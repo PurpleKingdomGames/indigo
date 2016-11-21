@@ -1,0 +1,34 @@
+
+*.class
+*.log
+.DS_Store
+
+# sbt specific
+sbt
+.sbt-local
+.cache
+.history
+.lib
+dist
+target
+lib_managed
+src_managed
+
+# IDE specific
+.idea
+*.iml
+
+# terraform
+*.tfstate
+*.tfstate.backup*
+
+#docker gatling loadtesting
+volumes
+
+bin
+.vagrant
+operations/pipeline/projectvars.sh
+env.properties
+native
+
+node_modules
