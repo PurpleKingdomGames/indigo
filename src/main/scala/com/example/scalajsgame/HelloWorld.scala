@@ -6,27 +6,48 @@ import org.scalajs.dom.raw.WebGLRenderingContext._
 
 import scala.scalajs.js.JSApp
 
+import scalajs.js.typedarray.Float32Array
+
 object HelloWorld extends JSApp {
   def main(): Unit = {
     println("Hello world!")
 
-    val can: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
-    dom.document.body.appendChild(can)
-    can.width = dom.window.innerWidth.toInt
-    can.height = (dom.window.innerHeight - 60).toInt
+    val vertexShader =
+      """
+        |void main()
+        |{
+        |    // Transforming The Vertex
+        |    //gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+        |}
+      """.stripMargin
 
-    val gl: raw.WebGLRenderingContext = can.getContext("webgl").asInstanceOf[raw.WebGLRenderingContext]
+    val fragmentShader =
+      """
+        |void main()
+        |{
+        |    // Setting Each Pixel To Red
+        |    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        |}
+      """.stripMargin
+
+    val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
+    dom.document.body.appendChild(canvas)
+    canvas.width = 256
+    canvas.height = 256
+
+    val gl: raw.WebGLRenderingContext = canvas.getContext("webgl").asInstanceOf[raw.WebGLRenderingContext]
     gl.clearColor(0.4, 0.0, 0.5, 0.8)
     gl.clear(COLOR_BUFFER_BIT)
 
     val vShader = gl.createShader(VERTEX_SHADER)
-    val vertText = "attribute vec2 position;gl_Position = vec4(position, 0, 1);"
-    gl.shaderSource(vShader, vertText)
+//    val vertText = "gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex" //"attribute vec2 position;gl_Position = vec4(position, 0, 1);"
+    gl.shaderSource(vShader, vertexShader)
     gl.compileShader(vShader)
+    println(gl.getShaderParameter(vShader, COMPILE_STATUS))
 
     val fShader = gl.createShader(FRAGMENT_SHADER)
-    val fragText = "precision highp float;uniform vec4 color;gl_FragColor = vec4(0, 1, 0, 1);"
-    gl.shaderSource(fShader, fragText)
+//    val fragText = "precision highp float;uniform vec4 color;gl_FragColor = vec4(0, 1, 0, 1);"
+    gl.shaderSource(fShader, fragmentShader)
     gl.compileShader(fShader)
 
     val program = gl.createProgram()
@@ -36,7 +57,7 @@ object HelloWorld extends JSApp {
 
     val tempVertices: scalajs.js.Array[Float] = scalajs.js.Array[Float]()
     tempVertices.push(-0.3f,-0.3f,   0.3f,-0.3f,  0.0f,0.3f,  0.2f,0.2f,   0.6f, 0.6f,   0.4f, -0.4f)
-    import scalajs.js.typedarray.Float32Array
+
     val vertices: Float32Array = new Float32Array(tempVertices)
 
     val buffer = gl.createBuffer()
@@ -44,15 +65,15 @@ object HelloWorld extends JSApp {
     gl.bufferData(ARRAY_BUFFER, vertices, STATIC_DRAW)
 
     gl.useProgram(program)
-    val progDyn = program.asInstanceOf[scalajs.js.Dynamic]
-    progDyn.color = gl.getUniformLocation(program, "color")
-    val temp2 = scalajs.js.Array[Double]()
-    temp2.push(0f, 1f, 0.5f, 1.0f)
-    gl.uniform4fv(progDyn.color.asInstanceOf[raw.WebGLUniformLocation], temp2)
-
-    progDyn.position = gl.getAttribLocation(program, "position")
-    gl.enableVertexAttribArray(progDyn.position.asInstanceOf[Int])
-    gl.vertexAttribPointer(progDyn.position.asInstanceOf[Int], 2, FLOAT, false, 0, 0)
+//    val progDyn = program.asInstanceOf[scalajs.js.Dynamic]
+//    progDyn.color = gl.getUniformLocation(program, "color")
+//    val temp2 = scalajs.js.Array[Double]()
+//    temp2.push(0f, 1f, 0.5f, 1.0f)
+//    gl.uniform4fv(progDyn.color.asInstanceOf[raw.WebGLUniformLocation], temp2)
+//
+//    progDyn.position = gl.getAttribLocation(program, "position")
+//    gl.enableVertexAttribArray(progDyn.position.asInstanceOf[Int])
+//    gl.vertexAttribPointer(progDyn.position.asInstanceOf[Int], 2, FLOAT, false, 0, 0)
     gl.drawArrays(TRIANGLES, 0, vertices.length / 2)
   }
 }
