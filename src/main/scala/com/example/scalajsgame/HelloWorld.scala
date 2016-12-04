@@ -13,6 +13,104 @@ object HelloWorld extends JSApp {
   val viewportSize = 256
 
   def main(): Unit = {
+    /*=================Creating a canvas=========================*/
+    val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
+    dom.document.body.appendChild(canvas)
+    canvas.width = viewportSize
+    canvas.height = viewportSize
+
+    val gl: raw.WebGLRenderingContext = canvas.getContext("webgl").asInstanceOf[raw.WebGLRenderingContext]
+
+    /*===========Defining and storing the geometry==============*/
+    val vertices = scalajs.js.Array[Double](
+      -0.5,0.5,0.0,
+      -0.5,-0.5,0.0,
+      0.5,-0.5,0.0
+    )
+
+    //Create an empty buffer object and store vertex data
+    val vertex_buffer = gl.createBuffer()
+
+    //Create a new buffer
+    gl.bindBuffer(ARRAY_BUFFER, vertex_buffer)
+
+    //bind it to the current buffer
+    gl.bufferData(ARRAY_BUFFER, new Float32Array(vertices), STATIC_DRAW)
+
+    // Pass the buffer data
+    gl.bindBuffer(ARRAY_BUFFER, null)
+
+    /*========================Shaders============================*/
+
+    //vertex shader source code
+    val vertCode =
+      """
+        |attribute vec4 coordinates;
+        |uniform vec4 translation;
+        |void main(void) {
+        |  gl_Position = coordinates + translation;
+        |}
+      """.stripMargin
+
+    //Create a vertex shader program object and compile it
+    val vertShader = gl.createShader(VERTEX_SHADER)
+    gl.shaderSource(vertShader, vertCode)
+    gl.compileShader(vertShader)
+
+
+    //fragment shader source code
+    val fragCode =
+      """
+        |void main(void) {
+        |   gl_FragColor = vec4(0.0, 0.0, 0.0, 0.1);
+        |}
+      """.stripMargin
+
+    //Create a fragment shader program object and compile it
+    val fragShader = gl.createShader(FRAGMENT_SHADER)
+    gl.shaderSource(fragShader, fragCode)
+    gl.compileShader(fragShader)
+
+    //Create and use combiened shader program
+    val shaderProgram = gl.createProgram()
+    gl.attachShader(shaderProgram, vertShader)
+    gl.attachShader(shaderProgram, fragShader)
+    gl.linkProgram(shaderProgram)
+
+    gl.useProgram(shaderProgram)
+
+
+    /* ===========Associating shaders to buffer objects============*/
+
+    gl.bindBuffer(ARRAY_BUFFER, vertex_buffer)
+    val coordinatesVar = gl.getAttribLocation(shaderProgram, "coordinates")
+    gl.vertexAttribPointer(coordinatesVar, 3, FLOAT, false, 0, 0)
+    gl.enableVertexAttribArray(coordinatesVar)
+
+    /* ==========translation======================================*/
+    val Tx = 0.5
+    val Ty = 0.5
+    val Tz = 0.0
+    val translation = gl.getUniformLocation(shaderProgram, "translation")
+    gl.uniform4f(translation, Tx, Ty, Tz, 0.0)
+
+    /*=================Drawing the riangle and transforming it========================*/
+
+    gl.clearColor(0.5, 0.5, 0.5, 0.9)
+    gl.enable(DEPTH_TEST)
+
+    gl.clear(COLOR_BUFFER_BIT)
+    gl.viewport(0,0,canvas.width,canvas.height)
+    gl.drawArrays(TRIANGLES, 0, 3)
+  }
+
+
+  // V2
+
+  /*
+  val viewportSize = 256
+
+  def main(): Unit = {
 
     println("Starting up")
 
@@ -46,13 +144,12 @@ object HelloWorld extends JSApp {
 
     val vertexShader =
       """
-        |attribute vec3 Position;
+        |attribute vec4 Position;
         |
-        |uniform mat4 u_ModelView;
-        |uniform mat4 u_Persp;
+        |uniform vec4 u_ModelView;
         |
         |void main(void) {
-        |    gl_Position = u_Persp * u_ModelView * vec4(Position, 1.0);
+        |    gl_Position = u_ModelView * Position;
         |}
       """.stripMargin
 
@@ -89,8 +186,10 @@ object HelloWorld extends JSApp {
     val progDyn = program.asInstanceOf[scalajs.js.Dynamic]
 
     progDyn.positionLocation = gl.getAttribLocation(program, "Position")
+
     gl.enableVertexAttribArray(progDyn.positionLocation.asInstanceOf[Int])
-    progDyn.u_PerspLocation = gl.getUniformLocation(program, "u_Persp")
+
+//    progDyn.u_PerspLocation = gl.getUniformLocation(program, "u_Persp")
     progDyn.u_ModelViewLocation = gl.getUniformLocation(program, "u_ModelView")
 
     progDyn
@@ -99,7 +198,11 @@ object HelloWorld extends JSApp {
   def setupBuffers(gl: raw.WebGLRenderingContext): WebGLBuffer = {
 
     val vertices = scalajs.js.Array[Float]()
-    vertices.push(0.0f,  1.0f,  -4.0f, -1.0f, -1.0f,  -4.0f, 1.0f, -1.0f,  -4.0f)
+    vertices.push(
+       0.0f,  1.0f, 0.0f,
+      -1.0f, -1.0f, 0.0f,
+       1.0f, -1.0f, 0.0f
+    )
 
     val buffer = gl.createBuffer()
     gl.bindBuffer(ARRAY_BUFFER, buffer)
@@ -111,26 +214,41 @@ object HelloWorld extends JSApp {
   def drawScene(gl: raw.WebGLRenderingContext, buffer: WebGLBuffer, progDyn: scalajs.js.Dynamic): Unit = {
 
     val pMatrix = Matrix4d()//.perspective(45f, (viewportSize / viewportSize).asInstanceOf[Double], 0.1f, 100f, false)
-    val mvMatrix = Matrix4d()//.translate(0f, 0f, -4f)
+    //val mvMatrix = Matrix4d().translate(0f, 0f, -4f)
 
-    println("p: " + pMatrix)
-    println("m: " + mvMatrix)
+    //println("p: " + pMatrix)
+    //println("m: " + mvMatrix)
 
     gl.viewport(0, 0, viewportSize, viewportSize)
     gl.clear(COLOR_BUFFER_BIT | DEPTH_BUFFER_BIT)
 
     //Pass triangle position to vertex shader
     gl.bindBuffer(ARRAY_BUFFER, buffer)
-    gl.vertexAttribPointer(progDyn.positionLocation.asInstanceOf[Int], 2, FLOAT, false, 0, 0)
+    gl.vertexAttribPointer(
+      indx = progDyn.positionLocation.asInstanceOf[Int],
+      size = 3,
+      `type` = FLOAT,
+      normalized = false,
+      stride = 0,
+      offset = 0
+    )
+
+    val perspLocation = progDyn.u_PerspLocation.asInstanceOf[raw.WebGLUniformLocation]
+    val moveLocation = progDyn.u_ModelViewLocation.asInstanceOf[raw.WebGLUniformLocation]
 
     //Pass model view projection matrix to vertex shader
-    gl.uniformMatrix4fv(progDyn.u_PerspLocation.asInstanceOf[raw.WebGLUniformLocation], false, pMatrix)
-    gl.uniformMatrix4fv(progDyn.u_ModelViewLocation.asInstanceOf[raw.WebGLUniformLocation], false, mvMatrix)
+    gl.uniformMatrix4fv(perspLocation, false, pMatrix)
+    //gl.uniformMatrix4fv(progDyn.u_ModelViewLocation.asInstanceOf[raw.WebGLUniformLocation], false, mvMatrix)
+
+    gl.uniform4f(moveLocation, 0d, 0d, -4d, 0d)
 
     //Draw our lovely triangle
     gl.drawArrays(TRIANGLES, 0, 3)
 
   }
+*/
+
+  /// V1
 
   /*
   def main(): Unit = {
