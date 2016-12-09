@@ -8,33 +8,40 @@ import org.scalajs.dom.{html, raw}
 import scala.scalajs.js.JSApp
 import scala.scalajs.js.typedarray.Float32Array
 
+import scala.language.implicitConversions
+
 object MyGame extends JSApp {
 
   val viewportSize = 256
 
-  def createCanvas(): html.Canvas = {
+  def main(): Unit = {
 
-    val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
-    dom.document.body.appendChild(canvas)
-    canvas.width = viewportSize
-    canvas.height = viewportSize
+    def createCanvas(name: String, width: Int, height: Int): html.Canvas = {
 
-    canvas
+      val canvas: html.Canvas = dom.document.createElement(name).asInstanceOf[html.Canvas]
+      dom.document.body.appendChild(canvas)
+      canvas.width = width
+      canvas.height = height
+
+      canvas
+    }
+
+    implicit val cnc: ContextAndCanvas = createCanvas("canvas", viewportSize, viewportSize)
+
+    Engine.addTriangle(CustomTriangle())
+    Engine.drawScene
+
   }
 
-  def initGL(canvas: html.Canvas): raw.WebGLRenderingContext = {
-    canvas.getContext("webgl").asInstanceOf[raw.WebGLRenderingContext]
+}
+
+object Engine {
+
+  def setupContextAndCanvas(canvas: html.Canvas): ContextAndCanvas = {
+    ContextAndCanvas(canvas.getContext("webgl").asInstanceOf[raw.WebGLRenderingContext], canvas)
   }
 
-  def createTriangle(): scalajs.js.Array[Double] = {
-    scalajs.js.Array[Double](
-      -0.5,0.5,0.0,
-      -0.5,-0.5,0.0,
-      0.5,-0.5,0.0
-    )
-  }
-
-  def createVertexBuffer(gl: raw.WebGLRenderingContext, vertices: scalajs.js.Array[Double]): WebGLBuffer = {
+  private def createVertexBuffer(gl: raw.WebGLRenderingContext, vertices: scalajs.js.Array[Double]): WebGLBuffer = {
     //Create an empty buffer object and store vertex data
     val vertexBuffer: WebGLBuffer = gl.createBuffer()
 
@@ -50,7 +57,7 @@ object MyGame extends JSApp {
     vertexBuffer
   }
 
-  def bucketOfShaders(gl: raw.WebGLRenderingContext): WebGLProgram = {
+  private def bucketOfShaders(gl: raw.WebGLRenderingContext): WebGLProgram = {
     //vertex shader source code
     val vertCode =
       """
@@ -65,7 +72,6 @@ object MyGame extends JSApp {
     val vertShader = gl.createShader(VERTEX_SHADER)
     gl.shaderSource(vertShader, vertCode)
     gl.compileShader(vertShader)
-
 
     //fragment shader source code
     val fragCode =
@@ -91,7 +97,7 @@ object MyGame extends JSApp {
     shaderProgram
   }
 
-  def bindShaderToBuffer(gl: raw.WebGLRenderingContext, vertexBuffer: WebGLBuffer, shaderProgram: WebGLProgram): Unit = {
+  private def bindShaderToBuffer(gl: raw.WebGLRenderingContext, vertexBuffer: WebGLBuffer, shaderProgram: WebGLProgram): Unit = {
     gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
 
     val coordinatesVar = gl.getAttribLocation(shaderProgram, "coordinates")
@@ -108,7 +114,7 @@ object MyGame extends JSApp {
     gl.enableVertexAttribArray(coordinatesVar)
   }
 
-  def transformTriangle(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram): Unit = {
+  private def transformTriangle(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram): Unit = {
     val Tx = 0.0 //0.5
     val Ty = 0.0 //0.5
     val Tz = 0.0
@@ -116,32 +122,37 @@ object MyGame extends JSApp {
     gl.uniform4f(translation, Tx, Ty, Tz, 0.0)
   }
 
-  def drawScene(canvas: html.Canvas, gl: raw.WebGLRenderingContext): Unit = {
-    gl.clearColor(0.5, 0.5, 0.5, 0.9)
-    gl.enable(DEPTH_TEST)
-
-    gl.clear(COLOR_BUFFER_BIT)
-    gl.viewport(0, 0, canvas.width, canvas.height)
-    gl.drawArrays(TRIANGLES, 0, 3)
+  def drawScene(implicit cNc: ContextAndCanvas): Unit = {
+    cNc.context.clearColor(0.5, 0.5, 0.5, 0.9)
+    cNc.context.enable(DEPTH_TEST)
+    cNc.context.clear(COLOR_BUFFER_BIT)
+    cNc.context.viewport(0, 0, cNc.canvas.width, cNc.canvas.height)
+    cNc.context.drawArrays(TRIANGLES, 0, 3)
   }
 
-  def main(): Unit = {
+  def addTriangle(triangle: CustomTriangle)(implicit cNc: ContextAndCanvas): Unit = {
+    val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, triangle.vertices)
+    val shaderProgram = bucketOfShaders(cNc.context)
 
-    val canvas: html.Canvas = createCanvas()
-    val gl: raw.WebGLRenderingContext = initGL(canvas)
-    val vertexBuffer: WebGLBuffer = createVertexBuffer(gl, createTriangle())
-    val shaderProgram = bucketOfShaders(gl)
-
-    bindShaderToBuffer(gl, vertexBuffer, shaderProgram)
-
-    drawScene(canvas, gl)
-
+    bindShaderToBuffer(cNc.context, vertexBuffer, shaderProgram)
+    transformTriangle(cNc.context, shaderProgram)
   }
 
 }
 
-object Engine {
-  
+object ContextAndCanvas {
+  implicit def canvasToContextAndCanvas(c: html.Canvas): ContextAndCanvas = {
+    Engine.setupContextAndCanvas(c)
+  }
+}
+case class ContextAndCanvas(context: raw.WebGLRenderingContext, canvas: html.Canvas)
+
+case class CustomTriangle() {
+  val vertices: scalajs.js.Array[Double] = scalajs.js.Array[Double](
+    -0.5,0.5,0.0,
+    -0.5,-0.5,0.0,
+    0.5,-0.5,0.0
+  )
 }
 
 //REFERENCE
