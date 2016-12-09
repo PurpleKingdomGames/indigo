@@ -16,19 +16,11 @@ object MyGame extends JSApp {
 
   def main(): Unit = {
 
-    def createCanvas(name: String, width: Int, height: Int): html.Canvas = {
+    implicit val cnc: ContextAndCanvas = Engine.createCanvas("canvas", viewportSize, viewportSize)
 
-      val canvas: html.Canvas = dom.document.createElement(name).asInstanceOf[html.Canvas]
-      dom.document.body.appendChild(canvas)
-      canvas.width = width
-      canvas.height = height
+    Engine.addTriangle(Triangle2D(0.5d, 0.5d))
+    Engine.addTriangle(Triangle2D(-0.5d, -0.5d))
 
-      canvas
-    }
-
-    implicit val cnc: ContextAndCanvas = createCanvas("canvas", viewportSize, viewportSize)
-
-    Engine.addTriangle(CustomTriangle())
     Engine.drawScene
 
   }
@@ -36,6 +28,16 @@ object MyGame extends JSApp {
 }
 
 object Engine {
+
+  def createCanvas(name: String, width: Int, height: Int): html.Canvas = {
+
+    val canvas: html.Canvas = dom.document.createElement(name).asInstanceOf[html.Canvas]
+    dom.document.body.appendChild(canvas)
+    canvas.width = width
+    canvas.height = height
+
+    canvas
+  }
 
   def setupContextAndCanvas(canvas: html.Canvas): ContextAndCanvas = {
     ContextAndCanvas(canvas.getContext("webgl").asInstanceOf[raw.WebGLRenderingContext], canvas)
@@ -114,9 +116,9 @@ object Engine {
     gl.enableVertexAttribArray(coordinatesVar)
   }
 
-  private def transformTriangle(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram): Unit = {
-    val Tx = 0.0 //0.5
-    val Ty = 0.0 //0.5
+  private def transformTriangle(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, triangle: Triangle2D): Unit = {
+    val Tx = triangle.x
+    val Ty = triangle.y
     val Tz = 0.0
     val translation = gl.getUniformLocation(shaderProgram, "translation")
     gl.uniform4f(translation, Tx, Ty, Tz, 0.0)
@@ -130,12 +132,12 @@ object Engine {
     cNc.context.drawArrays(TRIANGLES, 0, 3)
   }
 
-  def addTriangle(triangle: CustomTriangle)(implicit cNc: ContextAndCanvas): Unit = {
+  def addTriangle(triangle: Triangle2D)(implicit cNc: ContextAndCanvas): Unit = {
     val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, triangle.vertices)
     val shaderProgram = bucketOfShaders(cNc.context)
 
     bindShaderToBuffer(cNc.context, vertexBuffer, shaderProgram)
-    transformTriangle(cNc.context, shaderProgram)
+    transformTriangle(cNc.context, shaderProgram, triangle)
   }
 
 }
@@ -147,7 +149,7 @@ object ContextAndCanvas {
 }
 case class ContextAndCanvas(context: raw.WebGLRenderingContext, canvas: html.Canvas)
 
-case class CustomTriangle() {
+case class Triangle2D(x: Double, y: Double) {
   val vertices: scalajs.js.Array[Double] = scalajs.js.Array[Double](
     -0.5,0.5,0.0,
     -0.5,-0.5,0.0,
