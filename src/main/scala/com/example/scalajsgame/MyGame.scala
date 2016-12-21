@@ -27,7 +27,32 @@ object MyGame extends JSApp {
 
 }
 
+/*
+Knowing this a typical WebGL program basically follows this structure
+
+At Init time
+
+    create all shaders and programs and look up locations
+    create buffers and upload vertex data
+    create textures and upload texture data
+
+At Render Time
+
+    clear and set the viewport and other global state (enable depth testing, turn on culling, etc..)
+    For each thing you want to draw
+        call gl.useProgram for the program needed to draw.
+        setup attributes for the thing you want to draw
+            for each attribute call gl.bindBuffer, gl.vertexAttribPointer, gl.enableVertexAttribArray
+        setup uniforms for the thing you want to draw
+            call gl.uniformXXX for each uniform
+            call gl.activeTexture and gl.bindTexture to assign textures to texture units.
+        call gl.drawArrays or gl.drawElements
+
+ */
+
 object Engine {
+
+  var triangles: List[RenderableTriangle] = Nil
 
   def createCanvas(name: String, width: Int, height: Int): html.Canvas = {
 
@@ -94,8 +119,6 @@ object Engine {
     gl.attachShader(shaderProgram, fragShader)
     gl.linkProgram(shaderProgram)
 
-    gl.useProgram(shaderProgram)
-
     shaderProgram
   }
 
@@ -129,15 +152,24 @@ object Engine {
     cNc.context.enable(DEPTH_TEST)
     cNc.context.clear(COLOR_BUFFER_BIT)
     cNc.context.viewport(0, 0, cNc.canvas.width, cNc.canvas.height)
-    cNc.context.drawArrays(TRIANGLES, 0, 3)
+
+    triangles.foreach { triangle =>
+
+      cNc.context.useProgram(triangle.shaderProgram)
+
+      bindShaderToBuffer(cNc.context, triangle.vertexBuffer, triangle.shaderProgram)
+      transformTriangle(cNc.context, triangle.shaderProgram, triangle.triangle)
+
+      cNc.context.drawArrays(TRIANGLES, 0, 3)
+    }
+
   }
 
   def addTriangle(triangle: Triangle2D)(implicit cNc: ContextAndCanvas): Unit = {
     val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, triangle.vertices)
     val shaderProgram = bucketOfShaders(cNc.context)
 
-    bindShaderToBuffer(cNc.context, vertexBuffer, shaderProgram)
-    transformTriangle(cNc.context, shaderProgram, triangle)
+    triangles = RenderableTriangle(triangle, shaderProgram, vertexBuffer) :: triangles
   }
 
 }
@@ -156,6 +188,8 @@ case class Triangle2D(x: Double, y: Double) {
     0.5,-0.5,0.0
   )
 }
+
+case class RenderableTriangle(triangle: Triangle2D, shaderProgram: WebGLProgram, vertexBuffer: WebGLBuffer)
 
 //REFERENCE
 ////////////
