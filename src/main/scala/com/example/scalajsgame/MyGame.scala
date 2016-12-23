@@ -6,8 +6,7 @@ import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram}
 import org.scalajs.dom.{html, raw}
 
 import scala.scalajs.js.JSApp
-import scala.scalajs.js.typedarray.Float32Array
-
+import scala.scalajs.js.typedarray.{Float32Array, Uint8Array}
 import scala.language.implicitConversions
 
 object MyGame extends JSApp {
@@ -89,9 +88,17 @@ object Engine {
     val vertCode =
       """
         |attribute vec4 coordinates;
+        |attribute vec2 a_texcoord;
+        |
         |uniform vec4 translation;
+        |
+        |varying vec2 v_texcoord;
+        |
         |void main(void) {
         |  gl_Position = coordinates + translation;
+        |
+        |  // Pass the texcoord to the fragment shader.
+        |  v_texcoord = a_texcoord;
         |}
       """.stripMargin
 
@@ -100,11 +107,22 @@ object Engine {
     gl.shaderSource(vertShader, vertCode)
     gl.compileShader(vertShader)
 
+    //println("vert: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
+
     //fragment shader source code
     val fragCode =
       """
+        |precision mediump float;
+        |
+        |// Passed in from the vertex shader.
+        |varying vec2 v_texcoord;
+        |
+        |// The texture.
+        |uniform sampler2D u_texture;
+        |
         |void main(void) {
-        |   gl_FragColor = vec4(0.9, 0.3, 0.6, 1.0);
+        |   //gl_FragColor = vec4(0.9, 0.3, 0.6, 1.0);
+        |   gl_FragColor = texture2D(u_texture, v_texcoord);
         |}
       """.stripMargin
 
@@ -112,6 +130,8 @@ object Engine {
     val fragShader = gl.createShader(FRAGMENT_SHADER)
     gl.shaderSource(fragShader, fragCode)
     gl.compileShader(fragShader)
+
+    //println("frag: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
 
     //Create and use combined shader program
     val shaderProgram = gl.createProgram()
@@ -125,6 +145,7 @@ object Engine {
   private def bindShaderToBuffer(gl: raw.WebGLRenderingContext, vertexBuffer: WebGLBuffer, shaderProgram: WebGLProgram): Unit = {
     gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
 
+    //
     val coordinatesVar = gl.getAttribLocation(shaderProgram, "coordinates")
 
     gl.vertexAttribPointer(
@@ -137,6 +158,48 @@ object Engine {
     )
 
     gl.enableVertexAttribArray(coordinatesVar)
+
+    //
+    val texcoordLocation = gl.getAttribLocation(shaderProgram, "a_texcoord")
+    // We'll supply texcoords as floats.
+    gl.vertexAttribPointer(texcoordLocation, 2, FLOAT, false, 0, 0)
+    gl.enableVertexAttribArray(texcoordLocation)
+
+    //TODO: This needs to move and coords should come from the display object thing...
+    // Set Texcoords.
+    setTexcoords(gl)
+
+    organiseImage(gl)
+  }
+
+  private def setTexcoords(gl: raw.WebGLRenderingContext): Unit = {
+    val coords: scalajs.js.Array[Double] = scalajs.js.Array[Double](
+      0,0,0,
+      0,1,0,
+      1,0,0,
+      1,1,0
+    )
+
+    gl.bufferData(ARRAY_BUFFER, new Float32Array(coords), STATIC_DRAW)
+  }
+
+  private def organiseImage(gl: raw.WebGLRenderingContext): Unit = {
+    // Create a texture.
+    val texture = gl.createTexture()
+    gl.bindTexture(TEXTURE_2D, texture)
+
+    // Fill the texture with a 1x1 blue pixel.
+    gl.texImage2D(TEXTURE_2D, 0, RGBA, 1, 1, 0, RGBA, UNSIGNED_BYTE, new Uint8Array(scalajs.js.Array[Double](0, 0, 255, 255)))
+
+    // Asynchronously load an image
+    val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
+    image.src = "f-texture.png"
+    image.onload = (_: dom.Event) => {
+      // Now that the image has loaded make copy it to the texture.
+      gl.bindTexture(TEXTURE_2D, texture)
+      gl.texImage2D(TEXTURE_2D, 0, RGBA, RGBA, UNSIGNED_BYTE, image)
+      gl.generateMipmap(TEXTURE_2D)
+    }
   }
 
   private def transformDisplayObject(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, displayObject: DisplayObject): Unit = {
@@ -145,6 +208,10 @@ object Engine {
   }
 
   def drawScene(implicit cNc: ContextAndCanvas): Unit = {
+    dom.window.requestAnimationFrame(Engine.reallyDrawScene(cNc))
+  }
+
+  private def reallyDrawScene(cNc: ContextAndCanvas): Double => Unit = (time: Double) => {
     cNc.context.clearColor(0.5, 0.5, 0.5, 0.9)
     cNc.context.enable(DEPTH_TEST)
     cNc.context.clear(COLOR_BUFFER_BIT)
@@ -160,6 +227,7 @@ object Engine {
       cNc.context.drawArrays(renderableThing.displayObject.mode, 0, renderableThing.displayObject.count)
     }
 
+    dom.window.requestAnimationFrame(Engine.reallyDrawScene(cNc))
   }
 
   def addTriangle(triangle: Triangle2D)(implicit cNc: ContextAndCanvas): Unit = addDisplayObject(triangle)
