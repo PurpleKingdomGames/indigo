@@ -15,12 +15,17 @@ object MyGame extends JSApp {
 
   def main(): Unit = {
 
-    implicit val cnc: ContextAndCanvas = Engine.createCanvas("canvas", viewportSize, viewportSize)
+    val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
+    image.src = "f-texture.png"
+    image.onload = (_: dom.Event) => {
 
-    Engine.addRectangle(Rectangle2D(0, 0))
-//    Engine.addTriangle(Triangle2D(0, 0))
+      implicit val cnc: ContextAndCanvas = Engine.createCanvas("canvas", viewportSize, viewportSize)
 
-    Engine.drawScene
+      Engine.addRectangle(Rectangle2D(0, 0, image))
+      //    Engine.addTriangle(Triangle2D(0, 0))
+
+      Engine.drawScene
+    }
 
   }
 
@@ -142,7 +147,7 @@ object Engine {
     shaderProgram
   }
 
-  private def bindShaderToBuffer(gl: raw.WebGLRenderingContext, vertexBuffer: WebGLBuffer, shaderProgram: WebGLProgram): Unit = {
+  private def bindShaderToBuffer(gl: raw.WebGLRenderingContext, vertexBuffer: WebGLBuffer, shaderProgram: WebGLProgram, image: html.Image): Unit = {
     gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
 
     //
@@ -162,14 +167,14 @@ object Engine {
     //
     val texcoordLocation = gl.getAttribLocation(shaderProgram, "a_texcoord")
     // We'll supply texcoords as floats.
-    gl.vertexAttribPointer(texcoordLocation, 2, FLOAT, false, 0, 0)
+    gl.vertexAttribPointer(texcoordLocation, 3, FLOAT, false, 0, 0)
     gl.enableVertexAttribArray(texcoordLocation)
 
     //TODO: This needs to move and coords should come from the display object thing...
     // Set Texcoords.
     setTexcoords(gl)
 
-    organiseImage(gl)
+    organiseImage(gl, image)
   }
 
   private def setTexcoords(gl: raw.WebGLRenderingContext): Unit = {
@@ -183,23 +188,28 @@ object Engine {
     gl.bufferData(ARRAY_BUFFER, new Float32Array(coords), STATIC_DRAW)
   }
 
-  private def organiseImage(gl: raw.WebGLRenderingContext): Unit = {
+  private def organiseImage(gl: raw.WebGLRenderingContext, image: html.Image): Unit = {
     // Create a texture.
     val texture = gl.createTexture()
-    gl.bindTexture(TEXTURE_2D, texture)
+    //gl.bindTexture(TEXTURE_2D, texture)
 
     // Fill the texture with a 1x1 blue pixel.
-    gl.texImage2D(TEXTURE_2D, 0, RGBA, 1, 1, 0, RGBA, UNSIGNED_BYTE, new Uint8Array(scalajs.js.Array[Double](0, 0, 255, 255)))
+    //gl.texImage2D(TEXTURE_2D, 0, RGBA, 1, 1, 0, RGBA, UNSIGNED_BYTE, new Uint8Array(scalajs.js.Array[Double](0, 0, 255, 255)))
 
     // Asynchronously load an image
-    val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
-    image.src = "f-texture.png"
-    image.onload = (_: dom.Event) => {
+//    val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
+//    image.src = "f-texture.png"
+//    image.onload = (_: dom.Event) => {
       // Now that the image has loaded make copy it to the texture.
       gl.bindTexture(TEXTURE_2D, texture)
       gl.texImage2D(TEXTURE_2D, 0, RGBA, RGBA, UNSIGNED_BYTE, image)
       gl.generateMipmap(TEXTURE_2D)
-    }
+//    }
+  }
+
+  private def applyTextureLocation(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram): Unit = {
+    val u_texture = gl.getUniformLocation(shaderProgram, "u_texture")
+    gl.uniform1i(u_texture, 0)
   }
 
   private def transformDisplayObject(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, displayObject: DisplayObject): Unit = {
@@ -221,8 +231,9 @@ object Engine {
 
       cNc.context.useProgram(renderableThing.shaderProgram)
 
-      bindShaderToBuffer(cNc.context, renderableThing.vertexBuffer, renderableThing.shaderProgram)
+      bindShaderToBuffer(cNc.context, renderableThing.vertexBuffer, renderableThing.shaderProgram, renderableThing.displayObject.image)
       transformDisplayObject(cNc.context, renderableThing.shaderProgram, renderableThing.displayObject)
+      applyTextureLocation(cNc.context, renderableThing.shaderProgram)
 
       cNc.context.drawArrays(renderableThing.displayObject.mode, 0, renderableThing.displayObject.count)
     }
@@ -253,12 +264,13 @@ case class ContextAndCanvas(context: raw.WebGLRenderingContext, canvas: html.Can
 sealed trait DisplayObject {
   val x: Int
   val y: Int
+  val image: html.Image
   val vertices: scalajs.js.Array[Double]
   val count: Int
   val mode: Int //YUK! Wrap this in a real type?
 }
 
-case class Triangle2D(x: Int, y: Int) extends DisplayObject {
+case class Triangle2D(x: Int, y: Int, image: html.Image) extends DisplayObject {
   val vertices: scalajs.js.Array[Double] = scalajs.js.Array[Double](
     0,1,0,
     0,0,0,
@@ -268,7 +280,7 @@ case class Triangle2D(x: Int, y: Int) extends DisplayObject {
   val mode: Int = TRIANGLES
 }
 
-case class Rectangle2D(x: Int, y: Int) extends DisplayObject {
+case class Rectangle2D(x: Int, y: Int, image: html.Image) extends DisplayObject {
 
   /*
   B--D
