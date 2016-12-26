@@ -5,9 +5,9 @@ import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram}
 import org.scalajs.dom.{html, raw}
 
-import scala.scalajs.js.JSApp
-import scala.scalajs.js.typedarray.{Float32Array, Uint8Array}
 import scala.language.implicitConversions
+import scala.scalajs.js.JSApp
+import scala.scalajs.js.typedarray.Float32Array
 
 object MyGame extends JSApp {
 
@@ -16,7 +16,8 @@ object MyGame extends JSApp {
   def main(): Unit = {
 
     val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
-    image.src = "f-texture.png"
+    image.src = "Sprite-0001.png"
+    dom.document.body.appendChild(image)
     image.onload = (_: dom.Event) => {
 
       implicit val cnc: ContextAndCanvas = Engine.createCanvas("canvas", viewportSize, viewportSize)
@@ -72,7 +73,7 @@ object Engine {
     ContextAndCanvas(canvas.getContext("webgl").asInstanceOf[raw.WebGLRenderingContext], canvas)
   }
 
-  private def createVertexBuffer(gl: raw.WebGLRenderingContext, vertices: scalajs.js.Array[Double]): WebGLBuffer = {
+  private def createVertexBuffer[T](gl: raw.WebGLRenderingContext, vertices: scalajs.js.Array[T])(implicit num: Numeric[T]): WebGLBuffer = {
     //Create an empty buffer object and store vertex data
     val vertexBuffer: WebGLBuffer = gl.createBuffer()
 
@@ -81,9 +82,6 @@ object Engine {
 
     //bind it to the current buffer
     gl.bufferData(ARRAY_BUFFER, new Float32Array(vertices), STATIC_DRAW)
-
-    // Pass the buffer data
-    gl.bindBuffer(ARRAY_BUFFER, null)
 
     vertexBuffer
   }
@@ -147,11 +145,11 @@ object Engine {
     shaderProgram
   }
 
-  private def bindShaderToBuffer(gl: raw.WebGLRenderingContext, vertexBuffer: WebGLBuffer, shaderProgram: WebGLProgram, image: html.Image): Unit = {
-    gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
+  private def bindShaderToBuffer(gl: raw.WebGLRenderingContext, renderableThing: RenderableThing): Unit = {
+    // Vertices
+    gl.bindBuffer(ARRAY_BUFFER, renderableThing.vertexBuffer)
 
-    //
-    val coordinatesVar = gl.getAttribLocation(shaderProgram, "coordinates")
+    val coordinatesVar = gl.getAttribLocation(renderableThing.shaderProgram, "coordinates")
 
     gl.vertexAttribPointer(
       indx = coordinatesVar,
@@ -164,47 +162,29 @@ object Engine {
 
     gl.enableVertexAttribArray(coordinatesVar)
 
-    //
-    val texcoordLocation = gl.getAttribLocation(shaderProgram, "a_texcoord")
-    // We'll supply texcoords as floats.
-    gl.vertexAttribPointer(texcoordLocation, 3, FLOAT, false, 0, 0)
+    // Texture info
+    gl.bindBuffer(ARRAY_BUFFER, renderableThing.textureBuffer)
+
+    val texcoordLocation = gl.getAttribLocation(renderableThing.shaderProgram, "a_texcoord")
+    gl.vertexAttribPointer(
+      indx = texcoordLocation,
+      size = 2,
+      `type` = FLOAT,
+      normalized = false,
+      stride = 0,
+      offset = 0
+    )
     gl.enableVertexAttribArray(texcoordLocation)
 
-    //TODO: This needs to move and coords should come from the display object thing...
-    // Set Texcoords.
-    setTexcoords(gl)
-
-    organiseImage(gl, image)
-  }
-
-  private def setTexcoords(gl: raw.WebGLRenderingContext): Unit = {
-    val coords: scalajs.js.Array[Double] = scalajs.js.Array[Double](
-      0,0,0,
-      0,1,0,
-      1,0,0,
-      1,1,0
-    )
-
-    gl.bufferData(ARRAY_BUFFER, new Float32Array(coords), STATIC_DRAW)
   }
 
   private def organiseImage(gl: raw.WebGLRenderingContext, image: html.Image): Unit = {
-    // Create a texture.
+
     val texture = gl.createTexture()
-    //gl.bindTexture(TEXTURE_2D, texture)
 
-    // Fill the texture with a 1x1 blue pixel.
-    //gl.texImage2D(TEXTURE_2D, 0, RGBA, 1, 1, 0, RGBA, UNSIGNED_BYTE, new Uint8Array(scalajs.js.Array[Double](0, 0, 255, 255)))
-
-    // Asynchronously load an image
-//    val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
-//    image.src = "f-texture.png"
-//    image.onload = (_: dom.Event) => {
-      // Now that the image has loaded make copy it to the texture.
-      gl.bindTexture(TEXTURE_2D, texture)
-      gl.texImage2D(TEXTURE_2D, 0, RGBA, RGBA, UNSIGNED_BYTE, image)
-      gl.generateMipmap(TEXTURE_2D)
-//    }
+    gl.bindTexture(TEXTURE_2D, texture)
+    gl.texImage2D(TEXTURE_2D, 0, RGBA, RGBA, UNSIGNED_BYTE, image)
+    gl.generateMipmap(TEXTURE_2D)
   }
 
   private def applyTextureLocation(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram): Unit = {
@@ -218,10 +198,10 @@ object Engine {
   }
 
   def drawScene(implicit cNc: ContextAndCanvas): Unit = {
-    dom.window.requestAnimationFrame(Engine.reallyDrawScene(cNc))
+    dom.window.requestAnimationFrame(Engine.renderLoop(cNc))
   }
 
-  private def reallyDrawScene(cNc: ContextAndCanvas): Double => Unit = (time: Double) => {
+  private def renderLoop(cNc: ContextAndCanvas): Double => Unit = (time: Double) => {
     cNc.context.clearColor(0.5, 0.5, 0.5, 0.9)
     cNc.context.enable(DEPTH_TEST)
     cNc.context.clear(COLOR_BUFFER_BIT)
@@ -229,16 +209,21 @@ object Engine {
 
     renderableThings.foreach { renderableThing =>
 
+      // Use Program
       cNc.context.useProgram(renderableThing.shaderProgram)
 
-      bindShaderToBuffer(cNc.context, renderableThing.vertexBuffer, renderableThing.shaderProgram, renderableThing.displayObject.image)
+      // Setup attributes
+      bindShaderToBuffer(cNc.context, renderableThing)
+
+      // Setup Uniforms
       transformDisplayObject(cNc.context, renderableThing.shaderProgram, renderableThing.displayObject)
       applyTextureLocation(cNc.context, renderableThing.shaderProgram)
 
-      cNc.context.drawArrays(renderableThing.displayObject.mode, 0, renderableThing.displayObject.count)
+      // Draw
+      cNc.context.drawArrays(renderableThing.displayObject.mode, 0, renderableThing.displayObject.vertexCount)
     }
 
-    dom.window.requestAnimationFrame(Engine.reallyDrawScene(cNc))
+    dom.window.requestAnimationFrame(Engine.renderLoop(cNc))
   }
 
   def addTriangle(triangle: Triangle2D)(implicit cNc: ContextAndCanvas): Unit = addDisplayObject(triangle)
@@ -247,9 +232,13 @@ object Engine {
 
   private def addDisplayObject(displayObject: DisplayObject)(implicit cNc: ContextAndCanvas): Unit = {
     val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices)
+    val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.textureCoordinates)
+
+    organiseImage(cNc.context, displayObject.image)
+
     val shaderProgram = bucketOfShaders(cNc.context)
 
-    renderableThings = RenderableThing(displayObject, shaderProgram, vertexBuffer) :: renderableThings
+    renderableThings = RenderableThing(displayObject, shaderProgram, vertexBuffer, textureBuffer) :: renderableThings
   }
 
 }
@@ -261,41 +250,3 @@ object ContextAndCanvas {
 }
 case class ContextAndCanvas(context: raw.WebGLRenderingContext, canvas: html.Canvas)
 
-sealed trait DisplayObject {
-  val x: Int
-  val y: Int
-  val image: html.Image
-  val vertices: scalajs.js.Array[Double]
-  val count: Int
-  val mode: Int //YUK! Wrap this in a real type?
-}
-
-case class Triangle2D(x: Int, y: Int, image: html.Image) extends DisplayObject {
-  val vertices: scalajs.js.Array[Double] = scalajs.js.Array[Double](
-    0,1,0,
-    0,0,0,
-    1,0,0
-  )
-  val count: Int = 3
-  val mode: Int = TRIANGLES
-}
-
-case class Rectangle2D(x: Int, y: Int, image: html.Image) extends DisplayObject {
-
-  /*
-  B--D
-  |\ |
-  | \|
-  A--C
-   */
-  val vertices: scalajs.js.Array[Double] = scalajs.js.Array[Double](
-    0,0,0,
-    0,1,0,
-    1,0,0,
-    1,1,0
-  )
-  val count: Int = 4
-  val mode: Int = TRIANGLE_STRIP
-}
-
-case class RenderableThing(displayObject: DisplayObject, shaderProgram: WebGLProgram, vertexBuffer: WebGLBuffer)
