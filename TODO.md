@@ -13,8 +13,5 @@ The layers:
 3. The game.
 
 ## TODO
-
-- Load and apply a texture
 - Make the rectangle move at a framerate
 - Render in pixels...
-

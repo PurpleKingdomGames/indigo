@@ -192,9 +192,20 @@ object Engine {
     gl.uniform1i(u_texture, 0)
   }
 
+  var tmpX: Double = 0
+  var tmpY: Double = 0
+  var angle: Double = 0
+
   private def transformDisplayObject(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, displayObject: DisplayObject): Unit = {
     val translation = gl.getUniformLocation(shaderProgram, "translation")
-    gl.uniform4f(translation, displayObject.x, displayObject.y, 0.0, 0.0)
+//    gl.uniform4f(translation, displayObject.x, displayObject.y, 0.0, 0.0)
+
+    //Temporary just to get some movement going.
+    tmpX = Math.sin(angle) * 0.5
+    tmpY = Math.cos(angle) * 0.5
+    angle = angle + 0.01
+
+    gl.uniform4f(translation, tmpX, tmpY, 0.0, 0.0)
   }
 
   def drawScene(implicit cNc: ContextAndCanvas): Unit = {
