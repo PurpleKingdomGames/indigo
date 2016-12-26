@@ -7,7 +7,8 @@ import org.scalajs.dom.raw.WebGLRenderingContext._
 sealed trait DisplayObject {
   val x: Int
   val y: Int
-  val image: html.Image
+  // TODO: Make this just be a path, and have the engine take care of the loading.
+  val image: html.Image //TODO: Maybe not an image, maybe just a colour? ADT?
   val vertices: scalajs.js.Array[Double]
   val textureCoordinates: scalajs.js.Array[Int]
   val vertexCount: Int

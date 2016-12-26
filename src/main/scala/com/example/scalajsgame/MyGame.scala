@@ -11,16 +11,17 @@ import scala.scalajs.js.typedarray.Float32Array
 
 object MyGame extends JSApp {
 
-  val viewportSize = 256
+  private val viewportHeight: Int = 256
+  private val viewportWidth: Int = (viewportHeight.toDouble * (16d / 9d)).toInt
 
   def main(): Unit = {
 
     val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
     image.src = "Sprite-0001.png"
-    dom.document.body.appendChild(image)
+//    dom.document.body.appendChild(image)
     image.onload = (_: dom.Event) => {
 
-      implicit val cnc: ContextAndCanvas = Engine.createCanvas("canvas", viewportSize, viewportSize)
+      implicit val cnc: ContextAndCanvas = Engine.createCanvas("canvas", viewportWidth, viewportHeight)
 
       Engine.addRectangle(Rectangle2D(0, 0, image))
       //    Engine.addTriangle(Triangle2D(0, 0))
@@ -57,6 +58,7 @@ At Render Time
 
 object Engine {
 
+  //TODO: Remove later when I bring in the fold?
   private var renderableThings: List[RenderableThing] = Nil
 
   def createCanvas(name: String, width: Int, height: Int): html.Canvas = {
@@ -70,7 +72,13 @@ object Engine {
   }
 
   def setupContextAndCanvas(canvas: html.Canvas): ContextAndCanvas = {
-    ContextAndCanvas(canvas.getContext("webgl").asInstanceOf[raw.WebGLRenderingContext], canvas)
+    ContextAndCanvas(
+      context = canvas.getContext("webgl").asInstanceOf[raw.WebGLRenderingContext],
+      canvas = canvas,
+      width = canvas.clientWidth,
+      height = canvas.clientHeight,
+      aspect = canvas.clientWidth.toFloat / canvas.clientHeight.toFloat
+    )
   }
 
   private def createVertexBuffer[T](gl: raw.WebGLRenderingContext, vertices: scalajs.js.Array[T])(implicit num: Numeric[T]): WebGLBuffer = {
@@ -183,6 +191,11 @@ object Engine {
     val texture = gl.createTexture()
 
     gl.bindTexture(TEXTURE_2D, texture)
+
+    gl.texParameteri(TEXTURE_2D, TEXTURE_WRAP_S, CLAMP_TO_EDGE)
+    gl.texParameteri(TEXTURE_2D, TEXTURE_WRAP_T, CLAMP_TO_EDGE)
+    gl.texParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, LINEAR)
+
     gl.texImage2D(TEXTURE_2D, 0, RGBA, RGBA, UNSIGNED_BYTE, image)
     gl.generateMipmap(TEXTURE_2D)
   }
@@ -213,10 +226,12 @@ object Engine {
   }
 
   private def renderLoop(cNc: ContextAndCanvas): Double => Unit = (time: Double) => {
-    cNc.context.clearColor(0.5, 0.5, 0.5, 0.9)
+    cNc.context.clearColor(0, 0, 0, 1)
     cNc.context.enable(DEPTH_TEST)
     cNc.context.clear(COLOR_BUFFER_BIT)
-    cNc.context.viewport(0, 0, cNc.canvas.width, cNc.canvas.height)
+    cNc.context.viewport(0, 0, cNc.width, cNc.height)
+    cNc.context.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
+    cNc.context.enable(BLEND)
 
     renderableThings.foreach { renderableThing =>
 
@@ -259,5 +274,5 @@ object ContextAndCanvas {
     Engine.setupContextAndCanvas(c)
   }
 }
-case class ContextAndCanvas(context: raw.WebGLRenderingContext, canvas: html.Canvas)
+case class ContextAndCanvas(context: raw.WebGLRenderingContext, canvas: html.Canvas, width: Int, height: Int, aspect: Float)
 
