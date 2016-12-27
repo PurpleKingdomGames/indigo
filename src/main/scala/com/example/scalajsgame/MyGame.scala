@@ -101,12 +101,12 @@ object Engine {
         |attribute vec4 coordinates;
         |attribute vec2 a_texcoord;
         |
-        |uniform vec4 translation;
+        |uniform mat4 u_matrix;
         |
         |varying vec2 v_texcoord;
         |
         |void main(void) {
-        |  gl_Position = coordinates + translation;
+        |  gl_Position = u_matrix * coordinates;
         |
         |  // Pass the texcoord to the fragment shader.
         |  v_texcoord = a_texcoord;
@@ -209,8 +209,8 @@ object Engine {
   var tmpY: Double = 0
   var angle: Double = 0
 
-  private def transformDisplayObject(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, displayObject: DisplayObject): Unit = {
-    val translation = gl.getUniformLocation(shaderProgram, "translation")
+  private def transformDisplayObject(cNc: ContextAndCanvas, shaderProgram: WebGLProgram, displayObject: DisplayObject): Unit = {
+    val translation = cNc.context.getUniformLocation(shaderProgram, "u_matrix")
 //    gl.uniform4f(translation, displayObject.x, displayObject.y, 0.0, 0.0)
 
     //Temporary just to get some movement going.
@@ -218,7 +218,15 @@ object Engine {
     tmpY = Math.cos(angle) * 0.5
     angle = angle + 0.01
 
-    gl.uniform4f(translation, tmpX, tmpY, 0.0, 0.0)
+    val matrix4: Matrix4 =
+      Matrix4
+        .projection(2 * cNc.aspect, 2, 2)
+        .translate(tmpX, tmpY, 0.0)
+
+    //println(Matrix4.matrix4dToJsArray(matrix4))
+
+    cNc.context.uniformMatrix4fv(translation, false, matrix4)
+//    gl.uniform4f(translation, tmpX, tmpY, 0.0, 0.0)
   }
 
   def drawScene(implicit cNc: ContextAndCanvas): Unit = {
@@ -254,7 +262,7 @@ object Engine {
       bindShaderToBuffer(cNc.context, renderableThing)
 
       // Setup Uniforms
-      transformDisplayObject(cNc.context, renderableThing.shaderProgram, renderableThing.displayObject)
+      transformDisplayObject(cNc, renderableThing.shaderProgram, renderableThing.displayObject)
       applyTextureLocation(cNc.context, renderableThing.shaderProgram)
 
       // Draw
