@@ -224,7 +224,6 @@ object Engine {
   def drawScene(implicit cNc: ContextAndCanvas): Unit = {
     cNc.context.clearColor(0, 0, 0, 1)
     cNc.context.enable(DEPTH_TEST)
-    cNc.context.clear(COLOR_BUFFER_BIT)
     cNc.context.viewport(0, 0, cNc.width, cNc.height)
     cNc.context.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
     cNc.context.enable(BLEND)
@@ -243,6 +242,8 @@ object Engine {
   private def renderLoop(cNc: ContextAndCanvas): Double => Unit = (time: Double) => {
 
     resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight)
+
+    cNc.context.clear(COLOR_BUFFER_BIT)
 
     renderableThings.foreach { renderableThing =>
 
