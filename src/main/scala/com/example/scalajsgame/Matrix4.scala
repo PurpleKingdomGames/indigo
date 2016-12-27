@@ -56,6 +56,17 @@ case object Matrix4 {
     )
   }
 
+  def orthographic(left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double, dst: Double): Matrix4 = {
+    Matrix4(
+      List(
+        2 / (right - left),              0,                               0,                           0,
+        0,                               2 / (top - bottom),              0,                           0,
+        0,                               0,                               2 / (near - far),            0,
+        (left + right) / (left - right), (bottom + top) / (bottom - top), (near + far) / (near - far), 1
+      )
+    )
+  }
+
   def translation(tx: Double, ty: Double, tz: Double): Matrix4 = {
     Matrix4(
       List(

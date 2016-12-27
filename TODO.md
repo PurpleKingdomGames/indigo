@@ -13,5 +13,4 @@ The layers:
 3. The game.
 
 ## TODO
-- Make the rectangle move at a framerate
 - Render in pixels...
