@@ -13,4 +13,4 @@ The layers:
 3. The game.
 
 ## TODO
-- Render in pixels...
+- Share resources?

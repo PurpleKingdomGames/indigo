@@ -24,6 +24,8 @@ object MyGame extends JSApp {
       implicit val cnc: ContextAndCanvas = Engine.createCanvas("canvas", viewportWidth, viewportHeight)
 
       Engine.addRectangle(Rectangle2D(0, 0, 64, 64, image))
+      Engine.addRectangle(Rectangle2D(32, 32, 64, 64, image))
+      Engine.addRectangle(Rectangle2D(viewportWidth - 64, viewportHeight - 64, 64, 64, image))
 
       Engine.drawScene
     }
@@ -219,8 +221,9 @@ object Engine {
     val matrix4: Matrix4 =
       Matrix4
         .orthographic(0, cNc.width, cNc.height, 0, -1, 1)
+        .translate(displayObject.x, displayObject.y, 0)
         .scale(displayObject.width, displayObject.height, 1)
-        .translate(tmpX, tmpY, 0.0) // displayObject.x, displayObject.y
+//        .translate(tmpX, tmpY, 0.0)
 
     cNc.context.uniformMatrix4fv(
       location = translation,
@@ -277,6 +280,7 @@ object Engine {
   def addRectangle(rectangle: Rectangle2D)(implicit cNc: ContextAndCanvas): Unit = addDisplayObject(rectangle)
 
   private def addDisplayObject(displayObject: DisplayObject)(implicit cNc: ContextAndCanvas): Unit = {
+
     val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices)
     val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.textureCoordinates)
 
