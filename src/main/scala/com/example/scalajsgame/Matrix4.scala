@@ -45,6 +45,9 @@ case object Matrix4 {
     )
   )
 
+  /**
+    * Usage Matrix.projection(2 * aspectRatio, 2, 2) (assuming width > height) because the screen by default is 2 x 2 units: -1 to 1
+    */
   def projection(width: Double, height: Double, depth: Double): Matrix4 = {
     Matrix4(
       List(

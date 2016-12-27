@@ -18,13 +18,12 @@ object MyGame extends JSApp {
 
     val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
     image.src = "Sprite-0001.png"
-//    dom.document.body.appendChild(image)
+//    image.src = "f-texture.png"
     image.onload = (_: dom.Event) => {
 
       implicit val cnc: ContextAndCanvas = Engine.createCanvas("canvas", viewportWidth, viewportHeight)
 
-      Engine.addRectangle(Rectangle2D(0, 0, image))
-      //    Engine.addTriangle(Triangle2D(0, 0))
+      Engine.addRectangle(Rectangle2D(0, 0, 64, 64, image))
 
       Engine.drawScene
     }
@@ -211,7 +210,6 @@ object Engine {
 
   private def transformDisplayObject(cNc: ContextAndCanvas, shaderProgram: WebGLProgram, displayObject: DisplayObject): Unit = {
     val translation = cNc.context.getUniformLocation(shaderProgram, "u_matrix")
-//    gl.uniform4f(translation, displayObject.x, displayObject.y, 0.0, 0.0)
 
     //Temporary just to get some movement going.
     tmpX = Math.sin(angle) * 0.5
@@ -220,13 +218,15 @@ object Engine {
 
     val matrix4: Matrix4 =
       Matrix4
-        .projection(2 * cNc.aspect, 2, 2)
-        .translate(tmpX, tmpY, 0.0)
+        .orthographic(0, cNc.width, cNc.height, 0, -1, 1)
+        .scale(displayObject.width, displayObject.height, 1)
+        .translate(tmpX, tmpY, 0.0) // displayObject.x, displayObject.y
 
-    //println(Matrix4.matrix4dToJsArray(matrix4))
-
-    cNc.context.uniformMatrix4fv(translation, false, matrix4)
-//    gl.uniform4f(translation, tmpX, tmpY, 0.0, 0.0)
+    cNc.context.uniformMatrix4fv(
+      location = translation,
+      transpose = false,
+      value = matrix4
+    )
   }
 
   def drawScene(implicit cNc: ContextAndCanvas): Unit = {
