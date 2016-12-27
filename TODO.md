@@ -14,3 +14,4 @@ The layers:
 
 ## TODO
 - Share resources?
+- Provide an update mechanism
