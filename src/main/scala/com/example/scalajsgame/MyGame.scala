@@ -222,16 +222,27 @@ object Engine {
   }
 
   def drawScene(implicit cNc: ContextAndCanvas): Unit = {
-    dom.window.requestAnimationFrame(Engine.renderLoop(cNc))
-  }
-
-  private def renderLoop(cNc: ContextAndCanvas): Double => Unit = (time: Double) => {
     cNc.context.clearColor(0, 0, 0, 1)
     cNc.context.enable(DEPTH_TEST)
     cNc.context.clear(COLOR_BUFFER_BIT)
     cNc.context.viewport(0, 0, cNc.width, cNc.height)
     cNc.context.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
     cNc.context.enable(BLEND)
+
+    dom.window.requestAnimationFrame(Engine.renderLoop(cNc))
+  }
+
+  private def resize(canvas: html.Canvas, actualWidth: Int, actualHeight: Int): Unit = {
+    if (canvas.width != actualWidth || canvas.height != actualHeight) {
+      canvas.width = actualWidth
+      canvas.height = actualHeight
+    }
+  }
+
+
+  private def renderLoop(cNc: ContextAndCanvas): Double => Unit = (time: Double) => {
+
+    resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight)
 
     renderableThings.foreach { renderableThing =>
 
