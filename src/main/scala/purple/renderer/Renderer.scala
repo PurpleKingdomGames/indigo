@@ -1,39 +1,43 @@
 package purple.renderer
 
-import com.example.scalajsgame._
 import org.scalajs.dom
-import org.scalajs.dom.{html, raw}
-import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram}
 import org.scalajs.dom.raw.WebGLRenderingContext._
+import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram}
+import org.scalajs.dom.{html, raw}
 
-import scala.scalajs.js.typedarray.Float32Array
 import scala.language.implicitConversions
+import scala.scalajs.js.typedarray.Float32Array
 
 
-/*
-A typical WebGL program basically follows this structure
+object Renderer {
 
-At Init time
+  private var renderer: Option[Renderer] = None
 
-    create all shaders and programs and look up locations
-    create buffers and upload vertex data
-    create textures and upload texture data
+  def apply(config: RendererConfig): Renderer = {
+    renderer match {
+      case Some(r) => r
+      case None =>
+        renderer = Some(new Renderer(config))
 
-At Render Time
+        renderer.get
+    }
+  }
 
-    clear and set the viewport and other global state (enable depth testing, turn on culling, etc..)
-    For each thing you want to draw
-        call gl.useProgram for the program needed to draw.
-        setup attributes for the thing you want to draw
-            for each attribute call gl.bindBuffer, gl.vertexAttribPointer, gl.enableVertexAttribArray
-        setup uniforms for the thing you want to draw
-            call gl.uniformXXX for each uniform
-            call gl.activeTexture and gl.bindTexture to assign textures to texture units.
-        call gl.drawArrays or gl.drawElements
+  def setupContextAndCanvas(canvas: html.Canvas): ContextAndCanvas = {
+    ContextAndCanvas(
+      context = canvas.getContext("webgl").asInstanceOf[raw.WebGLRenderingContext],
+      canvas = canvas,
+      width = canvas.clientWidth,
+      height = canvas.clientHeight,
+      aspect = canvas.clientWidth.toFloat / canvas.clientHeight.toFloat
+    )
+  }
 
- */
+}
 
-object Engine {
+final case class RendererConfig()
+
+final class Renderer(config: RendererConfig) {
 
   //TODO: Remove later when I bring in the fold?
   private var renderableThings: List[RenderableThing] = Nil
@@ -46,16 +50,6 @@ object Engine {
     canvas.height = height
 
     canvas
-  }
-
-  def setupContextAndCanvas(canvas: html.Canvas): ContextAndCanvas = {
-    ContextAndCanvas(
-      context = canvas.getContext("webgl").asInstanceOf[raw.WebGLRenderingContext],
-      canvas = canvas,
-      width = canvas.clientWidth,
-      height = canvas.clientHeight,
-      aspect = canvas.clientWidth.toFloat / canvas.clientHeight.toFloat
-    )
   }
 
   private def createVertexBuffer[T](gl: raw.WebGLRenderingContext, vertices: scalajs.js.Array[T])(implicit num: Numeric[T]): WebGLBuffer = {
@@ -215,7 +209,7 @@ object Engine {
     cNc.context.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
     cNc.context.enable(BLEND)
 
-    dom.window.requestAnimationFrame(Engine.renderLoop(cNc))
+    dom.window.requestAnimationFrame(renderLoop(cNc))
   }
 
   private def resize(canvas: html.Canvas, actualWidth: Int, actualHeight: Int): Unit = {
@@ -248,7 +242,7 @@ object Engine {
       cNc.context.drawArrays(renderableThing.displayObject.mode, 0, renderableThing.displayObject.vertexCount)
     }
 
-    dom.window.requestAnimationFrame(Engine.renderLoop(cNc))
+    dom.window.requestAnimationFrame(renderLoop(cNc))
   }
 
   def addTriangle(triangle: Triangle2D)(implicit cNc: ContextAndCanvas): Unit = addDisplayObject(triangle)
@@ -271,7 +265,7 @@ object Engine {
 
 object ContextAndCanvas {
   implicit def canvasToContextAndCanvas(c: html.Canvas): ContextAndCanvas = {
-    Engine.setupContextAndCanvas(c)
+    Renderer.setupContextAndCanvas(c)
   }
 }
 case class ContextAndCanvas(context: raw.WebGLRenderingContext, canvas: html.Canvas, width: Int, height: Int, aspect: Float)
