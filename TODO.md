@@ -31,7 +31,7 @@ Renderer
 
 
 Game Engine
-- Game loop with fold?
+- Game loop with fold interface?
 - Preloader for textures
 - Scene graph -> flat list of renderable items
 - Model management

@@ -1,4 +1,4 @@
-package com.example.scalajsgame
+package purple.renderer
 
 import scala.language.implicitConversions
 

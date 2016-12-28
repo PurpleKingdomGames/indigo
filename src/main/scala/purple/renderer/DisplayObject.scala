@@ -1,8 +1,8 @@
-package com.example.scalajsgame
+package purple.renderer
 
 import org.scalajs.dom.html
-import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram}
 import org.scalajs.dom.raw.WebGLRenderingContext._
+import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram}
 
 sealed trait DisplayObject {
   val x: Int
