@@ -1,14 +1,12 @@
 package purple.gameengine
 
 import org.scalajs.dom
-import org.scalajs.dom.html
+import org.scalajs.dom.{Event, html}
 import org.scalajs.dom.raw.HTMLImageElement
-import org.scalajs.dom.Event
 import purple.renderer._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future, Promise}
+import scala.concurrent.{Future, Promise}
 import scala.scalajs.js.JSApp
 
 trait GameEngine[GameModel] extends JSApp {
@@ -19,13 +17,12 @@ trait GameEngine[GameModel] extends JSApp {
 
   def initialModel: GameModel
 
-  def updateModel(previousState: GameModel): GameModel
+  def updateModel(time: Double, previousState: GameModel): GameModel
 
   def updateView(currentState: GameModel): SceneGraphNode
 
   def main(): Unit = {
 
-//    val loadedImageAssets: List[LoadedImageAsset] =
     Future.sequence(imageAssets.toList.map(loadAsset)).foreach { loadedImageAssets =>
       val renderer: Renderer = Renderer(
         RendererConfig(
@@ -38,22 +35,6 @@ trait GameEngine[GameModel] extends JSApp {
       dom.window.requestAnimationFrame(loop(renderer))
     }
 
-
-//    val renderer = Renderer(RendererConfig())
-//
-//    val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
-//    image.src = "Sprite-0001.png"
-//    //    image.src = "f-texture.png"
-//    image.onload = (_: dom.Event) => {
-//
-//      implicit val cnc: ContextAndCanvas = renderer.createCanvas("canvas", viewportWidth, viewportHeight)
-//
-//      renderer.addRectangle(Rectangle2D(0, 0, 64, 64, image))
-//      renderer.addRectangle(Rectangle2D(32, 32, 64, 64, image))
-//      renderer.addRectangle(Rectangle2D(viewportWidth - 64, viewportHeight - 64, 64, 64, image))
-//
-//      renderer.drawScene
-//    }
   }
 
   private def onLoadFuture(image: HTMLImageElement): Future[HTMLImageElement] = {
@@ -73,15 +54,13 @@ trait GameEngine[GameModel] extends JSApp {
     val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
     image.src = imageAsset.path
 
-//    val loaded = Await.result(onLoadFuture(image), 5.second)
-
     onLoadFuture(image).map(i => LoadedImageAsset(imageAsset.name, i))
   }
 
   private var state: GameModel = initialModel
 
-  private def loop(renderer: Renderer)(timeDelta: Double): Unit = {
-    state = updateModel(state)
+  private def loop(renderer: Renderer)(time: Double): Unit = {
+    state = updateModel(time, state)
 
     val sceneGraph: SceneGraphNode = updateView(state)
 

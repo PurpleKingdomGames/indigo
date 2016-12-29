@@ -8,7 +8,7 @@ import scala.language.implicitConversions
 object MyGame extends GameEngine[Blocks] {
 
   private val viewportHeight: Int = 256
-  private val viewportWidth: Int = (viewportHeight.toDouble * (16d / 9d)).toInt
+  private val viewportWidth: Int = 455
 
   def config: GameConfig = GameConfig(
     viewport = GameViewport(viewportWidth, viewportHeight)
@@ -28,36 +28,45 @@ object MyGame extends GameEngine[Blocks] {
     )
   )
 
-  def updateModel(previousState: Blocks): Blocks = initialModel
+//  var tmpX: Int = 0
+//  var tmpY: Int = 0
+//  var angle: Double = 0
+
+  var once: Boolean = false
+
+  def updateModel(time: Double, previousState: Blocks): Blocks = {
+
+//    tmpX = (Math.sin(angle) * 32).toInt
+//    tmpY = (Math.cos(angle) * 32).toInt
+//    angle = angle + 0.01
+//
+//    previousState.copy(
+//      blocks = previousState.blocks.map(blk => blk.copy(x = tmpX + blk.x, y = tmpY + blk.y))
+//    )
+
+    if(!once) {
+      /*
+      Gives:
+Blocks(List(Block(0,0), Block(32,32), Block(391,192)))  scalajs-game-fastopt.js:12537:7
+Blocks(List(Block(0,0), Block(32,32), Block(-64,-64)))  scalajs-game-fastopt.js:12537:7
+       !!!!
+       */
+
+      println(initialModel)
+      println(previousState)
+      once = true
+    }
+
+    //TODO: this works, using previousState means loosing the third block for some reason...
+    initialModel
+
+  }
 
   def updateView(currentState: Blocks): SceneGraphNode = {
     SceneGraphNodeBranch(
       currentState.blocks.map(b => SceneGraphNodeLeaf(b.x, b.y, 64, 64, spriteSheetName))
     )
   }
-
-//  private val viewportHeight: Int = 256
-//  private val viewportWidth: Int = (viewportHeight.toDouble * (16d / 9d)).toInt
-//
-//  def main(): Unit = {
-//
-//    val renderer = Renderer(RendererConfig())
-//
-//    val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
-//    image.src = "Sprite-0001.png"
-////    image.src = "f-texture.png"
-//    image.onload = (_: dom.Event) => {
-//
-//      implicit val cnc: ContextAndCanvas = renderer.createCanvas("canvas", viewportWidth, viewportHeight)
-//
-//      renderer.addRectangle(Rectangle2D(0, 0, 64, 64, image))
-//      renderer.addRectangle(Rectangle2D(32, 32, 64, 64, image))
-//      renderer.addRectangle(Rectangle2D(viewportWidth - 64, viewportHeight - 64, 64, 64, image))
-//
-//      renderer.drawScene
-//    }
-//
-//  }
 
 }
 
