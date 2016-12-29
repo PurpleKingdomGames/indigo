@@ -14,6 +14,10 @@ The layers:
 
 ## TODO
 
+Bugs:
+- Clear colour not working
+- Weird numbers in the third block's position
+
 Renderer
 - Share resources for maximum use of instancing
 - Magnification
@@ -31,6 +35,9 @@ Renderer
 
 
 Game Engine
+- Expose time as time delta to update function
+- Add limited / specific framerate option
+- Input events from mouse and keyboard
 - Game loop with fold interface?
 - Preloader for textures
 - Scene graph -> flat list of renderable items
