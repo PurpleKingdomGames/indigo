@@ -13,14 +13,28 @@ object Renderer {
 
   private var renderer: Option[Renderer] = None
 
-  def apply(config: RendererConfig): Renderer = {
+  def apply(config: RendererConfig, loadedImageAssets: List[LoadedImageAsset]): Renderer = {
     renderer match {
       case Some(r) => r
       case None =>
-        renderer = Some(new Renderer(config))
+        val cNc = setupContextAndCanvas(createCanvas(config.viewport.width, config.viewport.height))
 
+        val r = new Renderer(config, loadedImageAssets, cNc)
+        r.init()
+
+        renderer = Some(r)
         renderer.get
     }
+  }
+
+  def createCanvas(width: Int, height: Int): html.Canvas = {
+
+    val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
+    dom.document.body.appendChild(canvas)
+    canvas.width = width
+    canvas.height = height
+
+    canvas
   }
 
   def setupContextAndCanvas(canvas: html.Canvas): ContextAndCanvas = {
@@ -35,22 +49,29 @@ object Renderer {
 
 }
 
-final case class RendererConfig()
+final case class RendererConfig(viewport: Viewport)
+final case class Viewport(width: Int, height: Int)
 
-final class Renderer(config: RendererConfig) {
+final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImageAsset], cNc: ContextAndCanvas) {
+
+  private val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, Rectangle2D.vertices)
+  private val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, Rectangle2D.textureCoordinates)
+
+  private val shaderProgram = bucketOfShaders(cNc.context)
+
+  def init(): Unit = {
+    cNc.context.clearColor(0, 0, 0, 1)
+    cNc.context.enable(DEPTH_TEST)
+    cNc.context.viewport(0, 0, cNc.width, cNc.height)
+    cNc.context.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
+    cNc.context.enable(BLEND)
+
+    //TODO: This is wrong, should be doing before we access the texture or something...
+    loadedImageAssets.foreach(li => organiseImage(cNc.context, li.data))
+  }
 
   //TODO: Remove later when I bring in the fold?
-  private var renderableThings: List[RenderableThing] = Nil
-
-  def createCanvas(name: String, width: Int, height: Int): html.Canvas = {
-
-    val canvas: html.Canvas = dom.document.createElement(name).asInstanceOf[html.Canvas]
-    dom.document.body.appendChild(canvas)
-    canvas.width = width
-    canvas.height = height
-
-    canvas
-  }
+//  private var renderableThings: List[RenderableThing] = Nil
 
   private def createVertexBuffer[T](gl: raw.WebGLRenderingContext, vertices: scalajs.js.Array[T])(implicit num: Numeric[T]): WebGLBuffer = {
     //Create an empty buffer object and store vertex data
@@ -124,11 +145,11 @@ final class Renderer(config: RendererConfig) {
     shaderProgram
   }
 
-  private def bindShaderToBuffer(gl: raw.WebGLRenderingContext, renderableThing: RenderableThing): Unit = {
+  private def bindShaderToBuffer(gl: raw.WebGLRenderingContext): Unit = {
     // Vertices
-    gl.bindBuffer(ARRAY_BUFFER, renderableThing.vertexBuffer)
+    gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
 
-    val coordinatesVar = gl.getAttribLocation(renderableThing.shaderProgram, "coordinates")
+    val coordinatesVar = gl.getAttribLocation(shaderProgram, "coordinates")
 
     gl.vertexAttribPointer(
       indx = coordinatesVar,
@@ -142,9 +163,9 @@ final class Renderer(config: RendererConfig) {
     gl.enableVertexAttribArray(coordinatesVar)
 
     // Texture info
-    gl.bindBuffer(ARRAY_BUFFER, renderableThing.textureBuffer)
+    gl.bindBuffer(ARRAY_BUFFER, textureBuffer)
 
-    val texcoordLocation = gl.getAttribLocation(renderableThing.shaderProgram, "a_texcoord")
+    val texcoordLocation = gl.getAttribLocation(shaderProgram, "a_texcoord")
     gl.vertexAttribPointer(
       indx = texcoordLocation,
       size = 2,
@@ -202,14 +223,42 @@ final class Renderer(config: RendererConfig) {
     )
   }
 
-  def drawScene(implicit cNc: ContextAndCanvas): Unit = {
+//  def drawScene(implicit cNc: ContextAndCanvas): Unit = {
+//    cNc.context.clearColor(0, 0, 0, 1)
+//    cNc.context.enable(DEPTH_TEST)
+//    cNc.context.viewport(0, 0, cNc.width, cNc.height)
+//    cNc.context.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
+//    cNc.context.enable(BLEND)
+//
+//    dom.window.requestAnimationFrame(renderLoop(cNc))
+//  }
+
+  def drawSceneOnce(displayObjectList: List[DisplayObject])(implicit cNc: ContextAndCanvas): Unit = {
     cNc.context.clearColor(0, 0, 0, 1)
     cNc.context.enable(DEPTH_TEST)
     cNc.context.viewport(0, 0, cNc.width, cNc.height)
     cNc.context.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
     cNc.context.enable(BLEND)
 
-    dom.window.requestAnimationFrame(renderLoop(cNc))
+    resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight)
+
+    cNc.context.clearColor(0, 0, 0, 1) //TODO: Get from config
+
+    displayObjectList.foreach { displayObject =>
+
+      // Use Program
+      cNc.context.useProgram(shaderProgram)
+
+      // Setup attributes
+      bindShaderToBuffer(cNc.context)
+
+      // Setup Uniforms
+      transformDisplayObject(cNc, shaderProgram, displayObject)
+      applyTextureLocation(cNc.context, shaderProgram)
+
+      // Draw
+      cNc.context.drawArrays(Rectangle2D.mode, 0, Rectangle2D.vertexCount)
+    }
   }
 
   private def resize(canvas: html.Canvas, actualWidth: Int, actualHeight: Int): Unit = {
@@ -220,46 +269,46 @@ final class Renderer(config: RendererConfig) {
   }
 
 
-  private def renderLoop(cNc: ContextAndCanvas): Double => Unit = (time: Double) => {
+//  private def renderLoop(cNc: ContextAndCanvas): Double => Unit = (time: Double) => {
+//
+//    resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight)
+//
+//    cNc.context.clear(COLOR_BUFFER_BIT)
+//
+//    renderableThings.foreach { renderableThing =>
+//
+//      // Use Program
+//      cNc.context.useProgram(renderableThing.shaderProgram)
+//
+//      // Setup attributes
+//      bindShaderToBuffer(cNc.context, renderableThing)
+//
+//      // Setup Uniforms
+//      transformDisplayObject(cNc, renderableThing.shaderProgram, renderableThing.displayObject)
+//      applyTextureLocation(cNc.context, renderableThing.shaderProgram)
+//
+//      // Draw
+//      cNc.context.drawArrays(renderableThing.displayObject.mode, 0, renderableThing.displayObject.vertexCount)
+//    }
+//
+//    dom.window.requestAnimationFrame(renderLoop(cNc))
+//  }
 
-    resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight)
-
-    cNc.context.clear(COLOR_BUFFER_BIT)
-
-    renderableThings.foreach { renderableThing =>
-
-      // Use Program
-      cNc.context.useProgram(renderableThing.shaderProgram)
-
-      // Setup attributes
-      bindShaderToBuffer(cNc.context, renderableThing)
-
-      // Setup Uniforms
-      transformDisplayObject(cNc, renderableThing.shaderProgram, renderableThing.displayObject)
-      applyTextureLocation(cNc.context, renderableThing.shaderProgram)
-
-      // Draw
-      cNc.context.drawArrays(renderableThing.displayObject.mode, 0, renderableThing.displayObject.vertexCount)
-    }
-
-    dom.window.requestAnimationFrame(renderLoop(cNc))
-  }
-
-  def addTriangle(triangle: Triangle2D)(implicit cNc: ContextAndCanvas): Unit = addDisplayObject(triangle)
-
-  def addRectangle(rectangle: Rectangle2D)(implicit cNc: ContextAndCanvas): Unit = addDisplayObject(rectangle)
-
-  private def addDisplayObject(displayObject: DisplayObject)(implicit cNc: ContextAndCanvas): Unit = {
-
-    val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices)
-    val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.textureCoordinates)
-
-    organiseImage(cNc.context, displayObject.image)
-
-    val shaderProgram = bucketOfShaders(cNc.context)
-
-    renderableThings = RenderableThing(displayObject, shaderProgram, vertexBuffer, textureBuffer) :: renderableThings
-  }
+//  def addTriangle(triangle: Triangle2D)(implicit cNc: ContextAndCanvas): Unit = addDisplayObject(triangle)
+//
+//  def addRectangle(rectangle: Rectangle2D)(implicit cNc: ContextAndCanvas): Unit = addDisplayObject(rectangle)
+//
+//  private def addDisplayObject(displayObject: DisplayObject)(implicit cNc: ContextAndCanvas): Unit = {
+//
+//    val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices)
+//    val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.textureCoordinates)
+//
+//    organiseImage(cNc.context, displayObject.image)
+//
+//    val shaderProgram = bucketOfShaders(cNc.context)
+//
+//    renderableThings = RenderableThing(displayObject, shaderProgram, vertexBuffer, textureBuffer) :: renderableThings
+//  }
 
 }
 
@@ -269,3 +318,7 @@ object ContextAndCanvas {
   }
 }
 case class ContextAndCanvas(context: raw.WebGLRenderingContext, canvas: html.Canvas, width: Int, height: Int, aspect: Float)
+
+sealed trait ImageAssetStates
+case class ImageAsset(name: String, path: String) extends ImageAssetStates
+case class LoadedImageAsset(name: String, data: html.Image)
