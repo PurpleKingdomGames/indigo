@@ -2,7 +2,7 @@ package purple.renderer
 
 import org.scalajs.dom
 import org.scalajs.dom.raw.WebGLRenderingContext._
-import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram}
+import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram, WebGLTexture}
 import org.scalajs.dom.{html, raw}
 
 import scala.language.implicitConversions
@@ -49,8 +49,11 @@ object Renderer {
 
 }
 
-final case class RendererConfig(viewport: Viewport)
+final case class RendererConfig(viewport: Viewport, clearColor: ClearColor)
 final case class Viewport(width: Int, height: Int)
+final case class ClearColor(r: Double, g: Double, b: Double, a: Double)
+
+final case class TextureLookup(name: String, texture: WebGLTexture)
 
 final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImageAsset], cNc: ContextAndCanvas) {
 
@@ -59,15 +62,21 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
 
   private val shaderProgram = bucketOfShaders(cNc.context)
 
+  private val textureLocations: List[TextureLookup] =
+    loadedImageAssets.map { li =>
+      TextureLookup(li.name, organiseImage(cNc.context, li.data))
+    }
+
   def init(): Unit = {
     cNc.context.clearColor(0, 0, 0, 1)
+//    cNc.context.clearColor(config.clearColor.r, config.clearColor.g, config.clearColor.b, config.clearColor.a)
     cNc.context.enable(DEPTH_TEST)
     cNc.context.viewport(0, 0, cNc.width, cNc.height)
     cNc.context.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
     cNc.context.enable(BLEND)
 
     //TODO: This is wrong, should be doing before we access the texture or something...
-    loadedImageAssets.foreach(li => organiseImage(cNc.context, li.data))
+//    loadedImageAssets.map(li => organiseImage(cNc.context, li.data))
   }
 
   //TODO: Remove later when I bring in the fold?
@@ -178,7 +187,7 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
 
   }
 
-  private def organiseImage(gl: raw.WebGLRenderingContext, image: html.Image): Unit = {
+  private def organiseImage(gl: raw.WebGLRenderingContext, image: html.Image): WebGLTexture = {
 
     val texture = gl.createTexture()
 
@@ -190,9 +199,15 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
 
     gl.texImage2D(TEXTURE_2D, 0, RGBA, RGBA, UNSIGNED_BYTE, image)
     gl.generateMipmap(TEXTURE_2D)
+
+    texture
   }
 
-  private def applyTextureLocation(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram): Unit = {
+
+  private def applyTextureLocation(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture): Unit = {
+
+    gl.bindTexture(TEXTURE_2D, texture) // Do I need to do more here?
+
     val u_texture = gl.getUniformLocation(shaderProgram, "u_texture")
     gl.uniform1i(u_texture, 0)
   }
@@ -233,8 +248,9 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
 //    dom.window.requestAnimationFrame(renderLoop(cNc))
 //  }
 
-  def drawSceneOnce(displayObjectList: List[DisplayObject])(implicit cNc: ContextAndCanvas): Unit = {
+  def drawSceneOnce(displayObjectList: List[DisplayObject]): Unit = {
     cNc.context.clearColor(0, 0, 0, 1)
+//    cNc.context.clearColor(config.clearColor.r, config.clearColor.g, config.clearColor.b, config.clearColor.a)
     cNc.context.enable(DEPTH_TEST)
     cNc.context.viewport(0, 0, cNc.width, cNc.height)
     cNc.context.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
@@ -242,22 +258,27 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
 
     resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight)
 
-    cNc.context.clearColor(0, 0, 0, 1) //TODO: Get from config
+    cNc.context.clearColor(0, 0, 0, 1)
+//    cNc.context.clearColor(config.clearColor.r, config.clearColor.g, config.clearColor.b, config.clearColor.a)
 
     displayObjectList.foreach { displayObject =>
 
-      // Use Program
-      cNc.context.useProgram(shaderProgram)
+      textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
 
-      // Setup attributes
-      bindShaderToBuffer(cNc.context)
+        // Use Program
+        cNc.context.useProgram(shaderProgram)
 
-      // Setup Uniforms
-      transformDisplayObject(cNc, shaderProgram, displayObject)
-      applyTextureLocation(cNc.context, shaderProgram)
+        // Setup attributes
+        bindShaderToBuffer(cNc.context)
 
-      // Draw
-      cNc.context.drawArrays(Rectangle2D.mode, 0, Rectangle2D.vertexCount)
+        // Setup Uniforms
+        transformDisplayObject(cNc, shaderProgram, displayObject)
+        applyTextureLocation(cNc.context, shaderProgram, textureLookup.texture)
+
+        // Draw
+        cNc.context.drawArrays(Rectangle2D.mode, 0, Rectangle2D.vertexCount)
+      }
+
     }
   }
 

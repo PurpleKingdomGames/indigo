@@ -14,7 +14,9 @@ object MyGame extends GameEngine[Blocks] {
     viewport = GameViewport(viewportWidth, viewportHeight)
   )
 
-  private val spriteAsset = ImageAsset("blob", "Sprite-0001.png")
+  val spriteSheetName: String = "blob"
+
+  private val spriteAsset = ImageAsset(spriteSheetName, "Sprite-0001.png")
 
   def imageAssets: Set[ImageAsset] = Set(spriteAsset)
 
@@ -30,7 +32,7 @@ object MyGame extends GameEngine[Blocks] {
 
   def updateView(currentState: Blocks): SceneGraphNode = {
     SceneGraphNodeBranch(
-      currentState.blocks.map(b => SceneGraphNodeLeaf(b.x, b.y, 64, 64, spriteAsset))
+      currentState.blocks.map(b => SceneGraphNodeLeaf(b.x, b.y, 64, 64, spriteSheetName))
     )
   }
 
