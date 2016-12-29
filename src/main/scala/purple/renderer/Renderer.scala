@@ -8,7 +8,6 @@ import org.scalajs.dom.{html, raw}
 import scala.language.implicitConversions
 import scala.scalajs.js.typedarray.Float32Array
 
-
 object Renderer {
 
   private var renderer: Option[Renderer] = None
@@ -28,7 +27,6 @@ object Renderer {
   }
 
   def createCanvas(width: Int, height: Int): html.Canvas = {
-
     val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
     dom.document.body.appendChild(canvas)
     canvas.width = width
@@ -68,8 +66,6 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
     }
 
   def init(): Unit = {
-    cNc.context.clearColor(0, 0, 0, 1)
-//    cNc.context.clearColor(config.clearColor.r, config.clearColor.g, config.clearColor.b, config.clearColor.a)
     cNc.context.enable(DEPTH_TEST)
     cNc.context.viewport(0, 0, cNc.width, cNc.height)
     cNc.context.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
@@ -224,17 +220,10 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
   }
 
   def drawSceneOnce(displayObjectList: List[DisplayObject]): Unit = {
-    cNc.context.clearColor(0, 0, 0, 1)
-//    cNc.context.clearColor(config.clearColor.r, config.clearColor.g, config.clearColor.b, config.clearColor.a)
-    cNc.context.enable(DEPTH_TEST)
-    cNc.context.viewport(0, 0, cNc.width, cNc.height)
-    cNc.context.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
-    cNc.context.enable(BLEND)
+    cNc.context.clear(COLOR_BUFFER_BIT)
+    cNc.context.clearColor(config.clearColor.r, config.clearColor.g, config.clearColor.b, config.clearColor.a)
 
     resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight)
-
-    cNc.context.clearColor(0, 0, 0, 1)
-//    cNc.context.clearColor(config.clearColor.r, config.clearColor.g, config.clearColor.b, config.clearColor.a)
 
     displayObjectList.foreach { displayObject =>
 
@@ -266,11 +255,6 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
 
 }
 
-object ContextAndCanvas {
-  implicit def canvasToContextAndCanvas(c: html.Canvas): ContextAndCanvas = {
-    Renderer.setupContextAndCanvas(c)
-  }
-}
 case class ContextAndCanvas(context: raw.WebGLRenderingContext, canvas: html.Canvas, width: Int, height: Int, aspect: Float)
 
 sealed trait ImageAssetStates
