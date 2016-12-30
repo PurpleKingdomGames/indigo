@@ -15,34 +15,19 @@ The layers:
 ## TODO
 
 Bugs:
-- Clear colour not working
-- Weird numbers in the third block's position
+- Textures not blending
 
 Renderer
-- Share resources for maximum use of instancing
 - Magnification
 - Image effects
   - Tint
   - Alpha
 - Flip (horz, vert)
-- Remove update routine (move to game engine)
-- Draw is a function that takes a list of renderable items (typeclass)
-- Renderer is instantiated with config and a list of already preloaded textures (referenced by name by game engine)
-  - Set up the rectangle vertex buffer
-  - Setup the shaders
-  - Setup each texture
 - A way to do animation frames
 
 
 Game Engine
-- Expose time as time delta to update function
-- Add limited / specific framerate option
 - Input events from mouse and keyboard
-- Game loop with fold interface?
-- Preloader for textures
-- Scene graph -> flat list of renderable items
-- Model management
-- Tie into renderer
 - Expose tint, alpha, flip etc.
 - Spritesheet management
   - Define animation frames
@@ -53,5 +38,4 @@ Game Engine
 - Backgrounds?
 
 Game
-- Initialise game engine with list of paths to textures
 - Make game.

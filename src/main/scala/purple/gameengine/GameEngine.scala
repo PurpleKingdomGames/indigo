@@ -17,7 +17,7 @@ trait GameEngine[GameModel] extends JSApp {
 
   def initialModel: GameModel
 
-  def updateModel(time: Double, previousState: GameModel): GameModel
+  def updateModel(timeDelta: Double, previousState: GameModel): GameModel
 
   def updateView(currentState: GameModel): SceneGraphNode
 
@@ -32,7 +32,7 @@ trait GameEngine[GameModel] extends JSApp {
         loadedImageAssets
       )
 
-      dom.window.requestAnimationFrame(loop(renderer))
+      dom.window.requestAnimationFrame(loop(renderer, 0))
     }
 
   }
@@ -57,14 +57,31 @@ trait GameEngine[GameModel] extends JSApp {
     onLoadFuture(image).map(i => LoadedImageAsset(imageAsset.name, i))
   }
 
-  private var state: GameModel = initialModel
+  private var state: Option[GameModel] = None
 
-  private def loop(renderer: Renderer)(time: Double): Unit = {
-    state = updateModel(time, state)
+  private def loop(renderer: Renderer, lastUpdateTime: Double)(time: Double): Unit = {
+    val timeDelta = time - lastUpdateTime
 
-    val sceneGraph: SceneGraphNode = updateView(state)
+    if(timeDelta > config.frameRateDeltaMillis) {
+      val model = state match {
+        case None => initialModel
+        case Some(previousState) => updateModel(timeDelta, previousState)
+      }
 
-    renderer.drawSceneOnce(
+      state = Some(model)
+
+      drawScene(renderer, model)
+
+      dom.window.requestAnimationFrame(loop(renderer, time))
+    } else {
+      dom.window.requestAnimationFrame(loop(renderer, lastUpdateTime))
+    }
+  }
+
+  private def drawScene(renderer: Renderer, gameModel: GameModel): Unit = {
+    val sceneGraph: SceneGraphNode = updateView(gameModel)
+
+    val displayObjects: List[DisplayObject] =
       sceneGraph.flatten(Nil).map { leaf =>
         DisplayObject(
           x = leaf.x,
@@ -74,14 +91,15 @@ trait GameEngine[GameModel] extends JSApp {
           imageRef = leaf.imageAssetRef
         )
       }.sortBy(d => d.imageRef)
-    )
 
-    dom.window.requestAnimationFrame(loop(renderer))
+    renderer.drawScene(displayObjects)
   }
 
 }
 
-case class GameConfig(viewport: GameViewport)
+case class GameConfig(viewport: GameViewport, frameRate: Int) {
+  val frameRateDeltaMillis: Int = 1000 / frameRate
+}
 
 case class GameViewport(width: Int, height: Int)
 

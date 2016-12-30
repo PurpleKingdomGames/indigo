@@ -11,7 +11,8 @@ object MyGame extends GameEngine[Blocks] {
   private val viewportWidth: Int = 455
 
   def config: GameConfig = GameConfig(
-    viewport = GameViewport(viewportWidth, viewportHeight)
+    viewport = GameViewport(viewportWidth, viewportHeight),
+    frameRate = 30
   )
 
   val spriteSheetName: String = "blob"
@@ -22,43 +23,25 @@ object MyGame extends GameEngine[Blocks] {
 
   def initialModel: Blocks = Blocks(
     List(
-      Block(0, 0),
-      Block(32, 32),
-      Block(viewportWidth - 64, viewportHeight - 64)
+      Block(0, 0, 0, 0),
+      Block(0, 0, 32, 32),
+      Block(0, 0, viewportWidth - 64, viewportHeight - 64)
     )
   )
 
-//  var tmpX: Int = 0
-//  var tmpY: Int = 0
-//  var angle: Double = 0
+  var tmpX: Int = 0
+  var tmpY: Int = 0
+  var angle: Double = 0
 
-  var once: Boolean = false
+  def updateModel(timeDelta: Double, previousState: Blocks): Blocks = {
 
-  def updateModel(time: Double, previousState: Blocks): Blocks = {
+    tmpX = (Math.sin(angle) * 32).toInt
+    tmpY = (Math.cos(angle) * 32).toInt
+    angle = angle + 0.01
 
-//    tmpX = (Math.sin(angle) * 32).toInt
-//    tmpY = (Math.cos(angle) * 32).toInt
-//    angle = angle + 0.01
-//
-//    previousState.copy(
-//      blocks = previousState.blocks.map(blk => blk.copy(x = tmpX + blk.x, y = tmpY + blk.y))
-//    )
-
-    if(!once) {
-      /*
-      Gives:
-Blocks(List(Block(0,0), Block(32,32), Block(391,192)))  scalajs-game-fastopt.js:12537:7
-Blocks(List(Block(0,0), Block(32,32), Block(-64,-64)))  scalajs-game-fastopt.js:12537:7
-       !!!!
-       */
-
-      println(initialModel)
-      println(previousState)
-      once = true
-    }
-
-    //TODO: this works, using previousState means loosing the third block for some reason...
-    initialModel
+    previousState.copy(
+      blocks = previousState.blocks.map(blk => blk.copy(x = tmpX + blk.centerX, y = tmpY + blk.centerY))
+    )
 
   }
 
@@ -71,4 +54,4 @@ Blocks(List(Block(0,0), Block(32,32), Block(-64,-64)))  scalajs-game-fastopt.js:
 }
 
 case class Blocks(blocks: List[Block])
-case class Block(x: Int, y: Int)
+case class Block(x: Int, y: Int, centerX: Int, centerY: Int)

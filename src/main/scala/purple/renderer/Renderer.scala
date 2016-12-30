@@ -219,7 +219,7 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
     )
   }
 
-  def drawSceneOnce(displayObjectList: List[DisplayObject]): Unit = {
+  def drawScene(displayObjectList: List[DisplayObject]): Unit = {
     cNc.context.clear(COLOR_BUFFER_BIT)
     cNc.context.clearColor(config.clearColor.r, config.clearColor.g, config.clearColor.b, config.clearColor.a)
 
