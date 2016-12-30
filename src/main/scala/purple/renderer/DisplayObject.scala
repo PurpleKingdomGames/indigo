@@ -17,7 +17,7 @@ import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram}
 //  val mode: Int //YUK! Wrap this in a real type?
 //}
 
-case class DisplayObject(x: Int, y: Int, width: Int, height: Int, imageRef: String)
+case class DisplayObject(x: Int, y: Int, width: Int, height: Int, imageRef: String, alpha: Double, tintR: Double, tintG: Double, tintB: Double)
 
 //case class Triangle2D(x: Int, y: Int, width: Int, height: Int, image: html.Image) extends DisplayObject {
 //  val vertices: scalajs.js.Array[Double] = scalajs.js.Array[Double](

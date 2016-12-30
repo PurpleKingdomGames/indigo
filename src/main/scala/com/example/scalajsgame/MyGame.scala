@@ -23,9 +23,9 @@ object MyGame extends GameEngine[Blocks] {
 
   def initialModel: Blocks = Blocks(
     List(
-      Block(0, 0, 0, 0),
-      Block(0, 0, 32, 32),
-      Block(0, 0, viewportWidth - 64, viewportHeight - 64)
+      Block(0, 0, 0, 0, 1, BlockTint(1, 0, 0)),
+      Block(0, 0, 32, 32, 0.5, BlockTint(0, 1, 0)),
+      Block(0, 0, viewportWidth - 64, viewportHeight - 64, 0.25, BlockTint(0, 0, 1))
     )
   )
 
@@ -47,11 +47,12 @@ object MyGame extends GameEngine[Blocks] {
 
   def updateView(currentState: Blocks): SceneGraphNode = {
     SceneGraphNodeBranch(
-      currentState.blocks.map(b => SceneGraphNodeLeaf(b.x, b.y, 64, 64, spriteSheetName))
+      currentState.blocks.map(b => SceneGraphNodeLeaf(b.x, b.y, 64, 64, spriteSheetName, SceneGraphNodeLeafEffects(b.alpha, Tint(b.tint.r, b.tint.g, b.tint.b))))
     )
   }
 
 }
 
 case class Blocks(blocks: List[Block])
-case class Block(x: Int, y: Int, centerX: Int, centerY: Int)
+case class Block(x: Int, y: Int, centerX: Int, centerY: Int, alpha: Double, tint: BlockTint)
+case class BlockTint(r: Double, g: Double, b: Double)

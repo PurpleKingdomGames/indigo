@@ -18,16 +18,13 @@ Bugs:
 
 Renderer
 - Magnification
-- Image effects
-  - Tint
-  - Alpha
 - Flip (horz, vert)
 - A way to do animation frames
 
 
 Game Engine
 - Input events from mouse and keyboard
-- Expose tint, alpha, flip etc.
+- Expose flip
 - Spritesheet management
   - Define animation frames
   - Define animation cycles (frame ranges)

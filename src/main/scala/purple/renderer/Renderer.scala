@@ -121,10 +121,13 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
         |
         |// The texture.
         |uniform sampler2D u_texture;
+        |uniform float uAlpha;
+        |uniform vec3 uTint;
         |
         |void main(void) {
-        |   //gl_FragColor = vec4(0.9, 0.3, 0.6, 1.0);
-        |   gl_FragColor = texture2D(u_texture, v_texcoord);
+        |   //vec4 tint = vec4(0.9, 0.3, 0.6, 1.0);
+        |   vec4 textureColor = texture2D(u_texture, v_texcoord);
+        |   gl_FragColor = vec4(textureColor.rgb * uTint, textureColor.a * uAlpha);
         |}
       """.stripMargin
 
@@ -194,16 +197,22 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
   }
 
 
-  private def applyTextureLocation(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture): Unit = {
+  private def setupFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, displayObject: DisplayObject): Unit = {
 
-    gl.bindTexture(TEXTURE_2D, texture) // Do I need to do more here?
+    gl.bindTexture(TEXTURE_2D, texture)
 
     val u_texture = gl.getUniformLocation(shaderProgram, "u_texture")
     gl.uniform1i(u_texture, 0)
+
+    val alphaLocation = gl.getUniformLocation(shaderProgram, "uAlpha")
+    gl.uniform1f(alphaLocation, displayObject.alpha)
+
+    val tintLocation = gl.getUniformLocation(shaderProgram, "uTint")
+    gl.uniform3fv(tintLocation, scalajs.js.Array[Double](displayObject.tintR, displayObject.tintG, displayObject.tintB))
   }
 
 
-  private def transformDisplayObject(cNc: ContextAndCanvas, shaderProgram: WebGLProgram, displayObject: DisplayObject): Unit = {
+  private def setupVertexShader(cNc: ContextAndCanvas, shaderProgram: WebGLProgram, displayObject: DisplayObject): Unit = {
     val translation = cNc.context.getUniformLocation(shaderProgram, "u_matrix")
 
     val matrix4: Matrix4 =
@@ -236,8 +245,8 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
         bindShaderToBuffer(cNc.context)
 
         // Setup Uniforms
-        transformDisplayObject(cNc, shaderProgram, displayObject)
-        applyTextureLocation(cNc.context, shaderProgram, textureLookup.texture)
+        setupVertexShader(cNc, shaderProgram, displayObject)
+        setupFragmentShader(cNc.context, shaderProgram, textureLookup.texture, displayObject)
 
         // Draw
         cNc.context.drawArrays(Rectangle2D.mode, 0, Rectangle2D.vertexCount)
