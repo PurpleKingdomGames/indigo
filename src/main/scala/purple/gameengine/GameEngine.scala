@@ -27,7 +27,8 @@ trait GameEngine[GameModel] extends JSApp {
       val renderer: Renderer = Renderer(
         RendererConfig(
           viewport = Viewport(config.viewport.width, config.viewport.height),
-          clearColor = ClearColor(0, 0, 0.3d, 1)
+          clearColor = config.clearColor,
+          magnification = config.magnification
         ),
         loadedImageAssets
       )
@@ -101,7 +102,7 @@ trait GameEngine[GameModel] extends JSApp {
 
 }
 
-case class GameConfig(viewport: GameViewport, frameRate: Int) {
+case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int) {
   val frameRateDeltaMillis: Int = 1000 / frameRate
 }
 

@@ -16,7 +16,7 @@ object Renderer {
     renderer match {
       case Some(r) => r
       case None =>
-        val cNc = setupContextAndCanvas(createCanvas(config.viewport.width, config.viewport.height))
+        val cNc = setupContextAndCanvas(createCanvas(config.viewport.width, config.viewport.height), config.magnification)
 
         val r = new Renderer(config, loadedImageAssets, cNc)
         r.init()
@@ -35,19 +35,20 @@ object Renderer {
     canvas
   }
 
-  def setupContextAndCanvas(canvas: html.Canvas): ContextAndCanvas = {
+  def setupContextAndCanvas(canvas: html.Canvas, magnification: Int): ContextAndCanvas = {
     ContextAndCanvas(
       context = canvas.getContext("webgl").asInstanceOf[raw.WebGLRenderingContext],
       canvas = canvas,
       width = canvas.clientWidth,
       height = canvas.clientHeight,
-      aspect = canvas.clientWidth.toFloat / canvas.clientHeight.toFloat
+      aspect = canvas.clientWidth.toFloat / canvas.clientHeight.toFloat,
+      magnification = magnification
     )
   }
 
 }
 
-final case class RendererConfig(viewport: Viewport, clearColor: ClearColor)
+final case class RendererConfig(viewport: Viewport, clearColor: ClearColor, magnification: Int)
 final case class Viewport(width: Int, height: Int)
 final case class ClearColor(r: Double, g: Double, b: Double, a: Double)
 
@@ -218,7 +219,7 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
 
     val matrix4: Matrix4 =
       Matrix4
-        .orthographic(0, cNc.width, cNc.height, 0, -1, 1)
+        .orthographic(0, cNc.width / cNc.magnification, cNc.height / cNc.magnification, 0, -1, 1)
         .translate(displayObject.x, displayObject.y, 0)
         .scale(displayObject.width, displayObject.height, 1)
 
@@ -265,7 +266,7 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
 
 }
 
-case class ContextAndCanvas(context: raw.WebGLRenderingContext, canvas: html.Canvas, width: Int, height: Int, aspect: Float)
+case class ContextAndCanvas(context: raw.WebGLRenderingContext, canvas: html.Canvas, width: Int, height: Int, aspect: Float, magnification: Int)
 
 sealed trait ImageAssetStates
 case class ImageAsset(name: String, path: String) extends ImageAssetStates

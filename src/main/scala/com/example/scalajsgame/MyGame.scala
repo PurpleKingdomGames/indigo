@@ -1,7 +1,7 @@
 package com.example.scalajsgame
 
 import purple.gameengine._
-import purple.renderer.ImageAsset
+import purple.renderer.{ClearColor, ImageAsset}
 
 import scala.language.implicitConversions
 
@@ -12,7 +12,9 @@ object MyGame extends GameEngine[Blocks] {
 
   def config: GameConfig = GameConfig(
     viewport = GameViewport(viewportWidth, viewportHeight),
-    frameRate = 30
+    frameRate = 30,
+    clearColor = ClearColor(0, 0, 0, 1),
+    magnification = 4
   )
 
   val spriteSheetName: String = "blob"

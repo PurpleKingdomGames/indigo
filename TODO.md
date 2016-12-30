@@ -18,7 +18,6 @@ Bugs:
 
 Renderer
 - Global tint i.e. ambient light
-- Magnification
 - Flip (horz, vert)
 - A way to do animation frames
 - Do not switch textures unless necessary
