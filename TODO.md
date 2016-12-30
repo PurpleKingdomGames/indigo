@@ -20,11 +20,12 @@ Renderer
 - Magnification
 - Flip (horz, vert)
 - A way to do animation frames
+- Do not switch textures unless necessary
 
 
 Game Engine
+- Revisit API
 - Input events from mouse and keyboard
-- Expose flip
 - Spritesheet management
   - Define animation frames
   - Define animation cycles (frame ranges)
