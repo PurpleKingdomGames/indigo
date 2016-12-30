@@ -15,7 +15,6 @@ The layers:
 ## TODO
 
 Bugs:
-- Textures not blending
 
 Renderer
 - Magnification

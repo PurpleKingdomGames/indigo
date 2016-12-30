@@ -66,9 +66,9 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
     }
 
   def init(): Unit = {
-    cNc.context.enable(DEPTH_TEST)
+    cNc.context.disable(DEPTH_TEST)
     cNc.context.viewport(0, 0, cNc.width, cNc.height)
-    cNc.context.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
+    cNc.context.blendFunc(ONE, ONE_MINUS_SRC_ALPHA)
     cNc.context.enable(BLEND)
   }
 
