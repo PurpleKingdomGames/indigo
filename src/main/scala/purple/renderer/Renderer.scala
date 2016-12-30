@@ -188,7 +188,8 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
 
     gl.texParameteri(TEXTURE_2D, TEXTURE_WRAP_S, CLAMP_TO_EDGE)
     gl.texParameteri(TEXTURE_2D, TEXTURE_WRAP_T, CLAMP_TO_EDGE)
-    gl.texParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, LINEAR)
+    gl.texParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, NEAREST)
+    gl.texParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, NEAREST)
 
     gl.texImage2D(TEXTURE_2D, 0, RGBA, RGBA, UNSIGNED_BYTE, image)
     gl.generateMipmap(TEXTURE_2D)

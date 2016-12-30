@@ -17,11 +17,12 @@ The layers:
 Bugs:
 
 Renderer
+- Global tint i.e. ambient light
 - Magnification
 - Flip (horz, vert)
 - A way to do animation frames
 - Do not switch textures unless necessary
-
+- Perf enhancement: Render at actual size to a buffer and scale up.
 
 Game Engine
 - Revisit API
@@ -29,10 +30,9 @@ Game Engine
 - Spritesheet management
   - Define animation frames
   - Define animation cycles (frame ranges)
+  - Accept JSON data with spritesheet?
 - Tilemap loading?
-- Layer management?
-- Parallax?
-- Backgrounds?
+- Layer management
 
 Game
 - Make game.

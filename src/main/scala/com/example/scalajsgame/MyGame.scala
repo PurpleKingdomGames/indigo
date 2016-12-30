@@ -24,7 +24,7 @@ object MyGame extends GameEngine[Blocks] {
   def initialModel: Blocks = Blocks(
     List(
       Block(0, 0, 0, 0, 1, BlockTint(1, 0, 0)),
-      Block(0, 0, 32, 32, 0.5, BlockTint(0, 1, 0)),
+      Block(0, 0, 32, 32, 0.5, BlockTint(1, 1, 1)),
       Block(0, 0, viewportWidth - 64, viewportHeight - 64, 0.25, BlockTint(0, 0, 1))
     )
   )
