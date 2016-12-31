@@ -14,7 +14,7 @@ object MyGame extends GameEngine[Blocks] {
     viewport = GameViewport(viewportWidth, viewportHeight),
     frameRate = 30,
     clearColor = ClearColor(0, 0, 0, 1),
-    magnification = 4
+    magnification = 2
   )
 
   val spriteSheetName: String = "blob"
@@ -49,7 +49,9 @@ object MyGame extends GameEngine[Blocks] {
 
   def updateView(currentState: Blocks): SceneGraphNode = {
     SceneGraphNodeBranch(
-      currentState.blocks.map(b => SceneGraphNodeLeaf(b.x, b.y, 64, 64, spriteSheetName, SceneGraphNodeLeafEffects(b.alpha, Tint(b.tint.r, b.tint.g, b.tint.b))))
+      currentState.blocks.map { b =>
+        SceneGraphNodeLeaf(b.x, b.y, 64, 64, spriteSheetName, SceneGraphNodeLeafEffects(b.alpha, Tint(b.tint.r, b.tint.g, b.tint.b)))
+      }
     )
   }
 

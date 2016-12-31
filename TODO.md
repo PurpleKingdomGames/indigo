@@ -17,21 +17,27 @@ The layers:
 Bugs:
 
 Renderer
-- Global tint i.e. ambient light
 - Flip (horz, vert)
 - A way to do animation frames
 - Do not switch textures unless necessary
-- Perf enhancement: Render at actual size to a buffer and scale up.
 
 Game Engine
 - Revisit API
+  -  SceneGraph should be like a DOM, sprites, buttons, animated sprites, static images, parallax images etc.
 - Input events from mouse and keyboard
 - Spritesheet management
   - Define animation frames
   - Define animation cycles (frame ranges)
   - Accept JSON data with spritesheet?
 - Tilemap loading?
-- Layer management
+- Layer management (just a z-index would be ok?)
 
 Game
 - Make game.
+
+
+Much later...
+- Lighting
+  - Ambient (global tint)
+  - Lighting effects
+- Perf enhancement: Render at actual size to a buffer and scale up.
