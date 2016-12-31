@@ -17,17 +17,19 @@ object MyGame extends GameEngine[Blocks] {
     magnification = 2
   )
 
-  val spriteSheetName: String = "blob"
+  val spriteSheetName1: String = "blob1"
+  val spriteSheetName2: String = "blob2"
 
-  private val spriteAsset = ImageAsset(spriteSheetName, "Sprite-0001.png")
+  private val spriteAsset1 = ImageAsset(spriteSheetName1, "Sprite-0001.png")
+  private val spriteAsset2 = ImageAsset(spriteSheetName2, "Sprite-0002.png")
 
-  def imageAssets: Set[ImageAsset] = Set(spriteAsset)
+  def imageAssets: Set[ImageAsset] = Set(spriteAsset1, spriteAsset2)
 
   def initialModel: Blocks = Blocks(
     List(
-      Block(0, 0, 0, 0, 1, BlockTint(1, 0, 0)),
-      Block(0, 0, 32, 32, 0.5, BlockTint(1, 1, 1)),
-      Block(0, 0, viewportWidth - 64, viewportHeight - 64, 0.25, BlockTint(0, 0, 1))
+      Block(0, 0, 0, 0, 1, BlockTint(1, 0, 0), spriteSheetName1),
+      Block(0, 0, 32, 32, 0.5, BlockTint(1, 1, 1), spriteSheetName2)//,
+//      Block(0, 0, viewportWidth - 64, viewportHeight - 64, 0.25, BlockTint(0, 0, 1))
     )
   )
 
@@ -50,7 +52,7 @@ object MyGame extends GameEngine[Blocks] {
   def updateView(currentState: Blocks): SceneGraphNode = {
     SceneGraphNodeBranch(
       currentState.blocks.map { b =>
-        SceneGraphNodeLeaf(b.x, b.y, 64, 64, spriteSheetName, SceneGraphNodeLeafEffects(b.alpha, Tint(b.tint.r, b.tint.g, b.tint.b)))
+        SceneGraphNodeLeaf(b.x, b.y, 64, 64, b.textureName, SceneGraphNodeLeafEffects(b.alpha, Tint(b.tint.r, b.tint.g, b.tint.b)))
       }
     )
   }
@@ -58,5 +60,5 @@ object MyGame extends GameEngine[Blocks] {
 }
 
 case class Blocks(blocks: List[Block])
-case class Block(x: Int, y: Int, centerX: Int, centerY: Int, alpha: Double, tint: BlockTint)
+case class Block(x: Int, y: Int, centerX: Int, centerY: Int, alpha: Double, tint: BlockTint, textureName: String)
 case class BlockTint(r: Double, g: Double, b: Double)

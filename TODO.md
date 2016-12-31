@@ -19,7 +19,6 @@ Bugs:
 Renderer
 - Flip (horz, vert)
 - A way to do animation frames
-- Do not switch textures unless necessary
 
 Game Engine
 - Revisit API

@@ -198,10 +198,14 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
     texture
   }
 
+  private var lastTextureName: String = ""
 
   private def setupFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, displayObject: DisplayObject): Unit = {
 
-    gl.bindTexture(TEXTURE_2D, texture)
+    if(displayObject.imageRef != lastTextureName) {
+      gl.bindTexture(TEXTURE_2D, texture)
+      lastTextureName = displayObject.imageRef
+    }
 
     val u_texture = gl.getUniformLocation(shaderProgram, "u_texture")
     gl.uniform1i(u_texture, 0)
