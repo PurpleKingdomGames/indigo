@@ -93,7 +93,9 @@ trait GameEngine[GameModel] extends JSApp {
           alpha = leaf.effects.alpha,
           tintR = leaf.effects.tint.r,
           tintG = leaf.effects.tint.g,
-          tintB = leaf.effects.tint.b
+          tintB = leaf.effects.tint.b,
+          flipHorizontal = leaf.effects.flip.horizontal,
+          flipVertical = leaf.effects.flip.vertical
         )
       }.sortBy(d => d.imageRef)
 
@@ -124,5 +126,6 @@ sealed trait SceneGraphNode {
 }
 case class SceneGraphNodeBranch(children: List[SceneGraphNode]) extends SceneGraphNode
 case class SceneGraphNodeLeaf(x: Int, y: Int, width: Int, height: Int, imageAssetRef: String, effects: SceneGraphNodeLeafEffects) extends SceneGraphNode
-case class SceneGraphNodeLeafEffects(alpha: Double, tint: Tint)
+case class SceneGraphNodeLeafEffects(alpha: Double, tint: Tint, flip: Flip)
 case class Tint(r: Double, g: Double, b: Double)
+case class Flip(horizontal: Boolean, vertical: Boolean)

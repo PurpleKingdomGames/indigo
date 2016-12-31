@@ -14,22 +14,24 @@ object MyGame extends GameEngine[Blocks] {
     viewport = GameViewport(viewportWidth, viewportHeight),
     frameRate = 30,
     clearColor = ClearColor(0, 0, 0, 1),
-    magnification = 2
+    magnification = 1
   )
 
   val spriteSheetName1: String = "blob1"
   val spriteSheetName2: String = "blob2"
+  val spriteSheetName3: String = "f"
 
   private val spriteAsset1 = ImageAsset(spriteSheetName1, "Sprite-0001.png")
   private val spriteAsset2 = ImageAsset(spriteSheetName2, "Sprite-0002.png")
+  private val spriteAsset3 = ImageAsset(spriteSheetName3, "f-texture.png")
 
-  def imageAssets: Set[ImageAsset] = Set(spriteAsset1, spriteAsset2)
+  def imageAssets: Set[ImageAsset] = Set(spriteAsset1, spriteAsset2, spriteAsset3)
 
   def initialModel: Blocks = Blocks(
     List(
-      Block(0, 0, 0, 0, 1, BlockTint(1, 0, 0), spriteSheetName1),
-      Block(0, 0, 32, 32, 0.5, BlockTint(1, 1, 1), spriteSheetName2)//,
-//      Block(0, 0, viewportWidth - 64, viewportHeight - 64, 0.25, BlockTint(0, 0, 1))
+      Block(0, 0, 0, 0, 1, BlockTint(1, 0, 0), spriteSheetName1, false, false),
+      Block(0, 0, 32, 32, 0.5, BlockTint(1, 1, 1), spriteSheetName2, false, false),
+      Block(0, 0, 64, 64, 1, BlockTint(1, 1, 1), spriteSheetName3, false, false)
     )
   )
 
@@ -52,7 +54,7 @@ object MyGame extends GameEngine[Blocks] {
   def updateView(currentState: Blocks): SceneGraphNode = {
     SceneGraphNodeBranch(
       currentState.blocks.map { b =>
-        SceneGraphNodeLeaf(b.x, b.y, 64, 64, b.textureName, SceneGraphNodeLeafEffects(b.alpha, Tint(b.tint.r, b.tint.g, b.tint.b)))
+        SceneGraphNodeLeaf(b.x, b.y, 64, 64, b.textureName, SceneGraphNodeLeafEffects(b.alpha, Tint(b.tint.r, b.tint.g, b.tint.b), Flip(b.flipH, b.flipV)))
       }
     )
   }
@@ -60,5 +62,5 @@ object MyGame extends GameEngine[Blocks] {
 }
 
 case class Blocks(blocks: List[Block])
-case class Block(x: Int, y: Int, centerX: Int, centerY: Int, alpha: Double, tint: BlockTint, textureName: String)
+case class Block(x: Int, y: Int, centerX: Int, centerY: Int, alpha: Double, tint: BlockTint, textureName: String, flipH: Boolean, flipV: Boolean)
 case class BlockTint(r: Double, g: Double, b: Double)

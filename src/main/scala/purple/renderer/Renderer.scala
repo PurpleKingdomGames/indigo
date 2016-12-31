@@ -217,6 +217,14 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
     gl.uniform3fv(tintLocation, scalajs.js.Array[Double](displayObject.tintR, displayObject.tintG, displayObject.tintB))
   }
 
+  private val flipMatrix: ((Boolean, Boolean)) => Matrix4 = flipValues => {
+    flipValues match {
+      case (true, true)   => Matrix4.identity.translate(1, 1, 0).scale(-1, -1, -1)
+      case (true, false)  => Matrix4.identity.translate(1, 0, 0).scale(-1,  1, -1)
+      case (false, true)  => Matrix4.identity.translate(0, 1, 0).scale( 1, -1, -1)
+      case (false, false) => Matrix4.identity
+    }
+  }
 
   private def setupVertexShader(cNc: ContextAndCanvas, shaderProgram: WebGLProgram, displayObject: DisplayObject): Unit = {
     val translation = cNc.context.getUniformLocation(shaderProgram, "u_matrix")
@@ -230,7 +238,7 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
     cNc.context.uniformMatrix4fv(
       location = translation,
       transpose = false,
-      value = matrix4
+      value = Matrix4.multiply(matrix4, flipMatrix((displayObject.flipHorizontal, displayObject.flipVertical)))
     )
   }
 

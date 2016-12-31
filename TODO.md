@@ -17,7 +17,6 @@ The layers:
 Bugs:
 
 Renderer
-- Flip (horz, vert)
 - A way to do animation frames
 
 Game Engine
