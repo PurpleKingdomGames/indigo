@@ -29,9 +29,9 @@ object MyGame extends GameEngine[Blocks] {
 
   def initialModel: Blocks = Blocks(
     List(
-      Block(0, 0, 0, 0, 1, BlockTint(1, 0, 0), spriteSheetName1, false, false),
-      Block(0, 0, 32, 32, 0.5, BlockTint(1, 1, 1), spriteSheetName2, false, false),
-      Block(0, 0, 64, 64, 1, BlockTint(1, 1, 1), spriteSheetName3, false, false)
+      Block(0, 0, 0, 0, 0, 1, BlockTint(1, 0, 0), spriteSheetName1, false, false),
+      Block(0, 0, 1, 32, 32, 1, BlockTint(1, 1, 1), spriteSheetName2, false, false),
+      Block(0, 0, 2, 64, 64, 1, BlockTint(1, 1, 1), spriteSheetName3, false, false)
     )
   )
 
@@ -54,7 +54,7 @@ object MyGame extends GameEngine[Blocks] {
   def updateView(currentState: Blocks): SceneGraphNode = {
     SceneGraphNodeBranch(
       currentState.blocks.map { b =>
-        SceneGraphNodeLeaf(b.x, b.y, 64, 64, b.textureName, SceneGraphNodeLeafEffects(b.alpha, Tint(b.tint.r, b.tint.g, b.tint.b), Flip(b.flipH, b.flipV)))
+        SceneGraphNodeLeaf(b.x, b.y, b.zIndex, 64, 64, b.textureName, SceneGraphNodeLeafEffects(b.alpha, Tint(b.tint.r, b.tint.g, b.tint.b), Flip(b.flipH, b.flipV)))
       }
     )
   }
@@ -62,5 +62,5 @@ object MyGame extends GameEngine[Blocks] {
 }
 
 case class Blocks(blocks: List[Block])
-case class Block(x: Int, y: Int, centerX: Int, centerY: Int, alpha: Double, tint: BlockTint, textureName: String, flipH: Boolean, flipV: Boolean)
+case class Block(x: Int, y: Int, zIndex: Int, centerX: Int, centerY: Int, alpha: Double, tint: BlockTint, textureName: String, flipH: Boolean, flipV: Boolean)
 case class BlockTint(r: Double, g: Double, b: Double)

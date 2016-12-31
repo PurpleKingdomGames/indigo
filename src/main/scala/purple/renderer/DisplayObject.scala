@@ -5,6 +5,7 @@ import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram}
 
 case class DisplayObject(x: Int,
                          y: Int,
+                         z: Int,
                          width: Int,
                          height: Int,
                          imageRef: String,

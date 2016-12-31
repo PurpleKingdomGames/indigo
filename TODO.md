@@ -5,7 +5,7 @@ There is no rotation.
 Everything snaps to a pixel so all positions are absolute.
 There might be physics, but then again, that could be built on top if it's needed at all.
 
-The aim is to create layers starting with mutable ugly WebGL and leading up to Purely funcational code.
+The aim is to create layers starting with mutable ugly WebGL and leading up to Purely functional code.
 
 The layers:
 1. The Renderer
@@ -28,7 +28,7 @@ Game Engine
   - Define animation cycles (frame ranges)
   - Accept JSON data with spritesheet?
 - Tilemap loading?
-- Layer management (just a z-index would be ok?)
+- Sound
 
 Game
 - Make game.
@@ -39,3 +39,4 @@ Much later...
   - Ambient (global tint)
   - Lighting effects
 - Perf enhancement: Render at actual size to a buffer and scale up.
+- Perf enhancement: We do some CPU side sorting, which generally will be ok, but if there are thousands of tiles and most of them never change, it would be nice to declare that somehow and only have to sort them once.

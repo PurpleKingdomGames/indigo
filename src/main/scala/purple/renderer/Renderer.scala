@@ -231,8 +231,8 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
 
     val matrix4: Matrix4 =
       Matrix4
-        .orthographic(0, cNc.width / cNc.magnification, cNc.height / cNc.magnification, 0, -1, 1)
-        .translate(displayObject.x, displayObject.y, 0)
+        .orthographic(0, cNc.width / cNc.magnification, cNc.height / cNc.magnification, 0, -10000, 10000)
+        .translate(displayObject.x, displayObject.y, displayObject.z)
         .scale(displayObject.width, displayObject.height, 1)
 
     cNc.context.uniformMatrix4fv(
@@ -248,7 +248,7 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
 
     resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight)
 
-    displayObjectList.foreach { displayObject =>
+    displayObjectList.sortBy(d => d.z).foreach { displayObject =>
 
       textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
 
