@@ -126,8 +126,7 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
         |uniform vec3 uTint;
         |
         |void main(void) {
-        |   //vec4 tint = vec4(0.9, 0.3, 0.6, 1.0);
-        |   vec4 textureColor = texture2D(u_texture, v_texcoord);
+        |   vec4 textureColor = texture2D(u_texture, (v_texcoord * vec2(0.3, 1)) + vec2(0.3, 0));
         |   gl_FragColor = vec4(textureColor.rgb * uTint, textureColor.a * uAlpha);
         |}
       """.stripMargin
