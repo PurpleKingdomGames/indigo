@@ -124,9 +124,11 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
         |uniform sampler2D u_texture;
         |uniform float uAlpha;
         |uniform vec3 uTint;
+        |uniform vec2 uTexcoordScale;
+        |uniform vec2 uTexcoordTranslate;
         |
         |void main(void) {
-        |   vec4 textureColor = texture2D(u_texture, (v_texcoord * vec2(0.3, 1)) + vec2(0.3, 0));
+        |   vec4 textureColor = texture2D(u_texture, (v_texcoord * uTexcoordScale) + uTexcoordTranslate);
         |   gl_FragColor = vec4(textureColor.rgb * uTint, textureColor.a * uAlpha);
         |}
       """.stripMargin
@@ -214,6 +216,18 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
 
     val tintLocation = gl.getUniformLocation(shaderProgram, "uTint")
     gl.uniform3fv(tintLocation, scalajs.js.Array[Double](displayObject.tintR, displayObject.tintG, displayObject.tintB))
+
+    val textureOffsets = Frame.calculateFrameOffset(
+      imageSize = Vector2(192, 64),
+      frameSize = Vector2(64, 64),
+      framePosition = Vector2(64, 0)
+    )
+
+    val texcoordScaleLocation = gl.getUniformLocation(shaderProgram, "uTexcoordScale")
+    gl.uniform2fv(texcoordScaleLocation, textureOffsets.scale.toScalaJSArrayDouble)
+
+    val texcoordTranlsateLocation = gl.getUniformLocation(shaderProgram, "uTexcoordTranslate")
+    gl.uniform2fv(texcoordTranlsateLocation, textureOffsets.translate.toScalaJSArrayDouble)
   }
 
   private val flipMatrix: ((Boolean, Boolean)) => Matrix4 = flipValues => {
