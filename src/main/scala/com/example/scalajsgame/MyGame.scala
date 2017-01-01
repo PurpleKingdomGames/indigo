@@ -20,12 +20,14 @@ object MyGame extends GameEngine[Blocks] {
   val spriteSheetName1: String = "blob1"
   val spriteSheetName2: String = "blob2"
   val spriteSheetName3: String = "f"
+  val trafficLightsName: String = "trafficlights"
 
   private val spriteAsset1 = ImageAsset(spriteSheetName1, "Sprite-0001.png")
   private val spriteAsset2 = ImageAsset(spriteSheetName2, "Sprite-0002.png")
   private val spriteAsset3 = ImageAsset(spriteSheetName3, "f-texture.png")
+  private val trafficLightsAsset = ImageAsset(trafficLightsName, "trafficlights.png")
 
-  def imageAssets: Set[ImageAsset] = Set(spriteAsset1, spriteAsset2, spriteAsset3)
+  def imageAssets: Set[ImageAsset] = Set(spriteAsset1, spriteAsset2, spriteAsset3, trafficLightsAsset)
 
   def initialModel: Blocks = Blocks(
     List(
@@ -55,7 +57,22 @@ object MyGame extends GameEngine[Blocks] {
     SceneGraphNodeBranch(
       currentState.blocks.map { b =>
         SceneGraphNodeLeaf(b.x, b.y, b.zIndex, 64, 64, b.textureName, SceneGraphNodeLeafEffects(b.alpha, Tint(b.tint.r, b.tint.g, b.tint.b), Flip(b.flipH, b.flipV)))
-      }
+      } ++
+        List(
+          SceneGraphNodeLeaf(
+            128,
+            128,
+            3,
+            64,
+            64,
+            trafficLightsName,
+            SceneGraphNodeLeafEffects(
+              1,
+              Tint(1,1,1),
+              Flip(false, false)
+            )
+          )
+        )
     )
   }
 
