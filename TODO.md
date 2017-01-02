@@ -17,16 +17,11 @@ The layers:
 Bugs:
 
 Renderer
-- A way to do animation frames
 
 Game Engine
+- Input events from mouse and keyboard
 - Revisit API
   -  SceneGraph should be like a DOM, sprites, buttons, animated sprites, static images, parallax images etc.
-- Input events from mouse and keyboard
-- Spritesheet management
-  - Define animation frames
-  - Define animation cycles (frame ranges)
-  - Accept JSON data with spritesheet?
 - Tilemap loading?
 - Sound
 
