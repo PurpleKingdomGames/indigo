@@ -71,7 +71,7 @@ trait GameEngine[GameModel] extends JSApp {
 
       state = Some(model)
 
-      drawScene(renderer, model)
+      drawScene(renderer, model, updateView)
 
       dom.window.requestAnimationFrame(loop(renderer, time))
     } else {
@@ -79,26 +79,54 @@ trait GameEngine[GameModel] extends JSApp {
     }
   }
 
-  private def drawScene(renderer: Renderer, gameModel: GameModel): Unit = {
-    val sceneGraph: SceneGraphNode = updateView(gameModel)
+  private val leafToDisplayObject: SceneGraphNodeLeaf => DisplayObject = {
+      case graphic: Graphic =>
+        DisplayObject(
+          x = graphic.bounds.position.x,
+          y = graphic.bounds.position.y,
+          z = -graphic.depth.zIndex,
+          width = graphic.bounds.size.x,
+          height = graphic.bounds.size.y,
+          imageRef = graphic.imageAssetRef,
+          alpha = graphic.effects.alpha,
+          tintR = graphic.effects.tint.r,
+          tintG = graphic.effects.tint.g,
+          tintB = graphic.effects.tint.b,
+          flipHorizontal = graphic.effects.flip.horizontal,
+          flipVertical = graphic.effects.flip.vertical,
+          frame = SpriteSheetFrame.defaultOffset
+        )
+
+      case sprite: Sprite =>
+        DisplayObject(
+          x = sprite.bounds.position.x,
+          y = sprite.bounds.position.y,
+          z = -sprite.depth.zIndex,
+          width = sprite.bounds.size.x,
+          height = sprite.bounds.size.y,
+          imageRef = sprite.imageAssetRef,
+          alpha = sprite.effects.alpha,
+          tintR = sprite.effects.tint.r,
+          tintG = sprite.effects.tint.g,
+          tintB = sprite.effects.tint.b,
+          flipHorizontal = sprite.effects.flip.horizontal,
+          flipVertical = sprite.effects.flip.vertical,
+          frame = SpriteSheetFrame.calculateFrameOffset(
+            imageSize = Vector2(sprite.animations.spriteSheetSize.x, sprite.animations.spriteSheetSize.y),
+            frameSize = Vector2(sprite.animations.currentFrame.bounds.size.x, sprite.animations.currentFrame.bounds.size.y),
+            framePosition = Vector2(sprite.animations.currentFrame.bounds.position.x, sprite.animations.currentFrame.bounds.position.y)
+          )
+        )
+    }
+
+  private def drawScene(renderer: Renderer, gameModel: GameModel, update: GameModel => SceneGraphNode): Unit = {
+    val sceneGraph: SceneGraphNode = update(gameModel)
 
     val displayObjects: List[DisplayObject] =
-      sceneGraph.flatten(Nil).map { leaf =>
-        DisplayObject(
-          x = leaf.x,
-          y = leaf.y,
-          z = -leaf.zIndex,
-          width = leaf.width,
-          height = leaf.height,
-          imageRef = leaf.imageAssetRef,
-          alpha = leaf.effects.alpha,
-          tintR = leaf.effects.tint.r,
-          tintG = leaf.effects.tint.g,
-          tintB = leaf.effects.tint.b,
-          flipHorizontal = leaf.effects.flip.horizontal,
-          flipVertical = leaf.effects.flip.vertical
-        )
-      }.sortBy(d => d.imageRef)
+      sceneGraph
+        .flatten(Nil)
+        .map(leafToDisplayObject)
+        .sortBy(d => d.imageRef)
 
     renderer.drawScene(displayObjects)
   }
@@ -111,22 +139,4 @@ case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearC
 
 case class GameViewport(width: Int, height: Int)
 
-object SceneGraphNode {
-  def empty: SceneGraphNode = SceneGraphNodeBranch(Nil)
-}
-sealed trait SceneGraphNode {
 
-  def flatten(acc: List[SceneGraphNodeLeaf]): List[SceneGraphNodeLeaf] = {
-    this match {
-      case l: SceneGraphNodeLeaf => l :: acc
-      case b: SceneGraphNodeBranch =>
-        b.children.flatMap(n => n.flatten(Nil)) ++ acc
-    }
-  }
-
-}
-case class SceneGraphNodeBranch(children: List[SceneGraphNode]) extends SceneGraphNode
-case class SceneGraphNodeLeaf(x: Int, y: Int, zIndex: Int, width: Int, height: Int, imageAssetRef: String, effects: SceneGraphNodeLeafEffects) extends SceneGraphNode
-case class SceneGraphNodeLeafEffects(alpha: Double, tint: Tint, flip: Flip)
-case class Tint(r: Double, g: Double, b: Double)
-case class Flip(horizontal: Boolean, vertical: Boolean)

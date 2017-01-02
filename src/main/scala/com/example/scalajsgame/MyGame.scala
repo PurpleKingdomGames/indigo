@@ -5,7 +5,7 @@ import purple.renderer.{ClearColor, ImageAsset}
 
 import scala.language.implicitConversions
 
-object MyGame extends GameEngine[Blocks] {
+object MyGame extends GameEngine[Stuff] {
 
   private val viewportHeight: Int = 256
   private val viewportWidth: Int = 455
@@ -29,48 +29,79 @@ object MyGame extends GameEngine[Blocks] {
 
   def imageAssets: Set[ImageAsset] = Set(spriteAsset1, spriteAsset2, spriteAsset3, trafficLightsAsset)
 
-  def initialModel: Blocks = Blocks(
-    List(
-      Block(0, 0, 0, 0, 0, 1, BlockTint(1, 0, 0), spriteSheetName1, false, false),
-      Block(0, 0, 1, 32, 32, 1, BlockTint(1, 1, 1), spriteSheetName2, false, false),
-      Block(0, 0, 2, 64, 64, 1, BlockTint(1, 1, 1), spriteSheetName3, false, false)
+  def initialModel: Stuff =
+    Stuff(
+      Blocks(
+        List(
+          Block(0, 0, 0, 0, 0, 1, BlockTint(1, 0, 0), spriteSheetName1, false, false),
+          Block(0, 0, 1, 32, 32, 1, BlockTint(1, 1, 1), spriteSheetName2, false, false),
+          Block(0, 0, 2, 64, 64, 1, BlockTint(1, 1, 1), spriteSheetName3, false, false)
+        )
+      ),
+      TrafficLights("red", 0, 0)
     )
-  )
 
   var tmpX: Int = 0
   var tmpY: Int = 0
   var angle: Double = 0
 
-  def updateModel(timeDelta: Double, previousState: Blocks): Blocks = {
+  def updateModel(timeDelta: Double, previousState: Stuff): Stuff = {
 
     tmpX = (Math.sin(angle) * 32).toInt
     tmpY = (Math.cos(angle) * 32).toInt
     angle = angle + 0.01
 
     previousState.copy(
-      blocks = previousState.blocks.map(blk => blk.copy(x = tmpX + blk.centerX, y = tmpY + blk.centerY))
+      blocks = Blocks(previousState.blocks.blocks.map(blk => blk.copy(x = tmpX + blk.centerX, y = tmpY + blk.centerY))),
+      trafficLights = previousState.trafficLights.nextColor(timeDelta)
     )
 
   }
 
-  def updateView(currentState: Blocks): SceneGraphNode = {
+  def updateView(currentState: Stuff): SceneGraphNode = {
     SceneGraphNodeBranch(
-      currentState.blocks.map { b =>
-        SceneGraphNodeLeaf(b.x, b.y, b.zIndex, 64, 64, b.textureName, SceneGraphNodeLeafEffects(b.alpha, Tint(b.tint.r, b.tint.g, b.tint.b), Flip(b.flipH, b.flipV)))
+      currentState.blocks.blocks.map { b =>
+        Graphic(Rectangle(Point(b.x, b.y), Point(64, 64)), Depth(b.zIndex), b.textureName)
+          .withAlpha(b.alpha)
+          .withTint(b.tint.r, b.tint.g, b.tint.b)
+          .flipHorizontal(b.flipH)
+          .flipVertical(b.flipV)
       } ++
         List(
-          SceneGraphNodeLeaf(
-            128,
-            128,
-            3,
-            64,
-            64,
-            trafficLightsName,
-            SceneGraphNodeLeafEffects(
-              1,
-              Tint(1,1,1),
-              Flip(false, false)
-            )
+          Sprite(
+            bounds = Rectangle(Point(128, 128), Point(64, 64)),
+            depth = Depth(3),
+            imageAssetRef = trafficLightsName,
+            animations =
+              Animations(
+                Point(192, 64),
+                Cycle(
+                  label = "trafficlights",
+                  frame = Frame(
+                    bounds = Rectangle(
+                      Point(0, 0),
+                      Point(64, 64)
+                    ),
+                    current = currentState.trafficLights.isRed
+                  )
+                ).addFrame(
+                  frame = Frame(
+                    bounds = Rectangle(
+                      Point(64, 0),
+                      Point(64, 64)
+                    ),
+                    current = currentState.trafficLights.isAmber
+                  )
+                ).addFrame(
+                  frame = Frame(
+                    bounds = Rectangle(
+                      Point(128, 0),
+                      Point(64, 64)
+                    ),
+                    current = currentState.trafficLights.isGreen
+                  )
+                )
+              )
           )
         )
     )
@@ -78,6 +109,24 @@ object MyGame extends GameEngine[Blocks] {
 
 }
 
+case class Stuff(blocks: Blocks, trafficLights: TrafficLights)
+case class TrafficLights(color: String, lastChange: Double, timeSinceChange: Double) {
+  def nextColor(timeDelta: Double): TrafficLights = {
+    if(timeSinceChange + timeDelta >= 1000) {
+      color match {
+        case "red" => TrafficLights("amber", lastChange + timeDelta, 0)
+        case "amber" => TrafficLights("green", lastChange + timeDelta, 0)
+        case "green" => TrafficLights("red", lastChange + timeDelta, 0)
+      }
+    } else {
+      this.copy(timeSinceChange = timeSinceChange + timeDelta)
+    }
+  }
+
+  def isRed: Boolean = color == "red"
+  def isAmber: Boolean = color == "amber"
+  def isGreen: Boolean = color == "green"
+}
 case class Blocks(blocks: List[Block])
 case class Block(x: Int, y: Int, zIndex: Int, centerX: Int, centerY: Int, alpha: Double, tint: BlockTint, textureName: String, flipH: Boolean, flipV: Boolean)
 case class BlockTint(r: Double, g: Double, b: Double)

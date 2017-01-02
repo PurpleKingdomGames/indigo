@@ -32,7 +32,7 @@ class Vector2Spec extends FunSpec with Matchers {
 
     it("should find the right coordinates of the frame when multiplied out by a texture coordinate") {
 
-      val offset = Frame.calculateFrameOffset(imageSize, frameSize, framePosition)
+      val offset = SpriteSheetFrame.calculateFrameOffset(imageSize, frameSize, framePosition)
 
       val textureCoordinate1 = Vector2(0, 0)
       val resultingMultiplier1 = textureCoordinate1.scale(offset.scale).translate(offset.translate)

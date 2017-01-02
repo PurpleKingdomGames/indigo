@@ -14,7 +14,9 @@ case class DisplayObject(x: Int,
                          tintG: Double,
                          tintB: Double,
                          flipHorizontal: Boolean,
-                         flipVertical: Boolean)
+                         flipVertical: Boolean,
+                         frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
+                        )
 
 object Rectangle2D {
   val vertices: scalajs.js.Array[Double] = scalajs.js.Array[Double](

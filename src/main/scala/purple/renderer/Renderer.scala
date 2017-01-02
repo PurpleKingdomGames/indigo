@@ -217,17 +217,11 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
     val tintLocation = gl.getUniformLocation(shaderProgram, "uTint")
     gl.uniform3fv(tintLocation, scalajs.js.Array[Double](displayObject.tintR, displayObject.tintG, displayObject.tintB))
 
-    val textureOffsets = Frame.calculateFrameOffset(
-      imageSize = Vector2(192, 64),
-      frameSize = Vector2(64, 64),
-      framePosition = Vector2(64, 0)
-    )
-
     val texcoordScaleLocation = gl.getUniformLocation(shaderProgram, "uTexcoordScale")
-    gl.uniform2fv(texcoordScaleLocation, textureOffsets.scale.toScalaJSArrayDouble)
+    gl.uniform2fv(texcoordScaleLocation, displayObject.frame.scale.toScalaJSArrayDouble)
 
     val texcoordTranlsateLocation = gl.getUniformLocation(shaderProgram, "uTexcoordTranslate")
-    gl.uniform2fv(texcoordTranlsateLocation, textureOffsets.translate.toScalaJSArrayDouble)
+    gl.uniform2fv(texcoordTranlsateLocation, displayObject.frame.translate.toScalaJSArrayDouble)
   }
 
   private val flipMatrix: ((Boolean, Boolean)) => Matrix4 = flipValues => {
