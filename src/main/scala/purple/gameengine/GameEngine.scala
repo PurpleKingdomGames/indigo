@@ -1,12 +1,9 @@
 package purple.gameengine
 
 import org.scalajs.dom
-import org.scalajs.dom.{Event, MouseEvent, html}
-import org.scalajs.dom.raw.HTMLImageElement
 import purple.renderer._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Future, Promise}
 import scala.scalajs.js.JSApp
 
 trait GameEngine[GameModel] extends JSApp {
@@ -21,9 +18,13 @@ trait GameEngine[GameModel] extends JSApp {
 
   def updateView(currentState: GameModel): SceneGraphNode
 
+  private var state: Option[GameModel] = None
+
   def main(): Unit = {
 
-    Future.sequence(imageAssets.toList.map(loadAsset)).foreach { loadedImageAssets =>
+    // loadAssets andThen setUpEventDispatcher andThen startGame
+
+    AssetManager.loadAssets(imageAssets.toList).foreach { loadedImageAssets =>
 
       val canvas = Renderer.createCanvas(config.viewport.width, config.viewport.height)
 
@@ -73,28 +74,6 @@ trait GameEngine[GameModel] extends JSApp {
     }
 
   }
-
-  private def onLoadFuture(image: HTMLImageElement): Future[HTMLImageElement] = {
-    if (image.complete) {
-      Future.successful(image)
-    } else {
-      val p = Promise[HTMLImageElement]()
-      image.onload = { (_: Event) =>
-        p.success(image)
-      }
-      p.future
-    }
-  }
-
-  private def loadAsset(imageAsset: ImageAsset): Future[LoadedImageAsset] = {
-
-    val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
-    image.src = imageAsset.path
-
-    onLoadFuture(image).map(i => LoadedImageAsset(imageAsset.name, i))
-  }
-
-  private var state: Option[GameModel] = None
 
   private def loop(renderer: Renderer, lastUpdateTime: Double)(time: Double): Unit = {
     val timeDelta = time - lastUpdateTime
