@@ -22,14 +22,17 @@ Game Engine
 - Input events from mouse and keyboard
 - Revisit API
   -  SceneGraph should be like a DOM, sprites, buttons, animated sprites, static images, parallax images etc.
-- Tilemap loading?
 - Sound
+- Full window size
+- Full screen
+- Fonts
 
 Game
 - Make game.
 
 
 Much later...
+- Tilemap loading?
 - Lighting
   - Ambient (global tint)
   - Lighting effects

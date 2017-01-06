@@ -1,7 +1,7 @@
 package purple.gameengine
 
 import org.scalajs.dom
-import org.scalajs.dom.{Event, html}
+import org.scalajs.dom.{Event, MouseEvent, html}
 import org.scalajs.dom.raw.HTMLImageElement
 import purple.renderer._
 
@@ -24,14 +24,50 @@ trait GameEngine[GameModel] extends JSApp {
   def main(): Unit = {
 
     Future.sequence(imageAssets.toList.map(loadAsset)).foreach { loadedImageAssets =>
+
+      val canvas = Renderer.createCanvas(config.viewport.width, config.viewport.height)
+
       val renderer: Renderer = Renderer(
         RendererConfig(
           viewport = Viewport(config.viewport.width, config.viewport.height),
           clearColor = config.clearColor,
           magnification = config.magnification
         ),
-        loadedImageAssets
+        loadedImageAssets,
+        canvas
       )
+
+      canvas.onclick = { e: dom.MouseEvent =>
+        println("click" + e)
+      }
+
+      canvas.ondblclick = { e: dom.MouseEvent =>
+        println("double click" + e)
+      }
+
+      canvas.onmousemove = { e: dom.MouseEvent =>
+        println("mouse move" + e)
+      }
+
+      canvas.onmousedown = { e: dom.MouseEvent =>
+        println("mouse down" + e)
+      }
+
+      canvas.onmouseup = { e: dom.MouseEvent =>
+        println("mouse up" + e)
+      }
+
+      dom.document.onkeypress = { e: dom.KeyboardEvent =>
+        println("key press" + e)
+      }
+
+      dom.document.onkeydown = { e: dom.KeyboardEvent =>
+        println("key down" + e)
+      }
+
+      dom.document.onkeyup = { e: dom.KeyboardEvent =>
+        println("key up" + e)
+      }
 
       dom.window.requestAnimationFrame(loop(renderer, 0))
     }

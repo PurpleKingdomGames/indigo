@@ -12,11 +12,11 @@ object Renderer {
 
   private var renderer: Option[Renderer] = None
 
-  def apply(config: RendererConfig, loadedImageAssets: List[LoadedImageAsset]): Renderer = {
+  def apply(config: RendererConfig, loadedImageAssets: List[LoadedImageAsset], canvas: html.Canvas): Renderer = {
     renderer match {
       case Some(r) => r
       case None =>
-        val cNc = setupContextAndCanvas(createCanvas(config.viewport.width, config.viewport.height), config.magnification)
+        val cNc = setupContextAndCanvas(canvas, config.magnification)
 
         val r = new Renderer(config, loadedImageAssets, cNc)
         r.init()
