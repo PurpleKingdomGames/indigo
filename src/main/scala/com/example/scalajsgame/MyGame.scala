@@ -45,15 +45,17 @@ object MyGame extends GameEngine[Stuff] {
   var tmpY: Int = 0
   var angle: Double = 0
 
-  def updateModel(timeDelta: Double, previousState: Stuff): Stuff = {
+  def updateModel(inputs: GameInputs, state: Stuff): Stuff = {
 
     tmpX = (Math.sin(angle) * 32).toInt
     tmpY = (Math.cos(angle) * 32).toInt
     angle = angle + 0.01
 
-    previousState.copy(
-      blocks = Blocks(previousState.blocks.blocks.map(blk => blk.copy(x = tmpX + blk.centerX, y = tmpY + blk.centerY))),
-      trafficLights = previousState.trafficLights.nextColor(timeDelta)
+    println(inputs)
+
+    state.copy(
+      blocks = Blocks(state.blocks.blocks.map(blk => blk.copy(x = tmpX + blk.centerX, y = tmpY + blk.centerY))),
+      trafficLights = state.trafficLights.nextColor(inputs.time.delta)
     )
 
   }

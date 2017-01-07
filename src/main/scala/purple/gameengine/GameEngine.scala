@@ -6,6 +6,9 @@ import purple.renderer._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.JSApp
 
+case class GameTime(time: Double, delta: Double)
+case class GameInputs(time: GameTime, events: List[GameEvent])
+
 trait GameEngine[GameModel] extends JSApp {
 
   def config: GameConfig
@@ -14,7 +17,7 @@ trait GameEngine[GameModel] extends JSApp {
 
   def initialModel: GameModel
 
-  def updateModel(timeDelta: Double, previousState: GameModel): GameModel
+  def updateModel(inputs: GameInputs, state: GameModel): GameModel
 
   def updateView(currentState: GameModel): SceneGraphNode
 
@@ -49,7 +52,14 @@ trait GameEngine[GameModel] extends JSApp {
     if(timeDelta > config.frameRateDeltaMillis) {
       val model = state match {
         case None => initialModel
-        case Some(previousState) => updateModel(timeDelta, previousState)
+        case Some(previousState) =>
+          updateModel(
+            GameInputs(
+              time = GameTime(time, timeDelta),
+              events = GlobalEventStream.collect
+            ),
+            previousState
+          )
       }
 
       state = Some(model)
