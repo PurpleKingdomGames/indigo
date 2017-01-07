@@ -22,11 +22,11 @@ trait GameEngine[GameModel] extends JSApp {
 
   def main(): Unit = {
 
-    // loadAssets andThen setUpEventDispatcher andThen startGame
-
     AssetManager.loadAssets(imageAssets.toList).foreach { loadedImageAssets =>
 
       val canvas = Renderer.createCanvas(config.viewport.width, config.viewport.height)
+
+      WorldEvents(canvas)
 
       val renderer: Renderer = Renderer(
         RendererConfig(
@@ -37,38 +37,6 @@ trait GameEngine[GameModel] extends JSApp {
         loadedImageAssets,
         canvas
       )
-
-      canvas.onclick = { e: dom.MouseEvent =>
-        println("click" + e)
-      }
-
-      canvas.ondblclick = { e: dom.MouseEvent =>
-        println("double click" + e)
-      }
-
-      canvas.onmousemove = { e: dom.MouseEvent =>
-        println("mouse move" + e)
-      }
-
-      canvas.onmousedown = { e: dom.MouseEvent =>
-        println("mouse down" + e)
-      }
-
-      canvas.onmouseup = { e: dom.MouseEvent =>
-        println("mouse up" + e)
-      }
-
-      dom.document.onkeypress = { e: dom.KeyboardEvent =>
-        println("key press" + e)
-      }
-
-      dom.document.onkeydown = { e: dom.KeyboardEvent =>
-        println("key down" + e)
-      }
-
-      dom.document.onkeyup = { e: dom.KeyboardEvent =>
-        println("key up" + e)
-      }
 
       dom.window.requestAnimationFrame(loop(renderer, 0))
     }
