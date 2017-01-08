@@ -94,12 +94,14 @@ case class Sprite(bounds: Rectangle, depth: Depth, imageAssetRef: String, animat
 
 }
 
-case class FontInfo(charSize: Point, imageAssetRef: String, fontChar: FontChar, fontChars: List[FontChar] = Nil) {
+case class FontInfo(charSize: Point, fontSpriteSheet: FontSpriteSheet, fontChar: FontChar, fontChars: List[FontChar] = Nil) {
   private val nonEmtpyChars: List[FontChar] = fontChar +: fontChars
 
-  def addChar(fontChar: FontChar) = FontInfo(charSize, imageAssetRef, fontChar, nonEmtpyChars)
-}
+  def addChar(fontChar: FontChar) = FontInfo(charSize, fontSpriteSheet, fontChar, nonEmtpyChars)
 
+  def findByCharacter(character: String): FontChar = nonEmtpyChars.find(p => p.character == character).getOrElse(FontChar("?", Point(0, 0)))
+}
+case class FontSpriteSheet(imageAssetRef: String, size: Point)
 case class FontChar(character: String, offset: Point)
 
 sealed trait TextAlignment
@@ -110,7 +112,7 @@ case object AlignRight extends TextAlignment
 case class Text(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontInfo: FontInfo, effects: Effects = Effects.default) extends SceneGraphNodeLeaf {
 
   val bounds: Rectangle = Rectangle(position, Point(text.length * fontInfo.charSize.x, fontInfo.charSize.y))
-  val imageAssetRef: String = fontInfo.imageAssetRef
+  val imageAssetRef: String = fontInfo.fontSpriteSheet.imageAssetRef
 
   def withAlpha(a: Double): Text =
     this.copy(effects = effects.copy(alpha = a))

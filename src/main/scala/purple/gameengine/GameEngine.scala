@@ -132,22 +132,38 @@ trait GameEngine[GameModel] extends JSApp {
         )
 
       case leaf: Text =>
-        leaf.text.toList.zipWithIndex.map { char =>
-//          DisplayObject(
-//            x = leaf.bounds.position.x,
-//            y = leaf.bounds.position.y,
-//            z = -leaf.depth.zIndex,
-//            width = leaf.bounds.size.x,
-//            height = leaf.bounds.size.y,
-//            imageRef = leaf.imageAssetRef,
-//            alpha = leaf.effects.alpha,
-//            tintR = leaf.effects.tint.r,
-//            tintG = leaf.effects.tint.g,
-//            tintB = leaf.effects.tint.b,
-//            flipHorizontal = leaf.effects.flip.horizontal,
-//            flipVertical = leaf.effects.flip.vertical,
-//            frame = SpriteSheetFrame.defaultOffset
-//          )
+        leaf.text.toList.zipWithIndex.map { case (char, index) =>
+          val fontChar = leaf.fontInfo.findByCharacter(char.toString)
+          val alignmentOffset: Point = leaf.alignment match {
+            case AlignLeft =>
+              Point(0, 0)
+
+            case AlignCenter =>
+              Point(-(leaf.bounds.size.x / 2), 0)
+
+            case AlignRight =>
+              Point(-leaf.bounds.size.x, 0)
+          }
+
+          DisplayObject(
+            x = leaf.position.x + (leaf.fontInfo.charSize.x * index) + alignmentOffset.x,
+            y = leaf.position.y,
+            z = leaf.depth.zIndex,
+            width = leaf.fontInfo.charSize.x,
+            height = leaf.fontInfo.charSize.y,
+            imageRef = leaf.imageAssetRef,
+            alpha = leaf.effects.alpha,
+            tintR = leaf.effects.tint.r,
+            tintG = leaf.effects.tint.g,
+            tintB = leaf.effects.tint.b,
+            flipHorizontal = leaf.effects.flip.horizontal,
+            flipVertical = leaf.effects.flip.vertical,
+            frame = SpriteSheetFrame.calculateFrameOffset(
+              imageSize = Vector2(leaf.fontInfo.fontSpriteSheet.size.x, leaf.fontInfo.fontSpriteSheet.size.y),
+              frameSize = Vector2(leaf.fontInfo.charSize.x, leaf.fontInfo.charSize.y),
+              framePosition = Vector2(fontChar.offset.x, fontChar.offset.y)
+            )
+          )
         }
     }
 

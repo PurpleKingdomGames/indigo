@@ -21,13 +21,15 @@ object MyGame extends GameEngine[Stuff] {
   val spriteSheetName2: String = "blob2"
   val spriteSheetName3: String = "f"
   val trafficLightsName: String = "trafficlights"
+  val fontName: String = "fontName"
 
   private val spriteAsset1 = ImageAsset(spriteSheetName1, "Sprite-0001.png")
   private val spriteAsset2 = ImageAsset(spriteSheetName2, "Sprite-0002.png")
   private val spriteAsset3 = ImageAsset(spriteSheetName3, "f-texture.png")
   private val trafficLightsAsset = ImageAsset(trafficLightsName, "trafficlights.png")
+  private val fontAsset = ImageAsset(fontName, "boxy_bold_font_5.png")
 
-  def imageAssets: Set[ImageAsset] = Set(spriteAsset1, spriteAsset2, spriteAsset3, trafficLightsAsset)
+  def imageAssets: Set[ImageAsset] = Set(spriteAsset1, spriteAsset2, spriteAsset3, trafficLightsAsset, fontAsset)
 
   def initialModel: Stuff =
     Stuff(
@@ -106,6 +108,22 @@ object MyGame extends GameEngine[Stuff] {
                   )
                 )
               )
+          ),
+          Text(
+            text = "CBA",
+            alignment = AlignLeft,
+            position = Point(100, 100),
+            depth = Depth(10),
+            fontInfo = FontInfo(
+              charSize = Point(64, 72),
+              fontSpriteSheet = FontSpriteSheet(
+                imageAssetRef = fontName,
+                size = Point(888, 640)
+              ),
+              fontChar = FontChar("A", Point(8, 215))
+            )
+              .addChar(FontChar("B", Point(8 + 64, 215)))
+              .addChar(FontChar("C", Point(8 + 64 + 64, 215)))
           )
         )
     )
