@@ -64,36 +64,67 @@ case class Frame(bounds: Rectangle, current: Boolean = false)
 // Concrete leaf types
 case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, effects: Effects = Effects.default) extends SceneGraphNodeLeaf {
 
-  def withAlpha(a: Double): SceneGraphNodeLeaf =
+  def withAlpha(a: Double): Graphic =
     this.copy(effects = effects.copy(alpha = a))
 
-  def withTint(red: Double, green: Double, blue: Double): SceneGraphNodeLeaf =
+  def withTint(red: Double, green: Double, blue: Double): Graphic =
     this.copy(effects = effects.copy(tint = Tint(red, green, blue)))
 
-  def flipHorizontal(h: Boolean): SceneGraphNodeLeaf =
+  def flipHorizontal(h: Boolean): Graphic =
     this.copy(effects = effects.copy(flip = Flip(horizontal = h, vertical = effects.flip.vertical)))
 
-  def flipVertical(v: Boolean): SceneGraphNodeLeaf =
+  def flipVertical(v: Boolean): Graphic =
     this.copy(effects = effects.copy(flip = Flip(horizontal = effects.flip.horizontal, vertical = v)))
 
 }
 
 case class Sprite(bounds: Rectangle, depth: Depth, imageAssetRef: String, animations: Animations, effects: Effects = Effects.default) extends SceneGraphNodeLeaf {
 
-  def withAlpha(a: Double): SceneGraphNodeLeaf =
+  def withAlpha(a: Double): Sprite =
     this.copy(effects = effects.copy(alpha = a))
 
-  def withTint(red: Double, green: Double, blue: Double): SceneGraphNodeLeaf =
+  def withTint(red: Double, green: Double, blue: Double): Sprite =
     this.copy(effects = effects.copy(tint = Tint(red, green, blue)))
 
-  def flipHorizontal(h: Boolean): SceneGraphNodeLeaf =
+  def flipHorizontal(h: Boolean): Sprite =
     this.copy(effects = effects.copy(flip = Flip(horizontal = h, vertical = effects.flip.vertical)))
 
-  def flipVertical(v: Boolean): SceneGraphNodeLeaf =
+  def flipVertical(v: Boolean): Sprite =
     this.copy(effects = effects.copy(flip = Flip(horizontal = effects.flip.horizontal, vertical = v)))
 
 }
 
+case class FontInfo(charSize: Point, imageAssetRef: String, fontChar: FontChar, fontChars: List[FontChar] = Nil) {
+  private val nonEmtpyChars: List[FontChar] = fontChar +: fontChars
+
+  def addChar(fontChar: FontChar) = FontInfo(charSize, imageAssetRef, fontChar, nonEmtpyChars)
+}
+
+case class FontChar(character: String, offset: Point)
+
+sealed trait TextAlignment
+case object AlignLeft extends TextAlignment
+case object AlignCenter extends TextAlignment
+case object AlignRight extends TextAlignment
+
+case class Text(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontInfo: FontInfo, effects: Effects = Effects.default) extends SceneGraphNodeLeaf {
+
+  val bounds: Rectangle = Rectangle(position, Point(text.length * fontInfo.charSize.x, fontInfo.charSize.y))
+  val imageAssetRef: String = fontInfo.imageAssetRef
+
+  def withAlpha(a: Double): Text =
+    this.copy(effects = effects.copy(alpha = a))
+
+  def withTint(red: Double, green: Double, blue: Double): Text =
+    this.copy(effects = effects.copy(tint = Tint(red, green, blue)))
+
+  def flipHorizontal(h: Boolean): Text =
+    this.copy(effects = effects.copy(flip = Flip(horizontal = h, vertical = effects.flip.vertical)))
+
+  def flipVertical(v: Boolean): Text =
+    this.copy(effects = effects.copy(flip = Flip(horizontal = effects.flip.horizontal, vertical = v)))
+
+}
 
 // Graphical effects
 object Effects {
@@ -113,5 +144,3 @@ object Effects {
 case class Effects(alpha: Double, tint: Tint, flip: Flip)
 case class Tint(r: Double, g: Double, b: Double)
 case class Flip(horizontal: Boolean, vertical: Boolean)
-
-// Animation

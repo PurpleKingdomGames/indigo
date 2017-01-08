@@ -6,6 +6,8 @@ import purple.renderer._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.JSApp
 
+import scala.language.implicitConversions
+
 case class GameTime(running: Double, delta: Double)
 
 /*
@@ -88,44 +90,65 @@ trait GameEngine[GameModel] extends JSApp {
     }
   }
 
-  private val leafToDisplayObject: SceneGraphNodeLeaf => DisplayObject = {
-      case graphic: Graphic =>
+  private implicit def displayObjectToList(displayObject: DisplayObject): List[DisplayObject] = List(displayObject)
+
+  private val leafToDisplayObject: SceneGraphNodeLeaf => List[DisplayObject] = {
+      case leaf: Graphic =>
         DisplayObject(
-          x = graphic.bounds.position.x,
-          y = graphic.bounds.position.y,
-          z = -graphic.depth.zIndex,
-          width = graphic.bounds.size.x,
-          height = graphic.bounds.size.y,
-          imageRef = graphic.imageAssetRef,
-          alpha = graphic.effects.alpha,
-          tintR = graphic.effects.tint.r,
-          tintG = graphic.effects.tint.g,
-          tintB = graphic.effects.tint.b,
-          flipHorizontal = graphic.effects.flip.horizontal,
-          flipVertical = graphic.effects.flip.vertical,
+          x = leaf.bounds.position.x,
+          y = leaf.bounds.position.y,
+          z = -leaf.depth.zIndex,
+          width = leaf.bounds.size.x,
+          height = leaf.bounds.size.y,
+          imageRef = leaf.imageAssetRef,
+          alpha = leaf.effects.alpha,
+          tintR = leaf.effects.tint.r,
+          tintG = leaf.effects.tint.g,
+          tintB = leaf.effects.tint.b,
+          flipHorizontal = leaf.effects.flip.horizontal,
+          flipVertical = leaf.effects.flip.vertical,
           frame = SpriteSheetFrame.defaultOffset
         )
 
-      case sprite: Sprite =>
+      case leaf: Sprite =>
         DisplayObject(
-          x = sprite.bounds.position.x,
-          y = sprite.bounds.position.y,
-          z = -sprite.depth.zIndex,
-          width = sprite.bounds.size.x,
-          height = sprite.bounds.size.y,
-          imageRef = sprite.imageAssetRef,
-          alpha = sprite.effects.alpha,
-          tintR = sprite.effects.tint.r,
-          tintG = sprite.effects.tint.g,
-          tintB = sprite.effects.tint.b,
-          flipHorizontal = sprite.effects.flip.horizontal,
-          flipVertical = sprite.effects.flip.vertical,
+          x = leaf.bounds.position.x,
+          y = leaf.bounds.position.y,
+          z = -leaf.depth.zIndex,
+          width = leaf.bounds.size.x,
+          height = leaf.bounds.size.y,
+          imageRef = leaf.imageAssetRef,
+          alpha = leaf.effects.alpha,
+          tintR = leaf.effects.tint.r,
+          tintG = leaf.effects.tint.g,
+          tintB = leaf.effects.tint.b,
+          flipHorizontal = leaf.effects.flip.horizontal,
+          flipVertical = leaf.effects.flip.vertical,
           frame = SpriteSheetFrame.calculateFrameOffset(
-            imageSize = Vector2(sprite.animations.spriteSheetSize.x, sprite.animations.spriteSheetSize.y),
-            frameSize = Vector2(sprite.animations.currentFrame.bounds.size.x, sprite.animations.currentFrame.bounds.size.y),
-            framePosition = Vector2(sprite.animations.currentFrame.bounds.position.x, sprite.animations.currentFrame.bounds.position.y)
+            imageSize = Vector2(leaf.animations.spriteSheetSize.x, leaf.animations.spriteSheetSize.y),
+            frameSize = Vector2(leaf.animations.currentFrame.bounds.size.x, leaf.animations.currentFrame.bounds.size.y),
+            framePosition = Vector2(leaf.animations.currentFrame.bounds.position.x, leaf.animations.currentFrame.bounds.position.y)
           )
         )
+
+      case leaf: Text =>
+        leaf.text.toList.zipWithIndex.map { char =>
+//          DisplayObject(
+//            x = leaf.bounds.position.x,
+//            y = leaf.bounds.position.y,
+//            z = -leaf.depth.zIndex,
+//            width = leaf.bounds.size.x,
+//            height = leaf.bounds.size.y,
+//            imageRef = leaf.imageAssetRef,
+//            alpha = leaf.effects.alpha,
+//            tintR = leaf.effects.tint.r,
+//            tintG = leaf.effects.tint.g,
+//            tintB = leaf.effects.tint.b,
+//            flipHorizontal = leaf.effects.flip.horizontal,
+//            flipVertical = leaf.effects.flip.vertical,
+//            frame = SpriteSheetFrame.defaultOffset
+//          )
+        }
     }
 
   private def drawScene(renderer: Renderer, gameModel: GameModel, update: GameModel => SceneGraphNode): Unit = {
@@ -134,7 +157,7 @@ trait GameEngine[GameModel] extends JSApp {
     val displayObjects: List[DisplayObject] =
       sceneGraph
         .flatten(Nil)
-        .map(leafToDisplayObject)
+        .flatMap(leafToDisplayObject)
         .sortBy(d => d.imageRef)
 
     renderer.drawScene(displayObjects)
