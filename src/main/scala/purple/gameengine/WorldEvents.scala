@@ -23,10 +23,6 @@ object WorldEvents {
       GlobalEventStream.push(MouseUp(e.clientX.toInt, e.clientY.toInt))
     }
 
-    dom.document.onkeypress = { e: dom.KeyboardEvent =>
-      GlobalEventStream.push(KeyPress(e.keyCode))
-    }
-
     dom.document.onkeydown = { e: dom.KeyboardEvent =>
       GlobalEventStream.push(KeyDown(e.keyCode))
     }

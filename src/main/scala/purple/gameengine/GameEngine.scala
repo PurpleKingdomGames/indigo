@@ -6,8 +6,18 @@ import purple.renderer._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.JSApp
 
-case class GameTime(time: Double, delta: Double)
-case class GameInputs(time: GameTime, events: List[GameEvent])
+case class GameTime(running: Double, delta: Double)
+
+/*
+There are some questions over time.
+Events are collected during a frame and then all processed sequentially at
+the beginning of the next frame so:
+1. Do you want the real time that the event happened?
+2. The time since the beginning of the frame (since they are sequential a
+long update could have a knock on effect for later events?
+3. The frame time - which is what you currently get.
+ */
+//case class UpdateEvent(event: GameEvent, time: GameTime)
 
 trait GameEngine[GameModel] extends JSApp {
 
@@ -17,7 +27,7 @@ trait GameEngine[GameModel] extends JSApp {
 
   def initialModel: GameModel
 
-  def updateModel(inputs: GameInputs, state: GameModel): GameModel
+  def updateModel(gameTime: GameTime, state: GameModel): GameEvent => GameModel
 
   def updateView(currentState: GameModel): SceneGraphNode
 
@@ -46,20 +56,26 @@ trait GameEngine[GameModel] extends JSApp {
 
   }
 
+  private def processUpdateEvents(previousState: GameModel, gameTime: GameTime, remaining: List[GameEvent]): GameModel = {
+    remaining match {
+      case Nil =>
+        updateModel(gameTime, previousState)(FrameTick)
+
+      case x :: xs =>
+        processUpdateEvents(updateModel(gameTime, previousState)(x), gameTime, xs)
+    }
+  }
+
   private def loop(renderer: Renderer, lastUpdateTime: Double)(time: Double): Unit = {
     val timeDelta = time - lastUpdateTime
 
     if(timeDelta > config.frameRateDeltaMillis) {
       val model = state match {
-        case None => initialModel
+        case None =>
+          initialModel
+
         case Some(previousState) =>
-          updateModel(
-            GameInputs(
-              time = GameTime(time, timeDelta),
-              events = GlobalEventStream.collect
-            ),
-            previousState
-          )
+          processUpdateEvents(previousState, GameTime(time, timeDelta), GlobalEventStream.collect)
       }
 
       state = Some(model)

@@ -37,11 +37,12 @@ object GlobalEventStream {
 
 sealed trait GameEvent
 
+case object FrameTick extends GameEvent
+
 case class MouseClick(x: Int, y: Int) extends GameEvent
 case class MouseUp(x: Int, y: Int) extends GameEvent
 case class MouseDown(x: Int, y: Int) extends GameEvent
 case class MousePosition(x: Int, y: Int) extends GameEvent
 
-case class KeyPress(keyCode: Int) extends GameEvent
 case class KeyUp(keyCode: Int) extends GameEvent
 case class KeyDown(keyCode: Int) extends GameEvent

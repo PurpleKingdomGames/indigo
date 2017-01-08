@@ -45,19 +45,21 @@ object MyGame extends GameEngine[Stuff] {
   var tmpY: Int = 0
   var angle: Double = 0
 
-  def updateModel(inputs: GameInputs, state: Stuff): Stuff = {
+  def updateModel(gameTime: GameTime, state: Stuff): GameEvent => Stuff = {
+    case FrameTick =>
 
-    tmpX = (Math.sin(angle) * 32).toInt
-    tmpY = (Math.cos(angle) * 32).toInt
-    angle = angle + 0.01
+      tmpX = (Math.sin(angle) * 32).toInt
+      tmpY = (Math.cos(angle) * 32).toInt
+      angle = angle + 0.01
 
-    println(inputs)
+      state.copy(
+        blocks = Blocks(state.blocks.blocks.map(blk => blk.copy(x = tmpX + blk.centerX, y = tmpY + blk.centerY))),
+        trafficLights = state.trafficLights.nextColor(gameTime.delta)
+      )
 
-    state.copy(
-      blocks = Blocks(state.blocks.blocks.map(blk => blk.copy(x = tmpX + blk.centerX, y = tmpY + blk.centerY))),
-      trafficLights = state.trafficLights.nextColor(inputs.time.delta)
-    )
-
+    case e =>
+//      println(e)
+      state
   }
 
   def updateView(currentState: Stuff): SceneGraphNode = {

@@ -19,7 +19,6 @@ Bugs:
 Renderer
 
 Game Engine
-- Input events from mouse and keyboard
 - Revisit API
   -  SceneGraph should be like a DOM, sprites, buttons, animated sprites, static images, parallax images etc.
 - Sound
