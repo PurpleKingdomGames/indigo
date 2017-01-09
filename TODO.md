@@ -20,11 +20,11 @@ Renderer
 
 Game Engine
 - Revisit API
-  -  SceneGraph should be like a DOM, sprites, buttons, animated sprites, static images, parallax images etc.
+  - SceneGraph should be like a DOM, sprites, buttons, animated sprites, static images, parallax images etc.
+  - Typeclass: ToSceneGraph?
 - Sound
 - Full window size
 - Full screen
-- Fonts
 
 Game
 - Make game.
@@ -37,3 +37,4 @@ Much later...
   - Lighting effects
 - Perf enhancement: Render at actual size to a buffer and scale up.
 - Perf enhancement: We do some CPU side sorting, which generally will be ok, but if there are thousands of tiles and most of them never change, it would be nice to declare that somehow and only have to sort them once.
+- Perf enhancement: Static objects. If you have a large group of rectangles that make up one big object - like level platforms - and they never move in relation to each other, we should be able to flatten them into one special object that can be drawn with a single call.
