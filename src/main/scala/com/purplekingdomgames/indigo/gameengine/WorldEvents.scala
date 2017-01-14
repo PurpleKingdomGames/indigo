@@ -1,4 +1,4 @@
-package purple.gameengine
+package com.purplekingdomgames.indigo.gameengine
 
 import org.scalajs.dom
 import org.scalajs.dom.html

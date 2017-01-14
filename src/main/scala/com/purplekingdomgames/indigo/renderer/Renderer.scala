@@ -1,4 +1,4 @@
-package purple.renderer
+package com.purplekingdomgames.indigo.renderer
 
 import org.scalajs.dom
 import org.scalajs.dom.raw.WebGLRenderingContext._

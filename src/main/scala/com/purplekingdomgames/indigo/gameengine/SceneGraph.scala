@@ -1,4 +1,4 @@
-package purple.gameengine
+package com.purplekingdomgames.indigo.gameengine
 
 object SceneGraphNode {
   def empty: SceneGraphNode = SceneGraphNodeBranch(Nil)

@@ -1,4 +1,4 @@
-package purple.renderer
+package com.purplekingdomgames.indigo.renderer
 
 case class Vector2(x: Double, y: Double) {
 

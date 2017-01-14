@@ -1,4 +1,4 @@
-package purple.renderer
+package com.purplekingdomgames.indigo.renderer
 
 object SpriteSheetFrame {
 

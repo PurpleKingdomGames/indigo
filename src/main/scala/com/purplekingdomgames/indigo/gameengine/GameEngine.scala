@@ -1,7 +1,7 @@
-package purple.gameengine
+package com.purplekingdomgames.indigo.gameengine
 
 import org.scalajs.dom
-import purple.renderer._
+import com.purplekingdomgames.indigo.renderer._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.JSApp

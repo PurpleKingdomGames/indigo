@@ -1,7 +1,7 @@
 package com.example.scalajsgame
 
-import purple.gameengine._
-import purple.renderer.{ClearColor, ImageAsset}
+import com.purplekingdomgames.indigo.gameengine._
+import com.purplekingdomgames.indigo.renderer.{ClearColor, ImageAsset}
 
 import scala.language.implicitConversions
 

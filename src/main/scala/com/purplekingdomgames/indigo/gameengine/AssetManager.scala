@@ -1,9 +1,9 @@
-package purple.gameengine
+package com.purplekingdomgames.indigo.gameengine
 
 import org.scalajs.dom
 import org.scalajs.dom.{html, _}
 import org.scalajs.dom.raw.HTMLImageElement
-import purple.renderer.{ImageAsset, LoadedImageAsset}
+import com.purplekingdomgames.indigo.renderer.{ImageAsset, LoadedImageAsset}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}

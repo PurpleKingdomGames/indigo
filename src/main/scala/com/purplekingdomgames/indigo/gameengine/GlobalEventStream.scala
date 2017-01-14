@@ -1,4 +1,4 @@
-package purple.gameengine
+package com.purplekingdomgames.indigo.gameengine
 
 /**
   * This has probably been over thought, but the idea is to have two parallel collections in an attempt to ensure messages are never lost,
