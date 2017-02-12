@@ -95,8 +95,8 @@ trait GameEngine[GameModel] extends JSApp {
   private val leafToDisplayObject: SceneGraphNodeLeaf => List[DisplayObject] = {
       case leaf: Graphic =>
         DisplayObject(
-          x = leaf.bounds.position.x,
-          y = leaf.bounds.position.y,
+          x = leaf.x,
+          y = leaf.y,
           z = -leaf.depth.zIndex,
           width = leaf.bounds.size.x,
           height = leaf.bounds.size.y,
@@ -107,13 +107,19 @@ trait GameEngine[GameModel] extends JSApp {
           tintB = leaf.effects.tint.b,
           flipHorizontal = leaf.effects.flip.horizontal,
           flipVertical = leaf.effects.flip.vertical,
-          frame = SpriteSheetFrame.defaultOffset
+          frame = leaf.crop.map { c =>
+            SpriteSheetFrame.calculateFrameOffset(
+              imageSize = Vector2(leaf.bounds.size.x, leaf.bounds.size.y),
+              frameSize = Vector2(c.size.x, c.size.y),
+              framePosition = Vector2(c.position.x, c.position.y)
+            )
+          }.getOrElse(SpriteSheetFrame.defaultOffset)
         )
 
       case leaf: Sprite =>
         DisplayObject(
-          x = leaf.bounds.position.x,
-          y = leaf.bounds.position.y,
+          x = leaf.x,
+          y = leaf.y,
           z = -leaf.depth.zIndex,
           width = leaf.bounds.size.x,
           height = leaf.bounds.size.y,

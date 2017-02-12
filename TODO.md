@@ -14,11 +14,18 @@ The layers:
 
 ## TODO
 
+UX sore points:
+- Rectangle construction, needs simpler apply method
+- ClearColour with Alpha 0 is almost always not what you want...
+-
+
 Bugs:
 
 Renderer
 
 Game Engine
+- Nice error message when failed to load asset
+- I think Scalajs is downloading script files on load, can they be local?
 - Revisit API
   - SceneGraph should be like a DOM, sprites, buttons, animated sprites, static images, parallax images etc.
   - Typeclass: ToSceneGraph?

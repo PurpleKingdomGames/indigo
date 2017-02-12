@@ -22,6 +22,8 @@ sealed trait SceneGraphNodeLeaf extends SceneGraphNode {
   val depth: Depth
   val imageAssetRef: String
   val effects: Effects
+  val ref: Option[Point]
+  val crop: Option[Rectangle]
 
   def withAlpha(a: Double): SceneGraphNodeLeaf
   def withTint(red: Double, green: Double, blue: Double): SceneGraphNodeLeaf
@@ -62,7 +64,10 @@ case class Cycle(label: String, frame: Frame, frames: List[Frame] = Nil, current
 case class Frame(bounds: Rectangle, current: Boolean = false)
 
 // Concrete leaf types
-case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, effects: Effects = Effects.default) extends SceneGraphNodeLeaf {
+case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Option[Point] = None, crop: Option[Rectangle] = None, effects: Effects = Effects.default) extends SceneGraphNodeLeaf {
+
+  val x: Int = bounds.position.x - ref.map(_.x).getOrElse(0)
+  val y: Int = bounds.position.y - ref.map(_.y).getOrElse(0)
 
   def withAlpha(a: Double): Graphic =
     this.copy(effects = effects.copy(alpha = a))
@@ -76,9 +81,20 @@ case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, effec
   def flipVertical(v: Boolean): Graphic =
     this.copy(effects = effects.copy(flip = Flip(horizontal = effects.flip.horizontal, vertical = v)))
 
+  def withRef(ref: Point): Graphic =
+    this.copy(ref = Option(ref))
+
+  def withCrop(crop: Rectangle): Graphic =
+    this.copy(crop = Option(crop))
+
 }
 
-case class Sprite(bounds: Rectangle, depth: Depth, imageAssetRef: String, animations: Animations, effects: Effects = Effects.default) extends SceneGraphNodeLeaf {
+case class Sprite(bounds: Rectangle, depth: Depth, imageAssetRef: String, animations: Animations, ref: Option[Point] = None, effects: Effects = Effects.default) extends SceneGraphNodeLeaf {
+
+  val crop: Option[Rectangle] = None
+
+  val x: Int = bounds.position.x - ref.map(_.x).getOrElse(0)
+  val y: Int = bounds.position.y - ref.map(_.y).getOrElse(0)
 
   def withAlpha(a: Double): Sprite =
     this.copy(effects = effects.copy(alpha = a))
@@ -91,6 +107,9 @@ case class Sprite(bounds: Rectangle, depth: Depth, imageAssetRef: String, animat
 
   def flipVertical(v: Boolean): Sprite =
     this.copy(effects = effects.copy(flip = Flip(horizontal = effects.flip.horizontal, vertical = v)))
+
+  def withRef(ref: Point): Sprite =
+    this.copy(ref = Option(ref))
 
 }
 
@@ -110,6 +129,10 @@ case object AlignCenter extends TextAlignment
 case object AlignRight extends TextAlignment
 
 case class Text(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontInfo: FontInfo, effects: Effects = Effects.default) extends SceneGraphNodeLeaf {
+
+  // Handled a different way
+  val ref: Option[Point] = None
+  val crop: Option[Rectangle] = None
 
   val bounds: Rectangle = Rectangle(position, Point(text.length * fontInfo.charSize.x, fontInfo.charSize.y))
   val imageAssetRef: String = fontInfo.fontSpriteSheet.imageAssetRef
