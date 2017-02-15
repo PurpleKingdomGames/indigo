@@ -35,9 +35,12 @@ object Renderer {
     canvas
   }
 
+  private def getContext(canvas: html.Canvas) =
+    (canvas.getContext("webgl")|| canvas.getContext("experimental-webgl")).asInstanceOf[raw.WebGLRenderingContext]
+
   def setupContextAndCanvas(canvas: html.Canvas, magnification: Int): ContextAndCanvas = {
     ContextAndCanvas(
-      context = canvas.getContext("webgl").asInstanceOf[raw.WebGLRenderingContext],
+      context = getContext(canvas),
       canvas = canvas,
       width = canvas.clientWidth,
       height = canvas.clientHeight,
