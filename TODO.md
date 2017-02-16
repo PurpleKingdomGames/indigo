@@ -22,6 +22,15 @@ UX sore points:
 Bugs:
 
 Renderer
+- Alternative to lighting: Blend modes.
+ I was thinking about different ways of doing lights and the obvious thing is to use real
+ lights but we don't need most of the things that come with them like shadows.
+ Better would be deferred lighting when we render the scene to a texture, render the
+ lighting to a texture, and then blend them together.
+ Importantly, I was thinking about doing lights with textures (like the flashlight in Doom 3)
+ for easy lighting effects.
+ Then I thought: Would it be easier (given that I have layers and stuff) to just do blend modes
+ in the first place? People could do lighting... without doing lighting.
 - Simple point lighting
 - Simple ambient lighting
 
@@ -44,3 +53,4 @@ Much later...
 - Performance enhancement: Render at actual size to a buffer and scale up.
 - Performance enhancement: We do some CPU side sorting, which generally will be ok, but if there are thousands of tiles and most of them never change, it would be nice to declare that somehow and only have to sort them once.
 - Performance enhancement: Static objects. If you have a large group of rectangles that make up one big object - like level platforms - and they never move in relation to each other, we should be able to flatten them into one special object that can be drawn with a single call.
+- Screen Effects: Would be awesome to have a bloom fliter for highlights?
