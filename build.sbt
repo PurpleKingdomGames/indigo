@@ -1,17 +1,20 @@
 
-
-enablePlugins(ScalaJSPlugin)
-
-name := "indigo"
-
-organization := "com.purplekingdomgames"
-
-version := "0.0.1-SNAPSHOT"
-
-scalaVersion := "2.12.1"
-
-libraryDependencies ++= Seq(
-  "org.scalatest" %%% "scalatest" % "3.0.1" % "test",
-  "org.scala-js" %%% "scalajs-dom" % "0.9.1"
-  //  "org.scalacheck" %% "scalacheck" % "1.12.1" % "test" withSources() withJavadoc()
+lazy val commonSettings = Seq(
+  version := "0.0.1-SNAPSHOT",
+  scalaVersion := "2.12.1",
+  organization := "com.purplekingdomgames"
 )
+
+lazy val indigo =
+  project
+    .settings(commonSettings: _*)
+
+lazy val sandbox =
+  project
+    .settings(commonSettings: _*)
+    .dependsOn(indigo)
+
+lazy val root =
+  (project in file("."))
+    .settings(commonSettings: _*)
+    .aggregate(indigo, sandbox)
