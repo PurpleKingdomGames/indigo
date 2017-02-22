@@ -31,6 +31,10 @@ object MyGame extends GameEngine[Stuff] {
 
   def imageAssets: Set[ImageAsset] = Set(spriteAsset1, spriteAsset2, spriteAsset3, trafficLightsAsset, fontAsset)
 
+  def textAssets: Set[TextAsset] = Set(
+    TextAsset("gloop-json", "gloop.json")
+  )
+
   def initialModel: Stuff =
     Stuff(
       Blocks(
@@ -47,8 +51,16 @@ object MyGame extends GameEngine[Stuff] {
   var tmpY: Int = 0
   var angle: Double = 0
 
+  var firstRun: Boolean = true
+
   def updateModel(gameTime: GameTime, state: Stuff): GameEvent => Stuff = {
     case FrameTick =>
+
+      if(firstRun) {
+        firstRun = false
+        println("Text asset loading: ")
+        println(assetCollection.texts.find(p => p.name == "gloop-json"))
+      }
 
       tmpX = (Math.sin(angle) * 32).toInt
       tmpY = (Math.cos(angle) * 32).toInt

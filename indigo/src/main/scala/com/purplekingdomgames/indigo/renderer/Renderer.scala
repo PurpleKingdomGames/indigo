@@ -292,4 +292,4 @@ case class ContextAndCanvas(context: raw.WebGLRenderingContext, canvas: html.Can
 
 sealed trait ImageAssetStates
 case class ImageAsset(name: String, path: String) extends ImageAssetStates
-case class LoadedImageAsset(name: String, data: html.Image)
+case class LoadedImageAsset(name: String, data: html.Image) extends ImageAssetStates
