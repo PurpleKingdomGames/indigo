@@ -2,6 +2,7 @@ package com.purplekingdomgames.indigo.gameengine
 
 import com.purplekingdomgames.indigo.renderer.{ImageAsset, LoadedImageAsset}
 import org.scalajs.dom
+import org.scalajs.dom.ext.Ajax
 import org.scalajs.dom.raw.HTMLImageElement
 import org.scalajs.dom.{html, _}
 
@@ -10,11 +11,15 @@ import scala.concurrent.{Future, Promise}
 
 object AssetManager {
 
-  def loadAssets(imageAssets: Set[ImageAsset], textAssets: Set[TextAsset]): Future[AssetCollection] =
+  def loadAssets(imageAssets: Set[ImageAsset], textAssets: Set[TextAsset]): Future[AssetCollection] = {
+    val ii = loadImageAssets(imageAssets.toList)
+    val tt = loadTextAssets(textAssets.toList)
+
     for {
-      i <- loadImageAssets(imageAssets.toList)
-      t <- loadTextAssets(textAssets.toList)
+      i <- ii
+      t <- tt
     } yield AssetCollection(i, t)
+  }
 
   val loadImageAssets: List[ImageAsset] => Future[List[LoadedImageAsset]] = imageAssets =>
     Future.sequence(imageAssets.map(loadImageAsset))
@@ -43,20 +48,25 @@ object AssetManager {
     Future.sequence(textAssets.map(loadTextAsset))
 
   def loadTextAsset(textAsset: TextAsset): Future[LoadedTextAsset] = {
-    val p = Promise[LoadedTextAsset]()
-
-    val client = new XMLHttpRequest()
-    client.open("GET", s"${textAsset.path}")
-    client.onreadystatechange = (_: Event) => {
-      if(client.readyState == XMLHttpRequest.DONE && client.status == 200) {
-        println("body: " + client.responseText)
-
-        p.success(LoadedTextAsset(textAsset.name, client.responseText))
-      }
+    Ajax.get(textAsset.path).map { xhr =>
+      xhr.responseType = "json"
+      LoadedTextAsset(textAsset.name, xhr.responseText)
     }
-    client.send()
-
-    p.future
+//    val p = Promise[LoadedTextAsset]()
+//
+//    val xhr = new XMLHttpRequest()
+//    xhr.open("GET", s"${textAsset.path}")
+//    xhr.onreadystatechange = (_: Event) => {
+//      if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
+////        xhr.responseType = "text"
+////        println("body: " + xhr.responseText)
+//
+//        p.success(LoadedTextAsset(textAsset.name, xhr.responseText))
+//      }
+//    }
+//    xhr.send()
+//
+//    p.future
   }
 
 }
