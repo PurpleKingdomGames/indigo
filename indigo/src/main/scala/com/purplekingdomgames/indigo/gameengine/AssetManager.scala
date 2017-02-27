@@ -14,8 +14,8 @@ object AssetManager {
 
   def loadAssets(imageAssets: Set[ImageAsset], textAssets: Set[TextAsset]): Future[AssetCollection] =
     for {
-      i <- loadImageAssets(imageAssets.toList)
       t <- loadTextAssets(textAssets.toList)
+      i <- loadImageAssets(imageAssets.toList)
     } yield AssetCollection(i, t)
 
   private val loadImageAssets: List[ImageAsset] => Future[List[LoadedImageAsset]] = imageAssets =>
