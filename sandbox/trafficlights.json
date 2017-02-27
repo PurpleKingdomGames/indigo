@@ -19,7 +19,7 @@
    },
    {
     "filename": "trafficlights 2.ase",
-    "frame": { "x": 128, "y": 0, "w": 64, "h": 64 },
+    "frame": { "x": 0, "y": 64, "w": 64, "h": 64 },
     "rotated": false,
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 64, "h": 64 },
@@ -29,18 +29,13 @@
  ],
  "meta": {
   "app": "http://www.aseprite.org/",
-  "version": "1.1.12",
-  "image": "/Users/dave/repos/scalajs-game/trafficlights.png",
+  "version": "1.1.13",
+  "image": "/Users/dave/repos/indigo/sandbox/trafficlights.png",
   "format": "RGBA8888",
-  "size": { "w": 192, "h": 64 },
+  "size": { "w": 128, "h": 128 },
   "scale": "1",
   "frameTags": [
-  ],
-  "layers": [
-   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" },
-   { "name": "Layer 2", "opacity": 255, "blendMode": "normal" },
-   { "name": "Layer 3", "opacity": 255, "blendMode": "normal" },
-   { "name": "Layer 4", "opacity": 255, "blendMode": "normal" }
+   { "name": "lights", "from": 0, "to": 2, "direction": "forward" }
   ]
  }
 }

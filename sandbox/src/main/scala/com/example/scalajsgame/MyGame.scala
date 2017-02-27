@@ -92,7 +92,7 @@ object MyGame extends GameEngine[Stuff] {
             imageAssetRef = trafficLightsName,
             animations =
               Animations(
-                Point(192, 64),
+                Point(128, 128),
                 Cycle(
                   label = "trafficlights",
                   frame = Frame(
@@ -113,7 +113,7 @@ object MyGame extends GameEngine[Stuff] {
                 ).addFrame(
                   frame = Frame(
                     bounds = Rectangle(
-                      Point(128, 0),
+                      Point(0, 64),
                       Point(64, 64)
                     ),
                     current = currentState.trafficLights.isGreen
