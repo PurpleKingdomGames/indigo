@@ -6,37 +6,32 @@ import org.scalajs.dom.ext.Ajax
 import org.scalajs.dom.raw.HTMLImageElement
 import org.scalajs.dom.{html, _}
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Future, Promise}
+
+import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
 object AssetManager {
 
-  def loadAssets(imageAssets: Set[ImageAsset], textAssets: Set[TextAsset]): Future[AssetCollection] = {
-    val ii = loadImageAssets(imageAssets.toList)
-    val tt = loadTextAssets(textAssets.toList)
-
+  def loadAssets(imageAssets: Set[ImageAsset], textAssets: Set[TextAsset]): Future[AssetCollection] =
     for {
-      i <- ii
-      t <- tt
+      i <- loadImageAssets(imageAssets.toList)
+      t <- loadTextAssets(textAssets.toList)
     } yield AssetCollection(i, t)
-  }
 
-  val loadImageAssets: List[ImageAsset] => Future[List[LoadedImageAsset]] = imageAssets =>
+  private val loadImageAssets: List[ImageAsset] => Future[List[LoadedImageAsset]] = imageAssets =>
     Future.sequence(imageAssets.map(loadImageAsset))
 
-  private def onLoadFuture(image: HTMLImageElement): Future[HTMLImageElement] = {
-    if (image.complete) {
-      Future.successful(image)
-    } else {
+  private def onLoadFuture(image: HTMLImageElement): Future[HTMLImageElement] =
+    if (image.complete) Future.successful(image)
+    else {
       val p = Promise[HTMLImageElement]()
       image.onload = { (_: Event) =>
         p.success(image)
       }
       p.future
     }
-  }
 
-  def loadImageAsset(imageAsset: ImageAsset): Future[LoadedImageAsset] = {
+  private def loadImageAsset(imageAsset: ImageAsset): Future[LoadedImageAsset] = {
 
     val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
     image.src = imageAsset.path
@@ -44,12 +39,11 @@ object AssetManager {
     onLoadFuture(image).map(i => LoadedImageAsset(imageAsset.name, i))
   }
 
-  val loadTextAssets: List[TextAsset] => Future[List[LoadedTextAsset]] = textAssets =>
+  private val loadTextAssets: List[TextAsset] => Future[List[LoadedTextAsset]] = textAssets =>
     Future.sequence(textAssets.map(loadTextAsset))
 
-  def loadTextAsset(textAsset: TextAsset): Future[LoadedTextAsset] = {
-    Ajax.get(textAsset.path).map { xhr =>
-      xhr.responseType = "json"
+  private def loadTextAsset(textAsset: TextAsset): Future[LoadedTextAsset] = {
+    Ajax.get(textAsset.path, responseType = "text").map { xhr =>
       LoadedTextAsset(textAsset.name, xhr.responseText)
     }
 //    val p = Promise[LoadedTextAsset]()
