@@ -32,7 +32,7 @@ object MyGame extends GameEngine[Stuff] {
   def imageAssets: Set[ImageAsset] = Set(spriteAsset1, spriteAsset2, spriteAsset3, trafficLightsAsset, fontAsset)
 
   def textAssets: Set[TextAsset] = Set(
-    TextAsset("gloop-json", "gloop.json")
+    TextAsset(trafficLightsName + "-json", trafficLightsName + ".json")
   )
 
   def initialModel: Stuff =
@@ -59,7 +59,13 @@ object MyGame extends GameEngine[Stuff] {
       if(firstRun) {
         firstRun = false
         println("Text asset loading: ")
-        println(assetCollection.texts.find(p => p.name == "gloop-json"))
+
+        val json = assetCollection.texts.find(p => p.name == trafficLightsName + "-json").map(_.contents).getOrElse("BOOM!")
+
+        println(json)
+
+        println(AsepriteHelper.fromJson(json))
+
       }
 
       tmpX = (Math.sin(angle) * 32).toInt
