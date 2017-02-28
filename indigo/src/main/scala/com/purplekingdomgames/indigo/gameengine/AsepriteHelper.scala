@@ -59,7 +59,7 @@ object AsepriteHelper {
           Option(
             Cycle(
               label = frameTag.name,
-              frame = x,
+              frame = x.copy(current = true),
               frames = xs
             )
           )
