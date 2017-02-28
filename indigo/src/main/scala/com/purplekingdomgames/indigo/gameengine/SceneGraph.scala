@@ -49,15 +49,21 @@ case class Animations(spriteSheetSize: Point, cycle: Cycle, cycles: List[Cycle] 
 
   def addCycle(cycle: Cycle) = Animations(spriteSheetSize, cycle, nonEmtpyCycles)
 
+  def nextFrame: Animations = {
+    this.copy(cycle = currentCycle.nextFrame(), cycles = nonEmtpyCycles.filterNot(_.current))
+  }
+
 }
 
-case class Cycle(label: String, frame: Frame, frames: List[Frame] = Nil, current: Boolean = false) {
+case class Cycle(label: String, playheadPosition: Int, frame: Frame, frames: List[Frame] = Nil, current: Boolean = false) {
   private val nonEmtpyFrames: List[Frame] = frame +: frames
 
   def currentFrame: Frame =
     nonEmtpyFrames.find(_.current).getOrElse(nonEmtpyFrames.head)
 
-  def addFrame(frame: Frame) = Cycle(label, frame, nonEmtpyFrames, current)
+  def addFrame(frame: Frame) = Cycle(label, playheadPosition, frame, nonEmtpyFrames, current)
+
+  def nextFrame(): Cycle = this.copy(playheadPosition = playheadPosition + 1 % nonEmtpyFrames.length)
 
 }
 
@@ -110,6 +116,8 @@ case class Sprite(bounds: Rectangle, depth: Depth, imageAssetRef: String, animat
 
   def withRef(ref: Point): Sprite =
     this.copy(ref = Option(ref))
+
+  def nextFrame: Sprite = this.copy(animations = animations.nextFrame)
 
 }
 

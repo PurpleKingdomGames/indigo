@@ -39,12 +39,13 @@ object AsepriteHelper {
   }
 
   private def extractFrames(frameTag: AsepriteFrameTag, asepriteFrames: List[AsepriteFrame]): List[Frame] = {
-    asepriteFrames.slice(frameTag.from, frameTag.to).map { aseFrame =>
+    asepriteFrames.slice(frameTag.from, frameTag.to + 1).map { aseFrame =>
       Frame(
         bounds = Rectangle(
           position = Point(aseFrame.frame.x, aseFrame.frame.y),
           size = Point(aseFrame.frame.w, aseFrame.frame.h)
-        )
+        ),
+        current = false
       )
     }
   }
@@ -59,6 +60,7 @@ object AsepriteHelper {
           Option(
             Cycle(
               label = frameTag.name,
+              playheadPosition = 0,
               frame = x.copy(current = true),
               frames = xs
             )
@@ -76,7 +78,7 @@ object AsepriteHelper {
         val animations: Animations =
           Animations(
             spriteSheetSize = Point(aseprite.meta.size.w, aseprite.meta.size.h),
-            cycle = x,
+            cycle = x.copy(current = true),
             cycles = xs
           )
         Option(

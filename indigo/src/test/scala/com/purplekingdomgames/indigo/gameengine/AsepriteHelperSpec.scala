@@ -20,6 +20,8 @@ class AsepriteHelperSpec extends FunSpec with Matchers {
 
 }
 
+
+
 object AsepriteSampleData {
 
   val depth: Depth = Depth(1)

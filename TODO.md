@@ -35,6 +35,11 @@ Renderer
 - Simple ambient lighting
 
 Game Engine
+- Frame numbers?
+- Animation controls like play, stop etc.
+- Remove all defaulted arguments.
+- Consider the process, we don't want to throw exceptions or deal with optional values we actually insist on having.
+  Validate. Fail early, fail fast.
 - Nice error message when failed to load asset
 - I think Scalajs is downloading script files on load, can they be local?
 - Revisit API

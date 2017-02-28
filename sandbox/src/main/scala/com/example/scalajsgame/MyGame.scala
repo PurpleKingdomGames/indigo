@@ -54,6 +54,7 @@ object MyGame extends GameEngine[Stuff] {
   var firstRun: Boolean = true
 
   var aseprite: Option[Aseprite] = None
+  var asepriteSprite: Option[Sprite] = None
 
   def updateModel(gameTime: GameTime, state: Stuff): GameEvent => Stuff = {
     case FrameTick =>
@@ -70,9 +71,9 @@ object MyGame extends GameEngine[Stuff] {
 
         println(aseprite)
 
-        println(
-          aseprite.flatMap(asepriteObj => AsepriteHelper.toSprite(asepriteObj, Depth(3), trafficLightsName))
-        )
+        asepriteSprite = aseprite.flatMap(asepriteObj => AsepriteHelper.toSprite(asepriteObj, Depth(3), trafficLightsName))
+
+        println(asepriteSprite)
 
       }
 
@@ -99,8 +100,14 @@ object MyGame extends GameEngine[Stuff] {
           .flipHorizontal(b.flipH)
           .flipVertical(b.flipV)
       } ++
+        {
+          if(asepriteSprite.isEmpty) Nil else {
+            asepriteSprite = asepriteSprite.map(_.nextFrame)
+//            println(asepriteSprite.get.animations.currentCycle.playheadPosition)
+            List(asepriteSprite.get)
+          }
+        } ++
         List(
-//          aseprite.flatMap(asepriteObj => AsepriteHelper.toSprite(asepriteObj, Depth(3), trafficLightsName)).get,
           Sprite(
             bounds = Rectangle(Point(0, 128), Point(64, 64)),
             depth = Depth(3),
@@ -110,6 +117,7 @@ object MyGame extends GameEngine[Stuff] {
                 Point(128, 128),
                 Cycle(
                   label = "trafficlights",
+                  playheadPosition = 0,
                   frame = Frame(
                     bounds = Rectangle(
                       Point(0, 0),
