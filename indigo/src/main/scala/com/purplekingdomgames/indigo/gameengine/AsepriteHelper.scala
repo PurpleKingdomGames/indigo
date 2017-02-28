@@ -38,6 +38,61 @@ object AsepriteHelper {
     }
   }
 
+  private def extractFrames(frameTag: AsepriteFrameTag, asepriteFrames: List[AsepriteFrame]): List[Frame] = {
+    asepriteFrames.slice(frameTag.from, frameTag.to).map { aseFrame =>
+      Frame(
+        bounds = Rectangle(
+          position = Point(aseFrame.frame.x, aseFrame.frame.y),
+          size = Point(aseFrame.frame.w, aseFrame.frame.h)
+        )
+      )
+    }
+  }
+
+  private def extractCycles(aseprite: Aseprite): List[Cycle] = {
+    aseprite.meta.frameTags.map { frameTag =>
+      extractFrames(frameTag, aseprite.frames) match {
+        case Nil =>
+          println("Failed to extract cycle with frameTag: " + frameTag)
+          None
+        case x :: xs =>
+          Option(
+            Cycle(
+              label = frameTag.name,
+              frame = x,
+              frames = xs
+            )
+          )
+      }
+    }.collect { case Some(s) => s }
+  }
+
+  def toSprite(aseprite: Aseprite, depth: Depth, imageAssetRef: String): Option[Sprite] = {
+    extractCycles(aseprite) match {
+      case Nil =>
+        println("No animation frames found in Aseprit: " + aseprite)
+        None
+      case x :: xs =>
+        val animations: Animations =
+          Animations(
+            spriteSheetSize = Point(aseprite.meta.size.w, aseprite.meta.size.h),
+            cycle = x,
+            cycles = xs
+          )
+        Option(
+          Sprite(
+            bounds = Rectangle(
+              position = Point(0, 0),
+              size = Point(x.frame.bounds.size.x, x.frame.bounds.size.y)
+            ),
+            depth = depth,
+            imageAssetRef = imageAssetRef,
+            animations = animations
+          )
+        )
+    }
+  }
+
 }
 
 /*

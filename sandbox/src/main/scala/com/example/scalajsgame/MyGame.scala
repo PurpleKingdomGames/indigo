@@ -53,6 +53,8 @@ object MyGame extends GameEngine[Stuff] {
 
   var firstRun: Boolean = true
 
+  var aseprite: Option[Aseprite] = None
+
   def updateModel(gameTime: GameTime, state: Stuff): GameEvent => Stuff = {
     case FrameTick =>
 
@@ -64,7 +66,13 @@ object MyGame extends GameEngine[Stuff] {
 
         println(json)
 
-        println(AsepriteHelper.fromJson(json))
+        aseprite = AsepriteHelper.fromJson(json)
+
+        println(aseprite)
+
+        println(
+          aseprite.flatMap(asepriteObj => AsepriteHelper.toSprite(asepriteObj, Depth(3), trafficLightsName))
+        )
 
       }
 
@@ -92,6 +100,7 @@ object MyGame extends GameEngine[Stuff] {
           .flipVertical(b.flipV)
       } ++
         List(
+//          aseprite.flatMap(asepriteObj => AsepriteHelper.toSprite(asepriteObj, Depth(3), trafficLightsName)).get,
           Sprite(
             bounds = Rectangle(Point(0, 128), Point(64, 64)),
             depth = Depth(3),
