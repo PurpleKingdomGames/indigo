@@ -25,9 +25,7 @@ trait GameEngine[GameModel] extends JSApp {
 
   def config: GameConfig
 
-  def imageAssets: Set[ImageAsset]
-
-  def textAssets: Set[TextAsset]
+  def assets: Set[AssetType]
 
   def initialModel: GameModel
 
@@ -41,7 +39,7 @@ trait GameEngine[GameModel] extends JSApp {
 
   def main(): Unit = {
 
-    AssetManager.loadAssets(imageAssets, textAssets).foreach { ac =>
+    AssetManager.loadAssets(assets).foreach { ac =>
 
       assetCollection = ac
 
@@ -55,7 +53,7 @@ trait GameEngine[GameModel] extends JSApp {
           clearColor = config.clearColor,
           magnification = config.magnification
         ),
-        assetCollection.images,
+        assetCollection.images.map(_.toTexture),
         canvas
       )
 

@@ -16,7 +16,6 @@ The layers:
 
 Immediate
 - Clear stages for asset load, validation, then start with the ability to fail with a nice error.
-- Unify Asset manager with one ADT
 
 Redesign
 - Move to Typeclass view construction

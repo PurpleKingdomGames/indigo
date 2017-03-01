@@ -12,13 +12,13 @@ object Renderer {
 
   private var renderer: Option[Renderer] = None
 
-  def apply(config: RendererConfig, loadedImageAssets: List[LoadedImageAsset], canvas: html.Canvas): Renderer = {
+  def apply(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: html.Canvas): Renderer = {
     renderer match {
       case Some(r) => r
       case None =>
         val cNc = setupContextAndCanvas(canvas, config.magnification)
 
-        val r = new Renderer(config, loadedImageAssets, cNc)
+        val r = new Renderer(config, loadedTextureAssets, cNc)
         r.init()
 
         renderer = Some(r)
@@ -73,7 +73,7 @@ object ClearColor {
 
 final case class TextureLookup(name: String, texture: WebGLTexture)
 
-final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImageAsset], cNc: ContextAndCanvas) {
+final class Renderer(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) {
 
   private val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, Rectangle2D.vertices)
   private val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, Rectangle2D.textureCoordinates)
@@ -81,7 +81,7 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
   private val shaderProgram = bucketOfShaders(cNc.context)
 
   private val textureLocations: List[TextureLookup] =
-    loadedImageAssets.map { li =>
+    loadedTextureAssets.map { li =>
       TextureLookup(li.name, organiseImage(cNc.context, li.data))
     }
 
@@ -306,6 +306,4 @@ final class Renderer(config: RendererConfig, loadedImageAssets: List[LoadedImage
 
 case class ContextAndCanvas(context: raw.WebGLRenderingContext, canvas: html.Canvas, width: Int, height: Int, aspect: Float, magnification: Int)
 
-sealed trait ImageAssetStates
-case class ImageAsset(name: String, path: String) extends ImageAssetStates
-case class LoadedImageAsset(name: String, data: html.Image) extends ImageAssetStates
+case class LoadedTextureAsset(name: String, data: html.Image)

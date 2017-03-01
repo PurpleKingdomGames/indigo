@@ -1,7 +1,7 @@
 package com.example.scalajsgame
 
 import com.purplekingdomgames.indigo.gameengine._
-import com.purplekingdomgames.indigo.renderer.{ClearColor, ImageAsset}
+import com.purplekingdomgames.indigo.renderer.ClearColor
 
 import scala.language.implicitConversions
 
@@ -29,11 +29,15 @@ object MyGame extends GameEngine[Stuff] {
   private val trafficLightsAsset = ImageAsset(trafficLightsName, "trafficlights.png")
   private val fontAsset = ImageAsset(fontName, "boxy_bold_font_5.png")
 
-  def imageAssets: Set[ImageAsset] = Set(spriteAsset1, spriteAsset2, spriteAsset3, trafficLightsAsset, fontAsset)
-
-  def textAssets: Set[TextAsset] = Set(
-    TextAsset(trafficLightsName + "-json", trafficLightsName + ".json")
-  )
+  def assets: Set[AssetType] =
+    Set(
+      spriteAsset1,
+      spriteAsset2,
+      spriteAsset3,
+      trafficLightsAsset,
+      fontAsset,
+      TextAsset(trafficLightsName + "-json", trafficLightsName + ".json")
+    )
 
   def initialModel: Stuff =
     Stuff(

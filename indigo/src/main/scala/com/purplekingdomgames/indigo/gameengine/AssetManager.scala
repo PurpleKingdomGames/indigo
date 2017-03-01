@@ -1,22 +1,38 @@
 package com.purplekingdomgames.indigo.gameengine
 
-import com.purplekingdomgames.indigo.renderer.{ImageAsset, LoadedImageAsset}
+import com.purplekingdomgames.indigo.renderer.LoadedTextureAsset
 import org.scalajs.dom
 import org.scalajs.dom.ext.Ajax
 import org.scalajs.dom.raw.HTMLImageElement
 import org.scalajs.dom.{html, _}
 
 import scala.concurrent.{Future, Promise}
-
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
 object AssetManager {
 
-  def loadAssets(imageAssets: Set[ImageAsset], textAssets: Set[TextAsset]): Future[AssetCollection] =
+  private def filterOutTextAssets(l: List[AssetType]): List[TextAsset] =
+    l.flatMap { at =>
+      at match {
+        case t: TextAsset => List(t)
+        case _ => Nil
+      }
+    }
+
+  private def filterOutImageAssets(l: List[AssetType]): List[ImageAsset] =
+    l.flatMap { at =>
+      at match {
+        case t: ImageAsset => List(t)
+        case _ => Nil
+      }
+    }
+
+  def loadAssets(assets: Set[AssetType]): Future[AssetCollection] = {
     for {
-      t <- loadTextAssets(textAssets.toList)
-      i <- loadImageAssets(imageAssets.toList)
+      t <- loadTextAssets(filterOutTextAssets(assets.toList))
+      i <- loadImageAssets(filterOutImageAssets(assets.toList))
     } yield AssetCollection(i, t)
+  }
 
   private val loadImageAssets: List[ImageAsset] => Future[List[LoadedImageAsset]] = imageAssets =>
     Future.sequence(imageAssets.map(loadImageAsset))
@@ -50,8 +66,13 @@ object AssetManager {
 
 }
 
-sealed trait TextAssetStates
-case class TextAsset(name: String, path: String) extends TextAssetStates
-case class LoadedTextAsset(name: String, contents: String) extends TextAssetStates
+sealed trait AssetType
+case class TextAsset(name: String, path: String) extends AssetType
+case class ImageAsset(name: String, path: String) extends AssetType
+
+case class LoadedTextAsset(name: String, contents: String)
+case class LoadedImageAsset(name: String, data: html.Image) {
+  def toTexture: LoadedTextureAsset = LoadedTextureAsset(name, data) // Identical, but one lives down in the renderer.
+}
 
 case class AssetCollection(images: List[LoadedImageAsset], texts: List[LoadedTextAsset])
