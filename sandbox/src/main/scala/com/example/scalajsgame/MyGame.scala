@@ -5,7 +5,7 @@ import com.purplekingdomgames.indigo.renderer.ClearColor
 
 import scala.language.implicitConversions
 
-object MyGame extends GameEngine[Stuff] {
+object MyGame extends GameEngine[MyStartupData, MyErrorReport, Stuff] {
 
   private val viewportHeight: Int = 256
   private val viewportWidth: Int = 455
@@ -17,39 +17,26 @@ object MyGame extends GameEngine[Stuff] {
     magnification = 1
   )
 
-  val spriteSheetName1: String = "blob1"
-  val spriteSheetName2: String = "blob2"
-  val spriteSheetName3: String = "f"
-  val trafficLightsName: String = "trafficlights"
-  val fontName: String = "fontName"
+  def assets: Set[AssetType] = MyAssets.assets
 
-  private val spriteAsset1 = ImageAsset(spriteSheetName1, "Sprite-0001.png")
-  private val spriteAsset2 = ImageAsset(spriteSheetName2, "Sprite-0002.png")
-  private val spriteAsset3 = ImageAsset(spriteSheetName3, "f-texture.png")
-  private val trafficLightsAsset = ImageAsset(trafficLightsName, "trafficlights.png")
-  private val fontAsset = ImageAsset(fontName, "boxy_bold_font_5.png")
-
-  def assets: Set[AssetType] =
-    Set(
-      spriteAsset1,
-      spriteAsset2,
-      spriteAsset3,
-      trafficLightsAsset,
-      fontAsset,
-      TextAsset(trafficLightsName + "-json", trafficLightsName + ".json")
-    )
-
-  def initialModel: Stuff =
+  def initialModel(startupData: MyStartupData): Stuff =
     Stuff(
       Blocks(
         List(
-          Block(0, 0, 0, 0, 0, 1, BlockTint(1, 0, 0), spriteSheetName1, false, false),
-          Block(0, 0, 1, 32, 32, 1, BlockTint(1, 1, 1), spriteSheetName2, false, false),
-          Block(0, 0, 2, 64, 64, 1, BlockTint(1, 1, 1), spriteSheetName3, false, false)
+          Block(0, 0, 0, 0, 0, 1, BlockTint(1, 0, 0), MyAssets.spriteSheetName1, false, false),
+          Block(0, 0, 1, 32, 32, 1, BlockTint(1, 1, 1), MyAssets.spriteSheetName2, false, false),
+          Block(0, 0, 2, 64, 64, 1, BlockTint(1, 1, 1), MyAssets.spriteSheetName3, false, false)
         )
       ),
       TrafficLights("red", 0, 0)
     )
+
+  def initialise(assetCollection: AssetCollection): Startup[MyErrorReport, MyStartupData] = {
+    val pass: Boolean = true
+
+    if(pass) MyStartupData("Hello")
+    else MyErrorReport(List("Boom!", "Boom!", "Shake the room!"))
+  }
 
   var tmpX: Int = 0
   var tmpY: Int = 0
@@ -67,7 +54,7 @@ object MyGame extends GameEngine[Stuff] {
         firstRun = false
         println("Text asset loading: ")
 
-        val json = assetCollection.texts.find(p => p.name == trafficLightsName + "-json").map(_.contents).getOrElse("BOOM!")
+        val json = assetCollection.texts.find(p => p.name == MyAssets.trafficLightsName + "-json").map(_.contents).getOrElse("BOOM!")
 
         println(json)
 
@@ -75,7 +62,7 @@ object MyGame extends GameEngine[Stuff] {
 
         println(aseprite)
 
-        asepriteSprite = aseprite.flatMap(asepriteObj => AsepriteHelper.toSprite(asepriteObj, Depth(3), trafficLightsName))
+        asepriteSprite = aseprite.flatMap(asepriteObj => AsepriteHelper.toSprite(asepriteObj, Depth(3), MyAssets.trafficLightsName))
 
         println(asepriteSprite)
 
@@ -115,7 +102,7 @@ object MyGame extends GameEngine[Stuff] {
           Sprite(
             bounds = Rectangle(Point(0, 128), Point(64, 64)),
             depth = Depth(3),
-            imageAssetRef = trafficLightsName,
+            imageAssetRef = MyAssets.trafficLightsName,
             animations =
               Animations(
                 Point(128, 128),
@@ -161,7 +148,7 @@ object MyGame extends GameEngine[Stuff] {
             fontInfo = FontInfo(
               charSize = Point(64, 72),
               fontSpriteSheet = FontSpriteSheet(
-                imageAssetRef = fontName,
+                imageAssetRef = MyAssets.fontName,
                 size = Point(888, 640)
               ),
               fontChar = FontChar("A", Point(8, 215)),
@@ -176,6 +163,8 @@ object MyGame extends GameEngine[Stuff] {
   }
 
 }
+
+case class MyStartupData(name: String)
 
 case class Stuff(blocks: Blocks, trafficLights: TrafficLights)
 case class TrafficLights(color: String, lastChange: Double, timeSinceChange: Double) {
@@ -198,3 +187,12 @@ case class TrafficLights(color: String, lastChange: Double, timeSinceChange: Dou
 case class Blocks(blocks: List[Block])
 case class Block(x: Int, y: Int, zIndex: Int, centerX: Int, centerY: Int, alpha: Double, tint: BlockTint, textureName: String, flipH: Boolean, flipV: Boolean)
 case class BlockTint(r: Double, g: Double, b: Double)
+
+case class MyErrorReport(errors: List[String])
+
+object MyErrorReport {
+
+  implicit val toErrorReport: ToReportable[MyErrorReport] =
+    ToReportable.createToReportable(r => r.errors.mkString("\n"))
+
+}

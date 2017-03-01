@@ -21,13 +21,15 @@ long update could have a knock on effect for later events?
  */
 //case class UpdateEvent(event: GameEvent, time: GameTime)
 
-trait GameEngine[GameModel] extends JSApp {
+trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
 
   def config: GameConfig
 
   def assets: Set[AssetType]
 
-  def initialModel: GameModel
+  def initialise(assetCollection: AssetCollection): Startup[StartupError, StartupData]
+
+  def initialModel(startupData: StartupData): GameModel
 
   def updateModel(gameTime: GameTime, state: GameModel): GameEvent => GameModel
 
@@ -43,21 +45,30 @@ trait GameEngine[GameModel] extends JSApp {
 
       assetCollection = ac
 
-      val canvas = Renderer.createCanvas(config.viewport.width, config.viewport.height)
+      initialise(assetCollection) match {
+        case e: StartupFailure[_] =>
+          println("Start up failed")
+          println(e.report)
 
-      WorldEvents(canvas)
+        case x: StartupSuccess[StartupData] =>
+          val loopFunc = loop(x.success) _
 
-      val renderer: Renderer = Renderer(
-        RendererConfig(
-          viewport = Viewport(config.viewport.width, config.viewport.height),
-          clearColor = config.clearColor,
-          magnification = config.magnification
-        ),
-        assetCollection.images.map(_.toTexture),
-        canvas
-      )
+          val canvas = Renderer.createCanvas(config.viewport.width, config.viewport.height)
 
-      dom.window.requestAnimationFrame(loop(renderer, 0))
+          WorldEvents(canvas)
+
+          val renderer: Renderer = Renderer(
+            RendererConfig(
+              viewport = Viewport(config.viewport.width, config.viewport.height),
+              clearColor = config.clearColor,
+              magnification = config.magnification
+            ),
+            assetCollection.images.map(_.toTexture),
+            canvas
+          )
+
+          dom.window.requestAnimationFrame(loopFunc(renderer, 0))
+      }
     }
 
   }
@@ -72,13 +83,13 @@ trait GameEngine[GameModel] extends JSApp {
     }
   }
 
-  private def loop(renderer: Renderer, lastUpdateTime: Double)(time: Double): Unit = {
+  private def loop(startupData: StartupData)(renderer: Renderer, lastUpdateTime: Double)(time: Double): Unit = {
     val timeDelta = time - lastUpdateTime
 
     if(timeDelta > config.frameRateDeltaMillis) {
       val model = state match {
         case None =>
-          initialModel
+          initialModel(startupData)
 
         case Some(previousState) =>
           processUpdateEvents(previousState, GameTime(time, timeDelta), GlobalEventStream.collect)
@@ -88,9 +99,9 @@ trait GameEngine[GameModel] extends JSApp {
 
       drawScene(renderer, model, updateView)
 
-      dom.window.requestAnimationFrame(loop(renderer, time))
+      dom.window.requestAnimationFrame(loop(startupData)(renderer, time))
     } else {
-      dom.window.requestAnimationFrame(loop(renderer, lastUpdateTime))
+      dom.window.requestAnimationFrame(loop(startupData)(renderer, lastUpdateTime))
     }
   }
 
@@ -197,4 +208,24 @@ case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearC
 
 case class GameViewport(width: Int, height: Int)
 
+sealed trait Startup[+Error, +Success]
+case class StartupFailure[Error](error: Error)(implicit toReportable: ToReportable[Error]) extends Startup[Error, Nothing] {
+  def report: String = toReportable.report(error)
+}
+case class StartupSuccess[Success](success: Success) extends Startup[Nothing, Success]
 
+object Startup {
+  implicit def toSuccess[T](v: T): StartupSuccess[T] = StartupSuccess(v)
+  implicit def toFailure[T](v: T)(implicit toReportable: ToReportable[T]): StartupFailure[T] = StartupFailure(v)
+}
+
+trait ToReportable[T] {
+  def report(t: T): String
+}
+
+object ToReportable {
+  def createToReportable[T](f: T => String): ToReportable[T] =
+    new ToReportable[T] {
+      def report(t: T): String = f(t)
+    }
+}

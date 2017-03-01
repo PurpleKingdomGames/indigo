@@ -14,9 +14,6 @@ The layers:
 
 ## TODO
 
-Immediate
-- Clear stages for asset load, validation, then start with the ability to fail with a nice error.
-
 Redesign
 - Move to Typeclass view construction
 - View function becomes some sort up view update maybe?
