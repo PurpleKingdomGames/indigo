@@ -22,7 +22,7 @@ sealed trait SceneGraphNodeLeaf extends SceneGraphNode {
   val depth: Depth
   val imageAssetRef: String
   val effects: Effects
-  val ref: Option[Point]
+  val ref: Point
   val crop: Option[Rectangle]
 
   def withAlpha(a: Double): SceneGraphNodeLeaf
@@ -37,7 +37,7 @@ case class Rectangle(position: Point, size: Point)
 case class Depth(zIndex: Int)
 
 // Frames
-case class Animations(spriteSheetSize: Point, cycle: Cycle, cycles: List[Cycle] = Nil) {
+case class Animations(spriteSheetSize: Point, cycle: Cycle, cycles: List[Cycle]) {
   private val nonEmtpyCycles: List[Cycle] = cycle +: cycles
 
   def currentCycle: Cycle =
@@ -55,7 +55,7 @@ case class Animations(spriteSheetSize: Point, cycle: Cycle, cycles: List[Cycle] 
 
 }
 
-case class Cycle(label: String, playheadPosition: Int, frame: Frame, frames: List[Frame] = Nil, current: Boolean = false) {
+case class Cycle(label: String, playheadPosition: Int, frame: Frame, frames: List[Frame], current: Boolean) {
   private val nonEmtpyFrames: List[Frame] = frame +: frames
 
   def currentFrame: Frame =
@@ -67,13 +67,13 @@ case class Cycle(label: String, playheadPosition: Int, frame: Frame, frames: Lis
 
 }
 
-case class Frame(bounds: Rectangle, current: Boolean = false)
+case class Frame(bounds: Rectangle, current: Boolean)
 
 // Concrete leaf types
-case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Option[Point] = None, crop: Option[Rectangle] = None, effects: Effects = Effects.default) extends SceneGraphNodeLeaf {
+case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Option[Rectangle], effects: Effects) extends SceneGraphNodeLeaf {
 
-  val x: Int = bounds.position.x - ref.map(_.x).getOrElse(0)
-  val y: Int = bounds.position.y - ref.map(_.y).getOrElse(0)
+  val x: Int = bounds.position.x - ref.x
+  val y: Int = bounds.position.y - ref.y
 
   def withAlpha(a: Double): Graphic =
     this.copy(effects = effects.copy(alpha = a))
@@ -88,19 +88,19 @@ case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: 
     this.copy(effects = effects.copy(flip = Flip(horizontal = effects.flip.horizontal, vertical = v)))
 
   def withRef(ref: Point): Graphic =
-    this.copy(ref = Option(ref))
+    this.copy(ref = ref)
 
   def withCrop(crop: Rectangle): Graphic =
     this.copy(crop = Option(crop))
 
 }
 
-case class Sprite(bounds: Rectangle, depth: Depth, imageAssetRef: String, animations: Animations, ref: Option[Point] = None, effects: Effects = Effects.default) extends SceneGraphNodeLeaf {
+case class Sprite(bounds: Rectangle, depth: Depth, imageAssetRef: String, animations: Animations, ref: Point, effects: Effects) extends SceneGraphNodeLeaf {
 
   val crop: Option[Rectangle] = None
 
-  val x: Int = bounds.position.x - ref.map(_.x).getOrElse(0)
-  val y: Int = bounds.position.y - ref.map(_.y).getOrElse(0)
+  val x: Int = bounds.position.x - ref.x
+  val y: Int = bounds.position.y - ref.y
 
   def withAlpha(a: Double): Sprite =
     this.copy(effects = effects.copy(alpha = a))
@@ -115,13 +115,13 @@ case class Sprite(bounds: Rectangle, depth: Depth, imageAssetRef: String, animat
     this.copy(effects = effects.copy(flip = Flip(horizontal = effects.flip.horizontal, vertical = v)))
 
   def withRef(ref: Point): Sprite =
-    this.copy(ref = Option(ref))
+    this.copy(ref = ref)
 
   def nextFrame: Sprite = this.copy(animations = animations.nextFrame)
 
 }
 
-case class FontInfo(charSize: Point, fontSpriteSheet: FontSpriteSheet, fontChar: FontChar, fontChars: List[FontChar] = Nil) {
+case class FontInfo(charSize: Point, fontSpriteSheet: FontSpriteSheet, fontChar: FontChar, fontChars: List[FontChar]) {
   private val nonEmtpyChars: List[FontChar] = fontChar +: fontChars
 
   def addChar(fontChar: FontChar) = FontInfo(charSize, fontSpriteSheet, fontChar, nonEmtpyChars)
@@ -136,10 +136,10 @@ case object AlignLeft extends TextAlignment
 case object AlignCenter extends TextAlignment
 case object AlignRight extends TextAlignment
 
-case class Text(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontInfo: FontInfo, effects: Effects = Effects.default) extends SceneGraphNodeLeaf {
+case class Text(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontInfo: FontInfo, effects: Effects) extends SceneGraphNodeLeaf {
 
   // Handled a different way
-  val ref: Option[Point] = None
+  val ref: Point = Point(0, 0)
   val crop: Option[Rectangle] = None
 
   val bounds: Rectangle = Rectangle(position, Point(text.length * fontInfo.charSize.x, fontInfo.charSize.y))

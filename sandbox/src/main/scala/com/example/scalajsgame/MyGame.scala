@@ -94,7 +94,7 @@ object MyGame extends GameEngine[Stuff] {
   def updateView(currentState: Stuff): SceneGraphNode = {
     SceneGraphNodeBranch(
       currentState.blocks.blocks.map { b =>
-        Graphic(Rectangle(Point(b.x, b.y), Point(64, 64)), Depth(b.zIndex), b.textureName)
+        Graphic(Rectangle(Point(b.x, b.y), Point(64, 64)), Depth(b.zIndex), b.textureName, ref = Point(0, 0), crop = None, effects = Effects.default)
           .withAlpha(b.alpha)
           .withTint(b.tint.r, b.tint.g, b.tint.b)
           .flipHorizontal(b.flipH)
@@ -124,7 +124,9 @@ object MyGame extends GameEngine[Stuff] {
                       Point(64, 64)
                     ),
                     current = currentState.trafficLights.isRed
-                  )
+                  ),
+                  frames = Nil,
+                  current = true
                 ).addFrame(
                   frame = Frame(
                     bounds = Rectangle(
@@ -141,8 +143,11 @@ object MyGame extends GameEngine[Stuff] {
                     ),
                     current = currentState.trafficLights.isGreen
                   )
-                )
-              )
+                ),
+                cycles = Nil
+              ),
+            ref = Point(0, 0),
+            effects = Effects.default
           ),
           Text(
             text = "CBA",
@@ -155,10 +160,12 @@ object MyGame extends GameEngine[Stuff] {
                 imageAssetRef = fontName,
                 size = Point(888, 640)
               ),
-              fontChar = FontChar("A", Point(8, 215))
+              fontChar = FontChar("A", Point(8, 215)),
+              fontChars = Nil
             )
               .addChar(FontChar("B", Point(8 + 64, 215)))
-              .addChar(FontChar("C", Point(8 + 64 + 64, 215)))
+              .addChar(FontChar("C", Point(8 + 64 + 64, 215))),
+            effects = Effects.default
           )
         )
     )

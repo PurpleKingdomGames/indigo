@@ -62,7 +62,8 @@ object AsepriteHelper {
               label = frameTag.name,
               playheadPosition = 0,
               frame = x.copy(current = true),
-              frames = xs
+              frames = xs,
+              current = false
             )
           )
       }
@@ -89,7 +90,9 @@ object AsepriteHelper {
             ),
             depth = depth,
             imageAssetRef = imageAssetRef,
-            animations = animations
+            animations = animations,
+            ref = Point(0, 0),
+            effects = Effects.default
           )
         )
     }
