@@ -14,10 +14,17 @@ The layers:
 
 ## TODO
 
-UX sore points:
+Immediate
+- Remove default values
 - Rectangle construction, needs simpler apply method
 - ClearColour with Alpha 0 is almost always not what you want...
--
+- Clear stages for asset load, validation, then start with the ability to fail with a nice error.
+
+Redesign
+- Move to Typeclass view construction
+- View function becomes some sort up view update maybe?
+- A way to bind models that can be turned into renderables to view objects so that their state can be persisted
+- Persist view state
 
 Bugs:
 
