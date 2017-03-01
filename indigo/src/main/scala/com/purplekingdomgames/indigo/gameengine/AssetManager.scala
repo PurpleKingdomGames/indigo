@@ -46,21 +46,6 @@ object AssetManager {
     Ajax.get(textAsset.path, responseType = "text").map { xhr =>
       LoadedTextAsset(textAsset.name, xhr.responseText)
     }
-//    val p = Promise[LoadedTextAsset]()
-//
-//    val xhr = new XMLHttpRequest()
-//    xhr.open("GET", s"${textAsset.path}")
-//    xhr.onreadystatechange = (_: Event) => {
-//      if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
-////        xhr.responseType = "text"
-////        println("body: " + xhr.responseText)
-//
-//        p.success(LoadedTextAsset(textAsset.name, xhr.responseText))
-//      }
-//    }
-//    xhr.send()
-//
-//    p.future
   }
 
 }
