@@ -15,7 +15,6 @@ The layers:
 ## TODO
 
 Immediate
-- ClearColour with Alpha 0 is almost always not what you want...
 - Clear stages for asset load, validation, then start with the ability to fail with a nice error.
 - Unify Asset manager with one ADT
 
