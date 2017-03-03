@@ -22,6 +22,8 @@ Persistent timeline animation states
  - Actions are then applied
  - Sprites that no longer exist in the view but who's id's memento's are still be stored are GC'd.
 
+- Might be nice to split user facing scene graph classes from internal versions that contain engine specific methods
+
 Bugs:
 
 Renderer
@@ -38,11 +40,7 @@ Renderer
 - Simple ambient lighting
 
 Game Engine
-- Frame numbers?
 - Animation controls like play, stop etc.
-- Remove all defaulted arguments.
-- Consider the process, we don't want to throw exceptions or deal with optional values we actually insist on having.
-  Validate. Fail early, fail fast.
 - Nice error message when failed to load asset
 - I think Scalajs is downloading script files on load, can they be local?
 - Revisit API

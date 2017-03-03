@@ -98,7 +98,7 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
       }
 
       state = Some(model)
-      
+
       val viewUpdateFunc: GameModel => SceneGraphNode =
         updateView _ andThen applyAnimationStates andThen processAnimationCommands andThen persistAnimationStates
 
