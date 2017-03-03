@@ -9,11 +9,12 @@ The API provided is about issuing commands to control playback.
 // Frames
 case class Animations(spriteSheetSize: Point, cycle: Cycle, cycles: Map[CycleLabel, Cycle]) {
 
+  private val currentCycleLabel = cycle.label // TODO: Ok is default but needs to come from somewhere if changed.
+
   private val nonEmtpyCycles: Map[CycleLabel, Cycle] = cycles ++ Map(cycle.label -> cycle)
 
   private def currentCycle: Cycle =
-    nonEmtpyCycles.getOrElse()
-//    nonEmtpyCycles.find(_.current).getOrElse(nonEmtpyCycles.head)
+    nonEmtpyCycles.getOrElse(currentCycleLabel, nonEmtpyCycles.head._2)
 
   def currentCycleName: String = currentCycle.label.label
 
@@ -21,26 +22,28 @@ case class Animations(spriteSheetSize: Point, cycle: Cycle, cycles: Map[CycleLab
 
   def addCycle(cycle: Cycle) = Animations(spriteSheetSize, cycle, nonEmtpyCycles)
 
-//  def nextFrame: Animations = {
-//    this.copy(cycle = currentCycle.nextFrame(), cycles = nonEmtpyCycles.filterNot(_.current))
-//  }
+}
 
+object Animations {
+  def apply(spriteSheetSize: Point, cycle: Cycle): Animations = Animations(spriteSheetSize, cycle, Map.empty[CycleLabel, Cycle])
 }
 
 case class CycleLabel(label: String)
 
-case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame], current: Boolean) {
+case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame]) {
   private val nonEmtpyFrames: List[Frame] = frame +: frames
-  private val playheadPosition: Int = 0
+  private val playheadPosition: Int = 0 // TODO: Ok is default but needs to come from somewhere if changed.
   private val frameCount: Int = nonEmtpyFrames.length
 
   def currentFrame: Frame =
     nonEmtpyFrames(playheadPosition % frameCount)
 
-  def addFrame(frame: Frame) = Cycle(label, frame, nonEmtpyFrames, current)
-
-//  def nextFrame(): Cycle = this.copy(playheadPosition = playheadPosition + 1 % nonEmtpyFrames.length)
+  def addFrame(frame: Frame) = Cycle(label, frame, nonEmtpyFrames)
 
 }
 
-case class Frame(bounds: Rectangle, current: Boolean)
+object Cycle {
+  def apply(label: String, frame: Frame): Cycle = Cycle(CycleLabel(label), frame, Nil)
+}
+
+case class Frame(bounds: Rectangle)

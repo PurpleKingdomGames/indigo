@@ -31,34 +31,27 @@ object MyView {
                 Point(128, 128),
                 Cycle(
                   label = "trafficlights",
-                  playheadPosition = 0,
                   frame = Frame(
                     bounds = Rectangle(
                       Point(0, 0),
                       Point(64, 64)
-                    ),
-                    current = currentState.trafficLights.isRed
-                  ),
-                  frames = Nil,
-                  current = true
+                    )
+                  )
                 ).addFrame(
                   frame = Frame(
                     bounds = Rectangle(
                       Point(64, 0),
                       Point(64, 64)
-                    ),
-                    current = currentState.trafficLights.isAmber
+                    )
                   )
                 ).addFrame(
                   frame = Frame(
                     bounds = Rectangle(
                       Point(0, 64),
                       Point(64, 64)
-                    ),
-                    current = currentState.trafficLights.isGreen
+                    )
                   )
-                ),
-                cycles = Nil
+                )
               ),
             ref = Point(0, 0),
             effects = Effects.default

@@ -44,8 +44,7 @@ object AsepriteHelper {
         bounds = Rectangle(
           position = Point(aseFrame.frame.x, aseFrame.frame.y),
           size = Point(aseFrame.frame.w, aseFrame.frame.h)
-        ),
-        current = false
+        )
       )
     }
   }
@@ -59,11 +58,9 @@ object AsepriteHelper {
         case x :: xs =>
           Option(
             Cycle(
-              label = frameTag.name,
-              playheadPosition = 0,
-              frame = x.copy(current = true),
-              frames = xs,
-              current = false
+              label = CycleLabel(frameTag.name),
+              frame = x,
+              frames = xs
             )
           )
       }
@@ -79,8 +76,8 @@ object AsepriteHelper {
         val animations: Animations =
           Animations(
             spriteSheetSize = Point(aseprite.meta.size.w, aseprite.meta.size.h),
-            cycle = x.copy(current = true),
-            cycles = xs
+            cycle = x,
+            cycles = xs.foldLeft(Map.empty[CycleLabel, Cycle])((a, b) => a ++ Map(b.label -> b))
           )
         Option(
           Sprite(
