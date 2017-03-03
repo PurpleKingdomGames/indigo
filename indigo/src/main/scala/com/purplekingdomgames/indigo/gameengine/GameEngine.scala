@@ -37,6 +37,8 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
 
   private var state: Option[GameModel] = None
 
+  private var animationStates: AnimationStates = AnimationStates(Nil)
+
   protected var assetCollection: AssetCollection = AssetCollection(Nil, Nil)
 
   def main(): Unit = {
@@ -96,9 +98,9 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
       }
 
       state = Some(model)
-
-      // TODO: val viewUpdateFunc = updateView andThen applyAnimationStates andThen processAnimationCommands andThen persistAnimationStates
-      val viewUpdateFunc: GameModel => SceneGraphNode = updateView
+      
+      val viewUpdateFunc: GameModel => SceneGraphNode =
+        updateView _ andThen applyAnimationStates andThen processAnimationCommands andThen persistAnimationStates
 
       drawScene(renderer, model, viewUpdateFunc)
 
@@ -106,6 +108,16 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
     } else {
       dom.window.requestAnimationFrame(loop(startupData)(renderer, lastUpdateTime))
     }
+  }
+
+  private val applyAnimationStates: SceneGraphNode => SceneGraphNode = sceneGraph =>
+    sceneGraph.applyAnimationMemento(animationStates)
+
+  private val processAnimationCommands: SceneGraphNode => SceneGraphNode = sceneGraph => sceneGraph
+
+  private val persistAnimationStates: SceneGraphNode => SceneGraphNode = sceneGraph => {
+    animationStates = AnimationState.extractAnimationStates(sceneGraph)
+    sceneGraph
   }
 
   private implicit def displayObjectToList(displayObject: DisplayObject): List[DisplayObject] = List(displayObject)
