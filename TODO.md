@@ -15,12 +15,13 @@ The layers:
 ## TODO
 
 Persistent timeline animation states
- - I've added a bindingKey requirement to sprites
- - After the view function has completed, the animations will be in a new state e.g. cycle 2 will now be playing (or still playing)
- - If the sprites bindingKey has been seen and saved before, then the sprite's memento is applied moving all the animation pieces into the right state
- - Will need to rethink animation object construction. Api must not allow direct access, you need to queue up actions to do after rehydration.
- - Actions are then applied
- - Sprites that no longer exist in the view but who's id's memento's are still be stored are GC'd.
+ -- I've added a bindingKey requirement to sprites
+ -- After the view function has completed, the animations will be in a new state e.g. cycle 2 will now be playing (or still playing)
+ -- If the sprites bindingKey has been seen and saved before, then the sprite's memento is applied moving all the animation pieces into the right state
+ -- Will need to rethink animation object construction. Api must not allow direct access,
+ - You need to queue up actions to do after rehydration.
+ -- Actions are then applied
+ -- Sprites that no longer exist in the view but who's id's memento's are still be stored are GC'd.
 
 - Might be nice to split user facing scene graph classes from internal versions that contain engine specific methods
 
