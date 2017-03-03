@@ -97,7 +97,10 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
 
       state = Some(model)
 
-      drawScene(renderer, model, updateView)
+      // TODO: val viewUpdateFunc = updateView andThen applyAnimationStates andThen processAnimationCommands andThen persistAnimationStates
+      val viewUpdateFunc: GameModel => SceneGraphNode = updateView
+
+      drawScene(renderer, model, viewUpdateFunc)
 
       dom.window.requestAnimationFrame(loop(startupData)(renderer, time))
     } else {

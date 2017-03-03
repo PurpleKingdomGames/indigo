@@ -1,5 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
+import com.purplekingdomgames.indigo.gameengine.AnimationStates
+
 import scala.language.implicitConversions
 import scala.util.Random
 
@@ -16,10 +18,15 @@ sealed trait SceneGraphNode {
     }
   }
 
+  def applyAnimationMemento(animationStates: AnimationStates): SceneGraphNode
+
 }
 
 // Types of SceneGraphNode
-case class SceneGraphNodeBranch(children: List[SceneGraphNode]) extends SceneGraphNode
+case class SceneGraphNodeBranch(children: List[SceneGraphNode]) extends SceneGraphNode {
+  def applyAnimationMemento(animationStates: AnimationStates): SceneGraphNode =
+    this.copy(children.map(_.applyAnimationMemento(animationStates)))
+}
 sealed trait SceneGraphNodeLeaf extends SceneGraphNode {
   val bounds: Rectangle
   val depth: Depth
@@ -58,6 +65,7 @@ case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: 
   def withCrop(crop: Rectangle): Graphic =
     this.copy(crop = Option(crop))
 
+  def applyAnimationMemento(animationStates: AnimationStates): SceneGraphNode = this
 }
 
 case class BindingKey(value: String)
@@ -94,6 +102,14 @@ case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, image
   def withRef(ref: Point): Sprite =
     this.copy(ref = ref)
 
+  def saveAnimationMemento: AnimationMemento = animations.saveMemento(bindingKey)
+
+  def applyAnimationMemento(animationStates: AnimationStates): SceneGraphNode =
+    animationStates.withBindingKey(bindingKey) match {
+      case Some(memento) => this.copy(animations = animations.applyMemento(memento))
+      case None => this
+    }
+  
 //  def nextFrame: Sprite = this.copy(animations = animations.nextFrame)
 
 }
@@ -134,6 +150,7 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
   def flipVertical(v: Boolean): Text =
     this.copy(effects = effects.copy(flip = Flip(horizontal = effects.flip.horizontal, vertical = v)))
 
+  def applyAnimationMemento(animationStates: AnimationStates): SceneGraphNode = this
 }
 
 // Graphical effects
