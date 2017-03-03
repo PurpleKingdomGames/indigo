@@ -1,4 +1,4 @@
-package com.purplekingdomgames.indigo.gameengine
+package com.purplekingdomgames.indigo.gameengine.scenegraph
 
 import scala.language.implicitConversions
 import scala.util.Random
@@ -33,58 +33,6 @@ sealed trait SceneGraphNodeLeaf extends SceneGraphNode {
   def flipHorizontal(h: Boolean): SceneGraphNodeLeaf
   def flipVertical(v: Boolean): SceneGraphNodeLeaf
 }
-
-// Data types
-case class Point(x: Int, y: Int)
-case class Rectangle(position: Point, size: Point)
-case class Depth(zIndex: Int)
-
-object Point {
-  val zero: Point = Point(0, 0)
-  implicit def tuple2ToPoint(t: (Int, Int)): Point = Point(t._1, t._2)
-}
-
-object Depth {
-  implicit def intToDepth(i: Int): Depth = Depth(i)
-}
-
-object Rectangle {
-  def apply(x: Int, y: Int, width: Int, height: Int): Rectangle = Rectangle(Point(x, y), Point(width, height))
-  implicit def tuple4ToRectangle(t: (Int, Int, Int, Int)): Rectangle = Rectangle(t._1, t._2, t._3, t._4)
-}
-
-// Frames
-case class Animations(spriteSheetSize: Point, cycle: Cycle, cycles: List[Cycle]) {
-  private val nonEmtpyCycles: List[Cycle] = cycle +: cycles
-
-  def currentCycle: Cycle =
-    nonEmtpyCycles.find(_.current).getOrElse(nonEmtpyCycles.head)
-
-  def currentCycleName: String = currentCycle.label
-
-  def currentFrame: Frame = currentCycle.currentFrame
-
-  def addCycle(cycle: Cycle) = Animations(spriteSheetSize, cycle, nonEmtpyCycles)
-
-  def nextFrame: Animations = {
-    this.copy(cycle = currentCycle.nextFrame(), cycles = nonEmtpyCycles.filterNot(_.current))
-  }
-
-}
-
-case class Cycle(label: String, playheadPosition: Int, frame: Frame, frames: List[Frame], current: Boolean) {
-  private val nonEmtpyFrames: List[Frame] = frame +: frames
-
-  def currentFrame: Frame =
-    nonEmtpyFrames.find(_.current).getOrElse(nonEmtpyFrames.head)
-
-  def addFrame(frame: Frame) = Cycle(label, playheadPosition, frame, nonEmtpyFrames, current)
-
-  def nextFrame(): Cycle = this.copy(playheadPosition = playheadPosition + 1 % nonEmtpyFrames.length)
-
-}
-
-case class Frame(bounds: Rectangle, current: Boolean)
 
 // Concrete leaf types
 case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Option[Rectangle], effects: Effects) extends SceneGraphNodeLeaf {

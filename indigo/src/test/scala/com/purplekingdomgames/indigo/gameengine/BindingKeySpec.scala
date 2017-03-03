@@ -1,5 +1,6 @@
 package com.purplekingdomgames.indigo.gameengine
 
+import com.purplekingdomgames.indigo.gameengine.scenegraph.BindingKey
 import org.scalatest.{FunSpec, Matchers}
 
 class BindingKeySpec extends FunSpec with Matchers {

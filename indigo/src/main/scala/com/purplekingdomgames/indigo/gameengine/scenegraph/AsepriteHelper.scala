@@ -1,4 +1,4 @@
-package com.purplekingdomgames.indigo.gameengine
+package com.purplekingdomgames.indigo.gameengine.scenegraph
 
 import upickle.default._
 

@@ -1,11 +1,11 @@
 package com.purplekingdomgames.indigo.gameengine
 
+import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import org.scalajs.dom
 import com.purplekingdomgames.indigo.renderer._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.JSApp
-
 import scala.language.implicitConversions
 
 case class GameTime(running: Double, delta: Double)

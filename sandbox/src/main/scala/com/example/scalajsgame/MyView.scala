@@ -1,6 +1,7 @@
 package com.example.scalajsgame
 
 import com.purplekingdomgames.indigo.gameengine._
+import com.purplekingdomgames.indigo.gameengine.scenegraph._
 
 object MyView {
 
