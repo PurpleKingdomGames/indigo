@@ -13,6 +13,7 @@ class AsepriteHelperSpec extends FunSpec with Matchers {
     it("should be able to convert the loaded definition into a renderable Sprite object") {
       AsepriteSampleData.aseprite.flatMap { as =>
         AsepriteHelper.toSprite(as, AsepriteSampleData.depth, AsepriteSampleData.imageAssetRef)
+          .map(_.withBindingKey("test"))
       } shouldEqual AsepriteSampleData.sprite
     }
 
@@ -124,8 +125,8 @@ object AsepriteSampleData {
   }
 
   val sprite: Option[Sprite] = Option {
-
     Sprite(
+      bindingKey = BindingKey("test"),
       bounds = Rectangle(Point(0, 0), Point(64, 64)),
       depth = depth,
       imageAssetRef = imageAssetRef,
@@ -133,6 +134,7 @@ object AsepriteSampleData {
         spriteSheetSize = Point(128, 128),
         cycle = Cycle(
           label = "lights",
+          playheadPosition = 0,
           frame = Frame(
             bounds = Rectangle(Point(0, 0), Point(64, 64)),
             current = true
@@ -146,11 +148,12 @@ object AsepriteSampleData {
               bounds = Rectangle(Point(0, 64), Point(64, 64)),
               current = false
             )
-          )
+          ),
+          current = true
         ),
         cycles = Nil
       ),
-      ref = None,
+      ref = Point.zero,
       effects = Effects.default
     )
 

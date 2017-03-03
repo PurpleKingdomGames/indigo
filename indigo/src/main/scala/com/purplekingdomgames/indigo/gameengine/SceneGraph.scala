@@ -1,6 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine
 
 import scala.language.implicitConversions
+import scala.util.Random
 
 object SceneGraphNode {
   def empty: SceneGraphNode = SceneGraphNodeBranch(Nil)
@@ -39,7 +40,7 @@ case class Rectangle(position: Point, size: Point)
 case class Depth(zIndex: Int)
 
 object Point {
-  val identity: Point = Point(0, 0)
+  val zero: Point = Point(0, 0)
   implicit def tuple2ToPoint(t: (Int, Int)): Point = Point(t._1, t._2)
 }
 
@@ -111,12 +112,24 @@ case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: 
 
 }
 
-case class Sprite(bounds: Rectangle, depth: Depth, imageAssetRef: String, animations: Animations, ref: Point, effects: Effects) extends SceneGraphNodeLeaf {
+case class BindingKey(value: String)
+object BindingKey {
+  private val random: Random = new Random
+
+  def generate: BindingKey = BindingKey(random.alphanumeric.take(16).mkString)
+}
+
+case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, imageAssetRef: String, animations: Animations, ref: Point, effects: Effects) extends SceneGraphNodeLeaf {
 
   val crop: Option[Rectangle] = None
 
   val x: Int = bounds.position.x - ref.x
   val y: Int = bounds.position.y - ref.y
+
+  def withBindingKey(keyValue: String): Sprite =
+    this.copy(bindingKey = BindingKey(keyValue))
+  def withBindingKey(bindingKey: BindingKey): Sprite =
+    this.copy(bindingKey = bindingKey)
 
   def withAlpha(a: Double): Sprite =
     this.copy(effects = effects.copy(alpha = a))

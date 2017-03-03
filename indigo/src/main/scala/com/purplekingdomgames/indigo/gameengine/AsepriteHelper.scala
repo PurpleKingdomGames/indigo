@@ -84,6 +84,7 @@ object AsepriteHelper {
           )
         Option(
           Sprite(
+            bindingKey = BindingKey.generate,
             bounds = Rectangle(
               position = Point(0, 0),
               size = Point(x.frame.bounds.size.x, x.frame.bounds.size.y)

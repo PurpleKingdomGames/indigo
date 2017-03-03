@@ -100,6 +100,7 @@ object MyGame extends GameEngine[MyStartupData, MyErrorReport, Stuff] {
         } ++
         List(
           Sprite(
+            bindingKey = BindingKey.generate,
             bounds = Rectangle(Point(0, 128), Point(64, 64)),
             depth = Depth(3),
             imageAssetRef = MyAssets.trafficLightsName,
