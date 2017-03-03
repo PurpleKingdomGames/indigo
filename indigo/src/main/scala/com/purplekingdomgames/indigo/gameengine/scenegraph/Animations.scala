@@ -1,13 +1,21 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
+/*
+Animations are really timeline animations:
+Construction is about adding animation cycles with frames
+The API provided is about issuing commands to control playback.
+ */
+
 // Frames
-case class Animations(spriteSheetSize: Point, cycle: Cycle, cycles: List[Cycle]) {
-  private val nonEmtpyCycles: List[Cycle] = cycle +: cycles
+case class Animations(spriteSheetSize: Point, cycle: Cycle, cycles: Map[CycleLabel, Cycle]) {
 
-  def currentCycle: Cycle =
-    nonEmtpyCycles.find(_.current).getOrElse(nonEmtpyCycles.head)
+  private val nonEmtpyCycles: Map[CycleLabel, Cycle] = cycles ++ Map(cycle.label -> cycle)
 
-  def currentCycleName: String = currentCycle.label
+  private def currentCycle: Cycle =
+    nonEmtpyCycles.getOrElse()
+//    nonEmtpyCycles.find(_.current).getOrElse(nonEmtpyCycles.head)
+
+  def currentCycleName: String = currentCycle.label.label
 
   def currentFrame: Frame = currentCycle.currentFrame
 
@@ -19,13 +27,17 @@ case class Animations(spriteSheetSize: Point, cycle: Cycle, cycles: List[Cycle])
 
 }
 
-case class Cycle(label: String, playheadPosition: Int, frame: Frame, frames: List[Frame], current: Boolean) {
+case class CycleLabel(label: String)
+
+case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame], current: Boolean) {
   private val nonEmtpyFrames: List[Frame] = frame +: frames
+  private val playheadPosition: Int = 0
+  private val frameCount: Int = nonEmtpyFrames.length
 
   def currentFrame: Frame =
-    nonEmtpyFrames.find(_.current).getOrElse(nonEmtpyFrames.head)
+    nonEmtpyFrames(playheadPosition % frameCount)
 
-  def addFrame(frame: Frame) = Cycle(label, playheadPosition, frame, nonEmtpyFrames, current)
+  def addFrame(frame: Frame) = Cycle(label, frame, nonEmtpyFrames, current)
 
 //  def nextFrame(): Cycle = this.copy(playheadPosition = playheadPosition + 1 % nonEmtpyFrames.length)
 
