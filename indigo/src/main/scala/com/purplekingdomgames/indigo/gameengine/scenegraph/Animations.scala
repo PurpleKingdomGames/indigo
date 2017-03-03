@@ -13,9 +13,9 @@ case class Animations(spriteSheetSize: Point, cycle: Cycle, cycles: List[Cycle])
 
   def addCycle(cycle: Cycle) = Animations(spriteSheetSize, cycle, nonEmtpyCycles)
 
-  def nextFrame: Animations = {
-    this.copy(cycle = currentCycle.nextFrame(), cycles = nonEmtpyCycles.filterNot(_.current))
-  }
+//  def nextFrame: Animations = {
+//    this.copy(cycle = currentCycle.nextFrame(), cycles = nonEmtpyCycles.filterNot(_.current))
+//  }
 
 }
 
@@ -27,7 +27,7 @@ case class Cycle(label: String, playheadPosition: Int, frame: Frame, frames: Lis
 
   def addFrame(frame: Frame) = Cycle(label, playheadPosition, frame, nonEmtpyFrames, current)
 
-  def nextFrame(): Cycle = this.copy(playheadPosition = playheadPosition + 1 % nonEmtpyFrames.length)
+//  def nextFrame(): Cycle = this.copy(playheadPosition = playheadPosition + 1 % nonEmtpyFrames.length)
 
 }
 

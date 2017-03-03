@@ -1,6 +1,5 @@
 package com.example.scalajsgame
 
-import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 
 object MyView {
@@ -16,7 +15,7 @@ object MyView {
       } ++
         {
           if(MyModel.asepriteSprite.isEmpty) Nil else {
-            MyModel.asepriteSprite = MyModel.asepriteSprite.map(_.nextFrame)
+//            MyModel.asepriteSprite = MyModel.asepriteSprite.map(_.nextFrame)
             //            println(MyModel.asepriteSprite.get.animations.currentCycle.playheadPosition)
             List(MyModel.asepriteSprite.get)
           }

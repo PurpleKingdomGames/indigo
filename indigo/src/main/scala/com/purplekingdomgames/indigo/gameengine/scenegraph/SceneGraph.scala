@@ -94,7 +94,7 @@ case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, image
   def withRef(ref: Point): Sprite =
     this.copy(ref = ref)
 
-  def nextFrame: Sprite = this.copy(animations = animations.nextFrame)
+//  def nextFrame: Sprite = this.copy(animations = animations.nextFrame)
 
 }
 
