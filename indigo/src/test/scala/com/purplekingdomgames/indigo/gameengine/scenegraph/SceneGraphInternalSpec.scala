@@ -54,7 +54,15 @@ object SceneGraphSamples {
         Effects.default
       ),
       SpriteInternal(
+        BindingKey("test"),
+        Rectangle(10, 10, 32, 32),
+        Depth(1),
+        "ref",
+        AnimationsInternal(
 
+        ),
+        Point.zero,
+        Effects.default
       ),
       SceneGraphNodeBranchInternal(
         List(

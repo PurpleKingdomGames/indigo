@@ -1,6 +1,5 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
-import com.purplekingdomgames.indigo.gameengine.GameTime
 import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 
@@ -92,15 +91,21 @@ case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, image
   def withRef(ref: Point): Sprite =
     this.copy(ref = ref)
 
-  private def addAction(action: AnimationAction): Sprite = this.copy(animations = animations.addAction(action))
+  def play(): Sprite =
+    this.copy(animations = animations.addAction(Play))
 
-  def play(): Sprite = addAction(Play)
-  def changeCycle(label: String): Sprite = addAction(ChangeCycle(label))
-  def jumpToFirstFrame(): Sprite = addAction(JumpToFirstFrame)
-  def jumpToLastFrame(): Sprite = addAction(JumpToLastFrame)
-  def jumpToFrame(number: Int): Sprite = addAction(JumpToFrame(number))
+  def changeCycle(label: String): Sprite =
+    this.copy(animations = animations.addAction(ChangeCycle(label)))
 
-  def runActions(gameTime: GameTime): Sprite = this.copy(animations = animations.runActions(gameTime))
+  def jumpToFirstFrame(): Sprite =
+    this.copy(animations = animations.addAction(JumpToFirstFrame))
+
+  def jumpToLastFrame(): Sprite =
+    this.copy(animations = animations.addAction(JumpToLastFrame))
+
+  def jumpToFrame(number: Int): Sprite =
+    this.copy(animations = animations.addAction(JumpToFrame(number)))
+
 }
 
 object Sprite {
