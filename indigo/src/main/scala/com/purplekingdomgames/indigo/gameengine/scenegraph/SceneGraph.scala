@@ -12,6 +12,11 @@ sealed trait SceneGraphNode
 
 case class SceneGraphNodeBranch(children: List[SceneGraphNode]) extends SceneGraphNode
 
+object SceneGraphNodeBranch {
+  def apply(children: SceneGraphNode*): SceneGraphNodeBranch =
+    SceneGraphNodeBranch(children.toList)
+}
+
 sealed trait SceneGraphNodeLeaf extends SceneGraphNode {
   val bounds: Rectangle
   val depth: Depth

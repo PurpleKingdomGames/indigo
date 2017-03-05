@@ -4,6 +4,14 @@ import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameTime}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 
+object SceneGraphInternal {
+
+  def fromPublicFacing(sceneGraphNode: SceneGraphNode): SceneGraphNodeInternal = {
+
+  }
+
+}
+
 sealed trait SceneGraphNodeInternal {
 
   def flatten(acc: List[SceneGraphNodeLeafInternal]): List[SceneGraphNodeLeafInternal] = {
@@ -40,7 +48,7 @@ sealed trait SceneGraphNodeLeafInternal extends SceneGraphNodeInternal {
 }
 
 // Concrete leaf types
-case class GraphicInternal(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Option[Rectangle], effects: Effects) extends SceneGraphNodeLeafInternal {
+case class GraphicInternal(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects) extends SceneGraphNodeLeafInternal {
 
   def applyAnimationMemento(animationStates: AnimationStates): SceneGraphNodeInternal = this
 
@@ -48,7 +56,7 @@ case class GraphicInternal(bounds: Rectangle, depth: Depth, imageAssetRef: Strin
 }
 
 case class SpriteInternal(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, imageAssetRef: String, animations: AnimationsInternal, ref: Point, effects: Effects) extends SceneGraphNodeLeafInternal {
-  val crop: Option[Rectangle] = None
+  val crop: Rectangle = bounds
 
   def saveAnimationMemento: Option[AnimationMemento] = Option(animations.saveMemento(bindingKey))
 

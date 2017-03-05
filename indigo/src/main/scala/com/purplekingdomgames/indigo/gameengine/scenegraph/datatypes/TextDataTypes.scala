@@ -7,6 +7,17 @@ case class FontInfo(charSize: Point, fontSpriteSheet: FontSpriteSheet, fontChar:
 
   def findByCharacter(character: String): FontChar = nonEmtpyChars.find(p => p.character == character).getOrElse(FontChar("?", Point(0, 0)))
 }
+
+object FontInfo {
+  def apply(charWidth: Int, charHeight: Int, imageAssetRef: String, sheetWidth: Int, sheetHeight: Int, char: FontChar): FontInfo =
+    FontInfo(
+      Point(charWidth, charHeight),
+      FontSpriteSheet(imageAssetRef, Point(sheetWidth, sheetHeight)),
+      char,
+      Nil
+    )
+}
+
 case class FontSpriteSheet(imageAssetRef: String, size: Point)
 case class FontChar(character: String, offset: Point)
 

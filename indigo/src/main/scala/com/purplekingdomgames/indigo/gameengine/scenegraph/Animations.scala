@@ -114,3 +114,7 @@ object Cycle {
 case class CycleMemento(playheadPosition: Int, frameDuration: Int)
 
 case class Frame(bounds: Rectangle)
+object Frame {
+  def apply(x: Int, y: Int, width: Int, height: Int): Frame =
+    Frame(Rectangle(Point(x, y), Point(width, height)))
+}
