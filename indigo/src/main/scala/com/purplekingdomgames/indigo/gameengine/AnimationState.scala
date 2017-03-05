@@ -1,6 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine
 
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{AnimationMemento, BindingKey, SceneGraphNode, Sprite}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.BindingKey
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{AnimationMemento, SceneGraphNode, Sprite}
 
 object AnimationState {
 

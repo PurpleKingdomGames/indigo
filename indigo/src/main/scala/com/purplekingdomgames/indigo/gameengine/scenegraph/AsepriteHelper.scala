@@ -1,5 +1,6 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Point, Rectangle}
 import upickle.default._
 
 case class Aseprite(frames: List[AsepriteFrame], meta: AsepriteMeta)

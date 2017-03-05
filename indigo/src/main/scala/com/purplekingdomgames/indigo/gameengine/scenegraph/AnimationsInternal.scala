@@ -11,35 +11,35 @@ The API provided is about issuing commands to control playback.
  */
 
 // Frames
-case class Animations(spriteSheetSize: Point, cycle: Cycle, cycles: Map[CycleLabel, Cycle], actions: List[AnimationAction]) {
+case class AnimationsInternal(spriteSheetSize: Point, cycle: CycleInternal, cycles: Map[CycleLabel, CycleInternal], actions: List[AnimationAction]) {
 
-  private val nonEmtpyCycles: Map[CycleLabel, Cycle] = cycles ++ Map(cycle.label -> cycle)
+  private val nonEmtpyCycles: Map[CycleLabel, CycleInternal] = cycles ++ Map(cycle.label -> cycle)
 
   private var currentCycleLabel = cycle.label // TODO: Ok as default but needs to come from somewhere if changed.
 
-  private def currentCycle: Cycle =
+  private def currentCycle: CycleInternal =
     nonEmtpyCycles.getOrElse(currentCycleLabel, nonEmtpyCycles.head._2)
 
   def currentCycleName: String = currentCycle.label.label
 
   def currentFrame: Frame = currentCycle.currentFrame
 
-  def addCycle(cycle: Cycle) = Animations(spriteSheetSize, cycle, nonEmtpyCycles, Nil)
+  def addCycle(cycle: CycleInternal) = AnimationsInternal(spriteSheetSize, cycle, nonEmtpyCycles, Nil)
 
-  def addAction(action: AnimationAction): Animations = this.copy(actions = action :: actions)
+  def addAction(action: AnimationAction): AnimationsInternal = this.copy(actions = action :: actions)
 
   def saveMemento(bindingKey: BindingKey): AnimationMemento = AnimationMemento(bindingKey, currentCycleLabel, nonEmtpyCycles.map(c => c._1 -> c._2.saveMemento))
 
-  def applyMemento(memento: AnimationMemento): Animations = {
+  def applyMemento(memento: AnimationMemento): AnimationsInternal = {
     currentCycleLabel = memento.currentCycleLabel
-    val updatedCycles: Map[CycleLabel, Cycle] = nonEmtpyCycles.map { case (l, c) =>
+    val updatedCycles: Map[CycleLabel, CycleInternal] = nonEmtpyCycles.map { case (l, c) =>
       l -> memento.cycleMementos.get(l).map(cm => c.applyMemento(cm)).getOrElse(c)
     }
     this.copy(cycle = updatedCycles.head._2, cycles = updatedCycles.tail)
   }
 
   // TODO: This is wrong!! Need to combine the anims.
-  def runActions(gameTime: GameTime): Animations = {
+  def runActions(gameTime: GameTime): AnimationsInternal = {
     actions.foldLeft(this) { (anim, action) =>
       action match {
         case ChangeCycle(label) =>
@@ -55,24 +55,7 @@ case class Animations(spriteSheetSize: Point, cycle: Cycle, cycles: Map[CycleLab
   }
 }
 
-sealed trait AnimationAction
-object AnimationAction {
-  case object Play extends AnimationAction
-  case class ChangeCycle(label: String) extends AnimationAction
-  case object JumpToFirstFrame extends AnimationAction
-  case object JumpToLastFrame extends AnimationAction
-  case class JumpToFrame(number: Int) extends AnimationAction
-}
-
-object Animations {
-  def apply(spriteSheetSize: Point, cycle: Cycle): Animations = Animations(spriteSheetSize, cycle, Map.empty[CycleLabel, Cycle], Nil)
-}
-
-case class AnimationMemento(bindingKey: BindingKey, currentCycleLabel: CycleLabel, cycleMementos: Map[CycleLabel, CycleMemento])
-
-case class CycleLabel(label: String)
-
-case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame]) {
+case class CycleInternal(label: CycleLabel, frame: Frame, frames: List[Frame]) {
   private val nonEmtpyFrames: List[Frame] = frame +: frames
   private val frameCount: Int = nonEmtpyFrames.length
 
@@ -82,18 +65,18 @@ case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame]) {
   def currentFrame: Frame =
     nonEmtpyFrames(playheadPosition % frameCount)
 
-  def addFrame(frame: Frame): Cycle = Cycle(label, frame, nonEmtpyFrames)
+  def addFrame(frame: Frame): CycleInternal = CycleInternal(label, frame, nonEmtpyFrames)
 
   def saveMemento: CycleMemento = CycleMemento(playheadPosition, frameDuration)
 
-  def applyMemento(memento: CycleMemento): Cycle = {
+  def applyMemento(memento: CycleMemento): CycleInternal = {
     playheadPosition = memento.playheadPosition
     frameDuration = memento.frameDuration
     this.copy()
   }
 
   //TODO: Obviousy wrong!
-  def runActions(gameTime: GameTime, actions: List[AnimationAction]): Cycle = {
+  def runActions(gameTime: GameTime, actions: List[AnimationAction]): CycleInternal = {
     actions.foldLeft(this) { (cycle, action) =>
       action match {
         case Play => cycle
@@ -106,11 +89,3 @@ case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame]) {
   }
 
 }
-
-object Cycle {
-  def apply(label: String, frame: Frame): Cycle = Cycle(CycleLabel(label), frame, Nil)
-}
-
-case class CycleMemento(playheadPosition: Int, frameDuration: Int)
-
-case class Frame(bounds: Rectangle)

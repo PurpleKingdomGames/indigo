@@ -1,4 +1,4 @@
-package com.purplekingdomgames.indigo.gameengine.scenegraph
+package com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes
 
 import scala.language.implicitConversions
 

@@ -1,6 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{AlignCenter, AlignLeft, AlignRight, Point}
 import org.scalajs.dom
 import com.purplekingdomgames.indigo.renderer._
 

@@ -1,7 +1,8 @@
 package com.example.scalajsgame
 
 import com.purplekingdomgames.indigo.gameengine._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Aseprite, AsepriteHelper, Depth, Sprite}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Depth
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Aseprite, AsepriteHelper, Sprite}
 
 object MyModel {
 
