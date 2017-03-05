@@ -24,23 +24,23 @@ object Animations {
   def apply(spriteSheetSize: Point, cycle: Cycle): Animations = Animations(spriteSheetSize, cycle.label, cycle, Map.empty[CycleLabel, Cycle], Nil)
 }
 
-case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame], frameDuration: Int) {
+case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame]) {
   private val nonEmtpyFrames: List[Frame] = frame +: frames
 
-  def addFrame(frame: Frame): Cycle = Cycle(label, frame, nonEmtpyFrames, frameDuration)
+  def addFrame(frame: Frame): Cycle = Cycle(label, frame, nonEmtpyFrames)
 }
 
 object Cycle {
-  def apply(label: String, frame: Frame): Cycle = Cycle(CycleLabel(label), frame, Nil, 1)
+  def apply(label: String, frame: Frame): Cycle = Cycle(CycleLabel(label), frame, Nil)
 }
 
 case class CycleLabel(label: String)
 
-case class Frame(bounds: Rectangle)
+case class Frame(bounds: Rectangle, duration: Int)
 
 object Frame {
   def apply(x: Int, y: Int, width: Int, height: Int): Frame =
-    Frame(Rectangle(Point(x, y), Point(width, height)))
+    Frame(Rectangle(Point(x, y), Point(width, height)), 1)
 }
 
 sealed trait AnimationAction

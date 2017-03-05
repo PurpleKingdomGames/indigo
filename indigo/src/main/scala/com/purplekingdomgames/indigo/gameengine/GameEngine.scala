@@ -100,8 +100,8 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
 
       state = Some(model)
 
-      val viewUpdateFunc: GameModel => SceneGraphNode =
-        updateView _ andThen applyAnimationStates andThen processAnimationCommands andThen persistAnimationStates
+      val viewUpdateFunc: GameModel => SceneGraphNodeInternal =
+        updateView _ andThen convertToInternalFormat andThen applyAnimationStates andThen processAnimationCommands andThen persistAnimationStates
 
       drawScene(renderer, model, viewUpdateFunc)
 
@@ -111,26 +111,29 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
     }
   }
 
-  private val applyAnimationStates: SceneGraphNode => SceneGraphNode = sceneGraph =>
+  private val convertToInternalFormat: SceneGraphNode => SceneGraphNodeInternal = scenegraph =>
+    SceneGraphInternal.fromPublicFacing(scenegraph)
+
+  private val applyAnimationStates: SceneGraphNodeInternal => SceneGraphNodeInternal = sceneGraph =>
     sceneGraph.applyAnimationMemento(animationStates)
 
-  private val processAnimationCommands: SceneGraphNode => SceneGraphNode = sceneGraph => sceneGraph
+  private val processAnimationCommands: SceneGraphNodeInternal => SceneGraphNodeInternal = sceneGraph => sceneGraph
 
-  private val persistAnimationStates: SceneGraphNode => SceneGraphNode = sceneGraph => {
+  private val persistAnimationStates: SceneGraphNodeInternal => SceneGraphNodeInternal = sceneGraph => {
     animationStates = AnimationState.extractAnimationStates(sceneGraph)
     sceneGraph
   }
 
   private implicit def displayObjectToList(displayObject: DisplayObject): List[DisplayObject] = List(displayObject)
 
-  private val leafToDisplayObject: SceneGraphNodeLeaf => List[DisplayObject] = {
-      case leaf: Graphic =>
+  private val leafToDisplayObject: SceneGraphNodeLeafInternal => List[DisplayObject] = {
+      case leaf: GraphicInternal =>
         DisplayObject(
           x = leaf.x,
           y = leaf.y,
           z = -leaf.depth.zIndex,
-          width = leaf.crop.map(c => c.size.x).getOrElse(leaf.bounds.size.x),
-          height = leaf.crop.map(c => c.size.y).getOrElse(leaf.bounds.size.y),
+          width = leaf.crop.size.x,
+          height = leaf.crop.size.y,
           imageRef = leaf.imageAssetRef,
           alpha = leaf.effects.alpha,
           tintR = leaf.effects.tint.r,
@@ -138,16 +141,17 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
           tintB = leaf.effects.tint.b,
           flipHorizontal = leaf.effects.flip.horizontal,
           flipVertical = leaf.effects.flip.vertical,
-          frame = leaf.crop.map { c =>
-            SpriteSheetFrame.calculateFrameOffset(
-              imageSize = Vector2(leaf.bounds.size.x, leaf.bounds.size.y),
-              frameSize = Vector2(c.size.x, c.size.y),
-              framePosition = Vector2(c.position.x, c.position.y)
-            )
-          }.getOrElse(SpriteSheetFrame.defaultOffset)
+          frame =
+            if(leaf.bounds == leaf.crop) SpriteSheetFrame.defaultOffset
+            else
+              SpriteSheetFrame.calculateFrameOffset(
+                imageSize = Vector2(leaf.bounds.size.x, leaf.bounds.size.y),
+                frameSize = Vector2(leaf.crop.size.x, leaf.crop.size.y),
+                framePosition = Vector2(leaf.crop.position.x, leaf.crop.position.y)
+              )
         )
 
-      case leaf: Sprite =>
+      case leaf: SpriteInternal =>
         DisplayObject(
           x = leaf.x,
           y = leaf.y,
@@ -168,7 +172,7 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
           )
         )
 
-      case leaf: Text =>
+      case leaf: TextInternal =>
         leaf.text.toList.zipWithIndex.map { case (char, index) =>
           val fontChar = leaf.fontInfo.findByCharacter(char.toString)
           val alignmentOffset: Point = leaf.alignment match {
@@ -204,17 +208,13 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
         }
     }
 
-  private def drawScene(renderer: Renderer, gameModel: GameModel, update: GameModel => SceneGraphNode): Unit = {
-    val sceneGraph: SceneGraphNode = update(gameModel)
-
-    val displayObjects: List[DisplayObject] =
-      sceneGraph
+  private def drawScene(renderer: Renderer, gameModel: GameModel, update: GameModel => SceneGraphNodeInternal): Unit =
+    renderer.drawScene(
+      update(gameModel)
         .flatten(Nil)
         .flatMap(leafToDisplayObject)
         .sortBy(d => d.imageRef)
-
-    renderer.drawScene(displayObjects)
-  }
+    )
 
 }
 

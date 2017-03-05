@@ -19,8 +19,6 @@ case class AnimationsInternal(spriteSheetSize: Point, currentCycleLabel: CycleLa
 
   def currentFrame: Frame = currentCycle.currentFrame
 
-  def addAction(action: AnimationAction): AnimationsInternal = this.copy(actions = action :: actions)
-
   def saveMemento(bindingKey: BindingKey): AnimationMemento = AnimationMemento(bindingKey, currentCycleLabel, nonEmtpyCycles.map(c => c._1 -> c._2.saveMemento))
 
   def applyMemento(memento: AnimationMemento): AnimationsInternal =
@@ -44,21 +42,21 @@ case class AnimationsInternal(spriteSheetSize: Point, currentCycleLabel: CycleLa
     }
 }
 
-case class CycleInternal(label: CycleLabel, nonEmtpyFrames: List[Frame], frameDuration: Int, playheadPosition: Int, lastFrameAdvance: Double) {
+case class CycleInternal(label: CycleLabel, nonEmtpyFrames: List[Frame], playheadPosition: Int, lastFrameAdvance: Double) {
   private val frameCount: Int = nonEmtpyFrames.length
 
   def currentFrame: Frame = nonEmtpyFrames(playheadPosition % frameCount)
 
-  def saveMemento: CycleMemento = CycleMemento(playheadPosition, frameDuration, lastFrameAdvance)
+  def saveMemento: CycleMemento = CycleMemento(playheadPosition, lastFrameAdvance)
 
   def applyMemento(memento: CycleMemento): CycleInternal =
-    this.copy(playheadPosition = memento.playheadPosition, frameDuration = memento.frameDuration)
-  
+    this.copy(playheadPosition = memento.playheadPosition)
+
   def runActions(gameTime: GameTime, actions: List[AnimationAction]): CycleInternal = {
     actions.foldLeft(this) { (cycle, action) =>
       action match {
         case Play =>
-          val next = CycleInternal.calculateNextPlayheadPosition(gameTime, playheadPosition, frameDuration, frameCount, lastFrameAdvance)
+          val next = CycleInternal.calculateNextPlayheadPosition(gameTime, playheadPosition, currentFrame.duration, frameCount, lastFrameAdvance)
           cycle.copy(
             playheadPosition = next.position,
             lastFrameAdvance = next.lastFrameAdvance
@@ -101,4 +99,4 @@ case class NextPlayheadPositon(position: Int, lastFrameAdvance: Double)
 
 case class AnimationMemento(bindingKey: BindingKey, currentCycleLabel: CycleLabel, cycleMementos: Map[CycleLabel, CycleMemento])
 
-case class CycleMemento(playheadPosition: Int, frameDuration: Int, lastFrameAdvance: Double)
+case class CycleMemento(playheadPosition: Int, lastFrameAdvance: Double)

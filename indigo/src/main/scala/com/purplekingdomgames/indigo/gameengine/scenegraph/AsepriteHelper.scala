@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Point, Rectangle}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import upickle.default._
 
 case class Aseprite(frames: List[AsepriteFrame], meta: AsepriteMeta)
@@ -45,7 +45,8 @@ object AsepriteHelper {
         bounds = Rectangle(
           position = Point(aseFrame.frame.x, aseFrame.frame.y),
           size = Point(aseFrame.frame.w, aseFrame.frame.h)
-        )
+        ),
+        duration = aseFrame.duration
       )
     }
   }
@@ -77,6 +78,7 @@ object AsepriteHelper {
         val animations: Animations =
           Animations(
             spriteSheetSize = Point(aseprite.meta.size.w, aseprite.meta.size.h),
+            currentCycleLabel = x.label,
             cycle = x,
             cycles = xs.foldLeft(Map.empty[CycleLabel, Cycle])((a, b) => a ++ Map(b.label -> b)),
             Nil
@@ -99,19 +101,3 @@ object AsepriteHelper {
   }
 
 }
-
-/*
-import upickle.default._
-
-write(1)                          ==> "1"
-
-write(Seq(1, 2, 3))               ==> "[1,2,3]"
-
-read[Seq[Int]]("[1, 2, 3]")       ==> List(1, 2, 3)
-
-write((1, "omg", true))           ==> """[1,"omg",true]"""
-
-type Tup = (Int, String, Boolean)
-
-read[Tup]("""[1, "omg", true]""") ==> (1, "omg", true)
- */

@@ -59,7 +59,20 @@ object SceneGraphSamples {
         Depth(1),
         "ref",
         AnimationsInternal(
-
+          Point(64, 32),
+          CycleLabel("label"),
+          nonEmtpyCycles = Map(
+            CycleLabel("label") -> CycleInternal(
+              CycleLabel("label"),
+              nonEmtpyFrames = List(
+                Frame(0, 0, 32, 32),
+                Frame(32, 0, 32, 32)
+              ),
+              playheadPosition = 0,
+              lastFrameAdvance = 0
+            )
+          ),
+          Nil
         ),
         Point.zero,
         Effects.default

@@ -1,13 +1,12 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
-import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameTime}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
+import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameTime}
 
 object SceneGraphInternal {
 
   def fromPublicFacing(sceneGraphNode: SceneGraphNode): SceneGraphNodeInternal = {
-
+    ???
   }
 
 }
@@ -38,7 +37,7 @@ sealed trait SceneGraphNodeLeafInternal extends SceneGraphNodeInternal {
   val imageAssetRef: String
   val effects: Effects
   val ref: Point
-  val crop: Option[Rectangle]
+  val crop: Rectangle
 
   def x: Int = bounds.position.x - ref.x
   def y: Int = bounds.position.y - ref.y
@@ -66,14 +65,6 @@ case class SpriteInternal(bindingKey: BindingKey, bounds: Rectangle, depth: Dept
       case None => this
     }
 
-  private def addAction(action: AnimationAction): SpriteInternal = this.copy(animations = animations.addAction(action))
-
-  def play(): SpriteInternal = addAction(Play)
-  def changeCycle(label: String): SpriteInternal = addAction(ChangeCycle(label))
-  def jumpToFirstFrame(): SpriteInternal = addAction(JumpToFirstFrame)
-  def jumpToLastFrame(): SpriteInternal = addAction(JumpToLastFrame)
-  def jumpToFrame(number: Int): SpriteInternal = addAction(JumpToFrame(number))
-
   def runActions(gameTime: GameTime): SpriteInternal = this.copy(animations = animations.runActions(gameTime))
 }
 
@@ -81,8 +72,8 @@ case class TextInternal(text: String, alignment: TextAlignment, position: Point,
 
   // Handled a different way
   val ref: Point = Point(0, 0)
-  val crop: Option[Rectangle] = None
   val bounds: Rectangle = Rectangle(position, Point(text.length * fontInfo.charSize.x, fontInfo.charSize.y))
+  val crop: Rectangle = bounds
   val imageAssetRef: String = fontInfo.fontSpriteSheet.imageAssetRef
 
   def applyAnimationMemento(animationStates: AnimationStates): SceneGraphNodeInternal = this
