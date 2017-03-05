@@ -77,7 +77,8 @@ object AsepriteHelper {
           Animations(
             spriteSheetSize = Point(aseprite.meta.size.w, aseprite.meta.size.h),
             cycle = x,
-            cycles = xs.foldLeft(Map.empty[CycleLabel, Cycle])((a, b) => a ++ Map(b.label -> b))
+            cycles = xs.foldLeft(Map.empty[CycleLabel, Cycle])((a, b) => a ++ Map(b.label -> b)),
+            Nil
           )
         Option(
           Sprite(

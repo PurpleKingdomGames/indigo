@@ -1,6 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
-import com.purplekingdomgames.indigo.gameengine.AnimationStates
+import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameTime}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
 
 import scala.language.implicitConversions
 import scala.util.Random
@@ -109,9 +110,16 @@ case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, image
       case Some(memento) => this.copy(animations = animations.applyMemento(memento))
       case None => this
     }
-  
-//  def nextFrame: Sprite = this.copy(animations = animations.nextFrame)
 
+  private def addAction(action: AnimationAction): Sprite = this.copy(animations = animations.addAction(action))
+
+  def play(): Sprite = addAction(Play)
+  def changeCycle(label: String): Sprite = addAction(ChangeCycle(label))
+  def jumpToFirstFrame(): Sprite = addAction(JumpToFirstFrame)
+  def jumpToLastFrame(): Sprite = addAction(JumpToLastFrame)
+  def jumpToFrame(number: Int): Sprite = addAction(JumpToFrame(number))
+
+  def runActions(gameTime: GameTime): Sprite = this.copy(animations = animations.runActions(gameTime))
 }
 
 case class FontInfo(charSize: Point, fontSpriteSheet: FontSpriteSheet, fontChar: FontChar, fontChars: List[FontChar]) {

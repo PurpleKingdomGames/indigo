@@ -24,6 +24,7 @@ Persistent timeline animation states
  -- Sprites that no longer exist in the view but who's id's memento's are still be stored are GC'd.
 
 - Might be nice to split user facing scene graph classes from internal versions that contain engine specific methods
+  This would allow the removal of `var`s since we could expose internal fields to copy().
 
 Bugs:
 
