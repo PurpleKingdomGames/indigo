@@ -89,19 +89,21 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
   private def loop(startupData: StartupData)(renderer: Renderer, lastUpdateTime: Double)(time: Double): Unit = {
     val timeDelta = time - lastUpdateTime
 
+    val gameTime: GameTime = GameTime(time, timeDelta)
+
     if(timeDelta > config.frameRateDeltaMillis) {
       val model = state match {
         case None =>
           initialModel(startupData)
 
         case Some(previousState) =>
-          processUpdateEvents(previousState, GameTime(time, timeDelta), GlobalEventStream.collect)
+          processUpdateEvents(previousState, gameTime, GlobalEventStream.collect)
       }
 
       state = Some(model)
 
       val viewUpdateFunc: GameModel => SceneGraphNodeInternal =
-        updateView _ andThen convertToInternalFormat andThen applyAnimationStates andThen processAnimationCommands andThen persistAnimationStates
+        updateView _ andThen convertToInternalFormat andThen applyAnimationStates andThen processAnimationCommands(gameTime) andThen persistAnimationStates
 
       drawScene(renderer, model, viewUpdateFunc)
 
@@ -117,7 +119,8 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
   private val applyAnimationStates: SceneGraphNodeInternal => SceneGraphNodeInternal = sceneGraph =>
     sceneGraph.applyAnimationMemento(animationStates)
 
-  private val processAnimationCommands: SceneGraphNodeInternal => SceneGraphNodeInternal = sceneGraph => sceneGraph
+  private val processAnimationCommands: GameTime => SceneGraphNodeInternal => SceneGraphNodeInternal = gameTime => sceneGraph =>
+    sceneGraph.runAnimationActions(gameTime)
 
   private val persistAnimationStates: SceneGraphNodeInternal => SceneGraphNodeInternal = sceneGraph => {
     animationStates = AnimationState.extractAnimationStates(sceneGraph)

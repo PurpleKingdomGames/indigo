@@ -47,10 +47,11 @@ case class CycleInternal(label: CycleLabel, nonEmtpyFrames: List[Frame], playhea
 
   def currentFrame: Frame = nonEmtpyFrames(playheadPosition % frameCount)
 
-  def saveMemento: CycleMemento = CycleMemento(playheadPosition, lastFrameAdvance)
+  def saveMemento: CycleMemento =
+    CycleMemento(playheadPosition, lastFrameAdvance)
 
   def applyMemento(memento: CycleMemento): CycleInternal =
-    this.copy(playheadPosition = memento.playheadPosition)
+    this.copy(playheadPosition = memento.playheadPosition, lastFrameAdvance = memento.lastFrameAdvance)
 
   def runActions(gameTime: GameTime, actions: List[AnimationAction]): CycleInternal = {
     actions.foldLeft(this) { (cycle, action) =>
@@ -63,6 +64,7 @@ case class CycleInternal(label: CycleLabel, nonEmtpyFrames: List[Frame], playhea
           )
 
         case ChangeCycle(_) => cycle // No op, done at animation level.
+
         case JumpToFirstFrame =>
           cycle.copy(playheadPosition = 0)
 
@@ -81,16 +83,10 @@ case class CycleInternal(label: CycleLabel, nonEmtpyFrames: List[Frame], playhea
 object CycleInternal {
 
   def calculateNextPlayheadPosition(gameTime: GameTime, currentPosition: Int, frameDuration: Int, frameCount: Int, lastFrameAdvance: Double): NextPlayheadPositon =
-    if(gameTime.running >= lastFrameAdvance + frameDuration) {
-      NextPlayheadPositon(
-        position = (currentPosition + 1) % frameCount,
-        lastFrameAdvance = gameTime.running
-      )
+    if (gameTime.running >= lastFrameAdvance + frameDuration) {
+      NextPlayheadPositon((currentPosition + 1) % frameCount, gameTime.running)
     } else {
-      NextPlayheadPositon(
-        position = currentPosition,
-        lastFrameAdvance = lastFrameAdvance
-      )
+      NextPlayheadPositon(currentPosition, lastFrameAdvance)
     }
 
 }

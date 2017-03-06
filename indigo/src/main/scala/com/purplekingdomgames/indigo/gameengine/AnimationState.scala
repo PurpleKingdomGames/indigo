@@ -1,14 +1,14 @@
 package com.purplekingdomgames.indigo.gameengine
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.BindingKey
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{AnimationMemento, SceneGraphNodeInternal, Sprite}
+import com.purplekingdomgames.indigo.gameengine.scenegraph._
 
 object AnimationState {
 
   def extractAnimationStates(sceneGraphNode: SceneGraphNodeInternal): AnimationStates = AnimationStates {
     sceneGraphNode.flatten(Nil)
       .flatMap {
-        case s: Sprite => s.saveAnimationMemento :: Nil
+        case s: SpriteInternal => s.saveAnimationMemento :: Nil
         case _ => Nil
       }
       .collect {

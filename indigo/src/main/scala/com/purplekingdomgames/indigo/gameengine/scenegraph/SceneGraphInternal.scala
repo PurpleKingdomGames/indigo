@@ -66,13 +66,20 @@ sealed trait SceneGraphNodeInternal {
 
   def applyAnimationMemento(animationStates: AnimationStates): SceneGraphNodeInternal
 
+  def runAnimationActions(gameTime: GameTime): SceneGraphNodeInternal
+
 }
 
 
 // Types of SceneGraphNode
 case class SceneGraphNodeBranchInternal(children: List[SceneGraphNodeInternal]) extends SceneGraphNodeInternal {
+
   def applyAnimationMemento(animationStates: AnimationStates): SceneGraphNodeInternal =
     this.copy(children.map(_.applyAnimationMemento(animationStates)))
+
+  def runAnimationActions(gameTime: GameTime): SceneGraphNodeInternal =
+    this.copy(children.map(_.runAnimationActions(gameTime)))
+
 }
 sealed trait SceneGraphNodeLeafInternal extends SceneGraphNodeInternal {
   val bounds: Rectangle
@@ -95,6 +102,8 @@ case class GraphicInternal(bounds: Rectangle, depth: Depth, imageAssetRef: Strin
   def applyAnimationMemento(animationStates: AnimationStates): SceneGraphNodeInternal = this
 
   def saveAnimationMemento: Option[AnimationMemento] = None
+
+  def runAnimationActions(gameTime: GameTime): SceneGraphNodeInternal = this
 }
 
 case class SpriteInternal(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, imageAssetRef: String, animations: AnimationsInternal, ref: Point, effects: Effects) extends SceneGraphNodeLeafInternal {
@@ -108,7 +117,7 @@ case class SpriteInternal(bindingKey: BindingKey, bounds: Rectangle, depth: Dept
       case None => this
     }
 
-  def runActions(gameTime: GameTime): SpriteInternal = this.copy(animations = animations.runActions(gameTime))
+  def runAnimationActions(gameTime: GameTime): SpriteInternal = this.copy(animations = animations.runActions(gameTime))
 }
 
 case class TextInternal(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontInfo: FontInfo, effects: Effects) extends SceneGraphNodeLeafInternal {
@@ -122,4 +131,6 @@ case class TextInternal(text: String, alignment: TextAlignment, position: Point,
   def applyAnimationMemento(animationStates: AnimationStates): SceneGraphNodeInternal = this
 
   def saveAnimationMemento: Option[AnimationMemento] = None
+
+  def runAnimationActions(gameTime: GameTime): SceneGraphNodeInternal = this
 }

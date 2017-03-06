@@ -32,19 +32,19 @@ object MyModel {
 
       if(firstRun) {
         firstRun = false
-        println("Text asset loading: ")
+//        println("Text asset loading: ")
 
         val json = assetCollection.texts.find(p => p.name == MyAssets.trafficLightsName + "-json").map(_.contents).getOrElse("BOOM!")
 
-        println(json)
+//        println(json)
 
         aseprite = AsepriteHelper.fromJson(json)
 
-        println(aseprite)
+//        println(aseprite)
 
         asepriteSprite = aseprite.flatMap(asepriteObj => AsepriteHelper.toSprite(asepriteObj, Depth(3), MyAssets.trafficLightsName))
 
-        println(asepriteSprite)
+//        println(asepriteSprite)
 
       }
 

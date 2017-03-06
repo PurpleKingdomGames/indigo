@@ -15,20 +15,17 @@ object MyView {
           .flipVertical(b.flipV)
       } ++
         {
-          if(MyModel.asepriteSprite.isEmpty) Nil else {
-//            MyModel.asepriteSprite = MyModel.asepriteSprite.map(_.nextFrame)
-            //            println(MyModel.asepriteSprite.get.animations.currentCycle.playheadPosition)
-            List(MyModel.asepriteSprite.get)
-          }
+          if(MyModel.asepriteSprite.isEmpty) Nil
+          else List(MyModel.asepriteSprite.get.withBindingKey("aseprite_test").play())
         } ++
         List(
-          Sprite(BindingKey.generate, 0, 128, 64, 64, 3, MyAssets.trafficLightsName,
+          Sprite(BindingKey("tl1"), 0, 128, 64, 64, 3, MyAssets.trafficLightsName,
             Animations(128, 128,
               Cycle("trafficlights", Frame(0, 0, 64, 64))
                 .addFrame(Frame(64, 0, 64, 64))
                 .addFrame(Frame(0, 64, 64, 64))
             )
-          ).play(),
+          ).jumpToLastFrame(),
           Text("cba", 100, 100, 10,
             FontInfo(64, 72, MyAssets.fontName, 888, 640, FontChar("A", Point(8, 215)))
               .addChar(FontChar("B", Point(8 + 64, 215)))
