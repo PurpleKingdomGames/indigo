@@ -1,7 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Point, Rectangle}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import org.scalatest.{FunSpec, Matchers}
 
 class AsepriteHelperSpec extends FunSpec with Matchers {
@@ -132,28 +132,29 @@ object AsepriteSampleData {
       bounds = Rectangle(Point(0, 0), Point(64, 64)),
       depth = depth,
       imageAssetRef = imageAssetRef,
-      animations = Animations(
+      animations =
+        Animations(
         spriteSheetSize = Point(128, 128),
+        currentCycleLabel = CycleLabel("lights"),
         cycle = Cycle(
-          label = "lights",
-          playheadPosition = 0,
+          label = CycleLabel("lights"),
           frame = Frame(
             bounds = Rectangle(Point(0, 0), Point(64, 64)),
-            current = true
+            duration = 100
           ),
           frames = List(
             Frame(
               bounds = Rectangle(Point(64, 0), Point(64, 64)),
-              current = false
+              duration = 100
             ),
             Frame(
               bounds = Rectangle(Point(0, 64), Point(64, 64)),
-              current = false
+              duration = 100
             )
-          ),
-          current = true
+          )
         ),
-        cycles = Nil
+        cycles = Map(),
+        actions = Nil
       ),
       ref = Point.zero,
       effects = Effects.default

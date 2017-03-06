@@ -5,9 +5,52 @@ import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameTime}
 
 object SceneGraphInternal {
 
-  def fromPublicFacing(sceneGraphNode: SceneGraphNode): SceneGraphNodeInternal = {
-    ???
+  private def convertCycleToInternal(cycle: Cycle): CycleInternal =
+    CycleInternal(
+      label = cycle.label,
+      nonEmtpyFrames = cycle.frame :: cycle.frames,
+      playheadPosition = 0,
+      lastFrameAdvance = 0
+    )
+
+  private def convertAnimationsToInternal(animations: Animations): AnimationsInternal = {
+    AnimationsInternal(
+      spriteSheetSize = animations.spriteSheetSize,
+      currentCycleLabel = animations.currentCycleLabel,
+      nonEmtpyCycles = (Map(animations.cycle.label -> animations.cycle) ++ animations.cycles).map(p => p._1 -> convertCycleToInternal(p._2)),
+      actions = animations.actions
+    )
   }
+
+  private def convertLeafNode(leaf: SceneGraphNodeLeaf): SceneGraphNodeLeafInternal =
+    leaf match {
+      case Graphic(bounds, depth, imageAssetRef, ref, crop, effects) =>
+        GraphicInternal(bounds, depth, imageAssetRef, ref, crop, effects)
+
+      case Text(text, alignment, position, depth, fontInfo, effects) =>
+        TextInternal(text, alignment, position, depth, fontInfo, effects)
+
+      case Sprite(bindingKey, bounds, depth, imageAssetRef, animations, ref, effects) =>
+        SpriteInternal(bindingKey, bounds, depth, imageAssetRef, convertAnimationsToInternal(animations), ref, effects)
+
+    }
+
+  private def convertChildren(children: List[SceneGraphNode]): List[SceneGraphNodeInternal] =
+    children.map(convertChild)
+
+  private def convertChild(sceneGraphNode: SceneGraphNode): SceneGraphNodeInternal =
+    sceneGraphNode match {
+      case SceneGraphNodeBranch(children) =>
+        SceneGraphNodeBranchInternal(
+          convertChildren(children)
+        )
+
+      case l: SceneGraphNodeLeaf =>
+        convertLeafNode(l)
+    }
+
+  def fromPublicFacing(sceneGraphNode: SceneGraphNode): SceneGraphNodeInternal =
+    convertChild(sceneGraphNode)
 
 }
 

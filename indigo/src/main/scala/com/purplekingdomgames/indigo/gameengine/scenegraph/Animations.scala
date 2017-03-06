@@ -25,9 +25,9 @@ object Animations {
 }
 
 case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame]) {
-  private val nonEmtpyFrames: List[Frame] = frame +: frames
+  private val nonEmtpyFrames: List[Frame] = frame :: frames
 
-  def addFrame(frame: Frame): Cycle = Cycle(label, frame, nonEmtpyFrames)
+  def addFrame(newFrame: Frame): Cycle = Cycle(label, nonEmtpyFrames.head, nonEmtpyFrames.tail ++ List(newFrame))
 }
 
 object Cycle {

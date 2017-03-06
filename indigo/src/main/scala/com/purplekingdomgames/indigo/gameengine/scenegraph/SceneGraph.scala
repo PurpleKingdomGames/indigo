@@ -155,7 +155,7 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
 object Text {
   def apply(text: String, x: Int, y: Int, depth: Int, fontInfo: FontInfo): Text =
     Text(
-      text = "",
+      text = text,
       alignment = AlignLeft,
       position = Point(x, y),
       depth = depth,
