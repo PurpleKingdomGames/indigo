@@ -1,7 +1,8 @@
 package com.example.scalajsgame
 
 import com.purplekingdomgames.indigo.gameengine._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneGraphNode
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Depth
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Aseprite, AsepriteHelper, SceneGraphNode, Sprite}
 import com.purplekingdomgames.indigo.renderer.ClearColor
 
 object MyGame extends GameEngine[MyStartupData, MyErrorReport, Stuff] {
@@ -13,16 +14,22 @@ object MyGame extends GameEngine[MyStartupData, MyErrorReport, Stuff] {
     viewport = GameViewport(viewportWidth, viewportHeight),
     frameRate = 30,
     clearColor = ClearColor(0, 0, 0, 1),
-    magnification = 1
+    magnification = 2
   )
 
   def assets: Set[AssetType] = MyAssets.assets
 
   def initialise(assetCollection: AssetCollection): Startup[MyErrorReport, MyStartupData] = {
-    val pass: Boolean = true
+    val dude = for {
+      json <- assetCollection.texts.find(p => p.name == MyAssets.dudeName + "-json").map(_.contents)
+      aseprite <- AsepriteHelper.fromJson(json)
+      sprite <- AsepriteHelper.toSprite(aseprite, Depth(3), MyAssets.dudeName)
+    } yield Dude(aseprite, sprite)
 
-    if(pass) MyStartupData("Hello")
-    else MyErrorReport(List("Boom!", "Boom!", "Shake the room!"))
+    dude match {
+      case Some(d) => MyStartupData(d)
+      case None => MyErrorReport("Failed to load the dude")
+    }
   }
 
   def initialModel(startupData: MyStartupData): Stuff = MyModel.initialModel(startupData)
@@ -33,7 +40,9 @@ object MyGame extends GameEngine[MyStartupData, MyErrorReport, Stuff] {
 
 }
 
-case class MyStartupData(name: String)
+case class Dude(aseprite: Aseprite, sprite: Sprite)
+
+case class MyStartupData(dude: Dude)
 
 case class MyErrorReport(errors: List[String])
 
@@ -41,5 +50,7 @@ object MyErrorReport {
 
   implicit val toErrorReport: ToReportable[MyErrorReport] =
     ToReportable.createToReportable(r => r.errors.mkString("\n"))
+
+  def apply(message: String*): MyErrorReport = MyErrorReport(message.toList)
 
 }

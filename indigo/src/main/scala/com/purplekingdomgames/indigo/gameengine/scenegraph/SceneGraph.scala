@@ -71,6 +71,9 @@ case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, image
 
   val crop: Rectangle = bounds
 
+  def moveTo(x: Int, y: Int): Sprite =
+    this.copy(bounds = bounds.copy(position = Point(x, y)))
+
   def withBindingKey(keyValue: String): Sprite =
     this.copy(bindingKey = BindingKey(keyValue))
   def withBindingKey(bindingKey: BindingKey): Sprite =

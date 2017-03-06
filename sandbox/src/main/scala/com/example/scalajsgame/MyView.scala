@@ -7,6 +7,24 @@ object MyView {
 
   def updateView(currentState: Stuff): SceneGraphNode = {
     SceneGraphNodeBranch(
+      List(
+        currentState.dude.walkDirection match {
+          case d @ DudeLeft =>
+            currentState.dude.dude.sprite.moveTo(150, 0).changeCycle(d.cycleName).play()
+          case d @ DudeRight =>
+            currentState.dude.dude.sprite.moveTo(150, 0).changeCycle(d.cycleName).play()
+          case d @ DudeUp =>
+            currentState.dude.dude.sprite.moveTo(150, 0).changeCycle(d.cycleName).play()
+          case d @ DudeDown =>
+            currentState.dude.dude.sprite
+              .moveTo(150, 0)
+              .changeCycle(d.cycleName)
+              .play()
+
+          case d @ DudeIdle =>
+            currentState.dude.dude.sprite.moveTo(150, 0).changeCycle(d.cycleName).play()
+        }
+      ) ++
       currentState.blocks.blocks.map { b =>
         Graphic(b.x, b.y, 64, 64, b.zIndex, b.textureName)
           .withAlpha(b.alpha)

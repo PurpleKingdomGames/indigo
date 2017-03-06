@@ -8,6 +8,7 @@ object MyModel {
 
   def initialModel(startupData: MyStartupData): Stuff =
     Stuff(
+      DudeModel(startupData.dude, DudeIdle),
       Blocks(
         List(
           Block(0, 0, 0, 0, 0, 1, BlockTint(1, 0, 0), MyAssets.spriteSheetName1, false, false),
@@ -32,20 +33,9 @@ object MyModel {
 
       if(firstRun) {
         firstRun = false
-//        println("Text asset loading: ")
-
         val json = assetCollection.texts.find(p => p.name == MyAssets.trafficLightsName + "-json").map(_.contents).getOrElse("BOOM!")
-
-//        println(json)
-
         aseprite = AsepriteHelper.fromJson(json)
-
-//        println(aseprite)
-
         asepriteSprite = aseprite.flatMap(asepriteObj => AsepriteHelper.toSprite(asepriteObj, Depth(3), MyAssets.trafficLightsName))
-
-//        println(asepriteSprite)
-
       }
 
       tmpX = (Math.sin(angle) * 32).toInt
@@ -57,6 +47,17 @@ object MyModel {
         trafficLights = state.trafficLights.nextColor(gameTime.delta)
       )
 
+    case KeyDown(Keys.LeftArrow) =>
+      state.copy(dude = state.dude.walkLeft)
+    case KeyDown(Keys.RightArrow) =>
+      state.copy(dude = state.dude.walkRight)
+    case KeyDown(Keys.UpArrow) =>
+      state.copy(dude = state.dude.walkUp)
+    case KeyDown(Keys.DownArrow) =>
+      state.copy(dude = state.dude.walkDown)
+    case KeyUp(_) =>
+      state.copy(dude = state.dude.idle)
+
     case e =>
       //      println(e)
       state
@@ -64,7 +65,25 @@ object MyModel {
 
 }
 
-case class Stuff(blocks: Blocks, trafficLights: TrafficLights)
+case class Stuff(dude: DudeModel, blocks: Blocks, trafficLights: TrafficLights)
+
+case class DudeModel(dude: Dude, walkDirection: DudeDirection) {
+  def idle: DudeModel = this.copy(walkDirection = DudeIdle)
+  def walkLeft: DudeModel = this.copy(walkDirection = DudeLeft)
+  def walkRight: DudeModel = this.copy(walkDirection = DudeRight)
+  def walkUp: DudeModel = this.copy(walkDirection = DudeUp)
+  def walkDown: DudeModel = this.copy(walkDirection = DudeDown)
+}
+
+sealed trait DudeDirection {
+  val cycleName: String
+}
+case object DudeIdle extends DudeDirection { val cycleName: String = "blink" }
+case object DudeLeft extends DudeDirection { val cycleName: String = "walk left" }
+case object DudeRight extends DudeDirection { val cycleName: String = "walk right" }
+case object DudeUp extends DudeDirection { val cycleName: String = "walk up" }
+case object DudeDown extends DudeDirection { val cycleName: String = "walk down" }
+
 case class TrafficLights(color: String, lastChange: Double, timeSinceChange: Double) {
   def nextColor(timeDelta: Double): TrafficLights = {
     if(timeSinceChange + timeDelta >= 1000) {
