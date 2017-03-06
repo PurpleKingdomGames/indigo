@@ -8,7 +8,7 @@ object MyView {
   def updateView(currentState: Stuff): SceneGraphNode = {
     SceneGraphNodeBranch(
       currentState.blocks.blocks.map { b =>
-        Graphic(Rectangle(Point(b.x, b.y), Point(64, 64)), Depth(b.zIndex), b.textureName, ref = Point(0, 0), crop = None, effects = Effects.default)
+        Graphic(b.x, b.y, 64, 64, b.zIndex, b.textureName)
           .withAlpha(b.alpha)
           .withTint(b.tint.r, b.tint.g, b.tint.b)
           .flipHorizontal(b.flipH)
@@ -22,58 +22,17 @@ object MyView {
           }
         } ++
         List(
-          Sprite(
-            bindingKey = BindingKey.generate,
-            bounds = Rectangle(Point(0, 128), Point(64, 64)),
-            depth = Depth(3),
-            imageAssetRef = MyAssets.trafficLightsName,
-            animations =
-              Animations(
-                Point(128, 128),
-                Cycle(
-                  label = "trafficlights",
-                  frame = Frame(
-                    bounds = Rectangle(
-                      Point(0, 0),
-                      Point(64, 64)
-                    )
-                  )
-                ).addFrame(
-                  frame = Frame(
-                    bounds = Rectangle(
-                      Point(64, 0),
-                      Point(64, 64)
-                    )
-                  )
-                ).addFrame(
-                  frame = Frame(
-                    bounds = Rectangle(
-                      Point(0, 64),
-                      Point(64, 64)
-                    )
-                  )
-                )
-              ),
-            ref = Point(0, 0),
-            effects = Effects.default
-          ),
-          Text(
-            text = "CBA",
-            alignment = AlignLeft,
-            position = Point(100, 100),
-            depth = Depth(10),
-            fontInfo = FontInfo(
-              charSize = Point(64, 72),
-              fontSpriteSheet = FontSpriteSheet(
-                imageAssetRef = MyAssets.fontName,
-                size = Point(888, 640)
-              ),
-              fontChar = FontChar("A", Point(8, 215)),
-              fontChars = Nil
+          Sprite(BindingKey.generate, 0, 128, 64, 64, 3, MyAssets.trafficLightsName,
+            Animations(128, 128,
+              Cycle("trafficlights", Frame(0, 0, 64, 64))
+                .addFrame(Frame(64, 0, 64, 64))
+                .addFrame(Frame(0, 64, 64, 64))
             )
+          ).play(),
+          Text("cba", 100, 100, 10,
+            FontInfo(64, 72, MyAssets.fontName, 888, 640, FontChar("A", Point(8, 215)))
               .addChar(FontChar("B", Point(8 + 64, 215)))
-              .addChar(FontChar("C", Point(8 + 64 + 64, 215))),
-            effects = Effects.default
+              .addChar(FontChar("C", Point(8 + 64 + 64, 215)))
           )
         )
     )

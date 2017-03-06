@@ -21,7 +21,7 @@ case class Animations(spriteSheetSize: Point, currentCycleLabel: CycleLabel, cyc
 }
 
 object Animations {
-  def apply(spriteSheetSize: Point, cycle: Cycle): Animations = Animations(spriteSheetSize, cycle.label, cycle, Map.empty[CycleLabel, Cycle], Nil)
+  def apply(spriteSheetWidth: Int, spriteSheetHeight: Int, cycle: Cycle): Animations = Animations(Point(spriteSheetWidth, spriteSheetHeight), cycle.label, cycle, Map.empty[CycleLabel, Cycle], Nil)
 }
 
 case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame]) {

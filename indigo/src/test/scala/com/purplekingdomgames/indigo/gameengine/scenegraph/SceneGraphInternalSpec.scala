@@ -28,7 +28,7 @@ object SceneGraphSamples {
     Sprite(
       BindingKey("test"), 10, 10, 32, 32, 1, "ref",
       Animations(
-        Point(64, 32),
+        64, 32,
         Cycle("label", Frame(0, 0, 32, 32))
           .addFrame(Frame(32, 0, 32, 32))
       )
