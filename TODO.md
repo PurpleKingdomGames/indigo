@@ -14,21 +14,12 @@ The layers:
 
 ## TODO
 
-Persistent timeline animation states
- -- I've added a bindingKey requirement to sprites
- -- After the view function has completed, the animations will be in a new state e.g. cycle 2 will now be playing (or still playing)
- -- If the sprites bindingKey has been seen and saved before, then the sprite's memento is applied moving all the animation pieces into the right state
- -- Will need to rethink animation object construction. Api must not allow direct access,
- - You need to queue up actions to do after rehydration.
- -- Actions are then applied
- -- Sprites that no longer exist in the view but who's id's memento's are still be stored are GC'd.
-
-- Might be nice to split user facing scene graph classes from internal versions that contain engine specific methods
-  This would allow the removal of `var`s since we could expose internal fields to copy().
-
 Bugs:
 
 Renderer
+- Layers, rendered to separate textures and blended together
+- Layer effects
+- Layer blend modes
 - Alternative to lighting: Blend modes.
  I was thinking about different ways of doing lights and the obvious thing is to use real
  lights but we don't need most of the things that come with them like shadows.
@@ -42,8 +33,6 @@ Renderer
 - Simple ambient lighting
 
 Game Engine
-- Animation controls like play, stop etc.
-- Nice error message when failed to load asset
 - I think Scalajs is downloading script files on load, can they be local?
 - Revisit API
   - SceneGraph should be like a DOM, sprites, buttons, animated sprites, static images, parallax images etc.
@@ -55,10 +44,12 @@ Game Engine
 Game
 - Make game.
 
-
 Much later...
 - Tilemap loading?
 - Performance enhancement: Render at actual size to a buffer and scale up.
-- Performance enhancement: We do some CPU side sorting, which generally will be ok, but if there are thousands of tiles and most of them never change, it would be nice to declare that somehow and only have to sort them once.
-- Performance enhancement: Static objects. If you have a large group of rectangles that make up one big object - like level platforms - and they never move in relation to each other, we should be able to flatten them into one special object that can be drawn with a single call.
+- Performance enhancement: We do some CPU side sorting, which generally will be ok, but if there are thousands of tiles
+  and most of them never change, it would be nice to declare that somehow and only have to sort them once.
+- Performance enhancement: Static objects. If you have a large group of rectangles that make up one big object - like
+  level platforms - and they never move in relation to each other, we should be able to flatten them into one special
+  object that can be drawn with a single call.
 - Screen Effects: Would be awesome to have a bloom fliter for highlights?
