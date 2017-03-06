@@ -26,7 +26,7 @@ object MyView {
                 .addFrame(Frame(0, 64, 64, 64))
             )
           ).jumpToLastFrame(),
-          Text("cba", 100, 100, 10,
+          Text("ABC", 100, 100, 10,
             FontInfo(64, 72, MyAssets.fontName, 888, 640, FontChar("A", Point(8, 215)))
               .addChar(FontChar("B", Point(8 + 64, 215)))
               .addChar(FontChar("C", Point(8 + 64 + 64, 215)))
