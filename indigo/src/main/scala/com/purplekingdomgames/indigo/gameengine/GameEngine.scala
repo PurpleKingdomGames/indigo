@@ -34,7 +34,7 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
 
   def updateModel(gameTime: GameTime, state: GameModel): GameEvent => GameModel
 
-  def updateView(currentState: GameModel): SceneGraphNode
+  def updateView(currentState: GameModel): SceneGraphRootNode
 
   private var state: Option[GameModel] = None
 
@@ -102,7 +102,7 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
 
       state = Some(model)
 
-      val viewUpdateFunc: GameModel => SceneGraphNodeInternal =
+      val viewUpdateFunc: GameModel => SceneGraphRootNodeInternal =
         updateView _ andThen convertToInternalFormat andThen applyAnimationStates andThen processAnimationCommands(gameTime) andThen persistAnimationStates
 
       drawScene(renderer, model, viewUpdateFunc)
@@ -113,16 +113,16 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
     }
   }
 
-  private val convertToInternalFormat: SceneGraphNode => SceneGraphNodeInternal = scenegraph =>
+  private val convertToInternalFormat: SceneGraphRootNode => SceneGraphRootNodeInternal = scenegraph =>
     SceneGraphInternal.fromPublicFacing(scenegraph)
 
-  private val applyAnimationStates: SceneGraphNodeInternal => SceneGraphNodeInternal = sceneGraph =>
+  private val applyAnimationStates: SceneGraphRootNodeInternal => SceneGraphRootNodeInternal = sceneGraph =>
     sceneGraph.applyAnimationMemento(animationStates)
 
-  private val processAnimationCommands: GameTime => SceneGraphNodeInternal => SceneGraphNodeInternal = gameTime => sceneGraph =>
+  private val processAnimationCommands: GameTime => SceneGraphRootNodeInternal => SceneGraphRootNodeInternal = gameTime => sceneGraph =>
     sceneGraph.runAnimationActions(gameTime)
 
-  private val persistAnimationStates: SceneGraphNodeInternal => SceneGraphNodeInternal = sceneGraph => {
+  private val persistAnimationStates: SceneGraphRootNodeInternal => SceneGraphRootNodeInternal = sceneGraph => {
     animationStates = AnimationState.extractAnimationStates(sceneGraph)
     sceneGraph
   }
@@ -211,12 +211,21 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
         }
     }
 
-  private def drawScene(renderer: Renderer, gameModel: GameModel, update: GameModel => SceneGraphNodeInternal): Unit =
+  private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNodeInternal): List[DisplayLayer] = {
+    rootNode.nonEmptyLayers.map { l =>
+      DisplayLayer(
+        l.node
+          .flatten
+          .flatMap(leafToDisplayObject)
+      )
+    }
+  }
+
+  private def drawScene(renderer: Renderer, gameModel: GameModel, update: GameModel => SceneGraphRootNodeInternal): Unit =
     renderer.drawScene(
-      update(gameModel)
-        .flatten(Nil)
-        .flatMap(leafToDisplayObject)
-        .sortBy(d => d.imageRef)
+      convertSceneGraphToDisplayable(
+        update(gameModel)
+      )
     )
 
 }

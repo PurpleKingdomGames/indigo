@@ -3,6 +3,25 @@ package com.purplekingdomgames.indigo.gameengine.scenegraph
 import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 
+case class SceneGraphRootNode(baseLayer: SceneGraphLayer, layers: List[SceneGraphLayer]) {
+  val nonEmptyLayers: List[SceneGraphLayer] = baseLayer :: layers
+}
+object SceneGraphRootNode {
+  def apply(baseLayer: SceneGraphLayer): SceneGraphRootNode =
+    SceneGraphRootNode(baseLayer, Nil)
+  def apply(layers: SceneGraphLayer*): SceneGraphRootNode =
+    SceneGraphRootNode(layers.head, layers.tail.toList)
+}
+
+case class SceneGraphLayer(node: SceneGraphNode)
+
+object SceneGraphLayer {
+  def apply(nodes: SceneGraphNode*): SceneGraphLayer =
+    SceneGraphLayer(
+      SceneGraphNodeBranch(nodes.toList)
+    )
+}
+
 object SceneGraphNode {
   def empty: SceneGraphNode = SceneGraphNodeBranch(Nil)
 }

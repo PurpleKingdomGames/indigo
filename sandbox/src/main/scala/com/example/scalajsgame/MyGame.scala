@@ -1,8 +1,8 @@
 package com.example.scalajsgame
 
 import com.purplekingdomgames.indigo.gameengine._
+import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Depth
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Aseprite, AsepriteHelper, SceneGraphNode, Sprite}
 import com.purplekingdomgames.indigo.renderer.ClearColor
 
 object MyGame extends GameEngine[MyStartupData, MyErrorReport, Stuff] {
@@ -36,7 +36,7 @@ object MyGame extends GameEngine[MyStartupData, MyErrorReport, Stuff] {
 
   def updateModel(gameTime: GameTime, state: Stuff): GameEvent => Stuff = MyModel.updateModel(assetCollection, gameTime, state)
 
-  def updateView(currentState: Stuff): SceneGraphNode = MyView.updateView(currentState)
+  def updateView(currentState: Stuff): SceneGraphRootNode = MyView.updateView(currentState)
 
 }
 

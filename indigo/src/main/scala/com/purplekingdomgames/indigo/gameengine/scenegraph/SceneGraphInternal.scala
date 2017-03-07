@@ -49,19 +49,48 @@ object SceneGraphInternal {
         convertLeafNode(l)
     }
 
-  def fromPublicFacing(sceneGraphNode: SceneGraphNode): SceneGraphNodeInternal =
-    convertChild(sceneGraphNode)
+  def fromPublicFacing(sceneGraphNode: SceneGraphRootNode): SceneGraphRootNodeInternal = {
+    val layers = sceneGraphNode.nonEmptyLayers.map { l =>
+      SceneGraphLayerInternal(
+        convertChild(l.node)
+      )
+    }
 
+    SceneGraphRootNodeInternal(layers.head, layers.tail)
+  }
+
+}
+
+case class SceneGraphRootNodeInternal(baseLayer: SceneGraphLayerInternal, layers: List[SceneGraphLayerInternal]) {
+  val nonEmptyLayers: List[SceneGraphLayerInternal] = baseLayer :: layers
+
+  def applyAnimationMemento(animationStates: AnimationStates): SceneGraphRootNodeInternal =
+    SceneGraphRootNodeInternal(baseLayer.applyAnimationMemento(animationStates), layers.map(_.applyAnimationMemento(animationStates)))
+
+  def runAnimationActions(gameTime: GameTime): SceneGraphRootNodeInternal =
+    SceneGraphRootNodeInternal(baseLayer.runAnimationActions(gameTime), layers.map(_.runAnimationActions(gameTime)))
+}
+
+case class SceneGraphLayerInternal(node: SceneGraphNodeInternal) {
+  def applyAnimationMemento(animationStates: AnimationStates): SceneGraphLayerInternal =
+    this.copy(node = node.applyAnimationMemento(animationStates))
+
+  def runAnimationActions(gameTime: GameTime): SceneGraphLayerInternal =
+    this.copy(node = node.runAnimationActions(gameTime))
 }
 
 sealed trait SceneGraphNodeInternal {
 
-  def flatten(acc: List[SceneGraphNodeLeafInternal]): List[SceneGraphNodeLeafInternal] = {
-    this match {
-      case l: SceneGraphNodeLeafInternal => l :: acc
-      case b: SceneGraphNodeBranchInternal =>
-        b.children.flatMap(n => n.flatten(Nil)) ++ acc
+  def flatten: List[SceneGraphNodeLeafInternal] = {
+    def rec(acc: List[SceneGraphNodeLeafInternal]): List[SceneGraphNodeLeafInternal] = {
+      this match {
+        case l: SceneGraphNodeLeafInternal => l :: acc
+        case b: SceneGraphNodeBranchInternal =>
+          b.children.flatMap(n => n.flatten) ++ acc
+      }
     }
+
+    rec(Nil)
   }
 
   def applyAnimationMemento(animationStates: AnimationStates): SceneGraphNodeInternal

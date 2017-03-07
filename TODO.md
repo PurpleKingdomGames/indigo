@@ -18,8 +18,8 @@ Bugs:
 
 Renderer
 - Layers, rendered to separate textures and blended together
-- Layer effects
-- Layer blend modes
+- Layer effects (Hue, saturation, tint, Blur, Bloom.. anything else? )
+- Layer blend modes (for combining with the layer below)
 - Alternative to lighting: Blend modes.
  I was thinking about different ways of doing lights and the obvious thing is to use real
  lights but we don't need most of the things that come with them like shadows.
@@ -52,4 +52,3 @@ Much later...
 - Performance enhancement: Static objects. If you have a large group of rectangles that make up one big object - like
   level platforms - and they never move in relation to each other, we should be able to flatten them into one special
   object that can be drawn with a single call.
-- Screen Effects: Would be awesome to have a bloom fliter for highlights?

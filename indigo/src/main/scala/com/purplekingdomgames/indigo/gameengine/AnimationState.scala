@@ -5,15 +5,17 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph._
 
 object AnimationState {
 
-  def extractAnimationStates(sceneGraphNode: SceneGraphNodeInternal): AnimationStates = AnimationStates {
-    sceneGraphNode.flatten(Nil)
-      .flatMap {
-        case s: SpriteInternal => s.saveAnimationMemento :: Nil
-        case _ => Nil
-      }
-      .collect {
-        case Some(s) => s
-      }
+  def extractAnimationStates(sceneGraphRootNode: SceneGraphRootNodeInternal): AnimationStates = AnimationStates {
+    sceneGraphRootNode.nonEmptyLayers.flatMap { l =>
+      l.node.flatten
+        .flatMap {
+          case s: SpriteInternal => s.saveAnimationMemento :: Nil
+          case _ => Nil
+        }
+        .collect {
+          case Some(s) => s
+        }
+    }
   }
 
   def applyAnimationStates(animationStates: AnimationStates, sceneGraphNode: SceneGraphNodeInternal): SceneGraphNodeInternal =

@@ -5,7 +5,17 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 
 object MyView {
 
-  def updateView(currentState: Stuff): SceneGraphNode = {
+  def updateView(currentState: Stuff): SceneGraphRootNode =
+    SceneGraphRootNode(
+      backgroundLayer(currentState),
+      layerOfStuff(currentState)
+    )
+
+  def backgroundLayer(currentState: Stuff): SceneGraphLayer = SceneGraphLayer {
+    Graphic(-1, -1, 392, 239, 10000, MyAssets.sludge)
+  }
+
+  def layerOfStuff(currentState: Stuff): SceneGraphLayer = SceneGraphLayer {
     SceneGraphNodeBranch(
       List(
         currentState.dude.walkDirection match {
@@ -25,13 +35,13 @@ object MyView {
             currentState.dude.dude.sprite.moveTo(150, 0).changeCycle(d.cycleName).play()
         }
       ) ++
-      currentState.blocks.blocks.map { b =>
-        Graphic(b.x, b.y, 64, 64, b.zIndex, b.textureName)
-          .withAlpha(b.alpha)
-          .withTint(b.tint.r, b.tint.g, b.tint.b)
-          .flipHorizontal(b.flipH)
-          .flipVertical(b.flipV)
-      } ++
+        currentState.blocks.blocks.map { b =>
+          Graphic(b.x, b.y, 64, 64, b.zIndex, b.textureName)
+            .withAlpha(b.alpha)
+            .withTint(b.tint.r, b.tint.g, b.tint.b)
+            .flipHorizontal(b.flipH)
+            .flipVertical(b.flipV)
+        } ++
         {
           if(MyModel.asepriteSprite.isEmpty) Nil
           else List(MyModel.asepriteSprite.get.withBindingKey("aseprite_test").play())

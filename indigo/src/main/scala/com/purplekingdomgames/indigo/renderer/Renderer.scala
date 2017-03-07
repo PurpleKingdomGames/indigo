@@ -268,13 +268,18 @@ final class Renderer(config: RendererConfig, loadedTextureAssets: List[LoadedTex
     )
   }
 
-  def drawScene(displayObjectList: List[DisplayObject]): Unit = {
+  def drawScene(displayLayerList: List[DisplayLayer]): Unit = {
     cNc.context.clear(COLOR_BUFFER_BIT)
     cNc.context.clearColor(config.clearColor.r, config.clearColor.g, config.clearColor.b, config.clearColor.a)
 
     resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight)
 
-    displayObjectList.sortBy(d => d.z).foreach { displayObject =>
+    //TEMP
+    //TODO: FrameBuffers.
+    val displayObjectList = displayLayerList.foldLeft(List.empty[DisplayObject])(_ ++ _.displayObjects)
+
+    //TODO: This sort should be done on a layer by layer basis once we have framebuffers.
+    displayObjectList.sortBy(d => (d.z, d.imageRef)).foreach { displayObject =>
 
       textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
 

@@ -9,8 +9,8 @@ object MyAssets {
   val spriteSheetName3: String = "f"
   val trafficLightsName: String = "trafficlights"
   val fontName: String = "fontName"
-
   val dudeName: String = "base_charactor"
+  val sludge: String = "sludge"
 
   private val spriteAsset1 = ImageAsset(spriteSheetName1, "Sprite-0001.png")
   private val spriteAsset2 = ImageAsset(spriteSheetName2, "Sprite-0002.png")
@@ -27,7 +27,8 @@ object MyAssets {
       fontAsset,
       TextAsset(trafficLightsName + "-json", trafficLightsName + ".json"),
       TextAsset(dudeName + "-json", dudeName + ".json"),
-      ImageAsset(dudeName, dudeName + ".png")
+      ImageAsset(dudeName, dudeName + ".png"),
+      ImageAsset(sludge, "sludge.png")
     )
 
 }

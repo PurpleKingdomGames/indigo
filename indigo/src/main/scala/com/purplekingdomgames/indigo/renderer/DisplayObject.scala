@@ -3,6 +3,8 @@ package com.purplekingdomgames.indigo.renderer
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram}
 
+case class DisplayLayer(displayObjects: List[DisplayObject])
+
 case class DisplayObject(x: Int,
                          y: Int,
                          z: Int,
