@@ -14,7 +14,7 @@ lazy val sandbox =
     .settings(commonSettings: _*)
     .dependsOn(indigo)
 
-lazy val root =
+lazy val indigoProject =
   (project in file("."))
     .settings(commonSettings: _*)
     .aggregate(indigo, sandbox)
