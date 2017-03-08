@@ -5,7 +5,7 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Depth
 import com.purplekingdomgames.indigo.renderer.ClearColor
 
-object MyGame extends GameEngine[MyStartupData, MyErrorReport, Stuff] {
+object MyGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel] {
 
   private val viewportHeight: Int = 256
   private val viewportWidth: Int = 455
@@ -24,7 +24,12 @@ object MyGame extends GameEngine[MyStartupData, MyErrorReport, Stuff] {
       json <- assetCollection.texts.find(p => p.name == MyAssets.dudeName + "-json").map(_.contents)
       aseprite <- AsepriteHelper.fromJson(json)
       sprite <- AsepriteHelper.toSprite(aseprite, Depth(3), MyAssets.dudeName)
-    } yield Dude(aseprite, sprite)
+    } yield Dude(
+      aseprite,
+      sprite
+        .withRef(16, 16) // Intial offset, so when talk about his position it's the center of the sprite
+        .moveTo(viewportWidth / 2 / 2, viewportHeight / 2 / 2) // Also place him in the middle of the screen initially
+    )
 
     dude match {
       case Some(d) => MyStartupData(d)
@@ -32,11 +37,11 @@ object MyGame extends GameEngine[MyStartupData, MyErrorReport, Stuff] {
     }
   }
 
-  def initialModel(startupData: MyStartupData): Stuff = MyModel.initialModel(startupData)
+  def initialModel(startupData: MyStartupData): MyGameModel = MyModel.initialModel(startupData)
 
-  def updateModel(gameTime: GameTime, state: Stuff): GameEvent => Stuff = MyModel.updateModel(assetCollection, gameTime, state)
+  def updateModel(gameTime: GameTime, state: MyGameModel): GameEvent => MyGameModel = MyModel.updateModel(assetCollection, gameTime, state)
 
-  def updateView(currentState: Stuff): SceneGraphRootNode = MyView.updateView(currentState)
+  def updateView(currentState: MyGameModel): SceneGraphRootNode = MyView.updateView(currentState)
 
 }
 

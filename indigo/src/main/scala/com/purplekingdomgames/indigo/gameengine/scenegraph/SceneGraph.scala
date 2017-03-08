@@ -68,6 +68,8 @@ case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: 
 
   def withRef(ref: Point): Graphic =
     this.copy(ref = ref)
+  def withRef(x: Int, y: Int): Graphic =
+    this.copy(ref = Point(x, y))
 
   def withCrop(crop: Rectangle): Graphic =
     this.copy(crop = crop)
@@ -112,6 +114,8 @@ case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, image
 
   def withRef(ref: Point): Sprite =
     this.copy(ref = ref)
+  def withRef(x: Int, y: Int): Sprite =
+    this.copy(ref = Point(x, y))
 
   def play(): Sprite =
     this.copy(animations = animations.addAction(Play))
