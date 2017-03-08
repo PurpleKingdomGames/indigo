@@ -9,12 +9,13 @@ object MyGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel] {
 
   private val viewportHeight: Int = 256
   private val viewportWidth: Int = 455
+  private val magnificationLevel: Int = 3
 
   def config: GameConfig = GameConfig(
     viewport = GameViewport(viewportWidth, viewportHeight),
     frameRate = 30,
     clearColor = ClearColor(0, 0, 0, 1),
-    magnification = 2
+    magnification = magnificationLevel
   )
 
   def assets: Set[AssetType] = MyAssets.assets
@@ -27,8 +28,8 @@ object MyGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel] {
     } yield Dude(
       aseprite,
       sprite
-        .withRef(16, 16) // Intial offset, so when talk about his position it's the center of the sprite
-        .moveTo(viewportWidth / 2 / 2, viewportHeight / 2 / 2) // Also place him in the middle of the screen initially
+        .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
+        .moveTo(viewportWidth / 2 / magnificationLevel, viewportHeight / 2 / magnificationLevel) // Also place him in the middle of the screen initially
     )
 
     dude match {
