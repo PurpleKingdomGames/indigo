@@ -14,7 +14,7 @@ object MyGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel] {
   def config: GameConfig = GameConfig(
     viewport = GameViewport(viewportWidth, viewportHeight),
     frameRate = 30,
-    clearColor = ClearColor(0, 0, 0, 1),
+    clearColor = ClearColor(0.4, 0.2, 0.5, 1),
     magnification = magnificationLevel
   )
 
