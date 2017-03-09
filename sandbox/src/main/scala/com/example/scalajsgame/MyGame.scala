@@ -47,11 +47,9 @@ object MyGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel] {
 }
 
 case class Dude(aseprite: Aseprite, sprite: Sprite)
-
 case class MyStartupData(dude: Dude)
 
 case class MyErrorReport(errors: List[String])
-
 object MyErrorReport {
 
   implicit val toErrorReport: ToReportable[MyErrorReport] =

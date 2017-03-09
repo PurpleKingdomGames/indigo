@@ -12,74 +12,51 @@ object MyView {
       ui = uiLayer(currentState)
     )
 
-  def gameLayer(currentState: MyGameModel): SceneGraphGameLayer = SceneGraphGameLayer {
-    SceneGraphNodeBranch(
-//      List(
+  def gameLayer(currentState: MyGameModel): SceneGraphGameLayer =
+    SceneGraphGameLayer(
+      SceneGraphNodeBranch(
         currentState.dude.walkDirection match {
-          case d @ DudeLeft =>
+          case d@DudeLeft =>
             currentState.dude.dude.sprite
               .changeCycle(d.cycleName)
               .play()
 
-          case d @ DudeRight =>
+          case d@DudeRight =>
             currentState.dude.dude.sprite
               .changeCycle(d.cycleName)
               .play()
 
-          case d @ DudeUp =>
+          case d@DudeUp =>
             currentState.dude.dude.sprite
               .changeCycle(d.cycleName)
               .play()
 
-          case d @ DudeDown =>
+          case d@DudeDown =>
             currentState.dude.dude.sprite
               .changeCycle(d.cycleName)
               .play()
 
-          case d @ DudeIdle =>
+          case d@DudeIdle =>
             currentState.dude.dude.sprite
               .changeCycle(d.cycleName)
               .play()
         }
-//      ) ++
-//        currentState.blocks.blocks.map { b =>
-//          Graphic(b.x, b.y, 64, 64, b.zIndex, b.textureName)
-//            .withAlpha(b.alpha)
-//            .withTint(b.tint.r, b.tint.g, b.tint.b)
-//            .flipHorizontal(b.flipH)
-//            .flipVertical(b.flipV)
-//        } ++
-//        {
-//          if(MyModel.asepriteSprite.isEmpty) Nil
-//          else List(MyModel.asepriteSprite.get.withBindingKey("aseprite_test").play())
-//        } ++
-//        List(
-//          Sprite(BindingKey("tl1"), 0, 128, 64, 64, 3, MyAssets.trafficLightsName,
-//            Animations(128, 128,
-//              Cycle("trafficlights", Frame(0, 0, 64, 64))
-//                .addFrame(Frame(64, 0, 64, 64))
-//                .addFrame(Frame(0, 64, 64, 64))
-//            )
-//          ).jumpToLastFrame(),
-//          Text("ABC", 100, 100, 10,
-//            FontInfo(64, 72, MyAssets.fontName, 888, 640, FontChar("A", Point(8, 215)))
-//              .addChar(FontChar("B", Point(8 + 64, 215)))
-//              .addChar(FontChar("C", Point(8 + 64 + 64, 215)))
-//          )
-//        )
+      )
     )
-  }
 
-  def lightingLayer(currentState: MyGameModel): SceneGraphLightingLayer = SceneGraphLightingLayer {
-    Graphic(0, 0, 320, 240, 1, MyAssets.light)
-  }
-
-  def uiLayer(currentState: MyGameModel): SceneGraphUiLayer = SceneGraphUiLayer {
-    Text("ABC", 2, 2, 5,
-      FontInfo(23, 23, MyAssets.smallFontName, 320, 230, FontChar("A", 3, 78))
-        .addChar(FontChar("B", Point(26, 78)))
-        .addChar(FontChar("C", Point(50, 78)))
+  def lightingLayer(currentState: MyGameModel): SceneGraphLightingLayer =
+    SceneGraphLightingLayer(
+      Graphic(0, 0, 320, 240, 1, MyAssets.light),
+      Graphic(-160, -120, 320, 240, 1, MyAssets.light)
     )
-  }
+
+  def uiLayer(currentState: MyGameModel): SceneGraphUiLayer =
+    SceneGraphUiLayer(
+      Text("ABC", 2, 2, 5,
+        FontInfo(23, 23, MyAssets.smallFontName, 320, 230, FontChar("A", 3, 78))
+          .addChar(FontChar("B", Point(26, 78)))
+          .addChar(FontChar("C", Point(50, 78)))
+      )
+    )
 
 }

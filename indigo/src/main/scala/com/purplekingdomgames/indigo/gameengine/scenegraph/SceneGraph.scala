@@ -17,9 +17,6 @@ object SceneGraphRootNode {
 }
 
 case class SceneGraphGameLayer(node: SceneGraphNode)
-case class SceneGraphLightingLayer(node: SceneGraphNode)
-case class SceneGraphUiLayer(node: SceneGraphNode)
-
 object SceneGraphGameLayer {
   def empty: SceneGraphGameLayer =
     SceneGraphGameLayer(SceneGraphNode.empty)
@@ -29,15 +26,19 @@ object SceneGraphGameLayer {
       SceneGraphNodeBranch(nodes.toList)
     )
 }
+
+case class SceneGraphLightingLayer(node: SceneGraphNodeBranch)
 object SceneGraphLightingLayer {
   def empty: SceneGraphLightingLayer =
     SceneGraphLightingLayer(SceneGraphNode.empty)
 
-  def apply(nodes: SceneGraphNode*): SceneGraphLightingLayer =
+  def apply(nodes: SceneGraphNodeLeaf*): SceneGraphLightingLayer =
     SceneGraphLightingLayer(
       SceneGraphNodeBranch(nodes.toList)
     )
 }
+
+case class SceneGraphUiLayer(node: SceneGraphNode)
 object SceneGraphUiLayer {
   def empty: SceneGraphUiLayer =
     SceneGraphUiLayer(SceneGraphNode.empty)
@@ -49,7 +50,7 @@ object SceneGraphUiLayer {
 }
 
 object SceneGraphNode {
-  def empty: SceneGraphNode = SceneGraphNodeBranch(Nil)
+  def empty: SceneGraphNodeBranch = SceneGraphNodeBranch(Nil)
 }
 
 sealed trait SceneGraphNode

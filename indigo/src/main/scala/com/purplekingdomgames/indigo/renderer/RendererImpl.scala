@@ -49,6 +49,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     5. New shader that accepts three images as input
     6. Draw one displayObject that fills the screen with the combined texture
 
+    Ref:
+    https://webglfundamentals.org/webgl/lessons/webgl-2-textures.html
+    https://webglfundamentals.org/webgl/lessons/webgl-image-processing-continued.html
 
      */
 
