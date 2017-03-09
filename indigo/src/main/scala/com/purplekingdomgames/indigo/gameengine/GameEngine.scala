@@ -60,7 +60,7 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
 
           WorldEvents(canvas)
 
-          val renderer: Renderer = Renderer(
+          val renderer: IRenderer = Renderer(
             RendererConfig(
               viewport = Viewport(config.viewport.width, config.viewport.height),
               clearColor = config.clearColor,
@@ -86,7 +86,7 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
     }
   }
 
-  private def loop(startupData: StartupData)(renderer: Renderer, lastUpdateTime: Double)(time: Double): Unit = {
+  private def loop(startupData: StartupData)(renderer: IRenderer, lastUpdateTime: Double)(time: Double): Unit = {
     val timeDelta = time - lastUpdateTime
 
     val gameTime: GameTime = GameTime(time, timeDelta)
@@ -221,7 +221,7 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
     }
   }
 
-  private def drawScene(renderer: Renderer, gameModel: GameModel, update: GameModel => SceneGraphRootNodeInternal): Unit =
+  private def drawScene(renderer: IRenderer, gameModel: GameModel, update: GameModel => SceneGraphRootNodeInternal): Unit =
     renderer.drawScene(
       convertSceneGraphToDisplayable(
         update(gameModel)
