@@ -1,20 +1,26 @@
 package com.example.scalajsgame
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo, Point}
 
 object MyView {
 
   def updateView(currentState: MyGameModel): SceneGraphRootNode =
     SceneGraphRootNode(
-//      backgroundLayer(currentState),
-      layerOfStuff(currentState)
+      gameLayer(currentState),
+      lighting = SceneGraphLayer.empty,
+      ui = uiLayer(currentState)
     )
 
-//  def backgroundLayer(currentState: Stuff): SceneGraphLayer = SceneGraphLayer {
-//    Graphic(-1, -1, 392, 239, 10000, MyAssets.sludge)
-//  }
+  def uiLayer(currentState: MyGameModel): SceneGraphLayer = SceneGraphLayer {
+    Text("ABC", 100, 100, 10,
+      FontInfo(64, 72, MyAssets.fontName, 888, 640, FontChar("A", 8, 215))
+        .addChar(FontChar("B", Point(8 + 64, 215)))
+        .addChar(FontChar("C", Point(8 + 64 + 64, 215)))
+    )
+  }
 
-  def layerOfStuff(currentState: MyGameModel): SceneGraphLayer = SceneGraphLayer {
+  def gameLayer(currentState: MyGameModel): SceneGraphLayer = SceneGraphLayer {
     SceneGraphNodeBranch(
 //      List(
         currentState.dude.walkDirection match {

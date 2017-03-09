@@ -29,14 +29,24 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight)
 
-    //TEMP
-    //TODO: FrameBuffers.
-    val displayObjectList =
-      List(displayable.game.displayObjects, displayable.lighting.displayObjects, displayable.ui.displayObjects)
-        .foldLeft(List.empty[DisplayObject])(_ ++ _)
+    /*
+    How to make this work, I think
+    ------------------------------
+    1. Change logic below to render each layer in order
+    2. Setup three fixed frame buffers
+    3. Switch to frame buffer before drawing each layer
+    4. Add a new step to compose the three framebuffers together on the canvas
 
-    //TODO: This sort should be done on a layer by layer basis once we have framebuffers.
-    displayObjectList.sortBy(d => (d.z, d.imageRef)).foreach { displayObject =>
+     */
+
+    drawLayer(displayable.game)
+    drawLayer(displayable.lighting)
+    drawLayer(displayable.ui)
+
+  }
+
+  private def drawLayer(displayLayer: DisplayLayer): Unit =
+    displayLayer.displayObjects.sortBy(d => (d.z, d.imageRef)).foreach { displayObject =>
 
       textureLocations(cNc, loadedTextureAssets).find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
 
@@ -55,6 +65,5 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       }
 
     }
-  }
 
 }

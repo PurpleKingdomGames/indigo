@@ -20,6 +20,9 @@ object FontInfo {
 
 case class FontSpriteSheet(imageAssetRef: String, size: Point)
 case class FontChar(character: String, offset: Point)
+object FontChar {
+  def apply(character: String, x: Int, y: Int): FontChar = FontChar(character, Point(x, y))
+}
 
 sealed trait TextAlignment
 case object AlignLeft extends TextAlignment

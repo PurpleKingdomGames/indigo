@@ -9,7 +9,7 @@ object MyGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel] {
 
   private val viewportHeight: Int = 256
   private val viewportWidth: Int = 455
-  private val magnificationLevel: Int = 3
+  private val magnificationLevel: Int = 1
 
   def config: GameConfig = GameConfig(
     viewport = GameViewport(viewportWidth, viewportHeight),
