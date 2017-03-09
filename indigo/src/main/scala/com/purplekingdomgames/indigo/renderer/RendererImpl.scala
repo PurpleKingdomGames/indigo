@@ -37,10 +37,18 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     /*
     How to make this work, I think
     ------------------------------
+
+    Initially:
+     Just try and get the diffuse layer to render to a framebuffer, then to the canvas.
+
+    Final todo list
     1. Change logic below to render each layer in order - done
     2. Setup three fixed frame buffers
     3. Switch to frame buffer before drawing each layer
-    4. Add a new step to compose the three framebuffers together on the canvas
+    4. New render stage to compose the three textures onto the canvas
+    5. New shader that accepts three images as input
+    6. Draw one displayObject that fills the screen with the combined texture
+
 
      */
 
