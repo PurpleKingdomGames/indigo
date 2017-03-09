@@ -1,5 +1,6 @@
 package com.purplekingdomgames.indigo.renderer
 
+import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
 
 trait IRenderer {
@@ -12,6 +13,8 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
   import RendererFunctions._
 
   private val shaderProgram = shaderProgramSetup(cNc.context)
+  private val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, Rectangle2D.vertices)
+  private val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, Rectangle2D.textureCoordinates)
 
   def init(): Unit = {
     cNc.context.disable(DEPTH_TEST)
@@ -39,7 +42,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
         cNc.context.useProgram(shaderProgram)
 
         // Setup attributes
-        bindShaderToBuffer(cNc, shaderProgram)
+        bindShaderToBuffer(cNc, shaderProgram, vertexBuffer, textureBuffer)
 
         // Setup Uniforms
         setupVertexShader(cNc, shaderProgram, displayObject)

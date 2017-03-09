@@ -89,12 +89,9 @@ object RendererFunctions {
     shaderProgram
   }
 
-  def bindShaderToBuffer(cNc: ContextAndCanvas, shaderProgram: WebGLProgram): Unit = {
+  def bindShaderToBuffer(cNc: ContextAndCanvas, shaderProgram: WebGLProgram, vertexBuffer: WebGLBuffer, textureBuffer: WebGLBuffer): Unit = {
 
     val gl = cNc.context
-
-    val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, Rectangle2D.vertices)
-    val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, Rectangle2D.textureCoordinates)
 
     // Vertices
     gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
