@@ -3,7 +3,13 @@ package com.purplekingdomgames.indigo.renderer
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram}
 
-case class DisplayLayer(displayObjects: List[DisplayObject])
+case class Displayable(game: GameDisplayLayer, lighting: LightingDisplayLayer, ui: UiDisplayLayer)
+case class GameDisplayLayer(displayObjects: List[DisplayObject]) extends DisplayLayer
+case class LightingDisplayLayer(displayObjects: List[DisplayObject]) extends DisplayLayer
+case class UiDisplayLayer(displayObjects: List[DisplayObject]) extends DisplayLayer
+sealed trait DisplayLayer {
+  val displayObjects: List[DisplayObject]
+}
 
 case class DisplayObject(x: Int,
                          y: Int,

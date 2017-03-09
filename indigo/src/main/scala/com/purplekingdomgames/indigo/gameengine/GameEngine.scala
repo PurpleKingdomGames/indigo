@@ -211,15 +211,12 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
         }
     }
 
-  private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNodeInternal): List[DisplayLayer] = {
-    rootNode.nonEmptyLayers.map { l =>
-      DisplayLayer(
-        l.node
-          .flatten
-          .flatMap(leafToDisplayObject)
-      )
-    }
-  }
+  private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNodeInternal): Displayable =
+    Displayable(
+      GameDisplayLayer(rootNode.game.node.flatten.flatMap(leafToDisplayObject)),
+      LightingDisplayLayer(rootNode.lighting.node.flatten.flatMap(leafToDisplayObject)),
+      UiDisplayLayer(rootNode.ui.node.flatten.flatMap(leafToDisplayObject))
+    )
 
   private def drawScene(renderer: IRenderer, gameModel: GameModel, update: GameModel => SceneGraphRootNodeInternal): Unit =
     renderer.drawScene(

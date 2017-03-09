@@ -5,7 +5,7 @@ import org.scalajs.dom.raw.WebGLRenderingContext._
 
 trait IRenderer {
   def init(): Unit
-  def drawScene(displayLayerList: List[DisplayLayer]): Unit
+  def drawScene(displayable: Displayable): Unit
 }
 
 final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends IRenderer {
@@ -23,7 +23,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     cNc.context.enable(BLEND)
   }
 
-  def drawScene(displayLayerList: List[DisplayLayer]): Unit = {
+  def drawScene(displayable: Displayable): Unit = {
     cNc.context.clear(COLOR_BUFFER_BIT)
     cNc.context.clearColor(config.clearColor.r, config.clearColor.g, config.clearColor.b, config.clearColor.a)
 
@@ -31,7 +31,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     //TEMP
     //TODO: FrameBuffers.
-    val displayObjectList = displayLayerList.foldLeft(List.empty[DisplayObject])(_ ++ _.displayObjects)
+    val displayObjectList =
+      List(displayable.game.displayObjects, displayable.lighting.displayObjects, displayable.ui.displayObjects)
+        .foldLeft(List.empty[DisplayObject])(_ ++ _)
 
     //TODO: This sort should be done on a layer by layer basis once we have framebuffers.
     displayObjectList.sortBy(d => (d.z, d.imageRef)).foreach { displayObject =>

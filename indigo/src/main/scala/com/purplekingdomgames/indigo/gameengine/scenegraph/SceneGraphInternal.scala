@@ -49,26 +49,46 @@ object SceneGraphInternal {
         convertLeafNode(l)
     }
 
-  def fromPublicFacing(sceneGraphNode: SceneGraphRootNode): SceneGraphRootNodeInternal = {
-    val layers = sceneGraphNode.nonEmptyLayers.map { l =>
-      SceneGraphLayerInternal(
-        convertChild(l.node)
+  def fromPublicFacing(sceneGraphNode: SceneGraphRootNode): SceneGraphRootNodeInternal =
+    SceneGraphRootNodeInternal(
+      game = SceneGraphLayerInternal(
+        convertChild(sceneGraphNode.game.node)
+      ),
+      lighting = SceneGraphLayerInternal(
+        convertChild(sceneGraphNode.lighting.node)
+      ),
+      ui = SceneGraphLayerInternal(
+        convertChild(sceneGraphNode.ui.node)
       )
-    }
-
-    SceneGraphRootNodeInternal(layers.head, layers.tail)
-  }
+    )
 
 }
 
-case class SceneGraphRootNodeInternal(baseLayer: SceneGraphLayerInternal, layers: List[SceneGraphLayerInternal]) {
-  val nonEmptyLayers: List[SceneGraphLayerInternal] = baseLayer :: layers
+/*
+Rather than have an unknown number of layers of dubious value, for now... and I may regret this
+later... lets just have some fixed layers with specific jobs. I can justify this on the grounds
+that the engine has a specific purpose, it's not general.
+Game - Simple diffuse colour layer
+Lighting - More involved, at minimum it's another diffuse layer that's multiplied onto the game layer
+Post processing screen effects can then be applied here to the combined game and lighting layers.
+UI - Simple diffuse, but always lives above the other two.
+ */
+case class SceneGraphRootNodeInternal(game: SceneGraphLayerInternal, lighting: SceneGraphLayerInternal, ui: SceneGraphLayerInternal) {
 
   def applyAnimationMemento(animationStates: AnimationStates): SceneGraphRootNodeInternal =
-    SceneGraphRootNodeInternal(baseLayer.applyAnimationMemento(animationStates), layers.map(_.applyAnimationMemento(animationStates)))
+    SceneGraphRootNodeInternal(
+      game.applyAnimationMemento(animationStates),
+      lighting.applyAnimationMemento(animationStates),
+      ui.applyAnimationMemento(animationStates)
+    )
 
   def runAnimationActions(gameTime: GameTime): SceneGraphRootNodeInternal =
-    SceneGraphRootNodeInternal(baseLayer.runAnimationActions(gameTime), layers.map(_.runAnimationActions(gameTime)))
+    SceneGraphRootNodeInternal(
+      game.runAnimationActions(gameTime),
+      lighting.runAnimationActions(gameTime),
+      ui.runAnimationActions(gameTime)
+    )
+
 }
 
 case class SceneGraphLayerInternal(node: SceneGraphNodeInternal) {
