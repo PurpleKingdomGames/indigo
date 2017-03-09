@@ -7,18 +7,10 @@ object MyView {
 
   def updateView(currentState: MyGameModel): SceneGraphRootNode =
     SceneGraphRootNode(
-      gameLayer(currentState),
-      lighting = SceneGraphLightingLayer.empty,
+      game = gameLayer(currentState),
+      lighting = lightingLayer(currentState),
       ui = uiLayer(currentState)
     )
-
-  def uiLayer(currentState: MyGameModel): SceneGraphUiLayer = SceneGraphUiLayer {
-    Text("ABC", 2, 2, 5,
-      FontInfo(23, 23, MyAssets.smallFontName, 320, 230, FontChar("A", 3, 78))
-        .addChar(FontChar("B", Point(26, 78)))
-        .addChar(FontChar("C", Point(50, 78)))
-    )
-  }
 
   def gameLayer(currentState: MyGameModel): SceneGraphGameLayer = SceneGraphGameLayer {
     SceneGraphNodeBranch(
@@ -75,6 +67,18 @@ object MyView {
 //              .addChar(FontChar("C", Point(8 + 64 + 64, 215)))
 //          )
 //        )
+    )
+  }
+
+  def lightingLayer(currentState: MyGameModel): SceneGraphLightingLayer = SceneGraphLightingLayer {
+    Graphic(0, 0, 320, 240, 1, MyAssets.light)
+  }
+
+  def uiLayer(currentState: MyGameModel): SceneGraphUiLayer = SceneGraphUiLayer {
+    Text("ABC", 2, 2, 5,
+      FontInfo(23, 23, MyAssets.smallFontName, 320, 230, FontChar("A", 3, 78))
+        .addChar(FontChar("B", Point(26, 78)))
+        .addChar(FontChar("C", Point(50, 78)))
     )
   }
 

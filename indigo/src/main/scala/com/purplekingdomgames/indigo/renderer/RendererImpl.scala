@@ -37,7 +37,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     /*
     How to make this work, I think
     ------------------------------
-    1. Change logic below to render each layer in order
+    1. Change logic below to render each layer in order - done
     2. Setup three fixed frame buffers
     3. Switch to frame buffer before drawing each layer
     4. Add a new step to compose the three framebuffers together on the canvas
