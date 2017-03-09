@@ -51,13 +51,13 @@ object SceneGraphInternal {
 
   def fromPublicFacing(sceneGraphNode: SceneGraphRootNode): SceneGraphRootNodeInternal =
     SceneGraphRootNodeInternal(
-      game = SceneGraphLayerInternal(
+      game = SceneGraphGameLayerInternal(
         convertChild(sceneGraphNode.game.node)
       ),
-      lighting = SceneGraphLayerInternal(
+      lighting = SceneGraphLightingLayerInternal(
         convertChild(sceneGraphNode.lighting.node)
       ),
-      ui = SceneGraphLayerInternal(
+      ui = SceneGraphUiLayerInternal(
         convertChild(sceneGraphNode.ui.node)
       )
     )
@@ -73,7 +73,7 @@ Lighting - More involved, at minimum it's another diffuse layer that's multiplie
 Post processing screen effects can then be applied here to the combined game and lighting layers.
 UI - Simple diffuse, but always lives above the other two.
  */
-case class SceneGraphRootNodeInternal(game: SceneGraphLayerInternal, lighting: SceneGraphLayerInternal, ui: SceneGraphLayerInternal) {
+case class SceneGraphRootNodeInternal(game: SceneGraphGameLayerInternal, lighting: SceneGraphLightingLayerInternal, ui: SceneGraphUiLayerInternal) {
 
   def applyAnimationMemento(animationStates: AnimationStates): SceneGraphRootNodeInternal =
     SceneGraphRootNodeInternal(
@@ -91,12 +91,32 @@ case class SceneGraphRootNodeInternal(game: SceneGraphLayerInternal, lighting: S
 
 }
 
-case class SceneGraphLayerInternal(node: SceneGraphNodeInternal) {
-  def applyAnimationMemento(animationStates: AnimationStates): SceneGraphLayerInternal =
+case class SceneGraphGameLayerInternal(node: SceneGraphNodeInternal) {
+
+  def applyAnimationMemento(animationStates: AnimationStates): SceneGraphGameLayerInternal =
     this.copy(node = node.applyAnimationMemento(animationStates))
 
-  def runAnimationActions(gameTime: GameTime): SceneGraphLayerInternal =
+  def runAnimationActions(gameTime: GameTime): SceneGraphGameLayerInternal =
     this.copy(node = node.runAnimationActions(gameTime))
+
+}
+case class SceneGraphLightingLayerInternal(node: SceneGraphNodeInternal) {
+
+  def applyAnimationMemento(animationStates: AnimationStates): SceneGraphLightingLayerInternal =
+    this.copy(node = node.applyAnimationMemento(animationStates))
+
+  def runAnimationActions(gameTime: GameTime): SceneGraphLightingLayerInternal =
+    this.copy(node = node.runAnimationActions(gameTime))
+
+}
+case class SceneGraphUiLayerInternal(node: SceneGraphNodeInternal) {
+
+  def applyAnimationMemento(animationStates: AnimationStates): SceneGraphUiLayerInternal =
+    this.copy(node = node.applyAnimationMemento(animationStates))
+
+  def runAnimationActions(gameTime: GameTime): SceneGraphUiLayerInternal =
+    this.copy(node = node.runAnimationActions(gameTime))
+
 }
 
 sealed trait SceneGraphNodeInternal {

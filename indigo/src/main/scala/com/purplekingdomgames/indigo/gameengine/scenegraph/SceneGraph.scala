@@ -3,27 +3,47 @@ package com.purplekingdomgames.indigo.gameengine.scenegraph
 import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 
-case class SceneGraphRootNode(game: SceneGraphLayer, lighting: SceneGraphLayer, ui: SceneGraphLayer) {
-  def addLightingLayer(lighting: SceneGraphLayer): SceneGraphRootNode =
+case class SceneGraphRootNode(game: SceneGraphGameLayer, lighting: SceneGraphLightingLayer, ui: SceneGraphUiLayer) {
+  def addLightingLayer(lighting: SceneGraphLightingLayer): SceneGraphRootNode =
     this.copy(lighting = lighting)
 
-  def addUiLayer(ui: SceneGraphLayer): SceneGraphRootNode =
+  def addUiLayer(ui: SceneGraphUiLayer): SceneGraphRootNode =
     this.copy(ui = ui)
 }
 
 object SceneGraphRootNode {
-  def apply(game: SceneGraphLayer): SceneGraphRootNode =
-    SceneGraphRootNode(game, SceneGraphLayer.empty, SceneGraphLayer.empty)
+  def apply(game: SceneGraphGameLayer): SceneGraphRootNode =
+    SceneGraphRootNode(game, SceneGraphLightingLayer.empty, SceneGraphUiLayer.empty)
 }
 
-case class SceneGraphLayer(node: SceneGraphNode)
+case class SceneGraphGameLayer(node: SceneGraphNode)
+case class SceneGraphLightingLayer(node: SceneGraphNode)
+case class SceneGraphUiLayer(node: SceneGraphNode)
 
-object SceneGraphLayer {
-  def empty: SceneGraphLayer =
-    SceneGraphLayer(SceneGraphNode.empty)
+object SceneGraphGameLayer {
+  def empty: SceneGraphGameLayer =
+    SceneGraphGameLayer(SceneGraphNode.empty)
 
-  def apply(nodes: SceneGraphNode*): SceneGraphLayer =
-    SceneGraphLayer(
+  def apply(nodes: SceneGraphNode*): SceneGraphGameLayer =
+    SceneGraphGameLayer(
+      SceneGraphNodeBranch(nodes.toList)
+    )
+}
+object SceneGraphLightingLayer {
+  def empty: SceneGraphLightingLayer =
+    SceneGraphLightingLayer(SceneGraphNode.empty)
+
+  def apply(nodes: SceneGraphNode*): SceneGraphLightingLayer =
+    SceneGraphLightingLayer(
+      SceneGraphNodeBranch(nodes.toList)
+    )
+}
+object SceneGraphUiLayer {
+  def empty: SceneGraphUiLayer =
+    SceneGraphUiLayer(SceneGraphNode.empty)
+
+  def apply(nodes: SceneGraphNode*): SceneGraphUiLayer =
+    SceneGraphUiLayer(
       SceneGraphNodeBranch(nodes.toList)
     )
 }

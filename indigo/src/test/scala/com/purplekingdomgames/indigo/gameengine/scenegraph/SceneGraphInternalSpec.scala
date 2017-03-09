@@ -21,7 +21,7 @@ object SceneGraphSamples {
 
   val api: SceneGraphRootNode =
     SceneGraphRootNode(
-      SceneGraphLayer(
+      SceneGraphGameLayer(
         SceneGraphNodeBranch(
           Text(
             "Hello", 10, 10, 1,
@@ -43,13 +43,13 @@ object SceneGraphSamples {
           )
         )
       ),
-      SceneGraphLayer.empty,
-      SceneGraphLayer.empty
+      SceneGraphLightingLayer.empty,
+      SceneGraphUiLayer.empty
     )
 
   val internal: SceneGraphRootNodeInternal =
     SceneGraphRootNodeInternal(
-      SceneGraphLayerInternal(
+      SceneGraphGameLayerInternal(
         SceneGraphNodeBranchInternal(
           List(
             TextInternal(
@@ -118,8 +118,8 @@ object SceneGraphSamples {
           )
         )
       ),
-      SceneGraphLayerInternal(SceneGraphNodeBranchInternal(Nil)),
-      SceneGraphLayerInternal(SceneGraphNodeBranchInternal(Nil))
+      SceneGraphLightingLayerInternal(SceneGraphNodeBranchInternal(Nil)),
+      SceneGraphUiLayerInternal(SceneGraphNodeBranchInternal(Nil))
     )
 
 }

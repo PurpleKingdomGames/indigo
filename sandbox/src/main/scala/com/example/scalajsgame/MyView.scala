@@ -8,11 +8,11 @@ object MyView {
   def updateView(currentState: MyGameModel): SceneGraphRootNode =
     SceneGraphRootNode(
       gameLayer(currentState),
-      lighting = SceneGraphLayer.empty,
+      lighting = SceneGraphLightingLayer.empty,
       ui = uiLayer(currentState)
     )
 
-  def uiLayer(currentState: MyGameModel): SceneGraphLayer = SceneGraphLayer {
+  def uiLayer(currentState: MyGameModel): SceneGraphUiLayer = SceneGraphUiLayer {
     Text("ABC", 2, 2, 5,
       FontInfo(23, 23, MyAssets.smallFontName, 320, 230, FontChar("A", 3, 78))
         .addChar(FontChar("B", Point(26, 78)))
@@ -20,7 +20,7 @@ object MyView {
     )
   }
 
-  def gameLayer(currentState: MyGameModel): SceneGraphLayer = SceneGraphLayer {
+  def gameLayer(currentState: MyGameModel): SceneGraphGameLayer = SceneGraphGameLayer {
     SceneGraphNodeBranch(
 //      List(
         currentState.dude.walkDirection match {

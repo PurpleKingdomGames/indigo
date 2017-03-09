@@ -11,6 +11,7 @@ object MyAssets {
 //  val fontName: String = "fontName"
   val smallFontName: String = "smallFontName"
   val dudeName: String = "base_charactor"
+//  val light: String = "light"
 //  val sludge: String = "sludge"
 
 //  private val spriteAsset1 = ImageAsset(spriteSheetName1, "Sprite-0001.png")
@@ -26,6 +27,7 @@ object MyAssets {
 //      trafficLightsAsset,
 //      ImageAsset(fontName, "boxy_bold_font_5.png"),
       ImageAsset(smallFontName, "boxy_font.png"),
+//      ImageAsset(light, "light_texture.png"),
 //      TextAsset(trafficLightsName + "-json", trafficLightsName + ".json"),
       TextAsset(dudeName + "-json", dudeName + ".json"),
       ImageAsset(dudeName, dudeName + ".png")//,
