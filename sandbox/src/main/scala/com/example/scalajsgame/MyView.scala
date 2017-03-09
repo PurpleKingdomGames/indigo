@@ -13,10 +13,10 @@ object MyView {
     )
 
   def uiLayer(currentState: MyGameModel): SceneGraphLayer = SceneGraphLayer {
-    Text("ABC", 100, 100, 10,
-      FontInfo(64, 72, MyAssets.fontName, 888, 640, FontChar("A", 8, 215))
-        .addChar(FontChar("B", Point(8 + 64, 215)))
-        .addChar(FontChar("C", Point(8 + 64 + 64, 215)))
+    Text("ABC", 2, 2, 5,
+      FontInfo(23, 23, MyAssets.smallFontName, 320, 230, FontChar("A", 3, 78))
+        .addChar(FontChar("B", Point(26, 78)))
+        .addChar(FontChar("C", Point(50, 78)))
     )
   }
 

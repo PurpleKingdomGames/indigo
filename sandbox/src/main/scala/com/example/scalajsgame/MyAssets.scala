@@ -8,7 +8,8 @@ object MyAssets {
 //  val spriteSheetName2: String = "blob2"
 //  val spriteSheetName3: String = "f"
 //  val trafficLightsName: String = "trafficlights"
-  val fontName: String = "fontName"
+//  val fontName: String = "fontName"
+  val smallFontName: String = "smallFontName"
   val dudeName: String = "base_charactor"
 //  val sludge: String = "sludge"
 
@@ -23,7 +24,8 @@ object MyAssets {
 //      spriteAsset2,
 //      spriteAsset3,
 //      trafficLightsAsset,
-      ImageAsset(fontName, "boxy_bold_font_5.png"),
+//      ImageAsset(fontName, "boxy_bold_font_5.png"),
+      ImageAsset(smallFontName, "boxy_font.png"),
 //      TextAsset(trafficLightsName + "-json", trafficLightsName + ".json"),
       TextAsset(dudeName + "-json", dudeName + ".json"),
       ImageAsset(dudeName, dudeName + ".png")//,

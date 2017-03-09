@@ -12,6 +12,11 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   import RendererFunctions._
 
+  private val textureLocations: List[TextureLookup] =
+    loadedTextureAssets.map { li =>
+      TextureLookup(li.name, organiseImage(cNc.context, li.data))
+    }
+
   private val shaderProgram = shaderProgramSetup(cNc.context)
   private val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, Rectangle2D.vertices)
   private val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, Rectangle2D.textureCoordinates)
@@ -48,7 +53,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
   private def drawLayer(displayLayer: DisplayLayer): Unit =
     displayLayer.displayObjects.sortBy(d => (d.z, d.imageRef)).foreach { displayObject =>
 
-      textureLocations(cNc, loadedTextureAssets).find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
+      textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
 
         // Use Program
         cNc.context.useProgram(shaderProgram)

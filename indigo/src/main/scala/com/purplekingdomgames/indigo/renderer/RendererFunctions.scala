@@ -8,11 +8,6 @@ import scala.scalajs.js.typedarray.Float32Array
 
 object RendererFunctions {
 
-  def textureLocations(cNc: ContextAndCanvas, loadedTextureAssets: List[LoadedTextureAsset]): List[TextureLookup] =
-    loadedTextureAssets.map { li =>
-      TextureLookup(li.name, organiseImage(cNc.context, li.data))
-    }
-
   def createVertexBuffer[T](gl: raw.WebGLRenderingContext, vertices: scalajs.js.Array[T])(implicit num: Numeric[T]): WebGLBuffer = {
     //Create an empty buffer object and store vertex data
     val vertexBuffer: WebGLBuffer = gl.createBuffer()
