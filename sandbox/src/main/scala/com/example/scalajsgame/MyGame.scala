@@ -7,9 +7,9 @@ import com.purplekingdomgames.indigo.renderer.ClearColor
 
 object MyGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel] {
 
+  private val viewportWidth: Int = 456
   private val viewportHeight: Int = 256
-  private val viewportWidth: Int = 455
-  private val magnificationLevel: Int = 2
+  private val magnificationLevel: Int = 3
 
   def config: GameConfig = GameConfig(
     viewport = GameViewport(viewportWidth, viewportHeight),

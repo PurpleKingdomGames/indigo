@@ -44,6 +44,10 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
 
   def main(): Unit = {
 
+    if(config.viewport.width % 2 != 0 || config.viewport.height % 2 != 0) {
+      println("WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!")
+    }
+
     AssetManager.loadAssets(assets).foreach { ac =>
 
       assetCollection = ac

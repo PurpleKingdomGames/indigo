@@ -120,16 +120,21 @@ object RendererFunctions {
 
   }
 
-  def organiseImage(gl: raw.WebGLRenderingContext, image: html.Image): WebGLTexture = {
-
+  def createAndBindTexture(gl: raw.WebGLRenderingContext): WebGLTexture = {
     val texture = gl.createTexture()
-
     gl.bindTexture(TEXTURE_2D, texture)
 
     gl.texParameteri(TEXTURE_2D, TEXTURE_WRAP_S, CLAMP_TO_EDGE)
     gl.texParameteri(TEXTURE_2D, TEXTURE_WRAP_T, CLAMP_TO_EDGE)
     gl.texParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, NEAREST)
     gl.texParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, NEAREST)
+
+    texture
+  }
+
+  def organiseImage(gl: raw.WebGLRenderingContext, image: html.Image): WebGLTexture = {
+
+    val texture = createAndBindTexture(gl)
 
     gl.texImage2D(TEXTURE_2D, 0, RGBA, RGBA, UNSIGNED_BYTE, image)
     gl.generateMipmap(TEXTURE_2D)
@@ -171,12 +176,12 @@ object RendererFunctions {
     }
   }
 
-  def setupVertexShader(cNc: ContextAndCanvas, shaderProgram: WebGLProgram, displayObject: DisplayObject): Unit = {
+  def setupVertexShader(cNc: ContextAndCanvas, shaderProgram: WebGLProgram, displayObject: DisplayObject, magnification: Int): Unit = {
     val translation = cNc.context.getUniformLocation(shaderProgram, "u_matrix")
 
     val matrix4: Matrix4 =
       Matrix4
-        .orthographic(0, cNc.width / cNc.magnification, cNc.height / cNc.magnification, 0, -10000, 10000)
+        .orthographic(0, cNc.width / magnification, cNc.height / magnification, 0, -10000, 10000)
         .translate(displayObject.x, displayObject.y, displayObject.z)
         .scale(displayObject.width, displayObject.height, 1)
 
