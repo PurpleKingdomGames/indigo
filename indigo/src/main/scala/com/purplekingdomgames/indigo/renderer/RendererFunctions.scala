@@ -191,7 +191,10 @@ object RendererFunctions {
         |   vec4 textureColorGame = texture2D(u_texture_game, v_texcoord);
         |   vec4 textureColorLighting = texture2D(u_texture_lighting, v_texcoord);
         |   vec4 textureColorUi = texture2D(u_texture_ui, v_texcoord);
-        |   gl_FragColor = textureColorGame * textureColorLighting * textureColorUi;
+        |
+        |   vec4 gameAndLighting = textureColorGame * textureColorLighting;
+        |
+        |   gl_FragColor = mix(gameAndLighting, textureColorUi, textureColorUi.a);
         |}
       """.stripMargin
 
