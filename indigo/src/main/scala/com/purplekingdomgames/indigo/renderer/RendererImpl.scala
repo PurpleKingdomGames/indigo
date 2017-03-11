@@ -76,25 +76,25 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
      */
 
-    drawLayerToTexture(displayable.game, gameFrameBuffer)
-    drawLayerToTexture(displayable.lighting, lightingFrameBuffer)
-    drawLayerToTexture(displayable.ui, uiFrameBuffer)
+    drawLayerToTexture(displayable.game, gameFrameBuffer, (d: DisplayObject) => (d.z, d.imageRef))
+    drawLayerToTexture(displayable.lighting, lightingFrameBuffer, (d: DisplayObject) => d.imageRef)
+    drawLayerToTexture(displayable.ui, uiFrameBuffer, (d: DisplayObject) => (d.z, d.imageRef))
 
     renderToCanvas(screenDisplayObject)
   }
 
-  private def drawLayerToTexture(displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents): Unit = {
+  private def drawLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, sortingFunction: DisplayObject => B)(implicit ord: Ordering[B]): Unit = {
 
     // Switch to the frameBuffer
     FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer)
 
     // Draw as normal
-    drawLayer(displayLayer)
+    drawLayer(displayLayer, sortingFunction)
 
   }
 
-  private def drawLayer(displayLayer: DisplayLayer): Unit =
-    displayLayer.displayObjects.sortBy(d => (d.z, d.imageRef)).foreach { displayObject =>
+  private def drawLayer[B](displayLayer: DisplayLayer, sortingFunction: DisplayObject => B)(implicit ord: Ordering[B]): Unit =
+    displayLayer.displayObjects.sortBy(sortingFunction).foreach { displayObject =>
       textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
         renderToFrameBuffer(displayObject, textureLookup.texture, cNc.magnification)
       }
