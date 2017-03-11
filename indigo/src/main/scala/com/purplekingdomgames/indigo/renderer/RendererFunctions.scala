@@ -84,6 +84,89 @@ object RendererFunctions {
     shaderProgram
   }
 
+  def mergeShaderProgramSetup(gl: raw.WebGLRenderingContext): WebGLProgram = {
+    //vertex shader source code
+    val vertCode =
+      """
+        |attribute vec4 coordinates;
+        |attribute vec2 a_texcoord;
+        |
+        |uniform mat4 u_matrix;
+        |
+        |varying vec2 v_texcoord;
+        |
+        |void main(void) {
+        |  gl_Position = u_matrix * coordinates;
+        |
+        |  // Pass the texcoord to the fragment shader.
+        |  v_texcoord = a_texcoord;
+        |}
+      """.stripMargin
+
+    //Create a vertex shader program object and compile it
+    val vertShader = gl.createShader(VERTEX_SHADER)
+    gl.shaderSource(vertShader, vertCode)
+    gl.compileShader(vertShader)
+
+    println("vert: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
+
+    //fragment shader source code
+    val fragCode2 =
+      """
+        |precision mediump float;
+        |
+        |// Passed in from the vertex shader.
+        |varying vec2 v_texcoord;
+        |
+        |// The textures.
+        |uniform sampler2D u_texture_game;
+        |uniform sampler2D u_texture_lighting;
+        |uniform sampler2D u_texture_ui;
+        |
+        |void main(void) {
+        |   vec4 textureColorGame = texture2D(u_texture_game, v_texcoord);
+        |   vec4 textureColorLighting = texture2D(u_texture_lighting, v_texcoord);
+        |   vec4 textureColorUi = texture2D(u_texture_ui, v_texcoord);
+        |   gl_FragColor = textureColorGame * textureColorLighting * u_texture_ui;
+        |}
+      """.stripMargin
+
+    val fragCode =
+      """
+        |precision mediump float;
+        |
+        |// Passed in from the vertex shader.
+        |varying vec2 v_texcoord;
+        |
+        |// The textures.
+        |uniform sampler2D u_texture_game;
+        |uniform sampler2D u_texture_lighting;
+        |uniform sampler2D u_texture_ui;
+        |
+        |void main(void) {
+        |   vec4 textureColorGame = texture2D(u_texture_game, v_texcoord);
+        |   vec4 textureColorLighting = texture2D(u_texture_lighting, v_texcoord);
+        |   vec4 textureColorUi = texture2D(u_texture_ui, v_texcoord);
+        |   gl_FragColor = textureColorGame;// * textureColorLighting * textureColorUi;
+        |}
+      """.stripMargin
+
+    //Create a fragment shader program object and compile it
+    val fragShader = gl.createShader(FRAGMENT_SHADER)
+    gl.shaderSource(fragShader, fragCode)
+    gl.compileShader(fragShader)
+
+    println("frag: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
+
+    //Create and use combined shader program
+    val shaderProgram = gl.createProgram()
+    gl.attachShader(shaderProgram, vertShader)
+    gl.attachShader(shaderProgram, fragShader)
+    gl.linkProgram(shaderProgram)
+
+    shaderProgram
+  }
+
   def bindShaderToBuffer(cNc: ContextAndCanvas, shaderProgram: WebGLProgram, vertexBuffer: WebGLBuffer, textureBuffer: WebGLBuffer): Unit = {
 
     val gl = cNc.context
@@ -165,6 +248,25 @@ object RendererFunctions {
 
     val texcoordTranlsateLocation = gl.getUniformLocation(shaderProgram, "uTexcoordTranslate")
     gl.uniform2fv(texcoordTranlsateLocation, displayObject.frame.translate.toScalaJSArrayDouble)
+  }
+
+  def setupMergeFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, textureGame: WebGLTexture, textureLighting: WebGLTexture, textureUi: WebGLTexture, displayObject: DisplayObject): Unit = {
+
+    val u_texture_game = gl.getUniformLocation(shaderProgram, "u_texture_game")
+    val u_texture_lighting = gl.getUniformLocation(shaderProgram, "u_texture_lighting")
+    val u_texture_ui = gl.getUniformLocation(shaderProgram, "u_texture_ui")
+
+    gl.uniform1i(u_texture_game, 0)
+    gl.uniform1i(u_texture_lighting, 1)
+    gl.uniform1i(u_texture_ui, 2)
+
+    gl.activeTexture(TEXTURE0)
+    gl.bindTexture(TEXTURE_2D, textureGame)
+    gl.activeTexture(TEXTURE1)
+    gl.bindTexture(TEXTURE_2D, textureLighting)
+    gl.activeTexture(TEXTURE2)
+    gl.bindTexture(TEXTURE_2D, textureUi)
+
   }
 
   val flipMatrix: ((Boolean, Boolean)) => Matrix4 = flipValues => {

@@ -1,7 +1,7 @@
 package com.purplekingdomgames.indigo.renderer
 
 import org.scalajs.dom.raw.WebGLRenderingContext._
-import org.scalajs.dom.raw.{WebGLBuffer, WebGLFramebuffer, WebGLTexture}
+import org.scalajs.dom.raw.{WebGLBuffer, WebGLTexture}
 
 trait IRenderer {
   def init(): Unit
@@ -42,6 +42,8 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
   private val lightingFrameBuffer: FrameBufferComponents = FrameBufferFunctions.createFrameBuffer(cNc, FrameBufferFunctions.createAndSetupTexture(cNc))
   private val uiFrameBuffer: FrameBufferComponents = FrameBufferFunctions.createFrameBuffer(cNc, FrameBufferFunctions.createAndSetupTexture(cNc))
 
+  private val mergeShaderProgram = mergeShaderProgramSetup(cNc.context)
+
   def init(): Unit = {
     cNc.context.disable(DEPTH_TEST)
     cNc.context.viewport(0, 0, cNc.width, cNc.height)
@@ -78,15 +80,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     drawLayerToTexture(displayable.lighting, lightingFrameBuffer)
     drawLayerToTexture(displayable.ui, uiFrameBuffer)
 
-    // Switch to canvas
-    FrameBufferFunctions.switchToCanvas(cNc, config)
-
-    // Render to canvas
-    // TODO: This doesn't work, and it doesn't matter because it's not the right idea anyway! :-P
-    render(screenDisplayObject, gameFrameBuffer.texture, 1)
-    render(screenDisplayObject, lightingFrameBuffer.texture, 1)
-    render(screenDisplayObject, uiFrameBuffer.texture, 1)
-
+    renderToCanvas(screenDisplayObject)
   }
 
   private def drawLayerToTexture(displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents): Unit = {
@@ -102,11 +96,11 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
   private def drawLayer(displayLayer: DisplayLayer): Unit =
     displayLayer.displayObjects.sortBy(d => (d.z, d.imageRef)).foreach { displayObject =>
       textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
-        render(displayObject, textureLookup.texture, cNc.magnification)
+        renderToFrameBuffer(displayObject, textureLookup.texture, cNc.magnification)
       }
     }
 
-  private def render(displayObject: DisplayObject, texture: WebGLTexture, magnification: Int): Unit = {
+  private def renderToFrameBuffer(displayObject: DisplayObject, texture: WebGLTexture, magnification: Int): Unit = {
     // Use Program
     cNc.context.useProgram(shaderProgram)
 
@@ -121,47 +115,24 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     cNc.context.drawArrays(Rectangle2D.mode, 0, Rectangle2D.vertexCount)
   }
 
+  private def renderToCanvas(displayObject: DisplayObject): Unit = {
+
+    // Switch to canvas
+    FrameBufferFunctions.switchToCanvas(cNc, config)
+
+    // Use Program
+    cNc.context.useProgram(mergeShaderProgram)
+
+    // Setup attributes
+    bindShaderToBuffer(cNc, mergeShaderProgram, vertexBuffer, textureBuffer)
+
+    // Setup Uniforms
+    setupVertexShader(cNc, mergeShaderProgram, displayObject, 1)
+    setupMergeFragmentShader(cNc.context, mergeShaderProgram, gameFrameBuffer.texture, lightingFrameBuffer.texture, uiFrameBuffer.texture, displayObject)
+
+    // Draw
+    cNc.context.drawArrays(Rectangle2D.mode, 0, Rectangle2D.vertexCount)
+
+  }
+
 }
-
-object FrameBufferFunctions {
-
-  def createAndSetupTexture(cNc: ContextAndCanvas): WebGLTexture = {
-    val gl = cNc.context
-    val texture = RendererFunctions.createAndBindTexture(gl)
-
-    gl.texImage2D(TEXTURE_2D, 0, RGBA, cNc.width, cNc.height, 0, RGBA, UNSIGNED_BYTE, null)
-
-    texture
-  }
-
-  def createFrameBuffer(cNc: ContextAndCanvas, texture: WebGLTexture): FrameBufferComponents = {
-    val gl = cNc.context
-
-    val frameBuffer = gl.createFramebuffer()
-    gl.bindFramebuffer(FRAMEBUFFER, frameBuffer)
-
-    gl.framebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_2D, texture, 0)
-
-    FrameBufferComponents(frameBuffer, texture)
-  }
-
-  def switchToFramebuffer(cNc: ContextAndCanvas, frameBuffer: WebGLFramebuffer): Unit = {
-    val gl = cNc.context
-
-    gl.bindFramebuffer(FRAMEBUFFER, frameBuffer)
-
-    cNc.context.clear(COLOR_BUFFER_BIT)
-    cNc.context.clearColor(1, 1, 1, 0)
-  }
-
-  def switchToCanvas(cNc: ContextAndCanvas, config: RendererConfig): Unit = {
-    val gl = cNc.context
-
-    gl.bindFramebuffer(FRAMEBUFFER, null)
-
-    cNc.context.clear(COLOR_BUFFER_BIT)
-    cNc.context.clearColor(config.clearColor.r, config.clearColor.g, config.clearColor.b, config.clearColor.a)
-  }
-}
-
-case class FrameBufferComponents(frameBuffer: WebGLFramebuffer, texture: WebGLTexture)
