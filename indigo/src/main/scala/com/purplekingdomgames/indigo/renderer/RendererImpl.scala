@@ -66,9 +66,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     1. Change logic below to render each layer in order - done
     2. Setup three fixed frame buffers - done
     3. Switch to frame buffer before drawing each layer - done
-    4. New render stage to compose the three textures onto the canvas
-    5. New shader that accepts three images as input
-    6. Draw one displayObject that fills the screen with the combined texture
+    4. New render stage to compose the three textures onto the canvas - done
+    5. New shader that accepts three images as input - half done, needs to combine them correctly
+    6. Draw one displayObject that fills the screen with the combined texture - done
 
     Ref:
     https://webglfundamentals.org/webgl/lessons/webgl-2-textures.html

@@ -108,28 +108,9 @@ object RendererFunctions {
     gl.shaderSource(vertShader, vertCode)
     gl.compileShader(vertShader)
 
-    println("vert: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
+    //println("vert: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
 
     //fragment shader source code
-    val fragCode2 =
-      """
-        |precision mediump float;
-        |
-        |// Passed in from the vertex shader.
-        |varying vec2 v_texcoord;
-        |
-        |// The textures.
-        |uniform sampler2D u_texture_game;
-        |uniform sampler2D u_texture_lighting;
-        |uniform sampler2D u_texture_ui;
-        |
-        |void main(void) {
-        |   vec4 textureColorGame = texture2D(u_texture_game, v_texcoord);
-        |   vec4 textureColorLighting = texture2D(u_texture_lighting, v_texcoord);
-        |   vec4 textureColorUi = texture2D(u_texture_ui, v_texcoord);
-        |   gl_FragColor = textureColorGame * textureColorLighting * u_texture_ui;
-        |}
-      """.stripMargin
 
     val fragCode =
       """
@@ -147,7 +128,7 @@ object RendererFunctions {
         |   vec4 textureColorGame = texture2D(u_texture_game, v_texcoord);
         |   vec4 textureColorLighting = texture2D(u_texture_lighting, v_texcoord);
         |   vec4 textureColorUi = texture2D(u_texture_ui, v_texcoord);
-        |   gl_FragColor = textureColorGame;// * textureColorLighting * textureColorUi;
+        |   gl_FragColor = textureColorGame * textureColorLighting * textureColorUi;
         |}
       """.stripMargin
 
@@ -156,7 +137,7 @@ object RendererFunctions {
     gl.shaderSource(fragShader, fragCode)
     gl.compileShader(fragShader)
 
-    println("frag: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
+    //println("frag: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
 
     //Create and use combined shader program
     val shaderProgram = gl.createProgram()
@@ -253,20 +234,22 @@ object RendererFunctions {
   def setupMergeFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, textureGame: WebGLTexture, textureLighting: WebGLTexture, textureUi: WebGLTexture, displayObject: DisplayObject): Unit = {
 
     val u_texture_game = gl.getUniformLocation(shaderProgram, "u_texture_game")
-    val u_texture_lighting = gl.getUniformLocation(shaderProgram, "u_texture_lighting")
-    val u_texture_ui = gl.getUniformLocation(shaderProgram, "u_texture_ui")
-
     gl.uniform1i(u_texture_game, 0)
-    gl.uniform1i(u_texture_lighting, 1)
-    gl.uniform1i(u_texture_ui, 2)
-
     gl.activeTexture(TEXTURE0)
     gl.bindTexture(TEXTURE_2D, textureGame)
+
+    val u_texture_lighting = gl.getUniformLocation(shaderProgram, "u_texture_lighting")
+    gl.uniform1i(u_texture_lighting, 1)
     gl.activeTexture(TEXTURE1)
     gl.bindTexture(TEXTURE_2D, textureLighting)
+
+    val u_texture_ui = gl.getUniformLocation(shaderProgram, "u_texture_ui")
+    gl.uniform1i(u_texture_ui, 2)
     gl.activeTexture(TEXTURE2)
     gl.bindTexture(TEXTURE_2D, textureUi)
 
+    // Reset to TEXTURE0 before the next round of rendering happens.
+    gl.activeTexture(TEXTURE0)
   }
 
   val flipMatrix: ((Boolean, Boolean)) => Matrix4 = flipValues => {
