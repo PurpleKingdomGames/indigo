@@ -84,6 +84,69 @@ object RendererFunctions {
     shaderProgram
   }
 
+  def lightingShaderProgramSetup(gl: raw.WebGLRenderingContext): WebGLProgram = {
+    //vertex shader source code
+    val vertCode =
+      """
+        |attribute vec4 coordinates;
+        |attribute vec2 a_texcoord;
+        |
+        |uniform mat4 u_matrix;
+        |
+        |varying vec2 v_texcoord;
+        |
+        |void main(void) {
+        |  gl_Position = u_matrix * coordinates;
+        |
+        |  // Pass the texcoord to the fragment shader.
+        |  v_texcoord = a_texcoord;
+        |}
+      """.stripMargin
+
+    //Create a vertex shader program object and compile it
+    val vertShader = gl.createShader(VERTEX_SHADER)
+    gl.shaderSource(vertShader, vertCode)
+    gl.compileShader(vertShader)
+
+    //println("vert: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
+
+    //fragment shader source code
+    val fragCode =
+      """
+        |precision mediump float;
+        |
+        |// Passed in from the vertex shader.
+        |varying vec2 v_texcoord;
+        |
+        |// The texture.
+        |uniform sampler2D u_texture;
+        |uniform float uAlpha;
+        |uniform vec3 uTint;
+        |uniform vec2 uTexcoordScale;
+        |uniform vec2 uTexcoordTranslate;
+        |
+        |void main(void) {
+        |   vec4 textureColor = texture2D(u_texture, (v_texcoord * uTexcoordScale) + uTexcoordTranslate);
+        |   gl_FragColor = vec4(textureColor.rgb * uTint, textureColor.a * uAlpha);
+        |}
+      """.stripMargin
+
+    //Create a fragment shader program object and compile it
+    val fragShader = gl.createShader(FRAGMENT_SHADER)
+    gl.shaderSource(fragShader, fragCode)
+    gl.compileShader(fragShader)
+
+    //println("frag: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
+
+    //Create and use combined shader program
+    val shaderProgram = gl.createProgram()
+    gl.attachShader(shaderProgram, vertShader)
+    gl.attachShader(shaderProgram, fragShader)
+    gl.linkProgram(shaderProgram)
+
+    shaderProgram
+  }
+
   def mergeShaderProgramSetup(gl: raw.WebGLRenderingContext): WebGLProgram = {
     //vertex shader source code
     val vertCode =
