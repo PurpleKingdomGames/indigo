@@ -122,6 +122,16 @@ case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, image
   def moveTo(x: Int, y: Int): Sprite =
     this.copy(bounds = bounds.copy(position = Point(x, y)))
 
+  def moveBy(x: Int, y: Int): Sprite =
+    this.copy(bounds = bounds.copy(
+      position =
+        bounds.position.copy(
+          x = bounds.position.x + x,
+          y = bounds.position.y + y
+        )
+      )
+    )
+
   def withBindingKey(keyValue: String): Sprite =
     this.copy(bindingKey = BindingKey(keyValue))
   def withBindingKey(bindingKey: BindingKey): Sprite =

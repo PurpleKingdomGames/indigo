@@ -25,22 +25,22 @@ object FrameBufferFunctions {
     FrameBufferComponents(frameBuffer, texture)
   }
 
-  def switchToFramebuffer(cNc: ContextAndCanvas, frameBuffer: WebGLFramebuffer): Unit = {
+  def switchToFramebuffer(cNc: ContextAndCanvas, frameBuffer: WebGLFramebuffer, clearColor: ClearColor): Unit = {
     val gl = cNc.context
 
     gl.bindFramebuffer(FRAMEBUFFER, frameBuffer)
 
     cNc.context.clear(COLOR_BUFFER_BIT)
-    cNc.context.clearColor(1, 1, 1, 0)
+    cNc.context.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a)
   }
 
-  def switchToCanvas(cNc: ContextAndCanvas, config: RendererConfig): Unit = {
+  def switchToCanvas(cNc: ContextAndCanvas, clearColor: ClearColor): Unit = {
     val gl = cNc.context
 
     gl.bindFramebuffer(FRAMEBUFFER, null)
 
     cNc.context.clear(COLOR_BUFFER_BIT)
-    cNc.context.clearColor(config.clearColor.r, config.clearColor.g, config.clearColor.b, config.clearColor.a)
+    cNc.context.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a)
   }
 }
 

@@ -40,14 +40,15 @@ object MyView {
             currentState.dude.dude.sprite
               .changeCycle(d.cycleName)
               .play()
-        }
+        },
+        currentState.dude.dude.sprite.moveBy(8, 10)
       )
     )
 
   def lightingLayer(currentState: MyGameModel): SceneGraphLightingLayer =
     SceneGraphLightingLayer(
-      Graphic(0, 0, 320, 240, 1, MyAssets.light),
-      Graphic(-160, -120, 320, 240, 1, MyAssets.light)
+      Graphic(0, 0, 320, 240, 1, MyAssets.light).withAlpha(0.25),
+      Graphic(-115, -100, 320, 240, 1, MyAssets.light)
     )
 
   def uiLayer(currentState: MyGameModel): SceneGraphUiLayer =

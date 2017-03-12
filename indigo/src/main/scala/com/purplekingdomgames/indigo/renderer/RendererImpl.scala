@@ -1,7 +1,7 @@
 package com.purplekingdomgames.indigo.renderer
 
+import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
-import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram, WebGLTexture}
 
 trait IRenderer {
   def init(): Unit
@@ -77,49 +77,69 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
      */
 
-    drawLayerToTexture(displayable.game, gameFrameBuffer, (d: DisplayObject) => (d.z, d.imageRef), shaderProgram)
-    drawLayerToTexture(displayable.lighting, lightingFrameBuffer, (d: DisplayObject) => d.imageRef, lightingShaderProgram)
-    drawLayerToTexture(displayable.ui, uiFrameBuffer, (d: DisplayObject) => (d.z, d.imageRef), shaderProgram)
+    drawLayerToTexture(displayable.game, gameFrameBuffer, ClearColor(1, 1, 1, 0))
+    drawLightingLayerToTexture(displayable.lighting, lightingFrameBuffer, ClearColor(0, 0, 0, 0))
+    drawLayerToTexture(displayable.ui, uiFrameBuffer, ClearColor(1, 1, 1, 0))
 
     renderToCanvas(screenDisplayObject)
   }
 
-  private def drawLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, sortingFunction: DisplayObject => B, shader: WebGLProgram)(implicit ord: Ordering[B]): Unit = {
+  private def drawLightingLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor): Unit = {
 
     // Switch to the frameBuffer
-    FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer)
+    FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)
 
     // Draw as normal
-    drawLayer(displayLayer, sortingFunction, shader)
+    displayLayer.displayObjects.sortBy(d => d.imageRef).foreach { displayObject =>
+      textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
+        // Use Program
+        cNc.context.useProgram(lightingShaderProgram)
+
+        // Setup attributes
+        bindShaderToBuffer(cNc, lightingShaderProgram, vertexBuffer, textureBuffer)
+
+        // Setup Uniforms
+        setupVertexShader(cNc, lightingShaderProgram, displayObject, cNc.magnification)
+        setupLightingFragmentShader(cNc.context, lightingShaderProgram, textureLookup.texture, /*lightingFrameBuffer.texture,*/ displayObject)
+
+        // Draw
+        cNc.context.drawArrays(Rectangle2D.mode, 0, Rectangle2D.vertexCount)
+      }
+  }
 
   }
 
-  private def drawLayer[B](displayLayer: DisplayLayer, sortingFunction: DisplayObject => B, shader: WebGLProgram)(implicit ord: Ordering[B]): Unit =
-    displayLayer.displayObjects.sortBy(sortingFunction).foreach { displayObject =>
+  private def drawLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor): Unit = {
+
+    // Switch to the frameBuffer
+    FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)
+
+    // Use Program
+    cNc.context.useProgram(shaderProgram)
+
+    // Setup attributes
+    bindShaderToBuffer(cNc, shaderProgram, vertexBuffer, textureBuffer)
+
+    // Draw as normal
+    displayLayer.displayObjects.sortBy(d => (d.z, d.imageRef)).foreach { displayObject =>
       textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
-        renderToFrameBuffer(displayObject, textureLookup.texture, cNc.magnification, shader)
+
+        // Setup Uniforms
+        setupVertexShader(cNc, shaderProgram, displayObject, cNc.magnification)
+        setupFragmentShader(cNc.context, shaderProgram, textureLookup.texture, displayObject)
+
+        // Draw
+        cNc.context.drawArrays(Rectangle2D.mode, 0, Rectangle2D.vertexCount)
+
       }
     }
 
-  private def renderToFrameBuffer(displayObject: DisplayObject, texture: WebGLTexture, magnification: Int, shader: WebGLProgram): Unit = {
-    // Use Program
-    cNc.context.useProgram(shader)
-
-    // Setup attributes
-    bindShaderToBuffer(cNc, shader, vertexBuffer, textureBuffer)
-
-    // Setup Uniforms
-    setupVertexShader(cNc, shader, displayObject, magnification)
-    setupFragmentShader(cNc.context, shader, texture, displayObject)
-
-    // Draw
-    cNc.context.drawArrays(Rectangle2D.mode, 0, Rectangle2D.vertexCount)
   }
 
   private def renderToCanvas(displayObject: DisplayObject): Unit = {
 
     // Switch to canvas
-    FrameBufferFunctions.switchToCanvas(cNc, config)
+    FrameBufferFunctions.switchToCanvas(cNc, config.clearColor)
 
     // Use Program
     cNc.context.useProgram(mergeShaderProgram)

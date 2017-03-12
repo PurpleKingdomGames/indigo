@@ -120,6 +120,7 @@ object RendererFunctions {
         |
         |// The texture.
         |uniform sampler2D u_texture;
+        |//uniform sampler2D u_texture_underlying;
         |uniform float uAlpha;
         |uniform vec3 uTint;
         |uniform vec2 uTexcoordScale;
@@ -127,7 +128,16 @@ object RendererFunctions {
         |
         |void main(void) {
         |   vec4 textureColor = texture2D(u_texture, (v_texcoord * uTexcoordScale) + uTexcoordTranslate);
-        |   gl_FragColor = vec4(textureColor.rgb * uTint, textureColor.a * uAlpha);
+        |
+        |   //vec4 underlyingColor = texture2D(u_texture_underlying, (v_texcoord * uTexcoordScale) + uTexcoordTranslate);
+        |   //vec4 newTextureColor = mix(underlyingColor, textureColor, textureColor.a);
+        |   //gl_FragColor = vec4(textureColor.rgb * uTint, textureColor.a * uAlpha);
+        |
+        |   //gl_FragColor = vec4(vec3(1, 1, 1), float(1));
+        |
+        |   float average = (textureColor.r + textureColor.g + textureColor.b) / float(3);
+        |
+        |   gl_FragColor = vec4(vec3(1, 1, 1) * uTint, average * uAlpha);
         |}
       """.stripMargin
 
@@ -192,11 +202,25 @@ object RendererFunctions {
         |   vec4 textureColorLighting = texture2D(u_texture_lighting, v_texcoord);
         |   vec4 textureColorUi = texture2D(u_texture_ui, v_texcoord);
         |
-        |   vec4 gameAndLighting = textureColorGame * textureColorLighting;
+        |   vec4 gameAndLighting = (1.0 - textureColorLighting.a) * textureColorGame + textureColorLighting.a * textureColorLighting;
+        |   //vec4 gameAndLighting = mix(textureColorGame, textureColorLighting, textureColorLighting.a);
+        |   //vec4 gameAndLighting = textureColorGame * textureColorLighting;
         |
         |   gl_FragColor = mix(gameAndLighting, textureColorUi, textureColorUi.a);
         |}
       """.stripMargin
+
+    /*
+
+    The above does it blend by essentially creating graphs that cross over in the middle.
+
+    1|\ /
+     | X
+     |/ \
+    0+---
+     0  1
+     
+     */
 
     //Create a fragment shader program object and compile it
     val fragShader = gl.createShader(FRAGMENT_SHADER)
@@ -295,6 +319,38 @@ object RendererFunctions {
 
     val texcoordTranlsateLocation = gl.getUniformLocation(shaderProgram, "uTexcoordTranslate")
     gl.uniform2fv(texcoordTranlsateLocation, displayObject.frame.translate.toScalaJSArrayDouble)
+  }
+
+  def setupLightingFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture/*, textureUnderlying: WebGLTexture*/, displayObject: DisplayObject): Unit = {
+
+    gl.activeTexture(TEXTURE0)
+
+    if(displayObject.imageRef != lastTextureName) {
+      gl.bindTexture(TEXTURE_2D, texture)
+      lastTextureName = displayObject.imageRef
+    }
+
+    val u_texture = gl.getUniformLocation(shaderProgram, "u_texture")
+    gl.uniform1i(u_texture, 0)
+
+//    val u_texture_underlying = gl.getUniformLocation(shaderProgram, "u_texture_underlying")
+//    gl.uniform1i(u_texture_underlying, 1)
+//    gl.activeTexture(TEXTURE1)
+//    gl.bindTexture(TEXTURE_2D, texture)
+
+    val alphaLocation = gl.getUniformLocation(shaderProgram, "uAlpha")
+    gl.uniform1f(alphaLocation, displayObject.alpha)
+
+    val tintLocation = gl.getUniformLocation(shaderProgram, "uTint")
+    gl.uniform3fv(tintLocation, scalajs.js.Array[Double](displayObject.tintR, displayObject.tintG, displayObject.tintB))
+
+    val texcoordScaleLocation = gl.getUniformLocation(shaderProgram, "uTexcoordScale")
+    gl.uniform2fv(texcoordScaleLocation, displayObject.frame.scale.toScalaJSArrayDouble)
+
+    val texcoordTranlsateLocation = gl.getUniformLocation(shaderProgram, "uTexcoordTranslate")
+    gl.uniform2fv(texcoordTranlsateLocation, displayObject.frame.translate.toScalaJSArrayDouble)
+
+    gl.activeTexture(TEXTURE0)
   }
 
   def setupMergeFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, textureGame: WebGLTexture, textureLighting: WebGLTexture, textureUi: WebGLTexture, displayObject: DisplayObject): Unit = {
