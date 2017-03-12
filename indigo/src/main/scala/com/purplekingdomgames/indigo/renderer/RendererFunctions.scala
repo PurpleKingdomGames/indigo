@@ -202,25 +202,13 @@ object RendererFunctions {
         |   vec4 textureColorLighting = texture2D(u_texture_lighting, v_texcoord);
         |   vec4 textureColorUi = texture2D(u_texture_ui, v_texcoord);
         |
-        |   vec4 gameAndLighting = (1.0 - textureColorLighting.a) * textureColorGame + textureColorLighting.a * textureColorLighting;
-        |   //vec4 gameAndLighting = mix(textureColorGame, textureColorLighting, textureColorLighting.a);
-        |   //vec4 gameAndLighting = textureColorGame * textureColorLighting;
+        |   // The brightness of the image is directly proportially to the amount of light hitting it.
+        |   // The amount of light in this case being textureColorLighting.a
+        |   vec4 gameAndLighting = vec4(textureColorGame.rgb * textureColorLighting.a, float(1.0));
         |
         |   gl_FragColor = mix(gameAndLighting, textureColorUi, textureColorUi.a);
         |}
       """.stripMargin
-
-    /*
-
-    The above does it blend by essentially creating graphs that cross over in the middle.
-
-    1|\ /
-     | X
-     |/ \
-    0+---
-     0  1
-     
-     */
 
     //Create a fragment shader program object and compile it
     val fragShader = gl.createShader(FRAGMENT_SHADER)
