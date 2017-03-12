@@ -191,7 +191,7 @@ object RendererFunctions {
         |uniform sampler2D u_texture_lighting;
         |uniform sampler2D u_texture_ui;
         |uniform float ambientAmount;
-        |uniform float ambientTint;
+        |uniform vec3 ambientTint;
         |
         |void main(void) {
         |   vec4 textureColorGame = texture2D(u_texture_game, v_texcoord);
@@ -200,7 +200,7 @@ object RendererFunctions {
         |
         |   // The brightness of the image is directly proportially to the amount of light hitting it.
         |   // The amount of light in this case being textureColorLighting.a
-        |   vec4 gameAndLighting = vec4((textureColorGame.rgb * (ambientAmount + textureColorLighting.a)), float(1.0));
+        |   vec4 gameAndLighting = vec4(((textureColorGame.rgb * ambientTint) * (ambientAmount + textureColorLighting.a)), float(1.0));
         |
         |   gl_FragColor = mix(gameAndLighting, textureColorUi, textureColorUi.a);
         |}
@@ -358,7 +358,7 @@ object RendererFunctions {
     gl.uniform1f(ambientAmountLocation, ambientLight.amount)
 
     val ambientTintLocation = gl.getUniformLocation(shaderProgram, "ambientTint")
-    gl.uniform1fv(ambientTintLocation, scalajs.js.Array[Double](ambientLight.tint.r, ambientLight.tint.g, ambientLight.tint.b))
+    gl.uniform3fv(ambientTintLocation, scalajs.js.Array[Double](ambientLight.tint.r, ambientLight.tint.g, ambientLight.tint.b))
 
     // Reset to TEXTURE0 before the next round of rendering happens.
     gl.activeTexture(TEXTURE0)

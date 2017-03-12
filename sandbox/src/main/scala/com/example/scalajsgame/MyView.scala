@@ -49,7 +49,7 @@ object MyView {
     SceneGraphLightingLayer(
       Graphic(0, 0, 320, 240, 1, MyAssets.light).withTint(1, 0, 0),//.withAlpha(0.5),
       Graphic(-115, -100, 320, 240, 1, MyAssets.light).withTint(0.5, 1, 0.5)
-    ).withAmbientLightAmount(0.5)
+    ).withAmbientLightAmount(0.5).withAmbientLightTint(0, 0, 1)
 
   def uiLayer(currentState: MyGameModel): SceneGraphUiLayer =
     SceneGraphUiLayer(
