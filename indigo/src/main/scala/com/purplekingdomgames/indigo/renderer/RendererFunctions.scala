@@ -131,7 +131,7 @@ object RendererFunctions {
         |
         |   float average = (textureColor.r + textureColor.g + textureColor.b) / float(3);
         |
-        |   gl_FragColor = vec4(vec3(1, 1, 1) * uTint, average * uAlpha);
+        |   gl_FragColor = vec4(textureColor.rgb, average * uAlpha);
         |}
       """.stripMargin
 
@@ -200,7 +200,7 @@ object RendererFunctions {
         |
         |   // The brightness of the image is directly proportially to the amount of light hitting it.
         |   // The amount of light in this case being textureColorLighting.a
-        |   vec4 gameAndLighting = vec4(((textureColorGame.rgb * ambientTint) * (ambientAmount + textureColorLighting.a)), float(1.0));
+        |   vec4 gameAndLighting = vec4(((textureColorGame.rgb * ambientTint * textureColorLighting.rgb) * (ambientAmount + textureColorLighting.a)), float(1.0));
         |
         |   gl_FragColor = mix(gameAndLighting, textureColorUi, textureColorUi.a);
         |}
@@ -316,11 +316,6 @@ object RendererFunctions {
 
     val u_texture = gl.getUniformLocation(shaderProgram, "u_texture")
     gl.uniform1i(u_texture, 0)
-
-//    val u_texture_underlying = gl.getUniformLocation(shaderProgram, "u_texture_underlying")
-//    gl.uniform1i(u_texture_underlying, 1)
-//    gl.activeTexture(TEXTURE1)
-//    gl.bindTexture(TEXTURE_2D, texture)
 
     val alphaLocation = gl.getUniformLocation(shaderProgram, "uAlpha")
     gl.uniform1f(alphaLocation, displayObject.alpha)
