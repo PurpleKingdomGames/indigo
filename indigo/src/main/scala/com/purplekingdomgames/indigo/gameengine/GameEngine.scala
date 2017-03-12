@@ -218,7 +218,7 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
   private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNodeInternal): Displayable =
     Displayable(
       GameDisplayLayer(rootNode.game.node.flatten.flatMap(leafToDisplayObject)),
-      LightingDisplayLayer(rootNode.lighting.node.flatten.flatMap(leafToDisplayObject)),
+      LightingDisplayLayer(rootNode.lighting.node.flatten.flatMap(leafToDisplayObject), rootNode.lighting.ambientLight),
       UiDisplayLayer(rootNode.ui.node.flatten.flatMap(leafToDisplayObject))
     )
 

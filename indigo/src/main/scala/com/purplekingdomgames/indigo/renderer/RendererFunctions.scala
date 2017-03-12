@@ -1,5 +1,6 @@
 package com.purplekingdomgames.indigo.renderer
 
+import com.purplekingdomgames.indigo.gameengine.scenegraph.AmbientLight
 import org.scalajs.dom.{html, raw}
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram, WebGLTexture}
@@ -120,7 +121,6 @@ object RendererFunctions {
         |
         |// The texture.
         |uniform sampler2D u_texture;
-        |//uniform sampler2D u_texture_underlying;
         |uniform float uAlpha;
         |uniform vec3 uTint;
         |uniform vec2 uTexcoordScale;
@@ -128,12 +128,6 @@ object RendererFunctions {
         |
         |void main(void) {
         |   vec4 textureColor = texture2D(u_texture, (v_texcoord * uTexcoordScale) + uTexcoordTranslate);
-        |
-        |   //vec4 underlyingColor = texture2D(u_texture_underlying, (v_texcoord * uTexcoordScale) + uTexcoordTranslate);
-        |   //vec4 newTextureColor = mix(underlyingColor, textureColor, textureColor.a);
-        |   //gl_FragColor = vec4(textureColor.rgb * uTint, textureColor.a * uAlpha);
-        |
-        |   //gl_FragColor = vec4(vec3(1, 1, 1), float(1));
         |
         |   float average = (textureColor.r + textureColor.g + textureColor.b) / float(3);
         |
@@ -196,6 +190,8 @@ object RendererFunctions {
         |uniform sampler2D u_texture_game;
         |uniform sampler2D u_texture_lighting;
         |uniform sampler2D u_texture_ui;
+        |uniform float ambientAmount;
+        |uniform float ambientTint;
         |
         |void main(void) {
         |   vec4 textureColorGame = texture2D(u_texture_game, v_texcoord);
@@ -204,7 +200,7 @@ object RendererFunctions {
         |
         |   // The brightness of the image is directly proportially to the amount of light hitting it.
         |   // The amount of light in this case being textureColorLighting.a
-        |   vec4 gameAndLighting = vec4(textureColorGame.rgb * textureColorLighting.a, float(1.0));
+        |   vec4 gameAndLighting = vec4((textureColorGame.rgb * (ambientAmount + textureColorLighting.a)), float(1.0));
         |
         |   gl_FragColor = mix(gameAndLighting, textureColorUi, textureColorUi.a);
         |}
@@ -341,7 +337,7 @@ object RendererFunctions {
     gl.activeTexture(TEXTURE0)
   }
 
-  def setupMergeFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, textureGame: WebGLTexture, textureLighting: WebGLTexture, textureUi: WebGLTexture, displayObject: DisplayObject): Unit = {
+  def setupMergeFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, textureGame: WebGLTexture, textureLighting: WebGLTexture, textureUi: WebGLTexture, displayObject: DisplayObject, ambientLight: AmbientLight): Unit = {
 
     val u_texture_game = gl.getUniformLocation(shaderProgram, "u_texture_game")
     gl.uniform1i(u_texture_game, 0)
@@ -357,6 +353,12 @@ object RendererFunctions {
     gl.uniform1i(u_texture_ui, 2)
     gl.activeTexture(TEXTURE2)
     gl.bindTexture(TEXTURE_2D, textureUi)
+
+    val ambientAmountLocation = gl.getUniformLocation(shaderProgram, "ambientAmount")
+    gl.uniform1f(ambientAmountLocation, ambientLight.amount)
+
+    val ambientTintLocation = gl.getUniformLocation(shaderProgram, "ambientTint")
+    gl.uniform1fv(ambientTintLocation, scalajs.js.Array[Double](ambientLight.tint.r, ambientLight.tint.g, ambientLight.tint.b))
 
     // Reset to TEXTURE0 before the next round of rendering happens.
     gl.activeTexture(TEXTURE0)

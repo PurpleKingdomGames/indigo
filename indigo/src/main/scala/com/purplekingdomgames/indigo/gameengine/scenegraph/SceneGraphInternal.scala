@@ -55,7 +55,8 @@ object SceneGraphInternal {
         convertChild(sceneGraphNode.game.node)
       ),
       lighting = SceneGraphLightingLayerInternal(
-        convertChild(sceneGraphNode.lighting.node)
+        convertChild(sceneGraphNode.lighting.node),
+        sceneGraphNode.lighting.ambientLight
       ),
       ui = SceneGraphUiLayerInternal(
         convertChild(sceneGraphNode.ui.node)
@@ -100,7 +101,7 @@ case class SceneGraphGameLayerInternal(node: SceneGraphNodeInternal) {
     this.copy(node = node.runAnimationActions(gameTime))
 
 }
-case class SceneGraphLightingLayerInternal(node: SceneGraphNodeInternal) {
+case class SceneGraphLightingLayerInternal(node: SceneGraphNodeInternal, ambientLight: AmbientLight) {
 
   def applyAnimationMemento(animationStates: AnimationStates): SceneGraphLightingLayerInternal =
     this.copy(node = node.applyAnimationMemento(animationStates))

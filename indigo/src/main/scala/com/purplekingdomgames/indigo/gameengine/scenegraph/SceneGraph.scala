@@ -27,15 +27,46 @@ object SceneGraphGameLayer {
     )
 }
 
-case class SceneGraphLightingLayer(node: SceneGraphNodeBranch)
+case class SceneGraphLightingLayer(node: SceneGraphNodeBranch, ambientLight: AmbientLight) {
+
+  def withAmbientLight(ambientLight: AmbientLight): SceneGraphLightingLayer = {
+    this.copy(
+      ambientLight = ambientLight
+    )
+  }
+  def withAmbientLightAmount(amount: Double): SceneGraphLightingLayer = {
+    this.copy(
+      ambientLight = this.ambientLight.copy(
+        amount = amount
+      )
+    )
+  }
+  def withAmbientLightTint(r: Double, g: Double, b: Double): SceneGraphLightingLayer = {
+    this.copy(
+      ambientLight = this.ambientLight.copy(
+        tint = Tint(r, g, b)
+      )
+    )
+  }
+
+}
 object SceneGraphLightingLayer {
   def empty: SceneGraphLightingLayer =
-    SceneGraphLightingLayer(SceneGraphNode.empty)
+    SceneGraphLightingLayer(
+      SceneGraphNode.empty,
+      AmbientLight.none
+    )
 
   def apply(nodes: SceneGraphNodeLeaf*): SceneGraphLightingLayer =
     SceneGraphLightingLayer(
-      SceneGraphNodeBranch(nodes.toList)
+      SceneGraphNodeBranch(nodes.toList),
+      AmbientLight.none
     )
+}
+
+case class AmbientLight(tint: Tint, amount: Double)
+object AmbientLight {
+  val none: AmbientLight = AmbientLight(Tint.none, 0)
 }
 
 case class SceneGraphUiLayer(node: SceneGraphNode)

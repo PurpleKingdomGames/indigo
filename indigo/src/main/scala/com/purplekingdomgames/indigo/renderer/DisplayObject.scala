@@ -1,11 +1,12 @@
 package com.purplekingdomgames.indigo.renderer
 
+import com.purplekingdomgames.indigo.gameengine.scenegraph.AmbientLight
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram}
 
 case class Displayable(game: GameDisplayLayer, lighting: LightingDisplayLayer, ui: UiDisplayLayer)
 case class GameDisplayLayer(displayObjects: List[DisplayObject]) extends DisplayLayer
-case class LightingDisplayLayer(displayObjects: List[DisplayObject]) extends DisplayLayer
+case class LightingDisplayLayer(displayObjects: List[DisplayObject], ambientLight: AmbientLight) extends DisplayLayer
 case class UiDisplayLayer(displayObjects: List[DisplayObject]) extends DisplayLayer
 sealed trait DisplayLayer {
   val displayObjects: List[DisplayObject]

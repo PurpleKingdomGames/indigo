@@ -1,5 +1,6 @@
 package com.purplekingdomgames.indigo.renderer
 
+import com.purplekingdomgames.indigo.gameengine.scenegraph.AmbientLight
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
 
@@ -81,7 +82,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     drawLightingLayerToTexture(displayable.lighting, lightingFrameBuffer, ClearColor(0, 0, 0, 0))
     drawLayerToTexture(displayable.ui, uiFrameBuffer, ClearColor(1, 1, 1, 0))
 
-    renderToCanvas(screenDisplayObject)
+    renderToCanvas(screenDisplayObject, displayable.lighting.ambientLight)
   }
 
   private def drawLightingLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor): Unit = {
@@ -136,7 +137,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   }
 
-  private def renderToCanvas(displayObject: DisplayObject): Unit = {
+  private def renderToCanvas(displayObject: DisplayObject, ambientLight: AmbientLight): Unit = {
 
     // Switch to canvas
     FrameBufferFunctions.switchToCanvas(cNc, config.clearColor)
@@ -149,7 +150,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     // Setup Uniforms
     setupVertexShader(cNc, mergeShaderProgram, displayObject, 1)
-    setupMergeFragmentShader(cNc.context, mergeShaderProgram, gameFrameBuffer.texture, lightingFrameBuffer.texture, uiFrameBuffer.texture, displayObject)
+    setupMergeFragmentShader(cNc.context, mergeShaderProgram, gameFrameBuffer.texture, lightingFrameBuffer.texture, uiFrameBuffer.texture, displayObject, ambientLight)
 
     // Draw
     cNc.context.drawArrays(Rectangle2D.mode, 0, Rectangle2D.vertexCount)
