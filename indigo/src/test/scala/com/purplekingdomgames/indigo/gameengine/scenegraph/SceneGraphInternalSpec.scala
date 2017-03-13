@@ -118,7 +118,7 @@ object SceneGraphSamples {
           )
         )
       ),
-      SceneGraphLightingLayerInternal(SceneGraphNodeBranchInternal(Nil)),
+      SceneGraphLightingLayerInternal(SceneGraphNodeBranchInternal(Nil), AmbientLight.none),
       SceneGraphUiLayerInternal(SceneGraphNodeBranchInternal(Nil))
     )
 

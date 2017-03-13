@@ -90,7 +90,7 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
     }
   }
 
-  private def loop(startupData: StartupData)(renderer: IRenderer, lastUpdateTime: Double)(time: Double): Unit = {
+  private def loop(startupData: StartupData)(renderer: IRenderer, lastUpdateTime: Double): Double => Unit = { time =>
     val timeDelta = time - lastUpdateTime
 
     val gameTime: GameTime = GameTime(time, timeDelta)

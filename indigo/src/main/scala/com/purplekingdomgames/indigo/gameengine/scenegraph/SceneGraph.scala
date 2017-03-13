@@ -131,6 +131,8 @@ case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: 
 
   def withCrop(crop: Rectangle): Graphic =
     this.copy(crop = crop)
+  def withCrop(x: Int, y: Int, width: Int, height: Int): Graphic =
+    this.copy(crop = Rectangle(x, y, width, height))
 
 }
 
