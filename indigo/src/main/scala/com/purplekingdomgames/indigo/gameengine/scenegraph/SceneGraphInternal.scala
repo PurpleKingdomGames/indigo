@@ -194,7 +194,11 @@ case class TextInternal(text: String, alignment: TextAlignment, position: Point,
 
   // Handled a different way
   val ref: Point = Point(0, 0)
-  val bounds: Rectangle = Rectangle(position, Point(text.length * fontInfo.charSize.x, fontInfo.charSize.y))
+  val bounds: Rectangle = {
+    text.toList
+      .map(c => fontInfo.findByCharacter(c).bounds)
+      .fold(Rectangle(0, 0, 0, 0))((acc, curr) => Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height)))
+  }
   val crop: Rectangle = bounds
   val imageAssetRef: String = fontInfo.fontSpriteSheet.imageAssetRef
 

@@ -25,7 +25,7 @@ object SceneGraphSamples {
         SceneGraphNodeBranch(
           Text(
             "Hello", 10, 10, 1,
-            FontInfo(16, 16, "ref", 32, 32, FontChar("a", Point.zero))
+            FontInfo("ref", 32, 32, FontChar("a", 0, 0, 16, 16))
           ),
           Graphic(10, 10, 32, 32, 1, "ref"),
           Sprite(
@@ -53,7 +53,7 @@ object SceneGraphSamples {
         SceneGraphNodeBranchInternal(
           List(
             TextInternal(
-              "Hello", AlignLeft, Point(10, 10), Depth(1), FontInfo(16, 16, "ref", 32, 32, FontChar("a", Point.zero)), Effects.default
+              "Hello", AlignLeft, Point(10, 10), Depth(1), FontInfo("ref", 32, 32, FontChar("a", 0, 0, 16, 16)), Effects.default
             ),
             GraphicInternal(
               Rectangle(10, 10, 32, 32),

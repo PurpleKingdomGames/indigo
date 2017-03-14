@@ -4,7 +4,12 @@ import scala.language.implicitConversions
 
 // Data types
 case class Point(x: Int, y: Int)
-case class Rectangle(position: Point, size: Point)
+case class Rectangle(position: Point, size: Point) {
+  val x: Int = position.x
+  val y: Int = position.y
+  val width: Int = size.x
+  val height: Int = size.y
+}
 case class Depth(zIndex: Int)
 
 object Point {

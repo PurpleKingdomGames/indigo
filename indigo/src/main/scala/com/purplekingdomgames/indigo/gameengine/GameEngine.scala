@@ -205,11 +205,11 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
           }
 
           DisplayObject(
-            x = leaf.position.x + (leaf.fontInfo.charSize.x * index) + alignmentOffset.x,
+            x = leaf.position.x + (fontChar.bounds.width * index) + alignmentOffset.x,
             y = leaf.position.y,
             z = leaf.depth.zIndex,
-            width = leaf.fontInfo.charSize.x,
-            height = leaf.fontInfo.charSize.y,
+            width = fontChar.bounds.width,
+            height = fontChar.bounds.height,
             imageRef = leaf.imageAssetRef,
             alpha = leaf.effects.alpha,
             tintR = leaf.effects.tint.r,
@@ -219,8 +219,8 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
             flipVertical = leaf.effects.flip.vertical,
             frame = SpriteSheetFrame.calculateFrameOffset(
               imageSize = Vector2(leaf.fontInfo.fontSpriteSheet.size.x, leaf.fontInfo.fontSpriteSheet.size.y),
-              frameSize = Vector2(leaf.fontInfo.charSize.x, leaf.fontInfo.charSize.y),
-              framePosition = Vector2(fontChar.offset.x, fontChar.offset.y)
+              frameSize = Vector2(fontChar.bounds.width, fontChar.bounds.height),
+              framePosition = Vector2(fontChar.bounds.x, fontChar.bounds.y)
             )
           )
         }
