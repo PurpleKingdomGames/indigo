@@ -30,8 +30,8 @@ object FrameBufferFunctions {
 
     gl.bindFramebuffer(FRAMEBUFFER, frameBuffer)
 
-    cNc.context.clear(COLOR_BUFFER_BIT)
     cNc.context.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a)
+    cNc.context.clear(COLOR_BUFFER_BIT)
   }
 
   def switchToCanvas(cNc: ContextAndCanvas, clearColor: ClearColor): Unit = {
@@ -39,8 +39,8 @@ object FrameBufferFunctions {
 
     gl.bindFramebuffer(FRAMEBUFFER, null)
 
-    cNc.context.clear(COLOR_BUFFER_BIT)
     cNc.context.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a)
+    cNc.context.clear(COLOR_BUFFER_BIT)
   }
 }
 

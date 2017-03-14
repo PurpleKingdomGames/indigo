@@ -4,6 +4,8 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.AmbientLight
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
 
+import scala.language.implicitConversions
+
 trait IRenderer {
   def init(): Unit
   def drawScene(displayable: Displayable): Unit
@@ -35,7 +37,6 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       TextureLookup(li.name, organiseImage(cNc.context, li.data))
     }
 
-  private val bgFillProgram = bgFillShaderProgramSetup(cNc.context)
   private val shaderProgram = shaderProgramSetup(cNc.context)
   private val lightingShaderProgram = lightingShaderProgramSetup(cNc.context)
   private val mergeShaderProgram = mergeShaderProgramSetup(cNc.context)
@@ -58,33 +59,15 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight)
 
-    /*
-    How to make this work, I think
-    ------------------------------
+    drawLayerToTexture(displayable.game, gameFrameBuffer, config.clearColor, drawBg = false)
+    drawLightingLayerToTexture(displayable.lighting, lightingFrameBuffer, displayable.lighting.ambientLight)
+    drawLayerToTexture(displayable.ui, uiFrameBuffer, ClearColor.Black.forceTransparent, drawBg = false)
 
-    Initially:
-     Just try and get the diffuse layer to render to a framebuffer, then to the canvas.
-
-    Final todo list
-    1. Change logic below to render each layer in order - done
-    2. Setup three fixed frame buffers - done
-    3. Switch to frame buffer before drawing each layer - done
-    4. New render stage to compose the three textures onto the canvas - done
-    5. New shader that accepts three images as input - half done, needs to combine them correctly
-    6. Draw one displayObject that fills the screen with the combined texture - done
-
-    Ref:
-    https://webglfundamentals.org/webgl/lessons/webgl-2-textures.html
-    https://webglfundamentals.org/webgl/lessons/webgl-image-processing-continued.html
-
-     */
-
-    drawLayerToTexture(displayable.game, gameFrameBuffer, config.clearColor)
-    drawLightingLayerToTexture(displayable.lighting, lightingFrameBuffer, ClearColor(0, 0, 0, 0))
-    drawLayerToTexture(displayable.ui, uiFrameBuffer, ClearColor(1, 1, 1, 0))
-
-    renderToCanvas(screenDisplayObject, displayable.lighting.ambientLight)
+    renderToCanvas(screenDisplayObject)
   }
+
+  implicit private def ambientToClearColor(a: AmbientLight): ClearColor =
+    ClearColor(a.tint.r * a.amount, a.tint.g * a.amount, a.tint.b * a.amount, 1)
 
   private def drawLightingLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor): Unit = {
 
@@ -111,13 +94,10 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   }
 
-  private def drawLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor): Unit = {
+  private def drawLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor, drawBg: Boolean): Unit = {
 
     // Switch to the frameBuffer
     FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)
-
-    // Fill background for consistent rendering
-    fillBackground(cNc, clearColor, screenDisplayObject, bgFillProgram, vertexBuffer)
 
     // Use Program
     cNc.context.useProgram(shaderProgram)
@@ -141,7 +121,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   }
 
-  private def renderToCanvas(displayObject: DisplayObject, ambientLight: AmbientLight): Unit = {
+  private def renderToCanvas(displayObject: DisplayObject): Unit = {
 
     // Switch to canvas
     FrameBufferFunctions.switchToCanvas(cNc, config.clearColor)
@@ -154,7 +134,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     // Setup Uniforms
     setupVertexShader(cNc, mergeShaderProgram, displayObject, 1)
-    setupMergeFragmentShader(cNc.context, mergeShaderProgram, gameFrameBuffer.texture, lightingFrameBuffer.texture, uiFrameBuffer.texture, displayObject, ambientLight)
+    setupMergeFragmentShader(cNc.context, mergeShaderProgram, gameFrameBuffer.texture, lightingFrameBuffer.texture, uiFrameBuffer.texture, displayObject)
 
     // Draw
     cNc.context.drawArrays(Rectangle2D.mode, 0, Rectangle2D.vertexCount)
