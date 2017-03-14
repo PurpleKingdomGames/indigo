@@ -24,6 +24,56 @@ object RendererFunctions {
     vertexBuffer
   }
 
+  def bgFillShaderProgramSetup(gl: raw.WebGLRenderingContext): WebGLProgram = {
+    //vertex shader source code
+    val vertCode =
+      """
+        |attribute vec4 coordinates;
+        |
+        |uniform mat4 u_matrix;
+        |
+        |void main(void) {
+        |  gl_Position = u_matrix * coordinates;
+        |}
+      """.stripMargin
+
+    //Create a vertex shader program object and compile it
+    val vertShader = gl.createShader(VERTEX_SHADER)
+    gl.shaderSource(vertShader, vertCode)
+    gl.compileShader(vertShader)
+
+    Logger.info("Fill vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
+
+    //fragment shader source code
+    val fragCode =
+      """
+        |precision mediump float;
+        |
+        |// The texture.
+        |uniform float uAlpha;
+        |uniform vec3 uTint;
+        |
+        |void main(void) {
+        |   gl_FragColor = vec4(uTint, uAlpha);
+        |}
+      """.stripMargin
+
+    //Create a fragment shader program object and compile it
+    val fragShader = gl.createShader(FRAGMENT_SHADER)
+    gl.shaderSource(fragShader, fragCode)
+    gl.compileShader(fragShader)
+
+    Logger.info("Fill fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
+
+    //Create and use combined shader program
+    val shaderProgram = gl.createProgram()
+    gl.attachShader(shaderProgram, vertShader)
+    gl.attachShader(shaderProgram, fragShader)
+    gl.linkProgram(shaderProgram)
+
+    shaderProgram
+  }
+
   def shaderProgramSetup(gl: raw.WebGLRenderingContext): WebGLProgram = {
     //vertex shader source code
     val vertCode =
@@ -48,7 +98,7 @@ object RendererFunctions {
     gl.shaderSource(vertShader, vertCode)
     gl.compileShader(vertShader)
 
-    //Logger.info("vert: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
+    Logger.info("Pixel vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
 
     //fragment shader source code
     val fragCode =
@@ -76,7 +126,7 @@ object RendererFunctions {
     gl.shaderSource(fragShader, fragCode)
     gl.compileShader(fragShader)
 
-    //Logger.info("frag: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
+    Logger.info("Pixel fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
 
     //Create and use combined shader program
     val shaderProgram = gl.createProgram()
@@ -111,7 +161,7 @@ object RendererFunctions {
     gl.shaderSource(vertShader, vertCode)
     gl.compileShader(vertShader)
 
-    //Logger.info("vert: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
+    Logger.info("Light vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
 
     //fragment shader source code
     val fragCode =
@@ -142,7 +192,7 @@ object RendererFunctions {
     gl.shaderSource(fragShader, fragCode)
     gl.compileShader(fragShader)
 
-    //Logger.info("frag: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
+    Logger.info("Light fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
 
     //Create and use combined shader program
     val shaderProgram = gl.createProgram()
@@ -177,7 +227,7 @@ object RendererFunctions {
     gl.shaderSource(vertShader, vertCode)
     gl.compileShader(vertShader)
 
-    //Logger.info("vert: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
+    Logger.info("Merge vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
 
     //fragment shader source code
 
@@ -204,7 +254,7 @@ object RendererFunctions {
         |   // The amount of light in this case being textureColorLighting.a
         |   vec4 gameAndLighting = vec4(((textureColorGame.rgb * ambientTint * textureColorLighting.rgb) * (ambientAmount + textureColorLighting.a)), float(1.0));
         |
-        |   gl_FragColor = mix(gameAndLighting, textureColorUi, textureColorUi.a);
+        |   gl_FragColor = mix(textureColorGame, textureColorUi, textureColorUi.a);
         |}
       """.stripMargin
 
@@ -213,7 +263,7 @@ object RendererFunctions {
     gl.shaderSource(fragShader, fragCode)
     gl.compileShader(fragShader)
 
-    //Logger.info("frag: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
+    Logger.info("Merge fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
 
     //Create and use combined shader program
     val shaderProgram = gl.createProgram()
@@ -307,7 +357,7 @@ object RendererFunctions {
     gl.uniform2fv(texcoordTranlsateLocation, displayObject.frame.translate.toScalaJSArrayDouble)
   }
 
-  def setupLightingFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture/*, textureUnderlying: WebGLTexture*/, displayObject: DisplayObject): Unit = {
+  def setupLightingFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, displayObject: DisplayObject): Unit = {
 
     gl.activeTexture(TEXTURE0)
 
@@ -391,5 +441,42 @@ object RendererFunctions {
       canvas.width = actualWidth
       canvas.height = actualHeight
     }
+
+  def fillBackground(cNc: ContextAndCanvas, clearColor: ClearColor, displayObject: DisplayObject, shaderProgram: WebGLProgram, vertexBuffer: WebGLBuffer): Unit = {
+    val gl = cNc.context
+
+    // Use Program
+    cNc.context.useProgram(shaderProgram)
+
+    // Setup attributes - Vertices
+    gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
+
+    val coordinatesVar = gl.getAttribLocation(shaderProgram, "coordinates")
+
+    gl.vertexAttribPointer(
+      indx = coordinatesVar,
+      size = 3,
+      `type` = FLOAT,
+      normalized = false,
+      stride = 0,
+      offset = 0
+    )
+
+    gl.enableVertexAttribArray(coordinatesVar)
+
+    // Setup vertex shader
+    setupVertexShader(cNc, shaderProgram, displayObject, cNc.magnification)
+
+    // Setup fragment shader
+    val alphaLocation = gl.getUniformLocation(shaderProgram, "uAlpha")
+    gl.uniform1f(alphaLocation, displayObject.alpha)
+
+    val tintLocation = gl.getUniformLocation(shaderProgram, "uTint")
+    gl.uniform3fv(tintLocation, scalajs.js.Array[Double](displayObject.tintR, displayObject.tintG, displayObject.tintB))
+
+    // Draw
+    cNc.context.drawArrays(Rectangle2D.mode, 0, Rectangle2D.vertexCount)
+
+  }
 
 }

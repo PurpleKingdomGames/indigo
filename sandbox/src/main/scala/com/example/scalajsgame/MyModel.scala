@@ -29,7 +29,7 @@ object MyModel {
       state.copy(dude = state.dude.idle)
 
     case _ =>
-      //      println(e)
+      //Logger.info(e)
       state
   }
 

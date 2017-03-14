@@ -8,8 +8,8 @@ object MyView {
   def updateView(currentState: MyGameModel): SceneGraphRootNode =
     SceneGraphRootNode(
       game = gameLayer(currentState),
-      lighting = lightingLayer(currentState),
-      ui = uiLayer(currentState)
+      lighting = SceneGraphLightingLayer.empty,//lightingLayer(currentState),
+      ui = SceneGraphUiLayer.empty//uiLayer(currentState)
     )
 
   def gameLayer(currentState: MyGameModel): SceneGraphGameLayer =

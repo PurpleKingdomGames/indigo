@@ -35,6 +35,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       TextureLookup(li.name, organiseImage(cNc.context, li.data))
     }
 
+  private val bgFillProgram = bgFillShaderProgramSetup(cNc.context)
   private val shaderProgram = shaderProgramSetup(cNc.context)
   private val lightingShaderProgram = lightingShaderProgramSetup(cNc.context)
   private val mergeShaderProgram = mergeShaderProgramSetup(cNc.context)
@@ -78,7 +79,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
      */
 
-    drawLayerToTexture(displayable.game, gameFrameBuffer, ClearColor(1, 1, 1, 0))
+    drawLayerToTexture(displayable.game, gameFrameBuffer, config.clearColor)
     drawLightingLayerToTexture(displayable.lighting, lightingFrameBuffer, ClearColor(0, 0, 0, 0))
     drawLayerToTexture(displayable.ui, uiFrameBuffer, ClearColor(1, 1, 1, 0))
 
@@ -101,7 +102,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
         // Setup Uniforms
         setupVertexShader(cNc, lightingShaderProgram, displayObject, cNc.magnification)
-        setupLightingFragmentShader(cNc.context, lightingShaderProgram, textureLookup.texture, /*lightingFrameBuffer.texture,*/ displayObject)
+        setupLightingFragmentShader(cNc.context, lightingShaderProgram, textureLookup.texture, displayObject)
 
         // Draw
         cNc.context.drawArrays(Rectangle2D.mode, 0, Rectangle2D.vertexCount)
@@ -114,6 +115,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     // Switch to the frameBuffer
     FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)
+
+    // Fill background for consistent rendering
+    fillBackground(cNc, clearColor, screenDisplayObject, bgFillProgram, vertexBuffer)
 
     // Use Program
     cNc.context.useProgram(shaderProgram)

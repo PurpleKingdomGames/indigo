@@ -66,7 +66,7 @@ object SceneGraphLightingLayer {
 
 case class AmbientLight(tint: Tint, amount: Double)
 object AmbientLight {
-  val none: AmbientLight = AmbientLight(Tint.none, 0)
+  val none: AmbientLight = AmbientLight(Tint.none, 1)
 }
 
 case class SceneGraphUiLayer(node: SceneGraphNode)
