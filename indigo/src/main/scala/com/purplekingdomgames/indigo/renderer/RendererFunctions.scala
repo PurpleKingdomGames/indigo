@@ -7,6 +7,8 @@ import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram, WebGLTexture}
 
 import scala.scalajs.js.typedarray.Float32Array
 
+import com.purplekingdomgames.indigo.Logger
+
 object RendererFunctions {
 
   def createVertexBuffer[T](gl: raw.WebGLRenderingContext, vertices: scalajs.js.Array[T])(implicit num: Numeric[T]): WebGLBuffer = {
@@ -46,7 +48,7 @@ object RendererFunctions {
     gl.shaderSource(vertShader, vertCode)
     gl.compileShader(vertShader)
 
-    //println("vert: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
+    //Logger.info("vert: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
 
     //fragment shader source code
     val fragCode =
@@ -74,7 +76,7 @@ object RendererFunctions {
     gl.shaderSource(fragShader, fragCode)
     gl.compileShader(fragShader)
 
-    //println("frag: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
+    //Logger.info("frag: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
 
     //Create and use combined shader program
     val shaderProgram = gl.createProgram()
@@ -109,7 +111,7 @@ object RendererFunctions {
     gl.shaderSource(vertShader, vertCode)
     gl.compileShader(vertShader)
 
-    //println("vert: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
+    //Logger.info("vert: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
 
     //fragment shader source code
     val fragCode =
@@ -140,7 +142,7 @@ object RendererFunctions {
     gl.shaderSource(fragShader, fragCode)
     gl.compileShader(fragShader)
 
-    //println("frag: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
+    //Logger.info("frag: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
 
     //Create and use combined shader program
     val shaderProgram = gl.createProgram()
@@ -175,7 +177,7 @@ object RendererFunctions {
     gl.shaderSource(vertShader, vertCode)
     gl.compileShader(vertShader)
 
-    //println("vert: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
+    //Logger.info("vert: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
 
     //fragment shader source code
 
@@ -211,7 +213,7 @@ object RendererFunctions {
     gl.shaderSource(fragShader, fragCode)
     gl.compileShader(fragShader)
 
-    //println("frag: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
+    //Logger.info("frag: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
 
     //Create and use combined shader program
     val shaderProgram = gl.createProgram()

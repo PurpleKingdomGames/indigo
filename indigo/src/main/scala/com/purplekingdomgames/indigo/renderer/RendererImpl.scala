@@ -106,7 +106,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
         // Draw
         cNc.context.drawArrays(Rectangle2D.mode, 0, Rectangle2D.vertexCount)
       }
-  }
+    }
 
   }
 

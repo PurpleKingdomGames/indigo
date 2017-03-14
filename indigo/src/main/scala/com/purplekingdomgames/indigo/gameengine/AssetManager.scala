@@ -9,6 +9,8 @@ import org.scalajs.dom.{html, _}
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 
+import com.purplekingdomgames.indigo.Logger
+
 object AssetManager {
 
   private def filterOutTextAssets(l: List[AssetType]): List[TextAsset] =
@@ -28,6 +30,8 @@ object AssetManager {
     }
 
   def loadAssets(assets: Set[AssetType]): Future[AssetCollection] = {
+    Logger.info(s"Loading ${assets.toList.length} assets")
+
     for {
       t <- loadTextAssets(filterOutTextAssets(assets.toList))
       i <- loadImageAssets(filterOutImageAssets(assets.toList))
@@ -48,18 +52,25 @@ object AssetManager {
     }
 
   private def loadImageAsset(imageAsset: ImageAsset): Future[LoadedImageAsset] = {
+    Logger.info(s"[Image] Loading ${imageAsset.path}")
 
     val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
     image.src = imageAsset.path
 
-    onLoadFuture(image).map(i => LoadedImageAsset(imageAsset.name, i))
+    onLoadFuture(image).map { i =>
+      Logger.info(s"[Image] Success ${imageAsset.path}")
+      LoadedImageAsset(imageAsset.name, i)
+    }
   }
 
   private val loadTextAssets: List[TextAsset] => Future[List[LoadedTextAsset]] = textAssets =>
     Future.sequence(textAssets.map(loadTextAsset))
 
   private def loadTextAsset(textAsset: TextAsset): Future[LoadedTextAsset] = {
+    Logger.info(s"[Text] Loading ${textAsset.path}")
+
     Ajax.get(textAsset.path, responseType = "text").map { xhr =>
+      Logger.info(s"[Text] Success ${textAsset.path}")
       LoadedTextAsset(textAsset.name, xhr.responseText)
     }
   }

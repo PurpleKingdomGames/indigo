@@ -11,6 +11,8 @@ import scala.language.implicitConversions
 
 case class GameTime(running: Double, delta: Double)
 
+import com.purplekingdomgames.indigo.Logger
+
 /*
 There are some questions over time.
 Events are collected during a frame and then all processed sequentially at
@@ -44,26 +46,34 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
 
   def main(): Unit = {
 
+    Logger.info("Starting Indigo")
+    Logger.info("Configuration: " + config.asString)
+
     if(config.viewport.width % 2 != 0 || config.viewport.height % 2 != 0) {
-      println("WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!")
+      Logger.info("WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!")
     }
 
     AssetManager.loadAssets(assets).foreach { ac =>
+
+      Logger.info("Asset load complete")
 
       assetCollection = ac
 
       initialise(assetCollection) match {
         case e: StartupFailure[_] =>
-          println("Start up failed")
-          println(e.report)
+          Logger.info("Game initialisation failed")
+          Logger.info(e.report)
 
         case x: StartupSuccess[StartupData] =>
+          Logger.info("Game initialisation succeeded")
           val loopFunc = loop(x.success) _
 
           val canvas = Renderer.createCanvas(config.viewport.width, config.viewport.height)
 
+          Logger.info("Starting world events")
           WorldEvents(canvas)
 
+          Logger.info("Starting renderer")
           val renderer: IRenderer = Renderer(
             RendererConfig(
               viewport = Viewport(config.viewport.width, config.viewport.height),
@@ -74,6 +84,7 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
             canvas
           )
 
+          Logger.info("Starting main loop, there will be no more log messages.")
           dom.window.requestAnimationFrame(loopFunc(renderer, 0))
       }
     }
@@ -233,6 +244,15 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
 
 case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int) {
   val frameRateDeltaMillis: Int = 1000 / frameRate
+
+  val asString: String =
+    s"""
+       |Viewpoint:      [${viewport.width}, ${viewport.height}]
+       |FPS:            $frameRate
+       |frameRateDelta: $frameRateDeltaMillis
+       |Clear color:    {red: ${clearColor.r}, green: ${clearColor.g}, blue: ${clearColor.b}, alpha: ${clearColor.a}}
+       |Magnification:  $magnification
+       |""".stripMargin
 }
 
 case class GameViewport(width: Int, height: Int)

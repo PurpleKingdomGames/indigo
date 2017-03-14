@@ -3,6 +3,8 @@ package com.purplekingdomgames.indigo.gameengine.scenegraph
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import upickle.default._
 
+import com.purplekingdomgames.indigo.Logger
+
 case class Aseprite(frames: List[AsepriteFrame], meta: AsepriteMeta)
 
 case class AsepriteFrame(filename: String,
@@ -34,7 +36,7 @@ object AsepriteHelper {
       Option(read[Aseprite](json))
     } catch {
       case e: Throwable =>
-        println("Failed to deserialise json into Aseprite: " + e.getMessage)
+        Logger.info("Failed to deserialise json into Aseprite: " + e.getMessage)
         None
     }
   }
@@ -55,7 +57,7 @@ object AsepriteHelper {
     aseprite.meta.frameTags.map { frameTag =>
       extractFrames(frameTag, aseprite.frames) match {
         case Nil =>
-          println("Failed to extract cycle with frameTag: " + frameTag)
+          Logger.info("Failed to extract cycle with frameTag: " + frameTag)
           None
         case x :: xs =>
           Option(
@@ -72,7 +74,7 @@ object AsepriteHelper {
   def toSprite(aseprite: Aseprite, depth: Depth, imageAssetRef: String): Option[Sprite] = {
     extractCycles(aseprite) match {
       case Nil =>
-        println("No animation frames found in Aseprit: " + aseprite)
+        Logger.info("No animation frames found in Aseprit: " + aseprite)
         None
       case x :: xs =>
         val animations: Animations =
