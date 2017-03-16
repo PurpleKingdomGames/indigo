@@ -47,6 +47,8 @@ case class MousePosition(x: Int, y: Int) extends GameEvent
 case class KeyUp(keyCode: Int) extends GameEvent
 case class KeyDown(keyCode: Int) extends GameEvent
 
+case class ViewEvent[EventDataType](eventDataType: EventDataType) extends GameEvent
+
 object Keys {
 
   val LeftArrow = 37

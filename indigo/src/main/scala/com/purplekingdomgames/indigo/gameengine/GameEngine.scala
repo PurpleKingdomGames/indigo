@@ -13,18 +13,7 @@ case class GameTime(running: Double, delta: Double)
 
 import com.purplekingdomgames.indigo.Logger
 
-/*
-There are some questions over time.
-Events are collected during a frame and then all processed sequentially at
-the beginning of the next frame so:
-1. Do you want the real time that the event happened?
-2. The time since the beginning of the frame (since they are sequential a
-long update could have a knock on effect for later events?
-3. The frame time - which is what you currently get.
- */
-//case class UpdateEvent(event: GameEvent, time: GameTime)
-
-trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
+trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extends JSApp {
 
   def config: GameConfig
 
@@ -34,9 +23,9 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
 
   def initialModel(startupData: StartupData): GameModel
 
-  def updateModel(gameTime: GameTime, state: GameModel): GameEvent => GameModel
+  def updateModel(gameTime: GameTime, gameModel: GameModel): GameEvent => GameModel
 
-  def updateView(currentState: GameModel): SceneGraphRootNode
+  def updateView(gameTime: GameTime, gameEvents: List[GameEvent]): GameModel => (SceneGraphRootNode, List[ViewEvent[ViewEventDataType]])
 
   private var state: Option[GameModel] = None
 
@@ -91,13 +80,13 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
 
   }
 
-  private def processUpdateEvents(previousState: GameModel, gameTime: GameTime, remaining: List[GameEvent]): GameModel = {
+  private def processModelUpdateEvents(gameTime: GameTime, previousModel: GameModel, remaining: List[GameEvent]): GameModel = {
     remaining match {
       case Nil =>
-        updateModel(gameTime, previousState)(FrameTick)
+        updateModel(gameTime, previousModel)(FrameTick)
 
       case x :: xs =>
-        processUpdateEvents(updateModel(gameTime, previousState)(x), gameTime, xs)
+        processModelUpdateEvents(gameTime, updateModel(gameTime, previousModel)(x), xs)
     }
   }
 
@@ -106,19 +95,26 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
 
     val gameTime: GameTime = GameTime(time, timeDelta)
 
+    val collectedEvents = GlobalEventStream.collect
+
     if(timeDelta > config.frameRateDeltaMillis) {
       val model = state match {
         case None =>
           initialModel(startupData)
 
-        case Some(previousState) =>
-          processUpdateEvents(previousState, gameTime, GlobalEventStream.collect)
+        case Some(previousModel) =>
+          processModelUpdateEvents(gameTime, previousModel, collectedEvents)
       }
 
       state = Some(model)
 
       val viewUpdateFunc: GameModel => SceneGraphRootNodeInternal =
-        updateView _ andThen convertToInternalFormat andThen applyAnimationStates andThen processAnimationCommands(gameTime) andThen persistAnimationStates
+        updateView(gameTime, collectedEvents) andThen
+          persistEvents andThen
+          convertToInternalFormat andThen
+          applyAnimationStates andThen
+          processAnimationCommands(gameTime) andThen
+          persistAnimationStates
 
       drawScene(renderer, model, viewUpdateFunc)
 
@@ -126,6 +122,11 @@ trait GameEngine[StartupData, StartupError, GameModel] extends JSApp {
     } else {
       dom.window.requestAnimationFrame(loop(startupData)(renderer, lastUpdateTime))
     }
+  }
+
+  private val persistEvents: ((SceneGraphRootNode, List[ViewEvent[ViewEventDataType]])) => SceneGraphRootNode = pair => {
+    pair._2.foreach(GlobalEventStream.push)
+    pair._1
   }
 
   private val convertToInternalFormat: SceneGraphRootNode => SceneGraphRootNodeInternal = scenegraph =>

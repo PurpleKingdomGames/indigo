@@ -5,7 +5,7 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Depth
 import com.purplekingdomgames.indigo.renderer.ClearColor
 
-object MyGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel] {
+object MyGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel, MyViewEventDataType] {
 
   private val viewportWidth: Int = 456
   private val viewportHeight: Int = 256
@@ -42,7 +42,8 @@ object MyGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel] {
 
   def updateModel(gameTime: GameTime, state: MyGameModel): GameEvent => MyGameModel = MyModel.updateModel(assetCollection, gameTime, state)
 
-  def updateView(currentState: MyGameModel): SceneGraphRootNode = MyView.updateView(currentState)
+  def updateView(gameTime: GameTime, gameEvents: List[GameEvent]): MyGameModel => (SceneGraphRootNode, List[ViewEvent[MyViewEventDataType]]) = model =>
+    MyView.updateView(gameTime, gameEvents, model)
 
 }
 
@@ -58,3 +59,5 @@ object MyErrorReport {
   def apply(message: String*): MyErrorReport = MyErrorReport(message.toList)
 
 }
+
+case class MyViewEventDataType()

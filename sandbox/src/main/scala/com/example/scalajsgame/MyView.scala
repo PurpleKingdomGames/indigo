@@ -1,15 +1,19 @@
 package com.example.scalajsgame
 
+import com.purplekingdomgames.indigo.gameengine.{GameEvent, GameTime, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo, Point}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo}
 
 object MyView {
 
-  def updateView(currentState: MyGameModel): SceneGraphRootNode =
-    SceneGraphRootNode(
-      game = gameLayer(currentState),
-      lighting = lightingLayer(currentState),
-      ui = uiLayer(currentState)
+  def updateView(gameTime: GameTime, gameEvents: List[GameEvent], model: MyGameModel): (SceneGraphRootNode, List[ViewEvent[MyViewEventDataType]]) =
+    (
+      SceneGraphRootNode(
+        game = gameLayer(model),
+        lighting = lightingLayer(model),
+        ui = uiLayer(model)
+      ),
+      Nil
     )
 
   def gameLayer(currentState: MyGameModel): SceneGraphGameLayer =
