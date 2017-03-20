@@ -27,8 +27,8 @@ object SceneGraphInternal {
       case Graphic(bounds, depth, imageAssetRef, ref, crop, effects) =>
         GraphicInternal(bounds, depth, imageAssetRef, ref, crop, effects)
 
-      case Text(text, alignment, position, depth, fontInfo, effects) =>
-        TextInternal(text, alignment, position, depth, fontInfo, effects)
+      case t @ Text(text, alignment, position, depth, fontInfo, effects) =>
+        TextInternal(text, t.bounds, alignment, position, depth, fontInfo, effects)
 
       case Sprite(bindingKey, bounds, depth, imageAssetRef, animations, ref, effects) =>
         SpriteInternal(bindingKey, bounds, depth, imageAssetRef, convertAnimationsToInternal(animations), ref, effects)
@@ -190,15 +190,10 @@ case class SpriteInternal(bindingKey: BindingKey, bounds: Rectangle, depth: Dept
   def runAnimationActions(gameTime: GameTime): SpriteInternal = this.copy(animations = animations.runActions(gameTime))
 }
 
-case class TextInternal(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontInfo: FontInfo, effects: Effects) extends SceneGraphNodeLeafInternal {
+case class TextInternal(text: String, bounds: Rectangle, alignment: TextAlignment, position: Point, depth: Depth, fontInfo: FontInfo, effects: Effects) extends SceneGraphNodeLeafInternal {
 
   // Handled a different way
   val ref: Point = Point(0, 0)
-  val bounds: Rectangle = {
-    text.toList
-      .map(c => fontInfo.findByCharacter(c).bounds)
-      .fold(Rectangle(0, 0, 0, 0))((acc, curr) => Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height)))
-  }
   val crop: Rectangle = bounds
   val imageAssetRef: String = fontInfo.fontSpriteSheet.imageAssetRef
 

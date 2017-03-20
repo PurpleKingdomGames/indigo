@@ -4,6 +4,8 @@ case class FontInfo(fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fon
   private val nonEmtpyChars: List[FontChar] = unknownChar +: fontChars
 
   def addChar(fontChar: FontChar) = FontInfo(fontSpriteSheet, fontChar, nonEmtpyChars)
+  def addChars(chars: List[FontChar]): FontInfo = this.copy(fontChars = fontChars ++ chars)
+  def addChars(chars: FontChar*): FontInfo = this.copy(fontChars = fontChars ++ chars)
 
   def findByCharacter(character: String): FontChar = nonEmtpyChars.find(p => p.character == character).getOrElse(unknownChar)
   def findByCharacter(character: Char): FontChar = findByCharacter(character.toString)
