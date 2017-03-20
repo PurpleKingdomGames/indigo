@@ -93,11 +93,13 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
   private def loop(startupData: StartupData)(renderer: IRenderer, lastUpdateTime: Double): Double => Unit = { time =>
     val timeDelta = time - lastUpdateTime
 
-    val gameTime: GameTime = GameTime(time, timeDelta)
-
-    val collectedEvents = GlobalEventStream.collect
-
+    // PUT NOTHING ABOVE THIS LINE!! Major performance penalties!!
     if(timeDelta > config.frameRateDeltaMillis) {
+
+      val gameTime: GameTime = GameTime(time, timeDelta)
+
+      val collectedEvents = GlobalEventStream.collect
+
       val model = state match {
         case None =>
           initialModel(startupData)
