@@ -13,16 +13,16 @@ object MyModel {
     case FrameTick =>
       state
 
-    case KeyDown(Keys.LeftArrow) =>
+    case KeyDown(Keys.LEFT_ARROW) =>
       state.copy(dude = state.dude.walkLeft)
 
-    case KeyDown(Keys.RightArrow) =>
+    case KeyDown(Keys.RIGHT_ARROW) =>
       state.copy(dude = state.dude.walkRight)
 
-    case KeyDown(Keys.UpArrow) =>
+    case KeyDown(Keys.UP_ARROW) =>
       state.copy(dude = state.dude.walkUp)
 
-    case KeyDown(Keys.DownArrow) =>
+    case KeyDown(Keys.DOWN_ARROW) =>
       state.copy(dude = state.dude.walkDown)
 
     case KeyUp(_) =>

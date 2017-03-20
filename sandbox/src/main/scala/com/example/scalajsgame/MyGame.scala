@@ -40,10 +40,10 @@ object MyGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel, MyVi
 
   def initialModel(startupData: MyStartupData): MyGameModel = MyModel.initialModel(startupData)
 
-  def updateModel(gameTime: GameTime, state: MyGameModel): GameEvent => MyGameModel = MyModel.updateModel(assetCollection, gameTime, state)
+  def updateModel(gameTime: GameTime, gameModel: MyGameModel): GameEvent => MyGameModel = MyModel.updateModel(assetCollection, gameTime, gameModel)
 
-  def updateView(gameTime: GameTime, gameEvents: List[GameEvent]): MyGameModel => (SceneGraphRootNode, List[ViewEvent[MyViewEventDataType]]) = model =>
-    MyView.updateView(gameTime, gameEvents, model)
+  def updateView(gameTime: GameTime, gameModel: MyGameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate[MyViewEventDataType] =
+    MyView.updateView(gameTime, gameModel, frameInputEvents)
 
 }
 

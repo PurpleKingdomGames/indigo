@@ -25,7 +25,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
   def updateModel(gameTime: GameTime, gameModel: GameModel): GameEvent => GameModel
 
-  def updateView(gameTime: GameTime, gameEvents: List[GameEvent]): GameModel => (SceneGraphRootNode, List[ViewEvent[ViewEventDataType]])
+  def updateView(gameTime: GameTime, gameModel: GameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate[ViewEventDataType]
 
   private var state: Option[GameModel] = None
 
@@ -110,15 +110,20 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
       state = Some(model)
 
-      val viewUpdateFunc: GameModel => SceneGraphRootNodeInternal =
-        updateView(gameTime, collectedEvents) andThen
+      val processUpdatedView: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNodeInternal =
           persistEvents andThen
           convertToInternalFormat andThen
           applyAnimationStates andThen
           processAnimationCommands(gameTime) andThen
           persistAnimationStates
 
-      drawScene(renderer, model, viewUpdateFunc)
+      val view = updateView(
+        gameTime,
+        model,
+        FrameInputEvents(collectedEvents.filterNot(_.isInstanceOf[ViewEvent[_]]))
+      )
+
+      drawScene(renderer, model, view, processUpdatedView)
 
       dom.window.requestAnimationFrame(loop(startupData)(renderer, time))
     } else {
@@ -126,9 +131,9 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
     }
   }
 
-  private val persistEvents: ((SceneGraphRootNode, List[ViewEvent[ViewEventDataType]])) => SceneGraphRootNode = pair => {
-    pair._2.foreach(GlobalEventStream.push)
-    pair._1
+  private val persistEvents: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNode = update => {
+    update.viewEvents.foreach(GlobalEventStream.push)
+    update.rootNode
   }
 
   private val convertToInternalFormat: SceneGraphRootNode => SceneGraphRootNodeInternal = scenegraph =>
@@ -236,10 +241,10 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
       UiDisplayLayer(rootNode.ui.node.flatten.flatMap(leafToDisplayObject))
     )
 
-  private def drawScene(renderer: IRenderer, gameModel: GameModel, update: GameModel => SceneGraphRootNodeInternal): Unit =
+  private def drawScene(renderer: IRenderer, gameModel: GameModel, view: SceneGraphUpdate[ViewEventDataType], processUpdatedView: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNodeInternal): Unit =
     renderer.drawScene(
       convertSceneGraphToDisplayable(
-        update(gameModel)
+        processUpdatedView(view)
       )
     )
 

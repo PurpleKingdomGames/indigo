@@ -1,13 +1,18 @@
 package com.example.scalajsgame
 
-import com.purplekingdomgames.indigo.gameengine.{GameEvent, GameTime, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo}
+import com.purplekingdomgames.indigo.gameengine.{FrameInputEvents, GameTime}
 
 object MyView {
 
-  def updateView(gameTime: GameTime, gameEvents: List[GameEvent], model: MyGameModel): (SceneGraphRootNode, List[ViewEvent[MyViewEventDataType]]) =
-    (
+  def updateView(gameTime: GameTime, model: MyGameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate[MyViewEventDataType] = {
+    frameInputEvents.mouseClickAt match {
+      case Some(position) => println("Mouse clicked at: " + position)
+      case None => ()
+    }
+    
+    SceneGraphUpdate(
       SceneGraphRootNode(
         game = gameLayer(model),
         lighting = lightingLayer(model),
@@ -15,6 +20,7 @@ object MyView {
       ),
       Nil
     )
+  }
 
   def gameLayer(currentState: MyGameModel): SceneGraphGameLayer =
     SceneGraphGameLayer(

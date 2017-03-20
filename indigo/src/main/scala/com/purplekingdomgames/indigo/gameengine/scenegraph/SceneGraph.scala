@@ -1,7 +1,10 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
+import com.purplekingdomgames.indigo.gameengine.ViewEvent
 import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
+
+case class SceneGraphUpdate[ViewEventDataType](rootNode: SceneGraphRootNode, viewEvents: List[ViewEvent[ViewEventDataType]])
 
 case class SceneGraphRootNode(game: SceneGraphGameLayer, lighting: SceneGraphLightingLayer, ui: SceneGraphUiLayer) {
   def addLightingLayer(lighting: SceneGraphLightingLayer): SceneGraphRootNode =
