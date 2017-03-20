@@ -58,9 +58,9 @@ object MyView {
   def uiLayer(currentState: MyGameModel): SceneGraphUiLayer =
     SceneGraphUiLayer(
       Text("ABC", 2, 2, 5,
-        FontInfo(MyAssets.smallFontName, 320, 230, FontChar("A", 23, 23, 3, 78))
-          .addChar(FontChar("B", 23, 23, 26, 78))
-          .addChar(FontChar("C", 23, 23, 50, 78))
+        FontInfo(MyAssets.smallFontName, 320, 230, FontChar("A", 3, 78, 23, 23))
+          .addChar(FontChar("B", 26, 78, 23, 23))
+          .addChar(FontChar("C", 50, 78, 23, 23))
       )
     )
 
