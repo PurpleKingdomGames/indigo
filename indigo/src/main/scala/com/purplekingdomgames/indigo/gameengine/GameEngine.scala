@@ -96,34 +96,40 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
     // PUT NOTHING ABOVE THIS LINE!! Major performance penalties!!
     if(timeDelta > config.frameRateDeltaMillis) {
 
-      val gameTime: GameTime = GameTime(time, timeDelta)
+      // Model updates cut off
+      if(timeDelta < config.haltModelUpdatesAt) {
+        val gameTime: GameTime = GameTime(time, timeDelta)
 
-      val collectedEvents = GlobalEventStream.collect
+        val collectedEvents = GlobalEventStream.collect
 
-      val model = state match {
-        case None =>
-          initialModel(startupData)
+        val model = state match {
+          case None =>
+            initialModel(startupData)
 
-        case Some(previousModel) =>
-          processModelUpdateEvents(gameTime, previousModel, collectedEvents)
+          case Some(previousModel) =>
+            processModelUpdateEvents(gameTime, previousModel, collectedEvents)
+        }
+
+        state = Some(model)
+
+        // View updates cut off
+        if(timeDelta < config.haltViewUpdatesAt) {
+          val processUpdatedView: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNodeInternal =
+            persistEvents andThen
+              convertToInternalFormat andThen
+              applyAnimationStates andThen
+              processAnimationCommands(gameTime) andThen
+              persistAnimationStates
+
+          val view = updateView(
+            gameTime,
+            model,
+            FrameInputEvents(collectedEvents.filterNot(_.isInstanceOf[ViewEvent[_]]))
+          )
+
+          drawScene(renderer, model, view, processUpdatedView)
+        }
       }
-
-      state = Some(model)
-
-      val processUpdatedView: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNodeInternal =
-          persistEvents andThen
-          convertToInternalFormat andThen
-          applyAnimationStates andThen
-          processAnimationCommands(gameTime) andThen
-          persistAnimationStates
-
-      val view = updateView(
-        gameTime,
-        model,
-        FrameInputEvents(collectedEvents.filterNot(_.isInstanceOf[ViewEvent[_]]))
-      )
-
-      drawScene(renderer, model, view, processUpdatedView)
 
       dom.window.requestAnimationFrame(loop(startupData)(renderer, time))
     } else {
@@ -253,11 +259,14 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int) {
   val frameRateDeltaMillis: Int = 1000 / frameRate
 
+  val haltViewUpdatesAt: Int = frameRateDeltaMillis * 2
+  val haltModelUpdatesAt: Int = frameRateDeltaMillis * 3
+
   val asString: String =
     s"""
        |Viewpoint:      [${viewport.width}, ${viewport.height}]
        |FPS:            $frameRate
-       |frameRateDelta: $frameRateDeltaMillis
+       |frameRateDelta: $frameRateDeltaMillis (view updates stop at: $haltViewUpdatesAt, model at: $haltModelUpdatesAt
        |Clear color:    {red: ${clearColor.r}, green: ${clearColor.g}, blue: ${clearColor.b}, alpha: ${clearColor.a}}
        |Magnification:  $magnification
        |""".stripMargin
