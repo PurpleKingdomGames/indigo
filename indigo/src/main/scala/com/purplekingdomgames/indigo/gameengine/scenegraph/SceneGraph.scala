@@ -225,11 +225,11 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
   // Handled a different way
   val ref: Point = Point(0, 0)
 
-  val bounds: Rectangle = {
-    text.toList
-      .map(c => fontInfo.findByCharacter(c).bounds)
-      .fold(Rectangle(0, 0, 0, 0))((acc, curr) => Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height)))
-  }
+  val bounds: Rectangle =
+    text.split('\n').map(_.replace("\n", "")).map(line => Text.calculateHeightOfLine(line, fontInfo))
+      .fold(Rectangle(0, 0, 0, 0)) {
+        (acc, next) => acc.copy(size = Point(Math.max(acc.width, next.width), acc.height + next.height))
+      }
 
   val crop: Rectangle = bounds
   val imageAssetRef: String = fontInfo.fontSpriteSheet.imageAssetRef
@@ -258,6 +258,13 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
 }
 
 object Text {
+
+  def calculateHeightOfLine(lineText: String, fontInfo: FontInfo): Rectangle = {
+    lineText.toList
+      .map(c => fontInfo.findByCharacter(c).bounds)
+      .fold(Rectangle(0, 0, 0, 0))((acc, curr) => Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height)))
+  }
+
   def apply(text: String, x: Int, y: Int, depth: Int, fontInfo: FontInfo): Text =
     Text(
       text = text,
