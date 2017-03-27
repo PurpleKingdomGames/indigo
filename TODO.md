@@ -14,38 +14,28 @@ The layers:
 
 ## TODO
 
+
+
 Bugs:
+- mouse position needs to be a signal that's folded (state retained) not on and off.
+- is mouse cursor position correct?
 
 Renderer
-- Layers, rendered to separate textures and blended together
 - Layer effects (Hue, saturation, tint, Blur, Bloom.. anything else? )
-- Layer blend modes (for combining with the layer below)
-- Alternative to lighting: Blend modes.
- I was thinking about different ways of doing lights and the obvious thing is to use real
- lights but we don't need most of the things that come with them like shadows.
- Better would be deferred lighting when we render the scene to a texture, render the
- lighting to a texture, and then blend them together.
- Importantly, I was thinking about doing lights with textures (like the flashlight in Doom 3)
- for easy lighting effects.
- Then I thought: Would it be easier (given that I have layers and stuff) to just do blend modes
- in the first place? People could do lighting... without doing lighting.
-- Simple point lighting
-- Simple ambient lighting
+- Pixel effects e.g. animate flood fill disolve
 
 Game Engine
-- I think Scalajs is downloading script files on load, can they be local?
-- Revisit API
-  - SceneGraph should be like a DOM, sprites, buttons, animated sprites, static images, parallax images etc.
-  - Typeclass: ToSceneGraph?
+- Config setting for hide mouse cursor
 - Sound
 - Full window size
 - Full screen
+- Tilemap loading
 
 Game
 - Make game.
 
-Much later...
-- Tilemap loading?
+Optimisations:
+- I think Scalajs is downloading script files on load, can they be local?
 - Performance enhancement: Render at actual size to a buffer and scale up.
 - Performance enhancement: We do some CPU side sorting, which generally will be ok, but if there are thousands of tiles
   and most of them never change, it would be nice to declare that somehow and only have to sort them once.
