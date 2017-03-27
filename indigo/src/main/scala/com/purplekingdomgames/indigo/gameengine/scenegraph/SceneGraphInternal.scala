@@ -28,7 +28,7 @@ object SceneGraphInternal {
         GraphicInternal(bounds, depth, imageAssetRef, ref, crop, effects)
 
       case t @ Text(text, alignment, position, depth, fontInfo, effects) =>
-        TextInternal(text, t.bounds, alignment, position, depth, fontInfo, effects)
+        TextInternal(text, t.lines, t.bounds, alignment, position, depth, fontInfo, effects)
 
       case Sprite(bindingKey, bounds, depth, imageAssetRef, animations, ref, effects) =>
         SpriteInternal(bindingKey, bounds, depth, imageAssetRef, convertAnimationsToInternal(animations), ref, effects)
@@ -190,7 +190,7 @@ case class SpriteInternal(bindingKey: BindingKey, bounds: Rectangle, depth: Dept
   def runAnimationActions(gameTime: GameTime): SpriteInternal = this.copy(animations = animations.runActions(gameTime))
 }
 
-case class TextInternal(text: String, bounds: Rectangle, alignment: TextAlignment, position: Point, depth: Depth, fontInfo: FontInfo, effects: Effects) extends SceneGraphNodeLeafInternal {
+case class TextInternal(text: String, lines: List[TextLine], bounds: Rectangle, alignment: TextAlignment, position: Point, depth: Depth, fontInfo: FontInfo, effects: Effects) extends SceneGraphNodeLeafInternal {
 
   // Handled a different way
   val ref: Point = Point(0, 0)

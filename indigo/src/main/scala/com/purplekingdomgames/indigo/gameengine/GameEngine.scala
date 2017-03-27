@@ -1,7 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{AlignCenter, AlignLeft, AlignRight, Point}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import org.scalajs.dom
 import com.purplekingdomgames.indigo.renderer._
 
@@ -205,40 +205,57 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
         )
 
       case leaf: TextInternal =>
-        leaf.text.toList.zipWithIndex.map { case (char, index) =>
-          val fontChar = leaf.fontInfo.findByCharacter(char.toString)
-          val alignmentOffset: Point = leaf.alignment match {
-            case AlignLeft =>
-              Point(0, 0)
 
-            case AlignCenter =>
-              Point(-(leaf.bounds.size.x / 2), 0)
+        val alignmentOffsetX: Rectangle => Int = lineBounds =>
+          leaf.alignment match {
+            case AlignLeft => 0
 
-            case AlignRight =>
-              Point(-leaf.bounds.size.x, 0)
+            case AlignCenter => -(lineBounds.size.x / 2)
+
+            case AlignRight => -lineBounds.size.x
           }
 
-          DisplayObject(
-            x = leaf.position.x + (fontChar.bounds.width * index) + alignmentOffset.x,
-            y = leaf.position.y,
-            z = leaf.depth.zIndex,
-            width = fontChar.bounds.width,
-            height = fontChar.bounds.height,
-            imageRef = leaf.imageAssetRef,
-            alpha = leaf.effects.alpha,
-            tintR = leaf.effects.tint.r,
-            tintG = leaf.effects.tint.g,
-            tintB = leaf.effects.tint.b,
-            flipHorizontal = leaf.effects.flip.horizontal,
-            flipVertical = leaf.effects.flip.vertical,
-            frame = SpriteSheetFrame.calculateFrameOffset(
-              imageSize = Vector2(leaf.fontInfo.fontSpriteSheet.size.x, leaf.fontInfo.fontSpriteSheet.size.y),
-              frameSize = Vector2(fontChar.bounds.width, fontChar.bounds.height),
-              framePosition = Vector2(fontChar.bounds.x, fontChar.bounds.y)
-            )
-          )
-        }
+        val converterFunc: (TextLine, Int, Int) => List[DisplayObject] =
+          textLineToDisplayObjects(leaf)
+
+        leaf.lines.foldLeft(0 -> List[DisplayObject]()) { (acc, textLine) =>
+          (acc._1 + textLine.lineBounds.height, acc._2 ++ converterFunc(textLine, alignmentOffsetX(textLine.lineBounds), acc._1))
+        }._2
+
     }
+
+  private def textLineToDisplayObjects(leaf: TextInternal): (TextLine, Int, Int) => List[DisplayObject] = (line, alignmentOffsetX, yOffset) =>
+    zipWithCharDetails(line.text.toList, leaf.fontInfo).map { case (fontChar, xPosition) =>
+      DisplayObject(
+        x = leaf.position.x + xPosition + alignmentOffsetX,
+        y = leaf.position.y + yOffset,
+        z = leaf.depth.zIndex,
+        width = fontChar.bounds.width,
+        height = fontChar.bounds.height,
+        imageRef = leaf.imageAssetRef,
+        alpha = leaf.effects.alpha,
+        tintR = leaf.effects.tint.r,
+        tintG = leaf.effects.tint.g,
+        tintB = leaf.effects.tint.b,
+        flipHorizontal = leaf.effects.flip.horizontal,
+        flipVertical = leaf.effects.flip.vertical,
+        frame = SpriteSheetFrame.calculateFrameOffset(
+          imageSize = Vector2(leaf.fontInfo.fontSpriteSheet.size.x, leaf.fontInfo.fontSpriteSheet.size.y),
+          frameSize = Vector2(fontChar.bounds.width, fontChar.bounds.height),
+          framePosition = Vector2(fontChar.bounds.x, fontChar.bounds.y)
+        )
+      )
+    }
+
+  private def zipWithCharDetails(charList: List[Char], fontInfo: FontInfo): List[(FontChar, Int)] = {
+    def rec(remaining: List[(Char, FontChar)], nextX: Int, acc: List[(FontChar, Int)]): List[(FontChar, Int)] =
+      remaining match {
+        case Nil => acc
+        case x :: xs => rec(xs, nextX + x._2.bounds.width, (x._2, nextX) :: acc)
+      }
+
+    rec(charList.map(c => (c, fontInfo.findByCharacter(c))), 0, Nil)
+  }
 
   private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNodeInternal): Displayable =
     Displayable(

@@ -225,11 +225,16 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
   // Handled a different way
   val ref: Point = Point(0, 0)
 
+  val lines: List[TextLine] =
+    text
+      .split('\n').toList
+      .map(_.replace("\n", ""))
+      .map(line => TextLine(line, Text.calculateBoundsOfLine(line, fontInfo)))
+
   val bounds: Rectangle =
-    text.split('\n').map(_.replace("\n", "")).map(line => Text.calculateHeightOfLine(line, fontInfo))
-      .fold(Rectangle(0, 0, 0, 0)) {
-        (acc, next) => acc.copy(size = Point(Math.max(acc.width, next.width), acc.height + next.height))
-      }
+    lines.map(_.lineBounds).fold(Rectangle.zero) {
+      (acc, next) => acc.copy(size = Point(Math.max(acc.width, next.width), acc.height + next.height))
+    }
 
   val crop: Rectangle = bounds
   val imageAssetRef: String = fontInfo.fontSpriteSheet.imageAssetRef
@@ -249,6 +254,10 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
   def withAlignment(alignment: TextAlignment): Text =
     this.copy(alignment = alignment)
 
+  def alignLeft: Text = copy(alignment = AlignLeft)
+  def alignCenter: Text = copy(alignment = AlignCenter)
+  def alignRight: Text = copy(alignment = AlignRight)
+
   def withText(text: String): Text =
     this.copy(text = text)
 
@@ -257,12 +266,14 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
 
 }
 
+case class TextLine(text: String, lineBounds: Rectangle)
+
 object Text {
 
-  def calculateHeightOfLine(lineText: String, fontInfo: FontInfo): Rectangle = {
+  def calculateBoundsOfLine(lineText: String, fontInfo: FontInfo): Rectangle = {
     lineText.toList
       .map(c => fontInfo.findByCharacter(c).bounds)
-      .fold(Rectangle(0, 0, 0, 0))((acc, curr) => Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height)))
+      .fold(Rectangle.zero)((acc, curr) => Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height)))
   }
 
   def apply(text: String, x: Int, y: Int, depth: Int, fontInfo: FontInfo): Text =

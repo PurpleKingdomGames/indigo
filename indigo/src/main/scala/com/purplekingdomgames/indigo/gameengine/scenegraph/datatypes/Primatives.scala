@@ -22,6 +22,7 @@ object Depth {
 }
 
 object Rectangle {
+  val zero: Rectangle = Rectangle(0, 0, 0, 0)
   def apply(x: Int, y: Int, width: Int, height: Int): Rectangle = Rectangle(Point(x, y), Point(width, height))
   implicit def tuple4ToRectangle(t: (Int, Int, Int, Int)): Rectangle = Rectangle(t._1, t._2, t._3, t._4)
 }

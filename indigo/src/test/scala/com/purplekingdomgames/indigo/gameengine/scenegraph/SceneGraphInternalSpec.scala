@@ -53,7 +53,7 @@ object SceneGraphSamples {
         SceneGraphNodeBranchInternal(
           List(
             TextInternal(
-              "Hello", Rectangle(0, 0, 80, 16), AlignLeft, Point(10, 10), Depth(1), FontInfo("ref", 32, 32, FontChar("a", 0, 0, 16, 16)), Effects.default
+              "Hello", List(TextLine("Hello", Rectangle(0, 0, 80, 16))), Rectangle(0, 0, 80, 16), AlignLeft, Point(10, 10), Depth(1), FontInfo("ref", 32, 32, FontChar("a", 0, 0, 16, 16)), Effects.default
             ),
             GraphicInternal(
               Rectangle(10, 10, 32, 32),

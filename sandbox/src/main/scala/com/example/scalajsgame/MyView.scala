@@ -61,13 +61,18 @@ object MyView {
       Graphic(-115, -100, 320, 240, 1, MyAssets.light)
     ).withAmbientLightAmount(0.5).withAmbientLightTint(1, 1, 0)
 
+  private val fontInfo: FontInfo =
+
+    FontInfo(MyAssets.smallFontName, 320, 230, FontChar("A", 3, 78, 23, 23))
+      .addChar(FontChar("B", 26, 78, 23, 23))
+      .addChar(FontChar("C", 50, 78, 23, 23))
+      .addChar(FontChar("!", 3, 0, 15, 23))
+
   def uiLayer(currentState: MyGameModel): SceneGraphUiLayer =
     SceneGraphUiLayer(
-      Text("ABC", 2, 2, 5,
-        FontInfo(MyAssets.smallFontName, 320, 230, FontChar("A", 3, 78, 23, 23))
-          .addChar(FontChar("B", 26, 78, 23, 23))
-          .addChar(FontChar("C", 50, 78, 23, 23))
-      )
+      Text("AB!\n!C", 2, 2, 5, fontInfo).alignLeft,
+      Text("AB!\n!C", 100, 2, 5, fontInfo).alignCenter,
+      Text("AB!\n!C", 200, 2, 5, fontInfo).alignRight
     )
 
 }
