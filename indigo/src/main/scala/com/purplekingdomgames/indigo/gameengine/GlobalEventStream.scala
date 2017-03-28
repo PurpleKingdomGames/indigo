@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigo.gameengine
 
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
 
 /**
   * This has probably been over thought, but the idea is to have two parallel collections in an attempt to ensure messages are never lost,
@@ -179,6 +179,7 @@ trait FrameMouseEvents {
   val mouseDownAt: Option[Point] = mouseEvents.collectFirst { case m: MouseDown => m.position }
   val mousePositionAt: Option[Point] = mouseEvents.collectFirst { case m: MousePosition => m.position }
 
+  // At
   private def wasMouseAt(position: Point, maybePosition: Option[Point]): Boolean =
     maybePosition match {
       case Some(pt) => position == pt
@@ -196,6 +197,25 @@ trait FrameMouseEvents {
 
   def wasMousePositionAt(position: Point): Boolean = wasMouseAt(position, mousePositionAt)
   def wasMousePositionAt(x: Int, y: Int): Boolean = wasMousePositionAt(Point(x, y))
+
+  //Within
+  private def wasMouseWithin(bounds: Rectangle, maybePosition: Option[Point]): Boolean =
+    maybePosition match {
+      case Some(pt) => bounds.isPointWithin(pt)
+      case None => false
+    }
+
+  def wasMouseClickedWithin(bounds: Rectangle): Boolean = wasMouseWithin(bounds, mouseClickAt)
+  def wasMouseClickedWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasMouseClickedWithin(Rectangle(x, y, width, height))
+
+  def wasMouseUpWithin(bounds: Rectangle): Boolean = wasMouseWithin(bounds, mouseUpAt)
+  def wasMouseUpWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasMouseUpWithin(Rectangle(x, y, width, height))
+
+  def wasMouseDownWithin(bounds: Rectangle): Boolean = wasMouseWithin(bounds, mouseDownAt)
+  def wasMouseDownWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasMouseDownWithin(Rectangle(x, y, width, height))
+
+  def wasMousePositionWithin(bounds: Rectangle): Boolean = wasMouseWithin(bounds, mousePositionAt)
+  def wasMousePositionWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasMousePositionWithin(Rectangle(x, y, width, height))
 
 }
 

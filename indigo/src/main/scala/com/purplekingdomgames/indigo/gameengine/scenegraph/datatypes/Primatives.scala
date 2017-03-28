@@ -9,6 +9,10 @@ case class Rectangle(position: Point, size: Point) {
   val y: Int = position.y
   val width: Int = size.x
   val height: Int = size.y
+
+  def isPointWithin(pt: Point): Boolean =
+    pt.x >= x && pt.x <= width && pt.y >= y && pt.y <= height
+  def isPointWithin(x: Int, y: Int): Boolean = isPointWithin(Point(x, y))
 }
 case class Depth(zIndex: Int)
 
