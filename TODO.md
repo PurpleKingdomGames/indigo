@@ -30,6 +30,7 @@ Game Engine
 - Full window size
 - Full screen
 - Tilemap loading
+- Find a way to reduce requestAnimationFrame calls
 
 Game
 - Make game.
