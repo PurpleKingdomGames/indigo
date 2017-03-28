@@ -102,6 +102,8 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
         val collectedEvents = GlobalEventStream.collect
 
+        GlobalSignalsManager.update(collectedEvents)
+
         val model = state match {
           case None =>
             initialModel(startupData)
