@@ -1,22 +1,29 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes
 
-case class FontInfo(fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar]) {
+case class FontInfo(fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean) {
   private val nonEmtpyChars: List[FontChar] = unknownChar +: fontChars
 
-  def addChar(fontChar: FontChar) = FontInfo(fontSpriteSheet, fontChar, nonEmtpyChars)
+  def addChar(fontChar: FontChar) = FontInfo(fontSpriteSheet, fontChar, nonEmtpyChars, caseSensitive)
   def addChars(chars: List[FontChar]): FontInfo = this.copy(fontChars = fontChars ++ chars)
   def addChars(chars: FontChar*): FontInfo = this.copy(fontChars = fontChars ++ chars)
 
-  def findByCharacter(character: String): FontChar = nonEmtpyChars.find(p => p.character == character).getOrElse(unknownChar)
+  def findByCharacter(character: String): FontChar = nonEmtpyChars.find { p =>
+    if(caseSensitive) p.character == character else p.character.toLowerCase == character.toLowerCase
+  }.getOrElse(unknownChar)
   def findByCharacter(character: Char): FontChar = findByCharacter(character.toString)
+
+  def makeCaseSensitive(sensitive: Boolean): FontInfo = this.copy(caseSensitive = sensitive)
+  def isCaseSensitive: FontInfo = makeCaseSensitive(true)
+  def isCaseInSensitive: FontInfo = makeCaseSensitive(false)
 }
 
 object FontInfo {
   def apply(imageAssetRef: String, sheetWidth: Int, sheetHeight: Int, unknownChar: FontChar, chars: FontChar*): FontInfo =
     FontInfo(
-      FontSpriteSheet(imageAssetRef, Point(sheetWidth, sheetHeight)),
-      unknownChar,
-      chars.toList
+      fontSpriteSheet = FontSpriteSheet(imageAssetRef, Point(sheetWidth, sheetHeight)),
+      unknownChar = unknownChar,
+      fontChars = chars.toList,
+      caseSensitive = false
     )
 }
 

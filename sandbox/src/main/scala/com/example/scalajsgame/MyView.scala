@@ -63,7 +63,8 @@ object MyView {
 
   private val fontInfo: FontInfo =
 
-    FontInfo(MyAssets.smallFontName, 320, 230, FontChar("A", 3, 78, 23, 23))
+    FontInfo(MyAssets.smallFontName, 320, 230, FontChar("a", 3, 78, 23, 23))
+      .isCaseInSensitive
       .addChar(FontChar("B", 26, 78, 23, 23))
       .addChar(FontChar("C", 50, 78, 23, 23))
       .addChar(FontChar("!", 3, 0, 15, 23))
