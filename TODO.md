@@ -17,8 +17,9 @@ The layers:
 
 
 Bugs:
-- mouse position needs to be a signal that's folded (state retained) not on and off.
-- is mouse cursor position correct?
+
+Indigo SBT Plugin
+- Build one. The aim should be to speed up development and make testing simpler.
 
 Renderer
 - Layer effects (Hue, saturation, tint, Blur, Bloom.. anything else? )

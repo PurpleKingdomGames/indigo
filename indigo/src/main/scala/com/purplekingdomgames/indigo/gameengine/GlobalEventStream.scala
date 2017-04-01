@@ -2,38 +2,15 @@ package com.purplekingdomgames.indigo.gameengine
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
 
-/**
-  * This has probably been over thought, but the idea is to have two parallel collections in an attempt to ensure messages are never lost,
-  * While ensuring that the data doesn't grow infinitely. Messages are collected in one queue and just before the queue is collected the other
-  * queue is activated so that all new events are placed onto that queue instead.
-  */
+import scala.collection.mutable
+
 object GlobalEventStream {
 
-  private var useBlue: Boolean = true
-  private var blueEvents: List[GameEvent] = Nil
-  private var greenEvents: List[GameEvent] = Nil
+  private var eventQueue = new mutable.Queue[GameEvent]()
 
-  def push(e: GameEvent): Unit = {
-    if(useBlue) {
-      blueEvents = blueEvents ++ List(e)
-    } else {
-      greenEvents = greenEvents ++ List(e)
-    }
-  }
+  def push(e: GameEvent): Unit = eventQueue += e
 
-  def collect: List[GameEvent] = {
-    if(useBlue) {
-      useBlue = !useBlue
-      val l = blueEvents
-      blueEvents = Nil
-      l
-    } else {
-      useBlue = !useBlue
-      val l = greenEvents
-      greenEvents = Nil
-      l
-    }
-  }
+  def collect: List[GameEvent] = eventQueue.dequeueAll(_ => true).toList
 
 }
 
