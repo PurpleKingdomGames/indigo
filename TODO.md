@@ -26,6 +26,8 @@ Renderer
 - Pixel effects e.g. animate flood fill disolve
 
 Game Engine
+- Simpler ViewEvents. Need a way to add onClick to `this`.
+- Give option for font char look ups to be case insensitive
 - Config setting for hide mouse cursor
 - Sound
 - Full window size
