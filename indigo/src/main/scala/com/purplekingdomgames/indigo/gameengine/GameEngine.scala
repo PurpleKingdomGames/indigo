@@ -13,7 +13,13 @@ case class GameTime(running: Double, delta: Double)
 
 import com.purplekingdomgames.indigo.Logger
 
+trait GameTypeHolder[T] {
+  type View = T
+}
+
 trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extends JSApp {
+
+  implicit val gameTypeHolder = new GameTypeHolder[ViewEventDataType] {}
 
   def config: GameConfig
 

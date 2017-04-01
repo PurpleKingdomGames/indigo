@@ -2,8 +2,8 @@ package com.purplekingdomgames.indigo.gameengine.scenegraph
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import upickle.default._
-
 import com.purplekingdomgames.indigo.Logger
+import com.purplekingdomgames.indigo.gameengine.{GameEngine, GameEvent, GameTypeHolder}
 
 case class Aseprite(frames: List[AsepriteFrame], meta: AsepriteMeta)
 
@@ -71,7 +71,7 @@ object AsepriteHelper {
     }.collect { case Some(s) => s }
   }
 
-  def toSprite(aseprite: Aseprite, depth: Depth, imageAssetRef: String): Option[Sprite] = {
+  def toSprite(aseprite: Aseprite, depth: Depth, imageAssetRef: String)(implicit gth: GameTypeHolder[_]): Option[Sprite[gth.View]] = {
     extractCycles(aseprite) match {
       case Nil =>
         Logger.info("No animation frames found in Aseprit: " + aseprite)
@@ -86,7 +86,7 @@ object AsepriteHelper {
             Nil
           )
         Option(
-          Sprite(
+          Sprite[gth.View](
             bindingKey = BindingKey.generate,
             bounds = Rectangle(
               position = Point(0, 0),
@@ -96,7 +96,8 @@ object AsepriteHelper {
             imageAssetRef = imageAssetRef,
             animations = animations,
             ref = Point(0, 0),
-            effects = Effects.default
+            effects = Effects.default,
+            eventHandler = (_: GameEvent) => None
           )
         )
     }

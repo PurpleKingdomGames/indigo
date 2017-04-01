@@ -22,16 +22,16 @@ object SceneGraphInternal {
     )
   }
 
-  private def convertLeafNode[VEDT](leaf: SceneGraphNodeLeaf): SceneGraphNodeLeafInternal[VEDT] =
+  private def convertLeafNode[VEDT](leaf: SceneGraphNodeLeaf[VEDT]): SceneGraphNodeLeafInternal[VEDT] =
     leaf match {
-      case Graphic(bounds, depth, imageAssetRef, ref, crop, effects) =>
-        GraphicInternal(bounds, depth, imageAssetRef, ref, crop, effects, (_: GameEvent) => None)
+      case Graphic(bounds, depth, imageAssetRef, ref, crop, effects, eventHandler) =>
+        GraphicInternal[VEDT](bounds, depth, imageAssetRef, ref, crop, effects, eventHandler)
 
-      case t @ Text(text, alignment, position, depth, fontInfo, effects) =>
-        TextInternal(text, t.lines, t.bounds, alignment, position, depth, fontInfo, effects, (_: GameEvent) => None)
+      case t @ Text(text, alignment, position, depth, fontInfo, effects, eventHandler) =>
+        TextInternal[VEDT](text, t.lines, t.bounds, alignment, position, depth, fontInfo, effects, eventHandler)
 
-      case Sprite(bindingKey, bounds, depth, imageAssetRef, animations, ref, effects) =>
-        SpriteInternal(bindingKey, bounds, depth, imageAssetRef, convertAnimationsToInternal(animations), ref, effects, (_: GameEvent) => None)
+      case Sprite(bindingKey, bounds, depth, imageAssetRef, animations, ref, effects, eventHandler) =>
+        SpriteInternal[VEDT](bindingKey, bounds, depth, imageAssetRef, convertAnimationsToInternal(animations), ref, effects, eventHandler)
 
     }
 
@@ -45,7 +45,7 @@ object SceneGraphInternal {
           convertChildren(children)
         )
 
-      case l: SceneGraphNodeLeaf =>
+      case l: SceneGraphNodeLeaf[VEDT] =>
         convertLeafNode[VEDT](l)
     }
 

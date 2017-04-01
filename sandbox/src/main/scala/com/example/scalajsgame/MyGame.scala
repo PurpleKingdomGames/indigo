@@ -47,7 +47,7 @@ object MyGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel, MyVi
 
 }
 
-case class Dude(aseprite: Aseprite, sprite: Sprite)
+case class Dude(aseprite: Aseprite, sprite: Sprite[MyViewEventDataType])
 case class MyStartupData(dude: Dude)
 
 case class MyErrorReport(errors: List[String])
