@@ -152,7 +152,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
   }
 
   private val convertToInternalFormat: SceneGraphRootNode[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] = scenegraph =>
-    SceneGraphInternal.fromPublicFacing(scenegraph)
+    SceneGraphInternal.fromPublicFacing[ViewEventDataType](scenegraph)
 
   private val persistNodeViewEvents: List[GameEvent] => SceneGraphRootNodeInternal[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] = gameEvents => rootNode => {
     rootNode.collectViewEvents(gameEvents).foreach(GlobalEventStream.push)

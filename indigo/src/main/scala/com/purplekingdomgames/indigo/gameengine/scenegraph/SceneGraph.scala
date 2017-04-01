@@ -7,13 +7,13 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 case class SceneGraphUpdate[ViewEventDataType](rootNode: SceneGraphRootNode[ViewEventDataType], viewEvents: List[ViewEvent[ViewEventDataType]])
 
 case class SceneGraphRootNode[ViewEventDataType](game: SceneGraphGameLayer, lighting: SceneGraphLightingLayer, ui: SceneGraphUiLayer) {
-  type VEDT = ViewEventDataType
 
   def addLightingLayer(lighting: SceneGraphLightingLayer): SceneGraphRootNode[ViewEventDataType] =
     this.copy(lighting = lighting)
 
   def addUiLayer(ui: SceneGraphUiLayer): SceneGraphRootNode[ViewEventDataType] =
     this.copy(ui = ui)
+
 }
 
 object SceneGraphRootNode {
@@ -114,6 +114,8 @@ sealed trait SceneGraphNodeLeaf[ViewEventDataType] extends SceneGraphNode {
   def withTint(red: Double, green: Double, blue: Double): SceneGraphNodeLeaf[ViewEventDataType]
   def flipHorizontal(h: Boolean): SceneGraphNodeLeaf[ViewEventDataType]
   def flipVertical(v: Boolean): SceneGraphNodeLeaf[ViewEventDataType]
+
+  def onEvent(e: GameEvent => Option[ViewEvent[ViewEventDataType]]): SceneGraphNodeLeaf[ViewEventDataType]
 }
 
 case class Graphic[ViewEventDataType](bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: GameEvent => Option[ViewEvent[ViewEventDataType]]) extends SceneGraphNodeLeaf[ViewEventDataType] {
@@ -139,6 +141,9 @@ case class Graphic[ViewEventDataType](bounds: Rectangle, depth: Depth, imageAsse
     this.copy(crop = crop)
   def withCrop(x: Int, y: Int, width: Int, height: Int): Graphic[ViewEventDataType] =
     this.copy(crop = Rectangle(x, y, width, height))
+
+  def onEvent(e: GameEvent => Option[ViewEvent[ViewEventDataType]]): Graphic[ViewEventDataType] =
+    this.copy(eventHandler = e)
 
 }
 
@@ -209,6 +214,9 @@ case class Sprite[ViewEventDataType](bindingKey: BindingKey, bounds: Rectangle, 
   def jumpToFrame(number: Int): Sprite[ViewEventDataType] =
     this.copy(animations = animations.addAction(JumpToFrame(number)))
 
+  def onEvent(e: GameEvent => Option[ViewEvent[ViewEventDataType]]): Sprite[ViewEventDataType] =
+    this.copy(eventHandler = e)
+
 }
 
 object Sprite {
@@ -268,6 +276,9 @@ case class Text[ViewEventDataType](text: String, alignment: TextAlignment, posit
 
   def withFontInfo(fontInfo: FontInfo): Text[ViewEventDataType] =
     this.copy(fontInfo = fontInfo)
+
+  def onEvent(e: GameEvent => Option[ViewEvent[ViewEventDataType]]): Text[ViewEventDataType] =
+    this.copy(eventHandler = e)
 
 }
 

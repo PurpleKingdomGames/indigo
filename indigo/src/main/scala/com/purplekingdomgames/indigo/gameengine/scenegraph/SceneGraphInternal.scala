@@ -1,7 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
-import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameEvent, GameTime, ViewEvent}
+import com.purplekingdomgames.indigo.gameengine._
 
 object SceneGraphInternal {
 
@@ -22,44 +22,44 @@ object SceneGraphInternal {
     )
   }
 
-  private def convertLeafNode[VEDT](leaf: SceneGraphNodeLeaf[VEDT]): SceneGraphNodeLeafInternal[VEDT] =
+  private def convertLeafNode[VEDT](leaf: SceneGraphNodeLeaf[VEDT])(implicit gth: GameTypeHolder[VEDT]): SceneGraphNodeLeafInternal[gth.View] =
     leaf match {
       case Graphic(bounds, depth, imageAssetRef, ref, crop, effects, eventHandler) =>
-        GraphicInternal[VEDT](bounds, depth, imageAssetRef, ref, crop, effects, eventHandler)
+        GraphicInternal[gth.View](bounds, depth, imageAssetRef, ref, crop, effects, eventHandler)
 
       case t @ Text(text, alignment, position, depth, fontInfo, effects, eventHandler) =>
-        TextInternal[VEDT](text, t.lines, t.bounds, alignment, position, depth, fontInfo, effects, eventHandler)
+        TextInternal[gth.View](text, t.lines, t.bounds, alignment, position, depth, fontInfo, effects, eventHandler)
 
       case Sprite(bindingKey, bounds, depth, imageAssetRef, animations, ref, effects, eventHandler) =>
-        SpriteInternal[VEDT](bindingKey, bounds, depth, imageAssetRef, convertAnimationsToInternal(animations), ref, effects, eventHandler)
+        SpriteInternal[gth.View](bindingKey, bounds, depth, imageAssetRef, convertAnimationsToInternal(animations), ref, effects, eventHandler)
 
     }
 
-  private def convertChildren[VEDT](children: List[SceneGraphNode]): List[SceneGraphNodeInternal[VEDT]] =
-    children.map(convertChild[VEDT])
+  private def convertChildren[VEDT](children: List[SceneGraphNode])(implicit gth: GameTypeHolder[VEDT]): List[SceneGraphNodeInternal[gth.View]] =
+    children.map(convertChild[gth.View])
 
-  private def convertChild[VEDT](sceneGraphNode: SceneGraphNode): SceneGraphNodeInternal[VEDT] =
+  private def convertChild[VEDT](sceneGraphNode: SceneGraphNode)(implicit gth: GameTypeHolder[VEDT]): SceneGraphNodeInternal[gth.View] =
     sceneGraphNode match {
       case SceneGraphNodeBranch(children) =>
-        SceneGraphNodeBranchInternal[VEDT](
-          convertChildren(children)
+        SceneGraphNodeBranchInternal[gth.View](
+          convertChildren[gth.View](children)
         )
 
-      case l: SceneGraphNodeLeaf[VEDT] =>
-        convertLeafNode[VEDT](l)
+      case l: SceneGraphNodeLeaf[gth.View] =>
+        convertLeafNode[gth.View](l)
     }
 
-  def fromPublicFacing(sceneGraphNode: SceneGraphRootNode[_]): SceneGraphRootNodeInternal[sceneGraphNode.VEDT] =
-    SceneGraphRootNodeInternal[sceneGraphNode.VEDT](
-      game = SceneGraphGameLayerInternal[sceneGraphNode.VEDT](
-        convertChild[sceneGraphNode.VEDT](sceneGraphNode.game.node)
+  def fromPublicFacing[VEDT](sceneGraphNode: SceneGraphRootNode[VEDT])(implicit gth: GameTypeHolder[VEDT]): SceneGraphRootNodeInternal[gth.View] =
+    SceneGraphRootNodeInternal[gth.View](
+      game = SceneGraphGameLayerInternal[gth.View](
+        convertChild[gth.View](sceneGraphNode.game.node)
       ),
-      lighting = SceneGraphLightingLayerInternal[sceneGraphNode.VEDT](
-        convertChild[sceneGraphNode.VEDT](sceneGraphNode.lighting.node),
+      lighting = SceneGraphLightingLayerInternal[gth.View](
+        convertChild[gth.View](sceneGraphNode.lighting.node),
         sceneGraphNode.lighting.ambientLight
       ),
-      ui = SceneGraphUiLayerInternal[sceneGraphNode.VEDT](
-        convertChild[sceneGraphNode.VEDT](sceneGraphNode.ui.node)
+      ui = SceneGraphUiLayerInternal[gth.View](
+        convertChild[gth.View](sceneGraphNode.ui.node)
       )
     )
 
