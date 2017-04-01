@@ -2,7 +2,7 @@ package com.example.scalajsgame
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo}
-import com.purplekingdomgames.indigo.gameengine.{FrameInputEvents, GameTime}
+import com.purplekingdomgames.indigo.gameengine.{FrameInputEvents, GameTime, GlobalSignals}
 
 object MyView {
 
@@ -58,7 +58,8 @@ object MyView {
   def lightingLayer(currentState: MyGameModel): SceneGraphLightingLayer =
     SceneGraphLightingLayer(
       Graphic(0, 0, 320, 240, 1, MyAssets.light).withTint(1, 0, 0),
-      Graphic(-115, -100, 320, 240, 1, MyAssets.light)
+      Graphic(-115, -100, 320, 240, 1, MyAssets.light),
+      Graphic(GlobalSignals.MousePosition.x - 160, GlobalSignals.MousePosition.y - 120, 320, 240, 1, MyAssets.light)
     ).withAmbientLightAmount(0.5).withAmbientLightTint(1, 1, 0)
 
   private val fontInfo: FontInfo =

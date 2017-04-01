@@ -3,7 +3,16 @@ package com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes
 import scala.language.implicitConversions
 
 // Data types
-case class Point(x: Int, y: Int)
+case class Point(x: Int, y: Int) {
+  def +(pt: Point): Point = Point(x + pt.x, y + pt.y)
+  def +(i: Int): Point = Point(x + i, y + i)
+  def -(pt: Point): Point = Point(x - pt.x, y - pt.y)
+  def -(i: Int): Point = Point(x - i, y - i)
+  def *(pt: Point): Point = Point(x * pt.x, y * pt.y)
+  def *(i: Int): Point = Point(x * i, y * i)
+  def /(pt: Point): Point = Point(x / pt.x, y / pt.y)
+  def /(i: Int): Point = Point(x / i, y / i)
+}
 case class Rectangle(position: Point, size: Point) {
   val x: Int = position.x
   val y: Int = position.y

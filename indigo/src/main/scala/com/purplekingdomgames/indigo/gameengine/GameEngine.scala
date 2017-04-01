@@ -102,7 +102,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
         val collectedEvents = GlobalEventStream.collect
 
-        GlobalSignalsManager.update(collectedEvents)
+        GlobalSignalsManager.update(collectedEvents, config.magnification)
 
         val model = state match {
           case None =>

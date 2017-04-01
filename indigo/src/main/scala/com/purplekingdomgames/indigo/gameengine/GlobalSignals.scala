@@ -12,11 +12,11 @@ private[indigo] object GlobalSignalsManager {
 
   private var signals: Signals = Signals.default
 
-  def update(events: List[GameEvent]): Signals = {
+  def update(events: List[GameEvent], magnification: Int): Signals = {
     signals = events.foldLeft(signals) { (sigs, e) =>
       e match {
         case mp: MousePosition =>
-          sigs.copy(mousePosition = mp.position)
+          sigs.copy(mousePosition = mp.position / magnification)
 
         case _ =>
           sigs
