@@ -116,9 +116,10 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
         // View updates cut off
         if(timeDelta < config.haltViewUpdatesAt) {
-          val processUpdatedView: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNodeInternal =
-            persistEvents andThen
+          val processUpdatedView: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] =
+            persistGlobalViewEvents andThen
               convertToInternalFormat andThen
+              persistNodeViewEvents(collectedEvents) andThen
               applyAnimationStates andThen
               processAnimationCommands(gameTime) andThen
               persistAnimationStates
@@ -139,29 +140,34 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
     }
   }
 
-  private val persistEvents: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNode = update => {
+  private val persistGlobalViewEvents: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNode[ViewEventDataType] = update => {
     update.viewEvents.foreach(GlobalEventStream.push)
     update.rootNode
   }
 
-  private val convertToInternalFormat: SceneGraphRootNode => SceneGraphRootNodeInternal = scenegraph =>
+  private val convertToInternalFormat: SceneGraphRootNode[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] = scenegraph =>
     SceneGraphInternal.fromPublicFacing(scenegraph)
 
-  private val applyAnimationStates: SceneGraphRootNodeInternal => SceneGraphRootNodeInternal = sceneGraph =>
+  private val persistNodeViewEvents: List[GameEvent] => SceneGraphRootNodeInternal[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] = gameEvents => rootNode => {
+    rootNode.collectViewEvents(gameEvents).foreach(GlobalEventStream.push)
+    rootNode
+  }
+
+  private val applyAnimationStates: SceneGraphRootNodeInternal[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] = sceneGraph =>
     sceneGraph.applyAnimationMemento(animationStates)
 
-  private val processAnimationCommands: GameTime => SceneGraphRootNodeInternal => SceneGraphRootNodeInternal = gameTime => sceneGraph =>
+  private val processAnimationCommands: GameTime => SceneGraphRootNodeInternal[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] = gameTime => sceneGraph =>
     sceneGraph.runAnimationActions(gameTime)
 
-  private val persistAnimationStates: SceneGraphRootNodeInternal => SceneGraphRootNodeInternal = sceneGraph => {
+  private val persistAnimationStates: SceneGraphRootNodeInternal[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] = sceneGraph => {
     animationStates = AnimationState.extractAnimationStates(sceneGraph)
     sceneGraph
   }
 
   private implicit def displayObjectToList(displayObject: DisplayObject): List[DisplayObject] = List(displayObject)
 
-  private val leafToDisplayObject: SceneGraphNodeLeafInternal => List[DisplayObject] = {
-      case leaf: GraphicInternal =>
+  private val leafToDisplayObject: SceneGraphNodeLeafInternal[ViewEventDataType] => List[DisplayObject] = {
+      case leaf: GraphicInternal[ViewEventDataType] =>
         DisplayObject(
           x = leaf.x,
           y = leaf.y,
@@ -185,7 +191,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
               )
         )
 
-      case leaf: SpriteInternal =>
+      case leaf: SpriteInternal[ViewEventDataType] =>
         DisplayObject(
           x = leaf.x,
           y = leaf.y,
@@ -206,7 +212,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
           )
         )
 
-      case leaf: TextInternal =>
+      case leaf: TextInternal[ViewEventDataType] =>
 
         val alignmentOffsetX: Rectangle => Int = lineBounds =>
           leaf.alignment match {
@@ -226,7 +232,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
     }
 
-  private def textLineToDisplayObjects(leaf: TextInternal): (TextLine, Int, Int) => List[DisplayObject] = (line, alignmentOffsetX, yOffset) =>
+  private def textLineToDisplayObjects(leaf: TextInternal[ViewEventDataType]): (TextLine, Int, Int) => List[DisplayObject] = (line, alignmentOffsetX, yOffset) =>
     zipWithCharDetails(line.text.toList, leaf.fontInfo).map { case (fontChar, xPosition) =>
       DisplayObject(
         x = leaf.position.x + xPosition + alignmentOffsetX,
@@ -259,14 +265,14 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
     rec(charList.map(c => (c, fontInfo.findByCharacter(c))), 0, Nil)
   }
 
-  private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNodeInternal): Displayable =
+  private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNodeInternal[ViewEventDataType]): Displayable =
     Displayable(
       GameDisplayLayer(rootNode.game.node.flatten.flatMap(leafToDisplayObject)),
       LightingDisplayLayer(rootNode.lighting.node.flatten.flatMap(leafToDisplayObject), rootNode.lighting.ambientLight),
       UiDisplayLayer(rootNode.ui.node.flatten.flatMap(leafToDisplayObject))
     )
 
-  private def drawScene(renderer: IRenderer, gameModel: GameModel, view: SceneGraphUpdate[ViewEventDataType], processUpdatedView: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNodeInternal): Unit =
+  private def drawScene(renderer: IRenderer, gameModel: GameModel, view: SceneGraphUpdate[ViewEventDataType], processUpdatedView: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType]): Unit =
     renderer.drawScene(
       convertSceneGraphToDisplayable(
         processUpdatedView(view)

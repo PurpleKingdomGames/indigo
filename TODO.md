@@ -26,6 +26,7 @@ Renderer
 - Pixel effects e.g. animate flood fill disolve
 
 Game Engine
+- Consider merging public and internal scenegraph classes and presenting a good old fashioned interface instead.
 - Simpler ViewEvents. Need a way to add onClick to `this`.
 - Config setting for hide mouse cursor
 - Sound

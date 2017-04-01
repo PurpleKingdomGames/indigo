@@ -4,18 +4,20 @@ import com.purplekingdomgames.indigo.gameengine.ViewEvent
 import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 
-case class SceneGraphUpdate[ViewEventDataType](rootNode: SceneGraphRootNode, viewEvents: List[ViewEvent[ViewEventDataType]])
+case class SceneGraphUpdate[ViewEventDataType](rootNode: SceneGraphRootNode[ViewEventDataType], viewEvents: List[ViewEvent[ViewEventDataType]])
 
-case class SceneGraphRootNode(game: SceneGraphGameLayer, lighting: SceneGraphLightingLayer, ui: SceneGraphUiLayer) {
-  def addLightingLayer(lighting: SceneGraphLightingLayer): SceneGraphRootNode =
+case class SceneGraphRootNode[ViewEventDataType](game: SceneGraphGameLayer, lighting: SceneGraphLightingLayer, ui: SceneGraphUiLayer) {
+  type VEDT = ViewEventDataType
+
+  def addLightingLayer(lighting: SceneGraphLightingLayer): SceneGraphRootNode[ViewEventDataType] =
     this.copy(lighting = lighting)
 
-  def addUiLayer(ui: SceneGraphUiLayer): SceneGraphRootNode =
+  def addUiLayer(ui: SceneGraphUiLayer): SceneGraphRootNode[ViewEventDataType] =
     this.copy(ui = ui)
 }
 
 object SceneGraphRootNode {
-  def apply(game: SceneGraphGameLayer): SceneGraphRootNode =
+  def apply[ViewEventDataType](game: SceneGraphGameLayer): SceneGraphRootNode[ViewEventDataType] =
     SceneGraphRootNode(game, SceneGraphLightingLayer.empty, SceneGraphUiLayer.empty)
 }
 
