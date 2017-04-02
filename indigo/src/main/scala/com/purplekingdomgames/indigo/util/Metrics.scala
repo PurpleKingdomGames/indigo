@@ -6,23 +6,37 @@ object Metrics {
 
   trait IMetrics {
     def record(m: Metric): Unit
-    def report(): Unit
   }
 
   private class MetricsInstance(logReportIntervalMs: Int) extends IMetrics {
     private val metrics: mutable.Queue[Metric] = new mutable.Queue[Metric]()
 
-    def record(m: Metric): Unit = metrics += m
+    private var lastReportTime: Long = System.currentTimeMillis()
 
-    def report(): Unit = Logger.info("I should err... report some metrics I guess...")
-    
+    def record(m: Metric): Unit = {
+      metrics += m
+
+      m match {
+        case FrameEndMetric(time) if time >= lastReportTime + logReportIntervalMs =>
+          lastReportTime = time
+          report(metrics.dequeueAll(_ => true).toList)
+        case _ => ()
+      }
+
+    }
+
+    private def report(metrics: List[Metric]): Unit =
+      Logger.info(
+        s"""**********************
+          |Metrics! ${metrics.length} of them!
+          |**********************
+        """.stripMargin
+      )
+
   }
 
   private class NullMetricsInstance extends IMetrics {
-
     def record(m: Metric): Unit = ()
-    def report(): Unit = ()
-
   }
 
   private var instance: Option[IMetrics] = None
@@ -41,25 +55,23 @@ object Metrics {
 
   def record(m: Metric): Unit = getInstance().record(m)
 
-  def report(): Unit = getInstance().report()
-
 }
 
 sealed trait Metric {
-  val time: Long = System.currentTimeMillis()
+  val time: Long
 }
-case object FrameStart extends Metric
+case class FrameStartMetric(time: Long = System.currentTimeMillis()) extends Metric
 
-case object UpdateStart extends Metric
-case object UpdateGameModelStart extends Metric
-case object UpdateGameModelEnd extends Metric
-case object UpdateGameViewStart extends Metric
-case object UpdateGameViewEnd extends Metric
-case object SkippedModelUpdate extends Metric
-case object SkippedViewUpdate extends Metric
-case object UpdateEnd extends Metric
+case class UpdateStartMetric(time: Long = System.currentTimeMillis()) extends Metric
+case class UpdateGameModelStartMetric(time: Long = System.currentTimeMillis()) extends Metric
+case class UpdateGameModelEndMetric(time: Long = System.currentTimeMillis()) extends Metric
+case class UpdateGameViewStartMetric(time: Long = System.currentTimeMillis()) extends Metric
+case class UpdateGameViewEndMetric(time: Long = System.currentTimeMillis()) extends Metric
+case class SkippedModelUpdateMetric(time: Long = System.currentTimeMillis()) extends Metric
+case class SkippedViewUpdateMetric(time: Long = System.currentTimeMillis()) extends Metric
+case class UpdateEndMetric(time: Long = System.currentTimeMillis()) extends Metric
 
-case object RenderStart extends Metric
-case object RenderEnd extends Metric
+case class RenderStartMetric(time: Long = System.currentTimeMillis()) extends Metric
+case class RenderEndMetric(time: Long = System.currentTimeMillis()) extends Metric
 
-case object FrameEnd extends Metric
+case class FrameEndMetric(time: Long = System.currentTimeMillis()) extends Metric

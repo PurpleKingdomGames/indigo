@@ -4,7 +4,7 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import org.scalajs.dom
 import com.purplekingdomgames.indigo.renderer._
-import com.purplekingdomgames.indigo.util.Logger
+import com.purplekingdomgames.indigo.util._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.JSApp
@@ -37,6 +37,8 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
   private var animationStates: AnimationStates = AnimationStates(Nil)
 
   protected var assetCollection: AssetCollection = AssetCollection(Nil, Nil)
+
+  private val metrics = Metrics.getInstance(config.recordMetrics, 10000)
 
   def main(): Unit = {
 
@@ -101,6 +103,8 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
     // PUT NOTHING ABOVE THIS LINE!! Major performance penalties!!
     if(timeDelta > config.frameRateDeltaMillis) {
 
+      metrics.record(FrameStartMetric())
+
       // Model updates cut off
       if(timeDelta < config.haltModelUpdatesAt) {
         val gameTime: GameTime = GameTime(time, timeDelta)
@@ -136,8 +140,14 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
           )
 
           drawScene(renderer, model, view, processUpdatedView)
+        } else {
+          metrics.record(SkippedViewUpdateMetric())
         }
+      } else {
+        metrics.record(SkippedModelUpdateMetric())
       }
+
+      metrics.record(FrameEndMetric())
 
       dom.window.requestAnimationFrame(loop(startupData)(renderer, time))
     } else {
@@ -286,7 +296,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
 }
 
-case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int) {
+case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int, recordMetrics: Boolean) {
   val frameRateDeltaMillis: Int = 1000 / frameRate
 
   val haltViewUpdatesAt: Int = frameRateDeltaMillis * 2
@@ -300,6 +310,23 @@ case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearC
        |Clear color:    {red: ${clearColor.r}, green: ${clearColor.g}, blue: ${clearColor.b}, alpha: ${clearColor.a}}
        |Magnification:  $magnification
        |""".stripMargin
+
+  def withViewport(width: Int, height: Int): GameConfig = this.copy(viewport = GameViewport(width, height))
+  def withFrameRate(frameRate: Int): GameConfig = this.copy(frameRate = frameRate)
+  def withClearColor(clearColor: ClearColor): GameConfig = this.copy(clearColor = clearColor)
+  def withMagnification(magnification: Int): GameConfig = this.copy(magnification = magnification)
+  def metricsEnabled: GameConfig = this.copy(recordMetrics = true)
+  def metricsDisabled: GameConfig = this.copy(recordMetrics = false)
+}
+
+object GameConfig {
+
+  val default: GameConfig =
+    GameConfig(GameViewport(550, 400), 30, ClearColor.Black, 1, recordMetrics = false)
+
+  def apply(width: Int, height: Int, frameRate: Int): GameConfig =
+    GameConfig(GameViewport(width, height), frameRate, ClearColor.Black, 1, recordMetrics = false)
+
 }
 
 case class GameViewport(width: Int, height: Int)

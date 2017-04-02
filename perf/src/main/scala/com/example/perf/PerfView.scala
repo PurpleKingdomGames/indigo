@@ -6,7 +6,7 @@ import com.purplekingdomgames.indigo.gameengine.{FrameInputEvents, GameTime, Glo
 
 import scala.util.Random
 
-object MyView {
+object PerfView {
 
   def updateView(gameTime: GameTime, model: MyGameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate[MyViewEventDataType] = {
     frameInputEvents.mouseClickAt match {
@@ -28,7 +28,7 @@ object MyView {
 
   private val positions: List[Point] =
     (1 to herdCount).toList.map { _ =>
-      Point((Random.nextFloat() * MyGame.viewportWidth).toInt, (Random.nextFloat() * MyGame.viewportHeight).toInt)
+      Point((Random.nextFloat() * PerfGame.viewportWidth).toInt, (Random.nextFloat() * PerfGame.viewportHeight).toInt)
     }
 
   private val theHerd: MyGameModel => List[Sprite[MyViewEventDataType]] = currentState =>
@@ -74,13 +74,13 @@ object MyView {
 
   def lightingLayer(currentState: MyGameModel): SceneGraphLightingLayer =
     SceneGraphLightingLayer(
-      Graphic(0, 0, 320, 240, 1, MyAssets.light).withTint(1, 0, 0),
-      Graphic(-115, -100, 320, 240, 1, MyAssets.light),
-      Graphic(GlobalSignals.MousePosition.x - 160, GlobalSignals.MousePosition.y - 120, 320, 240, 1, MyAssets.light)
+      Graphic(0, 0, 320, 240, 1, PerfAssets.light).withTint(1, 0, 0),
+      Graphic(-115, -100, 320, 240, 1, PerfAssets.light),
+      Graphic(GlobalSignals.MousePosition.x - 160, GlobalSignals.MousePosition.y - 120, 320, 240, 1, PerfAssets.light)
     ).withAmbientLightAmount(0.5).withAmbientLightTint(1, 1, 0)
 
   private val fontInfo: FontInfo =
-    FontInfo(MyAssets.smallFontName, 320, 230, FontChar("?", 93, 52, 23, 23))
+    FontInfo(PerfAssets.smallFontName, 320, 230, FontChar("?", 93, 52, 23, 23))
       .addChar(FontChar("A", 3, 78, 23, 23))
       .addChar(FontChar("B", 26, 78, 23, 23))
       .addChar(FontChar("C", 50, 78, 23, 23))
@@ -126,8 +126,8 @@ object MyView {
   def uiLayer(frameInputEvents: FrameInputEvents, currentState: MyGameModel): SceneGraphUiLayer =
     SceneGraphUiLayer(
       Text((herdCount + 1) + " Naked\ndudes", 10, 10, 5, fontInfo).alignLeft,
-      Text("Thundering Herd!", MyGame.viewportWidth / 2, 10, 5, fontInfo).alignCenter,
-      Text("use arrow\nkeys", MyGame.viewportWidth - 10, 10, 5, fontInfo).alignRight
+      Text("Thundering Herd!", PerfGame.viewportWidth / 2, 10, 5, fontInfo).alignCenter,
+      Text("use arrow\nkeys", PerfGame.viewportWidth - 10, 10, 5, fontInfo).alignRight
     )
 
 }

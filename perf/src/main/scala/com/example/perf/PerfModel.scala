@@ -2,7 +2,7 @@ package com.example.perf
 
 import com.purplekingdomgames.indigo.gameengine._
 
-object MyModel {
+object PerfModel {
 
   def initialModel(startupData: MyStartupData): MyGameModel =
     MyGameModel(

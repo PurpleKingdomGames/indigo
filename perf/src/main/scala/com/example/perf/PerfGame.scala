@@ -5,26 +5,27 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Depth
 import com.purplekingdomgames.indigo.renderer.ClearColor
 
-object MyGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel, MyViewEventDataType] {
+object PerfGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel, MyViewEventDataType] {
 
-  private val viewportWidth: Int = 456
-  private val viewportHeight: Int = 256
-  private val magnificationLevel: Int = 2
+  val viewportWidth: Int = 1024
+  val viewportHeight: Int = 768
+  val magnificationLevel: Int = 1
 
   def config: GameConfig = GameConfig(
     viewport = GameViewport(viewportWidth, viewportHeight),
     frameRate = 30,
     clearColor = ClearColor(0.4, 0.2, 0.5, 1),
-    magnification = magnificationLevel
+    magnification = magnificationLevel,
+    recordMetrics = true
   )
 
-  def assets: Set[AssetType] = MyAssets.assets
+  def assets: Set[AssetType] = PerfAssets.assets
 
   def initialise(assetCollection: AssetCollection): Startup[MyErrorReport, MyStartupData] = {
     val dude = for {
-      json <- assetCollection.texts.find(p => p.name == MyAssets.dudeName + "-json").map(_.contents)
+      json <- assetCollection.texts.find(p => p.name == PerfAssets.dudeName + "-json").map(_.contents)
       aseprite <- AsepriteHelper.fromJson(json)
-      sprite <- AsepriteHelper.toSprite(aseprite, Depth(3), MyAssets.dudeName)
+      sprite <- AsepriteHelper.toSprite(aseprite, Depth(3), PerfAssets.dudeName)
     } yield Dude(
       aseprite,
       sprite
@@ -38,12 +39,12 @@ object MyGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel, MyVi
     }
   }
 
-  def initialModel(startupData: MyStartupData): MyGameModel = MyModel.initialModel(startupData)
+  def initialModel(startupData: MyStartupData): MyGameModel = PerfModel.initialModel(startupData)
 
-  def updateModel(gameTime: GameTime, gameModel: MyGameModel): GameEvent => MyGameModel = MyModel.updateModel(assetCollection, gameTime, gameModel)
+  def updateModel(gameTime: GameTime, gameModel: MyGameModel): GameEvent => MyGameModel = PerfModel.updateModel(assetCollection, gameTime, gameModel)
 
   def updateView(gameTime: GameTime, gameModel: MyGameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate[MyViewEventDataType] =
-    MyView.updateView(gameTime, gameModel, frameInputEvents)
+    PerfView.updateView(gameTime, gameModel, frameInputEvents)
 
 }
 

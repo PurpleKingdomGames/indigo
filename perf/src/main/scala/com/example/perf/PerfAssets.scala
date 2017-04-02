@@ -2,7 +2,7 @@ package com.example.perf
 
 import com.purplekingdomgames.indigo.gameengine.{AssetType, ImageAsset, TextAsset}
 
-object MyAssets {
+object PerfAssets {
 
   val smallFontName: String = "smallFontName"
   val dudeName: String = "base_charactor"

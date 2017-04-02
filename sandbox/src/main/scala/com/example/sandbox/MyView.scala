@@ -1,4 +1,4 @@
-package com.example.perf
+package com.example.sandbox
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo}

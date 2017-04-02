@@ -1,4 +1,4 @@
-package com.example.perf
+package com.example.sandbox
 
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
@@ -7,15 +7,16 @@ import com.purplekingdomgames.indigo.renderer.ClearColor
 
 object MyGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel, MyViewEventDataType] {
 
-  val viewportWidth: Int = 1024
-  val viewportHeight: Int = 768
-  val magnificationLevel: Int = 1
+  private val viewportWidth: Int = 456
+  private val viewportHeight: Int = 256
+  private val magnificationLevel: Int = 2
 
   def config: GameConfig = GameConfig(
     viewport = GameViewport(viewportWidth, viewportHeight),
     frameRate = 30,
     clearColor = ClearColor(0.4, 0.2, 0.5, 1),
-    magnification = magnificationLevel
+    magnification = magnificationLevel,
+    recordMetrics = false
   )
 
   def assets: Set[AssetType] = MyAssets.assets

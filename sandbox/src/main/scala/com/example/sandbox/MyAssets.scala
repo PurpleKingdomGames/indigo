@@ -1,4 +1,4 @@
-package com.example.perf
+package com.example.sandbox
 
 import com.purplekingdomgames.indigo.gameengine.{AssetType, ImageAsset, TextAsset}
 
