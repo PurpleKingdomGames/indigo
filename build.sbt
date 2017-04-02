@@ -14,7 +14,12 @@ lazy val sandbox =
     .settings(commonSettings: _*)
     .dependsOn(indigo)
 
+lazy val perf =
+  project
+    .settings(commonSettings: _*)
+    .dependsOn(indigo)
+
 lazy val indigoProject =
   (project in file("."))
     .settings(commonSettings: _*)
-    .aggregate(indigo, sandbox)
+    .aggregate(indigo, sandbox, perf)

@@ -1,4 +1,4 @@
-package com.example.scalajsgame
+package com.example.perf
 
 import com.purplekingdomgames.indigo.gameengine.{AssetType, ImageAsset, TextAsset}
 

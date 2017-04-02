@@ -1,4 +1,4 @@
-package com.example.scalajsgame
+package com.example.perf
 
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
@@ -7,9 +7,9 @@ import com.purplekingdomgames.indigo.renderer.ClearColor
 
 object MyGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel, MyViewEventDataType] {
 
-  private val viewportWidth: Int = 456
-  private val viewportHeight: Int = 256
-  private val magnificationLevel: Int = 2
+  val viewportWidth: Int = 1024
+  val viewportHeight: Int = 768
+  val magnificationLevel: Int = 1
 
   def config: GameConfig = GameConfig(
     viewport = GameViewport(viewportWidth, viewportHeight),

@@ -110,6 +110,13 @@ sealed trait SceneGraphNodeLeaf[ViewEventDataType] extends SceneGraphNode {
   def x: Int = bounds.position.x - ref.x
   def y: Int = bounds.position.y - ref.y
 
+  def moveTo(pt: Point): SceneGraphNodeLeaf[ViewEventDataType]
+  def moveTo(x: Int, y: Int): SceneGraphNodeLeaf[ViewEventDataType]
+
+  def moveBy(pt: Point): SceneGraphNodeLeaf[ViewEventDataType]
+  def moveBy(x: Int, y: Int): SceneGraphNodeLeaf[ViewEventDataType]
+
+  def withDepth(depth: Int): SceneGraphNodeLeaf[ViewEventDataType]
   def withAlpha(a: Double): SceneGraphNodeLeaf[ViewEventDataType]
   def withTint(red: Double, green: Double, blue: Double): SceneGraphNodeLeaf[ViewEventDataType]
   def flipHorizontal(h: Boolean): SceneGraphNodeLeaf[ViewEventDataType]
@@ -119,6 +126,23 @@ sealed trait SceneGraphNodeLeaf[ViewEventDataType] extends SceneGraphNode {
 }
 
 case class Graphic[ViewEventDataType](bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent[ViewEventDataType]]) extends SceneGraphNodeLeaf[ViewEventDataType] {
+
+  def moveTo(pt: Point): Graphic[ViewEventDataType] =
+    this.copy(bounds = bounds.copy(position = pt))
+  def moveTo(x: Int, y: Int): Graphic[ViewEventDataType] =
+    moveTo(Point(x, y))
+
+  def moveBy(pt: Point): Graphic[ViewEventDataType] =
+    this.copy(bounds =
+      bounds.copy(
+        position = this.bounds.position + pt
+      )
+    )
+  def moveBy(x: Int, y: Int): Graphic[ViewEventDataType] =
+    moveBy(Point(x, y))
+
+  def withDepth(depth: Int): Graphic[ViewEventDataType] =
+    this.copy(depth = Depth(depth))
 
   def withAlpha(a: Double): Graphic[ViewEventDataType] =
     this.copy(effects = effects.copy(alpha = a))
@@ -162,20 +186,24 @@ object Graphic {
 
 case class Sprite[ViewEventDataType](bindingKey: BindingKey, bounds: Rectangle, depth: Depth, imageAssetRef: String, animations: Animations, ref: Point, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent[ViewEventDataType]]) extends SceneGraphNodeLeaf[ViewEventDataType] {
 
+  def withDepth(depth: Int): Sprite[ViewEventDataType] =
+    this.copy(depth = Depth(depth))
+
   val crop: Rectangle = bounds
 
+  def moveTo(pt: Point): Sprite[ViewEventDataType] =
+    this.copy(bounds = bounds.copy(position = pt))
   def moveTo(x: Int, y: Int): Sprite[ViewEventDataType] =
-    this.copy(bounds = bounds.copy(position = Point(x, y)))
+    moveTo(Point(x, y))
 
-  def moveBy(x: Int, y: Int): Sprite[ViewEventDataType] =
-    this.copy(bounds = bounds.copy(
-      position =
-        bounds.position.copy(
-          x = bounds.position.x + x,
-          y = bounds.position.y + y
-        )
+  def moveBy(pt: Point): Sprite[ViewEventDataType] =
+    this.copy(bounds =
+      bounds.copy(
+        position = this.bounds.position + pt
       )
     )
+  def moveBy(x: Int, y: Int): Sprite[ViewEventDataType] =
+    moveBy(Point(x, y))
 
   def withBindingKey(keyValue: String): Sprite[ViewEventDataType] =
     this.copy(bindingKey = BindingKey(keyValue))
@@ -251,6 +279,21 @@ case class Text[ViewEventDataType](text: String, alignment: TextAlignment, posit
 
   val crop: Rectangle = bounds
   val imageAssetRef: String = fontInfo.fontSpriteSheet.imageAssetRef
+
+  def moveTo(pt: Point): Text[ViewEventDataType] =
+    this.copy(position = pt)
+  def moveTo(x: Int, y: Int): Text[ViewEventDataType] =
+    moveTo(Point(x, y))
+
+  def moveBy(pt: Point): Text[ViewEventDataType] =
+    this.copy(
+      position = this.position + pt
+    )
+  def moveBy(x: Int, y: Int): Text[ViewEventDataType] =
+    moveBy(Point(x, y))
+
+  def withDepth(depth: Int): Text[ViewEventDataType] =
+    this.copy(depth = Depth(depth))
 
   def withAlpha(a: Double): Text[ViewEventDataType] =
     this.copy(effects = effects.copy(alpha = a))
