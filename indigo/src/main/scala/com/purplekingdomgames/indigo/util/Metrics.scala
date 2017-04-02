@@ -25,13 +25,55 @@ object Metrics {
 
     }
 
-    private def report(metrics: List[Metric]): Unit =
+    private def as2DecimalPlacePercent(a: Int, b: Int): Double =
+      Math.round((100d / a * b) * 100).toDouble / 100
+
+    private def report(metrics: List[Metric]): Unit = {
+
+      val frames: List[List[Metric]] = splitIntoFrames(metrics)
+      val frameCount: Int = frames.length
+      val period: Option[Long] =
+        metrics
+          .headOption
+          .map(_.time)
+          .flatMap { start =>
+            metrics.reverse.headOption.map(_.time - start)
+          }
+      val meanFps: String =
+        period.map(p => frameCount / (p / 1000).toInt).map(_.toString()).getOrElse("<missing>")
+
+      val modelUpdatesSkipped: Int = metrics.collect { case m @ SkippedModelUpdateMetric(_) => m }.length
+      val modelSkipsPercent: Double = as2DecimalPlacePercent(frameCount, modelUpdatesSkipped)
+      val viewUpdatesSkipped: Int = metrics.collect { case m @ SkippedViewUpdateMetric(_) => m }.length
+      val viewSkipsPercent: Double = as2DecimalPlacePercent(frameCount, viewUpdatesSkipped)
+
       Logger.info(
-        s"""**********************
-          |Metrics! ${metrics.length} of them!
+        s"""
+          |**********************
+          |Statistics:
+          |Frames since last report:  $frameCount
+          |Mean FPS (average):        $meanFps
+          |
+          |Model updates skipped:     $modelUpdatesSkipped\t($modelSkipsPercent %)
+          |View updates skipped:      $viewUpdatesSkipped\t($viewSkipsPercent %)
           |**********************
         """.stripMargin
       )
+    }
+
+    private def splitIntoFrames(metrics: List[Metric]): List[List[Metric]] = {
+      def rec(remaining: List[Metric], accFrame: List[Metric], acc: List[List[Metric]]): List[List[Metric]] = {
+        remaining match {
+          case Nil => acc
+          case FrameEndMetric(time) :: ms =>
+            rec(ms, Nil, (FrameEndMetric(time) :: accFrame) :: acc)
+          case m :: ms =>
+            rec(ms, m :: accFrame, acc)
+        }
+      }
+
+      rec(metrics, Nil, Nil)
+    }
 
   }
 
