@@ -4,14 +4,13 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import org.scalajs.dom
 import com.purplekingdomgames.indigo.renderer._
+import com.purplekingdomgames.indigo.util.Logger
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.scalajs.js.JSApp
 import scala.language.implicitConversions
 
 case class GameTime(running: Double, delta: Double)
-
-import com.purplekingdomgames.indigo.Logger
 
 trait GameTypeHolder[T] {
   type View = T

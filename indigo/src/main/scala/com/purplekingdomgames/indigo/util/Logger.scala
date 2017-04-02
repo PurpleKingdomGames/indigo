@@ -1,4 +1,4 @@
-package com.purplekingdomgames.indigo
+package com.purplekingdomgames.indigo.util
 
 /**
   * This is the dumbest logger ever.

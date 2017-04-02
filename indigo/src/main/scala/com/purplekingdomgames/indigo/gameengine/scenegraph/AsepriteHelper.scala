@@ -1,8 +1,8 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
-import com.purplekingdomgames.indigo.Logger
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import com.purplekingdomgames.indigo.gameengine.{GameEvent, GameTypeHolder}
+import com.purplekingdomgames.indigo.util.Logger
 import upickle.default._
 
 case class Aseprite(frames: List[AsepriteFrame], meta: AsepriteMeta)

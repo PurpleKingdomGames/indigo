@@ -1,6 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine
 
 import com.purplekingdomgames.indigo.renderer.LoadedTextureAsset
+import com.purplekingdomgames.indigo.util.Logger
 import org.scalajs.dom
 import org.scalajs.dom.ext.Ajax
 import org.scalajs.dom.raw.HTMLImageElement
@@ -8,8 +9,6 @@ import org.scalajs.dom.{html, _}
 
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-
-import com.purplekingdomgames.indigo.Logger
 
 object AssetManager {
 
