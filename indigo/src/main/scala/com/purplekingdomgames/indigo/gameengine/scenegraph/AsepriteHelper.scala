@@ -97,7 +97,7 @@ object AsepriteHelper {
             animations = animations,
             ref = Point(0, 0),
             effects = Effects.default,
-            eventHandler = (_:Rectangle, _: GameEvent) => None
+            eventHandler = (_:(Rectangle, GameEvent)) => None
           )
         )
     }

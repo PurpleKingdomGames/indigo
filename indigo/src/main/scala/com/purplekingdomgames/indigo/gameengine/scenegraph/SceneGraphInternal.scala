@@ -22,10 +22,13 @@ object SceneGraphInternal {
     )
   }
 
+  private def partApply[VEDT](f:((Rectangle, GameEvent)) => Option[ViewEvent[VEDT]], rectangle: Rectangle): GameEvent => Option[ViewEvent[VEDT]] =
+    (e: GameEvent) => f(rectangle, e)
+
   private def convertLeafNode[VEDT](leaf: SceneGraphNodeLeaf[VEDT])(implicit gth: GameTypeHolder[VEDT]): SceneGraphNodeLeafInternal[gth.View] =
     leaf match {
       case g @ Graphic(bounds, depth, imageAssetRef, ref, crop, effects, eventHandler) =>
-        GraphicInternal[gth.View](bounds, depth, imageAssetRef, ref, crop, effects, eventHandler.curried(g.bounds))
+        GraphicInternal[gth.View](bounds, depth, imageAssetRef, ref, crop, effects, partApply(eventHandler, g.bounds))
 
       case t @ Text(text, alignment, position, depth, fontInfo, effects, eventHandler) =>
         val bounds = (t.alignment, t.bounds.copy(position = t.position)) match {
@@ -34,10 +37,10 @@ object SceneGraphInternal {
           case (AlignRight, b) => b.copy(position = Point(b.x - b.width, b.y))
         }
 
-        TextInternal[gth.View](text, t.lines, t.bounds, alignment, position, depth, fontInfo, effects, eventHandler.curried(bounds))
+        TextInternal[gth.View](text, t.lines, t.bounds, alignment, position, depth, fontInfo, effects, partApply(eventHandler, bounds))
 
       case s @ Sprite(bindingKey, bounds, depth, imageAssetRef, animations, ref, effects, eventHandler) =>
-        SpriteInternal[gth.View](bindingKey, bounds, depth, imageAssetRef, convertAnimationsToInternal(animations), ref, effects, eventHandler.curried(s.bounds))
+        SpriteInternal[gth.View](bindingKey, bounds, depth, imageAssetRef, convertAnimationsToInternal(animations), ref, effects, partApply(eventHandler, s.bounds))
 
     }
 
