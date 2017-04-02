@@ -105,10 +105,16 @@ sealed trait Metric {
 case class FrameStartMetric(time: Long = System.currentTimeMillis()) extends Metric
 
 case class UpdateStartMetric(time: Long = System.currentTimeMillis()) extends Metric
-case class UpdateGameModelStartMetric(time: Long = System.currentTimeMillis()) extends Metric
-case class UpdateGameModelEndMetric(time: Long = System.currentTimeMillis()) extends Metric
-case class UpdateGameViewStartMetric(time: Long = System.currentTimeMillis()) extends Metric
-case class UpdateGameViewEndMetric(time: Long = System.currentTimeMillis()) extends Metric
+case class CallUpdateGameModelStartMetric(time: Long = System.currentTimeMillis()) extends Metric
+case class CallUpdateGameModelEndMetric(time: Long = System.currentTimeMillis()) extends Metric
+case class CallUpdateViewStartMetric(time: Long = System.currentTimeMillis()) extends Metric
+case class CallUpdateViewEndMetric(time: Long = System.currentTimeMillis()) extends Metric
+
+case class ProcessViewStartMetric(time: Long = System.currentTimeMillis()) extends Metric
+case class ProcessViewEndMetric(time: Long = System.currentTimeMillis()) extends Metric
+case class ToDisplayableStartMetric(time: Long = System.currentTimeMillis()) extends Metric
+case class ToDisplayableEndMetric(time: Long = System.currentTimeMillis()) extends Metric
+
 case class SkippedModelUpdateMetric(time: Long = System.currentTimeMillis()) extends Metric
 case class SkippedViewUpdateMetric(time: Long = System.currentTimeMillis()) extends Metric
 case class UpdateEndMetric(time: Long = System.currentTimeMillis()) extends Metric

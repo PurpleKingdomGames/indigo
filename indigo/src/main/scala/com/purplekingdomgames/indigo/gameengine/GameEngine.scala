@@ -107,12 +107,14 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
       // Model updates cut off
       if(timeDelta < config.haltModelUpdatesAt) {
+        metrics.record(UpdateStartMetric())
         val gameTime: GameTime = GameTime(time, timeDelta)
 
         val collectedEvents = GlobalEventStream.collect
 
         GlobalSignalsManager.update(collectedEvents)
 
+        metrics.record(CallUpdateGameModelStartMetric())
         val model = state match {
           case None =>
             initialModel(startupData)
@@ -120,11 +122,27 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
           case Some(previousModel) =>
             processModelUpdateEvents(gameTime, previousModel, collectedEvents)
         }
+        metrics.record(CallUpdateGameModelEndMetric())
 
         state = Some(model)
 
+        metrics.record(UpdateEndMetric())
+
         // View updates cut off
         if(timeDelta < config.haltViewUpdatesAt) {
+
+          metrics.record(CallUpdateViewStartMetric())
+
+          val view = updateView(
+            gameTime,
+            model,
+            FrameInputEvents(collectedEvents.filterNot(_.isInstanceOf[ViewEvent[_]]))
+          )
+
+          metrics.record(CallUpdateViewEndMetric())
+
+          metrics.record(ProcessViewStartMetric())
+
           val processUpdatedView: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] =
             persistGlobalViewEvents andThen
               convertToInternalFormat andThen
@@ -133,16 +151,25 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
               processAnimationCommands(gameTime) andThen
               persistAnimationStates
 
-          val view = updateView(
-            gameTime,
-            model,
-            FrameInputEvents(collectedEvents.filterNot(_.isInstanceOf[ViewEvent[_]]))
-          )
+          val processedView: SceneGraphRootNodeInternal[ViewEventDataType] = processUpdatedView(view)
 
-          drawScene(renderer, model, view, processUpdatedView)
+          metrics.record(ProcessViewEndMetric())
+
+          metrics.record(ToDisplayableStartMetric())
+
+          val displayable: Displayable = convertSceneGraphToDisplayable(processedView)
+
+          metrics.record(ToDisplayableEndMetric())
+          
+          metrics.record(RenderStartMetric())
+
+          drawScene(renderer, displayable)
+
+          metrics.record(RenderEndMetric())
         } else {
           metrics.record(SkippedViewUpdateMetric())
         }
+
       } else {
         metrics.record(SkippedModelUpdateMetric())
       }
@@ -287,12 +314,8 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
       UiDisplayLayer(rootNode.ui.node.flatten.flatMap(leafToDisplayObject))
     )
 
-  private def drawScene(renderer: IRenderer, gameModel: GameModel, view: SceneGraphUpdate[ViewEventDataType], processUpdatedView: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType]): Unit =
-    renderer.drawScene(
-      convertSceneGraphToDisplayable(
-        processUpdatedView(view)
-      )
-    )
+  private def drawScene(renderer: IRenderer, displayable: Displayable): Unit =
+    renderer.drawScene(displayable)
 
 }
 
