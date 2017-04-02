@@ -107,7 +107,9 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
       // Model updates cut off
       if(timeDelta < config.haltModelUpdatesAt) {
+
         metrics.record(UpdateStartMetric())
+
         val gameTime: GameTime = GameTime(time, timeDelta)
 
         val collectedEvents = GlobalEventStream.collect
