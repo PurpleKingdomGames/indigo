@@ -28,7 +28,13 @@ object SceneGraphInternal {
         GraphicInternal[gth.View](bounds, depth, imageAssetRef, ref, crop, effects, eventHandler.curried(g.bounds))
 
       case t @ Text(text, alignment, position, depth, fontInfo, effects, eventHandler) =>
-        TextInternal[gth.View](text, t.lines, t.bounds, alignment, position, depth, fontInfo, effects, eventHandler.curried(t.bounds))
+        val bounds = (t.alignment, t.bounds.copy(position = t.position)) match {
+          case (AlignLeft, b) => b
+          case (AlignCenter, b) => b.copy(position = Point(b.x - (b.width / 2), b.y))
+          case (AlignRight, b) => b.copy(position = Point(b.x - b.width, b.y))
+        }
+
+        TextInternal[gth.View](text, t.lines, t.bounds, alignment, position, depth, fontInfo, effects, eventHandler.curried(bounds))
 
       case s @ Sprite(bindingKey, bounds, depth, imageAssetRef, animations, ref, effects, eventHandler) =>
         SpriteInternal[gth.View](bindingKey, bounds, depth, imageAssetRef, convertAnimationsToInternal(animations), ref, effects, eventHandler.curried(s.bounds))

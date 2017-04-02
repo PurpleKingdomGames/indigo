@@ -74,11 +74,13 @@ object MyView {
     SceneGraphUiLayer(
       Text("AB!\n!C", 2, 2, 5, fontInfo).alignLeft,
       Text("AB!\n!C", 100, 2, 5, fontInfo).alignCenter,
-      Text("AB!\n!C", 200, 2, 5, fontInfo).alignRight/*.onEvent {
-        case ee if frameInputEvents.wasMouseClickedWithin(ee._1) =>
-          println("Hit me! Oh yeah!")
+      Text("AB!\n!C", 200, 2, 5, fontInfo).alignRight.onEvent {
+        (bounds, _) =>
+          if(frameInputEvents.wasMouseClickedWithin(bounds)) {
+            println("Hit me! Oh yeah!")
+          }
           None
-      }*/
+      }
     )
 
 }

@@ -20,8 +20,17 @@ case class Rectangle(position: Point, size: Point) {
   val height: Int = size.y
 
   def isPointWithin(pt: Point): Boolean =
-    pt.x >= x && pt.x <= width && pt.y >= y && pt.y <= height
+    pt.x >= x && pt.x <= x + width && pt.y >= y && pt.y <= y + height
   def isPointWithin(x: Int, y: Int): Boolean = isPointWithin(Point(x, y))
+
+  def +(rect: Rectangle): Rectangle = Rectangle(x + rect.x, y + rect.y, width + rect.width, height + rect.height)
+  def +(i: Int): Rectangle = Rectangle(x + i, y + i, width + i, height + i)
+  def -(rect: Rectangle): Rectangle = Rectangle(x - rect.x, y - rect.y, width - rect.width, height - rect.height)
+  def -(i: Int): Rectangle = Rectangle(x - i, y - i, width - i, height - i)
+  def *(rect: Rectangle): Rectangle = Rectangle(x * rect.x, y * rect.y, width * rect.width, height * rect.height)
+  def *(i: Int): Rectangle = Rectangle(x * i, y * i, width * i, height * i)
+  def /(rect: Rectangle): Rectangle = Rectangle(x / rect.x, y / rect.y, width / rect.width, height / rect.height)
+  def /(i: Int): Rectangle = Rectangle(x / i, y / i, width / i, height / i)
 }
 case class Depth(zIndex: Int)
 

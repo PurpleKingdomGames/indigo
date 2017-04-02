@@ -66,7 +66,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
           val canvas = Renderer.createCanvas(config.viewport.width, config.viewport.height)
 
           Logger.info("Starting world events")
-          WorldEvents(canvas)
+          WorldEvents(canvas, config.magnification)
 
           Logger.info("Starting renderer")
           val renderer: IRenderer = Renderer(
@@ -108,7 +108,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
         val collectedEvents = GlobalEventStream.collect
 
-        GlobalSignalsManager.update(collectedEvents, config.magnification)
+        GlobalSignalsManager.update(collectedEvents)
 
         val model = state match {
           case None =>
