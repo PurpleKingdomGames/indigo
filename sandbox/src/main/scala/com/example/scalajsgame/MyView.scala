@@ -2,7 +2,7 @@ package com.example.scalajsgame
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo}
-import com.purplekingdomgames.indigo.gameengine.{FrameInputEvents, GameTime, GlobalSignals}
+import com.purplekingdomgames.indigo.gameengine.{FrameInputEvents, GameTime, GlobalSignals, MouseClick}
 
 object MyView {
 
@@ -16,7 +16,7 @@ object MyView {
       SceneGraphRootNode(
         game = gameLayer(model),
         lighting = lightingLayer(model),
-        ui = uiLayer(model)
+        ui = uiLayer(frameInputEvents, model)
       ),
       Nil
     )
@@ -70,11 +70,15 @@ object MyView {
       .addChar(FontChar("C", 50, 78, 23, 23))
       .addChar(FontChar("!", 3, 0, 15, 23))
 
-  def uiLayer(currentState: MyGameModel): SceneGraphUiLayer =
+  def uiLayer(frameInputEvents: FrameInputEvents, currentState: MyGameModel): SceneGraphUiLayer =
     SceneGraphUiLayer(
       Text("AB!\n!C", 2, 2, 5, fontInfo).alignLeft,
       Text("AB!\n!C", 100, 2, 5, fontInfo).alignCenter,
-      Text("AB!\n!C", 200, 2, 5, fontInfo).alignRight
+      Text("AB!\n!C", 200, 2, 5, fontInfo).alignRight/*.onEvent {
+        case ee if frameInputEvents.wasMouseClickedWithin(ee._1) =>
+          println("Hit me! Oh yeah!")
+          None
+      }*/
     )
 
 }

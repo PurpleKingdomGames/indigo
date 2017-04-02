@@ -24,14 +24,14 @@ object SceneGraphInternal {
 
   private def convertLeafNode[VEDT](leaf: SceneGraphNodeLeaf[VEDT])(implicit gth: GameTypeHolder[VEDT]): SceneGraphNodeLeafInternal[gth.View] =
     leaf match {
-      case Graphic(bounds, depth, imageAssetRef, ref, crop, effects, eventHandler) =>
-        GraphicInternal[gth.View](bounds, depth, imageAssetRef, ref, crop, effects, eventHandler)
+      case g @ Graphic(bounds, depth, imageAssetRef, ref, crop, effects, eventHandler) =>
+        GraphicInternal[gth.View](bounds, depth, imageAssetRef, ref, crop, effects, eventHandler.curried(g.bounds))
 
       case t @ Text(text, alignment, position, depth, fontInfo, effects, eventHandler) =>
-        TextInternal[gth.View](text, t.lines, t.bounds, alignment, position, depth, fontInfo, effects, eventHandler)
+        TextInternal[gth.View](text, t.lines, t.bounds, alignment, position, depth, fontInfo, effects, eventHandler.curried(t.bounds))
 
-      case Sprite(bindingKey, bounds, depth, imageAssetRef, animations, ref, effects, eventHandler) =>
-        SpriteInternal[gth.View](bindingKey, bounds, depth, imageAssetRef, convertAnimationsToInternal(animations), ref, effects, eventHandler)
+      case s @ Sprite(bindingKey, bounds, depth, imageAssetRef, animations, ref, effects, eventHandler) =>
+        SpriteInternal[gth.View](bindingKey, bounds, depth, imageAssetRef, convertAnimationsToInternal(animations), ref, effects, eventHandler.curried(s.bounds))
 
     }
 
@@ -117,7 +117,8 @@ case class SceneGraphLightingLayerInternal[ViewEventDataType](node: SceneGraphNo
   def runAnimationActions(gameTime: GameTime): SceneGraphLightingLayerInternal[ViewEventDataType] =
     this.copy(node = node.runAnimationActions(gameTime))
 
-  def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent[ViewEventDataType]] = Nil
+  def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent[ViewEventDataType]] =
+    node.flatten.flatMap(n => gameEvents.map(e => n.eventHandler(e))).collect { case Some(s) => s}
 
 }
 case class SceneGraphUiLayerInternal[ViewEventDataType](node: SceneGraphNodeInternal[ViewEventDataType]) {
@@ -128,7 +129,8 @@ case class SceneGraphUiLayerInternal[ViewEventDataType](node: SceneGraphNodeInte
   def runAnimationActions(gameTime: GameTime): SceneGraphUiLayerInternal[ViewEventDataType] =
     this.copy(node = node.runAnimationActions(gameTime))
 
-  def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent[ViewEventDataType]] = Nil
+  def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent[ViewEventDataType]] =
+    node.flatten.flatMap(n => gameEvents.map(e => n.eventHandler(e))).collect { case Some(s) => s}
 
 }
 

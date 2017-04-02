@@ -105,7 +105,7 @@ sealed trait SceneGraphNodeLeaf[ViewEventDataType] extends SceneGraphNode {
   val effects: Effects
   val ref: Point
   val crop: Rectangle
-  val eventHandler: GameEvent => Option[ViewEvent[ViewEventDataType]]
+  val eventHandler: (Rectangle, GameEvent) => Option[ViewEvent[ViewEventDataType]]
 
   def x: Int = bounds.position.x - ref.x
   def y: Int = bounds.position.y - ref.y
@@ -115,10 +115,10 @@ sealed trait SceneGraphNodeLeaf[ViewEventDataType] extends SceneGraphNode {
   def flipHorizontal(h: Boolean): SceneGraphNodeLeaf[ViewEventDataType]
   def flipVertical(v: Boolean): SceneGraphNodeLeaf[ViewEventDataType]
 
-  def onEvent(e: GameEvent => Option[ViewEvent[ViewEventDataType]]): SceneGraphNodeLeaf[ViewEventDataType]
+  def onEvent(e: (Rectangle, GameEvent) => Option[ViewEvent[ViewEventDataType]]): SceneGraphNodeLeaf[ViewEventDataType]
 }
 
-case class Graphic[ViewEventDataType](bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: GameEvent => Option[ViewEvent[ViewEventDataType]]) extends SceneGraphNodeLeaf[ViewEventDataType] {
+case class Graphic[ViewEventDataType](bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: (Rectangle, GameEvent) => Option[ViewEvent[ViewEventDataType]]) extends SceneGraphNodeLeaf[ViewEventDataType] {
 
   def withAlpha(a: Double): Graphic[ViewEventDataType] =
     this.copy(effects = effects.copy(alpha = a))
@@ -142,7 +142,7 @@ case class Graphic[ViewEventDataType](bounds: Rectangle, depth: Depth, imageAsse
   def withCrop(x: Int, y: Int, width: Int, height: Int): Graphic[ViewEventDataType] =
     this.copy(crop = Rectangle(x, y, width, height))
 
-  def onEvent(e: GameEvent => Option[ViewEvent[ViewEventDataType]]): Graphic[ViewEventDataType] =
+  def onEvent(e: (Rectangle, GameEvent) => Option[ViewEvent[ViewEventDataType]]): Graphic[ViewEventDataType] =
     this.copy(eventHandler = e)
 
 }
@@ -156,11 +156,11 @@ object Graphic {
       ref = Point.zero,
       crop = Rectangle(x, y, width, height),
       effects = Effects.default,
-      eventHandler = (_: GameEvent) => None
+      eventHandler = (_:Rectangle, _: GameEvent) => None
     )
 }
 
-case class Sprite[ViewEventDataType](bindingKey: BindingKey, bounds: Rectangle, depth: Depth, imageAssetRef: String, animations: Animations, ref: Point, effects: Effects, eventHandler: GameEvent => Option[ViewEvent[ViewEventDataType]]) extends SceneGraphNodeLeaf[ViewEventDataType] {
+case class Sprite[ViewEventDataType](bindingKey: BindingKey, bounds: Rectangle, depth: Depth, imageAssetRef: String, animations: Animations, ref: Point, effects: Effects, eventHandler: (Rectangle, GameEvent) => Option[ViewEvent[ViewEventDataType]]) extends SceneGraphNodeLeaf[ViewEventDataType] {
 
   val crop: Rectangle = bounds
 
@@ -214,7 +214,7 @@ case class Sprite[ViewEventDataType](bindingKey: BindingKey, bounds: Rectangle, 
   def jumpToFrame(number: Int): Sprite[ViewEventDataType] =
     this.copy(animations = animations.addAction(JumpToFrame(number)))
 
-  def onEvent(e: GameEvent => Option[ViewEvent[ViewEventDataType]]): Sprite[ViewEventDataType] =
+  def onEvent(e: (Rectangle, GameEvent) => Option[ViewEvent[ViewEventDataType]]): Sprite[ViewEventDataType] =
     this.copy(eventHandler = e)
 
 }
@@ -229,11 +229,11 @@ object Sprite {
       animations = animations,
       ref = Point.zero,
       effects = Effects.default,
-      eventHandler = (_: GameEvent) => None
+      eventHandler = (_:Rectangle, _: GameEvent) => None
     )
 }
 
-case class Text[ViewEventDataType](text: String, alignment: TextAlignment, position: Point, depth: Depth, fontInfo: FontInfo, effects: Effects, eventHandler: GameEvent => Option[ViewEvent[ViewEventDataType]]) extends SceneGraphNodeLeaf[ViewEventDataType] {
+case class Text[ViewEventDataType](text: String, alignment: TextAlignment, position: Point, depth: Depth, fontInfo: FontInfo, effects: Effects, eventHandler: (Rectangle, GameEvent) => Option[ViewEvent[ViewEventDataType]]) extends SceneGraphNodeLeaf[ViewEventDataType] {
 
   // Handled a different way
   val ref: Point = Point(0, 0)
@@ -277,7 +277,7 @@ case class Text[ViewEventDataType](text: String, alignment: TextAlignment, posit
   def withFontInfo(fontInfo: FontInfo): Text[ViewEventDataType] =
     this.copy(fontInfo = fontInfo)
 
-  def onEvent(e: GameEvent => Option[ViewEvent[ViewEventDataType]]): Text[ViewEventDataType] =
+  def onEvent(e: (Rectangle, GameEvent) => Option[ViewEvent[ViewEventDataType]]): Text[ViewEventDataType] =
     this.copy(eventHandler = e)
 
 }
@@ -300,6 +300,6 @@ object Text {
       depth = depth,
       fontInfo = fontInfo,
       effects = Effects.default,
-      eventHandler = (_: GameEvent) => None
+      eventHandler = (_:Rectangle, _: GameEvent) => None
     )
 }

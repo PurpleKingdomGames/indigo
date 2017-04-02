@@ -1,9 +1,9 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
-import upickle.default._
 import com.purplekingdomgames.indigo.Logger
-import com.purplekingdomgames.indigo.gameengine.{GameEngine, GameEvent, GameTypeHolder}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
+import com.purplekingdomgames.indigo.gameengine.{GameEvent, GameTypeHolder}
+import upickle.default._
 
 case class Aseprite(frames: List[AsepriteFrame], meta: AsepriteMeta)
 
@@ -97,7 +97,7 @@ object AsepriteHelper {
             animations = animations,
             ref = Point(0, 0),
             effects = Effects.default,
-            eventHandler = (_: GameEvent) => None
+            eventHandler = (_:Rectangle, _: GameEvent) => None
           )
         )
     }
