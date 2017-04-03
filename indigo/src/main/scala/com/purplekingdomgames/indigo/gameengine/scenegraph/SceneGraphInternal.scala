@@ -2,6 +2,7 @@ package com.purplekingdomgames.indigo.gameengine.scenegraph
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import com.purplekingdomgames.indigo.gameengine._
+import com.purplekingdomgames.indigo.util._
 
 object SceneGraphInternal {
 
@@ -58,8 +59,11 @@ object SceneGraphInternal {
         convertLeafNode[gth.View](l)
     }
 
-  def fromPublicFacing[VEDT](sceneGraphNode: SceneGraphRootNode[VEDT])(implicit gth: GameTypeHolder[VEDT]): SceneGraphRootNodeInternal[gth.View] =
-    SceneGraphRootNodeInternal[gth.View](
+  def fromPublicFacing[VEDT](sceneGraphNode: SceneGraphRootNode[VEDT])(implicit gth: GameTypeHolder[VEDT], metrics: IMetrics): SceneGraphRootNodeInternal[gth.View] = {
+
+    metrics.record(ConvertToInternalStartMetric)
+
+    val res = SceneGraphRootNodeInternal[gth.View](
       game = SceneGraphGameLayerInternal[gth.View](
         convertChild[gth.View](sceneGraphNode.game.node)
       ),
@@ -71,6 +75,11 @@ object SceneGraphInternal {
         convertChild[gth.View](sceneGraphNode.ui.node)
       )
     )
+
+    metrics.record(ConvertToInternalEndMetric)
+
+    res
+  }
 
 }
 
@@ -85,19 +94,35 @@ UI - Simple diffuse, but always lives above the other two.
  */
 case class SceneGraphRootNodeInternal[ViewEventDataType](game: SceneGraphGameLayerInternal[ViewEventDataType], lighting: SceneGraphLightingLayerInternal[ViewEventDataType], ui: SceneGraphUiLayerInternal[ViewEventDataType]) {
 
-  def applyAnimationMemento(animationStates: AnimationStates): SceneGraphRootNodeInternal[ViewEventDataType] =
-    SceneGraphRootNodeInternal(
+  def applyAnimationMemento(animationStates: AnimationStates)(implicit metrics: IMetrics): SceneGraphRootNodeInternal[ViewEventDataType] = {
+
+    metrics.record(ApplyAnimationMementoStartMetric)
+
+    val res = SceneGraphRootNodeInternal(
       game.applyAnimationMemento(animationStates),
       lighting.applyAnimationMemento(animationStates),
       ui.applyAnimationMemento(animationStates)
     )
 
-  def runAnimationActions(gameTime: GameTime): SceneGraphRootNodeInternal[ViewEventDataType] =
-    SceneGraphRootNodeInternal(
+    metrics.record(ApplyAnimationMementoEndMetric)
+
+    res
+  }
+
+  def runAnimationActions(gameTime: GameTime)(implicit metrics: IMetrics): SceneGraphRootNodeInternal[ViewEventDataType] = {
+
+    metrics.record(RunAnimationActionsStartMetric)
+
+    val res = SceneGraphRootNodeInternal(
       game.runAnimationActions(gameTime),
       lighting.runAnimationActions(gameTime),
       ui.runAnimationActions(gameTime)
     )
+
+    metrics.record(RunAnimationActionsEndMetric)
+
+    res
+  }
 
   def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent[ViewEventDataType]] =
     game.collectViewEvents(gameEvents) ++

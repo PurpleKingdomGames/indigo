@@ -38,7 +38,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
   protected var assetCollection: AssetCollection = AssetCollection(Nil, Nil)
 
-  private val metrics = Metrics.getInstance(config.recordMetrics, 10000)
+  private implicit val metrics: IMetrics = Metrics.getInstance(config.recordMetrics, 10000)
 
   def main(): Unit = {
 
@@ -117,6 +117,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
         GlobalSignalsManager.update(collectedEvents)
 
         metrics.record(CallUpdateGameModelStartMetric)
+
         val model = state match {
           case None =>
             initialModel(startupData)
@@ -124,6 +125,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
           case Some(previousModel) =>
             processModelUpdateEvents(gameTime, previousModel, collectedEvents)
         }
+
         metrics.record(CallUpdateGameModelEndMetric)
 
         state = Some(model)
@@ -185,7 +187,9 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
   }
 
   private val persistGlobalViewEvents: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNode[ViewEventDataType] = update => {
+    metrics.record(PersistGlobalViewEventsStartMetric)
     update.viewEvents.foreach(GlobalEventStream.push)
+    metrics.record(PersistGlobalViewEventsEndMetric)
     update.rootNode
   }
 
@@ -193,7 +197,9 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
     SceneGraphInternal.fromPublicFacing[ViewEventDataType](scenegraph)
 
   private val persistNodeViewEvents: List[GameEvent] => SceneGraphRootNodeInternal[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] = gameEvents => rootNode => {
+    metrics.record(PersistNodeViewEventsStartMetric)
     rootNode.collectViewEvents(gameEvents).foreach(GlobalEventStream.push)
+    metrics.record(PersistNodeViewEventsEndMetric)
     rootNode
   }
 
@@ -204,7 +210,12 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
     sceneGraph.runAnimationActions(gameTime)
 
   private val persistAnimationStates: SceneGraphRootNodeInternal[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] = sceneGraph => {
+    metrics.record(PersistAnimationStatesStartMetric)
+
     animationStates = AnimationState.extractAnimationStates(sceneGraph)
+    
+    metrics.record(PersistAnimationStatesEndMetric)
+
     sceneGraph
   }
 
