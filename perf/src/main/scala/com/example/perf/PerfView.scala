@@ -24,7 +24,7 @@ object PerfView {
     )
   }
 
-  private val herdCount: Int = 250
+  private val herdCount: Int = 1000
 
   private val positions: List[Point] =
     (1 to herdCount).toList.map { _ =>
