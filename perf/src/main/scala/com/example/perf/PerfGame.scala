@@ -16,7 +16,12 @@ object PerfGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel, My
     frameRate = 30,
     clearColor = ClearColor(0.4, 0.2, 0.5, 1),
     magnification = magnificationLevel,
-    recordMetrics = true
+    advanced = AdvancedGameConfig(
+      recordMetrics = true,
+      logMetricsReportIntervalMs = 5000,
+      disableSkipModelUpdates = true,
+      disableSkipViewUpdates = true
+    )
   )
 
   def assets: Set[AssetType] = PerfAssets.assets

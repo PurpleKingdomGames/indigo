@@ -37,7 +37,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
   protected var assetCollection: AssetCollection = AssetCollection(Nil, Nil)
 
-  private implicit val metrics: IMetrics = Metrics.getInstance(config.recordMetrics, 10000)
+  private implicit val metrics: IMetrics = Metrics.getInstance(config.advanced.recordMetrics, config.advanced.logMetricsReportIntervalMs)
 
   def main(): Unit = {
 
@@ -105,7 +105,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
       metrics.record(FrameStartMetric)
 
       // Model updates cut off
-      if(timeDelta < config.haltModelUpdatesAt) {
+      if(config.advanced.disableSkipModelUpdates || timeDelta < config.haltModelUpdatesAt) {
 
         metrics.record(UpdateStartMetric)
 
@@ -125,14 +125,13 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
             processModelUpdateEvents(gameTime, previousModel, collectedEvents)
         }
 
-        metrics.record(CallUpdateGameModelEndMetric)
-
         state = Some(model)
 
+        metrics.record(CallUpdateGameModelEndMetric)
         metrics.record(UpdateEndMetric)
 
         // View updates cut off
-        if(timeDelta < config.haltViewUpdatesAt) {
+        if(config.advanced.disableSkipViewUpdates || timeDelta < config.haltViewUpdatesAt) {
 
           metrics.record(CallUpdateViewStartMetric)
 
@@ -143,7 +142,6 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
           )
 
           metrics.record(CallUpdateViewEndMetric)
-
           metrics.record(ProcessViewStartMetric)
 
           val processUpdatedView: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] =
@@ -157,13 +155,11 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
           val processedView: SceneGraphRootNodeInternal[ViewEventDataType] = processUpdatedView(view)
 
           metrics.record(ProcessViewEndMetric)
-
           metrics.record(ToDisplayableStartMetric)
 
           val displayable: Displayable = convertSceneGraphToDisplayable(processedView)
 
           metrics.record(ToDisplayableEndMetric)
-          
           metrics.record(RenderStartMetric)
 
           drawScene(renderer, displayable)
