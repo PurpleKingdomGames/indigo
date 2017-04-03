@@ -34,7 +34,9 @@ object Metrics {
     private def as2DecimalPlacePercent(a: Int, b: Int): Double =
       to2DecimalPlaces(100d / a * b)
 
-    case class FrameStats(frameDuration: Long,
+    case class FrameStats(general: FrameStatsGeneral, processView: FrameStatsProcessView, renderer: FrameStatsRenderer)
+
+    case class FrameStatsGeneral(frameDuration: Long,
                           updateDuration: Option[Long],
                           callUpdateModelDuration: Option[Long],
                           callUpdateViewDuration: Option[Long],
@@ -49,32 +51,55 @@ object Metrics {
                           renderPercentage: Option[Double]
                          )
 
+    case class FrameStatsProcessView()
+
+    case class FrameStatsRenderer()
+
     private def extractDuration(metrics: List[MetricWrapper], startName: String, endName: String): Option[Long] =
       metrics.find(_.metric.name == startName).map(_.time).flatMap { start =>
         metrics.find(_.metric.name == endName).map(_.time - start)
       }
 
+    private def asPercentOfFrameDuration(fd: Long, l: Option[Long]): Option[Double] =
+      l.map(t => as2DecimalPlacePercent(fd, t))
+
     private def extractFrameStatistics(metrics: List[MetricWrapper]): Option[FrameStats] = {
 
-      // Durations
       val frameDuration = extractDuration(metrics, FrameStartMetric.name, FrameEndMetric.name)
-      val updateDuration = extractDuration(metrics, UpdateStartMetric.name, UpdateEndMetric.name)
-      val callUpdateModelDuration = extractDuration(metrics, CallUpdateGameModelStartMetric.name, CallUpdateGameModelEndMetric.name)
-      val callUpdateViewDuration = extractDuration(metrics, CallUpdateViewStartMetric.name, CallUpdateViewEndMetric.name)
-      val processViewDuration = extractDuration(metrics, ProcessViewStartMetric.name, ProcessViewEndMetric.name)
-      val toDisplayableDuration = extractDuration(metrics, ToDisplayableStartMetric.name, ToDisplayableEndMetric.name)
-      val renderDuration = extractDuration(metrics, RenderStartMetric.name, RenderEndMetric.name)
 
-      // Percentages
-      val updatePercentage = frameDuration.flatMap(frame => updateDuration.map(t => as2DecimalPlacePercent(frame, t)))
-      val updateModelPercentage = frameDuration.flatMap(frame => callUpdateModelDuration.map(t => as2DecimalPlacePercent(frame, t)))
-      val callUpdateViewPercentage = frameDuration.flatMap(frame => callUpdateViewDuration.map(t => as2DecimalPlacePercent(frame, t)))
-      val processViewPercentage = frameDuration.flatMap(frame => processViewDuration.map(t => as2DecimalPlacePercent(frame, t)))
-      val toDisplayablePercentage = frameDuration.flatMap(frame => toDisplayableDuration.map(t => as2DecimalPlacePercent(frame, t)))
-      val renderPercentage = frameDuration.flatMap(frame => renderDuration.map(t => as2DecimalPlacePercent(frame, t)))
+      //
+      frameDuration.map { fd =>
 
-      frameDuration.map { t =>
-        FrameStats(t,
+        // General
+        // Durations
+        val updateDuration = extractDuration(metrics, UpdateStartMetric.name, UpdateEndMetric.name)
+        val callUpdateModelDuration = extractDuration(metrics, CallUpdateGameModelStartMetric.name, CallUpdateGameModelEndMetric.name)
+        val callUpdateViewDuration = extractDuration(metrics, CallUpdateViewStartMetric.name, CallUpdateViewEndMetric.name)
+        val processViewDuration = extractDuration(metrics, ProcessViewStartMetric.name, ProcessViewEndMetric.name)
+        val toDisplayableDuration = extractDuration(metrics, ToDisplayableStartMetric.name, ToDisplayableEndMetric.name)
+        val renderDuration = extractDuration(metrics, RenderStartMetric.name, RenderEndMetric.name)
+
+        // Percentages
+        val updatePercentage = asPercentOfFrameDuration(fd, updateDuration)
+        val updateModelPercentage = asPercentOfFrameDuration(fd, callUpdateModelDuration)
+        val callUpdateViewPercentage = asPercentOfFrameDuration(fd, callUpdateViewDuration)
+        val processViewPercentage = asPercentOfFrameDuration(fd, processViewDuration)
+        val toDisplayablePercentage = asPercentOfFrameDuration(fd, toDisplayableDuration)
+        val renderPercentage = asPercentOfFrameDuration(fd, renderDuration)
+
+        // Process view
+        // Durations
+
+        // Percentages
+
+        // Renderer
+        // Durations
+
+        // Percentages
+
+
+        // Build results
+        val general = FrameStatsGeneral(fd,
           updateDuration,
           callUpdateModelDuration,
           callUpdateViewDuration,
@@ -88,6 +113,12 @@ object Metrics {
           toDisplayablePercentage,
           renderPercentage
         )
+
+        val processView = FrameStatsProcessView()
+
+        val renderer = FrameStatsRenderer()
+
+        FrameStats(general, processView, renderer)
       }
     }
 
@@ -99,6 +130,7 @@ object Metrics {
 
     private def report(metrics: List[MetricWrapper]): Unit = {
 
+      // General Stats
       val frames: List[FrameStats] = splitIntoFrames(metrics).map(extractFrameStatistics).collect { case Some(s) => s}
       val frameCount: Int = frames.length
       val period: Option[Long] =
@@ -116,51 +148,59 @@ object Metrics {
       val viewUpdatesSkipped: Int = metrics.collect { case m @ MetricWrapper(SkippedViewUpdateMetric, _) => m }.length
       val viewSkipsPercent: Double = as2DecimalPlacePercent(frameCount, viewUpdatesSkipped)
 
+      // Game Engine High Level
       val meanFrameDuration: String =
-        to2DecimalPlaces(frames.map(_.frameDuration.toDouble).sum / frameCount.toDouble).toString
+        to2DecimalPlaces(frames.map(_.general.frameDuration.toDouble).sum / frameCount.toDouble).toString
 
       val meanUpdateModel: String = {
-        val a = calcMeanDuration(frames.map(_.callUpdateModelDuration)).toString
-        val b = calcMeanPercentage(frames.map(_.updateModelPercentage)).toString
+        val a = calcMeanDuration(frames.map(_.general.callUpdateModelDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.general.updateModelPercentage)).toString
 
         s"""$a\t($b%)"""
       }
 
       val meanUpdate: String = {
-        val a = calcMeanDuration(frames.map(_.updateDuration)).toString
-        val b = calcMeanPercentage(frames.map(_.updatePercentage)).toString
+        val a = calcMeanDuration(frames.map(_.general.updateDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.general.updatePercentage)).toString
 
         s"""$a\t($b%),\tcalling model update: $meanUpdateModel"""
       }
 
       val meanCallViewUpdate: String = {
-        val a = calcMeanDuration(frames.map(_.callUpdateViewDuration)).toString
-        val b = calcMeanPercentage(frames.map(_.callUpdateViewPercentage)).toString
+        val a = calcMeanDuration(frames.map(_.general.callUpdateViewDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.general.callUpdateViewPercentage)).toString
 
         s"""$a\t($b%)"""
       }
 
       val meanProcess: String = {
-        val a = calcMeanDuration(frames.map(_.processViewDuration)).toString
-        val b = calcMeanPercentage(frames.map(_.processViewPercentage)).toString
+        val a = calcMeanDuration(frames.map(_.general.processViewDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.general.processViewPercentage)).toString
 
         s"""$a\t($b%)"""
       }
 
       val meanToDisplayable: String = {
-        val a = calcMeanDuration(frames.map(_.toDisplayableDuration)).toString
-        val b = calcMeanPercentage(frames.map(_.toDisplayablePercentage)).toString
+        val a = calcMeanDuration(frames.map(_.general.toDisplayableDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.general.toDisplayablePercentage)).toString
 
         s"""$a\t($b%)"""
       }
 
       val meanRender: String = {
-        val a = calcMeanDuration(frames.map(_.renderDuration)).toString
-        val b = calcMeanPercentage(frames.map(_.renderPercentage)).toString
+        val a = calcMeanDuration(frames.map(_.general.renderDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.general.renderPercentage)).toString
 
         s"""$a\t($b%)"""
       }
 
+      // Processing view
+
+
+      // Renderer
+
+
+      // Log it!
       Logger.info(
         s"""
           |**********************
