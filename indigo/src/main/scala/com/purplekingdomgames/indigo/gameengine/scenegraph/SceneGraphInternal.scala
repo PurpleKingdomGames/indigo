@@ -1,8 +1,8 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import com.purplekingdomgames.indigo.gameengine._
-import com.purplekingdomgames.indigo.util._
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
+import com.purplekingdomgames.indigo.util.metrics._
 
 object SceneGraphInternal {
 
