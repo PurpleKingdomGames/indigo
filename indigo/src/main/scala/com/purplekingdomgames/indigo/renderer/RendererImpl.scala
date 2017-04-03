@@ -1,6 +1,7 @@
 package com.purplekingdomgames.indigo.renderer
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.AmbientLight
+import com.purplekingdomgames.indigo.util._
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
 
@@ -8,7 +9,7 @@ import scala.language.implicitConversions
 
 trait IRenderer {
   def init(): Unit
-  def drawScene(displayable: Displayable): Unit
+  def drawScene(displayable: Displayable)(implicit metrics: IMetrics): Unit
 }
 
 final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends IRenderer {
@@ -55,21 +56,31 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     cNc.context.enable(BLEND)
   }
 
-  def drawScene(displayable: Displayable): Unit = {
+  def drawScene(displayable: Displayable)(implicit metrics: IMetrics): Unit = {
 
     resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight)
 
+    metrics.record(DrawGameLayerStartMetric)
     drawLayerToTexture(displayable.game, gameFrameBuffer, config.clearColor, drawBg = false)
-    drawLightingLayerToTexture(displayable.lighting, lightingFrameBuffer, displayable.lighting.ambientLight)
-    drawLayerToTexture(displayable.ui, uiFrameBuffer, ClearColor.Black.forceTransparent, drawBg = false)
+    metrics.record(DrawGameLayerEndMetric)
 
+    metrics.record(DrawLightingLayerStartMetric)
+    drawLightingLayerToTexture(displayable.lighting, lightingFrameBuffer, displayable.lighting.ambientLight)
+    metrics.record(DrawLightingLayerEndMetric)
+
+    metrics.record(DrawUiLayerStartMetric)
+    drawLayerToTexture(displayable.ui, uiFrameBuffer, ClearColor.Black.forceTransparent, drawBg = false)
+    metrics.record(DrawUiLayerEndMetric)
+
+    metrics.record(RenderToConvasStartMetric)
     renderToCanvas(screenDisplayObject)
+    metrics.record(RenderToConvasEndMetric)
   }
 
   implicit private def ambientToClearColor(a: AmbientLight): ClearColor =
     ClearColor(a.tint.r * a.amount, a.tint.g * a.amount, a.tint.b * a.amount, 1)
 
-  private def drawLightingLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor): Unit = {
+  private def drawLightingLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor)(implicit metrics: IMetrics): Unit = {
 
     // Switch to the frameBuffer
     FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)
@@ -89,12 +100,13 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
         // Draw
         cNc.context.drawArrays(Rectangle2D.mode, 0, Rectangle2D.vertexCount)
+        metrics.record(LightingDrawCallMetric)
       }
     }
 
   }
 
-  private def drawLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor, drawBg: Boolean): Unit = {
+  private def drawLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor, drawBg: Boolean)(implicit metrics: IMetrics): Unit = {
 
     // Switch to the frameBuffer
     FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)
@@ -115,13 +127,14 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
         // Draw
         cNc.context.drawArrays(Rectangle2D.mode, 0, Rectangle2D.vertexCount)
+        metrics.record(NormalLayerDrawCallMetric)
 
       }
     }
 
   }
 
-  private def renderToCanvas(displayObject: DisplayObject): Unit = {
+  private def renderToCanvas(displayObject: DisplayObject)(implicit metrics: IMetrics): Unit = {
 
     // Switch to canvas
     FrameBufferFunctions.switchToCanvas(cNc, config.clearColor)
@@ -138,6 +151,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     // Draw
     cNc.context.drawArrays(Rectangle2D.mode, 0, Rectangle2D.vertexCount)
+    metrics.record(ToCanvasDrawCallMetric)
 
   }
 
