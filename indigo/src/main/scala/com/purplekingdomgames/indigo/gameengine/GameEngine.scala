@@ -103,12 +103,12 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
     // PUT NOTHING ABOVE THIS LINE!! Major performance penalties!!
     if(timeDelta > config.frameRateDeltaMillis) {
 
-      metrics.record(FrameStartMetric())
+      metrics.record(FrameStartMetric)
 
       // Model updates cut off
       if(timeDelta < config.haltModelUpdatesAt) {
 
-        metrics.record(UpdateStartMetric())
+        metrics.record(UpdateStartMetric)
 
         val gameTime: GameTime = GameTime(time, timeDelta)
 
@@ -116,7 +116,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
         GlobalSignalsManager.update(collectedEvents)
 
-        metrics.record(CallUpdateGameModelStartMetric())
+        metrics.record(CallUpdateGameModelStartMetric)
         val model = state match {
           case None =>
             initialModel(startupData)
@@ -124,16 +124,16 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
           case Some(previousModel) =>
             processModelUpdateEvents(gameTime, previousModel, collectedEvents)
         }
-        metrics.record(CallUpdateGameModelEndMetric())
+        metrics.record(CallUpdateGameModelEndMetric)
 
         state = Some(model)
 
-        metrics.record(UpdateEndMetric())
+        metrics.record(UpdateEndMetric)
 
         // View updates cut off
         if(timeDelta < config.haltViewUpdatesAt) {
 
-          metrics.record(CallUpdateViewStartMetric())
+          metrics.record(CallUpdateViewStartMetric)
 
           val view = updateView(
             gameTime,
@@ -141,9 +141,9 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
             FrameInputEvents(collectedEvents.filterNot(_.isInstanceOf[ViewEvent[_]]))
           )
 
-          metrics.record(CallUpdateViewEndMetric())
+          metrics.record(CallUpdateViewEndMetric)
 
-          metrics.record(ProcessViewStartMetric())
+          metrics.record(ProcessViewStartMetric)
 
           val processUpdatedView: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] =
             persistGlobalViewEvents andThen
@@ -155,28 +155,28 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
           val processedView: SceneGraphRootNodeInternal[ViewEventDataType] = processUpdatedView(view)
 
-          metrics.record(ProcessViewEndMetric())
+          metrics.record(ProcessViewEndMetric)
 
-          metrics.record(ToDisplayableStartMetric())
+          metrics.record(ToDisplayableStartMetric)
 
           val displayable: Displayable = convertSceneGraphToDisplayable(processedView)
 
-          metrics.record(ToDisplayableEndMetric())
+          metrics.record(ToDisplayableEndMetric)
           
-          metrics.record(RenderStartMetric())
+          metrics.record(RenderStartMetric)
 
           drawScene(renderer, displayable)
 
-          metrics.record(RenderEndMetric())
+          metrics.record(RenderEndMetric)
         } else {
-          metrics.record(SkippedViewUpdateMetric())
+          metrics.record(SkippedViewUpdateMetric)
         }
 
       } else {
-        metrics.record(SkippedModelUpdateMetric())
+        metrics.record(SkippedModelUpdateMetric)
       }
 
-      metrics.record(FrameEndMetric())
+      metrics.record(FrameEndMetric)
 
       dom.window.requestAnimationFrame(loop(startupData)(renderer, time))
     } else {

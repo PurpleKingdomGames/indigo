@@ -5,19 +5,20 @@ import scala.collection.mutable
 object Metrics {
 
   trait IMetrics {
-    def record(m: Metric): Unit
+    def record(m: Metric, time: Long = giveTime()): Unit
+    def giveTime(): Long
   }
 
   private class MetricsInstance(logReportIntervalMs: Int) extends IMetrics {
-    private val metrics: mutable.Queue[Metric] = new mutable.Queue[Metric]()
+    private val metrics: mutable.Queue[MetricWrapper] = new mutable.Queue[MetricWrapper]()
 
     private var lastReportTime: Long = System.currentTimeMillis()
 
-    def record(m: Metric): Unit = {
-      metrics += m
+    def record(m: Metric, time: Long = giveTime()): Unit = {
+      metrics += MetricWrapper(m, time)
 
       m match {
-        case FrameEndMetric(time) if time >= lastReportTime + logReportIntervalMs =>
+        case FrameEndMetric if time >= lastReportTime + logReportIntervalMs =>
           lastReportTime = time
           report(metrics.dequeueAll(_ => true).toList)
         case _ => ()
@@ -48,29 +49,29 @@ object Metrics {
                           renderPercentage: Option[Double]
                          )
 
-    private def extractDuration[S <: Metric, E <: Metric](metrics: List[Metric]): Option[Long] =
-      metrics.find(_.isInstanceOf[S]).map(_.time).flatMap { start =>
-        metrics.find(_.isInstanceOf[E]).map(_.time - start)
+    private def extractDuration(metrics: List[MetricWrapper], startName: String, endName: String): Option[Long] =
+      metrics.find(_.metric.name == startName).map(_.time).flatMap { start =>
+        metrics.find(_.metric.name == endName).map(_.time - start)
       }
 
-    private def extractFrameStatistics(metrics: List[Metric]): Option[FrameStats] = {
+    private def extractFrameStatistics(metrics: List[MetricWrapper]): Option[FrameStats] = {
 
       // Durations
-      val frameDuration = extractDuration[FrameStartMetric, FrameEndMetric](metrics)
-      val updateDuration = extractDuration[UpdateStartMetric, UpdateEndMetric](metrics)
-      val callUpdateModelDuration = extractDuration[CallUpdateGameModelStartMetric, CallUpdateGameModelEndMetric](metrics)
-      val callUpdateViewDuration = extractDuration[CallUpdateViewStartMetric, CallUpdateViewEndMetric](metrics)
-      val processViewDuration = extractDuration[ProcessViewStartMetric, ProcessViewEndMetric](metrics)
-      val toDisplayableDuration = extractDuration[ToDisplayableStartMetric, ToDisplayableEndMetric](metrics)
-      val renderDuration = extractDuration[RenderStartMetric, RenderEndMetric](metrics)
+      val frameDuration = extractDuration(metrics, FrameStartMetric.name, FrameEndMetric.name)
+      val updateDuration = extractDuration(metrics, UpdateStartMetric.name, UpdateEndMetric.name)
+      val callUpdateModelDuration = extractDuration(metrics, CallUpdateGameModelStartMetric.name, CallUpdateGameModelEndMetric.name)
+      val callUpdateViewDuration = extractDuration(metrics, CallUpdateViewStartMetric.name, CallUpdateViewEndMetric.name)
+      val processViewDuration = extractDuration(metrics, ProcessViewStartMetric.name, ProcessViewEndMetric.name)
+      val toDisplayableDuration = extractDuration(metrics, ToDisplayableStartMetric.name, ToDisplayableEndMetric.name)
+      val renderDuration = extractDuration(metrics, RenderStartMetric.name, RenderEndMetric.name)
 
       // Percentages
-      val updatePercentage = frameDuration.flatMap(frame => updateDuration.map(t => as2DecimalPlacePercent(frame, t - frame)))
-      val updateModelPercentage = frameDuration.flatMap(frame => callUpdateModelDuration.map(t => as2DecimalPlacePercent(frame, t - frame)))
-      val callUpdateViewPercentage = frameDuration.flatMap(frame => callUpdateViewDuration.map(t => as2DecimalPlacePercent(frame, t - frame)))
-      val processViewPercentage = frameDuration.flatMap(frame => processViewDuration.map(t => as2DecimalPlacePercent(frame, t - frame)))
-      val toDisplayablePercentage = frameDuration.flatMap(frame => toDisplayableDuration.map(t => as2DecimalPlacePercent(frame, t - frame)))
-      val renderPercentage = frameDuration.flatMap(frame => renderDuration.map(t => as2DecimalPlacePercent(frame, t - frame)))
+      val updatePercentage = frameDuration.flatMap(frame => updateDuration.map(t => as2DecimalPlacePercent(frame, t)))
+      val updateModelPercentage = frameDuration.flatMap(frame => callUpdateModelDuration.map(t => as2DecimalPlacePercent(frame, t)))
+      val callUpdateViewPercentage = frameDuration.flatMap(frame => callUpdateViewDuration.map(t => as2DecimalPlacePercent(frame, t)))
+      val processViewPercentage = frameDuration.flatMap(frame => processViewDuration.map(t => as2DecimalPlacePercent(frame, t)))
+      val toDisplayablePercentage = frameDuration.flatMap(frame => toDisplayableDuration.map(t => as2DecimalPlacePercent(frame, t)))
+      val renderPercentage = frameDuration.flatMap(frame => renderDuration.map(t => as2DecimalPlacePercent(frame, t)))
 
       frameDuration.map { t =>
         FrameStats(t,
@@ -90,7 +91,13 @@ object Metrics {
       }
     }
 
-    private def report(metrics: List[Metric]): Unit = {
+    private def calcMeanDuration(l: List[Option[Long]]): Double =
+      to2DecimalPlaces(l.collect { case Some(s) => s.toDouble }.sum / l.length.toDouble)
+
+    private def calcMeanPercentage(l: List[Option[Double]]): Double =
+      to2DecimalPlaces(l.collect { case Some(s) => s }.sum / l.length.toDouble)
+
+    private def report(metrics: List[MetricWrapper]): Unit = {
 
       val frames: List[FrameStats] = splitIntoFrames(metrics).map(extractFrameStatistics).collect { case Some(s) => s}
       val frameCount: Int = frames.length
@@ -104,52 +111,52 @@ object Metrics {
       val meanFps: String =
         period.map(p => frameCount / (p / 1000).toInt).map(_.toString()).getOrElse("<missing>")
 
-      val modelUpdatesSkipped: Int = metrics.collect { case m @ SkippedModelUpdateMetric(_) => m }.length
+      val modelUpdatesSkipped: Int = metrics.collect { case m @ MetricWrapper(SkippedModelUpdateMetric, _) => m }.length
       val modelSkipsPercent: Double = as2DecimalPlacePercent(frameCount, modelUpdatesSkipped)
-      val viewUpdatesSkipped: Int = metrics.collect { case m @ SkippedViewUpdateMetric(_) => m }.length
+      val viewUpdatesSkipped: Int = metrics.collect { case m @ MetricWrapper(SkippedViewUpdateMetric, _) => m }.length
       val viewSkipsPercent: Double = as2DecimalPlacePercent(frameCount, viewUpdatesSkipped)
 
       val meanFrameDuration: String =
         to2DecimalPlaces(frames.map(_.frameDuration.toDouble).sum / frameCount.toDouble).toString
 
       val meanUpdateModel: String = {
-        val a = to2DecimalPlaces(frames.map(_.callUpdateModelDuration).collect { case Some(s) => s.toDouble }.sum / frameCount.toDouble).toString
-        val b = to2DecimalPlaces(frames.map(_.updateModelPercentage).collect { case Some(s) => s }.sum / frameCount.toDouble).toString
+        val a = calcMeanDuration(frames.map(_.callUpdateModelDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.updateModelPercentage)).toString
 
         s"""$a\t($b%)"""
       }
 
       val meanUpdate: String = {
-        val a = to2DecimalPlaces(frames.map(_.updateDuration).collect { case Some(s) => s.toDouble }.sum / frameCount.toDouble).toString
-        val b = to2DecimalPlaces(frames.map(_.updatePercentage).collect { case Some(s) => s }.sum / frameCount.toDouble).toString
+        val a = calcMeanDuration(frames.map(_.updateDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.updatePercentage)).toString
 
         s"""$a\t($b%),\tcalling model update: $meanUpdateModel"""
       }
 
       val meanCallViewUpdate: String = {
-        val a = to2DecimalPlaces(frames.map(_.callUpdateViewDuration).collect { case Some(s) => s.toDouble }.sum / frameCount.toDouble).toString
-        val b = to2DecimalPlaces(frames.map(_.callUpdateViewPercentage).collect { case Some(s) => s }.sum / frameCount.toDouble).toString
+        val a = calcMeanDuration(frames.map(_.callUpdateViewDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.callUpdateViewPercentage)).toString
 
         s"""$a\t($b%)"""
       }
 
       val meanProcess: String = {
-        val a = to2DecimalPlaces(frames.map(_.processViewDuration).collect { case Some(s) => s.toDouble }.sum / frameCount.toDouble).toString
-        val b = to2DecimalPlaces(frames.map(_.processViewPercentage).collect { case Some(s) => s }.sum / frameCount.toDouble).toString
+        val a = calcMeanDuration(frames.map(_.processViewDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.processViewPercentage)).toString
 
         s"""$a\t($b%)"""
       }
 
       val meanToDisplayable: String = {
-        val a = to2DecimalPlaces(frames.map(_.toDisplayableDuration).collect { case Some(s) => s.toDouble }.sum / frameCount.toDouble).toString
-        val b = to2DecimalPlaces(frames.map(_.toDisplayablePercentage).collect { case Some(s) => s }.sum / frameCount.toDouble).toString
+        val a = calcMeanDuration(frames.map(_.toDisplayableDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.toDisplayablePercentage)).toString
 
         s"""$a\t($b%)"""
       }
 
       val meanRender: String = {
-        val a = to2DecimalPlaces(frames.map(_.renderDuration).collect { case Some(s) => s.toDouble }.sum / frameCount.toDouble).toString
-        val b = to2DecimalPlaces(frames.map(_.renderPercentage).collect { case Some(s) => s }.sum / frameCount.toDouble).toString
+        val a = calcMeanDuration(frames.map(_.renderDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.renderPercentage)).toString
 
         s"""$a\t($b%)"""
       }
@@ -159,7 +166,7 @@ object Metrics {
           |**********************
           |Statistics:
           |Frames since last report:  $frameCount
-          |Mean (avg) FPS:            $meanFps
+          |Mean FPS:            $meanFps
           |
           |Model updates skipped:     $modelUpdatesSkipped\t($modelSkipsPercent%)
           |View updates skipped:      $viewUpdatesSkipped\t($viewSkipsPercent%)
@@ -175,12 +182,12 @@ object Metrics {
       )
     }
 
-    private def splitIntoFrames(metrics: List[Metric]): List[List[Metric]] = {
-      def rec(remaining: List[Metric], accFrame: List[Metric], acc: List[List[Metric]]): List[List[Metric]] = {
+    private def splitIntoFrames(metrics: List[MetricWrapper]): List[List[MetricWrapper]] = {
+      def rec(remaining: List[MetricWrapper], accFrame: List[MetricWrapper], acc: List[List[MetricWrapper]]): List[List[MetricWrapper]] = {
         remaining match {
           case Nil => acc
-          case FrameEndMetric(time) :: ms =>
-            rec(ms, Nil, (FrameEndMetric(time) :: accFrame) :: acc)
+          case MetricWrapper(FrameEndMetric, time) :: ms =>
+            rec(ms, Nil, (MetricWrapper(FrameEndMetric, time) :: accFrame) :: acc)
           case m :: ms =>
             rec(ms, m :: accFrame, acc)
         }
@@ -189,10 +196,13 @@ object Metrics {
       rec(metrics, Nil, Nil)
     }
 
+    def giveTime(): Long = System.currentTimeMillis()
+
   }
 
   private class NullMetricsInstance extends IMetrics {
-    def record(m: Metric): Unit = ()
+    def record(m: Metric, time: Long = giveTime()): Unit = ()
+    def giveTime(): Long = 1
   }
 
   private var instance: Option[IMetrics] = None
@@ -209,32 +219,32 @@ object Metrics {
         instance.get
     }
 
-  def record(m: Metric): Unit = getInstance().record(m)
-
 }
 
+case class MetricWrapper(metric: Metric, time: Long)
+
 sealed trait Metric {
-  val time: Long
+  val name: String
 }
 
 // In Order!
-case class FrameStartMetric(time: Long = System.currentTimeMillis()) extends Metric
+case object FrameStartMetric extends Metric { val name: String = "frame start" }
 
-case class UpdateStartMetric(time: Long = System.currentTimeMillis()) extends Metric
-case class CallUpdateGameModelStartMetric(time: Long = System.currentTimeMillis()) extends Metric //nested
-case class CallUpdateGameModelEndMetric(time: Long = System.currentTimeMillis()) extends Metric //nested
-case class UpdateEndMetric(time: Long = System.currentTimeMillis()) extends Metric
+case object UpdateStartMetric extends Metric { val name: String = "update model start" }
+case object CallUpdateGameModelStartMetric extends Metric { val name: String = "call update model start" } //nested
+case object CallUpdateGameModelEndMetric extends Metric { val name: String = "call update model end" } //nested
+case object UpdateEndMetric extends Metric { val name: String = "update model end" }
 
-case class CallUpdateViewStartMetric(time: Long = System.currentTimeMillis()) extends Metric
-case class CallUpdateViewEndMetric(time: Long = System.currentTimeMillis()) extends Metric
-case class ProcessViewStartMetric(time: Long = System.currentTimeMillis()) extends Metric
-case class ProcessViewEndMetric(time: Long = System.currentTimeMillis()) extends Metric
-case class ToDisplayableStartMetric(time: Long = System.currentTimeMillis()) extends Metric
-case class ToDisplayableEndMetric(time: Long = System.currentTimeMillis()) extends Metric
-case class RenderStartMetric(time: Long = System.currentTimeMillis()) extends Metric
-case class RenderEndMetric(time: Long = System.currentTimeMillis()) extends Metric
+case object CallUpdateViewStartMetric extends Metric { val name: String = "call update view start" }
+case object CallUpdateViewEndMetric extends Metric { val name: String = "call update view end" }
+case object ProcessViewStartMetric extends Metric { val name: String = "process view start" }
+case object ProcessViewEndMetric extends Metric { val name: String = "process view end" }
+case object ToDisplayableStartMetric extends Metric { val name: String = "convert to displayable start" }
+case object ToDisplayableEndMetric extends Metric { val name: String = "convert to displayable end" }
+case object RenderStartMetric extends Metric { val name: String = "render start" }
+case object RenderEndMetric extends Metric { val name: String = "render end" }
 
-case class SkippedModelUpdateMetric(time: Long = System.currentTimeMillis()) extends Metric
-case class SkippedViewUpdateMetric(time: Long = System.currentTimeMillis()) extends Metric
+case object SkippedModelUpdateMetric extends Metric { val name: String = "skipped model update" }
+case object SkippedViewUpdateMetric extends Metric { val name: String = "skipped view update" }
 
-case class FrameEndMetric(time: Long = System.currentTimeMillis()) extends Metric
+case object FrameEndMetric extends Metric { val name: String = "frame end" }
