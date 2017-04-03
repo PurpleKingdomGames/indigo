@@ -50,17 +50,17 @@ case object PersistAnimationStatesStartMetric extends Metric { val name: String 
 case object PersistAnimationStatesEndMetric extends Metric { val name: String = "persist animation states end" }
 
 // Renderer metrics
-case object DrawGameLayerStartMetric extends Metric { val name: String = " start" }
-case object DrawGameLayerEndMetric extends Metric { val name: String = " end" }
+case object DrawGameLayerStartMetric extends Metric { val name: String = "draw game layer start" }
+case object DrawGameLayerEndMetric extends Metric { val name: String = "draw game layer end" }
 
-case object DrawLightingLayerStartMetric extends Metric { val name: String = " start" }
-case object DrawLightingLayerEndMetric extends Metric { val name: String = " end" }
+case object DrawLightingLayerStartMetric extends Metric { val name: String = "draw lighting layer start" }
+case object DrawLightingLayerEndMetric extends Metric { val name: String = "draw lighting layer end" }
 
-case object DrawUiLayerStartMetric extends Metric { val name: String = " start" }
-case object DrawUiLayerEndMetric extends Metric { val name: String = " end" }
+case object DrawUiLayerStartMetric extends Metric { val name: String = "draw ui layer start" }
+case object DrawUiLayerEndMetric extends Metric { val name: String = "draw ui layer end" }
 
-case object RenderToConvasStartMetric extends Metric { val name: String = " start" }
-case object RenderToConvasEndMetric extends Metric { val name: String = " end" }
+case object RenderToConvasStartMetric extends Metric { val name: String = "render to canvas start" }
+case object RenderToConvasEndMetric extends Metric { val name: String = "render to canvas end" }
 
 case object LightingDrawCallMetric extends Metric { val name: String = "draw call: lighting" }
 case object NormalLayerDrawCallMetric extends Metric { val name: String = "draw call: normal" }
