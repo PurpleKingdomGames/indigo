@@ -1,14 +1,13 @@
 package com.purplekingdomgames.indigo.gameengine
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
-import org.scalajs.dom
 import com.purplekingdomgames.indigo.renderer._
 import com.purplekingdomgames.indigo.util._
+import org.scalajs.dom
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.scalajs.js.JSApp
 import scala.language.implicitConversions
+import scala.scalajs.js.JSApp
 
 case class GameTime(running: Double, delta: Double)
 
@@ -219,172 +218,14 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
     sceneGraph
   }
 
-  private implicit def displayObjectToList(displayObject: DisplayObject): List[DisplayObject] = List(displayObject)
-
-  private val leafToDisplayObject: SceneGraphNodeLeafInternal[ViewEventDataType] => List[DisplayObject] = {
-      case leaf: GraphicInternal[ViewEventDataType] =>
-        DisplayObject(
-          x = leaf.x,
-          y = leaf.y,
-          z = -leaf.depth.zIndex,
-          width = leaf.crop.size.x,
-          height = leaf.crop.size.y,
-          imageRef = leaf.imageAssetRef,
-          alpha = leaf.effects.alpha,
-          tintR = leaf.effects.tint.r,
-          tintG = leaf.effects.tint.g,
-          tintB = leaf.effects.tint.b,
-          flipHorizontal = leaf.effects.flip.horizontal,
-          flipVertical = leaf.effects.flip.vertical,
-          frame =
-            if(leaf.bounds == leaf.crop) SpriteSheetFrame.defaultOffset
-            else
-              SpriteSheetFrame.calculateFrameOffset(
-                imageSize = Vector2(leaf.bounds.size.x, leaf.bounds.size.y),
-                frameSize = Vector2(leaf.crop.size.x, leaf.crop.size.y),
-                framePosition = Vector2(leaf.crop.position.x, leaf.crop.position.y)
-              )
-        )
-
-      case leaf: SpriteInternal[ViewEventDataType] =>
-        DisplayObject(
-          x = leaf.x,
-          y = leaf.y,
-          z = -leaf.depth.zIndex,
-          width = leaf.bounds.size.x,
-          height = leaf.bounds.size.y,
-          imageRef = leaf.imageAssetRef,
-          alpha = leaf.effects.alpha,
-          tintR = leaf.effects.tint.r,
-          tintG = leaf.effects.tint.g,
-          tintB = leaf.effects.tint.b,
-          flipHorizontal = leaf.effects.flip.horizontal,
-          flipVertical = leaf.effects.flip.vertical,
-          frame = SpriteSheetFrame.calculateFrameOffset(
-            imageSize = Vector2(leaf.animations.spriteSheetSize.x, leaf.animations.spriteSheetSize.y),
-            frameSize = Vector2(leaf.animations.currentFrame.bounds.size.x, leaf.animations.currentFrame.bounds.size.y),
-            framePosition = Vector2(leaf.animations.currentFrame.bounds.position.x, leaf.animations.currentFrame.bounds.position.y)
-          )
-        )
-
-      case leaf: TextInternal[ViewEventDataType] =>
-
-        val alignmentOffsetX: Rectangle => Int = lineBounds =>
-          leaf.alignment match {
-            case AlignLeft => 0
-
-            case AlignCenter => -(lineBounds.size.x / 2)
-
-            case AlignRight => -lineBounds.size.x
-          }
-
-        val converterFunc: (TextLine, Int, Int) => List[DisplayObject] =
-          textLineToDisplayObjects(leaf)
-
-        leaf.lines.foldLeft(0 -> List[DisplayObject]()) { (acc, textLine) =>
-          (acc._1 + textLine.lineBounds.height, acc._2 ++ converterFunc(textLine, alignmentOffsetX(textLine.lineBounds), acc._1))
-        }._2
-
-    }
-
-  private def textLineToDisplayObjects(leaf: TextInternal[ViewEventDataType]): (TextLine, Int, Int) => List[DisplayObject] = (line, alignmentOffsetX, yOffset) =>
-    zipWithCharDetails(line.text.toList, leaf.fontInfo).map { case (fontChar, xPosition) =>
-      DisplayObject(
-        x = leaf.position.x + xPosition + alignmentOffsetX,
-        y = leaf.position.y + yOffset,
-        z = leaf.depth.zIndex,
-        width = fontChar.bounds.width,
-        height = fontChar.bounds.height,
-        imageRef = leaf.imageAssetRef,
-        alpha = leaf.effects.alpha,
-        tintR = leaf.effects.tint.r,
-        tintG = leaf.effects.tint.g,
-        tintB = leaf.effects.tint.b,
-        flipHorizontal = leaf.effects.flip.horizontal,
-        flipVertical = leaf.effects.flip.vertical,
-        frame = SpriteSheetFrame.calculateFrameOffset(
-          imageSize = Vector2(leaf.fontInfo.fontSpriteSheet.size.x, leaf.fontInfo.fontSpriteSheet.size.y),
-          frameSize = Vector2(fontChar.bounds.width, fontChar.bounds.height),
-          framePosition = Vector2(fontChar.bounds.x, fontChar.bounds.y)
-        )
-      )
-    }
-
-  private def zipWithCharDetails(charList: List[Char], fontInfo: FontInfo): List[(FontChar, Int)] = {
-    def rec(remaining: List[(Char, FontChar)], nextX: Int, acc: List[(FontChar, Int)]): List[(FontChar, Int)] =
-      remaining match {
-        case Nil => acc
-        case x :: xs => rec(xs, nextX + x._2.bounds.width, (x._2, nextX) :: acc)
-      }
-
-    rec(charList.map(c => (c, fontInfo.findByCharacter(c))), 0, Nil)
-  }
-
   private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNodeInternal[ViewEventDataType]): Displayable =
     Displayable(
-      GameDisplayLayer(rootNode.game.node.flatten.flatMap(leafToDisplayObject)),
-      LightingDisplayLayer(rootNode.lighting.node.flatten.flatMap(leafToDisplayObject), rootNode.lighting.ambientLight),
-      UiDisplayLayer(rootNode.ui.node.flatten.flatMap(leafToDisplayObject))
+      GameDisplayLayer(rootNode.game.node.flatten.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType])),
+      LightingDisplayLayer(rootNode.lighting.node.flatten.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType]), rootNode.lighting.ambientLight),
+      UiDisplayLayer(rootNode.ui.node.flatten.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType]))
     )
 
   private def drawScene(renderer: IRenderer, displayable: Displayable): Unit =
     renderer.drawScene(displayable)
 
-}
-
-case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int, recordMetrics: Boolean) {
-  val frameRateDeltaMillis: Int = 1000 / frameRate
-
-  val haltViewUpdatesAt: Int = frameRateDeltaMillis * 2
-  val haltModelUpdatesAt: Int = frameRateDeltaMillis * 3
-
-  val asString: String =
-    s"""
-       |Viewpoint:      [${viewport.width}, ${viewport.height}]
-       |FPS:            $frameRate
-       |frameRateDelta: $frameRateDeltaMillis (view updates stop at: $haltViewUpdatesAt, model at: $haltModelUpdatesAt
-       |Clear color:    {red: ${clearColor.r}, green: ${clearColor.g}, blue: ${clearColor.b}, alpha: ${clearColor.a}}
-       |Magnification:  $magnification
-       |""".stripMargin
-
-  def withViewport(width: Int, height: Int): GameConfig = this.copy(viewport = GameViewport(width, height))
-  def withFrameRate(frameRate: Int): GameConfig = this.copy(frameRate = frameRate)
-  def withClearColor(clearColor: ClearColor): GameConfig = this.copy(clearColor = clearColor)
-  def withMagnification(magnification: Int): GameConfig = this.copy(magnification = magnification)
-  def metricsEnabled: GameConfig = this.copy(recordMetrics = true)
-  def metricsDisabled: GameConfig = this.copy(recordMetrics = false)
-}
-
-object GameConfig {
-
-  val default: GameConfig =
-    GameConfig(GameViewport(550, 400), 30, ClearColor.Black, 1, recordMetrics = false)
-
-  def apply(width: Int, height: Int, frameRate: Int): GameConfig =
-    GameConfig(GameViewport(width, height), frameRate, ClearColor.Black, 1, recordMetrics = false)
-
-}
-
-case class GameViewport(width: Int, height: Int)
-
-sealed trait Startup[+Error, +Success]
-case class StartupFailure[Error](error: Error)(implicit toReportable: ToReportable[Error]) extends Startup[Error, Nothing] {
-  def report: String = toReportable.report(error)
-}
-case class StartupSuccess[Success](success: Success) extends Startup[Nothing, Success]
-
-object Startup {
-  implicit def toSuccess[T](v: T): StartupSuccess[T] = StartupSuccess(v)
-  implicit def toFailure[T](v: T)(implicit toReportable: ToReportable[T]): StartupFailure[T] = StartupFailure(v)
-}
-
-trait ToReportable[T] {
-  def report(t: T): String
-}
-
-object ToReportable {
-  def createToReportable[T](f: T => String): ToReportable[T] =
-    new ToReportable[T] {
-      def report(t: T): String = f(t)
-    }
 }
