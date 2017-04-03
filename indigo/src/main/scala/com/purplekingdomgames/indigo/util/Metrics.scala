@@ -196,6 +196,8 @@ object Metrics {
         FrameStats(general, processView, renderer)
       }
     }
+    private def calcMeanCount(l: List[Int]): Double =
+      to2DecimalPlaces(l.sum / l.length.toDouble)
 
     private def calcMeanDuration(l: List[Option[Long]]): Double =
       to2DecimalPlaces(l.collect { case Some(s) => s.toDouble }.sum / l.length.toDouble)
@@ -270,10 +272,88 @@ object Metrics {
       }
 
       // Processing view
+      val meanPersistGlobalView: String = {
+        val a = calcMeanDuration(frames.map(_.processView.persistGlobalViewEventsDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.processView.persistGlobalViewEventsPercentage)).toString
+
+        s"""$a\t($b%)"""
+      }
+      val meanConvertToInternal: String = {
+        val a = calcMeanDuration(frames.map(_.processView.convertToInternalDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.processView.convertToInternalPercentage)).toString
+
+        s"""$a\t($b%)"""
+      }
+      val meanPersistNodeView: String = {
+        val a = calcMeanDuration(frames.map(_.processView.persistNodeViewEventsDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.processView.persistNodeViewEventsPercentage)).toString
+
+        s"""$a\t($b%)"""
+      }
+      val meanApplyAnimationMementos: String = {
+        val a = calcMeanDuration(frames.map(_.processView.applyAnimationMementosDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.processView.applyAnimationMementosPercentage)).toString
+
+        s"""$a\t($b%)"""
+      }
+      val meanRunAnimationActions: String = {
+        val a = calcMeanDuration(frames.map(_.processView.runAnimationActionsDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.processView.runAnimationActionsPercentage)).toString
+
+        s"""$a\t($b%)"""
+      }
+      val meanPersistAnimationStates: String = {
+        val a = calcMeanDuration(frames.map(_.processView.persistAnimationStatesDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.processView.persistAnimationStatesPercentage)).toString
+
+        s"""$a\t($b%)"""
+      }
 
 
       // Renderer
+      val meanDrawGameLayer: String = {
+        val a = calcMeanDuration(frames.map(_.renderer.drawGameLayerDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.renderer.drawGameLayerPercentage)).toString
 
+        s"""$a\t($b%)"""
+      }
+
+      val meanDrawLightingLayer: String = {
+        val a = calcMeanDuration(frames.map(_.renderer.drawLightingLayerDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.renderer.drawLightingLayerPercentage)).toString
+
+        s"""$a\t($b%)"""
+      }
+
+      val meanDrawUiLayer: String = {
+        val a = calcMeanDuration(frames.map(_.renderer.drawUiLayerDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.renderer.drawUiLayerPercentage)).toString
+
+        s"""$a\t($b%)"""
+      }
+
+      val meanRenderToCanvasLayer: String = {
+        val a = calcMeanDuration(frames.map(_.renderer.renderToCanvasDuration)).toString
+        val b = calcMeanPercentage(frames.map(_.renderer.renderToCanvasPercentage)).toString
+
+        s"""$a\t($b%)"""
+      }
+
+      val meanLightingDrawCalls: String = {
+        val a = calcMeanCount(frames.map(_.renderer.lightingDrawCalls)).toString
+
+        s"""$a"""
+      }
+      val meanNoramlDrawCalls: String = {
+        val a = calcMeanCount(frames.map(_.renderer.normalDrawCalls)).toString
+
+        s"""$a"""
+      }
+      val meanToCanvasDrawCalls: String = {
+        val a = calcMeanCount(frames.map(_.renderer.toCanvasDrawCalls)).toString
+
+        s"""$a"""
+      }
 
       // Log it!
       Logger.info(
@@ -282,7 +362,7 @@ object Metrics {
           |Statistics:
           |-----------
           |Frames since last report:  $frameCount
-          |Mean FPS:            $meanFps
+          |Mean FPS:                  $meanFps
           |Model updates skipped:     $modelUpdatesSkipped\t($modelSkipsPercent%)
           |View updates skipped:      $viewUpdatesSkipped\t($viewSkipsPercent%)
           |
@@ -297,10 +377,23 @@ object Metrics {
           |
           |View processing:
           |----------------
+          |Mean persist global view:  $meanPersistGlobalView
+          |Mean convert to internal:  $meanConvertToInternal
+          |Mean persist node view:    $meanPersistNodeView
+          |Mean apply animations:     $meanApplyAnimationMementos
+          |Mean animation actions:    $meanRunAnimationActions
+          |Mean persist animations:   $meanPersistAnimationStates
           |
           |Renderer:
           |---------
+          |Mean draw game layer:      $meanDrawGameLayer
+          |Mean draw lighting layer:  $meanDrawLightingLayer
+          |Mean draw ui layer:        $meanDrawUiLayer
+          |Mean render to canvas:     $meanRenderToCanvasLayer
           |
+          |Mean lighting draw calls:  $meanLightingDrawCalls
+          |Mean normal draw calls:    $meanNoramlDrawCalls
+          |Mean to canvas draw calls: $meanToCanvasDrawCalls
           |**********************
         """.stripMargin
       )
