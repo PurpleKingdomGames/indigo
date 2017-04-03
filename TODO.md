@@ -17,6 +17,7 @@ The layers:
 
 
 Bugs:
+- Lights don't work on a black background... should they?
 
 Indigo SBT Plugin
 - Build one. The aim should be to speed up development and make testing simpler.
