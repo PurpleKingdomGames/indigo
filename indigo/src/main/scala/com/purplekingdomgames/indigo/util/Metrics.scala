@@ -51,9 +51,32 @@ object Metrics {
                           renderPercentage: Option[Double]
                          )
 
-    case class FrameStatsProcessView()
+    case class FrameStatsProcessView(persistGlobalViewEventsDuration: Option[Long],
+                                     convertToInternalDuration: Option[Long],
+                                     persistNodeViewEventsDuration: Option[Long],
+                                     applyAnimationMementosDuration: Option[Long],
+                                     runAnimationActionsDuration: Option[Long],
+                                     persistAnimationStatesDuration: Option[Long],
+                                     persistGlobalViewEventsPercentage: Option[Double],
+                                     convertToInternalPercentage: Option[Double],
+                                     persistNodeViewEventsPercentage: Option[Double],
+                                     applyAnimationMementosPercentage: Option[Double],
+                                     runAnimationActionsPercentage: Option[Double],
+                                     persistAnimationStatesPercentage: Option[Double]
+                                    )
 
-    case class FrameStatsRenderer()
+    case class FrameStatsRenderer(drawGameLayerDuration: Option[Long],
+                                  drawLightingLayerDuration: Option[Long],
+                                  drawUiLayerDuration: Option[Long],
+                                  renderToCanvasDuration: Option[Long],
+                                  drawGameLayerPercentage: Option[Double],
+                                  drawLightingLayerPercentage: Option[Double],
+                                  drawUiLayerPercentage: Option[Double],
+                                  renderToCanvasPercentage: Option[Double],
+                                  lightingDrawCalls: Int,
+                                  normalDrawCalls: Int,
+                                  toCanvasDrawCalls: Int
+                                 )
 
     private def extractDuration(metrics: List[MetricWrapper], startName: String, endName: String): Option[Long] =
       metrics.find(_.metric.name == startName).map(_.time).flatMap { start =>
@@ -89,13 +112,40 @@ object Metrics {
 
         // Process view
         // Durations
+        val persistGlobalViewEventsDuration = extractDuration(metrics, PersistGlobalViewEventsStartMetric.name, PersistGlobalViewEventsEndMetric.name)
+        val convertToInternalDuration = extractDuration(metrics, ConvertToInternalStartMetric.name, ConvertToInternalEndMetric.name)
+        val persistNodeViewEventsDuration = extractDuration(metrics, PersistNodeViewEventsStartMetric.name, PersistNodeViewEventsEndMetric.name)
+        val applyAnimationMementosDuration = extractDuration(metrics, ApplyAnimationMementoStartMetric.name, ApplyAnimationMementoEndMetric.name)
+        val runAnimationActionsDuration = extractDuration(metrics, RunAnimationActionsStartMetric.name, RunAnimationActionsEndMetric.name)
+        val persistAnimationStatesDuration = extractDuration(metrics, PersistAnimationStatesStartMetric.name, PersistAnimationStatesEndMetric.name)
 
         // Percentages
+        val persistGlobalViewEventsPercentage = asPercentOfFrameDuration(fd, persistGlobalViewEventsDuration)
+        val convertToInternalPercentage = asPercentOfFrameDuration(fd, convertToInternalDuration)
+        val persistNodeViewEventsPercentage = asPercentOfFrameDuration(fd, persistNodeViewEventsDuration)
+        val applyAnimationMementosPercentage = asPercentOfFrameDuration(fd, applyAnimationMementosDuration)
+        val runAnimationActionsPercentage = asPercentOfFrameDuration(fd, runAnimationActionsDuration)
+        val persistAnimationStatesPercentage = asPercentOfFrameDuration(fd, persistAnimationStatesDuration)
+
 
         // Renderer
         // Durations
+        val drawGameLayerDuration = extractDuration(metrics, DrawGameLayerStartMetric.name, DrawGameLayerEndMetric.name)
+        val drawLightingLayerDuration = extractDuration(metrics, DrawLightingLayerStartMetric.name, DrawLightingLayerEndMetric.name)
+        val drawUiLayerDuration = extractDuration(metrics, DrawUiLayerStartMetric.name, DrawUiLayerEndMetric.name)
+        val renderToCanvasDuration = extractDuration(metrics, RenderToConvasStartMetric.name, RenderToConvasEndMetric.name)
 
         // Percentages
+        val drawGameLayerPercentage = asPercentOfFrameDuration(fd, drawGameLayerDuration)
+        val drawLightingLayerPercentage = asPercentOfFrameDuration(fd, drawLightingLayerDuration)
+        val drawUiLayerPercentage = asPercentOfFrameDuration(fd, drawUiLayerDuration)
+        val renderToCanvasPercentage = asPercentOfFrameDuration(fd, renderToCanvasDuration)
+
+
+        // Draw Call Counts
+        val lightingDrawCalls: Int = metrics.count(_.metric.name == LightingDrawCallMetric.name)
+        val normalDrawCalls: Int = metrics.count(_.metric.name == NormalLayerDrawCallMetric.name)
+        val toCanvasDrawCalls: Int = metrics.count(_.metric.name == ToCanvasDrawCallMetric.name)
 
 
         // Build results
@@ -114,9 +164,34 @@ object Metrics {
           renderPercentage
         )
 
-        val processView = FrameStatsProcessView()
+        val processView = FrameStatsProcessView(
+          persistGlobalViewEventsDuration,
+          convertToInternalDuration,
+          persistNodeViewEventsDuration,
+          applyAnimationMementosDuration,
+          runAnimationActionsDuration,
+          persistAnimationStatesDuration,
+          persistGlobalViewEventsPercentage,
+          convertToInternalPercentage,
+          persistNodeViewEventsPercentage,
+          applyAnimationMementosPercentage,
+          runAnimationActionsPercentage,
+          persistAnimationStatesPercentage
+        )
 
-        val renderer = FrameStatsRenderer()
+        val renderer = FrameStatsRenderer(
+          drawGameLayerDuration,
+          drawLightingLayerDuration,
+          drawUiLayerDuration,
+          renderToCanvasDuration,
+          drawGameLayerPercentage,
+          drawLightingLayerPercentage,
+          drawUiLayerPercentage,
+          renderToCanvasPercentage,
+          lightingDrawCalls,
+          normalDrawCalls,
+          toCanvasDrawCalls
+        )
 
         FrameStats(general, processView, renderer)
       }
