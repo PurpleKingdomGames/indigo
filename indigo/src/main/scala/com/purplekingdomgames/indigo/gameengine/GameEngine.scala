@@ -1,5 +1,6 @@
 package com.purplekingdomgames.indigo.gameengine
 
+import com.purplekingdomgames.indigo.gameengine.assets.{AssetCollection, AssetManager, AssetType, TextureAtlas}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.renderer._
 import com.purplekingdomgames.indigo.util._

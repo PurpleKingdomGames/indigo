@@ -1,6 +1,7 @@
 package com.example.perf
 
 import com.purplekingdomgames.indigo.gameengine._
+import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 
 object PerfModel {
 

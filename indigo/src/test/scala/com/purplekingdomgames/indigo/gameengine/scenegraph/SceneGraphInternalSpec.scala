@@ -1,9 +1,16 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
+import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneGraphSamples.TestViewDataType
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
+import com.purplekingdomgames.indigo.gameengine.{GameEvent, GameTypeHolder}
+import com.purplekingdomgames.indigo.util.metrics.{IMetrics, Metrics}
 import org.scalatest.{FunSpec, Matchers}
 
 class SceneGraphInternalSpec extends FunSpec with Matchers {
+
+  implicit val metrics: IMetrics = Metrics.getNullInstance
+
+  implicit val gameTypeHolder = new GameTypeHolder[TestViewDataType] {}
 
   describe("Converting a public Scene graph into a private one") {
 
@@ -19,7 +26,9 @@ class SceneGraphInternalSpec extends FunSpec with Matchers {
 
 object SceneGraphSamples {
 
-  val api: SceneGraphRootNode =
+  case class TestViewDataType()
+
+  val api: SceneGraphRootNode[TestViewDataType] =
     SceneGraphRootNode(
       SceneGraphGameLayer(
         SceneGraphNodeBranch(
@@ -47,23 +56,24 @@ object SceneGraphSamples {
       SceneGraphUiLayer.empty
     )
 
-  val internal: SceneGraphRootNodeInternal =
+  val internal: SceneGraphRootNodeInternal[TestViewDataType] =
     SceneGraphRootNodeInternal(
       SceneGraphGameLayerInternal(
         SceneGraphNodeBranchInternal(
           List(
-            TextInternal(
-              "Hello", List(TextLine("Hello", Rectangle(0, 0, 80, 16))), Rectangle(0, 0, 80, 16), AlignLeft, Point(10, 10), Depth(1), FontInfo("ref", 32, 32, FontChar("a", 0, 0, 16, 16)), Effects.default
+            TextInternal[TestViewDataType](
+              "Hello", List(TextLine("Hello", Rectangle(0, 0, 80, 16))), Rectangle(0, 0, 80, 16), AlignLeft, Point(10, 10), Depth(1), FontInfo("ref", 32, 32, FontChar("a", 0, 0, 16, 16)), Effects.default, (_: GameEvent) => None
             ),
-            GraphicInternal(
+            GraphicInternal[TestViewDataType](
               Rectangle(10, 10, 32, 32),
               Depth(1),
               "ref",
               Point.zero,
               Rectangle(10, 10, 32, 32),
-              Effects.default
+              Effects.default,
+              (_: GameEvent) => None
             ),
-            SpriteInternal(
+            SpriteInternal[TestViewDataType](
               BindingKey("test"),
               Rectangle(10, 10, 32, 32),
               Depth(1),
@@ -85,33 +95,37 @@ object SceneGraphSamples {
                 Nil
               ),
               Point.zero,
-              Effects.default
+              Effects.default,
+              (_: GameEvent) => None
             ),
             SceneGraphNodeBranchInternal(
               List(
-                GraphicInternal(
+                GraphicInternal[TestViewDataType](
                   Rectangle(10, 10, 32, 32),
                   Depth(1),
                   "ref1",
                   Point.zero,
                   Rectangle(10, 10, 32, 32),
-                  Effects.default
+                  Effects.default,
+                  (_: GameEvent) => None
                 ),
-                GraphicInternal(
+                GraphicInternal[TestViewDataType](
                   Rectangle(10, 10, 32, 32),
                   Depth(1),
                   "ref2",
                   Point.zero,
                   Rectangle(10, 10, 32, 32),
-                  Effects.default
+                  Effects.default,
+                  (_: GameEvent) => None
                 ),
-                GraphicInternal(
+                GraphicInternal[TestViewDataType](
                   Rectangle(10, 10, 32, 32),
                   Depth(1),
                   "ref3",
                   Point.zero,
                   Rectangle(10, 10, 32, 32),
-                  Effects.default
+                  Effects.default,
+                  (_: GameEvent) => None
                 )
               )
             )

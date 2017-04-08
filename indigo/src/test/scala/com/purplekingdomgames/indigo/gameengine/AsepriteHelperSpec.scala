@@ -6,6 +6,8 @@ import org.scalatest.{FunSpec, Matchers}
 
 class AsepriteHelperSpec extends FunSpec with Matchers {
 
+  implicit val gameTypeHolder = new GameTypeHolder[String] {}
+
   describe("Create an Aseprite asset") {
 
     it("should be able to parse the json definition") {
@@ -126,8 +128,8 @@ object AsepriteSampleData {
     )
   }
 
-  val sprite: Option[Sprite] = Option {
-    Sprite(
+  val sprite: Option[Sprite[String]] = Option {
+    Sprite[String](
       bindingKey = BindingKey("test"),
       bounds = Rectangle(Point(0, 0), Point(64, 64)),
       depth = depth,
@@ -157,7 +159,8 @@ object AsepriteSampleData {
         actions = Nil
       ),
       ref = Point.zero,
-      effects = Effects.default
+      effects = Effects.default,
+      (_: (Rectangle, GameEvent)) => None
     )
 
   }

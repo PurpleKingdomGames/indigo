@@ -1,6 +1,6 @@
 package com.example.sandbox
 
-import com.purplekingdomgames.indigo.gameengine.{AssetType, ImageAsset, TextAsset}
+import com.purplekingdomgames.indigo.gameengine.assets.{AssetType, ImageAsset, TextAsset}
 
 object MyAssets {
 

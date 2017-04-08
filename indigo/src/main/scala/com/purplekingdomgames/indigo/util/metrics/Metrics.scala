@@ -49,4 +49,6 @@ object Metrics {
         instance.get
     }
 
+  def getNullInstance: IMetrics = new NullMetricsInstance
+
 }

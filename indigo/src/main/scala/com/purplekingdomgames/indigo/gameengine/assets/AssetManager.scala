@@ -1,4 +1,4 @@
-package com.purplekingdomgames.indigo.gameengine
+package com.purplekingdomgames.indigo.gameengine.assets
 
 import com.purplekingdomgames.indigo.renderer.LoadedTextureAsset
 import com.purplekingdomgames.indigo.util.Logger
