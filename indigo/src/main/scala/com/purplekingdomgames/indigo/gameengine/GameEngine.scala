@@ -55,6 +55,8 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
       assetCollection = ac
 
+      TextureAtlas.create(assetCollection.images)
+
       initialise(assetCollection) match {
         case e: StartupFailure[_] =>
           Logger.info("Game initialisation failed")
