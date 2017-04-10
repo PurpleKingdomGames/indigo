@@ -1,36 +1,30 @@
 package com.purplekingdomgames.indigo.gameengine.assets
 
 import com.purplekingdomgames.indigo.gameengine.PowerOfTwo
+import com.purplekingdomgames.indigo.gameengine.assets.TextureAtlas.{MaxTextureSize, supportedSizes}
 import com.purplekingdomgames.indigo.util.Logger
 
 object TextureAtlas {
+
+  import TextureAtlasFunctions._
 
   val MaxTextureSize: PowerOfTwo = PowerOfTwo._4096
 
   val supportedSizes: Set[PowerOfTwo] = PowerOfTwo.all
 
-  private val filterTooLarge: List[LoadedImageAsset] => List[LoadedImageAsset] = images =>
-    images.flatMap { i =>
-      if(TextureAtlasFunctions.isTooBig(MaxTextureSize, i.data.width, i.data.height)) {
-        // I think we'll still access assets through the asset collection, which can try for the atlas first and fallback
-        Logger.info(s"Image ${i.name} is too large and will not be added to the texture atlas - may cause performance penalties")
-        Nil
-      } else List(i)
-    }
+  def create(images: List[ImageRef]): TextureAtlas = {
 
-  private val inflateAndSortByPowerOfTwo: List[LoadedImageAsset] => List[TextureDetails] = images =>
-    images.map(i => TextureDetails(i, TextureAtlasFunctions.pickPowerOfTwoSizeFor(supportedSizes, i.data.width, i.data.height))).sortBy(_.size.value).reverse
-
-  def create(images: List[LoadedImageAsset]): TextureAtlas = {
-
-    val q = filterTooLarge andThen inflateAndSortByPowerOfTwo
+    val q = filterTooLarge(MaxTextureSize) andThen inflateAndSortByPowerOfTwo
 
     TextureAtlas()
   }
 
 }
 
-case class TextureDetails(asset: LoadedImageAsset, size: PowerOfTwo)
+
+case class ImageRef(name: String, width: Int, height: Int)
+
+case class TextureDetails(imageRef: ImageRef, size: PowerOfTwo)
 
 case class TextureAtlas()
 
@@ -55,4 +49,15 @@ object TextureAtlasFunctions {
 
   def isTooBig(max: PowerOfTwo, width: Int, height: Int): Boolean = if(width > max.value || height > max.value) true else false
 
+  def filterTooLarge(max: PowerOfTwo): List[ImageRef] => List[ImageRef] = images =>
+    images.flatMap { i =>
+      if(TextureAtlasFunctions.isTooBig(max, i.width, i.height)) {
+        // I think we'll still access assets through the asset collection, which can try for the atlas first and fallback
+        Logger.info(s"Image ${i.name} is too large and will not be added to the texture atlas - may cause performance penalties")
+        Nil
+      } else List(i)
+    }
+
+  val inflateAndSortByPowerOfTwo: List[ImageRef] => List[TextureDetails] = images =>
+    images.map(i => TextureDetails(i, TextureAtlasFunctions.pickPowerOfTwoSizeFor(supportedSizes, i.width, i.height))).sortBy(_.size.value).reverse
 }

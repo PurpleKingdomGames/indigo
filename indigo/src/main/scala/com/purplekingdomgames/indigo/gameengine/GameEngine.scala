@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigo.gameengine
 
-import com.purplekingdomgames.indigo.gameengine.assets.{AssetCollection, AssetManager, AssetType, TextureAtlas}
+import com.purplekingdomgames.indigo.gameengine.assets._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.renderer._
 import com.purplekingdomgames.indigo.util._
@@ -56,7 +56,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
       assetCollection = ac
 
-      TextureAtlas.create(assetCollection.images)
+      TextureAtlas.create(assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height)))
 
       initialise(assetCollection) match {
         case e: StartupFailure[_] =>
