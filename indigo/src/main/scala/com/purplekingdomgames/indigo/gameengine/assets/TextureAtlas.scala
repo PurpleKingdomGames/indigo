@@ -1,7 +1,8 @@
 package com.purplekingdomgames.indigo.gameengine.assets
 
 import com.purplekingdomgames.indigo.gameengine.PowerOfTwo
-import com.purplekingdomgames.indigo.gameengine.assets.TextureAtlas.{MaxTextureSize, supportedSizes}
+import com.purplekingdomgames.indigo.gameengine.assets.TextureAtlas.supportedSizes
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
 import com.purplekingdomgames.indigo.util.Logger
 
 object TextureAtlas {
@@ -12,29 +13,14 @@ object TextureAtlas {
 
   val supportedSizes: Set[PowerOfTwo] = PowerOfTwo.all
 
-  def create(images: List[ImageRef]): TextureAtlas = {
+  def create(images: List[ImageRef]): TextureAtlas =
+    (filterTooLarge(MaxTextureSize) andThen inflateAndSortByPowerOfTwo andThen convertToAtlas)(images)
 
-    val q = filterTooLarge(MaxTextureSize) andThen inflateAndSortByPowerOfTwo
-
-    TextureAtlas()
-  }
+  def lookUp(name: String, textureAtlas: TextureAtlas): Unit = ()
+    
 
 }
 
-
-case class ImageRef(name: String, width: Int, height: Int)
-
-case class TextureDetails(imageRef: ImageRef, size: PowerOfTwo)
-
-case class TextureAtlas()
-
-sealed trait AtlasQuadTree
-case class AtlasQuadNode(textureSize: PowerOfTwo, atlas: AtlasSum) extends AtlasQuadTree
-case object AtlasQuadEmpty extends AtlasQuadTree
-
-sealed trait AtlasSum
-case class AtlasTexture() extends AtlasSum
-case class AtlasQuadDivision(q1: AtlasQuadTree, q2: AtlasQuadTree, q3: AtlasQuadTree, q4: AtlasQuadTree) extends AtlasSum
 
 object TextureAtlasFunctions {
 
@@ -60,4 +46,29 @@ object TextureAtlasFunctions {
 
   val inflateAndSortByPowerOfTwo: List[ImageRef] => List[TextureDetails] = images =>
     images.map(i => TextureDetails(i, TextureAtlasFunctions.pickPowerOfTwoSizeFor(supportedSizes, i.width, i.height))).sortBy(_.size.value).reverse
+
+  val convertToAtlas: List[TextureDetails] => TextureAtlas = textureDetails =>
+    ???
+
 }
+
+
+// Input
+case class ImageRef(name: String, width: Int, height: Int)
+
+case class TextureDetails(imageRef: ImageRef, size: PowerOfTwo)
+
+// Output
+case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, AtlasIndex])
+case class AtlasId(id: String)
+case class AtlasIndex(id: AtlasId, offset: Point)
+case class Atlas(/*TODO: image data??*/)
+
+// Intermediate tree structure
+sealed trait AtlasQuadTree
+case class AtlasQuadNode(textureSize: PowerOfTwo, atlas: AtlasSum) extends AtlasQuadTree
+case object AtlasQuadEmpty extends AtlasQuadTree
+
+sealed trait AtlasSum
+case class AtlasTexture(imageRef: ImageRef) extends AtlasSum
+case class AtlasQuadDivision(q1: AtlasQuadTree, q2: AtlasQuadTree, q3: AtlasQuadTree, q4: AtlasQuadTree) extends AtlasSum
