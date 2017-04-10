@@ -64,9 +64,11 @@ object TextureAtlasFunctions {
       case (AtlasQuadNode(_, _), AtlasQuadEmpty) => Some(a)
       case (AtlasQuadEmpty, AtlasQuadNode(_, _)) => Some(b)
       case (AtlasQuadNode(sizeA, _), AtlasQuadNode(sizeB, _)) if sizeA.doubled > max || sizeB.doubled > max => None
-      case (AtlasQuadNode(sizeA, sumA), AtlasQuadNode(sizeB, sumB)) => {
+      case (AtlasQuadNode(sizeA, sumA), AtlasQuadNode(sizeB, sumB)) =>
+
+        
+
         None
-      }
     }
 
   }

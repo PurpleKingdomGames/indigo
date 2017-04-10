@@ -92,7 +92,50 @@ class TextureAtlasSpec extends FunSpec with Matchers {
         )
       )
 
-    it("should be able to merge two trees together") {
+    val c =
+      AtlasQuadNode(
+        PowerOfTwo._64,
+        AtlasTexture(
+          ImageRef("c", 62, 48)
+        )
+      )
+
+    val d =
+      AtlasQuadNode(
+        PowerOfTwo._128,
+        AtlasTexture(
+          ImageRef("d", 62, 127)
+        )
+      )
+
+    val aPlusB =
+      AtlasQuadNode(
+        PowerOfTwo._2048,
+        AtlasQuadDivision(
+          a,
+          AtlasQuadNode(
+            PowerOfTwo._1024,
+            AtlasQuadDivision(
+              b,
+              AtlasQuadEmpty,
+              AtlasQuadEmpty,
+              AtlasQuadEmpty
+            )
+          ),
+          AtlasQuadEmpty,
+          AtlasQuadEmpty
+        )
+      )
+
+    it("should be able to merge two single item trees together") {
+
+      val max = PowerOfTwo._4096
+
+      TextureAtlasFunctions.mergeTrees(a, b, max) shouldEqual Some(aPlusB)
+
+    }
+
+    it("should be able to merge a single item tree with a more complex tree together") {
 
       val expected =
         AtlasQuadNode(
@@ -103,7 +146,39 @@ class TextureAtlasSpec extends FunSpec with Matchers {
               PowerOfTwo._1024,
               AtlasQuadDivision(
                 b,
-                AtlasQuadEmpty,
+                AtlasQuadNode(
+                  PowerOfTwo._512,
+                  AtlasQuadDivision(
+                    AtlasQuadNode(
+                      PowerOfTwo._256,
+                      AtlasQuadDivision(
+                        AtlasQuadNode(
+                          PowerOfTwo._128,
+                          AtlasQuadDivision(
+                            AtlasQuadNode(
+                              PowerOfTwo._64,
+                              AtlasQuadDivision(
+                                c,
+                                AtlasQuadEmpty,
+                                AtlasQuadEmpty,
+                                AtlasQuadEmpty
+                              )
+                            ),
+                            d,
+                            AtlasQuadEmpty,
+                            AtlasQuadEmpty
+                          )
+                        ),
+                        AtlasQuadEmpty,
+                        AtlasQuadEmpty,
+                        AtlasQuadEmpty
+                      )
+                    ),
+                    AtlasQuadEmpty,
+                    AtlasQuadEmpty,
+                    AtlasQuadEmpty
+                  )
+                ),
                 AtlasQuadEmpty,
                 AtlasQuadEmpty
               )
@@ -115,7 +190,8 @@ class TextureAtlasSpec extends FunSpec with Matchers {
 
       val max = PowerOfTwo._4096
 
-      TextureAtlasFunctions.mergeTrees(a, b, max) shouldEqual Some(expected)
+      val aPlusBPlusC = TextureAtlasFunctions.mergeTrees(aPlusB, c, max)
+      TextureAtlasFunctions.mergeTrees(aPlusBPlusC.get, d, max) shouldEqual Some(expected)
 
     }
 
