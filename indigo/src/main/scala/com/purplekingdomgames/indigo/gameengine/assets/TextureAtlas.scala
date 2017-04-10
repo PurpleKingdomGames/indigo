@@ -17,7 +17,7 @@ object TextureAtlas {
     (filterTooLarge(MaxTextureSize) andThen inflateAndSortByPowerOfTwo andThen convertToAtlas)(images)
 
   def lookUp(name: String, textureAtlas: TextureAtlas): Unit = ()
-    
+
 
 }
 
@@ -47,8 +47,29 @@ object TextureAtlasFunctions {
   val inflateAndSortByPowerOfTwo: List[ImageRef] => List[TextureDetails] = images =>
     images.map(i => TextureDetails(i, TextureAtlasFunctions.pickPowerOfTwoSizeFor(supportedSizes, i.width, i.height))).sortBy(_.size.value).reverse
 
-  val convertToAtlas: List[TextureDetails] => TextureAtlas = textureDetails =>
-    ???
+  val convertTextureDetailsToTree: TextureDetails => AtlasQuadTree = textureDetails => {
+    AtlasQuadNode(textureDetails.size, AtlasTexture(textureDetails.imageRef))
+  }
+
+  val convertToAtlas: List[TextureDetails] => TextureAtlas = list => {
+    list.map(convertTextureDetailsToTree)
+
+    TextureAtlas(Map(), Map())
+  }
+
+  def mergeTrees(a: AtlasQuadTree, b: AtlasQuadTree, max: PowerOfTwo): Option[AtlasQuadTree] = {
+
+    (a, b) match {
+      case (AtlasQuadEmpty, AtlasQuadEmpty) => Some(AtlasQuadEmpty)
+      case (AtlasQuadNode(_, _), AtlasQuadEmpty) => Some(a)
+      case (AtlasQuadEmpty, AtlasQuadNode(_, _)) => Some(b)
+      case (AtlasQuadNode(sizeA, _), AtlasQuadNode(sizeB, _)) if sizeA.doubled > max || sizeB.doubled > max => None
+      case (AtlasQuadNode(sizeA, sumA), AtlasQuadNode(sizeB, sumB)) => {
+        None
+      }
+    }
+
+  }
 
 }
 
