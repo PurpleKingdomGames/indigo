@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigo.gameengine.assets
 
-import com.purplekingdomgames.indigo.gameengine.PowerOfTwo
+import com.purplekingdomgames.indigo.gameengine.{PowerOfTwo, assets}
 import com.purplekingdomgames.indigo.gameengine.assets.TextureAtlas.supportedSizes
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
 import com.purplekingdomgames.indigo.util.Logger
@@ -57,21 +57,46 @@ object TextureAtlasFunctions {
     TextureAtlas(Map(), Map())
   }
 
-  def mergeTrees(a: AtlasQuadTree, b: AtlasQuadTree, max: PowerOfTwo): Option[AtlasQuadTree] = {
-
+  def mergeTrees(a: AtlasQuadTree, b: AtlasQuadTree, max: PowerOfTwo): Option[AtlasQuadTree] =
     (a, b) match {
-      case (AtlasQuadEmpty(_), AtlasQuadEmpty(_)) => Some(a)
-      case (AtlasQuadNode(_, _), AtlasQuadEmpty(_)) => Some(a)
-      case (AtlasQuadEmpty(_), AtlasQuadNode(_, _)) => Some(b)
-      case (AtlasQuadNode(sizeA, _), AtlasQuadNode(sizeB, _)) if sizeA.doubled > max || sizeB.doubled > max => None
-      case (AtlasQuadNode(sizeA, sumA), AtlasQuadNode(sizeB, sumB)) =>
+      case (AtlasQuadEmpty(_), AtlasQuadEmpty(_)) =>
+        Some(a)
 
-        // What to do?
+      case (AtlasQuadNode(_, _), AtlasQuadEmpty(_)) =>
+        Some(a)
 
+      case (AtlasQuadEmpty(_), AtlasQuadNode(_, _)) =>
+        Some(b)
+
+      case (AtlasQuadNode(_, _), AtlasQuadNode(sizeB, _)) if a.canAccommodate(sizeB) =>
+        mergeTreesAB(a, b)
+        
+      case (AtlasQuadNode(sizeA, _), AtlasQuadNode(_, _)) if b.canAccommodate(sizeA) =>
+        mergeTreesAB(b, a)
+
+      case (AtlasQuadNode(sizeA, _), AtlasQuadNode(sizeB, _)) if sizeA >= sizeB =>
+        mergeTreesAB(createEmptyTree(calculateSizeNeededToHouseAB(sizeA, sizeB)), a).flatMap { c =>
+          mergeTreesAB(c, b)
+        }
+
+      case (AtlasQuadNode(sizeA, _), AtlasQuadNode(sizeB, _)) if sizeA < sizeB =>
+        mergeTreesAB(createEmptyTree(calculateSizeNeededToHouseAB(sizeA, sizeB)), b).flatMap { c =>
+          mergeTreesAB(c, a)
+        }
+
+      case _ =>
+        Logger.info("Unexpectedly couldn't merge trees")
         None
     }
 
+  def mergeTreesAB(a: AtlasQuadTree, b: AtlasQuadTree): Option[AtlasQuadTree] = {
+    None
   }
+
+  def calculateSizeNeededToHouseAB(sizeA: PowerOfTwo, sizeB: PowerOfTwo): PowerOfTwo =
+    if(sizeA >= sizeB) sizeA.doubled else sizeB.doubled
+
+  def createEmptyTree(size: PowerOfTwo): AtlasQuadNode = AtlasQuadNode(size, AtlasQuadDivision.empty(size))
 
 }
 
@@ -110,4 +135,8 @@ case class AtlasTexture(imageRef: ImageRef) extends AtlasSum {
 case class AtlasQuadDivision(q1: AtlasQuadTree, q2: AtlasQuadTree, q3: AtlasQuadTree, q4: AtlasQuadTree) extends AtlasSum {
   def canAccommodate(requiredSize: PowerOfTwo): Boolean =
     q1.canAccommodate(requiredSize) || q2.canAccommodate(requiredSize) || q3.canAccommodate(requiredSize) || q4.canAccommodate(requiredSize)
+}
+
+object AtlasQuadDivision {
+  def empty(size: PowerOfTwo): AtlasQuadDivision = AtlasQuadDivision(AtlasQuadEmpty(size), AtlasQuadEmpty(size), AtlasQuadEmpty(size), AtlasQuadEmpty(size))
 }
