@@ -117,13 +117,13 @@ class TextureAtlasSpec extends FunSpec with Matchers {
             PowerOfTwo._1024,
             AtlasQuadDivision(
               b,
-              AtlasQuadEmpty,
-              AtlasQuadEmpty,
-              AtlasQuadEmpty
+              AtlasQuadEmpty(PowerOfTwo._512),
+              AtlasQuadEmpty(PowerOfTwo._512),
+              AtlasQuadEmpty(PowerOfTwo._512)
             )
           ),
-          AtlasQuadEmpty,
-          AtlasQuadEmpty
+          AtlasQuadEmpty(PowerOfTwo._1024),
+          AtlasQuadEmpty(PowerOfTwo._1024)
         )
       )
 
@@ -155,36 +155,28 @@ class TextureAtlasSpec extends FunSpec with Matchers {
                         AtlasQuadNode(
                           PowerOfTwo._128,
                           AtlasQuadDivision(
-                            AtlasQuadNode(
-                              PowerOfTwo._64,
-                              AtlasQuadDivision(
-                                c,
-                                AtlasQuadEmpty,
-                                AtlasQuadEmpty,
-                                AtlasQuadEmpty
-                              )
-                            ),
-                            d,
-                            AtlasQuadEmpty,
-                            AtlasQuadEmpty
+                            c,
+                            AtlasQuadEmpty(PowerOfTwo._64),
+                            AtlasQuadEmpty(PowerOfTwo._64),
+                            AtlasQuadEmpty(PowerOfTwo._64)
                           )
                         ),
-                        AtlasQuadEmpty,
-                        AtlasQuadEmpty,
-                        AtlasQuadEmpty
+                        d,
+                        AtlasQuadEmpty(PowerOfTwo._128),
+                        AtlasQuadEmpty(PowerOfTwo._128)
                       )
                     ),
-                    AtlasQuadEmpty,
-                    AtlasQuadEmpty,
-                    AtlasQuadEmpty
+                    AtlasQuadEmpty(PowerOfTwo._256),
+                    AtlasQuadEmpty(PowerOfTwo._256),
+                    AtlasQuadEmpty(PowerOfTwo._256)
                   )
                 ),
-                AtlasQuadEmpty,
-                AtlasQuadEmpty
+                AtlasQuadEmpty(PowerOfTwo._512),
+                AtlasQuadEmpty(PowerOfTwo._512)
               )
             ),
-            AtlasQuadEmpty,
-            AtlasQuadEmpty
+            AtlasQuadEmpty(PowerOfTwo._1024),
+            AtlasQuadEmpty(PowerOfTwo._1024)
           )
         )
 
@@ -199,8 +191,8 @@ class TextureAtlasSpec extends FunSpec with Matchers {
 
       val max = PowerOfTwo._4096
 
-      TextureAtlasFunctions.mergeTrees(a, AtlasQuadEmpty, max) shouldEqual Some(a)
-      TextureAtlasFunctions.mergeTrees(AtlasQuadEmpty, b, max) shouldEqual Some(b)
+      TextureAtlasFunctions.mergeTrees(a, AtlasQuadEmpty(PowerOfTwo._128), max) shouldEqual Some(a)
+      TextureAtlasFunctions.mergeTrees(AtlasQuadEmpty(PowerOfTwo._128), b, max) shouldEqual Some(b)
 
     }
 
@@ -209,6 +201,12 @@ class TextureAtlasSpec extends FunSpec with Matchers {
       val max = PowerOfTwo._1024
 
       TextureAtlasFunctions.mergeTrees(a, b, max) shouldEqual None
+
+    }
+
+    it("should be able to report if it can accomodate another tree of size") {
+
+      aPlusB.canAccommodate(PowerOfTwo._1024) shouldEqual true
 
     }
 

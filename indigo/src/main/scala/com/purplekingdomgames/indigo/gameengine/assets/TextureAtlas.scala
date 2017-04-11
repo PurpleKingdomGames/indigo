@@ -60,13 +60,13 @@ object TextureAtlasFunctions {
   def mergeTrees(a: AtlasQuadTree, b: AtlasQuadTree, max: PowerOfTwo): Option[AtlasQuadTree] = {
 
     (a, b) match {
-      case (AtlasQuadEmpty, AtlasQuadEmpty) => Some(AtlasQuadEmpty)
-      case (AtlasQuadNode(_, _), AtlasQuadEmpty) => Some(a)
-      case (AtlasQuadEmpty, AtlasQuadNode(_, _)) => Some(b)
+      case (AtlasQuadEmpty(_), AtlasQuadEmpty(_)) => Some(a)
+      case (AtlasQuadNode(_, _), AtlasQuadEmpty(_)) => Some(a)
+      case (AtlasQuadEmpty(_), AtlasQuadNode(_, _)) => Some(b)
       case (AtlasQuadNode(sizeA, _), AtlasQuadNode(sizeB, _)) if sizeA.doubled > max || sizeB.doubled > max => None
       case (AtlasQuadNode(sizeA, sumA), AtlasQuadNode(sizeB, sumB)) =>
 
-        
+        // What to do?
 
         None
     }
@@ -88,10 +88,26 @@ case class AtlasIndex(id: AtlasId, offset: Point)
 case class Atlas(/*TODO: image data??*/)
 
 // Intermediate tree structure
-sealed trait AtlasQuadTree
-case class AtlasQuadNode(textureSize: PowerOfTwo, atlas: AtlasSum) extends AtlasQuadTree
-case object AtlasQuadEmpty extends AtlasQuadTree
+sealed trait AtlasQuadTree {
+  val size: PowerOfTwo
+  def canAccommodate(requiredSize: PowerOfTwo): Boolean
+}
+case class AtlasQuadNode(size: PowerOfTwo, atlas: AtlasSum) extends AtlasQuadTree {
+  def canAccommodate(requiredSize: PowerOfTwo): Boolean =
+    if(size < requiredSize) false
+    else atlas.canAccommodate(requiredSize)
+}
+case class AtlasQuadEmpty(size: PowerOfTwo) extends AtlasQuadTree {
+  def canAccommodate(requiredSize: PowerOfTwo): Boolean = size >= requiredSize
+}
 
-sealed trait AtlasSum
-case class AtlasTexture(imageRef: ImageRef) extends AtlasSum
-case class AtlasQuadDivision(q1: AtlasQuadTree, q2: AtlasQuadTree, q3: AtlasQuadTree, q4: AtlasQuadTree) extends AtlasSum
+sealed trait AtlasSum {
+  def canAccommodate(requiredSize: PowerOfTwo): Boolean
+}
+case class AtlasTexture(imageRef: ImageRef) extends AtlasSum {
+  def canAccommodate(requiredSize: PowerOfTwo): Boolean = false
+}
+case class AtlasQuadDivision(q1: AtlasQuadTree, q2: AtlasQuadTree, q3: AtlasQuadTree, q4: AtlasQuadTree) extends AtlasSum {
+  def canAccommodate(requiredSize: PowerOfTwo): Boolean =
+    q1.canAccommodate(requiredSize) || q2.canAccommodate(requiredSize) || q3.canAccommodate(requiredSize) || q4.canAccommodate(requiredSize)
+}
