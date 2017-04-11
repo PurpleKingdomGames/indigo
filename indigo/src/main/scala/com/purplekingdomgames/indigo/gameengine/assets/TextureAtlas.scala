@@ -60,48 +60,79 @@ object TextureAtlasFunctions {
   def mergeTrees(a: AtlasQuadTree, b: AtlasQuadTree, max: PowerOfTwo): Option[AtlasQuadTree] =
     (a, b) match {
       case (AtlasQuadEmpty(_), AtlasQuadEmpty(_)) =>
+        println(1)
         Some(a)
 
       case (AtlasQuadNode(_, _), AtlasQuadEmpty(_)) =>
+        println(2)
         Some(a)
 
       case (AtlasQuadEmpty(_), AtlasQuadNode(_, _)) =>
+        println(3)
         Some(b)
 
       case (AtlasQuadNode(_, _), AtlasQuadNode(sizeB, _)) if a.canAccommodate(sizeB) =>
+        println(4)
         mergeTreeBIntoA(a, b)
 
       case (AtlasQuadNode(sizeA, _), AtlasQuadNode(_, _)) if b.canAccommodate(sizeA) =>
+        println(5)
         mergeTreeBIntoA(b, a)
 
       case (AtlasQuadNode(sizeA, _), AtlasQuadNode(sizeB, _)) if sizeA >= sizeB =>
+        println(6)
         mergeTreeBIntoA(createEmptyTree(calculateSizeNeededToHouseAB(sizeA, sizeB)), a).flatMap { c =>
           mergeTreeBIntoA(c, b)
         }
 
       case (AtlasQuadNode(sizeA, _), AtlasQuadNode(sizeB, _)) if sizeA < sizeB =>
+        println(7)
         mergeTreeBIntoA(createEmptyTree(calculateSizeNeededToHouseAB(sizeA, sizeB)), b).flatMap { c =>
           mergeTreeBIntoA(c, a)
         }
 
       case _ =>
+        println(8)
         Logger.info("Unexpectedly couldn't merge trees")
         None
     }
 
-  def mergeTreeBIntoA(a: AtlasQuadTree, b: AtlasQuadTree): Option[AtlasQuadTree] = {
-    if(!a.canAccommodate(b.size)) None
-    else {
-      //TODO: Use lens?
+  /*
+  6
 
-      None
+B <- A
+A: AtlasQuadNode(_2048,AtlasQuadDivision(AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024)))
+B: AtlasQuadNode(_1024,AtlasTexture(ImageRef(a,1024,768)))
+Result: Some(AtlasQuadNode(_2048,AtlasQuadDivision(AtlasQuadNode(_1024,AtlasTexture(ImageRef(a,1024,768))),AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024))))
+
+B <- A
+A: AtlasQuadNode(_2048,AtlasQuadDivision(AtlasQuadNode(_1024,AtlasTexture(ImageRef(a,1024,768))),AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024)))
+B: AtlasQuadNode(_512,AtlasTexture(ImageRef(b,500,400)))
+Result: Some(AtlasQuadNode(_2048,AtlasQuadDivision(AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024))))
+
+Not subdividing, and it's probably doing an insert on an empty that return 'this'
+
+   */
+
+  def mergeTreeBIntoA(a: AtlasQuadTree, b: AtlasQuadTree): Option[AtlasQuadTree] = {
+    println("B <- A")
+    println("A: " + a)
+    println("B: " + b)
+
+    val res = if (!a.canAccommodate(b.size)) None
+    else Option {
+      a.insert(b)
     }
+
+    println("Result: " + res)
+
+    res
   }
 
   def calculateSizeNeededToHouseAB(sizeA: PowerOfTwo, sizeB: PowerOfTwo): PowerOfTwo =
     if(sizeA >= sizeB) sizeA.doubled else sizeB.doubled
 
-  def createEmptyTree(size: PowerOfTwo): AtlasQuadNode = AtlasQuadNode(size, AtlasQuadDivision.empty(size))
+  def createEmptyTree(size: PowerOfTwo): AtlasQuadNode = AtlasQuadNode(size, AtlasQuadDivision.empty(size.halved))
 
 }
 
@@ -121,22 +152,52 @@ case class Atlas(/*TODO: image data??*/)
 sealed trait AtlasQuadTree {
   val size: PowerOfTwo
   def canAccommodate(requiredSize: PowerOfTwo): Boolean
+  def insert(tree: AtlasQuadTree): AtlasQuadTree
 }
+
 case class AtlasQuadNode(size: PowerOfTwo, atlas: AtlasSum) extends AtlasQuadTree {
   def canAccommodate(requiredSize: PowerOfTwo): Boolean =
     if(size < requiredSize) false
     else atlas.canAccommodate(requiredSize)
+
+  def insert(tree: AtlasQuadTree): AtlasQuadTree = this.copy ( atlas =
+    atlas match {
+      case AtlasTexture(_) => this.atlas
+
+      case d @ AtlasQuadDivision(AtlasQuadEmpty(s), _, _, _) if s === tree.size =>
+        d.copy(q1 = tree)
+      case d @ AtlasQuadDivision(_, AtlasQuadEmpty(s), _, _) if s === tree.size =>
+        d.copy(q2 = tree)
+      case d @ AtlasQuadDivision(_, _, AtlasQuadEmpty(s), _) if s === tree.size =>
+        d.copy(q3 = tree)
+      case d @ AtlasQuadDivision(_, _, _, AtlasQuadEmpty(s)) if s === tree.size =>
+        d.copy(q4 = tree)
+
+      case d @ AtlasQuadDivision(q, _, _, _) if q.canAccommodate(tree.size) =>
+        d.copy(q1 = d.q1.insert(tree))
+      case d @ AtlasQuadDivision(_, q, _, _) if q.canAccommodate(tree.size) =>
+        d.copy(q1 = d.q2.insert(tree))
+      case d @ AtlasQuadDivision(_, _, q, _) if q.canAccommodate(tree.size) =>
+        d.copy(q1 = d.q3.insert(tree))
+      case d @ AtlasQuadDivision(_, _, _, q) if q.canAccommodate(tree.size) =>
+        d.copy(q1 = d.q4.insert(tree))
+    }
+  )
 }
+
 case class AtlasQuadEmpty(size: PowerOfTwo) extends AtlasQuadTree {
   def canAccommodate(requiredSize: PowerOfTwo): Boolean = size >= requiredSize
+  def insert(tree: AtlasQuadTree): AtlasQuadTree = this
 }
 
 sealed trait AtlasSum {
   def canAccommodate(requiredSize: PowerOfTwo): Boolean
 }
+
 case class AtlasTexture(imageRef: ImageRef) extends AtlasSum {
   def canAccommodate(requiredSize: PowerOfTwo): Boolean = false
 }
+
 case class AtlasQuadDivision(q1: AtlasQuadTree, q2: AtlasQuadTree, q3: AtlasQuadTree, q4: AtlasQuadTree) extends AtlasSum {
   def canAccommodate(requiredSize: PowerOfTwo): Boolean =
     q1.canAccommodate(requiredSize) || q2.canAccommodate(requiredSize) || q3.canAccommodate(requiredSize) || q4.canAccommodate(requiredSize)
