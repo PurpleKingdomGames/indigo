@@ -182,8 +182,10 @@ class TextureAtlasSpec extends FunSpec with Matchers {
 
       val max = PowerOfTwo._4096
 
-      val aPlusBPlusC = TextureAtlasFunctions.mergeTrees(aPlusB, c, max)
-      TextureAtlasFunctions.mergeTrees(aPlusBPlusC.get, d, max) shouldEqual Some(expected)
+      TextureAtlasFunctions.mergeTrees(aPlusB, c, max) match {
+        case Some(aPlusBPlusC) => TextureAtlasFunctions.mergeTrees(aPlusBPlusC, d, max) shouldEqual Some(expected)
+        case None => fail("Unexpected None...")
+      }
 
     }
 
@@ -193,6 +195,36 @@ class TextureAtlasSpec extends FunSpec with Matchers {
 
       TextureAtlasFunctions.mergeTrees(a, AtlasQuadEmpty(PowerOfTwo._128), max) shouldEqual Some(a)
       TextureAtlasFunctions.mergeTrees(AtlasQuadEmpty(PowerOfTwo._128), b, max) shouldEqual Some(b)
+
+    }
+
+    it("should not merge tree B into empty tree A which cannot accommodate") {
+
+      val a = AtlasQuadNode(PowerOfTwo._4, AtlasQuadDivision.empty(PowerOfTwo._2))
+      val b = AtlasQuadNode(PowerOfTwo._128, AtlasTexture(ImageRef("b", 128, 128)))
+
+      TextureAtlasFunctions.mergeTreeBIntoA(a, b) shouldEqual None
+
+    }
+
+    it("should be able to merge tree B into empty tree A which can accommodate") {
+
+      val a = AtlasQuadNode(PowerOfTwo._256, AtlasQuadDivision.empty(PowerOfTwo._128))
+      val b = AtlasQuadNode(PowerOfTwo._128, AtlasTexture(ImageRef("b", 128, 128)))
+
+      val expected = Some(
+        AtlasQuadNode(
+          PowerOfTwo._256,
+          AtlasQuadDivision(
+            b,
+            AtlasQuadEmpty(PowerOfTwo._128),
+            AtlasQuadEmpty(PowerOfTwo._128),
+            AtlasQuadEmpty(PowerOfTwo._128)
+          )
+        )
+      )
+
+      TextureAtlasFunctions.mergeTreeBIntoA(a, b) shouldEqual expected
 
     }
 

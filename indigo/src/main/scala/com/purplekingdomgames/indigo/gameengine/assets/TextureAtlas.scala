@@ -69,19 +69,19 @@ object TextureAtlasFunctions {
         Some(b)
 
       case (AtlasQuadNode(_, _), AtlasQuadNode(sizeB, _)) if a.canAccommodate(sizeB) =>
-        mergeTreesAB(a, b)
-        
+        mergeTreeBIntoA(a, b)
+
       case (AtlasQuadNode(sizeA, _), AtlasQuadNode(_, _)) if b.canAccommodate(sizeA) =>
-        mergeTreesAB(b, a)
+        mergeTreeBIntoA(b, a)
 
       case (AtlasQuadNode(sizeA, _), AtlasQuadNode(sizeB, _)) if sizeA >= sizeB =>
-        mergeTreesAB(createEmptyTree(calculateSizeNeededToHouseAB(sizeA, sizeB)), a).flatMap { c =>
-          mergeTreesAB(c, b)
+        mergeTreeBIntoA(createEmptyTree(calculateSizeNeededToHouseAB(sizeA, sizeB)), a).flatMap { c =>
+          mergeTreeBIntoA(c, b)
         }
 
       case (AtlasQuadNode(sizeA, _), AtlasQuadNode(sizeB, _)) if sizeA < sizeB =>
-        mergeTreesAB(createEmptyTree(calculateSizeNeededToHouseAB(sizeA, sizeB)), b).flatMap { c =>
-          mergeTreesAB(c, a)
+        mergeTreeBIntoA(createEmptyTree(calculateSizeNeededToHouseAB(sizeA, sizeB)), b).flatMap { c =>
+          mergeTreeBIntoA(c, a)
         }
 
       case _ =>
@@ -89,8 +89,13 @@ object TextureAtlasFunctions {
         None
     }
 
-  def mergeTreesAB(a: AtlasQuadTree, b: AtlasQuadTree): Option[AtlasQuadTree] = {
-    None
+  def mergeTreeBIntoA(a: AtlasQuadTree, b: AtlasQuadTree): Option[AtlasQuadTree] = {
+    if(!a.canAccommodate(b.size)) None
+    else {
+      //TODO: Use lens?
+
+      None
+    }
   }
 
   def calculateSizeNeededToHouseAB(sizeA: PowerOfTwo, sizeB: PowerOfTwo): PowerOfTwo =
