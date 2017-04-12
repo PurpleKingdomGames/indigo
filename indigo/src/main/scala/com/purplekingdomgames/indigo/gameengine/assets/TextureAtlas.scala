@@ -79,13 +79,13 @@ object TextureAtlasFunctions {
         println(5)
         mergeTreeBIntoA(b, a)
 
-      case (AtlasQuadNode(sizeA, _), AtlasQuadNode(sizeB, _)) if sizeA >= sizeB =>
+      case (AtlasQuadNode(sizeA, _), AtlasQuadNode(sizeB, _)) if sizeA >= sizeB && sizeA.doubled <= max =>
         println(6)
         mergeTreeBIntoA(createEmptyTree(calculateSizeNeededToHouseAB(sizeA, sizeB)), a).flatMap { c =>
           mergeTreeBIntoA(c, b)
         }
 
-      case (AtlasQuadNode(sizeA, _), AtlasQuadNode(sizeB, _)) if sizeA < sizeB =>
+      case (AtlasQuadNode(sizeA, _), AtlasQuadNode(sizeB, _)) if sizeB >= sizeA && sizeB.doubled <= max =>
         println(7)
         mergeTreeBIntoA(createEmptyTree(calculateSizeNeededToHouseAB(sizeA, sizeB)), b).flatMap { c =>
           mergeTreeBIntoA(c, a)
@@ -93,7 +93,7 @@ object TextureAtlasFunctions {
 
       case _ =>
         println(8)
-        Logger.info("Unexpectedly couldn't merge trees")
+        Logger.info("Could not merge trees")
         None
     }
 
@@ -173,14 +173,31 @@ case class AtlasQuadNode(size: PowerOfTwo, atlas: AtlasSum) extends AtlasQuadTre
       case d @ AtlasQuadDivision(_, _, _, AtlasQuadEmpty(s)) if s === tree.size =>
         d.copy(q4 = tree)
 
-      case d @ AtlasQuadDivision(q, _, _, _) if q.canAccommodate(tree.size) =>
+      case d @ AtlasQuadDivision(AtlasQuadEmpty(s), _, _, _) if s > tree.size =>
+        d.copy(q1 = TextureAtlasFunctions.createEmptyTree(s).insert(tree))
+      case d @ AtlasQuadDivision(_, AtlasQuadEmpty(s), _, _) if s > tree.size =>
+        d.copy(q2 = TextureAtlasFunctions.createEmptyTree(s).insert(tree))
+      case d @ AtlasQuadDivision(_, _, AtlasQuadEmpty(s), _) if s > tree.size =>
+        d.copy(q3 = TextureAtlasFunctions.createEmptyTree(s).insert(tree))
+      case d @ AtlasQuadDivision(_, _, _, AtlasQuadEmpty(s)) if s > tree.size =>
+        d.copy(q4 = TextureAtlasFunctions.createEmptyTree(s).insert(tree))
+
+      case d @ AtlasQuadDivision(AtlasQuadNode(_, _), _, _, _) if d.q1.canAccommodate(tree.size) =>
+        println("a")
         d.copy(q1 = d.q1.insert(tree))
-      case d @ AtlasQuadDivision(_, q, _, _) if q.canAccommodate(tree.size) =>
-        d.copy(q1 = d.q2.insert(tree))
-      case d @ AtlasQuadDivision(_, _, q, _) if q.canAccommodate(tree.size) =>
-        d.copy(q1 = d.q3.insert(tree))
-      case d @ AtlasQuadDivision(_, _, _, q) if q.canAccommodate(tree.size) =>
-        d.copy(q1 = d.q4.insert(tree))
+      case d @ AtlasQuadDivision(_, AtlasQuadNode(_, _), _, _) if d.q2.canAccommodate(tree.size) =>
+        println("b")
+        d.copy(q2 = d.q2.insert(tree))
+      case d @ AtlasQuadDivision(_, _, AtlasQuadNode(_, _), _) if d.q3.canAccommodate(tree.size) =>
+        println("c")
+        d.copy(q3 = d.q3.insert(tree))
+      case d @ AtlasQuadDivision(_, _, _, AtlasQuadNode(_, _)) if d.q4.canAccommodate(tree.size) =>
+        println("d")
+        d.copy(q4 = d.q4.insert(tree))
+
+      case _ =>
+        println("Unexpected failure to insert tree")
+        this.atlas
     }
   )
 }

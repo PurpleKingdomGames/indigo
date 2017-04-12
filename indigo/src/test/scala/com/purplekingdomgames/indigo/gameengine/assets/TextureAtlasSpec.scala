@@ -75,7 +75,7 @@ class TextureAtlasSpec extends FunSpec with Matchers {
 //  }
 //
 //  describe("tree manipulation") {
-//
+
     val a =
       AtlasQuadNode(
         PowerOfTwo._1024,
@@ -83,7 +83,7 @@ class TextureAtlasSpec extends FunSpec with Matchers {
           ImageRef("a", 1024, 768)
         )
       )
-//
+
     val b =
       AtlasQuadNode(
         PowerOfTwo._512,
@@ -91,104 +91,104 @@ class TextureAtlasSpec extends FunSpec with Matchers {
           ImageRef("b", 500, 400)
         )
       )
-//
-//    val c =
-//      AtlasQuadNode(
-//        PowerOfTwo._64,
-//        AtlasTexture(
-//          ImageRef("c", 62, 48)
-//        )
-//      )
-//
-//    val d =
-//      AtlasQuadNode(
-//        PowerOfTwo._128,
-//        AtlasTexture(
-//          ImageRef("d", 62, 127)
-//        )
-//      )
-//
-//    val aPlusB =
-//      AtlasQuadNode(
-//        PowerOfTwo._2048,
-//        AtlasQuadDivision(
-//          a,
-//          AtlasQuadNode(
-//            PowerOfTwo._1024,
-//            AtlasQuadDivision(
-//              b,
-//              AtlasQuadEmpty(PowerOfTwo._512),
-//              AtlasQuadEmpty(PowerOfTwo._512),
-//              AtlasQuadEmpty(PowerOfTwo._512)
-//            )
-//          ),
-//          AtlasQuadEmpty(PowerOfTwo._1024),
-//          AtlasQuadEmpty(PowerOfTwo._1024)
-//        )
-//      )
-//
-//    it("should be able to merge two single item trees together") {
-//
-//      val max = PowerOfTwo._4096
-//
-//      TextureAtlasFunctions.mergeTrees(a, b, max) shouldEqual Some(aPlusB)
-//
-//    }
-//
-//    it("should be able to merge a single item tree with a more complex tree together") {
-//
-//      val expected =
-//        AtlasQuadNode(
-//          PowerOfTwo._2048,
-//          AtlasQuadDivision(
-//            a,
-//            AtlasQuadNode(
-//              PowerOfTwo._1024,
-//              AtlasQuadDivision(
-//                b,
-//                AtlasQuadNode(
-//                  PowerOfTwo._512,
-//                  AtlasQuadDivision(
-//                    AtlasQuadNode(
-//                      PowerOfTwo._256,
-//                      AtlasQuadDivision(
-//                        AtlasQuadNode(
-//                          PowerOfTwo._128,
-//                          AtlasQuadDivision(
-//                            c,
-//                            AtlasQuadEmpty(PowerOfTwo._64),
-//                            AtlasQuadEmpty(PowerOfTwo._64),
-//                            AtlasQuadEmpty(PowerOfTwo._64)
-//                          )
-//                        ),
-//                        d,
-//                        AtlasQuadEmpty(PowerOfTwo._128),
-//                        AtlasQuadEmpty(PowerOfTwo._128)
-//                      )
-//                    ),
-//                    AtlasQuadEmpty(PowerOfTwo._256),
-//                    AtlasQuadEmpty(PowerOfTwo._256),
-//                    AtlasQuadEmpty(PowerOfTwo._256)
-//                  )
-//                ),
-//                AtlasQuadEmpty(PowerOfTwo._512),
-//                AtlasQuadEmpty(PowerOfTwo._512)
-//              )
-//            ),
-//            AtlasQuadEmpty(PowerOfTwo._1024),
-//            AtlasQuadEmpty(PowerOfTwo._1024)
-//          )
-//        )
-//
-//      val max = PowerOfTwo._4096
-//
-//      TextureAtlasFunctions.mergeTrees(aPlusB, c, max) match {
-//        case Some(aPlusBPlusC) => TextureAtlasFunctions.mergeTrees(aPlusBPlusC, d, max) shouldEqual Some(expected)
-//        case None => fail("Unexpected None...")
-//      }
-//
-//    }
-//
+
+    val c =
+      AtlasQuadNode(
+        PowerOfTwo._64,
+        AtlasTexture(
+          ImageRef("c", 62, 48)
+        )
+      )
+
+    val d =
+      AtlasQuadNode(
+        PowerOfTwo._128,
+        AtlasTexture(
+          ImageRef("d", 62, 127)
+        )
+      )
+
+    val aPlusB =
+      AtlasQuadNode(
+        PowerOfTwo._2048,
+        AtlasQuadDivision(
+          a,
+          AtlasQuadNode(
+            PowerOfTwo._1024,
+            AtlasQuadDivision(
+              b,
+              AtlasQuadEmpty(PowerOfTwo._512),
+              AtlasQuadEmpty(PowerOfTwo._512),
+              AtlasQuadEmpty(PowerOfTwo._512)
+            )
+          ),
+          AtlasQuadEmpty(PowerOfTwo._1024),
+          AtlasQuadEmpty(PowerOfTwo._1024)
+        )
+      )
+
+    it("should be able to merge two single item trees together") {
+
+      val max = PowerOfTwo._4096
+
+      TextureAtlasFunctions.mergeTrees(a, b, max) shouldEqual Some(aPlusB)
+
+    }
+
+    it("should be able to merge a single item tree with a more complex tree together") {
+
+      val expected =
+        AtlasQuadNode(
+          PowerOfTwo._2048,
+          AtlasQuadDivision(
+            a,
+            AtlasQuadNode(
+              PowerOfTwo._1024,
+              AtlasQuadDivision(
+                b,
+                AtlasQuadNode(
+                  PowerOfTwo._512,
+                  AtlasQuadDivision(
+                    AtlasQuadNode(
+                      PowerOfTwo._256,
+                      AtlasQuadDivision(
+                        AtlasQuadNode(
+                          PowerOfTwo._128,
+                          AtlasQuadDivision(
+                            c,
+                            AtlasQuadEmpty(PowerOfTwo._64),
+                            AtlasQuadEmpty(PowerOfTwo._64),
+                            AtlasQuadEmpty(PowerOfTwo._64)
+                          )
+                        ),
+                        d,
+                        AtlasQuadEmpty(PowerOfTwo._128),
+                        AtlasQuadEmpty(PowerOfTwo._128)
+                      )
+                    ),
+                    AtlasQuadEmpty(PowerOfTwo._256),
+                    AtlasQuadEmpty(PowerOfTwo._256),
+                    AtlasQuadEmpty(PowerOfTwo._256)
+                  )
+                ),
+                AtlasQuadEmpty(PowerOfTwo._512),
+                AtlasQuadEmpty(PowerOfTwo._512)
+              )
+            ),
+            AtlasQuadEmpty(PowerOfTwo._1024),
+            AtlasQuadEmpty(PowerOfTwo._1024)
+          )
+        )
+
+      val max = PowerOfTwo._4096
+
+      TextureAtlasFunctions.mergeTrees(aPlusB, c, max) match {
+        case Some(aPlusBPlusC) => TextureAtlasFunctions.mergeTrees(aPlusBPlusC, d, max) shouldEqual Some(expected)
+        case None => fail("Unexpected None...")
+      }
+
+    }
+
 //    it("should merge two trees where one is empty") {
 //
 //      val max = PowerOfTwo._4096
