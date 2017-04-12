@@ -47,6 +47,33 @@ object TextureAtlasFunctions {
   val inflateAndSortByPowerOfTwo: List[ImageRef] => List[TextureDetails] = images =>
     images.map(i => TextureDetails(i, TextureAtlasFunctions.pickPowerOfTwoSizeFor(supportedSizes, i.width, i.height))).sortBy(_.size.value).reverse
 
+  def groupTexturesIntoAtlasBuckets(max: PowerOfTwo): List[TextureDetails] => List[List[TextureDetails]] = list => {
+
+    val runningTotal: List[TextureDetails] => Int = _.map(_.size.value).sum
+
+    def rec(remaining: List[TextureDetails], current: List[TextureDetails], rejected: List[TextureDetails], acc: List[List[TextureDetails]], maximum: PowerOfTwo): List[List[TextureDetails]] = {
+      (remaining, rejected) match {
+        case (Nil, Nil) =>
+          current :: acc
+
+        case (Nil, x :: xs) =>
+          rec(x :: xs, Nil, Nil, current :: acc, maximum)
+
+        case (x :: xs, _) if x.size >= maximum =>
+          rec(xs, current, rejected, List(x) :: acc, maximum)
+
+        case (x :: xs, _) if runningTotal(current) + x.size.value > maximum.value =>
+          rec(xs, current, x :: rejected, acc, maximum)
+
+        case (x :: xs, _) =>
+          rec(xs, x :: current, rejected, acc, maximum)
+
+      }
+    }
+
+    rec(list, Nil, Nil, Nil, max)
+  }
+
   val convertTextureDetailsToTree: TextureDetails => AtlasQuadTree = textureDetails => {
     AtlasQuadNode(textureDetails.size, AtlasTexture(textureDetails.imageRef))
   }

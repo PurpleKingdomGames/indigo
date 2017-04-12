@@ -9,7 +9,6 @@ sealed trait PowerOfTwo {
   def >=(powerOfTwo: PowerOfTwo): Boolean = value >= powerOfTwo.value
   def <(powerOfTwo: PowerOfTwo): Boolean = value < powerOfTwo.value
   def <=(powerOfTwo: PowerOfTwo): Boolean = value <= powerOfTwo.value
-
   def ===(powerOfTwo: PowerOfTwo): Boolean = value == powerOfTwo.value
 }
 object PowerOfTwo {

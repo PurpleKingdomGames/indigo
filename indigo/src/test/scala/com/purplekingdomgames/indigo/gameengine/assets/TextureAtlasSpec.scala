@@ -72,6 +72,29 @@ class TextureAtlasSpec extends FunSpec with Matchers {
       TextureAtlasFunctions.convertTextureDetailsToTree(original) shouldEqual expected
 
     }
+
+    it("should be able to take a list of texture details and group them into 'atlasable' groups") {
+
+      val tex = (name: String, pow: PowerOfTwo) => TextureDetails(ImageRef(name, 1, 1), pow)
+
+      val list: List[TextureDetails] = List(
+        tex("a", PowerOfTwo._256),
+        tex("b", PowerOfTwo._256),
+        tex("c", PowerOfTwo._128),
+        tex("d", PowerOfTwo._64),
+        tex("e", PowerOfTwo._256),
+        tex("f", PowerOfTwo._8),
+        tex("g", PowerOfTwo._4),
+        tex("h", PowerOfTwo._64),
+        tex("i", PowerOfTwo._128),
+        tex("j", PowerOfTwo._2),
+        tex("k", PowerOfTwo._256)
+      )
+
+      TextureAtlasFunctions.groupTexturesIntoAtlasBuckets(PowerOfTwo._256)(list).forall(l => l.map(_.size.value).sum <= 256) shouldEqual true
+
+    }
+
   }
 
   describe("tree manipulation") {
