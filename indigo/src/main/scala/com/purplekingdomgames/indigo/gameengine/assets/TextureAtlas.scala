@@ -90,9 +90,9 @@ object TextureAtlasFunctions {
     }
 
   def mergeTreeBIntoA(a: AtlasQuadTree, b: AtlasQuadTree): Option[AtlasQuadTree] =
-    if (!a.canAccommodate(b.size)) None
+    if (!a.canAccommodate(b.size) && !b.canAccommodate(a.size)) None
     else Option {
-      a.insert(b)
+      if(a.canAccommodate(b.size)) a.insert(b) else b.insert(a)
     }
 
   def calculateSizeNeededToHouseAB(sizeA: PowerOfTwo, sizeB: PowerOfTwo): PowerOfTwo =
@@ -119,6 +119,19 @@ sealed trait AtlasQuadTree {
   val size: PowerOfTwo
   def canAccommodate(requiredSize: PowerOfTwo): Boolean
   def insert(tree: AtlasQuadTree): AtlasQuadTree
+
+  def +(other: AtlasQuadTree): AtlasQuadTree = AtlasQuadTree.append(this, other)
+
+}
+
+// Oh look! It's a monoid...
+object AtlasQuadTree {
+
+  def identity: AtlasQuadTree = AtlasQuadEmpty(PowerOfTwo._1)
+
+  def append(first: AtlasQuadTree, second: AtlasQuadTree): AtlasQuadTree =
+    TextureAtlasFunctions.mergeTrees(first, second, PowerOfTwo.Max).getOrElse(first)
+
 }
 
 case class AtlasQuadNode(size: PowerOfTwo, atlas: AtlasSum) extends AtlasQuadTree {

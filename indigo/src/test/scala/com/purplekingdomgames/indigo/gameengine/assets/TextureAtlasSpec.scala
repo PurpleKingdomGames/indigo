@@ -297,9 +297,6 @@ class TextureAtlasSpec extends FunSpec with Matchers {
 
     it("should be able to fill a small tree (B)") {
 
-      val initial: AtlasQuadTree =
-        TextureAtlasFunctions.createEmptyTree(PowerOfTwo._16)
-
       val quad = (id: String, size: PowerOfTwo) => AtlasQuadNode(size, AtlasTexture(ImageRef(id, 1, 1)))
 
       val quads: List[AtlasQuadTree] = List(
@@ -312,7 +309,7 @@ class TextureAtlasSpec extends FunSpec with Matchers {
         quad("4_7", PowerOfTwo._4)
       )
 
-      val res = quads.foldLeft(initial)((a, b) => TextureAtlasFunctions.mergeTreeBIntoA(a, b).getOrElse(fail("Oops")))
+      val res: AtlasQuadTree = quads.foldLeft(AtlasQuadTree.identity)(_ + _)
 
       val expected =
         AtlasQuadNode(
