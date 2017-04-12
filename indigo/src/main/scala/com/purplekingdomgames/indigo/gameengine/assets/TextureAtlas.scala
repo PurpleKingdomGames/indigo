@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigo.gameengine.assets
 
-import com.purplekingdomgames.indigo.gameengine.{PowerOfTwo, assets}
+import com.purplekingdomgames.indigo.gameengine.PowerOfTwo
 import com.purplekingdomgames.indigo.gameengine.assets.TextureAtlas.supportedSizes
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
 import com.purplekingdomgames.indigo.util.Logger
@@ -60,74 +60,40 @@ object TextureAtlasFunctions {
   def mergeTrees(a: AtlasQuadTree, b: AtlasQuadTree, max: PowerOfTwo): Option[AtlasQuadTree] =
     (a, b) match {
       case (AtlasQuadEmpty(_), AtlasQuadEmpty(_)) =>
-        println(1)
         Some(a)
 
       case (AtlasQuadNode(_, _), AtlasQuadEmpty(_)) =>
-        println(2)
         Some(a)
 
       case (AtlasQuadEmpty(_), AtlasQuadNode(_, _)) =>
-        println(3)
         Some(b)
 
       case (AtlasQuadNode(_, _), AtlasQuadNode(sizeB, _)) if a.canAccommodate(sizeB) =>
-        println(4)
         mergeTreeBIntoA(a, b)
 
       case (AtlasQuadNode(sizeA, _), AtlasQuadNode(_, _)) if b.canAccommodate(sizeA) =>
-        println(5)
         mergeTreeBIntoA(b, a)
 
       case (AtlasQuadNode(sizeA, _), AtlasQuadNode(sizeB, _)) if sizeA >= sizeB && sizeA.doubled <= max =>
-        println(6)
         mergeTreeBIntoA(createEmptyTree(calculateSizeNeededToHouseAB(sizeA, sizeB)), a).flatMap { c =>
           mergeTreeBIntoA(c, b)
         }
 
       case (AtlasQuadNode(sizeA, _), AtlasQuadNode(sizeB, _)) if sizeB >= sizeA && sizeB.doubled <= max =>
-        println(7)
         mergeTreeBIntoA(createEmptyTree(calculateSizeNeededToHouseAB(sizeA, sizeB)), b).flatMap { c =>
           mergeTreeBIntoA(c, a)
         }
 
       case _ =>
-        println(8)
         Logger.info("Could not merge trees")
         None
     }
 
-  /*
-  6
-
-B <- A
-A: AtlasQuadNode(_2048,AtlasQuadDivision(AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024)))
-B: AtlasQuadNode(_1024,AtlasTexture(ImageRef(a,1024,768)))
-Result: Some(AtlasQuadNode(_2048,AtlasQuadDivision(AtlasQuadNode(_1024,AtlasTexture(ImageRef(a,1024,768))),AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024))))
-
-B <- A
-A: AtlasQuadNode(_2048,AtlasQuadDivision(AtlasQuadNode(_1024,AtlasTexture(ImageRef(a,1024,768))),AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024)))
-B: AtlasQuadNode(_512,AtlasTexture(ImageRef(b,500,400)))
-Result: Some(AtlasQuadNode(_2048,AtlasQuadDivision(AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024),AtlasQuadEmpty(_1024))))
-
-Not subdividing, and it's probably doing an insert on an empty that return 'this'
-
-   */
-
-  def mergeTreeBIntoA(a: AtlasQuadTree, b: AtlasQuadTree): Option[AtlasQuadTree] = {
-    println("B <- A")
-    println("A: " + a)
-    println("B: " + b)
-
-    val res = if (!a.canAccommodate(b.size)) None
+  def mergeTreeBIntoA(a: AtlasQuadTree, b: AtlasQuadTree): Option[AtlasQuadTree] =
+    if (!a.canAccommodate(b.size)) None
     else Option {
       a.insert(b)
     }
-
-    println("Result: " + res)
-
-    res
-  }
 
   def calculateSizeNeededToHouseAB(sizeA: PowerOfTwo, sizeB: PowerOfTwo): PowerOfTwo =
     if(sizeA >= sizeB) sizeA.doubled else sizeB.doubled
@@ -183,20 +149,16 @@ case class AtlasQuadNode(size: PowerOfTwo, atlas: AtlasSum) extends AtlasQuadTre
         d.copy(q4 = TextureAtlasFunctions.createEmptyTree(s).insert(tree))
 
       case d @ AtlasQuadDivision(AtlasQuadNode(_, _), _, _, _) if d.q1.canAccommodate(tree.size) =>
-        println("a")
         d.copy(q1 = d.q1.insert(tree))
       case d @ AtlasQuadDivision(_, AtlasQuadNode(_, _), _, _) if d.q2.canAccommodate(tree.size) =>
-        println("b")
         d.copy(q2 = d.q2.insert(tree))
       case d @ AtlasQuadDivision(_, _, AtlasQuadNode(_, _), _) if d.q3.canAccommodate(tree.size) =>
-        println("c")
         d.copy(q3 = d.q3.insert(tree))
       case d @ AtlasQuadDivision(_, _, _, AtlasQuadNode(_, _)) if d.q4.canAccommodate(tree.size) =>
-        println("d")
         d.copy(q4 = d.q4.insert(tree))
 
       case _ =>
-        println("Unexpected failure to insert tree")
+        Logger.info("Unexpected failure to insert tree")
         this.atlas
     }
   )
