@@ -12,6 +12,9 @@ case class Point(x: Int, y: Int) {
   def *(i: Int): Point = Point(x * i, y * i)
   def /(pt: Point): Point = Point(x / pt.x, y / pt.y)
   def /(i: Int): Point = Point(x / i, y / i)
+
+  def withX(x: Int): Point = this.copy(x = x)
+  def withY(y: Int): Point = this.copy(y = y)
 }
 case class Rectangle(position: Point, size: Point) {
   val x: Int = position.x

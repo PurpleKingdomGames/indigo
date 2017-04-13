@@ -1,5 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine
 
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
+
 sealed trait PowerOfTwo {
   val value: Int
   val halved: PowerOfTwo
@@ -10,6 +12,8 @@ sealed trait PowerOfTwo {
   def <(powerOfTwo: PowerOfTwo): Boolean = value < powerOfTwo.value
   def <=(powerOfTwo: PowerOfTwo): Boolean = value <= powerOfTwo.value
   def ===(powerOfTwo: PowerOfTwo): Boolean = value == powerOfTwo.value
+
+  def toPoint: Point = Point(value, value)
 }
 object PowerOfTwo {
   case object _1 extends PowerOfTwo {

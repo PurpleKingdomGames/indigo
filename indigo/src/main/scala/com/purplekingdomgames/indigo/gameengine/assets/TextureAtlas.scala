@@ -13,10 +13,8 @@ object TextureAtlas {
 
   val supportedSizes: Set[PowerOfTwo] = PowerOfTwo.all
 
-  def create(images: List[ImageRef]): TextureAtlas =
-    (filterTooLarge(MaxTextureSize) andThen
-      inflateAndSortByPowerOfTwo andThen
-      groupTexturesIntoAtlasBuckets(MaxTextureSize) andThen convertToAtlas)(images)
+  val create: List[ImageRef] => TextureAtlas =
+    inflateAndSortByPowerOfTwo andThen groupTexturesIntoAtlasBuckets(MaxTextureSize) andThen convertToAtlas
 
   def lookUp(name: String, textureAtlas: TextureAtlas): Unit = ()
 
@@ -30,11 +28,19 @@ case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, AtlasI
     this.atlases ++ other.atlases,
     this.legend ++ other.legend
   )
+
+  def lookUpByName(name: String): Option[AtlasLookupResult] =
+    legend.get(name).flatMap { i =>
+      atlases.get(i.id).map { a =>
+        AtlasLookupResult(a, i.offset)
+      }
+    }
+
 }
 case class AtlasId(id: String)
 case class AtlasIndex(id: AtlasId, offset: Point)
 case class Atlas(/*TODO: image data??*/)
-
+case class AtlasLookupResult(atlas: Atlas, offset: Point)
 
 object TextureAtlasFunctions {
 
@@ -49,14 +55,13 @@ object TextureAtlasFunctions {
 
   def isTooBig(max: PowerOfTwo, width: Int, height: Int): Boolean = if(width > max.value || height > max.value) true else false
 
-  def filterTooLarge(max: PowerOfTwo): List[ImageRef] => List[ImageRef] = images =>
-    images.flatMap { i =>
-      if(TextureAtlasFunctions.isTooBig(max, i.width, i.height)) {
-        // I think we'll still access assets through the asset collection, which can try for the atlas first and fallback
-        Logger.info(s"Image ${i.name} is too large and will not be added to the texture atlas - may cause performance penalties")
-        Nil
-      } else List(i)
-    }
+//  def filterIfTooLarge(max: PowerOfTwo): List[ImageRef] => List[ImageRef] = images =>
+//    images.flatMap { i =>
+//      if(TextureAtlasFunctions.isTooBig(max, i.width, i.height)) {
+//        Logger.info(s"Image ${i.name} is too large and will not be added to the texture atlas - may cause performance penalties")
+//        Nil
+//      } else List(i)
+//    }
 
   val inflateAndSortByPowerOfTwo: List[ImageRef] => List[TextureDetails] = images =>
     images.map(i => TextureDetails(i, TextureAtlasFunctions.pickPowerOfTwoSizeFor(supportedSizes, i.width, i.height))).sortBy(_.size.value).reverse
@@ -92,46 +97,30 @@ object TextureAtlasFunctions {
     AtlasQuadNode(textureDetails.size, AtlasTexture(textureDetails.imageRef))
   }
 
-  val convertToTextureAtlas: List[TextureDetails] => TextureAtlas = list => {
-    def rec(remaining: List[TextureDetails], currentIndex: Int, atlasesAcc: Map[AtlasId, Atlas], legendAcc: Map[String, AtlasIndex]): TextureAtlas = {
-      remaining match {
-        case Nil => ???
-        case x :: xs =>
-          ???
-      }
-    }
+  val convertToTextureAtlas: (AtlasId, List[TextureDetails]) => TextureAtlas = (atlasId, list) =>
+    list.map(convertTextureDetailsToTree).foldLeft(AtlasQuadTree.identity)(_ + _) match {
+      case AtlasQuadEmpty(_) => TextureAtlas.identity
+      case n: AtlasQuadNode =>
+        val textureMap = n.toTextureMap
 
-    rec(list, 0, Map(), Map())
-  }
+        val legend: Map[String, AtlasIndex] =
+          textureMap.textureCoords.foldLeft(Map.empty[String, AtlasIndex])((m, t) => m ++ Map(t.imageRef.name -> AtlasIndex(atlasId, t.coords)))
+
+        val atlas = Atlas()
+
+        TextureAtlas(
+          atlases = Map(
+            atlasId -> atlas
+          ),
+          legend = legend
+        )
+    }
 
   val combineTextureAtlases: List[TextureAtlas] => TextureAtlas = list =>
     list.foldLeft(TextureAtlas.identity)(_ + _)
 
-  val convertToAtlas: List[List[TextureDetails]] => TextureAtlas = list => {
-
-//    def rec(remaining: List[List[TextureDetails]], currentIndex: Int, atlasesAcc: Map[AtlasId, Atlas], legendAcc: Map[String, AtlasIndex]): TextureAtlas = {
-//      remaining match {
-//        case Nil => TextureAtlas(atlasesAcc, legendAcc)
-//        case x :: xs =>
-//          val atlasId = AtlasId("atlas_" + currentIndex)
-//          val atlasIndex = AtlasIndex(atlasId, )
-//          val names = x.map(_.imageRef.name)
-//
-//          ???
-//      }
-//    }
-
-//    rec(list, 0, Map(), Map())
-
-//    val p = list.map { l =>
-//
-//
-//      l.map(convertTextureDetailsToTree).foldLeft(AtlasQuadTree.identity)(_ + _)
-//
-//    }
-//
-    combineTextureAtlases(list.map(convertToTextureAtlas))
-  }
+  val convertToAtlas: List[List[TextureDetails]] => TextureAtlas = list =>
+    combineTextureAtlases(list.zipWithIndex.map(p => convertToTextureAtlas(AtlasId("atlas_" + p._2), p._1)))
 
   def mergeTrees(a: AtlasQuadTree, b: AtlasQuadTree, max: PowerOfTwo): Option[AtlasQuadTree] =
     (a, b) match {
@@ -184,6 +173,9 @@ case class ImageRef(name: String, width: Int, height: Int)
 
 case class TextureDetails(imageRef: ImageRef, size: PowerOfTwo)
 
+case class TextureMap(size: Int, textureCoords: List[TextureAndCoords])
+case class TextureAndCoords(imageRef: ImageRef, coords: Point)
+
 // Intermediate tree structure
 sealed trait AtlasQuadTree {
   val size: PowerOfTwo
@@ -192,6 +184,7 @@ sealed trait AtlasQuadTree {
 
   def +(other: AtlasQuadTree): AtlasQuadTree = AtlasQuadTree.append(this, other)
 
+  def toTextureCoordsList(offset: Point): List[TextureAndCoords]
 }
 
 // Oh look! It's a monoid...
@@ -245,11 +238,29 @@ case class AtlasQuadNode(size: PowerOfTwo, atlas: AtlasSum) extends AtlasQuadTre
         this.atlas
     }
   )
+
+  def toTextureCoordsList(offset: Point): List[TextureAndCoords] =
+    atlas match {
+      case AtlasTexture(imageRef) =>
+        List(TextureAndCoords(imageRef, offset))
+
+      case AtlasQuadDivision(q1, q2, q3, q4) =>
+        q1.toTextureCoordsList(offset) ++
+          q2.toTextureCoordsList(offset + size.toPoint.withY(0)) ++
+          q3.toTextureCoordsList(offset + size.toPoint.withX(0)) ++
+          q4.toTextureCoordsList(offset + size.toPoint)
+    }
+
+
+  def toTextureMap: TextureMap =
+    TextureMap(size.value, toTextureCoordsList(Point.zero))
 }
 
 case class AtlasQuadEmpty(size: PowerOfTwo) extends AtlasQuadTree {
   def canAccommodate(requiredSize: PowerOfTwo): Boolean = size >= requiredSize
   def insert(tree: AtlasQuadTree): AtlasQuadTree = this
+
+  def toTextureCoordsList(offset: Point): List[TextureAndCoords] = Nil
 }
 
 sealed trait AtlasSum {
