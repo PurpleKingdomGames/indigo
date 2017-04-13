@@ -9,12 +9,17 @@ object TextureAtlas {
 
   import TextureAtlasFunctions._
 
+  val IdPrefix: String = "atlas_"
+
   val MaxTextureSize: PowerOfTwo = PowerOfTwo._4096
 
   val supportedSizes: Set[PowerOfTwo] = PowerOfTwo.all
 
-  val create: List[ImageRef] => TextureAtlas =
-    inflateAndSortByPowerOfTwo andThen groupTexturesIntoAtlasBuckets(MaxTextureSize) andThen convertToAtlas
+  def createWithMaxSize(max: PowerOfTwo, imageRefs: List[ImageRef]): TextureAtlas =
+    (inflateAndSortByPowerOfTwo andThen groupTexturesIntoAtlasBuckets(max) andThen convertToAtlas)(imageRefs)
+
+  def create(imageRefs: List[ImageRef]): TextureAtlas =
+    (inflateAndSortByPowerOfTwo andThen groupTexturesIntoAtlasBuckets(MaxTextureSize) andThen convertToAtlas)(imageRefs)
 
   def lookUp(name: String, textureAtlas: TextureAtlas): Unit = ()
 
@@ -32,7 +37,7 @@ case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, AtlasI
   def lookUpByName(name: String): Option[AtlasLookupResult] =
     legend.get(name).flatMap { i =>
       atlases.get(i.id).map { a =>
-        AtlasLookupResult(a, i.offset)
+        AtlasLookupResult(name, i.id, a, i.offset)
       }
     }
 
@@ -40,7 +45,7 @@ case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, AtlasI
 case class AtlasId(id: String)
 case class AtlasIndex(id: AtlasId, offset: Point)
 case class Atlas(/*TODO: image data??*/)
-case class AtlasLookupResult(atlas: Atlas, offset: Point)
+case class AtlasLookupResult(name: String, atlasId: AtlasId, atlas: Atlas, offset: Point)
 
 object TextureAtlasFunctions {
 
@@ -81,7 +86,7 @@ object TextureAtlasFunctions {
         case (x :: xs, _) if x.size >= maximum =>
           rec(xs, current, rejected, List(x) :: acc, maximum)
 
-        case (x :: xs, _) if runningTotal(current) + x.size.value > maximum.value =>
+        case (x :: xs, _) if runningTotal(current) + x.size.value > maximum.value * 2 =>
           rec(xs, current, x :: rejected, acc, maximum)
 
         case (x :: xs, _) =>
@@ -120,7 +125,7 @@ object TextureAtlasFunctions {
     list.foldLeft(TextureAtlas.identity)(_ + _)
 
   val convertToAtlas: List[List[TextureDetails]] => TextureAtlas = list =>
-    combineTextureAtlases(list.zipWithIndex.map(p => convertToTextureAtlas(AtlasId("atlas_" + p._2), p._1)))
+    combineTextureAtlases(list.zipWithIndex.map(p => convertToTextureAtlas(AtlasId(TextureAtlas.IdPrefix + p._2), p._1)))
 
   def mergeTrees(a: AtlasQuadTree, b: AtlasQuadTree, max: PowerOfTwo): Option[AtlasQuadTree] =
     (a, b) match {

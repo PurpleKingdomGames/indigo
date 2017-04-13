@@ -1,9 +1,53 @@
 package com.purplekingdomgames.indigo.gameengine.assets
 
 import com.purplekingdomgames.indigo.gameengine.PowerOfTwo
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
 import org.scalatest.{FunSpec, Matchers}
 
 class TextureAtlasSpec extends FunSpec with Matchers {
+
+  describe("A texture atlas") {
+
+    it("should be able to generate a TextureAtlas with the default maximum") {
+
+      val imageRefs = List(
+        ImageRef("a", 10, 10),
+        ImageRef("b", 1024, 1024),
+        ImageRef("c", 512, 512),
+        ImageRef("d", 700, 600),
+        ImageRef("e", 5000, 300)
+      )
+
+      val actual: TextureAtlas = TextureAtlas.create(imageRefs)
+
+      actual.lookUpByName("a") shouldEqual Some(AtlasLookupResult("a", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(), Point(1024, 0)))
+      actual.lookUpByName("b") shouldEqual Some(AtlasLookupResult("b", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(), Point(2048, 0)))
+      actual.lookUpByName("c") shouldEqual Some(AtlasLookupResult("c", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(), Point.zero))
+      actual.lookUpByName("d") shouldEqual Some(AtlasLookupResult("d", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(), Point(0, 2048)))
+      actual.lookUpByName("e") shouldEqual Some(AtlasLookupResult("e", AtlasId(TextureAtlas.IdPrefix + "1"), Atlas(), Point.zero))
+
+    }
+
+    it("should be able to generate a tighter TextureAtlas") {
+
+      val imageRefs = List(
+        ImageRef("a", 64, 64),
+        ImageRef("b", 100, 100),
+        ImageRef("c", 128, 128),
+        ImageRef("d", 32, 32),
+        ImageRef("e", 64, 64)
+      )
+
+      val actual: TextureAtlas = TextureAtlas.createWithMaxSize(PowerOfTwo._128, imageRefs)
+
+      actual.lookUpByName("a") shouldEqual Some(AtlasLookupResult("a", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(), Point(0, 0)))
+      actual.lookUpByName("b") shouldEqual Some(AtlasLookupResult("b", AtlasId(TextureAtlas.IdPrefix + "1"), Atlas(), Point(0, 0)))
+      actual.lookUpByName("c") shouldEqual Some(AtlasLookupResult("c", AtlasId(TextureAtlas.IdPrefix + "2"), Atlas(), Point(0, 0)))
+      actual.lookUpByName("d") shouldEqual Some(AtlasLookupResult("d", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(), Point(128, 0)))
+      actual.lookUpByName("e") shouldEqual Some(AtlasLookupResult("e", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(), Point(0, 128)))
+
+    }
+  }
 
   describe("The texture atlas functions") {
 
@@ -91,7 +135,7 @@ class TextureAtlasSpec extends FunSpec with Matchers {
         tex("k", PowerOfTwo._256)
       )
 
-      TextureAtlasFunctions.groupTexturesIntoAtlasBuckets(PowerOfTwo._256)(list).forall(l => l.map(_.size.value).sum <= 256) shouldEqual true
+      TextureAtlasFunctions.groupTexturesIntoAtlasBuckets(PowerOfTwo._256)(list).forall(l => l.map(_.size.value).sum <= 256 * 2) shouldEqual true
 
     }
 
