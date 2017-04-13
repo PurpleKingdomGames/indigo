@@ -14,12 +14,26 @@ object TextureAtlas {
   val supportedSizes: Set[PowerOfTwo] = PowerOfTwo.all
 
   def create(images: List[ImageRef]): TextureAtlas =
-    (filterTooLarge(MaxTextureSize) andThen inflateAndSortByPowerOfTwo andThen convertToAtlas)(images)
+    (filterTooLarge(MaxTextureSize) andThen
+      inflateAndSortByPowerOfTwo andThen
+      groupTexturesIntoAtlasBuckets(MaxTextureSize) andThen convertToAtlas)(images)
 
   def lookUp(name: String, textureAtlas: TextureAtlas): Unit = ()
 
+  val identity: TextureAtlas = TextureAtlas(Map(), Map())
 
 }
+
+// Output
+case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, AtlasIndex]) {
+  def +(other: TextureAtlas): TextureAtlas = TextureAtlas(
+    this.atlases ++ other.atlases,
+    this.legend ++ other.legend
+  )
+}
+case class AtlasId(id: String)
+case class AtlasIndex(id: AtlasId, offset: Point)
+case class Atlas(/*TODO: image data??*/)
 
 
 object TextureAtlasFunctions {
@@ -78,10 +92,45 @@ object TextureAtlasFunctions {
     AtlasQuadNode(textureDetails.size, AtlasTexture(textureDetails.imageRef))
   }
 
-  val convertToAtlas: List[TextureDetails] => TextureAtlas = list => {
-    list.map(convertTextureDetailsToTree)
+  val convertToTextureAtlas: List[TextureDetails] => TextureAtlas = list => {
+    def rec(remaining: List[TextureDetails], currentIndex: Int, atlasesAcc: Map[AtlasId, Atlas], legendAcc: Map[String, AtlasIndex]): TextureAtlas = {
+      remaining match {
+        case Nil => ???
+        case x :: xs =>
+          ???
+      }
+    }
 
-    TextureAtlas(Map(), Map())
+    rec(list, 0, Map(), Map())
+  }
+
+  val combineTextureAtlases: List[TextureAtlas] => TextureAtlas = list =>
+    list.foldLeft(TextureAtlas.identity)(_ + _)
+
+  val convertToAtlas: List[List[TextureDetails]] => TextureAtlas = list => {
+
+//    def rec(remaining: List[List[TextureDetails]], currentIndex: Int, atlasesAcc: Map[AtlasId, Atlas], legendAcc: Map[String, AtlasIndex]): TextureAtlas = {
+//      remaining match {
+//        case Nil => TextureAtlas(atlasesAcc, legendAcc)
+//        case x :: xs =>
+//          val atlasId = AtlasId("atlas_" + currentIndex)
+//          val atlasIndex = AtlasIndex(atlasId, )
+//          val names = x.map(_.imageRef.name)
+//
+//          ???
+//      }
+//    }
+
+//    rec(list, 0, Map(), Map())
+
+//    val p = list.map { l =>
+//
+//
+//      l.map(convertTextureDetailsToTree).foldLeft(AtlasQuadTree.identity)(_ + _)
+//
+//    }
+//
+    combineTextureAtlases(list.map(convertToTextureAtlas))
   }
 
   def mergeTrees(a: AtlasQuadTree, b: AtlasQuadTree, max: PowerOfTwo): Option[AtlasQuadTree] =
@@ -134,12 +183,6 @@ object TextureAtlasFunctions {
 case class ImageRef(name: String, width: Int, height: Int)
 
 case class TextureDetails(imageRef: ImageRef, size: PowerOfTwo)
-
-// Output
-case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, AtlasIndex])
-case class AtlasId(id: String)
-case class AtlasIndex(id: AtlasId, offset: Point)
-case class Atlas(/*TODO: image data??*/)
 
 // Intermediate tree structure
 sealed trait AtlasQuadTree {
