@@ -18,7 +18,9 @@ class TextureAtlasSpec extends FunSpec with Matchers {
         ImageRef("e", 5000, 300)
       )
 
-      val actual: TextureAtlas = TextureAtlas.create(imageRefs)
+      val assetCollection: AssetCollection = AssetCollection(Nil, Nil)
+
+      val actual: TextureAtlas = TextureAtlas.create(imageRefs, assetCollection)
 
       actual.lookUpByName("a") shouldEqual Some(AtlasLookupResult("a", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(), Point(1024, 0)))
       actual.lookUpByName("b") shouldEqual Some(AtlasLookupResult("b", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(), Point(2048, 0)))
@@ -38,7 +40,9 @@ class TextureAtlasSpec extends FunSpec with Matchers {
         ImageRef("e", 64, 64)
       )
 
-      val actual: TextureAtlas = TextureAtlas.createWithMaxSize(PowerOfTwo._128, imageRefs)
+      val assetCollection: AssetCollection = AssetCollection(Nil, Nil)
+
+      val actual: TextureAtlas = TextureAtlas.createWithMaxSize(PowerOfTwo._128, imageRefs, assetCollection)
 
       actual.lookUpByName("a") shouldEqual Some(AtlasLookupResult("a", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(), Point(0, 0)))
       actual.lookUpByName("b") shouldEqual Some(AtlasLookupResult("b", AtlasId(TextureAtlas.IdPrefix + "1"), Atlas(), Point(0, 0)))

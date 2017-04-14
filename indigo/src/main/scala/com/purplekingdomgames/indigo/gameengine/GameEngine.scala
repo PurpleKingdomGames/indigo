@@ -56,7 +56,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
       assetCollection = ac
 
-      TextureAtlas.create(assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height)))
+      TextureAtlas.create(assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height)), assetCollection)
 
       initialise(assetCollection) match {
         case e: StartupFailure[_] =>

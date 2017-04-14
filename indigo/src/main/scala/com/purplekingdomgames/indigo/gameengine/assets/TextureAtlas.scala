@@ -4,6 +4,8 @@ import com.purplekingdomgames.indigo.gameengine.PowerOfTwo
 import com.purplekingdomgames.indigo.gameengine.assets.TextureAtlas.supportedSizes
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
 import com.purplekingdomgames.indigo.util.Logger
+import org.scalajs.dom
+import org.scalajs.dom.html
 
 object TextureAtlas {
 
@@ -15,11 +17,11 @@ object TextureAtlas {
 
   val supportedSizes: Set[PowerOfTwo] = PowerOfTwo.all
 
-  def createWithMaxSize(max: PowerOfTwo, imageRefs: List[ImageRef]): TextureAtlas =
-    (inflateAndSortByPowerOfTwo andThen groupTexturesIntoAtlasBuckets(max) andThen convertToAtlas)(imageRefs)
+  def createWithMaxSize(max: PowerOfTwo, imageRefs: List[ImageRef], assetCollection: AssetCollection): TextureAtlas =
+    (inflateAndSortByPowerOfTwo andThen groupTexturesIntoAtlasBuckets(max) andThen convertToAtlas(assetCollection))(imageRefs)
 
-  def create(imageRefs: List[ImageRef]): TextureAtlas =
-    (inflateAndSortByPowerOfTwo andThen groupTexturesIntoAtlasBuckets(MaxTextureSize) andThen convertToAtlas)(imageRefs)
+  def create(imageRefs: List[ImageRef], assetCollection: AssetCollection): TextureAtlas =
+    (inflateAndSortByPowerOfTwo andThen groupTexturesIntoAtlasBuckets(MaxTextureSize) andThen convertToAtlas(assetCollection))(imageRefs)
 
   def lookUp(name: String, textureAtlas: TextureAtlas): Unit = ()
 
@@ -90,11 +92,41 @@ object TextureAtlasFunctions {
     rec(list, Nil, Nil, Nil, max)
   }
 
+  private def createCanvas(width: Int, height: Int): html.Canvas = {
+    val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
+    dom.document.body.appendChild(canvas)
+    canvas.width = width
+    canvas.height = height
+
+    canvas
+  }
+
+  def createAtlas(textureMap: TextureMap, assetCollection: AssetCollection): Atlas = {
+    println("createAtlas", textureMap.size, textureMap.size)
+    val canvas: html.Canvas = createCanvas(textureMap.size * 2, textureMap.size * 2)
+    val ctx = canvas.getContext("2d")
+
+    textureMap.textureCoords.foreach { tex =>
+
+      assetCollection.images.find(p => p.name == tex.imageRef.name).foreach { img =>
+        println(s"Drawing '${tex.imageRef.name}' at ${tex.coords}")
+        ctx.drawImage(img.data, tex.coords.x, tex.coords.y, tex.imageRef.width, tex.imageRef.height)
+      }
+
+    }
+
+    // TODO: extract image data and place in Atlas using ctx.getImageData(0, 0, textureMap.size, textureMap.size)
+    // This will break tests
+    // It doesn't line up with what the renderer is expecting in terms of format, but the function can take ImageData in place of html.Image so it'll be fine, honest guv.
+
+    Atlas()
+  }
+
   val convertTextureDetailsToTree: TextureDetails => AtlasQuadTree = textureDetails => {
     AtlasQuadNode(textureDetails.size, AtlasTexture(textureDetails.imageRef))
   }
 
-  val convertToTextureAtlas: (AtlasId, List[TextureDetails]) => TextureAtlas = (atlasId, list) =>
+  val convertToTextureAtlas: AssetCollection => (AtlasId, List[TextureDetails]) => TextureAtlas = assetCollection => (atlasId, list) =>
     list.map(convertTextureDetailsToTree).foldLeft(AtlasQuadTree.identity)(_ + _) match {
       case AtlasQuadEmpty(_) => TextureAtlas.identity
       case n: AtlasQuadNode =>
@@ -103,7 +135,7 @@ object TextureAtlasFunctions {
         val legend: Map[String, AtlasIndex] =
           textureMap.textureCoords.foldLeft(Map.empty[String, AtlasIndex])((m, t) => m ++ Map(t.imageRef.name -> AtlasIndex(atlasId, t.coords)))
 
-        val atlas = Atlas()
+        val atlas = createAtlas(textureMap, assetCollection)
 
         TextureAtlas(
           atlases = Map(
@@ -116,8 +148,8 @@ object TextureAtlasFunctions {
   val combineTextureAtlases: List[TextureAtlas] => TextureAtlas = list =>
     list.foldLeft(TextureAtlas.identity)(_ + _)
 
-  val convertToAtlas: List[List[TextureDetails]] => TextureAtlas = list =>
-    combineTextureAtlases(list.zipWithIndex.map(p => convertToTextureAtlas(AtlasId(TextureAtlas.IdPrefix + p._2), p._1)))
+  val convertToAtlas: AssetCollection => List[List[TextureDetails]] => TextureAtlas = assetCollection => list =>
+    combineTextureAtlases(list.zipWithIndex.map(p => convertToTextureAtlas(assetCollection)(AtlasId(TextureAtlas.IdPrefix + p._2), p._1)))
 
   def mergeTrees(a: AtlasQuadTree, b: AtlasQuadTree, max: PowerOfTwo): Option[AtlasQuadTree] =
     (a, b) match {
