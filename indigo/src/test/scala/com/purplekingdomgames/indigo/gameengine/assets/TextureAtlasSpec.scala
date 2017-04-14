@@ -9,7 +9,7 @@ class TextureAtlasSpec extends FunSpec with Matchers {
   describe("A texture atlas") {
 
     it("should be able to generate a TextureAtlas with the default maximum") {
-
+      
       val imageRefs = List(
         ImageRef("a", 10, 10),
         ImageRef("b", 1024, 1024),
@@ -18,15 +18,16 @@ class TextureAtlasSpec extends FunSpec with Matchers {
         ImageRef("e", 5000, 300)
       )
 
-      val assetCollection: AssetCollection = AssetCollection(Nil, Nil)
+      val lookupByName: String => Option[LoadedImageAsset] = _ => None
+      val createAtlasFunc: (TextureMap, String => Option[LoadedImageAsset]) => Atlas = (_, _) => Atlas(PowerOfTwo.Max)
 
-      val actual: TextureAtlas = TextureAtlas.create(imageRefs, assetCollection)
+      val actual: TextureAtlas = TextureAtlas.create(imageRefs, lookupByName, createAtlasFunc)
 
-      actual.lookUpByName("a") shouldEqual Some(AtlasLookupResult("a", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(), Point(1024, 0)))
-      actual.lookUpByName("b") shouldEqual Some(AtlasLookupResult("b", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(), Point(2048, 0)))
-      actual.lookUpByName("c") shouldEqual Some(AtlasLookupResult("c", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(), Point.zero))
-      actual.lookUpByName("d") shouldEqual Some(AtlasLookupResult("d", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(), Point(0, 2048)))
-      actual.lookUpByName("e") shouldEqual Some(AtlasLookupResult("e", AtlasId(TextureAtlas.IdPrefix + "1"), Atlas(), Point.zero))
+      actual.lookUpByName("a") shouldEqual Some(AtlasLookupResult("a", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max), Point(512, 0)))
+      actual.lookUpByName("b") shouldEqual Some(AtlasLookupResult("b", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max), Point(1024, 0)))
+      actual.lookUpByName("c") shouldEqual Some(AtlasLookupResult("c", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max), Point.zero))
+      actual.lookUpByName("d") shouldEqual Some(AtlasLookupResult("d", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max), Point(0, 1024)))
+      actual.lookUpByName("e") shouldEqual Some(AtlasLookupResult("e", AtlasId(TextureAtlas.IdPrefix + "1"), Atlas(PowerOfTwo.Max), Point.zero))
 
     }
 
@@ -40,21 +41,22 @@ class TextureAtlasSpec extends FunSpec with Matchers {
         ImageRef("e", 64, 64)
       )
 
-      val assetCollection: AssetCollection = AssetCollection(Nil, Nil)
+      val lookupByName: String => Option[LoadedImageAsset] = _ => None
+      val createAtlasFunc: (TextureMap, String => Option[LoadedImageAsset]) => Atlas = (_, _) => Atlas(PowerOfTwo._128)
 
-      val actual: TextureAtlas = TextureAtlas.createWithMaxSize(PowerOfTwo._128, imageRefs, assetCollection)
+      val actual: TextureAtlas = TextureAtlas.createWithMaxSize(PowerOfTwo._128, imageRefs, lookupByName, createAtlasFunc)
 
-      actual.lookUpByName("a") shouldEqual Some(AtlasLookupResult("a", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(), Point(0, 0)))
-      actual.lookUpByName("b") shouldEqual Some(AtlasLookupResult("b", AtlasId(TextureAtlas.IdPrefix + "1"), Atlas(), Point(0, 0)))
-      actual.lookUpByName("c") shouldEqual Some(AtlasLookupResult("c", AtlasId(TextureAtlas.IdPrefix + "2"), Atlas(), Point(0, 0)))
-      actual.lookUpByName("d") shouldEqual Some(AtlasLookupResult("d", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(), Point(128, 0)))
-      actual.lookUpByName("e") shouldEqual Some(AtlasLookupResult("e", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(), Point(0, 128)))
+      actual.lookUpByName("a") shouldEqual Some(AtlasLookupResult("a", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo._128), Point(0, 0)))
+      actual.lookUpByName("b") shouldEqual Some(AtlasLookupResult("b", AtlasId(TextureAtlas.IdPrefix + "1"), Atlas(PowerOfTwo._128), Point(0, 0)))
+      actual.lookUpByName("c") shouldEqual Some(AtlasLookupResult("c", AtlasId(TextureAtlas.IdPrefix + "2"), Atlas(PowerOfTwo._128), Point(0, 0)))
+      actual.lookUpByName("d") shouldEqual Some(AtlasLookupResult("d", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo._128), Point(64, 0)))
+      actual.lookUpByName("e") shouldEqual Some(AtlasLookupResult("e", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo._128), Point(0, 64)))
 
     }
   }
 
   describe("The texture atlas functions") {
-
+    
     it("should be able to pick the right bucket for my image size") {
       TextureAtlasFunctions.pickPowerOfTwoSizeFor(TextureAtlas.supportedSizes, 116, 24).value shouldEqual 128
     }
@@ -385,6 +387,48 @@ class TextureAtlasSpec extends FunSpec with Matchers {
         )
 
       res shouldEqual expected
+    }
+
+    it("should be able to create a texture map of a small tree") {
+
+      val quad = (id: String, size: PowerOfTwo) => AtlasQuadNode(size, AtlasTexture(ImageRef(id, 1, 1)))
+
+      val quads: List[AtlasQuadTree] = List(
+        quad("8_1", PowerOfTwo._8),
+        quad("8_2", PowerOfTwo._8),
+        quad("8_3", PowerOfTwo._8),
+        quad("8_4", PowerOfTwo._8)
+      )
+
+      val actual = quads.foldLeft(AtlasQuadTree.identity)(_ + _)
+
+      val expected =
+        AtlasQuadNode(
+          PowerOfTwo._16,
+          AtlasQuadDivision(
+            quad("8_1", PowerOfTwo._8),
+            quad("8_2", PowerOfTwo._8),
+            quad("8_3", PowerOfTwo._8),
+            quad("8_4", PowerOfTwo._8)
+          )
+        )
+
+      actual shouldEqual expected
+
+      actual match {
+        case node: AtlasQuadNode =>
+          val textureMap = node.toTextureMap
+
+          textureMap.size shouldEqual PowerOfTwo._16
+
+          textureMap.textureCoords.find(_.imageRef.name == "8_1").map(_.coords) shouldEqual Some(Point(0, 0))
+          textureMap.textureCoords.find(_.imageRef.name == "8_2").map(_.coords) shouldEqual Some(Point(8, 0))
+          textureMap.textureCoords.find(_.imageRef.name == "8_3").map(_.coords) shouldEqual Some(Point(0, 8))
+          textureMap.textureCoords.find(_.imageRef.name == "8_4").map(_.coords) shouldEqual Some(Point(8, 8))
+
+        case _ =>
+          fail("Expected an AtlasQuadNode")
+      }
     }
 
   }

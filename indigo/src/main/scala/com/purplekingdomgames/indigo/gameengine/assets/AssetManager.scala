@@ -37,6 +37,9 @@ object AssetManager {
     } yield AssetCollection(i, t)
   }
 
+  def findByName(assetCollection: AssetCollection): String => Option[LoadedImageAsset] = name =>
+    assetCollection.images.find(p => p.name == name)
+
   private val loadImageAssets: List[ImageAsset] => Future[List[LoadedImageAsset]] = imageAssets =>
     Future.sequence(imageAssets.map(loadImageAsset))
 
