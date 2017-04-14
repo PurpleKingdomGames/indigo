@@ -60,14 +60,6 @@ object TextureAtlasFunctions {
 
   def isTooBig(max: PowerOfTwo, width: Int, height: Int): Boolean = if(width > max.value || height > max.value) true else false
 
-//  def filterIfTooLarge(max: PowerOfTwo): List[ImageRef] => List[ImageRef] = images =>
-//    images.flatMap { i =>
-//      if(TextureAtlasFunctions.isTooBig(max, i.width, i.height)) {
-//        Logger.info(s"Image ${i.name} is too large and will not be added to the texture atlas - may cause performance penalties")
-//        Nil
-//      } else List(i)
-//    }
-
   val inflateAndSortByPowerOfTwo: List[ImageRef] => List[TextureDetails] = images =>
     images.map(i => TextureDetails(i, TextureAtlasFunctions.pickPowerOfTwoSizeFor(supportedSizes, i.width, i.height))).sortBy(_.size.value).reverse
 
