@@ -1,7 +1,6 @@
 package com.example.sandbox
 
 import com.purplekingdomgames.indigo.gameengine._
-import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 
 object MyModel {
 
@@ -10,7 +9,7 @@ object MyModel {
       DudeModel(startupData.dude, DudeIdle)
     )
 
-  def updateModel(assetCollection: AssetCollection, gameTime: GameTime, state: MyGameModel): GameEvent => MyGameModel = {
+  def updateModel(gameTime: GameTime, state: MyGameModel): GameEvent => MyGameModel = {
     case FrameTick =>
       state
 

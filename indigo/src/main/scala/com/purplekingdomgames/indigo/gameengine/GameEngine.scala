@@ -37,8 +37,6 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
   private var animationStates: AnimationStates = AnimationStates(Nil)
 
-  protected var assetCollection: AssetCollection = AssetCollection(Nil, Nil)
-
   private implicit val metrics: IMetrics = Metrics.getInstance(config.advanced.recordMetrics, config.advanced.logMetricsReportIntervalMs)
 
   def main(): Unit = {
@@ -50,13 +48,15 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
       Logger.info("WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!")
     }
 
-    AssetManager.loadAssets(assets).foreach { ac =>
+    AssetManager.loadAssets(assets).foreach { assetCollection =>
 
       Logger.info("Asset load complete")
 
-      assetCollection = ac
-
-      TextureAtlas.create(assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height)), AssetManager.findByName(assetCollection), TextureAtlasFunctions.createAtlasData)
+      val textureAtlas = TextureAtlas.create(
+        assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height)),
+        AssetManager.findByName(assetCollection),
+        TextureAtlasFunctions.createAtlasData
+      )
 
       initialise(assetCollection) match {
         case e: StartupFailure[_] =>

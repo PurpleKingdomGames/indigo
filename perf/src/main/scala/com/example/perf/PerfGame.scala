@@ -47,7 +47,7 @@ object PerfGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel, My
 
   def initialModel(startupData: MyStartupData): MyGameModel = PerfModel.initialModel(startupData)
 
-  def updateModel(gameTime: GameTime, gameModel: MyGameModel): GameEvent => MyGameModel = PerfModel.updateModel(assetCollection, gameTime, gameModel)
+  def updateModel(gameTime: GameTime, gameModel: MyGameModel): GameEvent => MyGameModel = PerfModel.updateModel(gameTime, gameModel)
 
   def updateView(gameTime: GameTime, gameModel: MyGameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate[MyViewEventDataType] =
     PerfView.updateView(gameTime, gameModel, frameInputEvents)
