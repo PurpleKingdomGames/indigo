@@ -64,7 +64,15 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
         .collect { case Some(s) => s }
 
       val assetMapping = AssetMapping(
-        mappings = textureAtlas.legend.map(p => p._1 -> TextureRefAndOffset(p._2.id.id, p._2.offset))
+        mappings =
+          textureAtlas.legend
+            .map { p =>
+              p._1 -> TextureRefAndOffset(
+                atlasName = p._2.id.id,
+                atlasSize = textureAtlas.atlases.get(p._2.id).map(_.size.value).map(Vector2.apply).getOrElse(Vector2.one),
+                offset = p._2.offset
+              )
+            }
       )
 
       initialise(assetCollection) match {

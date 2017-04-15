@@ -41,4 +41,6 @@ object Vector2 {
     Vector2(vec1.x / vec2.x, vec1.y / vec2.y)
   }
 
+  def apply(i: Int): Vector2 = Vector2(i, i)
+
 }

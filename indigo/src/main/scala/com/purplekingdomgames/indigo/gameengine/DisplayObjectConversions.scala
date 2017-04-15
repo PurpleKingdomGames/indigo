@@ -23,6 +23,12 @@ object DisplayObjectConversions {
       ""
     }
 
+  private val lookupAtlasSize: (AssetMapping, String) => Vector2 = (assetMapping, name) =>
+    assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasSize).getOrElse {
+      Logger.info("Failed to find atlas size for texture: " + name)
+      Vector2.one
+    }
+
   def leafToDisplayObject[ViewEventDataType](assetMapping: AssetMapping): SceneGraphNodeLeafInternal[ViewEventDataType] => List[DisplayObject] = {
     case leaf: GraphicInternal[ViewEventDataType] =>
       DisplayObject(
@@ -40,7 +46,7 @@ object DisplayObjectConversions {
         flipVertical = leaf.effects.flip.vertical,
         frame =
           SpriteSheetFrame.calculateFrameOffset(
-            imageSize = Vector2(leaf.bounds.size.x, leaf.bounds.size.y), //TODO: This needs to be the atlas size?
+            imageSize = lookupAtlasSize(assetMapping, leaf.imageAssetRef),
             frameSize = Vector2(leaf.crop.size.x, leaf.crop.size.y),
             framePosition = Vector2(leaf.crop.position.x, leaf.crop.position.y),
             textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
@@ -62,7 +68,7 @@ object DisplayObjectConversions {
         flipHorizontal = leaf.effects.flip.horizontal,
         flipVertical = leaf.effects.flip.vertical,
         frame = SpriteSheetFrame.calculateFrameOffset(
-          imageSize = Vector2(leaf.animations.spriteSheetSize.x, leaf.animations.spriteSheetSize.y),
+          imageSize = lookupAtlasSize(assetMapping, leaf.imageAssetRef),
           frameSize = Vector2(leaf.animations.currentFrame.bounds.size.x, leaf.animations.currentFrame.bounds.size.y),
           framePosition = Vector2(leaf.animations.currentFrame.bounds.position.x, leaf.animations.currentFrame.bounds.position.y),
           textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
@@ -106,7 +112,7 @@ object DisplayObjectConversions {
         flipHorizontal = leaf.effects.flip.horizontal,
         flipVertical = leaf.effects.flip.vertical,
         frame = SpriteSheetFrame.calculateFrameOffset(
-          imageSize = Vector2(leaf.fontInfo.fontSpriteSheet.size.x, leaf.fontInfo.fontSpriteSheet.size.y),
+          imageSize = lookupAtlasSize(assetMapping, leaf.imageAssetRef),
           frameSize = Vector2(fontChar.bounds.width, fontChar.bounds.height),
           framePosition = Vector2(fontChar.bounds.x, fontChar.bounds.y),
           textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)

@@ -29,7 +29,7 @@ object ClearColor {
   val White: ClearColor = ClearColor(1, 1, 1)
 }
 
-final case class TextureRefAndOffset(atlasName: String, offset: Point)
+final case class TextureRefAndOffset(atlasName: String, atlasSize: Vector2, offset: Point)
 final case class AssetMapping(mappings: Map[String, TextureRefAndOffset])
 final case class TextureLookupResult(name: String, texture: WebGLTexture)
 final case class LoadedTextureAsset(name: String, data: raw.ImageData)
