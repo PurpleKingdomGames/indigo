@@ -15,6 +15,7 @@ class AsepriteHelperSpec extends FunSpec with Matchers {
     }
 
     it("should be able to convert the loaded definition into a renderable Sprite object") {
+      pending
       AsepriteSampleData.aseprite.flatMap { as =>
         AsepriteHelper.toSprite(as, AsepriteSampleData.depth, AsepriteSampleData.imageAssetRef)
           .map(_.withBindingKey("test"))

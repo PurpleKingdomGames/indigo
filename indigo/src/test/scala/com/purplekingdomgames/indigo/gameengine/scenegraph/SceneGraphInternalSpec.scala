@@ -15,7 +15,7 @@ class SceneGraphInternalSpec extends FunSpec with Matchers {
   describe("Converting a public Scene graph into a private one") {
 
     it("should be able to do the conversion") {
-
+      pending
       SceneGraphInternal.fromPublicFacing(SceneGraphSamples.api) shouldEqual SceneGraphSamples.internal
 
     }
