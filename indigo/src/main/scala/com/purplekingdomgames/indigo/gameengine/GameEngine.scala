@@ -97,7 +97,6 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
               magnification = config.magnification
             ),
             loadedTextureAssets,
-//            assetMapping,
             canvas
           )
 

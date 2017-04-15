@@ -3,6 +3,9 @@ package com.purplekingdomgames.indigo.gameengine.scenegraph
 import com.purplekingdomgames.indigo.gameengine.{GameEvent, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
+import com.purplekingdomgames.indigo.renderer.ClearColor
+
+import scala.language.implicitConversions
 
 case class SceneGraphUpdate[ViewEventDataType](rootNode: SceneGraphRootNode[ViewEventDataType], viewEvents: List[ViewEvent[ViewEventDataType]])
 
@@ -72,6 +75,9 @@ object SceneGraphLightingLayer {
 case class AmbientLight(tint: Tint, amount: Double)
 object AmbientLight {
   val none: AmbientLight = AmbientLight(Tint.none, 1)
+
+  implicit def ambientToClearColor(a: AmbientLight): ClearColor =
+    ClearColor(a.tint.r * a.amount, a.tint.g * a.amount, a.tint.b * a.amount, 1)
 }
 
 case class SceneGraphUiLayer(node: SceneGraphNode)

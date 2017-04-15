@@ -12,7 +12,7 @@ trait IRenderer {
   def drawScene(displayable: Displayable)(implicit metrics: IMetrics): Unit
 }
 
-final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], /*assetMapping: AssetMapping,*/ cNc: ContextAndCanvas) extends IRenderer {
+final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends IRenderer {
 
   import RendererFunctions._
 
@@ -77,22 +77,20 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(RenderToConvasEndMetric)
   }
 
-  implicit private def ambientToClearColor(a: AmbientLight): ClearColor =
-    ClearColor(a.tint.r * a.amount, a.tint.g * a.amount, a.tint.b * a.amount, 1)
-
   private def drawLightingLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor)(implicit metrics: IMetrics): Unit = {
 
     // Switch to the frameBuffer
     FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)
 
-    // Draw as normal
-    displayLayer.displayObjects.sortBy(d => d.imageRef).foreach { displayObject =>
-      textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
-        // Use Program
-        cNc.context.useProgram(lightingShaderProgram)
+    // Use Program
+    cNc.context.useProgram(lightingShaderProgram)
 
-        // Setup attributes
-        bindShaderToBuffer(cNc, lightingShaderProgram, vertexBuffer, textureBuffer)
+    // Setup attributes
+    bindShaderToBuffer(cNc, lightingShaderProgram, vertexBuffer, textureBuffer)
+
+    // Draw as normal
+    displayLayer.displayObjects.foreach { displayObject =>
+      textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
 
         // Setup Uniforms
         setupVertexShader(cNc, lightingShaderProgram, displayObject, cNc.magnification)
@@ -118,7 +116,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     bindShaderToBuffer(cNc, shaderProgram, vertexBuffer, textureBuffer)
 
     // Draw as normal
-    displayLayer.displayObjects.sortBy(d => (d.z, d.imageRef)).foreach { displayObject =>
+    displayLayer.displayObjects.sortBy(d => d.z).foreach { displayObject =>
       textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
 
         // Setup Uniforms
