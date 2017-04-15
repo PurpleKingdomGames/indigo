@@ -40,7 +40,7 @@ object DisplayObjectConversions {
         flipVertical = leaf.effects.flip.vertical,
         frame =
           SpriteSheetFrame.calculateFrameOffset(
-            imageSize = Vector2(leaf.bounds.size.x, leaf.bounds.size.y),
+            imageSize = Vector2(leaf.bounds.size.x, leaf.bounds.size.y), //TODO: This needs to be the atlas size?
             frameSize = Vector2(leaf.crop.size.x, leaf.crop.size.y),
             framePosition = Vector2(leaf.crop.position.x, leaf.crop.position.y),
             textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)

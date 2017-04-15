@@ -4,7 +4,7 @@ object SpriteSheetFrame {
 
   def calculateFrameOffset(imageSize: Vector2, frameSize: Vector2, framePosition: Vector2, textureOffset: Vector2): SpriteSheetFrameCoordinateOffsets = {
     val scaleFactor = frameSize / imageSize
-    val frameOffsetFactor = textureOffset + (framePosition / frameSize)
+    val frameOffsetFactor = (framePosition + textureOffset) / frameSize
     val translationFactor = scaleFactor * frameOffsetFactor
 
     SpriteSheetFrameCoordinateOffsets(scaleFactor, translationFactor)
