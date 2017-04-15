@@ -114,7 +114,7 @@ object TextureAtlasFunctions {
 
   private def createCanvas(width: Int, height: Int): html.Canvas = {
     val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
-    dom.document.body.appendChild(canvas)
+//    dom.document.body.appendChild(canvas)
     canvas.width = width
     canvas.height = height
 
