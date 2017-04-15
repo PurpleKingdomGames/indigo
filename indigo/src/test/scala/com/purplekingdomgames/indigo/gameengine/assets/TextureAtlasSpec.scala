@@ -19,15 +19,15 @@ class TextureAtlasSpec extends FunSpec with Matchers {
       )
 
       val lookupByName: String => Option[LoadedImageAsset] = _ => None
-      val createAtlasFunc: (TextureMap, String => Option[LoadedImageAsset]) => Atlas = (_, _) => Atlas(PowerOfTwo.Max)
+      val createAtlasFunc: (TextureMap, String => Option[LoadedImageAsset]) => Atlas = (_, _) => Atlas(PowerOfTwo.Max, None)
 
       val actual: TextureAtlas = TextureAtlas.create(imageRefs, lookupByName, createAtlasFunc)
 
-      actual.lookUpByName("a") shouldEqual Some(AtlasLookupResult("a", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max), Point(512, 0)))
-      actual.lookUpByName("b") shouldEqual Some(AtlasLookupResult("b", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max), Point(1024, 0)))
-      actual.lookUpByName("c") shouldEqual Some(AtlasLookupResult("c", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max), Point.zero))
-      actual.lookUpByName("d") shouldEqual Some(AtlasLookupResult("d", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max), Point(0, 1024)))
-      actual.lookUpByName("e") shouldEqual Some(AtlasLookupResult("e", AtlasId(TextureAtlas.IdPrefix + "1"), Atlas(PowerOfTwo.Max), Point.zero))
+      actual.lookUpByName("a") shouldEqual Some(AtlasLookupResult("a", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max, None), Point(512, 0)))
+      actual.lookUpByName("b") shouldEqual Some(AtlasLookupResult("b", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max, None), Point(1024, 0)))
+      actual.lookUpByName("c") shouldEqual Some(AtlasLookupResult("c", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max, None), Point.zero))
+      actual.lookUpByName("d") shouldEqual Some(AtlasLookupResult("d", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max, None), Point(0, 1024)))
+      actual.lookUpByName("e") shouldEqual Some(AtlasLookupResult("e", AtlasId(TextureAtlas.IdPrefix + "1"), Atlas(PowerOfTwo.Max, None), Point.zero))
 
     }
 
@@ -42,15 +42,15 @@ class TextureAtlasSpec extends FunSpec with Matchers {
       )
 
       val lookupByName: String => Option[LoadedImageAsset] = _ => None
-      val createAtlasFunc: (TextureMap, String => Option[LoadedImageAsset]) => Atlas = (_, _) => Atlas(PowerOfTwo._128)
+      val createAtlasFunc: (TextureMap, String => Option[LoadedImageAsset]) => Atlas = (_, _) => Atlas(PowerOfTwo._128, None)
 
       val actual: TextureAtlas = TextureAtlas.createWithMaxSize(PowerOfTwo._128, imageRefs, lookupByName, createAtlasFunc)
 
-      actual.lookUpByName("a") shouldEqual Some(AtlasLookupResult("a", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo._128), Point(0, 0)))
-      actual.lookUpByName("b") shouldEqual Some(AtlasLookupResult("b", AtlasId(TextureAtlas.IdPrefix + "1"), Atlas(PowerOfTwo._128), Point(0, 0)))
-      actual.lookUpByName("c") shouldEqual Some(AtlasLookupResult("c", AtlasId(TextureAtlas.IdPrefix + "2"), Atlas(PowerOfTwo._128), Point(0, 0)))
-      actual.lookUpByName("d") shouldEqual Some(AtlasLookupResult("d", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo._128), Point(64, 0)))
-      actual.lookUpByName("e") shouldEqual Some(AtlasLookupResult("e", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo._128), Point(0, 64)))
+      actual.lookUpByName("a") shouldEqual Some(AtlasLookupResult("a", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo._128, None), Point(0, 0)))
+      actual.lookUpByName("b") shouldEqual Some(AtlasLookupResult("b", AtlasId(TextureAtlas.IdPrefix + "1"), Atlas(PowerOfTwo._128, None), Point(0, 0)))
+      actual.lookUpByName("c") shouldEqual Some(AtlasLookupResult("c", AtlasId(TextureAtlas.IdPrefix + "2"), Atlas(PowerOfTwo._128, None), Point(0, 0)))
+      actual.lookUpByName("d") shouldEqual Some(AtlasLookupResult("d", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo._128, None), Point(64, 0)))
+      actual.lookUpByName("e") shouldEqual Some(AtlasLookupResult("e", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo._128, None), Point(0, 64)))
 
     }
   }

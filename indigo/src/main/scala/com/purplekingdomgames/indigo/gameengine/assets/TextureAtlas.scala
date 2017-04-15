@@ -5,7 +5,7 @@ import com.purplekingdomgames.indigo.gameengine.assets.TextureAtlas.supportedSiz
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
 import com.purplekingdomgames.indigo.util.Logger
 import org.scalajs.dom
-import org.scalajs.dom.html
+import org.scalajs.dom.{html, raw}
 
 object TextureAtlas {
 
@@ -59,7 +59,7 @@ case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, AtlasI
     s"""Atlas details:
     |Number of atlases: ${atlases.keys.toList.length}
     |Atlases: [
-    |  ${atlases.map(atlasRecordToString(legend)).mkString("  \n")}
+    |  ${atlases.map(atlasRecordToString(legend)).mkString("\n  ")}
     |]
   """.stripMargin
     }
@@ -67,7 +67,7 @@ case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, AtlasI
 }
 case class AtlasId(id: String)
 case class AtlasIndex(id: AtlasId, offset: Point)
-case class Atlas(size: PowerOfTwo/*TODO: image data??*/)
+case class Atlas(size: PowerOfTwo, imageData: Option[raw.ImageData]) // Yuk. Only optional so that testing is bearable.
 case class AtlasLookupResult(name: String, atlasId: AtlasId, atlas: Atlas, offset: Point)
 
 object TextureAtlasFunctions {
@@ -133,11 +133,9 @@ object TextureAtlasFunctions {
 
     }
 
-    // TODO: extract image data and place in Atlas using ctx.getImageData(0, 0, textureMap.size, textureMap.size)
-    // This will break tests
-    // It doesn't line up with what the renderer is expecting in terms of format, but the function can take ImageData in place of html.Image so it'll be fine, honest guv.
+    val imageData: raw.ImageData = ctx.getImageData(0, 0, textureMap.size.value, textureMap.size.value).asInstanceOf[raw.ImageData]
 
-    Atlas(textureMap.size)
+    Atlas(textureMap.size, Option(imageData))
   }
 
   val convertTextureDetailsToTree: TextureDetails => AtlasQuadTree = textureDetails => {
