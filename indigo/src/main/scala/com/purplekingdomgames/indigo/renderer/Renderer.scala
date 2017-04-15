@@ -9,13 +9,13 @@ object Renderer {
 
   private var renderer: Option[IRenderer] = None
 
-  def apply(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: html.Canvas): IRenderer = {
+  def apply(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], /*assetMapping: AssetMapping,*/ canvas: html.Canvas): IRenderer = {
     renderer match {
       case Some(r) => r
       case None =>
         val cNc = setupContextAndCanvas(canvas, config.magnification)
 
-        val r = new RendererImpl(config, loadedTextureAssets, cNc)
+        val r = new RendererImpl(config, loadedTextureAssets,/* assetMapping,*/ cNc)
         r.init()
 
         renderer = Some(r)

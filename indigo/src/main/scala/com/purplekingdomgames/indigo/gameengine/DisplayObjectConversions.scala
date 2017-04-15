@@ -2,7 +2,8 @@ package com.purplekingdomgames.indigo.gameengine
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.renderer.{DisplayObject, SpriteSheetFrame, Vector2}
+import com.purplekingdomgames.indigo.renderer.{AssetMapping, DisplayObject, SpriteSheetFrame, Vector2}
+import com.purplekingdomgames.indigo.util.Logger
 
 import scala.language.implicitConversions
 
@@ -10,7 +11,19 @@ object DisplayObjectConversions {
 
   private implicit def displayObjectToList(displayObject: DisplayObject): List[DisplayObject] = List(displayObject)
 
-  def leafToDisplayObject[ViewEventDataType]: SceneGraphNodeLeafInternal[ViewEventDataType] => List[DisplayObject] = {
+  private val lookupTextureOffset: (AssetMapping, String) => Vector2 = (assetMapping, name) =>
+    assetMapping.mappings.find(p => p._1 == name).map(_._2.offset).map(pt => Vector2(pt.x, pt.y)).getOrElse {
+      Logger.info("Failed to find atlas offset for texture: " + name)
+      Vector2.zero
+    }
+
+  private val lookupAtlasName: (AssetMapping, String) => String = (assetMapping, name) =>
+    assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasName).getOrElse {
+      Logger.info("Failed to find atlas name for texture: " + name)
+      ""
+    }
+
+  def leafToDisplayObject[ViewEventDataType](assetMapping: AssetMapping): SceneGraphNodeLeafInternal[ViewEventDataType] => List[DisplayObject] = {
     case leaf: GraphicInternal[ViewEventDataType] =>
       DisplayObject(
         x = leaf.x,
@@ -18,7 +31,7 @@ object DisplayObjectConversions {
         z = -leaf.depth.zIndex,
         width = leaf.crop.size.x,
         height = leaf.crop.size.y,
-        imageRef = leaf.imageAssetRef,
+        imageRef = lookupAtlasName(assetMapping, leaf.imageAssetRef),
         alpha = leaf.effects.alpha,
         tintR = leaf.effects.tint.r,
         tintG = leaf.effects.tint.g,
@@ -26,13 +39,12 @@ object DisplayObjectConversions {
         flipHorizontal = leaf.effects.flip.horizontal,
         flipVertical = leaf.effects.flip.vertical,
         frame =
-          if(leaf.bounds == leaf.crop) SpriteSheetFrame.defaultOffset
-          else
-            SpriteSheetFrame.calculateFrameOffset(
-              imageSize = Vector2(leaf.bounds.size.x, leaf.bounds.size.y),
-              frameSize = Vector2(leaf.crop.size.x, leaf.crop.size.y),
-              framePosition = Vector2(leaf.crop.position.x, leaf.crop.position.y)
-            )
+          SpriteSheetFrame.calculateFrameOffset(
+            imageSize = Vector2(leaf.bounds.size.x, leaf.bounds.size.y),
+            frameSize = Vector2(leaf.crop.size.x, leaf.crop.size.y),
+            framePosition = Vector2(leaf.crop.position.x, leaf.crop.position.y),
+            textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
+          )
       )
 
     case leaf: SpriteInternal[ViewEventDataType] =>
@@ -42,7 +54,7 @@ object DisplayObjectConversions {
         z = -leaf.depth.zIndex,
         width = leaf.bounds.size.x,
         height = leaf.bounds.size.y,
-        imageRef = leaf.imageAssetRef,
+        imageRef = lookupAtlasName(assetMapping, leaf.imageAssetRef),
         alpha = leaf.effects.alpha,
         tintR = leaf.effects.tint.r,
         tintG = leaf.effects.tint.g,
@@ -52,7 +64,8 @@ object DisplayObjectConversions {
         frame = SpriteSheetFrame.calculateFrameOffset(
           imageSize = Vector2(leaf.animations.spriteSheetSize.x, leaf.animations.spriteSheetSize.y),
           frameSize = Vector2(leaf.animations.currentFrame.bounds.size.x, leaf.animations.currentFrame.bounds.size.y),
-          framePosition = Vector2(leaf.animations.currentFrame.bounds.position.x, leaf.animations.currentFrame.bounds.position.y)
+          framePosition = Vector2(leaf.animations.currentFrame.bounds.position.x, leaf.animations.currentFrame.bounds.position.y),
+          textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
         )
       )
 
@@ -68,7 +81,7 @@ object DisplayObjectConversions {
         }
 
       val converterFunc: (TextLine, Int, Int) => List[DisplayObject] =
-        DisplayObjectConversions.textLineToDisplayObjects[ViewEventDataType](leaf)
+        DisplayObjectConversions.textLineToDisplayObjects[ViewEventDataType](leaf, assetMapping)
 
       leaf.lines.foldLeft(0 -> List[DisplayObject]()) { (acc, textLine) =>
         (acc._1 + textLine.lineBounds.height, acc._2 ++ converterFunc(textLine, alignmentOffsetX(textLine.lineBounds), acc._1))
@@ -77,7 +90,7 @@ object DisplayObjectConversions {
   }
 
 
-  def textLineToDisplayObjects[ViewEventDataType](leaf: TextInternal[ViewEventDataType]): (TextLine, Int, Int) => List[DisplayObject] = (line, alignmentOffsetX, yOffset) =>
+  def textLineToDisplayObjects[ViewEventDataType](leaf: TextInternal[ViewEventDataType], assetMapping: AssetMapping): (TextLine, Int, Int) => List[DisplayObject] = (line, alignmentOffsetX, yOffset) =>
     zipWithCharDetails(line.text.toList, leaf.fontInfo).map { case (fontChar, xPosition) =>
       DisplayObject(
         x = leaf.position.x + xPosition + alignmentOffsetX,
@@ -85,7 +98,7 @@ object DisplayObjectConversions {
         z = leaf.depth.zIndex,
         width = fontChar.bounds.width,
         height = fontChar.bounds.height,
-        imageRef = leaf.imageAssetRef,
+        imageRef = lookupAtlasName(assetMapping, leaf.imageAssetRef),
         alpha = leaf.effects.alpha,
         tintR = leaf.effects.tint.r,
         tintG = leaf.effects.tint.g,
@@ -95,7 +108,8 @@ object DisplayObjectConversions {
         frame = SpriteSheetFrame.calculateFrameOffset(
           imageSize = Vector2(leaf.fontInfo.fontSpriteSheet.size.x, leaf.fontInfo.fontSpriteSheet.size.y),
           frameSize = Vector2(fontChar.bounds.width, fontChar.bounds.height),
-          framePosition = Vector2(fontChar.bounds.x, fontChar.bounds.y)
+          framePosition = Vector2(fontChar.bounds.x, fontChar.bounds.y),
+          textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
         )
       )
     }

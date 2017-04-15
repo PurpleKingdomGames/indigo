@@ -1,6 +1,5 @@
 package com.purplekingdomgames.indigo.renderer
 
-import com.purplekingdomgames.indigo.gameengine.scenegraph.AmbientLight
 import com.purplekingdomgames.indigo.util.Logger
 import org.scalajs.dom.{html, raw}
 import org.scalajs.dom.raw.WebGLRenderingContext._
@@ -267,7 +266,7 @@ object RendererFunctions {
     texture
   }
 
-  def organiseImage(gl: raw.WebGLRenderingContext, image: html.Image): WebGLTexture = {
+  def organiseImage(gl: raw.WebGLRenderingContext, image: raw.ImageData): WebGLTexture = {
 
     val texture = createAndBindTexture(gl)
 

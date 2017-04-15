@@ -84,8 +84,6 @@ case class TextAsset(name: String, path: String) extends AssetType
 case class ImageAsset(name: String, path: String) extends AssetType
 
 case class LoadedTextAsset(name: String, contents: String)
-case class LoadedImageAsset(name: String, data: html.Image) {
-  def toTexture: LoadedTextureAsset = LoadedTextureAsset(name, data) // Identical, but one lives down in the renderer.
-}
+case class LoadedImageAsset(name: String, data: html.Image)
 
 case class AssetCollection(images: List[LoadedImageAsset], texts: List[LoadedTextAsset])

@@ -58,6 +58,15 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
         TextureAtlasFunctions.createAtlasData
       )
 
+      val loadedTextureAssets = textureAtlas.atlases
+        .toList
+        .map(a => a._2.imageData.map(data => LoadedTextureAsset(a._1.id, data)))
+        .collect { case Some(s) => s }
+
+      val assetMapping = AssetMapping(
+        mappings = textureAtlas.legend.map(p => p._1 -> TextureRefAndOffset(p._2.id.id, p._2.offset))
+      )
+
       initialise(assetCollection) match {
         case e: StartupFailure[_] =>
           Logger.info("Game initialisation failed")
@@ -65,7 +74,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
         case x: StartupSuccess[StartupData] =>
           Logger.info("Game initialisation succeeded")
-          val loopFunc = loop(x.success) _
+          val loopFunc = loop(x.success, assetMapping) _
 
           val canvas = Renderer.createCanvas(config.viewport.width, config.viewport.height)
 
@@ -79,7 +88,8 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
               clearColor = config.clearColor,
               magnification = config.magnification
             ),
-            assetCollection.images.map(_.toTexture),
+            loadedTextureAssets,
+//            assetMapping,
             canvas
           )
 
@@ -100,7 +110,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
     }
   }
 
-  private def loop(startupData: StartupData)(renderer: IRenderer, lastUpdateTime: Double): Double => Unit = { time =>
+  private def loop(startupData: StartupData, assetMapping: AssetMapping)(renderer: IRenderer, lastUpdateTime: Double): Double => Unit = { time =>
     val timeDelta = time - lastUpdateTime
 
     // PUT NOTHING ABOVE THIS LINE!! Major performance penalties!!
@@ -161,7 +171,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
           metrics.record(ProcessViewEndMetric)
           metrics.record(ToDisplayableStartMetric)
 
-          val displayable: Displayable = convertSceneGraphToDisplayable(processedView)
+          val displayable: Displayable = convertSceneGraphToDisplayable(processedView, assetMapping)
 
           metrics.record(ToDisplayableEndMetric)
           metrics.record(RenderStartMetric)
@@ -179,9 +189,9 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
       metrics.record(FrameEndMetric)
 
-      dom.window.requestAnimationFrame(loop(startupData)(renderer, time))
+      dom.window.requestAnimationFrame(loop(startupData, assetMapping)(renderer, time))
     } else {
-      dom.window.requestAnimationFrame(loop(startupData)(renderer, lastUpdateTime))
+      dom.window.requestAnimationFrame(loop(startupData, assetMapping)(renderer, lastUpdateTime))
     }
   }
 
@@ -218,11 +228,11 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
     sceneGraph
   }
 
-  private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNodeInternal[ViewEventDataType]): Displayable =
+  private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNodeInternal[ViewEventDataType], assetMapping: AssetMapping): Displayable =
     Displayable(
-      GameDisplayLayer(rootNode.game.node.flatten.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType])),
-      LightingDisplayLayer(rootNode.lighting.node.flatten.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType]), rootNode.lighting.ambientLight),
-      UiDisplayLayer(rootNode.ui.node.flatten.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType]))
+      GameDisplayLayer(rootNode.game.node.flatten.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType](assetMapping))),
+      LightingDisplayLayer(rootNode.lighting.node.flatten.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType](assetMapping)), rootNode.lighting.ambientLight),
+      UiDisplayLayer(rootNode.ui.node.flatten.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType](assetMapping)))
     )
 
   private def drawScene(renderer: IRenderer, displayable: Displayable): Unit =

@@ -12,7 +12,7 @@ trait IRenderer {
   def drawScene(displayable: Displayable)(implicit metrics: IMetrics): Unit
 }
 
-final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends IRenderer {
+final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], /*assetMapping: AssetMapping,*/ cNc: ContextAndCanvas) extends IRenderer {
 
   import RendererFunctions._
 
@@ -33,9 +33,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       frame = SpriteSheetFrame.defaultOffset
     )
 
-  private val textureLocations: List[TextureLookup] =
+  private val textureLocations: List[TextureLookupResult] =
     loadedTextureAssets.map { li =>
-      TextureLookup(li.name, organiseImage(cNc.context, li.data))
+      TextureLookupResult(li.name, organiseImage(cNc.context, li.data))
     }
 
   private val shaderProgram = shaderProgramSetup(cNc.context)
