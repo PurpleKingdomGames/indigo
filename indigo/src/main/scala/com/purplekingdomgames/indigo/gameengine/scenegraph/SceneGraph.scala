@@ -184,7 +184,7 @@ object Graphic {
       depth = depth,
       imageAssetRef = imageAssetRef,
       ref = Point.zero,
-      crop = Rectangle(x, y, width, height),
+      crop = Rectangle(0, 0, width, height),
       effects = Effects.default,
       eventHandler = (_:(Rectangle, GameEvent)) => None
     )
