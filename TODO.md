@@ -14,20 +14,13 @@ The layers:
 
 ## TODO
 
-Finishing Texture Atlases:
-- Fix tests by moving HTML "stuff" out of the Atlas create function (I think, can just have a js.Array[Double]?)
-- Create a combined image data object for each atlas.
-- Look at the renderer and work out how to push the texture data into that.
-- Join in the middle.
-
-
 Bugs:
 - Lights don't work on a black background... should they?
 - Should rendering text/font white space cost a draw call?
 
 TODO
-- Texture Atlas
 - Static objects (see below)
+- Asset tags so that related image assets are grouped on the same atlas where possible
 
 Indigo SBT Plugin
 - Build one. The aim should be to speed up development and make testing simpler.
