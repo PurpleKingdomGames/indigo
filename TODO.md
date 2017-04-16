@@ -14,6 +14,33 @@ The layers:
 
 ## TODO
 
+Need for Speed
+**************
+Back to OOP. (should help perf test results)
+- Indigo will continue to present an FP interface
+- Underneath its model will be mutable OOP for speed in order to:
+  - Remove object instantiation (public to internal to display object + endless object copying)
+  - Reduce GC overhead
+  - Become more diffable (mark as dirty on change etc.)
+
+Static collections of objects (Won't help perf test results, wrong kind of geometry)
+- A static collection might need to be declared up front
+- The collection is preprocessed heavily to result in maximum performance.
+- Essentially this is either:
+  a) A group of polys all at the same depth flattened into one rectangle with a preprocessed texture OR
+  b) A collection of triangles all using the same texture atlas, uploaded to their own buffer for quick rendering.
+     This option has the advantage of not needed all items to be on the same depth.
+- These would be referenced in the view using a new type.
+
+Prefabs (Won't help perf tests and we can almost do this already - and do using Aseprite objects)
+- May not be needed if the work above is good enough... also needs more thought. Don't want to programmer to be worrying
+  about things like object pools.
+- Indigo will allow you to declare prefabs.
+- These are identical to normal objects but in the view you just point at the prefab.
+- Prefabs are prototypes, each prefab is copied in and is allowed minor adjustments before rendering.
+
+
+
 Bugs:
 - Lights don't work on a black background... should they?
 - Should rendering text/font white space cost a draw call?
