@@ -24,13 +24,12 @@ case class Animations(spriteSheetSize: Point, currentCycleLabel: CycleLabel, cyc
 
   private[gameengine] def currentFrame: Frame = currentCycle.currentFrame
 
-  private[gameengine] def saveMemento(bindingKey: BindingKey): AnimationMemento = AnimationMemento(bindingKey, currentCycleLabel, nonEmtpyCycles.map(c => c._1 -> c._2.saveMemento))
+  private[gameengine] def saveMemento(bindingKey: BindingKey): AnimationMemento = AnimationMemento(bindingKey, currentCycleLabel, currentCycle.saveMemento)
 
   private[gameengine] def applyMemento(memento: AnimationMemento): Animations = {
 
-    val applied: Map[CycleLabel, Cycle] = nonEmtpyCycles.map { case (l, c) =>
-      l -> memento.cycleMementos.get(l).map(cm => c.applyMemento(cm)).getOrElse(c)
-    }
+    val applied: Map[CycleLabel, Cycle] =
+      nonEmtpyCycles ++ nonEmtpyCycles.get(memento.currentCycleLabel).map(c => Map(memento.currentCycleLabel -> c)).getOrElse(Map.empty[CycleLabel, Cycle])
 
     this.copy(
       currentCycleLabel = memento.currentCycleLabel,
@@ -130,6 +129,6 @@ object AnimationAction {
 
 private[gameengine] case class NextPlayheadPositon(position: Int, lastFrameAdvance: Double)
 
-private[gameengine] case class AnimationMemento(bindingKey: BindingKey, currentCycleLabel: CycleLabel, cycleMementos: Map[CycleLabel, CycleMemento])
+private[gameengine] case class AnimationMemento(bindingKey: BindingKey, currentCycleLabel: CycleLabel, currentCycleMemento: CycleMemento)
 
 private[gameengine] case class CycleMemento(playheadPosition: Int, lastFrameAdvance: Double)
