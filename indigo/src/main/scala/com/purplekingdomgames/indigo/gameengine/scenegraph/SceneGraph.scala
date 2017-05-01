@@ -1,110 +1,51 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
-import com.purplekingdomgames.indigo.gameengine.{GameEvent, ViewEvent}
+import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameEvent, GameTime, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
-import com.purplekingdomgames.indigo.renderer.ClearColor
-
-import scala.language.implicitConversions
 
 case class SceneGraphUpdate[ViewEventDataType](rootNode: SceneGraphRootNode[ViewEventDataType], viewEvents: List[ViewEvent[ViewEventDataType]])
 
-case class SceneGraphRootNode[ViewEventDataType](game: SceneGraphGameLayer, lighting: SceneGraphLightingLayer, ui: SceneGraphUiLayer) {
-
-  def addLightingLayer(lighting: SceneGraphLightingLayer): SceneGraphRootNode[ViewEventDataType] =
-    this.copy(lighting = lighting)
-
-  def addUiLayer(ui: SceneGraphUiLayer): SceneGraphRootNode[ViewEventDataType] =
-    this.copy(ui = ui)
-
-}
-
-object SceneGraphRootNode {
-  def apply[ViewEventDataType](game: SceneGraphGameLayer): SceneGraphRootNode[ViewEventDataType] =
-    SceneGraphRootNode(game, SceneGraphLightingLayer.empty, SceneGraphUiLayer.empty)
-}
-
-case class SceneGraphGameLayer(node: SceneGraphNode)
-object SceneGraphGameLayer {
-  def empty: SceneGraphGameLayer =
-    SceneGraphGameLayer(SceneGraphNode.empty)
-
-  def apply(nodes: SceneGraphNode*): SceneGraphGameLayer =
-    SceneGraphGameLayer(
-      SceneGraphNodeBranch(nodes.toList)
-    )
-}
-
-case class SceneGraphLightingLayer(node: SceneGraphNodeBranch, ambientLight: AmbientLight) {
-
-  def withAmbientLight(ambientLight: AmbientLight): SceneGraphLightingLayer = {
-    this.copy(
-      ambientLight = ambientLight
-    )
-  }
-  def withAmbientLightAmount(amount: Double): SceneGraphLightingLayer = {
-    this.copy(
-      ambientLight = this.ambientLight.copy(
-        amount = amount
-      )
-    )
-  }
-  def withAmbientLightTint(r: Double, g: Double, b: Double): SceneGraphLightingLayer = {
-    this.copy(
-      ambientLight = this.ambientLight.copy(
-        tint = Tint(r, g, b)
-      )
-    )
-  }
-
-}
-object SceneGraphLightingLayer {
-  def empty: SceneGraphLightingLayer =
-    SceneGraphLightingLayer(
-      SceneGraphNode.empty,
-      AmbientLight.none
-    )
-
-  def apply[ViewEventDataType](nodes: SceneGraphNodeLeaf[ViewEventDataType]*): SceneGraphLightingLayer =
-    SceneGraphLightingLayer(
-      SceneGraphNodeBranch(nodes.toList),
-      AmbientLight.none
-    )
-}
-
-case class AmbientLight(tint: Tint, amount: Double)
-object AmbientLight {
-  val none: AmbientLight = AmbientLight(Tint.none, 1)
-
-  implicit def ambientToClearColor(a: AmbientLight): ClearColor =
-    ClearColor(a.tint.r * a.amount, a.tint.g * a.amount, a.tint.b * a.amount, 1)
-}
-
-case class SceneGraphUiLayer(node: SceneGraphNode)
-object SceneGraphUiLayer {
-  def empty: SceneGraphUiLayer =
-    SceneGraphUiLayer(SceneGraphNode.empty)
-
-  def apply(nodes: SceneGraphNode*): SceneGraphUiLayer =
-    SceneGraphUiLayer(
-      SceneGraphNodeBranch(nodes.toList)
-    )
-}
-
 object SceneGraphNode {
-  def empty: SceneGraphNodeBranch = SceneGraphNodeBranch(Nil)
+  def empty[ViewEventDataType]: SceneGraphNodeBranch[ViewEventDataType] = SceneGraphNodeBranch(Nil)
 }
 
-sealed trait SceneGraphNode
+sealed trait SceneGraphNode[ViewEventDataType] {
 
-case class SceneGraphNodeBranch(children: List[SceneGraphNode]) extends SceneGraphNode
+  private[gameengine] def flatten: List[SceneGraphNodeLeaf[ViewEventDataType]] = {
+    def rec(acc: List[SceneGraphNodeLeaf[ViewEventDataType]]): List[SceneGraphNodeLeaf[ViewEventDataType]] = {
+      this match {
+        case l: SceneGraphNodeLeaf[ViewEventDataType] => l :: acc
+        case b: SceneGraphNodeBranch[ViewEventDataType] =>
+          b.children.flatMap(n => n.flatten) ++ acc
+      }
+    }
+
+    rec(Nil)
+  }
+
+  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): SceneGraphNode[ViewEventDataType]
+
+  private[gameengine] def runAnimationActions(gameTime: GameTime): SceneGraphNode[ViewEventDataType]
+
+}
+
+case class SceneGraphNodeBranch[ViewEventDataType](children: List[SceneGraphNode[ViewEventDataType]]) extends SceneGraphNode[ViewEventDataType] {
+
+  def applyAnimationMemento(animationStates: AnimationStates): SceneGraphNodeBranch[ViewEventDataType] =
+    this.copy(children.map(_.applyAnimationMemento(animationStates)))
+
+  def runAnimationActions(gameTime: GameTime): SceneGraphNodeBranch[ViewEventDataType] =
+    this.copy(children.map(_.runAnimationActions(gameTime)))
+
+}
 
 object SceneGraphNodeBranch {
-  def apply(children: SceneGraphNode*): SceneGraphNodeBranch =
+  def apply[ViewEventDataType](children: SceneGraphNode[ViewEventDataType]*): SceneGraphNodeBranch[ViewEventDataType] =
     SceneGraphNodeBranch(children.toList)
 }
 
-sealed trait SceneGraphNodeLeaf[ViewEventDataType] extends SceneGraphNode {
+sealed trait SceneGraphNodeLeaf[ViewEventDataType] extends SceneGraphNode[ViewEventDataType] {
   val bounds: Rectangle
   val depth: Depth
   val imageAssetRef: String
@@ -129,6 +70,10 @@ sealed trait SceneGraphNodeLeaf[ViewEventDataType] extends SceneGraphNode {
   def flipVertical(v: Boolean): SceneGraphNodeLeaf[ViewEventDataType]
 
   def onEvent(e: ((Rectangle, GameEvent)) => Option[ViewEvent[ViewEventDataType]]): SceneGraphNodeLeaf[ViewEventDataType]
+
+  private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent[ViewEventDataType]]
+
+  private[gameengine] def saveAnimationMemento: Option[AnimationMemento]
 }
 
 case class Graphic[ViewEventDataType](bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent[ViewEventDataType]]) extends SceneGraphNodeLeaf[ViewEventDataType] {
@@ -174,6 +119,15 @@ case class Graphic[ViewEventDataType](bounds: Rectangle, depth: Depth, imageAsse
 
   def onEvent(e: ((Rectangle, GameEvent)) => Option[ViewEvent[ViewEventDataType]]): Graphic[ViewEventDataType] =
     this.copy(eventHandler = e)
+
+  private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent[ViewEventDataType]] =
+    (e: GameEvent) => eventHandler(bounds, e)
+
+  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): Graphic[ViewEventDataType] = this
+
+  private[gameengine] def saveAnimationMemento: Option[AnimationMemento] = None
+
+  private[gameengine] def runAnimationActions(gameTime: GameTime): Graphic[ViewEventDataType] = this
 
 }
 
@@ -250,6 +204,19 @@ case class Sprite[ViewEventDataType](bindingKey: BindingKey, bounds: Rectangle, 
 
   def onEvent(e: ((Rectangle, GameEvent)) => Option[ViewEvent[ViewEventDataType]]): Sprite[ViewEventDataType] =
     this.copy(eventHandler = e)
+
+  private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent[ViewEventDataType]] =
+    (e: GameEvent) => eventHandler(bounds, e)
+
+  private[gameengine] def saveAnimationMemento: Option[AnimationMemento] = Option(animations.saveMemento(bindingKey))
+
+  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): Sprite[ViewEventDataType] =
+    animationStates.withBindingKey(bindingKey) match {
+      case Some(memento) => this.copy(animations = animations.applyMemento(memento))
+      case None => this
+    }
+
+  private[gameengine] def runAnimationActions(gameTime: GameTime): Sprite[ViewEventDataType] = this.copy(animations = animations.runActions(gameTime))
 
 }
 
@@ -328,6 +295,22 @@ case class Text[ViewEventDataType](text: String, alignment: TextAlignment, posit
 
   def onEvent(e: ((Rectangle, GameEvent)) => Option[ViewEvent[ViewEventDataType]]): Text[ViewEventDataType] =
     this.copy(eventHandler = e)
+
+  private val realBound: Rectangle =
+    (alignment, bounds.copy(position = position)) match {
+      case (AlignLeft, b) => b
+      case (AlignCenter, b) => b.copy(position = Point(b.x - (b.width / 2), b.y))
+      case (AlignRight, b) => b.copy(position = Point(b.x - b.width, b.y))
+    }
+
+  private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent[ViewEventDataType]] =
+    (e: GameEvent) => eventHandler(realBound, e)
+
+  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): Text[ViewEventDataType] = this
+
+  private[gameengine] def saveAnimationMemento: Option[AnimationMemento] = None
+
+  private[gameengine] def runAnimationActions(gameTime: GameTime): Text[ViewEventDataType] = this
 
 }
 

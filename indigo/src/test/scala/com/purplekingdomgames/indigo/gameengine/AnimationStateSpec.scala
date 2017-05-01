@@ -9,7 +9,7 @@ class AnimationStateSpec extends FunSpec with Matchers {
 
     it("Should be able to extract animation states") {
 
-      val states = AnimationState.extractAnimationStates(SceneGraphSamples.internal)
+      val states = AnimationState.extractAnimationStates(SceneGraphSamples.api)
 
       states.states.length shouldEqual 1
 

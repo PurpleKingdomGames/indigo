@@ -165,15 +165,14 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
           metrics.record(CallUpdateViewEndMetric)
           metrics.record(ProcessViewStartMetric)
 
-          val processUpdatedView: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] =
+          val processUpdatedView: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNode[ViewEventDataType] =
             persistGlobalViewEvents andThen
-              convertToInternalFormat andThen
               persistNodeViewEvents(collectedEvents) andThen
               applyAnimationStates andThen
               processAnimationCommands(gameTime) andThen
               persistAnimationStates
 
-          val processedView: SceneGraphRootNodeInternal[ViewEventDataType] = processUpdatedView(view)
+          val processedView: SceneGraphRootNode[ViewEventDataType] = processUpdatedView(view)
 
           metrics.record(ProcessViewEndMetric)
           metrics.record(ToDisplayableStartMetric)
@@ -209,23 +208,20 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
     update.rootNode
   }
 
-  private val convertToInternalFormat: SceneGraphRootNode[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] = scenegraph =>
-    SceneGraphInternal.fromPublicFacing[ViewEventDataType](scenegraph)
-
-  private val persistNodeViewEvents: List[GameEvent] => SceneGraphRootNodeInternal[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] = gameEvents => rootNode => {
+  private val persistNodeViewEvents: List[GameEvent] => SceneGraphRootNode[ViewEventDataType] => SceneGraphRootNode[ViewEventDataType] = gameEvents => rootNode => {
     metrics.record(PersistNodeViewEventsStartMetric)
     rootNode.collectViewEvents(gameEvents).foreach(GlobalEventStream.push)
     metrics.record(PersistNodeViewEventsEndMetric)
     rootNode
   }
 
-  private val applyAnimationStates: SceneGraphRootNodeInternal[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] = sceneGraph =>
+  private val applyAnimationStates: SceneGraphRootNode[ViewEventDataType] => SceneGraphRootNode[ViewEventDataType] = sceneGraph =>
     sceneGraph.applyAnimationMemento(animationStates)
 
-  private val processAnimationCommands: GameTime => SceneGraphRootNodeInternal[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] = gameTime => sceneGraph =>
+  private val processAnimationCommands: GameTime => SceneGraphRootNode[ViewEventDataType] => SceneGraphRootNode[ViewEventDataType] = gameTime => sceneGraph =>
     sceneGraph.runAnimationActions(gameTime)
 
-  private val persistAnimationStates: SceneGraphRootNodeInternal[ViewEventDataType] => SceneGraphRootNodeInternal[ViewEventDataType] = sceneGraph => {
+  private val persistAnimationStates: SceneGraphRootNode[ViewEventDataType] => SceneGraphRootNode[ViewEventDataType] = sceneGraph => {
     metrics.record(PersistAnimationStatesStartMetric)
 
     animationStates = AnimationState.extractAnimationStates(sceneGraph)
@@ -235,7 +231,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
     sceneGraph
   }
 
-  private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNodeInternal[ViewEventDataType], assetMapping: AssetMapping): Displayable =
+  private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNode[ViewEventDataType], assetMapping: AssetMapping): Displayable =
     Displayable(
       GameDisplayLayer(rootNode.game.node.flatten.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType](assetMapping))),
       LightingDisplayLayer(rootNode.lighting.node.flatten.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType](assetMapping)), rootNode.lighting.ambientLight),

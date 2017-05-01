@@ -29,8 +29,8 @@ object DisplayObjectConversions {
       Vector2.one
     }
 
-  def leafToDisplayObject[ViewEventDataType](assetMapping: AssetMapping): SceneGraphNodeLeafInternal[ViewEventDataType] => List[DisplayObject] = {
-    case leaf: GraphicInternal[ViewEventDataType] =>
+  def leafToDisplayObject[ViewEventDataType](assetMapping: AssetMapping): SceneGraphNodeLeaf[ViewEventDataType] => List[DisplayObject] = {
+    case leaf: Graphic[ViewEventDataType] =>
       DisplayObject(
         x = leaf.x,
         y = leaf.y,
@@ -53,7 +53,7 @@ object DisplayObjectConversions {
           )
       )
 
-    case leaf: SpriteInternal[ViewEventDataType] =>
+    case leaf: Sprite[ViewEventDataType] =>
       DisplayObject(
         x = leaf.x,
         y = leaf.y,
@@ -75,7 +75,7 @@ object DisplayObjectConversions {
         )
       )
 
-    case leaf: TextInternal[ViewEventDataType] =>
+    case leaf: Text[ViewEventDataType] =>
 
       val alignmentOffsetX: Rectangle => Int = lineBounds =>
         leaf.alignment match {
@@ -96,7 +96,7 @@ object DisplayObjectConversions {
   }
 
 
-  def textLineToDisplayObjects[ViewEventDataType](leaf: TextInternal[ViewEventDataType], assetMapping: AssetMapping): (TextLine, Int, Int) => List[DisplayObject] = (line, alignmentOffsetX, yOffset) =>
+  def textLineToDisplayObjects[ViewEventDataType](leaf: Text[ViewEventDataType], assetMapping: AssetMapping): (TextLine, Int, Int) => List[DisplayObject] = (line, alignmentOffsetX, yOffset) =>
     zipWithCharDetails(line.text.toList, leaf.fontInfo).map { case (fontChar, xPosition) =>
       DisplayObject(
         x = leaf.position.x + xPosition + alignmentOffsetX,

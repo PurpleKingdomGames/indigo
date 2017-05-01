@@ -62,7 +62,7 @@ object AsepriteHelper {
         case x :: xs =>
           Option(
             Cycle(
-              label = CycleLabel(frameTag.name),
+              label = frameTag.name,
               frame = x,
               frames = xs
             )

@@ -1,6 +1,5 @@
 package com.purplekingdomgames.indigo.renderer
 
-import com.purplekingdomgames.indigo.gameengine.scenegraph.AmbientLight
 import com.purplekingdomgames.indigo.util.metrics._
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._

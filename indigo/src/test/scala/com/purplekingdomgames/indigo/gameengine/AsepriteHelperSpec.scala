@@ -140,7 +140,7 @@ object AsepriteSampleData {
         spriteSheetSize = Point(128, 128),
         currentCycleLabel = CycleLabel("lights"),
         cycle = Cycle(
-          label = CycleLabel("lights"),
+          label = "lights",
           frame = Frame(
             bounds = Rectangle(Point(0, 0), Point(64, 64)),
             duration = 100
