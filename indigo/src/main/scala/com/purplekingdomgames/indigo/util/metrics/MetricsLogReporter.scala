@@ -47,7 +47,6 @@ object MetricsLogReporter {
       // Process view
       // Durations
       val persistGlobalViewEventsDuration = extractDuration(metrics, PersistGlobalViewEventsStartMetric.name, PersistGlobalViewEventsEndMetric.name)
-      val convertToInternalDuration = extractDuration(metrics, ConvertToInternalStartMetric.name, ConvertToInternalEndMetric.name)
       val persistNodeViewEventsDuration = extractDuration(metrics, PersistNodeViewEventsStartMetric.name, PersistNodeViewEventsEndMetric.name)
       val applyAnimationMementosDuration = extractDuration(metrics, ApplyAnimationMementoStartMetric.name, ApplyAnimationMementoEndMetric.name)
       val runAnimationActionsDuration = extractDuration(metrics, RunAnimationActionsStartMetric.name, RunAnimationActionsEndMetric.name)
@@ -55,7 +54,6 @@ object MetricsLogReporter {
 
       // Percentages
       val persistGlobalViewEventsPercentage = asPercentOfFrameDuration(fd, persistGlobalViewEventsDuration)
-      val convertToInternalPercentage = asPercentOfFrameDuration(fd, convertToInternalDuration)
       val persistNodeViewEventsPercentage = asPercentOfFrameDuration(fd, persistNodeViewEventsDuration)
       val applyAnimationMementosPercentage = asPercentOfFrameDuration(fd, applyAnimationMementosDuration)
       val runAnimationActionsPercentage = asPercentOfFrameDuration(fd, runAnimationActionsDuration)
@@ -100,13 +98,11 @@ object MetricsLogReporter {
 
       val processView = FrameStatsProcessView(
         persistGlobalViewEventsDuration,
-        convertToInternalDuration,
         persistNodeViewEventsDuration,
         applyAnimationMementosDuration,
         runAnimationActionsDuration,
         persistAnimationStatesDuration,
         persistGlobalViewEventsPercentage,
-        convertToInternalPercentage,
         persistNodeViewEventsPercentage,
         applyAnimationMementosPercentage,
         runAnimationActionsPercentage,
@@ -228,12 +224,6 @@ object MetricsLogReporter {
 
       s"""$a\t($b%)"""
     }
-    val meanConvertToInternal: String = {
-      val a = calcMeanDuration(frames.map(_.processView.convertToInternalDuration)).toString
-      val b = calcMeanPercentage(frames.map(_.processView.convertToInternalPercentage)).toString
-
-      s"""$a\t($b%)"""
-    }
     val meanPersistNodeView: String = {
       val a = calcMeanDuration(frames.map(_.processView.persistNodeViewEventsDuration)).toString
       val b = calcMeanPercentage(frames.map(_.processView.persistNodeViewEventsPercentage)).toString
@@ -328,7 +318,6 @@ object MetricsLogReporter {
           |View processing:
          |----------------
          |Mean persist global view:  $meanPersistGlobalView
-         |Mean convert to internal:  $meanConvertToInternal
          |Mean persist node view:    $meanPersistNodeView
          |Mean apply animations:     $meanApplyAnimationMementos
          |Mean animation actions:    $meanRunAnimationActions
@@ -369,13 +358,11 @@ case class FrameStatsGeneral(frameDuration: Long,
                             )
 
 case class FrameStatsProcessView(persistGlobalViewEventsDuration: Option[Long],
-                                 convertToInternalDuration: Option[Long],
                                  persistNodeViewEventsDuration: Option[Long],
                                  applyAnimationMementosDuration: Option[Long],
                                  runAnimationActionsDuration: Option[Long],
                                  persistAnimationStatesDuration: Option[Long],
                                  persistGlobalViewEventsPercentage: Option[Double],
-                                 convertToInternalPercentage: Option[Double],
                                  persistNodeViewEventsPercentage: Option[Double],
                                  applyAnimationMementosPercentage: Option[Double],
                                  runAnimationActionsPercentage: Option[Double],

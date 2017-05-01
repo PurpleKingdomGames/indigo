@@ -34,9 +34,6 @@ case object FrameEndMetric extends Metric { val name: String = "frame end" }
 case object PersistGlobalViewEventsStartMetric extends Metric { val name: String = "persist global view events start" }
 case object PersistGlobalViewEventsEndMetric extends Metric { val name: String = "persist global view events end" }
 
-case object ConvertToInternalStartMetric extends Metric { val name: String = "convert to internal start" }
-case object ConvertToInternalEndMetric extends Metric { val name: String = "convert to internal end" }
-
 case object PersistNodeViewEventsStartMetric extends Metric { val name: String = "persist node view events start" }
 case object PersistNodeViewEventsEndMetric extends Metric { val name: String = "persist node view events end" }
 
