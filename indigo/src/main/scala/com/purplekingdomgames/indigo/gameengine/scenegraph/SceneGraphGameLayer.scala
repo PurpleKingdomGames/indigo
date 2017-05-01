@@ -4,14 +4,8 @@ import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameEvent, Gam
 
 case class SceneGraphGameLayer[ViewEventDataType](node: SceneGraphNode[ViewEventDataType]) {
 
-  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): SceneGraphGameLayer[ViewEventDataType] =
-    this.copy(node = node.applyAnimationMemento(animationStates))
-
-  private[gameengine] def runAnimationActions(gameTime: GameTime): SceneGraphGameLayer[ViewEventDataType] =
-    this.copy(node = node.runAnimationActions(gameTime))
-
-  private[gameengine] def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent[ViewEventDataType]] =
-    node.flatten.flatMap(n => gameEvents.map(e => n.eventHandlerWithBoundsApplied(e))).collect { case Some(s) => s}
+  private[gameengine] def flatten: SceneGraphGameLayerFlat[ViewEventDataType] =
+    SceneGraphGameLayerFlat[ViewEventDataType](node.flatten)
 
 }
 
@@ -24,5 +18,18 @@ object SceneGraphGameLayer {
     SceneGraphGameLayer(
       SceneGraphNodeBranch[ViewEventDataType](nodes.toList)
     )
+
+}
+
+case class SceneGraphGameLayerFlat[ViewEventDataType](nodes: List[SceneGraphNodeLeaf[ViewEventDataType]]) {
+
+  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): SceneGraphGameLayerFlat[ViewEventDataType] =
+    this.copy(nodes = nodes.map(_.applyAnimationMemento(animationStates)))
+
+  private[gameengine] def runAnimationActions(gameTime: GameTime): SceneGraphGameLayerFlat[ViewEventDataType] =
+    this.copy(nodes = nodes.map(_.runAnimationActions(gameTime)))
+
+  private[gameengine] def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent[ViewEventDataType]] =
+    nodes.flatMap(n => gameEvents.map(e => n.eventHandlerWithBoundsApplied(e))).collect { case Some(s) => s}
 
 }

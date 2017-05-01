@@ -5,6 +5,9 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{AmbientLig
 
 case class SceneGraphLightingLayer[ViewEventDataType](node: SceneGraphNodeBranch[ViewEventDataType], ambientLight: AmbientLight) {
 
+  private[gameengine] def flatten: SceneGraphLightingLayerFlat[ViewEventDataType] =
+    SceneGraphLightingLayerFlat[ViewEventDataType](node.flatten, ambientLight)
+
   def withAmbientLight(ambientLight: AmbientLight): SceneGraphLightingLayer[ViewEventDataType] = {
     this.copy(
       ambientLight = ambientLight
@@ -25,15 +28,6 @@ case class SceneGraphLightingLayer[ViewEventDataType](node: SceneGraphNodeBranch
     )
   }
 
-  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): SceneGraphLightingLayer[ViewEventDataType] =
-    this.copy(node = node.applyAnimationMemento(animationStates))
-
-  private[gameengine] def runAnimationActions(gameTime: GameTime): SceneGraphLightingLayer[ViewEventDataType] =
-    this.copy(node = node.runAnimationActions(gameTime))
-
-  private[gameengine] def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent[ViewEventDataType]] =
-    node.flatten.flatMap(n => gameEvents.map(e => n.eventHandlerWithBoundsApplied(e))).collect { case Some(s) => s}
-
 }
 
 object SceneGraphLightingLayer {
@@ -48,4 +42,17 @@ object SceneGraphLightingLayer {
       SceneGraphNodeBranch[ViewEventDataType](nodes.toList),
       AmbientLight.none
     )
+}
+
+case class SceneGraphLightingLayerFlat[ViewEventDataType](nodes: List[SceneGraphNodeLeaf[ViewEventDataType]], ambientLight: AmbientLight) {
+
+  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): SceneGraphLightingLayerFlat[ViewEventDataType] =
+    this.copy(nodes = nodes.map(_.applyAnimationMemento(animationStates)))
+
+  private[gameengine] def runAnimationActions(gameTime: GameTime): SceneGraphLightingLayerFlat[ViewEventDataType] =
+    this.copy(nodes = nodes.map(_.runAnimationActions(gameTime)))
+
+  private[gameengine] def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent[ViewEventDataType]] =
+    nodes.flatMap(n => gameEvents.map(e => n.eventHandlerWithBoundsApplied(e))).collect { case Some(s) => s}
+
 }

@@ -165,14 +165,15 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
           metrics.record(CallUpdateViewEndMetric)
           metrics.record(ProcessViewStartMetric)
 
-          val processUpdatedView: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNode[ViewEventDataType] =
+          val processUpdatedView: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNodeFlat[ViewEventDataType] =
             persistGlobalViewEvents andThen
+              flattenNodes andThen
               persistNodeViewEvents(collectedEvents) andThen
               applyAnimationStates andThen
               processAnimationCommands(gameTime) andThen
               persistAnimationStates
 
-          val processedView: SceneGraphRootNode[ViewEventDataType] = processUpdatedView(view)
+          val processedView: SceneGraphRootNodeFlat[ViewEventDataType] = processUpdatedView(view)
 
           metrics.record(ProcessViewEndMetric)
           metrics.record(ToDisplayableStartMetric)
@@ -208,20 +209,22 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
     update.rootNode
   }
 
-  private val persistNodeViewEvents: List[GameEvent] => SceneGraphRootNode[ViewEventDataType] => SceneGraphRootNode[ViewEventDataType] = gameEvents => rootNode => {
+  private val flattenNodes: SceneGraphRootNode[ViewEventDataType] => SceneGraphRootNodeFlat[ViewEventDataType] = root => root.flatten
+
+  private val persistNodeViewEvents: List[GameEvent] => SceneGraphRootNodeFlat[ViewEventDataType] => SceneGraphRootNodeFlat[ViewEventDataType] = gameEvents => rootNode => {
     metrics.record(PersistNodeViewEventsStartMetric)
     rootNode.collectViewEvents(gameEvents).foreach(GlobalEventStream.push)
     metrics.record(PersistNodeViewEventsEndMetric)
     rootNode
   }
 
-  private val applyAnimationStates: SceneGraphRootNode[ViewEventDataType] => SceneGraphRootNode[ViewEventDataType] = sceneGraph =>
+  private val applyAnimationStates: SceneGraphRootNodeFlat[ViewEventDataType] => SceneGraphRootNodeFlat[ViewEventDataType] = sceneGraph =>
     sceneGraph.applyAnimationMemento(animationStates)
 
-  private val processAnimationCommands: GameTime => SceneGraphRootNode[ViewEventDataType] => SceneGraphRootNode[ViewEventDataType] = gameTime => sceneGraph =>
+  private val processAnimationCommands: GameTime => SceneGraphRootNodeFlat[ViewEventDataType] => SceneGraphRootNodeFlat[ViewEventDataType] = gameTime => sceneGraph =>
     sceneGraph.runAnimationActions(gameTime)
 
-  private val persistAnimationStates: SceneGraphRootNode[ViewEventDataType] => SceneGraphRootNode[ViewEventDataType] = sceneGraph => {
+  private val persistAnimationStates: SceneGraphRootNodeFlat[ViewEventDataType] => SceneGraphRootNodeFlat[ViewEventDataType] = sceneGraph => {
     metrics.record(PersistAnimationStatesStartMetric)
 
     animationStates = AnimationState.extractAnimationStates(sceneGraph)
@@ -231,11 +234,11 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
     sceneGraph
   }
 
-  private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNode[ViewEventDataType], assetMapping: AssetMapping): Displayable =
+  private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNodeFlat[ViewEventDataType], assetMapping: AssetMapping): Displayable =
     Displayable(
-      GameDisplayLayer(rootNode.game.node.flatten.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType](assetMapping))),
-      LightingDisplayLayer(rootNode.lighting.node.flatten.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType](assetMapping)), rootNode.lighting.ambientLight),
-      UiDisplayLayer(rootNode.ui.node.flatten.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType](assetMapping)))
+      GameDisplayLayer(rootNode.game.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType](assetMapping))),
+      LightingDisplayLayer(rootNode.lighting.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType](assetMapping)), rootNode.lighting.ambientLight),
+      UiDisplayLayer(rootNode.ui.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType](assetMapping)))
     )
 
   private def drawScene(renderer: IRenderer, displayable: Displayable): Unit =

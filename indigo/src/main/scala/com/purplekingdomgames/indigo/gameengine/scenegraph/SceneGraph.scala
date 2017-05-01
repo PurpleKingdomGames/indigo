@@ -24,21 +24,9 @@ sealed trait SceneGraphNode[ViewEventDataType] {
     rec(Nil)
   }
 
-  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): SceneGraphNode[ViewEventDataType]
-
-  private[gameengine] def runAnimationActions(gameTime: GameTime): SceneGraphNode[ViewEventDataType]
-
 }
 
-case class SceneGraphNodeBranch[ViewEventDataType](children: List[SceneGraphNode[ViewEventDataType]]) extends SceneGraphNode[ViewEventDataType] {
-
-  def applyAnimationMemento(animationStates: AnimationStates): SceneGraphNodeBranch[ViewEventDataType] =
-    this.copy(children.map(_.applyAnimationMemento(animationStates)))
-
-  def runAnimationActions(gameTime: GameTime): SceneGraphNodeBranch[ViewEventDataType] =
-    this.copy(children.map(_.runAnimationActions(gameTime)))
-
-}
+case class SceneGraphNodeBranch[ViewEventDataType](children: List[SceneGraphNode[ViewEventDataType]]) extends SceneGraphNode[ViewEventDataType]
 
 object SceneGraphNodeBranch {
   def apply[ViewEventDataType](children: SceneGraphNode[ViewEventDataType]*): SceneGraphNodeBranch[ViewEventDataType] =
@@ -74,6 +62,10 @@ sealed trait SceneGraphNodeLeaf[ViewEventDataType] extends SceneGraphNode[ViewEv
   private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent[ViewEventDataType]]
 
   private[gameengine] def saveAnimationMemento: Option[AnimationMemento]
+
+  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): SceneGraphNodeLeaf[ViewEventDataType]
+
+  private[gameengine] def runAnimationActions(gameTime: GameTime): SceneGraphNodeLeaf[ViewEventDataType]
 }
 
 case class Graphic[ViewEventDataType](bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent[ViewEventDataType]]) extends SceneGraphNodeLeaf[ViewEventDataType] {

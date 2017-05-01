@@ -5,9 +5,8 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph._
 
 object AnimationState {
 
-  private def flattenNode[ViewEventDataType](node: SceneGraphNode[ViewEventDataType]): List[AnimationMemento] = {
-    node
-      .flatten
+  private def saveMementos[ViewEventDataType](nodes: List[SceneGraphNodeLeaf[ViewEventDataType]]): List[AnimationMemento] = {
+    nodes
       .flatMap {
         case s: Sprite[ViewEventDataType] => s.saveAnimationMemento :: Nil
         case _ => Nil
@@ -17,14 +16,11 @@ object AnimationState {
       }
   }
 
-  def extractAnimationStates[ViewEventDataType](sceneGraphRootNode: SceneGraphRootNode[ViewEventDataType]): AnimationStates = AnimationStates {
-    flattenNode(sceneGraphRootNode.game.node) ++
-    flattenNode(sceneGraphRootNode.lighting.node) ++
-    flattenNode(sceneGraphRootNode.ui.node)
+  def extractAnimationStates[ViewEventDataType](sceneGraphRootNode: SceneGraphRootNodeFlat[ViewEventDataType]): AnimationStates = AnimationStates {
+    saveMementos(sceneGraphRootNode.game.nodes) ++
+    saveMementos(sceneGraphRootNode.lighting.nodes) ++
+    saveMementos(sceneGraphRootNode.ui.nodes)
   }
-
-  def applyAnimationStates[ViewEventDataType](animationStates: AnimationStates, sceneGraphNode: SceneGraphNode[ViewEventDataType]): SceneGraphNode[ViewEventDataType] =
-    sceneGraphNode.applyAnimationMemento(animationStates)
 
 }
 
