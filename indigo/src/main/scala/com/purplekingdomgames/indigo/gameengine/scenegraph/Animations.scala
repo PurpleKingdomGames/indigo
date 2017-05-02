@@ -26,26 +26,17 @@ case class Animations(spriteSheetSize: Point, currentCycleLabel: CycleLabel, cyc
 
   private[gameengine] def saveMemento(bindingKey: BindingKey): AnimationMemento = AnimationMemento(bindingKey, currentCycleLabel, currentCycle.saveMemento)
 
-  private[gameengine] def applyMemento(memento: AnimationMemento): Animations = {
-
-    val applied: Map[CycleLabel, Cycle] =
-      nonEmtpyCycles ++
-        nonEmtpyCycles
-          .get(memento.currentCycleLabel)
-          .map { c =>
-            Map(memento.currentCycleLabel -> c.copy(
-              playheadPosition = memento.currentCycleMemento.playheadPosition,
-              lastFrameAdvance = memento.currentCycleMemento.lastFrameAdvance
-            ))
-          }
-          .getOrElse(Map.empty[CycleLabel, Cycle])
-
-    this.copy(
+  private[gameengine] def applyMemento(memento: AnimationMemento): Animations =
+    Animations(
+      spriteSheetSize = spriteSheetSize,
       currentCycleLabel = memento.currentCycleLabel,
-      cycle = applied.head._2,
-      cycles = applied.tail
+      cycle =
+        nonEmtpyCycles
+          .getOrElse(memento.currentCycleLabel, nonEmtpyCycles.head._2)
+          .copy(playheadPosition = memento.currentCycleMemento.playheadPosition, lastFrameAdvance = memento.currentCycleMemento.lastFrameAdvance),
+      cycles = nonEmtpyCycles.filter(p => p._1.label != memento.currentCycleLabel.label),
+      actions = actions
     )
-  }
 
   private[gameengine] def runActions(gameTime: GameTime): Animations =
     actions.foldLeft(this) { (anim, action) =>
