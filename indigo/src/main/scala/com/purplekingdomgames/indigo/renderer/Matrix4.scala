@@ -4,6 +4,11 @@ import scala.language.implicitConversions
 
 case class Matrix4(mat: List[Double]) {
 
+  def row1: List[Double] = mat.slice(0, 4)
+  def row2: List[Double] = mat.slice(4, 8)
+  def row3: List[Double] = mat.slice(8, 12)
+  def row4: List[Double] = mat.slice(12, 16)
+
   def identity: Matrix4 = Matrix4.identity
 
   def translate(tx: Double, ty: Double, tz: Double): Matrix4 = {

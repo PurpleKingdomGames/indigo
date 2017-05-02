@@ -51,6 +51,25 @@ object DisplayObject {
   )
 
   val mode: Int = TRIANGLE_STRIP
+
+
+//  val matrix4: Matrix4 = Matrix4
+//    .orthographic(0, cNc.width / magnification, cNc.height / magnification, 0, -10000, 10000)
+//    .translate(displayObject.x, displayObject.y, displayObject.z)
+//    .scale(displayObject.width, displayObject.height, 1)
+
+  // then add the flip!
+  //Matrix4.multiply(matrix4, flipMatrix((displayObject.flipHorizontal, displayObject.flipVertical)))
+
+//  val flipMatrix: ((Boolean, Boolean)) => Matrix4 = flipValues => {
+//    flipValues match {
+//      case (true, true)   => Matrix4.identity.translate(1, 1, 0).scale(-1, -1, -1)
+//      case (true, false)  => Matrix4.identity.translate(1, 0, 0).scale(-1,  1, -1)
+//      case (false, true)  => Matrix4.identity.translate(0, 1, 0).scale( 1, -1, -1)
+//      case (false, false) => Matrix4.identity
+//    }
+//  }
+
 }
 
 case class RenderableThing(displayObject: DisplayObject, shaderProgram: WebGLProgram, vertexBuffer: WebGLBuffer, textureBuffer: WebGLBuffer)
