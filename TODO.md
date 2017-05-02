@@ -14,6 +14,13 @@ The layers:
 
 ## TODO
 
+Batch Renders
+*************
+1. Move the vertex(and texture?) buffer array creation out of the renderer and make it upload for every object.
+2. Apply matrices to vertex array before giving to renderer and simplify renderer matrix work.
+3. Move from triangle strips (unless you can figure out how to do several) to triangles.
+4. Turn a list of display objects with vertex buffers into a single vertex buffer and pass over for rendering.
+
 Need for Speed
 **************
 
