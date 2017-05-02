@@ -13,6 +13,12 @@ import scala.scalajs.js.JSApp
 
 case class GameTime(running: Double, delta: Double)
 
+object GameTime {
+  def now: GameTime = GameTime(System.currentTimeMillis(), 0)
+  def zero: GameTime = GameTime(0, 0)
+  def is(running: Double, delta: Double): GameTime = GameTime(running, delta)
+}
+
 trait GameTypeHolder[T] {
   type View = T
 }
