@@ -61,25 +61,50 @@ class AnimationStateSpec extends FunSpec with Matchers {
         animations = animations
       )
 
-      sprite.animations.currentFrame.bounds.x shouldEqual 0
+      withClue("Simple operations") {
+        sprite.animations.currentFrame.bounds.x shouldEqual 0
 
-      sprite.jumpToLastFrame().animations.runActions(GameTime.is(10, 10)).currentFrame.bounds.x shouldEqual 6
+        sprite.jumpToLastFrame().animations.runActions(GameTime.is(10, 10)).currentFrame.bounds.x shouldEqual 6
 
-      sprite.play().animations.runActions(GameTime.is(10, 10)).currentFrame.bounds.x shouldEqual 1
+        sprite.play().animations.runActions(GameTime.is(10, 10)).currentFrame.bounds.x shouldEqual 1
+      }
 
-      val s = sprite
-        .changeCycle("test-cycle2")
-        .play()
+      withClue("Check memento save") {
+        val s = sprite
+          .play()
 
-      val sa = s.animations
-        .runActions(GameTime.is(10, 10))
+        val sa = s.animations
+          .runActions(GameTime.is(10, 10))
 
-      sa.currentCycleName shouldEqual "test-cycle2"
-      sa.currentFrame shouldBe 1
+        sa.currentCycleName shouldEqual "test-cycle"
+        sa.currentFrame.bounds.x shouldBe 1
 
-      val memento = sa.saveMemento(s.bindingKey)
+        val memento = sa.saveMemento(s.bindingKey)
 
-      memento shouldEqual AnimationMemento(BindingKey("test"), CycleLabel("test-cycle2"), CycleMemento(2, 0))
+        memento shouldEqual AnimationMemento(BindingKey("test"), CycleLabel("test-cycle"), CycleMemento(1, 10))
+      }
+
+      withClue("Check memento save and apply with cycle change") {
+        val s2 = sprite
+          .changeCycle("test-cycle2")
+          .play()
+
+        val sa2 = s2.animations
+          .runActions(GameTime.is(10, 10))
+
+        sa2.currentCycleName shouldEqual "test-cycle2"
+        sa2.currentFrame.bounds.x shouldEqual 1
+
+        val memento2 = sa2.saveMemento(s2.bindingKey)
+
+        memento2 shouldEqual AnimationMemento(BindingKey("test"), CycleLabel("test-cycle2"), CycleMemento(1, 10))
+
+        val s3 = sprite.applyAnimationMemento(AnimationStates(List(memento2)))
+
+        s3.animations.currentCycleName shouldEqual "test-cycle2"
+        s3.animations.currentFrame.bounds.x shouldEqual 1
+
+      }
 
     }
 

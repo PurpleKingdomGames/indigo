@@ -18,7 +18,7 @@ case class Animations(spriteSheetSize: Point, currentCycleLabel: CycleLabel, cyc
 
   def addCycle(cycle: Cycle) = Animations(spriteSheetSize, currentCycleLabel, cycle, nonEmtpyCycles, Nil)
 
-  def addAction(action: AnimationAction): Animations = this.copy(actions = action :: actions)
+  def addAction(action: AnimationAction): Animations = this.copy(actions = actions :+ action)
 
   private[gameengine] def currentCycleName: String = currentCycle.label.label
 
@@ -29,7 +29,16 @@ case class Animations(spriteSheetSize: Point, currentCycleLabel: CycleLabel, cyc
   private[gameengine] def applyMemento(memento: AnimationMemento): Animations = {
 
     val applied: Map[CycleLabel, Cycle] =
-      nonEmtpyCycles ++ nonEmtpyCycles.get(memento.currentCycleLabel).map(c => Map(memento.currentCycleLabel -> c)).getOrElse(Map.empty[CycleLabel, Cycle])
+      nonEmtpyCycles ++
+        nonEmtpyCycles
+          .get(memento.currentCycleLabel)
+          .map { c =>
+            Map(memento.currentCycleLabel -> c.copy(
+              playheadPosition = memento.currentCycleMemento.playheadPosition,
+              lastFrameAdvance = memento.currentCycleMemento.lastFrameAdvance
+            ))
+          }
+          .getOrElse(Map.empty[CycleLabel, Cycle])
 
     this.copy(
       currentCycleLabel = memento.currentCycleLabel,
@@ -45,7 +54,7 @@ case class Animations(spriteSheetSize: Point, currentCycleLabel: CycleLabel, cyc
           anim.copy(currentCycleLabel = CycleLabel(label))
 
         case _ =>
-          anim.copy(cycle = currentCycle.runActions(gameTime, actions))
+          anim.copy(cycle = anim.currentCycle.runActions(gameTime, actions))
       }
     }
 
@@ -70,7 +79,7 @@ case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame], private[g
   private[gameengine] def applyMemento(memento: CycleMemento): Cycle =
     this.copy(playheadPosition = memento.playheadPosition, lastFrameAdvance = memento.lastFrameAdvance)
 
-  private[gameengine] def runActions(gameTime: GameTime, actions: List[AnimationAction]): Cycle = {
+  private[gameengine] def runActions(gameTime: GameTime, actions: List[AnimationAction]): Cycle =
     actions.foldLeft(this) { (cycle, action) =>
       action match {
         case Play =>
@@ -93,7 +102,7 @@ case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame], private[g
           else cycle.copy(playheadPosition = number)
       }
     }
-  }
+
 }
 
 object Cycle {
