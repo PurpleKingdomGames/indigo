@@ -16,12 +16,6 @@ The layers:
 
 Need for Speed
 **************
-Back to OOP. (should help perf test results)
-- Indigo will continue to present an FP interface
-- Underneath its model will be mutable OOP for speed in order to:
-  - Remove object instantiation (public to internal to display object + endless object copying)
-  - Reduce GC overhead
-  - Become more diffable (mark as dirty on change etc.)
 
 Static collections of objects (Won't help perf test results, wrong kind of geometry)
 - A static collection might need to be declared up front
@@ -38,8 +32,6 @@ Prefabs (Won't help perf tests and we can almost do this already - and do using 
 - Indigo will allow you to declare prefabs.
 - These are identical to normal objects but in the view you just point at the prefab.
 - Prefabs are prototypes, each prefab is copied in and is allowed minor adjustments before rendering.
-
-
 
 Bugs:
 - Lights don't work on a black background... should they?
