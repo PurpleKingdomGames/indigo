@@ -39,18 +39,24 @@ object DisplayObject {
     0,0,0,
     0,1,0,
     1,0,0,
+
+    0,1,0,
+    1,0,0,
     1,1,0
   )
-  val vertexCount: Int = 4
+  val vertexCount: Int = vertices.length / 3
 
   val textureCoordinates: scalajs.js.Array[Int] = scalajs.js.Array[Int](
     0,0,
     0,1,
     1,0,
+
+    0,1,
+    1,0,
     1,1
   )
 
-  val mode: Int = TRIANGLE_STRIP
+  val mode: Int = TRIANGLES
 
 
 //  val matrix4: Matrix4 = Matrix4
