@@ -15,23 +15,23 @@ case class Matrix4(mat: List[Double]) {
     Matrix4.multiply(this, Matrix4.translation(tx, ty, tz))
   }
 
-  def xRotate(angleInRadians: Double): Matrix4 = {
-    Matrix4.multiply(this, Matrix4.xRotation(angleInRadians))
-  }
+  def xRotate(angleInRadians: Double): Matrix4 = this * Matrix4.xRotation(angleInRadians)
 
-  def yRotate(angleInRadians: Double): Matrix4 = {
-    Matrix4.multiply(this, Matrix4.yRotation(angleInRadians))
-  }
+  def yRotate(angleInRadians: Double): Matrix4 = this * Matrix4.yRotation(angleInRadians)
 
-  def zRotate(angleInRadians: Double): Matrix4 = {
-    Matrix4.multiply(this, Matrix4.zRotation(angleInRadians))
-  }
+  def zRotate(angleInRadians: Double): Matrix4 = this * Matrix4.zRotation(angleInRadians)
 
-  def scale(sx: Double, sy: Double, sz: Double): Matrix4 = {
-    Matrix4.multiply(this, Matrix4.scaling(sx, sy, sz))
-  }
+  def scale(sx: Double, sy: Double, sz: Double): Matrix4 = this * Matrix4.scaling(sx, sy, sz)
 
   def transpose: Matrix4 = Matrix4.transpose(this)
+
+  def *(other: Matrix4): Matrix4 = Matrix4.multiply(this, other)
+
+  def projection(width: Double, height: Double, depth: Double): Matrix4 =
+    this * Matrix4.projection(width, height, depth)
+
+  def orthographic(left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double): Matrix4 =
+    this * Matrix4.orthographic(left, right, bottom, top, near, far)
 
 }
 
