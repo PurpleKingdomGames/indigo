@@ -4,10 +4,10 @@ import scala.language.implicitConversions
 
 case class Matrix4(mat: List[Double]) {
 
-  def row1: List[Double] = mat.slice(0, 4)
-  def row2: List[Double] = mat.slice(4, 8)
-  def row3: List[Double] = mat.slice(8, 12)
-  def row4: List[Double] = mat.slice(12, 16)
+  def row1: List[Double] = List(mat(0), mat(1), mat(2), mat(3))
+  def row2: List[Double] = List(mat(4), mat(5), mat(6), mat(7))
+  def row3: List[Double] = List(mat(8), mat(9), mat(10), mat(11))
+  def row4: List[Double] = List(mat(12), mat(13), mat(14), mat(15))
 
   def identity: Matrix4 = Matrix4.identity
 
@@ -49,6 +49,15 @@ case object Matrix4 {
       0, 1, 0, 0,
       0, 0, 1, 0,
       0, 0, 0, 1
+    )
+  )
+
+  def one: Matrix4 = Matrix4(
+    mat = List(
+      1, 1, 1, 1,
+      1, 1, 1, 1,
+      1, 1, 1, 1,
+      1, 1, 1, 1
     )
   )
 
@@ -181,22 +190,22 @@ case object Matrix4 {
 
     Matrix4(
       List(
-        b00 * a00 + b01 * a10 + b02 * a20 + b03 * a30,
-        b00 * a01 + b01 * a11 + b02 * a21 + b03 * a31,
-        b00 * a02 + b01 * a12 + b02 * a22 + b03 * a32,
-        b00 * a03 + b01 * a13 + b02 * a23 + b03 * a33,
-        b10 * a00 + b11 * a10 + b12 * a20 + b13 * a30,
-        b10 * a01 + b11 * a11 + b12 * a21 + b13 * a31,
-        b10 * a02 + b11 * a12 + b12 * a22 + b13 * a32,
-        b10 * a03 + b11 * a13 + b12 * a23 + b13 * a33,
-        b20 * a00 + b21 * a10 + b22 * a20 + b23 * a30,
-        b20 * a01 + b21 * a11 + b22 * a21 + b23 * a31,
-        b20 * a02 + b21 * a12 + b22 * a22 + b23 * a32,
-        b20 * a03 + b21 * a13 + b22 * a23 + b23 * a33,
-        b30 * a00 + b31 * a10 + b32 * a20 + b33 * a30,
-        b30 * a01 + b31 * a11 + b32 * a21 + b33 * a31,
-        b30 * a02 + b31 * a12 + b32 * a22 + b33 * a32,
-        b30 * a03 + b31 * a13 + b32 * a23 + b33 * a33
+        a00 * b00 + a01 * b10 + a02 * b20 + a03 * b30,
+        a00 * b01 + a01 * b11 + a02 * b21 + a03 * b31,
+        a00 * b02 + a01 * b12 + a02 * b22 + a03 * b32,
+        a00 * b03 + a01 * b13 + a02 * b23 + a03 * b33,
+        a10 * b00 + a11 * b10 + a12 * b20 + a13 * b30,
+        a10 * b01 + a11 * b11 + a12 * b21 + a13 * b31,
+        a10 * b02 + a11 * b12 + a12 * b22 + a13 * b32,
+        a10 * b03 + a11 * b13 + a12 * b23 + a13 * b33,
+        a20 * b00 + a21 * b10 + a22 * b20 + a23 * b30,
+        a20 * b01 + a21 * b11 + a22 * b21 + a23 * b31,
+        a20 * b02 + a21 * b12 + a22 * b22 + a23 * b32,
+        a20 * b03 + a21 * b13 + a22 * b23 + a23 * b33,
+        a30 * b00 + a31 * b10 + a32 * b20 + a33 * b30,
+        a30 * b01 + a31 * b11 + a32 * b21 + a33 * b31,
+        a30 * b02 + a31 * b12 + a32 * b22 + a33 * b32,
+        a30 * b03 + a31 * b13 + a32 * b23 + a33 * b33
       )
     )
   }

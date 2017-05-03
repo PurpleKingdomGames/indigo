@@ -45,23 +45,19 @@ object Vector4 {
     Vector4(vec1.x / vec2.x, vec1.y / vec2.y, vec1.z / vec2.z, vec1.w / vec2.w)
   }
 
-  def apply(i: Int): Vector4 = Vector4(i, i, i, i)
-  def apply(x: Double, y: Double, z: Double): Vector4 = Vector4(x, y, z, 0)
+  def position(x: Double, y: Double, z: Double): Vector4 = Vector4(x, y, z, 1)
+
+  def direction(x: Double, y: Double, z: Double): Vector4 = Vector4(x, y, z, 0)
 
   def applyMatrix4(vector4: Vector4, matrix4: Matrix4): Vector4 = {
-
+    val m = matrix4.transpose
     val vl = vector4.toList
 
-    println(matrix4.row1.zip(vl))
-    println(matrix4.row2.zip(vl))
-    println(matrix4.row3.zip(vl))
-    println(matrix4.row4.zip(vl))
-
     Vector4(
-      x = matrix4.row1.zip(vl).map(p => p._1 * p._2).sum,
-      y = matrix4.row2.zip(vl).map(p => p._1 * p._2).sum,
-      z = matrix4.row3.zip(vl).map(p => p._1 * p._2).sum,
-      w = matrix4.row4.zip(vl).map(p => p._1 * p._2).sum
+      x = m.row1.zip(vl).map(p => p._1 * p._2).sum,
+      y = m.row2.zip(vl).map(p => p._1 * p._2).sum,
+      z = m.row3.zip(vl).map(p => p._1 * p._2).sum,
+      w = m.row4.zip(vl).map(p => p._1 * p._2).sum
     )
   }
 
