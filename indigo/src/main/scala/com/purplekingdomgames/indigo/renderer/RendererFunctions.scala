@@ -297,8 +297,8 @@ object RendererFunctions {
     val texcoordScaleLocation = gl.getUniformLocation(shaderProgram, "uTexcoordScale")
     gl.uniform2fv(texcoordScaleLocation, displayObject.frame.scale.toScalaJSArrayDouble)
 
-    val texcoordTranlsateLocation = gl.getUniformLocation(shaderProgram, "uTexcoordTranslate")
-    gl.uniform2fv(texcoordTranlsateLocation, displayObject.frame.translate.toScalaJSArrayDouble)
+    val texcoordTranslateLocation = gl.getUniformLocation(shaderProgram, "uTexcoordTranslate")
+    gl.uniform2fv(texcoordTranslateLocation, displayObject.frame.translate.toScalaJSArrayDouble)
   }
 
   def setupLightingFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, displayObject: DisplayObject): Unit = {
@@ -320,8 +320,8 @@ object RendererFunctions {
     val texcoordScaleLocation = gl.getUniformLocation(shaderProgram, "uTexcoordScale")
     gl.uniform2fv(texcoordScaleLocation, displayObject.frame.scale.toScalaJSArrayDouble)
 
-    val texcoordTranlsateLocation = gl.getUniformLocation(shaderProgram, "uTexcoordTranslate")
-    gl.uniform2fv(texcoordTranlsateLocation, displayObject.frame.translate.toScalaJSArrayDouble)
+    val texcoordTranslateLocation = gl.getUniformLocation(shaderProgram, "uTexcoordTranslate")
+    gl.uniform2fv(texcoordTranslateLocation, displayObject.frame.translate.toScalaJSArrayDouble)
 
   }
 
