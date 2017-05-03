@@ -31,6 +31,8 @@ case class Matrix4(mat: List[Double]) {
     Matrix4.multiply(this, Matrix4.scaling(sx, sy, sz))
   }
 
+  def transpose: Matrix4 = Matrix4.transpose(this)
+
 }
 
 case object Matrix4 {
@@ -195,6 +197,18 @@ case object Matrix4 {
         b30 * a01 + b31 * a11 + b32 * a21 + b33 * a31,
         b30 * a02 + b31 * a12 + b32 * a22 + b33 * a32,
         b30 * a03 + b31 * a13 + b32 * a23 + b33 * a33
+      )
+    )
+  }
+
+  def transpose(matrix4: Matrix4): Matrix4 = {
+    val m = matrix4.mat
+    Matrix4(
+      mat = List(
+        m(0),  m(4),  m(8), m(12),
+        m(1),  m(5),  m(9), m(13),
+        m(2),  m(6), m(10), m(14),
+        m(3),  m(7), m(11), m(15)
       )
     )
   }
