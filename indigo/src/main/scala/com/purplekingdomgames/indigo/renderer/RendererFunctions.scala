@@ -28,16 +28,19 @@ object RendererFunctions {
       """
         |attribute vec4 coordinates;
         |attribute vec2 a_texcoord;
+        |attribute vec4 a_effectValues;
         |
         |uniform mat4 u_matrix;
         |
         |varying vec2 v_texcoord;
+        |varying vec4 v_effectValues;
         |
         |void main(void) {
         |  gl_Position = u_matrix * coordinates;
         |
         |  // Pass the texcoord to the fragment shader.
         |  v_texcoord = a_texcoord;
+        |  v_effectValues = a_effectValues;
         |}
       """.stripMargin
 
@@ -55,17 +58,16 @@ object RendererFunctions {
         |
         |// Passed in from the vertex shader.
         |varying vec2 v_texcoord;
+        |varying vec4 v_effectValues;
         |
         |// The texture.
         |uniform sampler2D u_texture;
-        |uniform float uAlpha;
-        |uniform vec3 uTint;
         |uniform vec2 uTexcoordScale;
         |uniform vec2 uTexcoordTranslate;
         |
         |void main(void) {
         |   vec4 textureColor = texture2D(u_texture, (v_texcoord * uTexcoordScale) + uTexcoordTranslate);
-        |   gl_FragColor = vec4(textureColor.rgb * uTint, textureColor.a * uAlpha);
+        |   gl_FragColor = textureColor * v_effectValues;
         |}
       """.stripMargin
 
@@ -91,16 +93,19 @@ object RendererFunctions {
       """
         |attribute vec4 coordinates;
         |attribute vec2 a_texcoord;
+        |attribute vec4 a_effectValues;
         |
         |uniform mat4 u_matrix;
         |
         |varying vec2 v_texcoord;
+        |varying vec4 v_effectValues;
         |
         |void main(void) {
         |  gl_Position = u_matrix * coordinates;
         |
         |  // Pass the texcoord to the fragment shader.
         |  v_texcoord = a_texcoord;
+        |  v_effectValues = a_effectValues;
         |}
       """.stripMargin
 
@@ -118,11 +123,10 @@ object RendererFunctions {
         |
         |// Passed in from the vertex shader.
         |varying vec2 v_texcoord;
+        |varying vec4 v_effectValues;
         |
         |// The texture.
         |uniform sampler2D u_texture;
-        |uniform float uAlpha;
-        |uniform vec3 uTint;
         |uniform vec2 uTexcoordScale;
         |uniform vec2 uTexcoordTranslate;
         |
@@ -131,7 +135,7 @@ object RendererFunctions {
         |
         |   float average = (textureColor.r + textureColor.g + textureColor.b) / float(3);
         |
-        |   gl_FragColor = vec4(textureColor.rgb * uTint, average * uAlpha);
+        |   gl_FragColor = vec4(textureColor.rgb * v_effectValues.rgb, average * v_effectValues.a);
         |}
       """.stripMargin
 
@@ -157,16 +161,19 @@ object RendererFunctions {
       """
         |attribute vec4 coordinates;
         |attribute vec2 a_texcoord;
+        |attribute vec4 a_effectValues;
         |
         |uniform mat4 u_matrix;
         |
         |varying vec2 v_texcoord;
+        |varying vec4 v_effectValues;
         |
         |void main(void) {
         |  gl_Position = u_matrix * coordinates;
         |
         |  // Pass the texcoord to the fragment shader.
         |  v_texcoord = a_texcoord;
+        |  v_effectValues = a_effectValues;
         |}
       """.stripMargin
 
@@ -185,6 +192,7 @@ object RendererFunctions {
         |
         |// Passed in from the vertex shader.
         |varying vec2 v_texcoord;
+        |varying vec4 v_effectValues;
         |
         |// The textures.
         |uniform sampler2D u_texture_game;
@@ -218,7 +226,7 @@ object RendererFunctions {
     shaderProgram
   }
 
-  def bindShaderToBuffer(cNc: ContextAndCanvas, shaderProgram: WebGLProgram, vertexBuffer: WebGLBuffer, textureBuffer: WebGLBuffer): Unit = {
+  def bindShaderToBuffer(cNc: ContextAndCanvas, shaderProgram: WebGLProgram, vertexBuffer: WebGLBuffer, textureBuffer: WebGLBuffer, effectsBuffer: WebGLBuffer): Unit = {
 
     val gl = cNc.context
 
@@ -251,6 +259,20 @@ object RendererFunctions {
       offset = 0
     )
     gl.enableVertexAttribArray(texCoOrdLocation)
+
+    // Effects info
+    gl.bindBuffer(ARRAY_BUFFER, effectsBuffer)
+
+    val effectValuesLocation = gl.getAttribLocation(shaderProgram, "a_effectValues")
+    gl.vertexAttribPointer(
+      indx = effectValuesLocation,
+      size = 4,
+      `type` = FLOAT,
+      normalized = false,
+      stride = 0,
+      offset = 0
+    )
+    gl.enableVertexAttribArray(effectValuesLocation)
 
   }
 
@@ -287,12 +309,12 @@ object RendererFunctions {
 
     val u_texture = gl.getUniformLocation(shaderProgram, "u_texture")
     gl.uniform1i(u_texture, 0)
-
-    val alphaLocation = gl.getUniformLocation(shaderProgram, "uAlpha")
-    gl.uniform1f(alphaLocation, displayObject.alpha)
-
-    val tintLocation = gl.getUniformLocation(shaderProgram, "uTint")
-    gl.uniform3fv(tintLocation, scalajs.js.Array[Double](displayObject.tintR, displayObject.tintG, displayObject.tintB))
+//
+//    val alphaLocation = gl.getUniformLocation(shaderProgram, "uAlpha")
+//    gl.uniform1f(alphaLocation, displayObject.alpha)
+//
+//    val tintLocation = gl.getUniformLocation(shaderProgram, "uTint")
+//    gl.uniform3fv(tintLocation, scalajs.js.Array[Double](displayObject.tintR, displayObject.tintG, displayObject.tintB))
 
     val texcoordScaleLocation = gl.getUniformLocation(shaderProgram, "uTexcoordScale")
     gl.uniform2fv(texcoordScaleLocation, displayObject.frame.scale.toScalaJSArrayDouble)
@@ -310,12 +332,12 @@ object RendererFunctions {
 
     val u_texture = gl.getUniformLocation(shaderProgram, "u_texture")
     gl.uniform1i(u_texture, 0)
-
-    val alphaLocation = gl.getUniformLocation(shaderProgram, "uAlpha")
-    gl.uniform1f(alphaLocation, displayObject.alpha)
-
-    val tintLocation = gl.getUniformLocation(shaderProgram, "uTint")
-    gl.uniform3fv(tintLocation, scalajs.js.Array[Double](displayObject.tintR, displayObject.tintG, displayObject.tintB))
+//
+//    val alphaLocation = gl.getUniformLocation(shaderProgram, "uAlpha")
+//    gl.uniform1f(alphaLocation, displayObject.alpha)
+//
+//    val tintLocation = gl.getUniformLocation(shaderProgram, "uTint")
+//    gl.uniform3fv(tintLocation, scalajs.js.Array[Double](displayObject.tintR, displayObject.tintG, displayObject.tintB))
 
     val texcoordScaleLocation = gl.getUniformLocation(shaderProgram, "uTexcoordScale")
     gl.uniform2fv(texcoordScaleLocation, displayObject.frame.scale.toScalaJSArrayDouble)

@@ -51,7 +51,7 @@ object MyView {
               .changeCycle(d.cycleName)
               .play()
         },
-        currentState.dude.dude.sprite.moveBy(8, 10)
+        currentState.dude.dude.sprite.moveBy(8, 10).withAlpha(0.5).withTint(0, 1, 0)
       )
     )
 

@@ -27,8 +27,16 @@ case class DisplayObject(x: Int,
                          frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
                         ) {
 
-  val vertices: scalajs.js.Array[Double] = DisplayObject.vertices
-  val textureCoordinates: scalajs.js.Array[Int] = DisplayObject.textureCoordinates
+  def vertices: scalajs.js.Array[Double] = DisplayObject.vertices //TODO: Transform
+  def textureCoordinates: scalajs.js.Array[Int] = DisplayObject.textureCoordinates //TODO: Transform
+  val effectValues: scalajs.js.Array[Double] = scalajs.js.Array[Double](
+    tintR,tintG,tintB,alpha,
+    tintR,tintG,tintB,alpha,
+    tintR,tintG,tintB,alpha,
+    tintR,tintG,tintB,alpha,
+    tintR,tintG,tintB,alpha,
+    tintR,tintG,tintB,alpha
+  )
   val vertexCount: Int = DisplayObject.vertexCount
   val mode: Int = DisplayObject.mode
 
@@ -44,7 +52,7 @@ object DisplayObject {
     1,0,0,
     1,1,0
   )
-  val vertexCount: Int = vertices.length / 3
+  val vertexCount: Int = 6
 
   val textureCoordinates: scalajs.js.Array[Int] = scalajs.js.Array[Int](
     0,0,

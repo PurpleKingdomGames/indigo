@@ -86,9 +86,10 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
       val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices)
       val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.textureCoordinates)
+      val effectsBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.effectValues)
 
       // Setup attributes
-      bindShaderToBuffer(cNc, lightingShaderProgram, vertexBuffer, textureBuffer)
+      bindShaderToBuffer(cNc, lightingShaderProgram, vertexBuffer, textureBuffer, effectsBuffer)
 
       textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
 
@@ -117,9 +118,10 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
       val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices)
       val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.textureCoordinates)
+      val effectsBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.effectValues)
 
       // Setup attributes
-      bindShaderToBuffer(cNc, shaderProgram, vertexBuffer, textureBuffer)
+      bindShaderToBuffer(cNc, shaderProgram, vertexBuffer, textureBuffer, effectsBuffer)
 
       textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
 
@@ -140,6 +142,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices)
     val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.textureCoordinates)
+    val effectsBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.effectValues)
 
     // Switch to canvas
     FrameBufferFunctions.switchToCanvas(cNc, config.clearColor)
@@ -148,7 +151,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     cNc.context.useProgram(mergeShaderProgram)
 
     // Setup attributes
-    bindShaderToBuffer(cNc, mergeShaderProgram, vertexBuffer, textureBuffer)
+    bindShaderToBuffer(cNc, mergeShaderProgram, vertexBuffer, textureBuffer, effectsBuffer)
 
     // Setup Uniforms
     setupVertexShader(cNc, mergeShaderProgram, displayObject, 1)
