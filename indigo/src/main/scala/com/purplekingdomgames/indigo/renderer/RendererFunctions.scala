@@ -62,11 +62,9 @@ object RendererFunctions {
         |
         |// The texture.
         |uniform sampler2D u_texture;
-        |uniform vec2 uTexcoordScale;
-        |uniform vec2 uTexcoordTranslate;
         |
         |void main(void) {
-        |   vec4 textureColor = texture2D(u_texture, (v_texcoord * uTexcoordScale) + uTexcoordTranslate);
+        |   vec4 textureColor = texture2D(u_texture, v_texcoord);
         |   gl_FragColor = textureColor * v_effectValues;
         |}
       """.stripMargin
@@ -127,11 +125,9 @@ object RendererFunctions {
         |
         |// The texture.
         |uniform sampler2D u_texture;
-        |uniform vec2 uTexcoordScale;
-        |uniform vec2 uTexcoordTranslate;
         |
         |void main(void) {
-        |   vec4 textureColor = texture2D(u_texture, (v_texcoord * uTexcoordScale) + uTexcoordTranslate);
+        |   vec4 textureColor = texture2D(u_texture, v_texcoord);
         |
         |   float average = (textureColor.r + textureColor.g + textureColor.b) / float(3);
         |
@@ -316,11 +312,11 @@ object RendererFunctions {
 //    val tintLocation = gl.getUniformLocation(shaderProgram, "uTint")
 //    gl.uniform3fv(tintLocation, scalajs.js.Array[Double](displayObject.tintR, displayObject.tintG, displayObject.tintB))
 
-    val texcoordScaleLocation = gl.getUniformLocation(shaderProgram, "uTexcoordScale")
-    gl.uniform2fv(texcoordScaleLocation, displayObject.frame.scale.toScalaJSArrayDouble)
-
-    val texcoordTranslateLocation = gl.getUniformLocation(shaderProgram, "uTexcoordTranslate")
-    gl.uniform2fv(texcoordTranslateLocation, displayObject.frame.translate.toScalaJSArrayDouble)
+//    val texcoordScaleLocation = gl.getUniformLocation(shaderProgram, "uTexcoordScale")
+//    gl.uniform2fv(texcoordScaleLocation, displayObject.frame.scale.toScalaJSArrayDouble)
+//
+//    val texcoordTranslateLocation = gl.getUniformLocation(shaderProgram, "uTexcoordTranslate")
+//    gl.uniform2fv(texcoordTranslateLocation, displayObject.frame.translate.toScalaJSArrayDouble)
   }
 
   def setupLightingFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, displayObject: DisplayObject): Unit = {
@@ -339,11 +335,11 @@ object RendererFunctions {
 //    val tintLocation = gl.getUniformLocation(shaderProgram, "uTint")
 //    gl.uniform3fv(tintLocation, scalajs.js.Array[Double](displayObject.tintR, displayObject.tintG, displayObject.tintB))
 
-    val texcoordScaleLocation = gl.getUniformLocation(shaderProgram, "uTexcoordScale")
-    gl.uniform2fv(texcoordScaleLocation, displayObject.frame.scale.toScalaJSArrayDouble)
-
-    val texcoordTranslateLocation = gl.getUniformLocation(shaderProgram, "uTexcoordTranslate")
-    gl.uniform2fv(texcoordTranslateLocation, displayObject.frame.translate.toScalaJSArrayDouble)
+//    val texcoordScaleLocation = gl.getUniformLocation(shaderProgram, "uTexcoordScale")
+//    gl.uniform2fv(texcoordScaleLocation, displayObject.frame.scale.toScalaJSArrayDouble)
+//
+//    val texcoordTranslateLocation = gl.getUniformLocation(shaderProgram, "uTexcoordTranslate")
+//    gl.uniform2fv(texcoordTranslateLocation, displayObject.frame.translate.toScalaJSArrayDouble)
 
   }
 

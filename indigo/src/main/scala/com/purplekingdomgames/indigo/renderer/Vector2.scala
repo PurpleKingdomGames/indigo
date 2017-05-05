@@ -13,6 +13,7 @@ case class Vector2(x: Double, y: Double) {
   def round: Vector2 = Vector2(Math.round(x), Math.round(y))
 
   def toScalaJSArrayDouble: scalajs.js.Array[Double] = scalajs.js.Array[Double](x, y)
+  def toScalaJSArrayInt: scalajs.js.Array[Int] = scalajs.js.Array[Int](x.toInt, y.toInt)
 
   def +(other: Vector2): Vector2 = Vector2.add(this, other)
   def -(other: Vector2): Vector2 = Vector2.subtract(this, other)
