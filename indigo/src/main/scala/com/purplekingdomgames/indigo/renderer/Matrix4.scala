@@ -21,7 +21,7 @@ case class Matrix4(mat: List[Double]) {
 
   def zRotate(angleInRadians: Double): Matrix4 = this * Matrix4.zRotation(angleInRadians)
 
-  def scale(sx: Double, sy: Double, sz: Double): Matrix4 = this * Matrix4.scaling(sx, sy, sz)
+  def scale(sx: Double, sy: Double, sz: Double): Matrix4 = this * Matrix4.scale(sx, sy, sz)
 
   def transpose: Matrix4 = Matrix4.transpose(this)
 
@@ -32,6 +32,9 @@ case class Matrix4(mat: List[Double]) {
 
   def orthographic(left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double): Matrix4 =
     this * Matrix4.orthographic(left, right, bottom, top, near, far)
+
+  def flip(horizontal: Boolean, vertical: Boolean): Matrix4 =
+    this * Matrix4.flip(horizontal, vertical)
 
 }
 
@@ -139,7 +142,7 @@ case object Matrix4 {
     )
   }
 
-  def scaling(sx: Double, sy: Double, sz: Double): Matrix4 = {
+  def scale(sx: Double, sy: Double, sz: Double): Matrix4 = {
     Matrix4(
       List(
         sx, 0,  0,  0,
@@ -221,6 +224,14 @@ case object Matrix4 {
       )
     )
   }
+
+  def flip(horizontal: Boolean, vertical: Boolean): Matrix4 =
+    (horizontal, vertical) match {
+      case (true, true) => Matrix4.scale(-1, -1, -1)
+      case (true, false) => Matrix4.scale(-1, 1, -1)
+      case (false, true) => Matrix4.scale(1, -1, -1)
+      case (false, false) => Matrix4.identity
+    }
 
   def apply(): Matrix4 = identity
 

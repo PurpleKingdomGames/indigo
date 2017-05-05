@@ -13,6 +13,7 @@ sealed trait DisplayLayer {
 }
 
 // TODO: Once batch rendering is in, almost all these fields can be private
+// TODO: Some of this can definitely be optimised, if there's any benefit to that.
 case class DisplayObject(x: Int,
                          y: Int,
                          z: Int,
@@ -28,11 +29,20 @@ case class DisplayObject(x: Int,
                          frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
                         ) {
 
-  def vertices: scalajs.js.Array[Double] = DisplayObject.vertices //TODO: Transform
+  def vertices(contextWidth: Int, contentHeight: Int, magnification: Int): scalajs.js.Array[Double] =
+    DisplayObject.convertVertexCoordsToJsArray(
+      DisplayObject.transformVertexCoords(
+        DisplayObject.vertices,
+        Matrix4
+          .scale(width, height, 1)
+          .translate(x, y, z)
+          .orthographic(0, contextWidth / magnification, contentHeight / magnification, 0, -10000, 10000)
+          .flip(flipHorizontal, flipVertical)
+      )
+    )
 
-  //(v_texcoord * uTexcoordScale) + uTexcoordTranslate
   def textureCoordinates: scalajs.js.Array[Double] =
-    DisplayObject.convertCoordsToJsArray(
+    DisplayObject.convertTextureCoordsToJsArray(
       DisplayObject.transformTextureCoords(
         DisplayObject.textureCoordinates,
         frame.translate,
@@ -54,16 +64,25 @@ case class DisplayObject(x: Int,
 }
 
 object DisplayObject {
-  val vertices: scalajs.js.Array[Double] = scalajs.js.Array[Double](
-    0,0,0,
-    0,1,0,
-    1,0,0,
 
-    0,1,0,
-    1,0,0,
-    1,1,0
+  val vertices: List[Vector4] = List(
+    Vector4.position(0, 0, 0),
+    Vector4.position(0, 1, 0),
+    Vector4.position(1, 0, 0),
+
+    Vector4.position(0, 1, 0),
+    Vector4.position(1, 0, 0),
+    Vector4.position(1, 1, 0)
   )
+
   val vertexCount: Int = 6
+
+  def transformVertexCoords(baseCoords: List[Vector4], matrix4: Matrix4): List[Vector4] = {
+    baseCoords.map(_.applyMatrix4(matrix4))
+  }
+
+  def convertVertexCoordsToJsArray(coords: List[Vector4]): scalajs.js.Array[Double] =
+    coords.map(_.toScalaJSArrayDouble).foldLeft(scalajs.js.Array[Double]())(_.concat(_))
 
   val textureCoordinates: List[Vector2] = List(
     Vector2(0, 0),
@@ -81,25 +100,8 @@ object DisplayObject {
     baseCoords.map(_.scale(scale).translate(translate))
   }
 
-  def convertCoordsToJsArray(coords: List[Vector2]): scalajs.js.Array[Double] =
+  def convertTextureCoordsToJsArray(coords: List[Vector2]): scalajs.js.Array[Double] =
     coords.map(_.toScalaJSArrayDouble).foldLeft(scalajs.js.Array[Double]())(_.concat(_))
-
-//  val matrix4: Matrix4 = Matrix4
-//    .orthographic(0, cNc.width / magnification, cNc.height / magnification, 0, -10000, 10000)
-//    .translate(displayObject.x, displayObject.y, displayObject.z)
-//    .scale(displayObject.width, displayObject.height, 1)
-
-  // then add the flip!
-  //Matrix4.multiply(matrix4, flipMatrix((displayObject.flipHorizontal, displayObject.flipVertical)))
-
-//  val flipMatrix: ((Boolean, Boolean)) => Matrix4 = flipValues => {
-//    flipValues match {
-//      case (true, true)   => Matrix4.identity.translate(1, 1, 0).scale(-1, -1, -1)
-//      case (true, false)  => Matrix4.identity.translate(1, 0, 0).scale(-1,  1, -1)
-//      case (false, true)  => Matrix4.identity.translate(0, 1, 0).scale( 1, -1, -1)
-//      case (false, false) => Matrix4.identity
-//    }
-//  }
 
 }
 

@@ -30,13 +30,11 @@ object RendererFunctions {
         |attribute vec2 a_texcoord;
         |attribute vec4 a_effectValues;
         |
-        |uniform mat4 u_matrix;
-        |
         |varying vec2 v_texcoord;
         |varying vec4 v_effectValues;
         |
         |void main(void) {
-        |  gl_Position = u_matrix * coordinates;
+        |  gl_Position = coordinates;
         |
         |  // Pass the texcoord to the fragment shader.
         |  v_texcoord = a_texcoord;
@@ -93,13 +91,11 @@ object RendererFunctions {
         |attribute vec2 a_texcoord;
         |attribute vec4 a_effectValues;
         |
-        |uniform mat4 u_matrix;
-        |
         |varying vec2 v_texcoord;
         |varying vec4 v_effectValues;
         |
         |void main(void) {
-        |  gl_Position = u_matrix * coordinates;
+        |  gl_Position = coordinates;
         |
         |  // Pass the texcoord to the fragment shader.
         |  v_texcoord = a_texcoord;
@@ -159,13 +155,11 @@ object RendererFunctions {
         |attribute vec2 a_texcoord;
         |attribute vec4 a_effectValues;
         |
-        |uniform mat4 u_matrix;
-        |
         |varying vec2 v_texcoord;
         |varying vec4 v_effectValues;
         |
         |void main(void) {
-        |  gl_Position = u_matrix * coordinates;
+        |  gl_Position = coordinates;
         |
         |  // Pass the texcoord to the fragment shader.
         |  v_texcoord = a_texcoord;
@@ -305,18 +299,6 @@ object RendererFunctions {
 
     val u_texture = gl.getUniformLocation(shaderProgram, "u_texture")
     gl.uniform1i(u_texture, 0)
-//
-//    val alphaLocation = gl.getUniformLocation(shaderProgram, "uAlpha")
-//    gl.uniform1f(alphaLocation, displayObject.alpha)
-//
-//    val tintLocation = gl.getUniformLocation(shaderProgram, "uTint")
-//    gl.uniform3fv(tintLocation, scalajs.js.Array[Double](displayObject.tintR, displayObject.tintG, displayObject.tintB))
-
-//    val texcoordScaleLocation = gl.getUniformLocation(shaderProgram, "uTexcoordScale")
-//    gl.uniform2fv(texcoordScaleLocation, displayObject.frame.scale.toScalaJSArrayDouble)
-//
-//    val texcoordTranslateLocation = gl.getUniformLocation(shaderProgram, "uTexcoordTranslate")
-//    gl.uniform2fv(texcoordTranslateLocation, displayObject.frame.translate.toScalaJSArrayDouble)
   }
 
   def setupLightingFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, displayObject: DisplayObject): Unit = {
@@ -328,18 +310,6 @@ object RendererFunctions {
 
     val u_texture = gl.getUniformLocation(shaderProgram, "u_texture")
     gl.uniform1i(u_texture, 0)
-//
-//    val alphaLocation = gl.getUniformLocation(shaderProgram, "uAlpha")
-//    gl.uniform1f(alphaLocation, displayObject.alpha)
-//
-//    val tintLocation = gl.getUniformLocation(shaderProgram, "uTint")
-//    gl.uniform3fv(tintLocation, scalajs.js.Array[Double](displayObject.tintR, displayObject.tintG, displayObject.tintB))
-
-//    val texcoordScaleLocation = gl.getUniformLocation(shaderProgram, "uTexcoordScale")
-//    gl.uniform2fv(texcoordScaleLocation, displayObject.frame.scale.toScalaJSArrayDouble)
-//
-//    val texcoordTranslateLocation = gl.getUniformLocation(shaderProgram, "uTexcoordTranslate")
-//    gl.uniform2fv(texcoordTranslateLocation, displayObject.frame.translate.toScalaJSArrayDouble)
 
   }
 
@@ -362,31 +332,6 @@ object RendererFunctions {
 
     // Reset to TEXTURE0 before the next round of rendering happens.
     gl.activeTexture(TEXTURE0)
-  }
-
-  def flipMatrix(flipHorizontal: Boolean, flipVertical: Boolean): Matrix4 =
-    (flipHorizontal, flipVertical) match {
-      case (true, true) => Matrix4.identity.scale(-1, -1, -1)
-      case (true, false) => Matrix4.identity.scale(-1, 1, -1)
-      case (false, true) => Matrix4.identity.scale(1, -1, -1)
-      case (false, false) => Matrix4.identity
-    }
-
-  def setupVertexShader(cNc: ContextAndCanvas, shaderProgram: WebGLProgram, displayObject: DisplayObject, magnification: Int): Unit = {
-    val translation = cNc.context.getUniformLocation(shaderProgram, "u_matrix")
-
-    val matrix4: Matrix4 =
-      Matrix4
-        .identity
-        .scale(displayObject.width, displayObject.height, 1)
-        .translate(displayObject.x, displayObject.y, displayObject.z)
-        .orthographic(0, cNc.width / magnification, cNc.height / magnification, 0, -10000, 10000)
-
-    cNc.context.uniformMatrix4fv(
-      location = translation,
-      transpose = false,
-      value = matrix4 * flipMatrix(displayObject.flipHorizontal, displayObject.flipVertical)
-    )
   }
 
   def resize(canvas: html.Canvas, actualWidth: Int, actualHeight: Int): Unit =

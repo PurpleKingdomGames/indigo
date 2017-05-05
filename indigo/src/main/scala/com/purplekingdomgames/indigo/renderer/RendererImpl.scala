@@ -15,13 +15,13 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   import RendererFunctions._
 
-  private val screenDisplayObject: DisplayObject =
+  private def screenDisplayObject(w: Int, h: Int): DisplayObject =
     DisplayObject(
       x = 0,
       y = 0,
       z = 1,
-      width = cNc.width,
-      height = cNc.height,
+      width = w,
+      height = h,
       imageRef = "",
       alpha = 1,
       tintR = 1,
@@ -69,7 +69,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(DrawUiLayerEndMetric)
 
     metrics.record(RenderToConvasStartMetric)
-    renderToCanvas(screenDisplayObject)
+    renderToCanvas(screenDisplayObject(cNc.width, cNc.height))
     metrics.record(RenderToConvasEndMetric)
   }
 
@@ -84,7 +84,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     // Draw as normal
     displayLayer.displayObjects.foreach { displayObject =>
 
-      val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices)
+      val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices(cNc.width, cNc.height, cNc.magnification))
       val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.textureCoordinates)
       val effectsBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.effectValues)
 
@@ -94,7 +94,6 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
 
         // Setup Uniforms
-        setupVertexShader(cNc, lightingShaderProgram, displayObject, cNc.magnification)
         setupLightingFragmentShader(cNc.context, lightingShaderProgram, textureLookup.texture, displayObject)
 
         // Draw
@@ -116,7 +115,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     // Draw as normal
     displayLayer.displayObjects.sortBy(d => d.z).foreach { displayObject =>
 
-      val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices)
+      val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices(cNc.width, cNc.height, cNc.magnification))
       val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.textureCoordinates)
       val effectsBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.effectValues)
 
@@ -126,7 +125,6 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
 
         // Setup Uniforms
-        setupVertexShader(cNc, shaderProgram, displayObject, cNc.magnification)
         setupFragmentShader(cNc.context, shaderProgram, textureLookup.texture, displayObject)
 
         // Draw
@@ -140,7 +138,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   private def renderToCanvas(displayObject: DisplayObject)(implicit metrics: IMetrics): Unit = {
 
-    val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices)
+    val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices(cNc.width, cNc.height, 1))
     val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.textureCoordinates)
     val effectsBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.effectValues)
 
@@ -154,7 +152,6 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     bindShaderToBuffer(cNc, mergeShaderProgram, vertexBuffer, textureBuffer, effectsBuffer)
 
     // Setup Uniforms
-    setupVertexShader(cNc, mergeShaderProgram, displayObject, 1)
     setupMergeFragmentShader(cNc.context, mergeShaderProgram, gameFrameBuffer.texture, lightingFrameBuffer.texture, uiFrameBuffer.texture, displayObject)
 
     // Draw
