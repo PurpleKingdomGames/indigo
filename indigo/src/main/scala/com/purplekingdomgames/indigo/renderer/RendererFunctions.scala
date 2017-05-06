@@ -290,22 +290,22 @@ object RendererFunctions {
 
   private var lastTextureName: String = ""
 
-  def setupFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, displayObject: DisplayObject): Unit = {
+  def setupFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, imageRef: String): Unit = {
 
-    if(displayObject.imageRef != lastTextureName) {
+    if(imageRef != lastTextureName) {
       gl.bindTexture(TEXTURE_2D, texture)
-      lastTextureName = displayObject.imageRef
+      lastTextureName = imageRef
     }
 
     val u_texture = gl.getUniformLocation(shaderProgram, "u_texture")
     gl.uniform1i(u_texture, 0)
   }
 
-  def setupLightingFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, displayObject: DisplayObject): Unit = {
+  def setupLightingFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, imageRef: String): Unit = {
 
-    if(displayObject.imageRef != lastTextureName) {
+    if(imageRef != lastTextureName) {
       gl.bindTexture(TEXTURE_2D, texture)
-      lastTextureName = displayObject.imageRef
+      lastTextureName = imageRef
     }
 
     val u_texture = gl.getUniformLocation(shaderProgram, "u_texture")
@@ -313,7 +313,7 @@ object RendererFunctions {
 
   }
 
-  def setupMergeFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, textureGame: WebGLTexture, textureLighting: WebGLTexture, textureUi: WebGLTexture, displayObject: DisplayObject): Unit = {
+  def setupMergeFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, textureGame: WebGLTexture, textureLighting: WebGLTexture, textureUi: WebGLTexture): Unit = {
 
     val u_texture_game = gl.getUniformLocation(shaderProgram, "u_texture_game")
     gl.uniform1i(u_texture_game, 1)

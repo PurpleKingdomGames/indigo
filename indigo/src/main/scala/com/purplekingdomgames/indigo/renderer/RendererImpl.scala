@@ -82,9 +82,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     cNc.context.useProgram(lightingShaderProgram)
 
     // Draw as normal
-    displayLayer.displayObjects.foreach { displayObject =>
+    DisplayObject.sortAndCompress(cNc.width, cNc.height, cNc.magnification)(displayLayer.displayObjects).foreach { displayObject =>
 
-      val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices(cNc.width, cNc.height, cNc.magnification))
+      val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices)
       val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.textureCoordinates)
       val effectsBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.effectValues)
 
@@ -94,7 +94,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
 
         // Setup Uniforms
-        setupLightingFragmentShader(cNc.context, lightingShaderProgram, textureLookup.texture, displayObject)
+        setupLightingFragmentShader(cNc.context, lightingShaderProgram, textureLookup.texture, displayObject.imageRef)
 
         // Draw
         cNc.context.drawArrays(displayObject.mode, 0, displayObject.vertexCount)
@@ -113,9 +113,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     cNc.context.useProgram(shaderProgram)
 
     // Draw as normal
-    displayLayer.displayObjects.sortBy(d => d.z).foreach { displayObject =>
+    DisplayObject.sortAndCompress(cNc.width, cNc.height, cNc.magnification)(displayLayer.displayObjects).foreach { displayObject =>
 
-      val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices(cNc.width, cNc.height, cNc.magnification))
+      val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices)
       val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.textureCoordinates)
       val effectsBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.effectValues)
 
@@ -125,7 +125,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
 
         // Setup Uniforms
-        setupFragmentShader(cNc.context, shaderProgram, textureLookup.texture, displayObject)
+        setupFragmentShader(cNc.context, shaderProgram, textureLookup.texture, displayObject.imageRef)
 
         // Draw
         cNc.context.drawArrays(displayObject.mode, 0, displayObject.vertexCount)
@@ -138,9 +138,11 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   private def renderToCanvas(displayObject: DisplayObject)(implicit metrics: IMetrics): Unit = {
 
-    val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices(cNc.width, cNc.height, 1))
-    val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.textureCoordinates)
-    val effectsBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.effectValues)
+    val compressed = displayObject.toCompressed(cNc.width, cNc.height, 1)
+
+    val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, compressed.vertices)
+    val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, compressed.textureCoordinates)
+    val effectsBuffer: WebGLBuffer = createVertexBuffer(cNc.context, compressed.effectValues)
 
     // Switch to canvas
     FrameBufferFunctions.switchToCanvas(cNc, config.clearColor)
@@ -152,10 +154,10 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     bindShaderToBuffer(cNc, mergeShaderProgram, vertexBuffer, textureBuffer, effectsBuffer)
 
     // Setup Uniforms
-    setupMergeFragmentShader(cNc.context, mergeShaderProgram, gameFrameBuffer.texture, lightingFrameBuffer.texture, uiFrameBuffer.texture, displayObject)
+    setupMergeFragmentShader(cNc.context, mergeShaderProgram, gameFrameBuffer.texture, lightingFrameBuffer.texture, uiFrameBuffer.texture)
 
     // Draw
-    cNc.context.drawArrays(displayObject.mode, 0, displayObject.vertexCount)
+    cNc.context.drawArrays(compressed.mode, 0, compressed.vertexCount)
     metrics.record(ToCanvasDrawCallMetric)
 
   }

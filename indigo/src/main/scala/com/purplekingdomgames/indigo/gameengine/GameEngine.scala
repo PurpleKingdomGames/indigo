@@ -242,9 +242,16 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
   private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNodeFlat[ViewEventDataType], assetMapping: AssetMapping): Displayable =
     Displayable(
-      GameDisplayLayer(rootNode.game.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType](assetMapping))),
-      LightingDisplayLayer(rootNode.lighting.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType](assetMapping)), rootNode.lighting.ambientLight),
-      UiDisplayLayer(rootNode.ui.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType](assetMapping)))
+      GameDisplayLayer(
+        rootNode.game.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType](assetMapping))
+      ),
+      LightingDisplayLayer(
+        rootNode.lighting.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType](assetMapping)),
+        rootNode.lighting.ambientLight
+      ),
+      UiDisplayLayer(
+        rootNode.ui.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject[ViewEventDataType](assetMapping))
+      )
     )
 
   private def drawScene(renderer: IRenderer, displayable: Displayable): Unit =

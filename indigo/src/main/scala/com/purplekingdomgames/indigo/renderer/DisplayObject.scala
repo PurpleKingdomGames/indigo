@@ -12,6 +12,25 @@ sealed trait DisplayLayer {
   val displayObjects: List[DisplayObject]
 }
 
+case class CompressedDisplayObject(imageRef: String, contextWidth: Int, contentHeight: Int, magnification: Int, vertices: scalajs.js.Array[Double], textureCoordinates: scalajs.js.Array[Double], effectValues: scalajs.js.Array[Double]) {
+  val vertexCount: Int = vertices.length / 3
+  val mode: Int = DisplayObject.mode
+
+  def +(other: CompressedDisplayObject): CompressedDisplayObject =
+    CompressedDisplayObject(
+      imageRef,
+      contextWidth,
+      contentHeight,
+      magnification,
+      vertices.concat(other.vertices),
+      textureCoordinates.concat(other.textureCoordinates),
+      effectValues.concat(other.effectValues)
+    )
+
+  def addDisplayObject(displayObject: DisplayObject): CompressedDisplayObject =
+    this + displayObject.toCompressed(contextWidth, contentHeight, magnification)
+}
+
 // TODO: Once batch rendering is in, almost all these fields can be private
 // TODO: Some of this can definitely be optimised, if there's any benefit to that.
 case class DisplayObject(x: Int,
@@ -29,7 +48,7 @@ case class DisplayObject(x: Int,
                          frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
                         ) {
 
-  def vertices(contextWidth: Int, contentHeight: Int, magnification: Int): scalajs.js.Array[Double] =
+  private def vertices(contextWidth: Int, contentHeight: Int, magnification: Int): scalajs.js.Array[Double] =
     DisplayObject.convertVertexCoordsToJsArray(
       DisplayObject.transformVertexCoords(
         DisplayObject.vertices,
@@ -41,7 +60,7 @@ case class DisplayObject(x: Int,
       )
     )
 
-  def textureCoordinates: scalajs.js.Array[Double] =
+  private def textureCoordinates: scalajs.js.Array[Double] =
     DisplayObject.convertTextureCoordsToJsArray(
       DisplayObject.transformTextureCoords(
         DisplayObject.textureCoordinates,
@@ -50,7 +69,7 @@ case class DisplayObject(x: Int,
       )
     )
 
-  val effectValues: scalajs.js.Array[Double] = scalajs.js.Array[Double](
+  private val effectValues: scalajs.js.Array[Double] = scalajs.js.Array[Double](
     tintR,tintG,tintB,alpha,
     tintR,tintG,tintB,alpha,
     tintR,tintG,tintB,alpha,
@@ -58,8 +77,9 @@ case class DisplayObject(x: Int,
     tintR,tintG,tintB,alpha,
     tintR,tintG,tintB,alpha
   )
-  val vertexCount: Int = DisplayObject.vertexCount
-  val mode: Int = DisplayObject.mode
+
+  def toCompressed(contextWidth: Int, contentHeight: Int, magnification: Int): CompressedDisplayObject =
+    CompressedDisplayObject(imageRef, contextWidth, contentHeight, magnification, vertices(contextWidth, contentHeight, magnification), textureCoordinates, effectValues)
 
 }
 
@@ -102,6 +122,35 @@ object DisplayObject {
 
   def convertTextureCoordsToJsArray(coords: List[Vector2]): scalajs.js.Array[Double] =
     coords.map(_.toScalaJSArrayDouble).foldLeft(scalajs.js.Array[Double]())(_.concat(_))
+
+  def sortAndCompress(contextWidth: Int, contentHeight: Int, magnification: Int): List[DisplayObject] => List[CompressedDisplayObject] =
+    sortByDepth andThen compress(contextWidth, contentHeight, magnification)
+
+  val sortByDepth: List[DisplayObject] => List[DisplayObject] = displayObjects =>
+    displayObjects.sortBy(d => d.z)
+
+  def compress(contextWidth: Int, contentHeight: Int, magnification: Int): List[DisplayObject] => List[CompressedDisplayObject] = displayObjects => {
+    def rec(remaining: List[DisplayObject], currentAccDisplayObject: Option[CompressedDisplayObject], acc: List[CompressedDisplayObject]): List[CompressedDisplayObject] = {
+      (remaining, currentAccDisplayObject) match {
+        case (Nil, None) =>
+          acc
+
+        case (Nil, Some(cdo)) =>
+          acc :+ cdo
+
+        case (x :: xs, None) =>
+          rec(xs, Option(x.toCompressed(contextWidth, contentHeight, magnification)), acc)
+
+        case (x :: xs, Some(cdo)) if x.imageRef != cdo.imageRef =>
+          rec(xs, Option(x.toCompressed(contextWidth, contentHeight, magnification)), acc :+ cdo)
+
+        case (x :: xs, Some(cdo)) =>
+          rec(xs, Option(cdo.addDisplayObject(x)), acc)
+      }
+    }
+
+    rec(displayObjects, None, Nil)
+  }
 
 }
 
