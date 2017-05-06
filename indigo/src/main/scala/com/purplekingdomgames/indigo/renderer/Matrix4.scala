@@ -33,6 +33,9 @@ case class Matrix4(mat: List[Double]) {
   def orthographic(left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double): Matrix4 =
     this * Matrix4.orthographic(left, right, bottom, top, near, far)
 
+  def withOrthographic(orthographic: Matrix4): Matrix4 =
+    this * orthographic
+
   def flip(horizontal: Boolean, vertical: Boolean): Matrix4 =
     this * Matrix4.flip(horizontal, vertical)
 
@@ -87,6 +90,10 @@ case object Matrix4 {
         (left + right) / (left - right), (bottom + top) / (bottom - top), (near + far) / (near - far), 1
       )
     )
+  }
+
+  def orthographic(width: Double, height: Double): Matrix4 = {
+    orthographic(0, width, height, 0, -10000, 10000)
   }
 
   def translation(tx: Double, ty: Double, tz: Double): Matrix4 = {
@@ -149,6 +156,17 @@ case object Matrix4 {
         0, sy,  0,  0,
         0,  0, sz,  0,
         0,  0,  0,  1
+      )
+    )
+  }
+
+  def translateAndScale(tx: Double, ty: Double, tz: Double, sx: Double, sy: Double, sz: Double): Matrix4 = {
+    Matrix4(
+      List(
+        sx, 0,  0,  0,
+        0, sy,  0,  0,
+        0,  0, sz,  0,
+        tx, ty, tz,  1
       )
     )
   }

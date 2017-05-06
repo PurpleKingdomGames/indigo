@@ -334,10 +334,19 @@ object RendererFunctions {
     gl.activeTexture(TEXTURE0)
   }
 
-  def resize(canvas: html.Canvas, actualWidth: Int, actualHeight: Int): Unit =
-    if (canvas.width != actualWidth || canvas.height != actualHeight) {
+  private var resizeRun: Boolean = false
+  private var orthographicProjectionMatrix: Matrix4 = Matrix4.identity
+
+  def resize(canvas: html.Canvas, actualWidth: Int, actualHeight: Int, magnification: Int): Matrix4 =
+    if (!resizeRun || canvas.width != actualWidth || canvas.height != actualHeight) {
+      resizeRun = true
       canvas.width = actualWidth
       canvas.height = actualHeight
+
+      orthographicProjectionMatrix = Matrix4.orthographic(actualWidth / magnification, actualHeight / magnification)
+      orthographicProjectionMatrix
+    } else {
+      orthographicProjectionMatrix
     }
 
 }

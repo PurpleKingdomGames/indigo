@@ -12,23 +12,21 @@ sealed trait DisplayLayer {
   val displayObjects: List[DisplayObject]
 }
 
-case class CompressedDisplayObject(imageRef: String, contextWidth: Int, contextHeight: Int, magnification: Int, vertices: scalajs.js.Array[Double], textureCoordinates: scalajs.js.Array[Double], effectValues: scalajs.js.Array[Double]) {
+case class CompressedDisplayObject(imageRef: String, orthographicProjectionMatrix: Matrix4, vertices: scalajs.js.Array[Double], textureCoordinates: scalajs.js.Array[Double], effectValues: scalajs.js.Array[Double]) {
   val vertexCount: Int = vertices.length / 3
   val mode: Int = DisplayObject.mode
 
   def +(other: CompressedDisplayObject): CompressedDisplayObject =
     CompressedDisplayObject(
       imageRef,
-      contextWidth,
-      contextHeight,
-      magnification,
+      orthographicProjectionMatrix,
       vertices.concat(other.vertices),
       textureCoordinates.concat(other.textureCoordinates),
       effectValues.concat(other.effectValues)
     )
 
   def addDisplayObject(displayObject: DisplayObject): CompressedDisplayObject =
-    this + displayObject.toCompressed(contextWidth, contextHeight, magnification)
+    this + displayObject.toCompressed(orthographicProjectionMatrix)
 }
 
 // TODO: Once batch rendering is in, almost all these fields can be private
@@ -48,14 +46,13 @@ case class DisplayObject(x: Int,
                          frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
                         ) {
 
-  private def vertices(contextWidth: Int, contextHeight: Int, magnification: Int): scalajs.js.Array[Double] =
+  private def vertices(orthographicProjectionMatrix: Matrix4): scalajs.js.Array[Double] =
     DisplayObject.convertVertexCoordsToJsArray(
       DisplayObject.transformVertexCoords(
         DisplayObject.vertices,
         Matrix4
-          .scale(width, height, 1)
-          .translate(x, y, z)
-          .orthographic(0, contextWidth / magnification, contextHeight / magnification, 0, -10000, 10000)
+          .translateAndScale(x, y, z, width, height, 1)
+          .withOrthographic(orthographicProjectionMatrix)
           .flip(flipHorizontal, flipVertical)
       )
     )
@@ -78,8 +75,8 @@ case class DisplayObject(x: Int,
     tintR,tintG,tintB,alpha
   )
 
-  def toCompressed(contextWidth: Int, contextHeight: Int, magnification: Int): CompressedDisplayObject =
-    CompressedDisplayObject(imageRef, contextWidth, contextHeight, magnification, vertices(contextWidth, contextHeight, magnification), textureCoordinates, effectValues)
+  def toCompressed(orthographicProjectionMatrix: Matrix4): CompressedDisplayObject =
+    CompressedDisplayObject(imageRef, orthographicProjectionMatrix, vertices(orthographicProjectionMatrix), textureCoordinates, effectValues)
 
 }
 
@@ -123,13 +120,13 @@ object DisplayObject {
   def convertTextureCoordsToJsArray(coords: List[Vector2]): scalajs.js.Array[Double] =
     coords.map(_.toScalaJSArrayDouble).foldLeft(scalajs.js.Array[Double]())(_.concat(_))
 
-  def sortAndCompress(contextWidth: Int, contextHeight: Int, magnification: Int): List[DisplayObject] => List[CompressedDisplayObject] =
-    sortByDepth andThen compress(contextWidth, contextHeight, magnification)
+  def sortAndCompress(orthographicProjectionMatrix: Matrix4): List[DisplayObject] => List[CompressedDisplayObject] =
+    sortByDepth andThen compress(orthographicProjectionMatrix)
 
   val sortByDepth: List[DisplayObject] => List[DisplayObject] = displayObjects =>
     displayObjects.sortWith((d1, d2) => d1.z < d2.z)
 
-  def compress(contextWidth: Int, contextHeight: Int, magnification: Int): List[DisplayObject] => List[CompressedDisplayObject] = displayObjects => {
+  def compress(orthographicProjectionMatrix: Matrix4): List[DisplayObject] => List[CompressedDisplayObject] = displayObjects => {
     def rec(remaining: List[DisplayObject], currentAccDisplayObject: Option[CompressedDisplayObject], acc: List[CompressedDisplayObject]): List[CompressedDisplayObject] = {
       (remaining, currentAccDisplayObject) match {
         case (Nil, None) =>
@@ -139,10 +136,10 @@ object DisplayObject {
           acc :+ cdo
 
         case (x :: xs, None) =>
-          rec(xs, Option(x.toCompressed(contextWidth, contextHeight, magnification)), acc)
+          rec(xs, Option(x.toCompressed(orthographicProjectionMatrix)), acc)
 
         case (x :: xs, Some(cdo)) if x.imageRef != cdo.imageRef =>
-          rec(xs, Option(x.toCompressed(contextWidth, contextHeight, magnification)), acc :+ cdo)
+          rec(xs, Option(x.toCompressed(orthographicProjectionMatrix)), acc :+ cdo)
 
         case (x :: xs, Some(cdo)) =>
           rec(xs, Option(cdo.addDisplayObject(x)), acc)

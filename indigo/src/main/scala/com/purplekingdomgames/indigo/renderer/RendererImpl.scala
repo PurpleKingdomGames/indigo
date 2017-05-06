@@ -54,26 +54,26 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   def drawScene(displayable: Displayable)(implicit metrics: IMetrics): Unit = {
 
-    resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight)
+    val projectionMatrix: Matrix4 = resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight, cNc.magnification)
 
     metrics.record(DrawGameLayerStartMetric)
-    drawLayerToTexture(displayable.game, gameFrameBuffer, config.clearColor, drawBg = false)
+    drawLayerToTexture(displayable.game, gameFrameBuffer, config.clearColor, projectionMatrix, drawBg = false)
     metrics.record(DrawGameLayerEndMetric)
 
     metrics.record(DrawLightingLayerStartMetric)
-    drawLightingLayerToTexture(displayable.lighting, lightingFrameBuffer, displayable.lighting.ambientLight)
+    drawLightingLayerToTexture(displayable.lighting, lightingFrameBuffer, displayable.lighting.ambientLight, projectionMatrix)
     metrics.record(DrawLightingLayerEndMetric)
 
     metrics.record(DrawUiLayerStartMetric)
-    drawLayerToTexture(displayable.ui, uiFrameBuffer, ClearColor.Black.forceTransparent, drawBg = false)
+    drawLayerToTexture(displayable.ui, uiFrameBuffer, ClearColor.Black.forceTransparent, projectionMatrix, drawBg = false)
     metrics.record(DrawUiLayerEndMetric)
 
     metrics.record(RenderToConvasStartMetric)
-    renderToCanvas(screenDisplayObject(cNc.width, cNc.height))
+    renderToCanvas(screenDisplayObject(cNc.width, cNc.height), projectionMatrix)
     metrics.record(RenderToConvasEndMetric)
   }
 
-  private def drawLightingLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor)(implicit metrics: IMetrics): Unit = {
+  private def drawLightingLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor, projectionMatrix: Matrix4)(implicit metrics: IMetrics): Unit = {
 
     // Switch to the frameBuffer
     FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)
@@ -82,7 +82,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     cNc.context.useProgram(lightingShaderProgram)
 
     // Draw as normal
-    DisplayObject.sortAndCompress(cNc.width, cNc.height, cNc.magnification)(displayLayer.displayObjects).foreach { displayObject =>
+    DisplayObject.sortAndCompress(projectionMatrix)(displayLayer.displayObjects).foreach { displayObject =>
 
       val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices)
       val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.textureCoordinates)
@@ -104,7 +104,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   }
 
-  private def drawLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor, drawBg: Boolean)(implicit metrics: IMetrics): Unit = {
+  private def drawLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor, projectionMatrix: Matrix4, drawBg: Boolean)(implicit metrics: IMetrics): Unit = {
 
     // Switch to the frameBuffer
     FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)
@@ -113,7 +113,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     cNc.context.useProgram(shaderProgram)
 
     // Draw as normal
-    DisplayObject.sortAndCompress(cNc.width, cNc.height, cNc.magnification)(displayLayer.displayObjects).foreach { displayObject =>
+    DisplayObject.sortAndCompress(projectionMatrix)(displayLayer.displayObjects).foreach { displayObject =>
 
       val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices)
       val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.textureCoordinates)
@@ -136,9 +136,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   }
 
-  private def renderToCanvas(displayObject: DisplayObject)(implicit metrics: IMetrics): Unit = {
+  private def renderToCanvas(displayObject: DisplayObject, projectionMatrix: Matrix4)(implicit metrics: IMetrics): Unit = {
 
-    val compressed = displayObject.toCompressed(cNc.width, cNc.height, 1)
+    val compressed = displayObject.toCompressed(projectionMatrix)
 
     val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, compressed.vertices)
     val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, compressed.textureCoordinates)
