@@ -14,7 +14,7 @@ object PerfGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel, My
 
   def config: GameConfig = GameConfig(
     viewport = GameViewport(viewportWidth, viewportHeight),
-    frameRate = 30,
+    frameRate = 60,
     clearColor = ClearColor(0.4, 0.2, 0.5, 1),
     magnification = magnificationLevel,
     advanced = AdvancedGameConfig(

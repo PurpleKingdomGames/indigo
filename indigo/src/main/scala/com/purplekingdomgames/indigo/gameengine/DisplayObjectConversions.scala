@@ -117,7 +117,6 @@ object DisplayObjectConversions {
 
   }
 
-
   def textLineToDisplayObjects[ViewEventDataType](leaf: Text[ViewEventDataType], assetMapping: AssetMapping): (TextLine, Int, Int) => List[DisplayObject] = (line, alignmentOffsetX, yOffset) =>
     zipWithCharDetails(line.text.toList, leaf.fontInfo).map { case (fontChar, xPosition) =>
       DisplayObject(
