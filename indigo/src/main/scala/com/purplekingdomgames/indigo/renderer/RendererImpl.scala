@@ -100,6 +100,11 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
         cNc.context.drawArrays(displayObject.mode, 0, displayObject.vertexCount)
         metrics.record(LightingDrawCallMetric)
       }
+
+      cNc.context.deleteBuffer(vertexBuffer)
+      cNc.context.deleteBuffer(textureBuffer)
+      cNc.context.deleteBuffer(effectsBuffer)
+
     }
 
   }
