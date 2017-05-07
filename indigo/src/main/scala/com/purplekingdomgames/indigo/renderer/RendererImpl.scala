@@ -73,7 +73,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(DrawUiLayerEndMetric)
 
     metrics.record(RenderToConvasStartMetric)
-    renderToCanvas(screenDisplayObject(cNc.width, cNc.height), projectionMatrix)
+    renderToCanvas(screenDisplayObject(cNc.width, cNc.height))
     metrics.record(RenderToConvasEndMetric)
   }
 
@@ -87,6 +87,8 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     // Draw as normal
     DisplayObject.sortAndCompress(projectionMatrix)(displayLayer.displayObjects).foreach { displayObject =>
+
+      metrics.record(LightingDrawCallLengthStartMetric)
 
       bindToBuffer(cNc.context, vertexBuffer, displayObject.vertices)
       bindToBuffer(cNc.context, textureBuffer, displayObject.textureCoordinates)
@@ -105,6 +107,8 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
         metrics.record(LightingDrawCallMetric)
       }
 
+      metrics.record(LightingDrawCallLengthEndMetric)
+
     }
 
   }
@@ -118,7 +122,10 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     cNc.context.useProgram(shaderProgram)
 
     // Draw as normal
-    DisplayObject.sortAndCompress(projectionMatrix)(displayLayer.displayObjects).foreach { displayObject =>
+    val compressed = DisplayObject.sortAndCompress(projectionMatrix)(displayLayer.displayObjects)
+
+    compressed.foreach { displayObject =>
+      metrics.record(NormalDrawCallLengthStartMetric)
 
       bindToBuffer(cNc.context, vertexBuffer, displayObject.vertices)
       bindToBuffer(cNc.context, textureBuffer, displayObject.textureCoordinates)
@@ -137,13 +144,17 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
         metrics.record(NormalLayerDrawCallMetric)
 
       }
+
+      metrics.record(NormalDrawCallLengthEndMetric)
     }
 
   }
 
-  private def renderToCanvas(displayObject: DisplayObject, projectionMatrix: Matrix4)(implicit metrics: IMetrics): Unit = {
+  private def renderToCanvas(displayObject: DisplayObject)(implicit metrics: IMetrics): Unit = {
 
-    val compressed = displayObject.toCompressed(projectionMatrix)
+    val compressed = displayObject.toCompressed(RendererFunctions.orthographicProjectionMatrixNoMag)
+
+    metrics.record(ToCanvasDrawCallLengthStartMetric)
 
     bindToBuffer(cNc.context, vertexBuffer, compressed.vertices)
     bindToBuffer(cNc.context, textureBuffer, compressed.textureCoordinates)
@@ -165,6 +176,8 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     cNc.context.drawArrays(compressed.mode, 0, compressed.vertexCount)
 
     metrics.record(ToCanvasDrawCallMetric)
+
+    metrics.record(ToCanvasDrawCallLengthEndMetric)
 
   }
 

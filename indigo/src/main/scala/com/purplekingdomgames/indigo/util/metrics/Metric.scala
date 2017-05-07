@@ -63,3 +63,9 @@ case object LightingDrawCallMetric extends Metric { val name: String = "draw cal
 case object NormalLayerDrawCallMetric extends Metric { val name: String = "draw call: normal" }
 case object ToCanvasDrawCallMetric extends Metric { val name: String = "draw call: to canvas" }
 
+case object NormalDrawCallLengthStartMetric extends Metric { val name: String = "draw call length start: normal"}
+case object NormalDrawCallLengthEndMetric extends Metric { val name: String = "draw call length end: normal"}
+case object LightingDrawCallLengthStartMetric extends Metric { val name: String = "draw call length start: lighting" }
+case object LightingDrawCallLengthEndMetric extends Metric { val name: String = "draw call length end: lighting" }
+case object ToCanvasDrawCallLengthStartMetric extends Metric { val name: String = "draw call length start: canvas" }
+case object ToCanvasDrawCallLengthEndMetric extends Metric { val name: String = "draw call length end: canvas" }

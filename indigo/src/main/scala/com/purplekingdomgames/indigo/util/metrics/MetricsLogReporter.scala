@@ -67,6 +67,10 @@ object MetricsLogReporter {
       val drawUiLayerDuration = extractDuration(metrics, DrawUiLayerStartMetric.name, DrawUiLayerEndMetric.name)
       val renderToCanvasDuration = extractDuration(metrics, RenderToConvasStartMetric.name, RenderToConvasEndMetric.name)
 
+      val normalDrawCallDuration = extractDuration(metrics, NormalDrawCallLengthStartMetric.name, NormalDrawCallLengthEndMetric.name)
+      val lightingDrawCallDuration = extractDuration(metrics, LightingDrawCallLengthStartMetric.name, LightingDrawCallLengthEndMetric.name)
+      val toCanvasDrawCallDuration = extractDuration(metrics, ToCanvasDrawCallLengthStartMetric.name, ToCanvasDrawCallLengthEndMetric.name)
+
       // Percentages
       val drawGameLayerPercentage = asPercentOfFrameDuration(fd, drawGameLayerDuration)
       val drawLightingLayerPercentage = asPercentOfFrameDuration(fd, drawLightingLayerDuration)
@@ -120,7 +124,10 @@ object MetricsLogReporter {
         renderToCanvasPercentage,
         lightingDrawCalls,
         normalDrawCalls,
-        toCanvasDrawCalls
+        toCanvasDrawCalls,
+        normalDrawCallDuration,
+        lightingDrawCallDuration,
+        toCanvasDrawCallDuration
       )
 
       FrameStats(general, processView, renderer)
@@ -295,6 +302,24 @@ object MetricsLogReporter {
       s"""$a"""
     }
 
+    val meanNormalDrawCallTime: String = {
+      val a = calcMeanDuration(frames.map(_.renderer.normalDrawCallDuration)).toString
+
+      s"""$a"""
+    }
+
+    val meanLightingDrawCallTime: String = {
+      val a = calcMeanDuration(frames.map(_.renderer.normalDrawCallDuration)).toString
+
+      s"""$a"""
+    }
+
+    val meanToCanvasDrawCallTime: String = {
+      val a = calcMeanDuration(frames.map(_.renderer.normalDrawCallDuration)).toString
+
+      s"""$a"""
+    }
+
     // Log it!
     Logger.info(
       s"""
@@ -306,7 +331,7 @@ object MetricsLogReporter {
          |Model updates skipped:     $modelUpdatesSkipped\t($modelSkipsPercent%)
          |View updates skipped:      $viewUpdatesSkipped\t($viewSkipsPercent%)
          |
-          |Engine timings:
+         |Engine timings:
          |---------------
          |Mean frame length:         $meanFrameDuration
          |Mean model update:         $meanUpdate
@@ -315,7 +340,7 @@ object MetricsLogReporter {
          |Mean convert view:         $meanToDisplayable
          |Mean render view:          $meanRender
          |
-          |View processing:
+         |View processing:
          |----------------
          |Mean persist global view:  $meanPersistGlobalView
          |Mean persist node view:    $meanPersistNodeView
@@ -323,16 +348,20 @@ object MetricsLogReporter {
          |Mean animation actions:    $meanRunAnimationActions
          |Mean persist animations:   $meanPersistAnimationStates
          |
-          |Renderer:
+         |Renderer:
          |---------
          |Mean draw game layer:      $meanDrawGameLayer
          |Mean draw lighting layer:  $meanDrawLightingLayer
          |Mean draw ui layer:        $meanDrawUiLayer
          |Mean render to canvas:     $meanRenderToCanvasLayer
          |
-          |Mean lighting draw calls:  $meanLightingDrawCalls
+         |Mean lighting draw calls:  $meanLightingDrawCalls
          |Mean normal draw calls:    $meanNoramlDrawCalls
          |Mean to canvas draw calls: $meanToCanvasDrawCalls
+         |
+         |Mean lighting draw time:   $meanLightingDrawCallTime
+         |Mean normal draw time:     $meanNormalDrawCallTime
+         |Mean to canvas draw time:  $meanToCanvasDrawCallTime
          |**********************
         """.stripMargin
     )
@@ -379,5 +408,8 @@ case class FrameStatsRenderer(drawGameLayerDuration: Option[Long],
                               renderToCanvasPercentage: Option[Double],
                               lightingDrawCalls: Int,
                               normalDrawCalls: Int,
-                              toCanvasDrawCalls: Int
+                              toCanvasDrawCalls: Int,
+                              normalDrawCallDuration: Option[Long],
+                              lightingDrawCallDuration: Option[Long],
+                              toCanvasDrawCallDuration: Option[Long]
                              )

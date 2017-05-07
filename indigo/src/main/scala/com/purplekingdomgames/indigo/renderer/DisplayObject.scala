@@ -123,30 +123,44 @@ object DisplayObject {
   def sortAndCompress(orthographicProjectionMatrix: Matrix4): List[DisplayObject] => List[CompressedDisplayObject] =
     sortByDepth andThen compress(orthographicProjectionMatrix)
 
-  val sortByDepth: List[DisplayObject] => List[DisplayObject] = displayObjects =>
+  val sortByDepth: List[DisplayObject] => List[DisplayObject] = displayObjects => {
     displayObjects.sortWith((d1, d2) => d1.z < d2.z)
+  }
 
+  // Entirely for performance reasons and it's still too slow...
   def compress(orthographicProjectionMatrix: Matrix4): List[DisplayObject] => List[CompressedDisplayObject] = displayObjects => {
-    def rec(remaining: List[DisplayObject], currentAccDisplayObject: Option[CompressedDisplayObject], acc: List[CompressedDisplayObject]): List[CompressedDisplayObject] = {
-      (remaining, currentAccDisplayObject) match {
-        case (Nil, None) =>
-          acc
+    var imageRef: String = ""
+    var v: scalajs.js.Array[Double] = scalajs.js.Array[Double]()
+    var t: scalajs.js.Array[Double] = scalajs.js.Array[Double]()
+    var e: scalajs.js.Array[Double] = scalajs.js.Array[Double]()
 
-        case (Nil, Some(cdo)) =>
-          acc :+ cdo
+    var res2: List[CompressedDisplayObject] = Nil
 
-        case (x :: xs, None) =>
-          rec(xs, Option(x.toCompressed(orthographicProjectionMatrix)), acc)
+    for(d <- displayObjects) {
 
-        case (x :: xs, Some(cdo)) if x.imageRef != cdo.imageRef =>
-          rec(xs, Option(x.toCompressed(orthographicProjectionMatrix)), acc :+ cdo)
+      val newV = d.vertices(orthographicProjectionMatrix)
+      val newT = d.textureCoordinates
+      val newE = d.effectValues
 
-        case (x :: xs, Some(cdo)) =>
-          rec(xs, Option(cdo.addDisplayObject(x)), acc)
+      if(imageRef == "") {
+        imageRef = d.imageRef
+        v = newV
+        t = newT
+        e = newE
+      } else if(imageRef == d.imageRef) {
+        for(vv <- newV) { v.push(vv) }
+        for(tt <- newT) { t.push(tt) }
+        for(ee <- newE) { e.push(ee) }
+      } else {
+        res2 = CompressedDisplayObject(imageRef, orthographicProjectionMatrix, v, t, e) :: res2
+        imageRef = d.imageRef
+        v = newV
+        t = newT
+        e = newE
       }
     }
 
-    rec(displayObjects, None, Nil)
+    CompressedDisplayObject(imageRef, orthographicProjectionMatrix, v, t, e) :: res2
   }
 
 }
