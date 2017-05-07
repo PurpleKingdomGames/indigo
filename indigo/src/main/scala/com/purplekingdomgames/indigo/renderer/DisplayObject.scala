@@ -31,6 +31,10 @@ case class DisplayObject(x: Int,
                          frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
                         ) {
 
+  private val flipTH: Int = if(flipHorizontal) 1 else 0
+  private val flipTV: Int = if(flipVertical) 1 else 0
+  private val flipSH: Int = if(flipHorizontal) -1 else 1
+  private val flipSV: Int = if(flipVertical) -1 else 1
 
   val vertices: scalajs.js.Array[Double] = scalajs.js.Array[Double](
     x,         y,          z,
@@ -42,15 +46,20 @@ case class DisplayObject(x: Int,
     width + x, height + y, z
   )
 
+  private val tx1 = if(flipHorizontal) 1 - frame.translate.x else frame.translate.x
+  private val tx2 = if(flipHorizontal) 1 - (frame.scale.x + frame.translate.x) else frame.scale.x + frame.translate.x
+  private val ty1 = if(flipVertical) 1 - frame.translate.y else frame.translate.y
+  private val ty2 = if(flipVertical) 1 - (frame.scale.y + frame.translate.y) else frame.scale.y + frame.translate.y
+
   val textureCoordinates: scalajs.js.Array[Double] =
     scalajs.js.Array[Double](
-      frame.translate.x,                 frame.translate.y,
-      frame.translate.x,                 frame.scale.y + frame.translate.y,
-      frame.scale.x + frame.translate.x, frame.translate.y,
+      tx1, ty1,
+      tx1, ty2,
+      tx2, ty1,
 
-      frame.translate.x,                 frame.scale.y + frame.translate.y,
-      frame.scale.x + frame.translate.x, frame.translate.y,
-      frame.scale.x + frame.translate.x, frame.scale.y + frame.translate.y
+      tx1, ty2,
+      tx2, ty1,
+      tx2, ty2
     )
 
   private val effectValues: scalajs.js.Array[Double] = scalajs.js.Array[Double](
