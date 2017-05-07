@@ -37,6 +37,10 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       TextureLookupResult(li.name, organiseImage(cNc.context, li.data))
     }
 
+  private val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context)
+  private val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context)
+  private val effectsBuffer: WebGLBuffer = createVertexBuffer(cNc.context)
+
   private val shaderProgram = shaderProgramSetup(cNc.context)
   private val lightingShaderProgram = lightingShaderProgramSetup(cNc.context)
   private val mergeShaderProgram = mergeShaderProgramSetup(cNc.context)
@@ -84,9 +88,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     // Draw as normal
     DisplayObject.sortAndCompress(projectionMatrix)(displayLayer.displayObjects).foreach { displayObject =>
 
-      val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices)
-      val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.textureCoordinates)
-      val effectsBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.effectValues)
+      bindToBuffer(cNc.context, vertexBuffer, displayObject.vertices)
+      bindToBuffer(cNc.context, textureBuffer, displayObject.textureCoordinates)
+      bindToBuffer(cNc.context, effectsBuffer, displayObject.effectValues)
 
       // Setup attributes
       bindShaderToBuffer(cNc, lightingShaderProgram, vertexBuffer, textureBuffer, effectsBuffer)
@@ -100,10 +104,6 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
         cNc.context.drawArrays(displayObject.mode, 0, displayObject.vertexCount)
         metrics.record(LightingDrawCallMetric)
       }
-
-      cNc.context.deleteBuffer(vertexBuffer)
-      cNc.context.deleteBuffer(textureBuffer)
-      cNc.context.deleteBuffer(effectsBuffer)
 
     }
 
@@ -120,9 +120,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     // Draw as normal
     DisplayObject.sortAndCompress(projectionMatrix)(displayLayer.displayObjects).foreach { displayObject =>
 
-      val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.vertices)
-      val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.textureCoordinates)
-      val effectsBuffer: WebGLBuffer = createVertexBuffer(cNc.context, displayObject.effectValues)
+      bindToBuffer(cNc.context, vertexBuffer, displayObject.vertices)
+      bindToBuffer(cNc.context, textureBuffer, displayObject.textureCoordinates)
+      bindToBuffer(cNc.context, effectsBuffer, displayObject.effectValues)
 
       // Setup attributes
       bindShaderToBuffer(cNc, shaderProgram, vertexBuffer, textureBuffer, effectsBuffer)
@@ -145,9 +145,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     val compressed = displayObject.toCompressed(projectionMatrix)
 
-    val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context, compressed.vertices)
-    val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context, compressed.textureCoordinates)
-    val effectsBuffer: WebGLBuffer = createVertexBuffer(cNc.context, compressed.effectValues)
+    bindToBuffer(cNc.context, vertexBuffer, compressed.vertices)
+    bindToBuffer(cNc.context, textureBuffer, compressed.textureCoordinates)
+    bindToBuffer(cNc.context, effectsBuffer, compressed.effectValues)
 
     // Switch to canvas
     FrameBufferFunctions.switchToCanvas(cNc, config.clearColor)
@@ -163,6 +163,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     // Draw
     cNc.context.drawArrays(compressed.mode, 0, compressed.vertexCount)
+
     metrics.record(ToCanvasDrawCallMetric)
 
   }

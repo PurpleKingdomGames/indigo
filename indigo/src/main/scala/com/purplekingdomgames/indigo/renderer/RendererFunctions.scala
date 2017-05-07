@@ -9,17 +9,16 @@ import scala.scalajs.js.typedarray.Float32Array
 
 object RendererFunctions {
 
-  def createVertexBuffer[T](gl: raw.WebGLRenderingContext, vertices: scalajs.js.Array[T])(implicit num: Numeric[T]): WebGLBuffer = {
-    //Create an empty buffer object and store vertex data
-    val vertexBuffer: WebGLBuffer = gl.createBuffer()
+  def createVertexBuffer(gl: raw.WebGLRenderingContext): WebGLBuffer = {
+    gl.createBuffer()
+  }
 
+  def bindToBuffer(gl: raw.WebGLRenderingContext, vertexBuffer: WebGLBuffer, vertices: scalajs.js.Array[Double]): Unit = {
     //Create a new buffer
     gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
 
     //bind it to the current buffer
     gl.bufferData(ARRAY_BUFFER, new Float32Array(vertices), STATIC_DRAW)
-
-    vertexBuffer
   }
 
   def shaderProgramSetup(gl: raw.WebGLRenderingContext): WebGLProgram = {
