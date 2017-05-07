@@ -2,6 +2,7 @@ package com.purplekingdomgames.indigo.gameengine
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
+import com.purplekingdomgames.indigo.renderer.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import com.purplekingdomgames.indigo.renderer.{AssetMapping, DisplayObject, SpriteSheetFrame, Vector2}
 import com.purplekingdomgames.indigo.util.Logger
 
@@ -15,6 +16,7 @@ object DisplayObjectConversions {
   private val lookupTextureOffsetCache: mutable.Map[String, Vector2] = mutable.Map.empty[String, Vector2]
   private val lookupAtlasNameCache: mutable.Map[String, String] = mutable.Map.empty[String, String]
   private val lookupAtlasSizeCache: mutable.Map[String, Vector2] = mutable.Map.empty[String, Vector2]
+  private val frameOffsetsCache: mutable.Map[String, SpriteSheetFrameCoordinateOffsets] = mutable.Map.empty[String, SpriteSheetFrameCoordinateOffsets]
 
   private val lookupTextureOffset: (AssetMapping, String) => Vector2 = (assetMapping, name) =>
     lookupTextureOffsetCache.getOrElseUpdate(name, {
@@ -42,47 +44,56 @@ object DisplayObjectConversions {
 
   def leafToDisplayObject[ViewEventDataType](assetMapping: AssetMapping): SceneGraphNodeLeaf[ViewEventDataType] => List[DisplayObject] = {
     case leaf: Graphic[ViewEventDataType] =>
-      DisplayObject(
-        x = leaf.x,
-        y = leaf.y,
-        z = -leaf.depth.zIndex,
-        width = leaf.crop.size.x,
-        height = leaf.crop.size.y,
-        imageRef = lookupAtlasName(assetMapping, leaf.imageAssetRef),
-        alpha = leaf.effects.alpha,
-        tintR = leaf.effects.tint.r,
-        tintG = leaf.effects.tint.g,
-        tintB = leaf.effects.tint.b,
-        flipHorizontal = leaf.effects.flip.horizontal,
-        flipVertical = leaf.effects.flip.vertical,
-        frame =
-          SpriteSheetFrame.calculateFrameOffset(
-            imageSize = lookupAtlasSize(assetMapping, leaf.imageAssetRef),
-            frameSize = Vector2(leaf.crop.size.x, leaf.crop.size.y),
-            framePosition = Vector2(leaf.crop.position.x, leaf.crop.position.y),
-            textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
-          )
+      List(
+        DisplayObject(
+          x = leaf.x,
+          y = leaf.y,
+          z = -leaf.depth.zIndex,
+          width = leaf.crop.size.x,
+          height = leaf.crop.size.y,
+          imageRef = lookupAtlasName(assetMapping, leaf.imageAssetRef),
+          alpha = leaf.effects.alpha,
+          tintR = leaf.effects.tint.r,
+          tintG = leaf.effects.tint.g,
+          tintB = leaf.effects.tint.b,
+          flipHorizontal = leaf.effects.flip.horizontal,
+          flipVertical = leaf.effects.flip.vertical,
+          frame =
+            frameOffsetsCache.getOrElseUpdate(leaf.frameHash, {
+              SpriteSheetFrame.calculateFrameOffset(
+                imageSize = lookupAtlasSize(assetMapping, leaf.imageAssetRef),
+                frameSize = Vector2(leaf.crop.size.x, leaf.crop.size.y),
+                framePosition = Vector2(leaf.crop.position.x, leaf.crop.position.y),
+                textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
+              )
+            })
+        )
       )
 
     case leaf: Sprite[ViewEventDataType] =>
-      DisplayObject(
-        x = leaf.x,
-        y = leaf.y,
-        z = -leaf.depth.zIndex,
-        width = leaf.bounds.size.x,
-        height = leaf.bounds.size.y,
-        imageRef = lookupAtlasName(assetMapping, leaf.imageAssetRef),
-        alpha = leaf.effects.alpha,
-        tintR = leaf.effects.tint.r,
-        tintG = leaf.effects.tint.g,
-        tintB = leaf.effects.tint.b,
-        flipHorizontal = leaf.effects.flip.horizontal,
-        flipVertical = leaf.effects.flip.vertical,
-        frame = SpriteSheetFrame.calculateFrameOffset(
-          imageSize = lookupAtlasSize(assetMapping, leaf.imageAssetRef),
-          frameSize = Vector2(leaf.animations.currentFrame.bounds.size.x, leaf.animations.currentFrame.bounds.size.y),
-          framePosition = Vector2(leaf.animations.currentFrame.bounds.position.x, leaf.animations.currentFrame.bounds.position.y),
-          textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
+      List(
+        DisplayObject(
+          x = leaf.x,
+          y = leaf.y,
+          z = -leaf.depth.zIndex,
+          width = leaf.bounds.size.x,
+          height = leaf.bounds.size.y,
+          imageRef = lookupAtlasName(assetMapping, leaf.imageAssetRef),
+          alpha = leaf.effects.alpha,
+          tintR = leaf.effects.tint.r,
+          tintG = leaf.effects.tint.g,
+          tintB = leaf.effects.tint.b,
+          flipHorizontal = leaf.effects.flip.horizontal,
+          flipVertical = leaf.effects.flip.vertical,
+          frame =
+            frameOffsetsCache.getOrElseUpdate(leaf.frameHash, {
+              SpriteSheetFrame.calculateFrameOffset(
+                imageSize = lookupAtlasSize(assetMapping, leaf.imageAssetRef),
+                frameSize = Vector2(leaf.animations.currentFrame.bounds.size.x, leaf.animations.currentFrame.bounds.size.y),
+                framePosition = Vector2(leaf.animations.currentFrame.bounds.position.x, leaf.animations.currentFrame.bounds.position.y),
+                textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
+              )
+            })
         )
       )
 
@@ -122,12 +133,15 @@ object DisplayObjectConversions {
         tintB = leaf.effects.tint.b,
         flipHorizontal = leaf.effects.flip.horizontal,
         flipVertical = leaf.effects.flip.vertical,
-        frame = SpriteSheetFrame.calculateFrameOffset(
-          imageSize = lookupAtlasSize(assetMapping, leaf.imageAssetRef),
-          frameSize = Vector2(fontChar.bounds.width, fontChar.bounds.height),
-          framePosition = Vector2(fontChar.bounds.x, fontChar.bounds.y),
-          textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
-        )
+        frame =
+          frameOffsetsCache.getOrElseUpdate(fontChar.bounds.hash + "_" + leaf.imageAssetRef, {
+            SpriteSheetFrame.calculateFrameOffset(
+              imageSize = lookupAtlasSize(assetMapping, leaf.imageAssetRef),
+              frameSize = Vector2(fontChar.bounds.width, fontChar.bounds.height),
+              framePosition = Vector2(fontChar.bounds.x, fontChar.bounds.y),
+              textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
+            )
+          })
       )
     }
 

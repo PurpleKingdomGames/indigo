@@ -42,6 +42,8 @@ sealed trait SceneGraphNodeLeaf[ViewEventDataType] extends SceneGraphNode[ViewEv
   val crop: Rectangle
   val eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent[ViewEventDataType]]
 
+  private[gameengine] def frameHash: String
+
   def x: Int = bounds.position.x - ref.x
   def y: Int = bounds.position.y - ref.y
 
@@ -69,6 +71,8 @@ sealed trait SceneGraphNodeLeaf[ViewEventDataType] extends SceneGraphNode[ViewEv
 }
 
 case class Graphic[ViewEventDataType](bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent[ViewEventDataType]]) extends SceneGraphNodeLeaf[ViewEventDataType] {
+
+  private[gameengine] def frameHash: String = crop.hash + "_" + imageAssetRef
 
   def moveTo(pt: Point): Graphic[ViewEventDataType] =
     this.copy(bounds = bounds.copy(position = pt))
@@ -137,6 +141,8 @@ object Graphic {
 }
 
 case class Sprite[ViewEventDataType](bindingKey: BindingKey, bounds: Rectangle, depth: Depth, imageAssetRef: String, animations: Animations, ref: Point, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent[ViewEventDataType]]) extends SceneGraphNodeLeaf[ViewEventDataType] {
+
+  private[gameengine] def frameHash: String = animations.currentFrame.bounds.hash + "_" + imageAssetRef
 
   def withDepth(depth: Int): Sprite[ViewEventDataType] =
     this.copy(depth = Depth(depth))
@@ -227,6 +233,8 @@ object Sprite {
 }
 
 case class Text[ViewEventDataType](text: String, alignment: TextAlignment, position: Point, depth: Depth, fontInfo: FontInfo, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent[ViewEventDataType]]) extends SceneGraphNodeLeaf[ViewEventDataType] {
+
+  private[gameengine] def frameHash: String = "" // Not used - look up done another way.
 
   // Handled a different way
   val ref: Point = Point(0, 0)
