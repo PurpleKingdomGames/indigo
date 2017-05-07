@@ -5,29 +5,40 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.renderer.{AssetMapping, DisplayObject, SpriteSheetFrame, Vector2}
 import com.purplekingdomgames.indigo.util.Logger
 
+import scala.collection.mutable
 import scala.language.implicitConversions
 
 object DisplayObjectConversions {
 
   private implicit def displayObjectToList(displayObject: DisplayObject): List[DisplayObject] = List(displayObject)
 
+  private val lookupTextureOffsetCache: mutable.Map[String, Vector2] = mutable.Map.empty[String, Vector2]
+  private val lookupAtlasNameCache: mutable.Map[String, String] = mutable.Map.empty[String, String]
+  private val lookupAtlasSizeCache: mutable.Map[String, Vector2] = mutable.Map.empty[String, Vector2]
+
   private val lookupTextureOffset: (AssetMapping, String) => Vector2 = (assetMapping, name) =>
-    assetMapping.mappings.find(p => p._1 == name).map(_._2.offset).map(pt => Vector2(pt.x, pt.y)).getOrElse {
-      Logger.info("Failed to find atlas offset for texture: " + name)
-      Vector2.zero
-    }
+    lookupTextureOffsetCache.getOrElseUpdate(name, {
+      assetMapping.mappings.find(p => p._1 == name).map(_._2.offset).map(pt => Vector2(pt.x, pt.y)).getOrElse {
+        Logger.info("Failed to find atlas offset for texture: " + name)
+        Vector2.zero
+      }
+    })
 
   private val lookupAtlasName: (AssetMapping, String) => String = (assetMapping, name) =>
-    assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasName).getOrElse {
-      Logger.info("Failed to find atlas name for texture: " + name)
-      ""
-    }
+    lookupAtlasNameCache.getOrElseUpdate(name, {
+      assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasName).getOrElse {
+        Logger.info("Failed to find atlas name for texture: " + name)
+        ""
+      }
+    })
 
   private val lookupAtlasSize: (AssetMapping, String) => Vector2 = (assetMapping, name) =>
-    assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasSize).getOrElse {
-      Logger.info("Failed to find atlas size for texture: " + name)
-      Vector2.one
-    }
+    lookupAtlasSizeCache.getOrElseUpdate(name, {
+      assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasSize).getOrElse {
+        Logger.info("Failed to find atlas size for texture: " + name)
+        Vector2.one
+      }
+    })
 
   def leafToDisplayObject[ViewEventDataType](assetMapping: AssetMapping): SceneGraphNodeLeaf[ViewEventDataType] => List[DisplayObject] = {
     case leaf: Graphic[ViewEventDataType] =>
