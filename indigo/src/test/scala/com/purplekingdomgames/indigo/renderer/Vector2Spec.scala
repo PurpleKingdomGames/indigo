@@ -30,6 +30,15 @@ class Vector2Spec extends FunSpec with Matchers {
 
     }
 
+    it("should be able to scale and translate") {
+
+      val res = Vector2(10, 10).scale(Vector2(2, 2)).translate(Vector2(5, 5))
+
+      res.x shouldEqual 25
+      res.y shouldEqual 25
+
+    }
+
   }
 
   def areDoubleVectorsEqual(expected: Vector2, actual: Vector2): Boolean = {
