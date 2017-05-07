@@ -58,18 +58,18 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   def drawScene(displayable: Displayable)(implicit metrics: IMetrics): Unit = {
 
-    val projectionMatrix: Matrix4 = resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight, cNc.magnification)
+    resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight, cNc.magnification)
 
     metrics.record(DrawGameLayerStartMetric)
-    drawLayerToTexture(displayable.game, gameFrameBuffer, config.clearColor, projectionMatrix, drawBg = false)
+    drawLayerToTexture(displayable.game, gameFrameBuffer, config.clearColor, drawBg = false)
     metrics.record(DrawGameLayerEndMetric)
 
     metrics.record(DrawLightingLayerStartMetric)
-    drawLightingLayerToTexture(displayable.lighting, lightingFrameBuffer, displayable.lighting.ambientLight, projectionMatrix)
+    drawLightingLayerToTexture(displayable.lighting, lightingFrameBuffer, displayable.lighting.ambientLight)
     metrics.record(DrawLightingLayerEndMetric)
 
     metrics.record(DrawUiLayerStartMetric)
-    drawLayerToTexture(displayable.ui, uiFrameBuffer, ClearColor.Black.forceTransparent, projectionMatrix, drawBg = false)
+    drawLayerToTexture(displayable.ui, uiFrameBuffer, ClearColor.Black.forceTransparent, drawBg = false)
     metrics.record(DrawUiLayerEndMetric)
 
     metrics.record(RenderToConvasStartMetric)
@@ -77,7 +77,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(RenderToConvasEndMetric)
   }
 
-  private def drawLightingLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor, projectionMatrix: Matrix4)(implicit metrics: IMetrics): Unit = {
+  private def drawLightingLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor)(implicit metrics: IMetrics): Unit = {
 
     // Switch to the frameBuffer
     FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)
@@ -86,7 +86,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     cNc.context.useProgram(lightingShaderProgram)
 
     // Draw as normal
-    DisplayObject.sortAndCompress(projectionMatrix)(displayLayer.displayObjects).foreach { displayObject =>
+    DisplayObject.sortAndCompress(RendererFunctions.orthographicProjectionMatrix)(displayLayer.displayObjects).foreach { displayObject =>
 
       metrics.record(LightingDrawCallLengthStartMetric)
 
@@ -113,7 +113,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   }
 
-  private def drawLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor, projectionMatrix: Matrix4, drawBg: Boolean)(implicit metrics: IMetrics): Unit = {
+  private def drawLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor, drawBg: Boolean)(implicit metrics: IMetrics): Unit = {
 
     // Switch to the frameBuffer
     FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)
@@ -122,7 +122,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     cNc.context.useProgram(shaderProgram)
 
     // Draw as normal
-    val compressed = DisplayObject.sortAndCompress(projectionMatrix)(displayLayer.displayObjects)
+    val compressed = DisplayObject.sortAndCompress(RendererFunctions.orthographicProjectionMatrix)(displayLayer.displayObjects)
 
     compressed.foreach { displayObject =>
       metrics.record(NormalDrawCallLengthStartMetric)

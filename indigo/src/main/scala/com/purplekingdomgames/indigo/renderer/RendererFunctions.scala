@@ -334,10 +334,10 @@ object RendererFunctions {
   }
 
   private var resizeRun: Boolean = false
-  private var orthographicProjectionMatrix: Matrix4 = Matrix4.identity
+  var orthographicProjectionMatrix: Matrix4 = Matrix4.identity
   var orthographicProjectionMatrixNoMag: Matrix4 = Matrix4.identity
 
-  def resize(canvas: html.Canvas, actualWidth: Int, actualHeight: Int, magnification: Int): Matrix4 =
+  def resize(canvas: html.Canvas, actualWidth: Int, actualHeight: Int, magnification: Int): Unit =
     if (!resizeRun || canvas.width != actualWidth || canvas.height != actualHeight) {
       resizeRun = true
       canvas.width = actualWidth
@@ -345,9 +345,6 @@ object RendererFunctions {
 
       orthographicProjectionMatrix = Matrix4.orthographic(actualWidth / magnification, actualHeight / magnification)
       orthographicProjectionMatrixNoMag = Matrix4.orthographic(actualWidth, actualHeight)
-      orthographicProjectionMatrix
-    } else {
-      orthographicProjectionMatrix
     }
 
 }
