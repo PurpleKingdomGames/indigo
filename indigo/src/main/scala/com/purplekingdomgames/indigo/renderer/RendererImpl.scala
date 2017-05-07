@@ -84,9 +84,10 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     // Use Program
     cNc.context.useProgram(lightingShaderProgram)
+    setupVertexShader(cNc, lightingShaderProgram, RendererFunctions.orthographicProjectionMatrix)
 
     // Draw as normal
-    DisplayObject.sortAndCompress(RendererFunctions.orthographicProjectionMatrix)(displayLayer.displayObjects).foreach { displayObject =>
+    DisplayObject.sortAndCompress(displayLayer.displayObjects).foreach { displayObject =>
 
       metrics.record(LightingDrawCallLengthStartMetric)
 
@@ -120,9 +121,10 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     // Use Program
     cNc.context.useProgram(shaderProgram)
+    setupVertexShader(cNc, shaderProgram, RendererFunctions.orthographicProjectionMatrix)
 
     // Draw as normal
-    val compressed = DisplayObject.sortAndCompress(RendererFunctions.orthographicProjectionMatrix)(displayLayer.displayObjects)
+    val compressed = DisplayObject.sortAndCompress(displayLayer.displayObjects)
 
     compressed.foreach { displayObject =>
       metrics.record(NormalDrawCallLengthStartMetric)
@@ -152,7 +154,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   private def renderToCanvas(displayObject: DisplayObject)(implicit metrics: IMetrics): Unit = {
 
-    val compressed = displayObject.toCompressed(RendererFunctions.orthographicProjectionMatrixNoMag)
+    val compressed = displayObject.toCompressed
 
     metrics.record(ToCanvasDrawCallLengthStartMetric)
 
@@ -165,6 +167,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     // Use Program
     cNc.context.useProgram(mergeShaderProgram)
+    setupVertexShader(cNc, mergeShaderProgram, RendererFunctions.orthographicProjectionMatrixNoMag)
 
     // Setup attributes
     bindShaderToBuffer(cNc, mergeShaderProgram, vertexBuffer, textureBuffer, effectsBuffer)

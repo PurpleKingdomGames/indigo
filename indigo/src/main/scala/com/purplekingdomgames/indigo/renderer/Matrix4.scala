@@ -39,6 +39,8 @@ case class Matrix4(mat: List[Double]) {
   def flip(horizontal: Boolean, vertical: Boolean): Matrix4 =
     this * Matrix4.flip(horizontal, vertical)
 
+  def toJsArray: scalajs.js.Array[Double] = Matrix4.matrix4dToJsArray(this)
+
 }
 
 case object Matrix4 {

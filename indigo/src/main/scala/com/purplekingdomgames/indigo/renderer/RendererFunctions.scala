@@ -3,7 +3,7 @@ package com.purplekingdomgames.indigo.renderer
 import com.purplekingdomgames.indigo.util.Logger
 import org.scalajs.dom.{html, raw}
 import org.scalajs.dom.raw.WebGLRenderingContext._
-import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram, WebGLTexture}
+import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram, WebGLTexture, WebGLUniformLocation}
 
 import scala.scalajs.js.typedarray.Float32Array
 
@@ -29,11 +29,13 @@ object RendererFunctions {
         |attribute vec2 a_texcoord;
         |attribute vec4 a_effectValues;
         |
+        |uniform mat4 u_matrix;
+        |
         |varying vec2 v_texcoord;
         |varying vec4 v_effectValues;
         |
         |void main(void) {
-        |  gl_Position = coordinates;
+        |  gl_Position = u_matrix * coordinates;
         |
         |  // Pass the texcoord to the fragment shader.
         |  v_texcoord = a_texcoord;
@@ -90,11 +92,13 @@ object RendererFunctions {
         |attribute vec2 a_texcoord;
         |attribute vec4 a_effectValues;
         |
+        |uniform mat4 u_matrix;
+        |
         |varying vec2 v_texcoord;
         |varying vec4 v_effectValues;
         |
         |void main(void) {
-        |  gl_Position = coordinates;
+        |  gl_Position = u_matrix * coordinates;
         |
         |  // Pass the texcoord to the fragment shader.
         |  v_texcoord = a_texcoord;
@@ -154,11 +158,13 @@ object RendererFunctions {
         |attribute vec2 a_texcoord;
         |attribute vec4 a_effectValues;
         |
+        |uniform mat4 u_matrix;
+        |
         |varying vec2 v_texcoord;
         |varying vec4 v_effectValues;
         |
         |void main(void) {
-        |  gl_Position = coordinates;
+        |  gl_Position = u_matrix * coordinates;
         |
         |  // Pass the texcoord to the fragment shader.
         |  v_texcoord = a_texcoord;
@@ -346,5 +352,24 @@ object RendererFunctions {
       orthographicProjectionMatrix = Matrix4.orthographic(actualWidth / magnification, actualHeight / magnification)
       orthographicProjectionMatrixNoMag = Matrix4.orthographic(actualWidth, actualHeight)
     }
+
+  val flipMatrix: ((Boolean, Boolean)) => Matrix4 = flipValues => {
+    flipValues match {
+      case (true, true)   => Matrix4.identity.translate(1, 1, 0).scale(-1, -1, -1)
+      case (true, false)  => Matrix4.identity.translate(1, 0, 0).scale(-1,  1, -1)
+      case (false, true)  => Matrix4.identity.translate(0, 1, 0).scale( 1, -1, -1)
+      case (false, false) => Matrix4.identity
+    }
+  }
+
+  def setupVertexShader(cNc: ContextAndCanvas, shaderProgram: WebGLProgram, projectionMatrix: Matrix4): Unit = {
+    val translation: WebGLUniformLocation = cNc.context.getUniformLocation(shaderProgram, "u_matrix")
+
+    cNc.context.uniformMatrix4fv(
+      location = translation,
+      transpose = false,
+      value = projectionMatrix.toJsArray //Matrix4.multiply(matrix4, flipMatrix((displayObject.flipHorizontal, displayObject.flipVertical)))
+    )
+  }
 
 }
