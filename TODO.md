@@ -14,18 +14,6 @@ The layers:
 
 ## TODO
 
-Batch Renders
-*************
-
-The batching is complicated. The objects must be sorted
-
-1. Move the vertex(and texture?) buffer array creation out of the renderer and make it upload for every object. --done
-2. Apply matrices to vertex array before giving to renderer and simplify renderer matrix work. --done
-3. Apply matrices to texture coords before giving to renderer and simplify renderer matrix work. --done
-4. Move from triangle strips (unless you can figure out how to do several) to triangles. --done
-5. Supply tint and alpha effect via vertex buffer --done
-6. Turn a list of display objects with vertex buffers into a single vertex buffer and pass over for rendering.
-
 Need for Speed
 **************
 
@@ -61,12 +49,10 @@ Renderer
 - Pixel effects e.g. animate flood fill disolve
 
 Game Engine
-- Consider merging public and internal scenegraph classes and presenting a good old fashioned interface instead.
-- Simpler ViewEvents. Need a way to add onClick to `this`.
-- Config setting for hide mouse cursor
+- Config setting for hide mouse cursor - when the plugin is generating the html.
 - Sound
-- Full window size
-- Full screen
+- Full window size - when the plugin is generating the html.
+- Full screen - when the plugin is generating the html.
 - Tilemap loading
 - Find a way to reduce requestAnimationFrame calls
 
@@ -75,9 +61,12 @@ Game
 
 Optimisations:
 - I think Scalajs is downloading script files on load, can they be local?
-- Performance enhancement: Render at actual size to a buffer and scale up.
 - Performance enhancement: We do some CPU side sorting, which generally will be ok, but if there are thousands of tiles
-  and most of them never change, it would be nice to declare that somehow and only have to sort them once.
-- Performance enhancement: Static objects. If you have a large group of rectangles that make up one big object - like
-  level platforms - and they never move in relation to each other, we should be able to flatten them into one special
-  object that can be drawn with a single call.
+  and most of them never change, it would be nice to declare that somehow and only have to sort them once. (statics)
+- Performance enhancement: Static objects. Everything is drawn in one call but large collections of unchanging scene
+  items could be marked as safe to cache to avoid recalculating all the things. Thinking backgrounds.
+- Flat objects: For large numbers of tiles all at the same level, they could be marked as "flat" and pre-renderer to a
+  framebuffer to be drawn at a fixed depth (subject to the usual sorting)
+- Rendering / updating layers at different rates. If the game layer only runs at 10FPS on purpose because of the
+  animation style then we can render at that rate rather than 30FPS, you literally just have to skip frames since it will
+  remain in the framebuffer.
