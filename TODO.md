@@ -14,6 +14,22 @@ The layers:
 
 ## TODO
 
+Indigo SBT Plugin
+- Ability to config some aspects of the project
+  - Mouse hide
+  - Windowing options - size - border - bg colour
+  - Game title
+  - Metadata?
+- Generate html for game
+- Open a browser window and run
+  - With console open?
+  - Is there a way to capture logs and print to terminal? Maybe via Cordova?
+- Front onto Cordova for cross platform publish to:
+  - Browser
+  - Mac
+  - PC
+  - ???
+
 Need for Speed
 **************
 
@@ -40,9 +56,6 @@ Bugs:
 TODO
 - Static objects (see below)
 - Asset tags so that related image assets are grouped on the same atlas where possible
-
-Indigo SBT Plugin
-- Build one. The aim should be to speed up development and make testing simpler.
 
 Renderer
 - Layer effects (Hue, saturation, tint, Blur, Bloom.. anything else? )
