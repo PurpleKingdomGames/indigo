@@ -9,6 +9,10 @@ lazy val indigo =
   project
     .settings(commonSettings: _*)
 
+lazy val sbtIndigo =
+  (project in file("sbt-indigo"))
+    .settings(commonSettings: _*)
+
 lazy val sandbox =
   project
     .settings(commonSettings: _*)
@@ -22,4 +26,4 @@ lazy val perf =
 lazy val indigoProject =
   (project in file("."))
     .settings(commonSettings: _*)
-    .aggregate(indigo, sandbox, perf)
+    .aggregate(indigo, sbtIndigo, sandbox, perf)
