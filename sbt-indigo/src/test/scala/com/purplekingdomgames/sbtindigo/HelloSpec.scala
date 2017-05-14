@@ -1,4 +1,4 @@
-package example
+package com.purplekingdomgames.sbtindigo
 
 import org.scalatest._
 
