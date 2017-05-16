@@ -27,13 +27,20 @@ object SbtIndigo extends sbt.AutoPlugin {
 
   lazy val indigoBuildTask: Def.Initialize[Task[Unit]] =
     Def.task {
-      IndigoBuild.build()
+      IndigoBuild.build(
+        TemplateOptions(
+          title = "Made with Indigo",
+          showCursor = true,
+          scriptPath = "./target/scala-2.12/indigo-sandbox-fastopt.js",
+          entryPoint = "com.example.sandbox.MyGame().main();"
+        )
+      )
     }
 }
 
 object IndigoBuild {
 
-  def build(): Unit = {
+  def build(templateOptions: TemplateOptions): Unit = {
 
     // create directory structure
     val dirPath = createDirectoryStructure()
@@ -43,9 +50,10 @@ object IndigoBuild {
     // copy assets into folder
 
     // Fill out html template
+    val html = template(templateOptions)
 
     // Write out file
-    writeHtml(dirPath)
+    writeHtml(dirPath, html)
 
   }
 
@@ -68,7 +76,7 @@ object IndigoBuild {
     }
   }
 
-  def writeHtml(dirPath: String): Unit = {
+  def writeHtml(dirPath: String, html: String): Unit = {
     val relativePath = dirPath + "/index.html"
     val file = new File(relativePath)
 
@@ -79,38 +87,37 @@ object IndigoBuild {
     file.createNewFile()
 
     new PrintWriter(relativePath) {
-      write(template)
+      write(html)
       close()
     }
 
     ()
   }
 
-  val template: String =
-    """
-      |<!DOCTYPE html>
+  val template: TemplateOptions => String = options =>
+    s"""<!DOCTYPE html>
       |<html>
       |  <head>
       |    <meta charset="UTF-8">
-      |    <title>Made with Indigo</title>
+      |    <title>${options.title}</title>
       |    <style>
       |      body {
       |        padding:0px;
       |        margin:0px;
       |      }
       |
-      |      canvas {
-      |        /*cursor: none*/
-      |      }
+      |      ${if(options.showCursor) "canvas { cursor: none }" }
       |    </style>
       |  </head>
       |  <body>
-      |    <script type="text/javascript" src="./target/scala-2.12/indigo-sandbox-fastopt.js"></script>
+      |    <script type="text/javascript" src="${options.scriptPath}"></script>
       |    <script type="text/javascript">
-      |      com.example.sandbox.MyGame().main();
+      |      ${options.entryPoint}
       |    </script>
       |  </body>
       |</html>
     """.stripMargin
 
 }
+
+case class TemplateOptions(title: String, showCursor: Boolean, scriptPath: String, entryPoint: String)
