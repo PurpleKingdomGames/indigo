@@ -29,6 +29,7 @@ Indigo SBT Plugin
   - Mac
   - PC
   - ???
+- Include whole lib so that you only need one sbt import?
 
 Need for Speed
 **************
