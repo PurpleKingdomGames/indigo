@@ -10,10 +10,10 @@ object MyAssets {
 
   def assets: Set[AssetType] =
     Set(
-      ImageAsset(smallFontName, "boxy_font.png"),
-      ImageAsset(light, "light_texture.png"),
-      TextAsset(dudeName + "-json", dudeName + ".json"),
-      ImageAsset(dudeName, dudeName + ".png")
+      ImageAsset(smallFontName, "assets/boxy_font.png"),
+      ImageAsset(light, "assets/light_texture.png"),
+      TextAsset(dudeName + "-json", "assets/" + dudeName + ".json"),
+      ImageAsset(dudeName, "assets/" + dudeName + ".png")
     )
 
 }

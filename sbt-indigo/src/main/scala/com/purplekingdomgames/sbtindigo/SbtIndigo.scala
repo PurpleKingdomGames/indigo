@@ -2,6 +2,7 @@ package com.purplekingdomgames.sbtindigo
 
 import java.io.PrintWriter
 
+import org.apache.commons.io.FileUtils
 import sbt.plugins.JvmPlugin
 import sbt.{File, _}
 
@@ -16,10 +17,11 @@ object SbtIndigo extends sbt.AutoPlugin {
   // Hide / Show mouse cursor
 
   object autoImport {
-    val indigoBuild: TaskKey[Unit] = taskKey[Unit]("Build an indigo game")
-    val entryPoint: SettingKey[String] = settingKey[String]("The fully qualified path to the Game class")
+    val indigoBuild: TaskKey[Unit] = taskKey[Unit]("Build an indigo game.")
+    val gameAssetsDirectory: SettingKey[String] = settingKey[String]("Project relative path to a directory that contains all of the assets the game needs to load.")
+    val entryPoint: SettingKey[String] = settingKey[String]("The fully qualified path to the Game class.")
     val showCursor: SettingKey[Boolean] = settingKey[Boolean]("Show the cursor? True by default.")
-    val title: SettingKey[String] = settingKey[String]("Title of your game. Defaults to 'Made with Indigo'")
+    val title: SettingKey[String] = settingKey[String]("Title of your game. Defaults to 'Made with Indigo'.")
   }
 
   import autoImport._
@@ -28,7 +30,8 @@ object SbtIndigo extends sbt.AutoPlugin {
     indigoBuild := indigoBuildTask.value,
     showCursor := true,
     entryPoint := "",
-    title := "Made with Indigo"
+    title := "Made with Indigo",
+    gameAssetsDirectory := "."
   )
 
   lazy val indigoBuildTask: Def.Initialize[Task[Unit]] =
@@ -51,7 +54,8 @@ object SbtIndigo extends sbt.AutoPlugin {
             title = title.value,
             showCursor = showCursor.value,
             scriptPathBase = scriptPathBase,
-            entryPoint = entryPoint.value + "().main();"
+            entryPoint = entryPoint.value + "().main();",
+            gameAssetsDirectoryPath = if(gameAssetsDirectory.value.startsWith("/")) gameAssetsDirectory.value else baseDir + "/" + gameAssetsDirectory.value
           )
         )
 
@@ -64,50 +68,73 @@ object IndigoBuild {
   def build(baseDir: String, templateOptions: TemplateOptions): Unit = {
 
     // create directory structure
-    val dirPath = createDirectoryStructure(baseDir)
+    val directoryStructure = createDirectoryStructure(baseDir)
 
     // copy built js file into scripts dir
-    //<base>/target/scala-<version>/<project-name>-fastopt.js
-    //<base>/target/scala-<version>/<project-name>-fastopt.js.map
-    //<base>/target/scala-<version>/<project-name>-jsdeps.js
-//    println(Keys.baseDirectory.value)
-//    println(Keys.scalaVersion.value)
-//    println(Keys.projectID.value)
+    val newScriptPath = copyScript(templateOptions, directoryStructure.scripts)
 
     // copy assets into folder
+    copyAssets(templateOptions.gameAssetsDirectoryPath, directoryStructure.assets)
 
     // Fill out html template
-    val html = template(templateOptions)
+    val html = template(templateOptions.copy(scriptPathBase = newScriptPath))
 
     // Write out file
-    val outputPath = writeHtml(dirPath, html)
+    val outputPath = writeHtml(directoryStructure, html)
 
     println(outputPath)
   }
 
-  def createDirectoryStructure(baseDir: String): String = {
-    //TODO: where to get the sub project path from?
+  case class DirectoryStructure(base: File, assets: File, scripts: File)
+
+  def createDirectoryStructure(baseDir: String): DirectoryStructure = {
     val dirPath = baseDir + "/target/indigo"
 
     println("dirPath: " + dirPath)
 
-    ensureDirectoryAt(dirPath)
-    ensureDirectoryAt(dirPath + "/scripts")
-    ensureDirectoryAt(dirPath + "/assets")
-
-    dirPath
+    DirectoryStructure(
+      ensureDirectoryAt(dirPath),
+      ensureDirectoryAt(dirPath + "/assets"),
+      ensureDirectoryAt(dirPath + "/scripts")
+    )
   }
 
-  private def ensureDirectoryAt(path: String): Unit = {
+  def copyAssets(gameAssetsDirectoryPath: String, destAssetsFolder: File): Unit = {
+    val dirFile = new File(gameAssetsDirectoryPath)
+
+    if (!dirFile.exists()) {
+      throw new Exception("Supplied game assets path does not exist")
+    } else if(!dirFile.isDirectory) {
+      throw new Exception("Supplied game assets path was not a directory")
+    } else {
+      println("Copying assets...")
+      FileUtils.copyDirectory(dirFile, destAssetsFolder)
+    }
+  }
+
+  def copyScript(templateOptions: TemplateOptions, desScriptsFolder: File): String = {
+    val path = s"${templateOptions.scriptPathBase}-fastopt.js"
+    val fileName = path.split('/').toList.reverse.headOption.getOrElse(throw new Exception("Could not figure out script file name from: " + path))
+    val scriptPath: File = new File(path)//TODO: This only covers the fast opt JS version
+
+    FileUtils.copyFileToDirectory(scriptPath, desScriptsFolder)
+
+    desScriptsFolder.getCanonicalPath + "/" + fileName
+  }
+
+
+  private def ensureDirectoryAt(path: String): File = {
     val dirFile = new File(path)
 
     if (!dirFile.exists()) {
       dirFile.mkdir()
     }
+
+    dirFile
   }
 
-  def writeHtml(dirPath: String, html: String): String = {
-    val relativePath = dirPath + "/index.html"
+  def writeHtml(directoryStructure: DirectoryStructure, html: String): String = {
+    val relativePath = directoryStructure.base.getCanonicalPath + "/index.html"
     val file = new File(relativePath)
 
     if (file.exists()) {
@@ -140,7 +167,7 @@ object IndigoBuild {
       |    </style>
       |  </head>
       |  <body>
-      |    <script type="text/javascript" src="${options.scriptPathBase}-fastopt.js"></script>
+      |    <script type="text/javascript" src="${options.scriptPathBase}"></script>
       |    <script type="text/javascript">
       |      ${options.entryPoint}
       |    </script>
@@ -150,4 +177,4 @@ object IndigoBuild {
 
 }
 
-case class TemplateOptions(title: String, showCursor: Boolean, scriptPathBase: String, entryPoint: String)
+case class TemplateOptions(title: String, showCursor: Boolean, scriptPathBase: String, entryPoint: String, gameAssetsDirectoryPath: String)

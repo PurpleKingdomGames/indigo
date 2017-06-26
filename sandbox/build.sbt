@@ -10,3 +10,4 @@ libraryDependencies ++= Seq(
 entryPoint := "com.example.sandbox.MyGame"
 showCursor := true
 title := "Sandbox"
+gameAssetsDirectory := "assets"
