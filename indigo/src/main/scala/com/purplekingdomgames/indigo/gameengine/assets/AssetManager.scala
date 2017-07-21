@@ -1,6 +1,5 @@
 package com.purplekingdomgames.indigo.gameengine.assets
 
-import com.purplekingdomgames.indigo.renderer.LoadedTextureAsset
 import com.purplekingdomgames.indigo.util.Logger
 import org.scalajs.dom
 import org.scalajs.dom.ext.Ajax
@@ -68,7 +67,7 @@ object AssetManager {
   private val loadTextAssets: List[TextAsset] => Future[List[LoadedTextAsset]] = textAssets =>
     Future.sequence(textAssets.map(loadTextAsset))
 
-  private def loadTextAsset(textAsset: TextAsset): Future[LoadedTextAsset] = {
+  def loadTextAsset(textAsset: TextAsset): Future[LoadedTextAsset] = {
     Logger.info(s"[Text] Loading ${textAsset.path}")
 
     Ajax.get(textAsset.path, responseType = "text").map { xhr =>

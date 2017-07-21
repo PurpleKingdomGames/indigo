@@ -23,6 +23,11 @@ lazy val perf =
     .settings(commonSettings: _*)
     .dependsOn(indigo)
 
+lazy val framework =
+  project
+    .settings(commonSettings: _*)
+    .dependsOn(indigo)
+
 lazy val indigoProject =
   (project in file("."))
     .settings(commonSettings: _*)

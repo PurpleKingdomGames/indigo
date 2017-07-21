@@ -1,4 +1,4 @@
-package com.example.sandbox
+package com.purplekingdomgames.indigoframework
 
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.assets.{AssetCollection, AssetType}

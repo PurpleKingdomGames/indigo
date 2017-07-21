@@ -1,0 +1,22 @@
+{
+  "images" : [
+    {
+      "name": "smallFontName",
+      "path": "assets/boxy_font.png"
+    },
+    {
+      "name": "light",
+      "path": "assets/light_texture.png"
+    },
+    {
+      "name": "base_charactor",
+      "path": "assets/base_charactor.png"
+    }
+  ],
+  "texts" : [
+    {
+      "name": "base_charactor-json",
+      "path": "assets/base_charactor.json"
+    }
+  ]
+}

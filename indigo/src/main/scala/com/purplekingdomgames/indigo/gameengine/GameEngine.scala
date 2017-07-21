@@ -7,6 +7,7 @@ import com.purplekingdomgames.indigo.util._
 import com.purplekingdomgames.indigo.util.metrics._
 import org.scalajs.dom
 
+import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
 import scala.scalajs.js.JSApp
@@ -31,6 +32,8 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
   def assets: Set[AssetType]
 
+  def assetsAsync: Future[Set[AssetType]] = Future.successful(Set())
+
   def initialise(assetCollection: AssetCollection): Startup[StartupError, StartupData]
 
   def initialModel(startupData: StartupData): GameModel
@@ -54,7 +57,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
       Logger.info("WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!")
     }
 
-    AssetManager.loadAssets(assets).foreach { assetCollection =>
+    assetsAsync.flatMap(aa => AssetManager.loadAssets(aa ++ assets)).foreach { assetCollection =>
 
       Logger.info("Asset load complete")
 
