@@ -13,6 +13,8 @@ The layers:
 3. The game.
 
 ## TODO
+- indigoBuild to depend on fastOptJS by default
+- See TODO's in Minsweeper game
 
 Indigo SBT Plugin
 - Ability to config some aspects of the project

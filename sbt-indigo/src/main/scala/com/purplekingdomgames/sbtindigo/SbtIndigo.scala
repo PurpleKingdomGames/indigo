@@ -103,7 +103,7 @@ object IndigoBuild {
     val dirFile = new File(gameAssetsDirectoryPath)
 
     if (!dirFile.exists()) {
-      throw new Exception("Supplied game assets path does not exist")
+      throw new Exception("Supplied game assets path does not exist: " + dirFile.getPath)
     } else if(!dirFile.isDirectory) {
       throw new Exception("Supplied game assets path was not a directory")
     } else {
