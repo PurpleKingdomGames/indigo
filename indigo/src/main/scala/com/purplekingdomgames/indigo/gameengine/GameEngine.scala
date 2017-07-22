@@ -30,6 +30,8 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
   def config: GameConfig
 
+  def configAsync: Future[Option[GameConfig]] = Future.successful(None)
+
   def assets: Set[AssetType]
 
   def assetsAsync: Future[Set[AssetType]] = Future.successful(Set())
@@ -46,72 +48,76 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
   private var animationStates: AnimationStates = AnimationStates(Nil)
 
-  private implicit val metrics: IMetrics = Metrics.getInstance(config.advanced.recordMetrics, config.advanced.logMetricsReportIntervalMs)
-
   def main(): Unit = {
 
-    Logger.info("Starting Indigo")
-    Logger.info("Configuration: " + config.asString)
+    configAsync.map(_.getOrElse(config)).foreach { gameConfig =>
 
-    if(config.viewport.width % 2 != 0 || config.viewport.height % 2 != 0) {
-      Logger.info("WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!")
-    }
+      implicit val metrics: IMetrics = Metrics.getInstance(gameConfig.advanced.recordMetrics, gameConfig.advanced.logMetricsReportIntervalMs)
 
-    assetsAsync.flatMap(aa => AssetManager.loadAssets(aa ++ assets)).foreach { assetCollection =>
+      Logger.info("Starting Indigo")
+      Logger.info("Configuration: " + gameConfig.asString)
 
-      Logger.info("Asset load complete")
-
-      val textureAtlas = TextureAtlas.create(
-        assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height)),
-        AssetManager.findByName(assetCollection),
-        TextureAtlasFunctions.createAtlasData
-      )
-
-      val loadedTextureAssets = textureAtlas.atlases
-        .toList
-        .map(a => a._2.imageData.map(data => LoadedTextureAsset(a._1.id, data)))
-        .collect { case Some(s) => s }
-
-      val assetMapping = AssetMapping(
-        mappings =
-          textureAtlas.legend
-            .map { p =>
-              p._1 -> TextureRefAndOffset(
-                atlasName = p._2.id.id,
-                atlasSize = textureAtlas.atlases.get(p._2.id).map(_.size.value).map(Vector2.apply).getOrElse(Vector2.one),
-                offset = p._2.offset
-              )
-            }
-      )
-
-      initialise(assetCollection) match {
-        case e: StartupFailure[_] =>
-          Logger.info("Game initialisation failed")
-          Logger.info(e.report)
-
-        case x: StartupSuccess[StartupData] =>
-          Logger.info("Game initialisation succeeded")
-          val loopFunc = loop(x.success, assetMapping) _
-
-          val canvas = Renderer.createCanvas(config.viewport.width, config.viewport.height)
-
-          Logger.info("Starting world events")
-          WorldEvents(canvas, config.magnification)
-
-          Logger.info("Starting renderer")
-          val renderer: IRenderer = Renderer(
-            RendererConfig(
-              viewport = Viewport(config.viewport.width, config.viewport.height),
-              clearColor = config.clearColor,
-              magnification = config.magnification
-            ),
-            loadedTextureAssets,
-            canvas
-          )
-
-          Logger.info("Starting main loop, there will be no more log messages.")
-          dom.window.requestAnimationFrame(loopFunc(renderer, 0))
+      if(gameConfig.viewport.width % 2 != 0 || gameConfig.viewport.height % 2 != 0) {
+        Logger.info("WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!")
       }
+
+      assetsAsync.flatMap(aa => AssetManager.loadAssets(aa ++ assets)).foreach { assetCollection =>
+
+        Logger.info("Asset load complete")
+
+        val textureAtlas = TextureAtlas.create(
+          assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height)),
+          AssetManager.findByName(assetCollection),
+          TextureAtlasFunctions.createAtlasData
+        )
+
+        val loadedTextureAssets = textureAtlas.atlases
+          .toList
+          .map(a => a._2.imageData.map(data => LoadedTextureAsset(a._1.id, data)))
+          .collect { case Some(s) => s }
+
+        val assetMapping = AssetMapping(
+          mappings =
+            textureAtlas.legend
+              .map { p =>
+                p._1 -> TextureRefAndOffset(
+                  atlasName = p._2.id.id,
+                  atlasSize = textureAtlas.atlases.get(p._2.id).map(_.size.value).map(Vector2.apply).getOrElse(Vector2.one),
+                  offset = p._2.offset
+                )
+              }
+        )
+
+        initialise(assetCollection) match {
+          case e: StartupFailure[_] =>
+            Logger.info("Game initialisation failed")
+            Logger.info(e.report)
+
+          case x: StartupSuccess[StartupData] =>
+            Logger.info("Game initialisation succeeded")
+            val loopFunc = loop(gameConfig, x.success, assetMapping) _
+
+            val canvas = Renderer.createCanvas(gameConfig.viewport.width, gameConfig.viewport.height)
+
+            Logger.info("Starting world events")
+            WorldEvents(canvas, gameConfig.magnification)
+
+            Logger.info("Starting renderer")
+            val renderer: IRenderer = Renderer(
+              RendererConfig(
+                viewport = Viewport(gameConfig.viewport.width, gameConfig.viewport.height),
+                clearColor = gameConfig.clearColor,
+                magnification = gameConfig.magnification
+              ),
+              loadedTextureAssets,
+              canvas
+            )
+
+            Logger.info("Starting main loop, there will be no more log messages.")
+            dom.window.requestAnimationFrame(loopFunc(renderer, 0))
+        }
+      }
+
     }
 
   }
@@ -126,16 +132,16 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
     }
   }
 
-  private def loop(startupData: StartupData, assetMapping: AssetMapping)(renderer: IRenderer, lastUpdateTime: Double): Double => Unit = { time =>
+  private def loop(gameConfig: GameConfig, startupData: StartupData, assetMapping: AssetMapping)(renderer: IRenderer, lastUpdateTime: Double)(implicit metrics: IMetrics): Double => Unit = { time =>
     val timeDelta = time - lastUpdateTime
 
     // PUT NOTHING ABOVE THIS LINE!! Major performance penalties!!
-    if(timeDelta > config.frameRateDeltaMillis) {
+    if(timeDelta > gameConfig.frameRateDeltaMillis) {
 
       metrics.record(FrameStartMetric)
 
       // Model updates cut off
-      if(config.advanced.disableSkipModelUpdates || timeDelta < config.haltModelUpdatesAt) {
+      if(gameConfig.advanced.disableSkipModelUpdates || timeDelta < gameConfig.haltModelUpdatesAt) {
 
         metrics.record(UpdateStartMetric)
 
@@ -161,7 +167,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
         metrics.record(UpdateEndMetric)
 
         // View updates cut off
-        if(config.advanced.disableSkipViewUpdates || timeDelta < config.haltViewUpdatesAt) {
+        if(gameConfig.advanced.disableSkipViewUpdates || timeDelta < gameConfig.haltViewUpdatesAt) {
 
           metrics.record(CallUpdateViewStartMetric)
 
@@ -175,12 +181,12 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
           metrics.record(ProcessViewStartMetric)
 
           val processUpdatedView: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNodeFlat[ViewEventDataType] =
-            persistGlobalViewEvents andThen
+            persistGlobalViewEvents(metrics) andThen
               flattenNodes andThen
-              persistNodeViewEvents(collectedEvents) andThen
-              applyAnimationStates andThen
-              processAnimationCommands(gameTime) andThen
-              persistAnimationStates
+              persistNodeViewEvents(metrics)(collectedEvents) andThen
+              applyAnimationStates(metrics) andThen
+              processAnimationCommands(metrics)(gameTime) andThen
+              persistAnimationStates(metrics)
 
           val processedView: SceneGraphRootNodeFlat[ViewEventDataType] = processUpdatedView(view)
 
@@ -205,13 +211,13 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
       metrics.record(FrameEndMetric)
 
-      dom.window.requestAnimationFrame(loop(startupData, assetMapping)(renderer, time))
+      dom.window.requestAnimationFrame(loop(gameConfig, startupData, assetMapping)(renderer, time))
     } else {
-      dom.window.requestAnimationFrame(loop(startupData, assetMapping)(renderer, lastUpdateTime))
+      dom.window.requestAnimationFrame(loop(gameConfig, startupData, assetMapping)(renderer, lastUpdateTime))
     }
   }
 
-  private val persistGlobalViewEvents: SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNode[ViewEventDataType] = update => {
+  private val persistGlobalViewEvents: IMetrics => SceneGraphUpdate[ViewEventDataType] => SceneGraphRootNode[ViewEventDataType] = metrics => update => {
     metrics.record(PersistGlobalViewEventsStartMetric)
     update.viewEvents.foreach(GlobalEventStream.push)
     metrics.record(PersistGlobalViewEventsEndMetric)
@@ -220,20 +226,20 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
   private val flattenNodes: SceneGraphRootNode[ViewEventDataType] => SceneGraphRootNodeFlat[ViewEventDataType] = root => root.flatten
 
-  private val persistNodeViewEvents: List[GameEvent] => SceneGraphRootNodeFlat[ViewEventDataType] => SceneGraphRootNodeFlat[ViewEventDataType] = gameEvents => rootNode => {
+  private val persistNodeViewEvents: IMetrics => List[GameEvent] => SceneGraphRootNodeFlat[ViewEventDataType] => SceneGraphRootNodeFlat[ViewEventDataType] = metrics => gameEvents => rootNode => {
     metrics.record(PersistNodeViewEventsStartMetric)
     rootNode.collectViewEvents(gameEvents).foreach(GlobalEventStream.push)
     metrics.record(PersistNodeViewEventsEndMetric)
     rootNode
   }
 
-  private val applyAnimationStates: SceneGraphRootNodeFlat[ViewEventDataType] => SceneGraphRootNodeFlat[ViewEventDataType] = sceneGraph =>
-    sceneGraph.applyAnimationMemento(animationStates)
+  private val applyAnimationStates: IMetrics => SceneGraphRootNodeFlat[ViewEventDataType] => SceneGraphRootNodeFlat[ViewEventDataType] = metrics => sceneGraph =>
+    sceneGraph.applyAnimationMemento(animationStates)(metrics)
 
-  private val processAnimationCommands: GameTime => SceneGraphRootNodeFlat[ViewEventDataType] => SceneGraphRootNodeFlat[ViewEventDataType] = gameTime => sceneGraph =>
-    sceneGraph.runAnimationActions(gameTime)
+  private val processAnimationCommands: IMetrics => GameTime => SceneGraphRootNodeFlat[ViewEventDataType] => SceneGraphRootNodeFlat[ViewEventDataType] = metrics => gameTime => sceneGraph =>
+    sceneGraph.runAnimationActions(gameTime)(metrics)
 
-  private val persistAnimationStates: SceneGraphRootNodeFlat[ViewEventDataType] => SceneGraphRootNodeFlat[ViewEventDataType] = sceneGraph => {
+  private val persistAnimationStates: IMetrics => SceneGraphRootNodeFlat[ViewEventDataType] => SceneGraphRootNodeFlat[ViewEventDataType] = metrics => sceneGraph => {
     metrics.record(PersistAnimationStatesStartMetric)
 
     animationStates = AnimationState.extractAnimationStates(sceneGraph)
@@ -257,7 +263,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
       )
     )
 
-  private def drawScene(renderer: IRenderer, displayable: Displayable): Unit =
+  private def drawScene(renderer: IRenderer, displayable: Displayable)(implicit metrics: IMetrics): Unit =
     renderer.drawScene(displayable)
 
 }

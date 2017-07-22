@@ -3,22 +3,18 @@ package com.purplekingdomgames.indigoframework
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.assets.{AssetCollection, AssetType}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.renderer.ClearColor
 
 import scala.concurrent.Future
 
 object Framework extends GameEngine[StartupData, StartupErrorReport, GameModel, GameViewEvent] {
 
-  private val viewportWidth: Int = 456
-  private val viewportHeight: Int = 256
-  private val magnificationLevel: Int = 2
+//  private val viewportWidth: Int = 456
+//  private val viewportHeight: Int = 256
+//  private val magnificationLevel: Int = 2
 
-  def config: GameConfig = GameConfig(
-    viewport = GameViewport(viewportWidth, viewportHeight),
-    frameRate = 30,
-    clearColor = ClearColor(0.4, 0.2, 0.5, 1),
-    magnification = magnificationLevel
-  )
+  def config: GameConfig = GameConfig.default
+
+  override def configAsync: Future[Option[GameConfig]] = GameConfigHelper.load
 
   def assets: Set[AssetType] = AssetsHelper.assets
   override def assetsAsync: Future[Set[AssetType]] = AssetsHelper.assetsAsync

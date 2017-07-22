@@ -1,0 +1,20 @@
+{
+  "viewport": {
+    "width": 256,
+    "height": 256
+  },
+  "frameRate": 10,
+  "clearColor": {
+    "r": 0.6,
+    "g": 0.1,
+    "b": 0,
+    "a": 1.0
+  },
+  "magnification": 1,
+  "advanced": {
+    "recordMetrics": false,
+    "logMetricsReportIntervalMs": 10000,
+    "disableSkipModelUpdates": false,
+    "disableSkipViewUpdates": false
+  }
+}
