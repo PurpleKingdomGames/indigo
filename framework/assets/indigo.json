@@ -1,0 +1,20 @@
+{
+  "scenes": [
+    {
+      "id":"test",
+      "active": true,
+      "scenegraph": [
+        {
+          "nodeType": "graphic",
+          "assetRef": "trafficlights",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 128,
+            "height": 128
+          }
+        }
+      ]
+    }
+  ]
+}

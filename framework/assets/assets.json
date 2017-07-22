@@ -11,9 +11,17 @@
     {
       "name": "base_charactor",
       "path": "assets/base_charactor.png"
+    },
+    {
+      "name": "trafficlights",
+      "path": "assets/trafficlights.png"
     }
   ],
   "texts" : [
+    {
+      "name": "indigoJson",
+      "path": "assets/indigo.json"
+    },
     {
       "name": "base_charactor-json",
       "path": "assets/base_charactor.json"
