@@ -5,16 +5,33 @@
       "active": true,
       "scenegraph": [
         {
-          "nodeType": "graphic",
-          "assetRef": "trafficlights",
-          "bounds": {
-            "x": 0,
-            "y": 0,
-            "width": 128,
-            "height": 128
-          }
+          "entityId": "traffic light red"
         }
       ]
+    }
+  ],
+  "entities": [
+    {
+      "id": "traffic light red",
+      "components": {
+        "presentation": {
+          "graphic": {
+            "assetRef": "trafficlights",
+            "bounds": {
+              "x": 10,
+              "y": 10,
+              "width": 128,
+              "height": 128
+            },
+            "crop": {
+              "x": 0,
+              "y": 0,
+              "width": 64,
+              "height": 64
+            }
+          }
+        }
+      }
     }
   ]
 }

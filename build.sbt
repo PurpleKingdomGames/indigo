@@ -31,4 +31,4 @@ lazy val framework =
 lazy val indigoProject =
   (project in file("."))
     .settings(commonSettings: _*)
-    .aggregate(indigo, sbtIndigo, sandbox, perf)
+    .aggregate(indigo, sbtIndigo, sandbox, perf, framework)

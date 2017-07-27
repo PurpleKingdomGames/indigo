@@ -3,7 +3,8 @@ package com.purplekingdomgames.indigo.gameengine.scenegraph
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import com.purplekingdomgames.indigo.gameengine.{GameEvent, GameTypeHolder}
 import com.purplekingdomgames.indigo.util.Logger
-import upickle.default._
+import io.circe.generic.auto._
+import io.circe.parser._
 
 case class Aseprite(frames: List[AsepriteFrame], meta: AsepriteMeta)
 
@@ -31,15 +32,13 @@ case class AsepriteFrameTag(name: String, from: Int, to: Int, direction: String)
 
 object AsepriteHelper {
 
-  def fromJson(json: String): Option[Aseprite] = {
-    try {
-      Option(read[Aseprite](json))
-    } catch {
-      case e: Throwable =>
+  def fromJson(json: String): Option[Aseprite] =
+    decode[Aseprite](json) match {
+      case Right(s) => Some(s)
+      case Left(e) =>
         Logger.info("Failed to deserialise json into Aseprite: " + e.getMessage)
         None
     }
-  }
 
   private def extractFrames(frameTag: AsepriteFrameTag, asepriteFrames: List[AsepriteFrame]): List[Frame] = {
     asepriteFrames.slice(frameTag.from, frameTag.to + 1).map { aseFrame =>

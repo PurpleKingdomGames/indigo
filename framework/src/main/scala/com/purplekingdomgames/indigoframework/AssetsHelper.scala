@@ -2,7 +2,8 @@ package com.purplekingdomgames.indigoframework
 
 import com.purplekingdomgames.indigo.gameengine.assets.{AssetManager, AssetType, ImageAsset, TextAsset}
 import com.purplekingdomgames.indigo.util.Logger
-import upickle.default._
+import io.circe.generic.auto._
+import io.circe.parser._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -23,15 +24,13 @@ object AssetsHelper {
         }
       }
 
-  def fromJson(json: String): Option[AssetList] = {
-    try {
-      Option(read[AssetList](json))
-    } catch {
-      case e: Throwable =>
-        Logger.info("Failed to deserialise json into a useable asset list: " + e.getMessage)
+  def fromJson(json: String): Option[AssetList] =
+    decode[AssetList](json) match {
+      case Right(al) => Some(al)
+      case Left(e) =>
+        Logger.info("Failed to deserialise json into AssetList: " + e.getMessage)
         None
     }
-  }
 
 }
 
