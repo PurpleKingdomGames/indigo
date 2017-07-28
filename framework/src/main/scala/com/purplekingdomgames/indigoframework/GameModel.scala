@@ -5,7 +5,7 @@ import com.purplekingdomgames.indigo.gameengine._
 object GameModelHelper {
 
   def initialModel(startupData: StartupData): GameModel =
-    GameModel()
+    GameModel(startupData.gameDefinition)
 
   def updateModel(gameTime: GameTime, state: GameModel): GameEvent => GameModel = {
     _ => state
@@ -34,7 +34,7 @@ object GameModelHelper {
 
 }
 
-case class GameModel()
+case class GameModel(gameDefinition: GameDefinition)
 
 //case class MyGameModel(dude: DudeModel)
 //

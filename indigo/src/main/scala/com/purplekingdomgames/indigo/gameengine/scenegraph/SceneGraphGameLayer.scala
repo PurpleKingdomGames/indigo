@@ -19,6 +19,11 @@ object SceneGraphGameLayer {
       SceneGraphNodeBranch[ViewEventDataType](nodes.toList)
     )
 
+  def apply[ViewEventDataType](nodes: List[SceneGraphNode[ViewEventDataType]]): SceneGraphGameLayer[ViewEventDataType] =
+    SceneGraphGameLayer(
+      SceneGraphNodeBranch[ViewEventDataType](nodes)
+    )
+
 }
 
 case class SceneGraphGameLayerFlat[ViewEventDataType](nodes: List[SceneGraphNodeLeaf[ViewEventDataType]]) {

@@ -1,12 +1,12 @@
 package com.purplekingdomgames.indigoframework
 
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Rectangle
 import com.purplekingdomgames.indigo.util.Logger
 import io.circe.generic.auto._
 import io.circe.parser._
 
 case class GameDefinition(scenes: List[GameScene], entities: List[Entity])
-case class GameScene(id: String, active: Boolean, scenegraph: List[GameNode])
-case class GameNode(entityId: Option[String], children: Option[List[GameNode]])
+case class GameScene(id: String, active: Boolean, entities: List[String])
 
 object GameDefinitionHelper {
 
@@ -24,4 +24,6 @@ case class Entity(id: String, components: EntityComponents)
 case class EntityComponents(presentation: EntityPresentation)
 case class EntityPresentation(graphic: Option[EntityGraphic])
 case class EntityGraphic(assetRef: String, bounds: EntityRectangle, crop: EntityRectangle)
-case class EntityRectangle(x: Int, y: Int, width: Int, height: Int)
+case class EntityRectangle(x: Int, y: Int, width: Int, height: Int) {
+  def toRectangle: Rectangle = Rectangle(x, y, width, height)
+}

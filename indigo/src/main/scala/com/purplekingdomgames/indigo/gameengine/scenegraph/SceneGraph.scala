@@ -138,6 +138,17 @@ object Graphic {
       effects = Effects.default,
       eventHandler = (_:(Rectangle, GameEvent)) => None
     )
+
+  def apply[ViewEventDataType](bounds: Rectangle, depth: Int, imageAssetRef: String): Graphic[ViewEventDataType] =
+    Graphic(
+      bounds = bounds,
+      depth = depth,
+      imageAssetRef = imageAssetRef,
+      ref = Point.zero,
+      crop = bounds,
+      effects = Effects.default,
+      eventHandler = (_:(Rectangle, GameEvent)) => None
+    )
 }
 
 case class Sprite[ViewEventDataType](bindingKey: BindingKey, bounds: Rectangle, depth: Depth, imageAssetRef: String, animations: Animations, ref: Point, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent[ViewEventDataType]]) extends SceneGraphNodeLeaf[ViewEventDataType] {

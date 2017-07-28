@@ -3,10 +3,8 @@
     {
       "id":"test",
       "active": true,
-      "scenegraph": [
-        {
-          "entityId": "traffic light red"
-        }
+      "entities": [
+        "traffic light red"
       ]
     }
   ],
