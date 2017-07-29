@@ -32,3 +32,5 @@ env.properties
 native
 
 node_modules
+
+elm-stuff
