@@ -95,8 +95,7 @@ configUpdate msg model =
       { model | magnification = updateMagnification model.magnification - 1 }
 
     InputMagnification str ->
-      -- { model | frameRate = updateMagnification model.magnification - 1 }
-      model
+      { model | magnification = updateMagnification (Result.withDefault 1 (String.toInt str)) }
 
     IncrementFrameRate ->
       { model | frameRate = updateFrameRate model.frameRate + 1 }
@@ -105,8 +104,7 @@ configUpdate msg model =
       { model | frameRate = updateFrameRate model.frameRate - 1 }
 
     InputFrameRate str ->
-      -- { model | frameRate = updateFrameRate model.frameRate - 1 }
-      model
+      { model | frameRate = updateFrameRate (Result.withDefault 30 (String.toInt str)) }
 
 
 -- View
