@@ -7,7 +7,8 @@ module ConfigEditor exposing (
   )
 
 import Html exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onInput)
+import Html.Attributes exposing (..)
 import Json.Encode exposing (..)
 
 
@@ -71,37 +72,41 @@ configModel =
 type ConfigUpdateMsg =
   IncrementMagnification
   | DecrementMagnification
+  | InputMagnification String
   | IncrementFrameRate
   | DecrementFrameRate
+  | InputFrameRate String
 
-clampInt : Int -> Int -> Int -> Int -> Int
-clampInt lowerBound upperBound current amount =
-  if current + amount > lowerBound - 1 && current + amount < upperBound + 1
-    then current + amount
-    else current
+updateMagnification : Int -> Int
+updateMagnification newValue =
+  Basics.max 1 (Basics.min 10 newValue)
 
-updateMagnification : Int -> Int -> Int
-updateMagnification current plus =
-  clampInt 1 10 current plus
-
-updateFrameRate : Int -> Int -> Int
-updateFrameRate current plus =
-  clampInt 1 60 current plus
+updateFrameRate : Int -> Int
+updateFrameRate newValue =
+  Basics.max 1 (Basics.min 60 newValue)
 
 configUpdate : ConfigUpdateMsg -> ConfigModel -> ConfigModel
 configUpdate msg model =
   case msg of
     IncrementMagnification ->
-      { model | magnification = updateMagnification model.magnification 1 }
+      { model | magnification = updateMagnification model.magnification + 1 }
 
     DecrementMagnification ->
-      { model | magnification = updateMagnification model.magnification -1 }
+      { model | magnification = updateMagnification model.magnification - 1 }
+
+    InputMagnification str ->
+      -- { model | frameRate = updateMagnification model.magnification - 1 }
+      model
 
     IncrementFrameRate ->
-      { model | frameRate = updateFrameRate model.frameRate 1 }
+      { model | frameRate = updateFrameRate model.frameRate + 1 }
 
     DecrementFrameRate ->
-      { model | frameRate = updateFrameRate model.frameRate -1 }
+      { model | frameRate = updateFrameRate model.frameRate - 1 }
+
+    InputFrameRate str ->
+      -- { model | frameRate = updateFrameRate model.frameRate - 1 }
+      model
 
 
 -- View
@@ -148,12 +153,14 @@ configView model =
   , div []
     [ text "Magnification"
     , button [ onClick IncrementMagnification ] [ text "+" ]
+    , input [ value (toString model.magnification), onInput InputMagnification ] []
     , button [ onClick DecrementMagnification ] [ text "-" ]
     ]
   , div []
     [ text "Frame rate"
     , button [ onClick IncrementFrameRate ] [ text "+" ]
+    , input [ value (toString model.frameRate), onInput InputFrameRate ] []
     , button [ onClick DecrementFrameRate ] [ text "-" ]
     ]
-  , textarea [] [ text (encode 2 (configJson model)) ]
+  , textarea [ cols 50, rows 25 ] [ text (encode 2 (configJson model)) ]
   ]
