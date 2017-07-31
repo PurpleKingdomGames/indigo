@@ -6,9 +6,10 @@ module ConfigEditor exposing (
   , ConfigUpdateMsg
   )
 
+import CounterComponent
 import Html exposing (..)
-import Html.Events exposing (onClick, onInput)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick, onInput)
 import Json.Encode exposing (..)
 
 
@@ -36,6 +37,7 @@ type alias AdvanceConfig =
 type alias ConfigModel =
   { magnification : Int
   , frameRate : Int
+  , fish : CounterComponent.CounterModel
   , viewport : ViewportConfig
   , clearColor : ClearColorConfig
   , advanced : AdvanceConfig
@@ -48,6 +50,7 @@ configModel : ConfigModel
 configModel =
   { magnification = 1
   , frameRate = 30
+  , fish = 1
   , viewport =
     { width = 550
     , height = 400
@@ -76,6 +79,7 @@ type ConfigUpdateMsg =
   | IncrementFrameRate
   | DecrementFrameRate
   | InputFrameRate String
+  | FishMsg CounterComponent.CounterUpdateMsg
 
 updateMagnification : Int -> Int
 updateMagnification newValue =
@@ -105,6 +109,9 @@ configUpdate msg model =
 
     InputFrameRate str ->
       { model | frameRate = updateFrameRate (Result.withDefault 30 (String.toInt str)) }
+
+    FishMsg msg ->
+      { model | fish = CounterComponent.update msg model.fish }
 
 
 -- View
@@ -160,5 +167,6 @@ configView model =
     , input [ value (toString model.frameRate), onInput InputFrameRate ] []
     , button [ onClick DecrementFrameRate ] [ text "-" ]
     ]
+  , Html.map FishMsg (CounterComponent.view "fish" model.fish)
   , textarea [ cols 50, rows 25 ] [ text (encode 2 (configJson model)) ]
   ]
