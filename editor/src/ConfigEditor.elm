@@ -10,7 +10,9 @@ module ConfigEditor
 import CounterComponent
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onInput)
 import Json.Encode exposing (..)
+import Monocle.Lens exposing (Lens, compose)
 
 
 -- Config definitions
@@ -20,6 +22,16 @@ type alias ViewportConfig =
     { width : Int
     , height : Int
     }
+
+
+viewportWidthLens : Lens ViewportConfig Int
+viewportWidthLens =
+    Lens (\vp -> vp.width) (\w vp -> { vp | width = w })
+
+
+viewportHeightLens : Lens ViewportConfig Int
+viewportHeightLens =
+    Lens (\vp -> vp.height) (\h vp -> { vp | height = h })
 
 
 type alias ClearColorConfig =
@@ -45,6 +57,21 @@ type alias ConfigModel =
     , clearColor : ClearColorConfig
     , advanced : AdvanceConfig
     }
+
+
+configViewportLens : Lens ConfigModel ViewportConfig
+configViewportLens =
+    Lens (\c -> c.viewport) (\vp c -> { c | viewport = vp })
+
+
+configViewportWidthLens : Lens ConfigModel Int
+configViewportWidthLens =
+    compose configViewportLens viewportWidthLens
+
+
+configViewportHeightLens : Lens ConfigModel Int
+configViewportHeightLens =
+    compose configViewportLens viewportHeightLens
 
 
 
@@ -81,6 +108,8 @@ configModel =
 type ConfigUpdateMsg
     = UpdateMagnification CounterComponent.CounterUpdateMsg
     | UpdateFrameRate CounterComponent.CounterUpdateMsg
+    | UpdateViewportWidth String
+    | UpdateViewportHeight String
 
 
 configUpdate : ConfigUpdateMsg -> ConfigModel -> ConfigModel
@@ -91,6 +120,12 @@ configUpdate msg model =
 
         UpdateFrameRate msg ->
             { model | frameRate = CounterComponent.update 1 60 msg model.frameRate }
+
+        UpdateViewportWidth msg ->
+            configViewportWidthLens.set (Result.withDefault 1 (String.toInt msg)) model
+
+        UpdateViewportHeight msg ->
+            configViewportHeightLens.set (Result.withDefault 1 (String.toInt msg)) model
 
 
 
@@ -142,5 +177,13 @@ configView model =
         [ div [] [ text "Config" ]
         , Html.map UpdateMagnification (CounterComponent.view "Magnification" model.magnification)
         , Html.map UpdateFrameRate (CounterComponent.view "Frame rate" model.frameRate)
+        , div []
+            [ text "Viewport width"
+            , input [ value (toString (configViewportWidthLens.get model)), onInput UpdateViewportWidth ] []
+            ]
+        , div []
+            [ text "Viewport height"
+            , input [ value (toString (configViewportHeightLens.get model)), onInput UpdateViewportHeight ] []
+            ]
         , textarea [ cols 50, rows 25 ] [ text (encode 2 (configJson model)) ]
         ]
