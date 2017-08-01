@@ -10,7 +10,6 @@ module ConfigEditor
 import CounterComponent
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
 import Json.Encode exposing (..)
 
 
@@ -40,9 +39,8 @@ type alias AdvanceConfig =
 
 
 type alias ConfigModel =
-    { magnification : Int
-    , frameRate : Int
-    , fish : CounterComponent.CounterModel
+    { magnification : CounterComponent.CounterModel
+    , frameRate : CounterComponent.CounterModel
     , viewport : ViewportConfig
     , clearColor : ClearColorConfig
     , advanced : AdvanceConfig
@@ -57,7 +55,6 @@ configModel : ConfigModel
 configModel =
     { magnification = 1
     , frameRate = 30
-    , fish = 1
     , viewport =
         { width = 550
         , height = 400
@@ -82,48 +79,18 @@ configModel =
 
 
 type ConfigUpdateMsg
-    = IncrementMagnification
-    | DecrementMagnification
-    | InputMagnification String
-    | IncrementFrameRate
-    | DecrementFrameRate
-    | InputFrameRate String
-    | FishMsg CounterComponent.CounterUpdateMsg
-
-
-updateMagnification : Int -> Int
-updateMagnification newValue =
-    Basics.max 1 (Basics.min 10 newValue)
-
-
-updateFrameRate : Int -> Int
-updateFrameRate newValue =
-    Basics.max 1 (Basics.min 60 newValue)
+    = UpdateMagnification CounterComponent.CounterUpdateMsg
+    | UpdateFrameRate CounterComponent.CounterUpdateMsg
 
 
 configUpdate : ConfigUpdateMsg -> ConfigModel -> ConfigModel
 configUpdate msg model =
     case msg of
-        IncrementMagnification ->
-            { model | magnification = updateMagnification model.magnification + 1 }
+        UpdateMagnification msg ->
+            { model | magnification = CounterComponent.update 1 10 msg model.magnification }
 
-        DecrementMagnification ->
-            { model | magnification = updateMagnification model.magnification - 1 }
-
-        InputMagnification str ->
-            { model | magnification = updateMagnification (Result.withDefault 1 (String.toInt str)) }
-
-        IncrementFrameRate ->
-            { model | frameRate = updateFrameRate model.frameRate + 1 }
-
-        DecrementFrameRate ->
-            { model | frameRate = updateFrameRate model.frameRate - 1 }
-
-        InputFrameRate str ->
-            { model | frameRate = updateFrameRate (Result.withDefault 30 (String.toInt str)) }
-
-        FishMsg msg ->
-            { model | fish = CounterComponent.update msg model.fish }
+        UpdateFrameRate msg ->
+            { model | frameRate = CounterComponent.update 1 60 msg model.frameRate }
 
 
 
@@ -173,18 +140,7 @@ configView : ConfigModel -> Html ConfigUpdateMsg
 configView model =
     div []
         [ div [] [ text "Config" ]
-        , div []
-            [ text "Magnification"
-            , button [ onClick IncrementMagnification ] [ text "+" ]
-            , input [ value (toString model.magnification), onInput InputMagnification ] []
-            , button [ onClick DecrementMagnification ] [ text "-" ]
-            ]
-        , div []
-            [ text "Frame rate"
-            , button [ onClick IncrementFrameRate ] [ text "+" ]
-            , input [ value (toString model.frameRate), onInput InputFrameRate ] []
-            , button [ onClick DecrementFrameRate ] [ text "-" ]
-            ]
-        , Html.map FishMsg (CounterComponent.view "fish" model.fish)
+        , Html.map UpdateMagnification (CounterComponent.view "Magnification" model.magnification)
+        , Html.map UpdateFrameRate (CounterComponent.view "Frame rate" model.frameRate)
         , textarea [ cols 50, rows 25 ] [ text (encode 2 (configJson model)) ]
         ]

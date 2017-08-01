@@ -7,45 +7,57 @@ import Html.Attributes exposing (..)
 
 -- Config definitions
 
-type alias CounterModel = Int
+
+type alias CounterModel =
+    Int
+
+
 
 -- Model
 
+
 model : CounterModel
 model =
-  0
+    0
+
+
 
 -- Update
 
-type CounterUpdateMsg =
-  IncrementCounter
-  | DecrementCounter
-  | InputCounter String
 
-clampValue : Int -> Int
-clampValue newValue =
-  Basics.max 1 (Basics.min 10 newValue)
+type CounterUpdateMsg
+    = IncrementCounter
+    | DecrementCounter
+    | InputCounter String
 
-update : CounterUpdateMsg -> CounterModel -> CounterModel
-update msg model =
-  case msg of
-    IncrementCounter ->
-      clampValue model + 1
 
-    DecrementCounter ->
-      clampValue model - 1
+clampValue : Int -> Int -> Int -> Int
+clampValue min max newValue =
+    Basics.max (min + 1) (Basics.min (max - 1) newValue)
 
-    InputCounter str ->
-      clampValue (Result.withDefault 1 (String.toInt str))
+
+update : Int -> Int -> CounterUpdateMsg -> CounterModel -> CounterModel
+update min max msg model =
+    case msg of
+        IncrementCounter ->
+            clampValue min max model + 1
+
+        DecrementCounter ->
+            clampValue min max model - 1
+
+        InputCounter str ->
+            clampValue min max (Result.withDefault 1 (String.toInt str))
+
 
 
 -- View
 
+
 view : String -> CounterModel -> Html CounterUpdateMsg
 view label model =
-  div []
-    [ text label
-    , button [ onClick IncrementCounter ] [ text "+" ]
-    , input [ value (toString model), onInput InputCounter ] []
-    , button [ onClick DecrementCounter ] [ text "-" ]
-    ]
+    div []
+        [ text label
+        , button [ onClick IncrementCounter ] [ text "+" ]
+        , input [ value (toString model), onInput InputCounter ] []
+        , button [ onClick DecrementCounter ] [ text "-" ]
+        ]
