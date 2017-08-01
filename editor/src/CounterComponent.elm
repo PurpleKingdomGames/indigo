@@ -32,21 +32,21 @@ type CounterUpdateMsg
 
 
 clampValue : Int -> Int -> Int -> Int
-clampValue min max newValue =
-    Basics.max (min + 1) (Basics.min (max - 1) newValue)
+clampValue lowerBound upperBound newValue =
+    Basics.max (lowerBound + 1) (Basics.min (upperBound - 1) newValue)
 
 
 update : Int -> Int -> CounterUpdateMsg -> CounterModel -> CounterModel
-update min max msg model =
+update lowerBound upperBound msg model =
     case msg of
         IncrementCounter ->
-            clampValue min max model + 1
+            clampValue lowerBound upperBound model + 1
 
         DecrementCounter ->
-            clampValue min max model - 1
+            clampValue lowerBound upperBound model - 1
 
         InputCounter str ->
-            clampValue min max (Result.withDefault 1 (String.toInt str))
+            clampValue lowerBound upperBound (Result.withDefault lowerBound (String.toInt str))
 
 
 
