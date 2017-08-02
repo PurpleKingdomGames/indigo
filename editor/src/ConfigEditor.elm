@@ -42,7 +42,7 @@ type alias ClearColorConfig =
     }
 
 
-type alias AdvanceConfig =
+type alias AdvancedConfig =
     { recordMetrics : Bool
     , logMetricsReportIntervalMs : Int
     , disableSkipModelUpdates : Bool
@@ -55,7 +55,7 @@ type alias ConfigModel =
     , frameRate : CounterComponent.CounterModel
     , viewport : ViewportConfig
     , clearColor : ClearColorConfig
-    , advanced : AdvanceConfig
+    , advanced : AdvancedConfig
     }
 
 
@@ -80,8 +80,8 @@ configViewportHeightLens =
 
 configModel : ConfigModel
 configModel =
-    { magnification = 1
-    , frameRate = 30
+    { magnification = CounterComponent.initialModel 1
+    , frameRate = CounterComponent.initialModel 30
     , viewport =
         { width = 550
         , height = 400
@@ -150,7 +150,7 @@ clearColorJson clearColor =
         ]
 
 
-advancedJson : AdvanceConfig -> Value
+advancedJson : AdvancedConfig -> Value
 advancedJson advanced =
     Json.Encode.object
         [ ( "recordMetrics", bool advanced.recordMetrics )

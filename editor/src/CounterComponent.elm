@@ -1,4 +1,4 @@
-module CounterComponent exposing (model, view, update, CounterModel, CounterUpdateMsg)
+module CounterComponent exposing (initialModel, view, update, CounterModel, CounterUpdateMsg)
 
 import Html exposing (..)
 import Html.Events exposing (onClick, onInput)
@@ -16,9 +16,9 @@ type alias CounterModel =
 -- Model
 
 
-model : CounterModel
-model =
-    0
+initialModel : Int -> CounterModel
+initialModel i =
+    i
 
 
 
