@@ -1,4 +1,4 @@
-module TextInputComponent exposing (..)
+module Components.TextInputComponent exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)

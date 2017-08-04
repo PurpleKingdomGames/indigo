@@ -1,4 +1,4 @@
-module CheckboxComponent exposing (..)
+module Components.CheckboxComponent exposing (..)
 
 import Html exposing (..)
 import Html.Events exposing (onCheck)

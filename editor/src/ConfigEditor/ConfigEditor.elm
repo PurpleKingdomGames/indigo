@@ -1,4 +1,4 @@
-module ConfigEditor
+module ConfigEditor.ConfigEditor
     exposing
         ( configModel
         , configUpdate
@@ -7,12 +7,12 @@ module ConfigEditor
         , ConfigUpdateMsg
         )
 
-import CounterComponent
+import Components.CounterComponent as CounterComponent
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Json.Encode exposing (..)
 import Monocle.Lens exposing (Lens, compose)
-import TextInputComponent
+import Components.TextInputComponent as TextInputComponent
 
 
 -- Config definitions

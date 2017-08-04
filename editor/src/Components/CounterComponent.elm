@@ -1,4 +1,4 @@
-module CounterComponent exposing (initialModel, view, update, CounterModel, CounterUpdateMsg)
+module Components.CounterComponent exposing (initialModel, view, update, CounterModel, CounterUpdateMsg)
 
 import Html exposing (..)
 import Html.Events exposing (onClick, onInput)
