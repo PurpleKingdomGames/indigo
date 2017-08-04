@@ -42,12 +42,52 @@ type alias ClearColorConfig =
     }
 
 
+clearColorRedLens : Lens ClearColorConfig Float
+clearColorRedLens =
+    Lens (\cc -> cc.red) (\v cc -> { cc | red = v })
+
+
+clearColorGreenLens : Lens ClearColorConfig Float
+clearColorGreenLens =
+    Lens (\cc -> cc.green) (\v cc -> { cc | green = v })
+
+
+clearColorBlueLens : Lens ClearColorConfig Float
+clearColorBlueLens =
+    Lens (\cc -> cc.blue) (\v cc -> { cc | blue = v })
+
+
+clearColorAlphaLens : Lens ClearColorConfig Float
+clearColorAlphaLens =
+    Lens (\cc -> cc.alpha) (\v cc -> { cc | alpha = v })
+
+
 type alias AdvancedConfig =
     { recordMetrics : Bool
     , logMetricsReportIntervalMs : Int
     , disableSkipModelUpdates : Bool
     , disableSkipViewUpdates : Bool
     }
+
+
+advancedRecordMetricsLens : Lens AdvancedConfig Bool
+advancedRecordMetricsLens =
+    Lens (\a -> a.recordMetrics) (\v a -> { a | recordMetrics = v })
+
+
+advancedMetricIntervalLens : Lens AdvancedConfig Int
+advancedMetricIntervalLens =
+    Lens (\a -> a.logMetricsReportIntervalMs) (\v a -> { a | logMetricsReportIntervalMs = v })
+
+
+advancedDisableSkipModelLens : Lens AdvancedConfig Bool
+advancedDisableSkipModelLens =
+    Lens (\a -> a.disableSkipModelUpdates) (\v a -> { a | disableSkipModelUpdates = v })
+
+
+advancedDisableSkipViewLens : Lens AdvancedConfig Bool
+advancedDisableSkipViewLens =
+    Lens (\a -> a.disableSkipViewUpdates) (\v a -> { a | disableSkipViewUpdates = v })
 
 
 type alias ConfigModel =
@@ -64,6 +104,20 @@ configViewportLens =
     Lens (\c -> c.viewport) (\vp c -> { c | viewport = vp })
 
 
+configClearColourLens : Lens ConfigModel ClearColorConfig
+configClearColourLens =
+    Lens (\c -> c.clearColor) (\cc c -> { c | clearColor = cc })
+
+
+configAdvancedLens : Lens ConfigModel AdvancedConfig
+configAdvancedLens =
+    Lens (\c -> c.advanced) (\a c -> { c | advanced = a })
+
+
+
+-- composed lenses
+
+
 configViewportWidthLens : Lens ConfigModel Int
 configViewportWidthLens =
     compose configViewportLens viewportWidthLens
@@ -72,6 +126,46 @@ configViewportWidthLens =
 configViewportHeightLens : Lens ConfigModel Int
 configViewportHeightLens =
     compose configViewportLens viewportHeightLens
+
+
+configClearColorRedLens : Lens ConfigModel Float
+configClearColorRedLens =
+    compose configClearColourLens clearColorRedLens
+
+
+configClearColorGreenLens : Lens ConfigModel Float
+configClearColorGreenLens =
+    compose configClearColourLens clearColorGreenLens
+
+
+configClearColorBlueLens : Lens ConfigModel Float
+configClearColorBlueLens =
+    compose configClearColourLens clearColorBlueLens
+
+
+configClearColorAlphaLens : Lens ConfigModel Float
+configClearColorAlphaLens =
+    compose configClearColourLens clearColorAlphaLens
+
+
+configAdvancedRecordMetricsLens : Lens ConfigModel Bool
+configAdvancedRecordMetricsLens =
+    compose configAdvancedLens advancedRecordMetricsLens
+
+
+configAdvancedMetricIntervalLens : Lens ConfigModel Int
+configAdvancedMetricIntervalLens =
+    compose configAdvancedLens advancedMetricIntervalLens
+
+
+configAdvancedDisableSkipModelLens : Lens ConfigModel Bool
+configAdvancedDisableSkipModelLens =
+    compose configAdvancedLens advancedDisableSkipModelLens
+
+
+configAdvancedDisableSkipViewLens : Lens ConfigModel Bool
+configAdvancedDisableSkipViewLens =
+    compose configAdvancedLens advancedDisableSkipViewLens
 
 
 
