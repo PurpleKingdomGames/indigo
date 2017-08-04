@@ -1,15 +1,50 @@
 module TextInputComponent exposing (..)
 
 import Html exposing (..)
-import Html.Events exposing (onInput)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onInput)
 
 
-type alias TextInputModel =
-    String
+type TextInputModel
+    = AsString String
+    | AsInt Int
+    | AsFloat Float
 
 
-initial : String -> TextInputModel
+toInt : TextInputModel -> Int
+toInt model =
+    case model of
+        AsInt i ->
+            i
+
+        _ ->
+            1
+
+
+toString : TextInputModel -> String
+toString model =
+    case model of
+        AsString str ->
+            str
+
+        AsInt i ->
+            (Basics.toString i)
+
+        AsFloat f ->
+            (Basics.toString f)
+
+
+toFloat : TextInputModel -> Float
+toFloat model =
+    case model of
+        AsFloat f ->
+            f
+
+        _ ->
+            1.0
+
+
+initial : TextInputModel -> TextInputModel
 initial default =
     default
 
@@ -20,9 +55,15 @@ type TextInputMsg
 
 update : TextInputMsg -> TextInputModel -> TextInputModel
 update msg model =
-    case msg of
-        Update msg ->
-            msg
+    case ( msg, model ) of
+        ( Update msg, AsString _ ) ->
+            AsString msg
+
+        ( Update msg, AsInt _ ) ->
+            AsInt (Result.withDefault 1 (String.toInt msg))
+
+        ( Update msg, AsFloat _ ) ->
+            AsFloat (Result.withDefault 1 (String.toFloat msg))
 
 
 view : String -> TextInputModel -> Html TextInputMsg

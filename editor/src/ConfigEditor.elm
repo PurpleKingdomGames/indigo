@@ -10,26 +10,26 @@ module ConfigEditor
 import CounterComponent
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onInput)
 import Json.Encode exposing (..)
 import Monocle.Lens exposing (Lens, compose)
+import TextInputComponent
 
 
 -- Config definitions
 
 
 type alias ViewportConfig =
-    { width : Int
-    , height : Int
+    { width : TextInputComponent.TextInputModel
+    , height : TextInputComponent.TextInputModel
     }
 
 
-viewportWidthLens : Lens ViewportConfig Int
+viewportWidthLens : Lens ViewportConfig TextInputComponent.TextInputModel
 viewportWidthLens =
     Lens (\vp -> vp.width) (\w vp -> { vp | width = w })
 
 
-viewportHeightLens : Lens ViewportConfig Int
+viewportHeightLens : Lens ViewportConfig TextInputComponent.TextInputModel
 viewportHeightLens =
     Lens (\vp -> vp.height) (\h vp -> { vp | height = h })
 
@@ -118,12 +118,12 @@ configAdvancedLens =
 -- composed lenses
 
 
-configViewportWidthLens : Lens ConfigModel Int
+configViewportWidthLens : Lens ConfigModel TextInputComponent.TextInputModel
 configViewportWidthLens =
     compose configViewportLens viewportWidthLens
 
 
-configViewportHeightLens : Lens ConfigModel Int
+configViewportHeightLens : Lens ConfigModel TextInputComponent.TextInputModel
 configViewportHeightLens =
     compose configViewportLens viewportHeightLens
 
@@ -177,8 +177,8 @@ configModel =
     { magnification = CounterComponent.initialModel 1
     , frameRate = CounterComponent.initialModel 30
     , viewport =
-        { width = 550
-        , height = 400
+        { width = TextInputComponent.initial (TextInputComponent.AsInt 550)
+        , height = TextInputComponent.initial (TextInputComponent.AsInt 400)
         }
     , clearColor =
         { red = 0.0
@@ -202,8 +202,8 @@ configModel =
 type ConfigUpdateMsg
     = UpdateMagnification CounterComponent.CounterUpdateMsg
     | UpdateFrameRate CounterComponent.CounterUpdateMsg
-    | UpdateViewportWidth String
-    | UpdateViewportHeight String
+    | UpdateViewportWidth TextInputComponent.TextInputMsg
+    | UpdateViewportHeight TextInputComponent.TextInputMsg
 
 
 configUpdate : ConfigUpdateMsg -> ConfigModel -> ConfigModel
@@ -216,10 +216,10 @@ configUpdate msg model =
             { model | frameRate = CounterComponent.update 1 60 msg model.frameRate }
 
         UpdateViewportWidth msg ->
-            configViewportWidthLens.set (Result.withDefault 1 (String.toInt msg)) model
+            configViewportWidthLens.set (TextInputComponent.update msg model.viewport.width) model
 
         UpdateViewportHeight msg ->
-            configViewportHeightLens.set (Result.withDefault 1 (String.toInt msg)) model
+            configViewportHeightLens.set (TextInputComponent.update msg model.viewport.height) model
 
 
 
@@ -229,8 +229,8 @@ configUpdate msg model =
 viewportJson : ViewportConfig -> Value
 viewportJson viewport =
     Json.Encode.object
-        [ ( "width", int viewport.width )
-        , ( "height", int viewport.height )
+        [ ( "width", int (TextInputComponent.toInt viewport.width) )
+        , ( "height", int (TextInputComponent.toInt viewport.height) )
         ]
 
 
@@ -271,13 +271,7 @@ configView model =
         [ div [] [ text "Config" ]
         , Html.map UpdateMagnification (CounterComponent.view "Magnification" model.magnification)
         , Html.map UpdateFrameRate (CounterComponent.view "Frame rate" model.frameRate)
-        , div []
-            [ text "Viewport width"
-            , input [ value (toString (configViewportWidthLens.get model)), onInput UpdateViewportWidth ] []
-            ]
-        , div []
-            [ text "Viewport height"
-            , input [ value (toString (configViewportHeightLens.get model)), onInput UpdateViewportHeight ] []
-            ]
+        , Html.map UpdateViewportWidth (TextInputComponent.view "Viewport width" model.viewport.width)
+        , Html.map UpdateViewportHeight (TextInputComponent.view "Viewport height" model.viewport.height)
         , textarea [ cols 50, rows 25 ] [ text (encode 2 (configJson model)) ]
         ]
