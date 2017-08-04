@@ -1,8 +1,8 @@
 module Main exposing (..)
 
 import Html exposing (..)
-import Components.CheckboxComponent exposing (..)
 import ConfigEditor.ConfigEditor exposing (..)
+import ConfigEditor.ConfigModel exposing (..)
 
 
 main : Program Never ConfigModel ConfigUpdateMsg
