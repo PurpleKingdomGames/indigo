@@ -5,6 +5,14 @@ module ConfigEditor.ConfigModel
         , ConfigModel
         , configViewportWidthLens
         , configViewportHeightLens
+        , configClearColorRedLens
+        , configClearColorGreenLens
+        , configClearColorBlueLens
+        , configClearColorAlphaLens
+        , configAdvancedRecordMetricsLens
+        , configAdvancedMetricIntervalLens
+        , configAdvancedDisableSkipModelLens
+        , configAdvancedDisableSkipViewLens
         )
 
 import Components.CounterComponent as CounterComponent
@@ -20,16 +28,16 @@ type alias ViewportConfig =
 
 
 type alias ClearColorConfig =
-    { red : Float
-    , green : Float
-    , blue : Float
-    , alpha : Float
+    { red : TextInputComponent.TextInputModel
+    , green : TextInputComponent.TextInputModel
+    , blue : TextInputComponent.TextInputModel
+    , alpha : TextInputComponent.TextInputModel
     }
 
 
 type alias AdvancedConfig =
     { recordMetrics : Bool
-    , logMetricsReportIntervalMs : Int
+    , logMetricsReportIntervalMs : TextInputComponent.TextInputModel
     , disableSkipModelUpdates : Bool
     , disableSkipViewUpdates : Bool
     }
@@ -53,16 +61,16 @@ configModel =
         , height = TextInputComponent.initial (TextInputComponent.AsInt 400)
         }
     , clearColor =
-        { red = 0.0
-        , green = 0.0
-        , blue = 0.0
-        , alpha = 1.0
+        { red = TextInputComponent.initial (TextInputComponent.AsFloat 0.0)
+        , green = TextInputComponent.initial (TextInputComponent.AsFloat 0.0)
+        , blue = TextInputComponent.initial (TextInputComponent.AsFloat 0.0)
+        , alpha = TextInputComponent.initial (TextInputComponent.AsFloat 1.0)
         }
     , advanced =
         { recordMetrics = False
-        , logMetricsReportIntervalMs = 10000
-        , disableSkipModelUpdates = True
-        , disableSkipViewUpdates = True
+        , logMetricsReportIntervalMs = TextInputComponent.initial (TextInputComponent.AsInt 10000)
+        , disableSkipModelUpdates = False
+        , disableSkipViewUpdates = False
         }
     }
 
@@ -81,22 +89,22 @@ viewportHeightLens =
     Lens (\vp -> vp.height) (\h vp -> { vp | height = h })
 
 
-clearColorRedLens : Lens ClearColorConfig Float
+clearColorRedLens : Lens ClearColorConfig TextInputComponent.TextInputModel
 clearColorRedLens =
     Lens (\cc -> cc.red) (\v cc -> { cc | red = v })
 
 
-clearColorGreenLens : Lens ClearColorConfig Float
+clearColorGreenLens : Lens ClearColorConfig TextInputComponent.TextInputModel
 clearColorGreenLens =
     Lens (\cc -> cc.green) (\v cc -> { cc | green = v })
 
 
-clearColorBlueLens : Lens ClearColorConfig Float
+clearColorBlueLens : Lens ClearColorConfig TextInputComponent.TextInputModel
 clearColorBlueLens =
     Lens (\cc -> cc.blue) (\v cc -> { cc | blue = v })
 
 
-clearColorAlphaLens : Lens ClearColorConfig Float
+clearColorAlphaLens : Lens ClearColorConfig TextInputComponent.TextInputModel
 clearColorAlphaLens =
     Lens (\cc -> cc.alpha) (\v cc -> { cc | alpha = v })
 
@@ -106,7 +114,7 @@ advancedRecordMetricsLens =
     Lens (\a -> a.recordMetrics) (\v a -> { a | recordMetrics = v })
 
 
-advancedMetricIntervalLens : Lens AdvancedConfig Int
+advancedMetricIntervalLens : Lens AdvancedConfig TextInputComponent.TextInputModel
 advancedMetricIntervalLens =
     Lens (\a -> a.logMetricsReportIntervalMs) (\v a -> { a | logMetricsReportIntervalMs = v })
 
@@ -146,22 +154,22 @@ configViewportHeightLens =
     compose configViewportLens viewportHeightLens
 
 
-configClearColorRedLens : Lens ConfigModel Float
+configClearColorRedLens : Lens ConfigModel TextInputComponent.TextInputModel
 configClearColorRedLens =
     compose configClearColourLens clearColorRedLens
 
 
-configClearColorGreenLens : Lens ConfigModel Float
+configClearColorGreenLens : Lens ConfigModel TextInputComponent.TextInputModel
 configClearColorGreenLens =
     compose configClearColourLens clearColorGreenLens
 
 
-configClearColorBlueLens : Lens ConfigModel Float
+configClearColorBlueLens : Lens ConfigModel TextInputComponent.TextInputModel
 configClearColorBlueLens =
     compose configClearColourLens clearColorBlueLens
 
 
-configClearColorAlphaLens : Lens ConfigModel Float
+configClearColorAlphaLens : Lens ConfigModel TextInputComponent.TextInputModel
 configClearColorAlphaLens =
     compose configClearColourLens clearColorAlphaLens
 
@@ -171,7 +179,7 @@ configAdvancedRecordMetricsLens =
     compose configAdvancedLens advancedRecordMetricsLens
 
 
-configAdvancedMetricIntervalLens : Lens ConfigModel Int
+configAdvancedMetricIntervalLens : Lens ConfigModel TextInputComponent.TextInputModel
 configAdvancedMetricIntervalLens =
     compose configAdvancedLens advancedMetricIntervalLens
 
@@ -201,10 +209,10 @@ viewportJson viewport =
 clearColorJson : ClearColorConfig -> Value
 clearColorJson clearColor =
     Json.Encode.object
-        [ ( "r", float clearColor.red )
-        , ( "g", float clearColor.green )
-        , ( "b", float clearColor.blue )
-        , ( "a", float clearColor.alpha )
+        [ ( "r", float (TextInputComponent.toFloat clearColor.red) )
+        , ( "g", float (TextInputComponent.toFloat clearColor.green) )
+        , ( "b", float (TextInputComponent.toFloat clearColor.blue) )
+        , ( "a", float (TextInputComponent.toFloat clearColor.alpha) )
         ]
 
 
@@ -212,7 +220,7 @@ advancedJson : AdvancedConfig -> Value
 advancedJson advanced =
     Json.Encode.object
         [ ( "recordMetrics", bool advanced.recordMetrics )
-        , ( "logMetricsReportIntervalMs", int advanced.logMetricsReportIntervalMs )
+        , ( "logMetricsReportIntervalMs", int (TextInputComponent.toInt advanced.logMetricsReportIntervalMs) )
         , ( "disableSkipModelUpdates", bool advanced.disableSkipModelUpdates )
         , ( "disableSkipViewUpdates", bool advanced.disableSkipViewUpdates )
         ]

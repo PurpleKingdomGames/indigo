@@ -63,7 +63,7 @@ update msg model =
             AsInt (Result.withDefault 1 (String.toInt msg))
 
         ( Update msg, AsFloat _ ) ->
-            AsFloat (Result.withDefault 1 (String.toFloat msg))
+            AsFloat (Result.withDefault 1.0 (String.toFloat msg))
 
 
 view : String -> TextInputModel -> Html TextInputMsg
