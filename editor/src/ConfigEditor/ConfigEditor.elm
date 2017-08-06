@@ -5,11 +5,12 @@ module ConfigEditor.ConfigEditor
         , ConfigUpdateMsg
         )
 
-import Components.CounterComponent as CounterComponent
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Json.Encode exposing (..)
 import Components.TextInputComponent as TextInputComponent
+import Components.CheckboxComponent as CheckboxComponent
+import Components.CounterComponent as CounterComponent
 import ConfigEditor.ConfigModel as ConfigModel exposing (..)
 
 
@@ -22,7 +23,10 @@ type ConfigUpdateMsg
     | UpdateClearColorG TextInputComponent.TextInputMsg
     | UpdateClearColorB TextInputComponent.TextInputMsg
     | UpdateClearColorA TextInputComponent.TextInputMsg
+    | UpdateAdvancedRecordMetrics CheckboxComponent.CheckboxMsg
     | UpdateAdvancedMetricsInterval TextInputComponent.TextInputMsg
+    | UpdateAdvancedDisableSkipModel CheckboxComponent.CheckboxMsg
+    | UpdateAdvancedDisableSkipView CheckboxComponent.CheckboxMsg
 
 
 configUpdate : ConfigUpdateMsg -> ConfigModel.ConfigModel -> ConfigModel.ConfigModel
@@ -52,8 +56,17 @@ configUpdate msg model =
         UpdateClearColorA msg ->
             configClearColorAlphaLens.set (TextInputComponent.update msg model.clearColor.alpha) model
 
+        UpdateAdvancedRecordMetrics msg ->
+            configAdvancedRecordMetricsLens.set (CheckboxComponent.update msg model.advanced.recordMetrics) model
+
         UpdateAdvancedMetricsInterval msg ->
             configAdvancedMetricIntervalLens.set (TextInputComponent.update msg model.advanced.logMetricsReportIntervalMs) model
+
+        UpdateAdvancedDisableSkipModel msg ->
+            configAdvancedDisableSkipModelLens.set (CheckboxComponent.update msg model.advanced.disableSkipModelUpdates) model
+
+        UpdateAdvancedDisableSkipView msg ->
+            configAdvancedDisableSkipViewLens.set (CheckboxComponent.update msg model.advanced.disableSkipViewUpdates) model
 
 
 configView : ConfigModel -> Html ConfigUpdateMsg
@@ -69,6 +82,9 @@ configView model =
         , Html.map UpdateClearColorB (TextInputComponent.view "Clear colour blue" model.clearColor.blue)
         , Html.map UpdateClearColorA (TextInputComponent.view "Clear colour alpha" model.clearColor.alpha)
         , text "Advanced"
+        , Html.map UpdateAdvancedRecordMetrics (CheckboxComponent.view "Record metrics" model.advanced.recordMetrics)
         , Html.map UpdateAdvancedMetricsInterval (TextInputComponent.view "Metric reporting interval" model.advanced.logMetricsReportIntervalMs)
+        , Html.map UpdateAdvancedDisableSkipModel (CheckboxComponent.view "Disable model update skipping" model.advanced.disableSkipModelUpdates)
+        , Html.map UpdateAdvancedDisableSkipView (CheckboxComponent.view "Disable view update skipping" model.advanced.disableSkipViewUpdates)
         , textarea [ cols 50, rows 25 ] [ text (encode 2 (configJson model)) ]
         ]
