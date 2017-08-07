@@ -1,3 +1,5 @@
 all:
+	rm -fr ./target
 	mkdir -p ./target
-	elm-make src/Main.elm --output=target/main.html
+	cp ../static/* target/
+	elm-make src/Main.elm --output=target/editor.js
