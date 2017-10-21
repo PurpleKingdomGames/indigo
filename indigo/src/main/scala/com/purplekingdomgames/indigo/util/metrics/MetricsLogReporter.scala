@@ -5,7 +5,7 @@ import com.purplekingdomgames.indigo.util._
 object MetricsLogReporter {
 
   private def to2DecimalPlaces(d: Double): Double =
-    Math.round(d * 100d) / 100d
+    Math.round(d * 100) / 100
 
   private def as2DecimalPlacePercent(a: Long, b: Long): Double =
     to2DecimalPlaces(100d / a * b)

@@ -4,25 +4,7 @@ val indigoVersion = "0.0.6-SNAPSHOT"
 lazy val commonSettings = Seq(
   version := indigoVersion,
   scalaVersion := "2.12.3",
-  organization := "com.purplekingdomgames",
-  scalacOptions ++= Seq(
-    //  "-Yno-imports", // Powerful but boring. There is another too called no-pref.
-    "-deprecation",
-    "-encoding", "UTF-8",
-    "-feature",
-    "-explaintypes",
-    "-language:existentials",
-    "-language:higherKinds",
-    "-language:implicitConversions",
-    "-unchecked",
-    //  "-Xfatal-warnings", // Specifically NOT included.
-    "-Xlint",
-    "-Yno-adapted-args",
-    "-Ywarn-dead-code",        // N.B. doesn't work well with the ??? hole
-    "-Ywarn-numeric-widen",
-    "-Ywarn-value-discard",
-    "-Xfuture"
-  )
+  organization := "com.purplekingdomgames"
 )
 
 // Plugin
@@ -63,5 +45,3 @@ def mirrorScalaSource(baseDirectory: File): Seq[File] = {
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.20")
 
 addSbtPlugin("com.purplekingdomgames" % "sbt-indigo" % indigoVersion)
-
-addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.2.1")

@@ -1,5 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes
 
+import scala.language.implicitConversions
+
 // Data types
 case class Point(x: Int, y: Int) {
   def +(pt: Point): Point = Point(x + pt.x, y + pt.y)

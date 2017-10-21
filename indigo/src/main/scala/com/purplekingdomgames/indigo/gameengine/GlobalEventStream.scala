@@ -6,13 +6,9 @@ import scala.collection.mutable
 
 object GlobalEventStream {
 
-  private var eventQueue: mutable.Queue[GameEvent] =
-    new mutable.Queue[GameEvent]()
+  private var eventQueue = new mutable.Queue[GameEvent]()
 
-  def push(e: GameEvent): Unit = {
-    eventQueue += e
-    ()
-  }
+  def push(e: GameEvent): Unit = eventQueue += e
 
   def collect: List[GameEvent] = eventQueue.dequeueAll(_ => true).toList
 

@@ -9,12 +9,13 @@ import org.scalajs.dom
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.language.implicitConversions
 import scala.scalajs.js.JSApp
 
 case class GameTime(running: Double, delta: Double)
 
 object GameTime {
-  def now: GameTime = GameTime(System.currentTimeMillis().toDouble, 0d)
+  def now: GameTime = GameTime(System.currentTimeMillis(), 0)
   def zero: GameTime = GameTime(0, 0)
   def is(running: Double, delta: Double): GameTime = GameTime(running, delta)
 }
@@ -25,7 +26,7 @@ trait GameTypeHolder[T] {
 
 trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extends JSApp {
 
-  implicit val gameTypeHolder: GameTypeHolder[ViewEventDataType] = new GameTypeHolder[ViewEventDataType] {}
+  implicit val gameTypeHolder = new GameTypeHolder[ViewEventDataType] {}
 
   def config: GameConfig
 
@@ -131,7 +132,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
     }
   }
 
-  private def loop(gameConfig: GameConfig, startupData: StartupData, assetMapping: AssetMapping)(renderer: IRenderer, lastUpdateTime: Double)(implicit metrics: IMetrics): Double => Int = { time =>
+  private def loop(gameConfig: GameConfig, startupData: StartupData, assetMapping: AssetMapping)(renderer: IRenderer, lastUpdateTime: Double)(implicit metrics: IMetrics): Double => Unit = { time =>
     val timeDelta = time - lastUpdateTime
 
     // PUT NOTHING ABOVE THIS LINE!! Major performance penalties!!

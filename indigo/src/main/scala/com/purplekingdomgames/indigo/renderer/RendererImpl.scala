@@ -4,6 +4,8 @@ import com.purplekingdomgames.indigo.util.metrics._
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
 
+import scala.language.implicitConversions
+
 trait IRenderer {
   def init(): Unit
   def drawScene(displayable: Displayable)(implicit metrics: IMetrics): Unit
@@ -49,7 +51,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   def init(): Unit = {
     cNc.context.disable(DEPTH_TEST)
-    cNc.context.viewport(0d, 0d, cNc.width.toDouble, cNc.height.toDouble)
+    cNc.context.viewport(0, 0, cNc.width, cNc.height)
     cNc.context.blendFunc(ONE, ONE_MINUS_SRC_ALPHA)
     cNc.context.enable(BLEND)
   }
