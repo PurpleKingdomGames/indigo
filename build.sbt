@@ -1,5 +1,44 @@
 
-import IndigoSbtBuild._
+val indigoVersion = "0.0.6-SNAPSHOT"
+
+lazy val commonSettings = Seq(
+  version := indigoVersion,
+  scalaVersion := "2.12.3",
+  organization := "com.purplekingdomgames",
+  libraryDependencies ++= Seq(
+    "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
+  ),
+  scalacOptions ++= Seq(
+    //  "-Yno-imports", // Powerful but boring. There is another too called no-pref.
+    "-deprecation",
+    "-encoding", "UTF-8",
+    "-feature",
+    "-explaintypes",
+    "-language:existentials",
+    "-language:higherKinds",
+    "-language:implicitConversions",
+    "-unchecked",
+    //  "-Xfatal-warnings", // Specifically NOT included.
+    "-Xlint",
+    "-Yno-adapted-args",
+    "-Ywarn-dead-code",        // N.B. doesn't work well with the ??? hole
+    "-Ywarn-numeric-widen",
+    "-Ywarn-value-discard",
+    "-Xfuture"
+  ),
+  wartremoverWarnings in (Compile, compile) ++= Warts.allBut(
+    Wart.Overloading,
+    Wart.FinalCaseClass,
+    Wart.ImplicitConversion,
+    Wart.Nothing,
+    Wart.ImplicitParameter,
+    Wart.NonUnitStatements,
+    Wart.Equals,
+    Wart.Recursion,
+    Wart.LeakingSealed,
+    Wart.Var
+  )
+)
 
 // Indigo
 lazy val indigo =
@@ -8,7 +47,6 @@ lazy val indigo =
     .settings(
       name := "indigo",
       libraryDependencies ++= Seq(
-        "org.scalatest" %%% "scalatest" % "3.0.1" % "test",
         "org.scala-js" %%% "scalajs-dom" % "0.9.1"
       ),
       libraryDependencies ++= Seq(
@@ -27,9 +65,6 @@ lazy val sandbox =
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(
       name := "indigo-sandbox",
-      libraryDependencies ++= Seq(
-        "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
-      ),
       entryPoint := "com.example.sandbox.MyGame",
       showCursor := true,
       title := "Sandbox",
@@ -42,9 +77,6 @@ lazy val perf =
     .dependsOn(indigo)
     .settings(
       name := "indigo-perf",
-      libraryDependencies ++= Seq(
-        "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
-      ),
       entryPoint := "com.example.perf.PerfGame",
       showCursor := true,
       title := "Perf",
@@ -59,9 +91,6 @@ lazy val framework =
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(
       name := "indigo-framework",
-      libraryDependencies ++= Seq(
-        "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
-      ),
       entryPoint := "com.purplekingdomgames.indigoframework.Framework",
       showCursor := true,
       title := "Framework",

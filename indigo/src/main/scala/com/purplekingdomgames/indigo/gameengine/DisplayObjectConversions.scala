@@ -7,11 +7,8 @@ import com.purplekingdomgames.indigo.renderer.{AssetMapping, DisplayObject, Spri
 import com.purplekingdomgames.indigo.util.Logger
 
 import scala.collection.mutable
-import scala.language.implicitConversions
 
 object DisplayObjectConversions {
-
-  private implicit def displayObjectToList(displayObject: DisplayObject): List[DisplayObject] = List(displayObject)
 
   private val lookupTextureOffsetCache: mutable.Map[String, Vector2] = mutable.Map.empty[String, Vector2]
   private val lookupAtlasNameCache: mutable.Map[String, String] = mutable.Map.empty[String, String]
@@ -20,7 +17,7 @@ object DisplayObjectConversions {
 
   private val lookupTextureOffset: (AssetMapping, String) => Vector2 = (assetMapping, name) =>
     lookupTextureOffsetCache.getOrElseUpdate(name, {
-      assetMapping.mappings.find(p => p._1 == name).map(_._2.offset).map(pt => Vector2(pt.x, pt.y)).getOrElse {
+      assetMapping.mappings.find(p => p._1 == name).map(_._2.offset).map(pt => Vector2(pt.x.toDouble, pt.y.toDouble)).getOrElse {
         Logger.info("Failed to find atlas offset for texture: " + name)
         Vector2.zero
       }
@@ -62,8 +59,8 @@ object DisplayObjectConversions {
             frameOffsetsCache.getOrElseUpdate(leaf.frameHash, {
               SpriteSheetFrame.calculateFrameOffset(
                 imageSize = lookupAtlasSize(assetMapping, leaf.imageAssetRef),
-                frameSize = Vector2(leaf.crop.size.x, leaf.crop.size.y),
-                framePosition = Vector2(leaf.crop.position.x, leaf.crop.position.y),
+                frameSize = Vector2(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble),
+                framePosition = Vector2(leaf.crop.position.x.toDouble, leaf.crop.position.y.toDouble),
                 textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
               )
             })
@@ -89,8 +86,8 @@ object DisplayObjectConversions {
             frameOffsetsCache.getOrElseUpdate(leaf.frameHash, {
               SpriteSheetFrame.calculateFrameOffset(
                 imageSize = lookupAtlasSize(assetMapping, leaf.imageAssetRef),
-                frameSize = Vector2(leaf.animations.currentFrame.bounds.size.x, leaf.animations.currentFrame.bounds.size.y),
-                framePosition = Vector2(leaf.animations.currentFrame.bounds.position.x, leaf.animations.currentFrame.bounds.position.y),
+                frameSize = Vector2(leaf.animations.currentFrame.bounds.size.x.toDouble, leaf.animations.currentFrame.bounds.size.y.toDouble),
+                framePosition = Vector2(leaf.animations.currentFrame.bounds.position.x.toDouble, leaf.animations.currentFrame.bounds.position.y.toDouble),
                 textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
               )
             })
@@ -136,8 +133,8 @@ object DisplayObjectConversions {
           frameOffsetsCache.getOrElseUpdate(fontChar.bounds.hash + "_" + leaf.imageAssetRef, {
             SpriteSheetFrame.calculateFrameOffset(
               imageSize = lookupAtlasSize(assetMapping, leaf.imageAssetRef),
-              frameSize = Vector2(fontChar.bounds.width, fontChar.bounds.height),
-              framePosition = Vector2(fontChar.bounds.x, fontChar.bounds.y),
+              frameSize = Vector2(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble),
+              framePosition = Vector2(fontChar.bounds.x.toDouble, fontChar.bounds.y.toDouble),
               textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
             )
           })

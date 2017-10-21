@@ -1,7 +1,5 @@
 package com.purplekingdomgames.indigo.renderer
 
-import scala.language.implicitConversions
-
 case class Matrix4(mat: List[Double]) {
 
   def row1: List[Double] = List(mat(0), mat(1), mat(2), mat(3))
