@@ -117,7 +117,7 @@ case class Graphic[ViewEventDataType](bounds: Rectangle, depth: Depth, imageAsse
     this.copy(eventHandler = e)
 
   private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent[ViewEventDataType]] =
-    (e: GameEvent) => eventHandler(bounds, e)
+    (e: GameEvent) => eventHandler((bounds, e))
 
   private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): Graphic[ViewEventDataType] = this
 
@@ -215,7 +215,7 @@ case class Sprite[ViewEventDataType](bindingKey: BindingKey, bounds: Rectangle, 
     this.copy(eventHandler = e)
 
   private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent[ViewEventDataType]] =
-    (e: GameEvent) => eventHandler(bounds, e)
+    (e: GameEvent) => eventHandler((bounds, e))
 
   private[gameengine] def saveAnimationMemento: Option[AnimationMemento] = Option(animations.saveMemento(bindingKey))
 
@@ -315,7 +315,7 @@ case class Text[ViewEventDataType](text: String, alignment: TextAlignment, posit
     }
 
   private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent[ViewEventDataType]] =
-    (e: GameEvent) => eventHandler(realBound, e)
+    (e: GameEvent) => eventHandler((realBound, e))
 
   private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): Text[ViewEventDataType] = this
 

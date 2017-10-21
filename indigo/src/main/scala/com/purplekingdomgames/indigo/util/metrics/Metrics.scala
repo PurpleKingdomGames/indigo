@@ -3,7 +3,8 @@ package com.purplekingdomgames.indigo.util.metrics
 import scala.collection.mutable
 
 trait IMetrics {
-  def record(m: Metric, time: Long = giveTime()): Unit
+  def record(m: Metric): Unit
+  def recordWithTime(m: Metric, time: Long): Unit
   def giveTime(): Long
 }
 
@@ -14,7 +15,9 @@ object Metrics {
 
     private var lastReportTime: Long = System.currentTimeMillis()
 
-    def record(m: Metric, time: Long = giveTime()): Unit = {
+    def record(m: Metric): Unit = recordWithTime(m, giveTime())
+
+    def recordWithTime(m: Metric, time: Long): Unit = {
       metrics += MetricWrapper(m, time)
 
       m match {
@@ -31,7 +34,8 @@ object Metrics {
   }
 
   private class NullMetricsInstance extends IMetrics {
-    def record(m: Metric, time: Long = giveTime()): Unit = ()
+    def record(m: Metric): Unit = ()
+    def recordWithTime(m: Metric, time: Long): Unit = ()
     def giveTime(): Long = 1
   }
 
@@ -39,14 +43,18 @@ object Metrics {
   private var savedEnabled: Boolean = false
   private var savedLogReportIntervalMs: Int = 10000
 
-  def getInstance(enabled: Boolean = savedEnabled, logReportIntervalMs: Int = savedLogReportIntervalMs): IMetrics =
+  def getInstance(): IMetrics =
+    getInstanceEnabledWithIntervalMs(savedEnabled, savedLogReportIntervalMs)
+
+  def getInstanceEnabledWithIntervalMs(enabled: Boolean, logReportIntervalMs: Int): IMetrics =
     instance match {
       case Some(i) => i
       case None =>
         savedEnabled = enabled
         savedLogReportIntervalMs = logReportIntervalMs
-        instance = if(enabled) Some(new MetricsInstance(logReportIntervalMs)) else Some(new NullMetricsInstance)
-        instance.get
+        val nextInstance = if(enabled) new MetricsInstance(logReportIntervalMs) else new NullMetricsInstance
+        instance = Some(nextInstance)
+        nextInstance
     }
 
   def getNullInstance: IMetrics = new NullMetricsInstance
