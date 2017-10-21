@@ -51,7 +51,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
 
     configAsync.map(_.getOrElse(config)).foreach { gameConfig =>
 
-      implicit val metrics: IMetrics = Metrics.getInstanceEnabledWithIntervalMs(gameConfig.advanced.recordMetrics, gameConfig.advanced.logMetricsReportIntervalMs)
+      implicit val metrics: IMetrics = Metrics.getInstance(gameConfig.advanced.recordMetrics, gameConfig.advanced.logMetricsReportIntervalMs)
 
       Logger.info("Starting Indigo")
       Logger.info("Configuration: " + gameConfig.asString)
