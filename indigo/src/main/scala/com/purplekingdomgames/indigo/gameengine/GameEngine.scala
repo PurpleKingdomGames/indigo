@@ -60,7 +60,7 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
         Logger.info("WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!")
       }
 
-      assetsAsync.flatMap(aa => AssetManager.loadAssets(aa ++ assets)).foreach { assetCollection =>
+      assetsAsync.flatMap[AssetCollection](aa => AssetManager.loadAssets(aa ++ assets)).foreach { assetCollection =>
 
         Logger.info("Asset load complete")
 
@@ -115,6 +115,8 @@ trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extend
             Logger.info("Starting main loop, there will be no more log messages.")
             dom.window.requestAnimationFrame(loopFunc(renderer, 0))
         }
+
+        ()
       }
 
     }

@@ -2,7 +2,7 @@ package com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes
 
 // Graphical effects
 object Effects {
-  val default = Effects(
+  val default: Effects = Effects(
     alpha = 1.0,
     tint = Tint.none,
     flip = Flip(

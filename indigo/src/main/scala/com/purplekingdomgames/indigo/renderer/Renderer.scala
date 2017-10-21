@@ -17,7 +17,7 @@ object Renderer {
         r.init()
 
         renderer = Some(r)
-        renderer.get
+        r
     }
   }
 
