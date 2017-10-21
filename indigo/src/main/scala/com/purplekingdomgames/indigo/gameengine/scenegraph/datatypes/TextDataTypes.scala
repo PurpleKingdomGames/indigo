@@ -3,7 +3,7 @@ package com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes
 case class FontInfo(fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean) {
   private val nonEmtpyChars: List[FontChar] = unknownChar +: fontChars
 
-  def addChar(fontChar: FontChar): FontInfo = FontInfo(fontSpriteSheet, fontChar, nonEmtpyChars, caseSensitive)
+  def addChar(fontChar: FontChar) = FontInfo(fontSpriteSheet, fontChar, nonEmtpyChars, caseSensitive)
   def addChars(chars: List[FontChar]): FontInfo = this.copy(fontChars = fontChars ++ chars)
   def addChars(chars: FontChar*): FontInfo = this.copy(fontChars = fontChars ++ chars)
 

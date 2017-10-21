@@ -19,7 +19,7 @@ case class Rectangle(position: Point, size: Point) {
   val y: Int = position.y
   val width: Int = size.x
   val height: Int = size.y
-  val hash: String = s"$x$y$width$height"
+  val hash: String = "" + x + y + width + height
 
   def isPointWithin(pt: Point): Boolean =
     pt.x >= x && pt.x <= x + width && pt.y >= y && pt.y <= y + height

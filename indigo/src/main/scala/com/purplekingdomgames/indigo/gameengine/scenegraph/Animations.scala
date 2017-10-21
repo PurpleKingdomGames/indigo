@@ -14,9 +14,9 @@ case class Animations(spriteSheetSize: Point, currentCycleLabel: CycleLabel, cyc
 
   private val nonEmtpyCycles: Map[CycleLabel, Cycle] = cycles ++ Map(cycle.label -> cycle)
 
-  def currentCycle: Cycle = nonEmtpyCycles.getOrElse(currentCycleLabel, cycle)
+  def currentCycle: Cycle = nonEmtpyCycles.getOrElse(currentCycleLabel, nonEmtpyCycles.head._2)
 
-  def addCycle(cycle: Cycle): Animations = Animations(spriteSheetSize, currentCycleLabel, cycle, nonEmtpyCycles, Nil)
+  def addCycle(cycle: Cycle) = Animations(spriteSheetSize, currentCycleLabel, cycle, nonEmtpyCycles, Nil)
 
   def addAction(action: AnimationAction): Animations = this.copy(actions = actions :+ action)
 
@@ -32,7 +32,7 @@ case class Animations(spriteSheetSize: Point, currentCycleLabel: CycleLabel, cyc
       currentCycleLabel = memento.currentCycleLabel,
       cycle =
         nonEmtpyCycles
-          .getOrElse(memento.currentCycleLabel, cycle)
+          .getOrElse(memento.currentCycleLabel, nonEmtpyCycles.head._2)
           .copy(playheadPosition = memento.currentCycleMemento.playheadPosition, lastFrameAdvance = memento.currentCycleMemento.lastFrameAdvance),
       cycles = nonEmtpyCycles.filter(p => p._1.label != memento.currentCycleLabel.label),
       actions = actions
@@ -58,7 +58,7 @@ object Animations {
 case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame], private[gameengine] val playheadPosition: Int, private[gameengine] val lastFrameAdvance: Double) {
   private val nonEmtpyFrames: List[Frame] = frame :: frames
 
-  def addFrame(newFrame: Frame): Cycle = Cycle(label, frame, frames ++ List(newFrame), playheadPosition, lastFrameAdvance)
+  def addFrame(newFrame: Frame): Cycle = Cycle(label, nonEmtpyFrames.head, nonEmtpyFrames.tail ++ List(newFrame), playheadPosition, lastFrameAdvance)
 
   private val frameCount: Int = nonEmtpyFrames.length
 

@@ -165,7 +165,7 @@ object TextureAtlasFunctions {
     list.foldLeft(TextureAtlas.identity)(_ + _)
 
   val convertToAtlas: ((TextureMap, String => Option[LoadedImageAsset]) => Atlas) => (String => Option[LoadedImageAsset]) => List[List[TextureDetails]] => TextureAtlas = createAtlasFunc => lookupByName => list =>
-    combineTextureAtlases(list.zipWithIndex.map(p => convertToTextureAtlas(createAtlasFunc)(lookupByName)(AtlasId(TextureAtlas.IdPrefix + p._2.toString), p._1)))
+    combineTextureAtlases(list.zipWithIndex.map(p => convertToTextureAtlas(createAtlasFunc)(lookupByName)(AtlasId(TextureAtlas.IdPrefix + p._2), p._1)))
 
   def mergeTrees(a: AtlasQuadTree, b: AtlasQuadTree, max: PowerOfTwo): Option[AtlasQuadTree] =
     (a, b) match {
