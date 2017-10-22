@@ -23,6 +23,9 @@ case class SceneGraphRootNode[ViewEventDataType](game: SceneGraphGameLayer[ViewE
 object SceneGraphRootNode {
   def apply[ViewEventDataType](game: SceneGraphGameLayer[ViewEventDataType]): SceneGraphRootNode[ViewEventDataType] =
     SceneGraphRootNode(game, SceneGraphLightingLayer.empty, SceneGraphUiLayer.empty)
+
+  def empty[ViewEventDataType]: SceneGraphRootNode[ViewEventDataType] =
+    SceneGraphRootNode(SceneGraphGameLayer.empty, SceneGraphLightingLayer.empty, SceneGraphUiLayer.empty)
 }
 
 case class SceneGraphRootNodeFlat[ViewEventDataType](game: SceneGraphGameLayerFlat[ViewEventDataType], lighting: SceneGraphLightingLayerFlat[ViewEventDataType], ui: SceneGraphUiLayerFlat[ViewEventDataType]) {

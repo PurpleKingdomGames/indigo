@@ -1,15 +1,12 @@
 package com.purplekingdomgames.indigo.gameengine
 
+import com.purplekingdomgames.indigo.IndigoGameRequirements
 import com.purplekingdomgames.indigo.gameengine.assets._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.renderer._
 import com.purplekingdomgames.indigo.util._
 import com.purplekingdomgames.indigo.util.metrics._
 import org.scalajs.dom
-
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.scalajs.js.JSApp
 
 case class GameTime(running: Double, delta: Double)
 
@@ -23,31 +20,17 @@ trait GameTypeHolder[T] {
   type View = T
 }
 
-trait GameEngine[StartupData, StartupError, GameModel, ViewEventDataType] extends JSApp {
+class GameEngine[StartupData, StartupError, GameModel, ViewEventDataType](gameEngineDeps: IndigoGameRequirements[StartupData, StartupError, GameModel, ViewEventDataType]) {
 
-  implicit val gameTypeHolder = new GameTypeHolder[ViewEventDataType] {}
+  import gameEngineDeps._
 
-  def config: GameConfig
-
-  def configAsync: Future[Option[GameConfig]] = Future.successful(None)
-
-  def assets: Set[AssetType]
-
-  def assetsAsync: Future[Set[AssetType]] = Future.successful(Set())
-
-  def initialise(assetCollection: AssetCollection): Startup[StartupError, StartupData]
-
-  def initialModel(startupData: StartupData): GameModel
-
-  def updateModel(gameTime: GameTime, gameModel: GameModel): GameEvent => GameModel
-
-  def updateView(gameTime: GameTime, gameModel: GameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate[ViewEventDataType]
+  implicit private val gameTypeHolder: GameTypeHolder[ViewEventDataType] = new GameTypeHolder[ViewEventDataType] {}
 
   private var state: Option[GameModel] = None
 
   private var animationStates: AnimationStates = AnimationStates(Nil)
 
-  def main(): Unit = {
+  def start(): Unit = {
 
     configAsync.map(_.getOrElse(config)).foreach { gameConfig =>
 
