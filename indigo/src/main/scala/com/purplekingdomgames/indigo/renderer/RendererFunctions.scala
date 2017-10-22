@@ -349,8 +349,8 @@ object RendererFunctions {
       canvas.width = actualWidth
       canvas.height = actualHeight
 
-      orthographicProjectionMatrix = Matrix4.orthographic(actualWidth / magnification, actualHeight / magnification)
-      orthographicProjectionMatrixNoMag = Matrix4.orthographic(actualWidth, actualHeight)
+      orthographicProjectionMatrix = Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
+      orthographicProjectionMatrixNoMag = Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)
     }
 
   val flipMatrix: ((Boolean, Boolean)) => Matrix4 = flipValues => {

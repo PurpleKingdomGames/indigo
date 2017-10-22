@@ -2,8 +2,6 @@ package com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes
 
 import com.purplekingdomgames.indigo.renderer.ClearColor
 
-import scala.language.implicitConversions
-
 case class AmbientLight(tint: Tint, amount: Double)
 
 object AmbientLight {

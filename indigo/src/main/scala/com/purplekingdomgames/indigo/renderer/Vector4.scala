@@ -10,7 +10,7 @@ case class Vector4(x: Double, y: Double, z: Double, w: Double) {
     Vector4.multiply(this, vec)
   }
 
-  def round: Vector4 = Vector4(Math.round(x), Math.round(y), Math.round(z), Math.round(w))
+  def round: Vector4 = Vector4(Math.round(x).toDouble, Math.round(y).toDouble, Math.round(z).toDouble, Math.round(w).toDouble)
 
   def toList: List[Double] = List(x, y, z, w)
 
@@ -27,8 +27,8 @@ case class Vector4(x: Double, y: Double, z: Double, w: Double) {
 
 object Vector4 {
 
-  val zero: Vector4 = Vector4(0, 0, 0, 0)
-  val one: Vector4 = Vector4(1, 1, 1, 1)
+  val zero: Vector4 = Vector4(0d, 0d, 0d, 0d)
+  val one: Vector4 = Vector4(1d, 1d, 1d, 1d)
 
   def add(vec1: Vector4, vec2: Vector4): Vector4 = {
     Vector4(vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z, vec1.w + vec2.w)

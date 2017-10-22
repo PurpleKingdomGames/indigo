@@ -31,19 +31,20 @@ case class DisplayObject(x: Int,
                          frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
                         ) {
 
-  private val flipTH: Int = if(flipHorizontal) 1 else 0
-  private val flipTV: Int = if(flipVertical) 1 else 0
-  private val flipSH: Int = if(flipHorizontal) -1 else 1
-  private val flipSV: Int = if(flipVertical) -1 else 1
+  val xd: Double = x.toDouble
+  val yd: Double = y.toDouble
+  val zd: Double = z.toDouble
+  val wd: Double = width.toDouble
+  val hd: Double = height.toDouble
 
   val vertices: scalajs.js.Array[Double] = scalajs.js.Array[Double](
-    x,         y,          z,
-    x,         height + y, z,
-    width + x, y,          z,
+    xd,      yd,      zd,
+    xd,      hd + yd, zd,
+    wd + xd, yd,      zd,
 
-    x,         height + y, z,
-    width + x, y,          z,
-    width + x, height + y, z
+    xd,      hd + yd, zd,
+    wd + xd, yd,      zd,
+    wd + xd, hd + yd, zd
   )
 
   private val tx1 = if(flipHorizontal) 1 - frame.translate.x else frame.translate.x

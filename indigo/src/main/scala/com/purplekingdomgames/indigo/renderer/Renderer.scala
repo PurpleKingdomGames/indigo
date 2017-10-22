@@ -3,8 +3,6 @@ package com.purplekingdomgames.indigo.renderer
 import org.scalajs.dom
 import org.scalajs.dom.{html, raw}
 
-import scala.language.implicitConversions
-
 object Renderer {
 
   private var renderer: Option[IRenderer] = None

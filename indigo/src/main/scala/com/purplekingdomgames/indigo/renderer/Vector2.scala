@@ -10,7 +10,7 @@ case class Vector2(x: Double, y: Double) {
     Vector2.multiply(this, vec)
   }
 
-  def round: Vector2 = Vector2(Math.round(x), Math.round(y))
+  def round: Vector2 = Vector2(Math.round(x).toDouble, Math.round(y).toDouble)
 
   def toScalaJSArrayDouble: scalajs.js.Array[Double] = scalajs.js.Array[Double](x, y)
   def toScalaJSArrayInt: scalajs.js.Array[Int] = scalajs.js.Array[Int](x.toInt, y.toInt)
@@ -23,8 +23,8 @@ case class Vector2(x: Double, y: Double) {
 
 object Vector2 {
 
-  val zero: Vector2 = Vector2(0, 0)
-  val one: Vector2 = Vector2(1, 1)
+  val zero: Vector2 = Vector2(0d, 0d)
+  val one: Vector2 = Vector2(1d, 1d)
 
   def add(vec1: Vector2, vec2: Vector2): Vector2 = {
     Vector2(vec1.x + vec2.x, vec1.y + vec2.y)
@@ -42,6 +42,6 @@ object Vector2 {
     Vector2(vec1.x / vec2.x, vec1.y / vec2.y)
   }
 
-  def apply(i: Int): Vector2 = Vector2(i, i)
+  def apply(i: Int): Vector2 = Vector2(i.toDouble, i.toDouble)
 
 }
