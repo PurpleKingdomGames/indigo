@@ -1,12 +1,14 @@
 package com.purplekingdomgames.indigo.gameengine
 
-import com.purplekingdomgames.indigo.IndigoGameRequirements
 import com.purplekingdomgames.indigo.gameengine.assets._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.renderer._
 import com.purplekingdomgames.indigo.util._
 import com.purplekingdomgames.indigo.util.metrics._
 import org.scalajs.dom
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 case class GameTime(running: Double, delta: Double)
 
@@ -20,11 +22,16 @@ trait GameTypeHolder[T] {
   type View = T
 }
 
-class GameEngine[StartupData, StartupError, GameModel, ViewEventDataType](gameEngineDeps: IndigoGameRequirements[StartupData, StartupError, GameModel, ViewEventDataType]) {
+class GameEngine[StartupData, StartupError, GameModel, ViewEventDataType](config: GameConfig,
+                                                                          configAsync: Future[Option[GameConfig]],
+                                                                          assets: Set[AssetType],
+                                                                          assetsAsync: Future[Set[AssetType]],
+                                                                          initialise: AssetCollection => Startup[StartupError, StartupData],
+                                                                          initialModel: StartupData => GameModel,
+                                                                          updateModel: (GameTime, GameModel) => GameEvent => GameModel,
+                                                                          updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate[ViewEventDataType]) {
 
-  import gameEngineDeps._
-
-  implicit private val gameTypeHolder: GameTypeHolder[ViewEventDataType] = new GameTypeHolder[ViewEventDataType] {}
+  implicit val gameTypeHolder: GameTypeHolder[ViewEventDataType] = new GameTypeHolder[ViewEventDataType] {}
 
   private var state: Option[GameModel] = None
 

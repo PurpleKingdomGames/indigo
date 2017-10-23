@@ -1,31 +1,40 @@
 package com.example.sandbox
 
+import com.purplekingdomgames.indigo.Indigo
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.assets.{AssetCollection, AssetType}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Depth
 import com.purplekingdomgames.indigo.renderer.ClearColor
 
-object MyGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel, MyViewEventDataType] {
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.scalajs.js.annotation.JSExportTopLevel
+
+object MyGame {
 
   private val viewportWidth: Int = 456
   private val viewportHeight: Int = 256
   private val magnificationLevel: Int = 2
 
-  def config: GameConfig = GameConfig(
+  implicit val config: GameConfig = GameConfig(
     viewport = GameViewport(viewportWidth, viewportHeight),
     frameRate = 30,
     clearColor = ClearColor(0.4, 0.2, 0.5, 1),
     magnification = magnificationLevel
   )
 
-  def assets: Set[AssetType] = MyAssets.assets
+  implicit val configAsync: Future[Option[GameConfig]] = Future(None)
 
-  def initialise(assetCollection: AssetCollection): Startup[MyErrorReport, MyStartupData] = {
+  implicit val assetsAsync: Future[Set[AssetType]] = Future(Set())
+
+  implicit val assets: Set[AssetType] = MyAssets.assets
+
+  implicit val initialise: AssetCollection => Startup[MyErrorReport, MyStartupData] = assetCollection => {
     val dude = for {
       json <- assetCollection.texts.find(p => p.name == MyAssets.dudeName + "-json").map(_.contents)
       aseprite <- AsepriteHelper.fromJson(json)
-      sprite <- AsepriteHelper.toSprite(aseprite, Depth(3), MyAssets.dudeName)
+      sprite <- AsepriteHelper.toSprite[MyViewEventDataType](aseprite, Depth(3), MyAssets.dudeName)
     } yield Dude(
       aseprite,
       sprite
@@ -39,12 +48,18 @@ object MyGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel, MyVi
     }
   }
 
-  def initialModel(startupData: MyStartupData): MyGameModel = MyModel.initialModel(startupData)
+  implicit val initialModel: MyStartupData => MyGameModel = startupData => MyModel.initialModel(startupData)
 
-  def updateModel(gameTime: GameTime, gameModel: MyGameModel): GameEvent => MyGameModel = MyModel.updateModel(gameTime, gameModel)
+  implicit val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel = (gameTime, gameModel) =>
+    MyModel.updateModel(gameTime, gameModel)
 
-  def updateView(gameTime: GameTime, gameModel: MyGameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate[MyViewEventDataType] =
+  implicit val updateView: (GameTime, MyGameModel, FrameInputEvents) => SceneGraphUpdate[MyViewEventDataType] = (gameTime, gameModel, frameInputEvents) =>
     MyView.updateView(gameTime, gameModel, frameInputEvents)
+
+  @JSExportTopLevel("com.example.sandbox.MyGame.main")
+  def main(args: Array[String]): Unit = {
+    Indigo.start[MyStartupData, MyErrorReport, MyGameModel, MyViewEventDataType]
+  }
 
 }
 

@@ -54,7 +54,7 @@ object SbtIndigo extends sbt.AutoPlugin {
             title = title.value,
             showCursor = showCursor.value,
             scriptPathBase = scriptPathBase,
-            entryPoint = entryPoint.value + "().main();",
+            entryPoint = entryPoint.value + ".main();",
             gameAssetsDirectoryPath = if(gameAssetsDirectory.value.startsWith("/")) gameAssetsDirectory.value else baseDir + "/" + gameAssetsDirectory.value
           )
         )

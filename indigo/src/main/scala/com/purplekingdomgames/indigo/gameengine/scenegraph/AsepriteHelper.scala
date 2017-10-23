@@ -1,7 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
+import com.purplekingdomgames.indigo.gameengine.GameEvent
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
-import com.purplekingdomgames.indigo.gameengine.{GameEvent, GameTypeHolder}
 import com.purplekingdomgames.indigo.util.Logger
 import io.circe.generic.auto._
 import io.circe.parser._
@@ -70,7 +70,39 @@ object AsepriteHelper {
     }.collect { case Some(s) => s }
   }
 
-  def toSprite(aseprite: Aseprite, depth: Depth, imageAssetRef: String)(implicit gth: GameTypeHolder[_]): Option[Sprite[gth.View]] = {
+//  def toSprite(aseprite: Aseprite, depth: Depth, imageAssetRef: String)(implicit gth: GameTypeHolder[_]): Option[Sprite[gth.View]] = {
+//    extractCycles(aseprite) match {
+//      case Nil =>
+//        Logger.info("No animation frames found in Aseprit: " + aseprite)
+//        None
+//      case x :: xs =>
+//        val animations: Animations =
+//          Animations(
+//            spriteSheetSize = Point(aseprite.meta.size.w, aseprite.meta.size.h),
+//            currentCycleLabel = x.label,
+//            cycle = x,
+//            cycles = xs.foldLeft(Map.empty[CycleLabel, Cycle])((a, b) => a ++ Map(b.label -> b)),
+//            Nil
+//          )
+//        Option(
+//          Sprite[gth.View](
+//            bindingKey = BindingKey.generate,
+//            bounds = Rectangle(
+//              position = Point(0, 0),
+//              size = Point(x.frame.bounds.size.x, x.frame.bounds.size.y)
+//            ),
+//            depth = depth,
+//            imageAssetRef = imageAssetRef,
+//            animations = animations,
+//            ref = Point(0, 0),
+//            effects = Effects.default,
+//            eventHandler = (_:(Rectangle, GameEvent)) => None
+//          )
+//        )
+//    }
+//  }
+
+  def toSprite[View](aseprite: Aseprite, depth: Depth, imageAssetRef: String): Option[Sprite[View]] = {
     extractCycles(aseprite) match {
       case Nil =>
         Logger.info("No animation frames found in Aseprit: " + aseprite)
@@ -85,7 +117,7 @@ object AsepriteHelper {
             Nil
           )
         Option(
-          Sprite[gth.View](
+          Sprite[View](
             bindingKey = BindingKey.generate,
             bounds = Rectangle(
               position = Point(0, 0),
