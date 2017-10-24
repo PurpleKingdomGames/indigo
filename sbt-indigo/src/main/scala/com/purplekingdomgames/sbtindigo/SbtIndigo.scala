@@ -19,7 +19,6 @@ object SbtIndigo extends sbt.AutoPlugin {
   object autoImport {
     val indigoBuild: TaskKey[Unit] = taskKey[Unit]("Build an indigo game.")
     val gameAssetsDirectory: SettingKey[String] = settingKey[String]("Project relative path to a directory that contains all of the assets the game needs to load.")
-    val entryPoint: SettingKey[String] = settingKey[String]("The fully qualified path to the Game class.")
     val showCursor: SettingKey[Boolean] = settingKey[Boolean]("Show the cursor? True by default.")
     val title: SettingKey[String] = settingKey[String]("Title of your game. Defaults to 'Made with Indigo'.")
   }
@@ -29,7 +28,6 @@ object SbtIndigo extends sbt.AutoPlugin {
   override lazy val projectSettings = Seq(
     indigoBuild := indigoBuildTask.value,
     showCursor := true,
-    entryPoint := "",
     title := "Made with Indigo",
     gameAssetsDirectory := "."
   )
@@ -37,29 +35,24 @@ object SbtIndigo extends sbt.AutoPlugin {
   lazy val indigoBuildTask: Def.Initialize[Task[Unit]] =
     Def.task {
 
-      if(entryPoint.value.isEmpty) println("The entryKey must be set")
-      else {
+      val baseDir: String = Keys.baseDirectory.value.getCanonicalPath
+      val scalaVersion: String = Keys.scalaVersion.value
+      val projectName: String = Keys.projectID.value.name
 
-        val baseDir: String = Keys.baseDirectory.value.getCanonicalPath
-        val scalaVersion: String = Keys.scalaVersion.value
-        val projectName: String = Keys.projectID.value.name
+      val scriptPathBase = s"$baseDir/target/scala-${scalaVersion.split('.').reverse.tail.reverse.mkString(".")}/$projectName"
 
-        val scriptPathBase = s"$baseDir/target/scala-${scalaVersion.split('.').reverse.tail.reverse.mkString(".")}/$projectName"
+      println(scriptPathBase)
 
-        println(scriptPathBase)
-
-        IndigoBuild.build(
-          baseDir,
-          TemplateOptions(
-            title = title.value,
-            showCursor = showCursor.value,
-            scriptPathBase = scriptPathBase,
-            entryPoint = entryPoint.value + ".main();",
-            gameAssetsDirectoryPath = if(gameAssetsDirectory.value.startsWith("/")) gameAssetsDirectory.value else baseDir + "/" + gameAssetsDirectory.value
-          )
+      IndigoBuild.build(
+        baseDir,
+        TemplateOptions(
+          title = title.value,
+          showCursor = showCursor.value,
+          scriptPathBase = scriptPathBase,
+          gameAssetsDirectoryPath = if(gameAssetsDirectory.value.startsWith("/")) gameAssetsDirectory.value else baseDir + "/" + gameAssetsDirectory.value
         )
+      )
 
-      }
     }
 }
 
@@ -168,13 +161,10 @@ object IndigoBuild {
       |  </head>
       |  <body>
       |    <script type="text/javascript" src="${options.scriptPathBase}"></script>
-      |    <script type="text/javascript">
-      |      ${options.entryPoint}
-      |    </script>
       |  </body>
       |</html>
     """.stripMargin
 
 }
 
-case class TemplateOptions(title: String, showCursor: Boolean, scriptPathBase: String, entryPoint: String, gameAssetsDirectoryPath: String)
+case class TemplateOptions(title: String, showCursor: Boolean, scriptPathBase: String, gameAssetsDirectoryPath: String)

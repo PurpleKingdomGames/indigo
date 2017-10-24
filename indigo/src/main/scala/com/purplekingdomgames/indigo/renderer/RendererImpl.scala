@@ -59,7 +59,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight, cNc.magnification)
 
     metrics.record(DrawGameLayerStartMetric)
-    drawLayerToTexture(displayable.game, gameFrameBuffer, config.clearColor, drawBg = false)
+    drawLayerToTexture(displayable.game, gameFrameBuffer, config.clearColor)
     metrics.record(DrawGameLayerEndMetric)
 
     metrics.record(DrawLightingLayerStartMetric)
@@ -67,7 +67,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(DrawLightingLayerEndMetric)
 
     metrics.record(DrawUiLayerStartMetric)
-    drawLayerToTexture(displayable.ui, uiFrameBuffer, ClearColor.Black.forceTransparent, drawBg = false)
+    drawLayerToTexture(displayable.ui, uiFrameBuffer, ClearColor.Black.forceTransparent)
     metrics.record(DrawUiLayerEndMetric)
 
     metrics.record(RenderToConvasStartMetric)
@@ -112,7 +112,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   }
 
-  private def drawLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor, drawBg: Boolean)(implicit metrics: IMetrics): Unit = {
+  private def drawLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor)(implicit metrics: IMetrics): Unit = {
 
     // Switch to the frameBuffer
     FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)

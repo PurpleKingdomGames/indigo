@@ -83,10 +83,10 @@ lazy val sandbox =
       libraryDependencies ++= Seq(
         "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
       ),
-      entryPoint := "com.example.sandbox.MyGame",
       showCursor := true,
       title := "Sandbox",
-      gameAssetsDirectory := "assets"
+      gameAssetsDirectory := "assets",
+      scalaJSUseMainModuleInitializer := true
     )
 
 lazy val perf =
@@ -98,7 +98,6 @@ lazy val perf =
       libraryDependencies ++= Seq(
         "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
       ),
-      entryPoint := "com.example.perf.PerfGame",
       showCursor := true,
       title := "Perf",
       gameAssetsDirectory := "assets"
@@ -115,7 +114,6 @@ lazy val framework =
       libraryDependencies ++= Seq(
         "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
       ),
-      entryPoint := "com.purplekingdomgames.indigoframework.Framework",
       showCursor := true,
       title := "Framework",
       gameAssetsDirectory := "assets"

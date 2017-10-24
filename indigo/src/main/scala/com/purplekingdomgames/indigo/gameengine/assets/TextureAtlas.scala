@@ -29,8 +29,6 @@ object TextureAtlas {
     textureAtlas
   }
 
-  def lookUp(name: String, textureAtlas: TextureAtlas): Unit = ()
-
   val identity: TextureAtlas = TextureAtlas(Map(), Map())
 
 }

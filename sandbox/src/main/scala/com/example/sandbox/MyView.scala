@@ -2,11 +2,11 @@ package com.example.sandbox
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo}
-import com.purplekingdomgames.indigo.gameengine.{FrameInputEvents, GameTime, GlobalSignals, MouseClick}
+import com.purplekingdomgames.indigo.gameengine.{FrameInputEvents, GlobalSignals, MouseClick}
 
 object MyView {
 
-  def updateView(gameTime: GameTime, model: MyGameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate[MyViewEventDataType] = {
+  def updateView(model: MyGameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate[MyViewEventDataType] = {
     frameInputEvents.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + position)
       case None => ()
@@ -15,8 +15,8 @@ object MyView {
     SceneGraphUpdate(
       SceneGraphRootNode(
         game = gameLayer(model),
-        lighting = lightingLayer(model),
-        ui = uiLayer(frameInputEvents, model)
+        lighting = lightingLayer,
+        ui = uiLayer(frameInputEvents)
       ),
       Nil
     )
@@ -55,7 +55,7 @@ object MyView {
       )
     )
 
-  def lightingLayer(currentState: MyGameModel): SceneGraphLightingLayer[MyViewEventDataType] =
+  def lightingLayer: SceneGraphLightingLayer[MyViewEventDataType] =
     SceneGraphLightingLayer[MyViewEventDataType](
       Graphic[MyViewEventDataType](0, 0, 320, 240, 1, MyAssets.light).withTint(1, 0, 0),
       Graphic[MyViewEventDataType](-115, -100, 320, 240, 1, MyAssets.light),
@@ -70,7 +70,7 @@ object MyView {
       .addChar(FontChar("C", 50, 78, 23, 23))
       .addChar(FontChar("!", 3, 0, 15, 23))
 
-  def uiLayer(frameInputEvents: FrameInputEvents, currentState: MyGameModel): SceneGraphUiLayer[MyViewEventDataType] =
+  def uiLayer(frameInputEvents: FrameInputEvents): SceneGraphUiLayer[MyViewEventDataType] =
     SceneGraphUiLayer(
       Text("AB!\n!C", 2, 2, 5, fontInfo).alignLeft,
       Text("AB!\n!C", 100, 2, 5, fontInfo).alignCenter,

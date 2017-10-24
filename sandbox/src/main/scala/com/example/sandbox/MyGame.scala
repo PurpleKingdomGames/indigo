@@ -50,11 +50,11 @@ object MyGame {
 
   implicit val initialModel: MyStartupData => MyGameModel = startupData => MyModel.initialModel(startupData)
 
-  implicit val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel = (gameTime, gameModel) =>
-    MyModel.updateModel(gameTime, gameModel)
+  implicit val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel = (_, gameModel) =>
+    MyModel.updateModel(gameModel)
 
-  implicit val updateView: (GameTime, MyGameModel, FrameInputEvents) => SceneGraphUpdate[MyViewEventDataType] = (gameTime, gameModel, frameInputEvents) =>
-    MyView.updateView(gameTime, gameModel, frameInputEvents)
+  implicit val updateView: (GameTime, MyGameModel, FrameInputEvents) => SceneGraphUpdate[MyViewEventDataType] = (_, gameModel, frameInputEvents) =>
+    MyView.updateView(gameModel, frameInputEvents)
 
   @JSExportTopLevel("com.example.sandbox.MyGame.main")
   def main(args: Array[String]): Unit = {

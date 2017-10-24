@@ -6,7 +6,7 @@ import scala.collection.mutable
 
 object GlobalEventStream {
 
-  private var eventQueue: mutable.Queue[GameEvent] =
+  private val eventQueue: mutable.Queue[GameEvent] =
     new mutable.Queue[GameEvent]()
 
   def push(e: GameEvent): Unit = {
