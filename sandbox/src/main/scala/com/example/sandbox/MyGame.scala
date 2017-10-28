@@ -7,9 +7,9 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Depth
 import com.purplekingdomgames.indigo.renderer.ClearColor
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 import scala.scalajs.js.annotation.JSExportTopLevel
+
+import com.purplekingdomgames.indigo._
 
 object MyGame {
 
@@ -23,10 +23,6 @@ object MyGame {
     clearColor = ClearColor(0.4, 0.2, 0.5, 1),
     magnification = magnificationLevel
   )
-
-  implicit val configAsync: Future[Option[GameConfig]] = Future(None)
-
-  implicit val assetsAsync: Future[Set[AssetType]] = Future(Set())
 
   implicit val assets: Set[AssetType] = MyAssets.assets
 
@@ -58,6 +54,17 @@ object MyGame {
 
   @JSExportTopLevel("com.example.sandbox.MyGame.main")
   def main(args: Array[String]): Unit = {
+    // Start up using builder
+//    Indigo.game
+//      .withConfig(config)
+//      .withAssets(assets)
+//      .startUpGameWith(initialise)
+//      .usingInitialModel(initialModel)
+//      .updateModelUsing(updateModel)
+//      .drawUsing(updateView)
+//      .start()
+
+    // Start up using implicits
     Indigo.start[MyStartupData, MyErrorReport, MyGameModel, MyViewEventDataType]
   }
 
