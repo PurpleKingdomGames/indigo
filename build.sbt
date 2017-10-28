@@ -5,7 +5,7 @@ lazy val commonSettings = Seq(
   version := indigoVersion,
   scalaVersion := "2.12.3",
   organization := "com.purplekingdomgames",
-  scalacOptions ++= Seq(
+  scalacOptions in (Compile, compile) ++= Seq(
     "-deprecation",                      // Emit warning and location for usages of deprecated APIs.
     "-encoding", "utf-8",                // Specify character encoding used by source files.
     "-explaintypes",                     // Explain type errors in more detail.
