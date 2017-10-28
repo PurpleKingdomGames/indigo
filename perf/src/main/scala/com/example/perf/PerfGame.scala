@@ -1,12 +1,15 @@
 package com.example.perf
 
+import com.purplekingdomgames.indigo.Indigo
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.assets.{AssetCollection, AssetType}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Depth
 import com.purplekingdomgames.indigo.renderer.ClearColor
 
-object PerfGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel, MyViewEventDataType] {
+import scala.scalajs.js.annotation.JSExportTopLevel
+
+object PerfGame {
 
   val viewportWidth: Int = 1024
   val viewportHeight: Int = 768
@@ -31,7 +34,7 @@ object PerfGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel, My
     val dude = for {
       json <- assetCollection.texts.find(p => p.name == PerfAssets.dudeName + "-json").map(_.contents)
       aseprite <- AsepriteHelper.fromJson(json)
-      sprite <- AsepriteHelper.toSprite(aseprite, Depth(3), PerfAssets.dudeName)
+      sprite <- AsepriteHelper.toSprite[MyViewEventDataType](aseprite, Depth(3), PerfAssets.dudeName)
     } yield Dude(
       aseprite,
       sprite
@@ -47,10 +50,24 @@ object PerfGame extends GameEngine[MyStartupData, MyErrorReport, MyGameModel, My
 
   def initialModel(startupData: MyStartupData): MyGameModel = PerfModel.initialModel(startupData)
 
-  def updateModel(gameTime: GameTime, gameModel: MyGameModel): GameEvent => MyGameModel = PerfModel.updateModel(gameTime, gameModel)
+  val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel = (_, gameModel) =>PerfModel.updateModel(gameModel)
 
-  def updateView(gameTime: GameTime, gameModel: MyGameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate[MyViewEventDataType] =
-    PerfView.updateView(gameTime, gameModel, frameInputEvents)
+  val updateView: (GameTime, MyGameModel, FrameInputEvents) => SceneGraphUpdate[MyViewEventDataType] = (_, gameModel, frameInputEvents) =>
+    PerfView.updateView(gameModel, frameInputEvents)
+
+  @JSExportTopLevel("com.example.perf.PerfGame.main")
+  def main(args: Array[String]): Unit = {
+    println("foo")
+
+    Indigo.game
+      .withConfig(config)
+      .withAssets(assets)
+      .startUpGameWith(initialise)
+      .usingInitialModel(initialModel)
+      .updateModelUsing(updateModel)
+      .drawUsing(updateView)
+      .start()
+  }
 
 }
 

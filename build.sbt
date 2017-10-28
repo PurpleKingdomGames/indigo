@@ -100,7 +100,8 @@ lazy val perf =
       ),
       showCursor := true,
       title := "Perf",
-      gameAssetsDirectory := "assets"
+      gameAssetsDirectory := "assets",
+      scalaJSUseMainModuleInitializer := true
     )
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
 
@@ -116,7 +117,8 @@ lazy val framework =
       ),
       showCursor := true,
       title := "Framework",
-      gameAssetsDirectory := "assets"
+      gameAssetsDirectory := "assets",
+      scalaJSUseMainModuleInitializer := true
     )
 
 // Root

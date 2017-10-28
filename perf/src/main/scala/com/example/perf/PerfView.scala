@@ -2,13 +2,13 @@ package com.example.perf
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo, Point}
-import com.purplekingdomgames.indigo.gameengine.{FrameInputEvents, GameTime, GlobalSignals}
+import com.purplekingdomgames.indigo.gameengine.{FrameInputEvents, GlobalSignals}
 
 import scala.util.Random
 
 object PerfView {
 
-  def updateView(gameTime: GameTime, model: MyGameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate[MyViewEventDataType] = {
+  def updateView(model: MyGameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate[MyViewEventDataType] = {
     frameInputEvents.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + position)
       case None => ()
@@ -17,8 +17,8 @@ object PerfView {
     SceneGraphUpdate(
       SceneGraphRootNode(
         game = gameLayer(model),
-        lighting = lightingLayer(model),
-        ui = uiLayer(frameInputEvents, model)
+        lighting = lightingLayer,
+        ui = uiLayer
       ),
       Nil
     )
@@ -72,7 +72,7 @@ object PerfView {
       )
     )
 
-  def lightingLayer(currentState: MyGameModel): SceneGraphLightingLayer[MyViewEventDataType] =
+  def lightingLayer: SceneGraphLightingLayer[MyViewEventDataType] =
     SceneGraphLightingLayer[MyViewEventDataType](
       Graphic[MyViewEventDataType](0, 0, 320, 240, 1, PerfAssets.light).withTint(1, 0, 0),
       Graphic[MyViewEventDataType](-115, -100, 320, 240, 1, PerfAssets.light),
@@ -123,7 +123,7 @@ object PerfView {
       .addChar(FontChar(",", 248, 0, 15, 23))
       .addChar(FontChar(" ", 145, 52, 23, 23))
 
-  def uiLayer(frameInputEvents: FrameInputEvents, currentState: MyGameModel): SceneGraphUiLayer[MyViewEventDataType] =
+  def uiLayer: SceneGraphUiLayer[MyViewEventDataType] =
     SceneGraphUiLayer(
       Text((herdCount + 1) + " Naked\ndudes", 10, 10, 5, fontInfo).alignLeft,
       Text("Thundering Herd!", PerfGame.viewportWidth / 2, 10, 5, fontInfo).alignCenter,
