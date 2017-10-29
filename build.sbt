@@ -120,6 +120,7 @@ lazy val framework =
       gameAssetsDirectory := "assets",
       scalaJSUseMainModuleInitializer := true
     )
+    .dependsOn(shared)
 
 // Server
 lazy val server =
@@ -131,8 +132,27 @@ lazy val server =
         "org.http4s"     %% "http4s-blaze-server"  % "0.17.5",
         "org.http4s"     %% "http4s-circe"         % "0.17.5",
         "org.http4s"     %% "http4s-dsl"           % "0.17.5",
-        "ch.qos.logback" %  "logback-classic"      % "1.2.3"
+        "ch.qos.logback" %  "logback-classic"      % "1.2.3",
+        "org.scalatest"  %% "scalatest"            % "3.0.1"   % "test"
       )
+    )
+    .dependsOn(shared)
+
+// Shared
+lazy val shared =
+  project
+    .settings(commonSettings: _*)
+    .enablePlugins(ScalaJSPlugin)
+    .settings(
+      name := "shared",
+      libraryDependencies ++= Seq(
+        "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
+      ),
+      libraryDependencies ++= Seq(
+        "io.circe" %%% "circe-core",
+        "io.circe" %%% "circe-generic",
+        "io.circe" %%% "circe-parser"
+      ).map(_ % "0.8.0")
     )
 
 // Root

@@ -1,10 +1,15 @@
 package com.purplekingdomgames.indigoframework
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Rectangle
+import com.purplekingdomgames.shared.EntityRectangle
 
 case class GameViewEvent()
 
 object GameViewHelper {
+
+  implicit def entityRectangleToRectangle(er: EntityRectangle): Rectangle =
+    Rectangle(er.x, er.y, er.width, er.height)
 
   def updateView(model: GameModel): SceneGraphUpdate[GameViewEvent] = {
     // find active scene
@@ -29,7 +34,7 @@ object GameViewHelper {
       .collect { case Some(s) => s }
       .flatMap(_.components.presentation.graphic)
       .map { graphic =>
-        Graphic[GameViewEvent](graphic.bounds.toRectangle, 1, graphic.assetRef).withCrop(graphic.crop.toRectangle)
+        Graphic[GameViewEvent](graphic.bounds, 1, graphic.assetRef).withCrop(graphic.crop)
       }
 
     SceneGraphUpdate(
