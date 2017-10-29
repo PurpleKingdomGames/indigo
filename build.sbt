@@ -3,7 +3,7 @@ val indigoVersion = "0.0.6-SNAPSHOT"
 
 lazy val commonSettings = Seq(
   version := indigoVersion,
-  scalaVersion := "2.12.3",
+  scalaVersion := "2.12.4",
   organization := "com.purplekingdomgames",
   scalacOptions in (Compile, compile) ++= Seq(
     "-deprecation",                      // Emit warning and location for usages of deprecated APIs.
@@ -121,8 +121,22 @@ lazy val framework =
       scalaJSUseMainModuleInitializer := true
     )
 
+// Server
+lazy val server =
+  project
+    .settings(commonSettings: _*)
+    .settings(
+      name := "server",
+      libraryDependencies ++= Seq(
+        "org.http4s"     %% "http4s-blaze-server"  % "0.17.5",
+        "org.http4s"     %% "http4s-circe"         % "0.17.5",
+        "org.http4s"     %% "http4s-dsl"           % "0.17.5",
+        "ch.qos.logback" %  "logback-classic"      % "1.2.3"
+      )
+    )
+
 // Root
 lazy val indigoProject =
   (project in file("."))
     .settings(commonSettings: _*)
-    .aggregate(indigo, sandbox, perf, framework)
+    .aggregate(indigo, sandbox, perf, framework, server)
