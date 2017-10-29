@@ -15,20 +15,22 @@ object PerfGame {
   val viewportHeight: Int = 768
   val magnificationLevel: Int = 1
 
-  def config: GameConfig = GameConfig(
-    viewport = GameViewport(viewportWidth, viewportHeight),
-    frameRate = 60,
-    clearColor = ClearColor(0.4, 0.2, 0.5, 1),
-    magnification = magnificationLevel,
-    advanced = AdvancedGameConfig(
-      recordMetrics = true,
-      logMetricsReportIntervalMs = 5000,
-      disableSkipModelUpdates = true,
-      disableSkipViewUpdates = true
+  def config: GameConfig =
+    GameConfig(
+      viewport = GameViewport(viewportWidth, viewportHeight),
+      frameRate = 60,
+      clearColor = ClearColor(0.4, 0.2, 0.5, 1),
+      magnification = magnificationLevel,
+      advanced = AdvancedGameConfig(
+        recordMetrics = true,
+        logMetricsReportIntervalMs = 5000,
+        disableSkipModelUpdates = true,
+        disableSkipViewUpdates = true
+      )
     )
-  )
 
-  def assets: Set[AssetType] = PerfAssets.assets
+  def assets: Set[AssetType] =
+    PerfAssets.assets
 
   def initialise(assetCollection: AssetCollection): Startup[MyErrorReport, MyStartupData] = {
     val dude = for {
@@ -48,17 +50,17 @@ object PerfGame {
     }
   }
 
-  def initialModel(startupData: MyStartupData): MyGameModel = PerfModel.initialModel(startupData)
+  def initialModel(startupData: MyStartupData): MyGameModel =
+    PerfModel.initialModel(startupData)
 
-  val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel = (_, gameModel) =>PerfModel.updateModel(gameModel)
+  val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel = (_, gameModel) =>
+    PerfModel.updateModel(gameModel)
 
   val updateView: (GameTime, MyGameModel, FrameInputEvents) => SceneGraphUpdate[MyViewEventDataType] = (_, gameModel, frameInputEvents) =>
     PerfView.updateView(gameModel, frameInputEvents)
 
   @JSExportTopLevel("com.example.perf.PerfGame.main")
-  def main(args: Array[String]): Unit = {
-    println("foo")
-
+  def main(args: Array[String]): Unit =
     Indigo.game
       .withConfig(config)
       .withAssets(assets)
@@ -67,7 +69,6 @@ object PerfGame {
       .updateModelUsing(updateModel)
       .drawUsing(updateView)
       .start()
-  }
 
 }
 
