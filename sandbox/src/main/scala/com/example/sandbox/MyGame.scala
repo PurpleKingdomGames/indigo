@@ -44,7 +44,8 @@ object MyGame {
     }
   }
 
-  implicit val initialModel: MyStartupData => MyGameModel = startupData => MyModel.initialModel(startupData)
+  implicit val initialModel: MyStartupData => MyGameModel = startupData =>
+    MyModel.initialModel(startupData)
 
   implicit val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel = (_, gameModel) =>
     MyModel.updateModel(gameModel)
@@ -53,20 +54,8 @@ object MyGame {
     MyView.updateView(gameModel, frameInputEvents)
 
   @JSExportTopLevel("com.example.sandbox.MyGame.main")
-  def main(args: Array[String]): Unit = {
-    // Start up using builder
-//    Indigo.game
-//      .withConfig(config)
-//      .withAssets(assets)
-//      .startUpGameWith(initialise)
-//      .usingInitialModel(initialModel)
-//      .updateModelUsing(updateModel)
-//      .drawUsing(updateView)
-//      .start()
-
-    // Start up using implicits
+  def main(args: Array[String]): Unit =
     Indigo.start[MyStartupData, MyErrorReport, MyGameModel, MyViewEventDataType]
-  }
 
 }
 

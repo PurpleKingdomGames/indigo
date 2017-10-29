@@ -1,81 +1,54 @@
 package com.purplekingdomgames.indigoframework
 
+import com.purplekingdomgames.indigo.Indigo
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.assets.{AssetCollection, AssetType}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 
 import scala.concurrent.Future
+import scala.scalajs.js.annotation.JSExportTopLevel
 
-object Framework extends GameEngine[StartupData, StartupErrorReport, GameModel, GameViewEvent] {
+object Framework {
 
-//  private val viewportWidth: Int = 456
-//  private val viewportHeight: Int = 256
-//  private val magnificationLevel: Int = 2
+  implicit val config: GameConfig =
+    GameConfig.default
 
-  def config: GameConfig = GameConfig.default
+  implicit val configAsync: Future[Option[GameConfig]] =
+    GameConfigHelper.load
 
-  override def configAsync: Future[Option[GameConfig]] = GameConfigHelper.load
+  implicit val assets: Set[AssetType] =
+    AssetsHelper.assets
 
-  def assets: Set[AssetType] = AssetsHelper.assets
-  override def assetsAsync: Future[Set[AssetType]] = AssetsHelper.assetsAsync
+  implicit val assetsAsync: Future[Set[AssetType]] =
+    AssetsHelper.assetsAsync
 
-  def initialise(assetCollection: AssetCollection): Startup[StartupErrorReport, StartupData] = {
-
-    val gameDef: Option[GameDefinition] = assetCollection.texts.find(p => p.name == "indigoJson").flatMap(json => GameDefinitionHelper.fromJson(json.contents))
-
-//    val dude = for {
-//      json <- assetCollection.texts.find(p => p.name == "base_charactor-json").map(_.contents)
-//      aseprite <- AsepriteHelper.fromJson(json)
-//      sprite <- AsepriteHelper.toSprite(aseprite, Depth(3), "base_charactor")
-//    } yield Dude(
-//      aseprite,
-//      sprite
-//        .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
-//        .moveTo(viewportWidth / 2 / magnificationLevel, viewportHeight / 2 / magnificationLevel) // Also place him in the middle of the screen initially
-//    )
-//
-//    dude match {
-//      case Some(d) => MyStartupData(d)
-//      case None => MyErrorReport("Failed to load the dude")
-//    }
-
-    gameDef match {
+  implicit val initialise: AssetCollection => Startup[StartupErrorReport, StartupData] = assetCollection =>
+    assetCollection
+      .texts
+      .find(p => p.name == "indigoJson")
+      .flatMap(json => GameDefinitionHelper.fromJson(json.contents)) match {
       case Some(gd) => StartupData(gd)
       case None => StartupErrorReport("Game definition could not be loaded")
     }
 
-  }
+  implicit val initialModel: StartupData => GameModel = startupData =>
+    GameModelHelper.initialModel(startupData)
 
-  def initialModel(startupData: StartupData): GameModel = GameModelHelper.initialModel(startupData)
+  implicit val updateModel: (GameTime, GameModel) => GameEvent => GameModel = (_, gameModel) =>
+    GameModelHelper.updateModel(gameModel)
 
-  def updateModel(gameTime: GameTime, gameModel: GameModel): GameEvent => GameModel = GameModelHelper.updateModel(gameTime, gameModel)
+  implicit val updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate[GameViewEvent] = (_, gameModel, _) =>
+    GameViewHelper.updateView(gameModel)
 
-  def updateView(gameTime: GameTime, gameModel: GameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate[GameViewEvent] =
-    GameViewHelper.updateView(gameTime, gameModel, frameInputEvents)
-
+  @JSExportTopLevel("com.purplekingdomgames.indigoframework.Framework.main")
+  def main(args: Array[String]): Unit =
+    Indigo.start[StartupData, StartupErrorReport, GameModel, GameViewEvent]
 }
-
 
 case class StartupErrorReport(message: String)
 object StartupErrorReport {
-
   implicit val toErrorReport: ToReportable[StartupErrorReport] =
     ToReportable.createToReportable(r => r.message)
-
 }
-case class StartupData(gameDefinition: GameDefinition)
 
-//case class Dude(aseprite: Aseprite, sprite: Sprite[MyViewEventDataType])
-//case class MyStartupData(dude: Dude)
-//
-//case class MyErrorReport(errors: List[String])
-//object MyErrorReport {
-//
-//  implicit val toErrorReport: ToReportable[MyErrorReport] =
-//    ToReportable.createToReportable(r => r.errors.mkString("\n"))
-//
-//  def apply(message: String*): MyErrorReport = MyErrorReport(message.toList)
-//
-//}
-//
-//case class MyViewEventDataType()
+case class StartupData(gameDefinition: GameDefinition)
