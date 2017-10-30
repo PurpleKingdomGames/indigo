@@ -1,6 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine.assets
 
 import com.purplekingdomgames.indigo.util.Logger
+import com.purplekingdomgames.shared.{AssetType, ImageAsset, TextAsset}
 import org.scalajs.dom
 import org.scalajs.dom.ext.Ajax
 import org.scalajs.dom.raw.HTMLImageElement
@@ -77,10 +78,6 @@ object AssetManager {
   }
 
 }
-
-sealed trait AssetType
-case class TextAsset(name: String, path: String) extends AssetType
-case class ImageAsset(name: String, path: String) extends AssetType
 
 case class LoadedTextAsset(name: String, contents: String)
 case class LoadedImageAsset(name: String, data: html.Image)

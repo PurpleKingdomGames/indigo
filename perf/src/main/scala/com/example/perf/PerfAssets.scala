@@ -1,6 +1,6 @@
 package com.example.perf
 
-import com.purplekingdomgames.indigo.gameengine.assets.{AssetType, ImageAsset, TextAsset}
+import com.purplekingdomgames.shared.{AssetType, ImageAsset, TextAsset}
 
 object PerfAssets {
 

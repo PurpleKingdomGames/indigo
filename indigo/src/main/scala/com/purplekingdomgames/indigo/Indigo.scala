@@ -1,8 +1,9 @@
 package com.purplekingdomgames.indigo
 
 import com.purplekingdomgames.indigo.gameengine._
-import com.purplekingdomgames.indigo.gameengine.assets.{AssetCollection, AssetType}
+import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneGraphUpdate
+import com.purplekingdomgames.shared.{AssetType, GameConfig}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

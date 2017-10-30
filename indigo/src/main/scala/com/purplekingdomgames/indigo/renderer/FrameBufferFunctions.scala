@@ -1,5 +1,6 @@
 package com.purplekingdomgames.indigo.renderer
 
+import com.purplekingdomgames.shared.ClearColor
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.{WebGLFramebuffer, WebGLTexture}
 

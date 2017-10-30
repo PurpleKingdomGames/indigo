@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes
 
-import com.purplekingdomgames.indigo.renderer.ClearColor
+import com.purplekingdomgames.shared.ClearColor
 
 case class AmbientLight(tint: Tint, amount: Double)
 

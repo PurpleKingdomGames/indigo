@@ -2,9 +2,9 @@ package com.purplekingdomgames.indigoframework
 
 import com.purplekingdomgames.indigo.Indigo
 import com.purplekingdomgames.indigo.gameengine._
-import com.purplekingdomgames.indigo.gameengine.assets.{AssetCollection, AssetType}
+import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.shared.GameDefinition
+import com.purplekingdomgames.shared.{AssetType, GameConfig, GameDefinition}
 
 import scala.concurrent.Future
 import scala.scalajs.js.annotation.JSExportTopLevel

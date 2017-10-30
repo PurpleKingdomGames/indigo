@@ -1,15 +1,13 @@
 package com.example.sandbox
 
-import com.purplekingdomgames.indigo.Indigo
 import com.purplekingdomgames.indigo.gameengine._
-import com.purplekingdomgames.indigo.gameengine.assets.{AssetCollection, AssetType}
+import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Depth
-import com.purplekingdomgames.indigo.renderer.ClearColor
+import com.purplekingdomgames.indigo.{Indigo, _}
+import com.purplekingdomgames.shared.{AssetType, ClearColor, GameConfig, GameViewport}
 
 import scala.scalajs.js.annotation.JSExportTopLevel
-
-import com.purplekingdomgames.indigo._
 
 object MyGame {
 

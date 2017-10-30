@@ -353,13 +353,11 @@ object RendererFunctions {
       orthographicProjectionMatrixNoMag = Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)
     }
 
-  val flipMatrix: ((Boolean, Boolean)) => Matrix4 = flipValues => {
-    flipValues match {
-      case (true, true)   => Matrix4.identity.translate(1, 1, 0).scale(-1, -1, -1)
-      case (true, false)  => Matrix4.identity.translate(1, 0, 0).scale(-1,  1, -1)
-      case (false, true)  => Matrix4.identity.translate(0, 1, 0).scale( 1, -1, -1)
-      case (false, false) => Matrix4.identity
-    }
+  val flipMatrix: ((Boolean, Boolean)) => Matrix4 = {
+    case (true, true)   => Matrix4.identity.translate(1, 1, 0).scale(-1, -1, -1)
+    case (true, false)  => Matrix4.identity.translate(1, 0, 0).scale(-1,  1, -1)
+    case (false, true)  => Matrix4.identity.translate(0, 1, 0).scale( 1, -1, -1)
+    case (false, false) => Matrix4.identity
   }
 
   def setupVertexShader(cNc: ContextAndCanvas, shaderProgram: WebGLProgram, projectionMatrix: Matrix4): Unit = {

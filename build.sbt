@@ -5,6 +5,14 @@ lazy val commonSettings = Seq(
   version := indigoVersion,
   scalaVersion := "2.12.4",
   organization := "com.purplekingdomgames",
+  libraryDependencies ++= Seq(
+    "io.circe" %%% "circe-core",
+    "io.circe" %%% "circe-generic",
+    "io.circe" %%% "circe-parser"
+  ).map(_ % "0.8.0"),
+  libraryDependencies ++= Seq(
+    "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
+  ),
   scalacOptions in (Compile, compile) ++= Seq(
     "-deprecation",                      // Emit warning and location for usages of deprecated APIs.
     "-encoding", "utf-8",                // Specify character encoding used by source files.
@@ -63,14 +71,10 @@ lazy val indigo =
       libraryDependencies ++= Seq(
         "org.scalatest" %%% "scalatest" % "3.0.1" % "test",
         "org.scala-js" %%% "scalajs-dom" % "0.9.1"
-      ),
-      libraryDependencies ++= Seq(
-        "io.circe" %%% "circe-core",
-        "io.circe" %%% "circe-generic",
-        "io.circe" %%% "circe-parser"
-      ).map(_ % "0.8.0")
+      )
     )
     .enablePlugins(ScalaJSPlugin)
+    .dependsOn(shared)
 
 // Games
 lazy val sandbox =
@@ -80,9 +84,6 @@ lazy val sandbox =
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(
       name := "indigo-sandbox",
-      libraryDependencies ++= Seq(
-        "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
-      ),
       showCursor := true,
       title := "Sandbox",
       gameAssetsDirectory := "assets",
@@ -95,9 +96,6 @@ lazy val perf =
     .dependsOn(indigo)
     .settings(
       name := "indigo-perf",
-      libraryDependencies ++= Seq(
-        "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
-      ),
       showCursor := true,
       title := "Perf",
       gameAssetsDirectory := "assets",
@@ -112,9 +110,6 @@ lazy val framework =
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(
       name := "indigo-framework",
-      libraryDependencies ++= Seq(
-        "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
-      ),
       showCursor := true,
       title := "Framework",
       gameAssetsDirectory := "assets",
@@ -132,8 +127,7 @@ lazy val server =
         "org.http4s"     %% "http4s-blaze-server"  % "0.17.5",
         "org.http4s"     %% "http4s-circe"         % "0.17.5",
         "org.http4s"     %% "http4s-dsl"           % "0.17.5",
-        "ch.qos.logback" %  "logback-classic"      % "1.2.3",
-        "org.scalatest"  %% "scalatest"            % "3.0.1"   % "test"
+        "ch.qos.logback" %  "logback-classic"      % "1.2.3"
       )
     )
     .dependsOn(shared)
@@ -144,15 +138,7 @@ lazy val shared =
     .settings(commonSettings: _*)
     .enablePlugins(ScalaJSPlugin)
     .settings(
-      name := "shared",
-      libraryDependencies ++= Seq(
-        "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
-      ),
-      libraryDependencies ++= Seq(
-        "io.circe" %%% "circe-core",
-        "io.circe" %%% "circe-generic",
-        "io.circe" %%% "circe-parser"
-      ).map(_ % "0.8.0")
+      name := "shared"
     )
 
 // Root

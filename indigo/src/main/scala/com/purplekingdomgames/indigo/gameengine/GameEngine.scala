@@ -5,6 +5,7 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.renderer._
 import com.purplekingdomgames.indigo.util._
 import com.purplekingdomgames.indigo.util.metrics._
+import com.purplekingdomgames.shared.{AssetType, GameConfig}
 import org.scalajs.dom
 
 import scala.concurrent.ExecutionContext.Implicits.global

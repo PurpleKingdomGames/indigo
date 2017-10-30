@@ -1,6 +1,7 @@
-package com.purplekingdomgames.indigo.gameengine
+package com.purplekingdomgames.shared
 
-import com.purplekingdomgames.indigo.renderer.ClearColor
+import io.circe.generic.auto._
+import io.circe.parser._
 
 case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int, advanced: AdvancedGameConfig) {
   val frameRateDeltaMillis: Int = 1000 / frameRate
@@ -42,6 +43,15 @@ object GameConfig {
 
   def apply(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int): GameConfig =
     GameConfig(viewport, frameRate, clearColor, magnification, AdvancedGameConfig.default)
+
+  def fromJson(json: String): Either[String, GameConfig] =
+    decode[GameConfig](json) match {
+      case Right(c) =>
+        Right(c)
+
+      case Left(e) =>
+        Left("Failed to deserialise json into GameConfig: " + e.getMessage)
+    }
 
 }
 

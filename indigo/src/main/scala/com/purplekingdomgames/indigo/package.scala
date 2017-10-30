@@ -1,7 +1,6 @@
 package com.purplekingdomgames
 
-import com.purplekingdomgames.indigo.gameengine.GameConfig
-import com.purplekingdomgames.indigo.gameengine.assets.AssetType
+import com.purplekingdomgames.shared.{AssetType, GameConfig}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
