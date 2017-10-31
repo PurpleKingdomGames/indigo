@@ -124,10 +124,13 @@ lazy val server =
     .settings(
       name := "server",
       libraryDependencies ++= Seq(
-        "org.http4s"     %% "http4s-blaze-server"  % "0.17.5",
-        "org.http4s"     %% "http4s-circe"         % "0.17.5",
-        "org.http4s"     %% "http4s-dsl"           % "0.17.5",
-        "ch.qos.logback" %  "logback-classic"      % "1.2.3"
+        "org.http4s"       %% "http4s-blaze-server"  % "0.17.5",
+        "org.http4s"       %% "http4s-circe"         % "0.17.5",
+        "org.http4s"       %% "http4s-dsl"           % "0.17.5",
+        "ch.qos.logback"   %  "logback-classic"      % "1.2.3",
+        "com.github.cb372" %% "scalacache-core"      % "0.10.0",
+        "com.github.cb372" %% "scalacache-redis"     % "0.10.0",
+        "com.github.cb372" %% "scalacache-caffeine"     % "0.10.0"
       )
     )
     .dependsOn(shared)
