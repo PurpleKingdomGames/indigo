@@ -18,7 +18,7 @@ We have a basic service, it needs to be extended to:
 Phase 1: Serve a game
 - //Serve static config
 - //Serve static assets list
-- Serve the assets listed
+- //Serve the assets listed
 - Serve a static game definition
 - On request to /play
   - serve up an html page with the framework embedded

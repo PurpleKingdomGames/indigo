@@ -7,13 +7,16 @@ import org.http4s.dsl._
 import io.circe.generic.auto._
 import io.circe.syntax._
 
+import java.io.File
+import fs2.interop.cats._
+
 object Service {
   val service = HttpService {
 
-    case GET -> Root / "config" =>
+    case GET -> Root / "game" / "id" / "config" =>
       Ok(GameConfig.default.asJson)
 
-    case GET -> Root / "assets" =>
+    case GET -> Root / "game" / "id" / "assets" =>
       Ok(
         AssetList.empty
           .withImage("smallFontName", "assets/boxy_font.png")
@@ -24,6 +27,10 @@ object Service {
           .withText("base_charactor-json", "assets/base_charactor.json")
           .asJson
       )
+
+    case request @ GET -> Root / "game" / "id" / "assets" / path =>
+      StaticFile.fromFile(new File("./server/assets/" + path), Some(request))
+        .getOrElseF(NotFound())
 
   }
 }
