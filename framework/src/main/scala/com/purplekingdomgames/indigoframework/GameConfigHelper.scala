@@ -9,6 +9,24 @@ import scala.concurrent.Future
 
 object GameConfigHelper {
 
+  /*
+  Looks useful:
+
+val xhr = new XMLHttpRequest()
+
+xhr.open("GET",
+  "https://api.twitter.com/1.1/search/" +
+  "tweets.json?q=%23scalajs"
+)
+xhr.onload = { (e: Event) =>
+  if (xhr.status == 200) {
+    val r = JSON.parse(xhr.responseText)
+    $("#tweets").html(parseTweets(r))
+  }
+}
+xhr.send()
+   */
+
   def load: Future[Option[GameConfig]] =
     AssetManager
       .loadTextAsset(TextAsset("assetsList", "assets/config.json"))

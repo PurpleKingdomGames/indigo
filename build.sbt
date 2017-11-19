@@ -112,8 +112,7 @@ lazy val framework =
       name := "indigo-framework",
       showCursor := true,
       title := "Framework",
-      gameAssetsDirectory := "assets",
-      scalaJSUseMainModuleInitializer := true
+      gameAssetsDirectory := "assets"
     )
     .dependsOn(shared)
 

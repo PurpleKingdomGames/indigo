@@ -7,20 +7,21 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.shared.{AssetType, GameConfig, GameDefinition}
 
 import scala.concurrent.Future
-import scala.scalajs.js.annotation.JSExportTopLevel
+import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 
+@JSExportTopLevel("Indigo")
 object Framework {
 
   implicit val config: GameConfig =
     GameConfig.default
 
-  implicit val configAsync: Future[Option[GameConfig]] =
+  implicit def configAsync: Future[Option[GameConfig]] =
     GameConfigHelper.load
 
   implicit val assets: Set[AssetType] =
     AssetsHelper.assets
 
-  implicit val assetsAsync: Future[Set[AssetType]] =
+  implicit def assetsAsync: Future[Set[AssetType]] =
     AssetsHelper.assetsAsync
 
   implicit val initialise: AssetCollection => Startup[StartupErrorReport, StartupData] = assetCollection =>
@@ -41,9 +42,14 @@ object Framework {
   implicit val updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate[GameViewEvent] = (_, gameModel, _) =>
     GameViewHelper.updateView(gameModel)
 
-  @JSExportTopLevel("com.purplekingdomgames.indigoframework.Framework.main")
-  def main(args: Array[String]): Unit =
+  @JSExport
+  def startLocal(): Unit =
     Indigo.start[StartupData, StartupErrorReport, GameModel, GameViewEvent]
+
+  @JSExport
+  def startRemote(): Unit =
+    Indigo.start[StartupData, StartupErrorReport, GameModel, GameViewEvent]
+
 }
 
 case class StartupErrorReport(message: String)
