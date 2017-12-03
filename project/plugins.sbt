@@ -3,7 +3,7 @@ val indigoVersion = "0.0.6-SNAPSHOT"
 
 lazy val commonSettings = Seq(
   version := indigoVersion,
-  scalaVersion := "2.12.3",
+  scalaVersion := "2.12.4",
   organization := "com.purplekingdomgames",
   scalacOptions ++= Seq(
     "-deprecation",                      // Emit warning and location for usages of deprecated APIs.
@@ -63,8 +63,8 @@ lazy val sbtIndigo =
       sbtPlugin := true,
       libraryDependencies ++= Seq(
         "commons-io" % "commons-io" % "2.5",
-        "org.scalatest" %% "scalatest" % "3.0.1" % "test",
-        "org.scala-js" %%% "scalajs-dom" % "0.9.1"
+        "org.scalatest" %% "scalatest" % "3.0.4" % "test",
+        "org.scala-js" %%% "scalajs-dom" % "0.9.2"
       ),
       libraryDependencies ++= Seq(
         "io.circe" %%% "circe-core",
@@ -89,7 +89,7 @@ def mirrorScalaSource(baseDirectory: File): Seq[File] = {
   else sys.error(s"Missing source directory: $scalaSourceDir")
 }
 
-addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.20")
+addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.21")
 
 addSbtPlugin("com.purplekingdomgames" % "sbt-indigo" % indigoVersion)
 

@@ -11,7 +11,7 @@ lazy val commonSettings = Seq(
     "io.circe" %%% "circe-parser"
   ).map(_ % "0.8.0"),
   libraryDependencies ++= Seq(
-    "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
+    "org.scalatest" %%% "scalatest" % "3.0.4" % "test"
   ),
   scalacOptions in (Compile, compile) ++= Seq(
     "-deprecation",                      // Emit warning and location for usages of deprecated APIs.
@@ -69,14 +69,27 @@ lazy val indigo =
     .settings(
       name := "indigo",
       libraryDependencies ++= Seq(
-        "org.scalatest" %%% "scalatest" % "3.0.1" % "test",
-        "org.scala-js" %%% "scalajs-dom" % "0.9.1"
+        "org.scalatest" %%% "scalatest" % "3.0.4" % "test",
+        "org.scala-js" %%% "scalajs-dom" % "0.9.2"
       )
     )
     .enablePlugins(ScalaJSPlugin)
     .dependsOn(shared)
 
 // Games
+lazy val snake =
+  project
+    .settings(commonSettings: _*)
+    .dependsOn(indigo)
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .settings(
+      name := "snake",
+      showCursor := true,
+      title := "Snake",
+      gameAssetsDirectory := "assets",
+      scalaJSUseMainModuleInitializer := true
+    )
+
 lazy val sandbox =
   project
     .settings(commonSettings: _*)
@@ -147,4 +160,4 @@ lazy val shared =
 lazy val indigoProject =
   (project in file("."))
     .settings(commonSettings: _*)
-    .aggregate(indigo, sandbox, perf, framework, server)
+    .aggregate(indigo, sandbox, perf, framework, server, snake)

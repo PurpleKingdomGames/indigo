@@ -6,7 +6,7 @@ import org.scalatest.{FunSpec, Matchers}
 
 class AsepriteHelperSpec extends FunSpec with Matchers {
 
-  implicit val gameTypeHolder = new GameTypeHolder[String] {}
+  implicit val gameTypeHolder: GameTypeHolder[String] = new GameTypeHolder[String] {}
 
   describe("Create an Aseprite asset") {
 
@@ -17,7 +17,7 @@ class AsepriteHelperSpec extends FunSpec with Matchers {
     it("should be able to convert the loaded definition into a renderable Sprite object") {
       pending
       AsepriteSampleData.aseprite.flatMap { as =>
-        AsepriteHelper.toSprite(as, AsepriteSampleData.depth, AsepriteSampleData.imageAssetRef)
+        AsepriteHelper.toSprite[String](as, AsepriteSampleData.depth, AsepriteSampleData.imageAssetRef)
           .map(_.withBindingKey("test"))
       } shouldEqual AsepriteSampleData.sprite
     }
