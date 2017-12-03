@@ -9,7 +9,7 @@ case class NoCollision(snakePoint: SnakePoint) extends CollisionCheckOutcome
 case class PickUp(snakePoint: SnakePoint) extends CollisionCheckOutcome
 case class Crashed(snakePoint: SnakePoint) extends CollisionCheckOutcome
 
-case class Snake(head: SnakePoint, body: List[SnakePoint], direction: SnakeDirection) {
+case class Snake(start: SnakePoint, body: List[SnakePoint], direction: SnakeDirection) {
 
   def turnLeft: Snake =
     Snake.turnLeft(this)
@@ -29,6 +29,9 @@ case class Snake(head: SnakePoint, body: List[SnakePoint], direction: SnakeDirec
 }
 object Snake {
 
+  def apply(start: SnakePoint): Snake =
+    Snake(start, Nil, Up)
+
   def turnLeft(snake: Snake): Snake =
     snake.copy(direction = snake.direction.turnLeft)
 
@@ -36,7 +39,7 @@ object Snake {
     snake.copy(direction = snake.direction.turnRight)
 
   def end(snake: Snake): SnakePoint =
-    snake.body.reverse.headOption.getOrElse(snake.head)
+    snake.body.reverse.headOption.getOrElse(snake.start)
 
   def grow(snake: Snake): Snake =
     snake.copy(body = snake.body :+ end(snake))
@@ -46,7 +49,7 @@ object Snake {
 
   def nextPosition(gridSize: GridSize): Snake => SnakePoint = snake =>
     snake.direction
-      .oneSquareForward(snake.head)
+      .oneSquareForward(snake.start)
       .wrap(gridSize)
 
   def snakeUpdate(snake: Snake): CollisionCheckOutcome => Snake = {
