@@ -1,15 +1,35 @@
 package snake
 
+import snake.CollisionCheckOutcome.{Crashed, NoCollision, PickUp}
+import snake.SnakeDirection.Up
+import snake.SnakeStatus.{Alive, Dead}
+import snake.TurnDirection.{TurnLeft, TurnRight}
+
 case class GridSize(x: Int, y: Int)
 
 sealed trait CollisionCheckOutcome {
   val snakePoint: SnakePoint
 }
-case class NoCollision(snakePoint: SnakePoint) extends CollisionCheckOutcome
-case class PickUp(snakePoint: SnakePoint) extends CollisionCheckOutcome
-case class Crashed(snakePoint: SnakePoint) extends CollisionCheckOutcome
+object CollisionCheckOutcome {
 
-case class Snake(start: SnakePoint, body: List[SnakePoint], direction: SnakeDirection) {
+  case class NoCollision(snakePoint: SnakePoint) extends CollisionCheckOutcome
+
+  case class PickUp(snakePoint: SnakePoint) extends CollisionCheckOutcome
+
+  case class Crashed(snakePoint: SnakePoint) extends CollisionCheckOutcome
+
+}
+
+sealed trait SnakeStatus
+object SnakeStatus {
+
+  case object Alive extends SnakeStatus
+
+  case object Dead extends SnakeStatus
+
+}
+
+case class Snake(start: SnakePoint, body: List[SnakePoint], direction: SnakeDirection, status: SnakeStatus) {
 
   def turnLeft: Snake =
     Snake.turnLeft(this)
@@ -26,11 +46,23 @@ case class Snake(start: SnakePoint, body: List[SnakePoint], direction: SnakeDire
   def grow: Snake =
     Snake.grow(this)
 
+  def crash: Snake =
+    Snake.crash(this)
+
+  def length: Int =
+    1 + body.length
+
+  def givePath: List[SnakePoint] =
+    start :: body
+
+  def givePathList: List[(Int, Int)] =
+    (start :: body).map(p => (p.x, p.y))
+
 }
 object Snake {
 
   def apply(start: SnakePoint): Snake =
-    Snake(start, Nil, Up)
+    Snake(start, Nil, Up, Alive)
 
   def turnLeft(snake: Snake): Snake =
     snake.copy(direction = snake.direction.turnLeft)
@@ -44,8 +76,11 @@ object Snake {
   def grow(snake: Snake): Snake =
     snake.copy(body = snake.body :+ end(snake))
 
+  def crash(snake: Snake): Snake =
+    snake.copy(status = Dead)
+
   def update(snake: Snake, gridSize: GridSize, collisionCheck: SnakePoint => CollisionCheckOutcome): Snake =
-    (nextPosition(gridSize) andThen collisionCheck andThen snakeUpdate(snake))(snake)
+    (nextPosition(gridSize) andThen collisionCheck andThen snakeUpdate(snake)) (snake)
 
   def nextPosition(gridSize: GridSize): Snake => SnakePoint = snake =>
     snake.direction
@@ -60,16 +95,16 @@ object Snake {
       moveToPosition(snake.grow, pt)
 
     case Crashed(_) =>
-      snake
+      snake.crash
   }
 
   def moveToPosition(snake: Snake, snakePoint: SnakePoint): Snake =
     snake match {
-      case Snake(_, Nil, d) =>
-        Snake(snakePoint, Nil, d)
+      case Snake(_, Nil, d, s) =>
+        Snake(snakePoint, Nil, d, s)
 
-      case Snake(h, l, d) =>
-        Snake(snakePoint, h :: l.reverse.tail.reverse, d)
+      case Snake(h, l, d, s) =>
+        Snake(snakePoint, h :: l.reverse.tail.reverse, d, s)
     }
 
 }
@@ -101,8 +136,13 @@ object SnakePoint {
 }
 
 sealed trait TurnDirection
-case object TurnLeft extends TurnDirection
-case object TurnRight extends TurnDirection
+object TurnDirection {
+
+  case object TurnLeft extends TurnDirection
+
+  case object TurnRight extends TurnDirection
+
+}
 
 sealed trait SnakeDirection {
 
@@ -117,6 +157,11 @@ sealed trait SnakeDirection {
 
 }
 object SnakeDirection {
+
+  case object Up extends SnakeDirection
+  case object Down extends SnakeDirection
+  case object Left extends SnakeDirection
+  case object Right extends SnakeDirection
 
   def turn(snakeDirection: SnakeDirection, turnDirection: TurnDirection): SnakeDirection =
     (snakeDirection, turnDirection) match {
@@ -161,8 +206,3 @@ object SnakeDirection {
     }
 
 }
-
-case object Up extends SnakeDirection
-case object Down extends SnakeDirection
-case object Left extends SnakeDirection
-case object Right extends SnakeDirection
