@@ -64,6 +64,9 @@ object Snake {
   def apply(start: SnakePoint): Snake =
     Snake(start, Nil, Up, Alive)
 
+  def apply(x: Int, y: Int): Snake =
+    Snake(SnakePoint(x, y), Nil, Up, Alive)
+
   def turnLeft(snake: Snake): Snake =
     snake.copy(direction = snake.direction.turnLeft)
 
