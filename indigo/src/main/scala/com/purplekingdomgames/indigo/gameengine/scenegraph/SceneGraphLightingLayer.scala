@@ -28,6 +28,24 @@ case class SceneGraphLightingLayer[ViewEventDataType](node: SceneGraphNodeBranch
     )
   }
 
+  def addChild(child: SceneGraphNode[ViewEventDataType]): SceneGraphLightingLayer[ViewEventDataType] =
+    node match {
+      case l: SceneGraphNodeLeaf[ViewEventDataType] =>
+        SceneGraphLightingLayer[ViewEventDataType](SceneGraphNodeBranch[ViewEventDataType](l, child), ambientLight)
+
+      case b: SceneGraphNodeBranch[ViewEventDataType] =>
+        SceneGraphLightingLayer[ViewEventDataType](b.addChild(child), ambientLight)
+    }
+
+  def addChildren(children: List[SceneGraphNode[ViewEventDataType]]): SceneGraphLightingLayer[ViewEventDataType] =
+    node match {
+      case l: SceneGraphNodeLeaf[ViewEventDataType] =>
+        SceneGraphLightingLayer[ViewEventDataType](SceneGraphNodeBranch[ViewEventDataType](l :: children), ambientLight)
+
+      case b: SceneGraphNodeBranch[ViewEventDataType] =>
+        SceneGraphLightingLayer[ViewEventDataType](b.addChildren(children), ambientLight)
+    }
+
 }
 
 object SceneGraphLightingLayer {

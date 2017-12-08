@@ -7,8 +7,8 @@ import scala.language.implicitConversions
 
 object SnakeView {
 
-  implicit def snakePointToPoint(snakePoint: SnakePoint): Point =
-    Point(snakePoint.x, snakePoint.y)
+  implicit def snakePointToYInvertedPoint(snakePoint: SnakePoint): Point =
+    Point(snakePoint.x * 16, (15 - snakePoint.y) * 16)
 
   def updateView(model: SnakeModel): SceneGraphUpdate[SnakeEvent] =
     SceneGraphUpdate(
@@ -21,10 +21,9 @@ object SnakeView {
     )
 
   def gameLayer(currentState: SnakeModel): SceneGraphGameLayer[SnakeEvent] =
-    SceneGraphGameLayer(
-      currentState.staticAssets.outerWalls,
-      currentState.staticAssets.apple.moveTo(32, 32),
-      currentState.staticAssets.snakeHead.moveTo(currentState.snake.start)
-    )
+    SceneGraphGameLayer()
+      .addChild(currentState.staticAssets.outerWalls)
+      .addChild(currentState.staticAssets.apple.moveTo(currentState.apple.x * 16, (15 - currentState.apple.y) *  16))
+      .addChildren(currentState.snake.givePath.map(pt => currentState.staticAssets.snakeBody.moveTo(pt)))
 
 }

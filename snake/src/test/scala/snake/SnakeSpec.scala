@@ -11,7 +11,7 @@ class SnakeSpec extends FunSpec with Matchers {
 
   def tick(snake: Snake, count: Int): Snake = {
     if(count == 0) snake
-    else tick(snake.update(gridSize, collisionF), count -1)
+    else tick(snake.update(gridSize, collisionF)._1, count -1)
   }
 
   implicit class Tickable(snake: Snake) {
@@ -122,7 +122,7 @@ class SnakeSpec extends FunSpec with Matchers {
       val s = Snake(SnakePoint.identity)
       s.status shouldEqual SnakeStatus.Alive
 
-      val s2 = s.update(gridSize, f)
+      val s2 = s.update(gridSize, f)._1
       s2.status shouldEqual SnakeStatus.Dead
     }
 
@@ -136,7 +136,7 @@ class SnakeSpec extends FunSpec with Matchers {
       val s = Snake(SnakePoint.identity)
       s.length shouldEqual 1
 
-      val s2 = s.update(gridSize, f)
+      val s2 = s.update(gridSize, f)._1
       s2.length shouldEqual 2
     }
 

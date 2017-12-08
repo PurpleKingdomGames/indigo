@@ -7,6 +7,24 @@ case class SceneGraphGameLayer[ViewEventDataType](node: SceneGraphNode[ViewEvent
   private[gameengine] def flatten: SceneGraphGameLayerFlat[ViewEventDataType] =
     SceneGraphGameLayerFlat[ViewEventDataType](node.flatten)
 
+  def addChild(child: SceneGraphNode[ViewEventDataType]): SceneGraphGameLayer[ViewEventDataType] =
+    node match {
+      case l: SceneGraphNodeLeaf[ViewEventDataType] =>
+        SceneGraphGameLayer[ViewEventDataType](SceneGraphNodeBranch[ViewEventDataType](l, child))
+
+      case b: SceneGraphNodeBranch[ViewEventDataType] =>
+        SceneGraphGameLayer[ViewEventDataType](b.addChild(child))
+    }
+
+  def addChildren(children: List[SceneGraphNode[ViewEventDataType]]): SceneGraphGameLayer[ViewEventDataType] =
+    node match {
+      case l: SceneGraphNodeLeaf[ViewEventDataType] =>
+        SceneGraphGameLayer[ViewEventDataType](SceneGraphNodeBranch[ViewEventDataType](l :: children))
+
+      case b: SceneGraphNodeBranch[ViewEventDataType] =>
+        SceneGraphGameLayer[ViewEventDataType](b.addChildren(children))
+    }
+
 }
 
 object SceneGraphGameLayer {

@@ -26,7 +26,15 @@ sealed trait SceneGraphNode[ViewEventDataType] {
 
 }
 
-case class SceneGraphNodeBranch[ViewEventDataType](children: List[SceneGraphNode[ViewEventDataType]]) extends SceneGraphNode[ViewEventDataType]
+case class SceneGraphNodeBranch[ViewEventDataType](children: List[SceneGraphNode[ViewEventDataType]]) extends SceneGraphNode[ViewEventDataType] {
+
+  def addChild(child: SceneGraphNode[ViewEventDataType]): SceneGraphNodeBranch[ViewEventDataType] =
+    this.copy(children = children :+ child)
+
+  def addChildren(additionalChildren: List[SceneGraphNode[ViewEventDataType]]): SceneGraphNodeBranch[ViewEventDataType] =
+    this.copy(children = children ++ additionalChildren)
+
+}
 
 object SceneGraphNodeBranch {
   def apply[ViewEventDataType](children: SceneGraphNode[ViewEventDataType]*): SceneGraphNodeBranch[ViewEventDataType] =

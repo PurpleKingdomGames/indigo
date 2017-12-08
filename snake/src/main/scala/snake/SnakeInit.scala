@@ -15,9 +15,12 @@ object SnakeInit {
       staticAssets = StaticAssets(
         wall = wall,
         apple = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(16, 0, 16, 16),
-        snakeHead = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(0, 16, 16, 16),
-        snakeBody = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(16, 16, 16, 16),
-        snakeTail = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(32, 16, 16, 16),
+//        snakeHead = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(0, 16, 16, 16),
+//        snakeBody = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(16, 16, 16, 16),
+//        snakeTail = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(32, 16, 16, 16),
+        snakeHead = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(48, 48, 16, 16),
+        snakeBody = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(48, 48, 16, 16),
+        snakeTail = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(48, 48, 16, 16),
         outerWalls = SceneGraphNodeBranch(
           (0 to 16).toList.map(i => wall.moveTo(i * 16, 0)) ++
             (0 to 16).toList.map(i => wall.moveTo(i * 16, gridSize.y * 16 - 16)) ++
