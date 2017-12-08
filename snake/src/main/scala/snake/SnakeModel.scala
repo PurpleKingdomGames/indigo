@@ -1,7 +1,7 @@
 package snake
 
 import com.purplekingdomgames.indigo.gameengine._
-import snake.CollisionCheckOutcome.PickUp
+import snake.CollisionCheckOutcome.{Crashed, PickUp}
 
 import scala.util.Random
 
@@ -9,10 +9,11 @@ object SnakeModel {
 
   def initialModel(startupData: SnakeStartupData): SnakeModel =
     SnakeModel(
-      startupData.gridSize,
-      startupData.staticAssets,
-      Snake(8, 8).grow.grow,
-      Apple(2, 13)
+      running = true,
+      gridSize = startupData.gridSize,
+      staticAssets = startupData.staticAssets,
+      snake = Snake(8, 8).grow.grow,
+      apple = Apple(2, 13)
     )
 
   private val hitTest: List[SnakePoint] => Apple => SnakePoint => CollisionCheckOutcome = body => apple => {
@@ -41,6 +42,12 @@ object SnakeModel {
   def updateModel(state: SnakeModel): GameEvent => SnakeModel = {
     case FrameTick =>
       state.snake.update(state.gridSize, hitTest(state.snake.givePath)(state.apple)) match {
+        case (s, Crashed(_)) =>
+          state.copy(
+            running = false,
+            snake = s
+          )
+
         case (s, PickUp(_)) =>
           state.copy(
             snake = s,
@@ -65,7 +72,7 @@ object SnakeModel {
 
 }
 
-case class SnakeModel(gridSize: GridSize, staticAssets: StaticAssets, snake: Snake, apple: Apple)
+case class SnakeModel(running: Boolean, gridSize: GridSize, staticAssets: StaticAssets, snake: Snake, apple: Apple)
 
 case class Apple(x: Int, y: Int)
 

@@ -13,17 +13,17 @@ object SnakeView {
   def updateView(model: SnakeModel): SceneGraphUpdate[SnakeEvent] =
     SceneGraphUpdate(
       SceneGraphRootNode(
-        game = gameLayer(model),
+        game = gameLayer(model, if(model.running) model.staticAssets.snakeAlive else model.staticAssets.snakeDead),
         lighting = SceneGraphLightingLayer.empty,
         ui = SceneGraphUiLayer.empty
       ),
       Nil
     )
 
-  def gameLayer(currentState: SnakeModel): SceneGraphGameLayer[SnakeEvent] =
+  def gameLayer(currentState: SnakeModel, snakeAsset: Graphic[SnakeEvent]): SceneGraphGameLayer[SnakeEvent] =
     SceneGraphGameLayer()
       .addChild(currentState.staticAssets.outerWalls)
       .addChild(currentState.staticAssets.apple.moveTo(currentState.apple.x * 16, (15 - currentState.apple.y) *  16))
-      .addChildren(currentState.snake.givePath.map(pt => currentState.staticAssets.snakeBody.moveTo(pt)))
+      .addChildren(currentState.snake.givePath.map(pt => snakeAsset.moveTo(pt)))
 
 }

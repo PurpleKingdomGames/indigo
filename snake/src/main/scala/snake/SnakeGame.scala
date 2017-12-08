@@ -32,7 +32,7 @@ object SnakeGame {
     SnakeModel.initialModel(startupData)
 
   implicit val updateModel: (GameTime, SnakeModel) => GameEvent => SnakeModel = (_, gameModel) =>
-    SnakeModel.updateModel(gameModel)
+    if(gameModel.running) SnakeModel.updateModel(gameModel) else _ => gameModel
 
   implicit val updateView: (GameTime, SnakeModel, FrameInputEvents) => SceneGraphUpdate[SnakeEvent] = (_, gameModel, _) =>
     SnakeView.updateView(gameModel)
