@@ -15,7 +15,7 @@ object SnakeModel {
       Apple(2, 13)
     )
 
-  private val hitTest: Apple => SnakePoint => CollisionCheckOutcome = apple => {
+  private val hitTest: List[SnakePoint] => Apple => SnakePoint => CollisionCheckOutcome = body => apple => {
       case pt @ SnakePoint(0, _) =>
         CollisionCheckOutcome.Crashed(pt)
 
@@ -31,13 +31,16 @@ object SnakeModel {
       case pt if pt.x == apple.x && pt.y == apple.y =>
         CollisionCheckOutcome.PickUp(pt)
 
+      case pt if body.contains(pt) =>
+        CollisionCheckOutcome.Crashed(pt)
+
       case pt =>
         CollisionCheckOutcome.NoCollision(pt)
     }
 
   def updateModel(state: SnakeModel): GameEvent => SnakeModel = {
     case FrameTick =>
-      state.snake.update(state.gridSize, hitTest(state.apple)) match {
+      state.snake.update(state.gridSize, hitTest(state.snake.givePath)(state.apple)) match {
         case (s, PickUp(_)) =>
           state.copy(
             snake = s,
