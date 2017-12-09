@@ -20,11 +20,11 @@ object SnakeInit {
 //        snakeTail = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(32, 16, 16, 16),
         snakeAlive = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(48, 48, 16, 16),
         snakeDead = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(32, 48, 16, 16),
-        outerWalls = SceneGraphNodeBranch(
+        outerWalls = SceneGraphNodeBranch( //TODO: Import map.
           (0 to 16).toList.map(i => wall.moveTo(i * 16, 0)) ++
-            (0 to 16).toList.map(i => wall.moveTo(i * 16, gridSize.y * 16 - 16)) ++
+            (0 to 16).toList.map(i => wall.moveTo(i * 16, gridSize.rows * 16 - 16)) ++
             (1 to 15).toList.map(i => wall.moveTo(0, i * 16)) ++
-            (1 to 15).toList.map(i => wall.moveTo(gridSize.x * 16 - 16, i * 16))
+            (1 to 15).toList.map(i => wall.moveTo(gridSize.columns * 16 - 16, i * 16))
         )
       )
     )

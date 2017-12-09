@@ -83,7 +83,7 @@ object Apple {
     def rand(max: Int, border: Int): Int =
       ((max - (border * 2)) * Random.nextFloat()).toInt + border
 
-    Apple(rand(gridSize.x, 1), rand(gridSize.y, 1))
+    Apple(rand(gridSize.columns, 1), rand(gridSize.rows, 1))
   }
 
 }

@@ -5,7 +5,7 @@ import snake.SnakeDirection.Up
 import snake.SnakeStatus.{Alive, Dead}
 import snake.TurnDirection.{TurnLeft, TurnRight}
 
-case class GridSize(x: Int, y: Int)
+case class GridSize(columns: Int, rows: Int, gridSquareSize: Int)
 
 sealed trait CollisionCheckOutcome {
   val snakePoint: SnakePoint
@@ -136,8 +136,8 @@ object SnakePoint {
 
   def wrap(snakePoint: SnakePoint, gridSize: GridSize): SnakePoint =
     snakePoint.copy(
-      x = snakePoint.x % gridSize.x,
-      y = snakePoint.y % gridSize.y
+      x = snakePoint.x % gridSize.columns,
+      y = snakePoint.y % gridSize.rows
     )
 
 }

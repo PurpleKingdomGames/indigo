@@ -3,12 +3,10 @@ package snake
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
 
-import scala.language.implicitConversions
-
 object SnakeView {
 
-  implicit def snakePointToYInvertedPoint(snakePoint: SnakePoint): Point =
-    Point(snakePoint.x * 16, (15 - snakePoint.y) * 16)
+  def coordsToGridPoint(x: Int, y: Int, gridSize: GridSize): Point =
+    Point(x * gridSize.gridSquareSize, ((gridSize.rows - 1) - y) * gridSize.gridSquareSize)
 
   def updateView(model: SnakeModel): SceneGraphUpdate[SnakeEvent] =
     SceneGraphUpdate(
@@ -23,7 +21,7 @@ object SnakeView {
   def gameLayer(currentState: SnakeModel, snakeAsset: Graphic[SnakeEvent]): SceneGraphGameLayer[SnakeEvent] =
     SceneGraphGameLayer()
       .addChild(currentState.staticAssets.outerWalls)
-      .addChild(currentState.staticAssets.apple.moveTo(currentState.apple.x * 16, (15 - currentState.apple.y) *  16))
-      .addChildren(currentState.snake.givePath.map(pt => snakeAsset.moveTo(pt)))
+      .addChild(currentState.staticAssets.apple.moveTo(coordsToGridPoint(currentState.apple.x, currentState.apple.y, currentState.gridSize)))
+      .addChildren(currentState.snake.givePath.map(pt => snakeAsset.moveTo(coordsToGridPoint(pt.x, pt.y, currentState.gridSize))))
 
 }

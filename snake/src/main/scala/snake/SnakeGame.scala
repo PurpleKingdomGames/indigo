@@ -10,10 +10,10 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 
 object SnakeGame {
 
-  private val gridSize: GridSize = GridSize(16, 16)
+  private val gridSize: GridSize = GridSize(32, 50, 16)
 
-  private val viewportWidth: Int = 16 * gridSize.x
-  private val viewportHeight: Int = 16 * gridSize.y
+  private val viewportWidth: Int = gridSize.gridSquareSize * gridSize.columns
+  private val viewportHeight: Int = gridSize.gridSquareSize * gridSize.rows
   private val magnificationLevel: Int = 1
 
   implicit val config: GameConfig = GameConfig(
