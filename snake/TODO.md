@@ -23,3 +23,4 @@
 - Is there a way to auto detect unused assets and not publish them? Macro that generates a manifest?
 - Indigo plugin to export to Cordova - just mac desktop for now
 - Explore publishing for Switch
+- Relative urls!
