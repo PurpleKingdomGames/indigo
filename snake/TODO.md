@@ -12,7 +12,7 @@
   - Title screen
   - Choose play mode
     - Single player
-    - Single player vs CPU (where... you will loose?)
+    - Single player vs CPU
     - Two Player
   - Game screen
   - Game over screen
@@ -21,5 +21,5 @@
 
 ### Publishing
 - Is there a way to auto detect unused assets and not publish them? Macro that generates a manifest?
-- Indigo plugin to export to Cordova - jst mac desktop for now
+- Indigo plugin to export to Cordova - just mac desktop for now
 - Explore publishing for Switch
