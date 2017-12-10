@@ -23,7 +23,7 @@ sealed trait QuadTree {
 }
 object QuadTree {
 
-  implicit case class ListSequence[A](l: List[Option[A]]) {
+  implicit class ListSequence[A](l: List[Option[A]]) {
 
     def sequence: Option[List[A]] =
       Option(
@@ -135,14 +135,23 @@ case class GridPoint(x: Int, y: Int) {
   def ===(other: GridPoint): Boolean =
     GridPoint.equality(this, other)
 
+  def +(other: GridPoint): GridPoint =
+    GridPoint.append(this, other)
+
 }
 object GridPoint {
+
+  def apply: GridPoint =
+    identity
 
   def identity: GridPoint =
     GridPoint(0, 0)
 
   def equality(a: GridPoint, b: GridPoint): Boolean =
     a.x == b.x && a.y == b.y
+
+  def append(a: GridPoint, b: GridPoint): GridPoint =
+    GridPoint(a.x + b.x, a.y + b.y)
 
 }
 

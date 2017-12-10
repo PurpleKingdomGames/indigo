@@ -5,7 +5,7 @@ import snake.CollisionCheckOutcome.{Crashed, NoCollision, PickUp}
 
 class SnakeSpec extends FunSpec with Matchers {
 
-  val gridSize: GridSize = GridSize(10, 10)
+  val gridSize: GridSize = GridSize(10, 10, 16)
 
   def collisionF: SnakePoint => CollisionCheckOutcome = pt => NoCollision(pt)
 
