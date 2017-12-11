@@ -102,6 +102,11 @@ object QuadTree {
 
 case class QuadBounds(x: Int, y: Int, width: Int, height: Int) {
 
+  val left: Int = x
+  val top: Int = y
+  val right: Int = x + width
+  val bottom: Int = y + height
+
   def +(other: QuadBounds): QuadBounds =
     QuadBounds.append(this, other)
 
@@ -114,13 +119,17 @@ object QuadBounds {
   def identity: QuadBounds =
     QuadBounds(0, 0, 0, 0)
 
-  def append(a: QuadBounds, b: QuadBounds): QuadBounds =
+  def append(a: QuadBounds, b: QuadBounds): QuadBounds = {
+    val left = if (a.x < b.x) a.x else b.x
+    val top = if (a.y < b.y) a.y else b.y
+
     QuadBounds(
-      if(a.x < b.x) a.x else b.x,
-      if(a.y < b.y) a.y else b.y,
-      if(a.width > b.width) a.width else b.width,
-      if(a.height > b.height) a.height else b.height
+      left,
+      top,
+      if (a.right > b.right) a.right - left else b.right - left,
+      if (a.bottom > b.bottom) a.bottom - top else b.bottom - top
     )
+  }
 
   def pointWithinBounds(quadBounds: QuadBounds, gridPoint: GridPoint): Boolean =
     gridPoint.x >= quadBounds.x &&
