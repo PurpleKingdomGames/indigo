@@ -87,7 +87,8 @@ lazy val snake =
       showCursor := true,
       title := "Snake",
       gameAssetsDirectory := "assets",
-      scalaJSUseMainModuleInitializer := true
+      scalaJSUseMainModuleInitializer := true,
+      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
     )
 
 lazy val sandbox =

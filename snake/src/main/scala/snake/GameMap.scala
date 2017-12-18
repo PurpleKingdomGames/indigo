@@ -1,15 +1,14 @@
 package snake
 
-import snake.QuadTree.QuadLeaf
-
+/***
+GameMap is a sparse tree of MapElements organised as a QuadTree where each
+tree leaf may only contain a single element.
+ */
 case class GameMap(quadTree: QuadTree, gridSize: GridSize)
 
 sealed trait QuadTree {
 
   val bounds: QuadBounds
-
-  def +(other: QuadTree): QuadLeaf =
-    QuadTree.append(this, other)
 
   def fetchElementAt(gridPoint: GridPoint): Option[MapElement] =
     QuadTree.fetchElementAt(this, gridPoint)
@@ -17,119 +16,152 @@ sealed trait QuadTree {
   def insertElement(element: MapElement): QuadTree =
     QuadTree.insertElementAt(this, element)
 
-  def flatten: QuadLeaf =
-    QuadTree.join(this)
+  def renderAsString: String =
+    QuadTree.renderAsString(this)
 
 }
 object QuadTree {
 
-  implicit class ListSequence[A](l: List[Option[A]]) {
+  case class QuadBranch(bounds: QuadBounds, a: QuadTree, b: QuadTree, c: QuadTree, d: QuadTree) extends QuadTree
+  case class QuadLeaf(bounds: QuadBounds, value: MapElement) extends QuadTree
+  case class QuadEmpty(bounds: QuadBounds) extends QuadTree
 
-    def sequence: Option[List[A]] =
-      Option(
-        l.flatMap {
-          case None =>
-            Nil
+  object QuadBranch {
+    def fromBounds(bounds: QuadBounds): QuadBranch =
+      fromBoundsAndQuarters(bounds, bounds.subdivide)
 
-          case Some(a) =>
-            List(a)
-        }
+    def fromBoundsAndQuarters(bounds: QuadBounds, quarters: (QuadBounds, QuadBounds, QuadBounds, QuadBounds)): QuadBranch ={
+      QuadBranch(
+        bounds,
+        QuadEmpty(quarters._1),
+        QuadEmpty(quarters._2),
+        QuadEmpty(quarters._3),
+        QuadEmpty(quarters._4)
       )
-
+    }
   }
 
-  case class QuadBranch(bounds: QuadBounds, a: QuadTree, b: QuadTree, c: QuadTree, d: QuadTree) extends QuadTree
-  case class QuadLeaf(bounds: QuadBounds, values: List[MapElement]) extends QuadTree
-
-  def identity: QuadTree =
-    QuadLeaf(QuadBounds.identity, Nil)
-
-  def join(quadTree: QuadTree): QuadLeaf =
-    quadTree match {
-      case l @ QuadLeaf(_, _) =>
-        l
-
-      case QuadBranch(_, a, b, c, d) =>
-        join(a) + join(b) + join(c) + join(d)
-    }
-
-  def append(a: QuadTree, b: QuadTree): QuadLeaf =
-    (a, b) match {
-      case (QuadLeaf(b1, vs1), QuadLeaf(b2, vs2)) =>
-        QuadLeaf(b1 + b2, vs1 ++ vs2)
-
-      case (x @ QuadLeaf(_, _), y @ QuadBranch(_, _, _, _, _)) =>
-        x + join(y)
-
-      case (x @ QuadBranch(_, _, _ , _, _), y @ QuadLeaf(_, _)) =>
-        join(x) + y
-
-      case (x @ QuadBranch(_, _, _ , _, _), y @ QuadBranch(_, _, _ , _, _)) =>
-        join(x) + join(y)
-    }
-
   def fetchElementAt(quadTree: QuadTree, gridPoint: GridPoint): Option[MapElement] =
-    if(quadTree.bounds.isPointWithinBounds(gridPoint)) {
-      quadTree match {
-        case QuadLeaf(_, values) =>
-          values.find(p => p.gridPoint === gridPoint)
-
-        case QuadBranch(_, a, b, c, d) =>
-          List(
-            a.fetchElementAt(gridPoint),
-            b.fetchElementAt(gridPoint),
-            c.fetchElementAt(gridPoint),
-            d.fetchElementAt(gridPoint)
-          ).sequence
-            .map(l => l.foldLeft(MapElement.identity)(_ + _))
-      }
-    } else None
-
-  def insertElementAt(quadTree: QuadTree, element: MapElement): QuadTree = {
     quadTree match {
-      case l @ QuadLeaf(_, _) if l.bounds.isPointWithinBounds(element.gridPoint) =>
-        l.copy(values = element :: l.values)
+      case QuadEmpty(bounds) if bounds.isPointWithinBounds(gridPoint) =>
+        None
 
-      case l @ QuadLeaf(_, _) =>
+      case QuadBranch(bounds, a, b, c, d) if bounds.isPointWithinBounds(gridPoint) =>
+        List(
+          a.fetchElementAt(gridPoint),
+          b.fetchElementAt(gridPoint),
+          c.fetchElementAt(gridPoint),
+          d.fetchElementAt(gridPoint)
+        ).find(p => p.isDefined).flatten
+
+      case QuadLeaf(bounds, value) if bounds.isPointWithinBounds(gridPoint) =>
+        Some(value)
+
+      case _ =>
+        None
+    }
+
+  def insertElementAt(quadTree: QuadTree, element: MapElement): QuadTree =
+    quadTree match {
+      case l @ QuadLeaf(bounds, _) if bounds.isPointWithinBounds(element.gridPoint) =>
+        l.copy(value = element)
+
+      case l: QuadLeaf =>
         l
+
+      case QuadBranch(bounds, a, b, c, d) if bounds.isPointWithinBounds(element.gridPoint) =>
+        QuadBranch(
+          bounds,
+          a.insertElement(element),
+          b.insertElement(element),
+          c.insertElement(element),
+          d.insertElement(element)
+        )
+
+      case b: QuadBranch =>
+        b
+
+      case QuadEmpty(bounds) if bounds.isOneUnitSquare =>
+        QuadLeaf(bounds, element)
+
+      case QuadEmpty(bounds) if bounds.isPointWithinBounds(element.gridPoint) =>
+        println("split bounds: " + bounds)
+        QuadBranch.fromBounds(bounds).insertElement(element)
+
+      case e: QuadEmpty =>
+        e
+    }
+
+  def renderAsString(quadTree: QuadTree): String =
+    renderAsStringWithIndent(quadTree, "")
+
+  def renderAsStringWithIndent(quadTree: QuadTree, indent: String): String = {
+    quadTree match {
+      case QuadEmpty(bounds) =>
+        indent + s"Empty [${bounds.renderAsString}]"
+
+      case QuadLeaf(bounds, value) =>
+        indent + s"Leaf [${bounds.renderAsString}] - ${value.renderAsString}"
 
       case QuadBranch(bounds, a, b, c, d) =>
-        QuadBranch(bounds, a.insertElement(element), b.insertElement(element), c.insertElement(element), d.insertElement(element))
+        s"""${indent}Branch [${bounds.renderAsString}]
+           |${renderAsStringWithIndent(a, indent + "  ")}
+           |${renderAsStringWithIndent(b, indent + "  ")}
+           |${renderAsStringWithIndent(c, indent + "  ")}
+           |${renderAsStringWithIndent(d, indent + "  ")}""".stripMargin
     }
   }
 
 }
 
-case class QuadBounds(x: Int, y: Int, width: Int, height: Int) {
+trait QuadBounds {
+  val x: Int
+  val y: Int
+  val width: Int
+  val height: Int
 
-  val left: Int = x
-  val top: Int = y
-  val right: Int = x + width
-  val bottom: Int = y + height
+  def left: Int = x
+  def top: Int = y
+  def right: Int = x + width
+  def bottom: Int = y + height
 
-  def +(other: QuadBounds): QuadBounds =
-    QuadBounds.append(this, other)
+  def isOneUnitSquare: Boolean =
+    width == 1 && height == 1
+
+  def subdivide: (QuadBounds, QuadBounds, QuadBounds, QuadBounds) =
+    QuadBounds.subdivide(this)
 
   def isPointWithinBounds(gridPoint: GridPoint): Boolean =
     QuadBounds.pointWithinBounds(this, gridPoint)
 
+  def renderAsString: String =
+    s"""($x, $y, $width, $height)"""
+
+  def ===(other: QuadBounds): Boolean =
+    QuadBounds.equals(this, other)
+
+  override def toString: String =
+    s"""QuadBounds($x, $y, $width, $height)"""
+
 }
+
 object QuadBounds {
 
-  def identity: QuadBounds =
-    QuadBounds(0, 0, 0, 0)
-
-  def append(a: QuadBounds, b: QuadBounds): QuadBounds = {
-    val left = if (a.x < b.x) a.x else b.x
-    val top = if (a.y < b.y) a.y else b.y
-
-    QuadBounds(
-      left,
-      top,
-      if (a.right > b.right) a.right - left else b.right - left,
-      if (a.bottom > b.bottom) a.bottom - top else b.bottom - top
+  def apply(_x: Int, _y: Int, _width: Int, _height: Int): QuadBounds =
+    unsafeCreate(
+      if(_x < 0) 0 else _x,
+      if(_y < 0) 0 else _y,
+      if(_width < 2) 2 else _width,
+      if(_height < 2) 2 else _height
     )
-  }
+
+  def unsafeCreate(_x: Int, _y: Int, _width: Int, _height: Int): QuadBounds =
+    new QuadBounds {
+      val x: Int = _x
+      val y: Int = _y
+      val width: Int = if(_width < 1) 1 else _width
+      val height: Int = if(_height < 1) 1 else _height
+    }
 
   def pointWithinBounds(quadBounds: QuadBounds, gridPoint: GridPoint): Boolean =
     gridPoint.x >= quadBounds.x &&
@@ -137,6 +169,28 @@ object QuadBounds {
       gridPoint.x <= quadBounds.x + quadBounds.width &&
       gridPoint.y <= quadBounds.y + quadBounds.height
 
+  def subdivide(quadBounds: QuadBounds): (QuadBounds, QuadBounds, QuadBounds, QuadBounds) =
+    (
+      unsafeCreate(quadBounds.x, quadBounds.y, quadBounds.width / 2, quadBounds.height / 2),
+      unsafeCreate(quadBounds.x + (quadBounds.width / 2), quadBounds.y, quadBounds.width - (quadBounds.width / 2), quadBounds.height / 2),
+      unsafeCreate(quadBounds.x, quadBounds.y + (quadBounds.height / 2), quadBounds.width / 2, quadBounds.height - (quadBounds.height / 2)),
+      unsafeCreate(quadBounds.x + (quadBounds.width / 2), quadBounds.y + (quadBounds.height / 2), quadBounds.width - (quadBounds.width / 2), quadBounds.height - (quadBounds.height / 2))
+    )
+
+  def combine(head: QuadBounds, tail: List[QuadBounds]): QuadBounds =
+    tail.foldLeft(head)((a, b) => append(a, b))
+
+  def append(a: QuadBounds, b: QuadBounds): QuadBounds = {
+    val l = Math.min(a.left, b.left)
+    val t = Math.min(a.top, b.top)
+    val w = Math.max(a.right, b.right) - l
+    val h = Math.max(a.bottom, b.bottom) - t
+
+    unsafeCreate(l, t, w, h)
+  }
+
+  def equals(a: QuadBounds, b: QuadBounds): Boolean =
+    a.x == b.x && a.y == b.y && a.width == b.width && a.height == b.height
 }
 
 case class GridPoint(x: Int, y: Int) {
@@ -165,35 +219,20 @@ object GridPoint {
 }
 
 sealed trait MapElement {
+
   val gridPoint: GridPoint
 
-  def +(other: MapElement): MapElement =
-    MapElement.append(this, other)
+  def renderAsString: String
 
 }
 object MapElement {
-  case class Empty(gridPoint: GridPoint) extends MapElement
 
-  case class Wall(gridPoint: GridPoint) extends MapElement
+  case class Wall(gridPoint: GridPoint) extends MapElement {
+    def renderAsString: String = "Wall"
+  }
 
-  case class Apple(gridPoint: GridPoint) extends MapElement
-
-  def identity: MapElement =
-    Empty(GridPoint.identity)
-
-  def append(a: MapElement, b: MapElement): MapElement =
-    (a, b) match {
-      case (Empty(_), Empty(_)) =>
-        a
-
-      case (_, Empty(_)) =>
-        a
-
-      case (Empty(_), _) =>
-        b
-
-      case _ =>
-        a
-    }
+  case class Apple(gridPoint: GridPoint) extends MapElement {
+    def renderAsString: String = "Apple"
+  }
 
 }
