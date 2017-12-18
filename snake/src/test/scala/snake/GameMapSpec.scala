@@ -36,36 +36,31 @@ class GameMapSpec extends FunSpec with Matchers {
 
     it("should be able to insert an element at a given position") {
 
-      val tree = QuadEmpty(QuadBounds(0, 0, 10, 10))
+      val tree = QuadTree.empty(16)
         .insertElement(MapElement.Apple(GridPoint(9, 2)))
-//        .insertElement(MapElement.Wall(GridPoint(0, 0)))
-//        .insertElement(MapElement.Wall(GridPoint(10, 10)))
-//        .insertElement(MapElement.Apple(GridPoint(20, 50)))
+        .insertElement(MapElement.Wall(GridPoint(0, 0)))
+        .insertElement(MapElement.Wall(GridPoint(10, 10)))
+        .insertElement(MapElement.Apple(GridPoint(20, 50)))
 
-      println(tree.renderAsString)
+      withClue("[9, 2]") {
+        tree.fetchElementAt(GridPoint(9, 2)) shouldEqual Some(MapElement.Apple(GridPoint(9, 2)))
+      }
 
-      fail("on purpose")
+      withClue("Should be missing at [1, 2]") {
+        tree.fetchElementAt(GridPoint(1, 2)) shouldEqual None
+      }
 
-//      withClue("[9, 2]") {
-//        tree.fetchElementAt(GridPoint(9, 2)) shouldEqual Some(MapElement.Apple(GridPoint(9, 2)))
-//      }
-//
-//      withClue("[1, 2]") {
-//        println(tree.fetchElementAt(GridPoint(1, 2)))
-//        tree.fetchElementAt(GridPoint(1, 2)) shouldEqual None
-//      }
-//
-//      withClue("[0, 0]") {
-//        tree.fetchElementAt(GridPoint(0, 0)) shouldEqual Some(MapElement.Wall(GridPoint(0, 0)))
-//      }
-//
-//      withClue("[10, 10]") {
-//        tree.fetchElementAt(GridPoint(10, 10)) shouldEqual Some(MapElement.Wall(GridPoint(10, 10)))
-//      }
-//
-//      withClue("[20, 50]") {
-//        tree.fetchElementAt(GridPoint(20, 50)) shouldEqual None
-//      }
+      withClue("[0, 0]") {
+        tree.fetchElementAt(GridPoint(0, 0)) shouldEqual Some(MapElement.Wall(GridPoint(0, 0)))
+      }
+
+      withClue("[10, 10]") {
+        tree.fetchElementAt(GridPoint(10, 10)) shouldEqual Some(MapElement.Wall(GridPoint(10, 10)))
+      }
+
+      withClue("Outside of area at [20, 50]") {
+        tree.fetchElementAt(GridPoint(20, 50)) shouldEqual None
+      }
 
     }
 

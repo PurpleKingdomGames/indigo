@@ -22,6 +22,9 @@ sealed trait QuadTree {
 }
 object QuadTree {
 
+  def empty(sizeAsPowerOf2: Int): QuadTree =
+    QuadEmpty(QuadBounds.apply(sizeAsPowerOf2))
+
   case class QuadBranch(bounds: QuadBounds, a: QuadTree, b: QuadTree, c: QuadTree, d: QuadTree) extends QuadTree
   case class QuadLeaf(bounds: QuadBounds, value: MapElement) extends QuadTree
   case class QuadEmpty(bounds: QuadBounds) extends QuadTree
@@ -81,11 +84,10 @@ object QuadTree {
       case b: QuadBranch =>
         b
 
-      case QuadEmpty(bounds) if bounds.isOneUnitSquare =>
+      case QuadEmpty(bounds) if bounds.isPointWithinBounds(element.gridPoint) && bounds.isOneUnitSquare =>
         QuadLeaf(bounds, element)
 
       case QuadEmpty(bounds) if bounds.isPointWithinBounds(element.gridPoint) =>
-        println("split bounds: " + bounds)
         QuadBranch.fromBounds(bounds).insertElement(element)
 
       case e: QuadEmpty =>
@@ -147,6 +149,14 @@ trait QuadBounds {
 
 object QuadBounds {
 
+  def apply(powerOf2: Int): QuadBounds =
+    unsafeCreate(
+      0,
+      0,
+      if(powerOf2 < 2) 2 else powerOf2,
+      if(powerOf2 < 2) 2 else powerOf2
+    )
+
   def apply(_x: Int, _y: Int, _width: Int, _height: Int): QuadBounds =
     unsafeCreate(
       if(_x < 0) 0 else _x,
@@ -164,10 +174,10 @@ object QuadBounds {
     }
 
   def pointWithinBounds(quadBounds: QuadBounds, gridPoint: GridPoint): Boolean =
-    gridPoint.x >= quadBounds.x &&
-      gridPoint.y >= quadBounds.y &&
-      gridPoint.x <= quadBounds.x + quadBounds.width &&
-      gridPoint.y <= quadBounds.y + quadBounds.height
+    gridPoint.x >= quadBounds.left &&
+      gridPoint.y >= quadBounds.top &&
+      gridPoint.x < quadBounds.right &&
+      gridPoint.y < quadBounds.bottom
 
   def subdivide(quadBounds: QuadBounds): (QuadBounds, QuadBounds, QuadBounds, QuadBounds) =
     (
