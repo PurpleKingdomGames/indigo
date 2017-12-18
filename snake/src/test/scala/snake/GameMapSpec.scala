@@ -1,5 +1,6 @@
 package snake
 
+import org.scalactic.Equality
 import org.scalatest.{FunSpec, Matchers}
 import snake.QuadTree.{QuadBranch, QuadEmpty, QuadLeaf}
 
@@ -64,11 +65,69 @@ class GameMapSpec extends FunSpec with Matchers {
 
     }
 
+    it("should be able to remove an element from a tree") {
+
+      val gridPoint = GridPoint(9, 2)
+
+      val tree = QuadTree.empty(16)
+        .insertElement(MapElement.Apple(gridPoint))
+
+      tree.fetchElementAt(gridPoint) shouldEqual Some(MapElement.Apple(gridPoint))
+
+      val tree2 = tree.removeElement(gridPoint)
+
+      tree2.fetchElementAt(gridPoint) shouldEqual None
+
+    }
+
+    // Needed because of the funky QuadBounds type.
+    implicit val eq: Equality[QuadTree] =
+      new Equality[QuadTree] {
+        def areEqual(a: QuadTree, b: Any): Boolean =
+          (a, b) match {
+            case (QuadEmpty(b1), QuadEmpty(b2)) if b1 === b2 =>
+              true
+
+            case (QuadLeaf(b1, v1), QuadLeaf(b2, v2)) if b1 === b2 && v1 == v2 =>
+              true
+
+            case (QuadBranch(bounds1, a1, b1, c1, d1), QuadBranch(bounds2, a2, b2, c2, d2)) =>
+              bounds1 === bounds2 && areEqual(a1, a2) && areEqual(b1, b2) && areEqual(c1, c2) && areEqual(d1, d2)
+
+            case _ =>
+              false
+          }
+      }
+
+    it("should be able to prune an existing tree to simplify the structure") {
+
+      val gridPoint = GridPoint(9, 2)
+
+      val tree = QuadTree.empty(16)
+        .insertElement(MapElement.Apple(gridPoint))
+        .removeElement(gridPoint)
+        .prune
+
+      tree shouldEqual QuadTree.empty(16)
+
+    }
+
+    it("should not prune an already optimal tree") {
+
+      val gridPoint = GridPoint(9, 2)
+
+      val tree = QuadTree.empty(16)
+        .insertElement(MapElement.Apple(gridPoint))
+
+      tree.prune shouldEqual tree
+
+    }
+
   }
 
   describe("QuadBounds") {
 
-    it("should be about to check a point is within the bounds") {
+    it("should be able to check a point is within the bounds") {
 
       val b = QuadBounds(0, 0, 10, 10)
 

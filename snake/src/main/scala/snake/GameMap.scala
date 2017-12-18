@@ -10,11 +10,19 @@ sealed trait QuadTree {
 
   val bounds: QuadBounds
 
+  def isEmpty: Boolean
+
   def fetchElementAt(gridPoint: GridPoint): Option[MapElement] =
     QuadTree.fetchElementAt(this, gridPoint)
 
   def insertElement(element: MapElement): QuadTree =
     QuadTree.insertElementAt(this, element)
+
+  def removeElement(gridPoint: GridPoint): QuadTree =
+    QuadTree.removeElement(this, gridPoint)
+
+  def prune: QuadTree =
+    QuadTree.prune(this)
 
   def renderAsString: String =
     QuadTree.renderAsString(this)
@@ -25,9 +33,17 @@ object QuadTree {
   def empty(sizeAsPowerOf2: Int): QuadTree =
     QuadEmpty(QuadBounds.apply(sizeAsPowerOf2))
 
-  case class QuadBranch(bounds: QuadBounds, a: QuadTree, b: QuadTree, c: QuadTree, d: QuadTree) extends QuadTree
-  case class QuadLeaf(bounds: QuadBounds, value: MapElement) extends QuadTree
-  case class QuadEmpty(bounds: QuadBounds) extends QuadTree
+  //TODO: This needs to be recursive. if a is branch, then do another empty check etc.
+  case class QuadBranch(bounds: QuadBounds, a: QuadTree, b: QuadTree, c: QuadTree, d: QuadTree) extends QuadTree {
+    def isEmpty: Boolean =
+      a.isEmpty && b.isEmpty && c.isEmpty && d.isEmpty
+  }
+  case class QuadLeaf(bounds: QuadBounds, value: MapElement) extends QuadTree {
+    def isEmpty: Boolean = false
+  }
+  case class QuadEmpty(bounds: QuadBounds) extends QuadTree {
+    def isEmpty: Boolean = true
+  }
 
   object QuadBranch {
     def fromBounds(bounds: QuadBounds): QuadBranch =
@@ -92,6 +108,39 @@ object QuadTree {
 
       case e: QuadEmpty =>
         e
+    }
+
+  def removeElement(quadTree: QuadTree, gridPoint: GridPoint): QuadTree =
+    quadTree match {
+      case QuadLeaf(bounds, _) if bounds.isPointWithinBounds(gridPoint) =>
+        QuadEmpty(bounds)
+
+      case QuadBranch(bounds, a, b, c, d) if bounds.isPointWithinBounds(gridPoint) =>
+        QuadBranch(
+          bounds,
+          a.removeElement(gridPoint),
+          b.removeElement(gridPoint),
+          c.removeElement(gridPoint),
+          d.removeElement(gridPoint)
+        )
+
+      case tree =>
+        tree
+    }
+
+  def prune(quadTree: QuadTree): QuadTree =
+    quadTree match {
+      case l: QuadLeaf =>
+        l
+
+      case e: QuadEmpty =>
+        e
+
+      case b: QuadBranch if b.isEmpty =>
+        QuadEmpty(b.bounds)
+
+      case QuadBranch(bounds, a, b, c, d) =>
+        QuadBranch(bounds, a.prune, b.prune, c.prune, d.prune)
     }
 
   def renderAsString(quadTree: QuadTree): String =
