@@ -1,10 +1,41 @@
 package snake
 
+import scala.language.implicitConversions
+import scala.util.Random
+
 /***
 GameMap is a sparse tree of MapElements organised as a QuadTree where each
 tree leaf may only contain a single element.
  */
-case class GameMap(quadTree: QuadTree, gridSize: GridSize)
+case class GameMap(quadTree: QuadTree, gridSize: GridSize) {
+
+  def isEmpty: Boolean = quadTree.isEmpty
+
+  def fetchElementAt(gridPoint: GridPoint): Option[MapElement] =
+    quadTree.fetchElementAt(gridPoint)
+
+  def insertElement(element: MapElement): GameMap =
+    this.copy(quadTree = quadTree.insertElement(element))
+
+  def removeElement(gridPoint: GridPoint): GameMap =
+    this.copy(quadTree = quadTree.removeElement(gridPoint))
+
+  def optimise: GameMap =
+    this.copy(quadTree = quadTree.prune)
+
+  def renderAsString: String =
+    s"""GameMap:
+       |${quadTree.renderAsString}
+     """.stripMargin
+
+}
+
+object GameMap {
+
+  def apply(gridSize: GridSize): GameMap =
+    GameMap(QuadTree.empty(gridSize), gridSize)
+
+}
 
 sealed trait QuadTree {
 
@@ -32,6 +63,9 @@ object QuadTree {
 
   def empty(sizeAsPowerOf2: Int): QuadTree =
     QuadEmpty(QuadBounds.apply(sizeAsPowerOf2))
+
+  def empty(gridSize: GridSize): QuadTree =
+    QuadEmpty(QuadBounds.apply(gridSize.asPowerOf2))
 
   //TODO: This needs to be recursive. if a is branch, then do another empty check etc.
   case class QuadBranch(bounds: QuadBounds, a: QuadTree, b: QuadTree, c: QuadTree, d: QuadTree) extends QuadTree {
@@ -263,6 +297,9 @@ case class GridPoint(x: Int, y: Int) {
 }
 object GridPoint {
 
+  implicit def tupleToGridPoint(t: (Int, Int)): GridPoint =
+    GridPoint(t._1, t._2)
+
   def apply: GridPoint =
     identity
 
@@ -287,11 +324,42 @@ sealed trait MapElement {
 object MapElement {
 
   case class Wall(gridPoint: GridPoint) extends MapElement {
+    def pure[A <: MapElement]: GridPoint => Wall = (gridPoint: GridPoint) => Wall.apply(gridPoint)
     def renderAsString: String = "Wall"
   }
 
   case class Apple(gridPoint: GridPoint) extends MapElement {
+    def pure[A <: MapElement]: GridPoint => Apple = (gridPoint: GridPoint) => Apple.apply(gridPoint)
     def renderAsString: String = "Apple"
+  }
+
+  object Apple {
+    def spawn(gridSize: GridSize): Apple = {
+      def rand(max: Int, border: Int): Int =
+        ((max - (border * 2)) * Random.nextFloat()).toInt + border
+
+      Apple(GridPoint(rand(gridSize.columns, 1), rand(gridSize.rows, 1)))
+    }
+  }
+
+  case class Player1Start(gridPoint: GridPoint) extends MapElement {
+    def pure[A <: MapElement]: GridPoint => Player1Start = (gridPoint: GridPoint) => Player1Start.apply(gridPoint)
+    def renderAsString: String = "Player 1 Start"
+  }
+
+  case class Player2Start(gridPoint: GridPoint) extends MapElement {
+    def pure[A <: MapElement]: GridPoint => Player2Start = (gridPoint: GridPoint) => Player2Start.apply(gridPoint)
+    def renderAsString: String = "Player 2 Start"
+  }
+
+  case class Player3Start(gridPoint: GridPoint) extends MapElement {
+    def pure[A <: MapElement]: GridPoint => Player3Start = (gridPoint: GridPoint) => Player3Start.apply(gridPoint)
+    def renderAsString: String = "Player 3 Start"
+  }
+
+  case class Player4Start(gridPoint: GridPoint) extends MapElement {
+    def pure[A <: MapElement]: GridPoint => Player4Start = (gridPoint: GridPoint) => Player4Start.apply(gridPoint)
+    def renderAsString: String = "Player 4 Start"
   }
 
 }

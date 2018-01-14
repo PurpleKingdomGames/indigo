@@ -31,13 +31,13 @@ class SnakeSpec extends FunSpec with Matchers {
 
     it("should be able to turn left") {
 
-      val s = Snake(SnakePoint.identity).turnLeft
+      val s = Snake(SnakePoint(1, 1)).turnLeft
 
       s.direction shouldEqual SnakeDirection.Left
 
       val s2 = tick(s, 1)
 
-      s2.start shouldEqual SnakePoint(-1, 0)
+      s2.start shouldEqual SnakePoint(0, 1)
 
     }
 
@@ -54,10 +54,13 @@ class SnakeSpec extends FunSpec with Matchers {
     }
 
     it("should wrap the world") {
+      withClue("up and over") {
+        tick(Snake(SnakePoint(0, 5)), 5).start shouldEqual SnakePoint(0, 0)
+      }
 
-      val s = tick(Snake(SnakePoint(0, 5)), 5)
-
-      s.start shouldEqual SnakePoint(0, 0)
+      withClue("down and out") {
+        tick(Snake(SnakePoint(5, 0)).turnLeft.turnLeft, 1).start shouldEqual SnakePoint(5, 10)
+      }
     }
 
     it("should be able to move") {

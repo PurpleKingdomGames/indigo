@@ -76,6 +76,8 @@ lazy val indigo =
     .enablePlugins(ScalaJSPlugin)
     .dependsOn(shared)
 
+//scalaJSLinkerConfig in Test ~= { _.withOptimizer(false) }
+
 // Games
 lazy val snake =
   project
@@ -88,7 +90,8 @@ lazy val snake =
       title := "Snake",
       gameAssetsDirectory := "assets",
       scalaJSUseMainModuleInitializer := true,
-      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
+      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test",
+      scalaJSLinkerConfig in Test ~= { _.withOptimizer(false) }
     )
 
 lazy val sandbox =

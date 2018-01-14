@@ -20,8 +20,8 @@ object SnakeView {
 
   def gameLayer(currentState: SnakeModel, snakeAsset: Graphic[SnakeEvent]): SceneGraphGameLayer[SnakeEvent] =
     SceneGraphGameLayer()
-      .addChild(currentState.staticAssets.outerWalls)
-      .addChild(currentState.staticAssets.apple.moveTo(coordsToGridPoint(currentState.apple.x, currentState.apple.y, currentState.gridSize)))
-      .addChildren(currentState.snake.givePath.map(pt => snakeAsset.moveTo(coordsToGridPoint(pt.x, pt.y, currentState.gridSize))))
+//      .addChild(currentState.staticAssets.outerWalls)
+//      .addChild(currentState.staticAssets.apple.moveTo(coordsToGridPoint(currentState.apple.x, currentState.apple.y, currentState.gridSize)))
+      .addChildren(currentState.snake.givePath.map(pt => snakeAsset.moveTo(coordsToGridPoint(pt.x, pt.y, currentState.gameMap.gridSize))))
 
 }

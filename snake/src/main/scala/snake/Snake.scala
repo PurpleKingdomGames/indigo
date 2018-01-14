@@ -5,7 +5,22 @@ import snake.SnakeDirection.Up
 import snake.SnakeStatus.{Alive, Dead}
 import snake.TurnDirection.{TurnLeft, TurnRight}
 
-case class GridSize(columns: Int, rows: Int, gridSquareSize: Int)
+case class GridSize(columns: Int, rows: Int, gridSquareSize: Int) {
+  def asPowerOf2: Int =
+    GridSize.asPowerOf2(this)
+
+  val centre: GridPoint =
+    GridPoint(columns / 2, rows / 2)
+}
+
+object GridSize {
+  def asPowerOf2(gridSize: GridSize): Int = {
+    def rec(maxLength: Int, size: Int): Int =
+      if(size >= maxLength) size else rec(maxLength, size * 2)
+
+    rec(if(gridSize.columns > gridSize.rows) gridSize.columns else gridSize.rows, 2)
+  }
+}
 
 sealed trait CollisionCheckOutcome {
   val snakePoint: SnakePoint
@@ -136,8 +151,8 @@ object SnakePoint {
 
   def wrap(snakePoint: SnakePoint, gridSize: GridSize): SnakePoint =
     snakePoint.copy(
-      x = snakePoint.x % gridSize.columns,
-      y = snakePoint.y % gridSize.rows
+      x = if(snakePoint.x < 0) gridSize.columns else snakePoint.x % gridSize.columns,
+      y = if(snakePoint.y < 0) gridSize.rows else snakePoint.y % gridSize.rows
     )
 
 }
