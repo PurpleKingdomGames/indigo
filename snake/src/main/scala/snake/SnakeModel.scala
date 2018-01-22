@@ -9,7 +9,7 @@ object SnakeModel {
     SnakeModel(
       running = true,
       staticAssets = startupData.staticAssets,
-      snake = Snake(8, 8).grow.grow,
+      player1 = Player(Snake(8, 8).grow.grow, 100, 0),
       gameMap = genLevel(startupData.gridSize)
     )
 
@@ -42,32 +42,21 @@ object SnakeModel {
         CollisionCheckOutcome.NoCollision(pt)
     }
 
-  def updateModel(state: SnakeModel): GameEvent => SnakeModel = {
+  def updateModel(gameTime: GameTime, state: SnakeModel): GameEvent => SnakeModel = {
     case FrameTick =>
-      state.snake.update(state.gameMap.gridSize, hitTest(state.snake.givePath)) match {
-//        case (s, Crashed(_)) =>
-//          state.copy(
-//            running = false,
-//            snake = s
-//          )
-//
-//        case (s, PickUp(_)) =>
-//          state.copy(
-//            snake = s,
-//            apple = Apple.spawn(state.gridSize)
-//          )
-
-        case (s, _) =>
-          state.copy(
-            snake = s
-          )
-      }
+      state.copy(
+        player1 = state.player1.update(gameTime, state.gameMap.gridSize, hitTest(state.player1.snake.givePath))
+      )
 
     case KeyDown(Keys.LEFT_ARROW) =>
-      state.copy(snake = state.snake.turnLeft)
+      state.copy(
+        player1 = state.player1.turnLeft
+      )
 
     case KeyDown(Keys.RIGHT_ARROW) =>
-      state.copy(snake = state.snake.turnRight)
+      state.copy(
+        player1 = state.player1.turnRight
+      )
 
     case _ =>
       state
@@ -75,4 +64,38 @@ object SnakeModel {
 
 }
 
-case class SnakeModel(running: Boolean, staticAssets: StaticAssets, snake: Snake, gameMap: GameMap)
+case class SnakeModel(running: Boolean, staticAssets: StaticAssets, player1: Player, gameMap: GameMap)
+
+case class Player(snake: Snake, tickDelay: Int, lastUpdated: Double) {
+
+  def update(gameTime: GameTime, gridSize: GridSize, collisionCheck: SnakePoint => CollisionCheckOutcome): Player =
+   snake.update(gridSize, collisionCheck) match {
+      //        case (s, Crashed(_)) =>
+      //          state.copy(
+      //            running = false,
+      //            snake = s
+      //          )
+      //
+      //        case (s, PickUp(_)) =>
+      //          state.copy(
+      //            snake = s,
+      //            apple = Apple.spawn(state.gridSize)
+      //          )
+
+      case (s, _) if gameTime.running >= lastUpdated + tickDelay =>
+        this.copy(
+          snake = s,
+          lastUpdated = gameTime.running
+        )
+
+      case (_, _) =>
+        this
+    }
+
+  def turnLeft: Player =
+    this.copy(snake = snake.turnLeft)
+
+  def turnRight: Player =
+    this.copy(snake = snake.turnRight)
+
+}

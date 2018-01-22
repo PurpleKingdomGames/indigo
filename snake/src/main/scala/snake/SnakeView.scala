@@ -22,6 +22,6 @@ object SnakeView {
     SceneGraphGameLayer()
 //      .addChild(currentState.staticAssets.outerWalls)
 //      .addChild(currentState.staticAssets.apple.moveTo(coordsToGridPoint(currentState.apple.x, currentState.apple.y, currentState.gridSize)))
-      .addChildren(currentState.snake.givePath.map(pt => snakeAsset.moveTo(coordsToGridPoint(pt.x, pt.y, currentState.gameMap.gridSize))))
+      .addChildren(currentState.player1.snake.givePath.map(pt => snakeAsset.moveTo(coordsToGridPoint(pt.x, pt.y, currentState.gameMap.gridSize))))
 
 }
