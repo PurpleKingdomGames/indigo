@@ -11,6 +11,9 @@ case class GameMap(quadTree: QuadTree, gridSize: GridSize) {
 
   def isEmpty: Boolean = quadTree.isEmpty
 
+  def fetchElementAt(x: Int, y: Int): Option[MapElement] =
+    quadTree.fetchElementAt(GridPoint(x, y))
+
   def fetchElementAt(gridPoint: GridPoint): Option[MapElement] =
     quadTree.fetchElementAt(gridPoint)
 
