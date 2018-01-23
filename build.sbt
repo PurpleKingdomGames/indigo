@@ -90,8 +90,7 @@ lazy val snake =
       title := "Snake",
       gameAssetsDirectory := "assets",
       scalaJSUseMainModuleInitializer := true,
-      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test",
-      scalaJSLinkerConfig in Test ~= { _.withOptimizer(false) }
+      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
     )
 
 lazy val sandbox =
