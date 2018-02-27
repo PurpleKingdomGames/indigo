@@ -6,6 +6,9 @@ import snake.SnakeStatus.{Alive, Dead}
 import snake.TurnDirection.{TurnLeft, TurnRight}
 
 case class GridSize(columns: Int, rows: Int, gridSquareSize: Int) {
+  val width: Int = columns
+  val height: Int = rows
+
   def asPowerOf2: Int =
     GridSize.asPowerOf2(this)
 
@@ -16,13 +19,13 @@ case class GridSize(columns: Int, rows: Int, gridSquareSize: Int) {
     GridPoint(0, 0)
 
   val topRight: GridPoint =
-    GridPoint(0, columns)
+    GridPoint(width - 1, 0)
 
   val bottomLeft: GridPoint =
-    GridPoint(rows, 0)
+    GridPoint(0, height - 1)
 
   val bottomRight: GridPoint =
-    GridPoint(rows, columns)
+    GridPoint(width - 1, height - 1)
 }
 
 object GridSize {
@@ -30,7 +33,7 @@ object GridSize {
     def rec(maxLength: Int, size: Int): Int =
       if(size >= maxLength) size else rec(maxLength, size * 2)
 
-    rec(if(gridSize.columns > gridSize.rows) gridSize.columns else gridSize.rows, 2)
+    rec(if(gridSize.width >= gridSize.height) gridSize.width else gridSize.height, 2)
   }
 }
 

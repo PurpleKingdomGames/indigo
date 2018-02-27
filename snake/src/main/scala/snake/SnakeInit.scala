@@ -1,8 +1,8 @@
 package snake
 
-import com.purplekingdomgames.indigo.gameengine.{Startup, ToReportable}
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphNodeBranch}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.Graphic
+import com.purplekingdomgames.indigo.gameengine.{Startup, ToReportable}
 
 object SnakeInit {
 
@@ -19,13 +19,7 @@ object SnakeInit {
 //        snakeBody = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(16, 16, 16, 16),
 //        snakeTail = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(32, 16, 16, 16),
         snakeAlive = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(48, 48, 16, 16),
-        snakeDead = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(32, 48, 16, 16),
-        outerWalls = SceneGraphNodeBranch( //TODO: Import map.
-          (0 to 16).toList.map(i => wall.moveTo(i * 16, 0)) ++
-            (0 to 16).toList.map(i => wall.moveTo(i * 16, gridSize.rows * 16 - 16)) ++
-            (1 to 15).toList.map(i => wall.moveTo(0, i * 16)) ++
-            (1 to 15).toList.map(i => wall.moveTo(gridSize.columns * 16 - 16, i * 16))
-        )
+        snakeDead = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(32, 48, 16, 16)
       )
     )
   }
@@ -34,7 +28,7 @@ object SnakeInit {
 
 case class SnakeStartupData(gridSize: GridSize, staticAssets: StaticAssets)
 
-case class StaticAssets(wall: Graphic[SnakeEvent], apple: Graphic[SnakeEvent], snakeAlive: Graphic[SnakeEvent], snakeDead: Graphic[SnakeEvent], outerWalls: SceneGraphNodeBranch[SnakeEvent])
+case class StaticAssets(wall: Graphic[SnakeEvent], apple: Graphic[SnakeEvent], snakeAlive: Graphic[SnakeEvent], snakeDead: Graphic[SnakeEvent])
 
 case class ErrorReport(errors: List[String])
 object ErrorReport {

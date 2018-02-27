@@ -22,7 +22,7 @@ object SnakeView {
     SceneGraphGameLayer()
 //      .addChild(currentState.staticAssets.apple.moveTo(coordsToGridPoint(currentState.apple.x, currentState.apple.y, currentState.gridSize)))
       .addChildren(currentState.player1.snake.givePath.map(pt => snakeAsset.moveTo(coordsToGridPoint(pt.x, pt.y, currentState.gameMap.gridSize))))
-      .addChildren {
+      .addChildren { //TODO: Could be statically pregenerated / loaded from Tiled map
         currentState.gameMap.findWalls.map(w => currentState.staticAssets.wall.moveTo(coordsToGridPoint(w.gridPoint.x, w.gridPoint.y, currentState.gameMap.gridSize)))
       }
 
