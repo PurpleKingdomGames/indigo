@@ -1,5 +1,8 @@
 package snake
 
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
+import snake.MapElement.Wall
+
 import scala.language.implicitConversions
 import scala.util.Random
 
@@ -25,6 +28,12 @@ case class GameMap(quadTree: QuadTree, gridSize: GridSize) {
 
   def removeElement(gridPoint: GridPoint): GameMap =
     this.copy(quadTree = quadTree.removeElement(gridPoint))
+
+  def asElementList: List[MapElement] =
+    quadTree.asElementList
+
+  def findWalls: List[Wall] =
+    quadTree.findWalls
 
   def optimise: GameMap =
     this.copy(quadTree = quadTree.prune)
@@ -57,6 +66,18 @@ sealed trait QuadTree {
 
   def removeElement(gridPoint: GridPoint): QuadTree =
     QuadTree.removeElement(this, gridPoint)
+
+  def asElementList: List[MapElement] =
+    QuadTree.asElementList(this)
+
+  def findWalls: List[Wall] =
+    this.asElementList.flatMap {
+      case w: Wall =>
+        List(w)
+
+      case _ =>
+        Nil
+    }
 
   def prune: QuadTree =
     QuadTree.prune(this)
@@ -167,6 +188,22 @@ object QuadTree {
       case tree =>
         tree
     }
+
+  def asElementList(quadTree: QuadTree): List[MapElement] = {
+    quadTree match {
+      case l: QuadLeaf =>
+        List(l.value)
+
+      case _: QuadEmpty =>
+        Nil
+
+      case b: QuadBranch if b.isEmpty =>
+        Nil
+
+      case QuadBranch(_, a, b, c, d) =>
+        asElementList(a) ++ asElementList(b) ++ asElementList(c) ++ asElementList(d)
+    }
+  }
 
   def prune(quadTree: QuadTree): QuadTree =
     quadTree match {
@@ -302,6 +339,9 @@ case class GridPoint(x: Int, y: Int) {
 
   def <=(other: GridPoint): Boolean =
     GridPoint.lessThanOrEqual(this, other)
+
+  def toPoint: Point =
+    Point(x, y)
 
 }
 object GridPoint {

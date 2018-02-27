@@ -21,6 +21,7 @@ object SnakeModel {
       .insertElements(rightEdgeWall(gridSize))
       .insertElements(bottomEdgeWall(gridSize))
       .insertElements(leftEdgeWall(gridSize))
+      .optimise
 
   private def topEdgeWall(gridSize: GridSize): List[Wall] =
     GridPoint.fillIncrementally(gridSize.topLeft, gridSize.topRight).map(Wall.apply)
