@@ -20,6 +20,9 @@ case class GameMap(quadTree: QuadTree, gridSize: GridSize) {
   def insertElement(element: MapElement): GameMap =
     this.copy(quadTree = quadTree.insertElement(element))
 
+  def insertElements(elements: List[MapElement]): GameMap =
+    elements.foldLeft(this)((map, elem) => map.insertElement(elem))
+
   def removeElement(gridPoint: GridPoint): GameMap =
     this.copy(quadTree = quadTree.removeElement(gridPoint))
 
@@ -297,6 +300,9 @@ case class GridPoint(x: Int, y: Int) {
   def +(other: GridPoint): GridPoint =
     GridPoint.append(this, other)
 
+  def <=(other: GridPoint): Boolean =
+    GridPoint.lessThanOrEqual(this, other)
+
 }
 object GridPoint {
 
@@ -314,6 +320,25 @@ object GridPoint {
 
   def append(a: GridPoint, b: GridPoint): GridPoint =
     GridPoint(a.x + b.x, a.y + b.y)
+
+  def lessThanOrEqual(a: GridPoint, b: GridPoint): Boolean =
+    a.x <= b.x && a.y <= b.y
+
+  def fillIncrementally(start: GridPoint, end: GridPoint): List[GridPoint] = {
+    def rec(last: GridPoint, dest: GridPoint, p: GridPoint => Boolean, acc: List[GridPoint]): List[GridPoint] = {
+      if(p(last)) acc
+      else {
+        val nextX: Int = if(last.x + 1 <= end.x) last.x + 1 else last.x
+        val nextY: Int = if(last.y + 1 <= end.y) last.y + 1 else last.y
+        val next: GridPoint = GridPoint(nextX, nextY)
+        rec(next, dest, p, acc :+ next)
+      }
+    }
+
+    if(start <= end) rec(start, end, (gp: GridPoint) => gp === end, List(start))
+    else rec(end, start, (gp: GridPoint) => gp === start, List(end))
+  }
+
 
 }
 

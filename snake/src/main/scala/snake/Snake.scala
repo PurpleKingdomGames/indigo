@@ -11,6 +11,18 @@ case class GridSize(columns: Int, rows: Int, gridSquareSize: Int) {
 
   val centre: GridPoint =
     GridPoint(columns / 2, rows / 2)
+
+  val topLeft: GridPoint =
+    GridPoint(0, 0)
+
+  val topRight: GridPoint =
+    GridPoint(0, columns)
+
+  val bottomLeft: GridPoint =
+    GridPoint(rows, 0)
+
+  val bottomRight: GridPoint =
+    GridPoint(rows, columns)
 }
 
 object GridSize {
