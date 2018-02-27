@@ -1,7 +1,7 @@
 package snake
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
-import snake.MapElement.Wall
+import snake.MapElement.{Apple, Wall}
 
 import scala.language.implicitConversions
 import scala.util.Random
@@ -29,11 +29,17 @@ case class GameMap(quadTree: QuadTree, gridSize: GridSize) {
   def removeElement(gridPoint: GridPoint): GameMap =
     this.copy(quadTree = quadTree.removeElement(gridPoint))
 
+  def findEmptySpace(not: List[GridPoint]): GridPoint =
+    quadTree.findEmptySpace(not)
+
   def asElementList: List[MapElement] =
     quadTree.asElementList
 
   def findWalls: List[Wall] =
     quadTree.findWalls
+
+  def findApples: List[Apple] =
+    quadTree.findApples
 
   def optimise: GameMap =
     this.copy(quadTree = quadTree.prune)
@@ -67,6 +73,9 @@ sealed trait QuadTree {
   def removeElement(gridPoint: GridPoint): QuadTree =
     QuadTree.removeElement(this, gridPoint)
 
+  def findEmptySpace(not: List[GridPoint]): GridPoint =
+    QuadTree.findEmptySpace(this, not)
+
   def asElementList: List[MapElement] =
     QuadTree.asElementList(this)
 
@@ -74,6 +83,15 @@ sealed trait QuadTree {
     this.asElementList.flatMap {
       case w: Wall =>
         List(w)
+
+      case _ =>
+        Nil
+    }
+
+  def findApples: List[Apple] =
+    this.asElementList.flatMap {
+      case a: Apple =>
+        List(a)
 
       case _ =>
         Nil
@@ -188,6 +206,26 @@ object QuadTree {
       case tree =>
         tree
     }
+
+  def findEmptySpace(quadTree: QuadTree, not: List[GridPoint]): GridPoint = {
+    def makeRandom: () => GridPoint = () =>
+      GridPoint.random(quadTree.bounds.width - 1, quadTree.bounds.height - 1) + GridPoint(1, 1)
+
+    def rec(pt: GridPoint): GridPoint = {
+      fetchElementAt(quadTree, pt) match {
+        case None if !not.contains(pt) =>
+          pt
+
+        case None =>
+          rec(makeRandom())
+
+        case Some(_) =>
+          rec(makeRandom())
+      }
+    }
+
+    rec(makeRandom())
+  }
 
   def asElementList(quadTree: QuadTree): List[MapElement] = {
     quadTree match {
@@ -379,6 +417,11 @@ object GridPoint {
     else rec(end, start, (gp: GridPoint) => gp === start, List(end))
   }
 
+  def random(maxX: Int, maxY: Int): GridPoint =
+    GridPoint(
+      x = Random.nextInt(maxX),
+      y = Random.nextInt(maxY)
+    )
 
 }
 

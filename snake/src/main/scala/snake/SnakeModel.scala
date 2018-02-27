@@ -9,7 +9,14 @@ object SnakeModel {
     SnakeModel(
       running = true,
       staticAssets = startupData.staticAssets,
-      player1 = Player(Snake(8, 8).grow.grow.grow.grow.grow, 100, 0),
+      player1 = Player(
+        snake = Snake(
+          startupData.gridSize.centre.x,
+          startupData.gridSize.centre.y
+        ).grow.grow,
+        tickDelay = 100,
+        lastUpdated = 0
+      ),
       gameMap = genLevel(startupData.gridSize)
     )
 
@@ -75,9 +82,18 @@ object SnakeModel {
             running = false
           )
 
-        case (player, CollisionCheckOutcome.PickUp(_)) => //TODO
+        case (player, CollisionCheckOutcome.PickUp(pt)) =>
           state.copy(
-            player1 = player
+            player1 = player.copy(snake = player.snake.grow),
+            gameMap = state.gameMap
+              .removeElement(GridPoint(pt.x, pt.y))
+              .insertElement(
+                Apple(
+                  state
+                    .gameMap
+                    .findEmptySpace(GridPoint(pt.x, pt.y) :: state.player1.snake.givePath.map(p => GridPoint(p.x, p.y)))
+                )
+              )
           )
 
         case (player, CollisionCheckOutcome.NoCollision(_)) =>
