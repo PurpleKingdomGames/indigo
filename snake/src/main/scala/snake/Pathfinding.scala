@@ -24,7 +24,7 @@ object SearchGrid {
       searchGrid.grid.exists(_.isStart) && searchGrid.grid.exists(_.isEnd)
   }
 
-  def generate(start: Coords, end: Coords, gridWidth: Int, gridHeight: Int): SearchGrid = {
+  def generate(start: Coords, end: Coords, impassable: List[Coords], gridWidth: Int, gridHeight: Int): SearchGrid = {
     val grid: List[GridSquare] = (0 until (gridWidth * gridHeight)).toList.map { index =>
       Coords.fromIndex(index, gridWidth) match {
         case c: Coords if c === start =>
@@ -32,6 +32,9 @@ object SearchGrid {
 
         case c: Coords if c === end =>
           EndSquare(index, end)
+
+        case c: Coords if impassable.contains(c) =>
+          ImpassableSquare(index, c)
 
         case c: Coords =>
           EmptySquare(index, c, 1, None)
@@ -71,6 +74,10 @@ object Coords {
 
 }
 
+object GridSquare {
+  val max: Int = 99999999
+}
+
 sealed trait GridSquare {
   val index: Int
   val coords: Coords
@@ -85,18 +92,25 @@ case class EmptySquare(index: Int, coords: Coords, weight: Int, score: Option[In
   val isStart: Boolean = false
   val isEnd: Boolean = false
 }
+case class ImpassableSquare(index: Int, coords: Coords) extends GridSquare {
+  val name: String = "impassable"
+  val isStart: Boolean = false
+  val isEnd: Boolean = false
+  val score: Option[Int] = Some(GridSquare.max)
+  val weight: Int = GridSquare.max
+}
 case class StartSquare(index: Int, coords: Coords) extends GridSquare {
-  val weight: Int = 0
+  val weight: Int = GridSquare.max
   val name: String = "start"
   val isStart: Boolean = true
   val isEnd: Boolean = false
   val score: Option[Int] = Some(0)
 }
 case class EndSquare(index: Int, coords: Coords) extends GridSquare {
-  val weight: Int = 0
+  val weight: Int = GridSquare.max
   val name: String = "end"
   val isStart: Boolean = false
   val isEnd: Boolean = true
-  val score: Option[Int] = Some(99999999)
+  val score: Option[Int] = Some(GridSquare.max)
 }
 

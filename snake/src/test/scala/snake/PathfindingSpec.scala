@@ -44,8 +44,9 @@ class PathfindingSpec extends FunSpec with Matchers {
 
       val start: Coords = Coords(1, 1)
       val end: Coords = Coords(3, 2)
+      val impassable: Coords = Coords(2, 2)
 
-      val searchGrid = SearchGrid.generate(start, end, 4, 3)
+      val searchGrid = SearchGrid.generate(start, end, List(impassable), 4, 3)
 
       withClue("is valid") {
         searchGrid.isValid shouldBe true
@@ -57,6 +58,10 @@ class PathfindingSpec extends FunSpec with Matchers {
 
       withClue("end") {
         searchGrid.grid(end.toGridPosition(4)) shouldBe EndSquare(11, end)
+      }
+
+      withClue("impassable") {
+        searchGrid.grid(impassable.toGridPosition(4)) shouldBe ImpassableSquare(10, impassable)
       }
 
     }
