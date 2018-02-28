@@ -6,13 +6,27 @@ import scala.language.implicitConversions
 
 class PathfindingSpec extends FunSpec with Matchers {
 
+  val coords: Coords = Coords(0, 0)
+
   implicit def tupleToCoorcs(t: (Int, Int)): Coords = Coords(t._1, t._2)
 
   describe("Coords") {
 
     it("should be able to convert zero indexed coordinates into a one dimensional array position") {
 
-      Coords(0, 0).toGridPosition(3) shouldBe 0
+      Coords(0, 0).toGridPosition(4) shouldBe 0
+      Coords(1, 1).toGridPosition(4) shouldBe 5
+      Coords(2, 3).toGridPosition(4) shouldBe 14
+      Coords(2, 2).toGridPosition(3) shouldBe 8
+
+    }
+
+    it("should be able to convert a zero indexed array position into coordinates") {
+
+      Coords.fromIndex(0, 4) shouldBe Coords(0, 0)
+      Coords.fromIndex(5, 4) shouldBe Coords(1, 1)
+      Coords.fromIndex(14, 4) shouldBe Coords(2, 3)
+      Coords.fromIndex(8, 3) shouldBe Coords(2, 2)
 
     }
 
@@ -22,12 +36,22 @@ class PathfindingSpec extends FunSpec with Matchers {
 
     it("should be able to generate a simple search grid") {
 
-      val searchGrid = SearchGrid.generate((1, 1), (2, 1), 3, 3)
+      val start: Coords = Coords(1, 1)
+      val end: Coords = Coords(3, 2)
 
-      searchGrid.isValid shouldBe true
+      val searchGrid = SearchGrid.generate(start, end, 4, 3)
 
-      searchGrid.grid(4) shouldBe StartSquare
-      searchGrid.grid(5) shouldBe EndSquare
+      withClue("is valid") {
+        searchGrid.isValid shouldBe true
+      }
+
+      withClue("start") {
+        searchGrid.grid(start.toGridPosition(4)) shouldBe StartSquare(5, start)
+      }
+
+      withClue("end") {
+        searchGrid.grid(end.toGridPosition(4)) shouldBe EndSquare(11, end)
+      }
 
     }
 
@@ -38,17 +62,17 @@ class PathfindingSpec extends FunSpec with Matchers {
     it("should be able to spot a good grid") {
 
       val grid: List[GridSquare] = List(
-        StartSquare,
-        EmptySquare(1),
-        EmptySquare(1),
+        StartSquare(0, coords),
+        EmptySquare(0, coords, 1),
+        EmptySquare(0, coords, 1),
 
-        EmptySquare(1),
-        EmptySquare(1),
-        EmptySquare(1),
+        EmptySquare(0, coords, 1),
+        EmptySquare(0, coords, 1),
+        EmptySquare(0, coords, 1),
 
-        EmptySquare(1),
-        EmptySquare(1),
-        EndSquare
+        EmptySquare(0, coords, 1),
+        EmptySquare(0, coords, 1),
+        EndSquare(0, coords)
       )
 
       SearchGrid.isValid(SearchGrid(3, 3, grid)) shouldBe true
@@ -57,17 +81,17 @@ class PathfindingSpec extends FunSpec with Matchers {
     it("should be able to spot a grid missing a start") {
 
       val grid: List[GridSquare] = List(
-        EmptySquare(1),
-        EmptySquare(1),
-        EmptySquare(1),
+        EmptySquare(0, coords, 1),
+        EmptySquare(0, coords, 1),
+        EmptySquare(0, coords, 1),
 
-        EmptySquare(1),
-        EmptySquare(1),
-        EmptySquare(1),
+        EmptySquare(0, coords, 1),
+        EmptySquare(0, coords, 1),
+        EmptySquare(0, coords, 1),
 
-        EmptySquare(1),
-        EmptySquare(1),
-        EndSquare
+        EmptySquare(0, coords, 1),
+        EmptySquare(0, coords, 1),
+        EndSquare(0, coords)
       )
 
       SearchGrid.isValid(SearchGrid(3, 3, grid)) shouldBe false
@@ -76,17 +100,17 @@ class PathfindingSpec extends FunSpec with Matchers {
     it("should be able to spot a grid missing an end") {
 
       val grid: List[GridSquare] = List(
-        StartSquare,
-        EmptySquare(1),
-        EmptySquare(1),
+        StartSquare(0, coords),
+        EmptySquare(0, coords, 1),
+        EmptySquare(0, coords, 1),
 
-        EmptySquare(1),
-        EmptySquare(1),
-        EmptySquare(1),
+        EmptySquare(0, coords, 1),
+        EmptySquare(0, coords, 1),
+        EmptySquare(0, coords, 1),
 
-        EmptySquare(1),
-        EmptySquare(1),
-        EmptySquare(1)
+        EmptySquare(0, coords, 1),
+        EmptySquare(0, coords, 1),
+        EmptySquare(0, coords, 1)
       )
 
       SearchGrid.isValid(SearchGrid(3, 3, grid)) shouldBe false
@@ -96,17 +120,17 @@ class PathfindingSpec extends FunSpec with Matchers {
     it("should be able to spot a grid of the wrong size") {
 
       val grid: List[GridSquare] = List(
-        StartSquare,
-        EmptySquare(1),
-        EmptySquare(1),
+        StartSquare(0, coords),
+        EmptySquare(0, coords, 1),
+        EmptySquare(0, coords, 1),
 
-        EmptySquare(1),
-        EmptySquare(1),
-        EmptySquare(1),
+        EmptySquare(0, coords, 1),
+        EmptySquare(0, coords, 1),
+        EmptySquare(0, coords, 1),
 
-        EmptySquare(1),
-        //EmptySquare(1), //missing on purpose!
-        EndSquare
+        EmptySquare(0, coords, 1),
+        //EmptySquare(0, coords, 1), //missing on purpose!
+        EndSquare(0, coords)
       )
 
       SearchGrid.isValid(SearchGrid(3, 3, grid)) shouldBe false
