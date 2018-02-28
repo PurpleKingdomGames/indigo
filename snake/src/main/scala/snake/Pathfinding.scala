@@ -34,7 +34,7 @@ object SearchGrid {
           EndSquare(index, end)
 
         case c: Coords =>
-          EmptySquare(index, c, 1)
+          EmptySquare(index, c, 1, None)
 
       }
     }
@@ -78,8 +78,9 @@ sealed trait GridSquare {
   val name: String
   val isStart: Boolean
   val isEnd: Boolean
+  val score: Option[Int]
 }
-case class EmptySquare(index: Int, coords: Coords, weight: Int) extends GridSquare {
+case class EmptySquare(index: Int, coords: Coords, weight: Int, score: Option[Int]) extends GridSquare {
   val name: String = "empty"
   val isStart: Boolean = false
   val isEnd: Boolean = false
@@ -89,10 +90,13 @@ case class StartSquare(index: Int, coords: Coords) extends GridSquare {
   val name: String = "start"
   val isStart: Boolean = true
   val isEnd: Boolean = false
+  val score: Option[Int] = Some(0)
 }
 case class EndSquare(index: Int, coords: Coords) extends GridSquare {
   val weight: Int = 0
   val name: String = "end"
   val isStart: Boolean = false
   val isEnd: Boolean = true
+  val score: Option[Int] = Some(99999999)
 }
+
