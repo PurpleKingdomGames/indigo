@@ -381,11 +381,22 @@ case class GridPoint(x: Int, y: Int) {
   def toPoint: Point =
     Point(x, y)
 
+  def wrap(gridSize: GridSize): GridPoint =
+    GridPoint.wrap(this, gridSize)
+
+  def asString: String =
+    s"""($x, $y)"""
+
 }
 object GridPoint {
 
   implicit def tupleToGridPoint(t: (Int, Int)): GridPoint =
     GridPoint(t._1, t._2)
+
+  val Up: GridPoint = GridPoint(0, 1)
+  val Down: GridPoint = GridPoint(0, -1)
+  val Left: GridPoint = GridPoint(-1, 0)
+  val Right: GridPoint = GridPoint(1, 0)
 
   def apply: GridPoint =
     identity
@@ -421,6 +432,12 @@ object GridPoint {
     GridPoint(
       x = Random.nextInt(maxX),
       y = Random.nextInt(maxY)
+    )
+
+  def wrap(gridPoint: GridPoint, gridSize: GridSize): GridPoint =
+    gridPoint.copy(
+      x = if(gridPoint.x < 0) gridSize.columns else gridPoint.x % gridSize.columns,
+      y = if(gridPoint.y < 0) gridSize.rows else gridPoint.y % gridSize.rows
     )
 
 }

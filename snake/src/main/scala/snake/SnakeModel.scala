@@ -46,7 +46,7 @@ object SnakeModel {
   private def leftEdgeWall(gridSize: GridSize): List[Wall] =
     GridPoint.fillIncrementally(gridSize.topLeft, gridSize.bottomLeft).map(Wall.apply)
 
-  private val hitTest: GameMap => List[SnakePoint] => SnakePoint => CollisionCheckOutcome = gameMap => body => pt =>
+  private val hitTest: GameMap => List[GridPoint] => GridPoint => CollisionCheckOutcome = gameMap => body => pt =>
     if(body.contains(pt)) CollisionCheckOutcome.Crashed(pt)
     else {
       gameMap.fetchElementAt(pt.x, pt.y) match {
@@ -86,12 +86,12 @@ object SnakeModel {
           state.copy(
             player1 = player.copy(snake = player.snake.grow, tickDelay = player.tickDelay - 5),
             gameMap = state.gameMap
-              .removeElement(GridPoint(pt.x, pt.y))
+              .removeElement(pt)
               .insertElement(
                 Apple(
                   state
                     .gameMap
-                    .findEmptySpace(GridPoint(pt.x, pt.y) :: state.player1.snake.givePath.map(p => GridPoint(p.x, p.y)))
+                    .findEmptySpace(pt :: state.player1.snake.givePath)
                 )
               )
           )
@@ -122,7 +122,7 @@ case class SnakeModel(running: Boolean, staticAssets: StaticAssets, player1: Pla
 
 case class Player(snake: Snake, tickDelay: Int, lastUpdated: Double) {
 
-  def update(gameTime: GameTime, gridSize: GridSize, collisionCheck: SnakePoint => CollisionCheckOutcome): (Player, CollisionCheckOutcome) =
+  def update(gameTime: GameTime, gridSize: GridSize, collisionCheck: GridPoint => CollisionCheckOutcome): (Player, CollisionCheckOutcome) =
     snake.update(gridSize, collisionCheck) match {
       case (s, outcome) if gameTime.running >= lastUpdated + tickDelay =>
         (this.copy(snake = s, lastUpdated = gameTime.running), outcome)

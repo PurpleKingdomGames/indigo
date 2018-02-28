@@ -38,15 +38,15 @@ object GridSize {
 }
 
 sealed trait CollisionCheckOutcome {
-  val snakePoint: SnakePoint
+  val gridPoint: GridPoint
 }
 object CollisionCheckOutcome {
 
-  case class NoCollision(snakePoint: SnakePoint) extends CollisionCheckOutcome
+  case class NoCollision(gridPoint: GridPoint) extends CollisionCheckOutcome
 
-  case class PickUp(snakePoint: SnakePoint) extends CollisionCheckOutcome
+  case class PickUp(gridPoint: GridPoint) extends CollisionCheckOutcome
 
-  case class Crashed(snakePoint: SnakePoint) extends CollisionCheckOutcome
+  case class Crashed(gridPoint: GridPoint) extends CollisionCheckOutcome
 
 }
 
@@ -59,7 +59,7 @@ object SnakeStatus {
 
 }
 
-case class Snake(start: SnakePoint, body: List[SnakePoint], direction: SnakeDirection, status: SnakeStatus) {
+case class Snake(start: GridPoint, body: List[GridPoint], direction: SnakeDirection, status: SnakeStatus) {
 
   def turnLeft: Snake =
     Snake.turnLeft(this)
@@ -67,10 +67,10 @@ case class Snake(start: SnakePoint, body: List[SnakePoint], direction: SnakeDire
   def turnRight: Snake =
     Snake.turnRight(this)
 
-  def update(gridSize: GridSize, collisionCheck: SnakePoint => CollisionCheckOutcome): (Snake, CollisionCheckOutcome) =
+  def update(gridSize: GridSize, collisionCheck: GridPoint => CollisionCheckOutcome): (Snake, CollisionCheckOutcome) =
     Snake.update(this, gridSize, collisionCheck)
 
-  def end: SnakePoint =
+  def end: GridPoint =
     Snake.end(this)
 
   def grow: Snake =
@@ -82,7 +82,7 @@ case class Snake(start: SnakePoint, body: List[SnakePoint], direction: SnakeDire
   def length: Int =
     1 + body.length
 
-  def givePath: List[SnakePoint] =
+  def givePath: List[GridPoint] =
     start :: body
 
   def givePathList: List[(Int, Int)] =
@@ -91,11 +91,11 @@ case class Snake(start: SnakePoint, body: List[SnakePoint], direction: SnakeDire
 }
 object Snake {
 
-  def apply(start: SnakePoint): Snake =
+  def apply(start: GridPoint): Snake =
     Snake(start, Nil, Up, Alive)
 
   def apply(x: Int, y: Int): Snake =
-    Snake(SnakePoint(x, y), Nil, Up, Alive)
+    Snake(GridPoint(x, y), Nil, Up, Alive)
 
   def turnLeft(snake: Snake): Snake =
     snake.copy(direction = snake.direction.turnLeft)
@@ -103,7 +103,7 @@ object Snake {
   def turnRight(snake: Snake): Snake =
     snake.copy(direction = snake.direction.turnRight)
 
-  def end(snake: Snake): SnakePoint =
+  def end(snake: Snake): GridPoint =
     snake.body.reverse.headOption.getOrElse(snake.start)
 
   def grow(snake: Snake): Snake =
@@ -112,10 +112,10 @@ object Snake {
   def crash(snake: Snake): Snake =
     snake.copy(status = Dead)
 
-  def update(snake: Snake, gridSize: GridSize, collisionCheck: SnakePoint => CollisionCheckOutcome): (Snake, CollisionCheckOutcome) =
+  def update(snake: Snake, gridSize: GridSize, collisionCheck: GridPoint => CollisionCheckOutcome): (Snake, CollisionCheckOutcome) =
     (nextPosition(gridSize) andThen collisionCheck andThen snakeUpdate(snake)) (snake)
 
-  def nextPosition(gridSize: GridSize): Snake => SnakePoint = snake =>
+  def nextPosition(gridSize: GridSize): Snake => GridPoint = snake =>
     snake.direction
       .oneSquareForward(snake.start)
       .wrap(gridSize)
@@ -131,7 +131,7 @@ object Snake {
       (snake.crash, oc)
   }
 
-  def moveToPosition(snake: Snake, snakePoint: SnakePoint): Snake =
+  def moveToPosition(snake: Snake, snakePoint: GridPoint): Snake =
     snake match {
       case Snake(_, Nil, d, s) =>
         Snake(snakePoint, Nil, d, s)
@@ -139,36 +139,6 @@ object Snake {
       case Snake(h, l, d, s) =>
         Snake(snakePoint, h :: l.reverse.tail.reverse, d, s)
     }
-
-}
-
-case class SnakePoint(x: Int, y: Int) {
-  def +(other: SnakePoint): SnakePoint =
-    SnakePoint.append(this, other)
-
-  def wrap(gridSize: GridSize): SnakePoint =
-    SnakePoint.wrap(this, gridSize)
-
-  def asString: String =
-    s"""($x, $y)"""
-}
-object SnakePoint {
-
-  val Up: SnakePoint = SnakePoint(0, 1)
-  val Down: SnakePoint = SnakePoint(0, -1)
-  val Left: SnakePoint = SnakePoint(-1, 0)
-  val Right: SnakePoint = SnakePoint(1, 0)
-
-  def identity: SnakePoint = SnakePoint(0, 0)
-
-  def append(a: SnakePoint, b: SnakePoint): SnakePoint =
-    SnakePoint(a.x + b.x, a.y + b.y)
-
-  def wrap(snakePoint: SnakePoint, gridSize: GridSize): SnakePoint =
-    snakePoint.copy(
-      x = if(snakePoint.x < 0) gridSize.columns else snakePoint.x % gridSize.columns,
-      y = if(snakePoint.y < 0) gridSize.rows else snakePoint.y % gridSize.rows
-    )
 
 }
 
@@ -189,7 +159,7 @@ sealed trait SnakeDirection {
   def turnRight: SnakeDirection =
     SnakeDirection.turn(this, TurnRight)
 
-  def oneSquareForward(current: SnakePoint): SnakePoint =
+  def oneSquareForward(current: GridPoint): GridPoint =
     SnakeDirection.oneSquareForward(this, current)
 
 }
@@ -227,19 +197,19 @@ object SnakeDirection {
         Down
     }
 
-  def oneSquareForward(snakeDirection: SnakeDirection, current: SnakePoint): SnakePoint =
+  def oneSquareForward(snakeDirection: SnakeDirection, current: GridPoint): GridPoint =
     snakeDirection match {
       case Up =>
-        current + SnakePoint.Up
+        current + GridPoint.Up
 
       case Down =>
-        current + SnakePoint.Down
+        current + GridPoint.Down
 
       case Left =>
-        current + SnakePoint.Left
+        current + GridPoint.Left
 
       case Right =>
-        current + SnakePoint.Right
+        current + GridPoint.Right
     }
 
 }
