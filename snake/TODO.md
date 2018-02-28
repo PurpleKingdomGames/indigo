@@ -3,8 +3,7 @@
 
 ### Game Dev
 - Invert Y again?
-- Remove all references to specific grid size values
-- A way to supply a map (including start points)
+- Create GameMap from Tiled?
 - Two snakes
 - CPU controlled Snake?
 - Alternate control schemes
@@ -13,20 +12,25 @@
   - Title screen
   - Choose play mode
     - Single player
-    - Single player vs CPU
+    - Single player vs CPU?
     - Two Player
+    - Two Player Network?
   - Game screen
   - Game over screen
   - Options screen
   - Pause screen?
 - Count down to level start
-- Collision hit test by grid item type, not co-ordinates.
 - Items
   - Normal item
 - Power ups
   - Slower 
 - Power downs
   - Faster
+  
+### Done
+- Remove all references to specific grid size values
+- Collision hit test by grid item type, not co-ordinates.
+- A way to supply a map (including start points)
 
 
 ### Publishing
