@@ -30,7 +30,7 @@ case class GameMap(quadTree: QuadTree, gridSize: GridSize) {
     this.copy(quadTree = quadTree.removeElement(gridPoint))
 
   def findEmptySpace(not: List[GridPoint]): GridPoint =
-    quadTree.findEmptySpace(not)
+    quadTree.findEmptySpace(gridSize, not)
 
   def asElementList: List[MapElement] =
     quadTree.asElementList
@@ -73,8 +73,8 @@ sealed trait QuadTree {
   def removeElement(gridPoint: GridPoint): QuadTree =
     QuadTree.removeElement(this, gridPoint)
 
-  def findEmptySpace(not: List[GridPoint]): GridPoint =
-    QuadTree.findEmptySpace(this, not)
+  def findEmptySpace(gridSize: GridSize, not: List[GridPoint]): GridPoint =
+    QuadTree.findEmptySpace(this, gridSize, not)
 
   def asElementList: List[MapElement] =
     QuadTree.asElementList(this)
@@ -207,9 +207,9 @@ object QuadTree {
         tree
     }
 
-  def findEmptySpace(quadTree: QuadTree, not: List[GridPoint]): GridPoint = {
+  def findEmptySpace(quadTree: QuadTree, gridSize: GridSize, not: List[GridPoint]): GridPoint = {
     def makeRandom: () => GridPoint = () =>
-      GridPoint.random(quadTree.bounds.width - 1, quadTree.bounds.height - 1) + GridPoint(1, 1)
+      GridPoint.random(gridSize.width - 2, gridSize.height - 2) + GridPoint(1, 1)
 
     def rec(pt: GridPoint): GridPoint = {
       fetchElementAt(quadTree, pt) match {

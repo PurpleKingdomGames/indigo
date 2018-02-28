@@ -84,7 +84,7 @@ object SnakeModel {
 
         case (player, CollisionCheckOutcome.PickUp(pt)) =>
           state.copy(
-            player1 = player.copy(snake = player.snake.grow),
+            player1 = player.copy(snake = player.snake.grow, tickDelay = player.tickDelay - 5),
             gameMap = state.gameMap
               .removeElement(GridPoint(pt.x, pt.y))
               .insertElement(
