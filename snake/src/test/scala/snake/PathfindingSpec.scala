@@ -15,6 +15,71 @@ class PathfindingSpec extends FunSpec with Matchers {
     pending
     
   }
+
+  describe("Sampling the grid") {
+
+    it("should be able to take a sample in the middle of the map") {
+      val start: Coords = Coords(1, 1)
+      val end: Coords = Coords(3, 2)
+      val impassable: Coords = Coords(2, 2)
+
+      val searchGrid = SearchGrid.generate(start, end, List(impassable), 4, 3)
+
+      val expected: List[GridSquare] =
+        List(
+          EmptySquare(1, Coords(1, 0), 1, None),
+          EmptySquare(2, Coords(2, 0), 1, None),
+          EmptySquare(3, Coords(3, 0), 1, None),
+          StartSquare(5, Coords(1, 1)),
+          //Sample point
+          EmptySquare(7, Coords(3, 1), 1, None),
+          EmptySquare(9, Coords(1, 2), 1, None),
+          ImpassableSquare(10, Coords(2, 2)),
+          EndSquare(11, Coords(3, 2))
+        )
+
+      searchGrid.sampleAt(Coords(2, 1)) shouldEqual expected
+    }
+
+    it("should be able to take a sample at the edge of the map") {
+      val start: Coords = Coords(1, 1)
+      val end: Coords = Coords(3, 2)
+      val impassable: Coords = Coords(2, 2)
+
+      val searchGrid = SearchGrid.generate(start, end, List(impassable), 4, 3)
+
+      val expected: List[GridSquare] =
+        List(
+          EmptySquare(2, Coords(2, 0), 1, None),
+          EmptySquare(3, Coords(3, 0), 1, None),
+          EmptySquare(6, Coords(2, 1), 1, None),
+          //Sample point
+          ImpassableSquare(10, Coords(2, 2)),
+          EndSquare(11, Coords(3, 2))
+        )
+
+      searchGrid.sampleAt(Coords(3, 1)) shouldEqual expected
+    }
+
+    it("should be able to take a sample at the top left of the map") {
+      val start: Coords = Coords(1, 1)
+      val end: Coords = Coords(3, 2)
+      val impassable: Coords = Coords(2, 2)
+
+      val searchGrid = SearchGrid.generate(start, end, List(impassable), 4, 3)
+
+      val expected: List[GridSquare] =
+      List(
+        //Sample point
+        EmptySquare(1, Coords(1, 0), 1, None),
+        EmptySquare(4, Coords(0, 1), 1, None),
+        StartSquare(5, Coords(1, 1))
+      )
+
+      searchGrid.sampleAt(Coords(0, 0)) shouldEqual expected
+    }
+
+  }
   
   describe("Coords") {
 

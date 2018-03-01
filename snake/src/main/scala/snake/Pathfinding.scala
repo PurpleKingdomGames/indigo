@@ -15,6 +15,9 @@ case class SearchGrid(validationWidth: Int, validationHeight: Int, grid: List[Gr
   def isValid: Boolean =
     SearchGrid.isValid(this)
 
+  def sampleAt(coords: Coords): List[GridSquare] =
+    SearchGrid.sampleAt(this, coords, validationWidth)
+
 }
 
 object SearchGrid {
@@ -22,6 +25,22 @@ object SearchGrid {
   def isValid(searchGrid: SearchGrid): Boolean = {
     searchGrid.grid.lengthCompare(searchGrid.validationWidth * searchGrid.validationHeight) == 0 &&
       searchGrid.grid.exists(_.isStart) && searchGrid.grid.exists(_.isEnd)
+  }
+
+  def coordsWithinGrid(searchGrid: SearchGrid, coords: Coords): Boolean =
+    coords.x >= 0 && coords.y >= 0 && coords.x < searchGrid.validationWidth && coords.y < searchGrid.validationHeight
+
+  def sampleAt(searchGrid: SearchGrid, coords: Coords, gridWidth: Int): List[GridSquare] = {
+    List(
+      coords + Coords.relativeUpLeft,
+      coords + Coords.relativeUp,
+      coords + Coords.relativeUpRight,
+      coords + Coords.relativeLeft,
+      coords + Coords.relativeRight,
+      coords + Coords.relativeDownLeft,
+      coords + Coords.relativeDown,
+      coords + Coords.relativeDownRight
+    ).filter(c => coordsWithinGrid(searchGrid, c)).map(c => searchGrid.grid(c.toGridPosition(gridWidth)))
   }
 
   def generate(start: Coords, end: Coords, impassable: List[Coords], gridWidth: Int, gridHeight: Int): SearchGrid = {
@@ -55,9 +74,21 @@ case class Coords(x: Int, y: Int) {
   def ===(other: Coords): Boolean =
     Coords.equality(this, other)
 
+  def +(other: Coords): Coords =
+    Coords.add(this, other)
+
 }
 
 object Coords {
+
+  val relativeUpLeft: Coords = Coords(-1, -1)
+  val relativeUp: Coords = Coords(0, -1)
+  val relativeUpRight: Coords = Coords(1, -1)
+  val relativeLeft: Coords = Coords(-1, 0)
+  val relativeRight: Coords = Coords(1, 0)
+  val relativeDownLeft: Coords = Coords(-1, 1)
+  val relativeDown: Coords = Coords(0, 1)
+  val relativeDownRight: Coords = Coords(1, 1)
 
   def toGridPosition(coords: Coords, gridWidth: Int): Int =
     coords.x + (coords.y * gridWidth)
@@ -71,6 +102,9 @@ object Coords {
 
   def equality(a: Coords, b: Coords): Boolean =
     a.x == b.x && a.y == b.y
+
+  def add(a: Coords, b: Coords): Coords =
+    Coords(a.x + b.x, a.y + b.y)
 
 }
 
