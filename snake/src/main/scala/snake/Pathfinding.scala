@@ -81,23 +81,26 @@ object SearchGrid {
 
         case (remainingSquares, lastScoredLocations) =>
 
-          //Find the squares from the remaining pile that the previous scores squares touched.
-          val a = lastScoredLocations.map(c => sampleAt(searchGrid, c, searchGrid.validationWidth))
+          // Find the squares from the remaining pile that the previous scores squares touched.
+          val roughEdges: List[List[GridSquare]] =
+            lastScoredLocations.map(c => sampleAt(searchGrid, c, searchGrid.validationWidth))
 
-          //Filter out any squares that aren't in the remainingSquares list
-          val b = a.flatMap(_.filter(c => remainingSquares.contains(c)))
+          // Filter out any squares that aren't in the remainingSquares list
+          val edges: List[GridSquare] =
+            roughEdges.flatMap(_.filter(c => remainingSquares.contains(c)))
 
-          //Deduplicate and score
-          val c = b.foldLeft[List[GridSquare]](Nil) { (l, x) =>
-            if(l.exists(p => p.coords === x.coords)) l else l :+ x
-          }.map(_.withScore(scoreValue))
+          // Deduplicate and score
+          val next: List[GridSquare] =
+            edges.foldLeft[List[GridSquare]](Nil) { (l, x) =>
+              if(l.exists(p => p.coords === x.coords)) l else l :+ x
+            }.map(_.withScore(scoreValue))
 
           rec(
             target = target,
-            unscored = remainingSquares.filter(p => !c.exists(q => q.coords === p.coords)),
+            unscored = remainingSquares.filter(p => !next.exists(q => q.coords === p.coords)),
             scoreValue = scoreValue + 1,
-            lastCoords = c.map(_.coords),
-            scored = c ++ scored
+            lastCoords = next.map(_.coords),
+            scored = next ++ scored
           )
       }
     }
