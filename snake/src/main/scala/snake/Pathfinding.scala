@@ -71,34 +71,40 @@ object SearchGrid {
 
   def scoreGridSquares(searchGrid: SearchGrid): List[GridSquare] = {
     @tailrec
-    def rec(unscored: List[GridSquare], scoreValue: Int, lastCoords: List[Coords], scored: List[GridSquare]): List[GridSquare] = {
+    def rec(target: Coords, unscored: List[GridSquare], scoreValue: Int, lastCoords: List[Coords], scored: List[GridSquare]): List[GridSquare] = {
       (unscored, lastCoords) match {
-        case (Nil, _) =>
+        case (Nil, _) | (_, Nil) =>
           scored
 
-        case (_, Nil) =>
+        case (_, last) if last.exists(_ === target) =>
           scored
 
-        case (us, lc) =>
-          val next: List[GridSquare] =
-            lc.flatMap { c =>
-              sampleAt(searchGrid, c, searchGrid.validationWidth)
-                .filter(g => us.contains(g))
-                .map(_.withScore(scoreValue))
-            }
+        case (remainingSquares, lastScoredLocations) =>
+
+          //Find the squares from the remaining pile that the previous scores squares touched.
+          val a = lastScoredLocations.map(c => sampleAt(searchGrid, c, searchGrid.validationWidth))
+
+          //Filter out any squares that aren't in the remainingSquares list
+          val b = a.flatMap(_.filter(c => remainingSquares.contains(c)))
+
+          //Deduplicate and score
+          val c = b.foldLeft[List[GridSquare]](Nil) { (l, x) =>
+            if(l.exists(p => p.coords === x.coords)) l else l :+ x
+          }.map(_.withScore(scoreValue))
 
           rec(
-            us.filterNot(p => next.exists(_.coords == p.coords)),
-            scoreValue + 1,
-            next.map(_.coords),
-            scored ++ next
+            target = target,
+            unscored = remainingSquares.filter(p => !c.exists(q => q.coords === p.coords)),
+            scoreValue = scoreValue + 1,
+            lastCoords = c.map(_.coords),
+            scored = c ++ scored
           )
       }
     }
     
     val (done, todo) = searchGrid.grid.partition(_.isEnd)
 
-    rec(todo, 1, List(searchGrid.end), done).sortBy(_.index)
+    rec(searchGrid.start, todo, 1, List(searchGrid.end), done).sortBy(_.index)
   }
 
   def score(searchGrid: SearchGrid): SearchGrid =

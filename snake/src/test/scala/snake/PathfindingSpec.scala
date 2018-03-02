@@ -29,7 +29,7 @@ class PathfindingSpec extends FunSpec with Matchers {
         List(
           EmptySquare(0, Coords(0, 0), Some(2)),
           ImpassableSquare(1, Coords(1, 0)),
-          EmptySquare(2, Coords(2, 0), None),
+//          EmptySquare(2, Coords(2, 0), None), // Unscored squares are not returned
           EmptySquare(3, Coords(0, 1), Some(1)),
           EmptySquare(4, Coords(1, 1), Some(2)),
           StartSquare(5, Coords(2, 1)),
