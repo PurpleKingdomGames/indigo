@@ -27,6 +27,9 @@ case class SearchGrid(validationWidth: Int, validationHeight: Int, start: Coords
   def score: SearchGrid =
     SearchGrid.score(this)
 
+  def locatePath: List[Coords] =
+    SearchGrid.locatePath
+
 }
 
 object SearchGrid {
@@ -112,6 +115,9 @@ object SearchGrid {
 
   def score(searchGrid: SearchGrid): SearchGrid =
     searchGrid.copy(grid = scoreGridSquares(searchGrid))
+
+  def locatePath: List[Coords] =
+    List(Coords(1, 1))
 
 }
 

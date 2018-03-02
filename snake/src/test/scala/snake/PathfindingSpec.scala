@@ -11,8 +11,24 @@ class PathfindingSpec extends FunSpec with Matchers {
   implicit def tupleToCoords(t: (Int, Int)): Coords = Coords(t._1, t._2)
 
   describe("Finding an unobscured path") {
-    
-    pending
+
+    it("should be able to find a route") {
+
+      val start: Coords = Coords(2, 1)
+      val end: Coords = Coords(0, 2)
+      val impassable: Coords = Coords(1, 0)
+
+      val searchGrid = SearchGrid.generate(start, end, List(impassable), 3, 3)
+
+      val scored = searchGrid.score
+
+      val path: List[Coords] = scored.locatePath
+
+      val expected: List[Coords] = Nil
+
+      path shouldEqual expected
+
+    }
     
   }
 
