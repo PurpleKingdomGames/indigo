@@ -20,13 +20,15 @@ class PathfindingSpec extends FunSpec with Matchers {
 
       val searchGrid = SearchGrid.generate(start, end, List(impassable), 3, 3)
 
-      val scored = searchGrid.score
+      val path: List[Coords] = searchGrid.locatePath
 
-      val path: List[Coords] = scored.locatePath
+      val possiblePaths: List[List[Coords]] = List(
+        List(start, Coords(2, 2), Coords(1, 2), end),
+        List(start, Coords(1, 1), Coords(0, 1), end),
+        List(start, Coords(1, 1), Coords(1, 2), end)
+      )
 
-      val expected: List[Coords] = Nil
-
-      path shouldEqual expected
+      possiblePaths.contains(path) shouldBe true
 
     }
     
@@ -45,7 +47,7 @@ class PathfindingSpec extends FunSpec with Matchers {
         List(
           EmptySquare(0, Coords(0, 0), Some(2)),
           ImpassableSquare(1, Coords(1, 0)),
-//          EmptySquare(2, Coords(2, 0), None), // Unscored squares are not returned
+          EmptySquare(2, Coords(2, 0), None), // Unscored squares are returned to keep sampleAt working correctly
           EmptySquare(3, Coords(0, 1), Some(1)),
           EmptySquare(4, Coords(1, 1), Some(2)),
           StartSquare(5, Coords(2, 1)),
@@ -54,7 +56,7 @@ class PathfindingSpec extends FunSpec with Matchers {
           EmptySquare(8, Coords(2, 2), Some(2))
         )
 
-      searchGrid.score shouldEqual SearchGrid(3, 3, start, end, expected)
+      SearchGrid.score(searchGrid) shouldEqual SearchGrid(3, 3, start, end, expected)
 
     }
 
@@ -78,7 +80,7 @@ class PathfindingSpec extends FunSpec with Matchers {
           ImpassableSquare(10, Coords(2, 2))
         )
 
-      searchGrid.sampleAt(Coords(2, 1)) shouldEqual expected
+      SearchGrid.sampleAt(searchGrid, Coords(2, 1), searchGrid.validationWidth) shouldEqual expected
     }
 
     it("should be able to take a sample at the edge of the map") {
@@ -96,7 +98,7 @@ class PathfindingSpec extends FunSpec with Matchers {
           EndSquare(11, Coords(3, 2))
         )
 
-      searchGrid.sampleAt(Coords(3, 1)) shouldEqual expected
+      SearchGrid.sampleAt(searchGrid, Coords(3, 1), searchGrid.validationWidth) shouldEqual expected
     }
 
     it("should be able to take a sample at the top left of the map") {
@@ -113,7 +115,7 @@ class PathfindingSpec extends FunSpec with Matchers {
         EmptySquare(4, Coords(0, 1), None)
       )
 
-      searchGrid.sampleAt(Coords(0, 0)) shouldEqual expected
+      SearchGrid.sampleAt(searchGrid, Coords(0, 0), searchGrid.validationWidth) shouldEqual expected
     }
 
   }

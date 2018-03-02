@@ -1,6 +1,7 @@
 package snake
 
 import scala.annotation.tailrec
+import scala.util.Random
 
 /**
   * This is very crude and inefficient, but should be ok for the Snake use case,
@@ -21,14 +22,8 @@ case class SearchGrid(validationWidth: Int, validationHeight: Int, start: Coords
   def isValid: Boolean =
     SearchGrid.isValid(this)
 
-  def sampleAt(coords: Coords): List[GridSquare] =
-    SearchGrid.sampleAt(this, coords, validationWidth)
-
-  def score: SearchGrid =
-    SearchGrid.score(this)
-
   def locatePath: List[Coords] =
-    SearchGrid.locatePath
+    SearchGrid.locatePath(SearchGrid.score(this))
 
 }
 
@@ -77,10 +72,10 @@ object SearchGrid {
     def rec(target: Coords, unscored: List[GridSquare], scoreValue: Int, lastCoords: List[Coords], scored: List[GridSquare]): List[GridSquare] = {
       (unscored, lastCoords) match {
         case (Nil, _) | (_, Nil) =>
-          scored
+          scored ++ unscored
 
         case (_, last) if last.exists(_ === target) =>
-          scored
+          scored ++ unscored
 
         case (remainingSquares, lastScoredLocations) =>
 
@@ -116,8 +111,26 @@ object SearchGrid {
   def score(searchGrid: SearchGrid): SearchGrid =
     searchGrid.copy(grid = scoreGridSquares(searchGrid))
 
-  def locatePath: List[Coords] =
-    List(Coords(1, 1))
+  def locatePath(searchGrid: SearchGrid): List[Coords] = {
+    def rec(currentPosition: Coords, currentScore: Int, target: Coords, grid: SearchGrid, width: Int, acc: List[Coords]): List[Coords] = {
+      if(currentPosition == target) acc
+      else {
+        sampleAt(grid, currentPosition, width).filter(c => c.score.getOrElse(GridSquare.max) < currentScore) match {
+          case Nil =>
+            acc
+
+          case next :: Nil =>
+            rec(next.coords, next.score.getOrElse(GridSquare.max), target, grid, width, acc :+ next.coords)
+
+          case xs =>
+            val next = xs(Random.nextInt(xs.length))
+            rec(next.coords, next.score.getOrElse(GridSquare.max), target, grid, width, acc :+ next.coords)
+        }
+      }
+    }
+
+    rec(searchGrid.start, GridSquare.max, searchGrid.end, searchGrid, searchGrid.validationWidth, List(searchGrid.start))
+  }
 
 }
 
@@ -193,14 +206,14 @@ case class StartSquare(index: Int, coords: Coords) extends GridSquare {
   val name: String = "start"
   val isStart: Boolean = true
   val isEnd: Boolean = false
-  val score: Option[Int] = Some(0)
+  val score: Option[Int] = Some(GridSquare.max)
   def withScore(score: Int): StartSquare = this
 }
 case class EndSquare(index: Int, coords: Coords) extends GridSquare {
   val name: String = "end"
   val isStart: Boolean = false
   val isEnd: Boolean = true
-  val score: Option[Int] = Some(GridSquare.max)
+  val score: Option[Int] = Some(0)
   def withScore(score: Int): EndSquare = this
 }
 
