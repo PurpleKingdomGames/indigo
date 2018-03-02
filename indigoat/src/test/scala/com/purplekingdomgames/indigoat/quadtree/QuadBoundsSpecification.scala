@@ -1,4 +1,4 @@
-package snake
+package com.purplekingdomgames.indigoat.quadtree
 
 import org.scalacheck._
 import org.scalacheck.Prop.BooleanOperators

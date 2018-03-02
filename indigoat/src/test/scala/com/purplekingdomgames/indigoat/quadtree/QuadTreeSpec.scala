@@ -1,10 +1,11 @@
-package snake
+package com.purplekingdomgames.indigoat.quadtree
 
+import com.purplekingdomgames.indigoat.grid.GridPoint
+import com.purplekingdomgames.indigoat.quadtree.QuadTree.{QuadBranch, QuadEmpty, QuadLeaf}
 import org.scalactic.Equality
 import org.scalatest.{FunSpec, Matchers}
-import snake.QuadTree.{QuadBranch, QuadEmpty, QuadLeaf}
 
-class GameMapSpec extends FunSpec with Matchers {
+class QuadTreeSpec extends FunSpec with Matchers {
 
   describe("QuadTrees") {
 
@@ -21,30 +22,30 @@ class GameMapSpec extends FunSpec with Matchers {
             QuadEmpty(QuadBounds(4, 0, 1, 1)),
             QuadEmpty(QuadBounds(5, 0, 1, 1)),
             QuadEmpty(QuadBounds(4, 1, 1, 1)),
-            QuadLeaf(QuadBounds(5, 1, 1, 1), MapElement.Apple(gridPoint))
+            QuadLeaf(QuadBounds(5, 1, 1, 1), "hello")
           ),
           QuadEmpty(QuadBounds(6, 0, 2, 2)),
           QuadEmpty(QuadBounds(4, 2, 2, 2)),
           QuadEmpty(QuadBounds(6, 2, 2, 2))
         ),
         QuadEmpty(QuadBounds(0, 4, 4, 4)),
-        QuadEmpty(QuadBounds(4, 4, 4, 4)),
+        QuadEmpty(QuadBounds(4, 4, 4, 4))
       )
 
-      tree.fetchElementAt(gridPoint) shouldEqual Some(MapElement.Apple(gridPoint))
+      tree.fetchElementAt(gridPoint) shouldEqual Some("hello")
 
     }
 
     it("should be able to insert an element at a given position") {
 
       val tree = QuadTree.empty(16)
-        .insertElement(MapElement.Apple(GridPoint(9, 2)))
-        .insertElement(MapElement.Wall(GridPoint(0, 0)))
-        .insertElement(MapElement.Wall(GridPoint(10, 10)))
-        .insertElement(MapElement.Apple(GridPoint(20, 50)))
+        .insertElement("a", GridPoint(9, 2))
+        .insertElement("b", GridPoint(0, 0))
+        .insertElement("c", GridPoint(10, 10))
+        .insertElement("d", GridPoint(20, 50))
 
       withClue("[9, 2]") {
-        tree.fetchElementAt(GridPoint(9, 2)) shouldEqual Some(MapElement.Apple(GridPoint(9, 2)))
+        tree.fetchElementAt(GridPoint(9, 2)) shouldEqual Some("a")
       }
 
       withClue("Should be missing at [1, 2]") {
@@ -52,11 +53,11 @@ class GameMapSpec extends FunSpec with Matchers {
       }
 
       withClue("[0, 0]") {
-        tree.fetchElementAt(GridPoint(0, 0)) shouldEqual Some(MapElement.Wall(GridPoint(0, 0)))
+        tree.fetchElementAt(GridPoint(0, 0)) shouldEqual Some("b")
       }
 
       withClue("[10, 10]") {
-        tree.fetchElementAt(GridPoint(10, 10)) shouldEqual Some(MapElement.Wall(GridPoint(10, 10)))
+        tree.fetchElementAt(GridPoint(10, 10)) shouldEqual Some("c")
       }
 
       withClue("Outside of area at [20, 50]") {
@@ -70,9 +71,9 @@ class GameMapSpec extends FunSpec with Matchers {
       val gridPoint = GridPoint(9, 2)
 
       val tree = QuadTree.empty(16)
-        .insertElement(MapElement.Apple(gridPoint))
+        .insertElement("test", gridPoint)
 
-      tree.fetchElementAt(gridPoint) shouldEqual Some(MapElement.Apple(gridPoint))
+      tree.fetchElementAt(gridPoint) shouldEqual Some("test")
 
       val tree2 = tree.removeElement(gridPoint)
 
@@ -81,9 +82,9 @@ class GameMapSpec extends FunSpec with Matchers {
     }
 
     // Needed because of the funky QuadBounds type.
-    implicit val eq: Equality[QuadTree] =
-      new Equality[QuadTree] {
-        def areEqual(a: QuadTree, b: Any): Boolean =
+    implicit def eq[T]: Equality[QuadTree[T]] =
+      new Equality[QuadTree[T]] {
+        def areEqual(a: QuadTree[T], b: Any): Boolean =
           (a, b) match {
             case (QuadEmpty(b1), QuadEmpty(b2)) if b1 === b2 =>
               true
@@ -104,7 +105,7 @@ class GameMapSpec extends FunSpec with Matchers {
       val gridPoint = GridPoint(9, 2)
 
       val tree = QuadTree.empty(16)
-        .insertElement(MapElement.Apple(gridPoint))
+        .insertElement(999, gridPoint)
         .removeElement(gridPoint)
         .prune
 
@@ -117,7 +118,7 @@ class GameMapSpec extends FunSpec with Matchers {
       val gridPoint = GridPoint(9, 2)
 
       val tree = QuadTree.empty(16)
-        .insertElement(MapElement.Apple(gridPoint))
+        .insertElement(999, gridPoint)
 
       tree.prune shouldEqual tree
 

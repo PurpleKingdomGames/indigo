@@ -78,11 +78,22 @@ lazy val indigo =
 
 //scalaJSLinkerConfig in Test ~= { _.withOptimizer(false) }
 
+// Shared
+lazy val indigoat =
+  project
+    .settings(commonSettings: _*)
+    .dependsOn(indigo)
+    .enablePlugins(ScalaJSPlugin)
+    .settings(
+      name := "indigoat",
+      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
+    )
+
 // Games
 lazy val snake =
   project
     .settings(commonSettings: _*)
-    .dependsOn(indigo)
+    .dependsOn(indigoat)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(
       name := "snake",

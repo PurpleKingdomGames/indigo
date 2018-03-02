@@ -1,10 +1,11 @@
-package snake
+package com.purplekingdomgames.indigoat.pathfinding
 
+import com.purplekingdomgames.indigoat.pathfinding.GridSquare.{EmptySquare, EndSquare, ImpassableSquare, StartSquare}
 import org.scalatest.{FunSpec, Matchers}
 
 import scala.language.implicitConversions
 
-class PathfindingSpec extends FunSpec with Matchers {
+class PathFindingSpec extends FunSpec with Matchers {
 
   val coords: Coords = Coords(0, 0)
 
@@ -31,7 +32,7 @@ class PathfindingSpec extends FunSpec with Matchers {
       possiblePaths.contains(path) shouldBe true
 
     }
-    
+
   }
 
   describe("Scoring the grid") {
@@ -109,17 +110,17 @@ class PathfindingSpec extends FunSpec with Matchers {
       val searchGrid = SearchGrid.generate(start, end, List(impassable), 4, 3)
 
       val expected: List[GridSquare] =
-      List(
-        //Sample point
-        EmptySquare(1, Coords(1, 0), None),
-        EmptySquare(4, Coords(0, 1), None)
-      )
+        List(
+          //Sample point
+          EmptySquare(1, Coords(1, 0), None),
+          EmptySquare(4, Coords(0, 1), None)
+        )
 
       SearchGrid.sampleAt(searchGrid, Coords(0, 0), searchGrid.validationWidth) shouldEqual expected
     }
 
   }
-  
+
   describe("Coords") {
 
     it("should be able to convert zero indexed coordinates into a one dimensional array position") {

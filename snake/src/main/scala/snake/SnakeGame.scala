@@ -4,6 +4,7 @@ import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.{Indigo, _}
+import com.purplekingdomgames.indigoat.grid.GridSize
 import com.purplekingdomgames.shared.{AssetType, ClearColor, GameConfig, GameViewport}
 
 import scala.scalajs.js.annotation.JSExportTopLevel

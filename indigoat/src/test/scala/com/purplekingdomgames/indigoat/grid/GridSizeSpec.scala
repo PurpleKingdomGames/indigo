@@ -1,4 +1,4 @@
-package snake
+package com.purplekingdomgames.indigoat.grid
 
 import org.scalatest.{FunSpec, Matchers}
 

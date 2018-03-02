@@ -1,6 +1,7 @@
 package snake
 
 import com.purplekingdomgames.indigo.gameengine._
+import com.purplekingdomgames.indigoat.grid.{GridPoint, GridSize}
 import snake.MapElement._
 
 object SnakeModel {
@@ -60,12 +61,6 @@ object SnakeModel {
           CollisionCheckOutcome.NoCollision(pt)
 
         case Some(Player2Start(_)) =>
-          CollisionCheckOutcome.NoCollision(pt)
-
-        case Some(Player3Start(_)) =>
-          CollisionCheckOutcome.NoCollision(pt)
-
-        case Some(Player4Start(_)) =>
           CollisionCheckOutcome.NoCollision(pt)
 
         case None =>

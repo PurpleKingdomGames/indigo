@@ -3,6 +3,7 @@ package snake
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.scenegraph.Graphic
 import com.purplekingdomgames.indigo.gameengine.{Startup, ToReportable}
+import com.purplekingdomgames.indigoat.grid.GridSize
 
 object SnakeInit {
 

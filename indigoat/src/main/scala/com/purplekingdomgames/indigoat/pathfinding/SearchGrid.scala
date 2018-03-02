@@ -1,21 +1,9 @@
-package snake
+package com.purplekingdomgames.indigoat.pathfinding
+
+import com.purplekingdomgames.indigoat.pathfinding.GridSquare.{EmptySquare, EndSquare, ImpassableSquare, StartSquare}
 
 import scala.annotation.tailrec
 import scala.util.Random
-
-/**
-  * This is very crude and inefficient, but should be ok for the Snake use case,
-  * in that:
-  *
-  * 1) Snake has small grids, so the amount of the grid to search requires no optimisation.
-  * 2) Snake does not do diagonals, so scoring does not expand diagonally either.
-  * 3) Snake does not have different types of terrain, so there is no weighting
-  */
-object Pathfinding {
-
-  //
-
-}
 
 case class SearchGrid(validationWidth: Int, validationHeight: Int, start: Coords, end: Coords, grid: List[GridSquare]) {
 
@@ -102,7 +90,7 @@ object SearchGrid {
           )
       }
     }
-    
+
     val (done, todo) = searchGrid.grid.partition(_.isEnd)
 
     rec(searchGrid.start, todo, 1, List(searchGrid.end), done).sortBy(_.index)
@@ -133,87 +121,3 @@ object SearchGrid {
   }
 
 }
-
-case class Coords(x: Int, y: Int) {
-
-  def toGridPosition(gridWidth: Int): Int =
-    Coords.toGridPosition(this, gridWidth)
-
-  def ===(other: Coords): Boolean =
-    Coords.equality(this, other)
-
-  def +(other: Coords): Coords =
-    Coords.add(this, other)
-
-}
-
-object Coords {
-
-  val relativeUpLeft: Coords = Coords(-1, -1)
-  val relativeUp: Coords = Coords(0, -1)
-  val relativeUpRight: Coords = Coords(1, -1)
-  val relativeLeft: Coords = Coords(-1, 0)
-  val relativeRight: Coords = Coords(1, 0)
-  val relativeDownLeft: Coords = Coords(-1, 1)
-  val relativeDown: Coords = Coords(0, 1)
-  val relativeDownRight: Coords = Coords(1, 1)
-
-  def toGridPosition(coords: Coords, gridWidth: Int): Int =
-    coords.x + (coords.y * gridWidth)
-
-  def fromIndex(index: Int, gridWidth: Int): Coords = {
-    Coords(
-      x = index % gridWidth,
-      y = index / gridWidth
-    )
-  }
-
-  def equality(a: Coords, b: Coords): Boolean =
-    a.x == b.x && a.y == b.y
-
-  def add(a: Coords, b: Coords): Coords =
-    Coords(a.x + b.x, a.y + b.y)
-
-}
-
-object GridSquare {
-  val max: Int = 99999999
-}
-
-sealed trait GridSquare {
-  val index: Int
-  val coords: Coords
-  val name: String
-  val isStart: Boolean
-  val isEnd: Boolean
-  val score: Option[Int]
-  def withScore(score: Int): GridSquare
-}
-case class EmptySquare(index: Int, coords: Coords, score: Option[Int]) extends GridSquare {
-  val name: String = "empty"
-  val isStart: Boolean = false
-  val isEnd: Boolean = false
-  def withScore(score: Int): EmptySquare = this.copy(score = Option(score))
-}
-case class ImpassableSquare(index: Int, coords: Coords) extends GridSquare {
-  val name: String = "impassable"
-  val isStart: Boolean = false
-  val isEnd: Boolean = false
-  val score: Option[Int] = Some(GridSquare.max)
-  def withScore(score: Int): ImpassableSquare = this
-}
-case class StartSquare(index: Int, coords: Coords) extends GridSquare {
-  val name: String = "start"
-  val isStart: Boolean = true
-  val isEnd: Boolean = false
-  val score: Option[Int] = Some(GridSquare.max)
-  def withScore(score: Int): StartSquare = this
-}
-case class EndSquare(index: Int, coords: Coords) extends GridSquare {
-  val name: String = "end"
-  val isStart: Boolean = false
-  val isEnd: Boolean = true
-  val score: Option[Int] = Some(0)
-  def withScore(score: Int): EndSquare = this
-}
-

@@ -1,5 +1,6 @@
 package snake
 
+import com.purplekingdomgames.indigoat.grid.{GridPoint, GridSize}
 import org.scalatest.{FunSpec, Matchers}
 import snake.CollisionCheckOutcome.{Crashed, NoCollision, PickUp}
 

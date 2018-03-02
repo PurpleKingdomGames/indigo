@@ -2,6 +2,7 @@ package snake
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
+import com.purplekingdomgames.indigoat.grid.{GridPoint, GridSize}
 
 object SnakeView {
 
