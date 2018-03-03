@@ -1,10 +1,10 @@
-package snake
+package snake.datatypes
 
 import com.purplekingdomgames.indigoat.grid.{GridPoint, GridSize}
-import snake.CollisionCheckOutcome.{Crashed, NoCollision, PickUp}
-import snake.SnakeDirection.Up
-import snake.SnakeStatus.{Alive, Dead}
-import snake.TurnDirection.{TurnLeft, TurnRight}
+import snake.datatypes.CollisionCheckOutcome.{Crashed, NoCollision, PickUp}
+import snake.datatypes.SnakeDirection.Up
+import snake.datatypes.SnakeStatus.{Alive, Dead}
+import snake.datatypes.TurnDirection.{TurnLeft, TurnRight}
 
 sealed trait CollisionCheckOutcome {
   val gridPoint: GridPoint

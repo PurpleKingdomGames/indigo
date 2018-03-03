@@ -1,8 +1,8 @@
-package snake
+package snake.arenas
 
 import com.purplekingdomgames.indigoat.grid.{GridPoint, GridSize}
 import com.purplekingdomgames.indigoat.quadtree.QuadTree
-import snake.MapElement.{Apple, Wall}
+import snake.arenas.MapElement.{Apple, Wall}
 
 /***
 GameMap is a sparse tree of MapElements organised as a QuadTree where each

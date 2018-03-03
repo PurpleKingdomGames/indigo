@@ -1,4 +1,4 @@
-package snake
+package snake.arenas
 
 import com.purplekingdomgames.indigoat.grid.{GridPoint, GridSize}
 

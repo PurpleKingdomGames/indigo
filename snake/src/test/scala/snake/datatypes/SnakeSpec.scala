@@ -1,8 +1,8 @@
-package snake
+package snake.datatypes
 
 import com.purplekingdomgames.indigoat.grid.{GridPoint, GridSize}
 import org.scalatest.{FunSpec, Matchers}
-import snake.CollisionCheckOutcome.{Crashed, NoCollision, PickUp}
+import snake.datatypes.CollisionCheckOutcome.{Crashed, NoCollision, PickUp}
 
 class SnakeSpec extends FunSpec with Matchers {
 
