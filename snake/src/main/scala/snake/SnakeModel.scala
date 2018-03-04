@@ -4,21 +4,20 @@ import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigoat.grid.{GridPoint, GridSize}
 import snake.arenas.GameMap
 import snake.datatypes.{CollisionCheckOutcome, Snake}
-import snake.screens.{GameScreen, GameScreenFunctions, Screen, TitleScreen}
+import snake.screens._
 
 object SnakeModel {
 
   def initialModel(startupData: SnakeStartupData): SnakeModel =
     SnakeModel(
-      currentScreen = GameScreen,
-      titleScreenModel = TitleScreenModel(),
+      currentScreen = TitleScreen,
       gameScreenModel = GameScreenFunctions.Model.initialModel(startupData)
     )
 
   def modelUpdate(gameTime: GameTime, state: SnakeModel): GameEvent => SnakeModel = gameEvent =>
     state.currentScreen match {
       case TitleScreen =>
-        state
+        TitleScreenFunctions.Model.update(state)(gameEvent)
 
       case GameScreen =>
         state.copy(gameScreenModel = GameScreenFunctions.Model.update(gameTime, state.gameScreenModel)(gameEvent))
@@ -26,9 +25,7 @@ object SnakeModel {
 
 }
 
-case class SnakeModel(currentScreen: Screen, titleScreenModel: TitleScreenModel, gameScreenModel: GameScreenModel)
-
-case class TitleScreenModel()
+case class SnakeModel(currentScreen: Screen, gameScreenModel: GameScreenModel)
 
 case class GameScreenModel(running: Boolean, staticAssets: StaticAssets, player1: Player, gameMap: GameMap)
 

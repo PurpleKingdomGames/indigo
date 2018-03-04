@@ -50,52 +50,52 @@ object GameScreenFunctions {
       }
 
     def update(gameTime: GameTime, state: GameScreenModel): GameEvent => GameScreenModel = gameEvent =>
-    if(state.running) {
-      gameEvent match {
-        case FrameTick =>
-          state.player1.update(gameTime, state.gameMap.gridSize, hitTest(state.gameMap)(state.player1.snake.givePath)) match {
-            case (player, CollisionCheckOutcome.Crashed(_)) =>
-              state.copy(
-                player1 = player,
-                running = false
-              )
+      if(state.running) {
+        gameEvent match {
+          case FrameTick =>
+            state.player1.update(gameTime, state.gameMap.gridSize, hitTest(state.gameMap)(state.player1.snake.givePath)) match {
+              case (player, CollisionCheckOutcome.Crashed(_)) =>
+                state.copy(
+                  player1 = player,
+                  running = false
+                )
 
-            case (player, CollisionCheckOutcome.PickUp(pt)) =>
-              state.copy(
-                player1 = player.copy(snake = player.snake.grow, tickDelay = player.tickDelay - 5),
-                gameMap = state.gameMap
-                  .removeElement(pt)
-                  .insertElement(
-                    Apple(
-                      state
-                        .gameMap
-                        .findEmptySpace(pt :: state.player1.snake.givePath)
+              case (player, CollisionCheckOutcome.PickUp(pt)) =>
+                state.copy(
+                  player1 = player.copy(snake = player.snake.grow, tickDelay = player.tickDelay - 5),
+                  gameMap = state.gameMap
+                    .removeElement(pt)
+                    .insertElement(
+                      Apple(
+                        state
+                          .gameMap
+                          .findEmptySpace(pt :: state.player1.snake.givePath)
+                      )
                     )
-                  )
-              )
+                )
 
-            case (player, CollisionCheckOutcome.NoCollision(_)) =>
-              state.copy(
-                player1 = player
-              )
-          }
+              case (player, CollisionCheckOutcome.NoCollision(_)) =>
+                state.copy(
+                  player1 = player
+                )
+            }
 
-        case KeyDown(Keys.LEFT_ARROW) =>
-          state.copy(
-            player1 = state.player1.turnLeft
-          )
+          case KeyDown(Keys.LEFT_ARROW) =>
+            state.copy(
+              player1 = state.player1.turnLeft
+            )
 
-        case KeyDown(Keys.RIGHT_ARROW) =>
-          state.copy(
-            player1 = state.player1.turnRight
-          )
+          case KeyDown(Keys.RIGHT_ARROW) =>
+            state.copy(
+              player1 = state.player1.turnRight
+            )
 
-        case _ =>
-          state
+          case _ =>
+            state
+        }
+      } else {
+        state
       }
-    } else {
-      state
-    }
 
   }
 
