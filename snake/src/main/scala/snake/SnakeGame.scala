@@ -21,7 +21,7 @@ object SnakeGame {
   val config: GameConfig = GameConfig(
     viewport = GameViewport(viewportWidth, viewportHeight),
     frameRate = 30,
-    clearColor = ClearColor.fromHexString("7cb941"),
+    clearColor = ClearColor.Black,
     magnification = magnificationLevel
   )
 

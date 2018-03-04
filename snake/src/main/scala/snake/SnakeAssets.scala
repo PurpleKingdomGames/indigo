@@ -8,7 +8,7 @@ object SnakeAssets {
 
   def assets: Set[AssetType] =
     Set(
-      ImageAsset(snakeTexture, "assets/snake.png")
+      ImageAsset(snakeTexture, "assets/snake2.png")
     )
 
 }

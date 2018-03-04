@@ -107,7 +107,7 @@ object GameScreenFunctions {
     def update(model: GameScreenModel): SceneGraphUpdate[SnakeEvent] =
       SceneGraphUpdate(
         SceneGraphRootNode(
-          game = gameLayer(model, if(model.running) model.staticAssets.snakeAlive else model.staticAssets.snakeDead),
+          game = gameLayer(model, if(model.running) model.staticAssets.gameScreen.player4.alive else model.staticAssets.gameScreen.player4.dead),
           lighting = SceneGraphLightingLayer.empty,
           ui = SceneGraphUiLayer.empty
         ),
@@ -117,11 +117,11 @@ object GameScreenFunctions {
     def gameLayer(currentState: GameScreenModel, snakeAsset: Graphic[SnakeEvent]): SceneGraphGameLayer[SnakeEvent] =
       SceneGraphGameLayer()
         .addChildren {
-          currentState.gameMap.findApples.map(a => currentState.staticAssets.apple.moveTo(coordsToGridPoint(a.gridPoint, currentState.gameMap.gridSize)))
+          currentState.gameMap.findApples.map(a => currentState.staticAssets.gameScreen.apple.moveTo(coordsToGridPoint(a.gridPoint, currentState.gameMap.gridSize)))
         }
         .addChildren(currentState.player1.snake.givePath.map(pt => snakeAsset.moveTo(coordsToGridPoint(pt, currentState.gameMap.gridSize))))
         .addChildren { //TODO: Could be statically pregenerated / loaded from Tiled map
-          currentState.gameMap.findWalls.map(w => currentState.staticAssets.wall.moveTo(coordsToGridPoint(w.gridPoint, currentState.gameMap.gridSize)))
+          currentState.gameMap.findWalls.map(w => currentState.staticAssets.gameScreen.wall.moveTo(coordsToGridPoint(w.gridPoint, currentState.gameMap.gridSize)))
         }
 
   }
