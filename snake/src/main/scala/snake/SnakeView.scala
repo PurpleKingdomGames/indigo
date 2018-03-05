@@ -9,7 +9,7 @@ object SnakeView {
   def viewUpdate: (GameTime, SnakeModel, FrameInputEvents) => SceneGraphUpdate[SnakeEvent] = (_, model, _) =>
     model.currentScreen match {
       case TitleScreen =>
-        TitleScreenFunctions.View.update()
+        TitleScreenFunctions.View.update(model.titleScreenModel)
 
       case GameScreen =>
         GameScreenFunctions.View.update(model.gameScreenModel)

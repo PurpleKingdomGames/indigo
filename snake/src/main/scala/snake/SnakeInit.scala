@@ -4,6 +4,7 @@ import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.scenegraph.Graphic
 import com.purplekingdomgames.indigo.gameengine.{Startup, StartupSuccess, ToReportable}
 import com.purplekingdomgames.indigoat.grid.GridSize
+import com.purplekingdomgames.indigoat.ui.ButtonAssets
 
 object SnakeInit {
 
@@ -49,9 +50,7 @@ case class SnakeStartupData(gridSize: GridSize, staticAssets: StaticAssets)
 
 case class StaticAssets(ui: UIAssets, gameScreen: GameScreenAssets)
 
-case class UIAssets(leftAndRight: ButtonAssets)
-
-case class ButtonAssets(up: Graphic[SnakeEvent], over: Graphic[SnakeEvent], down: Graphic[SnakeEvent])
+case class UIAssets(leftAndRight: ButtonAssets[SnakeEvent])
 
 case class GameScreenAssets(wall: Graphic[SnakeEvent],
                             apple: Graphic[SnakeEvent],

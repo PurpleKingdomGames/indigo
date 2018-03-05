@@ -1,7 +1,9 @@
 package snake
 
 import com.purplekingdomgames.indigo.gameengine._
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Rectangle
 import com.purplekingdomgames.indigoat.grid.{GridPoint, GridSize}
+import com.purplekingdomgames.indigoat.ui.{Button, ButtonAssets, ButtonState}
 import snake.arenas.GameMap
 import snake.datatypes.{CollisionCheckOutcome, Snake}
 import snake.screens._
@@ -11,13 +13,26 @@ object SnakeModel {
   def initialModel(startupData: SnakeStartupData): SnakeModel =
     SnakeModel(
       currentScreen = TitleScreen,
+      titleScreenModel = TitleScreenModel(
+        Button(
+          Rectangle(100, 100, 16, 16),
+          ButtonState.Up,
+          ButtonAssets(
+            up = startupData.staticAssets.gameScreen.player1.alive,
+            over = startupData.staticAssets.gameScreen.player2.alive,
+            down = startupData.staticAssets.gameScreen.player3.alive
+          )
+        ).withClickAction((_, btn) => btn.toDownState)
+          .withHoverOverAction((_, btn) => btn.toHoverState)
+          .withHoverOutAction((_, btn) => btn.toUpState)
+      ),
       gameScreenModel = GameScreenFunctions.Model.initialModel(startupData)
     )
 
   def modelUpdate(gameTime: GameTime, state: SnakeModel): GameEvent => SnakeModel = gameEvent =>
     state.currentScreen match {
       case TitleScreen =>
-        TitleScreenFunctions.Model.update(state)(gameEvent)
+        TitleScreenFunctions.Model.update(gameTime, state)(gameEvent)
 
       case GameScreen =>
         state.copy(gameScreenModel = GameScreenFunctions.Model.update(gameTime, state.gameScreenModel)(gameEvent))
@@ -25,7 +40,9 @@ object SnakeModel {
 
 }
 
-case class SnakeModel(currentScreen: Screen, gameScreenModel: GameScreenModel)
+case class SnakeModel(currentScreen: Screen, titleScreenModel: TitleScreenModel, gameScreenModel: GameScreenModel)
+
+case class TitleScreenModel(button: Button[SnakeEvent])
 
 case class GameScreenModel(running: Boolean, staticAssets: StaticAssets, player1: Player, gameMap: GameMap)
 

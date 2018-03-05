@@ -1,17 +1,30 @@
 package snake.screens
 
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Rectangle
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{SceneGraphRootNode, SceneGraphUiLayer, SceneGraphUpdate, Text}
-import com.purplekingdomgames.indigo.gameengine.{GameEvent, KeyUp}
-import snake.{ButtonAssets, SnakeAssets, SnakeEvent, SnakeModel}
+import com.purplekingdomgames.indigo.gameengine._
+import com.purplekingdomgames.indigo.gameengine.scenegraph._
+import snake.{SnakeAssets, SnakeEvent, SnakeModel, TitleScreenModel}
 
 object TitleScreenFunctions {
 
   object Model {
 
-    def update(state: SnakeModel): GameEvent => SnakeModel = {
+    def update(gameTime: GameTime, state: SnakeModel): GameEvent => SnakeModel = {
       case KeyUp(_) =>
         state.copy(currentScreen = GameScreen)
+
+      case e @ MouseClick(_, _) =>
+        state.copy(
+          titleScreenModel = state.titleScreenModel.copy(
+            button = state.titleScreenModel.button.update(gameTime, e)
+          )
+        )
+
+      case e @ MousePosition(_, _) =>
+        state.copy(
+          titleScreenModel = state.titleScreenModel.copy(
+            button = state.titleScreenModel.button.update(gameTime, e)
+          )
+        )
 
       case _ =>
         state
@@ -21,44 +34,18 @@ object TitleScreenFunctions {
 
   object View {
 
-    def update: () => SceneGraphUpdate[SnakeEvent] = () =>
+    def update: TitleScreenModel => SceneGraphUpdate[SnakeEvent] = model =>
       SceneGraphUpdate(
-        SceneGraphRootNode.empty.addUiLayer(ui),
+        SceneGraphRootNode.empty.addUiLayer(ui(model)),
         Nil
       )
 
-    def ui: SceneGraphUiLayer[SnakeEvent] =
+    def ui: TitleScreenModel => SceneGraphUiLayer[SnakeEvent] = model =>
       SceneGraphUiLayer[SnakeEvent](
-        Text[SnakeEvent]("press any key\nto start", 10, 10, 1, SnakeAssets.fontInfo).alignLeft
+        Text[SnakeEvent]("press any key\nto start", 10, 10, 1, SnakeAssets.fontInfo).alignLeft,
+        model.button.draw
       )
 
   }
-
-}
-
-object Button {
-
-  object Model {
-
-    def update(): Unit = ???
-
-  }
-
-  object View {
-
-    def update(): Unit = ???
-
-  }
-
-}
-
-case class ButtonModel(bounds: Rectangle, state: ButtonState, assets: ButtonAssets)
-
-sealed trait ButtonState
-object ButtonState {
-
-  case object Up extends ButtonState
-  case object Over extends ButtonState
-  case object Down extends ButtonState
 
 }
