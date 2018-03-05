@@ -1,8 +1,9 @@
 package snake.screens
 
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Rectangle
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{SceneGraphRootNode, SceneGraphUiLayer, SceneGraphUpdate, Text}
 import com.purplekingdomgames.indigo.gameengine.{GameEvent, KeyUp}
-import snake.{SnakeAssets, SnakeEvent, SnakeModel}
+import snake.{ButtonAssets, SnakeAssets, SnakeEvent, SnakeModel}
 
 object TitleScreenFunctions {
 
@@ -32,5 +33,32 @@ object TitleScreenFunctions {
       )
 
   }
+
+}
+
+object Button {
+
+  object Model {
+
+    def update(): Unit = ???
+
+  }
+
+  object View {
+
+    def update(): Unit = ???
+
+  }
+
+}
+
+case class ButtonModel(bounds: Rectangle, state: ButtonState, assets: ButtonAssets)
+
+sealed trait ButtonState
+object ButtonState {
+
+  case object Up extends ButtonState
+  case object Over extends ButtonState
+  case object Down extends ButtonState
 
 }

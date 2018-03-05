@@ -12,6 +12,13 @@ object SnakeInit {
       SnakeStartupData(
         gridSize = gridSize,
         staticAssets = StaticAssets(
+          ui = UIAssets(
+            leftAndRight = ButtonAssets(
+              up = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(208, 0, 48, 32),
+              over = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(208, 32, 48, 32),
+              down = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(208, 64, 48, 32)
+            )
+          ),
           gameScreen = GameScreenAssets(
             wall = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture),
             apple = Graphic(0, 0, 16, 16, 1, SnakeAssets.snakeTexture).withCrop(16, 0, 16, 16),
@@ -40,7 +47,11 @@ object SnakeInit {
 
 case class SnakeStartupData(gridSize: GridSize, staticAssets: StaticAssets)
 
-case class StaticAssets(gameScreen: GameScreenAssets)
+case class StaticAssets(ui: UIAssets, gameScreen: GameScreenAssets)
+
+case class UIAssets(leftAndRight: ButtonAssets)
+
+case class ButtonAssets(up: Graphic[SnakeEvent], over: Graphic[SnakeEvent], down: Graphic[SnakeEvent])
 
 case class GameScreenAssets(wall: Graphic[SnakeEvent],
                             apple: Graphic[SnakeEvent],
