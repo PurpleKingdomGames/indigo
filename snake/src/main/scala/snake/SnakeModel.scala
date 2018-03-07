@@ -22,9 +22,11 @@ object SnakeModel {
             over = startupData.staticAssets.gameScreen.player2.alive,
             down = startupData.staticAssets.gameScreen.player3.alive
           )
-        ).withClickAction((_, btn) => btn.toDownState)
-          .withHoverOverAction((_, btn) => btn.toHoverState)
-          .withHoverOutAction((_, btn) => btn.toUpState)
+        )
+//          .withDownAction((_, btn) => btn.toDownState)
+//          .withUpAction((_, btn) => btn.toUpState)
+//          .withHoverOverAction((_, btn) => if(btn.state.isDown) btn else btn.toHoverState)
+//          .withHoverOutAction((_, btn) => if(btn.state.isDown) btn else btn.toUpState)
       ),
       gameScreenModel = GameScreenFunctions.Model.initialModel(startupData)
     )

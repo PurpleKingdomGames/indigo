@@ -12,7 +12,14 @@ object TitleScreenFunctions {
       case KeyUp(_) =>
         state.copy(currentScreen = GameScreen)
 
-      case e @ MouseClick(_, _) =>
+      case e @ MouseDown(_, _) =>
+        state.copy(
+          titleScreenModel = state.titleScreenModel.copy(
+            button = state.titleScreenModel.button.update(gameTime, e)
+          )
+        )
+
+      case e @ MouseUp(_, _) =>
         state.copy(
           titleScreenModel = state.titleScreenModel.copy(
             button = state.titleScreenModel.button.update(gameTime, e)
