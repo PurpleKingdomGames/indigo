@@ -52,6 +52,7 @@ object Keys {
   val PAUSE_BREAK: Int = 19
   val CAPS_LOCK: Int = 20
   val ESCAPE: Int = 27
+  val SPACE: Int = 32
   val PAGE_UP: Int = 33
   val PAGE_DOWN: Int = 34
   val END: Int = 35

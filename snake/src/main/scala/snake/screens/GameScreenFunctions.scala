@@ -16,6 +16,7 @@ object GameScreenFunctions {
     def initialModel(startupData: SnakeStartupData): GameScreenModel =
       GameScreenModel(
         running = true,
+        gridSize = startupData.gridSize,
         staticAssets = startupData.staticAssets,
         player1 = Player(
           snake = Snake(

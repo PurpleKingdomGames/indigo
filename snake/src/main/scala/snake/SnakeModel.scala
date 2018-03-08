@@ -12,8 +12,8 @@ object SnakeModel {
 
   def initialModel(startupData: SnakeStartupData): SnakeModel =
     SnakeModel(
-      currentScreen = TitleScreen,
-      titleScreenModel = TitleScreenModel(
+      currentScreen = MenuScreen,
+      menuScreenModel = MenuScreenModel(
         Button(
           Rectangle(100, 100, 16, 16),
           ButtonState.Up,
@@ -33,20 +33,40 @@ object SnakeModel {
 
   def modelUpdate(gameTime: GameTime, state: SnakeModel): GameEvent => SnakeModel = gameEvent =>
     state.currentScreen match {
-      case TitleScreen =>
-        TitleScreenFunctions.Model.update(gameTime, state)(gameEvent)
+      case MenuScreen =>
+        MenuScreenFunctions.Model.update(gameTime, state)(gameEvent)
+
+      case GameScreen if state.gameScreenModel.running =>
+        state.copy(gameScreenModel = GameScreenFunctions.Model.update(gameTime, state.gameScreenModel)(gameEvent))
 
       case GameScreen =>
-        state.copy(gameScreenModel = GameScreenFunctions.Model.update(gameTime, state.gameScreenModel)(gameEvent))
+        // TODO: Could do this with an event?
+        state.copy(currentScreen = GameOverScreen)
+
+      case GameOverScreen =>
+        GameOverScreenFunctions.Model.update(state)(gameEvent)
     }
 
 }
 
-case class SnakeModel(currentScreen: Screen, titleScreenModel: TitleScreenModel, gameScreenModel: GameScreenModel)
+case class SnakeModel(currentScreen: Screen, menuScreenModel: MenuScreenModel, gameScreenModel: GameScreenModel)
 
-case class TitleScreenModel(button: Button[SnakeEvent])
+case class MenuScreenModel(button: Button[SnakeEvent])
 
-case class GameScreenModel(running: Boolean, staticAssets: StaticAssets, player1: Player, gameMap: GameMap)
+case class GameScreenModel(running: Boolean, gridSize: GridSize, staticAssets: StaticAssets, player1: Player, gameMap: GameMap) {
+  def reset: GameScreenModel =
+    this.copy(
+      running = true,
+      player1 = Player(
+        snake = Snake(
+          this.gridSize.centre.x,
+          this.gridSize.centre.y
+        ).grow.grow,
+        tickDelay = 100,
+        lastUpdated = 0
+      )
+    )
+}
 
 case class Player(snake: Snake, tickDelay: Int, lastUpdated: Double) {
 
