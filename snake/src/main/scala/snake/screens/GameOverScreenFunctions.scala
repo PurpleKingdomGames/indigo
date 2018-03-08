@@ -28,7 +28,7 @@ object GameOverScreenFunctions {
 
     def ui: () => SceneGraphUiLayer[SnakeEvent] = () =>
       SceneGraphUiLayer[SnakeEvent](
-        Text[SnakeEvent]("Game over!\nPress any SPACE\nto try again", 10, 10, 1, SnakeAssets.fontInfo).alignLeft
+        Text[SnakeEvent]("Game over!\nPress SPACE\nto try again", 10, 10, 1, SnakeAssets.fontInfo).alignLeft
       )
 
   }

@@ -9,7 +9,7 @@ object MenuScreenFunctions {
   object Model {
 
     def update(gameTime: GameTime, state: SnakeModel): GameEvent => SnakeModel = {
-      case KeyUp(_) =>
+      case KeyUp(Keys.SPACE) =>
         state.copy(currentScreen = GameScreen)
 
       case e @ MouseDown(_, _) =>
@@ -49,7 +49,7 @@ object MenuScreenFunctions {
 
     def ui: MenuScreenModel => SceneGraphUiLayer[SnakeEvent] = model =>
       SceneGraphUiLayer[SnakeEvent](
-        Text[SnakeEvent]("press any key\nto start", 10, 10, 1, SnakeAssets.fontInfo).alignLeft,
+        Text[SnakeEvent]("press space\nto start", 10, 10, 1, SnakeAssets.fontInfo).alignLeft,
         model.button.draw
       )
 
