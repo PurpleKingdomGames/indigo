@@ -118,11 +118,22 @@ Game Engine
 - Full screen - when the plugin is generating the html.
 - Tilemap loading
 - Find a way to reduce requestAnimationFrame calls
+- Bake networking into lifecycle
+- Automata 
+  - Simple programs that live short lives based on rules for game making convenience
+  - Boring things to keep track of in your game engine and have mostly no bearing on the game itself
+  - Can be created explicitly or by event
+  - Examples: 
+    1. Bullets - no model needed, has a graphic, flies in a direction, hitTest function creates an event
+    1. Score! - When a player scores a point you flash up a number where they're standing that fades out over time.
+    1. Firework - a curving bullet automata that creates an explosion automata (by event) once it's travelled a set distance.
+  - Particle systems are advanced automata
 
 Game
 - Make game.
 
 Optimisations:
+- Offload more onto the GPU - matrix calculations for example.
 - I think Scalajs is downloading script files on load, can they be local?
 - Performance enhancement: We do some CPU side sorting, which generally will be ok, but if there are thousands of tiles
   and most of them never change, it would be nice to declare that somehow and only have to sort them once. (statics)
