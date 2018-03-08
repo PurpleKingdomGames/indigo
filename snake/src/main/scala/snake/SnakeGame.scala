@@ -30,7 +30,7 @@ object SnakeGame {
     Indigo.game
       .withConfig(config)
       .withAssets(SnakeAssets.assets)
-      .startUpGameWith(SnakeInit.initialise(gridSize))
+      .startUpGameWith(SnakeInit.initialise(config.viewport, gridSize))
       .usingInitialModel(SnakeModel.initialModel)
       .updateModelUsing(SnakeModel.modelUpdate)
       .drawUsing[SnakeEvent](SnakeView.viewUpdate)

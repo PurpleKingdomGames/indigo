@@ -4,6 +4,7 @@ import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Rectangle
 import com.purplekingdomgames.indigoat.grid.{GridPoint, GridSize}
 import com.purplekingdomgames.indigoat.ui.{Button, ButtonAssets, ButtonState}
+import com.purplekingdomgames.shared.GameViewport
 import snake.arenas.GameMap
 import snake.datatypes.{CollisionCheckOutcome, Snake}
 import snake.screens._
@@ -14,6 +15,7 @@ object SnakeModel {
     SnakeModel(
       currentScreen = MenuScreen,
       menuScreenModel = MenuScreenModel(
+        startupData.viewport,
         Button(
           Rectangle(100, 100, 16, 16),
           ButtonState.Up,
@@ -51,7 +53,7 @@ object SnakeModel {
 
 case class SnakeModel(currentScreen: Screen, menuScreenModel: MenuScreenModel, gameScreenModel: GameScreenModel)
 
-case class MenuScreenModel(button: Button[SnakeEvent])
+case class MenuScreenModel(gameViewport: GameViewport, button: Button[SnakeEvent])
 
 case class GameScreenModel(running: Boolean, gridSize: GridSize, staticAssets: StaticAssets, player1: Player, gameMap: GameMap) {
   def reset: GameScreenModel =

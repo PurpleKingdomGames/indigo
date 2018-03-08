@@ -5,12 +5,14 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.Graphic
 import com.purplekingdomgames.indigo.gameengine.{Startup, StartupSuccess, ToReportable}
 import com.purplekingdomgames.indigoat.grid.GridSize
 import com.purplekingdomgames.indigoat.ui.ButtonAssets
+import com.purplekingdomgames.shared.GameViewport
 
 object SnakeInit {
 
-  def initialise(gridSize: GridSize): AssetCollection => Startup[ErrorReport, SnakeStartupData] = _ =>
+  def initialise(viewport: GameViewport, gridSize: GridSize): AssetCollection => Startup[ErrorReport, SnakeStartupData] = _ =>
     StartupSuccess(
       SnakeStartupData(
+        viewport = viewport,
         gridSize = gridSize,
         staticAssets = StaticAssets(
           ui = UIAssets(
@@ -46,7 +48,7 @@ object SnakeInit {
 
 }
 
-case class SnakeStartupData(gridSize: GridSize, staticAssets: StaticAssets)
+case class SnakeStartupData(viewport: GameViewport, gridSize: GridSize, staticAssets: StaticAssets)
 
 case class StaticAssets(ui: UIAssets, gameScreen: GameScreenAssets)
 

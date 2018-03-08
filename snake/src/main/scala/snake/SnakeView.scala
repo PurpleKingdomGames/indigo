@@ -15,7 +15,7 @@ object SnakeView {
         GameScreenFunctions.View.update(model.gameScreenModel)
 
       case GameOverScreen =>
-        GameOverScreenFunctions.View.update()
+        GameOverScreenFunctions.View.update(model.menuScreenModel.gameViewport)
     }
 
 }

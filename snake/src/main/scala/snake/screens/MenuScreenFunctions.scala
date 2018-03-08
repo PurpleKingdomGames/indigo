@@ -49,7 +49,7 @@ object MenuScreenFunctions {
 
     def ui: MenuScreenModel => SceneGraphUiLayer[SnakeEvent] = model =>
       SceneGraphUiLayer[SnakeEvent](
-        Text[SnakeEvent]("press space\nto start", 10, 10, 1, SnakeAssets.fontInfo).alignLeft,
+        Text[SnakeEvent]("press space to start", model.gameViewport.width / 2, model.gameViewport.height - 30, 1, SnakeAssets.fontInfo).alignCenter,
         model.button.draw
       )
 
