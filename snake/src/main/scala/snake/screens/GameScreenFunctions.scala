@@ -105,7 +105,7 @@ object GameScreenFunctions {
     def coordsToGridPoint(gridPoint: GridPoint, gridSize: GridSize): Point =
       Point(gridPoint.x * gridSize.gridSquareSize, ((gridSize.rows - 1) - gridPoint.y) * gridSize.gridSquareSize)
 
-    def update(model: GameScreenModel): SceneGraphUpdate[SnakeEvent] =
+    def update(model: GameScreenModel): SceneGraphUpdate =
       SceneGraphUpdate(
         SceneGraphRootNode(
           game = gameLayer(model, if(model.running) model.staticAssets.gameScreen.player4.alive else model.staticAssets.gameScreen.player4.dead),
@@ -115,7 +115,7 @@ object GameScreenFunctions {
         Nil
       )
 
-    def gameLayer(currentState: GameScreenModel, snakeAsset: Graphic[SnakeEvent]): SceneGraphGameLayer[SnakeEvent] =
+    def gameLayer(currentState: GameScreenModel, snakeAsset: Graphic): SceneGraphGameLayer =
       SceneGraphGameLayer()
         .addChildren {
           currentState.gameMap.findApples.map(a => currentState.staticAssets.gameScreen.apple.moveTo(coordsToGridPoint(a.gridPoint, currentState.gameMap.gridSize)))

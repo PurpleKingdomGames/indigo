@@ -28,7 +28,7 @@ object MyGame {
     val dude = for {
       json <- assetCollection.texts.find(p => p.name == MyAssets.dudeName + "-json").map(_.contents)
       aseprite <- AsepriteHelper.fromJson(json)
-      sprite <- AsepriteHelper.toSprite[MyViewEventDataType](aseprite, Depth(3), MyAssets.dudeName)
+      sprite <- AsepriteHelper.toSprite(aseprite, Depth(3), MyAssets.dudeName)
     } yield Dude(
       aseprite,
       sprite
@@ -48,16 +48,16 @@ object MyGame {
   implicit val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel = (_, gameModel) =>
     MyModel.updateModel(gameModel)
 
-  implicit val updateView: (GameTime, MyGameModel, FrameInputEvents) => SceneGraphUpdate[MyViewEventDataType] = (_, gameModel, frameInputEvents) =>
+  implicit val updateView: (GameTime, MyGameModel, FrameInputEvents) => SceneGraphUpdate = (_, gameModel, frameInputEvents) =>
     MyView.updateView(gameModel, frameInputEvents)
 
   @JSExportTopLevel("com.example.sandbox.MyGame.main")
   def main(args: Array[String]): Unit =
-    Indigo.start[MyStartupData, MyErrorReport, MyGameModel, MyViewEventDataType]
+    Indigo.start[MyStartupData, MyErrorReport, MyGameModel]
 
 }
 
-case class Dude(aseprite: Aseprite, sprite: Sprite[MyViewEventDataType])
+case class Dude(aseprite: Aseprite, sprite: Sprite)
 case class MyStartupData(dude: Dude)
 
 case class MyErrorReport(errors: List[String])
@@ -69,5 +69,3 @@ object MyErrorReport {
   def apply(message: String*): MyErrorReport = MyErrorReport(message.toList)
 
 }
-
-case class MyViewEventDataType()

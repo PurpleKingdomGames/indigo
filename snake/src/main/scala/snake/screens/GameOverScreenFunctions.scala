@@ -21,15 +21,15 @@ object GameOverScreenFunctions {
 
   object View {
 
-    def update: GameViewport => SceneGraphUpdate[SnakeEvent] = viewport =>
+    def update: GameViewport => SceneGraphUpdate = viewport =>
       SceneGraphUpdate(
         SceneGraphRootNode.empty.addUiLayer(ui(viewport)),
         Nil
       )
 
-    def ui: GameViewport => SceneGraphUiLayer[SnakeEvent] = viewport =>
-      SceneGraphUiLayer[SnakeEvent](
-        Text[SnakeEvent]("Game over!\nPress SPACE!", viewport.width / 2, (viewport.height / 2) - 30, 1, SnakeAssets.fontInfo).alignCenter
+    def ui: GameViewport => SceneGraphUiLayer = viewport =>
+      SceneGraphUiLayer(
+        Text("Game over!\nPress SPACE!", viewport.width / 2, (viewport.height / 2) - 30, 1, SnakeAssets.fontInfo).alignCenter
       )
 
   }

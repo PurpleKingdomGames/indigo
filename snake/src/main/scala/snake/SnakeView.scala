@@ -6,7 +6,7 @@ import snake.screens._
 
 object SnakeView {
 
-  def viewUpdate: (GameTime, SnakeModel, FrameInputEvents) => SceneGraphUpdate[SnakeEvent] = (gameTime, model, frameInputEvents) =>
+  def viewUpdate: (GameTime, SnakeModel, FrameInputEvents) => SceneGraphUpdate = (gameTime, model, frameInputEvents) =>
     model.currentScreen match {
       case MenuScreen =>
         MenuScreenFunctions.View.update(gameTime, frameInputEvents, model.menuScreenModel)

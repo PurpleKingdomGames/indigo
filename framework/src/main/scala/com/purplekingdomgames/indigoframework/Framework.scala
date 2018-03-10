@@ -39,16 +39,16 @@ object Framework {
   implicit val updateModel: (GameTime, GameModel) => GameEvent => GameModel = (_, gameModel) =>
     GameModelHelper.updateModel(gameModel)
 
-  implicit val updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate[GameViewEvent] = (_, gameModel, _) =>
+  implicit val updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate = (_, gameModel, _) =>
     GameViewHelper.updateView(gameModel)
 
   @JSExport
   def startLocal(): Unit =
-    Indigo.start[StartupData, StartupErrorReport, GameModel, GameViewEvent]
+    Indigo.start[StartupData, StartupErrorReport, GameModel]
 
   @JSExport
   def startRemote(): Unit =
-    Indigo.start[StartupData, StartupErrorReport, GameModel, GameViewEvent]
+    Indigo.start[StartupData, StartupErrorReport, GameModel]
 
 }
 

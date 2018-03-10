@@ -39,7 +39,7 @@ sealed trait KeyboardEvent extends GameEvent {
 case class KeyUp(keyCode: Int) extends KeyboardEvent
 case class KeyDown(keyCode: Int) extends KeyboardEvent
 
-case class ViewEvent[EventDataType](eventDataType: EventDataType) extends GameEvent
+trait ViewEvent extends GameEvent
 
 object Keys {
 

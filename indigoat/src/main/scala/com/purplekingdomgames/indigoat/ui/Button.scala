@@ -6,20 +6,20 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Rectangle
 
 object Button {
 
-  def apply[ViewEventType](state: ButtonState, assets: ButtonAssets[ViewEventType]): Button[ViewEventType] =
+  def apply(state: ButtonState, assets: ButtonAssets): Button =
     Button(state, assets, ButtonActions(None, None, None, None))
 
   object Model {
 
     //TODO: needs to receive some sort of button event to change the state against.
-    def update[ViewEventType](button: Button[ViewEventType]): Button[ViewEventType] =
+    def update(button: Button): Button =
       button
 
   }
 
   object View {
 
-    def applyEvents[ViewEventType](bounds: Rectangle, gameTime: GameTime, button: Button[ViewEventType]): FrameInputEvents => Button[ViewEventType] = frameEvents => {
+    def applyEvents(bounds: Rectangle, gameTime: GameTime, button: Button): FrameInputEvents => Button = frameEvents => {
       frameEvents.events.foldLeft(button) { (btn, e) =>
         e match {
           case MouseUp(x, y) if bounds.isPointWithin(x, y) =>
@@ -49,7 +49,7 @@ object Button {
       }
     }
 
-    def renderButton[ViewEventType](bounds: Rectangle)(button: Button[ViewEventType]): Graphic[ViewEventType] =
+    def renderButton(bounds: Rectangle)(button: Button): Graphic =
       button.state match {
         case ButtonState.Up =>
           button.assets.up.moveTo(bounds.position)
@@ -61,44 +61,44 @@ object Button {
           button.assets.down.moveTo(bounds.position)
       }
 
-    def update[ViewEventType](bounds: Rectangle, gameTime: GameTime, button: Button[ViewEventType], frameEvents: FrameInputEvents): Graphic[ViewEventType] =
+    def update(bounds: Rectangle, gameTime: GameTime, button: Button, frameEvents: FrameInputEvents): Graphic =
       (applyEvents(bounds, gameTime, button) andThen renderButton(bounds))(frameEvents)
 
   }
 
 }
 
-case class Button[ViewEventType](state: ButtonState, assets: ButtonAssets[ViewEventType], actions: ButtonActions[ViewEventType]) {
+case class Button(state: ButtonState, assets: ButtonAssets, actions: ButtonActions) {
 
-  def draw(bounds: Rectangle, gameTime: GameTime, frameEvents: FrameInputEvents): Graphic[ViewEventType] =
+  def draw(bounds: Rectangle, gameTime: GameTime, frameEvents: FrameInputEvents): Graphic =
     Button.View.update(bounds, gameTime, this, frameEvents)
 
-  def withUpAction(action: (GameTime, Button[ViewEventType]) => Button[ViewEventType]): Button[ViewEventType] =
+  def withUpAction(action: (GameTime, Button) => Button): Button =
     this.copy(actions = actions.copy(onUp = Option(action)))
 
-  def withDownAction(action: (GameTime, Button[ViewEventType]) => Button[ViewEventType]): Button[ViewEventType] =
+  def withDownAction(action: (GameTime, Button) => Button): Button =
     this.copy(actions = actions.copy(onDown = Option(action)))
 
-  def withHoverOverAction(action: (GameTime, Button[ViewEventType])  => Button[ViewEventType]): Button[ViewEventType] =
+  def withHoverOverAction(action: (GameTime, Button)  => Button): Button =
     this.copy(actions = actions.copy(onHoverOver = Option(action)))
 
-  def withHoverOutAction(action: (GameTime, Button[ViewEventType])  => Button[ViewEventType]): Button[ViewEventType] =
+  def withHoverOutAction(action: (GameTime, Button)  => Button): Button =
     this.copy(actions = actions.copy(onHoverOut = Option(action)))
 
-  def toUpState: Button[ViewEventType] =
+  def toUpState: Button =
     this.copy(state = ButtonState.Up)
 
-  def toHoverState: Button[ViewEventType] =
+  def toHoverState: Button =
     this.copy(state = ButtonState.Over)
 
-  def toDownState: Button[ViewEventType] =
+  def toDownState: Button =
     this.copy(state = ButtonState.Down)
 }
 
-case class ButtonActions[ViewEventType](onUp: Option[(GameTime, Button[ViewEventType]) => Button[ViewEventType]],
-                                        onDown: Option[(GameTime, Button[ViewEventType]) => Button[ViewEventType]],
-                                        onHoverOver: Option[(GameTime, Button[ViewEventType]) => Button[ViewEventType]],
-                                        onHoverOut: Option[(GameTime, Button[ViewEventType]) => Button[ViewEventType]])
+case class ButtonActions(onUp: Option[(GameTime, Button) => Button],
+                                        onDown: Option[(GameTime, Button) => Button],
+                                        onHoverOver: Option[(GameTime, Button) => Button],
+                                        onHoverOut: Option[(GameTime, Button) => Button])
 
 sealed trait ButtonState {
   def isDown: Boolean
@@ -117,4 +117,4 @@ object ButtonState {
 
 }
 
-case class ButtonAssets[ViewEventType](up: Graphic[ViewEventType], over: Graphic[ViewEventType], down: Graphic[ViewEventType])
+case class ButtonAssets(up: Graphic, over: Graphic, down: Graphic)

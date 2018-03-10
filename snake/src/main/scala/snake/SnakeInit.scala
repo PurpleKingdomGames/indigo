@@ -52,16 +52,16 @@ case class SnakeStartupData(viewport: GameViewport, gridSize: GridSize, staticAs
 
 case class StaticAssets(ui: UIAssets, gameScreen: GameScreenAssets)
 
-case class UIAssets(leftAndRight: ButtonAssets[SnakeEvent])
+case class UIAssets(leftAndRight: ButtonAssets)
 
-case class GameScreenAssets(wall: Graphic[SnakeEvent],
-                            apple: Graphic[SnakeEvent],
+case class GameScreenAssets(wall: Graphic,
+                            apple: Graphic,
                             player1: PlayerSnakeAssets,
                             player2: PlayerSnakeAssets,
                             player3: PlayerSnakeAssets,
                             player4: PlayerSnakeAssets)
 
-case class PlayerSnakeAssets(alive: Graphic[SnakeEvent], dead: Graphic[SnakeEvent])
+case class PlayerSnakeAssets(alive: Graphic, dead: Graphic)
 
 case class ErrorReport(errors: List[String])
 

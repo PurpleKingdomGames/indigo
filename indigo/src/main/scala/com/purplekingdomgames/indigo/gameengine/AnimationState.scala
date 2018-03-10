@@ -5,10 +5,10 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph._
 
 object AnimationState {
 
-  private def saveMementos[ViewEventDataType](nodes: List[SceneGraphNodeLeaf[ViewEventDataType]]): List[AnimationMemento] = {
+  private def saveMementos(nodes: List[SceneGraphNodeLeaf]): List[AnimationMemento] = {
     nodes
       .flatMap {
-        case s: Sprite[ViewEventDataType] => s.saveAnimationMemento :: Nil
+        case s: Sprite => s.saveAnimationMemento :: Nil
         case _ => Nil
       }
       .collect {
@@ -16,7 +16,7 @@ object AnimationState {
       }
   }
 
-  def extractAnimationStates[ViewEventDataType](sceneGraphRootNode: SceneGraphRootNodeFlat[ViewEventDataType]): AnimationStates = AnimationStates {
+  def extractAnimationStates(sceneGraphRootNode: SceneGraphRootNodeFlat): AnimationStates = AnimationStates {
     saveMementos(sceneGraphRootNode.game.nodes) ++
     saveMementos(sceneGraphRootNode.lighting.nodes) ++
     saveMementos(sceneGraphRootNode.ui.nodes)

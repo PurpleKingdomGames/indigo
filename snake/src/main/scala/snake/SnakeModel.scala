@@ -26,7 +26,7 @@ object SnakeModel {
       gameScreenModel = GameScreenFunctions.Model.initialModel(startupData)
     )
 
-  private def makeButton(startupData: SnakeStartupData, num: Int): Button[SnakeEvent] =
+  private def makeButton(startupData: SnakeStartupData, num: Int): Button =
     Button(
       ButtonState.Up,
       ButtonAssets(
@@ -61,7 +61,7 @@ case class SnakeModel(currentScreen: Screen, menuScreenModel: MenuScreenModel, g
 
 case class MenuScreenModel(gameViewport: GameViewport, menuItems: List[MenuItem])
 
-case class MenuItem(text: String, button: Button[SnakeEvent])
+case class MenuItem(text: String, button: Button)
 
 case class GameScreenModel(running: Boolean, gridSize: GridSize, staticAssets: StaticAssets, player1: Player, gameMap: GameMap) {
   def reset: GameScreenModel =

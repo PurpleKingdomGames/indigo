@@ -3,38 +3,38 @@ package com.purplekingdomgames.indigo.gameengine.scenegraph
 import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameEvent, GameTime, ViewEvent}
 import com.purplekingdomgames.indigo.util.metrics._
 
-case class SceneGraphRootNode[ViewEventDataType](game: SceneGraphGameLayer[ViewEventDataType], lighting: SceneGraphLightingLayer[ViewEventDataType], ui: SceneGraphUiLayer[ViewEventDataType]) {
+case class SceneGraphRootNode(game: SceneGraphGameLayer, lighting: SceneGraphLightingLayer, ui: SceneGraphUiLayer) {
 
-  private[gameengine] def flatten: SceneGraphRootNodeFlat[ViewEventDataType] =
-    SceneGraphRootNodeFlat[ViewEventDataType](
+  private[gameengine] def flatten: SceneGraphRootNodeFlat =
+    SceneGraphRootNodeFlat(
       game.flatten,
       lighting.flatten,
       ui.flatten
     )
 
-  def addLightingLayer(lighting: SceneGraphLightingLayer[ViewEventDataType]): SceneGraphRootNode[ViewEventDataType] =
+  def addLightingLayer(lighting: SceneGraphLightingLayer): SceneGraphRootNode =
     this.copy(lighting = lighting)
 
-  def addUiLayer(ui: SceneGraphUiLayer[ViewEventDataType]): SceneGraphRootNode[ViewEventDataType] =
+  def addUiLayer(ui: SceneGraphUiLayer): SceneGraphRootNode =
     this.copy(ui = ui)
 
 }
 
 object SceneGraphRootNode {
-  def apply[ViewEventDataType](game: SceneGraphGameLayer[ViewEventDataType]): SceneGraphRootNode[ViewEventDataType] =
+  def apply(game: SceneGraphGameLayer): SceneGraphRootNode =
     SceneGraphRootNode(game, SceneGraphLightingLayer.empty, SceneGraphUiLayer.empty)
 
-  def empty[ViewEventDataType]: SceneGraphRootNode[ViewEventDataType] =
+  def empty: SceneGraphRootNode =
     SceneGraphRootNode(SceneGraphGameLayer.empty, SceneGraphLightingLayer.empty, SceneGraphUiLayer.empty)
 }
 
-case class SceneGraphRootNodeFlat[ViewEventDataType](game: SceneGraphGameLayerFlat[ViewEventDataType], lighting: SceneGraphLightingLayerFlat[ViewEventDataType], ui: SceneGraphUiLayerFlat[ViewEventDataType]) {
+case class SceneGraphRootNodeFlat(game: SceneGraphGameLayerFlat, lighting: SceneGraphLightingLayerFlat, ui: SceneGraphUiLayerFlat) {
 
-  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates)(implicit metrics: IMetrics): SceneGraphRootNodeFlat[ViewEventDataType] = {
+  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates)(implicit metrics: IMetrics): SceneGraphRootNodeFlat = {
 
     metrics.record(ApplyAnimationMementoStartMetric)
 
-    val res = SceneGraphRootNodeFlat[ViewEventDataType](
+    val res = SceneGraphRootNodeFlat(
       game.applyAnimationMemento(animationStates),
       lighting.applyAnimationMemento(animationStates),
       ui.applyAnimationMemento(animationStates)
@@ -45,11 +45,11 @@ case class SceneGraphRootNodeFlat[ViewEventDataType](game: SceneGraphGameLayerFl
     res
   }
 
-  private[gameengine] def runAnimationActions(gameTime: GameTime)(implicit metrics: IMetrics): SceneGraphRootNodeFlat[ViewEventDataType] = {
+  private[gameengine] def runAnimationActions(gameTime: GameTime)(implicit metrics: IMetrics): SceneGraphRootNodeFlat = {
 
     metrics.record(RunAnimationActionsStartMetric)
 
-    val res = SceneGraphRootNodeFlat[ViewEventDataType](
+    val res = SceneGraphRootNodeFlat(
       game.runAnimationActions(gameTime),
       lighting.runAnimationActions(gameTime),
       ui.runAnimationActions(gameTime)
@@ -60,7 +60,7 @@ case class SceneGraphRootNodeFlat[ViewEventDataType](game: SceneGraphGameLayerFl
     res
   }
 
-  private[gameengine] def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent[ViewEventDataType]] =
+  private[gameengine] def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent] =
     game.collectViewEvents(gameEvents) ++
       lighting.collectViewEvents(gameEvents) ++
       ui.collectViewEvents(gameEvents)

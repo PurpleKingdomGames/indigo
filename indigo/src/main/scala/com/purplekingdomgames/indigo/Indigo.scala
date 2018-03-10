@@ -10,7 +10,7 @@ import scala.concurrent.Future
 
 object Indigo {
 
-  def start[StartupData, StartupError, GameModel, ViewEventDataType](implicit
+  def start[StartupData, StartupError, GameModel](implicit
                                                                      config: GameConfig,
                                                                      configAsync: Future[Option[GameConfig]],
                                                                      assets: Set[AssetType],
@@ -18,24 +18,24 @@ object Indigo {
                                                                      initialise: AssetCollection => Startup[StartupError, StartupData],
                                                                      initialModel: StartupData => GameModel,
                                                                      updateModel: (GameTime, GameModel) => GameEvent => GameModel,
-                                                                     updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate[ViewEventDataType]): Unit =
-    new GameEngine[StartupData, StartupError, GameModel, ViewEventDataType](config, configAsync, assets, assetsAsync, initialise, initialModel, updateModel, updateView).start()
+                                                                     updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate): Unit =
+    new GameEngine[StartupData, StartupError, GameModel](config, configAsync, assets, assetsAsync, initialise, initialModel, updateModel, updateView).start()
 
   def game: IndigoGameBase.type = IndigoGameBase
 }
 
 object IndigoGameBase {
 
-  class IndigoGame[StartupData, StartupError, GameModel, ViewEventDataType](config: GameConfig,
+  class IndigoGame[StartupData, StartupError, GameModel](config: GameConfig,
                                                                             configAsync: Future[Option[GameConfig]],
                                                                             assets: Set[AssetType],
                                                                             assetsAsync: Future[Set[AssetType]],
                                                                             initialise: AssetCollection => Startup[StartupError, StartupData],
                                                                             initialModel: StartupData => GameModel,
                                                                             updateModel: (GameTime, GameModel) => GameEvent => GameModel,
-                                                                            updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate[ViewEventDataType]) {
+                                                                            updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate) {
     def start(): Unit =
-      Indigo.start[StartupData, StartupError, GameModel, ViewEventDataType](config, configAsync, assets, assetsAsync, initialise, initialModel, updateModel, updateView)
+      Indigo.start[StartupData, StartupError, GameModel](config, configAsync, assets, assetsAsync, initialise, initialModel, updateModel, updateView)
   }
 
   class IndigoGameWithModelUpdate[StartupData, StartupError, GameModel](config: GameConfig,
@@ -45,7 +45,7 @@ object IndigoGameBase {
                                                                         initialise: AssetCollection => Startup[StartupError, StartupData],
                                                                         initialModel: StartupData => GameModel,
                                                                         updateModel: (GameTime, GameModel) => GameEvent => GameModel) {
-    def drawUsing[ViewEventDataType](updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate[ViewEventDataType]): IndigoGame[StartupData, StartupError, GameModel, ViewEventDataType] =
+    def drawUsing(updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate): IndigoGame[StartupData, StartupError, GameModel] =
       new IndigoGame(
         config: GameConfig,
         configAsync: Future[Option[GameConfig]],
@@ -54,7 +54,7 @@ object IndigoGameBase {
         initialise: AssetCollection => Startup[StartupError, StartupData],
         initialModel: StartupData => GameModel,
         updateModel: (GameTime, GameModel) => GameEvent => GameModel,
-        updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate[ViewEventDataType]
+        updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate
       )
   }
 

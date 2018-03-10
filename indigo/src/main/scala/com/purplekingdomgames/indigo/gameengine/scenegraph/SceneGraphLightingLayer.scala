@@ -3,24 +3,24 @@ package com.purplekingdomgames.indigo.gameengine.scenegraph
 import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameEvent, GameTime, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{AmbientLight, Tint}
 
-case class SceneGraphLightingLayer[ViewEventDataType](node: SceneGraphNodeBranch[ViewEventDataType], ambientLight: AmbientLight) {
+case class SceneGraphLightingLayer(node: SceneGraphNodeBranch, ambientLight: AmbientLight) {
 
-  private[gameengine] def flatten: SceneGraphLightingLayerFlat[ViewEventDataType] =
-    SceneGraphLightingLayerFlat[ViewEventDataType](node.flatten, ambientLight)
+  private[gameengine] def flatten: SceneGraphLightingLayerFlat =
+    SceneGraphLightingLayerFlat(node.flatten, ambientLight)
 
-  def withAmbientLight(ambientLight: AmbientLight): SceneGraphLightingLayer[ViewEventDataType] = {
+  def withAmbientLight(ambientLight: AmbientLight): SceneGraphLightingLayer = {
     this.copy(
       ambientLight = ambientLight
     )
   }
-  def withAmbientLightAmount(amount: Double): SceneGraphLightingLayer[ViewEventDataType] = {
+  def withAmbientLightAmount(amount: Double): SceneGraphLightingLayer = {
     this.copy(
       ambientLight = this.ambientLight.copy(
         amount = amount
       )
     )
   }
-  def withAmbientLightTint(r: Double, g: Double, b: Double): SceneGraphLightingLayer[ViewEventDataType] = {
+  def withAmbientLightTint(r: Double, g: Double, b: Double): SceneGraphLightingLayer = {
     this.copy(
       ambientLight = this.ambientLight.copy(
         tint = Tint(r, g, b)
@@ -28,49 +28,49 @@ case class SceneGraphLightingLayer[ViewEventDataType](node: SceneGraphNodeBranch
     )
   }
 
-  def addChild(child: SceneGraphNode[ViewEventDataType]): SceneGraphLightingLayer[ViewEventDataType] =
+  def addChild(child: SceneGraphNode): SceneGraphLightingLayer =
     node match {
-      case l: SceneGraphNodeLeaf[ViewEventDataType] =>
-        SceneGraphLightingLayer[ViewEventDataType](SceneGraphNodeBranch[ViewEventDataType](l, child), ambientLight)
+      case l: SceneGraphNodeLeaf =>
+        SceneGraphLightingLayer(SceneGraphNodeBranch(l, child), ambientLight)
 
-      case b: SceneGraphNodeBranch[ViewEventDataType] =>
-        SceneGraphLightingLayer[ViewEventDataType](b.addChild(child), ambientLight)
+      case b: SceneGraphNodeBranch =>
+        SceneGraphLightingLayer(b.addChild(child), ambientLight)
     }
 
-  def addChildren(children: List[SceneGraphNode[ViewEventDataType]]): SceneGraphLightingLayer[ViewEventDataType] =
+  def addChildren(children: List[SceneGraphNode]): SceneGraphLightingLayer =
     node match {
-      case l: SceneGraphNodeLeaf[ViewEventDataType] =>
-        SceneGraphLightingLayer[ViewEventDataType](SceneGraphNodeBranch[ViewEventDataType](l :: children), ambientLight)
+      case l: SceneGraphNodeLeaf =>
+        SceneGraphLightingLayer(SceneGraphNodeBranch(l :: children), ambientLight)
 
-      case b: SceneGraphNodeBranch[ViewEventDataType] =>
-        SceneGraphLightingLayer[ViewEventDataType](b.addChildren(children), ambientLight)
+      case b: SceneGraphNodeBranch =>
+        SceneGraphLightingLayer(b.addChildren(children), ambientLight)
     }
 
 }
 
 object SceneGraphLightingLayer {
-  def empty[ViewEventDataType]: SceneGraphLightingLayer[ViewEventDataType] =
+  def empty: SceneGraphLightingLayer =
     SceneGraphLightingLayer(
-      SceneGraphNode.empty[ViewEventDataType],
+      SceneGraphNode.empty,
       AmbientLight.none
     )
 
-  def apply[ViewEventDataType](nodes: SceneGraphNodeLeaf[ViewEventDataType]*): SceneGraphLightingLayer[ViewEventDataType] =
+  def apply(nodes: SceneGraphNodeLeaf*): SceneGraphLightingLayer =
     SceneGraphLightingLayer(
-      SceneGraphNodeBranch[ViewEventDataType](nodes.toList),
+      SceneGraphNodeBranch(nodes.toList),
       AmbientLight.none
     )
 }
 
-case class SceneGraphLightingLayerFlat[ViewEventDataType](nodes: List[SceneGraphNodeLeaf[ViewEventDataType]], ambientLight: AmbientLight) {
+case class SceneGraphLightingLayerFlat(nodes: List[SceneGraphNodeLeaf], ambientLight: AmbientLight) {
 
-  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): SceneGraphLightingLayerFlat[ViewEventDataType] =
+  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): SceneGraphLightingLayerFlat =
     this.copy(nodes = nodes.map(_.applyAnimationMemento(animationStates)))
 
-  private[gameengine] def runAnimationActions(gameTime: GameTime): SceneGraphLightingLayerFlat[ViewEventDataType] =
+  private[gameengine] def runAnimationActions(gameTime: GameTime): SceneGraphLightingLayerFlat =
     this.copy(nodes = nodes.map(_.runAnimationActions(gameTime)))
 
-  private[gameengine] def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent[ViewEventDataType]] =
+  private[gameengine] def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent] =
     nodes.flatMap(n => gameEvents.map(e => n.eventHandlerWithBoundsApplied(e))).collect { case Some(s) => s}
 
 }

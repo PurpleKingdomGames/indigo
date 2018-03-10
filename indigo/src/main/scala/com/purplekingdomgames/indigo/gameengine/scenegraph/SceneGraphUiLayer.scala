@@ -2,50 +2,50 @@ package com.purplekingdomgames.indigo.gameengine.scenegraph
 
 import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameEvent, GameTime, ViewEvent}
 
-case class SceneGraphUiLayer[ViewEventDataType](node: SceneGraphNode[ViewEventDataType]) {
+case class SceneGraphUiLayer(node: SceneGraphNode) {
 
-  private[gameengine] def flatten: SceneGraphUiLayerFlat[ViewEventDataType] =
-    SceneGraphUiLayerFlat[ViewEventDataType](node.flatten)
+  private[gameengine] def flatten: SceneGraphUiLayerFlat =
+    SceneGraphUiLayerFlat(node.flatten)
 
-  def addChild(child: SceneGraphNode[ViewEventDataType]): SceneGraphUiLayer[ViewEventDataType] =
+  def addChild(child: SceneGraphNode): SceneGraphUiLayer =
     node match {
-      case l: SceneGraphNodeLeaf[ViewEventDataType] =>
-        SceneGraphUiLayer[ViewEventDataType](SceneGraphNodeBranch[ViewEventDataType](l, child))
+      case l: SceneGraphNodeLeaf =>
+        SceneGraphUiLayer(SceneGraphNodeBranch(l, child))
 
-      case b: SceneGraphNodeBranch[ViewEventDataType] =>
-        SceneGraphUiLayer[ViewEventDataType](b.addChild(child))
+      case b: SceneGraphNodeBranch =>
+        SceneGraphUiLayer(b.addChild(child))
     }
 
-  def addChildren(children: List[SceneGraphNode[ViewEventDataType]]): SceneGraphUiLayer[ViewEventDataType] =
+  def addChildren(children: List[SceneGraphNode]): SceneGraphUiLayer =
     node match {
-      case l: SceneGraphNodeLeaf[ViewEventDataType] =>
-        SceneGraphUiLayer[ViewEventDataType](SceneGraphNodeBranch[ViewEventDataType](l :: children))
+      case l: SceneGraphNodeLeaf =>
+        SceneGraphUiLayer(SceneGraphNodeBranch(l :: children))
 
-      case b: SceneGraphNodeBranch[ViewEventDataType] =>
-        SceneGraphUiLayer[ViewEventDataType](b.addChildren(children))
+      case b: SceneGraphNodeBranch =>
+        SceneGraphUiLayer(b.addChildren(children))
     }
 
 }
 
 object SceneGraphUiLayer {
-  def empty[ViewEventDataType]: SceneGraphUiLayer[ViewEventDataType] =
-    SceneGraphUiLayer(SceneGraphNode.empty[ViewEventDataType])
+  def empty: SceneGraphUiLayer =
+    SceneGraphUiLayer(SceneGraphNode.empty)
 
-  def apply[ViewEventDataType](nodes: SceneGraphNode[ViewEventDataType]*): SceneGraphUiLayer[ViewEventDataType] =
+  def apply(nodes: SceneGraphNode*): SceneGraphUiLayer =
     SceneGraphUiLayer(
       SceneGraphNodeBranch(nodes.toList)
     )
 }
 
-case class SceneGraphUiLayerFlat[ViewEventDataType](nodes: List[SceneGraphNodeLeaf[ViewEventDataType]]) {
+case class SceneGraphUiLayerFlat(nodes: List[SceneGraphNodeLeaf]) {
 
-  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): SceneGraphUiLayerFlat[ViewEventDataType] =
+  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): SceneGraphUiLayerFlat =
     this.copy(nodes = nodes.map(_.applyAnimationMemento(animationStates)))
 
-  private[gameengine] def runAnimationActions(gameTime: GameTime): SceneGraphUiLayerFlat[ViewEventDataType] =
+  private[gameengine] def runAnimationActions(gameTime: GameTime): SceneGraphUiLayerFlat =
     this.copy(nodes = nodes.map(_.runAnimationActions(gameTime)))
 
-  private[gameengine] def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent[ViewEventDataType]] =
+  private[gameengine] def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent] =
     nodes.flatMap(n => gameEvents.map(e => n.eventHandlerWithBoundsApplied(e))).collect { case Some(s) => s}
 
 }

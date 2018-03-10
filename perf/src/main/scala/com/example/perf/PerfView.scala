@@ -8,7 +8,7 @@ import scala.util.Random
 
 object PerfView {
 
-  def updateView(model: MyGameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate[MyViewEventDataType] = {
+  def updateView(model: MyGameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate = {
     frameInputEvents.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + position)
       case None => ()
@@ -31,14 +31,14 @@ object PerfView {
       Point((Random.nextFloat() * PerfGame.viewportWidth).toInt, (Random.nextFloat() * PerfGame.viewportHeight).toInt)
     }
 
-  private val theHerd: MyGameModel => List[Sprite[MyViewEventDataType]] = currentState =>
+  private val theHerd: MyGameModel => List[Sprite] = currentState =>
     positions.map { pt =>
       currentState.dude.dude.sprite
         .moveTo(pt)
         .withDepth(herdCount - pt.y)
     }
 
-  def gameLayer(currentState: MyGameModel): SceneGraphGameLayer[MyViewEventDataType] =
+  def gameLayer(currentState: MyGameModel): SceneGraphGameLayer =
     SceneGraphGameLayer(
       SceneGraphNodeBranch(
         List(
@@ -72,11 +72,11 @@ object PerfView {
       )
     )
 
-  def lightingLayer: SceneGraphLightingLayer[MyViewEventDataType] =
-    SceneGraphLightingLayer[MyViewEventDataType](
-      Graphic[MyViewEventDataType](0, 0, 320, 240, 1, PerfAssets.light).withTint(1, 0, 0),
-      Graphic[MyViewEventDataType](-115, -100, 320, 240, 1, PerfAssets.light),
-      Graphic[MyViewEventDataType](GlobalSignals.MousePosition.x - 160, GlobalSignals.MousePosition.y - 120, 320, 240, 1, PerfAssets.light)
+  def lightingLayer: SceneGraphLightingLayer =
+    SceneGraphLightingLayer(
+      Graphic(0, 0, 320, 240, 1, PerfAssets.light).withTint(1, 0, 0),
+      Graphic(-115, -100, 320, 240, 1, PerfAssets.light),
+      Graphic(GlobalSignals.MousePosition.x - 160, GlobalSignals.MousePosition.y - 120, 320, 240, 1, PerfAssets.light)
     ).withAmbientLightAmount(0.5).withAmbientLightTint(1, 1, 0)
 
   private val fontInfo: FontInfo =
@@ -123,7 +123,7 @@ object PerfView {
       .addChar(FontChar(",", 248, 0, 15, 23))
       .addChar(FontChar(" ", 145, 52, 23, 23))
 
-  def uiLayer: SceneGraphUiLayer[MyViewEventDataType] =
+  def uiLayer: SceneGraphUiLayer =
     SceneGraphUiLayer(
       Text((herdCount + 1) + " Naked\ndudes", 10, 10, 5, fontInfo).alignLeft,
       Text("Thundering Herd!", PerfGame.viewportWidth / 2, 10, 5, fontInfo).alignCenter,

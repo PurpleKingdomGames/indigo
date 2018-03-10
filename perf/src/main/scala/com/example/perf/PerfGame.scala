@@ -36,7 +36,7 @@ object PerfGame {
     val dude = for {
       json <- assetCollection.texts.find(p => p.name == PerfAssets.dudeName + "-json").map(_.contents)
       aseprite <- AsepriteHelper.fromJson(json)
-      sprite <- AsepriteHelper.toSprite[MyViewEventDataType](aseprite, Depth(3), PerfAssets.dudeName)
+      sprite <- AsepriteHelper.toSprite(aseprite, Depth(3), PerfAssets.dudeName)
     } yield Dude(
       aseprite,
       sprite
@@ -56,7 +56,7 @@ object PerfGame {
   val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel = (_, gameModel) =>
     PerfModel.updateModel(gameModel)
 
-  val updateView: (GameTime, MyGameModel, FrameInputEvents) => SceneGraphUpdate[MyViewEventDataType] = (_, gameModel, frameInputEvents) =>
+  val updateView: (GameTime, MyGameModel, FrameInputEvents) => SceneGraphUpdate = (_, gameModel, frameInputEvents) =>
     PerfView.updateView(gameModel, frameInputEvents)
 
   @JSExportTopLevel("com.example.perf.PerfGame.main")
@@ -72,7 +72,7 @@ object PerfGame {
 
 }
 
-case class Dude(aseprite: Aseprite, sprite: Sprite[MyViewEventDataType])
+case class Dude(aseprite: Aseprite, sprite: Sprite)
 case class MyStartupData(dude: Dude)
 
 case class MyErrorReport(errors: List[String])
@@ -84,5 +84,3 @@ object MyErrorReport {
   def apply(message: String*): MyErrorReport = MyErrorReport(message.toList)
 
 }
-
-case class MyViewEventDataType()

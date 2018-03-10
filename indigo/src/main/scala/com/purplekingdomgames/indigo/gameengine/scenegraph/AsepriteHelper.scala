@@ -102,7 +102,7 @@ object AsepriteHelper {
 //    }
 //  }
 
-  def toSprite[View](aseprite: Aseprite, depth: Depth, imageAssetRef: String): Option[Sprite[View]] = {
+  def toSprite(aseprite: Aseprite, depth: Depth, imageAssetRef: String): Option[Sprite] = {
     extractCycles(aseprite) match {
       case Nil =>
         Logger.info("No animation frames found in Aseprit: " + aseprite)
@@ -117,7 +117,7 @@ object AsepriteHelper {
             Nil
           )
         Option(
-          Sprite[View](
+          Sprite(
             bindingKey = BindingKey.generate,
             bounds = Rectangle(
               position = Point(0, 0),
