@@ -2,36 +2,16 @@ package snake.screens
 
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import snake.{SnakeAssets, SnakeEvent, SnakeModel, MenuScreenModel}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Rectangle
+import snake.{MenuScreenModel, SnakeAssets, SnakeEvent, SnakeModel}
 
 object MenuScreenFunctions {
 
   object Model {
 
-    def update(gameTime: GameTime, state: SnakeModel): GameEvent => SnakeModel = {
+    def update(state: SnakeModel): GameEvent => SnakeModel = {
       case KeyUp(Keys.SPACE) =>
         state.copy(currentScreen = GameScreen)
-
-      case e @ MouseDown(_, _) =>
-        state.copy(
-          menuScreenModel = state.menuScreenModel.copy(
-            button = state.menuScreenModel.button.update(gameTime, e)
-          )
-        )
-
-      case e @ MouseUp(_, _) =>
-        state.copy(
-          menuScreenModel = state.menuScreenModel.copy(
-            button = state.menuScreenModel.button.update(gameTime, e)
-          )
-        )
-
-      case e @ MousePosition(_, _) =>
-        state.copy(
-          menuScreenModel = state.menuScreenModel.copy(
-            button = state.menuScreenModel.button.update(gameTime, e)
-          )
-        )
 
       case _ =>
         state
@@ -41,17 +21,23 @@ object MenuScreenFunctions {
 
   object View {
 
-    def update: MenuScreenModel => SceneGraphUpdate[SnakeEvent] = model =>
+    def update: (GameTime, FrameInputEvents, MenuScreenModel) => SceneGraphUpdate[SnakeEvent] = (gameTime, frameEvents, model) =>
       SceneGraphUpdate(
-        SceneGraphRootNode.empty.addUiLayer(ui(model)),
+        SceneGraphRootNode.empty.addUiLayer(ui(gameTime, frameEvents, model)),
         Nil
       )
 
-    def ui: MenuScreenModel => SceneGraphUiLayer[SnakeEvent] = model =>
+    def ui(gameTime: GameTime, frameEvents: FrameInputEvents, model: MenuScreenModel): SceneGraphUiLayer[SnakeEvent] =
       SceneGraphUiLayer[SnakeEvent](
         Text[SnakeEvent]("press space to start", model.gameViewport.width / 2, model.gameViewport.height - 30, 1, SnakeAssets.fontInfo).alignCenter,
-        model.button.draw
-      )
+      ).addChildren {
+        model.menuItems.zipWithIndex.flatMap { case (menuItem, i) =>
+          List(
+            menuItem.button.draw(Rectangle(10, (i * 20) + 10, 16, 16), gameTime, frameEvents),
+            Text[SnakeEvent](menuItem.text, 40, (i * 20) + 10, 1, SnakeAssets.fontInfo).alignLeft
+          )
+        }
+      }
 
   }
 

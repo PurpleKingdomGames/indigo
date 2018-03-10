@@ -1,7 +1,6 @@
 package snake
 
 import com.purplekingdomgames.indigo.gameengine._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Rectangle
 import com.purplekingdomgames.indigoat.grid.{GridPoint, GridSize}
 import com.purplekingdomgames.indigoat.ui.{Button, ButtonAssets, ButtonState}
 import com.purplekingdomgames.shared.GameViewport
@@ -16,27 +15,34 @@ object SnakeModel {
       currentScreen = MenuScreen,
       menuScreenModel = MenuScreenModel(
         startupData.viewport,
-        Button(
-          Rectangle(100, 100, 16, 16),
-          ButtonState.Up,
-          ButtonAssets(
-            up = startupData.staticAssets.gameScreen.player1.alive,
-            over = startupData.staticAssets.gameScreen.player2.alive,
-            down = startupData.staticAssets.gameScreen.player3.alive
-          )
+        menuItems = List(
+          MenuItem("demo mode", makeButton(startupData, 1)),
+          MenuItem("1up", makeButton(startupData, 2)),
+          MenuItem("1up vs cpu", makeButton(startupData, 3)),
+          MenuItem("2up local", makeButton(startupData, 4)),
+          MenuItem("2up network", makeButton(startupData, 5))
         )
-//          .withDownAction((_, btn) => btn.toDownState)
-//          .withUpAction((_, btn) => btn.toUpState)
-//          .withHoverOverAction((_, btn) => if(btn.state.isDown) btn else btn.toHoverState)
-//          .withHoverOutAction((_, btn) => if(btn.state.isDown) btn else btn.toUpState)
       ),
       gameScreenModel = GameScreenFunctions.Model.initialModel(startupData)
     )
 
+  private def makeButton(startupData: SnakeStartupData, num: Int): Button[SnakeEvent] =
+    Button(
+      ButtonState.Up,
+      ButtonAssets(
+        up = startupData.staticAssets.gameScreen.player1.alive,
+        over = startupData.staticAssets.gameScreen.player2.alive,
+        down = startupData.staticAssets.gameScreen.player3.alive
+      )
+    ).withUpAction { (_, btn) =>
+      println(num.toString)
+      btn
+    }
+
   def modelUpdate(gameTime: GameTime, state: SnakeModel): GameEvent => SnakeModel = gameEvent =>
     state.currentScreen match {
       case MenuScreen =>
-        MenuScreenFunctions.Model.update(gameTime, state)(gameEvent)
+        MenuScreenFunctions.Model.update(state)(gameEvent)
 
       case GameScreen if state.gameScreenModel.running =>
         state.copy(gameScreenModel = GameScreenFunctions.Model.update(gameTime, state.gameScreenModel)(gameEvent))
@@ -53,7 +59,9 @@ object SnakeModel {
 
 case class SnakeModel(currentScreen: Screen, menuScreenModel: MenuScreenModel, gameScreenModel: GameScreenModel)
 
-case class MenuScreenModel(gameViewport: GameViewport, button: Button[SnakeEvent])
+case class MenuScreenModel(gameViewport: GameViewport, menuItems: List[MenuItem])
+
+case class MenuItem(text: String, button: Button[SnakeEvent])
 
 case class GameScreenModel(running: Boolean, gridSize: GridSize, staticAssets: StaticAssets, player1: Player, gameMap: GameMap) {
   def reset: GameScreenModel =

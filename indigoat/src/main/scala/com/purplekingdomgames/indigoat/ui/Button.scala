@@ -1,72 +1,77 @@
 package com.purplekingdomgames.indigoat.ui
 
 import com.purplekingdomgames.indigo.gameengine._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphNode}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.Graphic
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Rectangle
 
 object Button {
 
-  def apply[ViewEventType](bounds: Rectangle, state: ButtonState, assets: ButtonAssets[ViewEventType]): Button[ViewEventType] =
-    Button(bounds, state, assets, ButtonActions(None, None, None, None))
+  def apply[ViewEventType](state: ButtonState, assets: ButtonAssets[ViewEventType]): Button[ViewEventType] =
+    Button(state, assets, ButtonActions(None, None, None, None))
 
   object Model {
 
-    def update[ViewEventType](gameTime: GameTime, button: Button[ViewEventType]): GameEvent => Button[ViewEventType] = {
-      case MouseClick(x, y) if button.bounds.isPointWithin(x, y) =>
-        button.toHoverState.actions.onUp.map(_(gameTime, button)).getOrElse(button.toHoverState)
-
-      case MouseUp(x, y) if button.bounds.isPointWithin(x, y) =>
-        button.toHoverState.actions.onHoverOver.map(_(gameTime, button)).getOrElse(button.toHoverState)
-
-      case MouseUp(_, _) =>
-        button.toUpState.actions.onHoverOut.map(_(gameTime, button)).getOrElse(button.toUpState)
-
-      case MouseDown(x, y) if button.bounds.isPointWithin(x, y) =>
-        button.toDownState.actions.onDown.map(_(gameTime, button)).getOrElse(button.toDownState)
-
-      case MousePosition(x, y) if button.bounds.isPointWithin(x, y) && button.state.isDown =>
-        button.actions.onHoverOver.map(_(gameTime, button)).getOrElse(button)
-
-      case MousePosition(x, y) if button.bounds.isPointWithin(x, y) =>
-        button.toHoverState.actions.onHoverOver.map(_(gameTime, button)).getOrElse(button.toHoverState)
-
-      case MousePosition(_, _) if button.state.isDown =>
-        button.actions.onHoverOut.map(_(gameTime, button)).getOrElse(button)
-
-      case MousePosition(_, _) =>
-        button.toUpState.actions.onHoverOut.map(_(gameTime, button)).getOrElse(button.toUpState)
-
-      case _ =>
-        button
-    }
+    //TODO: needs to receive some sort of button event to change the state against.
+    def update[ViewEventType](button: Button[ViewEventType]): Button[ViewEventType] =
+      button
 
   }
 
   object View {
 
-    def draw[ViewEventType](button: Button[ViewEventType]): SceneGraphNode[ViewEventType] =
+    def applyEvents[ViewEventType](bounds: Rectangle, gameTime: GameTime, button: Button[ViewEventType]): FrameInputEvents => Button[ViewEventType] = frameEvents => {
+      frameEvents.events.foldLeft(button) { (btn, e) =>
+        e match {
+          case MouseUp(x, y) if bounds.isPointWithin(x, y) =>
+            btn.toHoverState.actions.onHoverOver.map(_(gameTime, btn)).getOrElse(btn.toHoverState)
+
+          case MouseUp(_, _) =>
+            btn.toUpState.actions.onHoverOut.map(_(gameTime, btn)).getOrElse(btn.toUpState)
+
+          case MouseDown(x, y) if bounds.isPointWithin(x, y) =>
+            btn.toDownState.actions.onDown.map(_(gameTime, btn)).getOrElse(btn.toDownState)
+
+          case MousePosition(x, y) if bounds.isPointWithin(x, y) && btn.state.isDown =>
+            btn.actions.onHoverOver.map(_(gameTime, btn)).getOrElse(btn)
+
+          case MousePosition(x, y) if bounds.isPointWithin(x, y) =>
+            btn.toHoverState.actions.onHoverOver.map(_(gameTime, btn)).getOrElse(btn.toHoverState)
+
+          case MousePosition(_, _) if btn.state.isDown =>
+            btn.actions.onHoverOut.map(_(gameTime, btn)).getOrElse(btn)
+
+          case MousePosition(_, _) =>
+            btn.toUpState.actions.onHoverOut.map(_(gameTime, btn)).getOrElse(btn.toUpState)
+
+          case _ =>
+            btn
+        }
+      }
+    }
+
+    def renderButton[ViewEventType](bounds: Rectangle)(button: Button[ViewEventType]): Graphic[ViewEventType] =
       button.state match {
         case ButtonState.Up =>
-          button.assets.up.moveTo(button.bounds.position)
+          button.assets.up.moveTo(bounds.position)
 
         case ButtonState.Over =>
-          button.assets.over.moveTo(button.bounds.position)
+          button.assets.over.moveTo(bounds.position)
 
         case ButtonState.Down =>
-          button.assets.down.moveTo(button.bounds.position)
+          button.assets.down.moveTo(bounds.position)
       }
+
+    def update[ViewEventType](bounds: Rectangle, gameTime: GameTime, button: Button[ViewEventType], frameEvents: FrameInputEvents): Graphic[ViewEventType] =
+      (applyEvents(bounds, gameTime, button) andThen renderButton(bounds))(frameEvents)
 
   }
 
 }
 
-case class Button[ViewEventType](bounds: Rectangle, state: ButtonState, assets: ButtonAssets[ViewEventType], actions: ButtonActions[ViewEventType]) {
+case class Button[ViewEventType](state: ButtonState, assets: ButtonAssets[ViewEventType], actions: ButtonActions[ViewEventType]) {
 
-  def update(gameTime: GameTime, gameEvent: GameEvent): Button[ViewEventType] =
-    Button.Model.update(gameTime, this)(gameEvent)
-
-  def draw: SceneGraphNode[ViewEventType] =
-    Button.View.draw(this)
+  def draw(bounds: Rectangle, gameTime: GameTime, frameEvents: FrameInputEvents): Graphic[ViewEventType] =
+    Button.View.update(bounds, gameTime, this, frameEvents)
 
   def withUpAction(action: (GameTime, Button[ViewEventType]) => Button[ViewEventType]): Button[ViewEventType] =
     this.copy(actions = actions.copy(onUp = Option(action)))
