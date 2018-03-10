@@ -70,38 +70,6 @@ object AsepriteHelper {
     }.collect { case Some(s) => s }
   }
 
-//  def toSprite(aseprite: Aseprite, depth: Depth, imageAssetRef: String)(implicit gth: GameTypeHolder[_]): Option[Sprite[gth.View]] = {
-//    extractCycles(aseprite) match {
-//      case Nil =>
-//        Logger.info("No animation frames found in Aseprit: " + aseprite)
-//        None
-//      case x :: xs =>
-//        val animations: Animations =
-//          Animations(
-//            spriteSheetSize = Point(aseprite.meta.size.w, aseprite.meta.size.h),
-//            currentCycleLabel = x.label,
-//            cycle = x,
-//            cycles = xs.foldLeft(Map.empty[CycleLabel, Cycle])((a, b) => a ++ Map(b.label -> b)),
-//            Nil
-//          )
-//        Option(
-//          Sprite[gth.View](
-//            bindingKey = BindingKey.generate,
-//            bounds = Rectangle(
-//              position = Point(0, 0),
-//              size = Point(x.frame.bounds.size.x, x.frame.bounds.size.y)
-//            ),
-//            depth = depth,
-//            imageAssetRef = imageAssetRef,
-//            animations = animations,
-//            ref = Point(0, 0),
-//            effects = Effects.default,
-//            eventHandler = (_:(Rectangle, GameEvent)) => None
-//          )
-//        )
-//    }
-//  }
-
   def toSprite(aseprite: Aseprite, depth: Depth, imageAssetRef: String): Option[Sprite] = {
     extractCycles(aseprite) match {
       case Nil =>

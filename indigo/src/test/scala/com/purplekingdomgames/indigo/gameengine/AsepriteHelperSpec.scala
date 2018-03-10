@@ -6,8 +6,6 @@ import org.scalatest.{FunSpec, Matchers}
 
 class AsepriteHelperSpec extends FunSpec with Matchers {
 
-  implicit val gameTypeHolder: GameTypeHolder[String] = new GameTypeHolder[String] {}
-
   describe("Create an Aseprite asset") {
 
     it("should be able to parse the json definition") {
@@ -17,7 +15,7 @@ class AsepriteHelperSpec extends FunSpec with Matchers {
     it("should be able to convert the loaded definition into a renderable Sprite object") {
       pending
       AsepriteSampleData.aseprite.flatMap { as =>
-        AsepriteHelper.toSprite[String](as, AsepriteSampleData.depth, AsepriteSampleData.imageAssetRef)
+        AsepriteHelper.toSprite(as, AsepriteSampleData.depth, AsepriteSampleData.imageAssetRef)
           .map(_.withBindingKey("test"))
       } shouldEqual AsepriteSampleData.sprite
     }
@@ -129,8 +127,8 @@ object AsepriteSampleData {
     )
   }
 
-  val sprite: Option[Sprite[String]] = Option {
-    Sprite[String](
+  val sprite: Option[Sprite] = Option {
+    Sprite(
       bindingKey = BindingKey("test"),
       bounds = Rectangle(Point(0, 0), Point(64, 64)),
       depth = depth,
