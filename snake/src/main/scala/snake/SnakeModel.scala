@@ -16,10 +16,10 @@ object SnakeModel {
       menuScreenModel = MenuScreenModel(
         startupData.viewport,
         menuItems = List(
-          MenuItem("demo mode", makeButton(startupData, 1)),
-          MenuItem("1up", makeButton(startupData, 2)),
-          MenuItem("1up vs cpu", makeButton(startupData, 3)),
-          MenuItem("2up local", makeButton(startupData, 4)),
+//          MenuItem("demo mode", makeButton(startupData, 1)),
+//          MenuItem("1up", makeButton(startupData, 2)),
+//          MenuItem("1up vs cpu", makeButton(startupData, 3)),
+//          MenuItem("2up local", makeButton(startupData, 4)),
           MenuItem("2up network", makeButton(startupData, 5))
         )
       ),

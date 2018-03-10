@@ -11,9 +11,18 @@ object Button {
 
   object Model {
 
-    //TODO: needs to receive some sort of button event to change the state against.
-    def update(button: Button): Button =
-      button
+    def update(button: Button, viewEvent: ViewEvent): Button = {
+      viewEvent match {
+        case ButtonEvent(ButtonState.Up) =>
+          button.toUpState
+
+        case ButtonEvent(ButtonState.Over) =>
+          button.toHoverState
+
+        case ButtonEvent(ButtonState.Down) =>
+          button.toDownState
+      }
+    }
 
   }
 
@@ -23,25 +32,25 @@ object Button {
       frameEvents.events.foldLeft(button) { (btn, e) =>
         e match {
           case MouseUp(x, y) if bounds.isPointWithin(x, y) =>
-            btn.toHoverState.actions.onHoverOver.map(_(gameTime, btn)).getOrElse(btn.toHoverState)
+            btn.actions.onHoverOver.map(_(gameTime, btn)).getOrElse(btn)
 
           case MouseUp(_, _) =>
-            btn.toUpState.actions.onHoverOut.map(_(gameTime, btn)).getOrElse(btn.toUpState)
+            btn.actions.onHoverOut.map(_(gameTime, btn)).getOrElse(btn)
 
           case MouseDown(x, y) if bounds.isPointWithin(x, y) =>
-            btn.toDownState.actions.onDown.map(_(gameTime, btn)).getOrElse(btn.toDownState)
+            btn.actions.onDown.map(_(gameTime, btn)).getOrElse(btn)
 
           case MousePosition(x, y) if bounds.isPointWithin(x, y) && btn.state.isDown =>
             btn.actions.onHoverOver.map(_(gameTime, btn)).getOrElse(btn)
 
           case MousePosition(x, y) if bounds.isPointWithin(x, y) =>
-            btn.toHoverState.actions.onHoverOver.map(_(gameTime, btn)).getOrElse(btn.toHoverState)
+            btn.actions.onHoverOver.map(_(gameTime, btn)).getOrElse(btn)
 
           case MousePosition(_, _) if btn.state.isDown =>
             btn.actions.onHoverOut.map(_(gameTime, btn)).getOrElse(btn)
 
           case MousePosition(_, _) =>
-            btn.toUpState.actions.onHoverOut.map(_(gameTime, btn)).getOrElse(btn.toUpState)
+            btn.actions.onHoverOut.map(_(gameTime, btn)).getOrElse(btn)
 
           case _ =>
             btn
@@ -118,3 +127,5 @@ object ButtonState {
 }
 
 case class ButtonAssets(up: Graphic, over: Graphic, down: Graphic)
+
+case class ButtonEvent(newState: ButtonState) extends ViewEvent
