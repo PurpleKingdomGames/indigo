@@ -2,7 +2,7 @@ package com.purplekingdomgames.indigoat.ui
 
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.Graphic
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Rectangle
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey, Rectangle}
 
 object Button {
 
@@ -13,14 +13,17 @@ object Button {
 
     def update(button: Button, viewEvent: ViewEvent): Button = {
       viewEvent match {
-        case ButtonEvent(ButtonState.Up) =>
+        case ButtonEvent(bindingKey, ButtonState.Up) if button.bindingKey === bindingKey =>
           button.toUpState
 
-        case ButtonEvent(ButtonState.Over) =>
+        case ButtonEvent(bindingKey, ButtonState.Over) if button.bindingKey === bindingKey =>
           button.toHoverState
 
-        case ButtonEvent(ButtonState.Down) =>
+        case ButtonEvent(bindingKey, ButtonState.Down) if button.bindingKey === bindingKey =>
           button.toDownState
+
+        case _ =>
+          button
       }
     }
 
@@ -32,28 +35,28 @@ object Button {
       frameInputEvents.events.foldLeft[List[ViewEvent]](Nil) { (acc, e) =>
         e match {
           case MouseUp(x, y) if bounds.isPointWithin(x, y) =>
-            acc ++ button.actions.onUp().toList :+ ButtonEvent(ButtonState.Up)
+            acc ++ button.actions.onUp().toList :+ ButtonEvent(button.bindingKey, ButtonState.Over)
 
           case MouseUp(_, _) =>
-            acc :+ButtonEvent(ButtonState.Up)
+            acc :+ ButtonEvent(button.bindingKey, ButtonState.Up)
 
           case MouseDown(x, y) if bounds.isPointWithin(x, y) =>
-            acc ++ button.actions.onDown().toList :+ ButtonEvent(ButtonState.Down)
+            acc ++ button.actions.onDown().toList :+ ButtonEvent(button.bindingKey, ButtonState.Down)
 
           case MousePosition(x, y) if bounds.isPointWithin(x, y) && button.state.isDown =>
-            acc :+ ButtonEvent(ButtonState.Down)
+            acc :+ ButtonEvent(button.bindingKey, ButtonState.Down)
 
           case MousePosition(x, y) if bounds.isPointWithin(x, y) && button.state.isOver =>
-            acc :+ ButtonEvent(ButtonState.Over)
+            acc :+ ButtonEvent(button.bindingKey, ButtonState.Over)
 
           case MousePosition(x, y) if bounds.isPointWithin(x, y) =>
-            acc ++ button.actions.onHoverOver().toList :+ ButtonEvent(ButtonState.Over)
+            acc ++ button.actions.onHoverOver().toList :+ ButtonEvent(button.bindingKey, ButtonState.Over)
 
           case MousePosition(_, _) if button.state.isDown =>
-            acc :+ ButtonEvent(ButtonState.Down)
+            acc :+ ButtonEvent(button.bindingKey, ButtonState.Down)
 
           case MousePosition(_, _) =>
-            acc :+ ButtonEvent(ButtonState.Up)
+            acc :+ ButtonEvent(button.bindingKey, ButtonState.Up)
 
           case _ =>
             acc
@@ -83,6 +86,8 @@ object Button {
 }
 
 case class Button(state: ButtonState, assets: ButtonAssets, actions: ButtonActions) {
+
+  val bindingKey: BindingKey = BindingKey.generate
 
   def draw(bounds: Rectangle, frameEvents: FrameInputEvents): ButtonViewUpdate =
     Button.View.update(bounds, this, frameEvents)
@@ -137,7 +142,7 @@ object ButtonState {
 
 case class ButtonAssets(up: Graphic, over: Graphic, down: Graphic)
 
-case class ButtonEvent(newState: ButtonState) extends ViewEvent
+case class ButtonEvent(bindingKey: BindingKey, newState: ButtonState) extends ViewEvent
 
 case class ButtonViewUpdate(buttonGraphic: Graphic, buttonEvents: List[ViewEvent]) {
 
