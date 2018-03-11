@@ -18,13 +18,13 @@ object SnakeModel {
         menuItems =
           MenuZipper(
             previous = Nil,
-            current = MenuItem("demo mode", makeButton(startupData, 1)),
+            current = MenuItem("demo mode", makeButton(startupData, MenuScreen), MenuScreen),
             next =
               List(
-                MenuItem("1up", makeButton(startupData, 2)),
-                MenuItem("1up vs cpu", makeButton(startupData, 3)),
-                MenuItem("2up local", makeButton(startupData, 4)),
-                MenuItem("2up network", makeButton(startupData, 5))
+                MenuItem("1up", makeButton(startupData, GameScreen), GameScreen),
+                MenuItem("1up vs cpu", makeButton(startupData, MenuScreen), MenuScreen),
+                MenuItem("2up local", makeButton(startupData, MenuScreen), MenuScreen),
+                MenuItem("2up network", makeButton(startupData, MenuScreen), MenuScreen)
               )
           )
 
@@ -32,7 +32,7 @@ object SnakeModel {
       gameScreenModel = GameScreenFunctions.Model.initialModel(startupData)
     )
 
-  private def makeButton(startupData: SnakeStartupData, num: Int): Button =
+  private def makeButton(startupData: SnakeStartupData, screen: Screen): Button =
     Button(
       ButtonState.Up,
       ButtonAssets(
@@ -41,8 +41,7 @@ object SnakeModel {
         down = startupData.staticAssets.gameScreen.player3.alive
       )
     ).withUpAction { () =>
-      println(num.toString)
-      None
+      Option(ChangeScreenTo(screen))
     }
 
   def modelUpdate(gameTime: GameTime, state: SnakeModel): GameEvent => SnakeModel = gameEvent =>
@@ -91,7 +90,7 @@ case class MenuZipper(previous: List[MenuItem], current: MenuItem, next: List[Me
     }
 
 }
-case class MenuItem(text: String, button: Button)
+case class MenuItem(text: String, button: Button, goToScreen: Screen)
 
 case class GameScreenModel(running: Boolean, gridSize: GridSize, staticAssets: StaticAssets, player1: Player, gameMap: GameMap) {
   def reset: GameScreenModel =

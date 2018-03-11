@@ -28,6 +28,12 @@ object MenuScreenFunctions {
           )
         )
 
+      case KeyUp(Keys.ENTER) =>
+        state.copy(currentScreen = state.menuScreenModel.menuItems.current.goToScreen)
+
+      case ChangeScreenTo(screen) =>
+        state.copy(currentScreen = screen)
+
       case e: ViewEvent =>
         state.copy(menuScreenModel =
           state.menuScreenModel.copy(menuItems =
