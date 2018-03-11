@@ -7,7 +7,7 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Rectangle
 object Button {
 
   def apply(state: ButtonState, assets: ButtonAssets): Button =
-    Button(state, assets, ButtonActions(None, None, None, None))
+    Button(state, assets, ButtonActions(() => None, () => None, () => None, () => None))
 
   object Model {
 
@@ -28,37 +28,39 @@ object Button {
 
   object View {
 
-    def applyEvents(bounds: Rectangle, gameTime: GameTime, button: Button): FrameInputEvents => Button = frameEvents => {
-      frameEvents.events.foldLeft(button) { (btn, e) =>
+    def applyEvents(bounds: Rectangle, button: Button, frameInputEvents: FrameInputEvents): List[ViewEvent] =
+      frameInputEvents.events.foldLeft[List[ViewEvent]](Nil) { (acc, e) =>
         e match {
           case MouseUp(x, y) if bounds.isPointWithin(x, y) =>
-            btn.actions.onHoverOver.map(_(gameTime, btn)).getOrElse(btn)
+            acc ++ button.actions.onUp().toList :+ ButtonEvent(ButtonState.Up)
 
           case MouseUp(_, _) =>
-            btn.actions.onHoverOut.map(_(gameTime, btn)).getOrElse(btn)
+            acc :+ButtonEvent(ButtonState.Up)
 
           case MouseDown(x, y) if bounds.isPointWithin(x, y) =>
-            btn.actions.onDown.map(_(gameTime, btn)).getOrElse(btn)
+            acc ++ button.actions.onDown().toList :+ ButtonEvent(ButtonState.Down)
 
-          case MousePosition(x, y) if bounds.isPointWithin(x, y) && btn.state.isDown =>
-            btn.actions.onHoverOver.map(_(gameTime, btn)).getOrElse(btn)
+          case MousePosition(x, y) if bounds.isPointWithin(x, y) && button.state.isDown =>
+            acc :+ ButtonEvent(ButtonState.Down)
+
+          case MousePosition(x, y) if bounds.isPointWithin(x, y) && button.state.isOver =>
+            acc :+ ButtonEvent(ButtonState.Over)
 
           case MousePosition(x, y) if bounds.isPointWithin(x, y) =>
-            btn.actions.onHoverOver.map(_(gameTime, btn)).getOrElse(btn)
+            acc ++ button.actions.onHoverOver().toList :+ ButtonEvent(ButtonState.Over)
 
-          case MousePosition(_, _) if btn.state.isDown =>
-            btn.actions.onHoverOut.map(_(gameTime, btn)).getOrElse(btn)
+          case MousePosition(_, _) if button.state.isDown =>
+            acc :+ ButtonEvent(ButtonState.Down)
 
           case MousePosition(_, _) =>
-            btn.actions.onHoverOut.map(_(gameTime, btn)).getOrElse(btn)
+            acc :+ ButtonEvent(ButtonState.Up)
 
           case _ =>
-            btn
+            acc
         }
       }
-    }
 
-    def renderButton(bounds: Rectangle)(button: Button): Graphic =
+    def renderButton(bounds: Rectangle, button: Button): Graphic =
       button.state match {
         case ButtonState.Up =>
           button.assets.up.moveTo(bounds.position)
@@ -70,8 +72,11 @@ object Button {
           button.assets.down.moveTo(bounds.position)
       }
 
-    def update(bounds: Rectangle, gameTime: GameTime, button: Button, frameEvents: FrameInputEvents): Graphic =
-      (applyEvents(bounds, gameTime, button) andThen renderButton(bounds))(frameEvents)
+    def update(bounds: Rectangle, button: Button, frameEvents: FrameInputEvents): ButtonViewUpdate =
+      ButtonViewUpdate(
+        renderButton(bounds, button),
+        applyEvents(bounds, button, frameEvents)
+      )
 
   }
 
@@ -79,20 +84,20 @@ object Button {
 
 case class Button(state: ButtonState, assets: ButtonAssets, actions: ButtonActions) {
 
-  def draw(bounds: Rectangle, gameTime: GameTime, frameEvents: FrameInputEvents): Graphic =
-    Button.View.update(bounds, gameTime, this, frameEvents)
+  def draw(bounds: Rectangle, frameEvents: FrameInputEvents): ButtonViewUpdate =
+    Button.View.update(bounds, this, frameEvents)
 
-  def withUpAction(action: (GameTime, Button) => Button): Button =
-    this.copy(actions = actions.copy(onUp = Option(action)))
+  def withUpAction(action: () => Option[ViewEvent]): Button =
+    this.copy(actions = actions.copy(onUp = action))
 
-  def withDownAction(action: (GameTime, Button) => Button): Button =
-    this.copy(actions = actions.copy(onDown = Option(action)))
+  def withDownAction(action: () => Option[ViewEvent]): Button =
+    this.copy(actions = actions.copy(onDown = action))
 
-  def withHoverOverAction(action: (GameTime, Button)  => Button): Button =
-    this.copy(actions = actions.copy(onHoverOver = Option(action)))
+  def withHoverOverAction(action: () => Option[ViewEvent]): Button =
+    this.copy(actions = actions.copy(onHoverOver = action))
 
-  def withHoverOutAction(action: (GameTime, Button)  => Button): Button =
-    this.copy(actions = actions.copy(onHoverOut = Option(action)))
+  def withHoverOutAction(action: () => Option[ViewEvent]): Button =
+    this.copy(actions = actions.copy(onHoverOut = action))
 
   def toUpState: Button =
     this.copy(state = ButtonState.Up)
@@ -104,24 +109,28 @@ case class Button(state: ButtonState, assets: ButtonAssets, actions: ButtonActio
     this.copy(state = ButtonState.Down)
 }
 
-case class ButtonActions(onUp: Option[(GameTime, Button) => Button],
-                                        onDown: Option[(GameTime, Button) => Button],
-                                        onHoverOver: Option[(GameTime, Button) => Button],
-                                        onHoverOut: Option[(GameTime, Button) => Button])
+case class ButtonActions(onUp: () => Option[ViewEvent],
+                                        onDown: () => Option[ViewEvent],
+                                        onHoverOver: () => Option[ViewEvent],
+                                        onHoverOut: () => Option[ViewEvent])
 
 sealed trait ButtonState {
   def isDown: Boolean
+  def isOver: Boolean
 }
 object ButtonState {
 
   case object Up extends ButtonState {
     def isDown: Boolean = false
+    def isOver: Boolean = false
   }
   case object Over extends ButtonState {
     def isDown: Boolean = false
+    def isOver: Boolean = true
   }
   case object Down extends ButtonState {
     def isDown: Boolean = true
+    def isOver: Boolean = false
   }
 
 }
@@ -129,3 +138,9 @@ object ButtonState {
 case class ButtonAssets(up: Graphic, over: Graphic, down: Graphic)
 
 case class ButtonEvent(newState: ButtonState) extends ViewEvent
+
+case class ButtonViewUpdate(buttonGraphic: Graphic, buttonEvents: List[ViewEvent]) {
+
+  def toTuple: (Graphic, List[ViewEvent]) = (buttonGraphic, buttonEvents)
+
+}

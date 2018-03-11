@@ -31,24 +31,32 @@ object MenuScreenFunctions {
 
   object View {
 
-    def update: (GameTime, FrameInputEvents, MenuScreenModel) => SceneGraphUpdate = (gameTime, frameEvents, model) =>
-      SceneGraphUpdate(
-        SceneGraphRootNode.empty.addUiLayer(ui(gameTime, frameEvents, model)),
-        Nil
-      )
+    def update: (GameTime, FrameInputEvents, MenuScreenModel) => SceneGraphUpdate = (_, frameEvents, model) => {
 
-    //TODO: Buttons need to emit an event into the SceneGraphUpdate above
-    def ui(gameTime: GameTime, frameEvents: FrameInputEvents, model: MenuScreenModel): SceneGraphUiLayer =
-      SceneGraphUiLayer(
-        Text("press space to start", model.gameViewport.width / 2, model.gameViewport.height - 30, 1, SnakeAssets.fontInfo).alignCenter,
-      ).addChildren {
+      val uiLayer = ui(frameEvents, model)
+
+      SceneGraphUpdate(
+        SceneGraphRootNode.empty.addUiLayer(uiLayer._1),
+        uiLayer._2
+      )
+    }
+
+    def ui(frameEvents: FrameInputEvents, model: MenuScreenModel): (SceneGraphUiLayer, List[ViewEvent]) = {
+
+      val menuItemsAndEvents: List[(SceneGraphNode, List[ViewEvent])] =
         model.menuItems.zipWithIndex.flatMap { case (menuItem, i) =>
           List(
-            menuItem.button.draw(Rectangle(10, (i * 20) + 10, 16, 16), gameTime, frameEvents),
-            Text(menuItem.text, 40, (i * 20) + 10, 1, SnakeAssets.fontInfo).alignLeft
+            menuItem.button.draw(Rectangle(10, (i * 20) + 10, 16, 16), frameEvents).toTuple,
+            (Text(menuItem.text, 40, (i * 20) + 10, 1, SnakeAssets.fontInfo).alignLeft, Nil)
           )
         }
-      }
+
+      val uiLayer = SceneGraphUiLayer(
+        Text("press space to start", model.gameViewport.width / 2, model.gameViewport.height - 30, 1, SnakeAssets.fontInfo).alignCenter,
+      ).addChildren(menuItemsAndEvents.map(_._1))
+
+      (uiLayer, menuItemsAndEvents.flatMap(_._2))
+    }
 
   }
 
