@@ -15,13 +15,19 @@ object SnakeModel {
       currentScreen = MenuScreen,
       menuScreenModel = MenuScreenModel(
         startupData.viewport,
-        menuItems = List(
-          MenuItem("demo mode", makeButton(startupData, 1)),
-          MenuItem("1up", makeButton(startupData, 2)),
-          MenuItem("1up vs cpu", makeButton(startupData, 3)),
-          MenuItem("2up local", makeButton(startupData, 4)),
-          MenuItem("2up network", makeButton(startupData, 5))
-        )
+        menuItems =
+          MenuZipper(
+            previous = Nil,
+            current = MenuItem("demo mode", makeButton(startupData, 1)),
+            next =
+              List(
+                MenuItem("1up", makeButton(startupData, 2)),
+                MenuItem("1up vs cpu", makeButton(startupData, 3)),
+                MenuItem("2up local", makeButton(startupData, 4)),
+                MenuItem("2up network", makeButton(startupData, 5))
+              )
+          )
+
       ),
       gameScreenModel = GameScreenFunctions.Model.initialModel(startupData)
     )
@@ -59,8 +65,32 @@ object SnakeModel {
 
 case class SnakeModel(currentScreen: Screen, menuScreenModel: MenuScreenModel, gameScreenModel: GameScreenModel)
 
-case class MenuScreenModel(gameViewport: GameViewport, menuItems: List[MenuItem])
+case class MenuScreenModel(gameViewport: GameViewport, menuItems: MenuZipper)
 
+case class MenuZipper(previous: List[MenuItem], current: MenuItem, next: List[MenuItem]) {
+
+  val length: Int = previous.length + 1 + next.length
+  val positionOfCurrent: Int = previous.length
+
+  def forward: MenuZipper =
+    next match {
+      case Nil =>
+        this
+
+      case x :: xs =>
+        MenuZipper(current :: previous, x, xs)
+    }
+
+  def back: MenuZipper =
+    previous match {
+      case Nil =>
+        this
+
+      case x :: xs =>
+        MenuZipper(xs, x, current :: next)
+    }
+
+}
 case class MenuItem(text: String, button: Button)
 
 case class GameScreenModel(running: Boolean, gridSize: GridSize, staticAssets: StaticAssets, player1: Player, gameMap: GameMap) {
