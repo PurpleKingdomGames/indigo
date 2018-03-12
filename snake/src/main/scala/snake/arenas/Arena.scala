@@ -13,10 +13,10 @@ object Arena {
       .insertElements(rightEdgeWall(gridSize))
       .insertElements(bottomEdgeWall(gridSize))
       .insertElements(leftEdgeWall(gridSize))
-      .removeElement(GridPoint(gridSize.width / 2, 0))
-      .removeElement(GridPoint(gridSize.width / 2, gridSize.height - 1))
-      .removeElement(GridPoint(0, gridSize.height / 2))
-      .removeElement(GridPoint(gridSize.width - 1, gridSize.height / 2))
+//      .removeElement(GridPoint(gridSize.width / 2, 0))
+//      .removeElement(GridPoint(gridSize.width / 2, gridSize.height - 1))
+//      .removeElement(GridPoint(0, gridSize.height / 2))
+//      .removeElement(GridPoint(gridSize.width - 1, gridSize.height / 2))
       .optimise
 
   private def topEdgeWall(gridSize: GridSize): List[Wall] =

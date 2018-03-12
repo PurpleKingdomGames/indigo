@@ -2,7 +2,7 @@ package snake.screens
 
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Rectangle
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
 import com.purplekingdomgames.indigoat.ui.{Button, ButtonAssets, ButtonState}
 import snake._
 
@@ -12,7 +12,7 @@ object MenuScreenFunctions {
 
     def initialModel(startupData: SnakeStartupData): MenuScreenModel =
       MenuScreenModel(
-        startupData.viewport,
+        gameViewport = startupData.viewport,
         menuItems =
           MenuZipper(
             previous = Nil,
@@ -25,7 +25,6 @@ object MenuScreenFunctions {
                 MenuItem("2up network", makeButton(startupData, MenuScreen), MenuScreen)
               )
           )
-
       )
 
     private def makeButton(startupData: SnakeStartupData, screen: Screen): Button =
@@ -113,8 +112,8 @@ object MenuScreenFunctions {
 
         val draw: Boolean => ((MenuItem, Int)) => List[(SceneGraphNode, List[ViewEvent])] = p => { case (menuItem, i) =>
           List(
-            menuItem.button.draw(Rectangle(10, (i * 20) + 10, 16, 16), frameEvents).toTuple,
-            (Text(menuItem.text, 40, (i * 20) + 10, 1, SnakeAssets.fontInfo).alignLeft.withAlpha(if (p) 1 else 0.5), Nil)
+            menuItem.button.draw(Rectangle(0, (i * 10) + 10, 32, 32), Depth(2), frameEvents).toTuple,
+            (Text(menuItem.text, 40, (i * 20) + 10, 2, SnakeAssets.fontInfo).alignLeft.withAlpha(if (p) 1 else 0.5), Nil)
           )
         }
 
@@ -126,7 +125,7 @@ object MenuScreenFunctions {
       }
 
       val uiLayer = SceneGraphUiLayer(
-        Text("press space to start", model.gameViewport.width / 2, model.gameViewport.height - 30, 1, SnakeAssets.fontInfo).alignCenter,
+        Text("press space to start", model.gameViewport.width / 2, model.gameViewport.height - 30, 2, SnakeAssets.fontInfo).alignCenter
       ).addChildren(menuItemsAndEvents.map(_._1))
 
       (uiLayer, menuItemsAndEvents.flatMap(_._2))

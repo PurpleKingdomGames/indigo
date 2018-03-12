@@ -1,17 +1,19 @@
 package snake
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo}
-import com.purplekingdomgames.shared.{AssetType, ImageAsset}
+import com.purplekingdomgames.shared.{AssetType, ImageAsset, TextAsset}
 
 object SnakeAssets {
 
   val smallFontName: String = "smallFontName"
   val snakeTexture: String = "snakeTexture"
+  val snakeTiledMapData: String = "snakeTiledMapData"
 
   def assets: Set[AssetType] =
     Set(
       ImageAsset(smallFontName, "assets/boxy_font.png"),
-      ImageAsset(snakeTexture, "assets/snake2.png")
+      ImageAsset(snakeTexture, "assets/snake2.png"),
+      TextAsset(snakeTiledMapData, "assets/snake-level.json")
     )
 
   val fontInfo: FontInfo =

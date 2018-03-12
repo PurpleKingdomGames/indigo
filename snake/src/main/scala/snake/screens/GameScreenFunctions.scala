@@ -116,14 +116,11 @@ object GameScreenFunctions {
       )
 
     def gameLayer(currentState: GameScreenModel, snakeAsset: Graphic): SceneGraphGameLayer =
-      SceneGraphGameLayer()
+      SceneGraphGameLayer(currentState.staticAssets.gameScreen.background)
         .addChildren {
           currentState.gameMap.findApples.map(a => currentState.staticAssets.gameScreen.apple.moveTo(coordsToGridPoint(a.gridPoint, currentState.gameMap.gridSize)))
         }
         .addChildren(currentState.player1.snake.givePath.map(pt => snakeAsset.moveTo(coordsToGridPoint(pt, currentState.gameMap.gridSize))))
-        .addChildren { //TODO: Could be statically pregenerated / loaded from Tiled map
-          currentState.gameMap.findWalls.map(w => currentState.staticAssets.gameScreen.wallLeft.moveTo(coordsToGridPoint(w.gridPoint, currentState.gameMap.gridSize)))
-        }
 
   }
 

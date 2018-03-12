@@ -2,7 +2,7 @@ package com.purplekingdomgames.indigoat.ui
 
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.Graphic
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey, Rectangle}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey, Depth, Rectangle}
 
 object Button {
 
@@ -63,21 +63,21 @@ object Button {
         }
       }
 
-    def renderButton(bounds: Rectangle, button: Button): Graphic =
+    def renderButton(bounds: Rectangle, depth: Depth, button: Button): Graphic =
       button.state match {
         case ButtonState.Up =>
-          button.assets.up.moveTo(bounds.position)
+          button.assets.up.moveTo(bounds.position).withDepth(depth.zIndex)
 
         case ButtonState.Over =>
-          button.assets.over.moveTo(bounds.position)
+          button.assets.over.moveTo(bounds.position).withDepth(depth.zIndex)
 
         case ButtonState.Down =>
-          button.assets.down.moveTo(bounds.position)
+          button.assets.down.moveTo(bounds.position).withDepth(depth.zIndex)
       }
 
-    def update(bounds: Rectangle, button: Button, frameEvents: FrameInputEvents): ButtonViewUpdate =
+    def update(bounds: Rectangle, depth: Depth, button: Button, frameEvents: FrameInputEvents): ButtonViewUpdate =
       ButtonViewUpdate(
-        renderButton(bounds, button),
+        renderButton(bounds, depth, button),
         applyEvents(bounds, button, frameEvents)
       )
 
@@ -89,8 +89,8 @@ case class Button(state: ButtonState, assets: ButtonAssets, actions: ButtonActio
 
   val bindingKey: BindingKey = BindingKey.generate
 
-  def draw(bounds: Rectangle, frameEvents: FrameInputEvents): ButtonViewUpdate =
-    Button.View.update(bounds, this, frameEvents)
+  def draw(bounds: Rectangle, depth: Depth, frameEvents: FrameInputEvents): ButtonViewUpdate =
+    Button.View.update(bounds, depth, this, frameEvents)
 
   def withUpAction(action: () => Option[ViewEvent]): Button =
     this.copy(actions = actions.copy(onUp = action))
