@@ -30,6 +30,18 @@ object SnakeStatus {
 
 case class Snake(start: GridPoint, body: List[GridPoint], direction: SnakeDirection, status: SnakeStatus) {
 
+  def goUp: Snake =
+    Snake.goUp(this)
+
+  def goDown: Snake =
+    Snake.goDown(this)
+
+  def goLeft: Snake =
+    Snake.goLeft(this)
+
+  def goRight: Snake =
+    Snake.goRight(this)
+
   def turnLeft: Snake =
     Snake.turnLeft(this)
 
@@ -71,6 +83,18 @@ object Snake {
 
   def turnRight(snake: Snake): Snake =
     snake.copy(direction = snake.direction.turnRight)
+
+  def goUp(snake: Snake): Snake =
+    snake.copy(direction = snake.direction.goUp)
+
+  def goDown(snake: Snake): Snake =
+    snake.copy(direction = snake.direction.goDown)
+
+  def goLeft(snake: Snake): Snake =
+    snake.copy(direction = snake.direction.goLeft)
+
+  def goRight(snake: Snake): Snake =
+    snake.copy(direction = snake.direction.goRight)
 
   def end(snake: Snake): GridPoint =
     snake.body.reverse.headOption.getOrElse(snake.start)
@@ -128,6 +152,18 @@ sealed trait SnakeDirection {
   def turnRight: SnakeDirection =
     SnakeDirection.turn(this, TurnRight)
 
+  def goUp: SnakeDirection =
+    SnakeDirection.go(this, SnakeDirection.Up)
+
+  def goDown: SnakeDirection =
+    SnakeDirection.go(this, SnakeDirection.Down)
+
+  def goLeft: SnakeDirection =
+    SnakeDirection.go(this, SnakeDirection.Left)
+
+  def goRight: SnakeDirection =
+    SnakeDirection.go(this, SnakeDirection.Right)
+
   def oneSquareForward(current: GridPoint): GridPoint =
     SnakeDirection.oneSquareForward(this, current)
 
@@ -138,6 +174,36 @@ object SnakeDirection {
   case object Down extends SnakeDirection
   case object Left extends SnakeDirection
   case object Right extends SnakeDirection
+
+  def go(snakeDirection: SnakeDirection, goDirection: SnakeDirection): SnakeDirection =
+    (snakeDirection, goDirection) match {
+      case (Up, Left) =>
+        Left
+
+      case (Up, Right) =>
+        Right
+
+      case (Down, Left) =>
+        Left
+
+      case (Down, Right) =>
+        Right
+
+      case (Left, Up) =>
+        Up
+
+      case (Left, Down) =>
+        Down
+
+      case (Right, Up) =>
+        Up
+
+      case (Right, Down) =>
+        Down
+
+      case (current, _) =>
+        current
+    }
 
   def turn(snakeDirection: SnakeDirection, turnDirection: TurnDirection): SnakeDirection =
     (snakeDirection, turnDirection) match {

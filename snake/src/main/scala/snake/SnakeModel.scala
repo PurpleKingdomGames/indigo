@@ -78,6 +78,18 @@ case class Player(snake: Snake, tickDelay: Int, lastUpdated: Double) {
         (this, outcome)
     }
 
+  def goUp: Player =
+    this.copy(snake = snake.goUp)
+
+  def goRight: Player =
+    this.copy(snake = snake.goRight)
+
+  def goDown: Player =
+    this.copy(snake = snake.goDown)
+
+  def goLeft: Player =
+    this.copy(snake = snake.goLeft)
+
   def turnLeft: Player =
     this.copy(snake = snake.turnLeft)
 
