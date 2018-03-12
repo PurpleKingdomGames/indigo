@@ -122,7 +122,7 @@ object GameScreenFunctions {
         }
         .addChildren(currentState.player1.snake.givePath.map(pt => snakeAsset.moveTo(coordsToGridPoint(pt, currentState.gameMap.gridSize))))
         .addChildren { //TODO: Could be statically pregenerated / loaded from Tiled map
-          currentState.gameMap.findWalls.map(w => currentState.staticAssets.gameScreen.wall.moveTo(coordsToGridPoint(w.gridPoint, currentState.gameMap.gridSize)))
+          currentState.gameMap.findWalls.map(w => currentState.staticAssets.gameScreen.wallLeft.moveTo(coordsToGridPoint(w.gridPoint, currentState.gameMap.gridSize)))
         }
 
   }
