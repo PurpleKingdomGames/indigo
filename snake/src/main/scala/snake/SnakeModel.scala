@@ -2,7 +2,7 @@ package snake
 
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigoat.grid.{GridPoint, GridSize}
-import com.purplekingdomgames.indigoat.ui.{Button, ButtonAssets, ButtonState}
+import com.purplekingdomgames.indigoat.ui.Button
 import com.purplekingdomgames.shared.GameViewport
 import snake.arenas.GameMap
 import snake.datatypes.{CollisionCheckOutcome, Snake}
@@ -13,36 +13,9 @@ object SnakeModel {
   def initialModel(startupData: SnakeStartupData): SnakeModel =
     SnakeModel(
       currentScreen = MenuScreen,
-      menuScreenModel = MenuScreenModel(
-        startupData.viewport,
-        menuItems =
-          MenuZipper(
-            previous = Nil,
-            current = MenuItem("demo mode", makeButton(startupData, MenuScreen), MenuScreen),
-            next =
-              List(
-                MenuItem("1up", makeButton(startupData, GameScreen), GameScreen),
-                MenuItem("1up vs cpu", makeButton(startupData, MenuScreen), MenuScreen),
-                MenuItem("2up local", makeButton(startupData, MenuScreen), MenuScreen),
-                MenuItem("2up network", makeButton(startupData, MenuScreen), MenuScreen)
-              )
-          )
-
-      ),
+      menuScreenModel = MenuScreenFunctions.Model.initialModel(startupData),
       gameScreenModel = GameScreenFunctions.Model.initialModel(startupData)
     )
-
-  private def makeButton(startupData: SnakeStartupData, screen: Screen): Button =
-    Button(
-      ButtonState.Up,
-      ButtonAssets(
-        up = startupData.staticAssets.gameScreen.player1.alive,
-        over = startupData.staticAssets.gameScreen.player2.alive,
-        down = startupData.staticAssets.gameScreen.player3.alive
-      )
-    ).withUpAction { () =>
-      Option(ChangeScreenTo(screen))
-    }
 
   def modelUpdate(gameTime: GameTime, state: SnakeModel): GameEvent => SnakeModel = gameEvent =>
     state.currentScreen match {
@@ -53,7 +26,6 @@ object SnakeModel {
         state.copy(gameScreenModel = GameScreenFunctions.Model.update(gameTime, state.gameScreenModel)(gameEvent))
 
       case GameScreen =>
-        // TODO: Could do this with an event?
         state.copy(currentScreen = GameOverScreen)
 
       case GameOverScreen =>

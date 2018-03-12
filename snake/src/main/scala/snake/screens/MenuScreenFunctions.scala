@@ -3,12 +3,42 @@ package snake.screens
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Rectangle
-import com.purplekingdomgames.indigoat.ui.Button
-import snake.{MenuItem, MenuScreenModel, SnakeAssets, SnakeModel}
+import com.purplekingdomgames.indigoat.ui.{Button, ButtonAssets, ButtonState}
+import snake._
 
 object MenuScreenFunctions {
 
   object Model {
+
+    def initialModel(startupData: SnakeStartupData): MenuScreenModel =
+      MenuScreenModel(
+        startupData.viewport,
+        menuItems =
+          MenuZipper(
+            previous = Nil,
+            current = MenuItem("demo mode", makeButton(startupData, MenuScreen), MenuScreen),
+            next =
+              List(
+                MenuItem("1up", makeButton(startupData, GameScreen), GameScreen),
+                MenuItem("1up vs cpu", makeButton(startupData, MenuScreen), MenuScreen),
+                MenuItem("2up local", makeButton(startupData, MenuScreen), MenuScreen),
+                MenuItem("2up network", makeButton(startupData, MenuScreen), MenuScreen)
+              )
+          )
+
+      )
+
+    private def makeButton(startupData: SnakeStartupData, screen: Screen): Button =
+      Button(
+        ButtonState.Up,
+        ButtonAssets(
+          up = startupData.staticAssets.gameScreen.player1.alive,
+          over = startupData.staticAssets.gameScreen.player2.alive,
+          down = startupData.staticAssets.gameScreen.player3.alive
+        )
+      ).withUpAction { () =>
+        Option(ChangeScreenTo(screen))
+      }
 
     def update(state: SnakeModel): GameEvent => SnakeModel = {
       case KeyUp(Keys.SPACE) =>
