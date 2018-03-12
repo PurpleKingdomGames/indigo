@@ -12,6 +12,7 @@ object SnakeModel {
 
   def initialModel(startupData: SnakeStartupData): SnakeModel =
     SnakeModel(
+      startupData = startupData,
       currentScreen = MenuScreen,
       menuScreenModel = MenuScreenFunctions.Model.initialModel(startupData),
       gameScreenModel = GameScreenFunctions.Model.initialModel(startupData)
@@ -34,7 +35,7 @@ object SnakeModel {
 
 }
 
-case class SnakeModel(currentScreen: Screen, menuScreenModel: MenuScreenModel, gameScreenModel: GameScreenModel)
+case class SnakeModel(startupData: SnakeStartupData, currentScreen: Screen, menuScreenModel: MenuScreenModel, gameScreenModel: GameScreenModel)
 
 case class MenuScreenModel(gameViewport: GameViewport, menuItems: MenuZipper)
 
@@ -64,20 +65,7 @@ case class MenuZipper(previous: List[MenuItem], current: MenuItem, next: List[Me
 }
 case class MenuItem(text: String, button: Button, goToScreen: Screen)
 
-case class GameScreenModel(running: Boolean, gridSize: GridSize, staticAssets: StaticAssets, player1: Player, gameMap: GameMap) {
-  def reset: GameScreenModel =
-    this.copy(
-      running = true,
-      player1 = Player(
-        snake = Snake(
-          this.gridSize.centre.x,
-          this.gridSize.centre.y
-        ).grow.grow,
-        tickDelay = 100,
-        lastUpdated = 0
-      )
-    )
-}
+case class GameScreenModel(running: Boolean, gridSize: GridSize, staticAssets: StaticAssets, player1: Player, gameMap: GameMap)
 
 case class Player(snake: Snake, tickDelay: Int, lastUpdated: Double) {
 

@@ -42,7 +42,11 @@ object MenuScreenFunctions {
 
     def update(state: SnakeModel): GameEvent => SnakeModel = {
       case KeyUp(Keys.SPACE) =>
-        state.copy(currentScreen = GameScreen)
+        state.copy(
+          currentScreen = GameScreen,
+          menuScreenModel = MenuScreenFunctions.Model.initialModel(state.startupData),
+          gameScreenModel = GameScreenFunctions.Model.initialModel(state.startupData)
+        )
 
       case KeyUp(Keys.UP_ARROW) =>
         state.copy(
@@ -62,7 +66,11 @@ object MenuScreenFunctions {
         state.copy(currentScreen = state.menuScreenModel.menuItems.current.goToScreen)
 
       case ChangeScreenTo(screen) =>
-        state.copy(currentScreen = screen)
+        state.copy(
+          currentScreen = screen,
+          menuScreenModel = MenuScreenFunctions.Model.initialModel(state.startupData),
+          gameScreenModel = GameScreenFunctions.Model.initialModel(state.startupData)
+        )
 
       case e: ViewEvent =>
         state.copy(menuScreenModel =

@@ -11,7 +11,11 @@ object GameOverScreenFunctions {
 
     def update(state: SnakeModel): GameEvent => SnakeModel = {
       case KeyUp(Keys.SPACE) =>
-        state.copy(currentScreen = MenuScreen, gameScreenModel = state.gameScreenModel.reset)
+        state.copy(
+          currentScreen = MenuScreen,
+          menuScreenModel = MenuScreenFunctions.Model.initialModel(state.startupData),
+          gameScreenModel = GameScreenFunctions.Model.initialModel(state.startupData)
+        )
 
       case _ =>
         state
