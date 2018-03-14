@@ -24,7 +24,9 @@ object GameScreenFunctions {
             startupData.gridSize.centre.y
           ).grow.grow,
           tickDelay = 100,
-          lastUpdated = 0
+          lastUpdated = 0,
+          playerType = Human,
+          controlScheme = ControlScheme.directed
         ),
         gameMap = Arena.genLevel(startupData.gridSize)
       )
@@ -81,14 +83,9 @@ object GameScreenFunctions {
                 )
             }
 
-          case KeyPress(Keys.LEFT_ARROW) =>
+          case e: KeyboardEvent =>
             state.copy(
-              player1 = state.player1.turnLeft
-            )
-
-          case KeyPress(Keys.RIGHT_ARROW) =>
-            state.copy(
-              player1 = state.player1.turnRight
+              player1 = state.player1.controlScheme.instructPlayer(e, state.player1)
             )
 
           case _ =>

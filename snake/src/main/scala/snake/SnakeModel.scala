@@ -67,7 +67,7 @@ case class MenuItem(text: String, button: Button, goToScreen: Screen)
 
 case class GameScreenModel(running: Boolean, gridSize: GridSize, staticAssets: StaticAssets, player1: Player, gameMap: GameMap)
 
-case class Player(snake: Snake, tickDelay: Int, lastUpdated: Double) {
+case class Player(snake: Snake, tickDelay: Int, lastUpdated: Double, playerType: PlayerType, controlScheme: ControlScheme) {
 
   def update(gameTime: GameTime, gridSize: GridSize, collisionCheck: GridPoint => CollisionCheckOutcome): (Player, CollisionCheckOutcome) =
     snake.update(gridSize, collisionCheck) match {
@@ -96,4 +96,41 @@ case class Player(snake: Snake, tickDelay: Int, lastUpdated: Double) {
   def turnRight: Player =
     this.copy(snake = snake.turnRight)
 
+}
+
+sealed trait PlayerType
+case object Human extends PlayerType
+case object Computer extends PlayerType
+
+sealed trait ControlScheme {
+  def instructPlayer(keyboardEvent: KeyboardEvent, player: Player): Player =
+    (this, keyboardEvent) match {
+      case (Turning(left, _), KeyPress(code)) if code == left =>
+        player.turnLeft
+
+      case (Turning(_, right), KeyPress(code)) if code == right =>
+        player.turnRight
+
+      case (Directed(up, _, _, _), KeyPress(code)) if code == up =>
+        player.goUp
+
+      case (Directed(_, down, _, _), KeyPress(code)) if code == down =>
+        player.goDown
+
+      case (Directed(_, _, left, _), KeyPress(code)) if code == left =>
+        player.goLeft
+
+      case (Directed(_, _, _, right), KeyPress(code)) if code == right =>
+        player.goRight
+
+      case _ =>
+        player
+    }
+}
+case class Turning(left: Int, right: Int) extends ControlScheme
+case class Directed(up: Int, down: Int, left: Int, right: Int) extends ControlScheme
+
+object ControlScheme {
+  val turning: Turning = Turning(Keys.LEFT_ARROW, Keys.RIGHT_ARROW)
+  val directed: Directed = Directed(Keys.UP_ARROW, Keys.DOWN_ARROW, Keys.LEFT_ARROW, Keys.RIGHT_ARROW)
 }
