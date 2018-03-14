@@ -38,6 +38,7 @@ sealed trait KeyboardEvent extends GameEvent {
 }
 case class KeyUp(keyCode: Int) extends KeyboardEvent
 case class KeyDown(keyCode: Int) extends KeyboardEvent
+case class KeyPress(keyCode: Int) extends KeyboardEvent
 
 trait ViewEvent extends GameEvent
 
@@ -210,8 +211,10 @@ trait FrameKeyboardEvents {
 
   val keysUp: List[Int] = keyboardEvents.collect { case k: KeyUp => k.keyCode }
   val keysDown: List[Int] = keyboardEvents.collect { case k: KeyDown => k.keyCode }
+  val keysPressed: List[Int] = keyboardEvents.collect { case k: KeyPress => k.keyCode }
 
   def keysAreDown(keys: Int*): Boolean = keys.forall(keyCode => keysDown.contains(keyCode))
   def keysAreUp(keys: Int*): Boolean = keys.forall(keyCode => keysUp.contains(keyCode))
+  def keysWerePressed(keys: Int*): Boolean = keys.forall(keyCode => keysPressed.contains(keyCode))
 
 }

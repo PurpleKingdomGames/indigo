@@ -81,12 +81,12 @@ object GameScreenFunctions {
                 )
             }
 
-          case KeyDown(Keys.LEFT_ARROW) =>
+          case KeyPress(Keys.LEFT_ARROW) =>
             state.copy(
               player1 = state.player1.turnLeft
             )
 
-          case KeyDown(Keys.RIGHT_ARROW) =>
+          case KeyPress(Keys.RIGHT_ARROW) =>
             state.copy(
               player1 = state.player1.turnRight
             )

@@ -30,6 +30,10 @@ object WorldEvents {
       GlobalEventStream.push(KeyUp(e.keyCode))
     }
 
+    dom.document.onkeypress = { e: dom.KeyboardEvent =>
+      GlobalEventStream.push(KeyPress(e.keyCode))
+    }
+
   }
 
 }

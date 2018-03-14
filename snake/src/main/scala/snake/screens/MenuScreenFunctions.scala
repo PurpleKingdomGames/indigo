@@ -47,14 +47,14 @@ object MenuScreenFunctions {
           gameScreenModel = GameScreenFunctions.Model.initialModel(state.startupData)
         )
 
-      case KeyUp(Keys.UP_ARROW) =>
+      case KeyDown(Keys.UP_ARROW) =>
         state.copy(
           menuScreenModel = state.menuScreenModel.copy(
             menuItems = state.menuScreenModel.menuItems.back
           )
         )
 
-      case KeyUp(Keys.DOWN_ARROW) =>
+      case KeyDown(Keys.DOWN_ARROW) =>
         state.copy(
           menuScreenModel = state.menuScreenModel.copy(
             menuItems = state.menuScreenModel.menuItems.forward
@@ -112,7 +112,7 @@ object MenuScreenFunctions {
 
         val draw: Boolean => ((MenuItem, Int)) => List[(SceneGraphNode, List[ViewEvent])] = p => { case (menuItem, i) =>
           List(
-            menuItem.button.draw(Rectangle(0, (i * 10) + 10, 32, 32), Depth(2), frameEvents).toTuple,
+            menuItem.button.draw(Rectangle(10, (i * 20) + 10, 16, 16), Depth(2), frameEvents).toTuple,
             (Text(menuItem.text, 40, (i * 20) + 10, 2, SnakeAssets.fontInfo).alignLeft.withAlpha(if (p) 1 else 0.5), Nil)
           )
         }

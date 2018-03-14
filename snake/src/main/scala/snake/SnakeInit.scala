@@ -28,30 +28,23 @@ object SnakeInit {
             viewport = viewport,
             gridSize = gridSize,
             staticAssets = StaticAssets(
-              ui = UIAssets(
-                leftAndRight = ButtonAssets(
-                  up = Graphic(0, 0, 32, 32, 2, SnakeAssets.snakeTexture).withCrop(208, 0, 48, 32),
-                  over = Graphic(0, 0, 32, 32, 2, SnakeAssets.snakeTexture).withCrop(208, 32, 48, 32),
-                  down = Graphic(0, 0, 32, 32, 2, SnakeAssets.snakeTexture).withCrop(208, 64, 48, 32)
-                )
-              ),
               gameScreen = GameScreenAssets(
-                apple = Graphic(0, 0, 32, 32, 2, SnakeAssets.snakeTexture).withCrop(32, 0, 32, 32),
+                apple = Graphic(0, 0, 16, 16, 2, SnakeAssets.snakeTexture).withCrop(16, 0, 16, 16),
                 player1 = PlayerSnakeAssets(
-                  alive = Graphic(0, 0, 32, 32, 2, SnakeAssets.snakeTexture).withCrop(64, 0, 32, 32),
-                  dead = Graphic(0, 0, 32, 32, 2, SnakeAssets.snakeTexture).withCrop(96, 0, 32, 32)
+                  alive = Graphic(0, 0, 16, 16, 2, SnakeAssets.snakeTexture).withCrop(32, 0, 16, 16),
+                  dead = Graphic(0, 0, 16, 16, 2, SnakeAssets.snakeTexture).withCrop(48, 0, 16, 16)
                 ),
                 player2 = PlayerSnakeAssets(
-                  alive = Graphic(0, 0, 32, 32, 2, SnakeAssets.snakeTexture).withCrop(64, 32, 32, 32),
-                  dead = Graphic(0, 0, 32, 32, 2, SnakeAssets.snakeTexture).withCrop(96, 32, 32, 32)
+                  alive = Graphic(0, 0, 16, 16, 2, SnakeAssets.snakeTexture).withCrop(32, 16, 16, 16),
+                  dead = Graphic(0, 0, 16, 16, 2, SnakeAssets.snakeTexture).withCrop(48, 16, 16, 16)
                 ),
                 player3 = PlayerSnakeAssets(
-                  alive = Graphic(0, 0, 32, 32, 2, SnakeAssets.snakeTexture).withCrop(64, 64, 32, 32),
-                  dead = Graphic(0, 0, 32, 32, 2, SnakeAssets.snakeTexture).withCrop(96, 64, 32, 32)
+                  alive = Graphic(0, 0, 16, 16, 2, SnakeAssets.snakeTexture).withCrop(32, 32, 16, 16),
+                  dead = Graphic(0, 0, 16, 16, 2, SnakeAssets.snakeTexture).withCrop(48, 32, 16, 16)
                 ),
                 player4 = PlayerSnakeAssets(
-                  alive = Graphic(0, 0, 32, 32, 2, SnakeAssets.snakeTexture).withCrop(64, 96, 32, 32),
-                  dead = Graphic(0, 0, 32, 32, 2, SnakeAssets.snakeTexture).withCrop(96, 96, 32, 32)
+                  alive = Graphic(0, 0, 16, 16, 2, SnakeAssets.snakeTexture).withCrop(32, 48, 16, 16),
+                  dead = Graphic(0, 0, 16, 16, 2, SnakeAssets.snakeTexture).withCrop(48, 48, 16, 16)
                 ),
                 background = bg
               )
@@ -66,7 +59,7 @@ object SnakeInit {
 
 case class SnakeStartupData(viewport: GameViewport, gridSize: GridSize, staticAssets: StaticAssets)
 
-case class StaticAssets(ui: UIAssets, gameScreen: GameScreenAssets)
+case class StaticAssets(gameScreen: GameScreenAssets)
 
 case class UIAssets(leftAndRight: ButtonAssets)
 

@@ -9,9 +9,9 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 object SnakeGame {
 
   private val gridSize: GridSize = GridSize(
-    columns = 20,
-    rows = 14,
-    gridSquareSize = 32
+    columns = 40,
+    rows = 28,
+    gridSquareSize = 16
   )
 
   private val magnificationLevel: Int = 1
