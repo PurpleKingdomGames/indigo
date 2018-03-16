@@ -1,6 +1,8 @@
 
 val indigoVersion = "0.0.6-SNAPSHOT"
 
+addCommandAlias("snakeBuild", ";snake/fastOptJS;snake/indigoBuild")
+
 lazy val commonSettings = Seq(
   version := indigoVersion,
   scalaVersion := "2.12.4",
