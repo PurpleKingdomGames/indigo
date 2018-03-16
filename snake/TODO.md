@@ -1,36 +1,77 @@
 
 # TODOs
 
-### Game Dev
-- Invert Y again?
-- Create GameMap from Tiled?
-- Two snakes
-- CPU controlled Snake?
-- Alternate control schemes
-- HD
-- Screen manager
-  - Title screen
-  - Choose play mode
-    - Single player
-    - Single player vs CPU?
-    - Two Player
-    - Two Player Network?
-  - Game screen
-  - Game over screen
-  - Options screen
-  - Pause screen?
-- Count down to level start
+### Game Mechanics Misc
 - Items
   - Normal item
 - Power ups
-  - Slower 
+  - Slower
 - Power downs
   - Faster
   
-### Done
-- Remove all references to specific grid size values
-- Collision hit test by grid item type, not co-ordinates.
-- A way to supply a map (including start points)
+### Graphics
+- "Snake" graphics in different colours
+  - Head (4 views)
+  - Tail (4 views)
+  - Middle (4 views)
+  - Uncollected dude (4 views)
+- Power ups
+- Menus
+- Pause screen
+- Joust training posts?
+- 
+
+### Audio
+- ?!?!
+
+### Screens
+- Title screen
+- Menu screen
+  - Demo mode
+  - Single player
+  - Single player vs CPU?
+  - Two Player
+  - Two Player Network?
+- Select control schemes
+- Game screen
+- Game over screen
+- Options screen
+
+### Game Screen (general)
+- Pause screen
+- Count down to level start
+
+### Level creation
+- Tiled map of non-rendered items
+
+### Demo mode
+- Solvers
+  - Shortest path
+  - Longest path
+  - Greedy
+  - Hamilton
+- Snake controlled by "AI"
+- Looks for both 
+
+### Single player
+- Joust posts
+- Remove speed increases
+- U-turn assist?
+- Power ups?
+- Scores
+- 
+
+### Single player vs CPU
+- Jousting?
+- Power ups?
+- Who won?
+
+### Two player local
+- 2up choose control method
+
+### Two player network
+- Networking...
+
 
 
 ### Publishing
