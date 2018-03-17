@@ -1,6 +1,7 @@
-package com.purplekingdomgames.indigo.gameengine.scenegraph
+package com.purplekingdomgames.indigoat.formats
 
-import com.purplekingdomgames.indigo.gameengine.GameEvent
+import com.purplekingdomgames.indigo.gameengine.events.GameEvent
+import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import com.purplekingdomgames.indigo.util.Logger
 import io.circe.generic.auto._

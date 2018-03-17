@@ -163,7 +163,7 @@ lazy val snake =
 lazy val sandbox =
   project
     .settings(commonSettings: _*)
-    .dependsOn(indigo)
+    .dependsOn(indigoat)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(
       name := "indigo-sandbox",
@@ -176,7 +176,7 @@ lazy val sandbox =
 lazy val perf =
   project
     .settings(commonSettings: _*)
-    .dependsOn(indigo)
+    .dependsOn(indigoat)
     .settings(
       name := "indigo-perf",
       showCursor := true,
@@ -189,7 +189,7 @@ lazy val perf =
 lazy val framework =
   project
     .settings(commonSettings: _*)
-    .dependsOn(indigo)
+    .dependsOn(indigoat)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(
       name := "indigo-framework",

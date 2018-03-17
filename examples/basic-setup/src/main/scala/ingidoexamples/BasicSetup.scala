@@ -1,6 +1,7 @@
 package ingidoexamples
 
 import com.purplekingdomgames.indigo._
+import com.purplekingdomgames.indigo.gameengine.events
 
 object BasicSetup extends IndigoGameBasic[MyStartUpData, MyGameModel] {
 
@@ -14,10 +15,10 @@ object BasicSetup extends IndigoGameBasic[MyStartUpData, MyGameModel] {
   def initialModel(startupData: MyStartUpData): MyGameModel =
     MyGameModel()
 
-  def update(gameTime: GameTime, model: MyGameModel): GameEvent => MyGameModel = _ =>
+  def update(gameTime: GameTime, model: MyGameModel): events.GameEvent => MyGameModel = _ =>
     model
 
-  def render(gameTime: GameTime, model: MyGameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate =
+  def render(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneGraphUpdate =
     noRender
 }
 

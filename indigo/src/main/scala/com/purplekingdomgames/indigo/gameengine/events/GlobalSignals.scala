@@ -1,4 +1,4 @@
-package com.purplekingdomgames.indigo.gameengine
+package com.purplekingdomgames.indigo.gameengine.events
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
 
@@ -15,7 +15,7 @@ private[indigo] object GlobalSignalsManager {
   def update(events: List[GameEvent]): Signals = {
     signals = events.foldLeft(signals) { (sigs, e) =>
       e match {
-        case mp: MousePosition =>
+        case mp: MouseEvent.MousePosition =>
           sigs.copy(mousePosition = mp.position)
 
         case _ =>

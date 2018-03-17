@@ -1,6 +1,7 @@
-package com.purplekingdomgames.indigo.gameengine.scenegraph
+package com.purplekingdomgames.indigoat.formats
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphNodeBranch}
 import com.purplekingdomgames.indigo.util.Logger
 import io.circe.generic.auto._
 import io.circe.parser._

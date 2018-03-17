@@ -11,8 +11,8 @@ package object indigo {
   type AssetCollection = com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
   type StartupErrors = com.purplekingdomgames.indigo.gameengine.StartupErrors
   type GameTime = com.purplekingdomgames.indigo.gameengine.GameTime
-  type GameEvent = com.purplekingdomgames.indigo.gameengine.GameEvent
-  type FrameInputEvents = com.purplekingdomgames.indigo.gameengine.FrameInputEvents
+  type GameEvent = com.purplekingdomgames.indigo.gameengine.events.GameEvent
+  type FrameInputEvents = com.purplekingdomgames.indigo.gameengine.events.FrameInputEvents
   type SceneGraphUpdate = com.purplekingdomgames.indigo.gameengine.scenegraph.SceneGraphUpdate
   type AssetType = com.purplekingdomgames.shared.AssetType
   type GameConfig = com.purplekingdomgames.shared.GameConfig

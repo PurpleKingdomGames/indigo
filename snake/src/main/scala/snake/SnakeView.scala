@@ -1,6 +1,7 @@
 package snake
 
-import com.purplekingdomgames.indigo.gameengine.{FrameInputEvents, GameTime}
+import com.purplekingdomgames.indigo.gameengine.GameTime
+import com.purplekingdomgames.indigo.gameengine.events.FrameInputEvents
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import snake.screens._
 

@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigoat.ui
 
-import com.purplekingdomgames.indigo.gameengine._
+import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, MouseEvent, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.Graphic
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey, Depth, Rectangle}
 
@@ -34,28 +34,28 @@ object Button {
     def applyEvents(bounds: Rectangle, button: Button, frameInputEvents: FrameInputEvents): List[ViewEvent] =
       frameInputEvents.events.foldLeft[List[ViewEvent]](Nil) { (acc, e) =>
         e match {
-          case MouseUp(x, y) if bounds.isPointWithin(x, y) =>
+          case MouseEvent.MouseUp(x, y) if bounds.isPointWithin(x, y) =>
             acc ++ button.actions.onUp().toList :+ ButtonEvent(button.bindingKey, ButtonState.Over)
 
-          case MouseUp(_, _) =>
+          case MouseEvent.MouseUp(_, _) =>
             acc :+ ButtonEvent(button.bindingKey, ButtonState.Up)
 
-          case MouseDown(x, y) if bounds.isPointWithin(x, y) =>
+          case MouseEvent.MouseDown(x, y) if bounds.isPointWithin(x, y) =>
             acc ++ button.actions.onDown().toList :+ ButtonEvent(button.bindingKey, ButtonState.Down)
 
-          case MousePosition(x, y) if bounds.isPointWithin(x, y) && button.state.isDown =>
+          case MouseEvent.MousePosition(x, y) if bounds.isPointWithin(x, y) && button.state.isDown =>
             acc :+ ButtonEvent(button.bindingKey, ButtonState.Down)
 
-          case MousePosition(x, y) if bounds.isPointWithin(x, y) && button.state.isOver =>
+          case MouseEvent.MousePosition(x, y) if bounds.isPointWithin(x, y) && button.state.isOver =>
             acc :+ ButtonEvent(button.bindingKey, ButtonState.Over)
 
-          case MousePosition(x, y) if bounds.isPointWithin(x, y) =>
+          case MouseEvent.MousePosition(x, y) if bounds.isPointWithin(x, y) =>
             acc ++ button.actions.onHoverOver().toList :+ ButtonEvent(button.bindingKey, ButtonState.Over)
 
-          case MousePosition(_, _) if button.state.isDown =>
+          case MouseEvent.MousePosition(_, _) if button.state.isDown =>
             acc :+ ButtonEvent(button.bindingKey, ButtonState.Down)
 
-          case MousePosition(_, _) =>
+          case MouseEvent.MousePosition(_, _) =>
             acc :+ ButtonEvent(button.bindingKey, ButtonState.Up)
 
           case _ =>

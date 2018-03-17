@@ -1,6 +1,7 @@
 package snake.screens
 
 import com.purplekingdomgames.indigo.gameengine._
+import com.purplekingdomgames.indigo.gameengine.events._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
 import com.purplekingdomgames.indigoat.ui.{Button, ButtonAssets, ButtonEvent, ButtonState}
@@ -35,28 +36,28 @@ object MenuScreenFunctions {
       }
 
     def update(state: SnakeModel): GameEvent => SnakeModel = {
-      case KeyUp(Keys.SPACE) =>
+      case KeyboardEvent.KeyUp(Keys.SPACE) =>
         state.copy(
           currentScreen = GameScreen,
           menuScreenModel = MenuScreenFunctions.Model.initialModel(state.startupData),
           gameScreenModel = GameScreenFunctions.Model.initialModel(state.startupData)
         )
 
-      case KeyDown(Keys.UP_ARROW) =>
+      case KeyboardEvent.KeyDown(Keys.UP_ARROW) =>
         state.copy(
           menuScreenModel = state.menuScreenModel.copy(
             menuItems = state.menuScreenModel.menuItems.back
           )
         )
 
-      case KeyDown(Keys.DOWN_ARROW) =>
+      case KeyboardEvent.KeyDown(Keys.DOWN_ARROW) =>
         state.copy(
           menuScreenModel = state.menuScreenModel.copy(
             menuItems = state.menuScreenModel.menuItems.forward
           )
         )
 
-      case KeyUp(Keys.ENTER) =>
+      case KeyboardEvent.KeyUp(Keys.ENTER) =>
         state.copy(currentScreen = state.menuScreenModel.menuItems.current.goToScreen)
 
       case ChangeScreenTo(screen) =>

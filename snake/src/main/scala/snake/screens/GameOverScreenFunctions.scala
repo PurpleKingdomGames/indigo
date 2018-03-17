@@ -1,6 +1,6 @@
 package snake.screens
 
-import com.purplekingdomgames.indigo.gameengine._
+import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, KeyboardEvent, Keys}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.shared.GameViewport
 import snake._
@@ -10,7 +10,7 @@ object GameOverScreenFunctions {
   object Model {
 
     def update(state: SnakeModel): GameEvent => SnakeModel = {
-      case KeyUp(Keys.SPACE) =>
+      case KeyboardEvent.KeyUp(Keys.SPACE) =>
         state.copy(
           currentScreen = MenuScreen,
           menuScreenModel = MenuScreenFunctions.Model.initialModel(state.startupData),

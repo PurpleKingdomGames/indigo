@@ -1,23 +1,6 @@
-package com.purplekingdomgames.indigo.gameengine
+package com.purplekingdomgames.indigo.gameengine.events
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
-
-import scala.collection.mutable
-
-object GlobalEventStream {
-
-  private val eventQueue: mutable.Queue[GameEvent] =
-    new mutable.Queue[GameEvent]()
-
-  def push(e: GameEvent): Unit = {
-    eventQueue += e
-    ()
-  }
-
-  def collect: List[GameEvent] =
-    eventQueue.dequeueAll(_ => true).toList
-
-}
 
 sealed trait GameEvent
 
@@ -28,17 +11,21 @@ sealed trait MouseEvent extends GameEvent {
   val y: Int
   def position: Point = Point(x, y)
 }
-case class MouseClick(x: Int, y: Int) extends MouseEvent
-case class MouseUp(x: Int, y: Int) extends MouseEvent
-case class MouseDown(x: Int, y: Int) extends MouseEvent
-case class MousePosition(x: Int, y: Int) extends MouseEvent
+object MouseEvent {
+  case class MouseClick(x: Int, y: Int) extends MouseEvent
+  case class MouseUp(x: Int, y: Int) extends MouseEvent
+  case class MouseDown(x: Int, y: Int) extends MouseEvent
+  case class MousePosition(x: Int, y: Int) extends MouseEvent
+}
 
 sealed trait KeyboardEvent extends GameEvent {
   val keyCode: Int
 }
-case class KeyUp(keyCode: Int) extends KeyboardEvent
-case class KeyDown(keyCode: Int) extends KeyboardEvent
-case class KeyPress(keyCode: Int) extends KeyboardEvent
+object KeyboardEvent {
+  case class KeyUp(keyCode: Int) extends KeyboardEvent
+  case class KeyDown(keyCode: Int) extends KeyboardEvent
+  case class KeyPress(keyCode: Int) extends KeyboardEvent
+}
 
 trait ViewEvent extends GameEvent
 
@@ -158,10 +145,10 @@ trait FrameMouseEvents {
 
   val mouseEvents: List[MouseEvent] = events.collect { case e: MouseEvent => e }
 
-  val mouseClickAt: Option[Point] = mouseEvents.collectFirst { case m: MouseClick => m.position }
-  val mouseUpAt: Option[Point] = mouseEvents.collectFirst { case m: MouseUp => m.position }
-  val mouseDownAt: Option[Point] = mouseEvents.collectFirst { case m: MouseDown => m.position }
-  val mousePositionAt: Option[Point] = mouseEvents.collectFirst { case m: MousePosition => m.position }
+  val mouseClickAt: Option[Point] = mouseEvents.collectFirst { case m: MouseEvent.MouseClick => m.position }
+  val mouseUpAt: Option[Point] = mouseEvents.collectFirst { case m: MouseEvent.MouseUp => m.position }
+  val mouseDownAt: Option[Point] = mouseEvents.collectFirst { case m: MouseEvent.MouseDown => m.position }
+  val mousePositionAt: Option[Point] = mouseEvents.collectFirst { case m: MouseEvent.MousePosition => m.position }
 
   // At
   private def wasMouseAt(position: Point, maybePosition: Option[Point]): Boolean =
@@ -209,9 +196,9 @@ trait FrameKeyboardEvents {
 
   val keyboardEvents: List[KeyboardEvent] = events.collect { case e: KeyboardEvent => e }
 
-  val keysUp: List[Int] = keyboardEvents.collect { case k: KeyUp => k.keyCode }
-  val keysDown: List[Int] = keyboardEvents.collect { case k: KeyDown => k.keyCode }
-  val keysPressed: List[Int] = keyboardEvents.collect { case k: KeyPress => k.keyCode }
+  val keysUp: List[Int] = keyboardEvents.collect { case k: KeyboardEvent.KeyUp => k.keyCode }
+  val keysDown: List[Int] = keyboardEvents.collect { case k: KeyboardEvent.KeyDown => k.keyCode }
+  val keysPressed: List[Int] = keyboardEvents.collect { case k: KeyboardEvent.KeyPress => k.keyCode }
 
   def keysAreDown(keys: Int*): Boolean = keys.forall(keyCode => keysDown.contains(keyCode))
   def keysAreUp(keys: Int*): Boolean = keys.forall(keyCode => keysUp.contains(keyCode))

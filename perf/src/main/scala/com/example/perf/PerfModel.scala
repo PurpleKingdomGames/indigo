@@ -1,6 +1,6 @@
 package com.example.perf
 
-import com.purplekingdomgames.indigo.gameengine._
+import com.purplekingdomgames.indigo.gameengine.events.{FrameTick, GameEvent, KeyboardEvent, Keys}
 
 object PerfModel {
 
@@ -13,19 +13,19 @@ object PerfModel {
     case FrameTick =>
       state
 
-    case KeyDown(Keys.LEFT_ARROW) =>
+    case KeyboardEvent.KeyDown(Keys.LEFT_ARROW) =>
       state.copy(dude = state.dude.walkLeft)
 
-    case KeyDown(Keys.RIGHT_ARROW) =>
+    case KeyboardEvent.KeyDown(Keys.RIGHT_ARROW) =>
       state.copy(dude = state.dude.walkRight)
 
-    case KeyDown(Keys.UP_ARROW) =>
+    case KeyboardEvent.KeyDown(Keys.UP_ARROW) =>
       state.copy(dude = state.dude.walkUp)
 
-    case KeyDown(Keys.DOWN_ARROW) =>
+    case KeyboardEvent.KeyDown(Keys.DOWN_ARROW) =>
       state.copy(dude = state.dude.walkDown)
 
-    case KeyUp(_) =>
+    case KeyboardEvent.KeyUp(_) =>
       state.copy(dude = state.dude.idle)
 
     case _ =>

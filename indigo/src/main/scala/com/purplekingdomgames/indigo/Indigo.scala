@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigo
 
-import com.purplekingdomgames.indigo.gameengine._
+import com.purplekingdomgames.indigo.gameengine.{events, _}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -13,13 +13,13 @@ object Indigo {
 object IndigoGameBase {
 
   class IndigoGame[StartupData, StartupError, GameModel](config: GameConfig,
-                                                                            configAsync: Future[Option[GameConfig]],
-                                                                            assets: Set[AssetType],
-                                                                            assetsAsync: Future[Set[AssetType]],
-                                                                            initialise: AssetCollection => Startup[StartupError, StartupData],
-                                                                            initialModel: StartupData => GameModel,
-                                                                            updateModel: (GameTime, GameModel) => GameEvent => GameModel,
-                                                                            updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate) {
+                                                         configAsync: Future[Option[GameConfig]],
+                                                         assets: Set[AssetType],
+                                                         assetsAsync: Future[Set[AssetType]],
+                                                         initialise: AssetCollection => Startup[StartupError, StartupData],
+                                                         initialModel: StartupData => GameModel,
+                                                         updateModel: (GameTime, GameModel) => events.GameEvent => GameModel,
+                                                         updateView: (GameTime, GameModel, events.FrameInputEvents) => SceneGraphUpdate) {
     def start(): Unit =
       new GameEngine[StartupData, StartupError, GameModel](config, configAsync, assets, assetsAsync, initialise, initialModel, updateModel, updateView).start()
   }
@@ -30,8 +30,8 @@ object IndigoGameBase {
                                                                         assetsAsync: Future[Set[AssetType]],
                                                                         initialise: AssetCollection => Startup[StartupError, StartupData],
                                                                         initialModel: StartupData => GameModel,
-                                                                        updateModel: (GameTime, GameModel) => GameEvent => GameModel) {
-    def drawUsing(updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate): IndigoGame[StartupData, StartupError, GameModel] =
+                                                                        updateModel: (GameTime, GameModel) => events.GameEvent => GameModel) {
+    def drawUsing(updateView: (GameTime, GameModel, events.FrameInputEvents) => SceneGraphUpdate): IndigoGame[StartupData, StartupError, GameModel] =
       new IndigoGame(
         config: GameConfig,
         configAsync: Future[Option[GameConfig]],
@@ -39,8 +39,8 @@ object IndigoGameBase {
         assetsAsync: Future[Set[AssetType]],
         initialise: AssetCollection => Startup[StartupError, StartupData],
         initialModel: StartupData => GameModel,
-        updateModel: (GameTime, GameModel) => GameEvent => GameModel,
-        updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate
+        updateModel: (GameTime, GameModel) => events.GameEvent => GameModel,
+        updateView: (GameTime, GameModel, events.FrameInputEvents) => SceneGraphUpdate
       )
   }
 
@@ -50,7 +50,7 @@ object IndigoGameBase {
                                                                   assetsAsync: Future[Set[AssetType]],
                                                                   initialise: AssetCollection => Startup[StartupError, StartupData],
                                                                   initialModel: StartupData => GameModel) {
-    def updateModelUsing(modelUpdater: (GameTime, GameModel) => GameEvent => GameModel): IndigoGameWithModelUpdate[StartupData, StartupError, GameModel] =
+    def updateModelUsing(modelUpdater: (GameTime, GameModel) => events.GameEvent => GameModel): IndigoGameWithModelUpdate[StartupData, StartupError, GameModel] =
       new IndigoGameWithModelUpdate(config, configAsync, assets, assetsAsync, initialise, initialModel, modelUpdater)
   }
 

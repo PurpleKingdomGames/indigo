@@ -3,8 +3,10 @@ package com.example.sandbox
 import com.purplekingdomgames.indigo.Indigo
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
+import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GameEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Depth
+import com.purplekingdomgames.indigoat.formats.{Aseprite, AsepriteHelper}
 import com.purplekingdomgames.shared.{AssetType, ClearColor, GameConfig, GameViewport}
 
 import scala.scalajs.js.annotation.JSExportTopLevel

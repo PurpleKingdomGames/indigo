@@ -1,6 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine
 
 import com.purplekingdomgames.indigo.gameengine.assets._
+import com.purplekingdomgames.indigo.gameengine.events._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.renderer._
 import com.purplekingdomgames.indigo.util._
@@ -158,7 +159,7 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
           val view = updateView(
             gameTime,
             model,
-            FrameInputEvents(collectedEvents.filterNot(_.isInstanceOf[ViewEvent]))
+            events.FrameInputEvents(collectedEvents.filterNot(_.isInstanceOf[ViewEvent]))
           )
 
           metrics.record(CallUpdateViewEndMetric)

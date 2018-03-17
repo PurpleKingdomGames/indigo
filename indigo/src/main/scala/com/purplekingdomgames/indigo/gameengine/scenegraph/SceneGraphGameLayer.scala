@@ -1,6 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
-import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameEvent, GameTime, ViewEvent}
+import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, ViewEvent}
+import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameTime}
 
 case class SceneGraphGameLayer(node: SceneGraphNode) {
 

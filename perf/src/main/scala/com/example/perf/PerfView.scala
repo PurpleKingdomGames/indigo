@@ -2,7 +2,7 @@ package com.example.perf
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo, Point}
-import com.purplekingdomgames.indigo.gameengine.{FrameInputEvents, GlobalSignals}
+import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GlobalSignals}
 
 import scala.util.Random
 

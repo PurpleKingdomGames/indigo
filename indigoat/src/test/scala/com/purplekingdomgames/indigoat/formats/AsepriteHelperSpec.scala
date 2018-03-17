@@ -1,5 +1,6 @@
-package com.purplekingdomgames.indigo.gameengine
+package com.purplekingdomgames.indigoat.formats
 
+import com.purplekingdomgames.indigo.gameengine.events.GameEvent
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import org.scalatest.{FunSpec, Matchers}

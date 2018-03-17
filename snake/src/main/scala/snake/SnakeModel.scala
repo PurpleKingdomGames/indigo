@@ -1,6 +1,7 @@
 package snake
 
 import com.purplekingdomgames.indigo.gameengine._
+import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, KeyboardEvent, Keys}
 import com.purplekingdomgames.indigoat.grid.{GridPoint, GridSize}
 import com.purplekingdomgames.indigoat.ui.Button
 import com.purplekingdomgames.shared.GameViewport
@@ -105,22 +106,22 @@ case object Computer extends PlayerType
 sealed trait ControlScheme {
   def instructPlayer(keyboardEvent: KeyboardEvent, player: Player): Player =
     (this, keyboardEvent) match {
-      case (Turning(left, _), KeyPress(code)) if code == left =>
+      case (Turning(left, _), KeyboardEvent.KeyPress(code)) if code == left =>
         player.turnLeft
 
-      case (Turning(_, right), KeyPress(code)) if code == right =>
+      case (Turning(_, right), KeyboardEvent.KeyPress(code)) if code == right =>
         player.turnRight
 
-      case (Directed(up, _, _, _), KeyPress(code)) if code == up =>
+      case (Directed(up, _, _, _), KeyboardEvent.KeyPress(code)) if code == up =>
         player.goUp
 
-      case (Directed(_, down, _, _), KeyPress(code)) if code == down =>
+      case (Directed(_, down, _, _), KeyboardEvent.KeyPress(code)) if code == down =>
         player.goDown
 
-      case (Directed(_, _, left, _), KeyPress(code)) if code == left =>
+      case (Directed(_, _, left, _), KeyboardEvent.KeyPress(code)) if code == left =>
         player.goLeft
 
-      case (Directed(_, _, _, right), KeyPress(code)) if code == right =>
+      case (Directed(_, _, _, right), KeyboardEvent.KeyPress(code)) if code == right =>
         player.goRight
 
       case _ =>

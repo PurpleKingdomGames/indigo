@@ -1,6 +1,6 @@
 package snake.screens
 
-import com.purplekingdomgames.indigo.gameengine.ViewEvent
+import com.purplekingdomgames.indigo.gameengine.events.ViewEvent
 
 sealed trait Screen
 case object MenuScreen extends Screen
