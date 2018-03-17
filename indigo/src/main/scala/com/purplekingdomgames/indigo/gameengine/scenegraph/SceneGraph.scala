@@ -6,6 +6,10 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 
 case class SceneGraphUpdate(rootNode: SceneGraphRootNode, viewEvents: List[ViewEvent])
 
+object SceneGraphUpdate {
+  def skip: SceneGraphUpdate = SceneGraphUpdate(SceneGraphRootNode.empty, Nil)
+}
+
 object SceneGraphNode {
   def empty: SceneGraphNodeBranch = SceneGraphNodeBranch(Nil)
 }

@@ -64,6 +64,34 @@ lazy val commonSettings = Seq(
   )
 )
 
+// Examples
+lazy val basicSetup =
+  (project in file("examples/basic-setup"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoat)
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .settings(
+      name := "basic-setup",
+      showCursor := true,
+      title := "Basic Setup",
+      gameAssetsDirectory := "assets",
+      scalaJSUseMainModuleInitializer := true
+    )
+
+lazy val button =
+  (project in file("examples/button"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoat)
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .settings(
+      name := "button-example",
+      showCursor := true,
+      title := "Button example",
+      gameAssetsDirectory := "assets",
+      scalaJSUseMainModuleInitializer := true
+    )
+
+
 // Indigo
 lazy val indigo =
   project
