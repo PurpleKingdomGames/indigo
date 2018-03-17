@@ -1,59 +1,66 @@
 package ingidoexamples.button
 
-import com.purplekingdomgames.indigo.Indigo
-import com.purplekingdomgames.indigo.gameengine._
-import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
-import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneGraphUpdate
-import com.purplekingdomgames.shared._
+import com.purplekingdomgames.indigo._
+import com.purplekingdomgames.indigo.gameengine.ViewEvent
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphUpdate}
+import com.purplekingdomgames.indigoat.ui._
+import com.purplekingdomgames.shared.ImageAsset
 
-import scala.scalajs.js.annotation.JSExportTopLevel
+object ButtonExample extends IndigoGameBasic[Unit, MyGameModel] {
 
-object ButtonExample {
+  val config: GameConfig = defaultGameConfig
 
-  val config: GameConfig =
-    GameConfig(
-      viewport = GameViewport(550, 400),
-      frameRate = 60,
-      clearColor = ClearColor.Black,
-      magnification = 1
+  // We'll need some graphics.
+  val assets: Set[AssetType] = Set(ImageAsset("graphics", "assets/graphics.png"))
+
+  def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] =
+    Right(())
+
+  // Let's setup our button's initial state
+  def initialModel(startupData: Unit): MyGameModel =
+    MyGameModel(
+      button = Button(ButtonState.Up).withUpAction { () =>
+        Option(MyButtonEvent) // On mouse release will emit this event.
+      },
+      count = 0
     )
 
-  val assets: Set[AssetType] =
-    Set(ImageAsset("my image", "assets/graphics.png"))
+  // Match on event type, forward ButtonEvents to all buttons! (they'll work out if it's for the right button)
+  def update(gameTime: GameTime, model: MyGameModel): GameEvent => MyGameModel = {
+    case e: ButtonEvent =>
+      model.copy(
+        button = model.button.update(e)
+      )
 
-  val setup: AssetCollection => Startup[MyStartUpError, MyStartupData] =
-    _ => MyStartupData()
+    case MyButtonEvent => // Our event is caught, updates the model and writes to the console.
+      val next = model.copy(count = model.count + 1)
+      println("Count: " + next.count)
+      next
 
-  val initialModel: MyStartupData => MyGameModel =
-    _ => MyGameModel()
+    case _ =>
+      model
+  }
 
-  val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel =
-    (_, model) => _ => model
+  def render(gameTime: GameTime, model: MyGameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate = {
+    val button: ButtonViewUpdate = model.button.draw(
+      bounds = Rectangle(10, 10, 16, 16), // Where should the button be on the screen?
+      depth = Depth(2), // At what depth?
+      frameInputEvents = frameInputEvents, // delegate events
+      buttonAssets = ButtonAssets( // We could cache the graphics much earlier
+        up = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 0, 16, 16),
+        over = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 16, 16, 16),
+        down = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 32, 16, 16)
+      )
+    )
 
-  val renderer: (GameTime, MyGameModel, FrameInputEvents) => SceneGraphUpdate =
-    (_, _, _) => SceneGraphUpdate.skip
-
-  @JSExportTopLevel("Example.main")
-  def main(args: Array[String]): Unit =
-    Indigo.game
-      .withConfig(config)
-      .withAssets(assets)
-      .startUpGameWith(setup)
-      .usingInitialModel(initialModel)
-      .updateModelUsing(updateModel)
-      .drawUsing(renderer)
-      .start()
-
+    SceneGraphUpdate(
+      button.buttonEvents,
+      button.buttonGraphic
+    )
+  }
 }
 
-// Start up types - can be anything, but you must supply a way to render the
-// error cases
-case class MyStartupData()
-case class MyStartUpError(errors: List[String])
-object MyStartUpError {
-  implicit val toReportable: ToReportable[MyStartUpError] =
-    ToReportable.createToReportable(e => e.errors.mkString("\n"))
-}
-
-// Your game model is anything you like!
-case class MyGameModel()
+// We need a button in our model
+case class MyGameModel(button: Button, count: Int)
+case object MyButtonEvent extends ViewEvent

@@ -9,4 +9,10 @@ case class StartupSuccess[SuccessType](success: SuccessType) extends Startup[Not
 object Startup {
   implicit def toSuccess[T](v: T): StartupSuccess[T] = StartupSuccess(v)
   implicit def toFailure[T](v: T)(implicit toReportable: ToReportable[T]): StartupFailure[T] = StartupFailure(v)
+
+  def fromEither[A, B](either: Either[A, B])(implicit toReportable: ToReportable[A]): Startup[A, B] =
+    either match {
+      case Left(e) => StartupFailure(e)
+      case Right(s) => StartupSuccess(s)
+    }
 }

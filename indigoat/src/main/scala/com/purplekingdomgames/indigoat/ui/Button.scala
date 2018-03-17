@@ -6,13 +6,13 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey
 
 object Button {
 
-  def apply(state: ButtonState, assets: ButtonAssets): Button =
-    Button(state, assets, ButtonActions(() => None, () => None, () => None, () => None))
+  def apply(state: ButtonState): Button =
+    Button(state, ButtonActions(() => None, () => None, () => None, () => None))
 
   object Model {
 
-    def update(button: Button, viewEvent: ViewEvent): Button = {
-      viewEvent match {
+    def update(button: Button, buttonEvent: ButtonEvent): Button = {
+      buttonEvent match {
         case ButtonEvent(bindingKey, ButtonState.Up) if button.bindingKey === bindingKey =>
           button.toUpState
 
@@ -63,21 +63,21 @@ object Button {
         }
       }
 
-    def renderButton(bounds: Rectangle, depth: Depth, button: Button): Graphic =
+    def renderButton(bounds: Rectangle, depth: Depth, button: Button, assets: ButtonAssets): Graphic =
       button.state match {
         case ButtonState.Up =>
-          button.assets.up.moveTo(bounds.position).withDepth(depth.zIndex)
+          assets.up.moveTo(bounds.position).withDepth(depth.zIndex)
 
         case ButtonState.Over =>
-          button.assets.over.moveTo(bounds.position).withDepth(depth.zIndex)
+          assets.over.moveTo(bounds.position).withDepth(depth.zIndex)
 
         case ButtonState.Down =>
-          button.assets.down.moveTo(bounds.position).withDepth(depth.zIndex)
+          assets.down.moveTo(bounds.position).withDepth(depth.zIndex)
       }
 
-    def update(bounds: Rectangle, depth: Depth, button: Button, frameEvents: FrameInputEvents): ButtonViewUpdate =
+    def update(bounds: Rectangle, depth: Depth, button: Button, frameEvents: FrameInputEvents, assets: ButtonAssets): ButtonViewUpdate =
       ButtonViewUpdate(
-        renderButton(bounds, depth, button),
+        renderButton(bounds, depth, button, assets),
         applyEvents(bounds, button, frameEvents)
       )
 
@@ -85,12 +85,15 @@ object Button {
 
 }
 
-case class Button(state: ButtonState, assets: ButtonAssets, actions: ButtonActions) {
+case class Button(state: ButtonState, actions: ButtonActions) {
 
   val bindingKey: BindingKey = BindingKey.generate
 
-  def draw(bounds: Rectangle, depth: Depth, frameEvents: FrameInputEvents): ButtonViewUpdate =
-    Button.View.update(bounds, depth, this, frameEvents)
+  def update(buttonEvent: ButtonEvent): Button =
+    Button.Model.update(this, buttonEvent)
+
+  def draw(bounds: Rectangle, depth: Depth, frameInputEvents: FrameInputEvents, buttonAssets: ButtonAssets): ButtonViewUpdate =
+    Button.View.update(bounds, depth, this, frameInputEvents, buttonAssets)
 
   def withUpAction(action: () => Option[ViewEvent]): Button =
     this.copy(actions = actions.copy(onUp = action))

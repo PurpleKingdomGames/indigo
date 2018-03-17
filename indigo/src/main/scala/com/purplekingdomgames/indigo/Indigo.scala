@@ -9,19 +9,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object Indigo {
-
-  def start[StartupData, StartupError, GameModel](implicit
-                                                                     config: GameConfig,
-                                                                     configAsync: Future[Option[GameConfig]],
-                                                                     assets: Set[AssetType],
-                                                                     assetsAsync: Future[Set[AssetType]],
-                                                                     initialise: AssetCollection => Startup[StartupError, StartupData],
-                                                                     initialModel: StartupData => GameModel,
-                                                                     updateModel: (GameTime, GameModel) => GameEvent => GameModel,
-                                                                     updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate): Unit =
-    new GameEngine[StartupData, StartupError, GameModel](config, configAsync, assets, assetsAsync, initialise, initialModel, updateModel, updateView).start()
-
-  def game: IndigoGameBase.type = IndigoGameBase
+  def game: IndigoGameBase.type =
+    IndigoGameBase
 }
 
 object IndigoGameBase {
@@ -35,7 +24,7 @@ object IndigoGameBase {
                                                                             updateModel: (GameTime, GameModel) => GameEvent => GameModel,
                                                                             updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate) {
     def start(): Unit =
-      Indigo.start[StartupData, StartupError, GameModel](config, configAsync, assets, assetsAsync, initialise, initialModel, updateModel, updateView)
+      new GameEngine[StartupData, StartupError, GameModel](config, configAsync, assets, assetsAsync, initialise, initialModel, updateModel, updateView).start()
   }
 
   class IndigoGameWithModelUpdate[StartupData, StartupError, GameModel](config: GameConfig,

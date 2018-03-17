@@ -12,19 +12,19 @@ import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 @JSExportTopLevel("Indigo")
 object Framework {
 
-  implicit val config: GameConfig =
+  val config: GameConfig =
     GameConfig.default
 
-  implicit def configAsync: Future[Option[GameConfig]] =
+  def configAsync: Future[Option[GameConfig]] =
     GameConfigHelper.load
 
-  implicit val assets: Set[AssetType] =
+  val assets: Set[AssetType] =
     AssetsHelper.assets
 
-  implicit def assetsAsync: Future[Set[AssetType]] =
+  def assetsAsync: Future[Set[AssetType]] =
     AssetsHelper.assetsAsync
 
-  implicit val initialise: AssetCollection => Startup[StartupErrorReport, StartupData] = assetCollection =>
+  val initialise: AssetCollection => Startup[StartupErrorReport, StartupData] = assetCollection =>
     assetCollection
       .texts
       .find(p => p.name == "indigoJson")
@@ -33,22 +33,36 @@ object Framework {
       case None => StartupErrorReport("Game definition could not be loaded")
     }
 
-  implicit val initialModel: StartupData => GameModel = startupData =>
+  val initialModel: StartupData => GameModel = startupData =>
     GameModelHelper.initialModel(startupData)
 
-  implicit val updateModel: (GameTime, GameModel) => GameEvent => GameModel = (_, gameModel) =>
+  val updateModel: (GameTime, GameModel) => GameEvent => GameModel = (_, gameModel) =>
     GameModelHelper.updateModel(gameModel)
 
-  implicit val updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate = (_, gameModel, _) =>
+  val updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate = (_, gameModel, _) =>
     GameViewHelper.updateView(gameModel)
 
   @JSExport
   def startLocal(): Unit =
-    Indigo.start[StartupData, StartupErrorReport, GameModel]
+    Indigo.game
+      .withConfig(config)
+      .withAssets(assets)
+      .startUpGameWith(initialise)
+      .usingInitialModel(initialModel)
+      .updateModelUsing(updateModel)
+      .drawUsing(updateView)
+      .start()
 
   @JSExport
   def startRemote(): Unit =
-    Indigo.start[StartupData, StartupErrorReport, GameModel]
+    Indigo.game
+      .withConfig(config)
+      .withAssets(assets)
+      .startUpGameWith(initialise)
+      .usingInitialModel(initialModel)
+      .updateModelUsing(updateModel)
+      .drawUsing(updateView)
+      .start()
 
 }
 

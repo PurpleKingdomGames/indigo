@@ -1,59 +1,28 @@
 package ingidoexamples.basic
 
-import com.purplekingdomgames.indigo.Indigo
-import com.purplekingdomgames.indigo.gameengine._
-import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
-import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneGraphUpdate
-import com.purplekingdomgames.shared._
+import com.purplekingdomgames.indigo._
 
-import scala.scalajs.js.annotation.JSExportTopLevel
+object BasicSetup extends IndigoGameBasic[MyStartUpData, MyGameModel] {
 
-object BasicSetup {
+  val config: GameConfig = defaultGameConfig
 
-  val config: GameConfig =
-    GameConfig(
-      viewport = GameViewport(550, 400),
-      frameRate = 60,
-      clearColor = ClearColor.Black,
-      magnification = 1
-    )
+  val assets: Set[AssetType] = Set()
 
-  val assets: Set[AssetType] =
-    Set(ImageAsset("my image", "assets/graphics.png"))
+  def setup(assetCollection: AssetCollection): Either[StartupErrors, MyStartUpData] =
+    Right(MyStartUpData())
 
-  val setup: AssetCollection => Startup[MyStartUpError, MyStartupData] =
-    _ => MyStartupData()
+  def initialModel(startupData: MyStartUpData): MyGameModel =
+    MyGameModel()
 
-  val initialModel: MyStartupData => MyGameModel =
-    _ => MyGameModel()
+  def update(gameTime: GameTime, model: MyGameModel): GameEvent => MyGameModel = _ =>
+    model
 
-  val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel =
-    (_, model) => _ => model
-
-  val renderer: (GameTime, MyGameModel, FrameInputEvents) => SceneGraphUpdate =
-    (_, _, _) => SceneGraphUpdate.skip
-
-  @JSExportTopLevel("Example.main")
-  def main(args: Array[String]): Unit =
-    Indigo.game
-      .withConfig(config)
-      .withAssets(assets)
-      .startUpGameWith(setup)
-      .usingInitialModel(initialModel)
-      .updateModelUsing(updateModel)
-      .drawUsing(renderer)
-      .start()
-
+  def render(gameTime: GameTime, model: MyGameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate =
+    noRender
 }
 
-// Start up types - can be anything, but you must supply a way to render the
-// error cases
-case class MyStartupData()
-case class MyStartUpError(errors: List[String])
-object MyStartUpError {
-  implicit val toReportable: ToReportable[MyStartUpError] =
-    ToReportable.createToReportable(e => e.errors.mkString("\n"))
-}
+// What does your game need to start? E.g. Parsing a level description file
+case class MyStartUpData()
 
 // Your game model is anything you like!
 case class MyGameModel()

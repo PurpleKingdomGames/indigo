@@ -3,7 +3,7 @@ package snake.screens
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
-import com.purplekingdomgames.indigoat.ui.{Button, ButtonAssets, ButtonState}
+import com.purplekingdomgames.indigoat.ui.{Button, ButtonAssets, ButtonEvent, ButtonState}
 import snake._
 
 object MenuScreenFunctions {
@@ -16,25 +16,20 @@ object MenuScreenFunctions {
         menuItems =
           MenuZipper(
             previous = Nil,
-            current = MenuItem("demo mode", makeButton(startupData, MenuScreen), MenuScreen),
+            current = MenuItem("demo mode", makeButton(MenuScreen), MenuScreen),
             next =
               List(
-                MenuItem("1up", makeButton(startupData, GameScreen), GameScreen),
-                MenuItem("1up vs cpu", makeButton(startupData, MenuScreen), MenuScreen),
-                MenuItem("2up local", makeButton(startupData, MenuScreen), MenuScreen),
-                MenuItem("2up network", makeButton(startupData, MenuScreen), MenuScreen)
+                MenuItem("1up", makeButton(GameScreen), GameScreen),
+                MenuItem("1up vs cpu", makeButton(MenuScreen), MenuScreen),
+                MenuItem("2up local", makeButton(MenuScreen), MenuScreen),
+                MenuItem("2up network", makeButton(MenuScreen), MenuScreen)
               )
           )
       )
 
-    private def makeButton(startupData: SnakeStartupData, screen: Screen): Button =
+    private def makeButton(screen: Screen): Button =
       Button(
-        ButtonState.Up,
-        ButtonAssets(
-          up = startupData.staticAssets.gameScreen.player1.alive,
-          over = startupData.staticAssets.gameScreen.player2.alive,
-          down = startupData.staticAssets.gameScreen.player3.alive
-        )
+        ButtonState.Up
       ).withUpAction { () =>
         Option(ChangeScreenTo(screen))
       }
@@ -71,7 +66,7 @@ object MenuScreenFunctions {
           gameScreenModel = GameScreenFunctions.Model.initialModel(state.startupData)
         )
 
-      case e: ViewEvent =>
+      case e: ButtonEvent =>
         state.copy(menuScreenModel =
           state.menuScreenModel.copy(menuItems =
             state.menuScreenModel.menuItems.copy(
@@ -96,9 +91,16 @@ object MenuScreenFunctions {
 
   object View {
 
-    def update: (GameTime, FrameInputEvents, MenuScreenModel) => SceneGraphUpdate = (_, frameEvents, model) => {
+    def update: (GameTime, FrameInputEvents, SnakeModel) => SceneGraphUpdate = (_, frameEvents, model) => {
 
-      val uiLayer = ui(frameEvents, model)
+      val buttonAssets =
+        ButtonAssets(
+          up = model.startupData.staticAssets.gameScreen.player1.alive,
+          over = model.startupData.staticAssets.gameScreen.player2.alive,
+          down = model.startupData.staticAssets.gameScreen.player3.alive
+        )
+
+      val uiLayer = ui(frameEvents, model.menuScreenModel, buttonAssets)
 
       SceneGraphUpdate(
         SceneGraphRootNode.empty.addUiLayer(uiLayer._1),
@@ -106,13 +108,13 @@ object MenuScreenFunctions {
       )
     }
 
-    def ui(frameEvents: FrameInputEvents, model: MenuScreenModel): (SceneGraphUiLayer, List[ViewEvent]) = {
+    def ui(frameEvents: FrameInputEvents, model: MenuScreenModel, buttonAssets: ButtonAssets): (SceneGraphUiLayer, List[ViewEvent]) = {
 
       val menuItemsAndEvents: List[(SceneGraphNode, List[ViewEvent])] = {
 
         val draw: Boolean => ((MenuItem, Int)) => List[(SceneGraphNode, List[ViewEvent])] = p => { case (menuItem, i) =>
           List(
-            menuItem.button.draw(Rectangle(10, (i * 20) + 10, 16, 16), Depth(2), frameEvents).toTuple,
+            menuItem.button.draw(Rectangle(10, (i * 20) + 10, 16, 16), Depth(2), frameEvents, buttonAssets).toTuple,
             (Text(menuItem.text, 40, (i * 20) + 10, 2, SnakeAssets.fontInfo).alignLeft.withAlpha(if (p) 1 else 0.5), Nil)
           )
         }

@@ -78,6 +78,19 @@ lazy val basicSetup =
       scalaJSUseMainModuleInitializer := true
     )
 
+lazy val fullSetup =
+  (project in file("examples/full-setup"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoat)
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .settings(
+      name := "full-setup",
+      showCursor := true,
+      title := "Full Setup",
+      gameAssetsDirectory := "assets",
+      scalaJSUseMainModuleInitializer := true
+    )
+
 lazy val button =
   (project in file("examples/button"))
     .settings(commonSettings: _*)

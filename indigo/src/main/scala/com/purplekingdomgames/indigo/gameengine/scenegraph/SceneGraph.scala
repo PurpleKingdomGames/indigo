@@ -8,6 +8,19 @@ case class SceneGraphUpdate(rootNode: SceneGraphRootNode, viewEvents: List[ViewE
 
 object SceneGraphUpdate {
   def skip: SceneGraphUpdate = SceneGraphUpdate(SceneGraphRootNode.empty, Nil)
+
+  def apply(rootNode: SceneGraphRootNode): SceneGraphUpdate =
+    SceneGraphUpdate(rootNode, Nil)
+
+  def apply(viewEvents: List[ViewEvent], nodes: SceneGraphNode*): SceneGraphUpdate =
+    SceneGraphUpdate(SceneGraphRootNode(SceneGraphGameLayer(nodes.toList)), viewEvents)
+
+  def apply(gameLayer: SceneGraphGameLayer, viewEvents: List[ViewEvent]): SceneGraphUpdate =
+    SceneGraphUpdate(SceneGraphRootNode(gameLayer), viewEvents)
+
+  def apply(gameLayer: SceneGraphGameLayer, lightingLayer: SceneGraphLightingLayer, uiLayer: SceneGraphUiLayer, viewEvents: List[ViewEvent]): SceneGraphUpdate =
+    SceneGraphUpdate(SceneGraphRootNode(gameLayer, lightingLayer, uiLayer), viewEvents)
+
 }
 
 object SceneGraphNode {
