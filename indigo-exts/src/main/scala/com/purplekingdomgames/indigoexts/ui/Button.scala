@@ -43,19 +43,19 @@ object Button {
           case MouseEvent.MouseDown(x, y) if bounds.isPointWithin(x, y) =>
             acc ++ button.actions.onDown().toList :+ ButtonEvent(button.bindingKey, ButtonState.Down)
 
-          case MouseEvent.MousePosition(x, y) if bounds.isPointWithin(x, y) && button.state.isDown =>
+          case MouseEvent.Move(x, y) if bounds.isPointWithin(x, y) && button.state.isDown =>
             acc :+ ButtonEvent(button.bindingKey, ButtonState.Down)
 
-          case MouseEvent.MousePosition(x, y) if bounds.isPointWithin(x, y) && button.state.isOver =>
+          case MouseEvent.Move(x, y) if bounds.isPointWithin(x, y) && button.state.isOver =>
             acc :+ ButtonEvent(button.bindingKey, ButtonState.Over)
 
-          case MouseEvent.MousePosition(x, y) if bounds.isPointWithin(x, y) =>
+          case MouseEvent.Move(x, y) if bounds.isPointWithin(x, y) =>
             acc ++ button.actions.onHoverOver().toList :+ ButtonEvent(button.bindingKey, ButtonState.Over)
 
-          case MouseEvent.MousePosition(_, _) if button.state.isDown =>
+          case MouseEvent.Move(_, _) if button.state.isDown =>
             acc :+ ButtonEvent(button.bindingKey, ButtonState.Down)
 
-          case MouseEvent.MousePosition(_, _) =>
+          case MouseEvent.Move(_, _) =>
             acc :+ ButtonEvent(button.bindingKey, ButtonState.Up)
 
           case _ =>

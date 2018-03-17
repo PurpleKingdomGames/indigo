@@ -1,6 +1,7 @@
 package com.example.perf
 
-import com.purplekingdomgames.indigo.gameengine.events.{FrameTick, GameEvent, KeyboardEvent, Keys}
+import com.purplekingdomgames.indigo.gameengine.constants.Keys
+import com.purplekingdomgames.indigo.gameengine.events.{FrameTick, GameEvent, KeyboardEvent}
 
 object PerfModel {
 

@@ -1,6 +1,7 @@
 package snake.screens
 
-import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, KeyboardEvent, Keys}
+import com.purplekingdomgames.indigo.gameengine.constants.Keys
+import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, KeyboardEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.shared.GameViewport
 import snake._

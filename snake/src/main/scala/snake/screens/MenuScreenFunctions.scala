@@ -1,6 +1,7 @@
 package snake.screens
 
 import com.purplekingdomgames.indigo.gameengine._
+import com.purplekingdomgames.indigo.gameengine.constants.Keys
 import com.purplekingdomgames.indigo.gameengine.events._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}

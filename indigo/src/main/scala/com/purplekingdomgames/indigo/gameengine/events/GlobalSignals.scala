@@ -15,7 +15,7 @@ private[indigo] object GlobalSignalsManager {
   def update(events: List[GameEvent]): Signals = {
     signals = events.foldLeft(signals) { (sigs, e) =>
       e match {
-        case mp: MouseEvent.MousePosition =>
+        case mp: MouseEvent.Move =>
           sigs.copy(mousePosition = mp.position)
 
         case _ =>

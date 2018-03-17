@@ -1,7 +1,8 @@
 package snake
 
 import com.purplekingdomgames.indigo.gameengine._
-import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, KeyboardEvent, Keys}
+import com.purplekingdomgames.indigo.gameengine.constants.Keys
+import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, KeyboardEvent}
 import com.purplekingdomgames.indigoexts.grid.{GridPoint, GridSize}
 import com.purplekingdomgames.indigoexts.ui.Button
 import com.purplekingdomgames.shared.GameViewport

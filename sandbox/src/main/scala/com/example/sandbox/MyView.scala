@@ -75,7 +75,7 @@ object MyView {
       Text("AB!\n!C", 2, 2, 5, fontInfo).alignLeft,
       Text("AB!\n!C", 100, 2, 5, fontInfo).alignCenter,
       Text("AB!\n!C", 200, 2, 5, fontInfo).alignRight.onEvent {
-        case (bounds, MouseEvent.MouseClick(_, _)) =>
+        case (bounds, MouseEvent.Click(_, _)) =>
           if(frameInputEvents.wasMouseClickedWithin(bounds)) {
             println("Hit me! Oh yeah!")
           }
