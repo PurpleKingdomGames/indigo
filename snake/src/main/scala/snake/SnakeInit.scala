@@ -4,9 +4,9 @@ import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Depth
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphNodeBranch}
 import com.purplekingdomgames.indigo.gameengine.{Startup, StartupSuccess, ToReportable}
-import com.purplekingdomgames.indigoat.formats.TiledHelper
-import com.purplekingdomgames.indigoat.grid.GridSize
-import com.purplekingdomgames.indigoat.ui.ButtonAssets
+import com.purplekingdomgames.indigoexts.formats.TiledHelper
+import com.purplekingdomgames.indigoexts.grid.GridSize
+import com.purplekingdomgames.indigoexts.ui.ButtonAssets
 import com.purplekingdomgames.shared.GameViewport
 
 object SnakeInit {

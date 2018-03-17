@@ -6,7 +6,7 @@ import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GameEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Depth
-import com.purplekingdomgames.indigoat.formats.{Aseprite, AsepriteHelper}
+import com.purplekingdomgames.indigoexts.formats.{Aseprite, AsepriteHelper}
 import com.purplekingdomgames.shared._
 
 import scala.scalajs.js.annotation.JSExportTopLevel

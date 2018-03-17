@@ -1,7 +1,7 @@
 package snake
 
 import com.purplekingdomgames.indigo.Indigo
-import com.purplekingdomgames.indigoat.grid.GridSize
+import com.purplekingdomgames.indigoexts.grid.GridSize
 import com.purplekingdomgames.shared.{ClearColor, GameConfig, GameViewport}
 
 import scala.scalajs.js.annotation.JSExportTopLevel

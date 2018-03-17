@@ -4,7 +4,7 @@ import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.events._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
-import com.purplekingdomgames.indigoat.ui.{Button, ButtonAssets, ButtonEvent, ButtonState}
+import com.purplekingdomgames.indigoexts.ui.{Button, ButtonAssets, ButtonEvent, ButtonState}
 import snake._
 
 object MenuScreenFunctions {

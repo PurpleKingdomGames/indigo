@@ -1,6 +1,6 @@
 package snake.datatypes
 
-import com.purplekingdomgames.indigoat.grid.{GridPoint, GridSize}
+import com.purplekingdomgames.indigoexts.grid.{GridPoint, GridSize}
 import snake.datatypes.CollisionCheckOutcome.{Crashed, NoCollision, PickUp}
 import snake.datatypes.SnakeDirection.Up
 import snake.datatypes.SnakeStatus.{Alive, Dead}

@@ -1,6 +1,6 @@
 package snake.arenas
 
-import com.purplekingdomgames.indigoat.grid.{GridPoint, GridSize}
+import com.purplekingdomgames.indigoexts.grid.{GridPoint, GridSize}
 import snake.arenas.MapElement.{Apple, Player1Start, Wall}
 
 object Arena {

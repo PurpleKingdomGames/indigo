@@ -5,7 +5,7 @@ import com.purplekingdomgames.indigo.gameengine.events
 import com.purplekingdomgames.indigo.gameengine.events.ViewEvent
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphUpdate}
-import com.purplekingdomgames.indigoat.ui._
+import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.ImageAsset
 
 object HttpExample extends IndigoGameBasic[Unit, MyGameModel] {

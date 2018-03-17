@@ -68,7 +68,7 @@ lazy val commonSettings = Seq(
 lazy val basicSetup =
   (project in file("examples/basic-setup"))
     .settings(commonSettings: _*)
-    .dependsOn(indigoat)
+    .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(
       name := "basic-setup",
@@ -81,7 +81,7 @@ lazy val basicSetup =
 lazy val fullSetup =
   (project in file("examples/full-setup"))
     .settings(commonSettings: _*)
-    .dependsOn(indigoat)
+    .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(
       name := "full-setup",
@@ -94,7 +94,7 @@ lazy val fullSetup =
 lazy val button =
   (project in file("examples/button"))
     .settings(commonSettings: _*)
-    .dependsOn(indigoat)
+    .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(
       name := "button-example",
@@ -107,7 +107,7 @@ lazy val button =
 lazy val http =
   (project in file("examples/http"))
     .settings(commonSettings: _*)
-    .dependsOn(indigoat)
+    .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(
       name := "http-example",
@@ -132,16 +132,14 @@ lazy val indigo =
     .enablePlugins(ScalaJSPlugin)
     .dependsOn(shared)
 
-//scalaJSLinkerConfig in Test ~= { _.withOptimizer(false) }
-
 // Shared
-lazy val indigoat =
-  project
+lazy val indigoExts =
+  (project in file("indigo-exts"))
     .settings(commonSettings: _*)
     .dependsOn(indigo)
     .enablePlugins(ScalaJSPlugin)
     .settings(
-      name := "indigoat",
+      name := "indigo-exts",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
     )
 
@@ -149,7 +147,7 @@ lazy val indigoat =
 lazy val snake =
   project
     .settings(commonSettings: _*)
-    .dependsOn(indigoat)
+    .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(
       name := "snake",
@@ -163,7 +161,7 @@ lazy val snake =
 lazy val sandbox =
   project
     .settings(commonSettings: _*)
-    .dependsOn(indigoat)
+    .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(
       name := "indigo-sandbox",
@@ -176,7 +174,7 @@ lazy val sandbox =
 lazy val perf =
   project
     .settings(commonSettings: _*)
-    .dependsOn(indigoat)
+    .dependsOn(indigoExts)
     .settings(
       name := "indigo-perf",
       showCursor := true,
@@ -189,7 +187,7 @@ lazy val perf =
 lazy val framework =
   project
     .settings(commonSettings: _*)
-    .dependsOn(indigoat)
+    .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(
       name := "indigo-framework",
@@ -226,8 +224,11 @@ lazy val shared =
       name := "shared"
     )
 
+
 // Root
 lazy val indigoProject =
   (project in file("."))
     .settings(commonSettings: _*)
-    .aggregate(indigo, sandbox, perf, framework, server, snake)
+    .aggregate(indigo, indigoExts) //core
+    .aggregate(sandbox, perf, framework, server, snake) //games
+    .aggregate(basicSetup, fullSetup, button, http) //examples

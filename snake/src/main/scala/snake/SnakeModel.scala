@@ -2,8 +2,8 @@ package snake
 
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, KeyboardEvent, Keys}
-import com.purplekingdomgames.indigoat.grid.{GridPoint, GridSize}
-import com.purplekingdomgames.indigoat.ui.Button
+import com.purplekingdomgames.indigoexts.grid.{GridPoint, GridSize}
+import com.purplekingdomgames.indigoexts.ui.Button
 import com.purplekingdomgames.shared.GameViewport
 import snake.arenas.GameMap
 import snake.datatypes.{CollisionCheckOutcome, Snake}

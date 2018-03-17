@@ -1,7 +1,7 @@
 package snake.arenas
 
-import com.purplekingdomgames.indigoat.grid.{GridPoint, GridSize}
-import com.purplekingdomgames.indigoat.quadtree.QuadTree
+import com.purplekingdomgames.indigoexts.grid.{GridPoint, GridSize}
+import com.purplekingdomgames.indigoexts.quadtree.QuadTree
 import snake.arenas.MapElement.{Apple, Wall}
 
 /***

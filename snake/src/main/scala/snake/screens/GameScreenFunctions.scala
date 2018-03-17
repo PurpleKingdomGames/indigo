@@ -4,7 +4,7 @@ import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.events.{FrameTick, GameEvent, KeyboardEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
-import com.purplekingdomgames.indigoat.grid.{GridPoint, GridSize}
+import com.purplekingdomgames.indigoexts.grid.{GridPoint, GridSize}
 import snake._
 import snake.arenas.{Arena, GameMap, MapElement}
 import snake.arenas.MapElement.{Apple, Player1Start, Player2Start}
