@@ -1,9 +1,6 @@
 package com.purplekingdomgames.indigo
 
 import com.purplekingdomgames.indigo.gameengine._
-import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
-import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneGraphUpdate
-import com.purplekingdomgames.shared.{AssetType, GameConfig}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -80,6 +77,6 @@ object IndigoGameBase {
   }
 
   def withConfig(config: GameConfig): ConfiguredIndigoGame = new ConfiguredIndigoGame(config, Future(None))
-  def withAsyncConfig(configAsync: Future[Option[GameConfig]]): ConfiguredIndigoGame = new ConfiguredIndigoGame(GameConfig.default, configAsync)
+  def withAsyncConfig(configAsync: Future[Option[GameConfig]]): ConfiguredIndigoGame = new ConfiguredIndigoGame(defaultGameConfig, configAsync)
 }
 

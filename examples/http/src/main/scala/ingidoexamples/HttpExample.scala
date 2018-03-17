@@ -1,4 +1,4 @@
-package ingidoexamples.button
+package ingidoexamples
 
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.ViewEvent
@@ -7,7 +7,7 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphU
 import com.purplekingdomgames.indigoat.ui._
 import com.purplekingdomgames.shared.ImageAsset
 
-object ButtonExample extends IndigoGameBasic[Unit, MyGameModel] {
+object HttpExample extends IndigoGameBasic[Unit, MyGameModel] {
 
   val config: GameConfig = defaultGameConfig
 

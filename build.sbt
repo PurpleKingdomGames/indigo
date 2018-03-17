@@ -104,6 +104,19 @@ lazy val button =
       scalaJSUseMainModuleInitializer := true
     )
 
+lazy val http =
+  (project in file("examples/http"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoat)
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .settings(
+      name := "http-example",
+      showCursor := true,
+      title := "Http example",
+      gameAssetsDirectory := "assets",
+      scalaJSUseMainModuleInitializer := true
+    )
+
 
 // Indigo
 lazy val indigo =

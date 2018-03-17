@@ -1,4 +1,4 @@
-package ingidoexamples.basic
+package ingidoexamples
 
 import com.purplekingdomgames.indigo._
 
