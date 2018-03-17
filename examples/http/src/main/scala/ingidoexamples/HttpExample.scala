@@ -2,9 +2,10 @@ package ingidoexamples
 
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.events
-import com.purplekingdomgames.indigo.gameengine.events.ViewEvent
+import com.purplekingdomgames.indigo.gameengine.events.HttpEvent.{HttpError, HttpResponse}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphUpdate}
+import com.purplekingdomgames.indigo.networking.Http
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.ImageAsset
 
@@ -12,32 +13,33 @@ object HttpExample extends IndigoGameBasic[Unit, MyGameModel] {
 
   val config: GameConfig = defaultGameConfig
 
-  // We'll need some graphics.
   val assets: Set[AssetType] = Set(ImageAsset("graphics", "assets/graphics.png"))
 
   def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] =
     Right(())
 
-  // Let's setup our button's initial state
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(
       button = Button(ButtonState.Up).withUpAction { () =>
-        Option(MyButtonEvent) // On mouse release will emit this event.
+        Http.doGet("http://google.com")
+        None
       },
       count = 0
     )
 
-  // Match on event type, forward ButtonEvents to all buttons! (they'll work out if it's for the right button)
   def update(gameTime: GameTime, model: MyGameModel): events.GameEvent => MyGameModel = {
     case e: ButtonEvent =>
       model.copy(
         button = model.button.update(e)
       )
 
-    case MyButtonEvent => // Our event is caught, updates the model and writes to the console.
-      val next = model.copy(count = model.count + 1)
-      println("Count: " + next.count)
-      next
+    case HttpResponse(status) =>
+      println("Status code: " + status)
+      model
+
+    case HttpError =>
+      println("Http error message")
+      model
 
     case _ =>
       model
@@ -45,10 +47,10 @@ object HttpExample extends IndigoGameBasic[Unit, MyGameModel] {
 
   def render(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneGraphUpdate = {
     val button: ButtonViewUpdate = model.button.draw(
-      bounds = Rectangle(10, 10, 16, 16), // Where should the button be on the screen?
-      depth = Depth(2), // At what depth?
-      frameInputEvents = frameInputEvents, // delegate events
-      buttonAssets = ButtonAssets( // We could cache the graphics much earlier
+      bounds = Rectangle(10, 10, 16, 16),
+      depth = Depth(2),
+      frameInputEvents = frameInputEvents,
+      buttonAssets = ButtonAssets(
         up = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 0, 16, 16),
         over = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 16, 16, 16),
         down = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 32, 16, 16)
@@ -64,4 +66,3 @@ object HttpExample extends IndigoGameBasic[Unit, MyGameModel] {
 
 // We need a button in our model
 case class MyGameModel(button: Button, count: Int)
-case object MyButtonEvent extends ViewEvent

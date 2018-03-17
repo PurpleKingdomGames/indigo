@@ -28,3 +28,11 @@ object KeyboardEvent {
 }
 
 trait ViewEvent extends GameEvent
+
+sealed trait NetworkEvent extends GameEvent
+
+sealed trait HttpEvent extends NetworkEvent
+object HttpEvent {
+  case object HttpError extends HttpEvent
+  case class HttpResponse(status: Int) extends HttpEvent
+}
