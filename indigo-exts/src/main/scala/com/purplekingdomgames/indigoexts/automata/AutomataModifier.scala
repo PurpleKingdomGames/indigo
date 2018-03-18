@@ -9,7 +9,7 @@ object AutomataModifier {
   case class ChangeAlpha(f: (GameTime, Double) => Double) extends AutomataModifier
   case class ChangeTint(f: (GameTime, Tint) => Tint) extends AutomataModifier
   case class MoveTo(f: (GameTime, Point) => Point) extends AutomataModifier
-  case class EmitEvent(f: GameTime => ViewEvent) extends AutomataModifier
+  case class EmitEvents(f: GameTime => List[ViewEvent]) extends AutomataModifier
 
   /**
     * Collisions are a bit more complex. The idea is that you have a predicate that
