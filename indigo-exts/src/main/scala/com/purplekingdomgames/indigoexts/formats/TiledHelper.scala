@@ -49,7 +49,6 @@ object TiledHelper {
 
       SceneGraphNodeBranch(
         layer.data.zipWithIndex.flatMap { case (tileIndex, poitionIndex) =>
-          println(s"tileIndex: $tileIndex, poitionIndex: $poitionIndex, in map: ${tilesInUse.get(tileIndex).isDefined}")
           if(tileIndex == 0) Nil
           else
             tilesInUse.get(tileIndex)

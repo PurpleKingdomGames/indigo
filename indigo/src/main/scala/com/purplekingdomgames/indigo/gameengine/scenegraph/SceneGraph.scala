@@ -256,6 +256,7 @@ object Sprite {
     )
 }
 
+//TODO: FontInfo can be very large and is embedded into every instance, find a way to look up by reference.
 case class Text(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontInfo: FontInfo, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent]) extends SceneGraphNodeLeaf {
 
   private[gameengine] def frameHash: String = "" // Not used - look up done another way.

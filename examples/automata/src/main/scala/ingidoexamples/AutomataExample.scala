@@ -8,8 +8,6 @@ import com.purplekingdomgames.indigoexts.automata._
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.ImageAsset
 
-import scala.util.Random
-
 object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
 
   val fontName: String = "My boxy font"
@@ -26,10 +24,18 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
     AutomataFarm.register(
       TextAutomaton(
         AutomataPoolKey("points"),
-        Text("10pts!", 0, 0, 1, fontInfo),
-        AutomataLifeSpan(10000),
+        Text("1000", 0, 0, 1, fontInfo).alignCenter,
+        AutomataLifeSpan(1000),
         List(
-          AutomataModifier.MoveTo((_, _) => Point.tuple2ToPoint(config.viewport.center) + Point(Random.nextInt(100) - 50, Random.nextInt(100) - 50))
+          AutomataModifier.MoveTo((_, seed, _) => {
+            val start = Point.tuple2ToPoint(config.viewport.center)
+            val diff = 30 * (seed.timeAliveDelta / seed.lifeSpan)
+
+            start + Point(0, -diff.toInt)
+          }),
+          AutomataModifier.ChangeAlpha((_, seed, originalAlpha) =>
+            originalAlpha * (seed.timeAliveDelta / seed.lifeSpan)
+          )
         )
       )
     )

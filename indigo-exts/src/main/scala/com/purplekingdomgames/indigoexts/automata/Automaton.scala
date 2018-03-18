@@ -25,4 +25,4 @@ object AutomataPoolKey {
     a.key == b.key
 }
 
-case class AutomataLifeSpan(millis: Int)
+case class AutomataLifeSpan(millis: Double)
