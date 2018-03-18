@@ -12,6 +12,9 @@ import fs2.interop.cats._
 object Service {
   val service = HttpService {
 
+    case GET -> Root / "ping" =>
+      Ok("pong").replaceAllHeaders(Header("Access-Control-Allow-Origin", "*"), Header("Content-Type", "text/plain"))
+
     case GET -> Root / "game" / "id" / "definition" =>
       Ok(GameDetails.definition.asJson)
 

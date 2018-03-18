@@ -2,10 +2,10 @@ package ingidoexamples
 
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.events
-import com.purplekingdomgames.indigo.gameengine.events.HttpEvent.{HttpError, HttpResponse}
+import com.purplekingdomgames.indigo.gameengine.events.HttpReceiveEvent.{HttpError, HttpResponse}
+import com.purplekingdomgames.indigo.gameengine.events.HttpRequest
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphUpdate}
-import com.purplekingdomgames.indigo.networking.Http
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.ImageAsset
 
@@ -21,8 +21,7 @@ object HttpExample extends IndigoGameBasic[Unit, MyGameModel] {
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(
       button = Button(ButtonState.Up).withUpAction { () =>
-        Http.doGet("http://google.com")
-        None
+        Option(HttpRequest.GET("http://localhost:8080/ping"))
       },
       count = 0
     )
@@ -33,8 +32,10 @@ object HttpExample extends IndigoGameBasic[Unit, MyGameModel] {
         button = model.button.update(e)
       )
 
-    case HttpResponse(status) =>
+    case HttpResponse(status, headers, body) =>
       println("Status code: " + status)
+      println("Headers: " + headers.map(p => p._1 + ": " + p._2).mkString(", "))
+      println("Body: " + body.getOrElse("<EMPTY>"))
       model
 
     case HttpError =>
