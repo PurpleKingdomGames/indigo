@@ -130,6 +130,19 @@ lazy val graphic =
       scalaJSUseMainModuleInitializer := true
     )
 
+lazy val sprite =
+  (project in file("examples/sprite"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoExts)
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .settings(
+      name := "sprite-example",
+      showCursor := true,
+      title := "Sprite example",
+      gameAssetsDirectory := "assets",
+      scalaJSUseMainModuleInitializer := true
+    )
+
 lazy val http =
   (project in file("examples/http"))
     .settings(commonSettings: _*)
@@ -270,4 +283,4 @@ lazy val indigoProject =
     .settings(commonSettings: _*)
     .aggregate(indigo, indigoExts) //core
     .aggregate(sandbox, perf, framework, server, snake) //games
-    .aggregate(basicSetup, fullSetup, button, http, text, automata, graphic) //examples
+    .aggregate(basicSetup, fullSetup, button, http, text, automata, graphic, sprite) //examples

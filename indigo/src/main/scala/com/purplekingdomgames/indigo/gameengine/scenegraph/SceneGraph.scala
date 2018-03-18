@@ -5,28 +5,6 @@ import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameTime}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 
-case class SceneGraphUpdate(rootNode: SceneGraphRootNode, viewEvents: List[ViewEvent])
-
-object SceneGraphUpdate {
-  def skip: SceneGraphUpdate = SceneGraphUpdate(SceneGraphRootNode.empty, Nil)
-
-  def apply(rootNode: SceneGraphRootNode): SceneGraphUpdate =
-    SceneGraphUpdate(rootNode, Nil)
-
-  def apply(nodes: SceneGraphNode*): SceneGraphUpdate =
-    SceneGraphUpdate(SceneGraphRootNode(SceneGraphGameLayer(nodes.toList)), Nil)
-
-  def apply(viewEvents: List[ViewEvent], nodes: SceneGraphNode*): SceneGraphUpdate =
-    SceneGraphUpdate(SceneGraphRootNode(SceneGraphGameLayer(nodes.toList)), viewEvents)
-
-  def apply(gameLayer: SceneGraphGameLayer, viewEvents: List[ViewEvent]): SceneGraphUpdate =
-    SceneGraphUpdate(SceneGraphRootNode(gameLayer), viewEvents)
-
-  def apply(gameLayer: SceneGraphGameLayer, lightingLayer: SceneGraphLightingLayer, uiLayer: SceneGraphUiLayer, viewEvents: List[ViewEvent]): SceneGraphUpdate =
-    SceneGraphUpdate(SceneGraphRootNode(gameLayer, lightingLayer, uiLayer), viewEvents)
-
-}
-
 object SceneGraphNode {
   def empty: SceneGraphNodeBranch = SceneGraphNodeBranch(Nil)
 }
