@@ -2,42 +2,52 @@ package ingidoexamples
 
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.events
-import com.purplekingdomgames.indigo.gameengine.events.ViewEvent
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphUpdate}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphUpdate, Text}
+import com.purplekingdomgames.indigoexts.automata._
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.ImageAsset
 
 object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
 
+  val fontName: String = "My boxy font"
+
   val config: GameConfig = defaultGameConfig
 
-  // We'll need some graphics.
-  val assets: Set[AssetType] = Set(ImageAsset("graphics", "assets/graphics.png"))
+  val assets: Set[AssetType] = Set(
+    ImageAsset("graphics", "assets/graphics.png"),
+    ImageAsset(fontName, "assets/boxy_font.png")
+  )
 
-  def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] = {
+
+    AutomataFarm.register(
+      TextAutomaton(
+        AutomataPoolKey("points"),
+        Text("10pts!", 0, 0, 1, fontInfo),
+        AutomataLifeSpan(1000),
+        List(
+          AutomataModifier.MoveTo((_, _) => Point(256, 256))
+        )
+      )
+    )
+
     Right(())
+  }
 
-  // Let's setup our button's initial state
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(
       button = Button(ButtonState.Up).withUpAction { () =>
-        Option(MyButtonEvent) // On mouse release will emit this event.
+        None
       },
       count = 0
     )
 
-  // Match on event type, forward ButtonEvents to all buttons! (they'll work out if it's for the right button)
   def update(gameTime: GameTime, model: MyGameModel): events.GameEvent => MyGameModel = {
     case e: ButtonEvent =>
       model.copy(
         button = model.button.update(e)
       )
-
-    case MyButtonEvent => // Our event is caught, updates the model and writes to the console.
-      val next = model.copy(count = model.count + 1)
-      println("Count: " + next.count)
-      next
 
     case _ =>
       model
@@ -45,10 +55,10 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
 
   def render(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneGraphUpdate = {
     val button: ButtonViewUpdate = model.button.draw(
-      bounds = Rectangle(10, 10, 16, 16), // Where should the button be on the screen?
-      depth = Depth(2), // At what depth?
-      frameInputEvents = frameInputEvents, // delegate events
-      buttonAssets = ButtonAssets( // We could cache the graphics much earlier
+      bounds = Rectangle(10, 10, 16, 16),
+      depth = Depth(2),
+      frameInputEvents = frameInputEvents,
+      buttonAssets = ButtonAssets(
         up = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 0, 16, 16),
         over = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 16, 16, 16),
         down = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 32, 16, 16)
@@ -57,11 +67,55 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
 
     SceneGraphUpdate(
       button.buttonEvents,
-      button.buttonGraphic
+      button.buttonGraphic,
+      Text("click to win!", 30, 10, 1, fontInfo)
     )
   }
+
+  val fontInfo: FontInfo =
+    FontInfo(fontName, 320, 230, FontChar("?", 93, 52, 23, 23))
+      .addChar(FontChar("A", 3, 78, 23, 23))
+      .addChar(FontChar("B", 26, 78, 23, 23))
+      .addChar(FontChar("C", 50, 78, 23, 23))
+      .addChar(FontChar("D", 73, 78, 23, 23))
+      .addChar(FontChar("E", 96, 78, 23, 23))
+      .addChar(FontChar("F", 119, 78, 23, 23))
+      .addChar(FontChar("G", 142, 78, 23, 23))
+      .addChar(FontChar("H", 165, 78, 23, 23))
+      .addChar(FontChar("I", 188, 78, 15, 23))
+      .addChar(FontChar("J", 202, 78, 23, 23))
+      .addChar(FontChar("K", 225, 78, 23, 23))
+      .addChar(FontChar("L", 248, 78, 23, 23))
+      .addChar(FontChar("M", 271, 78, 23, 23))
+      .addChar(FontChar("N", 3, 104, 23, 23))
+      .addChar(FontChar("O", 29, 104, 23, 23))
+      .addChar(FontChar("P", 54, 104, 23, 23))
+      .addChar(FontChar("Q", 75, 104, 23, 23))
+      .addChar(FontChar("R", 101, 104, 23, 23))
+      .addChar(FontChar("S", 124, 104, 23, 23))
+      .addChar(FontChar("T", 148, 104, 23, 23))
+      .addChar(FontChar("U", 173, 104, 23, 23))
+      .addChar(FontChar("V", 197, 104, 23, 23))
+      .addChar(FontChar("W", 220, 104, 23, 23))
+      .addChar(FontChar("X", 248, 104, 23, 23))
+      .addChar(FontChar("Y", 271, 104, 23, 23))
+      .addChar(FontChar("Z", 297, 104, 23, 23))
+      .addChar(FontChar("0", 3, 26, 23, 23))
+      .addChar(FontChar("1", 26, 26, 15, 23))
+      .addChar(FontChar("2", 41, 26, 23, 23))
+      .addChar(FontChar("3", 64, 26, 23, 23))
+      .addChar(FontChar("4", 87, 26, 23, 23))
+      .addChar(FontChar("5", 110, 26, 23, 23))
+      .addChar(FontChar("6", 133, 26, 23, 23))
+      .addChar(FontChar("7", 156, 26, 23, 23))
+      .addChar(FontChar("8", 179, 26, 23, 23))
+      .addChar(FontChar("9", 202, 26, 23, 23))
+      .addChar(FontChar("?", 93, 52, 23, 23))
+      .addChar(FontChar("!", 3, 0, 15, 23))
+      .addChar(FontChar(".", 286, 0, 15, 23))
+      .addChar(FontChar(",", 248, 0, 15, 23))
+      .addChar(FontChar(" ", 145, 52, 23, 23))
+
 }
 
-// We need a button in our model
 case class MyGameModel(button: Button, count: Int)
-case object MyButtonEvent extends ViewEvent

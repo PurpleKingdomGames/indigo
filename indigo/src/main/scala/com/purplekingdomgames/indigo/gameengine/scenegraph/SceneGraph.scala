@@ -101,6 +101,9 @@ case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: 
   def withAlpha(a: Double): Graphic =
     this.copy(effects = effects.copy(alpha = a))
 
+  def withTint(tint: Tint): Graphic =
+    this.copy(effects = effects.copy(tint = tint))
+
   def withTint(red: Double, green: Double, blue: Double): Graphic =
     this.copy(effects = effects.copy(tint = Tint(red, green, blue)))
 
@@ -188,6 +191,9 @@ case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, image
 
   def withAlpha(a: Double): Sprite =
     this.copy(effects = effects.copy(alpha = a))
+
+  def withTint(tint: Tint): Sprite =
+    this.copy(effects = effects.copy(tint = tint))
 
   def withTint(red: Double, green: Double, blue: Double): Sprite =
     this.copy(effects = effects.copy(tint = Tint(red, green, blue)))
@@ -288,6 +294,9 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
 
   def withAlpha(a: Double): Text =
     this.copy(effects = effects.copy(alpha = a))
+
+  def withTint(tint: Tint): Text =
+    this.copy(effects = effects.copy(tint = tint))
 
   def withTint(red: Double, green: Double, blue: Double): Text =
     this.copy(effects = effects.copy(tint = Tint(red, green, blue)))
