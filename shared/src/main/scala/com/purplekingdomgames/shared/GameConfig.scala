@@ -55,7 +55,11 @@ object GameConfig {
 
 }
 
-case class GameViewport(width: Int, height: Int)
+case class GameViewport(width: Int, height: Int) {
+  val horizontalMiddle: Int = width / 2
+  val verticalMiddle: Int = height / 2
+  val center: (Int, Int) = (horizontalMiddle, verticalMiddle)
+}
 
 case class AdvancedGameConfig(recordMetrics: Boolean, logMetricsReportIntervalMs: Int, disableSkipModelUpdates: Boolean, disableSkipViewUpdates: Boolean)
 object AdvancedGameConfig {

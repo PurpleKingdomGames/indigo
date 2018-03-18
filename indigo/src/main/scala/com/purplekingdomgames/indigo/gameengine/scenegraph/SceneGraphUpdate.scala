@@ -13,8 +13,8 @@ object SceneGraphUpdate {
   def apply(nodes: SceneGraphNode*): SceneGraphUpdate =
     SceneGraphUpdate(SceneGraphRootNode(SceneGraphGameLayer(nodes.toList)), Nil)
 
-  def apply(viewEvents: List[ViewEvent], nodes: SceneGraphNode*): SceneGraphUpdate =
-    SceneGraphUpdate(SceneGraphRootNode(SceneGraphGameLayer(nodes.toList)), viewEvents)
+  def apply(nodes: List[SceneGraphNode], viewEvents: List[ViewEvent]): SceneGraphUpdate =
+    SceneGraphUpdate(SceneGraphRootNode(SceneGraphGameLayer(nodes)), viewEvents)
 
   def apply(gameLayer: SceneGraphGameLayer, viewEvents: List[ViewEvent]): SceneGraphUpdate =
     SceneGraphUpdate(SceneGraphRootNode(gameLayer), viewEvents)

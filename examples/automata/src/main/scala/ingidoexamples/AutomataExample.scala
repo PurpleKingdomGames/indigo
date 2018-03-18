@@ -8,6 +8,8 @@ import com.purplekingdomgames.indigoexts.automata._
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.ImageAsset
 
+import scala.util.Random
+
 object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
 
   val fontName: String = "My boxy font"
@@ -25,9 +27,9 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
       TextAutomaton(
         AutomataPoolKey("points"),
         Text("10pts!", 0, 0, 1, fontInfo),
-        AutomataLifeSpan(1000),
+        AutomataLifeSpan(10000),
         List(
-          AutomataModifier.MoveTo((_, _) => Point(256, 256))
+          AutomataModifier.MoveTo((_, _) => Point.tuple2ToPoint(config.viewport.center) + Point(Random.nextInt(100) - 50, Random.nextInt(100) - 50))
         )
       )
     )
@@ -38,7 +40,7 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(
       button = Button(ButtonState.Up).withUpAction { () =>
-        None
+        Option(AutomataEvent.Spawn(AutomataPoolKey("points"), Point(0, 0)))
       },
       count = 0
     )
@@ -48,6 +50,10 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
       model.copy(
         button = model.button.update(e)
       )
+
+    case e: AutomataEvent =>
+      AutomataFarm.update(gameTime, e)
+      model
 
     case _ =>
       model
@@ -66,9 +72,9 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
     )
 
     SceneGraphUpdate(
-      button.buttonEvents,
-      button.buttonGraphic,
-      Text("click to win!", 30, 10, 1, fontInfo)
+      List(button.buttonGraphic, Text("click to win!", 30, 10, 1, fontInfo))
+        ++ AutomataFarm.render(gameTime).children,
+      button.buttonEvents
     )
   }
 

@@ -2,10 +2,10 @@ package com.purplekingdomgames.indigoexts.automata
 
 import com.purplekingdomgames.indigo.GameTime
 import com.purplekingdomgames.indigo.gameengine.events.GlobalEventStream
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{SceneGraphNodeBranch, Sprite}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{SceneGraphNodeBranch, Sprite}
 import com.purplekingdomgames.indigoexts.automata.AutomataEvent.{KillAll, KillAllInPool, KillByKey, Spawn}
-import com.purplekingdomgames.indigoexts.automata.AutomataModifier.{ChangeAlpha, ChangeTint, EmitEvents, MoveTo}
+import com.purplekingdomgames.indigoexts.automata.AutomataModifier._
 
 import scala.collection.mutable
 
@@ -27,8 +27,10 @@ object AutomataFarm {
   private val inventory: mutable.HashMap[AutomataPoolKey, Automaton] = mutable.HashMap()
   private var paddock: List[SpawnedAutomaton] = Nil
 
-  def register(automaton: Automaton): Unit =
+  def register(automaton: Automaton): Unit = {
     inventory.put(automaton.key, automaton)
+    ()
+  }
 
   def update(gameTime: GameTime, automataEvent: AutomataEvent): Unit = {
     automataEvent match {

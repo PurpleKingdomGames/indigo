@@ -56,8 +56,8 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel] {
     )
 
     SceneGraphUpdate(
-      button.buttonEvents,
-      button.buttonGraphic
+      List(button.buttonGraphic),
+      button.buttonEvents
     )
   }
 }
