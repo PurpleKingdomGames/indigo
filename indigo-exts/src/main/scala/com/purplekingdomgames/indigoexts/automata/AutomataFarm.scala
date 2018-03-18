@@ -11,7 +11,7 @@ They can emit events
  */
 object AutomataFarm {
 
-  def register(automata: Automata): Unit = {}
+//  def register(automata: Automata): Unit = {}
   def update(): Unit = {}
   def render(): Unit = {}
 

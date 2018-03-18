@@ -78,6 +78,19 @@ lazy val basicSetup =
       scalaJSUseMainModuleInitializer := true
     )
 
+lazy val text =
+  (project in file("examples/text"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoExts)
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .settings(
+      name := "text-example",
+      showCursor := true,
+      title := "Text example",
+      gameAssetsDirectory := "assets",
+      scalaJSUseMainModuleInitializer := true
+    )
+
 lazy val fullSetup =
   (project in file("examples/full-setup"))
     .settings(commonSettings: _*)
@@ -100,6 +113,19 @@ lazy val button =
       name := "button-example",
       showCursor := true,
       title := "Button example",
+      gameAssetsDirectory := "assets",
+      scalaJSUseMainModuleInitializer := true
+    )
+
+lazy val graphic =
+  (project in file("examples/graphic"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoExts)
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .settings(
+      name := "graphic-example",
+      showCursor := true,
+      title := "Graphic example",
       gameAssetsDirectory := "assets",
       scalaJSUseMainModuleInitializer := true
     )
@@ -244,4 +270,4 @@ lazy val indigoProject =
     .settings(commonSettings: _*)
     .aggregate(indigo, indigoExts) //core
     .aggregate(sandbox, perf, framework, server, snake) //games
-    .aggregate(basicSetup, fullSetup, button, http) //examples
+    .aggregate(basicSetup, fullSetup, button, http, text, automata, graphic) //examples
