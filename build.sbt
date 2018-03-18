@@ -117,6 +117,19 @@ lazy val http =
       scalaJSUseMainModuleInitializer := true
     )
 
+lazy val automata =
+  (project in file("examples/automata"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoExts)
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .settings(
+      name := "automata-example",
+      showCursor := true,
+      title := "Automata example",
+      gameAssetsDirectory := "assets",
+      scalaJSUseMainModuleInitializer := true
+    )
+
 
 // Indigo
 lazy val indigo =
