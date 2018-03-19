@@ -11,7 +11,7 @@ lazy val commonSettings = Seq(
     "io.circe" %%% "circe-core",
     "io.circe" %%% "circe-generic",
     "io.circe" %%% "circe-parser"
-  ).map(_ % "0.8.0"),
+  ).map(_ % "0.9.2"),
   libraryDependencies ++= Seq(
     "org.scalatest" %%% "scalatest" % "3.0.4" % "test"
   ),
@@ -256,9 +256,9 @@ lazy val server =
     .settings(
       name := "server",
       libraryDependencies ++= Seq(
-        "org.http4s"       %% "http4s-blaze-server"  % "0.17.5",
-        "org.http4s"       %% "http4s-circe"         % "0.17.5",
-        "org.http4s"       %% "http4s-dsl"           % "0.17.5",
+        "org.http4s"       %% "http4s-blaze-server"  % "0.18.3",
+        "org.http4s"       %% "http4s-circe"         % "0.18.3",
+        "org.http4s"       %% "http4s-dsl"           % "0.18.3",
         "ch.qos.logback"   %  "logback-classic"      % "1.2.3",
         "com.github.cb372" %% "scalacache-core"      % "0.10.0",
         "com.github.cb372" %% "scalacache-redis"     % "0.10.0",
