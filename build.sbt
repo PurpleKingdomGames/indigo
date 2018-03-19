@@ -8,11 +8,6 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.12.4",
   organization := "com.purplekingdomgames",
   libraryDependencies ++= Seq(
-    "io.circe" %%% "circe-core",
-    "io.circe" %%% "circe-generic",
-    "io.circe" %%% "circe-parser"
-  ).map(_ % "0.9.2"),
-  libraryDependencies ++= Seq(
     "org.scalatest" %%% "scalatest" % "3.0.4" % "test"
   ),
   scalacOptions in (Compile, compile) ++= Seq(
@@ -156,6 +151,19 @@ lazy val http =
       scalaJSUseMainModuleInitializer := true
     )
 
+lazy val websocket =
+  (project in file("examples/websocket"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoExts)
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .settings(
+      name := "websocket-example",
+      showCursor := true,
+      title := "WebSocket example",
+      gameAssetsDirectory := "assets",
+      scalaJSUseMainModuleInitializer := true
+    )
+
 lazy val automata =
   (project in file("examples/automata"))
     .settings(commonSettings: _*)
@@ -263,7 +271,12 @@ lazy val server =
         "com.github.cb372" %% "scalacache-core"      % "0.10.0",
         "com.github.cb372" %% "scalacache-redis"     % "0.10.0",
         "com.github.cb372" %% "scalacache-caffeine"     % "0.10.0"
-      )
+      ),
+      libraryDependencies ++= Seq(
+        "io.circe" %%% "circe-core",
+        "io.circe" %%% "circe-generic",
+        "io.circe" %%% "circe-parser"
+      ).map(_ % "0.9.2")
     )
     .dependsOn(shared)
 
@@ -273,7 +286,12 @@ lazy val shared =
     .settings(commonSettings: _*)
     .enablePlugins(ScalaJSPlugin)
     .settings(
-      name := "shared"
+      name := "shared",
+      libraryDependencies ++= Seq(
+        "io.circe" %%% "circe-core",
+        "io.circe" %%% "circe-generic",
+        "io.circe" %%% "circe-parser"
+      ).map(_ % "0.9.2")
     )
 
 

@@ -33,6 +33,11 @@ trait ViewEvent extends GameEvent
 sealed trait NetworkSendEvent extends ViewEvent
 sealed trait NetworkReceiveEvent extends GameEvent
 
+case class WebSocketSend() extends NetworkSendEvent
+case class WebSocketReceive() extends NetworkReceiveEvent
+case class WebSocketError() extends NetworkReceiveEvent
+case class WebSocketClose() extends NetworkReceiveEvent
+
 sealed trait HttpReceiveEvent extends NetworkReceiveEvent
 object HttpReceiveEvent {
   case object HttpError extends HttpReceiveEvent

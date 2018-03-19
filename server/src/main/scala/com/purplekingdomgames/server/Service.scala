@@ -1,16 +1,24 @@
 package com.purplekingdomgames.server
 
+import java.io.File
+
 import cats.effect._
 import cats.implicits._
 import fs2._
 import fs2.StreamApp.ExitCode
 import org.http4s._
+import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
 import org.http4s.server.blaze.BlazeBuilder
 import org.http4s.server.websocket._
 import org.http4s.websocket.WebsocketBits._
+import _root_.io.circe.syntax._
+import _root_.io.circe.generic.auto._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
+
+import scala.language.higherKinds
 
 object MyService extends Service[IO]
 
@@ -21,7 +29,7 @@ abstract class Service[F[_]](implicit F: Effect[F]) extends StreamApp[F] with Ht
       Ok("Hello world.")
 
     case GET -> Root / "ping" =>
-      Ok("pong").replaceAllHeaders(Header("Access-Control-Allow-Origin", "*"), Header("Content-Type", "text/plain"))
+      Ok("pong").map(_.replaceAllHeaders(Header("Access-Control-Allow-Origin", "*"), Header("Content-Type", "text/plain")))
 
     case GET -> Root / "game" / "id" / "definition" =>
       Ok(GameDetails.definition.asJson)
@@ -36,17 +44,21 @@ abstract class Service[F[_]](implicit F: Effect[F]) extends StreamApp[F] with Ht
       StaticFile.fromFile(new File("./server/assets/" + path), Some(request))
         .getOrElseF(NotFound())
 
-    // ----------
+
+    // ---------------------------------------
     // WebSockets
+
     case GET -> Root / "ws" =>
       val toClient: Stream[F, WebSocketFrame] =
         scheduler.awakeEvery[F](1.seconds).map(d => Text(s"Ping! $d"))
+
       val fromClient: Sink[F, WebSocketFrame] = _.evalMap { (ws: WebSocketFrame) =>
         ws match {
           case Text(t, _) => F.delay(println(t))
           case f => F.delay(println(s"Unknown type: $f"))
         }
       }
+
       WebSocketBuilder[F].build(toClient, fromClient)
 
     case GET -> Root / "wsecho" =>
