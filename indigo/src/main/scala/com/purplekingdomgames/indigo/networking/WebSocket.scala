@@ -15,18 +15,30 @@ object WebSocket {
       connections.put(key, webSocketConnection)
     }
 
+  def open(key: String): Unit =
+    connections.get(key).foreach(_.open())
+
+  def keepAlive(): Unit = {
+    val reOpen = connections.filter(p => p._2.keepAlive && p._2.readyState.isClosed)
+
+    reOpen.map(p => (p._1, p._2.open())).foreach { e =>
+      connections.remove(e._1)
+      connections.put(e._1, e._2)
+    }
+  }
+
   def close(key: String): Unit =
     connections.get(key).foreach(_.close())
 
 }
 
-case class WebSocketConnection(address: String, onOpen: () => WebSocketSend, onMessage: dom.MessageEvent => WebSocketReceive, onError: () => WebSocketError, onClose: () => WebSocketClose) {
+case class WebSocketConnection(address: String, keepAlive: Boolean, onOpen: () => WebSocketSend, onMessage: dom.MessageEvent => WebSocketReceive, onError: () => WebSocketError, onClose: () => WebSocketClose) {
   private var maybeWebSocket: Option[WebSocket] = None
 
   def readyState: WebSocketReadyState =
     maybeWebSocket.map(s => WebSocketReadyState.fromInt(s.readyState)).getOrElse(WebSocketReadyState.CLOSED)
 
-  def open(): Unit = {
+  def open(): WebSocketConnection = {
     val socket = new dom.WebSocket(address)
 
     socket.onmessage =
@@ -46,6 +58,8 @@ case class WebSocketConnection(address: String, onOpen: () => WebSocketSend, onM
         GlobalEventStream.push(onClose())
 
     maybeWebSocket = Some(socket)
+
+    this
   }
 
   def close(): Unit =
