@@ -31,7 +31,7 @@ object Button {
 
   object View {
 
-    def applyEvents(bounds: Rectangle, button: Button, frameInputEvents: FrameInputEvents): List[ViewEvent] =
+    def applyEvents(bounds: Rectangle, button: Button, frameInputEvents: FrameInputEvents): List[ViewEvent] = {
       frameInputEvents.events.foldLeft[List[ViewEvent]](Nil) { (acc, e) =>
         e match {
           case MouseEvent.MouseUp(x, y) if bounds.isPointWithin(x, y) =>
@@ -62,6 +62,7 @@ object Button {
             acc
         }
       }
+    }
 
     def renderButton(bounds: Rectangle, depth: Depth, button: Button, assets: ButtonAssets): Graphic =
       button.state match {

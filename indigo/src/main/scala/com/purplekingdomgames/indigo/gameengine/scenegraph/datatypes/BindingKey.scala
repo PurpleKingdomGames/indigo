@@ -10,9 +10,8 @@ case class BindingKey(value: String) {
 }
 
 object BindingKey {
-  private val random: Random = new Random
-
-  def generate: BindingKey = BindingKey(random.alphanumeric.take(16).mkString)
+  def generate: BindingKey =
+    BindingKey(Random.alphanumeric.take(16).mkString)
 
   def equality(a: BindingKey, b: BindingKey): Boolean =
     a.value == b.value

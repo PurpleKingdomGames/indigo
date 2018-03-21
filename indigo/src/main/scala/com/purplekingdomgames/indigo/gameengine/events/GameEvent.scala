@@ -1,7 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine.events
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
-import com.purplekingdomgames.indigo.networking.HttpMethod
+import com.purplekingdomgames.indigo.networking.{HttpMethod, WebSocketConfig, WebSocketId}
 
 sealed trait GameEvent
 
@@ -33,10 +33,46 @@ trait ViewEvent extends GameEvent
 sealed trait NetworkSendEvent extends ViewEvent
 sealed trait NetworkReceiveEvent extends GameEvent
 
-case class WebSocketSend() extends NetworkSendEvent
-case class WebSocketReceive() extends NetworkReceiveEvent
-case class WebSocketError() extends NetworkReceiveEvent
-case class WebSocketClose() extends NetworkReceiveEvent
+// WebSockets
+
+sealed trait WebSocketEvent {
+  def giveId: Option[WebSocketId] =
+    this match {
+      case WebSocketEvent.ConnectOnly(config) =>
+        Option(config.id)
+
+      case WebSocketEvent.Open(_, config) =>
+        Option(config.id)
+
+      case WebSocketEvent.Send(_, config) =>
+        Option(config.id)
+
+      case WebSocketEvent.Receive(id, _) =>
+        Option(id)
+
+      case WebSocketEvent.Error(id, _) =>
+        Option(id)
+
+      case WebSocketEvent.Close(id) =>
+        Option(id)
+
+      case _ =>
+        None
+    }
+}
+object WebSocketEvent {
+  // Send
+  case class ConnectOnly(webSocketConfig: WebSocketConfig) extends WebSocketEvent with NetworkSendEvent
+  case class Open(message: String, webSocketConfig: WebSocketConfig) extends WebSocketEvent with NetworkSendEvent
+  case class Send(message: String, webSocketConfig: WebSocketConfig) extends WebSocketEvent with NetworkSendEvent
+
+  // Receive
+  case class Receive(webSocketId: WebSocketId, message: String) extends WebSocketEvent with NetworkReceiveEvent
+  case class Error(webSocketId: WebSocketId, error: String) extends WebSocketEvent with NetworkReceiveEvent
+  case class Close(webSocketId: WebSocketId) extends WebSocketEvent with NetworkReceiveEvent
+}
+
+// Http
 
 sealed trait HttpReceiveEvent extends NetworkReceiveEvent
 object HttpReceiveEvent {

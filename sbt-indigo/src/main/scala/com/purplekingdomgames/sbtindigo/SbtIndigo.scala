@@ -66,6 +66,9 @@ object IndigoBuild {
     // copy built js file into scripts dir
     val newScriptPath = copyScript(templateOptions, directoryStructure.scripts)
 
+    // copy built js source map file into scripts dir
+    copySourceMap(templateOptions, directoryStructure.scripts)
+
     // copy assets into folder
     copyAssets(templateOptions.gameAssetsDirectoryPath, directoryStructure.assets)
 
@@ -115,6 +118,15 @@ object IndigoBuild {
     desScriptsFolder.getCanonicalPath + "/" + fileName
   }
 
+  def copySourceMap(templateOptions: TemplateOptions, desScriptsFolder: File): String = {
+    val path = s"${templateOptions.scriptPathBase}-fastopt.js.map"
+    val fileName = path.split('/').toList.reverse.headOption.getOrElse(throw new Exception("Could not figure out source map file name from: " + path))
+    val scriptPath: File = new File(path)//TODO: This only covers the fast opt JS version
+
+    FileUtils.copyFileToDirectory(scriptPath, desScriptsFolder)
+
+    desScriptsFolder.getCanonicalPath + "/" + fileName
+  }
 
   private def ensureDirectoryAt(path: String): File = {
     val dirFile = new File(path)

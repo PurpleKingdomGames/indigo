@@ -301,4 +301,4 @@ lazy val indigoProject =
     .settings(commonSettings: _*)
     .aggregate(indigo, indigoExts) //core
     .aggregate(sandbox, perf, framework, server, snake) //games
-    .aggregate(basicSetup, fullSetup, button, http, text, automata, graphic, sprite) //examples
+    .aggregate(basicSetup, fullSetup, button, http, text, automata, graphic, sprite, websocket) //examples

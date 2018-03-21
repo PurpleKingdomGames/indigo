@@ -2,26 +2,50 @@ package ingidoexamples
 
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.events
-import com.purplekingdomgames.indigo.gameengine.events.HttpReceiveEvent.{HttpError, HttpResponse}
-import com.purplekingdomgames.indigo.gameengine.events.HttpRequest
+import com.purplekingdomgames.indigo.gameengine.events.WebSocketEvent
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphUpdate}
+import com.purplekingdomgames.indigo.networking.{WebSocketConfig, WebSocketId}
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.ImageAsset
 
-object WebSocketExample extends IndigoGameBasic[Unit, MyGameModel] {
+/*
+Two examples in server project:
+a) ws://localhost:8080/ws      // Server sends a Ping! every second
+b) ws://localhost:8080/wsecho  // Server echos back whatever it is sent.
+
+So we want a button that send a message to 2) and outputs to the console
+
+We also want to establish a connection on startup that repeated writes 1)'s
+Ping! to the console.
+ */
+object WebSocketExample extends IndigoGameBasic[MySetupData, MyGameModel] {
 
   val config: GameConfig = defaultGameConfig
 
   val assets: Set[AssetType] = Set(ImageAsset("graphics", "assets/graphics.png"))
 
-  def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] =
-    Right(())
+  def setup(assetCollection: AssetCollection): Either[StartupErrors, MySetupData] =
+    Right(
+      MySetupData(
+        pingSocket = WebSocketConfig(
+          id = WebSocketId("ping"),
+          address = "ws://localhost:8080/ws"
+        ),
+        echoSocket = WebSocketConfig(
+          id = WebSocketId("echo"),
+          address = "ws://localhost:8080/wsecho"
+        )
+      )
+    )
 
-  def initialModel(startupData: Unit): MyGameModel =
+  def initialModel(startupData: MySetupData): MyGameModel =
     MyGameModel(
-      button = Button(ButtonState.Up).withUpAction { () =>
-        Option(HttpRequest.GET("http://localhost:8080/ping"))
+      ping = Button(ButtonState.Up).withUpAction { () =>
+        Option(WebSocketEvent.ConnectOnly(startupData.pingSocket))
+      },
+      echo = Button(ButtonState.Up).withUpAction { () =>
+        Option(WebSocketEvent.Send("Hello!", startupData.echoSocket))
       },
       count = 0
     )
@@ -29,17 +53,24 @@ object WebSocketExample extends IndigoGameBasic[Unit, MyGameModel] {
   def update(gameTime: GameTime, model: MyGameModel): events.GameEvent => MyGameModel = {
     case e: ButtonEvent =>
       model.copy(
-        button = model.button.update(e)
+        ping = model.ping.update(e),
+        echo = model.echo.update(e)
       )
 
-    case HttpResponse(status, headers, body) =>
-      println("Status code: " + status)
-      println("Headers: " + headers.map(p => p._1 + ": " + p._2).mkString(", "))
-      println("Body: " + body.getOrElse("<EMPTY>"))
+    case WebSocketEvent.Receive(WebSocketId("ping"), message) =>
+      println("Message from Server: " + message)
       model
 
-    case HttpError =>
-      println("Http error message")
+    case WebSocketEvent.Receive(WebSocketId("echo"), message) =>
+      println("Server says you said: " + message)
+      model
+
+    case WebSocketEvent.Error(WebSocketId(id), message) =>
+      println(s"Connection [$id] errored with: " + message)
+      model
+
+    case WebSocketEvent.Close(WebSocketId(id)) =>
+      println(s"Connection [$id] closed.")
       model
 
     case _ =>
@@ -47,7 +78,7 @@ object WebSocketExample extends IndigoGameBasic[Unit, MyGameModel] {
   }
 
   def render(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneGraphUpdate = {
-    val button: ButtonViewUpdate = model.button.draw(
+    val pingButton: ButtonViewUpdate = model.ping.draw(
       bounds = Rectangle(10, 10, 16, 16),
       depth = Depth(2),
       frameInputEvents = frameInputEvents,
@@ -58,12 +89,25 @@ object WebSocketExample extends IndigoGameBasic[Unit, MyGameModel] {
       )
     )
 
+    val echoButton: ButtonViewUpdate = model.echo.draw(
+      bounds = Rectangle(10, 32, 16, 16),
+      depth = Depth(2),
+      frameInputEvents = frameInputEvents,
+      buttonAssets = ButtonAssets(
+        up = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 0, 16, 16),
+        over = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 16, 16, 16),
+        down = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 32, 16, 16)
+      )
+    )
+
     SceneGraphUpdate(
-      List(button.buttonGraphic),
-      button.buttonEvents
+      List(pingButton.buttonGraphic, echoButton.buttonGraphic),
+      pingButton.buttonEvents ++ echoButton.buttonEvents
     )
   }
 }
 
+case class MySetupData(pingSocket: WebSocketConfig, echoSocket: WebSocketConfig)
+
 // We need a button in our model
-case class MyGameModel(button: Button, count: Int)
+case class MyGameModel(ping: Button, echo: Button, count: Int)

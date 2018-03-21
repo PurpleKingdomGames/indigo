@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigo.gameengine.events
 
-import com.purplekingdomgames.indigo.networking.Http
+import com.purplekingdomgames.indigo.networking.{Http, WebSockets}
 
 import scala.collection.mutable
 
@@ -20,8 +20,12 @@ object GlobalEventStream {
 object NetworkEventProcessor {
 
   def filter: GameEvent => Option[GameEvent] = {
-    case get: HttpRequest.GET =>
-      Http.processRequest(get)
+    case httpRequest: HttpRequest =>
+      Http.processRequest(httpRequest)
+      None
+
+    case webSocketEvent: WebSocketEvent with NetworkSendEvent =>
+      WebSockets.processSendEvent(webSocketEvent)
       None
 
     case e =>
