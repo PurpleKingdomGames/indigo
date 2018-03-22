@@ -129,6 +129,15 @@ Game Engine
     1. Firework - a curving bullet automata that creates an explosion automata (by event) once it's travelled a set distance.
   - Particle systems are advanced automata
 
+IO Monad?
+Remove need to carry all font info around with every Text instance
+Update automata to be part of game cycle as a pose to being a register?
+
+Maybe add the idea of a 'registers' hook during game setup, allows initialisation of registers for:
+1. Fonts
+2. Static precomputed assets
+3. Automata
+
 Game
 - Make game.
 
