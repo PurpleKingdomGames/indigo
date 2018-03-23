@@ -2,31 +2,54 @@ package ingidoexamples
 
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.events
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{SceneGraphUpdate, Text}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphUpdate, Text}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, FontChar, FontInfo, Point}
+import com.purplekingdomgames.indigoexts.ui.{InputField, InputFieldAssets, InputFieldState, InputFieldViewUpdate}
 import com.purplekingdomgames.shared.{ClearColor, ImageAsset}
 
-object InputFieldExample extends IndigoGameBasic[Unit, Unit] {
-
-  val fontName: String = "My boxy font"
+object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel] {
 
   val config: GameConfig = defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399"))
 
-  val assets: Set[AssetType] = Set(ImageAsset(fontName, "assets/boxy_font.png"))
+  val assets: Set[AssetType] = Set(ImageAsset(FontStuff.fontName, "assets/boxy_font.png"))
 
   def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] =
     Right(())
 
-  def initialModel(startupData: Unit): Unit =
-    ()
+  def initialModel(startupData: Unit): MyGameModel =
+    MyGameModel(
+      InputField(InputFieldState.Normal)
+    )
 
-  def update(gameTime: GameTime, model: Unit): events.GameEvent => Unit = _ =>
+  def update(gameTime: GameTime, model: MyGameModel): events.GameEvent => MyGameModel = _ =>
     model
 
-  def render(gameTime: GameTime, model: Unit, frameInputEvents: events.FrameInputEvents): SceneGraphUpdate =
+  def render(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneGraphUpdate = {
+
+    val inputFieldUpdate: InputFieldViewUpdate =
+      model.inputField.draw(
+        Point(10, 10),
+        Depth(1),
+        frameInputEvents,
+        InputFieldAssets(
+          Text("input", 10, 20, 1, FontStuff.fontInfo).alignLeft,
+          Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 0, 16, 16)
+        )
+      )
+
     SceneGraphUpdate(
-      Text("Input", 10, 20, 1, fontInfo).alignLeft
+      inputFieldUpdate.sceneGraphNodes,
+      inputFieldUpdate.inputFieldEvents
     )
+  }
+
+}
+
+case class MyGameModel(inputField: InputField)
+
+object FontStuff {
+
+  val fontName: String = "My boxy font"
 
   val fontInfo: FontInfo =
     FontInfo(fontName, 320, 230, FontChar("?", 93, 52, 23, 23))
@@ -71,5 +94,4 @@ object InputFieldExample extends IndigoGameBasic[Unit, Unit] {
       .addChar(FontChar(".", 286, 0, 15, 23))
       .addChar(FontChar(",", 248, 0, 15, 23))
       .addChar(FontChar(" ", 145, 52, 23, 23))
-
 }
