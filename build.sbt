@@ -86,6 +86,19 @@ lazy val text =
       scalaJSUseMainModuleInitializer := true
     )
 
+lazy val inputfield =
+  (project in file("examples/inputfield"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoExts)
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .settings(
+      name := "input-field-example",
+      showCursor := true,
+      title := "Input field example",
+      gameAssetsDirectory := "assets",
+      scalaJSUseMainModuleInitializer := true
+    )
+
 lazy val fullSetup =
   (project in file("examples/full-setup"))
     .settings(commonSettings: _*)
@@ -301,4 +314,4 @@ lazy val indigoProject =
     .settings(commonSettings: _*)
     .aggregate(indigo, indigoExts) //core
     .aggregate(sandbox, perf, framework, server, snake) //games
-    .aggregate(basicSetup, fullSetup, button, http, text, automata, graphic, sprite, websocket) //examples
+    .aggregate(basicSetup, fullSetup, button, http, text, automata, graphic, sprite, websocket, inputfield) //examples
