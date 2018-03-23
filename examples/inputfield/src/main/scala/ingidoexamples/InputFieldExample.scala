@@ -4,7 +4,7 @@ import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.events
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphUpdate, Text}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, FontChar, FontInfo, Point}
-import com.purplekingdomgames.indigoexts.ui.{InputField, InputFieldAssets, InputFieldState, InputFieldViewUpdate}
+import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.{ClearColor, ImageAsset}
 
 object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel] {
@@ -18,11 +18,16 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel] {
 
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(
-      InputField(InputFieldState.Normal)
+      InputField("Fish")
     )
 
-  def update(gameTime: GameTime, model: MyGameModel): events.GameEvent => MyGameModel = _ =>
-    model
+  def update(gameTime: GameTime, model: MyGameModel): events.GameEvent => MyGameModel = {
+    case e: InputFieldEvent =>
+      model.copy(inputField = model.inputField.update(e))
+
+    case _ =>
+      model
+  }
 
   def render(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneGraphUpdate = {
 
@@ -33,7 +38,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel] {
         frameInputEvents,
         InputFieldAssets(
           Text("input", 10, 20, 1, FontStuff.fontInfo).alignLeft,
-          Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 0, 16, 16)
+          Graphic(0, 0, 16, 16, 2, FontStuff.fontName).withCrop(286, 0, 15, 23)
         )
       )
 
