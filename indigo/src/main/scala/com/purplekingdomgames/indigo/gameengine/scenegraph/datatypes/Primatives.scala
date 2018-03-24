@@ -33,6 +33,9 @@ case class Rectangle(position: Point, size: Point) {
   def *(i: Int): Rectangle = Rectangle(x * i, y * i, width * i, height * i)
   def /(rect: Rectangle): Rectangle = Rectangle(x / rect.x, y / rect.y, width / rect.width, height / rect.height)
   def /(i: Int): Rectangle = Rectangle(x / i, y / i, width / i, height / i)
+
+  def moveTo(point: Point): Rectangle =
+    Rectangle(x + point.x, y + point.y, width, height)
 }
 case class Depth(zIndex: Int)
 

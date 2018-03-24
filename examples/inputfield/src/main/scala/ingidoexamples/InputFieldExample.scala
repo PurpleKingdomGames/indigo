@@ -38,7 +38,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel] {
         frameInputEvents,
         InputFieldAssets(
           Text("input", 10, 20, 1, FontStuff.fontInfo).alignLeft,
-          Graphic(0, 0, 16, 16, 2, FontStuff.fontName).withCrop(286, 0, 15, 23)
+          Graphic(0, 0, 16, 16, 2, FontStuff.fontName).withCrop(286, 0, 14, 23)
         )
       )
 

@@ -1,5 +1,6 @@
 package com.purplekingdomgames.indigo.gameengine.events
 
+import com.purplekingdomgames.indigo.gameengine.constants.KeyCode
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
 import com.purplekingdomgames.indigo.networking.{HttpMethod, WebSocketConfig, WebSocketId}
 
@@ -20,12 +21,12 @@ object MouseEvent {
 }
 
 sealed trait KeyboardEvent extends GameEvent {
-  val keyCode: Int
+  val keyCode: KeyCode
 }
 object KeyboardEvent {
-  case class KeyUp(keyCode: Int) extends KeyboardEvent
-  case class KeyDown(keyCode: Int) extends KeyboardEvent
-  case class KeyPress(keyCode: Int) extends KeyboardEvent
+  case class KeyUp(keyCode: KeyCode) extends KeyboardEvent
+  case class KeyDown(keyCode: KeyCode) extends KeyboardEvent
+  case class KeyPress(keyCode: KeyCode) extends KeyboardEvent
 }
 
 trait ViewEvent extends GameEvent

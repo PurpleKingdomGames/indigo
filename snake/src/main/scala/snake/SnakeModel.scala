@@ -1,7 +1,7 @@
 package snake
 
 import com.purplekingdomgames.indigo.gameengine._
-import com.purplekingdomgames.indigo.gameengine.constants.Keys
+import com.purplekingdomgames.indigo.gameengine.constants.{KeyCode, Keys}
 import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, KeyboardEvent}
 import com.purplekingdomgames.indigoexts.grid.{GridPoint, GridSize}
 import com.purplekingdomgames.indigoexts.ui.Button
@@ -107,30 +107,30 @@ case object Computer extends PlayerType
 sealed trait ControlScheme {
   def instructPlayer(keyboardEvent: KeyboardEvent, player: Player): Player =
     (this, keyboardEvent) match {
-      case (Turning(left, _), KeyboardEvent.KeyPress(code)) if code == left =>
+      case (Turning(left, _), KeyboardEvent.KeyPress(code)) if code === left =>
         player.turnLeft
 
-      case (Turning(_, right), KeyboardEvent.KeyPress(code)) if code == right =>
+      case (Turning(_, right), KeyboardEvent.KeyPress(code)) if code === right =>
         player.turnRight
 
-      case (Directed(up, _, _, _), KeyboardEvent.KeyPress(code)) if code == up =>
+      case (Directed(up, _, _, _), KeyboardEvent.KeyPress(code)) if code === up =>
         player.goUp
 
-      case (Directed(_, down, _, _), KeyboardEvent.KeyPress(code)) if code == down =>
+      case (Directed(_, down, _, _), KeyboardEvent.KeyPress(code)) if code === down =>
         player.goDown
 
-      case (Directed(_, _, left, _), KeyboardEvent.KeyPress(code)) if code == left =>
+      case (Directed(_, _, left, _), KeyboardEvent.KeyPress(code)) if code === left =>
         player.goLeft
 
-      case (Directed(_, _, _, right), KeyboardEvent.KeyPress(code)) if code == right =>
+      case (Directed(_, _, _, right), KeyboardEvent.KeyPress(code)) if code === right =>
         player.goRight
 
       case _ =>
         player
     }
 }
-case class Turning(left: Int, right: Int) extends ControlScheme
-case class Directed(up: Int, down: Int, left: Int, right: Int) extends ControlScheme
+case class Turning(left: KeyCode, right: KeyCode) extends ControlScheme
+case class Directed(up: KeyCode, down: KeyCode, left: KeyCode, right: KeyCode) extends ControlScheme
 
 object ControlScheme {
   val turning: Turning = Turning(Keys.LEFT_ARROW, Keys.RIGHT_ARROW)

@@ -66,9 +66,9 @@ trait FrameKeyboardEvents {
 
   val keyboardEvents: List[KeyboardEvent] = events.collect { case e: KeyboardEvent => e }
 
-  val keysUp: List[Int] = keyboardEvents.collect { case k: KeyboardEvent.KeyUp => k.keyCode }
-  val keysDown: List[Int] = keyboardEvents.collect { case k: KeyboardEvent.KeyDown => k.keyCode }
-  val keysPressed: List[Int] = keyboardEvents.collect { case k: KeyboardEvent.KeyPress => k.keyCode }
+  val keysUp: List[Int] = keyboardEvents.collect { case k: KeyboardEvent.KeyUp => k.keyCode.code }
+  val keysDown: List[Int] = keyboardEvents.collect { case k: KeyboardEvent.KeyDown => k.keyCode.code }
+  val keysPressed: List[Int] = keyboardEvents.collect { case k: KeyboardEvent.KeyPress => k.keyCode.code }
 
   def keysAreDown(keys: Int*): Boolean = keys.forall(keyCode => keysDown.contains(keyCode))
   def keysAreUp(keys: Int*): Boolean = keys.forall(keyCode => keysUp.contains(keyCode))

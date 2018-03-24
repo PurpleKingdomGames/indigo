@@ -1,7 +1,8 @@
 package com.purplekingdomgames.indigoexts.ui
 
-import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, ViewEvent}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey, Depth, Point}
+import com.purplekingdomgames.indigo.gameengine.constants.Keys
+import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, KeyboardEvent, MouseEvent, ViewEvent}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey, Depth, Point, Rectangle}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphNode, Text}
 
 object InputField {
@@ -11,7 +12,7 @@ object InputField {
 
   object Model {
 
-    def update(inputField: InputField, inputFieldEvent: InputFieldEvent): InputField = {
+    def update(inputField: InputField, inputFieldEvent: InputFieldEvent): InputField =
       inputFieldEvent match {
         case InputFieldEvent.Delete(bindingKey) if inputField.bindingKey == bindingKey =>
           inputField.delete
@@ -33,40 +34,65 @@ object InputField {
 
         case InputFieldEvent.AddCharacter(bindingKey, char) if inputField.bindingKey == bindingKey =>
           inputField.addCharacter(char)
+
+        case _ =>
+          inputField
       }
-    }
 
   }
 
   object View {
 
-    //TODO: Convert frame input events into InputFieldEvents
-    def applyEvent(frameInputEvents: FrameInputEvents): List[InputFieldEvent] =
+    def applyEvent(bounds: Rectangle, inputField: InputField, frameInputEvents: FrameInputEvents): List[InputFieldEvent] = {
       frameInputEvents.events.foldLeft[List[InputFieldEvent]](Nil) { (acc, e) =>
         e match {
+          case MouseEvent.MouseUp(x, y) if bounds.isPointWithin(x, y) =>
+            acc :+ InputFieldEvent.GiveFocus(inputField.bindingKey)
+
+          case MouseEvent.MouseUp(_, _) =>
+            acc :+ InputFieldEvent.LoseFocus(inputField.bindingKey)
+
+          case KeyboardEvent.KeyDown(Keys.LEFT_ARROW) if inputField.state.hasFocus =>
+            acc :+ InputFieldEvent.CursorLeft(inputField.bindingKey)
+
+          case KeyboardEvent.KeyDown(Keys.RIGHT_ARROW) if inputField.state.hasFocus =>
+            acc :+ InputFieldEvent.CursorRight(inputField.bindingKey)
+
+          case KeyboardEvent.KeyPress(Keys.BACKSPACE) if inputField.state.hasFocus =>
+            acc :+ InputFieldEvent.Backspace(inputField.bindingKey)
+
+          case KeyboardEvent.KeyPress(Keys.DELETE) if inputField.state.hasFocus =>
+            acc :+ InputFieldEvent.Delete(inputField.bindingKey)
+
+          case KeyboardEvent.KeyUp(keyCode) if inputField.state.hasFocus && keyCode.isPrintable =>
+            acc :+ InputFieldEvent.AddCharacter(inputField.bindingKey, keyCode.printableCharacter)
+
           case _ =>
             acc
         }
       }
+    }
 
-    def render(position: Point, depth: Depth, inputField: InputField, inputFieldAssets: InputFieldAssets): List[SceneGraphNode] = {
+    def render(position: Point, depth: Depth, inputField: InputField, inputFieldAssets: InputFieldAssets): RenderedInputFieldElements = {
       inputField.state match {
         case InputFieldState.Normal =>
-          List(inputFieldAssets.text.withText(inputField.text).moveTo(position).withDepth(depth.zIndex))
+          RenderedInputFieldElements(inputFieldAssets.text.withText(inputField.text).moveTo(position).withDepth(depth.zIndex), None)
 
         case InputFieldState.HasFocus =>
-          List(
+          RenderedInputFieldElements(
             inputFieldAssets.text.withText(inputField.text).moveTo(position).withDepth(depth.zIndex),
-            inputFieldAssets.cursor.moveTo(position).withDepth(depth.zIndex)
+            Option(inputFieldAssets.cursor.moveTo(position + Point(0, 10)).withDepth(depth.zIndex + 1))
           )
       }
     }
 
     //TODO: Cursor position and blink...
     def update(position: Point, depth: Depth, inputField: InputField, frameEvents: FrameInputEvents, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate = {
+      val rendered: RenderedInputFieldElements = render(position, depth, inputField, inputFieldAssets)
+
       InputFieldViewUpdate(
-        render(position, depth, inputField, inputFieldAssets),
-        applyEvent(frameEvents)
+        rendered.toNodes,
+        applyEvent(rendered.field.bounds.moveTo(position), inputField, frameEvents)
       )
     }
 
@@ -94,19 +120,18 @@ object InputField {
     }
   }
 
-  def addCharacter(inputField: InputField, char: Char): InputField = {
+  def addCharacter(inputField: InputField, char: String): InputField = {
     val splitString = inputField.text.splitAt(inputField.cursorPosition)
 
     inputField.copy(
-      text = splitString._1 + char + splitString._2
+      text = splitString._1 + char + splitString._2,
+      cursorPosition = inputField.cursorPosition + 1
     )
   }
 
 }
 
-case class InputField(state: InputFieldState, text: String, cursorPosition: Int) {
-
-  val bindingKey: BindingKey = BindingKey.generate
+case class InputField(state: InputFieldState, text: String, cursorPosition: Int, bindingKey: BindingKey = BindingKey.generate) {
 
   def update(inputFieldEvent: InputFieldEvent): InputField =
     InputField.Model.update(this, inputFieldEvent)
@@ -138,9 +163,14 @@ case class InputField(state: InputFieldState, text: String, cursorPosition: Int)
   def backspace: InputField =
     InputField.backspace(this)
 
-  def addCharacter(char: Char): InputField =
+  def addCharacter(char: String): InputField =
     InputField.addCharacter(this, char)
 
+}
+
+case class RenderedInputFieldElements(field: Text, cursor: Option[Graphic]) {
+  def toNodes: List[SceneGraphNode] =
+    List(field) ++ cursor.map(c => List(c)).getOrElse(Nil)
 }
 
 case class InputFieldAssets(text: Text, cursor: Graphic)
@@ -159,7 +189,7 @@ object InputFieldEvent {
   case class CursorRight(bindingKey: BindingKey) extends InputFieldEvent
   case class GiveFocus(bindingKey: BindingKey) extends InputFieldEvent
   case class LoseFocus(bindingKey: BindingKey) extends InputFieldEvent
-  case class AddCharacter(bindingKey: BindingKey, char: Char) extends InputFieldEvent
+  case class AddCharacter(bindingKey: BindingKey, char: String) extends InputFieldEvent
 }
 
 sealed trait InputFieldState {

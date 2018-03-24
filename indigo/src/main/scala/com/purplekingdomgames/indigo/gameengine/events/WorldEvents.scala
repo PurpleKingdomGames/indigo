@@ -1,5 +1,6 @@
 package com.purplekingdomgames.indigo.gameengine.events
 
+import com.purplekingdomgames.indigo.gameengine.constants.Keys
 import org.scalajs.dom
 import org.scalajs.dom.html
 
@@ -23,15 +24,21 @@ object WorldEvents {
     }
 
     dom.document.onkeydown = { e: dom.KeyboardEvent =>
-      GlobalEventStream.push(KeyboardEvent.KeyDown(e.keyCode))
+      Keys.codeToKeyCode(e.keyCode).foreach { kc =>
+        GlobalEventStream.push(KeyboardEvent.KeyDown(kc))
+      }
     }
 
     dom.document.onkeyup = { e: dom.KeyboardEvent =>
-      GlobalEventStream.push(KeyboardEvent.KeyUp(e.keyCode))
+      Keys.codeToKeyCode(e.keyCode).foreach { kc =>
+        GlobalEventStream.push(KeyboardEvent.KeyUp(kc))
+      }
     }
 
     dom.document.onkeypress = { e: dom.KeyboardEvent =>
-      GlobalEventStream.push(KeyboardEvent.KeyPress(e.keyCode))
+      Keys.codeToKeyCode(e.keyCode).foreach { kc =>
+        GlobalEventStream.push(KeyboardEvent.KeyPress(kc))
+      }
     }
 
   }

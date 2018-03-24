@@ -86,9 +86,7 @@ object Button {
 
 }
 
-case class Button(state: ButtonState, actions: ButtonActions) {
-
-  val bindingKey: BindingKey = BindingKey.generate
+case class Button(state: ButtonState, actions: ButtonActions, bindingKey: BindingKey = BindingKey.generate) {
 
   def update(buttonEvent: ButtonEvent): Button =
     Button.Model.update(this, buttonEvent)
