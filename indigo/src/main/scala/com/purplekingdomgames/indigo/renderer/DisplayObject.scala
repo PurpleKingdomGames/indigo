@@ -83,7 +83,7 @@ object DisplayObject {
     sortByDepth andThen compress
 
   val sortByDepth: List[DisplayObject] => List[DisplayObject] = displayObjects => {
-    displayObjects.sortWith((d1, d2) => d1.z < d2.z)
+    displayObjects.sortWith((d1, d2) => d1.z > d2.z)
   }
 
   // Entirely for performance reasons

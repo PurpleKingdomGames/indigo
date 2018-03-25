@@ -45,7 +45,7 @@ object DisplayObjectConversions {
         DisplayObject(
           x = leaf.x,
           y = leaf.y,
-          z = -leaf.depth.zIndex,
+          z = leaf.depth.zIndex,
           width = leaf.crop.size.x,
           height = leaf.crop.size.y,
           imageRef = lookupAtlasName(assetMapping, leaf.imageAssetRef),
@@ -72,7 +72,7 @@ object DisplayObjectConversions {
         DisplayObject(
           x = leaf.x,
           y = leaf.y,
-          z = -leaf.depth.zIndex,
+          z = leaf.depth.zIndex,
           width = leaf.bounds.size.x,
           height = leaf.bounds.size.y,
           imageRef = lookupAtlasName(assetMapping, leaf.imageAssetRef),
