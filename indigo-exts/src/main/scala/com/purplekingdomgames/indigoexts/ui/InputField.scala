@@ -1,5 +1,6 @@
 package com.purplekingdomgames.indigoexts.ui
 
+import com.purplekingdomgames.indigo.GameTime
 import com.purplekingdomgames.indigo.gameengine.constants.Keys
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, KeyboardEvent, MouseEvent, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey, Depth, Point, Rectangle}
@@ -13,7 +14,6 @@ Add options:
 - overflow hide or wrap
 - max lines?
 home and end characters?
-blink is current system time / 100 % 2 == 0 (or similar)
 calculate line length to cursor / char index
  */
 object InputField {
@@ -84,7 +84,14 @@ object InputField {
       }
     }
 
-    def render(position: Point, depth: Depth, inputField: InputField, inputFieldAssets: InputFieldAssets): RenderedInputFieldElements = {
+    def drawCursor(gameTime: GameTime, position: Point, depth: Depth, inputFieldAssets: InputFieldAssets): Option[Graphic] = {
+      if (((gameTime.running * 0.00001) * 150).toInt % 2 == 0)
+        Option(inputFieldAssets.cursor.moveTo(position + Point(0, 10)).withDepth(depth.zIndex + 1))
+      else
+        None
+    }
+
+    def render(gameTime: GameTime, position: Point, depth: Depth, inputField: InputField, inputFieldAssets: InputFieldAssets): RenderedInputFieldElements = {
       inputField.state match {
         case InputFieldState.Normal =>
           RenderedInputFieldElements(inputFieldAssets.text.withText(inputField.text).moveTo(position).withDepth(depth.zIndex), None)
@@ -92,14 +99,14 @@ object InputField {
         case InputFieldState.HasFocus =>
           RenderedInputFieldElements(
             inputFieldAssets.text.withText(inputField.text).moveTo(position).withDepth(depth.zIndex),
-            Option(inputFieldAssets.cursor.moveTo(position + Point(0, 10)).withDepth(depth.zIndex + 1))
+            drawCursor(gameTime, position, depth, inputFieldAssets)
           )
       }
     }
 
-    //TODO: Cursor position and blink...
-    def update(position: Point, depth: Depth, inputField: InputField, frameEvents: FrameInputEvents, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate = {
-      val rendered: RenderedInputFieldElements = render(position, depth, inputField, inputFieldAssets)
+    //TODO: Cursor position
+    def update(gameTime: GameTime, position: Point, depth: Depth, inputField: InputField, frameEvents: FrameInputEvents, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate = {
+      val rendered: RenderedInputFieldElements = render(gameTime, position, depth, inputField, inputFieldAssets)
 
       InputFieldViewUpdate(
         rendered.toNodes,
@@ -147,8 +154,8 @@ case class InputField(state: InputFieldState, text: String, cursorPosition: Int,
   def update(inputFieldEvent: InputFieldEvent): InputField =
     InputField.Model.update(this, inputFieldEvent)
 
-  def draw(position: Point, depth: Depth, frameInputEvents: FrameInputEvents, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate =
-    InputField.View.update(position, depth, this, frameInputEvents, inputFieldAssets)
+  def draw(gameTime: GameTime, position: Point, depth: Depth, frameInputEvents: FrameInputEvents, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate =
+    InputField.View.update(gameTime, position, depth, this, frameInputEvents, inputFieldAssets)
 
   def giveFocus: InputField =
     this.copy(

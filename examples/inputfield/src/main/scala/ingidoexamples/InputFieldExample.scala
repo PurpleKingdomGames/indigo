@@ -33,6 +33,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel] {
 
     val inputFieldUpdate: InputFieldViewUpdate =
       model.inputField.draw(
+        gameTime,
         Point(10, 10),
         Depth(1),
         frameInputEvents,
