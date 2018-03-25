@@ -3,13 +3,9 @@ package com.purplekingdomgames.indigoexts.ui
 import com.purplekingdomgames.indigo.GameTime
 import com.purplekingdomgames.indigo.gameengine.constants.Keys
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, KeyboardEvent, MouseEvent, ViewEvent}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey, Depth, Point, Rectangle}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphNode, Text}
 
-//TODO's
-/*
-calculate line length to cursor / char index
- */
 object InputField {
 
   def apply(text: String): InputField =
@@ -90,14 +86,26 @@ object InputField {
       }
     }
 
-    def drawCursor(gameTime: GameTime, position: Point, depth: Depth, inputFieldAssets: InputFieldAssets): Option[Graphic] = {
+    private def calculateCursorPosition(textLine: String, offset: Point, fontInfo: FontInfo, cursorPosition: Int): Point = {
+      val lines = textLine.substring(0, cursorPosition).split('\n')
+      val lineCount = Math.max(0, lines.length - 1) + (if(textLine.takeRight(1) == "\n") 1 else 0)
+      val lineHeight = Text.calculateBoundsOfLine("a", fontInfo).height
+      val lastLine = if(textLine.takeRight(1) == "\n") "" else lines.reverse.headOption.getOrElse("")
+      val bounds = Text.calculateBoundsOfLine(lastLine, fontInfo)
+      
+      Point(bounds.size.x, 0) + offset + Point(0, lineHeight * lineCount)
+    }
+
+    private def drawCursor(gameTime: GameTime, inputField: InputField, position: Point, depth: Depth, inputFieldAssets: InputFieldAssets): Option[Graphic] = {
       if (((gameTime.running * 0.00001) * 150).toInt % 2 == 0)
-        Option(inputFieldAssets.cursor.moveTo(position + Point(0, 10)).withDepth(depth.zIndex + 1))
+        Option {
+          inputFieldAssets.cursor.moveTo(calculateCursorPosition(inputField.text, position, inputFieldAssets.text.fontInfo, inputField.cursorPosition)).withDepth(depth.zIndex + 100)
+        }
       else
         None
     }
 
-    def render(gameTime: GameTime, position: Point, depth: Depth, inputField: InputField, inputFieldAssets: InputFieldAssets): RenderedInputFieldElements = {
+    private def render(gameTime: GameTime, position: Point, depth: Depth, inputField: InputField, inputFieldAssets: InputFieldAssets): RenderedInputFieldElements = {
       inputField.state match {
         case InputFieldState.Normal =>
           RenderedInputFieldElements(inputFieldAssets.text.withText(inputField.text).moveTo(position).withDepth(depth.zIndex), None)
@@ -105,12 +113,11 @@ object InputField {
         case InputFieldState.HasFocus =>
           RenderedInputFieldElements(
             inputFieldAssets.text.withText(inputField.text).moveTo(position).withDepth(depth.zIndex),
-            drawCursor(gameTime, position, depth, inputFieldAssets)
+            drawCursor(gameTime, inputField, position, depth, inputFieldAssets)
           )
       }
     }
 
-    //TODO: Cursor position
     def update(gameTime: GameTime, position: Point, depth: Depth, inputField: InputField, frameEvents: FrameInputEvents, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate = {
       val rendered: RenderedInputFieldElements = render(gameTime, position, depth, inputField, inputFieldAssets)
 

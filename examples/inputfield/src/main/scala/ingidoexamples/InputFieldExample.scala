@@ -18,7 +18,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel] {
 
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(
-      InputField("Fish")
+      InputField("Fish").makeMultiLine
     )
 
   def update(gameTime: GameTime, model: MyGameModel): events.GameEvent => MyGameModel = {
