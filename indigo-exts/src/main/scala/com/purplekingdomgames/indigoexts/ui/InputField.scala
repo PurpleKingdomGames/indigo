@@ -8,17 +8,12 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphN
 
 //TODO's
 /*
-Add options:
-- max line length (pixels or chars?)
-- single / multiline
-- overflow hide or wrap
-- max lines?
 calculate line length to cursor / char index
  */
 object InputField {
 
   def apply(text: String): InputField =
-    InputField(InputFieldState.Normal, text, 0)
+    InputField(InputFieldState.Normal, text, 0, InputFieldOptions.default, BindingKey.generate)
 
   object Model {
 
@@ -150,17 +145,19 @@ object InputField {
   }
 
   def addCharacter(inputField: InputField, char: String): InputField = {
-    val splitString = inputField.text.splitAt(inputField.cursorPosition)
+    if(inputField.text.length < inputField.options.characterLimit && (char != "\n" || inputField.options.multiLine)) {
+      val splitString = inputField.text.splitAt(inputField.cursorPosition)
 
-    inputField.copy(
-      text = splitString._1 + char + splitString._2,
-      cursorPosition = inputField.cursorPosition + 1
-    )
+      inputField.copy(
+        text = (splitString._1 + char + splitString._2).replaceAllLiterally("\n\n", "\n"),
+        cursorPosition = inputField.cursorPosition + 1
+      )
+    } else inputField
   }
 
 }
 
-case class InputField(state: InputFieldState, text: String, cursorPosition: Int, bindingKey: BindingKey = BindingKey.generate) {
+case class InputField(state: InputFieldState, text: String, cursorPosition: Int, options: InputFieldOptions, bindingKey: BindingKey) {
 
   def update(inputFieldEvent: InputFieldEvent): InputField =
     InputField.Model.update(this, inputFieldEvent)
@@ -201,6 +198,32 @@ case class InputField(state: InputFieldState, text: String, cursorPosition: Int,
   def addCharacter(char: String): InputField =
     InputField.addCharacter(this, char)
 
+  def withCharacterLimit(limit: Int): InputField =
+    this.copy(options = options.withCharacterLimit(limit))
+
+  def makeMultiLine: InputField =
+    this.copy(options = options.makeMultiLine)
+
+  def makeSingleLine: InputField =
+    this.copy(options = options.makeSingleLine)
+
+}
+
+case class InputFieldOptions(characterLimit: Int, multiLine: Boolean) {
+
+  def withCharacterLimit(limit: Int): InputFieldOptions =
+    this.copy(characterLimit = limit)
+
+  def makeMultiLine: InputFieldOptions =
+    this.copy(multiLine = true)
+
+  def makeSingleLine: InputFieldOptions =
+    this.copy(multiLine = false)
+
+}
+object InputFieldOptions {
+  val default: InputFieldOptions =
+    InputFieldOptions(characterLimit = 255, multiLine = false)
 }
 
 case class RenderedInputFieldElements(field: Text, cursor: Option[Graphic]) {

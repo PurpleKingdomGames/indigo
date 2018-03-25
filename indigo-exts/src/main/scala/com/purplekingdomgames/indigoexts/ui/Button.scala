@@ -7,7 +7,7 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey
 object Button {
 
   def apply(state: ButtonState): Button =
-    Button(state, ButtonActions(() => None, () => None, () => None, () => None))
+    Button(state, ButtonActions(() => None, () => None, () => None, () => None), BindingKey.generate)
 
   object Model {
 
@@ -86,7 +86,7 @@ object Button {
 
 }
 
-case class Button(state: ButtonState, actions: ButtonActions, bindingKey: BindingKey = BindingKey.generate) {
+case class Button(state: ButtonState, actions: ButtonActions, bindingKey: BindingKey) {
 
   def update(buttonEvent: ButtonEvent): Button =
     Button.Model.update(this, buttonEvent)
