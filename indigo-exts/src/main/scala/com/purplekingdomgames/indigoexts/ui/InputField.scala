@@ -99,7 +99,7 @@ object InputField {
     private def drawCursor(gameTime: GameTime, inputField: InputField, position: Point, depth: Depth, inputFieldAssets: InputFieldAssets): Option[Graphic] = {
       if (((gameTime.running * 0.00001) * 150).toInt % 2 == 0)
         Option {
-          inputFieldAssets.cursor.moveTo(calculateCursorPosition(inputField.text, position, inputFieldAssets.text.fontInfo, inputField.cursorPosition)).withDepth(depth.zIndex + 100)
+          inputFieldAssets.cursor.moveTo(calculateCursorPosition(inputField.text, position, inputFieldAssets.text.fontInfo, inputField.cursorPosition)).withDepth(-(depth.zIndex + 100))
         }
       else
         None
@@ -146,7 +146,8 @@ object InputField {
     if(splitString._1.isEmpty) inputField
     else {
       inputField.copy(
-        text = splitString._1.take(splitString._1.length - 1) + splitString._2
+        text = splitString._1.take(splitString._1.length - 1) + splitString._2,
+        cursorPosition = if(inputField.cursorPosition > 0) inputField.cursorPosition - 1 else inputField.cursorPosition
       )
     }
   }
