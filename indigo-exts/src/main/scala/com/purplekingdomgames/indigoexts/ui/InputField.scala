@@ -5,6 +5,17 @@ import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, Keyboa
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey, Depth, Point, Rectangle}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphNode, Text}
 
+//TODO's
+/*
+Add options:
+- max line length (pixels or chars?)
+- single / multiline
+- overflow hide or wrap
+- max lines?
+home and end characters?
+blink is current system time / 100 % 2 == 0 (or similar)
+calculate line length to cursor / char index
+ */
 object InputField {
 
   def apply(text: String): InputField =
