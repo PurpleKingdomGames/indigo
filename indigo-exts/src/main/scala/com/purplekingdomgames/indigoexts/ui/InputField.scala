@@ -13,7 +13,6 @@ Add options:
 - single / multiline
 - overflow hide or wrap
 - max lines?
-home and end characters?
 calculate line length to cursor / char index
  */
 object InputField {
@@ -36,6 +35,12 @@ object InputField {
 
         case InputFieldEvent.CursorRight(bindingKey) if inputField.bindingKey == bindingKey =>
           inputField.cursorRight
+
+        case InputFieldEvent.CursorHome(bindingKey) if inputField.bindingKey == bindingKey =>
+          inputField.cursorHome
+
+        case InputFieldEvent.CursorEnd(bindingKey) if inputField.bindingKey == bindingKey =>
+          inputField.cursorEnd
 
         case InputFieldEvent.GiveFocus(bindingKey) if inputField.bindingKey == bindingKey =>
           inputField.giveFocus
@@ -74,6 +79,12 @@ object InputField {
 
           case KeyboardEvent.KeyPress(Keys.DELETE) if inputField.state.hasFocus =>
             acc :+ InputFieldEvent.Delete(inputField.bindingKey)
+
+          case KeyboardEvent.KeyPress(Keys.HOME) if inputField.state.hasFocus =>
+            acc :+ InputFieldEvent.CursorHome(inputField.bindingKey)
+
+          case KeyboardEvent.KeyPress(Keys.END) if inputField.state.hasFocus =>
+            acc :+ InputFieldEvent.CursorEnd(inputField.bindingKey)
 
           case KeyboardEvent.KeyUp(keyCode) if inputField.state.hasFocus && keyCode.isPrintable =>
             acc :+ InputFieldEvent.AddCharacter(inputField.bindingKey, keyCode.printableCharacter)
@@ -175,6 +186,12 @@ case class InputField(state: InputFieldState, text: String, cursorPosition: Int,
   def cursorRight: InputField =
     this.copy(cursorPosition = if(cursorPosition + 1 <= text.length) cursorPosition + 1 else text.length)
 
+  def cursorHome: InputField =
+    this.copy(cursorPosition = 0)
+
+  def cursorEnd: InputField =
+    this.copy(cursorPosition = text.length)
+
   def delete: InputField =
     InputField.deleteCharacter(this)
 
@@ -205,6 +222,8 @@ object InputFieldEvent {
   case class Backspace(bindingKey: BindingKey) extends InputFieldEvent
   case class CursorLeft(bindingKey: BindingKey) extends InputFieldEvent
   case class CursorRight(bindingKey: BindingKey) extends InputFieldEvent
+  case class CursorHome(bindingKey: BindingKey) extends InputFieldEvent
+  case class CursorEnd(bindingKey: BindingKey) extends InputFieldEvent
   case class GiveFocus(bindingKey: BindingKey) extends InputFieldEvent
   case class LoseFocus(bindingKey: BindingKey) extends InputFieldEvent
   case class AddCharacter(bindingKey: BindingKey, char: String) extends InputFieldEvent
