@@ -1,7 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine.assets
 
 import com.purplekingdomgames.indigo.util.Logger
-import com.purplekingdomgames.shared.{AssetType, ImageAsset, TextAsset}
+import com.purplekingdomgames.shared.{AssetType, AudioAsset, ImageAsset, TextAsset}
 import org.scalajs.dom
 import org.scalajs.dom.ext.Ajax
 import org.scalajs.dom.raw.HTMLImageElement
@@ -9,6 +9,7 @@ import org.scalajs.dom.{html, _}
 
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+import scala.scalajs.js.typedarray.ArrayBuffer
 
 object AssetManager {
 
@@ -28,13 +29,22 @@ object AssetManager {
       }
     }
 
+  private def filterOutAudioAssets(l: List[AssetType]): List[AudioAsset] =
+    l.flatMap { at =>
+      at match {
+        case t: AudioAsset => List(t)
+        case _ => Nil
+      }
+    }
+
   def loadAssets(assets: Set[AssetType]): Future[AssetCollection] = {
     Logger.info(s"Loading ${assets.toList.length} assets")
 
     for {
       t <- loadTextAssets(filterOutTextAssets(assets.toList))
       i <- loadImageAssets(filterOutImageAssets(assets.toList))
-    } yield AssetCollection(i, t)
+      a <- loadAudioAssets(filterOutAudioAssets(assets.toList))
+    } yield AssetCollection(i, t, a)
   }
 
   def findByName(assetCollection: AssetCollection): String => Option[LoadedImageAsset] = name =>
@@ -77,9 +87,29 @@ object AssetManager {
     }
   }
 
+  private val loadAudioAssets: List[AudioAsset] => Future[List[LoadedAudioAsset]] = audioAssets =>
+    Future.sequence(audioAssets.map(loadAudioAsset))
+
+  def loadAudioAsset(audioAsset: AudioAsset): Future[LoadedAudioAsset] = {
+    Logger.info(s"[Audio] Loading ${audioAsset.path}")
+
+    Ajax.get(audioAsset.path, responseType = "arraybuffer").flatMap { xhr =>
+      Logger.info(s"[Audio] Success ${audioAsset.path}")
+      val context = new AudioContext()
+      val p = context.decodeAudioData(
+        xhr.response.asInstanceOf[ArrayBuffer],
+        (audioBuffer: AudioBuffer) => audioBuffer,
+        () => Logger.info("Error decoding audio from: " + audioAsset.path)
+      )
+
+      p.toFuture.map(audioBuffer => LoadedAudioAsset(audioAsset.name, audioBuffer))
+    }
+  }
+
 }
 
 case class LoadedTextAsset(name: String, contents: String)
 case class LoadedImageAsset(name: String, data: html.Image)
+case class LoadedAudioAsset(name: String, data: dom.AudioBuffer)
 
-case class AssetCollection(images: List[LoadedImageAsset], texts: List[LoadedTextAsset])
+case class AssetCollection(images: List[LoadedImageAsset], texts: List[LoadedTextAsset], sounds: List[LoadedAudioAsset])

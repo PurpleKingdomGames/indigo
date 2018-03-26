@@ -73,7 +73,7 @@ object AutomataFarm {
                   g.moveTo(f(gameTime, sa.seedValues, g.bounds.position))
 
                 case EmitEvents(f) =>
-                  f(gameTime, sa.seedValues).foreach(GlobalEventStream.push)
+                  f(gameTime, sa.seedValues).foreach(GlobalEventStream.pushGameEvent)
                   g
               }
             }
@@ -92,7 +92,7 @@ object AutomataFarm {
                     s.moveTo(f(gameTime, sa.seedValues, s.bounds.position))
 
                   case EmitEvents(f) =>
-                    f(gameTime, sa.seedValues).foreach(GlobalEventStream.push)
+                    f(gameTime, sa.seedValues).foreach(GlobalEventStream.pushGameEvent)
                     s
                 }
               }
@@ -113,7 +113,7 @@ object AutomataFarm {
                   t.moveTo(f(gameTime, sa.seedValues, t.bounds.position))
 
                 case EmitEvents(f) =>
-                  f(gameTime, sa.seedValues).foreach(GlobalEventStream.push)
+                  f(gameTime, sa.seedValues).foreach(GlobalEventStream.pushGameEvent)
                   t
               }
             }

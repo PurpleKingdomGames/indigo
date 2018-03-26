@@ -41,7 +41,7 @@ object Http {
 
         val body = ((str: String) => if(str.isEmpty) None else Option(str))(xhr.responseText)
 
-        GlobalEventStream.push(
+        GlobalEventStream.pushGameEvent(
           HttpResponse(
             status = xhr.status,
             headers = parsedHeaders,
@@ -51,7 +51,7 @@ object Http {
       }
 
       xhr.onerror = (_: dom.Event) => {
-        GlobalEventStream.push(HttpError)
+        GlobalEventStream.pushGameEvent(HttpError)
       }
 
       if(request.body.isDefined) xhr.send(request.body.get)
@@ -59,7 +59,7 @@ object Http {
 
     } catch {
       case _: Throwable =>
-        GlobalEventStream.push(HttpError)
+        GlobalEventStream.pushGameEvent(HttpError)
     }
   }
 

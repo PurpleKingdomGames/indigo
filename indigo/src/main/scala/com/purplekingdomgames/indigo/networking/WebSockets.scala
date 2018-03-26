@@ -34,7 +34,7 @@ object WebSockets {
       }
     } catch {
       case e: Throwable =>
-        GlobalEventStream.push(WebSocketEvent.Error(event.giveId.getOrElse(WebSocketId("<not found>")), e.getMessage))
+        GlobalEventStream.pushGameEvent(WebSocketEvent.Error(event.giveId.getOrElse(WebSocketId("<not found>")), e.getMessage))
     }
 
   private def insertUpdateConfig(config: WebSocketConfig): WebSocketConfig = {
@@ -76,7 +76,7 @@ object WebSockets {
 
       socket.onmessage =
         (e: dom.MessageEvent) =>
-          GlobalEventStream.push(WebSocketEvent.Receive(config.id, e.data.toString))
+          GlobalEventStream.pushGameEvent(WebSocketEvent.Receive(config.id, e.data.toString))
 
       socket.onopen =
         (_: dom.Event) =>
@@ -84,11 +84,11 @@ object WebSockets {
 
       socket.onerror =
         (e: dom.ErrorEvent) =>
-          GlobalEventStream.push(WebSocketEvent.Error(config.id, e.message))
+          GlobalEventStream.pushGameEvent(WebSocketEvent.Error(config.id, e.message))
 
       socket.onclose =
         (_: dom.CloseEvent) =>
-          GlobalEventStream.push(WebSocketEvent.Close(config.id))
+          GlobalEventStream.pushGameEvent(WebSocketEvent.Close(config.id))
 
       Option(socket)
     } catch {

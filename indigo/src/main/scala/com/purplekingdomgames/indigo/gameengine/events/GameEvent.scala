@@ -31,6 +31,9 @@ object KeyboardEvent {
 
 trait ViewEvent extends GameEvent
 
+case class PlaySound(assetRef: String, volume: Double) extends ViewEvent
+
+
 sealed trait NetworkSendEvent extends ViewEvent
 sealed trait NetworkReceiveEvent extends GameEvent
 

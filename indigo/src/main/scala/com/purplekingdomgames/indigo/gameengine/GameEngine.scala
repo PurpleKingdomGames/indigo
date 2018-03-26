@@ -1,6 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine
 
 import com.purplekingdomgames.indigo.gameengine.assets._
+import com.purplekingdomgames.indigo.gameengine.audio.{AudioPlayer, IAudioPlayer}
 import com.purplekingdomgames.indigo.gameengine.events._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.renderer._
@@ -98,8 +99,10 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
               canvas
             )
 
+            val audioPlayer: IAudioPlayer = AudioPlayer(assetCollection.sounds)
+
             Logger.info("Starting main loop, there will be no more log messages.")
-            dom.window.requestAnimationFrame(loopFunc(renderer, 0))
+            dom.window.requestAnimationFrame(loopFunc(renderer, audioPlayer, 0))
         }
       }
 
@@ -117,7 +120,7 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
     }
   }
 
-  private def loop(gameConfig: GameConfig, startupData: StartupData, assetMapping: AssetMapping)(renderer: IRenderer, lastUpdateTime: Double)(implicit metrics: IMetrics): Double => Int = { time =>
+  private def loop(gameConfig: GameConfig, startupData: StartupData, assetMapping: AssetMapping)(renderer: IRenderer, audioPlayer: IAudioPlayer, lastUpdateTime: Double)(implicit metrics: IMetrics): Double => Int = { time =>
     val timeDelta = time - lastUpdateTime
 
     // PUT NOTHING ABOVE THIS LINE!! Major performance penalties!!
@@ -166,7 +169,7 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
           metrics.record(ProcessViewStartMetric)
 
           val processUpdatedView: SceneGraphUpdate => SceneGraphRootNodeFlat =
-            persistGlobalViewEvents(metrics) andThen
+            persistGlobalViewEvents(audioPlayer)(metrics) andThen
               flattenNodes andThen
               persistNodeViewEvents(metrics)(collectedEvents) andThen
               applyAnimationStates(metrics) andThen
@@ -196,15 +199,15 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
 
       metrics.record(FrameEndMetric)
 
-      dom.window.requestAnimationFrame(loop(gameConfig, startupData, assetMapping)(renderer, time))
+      dom.window.requestAnimationFrame(loop(gameConfig, startupData, assetMapping)(renderer, audioPlayer, time))
     } else {
-      dom.window.requestAnimationFrame(loop(gameConfig, startupData, assetMapping)(renderer, lastUpdateTime))
+      dom.window.requestAnimationFrame(loop(gameConfig, startupData, assetMapping)(renderer, audioPlayer, lastUpdateTime))
     }
   }
 
-  private val persistGlobalViewEvents: IMetrics => SceneGraphUpdate => SceneGraphRootNode = metrics => update => {
+  private val persistGlobalViewEvents: IAudioPlayer => IMetrics => SceneGraphUpdate => SceneGraphRootNode = audioPlayer => metrics => update => {
     metrics.record(PersistGlobalViewEventsStartMetric)
-    update.viewEvents.foreach(GlobalEventStream.push)
+    update.viewEvents.foreach(e => GlobalEventStream.pushViewEvent(audioPlayer, e))
     metrics.record(PersistGlobalViewEventsEndMetric)
     update.rootNode
   }
@@ -213,7 +216,7 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
 
   private val persistNodeViewEvents: IMetrics => List[GameEvent] => SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = metrics => gameEvents => rootNode => {
     metrics.record(PersistNodeViewEventsStartMetric)
-    rootNode.collectViewEvents(gameEvents).foreach(GlobalEventStream.push)
+    rootNode.collectViewEvents(gameEvents).foreach(GlobalEventStream.pushGameEvent)
     metrics.record(PersistNodeViewEventsEndMetric)
     rootNode
   }
