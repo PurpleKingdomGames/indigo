@@ -5,10 +5,10 @@ addCommandAlias("snakeBuild", ";snake/fastOptJS;snake/indigoBuild")
 
 lazy val commonSettings = Seq(
   version := indigoVersion,
-  scalaVersion := "2.12.4",
+  scalaVersion := "2.12.5",
   organization := "com.purplekingdomgames",
   libraryDependencies ++= Seq(
-    "org.scalatest" %%% "scalatest" % "3.0.4" % "test"
+    "org.scalatest" %%% "scalatest" % "3.0.5" % "test"
   ),
   scalacOptions in (Compile, compile) ++= Seq(
     "-deprecation",                      // Emit warning and location for usages of deprecated APIs.
