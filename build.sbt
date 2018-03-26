@@ -190,6 +190,19 @@ lazy val automata =
       scalaJSUseMainModuleInitializer := true
     )
 
+lazy val audio =
+  (project in file("examples/audio"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoExts)
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .settings(
+      name := "audio-example",
+      showCursor := true,
+      title := "Audio example",
+      gameAssetsDirectory := "assets",
+      scalaJSUseMainModuleInitializer := true
+    )
+
 
 // Indigo
 lazy val indigo =
@@ -314,4 +327,4 @@ lazy val indigoProject =
     .settings(commonSettings: _*)
     .aggregate(indigo, indigoExts) //core
     .aggregate(sandbox, perf, framework, server, snake) //games
-    .aggregate(basicSetup, fullSetup, button, http, text, automata, graphic, sprite, websocket, inputfield) //examples
+    .aggregate(basicSetup, fullSetup, button, http, text, automata, graphic, sprite, websocket, inputfield, audio) //examples
