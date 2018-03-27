@@ -19,7 +19,7 @@ trait IndigoGameBasic[StartupData, Model] {
 
   def update(gameTime: GameTime, model: Model): GameEvent => Model
 
-  def render(gameTime: GameTime, model: Model, frameInputEvents: FrameInputEvents): SceneGraphUpdate
+  def present(gameTime: GameTime, model: Model, frameInputEvents: FrameInputEvents): SceneUpdateFragment
 
   def main(args: Array[String]): Unit =
     Indigo.game
@@ -28,7 +28,10 @@ trait IndigoGameBasic[StartupData, Model] {
       .startUpGameWith(ac => Startup.fromEither(setup(ac)))
       .usingInitialModel(initialModel)
       .updateModelUsing(update)
-      .drawUsing(render)
+      .presentUsing(
+        (gameTime: GameTime, model: Model, frameInputEvents: FrameInputEvents) =>
+          present(gameTime, model, frameInputEvents).toSceneGraphUpdate
+      )
       .start()
 
 }

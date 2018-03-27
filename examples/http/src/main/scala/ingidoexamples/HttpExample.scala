@@ -4,8 +4,8 @@ import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.events
 import com.purplekingdomgames.indigo.gameengine.events.HttpReceiveEvent.{HttpError, HttpResponse}
 import com.purplekingdomgames.indigo.gameengine.events.HttpRequest
+import com.purplekingdomgames.indigo.gameengine.scenegraph.Graphic
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphUpdate}
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.ImageAsset
 
@@ -46,7 +46,7 @@ object HttpExample extends IndigoGameBasic[Unit, MyGameModel] {
       model
   }
 
-  def render(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneGraphUpdate = {
+  def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment = {
     val button: ButtonViewUpdate = model.button.draw(
       bounds = Rectangle(10, 10, 16, 16),
       depth = Depth(2),
@@ -58,10 +58,7 @@ object HttpExample extends IndigoGameBasic[Unit, MyGameModel] {
       )
     )
 
-    SceneGraphUpdate(
-      List(button.buttonGraphic),
-      button.buttonEvents
-    )
+    button.toSceneUpdateFragment
   }
 }
 

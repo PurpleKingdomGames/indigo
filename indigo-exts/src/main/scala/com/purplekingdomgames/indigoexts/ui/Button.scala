@@ -1,7 +1,7 @@
 package com.purplekingdomgames.indigoexts.ui
 
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, MouseEvent, ViewEvent}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.Graphic
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneUpdateFragment}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey, Depth, Rectangle}
 
 object Button {
@@ -148,6 +148,12 @@ case class ButtonEvent(bindingKey: BindingKey, newState: ButtonState) extends Vi
 
 case class ButtonViewUpdate(buttonGraphic: Graphic, buttonEvents: List[ViewEvent]) {
 
-  def toTuple: (Graphic, List[ViewEvent]) = (buttonGraphic, buttonEvents)
+  def toSceneUpdateFragment: SceneUpdateFragment =
+    SceneUpdateFragment()
+      .addGameLayerNodes(buttonGraphic)
+      .addViewEvents(buttonEvents)
+
+  def toTuple: (Graphic, List[ViewEvent]) =
+    (buttonGraphic, buttonEvents)
 
 }

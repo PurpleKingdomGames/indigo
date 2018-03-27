@@ -3,8 +3,8 @@ package ingidoexamples
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.events
 import com.purplekingdomgames.indigo.gameengine.events.WebSocketEvent
+import com.purplekingdomgames.indigo.gameengine.scenegraph.Graphic
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphUpdate}
 import com.purplekingdomgames.indigo.networking.{WebSocketConfig, WebSocketId}
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.ImageAsset
@@ -77,7 +77,7 @@ object WebSocketExample extends IndigoGameBasic[MySetupData, MyGameModel] {
       model
   }
 
-  def render(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneGraphUpdate = {
+  def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment = {
     val pingButton: ButtonViewUpdate = model.ping.draw(
       bounds = Rectangle(10, 10, 16, 16),
       depth = Depth(2),
@@ -100,10 +100,7 @@ object WebSocketExample extends IndigoGameBasic[MySetupData, MyGameModel] {
       )
     )
 
-    SceneGraphUpdate(
-      List(pingButton.buttonGraphic, echoButton.buttonGraphic),
-      pingButton.buttonEvents ++ echoButton.buttonEvents
-    )
+    pingButton.toSceneUpdateFragment |+| echoButton.toSceneUpdateFragment
   }
 }
 

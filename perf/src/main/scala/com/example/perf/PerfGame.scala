@@ -69,7 +69,7 @@ object PerfGame {
       .startUpGameWith(initialise)
       .usingInitialModel(initialModel)
       .updateModelUsing(updateModel)
-      .drawUsing(updateView)
+      .presentUsing(updateView)
       .start()
 
 }

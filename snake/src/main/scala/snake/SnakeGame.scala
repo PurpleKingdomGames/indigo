@@ -33,7 +33,7 @@ object SnakeGame {
       .startUpGameWith(SnakeInit.initialise(config.viewport, gridSize))
       .usingInitialModel(SnakeModel.initialModel)
       .updateModelUsing(SnakeModel.modelUpdate)
-      .drawUsing(SnakeView.viewUpdate)
+      .presentUsing(SnakeView.viewUpdate)
       .start()
 
 }

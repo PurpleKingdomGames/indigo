@@ -2,8 +2,8 @@ package ingidoexamples
 
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.events
+import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.BindingKey
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{SceneGraphUpdate, _}
 import com.purplekingdomgames.shared.ImageAsset
 
 object SpriteExample extends IndigoGameBasic[Unit, Unit] {
@@ -32,8 +32,8 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit] {
    advance of the render loops (cache effectively), then the key wouldn't be
    regenerated.
   */
-  def render(gameTime: GameTime, model: Unit, frameInputEvents: events.FrameInputEvents): SceneGraphUpdate =
-    SceneGraphUpdate(
+  def present(gameTime: GameTime, model: Unit, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment =
+    SceneUpdateFragment().addGameLayerNodes(
       Sprite(BindingKey("lights animation"), 0, 0, 64, 64, 1, "trafficlights",
         Animations(
           spriteSheetWidth = 128,

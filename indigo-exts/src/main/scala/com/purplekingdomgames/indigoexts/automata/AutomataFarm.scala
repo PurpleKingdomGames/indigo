@@ -3,7 +3,7 @@ package com.purplekingdomgames.indigoexts.automata
 import com.purplekingdomgames.indigo.GameTime
 import com.purplekingdomgames.indigo.gameengine.events.GlobalEventStream
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{SceneGraphNodeBranch, Sprite}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{SceneGraphNode, Sprite}
 import com.purplekingdomgames.indigoexts.automata.AutomataEvent.{KillAll, KillAllInPool, KillByKey, Spawn}
 import com.purplekingdomgames.indigoexts.automata.AutomataModifier._
 
@@ -54,72 +54,70 @@ object AutomataFarm {
     }
   }
 
-  def render(gameTime: GameTime): SceneGraphNodeBranch = {
+  def render(gameTime: GameTime): List[SceneGraphNode] = {
     paddock = paddock.filter(_.isAlive(gameTime.running)).map(_.updateDelta(gameTime.delta))
 
-    SceneGraphNodeBranch(
-      paddock.map { sa =>
-        sa.automata match {
-          case GraphicAutomaton(_, graphic, _, modifiers) =>
-            modifiers.foldLeft(graphic) { (g, m) =>
+    paddock.map { sa =>
+      sa.automata match {
+        case GraphicAutomaton(_, graphic, _, modifiers) =>
+          modifiers.foldLeft(graphic) { (g, m) =>
+            m match {
+              case ChangeAlpha(f) =>
+                g.withAlpha(f(gameTime, sa.seedValues, g.effects.alpha))
+
+              case ChangeTint(f) =>
+                g.withTint(f(gameTime, sa.seedValues, g.effects.tint))
+
+              case MoveTo(f) =>
+                g.moveTo(f(gameTime, sa.seedValues, g.bounds.position))
+
+              case EmitEvents(f) =>
+                f(gameTime, sa.seedValues).foreach(GlobalEventStream.pushGameEvent)
+                g
+            }
+          }
+
+        case SpriteAutomaton(_, sprite, autoPlay, maybeCycleLabel, _, modifiers) =>
+          def applySpriteModifiers(sp: Sprite): Sprite = {
+            modifiers.foldLeft[Sprite](sp) { (s, m) =>
               m match {
                 case ChangeAlpha(f) =>
-                  g.withAlpha(f(gameTime, sa.seedValues, g.effects.alpha))
+                  s.withAlpha(f(gameTime, sa.seedValues, s.effects.alpha))
 
                 case ChangeTint(f) =>
-                  g.withTint(f(gameTime, sa.seedValues, g.effects.tint))
+                  s.withTint(f(gameTime, sa.seedValues, s.effects.tint))
 
                 case MoveTo(f) =>
-                  g.moveTo(f(gameTime, sa.seedValues, g.bounds.position))
+                  s.moveTo(f(gameTime, sa.seedValues, s.bounds.position))
 
                 case EmitEvents(f) =>
                   f(gameTime, sa.seedValues).foreach(GlobalEventStream.pushGameEvent)
-                  g
+                  s
               }
             }
+          }
 
-          case SpriteAutomaton(_, sprite, autoPlay, maybeCycleLabel, _, modifiers) =>
-            def applySpriteModifiers(sp: Sprite): Sprite = {
-              modifiers.foldLeft[Sprite](sp) { (s, m) =>
-                m match {
-                  case ChangeAlpha(f) =>
-                    s.withAlpha(f(gameTime, sa.seedValues, s.effects.alpha))
+          applySpriteModifiers(((s: Sprite) => if(autoPlay) s.play() else s)(maybeCycleLabel.map(l => sprite.changeCycle(l)).getOrElse(sprite)))
 
-                  case ChangeTint(f) =>
-                    s.withTint(f(gameTime, sa.seedValues, s.effects.tint))
+        case TextAutomaton(_, text, _, modifiers) =>
+          modifiers.foldLeft(text) { (t, m) =>
+            m match {
+              case ChangeAlpha(f) =>
+                t.withAlpha(f(gameTime, sa.seedValues, t.effects.alpha))
 
-                  case MoveTo(f) =>
-                    s.moveTo(f(gameTime, sa.seedValues, s.bounds.position))
+              case ChangeTint(f) =>
+                t.withTint(f(gameTime, sa.seedValues, t.effects.tint))
 
-                  case EmitEvents(f) =>
-                    f(gameTime, sa.seedValues).foreach(GlobalEventStream.pushGameEvent)
-                    s
-                }
-              }
+              case MoveTo(f) =>
+                t.moveTo(f(gameTime, sa.seedValues, t.bounds.position))
+
+              case EmitEvents(f) =>
+                f(gameTime, sa.seedValues).foreach(GlobalEventStream.pushGameEvent)
+                t
             }
-
-            applySpriteModifiers(((s: Sprite) => if(autoPlay) s.play() else s)(maybeCycleLabel.map(l => sprite.changeCycle(l)).getOrElse(sprite)))
-
-          case TextAutomaton(_, text, _, modifiers) =>
-            modifiers.foldLeft(text) { (t, m) =>
-              m match {
-                case ChangeAlpha(f) =>
-                  t.withAlpha(f(gameTime, sa.seedValues, t.effects.alpha))
-
-                case ChangeTint(f) =>
-                  t.withTint(f(gameTime, sa.seedValues, t.effects.tint))
-
-                case MoveTo(f) =>
-                  t.moveTo(f(gameTime, sa.seedValues, t.bounds.position))
-
-                case EmitEvents(f) =>
-                  f(gameTime, sa.seedValues).foreach(GlobalEventStream.pushGameEvent)
-                  t
-              }
-            }
-        }
+          }
       }
-    )
+    }
   }
 
 }

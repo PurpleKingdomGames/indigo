@@ -2,8 +2,8 @@ package ingidoexamples
 
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.events
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphUpdate, Text}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, FontChar, FontInfo, Point}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, Text}
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.{ClearColor, ImageAsset}
 
@@ -29,7 +29,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel] {
       model
   }
 
-  def render(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneGraphUpdate = {
+  def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment = {
 
     val inputFieldUpdate: InputFieldViewUpdate =
       model.inputField.draw(
@@ -43,10 +43,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel] {
         )
       )
 
-    SceneGraphUpdate(
-      inputFieldUpdate.sceneGraphNodes,
-      inputFieldUpdate.inputFieldEvents
-    )
+    inputFieldUpdate.toSceneUpdateFragment
   }
 
 }

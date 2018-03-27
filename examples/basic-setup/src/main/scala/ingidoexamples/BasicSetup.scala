@@ -2,6 +2,7 @@ package ingidoexamples
 
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.events
+import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneUpdateFragment
 
 object BasicSetup extends IndigoGameBasic[MyStartUpData, MyGameModel] {
 
@@ -18,7 +19,7 @@ object BasicSetup extends IndigoGameBasic[MyStartUpData, MyGameModel] {
   def update(gameTime: GameTime, model: MyGameModel): events.GameEvent => MyGameModel = _ =>
     model
 
-  def render(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneGraphUpdate =
+  def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment =
     noRender
 }
 

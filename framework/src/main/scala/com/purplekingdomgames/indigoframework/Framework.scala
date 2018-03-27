@@ -51,7 +51,7 @@ object Framework {
       .startUpGameWith(initialise)
       .usingInitialModel(initialModel)
       .updateModelUsing(updateModel)
-      .drawUsing(updateView)
+      .presentUsing(updateView)
       .start()
 
   @JSExport
@@ -62,7 +62,7 @@ object Framework {
       .startUpGameWith(initialise)
       .usingInitialModel(initialModel)
       .updateModelUsing(updateModel)
-      .drawUsing(updateView)
+      .presentUsing(updateView)
       .start()
 
 }

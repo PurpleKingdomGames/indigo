@@ -42,7 +42,7 @@ object FullSetup {
       .startUpGameWith(setup)
       .usingInitialModel(initialModel)
       .updateModelUsing(updateModel)
-      .drawUsing(renderer)
+      .presentUsing(renderer)
       .start()
 
 }

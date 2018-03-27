@@ -53,13 +53,25 @@ object SceneGraphLightingLayer {
   def empty: SceneGraphLightingLayer =
     SceneGraphLightingLayer(
       SceneGraphNode.empty,
-      AmbientLight.none
+      AmbientLight.None
     )
 
-  def apply(nodes: SceneGraphNodeLeaf*): SceneGraphLightingLayer =
+  def apply(nodes: SceneGraphNode*): SceneGraphLightingLayer =
     SceneGraphLightingLayer(
       SceneGraphNodeBranch(nodes.toList),
-      AmbientLight.none
+      AmbientLight.None
+    )
+
+  def apply(nodes: List[SceneGraphNode]): SceneGraphLightingLayer =
+    SceneGraphLightingLayer(
+      SceneGraphNodeBranch(nodes),
+      AmbientLight.None
+    )
+
+  def apply(nodes: List[SceneGraphNode], ambientLight: AmbientLight): SceneGraphLightingLayer =
+    SceneGraphLightingLayer(
+      SceneGraphNodeBranch(nodes),
+      ambientLight
     )
 }
 

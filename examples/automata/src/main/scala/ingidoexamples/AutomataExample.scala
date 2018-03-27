@@ -3,7 +3,7 @@ package ingidoexamples
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.events
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphUpdate, Text}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphUpdate, SceneUpdateFragment, Text}
 import com.purplekingdomgames.indigoexts.automata._
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.ImageAsset
@@ -65,7 +65,7 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
       model
   }
 
-  def render(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneGraphUpdate = {
+  def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment = {
     val button: ButtonViewUpdate = model.button.draw(
       bounds = Rectangle(10, 10, 16, 16),
       depth = Depth(2),
@@ -79,9 +79,13 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
 
     SceneGraphUpdate(
       List(button.buttonGraphic, Text("click to win!", 30, 10, 1, fontInfo))
-        ++ AutomataFarm.render(gameTime).children,
+        ++ AutomataFarm.render(gameTime),
       button.buttonEvents
     )
+
+    button
+      .toSceneUpdateFragment
+      .addGameLayerNodes(AutomataFarm.render(gameTime))
   }
 
   val fontInfo: FontInfo =

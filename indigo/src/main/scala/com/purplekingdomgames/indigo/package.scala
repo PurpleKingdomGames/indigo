@@ -1,6 +1,6 @@
 package com.purplekingdomgames
 
-import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneGraphUpdate
+import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneUpdateFragment
 import com.purplekingdomgames.shared.GameConfig
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -13,7 +13,7 @@ package object indigo {
   type GameTime = com.purplekingdomgames.indigo.gameengine.GameTime
   type GameEvent = com.purplekingdomgames.indigo.gameengine.events.GameEvent
   type FrameInputEvents = com.purplekingdomgames.indigo.gameengine.events.FrameInputEvents
-  type SceneGraphUpdate = com.purplekingdomgames.indigo.gameengine.scenegraph.SceneGraphUpdate
+  type SceneUpdateFragment = com.purplekingdomgames.indigo.gameengine.scenegraph.SceneUpdateFragment
   type AssetType = com.purplekingdomgames.shared.AssetType
   type GameConfig = com.purplekingdomgames.shared.GameConfig
 
@@ -23,6 +23,6 @@ package object indigo {
 
   val defaultGameConfig: GameConfig = GameConfig.default
 
-  val noRender: SceneGraphUpdate = SceneGraphUpdate.skip
+  val noRender: SceneUpdateFragment = SceneUpdateFragment.empty
 
 }

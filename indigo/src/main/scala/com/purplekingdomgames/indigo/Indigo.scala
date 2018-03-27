@@ -1,5 +1,6 @@
 package com.purplekingdomgames.indigo
 
+import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneGraphUpdate
 import com.purplekingdomgames.indigo.gameengine.{events, _}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -31,7 +32,7 @@ object IndigoGameBase {
                                                                         initialise: AssetCollection => Startup[StartupError, StartupData],
                                                                         initialModel: StartupData => GameModel,
                                                                         updateModel: (GameTime, GameModel) => events.GameEvent => GameModel) {
-    def drawUsing(updateView: (GameTime, GameModel, events.FrameInputEvents) => SceneGraphUpdate): IndigoGame[StartupData, StartupError, GameModel] =
+    def presentUsing(updateView: (GameTime, GameModel, events.FrameInputEvents) => SceneGraphUpdate): IndigoGame[StartupData, StartupError, GameModel] =
       new IndigoGame(
         config: GameConfig,
         configAsync: Future[Option[GameConfig]],

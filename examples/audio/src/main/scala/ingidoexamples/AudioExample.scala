@@ -4,7 +4,7 @@ import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.events
 import com.purplekingdomgames.indigo.gameengine.events.PlaySound
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphUpdate}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneUpdateFragment}
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.{AudioAsset, ImageAsset}
 
@@ -38,8 +38,8 @@ object AudioExample extends IndigoGameBasic[Unit, MyGameModel] {
       model
   }
 
-  def render(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneGraphUpdate = {
-    val button: ButtonViewUpdate = model.button.draw(
+  def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment = {
+    model.button.draw(
       bounds = Rectangle(10, 10, 16, 16),
       depth = Depth(2),
       frameInputEvents = frameInputEvents,
@@ -48,12 +48,7 @@ object AudioExample extends IndigoGameBasic[Unit, MyGameModel] {
         over = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 16, 16, 16),
         down = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 32, 16, 16)
       )
-    )
-
-    SceneGraphUpdate(
-      List(button.buttonGraphic),
-      button.buttonEvents
-    )
+    ).toSceneUpdateFragment
   }
 }
 

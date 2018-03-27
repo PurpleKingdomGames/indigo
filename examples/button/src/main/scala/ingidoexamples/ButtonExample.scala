@@ -3,8 +3,8 @@ package ingidoexamples
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.events
 import com.purplekingdomgames.indigo.gameengine.events.ViewEvent
+import com.purplekingdomgames.indigo.gameengine.scenegraph.Graphic
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphUpdate}
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.ImageAsset
 
@@ -43,7 +43,7 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel] {
       model
   }
 
-  def render(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneGraphUpdate = {
+  def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment = {
     val button: ButtonViewUpdate = model.button.draw(
       bounds = Rectangle(10, 10, 16, 16), // Where should the button be on the screen?
       depth = Depth(2), // At what depth?
@@ -55,10 +55,7 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel] {
       )
     )
 
-    SceneGraphUpdate(
-      List(button.buttonGraphic),
-      button.buttonEvents
-    )
+    button.toSceneUpdateFragment
   }
 }
 

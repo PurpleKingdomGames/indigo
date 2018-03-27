@@ -36,6 +36,11 @@ object SceneGraphUiLayer {
     SceneGraphUiLayer(
       SceneGraphNodeBranch(nodes.toList)
     )
+
+  def apply(nodes: List[SceneGraphNode]): SceneGraphUiLayer =
+    SceneGraphUiLayer(
+      SceneGraphNodeBranch(nodes)
+    )
 }
 
 case class SceneGraphUiLayerFlat(nodes: List[SceneGraphNodeLeaf]) {

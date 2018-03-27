@@ -2,8 +2,8 @@ package ingidoexamples
 
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.events
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{SceneGraphUpdate, Text}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{SceneUpdateFragment, Text}
 import com.purplekingdomgames.shared.{ClearColor, ImageAsset}
 
 object TextExample extends IndigoGameBasic[Unit, Unit] {
@@ -23,8 +23,8 @@ object TextExample extends IndigoGameBasic[Unit, Unit] {
   def update(gameTime: GameTime, model: Unit): events.GameEvent => Unit = _ =>
     model
 
-  def render(gameTime: GameTime, model: Unit, frameInputEvents: events.FrameInputEvents): SceneGraphUpdate =
-    SceneGraphUpdate(
+  def present(gameTime: GameTime, model: Unit, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment =
+    SceneUpdateFragment().addGameLayerNodes(
       Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontInfo).alignRight
     )
 

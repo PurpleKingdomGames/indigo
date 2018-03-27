@@ -1,10 +1,10 @@
 package com.purplekingdomgames.indigoexts.ui
 
-import com.purplekingdomgames.indigo.GameTime
+import com.purplekingdomgames.indigo.{GameTime, SceneUpdateFragment}
 import com.purplekingdomgames.indigo.gameengine.constants.Keys
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, KeyboardEvent, MouseEvent, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphNode, Text}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphNode, SceneUpdateFragment, Text}
 
 object InputField {
 
@@ -242,7 +242,13 @@ case class RenderedInputFieldElements(field: Text, cursor: Option[Graphic]) {
 case class InputFieldAssets(text: Text, cursor: Graphic)
 
 case class InputFieldViewUpdate(sceneGraphNodes: List[SceneGraphNode], inputFieldEvents: List[InputFieldEvent]) {
-  def toTuple: (List[SceneGraphNode], List[InputFieldEvent]) = (sceneGraphNodes, inputFieldEvents)
+  def toSceneUpdateFragment: SceneUpdateFragment =
+    SceneUpdateFragment()
+      .addGameLayerNodes(sceneGraphNodes)
+      .addViewEvents(inputFieldEvents)
+
+  def toTuple: (List[SceneGraphNode], List[InputFieldEvent]) =
+    (sceneGraphNodes, inputFieldEvents)
 }
 
 sealed trait InputFieldEvent extends ViewEvent {

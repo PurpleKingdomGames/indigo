@@ -61,7 +61,7 @@ object MyGame {
       .startUpGameWith(initialise)
       .usingInitialModel(initialModel)
       .updateModelUsing(updateModel)
-      .drawUsing(updateView)
+      .presentUsing(updateView)
       .start()
 
 }
