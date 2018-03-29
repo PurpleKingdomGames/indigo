@@ -1,6 +1,10 @@
 package com.purplekingdomgames.indigo
 
-import com.purplekingdomgames.indigo.gameengine.Startup
+import com.purplekingdomgames.indigo.gameengine.{GameTime, Startup, StartupErrors}
+import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
+import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GameEvent}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneUpdateFragment
+import com.purplekingdomgames.shared.{AssetType, GameConfig}
 
 /**
   * A trait representing a minimal set of functions to get your game running

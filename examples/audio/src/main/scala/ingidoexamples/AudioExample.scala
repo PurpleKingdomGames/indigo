@@ -1,12 +1,13 @@
 package ingidoexamples
 
 import com.purplekingdomgames.indigo._
-import com.purplekingdomgames.indigo.gameengine.events
+import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
+import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.indigo.gameengine.events.PlaySound
+import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneUpdateFragment}
 import com.purplekingdomgames.indigoexts.ui._
-import com.purplekingdomgames.shared.{AudioAsset, ImageAsset}
+import com.purplekingdomgames.shared.{AssetType, AudioAsset, GameConfig, ImageAsset}
 
 object AudioExample extends IndigoGameBasic[Unit, MyGameModel] {
 
@@ -14,7 +15,8 @@ object AudioExample extends IndigoGameBasic[Unit, MyGameModel] {
 
   val assets: Set[AssetType] = Set(
     ImageAsset("graphics", "assets/graphics.png"),
-    AudioAsset("bounce", "assets/RetroGameJump.mp3")
+    AudioAsset("bounce", "assets/RetroGameJump.mp3"),
+    AudioAsset("music", "assets/march_of_steampunk.mp3")
   )
 
   def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] =
@@ -49,6 +51,11 @@ object AudioExample extends IndigoGameBasic[Unit, MyGameModel] {
         down = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 32, 16, 16)
       )
     ).toSceneUpdateFragment
+      .withAudio(
+        SceneAudio(
+          SceneAudioSource(SingleTrackLoop(Track("music")))
+        )
+      )
   }
 }
 

@@ -50,3 +50,7 @@ case object Silent extends PlaybackPattern
 case class SingleTrackLoop(track: Track) extends PlaybackPattern
 
 case class Track(assetRef: String, volume: Double)
+object Track {
+  def apply(assetRef: String): Track =
+    Track(assetRef, 1)
+}

@@ -1,10 +1,11 @@
 package ingidoexamples
 
 import com.purplekingdomgames.indigo._
-import com.purplekingdomgames.indigo.gameengine.events
+import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
+import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{SceneUpdateFragment, Text}
-import com.purplekingdomgames.shared.{ClearColor, ImageAsset}
+import com.purplekingdomgames.shared.{AssetType, ClearColor, GameConfig, ImageAsset}
 
 object TextExample extends IndigoGameBasic[Unit, Unit] {
 

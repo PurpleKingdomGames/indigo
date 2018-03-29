@@ -1,9 +1,10 @@
 package ingidoexamples
 
 import com.purplekingdomgames.indigo._
-import com.purplekingdomgames.indigo.gameengine.events
+import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
+import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneUpdateFragment}
-import com.purplekingdomgames.shared.ImageAsset
+import com.purplekingdomgames.shared.{AssetType, GameConfig, ImageAsset}
 
 object GraphicExample extends IndigoGameBasic[Unit, Unit] {
 

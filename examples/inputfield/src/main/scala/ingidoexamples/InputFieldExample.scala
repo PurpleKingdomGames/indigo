@@ -1,11 +1,12 @@
 package ingidoexamples
 
 import com.purplekingdomgames.indigo._
-import com.purplekingdomgames.indigo.gameengine.events
+import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
+import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, FontChar, FontInfo, Point}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, Text}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneUpdateFragment, Text}
 import com.purplekingdomgames.indigoexts.ui._
-import com.purplekingdomgames.shared.{ClearColor, ImageAsset}
+import com.purplekingdomgames.shared.{AssetType, ClearColor, GameConfig, ImageAsset}
 
 object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel] {
 

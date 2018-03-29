@@ -1,13 +1,14 @@
 package ingidoexamples
 
 import com.purplekingdomgames.indigo._
-import com.purplekingdomgames.indigo.gameengine.events
+import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
+import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.indigo.gameengine.events.WebSocketEvent
-import com.purplekingdomgames.indigo.gameengine.scenegraph.Graphic
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneUpdateFragment}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
 import com.purplekingdomgames.indigo.networking.{WebSocketConfig, WebSocketId}
 import com.purplekingdomgames.indigoexts.ui._
-import com.purplekingdomgames.shared.ImageAsset
+import com.purplekingdomgames.shared.{AssetType, GameConfig, ImageAsset}
 
 /*
 Two examples in server project:

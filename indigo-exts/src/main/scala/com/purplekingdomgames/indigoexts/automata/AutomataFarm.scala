@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigoexts.automata
 
-import com.purplekingdomgames.indigo.GameTime
+import com.purplekingdomgames.indigo.gameengine.GameTime
 import com.purplekingdomgames.indigo.gameengine.events.GlobalEventStream
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{SceneGraphNode, Sprite}

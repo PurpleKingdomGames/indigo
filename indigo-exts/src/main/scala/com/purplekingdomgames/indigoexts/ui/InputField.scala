@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigoexts.ui
 
-import com.purplekingdomgames.indigo.{GameTime, SceneUpdateFragment}
+import com.purplekingdomgames.indigo.gameengine.GameTime
 import com.purplekingdomgames.indigo.gameengine.constants.Keys
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, KeyboardEvent, MouseEvent, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
