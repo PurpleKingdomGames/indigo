@@ -30,6 +30,9 @@ case object SkippedViewUpdateMetric extends Metric { val name: String = "skipped
 
 case object FrameEndMetric extends Metric { val name: String = "frame end" }
 
+case object AudioStartMetric extends Metric { val name: String = "audio start" }
+case object AudioEndMetric extends Metric { val name: String = "audio end" }
+
 // Process view metrics
 case object PersistGlobalViewEventsStartMetric extends Metric { val name: String = "persist global view events start" }
 case object PersistGlobalViewEventsEndMetric extends Metric { val name: String = "persist global view events end" }

@@ -106,7 +106,8 @@ object MenuScreenFunctions {
 
       SceneGraphUpdate(
         SceneGraphRootNode.empty.addUiLayer(uiLayer._1),
-        uiLayer._2
+        uiLayer._2,
+        SceneAudio.None
       )
     }
 

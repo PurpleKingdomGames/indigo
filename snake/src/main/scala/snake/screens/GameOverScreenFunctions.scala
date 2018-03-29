@@ -29,7 +29,8 @@ object GameOverScreenFunctions {
     def update: GameViewport => SceneGraphUpdate = viewport =>
       SceneGraphUpdate(
         SceneGraphRootNode.empty.addUiLayer(ui(viewport)),
-        Nil
+        Nil,
+        SceneAudio.None
       )
 
     def ui: GameViewport => SceneGraphUiLayer = viewport =>

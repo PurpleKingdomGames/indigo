@@ -20,7 +20,8 @@ object PerfView {
         lighting = lightingLayer,
         ui = uiLayer
       ),
-      Nil
+      Nil,
+      SceneAudio.None
     )
   }
 

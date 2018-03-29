@@ -35,6 +35,7 @@ object MetricsLogReporter {
       val processViewDuration = extractDuration(metrics, ProcessViewStartMetric.name, ProcessViewEndMetric.name)
       val toDisplayableDuration = extractDuration(metrics, ToDisplayableStartMetric.name, ToDisplayableEndMetric.name)
       val renderDuration = extractDuration(metrics, RenderStartMetric.name, RenderEndMetric.name)
+      val audioDuration = extractDuration(metrics, AudioStartMetric.name, AudioEndMetric.name)
 
       // Percentages
       val updatePercentage = asPercentOfFrameDuration(fd, updateDuration)
@@ -43,6 +44,7 @@ object MetricsLogReporter {
       val processViewPercentage = asPercentOfFrameDuration(fd, processViewDuration)
       val toDisplayablePercentage = asPercentOfFrameDuration(fd, toDisplayableDuration)
       val renderPercentage = asPercentOfFrameDuration(fd, renderDuration)
+      val audioPercentage = asPercentOfFrameDuration(fd, audioDuration)
 
       // Process view
       // Durations
@@ -92,12 +94,14 @@ object MetricsLogReporter {
         processViewDuration,
         toDisplayableDuration,
         renderDuration,
+        audioDuration,
         updatePercentage,
         updateModelPercentage,
         callUpdateViewPercentage,
         processViewPercentage,
         toDisplayablePercentage,
-        renderPercentage
+        renderPercentage,
+        audioPercentage
       )
 
       val processView = FrameStatsProcessView(
@@ -224,6 +228,13 @@ object MetricsLogReporter {
       s"""$a\t($b%)"""
     }
 
+    val meanAudio: String = {
+      val a = calcMeanDuration(frames.map(_.general.audioDuration)).toString
+      val b = calcMeanPercentage(frames.map(_.general.audioPercentage)).toString
+
+      s"""$a\t($b%)"""
+    }
+
     // Processing view
     val meanPersistGlobalView: String = {
       val a = calcMeanDuration(frames.map(_.processView.persistGlobalViewEventsDuration)).toString
@@ -339,6 +350,7 @@ object MetricsLogReporter {
          |Mean process view:         $meanProcess
          |Mean convert view:         $meanToDisplayable
          |Mean render view:          $meanRender
+         |Mean play audio:           $meanAudio
          |
          |View processing:
          |----------------
@@ -378,12 +390,14 @@ case class FrameStatsGeneral(frameDuration: Long,
                              processViewDuration: Option[Long],
                              toDisplayableDuration: Option[Long],
                              renderDuration: Option[Long],
+                             audioDuration: Option[Long],
                              updatePercentage: Option[Double],
                              updateModelPercentage: Option[Double],
                              callUpdateViewPercentage: Option[Double],
                              processViewPercentage: Option[Double],
                              toDisplayablePercentage: Option[Double],
-                             renderPercentage: Option[Double]
+                             renderPercentage: Option[Double],
+                             audioPercentage: Option[Double]
                             )
 
 case class FrameStatsProcessView(persistGlobalViewEventsDuration: Option[Long],

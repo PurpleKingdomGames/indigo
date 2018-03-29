@@ -18,7 +18,8 @@ object MyView {
         lighting = lightingLayer,
         ui = uiLayer(frameInputEvents)
       ),
-      Nil
+      Nil,
+      SceneAudio.None
     )
   }
 

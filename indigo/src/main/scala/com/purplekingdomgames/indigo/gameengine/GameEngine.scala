@@ -189,6 +189,12 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
           drawScene(renderer, displayable)
 
           metrics.record(RenderEndMetric)
+          metrics.record(AudioStartMetric)
+
+          playAudio(audioPlayer, view.sceneAudio)
+
+          metrics.record(AudioEndMetric)
+
         } else {
           metrics.record(SkippedViewUpdateMetric)
         }
@@ -253,5 +259,8 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
 
   private def drawScene(renderer: IRenderer, displayable: Displayable)(implicit metrics: IMetrics): Unit =
     renderer.drawScene(displayable)
+
+  private def playAudio(audioPlayer: IAudioPlayer, sceneAudio: SceneAudio): Unit =
+    audioPlayer.playAudio(sceneAudio)
 
 }

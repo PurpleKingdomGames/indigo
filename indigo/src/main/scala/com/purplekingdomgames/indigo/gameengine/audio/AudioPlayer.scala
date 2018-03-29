@@ -1,6 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine.audio
 
 import com.purplekingdomgames.indigo.gameengine.assets.LoadedAudioAsset
+import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneAudio
 import org.scalajs.dom.raw.AudioContext
 
 object AudioPlayer {
@@ -23,6 +24,7 @@ object AudioPlayer {
 
 trait IAudioPlayer {
   def playSound(assetRef: String, volume: Double): Unit
+  def playAudio(sceneAudio: SceneAudio): Unit
 }
 
 final class AudioPlayerImpl(loadedAudioAssets: List[LoadedAudioAsset], context: AudioContext) extends IAudioPlayer {
@@ -40,5 +42,7 @@ final class AudioPlayerImpl(loadedAudioAssets: List[LoadedAudioAsset], context: 
       source.start(0)
     }
   }
+
+  def playAudio(sceneAudio: SceneAudio): Unit = {}
 
 }

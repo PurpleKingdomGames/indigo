@@ -14,7 +14,8 @@ case class SceneUpdateFragment(gameLayer: List[SceneGraphNode], lightingLayer: L
         SceneGraphLightingLayer(lightingLayer, ambientLight),
         SceneGraphUiLayer(uiLayer)
       ),
-      viewEvents
+      viewEvents,
+      audio
     )
 
   def addGameLayerNodes(nodes: SceneGraphNode*): SceneUpdateFragment =

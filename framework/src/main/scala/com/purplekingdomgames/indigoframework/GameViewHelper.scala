@@ -43,7 +43,8 @@ object GameViewHelper {
         lighting = SceneGraphLightingLayer.empty,
         ui = SceneGraphUiLayer.empty
       ),
-      Nil
+      Nil,
+      SceneAudio.None
     )
   }
 
