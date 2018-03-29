@@ -53,7 +53,7 @@ object SceneUpdateFragment {
     empty
 
   def empty: SceneUpdateFragment =
-    SceneUpdateFragment(Nil, Nil, Nil, AmbientLight.None, Nil, SceneAudio.Silent)
+    SceneUpdateFragment(Nil, Nil, Nil, AmbientLight.None, Nil, SceneAudio.None)
 
   def append(a: SceneUpdateFragment, b: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment(
@@ -62,12 +62,6 @@ object SceneUpdateFragment {
       a.uiLayer ++ b.uiLayer,
       a.ambientLight + b.ambientLight,
       a.viewEvents ++ b.viewEvents,
-      SceneAudio.Silent
+      SceneAudio.None
     )
-}
-
-case class SceneAudio()
-object SceneAudio {
-  val Silent: SceneAudio =
-    SceneAudio()
 }
