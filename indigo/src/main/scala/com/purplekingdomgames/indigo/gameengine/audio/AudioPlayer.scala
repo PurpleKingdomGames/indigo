@@ -29,7 +29,6 @@ trait IAudioPlayer {
 
 final class AudioPlayerImpl(loadedAudioAssets: List[LoadedAudioAsset], context: AudioContext) extends IAudioPlayer {
 
-  //TODO: Should use a pool of buffer / gain node combos?
   def playSound(assetRef: String, volume: Double): Unit = {
     loadedAudioAssets.find(_.name == assetRef).foreach { sound =>
       val source = context.createBufferSource()
