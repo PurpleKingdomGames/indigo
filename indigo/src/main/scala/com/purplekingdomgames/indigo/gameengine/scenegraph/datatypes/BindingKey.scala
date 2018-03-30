@@ -7,6 +7,9 @@ case class BindingKey(value: String) {
   def ===(other: BindingKey): Boolean =
     BindingKey.equality(this, other)
 
+  def =!=(other: BindingKey): Boolean =
+    !BindingKey.equality(this, other)
+
 }
 
 object BindingKey {

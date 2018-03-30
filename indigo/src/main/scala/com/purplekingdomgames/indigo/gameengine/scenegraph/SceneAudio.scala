@@ -1,5 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.BindingKey
+
 case class SceneAudio(sourceA: SceneAudioSource, sourceB: SceneAudioSource, sourceC: SceneAudioSource) {
   def |+|(other: SceneAudio): SceneAudio =
     SceneAudio.combine(this, other)
@@ -7,30 +9,30 @@ case class SceneAudio(sourceA: SceneAudioSource, sourceB: SceneAudioSource, sour
 object SceneAudio {
 
   def apply(sourceA: SceneAudioSource): SceneAudio =
-    SceneAudio(sourceA, SceneAudioSource(Silent, 0), SceneAudioSource(Silent, 0))
+    SceneAudio(sourceA, SceneAudioSource.None, SceneAudioSource.None)
 
   def apply(sourceA: SceneAudioSource, sourceB: SceneAudioSource): SceneAudio =
-    SceneAudio(sourceA, sourceB, SceneAudioSource(Silent, 0))
+    SceneAudio(sourceA, sourceB, SceneAudioSource.None)
 
   val None: SceneAudio =
-    SceneAudio(SceneAudioSource(Silent, 0), SceneAudioSource(Silent, 0), SceneAudioSource(Silent, 0))
+    SceneAudio(SceneAudioSource.None, SceneAudioSource.None, SceneAudioSource.None)
 
   def combine(a: SceneAudio, b: SceneAudio): SceneAudio =
     SceneAudio(a.sourceA |+| b.sourceA, a.sourceB |+| b.sourceB, a.sourceC |+| b.sourceC)
 
 }
 
-case class SceneAudioSource(playbackPattern: PlaybackPattern, masterVolume: Double) {
+case class SceneAudioSource(bindingKey: BindingKey, playbackPattern: PlaybackPattern, masterVolume: Volume) {
   def |+|(other: SceneAudioSource): SceneAudioSource =
     SceneAudioSource.combine(this, other)
 }
 object SceneAudioSource {
 
-  def apply(playbackPattern: PlaybackPattern): SceneAudioSource =
-    SceneAudioSource(playbackPattern, 1)
+  def apply(bindingKey: BindingKey, playbackPattern: PlaybackPattern): SceneAudioSource =
+    SceneAudioSource(bindingKey, playbackPattern, Volume.Max)
 
   val None: SceneAudioSource =
-    SceneAudioSource(Silent, 0)
+    SceneAudioSource(BindingKey("none"), PlaybackPattern.Silent, Volume.Min)
 
   def combine(a: SceneAudioSource, b: SceneAudioSource): SceneAudioSource =
     (a, b) match {
@@ -46,11 +48,34 @@ object SceneAudioSource {
 }
 
 sealed trait PlaybackPattern
-case object Silent extends PlaybackPattern
-case class SingleTrackLoop(track: Track) extends PlaybackPattern
+object PlaybackPattern {
+  case object Silent extends PlaybackPattern
+  case class SingleTrackLoop(track: Track) extends PlaybackPattern
+}
 
-case class Track(assetRef: String, volume: Double)
+case class Track(assetRef: String, volume: Volume)
 object Track {
   def apply(assetRef: String): Track =
-    Track(assetRef, 1)
+    Track(assetRef, Volume.Max)
+}
+
+trait Volume {
+  val amount: Double
+  def *(other: Volume): Volume =
+    Volume.product(this, other)
+}
+object Volume {
+  val Min: Volume = Volume(0)
+  val Max: Volume = Volume(1)
+
+  def apply(volume: Double): Volume =
+    new Volume {
+      val amount: Double =
+        if(volume < 0) 0
+        else if(volume > 1) 1
+        else volume
+    }
+
+  def product(a: Volume, b: Volume): Volume =
+    Volume(a.amount * b.amount)
 }

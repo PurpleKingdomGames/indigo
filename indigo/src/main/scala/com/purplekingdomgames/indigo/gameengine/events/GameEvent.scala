@@ -1,6 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine.events
 
 import com.purplekingdomgames.indigo.gameengine.constants.KeyCode
+import com.purplekingdomgames.indigo.gameengine.scenegraph.Volume
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
 import com.purplekingdomgames.indigo.networking.{HttpMethod, WebSocketConfig, WebSocketId}
 
@@ -31,7 +32,7 @@ object KeyboardEvent {
 
 trait ViewEvent extends GameEvent
 
-case class PlaySound(assetRef: String, volume: Double) extends ViewEvent
+case class PlaySound(assetRef: String, volume: Volume) extends ViewEvent
 
 
 sealed trait NetworkSendEvent extends ViewEvent

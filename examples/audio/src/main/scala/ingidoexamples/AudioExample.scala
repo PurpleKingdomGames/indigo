@@ -5,7 +5,7 @@ import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.indigo.gameengine.events.PlaySound
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey, Depth, Rectangle}
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.{AssetType, AudioAsset, GameConfig, ImageAsset}
 
@@ -25,7 +25,7 @@ object AudioExample extends IndigoGameBasic[Unit, MyGameModel] {
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(
       button = Button(ButtonState.Up).withUpAction { () =>
-        Option(PlaySound("bounce", 1))
+        Option(PlaySound("bounce", Volume.Max))
       },
       count = 0
     )
@@ -53,7 +53,7 @@ object AudioExample extends IndigoGameBasic[Unit, MyGameModel] {
     ).toSceneUpdateFragment
       .withAudio(
         SceneAudio(
-          SceneAudioSource(SingleTrackLoop(Track("music")))
+          SceneAudioSource(BindingKey("My bg music"), PlaybackPattern.SingleTrackLoop(Track("music")))
         )
       )
   }
