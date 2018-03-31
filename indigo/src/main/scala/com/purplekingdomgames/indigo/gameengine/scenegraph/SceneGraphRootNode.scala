@@ -27,6 +27,14 @@ object SceneGraphRootNode {
 
   def empty: SceneGraphRootNode =
     SceneGraphRootNode(SceneGraphGameLayer.empty, SceneGraphLightingLayer.empty, SceneGraphUiLayer.empty)
+
+  def fromFragment(sceneUpdateFragment: SceneUpdateFragment): SceneGraphRootNode = {
+    SceneGraphRootNode(
+      SceneGraphGameLayer(sceneUpdateFragment.gameLayer),
+      SceneGraphLightingLayer(sceneUpdateFragment.lightingLayer, sceneUpdateFragment.ambientLight),
+      SceneGraphUiLayer(sceneUpdateFragment.uiLayer)
+    )
+  }
 }
 
 case class SceneGraphRootNodeFlat(game: SceneGraphGameLayerFlat, lighting: SceneGraphLightingLayerFlat, ui: SceneGraphUiLayerFlat) {

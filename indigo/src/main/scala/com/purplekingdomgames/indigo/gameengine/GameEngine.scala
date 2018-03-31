@@ -28,7 +28,7 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
                                                                           initialise: AssetCollection => Startup[StartupError, StartupData],
                                                                           initialModel: StartupData => GameModel,
                                                                           updateModel: (GameTime, GameModel) => GameEvent => GameModel,
-                                                                          updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate) {
+                                                                          updateView: (GameTime, GameModel, FrameInputEvents) => SceneUpdateFragment) {
 
   private var state: Option[GameModel] = None
 
@@ -168,7 +168,7 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
           metrics.record(CallUpdateViewEndMetric)
           metrics.record(ProcessViewStartMetric)
 
-          val processUpdatedView: SceneGraphUpdate => SceneGraphRootNodeFlat =
+          val processUpdatedView: SceneUpdateFragment => SceneGraphRootNodeFlat =
             persistGlobalViewEvents(audioPlayer)(metrics) andThen
               flattenNodes andThen
               persistNodeViewEvents(metrics)(collectedEvents) andThen
@@ -191,7 +191,7 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
           metrics.record(RenderEndMetric)
           metrics.record(AudioStartMetric)
 
-          playAudio(audioPlayer, view.sceneAudio)
+          playAudio(audioPlayer, view.audio)
 
           metrics.record(AudioEndMetric)
 
@@ -211,11 +211,11 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
     }
   }
 
-  private val persistGlobalViewEvents: IAudioPlayer => IMetrics => SceneGraphUpdate => SceneGraphRootNode = audioPlayer => metrics => update => {
+  private val persistGlobalViewEvents: IAudioPlayer => IMetrics => SceneUpdateFragment => SceneGraphRootNode = audioPlayer => metrics => update => {
     metrics.record(PersistGlobalViewEventsStartMetric)
     update.viewEvents.foreach(e => GlobalEventStream.pushViewEvent(audioPlayer, e))
     metrics.record(PersistGlobalViewEventsEndMetric)
-    update.rootNode
+    SceneGraphRootNode.fromFragment(update)
   }
 
   private val flattenNodes: SceneGraphRootNode => SceneGraphRootNodeFlat = root => root.flatten

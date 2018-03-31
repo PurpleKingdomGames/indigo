@@ -2,9 +2,9 @@ package ingidoexamples
 
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
-import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphUpdate, SceneUpdateFragment, Text}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneUpdateFragment, Text}
+import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.indigoexts.automata._
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.{AssetType, GameConfig, ImageAsset}
@@ -67,7 +67,7 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
   }
 
   def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment = {
-    val button: ButtonViewUpdate = model.button.draw(
+    model.button.draw(
       bounds = Rectangle(10, 10, 16, 16),
       depth = Depth(2),
       frameInputEvents = frameInputEvents,
@@ -76,17 +76,9 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
         over = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 16, 16, 16),
         down = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 32, 16, 16)
       )
-    )
-
-    SceneGraphUpdate(
-      List(button.buttonGraphic, Text("click to win!", 30, 10, 1, fontInfo))
-        ++ AutomataFarm.render(gameTime),
-      button.buttonEvents
-    )
-
-    button
-      .toSceneUpdateFragment
+    ).toSceneUpdateFragment
       .addGameLayerNodes(AutomataFarm.render(gameTime))
+      .addGameLayerNodes(Text("click to win!", 30, 10, 1, fontInfo))
   }
 
   val fontInfo: FontInfo =

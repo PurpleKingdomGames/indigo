@@ -3,6 +3,7 @@ package snake.screens
 import com.purplekingdomgames.indigo.gameengine.constants.Keys
 import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, KeyboardEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.AmbientLight
 import com.purplekingdomgames.shared.GameViewport
 import snake._
 
@@ -26,15 +27,18 @@ object GameOverScreenFunctions {
 
   object View {
 
-    def update: GameViewport => SceneGraphUpdate = viewport =>
-      SceneGraphUpdate(
-        SceneGraphRootNode.empty.addUiLayer(ui(viewport)),
+    def update: GameViewport => SceneUpdateFragment = viewport =>
+      SceneUpdateFragment(
+        Nil,
+        Nil,
+        ui(viewport),
+        AmbientLight.Normal,
         Nil,
         SceneAudio.None
       )
 
-    def ui: GameViewport => SceneGraphUiLayer = viewport =>
-      SceneGraphUiLayer(
+    def ui: GameViewport => List[SceneGraphNode] = viewport =>
+      List(
         Text("Game over!\nPress SPACE!", viewport.width / 2, (viewport.height / 2) - 30, 1, SnakeAssets.fontInfo).alignCenter
       )
 

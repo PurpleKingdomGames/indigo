@@ -50,7 +50,7 @@ object MyGame {
   val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel = (_, gameModel) =>
     MyModel.updateModel(gameModel)
 
-  val updateView: (GameTime, MyGameModel, FrameInputEvents) => SceneGraphUpdate = (_, gameModel, frameInputEvents) =>
+  val updateView: (GameTime, MyGameModel, FrameInputEvents) => SceneUpdateFragment = (_, gameModel, frameInputEvents) =>
     MyView.updateView(gameModel, frameInputEvents)
 
   @JSExportTopLevel("com.example.sandbox.MyGame.main")

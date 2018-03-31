@@ -4,7 +4,7 @@ import com.purplekingdomgames.indigo.Indigo
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GameEvent}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneGraphUpdate
+import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneUpdateFragment
 import com.purplekingdomgames.shared._
 
 import scala.scalajs.js.annotation.JSExportTopLevel
@@ -31,8 +31,8 @@ object FullSetup {
   val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel =
     (_, model) => _ => model
 
-  val renderer: (GameTime, MyGameModel, FrameInputEvents) => SceneGraphUpdate =
-    (_, _, _) => SceneGraphUpdate.skip
+  val renderer: (GameTime, MyGameModel, FrameInputEvents) => SceneUpdateFragment =
+    (_, _, _) => SceneUpdateFragment.empty
 
   @JSExportTopLevel("Example.main")
   def main(args: Array[String]): Unit =

@@ -40,7 +40,7 @@ object Framework {
   val updateModel: (GameTime, GameModel) => GameEvent => GameModel = (_, gameModel) =>
     GameModelHelper.updateModel(gameModel)
 
-  val updateView: (GameTime, GameModel, FrameInputEvents) => SceneGraphUpdate = (_, gameModel, _) =>
+  val updateView: (GameTime, GameModel, FrameInputEvents) => SceneUpdateFragment = (_, gameModel, _) =>
     GameViewHelper.updateView(gameModel)
 
   @JSExport

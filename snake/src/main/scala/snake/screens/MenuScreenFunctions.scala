@@ -4,7 +4,7 @@ import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.constants.Keys
 import com.purplekingdomgames.indigo.gameengine.events._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{AmbientLight, Depth, Rectangle}
 import com.purplekingdomgames.indigoexts.ui.{Button, ButtonAssets, ButtonEvent, ButtonState}
 import snake._
 
@@ -93,8 +93,7 @@ object MenuScreenFunctions {
 
   object View {
 
-    def update: (GameTime, FrameInputEvents, SnakeModel) => SceneGraphUpdate = (_, frameEvents, model) => {
-
+    def update: (GameTime, FrameInputEvents, SnakeModel) => SceneUpdateFragment = (_, frameEvents, model) => {
       val buttonAssets =
         ButtonAssets(
           up = model.startupData.staticAssets.gameScreen.player1.alive,
@@ -102,16 +101,10 @@ object MenuScreenFunctions {
           down = model.startupData.staticAssets.gameScreen.player3.alive
         )
 
-      val uiLayer = ui(frameEvents, model.menuScreenModel, buttonAssets)
-
-      SceneGraphUpdate(
-        SceneGraphRootNode.empty.addUiLayer(uiLayer._1),
-        uiLayer._2,
-        SceneAudio.None
-      )
+      ui(frameEvents, model.menuScreenModel, buttonAssets)
     }
 
-    def ui(frameEvents: FrameInputEvents, model: MenuScreenModel, buttonAssets: ButtonAssets): (SceneGraphUiLayer, List[ViewEvent]) = {
+    def ui(frameEvents: FrameInputEvents, model: MenuScreenModel, buttonAssets: ButtonAssets): SceneUpdateFragment = {
 
       val menuItemsAndEvents: List[(SceneGraphNode, List[ViewEvent])] = {
 
@@ -129,11 +122,11 @@ object MenuScreenFunctions {
         p ++ c ++ n
       }
 
-      val uiLayer = SceneGraphUiLayer(
+      val uiLayer = List(
         Text("press space to start", model.gameViewport.width / 2, model.gameViewport.height - 30, 2, SnakeAssets.fontInfo).alignCenter
-      ).addChildren(menuItemsAndEvents.map(_._1))
+      ) ++ menuItemsAndEvents.map(_._1)
 
-      (uiLayer, menuItemsAndEvents.flatMap(_._2))
+      SceneUpdateFragment(Nil, Nil, uiLayer, AmbientLight.Normal, menuItemsAndEvents.flatMap(_._2), SceneAudio.None)
     }
 
   }

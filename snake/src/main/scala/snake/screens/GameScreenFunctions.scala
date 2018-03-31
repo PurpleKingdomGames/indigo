@@ -3,7 +3,7 @@ package snake.screens
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.events.{FrameTick, GameEvent, KeyboardEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{AmbientLight, Point}
 import com.purplekingdomgames.indigoexts.grid.{GridPoint, GridSize}
 import snake._
 import snake.arenas.{Arena, GameMap, MapElement}
@@ -103,23 +103,21 @@ object GameScreenFunctions {
     def coordsToGridPoint(gridPoint: GridPoint, gridSize: GridSize): Point =
       Point(gridPoint.x * gridSize.gridSquareSize, ((gridSize.rows - 1) - gridPoint.y) * gridSize.gridSquareSize)
 
-    def update(model: GameScreenModel): SceneGraphUpdate =
-      SceneGraphUpdate(
-        SceneGraphRootNode(
-          game = gameLayer(model, if(model.running) model.staticAssets.gameScreen.player4.alive else model.staticAssets.gameScreen.player4.dead),
-          lighting = SceneGraphLightingLayer.empty,
-          ui = SceneGraphUiLayer.empty
-        ),
+    def update(model: GameScreenModel): SceneUpdateFragment =
+      SceneUpdateFragment(
+        gameLayer(model, if(model.running) model.staticAssets.gameScreen.player4.alive else model.staticAssets.gameScreen.player4.dead),
+        Nil,
+        Nil,
+        AmbientLight.Normal,
         Nil,
         SceneAudio.None
       )
 
-    def gameLayer(currentState: GameScreenModel, snakeAsset: Graphic): SceneGraphGameLayer =
-      SceneGraphGameLayer(currentState.staticAssets.gameScreen.background)
-        .addChildren {
-          currentState.gameMap.findApples.map(a => currentState.staticAssets.gameScreen.apple.moveTo(coordsToGridPoint(a.gridPoint, currentState.gameMap.gridSize)))
-        }
-        .addChildren(currentState.player1.snake.givePath.map(pt => snakeAsset.moveTo(coordsToGridPoint(pt, currentState.gameMap.gridSize))))
+    def gameLayer(currentState: GameScreenModel, snakeAsset: Graphic): List[SceneGraphNode] = {
+      List(currentState.staticAssets.gameScreen.background) ++
+        currentState.gameMap.findApples.map(a => currentState.staticAssets.gameScreen.apple.moveTo(coordsToGridPoint(a.gridPoint, currentState.gameMap.gridSize))) ++
+        currentState.player1.snake.givePath.map(pt => snakeAsset.moveTo(coordsToGridPoint(pt, currentState.gameMap.gridSize)))
+    }
 
   }
 

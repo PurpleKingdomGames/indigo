@@ -1,25 +1,24 @@
 package com.example.perf
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo, Point}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{AmbientLight, FontChar, FontInfo, Point}
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GlobalSignals}
 
 import scala.util.Random
 
 object PerfView {
 
-  def updateView(model: MyGameModel, frameInputEvents: FrameInputEvents): SceneGraphUpdate = {
+  def updateView(model: MyGameModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     frameInputEvents.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + position)
       case None => ()
     }
     
-    SceneGraphUpdate(
-      SceneGraphRootNode(
-        game = gameLayer(model),
-        lighting = lightingLayer,
-        ui = uiLayer
-      ),
+    SceneUpdateFragment(
+      gameLayer(model),
+      lightingLayer,
+      uiLayer,
+      AmbientLight.Normal.withAmount(0.5).withTint(1, 1, 0),
       Nil,
       SceneAudio.None
     )
@@ -39,46 +38,42 @@ object PerfView {
         .withDepth(herdCount - pt.y)
     }
 
-  def gameLayer(currentState: MyGameModel): SceneGraphGameLayer =
-    SceneGraphGameLayer(
-      SceneGraphNodeBranch(
-        List(
-          currentState.dude.walkDirection match {
-            case d@DudeLeft =>
-              currentState.dude.dude.sprite
-                .changeCycle(d.cycleName)
-                .play()
+  def gameLayer(currentState: MyGameModel): List[SceneGraphNode] =
+    List(
+      currentState.dude.walkDirection match {
+        case d@DudeLeft =>
+          currentState.dude.dude.sprite
+            .changeCycle(d.cycleName)
+            .play()
 
-            case d@DudeRight =>
-              currentState.dude.dude.sprite
-                .changeCycle(d.cycleName)
-                .play()
+        case d@DudeRight =>
+          currentState.dude.dude.sprite
+            .changeCycle(d.cycleName)
+            .play()
 
-            case d@DudeUp =>
-              currentState.dude.dude.sprite
-                .changeCycle(d.cycleName)
-                .play()
+        case d@DudeUp =>
+          currentState.dude.dude.sprite
+            .changeCycle(d.cycleName)
+            .play()
 
-            case d@DudeDown =>
-              currentState.dude.dude.sprite
-                .changeCycle(d.cycleName)
-                .play()
+        case d@DudeDown =>
+          currentState.dude.dude.sprite
+            .changeCycle(d.cycleName)
+            .play()
 
-            case d@DudeIdle =>
-              currentState.dude.dude.sprite
-                .changeCycle(d.cycleName)
-                .play()
-          }
-        ) ++ theHerd(currentState)
-      )
-    )
+        case d@DudeIdle =>
+          currentState.dude.dude.sprite
+            .changeCycle(d.cycleName)
+            .play()
+      }
+    ) ++ theHerd(currentState)
 
-  def lightingLayer: SceneGraphLightingLayer =
-    SceneGraphLightingLayer(
+  def lightingLayer: List[SceneGraphNode] =
+    List(
       Graphic(0, 0, 320, 240, 1, PerfAssets.light).withTint(1, 0, 0),
       Graphic(-115, -100, 320, 240, 1, PerfAssets.light),
       Graphic(GlobalSignals.MousePosition.x - 160, GlobalSignals.MousePosition.y - 120, 320, 240, 1, PerfAssets.light)
-    ).withAmbientLightAmount(0.5).withAmbientLightTint(1, 1, 0)
+    )
 
   private val fontInfo: FontInfo =
     FontInfo(PerfAssets.smallFontName, 320, 230, FontChar("?", 93, 52, 23, 23))
@@ -124,8 +119,8 @@ object PerfView {
       .addChar(FontChar(",", 248, 0, 15, 23))
       .addChar(FontChar(" ", 145, 52, 23, 23))
 
-  def uiLayer: SceneGraphUiLayer =
-    SceneGraphUiLayer(
+  def uiLayer: List[SceneGraphNode] =
+    List(
       Text((herdCount + 1) + " Naked\ndudes", 10, 10, 5, fontInfo).alignLeft,
       Text("Thundering Herd!", PerfGame.viewportWidth / 2, 10, 5, fontInfo).alignCenter,
       Text("use arrow\nkeys", PerfGame.viewportWidth - 10, 10, 5, fontInfo).alignRight

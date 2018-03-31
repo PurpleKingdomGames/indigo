@@ -25,6 +25,7 @@ sealed trait SceneGraphNode {
 
 }
 
+//TODO: A branch isn't useful unless it has it's own set of transformations. Remove or add transformations that apply to children.
 case class SceneGraphNodeBranch(children: List[SceneGraphNode]) extends SceneGraphNode {
 
   def addChild(child: SceneGraphNode): SceneGraphNodeBranch =

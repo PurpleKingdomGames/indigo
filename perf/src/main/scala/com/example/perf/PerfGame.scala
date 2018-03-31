@@ -58,7 +58,7 @@ object PerfGame {
   val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel = (_, gameModel) =>
     PerfModel.updateModel(gameModel)
 
-  val updateView: (GameTime, MyGameModel, FrameInputEvents) => SceneGraphUpdate = (_, gameModel, frameInputEvents) =>
+  val updateView: (GameTime, MyGameModel, FrameInputEvents) => SceneUpdateFragment = (_, gameModel, frameInputEvents) =>
     PerfView.updateView(gameModel, frameInputEvents)
 
   @JSExportTopLevel("com.example.perf.PerfGame.main")

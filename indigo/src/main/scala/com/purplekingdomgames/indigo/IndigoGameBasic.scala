@@ -34,7 +34,7 @@ trait IndigoGameBasic[StartupData, Model] {
       .updateModelUsing(update)
       .presentUsing(
         (gameTime: GameTime, model: Model, frameInputEvents: FrameInputEvents) =>
-          present(gameTime, model, frameInputEvents).toSceneGraphUpdate
+          present(gameTime, model, frameInputEvents)
       )
       .start()
 

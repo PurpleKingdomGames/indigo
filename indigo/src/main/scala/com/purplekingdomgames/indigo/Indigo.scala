@@ -1,7 +1,7 @@
 package com.purplekingdomgames.indigo
 
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
-import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneGraphUpdate
+import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneUpdateFragment
 import com.purplekingdomgames.indigo.gameengine.{events, _}
 import com.purplekingdomgames.shared.{AssetType, GameConfig}
 
@@ -22,7 +22,7 @@ object IndigoGameBase {
                                                          initialise: AssetCollection => Startup[StartupError, StartupData],
                                                          initialModel: StartupData => GameModel,
                                                          updateModel: (GameTime, GameModel) => events.GameEvent => GameModel,
-                                                         updateView: (GameTime, GameModel, events.FrameInputEvents) => SceneGraphUpdate) {
+                                                         updateView: (GameTime, GameModel, events.FrameInputEvents) => SceneUpdateFragment) {
     def start(): Unit =
       new GameEngine[StartupData, StartupError, GameModel](config, configAsync, assets, assetsAsync, initialise, initialModel, updateModel, updateView).start()
   }
@@ -34,7 +34,7 @@ object IndigoGameBase {
                                                                         initialise: AssetCollection => Startup[StartupError, StartupData],
                                                                         initialModel: StartupData => GameModel,
                                                                         updateModel: (GameTime, GameModel) => events.GameEvent => GameModel) {
-    def presentUsing(updateView: (GameTime, GameModel, events.FrameInputEvents) => SceneGraphUpdate): IndigoGame[StartupData, StartupError, GameModel] =
+    def presentUsing(updateView: (GameTime, GameModel, events.FrameInputEvents) => SceneUpdateFragment): IndigoGame[StartupData, StartupError, GameModel] =
       new IndigoGame(
         config: GameConfig,
         configAsync: Future[Option[GameConfig]],
@@ -43,7 +43,7 @@ object IndigoGameBase {
         initialise: AssetCollection => Startup[StartupError, StartupData],
         initialModel: StartupData => GameModel,
         updateModel: (GameTime, GameModel) => events.GameEvent => GameModel,
-        updateView: (GameTime, GameModel, events.FrameInputEvents) => SceneGraphUpdate
+        updateView: (GameTime, GameModel, events.FrameInputEvents) => SceneUpdateFragment
       )
   }
 

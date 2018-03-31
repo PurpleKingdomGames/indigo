@@ -1,7 +1,7 @@
 package com.purplekingdomgames.indigoframework
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Rectangle
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{AmbientLight, Rectangle}
 import com.purplekingdomgames.shared.EntityRectangle
 
 case class GameViewEvent()
@@ -11,7 +11,7 @@ object GameViewHelper {
   implicit def entityRectangleToRectangle(er: EntityRectangle): Rectangle =
     Rectangle(er.x, er.y, er.width, er.height)
 
-  def updateView(model: GameModel): SceneGraphUpdate = {
+  def updateView(model: GameModel): SceneUpdateFragment = {
     // find active scene
     // read entities list
     // find entities
@@ -37,12 +37,11 @@ object GameViewHelper {
         Graphic(graphic.bounds, 1, graphic.assetRef).withCrop(graphic.crop)
       }
 
-    SceneGraphUpdate(
-      SceneGraphRootNode(
-        game = SceneGraphGameLayer(graphics),
-        lighting = SceneGraphLightingLayer.empty,
-        ui = SceneGraphUiLayer.empty
-      ),
+    SceneUpdateFragment(
+      graphics,
+      Nil,
+      Nil,
+      AmbientLight.Normal,
       Nil,
       SceneAudio.None
     )

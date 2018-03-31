@@ -5,16 +5,23 @@ import com.purplekingdomgames.shared.ClearColor
 case class AmbientLight(tint: Tint, amount: Double) {
   def +(other: AmbientLight): AmbientLight =
     AmbientLight.combine(this, other)
+
+  def withAmount(value: Double): AmbientLight =
+    this.copy(amount = value)
+
+  def withTint(r: Double, g: Double, b: Double): AmbientLight =
+    this.copy(tint = Tint(r, g, b))
+
 }
 
 object AmbientLight {
-  val None: AmbientLight = AmbientLight(Tint.None, 1)
+  val Normal: AmbientLight = AmbientLight(Tint.None, 1)
 
   def combine(a: AmbientLight, b: AmbientLight): AmbientLight =
     (a, b) match {
-      case (AmbientLight.None, x) =>
+      case (AmbientLight.Normal, x) =>
         x
-      case (x, AmbientLight.None) =>
+      case (x, AmbientLight.Normal) =>
         x
       case (x, y) =>
         AmbientLight(x.tint + y.tint, x.amount + y.amount)
