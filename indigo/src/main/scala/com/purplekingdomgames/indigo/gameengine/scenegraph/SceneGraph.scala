@@ -6,17 +6,25 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 
 object SceneGraphNode {
-  def empty: SceneGraphNodeBranch = SceneGraphNodeBranch(Nil)
+  def empty: SceneGraphNodeBranch = SceneGraphNodeBranch(Point.zero, Depth.Base, Nil)
 }
 
 sealed trait SceneGraphNode {
+  val depth: Depth
+
+  def withDepth(depth: Depth): SceneGraphNode
+  def moveBy(pt: Point): SceneGraphNode
 
   private[gameengine] def flatten: List[SceneGraphNodeLeaf] = {
     def rec(acc: List[SceneGraphNodeLeaf]): List[SceneGraphNodeLeaf] = {
       this match {
-        case l: SceneGraphNodeLeaf => l :: acc
+        case l: SceneGraphNodeLeaf =>
+          l :: acc
+
         case b: SceneGraphNodeBranch =>
-          b.children.flatMap(n => n.flatten) ++ acc
+          b.children
+            .map(c => c.withDepth(c.depth + b.depth).moveBy(b.position))
+            .flatMap(n => n.flatten) ++ acc
       }
     }
 
@@ -25,8 +33,13 @@ sealed trait SceneGraphNode {
 
 }
 
-//TODO: A branch isn't useful unless it has it's own set of transformations. Remove or add transformations that apply to children.
-case class SceneGraphNodeBranch(children: List[SceneGraphNode]) extends SceneGraphNode {
+case class SceneGraphNodeBranch(position: Point, depth: Depth, children: List[SceneGraphNode]) extends SceneGraphNode {
+
+  def withDepth(depth: Depth): SceneGraphNode =
+    this.copy(depth = depth)
+
+  def moveBy(pt: Point): SceneGraphNode =
+    this.copy(position = position + pt)
 
   def addChild(child: SceneGraphNode): SceneGraphNodeBranch =
     this.copy(children = children :+ child)
@@ -37,13 +50,18 @@ case class SceneGraphNodeBranch(children: List[SceneGraphNode]) extends SceneGra
 }
 
 object SceneGraphNodeBranch {
+  def apply(position: Point, depth: Depth, children: SceneGraphNode*): SceneGraphNodeBranch =
+    SceneGraphNodeBranch(position, depth, children.toList)
+
   def apply(children: SceneGraphNode*): SceneGraphNodeBranch =
-    SceneGraphNodeBranch(children.toList)
+    SceneGraphNodeBranch(Point.zero, Depth.Base, children.toList)
+
+  def apply(children: List[SceneGraphNode]): SceneGraphNodeBranch =
+    SceneGraphNodeBranch(Point.zero, Depth.Base, children)
 }
 
 sealed trait SceneGraphNodeLeaf extends SceneGraphNode {
   val bounds: Rectangle
-  val depth: Depth
   val imageAssetRef: String
   val effects: Effects
   val ref: Point
@@ -61,7 +79,7 @@ sealed trait SceneGraphNodeLeaf extends SceneGraphNode {
   def moveBy(pt: Point): SceneGraphNodeLeaf
   def moveBy(x: Int, y: Int): SceneGraphNodeLeaf
 
-  def withDepth(depth: Int): SceneGraphNodeLeaf
+  def withDepth(depth: Depth): SceneGraphNodeLeaf
   def withAlpha(a: Double): SceneGraphNodeLeaf
   def withTint(red: Double, green: Double, blue: Double): SceneGraphNodeLeaf
   def flipHorizontal(h: Boolean): SceneGraphNodeLeaf
@@ -96,8 +114,8 @@ case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: 
   def moveBy(x: Int, y: Int): Graphic =
     moveBy(Point(x, y))
 
-  def withDepth(depth: Int): Graphic =
-    this.copy(depth = Depth(depth))
+  def withDepth(depth: Depth): Graphic =
+    this.copy(depth = depth)
 
   def withAlpha(a: Double): Graphic =
     this.copy(effects = effects.copy(alpha = a))
@@ -166,8 +184,8 @@ case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, image
 
   private[gameengine] def frameHash: String = animations.currentFrame.bounds.hash + "_" + imageAssetRef
 
-  def withDepth(depth: Int): Sprite =
-    this.copy(depth = Depth(depth))
+  def withDepth(depth: Depth): Sprite =
+    this.copy(depth = depth)
 
   val crop: Rectangle = bounds
 
@@ -289,8 +307,8 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
   def moveBy(x: Int, y: Int): Text =
     moveBy(Point(x, y))
 
-  def withDepth(depth: Int): Text =
-    this.copy(depth = Depth(depth))
+  def withDepth(depth: Depth): Text =
+    this.copy(depth = depth)
 
   def withAlpha(a: Double): Text =
     this.copy(effects = effects.copy(alpha = a))

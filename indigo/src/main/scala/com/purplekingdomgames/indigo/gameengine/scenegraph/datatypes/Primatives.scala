@@ -37,15 +37,22 @@ case class Rectangle(position: Point, size: Point) {
   def moveTo(point: Point): Rectangle =
     Rectangle(x + point.x, y + point.y, width, height)
 }
-case class Depth(zIndex: Int) extends AnyVal
+case class Depth(zIndex: Int) extends AnyVal {
+  def +(other: Depth): Depth =
+    Depth.append(this, other)
+}
+object Depth {
+  val Base: Depth = Depth(1)
+
+  implicit def intToDepth(i: Int): Depth = Depth(i)
+
+  def append(a: Depth, b: Depth): Depth =
+    Depth(a.zIndex + b.zIndex)
+}
 
 object Point {
   val zero: Point = Point(0, 0)
   implicit def tuple2ToPoint(t: (Int, Int)): Point = Point(t._1, t._2)
-}
-
-object Depth {
-  implicit def intToDepth(i: Int): Depth = Depth(i)
 }
 
 object Rectangle {
