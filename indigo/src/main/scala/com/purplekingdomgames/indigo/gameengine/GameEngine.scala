@@ -4,6 +4,7 @@ import com.purplekingdomgames.indigo.gameengine.assets._
 import com.purplekingdomgames.indigo.gameengine.audio.{AudioPlayer, IAudioPlayer}
 import com.purplekingdomgames.indigo.gameengine.events._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.AmbientLight
 import com.purplekingdomgames.indigo.renderer._
 import com.purplekingdomgames.indigo.util._
 import com.purplekingdomgames.indigo.util.metrics._
@@ -181,7 +182,7 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
           metrics.record(ProcessViewEndMetric)
           metrics.record(ToDisplayableStartMetric)
 
-          val displayable: Displayable = convertSceneGraphToDisplayable(processedView, assetMapping)
+          val displayable: Displayable = convertSceneGraphToDisplayable(processedView, assetMapping, view.ambientLight)
 
           metrics.record(ToDisplayableEndMetric)
           metrics.record(RenderStartMetric)
@@ -243,14 +244,14 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
     sceneGraph
   }
 
-  private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNodeFlat, assetMapping: AssetMapping): Displayable =
+  private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight): Displayable =
     Displayable(
       GameDisplayLayer(
         rootNode.game.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(assetMapping))
       ),
       LightingDisplayLayer(
         rootNode.lighting.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(assetMapping)),
-        rootNode.lighting.ambientLight
+        ambientLight
       ),
       UiDisplayLayer(
         rootNode.ui.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(assetMapping))

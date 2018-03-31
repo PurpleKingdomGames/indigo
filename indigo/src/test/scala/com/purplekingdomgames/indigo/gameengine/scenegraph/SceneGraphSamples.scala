@@ -8,7 +8,7 @@ object SceneGraphSamples {
 
   val api: SceneGraphRootNode =
     SceneGraphRootNode(
-      SceneGraphGameLayer(
+      SceneGraphLayer(
         SceneGraphNodeBranch(
           Text(
             "Hello", 10, 10, 1,

@@ -4,7 +4,7 @@ import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameTime}
 import com.purplekingdomgames.indigo.util.metrics._
 
-case class SceneGraphRootNode(game: SceneGraphGameLayer, lighting: SceneGraphLightingLayer, ui: SceneGraphUiLayer) {
+case class SceneGraphRootNode(game: SceneGraphLayer, lighting: SceneGraphLayer, ui: SceneGraphLayer) {
 
   private[gameengine] def flatten: SceneGraphRootNodeFlat =
     SceneGraphRootNodeFlat(
@@ -13,31 +13,31 @@ case class SceneGraphRootNode(game: SceneGraphGameLayer, lighting: SceneGraphLig
       ui.flatten
     )
 
-  def addLightingLayer(lighting: SceneGraphLightingLayer): SceneGraphRootNode =
+  def addLightingLayer(lighting: SceneGraphLayer): SceneGraphRootNode =
     this.copy(lighting = lighting)
 
-  def addUiLayer(ui: SceneGraphUiLayer): SceneGraphRootNode =
+  def addUiLayer(ui: SceneGraphLayer): SceneGraphRootNode =
     this.copy(ui = ui)
 
 }
 
 object SceneGraphRootNode {
-  def apply(game: SceneGraphGameLayer): SceneGraphRootNode =
-    SceneGraphRootNode(game, SceneGraphLightingLayer.empty, SceneGraphUiLayer.empty)
+  def apply(game: SceneGraphLayer): SceneGraphRootNode =
+    SceneGraphRootNode(game, SceneGraphLayer.empty, SceneGraphLayer.empty)
 
   def empty: SceneGraphRootNode =
-    SceneGraphRootNode(SceneGraphGameLayer.empty, SceneGraphLightingLayer.empty, SceneGraphUiLayer.empty)
+    SceneGraphRootNode(SceneGraphLayer.empty, SceneGraphLayer.empty, SceneGraphLayer.empty)
 
   def fromFragment(sceneUpdateFragment: SceneUpdateFragment): SceneGraphRootNode = {
     SceneGraphRootNode(
-      SceneGraphGameLayer(sceneUpdateFragment.gameLayer),
-      SceneGraphLightingLayer(sceneUpdateFragment.lightingLayer, sceneUpdateFragment.ambientLight),
-      SceneGraphUiLayer(sceneUpdateFragment.uiLayer)
+      SceneGraphLayer(sceneUpdateFragment.gameLayer),
+      SceneGraphLayer(sceneUpdateFragment.lightingLayer),
+      SceneGraphLayer(sceneUpdateFragment.uiLayer)
     )
   }
 }
 
-case class SceneGraphRootNodeFlat(game: SceneGraphGameLayerFlat, lighting: SceneGraphLightingLayerFlat, ui: SceneGraphUiLayerFlat) {
+case class SceneGraphRootNodeFlat(game: SceneGraphLayerFlat, lighting: SceneGraphLayerFlat, ui: SceneGraphLayerFlat) {
 
   private[gameengine] def applyAnimationMemento(animationStates: AnimationStates)(implicit metrics: IMetrics): SceneGraphRootNodeFlat = {
 
