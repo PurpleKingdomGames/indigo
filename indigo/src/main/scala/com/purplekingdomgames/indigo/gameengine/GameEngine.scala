@@ -246,16 +246,16 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
 
   private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight): Displayable =
     Displayable(
-      GameDisplayLayer(
+      DisplayLayer(
         rootNode.game.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(assetMapping))
       ),
-      LightingDisplayLayer(
-        rootNode.lighting.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(assetMapping)),
-        ambientLight
+      DisplayLayer(
+        rootNode.lighting.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(assetMapping))
       ),
-      UiDisplayLayer(
+      DisplayLayer(
         rootNode.ui.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(assetMapping))
-      )
+      ),
+      ambientLight
     )
 
   private def drawScene(renderer: IRenderer, displayable: Displayable)(implicit metrics: IMetrics): Unit =

@@ -23,10 +23,10 @@ case class SceneGraphRootNode(game: SceneGraphLayer, lighting: SceneGraphLayer, 
 
 object SceneGraphRootNode {
   def apply(game: SceneGraphLayer): SceneGraphRootNode =
-    SceneGraphRootNode(game, SceneGraphLayer.empty, SceneGraphLayer.empty)
+    SceneGraphRootNode(game, SceneGraphLayer(Nil), SceneGraphLayer(Nil))
 
   def empty: SceneGraphRootNode =
-    SceneGraphRootNode(SceneGraphLayer.empty, SceneGraphLayer.empty, SceneGraphLayer.empty)
+    SceneGraphRootNode(SceneGraphLayer(Nil), SceneGraphLayer(Nil), SceneGraphLayer(Nil))
 
   def fromFragment(sceneUpdateFragment: SceneUpdateFragment): SceneGraphRootNode = {
     SceneGraphRootNode(
@@ -39,7 +39,7 @@ object SceneGraphRootNode {
 
 case class SceneGraphRootNodeFlat(game: SceneGraphLayerFlat, lighting: SceneGraphLayerFlat, ui: SceneGraphLayerFlat) {
 
-  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates)(implicit metrics: IMetrics): SceneGraphRootNodeFlat = {
+  def applyAnimationMemento(animationStates: AnimationStates)(implicit metrics: IMetrics): SceneGraphRootNodeFlat = {
 
     metrics.record(ApplyAnimationMementoStartMetric)
 
@@ -54,7 +54,7 @@ case class SceneGraphRootNodeFlat(game: SceneGraphLayerFlat, lighting: SceneGrap
     res
   }
 
-  private[gameengine] def runAnimationActions(gameTime: GameTime)(implicit metrics: IMetrics): SceneGraphRootNodeFlat = {
+  def runAnimationActions(gameTime: GameTime)(implicit metrics: IMetrics): SceneGraphRootNodeFlat = {
 
     metrics.record(RunAnimationActionsStartMetric)
 
@@ -69,7 +69,7 @@ case class SceneGraphRootNodeFlat(game: SceneGraphLayerFlat, lighting: SceneGrap
     res
   }
 
-  private[gameengine] def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent] =
+  def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent] =
     game.collectViewEvents(gameEvents) ++
       lighting.collectViewEvents(gameEvents) ++
       ui.collectViewEvents(gameEvents)

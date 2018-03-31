@@ -3,13 +3,8 @@ package com.purplekingdomgames.indigo.renderer
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.AmbientLight
 import org.scalajs.dom.raw.WebGLRenderingContext._
 
-case class Displayable(game: GameDisplayLayer, lighting: LightingDisplayLayer, ui: UiDisplayLayer)
-case class GameDisplayLayer(displayObjects: List[DisplayObject]) extends DisplayLayer
-case class LightingDisplayLayer(displayObjects: List[DisplayObject], ambientLight: AmbientLight) extends DisplayLayer
-case class UiDisplayLayer(displayObjects: List[DisplayObject]) extends DisplayLayer
-sealed trait DisplayLayer {
-  val displayObjects: List[DisplayObject]
-}
+case class Displayable(game: DisplayLayer, lighting: DisplayLayer, ui: DisplayLayer, ambientLight: AmbientLight)
+case class DisplayLayer(displayObjects: List[DisplayObject]) extends AnyVal
 
 case class CompressedDisplayObject(imageRef: String, vertices: scalajs.js.Array[Double], textureCoordinates: scalajs.js.Array[Double], effectValues: scalajs.js.Array[Double]) {
   val vertexCount: Int = vertices.length / 3

@@ -3,57 +3,23 @@ package com.purplekingdomgames.indigo.gameengine.scenegraph
 import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameTime}
 
-case class SceneGraphLayer(node: SceneGraphNode) {
+case class SceneGraphLayer(nodes: List[SceneGraphNode]) extends AnyVal {
 
-  private[gameengine] def flatten: SceneGraphLayerFlat =
-    SceneGraphLayerFlat(node.flatten)
-
-  def addChild(child: SceneGraphNode): SceneGraphLayer =
-    node match {
-      case l: SceneGraphNodeLeaf =>
-        SceneGraphLayer(SceneGraphNodeBranch(l, child))
-
-      case b: SceneGraphNodeBranch =>
-        SceneGraphLayer(b.addChild(child))
-    }
-
-  def addChildren(children: List[SceneGraphNode]): SceneGraphLayer =
-    node match {
-      case l: SceneGraphNodeLeaf =>
-        SceneGraphLayer(SceneGraphNodeBranch(l :: children))
-
-      case b: SceneGraphNodeBranch =>
-        SceneGraphLayer(b.addChildren(children))
-    }
+  def flatten: SceneGraphLayerFlat =
+    SceneGraphLayerFlat(nodes.flatMap(_.flatten))
 
 }
 
-object SceneGraphLayer {
 
-  def empty: SceneGraphLayer =
-    SceneGraphLayer(SceneGraphNode.empty)
+case class SceneGraphLayerFlat(nodes: List[SceneGraphNodeLeaf]) extends AnyVal {
 
-  def apply(nodes: SceneGraphNode*): SceneGraphLayer =
-    SceneGraphLayer(
-      SceneGraphNodeBranch(nodes.toList)
-    )
-
-  def apply(nodes: List[SceneGraphNode]): SceneGraphLayer =
-    SceneGraphLayer(
-      SceneGraphNodeBranch(nodes)
-    )
-
-}
-
-case class SceneGraphLayerFlat(nodes: List[SceneGraphNodeLeaf]) {
-
-  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): SceneGraphLayerFlat =
+  def applyAnimationMemento(animationStates: AnimationStates): SceneGraphLayerFlat =
     this.copy(nodes = nodes.map(_.applyAnimationMemento(animationStates)))
 
-  private[gameengine] def runAnimationActions(gameTime: GameTime): SceneGraphLayerFlat =
+  def runAnimationActions(gameTime: GameTime): SceneGraphLayerFlat =
     this.copy(nodes = nodes.map(_.runAnimationActions(gameTime)))
 
-  private[gameengine] def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent] =
+  def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent] =
     nodes.flatMap(n => gameEvents.map(e => n.eventHandlerWithBoundsApplied(e))).collect { case Some(s) => s}
 
 }
