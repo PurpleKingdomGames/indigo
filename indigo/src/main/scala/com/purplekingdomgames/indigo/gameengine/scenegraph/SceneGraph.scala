@@ -184,8 +184,6 @@ case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, image
   def moveBy(x: Int, y: Int): Sprite =
     moveBy(Point(x, y))
 
-  def withBindingKey(keyValue: String): Sprite =
-    this.copy(bindingKey = BindingKey(keyValue))
   def withBindingKey(bindingKey: BindingKey): Sprite =
     this.copy(bindingKey = bindingKey)
 

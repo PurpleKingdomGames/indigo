@@ -63,7 +63,7 @@ case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, AtlasI
     }
 
 }
-case class AtlasId(id: String)
+case class AtlasId(id: String) extends AnyVal
 case class AtlasIndex(id: AtlasId, offset: Point)
 case class Atlas(size: PowerOfTwo, imageData: Option[raw.ImageData]) // Yuk. Only optional so that testing is bearable.
 case class AtlasLookupResult(name: String, atlasId: AtlasId, atlas: Atlas, offset: Point)

@@ -2,7 +2,7 @@ package com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes
 
 import scala.util.Random
 
-case class BindingKey(value: String) {
+case class BindingKey(value: String) extends AnyVal {
 
   def ===(other: BindingKey): Boolean =
     BindingKey.equality(this, other)

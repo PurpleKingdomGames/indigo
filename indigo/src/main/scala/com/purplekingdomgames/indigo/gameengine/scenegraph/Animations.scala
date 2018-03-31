@@ -109,7 +109,7 @@ object Cycle {
 
 }
 
-case class CycleLabel(label: String)
+case class CycleLabel(label: String) extends AnyVal
 
 case class Frame(bounds: Rectangle, duration: Int)
 

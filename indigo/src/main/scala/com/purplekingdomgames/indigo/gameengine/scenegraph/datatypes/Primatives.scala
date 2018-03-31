@@ -37,7 +37,7 @@ case class Rectangle(position: Point, size: Point) {
   def moveTo(point: Point): Rectangle =
     Rectangle(x + point.x, y + point.y, width, height)
 }
-case class Depth(zIndex: Int)
+case class Depth(zIndex: Int) extends AnyVal
 
 object Point {
   val zero: Point = Point(0, 0)

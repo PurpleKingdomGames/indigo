@@ -13,7 +13,7 @@ case class GraphicAutomaton(key: AutomataPoolKey, graphic: Graphic, lifespan: Au
 case class SpriteAutomaton(key: AutomataPoolKey, sprite: Sprite, autoPlay: Boolean, animationCycleLabel: Option[String], lifespan: AutomataLifeSpan, modifiers: List[AutomataModifier]) extends Automaton
 case class TextAutomaton(key: AutomataPoolKey, text: Text, lifespan: AutomataLifeSpan, modifiers: List[AutomataModifier]) extends Automaton
 
-case class AutomataPoolKey(key: String) {
+case class AutomataPoolKey(key: String) extends AnyVal {
   def ===(other: AutomataPoolKey): Boolean =
     AutomataPoolKey.equality(this, other)
 }
