@@ -13,8 +13,8 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 
 object PerfGame {
 
-  val viewportWidth: Int = 1024
-  val viewportHeight: Int = 768
+  val viewportWidth: Int = 800
+  val viewportHeight: Int = 600
   val magnificationLevel: Int = 1
 
   def config: GameConfig =
