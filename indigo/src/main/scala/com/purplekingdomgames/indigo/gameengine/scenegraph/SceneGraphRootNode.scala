@@ -52,7 +52,7 @@ case class SceneGraphRootNodeFlat(game: SceneGraphLayerFlat, lighting: SceneGrap
     Then we save 10,000 identical animation mementos.
 
     So actions:
-    1. On save, cache saved mementos by key and don't save if you've already done the work
+    DONE: 1. On save, cache saved mementos by key and don't save if you've already done the work
     2. Merge apply and run into a single copy operation
     3. Do we need to do a copy at all? Could we extract the animation (and cache by binding key),
        apply the memento and then only re-apply during conversion to display object?

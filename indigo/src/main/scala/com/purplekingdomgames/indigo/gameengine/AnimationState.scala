@@ -6,14 +6,20 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph._
 object AnimationState {
 
   private def saveMementos(nodes: List[SceneGraphNodeLeaf]): List[AnimationMemento] = {
-    nodes
-      .flatMap {
-        case s: Sprite => s.saveAnimationMemento :: Nil
-        case _ => Nil
+    def rec(remaining: List[SceneGraphNodeLeaf], keysDone: List[String], acc: List[AnimationMemento]): List[AnimationMemento] = {
+      remaining match {
+        case Nil =>
+          acc
+
+        case (s: Sprite) :: xs if !keysDone.contains(s.bindingKey.value) =>
+          rec(xs, s.bindingKey.value :: keysDone, s.saveAnimationMemento.map(p => p :: acc).getOrElse(acc))
+
+        case _ :: xs =>
+          rec(xs, keysDone, acc)
       }
-      .collect {
-        case Some(s) => s
-      }
+    }
+
+    rec(nodes, Nil, Nil)
   }
 
   def extractAnimationStates(sceneGraphRootNode: SceneGraphRootNodeFlat): AnimationStates = AnimationStates {
