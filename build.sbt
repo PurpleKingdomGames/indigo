@@ -138,6 +138,19 @@ lazy val graphic =
       scalaJSUseMainModuleInitializer := true
     )
 
+lazy val group =
+  (project in file("examples/group"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoExts)
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .settings(
+      name := "group-example",
+      showCursor := true,
+      title := "Group example",
+      gameAssetsDirectory := "assets",
+      scalaJSUseMainModuleInitializer := true
+    )
+
 lazy val sprite =
   (project in file("examples/sprite"))
     .settings(commonSettings: _*)
@@ -326,6 +339,7 @@ lazy val indigoProject =
   (project in file("."))
     .settings(commonSettings: _*)
     .aggregate(indigo, indigoExts) //core
-    .aggregate(perf, button) //compile tests
+    .aggregate(group)
+//    .aggregate(perf, button) //compile tests
 //    .aggregate(sandbox, framework, server, snake) //games
 //    .aggregate(basicSetup, fullSetup, http, text, automata, graphic, sprite, websocket, inputfield, audio) //examples

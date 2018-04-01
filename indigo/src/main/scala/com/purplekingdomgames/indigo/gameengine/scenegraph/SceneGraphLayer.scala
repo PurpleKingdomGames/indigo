@@ -11,7 +11,7 @@ case class SceneGraphLayer(nodes: List[SceneGraphNode]) extends AnyVal {
 }
 
 
-case class SceneGraphLayerFlat(nodes: List[SceneGraphNodeLeaf]) extends AnyVal {
+case class SceneGraphLayerFlat(nodes: List[Renderable]) extends AnyVal {
 
   def applyAnimationMemento(animationStates: AnimationStates): SceneGraphLayerFlat =
     this.copy(nodes = nodes.map(_.applyAnimationMemento(animationStates)))

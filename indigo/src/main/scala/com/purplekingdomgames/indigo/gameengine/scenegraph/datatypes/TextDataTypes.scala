@@ -1,13 +1,13 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes
 
 case class FontInfo(fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean) {
-  private val nonEmtpyChars: List[FontChar] = unknownChar +: fontChars
+  private val nonEmptyChars: List[FontChar] = unknownChar +: fontChars
 
-  def addChar(fontChar: FontChar) = FontInfo(fontSpriteSheet, fontChar, nonEmtpyChars, caseSensitive)
+  def addChar(fontChar: FontChar) = FontInfo(fontSpriteSheet, fontChar, nonEmptyChars, caseSensitive)
   def addChars(chars: List[FontChar]): FontInfo = this.copy(fontChars = fontChars ++ chars)
   def addChars(chars: FontChar*): FontInfo = this.copy(fontChars = fontChars ++ chars)
 
-  def findByCharacter(character: String): FontChar = nonEmtpyChars.find { p =>
+  def findByCharacter(character: String): FontChar = nonEmptyChars.find { p =>
     if(caseSensitive) p.character == character else p.character.toLowerCase == character.toLowerCase
   }.getOrElse(unknownChar)
   def findByCharacter(character: Char): FontChar = findByCharacter(character.toString)

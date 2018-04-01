@@ -1,7 +1,7 @@
 package com.purplekingdomgames.indigoexts.formats
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphNodeBranch}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, Group}
 import com.purplekingdomgames.indigo.util.Logger
 import io.circe.generic.auto._
 import io.circe.parser._
@@ -31,7 +31,7 @@ object TiledHelper {
   }
 
   // Lots of the available metadata has simply not been used here...
-  def toSceneGraphNodeBranch(tiledMap: TiledMap, depth: Depth, imageAssetRef: String, tileSheetColumnCount: Int): SceneGraphNodeBranch = {
+  def toSceneGraphNodeBranch(tiledMap: TiledMap, depth: Depth, imageAssetRef: String, tileSheetColumnCount: Int): Group = {
     val tileSize: Point = Point(tiledMap.tilewidth, tiledMap.tileheight)
 
     val layers = tiledMap.layers.map { layer =>
@@ -47,7 +47,7 @@ object TiledHelper {
           )
         }
 
-      SceneGraphNodeBranch(
+      Group(
         layer.data.zipWithIndex.flatMap { case (tileIndex, poitionIndex) =>
           if(tileIndex == 0) Nil
           else
@@ -58,7 +58,7 @@ object TiledHelper {
       )
     }
 
-    SceneGraphNodeBranch(layers)
+    Group(layers)
   }
 
 }

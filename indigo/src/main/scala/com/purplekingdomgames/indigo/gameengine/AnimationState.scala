@@ -5,8 +5,8 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph._
 
 object AnimationState {
 
-  private def saveMementos(nodes: List[SceneGraphNodeLeaf]): List[AnimationMemento] = {
-    def rec(remaining: List[SceneGraphNodeLeaf], keysDone: List[String], acc: List[AnimationMemento]): List[AnimationMemento] = {
+  private def saveMementos(nodes: List[Renderable]): List[AnimationMemento] = {
+    def rec(remaining: List[Renderable], keysDone: List[String], acc: List[AnimationMemento]): List[AnimationMemento] = {
       remaining match {
         case Nil =>
           acc

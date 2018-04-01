@@ -6,24 +6,28 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 
 object SceneGraphNode {
-  def empty: SceneGraphNodeBranch = SceneGraphNodeBranch(Point.zero, Depth.Base, Nil)
+  def empty: Group = Group(Point.zero, Depth.Base, Nil)
 }
 
 sealed trait SceneGraphNode {
+  def bounds: Rectangle
   val depth: Depth
 
   def withDepth(depth: Depth): SceneGraphNode
+  def moveTo(pt: Point): SceneGraphNode
+  def moveTo(x: Int, y: Int): SceneGraphNode
   def moveBy(pt: Point): SceneGraphNode
+  def moveBy(x: Int, y: Int): SceneGraphNode
 
-  private[gameengine] def flatten: List[SceneGraphNodeLeaf] = {
-    def rec(acc: List[SceneGraphNodeLeaf]): List[SceneGraphNodeLeaf] = {
+  private[gameengine] def flatten: List[Renderable] = {
+    def rec(acc: List[Renderable]): List[Renderable] = {
       this match {
-        case l: SceneGraphNodeLeaf =>
+        case l: Renderable =>
           l :: acc
 
-        case b: SceneGraphNodeBranch =>
+        case b: Group =>
           b.children
-            .map(c => c.withDepth(c.depth + b.depth).moveBy(b.position))
+            .map(c => c.withDepth(c.depth + b.depth).moveBy(b.positionOffset))
             .flatMap(n => n.flatten) ++ acc
       }
     }
@@ -33,34 +37,54 @@ sealed trait SceneGraphNode {
 
 }
 
-case class SceneGraphNodeBranch(position: Point, depth: Depth, children: List[SceneGraphNode]) extends SceneGraphNode {
+case class Group(positionOffset: Point, depth: Depth, children: List[SceneGraphNode]) extends SceneGraphNode {
 
   def withDepth(depth: Depth): SceneGraphNode =
     this.copy(depth = depth)
 
-  def moveBy(pt: Point): SceneGraphNode =
-    this.copy(position = position + pt)
+  def moveTo(pt: Point): Group =
+    this.copy(positionOffset = pt)
+  def moveTo(x: Int, y: Int): Group =
+    moveTo(Point(x, y))
 
-  def addChild(child: SceneGraphNode): SceneGraphNodeBranch =
+  def moveBy(pt: Point): Group =
+    this.copy(
+      positionOffset = this.positionOffset + pt
+    )
+  def moveBy(x: Int, y: Int): Group =
+    moveBy(Point(x, y))
+
+  def bounds: Rectangle =
+    children match {
+      case Nil =>
+        Rectangle.zero
+
+      case x :: xs =>
+        xs.foldLeft(x.bounds) { (acc, node) =>
+          Rectangle.enclosing(acc, node.bounds)
+        }
+    }
+
+  def addChild(child: SceneGraphNode): Group =
     this.copy(children = children :+ child)
 
-  def addChildren(additionalChildren: List[SceneGraphNode]): SceneGraphNodeBranch =
+  def addChildren(additionalChildren: List[SceneGraphNode]): Group =
     this.copy(children = children ++ additionalChildren)
 
 }
 
-object SceneGraphNodeBranch {
-  def apply(position: Point, depth: Depth, children: SceneGraphNode*): SceneGraphNodeBranch =
-    SceneGraphNodeBranch(position, depth, children.toList)
+object Group {
+  def apply(position: Point, depth: Depth, children: SceneGraphNode*): Group =
+    Group(position, depth, children.toList)
 
-  def apply(children: SceneGraphNode*): SceneGraphNodeBranch =
-    SceneGraphNodeBranch(Point.zero, Depth.Base, children.toList)
+  def apply(children: SceneGraphNode*): Group =
+    Group(Point.zero, Depth.Base, children.toList)
 
-  def apply(children: List[SceneGraphNode]): SceneGraphNodeBranch =
-    SceneGraphNodeBranch(Point.zero, Depth.Base, children)
+  def apply(children: List[SceneGraphNode]): Group =
+    Group(Point.zero, Depth.Base, children)
 }
 
-sealed trait SceneGraphNodeLeaf extends SceneGraphNode {
+sealed trait Renderable extends SceneGraphNode {
   val bounds: Rectangle
   val imageAssetRef: String
   val effects: Effects
@@ -73,30 +97,30 @@ sealed trait SceneGraphNodeLeaf extends SceneGraphNode {
   def x: Int = bounds.position.x - ref.x
   def y: Int = bounds.position.y - ref.y
 
-  def moveTo(pt: Point): SceneGraphNodeLeaf
-  def moveTo(x: Int, y: Int): SceneGraphNodeLeaf
+  def moveTo(pt: Point): Renderable
+  def moveTo(x: Int, y: Int): Renderable
 
-  def moveBy(pt: Point): SceneGraphNodeLeaf
-  def moveBy(x: Int, y: Int): SceneGraphNodeLeaf
+  def moveBy(pt: Point): Renderable
+  def moveBy(x: Int, y: Int): Renderable
 
-  def withDepth(depth: Depth): SceneGraphNodeLeaf
-  def withAlpha(a: Double): SceneGraphNodeLeaf
-  def withTint(red: Double, green: Double, blue: Double): SceneGraphNodeLeaf
-  def flipHorizontal(h: Boolean): SceneGraphNodeLeaf
-  def flipVertical(v: Boolean): SceneGraphNodeLeaf
+  def withDepth(depth: Depth): Renderable
+  def withAlpha(a: Double): Renderable
+  def withTint(red: Double, green: Double, blue: Double): Renderable
+  def flipHorizontal(h: Boolean): Renderable
+  def flipVertical(v: Boolean): Renderable
 
-  def onEvent(e: ((Rectangle, GameEvent)) => Option[ViewEvent]): SceneGraphNodeLeaf
+  def onEvent(e: ((Rectangle, GameEvent)) => Option[ViewEvent]): Renderable
 
   private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent]
 
   private[gameengine] def saveAnimationMemento: Option[AnimationMemento]
 
-  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): SceneGraphNodeLeaf
+  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): Renderable
 
-  private[gameengine] def runAnimationActions(gameTime: GameTime): SceneGraphNodeLeaf
+  private[gameengine] def runAnimationActions(gameTime: GameTime): Renderable
 }
 
-case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent]) extends SceneGraphNodeLeaf {
+case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent]) extends Renderable {
 
   private[gameengine] def frameHash: String = crop.hash + "_" + imageAssetRef
 
@@ -180,7 +204,7 @@ object Graphic {
     )
 }
 
-case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, imageAssetRef: String, animations: Animations, ref: Point, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent]) extends SceneGraphNodeLeaf {
+case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, imageAssetRef: String, animations: Animations, ref: Point, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent]) extends Renderable {
 
   private[gameengine] def frameHash: String = animations.currentFrame.bounds.hash + "_" + imageAssetRef
 
@@ -274,7 +298,7 @@ object Sprite {
 }
 
 //TODO: FontInfo can be very large and is embedded into every instance, find a way to look up by reference.
-case class Text(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontInfo: FontInfo, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent]) extends SceneGraphNodeLeaf {
+case class Text(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontInfo: FontInfo, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent]) extends Renderable {
 
   private[gameengine] def frameHash: String = "" // Not used - look up done another way.
 

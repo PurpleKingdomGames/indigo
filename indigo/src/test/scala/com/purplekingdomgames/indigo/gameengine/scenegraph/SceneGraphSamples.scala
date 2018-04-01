@@ -9,7 +9,7 @@ object SceneGraphSamples {
   val api: SceneGraphRootNode =
     SceneGraphRootNode(
       SceneGraphLayer(
-        SceneGraphNodeBranch(
+        Group(
           Text(
             "Hello", 10, 10, 1,
             FontInfo("ref", 32, 32, FontChar("a", 0, 0, 16, 16))
@@ -23,7 +23,7 @@ object SceneGraphSamples {
                 .addFrame(Frame(32, 0, 32, 32))
             )
           ),
-          SceneGraphNodeBranch(
+          Group(
             Graphic(10, 10, 32, 32, 1, "ref1"),
             Graphic(10, 10, 32, 32, 1, "ref2"),
             Graphic(10, 10, 32, 32, 1, "ref3")

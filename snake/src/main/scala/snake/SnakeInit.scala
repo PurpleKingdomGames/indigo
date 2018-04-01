@@ -2,7 +2,7 @@ package snake
 
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Depth
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneGraphNodeBranch}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, Group}
 import com.purplekingdomgames.indigo.gameengine.{Startup, StartupSuccess, ToReportable}
 import com.purplekingdomgames.indigoexts.formats.TiledHelper
 import com.purplekingdomgames.indigoexts.grid.GridSize
@@ -69,7 +69,7 @@ case class GameScreenAssets(apple: Graphic,
                             player2: PlayerSnakeAssets,
                             player3: PlayerSnakeAssets,
                             player4: PlayerSnakeAssets,
-                            background: SceneGraphNodeBranch)
+                            background: Group)
 
 case class PlayerSnakeAssets(alive: Graphic, dead: Graphic)
 

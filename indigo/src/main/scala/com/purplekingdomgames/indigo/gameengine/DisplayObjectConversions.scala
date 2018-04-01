@@ -39,7 +39,7 @@ object DisplayObjectConversions {
       }
     })
 
-  def leafToDisplayObject(assetMapping: AssetMapping): SceneGraphNodeLeaf => List[DisplayObject] = {
+  def leafToDisplayObject(assetMapping: AssetMapping): Renderable => List[DisplayObject] = {
     case leaf: Graphic =>
       List(
         DisplayObject(
