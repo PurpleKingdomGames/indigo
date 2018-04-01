@@ -26,7 +26,7 @@ object AnimationState {
 
 case class AnimationStates(states: List[AnimationMemento]) extends AnyVal {
 
-  def withBindingKey(bindingKey: BindingKey): Option[AnimationMemento] =
+  def findStateWithBindingKey(bindingKey: BindingKey): Option[AnimationMemento] =
     states.find(_.bindingKey.value == bindingKey.value)
 
 }

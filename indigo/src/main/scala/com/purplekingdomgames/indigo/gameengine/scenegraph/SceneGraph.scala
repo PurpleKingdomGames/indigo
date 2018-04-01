@@ -250,7 +250,7 @@ case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, image
   private[gameengine] def saveAnimationMemento: Option[AnimationMemento] = Option(animations.saveMemento(bindingKey))
 
   private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): Sprite =
-    animationStates.withBindingKey(bindingKey) match {
+    animationStates.findStateWithBindingKey(bindingKey) match {
       case Some(memento) => this.copy(animations = animations.applyMemento(memento))
       case None => this
     }
