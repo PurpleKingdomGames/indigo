@@ -71,7 +71,7 @@ object AsepriteHelper {
     }.collect { case Some(s) => s }
   }
 
-  def toSprite(aseprite: Aseprite, depth: Depth, imageAssetRef: String): Option[Sprite] = {
+  def toSpriteAndAnimations(aseprite: Aseprite, depth: Depth, imageAssetRef: String): Option[SpriteAndAnimations] = {
     extractCycles(aseprite) match {
       case Nil =>
         Logger.info("No animation frames found in Aseprit: " + aseprite)
@@ -79,29 +79,34 @@ object AsepriteHelper {
       case x :: xs =>
         val animations: Animations =
           Animations(
-            AnimationsKey(BindingKey.generate.value),
+            animationsKey = AnimationsKey(BindingKey.generate.value),
+            imageAssetRef = imageAssetRef,
             spriteSheetSize = Point(aseprite.meta.size.w, aseprite.meta.size.h),
             currentCycleLabel = x.label,
             cycle = x,
             cycles = xs.foldLeft(Map.empty[CycleLabel, Cycle])((a, b) => a ++ Map(b.label -> b)),
-            Nil
+            actions = Nil
           )
         Option(
-          Sprite(
-            bindingKey = BindingKey.generate,
-            bounds = Rectangle(
-              position = Point(0, 0),
-              size = Point(x.frame.bounds.size.x, x.frame.bounds.size.y)
+          SpriteAndAnimations(
+            Sprite(
+              bindingKey = BindingKey.generate,
+              bounds = Rectangle(
+                position = Point(0, 0),
+                size = Point(x.frame.bounds.size.x, x.frame.bounds.size.y)
+              ),
+              depth = depth,
+              animationsKey = animations.animationsKey,
+              ref = Point(0, 0),
+              effects = Effects.default,
+              eventHandler = (_:(Rectangle, GameEvent)) => None
             ),
-            depth = depth,
-            imageAssetRef = imageAssetRef,
-            animations = animations,
-            ref = Point(0, 0),
-            effects = Effects.default,
-            eventHandler = (_:(Rectangle, GameEvent)) => None
+            animations
           )
         )
     }
   }
 
 }
+
+case class SpriteAndAnimations(sprite: Sprite, animations: Animations)

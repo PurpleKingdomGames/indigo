@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
-import com.purplekingdomgames.indigo.gameengine.assets.{AnimationStates, FontRegister}
+import com.purplekingdomgames.indigo.gameengine.assets.{AnimationStates, AnimationsRegister, FontRegister}
 import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.GameTime
 import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
@@ -236,20 +236,30 @@ case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, anima
   def withRef(x: Int, y: Int): Sprite =
     this.copy(ref = Point(x, y))
 
-  def play(): Sprite =
-    this.copy(animations = animations.addAction(Play))
+  def play(): Sprite = {
+    AnimationsRegister.addAction(bindingKey, animationsKey, Play)
+    this
+  }
 
-  def changeCycle(label: String): Sprite =
-    this.copy(animations = animations.addAction(ChangeCycle(label)))
+  def changeCycle(label: String): Sprite = {
+    AnimationsRegister.addAction(bindingKey, animationsKey, ChangeCycle(label))
+    this
+  }
 
-  def jumpToFirstFrame(): Sprite =
-    this.copy(animations = animations.addAction(JumpToFirstFrame))
+  def jumpToFirstFrame(): Sprite = {
+    AnimationsRegister.addAction(bindingKey, animationsKey, JumpToFirstFrame)
+    this
+  }
 
-  def jumpToLastFrame(): Sprite =
-    this.copy(animations = animations.addAction(JumpToLastFrame))
+  def jumpToLastFrame(): Sprite = {
+    AnimationsRegister.addAction(bindingKey, animationsKey, JumpToLastFrame)
+    this
+  }
 
-  def jumpToFrame(number: Int): Sprite =
-    this.copy(animations = animations.addAction(JumpToFrame(number)))
+  def jumpToFrame(number: Int): Sprite = {
+    AnimationsRegister.addAction(bindingKey, animationsKey, JumpToFrame(number))
+    this
+  }
 
   def onEvent(e: ((Rectangle, GameEvent)) => Option[ViewEvent]): Sprite =
     this.copy(eventHandler = e)

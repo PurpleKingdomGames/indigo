@@ -1,17 +1,15 @@
 package com.example.sandbox
 
-import com.purplekingdomgames.indigo.Indigo
+import com.purplekingdomgames.indigo.IndigoGameBasic
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GameEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Depth
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, FontInfo}
 import com.purplekingdomgames.indigoexts.formats.{Aseprite, AsepriteHelper}
 import com.purplekingdomgames.shared.{AssetType, ClearColor, GameConfig, GameViewport}
 
-import scala.scalajs.js.annotation.JSExportTopLevel
-
-object MyGame {
+object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel] {
 
   private val viewportWidth: Int = 456
   private val viewportHeight: Int = 256
@@ -26,55 +24,38 @@ object MyGame {
 
   val assets: Set[AssetType] = MyAssets.assets
 
-  val initialise: AssetCollection => Startup[MyErrorReport, MyStartupData] = assetCollection => {
+  val fonts: Set[FontInfo] = Set()
+  val animations: Set[Animations] = Set()
+
+  def setup(assetCollection: AssetCollection): Either[StartupErrors, MyStartupData] = {
     val dude = for {
       json <- assetCollection.texts.find(p => p.name == MyAssets.dudeName + "-json").map(_.contents)
       aseprite <- AsepriteHelper.fromJson(json)
-      sprite <- AsepriteHelper.toSprite(aseprite, Depth(3), MyAssets.dudeName)
+      spriteAndAnimations <- AsepriteHelper.toSpriteAndAnimations(aseprite, Depth(3), MyAssets.dudeName)
+      _ <- Option(registerAnimations(spriteAndAnimations.animations))
     } yield Dude(
       aseprite,
-      sprite
+      spriteAndAnimations.sprite
         .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
         .moveTo(viewportWidth / 2 / magnificationLevel, viewportHeight / 2 / magnificationLevel) // Also place him in the middle of the screen initially
     )
 
     dude match {
-      case Some(d) => MyStartupData(d)
-      case None => MyErrorReport("Failed to load the dude")
+      case Some(d) => Right(MyStartupData(d))
+      case None => Left(StartupErrors("Failed to load the dude"))
     }
   }
 
-  val initialModel: MyStartupData => MyGameModel = startupData =>
+  def initialModel(startupData: MyStartupData): MyGameModel =
     MyModel.initialModel(startupData)
 
-  val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel = (_, gameModel) =>
-    MyModel.updateModel(gameModel)
+  def update(gameTime: GameTime, model: MyGameModel): GameEvent => MyGameModel =
+    MyModel.updateModel(model)
 
-  val updateView: (GameTime, MyGameModel, FrameInputEvents) => SceneUpdateFragment = (_, gameModel, frameInputEvents) =>
-    MyView.updateView(gameModel, frameInputEvents)
-
-  @JSExportTopLevel("com.example.sandbox.MyGame.main")
-  def main(args: Array[String]): Unit =
-    Indigo.game
-      .withConfig(config)
-      .withAssets(assets)
-      .startUpGameWith(initialise)
-      .usingInitialModel(initialModel)
-      .updateModelUsing(updateModel)
-      .presentUsing(updateView)
-      .start()
+  def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
+    MyView.updateView(model, frameInputEvents)
 
 }
 
 case class Dude(aseprite: Aseprite, sprite: Sprite)
 case class MyStartupData(dude: Dude)
-
-case class MyErrorReport(errors: List[String])
-object MyErrorReport {
-
-  implicit val toErrorReport: ToReportable[MyErrorReport] =
-    ToReportable.createToReportable(r => r.errors.mkString("\n"))
-
-  def apply(message: String*): MyErrorReport = MyErrorReport(message.toList)
-
-}

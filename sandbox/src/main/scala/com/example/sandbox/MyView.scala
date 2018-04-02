@@ -2,7 +2,7 @@ package com.example.sandbox
 
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GlobalSignals, MouseEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{AmbientLight, FontChar, FontInfo}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{AmbientLight, FontChar, FontInfo, FontKey}
 
 object MyView {
 
@@ -60,9 +60,10 @@ object MyView {
       Graphic(GlobalSignals.MousePosition.x - 160, GlobalSignals.MousePosition.y - 120, 320, 240, 1, MyAssets.light)
     )
 
-  private val fontInfo: FontInfo =
+  val fontKey: FontKey = FontKey("My font")
 
-    FontInfo(MyAssets.smallFontName, 320, 230, FontChar("a", 3, 78, 23, 23))
+  val fontInfo: FontInfo =
+    FontInfo(fontKey, MyAssets.smallFontName, 320, 230, FontChar("a", 3, 78, 23, 23))
       .isCaseInSensitive
       .addChar(FontChar("B", 26, 78, 23, 23))
       .addChar(FontChar("C", 50, 78, 23, 23))
@@ -70,9 +71,9 @@ object MyView {
 
   def uiLayer(frameInputEvents: FrameInputEvents): List[SceneGraphNode] =
     List(
-      Text("AB!\n!C", 2, 2, 5, fontInfo).alignLeft,
-      Text("AB!\n!C", 100, 2, 5, fontInfo).alignCenter,
-      Text("AB!\n!C", 200, 2, 5, fontInfo).alignRight.onEvent {
+      Text("AB!\n!C", 2, 2, 5, fontKey).alignLeft,
+      Text("AB!\n!C", 100, 2, 5, fontKey).alignCenter,
+      Text("AB!\n!C", 200, 2, 5, fontKey).alignRight.onEvent {
         case (bounds, MouseEvent.Click(_, _)) =>
           if(frameInputEvents.wasMouseClickedWithin(bounds)) {
             println("Hit me! Oh yeah!")
