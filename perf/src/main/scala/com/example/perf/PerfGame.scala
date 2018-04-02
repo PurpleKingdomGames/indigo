@@ -66,6 +66,7 @@ object PerfGame {
     Indigo.game
       .withConfig(config)
       .withAssets(assets)
+      .withFonts(Set(PerfView.fontInfo))
       .startUpGameWith(initialise)
       .usingInitialModel(initialModel)
       .updateModelUsing(updateModel)

@@ -1,5 +1,6 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
+import com.purplekingdomgames.indigo.gameengine.assets.FontRegister
 import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameTime}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
@@ -298,18 +299,20 @@ object Sprite {
 }
 
 //TODO: FontInfo can be very large and is embedded into every instance, find a way to look up by reference.
-case class Text(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontInfo: FontInfo, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent]) extends Renderable {
+case class Text(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontKey: FontKey, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent]) extends Renderable {
 
   private[gameengine] def frameHash: String = "" // Not used - look up done another way.
 
   // Handled a different way
   val ref: Point = Point(0, 0)
 
-  val lines: List[TextLine] =
-    text
-      .split('\n').toList
-      .map(_.replace("\n", ""))
-      .map(line => TextLine(line, Text.calculateBoundsOfLine(line, fontInfo)))
+  def lines: List[TextLine] =
+    FontRegister.findByFontKey(fontKey).map { fontInfo =>
+      text
+        .split('\n').toList
+        .map(_.replace("\n", ""))
+        .map(line => TextLine(line, Text.calculateBoundsOfLine(line, fontInfo)))
+    }.getOrElse(Nil)
 
   val bounds: Rectangle =
     lines.map(_.lineBounds).fold(Rectangle.zero) {
@@ -317,7 +320,9 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
     }
 
   val crop: Rectangle = bounds
-  val imageAssetRef: String = fontInfo.fontSpriteSheet.imageAssetRef
+
+  // Handled a different way during conversion to DisplayObject
+  val imageAssetRef: String = ""
 
   def moveTo(pt: Point): Text =
     this.copy(position = pt)
@@ -359,8 +364,8 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
   def withText(text: String): Text =
     this.copy(text = text)
 
-  def withFontInfo(fontInfo: FontInfo): Text =
-    this.copy(fontInfo = fontInfo)
+  def withFontKey(fontKey: FontKey): Text =
+    this.copy(fontKey = fontKey)
 
   def onEvent(e: ((Rectangle, GameEvent)) => Option[ViewEvent]): Text =
     this.copy(eventHandler = e)
@@ -393,13 +398,13 @@ object Text {
       .fold(Rectangle.zero)((acc, curr) => Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height)))
   }
 
-  def apply(text: String, x: Int, y: Int, depth: Int, fontInfo: FontInfo): Text =
+  def apply(text: String, x: Int, y: Int, depth: Int, fontKey: FontKey): Text =
     Text(
       text = text,
       alignment = AlignLeft,
       position = Point(x, y),
       depth = depth,
-      fontInfo = fontInfo,
+      fontKey = fontKey,
       effects = Effects.default,
       eventHandler = (_:(Rectangle, GameEvent)) => None
     )

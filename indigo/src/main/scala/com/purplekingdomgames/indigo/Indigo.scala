@@ -2,6 +2,7 @@ package com.purplekingdomgames.indigo
 
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneUpdateFragment
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.FontInfo
 import com.purplekingdomgames.indigo.gameengine.{events, _}
 import com.purplekingdomgames.shared.{AssetType, GameConfig}
 
@@ -19,18 +20,20 @@ object IndigoGameBase {
                                                          configAsync: Future[Option[GameConfig]],
                                                          assets: Set[AssetType],
                                                          assetsAsync: Future[Set[AssetType]],
+                                                         fonts: Set[FontInfo],
                                                          initialise: AssetCollection => Startup[StartupError, StartupData],
                                                          initialModel: StartupData => GameModel,
                                                          updateModel: (GameTime, GameModel) => events.GameEvent => GameModel,
                                                          updateView: (GameTime, GameModel, events.FrameInputEvents) => SceneUpdateFragment) {
     def start(): Unit =
-      new GameEngine[StartupData, StartupError, GameModel](config, configAsync, assets, assetsAsync, initialise, initialModel, updateModel, updateView).start()
+      new GameEngine[StartupData, StartupError, GameModel](config, configAsync, assets, assetsAsync, fonts, initialise, initialModel, updateModel, updateView).start()
   }
 
   class IndigoGameWithModelUpdate[StartupData, StartupError, GameModel](config: GameConfig,
                                                                         configAsync: Future[Option[GameConfig]],
                                                                         assets: Set[AssetType],
                                                                         assetsAsync: Future[Set[AssetType]],
+                                                                        fonts: Set[FontInfo],
                                                                         initialise: AssetCollection => Startup[StartupError, StartupData],
                                                                         initialModel: StartupData => GameModel,
                                                                         updateModel: (GameTime, GameModel) => events.GameEvent => GameModel) {
@@ -40,6 +43,7 @@ object IndigoGameBase {
         configAsync: Future[Option[GameConfig]],
         assets: Set[AssetType],
         assetsAsync: Future[Set[AssetType]],
+        fonts,
         initialise: AssetCollection => Startup[StartupError, StartupData],
         initialModel: StartupData => GameModel,
         updateModel: (GameTime, GameModel) => events.GameEvent => GameModel,
@@ -51,27 +55,37 @@ object IndigoGameBase {
                                                                   configAsync: Future[Option[GameConfig]],
                                                                   assets: Set[AssetType],
                                                                   assetsAsync: Future[Set[AssetType]],
+                                                                  fonts: Set[FontInfo],
                                                                   initialise: AssetCollection => Startup[StartupError, StartupData],
                                                                   initialModel: StartupData => GameModel) {
     def updateModelUsing(modelUpdater: (GameTime, GameModel) => events.GameEvent => GameModel): IndigoGameWithModelUpdate[StartupData, StartupError, GameModel] =
-      new IndigoGameWithModelUpdate(config, configAsync, assets, assetsAsync, initialise, initialModel, modelUpdater)
+      new IndigoGameWithModelUpdate(config, configAsync, assets, assetsAsync, fonts, initialise, initialModel, modelUpdater)
   }
 
   class InitialisedIndigoGame[StartupData, StartupError](config: GameConfig,
                                                          configAsync: Future[Option[GameConfig]],
                                                          assets: Set[AssetType],
                                                          assetsAsync: Future[Set[AssetType]],
+                                                         fonts: Set[FontInfo],
                                                          initialise: AssetCollection => Startup[StartupError, StartupData]) {
     def usingInitialModel[GameModel](model: StartupData => GameModel): IndigoGameWithModel[StartupData, StartupError, GameModel] =
-      new IndigoGameWithModel(config, configAsync, assets, assetsAsync, initialise, model)
+      new IndigoGameWithModel(config, configAsync, assets, assetsAsync, fonts, initialise, model)
+  }
+
+  class IndigoGameWithFonts(config: GameConfig,
+                             configAsync: Future[Option[GameConfig]],
+                             assets: Set[AssetType],
+                             assetsAsync: Future[Set[AssetType]],
+                             fonts: Set[FontInfo]) {
+    def startUpGameWith[StartupData, StartupError](initializer: AssetCollection => Startup[StartupError, StartupData]) =
+      new InitialisedIndigoGame(config, configAsync, assets, assetsAsync, fonts, initializer)
   }
 
   class IndigoGameWithAssets(config: GameConfig,
                              configAsync: Future[Option[GameConfig]],
                              assets: Set[AssetType],
                              assetsAsync: Future[Set[AssetType]]) {
-    def startUpGameWith[StartupData, StartupError](initializer: AssetCollection => Startup[StartupError, StartupData]) =
-      new InitialisedIndigoGame(config, configAsync, assets, assetsAsync, initializer)
+    def withFonts(fonts: Set[FontInfo]): IndigoGameWithFonts = new IndigoGameWithFonts(config, configAsync, assets, assetsAsync, fonts)
   }
 
   class ConfiguredIndigoGame(config: GameConfig, configAsync: Future[Option[GameConfig]]) {

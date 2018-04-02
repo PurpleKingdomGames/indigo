@@ -1,5 +1,6 @@
 package com.purplekingdomgames.indigo.gameengine
 
+import com.purplekingdomgames.indigo.gameengine.assets.FontRegister
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.renderer.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
@@ -115,31 +116,33 @@ object DisplayObjectConversions {
   }
 
   def textLineToDisplayObjects(leaf: Text, assetMapping: AssetMapping): (TextLine, Int, Int) => List[DisplayObject] = (line, alignmentOffsetX, yOffset) =>
-    zipWithCharDetails(line.text.toList, leaf.fontInfo).map { case (fontChar, xPosition) =>
-      DisplayObject(
-        x = leaf.position.x + xPosition + alignmentOffsetX,
-        y = leaf.position.y + yOffset,
-        z = leaf.depth.zIndex,
-        width = fontChar.bounds.width,
-        height = fontChar.bounds.height,
-        imageRef = lookupAtlasName(assetMapping, leaf.imageAssetRef),
-        alpha = leaf.effects.alpha,
-        tintR = leaf.effects.tint.r,
-        tintG = leaf.effects.tint.g,
-        tintB = leaf.effects.tint.b,
-        flipHorizontal = leaf.effects.flip.horizontal,
-        flipVertical = leaf.effects.flip.vertical,
-        frame =
-          frameOffsetsCache.getOrElseUpdate(fontChar.bounds.hash + "_" + leaf.imageAssetRef, {
-            SpriteSheetFrame.calculateFrameOffset(
-              imageSize = lookupAtlasSize(assetMapping, leaf.imageAssetRef),
-              frameSize = Vector2(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble),
-              framePosition = Vector2(fontChar.bounds.x.toDouble, fontChar.bounds.y.toDouble),
-              textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
-            )
-          })
-      )
-    }
+    FontRegister.findByFontKey(leaf.fontKey).map { fontInfo =>
+      zipWithCharDetails(line.text.toList, fontInfo).map { case (fontChar, xPosition) =>
+        DisplayObject(
+          x = leaf.position.x + xPosition + alignmentOffsetX,
+          y = leaf.position.y + yOffset,
+          z = leaf.depth.zIndex,
+          width = fontChar.bounds.width,
+          height = fontChar.bounds.height,
+          imageRef = lookupAtlasName(assetMapping, fontInfo.fontSpriteSheet.imageAssetRef),
+          alpha = leaf.effects.alpha,
+          tintR = leaf.effects.tint.r,
+          tintG = leaf.effects.tint.g,
+          tintB = leaf.effects.tint.b,
+          flipHorizontal = leaf.effects.flip.horizontal,
+          flipVertical = leaf.effects.flip.vertical,
+          frame =
+            frameOffsetsCache.getOrElseUpdate(fontChar.bounds.hash + "_" + fontInfo.fontSpriteSheet.imageAssetRef, {
+              SpriteSheetFrame.calculateFrameOffset(
+                imageSize = lookupAtlasSize(assetMapping, fontInfo.fontSpriteSheet.imageAssetRef),
+                frameSize = Vector2(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble),
+                framePosition = Vector2(fontChar.bounds.x.toDouble, fontChar.bounds.y.toDouble),
+                textureOffset = lookupTextureOffset(assetMapping, fontInfo.fontSpriteSheet.imageAssetRef)
+              )
+            })
+        )
+      }
+    }.getOrElse(Nil)
 
   private def zipWithCharDetails(charList: List[Char], fontInfo: FontInfo): List[(FontChar, Int)] = {
     def rec(remaining: List[(Char, FontChar)], nextX: Int, acc: List[(FontChar, Int)]): List[(FontChar, Int)] =

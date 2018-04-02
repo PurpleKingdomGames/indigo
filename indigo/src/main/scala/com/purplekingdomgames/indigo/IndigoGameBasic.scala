@@ -4,6 +4,7 @@ import com.purplekingdomgames.indigo.gameengine.{GameTime, Startup, StartupError
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GameEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneUpdateFragment
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.FontInfo
 import com.purplekingdomgames.shared.{AssetType, GameConfig}
 
 /**
@@ -17,6 +18,8 @@ trait IndigoGameBasic[StartupData, Model] {
 
   val assets: Set[AssetType]
 
+  val fonts: Set[FontInfo]
+
   def setup(assetCollection: AssetCollection): Either[StartupErrors, StartupData]
 
   def initialModel(startupData: StartupData): Model
@@ -29,6 +32,7 @@ trait IndigoGameBasic[StartupData, Model] {
     Indigo.game
       .withConfig(config)
       .withAssets(assets)
+      .withFonts(fonts)
       .startUpGameWith(ac => Startup.fromEither(setup(ac)))
       .usingInitialModel(initialModel)
       .updateModelUsing(update)

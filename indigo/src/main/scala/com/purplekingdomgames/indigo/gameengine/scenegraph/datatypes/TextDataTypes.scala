@@ -1,9 +1,9 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes
 
-case class FontInfo(fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean) {
+case class FontInfo(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean) {
   private val nonEmptyChars: List[FontChar] = unknownChar +: fontChars
 
-  def addChar(fontChar: FontChar) = FontInfo(fontSpriteSheet, fontChar, nonEmptyChars, caseSensitive)
+  def addChar(fontChar: FontChar) = FontInfo(fontKey, fontSpriteSheet, fontChar, nonEmptyChars, caseSensitive)
   def addChars(chars: List[FontChar]): FontInfo = this.copy(fontChars = fontChars ++ chars)
   def addChars(chars: FontChar*): FontInfo = this.copy(fontChars = fontChars ++ chars)
 
@@ -18,13 +18,19 @@ case class FontInfo(fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fon
 }
 
 object FontInfo {
-  def apply(imageAssetRef: String, sheetWidth: Int, sheetHeight: Int, unknownChar: FontChar, chars: FontChar*): FontInfo =
+  def apply(fontKey: FontKey, imageAssetRef: String, sheetWidth: Int, sheetHeight: Int, unknownChar: FontChar, chars: FontChar*): FontInfo =
     FontInfo(
+      fontKey = fontKey,
       fontSpriteSheet = FontSpriteSheet(imageAssetRef, Point(sheetWidth, sheetHeight)),
       unknownChar = unknownChar,
       fontChars = chars.toList,
       caseSensitive = false
     )
+}
+
+case class FontKey(key: String) extends AnyVal {
+  def ===(other: FontKey): Boolean =
+    key == other.key
 }
 
 case class FontSpriteSheet(imageAssetRef: String, size: Point)

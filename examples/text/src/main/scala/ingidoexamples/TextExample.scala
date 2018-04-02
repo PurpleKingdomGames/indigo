@@ -2,9 +2,9 @@ package ingidoexamples
 
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
-import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo, FontKey}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{SceneUpdateFragment, Text}
+import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.shared.{AssetType, ClearColor, GameConfig, ImageAsset}
 
 object TextExample extends IndigoGameBasic[Unit, Unit] {
@@ -15,6 +15,8 @@ object TextExample extends IndigoGameBasic[Unit, Unit] {
 
   val assets: Set[AssetType] = Set(ImageAsset(fontName, "assets/boxy_font.png"))
 
+  val fonts: Set[FontInfo] = Set(fontInfo)
+
   def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] =
     Right(())
 
@@ -24,13 +26,15 @@ object TextExample extends IndigoGameBasic[Unit, Unit] {
   def update(gameTime: GameTime, model: Unit): events.GameEvent => Unit = _ =>
     model
 
-  def present(gameTime: GameTime, model: Unit, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment =
-    SceneUpdateFragment().addGameLayerNodes(
-      Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontInfo).alignRight
-    )
+  val text: Text = Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontKey).alignRight
 
-  val fontInfo: FontInfo =
-    FontInfo(fontName, 320, 230, FontChar("?", 93, 52, 23, 23))
+  def present(gameTime: GameTime, model: Unit, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment =
+    SceneUpdateFragment().addGameLayerNodes(text)
+
+  def fontKey: FontKey = FontKey("My Font")
+
+  def fontInfo: FontInfo =
+    FontInfo(fontKey, fontName, 320, 230, FontChar("?", 93, 52, 23, 23))
       .addChar(FontChar("A", 3, 78, 23, 23))
       .addChar(FontChar("B", 26, 78, 23, 23))
       .addChar(FontChar("C", 50, 78, 23, 23))

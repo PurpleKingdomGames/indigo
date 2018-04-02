@@ -1,6 +1,7 @@
 package com.purplekingdomgames.indigoexts.ui
 
 import com.purplekingdomgames.indigo.gameengine.GameTime
+import com.purplekingdomgames.indigo.gameengine.assets.FontRegister
 import com.purplekingdomgames.indigo.gameengine.constants.Keys
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, KeyboardEvent, MouseEvent, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
@@ -98,8 +99,8 @@ object InputField {
 
     private def drawCursor(gameTime: GameTime, inputField: InputField, position: Point, depth: Depth, inputFieldAssets: InputFieldAssets): Option[Graphic] = {
       if (((gameTime.running * 0.00001) * 150).toInt % 2 == 0)
-        Option {
-          inputFieldAssets.cursor.moveTo(calculateCursorPosition(inputField.text, position, inputFieldAssets.text.fontInfo, inputField.cursorPosition)).withDepth(-(depth.zIndex + 100))
+        FontRegister.findByFontKey(inputFieldAssets.text.fontKey).map { fontInfo =>
+          inputFieldAssets.cursor.moveTo(calculateCursorPosition(inputField.text, position, fontInfo, inputField.cursorPosition)).withDepth(-(depth.zIndex + 100))
         }
       else
         None

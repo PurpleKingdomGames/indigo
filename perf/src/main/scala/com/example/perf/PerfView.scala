@@ -1,7 +1,7 @@
 package com.example.perf
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{AmbientLight, FontChar, FontInfo, Point}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GlobalSignals}
 
 import scala.util.Random
@@ -75,8 +75,10 @@ object PerfView {
       Graphic(GlobalSignals.MousePosition.x - 160, GlobalSignals.MousePosition.y - 120, 320, 240, 1, PerfAssets.light)
     )
 
-  private val fontInfo: FontInfo =
-    FontInfo(PerfAssets.smallFontName, 320, 230, FontChar("?", 93, 52, 23, 23))
+  def fontKey: FontKey = FontKey("My Font")
+
+  def fontInfo: FontInfo =
+    FontInfo(fontKey, PerfAssets.smallFontName, 320, 230, FontChar("?", 93, 52, 23, 23))
       .addChar(FontChar("A", 3, 78, 23, 23))
       .addChar(FontChar("B", 26, 78, 23, 23))
       .addChar(FontChar("C", 50, 78, 23, 23))
@@ -121,9 +123,9 @@ object PerfView {
 
   def uiLayer: List[SceneGraphNode] =
     List(
-      Text((herdCount + 1) + " Naked\ndudes", 10, 10, 5, fontInfo).alignLeft,
-      Text("Thundering Herd!", PerfGame.viewportWidth / 2, 10, 5, fontInfo).alignCenter,
-      Text("use arrow\nkeys", PerfGame.viewportWidth - 10, 10, 5, fontInfo).alignRight
+      Text((herdCount + 1) + " Naked\ndudes", 10, 10, 5, fontKey).alignLeft,
+      Text("Thundering Herd!", PerfGame.viewportWidth / 2, 10, 5, fontKey).alignCenter,
+      Text("use arrow\nkeys", PerfGame.viewportWidth - 10, 10, 5, fontKey).alignRight
     )
 
 }

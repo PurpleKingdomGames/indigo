@@ -4,7 +4,7 @@ import com.purplekingdomgames.indigo.gameengine.assets._
 import com.purplekingdomgames.indigo.gameengine.audio.{AudioPlayer, IAudioPlayer}
 import com.purplekingdomgames.indigo.gameengine.events._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.AmbientLight
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{AmbientLight, FontInfo}
 import com.purplekingdomgames.indigo.renderer._
 import com.purplekingdomgames.indigo.util._
 import com.purplekingdomgames.indigo.util.metrics._
@@ -26,6 +26,7 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
                                                                           configAsync: Future[Option[GameConfig]],
                                                                           assets: Set[AssetType],
                                                                           assetsAsync: Future[Set[AssetType]],
+                                                                          fonts: Set[FontInfo],
                                                                           initialise: AssetCollection => Startup[StartupError, StartupData],
                                                                           initialModel: StartupData => GameModel,
                                                                           updateModel: (GameTime, GameModel) => GameEvent => GameModel,
@@ -36,6 +37,8 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
   private var animationStates: AnimationStates = AnimationStates(Nil)
 
   def start(): Unit = {
+
+    fonts.foreach(FontRegister.register)
 
     configAsync.map(_.getOrElse(config)).foreach { gameConfig =>
 
