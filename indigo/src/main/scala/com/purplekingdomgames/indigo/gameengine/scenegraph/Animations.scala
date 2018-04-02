@@ -9,16 +9,18 @@ Animations are really timeline animations:
 Construction is about adding animation cycles with frames
 The API provided is about issuing commands to control playback.
  */
-
-case class Animations(animationsKey: AnimationsKey, spriteSheetSize: Point, currentCycleLabel: CycleLabel, cycle: Cycle, cycles: Map[CycleLabel, Cycle], actions: List[AnimationAction]) {
+case class Animations(animationsKey: AnimationsKey, imageAssetRef: String, spriteSheetSize: Point, currentCycleLabel: CycleLabel, cycle: Cycle, cycles: Map[CycleLabel, Cycle], actions: List[AnimationAction]) {
 
   private val nonEmptyCycles: Map[CycleLabel, Cycle] = cycles ++ Map(cycle.label -> cycle)
 
   def currentCycle: Cycle = nonEmptyCycles.getOrElse(currentCycleLabel, nonEmptyCycles.head._2)
 
-  def addCycle(cycle: Cycle) = Animations(animationsKey, spriteSheetSize, currentCycleLabel, cycle, nonEmptyCycles, Nil)
+  def addCycle(cycle: Cycle) = Animations(animationsKey, imageAssetRef, spriteSheetSize, currentCycleLabel, cycle, nonEmptyCycles, Nil)
 
   def addAction(action: AnimationAction): Animations = this.copy(actions = actions :+ action)
+
+  def withAnimationsKey(animationsKey: AnimationsKey): Animations =
+    this.copy(animationsKey = animationsKey)
 
   private[gameengine] def currentCycleName: String = currentCycle.label.label
 
@@ -29,6 +31,7 @@ case class Animations(animationsKey: AnimationsKey, spriteSheetSize: Point, curr
   private[gameengine] def applyMemento(memento: AnimationMemento): Animations =
     Animations(
       animationsKey = animationsKey,
+      imageAssetRef = imageAssetRef,
       spriteSheetSize = spriteSheetSize,
       currentCycleLabel = memento.currentCycleLabel,
       cycle =
@@ -53,7 +56,7 @@ case class Animations(animationsKey: AnimationsKey, spriteSheetSize: Point, curr
 }
 
 object Animations {
-  def apply(animationsKey: AnimationsKey, spriteSheetWidth: Int, spriteSheetHeight: Int, cycle: Cycle): Animations = Animations(animationsKey, Point(spriteSheetWidth, spriteSheetHeight), cycle.label, cycle, Map.empty[CycleLabel, Cycle], Nil)
+  def apply(animationsKey: AnimationsKey, imageAssetRef: String, spriteSheetWidth: Int, spriteSheetHeight: Int, cycle: Cycle): Animations = Animations(animationsKey, imageAssetRef, Point(spriteSheetWidth, spriteSheetHeight), cycle.label, cycle, Map.empty[CycleLabel, Cycle], Nil)
 }
 
 case class AnimationsKey(key: String) extends AnyVal {

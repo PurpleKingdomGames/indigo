@@ -20,7 +20,7 @@ sealed trait SceneGraphNode {
   def moveBy(pt: Point): SceneGraphNode
   def moveBy(x: Int, y: Int): SceneGraphNode
 
-  private[gameengine] def flatten: List[Renderable] = {
+  def flatten: List[Renderable] = {
     def rec(acc: List[Renderable]): List[Renderable] = {
       this match {
         case l: Renderable =>
@@ -35,7 +35,6 @@ sealed trait SceneGraphNode {
 
     rec(Nil)
   }
-
 }
 
 case class Group(positionOffset: Point, depth: Depth, children: List[SceneGraphNode]) extends SceneGraphNode {
@@ -87,16 +86,11 @@ object Group {
 
 sealed trait Renderable extends SceneGraphNode {
   val bounds: Rectangle
-  val imageAssetRef: String
   val effects: Effects
-  val ref: Point
-  val crop: Rectangle
   val eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent]
 
-  private[gameengine] def frameHash: String
-
-  def x: Int = bounds.position.x - ref.x
-  def y: Int = bounds.position.y - ref.y
+  def x: Int
+  def y: Int
 
   def moveTo(pt: Point): Renderable
   def moveTo(x: Int, y: Int): Renderable
@@ -106,24 +100,22 @@ sealed trait Renderable extends SceneGraphNode {
 
   def withDepth(depth: Depth): Renderable
   def withAlpha(a: Double): Renderable
+  def withTint(tint: Tint): Renderable
   def withTint(red: Double, green: Double, blue: Double): Renderable
   def flipHorizontal(h: Boolean): Renderable
   def flipVertical(v: Boolean): Renderable
 
   def onEvent(e: ((Rectangle, GameEvent)) => Option[ViewEvent]): Renderable
 
+  //TODO: Review this.
   private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent]
 
-  private[gameengine] def saveAnimationMemento: Option[AnimationMemento]
-
-  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): Renderable
-
-  private[gameengine] def runAnimationActions(gameTime: GameTime): Renderable
 }
 
 case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent]) extends Renderable {
 
-  private[gameengine] def frameHash: String = crop.hash + "_" + imageAssetRef
+  def x: Int = bounds.position.x - ref.x
+  def y: Int = bounds.position.y - ref.y
 
   def moveTo(pt: Point): Graphic =
     this.copy(bounds = bounds.copy(position = pt))
@@ -173,12 +165,6 @@ case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: 
   private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent] =
     (e: GameEvent) => eventHandler((bounds, e))
 
-  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): Graphic = this
-
-  private[gameengine] def saveAnimationMemento: Option[AnimationMemento] = None
-
-  private[gameengine] def runAnimationActions(gameTime: GameTime): Graphic = this
-
 }
 
 object Graphic {
@@ -205,14 +191,13 @@ object Graphic {
     )
 }
 
-case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, imageAssetRef: String, animations: Animations, ref: Point, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent]) extends Renderable {
+case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, animationsKey: AnimationsKey, ref: Point, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent]) extends Renderable {
 
-  private[gameengine] def frameHash: String = animations.currentFrame.bounds.hash + "_" + imageAssetRef
+  def x: Int = bounds.position.x - ref.x
+  def y: Int = bounds.position.y - ref.y
 
   def withDepth(depth: Depth): Sprite =
     this.copy(depth = depth)
-
-  val crop: Rectangle = bounds
 
   def moveTo(pt: Point): Sprite =
     this.copy(bounds = bounds.copy(position = pt))
@@ -285,26 +270,22 @@ case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, image
 }
 
 object Sprite {
-  def apply(bindingKey: BindingKey, x: Int, y: Int, width: Int, height: Int, depth: Int, imageAssetRef: String, animations: Animations): Sprite =
+  def apply(bindingKey: BindingKey, x: Int, y: Int, width: Int, height: Int, depth: Int, imageAssetRef: String, animationsKey: AnimationsKey): Sprite =
     Sprite(
       bindingKey = bindingKey,
       bounds = Rectangle(x, y, width, height),
       depth = depth,
-      imageAssetRef = imageAssetRef,
-      animations = animations,
+      animationsKey = animationsKey,
       ref = Point.zero,
       effects = Effects.default,
       eventHandler = (_:(Rectangle, GameEvent)) => None
     )
 }
 
-//TODO: FontInfo can be very large and is embedded into every instance, find a way to look up by reference.
 case class Text(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontKey: FontKey, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent]) extends Renderable {
 
-  private[gameengine] def frameHash: String = "" // Not used - look up done another way.
-
-  // Handled a different way
-  val ref: Point = Point(0, 0)
+  def x: Int = bounds.position.x
+  def y: Int = bounds.position.y
 
   def lines: List[TextLine] =
     FontRegister.findByFontKey(fontKey).map { fontInfo =>
@@ -318,11 +299,6 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
     lines.map(_.lineBounds).fold(Rectangle.zero) {
       (acc, next) => acc.copy(size = Point(Math.max(acc.width, next.width), acc.height + next.height))
     }
-
-  val crop: Rectangle = bounds
-
-  // Handled a different way during conversion to DisplayObject
-  val imageAssetRef: String = ""
 
   def moveTo(pt: Point): Text =
     this.copy(position = pt)
@@ -379,12 +355,6 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
 
   private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent] =
     (e: GameEvent) => eventHandler((realBound, e))
-
-  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): Text = this
-
-  private[gameengine] def saveAnimationMemento: Option[AnimationMemento] = None
-
-  private[gameengine] def runAnimationActions(gameTime: GameTime): Text = this
 
 }
 

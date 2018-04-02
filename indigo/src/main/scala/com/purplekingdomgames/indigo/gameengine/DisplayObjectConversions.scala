@@ -57,7 +57,7 @@ object DisplayObjectConversions {
           flipHorizontal = leaf.effects.flip.horizontal,
           flipVertical = leaf.effects.flip.vertical,
           frame =
-            frameOffsetsCache.getOrElseUpdate(leaf.frameHash, {
+            frameOffsetsCache.getOrElseUpdate(s"${leaf.crop.hash}_${leaf.imageAssetRef}", {
               SpriteSheetFrame.calculateFrameOffset(
                 imageSize = lookupAtlasSize(assetMapping, leaf.imageAssetRef),
                 frameSize = Vector2(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble),
@@ -84,7 +84,7 @@ object DisplayObjectConversions {
           flipHorizontal = leaf.effects.flip.horizontal,
           flipVertical = leaf.effects.flip.vertical,
           frame =
-            frameOffsetsCache.getOrElseUpdate(leaf.frameHash, {
+            frameOffsetsCache.getOrElseUpdate(leaf.frameHash, { //frameHash = animations.currentFrame.bounds.hash + "_" + imageAssetRef
               SpriteSheetFrame.calculateFrameOffset(
                 imageSize = lookupAtlasSize(assetMapping, leaf.imageAssetRef),
                 frameSize = Vector2(leaf.animations.currentFrame.bounds.size.x.toDouble, leaf.animations.currentFrame.bounds.size.y.toDouble),
