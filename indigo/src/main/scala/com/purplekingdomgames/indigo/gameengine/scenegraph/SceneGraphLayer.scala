@@ -1,7 +1,8 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
 import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, ViewEvent}
-import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameTime}
+import com.purplekingdomgames.indigo.gameengine.GameTime
+import com.purplekingdomgames.indigo.gameengine.assets.AnimationStates
 
 case class SceneGraphLayer(nodes: List[SceneGraphNode]) extends AnyVal {
 

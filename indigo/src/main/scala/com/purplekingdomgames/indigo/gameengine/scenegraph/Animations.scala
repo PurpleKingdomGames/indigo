@@ -10,13 +10,13 @@ Construction is about adding animation cycles with frames
 The API provided is about issuing commands to control playback.
  */
 
-case class Animations(spriteSheetSize: Point, currentCycleLabel: CycleLabel, cycle: Cycle, cycles: Map[CycleLabel, Cycle], actions: List[AnimationAction]) {
+case class Animations(animationsKey: AnimationsKey, spriteSheetSize: Point, currentCycleLabel: CycleLabel, cycle: Cycle, cycles: Map[CycleLabel, Cycle], actions: List[AnimationAction]) {
 
-  private val nonEmtpyCycles: Map[CycleLabel, Cycle] = cycles ++ Map(cycle.label -> cycle)
+  private val nonEmptyCycles: Map[CycleLabel, Cycle] = cycles ++ Map(cycle.label -> cycle)
 
-  def currentCycle: Cycle = nonEmtpyCycles.getOrElse(currentCycleLabel, nonEmtpyCycles.head._2)
+  def currentCycle: Cycle = nonEmptyCycles.getOrElse(currentCycleLabel, nonEmptyCycles.head._2)
 
-  def addCycle(cycle: Cycle) = Animations(spriteSheetSize, currentCycleLabel, cycle, nonEmtpyCycles, Nil)
+  def addCycle(cycle: Cycle) = Animations(animationsKey, spriteSheetSize, currentCycleLabel, cycle, nonEmptyCycles, Nil)
 
   def addAction(action: AnimationAction): Animations = this.copy(actions = actions :+ action)
 
@@ -28,13 +28,14 @@ case class Animations(spriteSheetSize: Point, currentCycleLabel: CycleLabel, cyc
 
   private[gameengine] def applyMemento(memento: AnimationMemento): Animations =
     Animations(
+      animationsKey = animationsKey,
       spriteSheetSize = spriteSheetSize,
       currentCycleLabel = memento.currentCycleLabel,
       cycle =
-        nonEmtpyCycles
-          .getOrElse(memento.currentCycleLabel, nonEmtpyCycles.head._2)
+        nonEmptyCycles
+          .getOrElse(memento.currentCycleLabel, nonEmptyCycles.head._2)
           .copy(playheadPosition = memento.currentCycleMemento.playheadPosition, lastFrameAdvance = memento.currentCycleMemento.lastFrameAdvance),
-      cycles = nonEmtpyCycles.filter(p => p._1.label != memento.currentCycleLabel.label),
+      cycles = nonEmptyCycles.filter(p => p._1.label != memento.currentCycleLabel.label),
       actions = actions
     )
 
@@ -52,17 +53,26 @@ case class Animations(spriteSheetSize: Point, currentCycleLabel: CycleLabel, cyc
 }
 
 object Animations {
-  def apply(spriteSheetWidth: Int, spriteSheetHeight: Int, cycle: Cycle): Animations = Animations(Point(spriteSheetWidth, spriteSheetHeight), cycle.label, cycle, Map.empty[CycleLabel, Cycle], Nil)
+  def apply(animationsKey: AnimationsKey, spriteSheetWidth: Int, spriteSheetHeight: Int, cycle: Cycle): Animations = Animations(animationsKey, Point(spriteSheetWidth, spriteSheetHeight), cycle.label, cycle, Map.empty[CycleLabel, Cycle], Nil)
+}
+
+case class AnimationsKey(key: String) extends AnyVal {
+  def ===(other: AnimationsKey): Boolean =
+    AnimationsKey.equality(this, other)
+}
+object AnimationsKey {
+  def equality(a: AnimationsKey, b: AnimationsKey): Boolean =
+    a.key == b.key
 }
 
 case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame], private[gameengine] val playheadPosition: Int, private[gameengine] val lastFrameAdvance: Double) {
-  private val nonEmtpyFrames: List[Frame] = frame :: frames
+  private val nonEmptyFrames: List[Frame] = frame :: frames
 
-  def addFrame(newFrame: Frame): Cycle = Cycle(label, nonEmtpyFrames.head, nonEmtpyFrames.tail ++ List(newFrame), playheadPosition, lastFrameAdvance)
+  def addFrame(newFrame: Frame): Cycle = Cycle(label, nonEmptyFrames.head, nonEmptyFrames.tail ++ List(newFrame), playheadPosition, lastFrameAdvance)
 
-  private val frameCount: Int = nonEmtpyFrames.length
+  private val frameCount: Int = nonEmptyFrames.length
 
-  private[gameengine] def currentFrame: Frame = nonEmtpyFrames(playheadPosition % frameCount)
+  private[gameengine] def currentFrame: Frame = nonEmptyFrames(playheadPosition % frameCount)
 
   private[gameengine] def saveMemento: CycleMemento =
     CycleMemento(playheadPosition, lastFrameAdvance)

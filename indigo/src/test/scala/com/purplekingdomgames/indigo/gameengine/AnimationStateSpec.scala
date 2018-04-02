@@ -1,5 +1,6 @@
 package com.purplekingdomgames.indigo.gameengine
 
+import com.purplekingdomgames.indigo.gameengine.assets.{AnimationState, AnimationStates}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey, Point}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import org.scalatest.{FunSpec, Matchers}

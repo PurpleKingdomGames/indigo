@@ -1,7 +1,7 @@
-package com.purplekingdomgames.indigo.gameengine
+package com.purplekingdomgames.indigo.gameengine.assets
 
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.BindingKey
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.BindingKey
 
 object AnimationState {
 

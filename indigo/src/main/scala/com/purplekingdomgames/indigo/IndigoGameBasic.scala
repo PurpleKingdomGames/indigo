@@ -1,9 +1,10 @@
 package com.purplekingdomgames.indigo
 
+import com.purplekingdomgames.indigo.IndigoGameBase.IndigoGame
 import com.purplekingdomgames.indigo.gameengine.{GameTime, Startup, StartupErrors}
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GameEvent}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneUpdateFragment
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, SceneUpdateFragment}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.FontInfo
 import com.purplekingdomgames.shared.{AssetType, GameConfig}
 
@@ -20,6 +21,8 @@ trait IndigoGameBasic[StartupData, Model] {
 
   val fonts: Set[FontInfo]
 
+  val animations: Set[Animations]
+
   def setup(assetCollection: AssetCollection): Either[StartupErrors, StartupData]
 
   def initialModel(startupData: StartupData): Model
@@ -28,11 +31,12 @@ trait IndigoGameBasic[StartupData, Model] {
 
   def present(gameTime: GameTime, model: Model, frameInputEvents: FrameInputEvents): SceneUpdateFragment
 
-  def main(args: Array[String]): Unit =
+  private val indigoGame: IndigoGame[StartupData, StartupErrors, Model] =
     Indigo.game
       .withConfig(config)
       .withAssets(assets)
       .withFonts(fonts)
+      .withAnimations(animations)
       .startUpGameWith(ac => Startup.fromEither(setup(ac)))
       .usingInitialModel(initialModel)
       .updateModelUsing(update)
@@ -40,6 +44,14 @@ trait IndigoGameBasic[StartupData, Model] {
         (gameTime: GameTime, model: Model, frameInputEvents: FrameInputEvents) =>
           present(gameTime, model, frameInputEvents)
       )
-      .start()
+
+  def registerAnimations(animations: Animations): Unit =
+    indigoGame.registerAnimations(animations)
+
+  def registerFont(fontInfo: FontInfo): Unit =
+    indigoGame.registerFont(fontInfo)
+
+  def main(args: Array[String]): Unit =
+    indigoGame.start()
 
 }

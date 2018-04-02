@@ -79,6 +79,7 @@ object AsepriteHelper {
       case x :: xs =>
         val animations: Animations =
           Animations(
+            AnimationsKey(BindingKey.generate.value),
             spriteSheetSize = Point(aseprite.meta.size.w, aseprite.meta.size.h),
             currentCycleLabel = x.label,
             cycle = x,

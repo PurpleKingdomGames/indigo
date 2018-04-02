@@ -1,6 +1,6 @@
 package com.example.perf
 
-import com.purplekingdomgames.indigo.Indigo
+import com.purplekingdomgames.indigo.{Indigo, IndigoGameBase}
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GameEvent}
@@ -35,10 +35,11 @@ object PerfGame {
     PerfAssets.assets
 
   def initialise(assetCollection: AssetCollection): Startup[MyErrorReport, MyStartupData] = {
-    val dude = for {
+    val dude: Option[Dude] = for {
       json <- assetCollection.texts.find(p => p.name == PerfAssets.dudeName + "-json").map(_.contents)
       aseprite <- AsepriteHelper.fromJson(json)
       sprite <- AsepriteHelper.toSprite(aseprite, Depth(3), PerfAssets.dudeName)
+      _ <- Option(game.registerAnimations(sprite.animations))
     } yield Dude(
       aseprite,
       sprite
@@ -61,17 +62,20 @@ object PerfGame {
   val updateView: (GameTime, MyGameModel, FrameInputEvents) => SceneUpdateFragment = (_, gameModel, frameInputEvents) =>
     PerfView.updateView(gameModel, frameInputEvents)
 
-  @JSExportTopLevel("com.example.perf.PerfGame.main")
-  def main(args: Array[String]): Unit =
+  val game: IndigoGameBase.IndigoGame[MyStartupData, MyErrorReport, MyGameModel] =
     Indigo.game
       .withConfig(config)
       .withAssets(assets)
       .withFonts(Set(PerfView.fontInfo))
+      .withAnimations(Set())
       .startUpGameWith(initialise)
       .usingInitialModel(initialModel)
       .updateModelUsing(updateModel)
       .presentUsing(updateView)
-      .start()
+
+  @JSExportTopLevel("com.example.perf.PerfGame.main")
+  def main(args: Array[String]): Unit =
+    game.start()
 
 }
 

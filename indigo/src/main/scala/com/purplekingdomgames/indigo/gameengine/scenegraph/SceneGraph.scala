@@ -1,8 +1,8 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
-import com.purplekingdomgames.indigo.gameengine.assets.FontRegister
+import com.purplekingdomgames.indigo.gameengine.assets.{AnimationStates, FontRegister}
 import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, ViewEvent}
-import com.purplekingdomgames.indigo.gameengine.{AnimationStates, GameTime}
+import com.purplekingdomgames.indigo.gameengine.GameTime
 import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 

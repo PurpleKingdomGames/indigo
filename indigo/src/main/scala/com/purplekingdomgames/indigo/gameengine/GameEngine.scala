@@ -27,6 +27,7 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
                                                                           assets: Set[AssetType],
                                                                           assetsAsync: Future[Set[AssetType]],
                                                                           fonts: Set[FontInfo],
+                                                                          animations: Set[Animations],
                                                                           initialise: AssetCollection => Startup[StartupError, StartupData],
                                                                           initialModel: StartupData => GameModel,
                                                                           updateModel: (GameTime, GameModel) => GameEvent => GameModel,
@@ -34,10 +35,15 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
 
   private var state: Option[GameModel] = None
 
-  private var animationStates: AnimationStates = AnimationStates(Nil)
+  def registerAnimations(animations: Animations): Unit =
+    AnimationRegister.register(animations)
+
+  def registerFont(fontInfo: FontInfo): Unit =
+    FontRegister.register(fontInfo)
 
   def start(): Unit = {
 
+    animations.foreach(AnimationRegister.register)
     fonts.foreach(FontRegister.register)
 
     configAsync.map(_.getOrElse(config)).foreach { gameConfig =>
@@ -232,7 +238,7 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
   }
 
   private val applyAnimationStates: IMetrics => SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = metrics => sceneGraph =>
-    sceneGraph.applyAnimationMemento(animationStates)(metrics)
+    sceneGraph.applyAnimationMemento(AnimationRegister.getAnimationStates)(metrics)
 
   private val processAnimationCommands: IMetrics => GameTime => SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = metrics => gameTime => sceneGraph =>
     sceneGraph.runAnimationActions(gameTime)(metrics)
@@ -240,7 +246,7 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
   private val persistAnimationStates: IMetrics => SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = metrics => sceneGraph => {
     metrics.record(PersistAnimationStatesStartMetric)
 
-    animationStates = AnimationState.extractAnimationStates(sceneGraph)
+    AnimationRegister.setAnimationStates(AnimationState.extractAnimationStates(sceneGraph))
     
     metrics.record(PersistAnimationStatesEndMetric)
 
