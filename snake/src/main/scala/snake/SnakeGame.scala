@@ -30,6 +30,8 @@ object SnakeGame {
     Indigo.game
       .withConfig(config)
       .withAssets(SnakeAssets.assets)
+      .withFonts(Set(SnakeAssets.fontInfo))
+      .withAnimations(Set())
       .startUpGameWith(SnakeInit.initialise(config.viewport, gridSize))
       .usingInitialModel(SnakeModel.initialModel)
       .updateModelUsing(SnakeModel.modelUpdate)

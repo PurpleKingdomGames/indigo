@@ -111,7 +111,7 @@ object MenuScreenFunctions {
         val draw: Boolean => ((MenuItem, Int)) => List[(SceneGraphNode, List[ViewEvent])] = p => { case (menuItem, i) =>
           List(
             menuItem.button.draw(Rectangle(10, (i * 20) + 10, 16, 16), Depth(2), frameEvents, buttonAssets).toTuple,
-            (Text(menuItem.text, 40, (i * 20) + 10, 2, SnakeAssets.fontInfo).alignLeft.withAlpha(if (p) 1 else 0.5), Nil)
+            (Text(menuItem.text, 40, (i * 20) + 10, 2, SnakeAssets.fontKey).alignLeft.withAlpha(if (p) 1 else 0.5), Nil)
           )
         }
 
@@ -123,7 +123,7 @@ object MenuScreenFunctions {
       }
 
       val uiLayer = List(
-        Text("press space to start", model.gameViewport.width / 2, model.gameViewport.height - 30, 2, SnakeAssets.fontInfo).alignCenter
+        Text("press space to start", model.gameViewport.width / 2, model.gameViewport.height - 30, 2, SnakeAssets.fontKey).alignCenter
       ) ++ menuItemsAndEvents.map(_._1)
 
       SceneUpdateFragment(Nil, Nil, uiLayer, AmbientLight.Normal, menuItemsAndEvents.flatMap(_._2), SceneAudio.None)

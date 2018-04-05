@@ -1,6 +1,6 @@
 package snake
 
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo, FontKey}
 import com.purplekingdomgames.shared.{AssetType, ImageAsset, TextAsset}
 
 object SnakeAssets {
@@ -16,8 +16,10 @@ object SnakeAssets {
       TextAsset(snakeTiledMapData, "assets/snake-level.json")
     )
 
+  val fontKey: FontKey = FontKey("boxy font")
+
   val fontInfo: FontInfo =
-    FontInfo(smallFontName, 320, 230, FontChar("?", 93, 52, 23, 23))
+    FontInfo(fontKey, smallFontName, 320, 230, FontChar("?", 93, 52, 23, 23))
       .addChar(FontChar("A", 3, 78, 23, 23))
       .addChar(FontChar("B", 26, 78, 23, 23))
       .addChar(FontChar("C", 50, 78, 23, 23))

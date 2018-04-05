@@ -39,7 +39,7 @@ object GameOverScreenFunctions {
 
     def ui: GameViewport => List[SceneGraphNode] = viewport =>
       List(
-        Text("Game over!\nPress SPACE!", viewport.width / 2, (viewport.height / 2) - 30, 1, SnakeAssets.fontInfo).alignCenter
+        Text("Game over!\nPress SPACE!", viewport.width / 2, (viewport.height / 2) - 30, 1, SnakeAssets.fontKey).alignCenter
       )
 
   }
