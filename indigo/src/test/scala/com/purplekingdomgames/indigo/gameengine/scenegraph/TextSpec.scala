@@ -1,6 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo, Rectangle}
+import com.purplekingdomgames.indigo.gameengine.assets.FontRegister
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo, FontKey, Rectangle}
 import org.scalatest.{FunSpec, Matchers}
 
 class TextSpec extends FunSpec with Matchers {
@@ -15,9 +16,13 @@ class TextSpec extends FunSpec with Matchers {
         FontChar("c", 32, 16, 16, 16)
       )
 
-      val fontInfo = FontInfo("font-sheet", 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+      val fontKey = FontKey("test")
 
-      val t = Text("abc", 10, 20, 1, fontInfo)
+      val fontInfo = FontInfo(fontKey, "font-sheet", 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+
+      FontRegister.register(fontInfo)
+
+      val t = Text("abc", 10, 20, 1, fontKey)
 
       t.bounds shouldEqual Rectangle(0, 0, 16 * 3, 16)
 
@@ -31,9 +36,13 @@ class TextSpec extends FunSpec with Matchers {
         FontChar("c", 60, 16, 30, 30)
       )
 
-      val fontInfo = FontInfo("font-sheet", 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+      val fontKey = FontKey("test")
 
-      val t = Text("abc", 10, 20, 1, fontInfo)
+      val fontInfo = FontInfo(fontKey, "font-sheet", 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+
+      FontRegister.register(fontInfo)
+
+      val t = Text("abc", 10, 20, 1, fontKey)
 
       t.bounds shouldEqual Rectangle(0, 0, 10 + 20 + 30, 30)
 

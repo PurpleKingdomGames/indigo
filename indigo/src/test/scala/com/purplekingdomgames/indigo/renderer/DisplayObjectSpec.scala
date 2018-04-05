@@ -28,7 +28,7 @@ class DisplayObjectSpec extends FunSpec with Matchers {
         base.copy(z = 6),
         base.copy(z = 12),
         base.copy(z = 100)
-      )
+      ).reverse
 
       DisplayObject.sortByDepth(list) shouldEqual expected
 

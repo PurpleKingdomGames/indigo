@@ -338,7 +338,7 @@ lazy val indigoProject =
   (project in file("."))
     .settings(commonSettings: _*)
     .aggregate(indigo, indigoExts) //core
-//    .aggregate(sandbox)
-    .aggregate(perf, button) //compile tests
-    .aggregate(sandbox, framework, server, snake) //games
-    .aggregate(basicSetup, fullSetup, http, text, automata, graphic, sprite, websocket, inputfield, audio, group) //examples
+    .aggregate(snake)
+//    .aggregate(perf, button) //compile tests
+//    .aggregate(sandbox, framework, server, snake) //games
+//    .aggregate(basicSetup, fullSetup, http, text, automata, graphic, sprite, websocket, inputfield, audio, group) //examples

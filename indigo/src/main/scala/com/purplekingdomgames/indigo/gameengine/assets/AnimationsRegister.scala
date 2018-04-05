@@ -13,7 +13,7 @@ object AnimationsRegister {
   private val animationsRegistry: mutable.HashMap[AnimationsKey, Animations] = mutable.HashMap()
 
   private[gameengine] def register(animations: Animations): Unit = {
-    animationsRegistry.put(animations.animationsKey, animations)
+    animationsRegistry.update(animations.animationsKey, animations)
     ()
   }
 

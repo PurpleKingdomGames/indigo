@@ -9,7 +9,7 @@ object FontRegister {
   private val fontRegistry: mutable.HashMap[FontKey, FontInfo] = mutable.HashMap()
 
   private[gameengine] def register(fontInfo: FontInfo): Unit = {
-    fontRegistry.put(fontInfo.fontKey, fontInfo)
+    fontRegistry.update(fontInfo.fontKey, fontInfo)
     ()
   }
 
