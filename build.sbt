@@ -224,7 +224,6 @@ lazy val indigo =
     .settings(
       name := "indigo",
       libraryDependencies ++= Seq(
-        "org.scalatest" %%% "scalatest" % "3.0.4" % "test",
         "org.scala-js" %%% "scalajs-dom" % "0.9.2"
       )
     )
