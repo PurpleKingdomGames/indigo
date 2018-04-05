@@ -1,6 +1,19 @@
 
 # TODOs
 
+##Indigo general
+Preloaders
+Fullscreen
+Provide config on load
+Save game mechanism
+HTML page templating
+With default template:
+- Fullscreen button
+- center on page
+- Background tile / colour
+
+
+
 ### Game Mechanics Misc
 - Items
   - Normal item
