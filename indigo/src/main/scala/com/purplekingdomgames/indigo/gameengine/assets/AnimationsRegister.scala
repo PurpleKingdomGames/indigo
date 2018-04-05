@@ -3,6 +3,7 @@ package com.purplekingdomgames.indigo.gameengine.assets
 import com.purplekingdomgames.indigo.gameengine.GameTime
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.BindingKey
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{AnimationAction, Animations, AnimationsKey}
+import com.purplekingdomgames.indigo.util.metrics._
 
 import scala.collection.mutable
 
@@ -52,7 +53,7 @@ object AnimationsRegister {
     rec(actionsQueue.dequeueAll(p => p.animationsKey === animationsKey && p.bindingKey === bindingKey).toList, Nil, Nil)
   }
 
-  def clearActionsQueue(): Unit = {
+  private def clearActionsQueue(): Unit = {
     actionsQueue.dequeueAll(_ => true)
     ()
   }
@@ -65,14 +66,20 @@ object AnimationsRegister {
   - Inserting or fetching the entry for binding key x and animation key y
   - Applying an animation memento if one doesn't exist and running the commands queued against it.
    */
-  def fetchFromCache(gameTime: GameTime, bindingKey: BindingKey, animationsKey: AnimationsKey): Option[Animations] = {
+  def fetchFromCache(gameTime: GameTime, bindingKey: BindingKey, animationsKey: AnimationsKey)(implicit metrics: IMetrics): Option[Animations] = {
     val key: String = s"${bindingKey.value}_${animationsKey.key}"
 
     val cacheEntry: Option[AnimationCacheEntry] = animationsCache.get(key).orElse {
       findByAnimationsKey(animationsKey).map { anim =>
+        metrics.record(ApplyAnimationMementoStartMetric)
         val updated = animationStates.findStateWithBindingKey(bindingKey).map(m => anim.applyMemento(m)).getOrElse(anim)
+        metrics.record(ApplyAnimationMementoEndMetric)
+
+        metrics.record(RunAnimationActionsStartMetric)
         val commands = dequeueAndDeduplicateActions(bindingKey, animationsKey)
         val newAnim = commands.foldLeft(updated)((a, action) => a.addAction(action.action)).runActions(gameTime)
+        metrics.record(RunAnimationActionsEndMetric)
+
         AnimationCacheEntry(bindingKey, newAnim)
       }
     }
@@ -84,13 +91,19 @@ object AnimationsRegister {
     cacheEntry.map(_.animations)
   }
 
-  def clearCache(): Unit =
+  private def clearCache(): Unit =
     animationsCache.keys.foreach { key =>
       animationsCache.remove(key)
     }
 
-  def saveAnimationMementos(): Unit = {
+  private def saveAnimationMementos(): Unit = {
     setAnimationStates(AnimationStates(animationsCache.map(e => e._2.animations.saveMemento(e._2.bindingKey)).toList))
+  }
+
+  def persistAnimationStates(): Unit = {
+    saveAnimationMementos()
+    clearCache()
+    clearActionsQueue()
   }
 }
 

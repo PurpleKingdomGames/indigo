@@ -6,6 +6,7 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.renderer.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import com.purplekingdomgames.indigo.renderer.{AssetMapping, DisplayObject, SpriteSheetFrame, Vector2}
 import com.purplekingdomgames.indigo.util.Logger
+import com.purplekingdomgames.indigo.util.metrics.IMetrics
 
 import scala.collection.mutable
 
@@ -40,7 +41,7 @@ object DisplayObjectConversions {
       }
     })
 
-  def leafToDisplayObject(gameTime: GameTime, assetMapping: AssetMapping): Renderable => List[DisplayObject] = {
+  def leafToDisplayObject(gameTime: GameTime, assetMapping: AssetMapping)(implicit metrics: IMetrics): Renderable => List[DisplayObject] = {
     case leaf: Graphic =>
       List(
         DisplayObject(

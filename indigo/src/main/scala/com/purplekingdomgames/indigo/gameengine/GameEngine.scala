@@ -182,10 +182,7 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
           val processUpdatedView: SceneUpdateFragment => SceneGraphRootNodeFlat =
             persistGlobalViewEvents(audioPlayer)(metrics) andThen
               flattenNodes andThen
-              persistNodeViewEvents(metrics)(collectedEvents) //andThen
-//              applyAnimationStates(metrics) andThen
-//              processAnimationCommands(metrics)(gameTime) andThen
-//              persistAnimationStates(metrics)
+              persistNodeViewEvents(metrics)(collectedEvents)
 
           val processedView: SceneGraphRootNodeFlat = processUpdatedView(view)
 
@@ -196,13 +193,11 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
           val displayable: Displayable = convertSceneGraphToDisplayable(gameTime, processedView, assetMapping, view.ambientLight)
 
           metrics.record(ToDisplayableEndMetric)
+          metrics.record(PersistAnimationStatesStartMetric)
 
-          //----- metrics?
-          AnimationsRegister.saveAnimationMementos()
-          AnimationsRegister.clearCache()
-          AnimationsRegister.clearActionsQueue()
-          //-----
+          AnimationsRegister.persistAnimationStates()
 
+          metrics.record(PersistAnimationStatesEndMetric)
           metrics.record(RenderStartMetric)
 
           drawScene(renderer, displayable)
@@ -246,23 +241,7 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
     rootNode
   }
 
-//  private val applyAnimationStates: IMetrics => SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = metrics => sceneGraph =>
-//    sceneGraph.applyAnimationMemento(AnimationsRegister.getAnimationStates)(metrics)
-//
-//  private val processAnimationCommands: IMetrics => GameTime => SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = metrics => gameTime => sceneGraph =>
-//    sceneGraph.runAnimationActions(gameTime)(metrics)
-//
-//  private val persistAnimationStates: IMetrics => SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = metrics => sceneGraph => {
-//    metrics.record(PersistAnimationStatesStartMetric)
-//
-//    AnimationsRegister.setAnimationStates(AnimationState.extractAnimationStates(sceneGraph))
-//
-//    metrics.record(PersistAnimationStatesEndMetric)
-//
-//    sceneGraph
-//  }
-
-  private def convertSceneGraphToDisplayable(gameTime: GameTime, rootNode: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight): Displayable =
+  private def convertSceneGraphToDisplayable(gameTime: GameTime, rootNode: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight)(implicit metrics: IMetrics): Displayable =
     Displayable(
       DisplayLayer(
         rootNode.game.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping))

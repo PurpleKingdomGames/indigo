@@ -267,16 +267,6 @@ case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, anima
   private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent] =
     (e: GameEvent) => eventHandler((bounds, e))
 
-//  private[gameengine] def saveAnimationMemento: Option[AnimationMemento] = Option(animations.saveMemento(bindingKey))
-//
-//  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): Sprite =
-//    animationStates.findStateWithBindingKey(bindingKey) match {
-//      case Some(memento) => this.copy(animations = animations.applyMemento(memento))
-//      case None => this
-//    }
-//
-//  private[gameengine] def runAnimationActions(gameTime: GameTime): Sprite = this.copy(animations = animations.runActions(gameTime))
-
 }
 
 object Sprite {
@@ -304,7 +294,7 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
         .map(_.replace("\n", ""))
         .map(line => TextLine(line, Text.calculateBoundsOfLine(line, fontInfo)))
     }.getOrElse {
-      Logger.errorOnce(s"Cannot build Text lines, missing Font with key: ${fontKey}")
+      Logger.errorOnce(s"Cannot build Text lines, missing Font with key: $fontKey")
       Nil
     }
 
