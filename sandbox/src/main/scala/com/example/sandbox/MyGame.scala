@@ -54,7 +54,6 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel] {
 
   def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     MyView.updateView(model, frameInputEvents)
-
 }
 
 case class Dude(aseprite: Aseprite, sprite: Sprite)

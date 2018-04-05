@@ -22,6 +22,8 @@ case class Animations(animationsKey: AnimationsKey, imageAssetRef: String, sprit
   def withAnimationsKey(animationsKey: AnimationsKey): Animations =
     this.copy(animationsKey = animationsKey)
 
+  private[gameengine] val frameHash: String = currentFrame.bounds.hash + "_" + imageAssetRef
+
   private[gameengine] def currentCycleName: String = currentCycle.label.label
 
   private[gameengine] def currentFrame: Frame = currentCycle.currentFrame

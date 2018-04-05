@@ -181,19 +181,31 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
           val processUpdatedView: SceneUpdateFragment => SceneGraphRootNodeFlat =
             persistGlobalViewEvents(audioPlayer)(metrics) andThen
               flattenNodes andThen
-              persistNodeViewEvents(metrics)(collectedEvents) andThen
-              applyAnimationStates(metrics) andThen
-              processAnimationCommands(metrics)(gameTime) andThen
-              persistAnimationStates(metrics)
+              persistNodeViewEvents(metrics)(collectedEvents) //andThen
+//              applyAnimationStates(metrics) andThen
+//              processAnimationCommands(metrics)(gameTime) andThen
+//              persistAnimationStates(metrics)
 
           val processedView: SceneGraphRootNodeFlat = processUpdatedView(view)
 
           metrics.record(ProcessViewEndMetric)
+
+          //----- metrics?
+          AnimationsRegister.markAllAsUnseen()
+          //-----
+
           metrics.record(ToDisplayableStartMetric)
 
-          val displayable: Displayable = convertSceneGraphToDisplayable(processedView, assetMapping, view.ambientLight)
+          val displayable: Displayable = convertSceneGraphToDisplayable(gameTime, processedView, assetMapping, view.ambientLight)
 
           metrics.record(ToDisplayableEndMetric)
+
+          //----- metrics?
+          AnimationsRegister.removeAllUnseenFromCache()
+          AnimationsRegister.saveAnimationMementos()
+          AnimationsRegister.clearActionsQueue()
+          //-----
+
           metrics.record(RenderStartMetric)
 
           drawScene(renderer, displayable)
@@ -237,32 +249,32 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
     rootNode
   }
 
-  private val applyAnimationStates: IMetrics => SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = metrics => sceneGraph =>
-    sceneGraph.applyAnimationMemento(AnimationsRegister.getAnimationStates)(metrics)
+//  private val applyAnimationStates: IMetrics => SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = metrics => sceneGraph =>
+//    sceneGraph.applyAnimationMemento(AnimationsRegister.getAnimationStates)(metrics)
+//
+//  private val processAnimationCommands: IMetrics => GameTime => SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = metrics => gameTime => sceneGraph =>
+//    sceneGraph.runAnimationActions(gameTime)(metrics)
+//
+//  private val persistAnimationStates: IMetrics => SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = metrics => sceneGraph => {
+//    metrics.record(PersistAnimationStatesStartMetric)
+//
+//    AnimationsRegister.setAnimationStates(AnimationState.extractAnimationStates(sceneGraph))
+//
+//    metrics.record(PersistAnimationStatesEndMetric)
+//
+//    sceneGraph
+//  }
 
-  private val processAnimationCommands: IMetrics => GameTime => SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = metrics => gameTime => sceneGraph =>
-    sceneGraph.runAnimationActions(gameTime)(metrics)
-
-  private val persistAnimationStates: IMetrics => SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = metrics => sceneGraph => {
-    metrics.record(PersistAnimationStatesStartMetric)
-
-    AnimationsRegister.setAnimationStates(AnimationState.extractAnimationStates(sceneGraph))
-    
-    metrics.record(PersistAnimationStatesEndMetric)
-
-    sceneGraph
-  }
-
-  private def convertSceneGraphToDisplayable(rootNode: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight): Displayable =
+  private def convertSceneGraphToDisplayable(gameTime: GameTime, rootNode: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight): Displayable =
     Displayable(
       DisplayLayer(
-        rootNode.game.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(assetMapping))
+        rootNode.game.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping))
       ),
       DisplayLayer(
-        rootNode.lighting.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(assetMapping))
+        rootNode.lighting.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping))
       ),
       DisplayLayer(
-        rootNode.ui.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(assetMapping))
+        rootNode.ui.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping))
       ),
       ambientLight
     )

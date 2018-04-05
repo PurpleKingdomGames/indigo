@@ -1,8 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph
 
-import com.purplekingdomgames.indigo.gameengine.assets.{AnimationStates, AnimationsRegister, FontRegister}
+import com.purplekingdomgames.indigo.gameengine.assets.{AnimationsRegister, FontRegister}
 import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, ViewEvent}
-import com.purplekingdomgames.indigo.gameengine.GameTime
 import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 
@@ -267,20 +266,20 @@ case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, anima
   private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent] =
     (e: GameEvent) => eventHandler((bounds, e))
 
-  private[gameengine] def saveAnimationMemento: Option[AnimationMemento] = Option(animations.saveMemento(bindingKey))
-
-  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): Sprite =
-    animationStates.findStateWithBindingKey(bindingKey) match {
-      case Some(memento) => this.copy(animations = animations.applyMemento(memento))
-      case None => this
-    }
-
-  private[gameengine] def runAnimationActions(gameTime: GameTime): Sprite = this.copy(animations = animations.runActions(gameTime))
+//  private[gameengine] def saveAnimationMemento: Option[AnimationMemento] = Option(animations.saveMemento(bindingKey))
+//
+//  private[gameengine] def applyAnimationMemento(animationStates: AnimationStates): Sprite =
+//    animationStates.findStateWithBindingKey(bindingKey) match {
+//      case Some(memento) => this.copy(animations = animations.applyMemento(memento))
+//      case None => this
+//    }
+//
+//  private[gameengine] def runAnimationActions(gameTime: GameTime): Sprite = this.copy(animations = animations.runActions(gameTime))
 
 }
 
 object Sprite {
-  def apply(bindingKey: BindingKey, x: Int, y: Int, width: Int, height: Int, depth: Int, imageAssetRef: String, animationsKey: AnimationsKey): Sprite =
+  def apply(bindingKey: BindingKey, x: Int, y: Int, width: Int, height: Int, depth: Int, animationsKey: AnimationsKey): Sprite =
     Sprite(
       bindingKey = bindingKey,
       bounds = Rectangle(x, y, width, height),

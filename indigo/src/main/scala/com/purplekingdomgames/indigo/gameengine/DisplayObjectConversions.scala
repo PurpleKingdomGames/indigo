@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigo.gameengine
 
-import com.purplekingdomgames.indigo.gameengine.assets.FontRegister
+import com.purplekingdomgames.indigo.gameengine.assets.{AnimationsRegister, FontRegister}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.renderer.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
@@ -40,7 +40,7 @@ object DisplayObjectConversions {
       }
     })
 
-  def leafToDisplayObject(assetMapping: AssetMapping): Renderable => List[DisplayObject] = {
+  def leafToDisplayObject(gameTime: GameTime, assetMapping: AssetMapping): Renderable => List[DisplayObject] = {
     case leaf: Graphic =>
       List(
         DisplayObject(
@@ -69,31 +69,35 @@ object DisplayObjectConversions {
       )
 
     case leaf: Sprite =>
-      List(
-        DisplayObject(
-          x = leaf.x,
-          y = leaf.y,
-          z = leaf.depth.zIndex,
-          width = leaf.bounds.size.x,
-          height = leaf.bounds.size.y,
-          imageRef = lookupAtlasName(assetMapping, leaf.imageAssetRef),
-          alpha = leaf.effects.alpha,
-          tintR = leaf.effects.tint.r,
-          tintG = leaf.effects.tint.g,
-          tintB = leaf.effects.tint.b,
-          flipHorizontal = leaf.effects.flip.horizontal,
-          flipVertical = leaf.effects.flip.vertical,
-          frame =
-            frameOffsetsCache.getOrElseUpdate(leaf.frameHash, { //frameHash = animations.currentFrame.bounds.hash + "_" + imageAssetRef
-              SpriteSheetFrame.calculateFrameOffset(
-                imageSize = lookupAtlasSize(assetMapping, leaf.imageAssetRef),
-                frameSize = Vector2(leaf.animations.currentFrame.bounds.size.x.toDouble, leaf.animations.currentFrame.bounds.size.y.toDouble),
-                framePosition = Vector2(leaf.animations.currentFrame.bounds.position.x.toDouble, leaf.animations.currentFrame.bounds.position.y.toDouble),
-                textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
-              )
-            })
+      val animations: Option[Animations] = AnimationsRegister.fetchFromCache(gameTime, leaf.bindingKey, leaf.animationsKey)
+
+      animations.map { anim =>
+        List(
+          DisplayObject(
+            x = leaf.x,
+            y = leaf.y,
+            z = leaf.depth.zIndex,
+            width = leaf.bounds.size.x,
+            height = leaf.bounds.size.y,
+            imageRef = lookupAtlasName(assetMapping, anim.imageAssetRef),
+            alpha = leaf.effects.alpha,
+            tintR = leaf.effects.tint.r,
+            tintG = leaf.effects.tint.g,
+            tintB = leaf.effects.tint.b,
+            flipHorizontal = leaf.effects.flip.horizontal,
+            flipVertical = leaf.effects.flip.vertical,
+            frame =
+              frameOffsetsCache.getOrElseUpdate(anim.frameHash, {
+                SpriteSheetFrame.calculateFrameOffset(
+                  imageSize = lookupAtlasSize(assetMapping, anim.imageAssetRef),
+                  frameSize = Vector2(anim.currentFrame.bounds.size.x.toDouble, anim.currentFrame.bounds.size.y.toDouble),
+                  framePosition = Vector2(anim.currentFrame.bounds.position.x.toDouble, anim.currentFrame.bounds.position.y.toDouble),
+                  textureOffset = lookupTextureOffset(assetMapping, anim.imageAssetRef)
+                )
+              })
+          )
         )
-      )
+      }.getOrElse(Nil) // Report failure?
 
     case leaf: Text =>
 

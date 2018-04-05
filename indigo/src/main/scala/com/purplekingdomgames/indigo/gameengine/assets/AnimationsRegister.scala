@@ -53,7 +53,7 @@ object AnimationsRegister {
   }
 
   def clearActionsQueue(): Unit = {
-    actionsQueue.dequeueAll(_ == true)
+    actionsQueue.dequeueAll(_ => true)
     ()
   }
 
@@ -66,6 +66,13 @@ object AnimationsRegister {
     }
   }
 
+  /*
+    Look up of the cache entry means:
+  - Inserting or fetching the entry for binding key x and animation key y
+  - Applying an animation memento if one exists
+  - Running the commands queued against it.
+  - Marking as seen
+   */
   def fetchFromCache(gameTime: GameTime, bindingKey: BindingKey, animationsKey: AnimationsKey): Option[Animations] = {
     val key: String = s"${bindingKey.value}_${animationsKey.key}"
 

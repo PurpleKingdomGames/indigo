@@ -31,7 +31,7 @@ trait IndigoGameBasic[StartupData, Model] {
 
   def present(gameTime: GameTime, model: Model, frameInputEvents: FrameInputEvents): SceneUpdateFragment
 
-  private val indigoGame: IndigoGame[StartupData, StartupErrors, Model] =
+  private def indigoGame: IndigoGame[StartupData, StartupErrors, Model] =
     Indigo.game
       .withConfig(config)
       .withAssets(assets)
