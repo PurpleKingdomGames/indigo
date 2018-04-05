@@ -38,11 +38,11 @@ object PerfGame {
     val dude: Option[Dude] = for {
       json <- assetCollection.texts.find(p => p.name == PerfAssets.dudeName + "-json").map(_.contents)
       aseprite <- AsepriteHelper.fromJson(json)
-      sprite <- AsepriteHelper.toSprite(aseprite, Depth(3), PerfAssets.dudeName)
-      _ <- Option(game.registerAnimations(sprite.animations))
+      spriteAndAnimations <- AsepriteHelper.toSpriteAndAnimations(aseprite, Depth(3), PerfAssets.dudeName)
+      _ <- Option(game.registerAnimations(spriteAndAnimations.animations))
     } yield Dude(
       aseprite,
-      sprite
+      spriteAndAnimations.sprite
         .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
         .moveTo(viewportWidth / 2 / magnificationLevel, viewportHeight / 2 / magnificationLevel) // Also place him in the middle of the screen initially
     )
@@ -62,7 +62,7 @@ object PerfGame {
   val updateView: (GameTime, MyGameModel, FrameInputEvents) => SceneUpdateFragment = (_, gameModel, frameInputEvents) =>
     PerfView.updateView(gameModel, frameInputEvents)
 
-  val game: IndigoGameBase.IndigoGame[MyStartupData, MyErrorReport, MyGameModel] =
+  def game: IndigoGameBase.IndigoGame[MyStartupData, MyErrorReport, MyGameModel] =
     Indigo.game
       .withConfig(config)
       .withAssets(assets)
