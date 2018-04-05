@@ -60,80 +60,42 @@ object AnimationsRegister {
   // The running animation cache
   private val animationsCache: mutable.HashMap[String, AnimationCacheEntry] = mutable.HashMap()
 
-  def markAllAsUnseen(): Unit = {
-    animationsCache.foreach { entry =>
-      animationsCache.update(entry._1, entry._2.markAsUnseen)
-    }
-  }
-
   /*
     Look up of the cache entry means:
   - Inserting or fetching the entry for binding key x and animation key y
-  - Applying an animation memento if one exists
-  - Running the commands queued against it.
-  - Marking as seen
+  - Applying an animation memento if one doesn't exist and running the commands queued against it.
    */
   def fetchFromCache(gameTime: GameTime, bindingKey: BindingKey, animationsKey: AnimationsKey): Option[Animations] = {
     val key: String = s"${bindingKey.value}_${animationsKey.key}"
 
     val cacheEntry: Option[AnimationCacheEntry] = animationsCache.get(key).orElse {
-      findByAnimationsKey(animationsKey).map { a =>
-        AnimationCacheEntry(seen = false, bindingKey, animations = a)
+      findByAnimationsKey(animationsKey).map { anim =>
+        val updated = animationStates.findStateWithBindingKey(bindingKey).map(m => anim.applyMemento(m)).getOrElse(anim)
+        val commands = dequeueAndDeduplicateActions(bindingKey, animationsKey)
+        val newAnim = commands.foldLeft(updated)((a, action) => a.addAction(action.action)).runActions(gameTime)
+        AnimationCacheEntry(bindingKey, newAnim)
       }
     }
 
-    val res = cacheEntry.map { anim =>
-      val updated = animationStates.findStateWithBindingKey(bindingKey).map(m => anim.animations.applyMemento(m)).getOrElse(anim.animations)
-      val commands = dequeueAndDeduplicateActions(bindingKey, animationsKey)
-      commands.foldLeft(updated)((anim, action) => anim.addAction(action.action)).runActions(gameTime)
+    cacheEntry.foreach { e =>
+      animationsCache.update(key, e)
     }
 
-    cacheEntry.foreach { e => animationsCache.update(key, e.markAsSeen) }
-
-    res
+    cacheEntry.map(_.animations)
   }
 
-  def removeAllUnseenFromCache(): Unit = {
-    animationsCache.filter(_._2.wasUnseen).keys.foreach { key =>
+  def clearCache(): Unit =
+    animationsCache.keys.foreach { key =>
       animationsCache.remove(key)
     }
-  }
 
   def saveAnimationMementos(): Unit = {
     setAnimationStates(AnimationStates(animationsCache.map(e => e._2.animations.saveMemento(e._2.bindingKey)).toList))
   }
-
-  /*
-  TODO:
-  Processing view:
-  Actions for all animations will have been added to the queue
-
-  Mark all cache entries as unseen
-
-  DisplayObjectConversions calls the cache and says get or create and get me an entry for this bindingkey+animationkey pair
-
-  Look up of the cache entry means:
-  - Inserting or fetching the entry for binding key x and animation key y
-  - Applying an animation memento if one exists
-  - Running the commands queued against it.
-  - Marking as seen
-
-  DisplayObjectConversions then does the work to render the Sprite.
-
-  Remove any entries not marked as seen.
-  Save mementos
-  Clear the actions queue
-
-   */
-
 }
 
 case class AnimationActionCommand(bindingKey: BindingKey, animationsKey: AnimationsKey, action: AnimationAction) {
   val hash: String = s"${bindingKey.value}_${animationsKey.key}_${action.hash}"
 }
 
-case class AnimationCacheEntry(seen: Boolean, bindingKey: BindingKey, animations: Animations) {
-  def wasUnseen: Boolean = !seen
-  def markAsUnseen: AnimationCacheEntry = this.copy(seen = false)
-  def markAsSeen: AnimationCacheEntry = this.copy(seen = true)
-}
+case class AnimationCacheEntry(bindingKey: BindingKey, animations: Animations)

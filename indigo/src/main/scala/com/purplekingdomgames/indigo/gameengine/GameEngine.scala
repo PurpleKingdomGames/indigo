@@ -191,10 +191,6 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
 
           metrics.record(ProcessViewEndMetric)
 
-          //----- metrics?
-          AnimationsRegister.markAllAsUnseen()
-          //-----
-
           metrics.record(ToDisplayableStartMetric)
 
           val displayable: Displayable = convertSceneGraphToDisplayable(gameTime, processedView, assetMapping, view.ambientLight)
@@ -202,8 +198,8 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
           metrics.record(ToDisplayableEndMetric)
 
           //----- metrics?
-          AnimationsRegister.removeAllUnseenFromCache()
           AnimationsRegister.saveAnimationMementos()
+          AnimationsRegister.clearCache()
           AnimationsRegister.clearActionsQueue()
           //-----
 
