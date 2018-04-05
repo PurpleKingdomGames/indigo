@@ -97,7 +97,10 @@ object DisplayObjectConversions {
               })
           )
         )
-      }.getOrElse(Nil) // Report failure?
+      }.getOrElse{
+        Logger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${leaf.animationsKey}")
+        Nil
+      }
 
     case leaf: Text =>
 
@@ -146,7 +149,10 @@ object DisplayObjectConversions {
             })
         )
       }
-    }.getOrElse(Nil)
+    }.getOrElse {
+      Logger.errorOnce(s"Cannot render Text, missing Font with key: ${leaf.fontKey}")
+      Nil
+    }
 
   private def zipWithCharDetails(charList: List[Char], fontInfo: FontInfo): List[(FontChar, Int)] = {
     def rec(remaining: List[(Char, FontChar)], nextX: Int, acc: List[(FontChar, Int)]): List[(FontChar, Int)] =

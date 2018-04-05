@@ -4,6 +4,7 @@ import com.purplekingdomgames.indigo.gameengine.assets.{AnimationsRegister, Font
 import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
+import com.purplekingdomgames.indigo.util.Logger
 
 object SceneGraphNode {
   def empty: Group = Group(Point.zero, Depth.Base, Nil)
@@ -302,7 +303,10 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
         .split('\n').toList
         .map(_.replace("\n", ""))
         .map(line => TextLine(line, Text.calculateBoundsOfLine(line, fontInfo)))
-    }.getOrElse(Nil)
+    }.getOrElse {
+      Logger.errorOnce(s"Cannot build Text lines, missing Font with key: ${fontKey}")
+      Nil
+    }
 
   val bounds: Rectangle =
     lines.map(_.lineBounds).fold(Rectangle.zero) {

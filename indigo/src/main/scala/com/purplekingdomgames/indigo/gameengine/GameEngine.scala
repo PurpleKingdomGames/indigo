@@ -111,7 +111,8 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
 
             val audioPlayer: IAudioPlayer = AudioPlayer(assetCollection.sounds)
 
-            Logger.info("Starting main loop, there will be no more log messages.")
+            Logger.info("Starting main loop, there will be no more info log messages.")
+            Logger.info("You may get first occurrence error logs.")
             dom.window.requestAnimationFrame(loopFunc(renderer, audioPlayer, 0))
         }
       }
