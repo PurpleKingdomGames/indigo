@@ -69,12 +69,12 @@ case class MenuItem(text: String, button: Button, goToScreen: Screen)
 
 case class GameScreenModel(running: Boolean, gridSize: GridSize, staticAssets: StaticAssets, player1: Player, gameMap: GameMap)
 
-case class Player(snake: Snake, tickDelay: Int, lastUpdated: Double, playerType: PlayerType, controlScheme: ControlScheme) {
+case class Player(snake: Snake, tickDelay: Int, lastUpdated: Double, previousSnakePath: List[GridPoint], playerType: PlayerType, controlScheme: ControlScheme) {
 
   def update(gameTime: GameTime, gridSize: GridSize, collisionCheck: GridPoint => CollisionCheckOutcome): (Player, CollisionCheckOutcome) =
     snake.update(gridSize, collisionCheck) match {
       case (s, outcome) if gameTime.running >= lastUpdated + tickDelay =>
-        (this.copy(snake = s, lastUpdated = gameTime.running), outcome)
+        (this.copy(snake = s, lastUpdated = gameTime.running, previousSnakePath = snake.givePath), outcome)
 
       case (_, outcome) =>
         (this, outcome)

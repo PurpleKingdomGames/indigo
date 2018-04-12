@@ -14,12 +14,12 @@ import org.scalajs.dom
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-case class GameTime(running: Double, delta: Double)
+case class GameTime(running: Double, delta: Double, frameDuration: Double)
 
 object GameTime {
-  def now: GameTime = GameTime(System.currentTimeMillis().toDouble, 0)
-  def zero: GameTime = GameTime(0, 0)
-  def is(running: Double, delta: Double): GameTime = GameTime(running, delta)
+  def now(frameDuration: Double): GameTime = GameTime(System.currentTimeMillis().toDouble, 0, frameDuration)
+  def zero(frameDuration: Double): GameTime = GameTime(0, 0, frameDuration)
+  def is(running: Double, delta: Double, frameDuration: Double): GameTime = GameTime(running, delta, frameDuration)
 }
 
 class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
@@ -144,7 +144,7 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
 
         metrics.record(UpdateStartMetric)
 
-        val gameTime: GameTime = GameTime(time, timeDelta)
+        val gameTime: GameTime = GameTime(time, timeDelta, gameConfig.frameRateDeltaMillis.toDouble)
 
         val collectedEvents = GlobalEventStream.collect
 

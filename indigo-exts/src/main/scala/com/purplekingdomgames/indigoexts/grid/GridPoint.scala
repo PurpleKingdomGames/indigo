@@ -77,4 +77,7 @@ object GridPoint {
       y = if(gridPoint.y < 0) gridSize.rows else gridPoint.y % gridSize.rows
     )
 
+  def linearInterpolation(a: GridPoint, b: GridPoint, divisor: Double, multiplier: Double): Point =
+    Point.linearInterpolation(a.toPoint, b.toPoint, divisor, multiplier)
+
 }

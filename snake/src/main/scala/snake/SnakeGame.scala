@@ -2,7 +2,7 @@ package snake
 
 import com.purplekingdomgames.indigo.Indigo
 import com.purplekingdomgames.indigoexts.grid.GridSize
-import com.purplekingdomgames.shared.{ClearColor, GameConfig, GameViewport}
+import com.purplekingdomgames.shared.{AdvancedGameConfig, ClearColor, GameConfig, GameViewport}
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
@@ -23,6 +23,13 @@ object SnakeGame {
     frameRate = 30,
     clearColor = ClearColor.Black,
     magnification = magnificationLevel
+  ).withAdvancedSettings(
+    AdvancedGameConfig(
+      recordMetrics = false,
+      logMetricsReportIntervalMs = 5000,
+      disableSkipModelUpdates = true,
+      disableSkipViewUpdates = false
+    )
   )
 
   @JSExportTopLevel("Snake.main")
