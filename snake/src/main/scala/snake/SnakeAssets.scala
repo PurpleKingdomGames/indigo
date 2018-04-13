@@ -8,11 +8,13 @@ object SnakeAssets {
   val smallFontName: String = "smallFontName"
   val snakeTexture: String = "snakeTexture"
   val snakeTiledMapData: String = "snakeTiledMapData"
+  val arenaBg: String = "bg"
 
   def assets: Set[AssetType] =
     Set(
       ImageAsset(smallFontName, "assets/boxy_font.png"),
-      ImageAsset(snakeTexture, "assets/snake2.png"),
+      ImageAsset(snakeTexture, "assets/snake4.png"),
+      ImageAsset(arenaBg, "assets/snake-level-32x18.png"),
       TextAsset(snakeTiledMapData, "assets/snake-level.json")
     )
 

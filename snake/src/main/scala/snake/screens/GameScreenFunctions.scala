@@ -26,7 +26,7 @@ object GameScreenFunctions {
         staticAssets = startupData.staticAssets,
         player1 = Player(
           snake = snake,
-          tickDelay = 100,
+          tickDelay = 200,
           lastUpdated = 0,
           previousSnakePath = snake.givePath,
           playerType = Human,
