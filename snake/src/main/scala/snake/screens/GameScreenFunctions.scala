@@ -36,8 +36,10 @@ object GameScreenFunctions {
       )
     }
 
-    private val hitTest: GameMap => List[GridPoint] => GridPoint => CollisionCheckOutcome = gameMap => body => pt =>
-      if(body.contains(pt)) CollisionCheckOutcome.Crashed(pt)
+    private def hitTest(gameMap: GameMap, body: List[GridPoint], lastPosition: GridPoint, useNextPosition: Boolean): GridPoint => CollisionCheckOutcome = nextPosition => {
+      val pt: GridPoint = if (useNextPosition) nextPosition else lastPosition
+
+      if (useNextPosition && body.contains(pt)) CollisionCheckOutcome.Crashed(pt)
       else {
         gameMap.fetchElementAt(pt.x, pt.y) match {
           case Some(MapElement.Apple(_)) =>
@@ -56,12 +58,22 @@ object GameScreenFunctions {
             CollisionCheckOutcome.NoCollision(pt)
         }
       }
+    }
 
     def update(gameTime: GameTime, state: GameScreenModel): GameEvent => GameScreenModel = gameEvent =>
       if(state.running) {
         gameEvent match {
           case FrameTick =>
-            state.player1.update(gameTime, state.gameMap.gridSize, hitTest(state.gameMap)(state.player1.snake.givePath)) match {
+            state.player1.update(
+              gameTime,
+              state.gameMap.gridSize,
+              hitTest(
+                state.gameMap,
+                state.player1.snake.givePath,
+                state.player1.snake.start,
+                useNextPosition = (gameTime.running - state.player1.lastUpdated) > state.player1.tickDelay
+              )
+            ) match {
               case (player, CollisionCheckOutcome.Crashed(_)) =>
                 state.copy(
                   player1 = player,
