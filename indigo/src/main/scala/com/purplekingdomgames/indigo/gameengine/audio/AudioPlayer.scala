@@ -11,17 +11,15 @@ object AudioPlayer {
 
   private var player: Option[IAudioPlayer] = None
 
-  def apply(loadedAudioAssets: List[LoadedAudioAsset]): IAudioPlayer = {
+  def apply(loadedAudioAssets: List[LoadedAudioAsset]): IAudioPlayer =
     player match {
       case Some(p) => p
       case None =>
-
         val p = new AudioPlayerImpl(loadedAudioAssets, new AudioContext())
 
         player = Some(p)
         player.get
     }
-  }
 
 }
 
@@ -45,49 +43,54 @@ final class AudioPlayerImpl(loadedAudioAssets: List[LoadedAudioAsset], context: 
     AudioNodes(source, gainNode)
   }
 
-  def playSound(assetRef: String, volume: Volume): Unit = {
+  def playSound(assetRef: String, volume: Volume): Unit =
     loadedAudioAssets.find(_.name == assetRef).foreach { sound =>
       setupNodes(sound.data, volume, loop = false).audioBufferSourceNode.start(0)
     }
-  }
 
   private var sourceA: AudioSourceState = AudioSourceState(BindingKey("none"), None)
   private var sourceB: AudioSourceState = AudioSourceState(BindingKey("none"), None)
   private var sourceC: AudioSourceState = AudioSourceState(BindingKey("none"), None)
 
   def playAudio(sceneAudio: SceneAudio): Unit = {
-    updateSource(sceneAudio.sourceA, sourceA).foreach { src => sourceA = src }
-    updateSource(sceneAudio.sourceB, sourceB).foreach { src => sourceB = src }
-    updateSource(sceneAudio.sourceC, sourceC).foreach { src => sourceC = src }
+    updateSource(sceneAudio.sourceA, sourceA).foreach { src =>
+      sourceA = src
+    }
+    updateSource(sceneAudio.sourceB, sourceB).foreach { src =>
+      sourceB = src
+    }
+    updateSource(sceneAudio.sourceC, sourceC).foreach { src =>
+      sourceC = src
+    }
   }
 
   private def updateSource(sceneAudioSource: SceneAudioSource, currentSource: AudioSourceState): Option[AudioSourceState] =
-    if(sceneAudioSource.bindingKey === currentSource.bindingKey) None
-    else Option {
-      sceneAudioSource.playbackPattern match {
-        case PlaybackPattern.Silent =>
-          currentSource.audioNodes.foreach(_.audioBufferSourceNode.stop(0))
-          AudioSourceState(sceneAudioSource.bindingKey, None)
+    if (sceneAudioSource.bindingKey === currentSource.bindingKey) None
+    else
+      Option {
+        sceneAudioSource.playbackPattern match {
+          case PlaybackPattern.Silent =>
+            currentSource.audioNodes.foreach(_.audioBufferSourceNode.stop(0))
+            AudioSourceState(sceneAudioSource.bindingKey, None)
 
-        case PlaybackPattern.SingleTrackLoop(track) =>
-          currentSource.audioNodes.foreach(_.audioBufferSourceNode.stop(0))
+          case PlaybackPattern.SingleTrackLoop(track) =>
+            currentSource.audioNodes.foreach(_.audioBufferSourceNode.stop(0))
 
-          val nodes =
-            loadedAudioAssets
-              .find(_.name == track.assetRef)
-              .map(asset => setupNodes(asset.data, track.volume * sceneAudioSource.masterVolume, loop = true))
+            val nodes =
+              loadedAudioAssets
+                .find(_.name == track.assetRef)
+                .map(asset => setupNodes(asset.data, track.volume * sceneAudioSource.masterVolume, loop = true))
 
-          nodes.foreach(_.audioBufferSourceNode.start(0))
+            nodes.foreach(_.audioBufferSourceNode.start(0))
 
-          AudioSourceState(
-            bindingKey = sceneAudioSource.bindingKey,
-            audioNodes = nodes
-          )
+            AudioSourceState(
+              bindingKey = sceneAudioSource.bindingKey,
+              audioNodes = nodes
+            )
+        }
       }
-    }
 
   private case class AudioSourceState(bindingKey: BindingKey, audioNodes: Option[AudioNodes])
   private case class AudioNodes(audioBufferSourceNode: AudioBufferSourceNode, gainNode: GainNode)
 
 }
-

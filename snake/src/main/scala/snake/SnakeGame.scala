@@ -15,8 +15,8 @@ object SnakeGame {
   )
 
   private val magnificationLevel: Int = 1
-  private val viewportWidth: Int = (gridSize.gridSquareSize * gridSize.columns) * magnificationLevel
-  private val viewportHeight: Int = (gridSize.gridSquareSize * gridSize.rows) * magnificationLevel
+  private val viewportWidth: Int      = (gridSize.gridSquareSize * gridSize.columns) * magnificationLevel
+  private val viewportHeight: Int     = (gridSize.gridSquareSize * gridSize.rows) * magnificationLevel
 
   val config: GameConfig = GameConfig(
     viewport = GameViewport(viewportWidth, viewportHeight),

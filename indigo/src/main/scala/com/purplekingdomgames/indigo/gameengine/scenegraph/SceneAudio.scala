@@ -49,7 +49,7 @@ object SceneAudioSource {
 
 sealed trait PlaybackPattern
 object PlaybackPattern {
-  case object Silent extends PlaybackPattern
+  case object Silent                       extends PlaybackPattern
   case class SingleTrackLoop(track: Track) extends PlaybackPattern
 }
 
@@ -68,7 +68,7 @@ object Volume {
   val Max: Volume = Volume(1)
 
   def apply(volume: Double): Volume =
-    new Volume(if(volume < 0) 0 else if(volume > 1) 1 else volume)
+    new Volume(if (volume < 0) 0 else if (volume > 1) 1 else volume)
 
   def product(a: Volume, b: Volume): Volume =
     Volume(a.amount * b.amount)

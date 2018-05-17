@@ -5,10 +5,10 @@ import com.purplekingdomgames.shared.{AssetType, ImageAsset}
 
 object Assets {
 
-  val logoRef = "pk_games_pixel"
-  val cursorRef = "cursor"
+  val logoRef        = "pk_games_pixel"
+  val cursorRef      = "cursor"
   val spriteSheetRef = "spritesheet"
-  val fontRef = "font"
+  val fontRef        = "font"
 
   val images: Set[AssetType] = Set(
     ImageAsset(cursorRef, "assets/cursor.png"),
@@ -64,4 +64,3 @@ object Assets {
       .addChar(FontChar(" ", 145, 52, 23, 23))
 
 }
-

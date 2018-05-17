@@ -5,10 +5,10 @@ import com.purplekingdomgames.shared.{AssetType, ImageAsset, TextAsset}
 
 object SnakeAssets {
 
-  val smallFontName: String = "smallFontName"
-  val snakeTexture: String = "snakeTexture"
+  val smallFontName: String     = "smallFontName"
+  val snakeTexture: String      = "snakeTexture"
   val snakeTiledMapData: String = "snakeTiledMapData"
-  val arenaBg: String = "bg"
+  val arenaBg: String           = "bg"
 
   def assets: Set[AssetType] =
     Set(

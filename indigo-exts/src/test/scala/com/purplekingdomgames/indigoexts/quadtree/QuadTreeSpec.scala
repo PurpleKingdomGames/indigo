@@ -38,7 +38,8 @@ class QuadTreeSpec extends FunSpec with Matchers {
 
     it("should be able to insert an element at a given position") {
 
-      val tree = QuadTree.empty(16)
+      val tree = QuadTree
+        .empty(16)
         .insertElement("a", GridPoint(9, 2))
         .insertElement("b", GridPoint(0, 0))
         .insertElement("c", GridPoint(10, 10))
@@ -70,7 +71,8 @@ class QuadTreeSpec extends FunSpec with Matchers {
 
       val gridPoint = GridPoint(9, 2)
 
-      val tree = QuadTree.empty(16)
+      val tree = QuadTree
+        .empty(16)
         .insertElement("test", gridPoint)
 
       tree.fetchElementAt(gridPoint) shouldEqual Some("test")
@@ -104,7 +106,8 @@ class QuadTreeSpec extends FunSpec with Matchers {
 
       val gridPoint = GridPoint(9, 2)
 
-      val tree = QuadTree.empty(16)
+      val tree = QuadTree
+        .empty(16)
         .insertElement(999, gridPoint)
         .removeElement(gridPoint)
         .prune
@@ -117,7 +120,8 @@ class QuadTreeSpec extends FunSpec with Matchers {
 
       val gridPoint = GridPoint(9, 2)
 
-      val tree = QuadTree.empty(16)
+      val tree = QuadTree
+        .empty(16)
         .insertElement(999, gridPoint)
 
       tree.prune shouldEqual tree

@@ -18,8 +18,7 @@ object BasicSetup extends IndigoGameBasic[MyStartUpData, MyGameModel] {
   def initialModel(startupData: MyStartUpData): MyGameModel =
     MyGameModel()
 
-  def update(gameTime: GameTime, model: MyGameModel): events.GameEvent => MyGameModel = _ =>
-    model
+  def update(gameTime: GameTime, model: MyGameModel): events.GameEvent => MyGameModel = _ => model
 
   def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment =
     noRender

@@ -30,13 +30,11 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
         List(
           AutomataModifier.MoveTo((_, seed, _) => {
             val start = Point.tuple2ToPoint(config.viewport.center)
-            val diff = 30 * (seed.timeAliveDelta / seed.lifeSpan)
+            val diff  = 30 * (seed.timeAliveDelta / seed.lifeSpan)
 
             start + Point(0, -diff.toInt)
           }),
-          AutomataModifier.ChangeAlpha((_, seed, originalAlpha) =>
-            originalAlpha * (seed.timeAliveDelta / seed.lifeSpan)
-          )
+          AutomataModifier.ChangeAlpha((_, seed, originalAlpha) => originalAlpha * (seed.timeAliveDelta / seed.lifeSpan))
         )
       )
     )
@@ -66,20 +64,21 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
       model
   }
 
-  def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment = {
-    model.button.draw(
-      bounds = Rectangle(10, 10, 16, 16),
-      depth = Depth(2),
-      frameInputEvents = frameInputEvents,
-      buttonAssets = ButtonAssets(
-        up = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 0, 16, 16),
-        over = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 16, 16, 16),
-        down = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 32, 16, 16)
+  def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment =
+    model.button
+      .draw(
+        bounds = Rectangle(10, 10, 16, 16),
+        depth = Depth(2),
+        frameInputEvents = frameInputEvents,
+        buttonAssets = ButtonAssets(
+          up = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 0, 16, 16),
+          over = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 16, 16, 16),
+          down = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 32, 16, 16)
+        )
       )
-    ).toSceneUpdateFragment
+      .toSceneUpdateFragment
       .addGameLayerNodes(AutomataFarm.render(gameTime))
       .addGameLayerNodes(Text("click to win!", 30, 10, 1, fontInfo))
-  }
 
   val fontInfo: FontInfo =
     FontInfo(fontName, 320, 230, FontChar("?", 93, 52, 23, 23))

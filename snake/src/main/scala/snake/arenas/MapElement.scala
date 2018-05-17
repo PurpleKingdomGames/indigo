@@ -16,12 +16,12 @@ object MapElement {
 
   case class Wall(gridPoint: GridPoint) extends MapElement {
     def pure[A <: MapElement]: GridPoint => Wall = (gridPoint: GridPoint) => Wall.apply(gridPoint)
-    def renderAsString: String = "Wall"
+    def renderAsString: String                   = "Wall"
   }
 
   case class Apple(gridPoint: GridPoint) extends MapElement {
     def pure[A <: MapElement]: GridPoint => Apple = (gridPoint: GridPoint) => Apple.apply(gridPoint)
-    def renderAsString: String = "Apple"
+    def renderAsString: String                    = "Apple"
   }
 
   object Apple {
@@ -35,11 +35,11 @@ object MapElement {
 
   case class Player1Start(gridPoint: GridPoint) extends MapElement {
     def pure[A <: MapElement]: GridPoint => Player1Start = (gridPoint: GridPoint) => Player1Start.apply(gridPoint)
-    def renderAsString: String = "Player 1 Start"
+    def renderAsString: String                           = "Player 1 Start"
   }
 
   case class Player2Start(gridPoint: GridPoint) extends MapElement {
     def pure[A <: MapElement]: GridPoint => Player2Start = (gridPoint: GridPoint) => Player2Start.apply(gridPoint)
-    def renderAsString: String = "Player 2 Start"
+    def renderAsString: String                           = "Player 2 Start"
   }
 }

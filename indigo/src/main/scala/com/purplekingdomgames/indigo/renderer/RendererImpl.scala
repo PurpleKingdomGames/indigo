@@ -10,7 +10,8 @@ trait IRenderer {
   def drawScene(displayable: Displayable)(implicit metrics: IMetrics): Unit
 }
 
-final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends IRenderer {
+final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas)
+    extends IRenderer {
 
   import RendererFunctions._
 
@@ -36,17 +37,20 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       TextureLookupResult(li.name, organiseImage(cNc.context, li.data))
     }
 
-  private val vertexBuffer: WebGLBuffer = createVertexBuffer(cNc.context)
+  private val vertexBuffer: WebGLBuffer  = createVertexBuffer(cNc.context)
   private val textureBuffer: WebGLBuffer = createVertexBuffer(cNc.context)
   private val effectsBuffer: WebGLBuffer = createVertexBuffer(cNc.context)
 
-  private val shaderProgram = shaderProgramSetup(cNc.context)
+  private val shaderProgram         = shaderProgramSetup(cNc.context)
   private val lightingShaderProgram = lightingShaderProgramSetup(cNc.context)
-  private val mergeShaderProgram = mergeShaderProgramSetup(cNc.context)
+  private val mergeShaderProgram    = mergeShaderProgramSetup(cNc.context)
 
-  private val gameFrameBuffer: FrameBufferComponents = FrameBufferFunctions.createFrameBuffer(cNc, FrameBufferFunctions.createAndSetupTexture(cNc))
-  private val lightingFrameBuffer: FrameBufferComponents = FrameBufferFunctions.createFrameBuffer(cNc, FrameBufferFunctions.createAndSetupTexture(cNc))
-  private val uiFrameBuffer: FrameBufferComponents = FrameBufferFunctions.createFrameBuffer(cNc, FrameBufferFunctions.createAndSetupTexture(cNc))
+  private val gameFrameBuffer: FrameBufferComponents =
+    FrameBufferFunctions.createFrameBuffer(cNc, FrameBufferFunctions.createAndSetupTexture(cNc))
+  private val lightingFrameBuffer: FrameBufferComponents =
+    FrameBufferFunctions.createFrameBuffer(cNc, FrameBufferFunctions.createAndSetupTexture(cNc))
+  private val uiFrameBuffer: FrameBufferComponents =
+    FrameBufferFunctions.createFrameBuffer(cNc, FrameBufferFunctions.createAndSetupTexture(cNc))
 
   def init(): Unit = {
     cNc.context.disable(DEPTH_TEST)
@@ -76,7 +80,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(RenderToConvasEndMetric)
   }
 
-  private def drawLightingLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor)(implicit metrics: IMetrics): Unit = {
+  private def drawLightingLayerToTexture[B](displayLayer: DisplayLayer,
+                                            frameBufferComponents: FrameBufferComponents,
+                                            clearColor: ClearColor)(implicit metrics: IMetrics): Unit = {
 
     // Switch to the frameBuffer
     FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)
@@ -87,7 +93,6 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     // Draw as normal
     DisplayObject.sortAndCompress(displayLayer.displayObjects).foreach { displayObject =>
-
       metrics.record(LightingDrawCallLengthStartMetric)
 
       bindToBuffer(cNc.context, vertexBuffer, displayObject.vertices)
@@ -98,7 +103,6 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       bindShaderToBuffer(cNc, lightingShaderProgram, vertexBuffer, textureBuffer, effectsBuffer)
 
       textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
-
         // Setup Uniforms
         setupLightingFragmentShader(cNc.context, lightingShaderProgram, textureLookup.texture, displayObject.imageRef)
 
@@ -113,7 +117,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   }
 
-  private def drawLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor)(implicit metrics: IMetrics): Unit = {
+  private def drawLayerToTexture[B](displayLayer: DisplayLayer,
+                                    frameBufferComponents: FrameBufferComponents,
+                                    clearColor: ClearColor)(implicit metrics: IMetrics): Unit = {
 
     // Switch to the frameBuffer
     FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)
@@ -136,7 +142,6 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       bindShaderToBuffer(cNc, shaderProgram, vertexBuffer, textureBuffer, effectsBuffer)
 
       textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
-
         // Setup Uniforms
         setupFragmentShader(cNc.context, shaderProgram, textureLookup.texture, displayObject.imageRef)
 
@@ -172,7 +177,11 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     bindShaderToBuffer(cNc, mergeShaderProgram, vertexBuffer, textureBuffer, effectsBuffer)
 
     // Setup Uniforms
-    setupMergeFragmentShader(cNc.context, mergeShaderProgram, gameFrameBuffer.texture, lightingFrameBuffer.texture, uiFrameBuffer.texture)
+    setupMergeFragmentShader(cNc.context,
+                             mergeShaderProgram,
+                             gameFrameBuffer.texture,
+                             lightingFrameBuffer.texture,
+                             uiFrameBuffer.texture)
 
     // Draw
     cNc.context.drawArrays(compressed.mode, 0, compressed.vertexCount)

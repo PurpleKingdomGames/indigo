@@ -1,15 +1,15 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes
 
 case class Rectangle(position: Point, size: Point) {
-  val x: Int = position.x
-  val y: Int = position.y
-  val width: Int = size.x
-  val height: Int = size.y
+  val x: Int       = position.x
+  val y: Int       = position.y
+  val width: Int   = size.x
+  val height: Int  = size.y
   val hash: String = s"$x$y$width$height"
 
-  val left: Int = x
-  val right: Int = x + width
-  val top: Int = y
+  val left: Int   = x
+  val right: Int  = x + width
+  val top: Int    = y
   val bottom: Int = y + height
 
   def isPointWithin(pt: Point): Boolean =
@@ -17,13 +17,13 @@ case class Rectangle(position: Point, size: Point) {
   def isPointWithin(x: Int, y: Int): Boolean = isPointWithin(Point(x, y))
 
   def +(rect: Rectangle): Rectangle = Rectangle(x + rect.x, y + rect.y, width + rect.width, height + rect.height)
-  def +(i: Int): Rectangle = Rectangle(x + i, y + i, width + i, height + i)
+  def +(i: Int): Rectangle          = Rectangle(x + i, y + i, width + i, height + i)
   def -(rect: Rectangle): Rectangle = Rectangle(x - rect.x, y - rect.y, width - rect.width, height - rect.height)
-  def -(i: Int): Rectangle = Rectangle(x - i, y - i, width - i, height - i)
+  def -(i: Int): Rectangle          = Rectangle(x - i, y - i, width - i, height - i)
   def *(rect: Rectangle): Rectangle = Rectangle(x * rect.x, y * rect.y, width * rect.width, height * rect.height)
-  def *(i: Int): Rectangle = Rectangle(x * i, y * i, width * i, height * i)
+  def *(i: Int): Rectangle          = Rectangle(x * i, y * i, width * i, height * i)
   def /(rect: Rectangle): Rectangle = Rectangle(x / rect.x, y / rect.y, width / rect.width, height / rect.height)
-  def /(i: Int): Rectangle = Rectangle(x / i, y / i, width / i, height / i)
+  def /(i: Int): Rectangle          = Rectangle(x / i, y / i, width / i, height / i)
 
   def enclosing(other: Rectangle): Rectangle =
     Rectangle.enclosing(this, other)

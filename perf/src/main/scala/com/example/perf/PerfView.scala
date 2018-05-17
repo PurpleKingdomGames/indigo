@@ -11,9 +11,9 @@ object PerfView {
   def updateView(model: MyGameModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     frameInputEvents.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + position)
-      case None => ()
+      case None           => ()
     }
-    
+
     SceneUpdateFragment(
       gameLayer(model),
       lightingLayer,
@@ -36,32 +36,32 @@ object PerfView {
       currentState.dude.dude.sprite
         .moveTo(pt)
         .withDepth(herdCount - pt.y)
-    }
+  }
 
   def gameLayer(currentState: MyGameModel): List[SceneGraphNode] =
     List(
       currentState.dude.walkDirection match {
-        case d@DudeLeft =>
+        case d @ DudeLeft =>
           currentState.dude.dude.sprite
             .changeCycle(d.cycleName)
             .play()
 
-        case d@DudeRight =>
+        case d @ DudeRight =>
           currentState.dude.dude.sprite
             .changeCycle(d.cycleName)
             .play()
 
-        case d@DudeUp =>
+        case d @ DudeUp =>
           currentState.dude.dude.sprite
             .changeCycle(d.cycleName)
             .play()
 
-        case d@DudeDown =>
+        case d @ DudeDown =>
           currentState.dude.dude.sprite
             .changeCycle(d.cycleName)
             .play()
 
-        case d@DudeIdle =>
+        case d @ DudeIdle =>
           currentState.dude.dude.sprite
             .changeCycle(d.cycleName)
             .play()

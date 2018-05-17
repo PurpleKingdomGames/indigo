@@ -26,18 +26,19 @@ full engine I could clean it up, as a bolt on... I'm awaiting inspiration.
 object AutomataFarm {
 
   private val inventory: mutable.HashMap[AutomataPoolKey, Automaton] = mutable.HashMap()
-  private var paddock: List[SpawnedAutomaton] = Nil
+  private var paddock: List[SpawnedAutomaton]                        = Nil
 
   def register(automaton: Automaton): Unit = {
     inventory.put(automaton.key, automaton)
     ()
   }
 
-  def update(gameTime: GameTime, automataEvent: AutomataEvent): Unit = {
+  def update(gameTime: GameTime, automataEvent: AutomataEvent): Unit =
     automataEvent match {
       case Spawn(key, pt) =>
         inventory.get(key).foreach { k =>
-          paddock = paddock :+ SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running, k.lifespan.millis, 0, Random.nextInt()))
+          paddock = paddock :+ SpawnedAutomaton(k,
+                                                AutomatonSeedValues(pt, gameTime.running, k.lifespan.millis, 0, Random.nextInt()))
         }
 
       case KillAllInPool(key) =>
@@ -52,7 +53,6 @@ object AutomataFarm {
         paddock = Nil
         ()
     }
-  }
 
   def render(gameTime: GameTime): List[SceneGraphNode] = {
     paddock = paddock.filter(_.isAlive(gameTime.running)).map(_.updateDelta(gameTime.delta))
@@ -78,7 +78,7 @@ object AutomataFarm {
           }
 
         case SpriteAutomaton(_, sprite, autoPlay, maybeCycleLabel, _, modifiers) =>
-          def applySpriteModifiers(sp: Sprite): Sprite = {
+          def applySpriteModifiers(sp: Sprite): Sprite =
             modifiers.foldLeft[Sprite](sp) { (s, m) =>
               m match {
                 case ChangeAlpha(f) =>
@@ -95,9 +95,10 @@ object AutomataFarm {
                   s
               }
             }
-          }
 
-          applySpriteModifiers(((s: Sprite) => if(autoPlay) s.play() else s)(maybeCycleLabel.map(l => sprite.changeCycle(l)).getOrElse(sprite)))
+          applySpriteModifiers(
+            ((s: Sprite) => if (autoPlay) s.play() else s)(maybeCycleLabel.map(l => sprite.changeCycle(l)).getOrElse(sprite))
+          )
 
         case TextAutomaton(_, text, _, modifiers) =>
           modifiers.foldLeft(text) { (t, m) =>

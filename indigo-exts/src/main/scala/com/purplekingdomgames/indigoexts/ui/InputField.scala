@@ -51,7 +51,7 @@ object InputField {
 
   object View {
 
-    def applyEvent(bounds: Rectangle, inputField: InputField, frameInputEvents: FrameInputEvents): List[InputFieldEvent] = {
+    def applyEvent(bounds: Rectangle, inputField: InputField, frameInputEvents: FrameInputEvents): List[InputFieldEvent] =
       frameInputEvents.events.foldLeft[List[InputFieldEvent]](Nil) { (acc, e) =>
         e match {
           case MouseEvent.MouseUp(x, y) if bounds.isPointWithin(x, y) =>
@@ -85,31 +85,39 @@ object InputField {
             acc
         }
       }
-    }
 
     private def calculateCursorPosition(textLine: String, offset: Point, fontInfo: FontInfo, cursorPosition: Int): Point = {
-      val lines = textLine.substring(0, cursorPosition).split('\n')
-      val lineCount = Math.max(0, lines.length - 1) + (if(textLine.takeRight(1) == "\n") 1 else 0)
+      val lines      = textLine.substring(0, cursorPosition).split('\n')
+      val lineCount  = Math.max(0, lines.length - 1) + (if (textLine.takeRight(1) == "\n") 1 else 0)
       val lineHeight = Text.calculateBoundsOfLine("a", fontInfo).height
-      val lastLine = if(textLine.takeRight(1) == "\n") "" else lines.reverse.headOption.getOrElse("")
-      val bounds = Text.calculateBoundsOfLine(lastLine, fontInfo)
-      
+      val lastLine   = if (textLine.takeRight(1) == "\n") "" else lines.reverse.headOption.getOrElse("")
+      val bounds     = Text.calculateBoundsOfLine(lastLine, fontInfo)
+
       Point(bounds.size.x, 0) + offset + Point(0, lineHeight * lineCount)
     }
 
-    private def drawCursor(gameTime: GameTime, inputField: InputField, position: Point, depth: Depth, inputFieldAssets: InputFieldAssets): Option[Graphic] = {
+    private def drawCursor(gameTime: GameTime,
+                           inputField: InputField,
+                           position: Point,
+                           depth: Depth,
+                           inputFieldAssets: InputFieldAssets): Option[Graphic] =
       if (((gameTime.running * 0.00001) * 150).toInt % 2 == 0)
         FontRegister.findByFontKey(inputFieldAssets.text.fontKey).map { fontInfo =>
-          inputFieldAssets.cursor.moveTo(calculateCursorPosition(inputField.text, position, fontInfo, inputField.cursorPosition)).withDepth(-(depth.zIndex + 100))
-        }
-      else
+          inputFieldAssets.cursor
+            .moveTo(calculateCursorPosition(inputField.text, position, fontInfo, inputField.cursorPosition))
+            .withDepth(-(depth.zIndex + 100))
+        } else
         None
-    }
 
-    private def render(gameTime: GameTime, position: Point, depth: Depth, inputField: InputField, inputFieldAssets: InputFieldAssets): RenderedInputFieldElements = {
+    private def render(gameTime: GameTime,
+                       position: Point,
+                       depth: Depth,
+                       inputField: InputField,
+                       inputFieldAssets: InputFieldAssets): RenderedInputFieldElements =
       inputField.state match {
         case InputFieldState.Normal =>
-          RenderedInputFieldElements(inputFieldAssets.text.withText(inputField.text).moveTo(position).withDepth(depth.zIndex), None)
+          RenderedInputFieldElements(inputFieldAssets.text.withText(inputField.text).moveTo(position).withDepth(depth.zIndex),
+                                     None)
 
         case InputFieldState.HasFocus =>
           RenderedInputFieldElements(
@@ -117,9 +125,13 @@ object InputField {
             drawCursor(gameTime, inputField, position, depth, inputFieldAssets)
           )
       }
-    }
 
-    def update(gameTime: GameTime, position: Point, depth: Depth, inputField: InputField, frameEvents: FrameInputEvents, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate = {
+    def update(gameTime: GameTime,
+               position: Point,
+               depth: Depth,
+               inputField: InputField,
+               frameEvents: FrameInputEvents,
+               inputFieldAssets: InputFieldAssets): InputFieldViewUpdate = {
       val rendered: RenderedInputFieldElements = render(gameTime, position, depth, inputField, inputFieldAssets)
 
       InputFieldViewUpdate(
@@ -133,28 +145,26 @@ object InputField {
   def deleteCharacter(inputField: InputField): InputField = {
     val splitString = inputField.text.splitAt(inputField.cursorPosition)
 
-    if(splitString._2.isEmpty) inputField
-    else {
+    if (splitString._2.isEmpty) inputField
+    else
       inputField.copy(
         text = splitString._1 + splitString._2.substring(1)
       )
-    }
   }
 
   def backspace(inputField: InputField): InputField = {
     val splitString = inputField.text.splitAt(inputField.cursorPosition)
 
-    if(splitString._1.isEmpty) inputField
-    else {
+    if (splitString._1.isEmpty) inputField
+    else
       inputField.copy(
         text = splitString._1.take(splitString._1.length - 1) + splitString._2,
-        cursorPosition = if(inputField.cursorPosition > 0) inputField.cursorPosition - 1 else inputField.cursorPosition
+        cursorPosition = if (inputField.cursorPosition > 0) inputField.cursorPosition - 1 else inputField.cursorPosition
       )
-    }
   }
 
-  def addCharacter(inputField: InputField, char: String): InputField = {
-    if(inputField.text.length < inputField.options.characterLimit && (char != "\n" || inputField.options.multiLine)) {
+  def addCharacter(inputField: InputField, char: String): InputField =
+    if (inputField.text.length < inputField.options.characterLimit && (char != "\n" || inputField.options.multiLine)) {
       val splitString = inputField.text.splitAt(inputField.cursorPosition)
 
       inputField.copy(
@@ -162,16 +172,23 @@ object InputField {
         cursorPosition = inputField.cursorPosition + 1
       )
     } else inputField
-  }
 
 }
 
-case class InputField(state: InputFieldState, text: String, cursorPosition: Int, options: InputFieldOptions, bindingKey: BindingKey) {
+case class InputField(state: InputFieldState,
+                      text: String,
+                      cursorPosition: Int,
+                      options: InputFieldOptions,
+                      bindingKey: BindingKey) {
 
   def update(inputFieldEvent: InputFieldEvent): InputField =
     InputField.Model.update(this, inputFieldEvent)
 
-  def draw(gameTime: GameTime, position: Point, depth: Depth, frameInputEvents: FrameInputEvents, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate =
+  def draw(gameTime: GameTime,
+           position: Point,
+           depth: Depth,
+           frameInputEvents: FrameInputEvents,
+           inputFieldAssets: InputFieldAssets): InputFieldViewUpdate =
     InputField.View.update(gameTime, position, depth, this, frameInputEvents, inputFieldAssets)
 
   def giveFocus: InputField =
@@ -187,10 +204,10 @@ case class InputField(state: InputFieldState, text: String, cursorPosition: Int,
     )
 
   def cursorLeft: InputField =
-    this.copy(cursorPosition = if(cursorPosition - 1 >= 0) cursorPosition - 1 else cursorPosition)
+    this.copy(cursorPosition = if (cursorPosition - 1 >= 0) cursorPosition - 1 else cursorPosition)
 
   def cursorRight: InputField =
-    this.copy(cursorPosition = if(cursorPosition + 1 <= text.length) cursorPosition + 1 else text.length)
+    this.copy(cursorPosition = if (cursorPosition + 1 <= text.length) cursorPosition + 1 else text.length)
 
   def cursorHome: InputField =
     this.copy(cursorPosition = 0)
@@ -256,14 +273,14 @@ sealed trait InputFieldEvent extends ViewEvent {
   val bindingKey: BindingKey
 }
 object InputFieldEvent {
-  case class Delete(bindingKey: BindingKey) extends InputFieldEvent
-  case class Backspace(bindingKey: BindingKey) extends InputFieldEvent
-  case class CursorLeft(bindingKey: BindingKey) extends InputFieldEvent
-  case class CursorRight(bindingKey: BindingKey) extends InputFieldEvent
-  case class CursorHome(bindingKey: BindingKey) extends InputFieldEvent
-  case class CursorEnd(bindingKey: BindingKey) extends InputFieldEvent
-  case class GiveFocus(bindingKey: BindingKey) extends InputFieldEvent
-  case class LoseFocus(bindingKey: BindingKey) extends InputFieldEvent
+  case class Delete(bindingKey: BindingKey)                     extends InputFieldEvent
+  case class Backspace(bindingKey: BindingKey)                  extends InputFieldEvent
+  case class CursorLeft(bindingKey: BindingKey)                 extends InputFieldEvent
+  case class CursorRight(bindingKey: BindingKey)                extends InputFieldEvent
+  case class CursorHome(bindingKey: BindingKey)                 extends InputFieldEvent
+  case class CursorEnd(bindingKey: BindingKey)                  extends InputFieldEvent
+  case class GiveFocus(bindingKey: BindingKey)                  extends InputFieldEvent
+  case class LoseFocus(bindingKey: BindingKey)                  extends InputFieldEvent
   case class AddCharacter(bindingKey: BindingKey, char: String) extends InputFieldEvent
 }
 

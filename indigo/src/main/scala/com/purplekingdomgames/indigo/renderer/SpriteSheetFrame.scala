@@ -2,8 +2,11 @@ package com.purplekingdomgames.indigo.renderer
 
 object SpriteSheetFrame {
 
-  def calculateFrameOffset(imageSize: Vector2, frameSize: Vector2, framePosition: Vector2, textureOffset: Vector2): SpriteSheetFrameCoordinateOffsets = {
-    val scaleFactor = frameSize / imageSize
+  def calculateFrameOffset(imageSize: Vector2,
+                           frameSize: Vector2,
+                           framePosition: Vector2,
+                           textureOffset: Vector2): SpriteSheetFrameCoordinateOffsets = {
+    val scaleFactor       = frameSize / imageSize
     val frameOffsetFactor = (framePosition + textureOffset) / frameSize
     val translationFactor = scaleFactor * frameOffsetFactor
 

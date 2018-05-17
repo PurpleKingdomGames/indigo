@@ -40,23 +40,24 @@ object AudioExample extends IndigoGameBasic[Unit, MyGameModel] {
       model
   }
 
-  def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment = {
-    model.button.draw(
-      bounds = Rectangle(10, 10, 16, 16),
-      depth = Depth(2),
-      frameInputEvents = frameInputEvents,
-      buttonAssets = ButtonAssets(
-        up = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 0, 16, 16),
-        over = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 16, 16, 16),
-        down = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 32, 16, 16)
+  def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment =
+    model.button
+      .draw(
+        bounds = Rectangle(10, 10, 16, 16),
+        depth = Depth(2),
+        frameInputEvents = frameInputEvents,
+        buttonAssets = ButtonAssets(
+          up = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 0, 16, 16),
+          over = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 16, 16, 16),
+          down = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 32, 16, 16)
+        )
       )
-    ).toSceneUpdateFragment
+      .toSceneUpdateFragment
       .withAudio(
         SceneAudio(
           SceneAudioSource(BindingKey("My bg music"), PlaybackPattern.SingleTrackLoop(Track("music")))
         )
       )
-  }
 }
 
 case class MyGameModel(button: Button, count: Int)

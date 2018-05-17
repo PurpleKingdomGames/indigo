@@ -9,7 +9,7 @@ class TextureAtlasSpec extends FunSpec with Matchers {
   describe("A texture atlas") {
 
     it("should be able to generate a TextureAtlas with the default maximum") {
-      
+
       val imageRefs = List(
         ImageRef("a", 10, 10),
         ImageRef("b", 1024, 1024),
@@ -18,16 +18,26 @@ class TextureAtlasSpec extends FunSpec with Matchers {
         ImageRef("e", 5000, 300)
       )
 
-      val lookupByName: String => Option[LoadedImageAsset] = _ => None
+      val lookupByName: String => Option[LoadedImageAsset]                           = _ => None
       val createAtlasFunc: (TextureMap, String => Option[LoadedImageAsset]) => Atlas = (_, _) => Atlas(PowerOfTwo.Max, None)
 
       val actual: TextureAtlas = TextureAtlas.create(imageRefs, lookupByName, createAtlasFunc)
 
-      actual.lookUpByName("a") shouldEqual Some(AtlasLookupResult("a", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max, None), Point(512, 0)))
-      actual.lookUpByName("b") shouldEqual Some(AtlasLookupResult("b", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max, None), Point(1024, 0)))
-      actual.lookUpByName("c") shouldEqual Some(AtlasLookupResult("c", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max, None), Point.zero))
-      actual.lookUpByName("d") shouldEqual Some(AtlasLookupResult("d", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max, None), Point(0, 1024)))
-      actual.lookUpByName("e") shouldEqual Some(AtlasLookupResult("e", AtlasId(TextureAtlas.IdPrefix + "1"), Atlas(PowerOfTwo.Max, None), Point.zero))
+      actual.lookUpByName("a") shouldEqual Some(
+        AtlasLookupResult("a", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max, None), Point(512, 0))
+      )
+      actual.lookUpByName("b") shouldEqual Some(
+        AtlasLookupResult("b", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max, None), Point(1024, 0))
+      )
+      actual.lookUpByName("c") shouldEqual Some(
+        AtlasLookupResult("c", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max, None), Point.zero)
+      )
+      actual.lookUpByName("d") shouldEqual Some(
+        AtlasLookupResult("d", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo.Max, None), Point(0, 1024))
+      )
+      actual.lookUpByName("e") shouldEqual Some(
+        AtlasLookupResult("e", AtlasId(TextureAtlas.IdPrefix + "1"), Atlas(PowerOfTwo.Max, None), Point.zero)
+      )
 
     }
 
@@ -41,22 +51,32 @@ class TextureAtlasSpec extends FunSpec with Matchers {
         ImageRef("e", 64, 64)
       )
 
-      val lookupByName: String => Option[LoadedImageAsset] = _ => None
+      val lookupByName: String => Option[LoadedImageAsset]                           = _ => None
       val createAtlasFunc: (TextureMap, String => Option[LoadedImageAsset]) => Atlas = (_, _) => Atlas(PowerOfTwo._128, None)
 
       val actual: TextureAtlas = TextureAtlas.createWithMaxSize(PowerOfTwo._128, imageRefs, lookupByName, createAtlasFunc)
 
-      actual.lookUpByName("a") shouldEqual Some(AtlasLookupResult("a", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo._128, None), Point(0, 0)))
-      actual.lookUpByName("b") shouldEqual Some(AtlasLookupResult("b", AtlasId(TextureAtlas.IdPrefix + "1"), Atlas(PowerOfTwo._128, None), Point(0, 0)))
-      actual.lookUpByName("c") shouldEqual Some(AtlasLookupResult("c", AtlasId(TextureAtlas.IdPrefix + "2"), Atlas(PowerOfTwo._128, None), Point(0, 0)))
-      actual.lookUpByName("d") shouldEqual Some(AtlasLookupResult("d", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo._128, None), Point(64, 0)))
-      actual.lookUpByName("e") shouldEqual Some(AtlasLookupResult("e", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo._128, None), Point(0, 64)))
+      actual.lookUpByName("a") shouldEqual Some(
+        AtlasLookupResult("a", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo._128, None), Point(0, 0))
+      )
+      actual.lookUpByName("b") shouldEqual Some(
+        AtlasLookupResult("b", AtlasId(TextureAtlas.IdPrefix + "1"), Atlas(PowerOfTwo._128, None), Point(0, 0))
+      )
+      actual.lookUpByName("c") shouldEqual Some(
+        AtlasLookupResult("c", AtlasId(TextureAtlas.IdPrefix + "2"), Atlas(PowerOfTwo._128, None), Point(0, 0))
+      )
+      actual.lookUpByName("d") shouldEqual Some(
+        AtlasLookupResult("d", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo._128, None), Point(64, 0))
+      )
+      actual.lookUpByName("e") shouldEqual Some(
+        AtlasLookupResult("e", AtlasId(TextureAtlas.IdPrefix + "0"), Atlas(PowerOfTwo._128, None), Point(0, 64))
+      )
 
     }
   }
 
   describe("The texture atlas functions") {
-    
+
     it("should be able to pick the right bucket for my image size") {
       TextureAtlasFunctions.pickPowerOfTwoSizeFor(TextureAtlas.supportedSizes, 116, 24).value shouldEqual 128
     }
@@ -90,7 +110,7 @@ class TextureAtlasSpec extends FunSpec with Matchers {
 
     it("should be able to create a tree from one image") {
 
-      val imageRef = ImageRef("b", 1024, 1024)
+      val imageRef   = ImageRef("b", 1024, 1024)
       val powerOfTwo = PowerOfTwo._1024
 
       val original = TextureDetails(imageRef, powerOfTwo)
@@ -124,7 +144,9 @@ class TextureAtlasSpec extends FunSpec with Matchers {
         tex("k", PowerOfTwo._256)
       )
 
-      TextureAtlasFunctions.groupTexturesIntoAtlasBuckets(PowerOfTwo._256)(list).forall(l => l.map(_.size.value).sum <= 256 * 2) shouldEqual true
+      TextureAtlasFunctions
+        .groupTexturesIntoAtlasBuckets(PowerOfTwo._256)(list)
+        .forall(l => l.map(_.size.value).sum <= 256 * 2) shouldEqual true
 
     }
 
@@ -194,26 +216,32 @@ class TextureAtlasSpec extends FunSpec with Matchers {
     it("should be able to merge a single item tree with a more complex tree together") {
 
       val expected =
-        AtlasQuadNode(PowerOfTwo._2048,
+        AtlasQuadNode(
+          PowerOfTwo._2048,
           AtlasQuadDivision(
-            AtlasQuadNode(PowerOfTwo._1024,AtlasTexture(ImageRef("a",1024,768))),
-            AtlasQuadNode(PowerOfTwo._1024,
+            AtlasQuadNode(PowerOfTwo._1024, AtlasTexture(ImageRef("a", 1024, 768))),
+            AtlasQuadNode(
+              PowerOfTwo._1024,
               AtlasQuadDivision(
-                AtlasQuadNode(PowerOfTwo._512,AtlasTexture(ImageRef("b",500,400))),
+                AtlasQuadNode(PowerOfTwo._512, AtlasTexture(ImageRef("b", 500, 400))),
                 AtlasQuadEmpty(PowerOfTwo._512),
                 AtlasQuadEmpty(PowerOfTwo._512),
                 AtlasQuadEmpty(PowerOfTwo._512)
               )
             ),
-            AtlasQuadNode(PowerOfTwo._1024,
+            AtlasQuadNode(
+              PowerOfTwo._1024,
               AtlasQuadDivision(
-                AtlasQuadNode(PowerOfTwo._512,
+                AtlasQuadNode(
+                  PowerOfTwo._512,
                   AtlasQuadDivision(
-                    AtlasQuadNode(PowerOfTwo._256,
+                    AtlasQuadNode(
+                      PowerOfTwo._256,
                       AtlasQuadDivision(
-                        AtlasQuadNode(PowerOfTwo._128,
+                        AtlasQuadNode(
+                          PowerOfTwo._128,
                           AtlasQuadDivision(
-                            AtlasQuadNode(PowerOfTwo._64,AtlasTexture(ImageRef("c",62,48))),
+                            AtlasQuadNode(PowerOfTwo._64, AtlasTexture(ImageRef("c", 62, 48))),
                             AtlasQuadEmpty(PowerOfTwo._64),
                             AtlasQuadEmpty(PowerOfTwo._64),
                             AtlasQuadEmpty(PowerOfTwo._64)
@@ -234,13 +262,16 @@ class TextureAtlasSpec extends FunSpec with Matchers {
                 AtlasQuadEmpty(PowerOfTwo._512)
               )
             ),
-            AtlasQuadNode(PowerOfTwo._1024,
+            AtlasQuadNode(
+              PowerOfTwo._1024,
               AtlasQuadDivision(
-                AtlasQuadNode(PowerOfTwo._512,
+                AtlasQuadNode(
+                  PowerOfTwo._512,
                   AtlasQuadDivision(
-                    AtlasQuadNode(PowerOfTwo._256,
+                    AtlasQuadNode(
+                      PowerOfTwo._256,
                       AtlasQuadDivision(
-                        AtlasQuadNode(PowerOfTwo._128,AtlasTexture(ImageRef("d",62,127))),
+                        AtlasQuadNode(PowerOfTwo._128, AtlasTexture(ImageRef("d", 62, 127))),
                         AtlasQuadEmpty(PowerOfTwo._128),
                         AtlasQuadEmpty(PowerOfTwo._128),
                         AtlasQuadEmpty(PowerOfTwo._128)
@@ -263,7 +294,7 @@ class TextureAtlasSpec extends FunSpec with Matchers {
 
       TextureAtlasFunctions.mergeTrees(aPlusB, c, max) match {
         case Some(aPlusBPlusC) => TextureAtlasFunctions.mergeTrees(aPlusBPlusC, d, max) shouldEqual Some(expected)
-        case None => fail("Unexpected None...")
+        case None              => fail("Unexpected None...")
       }
 
     }

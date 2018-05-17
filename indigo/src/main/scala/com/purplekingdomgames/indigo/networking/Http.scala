@@ -7,8 +7,7 @@ import org.scalajs.dom.XMLHttpRequest
 
 object Http {
 
-  def processRequest(request: HttpRequest): Unit = {
-
+  def processRequest(request: HttpRequest): Unit =
     try {
 
       val xhr = new XMLHttpRequest
@@ -22,24 +21,29 @@ object Http {
       xhr.onload = (_: dom.Event) => {
 
         val parsedHeaders: Map[String, String] =
-          xhr.getAllResponseHeaders()
+          xhr
+            .getAllResponseHeaders()
             .split("\\r\\n")
-            .map(p => p.split(':').map(_.trim).toList match {
-              case Nil =>
-                None
-              case x :: y :: Nil =>
-                Option((x, y))
+            .map(
+              p =>
+                p.split(':').map(_.trim).toList match {
+                  case Nil =>
+                    None
+                  case x :: y :: Nil =>
+                    Option((x, y))
 
-              case x :: Nil =>
-                Option((x, ""))
+                  case x :: Nil =>
+                    Option((x, ""))
 
-              case _ =>
-                None
+                  case _ =>
+                    None
 
-            }).collect { case Some(t) => t}
+              }
+            )
+            .collect { case Some(t) => t }
             .foldLeft(Map.empty[String, String])(_ + _)
 
-        val body = ((str: String) => if(str.isEmpty) None else Option(str))(xhr.responseText)
+        val body = ((str: String) => if (str.isEmpty) None else Option(str))(xhr.responseText)
 
         GlobalEventStream.pushGameEvent(
           HttpResponse(
@@ -50,24 +54,21 @@ object Http {
         )
       }
 
-      xhr.onerror = (_: dom.Event) => {
-        GlobalEventStream.pushGameEvent(HttpError)
-      }
+      xhr.onerror = (_: dom.Event) => GlobalEventStream.pushGameEvent(HttpError)
 
-      if(request.body.isDefined) xhr.send(request.body.get)
+      if (request.body.isDefined) xhr.send(request.body.get)
       else xhr.send()
 
     } catch {
       case _: Throwable =>
         GlobalEventStream.pushGameEvent(HttpError)
     }
-  }
 
 }
 
 object HttpMethod {
-  val GET: String = "GET"
-  val POST: String = "POST"
-  val PUT: String = "PUT"
+  val GET: String    = "GET"
+  val POST: String   = "POST"
+  val PUT: String    = "PUT"
   val DELETE: String = "DELETE"
 }

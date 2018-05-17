@@ -59,15 +59,21 @@ object View {
 //      drawActors(currentState.level.gameActors)
 //    )
 
-  def generate(gameModel: NinjaAssaultGameModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
+  def generate(gameModel: NinjaAssaultGameModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     gameModel.activeScene match {
       case Logo(_) => LogoView.sceneGraph(frameInputEvents)
       case Menu(_) => MenuView.sceneGraph()
     }
-  }
 
   def cursor: Graphic =
-    Graphic(GlobalSignals.MousePosition.x / Settings.gameSetup.magnification, GlobalSignals.MousePosition.y / Settings.gameSetup.magnification, 32, 32, 1000, Assets.cursorRef) // Hide cursor with -->  `* {cursor: none;}`
+    Graphic(
+      GlobalSignals.MousePosition.x / Settings.gameSetup.magnification,
+      GlobalSignals.MousePosition.y / Settings.gameSetup.magnification,
+      32,
+      32,
+      1000,
+      Assets.cursorRef
+    ) // Hide cursor with -->  `* {cursor: none;}`
 
 }
 
@@ -75,7 +81,7 @@ object LogoView {
 
   def sceneGraph(frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     val events: List[ViewEvent] =
-      if(frameInputEvents.wasMouseClickedWithin(Settings.screenArea)) List(JumpToMenu)
+      if (frameInputEvents.wasMouseClickedWithin(Settings.screenArea)) List(JumpToMenu)
       else Nil
 
     SceneUpdateFragment(
@@ -103,7 +109,6 @@ object LogoView {
 object MenuView {
 
   def sceneGraph(): SceneUpdateFragment =
-
     SceneUpdateFragment(
       gameLayer = gameLayer,
       lightingLayer = Nil,
@@ -117,11 +122,15 @@ object MenuView {
     List(
       Graphic(72, 22, 256, 256, 1, Assets.logoRef),
       Text("NINJA ASSAULT!", Settings.activeHorizontalCenter, 10, 1, Assets.fontKey).withAlignment(AlignCenter),
-      Text("CLICK TO START", Settings.activeHorizontalCenter, Settings.activeScreenHeight - 10 - Assets.fontInfo.unknownChar.bounds.height, 1, Assets.fontKey).withAlignment(AlignCenter)
+      Text("CLICK TO START",
+           Settings.activeHorizontalCenter,
+           Settings.activeScreenHeight - 10 - Assets.fontInfo.unknownChar.bounds.height,
+           1,
+           Assets.fontKey).withAlignment(AlignCenter)
     )
 
   private def uiLayer: List[SceneGraphNode] =
     List(
-       View.cursor
+      View.cursor
     )
 }

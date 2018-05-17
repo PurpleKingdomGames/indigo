@@ -41,7 +41,7 @@ object AsepriteHelper {
         None
     }
 
-  private def extractFrames(frameTag: AsepriteFrameTag, asepriteFrames: List[AsepriteFrame]): List[Frame] = {
+  private def extractFrames(frameTag: AsepriteFrameTag, asepriteFrames: List[AsepriteFrame]): List[Frame] =
     asepriteFrames.slice(frameTag.from, frameTag.to + 1).map { aseFrame =>
       Frame(
         bounds = Rectangle(
@@ -51,27 +51,27 @@ object AsepriteHelper {
         duration = aseFrame.duration
       )
     }
-  }
 
-  private def extractCycles(aseprite: Aseprite): List[Cycle] = {
-    aseprite.meta.frameTags.map { frameTag =>
-      extractFrames(frameTag, aseprite.frames) match {
-        case Nil =>
-          Logger.info("Failed to extract cycle with frameTag: " + frameTag)
-          None
-        case x :: xs =>
-          Option(
-            Cycle(
-              label = frameTag.name,
-              frame = x,
-              frames = xs
+  private def extractCycles(aseprite: Aseprite): List[Cycle] =
+    aseprite.meta.frameTags
+      .map { frameTag =>
+        extractFrames(frameTag, aseprite.frames) match {
+          case Nil =>
+            Logger.info("Failed to extract cycle with frameTag: " + frameTag)
+            None
+          case x :: xs =>
+            Option(
+              Cycle(
+                label = frameTag.name,
+                frame = x,
+                frames = xs
+              )
             )
-          )
+        }
       }
-    }.collect { case Some(s) => s }
-  }
+      .collect { case Some(s) => s }
 
-  def toSpriteAndAnimations(aseprite: Aseprite, depth: Depth, imageAssetRef: String): Option[SpriteAndAnimations] = {
+  def toSpriteAndAnimations(aseprite: Aseprite, depth: Depth, imageAssetRef: String): Option[SpriteAndAnimations] =
     extractCycles(aseprite) match {
       case Nil =>
         Logger.info("No animation frames found in Aseprit: " + aseprite)
@@ -99,13 +99,12 @@ object AsepriteHelper {
               animationsKey = animations.animationsKey,
               ref = Point(0, 0),
               effects = Effects.default,
-              eventHandler = (_:(Rectangle, GameEvent)) => None
+              eventHandler = (_: (Rectangle, GameEvent)) => None
             ),
             animations
           )
         )
     }
-  }
 
 }
 

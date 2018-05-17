@@ -9,13 +9,20 @@ Animations are really timeline animations:
 Construction is about adding animation cycles with frames
 The API provided is about issuing commands to control playback.
  */
-case class Animations(animationsKey: AnimationsKey, imageAssetRef: String, spriteSheetSize: Point, currentCycleLabel: CycleLabel, cycle: Cycle, cycles: Map[CycleLabel, Cycle], actions: List[AnimationAction]) {
+case class Animations(animationsKey: AnimationsKey,
+                      imageAssetRef: String,
+                      spriteSheetSize: Point,
+                      currentCycleLabel: CycleLabel,
+                      cycle: Cycle,
+                      cycles: Map[CycleLabel, Cycle],
+                      actions: List[AnimationAction]) {
 
   private val nonEmptyCycles: Map[CycleLabel, Cycle] = cycles ++ Map(cycle.label -> cycle)
 
   def currentCycle: Cycle = nonEmptyCycles.getOrElse(currentCycleLabel, nonEmptyCycles.head._2)
 
-  def addCycle(cycle: Cycle) = Animations(animationsKey, imageAssetRef, spriteSheetSize, currentCycleLabel, cycle, nonEmptyCycles, Nil)
+  def addCycle(cycle: Cycle) =
+    Animations(animationsKey, imageAssetRef, spriteSheetSize, currentCycleLabel, cycle, nonEmptyCycles, Nil)
 
   def addAction(action: AnimationAction): Animations = this.copy(actions = actions :+ action)
 
@@ -28,7 +35,8 @@ case class Animations(animationsKey: AnimationsKey, imageAssetRef: String, sprit
 
   private[gameengine] def currentFrame: Frame = currentCycle.currentFrame
 
-  private[gameengine] def saveMemento(bindingKey: BindingKey): AnimationMemento = AnimationMemento(bindingKey, currentCycleLabel, currentCycle.saveMemento)
+  private[gameengine] def saveMemento(bindingKey: BindingKey): AnimationMemento =
+    AnimationMemento(bindingKey, currentCycleLabel, currentCycle.saveMemento)
 
   private[gameengine] def applyMemento(memento: AnimationMemento): Animations =
     Animations(
@@ -36,10 +44,10 @@ case class Animations(animationsKey: AnimationsKey, imageAssetRef: String, sprit
       imageAssetRef = imageAssetRef,
       spriteSheetSize = spriteSheetSize,
       currentCycleLabel = memento.currentCycleLabel,
-      cycle =
-        nonEmptyCycles
-          .getOrElse(memento.currentCycleLabel, nonEmptyCycles.head._2)
-          .copy(playheadPosition = memento.currentCycleMemento.playheadPosition, lastFrameAdvance = memento.currentCycleMemento.lastFrameAdvance),
+      cycle = nonEmptyCycles
+        .getOrElse(memento.currentCycleLabel, nonEmptyCycles.head._2)
+        .copy(playheadPosition = memento.currentCycleMemento.playheadPosition,
+              lastFrameAdvance = memento.currentCycleMemento.lastFrameAdvance),
       cycles = nonEmptyCycles.filter(p => p._1.label != memento.currentCycleLabel.label),
       actions = actions
     )
@@ -58,7 +66,18 @@ case class Animations(animationsKey: AnimationsKey, imageAssetRef: String, sprit
 }
 
 object Animations {
-  def apply(animationsKey: AnimationsKey, imageAssetRef: String, spriteSheetWidth: Int, spriteSheetHeight: Int, cycle: Cycle): Animations = Animations(animationsKey, imageAssetRef, Point(spriteSheetWidth, spriteSheetHeight), cycle.label, cycle, Map.empty[CycleLabel, Cycle], Nil)
+  def apply(animationsKey: AnimationsKey,
+            imageAssetRef: String,
+            spriteSheetWidth: Int,
+            spriteSheetHeight: Int,
+            cycle: Cycle): Animations =
+    Animations(animationsKey,
+               imageAssetRef,
+               Point(spriteSheetWidth, spriteSheetHeight),
+               cycle.label,
+               cycle,
+               Map.empty[CycleLabel, Cycle],
+               Nil)
 }
 
 case class AnimationsKey(key: String) extends AnyVal {
@@ -70,10 +89,15 @@ object AnimationsKey {
     a.key == b.key
 }
 
-case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame], private[gameengine] val playheadPosition: Int, private[gameengine] val lastFrameAdvance: Double) {
+case class Cycle(label: CycleLabel,
+                 frame: Frame,
+                 frames: List[Frame],
+                 private[gameengine] val playheadPosition: Int,
+                 private[gameengine] val lastFrameAdvance: Double) {
   private val nonEmptyFrames: List[Frame] = frame :: frames
 
-  def addFrame(newFrame: Frame): Cycle = Cycle(label, nonEmptyFrames.head, nonEmptyFrames.tail ++ List(newFrame), playheadPosition, lastFrameAdvance)
+  def addFrame(newFrame: Frame): Cycle =
+    Cycle(label, nonEmptyFrames.head, nonEmptyFrames.tail ++ List(newFrame), playheadPosition, lastFrameAdvance)
 
   private val frameCount: Int = nonEmptyFrames.length
 
@@ -89,7 +113,8 @@ case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame], private[g
     actions.foldLeft(this) { (cycle, action) =>
       action match {
         case Play =>
-          val next = Cycle.calculateNextPlayheadPosition(gameTime, playheadPosition, currentFrame.duration, frameCount, lastFrameAdvance)
+          val next =
+            Cycle.calculateNextPlayheadPosition(gameTime, playheadPosition, currentFrame.duration, frameCount, lastFrameAdvance)
           cycle.copy(
             playheadPosition = next.position,
             lastFrameAdvance = next.lastFrameAdvance
@@ -104,7 +129,7 @@ case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame], private[g
           cycle.copy(playheadPosition = frameCount - 1)
 
         case JumpToFrame(number) =>
-          if(number > frameCount - 1) cycle.copy(playheadPosition = frameCount - 1)
+          if (number > frameCount - 1) cycle.copy(playheadPosition = frameCount - 1)
           else cycle.copy(playheadPosition = number)
       }
     }
@@ -112,15 +137,18 @@ case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame], private[g
 }
 
 object Cycle {
-  def apply(label: String, frame: Frame): Cycle = Cycle(CycleLabel(label), frame, Nil, 0, 0)
+  def apply(label: String, frame: Frame): Cycle                      = Cycle(CycleLabel(label), frame, Nil, 0, 0)
   def apply(label: String, frame: Frame, frames: List[Frame]): Cycle = Cycle(CycleLabel(label), frame, frames, 0, 0)
 
-  private[gameengine] def calculateNextPlayheadPosition(gameTime: GameTime, currentPosition: Int, frameDuration: Int, frameCount: Int, lastFrameAdvance: Double): NextPlayheadPositon =
-    if (gameTime.running >= lastFrameAdvance + frameDuration) {
+  private[gameengine] def calculateNextPlayheadPosition(gameTime: GameTime,
+                                                        currentPosition: Int,
+                                                        frameDuration: Int,
+                                                        frameCount: Int,
+                                                        lastFrameAdvance: Double): NextPlayheadPositon =
+    if (gameTime.running >= lastFrameAdvance + frameDuration)
       NextPlayheadPositon((currentPosition + 1) % frameCount, gameTime.running)
-    } else {
+    else
       NextPlayheadPositon(currentPosition, lastFrameAdvance)
-    }
 
 }
 
@@ -162,6 +190,8 @@ object AnimationAction {
 
 private[gameengine] case class NextPlayheadPositon(position: Int, lastFrameAdvance: Double)
 
-private[gameengine] case class AnimationMemento(bindingKey: BindingKey, currentCycleLabel: CycleLabel, currentCycleMemento: CycleMemento)
+private[gameengine] case class AnimationMemento(bindingKey: BindingKey,
+                                                currentCycleLabel: CycleLabel,
+                                                currentCycleMemento: CycleMemento)
 
 private[gameengine] case class CycleMemento(playheadPosition: Int, lastFrameAdvance: Double)

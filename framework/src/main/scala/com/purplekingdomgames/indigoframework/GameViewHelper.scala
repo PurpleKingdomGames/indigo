@@ -19,16 +19,12 @@ object GameViewHelper {
     // stand well back
     // TODO: There must always be a scene, so this optional case should never happen.
     // TODO: The types are punishing us here, something to review
-    val graphics: List[Graphic] = model
-      .gameDefinition
-      .scenes
+    val graphics: List[Graphic] = model.gameDefinition.scenes
       .find(_.active)
       .map(_.entities)
       .getOrElse(Nil)
       .map { id =>
-        model
-          .gameDefinition
-          .entities
+        model.gameDefinition.entities
           .find(_.id == id)
       }
       .collect { case Some(s) => s }

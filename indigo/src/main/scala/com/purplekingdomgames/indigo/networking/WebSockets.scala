@@ -11,27 +11,25 @@ import scala.collection.mutable
 object WebSockets {
 
   private val connections: mutable.HashMap[WebSocketId, dom.WebSocket] = mutable.HashMap()
-  private val configs: mutable.HashMap[WebSocketId, WebSocketConfig] = mutable.HashMap()
+  private val configs: mutable.HashMap[WebSocketId, WebSocketConfig]   = mutable.HashMap()
 
   def processSendEvent(event: WebSocketEvent with NetworkSendEvent): Unit =
-    try {
-      event match {
-        case WebSocketEvent.ConnectOnly(config) =>
-          reEstablishConnection(insertUpdateConfig(config), None)
-          ()
+    try event match {
+      case WebSocketEvent.ConnectOnly(config) =>
+        reEstablishConnection(insertUpdateConfig(config), None)
+        ()
 
-        case WebSocketEvent.Open(message, config) =>
-          reEstablishConnection(insertUpdateConfig(config), Option(message))
-          ()
+      case WebSocketEvent.Open(message, config) =>
+        reEstablishConnection(insertUpdateConfig(config), Option(message))
+        ()
 
-        case WebSocketEvent.Send(message, config) =>
-          reEstablishConnection(insertUpdateConfig(config), None).foreach { socket =>
-            socket.send(message)
-          }
+      case WebSocketEvent.Send(message, config) =>
+        reEstablishConnection(insertUpdateConfig(config), None).foreach { socket =>
+          socket.send(message)
+        }
 
-        case _ =>
-          ()
-      }
+      case _ =>
+        ()
     } catch {
       case e: Throwable =>
         GlobalEventStream.pushGameEvent(WebSocketEvent.Error(event.giveId.getOrElse(WebSocketId("<not found>")), e.getMessage))
@@ -40,55 +38,52 @@ object WebSockets {
   private def insertUpdateConfig(config: WebSocketConfig): WebSocketConfig = {
     val maybeConfig = configs.get(config.id)
 
-    maybeConfig.flatMap { c =>
-      if (c === config)
-        Option(c)
-      else {
-        configs.remove(config.id)
-        configs.put(config.id, config)
+    maybeConfig
+      .flatMap { c =>
+        if (c === config)
+          Option(c)
+        else {
+          configs.remove(config.id)
+          configs.put(config.id, config)
+        }
       }
-    }.getOrElse(config)
+      .getOrElse(config)
   }
 
-  private def reEstablishConnection(config: WebSocketConfig, onOpenSendMessage: Option[String]): Option[dom.WebSocket] = {
-    connections.get(config.id).flatMap { conn =>
-      WebSocketReadyState.fromInt(conn.readyState) match {
-        case CLOSING | CLOSED =>
-          newConnection(config, onOpenSendMessage).flatMap { newConn =>
-            connections.remove(config.id)
-            connections.put(config.id, newConn)
-          }
+  private def reEstablishConnection(config: WebSocketConfig, onOpenSendMessage: Option[String]): Option[dom.WebSocket] =
+    connections
+      .get(config.id)
+      .flatMap { conn =>
+        WebSocketReadyState.fromInt(conn.readyState) match {
+          case CLOSING | CLOSED =>
+            newConnection(config, onOpenSendMessage).flatMap { newConn =>
+              connections.remove(config.id)
+              connections.put(config.id, newConn)
+            }
 
-        case _ =>
-          Option(conn)
+          case _ =>
+            Option(conn)
+        }
       }
-    }.orElse {
-      newConnection(config, onOpenSendMessage).flatMap { newConn =>
-        connections.remove(config.id)
-        connections.put(config.id, newConn)
+      .orElse {
+        newConnection(config, onOpenSendMessage).flatMap { newConn =>
+          connections.remove(config.id)
+          connections.put(config.id, newConn)
+        }
       }
-    }
-  }
 
-  private def newConnection(config: WebSocketConfig, onOpenSendMessage: Option[String]): Option[dom.WebSocket] = {
+  private def newConnection(config: WebSocketConfig, onOpenSendMessage: Option[String]): Option[dom.WebSocket] =
     try {
       val socket = new dom.WebSocket(config.address)
 
-      socket.onmessage =
-        (e: dom.MessageEvent) =>
-          GlobalEventStream.pushGameEvent(WebSocketEvent.Receive(config.id, e.data.toString))
+      socket.onmessage = (e: dom.MessageEvent) =>
+        GlobalEventStream.pushGameEvent(WebSocketEvent.Receive(config.id, e.data.toString))
 
-      socket.onopen =
-        (_: dom.Event) =>
-          onOpenSendMessage.foreach(msg => socket.send(msg))
+      socket.onopen = (_: dom.Event) => onOpenSendMessage.foreach(msg => socket.send(msg))
 
-      socket.onerror =
-        (e: dom.ErrorEvent) =>
-          GlobalEventStream.pushGameEvent(WebSocketEvent.Error(config.id, e.message))
+      socket.onerror = (e: dom.ErrorEvent) => GlobalEventStream.pushGameEvent(WebSocketEvent.Error(config.id, e.message))
 
-      socket.onclose =
-        (_: dom.CloseEvent) =>
-          GlobalEventStream.pushGameEvent(WebSocketEvent.Close(config.id))
+      socket.onclose = (_: dom.CloseEvent) => GlobalEventStream.pushGameEvent(WebSocketEvent.Close(config.id))
 
       Option(socket)
     } catch {
@@ -96,7 +91,6 @@ object WebSockets {
         Logger.info("Error trying to set up a websocket: " + e.getMessage)
         None
     }
-  }
 
 }
 
@@ -131,35 +125,35 @@ sealed trait WebSocketReadyState {
 object WebSocketReadyState {
 
   case object CONNECTING extends WebSocketReadyState {
-    val value: Int = 0
+    val value: Int            = 0
     val isConnecting: Boolean = true
-    val isOpen: Boolean = false
-    val isClosing: Boolean = false
-    val isClosed: Boolean = false
+    val isOpen: Boolean       = false
+    val isClosing: Boolean    = false
+    val isClosed: Boolean     = false
   }
 
   case object OPEN extends WebSocketReadyState {
-    val value: Int = 1
+    val value: Int            = 1
     val isConnecting: Boolean = false
-    val isOpen: Boolean = true
-    val isClosing: Boolean = false
-    val isClosed: Boolean = false
+    val isOpen: Boolean       = true
+    val isClosing: Boolean    = false
+    val isClosed: Boolean     = false
   }
 
   case object CLOSING extends WebSocketReadyState {
-    val value: Int = 2
+    val value: Int            = 2
     val isConnecting: Boolean = false
-    val isOpen: Boolean = false
-    val isClosing: Boolean = true
-    val isClosed: Boolean = false
+    val isOpen: Boolean       = false
+    val isClosing: Boolean    = true
+    val isClosed: Boolean     = false
   }
 
   case object CLOSED extends WebSocketReadyState {
-    val value: Int = 3
+    val value: Int            = 3
     val isConnecting: Boolean = false
-    val isOpen: Boolean = false
-    val isClosing: Boolean = false
-    val isClosed: Boolean = true
+    val isOpen: Boolean       = false
+    val isClosing: Boolean    = false
+    val isClosed: Boolean     = true
   }
 
   def fromInt(i: Int): WebSocketReadyState =

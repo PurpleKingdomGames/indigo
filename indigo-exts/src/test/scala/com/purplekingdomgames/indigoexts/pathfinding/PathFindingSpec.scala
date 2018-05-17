@@ -15,8 +15,8 @@ class PathFindingSpec extends FunSpec with Matchers {
 
     it("should be able to find a route") {
 
-      val start: Coords = Coords(2, 1)
-      val end: Coords = Coords(0, 2)
+      val start: Coords      = Coords(2, 1)
+      val end: Coords        = Coords(0, 2)
       val impassable: Coords = Coords(1, 0)
 
       val searchGrid = SearchGrid.generate(start, end, List(impassable), 3, 3)
@@ -38,8 +38,8 @@ class PathFindingSpec extends FunSpec with Matchers {
   describe("Scoring the grid") {
 
     it("should be able to score a grid") {
-      val start: Coords = Coords(2, 1)
-      val end: Coords = Coords(0, 2)
+      val start: Coords      = Coords(2, 1)
+      val end: Coords        = Coords(0, 2)
       val impassable: Coords = Coords(1, 0)
 
       val searchGrid = SearchGrid.generate(start, end, List(impassable), 3, 3)
@@ -66,8 +66,8 @@ class PathFindingSpec extends FunSpec with Matchers {
   describe("Sampling the grid") {
 
     it("should be able to take a sample in the middle of the map") {
-      val start: Coords = Coords(1, 1)
-      val end: Coords = Coords(3, 2)
+      val start: Coords      = Coords(1, 1)
+      val end: Coords        = Coords(3, 2)
       val impassable: Coords = Coords(2, 2)
 
       val searchGrid = SearchGrid.generate(start, end, List(impassable), 4, 3)
@@ -85,8 +85,8 @@ class PathFindingSpec extends FunSpec with Matchers {
     }
 
     it("should be able to take a sample at the edge of the map") {
-      val start: Coords = Coords(1, 1)
-      val end: Coords = Coords(3, 2)
+      val start: Coords      = Coords(1, 1)
+      val end: Coords        = Coords(3, 2)
       val impassable: Coords = Coords(2, 2)
 
       val searchGrid = SearchGrid.generate(start, end, List(impassable), 4, 3)
@@ -103,8 +103,8 @@ class PathFindingSpec extends FunSpec with Matchers {
     }
 
     it("should be able to take a sample at the top left of the map") {
-      val start: Coords = Coords(1, 1)
-      val end: Coords = Coords(3, 2)
+      val start: Coords      = Coords(1, 1)
+      val end: Coords        = Coords(3, 2)
       val impassable: Coords = Coords(2, 2)
 
       val searchGrid = SearchGrid.generate(start, end, List(impassable), 4, 3)
@@ -147,8 +147,8 @@ class PathFindingSpec extends FunSpec with Matchers {
 
     it("should be able to generate a simple search grid") {
 
-      val start: Coords = Coords(1, 1)
-      val end: Coords = Coords(3, 2)
+      val start: Coords      = Coords(1, 1)
+      val end: Coords        = Coords(3, 2)
       val impassable: Coords = Coords(2, 2)
 
       val searchGrid = SearchGrid.generate(start, end, List(impassable), 4, 3)
@@ -177,17 +177,15 @@ class PathFindingSpec extends FunSpec with Matchers {
 
     it("should be able to spot a good grid") {
       val start: Coords = Coords(1, 1)
-      val end: Coords = Coords(2, 2)
+      val end: Coords   = Coords(2, 2)
 
       val grid: List[GridSquare] = List(
         StartSquare(0, start),
         EmptySquare(0, coords, None),
         EmptySquare(0, coords, None),
-
         EmptySquare(0, coords, None),
         EmptySquare(0, coords, None),
         EmptySquare(0, coords, None),
-
         EmptySquare(0, coords, None),
         EmptySquare(0, coords, None),
         EndSquare(0, end)
@@ -198,17 +196,15 @@ class PathFindingSpec extends FunSpec with Matchers {
 
     it("should be able to spot a grid missing a start") {
       val start: Coords = Coords(1, 1)
-      val end: Coords = Coords(2, 2)
+      val end: Coords   = Coords(2, 2)
 
       val grid: List[GridSquare] = List(
         EmptySquare(0, coords, None),
         EmptySquare(0, coords, None),
         EmptySquare(0, coords, None),
-
         EmptySquare(0, coords, None),
         EmptySquare(0, coords, None),
         EmptySquare(0, coords, None),
-
         EmptySquare(0, coords, None),
         EmptySquare(0, coords, None),
         EndSquare(0, end)
@@ -219,17 +215,15 @@ class PathFindingSpec extends FunSpec with Matchers {
 
     it("should be able to spot a grid missing an end") {
       val start: Coords = Coords(1, 1)
-      val end: Coords = Coords(2, 2)
+      val end: Coords   = Coords(2, 2)
 
       val grid: List[GridSquare] = List(
         StartSquare(0, start),
         EmptySquare(0, coords, None),
         EmptySquare(0, coords, None),
-
         EmptySquare(0, coords, None),
         EmptySquare(0, coords, None),
         EmptySquare(0, coords, None),
-
         EmptySquare(0, coords, None),
         EmptySquare(0, coords, None),
         EmptySquare(0, coords, None)
@@ -241,17 +235,15 @@ class PathFindingSpec extends FunSpec with Matchers {
 
     it("should be able to spot a grid of the wrong size") {
       val start: Coords = Coords(1, 1)
-      val end: Coords = Coords(2, 2)
+      val end: Coords   = Coords(2, 2)
 
       val grid: List[GridSquare] = List(
         StartSquare(0, start),
         EmptySquare(0, coords, None),
         EmptySquare(0, coords, None),
-
         EmptySquare(0, coords, None),
         EmptySquare(0, coords, None),
         EmptySquare(0, coords, None),
-
         EmptySquare(0, coords, None),
         //EmptySquare(0, coords, None), //missing on purpose!
         EndSquare(0, end)

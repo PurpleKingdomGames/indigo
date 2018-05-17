@@ -15,18 +15,16 @@ object MenuScreenFunctions {
     def initialModel(startupData: SnakeStartupData): MenuScreenModel =
       MenuScreenModel(
         gameViewport = startupData.viewport,
-        menuItems =
-          MenuZipper(
-            previous = Nil,
-            current = MenuItem("demo mode", makeButton(MenuScreen), MenuScreen),
-            next =
-              List(
-                MenuItem("1up", makeButton(GameScreen), GameScreen),
-                MenuItem("1up vs cpu", makeButton(MenuScreen), MenuScreen),
-                MenuItem("2up local", makeButton(MenuScreen), MenuScreen),
-                MenuItem("2up network", makeButton(MenuScreen), MenuScreen)
-              )
+        menuItems = MenuZipper(
+          previous = Nil,
+          current = MenuItem("demo mode", makeButton(MenuScreen), MenuScreen),
+          next = List(
+            MenuItem("1up", makeButton(GameScreen), GameScreen),
+            MenuItem("1up vs cpu", makeButton(MenuScreen), MenuScreen),
+            MenuItem("2up local", makeButton(MenuScreen), MenuScreen),
+            MenuItem("2up network", makeButton(MenuScreen), MenuScreen)
           )
+        )
       )
 
     private def makeButton(screen: Screen): Button =
@@ -69,18 +67,24 @@ object MenuScreenFunctions {
         )
 
       case e: ButtonEvent =>
-        state.copy(menuScreenModel =
-          state.menuScreenModel.copy(menuItems =
-            state.menuScreenModel.menuItems.copy(
-              previous = state.menuScreenModel.menuItems.previous.map(mi => mi.copy(
-                button = Button.Model.update(mi.button, e)
-              )),
+        state.copy(
+          menuScreenModel = state.menuScreenModel.copy(
+            menuItems = state.menuScreenModel.menuItems.copy(
+              previous = state.menuScreenModel.menuItems.previous.map(
+                mi =>
+                  mi.copy(
+                    button = Button.Model.update(mi.button, e)
+                )
+              ),
               current = state.menuScreenModel.menuItems.current.copy(
                 button = Button.Model.update(state.menuScreenModel.menuItems.current.button, e)
               ),
-              next = state.menuScreenModel.menuItems.next.map(mi => mi.copy(
-                button = Button.Model.update(mi.button, e)
-              ))
+              next = state.menuScreenModel.menuItems.next.map(
+                mi =>
+                  mi.copy(
+                    button = Button.Model.update(mi.button, e)
+                )
+              )
             )
           )
         )
@@ -108,16 +112,18 @@ object MenuScreenFunctions {
 
       val menuItemsAndEvents: List[(SceneGraphNode, List[ViewEvent])] = {
 
-        val draw: Boolean => ((MenuItem, Int)) => List[(SceneGraphNode, List[ViewEvent])] = p => { case (menuItem, i) =>
-          List(
-            menuItem.button.draw(Rectangle(10, (i * 20) + 10, 16, 16), Depth(2), frameEvents, buttonAssets).toTuple,
-            (Text(menuItem.text, 40, (i * 20) + 10, 2, SnakeAssets.fontKey).alignLeft.withAlpha(if (p) 1 else 0.5), Nil)
-          )
+        val draw: Boolean => ((MenuItem, Int)) => List[(SceneGraphNode, List[ViewEvent])] = p => {
+          case (menuItem, i) =>
+            List(
+              menuItem.button.draw(Rectangle(10, (i * 20) + 10, 16, 16), Depth(2), frameEvents, buttonAssets).toTuple,
+              (Text(menuItem.text, 40, (i * 20) + 10, 2, SnakeAssets.fontKey).alignLeft.withAlpha(if (p) 1 else 0.5), Nil)
+            )
         }
 
         val p = model.menuItems.previous.reverse.zipWithIndex.flatMap(draw(false))
         val c = List((model.menuItems.current, model.menuItems.positionOfCurrent)).flatMap(draw(true))
-        val n = model.menuItems.next.zipWithIndex.map(p => (p._1, p._2 + model.menuItems.positionOfCurrent + 1)).flatMap(draw(false))
+        val n =
+          model.menuItems.next.zipWithIndex.map(p => (p._1, p._2 + model.menuItems.positionOfCurrent + 1)).flatMap(draw(false))
 
         p ++ c ++ n
       }

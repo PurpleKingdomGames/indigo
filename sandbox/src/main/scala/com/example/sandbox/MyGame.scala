@@ -11,8 +11,8 @@ import com.purplekingdomgames.shared.{AssetType, ClearColor, GameConfig, GameVie
 
 object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel] {
 
-  private val viewportWidth: Int = 456
-  private val viewportHeight: Int = 256
+  private val viewportWidth: Int      = 456
+  private val viewportHeight: Int     = 256
   private val magnificationLevel: Int = 2
 
   val config: GameConfig = GameConfig(
@@ -24,25 +24,26 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel] {
 
   val assets: Set[AssetType] = MyAssets.assets
 
-  val fonts: Set[FontInfo] = Set(MyView.fontInfo)
+  val fonts: Set[FontInfo]        = Set(MyView.fontInfo)
   val animations: Set[Animations] = Set()
 
   def setup(assetCollection: AssetCollection): Either[StartupErrors, MyStartupData] = {
     val dude = for {
-      json <- assetCollection.texts.find(p => p.name == MyAssets.dudeName + "-json").map(_.contents)
-      aseprite <- AsepriteHelper.fromJson(json)
+      json                <- assetCollection.texts.find(p => p.name == MyAssets.dudeName + "-json").map(_.contents)
+      aseprite            <- AsepriteHelper.fromJson(json)
       spriteAndAnimations <- AsepriteHelper.toSpriteAndAnimations(aseprite, Depth(3), MyAssets.dudeName)
-      _ <- Option(registerAnimations(spriteAndAnimations.animations))
-    } yield Dude(
-      aseprite,
-      spriteAndAnimations.sprite
-        .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
-        .moveTo(viewportWidth / 2 / magnificationLevel, viewportHeight / 2 / magnificationLevel) // Also place him in the middle of the screen initially
-    )
+      _                   <- Option(registerAnimations(spriteAndAnimations.animations))
+    } yield
+      Dude(
+        aseprite,
+        spriteAndAnimations.sprite
+          .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
+          .moveTo(viewportWidth / 2 / magnificationLevel, viewportHeight / 2 / magnificationLevel) // Also place him in the middle of the screen initially
+      )
 
     dude match {
       case Some(d) => Right(MyStartupData(d))
-      case None => Left(StartupErrors("Failed to load the dude"))
+      case None    => Left(StartupErrors("Failed to load the dude"))
     }
   }
 

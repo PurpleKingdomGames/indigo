@@ -20,30 +20,34 @@ object SnakeModel {
       gameScreenModel = GameScreenFunctions.Model.initialModel(startupData)
     )
 
-  def modelUpdate(gameTime: GameTime, state: SnakeModel): GameEvent => SnakeModel = gameEvent =>
-    state.currentScreen match {
-      case MenuScreen =>
-        MenuScreenFunctions.Model.update(state)(gameEvent)
+  def modelUpdate(gameTime: GameTime, state: SnakeModel): GameEvent => SnakeModel =
+    gameEvent =>
+      state.currentScreen match {
+        case MenuScreen =>
+          MenuScreenFunctions.Model.update(state)(gameEvent)
 
-      case GameScreen if state.gameScreenModel.running =>
-        state.copy(gameScreenModel = GameScreenFunctions.Model.update(gameTime, state.gameScreenModel)(gameEvent))
+        case GameScreen if state.gameScreenModel.running =>
+          state.copy(gameScreenModel = GameScreenFunctions.Model.update(gameTime, state.gameScreenModel)(gameEvent))
 
-      case GameScreen =>
-        state.copy(currentScreen = GameOverScreen)
+        case GameScreen =>
+          state.copy(currentScreen = GameOverScreen)
 
-      case GameOverScreen =>
-        GameOverScreenFunctions.Model.update(state)(gameEvent)
+        case GameOverScreen =>
+          GameOverScreenFunctions.Model.update(state)(gameEvent)
     }
 
 }
 
-case class SnakeModel(startupData: SnakeStartupData, currentScreen: Screen, menuScreenModel: MenuScreenModel, gameScreenModel: GameScreenModel)
+case class SnakeModel(startupData: SnakeStartupData,
+                      currentScreen: Screen,
+                      menuScreenModel: MenuScreenModel,
+                      gameScreenModel: GameScreenModel)
 
 case class MenuScreenModel(gameViewport: GameViewport, menuItems: MenuZipper)
 
 case class MenuZipper(previous: List[MenuItem], current: MenuItem, next: List[MenuItem]) {
 
-  val length: Int = previous.length + 1 + next.length
+  val length: Int            = previous.length + 1 + next.length
   val positionOfCurrent: Int = previous.length
 
   def forward: MenuZipper =
@@ -69,9 +73,16 @@ case class MenuItem(text: String, button: Button, goToScreen: Screen)
 
 case class GameScreenModel(running: Boolean, gridSize: GridSize, staticAssets: StaticAssets, player1: Player, gameMap: GameMap)
 
-case class Player(snake: Snake, tickDelay: Int, lastUpdated: Double, previousSnakePath: List[GridPoint], playerType: PlayerType, controlScheme: ControlScheme) {
+case class Player(snake: Snake,
+                  tickDelay: Int,
+                  lastUpdated: Double,
+                  previousSnakePath: List[GridPoint],
+                  playerType: PlayerType,
+                  controlScheme: ControlScheme) {
 
-  def update(gameTime: GameTime, gridSize: GridSize, collisionCheck: GridPoint => CollisionCheckOutcome): (Player, CollisionCheckOutcome) =
+  def update(gameTime: GameTime,
+             gridSize: GridSize,
+             collisionCheck: GridPoint => CollisionCheckOutcome): (Player, CollisionCheckOutcome) =
     snake.update(gridSize, collisionCheck) match {
       case (s, outcome) if gameTime.running >= lastUpdated + tickDelay =>
         (this.copy(snake = s, lastUpdated = gameTime.running, previousSnakePath = snake.givePath), outcome)
@@ -101,7 +112,7 @@ case class Player(snake: Snake, tickDelay: Int, lastUpdated: Double, previousSna
 }
 
 sealed trait PlayerType
-case object Human extends PlayerType
+case object Human    extends PlayerType
 case object Computer extends PlayerType
 
 sealed trait ControlScheme {
@@ -129,10 +140,10 @@ sealed trait ControlScheme {
         player
     }
 }
-case class Turning(left: KeyCode, right: KeyCode) extends ControlScheme
+case class Turning(left: KeyCode, right: KeyCode)                              extends ControlScheme
 case class Directed(up: KeyCode, down: KeyCode, left: KeyCode, right: KeyCode) extends ControlScheme
 
 object ControlScheme {
-  val turning: Turning = Turning(Keys.LEFT_ARROW, Keys.RIGHT_ARROW)
+  val turning: Turning   = Turning(Keys.LEFT_ARROW, Keys.RIGHT_ARROW)
   val directed: Directed = Directed(Keys.UP_ARROW, Keys.DOWN_ARROW, Keys.LEFT_ARROW, Keys.RIGHT_ARROW)
 }

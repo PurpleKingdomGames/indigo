@@ -41,9 +41,9 @@ abstract class Service[F[_]](implicit F: Effect[F]) extends StreamApp[F] with Ht
       Ok(GameDetails.assets.asJson)
 
     case request @ GET -> Root / "game" / "id" / "assets" / path =>
-      StaticFile.fromFile(new File("./server/assets/" + path), Some(request))
+      StaticFile
+        .fromFile(new File("./server/assets/" + path), Some(request))
         .getOrElseF(NotFound())
-
 
     // ---------------------------------------
     // WebSockets
@@ -55,7 +55,7 @@ abstract class Service[F[_]](implicit F: Effect[F]) extends StreamApp[F] with Ht
       val fromClient: Sink[F, WebSocketFrame] = _.evalMap { (ws: WebSocketFrame) =>
         ws match {
           case Text(t, _) => F.delay(println(t))
-          case f => F.delay(println(s"Unknown type: $f"))
+          case f          => F.delay(println(s"Unknown type: $f"))
         }
       }
 
@@ -65,7 +65,7 @@ abstract class Service[F[_]](implicit F: Effect[F]) extends StreamApp[F] with Ht
       val queue = async.unboundedQueue[F, WebSocketFrame]
       val echoReply: Pipe[F, WebSocketFrame, WebSocketFrame] = _.collect {
         case Text(msg, _) => Text("You sent the server: " + msg)
-        case _ => Text("Something new")
+        case _            => Text("Something new")
       }
 
       queue.flatMap { q =>

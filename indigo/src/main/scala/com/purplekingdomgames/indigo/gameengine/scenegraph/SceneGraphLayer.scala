@@ -9,7 +9,6 @@ case class SceneGraphLayer(nodes: List[SceneGraphNode]) extends AnyVal {
 
 }
 
-
 case class SceneGraphLayerFlat(nodes: List[Renderable]) extends AnyVal {
 
 //  def applyAnimationMemento(animationStates: AnimationStates): SceneGraphLayerFlat =
@@ -19,6 +18,6 @@ case class SceneGraphLayerFlat(nodes: List[Renderable]) extends AnyVal {
 //    this.copy(nodes = nodes.map(_.runAnimationActions(gameTime)))
 
   def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent] =
-    nodes.flatMap(n => gameEvents.map(e => n.eventHandlerWithBoundsApplied(e))).collect { case Some(s) => s}
+    nodes.flatMap(n => gameEvents.map(e => n.eventHandlerWithBoundsApplied(e))).collect { case Some(s) => s }
 
 }

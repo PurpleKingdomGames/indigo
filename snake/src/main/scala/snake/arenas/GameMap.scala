@@ -7,7 +7,7 @@ import snake.arenas.MapElement.{Apple, Wall}
 /***
 GameMap is a sparse tree of MapElements organised as a QuadTree where each
 tree leaf may only contain a single element.
- */
+  */
 case class GameMap(quadTree: QuadTree[MapElement], gridSize: GridSize) {
 
   def isEmpty: Boolean = quadTree.isEmpty

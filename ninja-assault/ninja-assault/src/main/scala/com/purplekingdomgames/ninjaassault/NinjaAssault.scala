@@ -11,8 +11,7 @@ import com.purplekingdomgames.ninjaassault.settings.{Assets, Settings}
 import com.purplekingdomgames.ninjaassault.view.View
 import com.purplekingdomgames.shared.{AssetType, GameConfig}
 
-
-object NinjaAssult  extends IndigoGameBasic[MyStartupData, NinjaAssaultGameModel] {
+object NinjaAssult extends IndigoGameBasic[MyStartupData, NinjaAssaultGameModel] {
 
   val config: GameConfig = Settings.gameSetup
 
@@ -28,8 +27,8 @@ object NinjaAssult  extends IndigoGameBasic[MyStartupData, NinjaAssaultGameModel
   def initialModel(startupData: MyStartupData): NinjaAssaultGameModel =
     NinjaAssaultGameModel.initialModel
 
-  def update(gameTime: GameTime, model: NinjaAssaultGameModel): events.GameEvent => NinjaAssaultGameModel = e =>
-    NinjaAssaultGameModel.update(model)(e)
+  def update(gameTime: GameTime, model: NinjaAssaultGameModel): events.GameEvent => NinjaAssaultGameModel =
+    e => NinjaAssaultGameModel.update(model)(e)
 
   def present(gameTime: GameTime, model: NinjaAssaultGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment =
     View.generate(model, frameInputEvents)
@@ -38,4 +37,4 @@ object NinjaAssult  extends IndigoGameBasic[MyStartupData, NinjaAssaultGameModel
 case class MyStartupData()
 
 sealed trait ViewUpdateEvent extends ViewEvent
-case object JumpToMenu extends ViewUpdateEvent
+case object JumpToMenu       extends ViewUpdateEvent

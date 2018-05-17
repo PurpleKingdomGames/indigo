@@ -39,7 +39,8 @@ object QuadTree {
     QuadEmpty(QuadBounds.apply(gridSize.asPowerOf2))
 
   //TODO: This needs to be recursive. if a is branch, then do another empty check etc.
-  case class QuadBranch[T](bounds: QuadBounds, a: QuadTree[T], b: QuadTree[T], c: QuadTree[T], d: QuadTree[T]) extends QuadTree[T] {
+  case class QuadBranch[T](bounds: QuadBounds, a: QuadTree[T], b: QuadTree[T], c: QuadTree[T], d: QuadTree[T])
+      extends QuadTree[T] {
     def isEmpty: Boolean =
       a.isEmpty && b.isEmpty && c.isEmpty && d.isEmpty
   }
@@ -54,7 +55,7 @@ object QuadTree {
     def fromBounds[T](bounds: QuadBounds): QuadBranch[T] =
       fromBoundsAndQuarters(bounds, bounds.subdivide)
 
-    def fromBoundsAndQuarters[T](bounds: QuadBounds, quarters: (QuadBounds, QuadBounds, QuadBounds, QuadBounds)): QuadBranch[T] ={
+    def fromBoundsAndQuarters[T](bounds: QuadBounds, quarters: (QuadBounds, QuadBounds, QuadBounds, QuadBounds)): QuadBranch[T] =
       QuadBranch(
         bounds,
         QuadEmpty(quarters._1),
@@ -62,7 +63,6 @@ object QuadTree {
         QuadEmpty(quarters._3),
         QuadEmpty(quarters._4)
       )
-    }
   }
 
   def fetchElementAt[T](quadTree: QuadTree[T], gridPoint: GridPoint): Option[T] =
@@ -134,10 +134,9 @@ object QuadTree {
     }
 
   def findEmptySpace[T](quadTree: QuadTree[T], gridSize: GridSize, not: List[GridPoint]): GridPoint = {
-    def makeRandom: () => GridPoint = () =>
-      GridPoint.random(gridSize.width - 2, gridSize.height - 2) + GridPoint(1, 1)
+    def makeRandom: () => GridPoint = () => GridPoint.random(gridSize.width - 2, gridSize.height - 2) + GridPoint(1, 1)
 
-    def rec(pt: GridPoint): GridPoint = {
+    def rec(pt: GridPoint): GridPoint =
       fetchElementAt(quadTree, pt) match {
         case None if !not.contains(pt) =>
           pt
@@ -148,12 +147,11 @@ object QuadTree {
         case Some(_) =>
           rec(makeRandom())
       }
-    }
 
     rec(makeRandom())
   }
 
-  def asElementList[T](quadTree: QuadTree[T]): List[T] = {
+  def asElementList[T](quadTree: QuadTree[T]): List[T] =
     quadTree match {
       case l: QuadLeaf[T] =>
         List(l.value)
@@ -167,7 +165,6 @@ object QuadTree {
       case QuadBranch(_, a, b, c, d) =>
         asElementList(a) ++ asElementList(b) ++ asElementList(c) ++ asElementList(d)
     }
-  }
 
   def prune[T](quadTree: QuadTree[T]): QuadTree[T] =
     quadTree match {
@@ -187,7 +184,7 @@ object QuadTree {
   def renderAsString[T](quadTree: QuadTree[T]): String =
     renderAsStringWithIndent(quadTree, "")
 
-  def renderAsStringWithIndent[T](quadTree: QuadTree[T], indent: String): String = {
+  def renderAsStringWithIndent[T](quadTree: QuadTree[T], indent: String): String =
     quadTree match {
       case QuadEmpty(bounds) =>
         indent + s"Empty [${bounds.renderAsString}]"
@@ -202,6 +199,5 @@ object QuadTree {
            |${renderAsStringWithIndent(c, indent + "  ")}
            |${renderAsStringWithIndent(d, indent + "  ")}""".stripMargin
     }
-  }
 
 }

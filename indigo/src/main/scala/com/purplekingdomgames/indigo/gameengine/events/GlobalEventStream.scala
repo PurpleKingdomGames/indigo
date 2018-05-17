@@ -11,11 +11,13 @@ object GlobalEventStream {
     new mutable.Queue[GameEvent]()
 
   def pushGameEvent(e: GameEvent): Unit =
-    NetworkEventProcessor.filter(e)
+    NetworkEventProcessor
+      .filter(e)
       .foreach(e => eventQueue += e)
 
   def pushViewEvent(audioPlayer: IAudioPlayer, e: ViewEvent): Unit =
-    NetworkEventProcessor.filter(e)
+    NetworkEventProcessor
+      .filter(e)
       .flatMap { AudioEventProcessor.filter(audioPlayer) }
       .foreach(e => eventQueue += e)
 

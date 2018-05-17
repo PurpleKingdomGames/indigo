@@ -41,8 +41,7 @@ trait IndigoGameBasic[StartupData, Model] {
       .usingInitialModel(initialModel)
       .updateModelUsing(update)
       .presentUsing(
-        (gameTime: GameTime, model: Model, frameInputEvents: FrameInputEvents) =>
-          present(gameTime, model, frameInputEvents)
+        (gameTime: GameTime, model: Model, frameInputEvents: FrameInputEvents) => present(gameTime, model, frameInputEvents)
       )
 
   def registerAnimations(animations: Animations): Unit =

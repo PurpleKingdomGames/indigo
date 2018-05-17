@@ -17,21 +17,23 @@ import scala.concurrent.Future
 case class GameTime(running: Double, delta: Double, frameDuration: Double)
 
 object GameTime {
-  def now(frameDuration: Double): GameTime = GameTime(System.currentTimeMillis().toDouble, 0, frameDuration)
-  def zero(frameDuration: Double): GameTime = GameTime(0, 0, frameDuration)
+  def now(frameDuration: Double): GameTime                                = GameTime(System.currentTimeMillis().toDouble, 0, frameDuration)
+  def zero(frameDuration: Double): GameTime                               = GameTime(0, 0, frameDuration)
   def is(running: Double, delta: Double, frameDuration: Double): GameTime = GameTime(running, delta, frameDuration)
 }
 
-class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
-                                                                          configAsync: Future[Option[GameConfig]],
-                                                                          assets: Set[AssetType],
-                                                                          assetsAsync: Future[Set[AssetType]],
-                                                                          fonts: Set[FontInfo],
-                                                                          animations: Set[Animations],
-                                                                          initialise: AssetCollection => Startup[StartupError, StartupData],
-                                                                          initialModel: StartupData => GameModel,
-                                                                          updateModel: (GameTime, GameModel) => GameEvent => GameModel,
-                                                                          updateView: (GameTime, GameModel, FrameInputEvents) => SceneUpdateFragment) {
+class GameEngine[StartupData, StartupError, GameModel](
+    config: GameConfig,
+    configAsync: Future[Option[GameConfig]],
+    assets: Set[AssetType],
+    assetsAsync: Future[Set[AssetType]],
+    fonts: Set[FontInfo],
+    animations: Set[Animations],
+    initialise: AssetCollection => Startup[StartupError, StartupData],
+    initialModel: StartupData => GameModel,
+    updateModel: (GameTime, GameModel) => GameEvent => GameModel,
+    updateView: (GameTime, GameModel, FrameInputEvents) => SceneUpdateFragment
+) {
 
   private var state: Option[GameModel] = None
 
@@ -47,18 +49,18 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
     fonts.foreach(FontRegister.register)
 
     configAsync.map(_.getOrElse(config)).foreach { gameConfig =>
-
-      implicit val metrics: IMetrics = Metrics.getInstance(gameConfig.advanced.recordMetrics, gameConfig.advanced.logMetricsReportIntervalMs)
+      implicit val metrics: IMetrics =
+        Metrics.getInstance(gameConfig.advanced.recordMetrics, gameConfig.advanced.logMetricsReportIntervalMs)
 
       Logger.info("Starting Indigo")
       Logger.info("Configuration: " + gameConfig.asString)
 
-      if(gameConfig.viewport.width % 2 != 0 || gameConfig.viewport.height % 2 != 0) {
-        Logger.info("WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!")
-      }
+      if (gameConfig.viewport.width % 2 != 0 || gameConfig.viewport.height % 2 != 0)
+        Logger.info(
+          "WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!"
+        )
 
       assetsAsync.flatMap(aa => AssetManager.loadAssets(aa ++ assets)).foreach { assetCollection =>
-
         Logger.info("Asset load complete")
 
         val textureAtlas = TextureAtlas.create(
@@ -67,21 +69,19 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
           TextureAtlasFunctions.createAtlasData
         )
 
-        val loadedTextureAssets = textureAtlas.atlases
-          .toList
+        val loadedTextureAssets = textureAtlas.atlases.toList
           .map(a => a._2.imageData.map(data => LoadedTextureAsset(a._1.id, data)))
           .collect { case Some(s) => s }
 
         val assetMapping = AssetMapping(
-          mappings =
-            textureAtlas.legend
-              .map { p =>
-                p._1 -> TextureRefAndOffset(
-                  atlasName = p._2.id.id,
-                  atlasSize = textureAtlas.atlases.get(p._2.id).map(_.size.value).map(Vector2.apply).getOrElse(Vector2.one),
-                  offset = p._2.offset
-                )
-              }
+          mappings = textureAtlas.legend
+            .map { p =>
+              p._1 -> TextureRefAndOffset(
+                atlasName = p._2.id.id,
+                atlasSize = textureAtlas.atlases.get(p._2.id).map(_.size.value).map(Vector2.apply).getOrElse(Vector2.one),
+                offset = p._2.offset
+              )
+            }
         )
 
         initialise(assetCollection) match {
@@ -121,7 +121,7 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
 
   }
 
-  private def processModelUpdateEvents(gameTime: GameTime, previousModel: GameModel, remaining: List[GameEvent]): GameModel = {
+  private def processModelUpdateEvents(gameTime: GameTime, previousModel: GameModel, remaining: List[GameEvent]): GameModel =
     remaining match {
       case Nil =>
         updateModel(gameTime, previousModel)(FrameTick)
@@ -129,18 +129,21 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
       case x :: xs =>
         processModelUpdateEvents(gameTime, updateModel(gameTime, previousModel)(x), xs)
     }
-  }
 
-  private def loop(gameConfig: GameConfig, startupData: StartupData, assetMapping: AssetMapping)(renderer: IRenderer, audioPlayer: IAudioPlayer, lastUpdateTime: Double)(implicit metrics: IMetrics): Double => Int = { time =>
+  private def loop(
+      gameConfig: GameConfig,
+      startupData: StartupData,
+      assetMapping: AssetMapping
+  )(renderer: IRenderer, audioPlayer: IAudioPlayer, lastUpdateTime: Double)(implicit metrics: IMetrics): Double => Int = { time =>
     val timeDelta = time - lastUpdateTime
 
     // PUT NOTHING ABOVE THIS LINE!! Major performance penalties!!
-    if(timeDelta > gameConfig.frameRateDeltaMillis) {
+    if (timeDelta > gameConfig.frameRateDeltaMillis) {
 
       metrics.record(FrameStartMetric)
 
       // Model updates cut off
-      if(gameConfig.advanced.disableSkipModelUpdates || timeDelta < gameConfig.haltModelUpdatesAt) {
+      if (gameConfig.advanced.disableSkipModelUpdates || timeDelta < gameConfig.haltModelUpdatesAt) {
 
         metrics.record(UpdateStartMetric)
 
@@ -166,7 +169,7 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
         metrics.record(UpdateEndMetric)
 
         // View updates cut off
-        if(gameConfig.advanced.disableSkipViewUpdates || timeDelta < gameConfig.haltViewUpdatesAt) {
+        if (gameConfig.advanced.disableSkipViewUpdates || timeDelta < gameConfig.haltViewUpdatesAt) {
 
           metrics.record(CallUpdateViewStartMetric)
 
@@ -209,39 +212,43 @@ class GameEngine[StartupData, StartupError, GameModel](config: GameConfig,
 
           metrics.record(AudioEndMetric)
 
-        } else {
+        } else
           metrics.record(SkippedViewUpdateMetric)
-        }
 
-      } else {
+      } else
         metrics.record(SkippedModelUpdateMetric)
-      }
 
       metrics.record(FrameEndMetric)
 
       dom.window.requestAnimationFrame(loop(gameConfig, startupData, assetMapping)(renderer, audioPlayer, time))
-    } else {
+    } else
       dom.window.requestAnimationFrame(loop(gameConfig, startupData, assetMapping)(renderer, audioPlayer, lastUpdateTime))
-    }
   }
 
-  private val persistGlobalViewEvents: IAudioPlayer => IMetrics => SceneUpdateFragment => SceneGraphRootNode = audioPlayer => metrics => update => {
-    metrics.record(PersistGlobalViewEventsStartMetric)
-    update.viewEvents.foreach(e => GlobalEventStream.pushViewEvent(audioPlayer, e))
-    metrics.record(PersistGlobalViewEventsEndMetric)
-    SceneGraphRootNode.fromFragment(update)
+  private val persistGlobalViewEvents: IAudioPlayer => IMetrics => SceneUpdateFragment => SceneGraphRootNode = audioPlayer =>
+    metrics =>
+      update => {
+        metrics.record(PersistGlobalViewEventsStartMetric)
+        update.viewEvents.foreach(e => GlobalEventStream.pushViewEvent(audioPlayer, e))
+        metrics.record(PersistGlobalViewEventsEndMetric)
+        SceneGraphRootNode.fromFragment(update)
   }
 
   private val flattenNodes: SceneGraphRootNode => SceneGraphRootNodeFlat = root => root.flatten
 
-  private val persistNodeViewEvents: IMetrics => List[GameEvent] => SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = metrics => gameEvents => rootNode => {
-    metrics.record(PersistNodeViewEventsStartMetric)
-    rootNode.collectViewEvents(gameEvents).foreach(GlobalEventStream.pushGameEvent)
-    metrics.record(PersistNodeViewEventsEndMetric)
-    rootNode
+  private val persistNodeViewEvents: IMetrics => List[GameEvent] => SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = metrics =>
+    gameEvents =>
+      rootNode => {
+        metrics.record(PersistNodeViewEventsStartMetric)
+        rootNode.collectViewEvents(gameEvents).foreach(GlobalEventStream.pushGameEvent)
+        metrics.record(PersistNodeViewEventsEndMetric)
+        rootNode
   }
 
-  private def convertSceneGraphToDisplayable(gameTime: GameTime, rootNode: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight)(implicit metrics: IMetrics): Displayable =
+  private def convertSceneGraphToDisplayable(gameTime: GameTime,
+                                             rootNode: SceneGraphRootNodeFlat,
+                                             assetMapping: AssetMapping,
+                                             ambientLight: AmbientLight)(implicit metrics: IMetrics): Displayable =
     Displayable(
       DisplayLayer(
         rootNode.game.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping))

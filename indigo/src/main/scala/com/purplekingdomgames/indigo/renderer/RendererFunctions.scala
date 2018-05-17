@@ -9,9 +9,8 @@ import scala.scalajs.js.typedarray.Float32Array
 
 object RendererFunctions {
 
-  def createVertexBuffer(gl: raw.WebGLRenderingContext): WebGLBuffer = {
+  def createVertexBuffer(gl: raw.WebGLRenderingContext): WebGLBuffer =
     gl.createBuffer()
-  }
 
   def bindToBuffer(gl: raw.WebGLRenderingContext, vertexBuffer: WebGLBuffer, vertices: scalajs.js.Array[Double]): Unit = {
     //Create a new buffer
@@ -221,7 +220,11 @@ object RendererFunctions {
     shaderProgram
   }
 
-  def bindShaderToBuffer(cNc: ContextAndCanvas, shaderProgram: WebGLProgram, vertexBuffer: WebGLBuffer, textureBuffer: WebGLBuffer, effectsBuffer: WebGLBuffer): Unit = {
+  def bindShaderToBuffer(cNc: ContextAndCanvas,
+                         shaderProgram: WebGLProgram,
+                         vertexBuffer: WebGLBuffer,
+                         textureBuffer: WebGLBuffer,
+                         effectsBuffer: WebGLBuffer): Unit = {
 
     val gl = cNc.context
 
@@ -295,9 +298,12 @@ object RendererFunctions {
 
   private var lastTextureName: String = ""
 
-  def setupFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, imageRef: String): Unit = {
+  def setupFragmentShader(gl: raw.WebGLRenderingContext,
+                          shaderProgram: WebGLProgram,
+                          texture: WebGLTexture,
+                          imageRef: String): Unit = {
 
-    if(imageRef != lastTextureName) {
+    if (imageRef != lastTextureName) {
       gl.bindTexture(TEXTURE_2D, texture)
       lastTextureName = imageRef
     }
@@ -306,9 +312,12 @@ object RendererFunctions {
     gl.uniform1i(u_texture, 0)
   }
 
-  def setupLightingFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, imageRef: String): Unit = {
+  def setupLightingFragmentShader(gl: raw.WebGLRenderingContext,
+                                  shaderProgram: WebGLProgram,
+                                  texture: WebGLTexture,
+                                  imageRef: String): Unit = {
 
-    if(imageRef != lastTextureName) {
+    if (imageRef != lastTextureName) {
       gl.bindTexture(TEXTURE_2D, texture)
       lastTextureName = imageRef
     }
@@ -318,7 +327,11 @@ object RendererFunctions {
 
   }
 
-  def setupMergeFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, textureGame: WebGLTexture, textureLighting: WebGLTexture, textureUi: WebGLTexture): Unit = {
+  def setupMergeFragmentShader(gl: raw.WebGLRenderingContext,
+                               shaderProgram: WebGLProgram,
+                               textureGame: WebGLTexture,
+                               textureLighting: WebGLTexture,
+                               textureUi: WebGLTexture): Unit = {
 
     val u_texture_game = gl.getUniformLocation(shaderProgram, "u_texture_game")
     gl.uniform1i(u_texture_game, 1)
@@ -339,8 +352,8 @@ object RendererFunctions {
     gl.activeTexture(TEXTURE0)
   }
 
-  private var resizeRun: Boolean = false
-  var orthographicProjectionMatrix: Matrix4 = Matrix4.identity
+  private var resizeRun: Boolean                 = false
+  var orthographicProjectionMatrix: Matrix4      = Matrix4.identity
   var orthographicProjectionMatrixNoMag: Matrix4 = Matrix4.identity
 
   def resize(canvas: html.Canvas, actualWidth: Int, actualHeight: Int, magnification: Int): Unit =
@@ -349,14 +362,15 @@ object RendererFunctions {
       canvas.width = actualWidth
       canvas.height = actualHeight
 
-      orthographicProjectionMatrix = Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
+      orthographicProjectionMatrix =
+        Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
       orthographicProjectionMatrixNoMag = Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)
     }
 
   val flipMatrix: ((Boolean, Boolean)) => Matrix4 = {
     case (true, true)   => Matrix4.identity.translate(1, 1, 0).scale(-1, -1, -1)
-    case (true, false)  => Matrix4.identity.translate(1, 0, 0).scale(-1,  1, -1)
-    case (false, true)  => Matrix4.identity.translate(0, 1, 0).scale( 1, -1, -1)
+    case (true, false)  => Matrix4.identity.translate(1, 0, 0).scale(-1, 1, -1)
+    case (false, true)  => Matrix4.identity.translate(0, 1, 0).scale(1, -1, -1)
     case (false, false) => Matrix4.identity
   }
 

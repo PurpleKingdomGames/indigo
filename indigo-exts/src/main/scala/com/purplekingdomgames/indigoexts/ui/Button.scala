@@ -11,7 +11,7 @@ object Button {
 
   object Model {
 
-    def update(button: Button, buttonEvent: ButtonEvent): Button = {
+    def update(button: Button, buttonEvent: ButtonEvent): Button =
       buttonEvent match {
         case ButtonEvent(bindingKey, ButtonState.Up) if button.bindingKey === bindingKey =>
           button.toUpState
@@ -25,13 +25,12 @@ object Button {
         case _ =>
           button
       }
-    }
 
   }
 
   object View {
 
-    def applyEvents(bounds: Rectangle, button: Button, frameInputEvents: FrameInputEvents): List[ViewEvent] = {
+    def applyEvents(bounds: Rectangle, button: Button, frameInputEvents: FrameInputEvents): List[ViewEvent] =
       frameInputEvents.events.foldLeft[List[ViewEvent]](Nil) { (acc, e) =>
         e match {
           case MouseEvent.MouseUp(x, y) if bounds.isPointWithin(x, y) =>
@@ -62,7 +61,6 @@ object Button {
             acc
         }
       }
-    }
 
     def renderButton(bounds: Rectangle, depth: Depth, button: Button, assets: ButtonAssets): Graphic =
       button.state match {
@@ -76,7 +74,11 @@ object Button {
           assets.down.moveTo(bounds.position).withDepth(depth.zIndex)
       }
 
-    def update(bounds: Rectangle, depth: Depth, button: Button, frameEvents: FrameInputEvents, assets: ButtonAssets): ButtonViewUpdate =
+    def update(bounds: Rectangle,
+               depth: Depth,
+               button: Button,
+               frameEvents: FrameInputEvents,
+               assets: ButtonAssets): ButtonViewUpdate =
       ButtonViewUpdate(
         renderButton(bounds, depth, button, assets),
         applyEvents(bounds, button, frameEvents)
@@ -117,9 +119,9 @@ case class Button(state: ButtonState, actions: ButtonActions, bindingKey: Bindin
 }
 
 case class ButtonActions(onUp: () => Option[ViewEvent],
-                                        onDown: () => Option[ViewEvent],
-                                        onHoverOver: () => Option[ViewEvent],
-                                        onHoverOut: () => Option[ViewEvent])
+                         onDown: () => Option[ViewEvent],
+                         onHoverOver: () => Option[ViewEvent],
+                         onHoverOut: () => Option[ViewEvent])
 
 sealed trait ButtonState {
   def isDown: Boolean

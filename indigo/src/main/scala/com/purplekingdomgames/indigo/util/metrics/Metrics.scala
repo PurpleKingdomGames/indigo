@@ -32,11 +32,11 @@ object Metrics {
 
   private class NullMetricsInstance extends IMetrics {
     def record(m: Metric, time: Long = giveTime()): Unit = ()
-    def giveTime(): Long = 1
+    def giveTime(): Long                                 = 1
   }
 
-  private var instance: Option[IMetrics] = None
-  private var savedEnabled: Boolean = false
+  private var instance: Option[IMetrics]    = None
+  private var savedEnabled: Boolean         = false
   private var savedLogReportIntervalMs: Int = 10000
 
   def getInstance(enabled: Boolean = savedEnabled, logReportIntervalMs: Int = savedLogReportIntervalMs): IMetrics =
@@ -45,7 +45,7 @@ object Metrics {
       case None =>
         savedEnabled = enabled
         savedLogReportIntervalMs = logReportIntervalMs
-        instance = if(enabled) Some(new MetricsInstance(logReportIntervalMs)) else Some(new NullMetricsInstance)
+        instance = if (enabled) Some(new MetricsInstance(logReportIntervalMs)) else Some(new NullMetricsInstance)
         instance.get
     }
 

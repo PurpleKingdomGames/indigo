@@ -7,16 +7,17 @@ import snake.screens._
 
 object SnakeView {
 
-  def viewUpdate: (GameTime, SnakeModel, FrameInputEvents) => SceneUpdateFragment = (gameTime, model, frameInputEvents) =>
-    model.currentScreen match {
-      case MenuScreen =>
-        MenuScreenFunctions.View.update(gameTime, frameInputEvents, model)
+  def viewUpdate: (GameTime, SnakeModel, FrameInputEvents) => SceneUpdateFragment =
+    (gameTime, model, frameInputEvents) =>
+      model.currentScreen match {
+        case MenuScreen =>
+          MenuScreenFunctions.View.update(gameTime, frameInputEvents, model)
 
-      case GameScreen =>
-        GameScreenFunctions.View.update(gameTime, model.gameScreenModel)
+        case GameScreen =>
+          GameScreenFunctions.View.update(gameTime, model.gameScreenModel)
 
-      case GameOverScreen =>
-        GameOverScreenFunctions.View.update(model.menuScreenModel.gameViewport)
+        case GameOverScreen =>
+          GameOverScreenFunctions.View.update(model.menuScreenModel.gameViewport)
     }
 
 }

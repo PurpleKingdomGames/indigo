@@ -105,13 +105,16 @@ object Snake {
   def crash(snake: Snake): Snake =
     snake.copy(status = Dead)
 
-  def update(snake: Snake, gridSize: GridSize, collisionCheck: GridPoint => CollisionCheckOutcome): (Snake, CollisionCheckOutcome) =
-    (nextPosition(gridSize) andThen collisionCheck andThen snakeUpdate(snake)) (snake)
+  def update(snake: Snake,
+             gridSize: GridSize,
+             collisionCheck: GridPoint => CollisionCheckOutcome): (Snake, CollisionCheckOutcome) =
+    (nextPosition(gridSize) andThen collisionCheck andThen snakeUpdate(snake))(snake)
 
-  def nextPosition(gridSize: GridSize): Snake => GridPoint = snake =>
-    snake.direction
-      .oneSquareForward(snake.start)
-      .wrap(gridSize)
+  def nextPosition(gridSize: GridSize): Snake => GridPoint =
+    snake =>
+      snake.direction
+        .oneSquareForward(snake.start)
+        .wrap(gridSize)
 
   def snakeUpdate(snake: Snake): CollisionCheckOutcome => (Snake, CollisionCheckOutcome) = {
     case oc @ NoCollision(pt) =>
@@ -170,9 +173,9 @@ sealed trait SnakeDirection {
 }
 object SnakeDirection {
 
-  case object Up extends SnakeDirection
-  case object Down extends SnakeDirection
-  case object Left extends SnakeDirection
+  case object Up    extends SnakeDirection
+  case object Down  extends SnakeDirection
+  case object Left  extends SnakeDirection
   case object Right extends SnakeDirection
 
   def go(snakeDirection: SnakeDirection, goDirection: SnakeDirection): SnakeDirection =

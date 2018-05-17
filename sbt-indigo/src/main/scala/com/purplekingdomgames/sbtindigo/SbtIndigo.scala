@@ -9,7 +9,7 @@ import sbt.{File, _}
 object SbtIndigo extends sbt.AutoPlugin {
 
   override def requires: JvmPlugin.type = plugins.JvmPlugin
-  override def trigger: PluginTrigger = allRequirements
+  override def trigger: PluginTrigger   = allRequirements
 
   // TODO
   // Settings for game title
@@ -18,9 +18,10 @@ object SbtIndigo extends sbt.AutoPlugin {
 
   object autoImport {
     val indigoBuild: TaskKey[Unit] = taskKey[Unit]("Build an indigo game.")
-    val gameAssetsDirectory: SettingKey[String] = settingKey[String]("Project relative path to a directory that contains all of the assets the game needs to load.")
+    val gameAssetsDirectory: SettingKey[String] =
+      settingKey[String]("Project relative path to a directory that contains all of the assets the game needs to load.")
     val showCursor: SettingKey[Boolean] = settingKey[Boolean]("Show the cursor? True by default.")
-    val title: SettingKey[String] = settingKey[String]("Title of your game. Defaults to 'Made with Indigo'.")
+    val title: SettingKey[String]       = settingKey[String]("Title of your game. Defaults to 'Made with Indigo'.")
   }
 
   import autoImport._
@@ -35,9 +36,9 @@ object SbtIndigo extends sbt.AutoPlugin {
   lazy val indigoBuildTask: Def.Initialize[Task[Unit]] =
     Def.task {
 
-      val baseDir: String = Keys.baseDirectory.value.getCanonicalPath
+      val baseDir: String      = Keys.baseDirectory.value.getCanonicalPath
       val scalaVersion: String = Keys.scalaVersion.value
-      val projectName: String = Keys.projectID.value.name
+      val projectName: String  = Keys.projectID.value.name
 
       val scriptPathBase = s"$baseDir/target/scala-${scalaVersion.split('.').reverse.tail.reverse.mkString(".")}/$projectName"
 
@@ -49,7 +50,9 @@ object SbtIndigo extends sbt.AutoPlugin {
           title = title.value,
           showCursor = showCursor.value,
           scriptPathBase = scriptPathBase,
-          gameAssetsDirectoryPath = if(gameAssetsDirectory.value.startsWith("/")) gameAssetsDirectory.value else baseDir + "/" + gameAssetsDirectory.value
+          gameAssetsDirectoryPath =
+            if (gameAssetsDirectory.value.startsWith("/")) gameAssetsDirectory.value
+            else baseDir + "/" + gameAssetsDirectory.value
         )
       )
 
@@ -98,11 +101,11 @@ object IndigoBuild {
   def copyAssets(gameAssetsDirectoryPath: String, destAssetsFolder: File): Unit = {
     val dirFile = new File(gameAssetsDirectoryPath)
 
-    if (!dirFile.exists()) {
+    if (!dirFile.exists())
       throw new Exception("Supplied game assets path does not exist: " + dirFile.getPath)
-    } else if(!dirFile.isDirectory) {
+    else if (!dirFile.isDirectory)
       throw new Exception("Supplied game assets path was not a directory")
-    } else {
+    else {
       println("Copying assets...")
       FileUtils.copyDirectory(dirFile, destAssetsFolder)
     }
@@ -110,8 +113,13 @@ object IndigoBuild {
 
   def copyScript(templateOptions: TemplateOptions, desScriptsFolder: File): String = {
     val path = s"${templateOptions.scriptPathBase}-fastopt.js"
-    val fileName = path.split('/').toList.reverse.headOption.getOrElse(throw new Exception("Could not figure out script file name from: " + path))
-    val scriptPath: File = new File(path)//TODO: This only covers the fast opt JS version
+    val fileName = path
+      .split('/')
+      .toList
+      .reverse
+      .headOption
+      .getOrElse(throw new Exception("Could not figure out script file name from: " + path))
+    val scriptPath: File = new File(path) //TODO: This only covers the fast opt JS version
 
     FileUtils.copyFileToDirectory(scriptPath, desScriptsFolder)
 
@@ -120,8 +128,13 @@ object IndigoBuild {
 
   def copySourceMap(templateOptions: TemplateOptions, desScriptsFolder: File): String = {
     val path = s"${templateOptions.scriptPathBase}-fastopt.js.map"
-    val fileName = path.split('/').toList.reverse.headOption.getOrElse(throw new Exception("Could not figure out source map file name from: " + path))
-    val scriptPath: File = new File(path)//TODO: This only covers the fast opt JS version
+    val fileName = path
+      .split('/')
+      .toList
+      .reverse
+      .headOption
+      .getOrElse(throw new Exception("Could not figure out source map file name from: " + path))
+    val scriptPath: File = new File(path) //TODO: This only covers the fast opt JS version
 
     FileUtils.copyFileToDirectory(scriptPath, desScriptsFolder)
 
@@ -131,20 +144,18 @@ object IndigoBuild {
   private def ensureDirectoryAt(path: String): File = {
     val dirFile = new File(path)
 
-    if (!dirFile.exists()) {
+    if (!dirFile.exists())
       dirFile.mkdir()
-    }
 
     dirFile
   }
 
   def writeHtml(directoryStructure: DirectoryStructure, html: String): String = {
     val relativePath = directoryStructure.base.getCanonicalPath + "/index.html"
-    val file = new File(relativePath)
+    val file         = new File(relativePath)
 
-    if (file.exists()) {
+    if (file.exists())
       file.delete()
-    }
 
     file.createNewFile()
 
@@ -156,8 +167,7 @@ object IndigoBuild {
     file.getCanonicalPath
   }
 
-  val template: TemplateOptions => String = options =>
-    s"""<!DOCTYPE html>
+  val template: TemplateOptions => String = options => s"""<!DOCTYPE html>
       |<html>
       |  <head>
       |    <meta charset="UTF-8">
@@ -168,7 +178,7 @@ object IndigoBuild {
       |        margin:0px;
       |      }
       |
-      |      ${if(!options.showCursor) "canvas { cursor: none }" else "" }
+      |      ${if (!options.showCursor) "canvas { cursor: none }" else ""}
       |    </style>
       |  </head>
       |  <body>

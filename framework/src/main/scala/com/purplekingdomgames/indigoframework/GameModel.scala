@@ -8,12 +8,10 @@ object GameModelHelper {
   def initialModel(startupData: StartupData): GameModel =
     GameModel(startupData.gameDefinition)
 
-  def updateModel(state: GameModel): GameEvent => GameModel = {
-    _ =>
-      state
+  def updateModel(state: GameModel): GameEvent => GameModel = { _ =>
+    state
   }
 
 }
 
 case class GameModel(gameDefinition: GameDefinition)
-

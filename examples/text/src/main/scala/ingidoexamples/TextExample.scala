@@ -25,8 +25,7 @@ object TextExample extends IndigoGameBasic[Unit, Unit] {
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(gameTime: GameTime, model: Unit): events.GameEvent => Unit = _ =>
-    model
+  def update(gameTime: GameTime, model: Unit): events.GameEvent => Unit = _ => model
 
   val text: Text = Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontKey).alignRight
 

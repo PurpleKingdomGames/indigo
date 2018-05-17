@@ -7,7 +7,7 @@ import org.scalajs.dom.raw.{WebGLFramebuffer, WebGLTexture}
 object FrameBufferFunctions {
 
   def createAndSetupTexture(cNc: ContextAndCanvas): WebGLTexture = {
-    val gl = cNc.context
+    val gl      = cNc.context
     val texture = RendererFunctions.createAndBindTexture(gl)
 
     gl.texImage2D(TEXTURE_2D, 0, RGBA, cNc.width, cNc.height, 0, RGBA, UNSIGNED_BYTE, null)

@@ -13,7 +13,7 @@ case class NinjaAssaultGameModel(scenes: List[Scene]) {
   val activeScene: Scene = scenes.find(_.active == true).getOrElse(Menu(true))
 
   def makeMenuSceneActive: NinjaAssaultGameModel =
-    this.copy (
+    this.copy(
       scenes = scenes.map {
         case Menu(_) => Menu(true)
         case Logo(_) => Logo(false)
@@ -204,8 +204,6 @@ object NinjaAssaultGameModel {
 .......
 
  */
-
-
 /*
 //lens example:
 

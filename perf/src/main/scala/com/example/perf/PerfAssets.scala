@@ -5,8 +5,8 @@ import com.purplekingdomgames.shared.{AssetType, ImageAsset, TextAsset}
 object PerfAssets {
 
   val smallFontName: String = "smallFontName"
-  val dudeName: String = "base_charactor"
-  val light: String = "light"
+  val dudeName: String      = "base_charactor"
+  val light: String         = "light"
 
   def assets: Set[AssetType] =
     Set(

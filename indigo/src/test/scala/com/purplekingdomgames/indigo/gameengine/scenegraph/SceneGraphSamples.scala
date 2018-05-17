@@ -7,7 +7,7 @@ object SceneGraphSamples {
 
   case class TestViewDataType()
 
-  val fontKey: FontKey = FontKey("test")
+  val fontKey: FontKey   = FontKey("test")
   val fontInfo: FontInfo = FontInfo(fontKey, "font-sheet", 256, 256, FontChar("a", 0, 0, 16, 16))
   FontRegister.register(fontInfo)
 
@@ -15,7 +15,8 @@ object SceneGraphSamples {
   val animations: Animations = Animations(
     animationsKey,
     "ref",
-    64, 32,
+    64,
+    32,
     Cycle("label", Frame(0, 0, 32, 32))
       .addFrame(Frame(32, 0, 32, 32))
   )
@@ -27,12 +28,21 @@ object SceneGraphSamples {
         List(
           Group(
             Text(
-              "Hello", 10, 10, 1,
+              "Hello",
+              10,
+              10,
+              1,
               fontKey
             ),
             Graphic(10, 10, 32, 32, 1, "ref"),
             Sprite(
-              BindingKey("test"), 10, 10, 32, 32, 1, animationsKey,
+              BindingKey("test"),
+              10,
+              10,
+              32,
+              32,
+              1,
+              animationsKey,
             ),
             Group(
               Graphic(10, 10, 32, 32, 1, "ref1"),

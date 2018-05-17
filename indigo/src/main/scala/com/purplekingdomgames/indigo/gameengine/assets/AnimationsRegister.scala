@@ -37,7 +37,9 @@ object AnimationsRegister {
     actionsQueue.enqueue(AnimationActionCommand(bindingKey, animationsKey, action))
 
   private def dequeueAndDeduplicateActions(bindingKey: BindingKey, animationsKey: AnimationsKey): List[AnimationActionCommand] = {
-    def rec(remaining: List[AnimationActionCommand], hashesDone: List[String], acc: List[AnimationActionCommand]): List[AnimationActionCommand] = {
+    def rec(remaining: List[AnimationActionCommand],
+            hashesDone: List[String],
+            acc: List[AnimationActionCommand]): List[AnimationActionCommand] =
       remaining match {
         case Nil =>
           acc
@@ -48,7 +50,6 @@ object AnimationsRegister {
         case x :: xs =>
           rec(xs, x.hash :: hashesDone, x :: acc)
       }
-    }
 
     rec(actionsQueue.dequeueAll(p => p.animationsKey === animationsKey && p.bindingKey === bindingKey).toList, Nil, Nil)
   }
@@ -66,7 +67,9 @@ object AnimationsRegister {
   - Inserting or fetching the entry for binding key x and animation key y
   - Applying an animation memento if one doesn't exist and running the commands queued against it.
    */
-  def fetchFromCache(gameTime: GameTime, bindingKey: BindingKey, animationsKey: AnimationsKey)(implicit metrics: IMetrics): Option[Animations] = {
+  def fetchFromCache(gameTime: GameTime, bindingKey: BindingKey, animationsKey: AnimationsKey)(
+      implicit metrics: IMetrics
+  ): Option[Animations] = {
     val key: String = s"${bindingKey.value}_${animationsKey.key}"
 
     val cacheEntry: Option[AnimationCacheEntry] = animationsCache.get(key).orElse {
@@ -77,7 +80,7 @@ object AnimationsRegister {
 
         metrics.record(RunAnimationActionsStartMetric)
         val commands = dequeueAndDeduplicateActions(bindingKey, animationsKey)
-        val newAnim = commands.foldLeft(updated)((a, action) => a.addAction(action.action)).runActions(gameTime)
+        val newAnim  = commands.foldLeft(updated)((a, action) => a.addAction(action.action)).runActions(gameTime)
         metrics.record(RunAnimationActionsEndMetric)
 
         AnimationCacheEntry(bindingKey, newAnim)
@@ -96,9 +99,8 @@ object AnimationsRegister {
       animationsCache.remove(key)
     }
 
-  private def saveAnimationMementos(): Unit = {
+  private def saveAnimationMementos(): Unit =
     setAnimationStates(AnimationStates(animationsCache.map(e => e._2.animations.saveMemento(e._2.bindingKey)).toList))
-  }
 
   def persistAnimationStates(): Unit = {
     saveAnimationMementos()

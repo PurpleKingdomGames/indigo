@@ -10,10 +10,9 @@ class SnakeSpec extends FunSpec with Matchers {
 
   def collisionF: GridPoint => CollisionCheckOutcome = pt => NoCollision(pt)
 
-  def tick(snake: Snake, count: Int): Snake = {
-    if(count == 0) snake
-    else tick(snake.update(gridSize, collisionF)._1, count -1)
-  }
+  def tick(snake: Snake, count: Int): Snake =
+    if (count == 0) snake
+    else tick(snake.update(gridSize, collisionF)._1, count - 1)
 
   implicit class Tickable(snake: Snake) {
     def doTick(): Snake = tick(snake, 1)
@@ -68,16 +67,23 @@ class SnakeSpec extends FunSpec with Matchers {
 
       val path: List[(Int, Int)] =
         Snake(GridPoint.identity).grow
-          .doTick().grow
+          .doTick()
+          .grow
           .turnRight
-          .doTick().grow
-          .doTick().grow
+          .doTick()
+          .grow
+          .doTick()
+          .grow
           .turnLeft
-          .doTick().grow
-          .doTick().grow
-          .doTick().grow
+          .doTick()
+          .grow
+          .doTick()
+          .grow
+          .doTick()
+          .grow
           .turnLeft
-          .doTick().grow
+          .doTick()
+          .grow
           .turnLeft
           .doTick()
           .givePathList
@@ -91,7 +97,7 @@ class SnakeSpec extends FunSpec with Matchers {
         (2, 3), //up
         (2, 4), //up
         (1, 4), //left
-        (1, 3)  //down
+        (1, 3) //down
       ).reverse
 
       path shouldEqual expected

@@ -13,8 +13,8 @@ import scala.scalajs.js.annotation.JSExportTopLevel
 
 object PerfGame {
 
-  val viewportWidth: Int = 800
-  val viewportHeight: Int = 600
+  val viewportWidth: Int      = 800
+  val viewportHeight: Int     = 600
   val magnificationLevel: Int = 1
 
   def config: GameConfig =
@@ -36,28 +36,28 @@ object PerfGame {
 
   def initialise(assetCollection: AssetCollection): Startup[MyErrorReport, MyStartupData] = {
     val dude: Option[Dude] = for {
-      json <- assetCollection.texts.find(p => p.name == PerfAssets.dudeName + "-json").map(_.contents)
-      aseprite <- AsepriteHelper.fromJson(json)
+      json                <- assetCollection.texts.find(p => p.name == PerfAssets.dudeName + "-json").map(_.contents)
+      aseprite            <- AsepriteHelper.fromJson(json)
       spriteAndAnimations <- AsepriteHelper.toSpriteAndAnimations(aseprite, Depth(3), PerfAssets.dudeName)
-      _ <- Option(game.registerAnimations(spriteAndAnimations.animations))
-    } yield Dude(
-      aseprite,
-      spriteAndAnimations.sprite
-        .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
-        .moveTo(viewportWidth / 2 / magnificationLevel, viewportHeight / 2 / magnificationLevel) // Also place him in the middle of the screen initially
-    )
+      _                   <- Option(game.registerAnimations(spriteAndAnimations.animations))
+    } yield
+      Dude(
+        aseprite,
+        spriteAndAnimations.sprite
+          .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
+          .moveTo(viewportWidth / 2 / magnificationLevel, viewportHeight / 2 / magnificationLevel) // Also place him in the middle of the screen initially
+      )
 
     dude match {
       case Some(d) => MyStartupData(d)
-      case None => MyErrorReport("Failed to load the dude")
+      case None    => MyErrorReport("Failed to load the dude")
     }
   }
 
   def initialModel(startupData: MyStartupData): MyGameModel =
     PerfModel.initialModel(startupData)
 
-  val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel = (_, gameModel) =>
-    PerfModel.updateModel(gameModel)
+  val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel = (_, gameModel) => PerfModel.updateModel(gameModel)
 
   val updateView: (GameTime, MyGameModel, FrameInputEvents) => SceneUpdateFragment = (_, gameModel, frameInputEvents) =>
     PerfView.updateView(gameModel, frameInputEvents)

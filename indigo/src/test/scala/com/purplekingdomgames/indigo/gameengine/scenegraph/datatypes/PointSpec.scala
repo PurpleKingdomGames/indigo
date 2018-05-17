@@ -4,7 +4,6 @@ import org.scalatest.{FunSpec, Matchers}
 
 class PointSpec extends FunSpec with Matchers {
 
-
   describe("Interpolation") {
 
     it("should be able to calculate a linear interpolation") {

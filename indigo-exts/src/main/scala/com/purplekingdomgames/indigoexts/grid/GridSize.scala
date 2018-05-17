@@ -1,7 +1,7 @@
 package com.purplekingdomgames.indigoexts.grid
 
 case class GridSize(columns: Int, rows: Int, gridSquareSize: Int) {
-  val width: Int = columns
+  val width: Int  = columns
   val height: Int = rows
 
   def asPowerOf2: Int =
@@ -26,8 +26,8 @@ case class GridSize(columns: Int, rows: Int, gridSquareSize: Int) {
 object GridSize {
   def asPowerOf2(gridSize: GridSize): Int = {
     def rec(maxLength: Int, size: Int): Int =
-      if(size >= maxLength) size else rec(maxLength, size * 2)
+      if (size >= maxLength) size else rec(maxLength, size * 2)
 
-    rec(if(gridSize.width >= gridSize.height) gridSize.width else gridSize.height, 2)
+    rec(if (gridSize.width >= gridSize.height) gridSize.width else gridSize.height, 2)
   }
 }

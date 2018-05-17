@@ -6,7 +6,7 @@ package com.purplekingdomgames.indigo.util
   */
 object Logger {
 
-  private val INFO: String = "INFO"
+  private val INFO: String  = "INFO"
   private val ERROR: String = "ERROR"
   private val DEBUG: String = "DEBUG"
 
@@ -16,25 +16,22 @@ object Logger {
   private def formatMessage(level: String, message: String): String =
     s"""[${System.currentTimeMillis()}] [$level] [Indigo] $message"""
 
-  val info: String => Unit = message =>
-    println(formatMessage(INFO, message))
+  val info: String => Unit = message => println(formatMessage(INFO, message))
 
-  val error: String => Unit = message =>
-    println(formatMessage(ERROR, message))
+  val error: String => Unit = message => println(formatMessage(ERROR, message))
 
   val errorOnce: String => Unit = message =>
-    if(!errorLogs.iterator.contains(message)) {
+    if (!errorLogs.iterator.contains(message)) {
       errorLogs.push(message)
       println(formatMessage(ERROR, message))
-    }
+  }
 
-  val debug: String => Unit = message =>
-    println(formatMessage(DEBUG, message))
+  val debug: String => Unit = message => println(formatMessage(DEBUG, message))
 
   val debugOnce: String => Unit = message =>
-    if(!debugLogs.iterator.contains(message)) {
+    if (!debugLogs.iterator.contains(message)) {
       debugLogs.push(message)
       println(formatMessage(DEBUG, message))
-    }
+  }
 
 }

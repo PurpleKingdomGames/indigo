@@ -17,7 +17,7 @@ object AssetManager {
     l.flatMap { at =>
       at match {
         case t: TextAsset => List(t)
-        case _ => Nil
+        case _            => Nil
       }
     }
 
@@ -25,7 +25,7 @@ object AssetManager {
     l.flatMap { at =>
       at match {
         case t: ImageAsset => List(t)
-        case _ => Nil
+        case _             => Nil
       }
     }
 
@@ -33,7 +33,7 @@ object AssetManager {
     l.flatMap { at =>
       at match {
         case t: AudioAsset => List(t)
-        case _ => Nil
+        case _             => Nil
       }
     }
 
@@ -47,8 +47,8 @@ object AssetManager {
     } yield AssetCollection(i, t, a)
   }
 
-  def findByName(assetCollection: AssetCollection): String => Option[LoadedImageAsset] = name =>
-    assetCollection.images.find(p => p.name == name)
+  def findByName(assetCollection: AssetCollection): String => Option[LoadedImageAsset] =
+    name => assetCollection.images.find(p => p.name == name)
 
   private val loadImageAssets: List[ImageAsset] => Future[List[LoadedImageAsset]] = imageAssets =>
     Future.sequence(imageAssets.map(loadImageAsset))

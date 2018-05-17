@@ -3,10 +3,14 @@ package com.purplekingdomgames.shared
 import io.circe.generic.auto._
 import io.circe.parser._
 
-case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int, advanced: AdvancedGameConfig) {
+case class GameConfig(viewport: GameViewport,
+                      frameRate: Int,
+                      clearColor: ClearColor,
+                      magnification: Int,
+                      advanced: AdvancedGameConfig) {
   val frameRateDeltaMillis: Int = 1000 / frameRate
 
-  val haltViewUpdatesAt: Int = frameRateDeltaMillis * 2
+  val haltViewUpdatesAt: Int  = frameRateDeltaMillis * 2
   val haltModelUpdatesAt: Int = frameRateDeltaMillis * 3
 
   val asString: String =
@@ -18,19 +22,20 @@ case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearC
        |Magnification:  $magnification
        |""".stripMargin
 
-  def withViewport(width: Int, height: Int): GameConfig = this.copy(viewport = GameViewport(width, height))
-  def withFrameRate(frameRate: Int): GameConfig = this.copy(frameRate = frameRate)
+  def withViewport(width: Int, height: Int): GameConfig  = this.copy(viewport = GameViewport(width, height))
+  def withFrameRate(frameRate: Int): GameConfig          = this.copy(frameRate = frameRate)
   def withClearColor(clearColor: ClearColor): GameConfig = this.copy(clearColor = clearColor)
-  def withMagnification(magnification: Int): GameConfig = this.copy(magnification = magnification)
+  def withMagnification(magnification: Int): GameConfig  = this.copy(magnification = magnification)
 
   def withAdvancedSettings(advanced: AdvancedGameConfig): GameConfig = this.copy(advanced = advanced)
-  def metricsEnabled: GameConfig = this.copy(advanced = advanced.copy(recordMetrics = true))
-  def metricsDisabled: GameConfig = this.copy(advanced = advanced.copy(recordMetrics = false))
-  def withLogInterval(milliseconds: Int): GameConfig = this.copy(advanced = advanced.copy(logMetricsReportIntervalMs = milliseconds))
+  def metricsEnabled: GameConfig                                     = this.copy(advanced = advanced.copy(recordMetrics = true))
+  def metricsDisabled: GameConfig                                    = this.copy(advanced = advanced.copy(recordMetrics = false))
+  def withLogInterval(milliseconds: Int): GameConfig =
+    this.copy(advanced = advanced.copy(logMetricsReportIntervalMs = milliseconds))
   def disableSkipModelUpdates: GameConfig = this.copy(advanced = advanced.copy(disableSkipModelUpdates = true))
-  def enableSkipModelUpdates: GameConfig = this.copy(advanced = advanced.copy(disableSkipModelUpdates = false))
-  def disableSkipViewUpdates: GameConfig = this.copy(advanced = advanced.copy(disableSkipViewUpdates = true))
-  def enableSkipViewUpdates: GameConfig = this.copy(advanced = advanced.copy(disableSkipViewUpdates = false))
+  def enableSkipModelUpdates: GameConfig  = this.copy(advanced = advanced.copy(disableSkipModelUpdates = false))
+  def disableSkipViewUpdates: GameConfig  = this.copy(advanced = advanced.copy(disableSkipViewUpdates = true))
+  def enableSkipViewUpdates: GameConfig   = this.copy(advanced = advanced.copy(disableSkipViewUpdates = false))
 }
 
 object GameConfig {
@@ -57,8 +62,8 @@ object GameConfig {
 
 case class GameViewport(width: Int, height: Int) {
   val horizontalMiddle: Int = width / 2
-  val verticalMiddle: Int = height / 2
-  val center: (Int, Int) = (horizontalMiddle, verticalMiddle)
+  val verticalMiddle: Int   = height / 2
+  val center: (Int, Int)    = (horizontalMiddle, verticalMiddle)
 }
 object GameViewport {
   val atWUXGA: GameViewport =
@@ -77,7 +82,10 @@ object GameViewport {
     GameViewport(640, 360)
 }
 
-case class AdvancedGameConfig(recordMetrics: Boolean, logMetricsReportIntervalMs: Int, disableSkipModelUpdates: Boolean, disableSkipViewUpdates: Boolean)
+case class AdvancedGameConfig(recordMetrics: Boolean,
+                              logMetricsReportIntervalMs: Int,
+                              disableSkipModelUpdates: Boolean,
+                              disableSkipViewUpdates: Boolean)
 object AdvancedGameConfig {
   val default: AdvancedGameConfig = AdvancedGameConfig(
     recordMetrics = false,

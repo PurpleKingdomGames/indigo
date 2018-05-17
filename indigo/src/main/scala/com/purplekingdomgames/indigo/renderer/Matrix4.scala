@@ -9,9 +9,8 @@ case class Matrix4(mat: List[Double]) {
 
   def identity: Matrix4 = Matrix4.identity
 
-  def translate(tx: Double, ty: Double, tz: Double): Matrix4 = {
+  def translate(tx: Double, ty: Double, tz: Double): Matrix4 =
     Matrix4.multiply(this, Matrix4.translation(tx, ty, tz))
-  }
 
   def xRotate(angleInRadians: Double): Matrix4 = this * Matrix4.xRotation(angleInRadians)
 
@@ -51,61 +50,87 @@ case object Matrix4 {
 
   def identity: Matrix4 = Matrix4(
     mat = List(
-      1, 0, 0, 0,
-      0, 1, 0, 0,
-      0, 0, 1, 0,
-      0, 0, 0, 1
+      1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
     )
   )
 
   def one: Matrix4 = Matrix4(
     mat = List(
-      1, 1, 1, 1,
-      1, 1, 1, 1,
-      1, 1, 1, 1,
-      1, 1, 1, 1
+      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
     )
   )
 
   /**
     * Usage Matrix.projection(2 * aspectRatio, 2, 2) (assuming width > height) because the screen by default is 2 x 2 units: -1 to 1
     */
-  def projection(width: Double, height: Double, depth: Double): Matrix4 = {
+  def projection(width: Double, height: Double, depth: Double): Matrix4 =
     Matrix4(
       List(
-        2 / width, 0,          0,         0,
-        0,         2 / height, 0,         0,
-        0,         0,          2 / depth, 0,
-        0,         0,          0,         1
+        2 / width,
+        0,
+        0,
+        0,
+        0,
+        2 / height,
+        0,
+        0,
+        0,
+        0,
+        2 / depth,
+        0,
+        0,
+        0,
+        0,
+        1
       )
     )
-  }
 
-  def orthographic(left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double): Matrix4 = {
+  def orthographic(left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double): Matrix4 =
     Matrix4(
       List(
-        2 / (right - left),              0,                               0,                           0,
-        0,                               2 / (top - bottom),              0,                           0,
-        0,                               0,                               2 / (near - far),            0,
-        (left + right) / (left - right), (bottom + top) / (bottom - top), (near + far) / (near - far), 1
+        2 / (right - left),
+        0,
+        0,
+        0,
+        0,
+        2 / (top - bottom),
+        0,
+        0,
+        0,
+        0,
+        2 / (near - far),
+        0,
+        (left + right) / (left - right),
+        (bottom + top) / (bottom - top),
+        (near + far) / (near - far),
+        1
       )
     )
-  }
 
-  def orthographic(width: Double, height: Double): Matrix4 = {
+  def orthographic(width: Double, height: Double): Matrix4 =
     orthographic(0, width, height, 0, -10000, 10000)
-  }
 
-  def translation(tx: Double, ty: Double, tz: Double): Matrix4 = {
+  def translation(tx: Double, ty: Double, tz: Double): Matrix4 =
     Matrix4(
       List(
-        1,  0,  0,  0,
-        0,  1,  0,  0,
-        0,  0,  1,  0,
-        tx, ty, tz, 1
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        tx,
+        ty,
+        tz,
+        1
       )
     )
-  }
 
   def xRotation(angleInRadians: Double): Matrix4 = {
     val c = Math.cos(angleInRadians)
@@ -113,10 +138,22 @@ case object Matrix4 {
 
     Matrix4(
       List(
-        1, 0, 0, 0,
-        0, c, s, 0,
-        0, -s, c, 0,
-        0, 0, 0, 1
+        1,
+        0,
+        0,
+        0,
+        0,
+        c,
+        s,
+        0,
+        0,
+        -s,
+        c,
+        0,
+        0,
+        0,
+        0,
+        1
       )
     )
   }
@@ -127,10 +164,22 @@ case object Matrix4 {
 
     Matrix4(
       List(
-        c, 0, -s, 0,
-        0, 1, 0, 0,
-        s, 0, c, 0,
-        0, 0, 0, 1
+        c,
+        0,
+        -s,
+        0,
+        0,
+        1,
+        0,
+        0,
+        s,
+        0,
+        c,
+        0,
+        0,
+        0,
+        0,
+        1
       )
     )
   }
@@ -141,35 +190,69 @@ case object Matrix4 {
 
     Matrix4(
       List(
-        c, s, 0, 0,
-        -s, c, 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1
+        c,
+        s,
+        0,
+        0,
+        -s,
+        c,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
       )
     )
   }
 
-  def scale(sx: Double, sy: Double, sz: Double): Matrix4 = {
+  def scale(sx: Double, sy: Double, sz: Double): Matrix4 =
     Matrix4(
       List(
-        sx, 0,  0,  0,
-        0, sy,  0,  0,
-        0,  0, sz,  0,
-        0,  0,  0,  1
+        sx,
+        0,
+        0,
+        0,
+        0,
+        sy,
+        0,
+        0,
+        0,
+        0,
+        sz,
+        0,
+        0,
+        0,
+        0,
+        1
       )
     )
-  }
 
-  def translateAndScale(tx: Double, ty: Double, tz: Double, sx: Double, sy: Double, sz: Double): Matrix4 = {
+  def translateAndScale(tx: Double, ty: Double, tz: Double, sx: Double, sy: Double, sz: Double): Matrix4 =
     Matrix4(
       List(
-        sx, 0,  0,  0,
-        0, sy,  0,  0,
-        0,  0, sz,  0,
-        tx, ty, tz,  1
+        sx,
+        0,
+        0,
+        0,
+        0,
+        sy,
+        0,
+        0,
+        0,
+        0,
+        sz,
+        0,
+        tx,
+        ty,
+        tz,
+        1
       )
     )
-  }
 
   def multiply(a: Matrix4, b: Matrix4): Matrix4 = {
     val listA = a.mat
@@ -235,19 +318,31 @@ case object Matrix4 {
     val m = matrix4.mat
     Matrix4(
       mat = List(
-        m(0),  m(4),  m(8), m(12),
-        m(1),  m(5),  m(9), m(13),
-        m(2),  m(6), m(10), m(14),
-        m(3),  m(7), m(11), m(15)
+        m(0),
+        m(4),
+        m(8),
+        m(12),
+        m(1),
+        m(5),
+        m(9),
+        m(13),
+        m(2),
+        m(6),
+        m(10),
+        m(14),
+        m(3),
+        m(7),
+        m(11),
+        m(15)
       )
     )
   }
 
   def flip(horizontal: Boolean, vertical: Boolean): Matrix4 =
     (horizontal, vertical) match {
-      case (true, true) => Matrix4.scale(-1, -1, -1)
-      case (true, false) => Matrix4.scale(-1, 1, -1)
-      case (false, true) => Matrix4.scale(1, -1, -1)
+      case (true, true)   => Matrix4.scale(-1, -1, -1)
+      case (true, false)  => Matrix4.scale(-1, 1, -1)
+      case (false, true)  => Matrix4.scale(1, -1, -1)
       case (false, false) => Matrix4.identity
     }
 

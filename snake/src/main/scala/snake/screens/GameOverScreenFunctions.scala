@@ -27,19 +27,21 @@ object GameOverScreenFunctions {
 
   object View {
 
-    def update: GameViewport => SceneUpdateFragment = viewport =>
-      SceneUpdateFragment(
-        Nil,
-        Nil,
-        ui(viewport),
-        AmbientLight.Normal,
-        Nil,
-        SceneAudio.None
+    def update: GameViewport => SceneUpdateFragment =
+      viewport =>
+        SceneUpdateFragment(
+          Nil,
+          Nil,
+          ui(viewport),
+          AmbientLight.Normal,
+          Nil,
+          SceneAudio.None
       )
 
-    def ui: GameViewport => List[SceneGraphNode] = viewport =>
-      List(
-        Text("Game over!\nPress SPACE!", viewport.width / 2, (viewport.height / 2) - 30, 1, SnakeAssets.fontKey).alignCenter
+    def ui: GameViewport => List[SceneGraphNode] =
+      viewport =>
+        List(
+          Text("Game over!\nPress SPACE!", viewport.width / 2, (viewport.height / 2) - 30, 1, SnakeAssets.fontKey).alignCenter
       )
 
   }

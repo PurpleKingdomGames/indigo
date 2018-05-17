@@ -9,9 +9,10 @@ import com.purplekingdomgames.shared.GameViewport
 
 object SnakeInit {
 
-  def initialise(viewport: GameViewport, gridSize: GridSize): AssetCollection => Startup[ErrorReport, SnakeStartupData] = assetCollection => {
+  def initialise(viewport: GameViewport, gridSize: GridSize): AssetCollection => Startup[ErrorReport, SnakeStartupData] =
+    assetCollection => {
 
-    val blockSize: Int = 30
+      val blockSize: Int = 30
 
 //    val background = for {
 //      json <- assetCollection.texts.find(p => p.name == SnakeAssets.snakeTiledMapData).map(_.contents)
@@ -24,39 +25,64 @@ object SnakeInit {
 //        ErrorReport("Failed to load the Tiled background map")
 //
 //      case Some(bg) =>
-        StartupSuccess(
-          SnakeStartupData(
-            viewport = viewport,
-            gridSize = gridSize,
-            staticAssets = StaticAssets(
-              gameScreen = GameScreenAssets(
-                apple = Graphic(0, 0, blockSize, blockSize, 2, SnakeAssets.snakeTexture).withCrop(blockSize, 0, blockSize, blockSize),
-                player1 = PlayerSnakeAssets(
-                  alive = Graphic(0, 0, blockSize, blockSize, 2, SnakeAssets.snakeTexture).withCrop(blockSize * 2, 0, blockSize, blockSize),
-                  dead = Graphic(0, 0, blockSize, blockSize, 2, SnakeAssets.snakeTexture).withCrop(blockSize * 3, 0, blockSize, blockSize)
-                ),
-                player2 = PlayerSnakeAssets(
-                  alive = Graphic(0, 0, blockSize, blockSize, 2, SnakeAssets.snakeTexture).withCrop(blockSize * 2, blockSize, blockSize, blockSize),
-                  dead = Graphic(0, 0, blockSize, blockSize, 2, SnakeAssets.snakeTexture).withCrop(blockSize * 3, blockSize, blockSize, blockSize)
-                ),
-                player3 = PlayerSnakeAssets(
-                  alive = Graphic(0, 0, blockSize, blockSize, 2, SnakeAssets.snakeTexture).withCrop(blockSize * 2, blockSize * 2, blockSize, blockSize),
-                  dead = Graphic(0, 0, blockSize, blockSize, 2, SnakeAssets.snakeTexture).withCrop(blockSize * 3, blockSize * 2, blockSize, blockSize)
-                ),
-                player4 = PlayerSnakeAssets(
-                  alive = Graphic(0, 0, blockSize, blockSize, 2, SnakeAssets.snakeTexture).withCrop(blockSize * 2, blockSize * 3, blockSize, blockSize),
-                  dead = Graphic(0, 0, blockSize, blockSize, 2, SnakeAssets.snakeTexture).withCrop(blockSize * 3, blockSize * 3, blockSize, blockSize)
-                ),
-                background = Group(
-                  Graphic(0, 0, 960, 540, 3, SnakeAssets.arenaBg)
-                )
+      StartupSuccess(
+        SnakeStartupData(
+          viewport = viewport,
+          gridSize = gridSize,
+          staticAssets = StaticAssets(
+            gameScreen = GameScreenAssets(
+              apple =
+                Graphic(0, 0, blockSize, blockSize, 2, SnakeAssets.snakeTexture).withCrop(blockSize, 0, blockSize, blockSize),
+              player1 = PlayerSnakeAssets(
+                alive = Graphic(0, 0, blockSize, blockSize, 2, SnakeAssets.snakeTexture).withCrop(blockSize * 2,
+                                                                                                  0,
+                                                                                                  blockSize,
+                                                                                                  blockSize),
+                dead = Graphic(0, 0, blockSize, blockSize, 2, SnakeAssets.snakeTexture).withCrop(blockSize * 3,
+                                                                                                 0,
+                                                                                                 blockSize,
+                                                                                                 blockSize)
+              ),
+              player2 = PlayerSnakeAssets(
+                alive = Graphic(0, 0, blockSize, blockSize, 2, SnakeAssets.snakeTexture).withCrop(blockSize * 2,
+                                                                                                  blockSize,
+                                                                                                  blockSize,
+                                                                                                  blockSize),
+                dead = Graphic(0, 0, blockSize, blockSize, 2, SnakeAssets.snakeTexture).withCrop(blockSize * 3,
+                                                                                                 blockSize,
+                                                                                                 blockSize,
+                                                                                                 blockSize)
+              ),
+              player3 = PlayerSnakeAssets(
+                alive = Graphic(0, 0, blockSize, blockSize, 2, SnakeAssets.snakeTexture).withCrop(blockSize * 2,
+                                                                                                  blockSize * 2,
+                                                                                                  blockSize,
+                                                                                                  blockSize),
+                dead = Graphic(0, 0, blockSize, blockSize, 2, SnakeAssets.snakeTexture).withCrop(blockSize * 3,
+                                                                                                 blockSize * 2,
+                                                                                                 blockSize,
+                                                                                                 blockSize)
+              ),
+              player4 = PlayerSnakeAssets(
+                alive = Graphic(0, 0, blockSize, blockSize, 2, SnakeAssets.snakeTexture).withCrop(blockSize * 2,
+                                                                                                  blockSize * 3,
+                                                                                                  blockSize,
+                                                                                                  blockSize),
+                dead = Graphic(0, 0, blockSize, blockSize, 2, SnakeAssets.snakeTexture).withCrop(blockSize * 3,
+                                                                                                 blockSize * 3,
+                                                                                                 blockSize,
+                                                                                                 blockSize)
+              ),
+              background = Group(
+                Graphic(0, 0, 960, 540, 3, SnakeAssets.arenaBg)
               )
             )
           )
         )
+      )
 //    }
 
-  }
+    }
 
 }
 

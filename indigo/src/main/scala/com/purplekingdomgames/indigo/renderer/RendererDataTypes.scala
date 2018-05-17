@@ -5,7 +5,12 @@ import com.purplekingdomgames.shared.ClearColor
 import org.scalajs.dom.{html, raw}
 import org.scalajs.dom.raw.WebGLTexture
 
-final case class ContextAndCanvas(context: raw.WebGLRenderingContext, canvas: html.Canvas, width: Int, height: Int, aspect: Float, magnification: Int)
+final case class ContextAndCanvas(context: raw.WebGLRenderingContext,
+                                  canvas: html.Canvas,
+                                  width: Int,
+                                  height: Int,
+                                  aspect: Float,
+                                  magnification: Int)
 
 final case class RendererConfig(viewport: Viewport, clearColor: ClearColor, magnification: Int)
 final case class Viewport(width: Int, height: Int)

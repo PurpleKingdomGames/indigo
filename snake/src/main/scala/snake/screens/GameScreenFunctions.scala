@@ -36,11 +36,14 @@ object GameScreenFunctions {
       )
     }
 
-    private def hitTest(gameMap: GameMap, body: List[GridPoint], lastPosition: GridPoint, useNextPosition: Boolean): GridPoint => CollisionCheckOutcome = nextPosition => {
+    private def hitTest(gameMap: GameMap,
+                        body: List[GridPoint],
+                        lastPosition: GridPoint,
+                        useNextPosition: Boolean): GridPoint => CollisionCheckOutcome = nextPosition => {
       val pt: GridPoint = if (useNextPosition) nextPosition else lastPosition
 
       if (useNextPosition && body.contains(pt)) CollisionCheckOutcome.Crashed(pt)
-      else {
+      else
         gameMap.fetchElementAt(pt.x, pt.y) match {
           case Some(MapElement.Apple(_)) =>
             CollisionCheckOutcome.PickUp(pt)
@@ -57,60 +60,57 @@ object GameScreenFunctions {
           case None =>
             CollisionCheckOutcome.NoCollision(pt)
         }
-      }
     }
 
-    def update(gameTime: GameTime, state: GameScreenModel): GameEvent => GameScreenModel = gameEvent =>
-      if(state.running) {
-        gameEvent match {
-          case FrameTick =>
-            state.player1.update(
-              gameTime,
-              state.gameMap.gridSize,
-              hitTest(
-                state.gameMap,
-                state.player1.snake.givePath,
-                state.player1.snake.start,
-                useNextPosition = (gameTime.running - state.player1.lastUpdated) > state.player1.tickDelay
-              )
-            ) match {
-              case (player, CollisionCheckOutcome.Crashed(_)) =>
-                state.copy(
-                  player1 = player,
-                  running = false
+    def update(gameTime: GameTime, state: GameScreenModel): GameEvent => GameScreenModel =
+      gameEvent =>
+        if (state.running)
+          gameEvent match {
+            case FrameTick =>
+              state.player1.update(
+                gameTime,
+                state.gameMap.gridSize,
+                hitTest(
+                  state.gameMap,
+                  state.player1.snake.givePath,
+                  state.player1.snake.start,
+                  useNextPosition = (gameTime.running - state.player1.lastUpdated) > state.player1.tickDelay
                 )
+              ) match {
+                case (player, CollisionCheckOutcome.Crashed(_)) =>
+                  state.copy(
+                    player1 = player,
+                    running = false
+                  )
 
-              case (player, CollisionCheckOutcome.PickUp(pt)) =>
-                state.copy(
-                  player1 = player.copy(snake = player.snake.grow),
-                  gameMap = state.gameMap
-                    .removeElement(pt)
-                    .insertElement(
-                      Apple(
-                        state
-                          .gameMap
-                          .findEmptySpace(pt :: state.player1.snake.givePath)
+                case (player, CollisionCheckOutcome.PickUp(pt)) =>
+                  state.copy(
+                    player1 = player.copy(snake = player.snake.grow),
+                    gameMap = state.gameMap
+                      .removeElement(pt)
+                      .insertElement(
+                        Apple(
+                          state.gameMap
+                            .findEmptySpace(pt :: state.player1.snake.givePath)
+                        )
                       )
-                    )
-                )
+                  )
 
-              case (player, CollisionCheckOutcome.NoCollision(_)) =>
-                state.copy(
-                  player1 = player
-                )
-            }
+                case (player, CollisionCheckOutcome.NoCollision(_)) =>
+                  state.copy(
+                    player1 = player
+                  )
+              }
 
-          case e: KeyboardEvent =>
-            state.copy(
-              player1 = state.player1.controlScheme.instructPlayer(e, state.player1)
-            )
+            case e: KeyboardEvent =>
+              state.copy(
+                player1 = state.player1.controlScheme.instructPlayer(e, state.player1)
+              )
 
-          case _ =>
-            state
-        }
-      } else {
+            case _ =>
+              state
+          } else
         state
-      }
 
   }
 
@@ -121,7 +121,9 @@ object GameScreenFunctions {
 
     def update(gameTime: GameTime, model: GameScreenModel): SceneUpdateFragment =
       SceneUpdateFragment(
-        gameLayer(gameTime, model, if(model.running) model.staticAssets.gameScreen.player4.alive else model.staticAssets.gameScreen.player4.dead),
+        gameLayer(gameTime,
+                  model,
+                  if (model.running) model.staticAssets.gameScreen.player4.alive else model.staticAssets.gameScreen.player4.dead),
         Nil,
         Nil,
         AmbientLight.Normal,
@@ -129,24 +131,25 @@ object GameScreenFunctions {
         SceneAudio.None
       )
 
-    def gameLayer(gameTime: GameTime, currentState: GameScreenModel, snakeAsset: Graphic): List[SceneGraphNode] = {
+    def gameLayer(gameTime: GameTime, currentState: GameScreenModel, snakeAsset: Graphic): List[SceneGraphNode] =
       List(currentState.staticAssets.gameScreen.background) ++
-        currentState.gameMap.findApples.map(a => currentState.staticAssets.gameScreen.apple.moveTo(coordsToPoint(a.gridPoint, currentState.gameMap.gridSize))) ++
+        currentState.gameMap.findApples.map(
+          a => currentState.staticAssets.gameScreen.apple.moveTo(coordsToPoint(a.gridPoint, currentState.gameMap.gridSize))
+        ) ++
         drawSnake(gameTime, currentState, snakeAsset)
-    }
 
-    def drawSnake(gameTime: GameTime, currentState: GameScreenModel, snakeAsset: Graphic): List[Graphic] = {
-      currentState.player1.previousSnakePath.zip(currentState.player1.snake.givePath).map { case (start, end) =>
-        snakeAsset.moveTo(
-          Point.linearInterpolation(
-            coordsToPoint(start, currentState.gameMap.gridSize),
-            coordsToPoint(end, currentState.gameMap.gridSize),
-            currentState.player1.tickDelay.toDouble,
-            gameTime.running - currentState.player1.lastUpdated
+    def drawSnake(gameTime: GameTime, currentState: GameScreenModel, snakeAsset: Graphic): List[Graphic] =
+      currentState.player1.previousSnakePath.zip(currentState.player1.snake.givePath).map {
+        case (start, end) =>
+          snakeAsset.moveTo(
+            Point.linearInterpolation(
+              coordsToPoint(start, currentState.gameMap.gridSize),
+              coordsToPoint(end, currentState.gameMap.gridSize),
+              currentState.player1.tickDelay.toDouble,
+              gameTime.running - currentState.player1.lastUpdated
+            )
           )
-        )
       }
-    }
 
   }
 

@@ -8,9 +8,9 @@ trait QuadBounds {
   val width: Int
   val height: Int
 
-  def left: Int = x
-  def top: Int = y
-  def right: Int = x + width
+  def left: Int   = x
+  def top: Int    = y
+  def right: Int  = x + width
   def bottom: Int = y + height
 
   def isOneUnitSquare: Boolean =
@@ -39,24 +39,24 @@ object QuadBounds {
     unsafeCreate(
       0,
       0,
-      if(powerOf2 < 2) 2 else powerOf2,
-      if(powerOf2 < 2) 2 else powerOf2
+      if (powerOf2 < 2) 2 else powerOf2,
+      if (powerOf2 < 2) 2 else powerOf2
     )
 
   def apply(_x: Int, _y: Int, _width: Int, _height: Int): QuadBounds =
     unsafeCreate(
-      if(_x < 0) 0 else _x,
-      if(_y < 0) 0 else _y,
-      if(_width < 2) 2 else _width,
-      if(_height < 2) 2 else _height
+      if (_x < 0) 0 else _x,
+      if (_y < 0) 0 else _y,
+      if (_width < 2) 2 else _width,
+      if (_height < 2) 2 else _height
     )
 
   def unsafeCreate(_x: Int, _y: Int, _width: Int, _height: Int): QuadBounds =
     new QuadBounds {
-      val x: Int = _x
-      val y: Int = _y
-      val width: Int = if(_width < 1) 1 else _width
-      val height: Int = if(_height < 1) 1 else _height
+      val x: Int      = _x
+      val y: Int      = _y
+      val width: Int  = if (_width < 1) 1 else _width
+      val height: Int = if (_height < 1) 1 else _height
     }
 
   def pointWithinBounds(quadBounds: QuadBounds, gridPoint: GridPoint): Boolean =
@@ -68,9 +68,18 @@ object QuadBounds {
   def subdivide(quadBounds: QuadBounds): (QuadBounds, QuadBounds, QuadBounds, QuadBounds) =
     (
       unsafeCreate(quadBounds.x, quadBounds.y, quadBounds.width / 2, quadBounds.height / 2),
-      unsafeCreate(quadBounds.x + (quadBounds.width / 2), quadBounds.y, quadBounds.width - (quadBounds.width / 2), quadBounds.height / 2),
-      unsafeCreate(quadBounds.x, quadBounds.y + (quadBounds.height / 2), quadBounds.width / 2, quadBounds.height - (quadBounds.height / 2)),
-      unsafeCreate(quadBounds.x + (quadBounds.width / 2), quadBounds.y + (quadBounds.height / 2), quadBounds.width - (quadBounds.width / 2), quadBounds.height - (quadBounds.height / 2))
+      unsafeCreate(quadBounds.x + (quadBounds.width / 2),
+                   quadBounds.y,
+                   quadBounds.width - (quadBounds.width / 2),
+                   quadBounds.height / 2),
+      unsafeCreate(quadBounds.x,
+                   quadBounds.y + (quadBounds.height / 2),
+                   quadBounds.width / 2,
+                   quadBounds.height - (quadBounds.height / 2)),
+      unsafeCreate(quadBounds.x + (quadBounds.width / 2),
+                   quadBounds.y + (quadBounds.height / 2),
+                   quadBounds.width - (quadBounds.width / 2),
+                   quadBounds.height - (quadBounds.height / 2))
     )
 
   def combine(head: QuadBounds, tail: List[QuadBounds]): QuadBounds =

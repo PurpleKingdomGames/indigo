@@ -7,7 +7,7 @@ object Renderer {
 
   private var renderer: Option[IRenderer] = None
 
-  def apply(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: html.Canvas): IRenderer = {
+  def apply(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: html.Canvas): IRenderer =
     renderer match {
       case Some(r) => r
       case None =>
@@ -19,7 +19,6 @@ object Renderer {
         renderer = Some(r)
         renderer.get
     }
-  }
 
   def createCanvas(width: Int, height: Int): html.Canvas = {
     val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
@@ -31,9 +30,9 @@ object Renderer {
   }
 
   private def getContext(canvas: html.Canvas) =
-    (canvas.getContext("webgl")|| canvas.getContext("experimental-webgl")).asInstanceOf[raw.WebGLRenderingContext]
+    (canvas.getContext("webgl") || canvas.getContext("experimental-webgl")).asInstanceOf[raw.WebGLRenderingContext]
 
-  private def setupContextAndCanvas(canvas: html.Canvas, magnification: Int): ContextAndCanvas = {
+  private def setupContextAndCanvas(canvas: html.Canvas, magnification: Int): ContextAndCanvas =
     ContextAndCanvas(
       context = getContext(canvas),
       canvas = canvas,
@@ -42,6 +41,5 @@ object Renderer {
       aspect = canvas.clientWidth.toFloat / canvas.clientHeight.toFloat,
       magnification = magnification
     )
-  }
 
 }

@@ -9,9 +9,17 @@ sealed trait Automaton {
   val modifiers: List[AutomataModifier]
   val lifespan: AutomataLifeSpan
 }
-case class GraphicAutomaton(key: AutomataPoolKey, graphic: Graphic, lifespan: AutomataLifeSpan, modifiers: List[AutomataModifier]) extends Automaton
-case class SpriteAutomaton(key: AutomataPoolKey, sprite: Sprite, autoPlay: Boolean, animationCycleLabel: Option[String], lifespan: AutomataLifeSpan, modifiers: List[AutomataModifier]) extends Automaton
-case class TextAutomaton(key: AutomataPoolKey, text: Text, lifespan: AutomataLifeSpan, modifiers: List[AutomataModifier]) extends Automaton
+case class GraphicAutomaton(key: AutomataPoolKey, graphic: Graphic, lifespan: AutomataLifeSpan, modifiers: List[AutomataModifier])
+    extends Automaton
+case class SpriteAutomaton(key: AutomataPoolKey,
+                           sprite: Sprite,
+                           autoPlay: Boolean,
+                           animationCycleLabel: Option[String],
+                           lifespan: AutomataLifeSpan,
+                           modifiers: List[AutomataModifier])
+    extends Automaton
+case class TextAutomaton(key: AutomataPoolKey, text: Text, lifespan: AutomataLifeSpan, modifiers: List[AutomataModifier])
+    extends Automaton
 
 case class AutomataPoolKey(key: String) extends AnyVal {
   def ===(other: AutomataPoolKey): Boolean =

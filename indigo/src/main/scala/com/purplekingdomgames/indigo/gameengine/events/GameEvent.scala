@@ -15,18 +15,18 @@ sealed trait MouseEvent extends GameEvent {
   def position: Point = Point(x, y)
 }
 object MouseEvent {
-  case class Click(x: Int, y: Int) extends MouseEvent
-  case class MouseUp(x: Int, y: Int) extends MouseEvent
+  case class Click(x: Int, y: Int)     extends MouseEvent
+  case class MouseUp(x: Int, y: Int)   extends MouseEvent
   case class MouseDown(x: Int, y: Int) extends MouseEvent
-  case class Move(x: Int, y: Int) extends MouseEvent
+  case class Move(x: Int, y: Int)      extends MouseEvent
 }
 
 sealed trait KeyboardEvent extends GameEvent {
   val keyCode: KeyCode
 }
 object KeyboardEvent {
-  case class KeyUp(keyCode: KeyCode) extends KeyboardEvent
-  case class KeyDown(keyCode: KeyCode) extends KeyboardEvent
+  case class KeyUp(keyCode: KeyCode)    extends KeyboardEvent
+  case class KeyDown(keyCode: KeyCode)  extends KeyboardEvent
   case class KeyPress(keyCode: KeyCode) extends KeyboardEvent
 }
 
@@ -34,8 +34,7 @@ trait ViewEvent extends GameEvent
 
 case class PlaySound(assetRef: String, volume: Volume) extends ViewEvent
 
-
-sealed trait NetworkSendEvent extends ViewEvent
+sealed trait NetworkSendEvent    extends ViewEvent
 sealed trait NetworkReceiveEvent extends GameEvent
 
 // WebSockets
@@ -67,21 +66,21 @@ sealed trait WebSocketEvent {
 }
 object WebSocketEvent {
   // Send
-  case class ConnectOnly(webSocketConfig: WebSocketConfig) extends WebSocketEvent with NetworkSendEvent
+  case class ConnectOnly(webSocketConfig: WebSocketConfig)           extends WebSocketEvent with NetworkSendEvent
   case class Open(message: String, webSocketConfig: WebSocketConfig) extends WebSocketEvent with NetworkSendEvent
   case class Send(message: String, webSocketConfig: WebSocketConfig) extends WebSocketEvent with NetworkSendEvent
 
   // Receive
   case class Receive(webSocketId: WebSocketId, message: String) extends WebSocketEvent with NetworkReceiveEvent
-  case class Error(webSocketId: WebSocketId, error: String) extends WebSocketEvent with NetworkReceiveEvent
-  case class Close(webSocketId: WebSocketId) extends WebSocketEvent with NetworkReceiveEvent
+  case class Error(webSocketId: WebSocketId, error: String)     extends WebSocketEvent with NetworkReceiveEvent
+  case class Close(webSocketId: WebSocketId)                    extends WebSocketEvent with NetworkReceiveEvent
 }
 
 // Http
 
 sealed trait HttpReceiveEvent extends NetworkReceiveEvent
 object HttpReceiveEvent {
-  case object HttpError extends HttpReceiveEvent
+  case object HttpError                                                                    extends HttpReceiveEvent
   case class HttpResponse(status: Int, headers: Map[String, String], body: Option[String]) extends HttpReceiveEvent
 }
 
@@ -92,20 +91,23 @@ sealed trait HttpRequest extends NetworkSendEvent {
   val body: Option[String]
   val method: String
 
-  val fullUrl: String = if(params.isEmpty) url else url + "?" + params.toList.map(p => p._1 + "=" + p._2).mkString("&")
+  val fullUrl: String = if (params.isEmpty) url else url + "?" + params.toList.map(p => p._1 + "=" + p._2).mkString("&")
 }
 object HttpRequest {
   case class GET(url: String, params: Map[String, String], headers: Map[String, String]) extends HttpRequest {
     val body: Option[String] = None
-    val method: String = HttpMethod.GET
+    val method: String       = HttpMethod.GET
   }
-  case class POST(url: String, params: Map[String, String], headers: Map[String, String], body: Option[String]) extends HttpRequest {
+  case class POST(url: String, params: Map[String, String], headers: Map[String, String], body: Option[String])
+      extends HttpRequest {
     val method: String = HttpMethod.POST
   }
-  case class PUT(url: String, params: Map[String, String], headers: Map[String, String], body: Option[String]) extends HttpRequest {
+  case class PUT(url: String, params: Map[String, String], headers: Map[String, String], body: Option[String])
+      extends HttpRequest {
     val method: String = HttpMethod.PUT
   }
-  case class DELETE(url: String, params: Map[String, String], headers: Map[String, String], body: Option[String]) extends HttpRequest {
+  case class DELETE(url: String, params: Map[String, String], headers: Map[String, String], body: Option[String])
+      extends HttpRequest {
     val method: String = HttpMethod.DELETE
   }
 

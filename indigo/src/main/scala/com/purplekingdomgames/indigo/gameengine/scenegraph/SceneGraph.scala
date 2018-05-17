@@ -21,7 +21,7 @@ sealed trait SceneGraphNode {
   def moveBy(x: Int, y: Int): SceneGraphNode
 
   def flatten: List[Renderable] = {
-    def rec(acc: List[Renderable]): List[Renderable] = {
+    def rec(acc: List[Renderable]): List[Renderable] =
       this match {
         case l: Renderable =>
           l :: acc
@@ -31,7 +31,6 @@ sealed trait SceneGraphNode {
             .map(c => c.withDepth(c.depth + b.depth).moveBy(b.positionOffset))
             .flatMap(n => n.flatten) ++ acc
       }
-    }
 
     rec(Nil)
   }
@@ -112,7 +111,14 @@ sealed trait Renderable extends SceneGraphNode {
 
 }
 
-case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent]) extends Renderable {
+case class Graphic(bounds: Rectangle,
+                   depth: Depth,
+                   imageAssetRef: String,
+                   ref: Point,
+                   crop: Rectangle,
+                   effects: Effects,
+                   eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent])
+    extends Renderable {
 
   def x: Int = bounds.position.x - ref.x
   def y: Int = bounds.position.y - ref.y
@@ -123,8 +129,8 @@ case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: 
     moveTo(Point(x, y))
 
   def moveBy(pt: Point): Graphic =
-    this.copy(bounds =
-      bounds.copy(
+    this.copy(
+      bounds = bounds.copy(
         position = this.bounds.position + pt
       )
     )
@@ -176,7 +182,7 @@ object Graphic {
       ref = Point.zero,
       crop = Rectangle(0, 0, width, height),
       effects = Effects.default,
-      eventHandler = (_:(Rectangle, GameEvent)) => None
+      eventHandler = (_: (Rectangle, GameEvent)) => None
     )
 
   def apply(bounds: Rectangle, depth: Int, imageAssetRef: String): Graphic =
@@ -187,11 +193,18 @@ object Graphic {
       ref = Point.zero,
       crop = bounds,
       effects = Effects.default,
-      eventHandler = (_:(Rectangle, GameEvent)) => None
+      eventHandler = (_: (Rectangle, GameEvent)) => None
     )
 }
 
-case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, animationsKey: AnimationsKey, ref: Point, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent]) extends Renderable {
+case class Sprite(bindingKey: BindingKey,
+                  bounds: Rectangle,
+                  depth: Depth,
+                  animationsKey: AnimationsKey,
+                  ref: Point,
+                  effects: Effects,
+                  eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent])
+    extends Renderable {
 
   def x: Int = bounds.position.x - ref.x
   def y: Int = bounds.position.y - ref.y
@@ -205,8 +218,8 @@ case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, anima
     moveTo(Point(x, y))
 
   def moveBy(pt: Point): Sprite =
-    this.copy(bounds =
-      bounds.copy(
+    this.copy(
+      bounds = bounds.copy(
         position = this.bounds.position + pt
       )
     )
@@ -278,29 +291,40 @@ object Sprite {
       animationsKey = animationsKey,
       ref = Point.zero,
       effects = Effects.default,
-      eventHandler = (_:(Rectangle, GameEvent)) => None
+      eventHandler = (_: (Rectangle, GameEvent)) => None
     )
 }
 
-case class Text(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontKey: FontKey, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent]) extends Renderable {
+case class Text(text: String,
+                alignment: TextAlignment,
+                position: Point,
+                depth: Depth,
+                fontKey: FontKey,
+                effects: Effects,
+                eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent])
+    extends Renderable {
 
   def x: Int = bounds.position.x
   def y: Int = bounds.position.y
 
   def lines: List[TextLine] =
-    FontRegister.findByFontKey(fontKey).map { fontInfo =>
-      text
-        .split('\n').toList
-        .map(_.replace("\n", ""))
-        .map(line => TextLine(line, Text.calculateBoundsOfLine(line, fontInfo)))
-    }.getOrElse {
-      Logger.errorOnce(s"Cannot build Text lines, missing Font with key: $fontKey")
-      Nil
-    }
+    FontRegister
+      .findByFontKey(fontKey)
+      .map { fontInfo =>
+        text
+          .split('\n')
+          .toList
+          .map(_.replace("\n", ""))
+          .map(line => TextLine(line, Text.calculateBoundsOfLine(line, fontInfo)))
+      }
+      .getOrElse {
+        Logger.errorOnce(s"Cannot build Text lines, missing Font with key: $fontKey")
+        Nil
+      }
 
   val bounds: Rectangle =
-    lines.map(_.lineBounds).fold(Rectangle.zero) {
-      (acc, next) => acc.copy(size = Point(Math.max(acc.width, next.width), acc.height + next.height))
+    lines.map(_.lineBounds).fold(Rectangle.zero) { (acc, next) =>
+      acc.copy(size = Point(Math.max(acc.width, next.width), acc.height + next.height))
     }
 
   def moveTo(pt: Point): Text =
@@ -336,9 +360,9 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
   def withAlignment(alignment: TextAlignment): Text =
     this.copy(alignment = alignment)
 
-  def alignLeft: Text = copy(alignment = AlignLeft)
+  def alignLeft: Text   = copy(alignment = AlignLeft)
   def alignCenter: Text = copy(alignment = AlignCenter)
-  def alignRight: Text = copy(alignment = AlignRight)
+  def alignRight: Text  = copy(alignment = AlignRight)
 
   def withText(text: String): Text =
     this.copy(text = text)
@@ -351,9 +375,9 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
 
   private val realBound: Rectangle =
     (alignment, bounds.copy(position = position)) match {
-      case (AlignLeft, b) => b
+      case (AlignLeft, b)   => b
       case (AlignCenter, b) => b.copy(position = Point(b.x - (b.width / 2), b.y))
-      case (AlignRight, b) => b.copy(position = Point(b.x - b.width, b.y))
+      case (AlignRight, b)  => b.copy(position = Point(b.x - b.width, b.y))
     }
 
   private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent] =
@@ -365,11 +389,10 @@ case class TextLine(text: String, lineBounds: Rectangle)
 
 object Text {
 
-  def calculateBoundsOfLine(lineText: String, fontInfo: FontInfo): Rectangle = {
+  def calculateBoundsOfLine(lineText: String, fontInfo: FontInfo): Rectangle =
     lineText.toList
       .map(c => fontInfo.findByCharacter(c).bounds)
       .fold(Rectangle.zero)((acc, curr) => Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height)))
-  }
 
   def apply(text: String, x: Int, y: Int, depth: Int, fontKey: FontKey): Text =
     Text(
@@ -379,6 +402,6 @@ object Text {
       depth = depth,
       fontKey = fontKey,
       effects = Effects.default,
-      eventHandler = (_:(Rectangle, GameEvent)) => None
+      eventHandler = (_: (Rectangle, GameEvent)) => None
     )
 }

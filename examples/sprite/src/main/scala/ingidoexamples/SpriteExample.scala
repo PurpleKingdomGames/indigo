@@ -32,10 +32,17 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit] {
    Fixed key strings, or better (and best practice) is to generate these things in
    advance of the render loops (cache effectively), then the key wouldn't be
    regenerated.
-  */
+   */
   def present(gameTime: GameTime, model: Unit, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment =
     SceneUpdateFragment().addGameLayerNodes(
-      Sprite(BindingKey("lights animation"), 0, 0, 64, 64, 1, "trafficlights",
+      Sprite(
+        BindingKey("lights animation"),
+        0,
+        0,
+        64,
+        64,
+        1,
+        "trafficlights",
         Animations(
           spriteSheetWidth = 128,
           spriteSheetHeight = 128,

@@ -5,7 +5,7 @@ import org.scalacheck.Prop.BooleanOperators
 
 object QuadBoundsSpecification extends Properties("QuadBounds") {
 
-  val gen: Gen[Int] = Gen.choose(1,100)
+  val gen: Gen[Int] = Gen.choose(1, 100)
 
   property("subdivide") = Prop.forAll(gen, gen, gen, gen) { (x: Int, y: Int, width: Int, height: Int) =>
     val original = QuadBounds(x, y, width, height)

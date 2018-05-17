@@ -26,19 +26,16 @@ object Framework {
     AssetsHelper.assetsAsync
 
   val initialise: AssetCollection => Startup[StartupErrorReport, StartupData] = assetCollection =>
-    assetCollection
-      .texts
+    assetCollection.texts
       .find(p => p.name == "indigoJson")
       .flatMap(json => GameDefinitionHelper.fromJson(json.contents)) match {
       case Some(gd) => StartupData(gd)
-      case None => StartupErrorReport("Game definition could not be loaded")
-    }
+      case None     => StartupErrorReport("Game definition could not be loaded")
+  }
 
-  val initialModel: StartupData => GameModel = startupData =>
-    GameModelHelper.initialModel(startupData)
+  val initialModel: StartupData => GameModel = startupData => GameModelHelper.initialModel(startupData)
 
-  val updateModel: (GameTime, GameModel) => GameEvent => GameModel = (_, gameModel) =>
-    GameModelHelper.updateModel(gameModel)
+  val updateModel: (GameTime, GameModel) => GameEvent => GameModel = (_, gameModel) => GameModelHelper.updateModel(gameModel)
 
   val updateView: (GameTime, GameModel, FrameInputEvents) => SceneUpdateFragment = (_, gameModel, _) =>
     GameViewHelper.updateView(gameModel)
