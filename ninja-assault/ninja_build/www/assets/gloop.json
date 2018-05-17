@@ -1,0 +1,28 @@
+{ "frames": [
+   {
+    "filename": "gloop.ase",
+    "frame": { "x": 0, "y": 0, "w": 320, "h": 240 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 320, "h": 240 },
+    "sourceSize": { "w": 320, "h": 240 },
+    "duration": 100
+   }
+ ],
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.1.13",
+  "image": "/Users/dave/repos/scalajs-game/gloop.png",
+  "format": "RGBA8888",
+  "size": { "w": 320, "h": 240 },
+  "scale": "1",
+  "frameTags": [
+  ],
+  "layers": [
+   { "name": "Layer 1", "opacity": 255, "blendMode": "normal" },
+   { "name": "Layer 4", "opacity": 255, "blendMode": "normal" },
+   { "name": "Layer 3", "opacity": 255, "blendMode": "normal" },
+   { "name": "Layer 2", "opacity": 255, "blendMode": "normal" }
+  ]
+ }
+}

@@ -2,6 +2,7 @@
 val indigoVersion = "0.0.6-SNAPSHOT"
 
 addCommandAlias("snakeBuild", ";snake/fastOptJS;snake/indigoBuild")
+addCommandAlias("ninjaBuild", ";ninja/fastOptJS;ninja/indigoBuild")
 
 lazy val commonSettings = Seq(
   version := indigoVersion,
@@ -242,6 +243,19 @@ lazy val indigoExts =
     )
 
 // Games
+lazy val ninja =
+  (project in file("ninja-assault/ninja-assault"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoExts)
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .settings(
+      name := "ninja-assault",
+      showCursor := true,
+      title := "Ninja Assault",
+      gameAssetsDirectory := "../asset_dev",
+      scalaJSUseMainModuleInitializer := true
+    )
+
 lazy val snake =
   project
     .settings(commonSettings: _*)
@@ -338,7 +352,7 @@ lazy val indigoProject =
   (project in file("."))
     .settings(commonSettings: _*)
     .aggregate(indigo, indigoExts) //core
-    .aggregate(snake)
+    .aggregate(ninja)
 //    .aggregate(perf, button) //compile tests
 //    .aggregate(sandbox, framework, server, snake) //games
 //    .aggregate(basicSetup, fullSetup, http, text, automata, graphic, sprite, websocket, inputfield, audio, group) //examples
