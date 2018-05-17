@@ -39,6 +39,8 @@ object FullSetup {
     Indigo.game
       .withConfig(config)
       .withAssets(assets)
+      .withFonts(Set())
+      .withAnimations(Set())
       .startUpGameWith(setup)
       .usingInitialModel(initialModel)
       .updateModelUsing(updateModel)

@@ -4,7 +4,7 @@ import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.BindingKey
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey, FontInfo}
 import com.purplekingdomgames.shared.{AssetType, GameConfig, ImageAsset}
 
 object SpriteExample extends IndigoGameBasic[Unit, Unit] {
@@ -12,6 +12,27 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit] {
   val config: GameConfig = defaultGameConfig
 
   val assets: Set[AssetType] = Set(ImageAsset("trafficlights", "assets/trafficlights.png"))
+
+  val fonts: Set[FontInfo] = Set()
+
+  val animationsKey: AnimationsKey = AnimationsKey("anims")
+
+  val animations: Set[Animations] = Set(
+    Animations(
+      animationsKey,
+      "trafficlights",
+      spriteSheetWidth = 128,
+      spriteSheetHeight = 128,
+      cycle = Cycle(
+        label = "lights",
+        frame = Frame(0, 0, 64, 64, 250),
+        frames = List(
+          Frame(64, 0, 64, 64, 250),
+          Frame(0, 64, 64, 64, 250)
+        )
+      )
+    )
+  )
 
   def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] =
     Right(())
@@ -42,19 +63,7 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit] {
         64,
         64,
         1,
-        "trafficlights",
-        Animations(
-          spriteSheetWidth = 128,
-          spriteSheetHeight = 128,
-          cycle = Cycle(
-            label = "lights",
-            frame = Frame(0, 0, 64, 64, 250),
-            frames = List(
-              Frame(64, 0, 64, 64, 250),
-              Frame(0, 64, 64, 64, 250)
-            )
-          )
-        )
+        animationsKey
       ).play()
     )
 }

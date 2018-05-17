@@ -2,8 +2,9 @@ package ingidoexamples
 
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.FontInfo
 import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneUpdateFragment}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment}
 import com.purplekingdomgames.shared.{AssetType, GameConfig, ImageAsset}
 
 object GraphicExample extends IndigoGameBasic[Unit, Unit] {
@@ -11,6 +12,10 @@ object GraphicExample extends IndigoGameBasic[Unit, Unit] {
   val config: GameConfig = defaultGameConfig
 
   val assets: Set[AssetType] = Set(ImageAsset("graphics", "assets/graphics.png"))
+
+  val fonts: Set[FontInfo] = Set()
+
+  val animations: Set[Animations] = Set()
 
   def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] =
     Right(())

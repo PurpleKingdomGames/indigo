@@ -3,7 +3,7 @@ package ingidoexamples
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneUpdateFragment, Text}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment, Text}
 import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.indigoexts.automata._
 import com.purplekingdomgames.indigoexts.ui._
@@ -11,7 +11,7 @@ import com.purplekingdomgames.shared.{AssetType, GameConfig, ImageAsset}
 
 object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
 
-  val fontName: String = "My boxy font"
+  import FontStuff._
 
   val config: GameConfig = defaultGameConfig
 
@@ -20,12 +20,16 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
     ImageAsset(fontName, "assets/boxy_font.png")
   )
 
+  val fonts: Set[FontInfo] = Set(fontInfo)
+
+  val animations: Set[Animations] = Set()
+
   def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] = {
 
     AutomataFarm.register(
       TextAutomaton(
         AutomataPoolKey("points"),
-        Text("1000", 0, 0, 1, fontInfo).alignCenter,
+        Text("1000", 0, 0, 1, fontKey).alignCenter,
         AutomataLifeSpan(1000),
         List(
           AutomataModifier.MoveTo((_, seed, _) => {
@@ -78,10 +82,19 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
       )
       .toSceneUpdateFragment
       .addGameLayerNodes(AutomataFarm.render(gameTime))
-      .addGameLayerNodes(Text("click to win!", 30, 10, 1, fontInfo))
+      .addGameLayerNodes(Text("click to win!", 30, 10, 1, fontKey))
+
+}
+
+case class MyGameModel(button: Button, count: Int)
+
+object FontStuff {
+
+  val fontKey: FontKey = FontKey("MyFontKey")
+  val fontName: String = "My boxy font"
 
   val fontInfo: FontInfo =
-    FontInfo(fontName, 320, 230, FontChar("?", 93, 52, 23, 23))
+    FontInfo(fontKey, fontName, 320, 230, FontChar("?", 93, 52, 23, 23))
       .addChar(FontChar("A", 3, 78, 23, 23))
       .addChar(FontChar("B", 26, 78, 23, 23))
       .addChar(FontChar("C", 50, 78, 23, 23))
@@ -123,7 +136,4 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
       .addChar(FontChar(".", 286, 0, 15, 23))
       .addChar(FontChar(",", 248, 0, 15, 23))
       .addChar(FontChar(" ", 145, 52, 23, 23))
-
 }
-
-case class MyGameModel(button: Button, count: Int)

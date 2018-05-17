@@ -5,7 +5,7 @@ import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.indigo.gameengine.events.PlaySound
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey, Depth, Rectangle}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey, Depth, FontInfo, Rectangle}
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.{AssetType, AudioAsset, GameConfig, ImageAsset}
 
@@ -18,6 +18,10 @@ object AudioExample extends IndigoGameBasic[Unit, MyGameModel] {
     AudioAsset("bounce", "assets/RetroGameJump.mp3"),
     AudioAsset("music", "assets/march_of_steampunk.mp3")
   )
+
+  val fonts: Set[FontInfo] = Set()
+
+  val animations: Set[Animations] = Set()
 
   def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] =
     Right(())

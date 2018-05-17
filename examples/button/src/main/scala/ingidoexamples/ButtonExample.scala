@@ -4,8 +4,8 @@ import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.indigo.gameengine.events.ViewEvent
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, SceneUpdateFragment}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Rectangle}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, FontInfo, Rectangle}
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.{AssetType, GameConfig, ImageAsset}
 
@@ -15,6 +15,10 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel] {
 
   // We'll need some graphics.
   val assets: Set[AssetType] = Set(ImageAsset("graphics", "assets/graphics.png"))
+
+  val fonts: Set[FontInfo] = Set()
+
+  val animations: Set[Animations] = Set()
 
   def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] =
     Right(())
