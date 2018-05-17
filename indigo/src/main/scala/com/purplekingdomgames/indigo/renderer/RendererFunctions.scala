@@ -20,6 +20,7 @@ object RendererFunctions {
     gl.bufferData(ARRAY_BUFFER, new Float32Array(vertices), STATIC_DRAW)
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
   def shaderProgramSetup(gl: raw.WebGLRenderingContext): WebGLProgram = {
     //vertex shader source code
     val vertCode =
@@ -83,6 +84,7 @@ object RendererFunctions {
     shaderProgram
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
   def lightingShaderProgramSetup(gl: raw.WebGLRenderingContext): WebGLProgram = {
     //vertex shader source code
     val vertCode =
@@ -149,6 +151,7 @@ object RendererFunctions {
     shaderProgram
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
   def mergeShaderProgramSetup(gl: raw.WebGLRenderingContext): WebGLProgram = {
     //vertex shader source code
     val vertCode =
@@ -296,6 +299,7 @@ object RendererFunctions {
     texture
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var lastTextureName: String = ""
 
   def setupFragmentShader(gl: raw.WebGLRenderingContext,
@@ -352,8 +356,11 @@ object RendererFunctions {
     gl.activeTexture(TEXTURE0)
   }
 
-  private var resizeRun: Boolean                 = false
-  var orthographicProjectionMatrix: Matrix4      = Matrix4.identity
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  private var resizeRun: Boolean = false
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  var orthographicProjectionMatrix: Matrix4 = Matrix4.identity
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var orthographicProjectionMatrixNoMag: Matrix4 = Matrix4.identity
 
   def resize(canvas: html.Canvas, actualWidth: Int, actualHeight: Int, magnification: Int): Unit =

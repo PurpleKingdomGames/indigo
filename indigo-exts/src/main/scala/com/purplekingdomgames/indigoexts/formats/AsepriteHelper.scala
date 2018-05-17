@@ -29,10 +29,14 @@ case class AsepriteMeta(app: String,
 
 case class AsepriteSize(w: Int, h: Int)
 
-case class AsepriteFrameTag(name: String, from: Int, to: Int, direction: String)
+case class AsepriteFrameTag(name: String, from: Int, to: Int, direction: String) {
+  override def toString: String =
+    s"""FrameTag($name, ${from.toString}, ${to.toString}, $direction)"""
+}
 
 object AsepriteHelper {
 
+  @SuppressWarnings(Array("org.wartremover.warts.PublicInference"))
   def fromJson(json: String): Option[Aseprite] =
     decode[Aseprite](json) match {
       case Right(s) => Some(s)
@@ -57,7 +61,7 @@ object AsepriteHelper {
       .map { frameTag =>
         extractFrames(frameTag, aseprite.frames) match {
           case Nil =>
-            Logger.info("Failed to extract cycle with frameTag: " + frameTag)
+            Logger.info("Failed to extract cycle with frameTag: " + frameTag.toString)
             None
           case x :: xs =>
             Option(
@@ -71,6 +75,7 @@ object AsepriteHelper {
       }
       .collect { case Some(s) => s }
 
+  @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
   def toSpriteAndAnimations(aseprite: Aseprite, depth: Depth, imageAssetRef: String): Option[SpriteAndAnimations] =
     extractCycles(aseprite) match {
       case Nil =>

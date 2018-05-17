@@ -25,8 +25,10 @@ full engine I could clean it up, as a bolt on... I'm awaiting inspiration.
  */
 object AutomataFarm {
 
+  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   private val inventory: mutable.HashMap[AutomataPoolKey, Automaton] = mutable.HashMap()
-  private var paddock: List[SpawnedAutomaton]                        = Nil
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  private var paddock: List[SpawnedAutomaton] = Nil
 
   def register(automaton: Automaton): Unit = {
     inventory.put(automaton.key, automaton)
@@ -57,7 +59,7 @@ object AutomataFarm {
   def render(gameTime: GameTime): List[SceneGraphNode] = {
     paddock = paddock.filter(_.isAlive(gameTime.running)).map(_.updateDelta(gameTime.delta))
 
-    paddock.map { sa =>
+    paddock.map[SceneGraphNode, List[SceneGraphNode]] { sa =>
       sa.automata match {
         case GraphicAutomaton(_, graphic, _, modifiers) =>
           modifiers.foldLeft(graphic) { (g, m) =>

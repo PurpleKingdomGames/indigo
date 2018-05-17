@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigoexts.pathfinding
 
-sealed trait GridSquare {
+sealed trait GridSquare extends Product with Serializable {
   val index: Int
   val coords: Coords
   val name: String

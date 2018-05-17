@@ -56,8 +56,13 @@ object Http {
 
       xhr.onerror = (_: dom.Event) => GlobalEventStream.pushGameEvent(HttpError)
 
-      if (request.body.isDefined) xhr.send(request.body.get)
-      else xhr.send()
+      request.body match {
+        case Some(b) =>
+          xhr.send(b)
+
+        case None =>
+          xhr.send()
+      }
 
     } catch {
       case _: Throwable =>

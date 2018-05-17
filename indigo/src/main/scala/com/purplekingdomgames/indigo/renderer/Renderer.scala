@@ -1,10 +1,12 @@
 package com.purplekingdomgames.indigo.renderer
 
 import org.scalajs.dom
+import org.scalajs.dom.raw.WebGLRenderingContext
 import org.scalajs.dom.{html, raw}
 
 object Renderer {
 
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var renderer: Option[IRenderer] = None
 
   def apply(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: html.Canvas): IRenderer =
@@ -17,10 +19,11 @@ object Renderer {
         r.init()
 
         renderer = Some(r)
-        renderer.get
+        r
     }
 
   def createCanvas(width: Int, height: Int): html.Canvas = {
+    @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
     val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
     dom.document.body.appendChild(canvas)
     canvas.width = width
@@ -29,7 +32,8 @@ object Renderer {
     canvas
   }
 
-  private def getContext(canvas: html.Canvas) =
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+  private def getContext(canvas: html.Canvas): WebGLRenderingContext =
     (canvas.getContext("webgl") || canvas.getContext("experimental-webgl")).asInstanceOf[raw.WebGLRenderingContext]
 
   private def setupContextAndCanvas(canvas: html.Canvas, magnification: Int): ContextAndCanvas =

@@ -184,6 +184,7 @@ object QuadTree {
   def renderAsString[T](quadTree: QuadTree[T]): String =
     renderAsStringWithIndent(quadTree, "")
 
+  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   def renderAsStringWithIndent[T](quadTree: QuadTree[T], indent: String): String =
     quadTree match {
       case QuadEmpty(bounds) =>

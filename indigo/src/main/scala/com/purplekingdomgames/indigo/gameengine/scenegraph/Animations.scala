@@ -19,9 +19,9 @@ case class Animations(animationsKey: AnimationsKey,
 
   private val nonEmptyCycles: Map[CycleLabel, Cycle] = cycles ++ Map(cycle.label -> cycle)
 
-  def currentCycle: Cycle = nonEmptyCycles.getOrElse(currentCycleLabel, nonEmptyCycles.head._2)
+  def currentCycle: Cycle = nonEmptyCycles.getOrElse(currentCycleLabel, cycle)
 
-  def addCycle(cycle: Cycle) =
+  def addCycle(cycle: Cycle): Animations =
     Animations(animationsKey, imageAssetRef, spriteSheetSize, currentCycleLabel, cycle, nonEmptyCycles, Nil)
 
   def addAction(action: AnimationAction): Animations = this.copy(actions = actions :+ action)
@@ -45,7 +45,7 @@ case class Animations(animationsKey: AnimationsKey,
       spriteSheetSize = spriteSheetSize,
       currentCycleLabel = memento.currentCycleLabel,
       cycle = nonEmptyCycles
-        .getOrElse(memento.currentCycleLabel, nonEmptyCycles.head._2)
+        .getOrElse(memento.currentCycleLabel, cycle)
         .copy(playheadPosition = memento.currentCycleMemento.playheadPosition,
               lastFrameAdvance = memento.currentCycleMemento.lastFrameAdvance),
       cycles = nonEmptyCycles.filter(p => p._1.label != memento.currentCycleLabel.label),
@@ -97,7 +97,7 @@ case class Cycle(label: CycleLabel,
   private val nonEmptyFrames: List[Frame] = frame :: frames
 
   def addFrame(newFrame: Frame): Cycle =
-    Cycle(label, nonEmptyFrames.head, nonEmptyFrames.tail ++ List(newFrame), playheadPosition, lastFrameAdvance)
+    Cycle(label, frame, nonEmptyFrames.drop(1) ++ List(newFrame), playheadPosition, lastFrameAdvance)
 
   private val frameCount: Int = nonEmptyFrames.length
 

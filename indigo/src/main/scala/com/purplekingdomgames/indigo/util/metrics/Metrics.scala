@@ -3,18 +3,25 @@ package com.purplekingdomgames.indigo.util.metrics
 import scala.collection.mutable
 
 trait IMetrics {
-  def record(m: Metric, time: Long = giveTime()): Unit
+  def record(m: Metric): Unit
+  def recordForSpecificTime(m: Metric, time: Long): Unit
   def giveTime(): Long
 }
 
 object Metrics {
 
   private class MetricsInstance(logReportIntervalMs: Int) extends IMetrics {
+
+    @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
     private val metrics: mutable.Queue[MetricWrapper] = new mutable.Queue[MetricWrapper]()
 
+    @SuppressWarnings(Array("org.wartremover.warts.Var"))
     private var lastReportTime: Long = System.currentTimeMillis()
 
-    def record(m: Metric, time: Long = giveTime()): Unit = {
+    def record(m: Metric): Unit =
+      recordForSpecificTime(m, giveTime())
+
+    def recordForSpecificTime(m: Metric, time: Long): Unit = {
       metrics += MetricWrapper(m, time)
 
       m match {
@@ -31,22 +38,21 @@ object Metrics {
   }
 
   private class NullMetricsInstance extends IMetrics {
-    def record(m: Metric, time: Long = giveTime()): Unit = ()
-    def giveTime(): Long                                 = 1
+    def record(m: Metric): Unit                            = ()
+    def recordForSpecificTime(m: Metric, time: Long): Unit = ()
+    def giveTime(): Long                                   = 1
   }
 
-  private var instance: Option[IMetrics]    = None
-  private var savedEnabled: Boolean         = false
-  private var savedLogReportIntervalMs: Int = 10000
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  private var instance: Option[IMetrics] = None
 
-  def getInstance(enabled: Boolean = savedEnabled, logReportIntervalMs: Int = savedLogReportIntervalMs): IMetrics =
+  def getInstance(enabled: Boolean, logReportIntervalMs: Int): IMetrics =
     instance match {
       case Some(i) => i
       case None =>
-        savedEnabled = enabled
-        savedLogReportIntervalMs = logReportIntervalMs
-        instance = if (enabled) Some(new MetricsInstance(logReportIntervalMs)) else Some(new NullMetricsInstance)
-        instance.get
+        val i = if (enabled) new MetricsInstance(logReportIntervalMs) else new NullMetricsInstance
+        instance = Some(i)
+        i
     }
 
   def getNullInstance: IMetrics = new NullMetricsInstance

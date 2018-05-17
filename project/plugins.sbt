@@ -94,3 +94,5 @@ addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.22")
 addSbtPlugin("com.purplekingdomgames" % "sbt-indigo" % indigoVersion)
 
 addSbtPlugin("org.lyranthe.sbt" % "partial-unification" % "1.1.0")
+
+addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.2.1")

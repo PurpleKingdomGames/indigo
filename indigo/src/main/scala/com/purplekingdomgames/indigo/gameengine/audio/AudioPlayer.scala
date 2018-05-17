@@ -9,6 +9,7 @@ import org.scalajs.dom.raw.AudioContext
 
 object AudioPlayer {
 
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var player: Option[IAudioPlayer] = None
 
   def apply(loadedAudioAssets: List[LoadedAudioAsset]): IAudioPlayer =
@@ -18,7 +19,7 @@ object AudioPlayer {
         val p = new AudioPlayerImpl(loadedAudioAssets, new AudioContext())
 
         player = Some(p)
-        player.get
+        p
     }
 
 }
@@ -48,8 +49,11 @@ final class AudioPlayerImpl(loadedAudioAssets: List[LoadedAudioAsset], context: 
       setupNodes(sound.data, volume, loop = false).audioBufferSourceNode.start(0)
     }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var sourceA: AudioSourceState = AudioSourceState(BindingKey("none"), None)
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var sourceB: AudioSourceState = AudioSourceState(BindingKey("none"), None)
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var sourceC: AudioSourceState = AudioSourceState(BindingKey("none"), None)
 
   def playAudio(sceneAudio: SceneAudio): Unit = {

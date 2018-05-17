@@ -15,6 +15,7 @@ case class AssetList(images: List[SimpleAssetType], texts: List[SimpleAssetType]
 
 object AssetList {
 
+  @SuppressWarnings(Array("org.wartremover.warts.PublicInference"))
   def fromJson(json: String): Either[String, AssetList] =
     decode[AssetList](json) match {
       case Right(al) =>

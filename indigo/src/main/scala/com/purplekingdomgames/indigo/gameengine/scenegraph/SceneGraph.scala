@@ -10,7 +10,7 @@ object SceneGraphNode {
   def empty: Group = Group(Point.zero, Depth.Base, Nil)
 }
 
-sealed trait SceneGraphNode {
+sealed trait SceneGraphNode extends Product with Serializable {
   def bounds: Rectangle
   val depth: Depth
 

@@ -12,9 +12,13 @@ import scala.collection.mutable
 
 object DisplayObjectConversions {
 
+  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   private val lookupTextureOffsetCache: mutable.Map[String, Vector2] = mutable.Map.empty[String, Vector2]
-  private val lookupAtlasNameCache: mutable.Map[String, String]      = mutable.Map.empty[String, String]
-  private val lookupAtlasSizeCache: mutable.Map[String, Vector2]     = mutable.Map.empty[String, Vector2]
+  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
+  private val lookupAtlasNameCache: mutable.Map[String, String] = mutable.Map.empty[String, String]
+  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
+  private val lookupAtlasSizeCache: mutable.Map[String, Vector2] = mutable.Map.empty[String, Vector2]
+  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   private val frameOffsetsCache: mutable.Map[String, SpriteSheetFrameCoordinateOffsets] =
     mutable.Map.empty[String, SpriteSheetFrameCoordinateOffsets]
 

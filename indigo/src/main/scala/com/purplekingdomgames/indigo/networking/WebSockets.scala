@@ -10,8 +10,10 @@ import scala.collection.mutable
 
 object WebSockets {
 
+  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   private val connections: mutable.HashMap[WebSocketId, dom.WebSocket] = mutable.HashMap()
-  private val configs: mutable.HashMap[WebSocketId, WebSocketConfig]   = mutable.HashMap()
+  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
+  private val configs: mutable.HashMap[WebSocketId, WebSocketConfig] = mutable.HashMap()
 
   def processSendEvent(event: WebSocketEvent with NetworkSendEvent): Unit =
     try event match {
@@ -72,6 +74,7 @@ object WebSockets {
         }
       }
 
+  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   private def newConnection(config: WebSocketConfig, onOpenSendMessage: Option[String]): Option[dom.WebSocket] =
     try {
       val socket = new dom.WebSocket(config.address)

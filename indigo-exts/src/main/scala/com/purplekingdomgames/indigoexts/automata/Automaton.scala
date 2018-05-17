@@ -3,7 +3,7 @@ package com.purplekingdomgames.indigoexts.automata
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, Sprite, Text}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.BindingKey
 
-sealed trait Automaton {
+sealed trait Automaton extends Product with Serializable {
   val bindingKey: BindingKey = BindingKey.generate
   val key: AutomataPoolKey
   val modifiers: List[AutomataModifier]

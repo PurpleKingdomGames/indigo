@@ -10,6 +10,7 @@ import scala.collection.mutable
 object AnimationsRegister {
 
   // Base registry
+  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   private val animationsRegistry: mutable.HashMap[AnimationsKey, Animations] = mutable.HashMap()
 
   private[gameengine] def register(animations: Animations): Unit = {
@@ -21,6 +22,7 @@ object AnimationsRegister {
     animationsRegistry.get(animationsKey)
 
   // Animations states
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var animationStates: AnimationStates = AnimationStates(Nil)
 
   private[gameengine] def getAnimationStates: AnimationStates =
@@ -30,6 +32,7 @@ object AnimationsRegister {
     animationStates = updatedAnimationStates
 
   // Frame animation actions queue
+  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   private val actionsQueue: mutable.Queue[AnimationActionCommand] =
     new mutable.Queue[AnimationActionCommand]()
 
@@ -60,6 +63,7 @@ object AnimationsRegister {
   }
 
   // The running animation cache
+  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   private val animationsCache: mutable.HashMap[String, AnimationCacheEntry] = mutable.HashMap()
 
   /*

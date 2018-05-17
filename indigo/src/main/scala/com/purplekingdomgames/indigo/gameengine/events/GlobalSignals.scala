@@ -10,6 +10,7 @@ object GlobalSignals {
 
 private[indigo] object GlobalSignalsManager {
 
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var signals: Signals = Signals.default
 
   def update(events: List[GameEvent]): Signals = {

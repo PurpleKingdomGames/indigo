@@ -15,6 +15,7 @@ This is not a full implementation. No doubt I'll be adding and tweaking as I go 
 
 object TiledHelper {
 
+  @SuppressWarnings(Array("org.wartremover.warts.PublicInference"))
   def fromJson(json: String): Option[TiledMap] =
     decode[TiledMap](json) match {
       case Right(s) => Some(s)

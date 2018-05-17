@@ -7,7 +7,7 @@ case class FontInfo(fontKey: FontKey,
                     caseSensitive: Boolean) {
   private val nonEmptyChars: List[FontChar] = unknownChar +: fontChars
 
-  def addChar(fontChar: FontChar)               = FontInfo(fontKey, fontSpriteSheet, fontChar, nonEmptyChars, caseSensitive)
+  def addChar(fontChar: FontChar): FontInfo     = FontInfo(fontKey, fontSpriteSheet, fontChar, nonEmptyChars, caseSensitive)
   def addChars(chars: List[FontChar]): FontInfo = this.copy(fontChars = fontChars ++ chars)
   def addChars(chars: FontChar*): FontInfo      = this.copy(fontChars = fontChars ++ chars)
 

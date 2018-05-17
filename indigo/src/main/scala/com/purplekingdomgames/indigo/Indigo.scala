@@ -120,7 +120,9 @@ object IndigoGameBase {
                                  assetsAsync: Future[Set[AssetType]],
                                  fonts: Set[FontInfo],
                                  animations: Set[Animations]) {
-    def startUpGameWith[StartupData, StartupError](initializer: AssetCollection => Startup[StartupError, StartupData]) =
+    def startUpGameWith[StartupData, StartupError](
+        initializer: AssetCollection => Startup[StartupError, StartupData]
+    ): InitialisedIndigoGame[StartupData, StartupError] =
       new InitialisedIndigoGame(config, configAsync, assets, assetsAsync, fonts, animations, initializer)
   }
 

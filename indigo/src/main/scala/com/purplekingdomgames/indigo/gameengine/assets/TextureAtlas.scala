@@ -126,6 +126,7 @@ object TextureAtlasFunctions {
     rec(list, Nil, Nil, Nil, max)
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   private def createCanvas(width: Int, height: Int): html.Canvas = {
     val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
 //    dom.document.body.appendChild(canvas)
@@ -135,6 +136,7 @@ object TextureAtlasFunctions {
     canvas
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   val createAtlasData: (TextureMap, String => Option[LoadedImageAsset]) => Atlas = (textureMap, lookupByName) => {
     val canvas: html.Canvas = createCanvas(textureMap.size.value, textureMap.size.value)
     val ctx                 = canvas.getContext("2d")
@@ -189,7 +191,7 @@ object TextureAtlasFunctions {
       list =>
         combineTextureAtlases(
           list.zipWithIndex
-            .map(p => convertToTextureAtlas(createAtlasFunc)(lookupByName)(AtlasId(TextureAtlas.IdPrefix + p._2), p._1))
+            .map(p => convertToTextureAtlas(createAtlasFunc)(lookupByName)(AtlasId(TextureAtlas.IdPrefix + p._2.toString), p._1))
   )
 
   def mergeTrees(a: AtlasQuadTree, b: AtlasQuadTree, max: PowerOfTwo): Option[AtlasQuadTree] =

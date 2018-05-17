@@ -6,6 +6,7 @@ import io.circe.parser._
 case class GameDefinition(scenes: List[GameScene], entities: List[Entity])
 object GameDefinition {
 
+  @SuppressWarnings(Array("org.wartremover.warts.PublicInference"))
   def fromJson(json: String): Either[String, GameDefinition] =
     decode[GameDefinition](json) match {
       case Right(gd) =>

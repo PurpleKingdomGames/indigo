@@ -117,11 +117,16 @@ object DisplayObject {
 
   // Entirely for performance reasons
   def compress: List[DisplayObject] => List[CompressedDisplayObject] = displayObjects => {
-    var imageRef: String            = ""
+    @SuppressWarnings(Array("org.wartremover.warts.Var"))
+    var imageRef: String = ""
+    @SuppressWarnings(Array("org.wartremover.warts.Var"))
     var v: scalajs.js.Array[Double] = scalajs.js.Array[Double]()
+    @SuppressWarnings(Array("org.wartremover.warts.Var"))
     var t: scalajs.js.Array[Double] = scalajs.js.Array[Double]()
+    @SuppressWarnings(Array("org.wartremover.warts.Var"))
     var e: scalajs.js.Array[Double] = scalajs.js.Array[Double]()
 
+    @SuppressWarnings(Array("org.wartremover.warts.Var"))
     var res2: List[CompressedDisplayObject] = Nil
 
     for (d <- displayObjects) {

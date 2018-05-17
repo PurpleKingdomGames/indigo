@@ -35,6 +35,7 @@ class GameEngine[StartupData, StartupError, GameModel](
     updateView: (GameTime, GameModel, FrameInputEvents) => SceneUpdateFragment
 ) {
 
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var state: Option[GameModel] = None
 
   def registerAnimations(animations: Animations): Unit =
@@ -115,6 +116,8 @@ class GameEngine[StartupData, StartupError, GameModel](
             Logger.info("You may get first occurrence error logs.")
             dom.window.requestAnimationFrame(loopFunc(renderer, audioPlayer, 0))
         }
+
+        ()
       }
 
     }

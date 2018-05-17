@@ -63,6 +63,7 @@ object AssetManager {
       p.future
     }
 
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   private def loadImageAsset(imageAsset: ImageAsset): Future[LoadedImageAsset] = {
     Logger.info(s"[Image] Loading ${imageAsset.path}")
 
@@ -90,6 +91,7 @@ object AssetManager {
   private val loadAudioAssets: List[AudioAsset] => Future[List[LoadedAudioAsset]] = audioAssets =>
     Future.sequence(audioAssets.map(loadAudioAsset))
 
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   def loadAudioAsset(audioAsset: AudioAsset): Future[LoadedAudioAsset] = {
     Logger.info(s"[Audio] Loading ${audioAsset.path}")
 

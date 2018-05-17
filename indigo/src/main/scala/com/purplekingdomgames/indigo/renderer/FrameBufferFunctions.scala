@@ -6,6 +6,7 @@ import org.scalajs.dom.raw.{WebGLFramebuffer, WebGLTexture}
 
 object FrameBufferFunctions {
 
+  @SuppressWarnings(Array("org.wartremover.warts.Null"))
   def createAndSetupTexture(cNc: ContextAndCanvas): WebGLTexture = {
     val gl      = cNc.context
     val texture = RendererFunctions.createAndBindTexture(gl)
@@ -35,6 +36,7 @@ object FrameBufferFunctions {
     cNc.context.clear(COLOR_BUFFER_BIT)
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Null"))
   def switchToCanvas(cNc: ContextAndCanvas, clearColor: ClearColor): Unit = {
     val gl = cNc.context
 
