@@ -363,6 +363,14 @@ lazy val indigoProject =
     .settings(commonSettings: _*)
     .aggregate(indigo, indigoExts) //core
     .aggregate(ninja)
-    .aggregate(perf, button) //compile tests
-    .aggregate(sandbox, framework, server, snake) //games
-    .aggregate(basicSetup, fullSetup, http, text, automata, graphic, sprite, websocket, inputfield, audio, group) //examples
+//    .aggregate(perf, button) //compile tests
+//    .aggregate(sandbox, framework, server, snake) //games
+//    .aggregate(basicSetup, fullSetup, http, text, automata, graphic, sprite, websocket, inputfield, audio, group) //examples
+
+
+addCommandAlias("buildIndigo", ";indigo/compile;indigoExts/compile")
+addCommandAlias("buildDev", ";sandbox/compile;perf/compile;framework/compile;server/compile")
+addCommandAlias("buildGames", ";snake/compile;ninja/compile")
+addCommandAlias("buildExamples1", ";basicSetup/compile;fullSetup/compile;button/compile;http/compile;text/compile;automata/compile")
+addCommandAlias("buildExamples2", ";graphic/compile;sprite/compile;websocket/compile;inputfield/compile;audio/compile;group/compile")
+addCommandAlias("buildAll", ";clean;buildIndigo;buildDev;buildGames;buildExamples1;buildExamples2")
