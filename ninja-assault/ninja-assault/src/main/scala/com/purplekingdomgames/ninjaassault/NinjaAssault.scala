@@ -31,10 +31,11 @@ object NinjaAssult extends IndigoGameBasic[MyStartupData, NinjaAssaultGameModel]
     e => NinjaAssaultGameModel.update(model)(e)
 
   def present(gameTime: GameTime, model: NinjaAssaultGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment =
-    View.generate(model, frameInputEvents)
+    View.draw(model, frameInputEvents)
 }
 
 case class MyStartupData()
 
 sealed trait ViewUpdateEvent extends ViewEvent
 case object JumpToMenu       extends ViewUpdateEvent
+case object JumpToGame       extends ViewUpdateEvent

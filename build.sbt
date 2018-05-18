@@ -261,7 +261,7 @@ lazy val ninja =
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(
       name := "ninja-assault",
-      showCursor := true,
+      showCursor := false,
       title := "Ninja Assault",
       gameAssetsDirectory := "../asset_dev",
       scalaJSUseMainModuleInitializer := true

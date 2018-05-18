@@ -1,13 +1,15 @@
 package com.purplekingdomgames.ninjaassault.model
 
 import com.purplekingdomgames.indigo.gameengine.events.GameEvent
-import com.purplekingdomgames.ninjaassault.JumpToMenu
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
+import com.purplekingdomgames.ninjaassault.{JumpToGame, JumpToMenu}
 
 sealed trait Scene extends Product with Serializable {
   val active: Boolean
 }
 case class Logo(active: Boolean) extends Scene
 case class Menu(active: Boolean) extends Scene
+case class Game(active: Boolean) extends Scene
 
 case class NinjaAssaultGameModel(scenes: List[Scene]) {
   val activeScene: Scene = scenes.find(_.active == true).getOrElse(Menu(true))
@@ -17,6 +19,16 @@ case class NinjaAssaultGameModel(scenes: List[Scene]) {
       scenes = scenes.map {
         case Menu(_) => Menu(true)
         case Logo(_) => Logo(false)
+        case Game(_) => Game(false)
+      }
+    )
+
+  def makeGameSceneActive: NinjaAssaultGameModel =
+    this.copy(
+      scenes = scenes.map {
+        case Menu(_) => Menu(false)
+        case Logo(_) => Logo(false)
+        case Game(_) => Game(true)
       }
     )
 
@@ -24,12 +36,15 @@ case class NinjaAssaultGameModel(scenes: List[Scene]) {
 
 object NinjaAssaultGameModel {
   val initialModel: NinjaAssaultGameModel = NinjaAssaultGameModel(
-    scenes = Logo(true) :: Menu(false) :: Nil
+    scenes = Logo(true) :: Menu(false) :: Game(false) :: Nil
   )
 
   def update(state: NinjaAssaultGameModel): GameEvent => NinjaAssaultGameModel = {
     case JumpToMenu =>
       state.makeMenuSceneActive
+
+    case JumpToGame =>
+      state.makeGameSceneActive
 
     case _ =>
       state
@@ -37,157 +52,150 @@ object NinjaAssaultGameModel {
 
 }
 
-//object NinjaAssaultGameModel {
-//
-//  private val initialLevel = Level(
-//    grid = Grid(
-//      gridSize = 32,
-//      width = 7,
-//      height = 9,
-//      rows = List(
-//        GridRow(
-//          columns = List(
-//            GridSquare(0, 0, Floor),
-//            GridSquare(0, 1, Floor),
-//            GridSquare(0, 2, Floor),
-//            GridSquare(0, 3, Floor),
-//            GridSquare(0, 4, Floor),
-//            GridSquare(0, 5, Floor),
-//            GridSquare(0, 6, Floor)
-//          )
-//        ),
-//        GridRow(
-//          columns = List(
-//            GridSquare(1, 0, Floor),
-//            GridSquare(1, 1, Column),
-//            GridSquare(1, 2, Floor),
-//            GridSquare(1, 3, Floor),
-//            GridSquare(1, 4, Floor),
-//            GridSquare(1, 5, Column),
-//            GridSquare(1, 6, Floor)
-//          )
-//        ),
-//        GridRow(
-//          columns = List(
-//            GridSquare(2, 0, Floor),
-//            GridSquare(2, 1, Floor),
-//            GridSquare(2, 2, Floor),
-//            GridSquare(2, 3, Floor),
-//            GridSquare(2, 4, Floor),
-//            GridSquare(2, 5, Floor),
-//            GridSquare(2, 6, Floor)
-//          )
-//        ),
-//        GridRow(
-//          columns = List(
-//            GridSquare(3, 0, Floor),
-//            GridSquare(3, 1, Floor),
-//            GridSquare(3, 2, Floor),
-//            GridSquare(3, 3, Column),
-//            GridSquare(3, 4, Floor),
-//            GridSquare(3, 5, Floor),
-//            GridSquare(3, 6, Floor)
-//          )
-//        ),
-//        GridRow(
-//          columns = List(
-//            GridSquare(4, 0, Floor),
-//            GridSquare(4, 1, Floor),
-//            GridSquare(4, 2, Floor),
-//            GridSquare(4, 3, Floor),
-//            GridSquare(4, 4, Floor),
-//            GridSquare(4, 5, Floor),
-//            GridSquare(4, 6, Floor)
-//          )
-//        ),
-//        GridRow(
-//          columns = List(
-//            GridSquare(5, 0, Floor),
-//            GridSquare(5, 1, Column),
-//            GridSquare(5, 2, Floor),
-//            GridSquare(5, 3, Floor),
-//            GridSquare(5, 4, Floor),
-//            GridSquare(5, 5, Column),
-//            GridSquare(5, 6, Floor)
-//          )
-//        ),
-//        GridRow(
-//          columns = List(
-//            GridSquare(6, 0, Floor),
-//            GridSquare(6, 1, Floor),
-//            GridSquare(6, 2, Floor),
-//            GridSquare(6, 3, Floor),
-//            GridSquare(6, 4, Floor),
-//            GridSquare(6, 5, Floor),
-//            GridSquare(6, 6, Floor)
-//          )
-//        ),
-//        GridRow(
-//          columns = List(
-//            GridSquare(7, 0, Floor),
-//            GridSquare(7, 1, Floor),
-//            GridSquare(7, 2, Wall),
-//            GridSquare(7, 3, Wall),
-//            GridSquare(7, 4, Wall),
-//            GridSquare(7, 5, Floor),
-//            GridSquare(7, 6, Floor)
-//          )
-//        ),
-//        GridRow(
-//          columns = List(
-//            GridSquare(8, 0, Floor),
-//            GridSquare(8, 1, Floor),
-//            GridSquare(8, 2, Floor),
-//            GridSquare(8, 3, Floor),
-//            GridSquare(8, 4, Floor),
-//            GridSquare(8, 5, Floor),
-//            GridSquare(8, 6, Floor)
-//          )
-//        )
-//      )
-//    ),
-//    gameActors = List(
-////      Guard(0, 0),
-//      Ninja(8, 3)
-//    )
-//  )
-//
-//  val initialModel: NinjaAssaultGameModel = NinjaAssaultGameModel(
-//    level = initialLevel,
-//    whosTurn = Human
-//  )
-//
-//  def update(gameTime: GameTime, state: NinjaAssaultGameModel): GameEvent => NinjaAssaultGameModel = { e =>
-//    initialModel
-//  }
-//
-//}
-//
-//case class NinjaAssaultGameModel(level: Level, whosTurn: Player)
-//
-//case class Level(grid: Grid, gameActors: List[GameActor])
-//
-//case class Grid(gridSize: Int, width: Int, height: Int, rows: List[GridRow])
-//
-//case class GridRow(columns: List[GridSquare])
-//
-//case class GridSquare(row: Int, column: Int, tile: Tile)
-//
-//sealed trait Tile
-//case object Floor extends Tile
-//case object Column extends Tile
-//case object Wall extends Tile
-//
-//sealed trait GameActor {
-//  val row: Int
-//  val column: Int
-//}
-//case class Ninja(row: Int, column: Int) extends GameActor
-//case class Guard(row: Int, column: Int) extends GameActor
-//
-//sealed trait Player
-//case object CPU extends Player
-//case object Human extends Player
+object LevelModel {
+
+  val initialLevel: Level = Level(
+    grid = Grid(
+      gridSize = 32,
+      width = 7,
+      height = 9,
+      rows = List(
+        GridRow(
+          columns = List(
+            GridSquare(0, 0, Floor),
+            GridSquare(0, 1, Floor),
+            GridSquare(0, 2, Floor),
+            GridSquare(0, 3, Floor),
+            GridSquare(0, 4, Floor),
+            GridSquare(0, 5, Floor),
+            GridSquare(0, 6, Floor)
+          )
+        ),
+        GridRow(
+          columns = List(
+            GridSquare(1, 0, Floor),
+            GridSquare(1, 1, Column),
+            GridSquare(1, 2, Floor),
+            GridSquare(1, 3, Floor),
+            GridSquare(1, 4, Floor),
+            GridSquare(1, 5, Column),
+            GridSquare(1, 6, Floor)
+          )
+        ),
+        GridRow(
+          columns = List(
+            GridSquare(2, 0, Floor),
+            GridSquare(2, 1, Floor),
+            GridSquare(2, 2, Floor),
+            GridSquare(2, 3, Floor),
+            GridSquare(2, 4, Floor),
+            GridSquare(2, 5, Floor),
+            GridSquare(2, 6, Floor)
+          )
+        ),
+        GridRow(
+          columns = List(
+            GridSquare(3, 0, Floor),
+            GridSquare(3, 1, Floor),
+            GridSquare(3, 2, Floor),
+            GridSquare(3, 3, Column),
+            GridSquare(3, 4, Floor),
+            GridSquare(3, 5, Floor),
+            GridSquare(3, 6, Floor)
+          )
+        ),
+        GridRow(
+          columns = List(
+            GridSquare(4, 0, Floor),
+            GridSquare(4, 1, Floor),
+            GridSquare(4, 2, Floor),
+            GridSquare(4, 3, Floor),
+            GridSquare(4, 4, Floor),
+            GridSquare(4, 5, Floor),
+            GridSquare(4, 6, Floor)
+          )
+        ),
+        GridRow(
+          columns = List(
+            GridSquare(5, 0, Floor),
+            GridSquare(5, 1, Column),
+            GridSquare(5, 2, Floor),
+            GridSquare(5, 3, Floor),
+            GridSquare(5, 4, Floor),
+            GridSquare(5, 5, Column),
+            GridSquare(5, 6, Floor)
+          )
+        ),
+        GridRow(
+          columns = List(
+            GridSquare(6, 0, Floor),
+            GridSquare(6, 1, Floor),
+            GridSquare(6, 2, Floor),
+            GridSquare(6, 3, Floor),
+            GridSquare(6, 4, Floor),
+            GridSquare(6, 5, Floor),
+            GridSquare(6, 6, Floor)
+          )
+        ),
+        GridRow(
+          columns = List(
+            GridSquare(7, 0, Floor),
+            GridSquare(7, 1, Floor),
+            GridSquare(7, 2, Wall),
+            GridSquare(7, 3, Wall),
+            GridSquare(7, 4, Wall),
+            GridSquare(7, 5, Floor),
+            GridSquare(7, 6, Floor)
+          )
+        ),
+        GridRow(
+          columns = List(
+            GridSquare(8, 0, Floor),
+            GridSquare(8, 1, Floor),
+            GridSquare(8, 2, Floor),
+            GridSquare(8, 3, Floor),
+            GridSquare(8, 4, Floor),
+            GridSquare(8, 5, Floor),
+            GridSquare(8, 6, Floor)
+          )
+        )
+      )
+    ),
+    gameActors = List(
+//      Guard(0, 0),
+      Ninja(8, 3)
+    )
+  )
+
+}
+
+case class Level(grid: Grid, gameActors: List[GameActor])
+
+case class Grid(gridSize: Int, width: Int, height: Int, rows: List[GridRow]) {
+  val levelWidthInPixels: Int  = width * gridSize
+  val levelHeightInPixels: Int = height * gridSize
+  val levelSizeInPixels: Point = Point(width, gridSize)
+}
+
+case class GridRow(columns: List[GridSquare])
+
+case class GridSquare(row: Int, column: Int, tile: Tile)
+
+sealed trait Tile
+case object Floor  extends Tile
+case object Column extends Tile
+case object Wall   extends Tile
+
+sealed trait GameActor {
+  val row: Int
+  val column: Int
+}
+case class Ninja(row: Int, column: Int) extends GameActor
+case class Guard(row: Int, column: Int) extends GameActor
+
+sealed trait Player
+case object CPU   extends Player
+case object Human extends Player
 
 /*
 
