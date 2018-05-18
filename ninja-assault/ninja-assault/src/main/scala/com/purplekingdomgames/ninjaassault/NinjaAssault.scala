@@ -13,13 +13,17 @@ import com.purplekingdomgames.shared.{AssetType, GameConfig}
 
 object NinjaAssult extends IndigoGameBasic[MyStartupData, NinjaAssaultGameModel] {
 
-  val config: GameConfig = Settings.gameSetup
+  val config: GameConfig =
+    Settings.gameSetup
 
-  val assets: Set[AssetType] = Assets.images
+  val assets: Set[AssetType] =
+    Assets.images
 
-  val fonts: Set[FontInfo] = Set(Assets.fontInfo)
+  val fonts: Set[FontInfo] =
+    Set(Assets.fontInfo)
 
-  val animations: Set[Animations] = Set()
+  val animations: Set[Animations] =
+    Set()
 
   def setup(assetCollection: AssetCollection): Either[StartupErrors, MyStartupData] =
     Right(MyStartupData())
