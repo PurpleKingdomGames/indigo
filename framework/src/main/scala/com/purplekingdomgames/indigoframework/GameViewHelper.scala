@@ -28,9 +28,15 @@ object GameViewHelper {
           .find(_.id == id)
       }
       .collect { case Some(s) => s }
-      .flatMap(_.components.presentation.graphic)
-      .map { graphic =>
-        Graphic(graphic.bounds, 1, graphic.assetRef).withCrop(graphic.crop)
+      .map {
+        _.components.presentation.graphic
+      }
+      .flatMap {
+        case Some(graphic) =>
+          List(Graphic(graphic.bounds, 1, graphic.assetRef).withCrop(graphic.crop))
+
+        case None =>
+          Nil
       }
 
     SceneUpdateFragment(

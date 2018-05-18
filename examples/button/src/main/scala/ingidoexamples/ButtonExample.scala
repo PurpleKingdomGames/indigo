@@ -41,7 +41,7 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel] {
 
     case MyButtonEvent => // Our event is caught, updates the model and writes to the console.
       val next = model.copy(count = model.count + 1)
-      println("Count: " + next.count)
+      println("Count: " + next.count.toString)
       next
 
     case _ =>

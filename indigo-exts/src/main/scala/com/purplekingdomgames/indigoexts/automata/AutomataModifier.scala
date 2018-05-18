@@ -4,7 +4,7 @@ import com.purplekingdomgames.indigo.gameengine.GameTime
 import com.purplekingdomgames.indigo.gameengine.events.ViewEvent
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Point, Tint}
 
-sealed trait AutomataModifier
+sealed trait AutomataModifier extends Product with Serializable
 object AutomataModifier {
   case class ChangeAlpha(f: (GameTime, AutomatonSeedValues, Double) => Double) extends AutomataModifier
   case class ChangeTint(f: (GameTime, AutomatonSeedValues, Tint) => Tint)      extends AutomataModifier

@@ -10,7 +10,7 @@ object PerfView {
 
   def updateView(model: MyGameModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     frameInputEvents.mouseClickAt match {
-      case Some(position) => println("Mouse clicked at: " + position)
+      case Some(position) => println("Mouse clicked at: " + position.toString)
       case None           => ()
     }
 
@@ -123,7 +123,7 @@ object PerfView {
 
   def uiLayer: List[SceneGraphNode] =
     List(
-      Text((herdCount + 1) + " Naked\ndudes", 10, 10, 5, fontKey).alignLeft,
+      Text((herdCount + 1).toString + " Naked\ndudes", 10, 10, 5, fontKey).alignLeft,
       Text("Thundering Herd!", PerfGame.viewportWidth / 2, 10, 5, fontKey).alignCenter,
       Text("use arrow\nkeys", PerfGame.viewportWidth - 10, 10, 5, fontKey).alignRight
     )

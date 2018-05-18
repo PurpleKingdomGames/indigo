@@ -133,7 +133,7 @@ object Snake {
         Snake(snakePoint, Nil, d, s)
 
       case Snake(h, l, d, s) =>
-        Snake(snakePoint, h :: l.reverse.tail.reverse, d, s)
+        Snake(snakePoint, h :: l.reverse.drop(1).reverse, d, s)
     }
 
 }

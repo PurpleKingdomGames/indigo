@@ -38,7 +38,7 @@ object HttpExample extends IndigoGameBasic[Unit, MyGameModel] {
       )
 
     case HttpResponse(status, headers, body) =>
-      println("Status code: " + status)
+      println("Status code: " + status.toString)
       println("Headers: " + headers.map(p => p._1 + ": " + p._2).mkString(", "))
       println("Body: " + body.getOrElse("<EMPTY>"))
       model

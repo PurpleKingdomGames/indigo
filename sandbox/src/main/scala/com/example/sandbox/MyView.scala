@@ -8,7 +8,7 @@ object MyView {
 
   def updateView(model: MyGameModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     frameInputEvents.mouseClickAt match {
-      case Some(position) => println("Mouse clicked at: " + position)
+      case Some(position) => println("Mouse clicked at: " + position.toString)
       case None           => ()
     }
 

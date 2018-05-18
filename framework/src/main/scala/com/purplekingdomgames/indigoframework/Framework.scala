@@ -40,6 +40,7 @@ object Framework {
   val updateView: (GameTime, GameModel, FrameInputEvents) => SceneUpdateFragment = (_, gameModel, _) =>
     GameViewHelper.updateView(gameModel)
 
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   @JSExport
   def startLocal(): Unit =
     Indigo.game
@@ -53,6 +54,7 @@ object Framework {
       .presentUsing(updateView)
       .start()
 
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   @JSExport
   def startRemote(): Unit =
     Indigo.game

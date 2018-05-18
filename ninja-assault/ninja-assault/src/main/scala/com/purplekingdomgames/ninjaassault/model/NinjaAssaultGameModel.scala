@@ -3,7 +3,7 @@ package com.purplekingdomgames.ninjaassault.model
 import com.purplekingdomgames.indigo.gameengine.events.GameEvent
 import com.purplekingdomgames.ninjaassault.JumpToMenu
 
-sealed trait Scene {
+sealed trait Scene extends Product with Serializable {
   val active: Boolean
 }
 case class Logo(active: Boolean) extends Scene

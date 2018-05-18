@@ -76,7 +76,7 @@ abstract class Service[F[_]](implicit F: Effect[F]) extends StreamApp[F] with Ht
       }
   }
 
-  // Investigate this Any.
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   def stream(args: List[String], requestShutdown: F[Unit]): Stream[F, ExitCode] =
     for {
       scheduler <- Scheduler[F](corePoolSize = 2)
