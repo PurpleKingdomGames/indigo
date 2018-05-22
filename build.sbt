@@ -1,9 +1,6 @@
 
 val indigoVersion = "0.0.6-SNAPSHOT"
 
-addCommandAlias("snakeBuild", ";snake/fastOptJS;snake/indigoBuild")
-addCommandAlias("ninjaBuild", ";ninja/fastOptJS;ninja/indigoBuild")
-
 lazy val commonSettings = Seq(
   version := indigoVersion,
   scalaVersion := "2.12.5",
@@ -254,33 +251,6 @@ lazy val indigoExts =
     )
 
 // Games
-lazy val ninja =
-  (project in file("ninja-assault/ninja-assault"))
-    .settings(commonSettings: _*)
-    .dependsOn(indigoExts)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
-    .settings(
-      name := "ninja-assault",
-      showCursor := false,
-      title := "Ninja Assault",
-      gameAssetsDirectory := "../asset_dev",
-      scalaJSUseMainModuleInitializer := true
-    )
-
-lazy val snake =
-  project
-    .settings(commonSettings: _*)
-    .dependsOn(indigoExts)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
-    .settings(
-      name := "snake",
-      showCursor := true,
-      title := "Snake",
-      gameAssetsDirectory := "assets",
-      scalaJSUseMainModuleInitializer := true,
-      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
-    )
-
 lazy val sandbox =
   project
     .settings(commonSettings: _*)
@@ -362,15 +332,16 @@ lazy val indigoProject =
   (project in file("."))
     .settings(commonSettings: _*)
     .aggregate(indigo, indigoExts) //core
-    .aggregate(ninja)
+    .aggregate(sandbox)
 //    .aggregate(perf, button) //compile tests
-//    .aggregate(sandbox, framework, server, snake) //games
+//    .aggregate(sandbox, framework, server) //games
 //    .aggregate(basicSetup, fullSetup, http, text, automata, graphic, sprite, websocket, inputfield, audio, group) //examples
 
 
-addCommandAlias("buildIndigo", ";indigo/compile;indigoExts/compile")
+addCommandAlias("buildIndigo", ";shared/compile;indigo/compile;indigoExts/compile")
 addCommandAlias("buildDev", ";sandbox/compile;perf/compile;framework/compile;server/compile")
-addCommandAlias("buildGames", ";snake/compile;ninja/compile")
 addCommandAlias("buildExamples1", ";basicSetup/compile;fullSetup/compile;button/compile;http/compile;text/compile;automata/compile")
 addCommandAlias("buildExamples2", ";graphic/compile;sprite/compile;websocket/compile;inputfield/compile;audio/compile;group/compile")
 addCommandAlias("buildAll", ";clean;buildIndigo;buildDev;buildGames;buildExamples1;buildExamples2")
+
+addCommandAlias("localPublish", ";clean;buildIndigo;shared/publishLocal;indigo/publishLocal;indigoExts/publishLocal")
