@@ -1,6 +1,8 @@
 package com.purplekingdomgames.ninjaassault.model
 
-case class Level(grid: Grid, gameActors: List[GameActor])
+case class Level(grid: Grid, gameActors: List[GameActor], camera: Camera)
+
+case class Camera(x: Int, y: Int)
 
 object Level {
 
@@ -129,8 +131,9 @@ object Level {
     ),
     gameActors = List(
       //      Guard(0, 0),
-      Ninja(8, 3)
-    )
+      Ninja(8, 3, hasFocus = true)
+    ),
+    camera = Camera(0, 0)
   )
 
 }

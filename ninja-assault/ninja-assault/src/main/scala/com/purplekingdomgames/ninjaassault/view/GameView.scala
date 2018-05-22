@@ -48,12 +48,12 @@ object GameView {
   }
 
   private val drawActor: GameActor => Graphic = {
-    case Guard(row, column) =>
+    case Guard(row, column, _) =>
       Graphic(column * 32, row * 32, 512, 512, 1, Assets.spriteSheetRef)
         .withCrop(32, 96, 32, 32)
         .withRef(-5, -3)
 
-    case Ninja(row, column) =>
+    case Ninja(row, column, _) =>
       Graphic(column * 32, row * 32, 512, 512, 1, Assets.spriteSheetRef)
         .withCrop(0, 96, 32, 32)
         .withRef(-10, -3)

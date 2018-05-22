@@ -9,9 +9,14 @@ object View {
 
   def draw(gameModel: NinjaAssaultGameModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     gameModel.activeScene match {
-      case Scene.Logo(_) => LogoView.draw(frameInputEvents) |+| SceneUpdateFragment.empty.addUiLayerNodes(cursor)
-      case Scene.Menu(_) => MenuView.draw(frameInputEvents) |+| SceneUpdateFragment.empty.addUiLayerNodes(cursor)
-      case Scene.Game(_) => GameView.draw() |+| SceneUpdateFragment.empty.addUiLayerNodes(cursor)
+      case Scene.Logo(_) =>
+        LogoView.draw(frameInputEvents) |+| SceneUpdateFragment.empty.addUiLayerNodes(cursor)
+
+      case Scene.Menu(_) =>
+        MenuView.draw(frameInputEvents) |+| SceneUpdateFragment.empty.addUiLayerNodes(cursor)
+
+      case Scene.Game(_, _) =>
+        GameView.draw() |+| SceneUpdateFragment.empty.addUiLayerNodes(cursor)
     }
 
   def cursor: Graphic =

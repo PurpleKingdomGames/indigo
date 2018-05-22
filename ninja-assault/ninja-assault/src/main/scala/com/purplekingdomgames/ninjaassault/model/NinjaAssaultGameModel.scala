@@ -9,18 +9,18 @@ case class NinjaAssaultGameModel(scenes: List[Scene]) {
   def makeMenuSceneActive: NinjaAssaultGameModel =
     this.copy(
       scenes = scenes.map {
-        case Scene.Menu(_) => Scene.Menu(true)
-        case Scene.Logo(_) => Scene.Logo(false)
-        case Scene.Game(_) => Scene.Game(false)
+        case Scene.Menu(_)    => Scene.Menu(true)
+        case Scene.Logo(_)    => Scene.Logo(false)
+        case Scene.Game(_, l) => Scene.Game(false, l)
       }
     )
 
   def makeGameSceneActive: NinjaAssaultGameModel =
     this.copy(
       scenes = scenes.map {
-        case Scene.Menu(_) => Scene.Menu(false)
-        case Scene.Logo(_) => Scene.Logo(false)
-        case Scene.Game(_) => Scene.Game(true)
+        case Scene.Menu(_)    => Scene.Menu(false)
+        case Scene.Logo(_)    => Scene.Logo(false)
+        case Scene.Game(_, l) => Scene.Game(true, l)
       }
     )
 
@@ -28,7 +28,7 @@ case class NinjaAssaultGameModel(scenes: List[Scene]) {
 
 object NinjaAssaultGameModel {
   val initialModel: NinjaAssaultGameModel = NinjaAssaultGameModel(
-    scenes = Scene.Logo(true) :: Scene.Menu(false) :: Scene.Game(false) :: Nil
+    scenes = Scene.Logo(true) :: Scene.Menu(false) :: Scene.Game(false, Level.testLevel) :: Nil
   )
 
   def update(state: NinjaAssaultGameModel): GameEvent => NinjaAssaultGameModel = {
