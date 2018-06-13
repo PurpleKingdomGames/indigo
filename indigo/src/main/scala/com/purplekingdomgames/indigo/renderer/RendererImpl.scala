@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigo.renderer
 
-import com.purplekingdomgames.indigo.util.metrics._
+import com.purplekingdomgames.indigo.runtime.metrics._
 import com.purplekingdomgames.shared.ClearColor
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._

@@ -1,6 +1,6 @@
-package com.purplekingdomgames.indigo.util.metrics
+package com.purplekingdomgames.indigo.runtime.metrics
 
-import com.purplekingdomgames.indigo.util._
+import com.purplekingdomgames.indigo.runtime._
 
 object MetricsLogReporter {
 

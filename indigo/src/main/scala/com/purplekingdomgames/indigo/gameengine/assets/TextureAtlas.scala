@@ -3,7 +3,7 @@ package com.purplekingdomgames.indigo.gameengine.assets
 import com.purplekingdomgames.indigo.gameengine.PowerOfTwo
 import com.purplekingdomgames.indigo.gameengine.assets.TextureAtlas.supportedSizes
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
-import com.purplekingdomgames.indigo.util.Logger
+import com.purplekingdomgames.indigo.runtime.Logger
 import org.scalajs.dom
 import org.scalajs.dom.{html, raw}
 

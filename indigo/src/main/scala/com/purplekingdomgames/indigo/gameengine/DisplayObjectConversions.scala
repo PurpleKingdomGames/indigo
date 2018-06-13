@@ -5,8 +5,8 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.renderer.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import com.purplekingdomgames.indigo.renderer.{AssetMapping, DisplayObject, SpriteSheetFrame, Vector2}
-import com.purplekingdomgames.indigo.util.Logger
-import com.purplekingdomgames.indigo.util.metrics.IMetrics
+import com.purplekingdomgames.indigo.runtime.Logger
+import com.purplekingdomgames.indigo.runtime.metrics.IMetrics
 
 import scala.collection.mutable
 

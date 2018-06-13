@@ -3,7 +3,7 @@ package com.purplekingdomgames.indigo.networking
 import com.purplekingdomgames.indigo.gameengine.events._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.BindingKey
 import com.purplekingdomgames.indigo.networking.WebSocketReadyState.{CLOSED, CLOSING}
-import com.purplekingdomgames.indigo.util.Logger
+import com.purplekingdomgames.indigo.runtime.Logger
 import org.scalajs.dom
 
 import scala.collection.mutable

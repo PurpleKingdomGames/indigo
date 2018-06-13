@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigo.gameengine.assets
 
-import com.purplekingdomgames.indigo.util.Logger
+import com.purplekingdomgames.indigo.runtime.Logger
 import com.purplekingdomgames.shared.{AssetType, AudioAsset, ImageAsset, TextAsset}
 import org.scalajs.dom
 import org.scalajs.dom.ext.Ajax

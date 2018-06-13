@@ -2,7 +2,7 @@ package com.purplekingdomgames.indigoexts.formats
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, Group}
-import com.purplekingdomgames.indigo.util.Logger
+import com.purplekingdomgames.indigo.runtime.Logger
 import io.circe.generic.auto._
 import io.circe.parser._
 

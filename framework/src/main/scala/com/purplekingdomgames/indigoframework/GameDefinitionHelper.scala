@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigoframework
 
-import com.purplekingdomgames.indigo.util.Logger
+import com.purplekingdomgames.indigo.runtime.Logger
 import com.purplekingdomgames.shared.GameDefinition
 
 object GameDefinitionHelper {

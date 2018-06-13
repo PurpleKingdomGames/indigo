@@ -4,7 +4,7 @@ import com.purplekingdomgames.indigo.gameengine.assets.{AnimationsRegister, Font
 import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
-import com.purplekingdomgames.indigo.util.Logger
+import com.purplekingdomgames.indigo.runtime.Logger
 
 object SceneGraphNode {
   def empty: Group = Group(Point.zero, Depth.Base, Nil)

@@ -3,7 +3,7 @@ package com.purplekingdomgames.indigo.gameengine.assets
 import com.purplekingdomgames.indigo.gameengine.GameTime
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.BindingKey
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{AnimationAction, Animations, AnimationsKey}
-import com.purplekingdomgames.indigo.util.metrics._
+import com.purplekingdomgames.indigo.runtime.metrics._
 
 import scala.collection.mutable
 

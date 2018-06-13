@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigo.renderer
 
-import com.purplekingdomgames.indigo.util.Logger
+import com.purplekingdomgames.indigo.runtime.Logger
 import org.scalajs.dom.{html, raw}
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram, WebGLTexture, WebGLUniformLocation}

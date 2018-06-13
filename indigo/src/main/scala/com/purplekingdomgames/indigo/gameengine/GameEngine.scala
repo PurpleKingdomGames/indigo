@@ -6,8 +6,8 @@ import com.purplekingdomgames.indigo.gameengine.events._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{AmbientLight, FontInfo}
 import com.purplekingdomgames.indigo.renderer._
-import com.purplekingdomgames.indigo.util._
-import com.purplekingdomgames.indigo.util.metrics._
+import com.purplekingdomgames.indigo.runtime._
+import com.purplekingdomgames.indigo.runtime.metrics._
 import com.purplekingdomgames.shared.{AssetType, GameConfig}
 import org.scalajs.dom
 
