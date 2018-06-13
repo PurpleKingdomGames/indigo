@@ -12,52 +12,17 @@ The layers:
 2. The Game Engine.
 3. The game.
 
-## Server TODO's
-We have a basic service, it needs to be extended to:
-
-Phase 1: Serve a game
-- //Serve static config
-- //Serve static assets list
-- //Serve the assets listed
-- //Serve a static game definition
-- On request to /play
-  - serve up an html page with the framework embedded
-  - framework must be configured to look for resources from remote
-  - game should load
-  
-Phase 2: Move static to DB
-- GameConfig to come from lookup
-- Assets to come from lookup
-- GameDefinition to come from lookup
-- Assets to come from some sort of storage
-
-Phase 3: Terrible login
-- Just enough so we can have different user spaces during dev.
-
-Phase 4: Viewing the data
-- Can see game config
-- Can see assets
-- Can see a scene list
-
-Phase 4: Configurable basics
-- Choose a game to work on
-- Configure and save gameconfig
-- Upload new assets
-- Serve assets list based on uploaded assets (for now)
-
-Phase 5: New Game
-- Ability to add a new game
-- Auto add default config
-- Auto add empty assets
-- Auto add empty GameDefinition
-
-Phase 6: Scene Manager
-- Can add new scenes
-- Can edit scene details
-- Can reorder scenes
-
-Phase 7: Level Editor
-Erm...?
+## Current TODOs
+- IO Monad
+  - The idea is to describe the runtime (initially JS, later native and JVM?) and control execution
+  - Initially pretty dumb:
+    - Lazy evaluation
+    - Catch exceptions and log, bail out gracefully.
+    - Record stage metrics?
+- ViewModel
+  - To avoid polluting the model with view details
+  - Add between update model and update view, it's another frame by frame piece of state just like the real model.
+  - Make Automata (and other pre-made features) make use of it.
 
 ## TODO
 - indigoBuild to depend on fastOptJS by default
@@ -80,6 +45,48 @@ Indigo SBT Plugin
   - ???
 - Include whole lib so that you only need one sbt import?
 
+Bugs:
+- Lights don't work on a black background... should they?
+  - Should we always fill with a real colour?
+- Should rendering text/font white space cost a draw call?
+
+TODO
+- Static objects (see below)
+- Asset tags so that related image assets are grouped on the same atlas where possible
+
+Renderer
+- Layer effects (Hue, saturation, tint, Blur, Bloom.. anything else?)
+- object effects (Blur, outline, drop shadow, innershadow, glow.. anything else?)
+- Real lights
+- Normal map support
+  - Possibly with bump to normal conversion tool for ease of use?
+
+Game Engine
+- Full window size - when the plugin is generating the html.
+- Full screen - when the plugin is generating the html. 
+- Particle systems, which are advanced automata
+
+Maybe add the idea of a 'registers' hook during game setup, allows initialisation of registers for:
+1. Fonts // Done
+2. Static precomputed assets
+3. Automata // Not needed?
+
+Game
+- Make game.
+
+Optimisations:
+- Offload more onto the GPU - matrix calculations for example.
+- I think Scalajs is downloading script files on load, can they be local?
+- Performance enhancement: We do some CPU side sorting, which generally will be ok, but if there are thousands of tiles
+  and most of them never change, it would be nice to declare that somehow and only have to sort them once. (statics)
+- Performance enhancement: Static objects. Everything is drawn in one call but large collections of unchanging scene
+  items could be marked as safe to cache to avoid recalculating all the things. Thinking backgrounds.
+- Flat objects: For large numbers of tiles all at the same level, they could be marked as "flat" and pre-renderer to a
+  framebuffer to be drawn at a fixed depth (subject to the usual sorting)
+- Rendering / updating layers at different rates. If the game layer only runs at 10FPS on purpose because of the
+  animation style then we can render at that rate rather than 30FPS, you literally just have to skip frames since it will
+  remain in the framebuffer.
+
 Need for Speed
 **************
 
@@ -98,58 +105,3 @@ Prefabs (Won't help perf tests and we can almost do this already - and do using 
 - Indigo will allow you to declare prefabs.
 - These are identical to normal objects but in the view you just point at the prefab.
 - Prefabs are prototypes, each prefab is copied in and is allowed minor adjustments before rendering.
-
-Bugs:
-- Lights don't work on a black background... should they?
-- Should rendering text/font white space cost a draw call?
-
-TODO
-- Static objects (see below)
-- Asset tags so that related image assets are grouped on the same atlas where possible
-
-Renderer
-- Layer effects (Hue, saturation, tint, Blur, Bloom.. anything else? )
-- Pixel effects e.g. animate flood fill disolve
-
-Game Engine
-- Config setting for hide mouse cursor - when the plugin is generating the html.
-- Sound
-- Full window size - when the plugin is generating the html.
-- Full screen - when the plugin is generating the html.
-- Tilemap loading
-- Find a way to reduce requestAnimationFrame calls
-- Bake networking into lifecycle
-- Automata 
-  - Simple programs that live short lives based on rules for game making convenience
-  - Boring things to keep track of in your game engine and have mostly no bearing on the game itself
-  - Can be created explicitly or by event
-  - Examples: 
-    1. Bullets - no model needed, has a graphic, flies in a direction, hitTest function creates an event
-    1. Score! - When a player scores a point you flash up a number where they're standing that fades out over time.
-    1. Firework - a curving bullet automata that creates an explosion automata (by event) once it's travelled a set distance.
-  - Particle systems are advanced automata
-
-IO Monad?
-Remove need to carry all font info around with every Text instance
-Update automata to be part of game cycle as a pose to being a register?
-
-Maybe add the idea of a 'registers' hook during game setup, allows initialisation of registers for:
-1. Fonts
-2. Static precomputed assets
-3. Automata
-
-Game
-- Make game.
-
-Optimisations:
-- Offload more onto the GPU - matrix calculations for example.
-- I think Scalajs is downloading script files on load, can they be local?
-- Performance enhancement: We do some CPU side sorting, which generally will be ok, but if there are thousands of tiles
-  and most of them never change, it would be nice to declare that somehow and only have to sort them once. (statics)
-- Performance enhancement: Static objects. Everything is drawn in one call but large collections of unchanging scene
-  items could be marked as safe to cache to avoid recalculating all the things. Thinking backgrounds.
-- Flat objects: For large numbers of tiles all at the same level, they could be marked as "flat" and pre-renderer to a
-  framebuffer to be drawn at a fixed depth (subject to the usual sorting)
-- Rendering / updating layers at different rates. If the game layer only runs at 10FPS on purpose because of the
-  animation style then we can render at that rate rather than 30FPS, you literally just have to skip frames since it will
-  remain in the framebuffer.
