@@ -6,6 +6,7 @@ trait IMetrics {
   def record(m: Metric): Unit
   def recordForSpecificTime(m: Metric, time: Long): Unit
   def giveTime(): Long
+  def giveMetrics: List[MetricWrapper]
 }
 
 object Metrics {
@@ -35,12 +36,16 @@ object Metrics {
 
     def giveTime(): Long = System.currentTimeMillis()
 
+    def giveMetrics: List[MetricWrapper] =
+      metrics.clone().dequeueAll(_ => true).toList
+
   }
 
   private class NullMetricsInstance extends IMetrics {
     def record(m: Metric): Unit                            = ()
     def recordForSpecificTime(m: Metric, time: Long): Unit = ()
     def giveTime(): Long                                   = 1
+    def giveMetrics: List[MetricWrapper]                   = Nil
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))

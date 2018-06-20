@@ -2,7 +2,7 @@ package com.purplekingdomgames.indigo.runtime.metrics
 
 case class MetricWrapper(metric: Metric, time: Long)
 
-sealed trait Metric {
+trait Metric {
   val name: String
 }
 

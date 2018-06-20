@@ -8,16 +8,29 @@ package com.purplekingdomgames.indigo.runtime
   */
 sealed trait IIO[+A] {
 
-  import IIO._
+  def pure[B](b: => B): IIO[B] =
+    this match {
+      case IIO.Pure(_) =>
+        IIO.pure(b)
+
+      case IIO.Delay(_) =>
+        IIO.delay(b)
+
+      case IIO.RaiseError(e) =>
+        IIO.raiseError(e)
+    }
 
   def isError: Boolean =
     this match {
-      case RaiseError(_) =>
+      case IIO.RaiseError(_) =>
         true
 
       case _ =>
         false
     }
+
+  def recover[B >: A](default: IIO[B]): IIO[B] =
+    cata(a => this.pure(a), default)
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   def unsafeRun(): A =
@@ -42,53 +55,29 @@ sealed trait IIO[+A] {
 
   def cata[B](f: A => B, default: B): B =
     this match {
-      case Pure(a) =>
+      case IIO.Pure(a) =>
         f(a)
 
-      case Delay(thunk) =>
-        f(thunk())
+      case IIO.Delay(thunk) =>
+        try {
+          f(thunk())
+        } catch {
+          case _: Throwable =>
+            default
+        }
 
-      case RaiseError(_) =>
+      case IIO.RaiseError(_) =>
         default
     }
 
   def map[B](f: A => B): IIO[B] =
-    this match {
-      case Pure(a) =>
-        pure(f(a))
-
-      case Delay(thunk) =>
-        try {
-          delay(f(thunk()))
-        } catch {
-          case e: Throwable =>
-            raiseError(e)
-        }
-
-      case RaiseError(e) =>
-        raiseError(e)
-    }
+    cata(x => pure[B](f(x)), IIO.raiseError(new Exception("Invalid map of an IIO.")))
 
   def flatMap[B](f: A => IIO[B]): IIO[B] =
-    this match {
-      case Pure(a) =>
-        f(a)
-
-      case Delay(thunk) =>
-        try {
-          f(thunk())
-        } catch {
-          case e: Throwable =>
-            raiseError(e)
-        }
-
-      case RaiseError(e) =>
-        Option
-        raiseError(e)
-    }
+    cata(x => f(x), IIO.raiseError(new Exception("Invalid flatMap of an IIO.")))
 
   def flatten[B](implicit ev: A <:< IIO[B]): IIO[B] =
-    cata(x => ev(x), raiseError(new Exception("Cannot flatten IIO in error state.")))
+    cata(x => ev(x), IIO.raiseError(new Exception("Invalid flatten of an IIO.")))
 
 }
 
