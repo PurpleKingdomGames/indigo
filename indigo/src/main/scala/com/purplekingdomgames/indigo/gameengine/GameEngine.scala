@@ -4,7 +4,7 @@ import com.purplekingdomgames.indigo.gameengine.assets._
 import com.purplekingdomgames.indigo.gameengine.audio.{AudioPlayer, IAudioPlayer}
 import com.purplekingdomgames.indigo.gameengine.events._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{AmbientLight, FontInfo}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.FontInfo
 import com.purplekingdomgames.indigo.renderer._
 import com.purplekingdomgames.indigo.runtime._
 import com.purplekingdomgames.indigo.runtime.metrics._
@@ -35,9 +35,6 @@ class GameEngine[StartupData, StartupError, GameModel](
     updateModel: (GameTime, GameModel) => GameEvent => GameModel,
     updateView: (GameTime, GameModel, FrameInputEvents) => SceneUpdateFragment
 ) {
-
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var state: Option[GameModel] = None
 
   def registerAnimations(animations: Animations): Unit =
     AnimationsRegister.register(animations)
@@ -77,7 +74,15 @@ class GameEngine[StartupData, StartupError, GameModel](
             _                   <- GameEngine.listenToWorldEvents(canvas, gameConfig.magnification)
             renderer            <- GameEngine.startRenderer(gameConfig, loadedTextureAssets, canvas)
             audioPlayer         <- GameEngine.startAudioPlayer(assetCollection.sounds)
-          } yield loop(gameConfig, startUpSuccessData, assetMapping, renderer, audioPlayer, 0)
+            gameLoopInstance <- GameEngine.initialiseGameLoop(gameConfig,
+                                                              startUpSuccessData,
+                                                              assetMapping,
+                                                              renderer,
+                                                              audioPlayer,
+                                                              initialModel,
+                                                              updateModel,
+                                                              updateView)
+          } yield gameLoopInstance.loop(0)
 
         Logger.info("Starting main loop, there will be no more info log messages.")
         Logger.info("You may get first occurrence error logs.")
@@ -88,103 +93,6 @@ class GameEngine[StartupData, StartupError, GameModel](
 
     }
 
-  }
-
-  private def loop(gameConfig: GameConfig,
-                   startupData: StartupData,
-                   assetMapping: AssetMapping,
-                   renderer: IRenderer,
-                   audioPlayer: IAudioPlayer,
-                   lastUpdateTime: Double)(implicit metrics: IMetrics): Double => Int = { time =>
-    val timeDelta = time - lastUpdateTime
-
-    // PUT NOTHING ABOVE THIS LINE!! Major performance penalties!!
-    if (timeDelta > gameConfig.frameRateDeltaMillis) {
-
-      metrics.record(FrameStartMetric)
-
-      // Model updates cut off
-      if (gameConfig.advanced.disableSkipModelUpdates || timeDelta < gameConfig.haltModelUpdatesAt) {
-
-        metrics.record(UpdateStartMetric)
-
-        val gameTime: GameTime = GameTime(time, timeDelta, gameConfig.frameRateDeltaMillis.toDouble)
-
-        val collectedEvents = GlobalEventStream.collect
-
-        GlobalSignalsManager.update(collectedEvents)
-
-        metrics.record(CallUpdateGameModelStartMetric)
-
-        val model = state match {
-          case None =>
-            initialModel(startupData)
-
-          case Some(previousModel) =>
-            GameEngine.processModelUpdateEvents(gameTime, previousModel, collectedEvents, updateModel)
-        }
-
-        state = Some(model)
-
-        metrics.record(CallUpdateGameModelEndMetric)
-        metrics.record(UpdateEndMetric)
-
-        // View updates cut off
-        if (gameConfig.advanced.disableSkipViewUpdates || timeDelta < gameConfig.haltViewUpdatesAt) {
-
-          metrics.record(CallUpdateViewStartMetric)
-
-          val view = updateView(
-            gameTime,
-            model,
-            events.FrameInputEvents(collectedEvents.filterNot(_.isInstanceOf[ViewEvent]))
-          )
-
-          metrics.record(CallUpdateViewEndMetric)
-          metrics.record(ProcessViewStartMetric)
-
-          val processUpdatedView: SceneUpdateFragment => SceneGraphRootNodeFlat =
-            GameEngine.persistGlobalViewEvents(audioPlayer)(metrics) andThen
-              GameEngine.flattenNodes andThen
-              GameEngine.persistNodeViewEvents(metrics)(collectedEvents)
-
-          val processedView: SceneGraphRootNodeFlat = processUpdatedView(view)
-
-          metrics.record(ProcessViewEndMetric)
-
-          metrics.record(ToDisplayableStartMetric)
-
-          val displayable: Displayable =
-            GameEngine.convertSceneGraphToDisplayable(gameTime, processedView, assetMapping, view.ambientLight)
-
-          metrics.record(ToDisplayableEndMetric)
-          metrics.record(PersistAnimationStatesStartMetric)
-
-          AnimationsRegister.persistAnimationStates()
-
-          metrics.record(PersistAnimationStatesEndMetric)
-          metrics.record(RenderStartMetric)
-
-          GameEngine.drawScene(renderer, displayable)
-
-          metrics.record(RenderEndMetric)
-          metrics.record(AudioStartMetric)
-
-          GameEngine.playAudio(audioPlayer, view.audio)
-
-          metrics.record(AudioEndMetric)
-
-        } else
-          metrics.record(SkippedViewUpdateMetric)
-
-      } else
-        metrics.record(SkippedModelUpdateMetric)
-
-      metrics.record(FrameEndMetric)
-
-      dom.window.requestAnimationFrame(loop(gameConfig, startupData, assetMapping, renderer, audioPlayer, time))
-    } else
-      dom.window.requestAnimationFrame(loop(gameConfig, startupData, assetMapping, renderer, audioPlayer, lastUpdateTime))
   }
 
 }
@@ -264,61 +172,25 @@ object GameEngine {
   def startAudioPlayer(sounds: List[LoadedAudioAsset]): IIO[IAudioPlayer] =
     IIO.pure(AudioPlayer(sounds))
 
-  //
-
-  def processModelUpdateEvents[GameModel](gameTime: GameTime,
-                                          previousModel: GameModel,
-                                          remaining: List[GameEvent],
-                                          updateModel: (GameTime, GameModel) => GameEvent => GameModel): GameModel =
-    remaining match {
-      case Nil =>
-        updateModel(gameTime, previousModel)(FrameTick)
-
-      case x :: xs =>
-        processModelUpdateEvents(gameTime, updateModel(gameTime, previousModel)(x), xs, updateModel)
-    }
-
-  val persistGlobalViewEvents: IAudioPlayer => IMetrics => SceneUpdateFragment => SceneGraphRootNode = audioPlayer =>
-    metrics =>
-      update => {
-        metrics.record(PersistGlobalViewEventsStartMetric)
-        update.viewEvents.foreach(e => GlobalEventStream.pushViewEvent(audioPlayer, e))
-        metrics.record(PersistGlobalViewEventsEndMetric)
-        SceneGraphRootNode.fromFragment(update)
-  }
-
-  val flattenNodes: SceneGraphRootNode => SceneGraphRootNodeFlat = root => root.flatten
-
-  val persistNodeViewEvents: IMetrics => List[GameEvent] => SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = metrics =>
-    gameEvents =>
-      rootNode => {
-        metrics.record(PersistNodeViewEventsStartMetric)
-        rootNode.collectViewEvents(gameEvents).foreach(GlobalEventStream.pushGameEvent)
-        metrics.record(PersistNodeViewEventsEndMetric)
-        rootNode
-  }
-
-  def convertSceneGraphToDisplayable(gameTime: GameTime,
-                                     rootNode: SceneGraphRootNodeFlat,
-                                     assetMapping: AssetMapping,
-                                     ambientLight: AmbientLight)(implicit metrics: IMetrics): Displayable =
-    Displayable(
-      DisplayLayer(
-        rootNode.game.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping))
-      ),
-      DisplayLayer(
-        rootNode.lighting.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping))
-      ),
-      DisplayLayer(
-        rootNode.ui.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping))
-      ),
-      ambientLight
+  def initialiseGameLoop[StartupData, GameModel](
+      gameConfig: GameConfig,
+      startupData: StartupData,
+      assetMapping: AssetMapping,
+      renderer: IRenderer,
+      audioPlayer: IAudioPlayer,
+      initialModel: StartupData => GameModel,
+      updateModel: (GameTime, GameModel) => GameEvent => GameModel,
+      updateView: (GameTime, GameModel, FrameInputEvents) => SceneUpdateFragment
+  )(implicit metrics: IMetrics): IIO[GameLoop[StartupData, GameModel]] =
+    IIO.pure(
+      new GameLoop[StartupData, GameModel](gameConfig,
+                                           startupData,
+                                           assetMapping,
+                                           renderer,
+                                           audioPlayer,
+                                           initialModel,
+                                           updateModel,
+                                           updateView)
     )
-
-  private def drawScene(renderer: IRenderer, displayable: Displayable)(implicit metrics: IMetrics): Unit =
-    renderer.drawScene(displayable)
-
-  private def playAudio(audioPlayer: IAudioPlayer, sceneAudio: SceneAudio): Unit =
-    audioPlayer.playAudio(sceneAudio)
 
 }
