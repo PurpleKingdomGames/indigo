@@ -1,6 +1,5 @@
 package com.purplekingdomgames.indigo.runtime
 
-
 /**
   * IIO (IndigoIO) to differentiate from other IO monads
   *
@@ -83,7 +82,7 @@ sealed trait IIO[+A] {
 
 object IIO {
 
-  case class Pure[A](a: A) extends IIO[A]
+  case class Pure[A](a: A)            extends IIO[A]
   case class Delay[A](thunk: () => A) extends IIO[A]
   case class RaiseError(e: Throwable) extends IIO[Nothing]
 

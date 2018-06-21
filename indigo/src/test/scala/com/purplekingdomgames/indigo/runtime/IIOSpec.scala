@@ -1,6 +1,5 @@
 package com.purplekingdomgames.indigo.runtime
 
-import com.purplekingdomgames.indigo.runtime.metrics.Metric
 import org.scalatest.{FunSpec, Matchers}
 
 class IIOSpec extends FunSpec with Matchers {
@@ -44,18 +43,4 @@ class IIOSpec extends FunSpec with Matchers {
 
   }
 
-//  describe("Recording metrics") {
-//
-//    it("should be able to record metrics") {
-//      val metrics: IMetrics = Metrics.getInstance(true, 1000000)
-//
-//      IIO.pure(10).map(i => i * 10).measure(StartTestMetric, EndTestMetric).unsafeRun()
-//
-//      metrics.giveMetrics shouldEqual List(StartTestMetric, EndTestMetric)
-//    }
-//
-//  }
-
 }
-case object StartTestMetric extends Metric { val name: String = "start test" }
-case object EndTestMetric   extends Metric { val name: String = "end test"   }
