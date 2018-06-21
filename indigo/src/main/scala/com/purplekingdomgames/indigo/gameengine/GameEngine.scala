@@ -84,11 +84,20 @@ class GameEngine[StartupData, StartupError, GameModel](
                                                               updateView)
           } yield gameLoopInstance.loop(0)
 
-        Logger.info("Starting main loop, there will be no more info log messages.")
-        Logger.info("You may get first occurrence error logs.")
-        dom.window.requestAnimationFrame(loopFunc.unsafeRun())
+        loopFunc.attemptRun match {
+          case Right(f) =>
+            Logger.info("Starting main loop, there will be no more info log messages.")
+            Logger.info("You may get first occurrence error logs.")
+            dom.window.requestAnimationFrame(f)
 
-        ()
+            ()
+
+          case Left(e) =>
+            Logger.error("Error during startup")
+            Logger.error(e.getMessage)
+
+            ()
+        }
       }
 
     }
@@ -100,13 +109,13 @@ class GameEngine[StartupData, StartupError, GameModel](
 object GameEngine {
 
   def registerAnimations(animations: Set[Animations]): IIO[Unit] =
-    IIO.pure(animations.foreach(AnimationsRegister.register))
+    IIO.delay(animations.foreach(AnimationsRegister.register))
 
   def registerFonts(fonts: Set[FontInfo]): IIO[Unit] =
-    IIO.pure(fonts.foreach(FontRegister.register))
+    IIO.delay(fonts.foreach(FontRegister.register))
 
   def createTextureAtlas(assetCollection: AssetCollection): IIO[TextureAtlas] =
-    IIO.pure(
+    IIO.delay(
       TextureAtlas.create(
         assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height)),
         AssetManager.findByName(assetCollection),
@@ -115,14 +124,14 @@ object GameEngine {
     )
 
   def extractLoadedTextures(textureAtlas: TextureAtlas): IIO[List[LoadedTextureAsset]] =
-    IIO.pure(
+    IIO.delay(
       textureAtlas.atlases.toList
         .map(a => a._2.imageData.map(data => LoadedTextureAsset(a._1.id, data)))
         .collect { case Some(s) => s }
     )
 
   def setupAssetMapping(textureAtlas: TextureAtlas): IIO[AssetMapping] =
-    IIO.pure(
+    IIO.delay(
       AssetMapping(
         mappings = textureAtlas.legend
           .map { p =>
@@ -144,19 +153,19 @@ object GameEngine {
 
       case x: StartupSuccess[StartupData] =>
         Logger.info("Game initialisation succeeded")
-        IIO.pure(x.success)
+        IIO.delay(x.success)
     }
 
   def createCanvas(gameConfig: GameConfig): IIO[Canvas] =
-    IIO.pure(Renderer.createCanvas(gameConfig.viewport.width, gameConfig.viewport.height))
+    IIO.delay(Renderer.createCanvas(gameConfig.viewport.width, gameConfig.viewport.height))
 
   def listenToWorldEvents(canvas: Canvas, magnification: Int): IIO[Unit] = {
     Logger.info("Starting world events")
-    IIO.pure(WorldEvents(canvas, magnification))
+    IIO.delay(WorldEvents(canvas, magnification))
   }
 
   def startRenderer(gameConfig: GameConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: Canvas): IIO[IRenderer] =
-    IIO.pure {
+    IIO.delay {
       Logger.info("Starting renderer")
       Renderer(
         RendererConfig(
@@ -170,7 +179,7 @@ object GameEngine {
     }
 
   def startAudioPlayer(sounds: List[LoadedAudioAsset]): IIO[IAudioPlayer] =
-    IIO.pure(AudioPlayer(sounds))
+    IIO.delay(AudioPlayer(sounds))
 
   def initialiseGameLoop[StartupData, GameModel](
       gameConfig: GameConfig,
@@ -182,7 +191,7 @@ object GameEngine {
       updateModel: (GameTime, GameModel) => GameEvent => GameModel,
       updateView: (GameTime, GameModel, FrameInputEvents) => SceneUpdateFragment
   )(implicit metrics: IMetrics): IIO[GameLoop[StartupData, GameModel]] =
-    IIO.pure(
+    IIO.delay(
       new GameLoop[StartupData, GameModel](gameConfig,
                                            startupData,
                                            assetMapping,
