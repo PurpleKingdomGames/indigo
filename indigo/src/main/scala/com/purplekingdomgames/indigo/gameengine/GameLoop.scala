@@ -11,6 +11,7 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.{
   SceneUpdateFragment
 }
 import com.purplekingdomgames.indigo.renderer.{AssetMapping, DisplayLayer, Displayable, IRenderer}
+import com.purplekingdomgames.indigo.runtime.IIO
 import com.purplekingdomgames.indigo.runtime.metrics._
 import com.purplekingdomgames.shared.GameConfig
 import org.scalajs.dom
@@ -44,13 +45,13 @@ class GameLoop[StartupData, GameModel](
 
         val gameTime: GameTime = GameTime(time, timeDelta, gameConfig.frameRateDeltaMillis.toDouble)
 
-        val collectedEvents = GlobalEventStream.collect
+        val collectedEvents: List[GameEvent] = GlobalEventStream.collect
 
         GlobalSignalsManager.update(collectedEvents)
 
         metrics.record(CallUpdateGameModelStartMetric)
 
-        val model = state match {
+        val model: GameModel = state match {
           case None =>
             initialModel(startupData)
 
@@ -66,47 +67,14 @@ class GameLoop[StartupData, GameModel](
         // View updates cut off
         if (gameConfig.advanced.disableSkipViewUpdates || timeDelta < gameConfig.haltViewUpdatesAt) {
 
-          metrics.record(CallUpdateViewStartMetric)
-
-          val view = updateView(
-            gameTime,
-            model,
-            events.FrameInputEvents(collectedEvents.filterNot(_.isInstanceOf[ViewEvent]))
-          )
-
-          metrics.record(CallUpdateViewEndMetric)
-          metrics.record(ProcessViewStartMetric)
-
-          val processUpdatedView: SceneUpdateFragment => SceneGraphRootNodeFlat =
-            GameLoop.persistGlobalViewEvents(audioPlayer)(metrics) andThen
-              GameLoop.flattenNodes andThen
-              GameLoop.persistNodeViewEvents(metrics)(collectedEvents)
-
-          val processedView: SceneGraphRootNodeFlat = processUpdatedView(view)
-
-          metrics.record(ProcessViewEndMetric)
-
-          metrics.record(ToDisplayableStartMetric)
-
-          val displayable: Displayable =
-            GameLoop.convertSceneGraphToDisplayable(gameTime, processedView, assetMapping, view.ambientLight)
-
-          metrics.record(ToDisplayableEndMetric)
-          metrics.record(PersistAnimationStatesStartMetric)
-
-          AnimationsRegister.persistAnimationStates()
-
-          metrics.record(PersistAnimationStatesEndMetric)
-          metrics.record(RenderStartMetric)
-
-          GameLoop.drawScene(renderer, displayable)
-
-          metrics.record(RenderEndMetric)
-          metrics.record(AudioStartMetric)
-
-          GameLoop.playAudio(audioPlayer, view.audio)
-
-          metrics.record(AudioEndMetric)
+          for {
+            view          <- GameLoop.updateGameView(updateView, gameTime, model, collectedEvents)
+            processedView <- GameLoop.processUpdatedView(view, audioPlayer, collectedEvents)
+            displayable   <- GameLoop.viewToDisplayable(gameTime, processedView, assetMapping, view.ambientLight)
+            _             <- GameLoop.persistAnimationStates()
+            _             <- GameLoop.drawScene(renderer, displayable)
+            _             <- GameLoop.playAudio(audioPlayer, view.audio)
+          } yield ()
 
         } else
           metrics.record(SkippedViewUpdateMetric)
@@ -124,6 +92,66 @@ class GameLoop[StartupData, GameModel](
 }
 
 object GameLoop {
+
+  def updateGameView[GameModel](updateView: (GameTime, GameModel, FrameInputEvents) => SceneUpdateFragment,
+                                gameTime: GameTime,
+                                model: GameModel,
+                                collectedEvents: List[GameEvent])(implicit metrics: IMetrics): IIO[SceneUpdateFragment] =
+    IIO.delay {
+      metrics.record(CallUpdateViewStartMetric)
+
+      val view: SceneUpdateFragment = updateView(
+        gameTime,
+        model,
+        events.FrameInputEvents(collectedEvents.filterNot(_.isInstanceOf[ViewEvent]))
+      )
+
+      metrics.record(CallUpdateViewEndMetric)
+
+      view
+    }
+
+  def processUpdatedView(view: SceneUpdateFragment, audioPlayer: IAudioPlayer, collectedEvents: List[GameEvent])(
+      implicit metrics: IMetrics
+  ): IIO[SceneGraphRootNodeFlat] =
+    IIO.delay {
+      metrics.record(ProcessViewStartMetric)
+
+      val processUpdatedView: SceneUpdateFragment => SceneGraphRootNodeFlat =
+        GameLoop.persistGlobalViewEvents(audioPlayer)(metrics) andThen
+          GameLoop.flattenNodes andThen
+          GameLoop.persistNodeViewEvents(metrics)(collectedEvents)
+
+      val processedView: SceneGraphRootNodeFlat = processUpdatedView(view)
+
+      metrics.record(ProcessViewEndMetric)
+
+      processedView
+    }
+
+  def viewToDisplayable(gameTime: GameTime,
+                        processedView: SceneGraphRootNodeFlat,
+                        assetMapping: AssetMapping,
+                        ambientLight: AmbientLight)(implicit metrics: IMetrics): IIO[Displayable] =
+    IIO.delay {
+      metrics.record(ToDisplayableStartMetric)
+
+      val displayable: Displayable =
+        GameLoop.convertSceneGraphToDisplayable(gameTime, processedView, assetMapping, ambientLight)
+
+      metrics.record(ToDisplayableEndMetric)
+
+      displayable
+    }
+
+  def persistAnimationStates()(implicit metrics: IMetrics): IIO[Unit] =
+    IIO.delay {
+      metrics.record(PersistAnimationStatesStartMetric)
+
+      AnimationsRegister.persistAnimationStates()
+
+      metrics.record(PersistAnimationStatesEndMetric)
+    }
 
   def processModelUpdateEvents[GameModel](gameTime: GameTime,
                                           previousModel: GameModel,
@@ -174,10 +202,22 @@ object GameLoop {
       ambientLight
     )
 
-  def drawScene(renderer: IRenderer, displayable: Displayable)(implicit metrics: IMetrics): Unit =
-    renderer.drawScene(displayable)
+  def drawScene(renderer: IRenderer, displayable: Displayable)(implicit metrics: IMetrics): IIO[Unit] =
+    IIO.delay {
+      metrics.record(RenderStartMetric)
 
-  def playAudio(audioPlayer: IAudioPlayer, sceneAudio: SceneAudio): Unit =
-    audioPlayer.playAudio(sceneAudio)
+      renderer.drawScene(displayable)
+
+      metrics.record(RenderEndMetric)
+    }
+
+  def playAudio(audioPlayer: IAudioPlayer, sceneAudio: SceneAudio)(implicit metrics: IMetrics): IIO[Unit] =
+    IIO.delay {
+      metrics.record(AudioStartMetric)
+
+      audioPlayer.playAudio(sceneAudio)
+
+      metrics.record(AudioEndMetric)
+    }
 
 }
