@@ -62,7 +62,7 @@ class GameEngine[StartupData, StartupError, GameModel](
         implicit val metrics: IMetrics =
           Metrics.getInstance(gameConfig.advanced.recordMetrics, gameConfig.advanced.logMetricsReportIntervalMs)
 
-        val loopFunc: IIO[Double => Int] =
+        val x: IIO[Double => Int] =
           for {
             _                   <- GameEngine.registerAnimations(animations)
             _                   <- GameEngine.registerFonts(fonts)
@@ -84,7 +84,7 @@ class GameEngine[StartupData, StartupError, GameModel](
                                                               updateView)
           } yield gameLoopInstance.loop(0)
 
-        loopFunc.attemptRun match {
+        x.attemptRun match {
           case Right(f) =>
             Logger.info("Starting main loop, there will be no more info log messages.")
             Logger.info("You may get first occurrence error logs.")

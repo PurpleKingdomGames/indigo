@@ -67,7 +67,7 @@ class GameLoop[StartupData, GameModel](
         // View updates cut off
         if (gameConfig.advanced.disableSkipViewUpdates || timeDelta < gameConfig.haltViewUpdatesAt) {
 
-          for {
+          val x = for {
             view          <- GameLoop.updateGameView(updateView, gameTime, model, collectedEvents)
             processedView <- GameLoop.processUpdatedView(view, audioPlayer, collectedEvents)
             displayable   <- GameLoop.viewToDisplayable(gameTime, processedView, assetMapping, view.ambientLight)
@@ -75,6 +75,8 @@ class GameLoop[StartupData, GameModel](
             _             <- GameLoop.drawScene(renderer, displayable)
             _             <- GameLoop.playAudio(audioPlayer, view.audio)
           } yield ()
+
+          x.unsafeRun()
 
         } else
           metrics.record(SkippedViewUpdateMetric)
@@ -85,8 +87,9 @@ class GameLoop[StartupData, GameModel](
       metrics.record(FrameEndMetric)
 
       dom.window.requestAnimationFrame(loop(time))
-    } else
+    } else {
       dom.window.requestAnimationFrame(loop(lastUpdateTime))
+    }
   }
 
 }
