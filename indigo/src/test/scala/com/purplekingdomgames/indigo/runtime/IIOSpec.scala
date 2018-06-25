@@ -43,4 +43,56 @@ class IIOSpec extends FunSpec with Matchers {
 
   }
 
+  describe("Laws: Pure") {
+
+    // Left identity: return a >>= f ≡ f a
+    it("should respect left identity") {
+      val a = 10
+      val f = (i: Int) => IIO.pure(i)
+      assert(IIO.pure(a).flatMap(f) eq f(a))
+    }
+
+    // Right identity: m >>= return ≡ m
+    it("should respect right identity") {
+      val m = IIO.pure(2)
+      assert(m.flatMap(x => IIO.pure[Int](x)) eq m)
+    }
+
+    // Associativity: (m >>= f) >>= g ≡ m >>= (\x -> f x >>= g)
+    it("should respect associativity identity") {
+      val m = IIO.pure(3)
+      val f = (i: Int) => IIO.pure(s"$i")
+      val g = (s: String) => IIO.pure(s.length > 1)
+
+      assert(m.flatMap(f).flatMap(g) eq m.flatMap((x: Int) => f(x).flatMap(g)))
+    }
+
+  }
+
+  describe("evaluation") {
+
+    it("should not evaluate a delayed action") {
+
+      val result: IIO[Int] =
+        for {
+          a <- IIO.delay(10)
+          b <- IIO.delay(a * 10)
+          c <- IIO.delay(b / 2)
+        } yield c
+
+      result match {
+        case IIO.Pure(_) =>
+          fail("Expected delay, got pure")
+
+        case IIO.RaiseError(_) =>
+          fail("Expected delay, got raise error")
+
+        case IIO.Delay(thunk) =>
+          thunk() shouldEqual 50
+      }
+
+    }
+
+  }
+
 }

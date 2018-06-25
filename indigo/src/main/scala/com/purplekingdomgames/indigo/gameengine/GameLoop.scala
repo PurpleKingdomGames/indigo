@@ -78,11 +78,13 @@ class GameLoop[StartupData, GameModel](
 
           x.unsafeRun()
 
-        } else
+        } else {
           metrics.record(SkippedViewUpdateMetric)
+        }
 
-      } else
+      } else {
         metrics.record(SkippedModelUpdateMetric)
+      }
 
       metrics.record(FrameEndMetric)
 

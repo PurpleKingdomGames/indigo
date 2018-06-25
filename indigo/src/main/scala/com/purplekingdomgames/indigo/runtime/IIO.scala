@@ -78,6 +78,21 @@ sealed trait IIO[+A] {
   def flatten[B](implicit ev: A <:< IIO[B]): IIO[B] =
     cata(x => ev(x), IIO.raiseError(new Exception("Invalid flatten of an IIO.")))
 
+  def eq[B >: A](other: IIO[B]): Boolean =
+    (this, other) match {
+      case (IIO.Pure(a), IIO.Pure(b)) =>
+        a == b
+
+      case (IIO.Delay(a), IIO.Delay(b)) =>
+        a == b
+
+      case (IIO.RaiseError(a), IIO.RaiseError(b)) =>
+        a == b
+
+      case _ =>
+        false
+    }
+
 }
 
 object IIO {
