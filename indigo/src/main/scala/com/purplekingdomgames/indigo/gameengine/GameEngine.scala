@@ -23,7 +23,7 @@ object GameTime {
   def is(running: Double, delta: Double, frameDuration: Double): GameTime = GameTime(running, delta, frameDuration)
 }
 
-class GameEngine[StartupData, StartupError, GameModel](
+class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     config: GameConfig,
     configAsync: Future[Option[GameConfig]],
     assets: Set[AssetType],
@@ -33,7 +33,9 @@ class GameEngine[StartupData, StartupError, GameModel](
     initialise: AssetCollection => Startup[StartupError, StartupData],
     initialModel: StartupData => GameModel,
     updateModel: (GameTime, GameModel) => GameEvent => GameModel,
-    updateView: (GameTime, GameModel, FrameInputEvents) => SceneUpdateFragment
+    initialViewModel: GameModel => ViewModel,
+    updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => ViewModel,
+    updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
 ) {
 
   def registerAnimations(animations: Animations): Unit =
@@ -74,14 +76,17 @@ class GameEngine[StartupData, StartupError, GameModel](
             _                   <- GameEngine.listenToWorldEvents(canvas, gameConfig.magnification)
             renderer            <- GameEngine.startRenderer(gameConfig, loadedTextureAssets, canvas)
             audioPlayer         <- GameEngine.startAudioPlayer(assetCollection.sounds)
-            gameLoopInstance <- GameEngine.initialiseGameLoop(gameConfig,
-                                                              startUpSuccessData,
-                                                              assetMapping,
-                                                              renderer,
-                                                              audioPlayer,
-                                                              initialModel,
-                                                              updateModel,
-                                                              updateView)
+            gameLoopInstance <- GameEngine.initialiseGameLoop(
+              gameConfig,
+              assetMapping,
+              renderer,
+              audioPlayer,
+              initialModel(startUpSuccessData),
+              updateModel,
+              initialViewModel,
+              updateViewModel,
+              updateView
+            )
           } yield gameLoopInstance.loop(0)
 
         x.attemptRun match {
@@ -181,25 +186,27 @@ object GameEngine {
   def startAudioPlayer(sounds: List[LoadedAudioAsset]): IIO[IAudioPlayer] =
     IIO.delay(AudioPlayer(sounds))
 
-  def initialiseGameLoop[StartupData, GameModel](
+  def initialiseGameLoop[GameModel, ViewModel](
       gameConfig: GameConfig,
-      startupData: StartupData,
       assetMapping: AssetMapping,
       renderer: IRenderer,
       audioPlayer: IAudioPlayer,
-      initialModel: StartupData => GameModel,
+      initialModel: GameModel,
       updateModel: (GameTime, GameModel) => GameEvent => GameModel,
-      updateView: (GameTime, GameModel, FrameInputEvents) => SceneUpdateFragment
-  )(implicit metrics: IMetrics): IIO[GameLoop[StartupData, GameModel]] =
+      initialViewModel: GameModel => ViewModel,
+      updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => ViewModel,
+      updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
+  )(implicit metrics: IMetrics): IIO[GameLoop[GameModel, ViewModel]] =
     IIO.delay(
-      new GameLoop[StartupData, GameModel](gameConfig,
-                                           startupData,
-                                           assetMapping,
-                                           renderer,
-                                           audioPlayer,
-                                           initialModel,
-                                           updateModel,
-                                           updateView)
+      new GameLoop[GameModel, ViewModel](gameConfig,
+                                         assetMapping,
+                                         renderer,
+                                         audioPlayer,
+                                         initialModel,
+                                         updateModel,
+                                         initialViewModel(initialModel),
+                                         updateViewModel,
+                                         updateView)
     )
 
 }

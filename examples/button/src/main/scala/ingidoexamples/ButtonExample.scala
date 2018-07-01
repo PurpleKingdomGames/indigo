@@ -3,13 +3,13 @@ package ingidoexamples
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
-import com.purplekingdomgames.indigo.gameengine.events.ViewEvent
+import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, FontInfo, Rectangle}
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.{AssetType, GameConfig, ImageAsset}
 
-object ButtonExample extends IndigoGameBasic[Unit, MyGameModel] {
+object ButtonExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   val config: GameConfig = defaultGameConfig
 
@@ -48,7 +48,15 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel] {
       model
   }
 
-  def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment = {
+  def initialViewModel: MyGameModel => Unit = _ => ()
+
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
+    ()
+
+  def present(gameTime: GameTime,
+              model: MyGameModel,
+              viewModel: Unit,
+              frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     val button: ButtonViewUpdate = model.button.draw(
       bounds = Rectangle(10, 10, 16, 16), // Where should the button be on the screen?
       depth = Depth(2), // At what depth?

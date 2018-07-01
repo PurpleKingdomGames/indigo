@@ -2,13 +2,14 @@ package ingidoexamples
 
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
+import com.purplekingdomgames.indigo.gameengine.events.FrameInputEvents
 import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment, Text}
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.{AssetType, ClearColor, GameConfig, ImageAsset}
 
-object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel] {
+object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   val config: GameConfig = defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399"))
 
@@ -34,7 +35,15 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel] {
       model
   }
 
-  def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment = {
+  def initialViewModel: MyGameModel => Unit = _ => ()
+
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
+    ()
+
+  def present(gameTime: GameTime,
+              model: MyGameModel,
+              viewModel: Unit,
+              frameInputEvents: events.FrameInputEvents): SceneUpdateFragment = {
 
     val inputFieldUpdate: InputFieldViewUpdate =
       model.inputField.draw(

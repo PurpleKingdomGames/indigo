@@ -16,19 +16,22 @@ import com.purplekingdomgames.indigo.runtime.metrics._
 import com.purplekingdomgames.shared.GameConfig
 import org.scalajs.dom
 
-class GameLoop[StartupData, GameModel](
+class GameLoop[GameModel, ViewModel](
     gameConfig: GameConfig,
-    startupData: StartupData,
     assetMapping: AssetMapping,
     renderer: IRenderer,
     audioPlayer: IAudioPlayer,
-    initialModel: StartupData => GameModel,
+    initialModel: GameModel,
     updateModel: (GameTime, GameModel) => GameEvent => GameModel,
-    updateView: (GameTime, GameModel, FrameInputEvents) => SceneUpdateFragment
+    initialViewModel: ViewModel,
+    updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => ViewModel,
+    updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
 )(implicit metrics: IMetrics) {
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var state: Option[GameModel] = None
+  private var gameModelState: Option[GameModel] = None
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  private var viewModelState: Option[ViewModel] = None
 
   def loop(lastUpdateTime: Double): Double => Int = { time =>
     val timeDelta = time - lastUpdateTime
@@ -45,30 +48,44 @@ class GameLoop[StartupData, GameModel](
 
         val gameTime: GameTime = GameTime(time, timeDelta, gameConfig.frameRateDeltaMillis.toDouble)
 
-        val collectedEvents: List[GameEvent] = GlobalEventStream.collect
+        val collectedEvents: List[GameEvent]   = GlobalEventStream.collect
+        val frameInputEvents: FrameInputEvents = events.FrameInputEvents(collectedEvents.filterNot(_.isInstanceOf[ViewEvent]))
 
         GlobalSignalsManager.update(collectedEvents)
 
         metrics.record(CallUpdateGameModelStartMetric)
 
-        val model: GameModel = state match {
+        val model: GameModel = gameModelState match {
           case None =>
-            initialModel(startupData)
+            initialModel
 
           case Some(previousModel) =>
             GameLoop.processModelUpdateEvents(gameTime, previousModel, collectedEvents, updateModel)
         }
 
-        state = Some(model)
+        gameModelState = Some(model)
 
         metrics.record(CallUpdateGameModelEndMetric)
+        metrics.record(CallUpdateViewModelStartMetric)
+
+        val viewModel: ViewModel = viewModelState match {
+          case None =>
+            initialViewModel
+
+          case Some(previousModel) =>
+            updateViewModel(gameTime, model, previousModel, frameInputEvents)
+        }
+
+        viewModelState = Some(viewModel)
+
+        metrics.record(CallUpdateViewModelEndMetric)
         metrics.record(UpdateEndMetric)
 
         // View updates cut off
         if (gameConfig.advanced.disableSkipViewUpdates || timeDelta < gameConfig.haltViewUpdatesAt) {
 
           val x = for {
-            view          <- GameLoop.updateGameView(updateView, gameTime, model, collectedEvents)
+            view          <- GameLoop.updateGameView(updateView, gameTime, model, viewModel, frameInputEvents)
             processedView <- GameLoop.processUpdatedView(view, audioPlayer, collectedEvents)
             displayable   <- GameLoop.viewToDisplayable(gameTime, processedView, assetMapping, view.ambientLight)
             _             <- GameLoop.persistAnimationStates()
@@ -98,17 +115,21 @@ class GameLoop[StartupData, GameModel](
 
 object GameLoop {
 
-  def updateGameView[GameModel](updateView: (GameTime, GameModel, FrameInputEvents) => SceneUpdateFragment,
-                                gameTime: GameTime,
-                                model: GameModel,
-                                collectedEvents: List[GameEvent])(implicit metrics: IMetrics): IIO[SceneUpdateFragment] =
+  def updateGameView[GameModel, ViewModel](
+      updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment,
+      gameTime: GameTime,
+      model: GameModel,
+      viewModel: ViewModel,
+      frameInputEvents: FrameInputEvents
+  )(implicit metrics: IMetrics): IIO[SceneUpdateFragment] =
     IIO.delay {
       metrics.record(CallUpdateViewStartMetric)
 
       val view: SceneUpdateFragment = updateView(
         gameTime,
         model,
-        events.FrameInputEvents(collectedEvents.filterNot(_.isInstanceOf[ViewEvent]))
+        viewModel,
+        frameInputEvents
       )
 
       metrics.record(CallUpdateViewEndMetric)

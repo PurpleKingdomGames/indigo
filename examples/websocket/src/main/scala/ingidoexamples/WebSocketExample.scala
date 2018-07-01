@@ -3,7 +3,7 @@ package ingidoexamples
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
-import com.purplekingdomgames.indigo.gameengine.events.WebSocketEvent
+import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, WebSocketEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, FontInfo, Rectangle}
 import com.purplekingdomgames.indigo.networking.{WebSocketConfig, WebSocketId}
@@ -20,7 +20,7 @@ So we want a button that send a message to 2) and outputs to the console
 We also want to establish a connection on startup that repeated writes 1)'s
 Ping! to the console.
  */
-object WebSocketExample extends IndigoGameBasic[MySetupData, MyGameModel] {
+object WebSocketExample extends IndigoGameBasic[MySetupData, MyGameModel, Unit] {
 
   val config: GameConfig = defaultGameConfig
 
@@ -82,7 +82,15 @@ object WebSocketExample extends IndigoGameBasic[MySetupData, MyGameModel] {
       model
   }
 
-  def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment = {
+  def initialViewModel: MyGameModel => Unit = _ => ()
+
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
+    ()
+
+  def present(gameTime: GameTime,
+              model: MyGameModel,
+              viewModel: Unit,
+              frameInputEvents: events.FrameInputEvents): SceneUpdateFragment = {
     val pingButton: ButtonViewUpdate = model.ping.draw(
       bounds = Rectangle(10, 10, 16, 16),
       depth = Depth(2),

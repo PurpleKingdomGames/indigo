@@ -16,7 +16,7 @@ object Indigo {
 
 object IndigoGameBase {
 
-  class IndigoGame[StartupData, StartupError, GameModel](
+  class IndigoGame[StartupData, StartupError, GameModel, ViewModel](
       config: GameConfig,
       configAsync: Future[Option[GameConfig]],
       assets: Set[AssetType],
@@ -26,20 +26,24 @@ object IndigoGameBase {
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
       updateModel: (GameTime, GameModel) => events.GameEvent => GameModel,
-      updateView: (GameTime, GameModel, events.FrameInputEvents) => SceneUpdateFragment
+      initialViewModel: GameModel => ViewModel,
+      updateViewModel: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => ViewModel,
+      updateView: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => SceneUpdateFragment
   ) {
 
-    private val gameEngine: GameEngine[StartupData, StartupError, GameModel] =
-      new GameEngine[StartupData, StartupError, GameModel](config,
-                                                           configAsync,
-                                                           assets,
-                                                           assetsAsync,
-                                                           fonts,
-                                                           animations,
-                                                           initialise,
-                                                           initialModel,
-                                                           updateModel,
-                                                           updateView)
+    private val gameEngine: GameEngine[StartupData, StartupError, GameModel, ViewModel] =
+      new GameEngine[StartupData, StartupError, GameModel, ViewModel](config,
+                                                                      configAsync,
+                                                                      assets,
+                                                                      assetsAsync,
+                                                                      fonts,
+                                                                      animations,
+                                                                      initialise,
+                                                                      initialModel,
+                                                                      updateModel,
+                                                                      initialViewModel,
+                                                                      updateViewModel,
+                                                                      updateView)
 
     def registerAnimations(animations: Animations): Unit =
       gameEngine.registerAnimations(animations)
@@ -49,6 +53,64 @@ object IndigoGameBase {
 
     def start(): Unit =
       gameEngine.start()
+  }
+
+  class IndigoGameWithViewModelUpdater[StartupData, StartupError, GameModel, ViewModel](
+      config: GameConfig,
+      configAsync: Future[Option[GameConfig]],
+      assets: Set[AssetType],
+      assetsAsync: Future[Set[AssetType]],
+      fonts: Set[FontInfo],
+      animations: Set[Animations],
+      initialise: AssetCollection => Startup[StartupError, StartupData],
+      initialModel: StartupData => GameModel,
+      updateModel: (GameTime, GameModel) => events.GameEvent => GameModel,
+      initialViewModel: GameModel => ViewModel,
+      updateViewModel: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => ViewModel
+  ) {
+    def presentUsing(
+        updateView: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => SceneUpdateFragment
+    ): IndigoGame[StartupData, StartupError, GameModel, ViewModel] =
+      new IndigoGame(config,
+                     configAsync,
+                     assets,
+                     assetsAsync,
+                     fonts,
+                     animations,
+                     initialise,
+                     initialModel,
+                     updateModel,
+                     initialViewModel,
+                     updateViewModel,
+                     updateView)
+  }
+
+  class IndigoGameWithInitialViewModel[StartupData, StartupError, GameModel, ViewModel](
+      config: GameConfig,
+      configAsync: Future[Option[GameConfig]],
+      assets: Set[AssetType],
+      assetsAsync: Future[Set[AssetType]],
+      fonts: Set[FontInfo],
+      animations: Set[Animations],
+      initialise: AssetCollection => Startup[StartupError, StartupData],
+      initialModel: StartupData => GameModel,
+      updateModel: (GameTime, GameModel) => events.GameEvent => GameModel,
+      initialViewModel: GameModel => ViewModel
+  ) {
+    def updateViewModelUsing(
+        updateViewModel: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => ViewModel
+    ): IndigoGameWithViewModelUpdater[StartupData, StartupError, GameModel, ViewModel] =
+      new IndigoGameWithViewModelUpdater(config,
+                                         configAsync,
+                                         assets,
+                                         assetsAsync,
+                                         fonts,
+                                         animations,
+                                         initialise,
+                                         initialModel,
+                                         updateModel,
+                                         initialViewModel,
+                                         updateViewModel)
   }
 
   class IndigoGameWithModelUpdate[StartupData, StartupError, GameModel](
@@ -62,20 +124,20 @@ object IndigoGameBase {
       initialModel: StartupData => GameModel,
       updateModel: (GameTime, GameModel) => events.GameEvent => GameModel
   ) {
-    def presentUsing(
-        updateView: (GameTime, GameModel, events.FrameInputEvents) => SceneUpdateFragment
-    ): IndigoGame[StartupData, StartupError, GameModel] =
-      new IndigoGame(
-        config: GameConfig,
-        configAsync: Future[Option[GameConfig]],
-        assets: Set[AssetType],
-        assetsAsync: Future[Set[AssetType]],
+    def initialiseViewModelUsing[ViewModel](
+        initialViewModel: GameModel => ViewModel
+    ): IndigoGameWithInitialViewModel[StartupData, StartupError, GameModel, ViewModel] =
+      new IndigoGameWithInitialViewModel(
+        config,
+        configAsync,
+        assets,
+        assetsAsync,
         fonts,
         animations,
-        initialise: AssetCollection => Startup[StartupError, StartupData],
-        initialModel: StartupData => GameModel,
-        updateModel: (GameTime, GameModel) => events.GameEvent => GameModel,
-        updateView: (GameTime, GameModel, events.FrameInputEvents) => SceneUpdateFragment
+        initialise,
+        initialModel,
+        updateModel,
+        initialViewModel
       )
   }
 

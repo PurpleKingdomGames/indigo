@@ -31,8 +31,12 @@ object FullSetup {
   val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel =
     (_, model) => _ => model
 
-  val renderer: (GameTime, MyGameModel, FrameInputEvents) => SceneUpdateFragment =
-    (_, _, _) => SceneUpdateFragment.empty
+  val initialViewModel: MyGameModel => MyViewModel = _ => MyViewModel()
+
+  val updateViewModel: (GameTime, MyGameModel, MyViewModel, FrameInputEvents) => MyViewModel = (_, _, _, _) => MyViewModel()
+
+  val renderer: (GameTime, MyGameModel, MyViewModel, FrameInputEvents) => SceneUpdateFragment =
+    (_, _, _, _) => SceneUpdateFragment.empty
 
   @JSExportTopLevel("Example.main")
   def main(args: Array[String]): Unit =
@@ -44,6 +48,8 @@ object FullSetup {
       .startUpGameWith(setup)
       .usingInitialModel(initialModel)
       .updateModelUsing(updateModel)
+      .initialiseViewModelUsing(initialViewModel)
+      .updateViewModelUsing(updateViewModel)
       .presentUsing(renderer)
       .start()
 
@@ -60,3 +66,6 @@ object MyStartUpError {
 
 // Your game model is anything you like!
 case class MyGameModel()
+
+// Your view model is also ...anything you like!
+case class MyViewModel()

@@ -59,10 +59,14 @@ object PerfGame {
 
   val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel = (_, gameModel) => PerfModel.updateModel(gameModel)
 
-  val updateView: (GameTime, MyGameModel, FrameInputEvents) => SceneUpdateFragment = (_, gameModel, frameInputEvents) =>
-    PerfView.updateView(gameModel, frameInputEvents)
+  val initialViewModel: MyGameModel => MyViewModel = _ => MyViewModel()
 
-  def game: IndigoGameBase.IndigoGame[MyStartupData, MyErrorReport, MyGameModel] =
+  val updateViewModel: (GameTime, MyGameModel, MyViewModel, FrameInputEvents) => MyViewModel = (_, _, previous, _) => previous
+
+  val updateView: (GameTime, MyGameModel, MyViewModel, FrameInputEvents) => SceneUpdateFragment =
+    (_, gameModel, _, frameInputEvents) => PerfView.updateView(gameModel, frameInputEvents)
+
+  def game: IndigoGameBase.IndigoGame[MyStartupData, MyErrorReport, MyGameModel, MyViewModel] =
     Indigo.game
       .withConfig(config)
       .withAssets(assets)
@@ -71,6 +75,8 @@ object PerfGame {
       .startUpGameWith(initialise)
       .usingInitialModel(initialModel)
       .updateModelUsing(updateModel)
+      .initialiseViewModelUsing(initialViewModel)
+      .updateViewModelUsing(updateViewModel)
       .presentUsing(updateView)
 
   @JSExportTopLevel("com.example.perf.PerfGame.main")
@@ -91,3 +97,5 @@ object MyErrorReport {
   def apply(message: String*): MyErrorReport = MyErrorReport(message.toList)
 
 }
+
+case class MyViewModel()

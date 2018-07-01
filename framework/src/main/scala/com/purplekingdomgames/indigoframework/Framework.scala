@@ -37,7 +37,11 @@ object Framework {
 
   val updateModel: (GameTime, GameModel) => GameEvent => GameModel = (_, gameModel) => GameModelHelper.updateModel(gameModel)
 
-  val updateView: (GameTime, GameModel, FrameInputEvents) => SceneUpdateFragment = (_, gameModel, _) =>
+  val initialViewModel: GameModel => Unit = _ => ()
+
+  val updateViewModel: (GameTime, GameModel, Unit, FrameInputEvents) => Unit = (_, _, _, _) => ()
+
+  val updateView: (GameTime, GameModel, Unit, FrameInputEvents) => SceneUpdateFragment = (_, gameModel, _, _) =>
     GameViewHelper.updateView(gameModel)
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
@@ -51,6 +55,8 @@ object Framework {
       .startUpGameWith(initialise)
       .usingInitialModel(initialModel)
       .updateModelUsing(updateModel)
+      .initialiseViewModelUsing(initialViewModel)
+      .updateViewModelUsing(updateViewModel)
       .presentUsing(updateView)
       .start()
 
@@ -65,6 +71,8 @@ object Framework {
       .startUpGameWith(initialise)
       .usingInitialModel(initialModel)
       .updateModelUsing(updateModel)
+      .initialiseViewModelUsing(initialViewModel)
+      .updateViewModelUsing(updateViewModel)
       .presentUsing(updateView)
       .start()
 

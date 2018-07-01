@@ -13,7 +13,7 @@ import com.purplekingdomgames.shared.{AssetType, GameConfig}
   * @tparam StartupData The class type representing your successful startup data
   * @tparam Model The class type representing your games model
   */
-trait IndigoGameBasic[StartupData, Model] {
+trait IndigoGameBasic[StartupData, Model, ViewModel] {
 
   val config: GameConfig
 
@@ -29,9 +29,13 @@ trait IndigoGameBasic[StartupData, Model] {
 
   def update(gameTime: GameTime, model: Model): GameEvent => Model
 
-  def present(gameTime: GameTime, model: Model, frameInputEvents: FrameInputEvents): SceneUpdateFragment
+  def initialViewModel: Model => ViewModel
 
-  private def indigoGame: IndigoGame[StartupData, StartupErrors, Model] =
+  def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents): ViewModel
+
+  def present(gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment
+
+  private def indigoGame: IndigoGame[StartupData, StartupErrors, Model, ViewModel] =
     Indigo.game
       .withConfig(config)
       .withAssets(assets)
@@ -40,8 +44,14 @@ trait IndigoGameBasic[StartupData, Model] {
       .startUpGameWith(ac => Startup.fromEither(setup(ac)))
       .usingInitialModel(initialModel)
       .updateModelUsing(update)
+      .initialiseViewModelUsing(initialViewModel)
+      .updateViewModelUsing(
+        (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents) =>
+          updateViewModel(gameTime, model, viewModel, frameInputEvents)
+      )
       .presentUsing(
-        (gameTime: GameTime, model: Model, frameInputEvents: FrameInputEvents) => present(gameTime, model, frameInputEvents)
+        (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents) =>
+          present(gameTime, model, viewModel, frameInputEvents)
       )
 
   def registerAnimations(animations: Animations): Unit =

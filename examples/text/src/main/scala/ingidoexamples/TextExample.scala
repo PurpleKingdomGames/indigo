@@ -2,12 +2,13 @@ package ingidoexamples
 
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
+import com.purplekingdomgames.indigo.gameengine.events.FrameInputEvents
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo, FontKey}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, SceneUpdateFragment, Text}
 import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.shared.{AssetType, ClearColor, GameConfig, ImageAsset}
 
-object TextExample extends IndigoGameBasic[Unit, Unit] {
+object TextExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val fontName: String = "My boxy font"
 
@@ -29,7 +30,12 @@ object TextExample extends IndigoGameBasic[Unit, Unit] {
 
   val text: Text = Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontKey).alignRight
 
-  def present(gameTime: GameTime, model: Unit, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment =
+  def initialViewModel: Unit => Unit = _ => ()
+
+  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
+    ()
+
+  def present(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment =
     SceneUpdateFragment().addGameLayerNodes(text)
 
   def fontKey: FontKey = FontKey("My Font")

@@ -2,6 +2,7 @@ package ingidoexamples
 
 import com.purplekingdomgames.indigo._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
+import com.purplekingdomgames.indigo.gameengine.events.FrameInputEvents
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment, Text}
 import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
@@ -9,7 +10,7 @@ import com.purplekingdomgames.indigoexts.automata._
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.{AssetType, GameConfig, ImageAsset}
 
-object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
+object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   import FontStuff._
 
@@ -68,7 +69,12 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel] {
       model
   }
 
-  def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment =
+  def initialViewModel: MyGameModel => Unit = _ => ()
+
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
+    ()
+
+  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     model.button
       .draw(
         bounds = Rectangle(10, 10, 16, 16),

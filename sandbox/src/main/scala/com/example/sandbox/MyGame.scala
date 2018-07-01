@@ -9,7 +9,7 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, Fon
 import com.purplekingdomgames.indigoexts.formats.{Aseprite, AsepriteHelper}
 import com.purplekingdomgames.shared.{AssetType, ClearColor, GameConfig, GameViewport}
 
-object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel] {
+object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, MyViewModel] {
 
   private val viewportWidth: Int      = 456
   private val viewportHeight: Int     = 256
@@ -53,9 +53,21 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel] {
   def update(gameTime: GameTime, model: MyGameModel): GameEvent => MyGameModel =
     MyModel.updateModel(model)
 
-  def present(gameTime: GameTime, model: MyGameModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
+  def initialViewModel: MyGameModel => MyViewModel = _ => MyViewModel()
+
+  def updateViewModel(gameTime: GameTime,
+                      model: MyGameModel,
+                      viewModel: MyViewModel,
+                      frameInputEvents: FrameInputEvents): MyViewModel =
+    viewModel
+
+  def present(gameTime: GameTime,
+              model: MyGameModel,
+              viewModel: MyViewModel,
+              frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     MyView.updateView(model, frameInputEvents)
 }
 
 case class Dude(aseprite: Aseprite, sprite: Sprite)
 case class MyStartupData(dude: Dude)
+case class MyViewModel()

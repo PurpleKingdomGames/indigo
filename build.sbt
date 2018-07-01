@@ -1,5 +1,5 @@
 
-val indigoVersion = "0.0.6-SNAPSHOT"
+val indigoVersion = "0.0.7-SNAPSHOT"
 
 lazy val commonSettings = Seq(
   version := indigoVersion,
@@ -297,9 +297,9 @@ lazy val server =
     .settings(
       name := "server",
       libraryDependencies ++= Seq(
-        "org.http4s"       %% "http4s-blaze-server" % "0.18.3",
-        "org.http4s"       %% "http4s-circe"        % "0.18.3",
-        "org.http4s"       %% "http4s-dsl"          % "0.18.3",
+        "org.http4s"       %% "http4s-blaze-server" % "0.18.12",
+        "org.http4s"       %% "http4s-circe"        % "0.18.12",
+        "org.http4s"       %% "http4s-dsl"          % "0.18.12",
         "ch.qos.logback"   % "logback-classic"      % "1.2.3",
         "com.github.cb372" %% "scalacache-core"     % "0.10.0",
         "com.github.cb372" %% "scalacache-redis"    % "0.10.0",
@@ -309,7 +309,7 @@ lazy val server =
         "io.circe" %%% "circe-core",
         "io.circe" %%% "circe-generic",
         "io.circe" %%% "circe-parser"
-      ).map(_ % "0.9.2")
+      ).map(_ % "0.9.3")
     )
     .dependsOn(shared)
 
@@ -324,7 +324,7 @@ lazy val shared =
         "io.circe" %%% "circe-core",
         "io.circe" %%% "circe-generic",
         "io.circe" %%% "circe-parser"
-      ).map(_ % "0.9.2")
+      ).map(_ % "0.9.3")
     )
 
 // Root
@@ -342,6 +342,6 @@ addCommandAlias("buildIndigo", ";shared/compile;indigo/compile;indigoExts/compil
 addCommandAlias("buildDev", ";sandbox/compile;perf/compile;framework/compile;server/compile")
 addCommandAlias("buildExamples1", ";basicSetup/compile;fullSetup/compile;button/compile;http/compile;text/compile;automata/compile")
 addCommandAlias("buildExamples2", ";graphic/compile;sprite/compile;websocket/compile;inputfield/compile;audio/compile;group/compile")
-addCommandAlias("buildAll", ";clean;buildIndigo;buildDev;buildGames;buildExamples1;buildExamples2")
+addCommandAlias("buildAll", ";clean;buildIndigo;buildDev;buildExamples1;buildExamples2")
 
 addCommandAlias("localPublish", ";clean;buildIndigo;shared/publishLocal;indigo/publishLocal;indigoExts/publishLocal")
