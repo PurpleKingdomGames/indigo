@@ -1,11 +1,11 @@
 package com.example.sandbox
 
-import com.purplekingdomgames.indigo.IndigoGameBasic
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GameEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, FontInfo}
+import com.purplekingdomgames.indigoexts.entry.IndigoGameBasic
 import com.purplekingdomgames.indigoexts.formats.{Aseprite, AsepriteHelper}
 import com.purplekingdomgames.shared.{AssetType, ClearColor, GameConfig, GameViewport}
 

@@ -1,11 +1,11 @@
-package com.purplekingdomgames.indigo
+package com.purplekingdomgames.indigoexts.entry
 
-import com.purplekingdomgames.indigo.IndigoGameBase.IndigoGame
-import com.purplekingdomgames.indigo.gameengine.{GameTime, Startup, StartupErrors}
+import IndigoGameBase.IndigoGame
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GameEvent}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, SceneUpdateFragment}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.FontInfo
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, SceneUpdateFragment}
+import com.purplekingdomgames.indigo.gameengine.{GameTime, Startup, StartupErrors}
 import com.purplekingdomgames.shared.{AssetType, GameConfig}
 
 /**

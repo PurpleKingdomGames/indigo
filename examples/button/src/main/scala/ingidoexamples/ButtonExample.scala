@@ -1,11 +1,12 @@
 package ingidoexamples
 
-import com.purplekingdomgames.indigo._
+import com.purplekingdomgames.indigoexts.entry._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, FontInfo, Rectangle}
+import com.purplekingdomgames.indigoexts.entry.IndigoGameBasic
 import com.purplekingdomgames.indigoexts.ui._
 import com.purplekingdomgames.shared.{AssetType, GameConfig, ImageAsset}
 

@@ -1,11 +1,11 @@
 package com.example.perf
 
-import com.purplekingdomgames.indigo.{Indigo, IndigoGameBase}
 import com.purplekingdomgames.indigo.gameengine._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GameEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Depth
+import com.purplekingdomgames.indigoexts.entry.{Indigo, IndigoGameBase}
 import com.purplekingdomgames.indigoexts.formats.{Aseprite, AsepriteHelper}
 import com.purplekingdomgames.shared._
 
