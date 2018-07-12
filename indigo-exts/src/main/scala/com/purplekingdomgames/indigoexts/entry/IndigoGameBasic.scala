@@ -1,12 +1,16 @@
 package com.purplekingdomgames.indigoexts.entry
 
-import IndigoGameBase.IndigoGame
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GameEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.FontInfo
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, SceneUpdateFragment}
-import com.purplekingdomgames.indigo.gameengine.{GameTime, Startup, StartupErrors}
+import com.purplekingdomgames.indigo.gameengine.{GameEngine, GameTime, Startup, StartupErrors}
 import com.purplekingdomgames.shared.{AssetType, GameConfig}
+
+import scala.concurrent.Future
+
+// Using Scala.js, so this is just to make the compiler happy.
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * A trait representing a minimal set of functions to get your game running
@@ -35,24 +39,22 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] {
 
   def present(gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment
 
-  private def indigoGame: IndigoGame[StartupData, StartupErrors, Model, ViewModel] =
-    Indigo.game
-      .withConfig(config)
-      .withAssets(assets)
-      .withFonts(fonts)
-      .withAnimations(animations)
-      .startUpGameWith(ac => Startup.fromEither(setup(ac)))
-      .usingInitialModel(initialModel)
-      .updateModelUsing(update)
-      .initialiseViewModelUsing(initialViewModel)
-      .updateViewModelUsing(
-        (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents) =>
-          updateViewModel(gameTime, model, viewModel, frameInputEvents)
-      )
-      .presentUsing(
-        (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents) =>
-          present(gameTime, model, viewModel, frameInputEvents)
-      )
+  private def indigoGame: GameEngine[StartupData, StartupErrors, Model, ViewModel] =
+    new GameEngine[StartupData, StartupErrors, Model, ViewModel](
+      config,
+      Future(None),
+      assets,
+      Future(Set()),
+      fonts,
+      animations,
+      (ac: AssetCollection) => Startup.fromEither(setup(ac)),
+      initialModel,
+      update,
+      initialViewModel,
+      updateViewModel,
+      (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents) =>
+        present(gameTime, model, viewModel, frameInputEvents)
+    )
 
   def registerAnimations(animations: Animations): Unit =
     indigoGame.registerAnimations(animations)
