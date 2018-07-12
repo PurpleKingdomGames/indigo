@@ -15,7 +15,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
   * A trait representing a minimal set of functions to get your game running
   * @tparam StartupData The class type representing your successful startup data
-  * @tparam Model The class type representing your games model
+  * @tparam Model The class type representing your game's model
+  * @tparam ViewModel The class type representing your game's view model
   */
 trait IndigoGameBasic[StartupData, Model, ViewModel] {
 
