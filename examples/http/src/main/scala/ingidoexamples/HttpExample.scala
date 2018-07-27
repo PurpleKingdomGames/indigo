@@ -1,21 +1,20 @@
 package ingidoexamples
 
-import com.purplekingdomgames.indigoexts.entry._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
-import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.indigo.gameengine.events.HttpReceiveEvent.{HttpError, HttpResponse}
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, HttpRequest}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Depth, FontInfo, Rectangle}
-import com.purplekingdomgames.indigoexts.entry.IndigoGameBasic
+import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment}
+import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
+import com.purplekingdomgames.indigoexts.entry.{IndigoGameBasic, _}
 import com.purplekingdomgames.indigoexts.ui._
-import com.purplekingdomgames.shared.{AssetType, GameConfig, ImageAsset}
+import com.purplekingdomgames.shared.{AssetType, GameConfig}
 
 object HttpExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   val config: GameConfig = defaultGameConfig
 
-  val assets: Set[AssetType] = Set(ImageAsset("graphics", "assets/graphics.png"))
+  val assets: Set[AssetType] = Set(AssetType.Image("graphics", "assets/graphics.png"))
 
   val fonts: Set[FontInfo] = Set()
 

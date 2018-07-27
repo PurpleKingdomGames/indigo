@@ -125,11 +125,11 @@ object DisplayObjectConversions {
     case leaf: Text =>
       val alignmentOffsetX: Rectangle => Int = lineBounds =>
         leaf.alignment match {
-          case AlignLeft => 0
+          case TextAlignment.Left => 0
 
-          case AlignCenter => -(lineBounds.size.x / 2)
+          case TextAlignment.Center => -(lineBounds.size.x / 2)
 
-          case AlignRight => -lineBounds.size.x
+          case TextAlignment.Right => -lineBounds.size.x
       }
 
       val converterFunc: (TextLine, Int, Int) => List[DisplayObject] =

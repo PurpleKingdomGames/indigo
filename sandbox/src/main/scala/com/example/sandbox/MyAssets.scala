@@ -1,6 +1,6 @@
 package com.example.sandbox
 
-import com.purplekingdomgames.shared.{AssetType, ImageAsset, TextAsset}
+import com.purplekingdomgames.shared.AssetType
 
 object MyAssets {
 
@@ -10,10 +10,10 @@ object MyAssets {
 
   def assets: Set[AssetType] =
     Set(
-      ImageAsset(smallFontName, "assets/boxy_font.png"),
-      ImageAsset(light, "assets/light_texture.png"),
-      TextAsset(dudeName + "-json", "assets/" + dudeName + ".json"),
-      ImageAsset(dudeName, "assets/" + dudeName + ".png")
+      AssetType.Image(smallFontName, "assets/boxy_font.png"),
+      AssetType.Image(light, "assets/light_texture.png"),
+      AssetType.Text(dudeName + "-json", "assets/" + dudeName + ".json"),
+      AssetType.Image(dudeName, "assets/" + dudeName + ".png")
     )
 
 }

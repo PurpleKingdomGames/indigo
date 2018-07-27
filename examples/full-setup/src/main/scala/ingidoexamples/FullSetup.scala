@@ -20,7 +20,7 @@ object FullSetup {
     )
 
   val assets: Set[AssetType] =
-    Set(ImageAsset("my image", "assets/graphics.png"))
+    Set(AssetType.Image("my image", "assets/graphics.png"))
 
   val setup: AssetCollection => Startup[MyStartUpError, MyStartupData] =
     _ => MyStartupData()

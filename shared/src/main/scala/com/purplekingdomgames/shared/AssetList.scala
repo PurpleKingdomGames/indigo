@@ -32,6 +32,6 @@ object AssetList {
 
 //upickle (which we should deprecate) won't deserialise ADT's without faff, so this is a cheap workaround.
 case class SimpleAssetType(name: String, path: String) {
-  def toTextAsset: TextAsset   = TextAsset(name, path)
-  def toImageAsset: ImageAsset = ImageAsset(name, path)
+  def toTextAsset: AssetType.Text   = AssetType.Text(name, path)
+  def toImageAsset: AssetType.Image = AssetType.Image(name, path)
 }

@@ -1,7 +1,7 @@
 package com.purplekingdomgames.indigo.gameengine.assets
 
 import com.purplekingdomgames.indigo.runtime.Logger
-import com.purplekingdomgames.shared.{AssetType, AudioAsset, ImageAsset, TextAsset}
+import com.purplekingdomgames.shared.AssetType
 import org.scalajs.dom
 import org.scalajs.dom.ext.Ajax
 import org.scalajs.dom.raw.HTMLImageElement
@@ -13,27 +13,27 @@ import scala.scalajs.js.typedarray.ArrayBuffer
 
 object AssetManager {
 
-  private def filterOutTextAssets(l: List[AssetType]): List[TextAsset] =
+  private def filterOutTextAssets(l: List[AssetType]): List[AssetType.Text] =
     l.flatMap { at =>
       at match {
-        case t: TextAsset => List(t)
-        case _            => Nil
+        case t: AssetType.Text => List(t)
+        case _                 => Nil
       }
     }
 
-  private def filterOutImageAssets(l: List[AssetType]): List[ImageAsset] =
+  private def filterOutImageAssets(l: List[AssetType]): List[AssetType.Image] =
     l.flatMap { at =>
       at match {
-        case t: ImageAsset => List(t)
-        case _             => Nil
+        case t: AssetType.Image => List(t)
+        case _                  => Nil
       }
     }
 
-  private def filterOutAudioAssets(l: List[AssetType]): List[AudioAsset] =
+  private def filterOutAudioAssets(l: List[AssetType]): List[AssetType.Audio] =
     l.flatMap { at =>
       at match {
-        case t: AudioAsset => List(t)
-        case _             => Nil
+        case t: AssetType.Audio => List(t)
+        case _                  => Nil
       }
     }
 
@@ -50,7 +50,7 @@ object AssetManager {
   def findByName(assetCollection: AssetCollection): String => Option[LoadedImageAsset] =
     name => assetCollection.images.find(p => p.name == name)
 
-  private val loadImageAssets: List[ImageAsset] => Future[List[LoadedImageAsset]] = imageAssets =>
+  private val loadImageAssets: List[AssetType.Image] => Future[List[LoadedImageAsset]] = imageAssets =>
     Future.sequence(imageAssets.map(loadImageAsset))
 
   private def onLoadFuture(image: HTMLImageElement): Future[HTMLImageElement] =
@@ -64,7 +64,7 @@ object AssetManager {
     }
 
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
-  private def loadImageAsset(imageAsset: ImageAsset): Future[LoadedImageAsset] = {
+  private def loadImageAsset(imageAsset: AssetType.Image): Future[LoadedImageAsset] = {
     Logger.info(s"[Image] Loading ${imageAsset.path}")
 
     val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
@@ -76,10 +76,10 @@ object AssetManager {
     }
   }
 
-  private val loadTextAssets: List[TextAsset] => Future[List[LoadedTextAsset]] = textAssets =>
+  private val loadTextAssets: List[AssetType.Text] => Future[List[LoadedTextAsset]] = textAssets =>
     Future.sequence(textAssets.map(loadTextAsset))
 
-  def loadTextAsset(textAsset: TextAsset): Future[LoadedTextAsset] = {
+  def loadTextAsset(textAsset: AssetType.Text): Future[LoadedTextAsset] = {
     Logger.info(s"[Text] Loading ${textAsset.path}")
 
     Ajax.get(textAsset.path, responseType = "text").map { xhr =>
@@ -88,11 +88,11 @@ object AssetManager {
     }
   }
 
-  private val loadAudioAssets: List[AudioAsset] => Future[List[LoadedAudioAsset]] = audioAssets =>
+  private val loadAudioAssets: List[AssetType.Audio] => Future[List[LoadedAudioAsset]] = audioAssets =>
     Future.sequence(audioAssets.map(loadAudioAsset))
 
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
-  def loadAudioAsset(audioAsset: AudioAsset): Future[LoadedAudioAsset] = {
+  def loadAudioAsset(audioAsset: AssetType.Audio): Future[LoadedAudioAsset] = {
     Logger.info(s"[Audio] Loading ${audioAsset.path}")
 
     Ajax.get(audioAsset.path, responseType = "arraybuffer").flatMap { xhr =>

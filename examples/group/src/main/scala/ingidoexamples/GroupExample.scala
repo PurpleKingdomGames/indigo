@@ -1,19 +1,18 @@
 package ingidoexamples
 
-import com.purplekingdomgames.indigoexts.entry._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.events.FrameInputEvents
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.FontInfo
-import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, Graphic, Group, SceneUpdateFragment}
-import com.purplekingdomgames.indigoexts.entry.IndigoGameBasic
-import com.purplekingdomgames.shared.{AssetType, GameConfig, ImageAsset}
+import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
+import com.purplekingdomgames.indigoexts.entry.{IndigoGameBasic, _}
+import com.purplekingdomgames.shared.{AssetType, GameConfig}
 
 object GroupExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val config: GameConfig = defaultGameConfig
 
-  val assets: Set[AssetType] = Set(ImageAsset("graphics", "assets/graphics.png"))
+  val assets: Set[AssetType] = Set(AssetType.Image("graphics", "assets/graphics.png"))
 
   val fonts: Set[FontInfo] = Set()
 

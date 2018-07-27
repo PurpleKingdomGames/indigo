@@ -1,20 +1,19 @@
 package ingidoexamples
 
-import com.purplekingdomgames.indigoexts.entry._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.events.FrameInputEvents
-import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment, Text}
-import com.purplekingdomgames.indigoexts.entry.IndigoGameBasic
+import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
+import com.purplekingdomgames.indigoexts.entry.{IndigoGameBasic, _}
 import com.purplekingdomgames.indigoexts.ui._
-import com.purplekingdomgames.shared.{AssetType, ClearColor, GameConfig, ImageAsset}
+import com.purplekingdomgames.shared.{AssetType, ClearColor, GameConfig}
 
 object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   val config: GameConfig = defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399"))
 
-  val assets: Set[AssetType] = Set(ImageAsset(FontStuff.fontName, "assets/boxy_font.png"))
+  val assets: Set[AssetType] = Set(AssetType.Image(FontStuff.fontName, "assets/boxy_font.png"))
 
   val fonts: Set[FontInfo] = Set(FontStuff.fontInfo)
 

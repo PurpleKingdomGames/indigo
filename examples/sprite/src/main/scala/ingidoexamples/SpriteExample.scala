@@ -1,19 +1,18 @@
 package ingidoexamples
 
-import com.purplekingdomgames.indigoexts.entry._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.events.FrameInputEvents
-import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey, FontInfo}
-import com.purplekingdomgames.indigoexts.entry.IndigoGameBasic
-import com.purplekingdomgames.shared.{AssetType, GameConfig, ImageAsset}
+import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
+import com.purplekingdomgames.indigoexts.entry.{IndigoGameBasic, _}
+import com.purplekingdomgames.shared.{AssetType, GameConfig}
 
 object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val config: GameConfig = defaultGameConfig
 
-  val assets: Set[AssetType] = Set(ImageAsset("trafficlights", "assets/trafficlights.png"))
+  val assets: Set[AssetType] = Set(AssetType.Image("trafficlights", "assets/trafficlights.png"))
 
   val fonts: Set[FontInfo] = Set()
 

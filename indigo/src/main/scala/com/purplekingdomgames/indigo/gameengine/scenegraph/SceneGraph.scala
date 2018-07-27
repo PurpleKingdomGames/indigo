@@ -360,9 +360,9 @@ case class Text(text: String,
   def withAlignment(alignment: TextAlignment): Text =
     this.copy(alignment = alignment)
 
-  def alignLeft: Text   = copy(alignment = AlignLeft)
-  def alignCenter: Text = copy(alignment = AlignCenter)
-  def alignRight: Text  = copy(alignment = AlignRight)
+  def alignLeft: Text   = copy(alignment = TextAlignment.Left)
+  def alignCenter: Text = copy(alignment = TextAlignment.Center)
+  def alignRight: Text  = copy(alignment = TextAlignment.Right)
 
   def withText(text: String): Text =
     this.copy(text = text)
@@ -375,9 +375,9 @@ case class Text(text: String,
 
   private val realBound: Rectangle =
     (alignment, bounds.copy(position = position)) match {
-      case (AlignLeft, b)   => b
-      case (AlignCenter, b) => b.copy(position = Point(b.x - (b.width / 2), b.y))
-      case (AlignRight, b)  => b.copy(position = Point(b.x - b.width, b.y))
+      case (TextAlignment.Left, b)   => b
+      case (TextAlignment.Center, b) => b.copy(position = Point(b.x - (b.width / 2), b.y))
+      case (TextAlignment.Right, b)  => b.copy(position = Point(b.x - b.width, b.y))
     }
 
   private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent] =
@@ -397,7 +397,7 @@ object Text {
   def apply(text: String, x: Int, y: Int, depth: Int, fontKey: FontKey): Text =
     Text(
       text = text,
-      alignment = AlignLeft,
+      alignment = TextAlignment.Left,
       position = Point(x, y),
       depth = depth,
       fontKey = fontKey,

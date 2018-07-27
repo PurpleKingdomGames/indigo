@@ -53,6 +53,8 @@ object FontChar {
 }
 
 sealed trait TextAlignment
-case object AlignLeft   extends TextAlignment
-case object AlignCenter extends TextAlignment
-case object AlignRight  extends TextAlignment
+object TextAlignment {
+  case object Left   extends TextAlignment
+  case object Center extends TextAlignment
+  case object Right  extends TextAlignment
+}

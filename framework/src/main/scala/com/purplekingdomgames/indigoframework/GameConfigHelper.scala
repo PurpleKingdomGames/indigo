@@ -2,7 +2,7 @@ package com.purplekingdomgames.indigoframework
 
 import com.purplekingdomgames.indigo.gameengine.assets.AssetManager
 import com.purplekingdomgames.indigo.runtime.Logger
-import com.purplekingdomgames.shared.{GameConfig, TextAsset}
+import com.purplekingdomgames.shared.{AssetType, GameConfig}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -29,7 +29,7 @@ xhr.send()
 
   def load: Future[Option[GameConfig]] =
     AssetManager
-      .loadTextAsset(TextAsset("assetsList", "assets/config.json"))
+      .loadTextAsset(AssetType.Text("assetsList", "assets/config.json"))
       .map { p =>
         fromJson(p.contents)
       }

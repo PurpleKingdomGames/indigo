@@ -342,6 +342,7 @@ addCommandAlias("buildIndigo", ";shared/compile;indigo/compile;indigoExts/compil
 addCommandAlias("buildDev", ";sandbox/compile;perf/compile;framework/compile;server/compile")
 addCommandAlias("buildExamples1", ";basicSetup/compile;fullSetup/compile;button/compile;http/compile;text/compile;automata/compile")
 addCommandAlias("buildExamples2", ";graphic/compile;sprite/compile;websocket/compile;inputfield/compile;audio/compile;group/compile")
-addCommandAlias("buildAll", ";clean;buildIndigo;buildDev;buildExamples1;buildExamples2")
+addCommandAlias("buildAllNoClean", ";buildIndigo;buildDev;buildExamples1;buildExamples2")
+addCommandAlias("buildAll", ";clean;buildAllNoClean")
 
 addCommandAlias("localPublish", ";clean;buildIndigo;shared/publishLocal;indigo/publishLocal;indigoExts/publishLocal")

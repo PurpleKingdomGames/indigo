@@ -1,13 +1,12 @@
 package ingidoexamples
 
-import com.purplekingdomgames.indigoexts.entry._
 import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
 import com.purplekingdomgames.indigo.gameengine.events.FrameInputEvents
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo, FontKey}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, SceneUpdateFragment, Text}
 import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
-import com.purplekingdomgames.indigoexts.entry.IndigoGameBasic
-import com.purplekingdomgames.shared.{AssetType, ClearColor, GameConfig, ImageAsset}
+import com.purplekingdomgames.indigoexts.entry.{IndigoGameBasic, _}
+import com.purplekingdomgames.shared.{AssetType, ClearColor, GameConfig}
 
 object TextExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
@@ -15,7 +14,7 @@ object TextExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val config: GameConfig = defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399"))
 
-  val assets: Set[AssetType] = Set(ImageAsset(fontName, "assets/boxy_font.png"))
+  val assets: Set[AssetType] = Set(AssetType.Image(fontName, "assets/boxy_font.png"))
 
   val fonts: Set[FontInfo] = Set(fontInfo)
 

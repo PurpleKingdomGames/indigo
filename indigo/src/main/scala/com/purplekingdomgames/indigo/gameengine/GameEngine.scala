@@ -151,12 +151,12 @@ object GameEngine {
 
   def initialisedGame[StartupError, StartupData](startupData: Startup[StartupError, StartupData]): IIO[StartupData] =
     startupData match {
-      case e: StartupFailure[_] =>
+      case e: Startup.Failure[_] =>
         Logger.info("Game initialisation failed")
         Logger.info(e.report)
         IIO.raiseError(new Exception("Game aborted due to start up failure"))
 
-      case x: StartupSuccess[StartupData] =>
+      case x: Startup.Success[StartupData] =>
         Logger.info("Game initialisation succeeded")
         IIO.delay(x.success)
     }

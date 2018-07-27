@@ -9,7 +9,7 @@ import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events
 import com.purplekingdomgames.indigoexts.automata._
 import com.purplekingdomgames.indigoexts.entry.IndigoGameBasic
 import com.purplekingdomgames.indigoexts.ui._
-import com.purplekingdomgames.shared.{AssetType, GameConfig, ImageAsset}
+import com.purplekingdomgames.shared.{AssetType, GameConfig}
 
 object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
@@ -18,8 +18,8 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
   val config: GameConfig = defaultGameConfig
 
   val assets: Set[AssetType] = Set(
-    ImageAsset("graphics", "assets/graphics.png"),
-    ImageAsset(fontName, "assets/boxy_font.png")
+    AssetType.Image("graphics", "assets/graphics.png"),
+    AssetType.Image(fontName, "assets/boxy_font.png")
   )
 
   val fonts: Set[FontInfo] = Set(fontInfo)

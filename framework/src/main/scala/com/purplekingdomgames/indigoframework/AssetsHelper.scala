@@ -2,7 +2,7 @@ package com.purplekingdomgames.indigoframework
 
 import com.purplekingdomgames.indigo.gameengine.assets.AssetManager
 import com.purplekingdomgames.indigo.runtime.Logger
-import com.purplekingdomgames.shared.{AssetList, AssetType, TextAsset}
+import com.purplekingdomgames.shared.{AssetList, AssetType}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -13,7 +13,7 @@ object AssetsHelper {
 
   def assetsAsync: Future[Set[AssetType]] =
     AssetManager
-      .loadTextAsset(TextAsset("assetsList", "assets/assets.json"))
+      .loadTextAsset(AssetType.Text("assetsList", "assets/assets.json"))
       .map { p =>
         fromJson(p.contents).map(_.toSet) match {
           case Some(as) =>
