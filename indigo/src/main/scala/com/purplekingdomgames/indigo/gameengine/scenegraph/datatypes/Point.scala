@@ -13,6 +13,9 @@ case class Point(x: Int, y: Int) {
   def withX(x: Int): Point = this.copy(x = x)
   def withY(y: Int): Point = this.copy(y = y)
 
+  def invert: Point =
+    Point(-x, -y)
+
   override def toString: String =
     s"""Point($x, $y)"""
 }
