@@ -80,6 +80,10 @@ lazy val sbtIndigo =
 lazy val metaIndigoProject =
   (project in file("."))
     .settings(commonSettings: _*)
+    .settings(
+      publish := {},
+      publishLocal := {}
+    )
     .dependsOn(sbtIndigo)
     .aggregate(sbtIndigo)
 
