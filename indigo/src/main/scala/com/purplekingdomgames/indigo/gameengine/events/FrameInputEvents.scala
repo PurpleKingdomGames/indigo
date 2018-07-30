@@ -13,12 +13,12 @@ trait FrameMouseEvents {
 
   val events: List[GameEvent]
 
-  val mouseEvents: List[MouseEvent] = events.collect { case e: MouseEvent => e }
+  def mouseEvents: List[MouseEvent] = events.collect { case e: MouseEvent => e }
 
-  val mouseClickAt: Option[Point]    = mouseEvents.collectFirst { case m: MouseEvent.Click     => m.position }
-  val mouseUpAt: Option[Point]       = mouseEvents.collectFirst { case m: MouseEvent.MouseUp   => m.position }
-  val mouseDownAt: Option[Point]     = mouseEvents.collectFirst { case m: MouseEvent.MouseDown => m.position }
-  val mousePositionAt: Option[Point] = mouseEvents.collectFirst { case m: MouseEvent.Move      => m.position }
+  def mouseClickAt: Option[Point]    = mouseEvents.collectFirst { case m: MouseEvent.Click     => m.position }
+  def mouseUpAt: Option[Point]       = mouseEvents.collectFirst { case m: MouseEvent.MouseUp   => m.position }
+  def mouseDownAt: Option[Point]     = mouseEvents.collectFirst { case m: MouseEvent.MouseDown => m.position }
+  def mousePositionAt: Option[Point] = mouseEvents.collectFirst { case m: MouseEvent.Move      => m.position }
 
   // At
   private def wasMouseAt(position: Point, maybePosition: Option[Point]): Boolean =
@@ -66,11 +66,11 @@ trait FrameKeyboardEvents {
 
   val events: List[GameEvent]
 
-  val keyboardEvents: List[KeyboardEvent] = events.collect { case e: KeyboardEvent => e }
+  def keyboardEvents: List[KeyboardEvent] = events.collect { case e: KeyboardEvent => e }
 
-  val keysUp: List[Int]      = keyboardEvents.collect { case k: KeyboardEvent.KeyUp    => k.keyCode.code }
-  val keysDown: List[Int]    = keyboardEvents.collect { case k: KeyboardEvent.KeyDown  => k.keyCode.code }
-  val keysPressed: List[Int] = keyboardEvents.collect { case k: KeyboardEvent.KeyPress => k.keyCode.code }
+  def keysUp: List[Int]      = keyboardEvents.collect { case k: KeyboardEvent.KeyUp    => k.keyCode.code }
+  def keysDown: List[Int]    = keyboardEvents.collect { case k: KeyboardEvent.KeyDown  => k.keyCode.code }
+  def keysPressed: List[Int] = keyboardEvents.collect { case k: KeyboardEvent.KeyPress => k.keyCode.code }
 
   def keysAreDown(keys: Int*): Boolean     = keys.forall(keyCode => keysDown.contains(keyCode))
   def keysAreUp(keys: Int*): Boolean       = keys.forall(keyCode => keysUp.contains(keyCode))
