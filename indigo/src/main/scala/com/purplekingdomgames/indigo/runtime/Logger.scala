@@ -16,22 +16,37 @@ object Logger {
   private def formatMessage(level: String, message: String): String =
     s"""[${System.currentTimeMillis()}] [$level] [Indigo] $message"""
 
-  val info: String => Unit = message => println(formatMessage(INFO, message))
+  private val infoString: String => Unit = message => println(formatMessage(INFO, message))
 
-  val error: String => Unit = message => println(formatMessage(ERROR, message))
+  private val errorString: String => Unit = message => println(formatMessage(ERROR, message))
 
-  val errorOnce: String => Unit = message =>
+  private val errorOnceString: String => Unit = message =>
     if (!errorLogs.iterator.contains(message)) {
       errorLogs.push(message)
       println(formatMessage(ERROR, message))
   }
 
-  val debug: String => Unit = message => println(formatMessage(DEBUG, message))
+  private val debugString: String => Unit = message => println(formatMessage(DEBUG, message))
 
-  val debugOnce: String => Unit = message =>
+  private val debugOnceString: String => Unit = message =>
     if (!debugLogs.iterator.contains(message)) {
       debugLogs.push(message)
       println(formatMessage(DEBUG, message))
   }
+
+  def info[A](value: A)(implicit show: Show[A]): Unit =
+    infoString(show.show(value))
+
+  def error[A](value: A)(implicit show: Show[A]): Unit =
+    errorString(show.show(value))
+
+  def errorOnce[A](value: A)(implicit show: Show[A]): Unit =
+    errorOnceString(show.show(value))
+
+  def debug[A](value: A)(implicit show: Show[A]): Unit =
+    debugString(show.show(value))
+
+  def debugOnce[A](value: A)(implicit show: Show[A]): Unit =
+    debugOnceString(show.show(value))
 
 }
