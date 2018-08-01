@@ -1,6 +1,7 @@
 package com.purplekingdomgames.indigoexts.grid
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
+import com.purplekingdomgames.indigo.runtime.Show
 
 import scala.util.Random
 
@@ -21,11 +22,11 @@ case class GridPoint(x: Int, y: Int) {
   def wrap(gridSize: GridSize): GridPoint =
     GridPoint.wrap(this, gridSize)
 
-  def asString: String =
-    s"""($x, $y)"""
-
 }
 object GridPoint {
+
+  implicit val show: Show[GridPoint] =
+    Show.create(p => s"""(${p.x}, ${p.y})""")
 
   implicit def tupleToGridPoint(t: (Int, Int)): GridPoint =
     GridPoint(t._1, t._2)

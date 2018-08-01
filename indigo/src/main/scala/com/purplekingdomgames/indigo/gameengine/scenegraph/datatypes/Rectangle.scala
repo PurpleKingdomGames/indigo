@@ -1,4 +1,5 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes
+import com.purplekingdomgames.indigo.runtime.Show
 
 case class Rectangle(position: Point, size: Point) {
   val x: Int       = position.x
@@ -39,6 +40,9 @@ object Rectangle {
   def apply(x: Int, y: Int, width: Int, height: Int): Rectangle = Rectangle(Point(x, y), Point(width, height))
 
   implicit def tuple4ToRectangle(t: (Int, Int, Int, Int)): Rectangle = Rectangle(t._1, t._2, t._3, t._4)
+
+  implicit val show: Show[Rectangle] =
+    Show.create(p => s"""Rectangle(${p.x}, ${p.y}, ${p.width}, ${p.height})""")
 
   def enclosing(a: Rectangle, b: Rectangle): Rectangle = {
     val newX: Int = if (a.left < b.left) a.left else b.left
