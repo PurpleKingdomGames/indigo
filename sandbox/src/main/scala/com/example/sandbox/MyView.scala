@@ -2,13 +2,14 @@ package com.example.sandbox
 
 import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GlobalSignals, MouseEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{AmbientLight, FontChar, FontInfo, FontKey}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
+import com.purplekingdomgames.indigo.runtime.Show
 
 object MyView {
 
   def updateView(model: MyGameModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     frameInputEvents.mouseClickAt match {
-      case Some(position) => println("Mouse clicked at: " + position.toString)
+      case Some(position) => println("Mouse clicked at: " + implicitly[Show[Point]].show(position))
       case None           => ()
     }
 

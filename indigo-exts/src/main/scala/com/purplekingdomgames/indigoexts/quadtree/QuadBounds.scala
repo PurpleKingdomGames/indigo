@@ -1,5 +1,6 @@
 package com.purplekingdomgames.indigoexts.quadtree
 
+import com.purplekingdomgames.indigo.runtime.Show
 import com.purplekingdomgames.indigoexts.grid.GridPoint
 
 trait QuadBounds {
@@ -28,12 +29,14 @@ trait QuadBounds {
   def ===(other: QuadBounds): Boolean =
     QuadBounds.equals(this, other)
 
-  override def toString: String =
-    s"""QuadBounds($x, $y, $width, $height)"""
-
 }
 
 object QuadBounds {
+
+  implicit val show: Show[QuadBounds] =
+    Show.create { qb =>
+      s"""QuadBounds(${qb.x}, ${qb.y}, ${qb.width}, ${qb.height})"""
+    }
 
   def apply(powerOf2: Int): QuadBounds =
     unsafeCreate(

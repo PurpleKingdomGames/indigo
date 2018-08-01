@@ -3,7 +3,7 @@ package com.purplekingdomgames.indigoexts.formats
 import com.purplekingdomgames.indigo.gameengine.events.GameEvent
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
-import com.purplekingdomgames.indigo.runtime.Logger
+import com.purplekingdomgames.indigo.runtime.{Logger, Show}
 import io.circe.generic.auto._
 import io.circe.parser._
 
@@ -29,9 +29,12 @@ case class AsepriteMeta(app: String,
 
 case class AsepriteSize(w: Int, h: Int)
 
-case class AsepriteFrameTag(name: String, from: Int, to: Int, direction: String) {
-  override def toString: String =
-    s"""FrameTag($name, ${from.toString}, ${to.toString}, $direction)"""
+case class AsepriteFrameTag(name: String, from: Int, to: Int, direction: String)
+object AsepriteFrameTag {
+  implicit val show: Show[AsepriteFrameTag] =
+    Show.create { ft =>
+      s"""FrameTag(${ft.name}, ${ft.from.toString}, ${ft.to.toString}, ${ft.direction})"""
+    }
 }
 
 object AsepriteHelper {
@@ -61,7 +64,7 @@ object AsepriteHelper {
       .map { frameTag =>
         extractFrames(frameTag, aseprite.frames) match {
           case Nil =>
-            Logger.info("Failed to extract cycle with frameTag: " + frameTag.toString)
+            Logger.info("Failed to extract cycle with frameTag: " + implicitly[Show[AsepriteFrameTag]].show(frameTag))
             None
           case x :: xs =>
             Option(
@@ -79,7 +82,7 @@ object AsepriteHelper {
   def toSpriteAndAnimations(aseprite: Aseprite, depth: Depth, imageAssetRef: String): Option[SpriteAndAnimations] =
     extractCycles(aseprite) match {
       case Nil =>
-        Logger.info("No animation frames found in Aseprit: " + aseprite)
+        Logger.info("No animation frames found in Aseprite")
         None
       case x :: xs =>
         val animations: Animations =
