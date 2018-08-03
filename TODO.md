@@ -1,3 +1,6 @@
+
+IT'S NOT AN IO MONAD, IT'S A READER, WRITER, STATE MONAD!!!
+
 # Building a 2D pixel art game engine
 This kind of engine has some interesting properties.
 There are no shaders to speak of.
