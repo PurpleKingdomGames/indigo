@@ -84,6 +84,23 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
                                             frameBufferComponents: FrameBufferComponents,
                                             clearColor: ClearColor)(implicit metrics: IMetrics): Unit = {
 
+    /*
+
+    TODO: Fix the light combining approach
+
+    What's happening now is that it's working like a normal draw layer, i.e. each thing just gets added
+    on top of the last with no regard for what's underneath it.. which nearly works.
+
+    What we should be doing is reading the texture+effects as we are now, AND also the currently rendered
+    framebuffer so far, and combining the values together opaquely so that you get a real combined light
+    value. It shouldn't matter whether your combining white with yellow or yellow with white, the result
+    should be the same.
+
+    In this model, ordering is not important so we can gain a bit of speed by not sorting the lighting layer
+    with `compress` not `sortAndCompress`.
+
+     */
+
     // Switch to the frameBuffer
     FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)
 
