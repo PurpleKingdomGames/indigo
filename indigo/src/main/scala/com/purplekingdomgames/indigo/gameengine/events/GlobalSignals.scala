@@ -11,6 +11,8 @@ object GlobalSignals {
 
   def KeysDown: Set[KeyCode] = GlobalSignalsManager.KeysDown
 
+  def LastKeyHeldDown: Option[KeyCode] = GlobalSignalsManager.LastKeyHeldDown
+
 }
 
 private[indigo] object GlobalSignalsManager {
@@ -31,10 +33,23 @@ private[indigo] object GlobalSignalsManager {
           signals.copy(leftMouseHeldDown = false)
 
         case e: KeyboardEvent.KeyDown =>
-          signals.copy(keysDown = signals.keysDown + e.keyCode)
+          signals.copy(
+            keysDown = signals.keysDown + e.keyCode,
+            lastKeyHeldDown = Some(e.keyCode)
+          )
 
         case e: KeyboardEvent.KeyUp =>
-          signals.copy(keysDown = signals.keysDown.filterNot(_ === e.keyCode))
+          val keysDown = signals.keysDown.filterNot(_ === e.keyCode)
+
+          val lastKey = signals.lastKeyHeldDown.flatMap { key =>
+            if (key === e.keyCode || !keysDown.contains(key)) None
+            else Some(key)
+          }
+
+          signals.copy(
+            keysDown = keysDown,
+            lastKeyHeldDown = lastKey
+          )
 
         case _ =>
           signals
@@ -50,13 +65,19 @@ private[indigo] object GlobalSignalsManager {
 
   def KeysDown: Set[KeyCode] = signals.keysDown
 
+  def LastKeyHeldDown: Option[KeyCode] = signals.lastKeyHeldDown
+
 }
 
-private[indigo] case class Signals(mousePosition: Point, keysDown: Set[KeyCode], leftMouseHeldDown: Boolean)
+private[indigo] case class Signals(mousePosition: Point,
+                                   keysDown: Set[KeyCode],
+                                   lastKeyHeldDown: Option[KeyCode],
+                                   leftMouseHeldDown: Boolean)
 private[indigo] object Signals {
   val default: Signals = Signals(
     mousePosition = Point.zero,
     keysDown = Set(),
+    lastKeyHeldDown = None,
     leftMouseHeldDown = false
   )
 }
