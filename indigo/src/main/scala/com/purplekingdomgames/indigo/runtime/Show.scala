@@ -20,7 +20,7 @@ object Show {
   implicit val floatShow: Show[Float] =
     create(i => i.toString)
 
-  implicit val boolShow: Show[Int] =
+  implicit val boolShow: Show[Boolean] =
     create(b => b.toString)
 
   implicit def tuple2Show[A, B](implicit showA: Show[A], showB: Show[B]): Show[(A, B)] =
