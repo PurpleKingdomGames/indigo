@@ -1,5 +1,22 @@
 # Indigo!
 
+## Local build instructions
+
+Assuming a machine with the JDK and SBT installed...
+
+On mac / linux from the project root:
+```
+bash scripts/localbuild.sh
+```
+Stand well back.
+
+On Windows:
+```
+Read what's in that file above and do that in windows speak.
+```
+Good luck.
+
+## Intro!
 Indigo is a non-traditional game engine proof of concept.
 
 ```
