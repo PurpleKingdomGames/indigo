@@ -1,5 +1,5 @@
 
-val indigoVersion = "0.0.7-SNAPSHOT"
+val indigoVersion = "0.0.8-SNAPSHOT"
 
 lazy val commonSettings = Seq(
   version := indigoVersion,
@@ -79,6 +79,20 @@ lazy val basicSetup =
       name := "basic-setup",
       showCursor := true,
       title := "Basic Setup",
+      gameAssetsDirectory := "assets",
+      scalaJSUseMainModuleInitializer := true
+    )
+
+// Examples
+lazy val scenesSetup =
+  (project in file("examples/scenes-setup"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoExts)
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .settings(
+      name := "scenes-setup",
+      showCursor := true,
+      title := "Scene Manager Setup",
       gameAssetsDirectory := "assets",
       scalaJSUseMainModuleInitializer := true
     )
@@ -333,14 +347,14 @@ lazy val indigoProject =
     .settings(commonSettings: _*)
     .aggregate(indigo, indigoExts) //core
     .aggregate(sandbox)
-//    .aggregate(perf, button) //compile tests
-//    .aggregate(sandbox, framework, server) //games
-//    .aggregate(basicSetup, fullSetup, http, text, automata, graphic, sprite, websocket, inputfield, audio, group) //examples
+    .aggregate(perf, button) //compile tests
+    .aggregate(sandbox, framework, server) //games
+    .aggregate(basicSetup, fullSetup, scenesSetup, http, text, automata, graphic, sprite, websocket, inputfield, audio, group) //examples
 
 
 addCommandAlias("buildIndigo", ";shared/compile;indigo/compile;indigoExts/compile")
 addCommandAlias("buildDev", ";sandbox/compile;perf/compile;framework/compile;server/compile")
-addCommandAlias("buildExamples1", ";basicSetup/compile;fullSetup/compile;button/compile;http/compile;text/compile;automata/compile")
+addCommandAlias("buildExamples1", ";basicSetup/compile;scenesSetup/compile;fullSetup/compile;button/compile;http/compile;text/compile;automata/compile")
 addCommandAlias("buildExamples2", ";graphic/compile;sprite/compile;websocket/compile;inputfield/compile;audio/compile;group/compile")
 addCommandAlias("buildAllNoClean", ";buildIndigo;buildDev;buildExamples1;buildExamples2")
 addCommandAlias("buildAll", ";clean;buildAllNoClean")

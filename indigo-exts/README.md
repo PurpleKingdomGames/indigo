@@ -1,5 +1,9 @@
-#IndiGoat
+# Indigo Extensions
 
-Goat, native to Nepal and Tibet:
+The Indigo Extensions library is a set of non-core abstractions and constructs to make game building easier.
 
-Appears indigo in bright sunlight due to a vitamin build up caused by eating depleted uranium rounds
+You do not need the extensions library to use Indigo, but you're have to build everything yourself from the primitives indigo provides.
+
+For example, Indigo does not have a scene manager because it does not care how you organise your game, but normally a scene manager would be a pretty useful thing to have. You can build it yourself of course, or you can use the one provided.
+
+Indigo extensions also provide a number of simplified ways to initialise your game in the `entry` package. 
