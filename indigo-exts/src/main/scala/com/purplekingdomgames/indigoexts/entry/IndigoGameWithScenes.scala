@@ -40,7 +40,7 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
 
   def initialModel(startupData: StartupData): Model
 
-  def initialViewModel: Model => ViewModel
+  def initialViewModel(startupData: StartupData): Model => ViewModel
 
   private def indigoGame: GameEngine[StartupData, StartupErrors, Model, ViewModel] = {
     val sceneManager: SceneManager[Model, ViewModel] =

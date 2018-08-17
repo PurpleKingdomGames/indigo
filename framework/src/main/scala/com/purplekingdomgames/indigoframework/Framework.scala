@@ -37,7 +37,7 @@ object Framework {
 
   val updateModel: (GameTime, GameModel) => GameEvent => GameModel = (_, gameModel) => GameModelHelper.updateModel(gameModel)
 
-  val initialViewModel: GameModel => Unit = _ => ()
+  val initialViewModel: (StartupData, GameModel) => Unit = (_, _) => ()
 
   val updateViewModel: (GameTime, GameModel, Unit, FrameInputEvents) => Unit = (_, _, _, _) => ()
 

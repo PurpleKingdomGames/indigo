@@ -44,7 +44,7 @@ object AudioExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       model
   }
 
-  def initialViewModel: MyGameModel => Unit = _ => ()
+  def initialViewModel(startupData: Unit): MyGameModel => Unit = _ => ()
 
   def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
     ()

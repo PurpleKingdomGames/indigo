@@ -34,7 +34,7 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] {
 
   def update(gameTime: GameTime, model: Model): GameEvent => Model
 
-  def initialViewModel: Model => ViewModel
+  def initialViewModel(startupData: StartupData): Model => ViewModel
 
   def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents): ViewModel
 

@@ -33,7 +33,7 @@ class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     initialise: AssetCollection => Startup[StartupError, StartupData],
     initialModel: StartupData => GameModel,
     updateModel: (GameTime, GameModel) => GameEvent => GameModel,
-    initialViewModel: GameModel => ViewModel,
+    initialViewModel: StartupData => GameModel => ViewModel,
     updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => ViewModel,
     updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
 ) {
@@ -83,7 +83,7 @@ class GameEngine[StartupData, StartupError, GameModel, ViewModel](
               audioPlayer,
               initialModel(startUpSuccessData),
               updateModel,
-              initialViewModel,
+              initialViewModel(startUpSuccessData),
               updateViewModel,
               updateView
             )

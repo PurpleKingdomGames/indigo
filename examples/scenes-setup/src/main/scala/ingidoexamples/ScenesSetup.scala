@@ -34,7 +34,7 @@ object ScenesSetup extends IndigoGameWithScenes[MyStartUpData, MyGameModel, MyVi
       sceneB = MessageB(startupData.messageB)
     )
 
-  def initialViewModel: MyGameModel => MyViewModel =
+  def initialViewModel(startupData: MyStartUpData): MyGameModel => MyViewModel =
     _ => MyViewModel()
 }
 

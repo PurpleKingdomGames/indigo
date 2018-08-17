@@ -59,7 +59,7 @@ object PerfGame {
 
   val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel = (_, gameModel) => PerfModel.updateModel(gameModel)
 
-  val initialViewModel: MyGameModel => MyViewModel = _ => MyViewModel()
+  val initialViewModel: (MyStartupData, MyGameModel) => MyViewModel = (_, _) => MyViewModel()
 
   val updateViewModel: (GameTime, MyGameModel, MyViewModel, FrameInputEvents) => MyViewModel = (_, _, previous, _) => previous
 

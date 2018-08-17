@@ -30,7 +30,7 @@ object TextExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val text: Text = Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontKey).alignRight
 
-  def initialViewModel: Unit => Unit = _ => ()
+  def initialViewModel(startupData: Unit): Unit => Unit = _ => ()
 
   def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
     ()

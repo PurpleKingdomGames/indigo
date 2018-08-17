@@ -82,7 +82,7 @@ object WebSocketExample extends IndigoGameBasic[MySetupData, MyGameModel, Unit] 
       model
   }
 
-  def initialViewModel: MyGameModel => Unit = _ => ()
+  def initialViewModel(startupData: MySetupData): MyGameModel => Unit = _ => ()
 
   def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
     ()

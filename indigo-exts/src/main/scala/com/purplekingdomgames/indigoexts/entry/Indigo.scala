@@ -26,7 +26,7 @@ object IndigoGameBase {
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
       updateModel: (GameTime, GameModel) => events.GameEvent => GameModel,
-      initialViewModel: GameModel => ViewModel,
+      initialViewModel: StartupData => GameModel => ViewModel,
       updateViewModel: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => ViewModel,
       updateView: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => SceneUpdateFragment
   ) {
@@ -65,7 +65,7 @@ object IndigoGameBase {
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
       updateModel: (GameTime, GameModel) => events.GameEvent => GameModel,
-      initialViewModel: GameModel => ViewModel,
+      initialViewModel: StartupData => GameModel => ViewModel,
       updateViewModel: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => ViewModel
   ) {
     def presentUsing(
@@ -95,7 +95,7 @@ object IndigoGameBase {
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
       updateModel: (GameTime, GameModel) => events.GameEvent => GameModel,
-      initialViewModel: GameModel => ViewModel
+      initialViewModel: StartupData => GameModel => ViewModel
   ) {
     def updateViewModelUsing(
         updateViewModel: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => ViewModel
@@ -125,7 +125,7 @@ object IndigoGameBase {
       updateModel: (GameTime, GameModel) => events.GameEvent => GameModel
   ) {
     def initialiseViewModelUsing[ViewModel](
-        initialViewModel: GameModel => ViewModel
+        initialViewModel: (StartupData, GameModel) => ViewModel
     ): IndigoGameWithInitialViewModel[StartupData, StartupError, GameModel, ViewModel] =
       new IndigoGameWithInitialViewModel(
         config,
@@ -137,7 +137,7 @@ object IndigoGameBase {
         initialise,
         initialModel,
         updateModel,
-        initialViewModel
+        (sd: StartupData) => (gm: GameModel) => initialViewModel(sd, gm)
       )
   }
 

@@ -27,7 +27,7 @@ object GraphicExample extends IndigoGameBasic[Unit, Unit, Unit] {
   def update(gameTime: GameTime, model: Unit): events.GameEvent => Unit =
     _ => model
 
-  def initialViewModel: Unit => Unit = _ => ()
+  def initialViewModel(startupData: Unit): Unit => Unit = _ => ()
 
   def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
     ()
