@@ -1,5 +1,6 @@
 package com.purplekingdomgames.indigoexts.quadtree
 
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Rectangle
 import com.purplekingdomgames.indigoexts.grid.GridPoint
 import com.purplekingdomgames.indigoexts.quadtree.QuadTree.{QuadBranch, QuadEmpty, QuadLeaf}
 import org.scalactic.Equality
@@ -126,6 +127,24 @@ class QuadTreeSpec extends FunSpec with Matchers {
 
       tree.prune shouldEqual tree
 
+    }
+
+    it("should be able to search for leaves matching a predicate") {
+      val tree = QuadTree
+        .empty(2)
+        .insertElement("a", GridPoint(0, 0))
+        .insertElement("b", GridPoint(0, 1))
+        .insertElement("c", GridPoint(1, 0))
+
+      val expected: List[String] = List("a", "b")
+
+      val within: Rectangle = Rectangle(0, 0, 0, 1)
+
+      val predicate: QuadTree[String] => Boolean = { qt =>
+        qt.bounds.toRectangle.intersects(within)
+      }
+
+      tree.search(predicate) shouldEqual expected
     }
 
   }

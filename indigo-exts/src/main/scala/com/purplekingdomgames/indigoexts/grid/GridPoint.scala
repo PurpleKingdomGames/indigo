@@ -42,6 +42,9 @@ object GridPoint {
   def identity: GridPoint =
     GridPoint(0, 0)
 
+  def fromPoint(point: Point): GridPoint =
+    GridPoint(point.x, point.y)
+
   def equality(a: GridPoint, b: GridPoint): Boolean =
     a.x == b.x && a.y == b.y
 

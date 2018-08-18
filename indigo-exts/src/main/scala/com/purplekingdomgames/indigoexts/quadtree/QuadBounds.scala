@@ -1,5 +1,6 @@
 package com.purplekingdomgames.indigoexts.quadtree
 
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Rectangle
 import com.purplekingdomgames.indigo.runtime.Show
 import com.purplekingdomgames.indigoexts.grid.GridPoint
 
@@ -14,6 +15,8 @@ trait QuadBounds {
   def right: Int  = x + width
   def bottom: Int = y + height
 
+  def center: GridPoint = GridPoint(x + (width / 2), y + (height / 2))
+
   def isOneUnitSquare: Boolean =
     width == 1 && height == 1
 
@@ -22,6 +25,9 @@ trait QuadBounds {
 
   def isPointWithinBounds(gridPoint: GridPoint): Boolean =
     QuadBounds.pointWithinBounds(this, gridPoint)
+
+  def toRectangle: Rectangle =
+    Rectangle(x, y, width, height)
 
   def renderAsString: String =
     s"""($x, $y, $width, $height)"""
@@ -53,6 +59,9 @@ object QuadBounds {
       if (_width < 2) 2 else _width,
       if (_height < 2) 2 else _height
     )
+
+  def fromRectangle(rectangle: Rectangle): QuadBounds =
+    unsafeCreate(rectangle.x, rectangle.y, rectangle.width, rectangle.height)
 
   def unsafeCreate(_x: Int, _y: Int, _width: Int, _height: Int): QuadBounds =
     new QuadBounds {

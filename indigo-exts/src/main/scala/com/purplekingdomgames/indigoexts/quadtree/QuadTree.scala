@@ -26,6 +26,9 @@ sealed trait QuadTree[T] {
   def prune: QuadTree[T] =
     QuadTree.prune(this)
 
+  def search(p: QuadTree[T] => Boolean): List[T] =
+    QuadTree.search(this, p)
+
   def renderAsString: String =
     QuadTree.renderAsString(this)
 
@@ -179,6 +182,18 @@ object QuadTree {
 
       case QuadBranch(bounds, a, b, c, d) =>
         QuadBranch[T](bounds, a.prune, b.prune, c.prune, d.prune)
+    }
+
+  def search[T](quadTree: QuadTree[T], p: QuadTree[T] => Boolean): List[T] =
+    quadTree match {
+      case q: QuadLeaf[T] if p(q) =>
+        List(q.value)
+
+      case q @ QuadBranch(_, a, b, c, d) if p(q) =>
+        search(a, p) ++ search(b, p) ++ search(c, p) ++ search(d, p)
+
+      case _ =>
+        Nil
     }
 
   def renderAsString[T](quadTree: QuadTree[T]): String =

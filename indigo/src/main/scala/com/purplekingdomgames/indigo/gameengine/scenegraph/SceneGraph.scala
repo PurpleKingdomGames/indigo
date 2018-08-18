@@ -60,7 +60,7 @@ case class Group(positionOffset: Point, depth: Depth, children: List[SceneGraphN
 
       case x :: xs =>
         xs.foldLeft(x.bounds) { (acc, node) =>
-          Rectangle.enclosing(acc, node.bounds)
+          Rectangle.expandToInclude(acc, node.bounds)
         }
     }
 
