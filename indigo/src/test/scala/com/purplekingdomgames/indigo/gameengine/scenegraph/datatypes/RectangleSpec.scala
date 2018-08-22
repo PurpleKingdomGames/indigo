@@ -3,6 +3,19 @@ import org.scalatest.{FunSpec, Matchers}
 
 class RectangleSpec extends FunSpec with Matchers {
 
+  describe("creating rectangles") {
+
+    it("should be able to construct a rectangle from two points") {
+      val pt1 = Point(5, 6)
+      val pt2 = Point(1, 3)
+
+      val expected = Rectangle(1, 3, 4, 3)
+
+      Rectangle.fromTwoPoints(pt1, pt2) shouldEqual expected
+    }
+
+  }
+
   describe("Expand to include two rectangles") {
 
     it("should return the original rectangle when it already encompasses the second one") {

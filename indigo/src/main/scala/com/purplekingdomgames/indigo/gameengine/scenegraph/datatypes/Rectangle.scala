@@ -48,8 +48,16 @@ object Rectangle {
 
   val zero: Rectangle = Rectangle(0, 0, 0, 0)
 
-  // TODO: Should we validate that Rectangles are always top left to bottom right?
   def apply(x: Int, y: Int, width: Int, height: Int): Rectangle = Rectangle(Point(x, y), Point(width, height))
+
+  def fromTwoPoints(pt1: Point, pt2: Point): Rectangle = {
+    val x = Math.min(pt1.x, pt2.x)
+    val y = Math.min(pt1.y, pt2.y)
+    val w = Math.max(pt1.x, pt2.x) - x
+    val h = Math.max(pt1.y, pt2.y) - y
+
+    Rectangle(x, y, w, h)
+  }
 
   implicit def tuple4ToRectangle(t: (Int, Int, Int, Int)): Rectangle = Rectangle(t._1, t._2, t._3, t._4)
 
