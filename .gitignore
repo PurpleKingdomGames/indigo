@@ -34,3 +34,4 @@ native
 node_modules
 
 elm-stuff
+.metals/

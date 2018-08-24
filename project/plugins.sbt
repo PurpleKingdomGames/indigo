@@ -100,3 +100,5 @@ addSbtPlugin("com.purplekingdomgames" % "sbt-indigo" % indigoVersion)
 addSbtPlugin("org.lyranthe.sbt" % "partial-unification" % "1.1.0")
 
 addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.2.1")
+
+addSbtPlugin("org.scalameta" % "sbt-metals" % "0.1.0-M1+264-b2700d29")

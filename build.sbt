@@ -3,7 +3,7 @@ val indigoVersion = "0.0.8-SNAPSHOT"
 
 lazy val commonSettings = Seq(
   version := indigoVersion,
-  scalaVersion := "2.12.6",
+  scalaVersion := "2.12.4",
   organization := "com.purplekingdomgames",
   libraryDependencies ++= Seq(
     "org.scalatest" %%% "scalatest" % "3.0.5" % "test"
@@ -66,7 +66,9 @@ lazy val commonSettings = Seq(
     Wart.Equals,
     Wart.Recursion,
     Wart.LeakingSealed
-  )
+  ),
+  addCompilerPlugin(MetalsPlugin.semanticdbScalac),
+  scalacOptions += "-Yrangepos"
 )
 
 // Examples
