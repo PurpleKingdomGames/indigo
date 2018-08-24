@@ -129,21 +129,18 @@ class QuadTreeSpec extends FunSpec with Matchers {
 
     }
 
-    it("should be able to search for leaves matching a predicate") {
+    it("should be able to search for a leaf under a point") {
       val tree = QuadTree
         .empty(2)
         .insertElement("a", GridPoint(0, 0))
         .insertElement("b", GridPoint(0, 1))
         .insertElement("c", GridPoint(1, 0))
 
-      val expected: List[String] = List("b", "c")
+      val expected: List[String] = List("b")
 
-      val predicate: QuadBounds => Boolean = { b =>
-        println(b.renderAsString)
-        b.x > 0 || b.y > 0
-      }
+      val point: Point = Point(0, 1)
 
-      tree.search(predicate) shouldEqual expected
+      QuadTree.searchByPoint(tree, point) shouldEqual expected
 
       // withClue("2x2") {
       //   val tree = QuadTree

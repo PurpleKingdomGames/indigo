@@ -1,6 +1,7 @@
 package com.purplekingdomgames.indigoexts.quadtree
 
 import com.purplekingdomgames.indigoexts.grid.{GridPoint, GridSize}
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
 
 sealed trait QuadTree[T] {
 
@@ -26,8 +27,8 @@ sealed trait QuadTree[T] {
   def prune: QuadTree[T] =
     QuadTree.prune(this)
 
-  def search(p: QuadBounds => Boolean): List[T] =
-    QuadTree.search(this, p)
+  // def search(p: QuadBounds => Boolean): List[T] =
+  //   QuadTree.search(this, p)
 
   def renderAsString: String =
     QuadTree.renderAsString(this)
@@ -184,13 +185,21 @@ object QuadTree {
         QuadBranch[T](bounds, a.prune, b.prune, c.prune, d.prune)
     }
 
-  def search[T](quadTree: QuadTree[T], p: QuadBounds => Boolean): List[T] =
+  def searchByPoint[T](quadTree: QuadTree[T], point: Point): List[T] =
     quadTree match {
-      case q: QuadLeaf[T] if p(q.bounds) =>
-        List(q.value)
+      case QuadEmpty(bounds) if bounds.isPointWithinBounds(GridPoint.fromPoint(point)) =>
+        Nil
 
-      case q @ QuadBranch(_, a, b, c, d) if p(q.bounds) =>
-        search(a, p) ++ search(b, p) ++ search(c, p) ++ search(d, p)
+      case QuadBranch(bounds, a, b, c, d) if bounds.isPointWithinBounds(GridPoint.fromPoint(point)) =>
+        List(
+          searchByPoint(a, point),
+          searchByPoint(b, point),
+          searchByPoint(c, point),
+          searchByPoint(d, point)
+        ).flatten
+
+      case QuadLeaf(bounds, value) if bounds.isPointWithinBounds(GridPoint.fromPoint(point)) =>
+        List(value)
 
       case _ =>
         Nil
