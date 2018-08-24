@@ -40,6 +40,12 @@ case class Rectangle(position: Point, size: Point) {
   def intersects(other: Rectangle): Boolean =
     Rectangle.intersecting(this, other)
 
+  def encompasses(other: Rectangle): Boolean =
+    Rectangle.encompassing(this, other)
+
+  def overlaps(other: Rectangle): Boolean =
+    Rectangle.overlapping(this, other)
+
   def moveTo(point: Point): Rectangle =
     Rectangle(x + point.x, y + point.y, width, height)
 }
@@ -78,5 +84,11 @@ object Rectangle {
 
   def intersecting(a: Rectangle, b: Rectangle): Boolean =
     b.corners.exists(p => a.isPointWithin(p))
+
+  def encompassing(a: Rectangle, b: Rectangle): Boolean =
+    b.corners.forall(p => a.isPointWithin(p))
+
+  def overlapping(a: Rectangle, b: Rectangle): Boolean =
+    intersecting(a, b) || encompassing(a, b)
 
 }

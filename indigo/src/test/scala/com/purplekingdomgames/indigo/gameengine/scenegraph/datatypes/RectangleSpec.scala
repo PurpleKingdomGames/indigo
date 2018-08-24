@@ -1,4 +1,5 @@
 package com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes
+
 import org.scalatest.{FunSpec, Matchers}
 
 class RectangleSpec extends FunSpec with Matchers {
@@ -49,7 +50,45 @@ class RectangleSpec extends FunSpec with Matchers {
 
       Rectangle.intersecting(a, b) shouldEqual false
     }
+  }
 
+  describe("encompasing rectangles") {
+    it("should return true when A encompases B") {
+      val a = Rectangle(10, 10, 110, 110)
+      val b = Rectangle(20, 20, 10, 10)
+
+      Rectangle.encompassing(a, b) shouldEqual true
+    }
+
+    it("should return false when A does not encompass B") {
+      val a = Rectangle(20, 20, 10, 10)
+      val b = Rectangle(10, 10, 110, 110)
+
+      Rectangle.encompassing(a, b) shouldEqual false
+    }
+
+    it("should return false when A and B merely intersect") {
+      val a = Rectangle(10, 10, 20, 200)
+      val b = Rectangle(15, 15, 100, 10)
+
+      Rectangle.encompassing(a, b) shouldEqual false
+    }
+  }
+
+  describe("overlapping rectangles") {
+    it("should return true when A overlaps B") {
+      val a = Rectangle(10, 10, 20, 20)
+      val b = Rectangle(15, 15, 100, 100)
+
+      Rectangle.overlapping(a, b) shouldEqual true
+    }
+
+    it("should return false when A and B do not overlap") {
+      val a = Rectangle(10, 10, 20, 20)
+      val b = Rectangle(100, 100, 100, 100)
+
+      Rectangle.overlapping(a, b) shouldEqual false
+    }
   }
 
 }
