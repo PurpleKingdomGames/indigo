@@ -193,9 +193,6 @@ object QuadTree {
 
   def searchByPoint[T](quadTree: QuadTree[T], point: Point): List[T] =
     quadTree match {
-      case QuadEmpty(bounds) if bounds.isPointWithinBounds(GridPoint.fromPoint(point)) =>
-        Nil
-
       case QuadBranch(bounds, a, b, c, d) if bounds.isPointWithinBounds(GridPoint.fromPoint(point)) =>
         List(
           searchByPoint(a, point),
