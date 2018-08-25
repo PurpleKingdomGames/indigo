@@ -143,8 +143,62 @@ class QuadTreeSpec extends FunSpec with Matchers {
       QuadTree.searchByPoint(tree, point) shouldEqual expected
     }
 
-    it("should allow a search of squares between two points") {
-      pending
+    it("should allow a search of squares between two horizontal points") {
+      val actual = QuadTree.searchByLine(SampleTree.tree, Point(1, 1), Point(3, 1))
+
+      val expected: List[String] =
+        List(
+          "1,1",
+          "2,1",
+          "3,1"
+        )
+
+      actual.length shouldEqual expected.length
+      expected shouldEqual actual
+    }
+
+    it("should allow a search of squares between two vertical points") {
+      val actual = QuadTree.searchByLine(SampleTree.tree, Point(2, 0), Point(2, 2))
+
+      val expected: List[String] =
+        List(
+          "2,0",
+          "2,1",
+          "2,2"
+        )
+
+      actual.length shouldEqual expected.length
+      expected shouldEqual actual
+    }
+
+    it("should allow a search of squares between two 45 degree points") {
+      val actual = QuadTree.searchByLine(SampleTree.tree, Point(0, 0), Point(3, 3))
+
+      val expected: List[String] =
+        List(
+          "0,0",
+          "1,1",
+          "2,2",
+          "3,3"
+        )
+
+      actual.length shouldEqual expected.length
+      expected shouldEqual actual
+    }
+
+    it("should allow a search of squares between two diagonal degree points") {
+      val actual = QuadTree.searchByLine(SampleTree.tree, Point(3, 2), Point(0, 1))
+
+      val expected: List[String] =
+        List(
+          "3,2",
+          "2,2",
+          "1,1",
+          "0,1"
+        )
+
+      actual.length shouldEqual expected.length
+      expected shouldEqual actual
     }
 
     it("should allow a search of squares intersecting with a 1x1 rectangle") {
