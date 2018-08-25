@@ -1,7 +1,7 @@
 package com.purplekingdomgames.indigoexts.quadtree
 
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
 import com.purplekingdomgames.indigoexts.grid.{GridPoint, GridSize}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
 
 sealed trait QuadTree[T] {
 
@@ -27,8 +27,14 @@ sealed trait QuadTree[T] {
   def prune: QuadTree[T] =
     QuadTree.prune(this)
 
-  // def search(p: QuadBounds => Boolean): List[T] =
-  //   QuadTree.search(this, p)
+  def searchByPoint(point: Point): List[T] =
+    QuadTree.searchByPoint(this, point)
+
+  def searchByLine(start: Point, end: Point): List[T] =
+    QuadTree.searchByLine(this, start, end)
+
+  def searchByRectangle(rectangle: Rectangle): List[T] =
+    QuadTree.searchByRectangle(this, rectangle)
 
   def renderAsString: String =
     QuadTree.renderAsString(this)
@@ -199,6 +205,28 @@ object QuadTree {
         ).flatten
 
       case QuadLeaf(bounds, value) if bounds.isPointWithinBounds(GridPoint.fromPoint(point)) =>
+        List(value)
+
+      case _ =>
+        Nil
+    }
+
+  def searchByLine[T](quadTree: QuadTree[T], start: Point, end: Point): List[T] = {
+    println(start)
+    println(end)
+    println(quadTree.renderAsString)
+    Nil
+  }
+
+  def searchByRectangle[T](quadTree: QuadTree[T], rectangle: Rectangle): List[T] =
+    quadTree match {
+      case QuadBranch(bounds, a, b, c, d) if rectangle.overlaps(bounds.toRectangle) =>
+        searchByRectangle(a, rectangle) ++
+          searchByRectangle(b, rectangle) ++
+          searchByRectangle(c, rectangle) ++
+          searchByRectangle(d, rectangle)
+
+      case QuadLeaf(bounds, value) if rectangle.isPointWithin(Point(bounds.x, bounds.y)) =>
         List(value)
 
       case _ =>

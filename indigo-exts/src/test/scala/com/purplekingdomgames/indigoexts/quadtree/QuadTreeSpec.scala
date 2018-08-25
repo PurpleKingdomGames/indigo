@@ -141,128 +141,112 @@ class QuadTreeSpec extends FunSpec with Matchers {
       val point: Point = Point(0, 1)
 
       QuadTree.searchByPoint(tree, point) shouldEqual expected
-
-      // withClue("2x2") {
-      //   val tree = QuadTree
-      //     .empty(2)
-      //     .insertElement("a", GridPoint(0, 0))
-      //     .insertElement("b", GridPoint(0, 1))
-      //     .insertElement("c", GridPoint(1, 0))
-      //
-      //   val expected: List[String] = List("a", "b")
-      //
-      //   val within: Rectangle = Rectangle(0, 0, 0, 1)
-      //
-      //   val predicate: QuadBounds => Boolean = { bounds =>
-      //     bounds.toRectangle.intersects(within)
-      //   }
-      //
-      //   tree.search(predicate) shouldEqual expected
-      // }
-
-      // withClue("4x4") {
-      //   val tree = QuadTree
-      //     .empty(4)
-      //     .insertElement("0,0", GridPoint(0, 0))
-      //     .insertElement("0,1", GridPoint(0, 1))
-      //     .insertElement("0,2", GridPoint(0, 2))
-      //     .insertElement("0,3", GridPoint(0, 3))
-      //     .insertElement("1,0", GridPoint(1, 0))
-      //     .insertElement("1,1", GridPoint(1, 1))
-      //     .insertElement("1,2", GridPoint(1, 2))
-      //     .insertElement("1,3", GridPoint(1, 3))
-      //     .insertElement("2,0", GridPoint(2, 0))
-      //     .insertElement("2,1", GridPoint(2, 1))
-      //     .insertElement("2,2", GridPoint(2, 2))
-      //     .insertElement("2,3", GridPoint(2, 3))
-      //     .insertElement("3,0", GridPoint(3, 0))
-      //     .insertElement("3,1", GridPoint(3, 1))
-      //     .insertElement("3,2", GridPoint(3, 2))
-      //     .insertElement("3,3", GridPoint(3, 3))
-      //
-      //   val expected: List[String] = List(
-      //     "0,1",
-      //     "1,1",
-      //     "2,1",
-      //     "3,1",
-      //     "0,2",
-      //     "1,2",
-      //     "2,2",
-      //     "3,2"
-      //   )
-      //
-      //   val searchRectangle: Rectangle = Rectangle(0, 1, 3, 2)
-      //
-      //   val predicate: QuadBounds => Boolean = { bounds =>
-      //     val refPoint =
-      //       if (bounds.width <= 1 || bounds.height <= 1) Point(bounds.x, bounds.y)
-      //       else bounds.center.toPoint
-      //
-      //     val p: Boolean = searchRectangle.isPointWithin(refPoint)
-      //
-      //     println("refPoint: " + refPoint + " : " + bounds.renderAsString + " - " + p.toString)
-      //     // println(p)
-      //     // bounds.toRectangle.intersects(searchRectangle)
-      //     p
-      //   }
-      //
-      //   val actual = tree.search(predicate)
-      //
-      //   actual.length shouldEqual expected.length
-      //   expected.forall(p => actual.contains(p)) shouldEqual true
-      //
-      // }
     }
 
     it("should allow a search of squares between two points") {
       pending
     }
 
-    it("should allow a search of squares between intersecting with a rectangle") {
-      pending
+    it("should allow a search of squares intersecting with a 1x1 rectangle") {
+      val r: Rectangle = Rectangle(1, 1, 1, 1)
+
+      val actual = QuadTree.searchByRectangle(SampleTree.tree, r)
+
+      val expected: List[String] = List("1,1")
+
+      actual.length shouldEqual expected.length
+      expected.forall(p => actual.contains(p)) shouldEqual true
     }
 
-    it("should allow a search of squares fully enclosed in a rectangle") {
-      pending
+    it("should allow a search of squares intersecting with a 2x2 rectangle") {
+      val r: Rectangle = Rectangle(0, 1, 2, 2)
+
+      val actual = QuadTree.searchByRectangle(SampleTree.tree, r)
+
+      val expected: List[String] = List(
+        "0,1",
+        "1,1",
+        "0,2",
+        "1,2"
+      )
+
+      actual.length shouldEqual expected.length
+      expected.forall(p => actual.contains(p)) shouldEqual true
+    }
+
+    it("should allow a search of squares intersecting with a rectangle the size of the grid") {
+      val r: Rectangle = Rectangle(0, 0, 4, 4)
+
+      val actual = QuadTree.searchByRectangle(SampleTree.tree, r)
+
+      val expected: List[String] =
+        List(
+          "0,0",
+          "0,1",
+          "0,2",
+          "0,3",
+          "1,0",
+          "1,1",
+          "1,2",
+          "1,3",
+          "2,0",
+          "2,1",
+          "2,2",
+          "2,3",
+          "3,0",
+          "3,1",
+          "3,2",
+          "3,3"
+        )
+
+      actual.length shouldEqual expected.length
+      expected.forall(p => actual.contains(p)) shouldEqual true
+    }
+
+    it("should allow a search of squares intersecting with a rectangle") {
+      val r: Rectangle = Rectangle(0, 1, 4, 2)
+
+      val actual = QuadTree.searchByRectangle(SampleTree.tree, r)
+
+      val expected: List[String] =
+        List(
+          "0,1",
+          "1,1",
+          "2,1",
+          "3,1",
+          "0,2",
+          "1,2",
+          "2,2",
+          "3,2"
+        )
+
+      actual.length shouldEqual expected.length
+      expected.forall(p => actual.contains(p)) shouldEqual true
     }
 
   }
 
-  describe("QuadBounds") {
+}
 
-    it("should be able to check a point is within the bounds") {
+object SampleTree {
 
-      val b = QuadBounds(0, 0, 10, 10)
-
-      b.isPointWithinBounds(GridPoint(5, 5)) shouldEqual true
-      b.isPointWithinBounds(GridPoint(0, 0)) shouldEqual true
-      b.isPointWithinBounds(GridPoint(-1, 5)) shouldEqual false
-      b.isPointWithinBounds(GridPoint(5, 20)) shouldEqual false
-
-    }
-
-    it("should be able to subdivide") {
-
-      val b = QuadBounds(0, 0, 10, 10)
-
-      b.subdivide._1 === QuadBounds(0, 0, 5, 5) shouldEqual true
-      b.subdivide._2 === QuadBounds(5, 0, 5, 5) shouldEqual true
-      b.subdivide._3 === QuadBounds(0, 5, 5, 5) shouldEqual true
-      b.subdivide._4 === QuadBounds(5, 5, 5, 5) shouldEqual true
-
-    }
-
-    it("should be able to re-combine") {
-      val original = QuadBounds(0, 0, 0, 2)
-
-      val divisions = original.subdivide
-
-      val recombined =
-        QuadBounds.combine(divisions._1, List(divisions._2, divisions._3, divisions._4))
-
-      recombined === original shouldEqual true
-    }
-
-  }
+  val tree: QuadTree[String] = QuadTree
+    .empty(4)
+    .insertElement("0,0", GridPoint(0, 0))
+    .insertElement("0,1", GridPoint(0, 1))
+    .insertElement("0,2", GridPoint(0, 2))
+    .insertElement("0,3", GridPoint(0, 3))
+    .insertElement("1,0", GridPoint(1, 0))
+    .insertElement("1,1", GridPoint(1, 1))
+    .insertElement("1,2", GridPoint(1, 2))
+    .insertElement("1,3", GridPoint(1, 3))
+    .insertElement("2,0", GridPoint(2, 0))
+    .insertElement("2,1", GridPoint(2, 1))
+    .insertElement("2,2", GridPoint(2, 2))
+    .insertElement("2,3", GridPoint(2, 3))
+    .insertElement("3,0", GridPoint(3, 0))
+    .insertElement("3,1", GridPoint(3, 1))
+    .insertElement("3,2", GridPoint(3, 2))
+    .insertElement("3,3", GridPoint(3, 3))
 
 }

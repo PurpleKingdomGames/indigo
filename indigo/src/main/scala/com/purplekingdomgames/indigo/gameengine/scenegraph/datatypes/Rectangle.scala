@@ -22,7 +22,8 @@ case class Rectangle(position: Point, size: Point) {
     List(topLeft, topRight, bottomRight, bottomLeft)
 
   def isPointWithin(pt: Point): Boolean =
-    pt.x >= x && pt.x <= x + width && pt.y >= y && pt.y <= y + height
+    pt.x >= left && pt.x < right && pt.y >= top && pt.y < bottom
+
   def isPointWithin(x: Int, y: Int): Boolean = isPointWithin(Point(x, y))
 
   def +(rect: Rectangle): Rectangle = Rectangle(x + rect.x, y + rect.y, width + rect.width, height + rect.height)
@@ -89,6 +90,6 @@ object Rectangle {
     b.corners.forall(p => a.isPointWithin(p))
 
   def overlapping(a: Rectangle, b: Rectangle): Boolean =
-    intersecting(a, b) || encompassing(a, b)
+    intersecting(a, b) || intersecting(b, a) || encompassing(a, b) || encompassing(b, a)
 
 }
