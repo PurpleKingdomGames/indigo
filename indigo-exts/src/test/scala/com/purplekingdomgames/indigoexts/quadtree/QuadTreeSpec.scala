@@ -143,6 +143,18 @@ class QuadTreeSpec extends FunSpec with Matchers {
       QuadTree.searchByPoint(tree, point) shouldEqual expected
     }
 
+    it("should allow a search of squares where the line points are in the same square") {
+      val actual = QuadTree.searchByLine(SampleTree.tree, Point(1, 1), Point(1, 1))
+
+      val expected: List[String] =
+        List(
+          "1,1"
+        )
+
+      actual.length shouldEqual expected.length
+      expected shouldEqual actual
+    }
+
     it("should allow a search of squares between two horizontal points") {
       val actual = QuadTree.searchByLine(SampleTree.tree, Point(1, 1), Point(3, 1))
 
