@@ -208,26 +208,28 @@ object QuadTree {
         Nil
     }
 
-  def searchByLine[T](quadTree: QuadTree[T], start: Point, end: Point): List[T] = {
-    println(start)
-    println(end)
-    println(quadTree.renderAsString)
-    Nil
-  }
+  def searchByLine[T](quadTree: QuadTree[T], start: Point, end: Point): List[T] =
+    if (start === end) searchByPoint(quadTree, start)
+    else {
+      Nil
+    }
 
   def searchByRectangle[T](quadTree: QuadTree[T], rectangle: Rectangle): List[T] =
-    quadTree match {
-      case QuadBranch(bounds, a, b, c, d) if rectangle.overlaps(bounds.toRectangle) =>
-        searchByRectangle(a, rectangle) ++
-          searchByRectangle(b, rectangle) ++
-          searchByRectangle(c, rectangle) ++
-          searchByRectangle(d, rectangle)
+    if (rectangle.width <= 1 && rectangle.height <= 1) searchByPoint(quadTree, rectangle.position)
+    else {
+      quadTree match {
+        case QuadBranch(bounds, a, b, c, d) if rectangle.overlaps(bounds.toRectangle) =>
+          searchByRectangle(a, rectangle) ++
+            searchByRectangle(b, rectangle) ++
+            searchByRectangle(c, rectangle) ++
+            searchByRectangle(d, rectangle)
 
-      case QuadLeaf(bounds, value) if rectangle.isPointWithin(Point(bounds.x, bounds.y)) =>
-        List(value)
+        case QuadLeaf(bounds, value) if rectangle.isPointWithin(Point(bounds.x, bounds.y)) =>
+          List(value)
 
-      case _ =>
-        Nil
+        case _ =>
+          Nil
+      }
     }
 
   def renderAsString[T](quadTree: QuadTree[T]): String =
