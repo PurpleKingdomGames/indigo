@@ -5,11 +5,22 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
 case class LineSegment(start: Point, end: Point) {
   val center: Point = end - start
 
+  def left: Int   = Math.min(start.x, end.x)
+  def right: Int  = Math.max(start.x, end.x)
+  def top: Int    = Math.min(start.y, end.y)
+  def bottom: Int = Math.max(start.y, end.y)
+
   val normal: Point =
     LineSegment.calculateNormal(start, end)
 
   def lineProperties: LineProperties =
     LineSegment.calculateLineComponents(start, end)
+
+  def intersectWith(other: LineSegment): IntersectionResult =
+    LineSegment.intersection(this, other)
+
+  def containsPoint(point: Point): Boolean =
+    LineSegment.lineContainsPoint(this, point)
 }
 
 object LineSegment {
@@ -117,6 +128,27 @@ object LineSegment {
 
     Point((x / Math.abs(x)).toInt, (y / Math.abs(y)).toInt)
   }
+
+  def lineContainsPoint(lineSegment: LineSegment, point: Point): Boolean =
+    lineSegment.lineProperties match {
+      case InvalidLine =>
+        false
+
+      case ParallelToAxisX =>
+        if (point.y == lineSegment.start.y && point.x >= lineSegment.left && point.x <= lineSegment.right) true
+        else false
+
+      case ParallelToAxisY =>
+        if (point.x == lineSegment.start.x && point.y >= lineSegment.top && point.y <= lineSegment.bottom) true
+        else false
+
+      case LineComponents(m, b) =>
+        if (point.x >= lineSegment.left && point.x <= lineSegment.right && point.y >= lineSegment.top && point.y <= lineSegment.bottom) {
+          // This is a slope comparison.. Any point on the line should have the same slope as the line.
+          val mDelta: Float = m - ((b - point.y.toFloat) / (0 - point.x.toFloat))
+          mDelta >= -0.001 && mDelta <= 0.001
+        } else false
+    }
 
 }
 

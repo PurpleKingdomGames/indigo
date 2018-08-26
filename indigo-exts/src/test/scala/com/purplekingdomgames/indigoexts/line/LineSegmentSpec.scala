@@ -187,4 +187,40 @@ class LineSegmentSpec extends FunSpec with Matchers {
 
   }
 
+  describe("Point on a line") {
+
+    //TODO: Can do a property based check here. Forall points on a line
+    // (i.e. start point * slope m < end point)
+    it("should be able to check if a point is on a line") {
+      withClue("horizontal") {
+        val line: LineSegment = LineSegment((10, 10), (20, 10))
+        val point: Point      = Point(15, 10)
+
+        LineSegment.lineContainsPoint(line, point) shouldEqual true
+      }
+
+      withClue("vertical") {
+        val line: LineSegment = LineSegment((10, 10), (10, 20))
+        val point: Point      = Point(10, 15)
+
+        LineSegment.lineContainsPoint(line, point) shouldEqual true
+      }
+
+      withClue("diagonal") {
+        val line: LineSegment = LineSegment((10, 10), (20, 20))
+        val point: Point      = Point(15, 15)
+
+        LineSegment.lineContainsPoint(line, point) shouldEqual true
+      }
+    }
+
+    it("should be able to check if a point is NOT on a line") {
+      val line: LineSegment = LineSegment((10, 10), (20, 20))
+      val point: Point      = Point(1, 5)
+
+      LineSegment.lineContainsPoint(line, point) shouldEqual false
+    }
+
+  }
+
 }
