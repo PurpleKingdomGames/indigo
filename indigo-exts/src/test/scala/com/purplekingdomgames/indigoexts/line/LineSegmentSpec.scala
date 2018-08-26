@@ -119,6 +119,24 @@ class LineSegmentSpec extends FunSpec with Matchers {
       actual shouldEqual expected
     }
 
+    it("should give the same intersection regardless of order") {
+      val actual1: IntersectionResult = LineSegment.intersection(
+        LineSegment((0, 15), (50, 15)),
+        LineSegment((10, 10), (10, 30))
+      )
+
+      val actual2: IntersectionResult = LineSegment.intersection(
+        LineSegment((0, 15), (50, 15)),
+        LineSegment((10, 10), (10, 30))
+      )
+
+      val expected: IntersectionPoint = IntersectionPoint(10, 15)
+
+      actual1 shouldEqual expected
+      actual2 shouldEqual expected
+      actual1 shouldEqual actual2
+    }
+
   }
 
   describe("normals") {

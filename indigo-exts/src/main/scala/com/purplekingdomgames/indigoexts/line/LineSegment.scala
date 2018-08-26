@@ -77,7 +77,7 @@ object LineSegment {
         NoIntersection
 
       case (ParallelToAxisX, ParallelToAxisY) =>
-        IntersectionPoint(l1.start.y.toFloat, l2.start.x.toFloat)
+        IntersectionPoint(l2.start.x.toFloat, l1.start.y.toFloat)
 
       case (ParallelToAxisY, ParallelToAxisX) =>
         IntersectionPoint(l1.start.x.toFloat, l2.start.y.toFloat)
