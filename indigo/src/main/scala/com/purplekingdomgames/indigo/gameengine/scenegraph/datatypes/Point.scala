@@ -19,6 +19,9 @@ case class Point(x: Int, y: Int) {
 
   def invert: Point =
     Point(-x, -y)
+
+  def distanceTo(other: Point): Double =
+    Point.distanceBetween(this, other)
 }
 
 object Point {
@@ -34,4 +37,12 @@ object Point {
 
   def equality(a: Point, b: Point): Boolean =
     a.x == b.x && a.y == b.y
+
+  def distanceBetween(a: Point, b: Point): Double = {
+    val aa = b.x.toDouble - a.x.toDouble
+    val bb = b.y.toDouble - a.y.toDouble
+    val cc = (aa * aa) - (bb * bb)
+
+    Math.sqrt(Math.abs(cc))
+  }
 }

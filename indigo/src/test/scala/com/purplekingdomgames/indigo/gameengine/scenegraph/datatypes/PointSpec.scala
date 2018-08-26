@@ -17,4 +17,29 @@ class PointSpec extends FunSpec with Matchers {
     }
 
   }
+
+  describe("calculating distance") {
+
+    it("should be able to calculate the distance between horizontal points") {
+      val p1: Point = Point(10, 10)
+      val p2: Point = Point(30, 10)
+
+      p1.distanceTo(p2) shouldEqual 20
+    }
+
+    it("should be able to calculate the distance between vertical points") {
+      val p1: Point = Point(10, 10)
+      val p2: Point = Point(10, 30)
+
+      p1.distanceTo(p2) shouldEqual 20
+    }
+
+    it("should be able to calculate the distance between diagonal points") {
+      val p1: Point = Point(10, 10)
+      val p2: Point = Point(30, 30)
+
+      p1.distanceTo(p2) shouldEqual Math.sqrt((20d * 20d) - (20d * 20d))
+    }
+
+  }
 }
