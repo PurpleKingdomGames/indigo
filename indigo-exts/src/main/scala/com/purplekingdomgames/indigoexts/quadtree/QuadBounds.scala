@@ -1,8 +1,9 @@
 package com.purplekingdomgames.indigoexts.quadtree
 
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Rectangle
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
 import com.purplekingdomgames.indigo.runtime.Show
 import com.purplekingdomgames.indigoexts.grid.GridPoint
+import com.purplekingdomgames.indigoexts.line.{IntersectionPoint, LineSegment, NoIntersection}
 
 trait QuadBounds {
   val x: Int
@@ -16,6 +17,15 @@ trait QuadBounds {
   def bottom: Int = y + height
 
   def center: GridPoint = GridPoint(x + (width / 2), y + (height / 2))
+
+  // Left, Bottom, Right, Top, following points counter clockwise.
+  def edges: List[LineSegment] =
+    List(
+      LineSegment((left, top), (left, bottom)),
+      LineSegment((left, bottom), (right, bottom)),
+      LineSegment((right, bottom), (right, top)),
+      LineSegment((right, top), (left, top))
+    )
 
   def isOneUnitSquare: Boolean =
     width == 1 && height == 1
@@ -108,4 +118,33 @@ object QuadBounds {
 
   def equals(a: QuadBounds, b: QuadBounds): Boolean =
     a.x == b.x && a.y == b.y && a.width == b.width && a.height == b.height
+
+  def rayCollisionCheck(bounds: QuadBounds, line: LineSegment): Boolean =
+    bounds.edges.exists { edge =>
+      line.intersectWith(edge) match {
+        case ip: IntersectionPoint =>
+          line.containsPoint(ip.toPoint)
+
+        case NoIntersection =>
+          false
+      }
+    }
+
+  def rayCollisionPosition(bounds: QuadBounds, line: LineSegment): Option[Point] =
+    bounds.edges
+      .map { edge =>
+        line.intersectWith(edge) match {
+          case ip @ IntersectionPoint(_, _) if line.containsPoint(ip.toPoint) =>
+            Some(ip.toPoint)
+
+          case IntersectionPoint(_, _) =>
+            None
+
+          case NoIntersection =>
+            None
+        }
+      }
+      .collect { case Some(s) => s }
+      .sortWith((p1, p2) => line.start.distanceTo(p1) < line.start.distanceTo(p2))
+      .headOption
 }

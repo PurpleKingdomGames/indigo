@@ -1,7 +1,9 @@
 package com.purplekingdomgames.indigoexts.quadtree
 
+import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
 import org.scalatest.{FunSpec, Matchers}
 import com.purplekingdomgames.indigoexts.grid.GridPoint
+import com.purplekingdomgames.indigoexts.line.LineSegment
 
 class QuadBoundsSpec extends FunSpec with Matchers {
 
@@ -38,6 +40,38 @@ class QuadBoundsSpec extends FunSpec with Matchers {
         QuadBounds.combine(divisions._1, List(divisions._2, divisions._3, divisions._4))
 
       recombined === original shouldEqual true
+    }
+
+  }
+
+  describe("Ray (LineSegment) collision") {
+
+    it("should be able to report a ray collision") {
+      val bounds: QuadBounds = QuadBounds(10, 10, 20, 20)
+      val line: LineSegment  = LineSegment(0, 15, 50, 15)
+
+      QuadBounds.rayCollisionCheck(bounds, line) shouldEqual true
+    }
+
+    it("should correctly report when there is no collision") {
+      val bounds: QuadBounds = QuadBounds(10, 10, 20, 20)
+      val line: LineSegment  = LineSegment(0, 15, 5, 15)
+
+      QuadBounds.rayCollisionCheck(bounds, line) shouldEqual false
+    }
+
+    it("should report where a line segment passed through the bounds") {
+      val bounds: QuadBounds = QuadBounds(10, 10, 20, 20)
+      val line: LineSegment  = LineSegment(0, 15, 50, 15)
+
+      QuadBounds.rayCollisionPosition(bounds, line) shouldEqual Some(Point(10, 15))
+    }
+
+    it("should report where a line segment did not pass through the bounds") {
+      val bounds: QuadBounds = QuadBounds(10, 10, 20, 20)
+      val line: LineSegment  = LineSegment(0, 15, 5, 15)
+
+      QuadBounds.rayCollisionPosition(bounds, line) shouldEqual None
     }
 
   }
