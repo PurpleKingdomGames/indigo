@@ -130,6 +130,9 @@ object LineSegment {
   }
 
   def lineContainsPoint(lineSegment: LineSegment, point: Point): Boolean =
+    lineContainsPoint(lineSegment, point, 0.01f)
+
+  def lineContainsPoint(lineSegment: LineSegment, point: Point, tolerance: Float): Boolean =
     lineSegment.lineProperties match {
       case InvalidLine =>
         false
@@ -145,8 +148,13 @@ object LineSegment {
       case LineComponents(m, b) =>
         if (point.x >= lineSegment.left && point.x <= lineSegment.right && point.y >= lineSegment.top && point.y <= lineSegment.bottom) {
           // This is a slope comparison.. Any point on the line should have the same slope as the line.
-          val mDelta: Float = m - ((b - point.y.toFloat) / (0 - point.x.toFloat))
-          mDelta >= -0.001 && mDelta <= 0.001
+          val m2: Float =
+            if (point.x == 0) 0
+            else (b - point.y.toFloat) / (0 - point.x.toFloat)
+
+          val mDelta: Float = m - m2
+
+          mDelta >= -tolerance && mDelta <= tolerance
         } else false
     }
 

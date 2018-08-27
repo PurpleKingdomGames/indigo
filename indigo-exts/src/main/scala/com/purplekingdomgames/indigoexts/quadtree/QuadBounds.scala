@@ -16,7 +16,8 @@ trait QuadBounds {
   def right: Int  = x + width
   def bottom: Int = y + height
 
-  def center: GridPoint = GridPoint(x + (width / 2), y + (height / 2))
+  def position: GridPoint = GridPoint(x, y)
+  def center: GridPoint   = GridPoint(x + (width / 2), y + (height / 2))
 
   // Left, Bottom, Right, Top, following points counter clockwise.
   def edges: List[LineSegment] =
@@ -38,6 +39,12 @@ trait QuadBounds {
 
   def toRectangle: Rectangle =
     Rectangle(x, y, width, height)
+
+  def collidesWithRay(lineSegment: LineSegment): Boolean =
+    QuadBounds.rayCollisionCheck(this, lineSegment)
+
+  def collidesWithRayAt(lineSegment: LineSegment): Option[Point] =
+    QuadBounds.rayCollisionPosition(this, lineSegment)
 
   def renderAsString: String =
     s"""($x, $y, $width, $height)"""

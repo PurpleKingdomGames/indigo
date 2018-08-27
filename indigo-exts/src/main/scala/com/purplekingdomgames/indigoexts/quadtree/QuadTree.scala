@@ -2,6 +2,7 @@ package com.purplekingdomgames.indigoexts.quadtree
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
 import com.purplekingdomgames.indigoexts.grid.{GridPoint, GridSize}
+import com.purplekingdomgames.indigoexts.line.LineSegment
 
 sealed trait QuadTree[T] {
 
@@ -209,9 +210,42 @@ object QuadTree {
     }
 
   def searchByLine[T](quadTree: QuadTree[T], start: Point, end: Point): List[T] =
-    if (start === end) searchByPoint(quadTree, start)
+    searchByLine(quadTree, LineSegment(start, end))
+
+  def searchByLine[T](quadTree: QuadTree[T], lineSegment: LineSegment): List[T] =
+    if (lineSegment.start === lineSegment.end) searchByPoint(quadTree, lineSegment.start)
     else {
-      Nil
+      quadTree match {
+        case QuadBranch(bounds, a, b, c, d) if bounds.toRectangle.isPointWithin(lineSegment.start) =>
+          searchByLine(a, lineSegment) ++
+            searchByLine(b, lineSegment) ++
+            searchByLine(c, lineSegment) ++
+            searchByLine(d, lineSegment)
+
+        case QuadBranch(bounds, a, b, c, d) if bounds.toRectangle.isPointWithin(lineSegment.end) =>
+          searchByLine(a, lineSegment) ++
+            searchByLine(b, lineSegment) ++
+            searchByLine(c, lineSegment) ++
+            searchByLine(d, lineSegment)
+
+        case QuadBranch(bounds, a, b, c, d) if bounds.collidesWithRay(lineSegment) =>
+          searchByLine(a, lineSegment) ++
+            searchByLine(b, lineSegment) ++
+            searchByLine(c, lineSegment) ++
+            searchByLine(d, lineSegment)
+
+        case QuadLeaf(bounds, value) if lineSegment.start === bounds.position.toPoint =>
+          List(value)
+
+        case QuadLeaf(bounds, value) if lineSegment.end === bounds.position.toPoint =>
+          List(value)
+
+        case QuadLeaf(bounds, value) if LineSegment.lineContainsPoint(lineSegment, bounds.position.toPoint, 0.35f) =>
+          List(value)
+
+        case _ =>
+          Nil
+      }
     }
 
   def searchByRectangle[T](quadTree: QuadTree[T], rectangle: Rectangle): List[T] =
