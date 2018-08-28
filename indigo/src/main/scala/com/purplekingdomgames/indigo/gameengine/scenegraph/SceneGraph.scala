@@ -4,7 +4,7 @@ import com.purplekingdomgames.indigo.gameengine.assets.{AnimationsRegister, Font
 import com.purplekingdomgames.indigo.gameengine.events.{GameEvent, ViewEvent}
 import com.purplekingdomgames.indigo.gameengine.scenegraph.AnimationAction._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
-import com.purplekingdomgames.indigo.runtime.Logger
+import com.purplekingdomgames.indigo.runtime.IndigoLogger
 
 object SceneGraphNode {
   def empty: Group = Group(Point.zero, Depth.Base, Nil)
@@ -111,13 +111,7 @@ sealed trait Renderable extends SceneGraphNode {
 
 }
 
-case class Graphic(bounds: Rectangle,
-                   depth: Depth,
-                   imageAssetRef: String,
-                   ref: Point,
-                   crop: Rectangle,
-                   effects: Effects,
-                   eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent])
+case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent])
     extends Renderable {
 
   def x: Int = bounds.position.x - ref.x
@@ -197,13 +191,7 @@ object Graphic {
     )
 }
 
-case class Sprite(bindingKey: BindingKey,
-                  bounds: Rectangle,
-                  depth: Depth,
-                  animationsKey: AnimationsKey,
-                  ref: Point,
-                  effects: Effects,
-                  eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent])
+case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, animationsKey: AnimationsKey, ref: Point, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent])
     extends Renderable {
 
   def x: Int = bounds.position.x - ref.x
@@ -295,13 +283,7 @@ object Sprite {
     )
 }
 
-case class Text(text: String,
-                alignment: TextAlignment,
-                position: Point,
-                depth: Depth,
-                fontKey: FontKey,
-                effects: Effects,
-                eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent])
+case class Text(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontKey: FontKey, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent])
     extends Renderable {
 
   def x: Int = bounds.position.x
@@ -318,7 +300,7 @@ case class Text(text: String,
           .map(line => TextLine(line, Text.calculateBoundsOfLine(line, fontInfo)))
       }
       .getOrElse {
-        Logger.errorOnce(s"Cannot build Text lines, missing Font with key: $fontKey")
+        IndigoLogger.errorOnce(s"Cannot build Text lines, missing Font with key: $fontKey")
         Nil
       }
 

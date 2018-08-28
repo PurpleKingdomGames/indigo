@@ -3,7 +3,7 @@ package com.purplekingdomgames.indigo.gameengine.assets
 import com.purplekingdomgames.indigo.gameengine.PowerOfTwo
 import com.purplekingdomgames.indigo.gameengine.assets.TextureAtlas.supportedSizes
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.Point
-import com.purplekingdomgames.indigo.runtime.Logger
+import com.purplekingdomgames.indigo.runtime.IndigoLogger
 import org.scalajs.dom
 import org.scalajs.dom.{html, raw}
 
@@ -25,15 +25,13 @@ object TextureAtlas {
       imageRefs
     )
 
-  def create(imageRefs: List[ImageRef],
-             lookupByName: String => Option[LoadedImageAsset],
-             createAtlasFunc: ((TextureMap, String => Option[LoadedImageAsset]) => Atlas)): TextureAtlas = {
-    Logger.info(s"Creating atlases. Max size: ${MaxTextureSize.value}x${MaxTextureSize.value}")
+  def create(imageRefs: List[ImageRef], lookupByName: String => Option[LoadedImageAsset], createAtlasFunc: ((TextureMap, String => Option[LoadedImageAsset]) => Atlas)): TextureAtlas = {
+    IndigoLogger.info(s"Creating atlases. Max size: ${MaxTextureSize.value}x${MaxTextureSize.value}")
     val textureAtlas = (inflateAndSortByPowerOfTwo andThen groupTexturesIntoAtlasBuckets(MaxTextureSize) andThen convertToAtlas(
       createAtlasFunc
     )(lookupByName))(imageRefs)
 
-    Logger.info(textureAtlas.report)
+    IndigoLogger.info(textureAtlas.report)
 
     textureAtlas
   }
@@ -100,11 +98,7 @@ object TextureAtlasFunctions {
   def groupTexturesIntoAtlasBuckets(max: PowerOfTwo): List[TextureDetails] => List[List[TextureDetails]] = list => {
     val runningTotal: List[TextureDetails] => Int = _.map(_.size.value).sum
 
-    def rec(remaining: List[TextureDetails],
-            current: List[TextureDetails],
-            rejected: List[TextureDetails],
-            acc: List[List[TextureDetails]],
-            maximum: PowerOfTwo): List[List[TextureDetails]] =
+    def rec(remaining: List[TextureDetails], current: List[TextureDetails], rejected: List[TextureDetails], acc: List[List[TextureDetails]], maximum: PowerOfTwo): List[List[TextureDetails]] =
       (remaining, rejected) match {
         case (Nil, Nil) =>
           current :: acc
@@ -154,8 +148,7 @@ object TextureAtlasFunctions {
     Atlas(textureMap.size, Option(imageData))
   }
 
-  val convertTextureDetailsToTree: TextureDetails => AtlasQuadTree = textureDetails =>
-    AtlasQuadNode(textureDetails.size, AtlasTexture(textureDetails.imageRef))
+  val convertTextureDetailsToTree: TextureDetails => AtlasQuadTree = textureDetails => AtlasQuadNode(textureDetails.size, AtlasTexture(textureDetails.imageRef))
 
   val convertToTextureAtlas: ((TextureMap, String => Option[LoadedImageAsset]) => Atlas) => (
       String => Option[LoadedImageAsset]
@@ -222,7 +215,7 @@ object TextureAtlasFunctions {
         }
 
       case _ =>
-        Logger.info("Could not merge trees")
+        IndigoLogger.info("Could not merge trees")
         None
     }
 
@@ -306,7 +299,7 @@ case class AtlasQuadNode(size: PowerOfTwo, atlas: AtlasSum) extends AtlasQuadTre
         d.copy(q4 = d.q4.insert(tree))
 
       case _ =>
-        Logger.info("Unexpected failure to insert tree")
+        IndigoLogger.info("Unexpected failure to insert tree")
         this.atlas
     })
 

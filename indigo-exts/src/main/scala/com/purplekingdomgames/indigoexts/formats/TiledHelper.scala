@@ -2,7 +2,7 @@ package com.purplekingdomgames.indigoexts.formats
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.{Graphic, Group}
-import com.purplekingdomgames.indigo.runtime.Logger
+import com.purplekingdomgames.indigo.runtime.IndigoLogger
 import io.circe.generic.auto._
 import io.circe.parser._
 
@@ -20,7 +20,7 @@ object TiledHelper {
     decode[TiledMap](json) match {
       case Right(s) => Some(s)
       case Left(e) =>
-        Logger.info("Failed to deserialise json into TiledMap: " + e.getMessage)
+        IndigoLogger.info("Failed to deserialise json into TiledMap: " + e.getMessage)
         None
     }
 

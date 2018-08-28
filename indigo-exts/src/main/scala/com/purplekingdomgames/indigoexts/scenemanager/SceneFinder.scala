@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigoexts.scenemanager
 
-import com.purplekingdomgames.indigo.runtime.Logger
+import com.purplekingdomgames.indigo.runtime.IndigoLogger
 import com.purplekingdomgames.indigoexts.collections.NonEmptyList
 case class SceneFinder(previous: List[ScenePosition], current: ScenePosition, next: List[ScenePosition]) {
 
@@ -69,7 +69,7 @@ case class SceneFinder(previous: List[ScenePosition], current: ScenePosition, ne
         sf
 
       case None =>
-        Logger.errorOnce("Failed to find scene called: " + name.name)
+        IndigoLogger.errorOnce("Failed to find scene called: " + name.name)
         this
     }
 

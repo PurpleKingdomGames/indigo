@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigo.renderer
 
-import com.purplekingdomgames.indigo.runtime.Logger
+import com.purplekingdomgames.indigo.runtime.IndigoLogger
 import org.scalajs.dom.{html, raw}
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram, WebGLTexture, WebGLUniformLocation}
@@ -48,7 +48,7 @@ object RendererFunctions {
     gl.shaderSource(vertShader, vertCode)
     gl.compileShader(vertShader)
 
-    Logger.info("Pixel vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
+    IndigoLogger.info("Pixel vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
 
     //fragment shader source code
     val fragCode =
@@ -73,7 +73,7 @@ object RendererFunctions {
     gl.shaderSource(fragShader, fragCode)
     gl.compileShader(fragShader)
 
-    Logger.info("Pixel fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
+    IndigoLogger.info("Pixel fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
 
     //Create and use combined shader program
     val shaderProgram = gl.createProgram()
@@ -112,7 +112,7 @@ object RendererFunctions {
     gl.shaderSource(vertShader, vertCode)
     gl.compileShader(vertShader)
 
-    Logger.info("Light vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
+    IndigoLogger.info("Light vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
 
     //fragment shader source code
     val fragCode =
@@ -140,7 +140,7 @@ object RendererFunctions {
     gl.shaderSource(fragShader, fragCode)
     gl.compileShader(fragShader)
 
-    Logger.info("Light fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
+    IndigoLogger.info("Light fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
 
     //Create and use combined shader program
     val shaderProgram = gl.createProgram()
@@ -179,7 +179,7 @@ object RendererFunctions {
     gl.shaderSource(vertShader, vertCode)
     gl.compileShader(vertShader)
 
-    Logger.info("Merge vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
+    IndigoLogger.info("Merge vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
 
     //fragment shader source code
 
@@ -212,7 +212,7 @@ object RendererFunctions {
     gl.shaderSource(fragShader, fragCode)
     gl.compileShader(fragShader)
 
-    Logger.info("Merge fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
+    IndigoLogger.info("Merge fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
 
     //Create and use combined shader program
     val shaderProgram = gl.createProgram()
@@ -223,11 +223,7 @@ object RendererFunctions {
     shaderProgram
   }
 
-  def bindShaderToBuffer(cNc: ContextAndCanvas,
-                         shaderProgram: WebGLProgram,
-                         vertexBuffer: WebGLBuffer,
-                         textureBuffer: WebGLBuffer,
-                         effectsBuffer: WebGLBuffer): Unit = {
+  def bindShaderToBuffer(cNc: ContextAndCanvas, shaderProgram: WebGLProgram, vertexBuffer: WebGLBuffer, textureBuffer: WebGLBuffer, effectsBuffer: WebGLBuffer): Unit = {
 
     val gl = cNc.context
 
@@ -302,10 +298,7 @@ object RendererFunctions {
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var lastTextureName: String = ""
 
-  def setupFragmentShader(gl: raw.WebGLRenderingContext,
-                          shaderProgram: WebGLProgram,
-                          texture: WebGLTexture,
-                          imageRef: String): Unit = {
+  def setupFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, imageRef: String): Unit = {
 
     if (imageRef != lastTextureName) {
       gl.bindTexture(TEXTURE_2D, texture)
@@ -316,10 +309,7 @@ object RendererFunctions {
     gl.uniform1i(u_texture, 0)
   }
 
-  def setupLightingFragmentShader(gl: raw.WebGLRenderingContext,
-                                  shaderProgram: WebGLProgram,
-                                  texture: WebGLTexture,
-                                  imageRef: String): Unit = {
+  def setupLightingFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, imageRef: String): Unit = {
 
     if (imageRef != lastTextureName) {
       gl.bindTexture(TEXTURE_2D, texture)
@@ -331,11 +321,7 @@ object RendererFunctions {
 
   }
 
-  def setupMergeFragmentShader(gl: raw.WebGLRenderingContext,
-                               shaderProgram: WebGLProgram,
-                               textureGame: WebGLTexture,
-                               textureLighting: WebGLTexture,
-                               textureUi: WebGLTexture): Unit = {
+  def setupMergeFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, textureGame: WebGLTexture, textureLighting: WebGLTexture, textureUi: WebGLTexture): Unit = {
 
     val u_texture_game = gl.getUniformLocation(shaderProgram, "u_texture_game")
     gl.uniform1i(u_texture_game, 1)
@@ -369,8 +355,7 @@ object RendererFunctions {
       canvas.width = actualWidth
       canvas.height = actualHeight
 
-      orthographicProjectionMatrix =
-        Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
+      orthographicProjectionMatrix = Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
       orthographicProjectionMatrixNoMag = Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)
     }
 

@@ -46,20 +46,20 @@ class GameEngine[StartupData, StartupError, GameModel, ViewModel](
 
   def start(): Unit = {
 
-    Logger.info("Starting Indigo")
+    IndigoLogger.info("Starting Indigo")
 
     // Arrange config
     configAsync.map(_.getOrElse(config)).foreach { gameConfig =>
-      Logger.info("Configuration: " + gameConfig.asString)
+      IndigoLogger.info("Configuration: " + gameConfig.asString)
 
       if (gameConfig.viewport.width % 2 != 0 || gameConfig.viewport.height % 2 != 0)
-        Logger.info(
+        IndigoLogger.info(
           "WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!"
         )
 
       // Arrange assets
       assetsAsync.flatMap(aa => AssetManager.loadAssets(aa ++ assets)).foreach { assetCollection =>
-        Logger.info("Asset load complete")
+        IndigoLogger.info("Asset load complete")
 
         implicit val metrics: IMetrics =
           Metrics.getInstance(gameConfig.advanced.recordMetrics, gameConfig.advanced.logMetricsReportIntervalMs)
@@ -91,15 +91,15 @@ class GameEngine[StartupData, StartupError, GameModel, ViewModel](
 
         x.attemptRun match {
           case Right(f) =>
-            Logger.info("Starting main loop, there will be no more info log messages.")
-            Logger.info("You may get first occurrence error logs.")
+            IndigoLogger.info("Starting main loop, there will be no more info log messages.")
+            IndigoLogger.info("You may get first occurrence error logs.")
             dom.window.requestAnimationFrame(f)
 
             ()
 
           case Left(e) =>
-            Logger.error("Error during startup")
-            Logger.error(e.getMessage)
+            IndigoLogger.error("Error during startup")
+            IndigoLogger.error(e.getMessage)
 
             ()
         }
@@ -152,12 +152,12 @@ object GameEngine {
   def initialisedGame[StartupError, StartupData](startupData: Startup[StartupError, StartupData]): IIO[StartupData] =
     startupData match {
       case e: Startup.Failure[_] =>
-        Logger.info("Game initialisation failed")
-        Logger.info(e.report)
+        IndigoLogger.info("Game initialisation failed")
+        IndigoLogger.info(e.report)
         IIO.raiseError(new Exception("Game aborted due to start up failure"))
 
       case x: Startup.Success[StartupData] =>
-        Logger.info("Game initialisation succeeded")
+        IndigoLogger.info("Game initialisation succeeded")
         IIO.delay(x.success)
     }
 
@@ -165,13 +165,13 @@ object GameEngine {
     IIO.delay(Renderer.createCanvas(gameConfig.viewport.width, gameConfig.viewport.height))
 
   def listenToWorldEvents(canvas: Canvas, magnification: Int): IIO[Unit] = {
-    Logger.info("Starting world events")
+    IndigoLogger.info("Starting world events")
     IIO.delay(WorldEvents(canvas, magnification))
   }
 
   def startRenderer(gameConfig: GameConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: Canvas): IIO[IRenderer] =
     IIO.delay {
-      Logger.info("Starting renderer")
+      IndigoLogger.info("Starting renderer")
       Renderer(
         RendererConfig(
           viewport = Viewport(gameConfig.viewport.width, gameConfig.viewport.height),
@@ -198,15 +198,7 @@ object GameEngine {
       updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
   )(implicit metrics: IMetrics): IIO[GameLoop[GameModel, ViewModel]] =
     IIO.delay(
-      new GameLoop[GameModel, ViewModel](gameConfig,
-                                         assetMapping,
-                                         renderer,
-                                         audioPlayer,
-                                         initialModel,
-                                         updateModel,
-                                         initialViewModel(initialModel),
-                                         updateViewModel,
-                                         updateView)
+      new GameLoop[GameModel, ViewModel](gameConfig, assetMapping, renderer, audioPlayer, initialModel, updateModel, initialViewModel(initialModel), updateViewModel, updateView)
     )
 
 }

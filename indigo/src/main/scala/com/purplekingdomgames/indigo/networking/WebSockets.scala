@@ -3,7 +3,7 @@ package com.purplekingdomgames.indigo.networking
 import com.purplekingdomgames.indigo.gameengine.events._
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.BindingKey
 import com.purplekingdomgames.indigo.networking.WebSocketReadyState.{CLOSED, CLOSING}
-import com.purplekingdomgames.indigo.runtime.Logger
+import com.purplekingdomgames.indigo.runtime.IndigoLogger
 import org.scalajs.dom
 
 import scala.collection.mutable
@@ -79,8 +79,7 @@ object WebSockets {
     try {
       val socket = new dom.WebSocket(config.address)
 
-      socket.onmessage = (e: dom.MessageEvent) =>
-        GlobalEventStream.pushGameEvent(WebSocketEvent.Receive(config.id, e.data.toString))
+      socket.onmessage = (e: dom.MessageEvent) => GlobalEventStream.pushGameEvent(WebSocketEvent.Receive(config.id, e.data.toString))
 
       socket.onopen = (_: dom.Event) => onOpenSendMessage.foreach(msg => socket.send(msg))
 
@@ -91,7 +90,7 @@ object WebSockets {
       Option(socket)
     } catch {
       case e: Throwable =>
-        Logger.info("Error trying to set up a websocket: " + e.getMessage)
+        IndigoLogger.info("Error trying to set up a websocket: " + e.getMessage)
         None
     }
 

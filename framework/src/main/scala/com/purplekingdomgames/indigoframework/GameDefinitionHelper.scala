@@ -1,6 +1,6 @@
 package com.purplekingdomgames.indigoframework
 
-import com.purplekingdomgames.indigo.runtime.Logger
+import com.purplekingdomgames.indigo.runtime.IndigoLogger
 import com.purplekingdomgames.shared.GameDefinition
 
 object GameDefinitionHelper {
@@ -9,7 +9,7 @@ object GameDefinitionHelper {
     GameDefinition.fromJson(json) match {
       case Right(gd) => Some(gd)
       case Left(errorMessage) =>
-        Logger.info(errorMessage)
+        IndigoLogger.info(errorMessage)
         None
     }
 

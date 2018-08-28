@@ -1,7 +1,7 @@
 package com.purplekingdomgames.indigoframework
 
 import com.purplekingdomgames.indigo.gameengine.assets.AssetManager
-import com.purplekingdomgames.indigo.runtime.Logger
+import com.purplekingdomgames.indigo.runtime.IndigoLogger
 import com.purplekingdomgames.shared.{AssetType, GameConfig}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -38,7 +38,7 @@ xhr.send()
     GameConfig.fromJson(json) match {
       case Right(c) => Some(c)
       case Left(e) =>
-        Logger.info(e)
+        IndigoLogger.info(e)
         None
     }
 

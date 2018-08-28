@@ -5,7 +5,7 @@ import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
 import com.purplekingdomgames.indigo.gameengine.scenegraph._
 import com.purplekingdomgames.indigo.renderer.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import com.purplekingdomgames.indigo.renderer.{AssetMapping, DisplayObject, SpriteSheetFrame, Vector2}
-import com.purplekingdomgames.indigo.runtime.Logger
+import com.purplekingdomgames.indigo.runtime.IndigoLogger
 import com.purplekingdomgames.indigo.runtime.metrics.IMetrics
 
 import scala.collection.mutable
@@ -30,7 +30,7 @@ object DisplayObjectConversions {
           .map(_._2.offset)
           .map(pt => Vector2(pt.x.toDouble, pt.y.toDouble))
           .getOrElse {
-            Logger.info("Failed to find atlas offset for texture: " + name)
+            IndigoLogger.info("Failed to find atlas offset for texture: " + name)
             Vector2.zero
           }
       }
@@ -39,7 +39,7 @@ object DisplayObjectConversions {
   private val lookupAtlasName: (AssetMapping, String) => String = (assetMapping, name) =>
     lookupAtlasNameCache.getOrElseUpdate(name, {
       assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasName).getOrElse {
-        Logger.info("Failed to find atlas name for texture: " + name)
+        IndigoLogger.info("Failed to find atlas name for texture: " + name)
         ""
       }
     })
@@ -48,14 +48,13 @@ object DisplayObjectConversions {
     lookupAtlasSizeCache.getOrElseUpdate(
       name, {
         assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasSize).getOrElse {
-          Logger.info("Failed to find atlas size for texture: " + name)
+          IndigoLogger.info("Failed to find atlas size for texture: " + name)
           Vector2.one
         }
       }
   )
 
-  def leafToDisplayObject(gameTime: GameTime,
-                          assetMapping: AssetMapping)(implicit metrics: IMetrics): Renderable => List[DisplayObject] = {
+  def leafToDisplayObject(gameTime: GameTime, assetMapping: AssetMapping)(implicit metrics: IMetrics): Renderable => List[DisplayObject] = {
     case leaf: Graphic =>
       List(
         DisplayObject(
@@ -108,8 +107,7 @@ object DisplayObjectConversions {
                   SpriteSheetFrame.calculateFrameOffset(
                     imageSize = lookupAtlasSize(assetMapping, anim.imageAssetRef),
                     frameSize = Vector2(anim.currentFrame.bounds.size.x.toDouble, anim.currentFrame.bounds.size.y.toDouble),
-                    framePosition =
-                      Vector2(anim.currentFrame.bounds.position.x.toDouble, anim.currentFrame.bounds.position.y.toDouble),
+                    framePosition = Vector2(anim.currentFrame.bounds.position.x.toDouble, anim.currentFrame.bounds.position.y.toDouble),
                     textureOffset = lookupTextureOffset(assetMapping, anim.imageAssetRef)
                   )
                 }
@@ -118,7 +116,7 @@ object DisplayObjectConversions {
           )
         }
         .getOrElse {
-          Logger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${leaf.animationsKey}")
+          IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${leaf.animationsKey}")
           Nil
         }
 
@@ -177,7 +175,7 @@ object DisplayObjectConversions {
           }
         }
         .getOrElse {
-          Logger.errorOnce(s"Cannot render Text, missing Font with key: ${leaf.fontKey}")
+          IndigoLogger.errorOnce(s"Cannot render Text, missing Font with key: ${leaf.fontKey}")
           Nil
       }
 
