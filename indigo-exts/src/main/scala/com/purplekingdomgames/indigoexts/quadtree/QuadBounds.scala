@@ -56,6 +56,9 @@ trait QuadBounds {
 
 object QuadBounds {
 
+  implicit def showQuadBounds[T]: Show[QuadBounds] =
+    Show.create(b => b.renderAsString)
+
   implicit val show: Show[QuadBounds] =
     Show.create { qb =>
       s"""QuadBounds(${qb.x}, ${qb.y}, ${qb.width}, ${qb.height})"""
@@ -97,18 +100,9 @@ object QuadBounds {
   def subdivide(quadBounds: QuadBounds): (QuadBounds, QuadBounds, QuadBounds, QuadBounds) =
     (
       unsafeCreate(quadBounds.x, quadBounds.y, quadBounds.width / 2, quadBounds.height / 2),
-      unsafeCreate(quadBounds.x + (quadBounds.width / 2),
-                   quadBounds.y,
-                   quadBounds.width - (quadBounds.width / 2),
-                   quadBounds.height / 2),
-      unsafeCreate(quadBounds.x,
-                   quadBounds.y + (quadBounds.height / 2),
-                   quadBounds.width / 2,
-                   quadBounds.height - (quadBounds.height / 2)),
-      unsafeCreate(quadBounds.x + (quadBounds.width / 2),
-                   quadBounds.y + (quadBounds.height / 2),
-                   quadBounds.width - (quadBounds.width / 2),
-                   quadBounds.height - (quadBounds.height / 2))
+      unsafeCreate(quadBounds.x + (quadBounds.width / 2), quadBounds.y, quadBounds.width - (quadBounds.width / 2), quadBounds.height / 2),
+      unsafeCreate(quadBounds.x, quadBounds.y + (quadBounds.height / 2), quadBounds.width / 2, quadBounds.height - (quadBounds.height / 2)),
+      unsafeCreate(quadBounds.x + (quadBounds.width / 2), quadBounds.y + (quadBounds.height / 2), quadBounds.width - (quadBounds.width / 2), quadBounds.height - (quadBounds.height / 2))
     )
 
   def combine(head: QuadBounds, tail: List[QuadBounds]): QuadBounds =

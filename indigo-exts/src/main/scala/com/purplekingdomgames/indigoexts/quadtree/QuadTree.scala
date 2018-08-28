@@ -1,6 +1,7 @@
 package com.purplekingdomgames.indigoexts.quadtree
 
 import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
+import com.purplekingdomgames.indigo.runtime.Show
 import com.purplekingdomgames.indigoexts.grid.{GridPoint, GridSize}
 import com.purplekingdomgames.indigoexts.line.LineSegment
 
@@ -43,6 +44,9 @@ sealed trait QuadTree[T] {
 }
 object QuadTree {
 
+  implicit def showQuadTree[T]: Show[QuadTree[T]] =
+    Show.create(t => t.renderAsString)
+
   def empty[T](sizeAsPowerOf2: Int): QuadTree[T] =
     QuadEmpty(QuadBounds.apply(sizeAsPowerOf2))
 
@@ -50,8 +54,7 @@ object QuadTree {
     QuadEmpty(QuadBounds.apply(gridSize.asPowerOf2))
 
   //TODO: This needs to be recursive. if a is branch, then do another empty check etc.
-  case class QuadBranch[T](bounds: QuadBounds, a: QuadTree[T], b: QuadTree[T], c: QuadTree[T], d: QuadTree[T])
-      extends QuadTree[T] {
+  case class QuadBranch[T](bounds: QuadBounds, a: QuadTree[T], b: QuadTree[T], c: QuadTree[T], d: QuadTree[T]) extends QuadTree[T] {
     def isEmpty: Boolean =
       a.isEmpty && b.isEmpty && c.isEmpty && d.isEmpty
   }
