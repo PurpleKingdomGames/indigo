@@ -17,6 +17,21 @@ class NonEmptyListSpec extends FunSpec with Matchers {
         }
     }
 
+  describe("NonEmptyList usage") {
+
+    it("can be pattern matched") {
+      NonEmptyList(1, 2, 3) match {
+        case NonEmptyList(head, tail) =>
+          head shouldEqual 1
+          tail shouldEqual List(2, 3)
+
+        case _ =>
+          fail("oops")
+      }
+    }
+
+  }
+
   describe("NonEmptyList ops") {
 
     it("should have: equality") {

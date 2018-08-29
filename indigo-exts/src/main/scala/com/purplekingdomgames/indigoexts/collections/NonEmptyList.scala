@@ -91,6 +91,9 @@ object NonEmptyList {
       val tail: List[A] = tailItems
     }
 
+  def unapply[A](nel: NonEmptyList[A]): Option[(A, List[A])] =
+    Option((nel.head, nel.tail))
+
   def point[A](a: A): NonEmptyList[A] =
     apply(a, List.empty[A])
 
