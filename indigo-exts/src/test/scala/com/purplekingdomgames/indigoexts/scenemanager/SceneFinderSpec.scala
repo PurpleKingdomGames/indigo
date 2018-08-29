@@ -6,8 +6,7 @@ class SceneFinderSpec extends FunSpec with Matchers {
 
   import TestScenes._
 
-  val scenes
-    : ScenesList[TestGameModel, TestViewModel, TestSceneA, _] = sceneA :: sceneB :: ScenesNil[TestGameModel, TestViewModel]()
+  val scenes: ScenesList[TestGameModel, TestViewModel, TestSceneA, _] = sceneA :: sceneB :: ScenesNil[TestGameModel, TestViewModel]()
 
   val sceneFinder: SceneFinder =
     SceneFinder(
@@ -31,8 +30,10 @@ class SceneFinderSpec extends FunSpec with Matchers {
     }
 
     it("should be able to produce a non-empty list of ScenePositions") {
-      SceneFinder.fromScenes(scenes).toNel shouldEqual NonEmptyList(ScenePosition(0, sceneA.name),
-                                                                    List(ScenePosition(1, sceneB.name)))
+      val a = SceneFinder.fromScenes(scenes).toNel
+      val b = NonEmptyList(ScenePosition(0, sceneA.name), List(ScenePosition(1, sceneB.name)))
+
+      NonEmptyList.equality(a, b) shouldEqual true
     }
 
     it("should be able give the current scene") {

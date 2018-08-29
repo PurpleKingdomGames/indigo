@@ -1,68 +1,90 @@
 package com.purplekingdomgames.indigoexts.collections
+import org.scalactic.Equality
 import org.scalatest.{FunSpec, Matchers}
 
 class NonEmptyListSpec extends FunSpec with Matchers {
 
+  // Needed because of the funky NonEmptyList type.
+  implicit def eq[T]: Equality[NonEmptyList[T]] =
+    new Equality[NonEmptyList[T]] {
+      def areEqual(a: NonEmptyList[T], b: Any): Boolean =
+        b match {
+          case l: NonEmptyList[T] =>
+            NonEmptyList.equality(a, l)
+
+          case _ =>
+            false
+        }
+    }
+
   describe("NonEmptyList ops") {
 
     it("should have: equality") {
-      pending
+      NonEmptyList(1) === NonEmptyList(1) shouldEqual true
     }
 
     it("should have: point") {
-      pending
+      NonEmptyList.point(1) shouldEqual NonEmptyList(1)
     }
 
     it("should have: map") {
-      pending
+      NonEmptyList(1, 2, 3).map(_ * 10) shouldEqual NonEmptyList(10, 20, 30)
+    }
+
+    it("should have: reverse") {
+      NonEmptyList(1, 2, 3, 4, 5).reverse shouldEqual NonEmptyList(5, 4, 3, 2, 1)
+      NonEmptyList(1) shouldEqual NonEmptyList(1)
     }
 
     it("should have: combine") {
-      pending
+      NonEmptyList(1) ++ NonEmptyList(2) shouldEqual NonEmptyList(1, 2)
     }
 
     it("should have: flatten") {
-      pending
+      NonEmptyList.flatten(NonEmptyList(NonEmptyList.point(1))) shouldEqual NonEmptyList(1)
     }
 
     it("should have: flatMap") {
-      pending
+      NonEmptyList(1, 2, 3).flatMap(i => NonEmptyList(i * 10 + 1)) shouldEqual NonEmptyList(11, 21, 31)
     }
 
     it("should have: foldLeft") {
-      pending
+      NonEmptyList("a", "b", "c").foldLeft("")(_ + _) shouldEqual "abc"
     }
 
     it("should have: reduceLeft") {
-      pending
+      NonEmptyList("a", "b", "c").reduce(_ + _) shouldEqual "abc"
     }
 
     it("should have: append") {
-      pending
+      NonEmptyList(1) :+ 2 shouldEqual NonEmptyList(1, 2)
     }
 
     it("should have: cons") {
-      pending
+      1 :: NonEmptyList(2) shouldEqual NonEmptyList(1, 2)
     }
 
     it("should have: zipWithIndex") {
-      pending
+      NonEmptyList("a", "b", "c").zipWithIndex shouldEqual NonEmptyList(("a", 0), ("b", 1), ("c", 2))
     }
 
     it("should have: zip") {
-      pending
+      NonEmptyList(1, 2, 3) zip NonEmptyList("a", "b", "c") shouldEqual NonEmptyList((1, "a"), (2, "b"), (3, "c"))
     }
 
     it("should have: forall") {
-      pending
+      NonEmptyList(1, 2, 3).forall(_ > 0) shouldEqual true
+      NonEmptyList(1, 2, 3).forall(_ > 1) shouldEqual false
     }
 
     it("should have: find") {
-      pending
+      NonEmptyList(1, 2, 3).find(_ == 2) shouldEqual Some(2)
+      NonEmptyList(1, 2, 3).find(_ == 4) shouldEqual None
     }
 
     it("should have: exists") {
-      pending
+      NonEmptyList(1, 2, 3).exists(_ == 2) shouldEqual true
+      NonEmptyList(1, 2, 3).exists(_ == 4) shouldEqual false
     }
 
   }

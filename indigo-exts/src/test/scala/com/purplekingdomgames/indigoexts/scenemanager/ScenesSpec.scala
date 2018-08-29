@@ -6,8 +6,7 @@ class ScenesSpec extends FunSpec with Matchers {
 
   import TestScenes._
 
-  val scenes
-    : ScenesList[TestGameModel, TestViewModel, TestSceneA, _] = sceneA :: sceneB :: ScenesNil[TestGameModel, TestViewModel]()
+  val scenes: ScenesList[TestGameModel, TestViewModel, TestSceneA, _] = sceneA :: sceneB :: ScenesNil[TestGameModel, TestViewModel]()
 
   describe("Scenes") {
 
@@ -29,7 +28,7 @@ class ScenesSpec extends FunSpec with Matchers {
     }
 
     it("should allow you to list all scene names") {
-      scenes.listSceneNames shouldEqual NonEmptyList(sceneNameA, List(sceneNameB))
+      NonEmptyList.equality(scenes.listSceneNames, NonEmptyList(sceneNameA, List(sceneNameB))) shouldEqual true
     }
 
   }

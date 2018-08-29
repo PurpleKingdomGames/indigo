@@ -1,6 +1,18 @@
 package com.purplekingdomgames.indigoexts.collections
+import com.purplekingdomgames.indigo.runtime.Show
 
-case class NonEmptyList[A](head: A, tail: List[A]) {
+trait NonEmptyList[A] {
+
+  val head: A
+  val tail: List[A]
+
+  def first: A = head
+
+  def last: A =
+    tail.reverse.headOption match {
+      case Some(s) => s
+      case None    => head
+    }
 
   def ===(other: NonEmptyList[A]): Boolean =
     NonEmptyList.equality(this, other)
@@ -8,14 +20,17 @@ case class NonEmptyList[A](head: A, tail: List[A]) {
   def length: Int =
     NonEmptyList.length(this)
 
+  def reverse: NonEmptyList[A] =
+    NonEmptyList.reverse(this)
+
   def toList: List[A] =
     head :: tail
 
   def foldLeft[Z](acc: Z)(f: (Z, A) => Z): Z =
     NonEmptyList.foldLeft(this)(acc)(f)
 
-  def reduceLeft(f: (A, A) => A): A =
-    NonEmptyList.reduceLeft(this)(f)
+  def reduce(f: (A, A) => A): A =
+    NonEmptyList.reduce(this)(f)
 
   def :+(next: A): NonEmptyList[A] =
     NonEmptyList.append(this)(next)
@@ -47,15 +62,37 @@ case class NonEmptyList[A](head: A, tail: List[A]) {
   def exists(p: A => Boolean): Boolean =
     NonEmptyList.exists(this)(p)
 
+  override def toString: String =
+    s"Nel[${head}][${tail.mkString(", ")}]"
+
+  def mkString: String =
+    mkString("")
+
+  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
+  def mkString(separator: String): String =
+    head.toString + separator + tail.mkString(separator)
+
 }
 
 object NonEmptyList {
 
-  def apply[A](a: A): NonEmptyList[A] =
-    NonEmptyList(a, List.empty[A])
+  implicit def showNonEmptyList[A](implicit showA: Show[A]): Show[NonEmptyList[A]] =
+    Show.create { l =>
+      val s = l.map(a => showA.show(a))
+      s"Nel[${s.head}][${s.tail.mkString(", ")}]"
+    }
+
+  def apply[A](head: A, tail: A*): NonEmptyList[A] =
+    apply(head, tail.toList)
+
+  def apply[A](headItem: A, tailItems: List[A]): NonEmptyList[A] =
+    new NonEmptyList[A] {
+      val head: A       = headItem
+      val tail: List[A] = tailItems
+    }
 
   def point[A](a: A): NonEmptyList[A] =
-    apply(a)
+    apply(a, List.empty[A])
 
   def equality[A](a: NonEmptyList[A], b: NonEmptyList[A]): Boolean =
     a.length == b.length && a.zip(b).forall(as => as._1 == as._2)
@@ -63,11 +100,20 @@ object NonEmptyList {
   def length[A](fa: NonEmptyList[A]): Int =
     fa.tail.length + 1
 
+  def reverse[A](fa: NonEmptyList[A]): NonEmptyList[A] =
+    fa.tail.reverse match {
+      case Nil =>
+        fa
+
+      case x :: xs =>
+        apply(x, xs :+ fa.head)
+    }
+
   def map[A, B](fa: NonEmptyList[A])(f: A => B): NonEmptyList[B] =
-    NonEmptyList(f(fa.head), fa.tail.map(f))
+    apply(f(fa.head), fa.tail.map(f))
 
   def combine[A](fa: NonEmptyList[A])(fb: NonEmptyList[A]): NonEmptyList[A] =
-    NonEmptyList(fa.head, fa.tail ++ fb.toList)
+    apply(fa.head, fa.tail ++ fb.toList)
 
   def flatten[A](fa: NonEmptyList[NonEmptyList[A]]): NonEmptyList[A] =
     fa.tail.foldLeft(fa.head)(_ ++ _)
@@ -78,20 +124,26 @@ object NonEmptyList {
   def foldLeft[A, Z](fa: NonEmptyList[A])(acc: Z)(f: (Z, A) => Z): Z =
     fa.tail.foldLeft(f(acc, fa.head))(f)
 
-  def reduceLeft[A](fa: NonEmptyList[A])(f: (A, A) => A): A =
-    foldLeft(fa)(fa.head)(f)
+  def reduce[A](fa: NonEmptyList[A])(f: (A, A) => A): A =
+    fa.tail match {
+      case Nil =>
+        fa.head
+
+      case x :: xs =>
+        foldLeft(NonEmptyList(x, xs))(fa.head)(f)
+    }
 
   def append[A](fa: NonEmptyList[A])(next: A): NonEmptyList[A] =
-    NonEmptyList(fa.head, fa.tail :+ next)
+    apply(fa.head, fa.tail :+ next)
 
   def cons[A](fa: NonEmptyList[A])(first: A): NonEmptyList[A] =
-    NonEmptyList(first, fa.head :: fa.tail)
+    apply(first, fa.head :: fa.tail)
 
   def zipWithIndex[A](fa: NonEmptyList[A]): NonEmptyList[(A, Int)] =
-    NonEmptyList((fa.head, 0), fa.tail.zipWithIndex.map(p => (p._1, p._2 + 1)))
+    apply((fa.head, 0), fa.tail.zipWithIndex.map(p => (p._1, p._2 + 1)))
 
   def zip[A, B](fa: NonEmptyList[A], fb: NonEmptyList[B]): NonEmptyList[(A, B)] =
-    NonEmptyList((fa.head, fb.head), fa.tail.zip(fb.tail))
+    apply((fa.head, fb.head), fa.tail.zip(fb.tail))
 
   def forall[A](fa: NonEmptyList[A])(p: A => Boolean): Boolean =
     fa.toList.forall(p)
