@@ -93,7 +93,7 @@ def mirrorScalaSource(baseDirectory: File): Seq[File] = {
   else sys.error(s"Missing source directory: $scalaSourceDir")
 }
 
-addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.24")
+addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.25")
 
 addSbtPlugin("com.purplekingdomgames" % "sbt-indigo" % indigoVersion)
 
