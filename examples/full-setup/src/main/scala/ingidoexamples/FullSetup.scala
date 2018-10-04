@@ -1,11 +1,11 @@
 package ingidoexamples
 
-import com.purplekingdomgames.indigo.gameengine._
-import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
-import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GameEvent}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.SceneUpdateFragment
-import com.purplekingdomgames.indigoexts.entry.Indigo
-import com.purplekingdomgames.shared._
+import indigo.gameengine._
+import indigo.gameengine.assets.AssetCollection
+import indigo.gameengine.events.{FrameInputEvents, GameEvent}
+import indigo.gameengine.scenegraph.SceneUpdateFragment
+import indigoexts.entry.Indigo
+import indigo.shared._
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 

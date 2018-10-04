@@ -1,6 +1,6 @@
-package com.purplekingdomgames.server
+package server
 
-import com.purplekingdomgames.shared._
+import indigo.shared._
 
 object GameDetails {
 

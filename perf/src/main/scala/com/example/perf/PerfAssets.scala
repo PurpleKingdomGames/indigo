@@ -1,6 +1,6 @@
 package com.example.perf
 
-import com.purplekingdomgames.shared.AssetType
+import indigo.shared.AssetType
 
 object PerfAssets {
 

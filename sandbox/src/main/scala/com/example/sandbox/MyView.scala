@@ -1,9 +1,9 @@
 package com.example.sandbox
 
-import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GlobalSignals, MouseEvent}
-import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
-import com.purplekingdomgames.indigo.runtime.Show
+import indigo.gameengine.events.{FrameInputEvents, GlobalSignals, MouseEvent}
+import indigo.gameengine.scenegraph._
+import indigo.gameengine.scenegraph.datatypes._
+import indigo.runtime.Show
 
 object MyView {
 

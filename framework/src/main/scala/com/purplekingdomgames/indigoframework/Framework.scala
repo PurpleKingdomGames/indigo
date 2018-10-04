@@ -1,11 +1,11 @@
-package com.purplekingdomgames.indigoframework
+package indigoframework
 
-import com.purplekingdomgames.indigo.gameengine._
-import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
-import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GameEvent}
-import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigoexts.entry.Indigo
-import com.purplekingdomgames.shared.{AssetType, GameConfig, GameDefinition}
+import indigo.gameengine._
+import indigo.gameengine.assets.AssetCollection
+import indigo.gameengine.events.{FrameInputEvents, GameEvent}
+import indigo.gameengine.scenegraph._
+import indigoexts.entry.Indigo
+import indigo.shared.{AssetType, GameConfig, GameDefinition}
 
 import scala.concurrent.Future
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
@@ -41,8 +41,7 @@ object Framework {
 
   val updateViewModel: (GameTime, GameModel, Unit, FrameInputEvents) => Unit = (_, _, _, _) => ()
 
-  val updateView: (GameTime, GameModel, Unit, FrameInputEvents) => SceneUpdateFragment = (_, gameModel, _, _) =>
-    GameViewHelper.updateView(gameModel)
+  val updateView: (GameTime, GameModel, Unit, FrameInputEvents) => SceneUpdateFragment = (_, gameModel, _, _) => GameViewHelper.updateView(gameModel)
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
   @JSExport

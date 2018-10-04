@@ -1,4 +1,4 @@
-package com.purplekingdomgames.server
+package server
 
 import org.scalatest.{FunSpec, Matchers}
 

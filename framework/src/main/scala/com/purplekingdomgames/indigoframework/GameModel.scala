@@ -1,7 +1,7 @@
-package com.purplekingdomgames.indigoframework
+package indigoframework
 
-import com.purplekingdomgames.indigo.gameengine.events.GameEvent
-import com.purplekingdomgames.shared.GameDefinition
+import indigo.gameengine.events.GameEvent
+import indigo.shared.GameDefinition
 
 object GameModelHelper {
 

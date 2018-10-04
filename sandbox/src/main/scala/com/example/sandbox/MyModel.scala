@@ -1,7 +1,7 @@
 package com.example.sandbox
 
-import com.purplekingdomgames.indigo.gameengine.constants.Keys
-import com.purplekingdomgames.indigo.gameengine.events.{FrameTick, GameEvent, KeyboardEvent}
+import indigo.gameengine.constants.Keys
+import indigo.gameengine.events.{FrameTick, GameEvent, KeyboardEvent}
 
 object MyModel {
 

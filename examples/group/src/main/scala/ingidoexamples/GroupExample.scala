@@ -1,12 +1,12 @@
 package ingidoexamples
 
-import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
-import com.purplekingdomgames.indigo.gameengine.events.FrameInputEvents
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.FontInfo
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, Graphic, Group, SceneUpdateFragment}
-import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
-import com.purplekingdomgames.indigoexts.entry.{IndigoGameBasic, _}
-import com.purplekingdomgames.shared.{AssetType, GameConfig}
+import indigo.gameengine.assets.AssetCollection
+import indigo.gameengine.events.FrameInputEvents
+import indigo.gameengine.scenegraph.datatypes.FontInfo
+import indigo.gameengine.scenegraph.{Animations, Graphic, Group, SceneUpdateFragment}
+import indigo.gameengine.{GameTime, StartupErrors, events}
+import indigoexts.entry.{IndigoGameBasic, _}
+import indigo.shared.{AssetType, GameConfig}
 
 object GroupExample extends IndigoGameBasic[Unit, Unit, Unit] {
 

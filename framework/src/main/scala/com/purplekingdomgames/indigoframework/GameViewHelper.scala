@@ -1,8 +1,8 @@
-package com.purplekingdomgames.indigoframework
+package indigoframework
 
-import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{AmbientLight, Rectangle}
-import com.purplekingdomgames.shared.EntityRectangle
+import indigo.gameengine.scenegraph._
+import indigo.gameengine.scenegraph.datatypes.{AmbientLight, Rectangle}
+import indigo.shared.EntityRectangle
 
 case class GameViewEvent()
 

@@ -1,8 +1,8 @@
-package com.purplekingdomgames.indigoframework
+package indigoframework
 
-import com.purplekingdomgames.indigo.gameengine.assets.AssetManager
-import com.purplekingdomgames.indigo.runtime.IndigoLogger
-import com.purplekingdomgames.shared.{AssetList, AssetType}
+import indigo.gameengine.assets.AssetManager
+import indigo.runtime.IndigoLogger
+import indigo.shared.{AssetList, AssetType}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

@@ -1,15 +1,15 @@
 package ingidoexamples
 
-import com.purplekingdomgames.indigoexts.entry._
-import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
-import com.purplekingdomgames.indigo.gameengine.events.FrameInputEvents
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment, Text}
-import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
-import com.purplekingdomgames.indigoexts.automata._
-import com.purplekingdomgames.indigoexts.entry.IndigoGameBasic
-import com.purplekingdomgames.indigoexts.ui._
-import com.purplekingdomgames.shared.{AssetType, GameConfig}
+import indigoexts.entry._
+import indigo.gameengine.assets.AssetCollection
+import indigo.gameengine.events.FrameInputEvents
+import indigo.gameengine.scenegraph.datatypes._
+import indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment, Text}
+import indigo.gameengine.{GameTime, StartupErrors, events}
+import indigoexts.automata._
+import indigoexts.entry.IndigoGameBasic
+import indigoexts.ui._
+import indigo.shared.{AssetType, GameConfig}
 
 object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 

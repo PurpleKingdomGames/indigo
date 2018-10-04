@@ -1,14 +1,14 @@
 package ingidoexamples
 
-import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors}
-import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
-import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, GameEvent, ViewEvent}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, SceneUpdateFragment, Text}
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo, FontKey, Rectangle}
-import com.purplekingdomgames.indigoexts.entry._
-import com.purplekingdomgames.indigoexts.lenses.Lens
-import com.purplekingdomgames.indigoexts.scenemanager._
-import com.purplekingdomgames.shared.{AssetType, ClearColor, GameConfig}
+import indigo.gameengine.{GameTime, StartupErrors}
+import indigo.gameengine.assets.AssetCollection
+import indigo.gameengine.events.{FrameInputEvents, GameEvent, ViewEvent}
+import indigo.gameengine.scenegraph.{Animations, SceneUpdateFragment, Text}
+import indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo, FontKey, Rectangle}
+import indigoexts.entry._
+import indigoexts.lenses.Lens
+import indigoexts.scenemanager._
+import indigo.shared.{AssetType, ClearColor, GameConfig}
 
 object ScenesSetup extends IndigoGameWithScenes[MyStartUpData, MyGameModel, MyViewModel] {
 
@@ -57,17 +57,11 @@ object SceneA extends Scene[MyGameModel, MyViewModel, MessageA, Unit] {
     _ => sceneModel
 
   // Nothing to do
-  def updateSceneViewModel(gameTime: GameTime,
-                           sceneModel: MessageA,
-                           sceneViewModel: Unit,
-                           frameInputEvents: FrameInputEvents): Unit = ()
+  def updateSceneViewModel(gameTime: GameTime, sceneModel: MessageA, sceneViewModel: Unit, frameInputEvents: FrameInputEvents): Unit = ()
 
   // Show some text
   // When the user clicks anywhere in the screen, trigger an event to jump to the other scene.
-  def updateSceneView(gameTime: GameTime,
-                      sceneModel: MessageA,
-                      sceneViewModel: Unit,
-                      frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
+  def updateSceneView(gameTime: GameTime, sceneModel: MessageA, sceneViewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     val events: List[ViewEvent] =
       if (frameInputEvents.wasMouseClickedWithin(Rectangle(0, 0, 550, 400))) List(JumpToScene(SceneB.name))
       else Nil
@@ -101,17 +95,11 @@ object SceneB extends Scene[MyGameModel, MyViewModel, MessageB, Unit] {
     _ => sceneModel
 
   // Nothing to do
-  def updateSceneViewModel(gameTime: GameTime,
-                           sceneModel: MessageB,
-                           sceneViewModel: Unit,
-                           frameInputEvents: FrameInputEvents): Unit = ()
+  def updateSceneViewModel(gameTime: GameTime, sceneModel: MessageB, sceneViewModel: Unit, frameInputEvents: FrameInputEvents): Unit = ()
 
   // Show some text
   // When the user clicks anywhere in the screen, trigger an event to jump to the other scene.
-  def updateSceneView(gameTime: GameTime,
-                      sceneModel: MessageB,
-                      sceneViewModel: Unit,
-                      frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
+  def updateSceneView(gameTime: GameTime, sceneModel: MessageB, sceneViewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     val events: List[ViewEvent] =
       if (frameInputEvents.wasMouseClickedWithin(Rectangle(0, 0, 550, 400))) List(JumpToScene(SceneA.name))
       else Nil

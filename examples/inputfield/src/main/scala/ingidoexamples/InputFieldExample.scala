@@ -1,13 +1,13 @@
 package ingidoexamples
 
-import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
-import com.purplekingdomgames.indigo.gameengine.events.FrameInputEvents
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment, Text}
-import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
-import com.purplekingdomgames.indigoexts.entry.{IndigoGameBasic, _}
-import com.purplekingdomgames.indigoexts.ui._
-import com.purplekingdomgames.shared.{AssetType, ClearColor, GameConfig}
+import indigo.gameengine.assets.AssetCollection
+import indigo.gameengine.events.FrameInputEvents
+import indigo.gameengine.scenegraph.datatypes._
+import indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment, Text}
+import indigo.gameengine.{GameTime, StartupErrors, events}
+import indigoexts.entry.{IndigoGameBasic, _}
+import indigoexts.ui._
+import indigo.shared.{AssetType, ClearColor, GameConfig}
 
 object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
@@ -40,10 +40,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
   def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
     ()
 
-  def present(gameTime: GameTime,
-              model: MyGameModel,
-              viewModel: Unit,
-              frameInputEvents: events.FrameInputEvents): SceneUpdateFragment = {
+  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment = {
 
     val inputFieldUpdate: InputFieldViewUpdate =
       model.inputField.draw(

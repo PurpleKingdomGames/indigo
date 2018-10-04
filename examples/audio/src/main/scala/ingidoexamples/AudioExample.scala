@@ -1,13 +1,13 @@
 package ingidoexamples
 
-import com.purplekingdomgames.indigo.gameengine.assets.AssetCollection
-import com.purplekingdomgames.indigo.gameengine.events.{FrameInputEvents, PlaySound}
-import com.purplekingdomgames.indigo.gameengine.scenegraph._
-import com.purplekingdomgames.indigo.gameengine.scenegraph.datatypes.{BindingKey, Depth, FontInfo, Rectangle}
-import com.purplekingdomgames.indigo.gameengine.{GameTime, StartupErrors, events}
-import com.purplekingdomgames.indigoexts.entry.{IndigoGameBasic, _}
-import com.purplekingdomgames.indigoexts.ui._
-import com.purplekingdomgames.shared.{AssetType, GameConfig}
+import indigo.gameengine.assets.AssetCollection
+import indigo.gameengine.events.{FrameInputEvents, PlaySound}
+import indigo.gameengine.scenegraph._
+import indigo.gameengine.scenegraph.datatypes.{BindingKey, Depth, FontInfo, Rectangle}
+import indigo.gameengine.{GameTime, StartupErrors, events}
+import indigoexts.entry.{IndigoGameBasic, _}
+import indigoexts.ui._
+import indigo.shared.{AssetType, GameConfig}
 
 object AudioExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 

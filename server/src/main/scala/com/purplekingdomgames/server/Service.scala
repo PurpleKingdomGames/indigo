@@ -1,4 +1,4 @@
-package com.purplekingdomgames.server
+package server
 
 import java.io.File
 
