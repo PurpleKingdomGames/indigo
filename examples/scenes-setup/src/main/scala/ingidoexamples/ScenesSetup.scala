@@ -1,14 +1,7 @@
 package ingidoexamples
 
-import indigo.gameengine.{GameTime, StartupErrors}
-import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.events.{FrameInputEvents, GameEvent, ViewEvent}
-import indigo.gameengine.scenegraph.{Animations, SceneUpdateFragment, Text}
-import indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo, FontKey, Rectangle}
-import indigoexts.entry._
-import indigoexts.lenses.Lens
-import indigoexts.scenemanager._
-import indigo.shared.{AssetType, ClearColor, GameConfig}
+import indigo._
+import indigoexts._
 
 object ScenesSetup extends IndigoGameWithScenes[MyStartUpData, MyGameModel, MyViewModel] {
 
