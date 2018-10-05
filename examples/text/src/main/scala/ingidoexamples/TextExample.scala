@@ -1,12 +1,7 @@
 package ingidoexamples
 
-import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.events.FrameInputEvents
-import indigo.gameengine.scenegraph.datatypes.{FontChar, FontInfo, FontKey}
-import indigo.gameengine.scenegraph.{Animations, SceneUpdateFragment, Text}
-import indigo.gameengine.{GameTime, StartupErrors, events}
-import indigoexts.entry.{IndigoGameBasic, _}
-import indigo.shared.{AssetType, ClearColor, GameConfig}
+import indigo._
+import indigoexts._
 
 object TextExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
@@ -26,7 +21,7 @@ object TextExample extends IndigoGameBasic[Unit, Unit, Unit] {
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(gameTime: GameTime, model: Unit): events.GameEvent => Unit = _ => model
+  def update(gameTime: GameTime, model: Unit): GameEvent => Unit = _ => model
 
   val text: Text = Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontKey).alignRight
 
@@ -35,7 +30,7 @@ object TextExample extends IndigoGameBasic[Unit, Unit, Unit] {
   def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
     ()
 
-  def present(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     SceneUpdateFragment().addGameLayerNodes(text)
 
   def fontKey: FontKey = FontKey("My Font")

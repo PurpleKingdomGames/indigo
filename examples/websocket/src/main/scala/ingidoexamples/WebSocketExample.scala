@@ -1,14 +1,7 @@
 package ingidoexamples
 
-import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.events.{FrameInputEvents, WebSocketEvent}
-import indigo.gameengine.scenegraph.datatypes.{Depth, FontInfo, Rectangle}
-import indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment}
-import indigo.gameengine.{GameTime, StartupErrors, events}
-import indigo.networking.{WebSocketConfig, WebSocketId}
-import indigoexts.entry.{IndigoGameBasic, _}
-import indigoexts.ui._
-import indigo.shared.{AssetType, GameConfig}
+import indigo._
+import indigoexts._
 
 /*
 Two examples in server project:
@@ -55,7 +48,7 @@ object WebSocketExample extends IndigoGameBasic[MySetupData, MyGameModel, Unit] 
       count = 0
     )
 
-  def update(gameTime: GameTime, model: MyGameModel): events.GameEvent => MyGameModel = {
+  def update(gameTime: GameTime, model: MyGameModel): GameEvent => MyGameModel = {
     case e: ButtonEvent =>
       model.copy(
         ping = model.ping.update(e),
@@ -87,7 +80,7 @@ object WebSocketExample extends IndigoGameBasic[MySetupData, MyGameModel, Unit] 
   def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
     ()
 
-  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment = {
+  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     val pingButton: ButtonViewUpdate = model.ping.draw(
       bounds = Rectangle(10, 10, 16, 16),
       depth = Depth(2),

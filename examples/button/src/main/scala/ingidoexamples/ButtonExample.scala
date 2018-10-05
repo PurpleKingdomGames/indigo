@@ -1,13 +1,7 @@
 package ingidoexamples
 
-import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.events.{FrameInputEvents, ViewEvent}
-import indigo.gameengine.scenegraph.datatypes.{Depth, FontInfo, Rectangle}
-import indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment}
-import indigo.gameengine.{GameTime, StartupErrors, events}
-import indigoexts.entry.{IndigoGameBasic, _}
-import indigoexts.ui._
-import indigo.shared.{AssetType, GameConfig}
+import indigo._
+import indigoexts._
 
 object ButtonExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
@@ -33,7 +27,7 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
     )
 
   // Match on event type, forward ButtonEvents to all buttons! (they'll work out if it's for the right button)
-  def update(gameTime: GameTime, model: MyGameModel): events.GameEvent => MyGameModel = {
+  def update(gameTime: GameTime, model: MyGameModel): GameEvent => MyGameModel = {
     case e: ButtonEvent =>
       model.copy(
         button = model.button.update(e)

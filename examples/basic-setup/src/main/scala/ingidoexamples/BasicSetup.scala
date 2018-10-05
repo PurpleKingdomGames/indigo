@@ -1,13 +1,7 @@
 package ingidoexamples
 
-import indigoexts.entry._
-import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.events.FrameInputEvents
-import indigo.gameengine.scenegraph.datatypes.FontInfo
-import indigo.gameengine.{GameTime, StartupErrors, events}
-import indigo.gameengine.scenegraph.{Animations, SceneUpdateFragment}
-import indigoexts.entry.IndigoGameBasic
-import indigo.shared.{AssetType, GameConfig}
+import indigo._
+import indigoexts._
 
 object BasicSetup extends IndigoGameBasic[MyStartUpData, MyGameModel, MyViewModel] {
 
@@ -25,7 +19,7 @@ object BasicSetup extends IndigoGameBasic[MyStartUpData, MyGameModel, MyViewMode
   def initialModel(startupData: MyStartUpData): MyGameModel =
     MyGameModel()
 
-  def update(gameTime: GameTime, model: MyGameModel): events.GameEvent => MyGameModel = _ => model
+  def update(gameTime: GameTime, model: MyGameModel): GameEvent => MyGameModel = _ => model
 
   def initialViewModel(startupData: MyStartUpData): MyGameModel => MyViewModel = _ => MyViewModel()
 

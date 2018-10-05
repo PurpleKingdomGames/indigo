@@ -1,11 +1,7 @@
 package ingidoexamples
 
-import indigo.gameengine._
-import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.events.{FrameInputEvents, GameEvent}
-import indigo.gameengine.scenegraph.SceneUpdateFragment
-import indigoexts.entry.Indigo
-import indigo.shared._
+import indigo._
+import indigoexts._
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 

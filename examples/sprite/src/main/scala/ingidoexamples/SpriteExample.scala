@@ -1,12 +1,7 @@
 package ingidoexamples
 
-import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.events.FrameInputEvents
-import indigo.gameengine.scenegraph._
-import indigo.gameengine.scenegraph.datatypes.{BindingKey, FontInfo}
-import indigo.gameengine.{GameTime, StartupErrors, events}
-import indigoexts.entry.{IndigoGameBasic, _}
-import indigo.shared.{AssetType, GameConfig}
+import indigo._
+import indigoexts._
 
 object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
@@ -41,7 +36,7 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(gameTime: GameTime, model: Unit): events.GameEvent => Unit =
+  def update(gameTime: GameTime, model: Unit): GameEvent => Unit =
     _ => model
 
   def initialViewModel(startupData: Unit): Unit => Unit = _ => ()

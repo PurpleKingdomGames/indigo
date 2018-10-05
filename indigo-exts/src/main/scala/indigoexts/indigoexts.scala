@@ -4,35 +4,47 @@ import scala.concurrent.Future
 package object indigoexts {
 
   // lenses
-  type Lens[A, B] = indigoexts.lenses.Lens[A, B]
-  val Lens: indigoexts.lenses.Lens.type = indigoexts.lenses.Lens
+  type Lens[A, B] = lenses.Lens[A, B]
+  val Lens: lenses.Lens.type = lenses.Lens
 
   // entry
-  val Indigo: indigoexts.entry.Indigo.type = indigoexts.entry.Indigo
-  type IndigoGameBasic[StartupData, Model, ViewModel]      = indigoexts.entry.IndigoGameBasic[StartupData, Model, ViewModel]
-  type IndigoGameWithScenes[StartupData, Model, ViewModel] = indigoexts.entry.IndigoGameWithScenes[StartupData, Model, ViewModel]
+  val Indigo: entry.Indigo.type = entry.Indigo
+  type IndigoGameBasic[StartupData, Model, ViewModel]      = entry.IndigoGameBasic[StartupData, Model, ViewModel]
+  type IndigoGameWithScenes[StartupData, Model, ViewModel] = entry.IndigoGameWithScenes[StartupData, Model, ViewModel]
 
-  implicit val emptyConfigAsync: Future[Option[GameConfig]] = indigoexts.entry.emptyConfigAsync
+  implicit val emptyConfigAsync: Future[Option[GameConfig]] = entry.emptyConfigAsync
 
-  implicit val emptyAssetsAsync: Future[Set[AssetType]] = indigoexts.entry.emptyAssetsAsync
+  implicit val emptyAssetsAsync: Future[Set[AssetType]] = entry.emptyAssetsAsync
 
-  val defaultGameConfig: GameConfig = indigoexts.entry.defaultGameConfig
+  val defaultGameConfig: GameConfig = entry.defaultGameConfig
 
-  val noRender: SceneUpdateFragment = indigoexts.entry.noRender
+  val noRender: SceneUpdateFragment = entry.noRender
 
   // scenes
-  type Scene[GameModel, ViewModel, SceneModel, SceneViewModel]                                                             = indigoexts.scenemanager.Scene[GameModel, ViewModel, SceneModel, SceneViewModel]
-  type ScenesList[GameModel, ViewModel, S1 <: Scene[GameModel, ViewModel, _, _], +S2 <: Scene[GameModel, ViewModel, _, _]] = indigoexts.scenemanager.ScenesList[GameModel, ViewModel, S1, S2]
-  type ScenesNil[GameModel, ViewModel]                                                                                     = indigoexts.scenemanager.ScenesNil[GameModel, ViewModel]
-  val ScenesNil: indigoexts.scenemanager.ScenesNil.type = indigoexts.scenemanager.ScenesNil
-  type Scenes[GameModel, ViewModel, +T <: indigoexts.scenemanager.Scene[GameModel, ViewModel, _, _]] =
-    indigoexts.scenemanager.Scenes[GameModel, ViewModel, T]
-  type SceneName = indigoexts.scenemanager.SceneName
-  val SceneName: indigoexts.scenemanager.SceneName.type = indigoexts.scenemanager.SceneName
-  type SceneEvent    = indigoexts.scenemanager.SceneEvent
-  type NextScene     = indigoexts.scenemanager.NextScene.type
-  type PreviousScene = indigoexts.scenemanager.PreviousScene.type
-  type JumpToScene   = indigoexts.scenemanager.JumpToScene
-  val JumpToScene: indigoexts.scenemanager.JumpToScene.type = indigoexts.scenemanager.JumpToScene
+  type Scene[GameModel, ViewModel, SceneModel, SceneViewModel]                                                             = scenemanager.Scene[GameModel, ViewModel, SceneModel, SceneViewModel]
+  type ScenesList[GameModel, ViewModel, S1 <: Scene[GameModel, ViewModel, _, _], +S2 <: Scene[GameModel, ViewModel, _, _]] = scenemanager.ScenesList[GameModel, ViewModel, S1, S2]
+  type ScenesNil[GameModel, ViewModel]                                                                                     = scenemanager.ScenesNil[GameModel, ViewModel]
+  val ScenesNil: scenemanager.ScenesNil.type = scenemanager.ScenesNil
+  type Scenes[GameModel, ViewModel, +T <: scenemanager.Scene[GameModel, ViewModel, _, _]] =
+    scenemanager.Scenes[GameModel, ViewModel, T]
+  type SceneName = scenemanager.SceneName
+  val SceneName: scenemanager.SceneName.type = scenemanager.SceneName
+  type SceneEvent    = scenemanager.SceneEvent
+  type NextScene     = scenemanager.NextScene.type
+  type PreviousScene = scenemanager.PreviousScene.type
+  type JumpToScene   = scenemanager.JumpToScene
+  val JumpToScene: scenemanager.JumpToScene.type = scenemanager.JumpToScene
+
+  //ui
+  type Button = ui.Button
+  val Button: ui.Button.type = ui.Button
+  type ButtonState = ui.ButtonState
+  val ButtonState: ui.ButtonState.type = ui.ButtonState
+  type ButtonEvent = ui.ButtonEvent
+  val ButtonEvent: ui.ButtonEvent.type = ui.ButtonEvent
+  type ButtonViewUpdate = ui.ButtonViewUpdate
+  val ButtonViewUpdate: ui.ButtonViewUpdate.type = ui.ButtonViewUpdate
+  type ButtonAssets = ui.ButtonAssets
+  val ButtonAssets: ui.ButtonAssets.type = ui.ButtonAssets
 
 }
