@@ -1,9 +1,6 @@
 package com.example.perf
 
-import indigo.gameengine.scenegraph._
-import indigo.gameengine.scenegraph.datatypes._
-import indigo.gameengine.events.{FrameInputEvents, GlobalSignals}
-import indigo.runtime.Show
+import indigo._
 
 import scala.util.Random
 

@@ -1,6 +1,6 @@
 package com.example.sandbox
 
-import indigo.shared.AssetType
+import indigo._
 
 object MyAssets {
 

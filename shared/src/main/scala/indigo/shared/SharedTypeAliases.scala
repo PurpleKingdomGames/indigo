@@ -15,4 +15,7 @@ trait SharedTypeAliases {
   type GameViewport = shared.GameViewport
   val GameViewport: shared.GameViewport.type = shared.GameViewport
 
+  type AdvancedGameConfig = shared.AdvancedGameConfig
+  val AdvancedGameConfig: shared.AdvancedGameConfig.type = shared.AdvancedGameConfig
+
 }

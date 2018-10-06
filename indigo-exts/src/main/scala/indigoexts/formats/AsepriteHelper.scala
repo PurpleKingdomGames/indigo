@@ -25,7 +25,7 @@ object AsepriteFrameTag {
     }
 }
 
-object AsepriteHelper {
+object Aseprite {
 
   @SuppressWarnings(Array("org.wartremover.warts.PublicInference"))
   def fromJson(json: String): Option[Aseprite] =

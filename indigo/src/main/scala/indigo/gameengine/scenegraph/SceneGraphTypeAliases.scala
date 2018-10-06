@@ -6,6 +6,9 @@ trait SceneGraphTypeAliases {
   type SceneUpdateFragment = gameengine.scenegraph.SceneUpdateFragment
   val SceneUpdateFragment: gameengine.scenegraph.SceneUpdateFragment.type = gameengine.scenegraph.SceneUpdateFragment
 
+  type SceneGraphNode = gameengine.scenegraph.SceneGraphNode
+  val SceneGraphNode: gameengine.scenegraph.SceneGraphNode.type = gameengine.scenegraph.SceneGraphNode
+
   // Audio
   type SceneAudio = gameengine.scenegraph.SceneAudio
   val SceneAudio: gameengine.scenegraph.SceneAudio.type = gameengine.scenegraph.SceneAudio

@@ -1,6 +1,6 @@
 package com.example.perf
 
-import indigo.shared.AssetType
+import indigo._
 
 object PerfAssets {
 

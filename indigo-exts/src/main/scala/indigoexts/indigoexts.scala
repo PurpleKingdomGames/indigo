@@ -14,6 +14,11 @@ package object indigoexts extends AutomataAliases {
   type IndigoGameBasic[StartupData, Model, ViewModel]      = entry.IndigoGameBasic[StartupData, Model, ViewModel]
   type IndigoGameWithScenes[StartupData, Model, ViewModel] = entry.IndigoGameWithScenes[StartupData, Model, ViewModel]
 
+  val IndigoGameBase: gameengine.GameTime.type = gameengine.GameTime
+
+  type IndigoGame[StartupData, StartupError, GameModel, ViewModel] = entry.IndigoGameBase.IndigoGame[StartupData, StartupError, GameModel, ViewModel]
+//  val IndigoGame: entry.IndigoGameBase.IndigoGame.type = entry.IndigoGameBase.IndigoGame
+
   implicit val emptyConfigAsync: Future[Option[GameConfig]] = entry.emptyConfigAsync
 
   implicit val emptyAssetsAsync: Future[Set[AssetType]] = entry.emptyAssetsAsync

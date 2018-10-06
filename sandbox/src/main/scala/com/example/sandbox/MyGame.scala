@@ -1,13 +1,8 @@
 package com.example.sandbox
 
-import indigo.gameengine._
-import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.events.{FrameInputEvents, GameEvent}
-import indigo.gameengine.scenegraph._
-import indigo.gameengine.scenegraph.datatypes.{Depth, FontInfo}
-import indigoexts.entry.IndigoGameBasic
-import indigoexts.formats.{Aseprite, AsepriteHelper}
-import indigo.shared.{AssetType, ClearColor, GameConfig, GameViewport}
+import indigo._
+import indigoexts._
+import indigoexts.formats.Aseprite
 
 object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, MyViewModel] {
 
@@ -30,8 +25,8 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, MyViewModel] {
   def setup(assetCollection: AssetCollection): Either[StartupErrors, MyStartupData] = {
     val dude = for {
       json                <- assetCollection.texts.find(p => p.name == MyAssets.dudeName + "-json").map(_.contents)
-      aseprite            <- AsepriteHelper.fromJson(json)
-      spriteAndAnimations <- AsepriteHelper.toSpriteAndAnimations(aseprite, Depth(3), MyAssets.dudeName)
+      aseprite            <- Aseprite.fromJson(json)
+      spriteAndAnimations <- Aseprite.toSpriteAndAnimations(aseprite, Depth(3), MyAssets.dudeName)
       _                   <- Option(registerAnimations(spriteAndAnimations.animations))
     } yield
       Dude(

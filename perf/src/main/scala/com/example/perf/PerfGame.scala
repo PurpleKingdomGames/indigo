@@ -1,13 +1,8 @@
 package com.example.perf
 
-import indigo.gameengine._
-import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.events.{FrameInputEvents, GameEvent}
-import indigo.gameengine.scenegraph._
-import indigo.gameengine.scenegraph.datatypes.Depth
-import indigoexts.entry.{Indigo, IndigoGameBase}
-import indigoexts.formats.{Aseprite, AsepriteHelper}
-import indigo.shared._
+import indigo._
+import indigoexts._
+import indigoexts.formats.Aseprite
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
@@ -37,8 +32,8 @@ object PerfGame {
   def initialise(assetCollection: AssetCollection): Startup[MyErrorReport, MyStartupData] = {
     val dude: Option[Dude] = for {
       json                <- assetCollection.texts.find(p => p.name == PerfAssets.dudeName + "-json").map(_.contents)
-      aseprite            <- AsepriteHelper.fromJson(json)
-      spriteAndAnimations <- AsepriteHelper.toSpriteAndAnimations(aseprite, Depth(3), PerfAssets.dudeName)
+      aseprite            <- Aseprite.fromJson(json)
+      spriteAndAnimations <- Aseprite.toSpriteAndAnimations(aseprite, Depth(3), PerfAssets.dudeName)
       _                   <- Option(game.registerAnimations(spriteAndAnimations.animations))
     } yield
       Dude(
@@ -66,7 +61,7 @@ object PerfGame {
   val updateView: (GameTime, MyGameModel, MyViewModel, FrameInputEvents) => SceneUpdateFragment =
     (_, gameModel, _, frameInputEvents) => PerfView.updateView(gameModel, frameInputEvents)
 
-  def game: IndigoGameBase.IndigoGame[MyStartupData, MyErrorReport, MyGameModel, MyViewModel] =
+  def game: IndigoGame[MyStartupData, MyErrorReport, MyGameModel, MyViewModel] =
     Indigo.game
       .withConfig(config)
       .withAssets(assets)

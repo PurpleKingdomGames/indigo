@@ -1,7 +1,6 @@
 package com.example.perf
 
-import indigo.gameengine.constants.Keys
-import indigo.gameengine.events.{FrameTick, GameEvent, KeyboardEvent}
+import indigo._
 
 object PerfModel {
 
