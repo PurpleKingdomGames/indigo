@@ -168,3 +168,40 @@ object WebSocketReadyState {
     }
 
 }
+
+sealed trait WebSocketEvent {
+  def giveId: Option[WebSocketId] =
+    this match {
+      case WebSocketEvent.ConnectOnly(config) =>
+        Option(config.id)
+
+      case WebSocketEvent.Open(_, config) =>
+        Option(config.id)
+
+      case WebSocketEvent.Send(_, config) =>
+        Option(config.id)
+
+      case WebSocketEvent.Receive(id, _) =>
+        Option(id)
+
+      case WebSocketEvent.Error(id, _) =>
+        Option(id)
+
+      case WebSocketEvent.Close(id) =>
+        Option(id)
+
+      case _ =>
+        None
+    }
+}
+object WebSocketEvent {
+  // Send
+  case class ConnectOnly(webSocketConfig: WebSocketConfig)           extends WebSocketEvent with NetworkSendEvent
+  case class Open(message: String, webSocketConfig: WebSocketConfig) extends WebSocketEvent with NetworkSendEvent
+  case class Send(message: String, webSocketConfig: WebSocketConfig) extends WebSocketEvent with NetworkSendEvent
+
+  // Receive
+  case class Receive(webSocketId: WebSocketId, message: String) extends WebSocketEvent with NetworkReceiveEvent
+  case class Error(webSocketId: WebSocketId, error: String)     extends WebSocketEvent with NetworkReceiveEvent
+  case class Close(webSocketId: WebSocketId)                    extends WebSocketEvent with NetworkReceiveEvent
+}

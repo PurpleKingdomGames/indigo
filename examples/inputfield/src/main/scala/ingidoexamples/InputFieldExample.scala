@@ -1,13 +1,7 @@
 package ingidoexamples
 
-import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.events.FrameInputEvents
-import indigo.gameengine.scenegraph.datatypes._
-import indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment, Text}
-import indigo.gameengine.{GameTime, StartupErrors, events}
-import indigoexts.entry.{IndigoGameBasic, _}
-import indigoexts.ui._
-import indigo.shared.{AssetType, ClearColor, GameConfig}
+import indigo._
+import indigoexts._
 
 object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
@@ -27,7 +21,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       InputField("Fish").makeMultiLine
     )
 
-  def update(gameTime: GameTime, model: MyGameModel): events.GameEvent => MyGameModel = {
+  def update(gameTime: GameTime, model: MyGameModel): GameEvent => MyGameModel = {
     case e: InputFieldEvent =>
       model.copy(inputField = model.inputField.update(e))
 
@@ -40,7 +34,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
   def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
     ()
 
-  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment = {
+  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
 
     val inputFieldUpdate: InputFieldViewUpdate =
       model.inputField.draw(

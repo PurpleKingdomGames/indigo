@@ -1,5 +1,6 @@
 package indigo.gameengine.scenegraph
 
+import indigo.gameengine.events.ViewEvent
 import indigo.gameengine.scenegraph.datatypes.BindingKey
 
 case class SceneAudio(sourceA: SceneAudioSource, sourceB: SceneAudioSource, sourceC: SceneAudioSource) {
@@ -73,3 +74,5 @@ object Volume {
   def product(a: Volume, b: Volume): Volume =
     Volume(a.amount * b.amount)
 }
+
+case class PlaySound(assetRef: String, volume: Volume) extends ViewEvent

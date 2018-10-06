@@ -1,7 +1,9 @@
 import indigo._
+import indigoexts.automata.AutomataAliases
+
 import scala.concurrent.Future
 
-package object indigoexts {
+package object indigoexts extends AutomataAliases {
 
   // lenses
   type Lens[A, B] = lenses.Lens[A, B]
@@ -46,5 +48,26 @@ package object indigoexts {
   val ButtonViewUpdate: ui.ButtonViewUpdate.type = ui.ButtonViewUpdate
   type ButtonAssets = ui.ButtonAssets
   val ButtonAssets: ui.ButtonAssets.type = ui.ButtonAssets
+
+  type InputField = ui.InputField
+  val InputField: ui.InputField.type = ui.InputField
+
+  type InputFieldOptions = ui.InputFieldOptions
+  val InputFieldOptions: ui.InputFieldOptions.type = ui.InputFieldOptions
+
+  type RenderedInputFieldElements = ui.RenderedInputFieldElements
+  val RenderedInputFieldElements: ui.RenderedInputFieldElements.type = ui.RenderedInputFieldElements
+
+  type InputFieldAssets = ui.InputFieldAssets
+  val InputFieldAssets: ui.InputFieldAssets.type = ui.InputFieldAssets
+
+  type InputFieldViewUpdate = ui.InputFieldViewUpdate
+  val InputFieldViewUpdate: ui.InputFieldViewUpdate.type = ui.InputFieldViewUpdate
+
+  type InputFieldEvent = ui.InputFieldEvent
+  val InputFieldEvent: ui.InputFieldEvent.type = ui.InputFieldEvent
+
+  type InputFieldState = ui.InputFieldState
+  val InputFieldState: ui.InputFieldState.type = ui.InputFieldState
 
 }

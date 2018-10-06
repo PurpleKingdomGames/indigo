@@ -1,15 +1,7 @@
 package ingidoexamples
 
-import indigoexts.entry._
-import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.events.FrameInputEvents
-import indigo.gameengine.scenegraph.datatypes._
-import indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment, Text}
-import indigo.gameengine.{GameTime, StartupErrors, events}
-import indigoexts.automata._
-import indigoexts.entry.IndigoGameBasic
-import indigoexts.ui._
-import indigo.shared.{AssetType, GameConfig}
+import indigo._
+import indigoexts._
 
 object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
@@ -56,7 +48,7 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       count = 0
     )
 
-  def update(gameTime: GameTime, model: MyGameModel): events.GameEvent => MyGameModel = {
+  def update(gameTime: GameTime, model: MyGameModel): GameEvent => MyGameModel = {
     case e: ButtonEvent =>
       model.copy(
         button = model.button.update(e)

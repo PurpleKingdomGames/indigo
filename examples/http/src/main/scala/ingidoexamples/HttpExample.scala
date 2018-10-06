@@ -1,14 +1,7 @@
 package ingidoexamples
 
-import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.events.HttpReceiveEvent.{HttpError, HttpResponse}
-import indigo.gameengine.events.{FrameInputEvents, HttpRequest}
-import indigo.gameengine.scenegraph.datatypes.{Depth, FontInfo, Rectangle}
-import indigo.gameengine.scenegraph.{Animations, Graphic, SceneUpdateFragment}
-import indigo.gameengine.{GameTime, StartupErrors, events}
-import indigoexts.entry.{IndigoGameBasic, _}
-import indigoexts.ui._
-import indigo.shared.{AssetType, GameConfig}
+import indigo._
+import indigoexts._
 
 object HttpExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
@@ -31,7 +24,7 @@ object HttpExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       count = 0
     )
 
-  def update(gameTime: GameTime, model: MyGameModel): events.GameEvent => MyGameModel = {
+  def update(gameTime: GameTime, model: MyGameModel): GameEvent => MyGameModel = {
     case e: ButtonEvent =>
       model.copy(
         button = model.button.update(e)

@@ -10,7 +10,4 @@ object AutomataModifier {
   case class ChangeTint(f: (GameTime, AutomatonSeedValues, Tint) => Tint)      extends AutomataModifier
   case class MoveTo(f: (GameTime, AutomatonSeedValues, Point) => Point)        extends AutomataModifier
   case class EmitEvents(f: (GameTime, AutomatonSeedValues) => List[ViewEvent]) extends AutomataModifier
-
-  //TODO: Bring this back when you have a real use case.
-//  case class Collision(f: ((Rectangle, Rectangle) => Boolean) => List[ViewEvent]) extends AutomataModifier
 }

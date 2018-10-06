@@ -1,12 +1,7 @@
 package ingidoexamples
 
-import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.events.FrameInputEvents
-import indigo.gameengine.scenegraph.datatypes.FontInfo
-import indigo.gameengine.scenegraph.{Animations, Graphic, Group, SceneUpdateFragment}
-import indigo.gameengine.{GameTime, StartupErrors, events}
-import indigoexts.entry.{IndigoGameBasic, _}
-import indigo.shared.{AssetType, GameConfig}
+import indigo._
+import indigoexts._
 
 object GroupExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
@@ -24,7 +19,7 @@ object GroupExample extends IndigoGameBasic[Unit, Unit, Unit] {
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(gameTime: GameTime, model: Unit): events.GameEvent => Unit =
+  def update(gameTime: GameTime, model: Unit): GameEvent => Unit =
     _ => model
 
   def initialViewModel(startupData: Unit): Unit => Unit = _ => ()
@@ -32,7 +27,7 @@ object GroupExample extends IndigoGameBasic[Unit, Unit, Unit] {
   def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
     ()
 
-  def present(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: events.FrameInputEvents): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     SceneUpdateFragment().addGameLayerNodes(
       Group(
         Graphic(0, 0, 256, 256, 1, "graphics").moveTo(64, 10).moveBy(-50, -50),
