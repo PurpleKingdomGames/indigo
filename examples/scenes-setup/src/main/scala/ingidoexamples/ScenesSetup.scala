@@ -2,6 +2,7 @@ package ingidoexamples
 
 import indigo._
 import indigoexts._
+import indigoexts.scenes._
 
 object ScenesSetup extends IndigoGameWithScenes[MyStartUpData, MyGameModel, MyViewModel] {
 

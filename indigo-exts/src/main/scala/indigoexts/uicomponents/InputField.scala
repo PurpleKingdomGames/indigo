@@ -1,4 +1,4 @@
-package indigoexts.ui
+package indigoexts.uicomponents
 
 import indigo.gameengine.GameTime
 import indigo.gameengine.assets.FontRegister

@@ -2,6 +2,7 @@ package ingidoexamples
 
 import indigo._
 import indigoexts._
+import indigoexts.ui._
 
 /*
 Two examples in server project:

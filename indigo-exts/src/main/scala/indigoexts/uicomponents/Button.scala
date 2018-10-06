@@ -1,4 +1,4 @@
-package indigoexts.ui
+package indigoexts.uicomponents
 
 import indigo.gameengine.events.{FrameInputEvents, MouseEvent, ViewEvent}
 import indigo.gameengine.scenegraph.{Graphic, SceneUpdateFragment}
