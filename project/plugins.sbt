@@ -3,7 +3,7 @@ val indigoVersion = "0.0.9-SNAPSHOT"
 lazy val commonSettings = Seq(
   version := indigoVersion,
   scalaVersion := "2.12.6",
-  organization := "com.purplekingdomgames",
+  organization := "indigo",
   scalacOptions ++= Seq(
     "-deprecation", // Emit warning and location for usages of deprecated APIs.
     "-encoding",
@@ -95,7 +95,7 @@ def mirrorScalaSource(baseDirectory: File): Seq[File] = {
 
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.25")
 
-addSbtPlugin("com.purplekingdomgames" % "sbt-indigo" % indigoVersion)
+addSbtPlugin("indigo" % "sbt-indigo" % indigoVersion)
 
 addSbtPlugin("org.lyranthe.sbt" % "partial-unification" % "1.1.0")
 
