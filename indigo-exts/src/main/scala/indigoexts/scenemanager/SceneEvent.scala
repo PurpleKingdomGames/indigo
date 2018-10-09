@@ -2,7 +2,9 @@ package indigoexts.scenemanager
 
 import indigo.gameengine.events.ViewEvent
 
-sealed trait SceneEvent                 extends ViewEvent
-case object NextScene                   extends SceneEvent
-case object PreviousScene               extends SceneEvent
-case class JumpToScene(name: SceneName) extends SceneEvent
+sealed trait SceneEvent extends ViewEvent
+object SceneEvent {
+  case object Next                   extends SceneEvent
+  case object Previous               extends SceneEvent
+  case class JumpTo(name: SceneName) extends SceneEvent
+}

@@ -13,15 +13,15 @@ class SceneManager[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel
 
   // Scene delegation
   def updateModel(gameTime: GameTime, model: GameModel): GameEvent => GameModel = {
-    case NextScene =>
+    case SceneEvent.Next =>
       finderInstance = finderInstance.forward
       model
 
-    case PreviousScene =>
+    case SceneEvent.Previous =>
       finderInstance = finderInstance.backward
       model
 
-    case JumpToScene(name) =>
+    case SceneEvent.JumpTo(name) =>
       finderInstance = finderInstance.jumpToSceneByName(name)
       model
 

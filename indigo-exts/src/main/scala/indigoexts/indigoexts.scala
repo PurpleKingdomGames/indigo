@@ -29,19 +29,20 @@ package object indigoexts extends AutomataAliases with CollectionsAliases {
 
   // scenes
   object scenes {
-    type Scene[GameModel, ViewModel, SceneModel, SceneViewModel]                                                             = scenemanager.Scene[GameModel, ViewModel, SceneModel, SceneViewModel]
+    type Scene[GameModel, ViewModel, SceneModel, SceneViewModel] = scenemanager.Scene[GameModel, ViewModel, SceneModel, SceneViewModel]
+
     type ScenesList[GameModel, ViewModel, S1 <: Scene[GameModel, ViewModel, _, _], +S2 <: Scene[GameModel, ViewModel, _, _]] = scenemanager.ScenesList[GameModel, ViewModel, S1, S2]
-    type ScenesNil[GameModel, ViewModel]                                                                                     = scenemanager.ScenesNil[GameModel, ViewModel]
+
+    type ScenesNil[GameModel, ViewModel] = scenemanager.ScenesNil[GameModel, ViewModel]
     val ScenesNil: scenemanager.ScenesNil.type = scenemanager.ScenesNil
+
     type Scenes[GameModel, ViewModel, +T <: scenemanager.Scene[GameModel, ViewModel, _, _]] =
       scenemanager.Scenes[GameModel, ViewModel, T]
+
     type SceneName = scenemanager.SceneName
     val SceneName: scenemanager.SceneName.type = scenemanager.SceneName
-    type SceneEvent    = scenemanager.SceneEvent
-    type NextScene     = scenemanager.NextScene.type
-    type PreviousScene = scenemanager.PreviousScene.type
-    type JumpToScene   = scenemanager.JumpToScene
-    val JumpToScene: scenemanager.JumpToScene.type = scenemanager.JumpToScene
+
+    type SceneEvent = scenemanager.SceneEvent
   }
 
   //ui

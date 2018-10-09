@@ -2,6 +2,7 @@ package ingidoexamples
 
 import indigo._
 import indigoexts._
+import indigoexts.scenemanager.SceneEvent
 import indigoexts.scenes._
 
 object ScenesSetup extends IndigoGameWithScenes[MyStartUpData, MyGameModel, MyViewModel] {
@@ -57,7 +58,7 @@ object SceneA extends Scene[MyGameModel, MyViewModel, MessageA, Unit] {
   // When the user clicks anywhere in the screen, trigger an event to jump to the other scene.
   def updateSceneView(gameTime: GameTime, sceneModel: MessageA, sceneViewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     val events: List[ViewEvent] =
-      if (frameInputEvents.wasMouseClickedWithin(Rectangle(0, 0, 550, 400))) List(JumpToScene(SceneB.name))
+      if (frameInputEvents.wasMouseClickedWithin(Rectangle(0, 0, 550, 400))) List(SceneEvent.JumpTo(SceneB.name))
       else Nil
 
     val text: Text = Text(sceneModel.value, 20, 20, 1, FontStuff.fontKey)
@@ -95,7 +96,7 @@ object SceneB extends Scene[MyGameModel, MyViewModel, MessageB, Unit] {
   // When the user clicks anywhere in the screen, trigger an event to jump to the other scene.
   def updateSceneView(gameTime: GameTime, sceneModel: MessageB, sceneViewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     val events: List[ViewEvent] =
-      if (frameInputEvents.wasMouseClickedWithin(Rectangle(0, 0, 550, 400))) List(JumpToScene(SceneA.name))
+      if (frameInputEvents.wasMouseClickedWithin(Rectangle(0, 0, 550, 400))) List(SceneEvent.JumpTo(SceneA.name))
       else Nil
 
     val text: Text = Text(sceneModel.value, 20, 20, 1, FontStuff.fontKey)
