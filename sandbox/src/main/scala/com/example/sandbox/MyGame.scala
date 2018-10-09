@@ -1,7 +1,7 @@
 package com.example.sandbox
 
 import indigo._
-import indigoexts._
+import indigoexts.entrypoint._
 import indigoexts.formats.Aseprite
 
 object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, MyViewModel] {

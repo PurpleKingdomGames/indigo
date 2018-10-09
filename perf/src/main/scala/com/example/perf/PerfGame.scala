@@ -1,7 +1,7 @@
 package com.example.perf
 
 import indigo._
-import indigoexts._
+import indigoexts.entrypoint._
 import indigoexts.formats.Aseprite
 
 import scala.scalajs.js.annotation.JSExportTopLevel

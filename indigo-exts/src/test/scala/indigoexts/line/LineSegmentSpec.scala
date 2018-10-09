@@ -1,6 +1,8 @@
 package indigoexts.line
 
 import indigo.gameengine.scenegraph.datatypes.Point
+import indigoexts.line.IntersectionResult._
+import indigoexts.line.LineProperties._
 import org.scalatest.{FunSpec, Matchers}
 
 class LineSegmentSpec extends FunSpec with Matchers {

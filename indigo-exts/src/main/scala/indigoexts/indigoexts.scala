@@ -1,33 +1,94 @@
 import indigo._
-import indigoexts.automata.AutomataAliases
-import indigoexts.collections.CollectionsAliases
 
 import scala.concurrent.Future
 
-package object indigoexts extends AutomataAliases with CollectionsAliases {
+package object indigoexts {
 
-  // lenses
-  type Lens[A, B] = lenses.Lens[A, B]
-  val Lens: lenses.Lens.type = lenses.Lens
+  object datatypes {
+    type NonEmptyList[A] = indigoexts.collections.NonEmptyList[A]
+    val NonEmptyList: indigoexts.collections.NonEmptyList.type = indigoexts.collections.NonEmptyList
+  }
 
-  // entry
-  val Indigo: entry.Indigo.type = entry.Indigo
-  type IndigoGameBasic[StartupData, Model, ViewModel]              = entry.IndigoGameBasic[StartupData, Model, ViewModel]
-  type IndigoGameWithScenes[StartupData, Model, ViewModel]         = entry.IndigoGameWithScenes[StartupData, Model, ViewModel]
-  type IndigoGame[StartupData, StartupError, GameModel, ViewModel] = entry.IndigoGameBase.IndigoGame[StartupData, StartupError, GameModel, ViewModel]
+  object automaton {
+    type Automaton = indigoexts.automata.Automaton
 
-  val IndigoGameBase: gameengine.GameTime.type = gameengine.GameTime
+    type AutomataEvent = indigoexts.automata.AutomataEvent
+    val AutomataEvent: indigoexts.automata.AutomataEvent.type = indigoexts.automata.AutomataEvent
 
-  // useful
-  implicit val emptyConfigAsync: Future[Option[GameConfig]] = entry.emptyConfigAsync
+    type AutomataModifier = indigoexts.automata.AutomataModifier
+    val AutomataModifier: indigoexts.automata.AutomataModifier.type = indigoexts.automata.AutomataModifier
 
-  implicit val emptyAssetsAsync: Future[Set[AssetType]] = entry.emptyAssetsAsync
+    val AutomataFarm: indigoexts.automata.AutomataFarm.type               = indigoexts.automata.AutomataFarm
+    val SpawnedAutomaton: indigoexts.automata.SpawnedAutomaton.type       = indigoexts.automata.SpawnedAutomaton
+    val AutomatonSeedValues: indigoexts.automata.AutomatonSeedValues.type = indigoexts.automata.AutomatonSeedValues
+    val GraphicAutomaton: indigoexts.automata.GraphicAutomaton.type       = indigoexts.automata.GraphicAutomaton
+    val SpriteAutomaton: indigoexts.automata.SpriteAutomaton.type         = indigoexts.automata.SpriteAutomaton
+    val TextAutomaton: indigoexts.automata.TextAutomaton.type             = indigoexts.automata.TextAutomaton
+    val AutomataPoolKey: indigoexts.automata.AutomataPoolKey.type         = indigoexts.automata.AutomataPoolKey
+    val AutomataLifeSpan: indigoexts.automata.AutomataLifeSpan.type       = indigoexts.automata.AutomataLifeSpan
+  }
 
-  val defaultGameConfig: GameConfig = entry.defaultGameConfig
+  object entrypoint {
+    val Indigo: entry.Indigo.type = entry.Indigo
 
-  val noRender: SceneUpdateFragment = entry.noRender
+    type IndigoGameBasic[StartupData, Model, ViewModel]      = entry.IndigoGameBasic[StartupData, Model, ViewModel]
+    type IndigoGameWithScenes[StartupData, Model, ViewModel] = entry.IndigoGameWithScenes[StartupData, Model, ViewModel]
 
-  // scenes
+    type IndigoGame[StartupData, StartupError, GameModel, ViewModel] = entry.IndigoGameBase.IndigoGame[StartupData, StartupError, GameModel, ViewModel]
+    val IndigoGameBase: gameengine.GameTime.type = gameengine.GameTime
+
+    implicit val emptyConfigAsync: Future[Option[GameConfig]] = entry.emptyConfigAsync
+
+    implicit val emptyAssetsAsync: Future[Set[AssetType]] = entry.emptyAssetsAsync
+
+    val defaultGameConfig: GameConfig = entry.defaultGameConfig
+
+    val noRender: SceneUpdateFragment = entry.noRender
+  }
+
+  object lens {
+    type Lens[A, B] = lenses.Lens[A, B]
+    val Lens: lenses.Lens.type = lenses.Lens
+  }
+
+  object grids {
+    type GridPoint = grid.GridPoint
+    val GridPoint: grid.GridPoint.type = grid.GridPoint
+
+    type GridSize = grid.GridSize
+    val GridSize: grid.GridSize.type = grid.GridSize
+
+    object pathfinding {
+      type Coords = indigoexts.pathfinding.Coords
+      val Coords: indigoexts.pathfinding.Coords.type = indigoexts.pathfinding.Coords
+
+      type GridSquare = indigoexts.pathfinding.GridSquare
+      val GridSquare: indigoexts.pathfinding.GridSquare.type = indigoexts.pathfinding.GridSquare
+
+      type SearchGrid = indigoexts.pathfinding.SearchGrid
+      val SearchGrid: indigoexts.pathfinding.SearchGrid.type = indigoexts.pathfinding.SearchGrid
+    }
+  }
+
+  object lines {
+    type LineSegment = line.LineSegment
+    val LineSegment: line.LineSegment.type = line.LineSegment
+
+    type LineProperties = line.LineProperties
+    val LineProperties: line.LineProperties.type = line.LineProperties
+
+    type IntersectionResult = line.IntersectionResult
+    val IntersectionResult: line.IntersectionResult.type = line.IntersectionResult
+  }
+
+  object quadtree {
+    type QuadBounds = quadtrees.QuadBounds
+    val QuadBounds: quadtrees.QuadBounds.type = quadtrees.QuadBounds
+
+    type QuadTree[T] = quadtrees.QuadTree[T]
+    val QuadTree: quadtrees.QuadTree.type = quadtrees.QuadTree
+  }
+
   object scenes {
     type Scene[GameModel, ViewModel, SceneModel, SceneViewModel] = scenemanager.Scene[GameModel, ViewModel, SceneModel, SceneViewModel]
 
@@ -45,7 +106,6 @@ package object indigoexts extends AutomataAliases with CollectionsAliases {
     type SceneEvent = scenemanager.SceneEvent
   }
 
-  //ui
   object ui {
     type Button = indigoexts.uicomponents.Button
     val Button: indigoexts.uicomponents.Button.type = indigoexts.uicomponents.Button

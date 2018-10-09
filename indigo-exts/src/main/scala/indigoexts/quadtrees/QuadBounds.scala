@@ -1,9 +1,9 @@
-package indigoexts.quadtree
+package indigoexts.quadtrees
 
 import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
 import indigo.runtime.Show
 import indigoexts.grid.GridPoint
-import indigoexts.line.{IntersectionPoint, LineSegment, NoIntersection}
+import indigoexts.line.{IntersectionResult, LineSegment}
 
 trait QuadBounds {
   val x: Int
@@ -123,10 +123,10 @@ object QuadBounds {
   def rayCollisionCheck(bounds: QuadBounds, line: LineSegment): Boolean =
     bounds.edges.exists { edge =>
       line.intersectWith(edge) match {
-        case ip: IntersectionPoint =>
+        case ip: IntersectionResult.IntersectionPoint =>
           line.containsPoint(ip.toPoint)
 
-        case NoIntersection =>
+        case IntersectionResult.NoIntersection =>
           false
       }
     }
@@ -135,13 +135,13 @@ object QuadBounds {
     bounds.edges
       .map { edge =>
         line.intersectWith(edge) match {
-          case ip @ IntersectionPoint(_, _) if line.containsPoint(ip.toPoint) =>
+          case ip @ IntersectionResult.IntersectionPoint(_, _) if line.containsPoint(ip.toPoint) =>
             Some(ip.toPoint)
 
-          case IntersectionPoint(_, _) =>
+          case IntersectionResult.IntersectionPoint(_, _) =>
             None
 
-          case NoIntersection =>
+          case IntersectionResult.NoIntersection =>
             None
         }
       }

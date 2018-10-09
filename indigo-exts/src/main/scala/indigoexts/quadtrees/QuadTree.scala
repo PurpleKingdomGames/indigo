@@ -1,4 +1,4 @@
-package indigoexts.quadtree
+package indigoexts.quadtrees
 
 import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
 import indigo.runtime.Show
@@ -53,7 +53,6 @@ object QuadTree {
   def empty[T](gridSize: GridSize): QuadTree[T] =
     QuadEmpty(QuadBounds.apply(gridSize.asPowerOf2))
 
-  //TODO: This needs to be recursive. if a is branch, then do another empty check etc.
   case class QuadBranch[T](bounds: QuadBounds, a: QuadTree[T], b: QuadTree[T], c: QuadTree[T], d: QuadTree[T]) extends QuadTree[T] {
     def isEmpty: Boolean =
       a.isEmpty && b.isEmpty && c.isEmpty && d.isEmpty

@@ -33,7 +33,7 @@ class SceneManagerSpec extends FunSpec with Matchers {
 
       val sceneManager = new SceneManager[TestGameModel, TestViewModel](scenes, sceneFinder)
 
-      val events = List(NextScene, FrameTick)
+      val events = List(SceneEvent.Next, FrameTick)
 
       val expected = TestGameModel(TestSceneModelA(0), TestSceneModelB(10))
 
@@ -49,16 +49,16 @@ class SceneManagerSpec extends FunSpec with Matchers {
       // A = 2, B = 40
       val events = List(
         FrameTick, // update scene A - 1
-        NextScene, // move to scene B
+        SceneEvent.Next, // move to scene B
         FrameTick, // update scene B - 10
-        NextScene, // do nothing
+        SceneEvent.Next, // do nothing
         FrameTick, // update scene B - 20
-        PreviousScene, // move to scene A
-        NextScene, // move to scene B,
+        SceneEvent.Previous, // move to scene A
+        SceneEvent.Next, // move to scene B,
         FrameTick, // update scene B - 30
-        PreviousScene, // move to scene A
+        SceneEvent.Previous, // move to scene A
         FrameTick, // update scene A - 2
-        JumpToScene(sceneB.name), // jump to scene B
+        SceneEvent.JumpTo(sceneB.name), // jump to scene B
         FrameTick // update scene B - 40
       )
 

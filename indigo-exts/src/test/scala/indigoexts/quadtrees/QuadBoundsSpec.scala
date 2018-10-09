@@ -1,4 +1,4 @@
-package indigoexts.quadtree
+package indigoexts.quadtrees
 
 import indigo.gameengine.scenegraph.datatypes.Point
 import org.scalatest.{FunSpec, Matchers}

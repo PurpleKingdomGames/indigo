@@ -9,7 +9,7 @@ class NonEmptyListSpec extends FunSpec with Matchers {
     new Equality[NonEmptyList[T]] {
       def areEqual(a: NonEmptyList[T], b: Any): Boolean =
         b match {
-          case l: NonEmptyList[T] =>
+          case l: NonEmptyList[T] @unchecked =>
             NonEmptyList.equality(a, l)
 
           case _ =>

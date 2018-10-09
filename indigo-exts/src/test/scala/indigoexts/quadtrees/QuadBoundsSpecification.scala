@@ -1,4 +1,4 @@
-package indigoexts.quadtree
+package indigoexts.quadtrees
 
 import org.scalacheck._
 import org.scalacheck.Prop.BooleanOperators

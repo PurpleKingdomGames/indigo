@@ -1,7 +1,7 @@
 package ingidoexamples
 
 import indigo._
-import indigoexts._
+import indigoexts.entrypoint._
 
 object BasicSetup extends IndigoGameBasic[MyStartUpData, MyGameModel, MyViewModel] {
 

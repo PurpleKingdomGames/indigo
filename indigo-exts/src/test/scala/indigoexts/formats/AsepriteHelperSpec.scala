@@ -10,13 +10,13 @@ class AsepriteHelperSpec extends FunSpec with Matchers {
   describe("Create an Aseprite asset") {
 
     it("should be able to parse the json definition") {
-      AsepriteHelper.fromJson(AsepriteSampleData.json) shouldEqual AsepriteSampleData.aseprite
+      Aseprite.fromJson(AsepriteSampleData.json) shouldEqual AsepriteSampleData.aseprite
     }
 
     it("should be able to convert the loaded definition into a renderable Sprite object") {
       pending
       AsepriteSampleData.aseprite.flatMap { as =>
-        AsepriteHelper
+        Aseprite
           .toSpriteAndAnimations(as, AsepriteSampleData.depth, AsepriteSampleData.imageAssetRef)
           .map(_.sprite.withBindingKey(BindingKey("test")))
       } shouldEqual AsepriteSampleData.sprite

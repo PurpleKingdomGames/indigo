@@ -1,8 +1,9 @@
 package ingidoexamples
 
 import indigo._
-import indigoexts._
+import indigoexts.entrypoint._
 import indigoexts.ui._
+import indigoexts.automaton._
 
 object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 

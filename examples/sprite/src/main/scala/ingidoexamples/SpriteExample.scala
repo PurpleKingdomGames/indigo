@@ -1,7 +1,7 @@
 package ingidoexamples
 
 import indigo._
-import indigoexts._
+import indigoexts.entrypoint._
 
 object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
 

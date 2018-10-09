@@ -41,18 +41,18 @@ object LineSegment {
   def calculateLineComponents(start: Point, end: Point): LineProperties =
     (start, end) match {
       case (Point(x1, y1), Point(x2, y2)) if x1 == x2 && y1 == y2 =>
-        InvalidLine
+        LineProperties.InvalidLine
 
       case (Point(x1, _), Point(x2, _)) if x1 == x2 =>
-        ParallelToAxisY
+        LineProperties.ParallelToAxisY
 
       case (Point(_, y1), Point(_, y2)) if y1 == y2 =>
-        ParallelToAxisX
+        LineProperties.ParallelToAxisX
 
       case (Point(x1, y1), Point(x2, y2)) =>
         val m: Float = (y2.toFloat - y1.toFloat) / (x2.toFloat - x1.toFloat)
 
-        LineComponents(m, y1 - (m * x1))
+        LineProperties.LineComponents(m, y1 - (m * x1))
     }
 
   def intersection(l1: LineSegment, l2: LineSegment): IntersectionResult =
@@ -61,62 +61,62 @@ object LineSegment {
     x-intercept = -b/m   (i.e. x = -b/m where y is moved to 0)
      */
     (l1.lineProperties, l2.lineProperties) match {
-      case (LineComponents(m1, b1), LineComponents(m2, b2)) =>
+      case (LineProperties.LineComponents(m1, b1), LineProperties.LineComponents(m2, b2)) =>
         //x = -b/m
         val x: Float = (b2 - b1) / (m1 - m2)
 
         //y = mx + b
         val y: Float = (m1 * x) + b1
 
-        IntersectionPoint(x, y)
+        IntersectionResult.IntersectionPoint(x, y)
 
-      case (ParallelToAxisX, ParallelToAxisX) =>
-        NoIntersection
+      case (LineProperties.ParallelToAxisX, LineProperties.ParallelToAxisX) =>
+        IntersectionResult.NoIntersection
 
-      case (ParallelToAxisY, ParallelToAxisY) =>
-        NoIntersection
+      case (LineProperties.ParallelToAxisY, LineProperties.ParallelToAxisY) =>
+        IntersectionResult.NoIntersection
 
-      case (ParallelToAxisX, ParallelToAxisY) =>
-        IntersectionPoint(l2.start.x.toFloat, l1.start.y.toFloat)
+      case (LineProperties.ParallelToAxisX, LineProperties.ParallelToAxisY) =>
+        IntersectionResult.IntersectionPoint(l2.start.x.toFloat, l1.start.y.toFloat)
 
-      case (ParallelToAxisY, ParallelToAxisX) =>
-        IntersectionPoint(l1.start.x.toFloat, l2.start.y.toFloat)
+      case (LineProperties.ParallelToAxisY, LineProperties.ParallelToAxisX) =>
+        IntersectionResult.IntersectionPoint(l1.start.x.toFloat, l2.start.y.toFloat)
 
-      case (ParallelToAxisX, LineComponents(m, b)) =>
-        IntersectionPoint(
+      case (LineProperties.ParallelToAxisX, LineProperties.LineComponents(m, b)) =>
+        IntersectionResult.IntersectionPoint(
           x = (-b / m) - l1.start.y.toFloat,
           y = l1.start.y.toFloat
         )
 
-      case (LineComponents(m, b), ParallelToAxisX) =>
-        IntersectionPoint(
+      case (LineProperties.LineComponents(m, b), LineProperties.ParallelToAxisX) =>
+        IntersectionResult.IntersectionPoint(
           x = (-b / m) - l2.start.y.toFloat,
           y = l2.start.y.toFloat
         )
 
-      case (ParallelToAxisY, LineComponents(m, b)) =>
-        IntersectionPoint(
+      case (LineProperties.ParallelToAxisY, LineProperties.LineComponents(m, b)) =>
+        IntersectionResult.IntersectionPoint(
           x = l1.start.x.toFloat,
           y = (m * l1.start.x) + b
         )
 
-      case (LineComponents(m, b), ParallelToAxisY) =>
-        IntersectionPoint(
+      case (LineProperties.LineComponents(m, b), LineProperties.ParallelToAxisY) =>
+        IntersectionResult.IntersectionPoint(
           x = l2.start.x.toFloat,
           y = (m * l2.start.x) + b
         )
 
-      case (InvalidLine, InvalidLine) =>
-        NoIntersection
+      case (LineProperties.InvalidLine, LineProperties.InvalidLine) =>
+        IntersectionResult.NoIntersection
 
-      case (_, InvalidLine) =>
-        NoIntersection
+      case (_, LineProperties.InvalidLine) =>
+        IntersectionResult.NoIntersection
 
-      case (InvalidLine, _) =>
-        NoIntersection
+      case (LineProperties.InvalidLine, _) =>
+        IntersectionResult.NoIntersection
 
       case _ =>
-        NoIntersection
+        IntersectionResult.NoIntersection
     }
 
   def calculateNormal(start: Point, end: Point): Point =
@@ -134,18 +134,18 @@ object LineSegment {
 
   def lineContainsPoint(lineSegment: LineSegment, point: Point, tolerance: Float): Boolean =
     lineSegment.lineProperties match {
-      case InvalidLine =>
+      case LineProperties.InvalidLine =>
         false
 
-      case ParallelToAxisX =>
+      case LineProperties.ParallelToAxisX =>
         if (point.y == lineSegment.start.y && point.x >= lineSegment.left && point.x <= lineSegment.right) true
         else false
 
-      case ParallelToAxisY =>
+      case LineProperties.ParallelToAxisY =>
         if (point.x == lineSegment.start.x && point.y >= lineSegment.top && point.y <= lineSegment.bottom) true
         else false
 
-      case LineComponents(m, b) =>
+      case LineProperties.LineComponents(m, b) =>
         if (point.x >= lineSegment.left && point.x <= lineSegment.right && point.y >= lineSegment.top && point.y <= lineSegment.bottom) {
           // This is a slope comparison.. Any point on the line should have the same slope as the line.
           val m2: Float =
@@ -161,15 +161,19 @@ object LineSegment {
 }
 
 sealed trait LineProperties
+object LineProperties {
 // y = mx + b
-case class LineComponents(m: Float, b: Float) extends LineProperties
-case object ParallelToAxisX                   extends LineProperties
-case object ParallelToAxisY                   extends LineProperties
-case object InvalidLine                       extends LineProperties
+  case class LineComponents(m: Float, b: Float) extends LineProperties
+  case object ParallelToAxisX                   extends LineProperties
+  case object ParallelToAxisY                   extends LineProperties
+  case object InvalidLine                       extends LineProperties
+}
 
 sealed trait IntersectionResult
-case class IntersectionPoint(x: Float, y: Float) extends IntersectionResult {
-  def toPoint: Point =
-    Point(x.toInt, y.toInt)
+object IntersectionResult {
+  case class IntersectionPoint(x: Float, y: Float) extends IntersectionResult {
+    def toPoint: Point =
+      Point(x.toInt, y.toInt)
+  }
+  case object NoIntersection extends IntersectionResult
 }
-case object NoIntersection extends IntersectionResult

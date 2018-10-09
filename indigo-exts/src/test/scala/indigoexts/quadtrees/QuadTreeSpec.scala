@@ -1,4 +1,4 @@
-package indigoexts.quadtree
+package indigoexts.quadtrees
 
 import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
 import indigoexts.grid.GridPoint
