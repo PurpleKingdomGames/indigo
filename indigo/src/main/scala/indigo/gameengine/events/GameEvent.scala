@@ -3,14 +3,19 @@ package indigo.gameengine.events
 import indigo.gameengine.constants.KeyCode
 import indigo.gameengine.scenegraph.datatypes.Point
 
-trait GameEvent
+trait GameEvent {
+  val isGameEvent: Boolean
+}
 
-case object FrameTick extends GameEvent
+case object FrameTick extends GameEvent {
+  val isGameEvent: Boolean = true
+}
 
 sealed trait MouseEvent extends GameEvent {
   val x: Int
   val y: Int
-  def position: Point = Point(x, y)
+  def position: Point      = Point(x, y)
+  val isGameEvent: Boolean = true
 }
 object MouseEvent {
   case class Click(x: Int, y: Int)     extends MouseEvent
@@ -21,6 +26,7 @@ object MouseEvent {
 
 sealed trait KeyboardEvent extends GameEvent {
   val keyCode: KeyCode
+  val isGameEvent: Boolean = true
 }
 object KeyboardEvent {
   case class KeyUp(keyCode: KeyCode)    extends KeyboardEvent
@@ -28,4 +34,6 @@ object KeyboardEvent {
   case class KeyPress(keyCode: KeyCode) extends KeyboardEvent
 }
 
-trait ViewEvent extends GameEvent
+trait ViewEvent extends GameEvent {
+  val isGameEvent: Boolean = false
+}

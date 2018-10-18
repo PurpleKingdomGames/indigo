@@ -44,7 +44,7 @@ class GameLoop[GameModel, ViewModel](
         val gameTime: GameTime = GameTime(time, timeDelta, gameConfig.frameRateDeltaMillis.toDouble)
 
         val collectedEvents: List[GameEvent]   = GlobalEventStream.collect
-        val frameInputEvents: FrameInputEvents = events.FrameInputEvents(collectedEvents.filterNot(_.isInstanceOf[ViewEvent]))
+        val frameInputEvents: FrameInputEvents = events.FrameInputEvents(collectedEvents.filter(_.isGameEvent))
 
         GlobalSignalsManager.update(collectedEvents)
 
