@@ -32,9 +32,9 @@ class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     animations: Set[Animations],
     initialise: AssetCollection => Startup[StartupError, StartupData],
     initialModel: StartupData => GameModel,
-    updateModel: (GameTime, GameModel) => GameEvent => GameModel,
+    updateModel: (GameTime, GameModel) => GameEvent => UpdatedModel[GameModel],
     initialViewModel: StartupData => GameModel => ViewModel,
-    updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => ViewModel,
+    updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => UpdatedViewModel[ViewModel],
     updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
 ) {
 
@@ -192,9 +192,9 @@ object GameEngine {
       renderer: IRenderer,
       audioPlayer: IAudioPlayer,
       initialModel: GameModel,
-      updateModel: (GameTime, GameModel) => GameEvent => GameModel,
+      updateModel: (GameTime, GameModel) => GameEvent => UpdatedModel[GameModel],
       initialViewModel: GameModel => ViewModel,
-      updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => ViewModel,
+      updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => UpdatedViewModel[ViewModel],
       updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
   )(implicit metrics: IMetrics): IIO[GameLoop[GameModel, ViewModel]] =
     IIO.delay(

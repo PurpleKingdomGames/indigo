@@ -28,7 +28,7 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
     )
 
   // Match on event type, forward ButtonEvents to all buttons! (they'll work out if it's for the right button)
-  def update(gameTime: GameTime, model: MyGameModel): GameEvent => MyGameModel = {
+  def update(gameTime: GameTime, model: MyGameModel): GameEvent => UpdatedModel[MyGameModel] = {
     case e: ButtonEvent =>
       model.copy(
         button = model.button.update(e)
@@ -45,7 +45,7 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   def initialViewModel(startupData: Unit): MyGameModel => Unit = _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] =
     ()
 
   def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
@@ -66,4 +66,4 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
 // We need a button in our model
 case class MyGameModel(button: Button, count: Int)
-case object MyButtonEvent extends ViewEvent
+case object MyButtonEvent extends FrameEvent

@@ -19,12 +19,12 @@ object GroupExample extends IndigoGameBasic[Unit, Unit, Unit] {
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(gameTime: GameTime, model: Unit): GameEvent => Unit =
+  def update(gameTime: GameTime, model: Unit): GameEvent => UpdatedModel[Unit] =
     _ => model
 
   def initialViewModel(startupData: Unit): Unit => Unit = _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
+  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] =
     ()
 
   def present(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =

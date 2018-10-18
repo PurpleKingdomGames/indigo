@@ -1,8 +1,8 @@
 package indigo.networking
 
-import indigo.gameengine.events.{GameEvent, ViewEvent}
+import indigo.gameengine.events.{GameEvent, FrameEvent}
 
-trait NetworkSendEvent extends ViewEvent
+trait NetworkSendEvent extends FrameEvent
 trait NetworkReceiveEvent extends GameEvent {
   val isGameEvent: Boolean = true
 }

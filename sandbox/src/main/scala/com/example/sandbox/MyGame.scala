@@ -45,13 +45,13 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, MyViewModel] {
   def initialModel(startupData: MyStartupData): MyGameModel =
     MyModel.initialModel(startupData)
 
-  def update(gameTime: GameTime, model: MyGameModel): GameEvent => MyGameModel =
+  def update(gameTime: GameTime, model: MyGameModel): GameEvent => UpdatedModel[MyGameModel] =
     MyModel.updateModel(model)
 
   def initialViewModel(startupData: MyStartupData): MyGameModel => MyViewModel = _ => MyViewModel()
 
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, frameInputEvents: FrameInputEvents): MyViewModel =
-    viewModel
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, frameInputEvents: FrameInputEvents): UpdatedViewModel[MyViewModel] =
+    UpdatedViewModel(viewModel)
 
   def present(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     MyView.updateView(model, frameInputEvents)

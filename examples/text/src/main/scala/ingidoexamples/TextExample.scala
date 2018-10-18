@@ -21,13 +21,13 @@ object TextExample extends IndigoGameBasic[Unit, Unit, Unit] {
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(gameTime: GameTime, model: Unit): GameEvent => Unit = _ => model
+  def update(gameTime: GameTime, model: Unit): GameEvent => UpdatedModel[Unit] = _ => model
 
   val text: Text = Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontKey).alignRight
 
   def initialViewModel(startupData: Unit): Unit => Unit = _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
+  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] =
     ()
 
   def present(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =

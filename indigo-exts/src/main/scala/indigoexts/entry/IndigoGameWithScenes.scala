@@ -4,7 +4,7 @@ import indigo.gameengine.assets.AssetCollection
 import indigo.gameengine.events.FrameInputEvents
 import indigo.gameengine.scenegraph.Animations
 import indigo.gameengine.scenegraph.datatypes.FontInfo
-import indigo.gameengine.{GameEngine, GameTime, Startup, StartupErrors}
+import indigo.gameengine._
 import indigo.shared.{AssetType, GameConfig}
 import indigoexts.scenemanager.{SceneManager, SceneName, ScenesList}
 

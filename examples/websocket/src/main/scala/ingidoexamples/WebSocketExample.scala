@@ -49,7 +49,7 @@ object WebSocketExample extends IndigoGameBasic[MySetupData, MyGameModel, Unit] 
       count = 0
     )
 
-  def update(gameTime: GameTime, model: MyGameModel): GameEvent => MyGameModel = {
+  def update(gameTime: GameTime, model: MyGameModel): GameEvent => UpdatedModel[MyGameModel] = {
     case e: ButtonEvent =>
       model.copy(
         ping = model.ping.update(e),
@@ -78,7 +78,7 @@ object WebSocketExample extends IndigoGameBasic[MySetupData, MyGameModel, Unit] 
 
   def initialViewModel(startupData: MySetupData): MyGameModel => Unit = _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] =
     ()
 
   def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {

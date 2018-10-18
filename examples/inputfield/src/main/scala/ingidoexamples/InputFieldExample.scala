@@ -22,7 +22,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       InputField("Fish").makeMultiLine
     )
 
-  def update(gameTime: GameTime, model: MyGameModel): GameEvent => MyGameModel = {
+  def update(gameTime: GameTime, model: MyGameModel): GameEvent => UpdatedModel[MyGameModel] = {
     case e: InputFieldEvent =>
       model.copy(inputField = model.inputField.update(e))
 
@@ -32,7 +32,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   def initialViewModel(startupData: Unit): MyGameModel => Unit = _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): Unit =
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] =
     ()
 
   def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {

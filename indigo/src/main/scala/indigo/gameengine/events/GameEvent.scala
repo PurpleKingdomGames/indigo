@@ -34,6 +34,6 @@ object KeyboardEvent {
   case class KeyPress(keyCode: KeyCode) extends KeyboardEvent
 }
 
-trait ViewEvent extends GameEvent {
+trait FrameEvent extends GameEvent {
   val isGameEvent: Boolean = false
 }

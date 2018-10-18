@@ -16,7 +16,7 @@ object GlobalEventStream {
       .filter(e)
       .foreach(e => eventQueue += e)
 
-  def pushViewEvent(audioPlayer: IAudioPlayer, e: ViewEvent): Unit =
+  def pushViewEvent(audioPlayer: IAudioPlayer, e: FrameEvent): Unit =
     NetworkEventProcessor
       .filter(e)
       .flatMap { AudioEventProcessor.filter(audioPlayer) }

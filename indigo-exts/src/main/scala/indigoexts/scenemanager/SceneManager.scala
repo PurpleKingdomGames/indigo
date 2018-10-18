@@ -1,6 +1,6 @@
 package indigoexts.scenemanager
 
-import indigo.gameengine.GameTime
+import indigo.gameengine.{GameTime, UpdatedModel, UpdatedViewModel}
 import indigo.gameengine.events.{FrameInputEvents, GameEvent}
 import indigo.gameengine.scenegraph.SceneUpdateFragment
 import indigo.runtime.IndigoLogger
@@ -12,35 +12,35 @@ class SceneManager[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel
   private var finderInstance: SceneFinder = scenesFinder
 
   // Scene delegation
-  def updateModel(gameTime: GameTime, model: GameModel): GameEvent => GameModel = {
+  def updateModel(gameTime: GameTime, model: GameModel): GameEvent => UpdatedModel[GameModel] = {
     case SceneEvent.Next =>
       finderInstance = finderInstance.forward
-      model
+      UpdatedModel(model, Nil)
 
     case SceneEvent.Previous =>
       finderInstance = finderInstance.backward
-      model
+      UpdatedModel(model, Nil)
 
     case SceneEvent.JumpTo(name) =>
       finderInstance = finderInstance.jumpToSceneByName(name)
-      model
+      UpdatedModel(model, Nil)
 
     case event =>
       scenes.findScene(finderInstance.current.name) match {
         case None =>
           IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
-          model
+          UpdatedModel(model, Nil)
 
         case Some(scene) =>
           scene.updateModelDelegate(gameTime, model)(event)
       }
   }
 
-  def updateViewModel(gameTime: GameTime, model: GameModel, viewModel: ViewModel, frameInputEvents: FrameInputEvents): ViewModel =
+  def updateViewModel(gameTime: GameTime, model: GameModel, viewModel: ViewModel, frameInputEvents: FrameInputEvents): UpdatedViewModel[ViewModel] =
     scenes.findScene(finderInstance.current.name) match {
       case None =>
         IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
-        viewModel
+        UpdatedViewModel(viewModel, Nil)
 
       case Some(scene) =>
         scene.updateViewModelDelegate(gameTime, model, viewModel, frameInputEvents)

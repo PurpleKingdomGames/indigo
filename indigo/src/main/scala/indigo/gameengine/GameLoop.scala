@@ -17,9 +17,9 @@ class GameLoop[GameModel, ViewModel](
     renderer: IRenderer,
     audioPlayer: IAudioPlayer,
     initialModel: GameModel,
-    updateModel: (GameTime, GameModel) => GameEvent => GameModel,
+    updateModel: (GameTime, GameModel) => GameEvent => UpdatedModel[GameModel],
     initialViewModel: ViewModel,
-    updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => ViewModel,
+    updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => UpdatedViewModel[ViewModel],
     updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
 )(implicit metrics: IMetrics) {
 
@@ -55,7 +55,7 @@ class GameLoop[GameModel, ViewModel](
             initialModel
 
           case Some(previousModel) =>
-            GameLoop.processModelUpdateEvents(gameTime, previousModel, collectedEvents, updateModel)
+            GameLoop.processModelUpdateEvents(audioPlayer, gameTime, previousModel, collectedEvents, updateModel)
         }
 
         gameModelState = Some(model)
@@ -68,7 +68,9 @@ class GameLoop[GameModel, ViewModel](
             initialViewModel
 
           case Some(previousModel) =>
-            updateViewModel(gameTime, model, previousModel, frameInputEvents)
+            val next = updateViewModel(gameTime, model, previousModel, frameInputEvents)
+            next.events.foreach(e => GlobalEventStream.pushViewEvent(audioPlayer, e))
+            next.model
         }
 
         viewModelState = Some(viewModel)
@@ -171,13 +173,21 @@ object GameLoop {
       metrics.record(PersistAnimationStatesEndMetric)
     }
 
-  def processModelUpdateEvents[GameModel](gameTime: GameTime, previousModel: GameModel, remaining: List[GameEvent], updateModel: (GameTime, GameModel) => GameEvent => GameModel): GameModel =
+  def processModelUpdateEvents[GameModel](audioPlayer: IAudioPlayer,
+                                          gameTime: GameTime,
+                                          previousModel: GameModel,
+                                          remaining: List[GameEvent],
+                                          updateModel: (GameTime, GameModel) => GameEvent => UpdatedModel[GameModel]): GameModel =
     remaining match {
       case Nil =>
-        updateModel(gameTime, previousModel)(FrameTick)
+        val next = updateModel(gameTime, previousModel)(FrameTick)
+        next.events.foreach(e => GlobalEventStream.pushViewEvent(audioPlayer, e))
+        next.model
 
       case x :: xs =>
-        processModelUpdateEvents(gameTime, updateModel(gameTime, previousModel)(x), xs, updateModel)
+        val next = updateModel(gameTime, previousModel)(x)
+        next.events.foreach(e => GlobalEventStream.pushViewEvent(audioPlayer, e))
+        processModelUpdateEvents(audioPlayer, gameTime, next.model, xs, updateModel)
     }
 
   val persistGlobalViewEvents: IAudioPlayer => IMetrics => SceneUpdateFragment => SceneGraphRootNode = audioPlayer =>

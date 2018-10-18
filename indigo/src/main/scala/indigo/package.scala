@@ -28,6 +28,12 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   type StartupErrors = gameengine.StartupErrors
   val StartupErrors: gameengine.StartupErrors.type = gameengine.StartupErrors
 
+  type UpdatedModel[T] = gameengine.UpdatedModel[T]
+  val UpdatedModel: gameengine.UpdatedModel.type = gameengine.UpdatedModel
+
+  type UpdatedViewModel[T] = gameengine.UpdatedViewModel[T]
+  val UpdatedViewModel: gameengine.UpdatedViewModel.type = gameengine.UpdatedViewModel
+
   // Constants
 
   val Keys: gameengine.constants.Keys.type = gameengine.constants.Keys

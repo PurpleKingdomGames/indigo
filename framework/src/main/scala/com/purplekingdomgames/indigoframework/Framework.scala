@@ -35,11 +35,11 @@ object Framework {
 
   val initialModel: StartupData => GameModel = startupData => GameModelHelper.initialModel(startupData)
 
-  val updateModel: (GameTime, GameModel) => GameEvent => GameModel = (_, gameModel) => GameModelHelper.updateModel(gameModel)
+  val updateModel: (GameTime, GameModel) => GameEvent => UpdatedModel[GameModel] = (_, gameModel) => GameModelHelper.updateModel(gameModel)
 
   val initialViewModel: (StartupData, GameModel) => Unit = (_, _) => ()
 
-  val updateViewModel: (GameTime, GameModel, Unit, FrameInputEvents) => Unit = (_, _, _, _) => ()
+  val updateViewModel: (GameTime, GameModel, Unit, FrameInputEvents) => UpdatedViewModel[Unit] = (_, _, _, _) => ()
 
   val updateView: (GameTime, GameModel, Unit, FrameInputEvents) => SceneUpdateFragment = (_, gameModel, _, _) => GameViewHelper.updateView(gameModel)
 

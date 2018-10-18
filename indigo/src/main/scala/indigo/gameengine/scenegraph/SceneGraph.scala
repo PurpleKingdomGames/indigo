@@ -1,7 +1,7 @@
 package indigo.gameengine.scenegraph
 
 import indigo.gameengine.assets.{AnimationsRegister, FontRegister}
-import indigo.gameengine.events.{GameEvent, ViewEvent}
+import indigo.gameengine.events.{GameEvent, FrameEvent}
 import indigo.gameengine.scenegraph.AnimationAction._
 import indigo.gameengine.scenegraph.datatypes._
 import indigo.runtime.IndigoLogger
@@ -86,7 +86,7 @@ object Group {
 sealed trait Renderable extends SceneGraphNode {
   val bounds: Rectangle
   val effects: Effects
-  val eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent]
+  val eventHandler: ((Rectangle, GameEvent)) => Option[FrameEvent]
 
   def x: Int
   def y: Int
@@ -104,14 +104,14 @@ sealed trait Renderable extends SceneGraphNode {
   def flipHorizontal(h: Boolean): Renderable
   def flipVertical(v: Boolean): Renderable
 
-  def onEvent(e: ((Rectangle, GameEvent)) => Option[ViewEvent]): Renderable
+  def onEvent(e: ((Rectangle, GameEvent)) => Option[FrameEvent]): Renderable
 
   //TODO: Review this.
-  private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent]
+  private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[FrameEvent]
 
 }
 
-case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent])
+case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[FrameEvent])
     extends Renderable {
 
   def x: Int = bounds.position.x - ref.x
@@ -159,10 +159,10 @@ case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: 
   def withCrop(x: Int, y: Int, width: Int, height: Int): Graphic =
     this.copy(crop = Rectangle(x, y, width, height))
 
-  def onEvent(e: ((Rectangle, GameEvent)) => Option[ViewEvent]): Graphic =
+  def onEvent(e: ((Rectangle, GameEvent)) => Option[FrameEvent]): Graphic =
     this.copy(eventHandler = e)
 
-  private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent] =
+  private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[FrameEvent] =
     (e: GameEvent) => eventHandler((bounds, e))
 
 }
@@ -191,7 +191,7 @@ object Graphic {
     )
 }
 
-case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, animationsKey: AnimationsKey, ref: Point, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent])
+case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, animationsKey: AnimationsKey, ref: Point, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[FrameEvent])
     extends Renderable {
 
   def x: Int = bounds.position.x - ref.x
@@ -262,10 +262,10 @@ case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, anima
     this
   }
 
-  def onEvent(e: ((Rectangle, GameEvent)) => Option[ViewEvent]): Sprite =
+  def onEvent(e: ((Rectangle, GameEvent)) => Option[FrameEvent]): Sprite =
     this.copy(eventHandler = e)
 
-  private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent] =
+  private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[FrameEvent] =
     (e: GameEvent) => eventHandler((bounds, e))
 
 }
@@ -283,7 +283,7 @@ object Sprite {
     )
 }
 
-case class Text(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontKey: FontKey, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[ViewEvent])
+case class Text(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontKey: FontKey, effects: Effects, eventHandler: ((Rectangle, GameEvent)) => Option[FrameEvent])
     extends Renderable {
 
   def x: Int = bounds.position.x
@@ -352,7 +352,7 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
   def withFontKey(fontKey: FontKey): Text =
     this.copy(fontKey = fontKey)
 
-  def onEvent(e: ((Rectangle, GameEvent)) => Option[ViewEvent]): Text =
+  def onEvent(e: ((Rectangle, GameEvent)) => Option[FrameEvent]): Text =
     this.copy(eventHandler = e)
 
   private val realBound: Rectangle =
@@ -362,7 +362,7 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
       case (TextAlignment.Right, b)  => b.copy(position = Point(b.x - b.width, b.y))
     }
 
-  private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[ViewEvent] =
+  private[gameengine] val eventHandlerWithBoundsApplied: GameEvent => Option[FrameEvent] =
     (e: GameEvent) => eventHandler((realBound, e))
 
 }

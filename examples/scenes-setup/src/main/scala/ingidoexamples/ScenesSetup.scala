@@ -49,16 +49,16 @@ object SceneA extends Scene[MyGameModel, MyViewModel, MessageA, Unit] {
     Lens.identity(())
 
   // Nothing to do
-  def updateSceneModel(gameTime: GameTime, sceneModel: MessageA): GameEvent => MessageA =
+  def updateSceneModel(gameTime: GameTime, sceneModel: MessageA): GameEvent => UpdatedModel[MessageA] =
     _ => sceneModel
 
   // Nothing to do
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: MessageA, sceneViewModel: Unit, frameInputEvents: FrameInputEvents): Unit = ()
+  def updateSceneViewModel(gameTime: GameTime, sceneModel: MessageA, sceneViewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] = ()
 
   // Show some text
   // When the user clicks anywhere in the screen, trigger an event to jump to the other scene.
   def updateSceneView(gameTime: GameTime, sceneModel: MessageA, sceneViewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
-    val events: List[ViewEvent] =
+    val events: List[FrameEvent] =
       if (frameInputEvents.wasMouseClickedWithin(Rectangle(0, 0, 550, 400))) List(SceneEvent.JumpTo(SceneB.name))
       else Nil
 
@@ -87,16 +87,16 @@ object SceneB extends Scene[MyGameModel, MyViewModel, MessageB, Unit] {
     Lens.identity(())
 
   // Nothing to do
-  def updateSceneModel(gameTime: GameTime, sceneModel: MessageB): GameEvent => MessageB =
+  def updateSceneModel(gameTime: GameTime, sceneModel: MessageB): GameEvent => UpdatedModel[MessageB] =
     _ => sceneModel
 
   // Nothing to do
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: MessageB, sceneViewModel: Unit, frameInputEvents: FrameInputEvents): Unit = ()
+  def updateSceneViewModel(gameTime: GameTime, sceneModel: MessageB, sceneViewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] = ()
 
   // Show some text
   // When the user clicks anywhere in the screen, trigger an event to jump to the other scene.
   def updateSceneView(gameTime: GameTime, sceneModel: MessageB, sceneViewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
-    val events: List[ViewEvent] =
+    val events: List[FrameEvent] =
       if (frameInputEvents.wasMouseClickedWithin(Rectangle(0, 0, 550, 400))) List(SceneEvent.JumpTo(SceneA.name))
       else Nil
 

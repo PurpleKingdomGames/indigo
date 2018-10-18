@@ -1,5 +1,6 @@
 package indigoexts.scenemanager
 
+import indigo.{UpdatedModel, UpdatedViewModel}
 import indigo.gameengine.GameTime
 import indigo.gameengine.events.{FrameInputEvents, GameEvent}
 import indigo.gameengine.scenegraph.SceneUpdateFragment
@@ -12,29 +13,35 @@ trait Scene[GameModel, ViewModel, SceneModel, SceneViewModel] {
   val sceneModelLens: Lens[GameModel, SceneModel]
   val sceneViewModelLens: Lens[ViewModel, SceneViewModel]
 
-  def updateSceneModel(gameTime: GameTime, sceneModel: SceneModel): GameEvent => SceneModel
+  def updateSceneModel(gameTime: GameTime, sceneModel: SceneModel): GameEvent => UpdatedModel[SceneModel]
 
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: SceneModel, sceneViewModel: SceneViewModel, frameInputEvents: FrameInputEvents): SceneViewModel
+  def updateSceneViewModel(gameTime: GameTime, sceneModel: SceneModel, sceneViewModel: SceneViewModel, frameInputEvents: FrameInputEvents): UpdatedViewModel[SceneViewModel]
 
   def updateSceneView(gameTime: GameTime, sceneModel: SceneModel, sceneViewModel: SceneViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment
 
-  def updateModelDelegate(gameTime: GameTime, gameModel: GameModel): GameEvent => GameModel =
-    e => sceneModelLens.set(gameModel, updateSceneModel(gameTime, sceneModelLens.get(gameModel))(e))
+  def updateModelDelegate(gameTime: GameTime, gameModel: GameModel): GameEvent => UpdatedModel[GameModel] =
+    e => {
+      val next = updateSceneModel(gameTime, sceneModelLens.get(gameModel))(e)
+      UpdatedModel(
+        sceneModelLens.set(gameModel, next.model),
+        next.events
+      )
+    }
 
-  def updateViewModelDelegate(gameTime: GameTime, model: GameModel, viewModel: ViewModel, frameInputEvents: FrameInputEvents): ViewModel =
-    sceneViewModelLens.set(
-      viewModel,
-      updateSceneViewModel(gameTime, sceneModelLens.get(model), sceneViewModelLens.get(viewModel), frameInputEvents)
+  def updateViewModelDelegate(gameTime: GameTime, model: GameModel, viewModel: ViewModel, frameInputEvents: FrameInputEvents): UpdatedViewModel[ViewModel] = {
+    val next = updateSceneViewModel(gameTime, sceneModelLens.get(model), sceneViewModelLens.get(viewModel), frameInputEvents)
+    UpdatedViewModel(
+      sceneViewModelLens.set(
+        viewModel,
+        next.model
+      ),
+      next.events
     )
+  }
 
   def updateViewDelegate(gameTime: GameTime, model: GameModel, viewModel: ViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     updateSceneView(gameTime, sceneModelLens.get(model), sceneViewModelLens.get(viewModel), frameInputEvents)
 
-//  def ::(
-//      scenes: ScenesList[GameModel, ViewModel, _, _]
-//  ): Scenes[GameModel, ViewModel, Scene[GameModel, ViewModel, SceneModel, SceneViewModel]] =
-//    ScenesList[GameModel, ViewModel, Scene[GameModel, ViewModel, SceneModel, SceneViewModel], scenes.Repr](this, scenes)
-//    Scenes.cons[GameModel, ViewModel, Scene[GameModel, ViewModel, SceneModel, SceneViewModel], scenes.Repr](this, scenes)
 }
 
 case class SceneName(name: String) extends AnyVal {

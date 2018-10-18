@@ -4,7 +4,7 @@ import indigo.gameengine.assets.AssetCollection
 import indigo.gameengine.events.{FrameInputEvents, GameEvent}
 import indigo.gameengine.scenegraph.datatypes.FontInfo
 import indigo.gameengine.scenegraph.{Animations, SceneUpdateFragment}
-import indigo.gameengine.{GameEngine, GameTime, Startup, StartupErrors}
+import indigo.gameengine._
 import indigo.shared.{AssetType, GameConfig}
 
 import scala.concurrent.Future
@@ -32,11 +32,11 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] {
 
   def initialModel(startupData: StartupData): Model
 
-  def update(gameTime: GameTime, model: Model): GameEvent => Model
+  def update(gameTime: GameTime, model: Model): GameEvent => UpdatedModel[Model]
 
   def initialViewModel(startupData: StartupData): Model => ViewModel
 
-  def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents): ViewModel
+  def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents): UpdatedViewModel[ViewModel]
 
   def present(gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment
 

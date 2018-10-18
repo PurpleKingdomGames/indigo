@@ -9,7 +9,7 @@ object MyModel {
       DudeModel(startupData.dude, DudeIdle)
     )
 
-  def updateModel(state: MyGameModel): GameEvent => MyGameModel = {
+  def updateModel(state: MyGameModel): GameEvent => UpdatedModel[MyGameModel] = {
     case FrameTick =>
       state
 
