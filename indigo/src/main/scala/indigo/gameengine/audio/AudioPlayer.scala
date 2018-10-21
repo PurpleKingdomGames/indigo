@@ -9,18 +9,8 @@ import org.scalajs.dom.raw.AudioContext
 
 object AudioPlayer {
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var player: Option[IAudioPlayer] = None
-
   def apply(loadedAudioAssets: List[LoadedAudioAsset]): IAudioPlayer =
-    player match {
-      case Some(p) => p
-      case None =>
-        val p = new AudioPlayerImpl(loadedAudioAssets, new AudioContext())
-
-        player = Some(p)
-        p
-    }
+    new AudioPlayerImpl(loadedAudioAssets, new AudioContext())
 
 }
 
