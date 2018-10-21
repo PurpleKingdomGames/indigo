@@ -32,7 +32,7 @@ class SceneManager[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel
           UpdatedModel(model, Nil)
 
         case Some(scene) =>
-          scene.updateModelDelegate(gameTime, model)(event)
+          Scene.updateModel(scene, gameTime, model)(event)
       }
   }
 
@@ -43,7 +43,7 @@ class SceneManager[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel
         UpdatedViewModel(viewModel, Nil)
 
       case Some(scene) =>
-        scene.updateViewModelDelegate(gameTime, model, viewModel, frameInputEvents)
+        Scene.updateViewModel(scene, gameTime, model, viewModel, frameInputEvents)
     }
 
   def updateView(gameTime: GameTime, model: GameModel, viewModel: ViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
@@ -53,7 +53,7 @@ class SceneManager[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel
         SceneUpdateFragment.empty
 
       case Some(scene) =>
-        scene.updateViewDelegate(gameTime, model, viewModel, frameInputEvents)
+        Scene.updateView(scene, gameTime, model, viewModel, frameInputEvents)
     }
 
 }
