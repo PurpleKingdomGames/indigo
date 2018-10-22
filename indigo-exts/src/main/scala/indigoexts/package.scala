@@ -15,17 +15,30 @@ package object indigoexts {
     type AutomataEvent = indigoexts.automata.AutomataEvent
     val AutomataEvent: indigoexts.automata.AutomataEvent.type = indigoexts.automata.AutomataEvent
 
-    type AutomataModifier = indigoexts.automata.AutomataModifier
     val AutomataModifier: indigoexts.automata.AutomataModifier.type = indigoexts.automata.AutomataModifier
 
-    val AutomataFarm: indigoexts.automata.AutomataFarm.type               = indigoexts.automata.AutomataFarm
-    val SpawnedAutomaton: indigoexts.automata.SpawnedAutomaton.type       = indigoexts.automata.SpawnedAutomaton
+    val AutomataFarm: indigoexts.automata.AutomataFarm.type = indigoexts.automata.AutomataFarm
+
+    type SpawnedAutomaton = indigoexts.automata.SpawnedAutomaton
+    val SpawnedAutomaton: indigoexts.automata.SpawnedAutomaton.type = indigoexts.automata.SpawnedAutomaton
+
+    type AutomatonSeedValues = indigoexts.automata.AutomatonSeedValues
     val AutomatonSeedValues: indigoexts.automata.AutomatonSeedValues.type = indigoexts.automata.AutomatonSeedValues
-    val GraphicAutomaton: indigoexts.automata.GraphicAutomaton.type       = indigoexts.automata.GraphicAutomaton
-    val SpriteAutomaton: indigoexts.automata.SpriteAutomaton.type         = indigoexts.automata.SpriteAutomaton
-    val TextAutomaton: indigoexts.automata.TextAutomaton.type             = indigoexts.automata.TextAutomaton
-    val AutomataPoolKey: indigoexts.automata.AutomataPoolKey.type         = indigoexts.automata.AutomataPoolKey
-    val AutomataLifeSpan: indigoexts.automata.AutomataLifeSpan.type       = indigoexts.automata.AutomataLifeSpan
+
+    type GraphicAutomaton = indigoexts.automata.GraphicAutomaton
+    val GraphicAutomaton: indigoexts.automata.GraphicAutomaton.type = indigoexts.automata.GraphicAutomaton
+
+    type SpriteAutomaton = indigoexts.automata.SpriteAutomaton
+    val SpriteAutomaton: indigoexts.automata.SpriteAutomaton.type = indigoexts.automata.SpriteAutomaton
+
+    type TextAutomaton = indigoexts.automata.TextAutomaton
+    val TextAutomaton: indigoexts.automata.TextAutomaton.type = indigoexts.automata.TextAutomaton
+
+    type AutomataPoolKey = indigoexts.automata.AutomataPoolKey
+    val AutomataPoolKey: indigoexts.automata.AutomataPoolKey.type = indigoexts.automata.AutomataPoolKey
+
+    type AutomataLifeSpan = indigoexts.automata.AutomataLifeSpan
+    val AutomataLifeSpan: indigoexts.automata.AutomataLifeSpan.type = indigoexts.automata.AutomataLifeSpan
   }
 
   object entrypoint {
