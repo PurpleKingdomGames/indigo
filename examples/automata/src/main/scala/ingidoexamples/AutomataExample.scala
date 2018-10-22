@@ -81,8 +81,8 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
           down = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 32, 16, 16)
         )
       )
-      .toSceneUpdateFragment
-      .addGameLayerNodes(AutomataFarm.render(gameTime))
+      .toSceneUpdateFragment |+| AutomataFarm
+      .renderToGameLayer(gameTime)
       .addGameLayerNodes(Text("click to win!", 30, 10, 1, fontKey))
 
 }

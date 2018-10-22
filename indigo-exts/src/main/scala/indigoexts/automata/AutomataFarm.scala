@@ -1,9 +1,9 @@
 package indigoexts.automata
 
 import indigo.gameengine.GameTime
-import indigo.gameengine.events.GlobalEventStream
+import indigo.gameengine.events.FrameEvent
 import indigo.gameengine.scenegraph.datatypes.Point
-import indigo.gameengine.scenegraph.{SceneGraphNode, Sprite}
+import indigo.gameengine.scenegraph._
 import indigoexts.automata.AutomataEvent.{KillAll, KillAllInPool, KillByKey, Spawn}
 import indigoexts.automata.AutomataModifier._
 
@@ -55,45 +55,70 @@ object AutomataFarm {
         ()
     }
 
-  def render(gameTime: GameTime): List[SceneGraphNode] = {
+  def renderToGameLayer(gameTime: GameTime): SceneUpdateFragment = {
+    val f =
+      (p: List[(SceneGraphNode, List[FrameEvent])]) =>
+        p.map(q => SceneUpdateFragment.empty.addGameLayerNodes(q._1).addViewEvents(q._2))
+          .foldLeft(SceneUpdateFragment.empty)(_ |+| _)
+
+    f(render(gameTime))
+  }
+
+  def renderToLightingLayer(gameTime: GameTime): SceneUpdateFragment = {
+    val f =
+      (p: List[(SceneGraphNode, List[FrameEvent])]) =>
+        p.map(q => SceneUpdateFragment.empty.addGameLayerNodes(q._1).addViewEvents(q._2))
+          .foldLeft(SceneUpdateFragment.empty)(_ |+| _)
+
+    f(render(gameTime))
+  }
+
+  def renderToUiLayer(gameTime: GameTime): SceneUpdateFragment = {
+    val f =
+      (p: List[(SceneGraphNode, List[FrameEvent])]) =>
+        p.map(q => SceneUpdateFragment.empty.addGameLayerNodes(q._1).addViewEvents(q._2))
+          .foldLeft(SceneUpdateFragment.empty)(_ |+| _)
+
+    f(render(gameTime))
+  }
+
+  private def render(gameTime: GameTime): List[(SceneGraphNode, List[FrameEvent])] = {
     paddock = paddock.filter(_.isAlive(gameTime.running)).map(_.updateDelta(gameTime.delta))
 
-    paddock.map[SceneGraphNode, List[SceneGraphNode]] { sa =>
+    paddock.map { sa =>
       sa.automata match {
         case GraphicAutomaton(_, graphic, _, modifiers) =>
-          modifiers.foldLeft(graphic) { (g, m) =>
+          modifiers.foldLeft[(Graphic, List[FrameEvent])]((graphic, Nil)) { (p, m) =>
             m match {
               case ChangeAlpha(f) =>
-                g.withAlpha(f(gameTime, sa.seedValues, g.effects.alpha))
+                (p._1.withAlpha(f(gameTime, sa.seedValues, p._1.effects.alpha)), Nil)
 
               case ChangeTint(f) =>
-                g.withTint(f(gameTime, sa.seedValues, g.effects.tint))
+                (p._1.withTint(f(gameTime, sa.seedValues, p._1.effects.tint)), Nil)
 
               case MoveTo(f) =>
-                g.moveTo(f(gameTime, sa.seedValues, g.bounds.position))
+                (p._1.moveTo(f(gameTime, sa.seedValues, p._1.bounds.position)), Nil)
 
               case EmitEvents(f) =>
-                f(gameTime, sa.seedValues).foreach(GlobalEventStream.pushGameEvent)
-                g
+                (p._1, p._2 ++ f(gameTime, sa.seedValues))
             }
           }
 
         case SpriteAutomaton(_, sprite, autoPlay, maybeCycleLabel, _, modifiers) =>
-          def applySpriteModifiers(sp: Sprite): Sprite =
-            modifiers.foldLeft[Sprite](sp) { (s, m) =>
+          def applySpriteModifiers(sp: Sprite): (Sprite, List[FrameEvent]) =
+            modifiers.foldLeft[(Sprite, List[FrameEvent])]((sp, Nil)) { (p, m) =>
               m match {
                 case ChangeAlpha(f) =>
-                  s.withAlpha(f(gameTime, sa.seedValues, s.effects.alpha))
+                  (p._1.withAlpha(f(gameTime, sa.seedValues, p._1.effects.alpha)), Nil)
 
                 case ChangeTint(f) =>
-                  s.withTint(f(gameTime, sa.seedValues, s.effects.tint))
+                  (p._1.withTint(f(gameTime, sa.seedValues, p._1.effects.tint)), Nil)
 
                 case MoveTo(f) =>
-                  s.moveTo(f(gameTime, sa.seedValues, s.bounds.position))
+                  (p._1.moveTo(f(gameTime, sa.seedValues, p._1.bounds.position)), Nil)
 
                 case EmitEvents(f) =>
-                  f(gameTime, sa.seedValues).foreach(GlobalEventStream.pushGameEvent)
-                  s
+                  (p._1, p._2 ++ f(gameTime, sa.seedValues))
               }
             }
 
@@ -102,20 +127,19 @@ object AutomataFarm {
           )
 
         case TextAutomaton(_, text, _, modifiers) =>
-          modifiers.foldLeft(text) { (t, m) =>
+          modifiers.foldLeft[(Text, List[FrameEvent])]((text, Nil)) { (p, m) =>
             m match {
               case ChangeAlpha(f) =>
-                t.withAlpha(f(gameTime, sa.seedValues, t.effects.alpha))
+                (p._1.withAlpha(f(gameTime, sa.seedValues, p._1.effects.alpha)), Nil)
 
               case ChangeTint(f) =>
-                t.withTint(f(gameTime, sa.seedValues, t.effects.tint))
+                (p._1.withTint(f(gameTime, sa.seedValues, p._1.effects.tint)), Nil)
 
               case MoveTo(f) =>
-                t.moveTo(f(gameTime, sa.seedValues, t.bounds.position))
+                (p._1.moveTo(f(gameTime, sa.seedValues, p._1.bounds.position)), Nil)
 
               case EmitEvents(f) =>
-                f(gameTime, sa.seedValues).foreach(GlobalEventStream.pushGameEvent)
-                t
+                (p._1, p._2 ++ f(gameTime, sa.seedValues))
             }
           }
       }

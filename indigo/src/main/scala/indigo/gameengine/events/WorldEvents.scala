@@ -6,38 +6,38 @@ import org.scalajs.dom.html
 
 object WorldEvents {
 
-  def apply(canvas: html.Canvas, magnification: Int): Unit = {
+  def apply(canvas: html.Canvas, magnification: Int)(implicit globalEventStream: GlobalEventStream): Unit = {
     canvas.onclick = { e: dom.MouseEvent =>
-      GlobalEventStream.pushGameEvent(MouseEvent.Click(e.clientX.toInt / magnification, e.clientY.toInt / magnification))
+      globalEventStream.pushGameEvent(MouseEvent.Click(e.clientX.toInt / magnification, e.clientY.toInt / magnification))
     }
 
     canvas.onmousemove = { e: dom.MouseEvent =>
-      GlobalEventStream.pushGameEvent(MouseEvent.Move(e.clientX.toInt / magnification, e.clientY.toInt / magnification))
+      globalEventStream.pushGameEvent(MouseEvent.Move(e.clientX.toInt / magnification, e.clientY.toInt / magnification))
     }
 
     canvas.onmousedown = { e: dom.MouseEvent =>
-      GlobalEventStream.pushGameEvent(MouseEvent.MouseDown(e.clientX.toInt / magnification, e.clientY.toInt / magnification))
+      globalEventStream.pushGameEvent(MouseEvent.MouseDown(e.clientX.toInt / magnification, e.clientY.toInt / magnification))
     }
 
     canvas.onmouseup = { e: dom.MouseEvent =>
-      GlobalEventStream.pushGameEvent(MouseEvent.MouseUp(e.clientX.toInt / magnification, e.clientY.toInt / magnification))
+      globalEventStream.pushGameEvent(MouseEvent.MouseUp(e.clientX.toInt / magnification, e.clientY.toInt / magnification))
     }
 
     dom.document.onkeydown = { e: dom.KeyboardEvent =>
       Keys.codeToKeyCode(e.keyCode).foreach { kc =>
-        GlobalEventStream.pushGameEvent(KeyboardEvent.KeyDown(kc))
+        globalEventStream.pushGameEvent(KeyboardEvent.KeyDown(kc))
       }
     }
 
     dom.document.onkeyup = { e: dom.KeyboardEvent =>
       Keys.codeToKeyCode(e.keyCode).foreach { kc =>
-        GlobalEventStream.pushGameEvent(KeyboardEvent.KeyUp(kc))
+        globalEventStream.pushGameEvent(KeyboardEvent.KeyUp(kc))
       }
     }
 
     dom.document.onkeypress = { e: dom.KeyboardEvent =>
       Keys.codeToKeyCode(e.keyCode).foreach { kc =>
-        GlobalEventStream.pushGameEvent(KeyboardEvent.KeyPress(kc))
+        globalEventStream.pushGameEvent(KeyboardEvent.KeyPress(kc))
       }
     }
 

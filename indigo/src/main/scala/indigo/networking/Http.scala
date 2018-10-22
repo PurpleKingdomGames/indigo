@@ -7,7 +7,7 @@ import org.scalajs.dom.XMLHttpRequest
 
 object Http {
 
-  def processRequest(request: HttpRequest): Unit =
+  def processRequest(request: HttpRequest)(implicit globalEventStream: GlobalEventStream): Unit =
     try {
 
       val xhr = new XMLHttpRequest
@@ -45,7 +45,7 @@ object Http {
 
         val body = ((str: String) => if (str.isEmpty) None else Option(str))(xhr.responseText)
 
-        GlobalEventStream.pushGameEvent(
+        globalEventStream.pushGameEvent(
           HttpResponse(
             status = xhr.status,
             headers = parsedHeaders,
@@ -54,7 +54,7 @@ object Http {
         )
       }
 
-      xhr.onerror = (_: dom.Event) => GlobalEventStream.pushGameEvent(HttpError)
+      xhr.onerror = (_: dom.Event) => globalEventStream.pushGameEvent(HttpError)
 
       request.body match {
         case Some(b) =>
@@ -66,7 +66,7 @@ object Http {
 
     } catch {
       case _: Throwable =>
-        GlobalEventStream.pushGameEvent(HttpError)
+        globalEventStream.pushGameEvent(HttpError)
     }
 
 }

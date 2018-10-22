@@ -15,7 +15,7 @@ object WebSockets {
   @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   private val configs: mutable.HashMap[WebSocketId, WebSocketConfig] = mutable.HashMap()
 
-  def processSendEvent(event: WebSocketEvent with NetworkSendEvent): Unit =
+  def processSendEvent(event: WebSocketEvent with NetworkSendEvent)(implicit globalEventStream: GlobalEventStream): Unit =
     try event match {
       case WebSocketEvent.ConnectOnly(config) =>
         reEstablishConnection(insertUpdateConfig(config), None)
@@ -34,7 +34,7 @@ object WebSockets {
         ()
     } catch {
       case e: Throwable =>
-        GlobalEventStream.pushGameEvent(WebSocketEvent.Error(event.giveId.getOrElse(WebSocketId("<not found>")), e.getMessage))
+        globalEventStream.pushGameEvent(WebSocketEvent.Error(event.giveId.getOrElse(WebSocketId("<not found>")), e.getMessage))
     }
 
   private def insertUpdateConfig(config: WebSocketConfig): WebSocketConfig = {
@@ -52,7 +52,7 @@ object WebSockets {
       .getOrElse(config)
   }
 
-  private def reEstablishConnection(config: WebSocketConfig, onOpenSendMessage: Option[String]): Option[dom.WebSocket] =
+  private def reEstablishConnection(config: WebSocketConfig, onOpenSendMessage: Option[String])(implicit globalEventStream: GlobalEventStream): Option[dom.WebSocket] =
     connections
       .get(config.id)
       .flatMap { conn =>
@@ -75,17 +75,17 @@ object WebSockets {
       }
 
   @SuppressWarnings(Array("org.wartremover.warts.ToString"))
-  private def newConnection(config: WebSocketConfig, onOpenSendMessage: Option[String]): Option[dom.WebSocket] =
+  private def newConnection(config: WebSocketConfig, onOpenSendMessage: Option[String])(implicit globalEventStream: GlobalEventStream): Option[dom.WebSocket] =
     try {
       val socket = new dom.WebSocket(config.address)
 
-      socket.onmessage = (e: dom.MessageEvent) => GlobalEventStream.pushGameEvent(WebSocketEvent.Receive(config.id, e.data.toString))
+      socket.onmessage = (e: dom.MessageEvent) => globalEventStream.pushGameEvent(WebSocketEvent.Receive(config.id, e.data.toString))
 
       socket.onopen = (_: dom.Event) => onOpenSendMessage.foreach(msg => socket.send(msg))
 
-      socket.onerror = (e: dom.ErrorEvent) => GlobalEventStream.pushGameEvent(WebSocketEvent.Error(config.id, e.message))
+      socket.onerror = (e: dom.ErrorEvent) => globalEventStream.pushGameEvent(WebSocketEvent.Error(config.id, e.message))
 
-      socket.onclose = (_: dom.CloseEvent) => GlobalEventStream.pushGameEvent(WebSocketEvent.Close(config.id))
+      socket.onclose = (_: dom.CloseEvent) => globalEventStream.pushGameEvent(WebSocketEvent.Close(config.id))
 
       Option(socket)
     } catch {

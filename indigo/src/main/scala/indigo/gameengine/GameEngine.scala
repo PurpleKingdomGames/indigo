@@ -64,6 +64,9 @@ class GameEngine[StartupData, StartupError, GameModel, ViewModel](
         implicit val metrics: IMetrics =
           Metrics.getInstance(gameConfig.advanced.recordMetrics, gameConfig.advanced.logMetricsReportIntervalMs)
 
+        implicit val globalEventStream: GlobalEventStream =
+          GlobalEventStream.default
+
         val x: IIO[Double => Int] =
           for {
             _                   <- GameEngine.registerAnimations(animations)
@@ -164,7 +167,7 @@ object GameEngine {
   def createCanvas(gameConfig: GameConfig): IIO[Canvas] =
     IIO.delay(Renderer.createCanvas(gameConfig.viewport.width, gameConfig.viewport.height))
 
-  def listenToWorldEvents(canvas: Canvas, magnification: Int): IIO[Unit] = {
+  def listenToWorldEvents(canvas: Canvas, magnification: Int)(implicit globalEventStream: GlobalEventStream): IIO[Unit] = {
     IndigoLogger.info("Starting world events")
     IIO.delay(WorldEvents(canvas, magnification))
   }
@@ -196,7 +199,7 @@ object GameEngine {
       initialViewModel: GameModel => ViewModel,
       updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => UpdatedViewModel[ViewModel],
       updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
-  )(implicit metrics: IMetrics): IIO[GameLoop[GameModel, ViewModel]] =
+  )(implicit metrics: IMetrics, globalEventStream: GlobalEventStream): IIO[GameLoop[GameModel, ViewModel]] =
     IIO.delay(
       new GameLoop[GameModel, ViewModel](gameConfig, assetMapping, renderer, audioPlayer, initialModel, updateModel, initialViewModel(initialModel), updateViewModel, updateView)
     )
