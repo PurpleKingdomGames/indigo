@@ -5,6 +5,10 @@ import indigoexts.entrypoint._
 import indigoexts.ui._
 import indigoexts.automaton._
 
+import scala.util.Random
+
+//TODO: Random value!
+
 object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   import FontStuff._
@@ -29,12 +33,16 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
         AutomataLifeSpan(1000),
         List(
           AutomataModifier.MoveTo((_, seed, _) => {
-            val start = Point.tuple2ToPoint(config.viewport.center)
-            val diff  = 30 * (seed.timeAliveDelta / seed.lifeSpan)
-
-            start + Point(0, -diff.toInt)
+            val diff = 30 * (seed.timeAliveDelta / seed.lifeSpan)
+            seed.spawnedAt + Point(0, -diff.toInt)
           }),
-          AutomataModifier.ChangeAlpha((_, seed, originalAlpha) => originalAlpha * (seed.timeAliveDelta / seed.lifeSpan))
+          AutomataModifier.ChangeAlpha { (_, seed, originalAlpha) =>
+            // Note: There is a shader bug that makes the White part of text not respect alpha correctly.
+            originalAlpha * (seed.timeAliveDelta / seed.lifeSpan)
+          },
+          AutomataModifier.ChangeTint { (_, _, _) =>
+            Tint(1, 0, 0)
+          }
         )
       )
     )
@@ -45,10 +53,13 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(
       button = Button(ButtonState.Up).withUpAction { () =>
-        Option(AutomataEvent.Spawn(AutomataPoolKey("points"), Point(0, 0)))
+        Option(AutomataEvent.Spawn(AutomataPoolKey("points"), generateLocation()))
       },
       count = 0
     )
+
+  def generateLocation(): Point =
+    Point(Random.nextInt(config.viewport.width - 50) + 25, Random.nextInt(config.viewport.height - 50) + 25)
 
   def update(gameTime: GameTime, model: MyGameModel): GameEvent => UpdatedModel[MyGameModel] = {
     case e: ButtonEvent =>
