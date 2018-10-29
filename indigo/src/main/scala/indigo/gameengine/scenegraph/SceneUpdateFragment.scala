@@ -1,13 +1,13 @@
 package indigo.gameengine.scenegraph
 
-import indigo.gameengine.events.FrameEvent
+import indigo.gameengine.events.ViewEvent
 import indigo.gameengine.scenegraph.datatypes.{AmbientLight, Tint}
 
 case class SceneUpdateFragment(gameLayer: List[SceneGraphNode],
                                lightingLayer: List[SceneGraphNode],
                                uiLayer: List[SceneGraphNode],
                                ambientLight: AmbientLight,
-                               viewEvents: List[FrameEvent],
+                               viewEvents: List[ViewEvent],
                                audio: SceneAudio) {
   def |+|(other: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment.append(this, other)
@@ -47,10 +47,10 @@ case class SceneUpdateFragment(gameLayer: List[SceneGraphNode],
       )
     )
 
-  def addViewEvents(events: FrameEvent*): SceneUpdateFragment =
+  def addViewEvents(events: ViewEvent*): SceneUpdateFragment =
     this.copy(viewEvents = viewEvents ++ events.toList)
 
-  def addViewEvents(events: List[FrameEvent]): SceneUpdateFragment =
+  def addViewEvents(events: List[ViewEvent]): SceneUpdateFragment =
     this.copy(viewEvents = viewEvents ++ events)
 
   def withAudio(sceneAudio: SceneAudio): SceneUpdateFragment =

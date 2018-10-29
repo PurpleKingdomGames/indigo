@@ -1,6 +1,6 @@
 package indigo.gameengine.scenegraph
 
-import indigo.gameengine.events.{GameEvent, FrameEvent}
+import indigo.gameengine.events.{GameEvent, ViewEvent}
 
 case class SceneGraphRootNode(game: SceneGraphLayer, lighting: SceneGraphLayer, ui: SceneGraphLayer) {
 
@@ -81,7 +81,7 @@ case class SceneGraphRootNodeFlat(game: SceneGraphLayerFlat, lighting: SceneGrap
 //    res
 //  }
 
-  def collectViewEvents(gameEvents: List[GameEvent]): List[FrameEvent] =
+  def collectViewEvents(gameEvents: List[GameEvent]): List[ViewEvent] =
     game.collectViewEvents(gameEvents) ++
       lighting.collectViewEvents(gameEvents) ++
       ui.collectViewEvents(gameEvents)

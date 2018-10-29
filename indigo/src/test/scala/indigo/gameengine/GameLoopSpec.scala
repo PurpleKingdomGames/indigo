@@ -1,6 +1,6 @@
 package indigo.gameengine
 
-import indigo.gameengine.events.{FrameEvent, GameEvent, GlobalEventStream}
+import indigo.gameengine.events.{ViewEvent, GameEvent, GlobalEventStream}
 import org.scalatest.{FunSpec, Matchers}
 
 class GameLoopSpec extends FunSpec with Matchers {
@@ -13,9 +13,9 @@ class GameLoopSpec extends FunSpec with Matchers {
 
       implicit val ges: GlobalEventStream =
         new GlobalEventStream {
-          def pushGameEvent(e: GameEvent): Unit  = ()
-          def pushViewEvent(e: FrameEvent): Unit = ()
-          def collect: List[GameEvent]           = Nil
+          def pushGameEvent(e: GameEvent): Unit = ()
+          def pushViewEvent(e: ViewEvent): Unit = ()
+          def collect: List[GameEvent]          = Nil
         }
 
       val gameEvents: List[GameEvent] =
@@ -49,7 +49,7 @@ class GameLoopSpec extends FunSpec with Matchers {
           var l: List[GameEvent] = Nil
 
           def pushGameEvent(e: GameEvent): Unit = ()
-          def pushViewEvent(e: FrameEvent): Unit = {
+          def pushViewEvent(e: ViewEvent): Unit = {
             l = l :+ e
             ()
           }
@@ -86,5 +86,5 @@ class GameLoopSpec extends FunSpec with Matchers {
 }
 
 case class TestGameModel(name: String)
-case class ChangeName(to: String) extends FrameEvent
-case class ShowName(name: String) extends FrameEvent
+case class ChangeName(to: String) extends ViewEvent
+case class ShowName(name: String) extends ViewEvent

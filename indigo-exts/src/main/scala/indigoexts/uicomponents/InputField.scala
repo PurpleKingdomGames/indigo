@@ -3,7 +3,7 @@ package indigoexts.uicomponents
 import indigo.gameengine.GameTime
 import indigo.gameengine.assets.FontRegister
 import indigo.gameengine.constants.Keys
-import indigo.gameengine.events.{FrameInputEvents, KeyboardEvent, MouseEvent, FrameEvent}
+import indigo.gameengine.events.{FrameInputEvents, KeyboardEvent, MouseEvent, ViewEvent}
 import indigo.gameengine.scenegraph.datatypes._
 import indigo.gameengine.scenegraph.{Graphic, SceneGraphNode, SceneUpdateFragment, Text}
 
@@ -247,7 +247,7 @@ case class InputFieldViewUpdate(sceneGraphNodes: List[SceneGraphNode], inputFiel
     (sceneGraphNodes, inputFieldEvents)
 }
 
-sealed trait InputFieldEvent extends FrameEvent {
+sealed trait InputFieldEvent extends ViewEvent {
   val bindingKey: BindingKey
 }
 object InputFieldEvent {

@@ -1,7 +1,7 @@
 package indigo.gameengine
-import indigo.gameengine.events.FrameEvent
+import indigo.gameengine.events.ViewEvent
 
-case class UpdatedModel[Model](model: Model, events: List[FrameEvent])
+case class UpdatedModel[Model](model: Model, events: List[ViewEvent])
 object UpdatedModel {
   implicit def liftModel[Model](m: Model): UpdatedModel[Model] =
     UpdatedModel(m)
@@ -10,7 +10,7 @@ object UpdatedModel {
     UpdatedModel(model, Nil)
 }
 
-case class UpdatedViewModel[Model](model: Model, events: List[FrameEvent])
+case class UpdatedViewModel[Model](model: Model, events: List[ViewEvent])
 object UpdatedViewModel {
   implicit def liftViewModel[Model](m: Model): UpdatedViewModel[Model] =
     UpdatedViewModel(m)

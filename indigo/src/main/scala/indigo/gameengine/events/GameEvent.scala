@@ -3,7 +3,8 @@ package indigo.gameengine.events
 import indigo.gameengine.constants.KeyCode
 import indigo.gameengine.scenegraph.datatypes.Point
 
-trait GameEvent {
+// GameEvents are a fixed set of events that move through the game engine and live for 1 frame.
+sealed trait GameEvent {
   val isGameEvent: Boolean
 }
 
@@ -34,6 +35,10 @@ object KeyboardEvent {
   case class KeyPress(keyCode: KeyCode) extends KeyboardEvent
 }
 
-trait FrameEvent extends GameEvent {
+// ViewEvents are emitted by the view function
+trait ViewEvent extends GameEvent {
   val isGameEvent: Boolean = false
 }
+
+// FrameEvents are passed from Model->ViewModel->View
+trait FrameEvent
