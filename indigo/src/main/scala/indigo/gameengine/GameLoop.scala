@@ -55,7 +55,7 @@ class GameLoop[GameModel, ViewModel](
             initialModel
 
           case Some(previousModel) =>
-            GameLoop.processModelUpdateEvents(audioPlayer, gameTime, previousModel, collectedEvents, updateModel)
+            GameLoop.processModelUpdateEvents(gameTime, previousModel, collectedEvents, updateModel)
         }
 
         gameModelState = Some(model)
@@ -69,7 +69,7 @@ class GameLoop[GameModel, ViewModel](
 
           case Some(previousModel) =>
             val next = updateViewModel(gameTime, model, previousModel, frameInputEvents)
-            next.events.foreach(e => globalEventStream.pushViewEvent(audioPlayer, e))
+            next.events.foreach(e => globalEventStream.pushViewEvent(e))
             next.model
         }
 
@@ -83,7 +83,7 @@ class GameLoop[GameModel, ViewModel](
 
           val x = for {
             view          <- GameLoop.updateGameView(updateView, gameTime, model, viewModel, frameInputEvents)
-            processedView <- GameLoop.processUpdatedView(view, audioPlayer, collectedEvents)
+            processedView <- GameLoop.processUpdatedView(view, collectedEvents)
             displayable   <- GameLoop.viewToDisplayable(gameTime, processedView, assetMapping, view.ambientLight)
             _             <- GameLoop.persistAnimationStates()
             _             <- GameLoop.drawScene(renderer, displayable)
@@ -134,7 +134,7 @@ object GameLoop {
       view
     }
 
-  def processUpdatedView(view: SceneUpdateFragment, audioPlayer: IAudioPlayer, collectedEvents: List[GameEvent])(
+  def processUpdatedView(view: SceneUpdateFragment, collectedEvents: List[GameEvent])(
       implicit metrics: IMetrics,
       globalEventStream: GlobalEventStream
   ): IIO[SceneGraphRootNodeFlat] =
@@ -142,7 +142,7 @@ object GameLoop {
       metrics.record(ProcessViewStartMetric)
 
       val processUpdatedView: SceneUpdateFragment => SceneGraphRootNodeFlat =
-        GameLoop.persistGlobalViewEvents(audioPlayer, metrics, globalEventStream) andThen
+        GameLoop.persistGlobalViewEvents(metrics, globalEventStream) andThen
           GameLoop.flattenNodes andThen
           GameLoop.persistNodeViewEvents(collectedEvents, metrics, globalEventStream)
 
@@ -174,26 +174,24 @@ object GameLoop {
       metrics.record(PersistAnimationStatesEndMetric)
     }
 
-  def processModelUpdateEvents[GameModel](audioPlayer: IAudioPlayer,
-                                          gameTime: GameTime,
-                                          previousModel: GameModel,
-                                          remaining: List[GameEvent],
-                                          updateModel: (GameTime, GameModel) => GameEvent => UpdatedModel[GameModel])(implicit globalEventStream: GlobalEventStream): GameModel =
+  def processModelUpdateEvents[GameModel](gameTime: GameTime, previousModel: GameModel, remaining: List[GameEvent], updateModel: (GameTime, GameModel) => GameEvent => UpdatedModel[GameModel])(
+      implicit globalEventStream: GlobalEventStream
+  ): GameModel =
     remaining match {
       case Nil =>
         val next = updateModel(gameTime, previousModel)(FrameTick)
-        next.events.foreach(e => globalEventStream.pushViewEvent(audioPlayer, e))
+        next.events.foreach(e => globalEventStream.pushViewEvent(e))
         next.model
 
       case x :: xs =>
         val next = updateModel(gameTime, previousModel)(x)
-        next.events.foreach(e => globalEventStream.pushViewEvent(audioPlayer, e))
-        processModelUpdateEvents(audioPlayer, gameTime, next.model, xs, updateModel)
+        next.events.foreach(e => globalEventStream.pushViewEvent(e))
+        processModelUpdateEvents(gameTime, next.model, xs, updateModel)
     }
 
-  def persistGlobalViewEvents(audioPlayer: IAudioPlayer, metrics: IMetrics, globalEventStream: GlobalEventStream): SceneUpdateFragment => SceneGraphRootNode = update => {
+  def persistGlobalViewEvents(metrics: IMetrics, globalEventStream: GlobalEventStream): SceneUpdateFragment => SceneGraphRootNode = update => {
     metrics.record(PersistGlobalViewEventsStartMetric)
-    update.viewEvents.foreach(e => globalEventStream.pushViewEvent(audioPlayer, e))
+    update.viewEvents.foreach(e => globalEventStream.pushViewEvent(e))
     metrics.record(PersistGlobalViewEventsEndMetric)
     SceneGraphRootNode.fromFragment(update)
   }

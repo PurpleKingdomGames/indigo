@@ -61,11 +61,14 @@ class GameEngine[StartupData, StartupError, GameModel, ViewModel](
       assetsAsync.flatMap(aa => AssetManager.loadAssets(aa ++ assets)).foreach { assetCollection =>
         IndigoLogger.info("Asset load complete")
 
+        val audioPlayer: IAudioPlayer =
+          GameEngine.startAudioPlayer(assetCollection.sounds)
+
         implicit val metrics: IMetrics =
           Metrics.getInstance(gameConfig.advanced.recordMetrics, gameConfig.advanced.logMetricsReportIntervalMs)
 
         implicit val globalEventStream: GlobalEventStream =
-          GlobalEventStream.default
+          GlobalEventStream.default(audioPlayer)
 
         val x: IIO[Double => Int] =
           for {
@@ -78,7 +81,6 @@ class GameEngine[StartupData, StartupError, GameModel, ViewModel](
             canvas              <- GameEngine.createCanvas(gameConfig)
             _                   <- GameEngine.listenToWorldEvents(canvas, gameConfig.magnification)
             renderer            <- GameEngine.startRenderer(gameConfig, loadedTextureAssets, canvas)
-            audioPlayer         <- GameEngine.startAudioPlayer(assetCollection.sounds)
             gameLoopInstance <- GameEngine.initialiseGameLoop(
               gameConfig,
               assetMapping,
@@ -186,8 +188,8 @@ object GameEngine {
       )
     }
 
-  def startAudioPlayer(sounds: List[LoadedAudioAsset]): IIO[IAudioPlayer] =
-    IIO.delay(AudioPlayer(sounds))
+  def startAudioPlayer(sounds: List[LoadedAudioAsset]): IAudioPlayer =
+    AudioPlayer(sounds)
 
   def initialiseGameLoop[GameModel, ViewModel](
       gameConfig: GameConfig,

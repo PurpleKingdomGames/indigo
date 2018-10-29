@@ -8,13 +8,13 @@ import scala.collection.mutable
 
 trait GlobalEventStream {
   def pushGameEvent(e: GameEvent): Unit
-  def pushViewEvent(audioPlayer: IAudioPlayer, e: FrameEvent): Unit
+  def pushViewEvent(e: FrameEvent): Unit
   def collect: List[GameEvent]
 }
 
 object GlobalEventStream {
 
-  val default: GlobalEventStream =
+  def default(audioPlayer: IAudioPlayer): GlobalEventStream =
     new GlobalEventStream {
       private val eventQueue: mutable.Queue[GameEvent] =
         new mutable.Queue[GameEvent]()
@@ -24,7 +24,7 @@ object GlobalEventStream {
           .filter(this)(e)
           .foreach(e => eventQueue += e)
 
-      def pushViewEvent(audioPlayer: IAudioPlayer, e: FrameEvent): Unit =
+      def pushViewEvent(e: FrameEvent): Unit =
         NetworkEventProcessor
           .filter(this)(e)
           .flatMap { AudioEventProcessor.filter(audioPlayer) }

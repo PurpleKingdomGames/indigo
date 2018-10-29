@@ -1,16 +1,16 @@
 package indigo.gameengine
-import indigo.gameengine.audio.IAudioPlayer
+//import indigo.gameengine.audio.IAudioPlayer
 import indigo.gameengine.events.{FrameEvent, GameEvent, GlobalEventStream}
-import indigo.gameengine.scenegraph.{SceneAudio, Volume}
+//import indigo.gameengine.scenegraph.{SceneAudio, Volume}
 import org.scalatest.{FunSpec, Matchers}
 
 class GameLoopSpec extends FunSpec with Matchers {
 
-  val audioPlayer: IAudioPlayer =
-    new IAudioPlayer {
-      def playSound(assetRef: String, volume: Volume): Unit = ()
-      def playAudio(sceneAudio: SceneAudio): Unit           = ()
-    }
+//  val audioPlayer: IAudioPlayer =
+//    new IAudioPlayer {
+//      def playSound(assetRef: String, volume: Volume): Unit = ()
+//      def playAudio(sceneAudio: SceneAudio): Unit           = ()
+//    }
 
   val gameTime: GameTime = GameTime(1000, 100, 10)
 
@@ -20,9 +20,9 @@ class GameLoopSpec extends FunSpec with Matchers {
 
       implicit val ges: GlobalEventStream =
         new GlobalEventStream {
-          def pushGameEvent(e: GameEvent): Unit                             = ()
-          def pushViewEvent(audioPlayer: IAudioPlayer, e: FrameEvent): Unit = ()
-          def collect: List[GameEvent]                                      = Nil
+          def pushGameEvent(e: GameEvent): Unit  = ()
+          def pushViewEvent(e: FrameEvent): Unit = ()
+          def collect: List[GameEvent]           = Nil
         }
 
       val gameEvents: List[GameEvent] =
@@ -40,7 +40,7 @@ class GameLoopSpec extends FunSpec with Matchers {
         }
 
       val actual: TestGameModel =
-        GameLoop.processModelUpdateEvents(audioPlayer, gameTime, TestGameModel("bob"), gameEvents, update)
+        GameLoop.processModelUpdateEvents(gameTime, TestGameModel("bob"), gameEvents, update)
 
       val expected: TestGameModel =
         TestGameModel("fred")
@@ -56,7 +56,7 @@ class GameLoopSpec extends FunSpec with Matchers {
           var l: List[GameEvent] = Nil
 
           def pushGameEvent(e: GameEvent): Unit = ()
-          def pushViewEvent(audioPlayer: IAudioPlayer, e: FrameEvent): Unit = {
+          def pushViewEvent(e: FrameEvent): Unit = {
             l = l :+ e
             ()
           }
@@ -78,7 +78,7 @@ class GameLoopSpec extends FunSpec with Matchers {
         }
 
       val actual: TestGameModel =
-        GameLoop.processModelUpdateEvents(audioPlayer, gameTime, TestGameModel("bob"), gameEvents, update)
+        GameLoop.processModelUpdateEvents(gameTime, TestGameModel("bob"), gameEvents, update)
 
       val expected: TestGameModel =
         TestGameModel("teddy")
