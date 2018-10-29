@@ -2,7 +2,7 @@ val indigoVersion = "0.0.9-SNAPSHOT"
 
 lazy val commonSettings = Seq(
   version := indigoVersion,
-  scalaVersion := "2.12.6",
+  scalaVersion := "2.12.7",
   organization := "indigo",
   scalacOptions ++= Seq(
     "-deprecation", // Emit warning and location for usages of deprecated APIs.
