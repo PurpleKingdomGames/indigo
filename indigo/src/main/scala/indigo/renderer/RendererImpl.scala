@@ -7,7 +7,7 @@ import org.scalajs.dom.raw.WebGLRenderingContext._
 
 trait IRenderer {
   def init(): Unit
-  def drawScene(displayable: Displayable)(implicit metrics: IMetrics): Unit
+  def drawScene(displayable: Displayable)(implicit metrics: Metrics): Unit
 }
 
 final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends IRenderer {
@@ -58,7 +58,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     cNc.context.enable(BLEND)
   }
 
-  def drawScene(displayable: Displayable)(implicit metrics: IMetrics): Unit = {
+  def drawScene(displayable: Displayable)(implicit metrics: Metrics): Unit = {
 
     resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight, cNc.magnification)
 
@@ -79,7 +79,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(RenderToConvasEndMetric)
   }
 
-  private def drawLightingLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor)(implicit metrics: IMetrics): Unit = {
+  private def drawLightingLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor)(implicit metrics: Metrics): Unit = {
 
     /*
 
@@ -131,7 +131,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   }
 
-  private def drawLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor)(implicit metrics: IMetrics): Unit = {
+  private def drawLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor)(implicit metrics: Metrics): Unit = {
 
     // Switch to the frameBuffer
     FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)
@@ -168,7 +168,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   }
 
-  private def renderToCanvas(displayObject: DisplayObject)(implicit metrics: IMetrics): Unit = {
+  private def renderToCanvas(displayObject: DisplayObject)(implicit metrics: Metrics): Unit = {
 
     val compressed = displayObject.toCompressed
 

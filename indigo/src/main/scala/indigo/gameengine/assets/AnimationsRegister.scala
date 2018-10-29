@@ -70,7 +70,7 @@ object AnimationsRegister {
   - Applying an animation memento if one doesn't exist and running the commands queued against it.
    */
   def fetchFromCache(gameTime: GameTime, bindingKey: BindingKey, animationsKey: AnimationsKey)(
-      implicit metrics: IMetrics
+      implicit metrics: Metrics
   ): Option[Animations] = {
     val key: String = s"${bindingKey.value}_${animationsKey.key}"
 

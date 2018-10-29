@@ -64,7 +64,7 @@ class GameEngine[StartupData, StartupError, GameModel, ViewModel](
         val audioPlayer: AudioPlayer =
           GameEngine.startAudioPlayer(assetCollection.sounds)
 
-        implicit val metrics: IMetrics =
+        implicit val metrics: Metrics =
           Metrics.getInstance(gameConfig.advanced.recordMetrics, gameConfig.advanced.logMetricsReportIntervalMs)
 
         implicit val globalEventStream: GlobalEventStream =
@@ -201,7 +201,7 @@ object GameEngine {
       initialViewModel: GameModel => ViewModel,
       updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => UpdatedViewModel[ViewModel],
       updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
-  )(implicit metrics: IMetrics, globalEventStream: GlobalEventStream): IIO[GameLoop[GameModel, ViewModel]] =
+  )(implicit metrics: Metrics, globalEventStream: GlobalEventStream): IIO[GameLoop[GameModel, ViewModel]] =
     IIO.delay(
       new GameLoop[GameModel, ViewModel](gameConfig, assetMapping, renderer, audioPlayer, initialModel, updateModel, initialViewModel(initialModel), updateViewModel, updateView)
     )

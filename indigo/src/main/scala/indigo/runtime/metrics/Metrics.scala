@@ -2,7 +2,7 @@ package indigo.runtime.metrics
 
 import scala.collection.mutable
 
-trait IMetrics {
+trait Metrics {
   def record(m: Metric): Unit
   def recordForSpecificTime(m: Metric, time: Long): Unit
   def giveTime(): Long
@@ -11,55 +11,60 @@ trait IMetrics {
 
 object Metrics {
 
-  private class MetricsInstance(logReportIntervalMs: Int) extends IMetrics {
+  val getNullInstance: Metrics =
+    new Metrics {
+      def record(m: Metric): Unit                            = ()
+      def recordForSpecificTime(m: Metric, time: Long): Unit = ()
+      def giveTime(): Long                                   = 1
+      def giveMetrics: List[MetricWrapper]                   = Nil
+    }
 
-    @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
-    private val metrics: mutable.Queue[MetricWrapper] = new mutable.Queue[MetricWrapper]()
+  private def metricsRecordingInstance(logReportIntervalMs: Int): Metrics =
+    new Metrics {
 
-    @SuppressWarnings(Array("org.wartremover.warts.Var"))
-    private var lastReportTime: Long = System.currentTimeMillis()
+      @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
+      private val metrics: mutable.Queue[MetricWrapper] = new mutable.Queue[MetricWrapper]()
 
-    def record(m: Metric): Unit =
-      recordForSpecificTime(m, giveTime())
+      @SuppressWarnings(Array("org.wartremover.warts.Var"))
+      private var lastReportTime: Long = System.currentTimeMillis()
 
-    def recordForSpecificTime(m: Metric, time: Long): Unit = {
-      metrics += MetricWrapper(m, time)
+      def record(m: Metric): Unit =
+        recordForSpecificTime(m, giveTime())
 
-      m match {
-        case FrameEndMetric if time >= lastReportTime + logReportIntervalMs =>
-          lastReportTime = time
-          MetricsLogReporter.report(metrics.dequeueAll(_ => true).toList)
-        case _ => ()
+      def recordForSpecificTime(m: Metric, time: Long): Unit = {
+        metrics += MetricWrapper(m, time)
+
+        m match {
+          case FrameEndMetric if time >= lastReportTime + logReportIntervalMs =>
+            lastReportTime = time
+            MetricsLogReporter.report(metrics.dequeueAll(_ => true).toList)
+          case _ => ()
+        }
+
       }
+
+      def giveTime(): Long = System.currentTimeMillis()
+
+      def giveMetrics: List[MetricWrapper] =
+        metrics.clone().dequeueAll(_ => true).toList
 
     }
 
-    def giveTime(): Long = System.currentTimeMillis()
-
-    def giveMetrics: List[MetricWrapper] =
-      metrics.clone().dequeueAll(_ => true).toList
-
-  }
-
-  private class NullMetricsInstance extends IMetrics {
-    def record(m: Metric): Unit                            = ()
-    def recordForSpecificTime(m: Metric, time: Long): Unit = ()
-    def giveTime(): Long                                   = 1
-    def giveMetrics: List[MetricWrapper]                   = Nil
-  }
-
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var instance: Option[IMetrics] = None
+  private var instance: Option[Metrics] = None
 
-  def getInstance(enabled: Boolean, logReportIntervalMs: Int): IMetrics =
+  def getInstance(enabled: Boolean, logReportIntervalMs: Int): Metrics =
     instance match {
       case Some(i) => i
       case None =>
-        val i = if (enabled) new MetricsInstance(logReportIntervalMs) else new NullMetricsInstance
+        val i = if (enabled) {
+          metricsRecordingInstance(logReportIntervalMs)
+        } else {
+          getNullInstance
+        }
+
         instance = Some(i)
         i
     }
-
-  def getNullInstance: IMetrics = new NullMetricsInstance
 
 }

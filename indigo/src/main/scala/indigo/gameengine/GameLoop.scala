@@ -21,7 +21,7 @@ class GameLoop[GameModel, ViewModel](
     initialViewModel: ViewModel,
     updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => UpdatedViewModel[ViewModel],
     updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
-)(implicit metrics: IMetrics, globalEventStream: GlobalEventStream) {
+)(implicit metrics: Metrics, globalEventStream: GlobalEventStream) {
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var gameModelState: Option[GameModel] = None
@@ -118,7 +118,7 @@ object GameLoop {
       model: GameModel,
       viewModel: ViewModel,
       frameInputEvents: FrameInputEvents
-  )(implicit metrics: IMetrics): IIO[SceneUpdateFragment] =
+  )(implicit metrics: Metrics): IIO[SceneUpdateFragment] =
     IIO.delay {
       metrics.record(CallUpdateViewStartMetric)
 
@@ -135,7 +135,7 @@ object GameLoop {
     }
 
   def processUpdatedView(view: SceneUpdateFragment, collectedEvents: List[GameEvent])(
-      implicit metrics: IMetrics,
+      implicit metrics: Metrics,
       globalEventStream: GlobalEventStream
   ): IIO[SceneGraphRootNodeFlat] =
     IIO.delay {
@@ -153,7 +153,7 @@ object GameLoop {
       processedView
     }
 
-  def viewToDisplayable(gameTime: GameTime, processedView: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight)(implicit metrics: IMetrics): IIO[Displayable] =
+  def viewToDisplayable(gameTime: GameTime, processedView: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight)(implicit metrics: Metrics): IIO[Displayable] =
     IIO.delay {
       metrics.record(ToDisplayableStartMetric)
 
@@ -165,7 +165,7 @@ object GameLoop {
       displayable
     }
 
-  def persistAnimationStates()(implicit metrics: IMetrics): IIO[Unit] =
+  def persistAnimationStates()(implicit metrics: Metrics): IIO[Unit] =
     IIO.delay {
       metrics.record(PersistAnimationStatesStartMetric)
 
@@ -189,7 +189,7 @@ object GameLoop {
         processModelUpdateEvents(gameTime, next.model, xs, updateModel)
     }
 
-  def persistGlobalViewEvents(metrics: IMetrics, globalEventStream: GlobalEventStream): SceneUpdateFragment => SceneGraphRootNode = update => {
+  def persistGlobalViewEvents(metrics: Metrics, globalEventStream: GlobalEventStream): SceneUpdateFragment => SceneGraphRootNode = update => {
     metrics.record(PersistGlobalViewEventsStartMetric)
     update.viewEvents.foreach(e => globalEventStream.pushViewEvent(e))
     metrics.record(PersistGlobalViewEventsEndMetric)
@@ -198,14 +198,14 @@ object GameLoop {
 
   val flattenNodes: SceneGraphRootNode => SceneGraphRootNodeFlat = root => root.flatten
 
-  def persistNodeViewEvents(gameEvents: List[GameEvent], metrics: IMetrics, globalEventStream: GlobalEventStream): SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = rootNode => {
+  def persistNodeViewEvents(gameEvents: List[GameEvent], metrics: Metrics, globalEventStream: GlobalEventStream): SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = rootNode => {
     metrics.record(PersistNodeViewEventsStartMetric)
     rootNode.collectViewEvents(gameEvents).foreach(globalEventStream.pushGameEvent)
     metrics.record(PersistNodeViewEventsEndMetric)
     rootNode
   }
 
-  def convertSceneGraphToDisplayable(gameTime: GameTime, rootNode: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight)(implicit metrics: IMetrics): Displayable =
+  def convertSceneGraphToDisplayable(gameTime: GameTime, rootNode: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight)(implicit metrics: Metrics): Displayable =
     Displayable(
       DisplayLayer(
         rootNode.game.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping))
@@ -219,7 +219,7 @@ object GameLoop {
       ambientLight
     )
 
-  def drawScene(renderer: IRenderer, displayable: Displayable)(implicit metrics: IMetrics): IIO[Unit] =
+  def drawScene(renderer: IRenderer, displayable: Displayable)(implicit metrics: Metrics): IIO[Unit] =
     IIO.delay {
       metrics.record(RenderStartMetric)
 
@@ -228,7 +228,7 @@ object GameLoop {
       metrics.record(RenderEndMetric)
     }
 
-  def playAudio(audioPlayer: AudioPlayer, sceneAudio: SceneAudio)(implicit metrics: IMetrics): IIO[Unit] =
+  def playAudio(audioPlayer: AudioPlayer, sceneAudio: SceneAudio)(implicit metrics: Metrics): IIO[Unit] =
     IIO.delay {
       metrics.record(AudioStartMetric)
 

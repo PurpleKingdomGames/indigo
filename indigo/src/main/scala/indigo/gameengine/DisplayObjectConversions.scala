@@ -6,7 +6,7 @@ import indigo.gameengine.scenegraph._
 import indigo.renderer.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import indigo.renderer.{AssetMapping, DisplayObject, SpriteSheetFrame, Vector2}
 import indigo.runtime.IndigoLogger
-import indigo.runtime.metrics.IMetrics
+import indigo.runtime.metrics.Metrics
 
 import scala.collection.mutable
 
@@ -54,7 +54,7 @@ object DisplayObjectConversions {
       }
   )
 
-  def leafToDisplayObject(gameTime: GameTime, assetMapping: AssetMapping)(implicit metrics: IMetrics): Renderable => List[DisplayObject] = {
+  def leafToDisplayObject(gameTime: GameTime, assetMapping: AssetMapping)(implicit metrics: Metrics): Renderable => List[DisplayObject] = {
     case leaf: Graphic =>
       List(
         DisplayObject(
