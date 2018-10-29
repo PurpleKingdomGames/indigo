@@ -1,6 +1,6 @@
 package indigo.gameengine.events
 
-import indigo.gameengine.audio.IAudioPlayer
+import indigo.gameengine.audio.AudioPlayer
 import indigo.gameengine.scenegraph.PlaySound
 import indigo.networking._
 
@@ -14,7 +14,7 @@ trait GlobalEventStream {
 
 object GlobalEventStream {
 
-  def default(audioPlayer: IAudioPlayer): GlobalEventStream =
+  def default(audioPlayer: AudioPlayer): GlobalEventStream =
     new GlobalEventStream {
       private val eventQueue: mutable.Queue[GameEvent] =
         new mutable.Queue[GameEvent]()
@@ -53,7 +53,7 @@ object GlobalEventStream {
 
   object AudioEventProcessor {
 
-    def filter: IAudioPlayer => GameEvent => Option[GameEvent] = audioPlayer => {
+    def filter: AudioPlayer => GameEvent => Option[GameEvent] = audioPlayer => {
       case PlaySound(assetRef, volume) =>
         audioPlayer.playSound(assetRef, volume)
         None

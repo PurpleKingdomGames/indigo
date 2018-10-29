@@ -1,7 +1,7 @@
 package indigo.gameengine
 
 import indigo.gameengine.assets._
-import indigo.gameengine.audio.{AudioPlayer, IAudioPlayer}
+import indigo.gameengine.audio.AudioPlayer
 import indigo.gameengine.events._
 import indigo.gameengine.scenegraph._
 import indigo.gameengine.scenegraph.datatypes.FontInfo
@@ -61,7 +61,7 @@ class GameEngine[StartupData, StartupError, GameModel, ViewModel](
       assetsAsync.flatMap(aa => AssetManager.loadAssets(aa ++ assets)).foreach { assetCollection =>
         IndigoLogger.info("Asset load complete")
 
-        val audioPlayer: IAudioPlayer =
+        val audioPlayer: AudioPlayer =
           GameEngine.startAudioPlayer(assetCollection.sounds)
 
         implicit val metrics: IMetrics =
@@ -188,14 +188,14 @@ object GameEngine {
       )
     }
 
-  def startAudioPlayer(sounds: List[LoadedAudioAsset]): IAudioPlayer =
+  def startAudioPlayer(sounds: List[LoadedAudioAsset]): AudioPlayer =
     AudioPlayer(sounds)
 
   def initialiseGameLoop[GameModel, ViewModel](
       gameConfig: GameConfig,
       assetMapping: AssetMapping,
       renderer: IRenderer,
-      audioPlayer: IAudioPlayer,
+      audioPlayer: AudioPlayer,
       initialModel: GameModel,
       updateModel: (GameTime, GameModel) => GameEvent => UpdatedModel[GameModel],
       initialViewModel: GameModel => ViewModel,

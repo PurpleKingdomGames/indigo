@@ -1,16 +1,9 @@
 package indigo.gameengine
-//import indigo.gameengine.audio.IAudioPlayer
+
 import indigo.gameengine.events.{FrameEvent, GameEvent, GlobalEventStream}
-//import indigo.gameengine.scenegraph.{SceneAudio, Volume}
 import org.scalatest.{FunSpec, Matchers}
 
 class GameLoopSpec extends FunSpec with Matchers {
-
-//  val audioPlayer: IAudioPlayer =
-//    new IAudioPlayer {
-//      def playSound(assetRef: String, volume: Volume): Unit = ()
-//      def playAudio(sceneAudio: SceneAudio): Unit           = ()
-//    }
 
   val gameTime: GameTime = GameTime(1000, 100, 10)
 

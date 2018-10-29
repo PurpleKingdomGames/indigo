@@ -1,7 +1,7 @@
 package indigo.gameengine
 
 import indigo.gameengine.assets.AnimationsRegister
-import indigo.gameengine.audio.IAudioPlayer
+import indigo.gameengine.audio.AudioPlayer
 import indigo.gameengine.events._
 import indigo.gameengine.scenegraph.datatypes.AmbientLight
 import indigo.gameengine.scenegraph.{SceneAudio, SceneGraphRootNode, SceneGraphRootNodeFlat, SceneUpdateFragment}
@@ -15,7 +15,7 @@ class GameLoop[GameModel, ViewModel](
     gameConfig: GameConfig,
     assetMapping: AssetMapping,
     renderer: IRenderer,
-    audioPlayer: IAudioPlayer,
+    audioPlayer: AudioPlayer,
     initialModel: GameModel,
     updateModel: (GameTime, GameModel) => GameEvent => UpdatedModel[GameModel],
     initialViewModel: ViewModel,
@@ -228,7 +228,7 @@ object GameLoop {
       metrics.record(RenderEndMetric)
     }
 
-  def playAudio(audioPlayer: IAudioPlayer, sceneAudio: SceneAudio)(implicit metrics: IMetrics): IIO[Unit] =
+  def playAudio(audioPlayer: AudioPlayer, sceneAudio: SceneAudio)(implicit metrics: IMetrics): IIO[Unit] =
     IIO.delay {
       metrics.record(AudioStartMetric)
 

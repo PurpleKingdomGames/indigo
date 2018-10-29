@@ -9,17 +9,17 @@ import org.scalajs.dom.raw.AudioContext
 
 object AudioPlayer {
 
-  def apply(loadedAudioAssets: List[LoadedAudioAsset]): IAudioPlayer =
+  def apply(loadedAudioAssets: List[LoadedAudioAsset]): AudioPlayer =
     new AudioPlayerImpl(loadedAudioAssets, new AudioContext())
 
 }
 
-trait IAudioPlayer {
+trait AudioPlayer {
   def playSound(assetRef: String, volume: Volume): Unit
   def playAudio(sceneAudio: SceneAudio): Unit
 }
 
-final class AudioPlayerImpl(loadedAudioAssets: List[LoadedAudioAsset], context: AudioContext) extends IAudioPlayer {
+final class AudioPlayerImpl(loadedAudioAssets: List[LoadedAudioAsset], context: AudioContext) extends AudioPlayer {
 
   private def setupNodes(audioBuffer: dom.AudioBuffer, volume: Volume, loop: Boolean): AudioNodes = {
     val source = context.createBufferSource()
