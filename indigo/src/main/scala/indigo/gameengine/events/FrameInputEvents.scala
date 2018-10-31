@@ -5,15 +5,19 @@ import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
 /**
   * Holds all the events that will be passed on to the view. These are world events only! View events go to the model.
   *
-  * @param events A list of GameEvents
+  * @param inFrameEvents A list of GlobalEvents
   */
-case class FrameInputEvents(events: List[GameEvent]) extends FrameMouseEvents with FrameKeyboardEvents
+case class FrameInputEvents(globalEvents: List[GlobalEvent], inFrameEvents: List[InFrameEvent]) extends FrameMouseEvents with FrameKeyboardEvents
+object FrameInputEvents {
+  val empty: FrameInputEvents =
+    FrameInputEvents(Nil, Nil)
+}
 
 trait FrameMouseEvents {
 
-  val events: List[GameEvent]
+  val globalEvents: List[GlobalEvent]
 
-  def mouseEvents: List[MouseEvent] = events.collect { case e: MouseEvent => e }
+  def mouseEvents: List[MouseEvent] = globalEvents.collect { case e: MouseEvent => e }
 
   def mouseClickAt: Option[Point]    = mouseEvents.collectFirst { case m: MouseEvent.Click     => m.position }
   def mouseUpAt: Option[Point]       = mouseEvents.collectFirst { case m: MouseEvent.MouseUp   => m.position }
@@ -64,9 +68,9 @@ trait FrameMouseEvents {
 
 trait FrameKeyboardEvents {
 
-  val events: List[GameEvent]
+  val globalEvents: List[GlobalEvent]
 
-  def keyboardEvents: List[KeyboardEvent] = events.collect { case e: KeyboardEvent => e }
+  def keyboardEvents: List[KeyboardEvent] = globalEvents.collect { case e: KeyboardEvent => e }
 
   def keysUp: List[Int]      = keyboardEvents.collect { case k: KeyboardEvent.KeyUp    => k.keyCode.code }
   def keysDown: List[Int]    = keyboardEvents.collect { case k: KeyboardEvent.KeyDown  => k.keyCode.code }

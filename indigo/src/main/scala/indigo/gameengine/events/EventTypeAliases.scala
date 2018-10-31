@@ -4,8 +4,8 @@ import indigo.gameengine.events
 trait EventTypeAliases {
 
   type FrameInputEvents = events.FrameInputEvents
-  type GameEvent        = events.GameEvent
-  type FrameEvent       = events.ViewEvent
+  type GlobalEvent      = events.GlobalEvent
+  type FrameEvent       = events.GlobalEvent
 
   val GlobalSignals: events.GlobalSignals.type = events.GlobalSignals
 
@@ -16,5 +16,11 @@ trait EventTypeAliases {
   val KeyboardEvent: events.KeyboardEvent.type = events.KeyboardEvent
 
   val FrameTick: events.FrameTick.type = events.FrameTick
+
+  type PlaySound = events.PlaySound
+  val PlaySound: events.PlaySound.type = events.PlaySound
+
+  type NetworkSendEvent    = events.NetworkSendEvent
+  type NetworkReceiveEvent = events.NetworkReceiveEvent
 
 }

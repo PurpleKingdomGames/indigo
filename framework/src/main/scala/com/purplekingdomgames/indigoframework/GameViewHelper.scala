@@ -4,7 +4,7 @@ import indigo.gameengine.scenegraph._
 import indigo.gameengine.scenegraph.datatypes.{AmbientLight, Rectangle}
 import indigo.shared.EntityRectangle
 
-case class GameViewEvent()
+case class GameGlobalEvent()
 
 object GameViewHelper {
 

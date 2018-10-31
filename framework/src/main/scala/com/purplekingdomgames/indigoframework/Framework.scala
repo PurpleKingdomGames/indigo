@@ -2,7 +2,7 @@ package indigoframework
 
 import indigo.gameengine._
 import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.events.{FrameInputEvents, GameEvent}
+import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
 import indigo.gameengine.scenegraph._
 import indigoexts.entry.Indigo
 import indigo.shared.{AssetType, GameConfig, GameDefinition}
@@ -35,7 +35,7 @@ object Framework {
 
   val initialModel: StartupData => GameModel = startupData => GameModelHelper.initialModel(startupData)
 
-  val updateModel: (GameTime, GameModel) => GameEvent => UpdatedModel[GameModel] = (_, gameModel) => GameModelHelper.updateModel(gameModel)
+  val updateModel: (GameTime, GameModel) => GlobalEvent => UpdatedModel[GameModel] = (_, gameModel) => GameModelHelper.updateModel(gameModel)
 
   val initialViewModel: (StartupData, GameModel) => Unit = (_, _) => ()
 

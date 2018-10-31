@@ -1,7 +1,7 @@
 package indigoexts.scenemanager
 
 import indigo.gameengine.GameTime
-import indigo.gameengine.events.{FrameInputEvents, GameEvent}
+import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
 import indigo.gameengine.scenegraph.SceneUpdateFragment
 import indigo.{UpdatedModel, UpdatedViewModel}
 import indigoexts.lenses.Lens
@@ -33,7 +33,7 @@ case class TestSceneA() extends Scene[TestGameModel, TestViewModel, TestSceneMod
       (m, mm) => m.copy(sceneA = mm)
     )
 
-  def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelA): GameEvent => UpdatedModel[TestSceneModelA] =
+  def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelA): GlobalEvent => UpdatedModel[TestSceneModelA] =
     _ => sceneModel.copy(count = sceneModel.count + 1)
 
   def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, frameInputEvents: FrameInputEvents): UpdatedViewModel[TestSceneViewModelA] =
@@ -61,7 +61,7 @@ case class TestSceneB() extends Scene[TestGameModel, TestViewModel, TestSceneMod
       (m, mm) => m.copy(sceneB = mm)
     )
 
-  def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelB): GameEvent => UpdatedModel[TestSceneModelB] =
+  def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelB): GlobalEvent => UpdatedModel[TestSceneModelB] =
     _ => sceneModel.copy(count = sceneModel.count + 10)
 
   def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, frameInputEvents: FrameInputEvents): UpdatedViewModel[TestSceneViewModelB] =

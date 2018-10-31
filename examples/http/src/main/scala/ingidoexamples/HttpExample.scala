@@ -25,7 +25,7 @@ object HttpExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       count = 0
     )
 
-  def update(gameTime: GameTime, model: MyGameModel): GameEvent => UpdatedModel[MyGameModel] = {
+  def update(gameTime: GameTime, model: MyGameModel): GlobalEvent => UpdatedModel[MyGameModel] = {
     case e: ButtonEvent =>
       model.copy(
         button = model.button.update(e)

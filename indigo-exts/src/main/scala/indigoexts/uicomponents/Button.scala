@@ -1,6 +1,6 @@
 package indigoexts.uicomponents
 
-import indigo.gameengine.events.{FrameInputEvents, MouseEvent, ViewEvent}
+import indigo.gameengine.events._
 import indigo.gameengine.scenegraph.{Graphic, SceneUpdateFragment}
 import indigo.gameengine.scenegraph.datatypes.{BindingKey, Depth, Rectangle}
 
@@ -30,8 +30,8 @@ object Button {
 
   object View {
 
-    def applyEvents(bounds: Rectangle, button: Button, frameInputEvents: FrameInputEvents): List[ViewEvent] =
-      frameInputEvents.events.foldLeft[List[ViewEvent]](Nil) { (acc, e) =>
+    def applyEvents(bounds: Rectangle, button: Button, frameInputEvents: FrameInputEvents): List[GlobalEvent] =
+      frameInputEvents.globalEvents.foldLeft[List[GlobalEvent]](Nil) { (acc, e) =>
         e match {
           case MouseEvent.MouseUp(x, y) if bounds.isPointWithin(x, y) =>
             acc ++ button.actions.onUp().toList :+ ButtonEvent(button.bindingKey, ButtonState.Over)
@@ -92,16 +92,16 @@ case class Button(state: ButtonState, actions: ButtonActions, bindingKey: Bindin
   def draw(bounds: Rectangle, depth: Depth, frameInputEvents: FrameInputEvents, buttonAssets: ButtonAssets): ButtonViewUpdate =
     Button.View.update(bounds, depth, this, frameInputEvents, buttonAssets)
 
-  def withUpAction(action: () => Option[ViewEvent]): Button =
+  def withUpAction(action: () => Option[GlobalEvent]): Button =
     this.copy(actions = actions.copy(onUp = action))
 
-  def withDownAction(action: () => Option[ViewEvent]): Button =
+  def withDownAction(action: () => Option[GlobalEvent]): Button =
     this.copy(actions = actions.copy(onDown = action))
 
-  def withHoverOverAction(action: () => Option[ViewEvent]): Button =
+  def withHoverOverAction(action: () => Option[GlobalEvent]): Button =
     this.copy(actions = actions.copy(onHoverOver = action))
 
-  def withHoverOutAction(action: () => Option[ViewEvent]): Button =
+  def withHoverOutAction(action: () => Option[GlobalEvent]): Button =
     this.copy(actions = actions.copy(onHoverOut = action))
 
   def toUpState: Button =
@@ -114,7 +114,7 @@ case class Button(state: ButtonState, actions: ButtonActions, bindingKey: Bindin
     this.copy(state = ButtonState.Down)
 }
 
-case class ButtonActions(onUp: () => Option[ViewEvent], onDown: () => Option[ViewEvent], onHoverOver: () => Option[ViewEvent], onHoverOut: () => Option[ViewEvent])
+case class ButtonActions(onUp: () => Option[GlobalEvent], onDown: () => Option[GlobalEvent], onHoverOver: () => Option[GlobalEvent], onHoverOut: () => Option[GlobalEvent])
 
 sealed trait ButtonState {
   def isDown: Boolean
@@ -139,16 +139,16 @@ object ButtonState {
 
 case class ButtonAssets(up: Graphic, over: Graphic, down: Graphic)
 
-case class ButtonEvent(bindingKey: BindingKey, newState: ButtonState) extends ViewEvent
+case class ButtonEvent(bindingKey: BindingKey, newState: ButtonState) extends GlobalEvent
 
-case class ButtonViewUpdate(buttonGraphic: Graphic, buttonEvents: List[ViewEvent]) {
+case class ButtonViewUpdate(buttonGraphic: Graphic, buttonEvents: List[GlobalEvent]) {
 
   def toSceneUpdateFragment: SceneUpdateFragment =
     SceneUpdateFragment()
       .addGameLayerNodes(buttonGraphic)
       .addViewEvents(buttonEvents)
 
-  def toTuple: (Graphic, List[ViewEvent]) =
+  def toTuple: (Graphic, List[GlobalEvent]) =
     (buttonGraphic, buttonEvents)
 
 }

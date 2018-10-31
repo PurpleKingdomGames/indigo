@@ -1,7 +1,7 @@
 package indigoexts.scenemanager
 
 import indigo.gameengine.GameTime
-import indigo.gameengine.events.{FrameTick, GameEvent}
+import indigo.gameengine.events.{FrameTick, GlobalEvent}
 import org.scalatest.{FunSpec, Matchers}
 
 class SceneManagerSpec extends FunSpec with Matchers {
@@ -72,7 +72,7 @@ class SceneManagerSpec extends FunSpec with Matchers {
 
   }
 
-  private def runModel(events: List[GameEvent], model: TestGameModel, sceneManager: SceneManager[TestGameModel, TestViewModel]): TestGameModel =
+  private def runModel(events: List[GlobalEvent], model: TestGameModel, sceneManager: SceneManager[TestGameModel, TestViewModel]): TestGameModel =
     events.foldLeft(model)((m, e) => sceneManager.updateModel(GameTime.now(16), m)(e).model)
 
 }

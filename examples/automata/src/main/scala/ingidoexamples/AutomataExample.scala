@@ -61,7 +61,7 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
   def generateLocation(): Point =
     Point(Random.nextInt(config.viewport.width - 50) + 25, Random.nextInt(config.viewport.height - 50) + 25)
 
-  def update(gameTime: GameTime, model: MyGameModel): GameEvent => UpdatedModel[MyGameModel] = {
+  def update(gameTime: GameTime, model: MyGameModel): GlobalEvent => UpdatedModel[MyGameModel] = {
     case e: ButtonEvent =>
       model.copy(
         button = model.button.update(e)

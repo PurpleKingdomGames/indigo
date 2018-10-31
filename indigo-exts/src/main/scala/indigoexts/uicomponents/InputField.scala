@@ -3,7 +3,7 @@ package indigoexts.uicomponents
 import indigo.gameengine.GameTime
 import indigo.gameengine.assets.FontRegister
 import indigo.gameengine.constants.Keys
-import indigo.gameengine.events.{FrameInputEvents, KeyboardEvent, MouseEvent, ViewEvent}
+import indigo.gameengine.events.{FrameInputEvents, KeyboardEvent, MouseEvent, GlobalEvent}
 import indigo.gameengine.scenegraph.datatypes._
 import indigo.gameengine.scenegraph.{Graphic, SceneGraphNode, SceneUpdateFragment, Text}
 
@@ -52,7 +52,7 @@ object InputField {
   object View {
 
     def applyEvent(bounds: Rectangle, inputField: InputField, frameInputEvents: FrameInputEvents): List[InputFieldEvent] =
-      frameInputEvents.events.foldLeft[List[InputFieldEvent]](Nil) { (acc, e) =>
+      frameInputEvents.globalEvents.foldLeft[List[InputFieldEvent]](Nil) { (acc, e) =>
         e match {
           case MouseEvent.MouseUp(x, y) if bounds.isPointWithin(x, y) =>
             acc :+ InputFieldEvent.GiveFocus(inputField.bindingKey)
@@ -247,7 +247,7 @@ case class InputFieldViewUpdate(sceneGraphNodes: List[SceneGraphNode], inputFiel
     (sceneGraphNodes, inputFieldEvents)
 }
 
-sealed trait InputFieldEvent extends ViewEvent {
+sealed trait InputFieldEvent extends GlobalEvent {
   val bindingKey: BindingKey
 }
 object InputFieldEvent {

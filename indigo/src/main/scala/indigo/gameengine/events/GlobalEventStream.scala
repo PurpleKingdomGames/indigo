@@ -1,42 +1,35 @@
 package indigo.gameengine.events
 
 import indigo.gameengine.audio.AudioPlayer
-import indigo.gameengine.scenegraph.PlaySound
 import indigo.networking._
 
 import scala.collection.mutable
 
 trait GlobalEventStream {
-  def pushGameEvent(e: GameEvent): Unit
-  def pushViewEvent(e: ViewEvent): Unit
-  def collect: List[GameEvent]
+  def pushGlobalEvent(e: GlobalEvent): Unit
+  def collect: List[GlobalEvent]
 }
 
 object GlobalEventStream {
 
   def default(audioPlayer: AudioPlayer): GlobalEventStream =
     new GlobalEventStream {
-      private val eventQueue: mutable.Queue[GameEvent] =
-        new mutable.Queue[GameEvent]()
+      private val eventQueue: mutable.Queue[GlobalEvent] =
+        new mutable.Queue[GlobalEvent]()
 
-      def pushGameEvent(e: GameEvent): Unit =
-        NetworkEventProcessor
-          .filter(this)(e)
-          .foreach(e => eventQueue += e)
-
-      def pushViewEvent(e: ViewEvent): Unit =
+      def pushGlobalEvent(e: GlobalEvent): Unit =
         NetworkEventProcessor
           .filter(this)(e)
           .flatMap { AudioEventProcessor.filter(audioPlayer) }
           .foreach(e => eventQueue += e)
 
-      def collect: List[GameEvent] =
+      def collect: List[GlobalEvent] =
         eventQueue.dequeueAll(_ => true).toList
     }
 
   object NetworkEventProcessor {
 
-    def filter(implicit globalEventStream: GlobalEventStream): GameEvent => Option[GameEvent] = {
+    def filter(implicit globalEventStream: GlobalEventStream): GlobalEvent => Option[GlobalEvent] = {
       case httpRequest: HttpRequest =>
         Http.processRequest(httpRequest)
         None
@@ -53,7 +46,7 @@ object GlobalEventStream {
 
   object AudioEventProcessor {
 
-    def filter: AudioPlayer => GameEvent => Option[GameEvent] = audioPlayer => {
+    def filter: AudioPlayer => GlobalEvent => Option[GlobalEvent] = audioPlayer => {
       case PlaySound(assetRef, volume) =>
         audioPlayer.playSound(assetRef, volume)
         None

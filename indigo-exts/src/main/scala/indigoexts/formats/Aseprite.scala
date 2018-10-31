@@ -1,6 +1,6 @@
 package indigoexts.formats
 
-import indigo.gameengine.events.GameEvent
+import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph._
 import indigo.gameengine.scenegraph.datatypes._
 import indigo.runtime.{IndigoLogger, Show}
@@ -95,7 +95,7 @@ object Aseprite {
               animationsKey = animations.animationsKey,
               ref = Point(0, 0),
               effects = Effects.default,
-              eventHandler = (_: (Rectangle, GameEvent)) => None
+              eventHandler = (_: (Rectangle, GlobalEvent)) => None
             ),
             animations
           )

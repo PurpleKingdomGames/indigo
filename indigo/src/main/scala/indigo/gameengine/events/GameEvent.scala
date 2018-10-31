@@ -1,22 +1,21 @@
 package indigo.gameengine.events
 
 import indigo.gameengine.constants.KeyCode
+import indigo.gameengine.scenegraph.Volume
 import indigo.gameengine.scenegraph.datatypes.Point
 
-// GameEvents are a fixed set of events that move through the game engine and live for 1 frame.
-sealed trait GameEvent {
-  val isGameEvent: Boolean
-}
+// FrameEvents are passed from Model->ViewModel->View
+trait InFrameEvent
 
-case object FrameTick extends GameEvent {
-  val isGameEvent: Boolean = true
-}
+// Events that are passed to the GlobalEventStream
+trait GlobalEvent
 
-sealed trait MouseEvent extends GameEvent {
+case object FrameTick extends GlobalEvent
+
+sealed trait MouseEvent extends GlobalEvent {
   val x: Int
   val y: Int
-  def position: Point      = Point(x, y)
-  val isGameEvent: Boolean = true
+  def position: Point = Point(x, y)
 }
 object MouseEvent {
   case class Click(x: Int, y: Int)     extends MouseEvent
@@ -25,9 +24,8 @@ object MouseEvent {
   case class Move(x: Int, y: Int)      extends MouseEvent
 }
 
-sealed trait KeyboardEvent extends GameEvent {
+sealed trait KeyboardEvent extends GlobalEvent {
   val keyCode: KeyCode
-  val isGameEvent: Boolean = true
 }
 object KeyboardEvent {
   case class KeyUp(keyCode: KeyCode)    extends KeyboardEvent
@@ -35,10 +33,7 @@ object KeyboardEvent {
   case class KeyPress(keyCode: KeyCode) extends KeyboardEvent
 }
 
-// ViewEvents are emitted by the view function
-trait ViewEvent extends GameEvent {
-  val isGameEvent: Boolean = false
-}
+case class PlaySound(assetRef: String, volume: Volume) extends GlobalEvent
 
-// FrameEvents are passed from Model->ViewModel->View
-trait FrameEvent
+trait NetworkSendEvent    extends GlobalEvent
+trait NetworkReceiveEvent extends GlobalEvent

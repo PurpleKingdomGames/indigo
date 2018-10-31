@@ -24,7 +24,7 @@ object FullSetup {
   val initialModel: MyStartupData => MyGameModel =
     _ => MyGameModel()
 
-  val updateModel: (GameTime, MyGameModel) => GameEvent => UpdatedModel[MyGameModel] =
+  val updateModel: (GameTime, MyGameModel) => GlobalEvent => UpdatedModel[MyGameModel] =
     (_, model) => _ => model
 
   val initialViewModel: (MyStartupData, MyGameModel) => MyViewModel = (_, _) => MyViewModel()

@@ -25,9 +25,6 @@ trait SceneGraphTypeAliases {
   type SceneAudioSource = gameengine.scenegraph.SceneAudioSource
   val SceneAudioSource: gameengine.scenegraph.SceneAudioSource.type = gameengine.scenegraph.SceneAudioSource
 
-  type PlaySound = gameengine.scenegraph.PlaySound
-  val PlaySound: gameengine.scenegraph.PlaySound.type = gameengine.scenegraph.PlaySound
-
   // Animation
   type Animations = gameengine.scenegraph.Animations
   val Animations: gameengine.scenegraph.Animations.type = gameengine.scenegraph.Animations

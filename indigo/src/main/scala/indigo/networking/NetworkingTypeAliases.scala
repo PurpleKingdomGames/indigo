@@ -3,9 +3,6 @@ import indigo.networking
 
 trait NetworkingTypeAliases {
 
-  type NetworkSendEvent    = networking.NetworkSendEvent
-  type NetworkReceiveEvent = networking.NetworkReceiveEvent
-
   //WebSockets
 
   val WebSockets: networking.WebSockets.type = networking.WebSockets

@@ -25,7 +25,7 @@ object IndigoGameBase {
       animations: Set[Animations],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
-      updateModel: (GameTime, GameModel) => events.GameEvent => UpdatedModel[GameModel],
+      updateModel: (GameTime, GameModel) => events.GlobalEvent => UpdatedModel[GameModel],
       initialViewModel: StartupData => GameModel => ViewModel,
       updateViewModel: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => UpdatedViewModel[ViewModel],
       updateView: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => SceneUpdateFragment
@@ -64,7 +64,7 @@ object IndigoGameBase {
       animations: Set[Animations],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
-      updateModel: (GameTime, GameModel) => events.GameEvent => UpdatedModel[GameModel],
+      updateModel: (GameTime, GameModel) => events.GlobalEvent => UpdatedModel[GameModel],
       initialViewModel: StartupData => GameModel => ViewModel,
       updateViewModel: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => UpdatedViewModel[ViewModel]
   ) {
@@ -83,7 +83,7 @@ object IndigoGameBase {
       animations: Set[Animations],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
-      updateModel: (GameTime, GameModel) => events.GameEvent => UpdatedModel[GameModel],
+      updateModel: (GameTime, GameModel) => events.GlobalEvent => UpdatedModel[GameModel],
       initialViewModel: StartupData => GameModel => ViewModel
   ) {
     def updateViewModelUsing(
@@ -101,7 +101,7 @@ object IndigoGameBase {
       animations: Set[Animations],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
-      updateModel: (GameTime, GameModel) => events.GameEvent => UpdatedModel[GameModel]
+      updateModel: (GameTime, GameModel) => events.GlobalEvent => UpdatedModel[GameModel]
   ) {
     def initialiseViewModelUsing[ViewModel](
         initialViewModel: (StartupData, GameModel) => ViewModel
@@ -131,7 +131,7 @@ object IndigoGameBase {
       initialModel: StartupData => GameModel
   ) {
     def updateModelUsing(
-        modelUpdater: (GameTime, GameModel) => events.GameEvent => UpdatedModel[GameModel]
+        modelUpdater: (GameTime, GameModel) => events.GlobalEvent => UpdatedModel[GameModel]
     ): IndigoGameWithModelUpdate[StartupData, StartupError, GameModel] =
       new IndigoGameWithModelUpdate(config, configAsync, assets, assetsAsync, fonts, animations, initialise, initialModel, modelUpdater)
   }

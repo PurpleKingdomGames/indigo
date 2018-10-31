@@ -36,7 +36,7 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(gameTime: GameTime, model: Unit): GameEvent => UpdatedModel[Unit] =
+  def update(gameTime: GameTime, model: Unit): GlobalEvent => UpdatedModel[Unit] =
     _ => model
 
   def initialViewModel(startupData: Unit): Unit => Unit = _ => ()

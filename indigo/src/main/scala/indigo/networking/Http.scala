@@ -1,6 +1,6 @@
 package indigo.networking
 
-import indigo.gameengine.events.GlobalEventStream
+import indigo.gameengine.events.{GlobalEventStream, NetworkReceiveEvent, NetworkSendEvent}
 import indigo.networking.HttpReceiveEvent.{HttpError, HttpResponse}
 import org.scalajs.dom
 import org.scalajs.dom.XMLHttpRequest
@@ -45,7 +45,7 @@ object Http {
 
         val body = ((str: String) => if (str.isEmpty) None else Option(str))(xhr.responseText)
 
-        globalEventStream.pushGameEvent(
+        globalEventStream.pushGlobalEvent(
           HttpResponse(
             status = xhr.status,
             headers = parsedHeaders,
@@ -54,7 +54,7 @@ object Http {
         )
       }
 
-      xhr.onerror = (_: dom.Event) => globalEventStream.pushGameEvent(HttpError)
+      xhr.onerror = (_: dom.Event) => globalEventStream.pushGlobalEvent(HttpError)
 
       request.body match {
         case Some(b) =>
@@ -66,7 +66,7 @@ object Http {
 
     } catch {
       case _: Throwable =>
-        globalEventStream.pushGameEvent(HttpError)
+        globalEventStream.pushGlobalEvent(HttpError)
     }
 
 }

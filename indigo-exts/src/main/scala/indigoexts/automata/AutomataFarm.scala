@@ -1,7 +1,7 @@
 package indigoexts.automata
 
 import indigo.gameengine.GameTime
-import indigo.gameengine.events.ViewEvent
+import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph.datatypes.Point
 import indigo.gameengine.scenegraph._
 import indigoexts.automata.AutomataEvent.{KillAll, KillAllInPool, KillByKey, Spawn}
@@ -57,7 +57,7 @@ object AutomataFarm {
 
   def renderToGameLayer(gameTime: GameTime): SceneUpdateFragment = {
     val f =
-      (p: List[(SceneGraphNode, List[ViewEvent])]) =>
+      (p: List[(SceneGraphNode, List[GlobalEvent])]) =>
         p.map(q => SceneUpdateFragment.empty.addGameLayerNodes(q._1).addViewEvents(q._2))
           .foldLeft(SceneUpdateFragment.empty)(_ |+| _)
 
@@ -66,7 +66,7 @@ object AutomataFarm {
 
   def renderToLightingLayer(gameTime: GameTime): SceneUpdateFragment = {
     val f =
-      (p: List[(SceneGraphNode, List[ViewEvent])]) =>
+      (p: List[(SceneGraphNode, List[GlobalEvent])]) =>
         p.map(q => SceneUpdateFragment.empty.addGameLayerNodes(q._1).addViewEvents(q._2))
           .foldLeft(SceneUpdateFragment.empty)(_ |+| _)
 
@@ -75,20 +75,20 @@ object AutomataFarm {
 
   def renderToUiLayer(gameTime: GameTime): SceneUpdateFragment = {
     val f =
-      (p: List[(SceneGraphNode, List[ViewEvent])]) =>
+      (p: List[(SceneGraphNode, List[GlobalEvent])]) =>
         p.map(q => SceneUpdateFragment.empty.addGameLayerNodes(q._1).addViewEvents(q._2))
           .foldLeft(SceneUpdateFragment.empty)(_ |+| _)
 
     f(render(gameTime))
   }
 
-  private def render(gameTime: GameTime): List[(SceneGraphNode, List[ViewEvent])] = {
+  private def render(gameTime: GameTime): List[(SceneGraphNode, List[GlobalEvent])] = {
     paddock = paddock.filter(_.isAlive(gameTime.running)).map(_.updateDelta(gameTime.delta))
 
     paddock.map { sa =>
       sa.automata match {
         case GraphicAutomaton(_, graphic, _, modifiers) =>
-          modifiers.foldLeft[(Graphic, List[ViewEvent])]((graphic, Nil)) { (p, m) =>
+          modifiers.foldLeft[(Graphic, List[GlobalEvent])]((graphic, Nil)) { (p, m) =>
             m match {
               case ChangeAlpha(f) =>
                 (p._1.withAlpha(f(gameTime, sa.seedValues, p._1.effects.alpha)), Nil)
@@ -105,8 +105,8 @@ object AutomataFarm {
           }
 
         case SpriteAutomaton(_, sprite, autoPlay, maybeCycleLabel, _, modifiers) =>
-          def applySpriteModifiers(sp: Sprite): (Sprite, List[ViewEvent]) =
-            modifiers.foldLeft[(Sprite, List[ViewEvent])]((sp, Nil)) { (p, m) =>
+          def applySpriteModifiers(sp: Sprite): (Sprite, List[GlobalEvent]) =
+            modifiers.foldLeft[(Sprite, List[GlobalEvent])]((sp, Nil)) { (p, m) =>
               m match {
                 case ChangeAlpha(f) =>
                   (p._1.withAlpha(f(gameTime, sa.seedValues, p._1.effects.alpha)), Nil)
@@ -127,7 +127,7 @@ object AutomataFarm {
           )
 
         case TextAutomaton(_, text, _, modifiers) =>
-          modifiers.foldLeft[(Text, List[ViewEvent])]((text, Nil)) { (p, m) =>
+          modifiers.foldLeft[(Text, List[GlobalEvent])]((text, Nil)) { (p, m) =>
             m match {
               case ChangeAlpha(f) =>
                 (p._1.withAlpha(f(gameTime, sa.seedValues, p._1.effects.alpha)), Nil)

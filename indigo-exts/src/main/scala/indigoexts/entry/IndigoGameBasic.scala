@@ -1,7 +1,7 @@
 package indigoexts.entry
 
 import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.events.{FrameInputEvents, GameEvent}
+import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
 import indigo.gameengine.scenegraph.datatypes.FontInfo
 import indigo.gameengine.scenegraph.{Animations, SceneUpdateFragment}
 import indigo.gameengine._
@@ -32,7 +32,7 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] {
 
   def initialModel(startupData: StartupData): Model
 
-  def update(gameTime: GameTime, model: Model): GameEvent => UpdatedModel[Model]
+  def update(gameTime: GameTime, model: Model): GlobalEvent => UpdatedModel[Model]
 
   def initialViewModel(startupData: StartupData): Model => ViewModel
 

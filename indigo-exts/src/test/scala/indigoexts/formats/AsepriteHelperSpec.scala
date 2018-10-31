@@ -1,6 +1,6 @@
 package indigoexts.formats
 
-import indigo.gameengine.events.GameEvent
+import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph._
 import indigo.gameengine.scenegraph.datatypes._
 import org.scalatest.{FunSpec, Matchers}
@@ -163,7 +163,7 @@ object AsepriteSampleData {
       animationsKey = animationsKey,
       ref = Point.zero,
       effects = Effects.default,
-      (_: (Rectangle, GameEvent)) => None
+      (_: (Rectangle, GlobalEvent)) => None
     )
 
   }

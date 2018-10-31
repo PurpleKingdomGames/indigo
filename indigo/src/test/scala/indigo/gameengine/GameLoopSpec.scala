@@ -1,6 +1,6 @@
 package indigo.gameengine
 
-import indigo.gameengine.events.{ViewEvent, GameEvent, GlobalEventStream}
+import indigo.gameengine.events.{FrameInputEvents, GlobalEvent, GlobalEventStream, InFrameEvent}
 import org.scalatest.{FunSpec, Matchers}
 
 class GameLoopSpec extends FunSpec with Matchers {
@@ -13,70 +13,71 @@ class GameLoopSpec extends FunSpec with Matchers {
 
       implicit val ges: GlobalEventStream =
         new GlobalEventStream {
-          def pushGameEvent(e: GameEvent): Unit = ()
-          def pushViewEvent(e: ViewEvent): Unit = ()
-          def collect: List[GameEvent]          = Nil
+          def pushLoopEvent(e: GlobalEvent): Unit   = ()
+          def pushGlobalEvent(e: GlobalEvent): Unit = ()
+          def collect: List[GlobalEvent]            = Nil
         }
 
-      val gameEvents: List[GameEvent] =
+      val gameEvents: List[GlobalEvent] =
         List(
           ChangeName("fred")
         )
 
-      val update: (GameTime, TestGameModel) => GameEvent => UpdatedModel[TestGameModel] =
+      val update: (GameTime, TestGameModel) => GlobalEvent => UpdatedModel[TestGameModel] =
         (_, model) => {
           case ChangeName(name) =>
-            UpdatedModel(model.copy(name = name), Nil)
+            UpdatedModel(model.copy(name = name))
 
           case _ =>
-            UpdatedModel(model, Nil)
+            UpdatedModel(model)
         }
 
-      val actual: TestGameModel =
+      val actual: (TestGameModel, FrameInputEvents) =
         GameLoop.processModelUpdateEvents(gameTime, TestGameModel("bob"), gameEvents, update)
 
       val expected: TestGameModel =
         TestGameModel("fred")
 
-      actual shouldEqual expected
+      actual._1 shouldEqual expected
 
     }
 
-    it("should be able to process a model update that emits an event") {
+    it("should be able to process a model update that emits a global and an InFrame event") {
 
       implicit val ges: GlobalEventStream =
         new GlobalEventStream {
-          var l: List[GameEvent] = Nil
+          var l: List[GlobalEvent] = Nil
 
-          def pushGameEvent(e: GameEvent): Unit = ()
-          def pushViewEvent(e: ViewEvent): Unit = {
+          def pushLoopEvent(e: GlobalEvent): Unit = ()
+          def pushGlobalEvent(e: GlobalEvent): Unit = {
             l = l :+ e
             ()
           }
-          def collect: List[GameEvent] = l
+          def collect: List[GlobalEvent] = l
         }
 
-      val gameEvents: List[GameEvent] =
+      val gameEvents: List[GlobalEvent] =
         List(
           ChangeName("teddy")
         )
 
-      val update: (GameTime, TestGameModel) => GameEvent => UpdatedModel[TestGameModel] =
+      val update: (GameTime, TestGameModel) => GlobalEvent => UpdatedModel[TestGameModel] =
         (_, model) => {
           case ChangeName(name) =>
-            UpdatedModel(model.copy(name = name), List(ShowName("show: " + name)))
+            UpdatedModel(model.copy(name = name), List(ShowName("show: " + name)), List(PresentName(name)))
 
           case _ =>
-            UpdatedModel(model, Nil)
+            UpdatedModel(model)
         }
 
-      val actual: TestGameModel =
+      val actual: (TestGameModel, FrameInputEvents) =
         GameLoop.processModelUpdateEvents(gameTime, TestGameModel("bob"), gameEvents, update)
 
       val expected: TestGameModel =
         TestGameModel("teddy")
 
-      actual shouldEqual expected
+      actual._1 shouldEqual expected
+      actual._2.inFrameEvents shouldEqual List(PresentName("teddy"))
       ges.collect shouldEqual List(ShowName("show: teddy"))
 
     }
@@ -86,5 +87,6 @@ class GameLoopSpec extends FunSpec with Matchers {
 }
 
 case class TestGameModel(name: String)
-case class ChangeName(to: String) extends ViewEvent
-case class ShowName(name: String) extends ViewEvent
+case class ChangeName(to: String)    extends GlobalEvent
+case class ShowName(name: String)    extends GlobalEvent
+case class PresentName(name: String) extends InFrameEvent

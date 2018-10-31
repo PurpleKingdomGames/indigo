@@ -49,7 +49,7 @@ object SceneA extends Scene[MyGameModel, MyViewModel, MessageA, Unit] {
     Lens.identity(())
 
   // Nothing to do
-  def updateSceneModel(gameTime: GameTime, sceneModel: MessageA): GameEvent => UpdatedModel[MessageA] =
+  def updateSceneModel(gameTime: GameTime, sceneModel: MessageA): GlobalEvent => UpdatedModel[MessageA] =
     _ => sceneModel
 
   // Nothing to do
@@ -87,7 +87,7 @@ object SceneB extends Scene[MyGameModel, MyViewModel, MessageB, Unit] {
     Lens.identity(())
 
   // Nothing to do
-  def updateSceneModel(gameTime: GameTime, sceneModel: MessageB): GameEvent => UpdatedModel[MessageB] =
+  def updateSceneModel(gameTime: GameTime, sceneModel: MessageB): GlobalEvent => UpdatedModel[MessageB] =
     _ => sceneModel
 
   // Nothing to do

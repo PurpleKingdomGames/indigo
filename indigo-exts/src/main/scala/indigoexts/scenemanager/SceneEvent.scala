@@ -1,8 +1,8 @@
 package indigoexts.scenemanager
 
-import indigo.gameengine.events.ViewEvent
+import indigo.gameengine.events.GlobalEvent
 
-sealed trait SceneEvent extends ViewEvent
+sealed trait SceneEvent extends GlobalEvent
 object SceneEvent {
   case object Next                   extends SceneEvent
   case object Previous               extends SceneEvent

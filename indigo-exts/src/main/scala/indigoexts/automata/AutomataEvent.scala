@@ -1,9 +1,9 @@
 package indigoexts.automata
 
-import indigo.gameengine.events.ViewEvent
+import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph.datatypes.{BindingKey, Point}
 
-sealed trait AutomataEvent extends ViewEvent
+sealed trait AutomataEvent extends GlobalEvent
 object AutomataEvent {
   case class Spawn(key: AutomataPoolKey, at: Point) extends AutomataEvent
   case class KillAllInPool(key: AutomataPoolKey)    extends AutomataEvent

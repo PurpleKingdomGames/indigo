@@ -3,6 +3,7 @@ package indigo.gameengine.events
 import indigo.gameengine.constants.KeyCode
 import indigo.gameengine.scenegraph.datatypes.Point
 
+// YUK!
 object GlobalSignals {
 
   def MousePosition: Point = GlobalSignalsManager.MousePosition
@@ -20,7 +21,7 @@ private[indigo] object GlobalSignalsManager {
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var signals: Signals = Signals.default
 
-  def update(events: List[GameEvent]): Signals = {
+  def update(events: List[GlobalEvent]): Signals = {
     signals = events.foldLeft(signals) { (signals, e) =>
       e match {
         case mp: MouseEvent.Move =>
