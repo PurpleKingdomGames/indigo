@@ -31,6 +31,27 @@ class LensSpec extends FunSpec with Matchers {
       (d: D, s: String) => d.copy(s = s)
     )
 
+  describe("Constructors") {
+    it("should have a simple identity function when there's nothing to do") {
+      Lens.identity.get(B(10)) shouldEqual B(10)
+    }
+
+    it("should have allow you to keep the original") {
+      Lens.keepOriginal[D].get(D("hi")) shouldEqual D("hi")
+      Lens.keepOriginal[D].set(D("hi"), D("fish")) shouldEqual D("hi")
+    }
+
+    it("should have allow you to keep the latest") {
+      Lens.keepLatest[D].get(D("hi")) shouldEqual D("hi")
+      Lens.keepLatest[D].set(D("hi"), D("fish")) shouldEqual D("fish")
+    }
+
+    it("should allow you to define a fixed lens with a constant B") {
+      Lens.fixed[C, D](D("hi")).get(C(D("x"))) shouldEqual D("hi")
+      Lens.fixed[C, D](D("hi")).set(C(D("x")), D("y")) shouldEqual C(D("x"))
+    }
+  }
+
   describe("Getting") {
 
     it("should be able to get a sub-object") {
@@ -38,7 +59,7 @@ class LensSpec extends FunSpec with Matchers {
     }
 
     it("should be able to get a more deeply nested sub-object with lens composition") {
-      (lensAC andThen lensCD andThen lensD).get(sample) shouldEqual "hello"
+      (lensAC andThen lensCD >=> lensD).get(sample) shouldEqual "hello"
     }
 
   }
