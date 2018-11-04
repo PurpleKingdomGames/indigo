@@ -18,6 +18,7 @@ object SbtIndigo extends sbt.AutoPlugin {
 
   object autoImport {
     val indigoBuild: TaskKey[Unit] = taskKey[Unit]("Build an indigo game.")
+    val indigoPublish: TaskKey[Unit] = taskKey[Unit]("Publish an indigo game.")
     val gameAssetsDirectory: SettingKey[String] =
       settingKey[String]("Project relative path to a directory that contains all of the assets the game needs to load.")
     val showCursor: SettingKey[Boolean] = settingKey[Boolean]("Show the cursor? True by default.")
@@ -28,6 +29,7 @@ object SbtIndigo extends sbt.AutoPlugin {
 
   override lazy val projectSettings = Seq(
     indigoBuild := indigoBuildTask.value,
+    indigoPublish := indigoPublishTask.value,
     showCursor := true,
     title := "Made with Indigo",
     gameAssetsDirectory := "."
@@ -57,6 +59,31 @@ object SbtIndigo extends sbt.AutoPlugin {
       )
 
     }
+
+  lazy val indigoPublishTask: Def.Initialize[Task[Unit]] =
+    Def.task {
+
+      val baseDir: String      = Keys.baseDirectory.value.getCanonicalPath
+      val scalaVersion: String = Keys.scalaVersion.value
+      val projectName: String  = Keys.projectID.value.name
+
+      val scriptPathBase = s"$baseDir/target/scala-${scalaVersion.split('.').reverse.tail.reverse.mkString(".")}/$projectName"
+
+      println(scriptPathBase)
+
+      IndigoBuild.publish(
+        baseDir,
+        TemplateOptions(
+          title = title.value,
+          showCursor = showCursor.value,
+          scriptPathBase = scriptPathBase,
+          gameAssetsDirectoryPath =
+            if (gameAssetsDirectory.value.startsWith("/")) gameAssetsDirectory.value
+            else baseDir + "/" + gameAssetsDirectory.value
+        )
+      )
+
+    }
 }
 
 object IndigoBuild {
@@ -64,10 +91,10 @@ object IndigoBuild {
   def build(baseDir: String, templateOptions: TemplateOptions): Unit = {
 
     // create directory structure
-    val directoryStructure = createDirectoryStructure(baseDir)
+    val directoryStructure = createDirectoryStructure(baseDir, "indigo")
 
     // copy built js file into scripts dir
-    val newScriptPath = copyScript(templateOptions, directoryStructure.scripts)
+    val newScriptPath = copyScript(templateOptions, directoryStructure.scripts, "fastopt")
 
     // copy built js source map file into scripts dir
     copySourceMap(templateOptions, directoryStructure.scripts)
@@ -84,10 +111,30 @@ object IndigoBuild {
     println(outputPath)
   }
 
+  def publish(baseDir: String, templateOptions: TemplateOptions): Unit = {
+
+    // create directory structure
+    val directoryStructure = createDirectoryStructure(baseDir, "indigo-published")
+
+    // copy built js file into scripts dir
+    val newScriptPath = copyScript(templateOptions, directoryStructure.scripts, "opt")
+
+    // copy assets into folder
+    copyAssets(templateOptions.gameAssetsDirectoryPath, directoryStructure.assets)
+
+    // Fill out html template
+    val html = template(templateOptions.copy(scriptPathBase = newScriptPath))
+
+    // Write out file
+    val outputPath = writeHtml(directoryStructure, html)
+
+    println(outputPath)
+  }
+
   case class DirectoryStructure(base: File, assets: File, scripts: File)
 
-  def createDirectoryStructure(baseDir: String): DirectoryStructure = {
-    val dirPath = baseDir + "/target/indigo"
+  def createDirectoryStructure(baseDir: String, outputFolderName: String): DirectoryStructure = {
+    val dirPath = baseDir + "/target/" + outputFolderName
 
     println("dirPath: " + dirPath)
 
@@ -111,8 +158,8 @@ object IndigoBuild {
     }
   }
 
-  def copyScript(templateOptions: TemplateOptions, desScriptsFolder: File): String = {
-    val path = s"${templateOptions.scriptPathBase}-fastopt.js"
+  def copyScript(templateOptions: TemplateOptions, desScriptsFolder: File, jsType: String): String = {
+    val path = s"${templateOptions.scriptPathBase}-$jsType.js"
     val fileName = path
       .split('/')
       .toList
