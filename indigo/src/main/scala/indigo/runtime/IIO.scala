@@ -70,13 +70,31 @@ sealed trait IIO[+A] {
     }
 
   def map[B](f: A => B): IIO[B] =
-    cata(x => pure[B](f(x)), IIO.raiseError(new Exception("Invalid map of an IIO.")))
+    this match {
+      case IIO.RaiseError(e) =>
+        cata(x => pure[B](f(x)), IIO.raiseError(e))
+
+      case _ =>
+        cata(x => pure[B](f(x)), IIO.raiseError(new Exception("Invalid map of an IIO.")))
+    }
 
   def flatMap[B](f: A => IIO[B]): IIO[B] =
-    cata(x => f(x), IIO.raiseError(new Exception("Invalid flatMap of an IIO.")))
+    this match {
+      case IIO.RaiseError(e) =>
+        cata(x => f(x), IIO.raiseError(e))
+
+      case _ =>
+        cata(x => f(x), IIO.raiseError(new Exception("Invalid flatMap of an IIO.")))
+    }
 
   def flatten[B](implicit ev: A <:< IIO[B]): IIO[B] =
-    cata(x => ev(x), IIO.raiseError(new Exception("Invalid flatten of an IIO.")))
+    this match {
+      case IIO.RaiseError(e) =>
+        cata(x => ev(x), IIO.raiseError(e))
+
+      case _ =>
+        cata(x => ev(x), IIO.raiseError(new Exception("Invalid flatten of an IIO.")))
+    }
 
   def eq[B >: A](other: IIO[B]): Boolean =
     (this, other) match {
@@ -97,20 +115,25 @@ sealed trait IIO[+A] {
 
 object IIO {
 
-  case class Pure[A](a: A)            extends IIO[A]
-  case class Delay[A](thunk: () => A) extends IIO[A]
-  case class RaiseError(e: Throwable) extends IIO[Nothing]
+  case class Pure[A](a: A)               extends IIO[A]
+  case class Delay[A](thunk: () => A)    extends IIO[A]
+  case class RaiseError[A](e: Throwable) extends IIO[A]
 
   def apply[A](a: => A): IIO[A] =
     pure(a)
 
   def pure[A](a: => A): IIO[A] =
-    Pure(a)
+    try {
+      Pure(a)
+    } catch {
+      case e: Throwable =>
+        RaiseError(e)
+    }
 
   def delay[A](a: => A): IIO[A] =
     Delay(() => a)
 
-  def raiseError(e: Throwable): IIO[Nothing] =
+  def raiseError[A](e: Throwable): IIO[A] =
     RaiseError(e)
 
 }

@@ -93,6 +93,50 @@ class IIOSpec extends FunSpec with Matchers {
 
     }
 
+    it("should preserve error messages (flatMap)") {
+
+      val result: IIO[Int] =
+        for {
+          a <- IIO.delay(10)
+          b <- IIO.raiseError[Int](new Exception(a.toString))
+          c <- IIO.delay(b / 2)
+        } yield c
+
+      result match {
+        case IIO.Pure(_) =>
+          fail("Expected delay, got pure")
+
+        case IIO.RaiseError(e) =>
+          e.getMessage shouldEqual "10"
+
+        case IIO.Delay(_) =>
+          fail("Expected error, got delay")
+      }
+
+    }
+
+    it("should preserve error messages (map)") {
+
+      val f: Int => Int = i => {
+        throw new Exception(i.toString)
+      }
+
+      val result: IIO[Int] =
+        IIO.pure(10).map[Int](f)
+
+      result match {
+        case IIO.Pure(_) =>
+          fail("Expected error, got pure")
+
+        case IIO.RaiseError(e) =>
+          e.getMessage shouldEqual "10"
+
+        case IIO.Delay(_) =>
+          fail("Expected error, got delay")
+      }
+
+    }
+
   }
 
 }
