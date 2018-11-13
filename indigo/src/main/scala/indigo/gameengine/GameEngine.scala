@@ -167,7 +167,13 @@ object GameEngine {
     }
 
   def createCanvas(gameConfig: GameConfig): IIO[Canvas] =
-    IIO.delay(Renderer.createCanvas(gameConfig.viewport.width, gameConfig.viewport.height))
+    Option(dom.document.getElementById("indigo-container")) match {
+      case None =>
+        IIO.raiseError(new Exception("""Parent element "indigo-container" could not be found on page."""))
+
+      case Some(parent) =>
+        IIO.delay(Renderer.createCanvas(gameConfig.viewport.width, gameConfig.viewport.height, parent))
+    }
 
   def listenToWorldEvents(canvas: Canvas, magnification: Int)(implicit globalEventStream: GlobalEventStream): IIO[Unit] = {
     IndigoLogger.info("Starting world events")

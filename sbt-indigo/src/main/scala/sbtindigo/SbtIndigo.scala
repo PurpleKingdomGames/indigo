@@ -258,6 +258,7 @@ object IndigoBuild {
       |}
       |    </script>
       |    <script type="text/javascript" src="${options.scriptPathBase}"></script>
+      |    <div id="indigo-container"></div>
       |  </body>
       |</html>
     """.stripMargin

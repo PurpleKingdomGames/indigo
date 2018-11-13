@@ -2,7 +2,7 @@ package indigo.renderer
 
 import org.scalajs.dom
 import org.scalajs.dom.raw.WebGLRenderingContext
-import org.scalajs.dom.{html, raw}
+import org.scalajs.dom.{Element, html, raw}
 
 object Renderer {
 
@@ -22,10 +22,10 @@ object Renderer {
         r
     }
 
-  def createCanvas(width: Int, height: Int): html.Canvas = {
+  def createCanvas(width: Int, height: Int, parent: Element): html.Canvas = {
     @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
     val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
-    dom.document.body.appendChild(canvas)
+    parent.appendChild(canvas)
     canvas.width = width
     canvas.height = height
 
