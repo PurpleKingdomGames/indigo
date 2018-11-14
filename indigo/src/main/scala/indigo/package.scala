@@ -9,7 +9,9 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
 
   val logger: IndigoLogger.type = IndigoLogger
 
-  type Show[A] = indigo.runtime.Show[A]
+  type Show[A] = runtime.Show[A]
+  val Show: runtime.Show.type = runtime.Show
+
   implicit class WithShow[T](val t: T) extends AnyVal {
     def show(implicit showMe: Show[T]): String = showMe.show(t)
   }
