@@ -1,5 +1,15 @@
 package indigoexts.lenses
 
+/* TODO
+
+Modify in place
+membership lens
+optional lens
+prisms
+modifyF
+
+ */
+
 trait Lens[A, B] {
   def get(from: A): B
   def set(into: A, value: B): A

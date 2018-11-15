@@ -84,6 +84,30 @@ class LensSpec extends FunSpec with Matchers {
 
   }
 
+  describe("Lens Laws") {
+
+    val lens: Lens[B, Int] =
+      Lens(
+        b => b.i,
+        (b, ii) => b.copy(i = ii)
+      )
+
+    it("must be true, that getting and setting a value back, changes nothing.") {
+      val x = B(100)
+
+      lens.set(x, lens.get(x)) shouldEqual x
+    }
+
+    it("must be true, that setting and then getting returns what I set.") {
+      lens.get(lens.set(B(100), 50)) shouldEqual 50
+    }
+
+    it("must be true, that setting twice and then getting returns the last value (no history)") {
+      lens.get(lens.set(lens.set(B(100), 50), 25)) shouldEqual 25
+    }
+
+  }
+
 }
 
 case class A(b: B, c: C)
