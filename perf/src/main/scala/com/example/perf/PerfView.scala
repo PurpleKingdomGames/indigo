@@ -14,7 +14,7 @@ object PerfView {
 
     SceneUpdateFragment(
       gameLayer(model),
-      lightingLayer,
+      lightingLayer(frameInputEvents.signals),
       uiLayer,
       AmbientLight.Normal.withAmount(0.5).withTint(1, 1, 0),
       Nil,
@@ -66,11 +66,11 @@ object PerfView {
       }
     ) ++ theHerd(currentState)
 
-  def lightingLayer: List[SceneGraphNode] =
+  def lightingLayer(signals: Signals): List[SceneGraphNode] =
     List(
       Graphic(0, 0, 320, 240, 1, PerfAssets.light).withTint(1, 0, 0),
       Graphic(-115, -100, 320, 240, 1, PerfAssets.light),
-      Graphic(GlobalSignals.MousePosition.x - 160, GlobalSignals.MousePosition.y - 120, 320, 240, 1, PerfAssets.light)
+      Graphic(signals.mousePosition.x - 160, signals.mousePosition.y - 120, 320, 240, 1, PerfAssets.light)
     )
 
   def fontKey: FontKey = FontKey("My Font")

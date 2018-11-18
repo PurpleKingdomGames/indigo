@@ -1,6 +1,6 @@
 package indigo.gameengine
 
-import indigo.gameengine.events.{FrameInputEvents, GlobalEvent, GlobalEventStream, InFrameEvent}
+import indigo.gameengine.events._
 import org.scalatest.{FunSpec, Matchers}
 
 class GameLoopSpec extends FunSpec with Matchers {
@@ -23,6 +23,9 @@ class GameLoopSpec extends FunSpec with Matchers {
           ChangeName("fred")
         )
 
+      val signals: Signals =
+        Signals.default
+
       val update: (GameTime, TestGameModel) => GlobalEvent => UpdatedModel[TestGameModel] =
         (_, model) => {
           case ChangeName(name) =>
@@ -33,7 +36,7 @@ class GameLoopSpec extends FunSpec with Matchers {
         }
 
       val actual: (TestGameModel, FrameInputEvents) =
-        GameLoop.processModelUpdateEvents(gameTime, TestGameModel("bob"), gameEvents, update)
+        GameLoop.processModelUpdateEvents(gameTime, TestGameModel("bob"), gameEvents, signals, update)
 
       val expected: TestGameModel =
         TestGameModel("fred")
@@ -61,6 +64,9 @@ class GameLoopSpec extends FunSpec with Matchers {
           ChangeName("teddy")
         )
 
+      val signals: Signals =
+        Signals.default
+
       val update: (GameTime, TestGameModel) => GlobalEvent => UpdatedModel[TestGameModel] =
         (_, model) => {
           case ChangeName(name) =>
@@ -71,7 +77,7 @@ class GameLoopSpec extends FunSpec with Matchers {
         }
 
       val actual: (TestGameModel, FrameInputEvents) =
-        GameLoop.processModelUpdateEvents(gameTime, TestGameModel("bob"), gameEvents, update)
+        GameLoop.processModelUpdateEvents(gameTime, TestGameModel("bob"), gameEvents, signals, update)
 
       val expected: TestGameModel =
         TestGameModel("teddy")

@@ -21,12 +21,14 @@ class GameLoop[GameModel, ViewModel](
     initialViewModel: ViewModel,
     updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => UpdatedViewModel[ViewModel],
     updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
-)(implicit metrics: Metrics, globalEventStream: GlobalEventStream) {
+)(implicit metrics: Metrics, globalEventStream: GlobalEventStream, globalSignals: GlobalSignals) {
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var gameModelState: Option[GameModel] = None
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var viewModelState: Option[ViewModel] = None
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  private var signalsState: Signals = Signals.default
 
   def loop(lastUpdateTime: Double): Double => Int = { time =>
     val timeDelta = time - lastUpdateTime
@@ -45,7 +47,8 @@ class GameLoop[GameModel, ViewModel](
 
         val collectedEvents: List[GlobalEvent] = globalEventStream.collect
 
-        GlobalSignalsManager.update(collectedEvents)
+        val signals = globalSignals.calculate(signalsState, collectedEvents)
+        signalsState = signals
 
         metrics.record(CallUpdateGameModelStartMetric)
 
@@ -54,7 +57,7 @@ class GameLoop[GameModel, ViewModel](
             (initialModel, FrameInputEvents.empty)
 
           case Some(previousModel) =>
-            GameLoop.processModelUpdateEvents(gameTime, previousModel, collectedEvents, updateModel)
+            GameLoop.processModelUpdateEvents(gameTime, previousModel, collectedEvents, signals, updateModel)
         }
 
         gameModelState = Some(model._1)
@@ -69,7 +72,7 @@ class GameLoop[GameModel, ViewModel](
           case Some(previousModel) =>
             val next = updateViewModel(gameTime, model._1, previousModel, model._2)
             next.globalEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
-            (next.model, FrameInputEvents(collectedEvents, next.inFrameEvents))
+            (next.model, FrameInputEvents(collectedEvents, next.inFrameEvents, signals))
         }
 
         viewModelState = Some(viewModel._1)
@@ -173,7 +176,11 @@ object GameLoop {
       metrics.record(PersistAnimationStatesEndMetric)
     }
 
-  def processModelUpdateEvents[GameModel](gameTime: GameTime, model: GameModel, collectedEvents: List[GlobalEvent], updateModel: (GameTime, GameModel) => GlobalEvent => UpdatedModel[GameModel])(
+  def processModelUpdateEvents[GameModel](gameTime: GameTime,
+                                          model: GameModel,
+                                          collectedEvents: List[GlobalEvent],
+                                          signals: Signals,
+                                          updateModel: (GameTime, GameModel) => GlobalEvent => UpdatedModel[GameModel])(
       implicit globalEventStream: GlobalEventStream
   ): (GameModel, FrameInputEvents) = {
     val combine: (UpdatedModel[GameModel], UpdatedModel[GameModel]) => UpdatedModel[GameModel] =
@@ -190,7 +197,7 @@ object GameLoop {
 
     val res = rec(collectedEvents, model)
     res.globalEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
-    (res.model, FrameInputEvents(res.globalEvents, res.inFrameEvents))
+    (res.model, FrameInputEvents(res.globalEvents, res.inFrameEvents, signals))
   }
 
   def persistGlobalViewEvents(metrics: Metrics, globalEventStream: GlobalEventStream): SceneUpdateFragment => SceneGraphRootNode = update => {

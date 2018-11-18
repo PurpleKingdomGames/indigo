@@ -1,5 +1,6 @@
 package indigo.gameengine.events
 
+import indigo.KeyCode
 import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
 
 /**
@@ -7,10 +8,10 @@ import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
   *
   * @param inFrameEvents A list of GlobalEvents
   */
-case class FrameInputEvents(globalEvents: List[GlobalEvent], inFrameEvents: List[InFrameEvent]) extends FrameMouseEvents with FrameKeyboardEvents
+case class FrameInputEvents(globalEvents: List[GlobalEvent], inFrameEvents: List[InFrameEvent], signals: Signals) extends FrameMouseEvents with FrameKeyboardEvents
 object FrameInputEvents {
   val empty: FrameInputEvents =
-    FrameInputEvents(Nil, Nil)
+    FrameInputEvents(Nil, Nil, Signals.default)
 }
 
 trait FrameMouseEvents {
@@ -72,12 +73,12 @@ trait FrameKeyboardEvents {
 
   def keyboardEvents: List[KeyboardEvent] = globalEvents.collect { case e: KeyboardEvent => e }
 
-  def keysUp: List[Int]      = keyboardEvents.collect { case k: KeyboardEvent.KeyUp    => k.keyCode.code }
-  def keysDown: List[Int]    = keyboardEvents.collect { case k: KeyboardEvent.KeyDown  => k.keyCode.code }
-  def keysPressed: List[Int] = keyboardEvents.collect { case k: KeyboardEvent.KeyPress => k.keyCode.code }
+  def keysUp: List[KeyCode]      = keyboardEvents.collect { case k: KeyboardEvent.KeyUp    => k.keyCode }
+  def keysDown: List[KeyCode]    = keyboardEvents.collect { case k: KeyboardEvent.KeyDown  => k.keyCode }
+  def keysPressed: List[KeyCode] = keyboardEvents.collect { case k: KeyboardEvent.KeyPress => k.keyCode }
 
-  def keysAreDown(keys: Int*): Boolean     = keys.forall(keyCode => keysDown.contains(keyCode))
-  def keysAreUp(keys: Int*): Boolean       = keys.forall(keyCode => keysUp.contains(keyCode))
-  def keysWerePressed(keys: Int*): Boolean = keys.forall(keyCode => keysPressed.contains(keyCode))
+  def keysAreDown(keys: KeyCode*): Boolean     = keys.forall(keyCode => keysDown.contains(keyCode))
+  def keysAreUp(keys: KeyCode*): Boolean       = keys.forall(keyCode => keysUp.contains(keyCode))
+  def keysWerePressed(keys: KeyCode*): Boolean = keys.forall(keyCode => keysPressed.contains(keyCode))
 
 }

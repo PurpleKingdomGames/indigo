@@ -70,6 +70,9 @@ class GameEngine[StartupData, StartupError, GameModel, ViewModel](
         implicit val globalEventStream: GlobalEventStream =
           GlobalEventStream.default(audioPlayer)
 
+        implicit val globalSignals: GlobalSignals =
+          GlobalSignals.default
+
         val x: IIO[Double => Int] =
           for {
             _                   <- GameEngine.registerAnimations(animations)
@@ -207,7 +210,7 @@ object GameEngine {
       initialViewModel: GameModel => ViewModel,
       updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => UpdatedViewModel[ViewModel],
       updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
-  )(implicit metrics: Metrics, globalEventStream: GlobalEventStream): IIO[GameLoop[GameModel, ViewModel]] =
+  )(implicit metrics: Metrics, globalEventStream: GlobalEventStream, globalSignals: GlobalSignals): IIO[GameLoop[GameModel, ViewModel]] =
     IIO.delay(
       new GameLoop[GameModel, ViewModel](gameConfig, assetMapping, renderer, audioPlayer, initialModel, updateModel, initialViewModel(initialModel), updateViewModel, updateView)
     )
