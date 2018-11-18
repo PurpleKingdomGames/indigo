@@ -361,4 +361,11 @@ addCommandAlias("buildExamples2", ";graphic/compile;sprite/compile;websocket/com
 addCommandAlias("buildAllNoClean", ";buildIndigo;buildDev;buildExamples1;buildExamples2")
 addCommandAlias("buildAll", ";clean;buildAllNoClean")
 
+addCommandAlias("testIndigo", ";shared/test;indigo/test;indigoExts/test")
+addCommandAlias("testDev", ";sandbox/test;perf/test;framework/test;server/test")
+addCommandAlias("testExamples1", ";basicSetup/test;scenesSetup/test;fullSetup/test;button/test;http/test;text/test;automata/test")
+addCommandAlias("testExamples2", ";graphic/test;sprite/test;websocket/test;inputfield/test;audio/test;group/test")
+addCommandAlias("testAllNoClean", ";testIndigo;testDev;testExamples1;testExamples2")
+addCommandAlias("testAll", ";clean;testAllNoClean")
+
 addCommandAlias("localPublish", ";clean;buildIndigo;shared/publishLocal;indigo/publishLocal;indigoExts/publishLocal")
