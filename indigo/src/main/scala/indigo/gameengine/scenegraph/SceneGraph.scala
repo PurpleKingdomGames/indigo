@@ -107,7 +107,7 @@ sealed trait Renderable extends SceneGraphNode {
   def onEvent(e: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]): Renderable
 
   //TODO: Review this.
-  private[gameengine] val eventHandlerWithBoundsApplied: GlobalEvent => Option[GlobalEvent]
+  def eventHandlerWithBoundsApplied(e: GlobalEvent): Option[GlobalEvent]
 
 }
 
@@ -162,8 +162,8 @@ case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: 
   def onEvent(e: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]): Graphic =
     this.copy(eventHandler = e)
 
-  private[gameengine] val eventHandlerWithBoundsApplied: GlobalEvent => Option[GlobalEvent] =
-    (e: GlobalEvent) => eventHandler((bounds, e))
+  def eventHandlerWithBoundsApplied(e: GlobalEvent): Option[GlobalEvent] =
+    eventHandler((bounds, e))
 
 }
 
@@ -265,8 +265,8 @@ case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, anima
   def onEvent(e: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]): Sprite =
     this.copy(eventHandler = e)
 
-  private[gameengine] val eventHandlerWithBoundsApplied: GlobalEvent => Option[GlobalEvent] =
-    (e: GlobalEvent) => eventHandler((bounds, e))
+  def eventHandlerWithBoundsApplied(e: GlobalEvent): Option[GlobalEvent] =
+    eventHandler((bounds, e))
 
 }
 
@@ -362,8 +362,8 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
       case (TextAlignment.Right, b)  => b.copy(position = Point(b.x - b.width, b.y))
     }
 
-  private[gameengine] val eventHandlerWithBoundsApplied: GlobalEvent => Option[GlobalEvent] =
-    (e: GlobalEvent) => eventHandler((realBound, e))
+  def eventHandlerWithBoundsApplied(e: GlobalEvent): Option[GlobalEvent] =
+    eventHandler((realBound, e))
 
 }
 
