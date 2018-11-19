@@ -12,6 +12,6 @@ case class SceneGraphLayer(nodes: List[SceneGraphNode]) extends AnyVal {
 case class SceneGraphLayerFlat(nodes: List[Renderable]) extends AnyVal {
 
   def collectViewEvents(gameEvents: List[GlobalEvent]): List[GlobalEvent] =
-    nodes.flatMap(n => gameEvents.map(e => n.eventHandlerWithBoundsApplied(e))).collect { case Some(s) => s }
+    nodes.flatMap(n => gameEvents.flatMap(e => n.eventHandlerWithBoundsApplied(e).toList))
 
 }
