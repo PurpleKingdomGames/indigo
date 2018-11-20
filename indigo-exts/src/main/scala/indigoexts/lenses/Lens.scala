@@ -14,6 +14,9 @@ trait Lens[A, B] {
   def get(from: A): B
   def set(into: A, value: B): A
 
+  def modify(a: A, f: B => B): A =
+    set(a, f(get(a)))
+
   def >=>[C](next: Lens[B, C]): Lens[A, C] =
     andThen(next)
 

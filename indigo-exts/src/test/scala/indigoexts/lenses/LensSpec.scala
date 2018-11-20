@@ -84,6 +84,20 @@ class LensSpec extends FunSpec with Matchers {
 
   }
 
+  describe("Modifying") {
+
+    it("should be able to modify a value in place") {
+
+      val lens  = lensCD andThen lensD
+      val value = C(D("hello"))
+
+      lensCD.modify(value, d => D(d.s + " there")) shouldEqual C(D("hello there"))
+      lens.modify(value, _ + ", world!") shouldEqual C(D("hello, world!"))
+
+    }
+
+  }
+
   describe("Lens Laws") {
 
     val lens: Lens[B, Int] =
