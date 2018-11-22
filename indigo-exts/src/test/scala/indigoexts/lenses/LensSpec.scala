@@ -122,6 +122,65 @@ class LensSpec extends FunSpec with Matchers {
 
   }
 
+  // What does this even mean? Clearly a load of rubbish.
+  /*
+  There's a lot wrong here.
+  A lens on a collection needs to be recursive
+  Or it needs to be a memberhsip lens
+  Or it needs to be an optional lens
+  Or it needs to be a prism.
+
+  I'm leaving this here for now, not sure if I'll fix it as technically none of this is needed.
+    ..but it is interesting.
+   */
+//  describe("Parametric lenses") {
+//
+//    it("should be able to change the type of a tuple") {
+//
+//      implicit val lensTupleRight: Lens[(Int, String), String] =
+//        Lens(
+//          p => p._2,
+//          (a, b) => (a._1, b)
+//        )
+//      implicit val lensList: Lens[List[Int], Int] =
+//        Lens(
+//          p => p.head,
+//          (a, b) => b :: a.drop(1)
+//        )
+//
+//      val value: (Int, String) = (10, "foo")
+//
+//      withClue("String => String (tuple)") {
+//        val expectedA: (Int, String) = (10, "bar")
+//
+//        val f: String => String                         = _ => "bar"
+//        val g: ((Int, String), String) => (Int, String) = (s, b) => (s._1, b)
+//
+//        Lens.modifyF(value)(f, g) shouldEqual expectedA
+//      }
+//
+//      withClue("String => Boolean (tuple)") {
+//        val expectedB: (Int, Boolean) = (10, true)
+//
+//        val f: String => Boolean                          = _.length < 5
+//        val g: ((Int, String), Boolean) => (Int, Boolean) = (s, b) => (s._1, b)
+//
+//        Lens.modifyF(value)(f, g) shouldEqual expectedB
+//      }
+//
+//      withClue("String => Boolean (list)") {
+//        val l: List[Int] = List(1,2,3,4)
+//        val expectedC: List[Boolean] = List(false, true, false, true)
+//
+//        val f: Int => Boolean                          = _ % 2 == 0
+//        val g: (List[Int], Boolean) => List[Boolean] = (s, b) => (s._1, b)
+//
+//        Lens.modifyF(l)(f, g) shouldEqual expectedC
+//      }
+//    }
+//
+//  }
+
 }
 
 case class A(b: B, c: C)

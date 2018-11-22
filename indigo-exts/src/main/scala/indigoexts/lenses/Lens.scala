@@ -1,15 +1,5 @@
 package indigoexts.lenses
 
-/* TODO
-
-Modify in place
-membership lens
-optional lens
-prisms
-modifyF
-
- */
-
 trait Lens[A, B] {
   def get(from: A): B
   def set(into: A, value: B): A
@@ -46,5 +36,9 @@ object Lens {
 
   def fixed[A, B](default: B): Lens[A, B] =
     Lens(_ => default, (a, _) => a)
+
+  // Left for interest but see tests.
+//  def modifyF[S, T, A, B](s: S)(f: A => B, g: (S, B) => T)(implicit lens: Lens[S, A]): T =
+//    g(s, f(lens.get(s)))
 
 }
