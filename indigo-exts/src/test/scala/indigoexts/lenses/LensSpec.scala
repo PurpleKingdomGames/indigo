@@ -122,6 +122,46 @@ class LensSpec extends FunSpec with Matchers {
 
   }
 
+  describe("Optional lens") {
+    it("should not be able to get a missing value") {
+      pending
+    }
+
+    it("should not be able to set a missing value") {
+      pending
+    }
+
+    it("should be able to get a present value") {
+      pending
+    }
+
+    it("should be able to set a present value") {
+      pending
+    }
+  }
+
+  describe("Membership lens") {
+    it("should not be able to get a missing value") {
+      pending
+    }
+
+    it("should be able to set a missing value") {
+      pending
+    }
+
+    it("should be able to get a present value") {
+      pending
+    }
+
+    it("should be able to set a present value") {
+      pending
+    }
+  }
+
+  describe("Prism") {
+    pending
+  }
+
   // What does this even mean? Clearly a load of rubbish.
   /*
   There's a lot wrong here.
