@@ -13,6 +13,8 @@ object BasicSetup extends IndigoGameBasic[MyStartUpData, MyGameModel, MyViewMode
 
   val animations: Set[Animations] = Set()
 
+  val subSystems: Set[SubSystem] = Set()
+
   def setup(assetCollection: AssetCollection): Either[StartupErrors, MyStartUpData] =
     Right(MyStartUpData())
 

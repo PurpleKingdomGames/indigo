@@ -21,6 +21,8 @@ object ScenesSetup extends IndigoGameWithScenes[MyStartUpData, MyGameModel, MyVi
 
   val animations: Set[Animations] = Set()
 
+  val subSystems: Set[SubSystem] = Set()
+
   def setup(assetCollection: AssetCollection): Either[StartupErrors, MyStartUpData] =
     Right(MyStartUpData("Scene A!", "Scene B?"))
 

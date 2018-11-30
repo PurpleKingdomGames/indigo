@@ -5,6 +5,7 @@ import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
 import indigo.gameengine.scenegraph.datatypes.FontInfo
 import indigo.gameengine.scenegraph.{Animations, SceneUpdateFragment}
 import indigo.gameengine._
+import indigo.gameengine.subsystems.SubSystem
 import indigo.shared.{AssetType, GameConfig}
 
 import scala.concurrent.Future
@@ -28,6 +29,8 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] {
 
   val animations: Set[Animations]
 
+  val subSystems: Set[SubSystem]
+
   def setup(assetCollection: AssetCollection): Either[StartupErrors, StartupData]
 
   def initialModel(startupData: StartupData): Model
@@ -41,13 +44,14 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] {
   def present(gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment
 
   private def indigoGame: GameEngine[StartupData, StartupErrors, Model, ViewModel] =
-    new GameEngine[StartupData, StartupErrors, Model, ViewModel](
+    GameEngine[StartupData, StartupErrors, Model, ViewModel](
       config,
       Future(None),
       assets,
       Future(Set()),
       fonts,
       animations,
+      subSystems,
       (ac: AssetCollection) => Startup.fromEither(setup(ac)),
       initialModel,
       update,

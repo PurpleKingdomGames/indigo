@@ -48,7 +48,6 @@ package object indigoexts {
     type IndigoGameWithScenes[StartupData, Model, ViewModel] = entry.IndigoGameWithScenes[StartupData, Model, ViewModel]
 
     type IndigoGame[StartupData, StartupError, GameModel, ViewModel] = entry.IndigoGameBase.IndigoGame[StartupData, StartupError, GameModel, ViewModel]
-    val IndigoGameBase: gameengine.GameTime.type = gameengine.GameTime
 
     implicit val emptyConfigAsync: Future[Option[GameConfig]] = entry.emptyConfigAsync
 

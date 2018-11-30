@@ -5,6 +5,7 @@ import indigo.gameengine.events.FrameInputEvents
 import indigo.gameengine.scenegraph.Animations
 import indigo.gameengine.scenegraph.datatypes.FontInfo
 import indigo.gameengine._
+import indigo.gameengine.subsystems.SubSystem
 import indigo.shared.{AssetType, GameConfig}
 import indigoexts.scenemanager.{SceneManager, SceneName, ScenesList}
 
@@ -36,6 +37,8 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
 
   val animations: Set[Animations]
 
+  val subSystems: Set[SubSystem]
+
   def setup(assetCollection: AssetCollection): Either[StartupErrors, StartupData]
 
   def initialModel(startupData: StartupData): Model
@@ -59,6 +62,7 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
       Future(Set()),
       fonts,
       animations,
+      subSystems,
       (ac: AssetCollection) => Startup.fromEither(setup(ac)),
       initialModel,
       (gameTime: GameTime, model: Model) => sceneManager.updateModel(gameTime, model),

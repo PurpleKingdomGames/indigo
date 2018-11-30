@@ -31,6 +31,8 @@ object MetricsLogReporter {
       val updateDuration = extractDuration(metrics, UpdateStartMetric.name, UpdateEndMetric.name)
       val callUpdateModelDuration =
         extractDuration(metrics, CallUpdateGameModelStartMetric.name, CallUpdateGameModelEndMetric.name)
+      val callUpdateSubSytemsDuration =
+        extractDuration(metrics, CallUpdateSubSystemsStartMetric.name, CallUpdateSubSystemsEndMetric.name)
       val callUpdateViewModelDuration =
         extractDuration(metrics, CallUpdateViewModelStartMetric.name, CallUpdateViewModelEndMetric.name)
       val callUpdateViewDuration = extractDuration(metrics, CallUpdateViewStartMetric.name, CallUpdateViewEndMetric.name)
@@ -40,14 +42,15 @@ object MetricsLogReporter {
       val audioDuration          = extractDuration(metrics, AudioStartMetric.name, AudioEndMetric.name)
 
       // Percentages
-      val updatePercentage          = asPercentOfFrameDuration(fd, updateDuration)
-      val updateModelPercentage     = asPercentOfFrameDuration(fd, callUpdateModelDuration)
-      val updateViewModelPercentage = asPercentOfFrameDuration(fd, callUpdateViewModelDuration)
-      val callUpdateViewPercentage  = asPercentOfFrameDuration(fd, callUpdateViewDuration)
-      val processViewPercentage     = asPercentOfFrameDuration(fd, processViewDuration)
-      val toDisplayablePercentage   = asPercentOfFrameDuration(fd, toDisplayableDuration)
-      val renderPercentage          = asPercentOfFrameDuration(fd, renderDuration)
-      val audioPercentage           = asPercentOfFrameDuration(fd, audioDuration)
+      val updatePercentage           = asPercentOfFrameDuration(fd, updateDuration)
+      val updateModelPercentage      = asPercentOfFrameDuration(fd, callUpdateModelDuration)
+      val updateSubSystemsPercentage = asPercentOfFrameDuration(fd, callUpdateSubSytemsDuration)
+      val updateViewModelPercentage  = asPercentOfFrameDuration(fd, callUpdateViewModelDuration)
+      val callUpdateViewPercentage   = asPercentOfFrameDuration(fd, callUpdateViewDuration)
+      val processViewPercentage      = asPercentOfFrameDuration(fd, processViewDuration)
+      val toDisplayablePercentage    = asPercentOfFrameDuration(fd, toDisplayableDuration)
+      val renderPercentage           = asPercentOfFrameDuration(fd, renderDuration)
+      val audioPercentage            = asPercentOfFrameDuration(fd, audioDuration)
 
       // Process view
       // Durations
@@ -99,6 +102,7 @@ object MetricsLogReporter {
         fd,
         updateDuration,
         callUpdateModelDuration,
+        callUpdateSubSytemsDuration,
         callUpdateViewDuration,
         processViewDuration,
         toDisplayableDuration,
@@ -106,6 +110,7 @@ object MetricsLogReporter {
         audioDuration,
         updatePercentage,
         updateModelPercentage,
+        updateSubSystemsPercentage,
         updateViewModelPercentage,
         callUpdateViewPercentage,
         processViewPercentage,
@@ -196,6 +201,13 @@ object MetricsLogReporter {
     val meanUpdateModel: String = {
       val a = calcMeanDuration(frames.map(_.general.callUpdateModelDuration)).toString
       val b = calcMeanPercentage(frames.map(_.general.updateModelPercentage)).toString
+
+      s"""$a\t($b%)"""
+    }
+
+    val meanUpdateSubSystems: String = {
+      val a = calcMeanDuration(frames.map(_.general.callUpdateSubSystemsDuration)).toString
+      val b = calcMeanPercentage(frames.map(_.general.updateSubSystemsPercentage)).toString
 
       s"""$a\t($b%)"""
     }
@@ -322,7 +334,7 @@ object MetricsLogReporter {
 
       s"""$a"""
     }
-    val meanNoramlDrawCalls: String = {
+    val meanNormalDrawCalls: String = {
       val a = calcMeanCount(frames.map(_.renderer.normalDrawCalls)).toString
 
       s"""$a"""
@@ -366,6 +378,7 @@ object MetricsLogReporter {
          |---------------
          |Mean frame length:         $meanFrameDuration
          |Mean model update:         $meanUpdate
+         |Mean subsystems update:    $meanUpdateSubSystems
          |Mean view model update:    $meanViewModelUpdate
          |Mean call view update:     $meanCallViewUpdate
          |Mean process view:         $meanProcess
@@ -389,7 +402,7 @@ object MetricsLogReporter {
          |Mean render to canvas:     $meanRenderToCanvasLayer
          |
          |Mean lighting draw calls:  $meanLightingDrawCalls
-         |Mean normal draw calls:    $meanNoramlDrawCalls
+         |Mean normal draw calls:    $meanNormalDrawCalls
          |Mean to canvas draw calls: $meanToCanvasDrawCalls
          |
          |Mean lighting draw time:   $meanLightingDrawCallTime
@@ -407,6 +420,7 @@ case class FrameStats(general: FrameStatsGeneral, processView: FrameStatsProcess
 case class FrameStatsGeneral(frameDuration: Long,
                              updateDuration: Option[Long],
                              callUpdateModelDuration: Option[Long],
+                             callUpdateSubSystemsDuration: Option[Long],
                              callUpdateViewDuration: Option[Long],
                              processViewDuration: Option[Long],
                              toDisplayableDuration: Option[Long],
@@ -414,6 +428,7 @@ case class FrameStatsGeneral(frameDuration: Long,
                              audioDuration: Option[Long],
                              updatePercentage: Option[Double],
                              updateModelPercentage: Option[Double],
+                             updateSubSystemsPercentage: Option[Double],
                              updateViewModelPercentage: Option[Double],
                              callUpdateViewPercentage: Option[Double],
                              processViewPercentage: Option[Double],

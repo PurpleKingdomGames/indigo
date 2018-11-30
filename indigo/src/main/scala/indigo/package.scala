@@ -21,6 +21,8 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   type GameTime = gameengine.GameTime
   val GameTime: gameengine.GameTime.type = gameengine.GameTime
 
+  type SubSystem = gameengine.subsystems.SubSystem
+
   type AssetCollection = gameengine.assets.AssetCollection
   val AssetCollection: gameengine.assets.AssetCollection.type = gameengine.assets.AssetCollection
 

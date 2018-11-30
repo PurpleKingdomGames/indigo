@@ -21,6 +21,7 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, MyViewModel] {
 
   val fonts: Set[FontInfo]        = Set(MyView.fontInfo)
   val animations: Set[Animations] = Set()
+  val subSystems: Set[SubSystem]  = Set()
 
   def setup(assetCollection: AssetCollection): Either[StartupErrors, MyStartupData] = {
     val dude = for {

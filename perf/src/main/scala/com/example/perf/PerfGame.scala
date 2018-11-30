@@ -66,7 +66,8 @@ object PerfGame {
       .withConfig(config)
       .withAssets(assets)
       .withFonts(Set(PerfView.fontInfo))
-      .withAnimations(Set())
+      .noAnimations
+      .noSubSystems
       .startUpGameWith(initialise)
       .usingInitialModel(initialModel)
       .updateModelUsing(updateModel)

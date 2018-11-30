@@ -13,6 +13,8 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val animationsKey: AnimationsKey = AnimationsKey("anims")
 
+  val subSystems: Set[SubSystem] = Set()
+
   val animations: Set[Animations] = Set(
     Animations(
       animationsKey,

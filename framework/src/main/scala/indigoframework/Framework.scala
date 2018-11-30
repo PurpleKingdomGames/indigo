@@ -49,8 +49,9 @@ object Framework {
     Indigo.game
       .withConfig(config)
       .withAssets(assets)
-      .withFonts(Set())
-      .withAnimations(Set())
+      .noFonts
+      .noAnimations
+      .noSubSystems
       .startUpGameWith(initialise)
       .usingInitialModel(initialModel)
       .updateModelUsing(updateModel)
@@ -65,8 +66,9 @@ object Framework {
     Indigo.game
       .withConfig(config)
       .withAssets(assets)
-      .withFonts(Set())
-      .withAnimations(Set())
+      .noFonts
+      .noAnimations
+      .noSubSystems
       .startUpGameWith(initialise)
       .usingInitialModel(initialModel)
       .updateModelUsing(updateModel)

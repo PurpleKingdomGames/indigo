@@ -5,6 +5,7 @@ import indigo.gameengine.audio.AudioPlayer
 import indigo.gameengine.events._
 import indigo.gameengine.scenegraph._
 import indigo.gameengine.scenegraph.datatypes.FontInfo
+import indigo.gameengine.subsystems.{SubSystem, SubSystemsRegister}
 import indigo.renderer._
 import indigo.runtime._
 import indigo.runtime.metrics._
@@ -23,13 +24,14 @@ object GameTime {
   def is(running: Double, delta: Double, frameDuration: Double): GameTime = GameTime(running, delta, frameDuration)
 }
 
-class GameEngine[StartupData, StartupError, GameModel, ViewModel](
+case class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     config: GameConfig,
     configAsync: Future[Option[GameConfig]],
     assets: Set[AssetType],
     assetsAsync: Future[Set[AssetType]],
     fonts: Set[FontInfo],
     animations: Set[Animations],
+    subSystems: Set[SubSystem],
     initialise: AssetCollection => Startup[StartupError, StartupData],
     initialModel: StartupData => GameModel,
     updateModel: (GameTime, GameModel) => GlobalEvent => UpdatedModel[GameModel],
@@ -44,7 +46,42 @@ class GameEngine[StartupData, StartupError, GameModel, ViewModel](
   def registerFont(fontInfo: FontInfo): Unit =
     FontRegister.register(fontInfo)
 
-  def start(): Unit = {
+  def start(): Unit =
+    GameEngine.start(
+      config,
+      configAsync,
+      assets,
+      assetsAsync,
+      fonts,
+      animations,
+      subSystems,
+      initialise,
+      initialModel,
+      updateModel,
+      initialViewModel,
+      updateViewModel,
+      updateView
+    )
+
+}
+
+object GameEngine {
+
+  def start[StartupData, StartupError, GameModel, ViewModel](
+      config: GameConfig,
+      configAsync: Future[Option[GameConfig]],
+      assets: Set[AssetType],
+      assetsAsync: Future[Set[AssetType]],
+      fonts: Set[FontInfo],
+      animations: Set[Animations],
+      subSystems: Set[SubSystem],
+      initialise: AssetCollection => Startup[StartupError, StartupData],
+      initialModel: StartupData => GameModel,
+      updateModel: (GameTime, GameModel) => GlobalEvent => UpdatedModel[GameModel],
+      initialViewModel: StartupData => GameModel => ViewModel,
+      updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => UpdatedViewModel[ViewModel],
+      updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
+  ): Unit = {
 
     IndigoLogger.info("Starting Indigo")
 
@@ -73,6 +110,9 @@ class GameEngine[StartupData, StartupError, GameModel, ViewModel](
         implicit val globalSignals: GlobalSignals =
           GlobalSignals.default
 
+        val subSystemsRegister: SubSystemsRegister =
+          SubSystemsRegister.add(SubSystemsRegister.empty, subSystems.toList)
+
         val x: IIO[Double => Int] =
           for {
             _                   <- GameEngine.registerAnimations(animations)
@@ -89,6 +129,7 @@ class GameEngine[StartupData, StartupError, GameModel, ViewModel](
               assetMapping,
               renderer,
               audioPlayer,
+              subSystemsRegister,
               initialModel(startUpSuccessData),
               updateModel,
               initialViewModel(startUpSuccessData),
@@ -114,12 +155,7 @@ class GameEngine[StartupData, StartupError, GameModel, ViewModel](
       }
 
     }
-
   }
-
-}
-
-object GameEngine {
 
   def registerAnimations(animations: Set[Animations]): IIO[Unit] =
     IIO.delay(animations.foreach(AnimationsRegister.register))
@@ -205,6 +241,7 @@ object GameEngine {
       assetMapping: AssetMapping,
       renderer: IRenderer,
       audioPlayer: AudioPlayer,
+      subSystemsRegister: SubSystemsRegister,
       initialModel: GameModel,
       updateModel: (GameTime, GameModel) => GlobalEvent => UpdatedModel[GameModel],
       initialViewModel: GameModel => ViewModel,
@@ -212,7 +249,7 @@ object GameEngine {
       updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
   )(implicit metrics: Metrics, globalEventStream: GlobalEventStream, globalSignals: GlobalSignals): IIO[GameLoop[GameModel, ViewModel]] =
     IIO.delay(
-      new GameLoop[GameModel, ViewModel](gameConfig, assetMapping, renderer, audioPlayer, initialModel, updateModel, initialViewModel(initialModel), updateViewModel, updateView)
+      new GameLoop[GameModel, ViewModel](gameConfig, assetMapping, renderer, audioPlayer, subSystemsRegister, initialModel, updateModel, initialViewModel(initialModel), updateViewModel, updateView)
     )
 
 }

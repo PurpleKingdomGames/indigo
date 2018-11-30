@@ -3,6 +3,7 @@ package indigoexts.entry
 import indigo.gameengine.assets.AssetCollection
 import indigo.gameengine.scenegraph.datatypes.FontInfo
 import indigo.gameengine.scenegraph.{Animations, SceneUpdateFragment}
+import indigo.gameengine.subsystems.SubSystem
 import indigo.gameengine.{events, _}
 import indigo.shared.{AssetType, GameConfig}
 
@@ -23,6 +24,7 @@ object IndigoGameBase {
       assetsAsync: Future[Set[AssetType]],
       fonts: Set[FontInfo],
       animations: Set[Animations],
+      subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
       updateModel: (GameTime, GameModel) => events.GlobalEvent => UpdatedModel[GameModel],
@@ -32,18 +34,19 @@ object IndigoGameBase {
   ) {
 
     private val gameEngine: GameEngine[StartupData, StartupError, GameModel, ViewModel] =
-      new GameEngine[StartupData, StartupError, GameModel, ViewModel](config,
-                                                                      configAsync,
-                                                                      assets,
-                                                                      assetsAsync,
-                                                                      fonts,
-                                                                      animations,
-                                                                      initialise,
-                                                                      initialModel,
-                                                                      updateModel,
-                                                                      initialViewModel,
-                                                                      updateViewModel,
-                                                                      updateView)
+      GameEngine[StartupData, StartupError, GameModel, ViewModel](config,
+                                                                  configAsync,
+                                                                  assets,
+                                                                  assetsAsync,
+                                                                  fonts,
+                                                                  animations,
+                                                                  subSystems,
+                                                                  initialise,
+                                                                  initialModel,
+                                                                  updateModel,
+                                                                  initialViewModel,
+                                                                  updateViewModel,
+                                                                  updateView)
 
     def registerAnimations(animations: Animations): Unit =
       gameEngine.registerAnimations(animations)
@@ -62,6 +65,7 @@ object IndigoGameBase {
       assetsAsync: Future[Set[AssetType]],
       fonts: Set[FontInfo],
       animations: Set[Animations],
+      subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
       updateModel: (GameTime, GameModel) => events.GlobalEvent => UpdatedModel[GameModel],
@@ -71,7 +75,7 @@ object IndigoGameBase {
     def presentUsing(
         updateView: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => SceneUpdateFragment
     ): IndigoGame[StartupData, StartupError, GameModel, ViewModel] =
-      new IndigoGame(config, configAsync, assets, assetsAsync, fonts, animations, initialise, initialModel, updateModel, initialViewModel, updateViewModel, updateView)
+      new IndigoGame(config, configAsync, assets, assetsAsync, fonts, animations, subSystems, initialise, initialModel, updateModel, initialViewModel, updateViewModel, updateView)
   }
 
   class IndigoGameWithInitialViewModel[StartupData, StartupError, GameModel, ViewModel](
@@ -81,6 +85,7 @@ object IndigoGameBase {
       assetsAsync: Future[Set[AssetType]],
       fonts: Set[FontInfo],
       animations: Set[Animations],
+      subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
       updateModel: (GameTime, GameModel) => events.GlobalEvent => UpdatedModel[GameModel],
@@ -89,7 +94,7 @@ object IndigoGameBase {
     def updateViewModelUsing(
         updateViewModel: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => UpdatedViewModel[ViewModel]
     ): IndigoGameWithViewModelUpdater[StartupData, StartupError, GameModel, ViewModel] =
-      new IndigoGameWithViewModelUpdater(config, configAsync, assets, assetsAsync, fonts, animations, initialise, initialModel, updateModel, initialViewModel, updateViewModel)
+      new IndigoGameWithViewModelUpdater(config, configAsync, assets, assetsAsync, fonts, animations, subSystems, initialise, initialModel, updateModel, initialViewModel, updateViewModel)
   }
 
   class IndigoGameWithModelUpdate[StartupData, StartupError, GameModel](
@@ -99,6 +104,7 @@ object IndigoGameBase {
       assetsAsync: Future[Set[AssetType]],
       fonts: Set[FontInfo],
       animations: Set[Animations],
+      subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
       updateModel: (GameTime, GameModel) => events.GlobalEvent => UpdatedModel[GameModel]
@@ -113,6 +119,7 @@ object IndigoGameBase {
         assetsAsync,
         fonts,
         animations,
+        subSystems,
         initialise,
         initialModel,
         updateModel,
@@ -127,13 +134,14 @@ object IndigoGameBase {
       assetsAsync: Future[Set[AssetType]],
       fonts: Set[FontInfo],
       animations: Set[Animations],
+      subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel
   ) {
     def updateModelUsing(
         modelUpdater: (GameTime, GameModel) => events.GlobalEvent => UpdatedModel[GameModel]
     ): IndigoGameWithModelUpdate[StartupData, StartupError, GameModel] =
-      new IndigoGameWithModelUpdate(config, configAsync, assets, assetsAsync, fonts, animations, initialise, initialModel, modelUpdater)
+      new IndigoGameWithModelUpdate(config, configAsync, assets, assetsAsync, fonts, animations, subSystems, initialise, initialModel, modelUpdater)
   }
 
   class InitialisedIndigoGame[StartupData, StartupError](config: GameConfig,
@@ -142,9 +150,23 @@ object IndigoGameBase {
                                                          assetsAsync: Future[Set[AssetType]],
                                                          fonts: Set[FontInfo],
                                                          animations: Set[Animations],
+                                                         subSystems: Set[SubSystem],
                                                          initialise: AssetCollection => Startup[StartupError, StartupData]) {
     def usingInitialModel[GameModel](model: StartupData => GameModel): IndigoGameWithModel[StartupData, StartupError, GameModel] =
-      new IndigoGameWithModel(config, configAsync, assets, assetsAsync, fonts, animations, initialise, model)
+      new IndigoGameWithModel(config, configAsync, assets, assetsAsync, fonts, animations, subSystems, initialise, model)
+  }
+
+  class IndigoGameWithSubSystems(config: GameConfig,
+                                 configAsync: Future[Option[GameConfig]],
+                                 assets: Set[AssetType],
+                                 assetsAsync: Future[Set[AssetType]],
+                                 fonts: Set[FontInfo],
+                                 animations: Set[Animations],
+                                 subSystems: Set[SubSystem]) {
+    def startUpGameWith[StartupData, StartupError](
+        initializer: AssetCollection => Startup[StartupError, StartupData]
+    ): InitialisedIndigoGame[StartupData, StartupError] =
+      new InitialisedIndigoGame(config, configAsync, assets, assetsAsync, fonts, animations, subSystems, initializer)
   }
 
   class IndigoGameWithAnimations(config: GameConfig,
@@ -153,20 +175,24 @@ object IndigoGameBase {
                                  assetsAsync: Future[Set[AssetType]],
                                  fonts: Set[FontInfo],
                                  animations: Set[Animations]) {
-    def startUpGameWith[StartupData, StartupError](
-        initializer: AssetCollection => Startup[StartupError, StartupData]
-    ): InitialisedIndigoGame[StartupData, StartupError] =
-      new InitialisedIndigoGame(config, configAsync, assets, assetsAsync, fonts, animations, initializer)
+    def withSubSystems(subSystems: Set[SubSystem]): IndigoGameWithSubSystems =
+      new IndigoGameWithSubSystems(config, configAsync, assets, assetsAsync, fonts, animations, subSystems)
+    def noSubSystems: IndigoGameWithSubSystems =
+      new IndigoGameWithSubSystems(config, configAsync, assets, assetsAsync, fonts, animations, Set())
   }
 
   class IndigoGameWithFonts(config: GameConfig, configAsync: Future[Option[GameConfig]], assets: Set[AssetType], assetsAsync: Future[Set[AssetType]], fonts: Set[FontInfo]) {
     def withAnimations(animations: Set[Animations]): IndigoGameWithAnimations =
       new IndigoGameWithAnimations(config, configAsync, assets, assetsAsync, fonts, animations)
+    def noAnimations: IndigoGameWithAnimations =
+      new IndigoGameWithAnimations(config, configAsync, assets, assetsAsync, fonts, Set())
   }
 
   class IndigoGameWithAssets(config: GameConfig, configAsync: Future[Option[GameConfig]], assets: Set[AssetType], assetsAsync: Future[Set[AssetType]]) {
     def withFonts(fonts: Set[FontInfo]): IndigoGameWithFonts =
       new IndigoGameWithFonts(config, configAsync, assets, assetsAsync, fonts)
+    def noFonts: IndigoGameWithFonts =
+      new IndigoGameWithFonts(config, configAsync, assets, assetsAsync, Set())
   }
 
   class ConfiguredIndigoGame(config: GameConfig, configAsync: Future[Option[GameConfig]]) {
