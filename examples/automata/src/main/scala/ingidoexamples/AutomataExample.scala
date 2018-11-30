@@ -37,8 +37,8 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
             // Note: There is a shader bug that makes the White part of text not respect alpha correctly.
             originalAlpha * (seed.timeAliveDelta / seed.lifeSpan)
           },
-          AutomataModifier.ChangeTint { (_, _, _) =>
-            Tint(1, 0, 0)
+          AutomataModifier.ChangeTint { (_, seed, _) =>
+            Tint(1 * (seed.timeAliveDelta / seed.lifeSpan), 0, 0)
           }
         )
       )
