@@ -1,6 +1,5 @@
 # Technical debt / Things I think should be different
 
-- Automata should be a subsystem
 - AudioPlayer should be a subsystem
 - Networking should be subsystem
 
