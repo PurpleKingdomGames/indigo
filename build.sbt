@@ -66,9 +66,8 @@ lazy val commonSettings = Seq(
     Wart.Equals,
     Wart.Recursion,
     Wart.LeakingSealed
-  )//,
-//  addCompilerPlugin(MetalsPlugin.semanticdbScalac),
-//  scalacOptions += "-Yrangepos"
+  ),
+  scalacOptions += "-Yrangepos"
 )
 
 // Examples
@@ -85,7 +84,19 @@ lazy val basicSetup =
       scalaJSUseMainModuleInitializer := true
     )
 
-// Examples
+lazy val subSystems =
+  (project in file("examples/subsystems"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoExts)
+    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .settings(
+      name := "subsystems",
+      showCursor := true,
+      title := "SubSystems Example",
+      gameAssetsDirectory := "assets",
+      scalaJSUseMainModuleInitializer := true
+    )
+
 lazy val scenesSetup =
   (project in file("examples/scenes-setup"))
     .settings(commonSettings: _*)
@@ -351,19 +362,19 @@ lazy val indigoProject =
     .aggregate(sandbox)
 //    .aggregate(perf, button) //compile tests
 //    .aggregate(sandbox, framework, server) //games
-//    .aggregate(basicSetup, fullSetup, scenesSetup, http, text, automata, graphic, sprite, websocket, inputfield, audio, group) //examples
+//    .aggregate(basicSetup, subSystems, fullSetup, scenesSetup, http, text, automata, graphic, sprite, websocket, inputfield, audio, group) //examples
 
 
 addCommandAlias("buildIndigo", ";shared/compile;indigo/compile;indigoExts/compile")
 addCommandAlias("buildDev", ";sandbox/compile;perf/compile;framework/compile;server/compile")
-addCommandAlias("buildExamples1", ";basicSetup/compile;scenesSetup/compile;fullSetup/compile;button/compile;http/compile;text/compile;automata/compile")
+addCommandAlias("buildExamples1", ";basicSetup/compile;subSystems/compile;scenesSetup/compile;fullSetup/compile;button/compile;http/compile;text/compile;automata/compile")
 addCommandAlias("buildExamples2", ";graphic/compile;sprite/compile;websocket/compile;inputfield/compile;audio/compile;group/compile")
 addCommandAlias("buildAllNoClean", ";buildIndigo;buildDev;buildExamples1;buildExamples2")
 addCommandAlias("buildAll", ";clean;buildAllNoClean")
 
 addCommandAlias("testIndigo", ";shared/test;indigo/test;indigoExts/test")
 addCommandAlias("testDev", ";sandbox/test;perf/test;framework/test;server/test")
-addCommandAlias("testExamples1", ";basicSetup/test;scenesSetup/test;fullSetup/test;button/test;http/test;text/test;automata/test")
+addCommandAlias("testExamples1", ";basicSetup/test;subSystems/test;scenesSetup/test;fullSetup/test;button/test;http/test;text/test;automata/test")
 addCommandAlias("testExamples2", ";graphic/test;sprite/test;websocket/test;inputfield/test;audio/test;group/test")
 addCommandAlias("testAllNoClean", ";testIndigo;testDev;testExamples1;testExamples2")
 addCommandAlias("testAll", ";clean;testAllNoClean")
