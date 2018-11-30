@@ -9,33 +9,37 @@ class SubSystemSpec extends FunSpec {
   describe("A SubSystem (PointsTracker example)") {
 
     it("should render the initial state correctly") {
-      assert(PointsTrackerExample(1230).render(GameTime.zero(10)).gameLayer.head.asInstanceOf[Text].text == "1230")
+      val expected = PointsTrackerExample(1230).render(GameTime.zero(10)).gameLayer.head.asInstanceOf[Text].text
+
+      assert(expected == "1230")
     }
 
     it("should respond to an Add event") {
-      assert(
+      val expected =
         PointsTrackerExample(0)
           .update(GameTime.zero(10))(PointsTrackerEvent.Add(10))
-          .model
+          .subSystem
           .render(GameTime.zero(10))
           .gameLayer
           .head
           .asInstanceOf[Text]
-          .text == "10"
-      )
+          .text
+
+      assert(expected == "10")
     }
 
     it("should respond to a LoseALl event and emit an event") {
-      assert(
+      val expected =
         PointsTrackerExample(1000)
           .update(GameTime.zero(10))(PointsTrackerEvent.LoseAll)
-          .model
+          .subSystem
           .render(GameTime.zero(10))
           .gameLayer
           .head
           .asInstanceOf[Text]
-          .text == "0"
-      )
+          .text
+
+      assert(expected == "0")
     }
 
   }

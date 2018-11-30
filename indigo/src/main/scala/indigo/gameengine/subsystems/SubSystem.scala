@@ -4,7 +4,9 @@ import indigo.gameengine.GameTime
 import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph.SceneUpdateFragment
 
-trait SubSystem[Model, EventType] {
+trait SubSystem {
+  type Model
+  type EventType
 
   val eventFilter: GlobalEvent => Option[EventType]
 
@@ -12,16 +14,17 @@ trait SubSystem[Model, EventType] {
 
   def render(gameTime: GameTime): SceneUpdateFragment
 
-  case class UpdatedSubSystem(model: Model, events: List[GlobalEvent]) {
-    def addGlobalEvents(globalEvents: GlobalEvent*): UpdatedSubSystem =
-      this.copy(events = events ++ globalEvents.toList)
-  }
-  object UpdatedSubSystem {
-    implicit def modelToUpdatedSubSystem(model: Model): UpdatedSubSystem =
-      apply(model)
+  def report: String
+}
 
-    def apply(model: Model): UpdatedSubSystem =
-      UpdatedSubSystem(model, Nil)
-  }
+case class UpdatedSubSystem(subSystem: SubSystem, events: List[GlobalEvent]) {
+  def addGlobalEvents(globalEvents: GlobalEvent*): UpdatedSubSystem =
+    this.copy(events = events ++ globalEvents.toList)
+}
+object UpdatedSubSystem {
+  implicit def subSystemToUpdatedSubSystem(subSystem: SubSystem): UpdatedSubSystem =
+    apply(subSystem)
 
+  def apply(subSystem: SubSystem): UpdatedSubSystem =
+    UpdatedSubSystem(subSystem, Nil)
 }

@@ -5,7 +5,10 @@ import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph.{SceneUpdateFragment, Text}
 import indigo.gameengine.scenegraph.datatypes.FontKey
 
-case class PointsTrackerExample(points: Int) extends SubSystem[PointsTrackerExample, PointsTrackerEvent] {
+case class PointsTrackerExample(points: Int) extends SubSystem {
+  type Model     = PointsTrackerExample
+  type EventType = PointsTrackerEvent
+
   val eventFilter: GlobalEvent => Option[PointsTrackerEvent] = {
     case e: PointsTrackerEvent => Option(e)
     case _                     => None
@@ -23,6 +26,9 @@ case class PointsTrackerExample(points: Int) extends SubSystem[PointsTrackerExam
   def render(gameTime: GameTime): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(Text(points.toString, 0, 0, 1, FontKey("")))
+
+  def report: String =
+    s"""Points: $points"""
 }
 
 sealed trait PointsTrackerEvent extends GlobalEvent with Product with Serializable
