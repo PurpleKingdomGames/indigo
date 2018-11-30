@@ -51,7 +51,27 @@ object AutomataFarm {
   def update(farm: AutomataFarm, gameTime: GameTime): AutomataEvent => UpdatedSubSystem = {
     case Spawn(key, pt) =>
       farm.copy(
-        paddock = farm.paddock ++ farm.inventory.get(key).map(k => SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running, k.lifespan.millis, 0, Random.nextInt()))).toList
+        paddock =
+          farm.paddock ++
+            farm.inventory
+              .get(key)
+              .map { k =>
+                SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running, k.lifespan.millis, 0, Random.nextInt()))
+              }
+              .toList
+      )
+
+    case ModifyAndSpawn(key, pt, f) =>
+      farm.copy(
+        paddock =
+          farm.paddock ++
+            farm.inventory
+              .get(key)
+              .map(f orElse { case a => a })
+              .map { k =>
+                SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running, k.lifespan.millis, 0, Random.nextInt()))
+              }
+              .toList
       )
 
     case KillAllInPool(key) =>

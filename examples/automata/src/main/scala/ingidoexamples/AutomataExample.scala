@@ -26,7 +26,7 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
     AutomataFarm.empty.add(
       TextAutomaton(
         AutomataPoolKey("points"),
-        Text("1000", 0, 0, 1, fontKey).alignCenter,
+        Text("0", 0, 0, 1, fontKey).alignCenter,
         AutomataLifeSpan(1000),
         List(
           AutomataModifier.MoveTo((_, seed, _) => {
@@ -51,13 +51,22 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(
       button = Button(ButtonState.Up).withUpAction { () =>
-        Option(AutomataEvent.Spawn(AutomataPoolKey("points"), generateLocation()))
+        Option(
+          AutomataEvent.ModifyAndSpawn(
+            AutomataPoolKey("points"),
+            generateLocation(),
+            { case t: TextAutomaton => t.changeTextTo(generatePoints()) }
+          )
+        )
       },
       count = 0
     )
 
   def generateLocation(): Point =
     Point(Random.nextInt(config.viewport.width - 50) + 25, Random.nextInt(config.viewport.height - 50) + 25)
+
+  def generatePoints(): String =
+    (Random.nextInt(10) * 100).toString + "!!"
 
   def update(gameTime: GameTime, model: MyGameModel): GlobalEvent => UpdatedModel[MyGameModel] = {
     case e: ButtonEvent =>
