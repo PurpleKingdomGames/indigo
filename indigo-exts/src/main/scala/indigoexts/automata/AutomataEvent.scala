@@ -9,4 +9,5 @@ object AutomataEvent {
   case class KillAllInPool(key: AutomataPoolKey)    extends AutomataEvent
   case class KillByKey(key: BindingKey)             extends AutomataEvent
   case object KillAll                               extends AutomataEvent
+  case object Cull                                  extends AutomataEvent
 }

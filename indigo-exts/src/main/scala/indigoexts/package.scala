@@ -15,8 +15,10 @@ package object indigoexts {
     type AutomataEvent = indigoexts.automata.AutomataEvent
     val AutomataEvent: indigoexts.automata.AutomataEvent.type = indigoexts.automata.AutomataEvent
 
+    type AutomataModifier = indigoexts.automata.AutomataModifier
     val AutomataModifier: indigoexts.automata.AutomataModifier.type = indigoexts.automata.AutomataModifier
 
+    type AutomataFarm = indigoexts.automata.AutomataFarm
     val AutomataFarm: indigoexts.automata.AutomataFarm.type = indigoexts.automata.AutomataFarm
 
     type SpawnedAutomaton = indigoexts.automata.SpawnedAutomaton

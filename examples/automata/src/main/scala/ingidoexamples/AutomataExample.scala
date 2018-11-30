@@ -7,8 +7,6 @@ import indigoexts.automaton._
 
 import scala.util.Random
 
-//TODO: Random value!
-
 object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   import FontStuff._
@@ -24,11 +22,8 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   val animations: Set[Animations] = Set()
 
-  val subSystems: Set[SubSystem] = Set()
-
-  def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] = {
-
-    AutomataFarm.register(
+  val subSystems: Set[SubSystem] = Set(
+    AutomataFarm.empty.add(
       TextAutomaton(
         AutomataPoolKey("points"),
         Text("1000", 0, 0, 1, fontKey).alignCenter,
@@ -48,9 +43,10 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
         )
       )
     )
+  )
 
+  def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] =
     Right(())
-  }
 
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(
@@ -69,9 +65,8 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
         button = model.button.update(e)
       )
 
-    case e: AutomataEvent =>
-      AutomataFarm.update(gameTime, e)
-      model
+    case FrameTick =>
+      UpdatedModel(model).addGlobalEvents(AutomataEvent.Cull)
 
     case _ =>
       model
@@ -94,8 +89,7 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
           down = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 32, 16, 16)
         )
       )
-      .toSceneUpdateFragment |+| AutomataFarm
-      .renderToGameLayer(gameTime)
+      .toSceneUpdateFragment
       .addGameLayerNodes(Text("click to win!", 30, 10, 1, fontKey))
 
 }

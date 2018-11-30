@@ -2,12 +2,12 @@ package indigoexts.automata
 
 import indigo.gameengine.GameTime
 import indigo.gameengine.events.GlobalEvent
-import indigo.gameengine.scenegraph.datatypes.Point
 import indigo.gameengine.scenegraph._
-import indigoexts.automata.AutomataEvent.{KillAll, KillAllInPool, KillByKey, Spawn}
+import indigo.gameengine.scenegraph.datatypes.Point
+import indigo.gameengine.subsystems.{SubSystem, UpdatedSubSystem}
+import indigoexts.automata.AutomataEvent._
 import indigoexts.automata.AutomataModifier._
 
-import scala.collection.mutable
 import scala.util.Random
 
 /*
@@ -17,75 +17,75 @@ They have a thing to render
 They have procedural modifiers based on time and previous value
 They can emit events
  */
+case class AutomataFarm(inventory: Map[AutomataPoolKey, Automaton], paddock: List[SpawnedAutomaton]) extends SubSystem {
+  type Model     = AutomataFarm
+  type EventType = AutomataEvent
 
-/*
-This is full of mutable nasty, but I can't think of a less awful way of doing it
-at the moment. It has an odd lifecycle. If we integrated it as a thing into the
-full engine I could clean it up, as a bolt on... I'm awaiting inspiration.
- */
+  val eventFilter: GlobalEvent => Option[AutomataEvent] = {
+    case e: AutomataEvent =>
+      Some(e)
+
+    case _ =>
+      None
+  }
+
+  def update(gameTime: GameTime): AutomataEvent => UpdatedSubSystem =
+    AutomataFarm.update(this, gameTime)
+
+  def render(gameTime: GameTime): SceneUpdateFragment =
+    AutomataFarm.render(this, gameTime)
+
+  def report: String =
+    "Automata farm"
+
+  def add(automaton: Automaton): AutomataFarm =
+    this.copy(
+      inventory = inventory + (automaton.key -> automaton)
+    )
+}
 object AutomataFarm {
 
-  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
-  private val inventory: mutable.HashMap[AutomataPoolKey, Automaton] = mutable.HashMap()
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var paddock: List[SpawnedAutomaton] = Nil
+  def empty: AutomataFarm =
+    AutomataFarm(Map.empty[AutomataPoolKey, Automaton], Nil)
 
-  def register(automaton: Automaton): Unit = {
-    inventory.put(automaton.key, automaton)
-    ()
-  }
+  def update(farm: AutomataFarm, gameTime: GameTime): AutomataEvent => UpdatedSubSystem = {
+    case Spawn(key, pt) =>
+      farm.copy(
+        paddock = farm.paddock ++ farm.inventory.get(key).map(k => SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running, k.lifespan.millis, 0, Random.nextInt()))).toList
+      )
 
-  def update(gameTime: GameTime, automataEvent: AutomataEvent): Unit =
-    automataEvent match {
-      case Spawn(key, pt) =>
-        inventory.get(key).foreach { k =>
-          paddock = paddock :+ SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running, k.lifespan.millis, 0, Random.nextInt()))
-        }
+    case KillAllInPool(key) =>
+      farm.copy(
+        paddock = farm.paddock.filterNot(p => p.automata.key === key)
+      )
 
-      case KillAllInPool(key) =>
-        paddock = paddock.filterNot(p => p.automata.key === key)
-        ()
+    case KillByKey(bindingKey) =>
+      farm.copy(
+        paddock = farm.paddock.filterNot(p => p.automata.bindingKey === bindingKey)
+      )
 
-      case KillByKey(bindingKey) =>
-        paddock = paddock.filterNot(p => p.automata.bindingKey === bindingKey)
-        ()
-
-      case KillAll =>
+    case KillAll =>
+      farm.copy(
         paddock = Nil
-        ()
-    }
+      )
 
-  def renderToGameLayer(gameTime: GameTime): SceneUpdateFragment = {
+    case Cull =>
+      farm.copy(
+        paddock = farm.paddock.filter(_.isAlive(gameTime.running)).map(_.updateDelta(gameTime.delta))
+      )
+  }
+
+  def render(farm: AutomataFarm, gameTime: GameTime): SceneUpdateFragment = {
     val f =
       (p: List[(SceneGraphNode, List[GlobalEvent])]) =>
         p.map(q => SceneUpdateFragment.empty.addGameLayerNodes(q._1).addViewEvents(q._2))
           .foldLeft(SceneUpdateFragment.empty)(_ |+| _)
 
-    f(render(gameTime))
+    f(renderNoLayer(farm, gameTime))
   }
 
-  def renderToLightingLayer(gameTime: GameTime): SceneUpdateFragment = {
-    val f =
-      (p: List[(SceneGraphNode, List[GlobalEvent])]) =>
-        p.map(q => SceneUpdateFragment.empty.addGameLayerNodes(q._1).addViewEvents(q._2))
-          .foldLeft(SceneUpdateFragment.empty)(_ |+| _)
-
-    f(render(gameTime))
-  }
-
-  def renderToUiLayer(gameTime: GameTime): SceneUpdateFragment = {
-    val f =
-      (p: List[(SceneGraphNode, List[GlobalEvent])]) =>
-        p.map(q => SceneUpdateFragment.empty.addGameLayerNodes(q._1).addViewEvents(q._2))
-          .foldLeft(SceneUpdateFragment.empty)(_ |+| _)
-
-    f(render(gameTime))
-  }
-
-  private def render(gameTime: GameTime): List[(SceneGraphNode, List[GlobalEvent])] = {
-    paddock = paddock.filter(_.isAlive(gameTime.running)).map(_.updateDelta(gameTime.delta))
-
-    paddock.map { sa =>
+  def renderNoLayer(farm: AutomataFarm, gameTime: GameTime): List[(SceneGraphNode, List[GlobalEvent])] =
+    farm.paddock.map { sa =>
       sa.automata match {
         case GraphicAutomaton(_, graphic, _, modifiers) =>
           modifiers.foldLeft[(Graphic, List[GlobalEvent])]((graphic, Nil)) { (p, m) =>
@@ -144,7 +144,6 @@ object AutomataFarm {
           }
       }
     }
-  }
 
 }
 
