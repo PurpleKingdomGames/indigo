@@ -2,7 +2,7 @@ package com.example.perf
 
 import indigo._
 import indigoexts.entrypoint._
-import indigoexts.formats.Aseprite
+import indigoexts.formats._
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
@@ -30,23 +30,27 @@ object PerfGame {
     PerfAssets.assets
 
   def initialise(assetCollection: AssetCollection): Startup[MyErrorReport, MyStartupData] = {
-    val dude: Option[Dude] = for {
+    def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[MyStartupData] =
+      Startup
+        .Success(
+          MyStartupData(
+            Dude(
+              aseprite,
+              spriteAndAnimations.sprite
+                .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
+                .moveTo(viewportWidth / 2 / magnificationLevel, viewportHeight / 2 / magnificationLevel) // Also place him in the middle of the screen initially
+            )
+          )
+        )
+        .addAnimations(spriteAndAnimations.animations)
+
+    val res: Option[Startup.Success[MyStartupData]] = for {
       json                <- assetCollection.texts.find(p => p.name == PerfAssets.dudeName + "-json").map(_.contents)
       aseprite            <- Aseprite.fromJson(json)
       spriteAndAnimations <- Aseprite.toSpriteAndAnimations(aseprite, Depth(3), PerfAssets.dudeName)
-      _                   <- Option(game.registerAnimations(spriteAndAnimations.animations))
-    } yield
-      Dude(
-        aseprite,
-        spriteAndAnimations.sprite
-          .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
-          .moveTo(viewportWidth / 2 / magnificationLevel, viewportHeight / 2 / magnificationLevel) // Also place him in the middle of the screen initially
-      )
+    } yield makeStartupData(aseprite, spriteAndAnimations)
 
-    dude match {
-      case Some(d) => MyStartupData(d)
-      case None    => MyErrorReport("Failed to load the dude")
-    }
+    res.getOrElse(Startup.Failure(MyErrorReport("Failed to load the dude")))
   }
 
   def initialModel(startupData: MyStartupData): MyGameModel =

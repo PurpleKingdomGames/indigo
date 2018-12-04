@@ -26,8 +26,8 @@ object WebSocketExample extends IndigoGameBasic[MySetupData, MyGameModel, Unit] 
 
   val subSystems: Set[SubSystem] = Set()
 
-  def setup(assetCollection: AssetCollection): Either[StartupErrors, MySetupData] =
-    Right(
+  def setup(assetCollection: AssetCollection): Startup[StartupErrors, MySetupData] =
+    Startup.Success(
       MySetupData(
         pingSocket = WebSocketConfig(
           id = WebSocketId("ping"),

@@ -48,12 +48,6 @@ object IndigoGameBase {
                                                                   updateViewModel,
                                                                   updateView)
 
-    def registerAnimations(animations: Animations): Unit =
-      gameEngine.registerAnimations(animations)
-
-    def registerFont(fontInfo: FontInfo): Unit =
-      gameEngine.registerFont(fontInfo)
-
     def start(): Unit =
       gameEngine.start()
   }

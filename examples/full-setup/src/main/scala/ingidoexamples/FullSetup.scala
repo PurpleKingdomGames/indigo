@@ -19,7 +19,7 @@ object FullSetup {
     Set(AssetType.Image("my image", "assets/graphics.png"))
 
   val setup: AssetCollection => Startup[MyStartUpError, MyStartupData] =
-    _ => MyStartupData()
+    _ => Startup.Success(MyStartupData())
 
   val initialModel: MyStartupData => MyGameModel =
     _ => MyGameModel()

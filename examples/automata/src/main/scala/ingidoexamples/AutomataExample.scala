@@ -45,8 +45,8 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
     )
   )
 
-  def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] =
-    Right(())
+  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+    Startup.Success(())
 
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(

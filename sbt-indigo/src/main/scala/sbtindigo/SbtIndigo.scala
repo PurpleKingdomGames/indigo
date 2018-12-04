@@ -11,11 +11,6 @@ object SbtIndigo extends sbt.AutoPlugin {
   override def requires: JvmPlugin.type = plugins.JvmPlugin
   override def trigger: PluginTrigger   = allRequirements
 
-  // TODO
-  // Settings for game title
-  // Asset directory
-  // Hide / Show mouse cursor
-
   object autoImport {
     val indigoBuild: TaskKey[Unit] = taskKey[Unit]("Build an indigo game.")
     val indigoPublish: TaskKey[Unit] = taskKey[Unit]("Publish an indigo game.")
@@ -166,7 +161,7 @@ object IndigoBuild {
       .reverse
       .headOption
       .getOrElse(throw new Exception("Could not figure out script file name from: " + path))
-    val scriptPath: File = new File(path) // TODO: This only covers the fast opt JS version
+    val scriptPath: File = new File(path)
 
     FileUtils.copyFileToDirectory(scriptPath, desScriptsFolder)
 
@@ -181,7 +176,7 @@ object IndigoBuild {
       .reverse
       .headOption
       .getOrElse(throw new Exception("Could not figure out source map file name from: " + path))
-    val scriptPath: File = new File(path) //TODO: This only covers the fast opt JS version
+    val scriptPath: File = new File(path)
 
     FileUtils.copyFileToDirectory(scriptPath, desScriptsFolder)
 

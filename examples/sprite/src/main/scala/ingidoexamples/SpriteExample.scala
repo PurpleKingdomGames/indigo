@@ -32,8 +32,8 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
     )
   )
 
-  def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] =
-    Right(())
+  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+    Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =
     ()

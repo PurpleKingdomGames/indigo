@@ -40,12 +40,6 @@ case class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
 ) {
 
-  def registerAnimations(animations: Animations): Unit =
-    AnimationsRegister.register(animations)
-
-  def registerFont(fontInfo: FontInfo): Unit =
-    FontRegister.register(fontInfo)
-
   def start(): Unit =
     GameEngine.start(
       config,
@@ -110,17 +104,20 @@ object GameEngine {
         implicit val globalSignals: GlobalSignals =
           GlobalSignals.default
 
+        val startupData: Startup[StartupError, StartupData] = initialise(assetCollection)
+
         val subSystemsRegister: SubSystemsRegister =
-          SubSystemsRegister.add(SubSystemsRegister.empty, subSystems.toList)
+          SubSystemsRegister
+            .add(SubSystemsRegister.empty, subSystems.toList ++ startupData.additionalSubSystems.toList)
 
         val x: IIO[Double => Int] =
           for {
-            _                   <- GameEngine.registerAnimations(animations)
-            _                   <- GameEngine.registerFonts(fonts)
+            _                   <- GameEngine.registerAnimations(animations ++ startupData.additionalAnimations)
+            _                   <- GameEngine.registerFonts(fonts ++ startupData.additionalFonts)
             textureAtlas        <- GameEngine.createTextureAtlas(assetCollection)
             loadedTextureAssets <- GameEngine.extractLoadedTextures(textureAtlas)
             assetMapping        <- GameEngine.setupAssetMapping(textureAtlas)
-            startUpSuccessData  <- GameEngine.initialisedGame(initialise(assetCollection))
+            startUpSuccessData  <- GameEngine.initialisedGame(startupData)
             canvas              <- GameEngine.createCanvas(gameConfig)
             _                   <- GameEngine.listenToWorldEvents(canvas, gameConfig.magnification)
             renderer            <- GameEngine.startRenderer(gameConfig, loadedTextureAssets, canvas)

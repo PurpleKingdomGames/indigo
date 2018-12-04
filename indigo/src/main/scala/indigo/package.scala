@@ -16,7 +16,8 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
     def show(implicit showMe: Show[T]): String = showMe.show(t)
   }
 
-  type Startup[+ErrorType, +SuccessType] = gameengine.Startup[ErrorType, SuccessType]
+  type Startup[ErrorType, SuccessType] = gameengine.Startup[ErrorType, SuccessType]
+  val Startup: gameengine.Startup.type = gameengine.Startup
 
   type GameTime = gameengine.GameTime
   val GameTime: gameengine.GameTime.type = gameengine.GameTime

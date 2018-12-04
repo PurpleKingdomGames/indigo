@@ -29,8 +29,11 @@ object Framework {
     assetCollection.texts
       .find(p => p.name == "indigoJson")
       .flatMap(json => GameDefinitionHelper.fromJson(json.contents)) match {
-      case Some(gd) => StartupData(gd)
-      case None     => StartupErrorReport("Game definition could not be loaded")
+      case Some(gd) =>
+        Startup.Success(StartupData(gd))
+
+      case None =>
+        Startup.Failure(StartupErrorReport("Game definition could not be loaded"))
   }
 
   val initialModel: StartupData => GameModel = startupData => GameModelHelper.initialModel(startupData)

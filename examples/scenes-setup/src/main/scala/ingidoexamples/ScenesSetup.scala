@@ -23,8 +23,8 @@ object ScenesSetup extends IndigoGameWithScenes[MyStartUpData, MyGameModel, MyVi
 
   val subSystems: Set[SubSystem] = Set()
 
-  def setup(assetCollection: AssetCollection): Either[StartupErrors, MyStartUpData] =
-    Right(MyStartUpData("Scene A!", "Scene B?"))
+  def setup(assetCollection: AssetCollection): Startup[StartupErrors, MyStartUpData] =
+    Startup.Success(MyStartUpData("Scene A!", "Scene B?"))
 
   def initialModel(startupData: MyStartUpData): MyGameModel =
     MyGameModel(

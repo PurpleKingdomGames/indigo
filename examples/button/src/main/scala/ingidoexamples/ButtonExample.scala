@@ -17,8 +17,8 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   val subSystems: Set[SubSystem] = Set()
 
-  def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] =
-    Right(())
+  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+    Startup.Success(())
 
   // Let's setup our button's initial state
   def initialModel(startupData: Unit): MyGameModel =

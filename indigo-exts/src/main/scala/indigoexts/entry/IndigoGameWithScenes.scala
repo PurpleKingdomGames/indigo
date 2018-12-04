@@ -39,7 +39,7 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
 
   val subSystems: Set[SubSystem]
 
-  def setup(assetCollection: AssetCollection): Either[StartupErrors, StartupData]
+  def setup(assetCollection: AssetCollection): Startup[StartupErrors, StartupData]
 
   def initialModel(startupData: StartupData): Model
 
@@ -63,7 +63,7 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
       fonts,
       animations,
       subSystems,
-      (ac: AssetCollection) => Startup.fromEither(setup(ac)),
+      (ac: AssetCollection) => setup(ac),
       initialModel,
       (gameTime: GameTime, model: Model) => sceneManager.updateModel(gameTime, model),
       initialViewModel,
@@ -71,12 +71,6 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
       (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents) => sceneManager.updateView(gameTime, model, viewModel, frameInputEvents)
     )
   }
-
-  def registerAnimations(animations: Animations): Unit =
-    indigoGame.registerAnimations(animations)
-
-  def registerFont(fontInfo: FontInfo): Unit =
-    indigoGame.registerFont(fontInfo)
 
   def main(args: Array[String]): Unit =
     indigoGame.start()

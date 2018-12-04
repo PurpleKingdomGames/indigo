@@ -20,8 +20,8 @@ object AudioExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   val subSystems: Set[SubSystem] = Set()
 
-  def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] =
-    Right(())
+  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+    Startup.Success(())
 
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(

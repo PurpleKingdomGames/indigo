@@ -17,8 +17,8 @@ object SubSystemsExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val subSystems: Set[SubSystem] = Set(PointsTrackerSubSystem(0, fontKey))
 
-  def setup(assetCollection: AssetCollection): Either[StartupErrors, Unit] =
-    Right(())
+  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+    Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =
     ()
