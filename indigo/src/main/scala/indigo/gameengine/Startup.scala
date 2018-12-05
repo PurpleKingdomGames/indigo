@@ -40,13 +40,19 @@ object Startup {
   }
   case class Success[SuccessType](success: SuccessType, animations: Set[Animations], fonts: Set[FontInfo], subSystems: Set[SubSystem]) extends Startup[Nothing, SuccessType] {
     def addAnimations(value: Animations*): Success[SuccessType] =
-      this.copy(animations = this.animations ++ value.toList)
+      addAnimations(value.toList)
+    def addAnimations(value: List[Animations]): Success[SuccessType] =
+      this.copy(animations = this.animations ++ value)
 
     def addFonts(value: FontInfo*): Success[SuccessType] =
-      this.copy(fonts = this.fonts ++ value.toList)
+      addFonts(value.toList)
+    def addFonts(value: List[FontInfo]): Success[SuccessType] =
+      this.copy(fonts = this.fonts ++ value)
 
     def addSubSystems(value: SubSystem*): Success[SuccessType] =
-      this.copy(subSystems = this.subSystems ++ value.toList)
+      addSubSystems(value.toList)
+    def addSubSystems(value: List[SubSystem]): Success[SuccessType] =
+      this.copy(subSystems = this.subSystems ++ value)
   }
   object Success {
     def apply[SuccessType](success: SuccessType): Success[SuccessType] =
