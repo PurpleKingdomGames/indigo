@@ -3,7 +3,7 @@ val indigoVersion = "0.0.10-SNAPSHOT"
 
 lazy val commonSettings = Seq(
   version := indigoVersion,
-  scalaVersion := "2.12.7",
+  scalaVersion := "2.12.8",
   organization := "indigo",
   libraryDependencies ++= Seq(
     "org.scalatest" %%% "scalatest" % "3.0.5" % "test"
