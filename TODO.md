@@ -1,6 +1,4 @@
 
-IT'S NOT AN IO MONAD, IT'S A READER, WRITER, STATE MONAD!!!
-
 # Building a 2D pixel art game engine
 This kind of engine has some interesting properties.
 There are no shaders to speak of.
@@ -68,14 +66,6 @@ Game Engine
 - Full window size - when the plugin is generating the html.
 - Full screen - when the plugin is generating the html. 
 - Particle systems, which are advanced automata
-
-Maybe add the idea of a 'registers' hook during game setup, allows initialisation of registers for:
-1. Fonts // Done
-2. Static precomputed assets
-3. Automata // Not needed?
-
-Game
-- Make game.
 
 Optimisations:
 - Offload more onto the GPU - matrix calculations for example.
