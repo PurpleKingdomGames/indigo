@@ -1,5 +1,6 @@
 package indigo.renderer
 
+import indigo.gameengine.scenegraph.datatypes.AmbientLight
 import indigo.runtime.metrics._
 import indigo.shared.ClearColor
 import org.scalajs.dom.raw.WebGLBuffer
@@ -67,7 +68,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(DrawGameLayerEndMetric)
 
     metrics.record(DrawLightingLayerStartMetric)
-    drawLightingLayerToTexture(displayable.lighting, lightingFrameBuffer, displayable.ambientLight)
+    drawLightingLayerToTexture(displayable.lighting, lightingFrameBuffer, AmbientLight.toClearColor(displayable.ambientLight))
     metrics.record(DrawLightingLayerEndMetric)
 
     metrics.record(DrawUiLayerStartMetric)

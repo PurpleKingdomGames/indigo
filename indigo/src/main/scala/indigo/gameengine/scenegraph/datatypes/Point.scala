@@ -27,7 +27,7 @@ final case class Point(x: Int, y: Int) {
 object Point {
   val zero: Point = Point(0, 0)
 
-  implicit def tuple2ToPoint(t: (Int, Int)): Point = Point(t._1, t._2)
+  def tuple2ToPoint(t: (Int, Int)): Point = Point(t._1, t._2)
 
   implicit val show: Show[Point] =
     Show.create(p => s"""Point(${p.x}, ${p.y})""")

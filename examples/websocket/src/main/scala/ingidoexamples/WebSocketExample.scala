@@ -53,35 +53,37 @@ object WebSocketExample extends IndigoGameBasic[MySetupData, MyGameModel, Unit] 
 
   def update(gameTime: GameTime, model: MyGameModel): GlobalEvent => UpdatedModel[MyGameModel] = {
     case e: ButtonEvent =>
-      model.copy(
-        ping = model.ping.update(e),
-        echo = model.echo.update(e)
+      UpdatedModel(
+        model.copy(
+          ping = model.ping.update(e),
+          echo = model.echo.update(e)
+        )
       )
 
     case WebSocketEvent.Receive(WebSocketId("ping"), message) =>
       println("Message from Server: " + message)
-      model
+      UpdatedModel(model)
 
     case WebSocketEvent.Receive(WebSocketId("echo"), message) =>
       println("Server says you said: " + message)
-      model
+      UpdatedModel(model)
 
     case WebSocketEvent.Error(WebSocketId(id), message) =>
       println(s"Connection [$id] errored with: " + message)
-      model
+      UpdatedModel(model)
 
     case WebSocketEvent.Close(WebSocketId(id)) =>
       println(s"Connection [$id] closed.")
-      model
+      UpdatedModel(model)
 
     case _ =>
-      model
+      UpdatedModel(model)
   }
 
   def initialViewModel(startupData: MySetupData): MyGameModel => Unit = _ => ()
 
   def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] =
-    ()
+    UpdatedViewModel(())
 
   def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     val pingButton: ButtonViewUpdate = model.ping.draw(

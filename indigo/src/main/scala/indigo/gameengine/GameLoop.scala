@@ -211,7 +211,7 @@ object GameLoop {
           rec(xs, combine(last, updateModel(gameTime, last.model)(x)))
       }
 
-    val res = rec(collectedEvents, model)
+    val res = rec(collectedEvents, UpdatedModel(model))
     res.globalEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
     (res.model, FrameInputEvents(res.globalEvents, res.inFrameEvents, signals))
   }

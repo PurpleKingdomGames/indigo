@@ -22,9 +22,6 @@ final case class UpdatedSubSystem(subSystem: SubSystem, events: List[GlobalEvent
     this.copy(events = events ++ globalEvents.toList)
 }
 object UpdatedSubSystem {
-  implicit def subSystemToUpdatedSubSystem(subSystem: SubSystem): UpdatedSubSystem =
-    apply(subSystem)
-
   def apply(subSystem: SubSystem): UpdatedSubSystem =
     UpdatedSubSystem(subSystem, Nil)
 }

@@ -27,6 +27,6 @@ object AmbientLight {
         AmbientLight(x.tint + y.tint, x.amount + y.amount)
     }
 
-  implicit def ambientToClearColor(a: AmbientLight): ClearColor =
+  def toClearColor(a: AmbientLight): ClearColor =
     ClearColor(a.tint.r * a.amount, a.tint.g * a.amount, a.tint.b * a.amount, 1)
 }

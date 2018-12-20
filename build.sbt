@@ -58,7 +58,6 @@ lazy val commonSettings = Seq(
   ),
   wartremoverWarnings in (Compile, compile) ++= Warts.allBut(
     Wart.Overloading,
-    Wart.ImplicitConversion,
     Wart.Nothing,
     Wart.ImplicitParameter,
     Wart.NonUnitStatements,

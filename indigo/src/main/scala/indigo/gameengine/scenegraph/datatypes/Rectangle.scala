@@ -66,8 +66,6 @@ object Rectangle {
     Rectangle(x, y, w, h)
   }
 
-  implicit def tuple4ToRectangle(t: (Int, Int, Int, Int)): Rectangle = Rectangle(t._1, t._2, t._3, t._4)
-
   implicit val show: Show[Rectangle] =
     Show.create(p => s"""Rectangle(${p.x}, ${p.y}, ${p.width}, ${p.height})""")
 

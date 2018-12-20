@@ -11,7 +11,7 @@ object ScenesSetup extends IndigoGameWithScenes[MyStartUpData, MyGameModel, MyVi
   val scenes: ScenesList[MyGameModel, MyViewModel, _, _] =
     SceneA :: SceneB :: ScenesNil[MyGameModel, MyViewModel]()
 
-  val initialScene: Option[SceneName] = SceneA.name
+  val initialScene: Option[SceneName] = Option(SceneA.name)
 
   val config: GameConfig = defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399"))
 
@@ -52,10 +52,10 @@ object SceneA extends Scene[MyGameModel, MyViewModel, MessageA, Unit] {
 
   // Nothing to do
   def updateSceneModel(gameTime: GameTime, sceneModel: MessageA): GlobalEvent => UpdatedModel[MessageA] =
-    _ => sceneModel
+    _ => UpdatedModel(sceneModel)
 
   // Nothing to do
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: MessageA, sceneViewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] = ()
+  def updateSceneViewModel(gameTime: GameTime, sceneModel: MessageA, sceneViewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] = UpdatedViewModel(())
 
   // Show some text
   // When the user clicks anywhere in the screen, trigger an event to jump to the other scene.
@@ -90,10 +90,10 @@ object SceneB extends Scene[MyGameModel, MyViewModel, MessageB, Unit] {
 
   // Nothing to do
   def updateSceneModel(gameTime: GameTime, sceneModel: MessageB): GlobalEvent => UpdatedModel[MessageB] =
-    _ => sceneModel
+    _ => UpdatedModel(sceneModel)
 
   // Nothing to do
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: MessageB, sceneViewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] = ()
+  def updateSceneViewModel(gameTime: GameTime, sceneModel: MessageB, sceneViewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] = UpdatedViewModel(())
 
   // Show some text
   // When the user clicks anywhere in the screen, trigger an event to jump to the other scene.

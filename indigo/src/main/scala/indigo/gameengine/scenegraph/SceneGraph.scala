@@ -38,7 +38,7 @@ sealed trait SceneGraphNode extends Product with Serializable {
 
 final case class Group(positionOffset: Point, depth: Depth, children: List[SceneGraphNode]) extends SceneGraphNode {
 
-  def withDepth(depth: Depth): SceneGraphNode =
+  def withDepth(depth: Depth): Group =
     this.copy(depth = depth)
 
   def moveTo(pt: Point): Group =
@@ -171,7 +171,7 @@ object Graphic {
   def apply(x: Int, y: Int, width: Int, height: Int, depth: Int, imageAssetRef: String): Graphic =
     Graphic(
       bounds = Rectangle(x, y, width, height),
-      depth = depth,
+      depth = Depth(depth),
       imageAssetRef = imageAssetRef,
       ref = Point.zero,
       crop = Rectangle(0, 0, width, height),
@@ -182,7 +182,7 @@ object Graphic {
   def apply(bounds: Rectangle, depth: Int, imageAssetRef: String): Graphic =
     Graphic(
       bounds = bounds,
-      depth = depth,
+      depth = Depth(depth),
       imageAssetRef = imageAssetRef,
       ref = Point.zero,
       crop = bounds,
@@ -281,7 +281,7 @@ object Sprite {
     Sprite(
       bindingKey = bindingKey,
       bounds = Rectangle(x, y, width, height),
-      depth = depth,
+      depth = Depth(depth),
       animationsKey = animationsKey,
       ref = Point.zero,
       effects = Effects.default,
@@ -387,7 +387,7 @@ object Text {
       text = text,
       alignment = TextAlignment.Left,
       position = Point(x, y),
-      depth = depth,
+      depth = Depth(depth),
       fontKey = fontKey,
       effects = Effects.default,
       eventHandler = (_: (Rectangle, GlobalEvent)) => None

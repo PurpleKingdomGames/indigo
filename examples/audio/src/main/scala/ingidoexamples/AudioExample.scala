@@ -33,18 +33,20 @@ object AudioExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   def update(gameTime: GameTime, model: MyGameModel): GlobalEvent => UpdatedModel[MyGameModel] = {
     case e: ButtonEvent =>
-      model.copy(
-        button = model.button.update(e)
+      UpdatedModel(
+        model.copy(
+          button = model.button.update(e)
+        )
       )
 
     case _ =>
-      model
+      UpdatedModel(model)
   }
 
   def initialViewModel(startupData: Unit): MyGameModel => Unit = _ => ()
 
   def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] =
-    ()
+    UpdatedViewModel(())
 
   def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     model.button

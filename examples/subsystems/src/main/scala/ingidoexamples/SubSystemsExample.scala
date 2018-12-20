@@ -29,13 +29,13 @@ object SubSystemsExample extends IndigoGameBasic[Unit, Unit, Unit] {
         .addGlobalEvents(PointsTrackerEvent.Add(10))
 
     case _ =>
-      ()
+      UpdatedModel(())
   }
 
   def initialViewModel(startupData: Unit): Unit => Unit = _ => ()
 
   def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] =
-    viewModel
+    UpdatedViewModel(viewModel)
 
   def present(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     noRender

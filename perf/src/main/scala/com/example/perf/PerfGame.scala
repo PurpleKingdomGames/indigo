@@ -60,7 +60,7 @@ object PerfGame {
 
   val initialViewModel: (MyStartupData, MyGameModel) => FpsCounter = (_, _) => FpsCounter.empty
 
-  val updateViewModel: (GameTime, MyGameModel, FpsCounter, FrameInputEvents) => UpdatedViewModel[FpsCounter] = (gameTime, _, previous, _) => FpsCounter.update(gameTime, previous)
+  val updateViewModel: (GameTime, MyGameModel, FpsCounter, FrameInputEvents) => UpdatedViewModel[FpsCounter] = (gameTime, _, previous, _) => UpdatedViewModel(FpsCounter.update(gameTime, previous))
 
   val updateView: (GameTime, MyGameModel, FpsCounter, FrameInputEvents) => SceneUpdateFragment =
     (_, gameModel, fpsCounter, frameInputEvents) => PerfView.updateView(gameModel, fpsCounter, frameInputEvents)

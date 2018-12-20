@@ -65,13 +65,13 @@ object Button {
     def renderButton(bounds: Rectangle, depth: Depth, button: Button, assets: ButtonAssets): Graphic =
       button.state match {
         case ButtonState.Up =>
-          assets.up.moveTo(bounds.position).withDepth(depth.zIndex)
+          assets.up.moveTo(bounds.position).withDepth(depth)
 
         case ButtonState.Over =>
-          assets.over.moveTo(bounds.position).withDepth(depth.zIndex)
+          assets.over.moveTo(bounds.position).withDepth(depth)
 
         case ButtonState.Down =>
-          assets.down.moveTo(bounds.position).withDepth(depth.zIndex)
+          assets.down.moveTo(bounds.position).withDepth(depth)
       }
 
     def update(bounds: Rectangle, depth: Depth, button: Button, frameEvents: FrameInputEvents, assets: ButtonAssets): ButtonViewUpdate =

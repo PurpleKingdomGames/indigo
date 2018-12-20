@@ -50,48 +50,60 @@ object AutomataFarm {
 
   def update(farm: AutomataFarm, gameTime: GameTime): AutomataEvent => UpdatedSubSystem = {
     case Spawn(key, pt) =>
-      farm.copy(
-        paddock =
-          farm.paddock ++
-            farm.inventory
-              .get(key)
-              .map { k =>
-                SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running, k.lifespan.millis, 0, Random.nextInt()))
-              }
-              .toList
+      UpdatedSubSystem(
+        farm.copy(
+          paddock =
+            farm.paddock ++
+              farm.inventory
+                .get(key)
+                .map { k =>
+                  SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running, k.lifespan.millis, 0, Random.nextInt()))
+                }
+                .toList
+        )
       )
 
     case ModifyAndSpawn(key, pt, f) =>
-      farm.copy(
-        paddock =
-          farm.paddock ++
-            farm.inventory
-              .get(key)
-              .map(f orElse { case a => a })
-              .map { k =>
-                SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running, k.lifespan.millis, 0, Random.nextInt()))
-              }
-              .toList
+      UpdatedSubSystem(
+        farm.copy(
+          paddock =
+            farm.paddock ++
+              farm.inventory
+                .get(key)
+                .map(f orElse { case a => a })
+                .map { k =>
+                  SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running, k.lifespan.millis, 0, Random.nextInt()))
+                }
+                .toList
+        )
       )
 
     case KillAllInPool(key) =>
-      farm.copy(
-        paddock = farm.paddock.filterNot(p => p.automata.key === key)
+      UpdatedSubSystem(
+        farm.copy(
+          paddock = farm.paddock.filterNot(p => p.automata.key === key)
+        )
       )
 
     case KillByKey(bindingKey) =>
-      farm.copy(
-        paddock = farm.paddock.filterNot(p => p.automata.bindingKey === bindingKey)
+      UpdatedSubSystem(
+        farm.copy(
+          paddock = farm.paddock.filterNot(p => p.automata.bindingKey === bindingKey)
+        )
       )
 
     case KillAll =>
-      farm.copy(
-        paddock = Nil
+      UpdatedSubSystem(
+        farm.copy(
+          paddock = Nil
+        )
       )
 
     case Cull =>
-      farm.copy(
-        paddock = farm.paddock.filter(_.isAlive(gameTime.running)).map(_.updateDelta(gameTime.delta))
+      UpdatedSubSystem(
+        farm.copy(
+          paddock = farm.paddock.filter(_.isAlive(gameTime.running)).map(_.updateDelta(gameTime.delta))
+        )
       )
   }
 

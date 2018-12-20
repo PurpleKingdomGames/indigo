@@ -8,7 +8,7 @@ final case class GameGlobalEvent()
 
 object GameViewHelper {
 
-  implicit def entityRectangleToRectangle(er: EntityRectangle): Rectangle =
+  def entityRectangleToRectangle(er: EntityRectangle): Rectangle =
     Rectangle(er.x, er.y, er.width, er.height)
 
   def updateView(model: GameModel): SceneUpdateFragment = {
@@ -33,7 +33,7 @@ object GameViewHelper {
       }
       .flatMap {
         case Some(graphic) =>
-          List(Graphic(graphic.bounds, 1, graphic.assetRef).withCrop(graphic.crop))
+          List(Graphic(entityRectangleToRectangle(graphic.bounds), 1, graphic.assetRef).withCrop(entityRectangleToRectangle(graphic.crop)))
 
         case None =>
           Nil

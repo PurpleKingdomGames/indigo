@@ -36,13 +36,13 @@ final case class Matrix4(mat: List[Double]) {
   def flip(horizontal: Boolean, vertical: Boolean): Matrix4 =
     this * Matrix4.flip(horizontal, vertical)
 
-  def toJsArray: scalajs.js.Array[Double] = Matrix4.matrix4dToJsArray(this)
+  def toJsArray: scalajs.js.Array[Double] = Matrix4.toJsArray(this)
 
 }
 
 case object Matrix4 {
 
-  implicit def matrix4dToJsArray(mat4d: Matrix4): scalajs.js.Array[Double] = {
+  def toJsArray(mat4d: Matrix4): scalajs.js.Array[Double] = {
     val a = new scalajs.js.Array[Double]()
     mat4d.mat.foreach(d => a.push(d))
     a

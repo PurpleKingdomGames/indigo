@@ -22,9 +22,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
 
-  implicit def sceneNameToOpt(sceneName: SceneName): Option[SceneName] =
-    Option(sceneName)
-
   val scenes: ScenesList[Model, ViewModel, _, _]
 
   val initialScene: Option[SceneName]

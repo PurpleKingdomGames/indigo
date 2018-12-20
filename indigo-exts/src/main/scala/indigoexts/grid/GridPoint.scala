@@ -28,7 +28,7 @@ object GridPoint {
   implicit val show: Show[GridPoint] =
     Show.create(p => s"""(${p.x}, ${p.y})""")
 
-  implicit def tupleToGridPoint(t: (Int, Int)): GridPoint =
+  def tupleToGridPoint(t: (Int, Int)): GridPoint =
     GridPoint(t._1, t._2)
 
   val Up: GridPoint    = GridPoint(0, 1)

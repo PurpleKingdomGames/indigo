@@ -33,7 +33,7 @@ object PerfView {
     positions.map { pt =>
       currentState.dude.dude.sprite
         .moveTo(pt)
-        .withDepth(herdCount - pt.y)
+        .withDepth(Depth(herdCount - pt.y))
   }
 
   def gameLayer(currentState: MyGameModel): List[SceneGraphNode] =

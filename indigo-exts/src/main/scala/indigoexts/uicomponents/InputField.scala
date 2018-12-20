@@ -101,18 +101,18 @@ object InputField {
         FontRegister.findByFontKey(inputFieldAssets.text.fontKey).map { fontInfo =>
           inputFieldAssets.cursor
             .moveTo(calculateCursorPosition(inputField.text, position, fontInfo, inputField.cursorPosition))
-            .withDepth(-(depth.zIndex + 100))
+            .withDepth(Depth(-(depth.zIndex + 100)))
         } else
         None
 
     private def render(gameTime: GameTime, position: Point, depth: Depth, inputField: InputField, inputFieldAssets: InputFieldAssets): RenderedInputFieldElements =
       inputField.state match {
         case InputFieldState.Normal =>
-          RenderedInputFieldElements(inputFieldAssets.text.withText(inputField.text).moveTo(position).withDepth(depth.zIndex), None)
+          RenderedInputFieldElements(inputFieldAssets.text.withText(inputField.text).moveTo(position).withDepth(depth), None)
 
         case InputFieldState.HasFocus =>
           RenderedInputFieldElements(
-            inputFieldAssets.text.withText(inputField.text).moveTo(position).withDepth(depth.zIndex),
+            inputFieldAssets.text.withText(inputField.text).moveTo(position).withDepth(depth),
             drawCursor(gameTime, inputField, position, depth, inputFieldAssets)
           )
       }

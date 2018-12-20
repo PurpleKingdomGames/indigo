@@ -10,7 +10,7 @@ object GameModelHelper {
     GameModel(startupData.gameDefinition)
 
   def updateModel(state: GameModel): GlobalEvent => UpdatedModel[GameModel] = { _ =>
-    state
+    UpdatedModel(state)
   }
 
 }

@@ -39,12 +39,12 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
     ()
 
   def update(gameTime: GameTime, model: Unit): GlobalEvent => UpdatedModel[Unit] =
-    _ => model
+    _ => UpdatedModel(model)
 
   def initialViewModel(startupData: Unit): Unit => Unit = _ => ()
 
   def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] =
-    ()
+    UpdatedViewModel(())
 
   /*
    Minimal sprite example, with one animation that we just play.

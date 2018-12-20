@@ -13,7 +13,7 @@ final case class PointsTrackerSubSystem(points: Int, fontKey: FontKey) extends S
 
   def update(gameTime: GameTime): PointsTrackerEvent => UpdatedSubSystem = {
     case PointsTrackerEvent.Add(pts) =>
-      this.copy(points = points + pts)
+      UpdatedSubSystem(this.copy(points = points + pts))
   }
 
   def render(gameTime: GameTime): SceneUpdateFragment =
