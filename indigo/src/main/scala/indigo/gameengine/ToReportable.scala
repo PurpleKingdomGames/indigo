@@ -11,7 +11,7 @@ object ToReportable {
     }
 }
 
-case class StartupErrors(errors: List[String]) {
+final case class StartupErrors(errors: List[String]) {
   def +(other: StartupErrors): StartupErrors =
     StartupErrors.combine(this, other)
 }

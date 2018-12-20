@@ -84,7 +84,7 @@ object Button {
 
 }
 
-case class Button(state: ButtonState, actions: ButtonActions, bindingKey: BindingKey) {
+final case class Button(state: ButtonState, actions: ButtonActions, bindingKey: BindingKey) {
 
   def update(buttonEvent: ButtonEvent): Button =
     Button.Model.update(this, buttonEvent)
@@ -114,7 +114,7 @@ case class Button(state: ButtonState, actions: ButtonActions, bindingKey: Bindin
     this.copy(state = ButtonState.Down)
 }
 
-case class ButtonActions(onUp: () => Option[GlobalEvent], onDown: () => Option[GlobalEvent], onHoverOver: () => Option[GlobalEvent], onHoverOut: () => Option[GlobalEvent])
+final case class ButtonActions(onUp: () => Option[GlobalEvent], onDown: () => Option[GlobalEvent], onHoverOver: () => Option[GlobalEvent], onHoverOut: () => Option[GlobalEvent])
 
 sealed trait ButtonState {
   def isDown: Boolean
@@ -137,11 +137,11 @@ object ButtonState {
 
 }
 
-case class ButtonAssets(up: Graphic, over: Graphic, down: Graphic)
+final case class ButtonAssets(up: Graphic, over: Graphic, down: Graphic)
 
-case class ButtonEvent(bindingKey: BindingKey, newState: ButtonState) extends GlobalEvent
+final case class ButtonEvent(bindingKey: BindingKey, newState: ButtonState) extends GlobalEvent
 
-case class ButtonViewUpdate(buttonGraphic: Graphic, buttonEvents: List[GlobalEvent]) {
+final case class ButtonViewUpdate(buttonGraphic: Graphic, buttonEvents: List[GlobalEvent]) {
 
   def toSceneUpdateFragment: SceneUpdateFragment =
     SceneUpdateFragment()

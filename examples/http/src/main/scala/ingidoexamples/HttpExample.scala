@@ -69,4 +69,4 @@ object HttpExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 }
 
 // We need a button in our model
-case class MyGameModel(button: Button, count: Int)
+final case class MyGameModel(button: Button, count: Int)

@@ -47,4 +47,4 @@ object FrameBufferFunctions {
   }
 }
 
-case class FrameBufferComponents(frameBuffer: WebGLFramebuffer, texture: WebGLTexture)
+final case class FrameBufferComponents(frameBuffer: WebGLFramebuffer, texture: WebGLTexture)

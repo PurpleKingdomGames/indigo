@@ -1,6 +1,6 @@
 package indigo.gameengine.scenegraph.datatypes
 
-case class Depth(zIndex: Int) extends AnyVal {
+final case class Depth(zIndex: Int) extends AnyVal {
   def +(other: Depth): Depth =
     Depth.append(this, other)
 }

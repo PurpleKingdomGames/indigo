@@ -54,15 +54,15 @@ object FullSetup {
 
 // Start up types - can be anything, but you must supply a way to render the
 // error cases
-case class MyStartupData()
-case class MyStartUpError(errors: List[String])
+final case class MyStartupData()
+final case class MyStartUpError(errors: List[String])
 object MyStartUpError {
   implicit val toReportable: ToReportable[MyStartUpError] =
     ToReportable.createToReportable(e => e.errors.mkString("\n"))
 }
 
 // Your game model is anything you like!
-case class MyGameModel()
+final case class MyGameModel()
 
 // Your view model is also ...anything you like!
-case class MyViewModel()
+final case class MyViewModel()

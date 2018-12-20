@@ -9,13 +9,13 @@ Animations are really timeline animations:
 Construction is about adding animation cycles with frames
 The API provided is about issuing commands to control playback.
  */
-case class Animations(animationsKey: AnimationsKey,
-                      imageAssetRef: String,
-                      spriteSheetSize: Point,
-                      currentCycleLabel: CycleLabel,
-                      cycle: Cycle,
-                      cycles: Map[CycleLabel, Cycle],
-                      actions: List[AnimationAction]) {
+final case class Animations(animationsKey: AnimationsKey,
+                            imageAssetRef: String,
+                            spriteSheetSize: Point,
+                            currentCycleLabel: CycleLabel,
+                            cycle: Cycle,
+                            cycles: Map[CycleLabel, Cycle],
+                            actions: List[AnimationAction]) {
 
   private val nonEmptyCycles: Map[CycleLabel, Cycle] = cycles ++ Map(cycle.label -> cycle)
 
@@ -69,7 +69,7 @@ object Animations {
     Animations(animationsKey, imageAssetRef, Point(spriteSheetWidth, spriteSheetHeight), cycle.label, cycle, Map.empty[CycleLabel, Cycle], Nil)
 }
 
-case class AnimationsKey(key: String) extends AnyVal {
+final case class AnimationsKey(key: String) extends AnyVal {
   def ===(other: AnimationsKey): Boolean =
     AnimationsKey.equality(this, other)
 }
@@ -78,7 +78,7 @@ object AnimationsKey {
     a.key == b.key
 }
 
-case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame], private[gameengine] val playheadPosition: Int, private[gameengine] val lastFrameAdvance: Double) {
+final case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame], private[gameengine] val playheadPosition: Int, private[gameengine] val lastFrameAdvance: Double) {
   private val nonEmptyFrames: List[Frame] = frame :: frames
 
   def addFrame(newFrame: Frame): Cycle =
@@ -133,9 +133,9 @@ object Cycle {
 
 }
 
-case class CycleLabel(label: String) extends AnyVal
+final case class CycleLabel(label: String) extends AnyVal
 
-case class Frame(bounds: Rectangle, duration: Int)
+final case class Frame(bounds: Rectangle, duration: Int)
 
 object Frame {
   def apply(x: Int, y: Int, width: Int, height: Int): Frame =
@@ -152,7 +152,7 @@ object AnimationAction {
     val hash: String = "Play"
   }
 
-  case class ChangeCycle(label: String) extends AnimationAction {
+  final case class ChangeCycle(label: String) extends AnimationAction {
     val hash: String = s"ChangeCycle($label)"
   }
 
@@ -164,13 +164,13 @@ object AnimationAction {
     val hash: String = "JumpToLastFrame"
   }
 
-  case class JumpToFrame(number: Int) extends AnimationAction {
+  final case class JumpToFrame(number: Int) extends AnimationAction {
     val hash: String = s"JumpToFrame($number)"
   }
 }
 
-private[gameengine] case class NextPlayheadPositon(position: Int, lastFrameAdvance: Double)
+private[gameengine] final case class NextPlayheadPositon(position: Int, lastFrameAdvance: Double)
 
-private[gameengine] case class AnimationMemento(bindingKey: BindingKey, currentCycleLabel: CycleLabel, currentCycleMemento: CycleMemento)
+private[gameengine] final case class AnimationMemento(bindingKey: BindingKey, currentCycleLabel: CycleLabel, currentCycleMemento: CycleMemento)
 
-private[gameengine] case class CycleMemento(playheadPosition: Int, lastFrameAdvance: Double)
+private[gameengine] final case class CycleMemento(playheadPosition: Int, lastFrameAdvance: Double)

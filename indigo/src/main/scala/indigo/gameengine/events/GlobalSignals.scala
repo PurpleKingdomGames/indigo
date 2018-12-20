@@ -47,7 +47,7 @@ object GlobalSignals {
     }
 }
 
-case class Signals(mousePosition: Point, keysDown: Set[KeyCode], lastKeyHeldDown: Option[KeyCode], leftMouseHeldDown: Boolean)
+final case class Signals(mousePosition: Point, keysDown: Set[KeyCode], lastKeyHeldDown: Option[KeyCode], leftMouseHeldDown: Boolean)
 object Signals {
   val default: Signals = Signals(
     mousePosition = Point.zero,

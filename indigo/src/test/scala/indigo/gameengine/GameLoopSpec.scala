@@ -92,7 +92,7 @@ class GameLoopSpec extends FunSpec with Matchers {
 
 }
 
-case class TestGameModel(name: String)
-case class ChangeName(to: String)    extends GlobalEvent
-case class ShowName(name: String)    extends GlobalEvent
-case class PresentName(name: String) extends InFrameEvent
+final case class TestGameModel(name: String)
+final case class ChangeName(to: String)    extends GlobalEvent
+final case class ShowName(name: String)    extends GlobalEvent
+final case class PresentName(name: String) extends InFrameEvent

@@ -36,9 +36,9 @@ object Scenes {
     ScenesList[GameModel, ViewModel, S1, S2](scene, scenes)
 }
 
-case class ScenesNil[GameModel, ViewModel]() extends Scenes[GameModel, ViewModel, Nothing]
+final case class ScenesNil[GameModel, ViewModel]() extends Scenes[GameModel, ViewModel, Nothing]
 
-case class ScenesList[GameModel, ViewModel, S1 <: Scene[GameModel, ViewModel, _, _], +S2 <: Scene[GameModel, ViewModel, _, _]](
+final case class ScenesList[GameModel, ViewModel, S1 <: Scene[GameModel, ViewModel, _, _], +S2 <: Scene[GameModel, ViewModel, _, _]](
     current: S1,
     next: Scenes[GameModel, ViewModel, S2]
 ) extends Scenes[GameModel, ViewModel, S1] {

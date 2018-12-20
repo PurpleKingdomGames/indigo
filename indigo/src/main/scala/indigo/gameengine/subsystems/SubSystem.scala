@@ -17,7 +17,7 @@ trait SubSystem {
   def report: String
 }
 
-case class UpdatedSubSystem(subSystem: SubSystem, events: List[GlobalEvent]) {
+final case class UpdatedSubSystem(subSystem: SubSystem, events: List[GlobalEvent]) {
   def addGlobalEvents(globalEvents: GlobalEvent*): UpdatedSubSystem =
     this.copy(events = events ++ globalEvents.toList)
 }

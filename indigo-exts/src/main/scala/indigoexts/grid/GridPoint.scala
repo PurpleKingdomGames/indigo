@@ -5,7 +5,7 @@ import indigo.runtime.Show
 
 import scala.util.Random
 
-case class GridPoint(x: Int, y: Int) {
+final case class GridPoint(x: Int, y: Int) {
 
   def ===(other: GridPoint): Boolean =
     GridPoint.equality(this, other)

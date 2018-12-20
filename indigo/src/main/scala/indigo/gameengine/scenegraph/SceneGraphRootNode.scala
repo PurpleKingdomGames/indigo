@@ -2,7 +2,7 @@ package indigo.gameengine.scenegraph
 
 import indigo.gameengine.events.GlobalEvent
 
-case class SceneGraphRootNode(game: SceneGraphLayer, lighting: SceneGraphLayer, ui: SceneGraphLayer) {
+final case class SceneGraphRootNode(game: SceneGraphLayer, lighting: SceneGraphLayer, ui: SceneGraphLayer) {
 
   private[gameengine] def flatten: SceneGraphRootNodeFlat =
     SceneGraphRootNodeFlat(
@@ -34,7 +34,7 @@ object SceneGraphRootNode {
     )
 }
 
-case class SceneGraphRootNodeFlat(game: SceneGraphLayerFlat, lighting: SceneGraphLayerFlat, ui: SceneGraphLayerFlat) {
+final case class SceneGraphRootNodeFlat(game: SceneGraphLayerFlat, lighting: SceneGraphLayerFlat, ui: SceneGraphLayerFlat) {
 
   def collectViewEvents(gameEvents: List[GlobalEvent]): List[GlobalEvent] =
     game.collectViewEvents(gameEvents) ++

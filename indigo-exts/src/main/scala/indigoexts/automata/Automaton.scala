@@ -9,10 +9,10 @@ sealed trait Automaton extends Product with Serializable {
   val modifiers: List[AutomataModifier]
   val lifespan: AutomataLifeSpan
 }
-case class GraphicAutomaton(key: AutomataPoolKey, graphic: Graphic, lifespan: AutomataLifeSpan, modifiers: List[AutomataModifier]) extends Automaton
-case class SpriteAutomaton(key: AutomataPoolKey, sprite: Sprite, autoPlay: Boolean, animationCycleLabel: Option[String], lifespan: AutomataLifeSpan, modifiers: List[AutomataModifier])
+final case class GraphicAutomaton(key: AutomataPoolKey, graphic: Graphic, lifespan: AutomataLifeSpan, modifiers: List[AutomataModifier]) extends Automaton
+final case class SpriteAutomaton(key: AutomataPoolKey, sprite: Sprite, autoPlay: Boolean, animationCycleLabel: Option[String], lifespan: AutomataLifeSpan, modifiers: List[AutomataModifier])
     extends Automaton
-case class TextAutomaton(key: AutomataPoolKey, text: Text, lifespan: AutomataLifeSpan, modifiers: List[AutomataModifier]) extends Automaton {
+final case class TextAutomaton(key: AutomataPoolKey, text: Text, lifespan: AutomataLifeSpan, modifiers: List[AutomataModifier]) extends Automaton {
   def changeTextTo(newText: String): TextAutomaton =
     this.copy(
       text = text.copy(
@@ -21,7 +21,7 @@ case class TextAutomaton(key: AutomataPoolKey, text: Text, lifespan: AutomataLif
     )
 }
 
-case class AutomataPoolKey(key: String) extends AnyVal {
+final case class AutomataPoolKey(key: String) extends AnyVal {
   def ===(other: AutomataPoolKey): Boolean =
     AutomataPoolKey.equality(this, other)
 }
@@ -33,4 +33,4 @@ object AutomataPoolKey {
     a.key == b.key
 }
 
-case class AutomataLifeSpan(millis: Double)
+final case class AutomataLifeSpan(millis: Double)

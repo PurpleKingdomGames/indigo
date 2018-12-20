@@ -1,6 +1,6 @@
 package indigo.renderer
 
-case class Vector4(x: Double, y: Double, z: Double, w: Double) {
+final case class Vector4(x: Double, y: Double, z: Double, w: Double) {
 
   def translate(vec: Vector4): Vector4 =
     Vector4.add(this, vec)

@@ -88,17 +88,17 @@ sealed trait HttpRequest extends NetworkSendEvent {
   val fullUrl: String = if (params.isEmpty) url else url + "?" + params.toList.map(p => p._1 + "=" + p._2).mkString("&")
 }
 object HttpRequest {
-  case class GET(url: String, params: Map[String, String], headers: Map[String, String]) extends HttpRequest {
+  final case class GET(url: String, params: Map[String, String], headers: Map[String, String]) extends HttpRequest {
     val body: Option[String] = None
     val method: String       = HttpMethod.GET
   }
-  case class POST(url: String, params: Map[String, String], headers: Map[String, String], body: Option[String]) extends HttpRequest {
+  final case class POST(url: String, params: Map[String, String], headers: Map[String, String], body: Option[String]) extends HttpRequest {
     val method: String = HttpMethod.POST
   }
-  case class PUT(url: String, params: Map[String, String], headers: Map[String, String], body: Option[String]) extends HttpRequest {
+  final case class PUT(url: String, params: Map[String, String], headers: Map[String, String], body: Option[String]) extends HttpRequest {
     val method: String = HttpMethod.PUT
   }
-  case class DELETE(url: String, params: Map[String, String], headers: Map[String, String], body: Option[String]) extends HttpRequest {
+  final case class DELETE(url: String, params: Map[String, String], headers: Map[String, String], body: Option[String]) extends HttpRequest {
     val method: String = HttpMethod.DELETE
   }
 
@@ -125,6 +125,6 @@ object HttpRequest {
 
 sealed trait HttpReceiveEvent extends NetworkReceiveEvent
 object HttpReceiveEvent {
-  case object HttpError                                                                    extends HttpReceiveEvent
-  case class HttpResponse(status: Int, headers: Map[String, String], body: Option[String]) extends HttpReceiveEvent
+  case object HttpError                                                                          extends HttpReceiveEvent
+  final case class HttpResponse(status: Int, headers: Map[String, String], body: Option[String]) extends HttpReceiveEvent
 }

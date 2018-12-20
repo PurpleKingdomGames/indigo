@@ -64,7 +64,7 @@ object TiledHelper {
 
 }
 
-case class TiledMap(
+final case class TiledMap(
     width: Int,
     height: Int,
     infinite: Boolean,
@@ -84,30 +84,30 @@ case class TiledMap(
     version: Int
 )
 
-case class TiledLayer(name: String,
-                      data: List[Int],
-                      x: Int,
-                      y: Int,
-                      width: Int,
-                      height: Int,
-                      opacity: Double,
-                      `type`: String, // tilelayer, objectgroup, or imagelayer
-                      visible: Boolean)
+final case class TiledLayer(name: String,
+                            data: List[Int],
+                            x: Int,
+                            y: Int,
+                            width: Int,
+                            height: Int,
+                            opacity: Double,
+                            `type`: String, // tilelayer, objectgroup, or imagelayer
+                            visible: Boolean)
 
-case class TileSet(columns: Option[Int],
-                   firstgid: Int,
-                   image: Option[String],
-                   imageheight: Option[Int],
-                   imagewidth: Option[Int],
-                   margin: Option[Int],
-                   name: Option[String],
-                   spacing: Option[Int],
-                   terrains: Option[List[TiledTerrain]],
-                   tilecount: Option[Int],
-                   tileheight: Option[Int],
-                   tiles: Option[Map[String, TiledTerrainCorner]],
-                   tilewidth: Option[Int],
-                   source: Option[String])
+final case class TileSet(columns: Option[Int],
+                         firstgid: Int,
+                         image: Option[String],
+                         imageheight: Option[Int],
+                         imagewidth: Option[Int],
+                         margin: Option[Int],
+                         name: Option[String],
+                         spacing: Option[Int],
+                         terrains: Option[List[TiledTerrain]],
+                         tilecount: Option[Int],
+                         tileheight: Option[Int],
+                         tiles: Option[Map[String, TiledTerrainCorner]],
+                         tilewidth: Option[Int],
+                         source: Option[String])
 
-case class TiledTerrain(name: String, tile: Int)
-case class TiledTerrainCorner(terrain: List[Int])
+final case class TiledTerrain(name: String, tile: Int)
+final case class TiledTerrainCorner(terrain: List[Int])

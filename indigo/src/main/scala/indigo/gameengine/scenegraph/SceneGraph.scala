@@ -36,7 +36,7 @@ sealed trait SceneGraphNode extends Product with Serializable {
   }
 }
 
-case class Group(positionOffset: Point, depth: Depth, children: List[SceneGraphNode]) extends SceneGraphNode {
+final case class Group(positionOffset: Point, depth: Depth, children: List[SceneGraphNode]) extends SceneGraphNode {
 
   def withDepth(depth: Depth): SceneGraphNode =
     this.copy(depth = depth)
@@ -111,7 +111,7 @@ sealed trait Renderable extends SceneGraphNode {
 
 }
 
-case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent])
+final case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent])
     extends Renderable {
 
   def x: Int = bounds.position.x - ref.x
@@ -191,7 +191,13 @@ object Graphic {
     )
 }
 
-case class Sprite(bindingKey: BindingKey, bounds: Rectangle, depth: Depth, animationsKey: AnimationsKey, ref: Point, effects: Effects, eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent])
+final case class Sprite(bindingKey: BindingKey,
+                        bounds: Rectangle,
+                        depth: Depth,
+                        animationsKey: AnimationsKey,
+                        ref: Point,
+                        effects: Effects,
+                        eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent])
     extends Renderable {
 
   def x: Int = bounds.position.x - ref.x
@@ -283,7 +289,7 @@ object Sprite {
     )
 }
 
-case class Text(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontKey: FontKey, effects: Effects, eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent])
+final case class Text(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontKey: FontKey, effects: Effects, eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent])
     extends Renderable {
 
   def x: Int = bounds.position.x
@@ -367,7 +373,7 @@ case class Text(text: String, alignment: TextAlignment, position: Point, depth: 
 
 }
 
-case class TextLine(text: String, lineBounds: Rectangle)
+final case class TextLine(text: String, lineBounds: Rectangle)
 
 object Text {
 

@@ -56,7 +56,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
 }
 
-case class MyGameModel(inputField: InputField)
+final case class MyGameModel(inputField: InputField)
 
 object FontStuff {
 

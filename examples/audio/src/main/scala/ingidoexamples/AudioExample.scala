@@ -66,4 +66,4 @@ object AudioExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       )
 }
 
-case class MyGameModel(button: Button, count: Int)
+final case class MyGameModel(button: Button, count: Int)

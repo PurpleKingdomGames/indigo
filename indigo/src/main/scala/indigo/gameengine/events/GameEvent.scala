@@ -18,22 +18,22 @@ sealed trait MouseEvent extends GlobalEvent {
   def position: Point = Point(x, y)
 }
 object MouseEvent {
-  case class Click(x: Int, y: Int)     extends MouseEvent
-  case class MouseUp(x: Int, y: Int)   extends MouseEvent
-  case class MouseDown(x: Int, y: Int) extends MouseEvent
-  case class Move(x: Int, y: Int)      extends MouseEvent
+  final case class Click(x: Int, y: Int)     extends MouseEvent
+  final case class MouseUp(x: Int, y: Int)   extends MouseEvent
+  final case class MouseDown(x: Int, y: Int) extends MouseEvent
+  final case class Move(x: Int, y: Int)      extends MouseEvent
 }
 
 sealed trait KeyboardEvent extends GlobalEvent {
   val keyCode: KeyCode
 }
 object KeyboardEvent {
-  case class KeyUp(keyCode: KeyCode)    extends KeyboardEvent
-  case class KeyDown(keyCode: KeyCode)  extends KeyboardEvent
-  case class KeyPress(keyCode: KeyCode) extends KeyboardEvent
+  final case class KeyUp(keyCode: KeyCode)    extends KeyboardEvent
+  final case class KeyDown(keyCode: KeyCode)  extends KeyboardEvent
+  final case class KeyPress(keyCode: KeyCode) extends KeyboardEvent
 }
 
-case class PlaySound(assetRef: String, volume: Volume) extends GlobalEvent
+final case class PlaySound(assetRef: String, volume: Volume) extends GlobalEvent
 
 trait NetworkSendEvent    extends GlobalEvent
 trait NetworkReceiveEvent extends GlobalEvent

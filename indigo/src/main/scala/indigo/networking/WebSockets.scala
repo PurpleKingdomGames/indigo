@@ -96,7 +96,7 @@ object WebSockets {
 
 }
 
-case class WebSocketId(id: String) {
+final case class WebSocketId(id: String) {
   def ===(other: WebSocketId): Boolean =
     WebSocketId.equality(this, other)
 }
@@ -108,7 +108,7 @@ object WebSocketId {
     a.id == b.id
 }
 
-case class WebSocketConfig(id: WebSocketId, address: String) {
+final case class WebSocketConfig(id: WebSocketId, address: String) {
   def ===(other: WebSocketConfig): Boolean =
     WebSocketConfig.equality(this, other)
 }
@@ -196,12 +196,12 @@ sealed trait WebSocketEvent {
 }
 object WebSocketEvent {
   // Send
-  case class ConnectOnly(webSocketConfig: WebSocketConfig)           extends WebSocketEvent with NetworkSendEvent
-  case class Open(message: String, webSocketConfig: WebSocketConfig) extends WebSocketEvent with NetworkSendEvent
-  case class Send(message: String, webSocketConfig: WebSocketConfig) extends WebSocketEvent with NetworkSendEvent
+  final case class ConnectOnly(webSocketConfig: WebSocketConfig)           extends WebSocketEvent with NetworkSendEvent
+  final case class Open(message: String, webSocketConfig: WebSocketConfig) extends WebSocketEvent with NetworkSendEvent
+  final case class Send(message: String, webSocketConfig: WebSocketConfig) extends WebSocketEvent with NetworkSendEvent
 
   // Receive
-  case class Receive(webSocketId: WebSocketId, message: String) extends WebSocketEvent with NetworkReceiveEvent
-  case class Error(webSocketId: WebSocketId, error: String)     extends WebSocketEvent with NetworkReceiveEvent
-  case class Close(webSocketId: WebSocketId)                    extends WebSocketEvent with NetworkReceiveEvent
+  final case class Receive(webSocketId: WebSocketId, message: String) extends WebSocketEvent with NetworkReceiveEvent
+  final case class Error(webSocketId: WebSocketId, error: String)     extends WebSocketEvent with NetworkReceiveEvent
+  final case class Close(webSocketId: WebSocketId)                    extends WebSocketEvent with NetworkReceiveEvent
 }

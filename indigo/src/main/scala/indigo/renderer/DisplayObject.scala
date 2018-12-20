@@ -3,27 +3,27 @@ package indigo.renderer
 import indigo.gameengine.scenegraph.datatypes.AmbientLight
 import org.scalajs.dom.raw.WebGLRenderingContext._
 
-case class Displayable(game: DisplayLayer, lighting: DisplayLayer, ui: DisplayLayer, ambientLight: AmbientLight)
-case class DisplayLayer(displayObjects: List[DisplayObject]) extends AnyVal
+final case class Displayable(game: DisplayLayer, lighting: DisplayLayer, ui: DisplayLayer, ambientLight: AmbientLight)
+final case class DisplayLayer(displayObjects: List[DisplayObject]) extends AnyVal
 
-case class CompressedDisplayObject(imageRef: String, vertices: scalajs.js.Array[Double], textureCoordinates: scalajs.js.Array[Double], effectValues: scalajs.js.Array[Double]) {
+final case class CompressedDisplayObject(imageRef: String, vertices: scalajs.js.Array[Double], textureCoordinates: scalajs.js.Array[Double], effectValues: scalajs.js.Array[Double]) {
   val vertexCount: Int = vertices.length / 3
   val mode: Int        = TRIANGLES
 }
 
-case class DisplayObject(x: Int,
-                         y: Int,
-                         z: Int,
-                         width: Int,
-                         height: Int,
-                         imageRef: String,
-                         alpha: Double,
-                         tintR: Double,
-                         tintG: Double,
-                         tintB: Double,
-                         flipHorizontal: Boolean,
-                         flipVertical: Boolean,
-                         frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets) {
+final case class DisplayObject(x: Int,
+                               y: Int,
+                               z: Int,
+                               width: Int,
+                               height: Int,
+                               imageRef: String,
+                               alpha: Double,
+                               tintR: Double,
+                               tintG: Double,
+                               tintB: Double,
+                               flipHorizontal: Boolean,
+                               flipVertical: Boolean,
+                               frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets) {
 
   val xd: Double = x.toDouble
   val yd: Double = y.toDouble

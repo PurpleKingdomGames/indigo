@@ -41,7 +41,7 @@ object TextureAtlas {
 }
 
 // Output
-case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, AtlasIndex]) {
+final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, AtlasIndex]) {
   def +(other: TextureAtlas): TextureAtlas = TextureAtlas(
     this.atlases ++ other.atlases,
     this.legend ++ other.legend
@@ -71,10 +71,10 @@ case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, AtlasI
   }
 
 }
-case class AtlasId(id: String) extends AnyVal
-case class AtlasIndex(id: AtlasId, offset: Point)
-case class Atlas(size: PowerOfTwo, imageData: Option[raw.ImageData]) // Yuk. Only optional so that testing is bearable.
-case class AtlasLookupResult(name: String, atlasId: AtlasId, atlas: Atlas, offset: Point)
+final case class AtlasId(id: String) extends AnyVal
+final case class AtlasIndex(id: AtlasId, offset: Point)
+final case class Atlas(size: PowerOfTwo, imageData: Option[raw.ImageData]) // Yuk. Only optional so that testing is bearable.
+final case class AtlasLookupResult(name: String, atlasId: AtlasId, atlas: Atlas, offset: Point)
 
 object TextureAtlasFunctions {
 
@@ -234,12 +234,12 @@ object TextureAtlasFunctions {
 }
 
 // Input
-case class ImageRef(name: String, width: Int, height: Int)
+final case class ImageRef(name: String, width: Int, height: Int)
 
-case class TextureDetails(imageRef: ImageRef, size: PowerOfTwo)
+final case class TextureDetails(imageRef: ImageRef, size: PowerOfTwo)
 
-case class TextureMap(size: PowerOfTwo, textureCoords: List[TextureAndCoords])
-case class TextureAndCoords(imageRef: ImageRef, coords: Point)
+final case class TextureMap(size: PowerOfTwo, textureCoords: List[TextureAndCoords])
+final case class TextureAndCoords(imageRef: ImageRef, coords: Point)
 
 // Intermediate tree structure
 sealed trait AtlasQuadTree {
@@ -262,7 +262,7 @@ object AtlasQuadTree {
 
 }
 
-case class AtlasQuadNode(size: PowerOfTwo, atlas: AtlasSum) extends AtlasQuadTree {
+final case class AtlasQuadNode(size: PowerOfTwo, atlas: AtlasSum) extends AtlasQuadTree {
   def canAccommodate(requiredSize: PowerOfTwo): Boolean =
     if (size < requiredSize) false
     else atlas.canAccommodate(requiredSize)
@@ -320,7 +320,7 @@ case class AtlasQuadNode(size: PowerOfTwo, atlas: AtlasSum) extends AtlasQuadTre
     TextureMap(size, toTextureCoordsList(Point.zero))
 }
 
-case class AtlasQuadEmpty(size: PowerOfTwo) extends AtlasQuadTree {
+final case class AtlasQuadEmpty(size: PowerOfTwo) extends AtlasQuadTree {
   def canAccommodate(requiredSize: PowerOfTwo): Boolean = size >= requiredSize
   def insert(tree: AtlasQuadTree): AtlasQuadTree        = this
 
@@ -331,11 +331,11 @@ sealed trait AtlasSum {
   def canAccommodate(requiredSize: PowerOfTwo): Boolean
 }
 
-case class AtlasTexture(imageRef: ImageRef) extends AtlasSum {
+final case class AtlasTexture(imageRef: ImageRef) extends AtlasSum {
   def canAccommodate(requiredSize: PowerOfTwo): Boolean = false
 }
 
-case class AtlasQuadDivision(q1: AtlasQuadTree, q2: AtlasQuadTree, q3: AtlasQuadTree, q4: AtlasQuadTree) extends AtlasSum {
+final case class AtlasQuadDivision(q1: AtlasQuadTree, q2: AtlasQuadTree, q3: AtlasQuadTree, q4: AtlasQuadTree) extends AtlasSum {
   def canAccommodate(requiredSize: PowerOfTwo): Boolean =
     q1.canAccommodate(requiredSize) || q2.canAccommodate(requiredSize) || q3.canAccommodate(requiredSize) || q4.canAccommodate(
       requiredSize

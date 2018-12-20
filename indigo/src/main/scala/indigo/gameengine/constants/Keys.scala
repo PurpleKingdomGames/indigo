@@ -2,7 +2,7 @@ package indigo.gameengine.constants
 
 import scala.language.implicitConversions
 
-case class KeyCode(code: Int, printableCharacter: String) {
+final case class KeyCode(code: Int, printableCharacter: String) {
   def ===(other: KeyCode): Boolean =
     code == other.code
 

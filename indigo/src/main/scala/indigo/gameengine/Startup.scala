@@ -35,10 +35,10 @@ sealed trait Startup[+ErrorType, +SuccessType] extends Product with Serializable
 
 object Startup {
 
-  case class Failure[ErrorType](error: ErrorType)(implicit toReportable: ToReportable[ErrorType]) extends Startup[ErrorType, Nothing] {
+  final case class Failure[ErrorType](error: ErrorType)(implicit toReportable: ToReportable[ErrorType]) extends Startup[ErrorType, Nothing] {
     def report: String = toReportable.report(error)
   }
-  case class Success[SuccessType](success: SuccessType, animations: Set[Animations], fonts: Set[FontInfo], subSystems: Set[SubSystem]) extends Startup[Nothing, SuccessType] {
+  final case class Success[SuccessType](success: SuccessType, animations: Set[Animations], fonts: Set[FontInfo], subSystems: Set[SubSystem]) extends Startup[Nothing, SuccessType] {
     def addAnimations(value: Animations*): Success[SuccessType] =
       addAnimations(value.toList)
     def addAnimations(value: List[Animations]): Success[SuccessType] =

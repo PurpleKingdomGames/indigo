@@ -223,7 +223,7 @@ class LensSpec extends FunSpec with Matchers {
 
 }
 
-case class A(b: B, c: C)
-case class B(i: Int)
-case class C(d: D)
-case class D(s: String)
+final case class A(b: B, c: C)
+final case class B(i: Int)
+final case class C(d: D)
+final case class D(s: String)

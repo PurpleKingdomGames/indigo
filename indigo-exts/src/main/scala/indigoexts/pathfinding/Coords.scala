@@ -1,6 +1,6 @@
 package indigoexts.pathfinding
 
-case class Coords(x: Int, y: Int) {
+final case class Coords(x: Int, y: Int) {
 
   def toGridPosition(gridWidth: Int): Int =
     Coords.toGridPosition(this, gridWidth)

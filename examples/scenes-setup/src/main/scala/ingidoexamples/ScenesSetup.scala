@@ -110,12 +110,12 @@ object SceneB extends Scene[MyGameModel, MyViewModel, MessageB, Unit] {
   }
 }
 
-case class MyStartUpData(messageA: String, messageB: String)
-case class MyGameModel(sceneA: MessageA, sceneB: MessageB)
-case class MyViewModel()
+final case class MyStartUpData(messageA: String, messageB: String)
+final case class MyGameModel(sceneA: MessageA, sceneB: MessageB)
+final case class MyViewModel()
 
-case class MessageA(value: String)
-case class MessageB(value: String)
+final case class MessageA(value: String)
+final case class MessageB(value: String)
 
 object FontStuff {
 

@@ -7,17 +7,17 @@ import indigo.runtime.{IndigoLogger, Show}
 import io.circe.generic.auto._
 import io.circe.parser._
 
-case class Aseprite(frames: List[AsepriteFrame], meta: AsepriteMeta)
+final case class Aseprite(frames: List[AsepriteFrame], meta: AsepriteMeta)
 
-case class AsepriteFrame(filename: String, frame: AsepriteRectangle, rotated: Boolean, trimmed: Boolean, spriteSourceSize: AsepriteRectangle, sourceSize: AsepriteSize, duration: Int)
+final case class AsepriteFrame(filename: String, frame: AsepriteRectangle, rotated: Boolean, trimmed: Boolean, spriteSourceSize: AsepriteRectangle, sourceSize: AsepriteSize, duration: Int)
 
-case class AsepriteRectangle(x: Int, y: Int, w: Int, h: Int)
+final case class AsepriteRectangle(x: Int, y: Int, w: Int, h: Int)
 
-case class AsepriteMeta(app: String, version: String, image: String, format: String, size: AsepriteSize, scale: String, frameTags: List[AsepriteFrameTag])
+final case class AsepriteMeta(app: String, version: String, image: String, format: String, size: AsepriteSize, scale: String, frameTags: List[AsepriteFrameTag])
 
-case class AsepriteSize(w: Int, h: Int)
+final case class AsepriteSize(w: Int, h: Int)
 
-case class AsepriteFrameTag(name: String, from: Int, to: Int, direction: String)
+final case class AsepriteFrameTag(name: String, from: Int, to: Int, direction: String)
 object AsepriteFrameTag {
   implicit val show: Show[AsepriteFrameTag] =
     Show.create { ft =>
@@ -104,4 +104,4 @@ object Aseprite {
 
 }
 
-case class SpriteAndAnimations(sprite: Sprite, animations: Animations)
+final case class SpriteAndAnimations(sprite: Sprite, animations: Animations)

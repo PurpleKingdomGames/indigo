@@ -111,8 +111,8 @@ object AnimationsRegister {
   }
 }
 
-case class AnimationActionCommand(bindingKey: BindingKey, animationsKey: AnimationsKey, action: AnimationAction) {
+final case class AnimationActionCommand(bindingKey: BindingKey, animationsKey: AnimationsKey, action: AnimationAction) {
   val hash: String = s"${bindingKey.value}_${animationsKey.key}_${action.hash}"
 }
 
-case class AnimationCacheEntry(bindingKey: BindingKey, animations: Animations)
+final case class AnimationCacheEntry(bindingKey: BindingKey, animations: Animations)

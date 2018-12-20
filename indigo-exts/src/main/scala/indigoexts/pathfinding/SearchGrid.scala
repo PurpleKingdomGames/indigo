@@ -5,7 +5,7 @@ import indigoexts.pathfinding.GridSquare.{EmptySquare, EndSquare, ImpassableSqua
 import scala.annotation.tailrec
 import scala.util.Random
 
-case class SearchGrid(validationWidth: Int, validationHeight: Int, start: Coords, end: Coords, grid: List[GridSquare]) {
+final case class SearchGrid(validationWidth: Int, validationHeight: Int, start: Coords, end: Coords, grid: List[GridSquare]) {
 
   def isValid: Boolean =
     SearchGrid.isValid(this)

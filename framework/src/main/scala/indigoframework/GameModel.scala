@@ -15,4 +15,4 @@ object GameModelHelper {
 
 }
 
-case class GameModel(gameDefinition: GameDefinition)
+final case class GameModel(gameDefinition: GameDefinition)

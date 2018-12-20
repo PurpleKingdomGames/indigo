@@ -1,6 +1,6 @@
 package indigo.runtime.metrics
 
-case class MetricWrapper(metric: Metric, time: Long)
+final case class MetricWrapper(metric: Metric, time: Long)
 
 trait Metric {
   val name: String

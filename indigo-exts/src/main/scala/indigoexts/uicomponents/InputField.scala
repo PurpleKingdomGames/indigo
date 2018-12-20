@@ -161,7 +161,7 @@ object InputField {
 
 }
 
-case class InputField(state: InputFieldState, text: String, cursorPosition: Int, options: InputFieldOptions, bindingKey: BindingKey) {
+final case class InputField(state: InputFieldState, text: String, cursorPosition: Int, options: InputFieldOptions, bindingKey: BindingKey) {
 
   def update(inputFieldEvent: InputFieldEvent): InputField =
     InputField.Model.update(this, inputFieldEvent)
@@ -213,7 +213,7 @@ case class InputField(state: InputFieldState, text: String, cursorPosition: Int,
 
 }
 
-case class InputFieldOptions(characterLimit: Int, multiLine: Boolean) {
+final case class InputFieldOptions(characterLimit: Int, multiLine: Boolean) {
 
   def withCharacterLimit(limit: Int): InputFieldOptions =
     this.copy(characterLimit = limit)
@@ -230,14 +230,14 @@ object InputFieldOptions {
     InputFieldOptions(characterLimit = 255, multiLine = false)
 }
 
-case class RenderedInputFieldElements(field: Text, cursor: Option[Graphic]) {
+final case class RenderedInputFieldElements(field: Text, cursor: Option[Graphic]) {
   def toNodes: List[SceneGraphNode] =
     List(field) ++ cursor.map(c => List(c)).getOrElse(Nil)
 }
 
-case class InputFieldAssets(text: Text, cursor: Graphic)
+final case class InputFieldAssets(text: Text, cursor: Graphic)
 
-case class InputFieldViewUpdate(sceneGraphNodes: List[SceneGraphNode], inputFieldEvents: List[InputFieldEvent]) {
+final case class InputFieldViewUpdate(sceneGraphNodes: List[SceneGraphNode], inputFieldEvents: List[InputFieldEvent]) {
   def toSceneUpdateFragment: SceneUpdateFragment =
     SceneUpdateFragment()
       .addGameLayerNodes(sceneGraphNodes)
@@ -251,15 +251,15 @@ sealed trait InputFieldEvent extends GlobalEvent {
   val bindingKey: BindingKey
 }
 object InputFieldEvent {
-  case class Delete(bindingKey: BindingKey)                     extends InputFieldEvent
-  case class Backspace(bindingKey: BindingKey)                  extends InputFieldEvent
-  case class CursorLeft(bindingKey: BindingKey)                 extends InputFieldEvent
-  case class CursorRight(bindingKey: BindingKey)                extends InputFieldEvent
-  case class CursorHome(bindingKey: BindingKey)                 extends InputFieldEvent
-  case class CursorEnd(bindingKey: BindingKey)                  extends InputFieldEvent
-  case class GiveFocus(bindingKey: BindingKey)                  extends InputFieldEvent
-  case class LoseFocus(bindingKey: BindingKey)                  extends InputFieldEvent
-  case class AddCharacter(bindingKey: BindingKey, char: String) extends InputFieldEvent
+  final case class Delete(bindingKey: BindingKey)                     extends InputFieldEvent
+  final case class Backspace(bindingKey: BindingKey)                  extends InputFieldEvent
+  final case class CursorLeft(bindingKey: BindingKey)                 extends InputFieldEvent
+  final case class CursorRight(bindingKey: BindingKey)                extends InputFieldEvent
+  final case class CursorHome(bindingKey: BindingKey)                 extends InputFieldEvent
+  final case class CursorEnd(bindingKey: BindingKey)                  extends InputFieldEvent
+  final case class GiveFocus(bindingKey: BindingKey)                  extends InputFieldEvent
+  final case class LoseFocus(bindingKey: BindingKey)                  extends InputFieldEvent
+  final case class AddCharacter(bindingKey: BindingKey, char: String) extends InputFieldEvent
 }
 
 sealed trait InputFieldState {

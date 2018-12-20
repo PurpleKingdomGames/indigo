@@ -82,10 +82,10 @@ object Framework {
 
 }
 
-case class StartupErrorReport(message: String)
+final case class StartupErrorReport(message: String)
 object StartupErrorReport {
   implicit val toErrorReport: ToReportable[StartupErrorReport] =
     ToReportable.createToReportable(r => r.message)
 }
 
-case class StartupData(gameDefinition: GameDefinition)
+final case class StartupData(gameDefinition: GameDefinition)

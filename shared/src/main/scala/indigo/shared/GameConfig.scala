@@ -3,7 +3,7 @@ package indigo.shared
 import io.circe.generic.auto._
 import io.circe.parser._
 
-case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int, advanced: AdvancedGameConfig) {
+final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int, advanced: AdvancedGameConfig) {
   val frameRateDeltaMillis: Int = 1000 / frameRate
 
   val haltViewUpdatesAt: Int  = frameRateDeltaMillis * 2
@@ -57,7 +57,7 @@ object GameConfig {
 
 }
 
-case class GameViewport(width: Int, height: Int) {
+final case class GameViewport(width: Int, height: Int) {
   val horizontalMiddle: Int = width / 2
   val verticalMiddle: Int   = height / 2
   val center: (Int, Int)    = (horizontalMiddle, verticalMiddle)
@@ -79,7 +79,7 @@ object GameViewport {
     GameViewport(640, 360)
 }
 
-case class AdvancedGameConfig(recordMetrics: Boolean, logMetricsReportIntervalMs: Int, disableSkipModelUpdates: Boolean, disableSkipViewUpdates: Boolean)
+final case class AdvancedGameConfig(recordMetrics: Boolean, logMetricsReportIntervalMs: Int, disableSkipModelUpdates: Boolean, disableSkipViewUpdates: Boolean)
 object AdvancedGameConfig {
   val default: AdvancedGameConfig = AdvancedGameConfig(
     recordMetrics = false,

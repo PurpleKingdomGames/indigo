@@ -1,6 +1,6 @@
 package indigoexts.grid
 
-case class GridSize(columns: Int, rows: Int, gridSquareSize: Int) {
+final case class GridSize(columns: Int, rows: Int, gridSquareSize: Int) {
   val width: Int  = columns
   val height: Int = rows
 

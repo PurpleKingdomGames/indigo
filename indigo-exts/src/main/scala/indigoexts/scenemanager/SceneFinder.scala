@@ -2,7 +2,7 @@ package indigoexts.scenemanager
 
 import indigo.runtime.IndigoLogger
 import indigoexts.collections.NonEmptyList
-case class SceneFinder(previous: List[ScenePosition], current: ScenePosition, next: List[ScenePosition]) {
+final case class SceneFinder(previous: List[ScenePosition], current: ScenePosition, next: List[ScenePosition]) {
 
   val sceneCount: Int =
     toList.length
@@ -87,4 +87,4 @@ object SceneFinder {
 
 }
 
-case class ScenePosition(index: Int, name: SceneName)
+final case class ScenePosition(index: Int, name: SceneName)

@@ -1,7 +1,7 @@
 package indigo.gameengine.scenegraph.datatypes
 import indigo.runtime.Show
 
-case class Rectangle(position: Point, size: Point) {
+final case class Rectangle(position: Point, size: Point) {
   val x: Int       = position.x
   val y: Int       = position.y
   val width: Int   = size.x

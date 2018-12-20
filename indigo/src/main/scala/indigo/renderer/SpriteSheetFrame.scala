@@ -15,6 +15,6 @@ object SpriteSheetFrame {
     translate = Vector2.zero
   )
 
-  case class SpriteSheetFrameCoordinateOffsets(scale: Vector2, translate: Vector2)
+  final case class SpriteSheetFrameCoordinateOffsets(scale: Vector2, translate: Vector2)
 
 }

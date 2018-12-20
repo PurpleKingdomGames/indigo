@@ -115,9 +115,9 @@ sealed trait IIO[+A] {
 
 object IIO {
 
-  case class Pure[A](a: A)               extends IIO[A]
-  case class Delay[A](thunk: () => A)    extends IIO[A]
-  case class RaiseError[A](e: Throwable) extends IIO[A]
+  final case class Pure[A](a: A)               extends IIO[A]
+  final case class Delay[A](thunk: () => A)    extends IIO[A]
+  final case class RaiseError[A](e: Throwable) extends IIO[A]
 
   def apply[A](a: => A): IIO[A] =
     pure(a)

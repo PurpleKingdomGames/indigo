@@ -2,7 +2,7 @@ package ingidoexamples
 
 import indigo._
 
-case class PointsTrackerSubSystem(points: Int, fontKey: FontKey) extends SubSystem {
+final case class PointsTrackerSubSystem(points: Int, fontKey: FontKey) extends SubSystem {
   type Model     = PointsTrackerSubSystem
   type EventType = PointsTrackerEvent
 
@@ -26,5 +26,5 @@ case class PointsTrackerSubSystem(points: Int, fontKey: FontKey) extends SubSyst
 
 sealed trait PointsTrackerEvent extends GlobalEvent with Product with Serializable
 object PointsTrackerEvent {
-  case class Add(points: Int) extends PointsTrackerEvent
+  final case class Add(points: Int) extends PointsTrackerEvent
 }

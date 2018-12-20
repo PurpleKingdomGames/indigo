@@ -62,6 +62,6 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, MyViewModel] {
     MyView.updateView(model, frameInputEvents)
 }
 
-case class Dude(aseprite: Aseprite, sprite: Sprite)
-case class MyStartupData(dude: Dude)
-case class MyViewModel()
+final case class Dude(aseprite: Aseprite, sprite: Sprite)
+final case class MyStartupData(dude: Dude)
+final case class MyViewModel()

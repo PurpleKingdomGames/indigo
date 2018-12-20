@@ -2,7 +2,7 @@ package indigo.gameengine.scenegraph
 
 import indigo.gameengine.scenegraph.datatypes.BindingKey
 
-case class SceneAudio(sourceA: SceneAudioSource, sourceB: SceneAudioSource, sourceC: SceneAudioSource) {
+final case class SceneAudio(sourceA: SceneAudioSource, sourceB: SceneAudioSource, sourceC: SceneAudioSource) {
   def |+|(other: SceneAudio): SceneAudio =
     SceneAudio.combine(this, other)
 }
@@ -22,7 +22,7 @@ object SceneAudio {
 
 }
 
-case class SceneAudioSource(bindingKey: BindingKey, playbackPattern: PlaybackPattern, masterVolume: Volume) {
+final case class SceneAudioSource(bindingKey: BindingKey, playbackPattern: PlaybackPattern, masterVolume: Volume) {
   def |+|(other: SceneAudioSource): SceneAudioSource =
     SceneAudioSource.combine(this, other)
 }
@@ -49,11 +49,11 @@ object SceneAudioSource {
 
 sealed trait PlaybackPattern
 object PlaybackPattern {
-  case object Silent                       extends PlaybackPattern
-  case class SingleTrackLoop(track: Track) extends PlaybackPattern
+  case object Silent                             extends PlaybackPattern
+  final case class SingleTrackLoop(track: Track) extends PlaybackPattern
 }
 
-case class Track(assetRef: String, volume: Volume)
+final case class Track(assetRef: String, volume: Volume)
 object Track {
   def apply(assetRef: String): Track =
     Track(assetRef, Volume.Max)

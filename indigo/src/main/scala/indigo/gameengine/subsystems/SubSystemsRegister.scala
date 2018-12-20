@@ -4,7 +4,7 @@ import indigo.gameengine.GameTime
 import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph.SceneUpdateFragment
 
-case class SubSystemsRegister(registeredSubSystems: List[SubSystem]) {
+final case class SubSystemsRegister(registeredSubSystems: List[SubSystem]) {
 
   def add(subSystems: SubSystem*): SubSystemsRegister =
     SubSystemsRegister.add(this, subSystems.toList)
@@ -50,4 +50,4 @@ object SubSystemsRegister {
 
 }
 
-case class UpdatedSubSystemsRegister(register: SubSystemsRegister, events: List[GlobalEvent])
+final case class UpdatedSubSystemsRegister(register: SubSystemsRegister, events: List[GlobalEvent])

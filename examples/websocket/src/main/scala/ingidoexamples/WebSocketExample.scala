@@ -110,7 +110,7 @@ object WebSocketExample extends IndigoGameBasic[MySetupData, MyGameModel, Unit] 
   }
 }
 
-case class MySetupData(pingSocket: WebSocketConfig, echoSocket: WebSocketConfig)
+final case class MySetupData(pingSocket: WebSocketConfig, echoSocket: WebSocketConfig)
 
 // We need a button in our model
-case class MyGameModel(ping: Button, echo: Button, count: Int)
+final case class MyGameModel(ping: Button, echo: Button, count: Int)

@@ -16,7 +16,7 @@ import org.scalajs.dom.html.Canvas
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-case class GameTime(running: Double, delta: Double, frameDuration: Double)
+final case class GameTime(running: Double, delta: Double, frameDuration: Double)
 
 object GameTime {
   def now(frameDuration: Double): GameTime                                = GameTime(System.currentTimeMillis().toDouble, 0, frameDuration)
@@ -24,7 +24,7 @@ object GameTime {
   def is(running: Double, delta: Double, frameDuration: Double): GameTime = GameTime(running, delta, frameDuration)
 }
 
-case class GameEngine[StartupData, StartupError, GameModel, ViewModel](
+final case class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     config: GameConfig,
     configAsync: Future[Option[GameConfig]],
     assets: Set[AssetType],

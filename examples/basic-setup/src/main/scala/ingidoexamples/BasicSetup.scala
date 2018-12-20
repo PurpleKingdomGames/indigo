@@ -33,10 +33,10 @@ object BasicSetup extends IndigoGameBasic[MyStartUpData, MyGameModel, MyViewMode
 }
 
 // What does your game need to start? E.g. Parsing a level description file
-case class MyStartUpData()
+final case class MyStartUpData()
 
 // Your game model is anything you like!
-case class MyGameModel()
+final case class MyGameModel()
 
 // Your view model is also ...anything you like!
-case class MyViewModel()
+final case class MyViewModel()

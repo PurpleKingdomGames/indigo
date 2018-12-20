@@ -2,7 +2,7 @@ package indigoexts.line
 
 import indigo.gameengine.scenegraph.datatypes.Point
 
-case class LineSegment(start: Point, end: Point) {
+final case class LineSegment(start: Point, end: Point) {
   val center: Point = end - start
 
   def left: Int   = Math.min(start.x, end.x)
@@ -163,15 +163,15 @@ object LineSegment {
 sealed trait LineProperties
 object LineProperties {
 // y = mx + b
-  case class LineComponents(m: Float, b: Float) extends LineProperties
-  case object ParallelToAxisX                   extends LineProperties
-  case object ParallelToAxisY                   extends LineProperties
-  case object InvalidLine                       extends LineProperties
+  final case class LineComponents(m: Float, b: Float) extends LineProperties
+  case object ParallelToAxisX                         extends LineProperties
+  case object ParallelToAxisY                         extends LineProperties
+  case object InvalidLine                             extends LineProperties
 }
 
 sealed trait IntersectionResult
 object IntersectionResult {
-  case class IntersectionPoint(x: Float, y: Float) extends IntersectionResult {
+  final case class IntersectionPoint(x: Float, y: Float) extends IntersectionResult {
     def toPoint: Point =
       Point(x.toInt, y.toInt)
   }

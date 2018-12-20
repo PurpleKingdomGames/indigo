@@ -11,12 +11,12 @@ object Effects {
     )
   )
 }
-case class Effects(alpha: Double, tint: Tint, flip: Flip)
-case class Tint(r: Double, g: Double, b: Double) {
+final case class Effects(alpha: Double, tint: Tint, flip: Flip)
+final case class Tint(r: Double, g: Double, b: Double) {
   def +(other: Tint): Tint =
     Tint.combine(this, other)
 }
-case class Flip(horizontal: Boolean, vertical: Boolean)
+final case class Flip(horizontal: Boolean, vertical: Boolean)
 
 object Tint {
   val None: Tint = Tint(1, 1, 1)

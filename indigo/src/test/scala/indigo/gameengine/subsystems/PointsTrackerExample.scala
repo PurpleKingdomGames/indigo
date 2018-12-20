@@ -5,7 +5,7 @@ import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph.{SceneUpdateFragment, Text}
 import indigo.gameengine.scenegraph.datatypes.FontKey
 
-case class PointsTrackerExample(points: Int) extends SubSystem {
+final case class PointsTrackerExample(points: Int) extends SubSystem {
   type Model     = PointsTrackerExample
   type EventType = PointsTrackerEvent
 

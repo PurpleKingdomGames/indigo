@@ -3,7 +3,7 @@ package indigo.shared
 import io.circe.generic.auto._
 import io.circe.parser._
 
-case class AssetList(images: List[SimpleAssetType], texts: List[SimpleAssetType]) {
+final case class AssetList(images: List[SimpleAssetType], texts: List[SimpleAssetType]) {
   def toSet: Set[AssetType] = texts.map(_.toTextAsset).toSet ++ images.map(_.toImageAsset).toSet
 
   def withImage(name: String, path: String): AssetList =
@@ -30,8 +30,7 @@ object AssetList {
 
 }
 
-//upickle (which we should deprecate) won't deserialise ADT's without faff, so this is a cheap workaround.
-case class SimpleAssetType(name: String, path: String) {
+final case class SimpleAssetType(name: String, path: String) {
   def toTextAsset: AssetType.Text   = AssetType.Text(name, path)
   def toImageAsset: AssetType.Image = AssetType.Image(name, path)
 }

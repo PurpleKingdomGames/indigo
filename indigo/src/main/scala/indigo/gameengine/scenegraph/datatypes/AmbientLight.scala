@@ -2,7 +2,7 @@ package indigo.gameengine.scenegraph.datatypes
 
 import indigo.shared.ClearColor
 
-case class AmbientLight(tint: Tint, amount: Double) {
+final case class AmbientLight(tint: Tint, amount: Double) {
   def +(other: AmbientLight): AmbientLight =
     AmbientLight.combine(this, other)
 

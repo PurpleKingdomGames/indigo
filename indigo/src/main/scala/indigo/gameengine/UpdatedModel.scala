@@ -1,7 +1,7 @@
 package indigo.gameengine
 import indigo.gameengine.events.{GlobalEvent, InFrameEvent}
 
-case class UpdatedModel[Model](model: Model, globalEvents: List[GlobalEvent], inFrameEvents: List[InFrameEvent]) {
+final case class UpdatedModel[Model](model: Model, globalEvents: List[GlobalEvent], inFrameEvents: List[InFrameEvent]) {
   def addGlobalEvents(events: GlobalEvent*): UpdatedModel[Model] =
     addGlobalEvents(events.toList)
   def addGlobalEvents(events: List[GlobalEvent]): UpdatedModel[Model] =
@@ -20,7 +20,7 @@ object UpdatedModel {
     UpdatedModel(model, Nil, Nil)
 }
 
-case class UpdatedViewModel[Model](model: Model, globalEvents: List[GlobalEvent], inFrameEvents: List[InFrameEvent]) {
+final case class UpdatedViewModel[Model](model: Model, globalEvents: List[GlobalEvent], inFrameEvents: List[InFrameEvent]) {
   def addGlobalEvents(events: GlobalEvent*): UpdatedViewModel[Model] =
     addGlobalEvents(events.toList)
   def addGlobalEvents(events: List[GlobalEvent]): UpdatedViewModel[Model] =

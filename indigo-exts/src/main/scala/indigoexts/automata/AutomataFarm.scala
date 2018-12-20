@@ -17,7 +17,7 @@ They have a thing to render
 They have procedural modifiers based on time and previous value
 They can emit events
  */
-case class AutomataFarm(inventory: Map[AutomataPoolKey, Automaton], paddock: List[SpawnedAutomaton]) extends SubSystem {
+final case class AutomataFarm(inventory: Map[AutomataPoolKey, Automaton], paddock: List[SpawnedAutomaton]) extends SubSystem {
   type Model     = AutomataFarm
   type EventType = AutomataEvent
 
@@ -167,7 +167,7 @@ object AutomataFarm {
 
 }
 
-case class SpawnedAutomaton(automata: Automaton, seedValues: AutomatonSeedValues) {
+final case class SpawnedAutomaton(automata: Automaton, seedValues: AutomatonSeedValues) {
   def isAlive(currentTime: Double): Boolean =
     seedValues.createdAt + automata.lifespan.millis > currentTime
 
@@ -175,4 +175,4 @@ case class SpawnedAutomaton(automata: Automaton, seedValues: AutomatonSeedValues
     this.copy(seedValues = seedValues.copy(timeAliveDelta = seedValues.timeAliveDelta + frameDelta.toInt))
 }
 
-case class AutomatonSeedValues(spawnedAt: Point, createdAt: Double, lifeSpan: Double, timeAliveDelta: Double, randomSeed: Int)
+final case class AutomatonSeedValues(spawnedAt: Point, createdAt: Double, lifeSpan: Double, timeAliveDelta: Double, randomSeed: Int)

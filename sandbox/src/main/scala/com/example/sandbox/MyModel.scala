@@ -35,9 +35,9 @@ object MyModel {
 
 }
 
-case class MyGameModel(dude: DudeModel)
+final case class MyGameModel(dude: DudeModel)
 
-case class DudeModel(dude: Dude, walkDirection: DudeDirection) {
+final case class DudeModel(dude: Dude, walkDirection: DudeDirection) {
   def idle: DudeModel      = this.copy(walkDirection = DudeIdle)
   def walkLeft: DudeModel  = this.copy(walkDirection = DudeLeft)
   def walkRight: DudeModel = this.copy(walkDirection = DudeRight)

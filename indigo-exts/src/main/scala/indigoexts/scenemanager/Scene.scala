@@ -46,7 +46,7 @@ object Scene {
 
 }
 
-case class SceneName(name: String) extends AnyVal {
+final case class SceneName(name: String) extends AnyVal {
   def ===(other: SceneName): Boolean =
     name == other.name
 }

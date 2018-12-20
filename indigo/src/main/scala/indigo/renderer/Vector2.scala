@@ -1,6 +1,6 @@
 package indigo.renderer
 
-case class Vector2(x: Double, y: Double) {
+final case class Vector2(x: Double, y: Double) {
 
   def translate(vec: Vector2): Vector2 =
     Vector2.add(this, vec)

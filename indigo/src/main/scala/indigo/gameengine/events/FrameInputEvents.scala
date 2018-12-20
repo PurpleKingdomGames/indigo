@@ -8,7 +8,7 @@ import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
   *
   * @param inFrameEvents A list of GlobalEvents
   */
-case class FrameInputEvents(globalEvents: List[GlobalEvent], inFrameEvents: List[InFrameEvent], signals: Signals) extends FrameMouseEvents with FrameKeyboardEvents
+final case class FrameInputEvents(globalEvents: List[GlobalEvent], inFrameEvents: List[InFrameEvent], signals: Signals) extends FrameMouseEvents with FrameKeyboardEvents
 object FrameInputEvents {
   val empty: FrameInputEvents =
     FrameInputEvents(Nil, Nil, Signals.default)

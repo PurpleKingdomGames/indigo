@@ -53,14 +53,14 @@ object QuadTree {
   def empty[T](gridSize: GridSize): QuadTree[T] =
     QuadEmpty(QuadBounds.apply(gridSize.asPowerOf2))
 
-  case class QuadBranch[T](bounds: QuadBounds, a: QuadTree[T], b: QuadTree[T], c: QuadTree[T], d: QuadTree[T]) extends QuadTree[T] {
+  final case class QuadBranch[T](bounds: QuadBounds, a: QuadTree[T], b: QuadTree[T], c: QuadTree[T], d: QuadTree[T]) extends QuadTree[T] {
     def isEmpty: Boolean =
       a.isEmpty && b.isEmpty && c.isEmpty && d.isEmpty
   }
-  case class QuadLeaf[T](bounds: QuadBounds, value: T) extends QuadTree[T] {
+  final case class QuadLeaf[T](bounds: QuadBounds, value: T) extends QuadTree[T] {
     def isEmpty: Boolean = false
   }
-  case class QuadEmpty[T](bounds: QuadBounds) extends QuadTree[T] {
+  final case class QuadEmpty[T](bounds: QuadBounds) extends QuadTree[T] {
     def isEmpty: Boolean = true
   }
 

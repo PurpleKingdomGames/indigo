@@ -1,6 +1,6 @@
 package indigo.renderer
 
-case class Matrix4(mat: List[Double]) {
+final case class Matrix4(mat: List[Double]) {
 
   def row1: List[Double] = List(mat(0), mat(1), mat(2), mat(3))
   def row2: List[Double] = List(mat(4), mat(5), mat(6), mat(7))

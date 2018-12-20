@@ -107,8 +107,8 @@ object AssetManager {
 
 }
 
-case class LoadedTextAsset(name: String, contents: String)
-case class LoadedImageAsset(name: String, data: html.Image)
-case class LoadedAudioAsset(name: String, data: dom.AudioBuffer)
+final case class LoadedTextAsset(name: String, contents: String)
+final case class LoadedImageAsset(name: String, data: html.Image)
+final case class LoadedAudioAsset(name: String, data: dom.AudioBuffer)
 
-case class AssetCollection(images: List[LoadedImageAsset], texts: List[LoadedTextAsset], sounds: List[LoadedAudioAsset])
+final case class AssetCollection(images: List[LoadedImageAsset], texts: List[LoadedTextAsset], sounds: List[LoadedAudioAsset])

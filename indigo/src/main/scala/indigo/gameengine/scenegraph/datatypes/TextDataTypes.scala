@@ -1,6 +1,6 @@
 package indigo.gameengine.scenegraph.datatypes
 
-case class FontInfo(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean) {
+final case class FontInfo(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean) {
   private val nonEmptyChars: List[FontChar] = unknownChar +: fontChars
 
   def addChar(fontChar: FontChar): FontInfo     = FontInfo(fontKey, fontSpriteSheet, fontChar, nonEmptyChars, caseSensitive)
@@ -31,13 +31,13 @@ object FontInfo {
     )
 }
 
-case class FontKey(key: String) extends AnyVal {
+final case class FontKey(key: String) extends AnyVal {
   def ===(other: FontKey): Boolean =
     key == other.key
 }
 
-case class FontSpriteSheet(imageAssetRef: String, size: Point)
-case class FontChar(character: String, bounds: Rectangle)
+final case class FontSpriteSheet(imageAssetRef: String, size: Point)
+final case class FontChar(character: String, bounds: Rectangle)
 object FontChar {
   def apply(character: String, x: Int, y: Int, width: Int, height: Int): FontChar =
     FontChar(character, Rectangle(x, y, width, height))
