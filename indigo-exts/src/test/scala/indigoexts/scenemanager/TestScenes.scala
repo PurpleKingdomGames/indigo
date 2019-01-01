@@ -34,10 +34,10 @@ final case class TestSceneA() extends Scene[TestGameModel, TestViewModel, TestSc
     )
 
   def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelA): GlobalEvent => UpdatedModel[TestSceneModelA] =
-    _ => sceneModel.copy(count = sceneModel.count + 1)
+    _ => UpdatedModel(sceneModel.copy(count = sceneModel.count + 1))
 
   def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, frameInputEvents: FrameInputEvents): UpdatedViewModel[TestSceneViewModelA] =
-    TestSceneViewModelA()
+    UpdatedViewModel(TestSceneViewModelA())
 
   def updateSceneView(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     SceneUpdateFragment.empty
@@ -62,10 +62,10 @@ final case class TestSceneB() extends Scene[TestGameModel, TestViewModel, TestSc
     )
 
   def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelB): GlobalEvent => UpdatedModel[TestSceneModelB] =
-    _ => sceneModel.copy(count = sceneModel.count + 10)
+    _ => UpdatedModel(sceneModel.copy(count = sceneModel.count + 10))
 
   def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, frameInputEvents: FrameInputEvents): UpdatedViewModel[TestSceneViewModelB] =
-    TestSceneViewModelB()
+    UpdatedViewModel(TestSceneViewModelB())
 
   def updateSceneView(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     SceneUpdateFragment.empty

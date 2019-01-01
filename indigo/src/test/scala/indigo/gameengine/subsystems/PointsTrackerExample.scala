@@ -6,7 +6,6 @@ import indigo.gameengine.scenegraph.{SceneUpdateFragment, Text}
 import indigo.gameengine.scenegraph.datatypes.FontKey
 
 final case class PointsTrackerExample(points: Int) extends SubSystem {
-  type Model     = PointsTrackerExample
   type EventType = PointsTrackerEvent
 
   val eventFilter: GlobalEvent => Option[PointsTrackerEvent] = {
@@ -16,7 +15,7 @@ final case class PointsTrackerExample(points: Int) extends SubSystem {
 
   def update(gameTime: GameTime): PointsTrackerEvent => UpdatedSubSystem = {
     case PointsTrackerEvent.Add(pts) =>
-      this.copy(points = points + pts)
+      UpdatedSubSystem(this.copy(points = points + pts))
 
     case PointsTrackerEvent.LoseAll =>
       UpdatedSubSystem(this.copy(points = 0))

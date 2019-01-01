@@ -5,7 +5,6 @@ import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph.SceneUpdateFragment
 
 trait SubSystem {
-  type Model
   type EventType
 
   val eventFilter: GlobalEvent => Option[EventType]
