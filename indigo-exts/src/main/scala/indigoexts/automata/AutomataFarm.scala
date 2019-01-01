@@ -1,7 +1,7 @@
 package indigoexts.automata
 
 import indigo.gameengine.GameTime
-import indigo.gameengine.events.GlobalEvent
+import indigo.gameengine.events.{FrameTick, GlobalEvent}
 import indigo.gameengine.scenegraph._
 import indigo.gameengine.scenegraph.datatypes.Point
 import indigo.gameengine.subsystems.{SubSystem, UpdatedSubSystem}
@@ -24,6 +24,9 @@ final case class AutomataFarm(inventory: Map[AutomataPoolKey, Automaton], paddoc
   val eventFilter: GlobalEvent => Option[AutomataEvent] = {
     case e: AutomataEvent =>
       Some(e)
+
+    case FrameTick =>
+      Some(AutomataEvent.Cull)
 
     case _ =>
       None

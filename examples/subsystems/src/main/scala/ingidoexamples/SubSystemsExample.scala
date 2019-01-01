@@ -15,7 +15,11 @@ object SubSystemsExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val animations: Set[Animations] = Set()
 
-  val subSystems: Set[SubSystem] = Set(PointsTrackerSubSystem(0, fontKey))
+  val subSystems: Set[SubSystem] =
+    Set(
+      PointsTrackerSubSystem(0, fontKey),
+      PointsAutomaton.automataSubSystem(fontKey)
+    )
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
     Startup.Success(())
@@ -24,9 +28,12 @@ object SubSystemsExample extends IndigoGameBasic[Unit, Unit, Unit] {
     ()
 
   def update(gameTime: GameTime, model: Unit): GlobalEvent => UpdatedModel[Unit] = {
-    case MouseEvent.Click(_, _) =>
+    case e @ MouseEvent.Click(_, _) =>
       UpdatedModel(())
-        .addGlobalEvents(PointsTrackerEvent.Add(10))
+        .addGlobalEvents(
+          PointsTrackerEvent.Add(10),
+          PointsAutomaton.spawnEvent(e.position - Point(0, 30))
+        )
 
     case _ =>
       UpdatedModel(())

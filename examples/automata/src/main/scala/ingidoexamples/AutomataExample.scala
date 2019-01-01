@@ -76,9 +76,6 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
         )
       )
 
-    case FrameTick =>
-      UpdatedModel(model).addGlobalEvents(AutomataEvent.Cull)
-
     case _ =>
       UpdatedModel(model)
   }

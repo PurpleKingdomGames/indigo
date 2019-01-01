@@ -5,10 +5,12 @@ import indigo.gameengine.scenegraph.datatypes.{BindingKey, Point}
 
 sealed trait AutomataEvent extends GlobalEvent
 object AutomataEvent {
-  final case class Spawn(key: AutomataPoolKey, at: Point)                                                           extends AutomataEvent
+  final case class Spawn(key: AutomataPoolKey, at: Point) extends AutomataEvent
+
   final case class ModifyAndSpawn(key: AutomataPoolKey, at: Point, modifier: PartialFunction[Automaton, Automaton]) extends AutomataEvent
-  final case class KillAllInPool(key: AutomataPoolKey)                                                              extends AutomataEvent
-  final case class KillByKey(key: BindingKey)                                                                       extends AutomataEvent
-  case object KillAll                                                                                               extends AutomataEvent
-  case object Cull                                                                                                  extends AutomataEvent
+
+  final case class KillAllInPool(key: AutomataPoolKey) extends AutomataEvent
+  final case class KillByKey(key: BindingKey)          extends AutomataEvent
+  case object KillAll                                  extends AutomataEvent
+  case object Cull                                     extends AutomataEvent
 }

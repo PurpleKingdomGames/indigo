@@ -49,7 +49,7 @@ class GameLoop[GameModel, ViewModel](
 
         val gameTime: GameTime = GameTime(time, timeDelta, gameConfig.frameRateDeltaMillis.toDouble)
 
-        val collectedEvents: List[GlobalEvent] = globalEventStream.collect
+        val collectedEvents: List[GlobalEvent] = globalEventStream.collect :+ FrameTick
 
         val signals = globalSignals.calculate(signalsState, collectedEvents)
         signalsState = signals
@@ -205,7 +205,7 @@ object GameLoop {
     def rec(remaining: List[GlobalEvent], last: UpdatedModel[GameModel]): UpdatedModel[GameModel] =
       remaining match {
         case Nil =>
-          combine(last, updateModel(gameTime, last.model)(FrameTick))
+          last
 
         case x :: xs =>
           rec(xs, combine(last, updateModel(gameTime, last.model)(x)))
