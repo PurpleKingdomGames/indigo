@@ -49,4 +49,7 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   type KeyCode = gameengine.constants.KeyCode
   val KeyCode: gameengine.constants.KeyCode.type = gameengine.constants.KeyCode
 
+  type PowerOfTwo = gameengine.PowerOfTwo
+  val PowerOfTwo: gameengine.PowerOfTwo.type = gameengine.PowerOfTwo
+
 }
