@@ -16,7 +16,9 @@ import org.scalajs.dom.html.Canvas
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-final case class GameTime(running: Double, delta: Double, frameDuration: Double)
+final case class GameTime(running: Double, delta: Double, frameDuration: Double) {
+  def multiplier: Double = delta / frameDuration
+}
 
 object GameTime {
   def now(frameDuration: Double): GameTime                                = GameTime(System.currentTimeMillis().toDouble, 0, frameDuration)
