@@ -17,7 +17,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 final case class GameTime(running: Double, delta: Double, frameDuration: Double) {
-  def multiplier: Double = delta / frameDuration
+  def multiplier: Double                  = delta / frameDuration
+  def intByTime(value: Int): Int          = (value * multiplier).toInt
+  def floatByTime(value: Float): Float    = (value * multiplier).toFloat
+  def doubleByTime(value: Double): Double = value * multiplier
 }
 
 object GameTime {
