@@ -1,5 +1,6 @@
 package indigoexts.quadtrees
 
+import indigo.gameengine.PowerOfTwo
 import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
 import indigoexts.grid.GridPoint
 import indigoexts.quadtree.QuadTree.{QuadBranch, QuadEmpty, QuadLeaf}
@@ -40,7 +41,7 @@ class QuadTreeSpec extends FunSpec with Matchers {
     it("should be able to insert an element at a given position") {
 
       val tree = QuadTree
-        .empty(16)
+        .empty(PowerOfTwo._16)
         .insertElement("a", GridPoint(9, 2))
         .insertElement("b", GridPoint(0, 0))
         .insertElement("c", GridPoint(10, 10))
@@ -73,7 +74,7 @@ class QuadTreeSpec extends FunSpec with Matchers {
       val gridPoint = GridPoint(9, 2)
 
       val tree = QuadTree
-        .empty(16)
+        .empty(PowerOfTwo._16)
         .insertElement("test", gridPoint)
 
       tree.fetchElementAt(gridPoint) shouldEqual Some("test")
@@ -108,12 +109,12 @@ class QuadTreeSpec extends FunSpec with Matchers {
       val gridPoint = GridPoint(9, 2)
 
       val tree = QuadTree
-        .empty(16)
+        .empty(PowerOfTwo._16)
         .insertElement(999, gridPoint)
         .removeElement(gridPoint)
         .prune
 
-      tree shouldEqual QuadTree.empty(16)
+      tree shouldEqual QuadTree.empty(PowerOfTwo._16)
 
     }
 
@@ -122,7 +123,7 @@ class QuadTreeSpec extends FunSpec with Matchers {
       val gridPoint = GridPoint(9, 2)
 
       val tree = QuadTree
-        .empty(16)
+        .empty(PowerOfTwo._16)
         .insertElement(999, gridPoint)
 
       tree.prune shouldEqual tree
@@ -131,7 +132,7 @@ class QuadTreeSpec extends FunSpec with Matchers {
 
     it("should be able to search for a leaf under a point") {
       val tree = QuadTree
-        .empty(2)
+        .empty(PowerOfTwo._2)
         .insertElement("a", GridPoint(0, 0))
         .insertElement("b", GridPoint(0, 1))
         .insertElement("c", GridPoint(1, 0))
@@ -302,7 +303,7 @@ class QuadTreeSpec extends FunSpec with Matchers {
 object SampleTree {
 
   val tree: QuadTree[String] = QuadTree
-    .empty(4)
+    .empty(PowerOfTwo._4)
     .insertElement("0,0", GridPoint(0, 0))
     .insertElement("0,1", GridPoint(0, 1))
     .insertElement("0,2", GridPoint(0, 2))

@@ -1,5 +1,6 @@
 package indigoexts.quadtrees
 
+import indigo.gameengine.PowerOfTwo
 import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
 import indigo.runtime.Show
 import indigoexts.grid.{GridPoint, GridSize}
@@ -47,11 +48,11 @@ object QuadTree {
   implicit def showQuadTree[T]: Show[QuadTree[T]] =
     Show.create(t => t.renderAsString)
 
-  def empty[T](sizeAsPowerOf2: Int): QuadTree[T] =
-    QuadEmpty(QuadBounds.apply(sizeAsPowerOf2))
+  def empty[T](size: PowerOfTwo): QuadTree[T] =
+    QuadEmpty(QuadBounds.apply(size.value))
 
   def empty[T](gridSize: GridSize): QuadTree[T] =
-    QuadEmpty(QuadBounds.apply(gridSize.asPowerOf2))
+    QuadEmpty(QuadBounds.apply(gridSize.asPowerOf2.value))
 
   final case class QuadBranch[T](bounds: QuadBounds, a: QuadTree[T], b: QuadTree[T], c: QuadTree[T], d: QuadTree[T]) extends QuadTree[T] {
     def isEmpty: Boolean =

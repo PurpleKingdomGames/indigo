@@ -14,7 +14,7 @@ class GridSizeSpec extends FunSpec with Matchers {
         gridSquareSize = 16
       )
 
-      gridSize.asPowerOf2 shouldEqual 32
+      gridSize.asPowerOf2.value shouldEqual 32
 
     }
 

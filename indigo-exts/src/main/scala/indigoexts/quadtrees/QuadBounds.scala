@@ -64,12 +64,12 @@ object QuadBounds {
       s"""QuadBounds(${qb.x}, ${qb.y}, ${qb.width}, ${qb.height})"""
     }
 
-  def apply(powerOf2: Int): QuadBounds =
+  def apply(size: Int): QuadBounds =
     unsafeCreate(
       0,
       0,
-      if (powerOf2 < 2) 2 else powerOf2,
-      if (powerOf2 < 2) 2 else powerOf2
+      if (size < 2) 2 else size,
+      if (size < 2) 2 else size
     )
 
   def apply(_x: Int, _y: Int, _width: Int, _height: Int): QuadBounds =

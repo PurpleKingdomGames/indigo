@@ -20,12 +20,12 @@ object TextureAtlas {
   def createWithMaxSize(max: PowerOfTwo,
                         imageRefs: List[ImageRef],
                         lookupByName: String => Option[LoadedImageAsset],
-                        createAtlasFunc: ((TextureMap, String => Option[LoadedImageAsset]) => Atlas)): TextureAtlas =
+                        createAtlasFunc: (TextureMap, String => Option[LoadedImageAsset]) => Atlas): TextureAtlas =
     (inflateAndSortByPowerOfTwo andThen groupTexturesIntoAtlasBuckets(max) andThen convertToAtlas(createAtlasFunc)(lookupByName))(
       imageRefs
     )
 
-  def create(imageRefs: List[ImageRef], lookupByName: String => Option[LoadedImageAsset], createAtlasFunc: ((TextureMap, String => Option[LoadedImageAsset]) => Atlas)): TextureAtlas = {
+  def create(imageRefs: List[ImageRef], lookupByName: String => Option[LoadedImageAsset], createAtlasFunc: (TextureMap, String => Option[LoadedImageAsset]) => Atlas): TextureAtlas = {
     IndigoLogger.info(s"Creating atlases. Max size: ${MaxTextureSize.value}x${MaxTextureSize.value}")
     val textureAtlas = (inflateAndSortByPowerOfTwo andThen groupTexturesIntoAtlasBuckets(MaxTextureSize) andThen convertToAtlas(
       createAtlasFunc
@@ -123,6 +123,7 @@ object TextureAtlasFunctions {
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   private def createCanvas(width: Int, height: Int): html.Canvas = {
     val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
+    // Handy if you want to draw the atlas to the page...
 //    dom.document.body.appendChild(canvas)
     canvas.width = width
     canvas.height = height
@@ -241,7 +242,6 @@ final case class TextureDetails(imageRef: ImageRef, size: PowerOfTwo)
 final case class TextureMap(size: PowerOfTwo, textureCoords: List[TextureAndCoords])
 final case class TextureAndCoords(imageRef: ImageRef, coords: Point)
 
-// Intermediate tree structure
 sealed trait AtlasQuadTree {
   val size: PowerOfTwo
   def canAccommodate(requiredSize: PowerOfTwo): Boolean
@@ -252,10 +252,9 @@ sealed trait AtlasQuadTree {
   def toTextureCoordsList(offset: Point): List[TextureAndCoords]
 }
 
-// Oh look! It's a monoid...
 object AtlasQuadTree {
 
-  def identity: AtlasQuadTree = AtlasQuadEmpty(PowerOfTwo._1)
+  def identity: AtlasQuadTree = AtlasQuadEmpty(PowerOfTwo._2)
 
   def append(first: AtlasQuadTree, second: AtlasQuadTree): AtlasQuadTree =
     TextureAtlasFunctions.mergeTrees(first, second, PowerOfTwo.Max).getOrElse(first)

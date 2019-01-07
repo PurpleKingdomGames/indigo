@@ -13,17 +13,18 @@ sealed trait PowerOfTwo {
   def <=(powerOfTwo: PowerOfTwo): Boolean  = value <= powerOfTwo.value
   def ===(powerOfTwo: PowerOfTwo): Boolean = value == powerOfTwo.value
 
+  def >(i: Int): Boolean   = value > i
+  def >=(i: Int): Boolean  = value >= i
+  def <(i: Int): Boolean   = value < i
+  def <=(i: Int): Boolean  = value <= i
+  def ===(i: Int): Boolean = value == i
+
   def toPoint: Point = Point(value, value)
 }
 object PowerOfTwo {
-  case object _1 extends PowerOfTwo {
-    val value: Int          = 1
-    val halved: PowerOfTwo  = _1
-    val doubled: PowerOfTwo = _2
-  }
   case object _2 extends PowerOfTwo {
     val value: Int          = 2
-    val halved: PowerOfTwo  = _1
+    val halved: PowerOfTwo  = _2
     val doubled: PowerOfTwo = _4
   }
   case object _4 extends PowerOfTwo {
@@ -82,13 +83,16 @@ object PowerOfTwo {
     val doubled: PowerOfTwo = _4096
   }
 
+  val Min: PowerOfTwo = _2
   val Max: PowerOfTwo = _4096
 
-  val all: Set[PowerOfTwo] = Set(_1, _2, _4, _8, _16, _32, _64, _128, _256, _512, _1024, _2048, _4096)
+  val all: Set[PowerOfTwo] = Set(_2, _4, _8, _16, _32, _64, _128, _256, _512, _1024, _2048, _4096)
 
-  def isValidPowerOfTwo(i: Int): Boolean = all.exists(p => p.value == i)
+  def isValidPowerOfTwo(i: Int): Boolean =
+    i >= Min.value && i <= Max.value && ((i & (i - 1)) == 0)
 
-  def fromInt(i: Int): Option[PowerOfTwo] = all.find(_.value == i)
+  def fromInt(i: Int): Option[PowerOfTwo] =
+    if (isValidPowerOfTwo(i)) all.find(_.value == i) else None
 
   def min(a: PowerOfTwo, b: PowerOfTwo): PowerOfTwo = if (a.value <= b.value) a else b
   def max(a: PowerOfTwo, b: PowerOfTwo): PowerOfTwo = if (a.value > b.value) a else b
