@@ -89,20 +89,50 @@ class QuadTreeSpec extends FunSpec with Matchers {
     implicit def eq[T]: Equality[QuadTree[T]] =
       new Equality[QuadTree[T]] {
         def areEqual(a: QuadTree[T], b: Any): Boolean =
-          (a, b) match {
-            case (QuadEmpty(b1), QuadEmpty(b2)) if b1 === b2 =>
-              true
-
-            case (QuadLeaf(b1, v1), QuadLeaf(b2, v2)) if b1 === b2 && v1 == v2 =>
-              true
-
-            case (QuadBranch(bounds1, a1, b1, c1, d1), QuadBranch(bounds2, a2, b2, c2, d2)) =>
-              bounds1 === bounds2 && areEqual(a1, a2) && areEqual(b1, b2) && areEqual(c1, c2) && areEqual(d1, d2)
+          b match {
+            case t: QuadTree[T] =>
+              QuadTree.equalTo(a, t)
 
             case _ =>
               false
           }
       }
+
+    it("should be able to check equality") {
+      withClue("equal") {
+
+        val treeA = QuadTree
+          .empty(PowerOfTwo._2)
+          .insertElement("a", GridPoint(0, 0))
+          .insertElement("b", GridPoint(0, 1))
+          .insertElement("c", GridPoint(1, 0))
+
+        val treeB = QuadTree
+          .empty(PowerOfTwo._2)
+          .insertElement("a", GridPoint(0, 0))
+          .insertElement("b", GridPoint(0, 1))
+          .insertElement("c", GridPoint(1, 0))
+
+        treeA === treeB shouldEqual true
+      }
+
+      withClue("not equal") {
+
+        val treeA = QuadTree
+          .empty(PowerOfTwo._2)
+          .insertElement("a", GridPoint(0, 0))
+          .insertElement("b", GridPoint(0, 1))
+          .insertElement("c", GridPoint(1, 0))
+
+        val treeB = QuadTree
+          .empty(PowerOfTwo._2)
+          .insertElement("a", GridPoint(0, 0))
+          .insertElement("b", GridPoint(0, 1))
+          .insertElement("d", GridPoint(1, 0))
+
+        treeA === treeB shouldEqual false
+      }
+    }
 
     it("should be able to prune an existing tree to simplify the structure") {
 

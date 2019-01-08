@@ -10,6 +10,9 @@ sealed trait QuadTree[T] {
 
   val bounds: QuadBounds
 
+  def ===(other: QuadTree[T]): Boolean =
+    QuadTree.equalTo(this, other)
+
   def isEmpty: Boolean
 
   def fetchElementAt(gridPoint: GridPoint): Option[T] =
@@ -287,6 +290,21 @@ object QuadTree {
            |${renderAsStringWithIndent(b, indent + "  ")}
            |${renderAsStringWithIndent(c, indent + "  ")}
            |${renderAsStringWithIndent(d, indent + "  ")}""".stripMargin
+    }
+
+  def equalTo[T](a: QuadTree[T], b: QuadTree[T]): Boolean =
+    (a, b) match {
+      case (QuadEmpty(b1), QuadEmpty(b2)) if b1 === b2 =>
+        true
+
+      case (QuadLeaf(b1, v1), QuadLeaf(b2, v2)) if b1 === b2 && v1 == v2 =>
+        true
+
+      case (QuadBranch(bounds1, a1, b1, c1, d1), QuadBranch(bounds2, a2, b2, c2, d2)) =>
+        bounds1 === bounds2 && equalTo(a1, a2) && equalTo(b1, b2) && equalTo(c1, c2) && equalTo(d1, d2)
+
+      case _ =>
+        false
     }
 
 }
