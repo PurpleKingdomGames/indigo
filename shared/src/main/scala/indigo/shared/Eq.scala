@@ -26,6 +26,42 @@ object Eq {
   @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   implicit val eqBoolean: Eq[Boolean] = create(_ == _)
 
+  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
+  implicit def eqTuple2[A, B](implicit eqA: Eq[A], eqB: Eq[B]): Eq[(A, B)] =
+    create((a, b) => eqA.equal(a._1, b._1) && eqB.equal(a._2, b._2))
+
+  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
+  implicit def eqList[A](implicit eq: Eq[A]): Eq[List[A]] =
+    create { (a, b) =>
+      a.length == b.length && a.zip(b).forall(p => eq.equal(p._1, p._2))
+    }
+
+  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
+  implicit def eqOption[A](implicit eq: Eq[A]): Eq[Option[A]] =
+    create {
+      case (Some(a), Some(b)) =>
+        eq.equal(a, b)
+
+      case (None, None) =>
+        true
+
+      case _ =>
+        false
+    }
+
+  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
+  implicit def eqEither[A, B](implicit eqA: Eq[A], eqB: Eq[B]): Eq[Either[A, B]] =
+    create {
+      case (Left(a), Left(b)) =>
+        eqA.equal(a, b)
+
+      case (Right(a), Right(b)) =>
+        eqB.equal(a, b)
+
+      case _ =>
+        false
+    }
+
   trait EqSyntax[A] {
     val eq: Eq[A]
     val value: A

@@ -1,5 +1,6 @@
 package indigo.runtime
 
+import indigo.shared.Eq._
 import org.scalatest.{FunSpec, Matchers}
 
 class IIOSpec extends FunSpec with Matchers {
@@ -49,13 +50,13 @@ class IIOSpec extends FunSpec with Matchers {
     it("should respect left identity") {
       val a = 10
       val f = (i: Int) => IIO.pure(i)
-      assert(IIO.pure(a).flatMap(f) eq f(a))
+      assert(IIO.areEqual(IIO.pure(a).flatMap(f), f(a)))
     }
 
     // Right identity: m >>= return ≡ m
     it("should respect right identity") {
       val m = IIO.pure(2)
-      assert(m.flatMap(x => IIO.pure[Int](x)) eq m)
+      assert(IIO.areEqual(m.flatMap(x => IIO.pure[Int](x)), m))
     }
 
     // Associativity: (m >>= f) >>= g ≡ m >>= (\x -> f x >>= g)
@@ -64,7 +65,7 @@ class IIOSpec extends FunSpec with Matchers {
       val f = (i: Int) => IIO.pure(s"$i")
       val g = (s: String) => IIO.pure(s.length > 1)
 
-      assert(m.flatMap(f).flatMap(g) eq m.flatMap((x: Int) => f(x).flatMap(g)))
+      assert(IIO.areEqual(m.flatMap(f).flatMap(g), m.flatMap((x: Int) => f(x).flatMap(g))))
     }
 
   }

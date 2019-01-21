@@ -3,6 +3,7 @@ package indigoframework
 import indigo.gameengine.scenegraph._
 import indigo.gameengine.scenegraph.datatypes.{AmbientLight, Rectangle}
 import indigo.shared.EntityRectangle
+import indigo.shared.Eq._
 
 final case class GameGlobalEvent()
 
@@ -25,7 +26,7 @@ object GameViewHelper {
       .getOrElse(Nil)
       .map { id =>
         model.gameDefinition.entities
-          .find(_.id == id)
+          .find(_.id === id)
       }
       .collect { case Some(s) => s }
       .map {

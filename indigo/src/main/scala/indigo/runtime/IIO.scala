@@ -102,29 +102,26 @@ sealed trait IIO[+A] {
 
 object IIO {
 
-  implicit class EqIIO[A](value: IIO[A])(implicit eqA: Eq[A]) extends Eq[IIO[A]] {
-    def ===(other: IIO[A]): Boolean =
-      equal(value, other)
+  implicit def eqIIO[A](implicit eq: Eq[A]): Eq[IIO[A]] =
+    Eq.create[IIO[A]] { (a, b) =>
+      areEqual(a, b)
+    }
 
-    def !==(other: IIO[A]): Boolean =
-      !equal(value, other)
+  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
+  def areEqual[A](a1: IIO[A], a2: IIO[A])(implicit eq: Eq[A]): Boolean =
+    (a1, a2) match {
+      case (IIO.Pure(a), IIO.Pure(b)) =>
+        eq.equal(a, b)
 
-    @SuppressWarnings(Array("org.wartremover.warts.Equals"))
-    def equal(a1: IIO[A], a2: IIO[A]): Boolean =
-      (a1, a2) match {
-        case (IIO.Pure(a), IIO.Pure(b)) =>
-          eqA.equal(a, b)
+      case (IIO.Delay(a), IIO.Delay(b)) =>
+        eq.equal(a(), b())
 
-        case (IIO.Delay(a), IIO.Delay(b)) =>
-          eqA.equal(a(), b())
+      case (IIO.RaiseError(a), IIO.RaiseError(b)) =>
+        a == b
 
-        case (IIO.RaiseError(a), IIO.RaiseError(b)) =>
-          a == b
-
-        case _ =>
-          false
-      }
-  }
+      case _ =>
+        false
+    }
 
   final case class Pure[A](a: A)               extends IIO[A]
   final case class Delay[A](thunk: () => A)    extends IIO[A]
