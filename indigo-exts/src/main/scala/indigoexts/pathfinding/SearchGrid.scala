@@ -98,6 +98,7 @@ object SearchGrid {
     searchGrid.copy(grid = scoreGridSquares(searchGrid))
 
   def locatePath(searchGrid: SearchGrid): List[Coords] = {
+    @tailrec
     def rec(currentPosition: Coords, currentScore: Int, target: Coords, grid: SearchGrid, width: Int, acc: List[Coords]): List[Coords] =
       if (currentPosition == target) acc
       else

@@ -6,6 +6,8 @@ import indigo.runtime.Show
 import indigoexts.grid.{GridPoint, GridSize}
 import indigoexts.line.LineSegment
 
+import scala.annotation.tailrec
+
 sealed trait QuadTree[T] {
 
   val bounds: QuadBounds
@@ -153,6 +155,7 @@ object QuadTree {
   def findEmptySpace[T](quadTree: QuadTree[T], gridSize: GridSize, not: List[GridPoint]): GridPoint = {
     def makeRandom: () => GridPoint = () => GridPoint.random(gridSize.width - 2, gridSize.height - 2) + GridPoint(1, 1)
 
+    @tailrec
     def rec(pt: GridPoint): GridPoint =
       fetchElementAt(quadTree, pt) match {
         case None if !not.contains(pt) =>
@@ -168,6 +171,7 @@ object QuadTree {
     rec(makeRandom())
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def asElementList[T](quadTree: QuadTree[T]): List[T] =
     quadTree match {
       case l: QuadLeaf[T] =>
@@ -198,6 +202,7 @@ object QuadTree {
         QuadBranch[T](bounds, a.prune, b.prune, c.prune, d.prune)
     }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def searchByPoint[T](quadTree: QuadTree[T], point: Point): List[T] =
     quadTree match {
       case QuadBranch(bounds, a, b, c, d) if bounds.isPointWithinBounds(GridPoint.fromPoint(point)) =>
@@ -218,6 +223,7 @@ object QuadTree {
   def searchByLine[T](quadTree: QuadTree[T], start: Point, end: Point): List[T] =
     searchByLine(quadTree, LineSegment(start, end))
 
+  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def searchByLine[T](quadTree: QuadTree[T], lineSegment: LineSegment): List[T] =
     if (lineSegment.start === lineSegment.end) searchByPoint(quadTree, lineSegment.start)
     else {
@@ -254,6 +260,7 @@ object QuadTree {
       }
     }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def searchByRectangle[T](quadTree: QuadTree[T], rectangle: Rectangle): List[T] =
     if (rectangle.width <= 1 && rectangle.height <= 1) searchByPoint(quadTree, rectangle.position)
     else {
@@ -275,7 +282,7 @@ object QuadTree {
   def renderAsString[T](quadTree: QuadTree[T]): String =
     renderAsStringWithIndent(quadTree, "")
 
-  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
+  @SuppressWarnings(Array("org.wartremover.warts.ToString", "org.wartremover.warts.Recursion"))
   def renderAsStringWithIndent[T](quadTree: QuadTree[T], indent: String): String =
     quadTree match {
       case QuadEmpty(bounds) =>
@@ -292,6 +299,7 @@ object QuadTree {
            |${renderAsStringWithIndent(d, indent + "  ")}""".stripMargin
     }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def equalTo[T](a: QuadTree[T], b: QuadTree[T]): Boolean =
     (a, b) match {
       case (QuadEmpty(b1), QuadEmpty(b2)) if b1 === b2 =>

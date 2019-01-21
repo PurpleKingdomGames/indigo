@@ -3,6 +3,7 @@ package indigoexts.grid
 import indigo.gameengine.scenegraph.datatypes.Point
 import indigo.runtime.Show
 
+import scala.annotation.tailrec
 import scala.util.Random
 
 final case class GridPoint(x: Int, y: Int) {
@@ -55,6 +56,7 @@ object GridPoint {
     a.x <= b.x && a.y <= b.y
 
   def fillIncrementally(start: GridPoint, end: GridPoint): List[GridPoint] = {
+    @tailrec
     def rec(last: GridPoint, dest: GridPoint, p: GridPoint => Boolean, acc: List[GridPoint]): List[GridPoint] =
       if (p(last)) acc
       else {

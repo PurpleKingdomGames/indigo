@@ -8,6 +8,7 @@ import indigo.renderer.{AssetMapping, DisplayObject, SpriteSheetFrame, Vector2}
 import indigo.runtime.IndigoLogger
 import indigo.runtime.metrics.Metrics
 
+import scala.annotation.tailrec
 import scala.collection.mutable
 
 object DisplayObjectConversions {
@@ -180,6 +181,7 @@ object DisplayObjectConversions {
       }
 
   private def zipWithCharDetails(charList: List[Char], fontInfo: FontInfo): List[(FontChar, Int)] = {
+    @tailrec
     def rec(remaining: List[(Char, FontChar)], nextX: Int, acc: List[(FontChar, Int)]): List[(FontChar, Int)] =
       remaining match {
         case Nil     => acc

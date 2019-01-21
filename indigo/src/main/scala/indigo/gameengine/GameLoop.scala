@@ -12,6 +12,8 @@ import indigo.runtime.metrics._
 import indigo.shared.GameConfig
 import org.scalajs.dom
 
+import scala.annotation.tailrec
+
 class GameLoop[GameModel, ViewModel](
     gameConfig: GameConfig,
     assetMapping: AssetMapping,
@@ -34,6 +36,7 @@ class GameLoop[GameModel, ViewModel](
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var subSystemsState: SubSystemsRegister = subSystemsRegister
 
+  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def loop(lastUpdateTime: Double): Double => Int = { time =>
     val timeDelta = time - lastUpdateTime
 
@@ -202,6 +205,7 @@ object GameLoop {
     val combine: (UpdatedModel[GameModel], UpdatedModel[GameModel]) => UpdatedModel[GameModel] =
       (a, b) => UpdatedModel(b.model, a.globalEvents ++ b.globalEvents, a.inFrameEvents ++ b.inFrameEvents)
 
+    @tailrec
     def rec(remaining: List[GlobalEvent], last: UpdatedModel[GameModel]): UpdatedModel[GameModel] =
       remaining match {
         case Nil =>
@@ -216,6 +220,7 @@ object GameLoop {
     (res.model, FrameInputEvents(res.globalEvents, res.inFrameEvents, signals))
   }
 
+  @tailrec
   def processSubSystemUpdates(gameTime: GameTime, register: SubSystemsRegister, collectedEvents: List[GlobalEvent])(implicit globalEventStream: GlobalEventStream): SubSystemsRegister =
     collectedEvents match {
       case Nil =>

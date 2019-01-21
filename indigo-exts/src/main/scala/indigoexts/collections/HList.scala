@@ -1,4 +1,5 @@
 package indigoexts.collections
+import scala.annotation.tailrec
 
 sealed trait HList extends Product with Serializable {
   type HeadType
@@ -7,6 +8,7 @@ sealed trait HList extends Product with Serializable {
 
   def ::[A](head: A): HList
 
+  @tailrec
   private def unstableConcat(remaining: HList, acc: HList): HList =
     remaining match {
       case HNil =>
@@ -58,6 +60,7 @@ object HList {
     list.reverse.foldLeft(HList.empty)((acc, n) => n :: acc)
 
   def equalityCheck(a: HList, b: HList): Boolean = {
+    @tailrec
     def rec(remainingA: HList, remainingB: HList): Boolean =
       (remainingA, remainingB) match {
         case (HNil, HNil) =>

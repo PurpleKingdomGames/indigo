@@ -1,4 +1,5 @@
 package indigoexts.scenemanager
+
 import indigoexts.collections.NonEmptyList
 
 sealed trait Scenes[GameModel, ViewModel, +T <: Scene[GameModel, ViewModel, _, _]] extends Product with Serializable {
@@ -6,7 +7,8 @@ sealed trait Scenes[GameModel, ViewModel, +T <: Scene[GameModel, ViewModel, _, _
   def ::[S1 <: Scene[GameModel, ViewModel, _, _]](scene: S1): ScenesList[GameModel, ViewModel, S1, T] =
     Scenes.cons(scene, this)
 
-  def foldLeft[Z](acc: Z)(f: (Z, Scene[GameModel, ViewModel, _, _]) => Z): Z =
+  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+  final def foldLeft[Z](acc: Z)(f: (Z, Scene[GameModel, ViewModel, _, _]) => Z): Z =
     this match {
       case ScenesNil() =>
         acc
@@ -15,6 +17,7 @@ sealed trait Scenes[GameModel, ViewModel, +T <: Scene[GameModel, ViewModel, _, _
         t.foldLeft(f(acc, h))(f)
     }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   final def findScene(name: SceneName): Option[Scene[GameModel, ViewModel, _, _]] =
     this match {
       case ScenesNil() =>

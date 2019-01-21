@@ -7,6 +7,8 @@ import indigo.runtime.IndigoLogger
 import org.scalajs.dom
 import org.scalajs.dom.{html, raw}
 
+import scala.annotation.tailrec
+
 object TextureAtlas {
 
   import TextureAtlasFunctions._
@@ -98,6 +100,7 @@ object TextureAtlasFunctions {
   def groupTexturesIntoAtlasBuckets(max: PowerOfTwo): List[TextureDetails] => List[List[TextureDetails]] = list => {
     val runningTotal: List[TextureDetails] => Int = _.map(_.size.value).sum
 
+    @tailrec
     def rec(remaining: List[TextureDetails], current: List[TextureDetails], rejected: List[TextureDetails], acc: List[List[TextureDetails]], maximum: PowerOfTwo): List[List[TextureDetails]] =
       (remaining, rejected) match {
         case (Nil, Nil) =>
@@ -266,6 +269,7 @@ final case class AtlasQuadNode(size: PowerOfTwo, atlas: AtlasSum) extends AtlasQ
     if (size < requiredSize) false
     else atlas.canAccommodate(requiredSize)
 
+  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def insert(tree: AtlasQuadTree): AtlasQuadTree =
     this.copy(atlas = atlas match {
       case AtlasTexture(_) => this.atlas

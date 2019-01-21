@@ -2,6 +2,9 @@ package indigoexts.scenemanager
 
 import indigo.runtime.IndigoLogger
 import indigoexts.collections.NonEmptyList
+
+import scala.annotation.tailrec
+
 final case class SceneFinder(previous: List[ScenePosition], current: ScenePosition, next: List[ScenePosition]) {
 
   val sceneCount: Int =
@@ -40,6 +43,7 @@ final case class SceneFinder(previous: List[ScenePosition], current: ScenePositi
         this.copy(xs.reverse, x, current :: next)
     }
 
+  @tailrec
   def jumpToSceneByPosition(index: Int): SceneFinder =
     index match {
       case i if i < 0 =>

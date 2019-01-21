@@ -2,6 +2,8 @@ package indigoexts.grid
 
 import indigo.PowerOfTwo
 
+import scala.annotation.tailrec
+
 final case class GridSize(columns: Int, rows: Int, gridSquareSize: Int) {
   val width: Int  = columns
   val height: Int = rows
@@ -27,6 +29,7 @@ final case class GridSize(columns: Int, rows: Int, gridSquareSize: Int) {
 
 object GridSize {
   def asPowerOf2(gridSize: GridSize): PowerOfTwo = {
+    @tailrec
     def rec(maxLength: Int, size: PowerOfTwo): PowerOfTwo =
       if (size >= maxLength) size
       else if (size === PowerOfTwo.Max) size

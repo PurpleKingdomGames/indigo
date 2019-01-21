@@ -20,6 +20,7 @@ sealed trait SceneGraphNode extends Product with Serializable {
   def moveBy(pt: Point): SceneGraphNode
   def moveBy(x: Int, y: Int): SceneGraphNode
 
+  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def flatten: List[Renderable] = {
     def rec(acc: List[Renderable]): List[Renderable] =
       this match {

@@ -2,6 +2,8 @@ package indigo.runtime.metrics
 
 import indigo.runtime._
 
+import scala.annotation.tailrec
+
 object MetricsLogReporter {
 
   private def to2DecimalPlaces(d: Double): Double =
@@ -163,6 +165,7 @@ object MetricsLogReporter {
     to2DecimalPlaces(l.collect { case Some(s) => s }.sum / l.length.toDouble)
 
   private def splitIntoFrames(metrics: List[MetricWrapper]): List[List[MetricWrapper]] = {
+    @tailrec
     def rec(remaining: List[MetricWrapper], accFrame: List[MetricWrapper], acc: List[List[MetricWrapper]]): List[List[MetricWrapper]] =
       remaining match {
         case Nil => acc

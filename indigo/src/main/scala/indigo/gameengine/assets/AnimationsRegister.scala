@@ -5,6 +5,7 @@ import indigo.gameengine.scenegraph.datatypes.BindingKey
 import indigo.gameengine.scenegraph.{AnimationAction, Animations, AnimationsKey}
 import indigo.runtime.metrics._
 
+import scala.annotation.tailrec
 import scala.collection.mutable
 
 object AnimationsRegister {
@@ -40,6 +41,7 @@ object AnimationsRegister {
     actionsQueue.enqueue(AnimationActionCommand(bindingKey, animationsKey, action))
 
   private def dequeueAndDeduplicateActions(bindingKey: BindingKey, animationsKey: AnimationsKey): List[AnimationActionCommand] = {
+    @tailrec
     def rec(remaining: List[AnimationActionCommand], hashesDone: List[String], acc: List[AnimationActionCommand]): List[AnimationActionCommand] =
       remaining match {
         case Nil =>
