@@ -22,8 +22,8 @@ object Renderer {
         r
     }
 
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements", "org.wartremover.warts.AsInstanceOf"))
   def createCanvas(width: Int, height: Int, parent: Element): html.Canvas = {
-    @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
     val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
     parent.appendChild(canvas)
     canvas.width = width

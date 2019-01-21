@@ -31,6 +31,7 @@ object Metrics {
       def record(m: Metric): Unit =
         recordForSpecificTime(m, giveTime())
 
+      @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
       def recordForSpecificTime(m: Metric, time: Long): Unit = {
         metrics += MetricWrapper(m, time)
 
@@ -40,7 +41,6 @@ object Metrics {
             MetricsLogReporter.report(metrics.dequeueAll(_ => true).toList)
           case _ => ()
         }
-
       }
 
       def giveTime(): Long = System.currentTimeMillis()

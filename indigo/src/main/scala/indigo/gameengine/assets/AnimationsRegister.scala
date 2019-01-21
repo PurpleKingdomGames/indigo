@@ -55,6 +55,7 @@ object AnimationsRegister {
     rec(actionsQueue.dequeueAll(p => p.animationsKey === animationsKey && p.bindingKey === bindingKey).toList, Nil, Nil)
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   private def clearActionsQueue(): Unit = {
     actionsQueue.dequeueAll(_ => true)
     ()

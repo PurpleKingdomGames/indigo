@@ -22,6 +22,7 @@ object IndigoLogger {
 
   private val errorString: String => Unit = message => println(formatMessage(ERROR, message))
 
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   private val errorOnceString: String => Unit = message =>
     if (!errorLogs.iterator.contains(message)) {
       errorLogs.push(message)
@@ -30,6 +31,7 @@ object IndigoLogger {
 
   private val debugString: String => Unit = message => println(formatMessage(DEBUG, message))
 
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   private val debugOnceString: String => Unit = message =>
     if (!debugLogs.iterator.contains(message)) {
       debugLogs.push(message)

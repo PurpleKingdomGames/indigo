@@ -66,6 +66,7 @@ final case class GameEngine[StartupData, StartupError, GameModel, ViewModel](
 
 object GameEngine {
 
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def start[StartupData, StartupError, GameModel, ViewModel](
       config: GameConfig,
       configAsync: Future[Option[GameConfig]],

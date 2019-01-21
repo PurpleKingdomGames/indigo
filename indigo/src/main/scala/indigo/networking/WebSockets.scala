@@ -15,6 +15,7 @@ object WebSockets {
   @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   private val configs: mutable.HashMap[WebSocketId, WebSocketConfig] = mutable.HashMap()
 
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def processSendEvent(event: WebSocketEvent with NetworkSendEvent)(implicit globalEventStream: GlobalEventStream): Unit =
     try event match {
       case WebSocketEvent.ConnectOnly(config) =>
@@ -37,6 +38,7 @@ object WebSockets {
         globalEventStream.pushGlobalEvent(WebSocketEvent.Error(event.giveId.getOrElse(WebSocketId("<not found>")), e.getMessage))
     }
 
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   private def insertUpdateConfig(config: WebSocketConfig): WebSocketConfig = {
     val maybeConfig = configs.get(config.id)
 
@@ -52,6 +54,7 @@ object WebSockets {
       .getOrElse(config)
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   private def reEstablishConnection(config: WebSocketConfig, onOpenSendMessage: Option[String])(implicit globalEventStream: GlobalEventStream): Option[dom.WebSocket] =
     connections
       .get(config.id)
