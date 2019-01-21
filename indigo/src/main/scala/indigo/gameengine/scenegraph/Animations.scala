@@ -4,6 +4,8 @@ import indigo.gameengine.GameTime
 import indigo.gameengine.scenegraph.AnimationAction._
 import indigo.gameengine.scenegraph.datatypes.{BindingKey, Point, Rectangle}
 
+import indigo.shared.Eq._
+
 /*
 Animations are really timeline animations:
 Construction is about adding animation cycles with frames
@@ -75,7 +77,7 @@ final case class AnimationsKey(key: String) extends AnyVal {
 }
 object AnimationsKey {
   def equality(a: AnimationsKey, b: AnimationsKey): Boolean =
-    a.key == b.key
+    a.key === b.key
 }
 
 final case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame], private[gameengine] val playheadPosition: Int, private[gameengine] val lastFrameAdvance: Double) {

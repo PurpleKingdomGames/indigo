@@ -4,8 +4,10 @@ import indigo.gameengine.PowerOfTwo
 import indigo.gameengine.assets.TextureAtlas.supportedSizes
 import indigo.gameengine.scenegraph.datatypes.Point
 import indigo.runtime.IndigoLogger
+import indigo.shared.Eq
 import org.scalajs.dom
 import org.scalajs.dom.{html, raw}
+import indigo.shared.Eq._
 
 import scala.annotation.tailrec
 
@@ -59,7 +61,7 @@ final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, 
   def report: String = {
     val atlasRecordToString: Map[String, AtlasIndex] => ((AtlasId, Atlas)) => String = leg =>
       at => {
-        val relevant = leg.filter(k => k._2.id == at._1)
+        val relevant = leg.filter(k => k._2.id === at._1)
 
         s"Atlas [${at._1.id}] [${at._2.size.value}] contains images: ${relevant.toList.map(_._1).mkString(", ")}"
     }
@@ -73,7 +75,11 @@ final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, 
   }
 
 }
-final case class AtlasId(id: String) extends AnyVal
+final case class AtlasId(id: String) extends AnyVal {
+  def ===(other: AtlasId): Boolean =
+    implicitly[Eq[String]].equal(id, other.id)
+}
+
 final case class AtlasIndex(id: AtlasId, offset: Point)
 final case class Atlas(size: PowerOfTwo, imageData: Option[raw.ImageData]) // Yuk. Only optional so that testing is bearable.
 final case class AtlasLookupResult(name: String, atlasId: AtlasId, atlas: Atlas, offset: Point)

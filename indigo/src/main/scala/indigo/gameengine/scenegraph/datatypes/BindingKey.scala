@@ -1,6 +1,7 @@
 package indigo.gameengine.scenegraph.datatypes
 
 import scala.util.Random
+import indigo.shared.Eq._
 
 final case class BindingKey(value: String) extends AnyVal {
 
@@ -17,5 +18,5 @@ object BindingKey {
     BindingKey(Random.alphanumeric.take(16).mkString)
 
   def equality(a: BindingKey, b: BindingKey): Boolean =
-    a.value == b.value
+    a.value === b.value
 }

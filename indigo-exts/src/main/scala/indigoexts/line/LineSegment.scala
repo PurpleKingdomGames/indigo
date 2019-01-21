@@ -1,5 +1,6 @@
 package indigoexts.line
 
+import indigo.shared.Eq._
 import indigo.gameengine.scenegraph.datatypes.Point
 
 final case class LineSegment(start: Point, end: Point) {
@@ -40,13 +41,13 @@ object LineSegment {
    */
   def calculateLineComponents(start: Point, end: Point): LineProperties =
     (start, end) match {
-      case (Point(x1, y1), Point(x2, y2)) if x1 == x2 && y1 == y2 =>
+      case (Point(x1, y1), Point(x2, y2)) if x1 === x2 && y1 === y2 =>
         LineProperties.InvalidLine
 
-      case (Point(x1, _), Point(x2, _)) if x1 == x2 =>
+      case (Point(x1, _), Point(x2, _)) if x1 === x2 =>
         LineProperties.ParallelToAxisY
 
-      case (Point(_, y1), Point(_, y2)) if y1 == y2 =>
+      case (Point(_, y1), Point(_, y2)) if y1 === y2 =>
         LineProperties.ParallelToAxisX
 
       case (Point(x1, y1), Point(x2, y2)) =>
@@ -138,18 +139,18 @@ object LineSegment {
         false
 
       case LineProperties.ParallelToAxisX =>
-        if (point.y == lineSegment.start.y && point.x >= lineSegment.left && point.x <= lineSegment.right) true
+        if (point.y === lineSegment.start.y && point.x >= lineSegment.left && point.x <= lineSegment.right) true
         else false
 
       case LineProperties.ParallelToAxisY =>
-        if (point.x == lineSegment.start.x && point.y >= lineSegment.top && point.y <= lineSegment.bottom) true
+        if (point.x === lineSegment.start.x && point.y >= lineSegment.top && point.y <= lineSegment.bottom) true
         else false
 
       case LineProperties.LineComponents(m, b) =>
         if (point.x >= lineSegment.left && point.x <= lineSegment.right && point.y >= lineSegment.top && point.y <= lineSegment.bottom) {
           // This is a slope comparison.. Any point on the line should have the same slope as the line.
           val m2: Float =
-            if (point.x == 0) 0
+            if (point.x === 0) 0
             else (b - point.y.toFloat) / (0 - point.x.toFloat)
 
           val mDelta: Float = m - m2

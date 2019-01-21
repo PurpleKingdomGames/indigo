@@ -1,6 +1,7 @@
 package indigo.runtime.metrics
 
 import indigo.runtime._
+import indigo.shared.Eq._
 
 import scala.annotation.tailrec
 
@@ -15,8 +16,8 @@ object MetricsLogReporter {
     to2DecimalPlaces(100d / a * b)
 
   private def extractDuration(metrics: List[MetricWrapper], startName: String, endName: String): Option[Long] =
-    metrics.find(_.metric.name == startName).map(_.time).flatMap { start =>
-      metrics.find(_.metric.name == endName).map(_.time - start)
+    metrics.find(_.metric.name === startName).map(_.time).flatMap { start =>
+      metrics.find(_.metric.name === endName).map(_.time - start)
     }
 
   private def asPercentOfFrameDuration(fd: Long, l: Option[Long]): Option[Double] =
@@ -95,9 +96,9 @@ object MetricsLogReporter {
       val renderToCanvasPercentage    = asPercentOfFrameDuration(fd, renderToCanvasDuration)
 
       // Draw Call Counts
-      val lightingDrawCalls: Int = metrics.count(_.metric.name == LightingDrawCallMetric.name)
-      val normalDrawCalls: Int   = metrics.count(_.metric.name == NormalLayerDrawCallMetric.name)
-      val toCanvasDrawCalls: Int = metrics.count(_.metric.name == ToCanvasDrawCallMetric.name)
+      val lightingDrawCalls: Int = metrics.count(_.metric.name === LightingDrawCallMetric.name)
+      val normalDrawCalls: Int   = metrics.count(_.metric.name === NormalLayerDrawCallMetric.name)
+      val toCanvasDrawCalls: Int = metrics.count(_.metric.name === ToCanvasDrawCallMetric.name)
 
       // Build results
       val general = FrameStatsGeneral(

@@ -2,12 +2,14 @@ package indigo.gameengine.constants
 
 import scala.language.implicitConversions
 
+import indigo.shared.Eq._
+
 final case class KeyCode(code: Int, printableCharacter: String) {
   def ===(other: KeyCode): Boolean =
-    code == other.code
+    code === other.code
 
   def isPrintable: Boolean =
-    printableCharacter != ""
+    printableCharacter !== ""
 }
 
 object Keys {
@@ -222,7 +224,7 @@ object Keys {
     )
 
   def codeToKeyCode(code: Int): Option[KeyCode] =
-    safeKeyCodes.find(_.code == code)
+    safeKeyCodes.find(_.code === code)
 
   def isSafeKeyCode(code: Int): Boolean =
     codeToKeyCode(code).isDefined

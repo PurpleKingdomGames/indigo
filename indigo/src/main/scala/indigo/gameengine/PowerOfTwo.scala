@@ -2,6 +2,8 @@ package indigo.gameengine
 
 import indigo.gameengine.scenegraph.datatypes.Point
 
+import indigo.shared.Eq._
+
 sealed trait PowerOfTwo {
   val value: Int
   val halved: PowerOfTwo
@@ -11,13 +13,13 @@ sealed trait PowerOfTwo {
   def >=(powerOfTwo: PowerOfTwo): Boolean  = value >= powerOfTwo.value
   def <(powerOfTwo: PowerOfTwo): Boolean   = value < powerOfTwo.value
   def <=(powerOfTwo: PowerOfTwo): Boolean  = value <= powerOfTwo.value
-  def ===(powerOfTwo: PowerOfTwo): Boolean = value == powerOfTwo.value
+  def ===(powerOfTwo: PowerOfTwo): Boolean = value === powerOfTwo.value
 
   def >(i: Int): Boolean   = value > i
   def >=(i: Int): Boolean  = value >= i
   def <(i: Int): Boolean   = value < i
   def <=(i: Int): Boolean  = value <= i
-  def ===(i: Int): Boolean = value == i
+  def ===(i: Int): Boolean = value === i
 
   def toPoint: Point = Point(value, value)
 }
@@ -89,10 +91,10 @@ object PowerOfTwo {
   val all: Set[PowerOfTwo] = Set(_2, _4, _8, _16, _32, _64, _128, _256, _512, _1024, _2048, _4096)
 
   def isValidPowerOfTwo(i: Int): Boolean =
-    i >= Min.value && i <= Max.value && ((i & (i - 1)) == 0)
+    i >= Min.value && i <= Max.value && ((i & (i - 1)) === 0)
 
   def fromInt(i: Int): Option[PowerOfTwo] =
-    if (isValidPowerOfTwo(i)) all.find(_.value == i) else None
+    if (isValidPowerOfTwo(i)) all.find(_.value === i) else None
 
   def min(a: PowerOfTwo, b: PowerOfTwo): PowerOfTwo = if (a.value <= b.value) a else b
   def max(a: PowerOfTwo, b: PowerOfTwo): PowerOfTwo = if (a.value > b.value) a else b

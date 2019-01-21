@@ -3,6 +3,7 @@ package indigoexts.quadtrees
 import indigo.gameengine.PowerOfTwo
 import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
 import indigo.runtime.Show
+import indigo.shared.Eq
 import indigoexts.grid.{GridPoint, GridSize}
 import indigoexts.line.LineSegment
 
@@ -12,7 +13,7 @@ sealed trait QuadTree[T] {
 
   val bounds: QuadBounds
 
-  def ===(other: QuadTree[T]): Boolean =
+  def ===(other: QuadTree[T])(implicit eq: Eq[T]): Boolean =
     QuadTree.equalTo(this, other)
 
   def isEmpty: Boolean
@@ -300,12 +301,12 @@ object QuadTree {
     }
 
   @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
-  def equalTo[T](a: QuadTree[T], b: QuadTree[T]): Boolean =
+  def equalTo[T](a: QuadTree[T], b: QuadTree[T])(implicit eq: Eq[T]): Boolean =
     (a, b) match {
       case (QuadEmpty(b1), QuadEmpty(b2)) if b1 === b2 =>
         true
 
-      case (QuadLeaf(b1, v1), QuadLeaf(b2, v2)) if b1 === b2 && v1 == v2 =>
+      case (QuadLeaf(b1, v1), QuadLeaf(b2, v2)) if b1 === b2 && eq.equal(v1, v2) =>
         true
 
       case (QuadBranch(bounds1, a1, b1, c1, d1), QuadBranch(bounds2, a2, b2, c2, d2)) =>

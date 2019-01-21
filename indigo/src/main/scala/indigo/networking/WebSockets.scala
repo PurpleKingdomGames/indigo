@@ -5,6 +5,7 @@ import indigo.gameengine.scenegraph.datatypes.BindingKey
 import indigo.networking.WebSocketReadyState.{CLOSED, CLOSING}
 import indigo.runtime.IndigoLogger
 import org.scalajs.dom
+import indigo.shared.Eq._
 
 import scala.collection.mutable
 
@@ -108,7 +109,7 @@ object WebSocketId {
     WebSocketId(BindingKey.generate.value)
 
   def equality(a: WebSocketId, b: WebSocketId): Boolean =
-    a.id == b.id
+    a.id === b.id
 }
 
 final case class WebSocketConfig(id: WebSocketId, address: String) {
@@ -117,7 +118,7 @@ final case class WebSocketConfig(id: WebSocketId, address: String) {
 }
 object WebSocketConfig {
   def equality(a: WebSocketConfig, b: WebSocketConfig): Boolean =
-    a.id === b.id && a.address == b.address
+    a.id === b.id && a.address === b.address
 }
 
 sealed trait WebSocketReadyState {

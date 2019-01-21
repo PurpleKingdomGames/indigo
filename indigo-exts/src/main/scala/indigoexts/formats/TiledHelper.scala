@@ -6,6 +6,8 @@ import indigo.runtime.IndigoLogger
 import io.circe.generic.auto._
 import io.circe.parser._
 
+import indigo.shared.Eq._
+
 /*
 Full spec is here:
 http://doc.mapeditor.org/reference/tmx-map-format/
@@ -49,7 +51,7 @@ object TiledHelper {
       Group(
         layer.data.zipWithIndex.flatMap {
           case (tileIndex, poitionIndex) =>
-            if (tileIndex == 0) Nil
+            if (tileIndex === 0) Nil
             else
               tilesInUse
                 .get(tileIndex)

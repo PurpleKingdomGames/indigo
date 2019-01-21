@@ -7,6 +7,8 @@ import indigo.gameengine.events.{FrameInputEvents, KeyboardEvent, MouseEvent, Gl
 import indigo.gameengine.scenegraph.datatypes._
 import indigo.gameengine.scenegraph.{Graphic, SceneGraphNode, SceneUpdateFragment, Text}
 
+import indigo.shared.Eq._
+
 object InputField {
 
   def apply(text: String): InputField =
@@ -16,31 +18,31 @@ object InputField {
 
     def update(inputField: InputField, inputFieldEvent: InputFieldEvent): InputField =
       inputFieldEvent match {
-        case InputFieldEvent.Delete(bindingKey) if inputField.bindingKey == bindingKey =>
+        case InputFieldEvent.Delete(bindingKey) if inputField.bindingKey === bindingKey =>
           inputField.delete
 
-        case InputFieldEvent.Backspace(bindingKey) if inputField.bindingKey == bindingKey =>
+        case InputFieldEvent.Backspace(bindingKey) if inputField.bindingKey === bindingKey =>
           inputField.backspace
 
-        case InputFieldEvent.CursorLeft(bindingKey) if inputField.bindingKey == bindingKey =>
+        case InputFieldEvent.CursorLeft(bindingKey) if inputField.bindingKey === bindingKey =>
           inputField.cursorLeft
 
-        case InputFieldEvent.CursorRight(bindingKey) if inputField.bindingKey == bindingKey =>
+        case InputFieldEvent.CursorRight(bindingKey) if inputField.bindingKey === bindingKey =>
           inputField.cursorRight
 
-        case InputFieldEvent.CursorHome(bindingKey) if inputField.bindingKey == bindingKey =>
+        case InputFieldEvent.CursorHome(bindingKey) if inputField.bindingKey === bindingKey =>
           inputField.cursorHome
 
-        case InputFieldEvent.CursorEnd(bindingKey) if inputField.bindingKey == bindingKey =>
+        case InputFieldEvent.CursorEnd(bindingKey) if inputField.bindingKey === bindingKey =>
           inputField.cursorEnd
 
-        case InputFieldEvent.GiveFocus(bindingKey) if inputField.bindingKey == bindingKey =>
+        case InputFieldEvent.GiveFocus(bindingKey) if inputField.bindingKey === bindingKey =>
           inputField.giveFocus
 
-        case InputFieldEvent.LoseFocus(bindingKey) if inputField.bindingKey == bindingKey =>
+        case InputFieldEvent.LoseFocus(bindingKey) if inputField.bindingKey === bindingKey =>
           inputField.loseFocus
 
-        case InputFieldEvent.AddCharacter(bindingKey, char) if inputField.bindingKey == bindingKey =>
+        case InputFieldEvent.AddCharacter(bindingKey, char) if inputField.bindingKey === bindingKey =>
           inputField.addCharacter(char)
 
         case _ =>
@@ -88,16 +90,16 @@ object InputField {
 
     private def calculateCursorPosition(textLine: String, offset: Point, fontInfo: FontInfo, cursorPosition: Int): Point = {
       val lines      = textLine.substring(0, cursorPosition).split('\n')
-      val lineCount  = Math.max(0, lines.length - 1) + (if (textLine.takeRight(1) == "\n") 1 else 0)
+      val lineCount  = Math.max(0, lines.length - 1) + (if (textLine.takeRight(1) === "\n") 1 else 0)
       val lineHeight = Text.calculateBoundsOfLine("a", fontInfo).height
-      val lastLine   = if (textLine.takeRight(1) == "\n") "" else lines.reverse.headOption.getOrElse("")
+      val lastLine   = if (textLine.takeRight(1) === "\n") "" else lines.reverse.headOption.getOrElse("")
       val bounds     = Text.calculateBoundsOfLine(lastLine, fontInfo)
 
       Point(bounds.size.x, 0) + offset + Point(0, lineHeight * lineCount)
     }
 
     private def drawCursor(gameTime: GameTime, inputField: InputField, position: Point, depth: Depth, inputFieldAssets: InputFieldAssets): Option[Graphic] =
-      if (((gameTime.running * 0.00001) * 150).toInt % 2 == 0)
+      if (((gameTime.running * 0.00001) * 150).toInt % 2 === 0)
         FontRegister.findByFontKey(inputFieldAssets.text.fontKey).map { fontInfo =>
           inputFieldAssets.cursor
             .moveTo(calculateCursorPosition(inputField.text, position, fontInfo, inputField.cursorPosition))
@@ -150,7 +152,7 @@ object InputField {
   }
 
   def addCharacter(inputField: InputField, char: String): InputField =
-    if (inputField.text.length < inputField.options.characterLimit && (char != "\n" || inputField.options.multiLine)) {
+    if (inputField.text.length < inputField.options.characterLimit && ((char !== "\n") || inputField.options.multiLine)) {
       val splitString = inputField.text.splitAt(inputField.cursorPosition)
 
       inputField.copy(

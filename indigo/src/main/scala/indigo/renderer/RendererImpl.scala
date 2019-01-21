@@ -5,6 +5,7 @@ import indigo.runtime.metrics._
 import indigo.shared.ClearColor
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
+import indigo.shared.Eq._
 
 trait IRenderer {
   def init(): Unit
@@ -117,7 +118,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       // Setup attributes
       bindShaderToBuffer(cNc, lightingShaderProgram, vertexBuffer, textureBuffer, effectsBuffer)
 
-      textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
+      textureLocations.find(t => t.name === displayObject.imageRef).foreach { textureLookup =>
         // Setup Uniforms
         setupLightingFragmentShader(cNc.context, lightingShaderProgram, textureLookup.texture, displayObject.imageRef)
 
@@ -154,7 +155,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       // Setup attributes
       bindShaderToBuffer(cNc, shaderProgram, vertexBuffer, textureBuffer, effectsBuffer)
 
-      textureLocations.find(t => t.name == displayObject.imageRef).foreach { textureLookup =>
+      textureLocations.find(t => t.name === displayObject.imageRef).foreach { textureLookup =>
         // Setup Uniforms
         setupFragmentShader(cNc.context, shaderProgram, textureLookup.texture, displayObject.imageRef)
 

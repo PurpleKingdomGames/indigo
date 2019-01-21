@@ -1,5 +1,8 @@
 package indigo.gameengine.scenegraph.datatypes
 
+import indigo.shared.Eq
+import indigo.shared.Eq._
+
 final case class FontInfo(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean) {
   private val nonEmptyChars: List[FontChar] = unknownChar +: fontChars
 
@@ -10,7 +13,7 @@ final case class FontInfo(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, un
   def findByCharacter(character: String): FontChar =
     nonEmptyChars
       .find { p =>
-        if (caseSensitive) p.character == character else p.character.toLowerCase == character.toLowerCase
+        if (caseSensitive) p.character === character else p.character.toLowerCase === character.toLowerCase
       }
       .getOrElse(unknownChar)
   def findByCharacter(character: Char): FontChar = findByCharacter(character.toString)
@@ -31,9 +34,20 @@ object FontInfo {
     )
 }
 
-final case class FontKey(key: String) extends AnyVal {
-  def ===(other: FontKey): Boolean =
-    key == other.key
+final case class FontKey(key: String) extends AnyVal
+object FontKey {
+
+  implicit class EqFontKey(value: FontKey) extends Eq[FontKey] {
+    def ===(other: FontKey): Boolean =
+      equal(value, other)
+
+    def !==(other: FontKey): Boolean =
+      !equal(value, other)
+
+    def equal(a1: FontKey, a2: FontKey): Boolean =
+      implicitly[Eq[String]].equal(a1.key, a2.key)
+  }
+
 }
 
 final case class FontSpriteSheet(imageAssetRef: String, size: Point)

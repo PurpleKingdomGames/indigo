@@ -1,4 +1,5 @@
 package indigoexts.collections
+
 import scala.annotation.tailrec
 
 sealed trait HList extends Product with Serializable {
@@ -59,6 +60,7 @@ object HList {
   def fromList[A](list: List[A]): HList =
     list.reverse.foldLeft(HList.empty)((acc, n) => n :: acc)
 
+  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   def equalityCheck(a: HList, b: HList): Boolean = {
     @tailrec
     def rec(remainingA: HList, remainingB: HList): Boolean =

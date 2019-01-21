@@ -16,6 +16,8 @@ import org.scalajs.dom.html.Canvas
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
+import indigo.shared.Eq._
+
 final case class GameTime(running: Double, delta: Double, frameDuration: Double) {
   def multiplier: Double                  = delta / frameDuration
   def intByTime(value: Int): Int          = (value * multiplier).toInt
@@ -89,7 +91,7 @@ object GameEngine {
     configAsync.map(_.getOrElse(config)).foreach { gameConfig =>
       IndigoLogger.info("Configuration: " + gameConfig.asString)
 
-      if (gameConfig.viewport.width % 2 != 0 || gameConfig.viewport.height % 2 != 0)
+      if ((gameConfig.viewport.width % 2 !== 0) || (gameConfig.viewport.height % 2 !== 0))
         IndigoLogger.info(
           "WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!"
         )

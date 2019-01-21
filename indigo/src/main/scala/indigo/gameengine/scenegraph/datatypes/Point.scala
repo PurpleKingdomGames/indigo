@@ -1,4 +1,6 @@
 package indigo.gameengine.scenegraph.datatypes
+
+import indigo.shared.Eq._
 import indigo.runtime.Show
 
 final case class Point(x: Int, y: Int) {
@@ -36,7 +38,7 @@ object Point {
     Point(a.x + (((b.x - a.x) / divisor) * multiplier).toInt, a.y + (((b.y - a.y) / divisor) * multiplier).toInt)
 
   def equality(a: Point, b: Point): Boolean =
-    a.x == b.x && a.y == b.y
+    a.x === b.x && a.y === b.y
 
   def distanceBetween(a: Point, b: Point): Double = {
     val aa = b.x.toDouble - a.x.toDouble

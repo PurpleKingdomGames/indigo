@@ -5,6 +5,8 @@ import indigo.runtime.Show
 import indigoexts.grid.GridPoint
 import indigoexts.line.{IntersectionResult, LineSegment}
 
+import indigo.shared.Eq._
+
 trait QuadBounds {
   val x: Int
   val y: Int
@@ -29,7 +31,7 @@ trait QuadBounds {
     )
 
   def isOneUnitSquare: Boolean =
-    width == 1 && height == 1
+    width === 1 && height === 1
 
   def subdivide: (QuadBounds, QuadBounds, QuadBounds, QuadBounds) =
     QuadBounds.subdivide(this)
@@ -118,7 +120,7 @@ object QuadBounds {
   }
 
   def equals(a: QuadBounds, b: QuadBounds): Boolean =
-    a.x == b.x && a.y == b.y && a.width == b.width && a.height == b.height
+    a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
 
   def rayCollisionCheck(bounds: QuadBounds, line: LineSegment): Boolean =
     bounds.edges.exists { edge =>

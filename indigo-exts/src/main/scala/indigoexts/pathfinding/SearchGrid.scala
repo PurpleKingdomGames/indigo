@@ -1,7 +1,7 @@
 package indigoexts.pathfinding
 
 import indigoexts.pathfinding.GridSquare.{EmptySquare, EndSquare, ImpassableSquare, StartSquare}
-
+import indigo.shared.Eq._
 import scala.annotation.tailrec
 import scala.util.Random
 
@@ -18,7 +18,7 @@ final case class SearchGrid(validationWidth: Int, validationHeight: Int, start: 
 object SearchGrid {
 
   def isValid(searchGrid: SearchGrid): Boolean =
-    searchGrid.grid.lengthCompare(searchGrid.validationWidth * searchGrid.validationHeight) == 0 &&
+    searchGrid.grid.lengthCompare(searchGrid.validationWidth * searchGrid.validationHeight) === 0 &&
       searchGrid.grid.exists(_.isStart) && searchGrid.grid.exists(_.isEnd)
 
   def coordsWithinGrid(searchGrid: SearchGrid, coords: Coords): Boolean =
@@ -100,7 +100,7 @@ object SearchGrid {
   def locatePath(searchGrid: SearchGrid): List[Coords] = {
     @tailrec
     def rec(currentPosition: Coords, currentScore: Int, target: Coords, grid: SearchGrid, width: Int, acc: List[Coords]): List[Coords] =
-      if (currentPosition == target) acc
+      if (currentPosition === target) acc
       else
         sampleAt(grid, currentPosition, width).filter(c => c.score.getOrElse(GridSquare.max) < currentScore) match {
           case Nil =>

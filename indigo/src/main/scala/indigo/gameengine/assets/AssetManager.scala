@@ -11,6 +11,8 @@ import scala.concurrent.{Future, Promise}
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js.typedarray.ArrayBuffer
 
+import indigo.shared.Eq._
+
 object AssetManager {
 
   private def filterOutTextAssets(l: List[AssetType]): List[AssetType.Text] =
@@ -48,7 +50,7 @@ object AssetManager {
   }
 
   def findByName(assetCollection: AssetCollection): String => Option[LoadedImageAsset] =
-    name => assetCollection.images.find(p => p.name == name)
+    name => assetCollection.images.find(p => p.name === name)
 
   private val loadImageAssets: List[AssetType.Image] => Future[List[LoadedImageAsset]] = imageAssets => Future.sequence(imageAssets.map(loadImageAsset))
 
@@ -56,7 +58,7 @@ object AssetManager {
     if (image.complete) Future.successful(image)
     else {
       val p = Promise[HTMLImageElement]()
-      image.onload = { (_: Event) =>
+      image.onload = { _: Event =>
         p.success(image)
       }
       p.future

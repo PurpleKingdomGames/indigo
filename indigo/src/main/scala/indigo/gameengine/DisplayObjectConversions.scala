@@ -11,6 +11,8 @@ import indigo.runtime.metrics.Metrics
 import scala.annotation.tailrec
 import scala.collection.mutable
 
+import indigo.shared.Eq._
+
 object DisplayObjectConversions {
 
   @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
@@ -27,7 +29,7 @@ object DisplayObjectConversions {
     lookupTextureOffsetCache.getOrElseUpdate(
       name, {
         assetMapping.mappings
-          .find(p => p._1 == name)
+          .find(p => p._1 === name)
           .map(_._2.offset)
           .map(pt => Vector2(pt.x.toDouble, pt.y.toDouble))
           .getOrElse {
@@ -39,7 +41,7 @@ object DisplayObjectConversions {
 
   private val lookupAtlasName: (AssetMapping, String) => String = (assetMapping, name) =>
     lookupAtlasNameCache.getOrElseUpdate(name, {
-      assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasName).getOrElse {
+      assetMapping.mappings.find(p => p._1 === name).map(_._2.atlasName).getOrElse {
         IndigoLogger.info("Failed to find atlas name for texture: " + name)
         ""
       }
@@ -48,7 +50,7 @@ object DisplayObjectConversions {
   private val lookupAtlasSize: (AssetMapping, String) => Vector2 = (assetMapping, name) =>
     lookupAtlasSizeCache.getOrElseUpdate(
       name, {
-        assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasSize).getOrElse {
+        assetMapping.mappings.find(p => p._1 === name).map(_._2.atlasSize).getOrElse {
           IndigoLogger.info("Failed to find atlas size for texture: " + name)
           Vector2.one
         }

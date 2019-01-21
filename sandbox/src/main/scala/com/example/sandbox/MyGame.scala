@@ -4,6 +4,8 @@ import indigo._
 import indigoexts.entrypoint._
 import indigoexts.formats._
 
+import indigo.shared.Eq._
+
 object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, MyViewModel] {
 
   private val viewportWidth: Int      = 456
@@ -39,7 +41,7 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, MyViewModel] {
         .addAnimations(spriteAndAnimations.animations)
 
     val res: Option[Startup.Success[MyStartupData]] = for {
-      json                <- assetCollection.texts.find(p => p.name == MyAssets.dudeName + "-json").map(_.contents)
+      json                <- assetCollection.texts.find(p => p.name === MyAssets.dudeName + "-json").map(_.contents)
       aseprite            <- Aseprite.fromJson(json)
       spriteAndAnimations <- Aseprite.toSpriteAndAnimations(aseprite, Depth(3), MyAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)

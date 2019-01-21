@@ -1,16 +1,20 @@
 package indigoexts.collections
+
 import org.scalactic.Equality
 import org.scalatest.{FunSpec, Matchers}
+
+import indigo.shared.Eq._
+import indigo.shared.Eq
 
 class NonEmptyListSpec extends FunSpec with Matchers {
 
   // Needed because of the funky NonEmptyList type.
-  implicit def eq[T]: Equality[NonEmptyList[T]] =
+  implicit def eq[T](implicit eqT: Eq[T]): Equality[NonEmptyList[T]] =
     new Equality[NonEmptyList[T]] {
       def areEqual(a: NonEmptyList[T], b: Any): Boolean =
         b match {
           case l: NonEmptyList[T] @unchecked =>
-            NonEmptyList.equality(a, l)
+            NonEmptyList.equality(a, l)(eqT)
 
           case _ =>
             false

@@ -1,7 +1,9 @@
 package indigoexts.scenemanager
 
 import indigo.runtime.IndigoLogger
+import indigo.shared.Eq
 import indigoexts.collections.NonEmptyList
+import indigo.shared.Eq._
 
 import scala.annotation.tailrec
 
@@ -52,7 +54,7 @@ final case class SceneFinder(previous: List[ScenePosition], current: ScenePositi
       case i if i > sceneCount =>
         this
 
-      case i if i == current.index =>
+      case i if i === current.index =>
         this
 
       case i if i < current.index =>
@@ -67,7 +69,7 @@ final case class SceneFinder(previous: List[ScenePosition], current: ScenePositi
 
   def jumpToSceneByName(name: SceneName): SceneFinder =
     this.toList
-      .find(p => p.name == name)
+      .find(p => p.name === name)
       .map(p => jumpToSceneByPosition(p.index)) match {
       case Some(sf) =>
         sf
@@ -92,3 +94,11 @@ object SceneFinder {
 }
 
 final case class ScenePosition(index: Int, name: SceneName)
+object ScenePosition {
+
+  implicit val EqScenePosition: Eq[ScenePosition] =
+    Eq.create[ScenePosition] { (a, b) =>
+      a.index === b.index && a.name === b.name
+    }
+
+}

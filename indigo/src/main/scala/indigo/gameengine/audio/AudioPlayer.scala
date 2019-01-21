@@ -7,6 +7,8 @@ import org.scalajs.dom
 import org.scalajs.dom.{AudioBufferSourceNode, GainNode}
 import org.scalajs.dom.raw.AudioContext
 
+import indigo.shared.Eq._
+
 object AudioPlayer {
 
   def apply(loadedAudioAssets: List[LoadedAudioAsset]): AudioPlayer =
@@ -35,7 +37,7 @@ final class AudioPlayerImpl(loadedAudioAssets: List[LoadedAudioAsset], context: 
   }
 
   def playSound(assetRef: String, volume: Volume): Unit =
-    loadedAudioAssets.find(_.name == assetRef).foreach { sound =>
+    loadedAudioAssets.find(_.name === assetRef).foreach { sound =>
       setupNodes(sound.data, volume, loop = false).audioBufferSourceNode.start(0)
     }
 
@@ -72,7 +74,7 @@ final class AudioPlayerImpl(loadedAudioAssets: List[LoadedAudioAsset], context: 
 
             val nodes =
               loadedAudioAssets
-                .find(_.name == track.assetRef)
+                .find(_.name === track.assetRef)
                 .map(asset => setupNodes(asset.data, track.volume * sceneAudioSource.masterVolume, loop = true))
 
             nodes.foreach(_.audioBufferSourceNode.start(0))

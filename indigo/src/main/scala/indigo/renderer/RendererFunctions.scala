@@ -4,6 +4,7 @@ import indigo.runtime.IndigoLogger
 import org.scalajs.dom.{html, raw}
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram, WebGLTexture, WebGLUniformLocation}
+import indigo.shared.Eq._
 
 import scala.scalajs.js.typedarray.Float32Array
 
@@ -300,7 +301,7 @@ object RendererFunctions {
 
   def setupFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, imageRef: String): Unit = {
 
-    if (imageRef != lastTextureName) {
+    if (imageRef !== lastTextureName) {
       gl.bindTexture(TEXTURE_2D, texture)
       lastTextureName = imageRef
     }
@@ -311,7 +312,7 @@ object RendererFunctions {
 
   def setupLightingFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, imageRef: String): Unit = {
 
-    if (imageRef != lastTextureName) {
+    if (imageRef !== lastTextureName) {
       gl.bindTexture(TEXTURE_2D, texture)
       lastTextureName = imageRef
     }
@@ -350,7 +351,7 @@ object RendererFunctions {
   var orthographicProjectionMatrixNoMag: Matrix4 = Matrix4.identity
 
   def resize(canvas: html.Canvas, actualWidth: Int, actualHeight: Int, magnification: Int): Unit =
-    if (!resizeRun || canvas.width != actualWidth || canvas.height != actualHeight) {
+    if (!resizeRun || (canvas.width !== actualWidth) || (canvas.height !== actualHeight)) {
       resizeRun = true
       canvas.width = actualWidth
       canvas.height = actualHeight

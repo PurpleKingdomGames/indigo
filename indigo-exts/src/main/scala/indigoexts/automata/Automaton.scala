@@ -3,6 +3,8 @@ package indigoexts.automata
 import indigo.gameengine.scenegraph.{Graphic, Sprite, Text}
 import indigo.gameengine.scenegraph.datatypes.BindingKey
 
+import indigo.shared.Eq._
+
 sealed trait Automaton extends Product with Serializable {
   val bindingKey: BindingKey = BindingKey.generate
   val key: AutomataPoolKey
@@ -30,7 +32,7 @@ object AutomataPoolKey {
     AutomataPoolKey(BindingKey.generate.value)
 
   def equality(a: AutomataPoolKey, b: AutomataPoolKey): Boolean =
-    a.key == b.key
+    a.key === b.key
 }
 
 final case class AutomataLifeSpan(millis: Double)

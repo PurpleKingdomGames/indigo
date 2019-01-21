@@ -28,7 +28,7 @@ trait FrameMouseEvents {
   // At
   private def wasMouseAt(position: Point, maybePosition: Option[Point]): Boolean =
     maybePosition match {
-      case Some(pt) => position == pt
+      case Some(pt) => position === pt
       case None     => false
     }
 

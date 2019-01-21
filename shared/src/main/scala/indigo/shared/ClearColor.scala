@@ -1,5 +1,7 @@
 package indigo.shared
 
+import Eq._
+
 final case class ClearColor(r: Double, g: Double, b: Double, a: Double) {
   def forceOpaque: ClearColor                = this.copy(a = 1d)
   def forceTransparent: ClearColor           = this.copy(a = 0d)
@@ -22,14 +24,14 @@ object ClearColor {
 
   def fromHexString(hex: String): ClearColor =
     hex.trim match {
-      case h if h.startsWith("0x") && h.length == 8 =>
+      case h if h.startsWith("0x") && h.length === 8 =>
         fromRGB(
           Integer.parseInt(hex.substring(2, 4), 16),
           Integer.parseInt(hex.substring(4, 6), 16),
           Integer.parseInt(hex.substring(6), 16)
         )
 
-      case h if h.length == 6 =>
+      case h if h.length === 6 =>
         fromRGB(
           Integer.parseInt(hex.substring(0, 2), 16),
           Integer.parseInt(hex.substring(2, 4), 16),

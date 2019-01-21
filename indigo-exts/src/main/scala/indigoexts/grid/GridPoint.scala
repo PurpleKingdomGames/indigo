@@ -6,6 +6,8 @@ import indigo.runtime.Show
 import scala.annotation.tailrec
 import scala.util.Random
 
+import indigo.shared.Eq._
+
 final case class GridPoint(x: Int, y: Int) {
 
   def ===(other: GridPoint): Boolean =
@@ -47,7 +49,7 @@ object GridPoint {
     GridPoint(point.x, point.y)
 
   def equality(a: GridPoint, b: GridPoint): Boolean =
-    a.x == b.x && a.y == b.y
+    a.x === b.x && a.y === b.y
 
   def append(a: GridPoint, b: GridPoint): GridPoint =
     GridPoint(a.x + b.x, a.y + b.y)

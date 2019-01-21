@@ -4,7 +4,9 @@ import indigo.{UpdatedModel, UpdatedViewModel}
 import indigo.gameengine.GameTime
 import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
 import indigo.gameengine.scenegraph.SceneUpdateFragment
+import indigo.shared.Eq
 import indigoexts.lenses.Lens
+import indigo.shared.Eq._
 
 trait Scene[GameModel, ViewModel, SceneModel, SceneViewModel] {
 
@@ -48,5 +50,13 @@ object Scene {
 
 final case class SceneName(name: String) extends AnyVal {
   def ===(other: SceneName): Boolean =
-    name == other.name
+    name === other.name
+}
+object SceneName {
+
+  implicit val EqSceneName: Eq[SceneName] =
+    Eq.create[SceneName] { (a, b) =>
+      a === b
+    }
+
 }

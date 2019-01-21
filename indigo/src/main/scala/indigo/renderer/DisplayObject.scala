@@ -2,6 +2,7 @@ package indigo.renderer
 
 import indigo.gameengine.scenegraph.datatypes.AmbientLight
 import org.scalajs.dom.raw.WebGLRenderingContext._
+import indigo.shared.Eq._
 
 final case class Displayable(game: DisplayLayer, lighting: DisplayLayer, ui: DisplayLayer, ambientLight: AmbientLight)
 final case class DisplayLayer(displayObjects: List[DisplayObject]) extends AnyVal
@@ -132,12 +133,12 @@ object DisplayObject {
       val newT = d.textureCoordinates
       val newE = d.effectValues
 
-      if (imageRef == "") {
+      if (imageRef === "") {
         imageRef = d.imageRef
         v = newV
         t = newT
         e = newE
-      } else if (imageRef == d.imageRef) {
+      } else if (imageRef === d.imageRef) {
         for (vv <- newV) v.push(vv)
         for (tt <- newT) t.push(tt)
         for (ee <- newE) e.push(ee)

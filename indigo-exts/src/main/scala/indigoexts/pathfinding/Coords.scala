@@ -1,5 +1,7 @@
 package indigoexts.pathfinding
 
+import indigo.shared.Eq._
+
 final case class Coords(x: Int, y: Int) {
 
   def toGridPosition(gridWidth: Int): Int =
@@ -34,7 +36,7 @@ object Coords {
     )
 
   def equality(a: Coords, b: Coords): Boolean =
-    a.x == b.x && a.y == b.y
+    a.x === b.x && a.y === b.y
 
   def add(a: Coords, b: Coords): Coords =
     Coords(a.x + b.x, a.y + b.y)
