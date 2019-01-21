@@ -24,7 +24,7 @@ object MyService extends Service[IO]
 
 abstract class Service[F[_]](implicit F: Effect[F]) extends StreamApp[F] with Http4sDsl[F] {
 
-  @SuppressWarnings(Array("org.wartremover.warts.PublicInference"))
+  @SuppressWarnings(Array("org.wartremover.warts.PublicInference", "org.wartremover.warts.Nothing"))
   def route(scheduler: Scheduler): HttpService[F] = HttpService[F] {
     case GET -> Root / "hello" =>
       Ok("Hello world.")
@@ -76,7 +76,7 @@ abstract class Service[F[_]](implicit F: Effect[F]) extends StreamApp[F] with Ht
       }
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  @SuppressWarnings(Array("org.wartremover.warts.Any", "org.wartremover.warts.Nothing"))
   def stream(args: List[String], requestShutdown: F[Unit]): Stream[F, ExitCode] =
     for {
       scheduler <- Scheduler[F](corePoolSize = 2)

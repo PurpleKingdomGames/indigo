@@ -49,10 +49,10 @@ object GameConfig {
   def fromJson(json: String): Either[String, GameConfig] =
     decode[GameConfig](json) match {
       case Right(c) =>
-        Right(c)
+        Right[String, GameConfig](c)
 
       case Left(e) =>
-        Left("Failed to deserialise json into GameConfig: " + e.getMessage)
+        Left[String, GameConfig]("Failed to deserialise json into GameConfig: " + e.getMessage)
     }
 
 }

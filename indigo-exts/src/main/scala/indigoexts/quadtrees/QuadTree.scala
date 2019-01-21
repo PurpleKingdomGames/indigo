@@ -107,8 +107,8 @@ object QuadTree {
 
   def insertElementAt[T](gridPoint: GridPoint, quadTree: QuadTree[T], element: T): QuadTree[T] =
     quadTree match {
-      case l @ QuadLeaf(bounds, _) if bounds.isPointWithinBounds(gridPoint) =>
-        l.copy(value = element)
+      case QuadLeaf(bounds, _) if bounds.isPointWithinBounds(gridPoint) =>
+        QuadLeaf(bounds, element)
 
       case l: QuadLeaf[T] =>
         l

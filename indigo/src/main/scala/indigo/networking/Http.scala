@@ -104,22 +104,22 @@ object HttpRequest {
 
   object GET {
     def apply(url: String): GET =
-      GET(url, Map(), Map())
+      GET(url, Map.empty[String, String], Map.empty[String, String])
   }
 
   object POST {
     def apply(url: String, body: String): POST =
-      POST(url, Map(), Map(), Option(body))
+      POST(url, Map.empty[String, String], Map.empty[String, String], Option(body))
   }
 
   object PUT {
     def apply(url: String, body: String): PUT =
-      PUT(url, Map(), Map(), Option(body))
+      PUT(url, Map.empty[String, String], Map.empty[String, String], Option(body))
   }
 
   object DELETE {
     def apply(url: String, body: Option[String]): DELETE =
-      DELETE(url, Map(), Map(), body)
+      DELETE(url, Map.empty[String, String], Map.empty[String, String], body)
   }
 }
 

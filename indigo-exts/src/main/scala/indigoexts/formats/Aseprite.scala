@@ -27,7 +27,7 @@ object AsepriteFrameTag {
 
 object Aseprite {
 
-  @SuppressWarnings(Array("org.wartremover.warts.PublicInference"))
+  @SuppressWarnings(Array("org.wartremover.warts.PublicInference", "org.wartremover.warts.Nothing"))
   def fromJson(json: String): Option[Aseprite] =
     decode[Aseprite](json) match {
       case Right(s) => Some(s)

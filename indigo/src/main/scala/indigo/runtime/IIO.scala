@@ -18,7 +18,7 @@ sealed trait IIO[+A] {
         IIO.delay(b)
 
       case IIO.RaiseError(e) =>
-        IIO.raiseError(e)
+        IIO.raiseError[B](e)
     }
 
   def isError: Boolean =
@@ -48,10 +48,10 @@ sealed trait IIO[+A] {
 
   def attemptRun: Either[Throwable, A] =
     try {
-      Right(unsafeRun())
+      Right[Throwable, A](unsafeRun())
     } catch {
       case t: Throwable =>
-        Left(t)
+        Left[Throwable, A](t)
     }
 
   def cata[B](f: A => B, default: B): B =
@@ -74,28 +74,28 @@ sealed trait IIO[+A] {
   def map[B](f: A => B): IIO[B] =
     this match {
       case IIO.RaiseError(e) =>
-        cata(x => pure[B](f(x)), IIO.raiseError(e))
+        cata(x => pure[B](f(x)), IIO.raiseError[B](e))
 
       case _ =>
-        cata(x => pure[B](f(x)), IIO.raiseError(new Exception("Invalid map of an IIO.")))
+        cata(x => pure[B](f(x)), IIO.raiseError[B](new Exception("Invalid map of an IIO.")))
     }
 
   def flatMap[B](f: A => IIO[B]): IIO[B] =
     this match {
       case IIO.RaiseError(e) =>
-        cata(x => f(x), IIO.raiseError(e))
+        cata(x => f(x), IIO.raiseError[B](e))
 
       case _ =>
-        cata(x => f(x), IIO.raiseError(new Exception("Invalid flatMap of an IIO.")))
+        cata(x => f(x), IIO.raiseError[B](new Exception("Invalid flatMap of an IIO.")))
     }
 
   def flatten[B](implicit ev: A <:< IIO[B]): IIO[B] =
     this match {
       case IIO.RaiseError(e) =>
-        cata(x => ev(x), IIO.raiseError(e))
+        cata(x => ev(x), IIO.raiseError[B](e))
 
       case _ =>
-        cata(x => ev(x), IIO.raiseError(new Exception("Invalid flatten of an IIO.")))
+        cata(x => ev(x), IIO.raiseError[B](new Exception("Invalid flatten of an IIO.")))
     }
 
 }
@@ -135,13 +135,13 @@ object IIO {
       Pure(a)
     } catch {
       case e: Throwable =>
-        RaiseError(e)
+        RaiseError[A](e)
     }
 
   def delay[A](a: => A): IIO[A] =
     Delay(() => a)
 
   def raiseError[A](e: Throwable): IIO[A] =
-    RaiseError(e)
+    RaiseError[A](e)
 
 }

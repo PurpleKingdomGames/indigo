@@ -81,7 +81,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(RenderToConvasEndMetric)
   }
 
-  private def drawLightingLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor)(implicit metrics: Metrics): Unit = {
+  private def drawLightingLayerToTexture(displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor)(implicit metrics: Metrics): Unit = {
 
     /*
 
@@ -133,7 +133,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   }
 
-  private def drawLayerToTexture[B](displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor)(implicit metrics: Metrics): Unit = {
+  private def drawLayerToTexture(displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor)(implicit metrics: Metrics): Unit = {
 
     // Switch to the frameBuffer
     FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)

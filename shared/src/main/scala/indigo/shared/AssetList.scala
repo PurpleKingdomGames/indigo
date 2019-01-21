@@ -19,10 +19,10 @@ object AssetList {
   def fromJson(json: String): Either[String, AssetList] =
     decode[AssetList](json) match {
       case Right(al) =>
-        Right(al)
+        Right[String, AssetList](al)
 
       case Left(e) =>
-        Left("Failed to deserialise json into AssetList: " + e.getMessage)
+        Left[String, AssetList]("Failed to deserialise json into AssetList: " + e.getMessage)
     }
 
   val empty: AssetList =

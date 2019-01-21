@@ -42,17 +42,17 @@ object Startup {
     def addAnimations(value: Animations*): Success[SuccessType] =
       addAnimations(value.toList)
     def addAnimations(value: List[Animations]): Success[SuccessType] =
-      this.copy(animations = this.animations ++ value)
+      Success(success, animations ++ value, fonts, subSystems)
 
     def addFonts(value: FontInfo*): Success[SuccessType] =
       addFonts(value.toList)
     def addFonts(value: List[FontInfo]): Success[SuccessType] =
-      this.copy(fonts = this.fonts ++ value)
+      Success(success, animations, fonts ++ value, subSystems)
 
     def addSubSystems(value: SubSystem*): Success[SuccessType] =
       addSubSystems(value.toList)
     def addSubSystems(value: List[SubSystem]): Success[SuccessType] =
-      this.copy(subSystems = this.subSystems ++ value)
+      Success(success, animations, fonts, subSystems ++ value)
   }
   object Success {
     def apply[SuccessType](success: SuccessType): Success[SuccessType] =

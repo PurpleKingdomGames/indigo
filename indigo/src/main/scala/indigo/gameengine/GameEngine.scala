@@ -203,7 +203,7 @@ object GameEngine {
       case e: Startup.Failure[_] =>
         IndigoLogger.info("Game initialisation failed")
         IndigoLogger.info(e.report)
-        IIO.raiseError(new Exception("Game aborted due to start up failure"))
+        IIO.raiseError[StartupData](new Exception("Game aborted due to start up failure"))
 
       case x: Startup.Success[StartupData] =>
         IndigoLogger.info("Game initialisation succeeded")
@@ -213,7 +213,7 @@ object GameEngine {
   def createCanvas(gameConfig: GameConfig): IIO[Canvas] =
     Option(dom.document.getElementById("indigo-container")) match {
       case None =>
-        IIO.raiseError(new Exception("""Parent element "indigo-container" could not be found on page."""))
+        IIO.raiseError[Canvas](new Exception("""Parent element "indigo-container" could not be found on page."""))
 
       case Some(parent) =>
         IIO.delay(Renderer.createCanvas(gameConfig.viewport.width, gameConfig.viewport.height, parent))

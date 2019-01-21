@@ -40,7 +40,7 @@ object TextureAtlas {
     textureAtlas
   }
 
-  val identity: TextureAtlas = TextureAtlas(Map(), Map())
+  val identity: TextureAtlas = TextureAtlas(Map.empty[AtlasId, Atlas], Map.empty[String, AtlasIndex])
 
 }
 

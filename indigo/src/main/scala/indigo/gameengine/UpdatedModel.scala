@@ -5,12 +5,12 @@ final case class UpdatedModel[Model](model: Model, globalEvents: List[GlobalEven
   def addGlobalEvents(events: GlobalEvent*): UpdatedModel[Model] =
     addGlobalEvents(events.toList)
   def addGlobalEvents(events: List[GlobalEvent]): UpdatedModel[Model] =
-    this.copy(globalEvents = globalEvents ++ events)
+    UpdatedModel(model, globalEvents ++ events, inFrameEvents)
 
   def addInFrameEvents(events: InFrameEvent*): UpdatedModel[Model] =
     addInFrameEvents(events.toList)
   def addInFrameEvents(events: List[InFrameEvent]): UpdatedModel[Model] =
-    this.copy(inFrameEvents = inFrameEvents ++ events)
+    UpdatedModel(model, globalEvents, inFrameEvents ++ events)
 }
 object UpdatedModel {
   def apply[Model](model: Model): UpdatedModel[Model] =
@@ -21,12 +21,12 @@ final case class UpdatedViewModel[Model](model: Model, globalEvents: List[Global
   def addGlobalEvents(events: GlobalEvent*): UpdatedViewModel[Model] =
     addGlobalEvents(events.toList)
   def addGlobalEvents(events: List[GlobalEvent]): UpdatedViewModel[Model] =
-    this.copy(globalEvents = globalEvents ++ events)
+    UpdatedViewModel(model, globalEvents ++ events, inFrameEvents)
 
   def addInFrameEvents(events: InFrameEvent*): UpdatedViewModel[Model] =
     addInFrameEvents(events.toList)
   def addInFrameEvents(events: List[InFrameEvent]): UpdatedViewModel[Model] =
-    this.copy(inFrameEvents = inFrameEvents ++ events)
+    UpdatedViewModel(model, globalEvents, inFrameEvents ++ events)
 }
 object UpdatedViewModel {
   def apply[Model](model: Model): UpdatedViewModel[Model] =
