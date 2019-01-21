@@ -63,7 +63,6 @@ lazy val commonSettings = Seq(
     Wart.NonUnitStatements,
     Wart.Equals,
     Wart.Recursion,
-    Wart.LeakingSealed
   ),
   scalacOptions += "-Yrangepos"
 )
