@@ -1,6 +1,6 @@
 package indigo.runtime
 
-import indigo.shared.Eq._
+import indigo.Eq._
 import org.scalatest.{FunSpec, Matchers}
 
 class IIOSpec extends FunSpec with Matchers {

@@ -3,7 +3,7 @@ package indigoexts.collections
 import org.scalactic.Equality
 import org.scalatest.{FunSpec, Matchers}
 
-import indigo.shared.Eq._
+import indigo.Eq._
 import indigo.shared.Eq
 
 class NonEmptyListSpec extends FunSpec with Matchers {

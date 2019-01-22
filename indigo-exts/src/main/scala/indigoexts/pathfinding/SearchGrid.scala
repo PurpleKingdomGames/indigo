@@ -1,7 +1,8 @@
 package indigoexts.pathfinding
 
 import indigoexts.pathfinding.GridSquare.{EmptySquare, EndSquare, ImpassableSquare, StartSquare}
-import indigo.shared.Eq._
+
+import indigo.Eq._
 import scala.annotation.tailrec
 import scala.util.Random
 

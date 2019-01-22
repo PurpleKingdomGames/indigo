@@ -2,7 +2,7 @@ package indigo.gameengine
 
 import indigo.gameengine.scenegraph.datatypes.Point
 
-import indigo.shared.Eq._
+import indigo.Eq._
 
 sealed trait PowerOfTwo {
   val value: Int

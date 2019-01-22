@@ -6,7 +6,8 @@ import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
 import indigo.gameengine.scenegraph.SceneUpdateFragment
 import indigo.shared.Eq
 import indigoexts.lenses.Lens
-import indigo.shared.Eq._
+
+import indigo.Eq._
 
 trait Scene[GameModel, ViewModel, SceneModel, SceneViewModel] {
 

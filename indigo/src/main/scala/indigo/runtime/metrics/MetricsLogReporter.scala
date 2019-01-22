@@ -1,7 +1,8 @@
 package indigo.runtime.metrics
 
 import indigo.runtime._
-import indigo.shared.Eq._
+
+import indigo.Eq._
 
 import scala.annotation.tailrec
 

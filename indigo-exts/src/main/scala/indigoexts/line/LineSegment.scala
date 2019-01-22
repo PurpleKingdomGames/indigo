@@ -1,6 +1,6 @@
 package indigoexts.line
 
-import indigo.shared.Eq._
+import indigo.Eq._
 import indigo.gameengine.scenegraph.datatypes.Point
 
 final case class LineSegment(start: Point, end: Point) {

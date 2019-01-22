@@ -7,7 +7,8 @@ import indigo.runtime.IndigoLogger
 import indigo.shared.Eq
 import org.scalajs.dom
 import org.scalajs.dom.{html, raw}
-import indigo.shared.Eq._
+
+import indigo.Eq._
 
 import scala.annotation.tailrec
 

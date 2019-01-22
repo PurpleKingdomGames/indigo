@@ -3,7 +3,7 @@ package indigo.gameengine.assets
 import indigo.gameengine.scenegraph._
 import indigo.gameengine.scenegraph.datatypes.BindingKey
 
-import indigo.shared.Eq._
+import indigo.Eq._
 
 final case class AnimationStates(states: List[AnimationMemento]) extends AnyVal {
 

@@ -16,7 +16,7 @@ import org.scalajs.dom.html.Canvas
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import indigo.shared.Eq._
+import indigo.Eq._
 
 final case class GameTime(running: Double, delta: Double, frameDuration: Double) {
   def multiplier: Double                  = delta / frameDuration

@@ -1,6 +1,6 @@
 package indigo.gameengine.scenegraph.datatypes
 
-import indigo.shared.Eq._
+import indigo.Eq._
 import indigo.runtime.Show
 
 final case class Point(x: Int, y: Int) {

@@ -2,7 +2,8 @@ package indigo.renderer
 
 import indigo.gameengine.scenegraph.datatypes.AmbientLight
 import org.scalajs.dom.raw.WebGLRenderingContext._
-import indigo.shared.Eq._
+
+import indigo.Eq._
 
 final case class Displayable(game: DisplayLayer, lighting: DisplayLayer, ui: DisplayLayer, ambientLight: AmbientLight)
 final case class DisplayLayer(displayObjects: List[DisplayObject]) extends AnyVal

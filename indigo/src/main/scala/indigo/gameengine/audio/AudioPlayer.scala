@@ -7,7 +7,7 @@ import org.scalajs.dom
 import org.scalajs.dom.{AudioBufferSourceNode, GainNode}
 import org.scalajs.dom.raw.AudioContext
 
-import indigo.shared.Eq._
+import indigo.Eq._
 
 object AudioPlayer {
 

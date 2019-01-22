@@ -4,7 +4,7 @@ import indigo.gameengine.GameTime
 import indigo.gameengine.scenegraph.AnimationAction._
 import indigo.gameengine.scenegraph.datatypes.{BindingKey, Point, Rectangle}
 
-import indigo.shared.Eq._
+import indigo.Eq._
 
 /*
 Animations are really timeline animations:

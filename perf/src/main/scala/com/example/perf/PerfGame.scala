@@ -1,10 +1,9 @@
 package com.example.perf
 
 import indigo._
+import indigo.Eq._
 import indigoexts.entrypoint._
 import indigoexts.formats._
-
-import indigo.shared.Eq._
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 

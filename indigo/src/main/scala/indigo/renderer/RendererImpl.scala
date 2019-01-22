@@ -5,7 +5,8 @@ import indigo.runtime.metrics._
 import indigo.shared.ClearColor
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
-import indigo.shared.Eq._
+
+import indigo.Eq._
 
 trait IRenderer {
   def init(): Unit

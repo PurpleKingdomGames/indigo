@@ -5,7 +5,8 @@ import indigo.gameengine.scenegraph.datatypes.BindingKey
 import indigo.networking.WebSocketReadyState.{CLOSED, CLOSING}
 import indigo.runtime.IndigoLogger
 import org.scalajs.dom
-import indigo.shared.Eq._
+
+import indigo.Eq._
 
 import scala.collection.mutable
 

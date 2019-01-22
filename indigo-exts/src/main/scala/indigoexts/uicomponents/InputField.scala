@@ -7,7 +7,7 @@ import indigo.gameengine.events.{FrameInputEvents, KeyboardEvent, MouseEvent, Gl
 import indigo.gameengine.scenegraph.datatypes._
 import indigo.gameengine.scenegraph.{Graphic, SceneGraphNode, SceneUpdateFragment, Text}
 
-import indigo.shared.Eq._
+import indigo.Eq._
 
 object InputField {
 

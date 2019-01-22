@@ -3,7 +3,7 @@ package indigoexts.automata
 import indigo.gameengine.scenegraph.{Graphic, Sprite, Text}
 import indigo.gameengine.scenegraph.datatypes.BindingKey
 
-import indigo.shared.Eq._
+import indigo.Eq._
 
 sealed trait Automaton extends Product with Serializable {
   val bindingKey: BindingKey = BindingKey.generate

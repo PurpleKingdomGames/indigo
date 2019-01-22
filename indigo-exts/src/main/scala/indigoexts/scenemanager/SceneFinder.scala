@@ -3,7 +3,8 @@ package indigoexts.scenemanager
 import indigo.runtime.IndigoLogger
 import indigo.shared.Eq
 import indigoexts.collections.NonEmptyList
-import indigo.shared.Eq._
+
+import indigo.Eq._
 
 import scala.annotation.tailrec
 

@@ -1,7 +1,8 @@
 package indigoexts.collections
 
 import indigo.runtime.Show
-import indigo.shared.Eq._
+
+import indigo.Eq._
 import indigo.shared.Eq
 
 trait NonEmptyList[A] {

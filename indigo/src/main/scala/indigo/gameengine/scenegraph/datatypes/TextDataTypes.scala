@@ -1,7 +1,8 @@
 package indigo.gameengine.scenegraph.datatypes
 
 import indigo.shared.Eq
-import indigo.shared.Eq._
+
+import indigo.Eq._
 
 final case class FontInfo(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean) {
   private val nonEmptyChars: List[FontChar] = unknownChar +: fontChars

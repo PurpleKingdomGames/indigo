@@ -2,7 +2,7 @@ package indigo.gameengine.constants
 
 import scala.language.implicitConversions
 
-import indigo.shared.Eq._
+import indigo.Eq._
 
 final case class KeyCode(code: Int, printableCharacter: String) {
   def ===(other: KeyCode): Boolean =

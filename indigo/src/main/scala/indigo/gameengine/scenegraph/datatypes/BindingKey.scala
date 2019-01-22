@@ -1,7 +1,8 @@
 package indigo.gameengine.scenegraph.datatypes
 
 import scala.util.Random
-import indigo.shared.Eq._
+
+import indigo.Eq._
 
 final case class BindingKey(value: String) extends AnyVal {
 

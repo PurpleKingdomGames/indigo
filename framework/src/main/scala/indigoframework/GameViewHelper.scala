@@ -3,7 +3,8 @@ package indigoframework
 import indigo.gameengine.scenegraph._
 import indigo.gameengine.scenegraph.datatypes.{AmbientLight, Rectangle}
 import indigo.shared.EntityRectangle
-import indigo.shared.Eq._
+
+import indigo.Eq._
 
 final case class GameGlobalEvent()
 
