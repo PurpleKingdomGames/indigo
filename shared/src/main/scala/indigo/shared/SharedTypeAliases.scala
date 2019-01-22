@@ -1,7 +1,11 @@
 package indigo.shared
+
 import indigo.shared
 
 trait SharedTypeAliases {
+
+  type Eq[A] = shared.Eq[A]
+  val Eq: shared.Eq.type = shared.Eq
 
   type AssetType = shared.AssetType
   val AssetType: shared.AssetType.type = shared.AssetType
