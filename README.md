@@ -4,7 +4,7 @@
 
 Assuming a machine with the JDK and SBT installed...
 
-On mac / linux from the project root:
+On Mac / Linux from the project root:
 ```
 bash scripts/localbuild.sh
 ```
@@ -14,7 +14,7 @@ On Windows:
 ```
 Read what's in that file above and do that in windows speak.
 ```
-Good luck.
+Good luck. You're on your own.
 
 ## Intro!
 Indigo is a non-traditional game engine proof of concept.
