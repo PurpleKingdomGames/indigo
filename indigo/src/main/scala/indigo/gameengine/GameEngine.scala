@@ -18,19 +18,6 @@ import scala.concurrent.Future
 
 import indigo.Eq._
 
-final case class GameTime(running: Double, delta: Double, frameDuration: Double) {
-  def multiplier: Double                  = delta / frameDuration
-  def intByTime(value: Int): Int          = (value * multiplier).toInt
-  def floatByTime(value: Float): Float    = (value * multiplier).toFloat
-  def doubleByTime(value: Double): Double = value * multiplier
-}
-
-object GameTime {
-  def now(frameDuration: Double): GameTime                                = GameTime(System.currentTimeMillis().toDouble, 0, frameDuration)
-  def zero(frameDuration: Double): GameTime                               = GameTime(0, 0, frameDuration)
-  def is(running: Double, delta: Double, frameDuration: Double): GameTime = GameTime(running, delta, frameDuration)
-}
-
 final case class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     config: GameConfig,
     configAsync: Future[Option[GameConfig]],
