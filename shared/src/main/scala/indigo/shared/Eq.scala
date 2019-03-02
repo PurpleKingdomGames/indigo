@@ -6,6 +6,12 @@ trait Eq[A] {
 
 object Eq {
 
+  def hardCodeEqual[A]: (A, A) => Boolean =
+    (_, _) => true
+
+  def hardCodeNotEqual[A]: (A, A) => Boolean =
+    (_, _) => false
+
   def create[A](f: (A, A) => Boolean): Eq[A] =
     new Eq[A] {
       def equal(a1: A, a2: A): Boolean = f(a1, a2)
@@ -62,6 +68,26 @@ object Eq {
         false
     }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Equals", "org.wartremover.warts.Nothing"))
+  implicit def eqRight[_, B](implicit eqB: Eq[B]): Eq[Right[_, B]] =
+    create {
+      case (Right(a), Right(b)) =>
+        eqB.equal(a, b)
+
+      case _ =>
+        false
+    }
+
+  @SuppressWarnings(Array("org.wartremover.warts.Equals", "org.wartremover.warts.Nothing"))
+  implicit def eqLeft[A, _](implicit eqA: Eq[A]): Eq[Left[A, _]] =
+    create {
+      case (Left(a), Left(b)) =>
+        eqA.equal(a, b)
+
+      case _ =>
+        false
+    }
+
   trait EqSyntax[A] {
     val eq: Eq[A]
     val value: A
@@ -82,53 +108,16 @@ object Eq {
 
   implicit class EqBoolean(val value: Boolean)(implicit val eq: Eq[Boolean]) extends EqSyntax[Boolean]
 
-//
-//  implicit class EqInt(value: Int) extends Eq[Int] {
-//    def ===(other: Int): Boolean =
-//      equal(value, other)
-//
-//    def !==(other: Int): Boolean =
-//      !equal(value, other)
-//
-//    @SuppressWarnings(Array("org.wartremover.warts.Equals"))
-//    def equal(a1: Int, a2: Int): Boolean =
-//      a1 == a2
-//  }
-//
-//  implicit class EqFloat(value: Float) extends Eq[Float] {
-//    def ===(other: Float): Boolean =
-//      equal(value, other)
-//
-//    def !==(other: Float): Boolean =
-//      !equal(value, other)
-//
-//    @SuppressWarnings(Array("org.wartremover.warts.Equals"))
-//    def equal(a1: Float, a2: Float): Boolean =
-//      a1 == a2
-//  }
-//
-//  implicit class EqDouble(value: Double) extends Eq[Double] {
-//    def ===(other: Double): Boolean =
-//      equal(value, other)
-//
-//    def !==(other: Double): Boolean =
-//      !equal(value, other)
-//
-//    @SuppressWarnings(Array("org.wartremover.warts.Equals"))
-//    def equal(a1: Double, a2: Double): Boolean =
-//      a1 == a2
-//  }
-//
-//  implicit class EqBoolean(value: Boolean) extends Eq[Boolean] {
-//    def ===(other: Boolean): Boolean =
-//      equal(value, other)
-//
-//    def !==(other: Boolean): Boolean =
-//      !equal(value, other)
-//
-//    @SuppressWarnings(Array("org.wartremover.warts.Equals"))
-//    def equal(a1: Boolean, a2: Boolean): Boolean =
-//      a1 == a2
-//  }
+  implicit class EqTuple2[A, B](val value: (A, B))(implicit val eq: Eq[(A, B)]) extends EqSyntax[(A, B)]
+
+  implicit class EqList[A](val value: List[A])(implicit val eq: Eq[List[A]]) extends EqSyntax[List[A]]
+
+  implicit class EqOption[A](val value: Option[A])(implicit val eq: Eq[Option[A]]) extends EqSyntax[Option[A]]
+
+  implicit class EqEither[A, B](val value: Either[A, B])(implicit val eq: Eq[Either[A, B]]) extends EqSyntax[Either[A, B]]
+
+  implicit class EqRight[B](val value: Right[_, B])(implicit val eq: Eq[Right[_, B]]) extends EqSyntax[Right[_, B]]
+
+  implicit class EqLeft[A](val value: Left[A, _])(implicit val eq: Eq[Left[A, _]]) extends EqSyntax[Left[A, _]]
 
 }
