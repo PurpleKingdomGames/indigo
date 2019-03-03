@@ -6,12 +6,6 @@ trait Eq[A] {
 
 object Eq {
 
-  def hardCodeEqual[A]: (A, A) => Boolean =
-    (_, _) => true
-
-  def hardCodeNotEqual[A]: (A, A) => Boolean =
-    (_, _) => false
-
   def create[A](f: (A, A) => Boolean): Eq[A] =
     new Eq[A] {
       def equal(a1: A, a2: A): Boolean = f(a1, a2)
@@ -69,7 +63,7 @@ object Eq {
     }
 
   @SuppressWarnings(Array("org.wartremover.warts.Equals", "org.wartremover.warts.Nothing"))
-  implicit def eqRight[_, B](implicit eqB: Eq[B]): Eq[Right[_, B]] =
+  implicit def eqRight[B](implicit eqB: Eq[B]): Eq[Right[Nothing, B]] =
     create {
       case (Right(a), Right(b)) =>
         eqB.equal(a, b)
@@ -79,7 +73,7 @@ object Eq {
     }
 
   @SuppressWarnings(Array("org.wartremover.warts.Equals", "org.wartremover.warts.Nothing"))
-  implicit def eqLeft[A, _](implicit eqA: Eq[A]): Eq[Left[A, _]] =
+  implicit def eqLeft[A](implicit eqA: Eq[A]): Eq[Left[A, Nothing]] =
     create {
       case (Left(a), Left(b)) =>
         eqA.equal(a, b)
@@ -88,36 +82,12 @@ object Eq {
         false
     }
 
-  trait EqSyntax[A] {
-    val eq: Eq[A]
-    val value: A
+  implicit class EqValue[A](val value: A)(implicit val eq: Eq[A]) {
     def ===(other: A): Boolean =
       eq.equal(value, other)
 
     def !==(other: A): Boolean =
       !eq.equal(value, other)
   }
-
-  implicit class EqString(val value: String)(implicit val eq: Eq[String]) extends EqSyntax[String]
-
-  implicit class EqInt(val value: Int)(implicit val eq: Eq[Int]) extends EqSyntax[Int]
-
-  implicit class EqFloat(val value: Float)(implicit val eq: Eq[Float]) extends EqSyntax[Float]
-
-  implicit class EqDouble(val value: Double)(implicit val eq: Eq[Double]) extends EqSyntax[Double]
-
-  implicit class EqBoolean(val value: Boolean)(implicit val eq: Eq[Boolean]) extends EqSyntax[Boolean]
-
-  implicit class EqTuple2[A, B](val value: (A, B))(implicit val eq: Eq[(A, B)]) extends EqSyntax[(A, B)]
-
-  implicit class EqList[A](val value: List[A])(implicit val eq: Eq[List[A]]) extends EqSyntax[List[A]]
-
-  implicit class EqOption[A](val value: Option[A])(implicit val eq: Eq[Option[A]]) extends EqSyntax[Option[A]]
-
-  implicit class EqEither[A, B](val value: Either[A, B])(implicit val eq: Eq[Either[A, B]]) extends EqSyntax[Either[A, B]]
-
-  implicit class EqRight[B](val value: Right[_, B])(implicit val eq: Eq[Right[_, B]]) extends EqSyntax[Right[_, B]]
-
-  implicit class EqLeft[A](val value: Left[A, _])(implicit val eq: Eq[Left[A, _]]) extends EqSyntax[Left[A, _]]
 
 }

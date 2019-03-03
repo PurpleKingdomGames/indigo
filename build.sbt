@@ -5,8 +5,10 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.12.8",
   organization := "indigo",
   libraryDependencies ++= Seq(
-    "org.scalatest" %%% "scalatest" % "3.0.5" % "test"
+    "org.scalatest"  %%% "scalatest"  % "3.0.5"  % "test",
+    "com.lihaoyi" %%% "utest" % "0.6.6" % "test"
   ),
+  testFrameworks += new TestFramework("utest.runner.Framework"),
   scalacOptions in (Compile, compile) ++= Seq(
     "-deprecation", // Emit warning and location for usages of deprecated APIs.
     "-encoding",
