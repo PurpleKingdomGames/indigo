@@ -73,6 +73,6 @@ class SceneManagerSpec extends FunSpec with Matchers {
   }
 
   private def runModel(events: List[GlobalEvent], model: TestGameModel, sceneManager: SceneManager[TestGameModel, TestViewModel]): TestGameModel =
-    events.foldLeft(model)((m, e) => sceneManager.updateModel(GameTime.now(16), m)(e).model)
+    events.foldLeft(model)((m, e) => sceneManager.updateModel(GameTime.now, m)(e).model)
 
 }

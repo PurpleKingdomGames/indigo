@@ -1,16 +1,23 @@
 package indigo.gameengine
 
-final case class GameTime(running: Double, delta: Double, frameDuration: Double) {
-  def multiplier: Double                  = delta / frameDuration
+final class GameTime(val running: Double, val delta: Double, val targetFPS: Int) {
+  lazy val frameDuration: Double = 1000d / targetFPS.toDouble
+  lazy val multiplier: Double    = delta / frameDuration
+
   def intByTime(value: Int): Int          = (value * multiplier).toInt
   def floatByTime(value: Float): Float    = (value * multiplier).toFloat
   def doubleByTime(value: Double): Double = value * multiplier
 
-  val fps: Int = (1000d / frameDuration).toInt
+  def setTargetFPS(fps: Int): GameTime =
+    new GameTime(running, delta, fps)
 }
 
 object GameTime {
-  def now(frameDuration: Double): GameTime                                = GameTime(System.currentTimeMillis().toDouble, 0, frameDuration)
-  def zero(frameDuration: Double): GameTime                               = GameTime(0, 0, frameDuration)
-  def is(running: Double, delta: Double, frameDuration: Double): GameTime = GameTime(running, delta, frameDuration)
+
+  val DefaultFPS: Int = 30
+
+  def now: GameTime                                       = new GameTime(System.currentTimeMillis().toDouble, 0, DefaultFPS)
+  def zero: GameTime                                      = new GameTime(0, 0, DefaultFPS)
+  def is(running: Double): GameTime                       = new GameTime(running, 0, DefaultFPS)
+  def withDelta(running: Double, delta: Double): GameTime = new GameTime(running, delta, DefaultFPS)
 }

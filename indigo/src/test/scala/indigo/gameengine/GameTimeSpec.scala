@@ -6,11 +6,11 @@ class GameTimeSpec extends FunSpec with Matchers {
 
   describe("GameTime") {
 
-    it("should be able to calculate the fps of the game") {
+    it("should be able to calculate the frame duration of the game") {
 
-      val gameTime: GameTime = GameTime(running = 0, delta = 0, frameDuration = 33.3)
+      val gameTime: GameTime = new GameTime(running = 0, delta = 0, targetFPS = 30)
 
-      gameTime.fps shouldEqual 30
+      Math.round(gameTime.frameDuration) shouldEqual 33
 
     }
 

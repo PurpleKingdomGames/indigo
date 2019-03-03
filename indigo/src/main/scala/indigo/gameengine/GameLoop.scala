@@ -50,7 +50,7 @@ class GameLoop[GameModel, ViewModel](
 
         metrics.record(UpdateStartMetric)
 
-        val gameTime: GameTime = GameTime(time, timeDelta, gameConfig.frameRateDeltaMillis.toDouble)
+        val gameTime: GameTime = new GameTime(time, timeDelta, gameConfig.frameRate)
 
         val collectedEvents: List[GlobalEvent] = globalEventStream.collect :+ FrameTick
 
@@ -195,11 +195,13 @@ object GameLoop {
       metrics.record(PersistAnimationStatesEndMetric)
     }
 
-  def processModelUpdateEvents[GameModel](gameTime: GameTime,
-                                          model: GameModel,
-                                          collectedEvents: List[GlobalEvent],
-                                          signals: Signals,
-                                          updateModel: (GameTime, GameModel) => GlobalEvent => UpdatedModel[GameModel])(
+  def processModelUpdateEvents[GameModel](
+      gameTime: GameTime,
+      model: GameModel,
+      collectedEvents: List[GlobalEvent],
+      signals: Signals,
+      updateModel: (GameTime, GameModel) => GlobalEvent => UpdatedModel[GameModel]
+  )(
       implicit globalEventStream: GlobalEventStream
   ): (GameModel, FrameInputEvents) = {
     val combine: (UpdatedModel[GameModel], UpdatedModel[GameModel]) => UpdatedModel[GameModel] =
