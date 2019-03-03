@@ -377,3 +377,5 @@ addCommandAlias("testAllNoClean", ";testIndigo;testDev;testExamples1;testExample
 addCommandAlias("testAll", ";clean;testAllNoClean")
 
 addCommandAlias("localPublish", ";clean;buildIndigo;shared/publishLocal;indigo/publishLocal;indigoExts/publishLocal")
+
+addCommandAlias("sandboxBuild", ";buildIndigo;shared/compile;indigo/compile;indigoExts/compile;sandbox/test;sandbox/fastOptJS;sandbox/indigoBuild")
