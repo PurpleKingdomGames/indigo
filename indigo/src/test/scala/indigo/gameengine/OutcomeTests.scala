@@ -7,22 +7,23 @@ object OutcomeTests extends TestSuite {
   import indigo.IndigoEq._
   import Outcome._
 
-  final case class TestEvent(message: String) extends GlobalEvent
+  final case class TestEvent(message: String)   extends GlobalEvent
+  final case class InFrameTestEvent(count: Int) extends InFrameEvent
 
   val tests: Tests =
     Tests {
       "Adding events" - {
 
         "adding events after the fact" - {
-          Outcome(10).events ==> Nil
-          Outcome(10).addEvents(TestEvent("a")).events ==> List(TestEvent("a"))
+          Outcome(10).globalEvents ==> Nil
+          Outcome(10).addGlobalEvents(TestEvent("a")).globalEvents ==> List(TestEvent("a"))
         }
 
         "creating events based on new state" - {
           val actual = Outcome(10)
-            .addEvents(TestEvent("a"))
-            .createEvents(i => List(TestEvent(s"count: $i")))
-            .events
+            .addGlobalEvents(TestEvent("a"))
+            .createGlobalEvents(i => List(TestEvent(s"count: $i")))
+            .globalEvents
 
           val expected = List(TestEvent("a"), TestEvent("count: 10"))
 
@@ -32,7 +33,7 @@ object OutcomeTests extends TestSuite {
       }
 
       "Extractor should allow pattern match" - {
-        val a = Outcome(1).addEvents(TestEvent("a"))
+        val a = Outcome(1).addGlobalEvents(TestEvent("a"))
 
         a match {
           case Outcome(n, TestEvent(s) :: Nil) =>
@@ -48,9 +49,9 @@ object OutcomeTests extends TestSuite {
         "sequencing" - {
           val l: List[Outcome[Int]] =
             List(
-              Outcome(1).addEvents(TestEvent("a")),
-              Outcome(2).addEvents(TestEvent("b")),
-              Outcome(3).addEvents(TestEvent("c"))
+              Outcome(1).addGlobalEvents(TestEvent("a")),
+              Outcome(2).addGlobalEvents(TestEvent("b")),
+              Outcome(3).addGlobalEvents(TestEvent("c"))
             )
 
           val actual: Outcome[List[Int]] =
@@ -58,7 +59,7 @@ object OutcomeTests extends TestSuite {
 
           val expected: Outcome[List[Int]] =
             Outcome(List(1, 2, 3))
-              .addEvents(TestEvent("a"), TestEvent("b"), TestEvent("c"))
+              .addGlobalEvents(TestEvent("a"), TestEvent("b"), TestEvent("c"))
 
           actual === expected ==> true
         }
@@ -89,21 +90,37 @@ object OutcomeTests extends TestSuite {
 
         "map state" - {
           Outcome(10).mapState(_ + 10) === Outcome(20) ==> true
-          Outcome(10).addEvents(TestEvent("a")).mapState(_ + 10) === Outcome(20).addEvents(TestEvent("a")) ==> true
+          Outcome(10).addGlobalEvents(TestEvent("a")).mapState(_ + 10) === Outcome(20).addGlobalEvents(TestEvent("a")) ==> true
         }
 
-        "map events" - {
+        "map global events" - {
           val actual =
             Outcome(10)
-              .addEvents(TestEvent("a"), TestEvent("b"), TestEvent("c"))
-              .mapEvents(_.filter {
+              .addGlobalEvents(TestEvent("a"), TestEvent("b"), TestEvent("c"))
+              .mapGlobalEvents(_.filter {
                 case TestEvent(msg) =>
                   msg == "b"
               })
 
           val expected =
             Outcome(10)
-              .addEvents(TestEvent("b"))
+              .addGlobalEvents(TestEvent("b"))
+
+          actual === expected ==> true
+        }
+
+        "map in frame events" - {
+          val actual =
+            Outcome(10)
+              .addInFrameEvents(InFrameTestEvent(1), InFrameTestEvent(2), InFrameTestEvent(3))
+              .mapInFrameEvents(_.filter {
+                case InFrameTestEvent(i) =>
+                  i == 2
+              })
+
+          val expected =
+            Outcome(10)
+              .addInFrameEvents(InFrameTestEvent(2))
 
           actual === expected ==> true
         }
@@ -111,18 +128,24 @@ object OutcomeTests extends TestSuite {
         "map all" - {
           val actual =
             Outcome(10)
-              .addEvents(TestEvent("a"), TestEvent("b"), TestEvent("c"))
+              .addGlobalEvents(TestEvent("a"), TestEvent("b"), TestEvent("c"))
+              .addInFrameEvents(InFrameTestEvent(1), InFrameTestEvent(2), InFrameTestEvent(3))
               .mapAll(
                 _ + 20,
                 _.filter {
                   case TestEvent(msg) =>
                     msg == "b"
+                },
+                _.filter {
+                  case InFrameTestEvent(i) =>
+                    i == 2
                 }
               )
 
           val expected =
             Outcome(30)
-              .addEvents(TestEvent("b"))
+              .addGlobalEvents(TestEvent("b"))
+              .addInFrameEvents(InFrameTestEvent(2))
 
           actual === expected ==> true
         }
@@ -133,14 +156,14 @@ object OutcomeTests extends TestSuite {
 
         "Outcomes can be combined" - {
 
-          val oa = Outcome("count").addEvents(TestEvent("x"))
-          val ob = Outcome(1).addEvents(TestEvent("y"), TestEvent("z"))
+          val oa = Outcome("count").addGlobalEvents(TestEvent("x"))
+          val ob = Outcome(1).addGlobalEvents(TestEvent("y"), TestEvent("z"))
 
           val actual =
             oa |+| ob
 
           val expected =
-            Outcome(("count", 1)).addEvents(TestEvent("x"), TestEvent("y"), TestEvent("z"))
+            Outcome(("count", 1)).addGlobalEvents(TestEvent("x"), TestEvent("y"), TestEvent("z"))
 
           actual === expected ==> true
         }
@@ -163,24 +186,24 @@ object OutcomeTests extends TestSuite {
         "ap with event" - {
 
           val actual: Outcome[Int] =
-            Outcome(10).addEvents(TestEvent("x")).apState(Outcome((i: Int) => i + 10))
+            Outcome(10).addGlobalEvents(TestEvent("x")).apState(Outcome((i: Int) => i + 10))
 
           val expected: Outcome[Int] =
-            Outcome(20).addEvents(TestEvent("x"))
+            Outcome(20).addGlobalEvents(TestEvent("x"))
 
           actual === expected ==> true
         }
 
         "map2" - {
 
-          val oa = Outcome("count").addEvents(TestEvent("x"))
-          val ob = Outcome(1).addEvents(TestEvent("y"), TestEvent("z"))
+          val oa = Outcome("count").addGlobalEvents(TestEvent("x"))
+          val ob = Outcome(1).addGlobalEvents(TestEvent("y"), TestEvent("z"))
 
           val actual: Outcome[String] =
             (oa, ob).map2(t => t._1 + ": " + t._2)
 
           val expected: Outcome[String] =
-            Outcome("count: 1").addEvents(TestEvent("x"), TestEvent("y"), TestEvent("z"))
+            Outcome("count: 1").addGlobalEvents(TestEvent("x"), TestEvent("y"), TestEvent("z"))
 
           actual === expected ==> true
 
