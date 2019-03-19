@@ -4,7 +4,7 @@ import utest._
 
 object OutcomeTests extends TestSuite {
   import indigo._
-  import indigo.Eq._
+  import indigo.IndigoEq._
   import Outcome._
 
   final case class TestEvent(message: String) extends GlobalEvent
@@ -42,7 +42,7 @@ object OutcomeTests extends TestSuite {
       }
 
       "Transforming outcomes" - {
-        import indigo.Eq._
+        import indigo.IndigoEq._
         import Outcome._
 
         "sequencing" - {

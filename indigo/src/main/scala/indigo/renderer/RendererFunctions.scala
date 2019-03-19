@@ -5,7 +5,7 @@ import org.scalajs.dom.{html, raw}
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram, WebGLTexture, WebGLUniformLocation}
 
-import indigo.Eq._
+import indigo.IndigoEq._
 
 import scala.scalajs.js.typedarray.Float32Array
 

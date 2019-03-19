@@ -1,6 +1,6 @@
 package indigoexts.abstractions
 
-import indigo.shared.Eq
+import indigo.shared.IndigoEq
 
 trait Id[A] {
   val value: A
@@ -11,7 +11,7 @@ trait Id[A] {
   def flatMap[B](f: A => Id[B]): Id[B] =
     Id.flatMap[A, B](Id.pure(value))(f)
 
-  def ===(other: Id[A])(implicit eq: Eq[A]): Boolean =
+  def ===(other: Id[A])(implicit eq: IndigoEq[A]): Boolean =
     eq.equal(value, other.value)
 }
 

@@ -1,12 +1,12 @@
 package indigoexts.timevarying
 
 import indigo.GameTime
-import indigo.Eq
-import indigo.Eq._
+import indigo.IndigoEq
+import indigo.IndigoEq._
 
 class TimeVaryingValue[T](val value: T, val startValue: T, val createdAt: Double)(implicit vot: ValueOverTime[T]) {
 
-  def ===(other: TimeVaryingValue[T])(implicit eq: Eq[TimeVaryingValue[T]]): Boolean =
+  def ===(other: TimeVaryingValue[T])(implicit eq: IndigoEq[TimeVaryingValue[T]]): Boolean =
     eq.equal(this, other)
 
   def increase(unitsPerSecond: T, gameTime: GameTime): TimeVaryingValue[T] =
@@ -33,8 +33,8 @@ class TimeVaryingValue[T](val value: T, val startValue: T, val createdAt: Double
 }
 object TimeVaryingValue {
 
-  implicit def eqTimeVaryingValue[T](implicit vot: ValueOverTime[T]): Eq[TimeVaryingValue[T]] =
-    Eq.create[TimeVaryingValue[T]] { (a, b) =>
+  implicit def eqTimeVaryingValue[T](implicit vot: ValueOverTime[T]): IndigoEq[TimeVaryingValue[T]] =
+    IndigoEq.create[TimeVaryingValue[T]] { (a, b) =>
       vot.equal(a.value, b.value) && vot.equal(a.startValue, b.startValue) && a.createdAt === b.createdAt
     }
 

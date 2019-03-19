@@ -1,9 +1,9 @@
 package indigoexts.collections
 
-import indigo.runtime.Show
+import indigo.runtime.IndigoShow
 
-import indigo.Eq._
-import indigo.shared.Eq
+import indigo.IndigoEq._
+import indigo.shared.IndigoEq
 
 trait NonEmptyList[A] {
 
@@ -18,7 +18,7 @@ trait NonEmptyList[A] {
       case None    => head
     }
 
-  def ===(other: NonEmptyList[A])(implicit eq: Eq[A]): Boolean =
+  def ===(other: NonEmptyList[A])(implicit eq: IndigoEq[A]): Boolean =
     NonEmptyList.equality(this, other)
 
   def length: Int =
@@ -80,8 +80,8 @@ trait NonEmptyList[A] {
 
 object NonEmptyList {
 
-  implicit def showNonEmptyList[A](implicit showA: Show[A]): Show[NonEmptyList[A]] =
-    Show.create { l =>
+  implicit def showNonEmptyList[A](implicit showA: IndigoShow[A]): IndigoShow[NonEmptyList[A]] =
+    IndigoShow.create { l =>
       val s = l.map(a => showA.show(a))
       s"Nel[${s.head}][${s.tail.mkString(", ")}]"
     }
@@ -101,7 +101,7 @@ object NonEmptyList {
   def point[A](a: A): NonEmptyList[A] =
     apply(a, List.empty[A])
 
-  def equality[A](a: NonEmptyList[A], b: NonEmptyList[A])(implicit eq: Eq[A]): Boolean =
+  def equality[A](a: NonEmptyList[A], b: NonEmptyList[A])(implicit eq: IndigoEq[A]): Boolean =
     a.length === b.length && a.zip(b).forall(as => eq.equal(as._1, as._2))
 
   def length[A](fa: NonEmptyList[A]): Int =

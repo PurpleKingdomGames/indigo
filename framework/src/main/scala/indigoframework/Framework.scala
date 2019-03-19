@@ -10,7 +10,7 @@ import indigo.shared.{AssetType, GameConfig, GameDefinition}
 import scala.concurrent.Future
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 
-import indigo.Eq._
+import indigo.IndigoEq._
 
 @JSExportTopLevel("Indigo")
 object Framework {

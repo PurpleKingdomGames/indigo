@@ -2,8 +2,8 @@ package indigoexts.quadtrees
 
 import indigo.gameengine.PowerOfTwo
 import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
-import indigo.runtime.Show
-import indigo.shared.Eq
+import indigo.runtime.IndigoShow
+import indigo.shared.IndigoEq
 import indigoexts.grid.{GridPoint, GridSize}
 import indigoexts.line.LineSegment
 
@@ -13,7 +13,7 @@ sealed trait QuadTree[T] {
 
   val bounds: QuadBounds
 
-  def ===(other: QuadTree[T])(implicit eq: Eq[T]): Boolean =
+  def ===(other: QuadTree[T])(implicit eq: IndigoEq[T]): Boolean =
     QuadTree.equalTo(this, other)
 
   def isEmpty: Boolean
@@ -51,8 +51,8 @@ sealed trait QuadTree[T] {
 }
 object QuadTree {
 
-  implicit def showQuadTree[T]: Show[QuadTree[T]] =
-    Show.create(t => t.renderAsString)
+  implicit def showQuadTree[T]: IndigoShow[QuadTree[T]] =
+    IndigoShow.create(t => t.renderAsString)
 
   def empty[T](size: PowerOfTwo): QuadTree[T] =
     QuadEmpty(QuadBounds.apply(size.value))
@@ -301,7 +301,7 @@ object QuadTree {
     }
 
   @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
-  def equalTo[T](a: QuadTree[T], b: QuadTree[T])(implicit eq: Eq[T]): Boolean =
+  def equalTo[T](a: QuadTree[T], b: QuadTree[T])(implicit eq: IndigoEq[T]): Boolean =
     (a, b) match {
       case (QuadEmpty(b1), QuadEmpty(b2)) if b1 === b2 =>
         true

@@ -2,7 +2,7 @@ package indigo.runtime.metrics
 
 import indigo.runtime._
 
-import indigo.Eq._
+import indigo.IndigoEq._
 
 import scala.annotation.tailrec
 

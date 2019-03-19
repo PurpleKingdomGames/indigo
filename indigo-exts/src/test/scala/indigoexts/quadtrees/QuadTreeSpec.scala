@@ -2,7 +2,7 @@ package indigoexts.quadtrees
 
 import indigo.gameengine.PowerOfTwo
 import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
-import indigo.shared.Eq
+import indigo.shared.IndigoEq
 import indigoexts.grid.GridPoint
 import indigoexts.quadtree.QuadTree.{QuadBranch, QuadEmpty, QuadLeaf}
 import org.scalactic.Equality
@@ -87,7 +87,7 @@ class QuadTreeSpec extends FunSpec with Matchers {
     }
 
     // Needed because of the funky QuadBounds type.
-    implicit def eq[T](implicit eqT: Eq[T]): Equality[QuadTree[T]] =
+    implicit def eq[T](implicit eqT: IndigoEq[T]): Equality[QuadTree[T]] =
       new Equality[QuadTree[T]] {
         def areEqual(a: QuadTree[T], b: Any): Boolean =
           b match {

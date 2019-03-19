@@ -1,7 +1,7 @@
 package com.example.perf
 
 import indigo._
-import indigo.Eq._
+import indigo.IndigoEq._
 import indigoexts.entrypoint._
 import indigoexts.formats._
 

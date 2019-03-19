@@ -1,11 +1,11 @@
 package indigoexts.quadtrees
 
 import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
-import indigo.runtime.Show
+import indigo.runtime.IndigoShow
 import indigoexts.grid.GridPoint
 import indigoexts.line.{IntersectionResult, LineSegment}
 
-import indigo.Eq._
+import indigo.IndigoEq._
 
 trait QuadBounds {
   val x: Int
@@ -58,11 +58,11 @@ trait QuadBounds {
 
 object QuadBounds {
 
-  implicit def showQuadBounds[T]: Show[QuadBounds] =
-    Show.create(b => b.renderAsString)
+  implicit def showQuadBounds[T]: IndigoShow[QuadBounds] =
+    IndigoShow.create(b => b.renderAsString)
 
-  implicit val show: Show[QuadBounds] =
-    Show.create { qb =>
+  implicit val show: IndigoShow[QuadBounds] =
+    IndigoShow.create { qb =>
       s"""QuadBounds(${qb.x}, ${qb.y}, ${qb.width}, ${qb.height})"""
     }
 

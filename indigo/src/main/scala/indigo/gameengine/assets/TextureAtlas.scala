@@ -4,11 +4,11 @@ import indigo.gameengine.PowerOfTwo
 import indigo.gameengine.assets.TextureAtlas.supportedSizes
 import indigo.gameengine.scenegraph.datatypes.Point
 import indigo.runtime.IndigoLogger
-import indigo.shared.Eq
+import indigo.shared.IndigoEq
 import org.scalajs.dom
 import org.scalajs.dom.{html, raw}
 
-import indigo.Eq._
+import indigo.IndigoEq._
 
 import scala.annotation.tailrec
 
@@ -78,7 +78,7 @@ final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, 
 }
 final case class AtlasId(id: String) extends AnyVal {
   def ===(other: AtlasId): Boolean =
-    implicitly[Eq[String]].equal(id, other.id)
+    implicitly[IndigoEq[String]].equal(id, other.id)
 }
 
 final case class AtlasIndex(id: AtlasId, offset: Point)

@@ -1,7 +1,7 @@
 package indigoexts.timevarying
 
 import indigo.GameTime
-import indigo.Eq
+import indigo.IndigoEq
 
 sealed trait ValueOverTime[T] {
   def zero: T
@@ -27,7 +27,7 @@ object ValueOverTime {
         ((unitsPerSecond.toDouble * 0.001) * (gameTime.running - creationTime)).toInt
 
       def equal(a: Int, b: Int): Boolean =
-        implicitly[Eq[Int]].equal(a, b)
+        implicitly[IndigoEq[Int]].equal(a, b)
 
       def plus(a: Int, b: Int): Int =
         a + b
@@ -58,7 +58,7 @@ object ValueOverTime {
         ((unitsPerSecond.toDouble * 0.001) * (gameTime.running - creationTime)).toFloat
 
       def equal(a: Float, b: Float): Boolean =
-        implicitly[Eq[Float]].equal(a, b)
+        implicitly[IndigoEq[Float]].equal(a, b)
 
       def plus(a: Float, b: Float): Float =
         a + b
@@ -89,7 +89,7 @@ object ValueOverTime {
         (unitsPerSecond.toDouble * 0.001) * (gameTime.running - creationTime)
 
       def equal(a: Double, b: Double): Boolean =
-        implicitly[Eq[Double]].equal(a, b)
+        implicitly[IndigoEq[Double]].equal(a, b)
 
       def plus(a: Double, b: Double): Double =
         a + b

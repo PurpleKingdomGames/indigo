@@ -7,7 +7,7 @@ import indigo.gameengine.scenegraph.datatypes.AmbientLight
 import indigo.gameengine.scenegraph.{SceneAudio, SceneGraphRootNode, SceneGraphRootNodeFlat, SceneUpdateFragment}
 import indigo.gameengine.subsystems.SubSystemsRegister
 import indigo.renderer.{AssetMapping, DisplayLayer, Displayable, IRenderer}
-import indigo.runtime.IIO
+import indigo.runtime.IndigoIO
 import indigo.runtime.metrics._
 import indigo.shared.GameConfig
 import org.scalajs.dom
@@ -139,8 +139,8 @@ object GameLoop {
       viewModel: ViewModel,
       frameInputEvents: FrameInputEvents,
       subSystemsRegister: SubSystemsRegister
-  )(implicit metrics: Metrics): IIO[SceneUpdateFragment] =
-    IIO.delay {
+  )(implicit metrics: Metrics): IndigoIO[SceneUpdateFragment] =
+    IndigoIO.delay {
       metrics.record(CallUpdateViewStartMetric)
 
       val view: SceneUpdateFragment = updateView(
@@ -158,8 +158,8 @@ object GameLoop {
   def processUpdatedView(view: SceneUpdateFragment, collectedEvents: List[GlobalEvent])(
       implicit metrics: Metrics,
       globalEventStream: GlobalEventStream
-  ): IIO[SceneGraphRootNodeFlat] =
-    IIO.delay {
+  ): IndigoIO[SceneGraphRootNodeFlat] =
+    IndigoIO.delay {
       metrics.record(ProcessViewStartMetric)
 
       val processUpdatedView: SceneUpdateFragment => SceneGraphRootNodeFlat =
@@ -174,8 +174,8 @@ object GameLoop {
       processedView
     }
 
-  def viewToDisplayable(gameTime: GameTime, processedView: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight)(implicit metrics: Metrics): IIO[Displayable] =
-    IIO.delay {
+  def viewToDisplayable(gameTime: GameTime, processedView: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight)(implicit metrics: Metrics): IndigoIO[Displayable] =
+    IndigoIO.delay {
       metrics.record(ToDisplayableStartMetric)
 
       val displayable: Displayable =
@@ -186,8 +186,8 @@ object GameLoop {
       displayable
     }
 
-  def persistAnimationStates()(implicit metrics: Metrics): IIO[Unit] =
-    IIO.delay {
+  def persistAnimationStates()(implicit metrics: Metrics): IndigoIO[Unit] =
+    IndigoIO.delay {
       metrics.record(PersistAnimationStatesStartMetric)
 
       AnimationsRegister.persistAnimationStates()
@@ -268,8 +268,8 @@ object GameLoop {
       ambientLight
     )
 
-  def drawScene(renderer: IRenderer, displayable: Displayable)(implicit metrics: Metrics): IIO[Unit] =
-    IIO.delay {
+  def drawScene(renderer: IRenderer, displayable: Displayable)(implicit metrics: Metrics): IndigoIO[Unit] =
+    IndigoIO.delay {
       metrics.record(RenderStartMetric)
 
       renderer.drawScene(displayable)
@@ -277,8 +277,8 @@ object GameLoop {
       metrics.record(RenderEndMetric)
     }
 
-  def playAudio(audioPlayer: AudioPlayer, sceneAudio: SceneAudio)(implicit metrics: Metrics): IIO[Unit] =
-    IIO.delay {
+  def playAudio(audioPlayer: AudioPlayer, sceneAudio: SceneAudio)(implicit metrics: Metrics): IndigoIO[Unit] =
+    IndigoIO.delay {
       metrics.record(AudioStartMetric)
 
       audioPlayer.playAudio(sceneAudio)

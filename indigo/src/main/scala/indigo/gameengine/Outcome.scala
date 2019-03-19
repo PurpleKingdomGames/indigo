@@ -1,7 +1,10 @@
 package indigo.gameengine
 
-import indigo._
+import indigo.runtime.IndigoShow
 import indigo.abstractions.Monad
+import indigo.gameengine.events.GlobalEvent
+import indigo.shared.IndigoEq
+
 import scala.annotation.tailrec
 
 final class Outcome[A](val state: A, val events: List[GlobalEvent]) {
@@ -48,12 +51,12 @@ object Outcome {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.ToString"))
-  implicit val showGlobalEvent: Show[GlobalEvent] =
-    Show.create(_.toString)
+  implicit val showGlobalEvent: IndigoShow[GlobalEvent] =
+    IndigoShow.create(_.toString)
 
   @SuppressWarnings(Array("org.wartremover.warts.Equals"))
-  implicit val eqGlobalEvent: Eq[GlobalEvent] =
-    Eq.create(_ == _)
+  implicit val eqGlobalEvent: IndigoEq[GlobalEvent] =
+    IndigoEq.create(_ == _)
 
   implicit val monad: Monad[Outcome] =
     new Monad[Outcome] {
@@ -72,13 +75,13 @@ object Outcome {
 
     }
 
-  implicit def eq[A](implicit eqA: Eq[A], eqE: Eq[List[GlobalEvent]]): Eq[Outcome[A]] =
-    Eq.create { (a, b) =>
+  implicit def eq[A](implicit eqA: IndigoEq[A], eqE: IndigoEq[List[GlobalEvent]]): IndigoEq[Outcome[A]] =
+    IndigoEq.create { (a, b) =>
       eqA.equal(a.state, b.state) && eqE.equal(a.events, b.events)
     }
 
-  implicit def show[A](implicit as: Show[A], ae: Show[List[GlobalEvent]]): Show[Outcome[A]] =
-    Show.create { outcomeA =>
+  implicit def show[A](implicit as: IndigoShow[A], ae: IndigoShow[List[GlobalEvent]]): IndigoShow[Outcome[A]] =
+    IndigoShow.create { outcomeA =>
       s"Outcome(${as.show(outcomeA.state)}, ${ae.show(outcomeA.events)})"
     }
 

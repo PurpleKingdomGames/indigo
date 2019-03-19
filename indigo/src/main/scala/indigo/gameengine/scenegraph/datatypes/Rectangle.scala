@@ -1,5 +1,5 @@
 package indigo.gameengine.scenegraph.datatypes
-import indigo.runtime.Show
+import indigo.runtime.IndigoShow
 
 final case class Rectangle(position: Point, size: Point) {
   val x: Int       = position.x
@@ -66,8 +66,8 @@ object Rectangle {
     Rectangle(x, y, w, h)
   }
 
-  implicit val show: Show[Rectangle] =
-    Show.create(p => s"""Rectangle(${p.x}, ${p.y}, ${p.width}, ${p.height})""")
+  implicit val show: IndigoShow[Rectangle] =
+    IndigoShow.create(p => s"""Rectangle(${p.x}, ${p.y}, ${p.width}, ${p.height})""")
 
   def expandToInclude(a: Rectangle, b: Rectangle): Rectangle = {
     val newX: Int = if (a.left < b.left) a.left else b.left

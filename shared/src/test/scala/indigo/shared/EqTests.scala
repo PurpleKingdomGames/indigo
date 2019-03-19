@@ -4,7 +4,7 @@ import utest._
 
 object EqTests extends TestSuite {
 
-  import Eq._
+  import IndigoEq._
 
   val tests: Tests =
     Tests {
@@ -48,10 +48,10 @@ object EqTests extends TestSuite {
         assert(Option(10) !== None)
       }
 
-     "should be able to compare eithers" - {
-       assert(Right(1) === Right(1))
-       assert(Left("a") === Left("a"))
-     }
+      "should be able to compare eithers" - {
+        assert(Right(1) === Right(1))
+        assert(Left("a") === Left("a"))
+      }
     }
 
 }
