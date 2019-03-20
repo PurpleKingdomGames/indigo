@@ -85,7 +85,7 @@ final case class SceneFinder(previous: List[ScenePosition], current: ScenePositi
 object SceneFinder {
 
   def fromScenes[GameModel, ViewModel](
-      scenesList: ScenesList[GameModel, ViewModel, _, _]
+      scenesList: ScenesList[GameModel, ViewModel]
   ): SceneFinder = {
     val a = scenesList.listSceneNames.zipWithIndex.map(p => ScenePosition(p._2, p._1))
 

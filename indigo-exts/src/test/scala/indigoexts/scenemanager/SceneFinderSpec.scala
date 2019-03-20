@@ -6,7 +6,7 @@ class SceneFinderSpec extends FunSpec with Matchers {
 
   import TestScenes._
 
-  val scenes: ScenesList[TestGameModel, TestViewModel, TestSceneA, _] = sceneA :: sceneB :: ScenesNil[TestGameModel, TestViewModel]()
+  val scenes: ScenesList[TestGameModel, TestViewModel] = sceneA :: sceneB :: ScenesNil[TestGameModel, TestViewModel]()
 
   val sceneFinder: SceneFinder =
     SceneFinder(

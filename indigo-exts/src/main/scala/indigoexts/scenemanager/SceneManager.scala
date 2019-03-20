@@ -5,7 +5,7 @@ import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
 import indigo.gameengine.scenegraph.SceneUpdateFragment
 import indigo.runtime.IndigoLogger
 
-class SceneManager[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel, _, _], scenesFinder: SceneFinder) {
+class SceneManager[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel], scenesFinder: SceneFinder) {
 
   // Scene management
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
@@ -60,10 +60,10 @@ class SceneManager[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel
 
 object SceneManager {
 
-  def apply[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel, _, _]): SceneManager[GameModel, ViewModel] =
+  def apply[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel]): SceneManager[GameModel, ViewModel] =
     new SceneManager[GameModel, ViewModel](scenes, SceneFinder.fromScenes[GameModel, ViewModel](scenes))
 
-  def apply[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel, _, _], initialScene: SceneName): SceneManager[GameModel, ViewModel] =
+  def apply[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel], initialScene: SceneName): SceneManager[GameModel, ViewModel] =
     new SceneManager[GameModel, ViewModel](scenes, SceneFinder.fromScenes[GameModel, ViewModel](scenes).jumpToSceneByName(initialScene))
 
 }

@@ -19,7 +19,10 @@ object TestScenes {
 final case class TestGameModel(sceneA: TestSceneModelA, sceneB: TestSceneModelB)
 final case class TestViewModel(sceneA: TestSceneViewModelA, sceneB: TestSceneViewModelB)
 
-final case class TestSceneA() extends Scene[TestGameModel, TestViewModel, TestSceneModelA, TestSceneViewModelA] {
+final case class TestSceneA() extends Scene[TestGameModel, TestViewModel] {
+  type SceneModel = TestSceneModelA
+  type SceneViewModel = TestSceneViewModelA
+
   val name: SceneName = SceneName("test scene a")
 
   val sceneModelLens: Lens[TestGameModel, TestSceneModelA] =
@@ -46,7 +49,10 @@ final case class TestSceneA() extends Scene[TestGameModel, TestViewModel, TestSc
 final case class TestSceneModelA(count: Int)
 final case class TestSceneViewModelA()
 
-final case class TestSceneB() extends Scene[TestGameModel, TestViewModel, TestSceneModelB, TestSceneViewModelB] {
+final case class TestSceneB() extends Scene[TestGameModel, TestViewModel] {
+  type SceneModel = TestSceneModelB
+  type SceneViewModel = TestSceneViewModelB
+
   val name: SceneName = SceneName("test scene b")
 
   val sceneModelLens: Lens[TestGameModel, TestSceneModelB] =

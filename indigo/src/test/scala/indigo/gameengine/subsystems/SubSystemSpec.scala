@@ -18,7 +18,7 @@ class SubSystemSpec extends FunSpec {
       val expected =
         PointsTrackerExample(0)
           .update(GameTime.zero)(PointsTrackerEvent.Add(10))
-          .subSystem
+          .state
           .render(GameTime.zero)
           .gameLayer
           .head
@@ -32,7 +32,7 @@ class SubSystemSpec extends FunSpec {
       val expected =
         PointsTrackerExample(1000)
           .update(GameTime.zero)(PointsTrackerEvent.LoseAll)
-          .subSystem
+          .state
           .render(GameTime.zero)
           .gameLayer
           .head

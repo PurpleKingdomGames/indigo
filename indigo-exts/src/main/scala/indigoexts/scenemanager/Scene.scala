@@ -9,7 +9,9 @@ import indigoexts.lenses.Lens
 
 import indigo.EqualTo._
 
-trait Scene[GameModel, ViewModel, SceneModel, SceneViewModel] {
+trait Scene[GameModel, ViewModel] {
+  type SceneModel
+  type SceneViewModel
 
   val name: SceneName
   val sceneModelLens: Lens[GameModel, SceneModel]
@@ -22,7 +24,7 @@ trait Scene[GameModel, ViewModel, SceneModel, SceneViewModel] {
 }
 object Scene {
 
-  def updateModel[GM, VM, SModel, SVModel](scene: Scene[GM, VM, SModel, SVModel], gameTime: GameTime, gameModel: GM): GlobalEvent => Outcome[GM] =
+  def updateModel[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, gameModel: GM): GlobalEvent => Outcome[GM] =
     e => {
       val next = scene.updateSceneModel(gameTime, scene.sceneModelLens.get(gameModel))(e)
       new Outcome(
@@ -32,7 +34,7 @@ object Scene {
       )
     }
 
-  def updateViewModel[GM, VM, SModel, SVModel](scene: Scene[GM, VM, SModel, SVModel], gameTime: GameTime, model: GM, viewModel: VM, frameInputEvents: FrameInputEvents): Outcome[VM] = {
+  def updateViewModel[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, model: GM, viewModel: VM, frameInputEvents: FrameInputEvents): Outcome[VM] = {
     val next = scene.updateSceneViewModel(gameTime, scene.sceneModelLens.get(model), scene.sceneViewModelLens.get(viewModel), frameInputEvents)
     new Outcome(
       scene.sceneViewModelLens.set(
@@ -44,7 +46,7 @@ object Scene {
     )
   }
 
-  def updateView[GM, VM, SModel, SVModel](scene: Scene[GM, VM, SModel, SVModel], gameTime: GameTime, model: GM, viewModel: VM, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
+  def updateView[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, model: GM, viewModel: VM, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     scene.updateSceneView(gameTime, scene.sceneModelLens.get(model), scene.sceneViewModelLens.get(viewModel), frameInputEvents)
 
 }

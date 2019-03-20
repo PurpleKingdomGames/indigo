@@ -32,12 +32,12 @@ object JobMarketTests extends TestSuite {
           val nothingFoundEvent: JobMarketEvent = JobMarketEvent.NothingFound(bindingKey)
 
           val updatedA = market.update(GameTime.zero)(allocateEvent)
-          updatedA.subSystem.asInstanceOf[JobMarket].jobs ==> List(job)
-          updatedA.events ==> Nil
+          updatedA.state.asInstanceOf[JobMarket].jobs ==> List(job)
+          updatedA.globalEvents ==> Nil
 
           val updatedB = market.update(GameTime.zero)(nothingFoundEvent)
-          updatedB.subSystem.asInstanceOf[JobMarket].jobs ==> List(job)
-          updatedB.events ==> Nil
+          updatedB.state.asInstanceOf[JobMarket].jobs ==> List(job)
+          updatedB.globalEvents ==> Nil
 
         }
 
@@ -72,8 +72,8 @@ object JobMarketTests extends TestSuite {
 
             val updated = market.update(GameTime.zero)(findEvent)
 
-            updated.subSystem.asInstanceOf[JobMarket].jobs ==> Nil
-            updated.events.head ==> JobMarketEvent.Allocate(bindingKey, job)
+            updated.state.asInstanceOf[JobMarket].jobs ==> Nil
+            updated.globalEvents.head ==> JobMarketEvent.Allocate(bindingKey, job)
           }
 
           "but not when there isn't any work" - {
@@ -83,8 +83,8 @@ object JobMarketTests extends TestSuite {
 
             val updated = market.update(GameTime.zero)(findEvent)
 
-            updated.subSystem.asInstanceOf[JobMarket].jobs ==> Nil
-            updated.events.head ==> JobMarketEvent.NothingFound(bindingKey)
+            updated.state.asInstanceOf[JobMarket].jobs ==> Nil
+            updated.globalEvents.head ==> JobMarketEvent.NothingFound(bindingKey)
           }
 
           "or when the work is not acceptable to the worker" - {
@@ -95,8 +95,8 @@ object JobMarketTests extends TestSuite {
 
             val updated = market.update(GameTime.zero)(findEvent)
 
-            updated.subSystem.asInstanceOf[JobMarket].jobs ==> List(job)
-            updated.events.head ==> JobMarketEvent.NothingFound(bindingKey)
+            updated.state.asInstanceOf[JobMarket].jobs ==> List(job)
+            updated.globalEvents.head ==> JobMarketEvent.NothingFound(bindingKey)
           }
         }
 
@@ -109,7 +109,7 @@ object JobMarketTests extends TestSuite {
 
             val updated = market.update(GameTime.zero)(postEvent)
 
-            updated.subSystem.asInstanceOf[JobMarket].jobs ==> List(job)
+            updated.state.asInstanceOf[JobMarket].jobs ==> List(job)
           }
 
           "and append to a non-empty market" - {
@@ -119,7 +119,7 @@ object JobMarketTests extends TestSuite {
 
             val updated = market.update(GameTime.zero)(postEvent)
 
-            updated.subSystem.asInstanceOf[JobMarket].jobs ==> List(SampleJobs.Fishing(0), job)
+            updated.state.asInstanceOf[JobMarket].jobs ==> List(SampleJobs.Fishing(0), job)
           }
 
           "the jobs state will be preserved" - {
@@ -129,7 +129,7 @@ object JobMarketTests extends TestSuite {
 
             val updated = market.update(GameTime.zero)(postEvent)
 
-            updated.subSystem.asInstanceOf[JobMarket].jobs ==> List(SampleJobs.Fishing(50))
+            updated.state.asInstanceOf[JobMarket].jobs ==> List(SampleJobs.Fishing(50))
           }
         }
 

@@ -2,13 +2,13 @@ package indigoexts.scenemanager
 
 import indigoexts.collections.NonEmptyList
 
-sealed trait Scenes[GameModel, ViewModel, +T <: Scene[GameModel, ViewModel, _, _]] extends Product with Serializable {
+sealed trait Scenes[GameModel, ViewModel] extends Product with Serializable {
 
-  def ::[S1 <: Scene[GameModel, ViewModel, _, _]](scene: S1): ScenesList[GameModel, ViewModel, S1, T] =
+  def ::(scene: Scene[GameModel, ViewModel]): ScenesList[GameModel, ViewModel] =
     Scenes.cons(scene, this)
 
   @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
-  final def foldLeft[Z](acc: Z)(f: (Z, Scene[GameModel, ViewModel, _, _]) => Z): Z =
+  final def foldLeft[Z](acc: Z)(f: (Z, Scene[GameModel, ViewModel]) => Z): Z =
     this match {
       case ScenesNil() =>
         acc
@@ -18,7 +18,7 @@ sealed trait Scenes[GameModel, ViewModel, +T <: Scene[GameModel, ViewModel, _, _
     }
 
   @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
-  final def findScene(name: SceneName): Option[Scene[GameModel, ViewModel, _, _]] =
+  final def findScene(name: SceneName): Option[Scene[GameModel, ViewModel]] =
     this match {
       case ScenesNil() =>
         None
@@ -32,30 +32,32 @@ sealed trait Scenes[GameModel, ViewModel, +T <: Scene[GameModel, ViewModel, _, _
 }
 
 object Scenes {
-  def cons[GameModel, ViewModel, S1 <: Scene[GameModel, ViewModel, _, _], S2 <: Scene[GameModel, ViewModel, _, _]](
-      scene: S1,
-      scenes: Scenes[GameModel, ViewModel, S2]
-  ): ScenesList[GameModel, ViewModel, S1, S2] =
-    ScenesList[GameModel, ViewModel, S1, S2](scene, scenes)
+  def cons[GameModel, ViewModel](
+      scene: Scene[GameModel, ViewModel],
+      scenes: Scenes[GameModel, ViewModel]
+  ): ScenesList[GameModel, ViewModel] =
+    ScenesList[GameModel, ViewModel](scene, scenes)
 }
 
-final case class ScenesNil[GameModel, ViewModel]() extends Scenes[GameModel, ViewModel, Nothing]
+// TODO: Get rid of the ()
+final case class ScenesNil[GameModel, ViewModel]() extends Scenes[GameModel, ViewModel]
 
-final case class ScenesList[GameModel, ViewModel, S1 <: Scene[GameModel, ViewModel, _, _], +S2 <: Scene[GameModel, ViewModel, _, _]](
-    current: S1,
-    next: Scenes[GameModel, ViewModel, S2]
-) extends Scenes[GameModel, ViewModel, S1] {
-  def head: S1 = current
+final case class ScenesList[GameModel, ViewModel](
+    current: Scene[GameModel, ViewModel],
+    next: Scenes[GameModel, ViewModel]
+) extends Scenes[GameModel, ViewModel] {
+  // TODO: current is head
+  def head: Scene[GameModel, ViewModel] = current
 
   def listSceneNames: NonEmptyList[SceneName] =
     this.next.foldLeft(NonEmptyList(current.name, Nil))(_ :+ _.name)
 
-  def nextScene: ScenesList[GameModel, ViewModel, _, _] =
+  def nextScene: ScenesList[GameModel, ViewModel] =
     next match {
       case ScenesNil() =>
         this
 
-      case t: ScenesList[GameModel, ViewModel, _, _] =>
+      case t: ScenesList[GameModel, ViewModel] =>
         t
     }
 }

@@ -8,7 +8,7 @@ import indigoexts.lens._
 
 object ScenesSetup extends IndigoGameWithScenes[MyStartUpData, MyGameModel, MyViewModel] {
 
-  val scenes: ScenesList[MyGameModel, MyViewModel, _, _] =
+  val scenes: ScenesList[MyGameModel, MyViewModel] =
     SceneA :: SceneB :: ScenesNil[MyGameModel, MyViewModel]()
 
   val initialScene: Option[SceneName] = Option(SceneA.name)
@@ -37,7 +37,10 @@ object ScenesSetup extends IndigoGameWithScenes[MyStartUpData, MyGameModel, MyVi
 }
 
 // There is no relevant entry in the ViewModel for either scene, so we've just left it as Unit.
-object SceneA extends Scene[MyGameModel, MyViewModel, MessageA, Unit] {
+object SceneA extends Scene[MyGameModel, MyViewModel] {
+  type SceneModel = MessageA
+  type SceneViewModel = Unit
+
   val name: SceneName = SceneName("A")
 
   val sceneModelLens: Lens[MyGameModel, MessageA] =
@@ -74,7 +77,9 @@ object SceneA extends Scene[MyGameModel, MyViewModel, MessageA, Unit] {
 }
 
 // There is no relevant entry in the ViewModel for either scene, so we've just left it as Unit.
-object SceneB extends Scene[MyGameModel, MyViewModel, MessageB, Unit] {
+object SceneB extends Scene[MyGameModel, MyViewModel] {
+  type SceneModel = MessageB
+  type SceneViewModel = Unit
 
   val name: SceneName = SceneName("B")
 

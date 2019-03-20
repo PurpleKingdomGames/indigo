@@ -1,6 +1,7 @@
 package indigo.gameengine.subsystems
 
 import indigo.gameengine.GameTime
+import indigo.gameengine.Outcome
 import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph.{SceneUpdateFragment, Text}
 import indigo.gameengine.scenegraph.datatypes.FontKey
@@ -13,7 +14,7 @@ final case class PointsTrackerExample(points: Int) extends SubSystem {
     case _                     => None
   }
 
-  def update(gameTime: GameTime): PointsTrackerEvent => Outcome = {
+  def update(gameTime: GameTime): PointsTrackerEvent => Outcome[SubSystem] = {
     case PointsTrackerEvent.Add(pts) =>
       Outcome(this.copy(points = points + pts))
 

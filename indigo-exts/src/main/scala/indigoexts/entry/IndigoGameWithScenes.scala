@@ -22,7 +22,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
 
-  val scenes: ScenesList[Model, ViewModel, _, _]
+  val scenes: ScenesList[Model, ViewModel]
 
   val initialScene: Option[SceneName]
 

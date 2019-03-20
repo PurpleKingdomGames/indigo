@@ -8,7 +8,7 @@ class SceneManagerSpec extends FunSpec with Matchers {
 
   import TestScenes._
 
-  val scenes: ScenesList[TestGameModel, TestViewModel, TestSceneA, _] = sceneA :: sceneB :: ScenesNil[TestGameModel, TestViewModel]()
+  val scenes: ScenesList[TestGameModel, TestViewModel] = sceneA :: sceneB :: ScenesNil[TestGameModel, TestViewModel]()
   val sceneFinder: SceneFinder                                        = SceneFinder.fromScenes(scenes)
 
   val gameModel = TestGameModel(TestSceneModelA(0), TestSceneModelB(0))

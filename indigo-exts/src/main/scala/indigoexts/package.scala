@@ -104,16 +104,16 @@ package object indigoexts {
   }
 
   object scenes {
-    type Scene[GameModel, ViewModel, SceneModel, SceneViewModel] = scenemanager.Scene[GameModel, ViewModel, SceneModel, SceneViewModel]
+    type Scene[GameModel, ViewModel] = scenemanager.Scene[GameModel, ViewModel]
 
-    type ScenesList[GameModel, ViewModel, S1 <: Scene[GameModel, ViewModel, _, _], +S2 <: Scene[GameModel, ViewModel, _, _]] = scenemanager.ScenesList[GameModel, ViewModel, S1, S2]
+    type ScenesList[GameModel, ViewModel] = scenemanager.ScenesList[GameModel, ViewModel]
     val ScenesList: scenemanager.ScenesList.type = scenemanager.ScenesList
 
     type ScenesNil[GameModel, ViewModel] = scenemanager.ScenesNil[GameModel, ViewModel]
     val ScenesNil: scenemanager.ScenesNil.type = scenemanager.ScenesNil
 
-    type Scenes[GameModel, ViewModel, +T <: scenemanager.Scene[GameModel, ViewModel, _, _]] =
-      scenemanager.Scenes[GameModel, ViewModel, T]
+    type Scenes[GameModel, ViewModel] =
+      scenemanager.Scenes[GameModel, ViewModel]
 
     type SceneName = scenemanager.SceneName
     val SceneName: scenemanager.SceneName.type = scenemanager.SceneName
