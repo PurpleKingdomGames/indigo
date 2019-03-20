@@ -1,6 +1,6 @@
 package indigoexts.pathfinding
 
-import indigo.IndigoEq._
+import indigo.EqualTo._
 
 final case class Coords(x: Int, y: Int) {
 

@@ -1,10 +1,10 @@
 package indigoexts.scenemanager
 
 import indigo.runtime.IndigoLogger
-import indigo.shared.IndigoEq
+import indigo.shared.EqualTo
 import indigoexts.collections.NonEmptyList
 
-import indigo.IndigoEq._
+import indigo.EqualTo._
 
 import scala.annotation.tailrec
 
@@ -97,8 +97,8 @@ object SceneFinder {
 final case class ScenePosition(index: Int, name: SceneName)
 object ScenePosition {
 
-  implicit val EqScenePosition: IndigoEq[ScenePosition] =
-    IndigoEq.create[ScenePosition] { (a, b) =>
+  implicit val EqScenePosition: EqualTo[ScenePosition] =
+    EqualTo.create[ScenePosition] { (a, b) =>
       a.index === b.index && a.name === b.name
     }
 

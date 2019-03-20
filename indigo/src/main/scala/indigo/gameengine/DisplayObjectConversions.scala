@@ -11,7 +11,7 @@ import indigo.runtime.metrics.Metrics
 import scala.annotation.tailrec
 import scala.collection.mutable
 
-import indigo.IndigoEq._
+import indigo.EqualTo._
 
 object DisplayObjectConversions {
 

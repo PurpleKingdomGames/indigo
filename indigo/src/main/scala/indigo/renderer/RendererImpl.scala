@@ -6,7 +6,7 @@ import indigo.shared.ClearColor
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
 
-import indigo.IndigoEq._
+import indigo.EqualTo._
 
 trait IRenderer {
   def init(): Unit

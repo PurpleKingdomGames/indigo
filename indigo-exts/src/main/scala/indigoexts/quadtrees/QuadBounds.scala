@@ -5,7 +5,7 @@ import indigo.runtime.AsString
 import indigoexts.grid.GridPoint
 import indigoexts.line.{IntersectionResult, LineSegment}
 
-import indigo.IndigoEq._
+import indigo.EqualTo._
 
 trait QuadBounds {
   val x: Int

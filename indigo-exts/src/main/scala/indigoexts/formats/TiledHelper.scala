@@ -6,7 +6,7 @@ import indigo.runtime.IndigoLogger
 import io.circe.generic.auto._
 import io.circe.parser._
 
-import indigo.IndigoEq._
+import indigo.EqualTo._
 
 /*
 Full spec is here:

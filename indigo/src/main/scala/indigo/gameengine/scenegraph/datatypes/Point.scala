@@ -1,6 +1,6 @@
 package indigo.gameengine.scenegraph.datatypes
 
-import indigo.IndigoEq._
+import indigo.EqualTo._
 import indigo.runtime.AsString
 
 final case class Point(x: Int, y: Int) {

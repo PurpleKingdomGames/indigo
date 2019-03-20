@@ -2,8 +2,8 @@ package indigoexts.collections
 
 import indigo.runtime.AsString
 
-import indigo.IndigoEq._
-import indigo.shared.IndigoEq
+import indigo.EqualTo._
+import indigo.shared.EqualTo
 
 trait NonEmptyList[A] {
 
@@ -18,7 +18,7 @@ trait NonEmptyList[A] {
       case None    => head
     }
 
-  def ===(other: NonEmptyList[A])(implicit eq: IndigoEq[A]): Boolean =
+  def ===(other: NonEmptyList[A])(implicit eq: EqualTo[A]): Boolean =
     NonEmptyList.equality(this, other)
 
   def length: Int =
@@ -101,7 +101,7 @@ object NonEmptyList {
   def point[A](a: A): NonEmptyList[A] =
     apply(a, List.empty[A])
 
-  def equality[A](a: NonEmptyList[A], b: NonEmptyList[A])(implicit eq: IndigoEq[A]): Boolean =
+  def equality[A](a: NonEmptyList[A], b: NonEmptyList[A])(implicit eq: EqualTo[A]): Boolean =
     a.length === b.length && a.zip(b).forall(as => eq.equal(as._1, as._2))
 
   def length[A](fa: NonEmptyList[A]): Int =

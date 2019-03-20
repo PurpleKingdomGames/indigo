@@ -1,6 +1,6 @@
 package indigo.runtime
 
-import indigo.shared.IndigoEq
+import indigo.shared.EqualTo
 
 /**
   * IIO (IndigoIO) to differentiate from other IO monads
@@ -102,13 +102,13 @@ sealed trait IndigoIO[+A] {
 
 object IndigoIO {
 
-  implicit def eqIIO[A](implicit eq: IndigoEq[A]): IndigoEq[IndigoIO[A]] =
-    IndigoEq.create[IndigoIO[A]] { (a, b) =>
+  implicit def eqIIO[A](implicit eq: EqualTo[A]): EqualTo[IndigoIO[A]] =
+    EqualTo.create[IndigoIO[A]] { (a, b) =>
       areEqual(a, b)
     }
 
   @SuppressWarnings(Array("org.wartremover.warts.Equals"))
-  def areEqual[A](a1: IndigoIO[A], a2: IndigoIO[A])(implicit eq: IndigoEq[A]): Boolean =
+  def areEqual[A](a1: IndigoIO[A], a2: IndigoIO[A])(implicit eq: EqualTo[A]): Boolean =
     (a1, a2) match {
       case (IndigoIO.Pure(a), IndigoIO.Pure(b)) =>
         eq.equal(a, b)

@@ -4,8 +4,8 @@ import indigo.shared
 
 trait SharedTypeAliases {
 
-  type IndigoEq[A] = shared.IndigoEq[A]
-  val IndigoEq: shared.IndigoEq.type = shared.IndigoEq
+  type EqualTo[A] = shared.EqualTo[A]
+  val EqualTo: shared.EqualTo.type = shared.EqualTo
 
   type AssetType = shared.AssetType
   val AssetType: shared.AssetType.type = shared.AssetType

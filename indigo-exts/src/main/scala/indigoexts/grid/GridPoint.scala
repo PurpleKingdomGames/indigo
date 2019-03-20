@@ -6,7 +6,7 @@ import indigo.runtime.AsString
 import scala.annotation.tailrec
 import scala.util.Random
 
-import indigo.IndigoEq._
+import indigo.EqualTo._
 
 final case class GridPoint(x: Int, y: Int) {
 

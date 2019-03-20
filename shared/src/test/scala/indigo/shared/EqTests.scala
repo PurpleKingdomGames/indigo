@@ -4,7 +4,7 @@ import utest._
 
 object EqTests extends TestSuite {
 
-  import IndigoEq._
+  import EqualTo._
 
   val tests: Tests =
     Tests {

@@ -3,7 +3,7 @@ package indigo.gameengine
 import indigo.runtime.AsString
 import indigo.abstractions.Monad
 import indigo.gameengine.events.{GlobalEvent, InFrameEvent}
-import indigo.shared.IndigoEq
+import indigo.shared.EqualTo
 
 import scala.annotation.tailrec
 
@@ -67,8 +67,8 @@ object Outcome {
     AsString.create(_.toString)
 
   @SuppressWarnings(Array("org.wartremover.warts.Equals"))
-  implicit val eqGlobalEvent: IndigoEq[GlobalEvent] =
-    IndigoEq.create(_ == _)
+  implicit val eqGlobalEvent: EqualTo[GlobalEvent] =
+    EqualTo.create(_ == _)
 
   implicit val monad: Monad[Outcome] =
     new Monad[Outcome] {
@@ -87,8 +87,8 @@ object Outcome {
 
     }
 
-  implicit def eq[A](implicit eqA: IndigoEq[A], eqE: IndigoEq[List[GlobalEvent]]): IndigoEq[Outcome[A]] =
-    IndigoEq.create { (a, b) =>
+  implicit def eq[A](implicit eqA: EqualTo[A], eqE: EqualTo[List[GlobalEvent]]): EqualTo[Outcome[A]] =
+    EqualTo.create { (a, b) =>
       eqA.equal(a.state, b.state) && eqE.equal(a.globalEvents, b.globalEvents)
     }
 

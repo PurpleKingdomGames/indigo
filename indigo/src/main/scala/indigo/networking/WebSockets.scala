@@ -6,7 +6,7 @@ import indigo.networking.WebSocketReadyState.{CLOSED, CLOSING}
 import indigo.runtime.IndigoLogger
 import org.scalajs.dom
 
-import indigo.IndigoEq._
+import indigo.EqualTo._
 
 import scala.collection.mutable
 

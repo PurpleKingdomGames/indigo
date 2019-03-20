@@ -1,8 +1,8 @@
 package indigo.gameengine.scenegraph.datatypes
 
-import indigo.shared.IndigoEq
+import indigo.shared.EqualTo
 
-import indigo.IndigoEq._
+import indigo.EqualTo._
 
 final case class FontInfo(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean) {
   private val nonEmptyChars: List[FontChar] = unknownChar +: fontChars
@@ -38,7 +38,7 @@ object FontInfo {
 final case class FontKey(key: String) extends AnyVal
 object FontKey {
 
-  implicit class IndigoEqFontKey(value: FontKey) extends IndigoEq[FontKey] {
+  implicit class EqualToFontKey(value: FontKey) extends EqualTo[FontKey] {
     def ===(other: FontKey): Boolean =
       equal(value, other)
 
@@ -46,7 +46,7 @@ object FontKey {
       !equal(value, other)
 
     def equal(a1: FontKey, a2: FontKey): Boolean =
-      implicitly[IndigoEq[String]].equal(a1.key, a2.key)
+      implicitly[EqualTo[String]].equal(a1.key, a2.key)
   }
 
 }

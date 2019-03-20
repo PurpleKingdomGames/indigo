@@ -16,7 +16,7 @@ import org.scalajs.dom.html.Canvas
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import indigo.IndigoEq._
+import indigo.EqualTo._
 
 final case class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     config: GameConfig,

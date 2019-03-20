@@ -1,6 +1,6 @@
 package indigo.shared
 
-import IndigoEq._
+import EqualTo._
 
 final case class ClearColor(r: Double, g: Double, b: Double, a: Double) {
   def forceOpaque: ClearColor                = this.copy(a = 1d)
