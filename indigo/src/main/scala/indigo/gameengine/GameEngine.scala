@@ -105,7 +105,7 @@ object GameEngine {
           SubSystemsRegister
             .add(SubSystemsRegister.empty, subSystems.toList ++ startupData.additionalSubSystems.toList)
 
-        val x: IndigoIO[Double => Int] =
+        val x: GameContext[Double => Int] =
           for {
             _                   <- GameEngine.registerAnimations(animations ++ startupData.additionalAnimations)
             _                   <- GameEngine.registerFonts(fonts ++ startupData.additionalFonts)
@@ -149,14 +149,14 @@ object GameEngine {
     }
   }
 
-  def registerAnimations(animations: Set[Animations]): IndigoIO[Unit] =
-    IndigoIO.delay(animations.foreach(AnimationsRegister.register))
+  def registerAnimations(animations: Set[Animations]): GameContext[Unit] =
+    GameContext.delay(animations.foreach(AnimationsRegister.register))
 
-  def registerFonts(fonts: Set[FontInfo]): IndigoIO[Unit] =
-    IndigoIO.delay(fonts.foreach(FontRegister.register))
+  def registerFonts(fonts: Set[FontInfo]): GameContext[Unit] =
+    GameContext.delay(fonts.foreach(FontRegister.register))
 
-  def createTextureAtlas(assetCollection: AssetCollection): IndigoIO[TextureAtlas] =
-    IndigoIO.delay(
+  def createTextureAtlas(assetCollection: AssetCollection): GameContext[TextureAtlas] =
+    GameContext.delay(
       TextureAtlas.create(
         assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height)),
         AssetManager.findByName(assetCollection),
@@ -164,15 +164,15 @@ object GameEngine {
       )
     )
 
-  def extractLoadedTextures(textureAtlas: TextureAtlas): IndigoIO[List[LoadedTextureAsset]] =
-    IndigoIO.delay(
+  def extractLoadedTextures(textureAtlas: TextureAtlas): GameContext[List[LoadedTextureAsset]] =
+    GameContext.delay(
       textureAtlas.atlases.toList
         .map(a => a._2.imageData.map(data => LoadedTextureAsset(a._1.id, data)))
         .collect { case Some(s) => s }
     )
 
-  def setupAssetMapping(textureAtlas: TextureAtlas): IndigoIO[AssetMapping] =
-    IndigoIO.delay(
+  def setupAssetMapping(textureAtlas: TextureAtlas): GameContext[AssetMapping] =
+    GameContext.delay(
       AssetMapping(
         mappings = textureAtlas.legend
           .map { p =>
@@ -185,34 +185,34 @@ object GameEngine {
       )
     )
 
-  def initialisedGame[StartupError, StartupData](startupData: Startup[StartupError, StartupData]): IndigoIO[StartupData] =
+  def initialisedGame[StartupError, StartupData](startupData: Startup[StartupError, StartupData]): GameContext[StartupData] =
     startupData match {
       case e: Startup.Failure[_] =>
         IndigoLogger.info("Game initialisation failed")
         IndigoLogger.info(e.report)
-        IndigoIO.raiseError[StartupData](new Exception("Game aborted due to start up failure"))
+        GameContext.raiseError[StartupData](new Exception("Game aborted due to start up failure"))
 
       case x: Startup.Success[StartupData] =>
         IndigoLogger.info("Game initialisation succeeded")
-        IndigoIO.delay(x.success)
+        GameContext.delay(x.success)
     }
 
-  def createCanvas(gameConfig: GameConfig): IndigoIO[Canvas] =
+  def createCanvas(gameConfig: GameConfig): GameContext[Canvas] =
     Option(dom.document.getElementById("indigo-container")) match {
       case None =>
-        IndigoIO.raiseError[Canvas](new Exception("""Parent element "indigo-container" could not be found on page."""))
+        GameContext.raiseError[Canvas](new Exception("""Parent element "indigo-container" could not be found on page."""))
 
       case Some(parent) =>
-        IndigoIO.delay(Renderer.createCanvas(gameConfig.viewport.width, gameConfig.viewport.height, parent))
+        GameContext.delay(Renderer.createCanvas(gameConfig.viewport.width, gameConfig.viewport.height, parent))
     }
 
-  def listenToWorldEvents(canvas: Canvas, magnification: Int)(implicit globalEventStream: GlobalEventStream): IndigoIO[Unit] = {
+  def listenToWorldEvents(canvas: Canvas, magnification: Int)(implicit globalEventStream: GlobalEventStream): GameContext[Unit] = {
     IndigoLogger.info("Starting world events")
-    IndigoIO.delay(WorldEvents(canvas, magnification))
+    GameContext.delay(WorldEvents(canvas, magnification))
   }
 
-  def startRenderer(gameConfig: GameConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: Canvas): IndigoIO[IRenderer] =
-    IndigoIO.delay {
+  def startRenderer(gameConfig: GameConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: Canvas): GameContext[IRenderer] =
+    GameContext.delay {
       IndigoLogger.info("Starting renderer")
       Renderer(
         RendererConfig(
@@ -239,8 +239,8 @@ object GameEngine {
       initialViewModel: GameModel => ViewModel,
       updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => UpdatedViewModel[ViewModel],
       updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
-  )(implicit metrics: Metrics, globalEventStream: GlobalEventStream, globalSignals: GlobalSignals): IndigoIO[GameLoop[GameModel, ViewModel]] =
-    IndigoIO.delay(
+  )(implicit metrics: Metrics, globalEventStream: GlobalEventStream, globalSignals: GlobalSignals): GameContext[GameLoop[GameModel, ViewModel]] =
+    GameContext.delay(
       new GameLoop[GameModel, ViewModel](gameConfig, assetMapping, renderer, audioPlayer, subSystemsRegister, initialModel, updateModel, initialViewModel(initialModel), updateViewModel, updateView)
     )
 
