@@ -68,22 +68,22 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
   def generatePoints(): String =
     (Random.nextInt(10) * 100).toString + "!!"
 
-  def update(gameTime: GameTime, model: MyGameModel): GlobalEvent => UpdatedModel[MyGameModel] = {
+  def update(gameTime: GameTime, model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
     case e: ButtonEvent =>
-      UpdatedModel(
+      Outcome(
         model.copy(
           button = model.button.update(e)
         )
       )
 
     case _ =>
-      UpdatedModel(model)
+      Outcome(model)
   }
 
   def initialViewModel(startupData: Unit): MyGameModel => Unit = _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] =
-    UpdatedViewModel(())
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): Outcome[Unit] =
+    Outcome(())
 
   def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     model.button

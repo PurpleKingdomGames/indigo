@@ -1,10 +1,11 @@
 package indigoexts.automata
 
 import indigo.gameengine.GameTime
+import indigo.gameengine.Outcome
 import indigo.gameengine.events.{FrameTick, GlobalEvent}
 import indigo.gameengine.scenegraph._
 import indigo.gameengine.scenegraph.datatypes.Point
-import indigo.gameengine.subsystems.{SubSystem, UpdatedSubSystem}
+import indigo.gameengine.subsystems.SubSystem
 import indigoexts.automata.AutomataEvent._
 import indigoexts.automata.AutomataModifier._
 
@@ -32,7 +33,7 @@ final case class AutomataFarm(inventory: Map[AutomataPoolKey, Automaton], paddoc
       None
   }
 
-  def update(gameTime: GameTime): AutomataEvent => UpdatedSubSystem =
+  def update(gameTime: GameTime): AutomataEvent => Outcome[SubSystem] =
     AutomataFarm.update(this, gameTime)
 
   def render(gameTime: GameTime): SceneUpdateFragment =
@@ -51,9 +52,9 @@ object AutomataFarm {
   def empty: AutomataFarm =
     AutomataFarm(Map.empty[AutomataPoolKey, Automaton], Nil)
 
-  def update(farm: AutomataFarm, gameTime: GameTime): AutomataEvent => UpdatedSubSystem = {
+  def update(farm: AutomataFarm, gameTime: GameTime): AutomataEvent => Outcome[SubSystem] = {
     case Spawn(key, pt) =>
-      UpdatedSubSystem(
+      Outcome(
         farm.copy(
           paddock =
             farm.paddock ++
@@ -67,7 +68,7 @@ object AutomataFarm {
       )
 
     case ModifyAndSpawn(key, pt, f) =>
-      UpdatedSubSystem(
+      Outcome(
         farm.copy(
           paddock =
             farm.paddock ++
@@ -82,28 +83,28 @@ object AutomataFarm {
       )
 
     case KillAllInPool(key) =>
-      UpdatedSubSystem(
+      Outcome(
         farm.copy(
           paddock = farm.paddock.filterNot(p => p.automata.key === key)
         )
       )
 
     case KillByKey(bindingKey) =>
-      UpdatedSubSystem(
+      Outcome(
         farm.copy(
           paddock = farm.paddock.filterNot(p => p.automata.bindingKey === bindingKey)
         )
       )
 
     case KillAll =>
-      UpdatedSubSystem(
+      Outcome(
         farm.copy(
           paddock = Nil
         )
       )
 
     case Cull =>
-      UpdatedSubSystem(
+      Outcome(
         farm.copy(
           paddock = farm.paddock.filter(_.isAlive(gameTime.running)).map(_.updateDelta(gameTime.delta))
         )

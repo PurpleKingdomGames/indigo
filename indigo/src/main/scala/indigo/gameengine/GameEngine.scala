@@ -28,9 +28,9 @@ final case class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     subSystems: Set[SubSystem],
     initialise: AssetCollection => Startup[StartupError, StartupData],
     initialModel: StartupData => GameModel,
-    updateModel: (GameTime, GameModel) => GlobalEvent => UpdatedModel[GameModel],
+    updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel],
     initialViewModel: StartupData => GameModel => ViewModel,
-    updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => UpdatedViewModel[ViewModel],
+    updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => Outcome[ViewModel],
     updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
 ) {
 
@@ -66,9 +66,9 @@ object GameEngine {
       subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
-      updateModel: (GameTime, GameModel) => GlobalEvent => UpdatedModel[GameModel],
+      updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel],
       initialViewModel: StartupData => GameModel => ViewModel,
-      updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => UpdatedViewModel[ViewModel],
+      updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => Outcome[ViewModel],
       updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
   ): Unit = {
 
@@ -235,9 +235,9 @@ object GameEngine {
       audioPlayer: AudioPlayer,
       subSystemsRegister: SubSystemsRegister,
       initialModel: GameModel,
-      updateModel: (GameTime, GameModel) => GlobalEvent => UpdatedModel[GameModel],
+      updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel],
       initialViewModel: GameModel => ViewModel,
-      updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => UpdatedViewModel[ViewModel],
+      updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => Outcome[ViewModel],
       updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
   )(implicit metrics: Metrics, globalEventStream: GlobalEventStream, globalSignals: GlobalSignals): GameContext[GameLoop[GameModel, ViewModel]] =
     GameContext.delay(

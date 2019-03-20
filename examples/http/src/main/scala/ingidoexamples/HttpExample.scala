@@ -27,9 +27,9 @@ object HttpExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       count = 0
     )
 
-  def update(gameTime: GameTime, model: MyGameModel): GlobalEvent => UpdatedModel[MyGameModel] = {
+  def update(gameTime: GameTime, model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
     case e: ButtonEvent =>
-      UpdatedModel(
+      Outcome(
         model.copy(
           button = model.button.update(e)
         )
@@ -39,20 +39,20 @@ object HttpExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       println("Status code: " + status.toString)
       println("Headers: " + headers.map(p => p._1 + ": " + p._2).mkString(", "))
       println("Body: " + body.getOrElse("<EMPTY>"))
-      UpdatedModel(model)
+      Outcome(model)
 
     case HttpError =>
       println("Http error message")
-      UpdatedModel(model)
+      Outcome(model)
 
     case _ =>
-      UpdatedModel(model)
+      Outcome(model)
   }
 
   def initialViewModel(startupData: Unit): MyGameModel => Unit = _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] =
-    UpdatedViewModel(())
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): Outcome[Unit] =
+    Outcome(())
 
   def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     val button: ButtonViewUpdate = model.button.draw(

@@ -7,7 +7,7 @@ import indigo.shared.EqualTo
 
 import scala.annotation.tailrec
 
-final class Outcome[A](val state: A, val globalEvents: List[GlobalEvent], val inFrameEvents: List[InFrameEvent]) {
+final class Outcome[+A](val state: A, val globalEvents: List[GlobalEvent], val inFrameEvents: List[InFrameEvent]) {
 
   def addGlobalEvents(newEvents: GlobalEvent*): Outcome[A] =
     Outcome.addGlobalEvents(this, newEvents.toList)
@@ -96,6 +96,10 @@ object Outcome {
     AsString.create { outcomeA =>
       s"Outcome(${as.show(outcomeA.state)}, ${ae.show(outcomeA.globalEvents)})"
     }
+
+  
+  def apply[A](state: A, globalEvents: List[GlobalEvent], inFrameEvents: List[InFrameEvent]): Outcome[A] =
+   new Outcome(state, globalEvents, inFrameEvents) 
 
   def apply[A](state: A): Outcome[A] =
     pure(state)

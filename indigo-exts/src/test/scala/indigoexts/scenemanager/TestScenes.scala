@@ -3,7 +3,7 @@ package indigoexts.scenemanager
 import indigo.gameengine.GameTime
 import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
 import indigo.gameengine.scenegraph.SceneUpdateFragment
-import indigo.{UpdatedModel, UpdatedViewModel}
+import indigo.Outcome
 import indigoexts.lenses.Lens
 
 object TestScenes {
@@ -33,11 +33,11 @@ final case class TestSceneA() extends Scene[TestGameModel, TestViewModel, TestSc
       (m, mm) => m.copy(sceneA = mm)
     )
 
-  def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelA): GlobalEvent => UpdatedModel[TestSceneModelA] =
-    _ => UpdatedModel(sceneModel.copy(count = sceneModel.count + 1))
+  def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelA): GlobalEvent => Outcome[TestSceneModelA] =
+    _ => Outcome(sceneModel.copy(count = sceneModel.count + 1))
 
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, frameInputEvents: FrameInputEvents): UpdatedViewModel[TestSceneViewModelA] =
-    UpdatedViewModel(TestSceneViewModelA())
+  def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, frameInputEvents: FrameInputEvents): Outcome[TestSceneViewModelA] =
+    Outcome(TestSceneViewModelA())
 
   def updateSceneView(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     SceneUpdateFragment.empty
@@ -61,11 +61,11 @@ final case class TestSceneB() extends Scene[TestGameModel, TestViewModel, TestSc
       (m, mm) => m.copy(sceneB = mm)
     )
 
-  def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelB): GlobalEvent => UpdatedModel[TestSceneModelB] =
-    _ => UpdatedModel(sceneModel.copy(count = sceneModel.count + 10))
+  def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelB): GlobalEvent => Outcome[TestSceneModelB] =
+    _ => Outcome(sceneModel.copy(count = sceneModel.count + 10))
 
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, frameInputEvents: FrameInputEvents): UpdatedViewModel[TestSceneViewModelB] =
-    UpdatedViewModel(TestSceneViewModelB())
+  def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, frameInputEvents: FrameInputEvents): Outcome[TestSceneViewModelB] =
+    Outcome(TestSceneViewModelB())
 
   def updateSceneView(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     SceneUpdateFragment.empty

@@ -38,7 +38,7 @@ object PerfGame {
             Dude(
               aseprite,
               spriteAndAnimations.sprite
-                .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
+                .withRef(16, 16)                                                                         // Initial offset, so when talk about his position it's the center of the sprite
                 .moveTo(viewportWidth / 2 / magnificationLevel, viewportHeight / 2 / magnificationLevel) // Also place him in the middle of the screen initially
             )
           )
@@ -57,11 +57,11 @@ object PerfGame {
   def initialModel(startupData: MyStartupData): MyGameModel =
     PerfModel.initialModel(startupData)
 
-  val updateModel: (GameTime, MyGameModel) => GlobalEvent => UpdatedModel[MyGameModel] = (_, gameModel) => PerfModel.updateModel(gameModel)
+  val updateModel: (GameTime, MyGameModel) => GlobalEvent => Outcome[MyGameModel] = (_, gameModel) => PerfModel.updateModel(gameModel)
 
   val initialViewModel: (MyStartupData, MyGameModel) => FpsCounter = (_, _) => FpsCounter.empty
 
-  val updateViewModel: (GameTime, MyGameModel, FpsCounter, FrameInputEvents) => UpdatedViewModel[FpsCounter] = (gameTime, _, previous, _) => UpdatedViewModel(FpsCounter.update(gameTime, previous))
+  val updateViewModel: (GameTime, MyGameModel, FpsCounter, FrameInputEvents) => Outcome[FpsCounter] = (gameTime, _, previous, _) => Outcome(FpsCounter.update(gameTime, previous))
 
   val updateView: (GameTime, MyGameModel, FpsCounter, FrameInputEvents) => SceneUpdateFragment =
     (_, gameModel, fpsCounter, frameInputEvents) => PerfView.updateView(gameModel, fpsCounter, frameInputEvents)

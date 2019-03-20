@@ -9,28 +9,28 @@ object PerfModel {
       DudeModel(startupData.dude, DudeIdle)
     )
 
-  def updateModel(state: MyGameModel): GlobalEvent => UpdatedModel[MyGameModel] = {
+  def updateModel(state: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
     case FrameTick =>
-      UpdatedModel(state)
+      Outcome(state)
 
     case KeyboardEvent.KeyDown(Keys.LEFT_ARROW) =>
-      UpdatedModel(state.copy(dude = state.dude.walkLeft))
+      Outcome(state.copy(dude = state.dude.walkLeft))
 
     case KeyboardEvent.KeyDown(Keys.RIGHT_ARROW) =>
-      UpdatedModel(state.copy(dude = state.dude.walkRight))
+      Outcome(state.copy(dude = state.dude.walkRight))
 
     case KeyboardEvent.KeyDown(Keys.UP_ARROW) =>
-      UpdatedModel(state.copy(dude = state.dude.walkUp))
+      Outcome(state.copy(dude = state.dude.walkUp))
 
     case KeyboardEvent.KeyDown(Keys.DOWN_ARROW) =>
-      UpdatedModel(state.copy(dude = state.dude.walkDown))
+      Outcome(state.copy(dude = state.dude.walkDown))
 
     case KeyboardEvent.KeyUp(_) =>
-      UpdatedModel(state.copy(dude = state.dude.idle))
+      Outcome(state.copy(dude = state.dude.idle))
 
     case _ =>
       //Logger.info(e)
-      UpdatedModel(state)
+      Outcome(state)
   }
 
 }

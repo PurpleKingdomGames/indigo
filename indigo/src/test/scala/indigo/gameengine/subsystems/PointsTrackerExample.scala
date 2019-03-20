@@ -13,12 +13,12 @@ final case class PointsTrackerExample(points: Int) extends SubSystem {
     case _                     => None
   }
 
-  def update(gameTime: GameTime): PointsTrackerEvent => UpdatedSubSystem = {
+  def update(gameTime: GameTime): PointsTrackerEvent => Outcome = {
     case PointsTrackerEvent.Add(pts) =>
-      UpdatedSubSystem(this.copy(points = points + pts))
+      Outcome(this.copy(points = points + pts))
 
     case PointsTrackerEvent.LoseAll =>
-      UpdatedSubSystem(this.copy(points = 0))
+      Outcome(this.copy(points = 0))
         .addGlobalEvents(GameOver)
   }
 

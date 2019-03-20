@@ -1,6 +1,7 @@
 package indigo.gameengine.subsystems
 
 import indigo.gameengine.GameTime
+import indigo.gameengine.Outcome
 import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph.SceneUpdateFragment
 
@@ -9,7 +10,7 @@ final case class SubSystemsRegister(registeredSubSystems: List[SubSystem]) {
   def add(subSystems: SubSystem*): SubSystemsRegister =
     SubSystemsRegister.add(this, subSystems.toList)
 
-  def update(gameTime: GameTime): GlobalEvent => UpdatedSubSystemsRegister =
+  def update(gameTime: GameTime): GlobalEvent => OutcomesRegister =
     SubSystemsRegister.update(this, gameTime)
 
   def render(gameTime: GameTime): SceneUpdateFragment =
@@ -27,19 +28,19 @@ object SubSystemsRegister {
   def add(register: SubSystemsRegister, subSystems: List[SubSystem]): SubSystemsRegister =
     register.copy(registeredSubSystems = register.registeredSubSystems ++ subSystems)
 
-  def update(register: SubSystemsRegister, gameTime: GameTime): GlobalEvent => UpdatedSubSystemsRegister = {
+  def update(register: SubSystemsRegister, gameTime: GameTime): GlobalEvent => OutcomesRegister = {
     case e: GlobalEvent =>
       val updated = register.registeredSubSystems.map { ss =>
-        ss.eventFilter(e).map(ee => ss.update(gameTime)(ee)).getOrElse(UpdatedSubSystem(ss, Nil))
+        ss.eventFilter(e).map(ee => ss.update(gameTime)(ee)).getOrElse(Outcome(ss, Nil, Nil))
       }
 
-      UpdatedSubSystemsRegister(
-        register.copy(registeredSubSystems = updated.map(_.subSystem)),
-        updated.flatMap(_.events)
+      OutcomesRegister(
+        register.copy(registeredSubSystems = updated.map(_.state)),
+        updated.flatMap(_.globalEvents)
       )
 
     case _ =>
-      UpdatedSubSystemsRegister(register, Nil)
+      OutcomesRegister(register, Nil)
   }
 
   def render(register: SubSystemsRegister, gameTime: GameTime): SceneUpdateFragment =
@@ -50,4 +51,4 @@ object SubSystemsRegister {
 
 }
 
-final case class UpdatedSubSystemsRegister(register: SubSystemsRegister, events: List[GlobalEvent])
+final case class OutcomesRegister(register: SubSystemsRegister, events: List[GlobalEvent])

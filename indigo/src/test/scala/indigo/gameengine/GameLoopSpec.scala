@@ -26,13 +26,13 @@ class GameLoopSpec extends FunSpec with Matchers {
       val signals: Signals =
         Signals.default
 
-      val update: (GameTime, TestGameModel) => GlobalEvent => UpdatedModel[TestGameModel] =
+      val update: (GameTime, TestGameModel) => GlobalEvent => Outcome[TestGameModel] =
         (_, model) => {
           case ChangeName(name) =>
-            UpdatedModel(model.copy(name = name))
+            Outcome(model.copy(name = name))
 
           case _ =>
-            UpdatedModel(model)
+            Outcome(model)
         }
 
       val actual: (TestGameModel, FrameInputEvents) =
@@ -67,13 +67,13 @@ class GameLoopSpec extends FunSpec with Matchers {
       val signals: Signals =
         Signals.default
 
-      val update: (GameTime, TestGameModel) => GlobalEvent => UpdatedModel[TestGameModel] =
+      val update: (GameTime, TestGameModel) => GlobalEvent => Outcome[TestGameModel] =
         (_, model) => {
           case ChangeName(name) =>
-            UpdatedModel(model.copy(name = name), List(ShowName("show: " + name)), List(PresentName(name)))
+            Outcome(model.copy(name = name), List(ShowName("show: " + name)), List(PresentName(name)))
 
           case _ =>
-            UpdatedModel(model)
+            Outcome(model)
         }
 
       val actual: (TestGameModel, FrameInputEvents) =

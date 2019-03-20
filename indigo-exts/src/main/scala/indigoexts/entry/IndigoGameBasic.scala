@@ -35,11 +35,11 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] {
 
   def initialModel(startupData: StartupData): Model
 
-  def update(gameTime: GameTime, model: Model): GlobalEvent => UpdatedModel[Model]
+  def update(gameTime: GameTime, model: Model): GlobalEvent => Outcome[Model]
 
   def initialViewModel(startupData: StartupData): Model => ViewModel
 
-  def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents): UpdatedViewModel[ViewModel]
+  def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents): Outcome[ViewModel]
 
   def present(gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment
 

@@ -11,29 +11,25 @@ final case class JobMarket(jobs: List[Job]) extends SubSystem {
     case _                 => None
   }
 
-  def update(gameTime: GameTime): JobMarketEvent => UpdatedSubSystem = {
+  def update(gameTime: GameTime): JobMarketEvent => Outcome[SubSystem] = {
     case JobMarketEvent.Post(job) =>
-      UpdatedSubSystem(
+      Outcome(
         this.copy(jobs = jobs :+ job)
       )
 
     case JobMarketEvent.Find(id, canTakeJob) =>
       JobMarket.findJob(jobs, canTakeJob, Nil) match {
         case (None, _) =>
-          UpdatedSubSystem(this).addGlobalEvents(
-            JobMarketEvent.NothingFound(id)
-          )
+          Outcome(this)
+            .addGlobalEvents(JobMarketEvent.NothingFound(id))
 
         case (Some(job), updatedJobsList) =>
-          UpdatedSubSystem(
-            this.copy(jobs = updatedJobsList)
-          ).addGlobalEvents(
-            JobMarketEvent.Allocate(id, job)
-          )
+          Outcome(this.copy(jobs = updatedJobsList))
+            .addGlobalEvents(JobMarketEvent.Allocate(id, job))
       }
 
     case _ =>
-      UpdatedSubSystem(this)
+      Outcome(this)
   }
 
   def render(gameTime: GameTime): SceneUpdateFragment =

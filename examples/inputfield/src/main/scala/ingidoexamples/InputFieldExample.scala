@@ -24,18 +24,18 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       InputField("Fish").makeMultiLine
     )
 
-  def update(gameTime: GameTime, model: MyGameModel): GlobalEvent => UpdatedModel[MyGameModel] = {
+  def update(gameTime: GameTime, model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
     case e: InputFieldEvent =>
-      UpdatedModel(model.copy(inputField = model.inputField.update(e)))
+      Outcome(model.copy(inputField = model.inputField.update(e)))
 
     case _ =>
-      UpdatedModel(model)
+      Outcome(model)
   }
 
   def initialViewModel(startupData: Unit): MyGameModel => Unit = _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] =
-    UpdatedViewModel(())
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): Outcome[Unit] =
+    Outcome(())
 
   def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
 

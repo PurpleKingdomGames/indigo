@@ -27,22 +27,22 @@ object SubSystemsExample extends IndigoGameBasic[Unit, Unit, Unit] {
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(gameTime: GameTime, model: Unit): GlobalEvent => UpdatedModel[Unit] = {
+  def update(gameTime: GameTime, model: Unit): GlobalEvent => Outcome[Unit] = {
     case e @ MouseEvent.Click(_, _) =>
-      UpdatedModel(())
+      Outcome(())
         .addGlobalEvents(
           PointsTrackerEvent.Add(10),
           PointsAutomaton.spawnEvent(e.position - Point(0, 30))
         )
 
     case _ =>
-      UpdatedModel(())
+      Outcome(())
   }
 
   def initialViewModel(startupData: Unit): Unit => Unit = _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] =
-    UpdatedViewModel(viewModel)
+  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): Outcome[Unit] =
+    Outcome(viewModel)
 
   def present(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     noRender

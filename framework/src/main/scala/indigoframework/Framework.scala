@@ -36,15 +36,15 @@ object Framework {
 
       case None =>
         Startup.Failure(StartupErrorReport("Game definition could not be loaded"))
-  }
+    }
 
   val initialModel: StartupData => GameModel = startupData => GameModelHelper.initialModel(startupData)
 
-  val updateModel: (GameTime, GameModel) => GlobalEvent => UpdatedModel[GameModel] = (_, gameModel) => GameModelHelper.updateModel(gameModel)
+  val updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel] = (_, gameModel) => GameModelHelper.updateModel(gameModel)
 
   val initialViewModel: (StartupData, GameModel) => Unit = (_, _) => ()
 
-  val updateViewModel: (GameTime, GameModel, Unit, FrameInputEvents) => UpdatedViewModel[Unit] = (_, _, _, _) => UpdatedViewModel(())
+  val updateViewModel: (GameTime, GameModel, Unit, FrameInputEvents) => Outcome[Unit] = (_, _, _, _) => Outcome(())
 
   val updateView: (GameTime, GameModel, Unit, FrameInputEvents) => SceneUpdateFragment = (_, gameModel, _, _) => GameViewHelper.updateView(gameModel)
 

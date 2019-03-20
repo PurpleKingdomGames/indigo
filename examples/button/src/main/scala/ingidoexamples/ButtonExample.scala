@@ -30,9 +30,9 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
     )
 
   // Match on event type, forward ButtonEvents to all buttons! (they'll work out if it's for the right button)
-  def update(gameTime: GameTime, model: MyGameModel): GlobalEvent => UpdatedModel[MyGameModel] = {
+  def update(gameTime: GameTime, model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
     case e: ButtonEvent =>
-      UpdatedModel(
+      Outcome(
         model.copy(
           button = model.button.update(e)
         )
@@ -41,23 +41,23 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
     case MyButtonEvent => // Our event is caught, updates the model and writes to the console.
       val next = model.copy(count = model.count + 1)
       println("Count: " + next.count.toString)
-      UpdatedModel(next)
+      Outcome(next)
 
     case _ =>
-      UpdatedModel(model)
+      Outcome(model)
   }
 
   def initialViewModel(startupData: Unit): MyGameModel => Unit = _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): UpdatedViewModel[Unit] =
-    UpdatedViewModel(())
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): Outcome[Unit] =
+    Outcome(())
 
   def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     val button: ButtonViewUpdate = model.button.draw(
-      bounds = Rectangle(10, 10, 16, 16), // Where should the button be on the screen?
-      depth = Depth(2), // At what depth?
+      bounds = Rectangle(10, 10, 16, 16),  // Where should the button be on the screen?
+      depth = Depth(2),                    // At what depth?
       frameInputEvents = frameInputEvents, // delegate events
-      buttonAssets = ButtonAssets( // We could cache the graphics much earlier
+      buttonAssets = ButtonAssets(         // We could cache the graphics much earlier
         up = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 0, 16, 16),
         over = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 16, 16, 16),
         down = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 32, 16, 16)

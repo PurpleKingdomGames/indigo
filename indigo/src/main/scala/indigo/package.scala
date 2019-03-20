@@ -24,9 +24,6 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
 
   type SubSystem = gameengine.subsystems.SubSystem
 
-  type UpdatedSubSystem = gameengine.subsystems.UpdatedSubSystem
-  val UpdatedSubSystem: gameengine.subsystems.UpdatedSubSystem.type = gameengine.subsystems.UpdatedSubSystem
-
   type AssetCollection = gameengine.assets.AssetCollection
   val AssetCollection: gameengine.assets.AssetCollection.type = gameengine.assets.AssetCollection
 
@@ -36,11 +33,8 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   type StartupErrors = gameengine.StartupErrors
   val StartupErrors: gameengine.StartupErrors.type = gameengine.StartupErrors
 
-  type UpdatedModel[T] = gameengine.UpdatedModel[T]
-  val UpdatedModel: gameengine.UpdatedModel.type = gameengine.UpdatedModel
-
-  type UpdatedViewModel[T] = gameengine.UpdatedViewModel[T]
-  val UpdatedViewModel: gameengine.UpdatedViewModel.type = gameengine.UpdatedViewModel
+  type Outcome[T] = gameengine.Outcome[T]
+  val Outcome: gameengine.Outcome.type = gameengine.Outcome
 
   // Constants
 

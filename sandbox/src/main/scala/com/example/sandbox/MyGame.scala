@@ -33,7 +33,7 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, MyViewModel] {
             Dude(
               aseprite,
               spriteAndAnimations.sprite
-                .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
+                .withRef(16, 16)                                                                         // Initial offset, so when talk about his position it's the center of the sprite
                 .moveTo(viewportWidth / 2 / magnificationLevel, viewportHeight / 2 / magnificationLevel) // Also place him in the middle of the screen initially
             )
           )
@@ -52,13 +52,13 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, MyViewModel] {
   def initialModel(startupData: MyStartupData): MyGameModel =
     MyModel.initialModel(startupData)
 
-  def update(gameTime: GameTime, model: MyGameModel): GlobalEvent => UpdatedModel[MyGameModel] =
+  def update(gameTime: GameTime, model: MyGameModel): GlobalEvent => Outcome[MyGameModel] =
     MyModel.updateModel(model)
 
   def initialViewModel(startupData: MyStartupData): MyGameModel => MyViewModel = _ => MyViewModel()
 
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, frameInputEvents: FrameInputEvents): UpdatedViewModel[MyViewModel] =
-    UpdatedViewModel(viewModel)
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, frameInputEvents: FrameInputEvents): Outcome[MyViewModel] =
+    Outcome(viewModel)
 
   def present(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     MyView.updateView(model, frameInputEvents)

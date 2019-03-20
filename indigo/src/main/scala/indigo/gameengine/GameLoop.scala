@@ -21,9 +21,9 @@ class GameLoop[GameModel, ViewModel](
     audioPlayer: AudioPlayer,
     subSystemsRegister: SubSystemsRegister,
     initialModel: GameModel,
-    updateModel: (GameTime, GameModel) => GlobalEvent => UpdatedModel[GameModel],
+    updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel],
     initialViewModel: ViewModel,
-    updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => UpdatedViewModel[ViewModel],
+    updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => Outcome[ViewModel],
     updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
 )(implicit metrics: Metrics, globalEventStream: GlobalEventStream, globalSignals: GlobalSignals) {
 
@@ -90,7 +90,7 @@ class GameLoop[GameModel, ViewModel](
           case Some(previousModel) =>
             val next = updateViewModel(gameTime, model._1, previousModel, model._2)
             next.globalEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
-            (next.model, FrameInputEvents(collectedEvents, next.inFrameEvents, signals))
+            (next.state, FrameInputEvents(collectedEvents, next.inFrameEvents, signals))
         }
 
         viewModelState = Some(viewModel._1)
@@ -200,26 +200,26 @@ object GameLoop {
       model: GameModel,
       collectedEvents: List[GlobalEvent],
       signals: Signals,
-      updateModel: (GameTime, GameModel) => GlobalEvent => UpdatedModel[GameModel]
+      updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel]
   )(
       implicit globalEventStream: GlobalEventStream
   ): (GameModel, FrameInputEvents) = {
-    val combine: (UpdatedModel[GameModel], UpdatedModel[GameModel]) => UpdatedModel[GameModel] =
-      (a, b) => UpdatedModel(b.model, a.globalEvents ++ b.globalEvents, a.inFrameEvents ++ b.inFrameEvents)
+    val combine: (Outcome[GameModel], Outcome[GameModel]) => Outcome[GameModel] =
+      (a, b) => new Outcome(b.state, a.globalEvents ++ b.globalEvents, a.inFrameEvents ++ b.inFrameEvents)
 
     @tailrec
-    def rec(remaining: List[GlobalEvent], last: UpdatedModel[GameModel]): UpdatedModel[GameModel] =
+    def rec(remaining: List[GlobalEvent], last: Outcome[GameModel]): Outcome[GameModel] =
       remaining match {
         case Nil =>
           last
 
         case x :: xs =>
-          rec(xs, combine(last, updateModel(gameTime, last.model)(x)))
+          rec(xs, combine(last, updateModel(gameTime, last.state)(x)))
       }
 
-    val res = rec(collectedEvents, UpdatedModel(model))
+    val res = rec(collectedEvents, Outcome(model))
     res.globalEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
-    (res.model, FrameInputEvents(res.globalEvents, res.inFrameEvents, signals))
+    (res.state, FrameInputEvents(res.globalEvents, res.inFrameEvents, signals))
   }
 
   @tailrec
