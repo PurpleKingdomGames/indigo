@@ -1,6 +1,6 @@
 package indigo.gameengine
 
-import indigo.runtime.IndigoShow
+import indigo.runtime.AsString
 import indigo.abstractions.Monad
 import indigo.gameengine.events.{GlobalEvent, InFrameEvent}
 import indigo.shared.IndigoEq
@@ -63,8 +63,8 @@ object Outcome {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.ToString"))
-  implicit val showGlobalEvent: IndigoShow[GlobalEvent] =
-    IndigoShow.create(_.toString)
+  implicit val showGlobalEvent: AsString[GlobalEvent] =
+    AsString.create(_.toString)
 
   @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   implicit val eqGlobalEvent: IndigoEq[GlobalEvent] =
@@ -92,8 +92,8 @@ object Outcome {
       eqA.equal(a.state, b.state) && eqE.equal(a.globalEvents, b.globalEvents)
     }
 
-  implicit def show[A](implicit as: IndigoShow[A], ae: IndigoShow[List[GlobalEvent]]): IndigoShow[Outcome[A]] =
-    IndigoShow.create { outcomeA =>
+  implicit def show[A](implicit as: AsString[A], ae: AsString[List[GlobalEvent]]): AsString[Outcome[A]] =
+    AsString.create { outcomeA =>
       s"Outcome(${as.show(outcomeA.state)}, ${ae.show(outcomeA.globalEvents)})"
     }
 

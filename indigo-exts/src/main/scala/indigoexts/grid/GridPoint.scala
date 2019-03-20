@@ -1,7 +1,7 @@
 package indigoexts.grid
 
 import indigo.gameengine.scenegraph.datatypes.Point
-import indigo.runtime.IndigoShow
+import indigo.runtime.AsString
 
 import scala.annotation.tailrec
 import scala.util.Random
@@ -28,8 +28,8 @@ final case class GridPoint(x: Int, y: Int) {
 }
 object GridPoint {
 
-  implicit val show: IndigoShow[GridPoint] =
-    IndigoShow.create(p => s"""(${p.x}, ${p.y})""")
+  implicit val show: AsString[GridPoint] =
+    AsString.create(p => s"""(${p.x}, ${p.y})""")
 
   def tupleToGridPoint(t: (Int, Int)): GridPoint =
     GridPoint(t._1, t._2)

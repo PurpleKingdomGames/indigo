@@ -9,11 +9,11 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
 
   val logger: IndigoLogger.type = IndigoLogger
 
-  type IndigoShow[A] = runtime.IndigoShow[A]
-  val IndigoShow: runtime.IndigoShow.type = runtime.IndigoShow
+  type AsString[A] = runtime.AsString[A]
+  val AsString: runtime.AsString.type = runtime.AsString
 
-  implicit class WithShow[T](val t: T) extends AnyVal {
-    def show(implicit showMe: IndigoShow[T]): String = showMe.show(t)
+  implicit class WithAsString[T](val t: T) extends AnyVal {
+    def show(implicit showMe: AsString[T]): String = showMe.show(t)
   }
 
   type Startup[ErrorType, SuccessType] = gameengine.Startup[ErrorType, SuccessType]

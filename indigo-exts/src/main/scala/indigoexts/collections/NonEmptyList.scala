@@ -1,6 +1,6 @@
 package indigoexts.collections
 
-import indigo.runtime.IndigoShow
+import indigo.runtime.AsString
 
 import indigo.IndigoEq._
 import indigo.shared.IndigoEq
@@ -80,8 +80,8 @@ trait NonEmptyList[A] {
 
 object NonEmptyList {
 
-  implicit def showNonEmptyList[A](implicit showA: IndigoShow[A]): IndigoShow[NonEmptyList[A]] =
-    IndigoShow.create { l =>
+  implicit def showNonEmptyList[A](implicit showA: AsString[A]): AsString[NonEmptyList[A]] =
+    AsString.create { l =>
       val s = l.map(a => showA.show(a))
       s"Nel[${s.head}][${s.tail.mkString(", ")}]"
     }

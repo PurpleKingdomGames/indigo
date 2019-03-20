@@ -38,94 +38,82 @@ object IndigoLogger {
       println(formatMessage(DEBUG, message))
   }
 
-  def consoleLog[A](valueA: A)(implicit showA: IndigoShow[A]): Unit =
+  def consoleLog[A](valueA: A)(implicit showA: AsString[A]): Unit =
     consoleLogString(s"${showA.show(valueA)}")
-  def consoleLog[A, B](valueA: A, valueB: B)(implicit showA: IndigoShow[A], showB: IndigoShow[B]): Unit =
+  def consoleLog[A, B](valueA: A, valueB: B)(implicit showA: AsString[A], showB: AsString[B]): Unit =
     consoleLogString(s"${showA.show(valueA)}, ${showB.show(valueB)}")
-  def consoleLog[A, B, C](valueA: A, valueB: B, valueC: C)(implicit showA: IndigoShow[A], showB: IndigoShow[B], showC: IndigoShow[C]): Unit =
+  def consoleLog[A, B, C](valueA: A, valueB: B, valueC: C)(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C]): Unit =
     consoleLogString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}")
-  def consoleLog[A, B, C, D](valueA: A, valueB: B, valueC: C, valueD: D)(implicit showA: IndigoShow[A], showB: IndigoShow[B], showC: IndigoShow[C], showD: IndigoShow[D]): Unit =
+  def consoleLog[A, B, C, D](valueA: A, valueB: B, valueC: C, valueD: D)(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C], showD: AsString[D]): Unit =
     consoleLogString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}, ${showD.show(valueD)}")
-  def consoleLog[A, B, C, D, E](valueA: A, valueB: B, valueC: C, valueD: D, valueE: E)(implicit showA: IndigoShow[A],
-                                                                                       showB: IndigoShow[B],
-                                                                                       showC: IndigoShow[C],
-                                                                                       showD: IndigoShow[D],
-                                                                                       showE: IndigoShow[E]): Unit =
+  def consoleLog[A, B, C, D, E](valueA: A, valueB: B, valueC: C, valueD: D, valueE: E)(implicit showA: AsString[A],
+                                                                                       showB: AsString[B],
+                                                                                       showC: AsString[C],
+                                                                                       showD: AsString[D],
+                                                                                       showE: AsString[E]): Unit =
     consoleLogString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}, ${showD.show(valueD)}, ${showE.show(valueE)}")
 
-  def info[A](valueA: A)(implicit showA: IndigoShow[A]): Unit =
+  def info[A](valueA: A)(implicit showA: AsString[A]): Unit =
     infoString(s"${showA.show(valueA)}")
-  def info[A, B](valueA: A, valueB: B)(implicit showA: IndigoShow[A], showB: IndigoShow[B]): Unit =
+  def info[A, B](valueA: A, valueB: B)(implicit showA: AsString[A], showB: AsString[B]): Unit =
     infoString(s"${showA.show(valueA)}, ${showB.show(valueB)}")
-  def info[A, B, C](valueA: A, valueB: B, valueC: C)(implicit showA: IndigoShow[A], showB: IndigoShow[B], showC: IndigoShow[C]): Unit =
+  def info[A, B, C](valueA: A, valueB: B, valueC: C)(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C]): Unit =
     infoString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}")
-  def info[A, B, C, D](valueA: A, valueB: B, valueC: C, valueD: D)(implicit showA: IndigoShow[A], showB: IndigoShow[B], showC: IndigoShow[C], showD: IndigoShow[D]): Unit =
+  def info[A, B, C, D](valueA: A, valueB: B, valueC: C, valueD: D)(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C], showD: AsString[D]): Unit =
     infoString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}, ${showD.show(valueD)}")
-  def info[A, B, C, D, E](valueA: A, valueB: B, valueC: C, valueD: D, valueE: E)(implicit showA: IndigoShow[A],
-                                                                                 showB: IndigoShow[B],
-                                                                                 showC: IndigoShow[C],
-                                                                                 showD: IndigoShow[D],
-                                                                                 showE: IndigoShow[E]): Unit =
+  def info[A, B, C, D, E](valueA: A, valueB: B, valueC: C, valueD: D, valueE: E)(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C], showD: AsString[D], showE: AsString[E]): Unit =
     infoString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}, ${showD.show(valueD)}, ${showE.show(valueE)}")
 
-  def error[A](valueA: A)(implicit showA: IndigoShow[A]): Unit =
+  def error[A](valueA: A)(implicit showA: AsString[A]): Unit =
     errorString(s"${showA.show(valueA)}")
-  def error[A, B](valueA: A, valueB: B)(implicit showA: IndigoShow[A], showB: IndigoShow[B]): Unit =
+  def error[A, B](valueA: A, valueB: B)(implicit showA: AsString[A], showB: AsString[B]): Unit =
     errorString(s"${showA.show(valueA)}, ${showB.show(valueB)}")
-  def error[A, B, C](valueA: A, valueB: B, valueC: C)(implicit showA: IndigoShow[A], showB: IndigoShow[B], showC: IndigoShow[C]): Unit =
+  def error[A, B, C](valueA: A, valueB: B, valueC: C)(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C]): Unit =
     errorString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}")
-  def error[A, B, C, D](valueA: A, valueB: B, valueC: C, valueD: D)(implicit showA: IndigoShow[A], showB: IndigoShow[B], showC: IndigoShow[C], showD: IndigoShow[D]): Unit =
+  def error[A, B, C, D](valueA: A, valueB: B, valueC: C, valueD: D)(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C], showD: AsString[D]): Unit =
     errorString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}, ${showD.show(valueD)}")
-  def error[A, B, C, D, E](valueA: A, valueB: B, valueC: C, valueD: D, valueE: E)(implicit showA: IndigoShow[A],
-                                                                                  showB: IndigoShow[B],
-                                                                                  showC: IndigoShow[C],
-                                                                                  showD: IndigoShow[D],
-                                                                                  showE: IndigoShow[E]): Unit =
+  def error[A, B, C, D, E](valueA: A, valueB: B, valueC: C, valueD: D, valueE: E)(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C], showD: AsString[D], showE: AsString[E]): Unit =
     errorString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}, ${showD.show(valueD)}, ${showE.show(valueE)}")
 
-  def errorOnce[A](valueA: A)(implicit showA: IndigoShow[A]): Unit =
+  def errorOnce[A](valueA: A)(implicit showA: AsString[A]): Unit =
     errorOnceString(s"${showA.show(valueA)}")
-  def errorOnce[A, B](valueA: A, valueB: B)(implicit showA: IndigoShow[A], showB: IndigoShow[B]): Unit =
+  def errorOnce[A, B](valueA: A, valueB: B)(implicit showA: AsString[A], showB: AsString[B]): Unit =
     errorOnceString(s"${showA.show(valueA)}, ${showB.show(valueB)}")
-  def errorOnce[A, B, C](valueA: A, valueB: B, valueC: C)(implicit showA: IndigoShow[A], showB: IndigoShow[B], showC: IndigoShow[C]): Unit =
+  def errorOnce[A, B, C](valueA: A, valueB: B, valueC: C)(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C]): Unit =
     errorOnceString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}")
-  def errorOnce[A, B, C, D](valueA: A, valueB: B, valueC: C, valueD: D)(implicit showA: IndigoShow[A], showB: IndigoShow[B], showC: IndigoShow[C], showD: IndigoShow[D]): Unit =
+  def errorOnce[A, B, C, D](valueA: A, valueB: B, valueC: C, valueD: D)(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C], showD: AsString[D]): Unit =
     errorOnceString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}, ${showD.show(valueD)}")
-  def errorOnce[A, B, C, D, E](valueA: A, valueB: B, valueC: C, valueD: D, valueE: E)(implicit showA: IndigoShow[A],
-                                                                                      showB: IndigoShow[B],
-                                                                                      showC: IndigoShow[C],
-                                                                                      showD: IndigoShow[D],
-                                                                                      showE: IndigoShow[E]): Unit =
+  def errorOnce[A, B, C, D, E](valueA: A, valueB: B, valueC: C, valueD: D, valueE: E)(implicit showA: AsString[A],
+                                                                                      showB: AsString[B],
+                                                                                      showC: AsString[C],
+                                                                                      showD: AsString[D],
+                                                                                      showE: AsString[E]): Unit =
     errorOnceString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}, ${showD.show(valueD)}, ${showE.show(valueE)}")
 
-  def debug[A](valueA: A)(implicit showA: IndigoShow[A]): Unit =
+  def debug[A](valueA: A)(implicit showA: AsString[A]): Unit =
     debugString(s"${showA.show(valueA)}")
-  def debug[A, B](valueA: A, valueB: B)(implicit showA: IndigoShow[A], showB: IndigoShow[B]): Unit =
+  def debug[A, B](valueA: A, valueB: B)(implicit showA: AsString[A], showB: AsString[B]): Unit =
     debugString(s"${showA.show(valueA)}, ${showB.show(valueB)}")
-  def debug[A, B, C](valueA: A, valueB: B, valueC: C)(implicit showA: IndigoShow[A], showB: IndigoShow[B], showC: IndigoShow[C]): Unit =
+  def debug[A, B, C](valueA: A, valueB: B, valueC: C)(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C]): Unit =
     debugString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}")
-  def debug[A, B, C, D](valueA: A, valueB: B, valueC: C, valueD: D)(implicit showA: IndigoShow[A], showB: IndigoShow[B], showC: IndigoShow[C], showD: IndigoShow[D]): Unit =
+  def debug[A, B, C, D](valueA: A, valueB: B, valueC: C, valueD: D)(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C], showD: AsString[D]): Unit =
     debugString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}, ${showD.show(valueD)}")
-  def debug[A, B, C, D, E](valueA: A, valueB: B, valueC: C, valueD: D, valueE: E)(implicit showA: IndigoShow[A],
-                                                                                  showB: IndigoShow[B],
-                                                                                  showC: IndigoShow[C],
-                                                                                  showD: IndigoShow[D],
-                                                                                  showE: IndigoShow[E]): Unit =
+  def debug[A, B, C, D, E](valueA: A, valueB: B, valueC: C, valueD: D, valueE: E)(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C], showD: AsString[D], showE: AsString[E]): Unit =
     debugString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}, ${showD.show(valueD)}, ${showE.show(valueE)}")
 
-  def debugOnce[A](valueA: A)(implicit showA: IndigoShow[A]): Unit =
+  def debugOnce[A](valueA: A)(implicit showA: AsString[A]): Unit =
     debugOnceString(s"${showA.show(valueA)}")
-  def debugOnce[A, B](valueA: A, valueB: B)(implicit showA: IndigoShow[A], showB: IndigoShow[B]): Unit =
+  def debugOnce[A, B](valueA: A, valueB: B)(implicit showA: AsString[A], showB: AsString[B]): Unit =
     debugOnceString(s"${showA.show(valueA)}, ${showB.show(valueB)}")
-  def debugOnce[A, B, C](valueA: A, valueB: B, valueC: C)(implicit showA: IndigoShow[A], showB: IndigoShow[B], showC: IndigoShow[C]): Unit =
+  def debugOnce[A, B, C](valueA: A, valueB: B, valueC: C)(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C]): Unit =
     debugOnceString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}")
-  def debugOnce[A, B, C, D](valueA: A, valueB: B, valueC: C, valueD: D)(implicit showA: IndigoShow[A], showB: IndigoShow[B], showC: IndigoShow[C], showD: IndigoShow[D]): Unit =
+  def debugOnce[A, B, C, D](valueA: A, valueB: B, valueC: C, valueD: D)(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C], showD: AsString[D]): Unit =
     debugOnceString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}, ${showD.show(valueD)}")
-  def debugOnce[A, B, C, D, E](valueA: A, valueB: B, valueC: C, valueD: D, valueE: E)(implicit showA: IndigoShow[A],
-                                                                                      showB: IndigoShow[B],
-                                                                                      showC: IndigoShow[C],
-                                                                                      showD: IndigoShow[D],
-                                                                                      showE: IndigoShow[E]): Unit =
+  def debugOnce[A, B, C, D, E](valueA: A, valueB: B, valueC: C, valueD: D, valueE: E)(implicit showA: AsString[A],
+                                                                                      showB: AsString[B],
+                                                                                      showC: AsString[C],
+                                                                                      showD: AsString[D],
+                                                                                      showE: AsString[E]): Unit =
     debugOnceString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}, ${showD.show(valueD)}, ${showE.show(valueE)}")
 
 }

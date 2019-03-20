@@ -2,7 +2,7 @@ package indigoexts.quadtrees
 
 import indigo.gameengine.PowerOfTwo
 import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
-import indigo.runtime.IndigoShow
+import indigo.runtime.AsString
 import indigo.shared.IndigoEq
 import indigoexts.grid.{GridPoint, GridSize}
 import indigoexts.line.LineSegment
@@ -51,8 +51,8 @@ sealed trait QuadTree[T] {
 }
 object QuadTree {
 
-  implicit def showQuadTree[T]: IndigoShow[QuadTree[T]] =
-    IndigoShow.create(t => t.renderAsString)
+  implicit def showQuadTree[T]: AsString[QuadTree[T]] =
+    AsString.create(t => t.renderAsString)
 
   def empty[T](size: PowerOfTwo): QuadTree[T] =
     QuadEmpty(QuadBounds.apply(size.value))

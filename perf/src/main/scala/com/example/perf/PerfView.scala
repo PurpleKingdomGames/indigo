@@ -8,7 +8,7 @@ object PerfView {
 
   def updateView(model: MyGameModel, fpsCounter: FpsCounter, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     frameInputEvents.mouseClickAt match {
-      case Some(position) => println("Mouse clicked at: " + implicitly[IndigoShow[Point]].show(position))
+      case Some(position) => println("Mouse clicked at: " + implicitly[AsString[Point]].show(position))
       case None           => ()
     }
 

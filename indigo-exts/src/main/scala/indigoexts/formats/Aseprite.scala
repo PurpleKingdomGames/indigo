@@ -3,7 +3,7 @@ package indigoexts.formats
 import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph._
 import indigo.gameengine.scenegraph.datatypes._
-import indigo.runtime.{IndigoLogger, IndigoShow}
+import indigo.runtime.{IndigoLogger, AsString}
 import io.circe.generic.auto._
 import io.circe.parser._
 
@@ -19,8 +19,8 @@ final case class AsepriteSize(w: Int, h: Int)
 
 final case class AsepriteFrameTag(name: String, from: Int, to: Int, direction: String)
 object AsepriteFrameTag {
-  implicit val show: IndigoShow[AsepriteFrameTag] =
-    IndigoShow.create { ft =>
+  implicit val show: AsString[AsepriteFrameTag] =
+    AsString.create { ft =>
       s"""FrameTag(${ft.name}, ${ft.from.toString}, ${ft.to.toString}, ${ft.direction})"""
     }
 }
@@ -52,7 +52,7 @@ object Aseprite {
       .map { frameTag =>
         extractFrames(frameTag, aseprite.frames) match {
           case Nil =>
-            IndigoLogger.info("Failed to extract cycle with frameTag: " + implicitly[IndigoShow[AsepriteFrameTag]].show(frameTag))
+            IndigoLogger.info("Failed to extract cycle with frameTag: " + implicitly[AsString[AsepriteFrameTag]].show(frameTag))
             None
           case x :: xs =>
             Option(
