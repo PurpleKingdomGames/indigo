@@ -26,7 +26,7 @@ class WorkScheduleSpec extends FunSpec with Matchers {
 
       val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, Nil)
 
-      val gameTime = new GameTime(0, 0, 0)
+      val gameTime = new GameTime(0, 0, GameTime.FPS(0))
 
       val actual = workSchedule.update(gameTime, actor, context)(SampleActor.worker)(FrameTick).workSchedule.jobStack
 
@@ -41,7 +41,7 @@ class WorkScheduleSpec extends FunSpec with Matchers {
       val jobs                   = Fishing(0) :: Nil
 
       val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, jobs)
-      val gameTime     = new GameTime(0, 0, 0)
+      val gameTime     = new GameTime(0, 0, GameTime.FPS(0))
 
       workSchedule.update(gameTime, actor, context)(SampleActor.worker)(FrameTick).workSchedule.jobStack.headOption match {
         case Some(j @ Fishing(done)) =>
@@ -61,7 +61,7 @@ class WorkScheduleSpec extends FunSpec with Matchers {
       val expected: List[Job]    = Nil
 
       val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, Nil)
-      val gameTime     = new GameTime(0, 0, 0)
+      val gameTime     = new GameTime(0, 0, GameTime.FPS(0))
 
       val allocationId = bindingKey
 
@@ -80,7 +80,7 @@ class WorkScheduleSpec extends FunSpec with Matchers {
       val expected: List[Job]    = jobToAllocate :: Nil
 
       val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, Nil)
-      val gameTime     = new GameTime(0, 0, 0)
+      val gameTime     = new GameTime(0, 0, GameTime.FPS(0))
 
       val allocationId = bindingKey
 
@@ -98,7 +98,7 @@ class WorkScheduleSpec extends FunSpec with Matchers {
       val expected: List[Job]    = WanderTo(100) :: Nil
 
       val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, Nil)
-      val gameTime     = new GameTime(0, 0, 0)
+      val gameTime     = new GameTime(0, 0, GameTime.FPS(0))
 
       val allocationId = bindingKey
 
@@ -146,7 +146,7 @@ class WorkScheduleSpec extends FunSpec with Matchers {
         }
       }
 
-      val gameTime = new GameTime(0, 0, 0)
+      val gameTime = new GameTime(0, 0, GameTime.FPS(0))
 
       val workSchedule2 = workSchedule.update(gameTime, actor, context)(SampleActor.worker)(FrameTick).workSchedule
 
