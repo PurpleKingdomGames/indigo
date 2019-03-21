@@ -1,4 +1,4 @@
-package indigoexts.timevarying
+package indigoexts.temporal
 
 import indigo.GameTime
 
