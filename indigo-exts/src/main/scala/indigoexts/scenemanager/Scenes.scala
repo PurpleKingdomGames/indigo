@@ -7,9 +7,27 @@ sealed trait Scenes[GameModel, ViewModel] extends Product with Serializable {
   def ::(scene: Scene[GameModel, ViewModel]): ScenesList[GameModel, ViewModel] =
     Scenes.cons(scene, this)
 
-  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   final def foldLeft[Z](acc: Z)(f: (Z, Scene[GameModel, ViewModel]) => Z): Z =
-    this match {
+    Scenes.foldLeft(this)(acc)(f)
+
+  final def findScene(name: SceneName): Option[Scene[GameModel, ViewModel]] =
+    Scenes.findScene(this, name)
+}
+
+object Scenes {
+
+  def empty[GameModel, ViewModel]: Scenes[GameModel, ViewModel] =
+    ScenesNil()
+
+  def cons[GameModel, ViewModel](
+      scene: Scene[GameModel, ViewModel],
+      scenes: Scenes[GameModel, ViewModel]
+  ): ScenesList[GameModel, ViewModel] =
+    ScenesList[GameModel, ViewModel](scene, scenes)
+
+  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+  final def foldLeft[GameModel, ViewModel, Z](scenes: Scenes[GameModel, ViewModel])(acc: Z)(f: (Z, Scene[GameModel, ViewModel]) => Z): Z =
+    scenes match {
       case ScenesNil() =>
         acc
 
@@ -18,8 +36,8 @@ sealed trait Scenes[GameModel, ViewModel] extends Product with Serializable {
     }
 
   @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
-  final def findScene(name: SceneName): Option[Scene[GameModel, ViewModel]] =
-    this match {
+  final def findScene[GameModel, ViewModel](scenes: Scenes[GameModel, ViewModel], name: SceneName): Option[Scene[GameModel, ViewModel]] =
+    scenes match {
       case ScenesNil() =>
         None
 
@@ -29,14 +47,6 @@ sealed trait Scenes[GameModel, ViewModel] extends Product with Serializable {
       case ScenesList(_, t) =>
         t.findScene(name)
     }
-}
-
-object Scenes {
-  def cons[GameModel, ViewModel](
-      scene: Scene[GameModel, ViewModel],
-      scenes: Scenes[GameModel, ViewModel]
-  ): ScenesList[GameModel, ViewModel] =
-    ScenesList[GameModel, ViewModel](scene, scenes)
 }
 
 // TODO: Get rid of the ()
