@@ -376,6 +376,13 @@ addCommandAlias("testExamples2", ";graphic/test;sprite/test;websocket/test;input
 addCommandAlias("testAllNoClean", ";testIndigo;testDev;testExamples1;testExamples2")
 addCommandAlias("testAll", ";clean;testAllNoClean")
 
+addCommandAlias("testCompileIndigo", ";shared/test:compile;indigo/test:compile;indigoExts/test:compile")
+addCommandAlias("testCompileDev", ";sandbox/test:compile;perf/test:compile;framework/test:compile;server/test:compile")
+addCommandAlias("testCompileExamples1", ";basicSetup/test:compile;subSystems/test:compile;scenesSetup/test:compile;fullSetup/test:compile;button/test:compile;http/test:compile;text/test:compile;automata/test:compile")
+addCommandAlias("testCompileExamples2", ";graphic/test:compile;sprite/test:compile;websocket/test:compile;inputfield/test:compile;audio/test:compile;group/test:compile")
+addCommandAlias("testCompileAllNoClean", ";testCompileIndigo;testCompileDev;testCompileExamples1;testCompileExamples2")
+addCommandAlias("testCompileAll", ";clean;testCompileAllNoClean")
+
 addCommandAlias("localPublish", ";clean;buildIndigo;shared/publishLocal;indigo/publishLocal;indigoExts/publishLocal")
 
 addCommandAlias("sandboxBuild", ";buildIndigo;shared/compile;indigo/compile;indigoExts/compile;sandbox/test;sandbox/fastOptJS;sandbox/indigoBuild")
