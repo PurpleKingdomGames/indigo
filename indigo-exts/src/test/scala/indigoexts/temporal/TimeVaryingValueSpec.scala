@@ -6,6 +6,12 @@ import org.scalatest.{FunSpec, Matchers}
 
 class TimeVaryingValueSpec extends FunSpec with Matchers {
 
+  implicit def intToMillis(i: Int): GameTime.Millis =
+    GameTime.Millis(i.toDouble)
+
+  implicit def doubleToMillis(d: Double): GameTime.Millis =
+    GameTime.Millis(d)
+
   val fps10: GameTime.FPS = GameTime.FPS(10)
   val fps33: GameTime.FPS = GameTime.FPS(33)
 

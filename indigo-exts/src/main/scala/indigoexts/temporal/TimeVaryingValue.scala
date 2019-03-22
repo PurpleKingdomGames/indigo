@@ -3,8 +3,9 @@ package indigoexts.temporal
 import indigo.GameTime
 import indigo.EqualTo
 import indigo.EqualTo._
+import indigo.AsString
 
-class TimeVaryingValue[T](val value: T, val startValue: T, val createdAt: Double)(implicit vot: ValueOverTime[T]) {
+class TimeVaryingValue[T](val value: T, val startValue: T, val createdAt: GameTime.Millis)(implicit vot: ValueOverTime[T], millisAsString: AsString[GameTime.Millis]) {
 
   def ===(other: TimeVaryingValue[T])(implicit eq: EqualTo[TimeVaryingValue[T]]): Boolean =
     eq.equal(this, other)
@@ -28,7 +29,7 @@ class TimeVaryingValue[T](val value: T, val startValue: T, val createdAt: Double
     TimeVaryingValue.decreaseWrapAt(this, limit, unitsPerSecond, gameTime)
 
   override def toString(): String =
-    s"TimeVaryingValue(${vot.asString(value)}, ${vot.asString(startValue)}, ${createdAt.toString})"
+    s"TimeVaryingValue(${vot.asString(value)}, ${vot.asString(startValue)}, ${millisAsString.show(createdAt)})"
 
 }
 object TimeVaryingValue {

@@ -6,7 +6,7 @@ import indigo.EqualTo
 sealed trait ValueOverTime[T] {
   def zero: T
   def one: T
-  def changeAmount(gameTime: GameTime, unitsPerSecond: T, creationTime: Double): T
+  def changeAmount(gameTime: GameTime, unitsPerSecond: T, creationTime: GameTime.Millis): T
   def equal(a: T, b: T): Boolean
   def plus(a: T, b: T): T
   def minus(a: T, b: T): T
@@ -23,8 +23,8 @@ object ValueOverTime {
 
       val one: Int = 1
 
-      def changeAmount(gameTime: GameTime, unitsPerSecond: Int, creationTime: Double): Int =
-        ((unitsPerSecond.toDouble * 0.001) * (gameTime.running - creationTime)).toInt
+      def changeAmount(gameTime: GameTime, unitsPerSecond: Int, creationTime: GameTime.Millis): Int =
+        (GameTime.Millis(unitsPerSecond.toDouble * 0.001) * (gameTime.running - creationTime)).toInt
 
       def equal(a: Int, b: Int): Boolean =
         implicitly[EqualTo[Int]].equal(a, b)
@@ -54,8 +54,8 @@ object ValueOverTime {
 
       val one: Float = 1
 
-      def changeAmount(gameTime: GameTime, unitsPerSecond: Float, creationTime: Double): Float =
-        ((unitsPerSecond.toDouble * 0.001) * (gameTime.running - creationTime)).toFloat
+      def changeAmount(gameTime: GameTime, unitsPerSecond: Float, creationTime: GameTime.Millis): Float =
+        (GameTime.Millis(unitsPerSecond.toDouble * 0.001) * (gameTime.running - creationTime)).toFloat
 
       def equal(a: Float, b: Float): Boolean =
         implicitly[EqualTo[Float]].equal(a, b)
@@ -85,8 +85,8 @@ object ValueOverTime {
 
       val one: Double = 1
 
-      def changeAmount(gameTime: GameTime, unitsPerSecond: Double, creationTime: Double): Double =
-        (unitsPerSecond.toDouble * 0.001) * (gameTime.running - creationTime)
+      def changeAmount(gameTime: GameTime, unitsPerSecond: Double, creationTime: GameTime.Millis): Double =
+        (GameTime.Millis(unitsPerSecond.toDouble * 0.001) * (gameTime.running - creationTime)).toDouble
 
       def equal(a: Double, b: Double): Boolean =
         implicitly[EqualTo[Double]].equal(a, b)

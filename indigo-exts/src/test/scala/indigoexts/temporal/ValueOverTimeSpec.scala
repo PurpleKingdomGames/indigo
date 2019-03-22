@@ -9,6 +9,12 @@ class ValueOverTimeSpec extends FunSpec with Matchers {
   val fps100: GameTime.FPS = GameTime.FPS(100)
   val fps30: GameTime.FPS = GameTime.FPS(30)
 
+  implicit def intToMillis(i: Int): GameTime.Millis =
+    GameTime.Millis(i.toDouble)
+
+  implicit def doubleToMillis(d: Double): GameTime.Millis =
+    GameTime.Millis(d)
+
   describe("The changeAmount function (Int)") {
 
     it("should be able to calculate the amount of change at 10fps") {

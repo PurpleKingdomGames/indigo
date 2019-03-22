@@ -61,7 +61,7 @@ object AutomataFarm {
               farm.inventory
                 .get(key)
                 .map { k =>
-                  SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running, k.lifespan.millis, 0, Random.nextInt()))
+                  SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running.value, k.lifespan.millis, 0, Random.nextInt()))
                 }
                 .toList
         )
@@ -76,7 +76,7 @@ object AutomataFarm {
                 .get(key)
                 .map(f orElse { case a => a })
                 .map { k =>
-                  SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running, k.lifespan.millis, 0, Random.nextInt()))
+                  SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running.value, k.lifespan.millis, 0, Random.nextInt()))
                 }
                 .toList
         )
@@ -106,7 +106,7 @@ object AutomataFarm {
     case Cull =>
       Outcome(
         farm.copy(
-          paddock = farm.paddock.filter(_.isAlive(gameTime.running)).map(_.updateDelta(gameTime.delta))
+          paddock = farm.paddock.filter(_.isAlive(gameTime.running.value)).map(_.updateDelta(gameTime.delta.value))
         )
       )
   }

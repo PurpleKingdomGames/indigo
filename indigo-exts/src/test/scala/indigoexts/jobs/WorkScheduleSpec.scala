@@ -7,6 +7,12 @@ import indigo.gameengine.scenegraph.datatypes.BindingKey
 import indigo.GlobalEvent
 
 class WorkScheduleSpec extends FunSpec with Matchers {
+  
+  implicit def intToMillis(i: Int): GameTime.Millis =
+    GameTime.Millis(i.toDouble)
+
+  implicit def doubleToMillis(d: Double): GameTime.Millis =
+    GameTime.Millis(d)
 
   import SampleJobs._
 

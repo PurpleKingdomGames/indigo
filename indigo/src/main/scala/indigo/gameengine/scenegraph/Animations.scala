@@ -128,8 +128,8 @@ object Cycle {
   def apply(label: String, frame: Frame, frames: List[Frame]): Cycle = Cycle(CycleLabel(label), frame, frames, 0, 0)
 
   private[gameengine] def calculateNextPlayheadPosition(gameTime: GameTime, currentPosition: Int, frameDuration: Int, frameCount: Int, lastFrameAdvance: Double): NextPlayheadPositon =
-    if (gameTime.running >= lastFrameAdvance + frameDuration)
-      NextPlayheadPositon((currentPosition + 1) % frameCount, gameTime.running)
+    if (gameTime.running.value >= lastFrameAdvance + frameDuration)
+      NextPlayheadPositon((currentPosition + 1) % frameCount, gameTime.running.value)
     else
       NextPlayheadPositon(currentPosition, lastFrameAdvance)
 

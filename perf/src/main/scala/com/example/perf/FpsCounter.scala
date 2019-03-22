@@ -9,10 +9,10 @@ object FpsCounter {
     FpsCounter(0, 0, 0)
 
   def update(gameTime: GameTime, previous: FpsCounter): FpsCounter =
-    if (gameTime.running >= previous.lastInterval + 1000) {
+    if (gameTime.running.toDouble >= previous.lastInterval + 1000) {
       previous.copy(
         fps = previous.frameCountSinceInterval + 1,
-        lastInterval = gameTime.running,
+        lastInterval = gameTime.running.toDouble,
         frameCountSinceInterval = 0
       )
     } else {

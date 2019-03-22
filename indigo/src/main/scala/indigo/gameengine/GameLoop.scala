@@ -50,7 +50,7 @@ class GameLoop[GameModel, ViewModel](
 
         metrics.record(UpdateStartMetric)
 
-        val gameTime: GameTime = new GameTime(time, timeDelta, GameTime.FPS(gameConfig.frameRate))
+        val gameTime: GameTime = new GameTime(GameTime.Millis(time), GameTime.Millis(timeDelta), GameTime.FPS(gameConfig.frameRate))
 
         val collectedEvents: List[GlobalEvent] = globalEventStream.collect :+ FrameTick
 

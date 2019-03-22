@@ -99,7 +99,7 @@ object InputField {
     }
 
     private def drawCursor(gameTime: GameTime, inputField: InputField, position: Point, depth: Depth, inputFieldAssets: InputFieldAssets): Option[Graphic] =
-      if (((gameTime.running * 0.00001) * 150).toInt % 2 === 0)
+      if (((gameTime.running.toDouble * 0.00001) * 150).toInt % 2 === 0)
         FontRegister.findByFontKey(inputFieldAssets.text.fontKey).map { fontInfo =>
           inputFieldAssets.cursor
             .moveTo(calculateCursorPosition(inputField.text, position, fontInfo, inputField.cursorPosition))
