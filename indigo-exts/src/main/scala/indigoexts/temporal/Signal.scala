@@ -8,6 +8,7 @@ import indigo.abstractions.Applicative
   */
 trait Signal[A] {
   def at(t: Millis): A
+  def merge[B, C](other: Signal[B])(f: (A, B) => C): Signal[C]
 }
 object Signal {
 
@@ -34,6 +35,8 @@ object Signal {
   def create[A](f: Millis => A): Signal[A] =
     new Signal[A] {
       def at(t: Millis): A = f(t)
+      def merge[B, C](other: Signal[B])(f: (A, B) => C): Signal[C] =
+        applicativeSignal.apply2(this, other)(f)
     }
 }
 
@@ -41,6 +44,7 @@ object Signal {
   * A Signal Function maps Signal[A] -> Signal[B]
   */
 class SignalFunction[A, B](val f: Signal[A] => Signal[B]) {
+
   def andThen[C](other: SignalFunction[B, C]): SignalFunction[A, C] =
     SignalFunction.andThen(this, other)
 
