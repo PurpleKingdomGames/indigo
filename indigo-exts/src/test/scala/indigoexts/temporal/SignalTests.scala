@@ -94,6 +94,14 @@ Where a thing moves in a circle for 2 seconds and then stops.
 
       }
 
+      "Moving and then stopping after a certain time" - {
+        1 ==> 2
+      }
+
+      "Moving up to a point and then changing direction" - {
+        1 ==> 2
+      }
+
     }
 
 }
