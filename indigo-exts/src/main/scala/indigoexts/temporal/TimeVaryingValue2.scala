@@ -41,10 +41,10 @@ object Signal {
   * A Signal Function maps Signal[A] -> Signal[B]
   */
 class SignalFunction[A, B](val f: Signal[A] => Signal[B]) {
-  def >>>[C](other: SignalFunction[B, C]): SignalFunction[A, C] =
+  def andThen[C](other: SignalFunction[B, C]): SignalFunction[A, C] =
     SignalFunction.andThen(this, other)
 
-  def &&&[C](other: SignalFunction[A, C]): SignalFunction[A, (B, C)] =
+  def and[C](other: SignalFunction[A, C]): SignalFunction[A, (B, C)] =
     SignalFunction.parallel(this, other)
 }
 object SignalFunction {
