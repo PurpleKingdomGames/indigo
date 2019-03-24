@@ -38,6 +38,9 @@ object Signal {
       def merge[B, C](other: Signal[B])(f: (A, B) => C): Signal[C] =
         applicativeSignal.apply2(this, other)(f)
     }
+
+    def merge[A, B, C](sa: Signal[A], sb: Signal[B])(f: (A, B) => C): Signal[C] =
+      applicativeSignal.apply2(sa, sb)(f)
 }
 
 /**

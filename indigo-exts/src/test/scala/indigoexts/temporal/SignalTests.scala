@@ -8,7 +8,7 @@ object SignalTests extends TestSuite {
   val tests: Tests =
     Tests {
 
-      "Signals" -{
+      "Signals" - {
         "should be able to get a fixed value from a signal" - {
           Signal.fixed("a").at(Millis(100)) ==> "a"
         }
@@ -52,8 +52,6 @@ object SignalTests extends TestSuite {
         }
       }
 
-
-
       /*
 So eventually I'd like a test where you take 3 signals, merge them and prove their bahviour changes like:
 Signal(Math.sin + distance)
@@ -65,16 +63,35 @@ Signal(TemporalPredicate.until(t >= cut off))
 
 Where a thing moves in a circle for 2 seconds and then stops.
        */
-      "experimenting" - {
+      "Moving in a circle" - {
 
-        val distance = 10
+        val distance: Signal[Double] =
+          Signal.fixed(10)
 
-        val sin    = Signal.create(t => Math.sin(t.toDouble) * distance)
-        val cos    = Signal.create(t => Math.cos(t.toDouble) * distance)
-        val cutOff = Signal.fixed(Millis(2000))
+        val timeToRadians: Signal[Double] =
+          Signal.create(t => (Math.PI * 2) * (1d / 1000d) * (t.toDouble % 1000d))
 
+        val input: Signal[(Double, Double)] =
+          Signal.merge(timeToRadians, distance)((r, d) => (r, d))
 
-        1 ==> 2
+        val xSignal: SignalFunction[(Double, Double), Int] =
+          SignalFunction.lift((t: (Double, Double)) => (Math.sin(t._1) * t._2).toInt)
+
+        val ySignal: SignalFunction[(Double, Double), Int] =
+          SignalFunction.lift((t: (Double, Double)) => (Math.cos(t._1) * t._2).toInt)
+
+        val positionSF: SignalFunction[(Double, Double), (Int, Int)] =
+          xSignal and ySignal
+
+        val positionSignal: Signal[(Int, Int)] =
+          positionSF.f(input)
+
+        positionSignal.at(Millis.zero) ==> (0, 10)
+        positionSignal.at(Millis(250)) ==> (10, 0)
+        positionSignal.at(Millis(500)) ==> (0, -10)
+        positionSignal.at(Millis(750)) ==> (-10, 0)
+        positionSignal.at(Millis(1000)) ==> (0, 10)
+
       }
 
     }
