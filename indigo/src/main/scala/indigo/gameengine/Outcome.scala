@@ -57,11 +57,6 @@ object Outcome {
       Outcome.sequence(l)
   }
 
-  implicit class tupleOutcomesMap2[A, B, C](val t: (Outcome[A], Outcome[B])) extends AnyVal {
-    def map2(f: ((A, B)) => C): Outcome[C] =
-      Outcome.map2(t)(f)
-  }
-
   @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   implicit val showGlobalEvent: AsString[GlobalEvent] =
     AsString.create(_.toString)
@@ -97,9 +92,8 @@ object Outcome {
       s"Outcome(${as.show(outcomeA.state)}, ${ae.show(outcomeA.globalEvents)})"
     }
 
-  
   def apply[A](state: A, globalEvents: List[GlobalEvent], inFrameEvents: List[InFrameEvent]): Outcome[A] =
-   new Outcome(state, globalEvents, inFrameEvents) 
+    new Outcome(state, globalEvents, inFrameEvents)
 
   def apply[A](state: A): Outcome[A] =
     pure(state)
@@ -153,8 +147,8 @@ object Outcome {
   def apState[A, B](oa: Outcome[A])(of: Outcome[A => B]): Outcome[B] =
     oa.mapState(of.state)
 
-  def map2[A, B, C](t: (Outcome[A], Outcome[B]))(f: ((A, B)) => C): Outcome[C] =
-    apState(combine(t._1, t._2))(pure(f))
+  def ap2State[A, B, C](oa: Outcome[A], ob: Outcome[B])(of: Outcome[(A, B) => C]): Outcome[C] =
+    apState(combine(oa, ob))(of.mapState(f => (t: (A, B)) => f.curried(t._1)(t._2)))
 
   def combine[A, B](oa: Outcome[A], ob: Outcome[B]): Outcome[(A, B)] =
     Outcome((oa.state, ob.state)).addGlobalEvents(oa.globalEvents ++ ob.globalEvents)

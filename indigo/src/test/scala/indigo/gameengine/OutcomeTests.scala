@@ -195,12 +195,13 @@ object OutcomeTests extends TestSuite {
         }
 
         "map2" - {
+          import indigo.abstractions.syntax._
 
           val oa = Outcome("count").addGlobalEvents(TestEvent("x"))
           val ob = Outcome(1).addGlobalEvents(TestEvent("y"), TestEvent("z"))
 
           val actual: Outcome[String] =
-            (oa, ob).map2(t => t._1 + ": " + t._2)
+            (oa, ob).map2((a, b) => a + ": " + b)
 
           val expected: Outcome[String] =
             Outcome("count: 1").addGlobalEvents(TestEvent("x"), TestEvent("y"), TestEvent("z"))

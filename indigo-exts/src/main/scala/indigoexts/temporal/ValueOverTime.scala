@@ -3,6 +3,10 @@ package indigoexts.temporal
 import indigo.GameTime
 import indigo.EqualTo
 
+/**
+ * A [ValueOverTime[T]] manages the time based 
+ * rate of change logic for numeric values.
+ */
 sealed trait ValueOverTime[T] {
   def zero: T
   def one: T
