@@ -77,6 +77,10 @@ object Outcome {
       def ap[A, B](fa: Outcome[A])(f: Outcome[A => B]): Outcome[B] =
         Outcome.apState(fa)(f)
 
+      // ap2 is defined in Apply, but Outcome has a particular implementation of it to preserve events.
+      override def ap2[A, B, C](fa: Outcome[A], fb: Outcome[B])(f: Outcome[(A, B) => C]): Outcome[C] =
+        Outcome.ap2State(fa, fb)(f)
+
       def flatMap[A, B](fa: Outcome[A])(f: A => Outcome[B]): Outcome[B] =
         Outcome.flatMapState(fa)(f)
 

@@ -1,32 +1,32 @@
 package indigoexts.temporal
 
-import indigo.GameTime
+import indigo.GameTime.Millis
 import indigo.EqualTo
 import indigo.EqualTo._
 import indigo.AsString
 
-class TimeVaryingValue[T](val value: T, val startValue: T, val createdAt: GameTime.Millis)(implicit vot: ValueOverTime[T], millisAsString: AsString[GameTime.Millis]) {
+class TimeVaryingValue[T](val value: T, val startValue: T, val createdAt: Millis)(implicit vot: ValueOverTime[T], millisAsString: AsString[Millis]) {
 
   def ===(other: TimeVaryingValue[T])(implicit eq: EqualTo[TimeVaryingValue[T]]): Boolean =
     eq.equal(this, other)
 
-  def increase(unitsPerSecond: T, gameTime: GameTime): TimeVaryingValue[T] =
-    TimeVaryingValue.increase(this, unitsPerSecond, gameTime)
+  def increase(unitsPerSecond: T, runningTime: Millis): TimeVaryingValue[T] =
+    TimeVaryingValue.increase(this, unitsPerSecond, runningTime)
 
-  def increaseTo(limit: T, unitsPerSecond: T, gameTime: GameTime): TimeVaryingValue[T] =
-    TimeVaryingValue.increaseTo(this, limit, unitsPerSecond, gameTime)
+  def increaseTo(limit: T, unitsPerSecond: T, runningTime: Millis): TimeVaryingValue[T] =
+    TimeVaryingValue.increaseTo(this, limit, unitsPerSecond, runningTime)
 
-  def increaseWrapAt(limit: T, unitsPerSecond: T, gameTime: GameTime): TimeVaryingValue[T] =
-    TimeVaryingValue.increaseWrapAt(this, limit, unitsPerSecond, gameTime)
+  def increaseWrapAt(limit: T, unitsPerSecond: T, runningTime: Millis): TimeVaryingValue[T] =
+    TimeVaryingValue.increaseWrapAt(this, limit, unitsPerSecond, runningTime)
 
-  def decrease(unitsPerSecond: T, gameTime: GameTime): TimeVaryingValue[T] =
-    TimeVaryingValue.decrease(this, unitsPerSecond, gameTime)
+  def decrease(unitsPerSecond: T, runningTime: Millis): TimeVaryingValue[T] =
+    TimeVaryingValue.decrease(this, unitsPerSecond, runningTime)
 
-  def decreaseTo(limit: T, unitsPerSecond: T, gameTime: GameTime): TimeVaryingValue[T] =
-    TimeVaryingValue.decreaseTo(this, limit, unitsPerSecond, gameTime)
+  def decreaseTo(limit: T, unitsPerSecond: T, runningTime: Millis): TimeVaryingValue[T] =
+    TimeVaryingValue.decreaseTo(this, limit, unitsPerSecond, runningTime)
 
-  def decreaseWrapAt(limit: T, unitsPerSecond: T, gameTime: GameTime): TimeVaryingValue[T] =
-    TimeVaryingValue.decreaseWrapAt(this, limit, unitsPerSecond, gameTime)
+  def decreaseWrapAt(limit: T, unitsPerSecond: T, runningTime: Millis): TimeVaryingValue[T] =
+    TimeVaryingValue.decreaseWrapAt(this, limit, unitsPerSecond, runningTime)
 
   override def toString(): String =
     s"TimeVaryingValue(${vot.asString(value)}, ${vot.asString(startValue)}, ${millisAsString.show(createdAt)})"
@@ -41,27 +41,27 @@ object TimeVaryingValue {
 
   import ValueOverTime._
 
-  def apply[T](value: T, gameTime: GameTime)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
-    new TimeVaryingValue(value, value, gameTime.running)
+  def apply[T](value: T, runningTime: Millis)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
+    new TimeVaryingValue(value, value, runningTime)
 
-  def withStartingValue[T](value: T, startValue: T, gameTime: GameTime)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
-    new TimeVaryingValue(value, startValue, gameTime.running)
+  def withStartingValue[T](value: T, startValue: T, runningTime: Millis)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
+    new TimeVaryingValue(value, startValue, runningTime)
 
   def modifyValue[T](timeVaryingValue: TimeVaryingValue[T], newValue: T)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
     new TimeVaryingValue(newValue, timeVaryingValue.startValue, timeVaryingValue.createdAt)
 
-  def increase[T](timeVaryingValue: TimeVaryingValue[T], unitsPerSecond: T, gameTime: GameTime)(
+  def increase[T](timeVaryingValue: TimeVaryingValue[T], unitsPerSecond: T, runningTime: Millis)(
       implicit vot: ValueOverTime[T]
   ): TimeVaryingValue[T] =
     modifyValue(
       timeVaryingValue,
-      timeVaryingValue.startValue + vot.changeAmount(gameTime, unitsPerSecond, timeVaryingValue.createdAt)
+      timeVaryingValue.startValue + vot.changeAmount(runningTime, unitsPerSecond, timeVaryingValue.createdAt)
     )
 
-  def increaseTo[T](timeVaryingValue: TimeVaryingValue[T], limit: T, unitsPerSecond: T, gameTime: GameTime)(
+  def increaseTo[T](timeVaryingValue: TimeVaryingValue[T], limit: T, unitsPerSecond: T, runningTime: Millis)(
       implicit vot: ValueOverTime[T]
   ): TimeVaryingValue[T] =
-    timeVaryingValue.startValue + vot.changeAmount(gameTime, unitsPerSecond, timeVaryingValue.createdAt) match {
+    timeVaryingValue.startValue + vot.changeAmount(runningTime, unitsPerSecond, timeVaryingValue.createdAt) match {
       case x if x === limit || x > limit =>
         modifyValue(timeVaryingValue, limit)
 
@@ -69,26 +69,26 @@ object TimeVaryingValue {
         modifyValue(timeVaryingValue, x)
     }
 
-  def increaseWrapAt[T](timeVaryingValue: TimeVaryingValue[T], limit: T, unitsPerSecond: T, gameTime: GameTime)(
+  def increaseWrapAt[T](timeVaryingValue: TimeVaryingValue[T], limit: T, unitsPerSecond: T, runningTime: Millis)(
       implicit vot: ValueOverTime[T]
   ): TimeVaryingValue[T] =
     modifyValue(
       timeVaryingValue,
-      (timeVaryingValue.startValue + vot.changeAmount(gameTime, unitsPerSecond, timeVaryingValue.createdAt)) % (limit + vot.one)
+      (timeVaryingValue.startValue + vot.changeAmount(runningTime, unitsPerSecond, timeVaryingValue.createdAt)) % (limit + vot.one)
     )
 
-  def decrease[T](timeVaryingValue: TimeVaryingValue[T], unitsPerSecond: T, gameTime: GameTime)(
+  def decrease[T](timeVaryingValue: TimeVaryingValue[T], unitsPerSecond: T, runningTime: Millis)(
       implicit vot: ValueOverTime[T]
   ): TimeVaryingValue[T] =
     modifyValue(
       timeVaryingValue,
-      timeVaryingValue.startValue - vot.changeAmount(gameTime, unitsPerSecond, timeVaryingValue.createdAt)
+      timeVaryingValue.startValue - vot.changeAmount(runningTime, unitsPerSecond, timeVaryingValue.createdAt)
     )
 
-  def decreaseTo[T](timeVaryingValue: TimeVaryingValue[T], limit: T, unitsPerSecond: T, gameTime: GameTime)(
+  def decreaseTo[T](timeVaryingValue: TimeVaryingValue[T], limit: T, unitsPerSecond: T, runningTime: Millis)(
       implicit vot: ValueOverTime[T]
   ): TimeVaryingValue[T] =
-    timeVaryingValue.startValue - vot.changeAmount(gameTime, unitsPerSecond, timeVaryingValue.createdAt) match {
+    timeVaryingValue.startValue - vot.changeAmount(runningTime, unitsPerSecond, timeVaryingValue.createdAt) match {
       case x if x === limit || x < limit =>
         modifyValue(timeVaryingValue, limit)
 
@@ -96,12 +96,12 @@ object TimeVaryingValue {
         modifyValue(timeVaryingValue, x)
     }
 
-  def decreaseWrapAt[T](timeVaryingValue: TimeVaryingValue[T], limit: T, unitsPerSecond: T, gameTime: GameTime)(
+  def decreaseWrapAt[T](timeVaryingValue: TimeVaryingValue[T], limit: T, unitsPerSecond: T, runningTime: Millis)(
       implicit vot: ValueOverTime[T]
   ): TimeVaryingValue[T] =
     modifyValue(
       timeVaryingValue,
-      (timeVaryingValue.startValue - vot.changeAmount(gameTime, unitsPerSecond, timeVaryingValue.createdAt)) % (limit + vot.one)
+      (timeVaryingValue.startValue - vot.changeAmount(runningTime, unitsPerSecond, timeVaryingValue.createdAt)) % (limit + vot.one)
     )
 
 }

@@ -1,6 +1,7 @@
 package indigoexts.temporal
 
 import utest._
+import indigo.GameTime
 import indigo.GameTime.Millis
 
 object SignalTests extends TestSuite {
@@ -63,6 +64,7 @@ Signal(TemporalPredicate.until(t >= cut off))
 
 Where a thing moves in a circle for 2 seconds and then stops.
        */
+
       "Moving in a circle" - {
 
         val distance: Signal[Double] =
@@ -95,6 +97,22 @@ Where a thing moves in a circle for 2 seconds and then stops.
       }
 
       "Moving and then stopping after a certain time" - {
+
+        val initialPositionX = 10
+        val velocity = 10
+        val creationTime = Millis.zero
+
+        val vot: ValueOverTime[Int] = implicitly[ValueOverTime[Int]]
+
+        val s: Signal[Int] = Signal.create { t =>
+          initialPositionX + vot.changeAmount(t, velocity, creationTime)
+        }
+
+        // Sanity check, basic signal should adance position over time
+        (0 to 10).toList.foreach { i =>
+          s.at(Millis(i * 1000)) ==> initialPositionX + (velocity * i)
+        }
+
         1 ==> 2
       }
 

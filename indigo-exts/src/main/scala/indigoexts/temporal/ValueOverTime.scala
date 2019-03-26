@@ -1,6 +1,6 @@
 package indigoexts.temporal
 
-import indigo.GameTime
+import indigo.GameTime.Millis
 import indigo.EqualTo
 
 /**
@@ -10,7 +10,7 @@ import indigo.EqualTo
 sealed trait ValueOverTime[T] {
   def zero: T
   def one: T
-  def changeAmount(gameTime: GameTime, unitsPerSecond: T, creationTime: GameTime.Millis): T
+  def changeAmount(runningTime: Millis, unitsPerSecond: T, creationTime: Millis): T
   def equal(a: T, b: T): Boolean
   def plus(a: T, b: T): T
   def minus(a: T, b: T): T
@@ -27,8 +27,8 @@ object ValueOverTime {
 
       val one: Int = 1
 
-      def changeAmount(gameTime: GameTime, unitsPerSecond: Int, creationTime: GameTime.Millis): Int =
-        (GameTime.Millis(unitsPerSecond.toDouble * 0.001) * (gameTime.running - creationTime)).toInt
+      def changeAmount(runningTime: Millis, unitsPerSecond: Int, creationTime: Millis): Int =
+        (Millis(unitsPerSecond.toDouble * 0.001) * (runningTime - creationTime)).toInt
 
       def equal(a: Int, b: Int): Boolean =
         implicitly[EqualTo[Int]].equal(a, b)
@@ -58,8 +58,8 @@ object ValueOverTime {
 
       val one: Float = 1
 
-      def changeAmount(gameTime: GameTime, unitsPerSecond: Float, creationTime: GameTime.Millis): Float =
-        (GameTime.Millis(unitsPerSecond.toDouble * 0.001) * (gameTime.running - creationTime)).toFloat
+      def changeAmount(runningTime: Millis, unitsPerSecond: Float, creationTime: Millis): Float =
+        (Millis(unitsPerSecond.toDouble * 0.001) * (runningTime - creationTime)).toFloat
 
       def equal(a: Float, b: Float): Boolean =
         implicitly[EqualTo[Float]].equal(a, b)
@@ -89,8 +89,8 @@ object ValueOverTime {
 
       val one: Double = 1
 
-      def changeAmount(gameTime: GameTime, unitsPerSecond: Double, creationTime: GameTime.Millis): Double =
-        (GameTime.Millis(unitsPerSecond.toDouble * 0.001) * (gameTime.running - creationTime)).toDouble
+      def changeAmount(runningTime: Millis, unitsPerSecond: Double, creationTime: Millis): Double =
+        (Millis(unitsPerSecond.toDouble * 0.001) * (runningTime - creationTime)).toDouble
 
       def equal(a: Double, b: Double): Boolean =
         implicitly[EqualTo[Double]].equal(a, b)
