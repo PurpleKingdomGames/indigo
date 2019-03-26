@@ -6,7 +6,7 @@ import indigo.abstractions.Applicative
 /**
   * A Signal, or Time Varying Value is function t: Millis -> A
   */
-trait Signal[A] {
+sealed trait Signal[A] {
   def at(t: Millis): A
   def merge[B, C](other: Signal[B])(f: (A, B) => C): Signal[C]
 }
@@ -46,7 +46,7 @@ object Signal {
 /**
   * A Signal Function maps Signal[A] -> Signal[B]
   */
-class SignalFunction[A, B](val f: Signal[A] => Signal[B]) {
+final class SignalFunction[A, B](val f: Signal[A] => Signal[B]) {
 
   def andThen[C](other: SignalFunction[B, C]): SignalFunction[A, C] =
     SignalFunction.andThen(this, other)
@@ -72,23 +72,5 @@ object SignalFunction {
       (s: Signal[A]) =>
         (sa.f(s), sb.f(s)).map2((b, c) => (b, c))
     }
-
-}
-
-/**
-  * A Temporal Proposition is a function t: Millis -> Boolean
-  */
-trait TemporalProposition extends Signal[Boolean] {
-  def at(t: Millis): Boolean
-}
-
-/**
-  * A Temporal Predicate is the combination of a Signal and a TProp
-  * where we use the values coming into the unapplied signal (to capture the time!)
-  */
-trait TemporalPredicate[A] {
-
-  // def until
-// SingalFunction[A, Boolean] => TPred (constructor)
 
 }
