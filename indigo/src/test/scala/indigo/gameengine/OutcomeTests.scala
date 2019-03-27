@@ -7,8 +7,7 @@ object OutcomeTests extends TestSuite {
   import indigo.EqualTo._
   import Outcome._
 
-  final case class TestEvent(message: String)   extends GlobalEvent
-  final case class InFrameTestEvent(count: Int) extends InFrameEvent
+  final case class TestEvent(message: String) extends GlobalEvent
 
   val tests: Tests =
     Tests {
@@ -109,43 +108,21 @@ object OutcomeTests extends TestSuite {
           actual === expected ==> true
         }
 
-        "map in frame events" - {
-          val actual =
-            Outcome(10)
-              .addInFrameEvents(InFrameTestEvent(1), InFrameTestEvent(2), InFrameTestEvent(3))
-              .mapInFrameEvents(_.filter {
-                case InFrameTestEvent(i) =>
-                  i == 2
-              })
-
-          val expected =
-            Outcome(10)
-              .addInFrameEvents(InFrameTestEvent(2))
-
-          actual === expected ==> true
-        }
-
         "map all" - {
           val actual =
             Outcome(10)
               .addGlobalEvents(TestEvent("a"), TestEvent("b"), TestEvent("c"))
-              .addInFrameEvents(InFrameTestEvent(1), InFrameTestEvent(2), InFrameTestEvent(3))
               .mapAll(
                 _ + 20,
                 _.filter {
                   case TestEvent(msg) =>
                     msg == "b"
-                },
-                _.filter {
-                  case InFrameTestEvent(i) =>
-                    i == 2
                 }
               )
 
           val expected =
             Outcome(30)
               .addGlobalEvents(TestEvent("b"))
-              .addInFrameEvents(InFrameTestEvent(2))
 
           actual === expected ==> true
         }

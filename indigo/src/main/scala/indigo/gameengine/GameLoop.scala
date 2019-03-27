@@ -90,7 +90,7 @@ class GameLoop[GameModel, ViewModel](
           case Some(previousModel) =>
             val next = updateViewModel(gameTime, model._1, previousModel, model._2)
             next.globalEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
-            (next.state, FrameInputEvents(collectedEvents, next.inFrameEvents, signals))
+            (next.state, FrameInputEvents(collectedEvents, signals))
         }
 
         viewModelState = Some(viewModel._1)
@@ -205,7 +205,7 @@ object GameLoop {
       implicit globalEventStream: GlobalEventStream
   ): (GameModel, FrameInputEvents) = {
     val combine: (Outcome[GameModel], Outcome[GameModel]) => Outcome[GameModel] =
-      (a, b) => new Outcome(b.state, a.globalEvents ++ b.globalEvents, a.inFrameEvents ++ b.inFrameEvents)
+      (a, b) => new Outcome(b.state, a.globalEvents ++ b.globalEvents)
 
     @tailrec
     def rec(remaining: List[GlobalEvent], last: Outcome[GameModel]): Outcome[GameModel] =
@@ -219,7 +219,7 @@ object GameLoop {
 
     val res = rec(collectedEvents, Outcome(model))
     res.globalEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
-    (res.state, FrameInputEvents(res.globalEvents, res.inFrameEvents, signals))
+    (res.state, FrameInputEvents(res.globalEvents, signals))
   }
 
   @tailrec

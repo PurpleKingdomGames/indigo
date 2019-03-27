@@ -45,7 +45,7 @@ class GameLoopSpec extends FunSpec with Matchers {
 
     }
 
-    it("should be able to process a model update that emits a global and an InFrame event") {
+    it("should be able to process a model update that emits a global event") {
 
       implicit val ges: GlobalEventStream =
         new GlobalEventStream {
@@ -70,7 +70,7 @@ class GameLoopSpec extends FunSpec with Matchers {
       val update: (GameTime, TestGameModel) => GlobalEvent => Outcome[TestGameModel] =
         (_, model) => {
           case ChangeName(name) =>
-            Outcome(model.copy(name = name), List(ShowName("show: " + name)), List(PresentName(name)))
+            Outcome(model.copy(name = name), List(ShowName("show: " + name)))
 
           case _ =>
             Outcome(model)
@@ -83,7 +83,6 @@ class GameLoopSpec extends FunSpec with Matchers {
         TestGameModel("teddy")
 
       actual._1 shouldEqual expected
-      actual._2.inFrameEvents shouldEqual List(PresentName("teddy"))
       ges.collect shouldEqual List(ShowName("show: teddy"))
 
     }
@@ -93,6 +92,5 @@ class GameLoopSpec extends FunSpec with Matchers {
 }
 
 final case class TestGameModel(name: String)
-final case class ChangeName(to: String)    extends GlobalEvent
-final case class ShowName(name: String)    extends GlobalEvent
-final case class PresentName(name: String) extends InFrameEvent
+final case class ChangeName(to: String) extends GlobalEvent
+final case class ShowName(name: String) extends GlobalEvent

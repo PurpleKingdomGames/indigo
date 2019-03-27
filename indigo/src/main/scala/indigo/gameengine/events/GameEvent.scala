@@ -4,9 +4,6 @@ import indigo.gameengine.constants.KeyCode
 import indigo.gameengine.scenegraph.Volume
 import indigo.gameengine.scenegraph.datatypes.Point
 
-// FrameEvents are passed from Model->ViewModel->View
-trait InFrameEvent
-
 // Events that are passed to the GlobalEventStream
 trait GlobalEvent
 

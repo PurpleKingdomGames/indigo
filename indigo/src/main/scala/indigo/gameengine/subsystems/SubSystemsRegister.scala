@@ -31,7 +31,7 @@ object SubSystemsRegister {
   def update(register: SubSystemsRegister, gameTime: GameTime): GlobalEvent => OutcomesRegister = {
     case e: GlobalEvent =>
       val updated = register.registeredSubSystems.map { ss =>
-        ss.eventFilter(e).map(ee => ss.update(gameTime)(ee)).getOrElse(Outcome(ss, Nil, Nil))
+        ss.eventFilter(e).map(ee => ss.update(gameTime)(ee)).getOrElse(Outcome(ss, Nil))
       }
 
       OutcomesRegister(

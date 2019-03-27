@@ -29,8 +29,7 @@ object Scene {
       val next = scene.updateSceneModel(gameTime, scene.sceneModelLens.get(gameModel))(e)
       new Outcome(
         scene.sceneModelLens.set(gameModel, next.state),
-        next.globalEvents,
-        next.inFrameEvents
+        next.globalEvents
       )
     }
 
@@ -41,8 +40,7 @@ object Scene {
         viewModel,
         next.state
       ),
-      next.globalEvents,
-      next.inFrameEvents
+      next.globalEvents
     )
   }
 

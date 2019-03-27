@@ -2,12 +2,12 @@ package indigo.gameengine
 
 import indigo.runtime.AsString
 import indigo.abstractions.Monad
-import indigo.gameengine.events.{GlobalEvent, InFrameEvent}
+import indigo.gameengine.events.GlobalEvent
 import indigo.shared.EqualTo
 
 import scala.annotation.tailrec
 
-final class Outcome[+A](val state: A, val globalEvents: List[GlobalEvent], val inFrameEvents: List[InFrameEvent]) {
+final class Outcome[+A](val state: A, val globalEvents: List[GlobalEvent]) {
 
   def addGlobalEvents(newEvents: GlobalEvent*): Outcome[A] =
     Outcome.addGlobalEvents(this, newEvents.toList)
@@ -15,17 +15,8 @@ final class Outcome[+A](val state: A, val globalEvents: List[GlobalEvent], val i
   def addGlobalEvents(newEvents: List[GlobalEvent]): Outcome[A] =
     Outcome.addGlobalEvents(this, newEvents)
 
-  def addInFrameEvents(events: InFrameEvent*): Outcome[A] =
-    addInFrameEvents(events.toList)
-
-  def addInFrameEvents(events: List[InFrameEvent]): Outcome[A] =
-    Outcome.addInFrameEvents(this, inFrameEvents ++ events)
-
   def createGlobalEvents(f: A => List[GlobalEvent]): Outcome[A] =
     Outcome.createGlobalEvents(this, f)
-
-  def createInFrameEvents(f: A => List[InFrameEvent]): Outcome[A] =
-    Outcome.createInFrameEvents(this, f)
 
   def mapState[B](f: A => B): Outcome[B] =
     Outcome.mapState(this)(f)
@@ -33,11 +24,8 @@ final class Outcome[+A](val state: A, val globalEvents: List[GlobalEvent], val i
   def mapGlobalEvents[B](f: List[GlobalEvent] => List[GlobalEvent]): Outcome[A] =
     Outcome.mapGlobalEvents(this)(f)
 
-  def mapInFrameEvents[B](f: List[InFrameEvent] => List[InFrameEvent]): Outcome[A] =
-    Outcome.mapInFrameEvents(this)(f)
-
-  def mapAll[B](f: A => B, g: List[GlobalEvent] => List[GlobalEvent], h: List[InFrameEvent] => List[InFrameEvent]): Outcome[B] =
-    Outcome.mapAll(this)(f, g, h)
+  def mapAll[B](f: A => B, g: List[GlobalEvent] => List[GlobalEvent]): Outcome[B] =
+    Outcome.mapAll(this)(f, g)
 
   def apState[B](of: Outcome[A => B]): Outcome[B] =
     Outcome.apState(this)(of)
@@ -96,29 +84,23 @@ object Outcome {
       s"Outcome(${as.show(outcomeA.state)}, ${ae.show(outcomeA.globalEvents)})"
     }
 
-  def apply[A](state: A, globalEvents: List[GlobalEvent], inFrameEvents: List[InFrameEvent]): Outcome[A] =
-    new Outcome(state, globalEvents, inFrameEvents)
+  def apply[A](state: A, globalEvents: List[GlobalEvent]): Outcome[A] =
+    new Outcome(state, globalEvents)
 
   def apply[A](state: A): Outcome[A] =
     pure(state)
 
   def pure[A](state: A): Outcome[A] =
-    new Outcome[A](state, Nil, Nil)
+    new Outcome[A](state, Nil)
 
   def unapply[A](outcome: Outcome[A]): Option[(A, List[GlobalEvent])] =
     Option((outcome.state, outcome.globalEvents))
 
   def addGlobalEvents[A](o: Outcome[A], newEvents: List[GlobalEvent]): Outcome[A] =
-    new Outcome(o.state, o.globalEvents ++ newEvents, o.inFrameEvents)
-
-  def addInFrameEvents[A](o: Outcome[A], newEvents: List[InFrameEvent]): Outcome[A] =
-    new Outcome(o.state, o.globalEvents, o.inFrameEvents ++ newEvents)
+    new Outcome(o.state, o.globalEvents ++ newEvents)
 
   def createGlobalEvents[A](o: Outcome[A], f: A => List[GlobalEvent]): Outcome[A] =
-    new Outcome(o.state, o.globalEvents ++ f(o.state), o.inFrameEvents)
-
-  def createInFrameEvents[A](o: Outcome[A], f: A => List[InFrameEvent]): Outcome[A] =
-    new Outcome(o.state, o.globalEvents, o.inFrameEvents ++ f(o.state))
+    new Outcome(o.state, o.globalEvents ++ f(o.state))
 
   def sequence[A](l: List[Outcome[A]]): Outcome[List[A]] = {
     @tailrec
@@ -135,18 +117,14 @@ object Outcome {
   }
 
   def mapState[A, B](oa: Outcome[A])(f: A => B): Outcome[B] =
-    mapAll(oa)(f, identity, identity)
+    mapAll(oa)(f, identity)
 
   def mapGlobalEvents[A](oa: Outcome[A])(f: List[GlobalEvent] => List[GlobalEvent]): Outcome[A] =
-    mapAll(oa)(identity, f, identity)
+    mapAll(oa)(identity, f)
 
-  def mapInFrameEvents[A](oa: Outcome[A])(f: List[InFrameEvent] => List[InFrameEvent]): Outcome[A] =
-    mapAll(oa)(identity, identity, f)
-
-  def mapAll[A, B](oa: Outcome[A])(f: A => B, g: List[GlobalEvent] => List[GlobalEvent], h: List[InFrameEvent] => List[InFrameEvent]): Outcome[B] =
+  def mapAll[A, B](oa: Outcome[A])(f: A => B, g: List[GlobalEvent] => List[GlobalEvent]): Outcome[B] =
     Outcome(f(oa.state))
       .addGlobalEvents(g(oa.globalEvents))
-      .addInFrameEvents(h(oa.inFrameEvents))
 
   def apState[A, B](oa: Outcome[A])(of: Outcome[A => B]): Outcome[B] =
     oa.mapState(of.state)
