@@ -3,17 +3,20 @@ package indigo.shared
 import io.circe.generic.auto._
 import io.circe.parser._
 
-final case class AssetList(images: List[SimpleAssetType], texts: List[SimpleAssetType]) {
+final class AssetList(val images: List[SimpleAssetType], val texts: List[SimpleAssetType]) {
   def toSet: Set[AssetType] = texts.map(_.toTextAsset).toSet ++ images.map(_.toImageAsset).toSet
 
   def withImage(name: String, path: String): AssetList =
-    this.copy(images = SimpleAssetType(name, path) :: images)
+    AssetList(SimpleAssetType(name, path) :: images, texts)
 
   def withText(name: String, path: String): AssetList =
-    this.copy(texts = SimpleAssetType(name, path) :: texts)
+    AssetList(images, SimpleAssetType(name, path) :: texts)
 }
 
 object AssetList {
+
+  def apply(images: List[SimpleAssetType], texts: List[SimpleAssetType]): AssetList =
+    new AssetList(images, texts)
 
   @SuppressWarnings(Array("org.wartremover.warts.PublicInference"))
   def fromJson(json: String): Either[String, AssetList] =
