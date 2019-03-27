@@ -1,6 +1,13 @@
 package indigo.runtime.metrics
 
-final case class MetricWrapper(metric: Metric, time: Long)
+final class MetricWrapper(val metric: Metric, val time: Long)
+object MetricWrapper {
+  def apply(metric: Metric, time: Long): MetricWrapper =
+    new MetricWrapper(metric, time)
+
+  def unapply(metricWrapper: MetricWrapper): Option[(Metric, Long)] =
+    Option((metricWrapper.metric, metricWrapper.time))
+}
 
 trait Metric {
   val name: String
