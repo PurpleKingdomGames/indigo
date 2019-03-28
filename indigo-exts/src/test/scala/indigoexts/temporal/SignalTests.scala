@@ -71,22 +71,22 @@ Where a thing moves in a circle for 2 seconds and then stops.
           Signal.fixed(10)
 
         val timeToRadians: Signal[Double] =
-          Signal.create(t => (Math.PI * 2) * (1d / 1000d) * (t.toDouble % 1000d))
+          Signal(t => (Math.PI * 2) * (1d / 1000d) * (t.toDouble % 1000d))
 
         val input: Signal[(Double, Double)] =
-          Signal.product(timeToRadians, distance)
+          timeToRadians |*| distance
 
         val xSignal: SignalFunction[(Double, Double), Int] =
-          SignalFunction.lift((t: (Double, Double)) => (Math.sin(t._1) * t._2).toInt)
+          SignalFunction((t: (Double, Double)) => (Math.sin(t._1) * t._2).toInt)
 
         val ySignal: SignalFunction[(Double, Double), Int] =
-          SignalFunction.lift((t: (Double, Double)) => (Math.cos(t._1) * t._2).toInt)
+          SignalFunction((t: (Double, Double)) => (Math.cos(t._1) * t._2).toInt)
 
         val positionSF: SignalFunction[(Double, Double), (Int, Int)] =
-          xSignal and ySignal
+          xSignal &&& ySignal
 
         val positionSignal: Signal[(Int, Int)] =
-          positionSF.run(input)
+          input |> positionSF
 
         positionSignal.at(Millis.zero) ==> (0, 10)
         positionSignal.at(Millis(250)) ==> (10, 0)
@@ -98,43 +98,37 @@ Where a thing moves in a circle for 2 seconds and then stops.
 
       "Moving and then stopping after a certain time" - {
 
-        final case class InitialConditions(xPos: Int, velocity: Int, creationTime: Millis, stopAfter: Millis)
+        final case class Conditions(xPos: Int, velocity: Int, creationTime: Millis, stopAfter: Millis)
 
-        val conditions = InitialConditions(100, 10, Millis.zero, Millis(20000))
+        val conditions = Conditions(100, 10, Millis.zero, Millis(20000))
 
-        val init: Signal[InitialConditions] =
-          Signal.fixed(conditions)
+        val timeAndConditions: Signal[(Millis, Conditions)] =
+          Signal.Time |*| Signal.fixed(conditions)
 
-        val timeSignal: Signal[Millis] =
-          Signal.create(identity)
+        val timeShift: SignalFunction[(Millis, Conditions), (Millis, Conditions)] =
+          SignalFunction(t => (t._1 - t._2.creationTime, t._2))
 
-        val timeAndConditions: Signal[(Millis, InitialConditions)] =
-          Signal.product(timeSignal, init)
+        val timeStop: SignalFunction[(Millis, Conditions), (Millis, Conditions)] =
+          SignalFunction(t => if (t._1 >= t._2.stopAfter) (t._2.stopAfter, t._2) else t)
 
-        val timeShift: SignalFunction[(Millis, InitialConditions), (Millis, InitialConditions)] =
-          SignalFunction.lift(t => (t._1 - t._2.creationTime, t._2))
+        val timeToSeconds: SignalFunction[(Millis, Conditions), (Double, Conditions)] =
+          SignalFunction(t => (t._1.toDouble * 0.001d, t._2))
 
-        val timeStop: SignalFunction[(Millis, InitialConditions), (Millis, InitialConditions)] =
-          SignalFunction.lift(t => if (t._1 >= t._2.stopAfter) (t._2.stopAfter, t._2) else t)
+        val positionX: SignalFunction[(Double, Conditions), Int] =
+          SignalFunction(t => t._2.xPos + (t._1 * t._2.velocity).toInt)
 
-        val timeToSeconds: SignalFunction[(Millis, InitialConditions), (Double, InitialConditions)] =
-          SignalFunction.lift(t => (t._1.toDouble * 0.001d, t._2))
-
-        val positionX: SignalFunction[(Double, InitialConditions), Int] =
-          SignalFunction.lift(t => t._2.xPos + (t._1 * t._2.velocity).toInt)
-
-        val signal: SignalFunction[(Millis, InitialConditions), Int] =
+        val signalPipeline: SignalFunction[(Millis, Conditions), Int] =
           timeShift >>> timeStop >>> timeToSeconds >>> positionX
 
-        val inputSignal: Signal[Int] =
-          timeAndConditions |> signal
+        val signal: Signal[Int] =
+          timeAndConditions |> signalPipeline
 
         // Sanity check, basic signal should adance position over time
         (0 to 10).toList.foreach { i =>
-          inputSignal.at(Millis(i * 1000)) ==> conditions.xPos + (conditions.velocity * i).toInt
+          signal.at(Millis(i * 1000)) ==> conditions.xPos + (conditions.velocity * i).toInt
         }
 
-        inputSignal.at(Millis(30000)) ==> inputSignal.at(Millis(20000))
+        signal.at(Millis(30000)) ==> signal.at(Millis(20000))
 
       }
 

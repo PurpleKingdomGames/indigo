@@ -11,6 +11,7 @@ sealed trait Signal[A] {
   def merge[B, C](other: Signal[B])(f: (A, B) => C): Signal[C]
   def |>[B](sf: SignalFunction[A, B]): Signal[B] = pipe(sf)
   def pipe[B](sf: SignalFunction[A, B]): Signal[B]
+  def |*|[B](other: Signal[B]): Signal[(A, B)]
 }
 object Signal {
 
@@ -31,8 +32,14 @@ object Signal {
 
     }
 
+  val Time: Signal[Millis] =
+    Signal.create(identity)
+
   def fixed[A](a: A): Signal[A] =
     create(_ => a)
+
+  def apply[A](f: Millis => A): Signal[A] =
+    create(f)
 
   def create[A](f: Millis => A): Signal[A] =
     new Signal[A] {
@@ -44,6 +51,9 @@ object Signal {
 
       def pipe[B](sf: SignalFunction[A, B]): Signal[B] =
         sf.run(this)
+
+      def |*|[B](other: Signal[B]): Signal[(A, B)] =
+        Signal.product(this, other)
     }
 
   def merge[A, B, C](sa: Signal[A], sb: Signal[B])(f: (A, B) => C): Signal[C] =
@@ -75,8 +85,8 @@ object SignalFunction {
 
   import indigo.abstractions.syntax._
 
-  def apply[A, B](f: Signal[A] => Signal[B]): SignalFunction[A, B] =
-    new SignalFunction(f)
+  def apply[A, B](f: A => B): SignalFunction[A, B] =
+    lift(f)
 
   def arr[A, B](f: A => B): SignalFunction[A, B] =
     lift[A, B](f)
@@ -85,11 +95,9 @@ object SignalFunction {
     new SignalFunction((sa: Signal[A]) => sa.map(f))
 
   def andThen[A, B, C](sa: SignalFunction[A, B], sb: SignalFunction[B, C]): SignalFunction[A, C] =
-    SignalFunction(sa.run andThen sb.run)
+    new SignalFunction(sa.run andThen sb.run)
 
   def parallel[A, B, C](sa: SignalFunction[A, B], sb: SignalFunction[A, C]): SignalFunction[A, (B, C)] =
-    SignalFunction[A, (B, C)] { (s: Signal[A]) =>
-      (sa.run(s), sb.run(s)).map2((b, c) => (b, c))
-    }
+    new SignalFunction[A, (B, C)]((s: Signal[A]) => (sa.run(s), sb.run(s)).map2((b, c) => (b, c)))
 
 }
