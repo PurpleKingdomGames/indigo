@@ -43,7 +43,7 @@ object Signal {
         applicativeSignal.apply2(this, other)(f)
 
       def pipe[B](sf: SignalFunction[A, B]): Signal[B] =
-        sf.f(this)
+        sf.run(this)
     }
 
   def merge[A, B, C](sa: Signal[A], sb: Signal[B])(f: (A, B) => C): Signal[C] =
@@ -57,7 +57,7 @@ object Signal {
 /**
   * A Signal Function maps Signal[A] -> Signal[B]
   */
-final class SignalFunction[A, B](val f: Signal[A] => Signal[B]) {
+final class SignalFunction[A, B](val run: Signal[A] => Signal[B]) {
 
   def >>>[C](other: SignalFunction[B, C]): SignalFunction[A, C] =
     SignalFunction.andThen(this, other)
@@ -85,11 +85,11 @@ object SignalFunction {
     new SignalFunction((sa: Signal[A]) => sa.map(f))
 
   def andThen[A, B, C](sa: SignalFunction[A, B], sb: SignalFunction[B, C]): SignalFunction[A, C] =
-    SignalFunction(sa.f andThen sb.f)
+    SignalFunction(sa.run andThen sb.run)
 
   def parallel[A, B, C](sa: SignalFunction[A, B], sb: SignalFunction[A, C]): SignalFunction[A, (B, C)] =
     SignalFunction[A, (B, C)] { (s: Signal[A]) =>
-      (sa.f(s), sb.f(s)).map2((b, c) => (b, c))
+      (sa.run(s), sb.run(s)).map2((b, c) => (b, c))
     }
 
 }

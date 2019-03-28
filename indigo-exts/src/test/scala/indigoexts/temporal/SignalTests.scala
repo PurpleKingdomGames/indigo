@@ -38,8 +38,8 @@ object SignalTests extends TestSuite {
 
           val h: SignalFunction[Int, Boolean] = f andThen g
 
-          h.f(Signal.fixed(1)).at(Millis.zero) ==> true
-          h.f(Signal.fixed(1000)).at(Millis.zero) ==> false
+          h.run(Signal.fixed(1)).at(Millis.zero) ==> true
+          h.run(Signal.fixed(1000)).at(Millis.zero) ==> false
         }
 
         "should be able to run signal functions and parallel" - {
@@ -48,8 +48,8 @@ object SignalTests extends TestSuite {
 
           val h: SignalFunction[Int, (String, Boolean)] = f and g
 
-          h.f(Signal.fixed(1)).at(Millis.zero) ==> ("1", true)
-          h.f(Signal.fixed(1000)).at(Millis.zero) ==> ("1000", false)
+          h.run(Signal.fixed(1)).at(Millis.zero) ==> ("1", true)
+          h.run(Signal.fixed(1000)).at(Millis.zero) ==> ("1000", false)
         }
       }
 
@@ -86,7 +86,7 @@ Where a thing moves in a circle for 2 seconds and then stops.
           xSignal and ySignal
 
         val positionSignal: Signal[(Int, Int)] =
-          positionSF.f(input)
+          positionSF.run(input)
 
         positionSignal.at(Millis.zero) ==> (0, 10)
         positionSignal.at(Millis(250)) ==> (10, 0)
@@ -131,7 +131,7 @@ Where a thing moves in a circle for 2 seconds and then stops.
           (timeAndConditions |> signal).at(Millis(i * 1000)) ==> conditions.xPos + (conditions.velocity * i).toInt
         }
 
-        (timeAndConditions |> signal).at(Millis(30000)) ==> signal.f(timeAndConditions).at(Millis(20000))
+        (timeAndConditions |> signal).at(Millis(30000)) ==> (timeAndConditions |> signal).at(Millis(20000))
 
       }
 
