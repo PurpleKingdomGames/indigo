@@ -74,7 +74,7 @@ Where a thing moves in a circle for 2 seconds and then stops.
           Signal.create(t => (Math.PI * 2) * (1d / 1000d) * (t.toDouble % 1000d))
 
         val input: Signal[(Double, Double)] =
-          Signal.merge(timeToRadians, distance)((r, d) => (r, d))
+          Signal.product(timeToRadians, distance)
 
         val xSignal: SignalFunction[(Double, Double), Int] =
           SignalFunction.lift((t: (Double, Double)) => (Math.sin(t._1) * t._2).toInt)
@@ -98,26 +98,41 @@ Where a thing moves in a circle for 2 seconds and then stops.
 
       "Moving and then stopping after a certain time" - {
 
-        val initialPositionX = 10
-        val velocity = 10
-        val creationTime = Millis.zero
+        final case class InitialConditions(xPos: Int, velocity: Int, creationTime: Millis, stopAfter: Millis)
 
-        val vot: ValueOverTime[Int] = implicitly[ValueOverTime[Int]]
+        val conditions = InitialConditions(100, 10, Millis.zero, Millis(20000))
 
-        val s: Signal[Int] = Signal.create { t =>
-          initialPositionX + vot.changeAmount(t, velocity, creationTime)
-        }
+        val init: Signal[InitialConditions] =
+          Signal.fixed(conditions)
+
+        val timeSignal: Signal[Millis] =
+          Signal.create(identity)
+
+        val timeAndConditions: Signal[(Millis, InitialConditions)] =
+          Signal.product(timeSignal, init)
+
+        val timeShift: SignalFunction[(Millis, InitialConditions), (Millis, InitialConditions)] =
+          SignalFunction.lift(t => (t._1 - t._2.creationTime, t._2))
+
+        val timeStop: SignalFunction[(Millis, InitialConditions), (Millis, InitialConditions)] =
+          SignalFunction.lift(t => if(t._1 >= t._2.stopAfter) (t._2.stopAfter, t._2) else t)
+
+        val timeToSeconds: SignalFunction[(Millis, InitialConditions), (Double, InitialConditions)] =
+          SignalFunction.lift(t => (t._1.toDouble * 0.001d, t._2))
+
+        val positionX: SignalFunction[(Double, InitialConditions), Int] =
+          SignalFunction.lift(t => t._2.xPos + (t._1 * t._2.velocity).toInt)
+
+        val signal: SignalFunction[(Millis, InitialConditions), Int] =
+          timeShift andThen timeStop andThen timeToSeconds andThen positionX
 
         // Sanity check, basic signal should adance position over time
         (0 to 10).toList.foreach { i =>
-          s.at(Millis(i * 1000)) ==> initialPositionX + (velocity * i)
+          signal.f(timeAndConditions).at(Millis(i * 1000)) ==> conditions.xPos + (conditions.velocity * i).toInt
         }
 
-        1 ==> 2
-      }
+        signal.f(timeAndConditions).at(Millis(30000)) ==> signal.f(timeAndConditions).at(Millis(20000))
 
-      "Moving up to a point and then changing direction" - {
-        1 ==> 2
       }
 
     }

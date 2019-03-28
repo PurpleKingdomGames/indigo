@@ -9,6 +9,8 @@ import indigo.abstractions.Applicative
 sealed trait Signal[A] {
   def at(t: Millis): A
   def merge[B, C](other: Signal[B])(f: (A, B) => C): Signal[C]
+  def |>[B](sf: SignalFunction[A, B]): Signal[B] = pipe(sf)
+  def pipe[B](sf: SignalFunction[A, B]): Signal[B]
 }
 object Signal {
 
@@ -34,13 +36,22 @@ object Signal {
 
   def create[A](f: Millis => A): Signal[A] =
     new Signal[A] {
-      def at(t: Millis): A = f(t)
+      def at(t: Millis): A =
+        f(t)
+
       def merge[B, C](other: Signal[B])(f: (A, B) => C): Signal[C] =
         applicativeSignal.apply2(this, other)(f)
+
+      def pipe[B](sf: SignalFunction[A, B]): Signal[B] =
+        sf.f(this)
     }
 
-    def merge[A, B, C](sa: Signal[A], sb: Signal[B])(f: (A, B) => C): Signal[C] =
-      applicativeSignal.apply2(sa, sb)(f)
+  def merge[A, B, C](sa: Signal[A], sb: Signal[B])(f: (A, B) => C): Signal[C] =
+    applicativeSignal.apply2(sa, sb)(f)
+
+  def product[A, B](sa: Signal[A], sb: Signal[B]): Signal[(A, B)] =
+    merge(sa, sb)((_, _))
+
 }
 
 /**
@@ -48,8 +59,14 @@ object Signal {
   */
 final class SignalFunction[A, B](val f: Signal[A] => Signal[B]) {
 
+  def >>>[C](other: SignalFunction[B, C]): SignalFunction[A, C] =
+    SignalFunction.andThen(this, other)
+
   def andThen[C](other: SignalFunction[B, C]): SignalFunction[A, C] =
     SignalFunction.andThen(this, other)
+
+  def &&&[C](other: SignalFunction[A, C]): SignalFunction[A, (B, C)] =
+    SignalFunction.parallel(this, other)
 
   def and[C](other: SignalFunction[A, C]): SignalFunction[A, (B, C)] =
     SignalFunction.parallel(this, other)
@@ -61,16 +78,18 @@ object SignalFunction {
   def apply[A, B](f: Signal[A] => Signal[B]): SignalFunction[A, B] =
     new SignalFunction(f)
 
-  def lift[A, B, C](f: A => B): SignalFunction[A, B] =
+  def arr[A, B](f: A => B): SignalFunction[A, B] =
+    lift[A, B](f)
+
+  def lift[A, B](f: A => B): SignalFunction[A, B] =
     new SignalFunction((sa: Signal[A]) => sa.map(f))
 
   def andThen[A, B, C](sa: SignalFunction[A, B], sb: SignalFunction[B, C]): SignalFunction[A, C] =
     SignalFunction(sa.f andThen sb.f)
 
   def parallel[A, B, C](sa: SignalFunction[A, B], sb: SignalFunction[A, C]): SignalFunction[A, (B, C)] =
-    SignalFunction[A, (B, C)]{
-      (s: Signal[A]) =>
-        (sa.f(s), sb.f(s)).map2((b, c) => (b, c))
+    SignalFunction[A, (B, C)] { (s: Signal[A]) =>
+      (sa.f(s), sb.f(s)).map2((b, c) => (b, c))
     }
 
 }
