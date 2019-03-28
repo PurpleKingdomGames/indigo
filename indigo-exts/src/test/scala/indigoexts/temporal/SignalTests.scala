@@ -124,14 +124,14 @@ Where a thing moves in a circle for 2 seconds and then stops.
           SignalFunction.lift(t => t._2.xPos + (t._1 * t._2.velocity).toInt)
 
         val signal: SignalFunction[(Millis, InitialConditions), Int] =
-          timeShift andThen timeStop andThen timeToSeconds andThen positionX
+          timeShift >>> timeStop >>> timeToSeconds >>> positionX
 
         // Sanity check, basic signal should adance position over time
         (0 to 10).toList.foreach { i =>
-          signal.f(timeAndConditions).at(Millis(i * 1000)) ==> conditions.xPos + (conditions.velocity * i).toInt
+          (timeAndConditions |> signal).at(Millis(i * 1000)) ==> conditions.xPos + (conditions.velocity * i).toInt
         }
 
-        signal.f(timeAndConditions).at(Millis(30000)) ==> signal.f(timeAndConditions).at(Millis(20000))
+        (timeAndConditions |> signal).at(Millis(30000)) ==> signal.f(timeAndConditions).at(Millis(20000))
 
       }
 
