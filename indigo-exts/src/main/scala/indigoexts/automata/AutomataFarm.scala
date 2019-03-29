@@ -1,13 +1,13 @@
 package indigoexts.automata
 
 import indigo.gameengine.GameTime
+import indigo.gameengine.GameTime.Millis
 import indigo.gameengine.Outcome
 import indigo.gameengine.events.{FrameTick, GlobalEvent}
 import indigo.gameengine.scenegraph._
 import indigo.gameengine.scenegraph.datatypes.Point
 import indigo.gameengine.subsystems.SubSystem
 import indigoexts.automata.AutomataEvent._
-import indigoexts.automata.AutomataModifier._
 
 import scala.util.Random
 
@@ -61,22 +61,7 @@ object AutomataFarm {
               farm.inventory
                 .get(key)
                 .map { k =>
-                  SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running.value, k.lifespan.millis, 0, Random.nextInt()))
-                }
-                .toList
-        )
-      )
-
-    case ModifyAndSpawn(key, pt, f) =>
-      Outcome(
-        farm.copy(
-          paddock =
-            farm.paddock ++
-              farm.inventory
-                .get(key)
-                .map(f orElse { case a => a })
-                .map { k =>
-                  SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running.value, k.lifespan.millis, 0, Random.nextInt()))
+                  SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running, k.lifespan, Millis.zero, Random.nextInt()))
                 }
                 .toList
         )
@@ -85,14 +70,14 @@ object AutomataFarm {
     case KillAllInPool(key) =>
       Outcome(
         farm.copy(
-          paddock = farm.paddock.filterNot(p => p.automata.key === key)
+          paddock = farm.paddock.filterNot(p => p.automaton.key === key)
         )
       )
 
     case KillByKey(bindingKey) =>
       Outcome(
         farm.copy(
-          paddock = farm.paddock.filterNot(p => p.automata.bindingKey === bindingKey)
+          paddock = farm.paddock.filterNot(p => p.automaton.bindingKey === bindingKey)
         )
       )
 
@@ -106,89 +91,32 @@ object AutomataFarm {
     case Cull =>
       Outcome(
         farm.copy(
-          paddock = farm.paddock.filter(_.isAlive(gameTime.running.value)).map(_.updateDelta(gameTime.delta.value))
+          paddock = farm.paddock.filter(_.isAlive(gameTime.running)).map(_.updateDelta(gameTime.delta))
         )
       )
   }
 
   def render(farm: AutomataFarm, gameTime: GameTime): SceneUpdateFragment = {
     val f =
-      (p: List[(SceneGraphNode, List[GlobalEvent])]) =>
-        p.map(q => SceneUpdateFragment.empty.addGameLayerNodes(q._1).addViewEvents(q._2))
+      (p: List[Outcome[SceneGraphNode]]) =>
+        p.map(q => SceneUpdateFragment.empty.addGameLayerNodes(q.state).addViewEvents(q.globalEvents))
           .foldLeft(SceneUpdateFragment.empty)(_ |+| _)
 
     f(renderNoLayer(farm, gameTime))
   }
 
-  def renderNoLayer(farm: AutomataFarm, gameTime: GameTime): List[(SceneGraphNode, List[GlobalEvent])] =
+  def renderNoLayer(farm: AutomataFarm, gameTime: GameTime): List[Outcome[SceneGraphNode]] =
     farm.paddock.map { sa =>
-      sa.automata match {
-        case GraphicAutomaton(_, graphic, _, modifiers) =>
-          modifiers.foldLeft[(Graphic, List[GlobalEvent])]((graphic, Nil)) { (p, m) =>
-            m match {
-              case ChangeAlpha(f) =>
-                (p._1.withAlpha(f(gameTime, sa.seedValues, p._1.effects.alpha)), Nil)
-
-              case ChangeTint(f) =>
-                (p._1.withTint(f(gameTime, sa.seedValues, p._1.effects.tint)), Nil)
-
-              case MoveTo(f) =>
-                (p._1.moveTo(f(gameTime, sa.seedValues, p._1.bounds.position)), Nil)
-
-              case EmitEvents(f) =>
-                (p._1, p._2 ++ f(gameTime, sa.seedValues))
-            }
-          }
-
-        case SpriteAutomaton(_, sprite, autoPlay, maybeCycleLabel, _, modifiers) =>
-          def applySpriteModifiers(sp: Sprite): (Sprite, List[GlobalEvent]) =
-            modifiers.foldLeft[(Sprite, List[GlobalEvent])]((sp, Nil)) { (p, m) =>
-              m match {
-                case ChangeAlpha(f) =>
-                  (p._1.withAlpha(f(gameTime, sa.seedValues, p._1.effects.alpha)), Nil)
-
-                case ChangeTint(f) =>
-                  (p._1.withTint(f(gameTime, sa.seedValues, p._1.effects.tint)), Nil)
-
-                case MoveTo(f) =>
-                  (p._1.moveTo(f(gameTime, sa.seedValues, p._1.bounds.position)), Nil)
-
-                case EmitEvents(f) =>
-                  (p._1, p._2 ++ f(gameTime, sa.seedValues))
-              }
-            }
-
-          applySpriteModifiers(
-            ((s: Sprite) => if (autoPlay) s.play() else s)(maybeCycleLabel.map(l => sprite.changeCycle(l)).getOrElse(sprite))
-          )
-
-        case TextAutomaton(_, text, _, modifiers) =>
-          modifiers.foldLeft[(Text, List[GlobalEvent])]((text, Nil)) { (p, m) =>
-            m match {
-              case ChangeAlpha(f) =>
-                (p._1.withAlpha(f(gameTime, sa.seedValues, p._1.effects.alpha)), Nil)
-
-              case ChangeTint(f) =>
-                (p._1.withTint(f(gameTime, sa.seedValues, p._1.effects.tint)), Nil)
-
-              case MoveTo(f) =>
-                (p._1.moveTo(f(gameTime, sa.seedValues, p._1.bounds.position)), Nil)
-
-              case EmitEvents(f) =>
-                (p._1, p._2 ++ f(gameTime, sa.seedValues))
-            }
-          }
-      }
+      sa.automaton.modifier(sa.seedValues, sa.automaton.renderable).at(gameTime.running)
     }
-
 }
 
-final case class SpawnedAutomaton(automata: Automaton, seedValues: AutomatonSeedValues) {
-  def isAlive(currentTime: Double): Boolean =
-    seedValues.createdAt + automata.lifespan.millis > currentTime
+final case class SpawnedAutomaton(automaton: Automaton, seedValues: AutomatonSeedValues) {
+  def isAlive(currentTime: Millis): Boolean =
+    seedValues.createdAt + automaton.lifespan > currentTime
 
-  def updateDelta(frameDelta: Double): SpawnedAutomaton =
-    this.copy(seedValues = seedValues.copy(timeAliveDelta = seedValues.timeAliveDelta + frameDelta.toInt))
+  def updateDelta(frameDelta: Millis): SpawnedAutomaton =
+    this.copy(seedValues = seedValues.copy(timeAliveDelta = seedValues.timeAliveDelta + frameDelta))
 }
 
-final case class AutomatonSeedValues(spawnedAt: Point, createdAt: Double, lifeSpan: Double, timeAliveDelta: Double, randomSeed: Int)
+final case class AutomatonSeedValues(spawnedAt: Point, createdAt: Millis, lifeSpan: Millis, timeAliveDelta: Millis, randomSeed: Int)

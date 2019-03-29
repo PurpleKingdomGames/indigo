@@ -1,26 +1,26 @@
 package indigoexts.automata
 
-import indigo.gameengine.scenegraph.{Graphic, Sprite, Text}
+import indigo.Outcome
+import indigo.gameengine.scenegraph.Renderable
 import indigo.gameengine.scenegraph.datatypes.BindingKey
+import indigo.GameTime.Millis
+import indigoexts.temporal.Signal
 
 import indigo.EqualTo._
 
-sealed trait Automaton extends Product with Serializable {
-  val bindingKey: BindingKey = BindingKey.generate
-  val key: AutomataPoolKey
-  val modifiers: List[AutomataModifier]
-  val lifespan: AutomataLifeSpan
+final class Automaton(val key: AutomataPoolKey, val renderable: Renderable, val lifespan: Millis, val bindingKey: BindingKey, val modifier: (AutomatonSeedValues, Renderable) => Signal[Outcome[Renderable]]) {
+  def withModifier(modifier: (AutomatonSeedValues, Renderable) => Signal[Outcome[Renderable]]): Automaton =
+    new Automaton(key, renderable, lifespan, bindingKey, modifier)
 }
-final case class GraphicAutomaton(key: AutomataPoolKey, graphic: Graphic, lifespan: AutomataLifeSpan, modifiers: List[AutomataModifier]) extends Automaton
-final case class SpriteAutomaton(key: AutomataPoolKey, sprite: Sprite, autoPlay: Boolean, animationCycleLabel: Option[String], lifespan: AutomataLifeSpan, modifiers: List[AutomataModifier])
-    extends Automaton
-final case class TextAutomaton(key: AutomataPoolKey, text: Text, lifespan: AutomataLifeSpan, modifiers: List[AutomataModifier]) extends Automaton {
-  def changeTextTo(newText: String): TextAutomaton =
-    this.copy(
-      text = text.copy(
-        text = newText
-      )
-    )
+
+object Automaton {
+
+  val NoModifySignal: (AutomatonSeedValues, Renderable) => Signal[Outcome[Renderable]] =
+    (_, r) => Signal.fixed(Outcome(r))
+
+  def apply(key: AutomataPoolKey, renderable: Renderable, lifespan: Millis): Automaton =
+    new Automaton(key, renderable, lifespan, BindingKey.generate, NoModifySignal)
+
 }
 
 final case class AutomataPoolKey(key: String) extends AnyVal {
@@ -34,5 +34,3 @@ object AutomataPoolKey {
   def equality(a: AutomataPoolKey, b: AutomataPoolKey): Boolean =
     a.key === b.key
 }
-
-final case class AutomataLifeSpan(millis: Double)
