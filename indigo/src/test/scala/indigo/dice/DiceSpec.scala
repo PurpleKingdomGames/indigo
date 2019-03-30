@@ -1,7 +1,7 @@
-package indigoexts.dice
+package indigo.dice
 
 import org.scalatest.{FunSpec, Matchers}
-import indigoexts.collections.NonEmptyList
+import indigo.collections.NonEmptyList
 
 class DiceSpec extends FunSpec with Matchers {
 

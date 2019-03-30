@@ -4,14 +4,15 @@ import indigo.gameengine.GameTime
 import indigo.gameengine.Outcome
 import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph.SceneUpdateFragment
+import indigo.Dice
 
 final case class SubSystemsRegister(registeredSubSystems: List[SubSystem]) {
 
   def add(subSystems: SubSystem*): SubSystemsRegister =
     SubSystemsRegister.add(this, subSystems.toList)
 
-  def update(gameTime: GameTime): GlobalEvent => OutcomesRegister =
-    SubSystemsRegister.update(this, gameTime)
+  def update(gameTime: GameTime, dice: Dice): GlobalEvent => OutcomesRegister =
+    SubSystemsRegister.update(this, gameTime, dice)
 
   def render(gameTime: GameTime): SceneUpdateFragment =
     SubSystemsRegister.render(this, gameTime)
@@ -28,10 +29,10 @@ object SubSystemsRegister {
   def add(register: SubSystemsRegister, subSystems: List[SubSystem]): SubSystemsRegister =
     register.copy(registeredSubSystems = register.registeredSubSystems ++ subSystems)
 
-  def update(register: SubSystemsRegister, gameTime: GameTime): GlobalEvent => OutcomesRegister = {
+  def update(register: SubSystemsRegister, gameTime: GameTime, dice: Dice): GlobalEvent => OutcomesRegister = {
     case e: GlobalEvent =>
       val updated = register.registeredSubSystems.map { ss =>
-        ss.eventFilter(e).map(ee => ss.update(gameTime)(ee)).getOrElse(Outcome(ss, Nil))
+        ss.eventFilter(e).map(ee => ss.update(gameTime, dice)(ee)).getOrElse(Outcome(ss, Nil))
       }
 
       OutcomesRegister(

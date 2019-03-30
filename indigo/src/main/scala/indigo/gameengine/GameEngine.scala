@@ -1,5 +1,6 @@
 package indigo.gameengine
 
+import indigo.GameTime.Millis
 import indigo.gameengine.assets._
 import indigo.gameengine.audio.AudioPlayer
 import indigo.gameengine.events._
@@ -105,7 +106,7 @@ object GameEngine {
           SubSystemsRegister
             .add(SubSystemsRegister.empty, subSystems.toList ++ startupData.additionalSubSystems.toList)
 
-        val x: GameContext[Double => Int] =
+        val x: GameContext[Long => Int] =
           for {
             _                   <- GameEngine.registerAnimations(animations ++ startupData.additionalAnimations)
             _                   <- GameEngine.registerFonts(fonts ++ startupData.additionalFonts)
@@ -117,6 +118,7 @@ object GameEngine {
             _                   <- GameEngine.listenToWorldEvents(canvas, gameConfig.magnification)
             renderer            <- GameEngine.startRenderer(gameConfig, loadedTextureAssets, canvas)
             gameLoopInstance <- GameEngine.initialiseGameLoop(
+              Millis(System.currentTimeMillis()),
               gameConfig,
               assetMapping,
               renderer,
@@ -134,7 +136,7 @@ object GameEngine {
           case Right(f) =>
             IndigoLogger.info("Starting main loop, there will be no more info log messages.")
             IndigoLogger.info("You may get first occurrence error logs.")
-            dom.window.requestAnimationFrame(f)
+            dom.window.requestAnimationFrame(t => f(t.toLong))
 
             ()
 
@@ -229,6 +231,7 @@ object GameEngine {
     AudioPlayer(sounds)
 
   def initialiseGameLoop[GameModel, ViewModel](
+      launchTime: Millis,
       gameConfig: GameConfig,
       assetMapping: AssetMapping,
       renderer: IRenderer,
@@ -241,7 +244,19 @@ object GameEngine {
       updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
   )(implicit metrics: Metrics, globalEventStream: GlobalEventStream, globalSignals: GlobalSignals): GameContext[GameLoop[GameModel, ViewModel]] =
     GameContext.delay(
-      new GameLoop[GameModel, ViewModel](gameConfig, assetMapping, renderer, audioPlayer, subSystemsRegister, initialModel, updateModel, initialViewModel(initialModel), updateViewModel, updateView)
+      new GameLoop[GameModel, ViewModel](
+        launchTime: Millis,
+        gameConfig,
+        assetMapping,
+        renderer,
+        audioPlayer,
+        subSystemsRegister,
+        initialModel,
+        updateModel,
+        initialViewModel(initialModel),
+        updateViewModel,
+        updateView
+      )
     )
 
 }

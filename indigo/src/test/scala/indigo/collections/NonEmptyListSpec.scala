@@ -1,4 +1,4 @@
-package indigoexts.collections
+package indigo.collections
 
 import org.scalactic.Equality
 import org.scalatest.{FunSpec, Matchers}

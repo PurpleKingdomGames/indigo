@@ -22,6 +22,9 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   type GameTime = gameengine.GameTime
   val GameTime: gameengine.GameTime.type = gameengine.GameTime
 
+  type Dice = dice.Dice
+  val Dice: dice.Dice.type = dice.Dice
+
   type SubSystem = gameengine.subsystems.SubSystem
 
   type AssetCollection = gameengine.assets.AssetCollection
@@ -46,4 +49,8 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   type PowerOfTwo = gameengine.PowerOfTwo
   val PowerOfTwo: gameengine.PowerOfTwo.type = gameengine.PowerOfTwo
 
+  object datatypes {
+    type NonEmptyList[A] = indigo.collections.NonEmptyList[A]
+    val NonEmptyList: indigo.collections.NonEmptyList.type = indigo.collections.NonEmptyList
+  }
 }

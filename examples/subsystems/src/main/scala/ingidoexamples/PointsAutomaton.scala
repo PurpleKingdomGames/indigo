@@ -35,13 +35,13 @@ object PointsAutomaton {
   def automataSubSystem(fontKey: FontKey): AutomataFarm =
     AutomataFarm.empty.add(
       Automaton(
-        AutomataPoolKey("points"),
+        AutomatonPoolKey("points"),
         Text("10", 0, 0, 1, fontKey).alignCenter,
         Millis(1000)
       ).withModifier(modifier)
     )
 
   def spawnEvent(position: Point) =
-    AutomataEvent.Spawn(AutomataPoolKey("points"), position)
+    AutomataFarmEvent.Spawn(AutomatonPoolKey("points"), position)
 
 }

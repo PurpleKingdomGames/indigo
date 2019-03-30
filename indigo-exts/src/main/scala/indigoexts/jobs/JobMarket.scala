@@ -11,7 +11,7 @@ final case class JobMarket(jobs: List[Job]) extends SubSystem {
     case _                 => None
   }
 
-  def update(gameTime: GameTime): JobMarketEvent => Outcome[SubSystem] = {
+  def update(gameTime: GameTime, dice: Dice): JobMarketEvent => Outcome[SubSystem] = {
     case JobMarketEvent.Post(job) =>
       Outcome(
         this.copy(jobs = jobs :+ job)

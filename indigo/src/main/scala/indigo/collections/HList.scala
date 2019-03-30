@@ -1,4 +1,4 @@
-package indigoexts.collections
+package indigo.collections
 
 import scala.annotation.tailrec
 

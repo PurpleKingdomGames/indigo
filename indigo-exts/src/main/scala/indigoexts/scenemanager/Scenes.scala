@@ -1,6 +1,6 @@
 package indigoexts.scenemanager
 
-import indigoexts.collections.NonEmptyList
+import indigo.collections.NonEmptyList
 
 sealed trait Scenes[GameModel, ViewModel] extends Product with Serializable {
 

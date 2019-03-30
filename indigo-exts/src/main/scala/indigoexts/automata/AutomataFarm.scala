@@ -5,11 +5,9 @@ import indigo.gameengine.GameTime.Millis
 import indigo.gameengine.Outcome
 import indigo.gameengine.events.{FrameTick, GlobalEvent}
 import indigo.gameengine.scenegraph._
-import indigo.gameengine.scenegraph.datatypes.Point
 import indigo.gameengine.subsystems.SubSystem
-import indigoexts.automata.AutomataEvent._
-
-import scala.util.Random
+import indigoexts.automata.AutomataFarmEvent._
+import indigo.dice.Dice
 
 /*
 Properties of an automaton:
@@ -18,23 +16,23 @@ They have a thing to render
 They have procedural modifiers based on time and previous value
 They can emit events
  */
-final case class AutomataFarm(inventory: Map[AutomataPoolKey, Automaton], paddock: List[SpawnedAutomaton]) extends SubSystem {
+final case class AutomataFarm(inventory: Map[AutomatonPoolKey, Automaton], paddock: List[SpawnedAutomaton]) extends SubSystem {
   type Model     = AutomataFarm
-  type EventType = AutomataEvent
+  type EventType = AutomataFarmEvent
 
-  val eventFilter: GlobalEvent => Option[AutomataEvent] = {
-    case e: AutomataEvent =>
+  val eventFilter: GlobalEvent => Option[AutomataFarmEvent] = {
+    case e: AutomataFarmEvent =>
       Some(e)
 
     case FrameTick =>
-      Some(AutomataEvent.Cull)
+      Some(AutomataFarmEvent.Cull)
 
     case _ =>
       None
   }
 
-  def update(gameTime: GameTime): AutomataEvent => Outcome[SubSystem] =
-    AutomataFarm.update(this, gameTime)
+  def update(gameTime: GameTime, dice: Dice): AutomataFarmEvent => Outcome[SubSystem] =
+    AutomataFarm.update(this, gameTime, dice)
 
   def render(gameTime: GameTime): SceneUpdateFragment =
     AutomataFarm.render(this, gameTime)
@@ -50,9 +48,9 @@ final case class AutomataFarm(inventory: Map[AutomataPoolKey, Automaton], paddoc
 object AutomataFarm {
 
   def empty: AutomataFarm =
-    AutomataFarm(Map.empty[AutomataPoolKey, Automaton], Nil)
+    AutomataFarm(Map.empty[AutomatonPoolKey, Automaton], Nil)
 
-  def update(farm: AutomataFarm, gameTime: GameTime): AutomataEvent => Outcome[SubSystem] = {
+  def update(farm: AutomataFarm, gameTime: GameTime, dice: Dice): AutomataFarmEvent => Outcome[SubSystem] = {
     case Spawn(key, pt) =>
       Outcome(
         farm.copy(
@@ -61,7 +59,7 @@ object AutomataFarm {
               farm.inventory
                 .get(key)
                 .map { k =>
-                  SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running, k.lifespan, Millis.zero, Random.nextInt()))
+                  SpawnedAutomaton(k, AutomatonSeedValues(pt, gameTime.running, k.lifespan, Millis.zero, dice.roll))
                 }
                 .toList
         )
@@ -110,13 +108,3 @@ object AutomataFarm {
       sa.automaton.modifier(sa.seedValues, sa.automaton.renderable).at(gameTime.running)
     }
 }
-
-final case class SpawnedAutomaton(automaton: Automaton, seedValues: AutomatonSeedValues) {
-  def isAlive(currentTime: Millis): Boolean =
-    seedValues.createdAt + automaton.lifespan > currentTime
-
-  def updateDelta(frameDelta: Millis): SpawnedAutomaton =
-    this.copy(seedValues = seedValues.copy(timeAliveDelta = seedValues.timeAliveDelta + frameDelta))
-}
-
-final case class AutomatonSeedValues(spawnedAt: Point, createdAt: Millis, lifeSpan: Millis, timeAliveDelta: Millis, randomSeed: Int)

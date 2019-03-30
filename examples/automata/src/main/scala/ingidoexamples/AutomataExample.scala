@@ -4,6 +4,7 @@ import indigo._
 import indigoexts.entrypoint._
 import indigoexts.ui._
 import indigoexts.automaton._
+import indigo.GameTime.Millis
 
 import scala.util.Random
 
@@ -24,23 +25,24 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   val subSystems: Set[SubSystem] = Set(
     AutomataFarm.empty.add(
-      TextAutomaton(
-        AutomataPoolKey("points"),
+      Automaton(
+        AutomatonPoolKey("points"),
         Text("0", 0, 0, 1, fontKey).alignCenter,
-        AutomataLifeSpan(1000),
-        List(
-          AutomataModifier.MoveTo((_, seed, _) => {
-            val diff = 30 * (seed.timeAliveDelta / seed.lifeSpan)
-            seed.spawnedAt + Point(0, -diff.toInt)
-          }),
-          AutomataModifier.ChangeAlpha { (_, seed, originalAlpha) =>
-            // Note: There is a shader bug that makes the White part of text not respect alpha correctly.
-            originalAlpha * (seed.timeAliveDelta / seed.lifeSpan)
-          },
-          AutomataModifier.ChangeTint { (_, seed, _) =>
-            Tint(1 * (seed.timeAliveDelta / seed.lifeSpan), 0, 0)
-          }
-        )
+        Mil
+        lis(1000)//,
+        // List(
+        //   AutomataModifier.MoveTo((_, seed, _) => {
+        //     val diff = 30 * (seed.timeAliveDelta / seed.lifeSpan)
+        //     seed.spawnedAt + Point(0, -diff.toInt)
+        //   }),
+        //   AutomataModifier.ChangeAlpha { (_, seed, originalAlpha) =>
+        //     // Note: There is a shader bug that makes the White part of text not respect alpha correctly.
+        //     originalAlpha * (seed.timeAliveDelta / seed.lifeSpan)
+        //   },
+        //   AutomataModifier.ChangeTint { (_, seed, _) =>
+        //     Tint(1 * (seed.timeAliveDelta / seed.lifeSpan), 0, 0)
+        //   }
+        // )
       )
     )
   )
@@ -52,11 +54,15 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
     MyGameModel(
       button = Button(ButtonState.Up).withUpAction { () =>
         Option(
-          AutomataEvent.ModifyAndSpawn(
-            AutomataPoolKey("points"),
-            generateLocation(),
-            { case t: TextAutomaton => t.changeTextTo(generatePoints()) }
+          AutomataFarmEvent.Spawn(
+            AutomatonPoolKey("points"),
+            generateLocation()
           )
+          // AutomataEvent.ModifyAndSpawn(
+          //   AutomataPoolKey("points"),
+          //   generateLocation(),
+          //   { case t: TextAutomaton => t.changeTextTo(generatePoints()) }
+          // )
         )
       },
       count = 0

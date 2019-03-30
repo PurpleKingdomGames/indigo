@@ -1,4 +1,4 @@
-package indigoexts.dice
+package indigo.dice
 
 import org.scalacheck._
 

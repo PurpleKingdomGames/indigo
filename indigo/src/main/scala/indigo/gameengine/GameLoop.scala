@@ -10,11 +10,14 @@ import indigo.renderer.{AssetMapping, DisplayLayer, Displayable, IRenderer}
 import indigo.runtime.GameContext
 import indigo.runtime.metrics._
 import indigo.shared.GameConfig
+import indigo.dice.Dice
 import org.scalajs.dom
+import indigo.GameTime.Millis
 
 import scala.annotation.tailrec
 
 class GameLoop[GameModel, ViewModel](
+    launchTime: Millis,
     gameConfig: GameConfig,
     assetMapping: AssetMapping,
     renderer: IRenderer,
@@ -37,8 +40,8 @@ class GameLoop[GameModel, ViewModel](
   private var subSystemsState: SubSystemsRegister = subSystemsRegister
 
   @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
-  def loop(lastUpdateTime: Double): Double => Int = { time =>
-    val timeDelta = time - lastUpdateTime
+  def loop(lastUpdateTime: Long): Long => Int = { time =>
+    val timeDelta: Long = time - lastUpdateTime
 
     // PUT NOTHING ABOVE THIS LINE!! Major performance penalties!!
     if (timeDelta > gameConfig.frameRateDeltaMillis) {
@@ -50,7 +53,9 @@ class GameLoop[GameModel, ViewModel](
 
         metrics.record(UpdateStartMetric)
 
-        val gameTime: GameTime = new GameTime(GameTime.Millis(time), GameTime.Millis(timeDelta), GameTime.FPS(gameConfig.frameRate))
+        val gameTime: GameTime = new GameTime(GameTime.Millis(time), GameTime.Millis(timeDelta), GameTime.FPS(gameConfig.frameRate), launchTime)
+
+        val dice: Dice = Dice.default(gameTime.running.value)
 
         val collectedEvents: List[GlobalEvent] = globalEventStream.collect :+ FrameTick
 
@@ -74,7 +79,7 @@ class GameLoop[GameModel, ViewModel](
         //
         metrics.record(CallUpdateSubSystemsStartMetric)
 
-        val subSystems = GameLoop.processSubSystemUpdates(gameTime, subSystemsState, collectedEvents)
+        val subSystems = GameLoop.processSubSystemUpdates(gameTime, dice, subSystemsState, collectedEvents)
 
         subSystemsState = subSystems
 
@@ -122,9 +127,9 @@ class GameLoop[GameModel, ViewModel](
 
       metrics.record(FrameEndMetric)
 
-      dom.window.requestAnimationFrame(loop(time))
+      dom.window.requestAnimationFrame(t => loop(time)(t.toLong))
     } else {
-      dom.window.requestAnimationFrame(loop(lastUpdateTime))
+      dom.window.requestAnimationFrame(t => loop(lastUpdateTime)(t.toLong))
     }
   }
 
@@ -223,16 +228,17 @@ object GameLoop {
   }
 
   @tailrec
-  def processSubSystemUpdates(gameTime: GameTime, register: SubSystemsRegister, collectedEvents: List[GlobalEvent])(implicit globalEventStream: GlobalEventStream): SubSystemsRegister =
+  def processSubSystemUpdates(gameTime: GameTime, dice: Dice, register: SubSystemsRegister, collectedEvents: List[GlobalEvent])(implicit globalEventStream: GlobalEventStream): SubSystemsRegister =
     collectedEvents match {
       case Nil =>
         register
 
       case e :: es =>
-        val res = register.update(gameTime)(e)
+        val res = register.update(gameTime, dice)(e)
         res.events.foreach(e => globalEventStream.pushGlobalEvent(e))
         processSubSystemUpdates(
           gameTime,
+          dice,
           res.register,
           es
         )

@@ -1,31 +1,34 @@
 package indigo.gameengine
 
 import indigo.{EqualTo, AsString}
-import indigo.abstractions.Monoid
 
-final class GameTime(val running: GameTime.Millis, val delta: GameTime.Millis, val targetFPS: GameTime.FPS) {
-  lazy val frameDuration: GameTime.Millis = GameTime.Millis(1000d / targetFPS.asDouble)
-  lazy val multiplier: Double             = delta.value / frameDuration.value
+final class GameTime(val system: GameTime.Millis, val delta: GameTime.Millis, val targetFPS: GameTime.FPS, val launch: GameTime.Millis) {
+
+  val running: GameTime.Millis = system - launch
+
+  lazy val frameDuration: GameTime.Millis = GameTime.Millis((1000d / targetFPS.asDouble).toLong)
+  lazy val multiplier: Double             = delta.toDouble / frameDuration.toDouble
 
   def intByTime(value: Int): Int          = (value * multiplier).toInt
   def floatByTime(value: Float): Float    = (value * multiplier).toFloat
   def doubleByTime(value: Double): Double = value * multiplier
 
   def setTargetFPS(fps: Int): GameTime =
-    new GameTime(running, delta, GameTime.FPS(fps))
+    new GameTime(running, delta, GameTime.FPS(fps), launch)
 
-  def forwardInTimeBy(amount: GameTime.Millis): GameTime =
-    GameTime.combine(this, GameTime(amount, GameTime.Millis(0), GameTime.FPS(0)))
+  // def forwardInTimeBy(amount: GameTime.Millis): GameTime =
+  //   GameTime.combine(this, GameTime(amount, GameTime.Millis(0), GameTime.FPS(0)))
 
-  def backInTimeBy(amount: GameTime.Millis): GameTime =
-    GameTime.combine(this, GameTime(GameTime.Millis(-amount.value), GameTime.Millis(0), GameTime.FPS(0)))
+  // def backInTimeBy(amount: GameTime.Millis): GameTime =
+  //   GameTime.combine(this, GameTime(GameTime.Millis(-amount.value), GameTime.Millis(0), GameTime.FPS(0)))
 }
 
-object GameTime extends Monoid[GameTime] {
+object GameTime {
 
   implicit val equalTo: EqualTo[GameTime] =
     EqualTo.create { (a, b) =>
-      implicitly[EqualTo[Millis]].equal(a.running, b.running) &&
+      implicitly[EqualTo[Millis]].equal(a.system, b.system) &&
+      implicitly[EqualTo[Millis]].equal(a.launch, b.launch) &&
       implicitly[EqualTo[Millis]].equal(a.delta, b.delta) &&
       implicitly[EqualTo[FPS]].equal(a.targetFPS, b.targetFPS)
     }
@@ -35,31 +38,30 @@ object GameTime extends Monoid[GameTime] {
       s"GameTime(${implicitly[AsString[Millis]].show(gt.running)}, ${implicitly[AsString[Millis]].show(gt.delta)}, ${implicitly[AsString[FPS]].show(gt.targetFPS)})"
     }
 
-  def now: GameTime                                       = new GameTime(Millis(System.currentTimeMillis().toDouble), Millis(0), FPS.Default)
-  def zero: GameTime                                      = new GameTime(Millis(0), Millis(0), FPS.Default)
-  def is(running: Millis): GameTime                       = new GameTime(running, Millis(0), FPS.Default)
-  def withDelta(running: Millis, delta: Millis): GameTime = new GameTime(running, delta, FPS.Default)
+  def now: GameTime =
+    new GameTime(Millis(System.currentTimeMillis()), Millis(0), FPS.Default, Millis(0))
 
-  def apply(running: Millis, delta: Millis, targetFPS: FPS): GameTime =
-    new GameTime(running, delta, targetFPS)
+  def zero: GameTime =
+    new GameTime(Millis(0), Millis(0), FPS.Default, Millis(0))
 
-  def identity: GameTime =
-    GameTime(GameTime.Millis(0), GameTime.Millis(0), GameTime.FPS(0))
+  def is(running: Millis): GameTime =
+    ({ (system: Millis) =>
+      new GameTime(system, Millis(0), FPS.Default, system - running)
+    })(Millis(System.currentTimeMillis()))
 
-  def combine(a: GameTime, b: GameTime): GameTime =
-    GameTime(
-      a.running + b.running,
-      a.delta + b.delta,
-      a.targetFPS + b.targetFPS
-    )
+  def withDelta(running: Millis, delta: Millis): GameTime =
+    ({ (system: Millis) =>
+      new GameTime(system, delta, FPS.Default, system - running)
+    })(Millis(System.currentTimeMillis()))
+
+  def apply(system: Millis, delta: Millis, targetFPS: FPS, launch: Millis): GameTime =
+    new GameTime(system, delta, targetFPS, launch)
 
   final class FPS(val value: Int) extends AnyVal {
+    def asLong: Long = value.toLong
     def asDouble: Double = value.toDouble
-
-    def +(other: FPS): FPS =
-      FPS.combine(this, other)
   }
-  object FPS extends Monoid[FPS] {
+  object FPS {
 
     implicit val fpsEqualTo: EqualTo[FPS] =
       EqualTo.create { (a, b) =>
@@ -76,14 +78,9 @@ object GameTime extends Monoid[GameTime] {
     def apply(value: Int): FPS =
       new FPS(value)
 
-    def identity: FPS =
-      FPS(0)
-
-    def combine(a: FPS, b: FPS): FPS =
-      FPS(a.value + b.value)
   }
 
-  final class Millis(val value: Double) extends AnyVal {
+  final class Millis(val value: Long) extends AnyVal {
 
     def +(other: Millis): Millis =
       Millis.plus(this, other)
@@ -104,19 +101,22 @@ object GameTime extends Monoid[GameTime] {
       Millis.greaterThan(this, other)
 
     def <=(other: Millis): Boolean =
-      Millis.lessThan(this, other) || implicitly[EqualTo[Double]].equal(this.value, other.value)
+      Millis.lessThan(this, other) || implicitly[EqualTo[Long]].equal(this.value, other.value)
 
     def >=(other: Millis): Boolean =
-      Millis.greaterThan(this, other) || implicitly[EqualTo[Double]].equal(this.value, other.value)
+      Millis.greaterThan(this, other) || implicitly[EqualTo[Long]].equal(this.value, other.value)
 
     def toInt: Int =
       value.toInt
+
+    def toLong: Long =
+      value
 
     def toFloat: Float =
       value.toFloat
 
     def toDouble: Double =
-      value
+      value.toDouble
 
   }
   object Millis {
@@ -126,13 +126,13 @@ object GameTime extends Monoid[GameTime] {
 
     implicit val equalToMillis: EqualTo[Millis] =
       EqualTo.create { (a, b) =>
-        implicitly[EqualTo[Double]].equal(a.value, b.value)
+        implicitly[EqualTo[Long]].equal(a.value, b.value)
       }
 
     implicit val asStringMillis: AsString[Millis] =
-      AsString.create(d => s"Millis(${implicitly[AsString[Double]].show(d.value)})")
+      AsString.create(d => s"Millis(${implicitly[AsString[Long]].show(d.value)})")
 
-    def apply(value: Double): Millis =
+    def apply(value: Long): Millis =
       new Millis(value)
 
     def plus(a: Millis, b: Millis): Millis =

@@ -2,7 +2,7 @@ package indigoexts.scenemanager
 
 import indigo.runtime.IndigoLogger
 import indigo.shared.EqualTo
-import indigoexts.collections.NonEmptyList
+import indigo.collections.NonEmptyList
 
 import indigo.EqualTo._
 

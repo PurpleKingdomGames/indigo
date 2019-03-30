@@ -80,7 +80,7 @@ object AnimationsKey {
     a.key === b.key
 }
 
-final case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame], private[gameengine] val playheadPosition: Int, private[gameengine] val lastFrameAdvance: Double) {
+final case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame], private[gameengine] val playheadPosition: Int, private[gameengine] val lastFrameAdvance: Long) {
   private val nonEmptyFrames: List[Frame] = frame :: frames
 
   def addFrame(newFrame: Frame): Cycle =
@@ -127,7 +127,7 @@ object Cycle {
   def apply(label: String, frame: Frame): Cycle                      = Cycle(CycleLabel(label), frame, Nil, 0, 0)
   def apply(label: String, frame: Frame, frames: List[Frame]): Cycle = Cycle(CycleLabel(label), frame, frames, 0, 0)
 
-  private[gameengine] def calculateNextPlayheadPosition(gameTime: GameTime, currentPosition: Int, frameDuration: Int, frameCount: Int, lastFrameAdvance: Double): NextPlayheadPositon =
+  private[gameengine] def calculateNextPlayheadPosition(gameTime: GameTime, currentPosition: Int, frameDuration: Int, frameCount: Int, lastFrameAdvance: Long): NextPlayheadPositon =
     if (gameTime.running.value >= lastFrameAdvance + frameDuration)
       NextPlayheadPositon((currentPosition + 1) % frameCount, gameTime.running.value)
     else
@@ -171,8 +171,8 @@ object AnimationAction {
   }
 }
 
-private[gameengine] final case class NextPlayheadPositon(position: Int, lastFrameAdvance: Double)
+private[gameengine] final case class NextPlayheadPositon(position: Int, lastFrameAdvance: Long)
 
 private[gameengine] final case class AnimationMemento(bindingKey: BindingKey, currentCycleLabel: CycleLabel, currentCycleMemento: CycleMemento)
 
-private[gameengine] final case class CycleMemento(playheadPosition: Int, lastFrameAdvance: Double)
+private[gameengine] final case class CycleMemento(playheadPosition: Int, lastFrameAdvance: Long)

@@ -18,6 +18,9 @@ object EqualTo {
   implicit val eqInt: EqualTo[Int] = create(_ == _)
 
   @SuppressWarnings(Array("org.wartremover.warts.Equals"))
+  implicit val eqLong: EqualTo[Long] = create(_ == _)
+
+  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   implicit val eqFloat: EqualTo[Float] = create(_ == _)
 
   @SuppressWarnings(Array("org.wartremover.warts.Equals"))

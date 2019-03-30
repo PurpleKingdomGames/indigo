@@ -4,17 +4,12 @@ import scala.concurrent.Future
 
 package object indigoexts {
 
-  object datatypes {
-    type NonEmptyList[A] = indigoexts.collections.NonEmptyList[A]
-    val NonEmptyList: indigoexts.collections.NonEmptyList.type = indigoexts.collections.NonEmptyList
-  }
-
   object automaton {
     type Automaton = indigoexts.automata.Automaton
     val Automaton: indigoexts.automata.Automaton.type = indigoexts.automata.Automaton
 
-    type AutomataEvent = indigoexts.automata.AutomataEvent
-    val AutomataEvent: indigoexts.automata.AutomataEvent.type = indigoexts.automata.AutomataEvent
+    type AutomataFarmEvent = indigoexts.automata.AutomataFarmEvent
+    val AutomataFarmEvent: indigoexts.automata.AutomataFarmEvent.type = indigoexts.automata.AutomataFarmEvent
 
     type AutomataFarm = indigoexts.automata.AutomataFarm
     val AutomataFarm: indigoexts.automata.AutomataFarm.type = indigoexts.automata.AutomataFarm
@@ -25,8 +20,8 @@ package object indigoexts {
     type AutomatonSeedValues = indigoexts.automata.AutomatonSeedValues
     val AutomatonSeedValues: indigoexts.automata.AutomatonSeedValues.type = indigoexts.automata.AutomatonSeedValues
 
-    type AutomataPoolKey = indigoexts.automata.AutomataPoolKey
-    val AutomataPoolKey: indigoexts.automata.AutomataPoolKey.type = indigoexts.automata.AutomataPoolKey
+    type AutomatonPoolKey = indigoexts.automata.AutomatonPoolKey
+    val AutomatonPoolKey: indigoexts.automata.AutomatonPoolKey.type = indigoexts.automata.AutomatonPoolKey
   }
 
   object entrypoint {
