@@ -1,7 +1,7 @@
 package indigoexts.automata
 
 import indigo.Point
-import indigo.GameTime.Millis
+import indigo.Millis
 
 final class AutomatonSeedValues(
     val spawnedAt: Point,

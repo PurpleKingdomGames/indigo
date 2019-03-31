@@ -1,6 +1,6 @@
 package indigo.gameengine.scenegraph
 
-import indigo.gameengine.GameTime
+import indigo.time.GameTime
 import indigo.gameengine.scenegraph.AnimationAction._
 import indigo.gameengine.scenegraph.datatypes.{BindingKey, Point, Rectangle}
 
@@ -11,13 +11,15 @@ Animations are really timeline animations:
 Construction is about adding animation cycles with frames
 The API provided is about issuing commands to control playback.
  */
-final case class Animations(animationsKey: AnimationsKey,
-                            imageAssetRef: String,
-                            spriteSheetSize: Point,
-                            currentCycleLabel: CycleLabel,
-                            cycle: Cycle,
-                            cycles: Map[CycleLabel, Cycle],
-                            actions: List[AnimationAction]) {
+final case class Animations(
+    animationsKey: AnimationsKey,
+    imageAssetRef: String,
+    spriteSheetSize: Point,
+    currentCycleLabel: CycleLabel,
+    cycle: Cycle,
+    cycles: Map[CycleLabel, Cycle],
+    actions: List[AnimationAction]
+) {
 
   private val nonEmptyCycles: Map[CycleLabel, Cycle] = cycles ++ Map(cycle.label -> cycle)
 

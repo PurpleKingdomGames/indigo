@@ -8,6 +8,7 @@ import indigo.gameengine._
 import indigo.gameengine.subsystems.SubSystem
 import indigo.shared.{AssetType, GameConfig}
 import indigoexts.scenemanager.{SceneManager, SceneName, ScenesList}
+import indigo.GameTime
 
 import scala.concurrent.Future
 

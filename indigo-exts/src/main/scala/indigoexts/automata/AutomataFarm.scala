@@ -1,7 +1,7 @@
 package indigoexts.automata
 
-import indigo.gameengine.GameTime
-import indigo.gameengine.GameTime.Millis
+import indigo.time.GameTime
+import indigo.time.Millis
 import indigo.gameengine.Outcome
 import indigo.gameengine.events.{FrameTick, GlobalEvent}
 import indigo.gameengine.scenegraph._

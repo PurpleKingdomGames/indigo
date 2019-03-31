@@ -1,6 +1,6 @@
 package indigo.gameengine.assets
 
-import indigo.gameengine.GameTime
+import indigo.time.GameTime
 import indigo.gameengine.scenegraph.datatypes.BindingKey
 import indigo.gameengine.scenegraph.{AnimationAction, Animations, AnimationsKey}
 import indigo.runtime.metrics._

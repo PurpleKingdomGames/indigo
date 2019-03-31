@@ -1,18 +1,19 @@
 package indigoexts.jobs
 
 import org.scalatest.{FunSpec, Matchers}
-import indigo.gameengine.GameTime
+import indigo.time.GameTime
+import indigo.time.Millis
 import indigo.gameengine.events.FrameTick
 import indigo.gameengine.scenegraph.datatypes.BindingKey
 import indigo.GlobalEvent
 
 class WorkScheduleSpec extends FunSpec with Matchers {
-  
-  implicit def intToMillis(i: Int): GameTime.Millis =
-    GameTime.Millis(i.toLong)
 
-  implicit def doubleToMillis(d: Double): GameTime.Millis =
-    GameTime.Millis(d.toLong)
+  implicit def intToMillis(i: Int): Millis =
+    Millis(i.toLong)
+
+  implicit def doubleToMillis(d: Double): Millis =
+    Millis(d.toLong)
 
   import SampleJobs._
 

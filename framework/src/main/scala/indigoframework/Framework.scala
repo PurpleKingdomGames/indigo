@@ -6,6 +6,7 @@ import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
 import indigo.gameengine.scenegraph._
 import indigoexts.entry.Indigo
 import indigo.shared.{AssetType, GameConfig, GameDefinition}
+import indigo.GameTime
 
 import scala.concurrent.Future
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}

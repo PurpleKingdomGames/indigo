@@ -2,7 +2,7 @@ package indigoexts.temporal
 
 import utest._
 import indigo.GameTime
-import indigo.GameTime.Millis
+import indigo.Millis
 
 object SignalTests extends TestSuite {
 

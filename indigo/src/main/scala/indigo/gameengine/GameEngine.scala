@@ -1,6 +1,7 @@
 package indigo.gameengine
 
-import indigo.GameTime.Millis
+import indigo.Millis
+import indigo.GameTime
 import indigo.gameengine.assets._
 import indigo.gameengine.audio.AudioPlayer
 import indigo.gameengine.events._

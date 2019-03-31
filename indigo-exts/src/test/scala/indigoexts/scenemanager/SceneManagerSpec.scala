@@ -1,6 +1,6 @@
 package indigoexts.scenemanager
 
-import indigo.gameengine.GameTime
+import indigo.time.GameTime
 import indigo.gameengine.events.{FrameTick, GlobalEvent}
 import org.scalatest.{FunSpec, Matchers}
 
@@ -9,7 +9,7 @@ class SceneManagerSpec extends FunSpec with Matchers {
   import TestScenes._
 
   val scenes: ScenesList[TestGameModel, TestViewModel] = sceneA :: sceneB :: ScenesNil[TestGameModel, TestViewModel]()
-  val sceneFinder: SceneFinder                                        = SceneFinder.fromScenes(scenes)
+  val sceneFinder: SceneFinder                         = SceneFinder.fromScenes(scenes)
 
   val gameModel = TestGameModel(TestSceneModelA(0), TestSceneModelB(0))
 
@@ -48,18 +48,18 @@ class SceneManagerSpec extends FunSpec with Matchers {
 
       // A = 2, B = 40
       val events = List(
-        FrameTick, // update scene A - 1
-        SceneEvent.Next, // move to scene B
-        FrameTick, // update scene B - 10
-        SceneEvent.Next, // do nothing
-        FrameTick, // update scene B - 20
-        SceneEvent.Previous, // move to scene A
-        SceneEvent.Next, // move to scene B,
-        FrameTick, // update scene B - 30
-        SceneEvent.Previous, // move to scene A
-        FrameTick, // update scene A - 2
+        FrameTick,                      // update scene A - 1
+        SceneEvent.Next,                // move to scene B
+        FrameTick,                      // update scene B - 10
+        SceneEvent.Next,                // do nothing
+        FrameTick,                      // update scene B - 20
+        SceneEvent.Previous,            // move to scene A
+        SceneEvent.Next,                // move to scene B,
+        FrameTick,                      // update scene B - 30
+        SceneEvent.Previous,            // move to scene A
+        FrameTick,                      // update scene A - 2
         SceneEvent.JumpTo(sceneB.name), // jump to scene B
-        FrameTick // update scene B - 40
+        FrameTick                       // update scene B - 40
       )
 
       val expected = TestGameModel(TestSceneModelA(2), TestSceneModelB(40))

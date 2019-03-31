@@ -1,6 +1,6 @@
 package indigoexts.jobs
 
-import indigo.gameengine.GameTime
+import indigo.time.GameTime
 import indigo.gameengine.events.{FrameTick, GlobalEvent}
 import indigo.gameengine.scenegraph.datatypes.BindingKey
 

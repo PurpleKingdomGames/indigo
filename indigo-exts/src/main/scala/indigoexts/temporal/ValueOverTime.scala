@@ -1,6 +1,6 @@
 package indigoexts.temporal
 
-import indigo.GameTime.Millis
+import indigo.Millis
 import indigo.EqualTo
 
 /**

@@ -18,7 +18,7 @@
 //     val valueAt: GameTime => Boolean = _ => false
 //   }
 
-//   final case class TrueDuring(startTime: GameTime.Millis, endTime: GameTime.Millis) extends TemporalPredicate {
+//   final case class TrueDuring(startTime: Millis, endTime: Millis) extends TemporalPredicate {
 //     val valueAt: GameTime => Boolean = gameTime =>
 //       gameTime.running >= startTime && gameTime.running <= endTime
 

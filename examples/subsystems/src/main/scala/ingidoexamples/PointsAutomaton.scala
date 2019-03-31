@@ -2,7 +2,7 @@ package ingidoexamples
 
 import indigo._
 import indigoexts.automaton._
-import indigo.GameTime.Millis
+import indigo.Millis
 import indigoexts.temporal.{Signal, SignalFunction}
 import indigo.gameengine.scenegraph.Renderable
 

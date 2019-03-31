@@ -7,6 +7,7 @@ import indigo.renderer.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import indigo.renderer.{AssetMapping, DisplayObject, SpriteSheetFrame, Vector2}
 import indigo.runtime.IndigoLogger
 import indigo.runtime.metrics.Metrics
+import indigo.GameTime
 
 import scala.annotation.tailrec
 import scala.collection.mutable

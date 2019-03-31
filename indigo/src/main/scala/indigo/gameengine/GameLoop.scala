@@ -12,7 +12,8 @@ import indigo.runtime.metrics._
 import indigo.shared.GameConfig
 import indigo.dice.Dice
 import org.scalajs.dom
-import indigo.GameTime.Millis
+import indigo.GameTime
+import indigo.Millis
 
 import scala.annotation.tailrec
 
@@ -53,7 +54,7 @@ class GameLoop[GameModel, ViewModel](
 
         metrics.record(UpdateStartMetric)
 
-        val gameTime: GameTime = new GameTime(GameTime.Millis(time), GameTime.Millis(timeDelta), GameTime.FPS(gameConfig.frameRate), launchTime)
+        val gameTime: GameTime = new GameTime(Millis(time), Millis(timeDelta), GameTime.FPS(gameConfig.frameRate), launchTime)
 
         val dice: Dice = Dice.default(gameTime.running.value)
 

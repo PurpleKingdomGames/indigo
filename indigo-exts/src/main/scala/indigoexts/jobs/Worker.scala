@@ -1,6 +1,6 @@
 package indigoexts.jobs
 
-import indigo.gameengine.GameTime
+import indigo.time.GameTime
 import indigo.gameengine.events.GlobalEvent
 
 trait Worker[Actor, Context] {

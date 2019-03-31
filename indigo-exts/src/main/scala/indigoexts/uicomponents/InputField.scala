@@ -1,6 +1,6 @@
 package indigoexts.uicomponents
 
-import indigo.gameengine.GameTime
+import indigo.time.GameTime
 import indigo.gameengine.assets.FontRegister
 import indigo.gameengine.constants.Keys
 import indigo.gameengine.events.{FrameInputEvents, KeyboardEvent, MouseEvent, GlobalEvent}

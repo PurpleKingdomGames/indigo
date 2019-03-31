@@ -1,6 +1,6 @@
 package indigoexts.scenemanager
 
-import indigo.gameengine.GameTime
+import indigo.time.GameTime
 import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
 import indigo.gameengine.scenegraph.SceneUpdateFragment
 import indigo.Outcome
@@ -20,7 +20,7 @@ final case class TestGameModel(sceneA: TestSceneModelA, sceneB: TestSceneModelB)
 final case class TestViewModel(sceneA: TestSceneViewModelA, sceneB: TestSceneViewModelB)
 
 final case class TestSceneA() extends Scene[TestGameModel, TestViewModel] {
-  type SceneModel = TestSceneModelA
+  type SceneModel     = TestSceneModelA
   type SceneViewModel = TestSceneViewModelA
 
   val name: SceneName = SceneName("test scene a")
@@ -50,7 +50,7 @@ final case class TestSceneModelA(count: Int)
 final case class TestSceneViewModelA()
 
 final case class TestSceneB() extends Scene[TestGameModel, TestViewModel] {
-  type SceneModel = TestSceneModelB
+  type SceneModel     = TestSceneModelB
   type SceneViewModel = TestSceneViewModelB
 
   val name: SceneName = SceneName("test scene b")

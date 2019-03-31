@@ -1,6 +1,6 @@
 package indigo.gameengine.subsystems
 
-import indigo.gameengine.GameTime
+import indigo.time.GameTime
 import indigo.gameengine.Outcome
 import indigo.dice.Dice
 import indigo.gameengine.events.GlobalEvent

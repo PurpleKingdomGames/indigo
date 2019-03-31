@@ -1,6 +1,6 @@
 package indigoexts.temporal
 
-import indigo.GameTime.Millis
+import indigo.{Millis, Seconds}
 import indigo.abstractions.Applicative
 
 /**
@@ -34,6 +34,9 @@ object Signal {
 
   val Time: Signal[Millis] =
     Signal.create(identity)
+
+  val TimeInSeconds: Signal[Seconds] =
+    Signal.create(_.toSeconds)
 
   def fixed[A](a: A): Signal[A] =
     create(_ => a)

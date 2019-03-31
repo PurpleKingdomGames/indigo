@@ -3,10 +3,16 @@ package indigoexts.automata
 import indigo.Outcome
 import indigo.gameengine.scenegraph.Renderable
 import indigo.gameengine.scenegraph.datatypes.BindingKey
-import indigo.GameTime.Millis
+import indigo.Millis
 import indigoexts.temporal.Signal
 
-final class Automaton(val key: AutomatonPoolKey, val renderable: Renderable, val lifespan: Millis, val bindingKey: BindingKey, val modifier: (AutomatonSeedValues, Renderable) => Signal[Outcome[Renderable]]) {
+final class Automaton(
+    val key: AutomatonPoolKey,
+    val renderable: Renderable,
+    val lifespan: Millis,
+    val bindingKey: BindingKey,
+    val modifier: (AutomatonSeedValues, Renderable) => Signal[Outcome[Renderable]]
+) {
   def withModifier(modifier: (AutomatonSeedValues, Renderable) => Signal[Outcome[Renderable]]): Automaton =
     new Automaton(key, renderable, lifespan, bindingKey, modifier)
 }

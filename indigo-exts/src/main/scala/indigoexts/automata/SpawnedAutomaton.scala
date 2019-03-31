@@ -1,6 +1,6 @@
 package indigoexts.automata
 
-import indigo.GameTime.Millis
+import indigo.Millis
 
 final class SpawnedAutomaton(val automaton: Automaton, val seedValues: AutomatonSeedValues) {
   def isAlive(currentTime: Millis): Boolean =

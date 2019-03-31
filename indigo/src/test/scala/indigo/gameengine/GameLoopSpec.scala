@@ -2,11 +2,12 @@ package indigo.gameengine
 
 import indigo.gameengine.events._
 import org.scalatest.{FunSpec, Matchers}
+import indigo.{GameTime, Millis}
 
 class GameLoopSpec extends FunSpec with Matchers {
 
   val gameTime: GameTime =
-    GameTime(GameTime.Millis(1000), GameTime.Millis(100), GameTime.FPS(100), GameTime.Millis(1000))
+    GameTime(Millis(1000), Millis(100), GameTime.FPS(100), Millis(1000))
 
   describe("Processing model updates") {
 

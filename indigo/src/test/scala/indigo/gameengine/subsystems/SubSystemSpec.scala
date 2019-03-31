@@ -1,6 +1,6 @@
 package indigo.gameengine.subsystems
 
-import indigo.gameengine.GameTime
+import indigo.time.GameTime
 import indigo.gameengine.scenegraph.Text
 import indigo.dice.Dice
 
@@ -8,8 +8,8 @@ import org.scalatest.FunSpec
 
 class SubSystemSpec extends FunSpec {
 
-val dice: Dice =
-  Dice.loaded(6)
+  val dice: Dice =
+    Dice.loaded(6)
 
   describe("A SubSystem (PointsTracker example)") {
 

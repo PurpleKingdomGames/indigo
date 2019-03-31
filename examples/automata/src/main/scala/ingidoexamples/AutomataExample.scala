@@ -4,7 +4,9 @@ import indigo._
 import indigoexts.entrypoint._
 import indigoexts.ui._
 import indigoexts.automaton._
-import indigo.GameTime.Millis
+import indigo.Millis
+import indigoexts.temporal.Signal
+import indigo.gameengine.scenegraph.Renderable
 
 import scala.util.Random
 
@@ -28,21 +30,8 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       Automaton(
         AutomatonPoolKey("points"),
         Text("0", 0, 0, 1, fontKey).alignCenter,
-        Millis(1000)//,
-        // List(
-        //   AutomataModifier.MoveTo((_, seed, _) => {
-        //     val diff = 30 * (seed.timeAliveDelta / seed.lifeSpan)
-        //     seed.spawnedAt + Point(0, -diff.toInt)
-        //   }),
-        //   AutomataModifier.ChangeAlpha { (_, seed, originalAlpha) =>
-        //     // Note: There is a shader bug that makes the White part of text not respect alpha correctly.
-        //     originalAlpha * (seed.timeAliveDelta / seed.lifeSpan)
-        //   },
-        //   AutomataModifier.ChangeTint { (_, seed, _) =>
-        //     Tint(1 * (seed.timeAliveDelta / seed.lifeSpan), 0, 0)
-        //   }
-        // )
-      )
+        Millis(1000)
+      ).withModifier(Points.modifer)
     )
   )
 
@@ -57,11 +46,6 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
             AutomatonPoolKey("points"),
             generateLocation()
           )
-          // AutomataEvent.ModifyAndSpawn(
-          //   AutomataPoolKey("points"),
-          //   generateLocation(),
-          //   { case t: TextAutomaton => t.changeTextTo(generatePoints()) }
-          // )
         )
       },
       count = 0
@@ -157,4 +141,33 @@ object FontStuff {
       .addChar(FontChar(".", 286, 0, 15, 23))
       .addChar(FontChar(",", 248, 0, 15, 23))
       .addChar(FontChar(" ", 145, 52, 23, 23))
+}
+
+object Points {
+
+//...we have no way of doing this? Yes we do!
+// AutomataEvent.ModifyAndSpawn(
+//   AutomataPoolKey("points"),
+//   generateLocation(),
+//   { case t: TextAutomaton => t.changeTextTo(generatePoints()) }
+// )
+
+// the modifiers
+// List(
+//   AutomataModifier.MoveTo((_, seed, _) => {
+//     val diff = 30 * (seed.timeAliveDelta / seed.lifeSpan)
+//     seed.spawnedAt + Point(0, -diff.toInt)
+//   }),
+//   AutomataModifier.ChangeAlpha { (_, seed, originalAlpha) =>
+//     // Note: There is a shader bug that makes the White part of text not respect alpha correctly.
+//     originalAlpha * (seed.timeAliveDelta / seed.lifeSpan)
+//   },
+//   AutomataModifier.ChangeTint { (_, seed, _) =>
+//     Tint(1 * (seed.timeAliveDelta / seed.lifeSpan), 0, 0)
+//   }
+// )
+
+  val modifer: (AutomatonSeedValues, Renderable) => Signal[Outcome[Renderable]] =
+    (_, r) => Signal.fixed(Outcome(r))
+
 }

@@ -19,8 +19,14 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   type Startup[ErrorType, SuccessType] = gameengine.Startup[ErrorType, SuccessType]
   val Startup: gameengine.Startup.type = gameengine.Startup
 
-  type GameTime = gameengine.GameTime
-  val GameTime: gameengine.GameTime.type = gameengine.GameTime
+  type GameTime = time.GameTime
+  val GameTime: time.GameTime.type = time.GameTime
+
+  type Millis = time.Millis
+  val Millis: time.Millis.type = time.Millis
+
+  type Seconds = time.Seconds
+  val Seconds: time.Seconds.type = time.Seconds
 
   type Dice = dice.Dice
   val Dice: dice.Dice.type = dice.Dice
