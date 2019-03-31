@@ -42,7 +42,7 @@ class ValueOverTimeSpec extends FunSpec with Matchers {
       val actual: List[Int] = (1 to 30).toList
         .map(_.toDouble * 33.3)
         .map { runningTime =>
-          vot.changeAmount(Millis(runningTime), 10, Millis(0))
+          vot.changeAmount(Millis(runningTime.toLong), 10, Millis(0))
         }
         .distinct
 

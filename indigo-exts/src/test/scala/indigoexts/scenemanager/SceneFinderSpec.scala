@@ -1,5 +1,6 @@
 package indigoexts.scenemanager
-import indigoexts.collections.NonEmptyList
+
+import indigo.collections.NonEmptyList
 import org.scalatest.{FunSpec, Matchers}
 
 class SceneFinderSpec extends FunSpec with Matchers {

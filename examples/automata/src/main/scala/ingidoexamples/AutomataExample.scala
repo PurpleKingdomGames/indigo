@@ -28,8 +28,7 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       Automaton(
         AutomatonPoolKey("points"),
         Text("0", 0, 0, 1, fontKey).alignCenter,
-        Mil
-        lis(1000)//,
+        Millis(1000)//,
         // List(
         //   AutomataModifier.MoveTo((_, seed, _) => {
         //     val diff = 30 * (seed.timeAliveDelta / seed.lifeSpan)

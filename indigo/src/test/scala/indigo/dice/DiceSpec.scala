@@ -11,14 +11,14 @@ class DiceSpec extends FunSpec with Matchers {
   describe("dice functions") {
 
     it("diceSidesN") {
-      val roll: Int = Dice.diceSidesN(1).roll(10)
+      val roll: Int = Dice.diceSidesN(1, 0).roll(10)
 
       checkDice(roll, 10) shouldEqual true
     }
 
     it("should have a roll multiple dice function") {
 
-      Dice.roll(2, 6) match {
+      Dice.roll(2, 6, 0) match {
         case Some(NonEmptyList(d1, d2 :: Nil)) =>
           withClue("d1: " + d1) {
             checkDice(d1, 6) shouldEqual true
@@ -35,12 +35,12 @@ class DiceSpec extends FunSpec with Matchers {
     }
 
     it("should not roll with invalid values") {
-      Dice.roll(0, 6) shouldEqual None
-      Dice.roll(4, 0) shouldEqual None
+      Dice.roll(0, 6, 0) shouldEqual None
+      Dice.roll(4, 0, 0) shouldEqual None
     }
 
     it("should allow arbitrary rolls") {
-      val dice = Dice.arbitrary(1, 3)
+      val dice = Dice.arbitrary(1, 3, 0)
 
       checkDice(dice.roll, 3) shouldEqual true
       checkDice(dice.roll(3), 3) shouldEqual true

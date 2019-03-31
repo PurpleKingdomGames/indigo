@@ -2,9 +2,14 @@ package indigo.gameengine.subsystems
 
 import indigo.gameengine.GameTime
 import indigo.gameengine.scenegraph.Text
+import indigo.Dice
+
 import org.scalatest.FunSpec
 
 class SubSystemsRegisterSpec extends FunSpec {
+
+  val dice: Dice =
+    Dice.loaded(6)
 
   describe("The sub system register") {
 
@@ -17,7 +22,7 @@ class SubSystemsRegisterSpec extends FunSpec {
     it("should allow you to update sub systems") {
       val r = SubSystemsRegister.empty.add(PointsTrackerExample(10), PointsTrackerExample(50))
 
-      val reports = r.update(GameTime.zero)(PointsTrackerEvent.Add(10)).register.reports
+      val reports = r.update(GameTime.zero, dice)(PointsTrackerEvent.Add(10)).register.reports
 
       assert(reports.contains("Points: 20"))
       assert(reports.contains("Points: 60"))
@@ -26,7 +31,7 @@ class SubSystemsRegisterSpec extends FunSpec {
     it("should allow you to update sub systems and emit events") {
       val r = SubSystemsRegister.empty.add(PointsTrackerExample(10), PointsTrackerExample(50))
 
-      val updated = r.update(GameTime.zero)(PointsTrackerEvent.LoseAll)
+      val updated = r.update(GameTime.zero, dice)(PointsTrackerEvent.LoseAll)
 
       assert(updated.register.reports == List("Points: 0", "Points: 0"))
       assert(updated.events == List(GameOver, GameOver))
@@ -36,7 +41,7 @@ class SubSystemsRegisterSpec extends FunSpec {
       val r = SubSystemsRegister.empty.add(PointsTrackerExample(10), PointsTrackerExample(50))
 
       val rendered =
-        r.update(GameTime.zero)(PointsTrackerEvent.Add(10))
+        r.update(GameTime.zero, dice)(PointsTrackerEvent.Add(10))
           .register
           .render(GameTime.zero)
           .gameLayer

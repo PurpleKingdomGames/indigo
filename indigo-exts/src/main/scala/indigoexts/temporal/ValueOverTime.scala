@@ -4,9 +4,9 @@ import indigo.GameTime.Millis
 import indigo.EqualTo
 
 /**
- * A [ValueOverTime[T]] manages the time based 
- * rate of change logic for numeric values.
- */
+  * A [ValueOverTime[T]] manages the time based
+  * rate of change logic for numeric values.
+  */
 sealed trait ValueOverTime[T] {
   def zero: T
   def one: T
@@ -28,7 +28,7 @@ object ValueOverTime {
       val one: Int = 1
 
       def changeAmount(runningTime: Millis, unitsPerSecond: Int, creationTime: Millis): Int =
-        (Millis((unitsPerSecond.toDouble * 0.001d).toLong) * (runningTime - creationTime)).toInt
+        ((unitsPerSecond.toDouble * 0.001d) * (runningTime.value - creationTime.value)).toInt
 
       def equal(a: Int, b: Int): Boolean =
         implicitly[EqualTo[Int]].equal(a, b)
@@ -52,14 +52,14 @@ object ValueOverTime {
         t.toString
     }
 
-    implicit val longValueOverTime: ValueOverTime[Long] =
+  implicit val longValueOverTime: ValueOverTime[Long] =
     new ValueOverTime[Long] {
       val zero: Long = 0
 
       val one: Long = 1
 
       def changeAmount(runningTime: Millis, unitsPerSecond: Long, creationTime: Millis): Long =
-        (Millis((unitsPerSecond.toDouble * 0.001d).toLong) * (runningTime - creationTime)).toLong
+        ((unitsPerSecond.toDouble * 0.001d) * (runningTime.value - creationTime.value)).toLong
 
       def equal(a: Long, b: Long): Boolean =
         implicitly[EqualTo[Long]].equal(a, b)
@@ -90,7 +90,7 @@ object ValueOverTime {
       val one: Float = 1
 
       def changeAmount(runningTime: Millis, unitsPerSecond: Float, creationTime: Millis): Float =
-        (Millis((unitsPerSecond.toDouble * 0.001d).toLong) * (runningTime - creationTime)).toFloat
+        ((unitsPerSecond.toDouble * 0.001d) * (runningTime.value - creationTime.value)).toFloat
 
       def equal(a: Float, b: Float): Boolean =
         implicitly[EqualTo[Float]].equal(a, b)
@@ -121,7 +121,7 @@ object ValueOverTime {
       val one: Double = 1
 
       def changeAmount(runningTime: Millis, unitsPerSecond: Double, creationTime: Millis): Double =
-        (Millis((unitsPerSecond * 0.001d).toLong) * (runningTime - creationTime)).toDouble
+        ((unitsPerSecond.toDouble * 0.001d) * (runningTime.value - creationTime.value)).toDouble
 
       def equal(a: Double, b: Double): Boolean =
         implicitly[EqualTo[Double]].equal(a, b)

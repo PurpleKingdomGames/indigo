@@ -31,16 +31,16 @@ final case class Animations(animationsKey: AnimationsKey,
   def withAnimationsKey(animationsKey: AnimationsKey): Animations =
     this.copy(animationsKey = animationsKey)
 
-  private[gameengine] val frameHash: String = currentFrame.bounds.hash + "_" + imageAssetRef
+  val frameHash: String = currentFrame.bounds.hash + "_" + imageAssetRef
 
-  private[gameengine] def currentCycleName: String = currentCycle.label.label
+  def currentCycleName: String = currentCycle.label.label
 
-  private[gameengine] def currentFrame: Frame = currentCycle.currentFrame
+  def currentFrame: Frame = currentCycle.currentFrame
 
-  private[gameengine] def saveMemento(bindingKey: BindingKey): AnimationMemento =
+  def saveMemento(bindingKey: BindingKey): AnimationMemento =
     AnimationMemento(bindingKey, currentCycleLabel, currentCycle.saveMemento)
 
-  private[gameengine] def applyMemento(memento: AnimationMemento): Animations =
+  def applyMemento(memento: AnimationMemento): Animations =
     Animations(
       animationsKey = animationsKey,
       imageAssetRef = imageAssetRef,
@@ -53,7 +53,7 @@ final case class Animations(animationsKey: AnimationsKey,
       actions = actions
     )
 
-  private[gameengine] def runActions(gameTime: GameTime): Animations =
+  def runActions(gameTime: GameTime): Animations =
     actions.foldLeft(this) { (anim, action) =>
       action match {
         case ChangeCycle(label) =>
@@ -80,23 +80,23 @@ object AnimationsKey {
     a.key === b.key
 }
 
-final case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame], private[gameengine] val playheadPosition: Int, private[gameengine] val lastFrameAdvance: Long) {
-  private val nonEmptyFrames: List[Frame] = frame :: frames
+final case class Cycle(label: CycleLabel, frame: Frame, frames: List[Frame], val playheadPosition: Int, val lastFrameAdvance: Long) {
+  val nonEmptyFrames: List[Frame] = frame :: frames
 
   def addFrame(newFrame: Frame): Cycle =
     Cycle(label, frame, nonEmptyFrames.drop(1) ++ List(newFrame), playheadPosition, lastFrameAdvance)
 
-  private val frameCount: Int = nonEmptyFrames.length
+  val frameCount: Int = nonEmptyFrames.length
 
-  private[gameengine] def currentFrame: Frame = nonEmptyFrames(playheadPosition % frameCount)
+  def currentFrame: Frame = nonEmptyFrames(playheadPosition % frameCount)
 
-  private[gameengine] def saveMemento: CycleMemento =
+  def saveMemento: CycleMemento =
     CycleMemento(playheadPosition, lastFrameAdvance)
 
-  private[gameengine] def applyMemento(memento: CycleMemento): Cycle =
+  def applyMemento(memento: CycleMemento): Cycle =
     this.copy(playheadPosition = memento.playheadPosition, lastFrameAdvance = memento.lastFrameAdvance)
 
-  private[gameengine] def runActions(gameTime: GameTime, actions: List[AnimationAction]): Cycle =
+  def runActions(gameTime: GameTime, actions: List[AnimationAction]): Cycle =
     actions.foldLeft(this) { (cycle, action) =>
       action match {
         case Play =>
@@ -127,7 +127,7 @@ object Cycle {
   def apply(label: String, frame: Frame): Cycle                      = Cycle(CycleLabel(label), frame, Nil, 0, 0)
   def apply(label: String, frame: Frame, frames: List[Frame]): Cycle = Cycle(CycleLabel(label), frame, frames, 0, 0)
 
-  private[gameengine] def calculateNextPlayheadPosition(gameTime: GameTime, currentPosition: Int, frameDuration: Int, frameCount: Int, lastFrameAdvance: Long): NextPlayheadPositon =
+  def calculateNextPlayheadPosition(gameTime: GameTime, currentPosition: Int, frameDuration: Int, frameCount: Int, lastFrameAdvance: Long): NextPlayheadPositon =
     if (gameTime.running.value >= lastFrameAdvance + frameDuration)
       NextPlayheadPositon((currentPosition + 1) % frameCount, gameTime.running.value)
     else
@@ -171,8 +171,8 @@ object AnimationAction {
   }
 }
 
-private[gameengine] final case class NextPlayheadPositon(position: Int, lastFrameAdvance: Long)
+final case class NextPlayheadPositon(position: Int, lastFrameAdvance: Long)
 
-private[gameengine] final case class AnimationMemento(bindingKey: BindingKey, currentCycleLabel: CycleLabel, currentCycleMemento: CycleMemento)
+final case class AnimationMemento(bindingKey: BindingKey, currentCycleLabel: CycleLabel, currentCycleMemento: CycleMemento)
 
-private[gameengine] final case class CycleMemento(playheadPosition: Int, lastFrameAdvance: Long)
+final case class CycleMemento(playheadPosition: Int, lastFrameAdvance: Long)

@@ -5,7 +5,8 @@ import org.scalatest.{FunSpec, Matchers}
 
 class GameLoopSpec extends FunSpec with Matchers {
 
-  val gameTime: GameTime = new GameTime(GameTime.Millis(1000), GameTime.Millis(100), GameTime.FPS(100))
+  val gameTime: GameTime =
+    GameTime(GameTime.Millis(1000), GameTime.Millis(100), GameTime.FPS(100), GameTime.Millis(1000))
 
   describe("Processing model updates") {
 

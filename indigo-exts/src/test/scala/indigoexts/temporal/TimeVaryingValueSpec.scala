@@ -33,7 +33,7 @@ class TimeVaryingValueSpec extends FunSpec with Matchers {
   describe("increasing capped") {
 
     it("should increase one value over time.") {
-      TimeVaryingValue(0, millis0).increaseTo(100, 10, Millis(33.3 * 4)).value shouldEqual 1
+      TimeVaryingValue(0, millis0).increaseTo(100, 10, Millis((33.3 * 4).toLong)).value shouldEqual 1
       TimeVaryingValue(0, millis0).increaseTo(100, 10, Millis(50000)).value shouldEqual 100
     }
 

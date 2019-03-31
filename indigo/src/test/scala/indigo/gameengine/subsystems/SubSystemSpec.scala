@@ -2,9 +2,14 @@ package indigo.gameengine.subsystems
 
 import indigo.gameengine.GameTime
 import indigo.gameengine.scenegraph.Text
+import indigo.dice.Dice
+
 import org.scalatest.FunSpec
 
 class SubSystemSpec extends FunSpec {
+
+val dice: Dice =
+  Dice.loaded(6)
 
   describe("A SubSystem (PointsTracker example)") {
 
@@ -17,7 +22,7 @@ class SubSystemSpec extends FunSpec {
     it("should respond to an Add event") {
       val expected =
         PointsTrackerExample(0)
-          .update(GameTime.zero)(PointsTrackerEvent.Add(10))
+          .update(GameTime.zero, dice)(PointsTrackerEvent.Add(10))
           .state
           .render(GameTime.zero)
           .gameLayer
@@ -31,7 +36,7 @@ class SubSystemSpec extends FunSpec {
     it("should respond to a LoseALl event and emit an event") {
       val expected =
         PointsTrackerExample(1000)
-          .update(GameTime.zero)(PointsTrackerEvent.LoseAll)
+          .update(GameTime.zero, dice)(PointsTrackerEvent.LoseAll)
           .state
           .render(GameTime.zero)
           .gameLayer
