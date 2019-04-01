@@ -221,19 +221,6 @@ lazy val websocket =
       scalaJSUseMainModuleInitializer := true
     )
 
-lazy val automata =
-  (project in file("examples/automata"))
-    .settings(commonSettings: _*)
-    .dependsOn(indigoExts)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
-    .settings(
-      name := "automata-example",
-      showCursor := true,
-      title := "Automata example",
-      gameAssetsDirectory := "assets",
-      scalaJSUseMainModuleInitializer := true
-    )
-
 lazy val audio =
   (project in file("examples/audio"))
     .settings(commonSettings: _*)
@@ -357,13 +344,13 @@ lazy val indigoProject =
     .aggregate(sandbox)
 //    .aggregate(perf, button) //compile tests
 //    .aggregate(sandbox, framework, server) //games
-//    .aggregate(basicSetup, subSystems, fullSetup, scenesSetup, http, text, automata, graphic, sprite, websocket, inputfield, audio, group) //examples
+//    .aggregate(basicSetup, subSystems, fullSetup, scenesSetup, http, text, graphic, sprite, websocket, inputfield, audio, group) //examples
 
 addCommandAlias("buildIndigo", ";shared/compile;indigo/compile;indigoExts/compile")
 addCommandAlias("buildDev", ";sandbox/compile;perf/compile;framework/compile;server/compile")
 addCommandAlias(
   "buildExamples1",
-  ";basicSetup/compile;subSystems/compile;scenesSetup/compile;fullSetup/compile;button/compile;http/compile;text/compile;automata/compile"
+  ";basicSetup/compile;subSystems/compile;scenesSetup/compile;fullSetup/compile;button/compile;http/compile;text/compile"
 )
 addCommandAlias("buildExamples2", ";graphic/compile;sprite/compile;websocket/compile;inputfield/compile;audio/compile;group/compile")
 addCommandAlias("buildAllNoClean", ";buildIndigo;buildDev;buildExamples1;buildExamples2")
@@ -371,14 +358,14 @@ addCommandAlias("buildAll", ";clean;buildAllNoClean")
 
 addCommandAlias("testIndigo", ";shared/test;indigo/test;indigoExts/test")
 addCommandAlias("testDev", ";sandbox/test;perf/test;framework/test;server/test")
-addCommandAlias("testExamples1", ";basicSetup/test;subSystems/test;scenesSetup/test;fullSetup/test;button/test;http/test;text/test;automata/test")
+addCommandAlias("testExamples1", ";basicSetup/test;subSystems/test;scenesSetup/test;fullSetup/test;button/test;http/test;text/test")
 addCommandAlias("testExamples2", ";graphic/test;sprite/test;websocket/test;inputfield/test;audio/test;group/test")
 addCommandAlias("testAllNoClean", ";testIndigo;testDev;testExamples1;testExamples2")
 addCommandAlias("testAll", ";clean;testAllNoClean")
 
 addCommandAlias("testCompileIndigo", ";shared/test:compile;indigo/test:compile;indigoExts/test:compile")
 addCommandAlias("testCompileDev", ";sandbox/test:compile;perf/test:compile;framework/test:compile;server/test:compile")
-addCommandAlias("testCompileExamples1", ";basicSetup/test:compile;subSystems/test:compile;scenesSetup/test:compile;fullSetup/test:compile;button/test:compile;http/test:compile;text/test:compile;automata/test:compile")
+addCommandAlias("testCompileExamples1", ";basicSetup/test:compile;subSystems/test:compile;scenesSetup/test:compile;fullSetup/test:compile;button/test:compile;http/test:compile;text/test:compile")
 addCommandAlias("testCompileExamples2", ";graphic/test:compile;sprite/test:compile;websocket/test:compile;inputfield/test:compile;audio/test:compile;group/test:compile")
 addCommandAlias("testCompileAllNoClean", ";testCompileIndigo;testCompileDev;testCompileExamples1;testCompileExamples2")
 addCommandAlias("testCompileAll", ";clean;testCompileAllNoClean")

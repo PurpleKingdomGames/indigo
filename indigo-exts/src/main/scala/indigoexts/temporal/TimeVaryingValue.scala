@@ -41,11 +41,11 @@ object TimeVaryingValue {
 
   import ValueOverTime._
 
-  def apply[T](value: T, runningTime: Millis)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
-    new TimeVaryingValue(value, value, runningTime)
+  def apply[T](value: T, createdAt: Millis)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
+    new TimeVaryingValue(value, value, createdAt)
 
-  def withStartingValue[T](value: T, startValue: T, runningTime: Millis)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
-    new TimeVaryingValue(value, startValue, runningTime)
+  def withStartingValue[T](value: T, startValue: T, createdAt: Millis)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
+    new TimeVaryingValue(value, startValue, createdAt)
 
   def modifyValue[T](timeVaryingValue: TimeVaryingValue[T], newValue: T)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
     new TimeVaryingValue(newValue, timeVaryingValue.startValue, timeVaryingValue.createdAt)

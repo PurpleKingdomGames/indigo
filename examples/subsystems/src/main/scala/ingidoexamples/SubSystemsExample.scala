@@ -18,7 +18,7 @@ object SubSystemsExample extends IndigoGameBasic[Unit, Unit, Unit] {
   val subSystems: Set[SubSystem] =
     Set(
       PointsTrackerSubSystem(0, fontKey),
-      PointsAutomaton.automataSubSystem(fontKey)
+      FloatingPoints(fontKey, Nil)
     )
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
@@ -32,7 +32,7 @@ object SubSystemsExample extends IndigoGameBasic[Unit, Unit, Unit] {
       Outcome(())
         .addGlobalEvents(
           PointsTrackerEvent.Add(10),
-          PointsAutomaton.spawnEvent(e.position - Point(0, 30))
+          FloatingPointEvent.Spawn(e.position - Point(0, 30))
         )
 
     case _ =>

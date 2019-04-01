@@ -15,6 +15,7 @@ trait EventTypeAliases {
   type KeyboardEvent = events.KeyboardEvent
   val KeyboardEvent: events.KeyboardEvent.type = events.KeyboardEvent
 
+  type FrameTick = events.FrameTick.type
   val FrameTick: events.FrameTick.type = events.FrameTick
 
   type PlaySound = events.PlaySound
