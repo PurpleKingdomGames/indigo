@@ -18,8 +18,8 @@ object SceneGraphSamples {
     "ref",
     64,
     32,
-    Cycle("label", Frame(0, 0, 32, 32))
-      .addFrame(Frame(32, 0, 32, 32))
+    Cycle("label", Frame.fromBounds(0, 0, 32, 32))
+      .addFrame(Frame.fromBounds(32, 0, 32, 32))
   )
   AnimationsRegister.register(animations)
 
