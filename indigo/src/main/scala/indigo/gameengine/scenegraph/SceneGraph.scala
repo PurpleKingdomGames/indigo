@@ -2,7 +2,8 @@ package indigo.gameengine.scenegraph
 
 import indigo.gameengine.assets.{AnimationsRegister, FontRegister}
 import indigo.gameengine.events.GlobalEvent
-import indigo.gameengine.scenegraph.AnimationAction._
+import indigo.gameengine.scenegraph.animation.AnimationAction._
+import indigo.gameengine.scenegraph.animation.AnimationsKey
 import indigo.gameengine.scenegraph.datatypes._
 import indigo.runtime.IndigoLogger
 

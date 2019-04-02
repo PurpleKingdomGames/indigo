@@ -26,17 +26,20 @@ trait SceneGraphTypeAliases {
   val SceneAudioSource: gameengine.scenegraph.SceneAudioSource.type = gameengine.scenegraph.SceneAudioSource
 
   // Animation
-  type Animations = gameengine.scenegraph.Animations
-  val Animations: gameengine.scenegraph.Animations.type = gameengine.scenegraph.Animations
+  type Animations = gameengine.scenegraph.animation.Animations
+  val Animations: gameengine.scenegraph.animation.Animations.type = gameengine.scenegraph.animation.Animations
 
-  type Cycle = gameengine.scenegraph.Cycle
-  val Cycle: gameengine.scenegraph.Cycle.type = gameengine.scenegraph.Cycle
+  type Cycle = gameengine.scenegraph.animation.Cycle
+  val Cycle: gameengine.scenegraph.animation.Cycle.type = gameengine.scenegraph.animation.Cycle
 
-  type Frame = gameengine.scenegraph.Frame
-  val Frame: gameengine.scenegraph.Frame.type = gameengine.scenegraph.Frame
+  type Frame = gameengine.scenegraph.animation.Frame
+  val Frame: gameengine.scenegraph.animation.Frame.type = gameengine.scenegraph.animation.Frame
 
-  type AnimationsKey = gameengine.scenegraph.AnimationsKey
-  val AnimationsKey: gameengine.scenegraph.AnimationsKey.type = gameengine.scenegraph.AnimationsKey
+  type AnimationsKey = gameengine.scenegraph.animation.AnimationsKey
+  val AnimationsKey: gameengine.scenegraph.animation.AnimationsKey.type = gameengine.scenegraph.animation.AnimationsKey
+
+  type AnimationAction = gameengine.scenegraph.animation.AnimationAction
+  val AnimationAction: gameengine.scenegraph.animation.AnimationAction.type = gameengine.scenegraph.animation.AnimationAction
 
   // Primitives
   type Sprite = gameengine.scenegraph.Sprite

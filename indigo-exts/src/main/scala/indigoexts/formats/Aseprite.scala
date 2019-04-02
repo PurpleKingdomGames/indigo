@@ -2,6 +2,7 @@ package indigoexts.formats
 
 import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph._
+import indigo.gameengine.scenegraph.animation._
 import indigo.gameengine.scenegraph.datatypes._
 import indigo.runtime.{IndigoLogger, AsString}
 import io.circe.generic.auto._

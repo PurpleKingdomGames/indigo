@@ -6,6 +6,7 @@ import indigo.gameengine.assets._
 import indigo.gameengine.audio.AudioPlayer
 import indigo.gameengine.events._
 import indigo.gameengine.scenegraph._
+import indigo.gameengine.scenegraph.animation._
 import indigo.gameengine.scenegraph.datatypes.FontInfo
 import indigo.gameengine.subsystems.{SubSystem, SubSystemsRegister}
 import indigo.renderer._

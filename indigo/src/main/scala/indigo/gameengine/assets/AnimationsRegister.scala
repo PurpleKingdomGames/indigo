@@ -2,7 +2,7 @@ package indigo.gameengine.assets
 
 import indigo.time.GameTime
 import indigo.gameengine.scenegraph.datatypes.BindingKey
-import indigo.gameengine.scenegraph.{AnimationAction, Animations, AnimationsKey}
+import indigo.gameengine.scenegraph.animation.{AnimationAction, Animations, AnimationsKey}
 import indigo.runtime.metrics._
 
 import scala.annotation.tailrec

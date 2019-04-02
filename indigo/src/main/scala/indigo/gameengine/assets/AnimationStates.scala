@@ -1,6 +1,6 @@
 package indigo.gameengine.assets
 
-import indigo.gameengine.scenegraph._
+import indigo.gameengine.scenegraph.animation.AnimationMemento
 import indigo.gameengine.scenegraph.datatypes.BindingKey
 
 import indigo.EqualTo._

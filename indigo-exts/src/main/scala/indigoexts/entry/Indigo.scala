@@ -2,7 +2,8 @@ package indigoexts.entry
 
 import indigo.gameengine.assets.AssetCollection
 import indigo.gameengine.scenegraph.datatypes.FontInfo
-import indigo.gameengine.scenegraph.{Animations, SceneUpdateFragment}
+import indigo.gameengine.scenegraph.SceneUpdateFragment
+import indigo.gameengine.scenegraph.animation.Animations
 import indigo.gameengine.subsystems.SubSystem
 import indigo.gameengine.{events, _}
 import indigo.shared.{AssetType, GameConfig}

@@ -3,7 +3,8 @@ package indigoexts.entry
 import indigo.gameengine.assets.AssetCollection
 import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
 import indigo.gameengine.scenegraph.datatypes.FontInfo
-import indigo.gameengine.scenegraph.{Animations, SceneUpdateFragment}
+import indigo.gameengine.scenegraph.SceneUpdateFragment
+import indigo.gameengine.scenegraph.animation.Animations
 import indigo.gameengine._
 import indigo.gameengine.subsystems.SubSystem
 import indigo.shared.{AssetType, GameConfig}

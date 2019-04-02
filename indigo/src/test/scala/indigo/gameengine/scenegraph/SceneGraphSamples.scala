@@ -2,6 +2,7 @@ package indigo.gameengine.scenegraph
 
 import indigo.gameengine.assets.{AnimationsRegister, FontRegister}
 import indigo.gameengine.scenegraph.datatypes._
+import indigo.gameengine.scenegraph.animation._
 
 object SceneGraphSamples {
 

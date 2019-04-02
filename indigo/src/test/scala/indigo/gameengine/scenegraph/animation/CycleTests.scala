@@ -1,4 +1,4 @@
-package indigo.gameengine.scenegraph
+package indigo.gameengine.scenegraph.animation
 
 import utest._
 

@@ -1,6 +1,7 @@
 package indigo.gameengine
+
 import indigo.SubSystem
-import indigo.gameengine.scenegraph.Animations
+import indigo.gameengine.scenegraph.animation.Animations
 import indigo.gameengine.scenegraph.datatypes.FontInfo
 
 sealed trait Startup[+ErrorType, +SuccessType] extends Product with Serializable {

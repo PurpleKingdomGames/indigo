@@ -2,6 +2,7 @@ package indigoexts.formats
 
 import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph._
+import indigo.gameengine.scenegraph.animation._
 import indigo.gameengine.scenegraph.datatypes._
 import org.scalatest.{FunSpec, Matchers}
 
