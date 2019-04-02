@@ -1,6 +1,7 @@
 package ingidoexamples
 
 import indigo._
+import indigo.collections.NonEmptyList
 import indigoexts.entrypoint._
 
 object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
@@ -11,22 +12,23 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val fonts: Set[FontInfo] = Set()
 
-  val animationsKey: AnimationsKey = AnimationsKey("anims")
-
   val subSystems: Set[SubSystem] = Set()
 
+  val animationsKey: AnimationsKey = AnimationsKey("anims")
+
   val animations: Set[Animations] = Set(
-    Animations(
+    Animations.create(
       animationsKey,
       "trafficlights",
-      spriteSheetWidth = 128,
-      spriteSheetHeight = 128,
-      cycle = Cycle(
-        label = "lights",
-        frame = Frame(0, 0, 64, 64, 250),
-        frames = List(
-          Frame(64, 0, 64, 64, 250),
-          Frame(0, 64, 64, 64, 250)
+      Point(128, 128),
+      cycle = Cycle.create(
+        "lights",
+        NonEmptyList(
+          Frame(Rectangle(0, 0, 64, 64), 250),
+          List(
+            Frame(Rectangle(64, 0, 64, 64), 250),
+            Frame(Rectangle(0, 64, 64, 64), 250)
+          )
         )
       )
     )

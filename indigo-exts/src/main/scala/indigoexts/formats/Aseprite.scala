@@ -5,6 +5,7 @@ import indigo.gameengine.scenegraph._
 import indigo.gameengine.scenegraph.animation._
 import indigo.gameengine.scenegraph.datatypes._
 import indigo.runtime.{IndigoLogger, AsString}
+import indigo.collections.NonEmptyList
 import io.circe.generic.auto._
 import io.circe.parser._
 
@@ -57,11 +58,7 @@ object Aseprite {
             None
           case x :: xs =>
             Option(
-              Cycle(
-                label = frameTag.name,
-                frame = x,
-                frames = xs
-              )
+              Cycle.create(frameTag.name, NonEmptyList(x, xs))
             )
         }
       }
@@ -90,7 +87,7 @@ object Aseprite {
               bindingKey = BindingKey.generate,
               bounds = Rectangle(
                 position = Point(0, 0),
-                size = Point(x.frame.bounds.size.x, x.frame.bounds.size.y)
+                size = Point(x.frames.head.bounds.size.x, x.frames.head.bounds.size.y)
               ),
               depth = depth,
               animationsKey = animations.animationsKey,

@@ -3,6 +3,7 @@ package indigo.gameengine.scenegraph
 import indigo.gameengine.assets.{AnimationsRegister, FontRegister}
 import indigo.gameengine.scenegraph.datatypes._
 import indigo.gameengine.scenegraph.animation._
+import indigo.collections.NonEmptyList
 
 object SceneGraphSamples {
 
@@ -13,14 +14,22 @@ object SceneGraphSamples {
   FontRegister.register(fontInfo)
 
   val animationsKey: AnimationsKey = AnimationsKey("test-anim")
-  val animations: Animations = Animations(
-    animationsKey,
-    "ref",
-    64,
-    32,
-    Cycle("label", Frame.fromBounds(0, 0, 32, 32))
-      .addFrame(Frame.fromBounds(32, 0, 32, 32))
-  )
+  val animations: Animations =
+    Animations(
+      animationsKey,
+      "ref",
+      Point(64, 32),
+      CycleLabel("label"),
+      Cycle(
+        CycleLabel("label"),
+        NonEmptyList(Frame.fromBounds(0, 0, 32, 32), List(Frame.fromBounds(32, 0, 32, 32))),
+        0,
+        0
+      ),
+      Map.empty[CycleLabel, Cycle],
+      Nil
+    )
+
   AnimationsRegister.register(animations)
 
   val api: SceneGraphRootNode =
@@ -43,7 +52,7 @@ object SceneGraphSamples {
               32,
               32,
               1,
-              animationsKey,
+              animationsKey
             ),
             Group(
               Graphic(10, 10, 32, 32, 1, "ref1"),
