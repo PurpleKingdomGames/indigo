@@ -3,6 +3,10 @@ package indigo.gameengine.scenegraph.animation
 import indigo.GameTime
 import indigo.AnimationAction._
 import indigo.collections.NonEmptyList
+import indigo.EqualTo
+import indigo.EqualTo._
+import indigo.AsString
+import indigo.AsString._
 
 final class Cycle(val label: CycleLabel, val frames: NonEmptyList[Frame], val playheadPosition: Int, val lastFrameAdvance: Long) {
 
@@ -31,10 +35,23 @@ final class Cycle(val label: CycleLabel, val frames: NonEmptyList[Frame], val pl
 
 object Cycle {
 
+  implicit val cycleEqualTo: EqualTo[Cycle] =
+    EqualTo.create { (a, b) =>
+      a.label === b.label &&
+      a.frames === b.frames &&
+      a.playheadPosition === b.playheadPosition &&
+      a.lastFrameAdvance === b.lastFrameAdvance
+    }
+
+  implicit val cycleAsString: AsString[Cycle] = {
+    AsString.create { c =>
+      s"Cycle(${c.label.show}, ${c.frames.show}, ${c.playheadPosition.show}, ${c.lastFrameAdvance.show})"
+    }
+  }
+
   def apply(label: CycleLabel, frames: NonEmptyList[Frame], playheadPosition: Int, lastFrameAdvance: Long): Cycle =
     new Cycle(label, frames, playheadPosition, lastFrameAdvance)
 
-  // def apply(label: String, frame: Frame): Cycle                = Cycle(CycleLabel(label), NonEmptyList(frame), 0, 0)
   def create(label: String, frames: NonEmptyList[Frame]): Cycle =
     Cycle(CycleLabel(label), frames, 0, 0)
 
@@ -80,10 +97,32 @@ object Cycle {
     }
 }
 
-final case class CycleLabel(value: String) extends AnyVal
+final class CycleLabel(val value: String) extends AnyVal
+object CycleLabel {
+
+  implicit val cycleLabelEqualTo: EqualTo[CycleLabel] =
+    EqualTo.create { (a, b) =>
+      a.value === b.value
+    }
+
+  implicit val cycleLabelAsString: AsString[CycleLabel] =
+    AsString.create(l => s"CycleLabel(${l.value})")
+
+  def apply(value: String): CycleLabel =
+    new CycleLabel(value)
+}
 
 final class CycleMemento(val playheadPosition: Int, val lastFrameAdvance: Long)
 object CycleMemento {
+
+  implicit val cycleMementoEqualTo: EqualTo[CycleMemento] =
+    EqualTo.create { (a, b) =>
+      a.playheadPosition === b.playheadPosition && a.lastFrameAdvance === b.lastFrameAdvance
+    }
+
+  implicit val cycleMementoAsString: AsString[CycleMemento] =
+    AsString.create(m => s"CycleMemento(${m.playheadPosition.show}, ${m.lastFrameAdvance.show})")
+
   def apply(playheadPosition: Int, lastFrameAdvance: Long): CycleMemento =
     new CycleMemento(playheadPosition, lastFrameAdvance)
 }

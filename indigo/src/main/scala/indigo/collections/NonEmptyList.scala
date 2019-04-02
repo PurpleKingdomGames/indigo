@@ -86,6 +86,9 @@ object NonEmptyList {
       s"Nel[${s.head}][${s.tail.mkString(", ")}]"
     }
 
+  implicit def equalToNonEmptyList[A](implicit eq: EqualTo[A]): EqualTo[NonEmptyList[A]] =
+    EqualTo.create(equality(_, _))
+
   def apply[A](head: A, tail: A*): NonEmptyList[A] =
     apply(head, tail.toList)
 

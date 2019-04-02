@@ -12,10 +12,6 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   type AsString[A] = runtime.AsString[A]
   val AsString: runtime.AsString.type = runtime.AsString
 
-  implicit class WithAsString[T](val t: T) extends AnyVal {
-    def show(implicit showMe: AsString[T]): String = showMe.show(t)
-  }
-
   type Startup[ErrorType, SuccessType] = gameengine.Startup[ErrorType, SuccessType]
   val Startup: gameengine.Startup.type = gameengine.Startup
 

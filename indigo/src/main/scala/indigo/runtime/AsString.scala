@@ -39,4 +39,9 @@ object AsString {
     new AsString[A] {
       def show(a: A): String = f(a)
     }
+
+  implicit class AsStringSyntax[A](val a: A)(implicit val s: AsString[A]) {
+    def show: String =
+      s.show(a)
+  }
 }

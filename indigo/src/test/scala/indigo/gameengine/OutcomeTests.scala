@@ -5,6 +5,7 @@ import utest._
 object OutcomeTests extends TestSuite {
   import indigo._
   import indigo.EqualTo._
+  import indigo.AsString._
   import Outcome._
 
   final case class TestEvent(message: String) extends GlobalEvent

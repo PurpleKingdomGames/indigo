@@ -1,7 +1,7 @@
 package indigo.gameengine.scenegraph.datatypes
 
 import indigo.EqualTo._
-import indigo.runtime.AsString
+import indigo.{AsString, EqualTo}
 
 final case class Point(x: Int, y: Int) {
   def +(pt: Point): Point = Point(x + pt.x, y + pt.y)
@@ -33,6 +33,11 @@ object Point {
 
   implicit val show: AsString[Point] =
     AsString.create(p => s"""Point(${p.x}, ${p.y})""")
+
+  implicit val eq: EqualTo[Point] =
+    EqualTo.create { (a, b) =>
+      a.x === b.x && a.y === b.y
+    }
 
   def linearInterpolation(a: Point, b: Point, divisor: Double, multiplier: Double): Point =
     Point(a.x + (((b.x - a.x) / divisor) * multiplier).toInt, a.y + (((b.y - a.y) / divisor) * multiplier).toInt)

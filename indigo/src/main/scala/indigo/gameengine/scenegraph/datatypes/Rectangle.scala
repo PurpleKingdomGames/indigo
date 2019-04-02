@@ -1,12 +1,14 @@
 package indigo.gameengine.scenegraph.datatypes
-import indigo.runtime.AsString
+
+import indigo.{AsString, EqualTo}
+import indigo.AsString._
 
 final case class Rectangle(position: Point, size: Point) {
   val x: Int       = position.x
   val y: Int       = position.y
   val width: Int   = size.x
   val height: Int  = size.y
-  val hash: String = s"$x$y$width$height"
+  val hash: String = s"${x.show}${y.show}${width.show}${height.show}"
 
   val left: Int   = x
   val right: Int  = x + width
@@ -67,7 +69,12 @@ object Rectangle {
   }
 
   implicit val show: AsString[Rectangle] =
-    AsString.create(p => s"""Rectangle(${p.x}, ${p.y}, ${p.width}, ${p.height})""")
+    AsString.create(p => s"""Rectangle(Position(${p.x.show}, ${p.y.show}), Size(${p.width.show}, ${p.height.show}))""")
+
+  implicit val eq: EqualTo[Rectangle] =
+    EqualTo.create { (a, b) =>
+      a.position === b.position && a.size === b.size
+    }
 
   def expandToInclude(a: Rectangle, b: Rectangle): Rectangle = {
     val newX: Int = if (a.left < b.left) a.left else b.left
