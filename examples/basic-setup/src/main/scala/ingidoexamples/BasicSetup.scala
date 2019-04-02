@@ -11,7 +11,7 @@ object BasicSetup extends IndigoGameBasic[MyStartUpData, MyGameModel, MyViewMode
 
   val fonts: Set[FontInfo] = Set()
 
-  val animations: Set[Animations] = Set()
+  val animations: Set[Animation] = Set()
 
   val subSystems: Set[SubSystem] = Set()
 

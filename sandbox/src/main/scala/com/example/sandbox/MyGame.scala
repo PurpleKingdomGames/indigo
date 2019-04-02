@@ -22,7 +22,7 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, MyViewModel] {
   val assets: Set[AssetType] = MyAssets.assets
 
   val fonts: Set[FontInfo]        = Set(MyView.fontInfo)
-  val animations: Set[Animations] = Set()
+  val animations: Set[Animation] = Set()
   val subSystems: Set[SubSystem]  = Set()
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, MyStartupData] = {

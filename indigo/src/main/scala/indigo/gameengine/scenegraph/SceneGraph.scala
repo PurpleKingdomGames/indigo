@@ -3,7 +3,7 @@ package indigo.gameengine.scenegraph
 import indigo.gameengine.assets.{AnimationsRegister, FontRegister}
 import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph.animation.AnimationAction._
-import indigo.gameengine.scenegraph.animation.AnimationsKey
+import indigo.gameengine.scenegraph.animation.AnimationKey
 import indigo.gameengine.scenegraph.datatypes._
 import indigo.runtime.IndigoLogger
 
@@ -196,7 +196,7 @@ object Graphic {
 final case class Sprite(bindingKey: BindingKey,
                         bounds: Rectangle,
                         depth: Depth,
-                        animationsKey: AnimationsKey,
+                        animationsKey: AnimationKey,
                         ref: Point,
                         effects: Effects,
                         eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent])
@@ -279,7 +279,7 @@ final case class Sprite(bindingKey: BindingKey,
 }
 
 object Sprite {
-  def apply(bindingKey: BindingKey, x: Int, y: Int, width: Int, height: Int, depth: Int, animationsKey: AnimationsKey): Sprite =
+  def apply(bindingKey: BindingKey, x: Int, y: Int, width: Int, height: Int, depth: Int, animationsKey: AnimationKey): Sprite =
     Sprite(
       bindingKey = bindingKey,
       bounds = Rectangle(x, y, width, height),

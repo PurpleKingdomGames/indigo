@@ -27,7 +27,7 @@ final case class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     assets: Set[AssetType],
     assetsAsync: Future[Set[AssetType]],
     fonts: Set[FontInfo],
-    animations: Set[Animations],
+    animations: Set[Animation],
     subSystems: Set[SubSystem],
     initialise: AssetCollection => Startup[StartupError, StartupData],
     initialModel: StartupData => GameModel,
@@ -65,7 +65,7 @@ object GameEngine {
       assets: Set[AssetType],
       assetsAsync: Future[Set[AssetType]],
       fonts: Set[FontInfo],
-      animations: Set[Animations],
+      animations: Set[Animation],
       subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
@@ -153,7 +153,7 @@ object GameEngine {
     }
   }
 
-  def registerAnimations(animations: Set[Animations]): GameContext[Unit] =
+  def registerAnimations(animations: Set[Animation]): GameContext[Unit] =
     GameContext.delay(animations.foreach(AnimationsRegister.register))
 
   def registerFonts(fonts: Set[FontInfo]): GameContext[Unit] =

@@ -26,8 +26,8 @@ trait SceneGraphTypeAliases {
   val SceneAudioSource: gameengine.scenegraph.SceneAudioSource.type = gameengine.scenegraph.SceneAudioSource
 
   // Animation
-  type Animations = gameengine.scenegraph.animation.Animations
-  val Animations: gameengine.scenegraph.animation.Animations.type = gameengine.scenegraph.animation.Animations
+  type Animation = gameengine.scenegraph.animation.Animation
+  val Animation: gameengine.scenegraph.animation.Animation.type = gameengine.scenegraph.animation.Animation
 
   type Cycle = gameengine.scenegraph.animation.Cycle
   val Cycle: gameengine.scenegraph.animation.Cycle.type = gameengine.scenegraph.animation.Cycle
@@ -35,8 +35,8 @@ trait SceneGraphTypeAliases {
   type Frame = gameengine.scenegraph.animation.Frame
   val Frame: gameengine.scenegraph.animation.Frame.type = gameengine.scenegraph.animation.Frame
 
-  type AnimationsKey = gameengine.scenegraph.animation.AnimationsKey
-  val AnimationsKey: gameengine.scenegraph.animation.AnimationsKey.type = gameengine.scenegraph.animation.AnimationsKey
+  type AnimationKey = gameengine.scenegraph.animation.AnimationKey
+  val AnimationKey: gameengine.scenegraph.animation.AnimationKey.type = gameengine.scenegraph.animation.AnimationKey
 
   type AnimationAction = gameengine.scenegraph.animation.AnimationAction
   val AnimationAction: gameengine.scenegraph.animation.AnimationAction.type = gameengine.scenegraph.animation.AnimationAction

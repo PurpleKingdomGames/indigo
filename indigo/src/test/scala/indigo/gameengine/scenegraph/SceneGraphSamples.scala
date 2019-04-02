@@ -13,9 +13,9 @@ object SceneGraphSamples {
   val fontInfo: FontInfo = FontInfo(fontKey, "font-sheet", 256, 256, FontChar("a", 0, 0, 16, 16))
   FontRegister.register(fontInfo)
 
-  val animationsKey: AnimationsKey = AnimationsKey("test-anim")
-  val animations: Animations =
-    Animations(
+  val animationsKey: AnimationKey = AnimationKey("test-anim")
+  val animations: Animation =
+    Animation(
       animationsKey,
       "ref",
       Point(64, 32),

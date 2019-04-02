@@ -3,7 +3,7 @@ package indigoexts.entry
 import indigo.gameengine.assets.AssetCollection
 import indigo.gameengine.scenegraph.datatypes.FontInfo
 import indigo.gameengine.scenegraph.SceneUpdateFragment
-import indigo.gameengine.scenegraph.animation.Animations
+import indigo.gameengine.scenegraph.animation.Animation
 import indigo.gameengine.subsystems.SubSystem
 import indigo.gameengine.{events, _}
 import indigo.shared.{AssetType, GameConfig}
@@ -25,7 +25,7 @@ object IndigoGameBase {
       assets: Set[AssetType],
       assetsAsync: Future[Set[AssetType]],
       fonts: Set[FontInfo],
-      animations: Set[Animations],
+      animations: Set[Animation],
       subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
@@ -62,7 +62,7 @@ object IndigoGameBase {
       assets: Set[AssetType],
       assetsAsync: Future[Set[AssetType]],
       fonts: Set[FontInfo],
-      animations: Set[Animations],
+      animations: Set[Animation],
       subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
@@ -82,7 +82,7 @@ object IndigoGameBase {
       assets: Set[AssetType],
       assetsAsync: Future[Set[AssetType]],
       fonts: Set[FontInfo],
-      animations: Set[Animations],
+      animations: Set[Animation],
       subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
@@ -101,7 +101,7 @@ object IndigoGameBase {
       assets: Set[AssetType],
       assetsAsync: Future[Set[AssetType]],
       fonts: Set[FontInfo],
-      animations: Set[Animations],
+      animations: Set[Animation],
       subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
@@ -131,7 +131,7 @@ object IndigoGameBase {
       assets: Set[AssetType],
       assetsAsync: Future[Set[AssetType]],
       fonts: Set[FontInfo],
-      animations: Set[Animations],
+      animations: Set[Animation],
       subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel
@@ -148,7 +148,7 @@ object IndigoGameBase {
       assets: Set[AssetType],
       assetsAsync: Future[Set[AssetType]],
       fonts: Set[FontInfo],
-      animations: Set[Animations],
+      animations: Set[Animation],
       subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData]
   ) {
@@ -162,7 +162,7 @@ object IndigoGameBase {
       assets: Set[AssetType],
       assetsAsync: Future[Set[AssetType]],
       fonts: Set[FontInfo],
-      animations: Set[Animations],
+      animations: Set[Animation],
       subSystems: Set[SubSystem]
   ) {
     def startUpGameWith[StartupData, StartupError](
@@ -177,7 +177,7 @@ object IndigoGameBase {
       assets: Set[AssetType],
       assetsAsync: Future[Set[AssetType]],
       fonts: Set[FontInfo],
-      animations: Set[Animations]
+      animations: Set[Animation]
   ) {
     def withSubSystems(subSystems: Set[SubSystem]): IndigoGameWithSubSystems =
       new IndigoGameWithSubSystems(config, configAsync, assets, assetsAsync, fonts, animations, subSystems)
@@ -186,7 +186,7 @@ object IndigoGameBase {
   }
 
   class IndigoGameWithFonts(config: GameConfig, configAsync: Future[Option[GameConfig]], assets: Set[AssetType], assetsAsync: Future[Set[AssetType]], fonts: Set[FontInfo]) {
-    def withAnimations(animations: Set[Animations]): IndigoGameWithAnimations =
+    def withAnimations(animations: Set[Animation]): IndigoGameWithAnimations =
       new IndigoGameWithAnimations(config, configAsync, assets, assetsAsync, fonts, animations)
     def noAnimations: IndigoGameWithAnimations =
       new IndigoGameWithAnimations(config, configAsync, assets, assetsAsync, fonts, Set())

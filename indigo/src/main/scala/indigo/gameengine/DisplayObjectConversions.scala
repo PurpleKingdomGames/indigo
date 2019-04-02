@@ -39,7 +39,7 @@ object DisplayObjectConversions {
             Vector2.zero
           }
       }
-  )
+    )
 
   private val lookupAtlasName: (AssetMapping, String) => String = (assetMapping, name) =>
     lookupAtlasNameCache.getOrElseUpdate(name, {
@@ -57,7 +57,7 @@ object DisplayObjectConversions {
           Vector2.one
         }
       }
-  )
+    )
 
   def leafToDisplayObject(gameTime: GameTime, assetMapping: AssetMapping)(implicit metrics: Metrics): Renderable => List[DisplayObject] = {
     case leaf: Graphic =>
@@ -89,7 +89,7 @@ object DisplayObjectConversions {
       )
 
     case leaf: Sprite =>
-      val animations: Option[Animations] = AnimationsRegister.fetchFromCache(gameTime, leaf.bindingKey, leaf.animationsKey)
+      val animations: Option[Animation] = AnimationsRegister.fetchFromCache(gameTime, leaf.bindingKey, leaf.animationsKey)
 
       animations
         .map { anim =>
@@ -133,7 +133,7 @@ object DisplayObjectConversions {
           case TextAlignment.Center => -(lineBounds.size.x / 2)
 
           case TextAlignment.Right => -lineBounds.size.x
-      }
+        }
 
       val converterFunc: (TextLine, Int, Int) => List[DisplayObject] =
         DisplayObjectConversions.textLineToDisplayObjects(leaf, assetMapping)
@@ -182,7 +182,7 @@ object DisplayObjectConversions {
         .getOrElse {
           IndigoLogger.errorOnce(s"Cannot render Text, missing Font with key: ${leaf.fontKey}")
           Nil
-      }
+        }
 
   private def zipWithCharDetails(charList: List[Char], fontInfo: FontInfo): List[(FontChar, Int)] = {
     @tailrec

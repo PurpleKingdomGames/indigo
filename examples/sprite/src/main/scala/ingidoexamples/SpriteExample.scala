@@ -14,10 +14,10 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val subSystems: Set[SubSystem] = Set()
 
-  val animationsKey: AnimationsKey = AnimationsKey("anims")
+  val animationsKey: AnimationKey = AnimationKey("anims")
 
-  val animations: Set[Animations] = Set(
-    Animations.create(
+  val animations: Set[Animation] = Set(
+    Animation.create(
       animationsKey,
       "trafficlights",
       Point(128, 128),

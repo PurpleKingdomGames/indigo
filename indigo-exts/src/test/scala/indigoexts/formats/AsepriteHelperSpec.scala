@@ -128,7 +128,7 @@ object AsepriteSampleData {
     )
   }
 
-  val animationsKey: AnimationsKey = AnimationsKey("test")
+  val animationsKey: AnimationKey = AnimationKey("test")
 
   /*
   Animations(

@@ -71,9 +71,9 @@ object Aseprite {
         IndigoLogger.info("No animation frames found in Aseprite")
         None
       case x :: xs =>
-        val animations: Animations =
-          Animations(
-            animationsKey = AnimationsKey(BindingKey.generate.value),
+        val animations: Animation =
+          Animation(
+            animationsKey = AnimationKey(BindingKey.generate.value),
             imageAssetRef = imageAssetRef,
             spriteSheetSize = Point(aseprite.meta.size.w, aseprite.meta.size.h),
             currentCycleLabel = x.label,
@@ -102,4 +102,4 @@ object Aseprite {
 
 }
 
-final case class SpriteAndAnimations(sprite: Sprite, animations: Animations)
+final case class SpriteAndAnimations(sprite: Sprite, animations: Animation)

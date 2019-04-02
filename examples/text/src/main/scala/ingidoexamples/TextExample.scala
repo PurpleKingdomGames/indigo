@@ -13,7 +13,7 @@ object TextExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val fonts: Set[FontInfo] = Set(fontInfo)
 
-  val animations: Set[Animations] = Set()
+  val animations: Set[Animation] = Set()
 
   val subSystems: Set[SubSystem] = Set()
 

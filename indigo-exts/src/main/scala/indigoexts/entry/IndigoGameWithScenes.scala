@@ -2,7 +2,7 @@ package indigoexts.entry
 
 import indigo.gameengine.assets.AssetCollection
 import indigo.gameengine.events.FrameInputEvents
-import indigo.gameengine.scenegraph.animation.Animations
+import indigo.gameengine.scenegraph.animation.Animation
 import indigo.gameengine.scenegraph.datatypes.FontInfo
 import indigo.gameengine._
 import indigo.gameengine.subsystems.SubSystem
@@ -33,7 +33,7 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
 
   val fonts: Set[FontInfo]
 
-  val animations: Set[Animations]
+  val animations: Set[Animation]
 
   val subSystems: Set[SubSystem]
 

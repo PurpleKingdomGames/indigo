@@ -19,7 +19,7 @@ object ScenesSetup extends IndigoGameWithScenes[MyStartUpData, MyGameModel, MyVi
 
   val fonts: Set[FontInfo] = Set(FontStuff.fontInfo)
 
-  val animations: Set[Animations] = Set()
+  val animations: Set[Animation] = Set()
 
   val subSystems: Set[SubSystem] = Set()
 

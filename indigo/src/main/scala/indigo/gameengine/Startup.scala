@@ -1,11 +1,11 @@
 package indigo.gameengine
 
 import indigo.SubSystem
-import indigo.gameengine.scenegraph.animation.Animations
+import indigo.gameengine.scenegraph.animation.Animation
 import indigo.gameengine.scenegraph.datatypes.FontInfo
 
 sealed trait Startup[+ErrorType, +SuccessType] extends Product with Serializable {
-  def additionalAnimations: Set[Animations] =
+  def additionalAnimations: Set[Animation] =
     this match {
       case Startup.Failure(_) =>
         Set()
@@ -39,10 +39,10 @@ object Startup {
   final case class Failure[ErrorType](error: ErrorType)(implicit toReportable: ToReportable[ErrorType]) extends Startup[ErrorType, Nothing] {
     def report: String = toReportable.report(error)
   }
-  final case class Success[SuccessType](success: SuccessType, animations: Set[Animations], fonts: Set[FontInfo], subSystems: Set[SubSystem]) extends Startup[Nothing, SuccessType] {
-    def addAnimations(value: Animations*): Success[SuccessType] =
+  final case class Success[SuccessType](success: SuccessType, animations: Set[Animation], fonts: Set[FontInfo], subSystems: Set[SubSystem]) extends Startup[Nothing, SuccessType] {
+    def addAnimations(value: Animation*): Success[SuccessType] =
       addAnimations(value.toList)
-    def addAnimations(value: List[Animations]): Success[SuccessType] =
+    def addAnimations(value: List[Animation]): Success[SuccessType] =
       Success(success, animations ++ value, fonts, subSystems)
 
     def addFonts(value: FontInfo*): Success[SuccessType] =

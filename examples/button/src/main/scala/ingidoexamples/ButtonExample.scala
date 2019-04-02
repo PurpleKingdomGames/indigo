@@ -13,7 +13,7 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   val fonts: Set[FontInfo] = Set()
 
-  val animations: Set[Animations] = Set()
+  val animations: Set[Animation] = Set()
 
   val subSystems: Set[SubSystem] = Set()
 

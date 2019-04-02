@@ -6,8 +6,8 @@ import indigo.gameengine.scenegraph.datatypes.{BindingKey, Point}
 
 import indigo.EqualTo._
 
-final case class Animations(
-    animationsKey: AnimationsKey,
+final case class Animation(
+    animationsKey: AnimationKey,
     imageAssetRef: String,
     spriteSheetSize: Point,
     currentCycleLabel: CycleLabel,
@@ -23,16 +23,16 @@ final case class Animations(
     currentFrame.bounds.hash + "_" + imageAssetRef
 
   def currentCycle: Cycle =
-    Animations.currentCycle(this)
+    Animation.currentCycle(this)
 
-  def addCycle(cycle: Cycle): Animations =
-    Animations.addCycle(this, cycle)
+  def addCycle(cycle: Cycle): Animation =
+    Animation.addCycle(this, cycle)
 
-  def addAction(action: AnimationAction): Animations =
-    Animations.addAction(this, action)
+  def addAction(action: AnimationAction): Animation =
+    Animation.addAction(this, action)
 
-  def withAnimationsKey(animationsKey: AnimationsKey): Animations =
-    Animations.withAnimationsKey(this, animationsKey)
+  def withAnimationKey(animationsKey: AnimationKey): Animation =
+    Animation.withAnimationKey(this, animationsKey)
 
   def currentCycleName: String =
     currentCycle.label.value
@@ -43,46 +43,46 @@ final case class Animations(
   def saveMemento(bindingKey: BindingKey): AnimationMemento =
     AnimationMemento(bindingKey, currentCycleLabel, currentCycle.saveMemento)
 
-  def applyMemento(memento: AnimationMemento): Animations =
-    Animations.applyMemento(this, memento)
+  def applyMemento(memento: AnimationMemento): Animation =
+    Animation.applyMemento(this, memento)
 
-  def runActions(gameTime: GameTime): Animations =
-    Animations.runActions(this, gameTime)
+  def runActions(gameTime: GameTime): Animation =
+    Animation.runActions(this, gameTime)
 
 }
 
-object Animations {
+object Animation {
 
   def apply(
-      animationsKey: AnimationsKey,
+      animationsKey: AnimationKey,
       imageAssetRef: String,
       spriteSheetSize: Point,
       currentCycleLabel: CycleLabel,
       cycle: Cycle,
       cycles: Map[CycleLabel, Cycle],
       actions: List[AnimationAction]
-  ): Animations =
-    new Animations(animationsKey, imageAssetRef, spriteSheetSize, currentCycleLabel, cycle, cycles, actions)
+  ): Animation =
+    new Animation(animationsKey, imageAssetRef, spriteSheetSize, currentCycleLabel, cycle, cycles, actions)
 
-  def create(animationsKey: AnimationsKey, imageAssetRef: String, spriteSheetSize: Point, cycle: Cycle): Animations =
+  def create(animationsKey: AnimationKey, imageAssetRef: String, spriteSheetSize: Point, cycle: Cycle): Animation =
     apply(animationsKey, imageAssetRef, spriteSheetSize, cycle.label, cycle, Map.empty[CycleLabel, Cycle], Nil)
 
-  def currentCycle(animations: Animations): Cycle =
+  def currentCycle(animations: Animation): Cycle =
     animations.toMap.getOrElse(animations.currentCycleLabel, animations.cycle)
 
-  def addCycle(animations: Animations, cycle: Cycle): Animations =
+  def addCycle(animations: Animation, cycle: Cycle): Animation =
     animations.copy(cycle = cycle, cycles = animations.toMap)
 
-  def addAction(animations: Animations, action: AnimationAction): Animations =
+  def addAction(animations: Animation, action: AnimationAction): Animation =
     animations.copy(actions = animations.actions :+ action)
 
-  def withAnimationsKey(animations: Animations, animationsKey: AnimationsKey): Animations =
+  def withAnimationKey(animations: Animation, animationsKey: AnimationKey): Animation =
     animations.copy(animationsKey = animationsKey)
 
-  def saveMemento(animations: Animations, bindingKey: BindingKey): AnimationMemento =
+  def saveMemento(animations: Animation, bindingKey: BindingKey): AnimationMemento =
     AnimationMemento(bindingKey, animations.currentCycleLabel, animations.currentCycle.saveMemento)
 
-  def applyMemento(animations: Animations, memento: AnimationMemento): Animations =
+  def applyMemento(animations: Animation, memento: AnimationMemento): Animation =
     animations.copy(
       cycle = animations.toMap
         .getOrElse(memento.currentCycleLabel, animations.cycle)
@@ -91,7 +91,7 @@ object Animations {
         .filter(p => p._1.value !== memento.currentCycleLabel.value)
     )
 
-  def runActions(animations: Animations, gameTime: GameTime): Animations =
+  def runActions(animations: Animation, gameTime: GameTime): Animation =
     animations.actions.foldLeft(animations) { (anim, action) =>
       action match {
         case ChangeCycle(newLabel) =>
