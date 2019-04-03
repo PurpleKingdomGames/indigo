@@ -1,6 +1,6 @@
 package indigo.gameengine
 
-import indigo.SubSystem
+import indigo.gameengine.subsystems.SubSystem
 import indigo.gameengine.scenegraph.animation.Animation
 import indigo.gameengine.scenegraph.datatypes.FontInfo
 

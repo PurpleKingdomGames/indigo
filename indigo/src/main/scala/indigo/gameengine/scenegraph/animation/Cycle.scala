@@ -1,12 +1,12 @@
 package indigo.gameengine.scenegraph.animation
 
-import indigo.GameTime
-import indigo.AnimationAction._
+import indigo.time.GameTime
+import indigo.gameengine.scenegraph.animation.AnimationAction._
 import indigo.collections.NonEmptyList
-import indigo.EqualTo
-import indigo.EqualTo._
-import indigo.AsString
-import indigo.AsString._
+import indigo.shared.EqualTo
+import indigo.shared.EqualTo._
+import indigo.shared.AsString
+import indigo.shared.AsString._
 
 final class Cycle(val label: CycleLabel, val frames: NonEmptyList[Frame], val playheadPosition: Int, val lastFrameAdvance: Long) {
 
@@ -45,7 +45,8 @@ object Cycle {
 
   implicit val cycleAsString: AsString[Cycle] = {
     AsString.create { c =>
-      s"Cycle(${c.label.show}, ${c.frames.show}, ${c.playheadPosition.show}, ${c.lastFrameAdvance.show})"
+      // s"Cycle(${c.label.show}, ${c.frames.show}, ${c.playheadPosition.show}, ${c.lastFrameAdvance.show})"
+      s"Cycle(${c.label.show}, ${c.playheadPosition.show}, ${c.lastFrameAdvance.show})"
     }
   }
 

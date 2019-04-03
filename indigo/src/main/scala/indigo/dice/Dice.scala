@@ -35,7 +35,7 @@ object Dice {
       }
 
     if (isPositive(dice) && isPositive(sides))
-      rec(dice - 1, NonEmptyList.point(diceSidesN(sides, seed).roll))
+      rec(dice - 1, NonEmptyList(diceSidesN(sides, seed).roll))
     else
       None
   }

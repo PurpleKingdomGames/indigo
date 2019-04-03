@@ -1,7 +1,7 @@
 package indigoexts.scenemanager
 
-import indigo.GameTime
-import indigo.Outcome
+import indigo.time.GameTime
+import indigo.gameengine.Outcome
 import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
 import indigo.gameengine.scenegraph.SceneUpdateFragment
 import indigo.runtime.IndigoLogger

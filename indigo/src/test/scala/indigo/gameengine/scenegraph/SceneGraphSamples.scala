@@ -22,7 +22,7 @@ object SceneGraphSamples {
       CycleLabel("label"),
       Cycle(
         CycleLabel("label"),
-        NonEmptyList(Frame.fromBounds(0, 0, 32, 32), List(Frame.fromBounds(32, 0, 32, 32))),
+        NonEmptyList(Frame.fromBounds(0, 0, 32, 32), Frame.fromBounds(32, 0, 32, 32)),
         0,
         0
       ),

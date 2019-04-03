@@ -38,8 +38,6 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   type Outcome[T] = gameengine.Outcome[T]
   val Outcome: gameengine.Outcome.type = gameengine.Outcome
 
-  // Constants
-
   val Keys: gameengine.constants.Keys.type = gameengine.constants.Keys
 
   type KeyCode = gameengine.constants.KeyCode

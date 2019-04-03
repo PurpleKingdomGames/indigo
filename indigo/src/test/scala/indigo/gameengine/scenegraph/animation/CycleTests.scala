@@ -5,7 +5,7 @@ import utest._
 import indigo._
 import indigo.collections.NonEmptyList
 
-import indigo.EqualTo._
+import indigo.shared.EqualTo._
 
 object CycleTests extends TestSuite {
 
@@ -28,6 +28,7 @@ object CycleTests extends TestSuite {
 
         "adding a frame" - {
           //cycle.addFrame(frame2) === Cycle.create("test", NonEmptyList(frame1, frame2)) ==> true
+          1 ==> 2
         }
 
       }

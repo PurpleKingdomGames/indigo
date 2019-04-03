@@ -1,7 +1,7 @@
 package indigoexts.temporal
 
-import indigo.Millis
-import indigo.EqualTo
+import indigo.time.Millis
+import indigo.shared.EqualTo
 
 /**
   * A [ValueOverTime[T]] manages the time based

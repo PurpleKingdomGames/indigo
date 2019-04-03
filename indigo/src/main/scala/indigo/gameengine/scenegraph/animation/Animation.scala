@@ -4,7 +4,7 @@ import indigo.time.GameTime
 import indigo.gameengine.scenegraph.animation.AnimationAction._
 import indigo.gameengine.scenegraph.datatypes.{BindingKey, Point}
 
-import indigo.EqualTo._
+import indigo.shared.EqualTo._
 
 final case class Animation(
     animationsKey: AnimationKey,

@@ -1,9 +1,9 @@
 package indigoexts.temporal
 
-import indigo.Millis
-import indigo.EqualTo
-import indigo.EqualTo._
-import indigo.AsString
+import indigo.time.Millis
+import indigo.shared.EqualTo
+import indigo.shared.EqualTo._
+import indigo.shared.AsString
 
 class TimeVaryingValue[T](val value: T, val startValue: T, val createdAt: Millis)(implicit vot: ValueOverTime[T], millisAsString: AsString[Millis]) {
 

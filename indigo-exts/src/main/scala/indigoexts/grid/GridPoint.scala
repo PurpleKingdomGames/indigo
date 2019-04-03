@@ -1,12 +1,12 @@
 package indigoexts.grid
 
 import indigo.gameengine.scenegraph.datatypes.Point
-import indigo.AsString
+import indigo.shared.AsString
 
 import scala.annotation.tailrec
 import scala.util.Random
 
-import indigo.EqualTo._
+import indigo.shared.EqualTo._
 
 final case class GridPoint(x: Int, y: Int) {
 

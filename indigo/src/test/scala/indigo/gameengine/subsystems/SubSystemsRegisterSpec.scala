@@ -2,7 +2,7 @@ package indigo.gameengine.subsystems
 
 import indigo.time.GameTime
 import indigo.gameengine.scenegraph.Text
-import indigo.Dice
+import indigo.dice.Dice
 
 import org.scalatest.FunSpec
 

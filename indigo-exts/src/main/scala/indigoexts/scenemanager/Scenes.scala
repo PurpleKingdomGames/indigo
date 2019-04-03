@@ -1,6 +1,7 @@
 package indigoexts.scenemanager
 
 import indigo.collections.NonEmptyList
+import indigo.shared.EqualTo._
 
 sealed trait Scenes[GameModel, ViewModel] extends Product with Serializable {
 
@@ -49,18 +50,17 @@ object Scenes {
     }
 }
 
-// TODO: Get rid of the ()
 final case class ScenesNil[GameModel, ViewModel]() extends Scenes[GameModel, ViewModel]
 
 final case class ScenesList[GameModel, ViewModel](
     current: Scene[GameModel, ViewModel],
     next: Scenes[GameModel, ViewModel]
 ) extends Scenes[GameModel, ViewModel] {
-  // TODO: current is head
+  
   def head: Scene[GameModel, ViewModel] = current
 
   def listSceneNames: NonEmptyList[SceneName] =
-    this.next.foldLeft(NonEmptyList(current.name, Nil))(_ :+ _.name)
+    this.next.foldLeft(NonEmptyList(current.name))(_ :+ _.name)
 
   def nextScene: ScenesList[GameModel, ViewModel] =
     next match {

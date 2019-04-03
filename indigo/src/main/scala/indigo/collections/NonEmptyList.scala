@@ -1,8 +1,8 @@
 package indigo.collections
 
-import indigo.AsString
-import indigo.EqualTo._
-import indigo.EqualTo
+import indigo.shared.AsString
+import indigo.shared.EqualTo._
+import indigo.shared.EqualTo
 
 trait NonEmptyList[A] {
 
@@ -16,9 +16,6 @@ trait NonEmptyList[A] {
       case Some(s) => s
       case None    => head
     }
-
-  def ===(other: NonEmptyList[A])(implicit eq: EqualTo[A]): Boolean =
-    NonEmptyList.equality(this, other)
 
   def length: Int =
     NonEmptyList.length(this)
@@ -86,12 +83,12 @@ object NonEmptyList {
     }
 
   implicit def equalToNonEmptyList[A](implicit eq: EqualTo[A]): EqualTo[NonEmptyList[A]] =
-    EqualTo.create(equality(_, _))
+    EqualTo.create((a, b) => equality(a, b))
 
   def apply[A](head: A, tail: A*): NonEmptyList[A] =
-    apply(head, tail.toList)
+    pure(head, tail.toList)
 
-  def apply[A](headItem: A, tailItems: List[A]): NonEmptyList[A] =
+  def pure[A](headItem: A, tailItems: List[A]): NonEmptyList[A] =
     new NonEmptyList[A] {
       val head: A       = headItem
       val tail: List[A] = tailItems
@@ -101,7 +98,7 @@ object NonEmptyList {
     Option((nel.head, nel.tail))
 
   def point[A](a: A): NonEmptyList[A] =
-    apply(a, List.empty[A])
+    pure(a, List.empty[A])
 
   def equality[A](a: NonEmptyList[A], b: NonEmptyList[A])(implicit eq: EqualTo[A]): Boolean =
     a.length === b.length && a.zip(b).forall(as => eq.equal(as._1, as._2))
@@ -115,14 +112,14 @@ object NonEmptyList {
         fa
 
       case x :: xs =>
-        apply(x, xs :+ fa.head)
+        pure(x, xs :+ fa.head)
     }
 
   def map[A, B](fa: NonEmptyList[A])(f: A => B): NonEmptyList[B] =
-    apply(f(fa.head), fa.tail.map(f))
+    pure(f(fa.head), fa.tail.map(f))
 
   def combine[A](fa: NonEmptyList[A])(fb: NonEmptyList[A]): NonEmptyList[A] =
-    apply(fa.head, fa.tail ++ fb.toList)
+    pure(fa.head, fa.tail ++ fb.toList)
 
   def flatten[A](fa: NonEmptyList[NonEmptyList[A]]): NonEmptyList[A] =
     fa.tail.foldLeft(fa.head)(_ ++ _)
@@ -139,20 +136,20 @@ object NonEmptyList {
         fa.head
 
       case x :: xs =>
-        foldLeft(NonEmptyList(x, xs))(fa.head)(f)
+        foldLeft(NonEmptyList.pure(x, xs))(fa.head)(f)
     }
 
   def append[A](fa: NonEmptyList[A])(next: A): NonEmptyList[A] =
-    apply(fa.head, fa.tail :+ next)
+    pure(fa.head, fa.tail :+ next)
 
   def cons[A](fa: NonEmptyList[A])(first: A): NonEmptyList[A] =
-    apply(first, fa.head :: fa.tail)
+    pure(first, fa.head :: fa.tail)
 
   def zipWithIndex[A](fa: NonEmptyList[A]): NonEmptyList[(A, Int)] =
-    apply((fa.head, 0), fa.tail.zipWithIndex.map(p => (p._1, p._2 + 1)))
+    pure((fa.head, 0), fa.tail.zipWithIndex.map(p => (p._1, p._2 + 1)))
 
   def zip[A, B](fa: NonEmptyList[A], fb: NonEmptyList[B]): NonEmptyList[(A, B)] =
-    apply((fa.head, fb.head), fa.tail.zip(fb.tail))
+    pure((fa.head, fb.head), fa.tail.zip(fb.tail))
 
   def forall[A](fa: NonEmptyList[A])(p: A => Boolean): Boolean =
     fa.toList.forall(p)

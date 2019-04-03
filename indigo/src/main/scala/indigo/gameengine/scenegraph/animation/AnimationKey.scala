@@ -1,6 +1,6 @@
 package indigo.gameengine.scenegraph.animation
 
-import indigo.EqualTo._
+import indigo.shared.EqualTo._
 
 final class AnimationKey(val key: String) extends AnyVal {
   def ===(other: AnimationKey): Boolean =

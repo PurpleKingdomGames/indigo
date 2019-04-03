@@ -1,4 +1,5 @@
 package indigo.gameengine.scenegraph
+
 import indigo.gameengine
 
 trait SceneGraphTypeAliases {

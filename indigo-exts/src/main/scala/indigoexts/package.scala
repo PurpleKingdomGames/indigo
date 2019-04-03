@@ -1,4 +1,3 @@
-import indigo._
 
 import scala.concurrent.Future
 
@@ -12,13 +11,13 @@ package object indigoexts {
 
     type IndigoGame[StartupData, StartupError, GameModel, ViewModel] = entry.IndigoGameBase.IndigoGame[StartupData, StartupError, GameModel, ViewModel]
 
-    implicit val emptyConfigAsync: Future[Option[GameConfig]] = entry.emptyConfigAsync
+    implicit val emptyConfigAsync: Future[Option[indigo.shared.GameConfig]] = entry.emptyConfigAsync
 
-    implicit val emptyAssetsAsync: Future[Set[AssetType]] = entry.emptyAssetsAsync
+    implicit val emptyAssetsAsync: Future[Set[indigo.shared.AssetType]] = entry.emptyAssetsAsync
 
-    val defaultGameConfig: GameConfig = entry.defaultGameConfig
+    val defaultGameConfig: indigo.shared.GameConfig = entry.defaultGameConfig
 
-    val noRender: SceneUpdateFragment = entry.noRender
+    val noRender: indigo.gameengine.scenegraph.SceneUpdateFragment = entry.noRender
   }
 
   object lens {

@@ -1,7 +1,7 @@
 package indigo.gameengine.scenegraph.datatypes
 
-import indigo.{AsString, EqualTo}
-import indigo.AsString._
+import indigo.shared.{AsString, EqualTo}
+import indigo.shared.AsString._
 
 final case class Rectangle(position: Point, size: Point) {
   val x: Int       = position.x

@@ -12,8 +12,8 @@ import indigo.runtime.metrics._
 import indigo.shared.GameConfig
 import indigo.dice.Dice
 import org.scalajs.dom
-import indigo.GameTime
-import indigo.Millis
+import indigo.time.GameTime
+import indigo.time.Millis
 
 import scala.annotation.tailrec
 

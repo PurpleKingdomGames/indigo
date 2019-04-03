@@ -1,6 +1,6 @@
 package indigo.gameengine.events
 
-import indigo.KeyCode
+import indigo.gameengine.constants.KeyCode
 import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
 
 /**

@@ -1,6 +1,6 @@
 package indigo.runtime
 
-import indigo.EqualTo._
+import indigo.shared.EqualTo._
 import org.scalatest.{FunSpec, Matchers}
 
 class GameContextSpec extends FunSpec with Matchers {

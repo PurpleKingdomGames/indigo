@@ -1,7 +1,7 @@
 package indigo.gameengine
 
-import indigo.Millis
-import indigo.GameTime
+import indigo.time.Millis
+import indigo.time.GameTime
 import indigo.gameengine.assets._
 import indigo.gameengine.audio.AudioPlayer
 import indigo.gameengine.events._
@@ -19,7 +19,7 @@ import org.scalajs.dom.html.Canvas
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import indigo.EqualTo._
+import indigo.shared.EqualTo._
 
 final case class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     config: GameConfig,

@@ -8,12 +8,12 @@ import indigo.renderer.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import indigo.renderer.{AssetMapping, DisplayObject, SpriteSheetFrame, Vector2}
 import indigo.runtime.IndigoLogger
 import indigo.runtime.metrics.Metrics
-import indigo.GameTime
+import indigo.time.GameTime
 
 import scala.annotation.tailrec
 import scala.collection.mutable
 
-import indigo.EqualTo._
+import indigo.shared.EqualTo._
 
 object DisplayObjectConversions {
 

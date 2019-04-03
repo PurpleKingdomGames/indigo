@@ -4,7 +4,7 @@ import indigo.time.GameTime
 import indigo.gameengine.Outcome
 import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph.SceneUpdateFragment
-import indigo.Dice
+import indigo.dice.Dice
 
 trait SubSystem {
   type EventType

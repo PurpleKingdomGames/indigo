@@ -2,7 +2,7 @@ package indigo.runtime.metrics
 
 import indigo.runtime._
 
-import indigo.EqualTo._
+import indigo.shared.EqualTo._
 
 import scala.annotation.tailrec
 

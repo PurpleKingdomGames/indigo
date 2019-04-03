@@ -1,4 +1,5 @@
 package indigo.gameengine.events
+
 import indigo.gameengine.events
 
 trait EventTypeAliases {

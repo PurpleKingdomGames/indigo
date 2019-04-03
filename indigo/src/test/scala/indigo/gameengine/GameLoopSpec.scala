@@ -2,7 +2,7 @@ package indigo.gameengine
 
 import indigo.gameengine.events._
 import org.scalatest.{FunSpec, Matchers}
-import indigo.{GameTime, Millis}
+import indigo.time.{GameTime, Millis}
 
 class GameLoopSpec extends FunSpec with Matchers {
 

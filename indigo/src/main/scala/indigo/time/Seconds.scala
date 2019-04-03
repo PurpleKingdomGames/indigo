@@ -1,6 +1,6 @@
 package indigo.time
 
-import indigo.{EqualTo, AsString}
+import indigo.shared.{EqualTo, AsString}
 
 final class Seconds(val value: Double) extends AnyVal {
 

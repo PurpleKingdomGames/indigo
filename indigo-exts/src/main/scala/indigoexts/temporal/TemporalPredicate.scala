@@ -1,6 +1,6 @@
 // package indigoexts.temporal
 
-// import indigo.GameTime
+// import indigo.time.GameTime
 
 // sealed trait TemporalPredicate {
 //   val valueAt: GameTime => Boolean

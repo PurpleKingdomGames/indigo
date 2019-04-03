@@ -1,6 +1,6 @@
 package indigoexts.temporal
 
-import indigo.{Millis, Seconds}
+import indigo.time.{Millis, Seconds}
 import indigo.abstractions.Applicative
 
 /**

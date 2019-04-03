@@ -1,6 +1,12 @@
 package indigoexts.jobs
 
-import indigo._
+import indigo.gameengine.subsystems.SubSystem
+import indigo.dice.Dice
+import indigo.time.GameTime
+import indigo.gameengine.events.GlobalEvent
+import indigo.gameengine.Outcome
+import indigo.gameengine.scenegraph.SceneUpdateFragment
+import indigo.gameengine.scenegraph.datatypes.BindingKey
 
 final case class JobMarket(jobs: List[Job]) extends SubSystem {
 

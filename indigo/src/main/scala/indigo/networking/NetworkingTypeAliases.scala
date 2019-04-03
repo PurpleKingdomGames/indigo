@@ -1,4 +1,5 @@
 package indigo.networking
+
 import indigo.networking
 
 trait NetworkingTypeAliases {

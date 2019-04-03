@@ -8,7 +8,7 @@ import indigo.gameengine.scenegraph.animation.Animation
 import indigo.gameengine._
 import indigo.gameengine.subsystems.SubSystem
 import indigo.shared.{AssetType, GameConfig}
-import indigo.GameTime
+import indigo.time.GameTime
 
 import scala.concurrent.Future
 

@@ -11,7 +11,7 @@ import scala.concurrent.{Future, Promise}
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js.typedarray.ArrayBuffer
 
-import indigo.EqualTo._
+import indigo.shared.EqualTo._
 
 object AssetManager {
 

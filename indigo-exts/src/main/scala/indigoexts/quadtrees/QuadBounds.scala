@@ -1,11 +1,11 @@
 package indigoexts.quadtrees
 
 import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
-import indigo.AsString
+import indigo.shared.AsString
 import indigoexts.grid.GridPoint
 import indigoexts.line.{IntersectionResult, LineSegment}
 
-import indigo.EqualTo._
+import indigo.shared.EqualTo._
 
 trait QuadBounds {
   val x: Int

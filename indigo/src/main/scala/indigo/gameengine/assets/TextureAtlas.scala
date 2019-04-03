@@ -8,7 +8,7 @@ import indigo.shared.EqualTo
 import org.scalajs.dom
 import org.scalajs.dom.{html, raw}
 
-import indigo.EqualTo._
+import indigo.shared.EqualTo._
 
 import scala.annotation.tailrec
 

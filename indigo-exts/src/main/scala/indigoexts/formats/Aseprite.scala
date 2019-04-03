@@ -6,7 +6,7 @@ import indigo.gameengine.scenegraph.animation._
 import indigo.gameengine.scenegraph.datatypes._
 import indigo.runtime.IndigoLogger
 import indigo.collections.NonEmptyList
-import indigo.AsString
+import indigo.shared.AsString
 import io.circe.generic.auto._
 import io.circe.parser._
 
@@ -59,7 +59,7 @@ object Aseprite {
             None
           case x :: xs =>
             Option(
-              Cycle.create(frameTag.name, NonEmptyList(x, xs))
+              Cycle.create(frameTag.name, NonEmptyList.pure(x, xs))
             )
         }
       }

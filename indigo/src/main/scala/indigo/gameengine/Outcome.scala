@@ -1,9 +1,9 @@
 package indigo.gameengine
 
-import indigo.AsString
+import indigo.shared.AsString
 import indigo.abstractions.Monad
 import indigo.gameengine.events.GlobalEvent
-import indigo.EqualTo
+import indigo.shared.EqualTo
 
 import scala.annotation.tailrec
 

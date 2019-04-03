@@ -4,7 +4,7 @@ import indigo.runtime.IndigoLogger
 import indigo.shared.EqualTo
 import indigo.collections.NonEmptyList
 
-import indigo.EqualTo._
+import indigo.shared.EqualTo._
 
 import scala.annotation.tailrec
 
@@ -19,10 +19,10 @@ final case class SceneFinder(previous: List[ScenePosition], current: ScenePositi
   def toNel: NonEmptyList[ScenePosition] =
     previous match {
       case Nil =>
-        NonEmptyList(current, next)
+        NonEmptyList.pure(current, next)
 
       case x :: xs =>
-        NonEmptyList(x, (xs :+ current) ++ next)
+        NonEmptyList.pure(x, (xs :+ current) ++ next)
     }
 
   def giveCurrent: ScenePosition =

@@ -1,6 +1,6 @@
 package indigoexts.temporal
 
-import indigo.Millis
+import indigo.time.Millis
 
 import org.scalatest.{FunSpec, Matchers}
 

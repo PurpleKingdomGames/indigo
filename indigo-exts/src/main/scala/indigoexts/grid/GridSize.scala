@@ -1,6 +1,6 @@
 package indigoexts.grid
 
-import indigo.PowerOfTwo
+import indigo.gameengine.PowerOfTwo
 
 import scala.annotation.tailrec
 

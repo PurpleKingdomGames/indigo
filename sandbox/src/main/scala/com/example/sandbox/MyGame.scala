@@ -4,7 +4,7 @@ import indigo._
 import indigoexts.entrypoint._
 import indigoexts.formats._
 
-import indigo.EqualTo._
+import indigo.shared.EqualTo._
 
 object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, MyViewModel] {
 

@@ -1,6 +1,6 @@
 package indigo.time
 
-import indigo.{EqualTo, AsString}
+import indigo.shared.{EqualTo, AsString}
 
 final class GameTime(val system: Millis, val delta: Millis, val targetFPS: GameTime.FPS, val launch: Millis) {
 

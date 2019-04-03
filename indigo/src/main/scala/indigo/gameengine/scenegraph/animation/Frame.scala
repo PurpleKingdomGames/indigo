@@ -1,10 +1,10 @@
 package indigo.gameengine.scenegraph.animation
 
-import indigo.Rectangle
-import indigo.Point
-import indigo.{EqualTo, AsString}
-import indigo.EqualTo._
-import indigo.AsString._
+import indigo.gameengine.scenegraph.datatypes.Rectangle
+import indigo.gameengine.scenegraph.datatypes.Point
+import indigo.shared.{EqualTo, AsString}
+import indigo.shared.EqualTo._
+import indigo.shared.AsString._
 
 final class Frame(val bounds: Rectangle, val duration: Int)
 

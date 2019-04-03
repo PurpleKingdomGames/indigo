@@ -5,7 +5,7 @@ import utest._
 object GameTimeTests extends TestSuite {
 
   import GameTime._
-  import indigo.EqualTo._
+  import indigo.shared.EqualTo._
 
   val tests: Tests =
     Tests {
