@@ -1,7 +1,7 @@
 package indigoexts.grid
 
 import indigo.gameengine.scenegraph.datatypes.Point
-import indigo.runtime.AsString
+import indigo.AsString
 
 import scala.annotation.tailrec
 import scala.util.Random

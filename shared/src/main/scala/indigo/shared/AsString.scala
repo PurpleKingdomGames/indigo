@@ -1,4 +1,4 @@
-package indigo.runtime
+package indigo.shared
 
 trait AsString[A] {
   def show(a: A): String

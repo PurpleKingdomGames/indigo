@@ -1,7 +1,7 @@
 package indigo.gameengine.scenegraph.datatypes
 
-import indigo.EqualTo._
 import indigo.{AsString, EqualTo}
+import indigo.EqualTo._
 
 final case class Point(x: Int, y: Int) {
   def +(pt: Point): Point = Point(x + pt.x, y + pt.y)

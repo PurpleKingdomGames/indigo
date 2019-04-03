@@ -4,6 +4,9 @@ import indigo.shared
 
 trait SharedTypeAliases {
 
+  type AsString[A] = shared.AsString[A]
+  val AsString: shared.AsString.type = shared.AsString
+
   type EqualTo[A] = shared.EqualTo[A]
   val EqualTo: shared.EqualTo.type = shared.EqualTo
 

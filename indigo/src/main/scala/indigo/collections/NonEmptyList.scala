@@ -1,9 +1,8 @@
 package indigo.collections
 
-import indigo.runtime.AsString
-
+import indigo.AsString
 import indigo.EqualTo._
-import indigo.shared.EqualTo
+import indigo.EqualTo
 
 trait NonEmptyList[A] {
 

@@ -1,5 +1,7 @@
 package indigo.runtime
 
+import indigo.shared.AsString
+
 /**
   * This is the dumbest logger ever.
   * We're just logging to the Browsers console, I just wanted a few standard headers with the message.

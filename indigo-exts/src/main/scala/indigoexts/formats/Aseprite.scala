@@ -4,8 +4,9 @@ import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph._
 import indigo.gameengine.scenegraph.animation._
 import indigo.gameengine.scenegraph.datatypes._
-import indigo.runtime.{IndigoLogger, AsString}
+import indigo.runtime.IndigoLogger
 import indigo.collections.NonEmptyList
+import indigo.AsString
 import io.circe.generic.auto._
 import io.circe.parser._
 

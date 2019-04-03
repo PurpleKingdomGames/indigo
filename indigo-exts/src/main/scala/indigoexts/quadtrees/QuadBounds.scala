@@ -1,7 +1,7 @@
 package indigoexts.quadtrees
 
 import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
-import indigo.runtime.AsString
+import indigo.AsString
 import indigoexts.grid.GridPoint
 import indigoexts.line.{IntersectionResult, LineSegment}
 

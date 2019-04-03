@@ -68,10 +68,10 @@ object Rectangle {
     Rectangle(x, y, w, h)
   }
 
-  implicit val show: AsString[Rectangle] =
+  implicit val rectangleShow: AsString[Rectangle] =
     AsString.create(p => s"""Rectangle(Position(${p.x.show}, ${p.y.show}), Size(${p.width.show}, ${p.height.show}))""")
 
-  implicit val eq: EqualTo[Rectangle] =
+  implicit val rectangleEqualTo: EqualTo[Rectangle] =
     EqualTo.create { (a, b) =>
       a.position === b.position && a.size === b.size
     }
