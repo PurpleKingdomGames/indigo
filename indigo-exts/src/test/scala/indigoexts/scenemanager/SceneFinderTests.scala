@@ -3,12 +3,14 @@ package indigoexts.scenemanager
 import utest._
 
 import indigo.collections.NonEmptyList
+import indigo.EqualTo._
 
 object SceneFinderTests extends TestSuite {
 
   import TestScenes._
 
-  val scenes: ScenesList[TestGameModel, TestViewModel] = sceneA :: sceneB :: ScenesNil[TestGameModel, TestViewModel]()
+  val scenes: NonEmptyList[Scene[TestGameModel, TestViewModel]] =
+    NonEmptyList(sceneA, sceneB)
 
   val sceneFinder: SceneFinder =
     SceneFinder(
@@ -22,7 +24,7 @@ object SceneFinderTests extends TestSuite {
       "managing the scenes list" - {
 
         "should be able to construct a SceneFinder from a Scenes object" - {
-          SceneFinder.fromScenes(scenes) ==> sceneFinder
+          SceneFinder.fromScenes(scenes) === sceneFinder ==> true
         }
 
         "should report the correct number of scenes" - {
@@ -30,47 +32,47 @@ object SceneFinderTests extends TestSuite {
         }
 
         "should be able to produce a list of ScenePositions" - {
-          SceneFinder.fromScenes(scenes).toList ==> List(ScenePosition(0, sceneA.name), ScenePosition(1, sceneB.name))
+          SceneFinder.fromScenes(scenes).toList === List(ScenePosition(0, sceneA.name), ScenePosition(1, sceneB.name))
         }
 
         "should be able to produce a non-empty list of ScenePositions" - {
           val a = SceneFinder.fromScenes(scenes).toNel
           val b = NonEmptyList(ScenePosition(0, sceneA.name), ScenePosition(1, sceneB.name))
 
-          NonEmptyList.equality(a, b) ==> true
+          a === b ==> true
         }
 
         "should be able give the current scene" - {
-          SceneFinder.fromScenes(scenes).current ==> ScenePosition(0, sceneA.name)
+          SceneFinder.fromScenes(scenes).current === ScenePosition(0, sceneA.name) ==> true
         }
 
         "should be able go forward" - {
-          SceneFinder.fromScenes(scenes).forward.current ==> ScenePosition(1, sceneB.name)
+          SceneFinder.fromScenes(scenes).forward.current === ScenePosition(1, sceneB.name) ==> true
         }
 
         "should be able go backward" - {
-          SceneFinder.fromScenes(scenes).forward.backward.current ==> ScenePosition(0, sceneA.name)
+          SceneFinder.fromScenes(scenes).forward.backward.current === ScenePosition(0, sceneA.name) ==> true
         }
 
         "should be able go forward, backward, and forward again" - {
-          SceneFinder.fromScenes(scenes).forward.backward.forward.current ==> ScenePosition(1, sceneB.name)
+          SceneFinder.fromScenes(scenes).forward.backward.forward.current === ScenePosition(1, sceneB.name) ==> true
         }
 
         "should be able to jump to a scene by index" - {
-          sceneFinder.jumpToSceneByPosition(1).current ==> ScenePosition(1, sceneB.name)
+          sceneFinder.jumpToSceneByPosition(1).current === ScenePosition(1, sceneB.name) ==> true
         }
 
         "should reject invalid index numbers to jump to" - {
-          sceneFinder.jumpToSceneByPosition(10).current ==> ScenePosition(0, sceneA.name)
-          sceneFinder.jumpToSceneByPosition(-1).current ==> ScenePosition(0, sceneA.name)
+          sceneFinder.jumpToSceneByPosition(10).current === ScenePosition(0, sceneA.name) ==> true
+          sceneFinder.jumpToSceneByPosition(-1).current === ScenePosition(0, sceneA.name) ==> true
         }
 
         "should be able to jump to a scene by name" - {
-          sceneFinder.jumpToSceneByName(sceneB.name).current ==> ScenePosition(1, sceneB.name)
+          sceneFinder.jumpToSceneByName(sceneB.name).current === ScenePosition(1, sceneB.name) ==> true
         }
 
         "should reject invalid scene name to jump to" - {
-          sceneFinder.jumpToSceneByName(SceneName("foo")).current ==> ScenePosition(0, sceneA.name)
+          sceneFinder.jumpToSceneByName(SceneName("foo")).current == ScenePosition(0, sceneA.name) ==> true
         }
 
       }

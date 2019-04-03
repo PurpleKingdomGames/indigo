@@ -7,8 +7,9 @@ import indigo.gameengine.scenegraph.datatypes.FontInfo
 import indigo.gameengine._
 import indigo.gameengine.subsystems.SubSystem
 import indigo.shared.{AssetType, GameConfig}
-import indigoexts.scenemanager.{SceneManager, SceneName, ScenesList}
+import indigoexts.scenemanager.{SceneManager, SceneName, Scene}
 import indigo.time.GameTime
+import indigo.collections.NonEmptyList
 
 import scala.concurrent.Future
 
@@ -23,7 +24,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   */
 trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
 
-  val scenes: ScenesList[Model, ViewModel]
+  val scenes: NonEmptyList[Scene[Model, ViewModel]]
 
   val initialScene: Option[SceneName]
 
@@ -50,7 +51,7 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
           SceneManager(scenes, name)
 
         case None =>
-          SceneManager(scenes)
+          SceneManager(scenes, scenes.head.name)
       }
 
     new GameEngine[StartupData, StartupErrors, Model, ViewModel](

@@ -85,7 +85,7 @@ object EqualTo {
         false
     }
 
-  implicit class EqValue[A](val value: A)(implicit val eq: EqualTo[A]) {
+  implicit class EqualToSyntax[A](val value: A)(implicit val eq: EqualTo[A]) {
     def ===(other: A): Boolean =
       eq.equal(value, other)
 

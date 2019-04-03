@@ -1,14 +1,13 @@
 package indigoexts.scenemanager
 
 import indigo.runtime.IndigoLogger
-import indigo.shared.EqualTo
 import indigo.collections.NonEmptyList
-
+import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 
 import scala.annotation.tailrec
 
-final case class SceneFinder(previous: List[ScenePosition], current: ScenePosition, next: List[ScenePosition]) {
+final class SceneFinder(val previous: List[ScenePosition], val current: ScenePosition, val next: List[ScenePosition]) {
 
   val sceneCount: Int =
     toList.length
@@ -25,16 +24,13 @@ final case class SceneFinder(previous: List[ScenePosition], current: ScenePositi
         NonEmptyList.pure(x, (xs :+ current) ++ next)
     }
 
-  def giveCurrent: ScenePosition =
-    current
-
   def forward: SceneFinder =
     next match {
       case Nil =>
         this
 
       case x :: xs =>
-        this.copy(previous :+ current, x, xs)
+        SceneFinder(previous :+ current, x, xs)
     }
 
   def backward: SceneFinder =
@@ -43,7 +39,7 @@ final case class SceneFinder(previous: List[ScenePosition], current: ScenePositi
         this
 
       case x :: xs =>
-        this.copy(xs.reverse, x, current :: next)
+        SceneFinder(xs.reverse, x, current :: next)
     }
 
   @tailrec
@@ -84,10 +80,18 @@ final case class SceneFinder(previous: List[ScenePosition], current: ScenePositi
 
 object SceneFinder {
 
-  def fromScenes[GameModel, ViewModel](
-      scenesList: ScenesList[GameModel, ViewModel]
-  ): SceneFinder = {
-    val a = scenesList.listSceneNames.zipWithIndex.map(p => ScenePosition(p._2, p._1))
+  implicit def scenesFinderEqualTo(implicit eqL: EqualTo[List[ScenePosition]], eqP: EqualTo[ScenePosition]): EqualTo[SceneFinder] =
+    EqualTo.create { (a, b) =>
+      eqL.equal(a.previous, b.previous) &&
+      eqP.equal(a.current, b.current) &&
+      eqL.equal(a.next, b.next)
+    }
+
+  def apply(previous: List[ScenePosition], current: ScenePosition, next: List[ScenePosition]): SceneFinder =
+    new SceneFinder(previous, current, next)
+
+  def fromScenes[GameModel, ViewModel](scenesList: NonEmptyList[Scene[GameModel, ViewModel]]): SceneFinder = {
+    val a = scenesList.map(_.name).zipWithIndex.map(p => ScenePosition(p._2, p._1))
 
     SceneFinder(Nil, a.head, a.tail)
   }
@@ -97,9 +101,9 @@ object SceneFinder {
 final case class ScenePosition(index: Int, name: SceneName)
 object ScenePosition {
 
-  implicit val EqScenePosition: EqualTo[ScenePosition] =
+  implicit def EqScenePosition(implicit eqInt: EqualTo[Int], eqName: EqualTo[SceneName]): EqualTo[ScenePosition] =
     EqualTo.create[ScenePosition] { (a, b) =>
-      a.index === b.index && a.name === b.name
+      eqInt.equal(a.index, b.index) && eqName.equal(a.name, b.name)
     }
 
 }

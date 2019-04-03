@@ -5,8 +5,10 @@ import indigo.gameengine.Outcome
 import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
 import indigo.gameengine.scenegraph.SceneUpdateFragment
 import indigo.runtime.IndigoLogger
+import indigo.collections.NonEmptyList
+import indigo.shared.EqualTo._
 
-class SceneManager[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel], scenesFinder: SceneFinder) {
+class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, ViewModel]], scenesFinder: SceneFinder) {
 
   // Scene management
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
@@ -27,7 +29,7 @@ class SceneManager[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel
       Outcome(model)
 
     case event =>
-      scenes.findScene(finderInstance.current.name) match {
+      scenes.find(_.name === finderInstance.current.name) match {
         case None =>
           IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
           Outcome(model)
@@ -38,7 +40,7 @@ class SceneManager[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel
   }
 
   def updateViewModel(gameTime: GameTime, model: GameModel, viewModel: ViewModel, frameInputEvents: FrameInputEvents): Outcome[ViewModel] =
-    scenes.findScene(finderInstance.current.name) match {
+    scenes.find(_.name === finderInstance.current.name) match {
       case None =>
         IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
         Outcome(viewModel)
@@ -48,7 +50,7 @@ class SceneManager[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel
     }
 
   def updateView(gameTime: GameTime, model: GameModel, viewModel: ViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
-    scenes.findScene(finderInstance.current.name) match {
+    scenes.find(_.name === finderInstance.current.name) match {
       case None =>
         IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
         SceneUpdateFragment.empty
@@ -61,10 +63,7 @@ class SceneManager[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel
 
 object SceneManager {
 
-  def apply[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel]): SceneManager[GameModel, ViewModel] =
-    new SceneManager[GameModel, ViewModel](scenes, SceneFinder.fromScenes[GameModel, ViewModel](scenes))
-
-  def apply[GameModel, ViewModel](scenes: ScenesList[GameModel, ViewModel], initialScene: SceneName): SceneManager[GameModel, ViewModel] =
+  def apply[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, ViewModel]], initialScene: SceneName): SceneManager[GameModel, ViewModel] =
     new SceneManager[GameModel, ViewModel](scenes, SceneFinder.fromScenes[GameModel, ViewModel](scenes).jumpToSceneByName(initialScene))
 
 }

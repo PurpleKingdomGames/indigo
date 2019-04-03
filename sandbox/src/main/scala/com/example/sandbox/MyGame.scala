@@ -21,9 +21,9 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, MyViewModel] {
 
   val assets: Set[AssetType] = MyAssets.assets
 
-  val fonts: Set[FontInfo]        = Set(MyView.fontInfo)
+  val fonts: Set[FontInfo]       = Set(MyView.fontInfo)
   val animations: Set[Animation] = Set()
-  val subSystems: Set[SubSystem]  = Set()
+  val subSystems: Set[SubSystem] = Set()
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, MyStartupData] = {
     def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[MyStartupData] =

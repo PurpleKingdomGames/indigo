@@ -3,13 +3,16 @@ package indigoexts.scenemanager
 import indigo.time.GameTime
 import indigo.gameengine.events.{FrameTick, GlobalEvent}
 import org.scalatest.{FunSpec, Matchers}
+import indigo.collections.NonEmptyList
 
 class SceneManagerSpec extends FunSpec with Matchers {
 
   import TestScenes._
 
-  val scenes: ScenesList[TestGameModel, TestViewModel] = sceneA :: sceneB :: ScenesNil[TestGameModel, TestViewModel]()
-  val sceneFinder: SceneFinder                         = SceneFinder.fromScenes(scenes)
+  val scenes: NonEmptyList[Scene[TestGameModel, TestViewModel]] =
+    NonEmptyList(sceneA, sceneB)
+
+  val sceneFinder: SceneFinder = SceneFinder.fromScenes(scenes)
 
   val gameModel = TestGameModel(TestSceneModelA(0), TestSceneModelB(0))
 
