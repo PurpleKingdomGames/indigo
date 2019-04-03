@@ -2,7 +2,7 @@ package indigo.shared
 
 import utest._
 
-object EqTests extends TestSuite {
+object EqualToTests extends TestSuite {
 
   import EqualTo._
 
