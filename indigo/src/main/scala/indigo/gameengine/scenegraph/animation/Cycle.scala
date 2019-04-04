@@ -7,6 +7,7 @@ import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import indigo.shared.AsString
 import indigo.shared.AsString._
+import indigo.temporal.Signal
 
 final class Cycle(val label: CycleLabel, val frames: NonEmptyList[Frame], val playheadPosition: Int, val lastFrameAdvance: Long) {
 
@@ -45,8 +46,7 @@ object Cycle {
 
   implicit val cycleAsString: AsString[Cycle] = {
     AsString.create { c =>
-      // s"Cycle(${c.label.show}, ${c.frames.show}, ${c.playheadPosition.show}, ${c.lastFrameAdvance.show})"
-      s"Cycle(${c.label.show}, ${c.playheadPosition.show}, ${c.lastFrameAdvance.show})"
+      s"Cycle(${c.label.show}, ${c.frames.show}, ${c.playheadPosition.show}, ${c.lastFrameAdvance.show})"
     }
   }
 
@@ -55,12 +55,6 @@ object Cycle {
 
   def create(label: String, frames: NonEmptyList[Frame]): Cycle =
     Cycle(CycleLabel(label), frames, 0, 0)
-
-  def calculateNextPlayheadPosition(gameTime: GameTime, currentPosition: Int, frameDuration: Int, frameCount: Int, lastFrameAdvance: Long): CycleMemento =
-    if (gameTime.running.value >= lastFrameAdvance + frameDuration)
-      CycleMemento((currentPosition + 1) % frameCount, gameTime.running.value)
-    else
-      CycleMemento(currentPosition, lastFrameAdvance)
 
   def currentFrame(cycle: Cycle): Frame =
     cycle.frames.toList(cycle.playheadPosition % cycle.frameCount)
@@ -74,12 +68,25 @@ object Cycle {
   def applyMemento(cycle: Cycle, memento: CycleMemento): Cycle =
     updatePlayheadAndLastAdvance(cycle, memento.playheadPosition, memento.lastFrameAdvance)
 
+  def calculateNextPlayheadPosition(currentPosition: Int, frameDuration: Int, frameCount: Int, lastFrameAdvance: Long): Signal[CycleMemento] =
+    Signal.create { t =>
+      if (t.value >= lastFrameAdvance + frameDuration)
+        CycleMemento((currentPosition + 1) % frameCount, t.value)
+      else
+        CycleMemento(currentPosition, lastFrameAdvance)
+    }
+
   def runActions(cycle: Cycle, gameTime: GameTime, actions: List[AnimationAction]): Cycle =
     actions.foldLeft(cycle) { (cycle, action) =>
       action match {
         case Play =>
           cycle.applyMemento(
-            calculateNextPlayheadPosition(gameTime, cycle.playheadPosition, cycle.currentFrame.duration, cycle.frameCount, cycle.lastFrameAdvance)
+            calculateNextPlayheadPosition(
+              cycle.playheadPosition,
+              cycle.currentFrame.duration,
+              cycle.frameCount,
+              cycle.lastFrameAdvance
+            ).at(gameTime.running)
           )
 
         case ChangeCycle(_) =>
