@@ -5,11 +5,12 @@ import indigoexts.entrypoint._
 import indigoexts.scenemanager.SceneEvent
 import indigoexts.scenes._
 import indigoexts.lens._
+import indigo.collections.NonEmptyList
 
 object ScenesSetup extends IndigoGameWithScenes[MyStartUpData, MyGameModel, MyViewModel] {
 
-  val scenes: ScenesList[MyGameModel, MyViewModel] =
-    SceneA :: SceneB :: ScenesNil[MyGameModel, MyViewModel]()
+  val scenes: NonEmptyList[Scene[MyGameModel, MyViewModel]] =
+    NonEmptyList(SceneA, SceneB)
 
   val initialScene: Option[SceneName] = Option(SceneA.name)
 

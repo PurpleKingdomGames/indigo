@@ -25,10 +25,8 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
         "lights",
         NonEmptyList(
           Frame(Rectangle(0, 0, 64, 64), 250),
-          List(
-            Frame(Rectangle(64, 0, 64, 64), 250),
-            Frame(Rectangle(0, 64, 64, 64), 250)
-          )
+          Frame(Rectangle(64, 0, 64, 64), 250),
+          Frame(Rectangle(0, 64, 64, 64), 250)
         )
       )
     )
