@@ -32,13 +32,15 @@ object CycleTests extends TestSuite {
         }
 
         "calculate next play head position" - {
-          val actual: Signal[CycleMemento] =
-            Cycle.calculateNextPlayheadPosition(0,30, 10, 0)
+          val signal: Signal[CycleMemento] =
+            Cycle.calculateNextPlayheadPosition(0, 30, 10, 0)
 
-          val expected: CycleMemento =
-            CycleMemento(0, 0)
-
-          actual.at(GameTime.zero.running) === expected ==> true
+          (0 to 10).toList
+            .map(i => (GameTime.is(Millis(i * 30)), CycleMemento(i, 0)))
+            .map {
+              case (gameTime, res) =>
+                signal.at(gameTime.running) === res ==> true
+            }
         }
 
         "get the current frame" - {
