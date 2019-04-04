@@ -29,7 +29,7 @@ object GameTime {
 
   implicit val gameTimeAsString: AsString[GameTime] =
     AsString.create { gt =>
-      s"GameTime(${implicitly[AsString[Millis]].show(gt.running)}, ${implicitly[AsString[Millis]].show(gt.delta)}, ${implicitly[AsString[FPS]].show(gt.targetFPS)})"
+      s"GameTime(running = ${implicitly[AsString[Millis]].show(gt.running)}, delta = ${implicitly[AsString[Millis]].show(gt.delta)}, fps = ${implicitly[AsString[FPS]].show(gt.targetFPS)})"
     }
 
   def now: GameTime =
