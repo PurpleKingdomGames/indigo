@@ -32,15 +32,20 @@ object CycleTests extends TestSuite {
         }
 
         "calculate next play head position" - {
-          val signal: Signal[CycleMemento] =
-            Cycle.calculateNextPlayheadPosition(0, 30, 10, 0)
+          val actual: CycleMemento =
+            Cycle
+              .calculateNextPlayheadPosition(
+                currentPosition = 2,
+                frameDuration = 30,
+                frameCount = 10,
+                lastFrameAdvance = 60
+              )
+              .at(GameTime.is(Millis(90)).running)
 
-          (0 to 10).toList
-            .map(i => (GameTime.is(Millis(i * 30)), CycleMemento(i, 0)))
-            .map {
-              case (gameTime, res) =>
-                signal.at(gameTime.running) === res ==> true
-            }
+          val expected: CycleMemento =
+            CycleMemento(3, 90)
+
+          actual === expected ==> true
         }
 
         "get the current frame" - {
@@ -62,7 +67,16 @@ object CycleTests extends TestSuite {
         import AnimationAction._
 
         "Play" - {
-          cycle.runActions(GameTime.zero, List(Play)).currentFrame === frame2 ==> true
+          val actual =
+            cycle
+              .runActions(GameTime.is(Millis(0)), List(Play))
+              .runActions(GameTime.is(Millis(10)), List(Play))
+              .currentFrame
+
+          val expected =
+            frame2
+
+          actual === expected ==> true
         }
 
         "ChangeCycle" - {
