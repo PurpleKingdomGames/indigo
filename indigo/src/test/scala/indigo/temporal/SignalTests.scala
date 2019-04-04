@@ -1,4 +1,4 @@
-package indigoexts.temporal
+package indigo.temporal
 
 import utest._
 import indigo.time.GameTime

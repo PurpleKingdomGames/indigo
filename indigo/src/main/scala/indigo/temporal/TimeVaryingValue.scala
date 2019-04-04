@@ -1,4 +1,4 @@
-package indigoexts.temporal
+package indigo.temporal
 
 import indigo.time.Millis
 import indigo.shared.EqualTo
