@@ -29,7 +29,6 @@ object MyModel {
       Outcome(state.copy(dude = state.dude.idle))
 
     case _ =>
-      //Logger.info(e)
       Outcome(state)
   }
 

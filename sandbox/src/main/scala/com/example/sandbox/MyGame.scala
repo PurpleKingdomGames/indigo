@@ -6,7 +6,7 @@ import indigoexts.formats._
 
 import indigo.shared.EqualTo._
 
-object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, MyViewModel] {
+object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
 
   private val viewportWidth: Int      = 456
   private val viewportHeight: Int     = 256
@@ -55,15 +55,14 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, MyViewModel] {
   def update(gameTime: GameTime, model: MyGameModel): GlobalEvent => Outcome[MyGameModel] =
     MyModel.updateModel(model)
 
-  def initialViewModel(startupData: MyStartupData): MyGameModel => MyViewModel = _ => MyViewModel()
+  def initialViewModel(startupData: MyStartupData): MyGameModel => Unit = _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, frameInputEvents: FrameInputEvents): Outcome[MyViewModel] =
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): Outcome[Unit] =
     Outcome(viewModel)
 
-  def present(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     MyView.updateView(model, frameInputEvents)
 }
 
 final case class Dude(aseprite: Aseprite, sprite: Sprite)
 final case class MyStartupData(dude: Dude)
-final case class MyViewModel()
