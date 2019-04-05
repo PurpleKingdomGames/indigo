@@ -4,6 +4,7 @@ import indigo.time.GameTime
 import indigo.gameengine.scenegraph.datatypes.BindingKey
 import indigo.gameengine.scenegraph.animation.{AnimationAction, Animation, AnimationKey}
 import indigo.runtime.metrics._
+import indigo.shared.EqualTo._
 
 import scala.annotation.tailrec
 import scala.collection.mutable
@@ -75,7 +76,7 @@ object AnimationsRegister {
   def fetchFromCache(gameTime: GameTime, bindingKey: BindingKey, animationsKey: AnimationKey)(
       implicit metrics: Metrics
   ): Option[Animation] = {
-    val key: String = s"${bindingKey.value}_${animationsKey.key}"
+    val key: String = s"${bindingKey.value}_${animationsKey.value}"
 
     val cacheEntry: Option[AnimationCacheEntry] = animationsCache.get(key).orElse {
       findByAnimationKey(animationsKey).map { anim =>
@@ -115,7 +116,7 @@ object AnimationsRegister {
 }
 
 final case class AnimationActionCommand(bindingKey: BindingKey, animationsKey: AnimationKey, action: AnimationAction) {
-  val hash: String = s"${bindingKey.value}_${animationsKey.key}_${action.hash}"
+  val hash: String = s"${bindingKey.value}_${animationsKey.value}_${action.hash}"
 }
 
 final case class AnimationCacheEntry(bindingKey: BindingKey, animations: Animation)

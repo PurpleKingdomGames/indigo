@@ -1,14 +1,21 @@
 package indigo.gameengine.scenegraph.animation
 
+import indigo.shared.{AsString, EqualTo}
 import indigo.shared.EqualTo._
 
-final class AnimationKey(val key: String) extends AnyVal {
-  def ===(other: AnimationKey): Boolean =
-    AnimationKey.equality(this, other)
-}
+final class AnimationKey(val value: String) extends AnyVal
+
 object AnimationKey {
-  def equality(a: AnimationKey, b: AnimationKey): Boolean =
-    a.key === b.key
+
+  implicit val animationKeyEqualTo: EqualTo[AnimationKey] =
+    EqualTo.create { (a, b) =>
+      a.value === b.value
+    }
+
+  implicit val animationKeyAsString: AsString[AnimationKey] =
+    AsString.create { key =>
+      s"AnimationKey(${key.value})"
+    }
 
   def apply(key: String): AnimationKey =
     new AnimationKey(key)

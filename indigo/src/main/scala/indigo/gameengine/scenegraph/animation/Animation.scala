@@ -4,6 +4,8 @@ import indigo.time.GameTime
 import indigo.gameengine.scenegraph.animation.AnimationAction._
 import indigo.gameengine.scenegraph.datatypes.{BindingKey, Point}
 import indigo.collections.NonEmptyList
+import indigo.shared.EqualTo
+import indigo.shared.AsString
 
 import indigo.shared.EqualTo._
 
@@ -50,15 +52,33 @@ final case class Animation(
 
 object Animation {
 
-  def apply(
-      animationsKey: AnimationKey,
-      imageAssetRef: String,
-      spriteSheetSize: Point,
-      currentCycleLabel: CycleLabel,
-      cycles: NonEmptyList[Cycle],
-      actions: List[AnimationAction]
-  ): Animation =
-    new Animation(animationsKey, imageAssetRef, spriteSheetSize, currentCycleLabel, cycles, actions)
+  implicit def animationEqualTo(
+    implicit eAK: EqualTo[AnimationKey],
+    eS: EqualTo[String],
+    eP: EqualTo[Point],
+    eCL: EqualTo[CycleLabel],
+    eNelC: EqualTo[NonEmptyList[Cycle]],
+    eLA: EqualTo[List[AnimationAction]]
+): EqualTo[Animation] =
+    EqualTo.create { (a, b) =>
+      eAK.equal(a.animationsKey, b.animationsKey) &&
+      eS.equal(a.imageAssetRef, b.imageAssetRef) &&
+      eP.equal(a.spriteSheetSize, b.spriteSheetSize) &&
+      eCL.equal(a.currentCycleLabel, b.currentCycleLabel) &&
+      eNelC.equal(a.cycles, b.cycles) &&
+      eLA.equal(a.actions, b.actions)
+    }
+
+  implicit def animationAsString(
+      implicit sAK: AsString[AnimationKey],
+      sP: AsString[Point],
+      sCL: AsString[CycleLabel],
+      sNelC: AsString[NonEmptyList[Cycle]],
+      sLA: AsString[List[AnimationAction]]
+  ): AsString[Animation] =
+    AsString.create { a =>
+      s"Animation(${sAK.show(a.animationsKey)}, imageAssetRef, ${sP.show(a.spriteSheetSize)}, ${sCL.show(a.currentCycleLabel)}, ${sNelC.show(a.cycles)}, ${sLA.show(a.actions)})"
+    }
 
   def create(animationsKey: AnimationKey, imageAssetRef: String, spriteSheetSize: Point, cycle: Cycle): Animation =
     apply(animationsKey, imageAssetRef, spriteSheetSize, cycle.label, NonEmptyList(cycle), Nil)
