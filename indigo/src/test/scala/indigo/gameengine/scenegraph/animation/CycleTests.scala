@@ -96,6 +96,10 @@ object CycleTests extends TestSuite {
           cycle.runActions(GameTime.zero, List(JumpToFrame(1))).currentFrame === frame2 ==> true
         }
 
+        "JumpToFrame (capped at max)" - {
+          cycle.runActions(GameTime.zero, List(JumpToFrame(10))).currentFrame === frame3 ==> true
+        }
+
       }
 
     }
