@@ -14,7 +14,6 @@ import indigo.dice.Dice
 import org.scalajs.dom
 import indigo.time.GameTime
 import indigo.time.Millis
-import indigo.shared.AsString._
 
 import scala.annotation.tailrec
 
