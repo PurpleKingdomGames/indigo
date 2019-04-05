@@ -2,7 +2,7 @@ package ingidoexamples
 
 import indigo._
 import indigo.time.Millis
-import indigoexts.temporal.{Signal, SignalFunction, TimeVaryingValue}
+import indigo.temporal.{Signal, SignalFunction, TimeVaryingValue}
 
 final case class FloatingPoints(fontKey: FontKey, entities: List[FloatingPointEntity]) extends SubSystem {
   type EventType = FloatingPointEvent
@@ -16,7 +16,7 @@ final case class FloatingPoints(fontKey: FontKey, entities: List[FloatingPointEn
   def update(gameTime: GameTime, dice: Dice): FloatingPointEvent => Outcome[SubSystem] = {
     case FloatingPointEvent.Spawn(position) =>
       Outcome(
-        this.copy(entities = FloatingPointEntity(position, gameTime.running, TimeVaryingValue(2, gameTime.system)) :: entities)
+        this.copy(entities = FloatingPointEntity(position, gameTime.running, TimeVaryingValue(2, gameTime.running)) :: entities)
       )
 
     case FloatingPointEvent.Update =>
@@ -75,7 +75,7 @@ object FloatingPoints {
 
 final case class FloatingPointEntity(spawnedAt: Point, createdAt: Millis, ttl: TimeVaryingValue[Int]) {
   def update(gameTime: GameTime): FloatingPointEntity =
-    this.copy(ttl = ttl.decrease(2, gameTime.system))
+    this.copy(ttl = ttl.decrease(2, gameTime.running))
 }
 
 sealed trait FloatingPointEvent extends GlobalEvent

@@ -1,6 +1,5 @@
 package indigo.gameengine
 
-import indigo.time.Millis
 import indigo.time.GameTime
 import indigo.gameengine.assets._
 import indigo.gameengine.audio.AudioPlayer
@@ -120,7 +119,6 @@ object GameEngine {
             _                   <- GameEngine.listenToWorldEvents(canvas, gameConfig.magnification)
             renderer            <- GameEngine.startRenderer(gameConfig, loadedTextureAssets, canvas)
             gameLoopInstance <- GameEngine.initialiseGameLoop(
-              Millis(System.currentTimeMillis()),
               gameConfig,
               assetMapping,
               renderer,
@@ -233,7 +231,6 @@ object GameEngine {
     AudioPlayer(sounds)
 
   def initialiseGameLoop[GameModel, ViewModel](
-      launchTime: Millis,
       gameConfig: GameConfig,
       assetMapping: AssetMapping,
       renderer: IRenderer,
@@ -247,7 +244,6 @@ object GameEngine {
   )(implicit metrics: Metrics, globalEventStream: GlobalEventStream, globalSignals: GlobalSignals): GameContext[GameLoop[GameModel, ViewModel]] =
     GameContext.delay(
       new GameLoop[GameModel, ViewModel](
-        launchTime: Millis,
         gameConfig,
         assetMapping,
         renderer,

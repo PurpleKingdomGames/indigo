@@ -7,7 +7,7 @@ import indigo.time.{GameTime, Millis}
 class GameLoopSpec extends FunSpec with Matchers {
 
   val gameTime: GameTime =
-    GameTime(Millis(1000), Millis(100), GameTime.FPS(100), Millis(1000))
+    GameTime(Millis(1000), Millis(100), GameTime.FPS(100))
 
   describe("Processing model updates") {
 

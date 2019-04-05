@@ -2,9 +2,7 @@ package indigo.time
 
 import indigo.shared.{EqualTo, AsString}
 
-final class GameTime(val system: Millis, val delta: Millis, val targetFPS: GameTime.FPS, val launch: Millis) {
-
-  val running: Millis = system - launch
+final class GameTime(val running: Millis, val delta: Millis, val targetFPS: GameTime.FPS) {
 
   lazy val frameDuration: Millis = Millis((1000d / targetFPS.asDouble).toLong)
   lazy val multiplier: Double    = delta.toDouble / frameDuration.toDouble
@@ -14,15 +12,14 @@ final class GameTime(val system: Millis, val delta: Millis, val targetFPS: GameT
   def doubleByTime(value: Double): Double = value * multiplier
 
   def setTargetFPS(fps: Int): GameTime =
-    new GameTime(running, delta, GameTime.FPS(fps), launch)
+    new GameTime(running, delta, GameTime.FPS(fps))
 }
 
 object GameTime {
 
   implicit val equalTo: EqualTo[GameTime] =
     EqualTo.create { (a, b) =>
-      implicitly[EqualTo[Millis]].equal(a.system, b.system) &&
-      implicitly[EqualTo[Millis]].equal(a.launch, b.launch) &&
+      implicitly[EqualTo[Millis]].equal(a.running, b.running) &&
       implicitly[EqualTo[Millis]].equal(a.delta, b.delta) &&
       implicitly[EqualTo[FPS]].equal(a.targetFPS, b.targetFPS)
     }
@@ -32,24 +29,17 @@ object GameTime {
       s"GameTime(running = ${implicitly[AsString[Millis]].show(gt.running)}, delta = ${implicitly[AsString[Millis]].show(gt.delta)}, fps = ${implicitly[AsString[FPS]].show(gt.targetFPS)})"
     }
 
-  def now: GameTime =
-    GameTime(Millis(System.currentTimeMillis()), Millis(0), FPS.Default, Millis(0))
-
   def zero: GameTime =
-    GameTime(Millis(0), Millis(0), FPS.Default, Millis(0))
+    GameTime(Millis(0), Millis(0), FPS.Default)
 
   def is(running: Millis): GameTime =
-    ({ (system: Millis) =>
-      new GameTime(system, Millis(0), FPS.Default, system - running)
-    })(Millis(System.currentTimeMillis()))
+      new GameTime(running, Millis(0), FPS.Default)
 
   def withDelta(running: Millis, delta: Millis): GameTime =
-    ({ (system: Millis) =>
-      new GameTime(system, delta, FPS.Default, system - running)
-    })(Millis(System.currentTimeMillis()))
+      new GameTime(running, delta, FPS.Default)
 
-  def apply(system: Millis, delta: Millis, targetFPS: FPS, launch: Millis): GameTime =
-    new GameTime(system, delta, targetFPS, launch)
+  def apply(running: Millis, delta: Millis, targetFPS: FPS): GameTime =
+    new GameTime(running, delta, targetFPS)
 
   final class FPS(val value: Int) extends AnyVal {
     def asLong: Long     = value.toLong

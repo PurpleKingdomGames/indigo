@@ -14,11 +14,11 @@ import indigo.dice.Dice
 import org.scalajs.dom
 import indigo.time.GameTime
 import indigo.time.Millis
+import indigo.shared.AsString._
 
 import scala.annotation.tailrec
 
 class GameLoop[GameModel, ViewModel](
-    launchTime: Millis,
     gameConfig: GameConfig,
     assetMapping: AssetMapping,
     renderer: IRenderer,
@@ -54,7 +54,9 @@ class GameLoop[GameModel, ViewModel](
 
         metrics.record(UpdateStartMetric)
 
-        val gameTime: GameTime = new GameTime(Millis(time), Millis(timeDelta), GameTime.FPS(gameConfig.frameRate), launchTime)
+        val gameTime: GameTime = new GameTime(Millis(time), Millis(timeDelta), GameTime.FPS(gameConfig.frameRate))
+
+        println(gameTime.show)
 
         val dice: Dice = Dice.default(gameTime.running.value)
 
