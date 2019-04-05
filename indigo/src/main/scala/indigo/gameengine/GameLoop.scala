@@ -56,8 +56,6 @@ class GameLoop[GameModel, ViewModel](
 
         val gameTime: GameTime = new GameTime(Millis(time), Millis(timeDelta), GameTime.FPS(gameConfig.frameRate))
 
-        println(gameTime.show)
-
         val dice: Dice = Dice.default(gameTime.running.value)
 
         val collectedEvents: List[GlobalEvent] = globalEventStream.collect :+ FrameTick
