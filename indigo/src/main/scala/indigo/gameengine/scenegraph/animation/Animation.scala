@@ -3,6 +3,7 @@ package indigo.gameengine.scenegraph.animation
 import indigo.time.GameTime
 import indigo.gameengine.scenegraph.animation.AnimationAction._
 import indigo.gameengine.scenegraph.datatypes.{BindingKey, Point}
+import indigo.collections.NonEmptyList
 
 import indigo.shared.EqualTo._
 
@@ -11,13 +12,9 @@ final case class Animation(
     imageAssetRef: String,
     spriteSheetSize: Point,
     currentCycleLabel: CycleLabel,
-    cycle: Cycle,
-    cycles: Map[CycleLabel, Cycle],
+    cycles: NonEmptyList[Cycle],
     actions: List[AnimationAction]
 ) {
-
-  val toMap: Map[CycleLabel, Cycle] =
-    cycles ++ Map(cycle.label -> cycle)
 
   val frameHash: String =
     currentFrame.bounds.hash + "_" + imageAssetRef
@@ -58,20 +55,19 @@ object Animation {
       imageAssetRef: String,
       spriteSheetSize: Point,
       currentCycleLabel: CycleLabel,
-      cycle: Cycle,
-      cycles: Map[CycleLabel, Cycle],
+      cycles: NonEmptyList[Cycle],
       actions: List[AnimationAction]
   ): Animation =
-    new Animation(animationsKey, imageAssetRef, spriteSheetSize, currentCycleLabel, cycle, cycles, actions)
+    new Animation(animationsKey, imageAssetRef, spriteSheetSize, currentCycleLabel, cycles, actions)
 
   def create(animationsKey: AnimationKey, imageAssetRef: String, spriteSheetSize: Point, cycle: Cycle): Animation =
-    apply(animationsKey, imageAssetRef, spriteSheetSize, cycle.label, cycle, Map.empty[CycleLabel, Cycle], Nil)
+    apply(animationsKey, imageAssetRef, spriteSheetSize, cycle.label, NonEmptyList(cycle), Nil)
 
   def currentCycle(animations: Animation): Cycle =
-    animations.toMap.getOrElse(animations.currentCycleLabel, animations.cycle)
+    animations.cycles.find(_.label === animations.currentCycleLabel).getOrElse(animations.cycles.head)
 
   def addCycle(animations: Animation, cycle: Cycle): Animation =
-    animations.copy(cycle = cycle, cycles = animations.toMap)
+    animations.copy(cycles = cycle :: animations.cycles)
 
   def addAction(animations: Animation, action: AnimationAction): Animation =
     animations.copy(actions = animations.actions :+ action)
@@ -84,21 +80,30 @@ object Animation {
 
   def applyMemento(animations: Animation, memento: AnimationMemento): Animation =
     animations.copy(
-      cycle = animations.toMap
-        .getOrElse(memento.currentCycleLabel, animations.cycle)
-        .updatePlayheadAndLastAdvance(memento.currentCycleMemento.playheadPosition, memento.currentCycleMemento.lastFrameAdvance),
-      cycles = animations.toMap
-        .filter(p => p._1.value !== memento.currentCycleLabel.value)
+      cycles = animations.cycles.map { c =>
+        if (c.label === memento.currentCycleLabel) {
+          c.applyMemento(memento.currentCycleMemento)
+        } else c
+      }
     )
 
   def runActions(animations: Animation, gameTime: GameTime): Animation =
     animations.actions.foldLeft(animations) { (anim, action) =>
       action match {
-        case ChangeCycle(newLabel) =>
-          anim.copy(currentCycleLabel = CycleLabel(newLabel))
+        case ChangeCycle(newLabel) if animations.cycles.exists(_.label === newLabel) =>
+          anim.copy(currentCycleLabel = newLabel)
+
+        case ChangeCycle(_) =>
+          anim
 
         case _ =>
-          anim.copy(cycle = anim.currentCycle.runActions(gameTime, animations.actions))
+          anim.copy(
+            cycles = anim.cycles.map { c =>
+              if (c.label === anim.currentCycleLabel) {
+                c.runActions(gameTime, animations.actions)
+              } else c
+            }
+          )
       }
     }
 }

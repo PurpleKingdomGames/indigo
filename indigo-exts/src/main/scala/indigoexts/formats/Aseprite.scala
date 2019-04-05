@@ -78,8 +78,7 @@ object Aseprite {
             imageAssetRef = imageAssetRef,
             spriteSheetSize = Point(aseprite.meta.size.w, aseprite.meta.size.h),
             currentCycleLabel = x.label,
-            cycle = x,
-            cycles = xs.foldLeft(Map.empty[CycleLabel, Cycle])((a, b) => a ++ Map(b.label -> b)),
+            cycles = NonEmptyList.pure(x, xs), 
             actions = Nil
           )
         Option(

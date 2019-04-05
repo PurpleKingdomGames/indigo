@@ -46,10 +46,10 @@ final case class DudeModel(dude: Dude, walkDirection: DudeDirection) {
 }
 
 sealed trait DudeDirection {
-  val cycleName: String
+  val cycleName: CycleLabel
 }
-case object DudeIdle  extends DudeDirection { val cycleName: String = "blink"      }
-case object DudeLeft  extends DudeDirection { val cycleName: String = "walk left"  }
-case object DudeRight extends DudeDirection { val cycleName: String = "walk right" }
-case object DudeUp    extends DudeDirection { val cycleName: String = "walk up"    }
-case object DudeDown  extends DudeDirection { val cycleName: String = "walk down"  }
+case object DudeIdle  extends DudeDirection { val cycleName: CycleLabel = CycleLabel("blink")      }
+case object DudeLeft  extends DudeDirection { val cycleName: CycleLabel = CycleLabel("walk left")  }
+case object DudeRight extends DudeDirection { val cycleName: CycleLabel = CycleLabel("walk right") }
+case object DudeUp    extends DudeDirection { val cycleName: CycleLabel = CycleLabel("walk up")    }
+case object DudeDown  extends DudeDirection { val cycleName: CycleLabel = CycleLabel("walk down")  }

@@ -4,6 +4,7 @@ import indigo.gameengine.assets.{AnimationsRegister, FontRegister}
 import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph.animation.AnimationAction._
 import indigo.gameengine.scenegraph.animation.AnimationKey
+import indigo.gameengine.scenegraph.animation.CycleLabel
 import indigo.gameengine.scenegraph.datatypes._
 import indigo.runtime.IndigoLogger
 
@@ -250,7 +251,7 @@ final case class Sprite(bindingKey: BindingKey,
     this
   }
 
-  def changeCycle(label: String): Sprite = {
+  def changeCycle(label: CycleLabel): Sprite = {
     AnimationsRegister.addAction(bindingKey, animationsKey, ChangeCycle(label))
     this
   }

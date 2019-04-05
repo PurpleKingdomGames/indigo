@@ -20,13 +20,14 @@ object SceneGraphSamples {
       "ref",
       Point(64, 32),
       CycleLabel("label"),
-      Cycle(
-        CycleLabel("label"),
-        NonEmptyList(Frame.fromBounds(0, 0, 32, 32), Frame.fromBounds(32, 0, 32, 32)),
-        0,
-        0
+      NonEmptyList(
+        Cycle(
+          CycleLabel("label"),
+          NonEmptyList(Frame.fromBounds(0, 0, 32, 32), Frame.fromBounds(32, 0, 32, 32)),
+          0,
+          0
+        )
       ),
-      Map.empty[CycleLabel, Cycle],
       Nil
     )
 

@@ -33,6 +33,9 @@ trait SceneGraphTypeAliases {
   type Cycle = gameengine.scenegraph.animation.Cycle
   val Cycle: gameengine.scenegraph.animation.Cycle.type = gameengine.scenegraph.animation.Cycle
 
+  type CycleLabel = gameengine.scenegraph.animation.CycleLabel
+  val CycleLabel: gameengine.scenegraph.animation.CycleLabel.type = gameengine.scenegraph.animation.CycleLabel
+
   type Frame = gameengine.scenegraph.animation.Frame
   val Frame: gameengine.scenegraph.animation.Frame.type = gameengine.scenegraph.animation.Frame
 

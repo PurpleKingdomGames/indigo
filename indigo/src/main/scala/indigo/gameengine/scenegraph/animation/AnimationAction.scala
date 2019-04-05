@@ -8,7 +8,7 @@ object AnimationAction {
     val hash: String = "Play"
   }
 
-  final case class ChangeCycle(label: String) extends AnimationAction {
+  final case class ChangeCycle(label: CycleLabel) extends AnimationAction {
     val hash: String = s"ChangeCycle($label)"
   }
 

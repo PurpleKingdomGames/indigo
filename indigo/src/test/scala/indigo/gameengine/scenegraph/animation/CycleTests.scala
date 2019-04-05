@@ -81,7 +81,7 @@ object CycleTests extends TestSuite {
 
         "ChangeCycle" - {
           //no op
-          cycle.runActions(GameTime.zero, List(ChangeCycle("fish"))).currentFrame === frame1 ==> true
+          cycle.runActions(GameTime.zero, List(ChangeCycle(CycleLabel("fish")))).currentFrame === frame1 ==> true
         }
 
         "JumpToFirstFrame" - {
