@@ -27,7 +27,7 @@ object AnimationAction {
   }
 
   final case class ChangeCycle(label: CycleLabel) extends AnimationAction {
-    val hash: String = s"ChangeCycle($label)"
+    val hash: String = s"ChangeCycle(${label.value})"
   }
 
   case object JumpToFirstFrame extends AnimationAction {
