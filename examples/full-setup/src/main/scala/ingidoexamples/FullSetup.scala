@@ -3,8 +3,6 @@ package ingidoexamples
 import indigo._
 import indigoexts.entrypoint._
 
-import scala.scalajs.js.annotation.JSExportTopLevel
-
 object FullSetup {
 
   val config: GameConfig =
@@ -34,7 +32,6 @@ object FullSetup {
   val renderer: (GameTime, MyGameModel, MyViewModel, FrameInputEvents) => SceneUpdateFragment =
     (_, _, _, _) => SceneUpdateFragment.empty
 
-  @JSExportTopLevel("Example.main")
   def main(args: Array[String]): Unit =
     Indigo.game
       .withConfig(config)

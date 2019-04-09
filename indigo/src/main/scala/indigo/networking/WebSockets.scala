@@ -88,7 +88,7 @@ object WebSockets {
 
       socket.onopen = (_: dom.Event) => onOpenSendMessage.foreach(msg => socket.send(msg))
 
-      socket.onerror = (e: dom.ErrorEvent) => globalEventStream.pushGlobalEvent(WebSocketEvent.Error(config.id, e.message))
+      socket.onerror = (_: dom.Event) => globalEventStream.pushGlobalEvent(WebSocketEvent.Error(config.id, "Web socket connection error"))
 
       socket.onclose = (_: dom.CloseEvent) => globalEventStream.pushGlobalEvent(WebSocketEvent.Close(config.id))
 

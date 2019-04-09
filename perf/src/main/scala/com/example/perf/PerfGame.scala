@@ -5,8 +5,6 @@ import indigo.shared.EqualTo._
 import indigoexts.entrypoint._
 import indigoexts.formats._
 
-import scala.scalajs.js.annotation.JSExportTopLevel
-
 object PerfGame {
 
   val viewportWidth: Int      = 800
@@ -80,7 +78,6 @@ object PerfGame {
       .updateViewModelUsing(updateViewModel)
       .presentUsing(updateView)
 
-  @JSExportTopLevel("com.example.perf.PerfGame.main")
   def main(args: Array[String]): Unit =
     game.start()
 

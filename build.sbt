@@ -61,7 +61,8 @@ lazy val commonSettings = Seq(
     Wart.Overloading,
     Wart.ImplicitParameter
   ),
-  scalacOptions += "-Yrangepos"
+  scalacOptions += "-Yrangepos",
+  concurrentRestrictions in Global += Tags.limit(ScalaJSTags.Link, 2)
 )
 
 // Examples
@@ -241,7 +242,7 @@ lazy val indigo =
     .settings(
       name := "indigo",
       libraryDependencies ++= Seq(
-        "org.scala-js"   %%% "scalajs-dom" % "0.9.2",
+        "org.scala-js"   %%% "scalajs-dom" % "0.9.6",
         "org.scalacheck" %%% "scalacheck"  % "1.13.4" % "test"
       )
     )
