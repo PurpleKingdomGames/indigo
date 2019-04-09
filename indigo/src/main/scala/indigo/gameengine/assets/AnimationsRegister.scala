@@ -85,7 +85,7 @@ object AnimationsRegister {
         metrics.record(ApplyAnimationMementoEndMetric)
 
         metrics.record(RunAnimationActionsStartMetric)
-        val commands = dequeueAndDeduplicateActions(bindingKey, animationsKey)
+        val commands = dequeueAndDeduplicateActions(bindingKey, animationsKey).reverse
         val newAnim  = commands.foldLeft(updated)((a, action) => a.addAction(action.action)).runActions(gameTime)
         metrics.record(RunAnimationActionsEndMetric)
 
