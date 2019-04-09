@@ -130,6 +130,12 @@ object Animation {
 
 final class AnimationMemento(val bindingKey: BindingKey, val currentCycleLabel: CycleLabel, val currentCycleMemento: CycleMemento)
 object AnimationMemento {
+
+  implicit def animationMementoAsString(implicit bk: AsString[BindingKey], cl: AsString[CycleLabel], cm: AsString[CycleMemento]): AsString[AnimationMemento] =
+    AsString.create { m =>
+      s"""AnimationMemento(bindingKey = ${bk.show(m.bindingKey)}, cycleLabel = ${cl.show(m.currentCycleLabel)}, cycleMemento = ${cm.show(m.currentCycleMemento)}, )"""
+    }
+
   def apply(bindingKey: BindingKey, currentCycleLabel: CycleLabel, currentCycleMemento: CycleMemento): AnimationMemento =
     new AnimationMemento(bindingKey, currentCycleLabel, currentCycleMemento)
 }
