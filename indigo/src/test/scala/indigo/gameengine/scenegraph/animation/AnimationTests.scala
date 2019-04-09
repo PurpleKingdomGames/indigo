@@ -62,8 +62,11 @@ object AnimationTests extends TestSuite {
           val expected: Animation =
             animation
 
+          println("---")
           println(actual.show)
+          println("---")
           println(expected.show)
+          println("---")
 
           actual === expected ==> true
         }

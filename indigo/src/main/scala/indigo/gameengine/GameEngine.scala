@@ -107,10 +107,14 @@ object GameEngine {
           SubSystemsRegister
             .add(SubSystemsRegister.empty, subSystems.toList ++ startupData.additionalSubSystems.toList)
 
+        val fontRegister: FontRegister =
+          FontRegister.fromSet(fonts ++ startupData.additionalFonts)
+
+        val animationRegsiter: AnimationsRegister =
+          AnimationsRegister.fromSet(animations ++ startupData.additionalAnimations)
+
         val x: GameContext[Long => Int] =
           for {
-            _                   <- GameEngine.registerAnimations(animations ++ startupData.additionalAnimations)
-            _                   <- GameEngine.registerFonts(fonts ++ startupData.additionalFonts)
             textureAtlas        <- GameEngine.createTextureAtlas(assetCollection)
             loadedTextureAssets <- GameEngine.extractLoadedTextures(textureAtlas)
             assetMapping        <- GameEngine.setupAssetMapping(textureAtlas)
@@ -150,12 +154,6 @@ object GameEngine {
 
     }
   }
-
-  def registerAnimations(animations: Set[Animation]): GameContext[Unit] =
-    GameContext.delay(animations.foreach(AnimationsRegister.register))
-
-  def registerFonts(fonts: Set[FontInfo]): GameContext[Unit] =
-    GameContext.delay(fonts.foreach(FontRegister.register))
 
   def createTextureAtlas(assetCollection: AssetCollection): GameContext[TextureAtlas] =
     GameContext.delay(
