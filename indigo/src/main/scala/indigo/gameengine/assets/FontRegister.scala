@@ -4,18 +4,17 @@ import indigo.gameengine.scenegraph.datatypes.{FontInfo, FontKey}
 
 import scala.collection.mutable
 
-final class FontRegister(val fonts: Map[FontKey, FontInfo])
 object FontRegister {
 
-  def apply(fonts: Map[FontKey, FontInfo]): FontRegister =
-    new FontRegister(fonts)
+  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
+  private val fontRegistry: mutable.HashMap[FontKey, FontInfo] = mutable.HashMap()
 
-  def fromSet(fonts: Set[FontInfo]): FontRegister =
-    new FontRegister(
-      fonts.foldLeft(Map.empty[FontKey, FontInfo])((acc, n) => acc + (n.fontKey -> n))
-    )
+  private[gameengine] def register(fontInfo: FontInfo): Unit = {
+    fontRegistry.update(fontInfo.fontKey, fontInfo)
+    ()
+  }
 
-  def findByFontKey(register: FontRegister, fontKey: FontKey): Option[FontInfo] =
-    register.fonts.get(fontKey)
+  def findByFontKey(fontKey: FontKey): Option[FontInfo] =
+    fontRegistry.get(fontKey)
 
 }
