@@ -17,7 +17,7 @@ object SceneGraphSamples {
   val animations: Animation =
     Animation(
       animationsKey,
-      "ref",
+      ImageAssetRef("ref"),
       Point(64, 32),
       CycleLabel("label"),
       NonEmptyList(

@@ -100,7 +100,7 @@ object DisplayObjectConversions {
               z = leaf.depth.zIndex,
               width = leaf.bounds.size.x,
               height = leaf.bounds.size.y,
-              imageRef = lookupAtlasName(assetMapping, anim.imageAssetRef),
+              imageRef = lookupAtlasName(assetMapping, anim.imageAssetRef.ref),
               alpha = leaf.effects.alpha,
               tintR = leaf.effects.tint.r,
               tintG = leaf.effects.tint.g,
@@ -110,10 +110,10 @@ object DisplayObjectConversions {
               frame = frameOffsetsCache.getOrElseUpdate(
                 anim.frameHash, {
                   SpriteSheetFrame.calculateFrameOffset(
-                    imageSize = lookupAtlasSize(assetMapping, anim.imageAssetRef),
+                    imageSize = lookupAtlasSize(assetMapping, anim.imageAssetRef.ref),
                     frameSize = Vector2(anim.currentFrame.bounds.size.x.toDouble, anim.currentFrame.bounds.size.y.toDouble),
                     framePosition = Vector2(anim.currentFrame.bounds.position.x.toDouble, anim.currentFrame.bounds.position.y.toDouble),
-                    textureOffset = lookupTextureOffset(assetMapping, anim.imageAssetRef)
+                    textureOffset = lookupTextureOffset(assetMapping, anim.imageAssetRef.ref)
                   )
                 }
               )

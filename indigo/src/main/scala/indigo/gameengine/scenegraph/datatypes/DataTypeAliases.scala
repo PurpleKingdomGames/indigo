@@ -40,4 +40,6 @@ trait DataTypeAliases {
   type Flip = scenegraph.datatypes.Flip
   val Flip: scenegraph.datatypes.Flip.type = scenegraph.datatypes.Flip
 
+  type ImageAssetRef = scenegraph.datatypes.ImageAssetRef
+  val ImageAssetRef: scenegraph.datatypes.ImageAssetRef.type = scenegraph.datatypes.ImageAssetRef
 }

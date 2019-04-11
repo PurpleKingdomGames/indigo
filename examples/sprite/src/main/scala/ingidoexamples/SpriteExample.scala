@@ -19,7 +19,7 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
   val animations: Set[Animation] = Set(
     Animation.create(
       animationsKey,
-      "trafficlights",
+      ImageAssetRef("trafficlights"),
       Point(128, 128),
       cycle = Cycle.create(
         "lights",

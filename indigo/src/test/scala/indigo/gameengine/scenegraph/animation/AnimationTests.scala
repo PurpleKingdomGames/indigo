@@ -39,7 +39,7 @@ object AnimationTests extends TestSuite {
   val animation: Animation =
     Animation(
       AnimationKey("test anim"),
-      "imageAssetRef",
+      ImageAssetRef("imageAssetRef"),
       Point.zero,
       cycles.head.label,
       cycles,

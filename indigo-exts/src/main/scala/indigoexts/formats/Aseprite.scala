@@ -75,7 +75,7 @@ object Aseprite {
         val animations: Animation =
           Animation(
             animationsKey = AnimationKey(BindingKey.generate.value),
-            imageAssetRef = imageAssetRef,
+            imageAssetRef = ImageAssetRef(imageAssetRef),
             spriteSheetSize = Point(aseprite.meta.size.w, aseprite.meta.size.h),
             currentCycleLabel = x.label,
             cycles = NonEmptyList.pure(x, xs), 

@@ -2,7 +2,7 @@ package indigo.gameengine.scenegraph.animation
 
 import indigo.time.GameTime
 import indigo.gameengine.scenegraph.animation.AnimationAction._
-import indigo.gameengine.scenegraph.datatypes.{BindingKey, Point}
+import indigo.gameengine.scenegraph.datatypes.{BindingKey, Point, ImageAssetRef}
 import indigo.collections.NonEmptyList
 import indigo.shared.EqualTo
 import indigo.shared.AsString
@@ -11,7 +11,7 @@ import indigo.shared.EqualTo._
 
 final case class Animation(
     animationsKey: AnimationKey,
-    imageAssetRef: String,
+    imageAssetRef: ImageAssetRef,
     spriteSheetSize: Point,
     currentCycleLabel: CycleLabel,
     cycles: NonEmptyList[Cycle],
@@ -19,7 +19,7 @@ final case class Animation(
 ) {
 
   val frameHash: String =
-    currentFrame.bounds.hash + "_" + imageAssetRef
+    currentFrame.bounds.hash + "_" + imageAssetRef.ref
 
   def currentCycle: Cycle =
     Animation.currentCycle(this)
@@ -53,13 +53,13 @@ final case class Animation(
 object Animation {
 
   implicit def animationEqualTo(
-    implicit eAK: EqualTo[AnimationKey],
-    eS: EqualTo[String],
-    eP: EqualTo[Point],
-    eCL: EqualTo[CycleLabel],
-    eNelC: EqualTo[NonEmptyList[Cycle]],
-    eLA: EqualTo[List[AnimationAction]]
-): EqualTo[Animation] =
+      implicit eAK: EqualTo[AnimationKey],
+      eS: EqualTo[ImageAssetRef],
+      eP: EqualTo[Point],
+      eCL: EqualTo[CycleLabel],
+      eNelC: EqualTo[NonEmptyList[Cycle]],
+      eLA: EqualTo[List[AnimationAction]]
+  ): EqualTo[Animation] =
     EqualTo.create { (a, b) =>
       eAK.equal(a.animationsKey, b.animationsKey) &&
       eS.equal(a.imageAssetRef, b.imageAssetRef) &&
@@ -71,16 +71,17 @@ object Animation {
 
   implicit def animationAsString(
       implicit sAK: AsString[AnimationKey],
+      sIAR: AsString[ImageAssetRef],
       sP: AsString[Point],
       sCL: AsString[CycleLabel],
       sNelC: AsString[NonEmptyList[Cycle]],
       sLA: AsString[List[AnimationAction]]
   ): AsString[Animation] =
     AsString.create { a =>
-      s"Animation(${sAK.show(a.animationsKey)}, imageAssetRef, ${sP.show(a.spriteSheetSize)}, ${sCL.show(a.currentCycleLabel)}, ${sNelC.show(a.cycles)}, ${sLA.show(a.actions)})"
+      s"Animation(${sAK.show(a.animationsKey)}, ${sIAR.show(a.imageAssetRef)}, ${sP.show(a.spriteSheetSize)}, ${sCL.show(a.currentCycleLabel)}, ${sNelC.show(a.cycles)}, ${sLA.show(a.actions)})"
     }
 
-  def create(animationsKey: AnimationKey, imageAssetRef: String, spriteSheetSize: Point, cycle: Cycle): Animation =
+  def create(animationsKey: AnimationKey, imageAssetRef: ImageAssetRef, spriteSheetSize: Point, cycle: Cycle): Animation =
     apply(animationsKey, imageAssetRef, spriteSheetSize, cycle.label, NonEmptyList(cycle), Nil)
 
   def currentCycle(animations: Animation): Cycle =
