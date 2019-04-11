@@ -1,14 +1,12 @@
 package indigoexts.pathfinding
 
-import indigo.shared.EqualTo._
+import indigo.shared.EqualTo
+import indigo.shared.AsString
 
 final case class Coords(x: Int, y: Int) {
 
   def toGridPosition(gridWidth: Int): Int =
     Coords.toGridPosition(this, gridWidth)
-
-  def ===(other: Coords): Boolean =
-    Coords.equality(this, other)
 
   def +(other: Coords): Coords =
     Coords.add(this, other)
@@ -16,6 +14,14 @@ final case class Coords(x: Int, y: Int) {
 }
 
 object Coords {
+
+  implicit def show(implicit showI: AsString[Int]): AsString[Coords] =
+    AsString.create(p => s"""Coords(${showI.show(p.x)}, ${showI.show(p.y)})""")
+
+  implicit def eq(implicit eqI: EqualTo[Int]): EqualTo[Coords] =
+    EqualTo.create { (a, b) =>
+      eqI.equal(a.x, b.x) && eqI.equal(a.y, b.y)
+    }
 
   val relativeUpLeft: Coords    = Coords(-1, -1)
   val relativeUp: Coords        = Coords(0, -1)
@@ -34,9 +40,6 @@ object Coords {
       x = index % gridWidth,
       y = index / gridWidth
     )
-
-  def equality(a: Coords, b: Coords): Boolean =
-    a.x === b.x && a.y === b.y
 
   def add(a: Coords, b: Coords): Coords =
     Coords(a.x + b.x, a.y + b.y)

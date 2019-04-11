@@ -2,6 +2,7 @@ package indigoexts.grid
 
 import indigo.gameengine.scenegraph.datatypes.Point
 import indigo.shared.AsString
+import indigo.shared.EqualTo
 
 import scala.annotation.tailrec
 import scala.util.Random
@@ -9,9 +10,6 @@ import scala.util.Random
 import indigo.shared.EqualTo._
 
 final case class GridPoint(x: Int, y: Int) {
-
-  def ===(other: GridPoint): Boolean =
-    GridPoint.equality(this, other)
 
   def +(other: GridPoint): GridPoint =
     GridPoint.append(this, other)
@@ -27,9 +25,14 @@ final case class GridPoint(x: Int, y: Int) {
 
 }
 object GridPoint {
+  
+  implicit def show(implicit showI: AsString[Int]): AsString[GridPoint] =
+    AsString.create(p => s"""GridPoint(${showI.show(p.x)}, ${showI.show(p.y)})""")
 
-  implicit val show: AsString[GridPoint] =
-    AsString.create(p => s"""(${p.x}, ${p.y})""")
+  implicit def eq(implicit eqI: EqualTo[Int]): EqualTo[GridPoint] =
+    EqualTo.create { (a, b) =>
+      eqI.equal(a.x, b.x) && eqI.equal(a.y, b.y)
+    }
 
   def tupleToGridPoint(t: (Int, Int)): GridPoint =
     GridPoint(t._1, t._2)

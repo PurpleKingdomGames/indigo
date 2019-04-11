@@ -1,7 +1,6 @@
 package indigo.gameengine.scenegraph.datatypes
 
 import indigo.shared.{AsString, EqualTo}
-import indigo.shared.EqualTo._
 
 final case class Point(x: Int, y: Int) {
   def +(pt: Point): Point = Point(x + pt.x, y + pt.y)
@@ -28,12 +27,12 @@ object Point {
 
   def tuple2ToPoint(t: (Int, Int)): Point = Point(t._1, t._2)
 
-  implicit val show: AsString[Point] =
-    AsString.create(p => s"""Point(${p.x}, ${p.y})""")
+  implicit def show(implicit showI: AsString[Int]): AsString[Point] =
+    AsString.create(p => s"""Point(${showI.show(p.x)}, ${showI.show(p.y)})""")
 
-  implicit val eq: EqualTo[Point] =
+  implicit def eq(implicit eqI: EqualTo[Int]): EqualTo[Point] =
     EqualTo.create { (a, b) =>
-      a.x === b.x && a.y === b.y
+      eqI.equal(a.x, b.x) && eqI.equal(a.y, b.y)
     }
 
   def linearInterpolation(a: Point, b: Point, divisor: Double, multiplier: Double): Point =

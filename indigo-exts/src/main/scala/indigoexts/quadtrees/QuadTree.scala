@@ -3,6 +3,7 @@ package indigoexts.quadtrees
 import indigo.gameengine.PowerOfTwo
 import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
 import indigo.shared.AsString
+import indigo.shared.AsString._
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import indigoexts.grid.{GridPoint, GridSize}
@@ -288,13 +289,13 @@ object QuadTree {
   def renderAsStringWithIndent[T](quadTree: QuadTree[T], indent: String): String =
     quadTree match {
       case QuadEmpty(bounds) =>
-        indent + s"Empty [${bounds.renderAsString}]"
+        indent + s"Empty [${bounds.show}]"
 
       case QuadLeaf(bounds, value) =>
-        indent + s"Leaf [${bounds.renderAsString}] - ${value.toString}"
+        indent + s"Leaf [${bounds.show}] - ${value.toString}"
 
       case QuadBranch(bounds, a, b, c, d) =>
-        s"""${indent}Branch [${bounds.renderAsString}]
+        s"""${indent}Branch [${bounds.show}]
            |${renderAsStringWithIndent(a, indent + "  ")}
            |${renderAsStringWithIndent(b, indent + "  ")}
            |${renderAsStringWithIndent(c, indent + "  ")}

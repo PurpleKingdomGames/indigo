@@ -5,6 +5,7 @@ import indigo.shared.AsString
 import indigoexts.grid.GridPoint
 import indigoexts.line.{IntersectionResult, LineSegment}
 
+import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 
 trait QuadBounds {
@@ -48,22 +49,18 @@ trait QuadBounds {
   def collidesWithRayAt(lineSegment: LineSegment): Option[Point] =
     QuadBounds.rayCollisionPosition(this, lineSegment)
 
-  def renderAsString: String =
-    s"""($x, $y, $width, $height)"""
-
-  def ===(other: QuadBounds): Boolean =
-    QuadBounds.equals(this, other)
-
 }
 
 object QuadBounds {
 
-  implicit def showQuadBounds[T]: AsString[QuadBounds] =
-    AsString.create(b => b.renderAsString)
-
-  implicit val show: AsString[QuadBounds] =
+  implicit def show(implicit s: AsString[Int]): AsString[QuadBounds] =
     AsString.create { qb =>
-      s"""QuadBounds(${qb.x}, ${qb.y}, ${qb.width}, ${qb.height})"""
+      s"""QuadBounds(${s.show(qb.x)}, ${s.show(qb.y)}, ${s.show(qb.width)}, ${s.show(qb.height)})"""
+    }
+
+  implicit def eq(implicit eqI: EqualTo[Int]): EqualTo[QuadBounds] =
+    EqualTo.create { (a, b) =>
+      eqI.equal(a.x, b.x) && eqI.equal(a.y, b.y) && eqI.equal(a.width, b.width) && eqI.equal(a.height, b.height)
     }
 
   def apply(size: Int): QuadBounds =
@@ -118,9 +115,6 @@ object QuadBounds {
 
     unsafeCreate(l, t, w, h)
   }
-
-  def equals(a: QuadBounds, b: QuadBounds): Boolean =
-    a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
 
   def rayCollisionCheck(bounds: QuadBounds, line: LineSegment): Boolean =
     bounds.edges.exists { edge =>
