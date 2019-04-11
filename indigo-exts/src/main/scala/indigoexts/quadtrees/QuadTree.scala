@@ -4,6 +4,7 @@ import indigo.gameengine.PowerOfTwo
 import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
 import indigo.shared.AsString
 import indigo.shared.EqualTo
+import indigo.shared.EqualTo._
 import indigoexts.grid.{GridPoint, GridSize}
 import indigoexts.line.LineSegment
 

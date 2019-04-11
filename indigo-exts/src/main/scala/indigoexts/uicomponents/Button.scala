@@ -3,6 +3,7 @@ package indigoexts.uicomponents
 import indigo.gameengine.events._
 import indigo.gameengine.scenegraph.{Graphic, SceneUpdateFragment}
 import indigo.gameengine.scenegraph.datatypes.{BindingKey, Depth, Rectangle}
+import indigo.shared.EqualTo._
 
 object Button {
 

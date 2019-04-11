@@ -2,6 +2,7 @@ package indigo.gameengine.events
 
 import indigo.gameengine.constants.KeyCode
 import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
+import indigo.shared.EqualTo._
 
 /**
   * Holds all the events that will be passed on to the view. These are world events only! View events go to the model.

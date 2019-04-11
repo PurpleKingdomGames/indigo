@@ -7,9 +7,6 @@ import indigo.shared.AsString
 
 class TimeVaryingValue[T](val value: T, val startValue: T, val createdAt: Millis)(implicit vot: ValueOverTime[T], millisAsString: AsString[Millis]) {
 
-  def ===(other: TimeVaryingValue[T])(implicit eq: EqualTo[TimeVaryingValue[T]]): Boolean =
-    eq.equal(this, other)
-
   def increase(unitsPerSecond: T, runningTime: Millis): TimeVaryingValue[T] =
     TimeVaryingValue.increase(this, unitsPerSecond, runningTime)
 
