@@ -1,6 +1,7 @@
 package indigoexts.abstractions
 
 import indigo.shared.EqualTo
+import indigo.shared.AsString
 
 trait Id[A] {
   val value: A
@@ -10,12 +11,15 @@ trait Id[A] {
 
   def flatMap[B](f: A => Id[B]): Id[B] =
     Id.flatMap[A, B](Id.pure(value))(f)
-
-  def ===(other: Id[A])(implicit eq: EqualTo[A]): Boolean =
-    eq.equal(value, other.value)
 }
 
 object Id {
+
+  implicit def eq[A](implicit eqA: EqualTo[A]): EqualTo[Id[A]] =
+    EqualTo.create((a, b) => eqA.equal(a.value, b.value))
+
+  implicit def show[A](implicit showA: AsString[A]): AsString[Id[A]] =
+    AsString.create(a => s"Id(${showA.show(a.value)})")
 
   def pure[A](a: A): Id[A] =
     new Id[A] {

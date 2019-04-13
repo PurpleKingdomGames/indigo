@@ -2,6 +2,8 @@ package indigoexts.abstractions
 
 import utest._
 
+import indigo.shared.EqualTo._
+
 object IdTests extends TestSuite {
 
   val tests: Tests =
