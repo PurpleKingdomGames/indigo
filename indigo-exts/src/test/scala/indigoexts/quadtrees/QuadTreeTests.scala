@@ -2,7 +2,8 @@ package indigoexts.quadtrees
 
 import indigo.gameengine.PowerOfTwo
 import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
-import indigo.shared.EqualTo
+import indigo.shared.EqualTo._
+import indigo.shared.AsString._
 import indigoexts.grid.GridPoint
 import indigoexts.quadtree.QuadTree.{QuadBranch, QuadEmpty, QuadLeaf}
 import utest._
@@ -16,7 +17,7 @@ object QuadTreeTests extends TestSuite {
         "should be able to fetch an element at a given position" - {
           val gridPoint: GridPoint = GridPoint(5, 1)
 
-          val tree = QuadBranch(
+          val tree: QuadBranch[String] = QuadBranch(
             QuadBounds(0, 0, 8, 8),
             QuadEmpty(QuadBounds(0, 0, 4, 4)),
             QuadBranch(

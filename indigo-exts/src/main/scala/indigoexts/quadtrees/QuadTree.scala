@@ -15,9 +15,6 @@ sealed trait QuadTree[T] {
 
   val bounds: QuadBounds
 
-  def ===(other: QuadTree[T])(implicit eq: EqualTo[T]): Boolean =
-    QuadTree.equalTo(this, other)
-
   def isEmpty: Boolean
 
   def fetchElementAt(gridPoint: GridPoint): Option[T] =
@@ -47,14 +44,50 @@ sealed trait QuadTree[T] {
   def searchByRectangle(rectangle: Rectangle): List[T] =
     QuadTree.searchByRectangle(this, rectangle)
 
-  def renderAsString: String =
-    QuadTree.renderAsString(this)
-
 }
 object QuadTree {
 
-  implicit def showQuadTree[T]: AsString[QuadTree[T]] =
-    AsString.create(t => t.renderAsString)
+  implicit def showQuadTree[T](implicit showT: AsString[T]): AsString[QuadTree[T]] = {
+    @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+    def rec(quadTree: QuadTree[T], indent: String): String =
+      quadTree match {
+        case QuadEmpty(bounds) =>
+          indent + s"Empty [${bounds.show}]"
+
+        case QuadLeaf(bounds, value) =>
+          indent + s"Leaf [${bounds.show}] - ${showT.show(value)}"
+
+        case QuadBranch(bounds, a, b, c, d) =>
+          s"""${indent}Branch [${bounds.show}]
+             |${rec(a, indent + "  ")}
+             |${rec(b, indent + "  ")}
+             |${rec(c, indent + "  ")}
+             |${rec(d, indent + "  ")}""".stripMargin
+      }
+
+    AsString.create(t => rec(t, ""))
+  }
+
+  implicit def eq[T](implicit eqT: EqualTo[T]): EqualTo[QuadTree[T]] =
+    EqualTo.create { (a, b) =>
+      @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+      def rec(a: QuadTree[T], b: QuadTree[T]): Boolean =
+        (a, b) match {
+          case (QuadEmpty(b1), QuadEmpty(b2)) if b1 === b2 =>
+            true
+
+          case (QuadLeaf(b1, v1), QuadLeaf(b2, v2)) if b1 === b2 && eqT.equal(v1, v2) =>
+            true
+
+          case (QuadBranch(bounds1, a1, b1, c1, d1), QuadBranch(bounds2, a2, b2, c2, d2)) =>
+            bounds1 === bounds2 && rec(a1, a2) && rec(b1, b2) && rec(c1, c2) && rec(d1, d2)
+
+          case _ =>
+            false
+        }
+
+      rec(a, b)
+    }
 
   def empty[T](size: PowerOfTwo): QuadTree[T] =
     QuadEmpty(QuadBounds.apply(size.value))
@@ -73,7 +106,30 @@ object QuadTree {
     def isEmpty: Boolean = true
   }
 
+  object QuadLeaf {
+    implicit def show[T](implicit showQ: AsString[QuadTree[T]]): AsString[QuadLeaf[T]] =
+      AsString.create(t => showQ.show(t))
+
+    implicit def eq[T](implicit eqQ: EqualTo[QuadTree[T]]): EqualTo[QuadLeaf[T]] =
+      EqualTo.create((a, b) => eqQ.equal(a, b))
+  }
+
+  object QuadEmpty {
+    implicit def show[T](implicit showQ: AsString[QuadTree[T]]): AsString[QuadEmpty[T]] =
+      AsString.create(t => showQ.show(t))
+
+    implicit def eq[T](implicit eqQ: EqualTo[QuadTree[T]]): EqualTo[QuadEmpty[T]] =
+      EqualTo.create((a, b) => eqQ.equal(a, b))
+  }
+
   object QuadBranch {
+
+    implicit def show[T](implicit showQ: AsString[QuadTree[T]]): AsString[QuadBranch[T]] =
+      AsString.create(t => showQ.show(t))
+
+    implicit def eq[T](implicit eqQ: EqualTo[QuadTree[T]]): EqualTo[QuadBranch[T]] =
+      EqualTo.create((a, b) => eqQ.equal(a, b))
+
     def fromBounds[T](bounds: QuadBounds): QuadBranch[T] =
       fromBoundsAndQuarters(bounds, bounds.subdivide)
 
@@ -280,42 +336,6 @@ object QuadTree {
         case _ =>
           Nil
       }
-    }
-
-  def renderAsString[T](quadTree: QuadTree[T]): String =
-    renderAsStringWithIndent(quadTree, "")
-
-  @SuppressWarnings(Array("org.wartremover.warts.ToString", "org.wartremover.warts.Recursion"))
-  def renderAsStringWithIndent[T](quadTree: QuadTree[T], indent: String): String =
-    quadTree match {
-      case QuadEmpty(bounds) =>
-        indent + s"Empty [${bounds.show}]"
-
-      case QuadLeaf(bounds, value) =>
-        indent + s"Leaf [${bounds.show}] - ${value.toString}"
-
-      case QuadBranch(bounds, a, b, c, d) =>
-        s"""${indent}Branch [${bounds.show}]
-           |${renderAsStringWithIndent(a, indent + "  ")}
-           |${renderAsStringWithIndent(b, indent + "  ")}
-           |${renderAsStringWithIndent(c, indent + "  ")}
-           |${renderAsStringWithIndent(d, indent + "  ")}""".stripMargin
-    }
-
-  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
-  def equalTo[T](a: QuadTree[T], b: QuadTree[T])(implicit eq: EqualTo[T]): Boolean =
-    (a, b) match {
-      case (QuadEmpty(b1), QuadEmpty(b2)) if b1 === b2 =>
-        true
-
-      case (QuadLeaf(b1, v1), QuadLeaf(b2, v2)) if b1 === b2 && eq.equal(v1, v2) =>
-        true
-
-      case (QuadBranch(bounds1, a1, b1, c1, d1), QuadBranch(bounds2, a2, b2, c2, d2)) =>
-        bounds1 === bounds2 && equalTo(a1, a2) && equalTo(b1, b2) && equalTo(c1, c2) && equalTo(d1, d2)
-
-      case _ =>
-        false
     }
 
 }
