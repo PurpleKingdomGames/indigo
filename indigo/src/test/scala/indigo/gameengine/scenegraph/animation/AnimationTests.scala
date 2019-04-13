@@ -74,7 +74,7 @@ object AnimationTests extends TestSuite {
         //   //   animation
         //   //   .addAction(ChangeCycle())
 
-        //   1 ==> 2
+        //   fail("error")
 
         // }
 

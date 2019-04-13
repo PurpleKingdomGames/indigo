@@ -63,7 +63,6 @@ lazy val sbtIndigo =
       sbtPlugin := true,
       libraryDependencies ++= Seq(
         "commons-io"    % "commons-io"    % "2.5",
-        "org.scalatest" %% "scalatest"    % "3.0.5" % "test",
         "org.scala-js"  %%% "scalajs-dom" % "0.9.6"
       ),
       libraryDependencies ++= Seq(
