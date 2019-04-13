@@ -5,7 +5,6 @@ import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
 import indigo.shared.EqualTo
 import indigoexts.grid.GridPoint
 import indigoexts.quadtree.QuadTree.{QuadBranch, QuadEmpty, QuadLeaf}
-import org.scalactic.Equality
 import utest._
 
 object QuadTreeTests extends TestSuite {
@@ -87,19 +86,6 @@ object QuadTreeTests extends TestSuite {
           tree2.fetchElementAt(gridPoint) ==> None
 
         }
-
-        // Needed because of the funky QuadBounds type.
-        implicit def eq[T](implicit eqT: EqualTo[T]): Equality[QuadTree[T]] =
-          new Equality[QuadTree[T]] {
-            def areEqual(a: QuadTree[T], b: Any): Boolean =
-              b match {
-                case t: QuadTree[T] @unchecked =>
-                  QuadTree.equalTo(a, t)
-
-                case _ =>
-                  false
-              }
-          }
 
         "should be able to check equality" - {
           "equal" - {
