@@ -1,4 +1,4 @@
-package server
+package indigoserver
 
 import indigo.shared._
 
