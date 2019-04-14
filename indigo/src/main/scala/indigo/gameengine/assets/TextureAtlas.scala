@@ -5,6 +5,7 @@ import indigo.gameengine.assets.TextureAtlas.supportedSizes
 import indigo.gameengine.scenegraph.datatypes.Point
 import indigo.runtime.IndigoLogger
 import indigo.shared.EqualTo
+import indigo.shared.EqualTo._
 import org.scalajs.dom
 import org.scalajs.dom.{html, raw}
 
@@ -74,9 +75,15 @@ final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, 
   }
 
 }
-final case class AtlasId(id: String) extends AnyVal {
-  def ===(other: AtlasId): Boolean =
-    implicitly[EqualTo[String]].equal(id, other.id)
+
+final case class AtlasId(id: String) extends AnyVal
+object AtlasId {
+
+  implicit def eq(implicit eqS: EqualTo[String]): EqualTo[AtlasId] =
+    EqualTo.create { (a, b) =>
+      eqS.equal(a.id, b.id)
+    }
+
 }
 
 final case class AtlasIndex(id: AtlasId, offset: Point)
