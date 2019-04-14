@@ -6,7 +6,9 @@ import indigo.networking.WebSocketReadyState.{CLOSED, CLOSING}
 import indigo.runtime.IndigoLogger
 import org.scalajs.dom
 
+import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
+import indigo.shared.AsString
 
 import scala.collection.mutable
 
@@ -101,25 +103,27 @@ object WebSockets {
 
 }
 
-final case class WebSocketId(id: String) {
-  def ===(other: WebSocketId): Boolean =
-    WebSocketId.equality(this, other)
-}
+final case class WebSocketId(id: String)
 object WebSocketId {
   def generate: WebSocketId =
     WebSocketId(BindingKey.generate.value)
 
-  def equality(a: WebSocketId, b: WebSocketId): Boolean =
-    a.id === b.id
+  implicit def eq(implicit eqS: EqualTo[String]): EqualTo[WebSocketId] =
+    EqualTo.create((a, b) => eqS.equal(a.id, b.id))
+
+  implicit def show(implicit showS: AsString[String]): AsString[WebSocketId] =
+    AsString.create(v => s"""WebSocketId(${showS.show(v.id)})""")
 }
 
-final case class WebSocketConfig(id: WebSocketId, address: String) {
-  def ===(other: WebSocketConfig): Boolean =
-    WebSocketConfig.equality(this, other)
-}
+final case class WebSocketConfig(id: WebSocketId, address: String)
 object WebSocketConfig {
-  def equality(a: WebSocketConfig, b: WebSocketConfig): Boolean =
-    a.id === b.id && a.address === b.address
+
+  implicit def eq(implicit eqId: EqualTo[WebSocketId], eqS: EqualTo[String]): EqualTo[WebSocketConfig] =
+    EqualTo.create((a, b) => eqId.equal(a.id, b.id) && eqS.equal(a.address, b.address))
+
+  implicit def show(implicit sId: AsString[WebSocketId], showS: AsString[String]): AsString[WebSocketConfig] =
+    AsString.create(v => s"""WebSocketConfig(${sId.show(v.id)}, ${showS.show(v.address)})""")
+
 }
 
 sealed trait WebSocketReadyState {
