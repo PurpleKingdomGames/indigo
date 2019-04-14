@@ -24,7 +24,7 @@ object SubSystemsRegisterTests extends TestSuite {
         "should allow you to update sub systems" - {
           val r = SubSystemsRegister.empty.add(PointsTrackerExample(10), PointsTrackerExample(50))
 
-          val reports = r.update(GameTime.zero, dice)(PointsTrackerEvent.Add(10)).register.reports
+          val reports = r.update(GameTime.zero, dice)(PointsTrackerEvent.Add(10)).state.reports
 
           assert(reports.contains("Points: 20"))
           assert(reports.contains("Points: 60"))
@@ -35,8 +35,8 @@ object SubSystemsRegisterTests extends TestSuite {
 
           val updated = r.update(GameTime.zero, dice)(PointsTrackerEvent.LoseAll)
 
-          assert(updated.register.reports == List("Points: 0", "Points: 0"))
-          assert(updated.events == List(GameOver, GameOver))
+          assert(updated.state.reports == List("Points: 0", "Points: 0"))
+          assert(updated.globalEvents == List(GameOver, GameOver))
         }
 
         "should allow you to render sub systems" - {
@@ -44,7 +44,7 @@ object SubSystemsRegisterTests extends TestSuite {
 
           val rendered =
             r.update(GameTime.zero, dice)(PointsTrackerEvent.Add(10))
-              .register
+              .state
               .render(GameTime.zero)
               .gameLayer
               .map(_.asInstanceOf[Text].text)

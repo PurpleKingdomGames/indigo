@@ -2,16 +2,17 @@ package indigo.gameengine.subsystems
 
 import indigo.time.GameTime
 import indigo.gameengine.Outcome
+import indigo.gameengine.Outcome._
 import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph.SceneUpdateFragment
 import indigo.dice.Dice
 
-final case class SubSystemsRegister(registeredSubSystems: List[SubSystem]) {
+final class SubSystemsRegister(val registeredSubSystems: List[SubSystem]) {
 
   def add(subSystems: SubSystem*): SubSystemsRegister =
     SubSystemsRegister.add(this, subSystems.toList)
 
-  def update(gameTime: GameTime, dice: Dice): GlobalEvent => OutcomesRegister =
+  def update(gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[SubSystemsRegister] =
     SubSystemsRegister.update(this, gameTime, dice)
 
   def render(gameTime: GameTime): SceneUpdateFragment =
@@ -23,25 +24,29 @@ final case class SubSystemsRegister(registeredSubSystems: List[SubSystem]) {
 }
 
 object SubSystemsRegister {
+
+  def apply(subSystems: List[SubSystem]): SubSystemsRegister =
+    new SubSystemsRegister(subSystems)
+
   val empty: SubSystemsRegister =
     SubSystemsRegister(Nil)
 
   def add(register: SubSystemsRegister, subSystems: List[SubSystem]): SubSystemsRegister =
-    register.copy(registeredSubSystems = register.registeredSubSystems ++ subSystems)
+    SubSystemsRegister(register.registeredSubSystems ++ subSystems)
 
-  def update(register: SubSystemsRegister, gameTime: GameTime, dice: Dice): GlobalEvent => OutcomesRegister = {
+  def update(register: SubSystemsRegister, gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[SubSystemsRegister] = {
     case e: GlobalEvent =>
-      val updated = register.registeredSubSystems.map { ss =>
-        ss.eventFilter(e).map(ee => ss.update(gameTime, dice)(ee)).getOrElse(Outcome(ss, Nil))
-      }
-
-      OutcomesRegister(
-        register.copy(registeredSubSystems = updated.map(_.state)),
-        updated.flatMap(_.globalEvents)
-      )
+      register.registeredSubSystems
+        .map { ss =>
+          ss.eventFilter(e)
+            .map(ee => ss.update(gameTime, dice)(ee))
+            .getOrElse(Outcome(ss, Nil))
+        }
+        .sequence
+        .mapState(ss => SubSystemsRegister(ss))
 
     case _ =>
-      OutcomesRegister(register, Nil)
+      Outcome(register)
   }
 
   def render(register: SubSystemsRegister, gameTime: GameTime): SceneUpdateFragment =
@@ -51,5 +56,3 @@ object SubSystemsRegister {
     register.registeredSubSystems.map(_.report)
 
 }
-
-final case class OutcomesRegister(register: SubSystemsRegister, events: List[GlobalEvent])

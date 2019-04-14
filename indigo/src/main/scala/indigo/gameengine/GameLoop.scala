@@ -241,11 +241,13 @@ object GameLoop {
 
       case e :: es =>
         val res = register.update(gameTime, dice)(e)
-        res.events.foreach(e => globalEventStream.pushGlobalEvent(e))
+
+        res.globalEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
+
         processSubSystemUpdates(
           gameTime,
           dice,
-          res.register,
+          res.state,
           es,
           globalEventStream
         )
