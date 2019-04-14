@@ -1,7 +1,5 @@
 package indigo.gameengine.constants
 
-// import scala.language.implicitConversions
-
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import indigo.shared.AsString
