@@ -1,12 +1,18 @@
 // package indigo.gameengine
 
-// import indigo.dice.Dice
-// import indigo.time.GameTime
+import indigo.dice.Dice
+import indigo.time.GameTime
+import indigo.gameengine.events.{GlobalEvent, Signals}
 // import indigo.gameengine.events.{FrameInputEvents, GlobalEvent, Signals}
-// import indigo.gameengine.scenegraph.SceneUpdateFragment
+import indigo.gameengine.scenegraph.SceneUpdateFragment
+import indigo.gameengine.Outcome
 // import indigoexts.scenemanager.Scene
 
-// object ProcessFrame {
+trait FrameProcessor[Model, ViewModel] {
+  def run(model: Model, viewModel: ViewModel): (GameTime, List[GlobalEvent], Signals, Dice) => (Outcome[(Model, ViewModel)], SceneUpdateFragment)
+}
+
+// object FrameProcessor {
 
 //   def now[Model, ViewModel](scene: Scene): (Model, ViewModel) => (GameTime, List[GlobalEvent], Signals, Dice) => (Outcome[(Model, ViewModel)], SceneUpdateFragment) =
 //     (model, viewModel) =>
