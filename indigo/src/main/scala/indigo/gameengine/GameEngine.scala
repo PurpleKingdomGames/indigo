@@ -92,13 +92,13 @@ object GameEngine {
         val audioPlayer: AudioPlayer =
           GameEngine.startAudioPlayer(assetCollection.sounds)
 
-        implicit val metrics: Metrics =
+        val metrics: Metrics =
           Metrics.getInstance(gameConfig.advanced.recordMetrics, gameConfig.advanced.logMetricsReportIntervalMs)
 
-        implicit val globalEventStream: GlobalEventStream =
+        val globalEventStream: GlobalEventStream =
           GlobalEventStream.default(audioPlayer)
 
-        implicit val globalSignals: GlobalSignals =
+        val globalSignals: GlobalSignals =
           GlobalSignals.default
 
         val startupData: Startup[StartupError, StartupData] = initialise(assetCollection)
@@ -116,7 +116,7 @@ object GameEngine {
             assetMapping        <- GameEngine.setupAssetMapping(textureAtlas)
             startUpSuccessData  <- GameEngine.initialisedGame(startupData)
             canvas              <- GameEngine.createCanvas(gameConfig)
-            _                   <- GameEngine.listenToWorldEvents(canvas, gameConfig.magnification)
+            _                   <- GameEngine.listenToWorldEvents(canvas, gameConfig.magnification, globalEventStream)
             renderer            <- GameEngine.startRenderer(gameConfig, loadedTextureAssets, canvas)
             gameLoopInstance <- GameEngine.initialiseGameLoop(
               gameConfig,
@@ -128,7 +128,10 @@ object GameEngine {
               updateModel,
               initialViewModel(startUpSuccessData),
               updateViewModel,
-              updateView
+              updateView,
+              metrics,
+              globalEventStream,
+              globalSignals
             )
           } yield gameLoopInstance.loop(0)
 
@@ -208,9 +211,9 @@ object GameEngine {
         GameContext.delay(Renderer.createCanvas(gameConfig.viewport.width, gameConfig.viewport.height, parent))
     }
 
-  def listenToWorldEvents(canvas: Canvas, magnification: Int)(implicit globalEventStream: GlobalEventStream): GameContext[Unit] = {
+  def listenToWorldEvents(canvas: Canvas, magnification: Int, globalEventStream: GlobalEventStream): GameContext[Unit] = {
     IndigoLogger.info("Starting world events")
-    GameContext.delay(WorldEvents(canvas, magnification))
+    GameContext.delay(WorldEvents(canvas, magnification, globalEventStream))
   }
 
   def startRenderer(gameConfig: GameConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: Canvas): GameContext[IRenderer] =
@@ -240,8 +243,10 @@ object GameEngine {
       updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel],
       initialViewModel: GameModel => ViewModel,
       updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => Outcome[ViewModel],
-      updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
-  )(implicit metrics: Metrics, globalEventStream: GlobalEventStream, globalSignals: GlobalSignals): GameContext[GameLoop[GameModel, ViewModel]] =
+      updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment,
+      metrics: Metrics,
+      globalEventStream: GlobalEventStream,
+      globalSignals: GlobalSignals): GameContext[GameLoop[GameModel, ViewModel]] =
     GameContext.delay(
       new GameLoop[GameModel, ViewModel](
         gameConfig,
@@ -253,7 +258,10 @@ object GameEngine {
         updateModel,
         initialViewModel(initialModel),
         updateViewModel,
-        updateView
+        updateView,
+        metrics,
+        globalEventStream,
+        globalSignals
       )
     )
 

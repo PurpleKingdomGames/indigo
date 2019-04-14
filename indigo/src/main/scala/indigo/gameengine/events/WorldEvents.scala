@@ -6,7 +6,7 @@ import org.scalajs.dom.html
 
 object WorldEvents {
 
-  def apply(canvas: html.Canvas, magnification: Int)(implicit globalEventStream: GlobalEventStream): Unit = {
+  def apply(canvas: html.Canvas, magnification: Int, globalEventStream: GlobalEventStream): Unit = {
     canvas.onclick = { e: dom.MouseEvent =>
       globalEventStream.pushGlobalEvent(MouseEvent.Click(e.clientX.toInt / magnification, e.clientY.toInt / magnification))
     }

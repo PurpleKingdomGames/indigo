@@ -27,8 +27,11 @@ class GameLoop[GameModel, ViewModel](
     updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel],
     initialViewModel: ViewModel,
     updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => Outcome[ViewModel],
-    updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
-)(implicit metrics: Metrics, globalEventStream: GlobalEventStream, globalSignals: GlobalSignals) {
+    updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment,
+    metrics: Metrics,
+    globalEventStream: GlobalEventStream,
+    globalSignals: GlobalSignals
+) {
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var gameModelState: Option[GameModel] = None
@@ -53,13 +56,18 @@ class GameLoop[GameModel, ViewModel](
 
         metrics.record(UpdateStartMetric)
 
-        val gameTime: GameTime = new GameTime(Millis(time), Millis(timeDelta), GameTime.FPS(gameConfig.frameRate))
+        val gameTime: GameTime =
+          new GameTime(Millis(time), Millis(timeDelta), GameTime.FPS(gameConfig.frameRate))
 
-        val dice: Dice = Dice.default(gameTime.running.value)
+        val dice: Dice =
+          Dice.default(gameTime.running.value)
 
-        val collectedEvents: List[GlobalEvent] = globalEventStream.collect :+ FrameTick
+        val collectedEvents: List[GlobalEvent] =
+          globalEventStream.collect :+ FrameTick
 
-        val signals = globalSignals.calculate(signalsState, collectedEvents)
+        val signals: Signals =
+          globalSignals.calculate(signalsState, collectedEvents)
+
         signalsState = signals
 
         metrics.record(CallUpdateGameModelStartMetric)
@@ -69,7 +77,7 @@ class GameLoop[GameModel, ViewModel](
             (initialModel, FrameInputEvents.empty)
 
           case Some(previousModel) =>
-            GameLoop.processModelUpdateEvents(gameTime, previousModel, collectedEvents, signals, updateModel)
+            GameLoop.processModelUpdateEvents(gameTime, previousModel, collectedEvents, signals, updateModel, globalEventStream)
         }
 
         gameModelState = Some(model._1)
@@ -79,7 +87,8 @@ class GameLoop[GameModel, ViewModel](
         //
         metrics.record(CallUpdateSubSystemsStartMetric)
 
-        val subSystems = GameLoop.processSubSystemUpdates(gameTime, dice, subSystemsState, collectedEvents)
+        val subSystems =
+          GameLoop.processSubSystemUpdates(gameTime, dice, subSystemsState, collectedEvents, globalEventStream)
 
         subSystemsState = subSystems
 
@@ -107,12 +116,12 @@ class GameLoop[GameModel, ViewModel](
         if (gameConfig.advanced.disableSkipViewUpdates || timeDelta < gameConfig.haltViewUpdatesAt) {
 
           val x = for {
-            view          <- GameLoop.updateGameView(updateView, gameTime, model._1, viewModel._1, viewModel._2, subSystemsState)
-            processedView <- GameLoop.processUpdatedView(view, collectedEvents)
-            displayable   <- GameLoop.viewToDisplayable(gameTime, processedView, assetMapping, view.ambientLight)
-            _             <- GameLoop.persistAnimationStates()
-            _             <- GameLoop.drawScene(renderer, displayable)
-            _             <- GameLoop.playAudio(audioPlayer, view.audio)
+            view          <- GameLoop.updateGameView(updateView, gameTime, model._1, viewModel._1, viewModel._2, subSystemsState, metrics)
+            processedView <- GameLoop.processUpdatedView(view, collectedEvents, metrics, globalEventStream)
+            displayable   <- GameLoop.viewToDisplayable(gameTime, processedView, assetMapping, view.ambientLight, metrics)
+            _             <- GameLoop.persistAnimationStates(metrics)
+            _             <- GameLoop.drawScene(renderer, displayable, metrics)
+            _             <- GameLoop.playAudio(audioPlayer, view.audio, metrics)
           } yield ()
 
           x.unsafeRun()
@@ -143,8 +152,9 @@ object GameLoop {
       model: GameModel,
       viewModel: ViewModel,
       frameInputEvents: FrameInputEvents,
-      subSystemsRegister: SubSystemsRegister
-  )(implicit metrics: Metrics): GameContext[SceneUpdateFragment] =
+      subSystemsRegister: SubSystemsRegister,
+      metrics: Metrics
+  ): GameContext[SceneUpdateFragment] =
     GameContext.delay {
       metrics.record(CallUpdateViewStartMetric)
 
@@ -160,10 +170,7 @@ object GameLoop {
       view
     }
 
-  def processUpdatedView(view: SceneUpdateFragment, collectedEvents: List[GlobalEvent])(
-      implicit metrics: Metrics,
-      globalEventStream: GlobalEventStream
-  ): GameContext[SceneGraphRootNodeFlat] =
+  def processUpdatedView(view: SceneUpdateFragment, collectedEvents: List[GlobalEvent], metrics: Metrics, globalEventStream: GlobalEventStream): GameContext[SceneGraphRootNodeFlat] =
     GameContext.delay {
       metrics.record(ProcessViewStartMetric)
 
@@ -179,19 +186,19 @@ object GameLoop {
       processedView
     }
 
-  def viewToDisplayable(gameTime: GameTime, processedView: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight)(implicit metrics: Metrics): GameContext[Displayable] =
+  def viewToDisplayable(gameTime: GameTime, processedView: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight, metrics: Metrics): GameContext[Displayable] =
     GameContext.delay {
       metrics.record(ToDisplayableStartMetric)
 
       val displayable: Displayable =
-        GameLoop.convertSceneGraphToDisplayable(gameTime, processedView, assetMapping, ambientLight)
+        GameLoop.convertSceneGraphToDisplayable(gameTime, processedView, assetMapping, ambientLight, metrics)
 
       metrics.record(ToDisplayableEndMetric)
 
       displayable
     }
 
-  def persistAnimationStates()(implicit metrics: Metrics): GameContext[Unit] =
+  def persistAnimationStates(metrics: Metrics): GameContext[Unit] =
     GameContext.delay {
       metrics.record(PersistAnimationStatesStartMetric)
 
@@ -205,9 +212,8 @@ object GameLoop {
       model: GameModel,
       collectedEvents: List[GlobalEvent],
       signals: Signals,
-      updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel]
-  )(
-      implicit globalEventStream: GlobalEventStream
+      updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel],
+      globalEventStream: GlobalEventStream
   ): (GameModel, FrameInputEvents) = {
     val combine: (Outcome[GameModel], Outcome[GameModel]) => Outcome[GameModel] =
       (a, b) => new Outcome(b.state, a.globalEvents ++ b.globalEvents)
@@ -228,7 +234,7 @@ object GameLoop {
   }
 
   @tailrec
-  def processSubSystemUpdates(gameTime: GameTime, dice: Dice, register: SubSystemsRegister, collectedEvents: List[GlobalEvent])(implicit globalEventStream: GlobalEventStream): SubSystemsRegister =
+  def processSubSystemUpdates(gameTime: GameTime, dice: Dice, register: SubSystemsRegister, collectedEvents: List[GlobalEvent], globalEventStream: GlobalEventStream): SubSystemsRegister =
     collectedEvents match {
       case Nil =>
         register
@@ -240,7 +246,8 @@ object GameLoop {
           gameTime,
           dice,
           res.register,
-          es
+          es,
+          globalEventStream
         )
     }
 
@@ -260,30 +267,30 @@ object GameLoop {
     rootNode
   }
 
-  def convertSceneGraphToDisplayable(gameTime: GameTime, rootNode: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight)(implicit metrics: Metrics): Displayable =
+  def convertSceneGraphToDisplayable(gameTime: GameTime, rootNode: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight, metrics: Metrics): Displayable =
     Displayable(
       DisplayLayer(
-        rootNode.game.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping))
+        rootNode.game.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping, metrics))
       ),
       DisplayLayer(
-        rootNode.lighting.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping))
+        rootNode.lighting.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping, metrics))
       ),
       DisplayLayer(
-        rootNode.ui.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping))
+        rootNode.ui.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping, metrics))
       ),
       ambientLight
     )
 
-  def drawScene(renderer: IRenderer, displayable: Displayable)(implicit metrics: Metrics): GameContext[Unit] =
+  def drawScene(renderer: IRenderer, displayable: Displayable, metrics: Metrics): GameContext[Unit] =
     GameContext.delay {
       metrics.record(RenderStartMetric)
 
-      renderer.drawScene(displayable)
+      renderer.drawScene(displayable, metrics)
 
       metrics.record(RenderEndMetric)
     }
 
-  def playAudio(audioPlayer: AudioPlayer, sceneAudio: SceneAudio)(implicit metrics: Metrics): GameContext[Unit] =
+  def playAudio(audioPlayer: AudioPlayer, sceneAudio: SceneAudio, metrics: Metrics): GameContext[Unit] =
     GameContext.delay {
       metrics.record(AudioStartMetric)
 

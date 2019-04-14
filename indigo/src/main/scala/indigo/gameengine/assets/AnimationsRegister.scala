@@ -73,9 +73,7 @@ object AnimationsRegister {
   - Inserting or fetching the entry for binding key x and animation key y
   - Applying an animation memento if one doesn't exist and running the commands queued against it.
    */
-  def fetchFromCache(gameTime: GameTime, bindingKey: BindingKey, animationsKey: AnimationKey)(
-      implicit metrics: Metrics
-  ): Option[Animation] = {
+  def fetchFromCache(gameTime: GameTime, bindingKey: BindingKey, animationsKey: AnimationKey, metrics: Metrics): Option[Animation] = {
     val key: String = s"${bindingKey.value}_${animationsKey.value}"
 
     val cacheEntry: Option[AnimationCacheEntry] = animationsCache.get(key).orElse {

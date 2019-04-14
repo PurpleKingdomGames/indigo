@@ -10,7 +10,7 @@ import indigo.shared.EqualTo._
 
 trait IRenderer {
   def init(): Unit
-  def drawScene(displayable: Displayable)(implicit metrics: Metrics): Unit
+  def drawScene(displayable: Displayable, metrics: Metrics): Unit
 }
 
 final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends IRenderer {
@@ -61,28 +61,28 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     cNc.context.enable(BLEND)
   }
 
-  def drawScene(displayable: Displayable)(implicit metrics: Metrics): Unit = {
+  def drawScene(displayable: Displayable, metrics: Metrics): Unit = {
 
     resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight, cNc.magnification)
 
     metrics.record(DrawGameLayerStartMetric)
-    drawLayerToTexture(displayable.game, gameFrameBuffer, config.clearColor)
+    drawLayerToTexture(displayable.game, gameFrameBuffer, config.clearColor, metrics)
     metrics.record(DrawGameLayerEndMetric)
 
     metrics.record(DrawLightingLayerStartMetric)
-    drawLightingLayerToTexture(displayable.lighting, lightingFrameBuffer, AmbientLight.toClearColor(displayable.ambientLight))
+    drawLightingLayerToTexture(displayable.lighting, lightingFrameBuffer, AmbientLight.toClearColor(displayable.ambientLight), metrics)
     metrics.record(DrawLightingLayerEndMetric)
 
     metrics.record(DrawUiLayerStartMetric)
-    drawLayerToTexture(displayable.ui, uiFrameBuffer, ClearColor.Black.forceTransparent)
+    drawLayerToTexture(displayable.ui, uiFrameBuffer, ClearColor.Black.forceTransparent, metrics)
     metrics.record(DrawUiLayerEndMetric)
 
     metrics.record(RenderToConvasStartMetric)
-    renderToCanvas(screenDisplayObject(cNc.width, cNc.height))
+    renderToCanvas(screenDisplayObject(cNc.width, cNc.height), metrics)
     metrics.record(RenderToConvasEndMetric)
   }
 
-  private def drawLightingLayerToTexture(displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor)(implicit metrics: Metrics): Unit = {
+  private def drawLightingLayerToTexture(displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor, metrics: Metrics): Unit = {
 
     /*
 
@@ -134,7 +134,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   }
 
-  private def drawLayerToTexture(displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor)(implicit metrics: Metrics): Unit = {
+  private def drawLayerToTexture(displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor, metrics: Metrics): Unit = {
 
     // Switch to the frameBuffer
     FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)
@@ -171,7 +171,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   }
 
-  private def renderToCanvas(displayObject: DisplayObject)(implicit metrics: Metrics): Unit = {
+  private def renderToCanvas(displayObject: DisplayObject, metrics: Metrics): Unit = {
 
     val compressed = displayObject.toCompressed
 

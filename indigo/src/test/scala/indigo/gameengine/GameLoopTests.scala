@@ -15,7 +15,7 @@ object GameLoopTests extends TestSuite {
 
         "should be able to process simple model updates based on an event" - {
 
-          implicit val ges: GlobalEventStream =
+          val ges: GlobalEventStream =
             new GlobalEventStream {
               def pushLoopEvent(e: GlobalEvent): Unit   = ()
               def pushGlobalEvent(e: GlobalEvent): Unit = ()
@@ -40,7 +40,7 @@ object GameLoopTests extends TestSuite {
             }
 
           val actual: (TestGameModel, FrameInputEvents) =
-            GameLoop.processModelUpdateEvents(gameTime, TestGameModel("bob"), gameEvents, signals, update)
+            GameLoop.processModelUpdateEvents(gameTime, TestGameModel("bob"), gameEvents, signals, update, ges)
 
           val expected: TestGameModel =
             TestGameModel("fred")
@@ -81,7 +81,7 @@ object GameLoopTests extends TestSuite {
             }
 
           val actual: (TestGameModel, FrameInputEvents) =
-            GameLoop.processModelUpdateEvents(gameTime, TestGameModel("bob"), gameEvents, signals, update)
+            GameLoop.processModelUpdateEvents(gameTime, TestGameModel("bob"), gameEvents, signals, update, ges)
 
           val expected: TestGameModel =
             TestGameModel("teddy")

@@ -59,7 +59,7 @@ object DisplayObjectConversions {
       }
     )
 
-  def leafToDisplayObject(gameTime: GameTime, assetMapping: AssetMapping)(implicit metrics: Metrics): Renderable => List[DisplayObject] = {
+  def leafToDisplayObject(gameTime: GameTime, assetMapping: AssetMapping, metrics: Metrics): Renderable => List[DisplayObject] = {
     case leaf: Graphic =>
       List(
         DisplayObject(
@@ -89,7 +89,8 @@ object DisplayObjectConversions {
       )
 
     case leaf: Sprite =>
-      val animations: Option[Animation] = AnimationsRegister.fetchFromCache(gameTime, leaf.bindingKey, leaf.animationsKey)
+      val animations: Option[Animation] =
+        AnimationsRegister.fetchFromCache(gameTime, leaf.bindingKey, leaf.animationsKey, metrics)
 
       animations
         .map { anim =>
