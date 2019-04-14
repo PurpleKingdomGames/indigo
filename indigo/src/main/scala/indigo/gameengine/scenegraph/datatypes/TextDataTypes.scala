@@ -38,16 +38,10 @@ object FontInfo {
 final case class FontKey(key: String) extends AnyVal
 object FontKey {
 
-  implicit class EqualToFontKey(value: FontKey) extends EqualTo[FontKey] {
-    def ===(other: FontKey): Boolean =
-      equal(value, other)
-
-    def !==(other: FontKey): Boolean =
-      !equal(value, other)
-
-    def equal(a1: FontKey, a2: FontKey): Boolean =
-      implicitly[EqualTo[String]].equal(a1.key, a2.key)
-  }
+  implicit def eq(implicit eqS: EqualTo[String]): EqualTo[FontKey] =
+    EqualTo.create { (a, b) =>
+      eqS.equal(a.key, b.key)
+    }
 
 }
 
