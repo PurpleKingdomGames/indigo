@@ -2,6 +2,7 @@ package indigo.gameengine.events
 
 import indigo.gameengine.constants.KeyCode
 import indigo.gameengine.scenegraph.datatypes.Point
+import indigo.shared.EqualTo._
 
 trait GlobalSignals {
   def calculate(previous: Signals, events: List[GlobalEvent]): Signals

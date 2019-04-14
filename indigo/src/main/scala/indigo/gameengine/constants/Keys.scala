@@ -1,15 +1,21 @@
 package indigo.gameengine.constants
 
-import scala.language.implicitConversions
+// import scala.language.implicitConversions
 
+import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
+import indigo.shared.AsString
 
 final case class KeyCode(code: Int, printableCharacter: String) {
-  def ===(other: KeyCode): Boolean =
-    code === other.code
-
   def isPrintable: Boolean =
     printableCharacter !== ""
+}
+object KeyCode {
+  implicit def eq(implicit eqI: EqualTo[Int]): EqualTo[KeyCode] =
+    EqualTo.create((a, b) => eqI.equal(a.code, b.code))
+
+  implicit def show(implicit showI: AsString[Int]): AsString[KeyCode] =
+    AsString.create(kc => s"""KeyCode(${showI.show(kc.code)})""")
 }
 
 object Keys {
