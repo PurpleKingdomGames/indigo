@@ -51,7 +51,7 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] {
           GameWithSubSystems.present(present)(gameTime, model, viewModel, frameInputEvents)
       )
 
-    GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel](
+    new GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel](
       config,
       Future(None),
       assets,

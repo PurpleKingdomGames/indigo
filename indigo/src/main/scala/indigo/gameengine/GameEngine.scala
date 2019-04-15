@@ -17,7 +17,7 @@ import scala.concurrent.Future
 
 import indigo.shared.EqualTo._
 
-final case class GameEngine[StartupData, StartupError, GameModel, ViewModel](
+final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     config: GameConfig,
     configAsync: Future[Option[GameConfig]],
     assets: Set[AssetType],

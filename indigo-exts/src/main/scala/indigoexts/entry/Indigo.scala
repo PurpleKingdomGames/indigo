@@ -33,7 +33,7 @@ object IndigoGameBase {
       StandardFrameProcessor(updateModel, updateViewModel, updateView)
 
     private val gameEngine: GameEngine[StartupData, StartupError, GameModel, ViewModel] =
-      GameEngine[StartupData, StartupError, GameModel, ViewModel](
+      new GameEngine[StartupData, StartupError, GameModel, ViewModel](
         config,
         configAsync,
         assets,
