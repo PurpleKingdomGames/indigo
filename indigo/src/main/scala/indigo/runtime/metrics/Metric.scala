@@ -16,14 +16,12 @@ trait Metric {
 // In Order (unless otherwise stated)!
 case object FrameStartMetric extends Metric { val name: String = "frame start" }
 
-case object UpdateStartMetric               extends Metric { val name: String = "update model start"           }
-case object CallUpdateGameModelStartMetric  extends Metric { val name: String = "call update model start"      } //nested
-case object CallUpdateGameModelEndMetric    extends Metric { val name: String = "call update model end"        } //nested
-case object CallUpdateSubSystemsStartMetric extends Metric { val name: String = "call update model start"      } //nested
-case object CallUpdateSubSystemsEndMetric   extends Metric { val name: String = "call update model end"        } //nested
-case object CallUpdateViewModelStartMetric  extends Metric { val name: String = "call update view model start" } //nested
-case object CallUpdateViewModelEndMetric    extends Metric { val name: String = "call update view model end"   } //nested
-case object UpdateEndMetric                 extends Metric { val name: String = "update model end"             }
+case object UpdateStartMetric                   extends Metric { val name: String = "update model start"             }
+case object CallFrameProcessorStartMetric extends Metric { val name: String = "call frame processor start"     } //nested
+case object CallFrameProcessorEndMetric   extends Metric { val name: String = "call frame processor model end" } //nested
+case object CallUpdateSubSystemsStartMetric     extends Metric { val name: String = "call update subsystem start"    } //nested
+case object CallUpdateSubSystemsEndMetric       extends Metric { val name: String = "call update subsystem end"      } //nested
+case object UpdateEndMetric                     extends Metric { val name: String = "update model end"               }
 
 case object CallUpdateViewStartMetric extends Metric { val name: String = "call update view start" }
 case object CallUpdateViewEndMetric   extends Metric { val name: String = "call update view end"   }

@@ -33,12 +33,10 @@ object MetricsLogReporter {
       // General
       // Durations
       val updateDuration = extractDuration(metrics, UpdateStartMetric.name, UpdateEndMetric.name)
-      val callUpdateModelDuration =
-        extractDuration(metrics, CallUpdateGameModelStartMetric.name, CallUpdateGameModelEndMetric.name)
+      val callFrameProcessorDuration =
+        extractDuration(metrics, CallFrameProcessorStartMetric.name, CallFrameProcessorEndMetric.name)
       val callUpdateSubSytemsDuration =
         extractDuration(metrics, CallUpdateSubSystemsStartMetric.name, CallUpdateSubSystemsEndMetric.name)
-      val callUpdateViewModelDuration =
-        extractDuration(metrics, CallUpdateViewModelStartMetric.name, CallUpdateViewModelEndMetric.name)
       val callUpdateViewDuration = extractDuration(metrics, CallUpdateViewStartMetric.name, CallUpdateViewEndMetric.name)
       val processViewDuration    = extractDuration(metrics, ProcessViewStartMetric.name, ProcessViewEndMetric.name)
       val toDisplayableDuration  = extractDuration(metrics, ToDisplayableStartMetric.name, ToDisplayableEndMetric.name)
@@ -47,9 +45,8 @@ object MetricsLogReporter {
 
       // Percentages
       val updatePercentage           = asPercentOfFrameDuration(fd, updateDuration)
-      val updateModelPercentage      = asPercentOfFrameDuration(fd, callUpdateModelDuration)
+      val frameProcessorPercentage      = asPercentOfFrameDuration(fd, callFrameProcessorDuration)
       val updateSubSystemsPercentage = asPercentOfFrameDuration(fd, callUpdateSubSytemsDuration)
-      val updateViewModelPercentage  = asPercentOfFrameDuration(fd, callUpdateViewModelDuration)
       val callUpdateViewPercentage   = asPercentOfFrameDuration(fd, callUpdateViewDuration)
       val processViewPercentage      = asPercentOfFrameDuration(fd, processViewDuration)
       val toDisplayablePercentage    = asPercentOfFrameDuration(fd, toDisplayableDuration)
@@ -105,7 +102,7 @@ object MetricsLogReporter {
       val general = FrameStatsGeneral(
         fd,
         updateDuration,
-        callUpdateModelDuration,
+        callFrameProcessorDuration,
         callUpdateSubSytemsDuration,
         callUpdateViewDuration,
         processViewDuration,
@@ -113,9 +110,8 @@ object MetricsLogReporter {
         renderDuration,
         audioDuration,
         updatePercentage,
-        updateModelPercentage,
+        frameProcessorPercentage,
         updateSubSystemsPercentage,
-        updateViewModelPercentage,
         callUpdateViewPercentage,
         processViewPercentage,
         toDisplayablePercentage,
@@ -203,9 +199,9 @@ object MetricsLogReporter {
     val meanFrameDuration: String =
       to2DecimalPlaces(frames.map(_.general.frameDuration.toDouble).sum / frameCount.toDouble).toString
 
-    val meanUpdateModel: String = {
-      val a = calcMeanDuration(frames.map(_.general.callUpdateModelDuration)).toString
-      val b = calcMeanPercentage(frames.map(_.general.updateModelPercentage)).toString
+    val meanFrameProcessor: String = {
+      val a = calcMeanDuration(frames.map(_.general.frameProcessorDuration)).toString
+      val b = calcMeanPercentage(frames.map(_.general.frameProcessorPercentage)).toString
 
       s"""$a\t($b%)"""
     }
@@ -217,25 +213,11 @@ object MetricsLogReporter {
       s"""$a\t($b%)"""
     }
 
-    val meanUpdateViewModel: String = {
-      val a = calcMeanDuration(frames.map(_.general.callUpdateModelDuration)).toString
-      val b = calcMeanPercentage(frames.map(_.general.updateViewModelPercentage)).toString
-
-      s"""$a\t($b%)"""
-    }
-
     val meanUpdate: String = {
       val a = calcMeanDuration(frames.map(_.general.updateDuration)).toString
       val b = calcMeanPercentage(frames.map(_.general.updatePercentage)).toString
 
-      s"""$a\t($b%),\tcalling model update: $meanUpdateModel"""
-    }
-
-    val meanViewModelUpdate: String = {
-      val a = calcMeanDuration(frames.map(_.general.updateDuration)).toString
-      val b = calcMeanPercentage(frames.map(_.general.updatePercentage)).toString
-
-      s"""$a\t($b%),\tcalling model update: $meanUpdateViewModel"""
+      s"""$a\t($b%),\tcalling frame processor: $meanFrameProcessor"""
     }
 
     val meanCallViewUpdate: String = {
@@ -382,9 +364,8 @@ object MetricsLogReporter {
          |Engine timings:
          |---------------
          |Mean frame length:         $meanFrameDuration
-         |Mean model update:         $meanUpdate
+         |Mean update:               $meanUpdate
          |Mean subsystems update:    $meanUpdateSubSystems
-         |Mean view model update:    $meanViewModelUpdate
          |Mean call view update:     $meanCallViewUpdate
          |Mean process view:         $meanProcess
          |Mean convert view:         $meanToDisplayable
@@ -424,7 +405,7 @@ final case class FrameStats(general: FrameStatsGeneral, processView: FrameStatsP
 
 final case class FrameStatsGeneral(frameDuration: Long,
                                    updateDuration: Option[Long],
-                                   callUpdateModelDuration: Option[Long],
+                                   frameProcessorDuration: Option[Long],
                                    callUpdateSubSystemsDuration: Option[Long],
                                    callUpdateViewDuration: Option[Long],
                                    processViewDuration: Option[Long],
@@ -432,9 +413,8 @@ final case class FrameStatsGeneral(frameDuration: Long,
                                    renderDuration: Option[Long],
                                    audioDuration: Option[Long],
                                    updatePercentage: Option[Double],
-                                   updateModelPercentage: Option[Double],
+                                   frameProcessorPercentage: Option[Double],
                                    updateSubSystemsPercentage: Option[Double],
-                                   updateViewModelPercentage: Option[Double],
                                    callUpdateViewPercentage: Option[Double],
                                    processViewPercentage: Option[Double],
                                    toDisplayablePercentage: Option[Double],

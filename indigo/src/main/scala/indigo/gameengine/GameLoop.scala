@@ -85,16 +85,12 @@ class GameLoop[GameModel, ViewModel](
         // View updates cut off
         if (gameConfig.advanced.disableSkipViewUpdates || timeDelta < gameConfig.haltViewUpdatesAt) {
 
-          metrics.record(CallUpdateGameModelStartMetric)
+          metrics.record(CallFrameProcessorStartMetric)
 
           val (next, view): (Outcome[(GameModel, ViewModel)], SceneUpdateFragment) =
             frameProcessor.run(gameModelState, viewModelState)(gameTime, collectedEvents, signalsState, dice)
 
-          metrics.record(CallUpdateGameModelEndMetric)
-
-          // No longer relevant
-          metrics.record(CallUpdateViewModelStartMetric)
-          metrics.record(CallUpdateViewModelEndMetric)
+          metrics.record(CallFrameProcessorEndMetric)
 
           // Persist everything!
           gameModelState = next.state._1
@@ -114,16 +110,12 @@ class GameLoop[GameModel, ViewModel](
           frameSideEffects.unsafeRun()
 
         } else {
-          metrics.record(CallUpdateGameModelStartMetric)
+          metrics.record(CallFrameProcessorStartMetric)
 
           val next: Outcome[(GameModel, ViewModel)] =
             frameProcessor.runSkipView(gameModelState, viewModelState)(gameTime, collectedEvents, signalsState, dice)
 
-          metrics.record(CallUpdateGameModelEndMetric)
-
-          // No longer relevant
-          metrics.record(CallUpdateViewModelStartMetric)
-          metrics.record(CallUpdateViewModelEndMetric)
+          metrics.record(CallFrameProcessorEndMetric)
 
           // Persist everything!
           gameModelState = next.state._1
