@@ -3,16 +3,8 @@ package indigoexts.entry
 import indigo._
 import indigo.gameengine.GameEngine
 import indigo.gameengine.StandardFrameProcessor
-
-// import indigo.gameengine.assets.AssetCollection
-// import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
-// import indigo.gameengine.scenegraph.datatypes.FontInfo
-// import indigo.gameengine.scenegraph.SceneUpdateFragment
-// import indigo.gameengine.scenegraph.animation.Animation
-// import indigo.gameengine._
-// import indigo.gameengine.subsystems.SubSystem
-// import indigo.shared.{AssetType, GameConfig}
-// import indigo.time.GameTime
+import indigoexts.subsystems.SubSystem
+import indigoexts.subsystems.SubSystemsRegister
 
 import scala.concurrent.Future
 
@@ -49,32 +41,56 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] {
 
   def present(gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment
 
-  private val frameProcessor: StandardFrameProcessor[Model, ViewModel] =
-    StandardFrameProcessor(
-      update,
-      updateViewModel,
-      (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents) => present(gameTime, model, viewModel, frameInputEvents)
-    )
+  private def indigoGame: GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel] = {
 
-  private def indigoGame: GameEngine[StartupData, StartupErrors, Model, ViewModel] =
-    GameEngine[StartupData, StartupErrors, Model, ViewModel](
+    val frameProcessor: StandardFrameProcessor[GameWithSubSystems[Model], ViewModel] =
+      StandardFrameProcessor(
+        GameWithSubSystems.update(update),
+        GameWithSubSystems.updateViewModel(updateViewModel),
+        (gameTime: GameTime, model: GameWithSubSystems[Model], viewModel: ViewModel, frameInputEvents: FrameInputEvents) =>
+          GameWithSubSystems.present(present)(gameTime, model, viewModel, frameInputEvents)
+      )
+
+    GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel](
       config,
       Future(None),
       assets,
       Future(Set()),
       fonts,
       animations,
-      subSystems,
       (ac: AssetCollection) => setup(ac),
-      initialModel,
-      // update,
-      initialViewModel,
-      // updateViewModel,
-      // (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents) => present(gameTime, model, viewModel, frameInputEvents)
+      (sd: StartupData) => GameWithSubSystems(initialModel(sd), SubSystemsRegister(subSystems.toList)),
+      (sd: StartupData) => (m: GameWithSubSystems[Model]) => initialViewModel(sd)(m.model),
       frameProcessor
     )
+  }
 
   def main(args: Array[String]): Unit =
     indigoGame.start()
 
+}
+
+final class GameWithSubSystems[Model](val model: Model, val subSystemsRegister: SubSystemsRegister)
+object GameWithSubSystems {
+  import indigo.abstractions.syntax._
+
+  def apply[Model](model: Model, subSystemsRegister: SubSystemsRegister): GameWithSubSystems[Model] =
+    new GameWithSubSystems[Model](model, subSystemsRegister)
+
+  def update[Model](
+      modelUpdate: (GameTime, Model, Dice) => GlobalEvent => Outcome[Model]
+  )(gameTime: GameTime, model: GameWithSubSystems[Model], dice: Dice): GlobalEvent => Outcome[GameWithSubSystems[Model]] =
+    e =>
+      (modelUpdate(gameTime, model.model, dice)(e), model.subSystemsRegister.update(gameTime, dice)(e))
+        .map2((m, s) => GameWithSubSystems(m, s))
+
+  def updateViewModel[Model, ViewModel](
+      viewModelUpdate: (GameTime, Model, ViewModel, FrameInputEvents, Dice) => Outcome[ViewModel]
+  )(gameTime: GameTime, model: GameWithSubSystems[Model], viewModel: ViewModel, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[ViewModel] =
+    viewModelUpdate(gameTime, model.model, viewModel, frameInputEvents, dice)
+
+  def present[Model, ViewModel](
+      viewPresent: (GameTime, Model, ViewModel, FrameInputEvents) => SceneUpdateFragment
+  )(gameTime: GameTime, model: GameWithSubSystems[Model], viewModel: ViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
+    viewPresent(gameTime, model.model, viewModel, frameInputEvents) |+| model.subSystemsRegister.render(gameTime)
 }

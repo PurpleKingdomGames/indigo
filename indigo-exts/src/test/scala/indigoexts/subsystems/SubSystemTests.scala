@@ -1,4 +1,4 @@
-package indigo.gameengine.subsystems
+package indigoexts.subsystems
 
 import indigo.time.GameTime
 import indigo.gameengine.scenegraph.Text

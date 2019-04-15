@@ -24,8 +24,6 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   type Dice = dice.Dice
   val Dice: dice.Dice.type = dice.Dice
 
-  type SubSystem = gameengine.subsystems.SubSystem
-
   type AssetCollection = gameengine.assets.AssetCollection
   val AssetCollection: gameengine.assets.AssetCollection.type = gameengine.assets.AssetCollection
 

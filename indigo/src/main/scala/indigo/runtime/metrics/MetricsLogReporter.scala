@@ -35,8 +35,6 @@ object MetricsLogReporter {
       val updateDuration = extractDuration(metrics, UpdateStartMetric.name, UpdateEndMetric.name)
       val callFrameProcessorDuration =
         extractDuration(metrics, CallFrameProcessorStartMetric.name, CallFrameProcessorEndMetric.name)
-      val callUpdateSubSytemsDuration =
-        extractDuration(metrics, CallUpdateSubSystemsStartMetric.name, CallUpdateSubSystemsEndMetric.name)
       val callUpdateViewDuration = extractDuration(metrics, CallUpdateViewStartMetric.name, CallUpdateViewEndMetric.name)
       val processViewDuration    = extractDuration(metrics, ProcessViewStartMetric.name, ProcessViewEndMetric.name)
       val toDisplayableDuration  = extractDuration(metrics, ToDisplayableStartMetric.name, ToDisplayableEndMetric.name)
@@ -46,7 +44,6 @@ object MetricsLogReporter {
       // Percentages
       val updatePercentage           = asPercentOfFrameDuration(fd, updateDuration)
       val frameProcessorPercentage      = asPercentOfFrameDuration(fd, callFrameProcessorDuration)
-      val updateSubSystemsPercentage = asPercentOfFrameDuration(fd, callUpdateSubSytemsDuration)
       val callUpdateViewPercentage   = asPercentOfFrameDuration(fd, callUpdateViewDuration)
       val processViewPercentage      = asPercentOfFrameDuration(fd, processViewDuration)
       val toDisplayablePercentage    = asPercentOfFrameDuration(fd, toDisplayableDuration)
@@ -103,7 +100,6 @@ object MetricsLogReporter {
         fd,
         updateDuration,
         callFrameProcessorDuration,
-        callUpdateSubSytemsDuration,
         callUpdateViewDuration,
         processViewDuration,
         toDisplayableDuration,
@@ -111,7 +107,6 @@ object MetricsLogReporter {
         audioDuration,
         updatePercentage,
         frameProcessorPercentage,
-        updateSubSystemsPercentage,
         callUpdateViewPercentage,
         processViewPercentage,
         toDisplayablePercentage,
@@ -202,13 +197,6 @@ object MetricsLogReporter {
     val meanFrameProcessor: String = {
       val a = calcMeanDuration(frames.map(_.general.frameProcessorDuration)).toString
       val b = calcMeanPercentage(frames.map(_.general.frameProcessorPercentage)).toString
-
-      s"""$a\t($b%)"""
-    }
-
-    val meanUpdateSubSystems: String = {
-      val a = calcMeanDuration(frames.map(_.general.callUpdateSubSystemsDuration)).toString
-      val b = calcMeanPercentage(frames.map(_.general.updateSubSystemsPercentage)).toString
 
       s"""$a\t($b%)"""
     }
@@ -365,7 +353,6 @@ object MetricsLogReporter {
          |---------------
          |Mean frame length:         $meanFrameDuration
          |Mean update:               $meanUpdate
-         |Mean subsystems update:    $meanUpdateSubSystems
          |Mean call view update:     $meanCallViewUpdate
          |Mean process view:         $meanProcess
          |Mean convert view:         $meanToDisplayable
@@ -406,7 +393,6 @@ final case class FrameStats(general: FrameStatsGeneral, processView: FrameStatsP
 final case class FrameStatsGeneral(frameDuration: Long,
                                    updateDuration: Option[Long],
                                    frameProcessorDuration: Option[Long],
-                                   callUpdateSubSystemsDuration: Option[Long],
                                    callUpdateViewDuration: Option[Long],
                                    processViewDuration: Option[Long],
                                    toDisplayableDuration: Option[Long],
@@ -414,7 +400,6 @@ final case class FrameStatsGeneral(frameDuration: Long,
                                    audioDuration: Option[Long],
                                    updatePercentage: Option[Double],
                                    frameProcessorPercentage: Option[Double],
-                                   updateSubSystemsPercentage: Option[Double],
                                    callUpdateViewPercentage: Option[Double],
                                    processViewPercentage: Option[Double],
                                    toDisplayablePercentage: Option[Double],

@@ -1,4 +1,3 @@
-
 import scala.concurrent.Future
 
 package object indigoexts {
@@ -18,6 +17,9 @@ package object indigoexts {
     val defaultGameConfig: indigo.shared.GameConfig = entry.defaultGameConfig
 
     val noRender: indigo.gameengine.scenegraph.SceneUpdateFragment = entry.noRender
+
+    type SubSystem = subsystems.SubSystem
+
   }
 
   object lens {

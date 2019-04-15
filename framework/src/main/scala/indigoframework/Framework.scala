@@ -53,7 +53,6 @@ object Framework {
       .withAssets(assets)
       .noFonts
       .noAnimations
-      .noSubSystems
       .startUpGameWith(initialise)
       .usingInitialModel(initialModel)
       .updateModelUsing(updateModel)
@@ -70,7 +69,6 @@ object Framework {
       .withAssets(assets)
       .noFonts
       .noAnimations
-      .noSubSystems
       .startUpGameWith(initialise)
       .usingInitialModel(initialModel)
       .updateModelUsing(updateModel)

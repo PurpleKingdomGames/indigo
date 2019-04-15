@@ -1,6 +1,6 @@
 package indigoexts.jobs
 
-import indigo.gameengine.subsystems.SubSystem
+import indigoexts.subsystems.SubSystem
 import indigo.dice.Dice
 import indigo.time.GameTime
 import indigo.gameengine.events.GlobalEvent

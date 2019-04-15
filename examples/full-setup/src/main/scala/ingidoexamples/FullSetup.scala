@@ -38,7 +38,6 @@ object FullSetup {
       .withAssets(assets)
       .noFonts
       .noAnimations
-      .noSubSystems
       .startUpGameWith(setup)
       .usingInitialModel(initialModel)
       .updateModelUsing(updateModel)

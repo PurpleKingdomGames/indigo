@@ -1,6 +1,7 @@
 package ingidoexamples
 
 import indigo._
+import indigoexts.subsystems.SubSystem
 
 final case class PointsTrackerSubSystem(points: Int, fontKey: FontKey) extends SubSystem {
   type EventType = PointsTrackerEvent

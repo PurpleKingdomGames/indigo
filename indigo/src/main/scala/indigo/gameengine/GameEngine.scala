@@ -5,7 +5,6 @@ import indigo.gameengine.audio.AudioPlayer
 import indigo.gameengine.events._
 import indigo.gameengine.scenegraph.animation._
 import indigo.gameengine.scenegraph.datatypes.FontInfo
-import indigo.gameengine.subsystems.{SubSystem, SubSystemsRegister}
 import indigo.renderer._
 import indigo.runtime._
 import indigo.runtime.metrics._
@@ -25,7 +24,6 @@ final case class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     assetsAsync: Future[Set[AssetType]],
     fonts: Set[FontInfo],
     animations: Set[Animation],
-    subSystems: Set[SubSystem],
     initialise: AssetCollection => Startup[StartupError, StartupData],
     initialModel: StartupData => GameModel,
     initialViewModel: StartupData => GameModel => ViewModel,
@@ -40,7 +38,6 @@ final case class GameEngine[StartupData, StartupError, GameModel, ViewModel](
       assetsAsync,
       fonts,
       animations,
-      subSystems,
       initialise,
       initialModel,
       initialViewModel,
@@ -59,7 +56,6 @@ object GameEngine {
       assetsAsync: Future[Set[AssetType]],
       fonts: Set[FontInfo],
       animations: Set[Animation],
-      subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
       initialViewModel: StartupData => GameModel => ViewModel,
@@ -95,10 +91,6 @@ object GameEngine {
 
         val startupData: Startup[StartupError, StartupData] = initialise(assetCollection)
 
-        val subSystemsRegister: SubSystemsRegister =
-          SubSystemsRegister
-            .add(SubSystemsRegister.empty, subSystems.toList ++ startupData.additionalSubSystems.toList)
-
         val x: GameContext[Long => Int] =
           for {
             _                   <- GameEngine.registerAnimations(animations ++ startupData.additionalAnimations)
@@ -115,7 +107,6 @@ object GameEngine {
               assetMapping,
               renderer,
               audioPlayer,
-              subSystemsRegister,
               initialModel(startUpSuccessData),
               initialViewModel(startUpSuccessData),
               frameProccessor,
@@ -228,7 +219,6 @@ object GameEngine {
       assetMapping: AssetMapping,
       renderer: IRenderer,
       audioPlayer: AudioPlayer,
-      subSystemsRegister: SubSystemsRegister,
       initialModel: GameModel,
       initialViewModel: GameModel => ViewModel,
       frameProccessor: FrameProcessor[GameModel, ViewModel],
@@ -241,7 +231,6 @@ object GameEngine {
         assetMapping,
         renderer,
         audioPlayer,
-        subSystemsRegister,
         initialModel,
         initialViewModel(initialModel),
         frameProccessor,

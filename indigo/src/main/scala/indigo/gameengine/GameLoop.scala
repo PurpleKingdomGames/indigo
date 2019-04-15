@@ -5,7 +5,6 @@ import indigo.gameengine.audio.AudioPlayer
 import indigo.gameengine.events._
 import indigo.gameengine.scenegraph.datatypes.AmbientLight
 import indigo.gameengine.scenegraph.{SceneAudio, SceneGraphRootNode, SceneGraphRootNodeFlat, SceneUpdateFragment}
-import indigo.gameengine.subsystems.SubSystemsRegister
 import indigo.renderer.{AssetMapping, DisplayLayer, Displayable, IRenderer}
 import indigo.runtime.GameContext
 import indigo.runtime.metrics._
@@ -22,7 +21,6 @@ class GameLoop[GameModel, ViewModel](
     assetMapping: AssetMapping,
     renderer: IRenderer,
     audioPlayer: AudioPlayer,
-    subSystemsRegister: SubSystemsRegister,
     initialModel: GameModel,
     initialViewModel: ViewModel,
     frameProcessor: FrameProcessor[GameModel, ViewModel],
@@ -39,9 +37,6 @@ class GameLoop[GameModel, ViewModel](
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var signalsState: Signals = Signals.default
-
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var subSystemsState: SubSystemsRegister = subSystemsRegister
 
   @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def loop(lastUpdateTime: Long): Long => Int = { time =>
@@ -67,17 +62,6 @@ class GameLoop[GameModel, ViewModel](
           globalEventStream.collect :+ FrameTick
 
         signalsState = globalSignals.calculate(signalsState, collectedEvents)
-
-        //
-        metrics.record(CallUpdateSubSystemsStartMetric)
-
-        val subSystems =
-          GameLoop.processSubSystemUpdates(gameTime, dice, subSystemsState, collectedEvents, globalEventStream)
-
-        subSystemsState = subSystems
-
-        metrics.record(CallUpdateSubSystemsEndMetric)
-        //
 
         // View updates cut off
         if (gameConfig.advanced.disableSkipViewUpdates || timeDelta < gameConfig.haltViewUpdatesAt) {
@@ -145,7 +129,6 @@ object GameLoop {
       model: GameModel,
       viewModel: ViewModel,
       frameInputEvents: FrameInputEvents,
-      subSystemsRegister: SubSystemsRegister,
       metrics: Metrics
   ): SceneUpdateFragment = {
     metrics.record(CallUpdateViewStartMetric)
@@ -155,7 +138,7 @@ object GameLoop {
       model,
       viewModel,
       frameInputEvents
-    ) |+| subSystemsRegister.render(gameTime)
+    )
 
     metrics.record(CallUpdateViewEndMetric)
 
@@ -224,26 +207,6 @@ object GameLoop {
     res.globalEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
     (res.state, FrameInputEvents(res.globalEvents, signals))
   }
-
-  @tailrec
-  def processSubSystemUpdates(gameTime: GameTime, dice: Dice, register: SubSystemsRegister, collectedEvents: List[GlobalEvent], globalEventStream: GlobalEventStream): SubSystemsRegister =
-    collectedEvents match {
-      case Nil =>
-        register
-
-      case e :: es =>
-        val res = register.update(gameTime, dice)(e)
-
-        res.globalEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
-
-        processSubSystemUpdates(
-          gameTime,
-          dice,
-          res.state,
-          es,
-          globalEventStream
-        )
-    }
 
   def persistGlobalViewEvents(metrics: Metrics, globalEventStream: GlobalEventStream): SceneUpdateFragment => SceneGraphRootNode = update => {
     metrics.record(PersistGlobalViewEventsStartMetric)
