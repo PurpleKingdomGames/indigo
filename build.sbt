@@ -1,6 +1,12 @@
+import scala.sys.process._
+
+lazy val code =
+  taskKey[Unit]("Launch VSCode in the current directory")
+
 val indigoVersion = "0.0.10-SNAPSHOT"
 
 lazy val commonSettings = Seq(
+  code := { "code ." ! },
   version := indigoVersion,
   scalaVersion := "2.12.8",
   organization := "indigo",
@@ -365,8 +371,14 @@ addCommandAlias("testAll", ";clean;testAllNoClean")
 
 addCommandAlias("testCompileIndigo", ";shared/test:compile;indigo/test:compile;indigoExts/test:compile")
 addCommandAlias("testCompileDev", ";sandbox/test:compile;perf/test:compile;framework/test:compile;server/test:compile")
-addCommandAlias("testCompileExamples1", ";basicSetup/test:compile;subSystems/test:compile;scenesSetup/test:compile;fullSetup/test:compile;button/test:compile;http/test:compile;text/test:compile")
-addCommandAlias("testCompileExamples2", ";graphic/test:compile;sprite/test:compile;websocket/test:compile;inputfield/test:compile;audio/test:compile;group/test:compile")
+addCommandAlias(
+  "testCompileExamples1",
+  ";basicSetup/test:compile;subSystems/test:compile;scenesSetup/test:compile;fullSetup/test:compile;button/test:compile;http/test:compile;text/test:compile"
+)
+addCommandAlias(
+  "testCompileExamples2",
+  ";graphic/test:compile;sprite/test:compile;websocket/test:compile;inputfield/test:compile;audio/test:compile;group/test:compile"
+)
 addCommandAlias("testCompileAllNoClean", ";testCompileIndigo;testCompileDev;testCompileExamples1;testCompileExamples2")
 addCommandAlias("testCompileAll", ";clean;testCompileAllNoClean")
 
