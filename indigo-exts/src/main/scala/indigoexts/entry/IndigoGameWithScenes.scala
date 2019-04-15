@@ -4,6 +4,8 @@ import indigo._
 import indigoexts.scenemanager.{SceneManager, SceneName, Scene}
 import indigo.gameengine.GameEngine
 import indigo.gameengine.StandardFrameProcessor
+import indigoexts.subsystems.SubSystem
+import indigoexts.subsystems.SubSystemsRegister
 
 import scala.concurrent.Future
 
@@ -30,13 +32,15 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
 
   val animations: Set[Animation]
 
+  val subSystems: Set[SubSystem]
+
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, StartupData]
 
   def initialModel(startupData: StartupData): Model
 
   def initialViewModel(startupData: StartupData): Model => ViewModel
 
-  private def indigoGame: GameEngine[StartupData, StartupErrors, Model, ViewModel] = {
+  private def indigoGame: GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel] = {
     val sceneManager: SceneManager[Model, ViewModel] =
       initialScene match {
         case Some(name) =>
@@ -46,14 +50,15 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
           SceneManager(scenes, scenes.head.name)
       }
 
-    val frameProcessor: StandardFrameProcessor[Model, ViewModel] =
+    val frameProcessor: StandardFrameProcessor[GameWithSubSystems[Model], ViewModel] = {
       StandardFrameProcessor(
-        (gameTime: GameTime, model: Model, dice: Dice) => sceneManager.updateModel(gameTime, model, dice),
-        (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents, dice: Dice) => sceneManager.updateViewModel(gameTime, model, viewModel, frameInputEvents, dice),
-        (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents) => sceneManager.updateView(gameTime, model, viewModel, frameInputEvents)
+        GameWithSubSystems.update(sceneManager.updateModel),
+        GameWithSubSystems.updateViewModel(sceneManager.updateViewModel),
+        GameWithSubSystems.present(sceneManager.updateView)
       )
+    }
 
-    new GameEngine[StartupData, StartupErrors, Model, ViewModel](
+    new GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel](
       config,
       Future(None),
       assets,
@@ -61,8 +66,8 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
       fonts,
       animations,
       (ac: AssetCollection) => setup(ac),
-      initialModel,
-      initialViewModel,
+      (sd: StartupData) => GameWithSubSystems(initialModel(sd), SubSystemsRegister(subSystems.toList)),
+      (sd: StartupData) => (m: GameWithSubSystems[Model]) => initialViewModel(sd)(m.model),
       frameProcessor
     )
   }

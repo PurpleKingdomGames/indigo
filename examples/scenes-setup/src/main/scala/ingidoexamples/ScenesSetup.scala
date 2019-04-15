@@ -6,6 +6,7 @@ import indigoexts.scenemanager.SceneEvent
 import indigoexts.scenes._
 import indigoexts.lens._
 import indigo.collections.NonEmptyList
+import indigoexts.subsystems.FPSCounter
 
 object ScenesSetup extends IndigoGameWithScenes[MyStartUpData, MyGameModel, MyViewModel] {
 
@@ -22,7 +23,7 @@ object ScenesSetup extends IndigoGameWithScenes[MyStartUpData, MyGameModel, MyVi
 
   val animations: Set[Animation] = Set()
 
-  val subSystems: Set[SubSystem] = Set()
+  val subSystems: Set[SubSystem] = Set(FPSCounter.subSystem(FontStuff.fontKey, Point(10, 360)))
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, MyStartUpData] =
     Startup.Success(MyStartUpData("Scene A!", "Scene B?"))
