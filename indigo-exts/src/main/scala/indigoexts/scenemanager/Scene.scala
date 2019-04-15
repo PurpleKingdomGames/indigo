@@ -6,6 +6,7 @@ import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
 import indigo.gameengine.scenegraph.SceneUpdateFragment
 import indigo.shared.EqualTo
 import indigoexts.lenses.Lens
+import indigo.dice.Dice
 
 trait Scene[GameModel, ViewModel] {
   type SceneModel
@@ -15,22 +16,22 @@ trait Scene[GameModel, ViewModel] {
   val sceneModelLens: Lens[GameModel, SceneModel]
   val sceneViewModelLens: Lens[ViewModel, SceneViewModel]
 
-  def updateSceneModel(gameTime: GameTime, sceneModel: SceneModel): GlobalEvent => Outcome[SceneModel]
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: SceneModel, sceneViewModel: SceneViewModel, frameInputEvents: FrameInputEvents): Outcome[SceneViewModel]
+  def updateSceneModel(gameTime: GameTime, sceneModel: SceneModel, dice: Dice): GlobalEvent => Outcome[SceneModel]
+  def updateSceneViewModel(gameTime: GameTime, sceneModel: SceneModel, sceneViewModel: SceneViewModel, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[SceneViewModel]
   def updateSceneView(gameTime: GameTime, sceneModel: SceneModel, sceneViewModel: SceneViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment
 
 }
 object Scene {
 
-  def updateModel[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, gameModel: GM): GlobalEvent => Outcome[GM] =
+  def updateModel[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, gameModel: GM, dice: Dice): GlobalEvent => Outcome[GM] =
     e =>
       scene
-        .updateSceneModel(gameTime, scene.sceneModelLens.get(gameModel))(e)
+        .updateSceneModel(gameTime, scene.sceneModelLens.get(gameModel), dice)(e)
         .mapState(scene.sceneModelLens.set(gameModel, _))
 
-  def updateViewModel[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, model: GM, viewModel: VM, frameInputEvents: FrameInputEvents): Outcome[VM] =
+  def updateViewModel[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, model: GM, viewModel: VM, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[VM] =
     scene
-      .updateSceneViewModel(gameTime, scene.sceneModelLens.get(model), scene.sceneViewModelLens.get(viewModel), frameInputEvents)
+      .updateSceneViewModel(gameTime, scene.sceneModelLens.get(model), scene.sceneViewModelLens.get(viewModel), frameInputEvents, dice)
       .mapState(scene.sceneViewModelLens.set(viewModel, _))
 
   def updateView[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, model: GM, viewModel: VM, frameInputEvents: FrameInputEvents): SceneUpdateFragment =

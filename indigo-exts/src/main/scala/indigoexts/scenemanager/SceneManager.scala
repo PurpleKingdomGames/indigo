@@ -7,6 +7,7 @@ import indigo.gameengine.scenegraph.SceneUpdateFragment
 import indigo.runtime.IndigoLogger
 import indigo.collections.NonEmptyList
 import indigo.shared.EqualTo._
+import indigo.dice.Dice
 
 class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, ViewModel]], scenesFinder: SceneFinder) {
 
@@ -15,7 +16,7 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
   private var finderInstance: SceneFinder = scenesFinder
 
   // Scene delegation
-  def updateModel(gameTime: GameTime, model: GameModel): GlobalEvent => Outcome[GameModel] = {
+  def updateModel(gameTime: GameTime, model: GameModel, dice: Dice): GlobalEvent => Outcome[GameModel] = {
     case SceneEvent.Next =>
       finderInstance = finderInstance.forward
       Outcome(model)
@@ -35,18 +36,18 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
           Outcome(model)
 
         case Some(scene) =>
-          Scene.updateModel(scene, gameTime, model)(event)
+          Scene.updateModel(scene, gameTime, model, dice)(event)
       }
   }
 
-  def updateViewModel(gameTime: GameTime, model: GameModel, viewModel: ViewModel, frameInputEvents: FrameInputEvents): Outcome[ViewModel] =
+  def updateViewModel(gameTime: GameTime, model: GameModel, viewModel: ViewModel, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[ViewModel] =
     scenes.find(_.name === finderInstance.current.name) match {
       case None =>
         IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
         Outcome(viewModel)
 
       case Some(scene) =>
-        Scene.updateViewModel(scene, gameTime, model, viewModel, frameInputEvents)
+        Scene.updateViewModel(scene, gameTime, model, viewModel, frameInputEvents, dice)
     }
 
   def updateView(gameTime: GameTime, model: GameModel, viewModel: ViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment =

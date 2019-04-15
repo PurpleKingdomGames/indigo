@@ -78,7 +78,8 @@ object SceneManagerTests extends TestSuite {
       }
     }
 
+  import indigo.dice.Dice
   private def runModel(events: List[GlobalEvent], model: TestGameModel, sceneManager: SceneManager[TestGameModel, TestViewModel]): TestGameModel =
-    events.foldLeft(model)((m, e) => sceneManager.updateModel(GameTime.zero, m)(e).state)
+    events.foldLeft(model)((m, e) => sceneManager.updateModel(GameTime.zero, m, Dice.loaded(0))(e).state)
 
 }

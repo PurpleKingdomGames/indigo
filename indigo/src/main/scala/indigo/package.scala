@@ -46,8 +46,6 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   type PowerOfTwo = gameengine.PowerOfTwo
   val PowerOfTwo: gameengine.PowerOfTwo.type = gameengine.PowerOfTwo
 
-  object datatypes {
-    type NonEmptyList[A] = indigo.collections.NonEmptyList[A]
-    val NonEmptyList: indigo.collections.NonEmptyList.type = indigo.collections.NonEmptyList
-  }
+  type NonEmptyList[A] = indigo.collections.NonEmptyList[A]
+  val NonEmptyList: indigo.collections.NonEmptyList.type = indigo.collections.NonEmptyList
 }

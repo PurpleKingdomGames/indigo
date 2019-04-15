@@ -1,14 +1,18 @@
 package indigoexts.entry
 
-import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
-import indigo.gameengine.scenegraph.datatypes.FontInfo
-import indigo.gameengine.scenegraph.SceneUpdateFragment
-import indigo.gameengine.scenegraph.animation.Animation
-import indigo.gameengine._
-import indigo.gameengine.subsystems.SubSystem
-import indigo.shared.{AssetType, GameConfig}
-import indigo.time.GameTime
+import indigo._
+import indigo.gameengine.GameEngine
+import indigo.gameengine.StandardFrameProcessor
+
+// import indigo.gameengine.assets.AssetCollection
+// import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
+// import indigo.gameengine.scenegraph.datatypes.FontInfo
+// import indigo.gameengine.scenegraph.SceneUpdateFragment
+// import indigo.gameengine.scenegraph.animation.Animation
+// import indigo.gameengine._
+// import indigo.gameengine.subsystems.SubSystem
+// import indigo.shared.{AssetType, GameConfig}
+// import indigo.time.GameTime
 
 import scala.concurrent.Future
 
@@ -37,13 +41,20 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] {
 
   def initialModel(startupData: StartupData): Model
 
-  def update(gameTime: GameTime, model: Model): GlobalEvent => Outcome[Model]
+  def update(gameTime: GameTime, model: Model, dice: Dice): GlobalEvent => Outcome[Model]
 
   def initialViewModel(startupData: StartupData): Model => ViewModel
 
-  def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents): Outcome[ViewModel]
+  def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[ViewModel]
 
   def present(gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment
+
+  private val frameProcessor: StandardFrameProcessor[Model, ViewModel] =
+    StandardFrameProcessor(
+      update,
+      updateViewModel,
+      (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents) => present(gameTime, model, viewModel, frameInputEvents)
+    )
 
   private def indigoGame: GameEngine[StartupData, StartupErrors, Model, ViewModel] =
     GameEngine[StartupData, StartupErrors, Model, ViewModel](
@@ -56,10 +67,11 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] {
       subSystems,
       (ac: AssetCollection) => setup(ac),
       initialModel,
-      update,
+      // update,
       initialViewModel,
-      updateViewModel,
-      (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents) => present(gameTime, model, viewModel, frameInputEvents)
+      // updateViewModel,
+      // (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents) => present(gameTime, model, viewModel, frameInputEvents)
+      frameProcessor
     )
 
   def main(args: Array[String]): Unit =

@@ -24,21 +24,25 @@ class GameLoop[GameModel, ViewModel](
     audioPlayer: AudioPlayer,
     subSystemsRegister: SubSystemsRegister,
     initialModel: GameModel,
-    updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel],
+    // updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel],
     initialViewModel: ViewModel,
-    updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => Outcome[ViewModel],
-    updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment,
+    // updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => Outcome[ViewModel],
+    // updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment,
+    frameProcessor: FrameProcessor[GameModel, ViewModel],
     metrics: Metrics,
     globalEventStream: GlobalEventStream,
     globalSignals: GlobalSignals
 ) {
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var gameModelState: Option[GameModel] = None
+  private var gameModelState: GameModel = initialModel
+
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var viewModelState: Option[ViewModel] = None
+  private var viewModelState: ViewModel = initialViewModel
+
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var signalsState: Signals = Signals.default
+
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var subSystemsState: SubSystemsRegister = subSystemsRegister
 
@@ -65,24 +69,7 @@ class GameLoop[GameModel, ViewModel](
         val collectedEvents: List[GlobalEvent] =
           globalEventStream.collect :+ FrameTick
 
-        val signals: Signals =
-          globalSignals.calculate(signalsState, collectedEvents)
-
-        signalsState = signals
-
-        metrics.record(CallUpdateGameModelStartMetric)
-
-        val model: (GameModel, FrameInputEvents) = gameModelState match {
-          case None =>
-            (initialModel, FrameInputEvents.empty)
-
-          case Some(previousModel) =>
-            GameLoop.processModelUpdateEvents(gameTime, previousModel, collectedEvents, signals, updateModel, globalEventStream)
-        }
-
-        gameModelState = Some(model._1)
-
-        metrics.record(CallUpdateGameModelEndMetric)
+        signalsState = globalSignals.calculate(signalsState, collectedEvents)
 
         //
         metrics.record(CallUpdateSubSystemsStartMetric)
@@ -95,28 +82,28 @@ class GameLoop[GameModel, ViewModel](
         metrics.record(CallUpdateSubSystemsEndMetric)
         //
 
-        metrics.record(CallUpdateViewModelStartMetric)
-
-        val viewModel: (ViewModel, FrameInputEvents) = viewModelState match {
-          case None =>
-            (initialViewModel, FrameInputEvents.empty)
-
-          case Some(previousModel) =>
-            val next = updateViewModel(gameTime, model._1, previousModel, model._2)
-            next.globalEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
-            (next.state, FrameInputEvents(collectedEvents, signals))
-        }
-
-        viewModelState = Some(viewModel._1)
-
-        metrics.record(CallUpdateViewModelEndMetric)
-        metrics.record(UpdateEndMetric)
-
         // View updates cut off
         if (gameConfig.advanced.disableSkipViewUpdates || timeDelta < gameConfig.haltViewUpdatesAt) {
 
-          val x = for {
-            view          <- GameLoop.updateGameView(updateView, gameTime, model._1, viewModel._1, viewModel._2, subSystemsState, metrics)
+          metrics.record(CallUpdateGameModelStartMetric)
+
+          val (next, view): (Outcome[(GameModel, ViewModel)], SceneUpdateFragment) =
+            frameProcessor.run(gameModelState, viewModelState)(gameTime, collectedEvents, signalsState, dice)
+
+          metrics.record(CallUpdateGameModelEndMetric)
+
+          // No longer relevant
+          metrics.record(CallUpdateViewModelStartMetric)
+          metrics.record(CallUpdateViewModelEndMetric)
+
+          // Persist everything!
+          gameModelState = next.state._1
+          viewModelState = next.state._2
+          next.globalEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
+
+          metrics.record(UpdateEndMetric)
+
+          val frameSideEffects = for {
             processedView <- GameLoop.processUpdatedView(view, collectedEvents, metrics, globalEventStream)
             displayable   <- GameLoop.viewToDisplayable(gameTime, processedView, assetMapping, view.ambientLight, metrics)
             _             <- GameLoop.persistAnimationStates(metrics)
@@ -124,9 +111,26 @@ class GameLoop[GameModel, ViewModel](
             _             <- GameLoop.playAudio(audioPlayer, view.audio, metrics)
           } yield ()
 
-          x.unsafeRun()
+          frameSideEffects.unsafeRun()
 
         } else {
+          metrics.record(CallUpdateGameModelStartMetric)
+
+          val next: Outcome[(GameModel, ViewModel)] =
+            frameProcessor.runSkipView(gameModelState, viewModelState)(gameTime, collectedEvents, signalsState, dice)
+
+          metrics.record(CallUpdateGameModelEndMetric)
+
+          // No longer relevant
+          metrics.record(CallUpdateViewModelStartMetric)
+          metrics.record(CallUpdateViewModelEndMetric)
+
+          // Persist everything!
+          gameModelState = next.state._1
+          viewModelState = next.state._2
+          next.globalEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
+
+          metrics.record(UpdateEndMetric)
           metrics.record(SkippedViewUpdateMetric)
         }
 
@@ -154,21 +158,20 @@ object GameLoop {
       frameInputEvents: FrameInputEvents,
       subSystemsRegister: SubSystemsRegister,
       metrics: Metrics
-  ): GameContext[SceneUpdateFragment] =
-    GameContext.delay {
-      metrics.record(CallUpdateViewStartMetric)
+  ): SceneUpdateFragment = {
+    metrics.record(CallUpdateViewStartMetric)
 
-      val view: SceneUpdateFragment = updateView(
-        gameTime,
-        model,
-        viewModel,
-        frameInputEvents
-      ) |+| subSystemsRegister.render(gameTime)
+    val view: SceneUpdateFragment = updateView(
+      gameTime,
+      model,
+      viewModel,
+      frameInputEvents
+    ) |+| subSystemsRegister.render(gameTime)
 
-      metrics.record(CallUpdateViewEndMetric)
+    metrics.record(CallUpdateViewEndMetric)
 
-      view
-    }
+    view
+  }
 
   def processUpdatedView(view: SceneUpdateFragment, collectedEvents: List[GlobalEvent], metrics: Metrics, globalEventStream: GlobalEventStream): GameContext[SceneGraphRootNodeFlat] =
     GameContext.delay {

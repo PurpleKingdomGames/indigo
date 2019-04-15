@@ -1,10 +1,10 @@
 package indigo.gameengine
 
-import indigo.time.GameTime
+// import indigo.time.GameTime
 import indigo.gameengine.assets._
 import indigo.gameengine.audio.AudioPlayer
 import indigo.gameengine.events._
-import indigo.gameengine.scenegraph._
+// import indigo.gameengine.scenegraph._
 import indigo.gameengine.scenegraph.animation._
 import indigo.gameengine.scenegraph.datatypes.FontInfo
 import indigo.gameengine.subsystems.{SubSystem, SubSystemsRegister}
@@ -30,10 +30,11 @@ final case class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     subSystems: Set[SubSystem],
     initialise: AssetCollection => Startup[StartupError, StartupData],
     initialModel: StartupData => GameModel,
-    updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel],
+    // updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel],
     initialViewModel: StartupData => GameModel => ViewModel,
-    updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => Outcome[ViewModel],
-    updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
+    // updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => Outcome[ViewModel],
+    // updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
+    frameProccessor: FrameProcessor[GameModel, ViewModel]
 ) {
 
   def start(): Unit =
@@ -47,10 +48,11 @@ final case class GameEngine[StartupData, StartupError, GameModel, ViewModel](
       subSystems,
       initialise,
       initialModel,
-      updateModel,
+      // updateModel,
       initialViewModel,
-      updateViewModel,
-      updateView
+      // updateViewModel,
+      // updateView
+      frameProccessor
     )
 
 }
@@ -68,10 +70,11 @@ object GameEngine {
       subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
-      updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel],
+      // updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel],
       initialViewModel: StartupData => GameModel => ViewModel,
-      updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => Outcome[ViewModel],
-      updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
+      // updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => Outcome[ViewModel],
+      // updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
+      frameProccessor: FrameProcessor[GameModel, ViewModel]
   ): Unit = {
 
     IndigoLogger.info("Starting Indigo")
@@ -125,10 +128,11 @@ object GameEngine {
               audioPlayer,
               subSystemsRegister,
               initialModel(startUpSuccessData),
-              updateModel,
+              // updateModel,
               initialViewModel(startUpSuccessData),
-              updateViewModel,
-              updateView,
+              // updateViewModel,
+              // updateView,
+              frameProccessor,
               metrics,
               globalEventStream,
               globalSignals
@@ -240,10 +244,11 @@ object GameEngine {
       audioPlayer: AudioPlayer,
       subSystemsRegister: SubSystemsRegister,
       initialModel: GameModel,
-      updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel],
+      // updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel],
       initialViewModel: GameModel => ViewModel,
-      updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => Outcome[ViewModel],
-      updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment,
+      // updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents) => Outcome[ViewModel],
+      // updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment,
+      frameProccessor: FrameProcessor[GameModel, ViewModel],
       metrics: Metrics,
       globalEventStream: GlobalEventStream,
       globalSignals: GlobalSignals): GameContext[GameLoop[GameModel, ViewModel]] =
@@ -255,10 +260,11 @@ object GameEngine {
         audioPlayer,
         subSystemsRegister,
         initialModel,
-        updateModel,
+        // updateModel,
         initialViewModel(initialModel),
-        updateViewModel,
-        updateView,
+        // updateViewModel,
+        // updateView,
+        frameProccessor,
         metrics,
         globalEventStream,
         globalSignals

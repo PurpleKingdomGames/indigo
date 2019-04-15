@@ -22,12 +22,12 @@ object FullSetup {
   val initialModel: MyStartupData => MyGameModel =
     _ => MyGameModel()
 
-  val updateModel: (GameTime, MyGameModel) => GlobalEvent => Outcome[MyGameModel] =
-    (_, model) => _ => Outcome(model)
+  val updateModel: (GameTime, MyGameModel, Dice) => GlobalEvent => Outcome[MyGameModel] =
+    (_, model, _) => _ => Outcome(model)
 
   val initialViewModel: (MyStartupData, MyGameModel) => MyViewModel = (_, _) => MyViewModel()
 
-  val updateViewModel: (GameTime, MyGameModel, MyViewModel, FrameInputEvents) => Outcome[MyViewModel] = (_, _, _, _) => Outcome(MyViewModel())
+  val updateViewModel: (GameTime, MyGameModel, MyViewModel, FrameInputEvents, Dice) => Outcome[MyViewModel] = (_, _, _, _, _) => Outcome(MyViewModel())
 
   val renderer: (GameTime, MyGameModel, MyViewModel, FrameInputEvents) => SceneUpdateFragment =
     (_, _, _, _) => SceneUpdateFragment.empty

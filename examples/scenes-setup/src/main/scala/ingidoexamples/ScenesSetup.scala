@@ -55,11 +55,11 @@ object SceneA extends Scene[MyGameModel, MyViewModel] {
     Lens.fixed(())
 
   // Nothing to do
-  def updateSceneModel(gameTime: GameTime, sceneModel: MessageA): GlobalEvent => Outcome[MessageA] =
+  def updateSceneModel(gameTime: GameTime, sceneModel: MessageA, dice: Dice): GlobalEvent => Outcome[MessageA] =
     _ => Outcome(sceneModel)
 
   // Nothing to do
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: MessageA, sceneViewModel: Unit, frameInputEvents: FrameInputEvents): Outcome[Unit] = Outcome(())
+  def updateSceneViewModel(gameTime: GameTime, sceneModel: MessageA, sceneViewModel: Unit, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[Unit] = Outcome(())
 
   // Show some text
   // When the user clicks anywhere in the screen, trigger an event to jump to the other scene.
@@ -95,11 +95,11 @@ object SceneB extends Scene[MyGameModel, MyViewModel] {
     Lens.fixed(())
 
   // Nothing to do
-  def updateSceneModel(gameTime: GameTime, sceneModel: MessageB): GlobalEvent => Outcome[MessageB] =
+  def updateSceneModel(gameTime: GameTime, sceneModel: MessageB, dice: Dice): GlobalEvent => Outcome[MessageB] =
     _ => Outcome(sceneModel)
 
   // Nothing to do
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: MessageB, sceneViewModel: Unit, frameInputEvents: FrameInputEvents): Outcome[Unit] = Outcome(())
+  def updateSceneViewModel(gameTime: GameTime, sceneModel: MessageB, sceneViewModel: Unit, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[Unit] = Outcome(())
 
   // Show some text
   // When the user clicks anywhere in the screen, trigger an event to jump to the other scene.

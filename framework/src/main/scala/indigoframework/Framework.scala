@@ -1,12 +1,8 @@
 package indigoframework
 
-import indigo.gameengine._
-import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
-import indigo.gameengine.scenegraph._
+import indigo._
 import indigoexts.entry.Indigo
-import indigo.shared.{AssetType, GameConfig, GameDefinition}
-import indigo.time.GameTime
+import indigo.shared.{GameDefinition}
 
 import scala.concurrent.Future
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
@@ -41,11 +37,11 @@ object Framework {
 
   val initialModel: StartupData => GameModel = startupData => GameModelHelper.initialModel(startupData)
 
-  val updateModel: (GameTime, GameModel) => GlobalEvent => Outcome[GameModel] = (_, gameModel) => GameModelHelper.updateModel(gameModel)
+  val updateModel: (GameTime, GameModel, Dice) => GlobalEvent => Outcome[GameModel] = (_, gameModel, _) => GameModelHelper.updateModel(gameModel)
 
   val initialViewModel: (StartupData, GameModel) => Unit = (_, _) => ()
 
-  val updateViewModel: (GameTime, GameModel, Unit, FrameInputEvents) => Outcome[Unit] = (_, _, _, _) => Outcome(())
+  val updateViewModel: (GameTime, GameModel, Unit, FrameInputEvents, Dice) => Outcome[Unit] = (_, _, _, _, _) => Outcome(())
 
   val updateView: (GameTime, GameModel, Unit, FrameInputEvents) => SceneUpdateFragment = (_, gameModel, _, _) => GameViewHelper.updateView(gameModel)
 

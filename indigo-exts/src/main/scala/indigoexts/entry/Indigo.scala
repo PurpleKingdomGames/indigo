@@ -1,13 +1,8 @@
 package indigoexts.entry
 
-import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.scenegraph.datatypes.FontInfo
-import indigo.gameengine.scenegraph.SceneUpdateFragment
-import indigo.gameengine.scenegraph.animation.Animation
-import indigo.gameengine.subsystems.SubSystem
-import indigo.gameengine.{events, _}
-import indigo.shared.{AssetType, GameConfig}
-import indigo.time.GameTime
+import indigo._
+import indigo.gameengine.GameEngine
+import indigo.gameengine.StandardFrameProcessor
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -29,11 +24,14 @@ object IndigoGameBase {
       subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
-      updateModel: (GameTime, GameModel) => events.GlobalEvent => Outcome[GameModel],
+      updateModel: (GameTime, GameModel, Dice) => GlobalEvent => Outcome[GameModel],
       initialViewModel: StartupData => GameModel => ViewModel,
-      updateViewModel: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => Outcome[ViewModel],
-      updateView: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => SceneUpdateFragment
+      updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents, Dice) => Outcome[ViewModel],
+      updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
   ) {
+
+    private val frameProcessor: StandardFrameProcessor[GameModel, ViewModel] =
+      StandardFrameProcessor(updateModel, updateViewModel, updateView)
 
     private val gameEngine: GameEngine[StartupData, StartupError, GameModel, ViewModel] =
       GameEngine[StartupData, StartupError, GameModel, ViewModel](
@@ -46,10 +44,11 @@ object IndigoGameBase {
         subSystems,
         initialise,
         initialModel,
-        updateModel,
+        // updateModel,
         initialViewModel,
-        updateViewModel,
-        updateView
+        // updateViewModel,
+        // updateView
+        frameProcessor
       )
 
     def start(): Unit =
@@ -66,12 +65,12 @@ object IndigoGameBase {
       subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
-      updateModel: (GameTime, GameModel) => events.GlobalEvent => Outcome[GameModel],
+      updateModel: (GameTime, GameModel, Dice) => GlobalEvent => Outcome[GameModel],
       initialViewModel: StartupData => GameModel => ViewModel,
-      updateViewModel: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => Outcome[ViewModel]
+      updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents, Dice) => Outcome[ViewModel]
   ) {
     def presentUsing(
-        updateView: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => SceneUpdateFragment
+        updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
     ): IndigoGame[StartupData, StartupError, GameModel, ViewModel] =
       new IndigoGame(config, configAsync, assets, assetsAsync, fonts, animations, subSystems, initialise, initialModel, updateModel, initialViewModel, updateViewModel, updateView)
   }
@@ -86,11 +85,11 @@ object IndigoGameBase {
       subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
-      updateModel: (GameTime, GameModel) => events.GlobalEvent => Outcome[GameModel],
+      updateModel: (GameTime, GameModel, Dice) => GlobalEvent => Outcome[GameModel],
       initialViewModel: StartupData => GameModel => ViewModel
   ) {
     def updateViewModelUsing(
-        updateViewModel: (GameTime, GameModel, ViewModel, events.FrameInputEvents) => Outcome[ViewModel]
+        updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents, Dice) => Outcome[ViewModel]
     ): IndigoGameWithViewModelUpdater[StartupData, StartupError, GameModel, ViewModel] =
       new IndigoGameWithViewModelUpdater(config, configAsync, assets, assetsAsync, fonts, animations, subSystems, initialise, initialModel, updateModel, initialViewModel, updateViewModel)
   }
@@ -105,7 +104,7 @@ object IndigoGameBase {
       subSystems: Set[SubSystem],
       initialise: AssetCollection => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
-      updateModel: (GameTime, GameModel) => events.GlobalEvent => Outcome[GameModel]
+      updateModel: (GameTime, GameModel, Dice) => GlobalEvent => Outcome[GameModel]
   ) {
     def initialiseViewModelUsing[ViewModel](
         initialViewModel: (StartupData, GameModel) => ViewModel
@@ -137,7 +136,7 @@ object IndigoGameBase {
       initialModel: StartupData => GameModel
   ) {
     def updateModelUsing(
-        modelUpdater: (GameTime, GameModel) => events.GlobalEvent => Outcome[GameModel]
+        modelUpdater: (GameTime, GameModel, Dice) => GlobalEvent => Outcome[GameModel]
     ): IndigoGameWithModelUpdate[StartupData, StartupError, GameModel] =
       new IndigoGameWithModelUpdate(config, configAsync, assets, assetsAsync, fonts, animations, subSystems, initialise, initialModel, modelUpdater)
   }

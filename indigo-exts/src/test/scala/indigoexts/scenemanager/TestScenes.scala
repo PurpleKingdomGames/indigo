@@ -5,6 +5,7 @@ import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
 import indigo.gameengine.scenegraph.SceneUpdateFragment
 import indigo.Outcome
 import indigoexts.lenses.Lens
+import indigo.dice.Dice
 
 object TestScenes {
 
@@ -36,10 +37,10 @@ final case class TestSceneA() extends Scene[TestGameModel, TestViewModel] {
       (m, mm) => m.copy(sceneA = mm)
     )
 
-  def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelA): GlobalEvent => Outcome[TestSceneModelA] =
+  def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelA, dice: Dice): GlobalEvent => Outcome[TestSceneModelA] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 1))
 
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, frameInputEvents: FrameInputEvents): Outcome[TestSceneViewModelA] =
+  def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[TestSceneViewModelA] =
     Outcome(TestSceneViewModelA())
 
   def updateSceneView(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
@@ -67,10 +68,10 @@ final case class TestSceneB() extends Scene[TestGameModel, TestViewModel] {
       (m, mm) => m.copy(sceneB = mm)
     )
 
-  def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelB): GlobalEvent => Outcome[TestSceneModelB] =
+  def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelB, dice: Dice): GlobalEvent => Outcome[TestSceneModelB] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 10))
 
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, frameInputEvents: FrameInputEvents): Outcome[TestSceneViewModelB] =
+  def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[TestSceneViewModelB] =
     Outcome(TestSceneViewModelB())
 
   def updateSceneView(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, frameInputEvents: FrameInputEvents): SceneUpdateFragment =

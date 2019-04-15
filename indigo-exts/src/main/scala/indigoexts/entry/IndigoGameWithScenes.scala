@@ -1,15 +1,21 @@
 package indigoexts.entry
 
-import indigo.gameengine.assets.AssetCollection
-import indigo.gameengine.events.FrameInputEvents
-import indigo.gameengine.scenegraph.animation.Animation
-import indigo.gameengine.scenegraph.datatypes.FontInfo
-import indigo.gameengine._
-import indigo.gameengine.subsystems.SubSystem
-import indigo.shared.{AssetType, GameConfig}
+import indigo._
 import indigoexts.scenemanager.{SceneManager, SceneName, Scene}
-import indigo.time.GameTime
-import indigo.collections.NonEmptyList
+import indigo.gameengine.GameEngine
+import indigo.gameengine.StandardFrameProcessor
+// import indigo.collections.NonEmptyList
+
+// import indigo.gameengine.assets.AssetCollection
+// import indigo.gameengine.events.FrameInputEvents
+// import indigo.gameengine.scenegraph.animation.Animation
+// import indigo.gameengine.scenegraph.datatypes.FontInfo
+// import indigo.gameengine._
+// import indigo.gameengine.subsystems.SubSystem
+// import indigo.shared.{AssetType, GameConfig}
+// import indigoexts.scenemanager.{SceneManager, SceneName, Scene}
+// import indigo.time.GameTime
+// import indigo.collections.NonEmptyList
 
 import scala.concurrent.Future
 
@@ -54,6 +60,13 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
           SceneManager(scenes, scenes.head.name)
       }
 
+    val frameProcessor: StandardFrameProcessor[Model, ViewModel] =
+      StandardFrameProcessor(
+        (gameTime: GameTime, model: Model, dice: Dice) => sceneManager.updateModel(gameTime, model, dice),
+        (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents, dice: Dice) => sceneManager.updateViewModel(gameTime, model, viewModel, frameInputEvents, dice),
+        (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents) => sceneManager.updateView(gameTime, model, viewModel, frameInputEvents)
+      )
+
     new GameEngine[StartupData, StartupErrors, Model, ViewModel](
       config,
       Future(None),
@@ -64,10 +77,11 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
       subSystems,
       (ac: AssetCollection) => setup(ac),
       initialModel,
-      (gameTime: GameTime, model: Model) => sceneManager.updateModel(gameTime, model),
+      // (gameTime: GameTime, model: Model) => sceneManager.updateModel(gameTime, model),
       initialViewModel,
-      (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents) => sceneManager.updateViewModel(gameTime, model, viewModel, frameInputEvents),
-      (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents) => sceneManager.updateView(gameTime, model, viewModel, frameInputEvents)
+      // (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents) => sceneManager.updateViewModel(gameTime, model, viewModel, frameInputEvents),
+      // (gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents) => sceneManager.updateView(gameTime, model, viewModel, frameInputEvents)
+      frameProcessor
     )
   }
 
