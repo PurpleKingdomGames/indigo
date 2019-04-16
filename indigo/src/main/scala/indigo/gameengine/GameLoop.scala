@@ -43,7 +43,13 @@ class GameLoop[GameModel, ViewModel](
     val timeDelta: Long = time - lastUpdateTime
 
     // PUT NOTHING ABOVE THIS LINE!! Major performance penalties!!
-    if (timeDelta > gameConfig.frameRateDeltaMillis) {
+    // This is... confusing... aiming for 30 FPS:
+    // (timeDelta: Long) >= (frameRateDeltaMillis: Long) (which has been round from 33.333 to 33) - 1
+    // This seems to give us a solid 30 to 31 frames per second.
+    // Without the -1, we get 27 to 28
+    // ...probably because the timeDelta is also rounded down from Double to Long
+    // By insisting time be measured in sensible units, I've made a rod for my own back...
+    if (timeDelta >= gameConfig.frameRateDeltaMillis.toLong - 1) {
 
       metrics.record(FrameStartMetric)
 
