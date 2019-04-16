@@ -65,6 +65,9 @@ object Signal {
   def product[A, B](sa: Signal[A], sb: Signal[B]): Signal[(A, B)] =
     merge(sa, sb)((_, _))
 
+  def triple[A, B, C](sa: Signal[A], sb: Signal[B], sc: Signal[C]): Signal[(A, B, C)] =
+    merge(merge(sa, sb)((a, b) => (a, b)), sc)((ab, c) => (ab._1, ab._2, c))
+
 }
 
 /**

@@ -1,6 +1,7 @@
-package indigoexts.subsystems
+package indigoexts.subsystems.fpscounter
 
 import indigo._
+import indigoexts.subsystems.SubSystem
 
 final case class FPSCounter(fps: Int, lastInterval: Millis, frameCountSinceInterval: Int, fontKey: FontKey, position: Point) extends SubSystem {
 

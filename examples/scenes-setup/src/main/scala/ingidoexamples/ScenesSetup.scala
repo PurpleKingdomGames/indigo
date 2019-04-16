@@ -6,7 +6,7 @@ import indigoexts.scenemanager.SceneEvent
 import indigoexts.scenes._
 import indigoexts.lens._
 import indigo.collections.NonEmptyList
-import indigoexts.subsystems.FPSCounter
+import indigoexts.subsystems.fpscounter.FPSCounter
 
 object ScenesSetup extends IndigoGameWithScenes[MyStartUpData, MyGameModel, MyViewModel] {
 
@@ -40,7 +40,7 @@ object ScenesSetup extends IndigoGameWithScenes[MyStartUpData, MyGameModel, MyVi
 
 // There is no relevant entry in the ViewModel for either scene, so we've just left it as Unit.
 object SceneA extends Scene[MyGameModel, MyViewModel] {
-  type SceneModel = MessageA
+  type SceneModel     = MessageA
   type SceneViewModel = Unit
 
   val name: SceneName = SceneName("A")
@@ -80,7 +80,7 @@ object SceneA extends Scene[MyGameModel, MyViewModel] {
 
 // There is no relevant entry in the ViewModel for either scene, so we've just left it as Unit.
 object SceneB extends Scene[MyGameModel, MyViewModel] {
-  type SceneModel = MessageB
+  type SceneModel     = MessageB
   type SceneViewModel = Unit
 
   val name: SceneName = SceneName("B")

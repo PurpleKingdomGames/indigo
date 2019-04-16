@@ -76,6 +76,9 @@ object Dice {
     }
   }
 
+  val ZeroIndexed: Long => Dice =
+    (seed: Long) => arbitrary(0, Int.MaxValue, seed)
+
   object Sides {
     val MaxInt: Long => Dice   = (seed: Long) => arbitrary(1, Int.MaxValue, seed)
     val One: Long => Dice      = (seed: Long) => diceSidesN(1, seed)
