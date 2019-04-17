@@ -16,6 +16,9 @@ final class Millis(val value: Long) extends AnyVal {
   def /(other: Millis): Millis =
     Millis.divide(this, other)
 
+  def %(other: Millis): Millis =
+    Millis.modulo(this, other)
+
   def <(other: Millis): Boolean =
     Millis.lessThan(this, other)
 
@@ -71,6 +74,9 @@ object Millis {
 
   def divide(a: Millis, b: Millis): Millis =
     Millis(a.value / b.value)
+
+  def modulo(a: Millis, b: Millis): Millis =
+    Millis(a.value % b.value)
 
   def greaterThan(a: Millis, b: Millis): Boolean =
     a.value > b.value

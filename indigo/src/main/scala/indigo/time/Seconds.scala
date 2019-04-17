@@ -16,6 +16,9 @@ final class Seconds(val value: Double) extends AnyVal {
   def /(other: Seconds): Seconds =
     Seconds.divide(this, other)
 
+  def %(other: Seconds): Seconds =
+    Seconds.modulo(this, other)
+
   def <(other: Seconds): Boolean =
     Seconds.lessThan(this, other)
 
@@ -71,6 +74,9 @@ object Seconds {
 
   def divide(a: Seconds, b: Seconds): Seconds =
     Seconds(a.value / b.value)
+
+  def modulo(a: Seconds, b: Seconds): Seconds =
+    Seconds(a.value % b.value)
 
   def greaterThan(a: Seconds, b: Seconds): Boolean =
     a.value > b.value
