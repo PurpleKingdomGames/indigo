@@ -44,21 +44,6 @@ object SignalTests extends TestSuite {
           pulse.at(Millis(1243)) ==> true
 
         }
-
-        "Tick signal" - {
-
-          val tick = Signal.Tick(Millis(10))
-
-          tick.at(Millis(0)) ==> true
-          tick.at(Millis(1)) ==> false
-          tick.at(Millis(5)) ==> false
-          tick.at(Millis(9)) ==> false
-          tick.at(Millis(10)) ==> true
-          tick.at(Millis(15)) ==> false
-          tick.at(Millis(20)) ==> true
-          tick.at(Millis(10000)) ==> true
-
-        }
       }
 
       "SignalFunctions" - {
