@@ -2,6 +2,7 @@ package indigo.temporal
 
 import indigo.time.{Millis, Seconds}
 import indigo.abstractions.Applicative
+import indigo.shared.EqualTo._
 
 /**
   * A Signal, or Time Varying Value is function t: Millis -> A
@@ -37,6 +38,9 @@ object Signal {
 
   val TimeInSeconds: Signal[Seconds] =
     Signal.create(_.toSeconds)
+
+  def Pulse(interval: Millis): Signal[Boolean] =
+    Signal.create(t => (t / interval).value % 2 === 0)
 
   def fixed[A](a: A): Signal[A] =
     create(_ => a)

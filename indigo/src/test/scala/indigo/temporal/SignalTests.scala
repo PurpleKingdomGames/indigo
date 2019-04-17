@@ -29,6 +29,21 @@ object SignalTests extends TestSuite {
           //Alternative to applicative syntax
           a.merge(b)(_ + _).at(Millis.zero) ==> 3
         }
+
+        "Pulse signal" - {
+
+          val pulse = Signal.Pulse(Millis(10))
+
+          pulse.at(Millis(0)) ==> true
+          pulse.at(Millis(1)) ==> true
+          pulse.at(Millis(10)) ==> false
+          pulse.at(Millis(11)) ==> false
+          pulse.at(Millis(20)) ==> true
+          pulse.at(Millis(23)) ==> true
+          pulse.at(Millis(1234)) ==> false
+          pulse.at(Millis(1243)) ==> true
+
+        }
       }
 
       "SignalFunctions" - {
