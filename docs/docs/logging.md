@@ -14,6 +14,17 @@ debug(...)
 debugOnce(...)
 ```
 
+## Requirements
+
+Here is the signature of the info logger:
+
+```scala
+def info[A](valueA: A)(implicit showA: AsString[A]): Unit
+```
+
+Please note that this requires a instance of `AsString` to exist for *any* type you intend to log. For more information please read the entry on [AsString](collections-abstractions-and-typeclasses.md#AsString).
+
+## Format
 Logs are currently written out in a fixed format:
 
 `s"""[${system time millis}] [$level] [Indigo] $message"""`
