@@ -42,6 +42,9 @@ object Signal {
   def Pulse(interval: Millis): Signal[Boolean] =
     Signal.create(t => (t / interval).value % 2 === 0)
 
+  def Tick(interval: Millis): Signal[Boolean] =
+    Signal.create(t => (t % interval).value === 0)
+
   def fixed[A](a: A): Signal[A] =
     create(_ => a)
 
