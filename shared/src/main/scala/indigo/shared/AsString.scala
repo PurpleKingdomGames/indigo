@@ -59,8 +59,10 @@ object AsString {
 
   /**
     * Provides an implicit extension method
-    * @example import indigo.AsString._
+    * @example `
+    *          import indigo.AsString._
     *          10.show
+    *          `
     * @param a value of type A to convert to a String
     * @param s required implicit AsString for type A
     * @tparam A the type we need an implicit AsString instance of.
