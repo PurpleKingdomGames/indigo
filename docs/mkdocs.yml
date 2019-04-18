@@ -21,4 +21,5 @@ nav:
     - UI Components: ui-components.md
     - Text & Fonts: text-and-fonts.md
     - Importers: importers.md
+    - Animation: animation.md
 theme: readthedocs
