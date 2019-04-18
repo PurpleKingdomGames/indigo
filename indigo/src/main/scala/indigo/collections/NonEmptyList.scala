@@ -18,7 +18,7 @@ trait NonEmptyList[A] {
   val head: A
 
   /**
-    * The remaining elements of the list, as a [[List]] since the
+    * The remaining elements of the list, as a List since the
     * tail can be empty.
     */
   val tail: List[A]
@@ -41,7 +41,7 @@ trait NonEmptyList[A] {
 
   /**
     * A count of the elements in the list
-    * @return [[Int]]
+    * @return Int
     */
   def length: Int =
     NonEmptyList.length(this)
@@ -54,7 +54,7 @@ trait NonEmptyList[A] {
     NonEmptyList.reverse(this)
 
   /**
-    * Converts the NonEmptyList back to a regular [[List]].
+    * Converts the NonEmptyList back to a regular List.
     * @return
     */
   def toList: List[A] =

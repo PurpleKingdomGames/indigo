@@ -27,7 +27,7 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
   val scenes: NonEmptyList[Scene[Model, ViewModel]]
 
   /**
-    * Optional name of the first scene. If [[None]] is provided
+    * Optional name of the first scene. If None is provided
     * then the first scene is the head of the scenes list.
     */
   val initialScene: Option[SceneName]
@@ -38,26 +38,26 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
   val config: GameConfig
 
   /**
-    * A [[Set]] of assets to be loaded.
+    * A Set of assets to be loaded.
     */
   val assets: Set[AssetType]
 
   /**
-    * A [[Set]] of FontInfo's describing the fonts for your game.
+    * A Set of FontInfo's describing the fonts for your game.
     * Please note that more fonts can be added to the `Startup` object
     * resulting from the `setup` method below.
     */
   val fonts: Set[FontInfo]
 
   /**
-    * A [[Set]] of initial, predefined animations for your game.
+    * A Set of initial, predefined animations for your game.
     * Please note that more animations can be added to the `Startup` object
     * resulting from the `setup` method below.
     */
   val animations: Set[Animation]
 
   /**
-    * A [[Set]] of SubSystems for your game.
+    * A Set of SubSystems for your game.
     */
   val subSystems: Set[SubSystem]
 
