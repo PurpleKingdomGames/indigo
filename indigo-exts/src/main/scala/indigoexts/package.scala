@@ -5,8 +5,8 @@ package object indigoexts {
   object entrypoint {
     val Indigo: entry.Indigo.type = entry.Indigo
 
-    type IndigoGameBasic[StartupData, Model, ViewModel]      = entry.IndigoGameBasic[StartupData, Model, ViewModel]
-    
+    type IndigoGameBasic[StartupData, Model, ViewModel] = entry.IndigoGameBasic[StartupData, Model, ViewModel]
+
     type IndigoGameWithScenes[StartupData, Model, ViewModel] = entry.IndigoGameWithScenes[StartupData, Model, ViewModel]
 
     type IndigoGame[StartupData, StartupError, GameModel, ViewModel] = entry.IndigoGameBase.IndigoGame[StartupData, StartupError, GameModel, ViewModel]

@@ -7,8 +7,10 @@ lazy val code =
 addCommandAlias(
   "readdocs",
   List(
+    "shared/doc",
     "indigo/doc",
     "indigoExts/doc",
+    "indigo/openshareddocs",
     "indigo/openindigodocs",
     "indigoExts/openindigoextsdocs"
   ).mkString(";", ";", "")
@@ -18,6 +20,7 @@ val indigoVersion = "0.0.10-SNAPSHOT"
 
 lazy val commonSettings = Seq(
   code := { "code ." ! },
+  openshareddocs := { "open -a Firefox shared/target/scala-2.12/api/indigo/index.html" ! },
   openindigodocs := { "open -a Firefox indigo/target/scala-2.12/api/indigo/index.html" ! },
   openindigoextsdocs := { "open -a Firefox indigo-exts/target/scala-2.12/api/indigoexts/index.html" ! },
   version := indigoVersion,
@@ -557,6 +560,10 @@ addCommandAlias(
     "sandbox/indigoBuild"
   ).mkString(";", ";", "")
 )
+
+// Don't call this, call readdocs
+lazy val openshareddocs =
+  taskKey[Unit]("Open the Indigo Shared API docs in FireFox")
 
 // Don't call this, call readdocs
 lazy val openindigodocs =
