@@ -3,10 +3,23 @@ import scala.sys.process._
 lazy val code =
   taskKey[Unit]("Launch VSCode in the current directory")
 
+// Rebuild ScalaDocs and open in Firefox
+addCommandAlias(
+  "readdocs",
+  List(
+    "indigo/doc",
+    "indigoExts/doc",
+    "indigo/openindigodocs",
+    "indigoExts/openindigoextsdocs"
+  ).mkString(";", ";", "")
+)
+
 val indigoVersion = "0.0.10-SNAPSHOT"
 
 lazy val commonSettings = Seq(
   code := { "code ." ! },
+  openindigodocs := { "open -a Firefox indigo/target/scala-2.12/api/indigo/index.html" ! },
+  openindigoextsdocs := { "open -a Firefox indigo-exts/target/scala-2.12/api/indigoexts/index.html" ! },
   version := indigoVersion,
   scalaVersion := "2.12.8",
   organization := "indigo",
@@ -14,6 +27,7 @@ lazy val commonSettings = Seq(
     "com.lihaoyi" %%% "utest" % "0.6.6" % "test"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
+  scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits"),
   scalacOptions in (Compile, compile) ++= Seq(
     "-deprecation", // Emit warning and location for usages of deprecated APIs.
     "-encoding",
@@ -508,7 +522,7 @@ addCommandAlias(
   List(
     "testCompileIndigo",
     "testCompileDev",
-  "testCompileExamples1",
+    "testCompileExamples1",
     "testCompileExamples2"
   ).mkString(";", ";", "")
 )
@@ -543,3 +557,11 @@ addCommandAlias(
     "sandbox/indigoBuild"
   ).mkString(";", ";", "")
 )
+
+// Don't call this, call readdocs
+lazy val openindigodocs =
+  taskKey[Unit]("Open the Indigo API docs in FireFox")
+
+// Don't call this, call readdocs
+lazy val openindigoextsdocs =
+  taskKey[Unit]("Open the Indigo Extensions API docs in FireFox")

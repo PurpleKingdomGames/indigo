@@ -6,6 +6,7 @@ package object indigoexts {
     val Indigo: entry.Indigo.type = entry.Indigo
 
     type IndigoGameBasic[StartupData, Model, ViewModel]      = entry.IndigoGameBasic[StartupData, Model, ViewModel]
+    
     type IndigoGameWithScenes[StartupData, Model, ViewModel] = entry.IndigoGameWithScenes[StartupData, Model, ViewModel]
 
     type IndigoGame[StartupData, StartupError, GameModel, ViewModel] = entry.IndigoGameBase.IndigoGame[StartupData, StartupError, GameModel, ViewModel]
@@ -14,8 +15,21 @@ package object indigoexts {
 
     implicit val emptyAssetsAsync: Future[Set[indigo.shared.AssetType]] = entry.emptyAssetsAsync
 
+    /**
+      * defaultGameConfig Provides a useful default config set up:
+      * - Game Viewport = 550 x 400
+      * - FPS = 30
+      * - Clear color = Black
+      * - Magnification = 1
+      * - No advanced settings enabled
+      * @return A GameConfig instance
+      */
     val defaultGameConfig: indigo.shared.GameConfig = entry.defaultGameConfig
 
+    /**
+      * noRender Convenience value, alias for SceneUpdateFragment.empty
+      * @return An Empty SceneUpdateFragment
+      */
     val noRender: indigo.gameengine.scenegraph.SceneUpdateFragment = entry.noRender
 
     type SubSystem = subsystems.SubSystem
