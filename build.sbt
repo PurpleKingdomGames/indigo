@@ -280,7 +280,7 @@ lazy val indigo =
     .enablePlugins(ScalaJSPlugin)
     .dependsOn(shared)
 
-// Shared
+// Indigo Extensions
 lazy val indigoExts =
   (project in file("indigo-exts"))
     .settings(commonSettings: _*)
@@ -289,6 +289,18 @@ lazy val indigoExts =
     .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "indigo-exts",
+      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
+    )
+
+// Indigo Extensions
+lazy val indigoJS =
+  (project in file("indigo-js"))
+    .settings(commonSettings: _*)
+    // .dependsOn(indigo)
+    // .dependsOn(circe9 % "provided")
+    .enablePlugins(ScalaJSPlugin)
+    .settings(
+      name := "indigo-js",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
     )
 
@@ -392,8 +404,14 @@ lazy val indigoProject =
       openindigodocs := { "open -a Firefox indigo/target/scala-2.12/api/indigo/index.html" ! },
       openindigoextsdocs := { "open -a Firefox indigo-exts/target/scala-2.12/api/indigoexts/index.html" ! }
     )
-    .aggregate(shared, circe9, indigo, indigoExts) //core
-    .aggregate(sandbox)
+    .aggregate(
+      shared,
+      indigoJS,
+      circe9,
+      indigo,
+      indigoExts,
+      sandbox
+    )
 
 addCommandAlias(
   "buildIndigo",
