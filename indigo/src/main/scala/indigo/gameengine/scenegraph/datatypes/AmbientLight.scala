@@ -1,5 +1,8 @@
 package indigo.gameengine.scenegraph.datatypes
 
+import indigo.shared.AsString
+import indigo.shared.EqualTo
+
 import indigo.shared.ClearColor
 
 final case class AmbientLight(tint: Tint, amount: Double) {
@@ -15,6 +18,25 @@ final case class AmbientLight(tint: Tint, amount: Double) {
 }
 
 object AmbientLight {
+
+  implicit val show: AsString[AmbientLight] = {
+    val st = implicitly[AsString[Tint]]
+    val sd = implicitly[AsString[Double]]
+
+    AsString.create { v =>
+      s"AmbientLight(${st.show(v.tint)}, ${sd.show(v.amount)})"
+    }
+  }
+
+  implicit val eq: EqualTo[AmbientLight] = {
+    val et = implicitly[EqualTo[Tint]]
+    val ed = implicitly[EqualTo[Double]]
+
+    EqualTo.create { (a, b) =>
+      et.equal(a.tint, b.tint) && ed.equal(a.amount, b.amount)
+    }
+  }
+
   val Normal: AmbientLight = AmbientLight(Tint.None, 1)
 
   def combine(a: AmbientLight, b: AmbientLight): AmbientLight =

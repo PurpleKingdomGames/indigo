@@ -33,7 +33,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   private val textureLocations: List[TextureLookupResult] =
     loadedTextureAssets.map { li =>
-      TextureLookupResult(li.name, organiseImage(cNc.context, li.data))
+      new TextureLookupResult(li.name, organiseImage(cNc.context, li.data))
     }
 
   private val vertexBuffer: WebGLBuffer  = createVertexBuffer(cNc.context)

@@ -1,5 +1,7 @@
 package indigo.gameengine.display
 
+import indigo.shared.EqualTo._
+
 import utest._
 
 object Vector4Tests extends TestSuite {
@@ -14,7 +16,7 @@ object Vector4Tests extends TestSuite {
 
           val m = Matrix4.identity
 
-          v.applyMatrix4(m) ==> v
+          v.applyMatrix4(m) === v ==> true
 
         }
 
@@ -24,7 +26,7 @@ object Vector4Tests extends TestSuite {
 
           val m = Matrix4.identity.translate(5, 10, 20)
 
-          v.applyMatrix4(m) ==> Vector4.position(15, 20, 30)
+          v.applyMatrix4(m) === Vector4.position(15, 20, 30) ==> true
 
         }
 
@@ -34,7 +36,7 @@ object Vector4Tests extends TestSuite {
 
           val m = Matrix4.identity.scale(2, 2, 2)
 
-          v.applyMatrix4(m) ==> Vector4.position(20, 20, 2)
+          v.applyMatrix4(m) === Vector4.position(20, 20, 2) ==> true
 
         }
 
@@ -44,7 +46,7 @@ object Vector4Tests extends TestSuite {
 
           val m = Matrix4.identity.translate(10, 10, 10).scale(2, 2, 2)
 
-          v.applyMatrix4(m) ==> Vector4.position(40, 40, 40)
+          v.applyMatrix4(m) === Vector4.position(40, 40, 40) ==> true
 
         }
 
@@ -54,7 +56,7 @@ object Vector4Tests extends TestSuite {
 
           val m = Matrix4.identity.scale(2, 2, 2).translate(10, 10, 10)
 
-          v.applyMatrix4(m) ==> Vector4.position(30, 30, 30)
+          v.applyMatrix4(m) === Vector4.position(30, 30, 30) ==> true
 
         }
 

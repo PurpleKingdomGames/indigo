@@ -1,5 +1,8 @@
 package indigo.gameengine.display
 
+import indigo.shared.AsString
+import indigo.shared.EqualTo
+
 final case class Matrix4(mat: List[Double]) {
 
   def row1: List[Double] = List(mat(0), mat(1), mat(2), mat(3))
@@ -39,6 +42,22 @@ final case class Matrix4(mat: List[Double]) {
 }
 
 object Matrix4 {
+
+  implicit val show: AsString[Matrix4] = {
+    val ev = implicitly[AsString[List[Double]]]
+
+    AsString.create { v =>
+      s"Matrix4(${ev.show(v.row1)}, ${ev.show(v.row2)}, ${ev.show(v.row3)}, ${ev.show(v.row4)})"
+    }
+  }
+
+  implicit val eq: EqualTo[Matrix4] = {
+    val ev = implicitly[EqualTo[List[Double]]]
+
+    EqualTo.create { (a, b) =>
+      ev.equal(a.mat, b.mat)
+    }
+  }
 
   def identity: Matrix4 = Matrix4(
     mat = List(

@@ -1,5 +1,7 @@
 package indigo.gameengine.display
 
+import indigo.shared.EqualTo._
+
 import utest._
 
 object Matrix4Tests extends TestSuite {
@@ -23,7 +25,7 @@ object Matrix4Tests extends TestSuite {
             1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 2, 0, 0, 1
           )
 
-          Matrix4.identity.translate(2.0, 0, 0).mat ==> expected
+          Matrix4.identity.translate(2.0, 0, 0).mat === expected ==> true
 
         }
 

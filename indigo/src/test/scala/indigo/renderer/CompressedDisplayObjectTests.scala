@@ -1,6 +1,7 @@
 package indigo.renderer
 
 import indigo.gameengine.display.DisplayObject
+import indigo.shared.EqualTo._
 
 import utest._
 
@@ -40,7 +41,7 @@ object CompressedDisplayObjectTests extends TestSuite {
             modifyZ(100)(base)
           ).reverse
 
-          CompressedDisplayObject.sortByDepth(list) ==> expected
+          CompressedDisplayObject.sortByDepth(list) === expected ==> true
 
         }
 

@@ -156,16 +156,16 @@ object GameEngine {
   def extractLoadedTextures(textureAtlas: TextureAtlas): GameContext[List[LoadedTextureAsset]] =
     GameContext.delay(
       textureAtlas.atlases.toList
-        .map(a => a._2.imageData.map(data => LoadedTextureAsset(a._1.id, data)))
+        .map(a => a._2.imageData.map(data => new LoadedTextureAsset(a._1.id, data)))
         .collect { case Some(s) => s }
     )
 
   def setupAssetMapping(textureAtlas: TextureAtlas): GameContext[AssetMapping] =
     GameContext.delay(
-      AssetMapping(
+      new AssetMapping(
         mappings = textureAtlas.legend
           .map { p =>
-            p._1 -> TextureRefAndOffset(
+            p._1 -> new TextureRefAndOffset(
               atlasName = p._2.id.id,
               atlasSize = textureAtlas.atlases.get(p._2.id).map(_.size.value).map(Vector2.apply).getOrElse(Vector2.one),
               offset = p._2.offset
@@ -204,8 +204,8 @@ object GameEngine {
     GameContext.delay {
       IndigoLogger.info("Starting renderer")
       Renderer(
-        RendererConfig(
-          viewport = Viewport(gameConfig.viewport.width, gameConfig.viewport.height),
+        new RendererConfig(
+          viewport = new Viewport(gameConfig.viewport.width, gameConfig.viewport.height),
           clearColor = gameConfig.clearColor,
           magnification = gameConfig.magnification
         ),

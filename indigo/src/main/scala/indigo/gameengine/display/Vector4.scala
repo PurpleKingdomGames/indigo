@@ -1,6 +1,9 @@
 package indigo.gameengine.display
 
-final case class Vector4(x: Double, y: Double, z: Double, w: Double) {
+import indigo.shared.AsString
+import indigo.shared.EqualTo
+
+final class Vector4(val x: Double, val y: Double, val z: Double, val w: Double) {
 
   def translate(vec: Vector4): Vector4 =
     Vector4.add(this, vec)
@@ -21,6 +24,25 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) {
 }
 
 object Vector4 {
+
+  implicit val show: AsString[Vector4] = {
+    val sD = implicitly[AsString[Double]]
+
+    AsString.create { v =>
+      s"Vector4(x = ${sD.show(v.x)}, y = ${sD.show(v.y)}, z = ${sD.show(v.z)}, w = ${sD.show(v.w)})"
+    }
+  }
+
+  implicit val eq: EqualTo[Vector4] = {
+    val ev = implicitly[EqualTo[Double]]
+
+    EqualTo.create { (a, b) =>
+      ev.equal(a.x, b.x) && ev.equal(a.y, b.y) && ev.equal(a.z, b.z) && ev.equal(a.w, b.w)
+    }
+  }
+
+  def apply(x: Double, y: Double, z: Double, w: Double): Vector4 =
+    new Vector4(x, y, z, w)
 
   val zero: Vector4 = Vector4(0d, 0d, 0d, 0d)
   val one: Vector4  = Vector4(1d, 1d, 1d, 1d)
