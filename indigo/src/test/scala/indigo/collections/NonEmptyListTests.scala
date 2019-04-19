@@ -14,7 +14,7 @@ object NonEmptyListTests extends TestSuite {
 
           val nel = NonEmptyList(1, 2, 3)
 
-          nel.show ==> "Nel[1][2, 3]"
+          nel.show ==> "NonEmptyList[1][2, 3]"
 
         }
       }
