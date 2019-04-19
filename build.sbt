@@ -10,19 +10,15 @@ addCommandAlias(
     "shared/doc",
     "indigo/doc",
     "indigoExts/doc",
-    "indigo/openshareddocs",
-    "indigo/openindigodocs",
-    "indigoExts/openindigoextsdocs"
+    "openshareddocs",
+    "openindigodocs",
+    "openindigoextsdocs"
   ).mkString(";", ";", "")
 )
 
 val indigoVersion = "0.0.10-SNAPSHOT"
 
 lazy val commonSettings = Seq(
-  code := { "code ." ! },
-  openshareddocs := { "open -a Firefox shared/target/scala-2.12/api/indigo/index.html" ! },
-  openindigodocs := { "open -a Firefox indigo/target/scala-2.12/api/indigo/index.html" ! },
-  openindigoextsdocs := { "open -a Firefox indigo-exts/target/scala-2.12/api/indigoexts/index.html" ! },
   version := indigoVersion,
   scalaVersion := "2.12.8",
   organization := "indigo",
@@ -376,6 +372,12 @@ lazy val shared =
 lazy val indigoProject =
   (project in file("."))
     .settings(commonSettings: _*)
+    .settings(
+      code := { "code ." ! },
+      openshareddocs := { "open -a Firefox shared/target/scala-2.12/api/indigo/index.html" ! },
+      openindigodocs := { "open -a Firefox indigo/target/scala-2.12/api/indigo/index.html" ! },
+      openindigoextsdocs := { "open -a Firefox indigo-exts/target/scala-2.12/api/indigoexts/index.html" ! }
+    )
     .aggregate(shared, indigo, indigoExts) //core
     .aggregate(sandbox)
 
