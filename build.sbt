@@ -273,12 +273,13 @@ lazy val indigo =
     .settings(
       name := "indigo",
       libraryDependencies ++= Seq(
-        "org.scala-js"   %%% "scalajs-dom" % "0.9.6",
+        "org.scala-js"   %%% "scalajs-dom" % "0.9.6", //TODO: remove!
         "org.scalacheck" %%% "scalacheck"  % "1.13.4" % "test"
       )
     )
     .enablePlugins(ScalaJSPlugin)
     .dependsOn(shared)
+    .dependsOn(indigoJS)
 
 // Indigo Extensions
 lazy val indigoExts =
@@ -296,12 +297,13 @@ lazy val indigoExts =
 lazy val indigoJS =
   (project in file("indigo-js"))
     .settings(commonSettings: _*)
-    // .dependsOn(indigo)
-    // .dependsOn(circe9 % "provided")
     .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "indigo-js",
-      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
+      libraryDependencies ++= Seq(
+        "org.scala-js"   %%% "scalajs-dom" % "0.9.6",
+        "org.scalacheck" %%% "scalacheck"  % "1.13.4" % "test"
+      )
     )
 
 // Games
@@ -376,7 +378,8 @@ lazy val shared =
     .settings(commonSettings: _*)
     .enablePlugins(ScalaJSPlugin)
     .settings(
-      name := "shared"
+      name := "shared",
+      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
     )
 
 // Circe 0.9.x

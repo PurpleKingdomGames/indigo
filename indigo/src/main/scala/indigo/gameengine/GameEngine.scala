@@ -5,7 +5,7 @@ import indigo.gameengine.audio.AudioPlayer
 import indigo.gameengine.events._
 import indigo.gameengine.scenegraph.animation._
 import indigo.gameengine.scenegraph.datatypes.FontInfo
-import indigo.renderer._
+import indigo.platform.renderer._
 import indigo.runtime._
 import indigo.runtime.metrics._
 import indigo.shared.{AssetType, GameConfig}
