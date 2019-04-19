@@ -66,16 +66,16 @@ case object DrawLightingLayerEndMetric   extends Metric { val name: String = "dr
 case object DrawUiLayerStartMetric extends Metric { val name: String = "draw ui layer start" }
 case object DrawUiLayerEndMetric   extends Metric { val name: String = "draw ui layer end"   }
 
-case object RenderToConvasStartMetric extends Metric { val name: String = "render to canvas start" }
-case object RenderToConvasEndMetric   extends Metric { val name: String = "render to canvas end"   }
+case object RenderToWindowStartMetric extends Metric { val name: String = "render to window start" }
+case object RenderToWindowEndMetric   extends Metric { val name: String = "render to window end"   }
 
 case object LightingDrawCallMetric    extends Metric { val name: String = "draw call: lighting"  }
 case object NormalLayerDrawCallMetric extends Metric { val name: String = "draw call: normal"    }
-case object ToCanvasDrawCallMetric    extends Metric { val name: String = "draw call: to canvas" }
+case object ToWindowDrawCallMetric    extends Metric { val name: String = "draw call: to window" }
 
 case object NormalDrawCallLengthStartMetric   extends Metric { val name: String = "draw call length start: normal"   }
 case object NormalDrawCallLengthEndMetric     extends Metric { val name: String = "draw call length end: normal"     }
 case object LightingDrawCallLengthStartMetric extends Metric { val name: String = "draw call length start: lighting" }
 case object LightingDrawCallLengthEndMetric   extends Metric { val name: String = "draw call length end: lighting"   }
-case object ToCanvasDrawCallLengthStartMetric extends Metric { val name: String = "draw call length start: canvas"   }
-case object ToCanvasDrawCallLengthEndMetric   extends Metric { val name: String = "draw call length end: canvas"     }
+case object ToWindowDrawCallLengthStartMetric extends Metric { val name: String = "draw call length start: window"   }
+case object ToWindowDrawCallLengthEndMetric   extends Metric { val name: String = "draw call length end: window"     }

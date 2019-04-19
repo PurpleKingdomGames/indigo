@@ -77,9 +77,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     drawLayerToTexture(displayable.ui, uiFrameBuffer, ClearColor.Black.forceTransparent, metrics)
     metrics.record(DrawUiLayerEndMetric)
 
-    metrics.record(RenderToConvasStartMetric)
-    renderToCanvas(screenDisplayObject(cNc.width, cNc.height), metrics)
-    metrics.record(RenderToConvasEndMetric)
+    metrics.record(RenderToWindowStartMetric)
+    renderToWindow(screenDisplayObject(cNc.width, cNc.height), metrics)
+    metrics.record(RenderToWindowEndMetric)
   }
 
   private def drawLightingLayerToTexture(displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor, metrics: Metrics): Unit = {
@@ -171,11 +171,11 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   }
 
-  private def renderToCanvas(displayObject: DisplayObject, metrics: Metrics): Unit = {
+  private def renderToWindow(displayObject: DisplayObject, metrics: Metrics): Unit = {
 
     val compressed = displayObject.toCompressed
 
-    metrics.record(ToCanvasDrawCallLengthStartMetric)
+    metrics.record(ToWindowDrawCallLengthStartMetric)
 
     bindToBuffer(cNc.context, vertexBuffer, compressed.vertices)
     bindToBuffer(cNc.context, textureBuffer, compressed.textureCoordinates)
@@ -197,9 +197,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     // Draw
     cNc.context.drawArrays(compressed.mode, 0, compressed.vertexCount)
 
-    metrics.record(ToCanvasDrawCallMetric)
+    metrics.record(ToWindowDrawCallMetric)
 
-    metrics.record(ToCanvasDrawCallLengthEndMetric)
+    metrics.record(ToWindowDrawCallLengthEndMetric)
 
   }
 

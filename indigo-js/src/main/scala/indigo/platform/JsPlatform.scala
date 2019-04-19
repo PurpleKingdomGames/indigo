@@ -1,3 +1,3 @@
-package indigo.json
+package indigo.platform
 
 object JsPlatform {}

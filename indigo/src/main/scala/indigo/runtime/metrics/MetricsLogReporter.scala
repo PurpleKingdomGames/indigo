@@ -75,25 +75,25 @@ object MetricsLogReporter {
       val drawGameLayerDuration     = extractDuration(metrics, DrawGameLayerStartMetric.name, DrawGameLayerEndMetric.name)
       val drawLightingLayerDuration = extractDuration(metrics, DrawLightingLayerStartMetric.name, DrawLightingLayerEndMetric.name)
       val drawUiLayerDuration       = extractDuration(metrics, DrawUiLayerStartMetric.name, DrawUiLayerEndMetric.name)
-      val renderToCanvasDuration    = extractDuration(metrics, RenderToConvasStartMetric.name, RenderToConvasEndMetric.name)
+      val renderToWindowDuration    = extractDuration(metrics, RenderToWindowStartMetric.name, RenderToWindowEndMetric.name)
 
       val normalDrawCallDuration =
         extractDuration(metrics, NormalDrawCallLengthStartMetric.name, NormalDrawCallLengthEndMetric.name)
       val lightingDrawCallDuration =
         extractDuration(metrics, LightingDrawCallLengthStartMetric.name, LightingDrawCallLengthEndMetric.name)
-      val toCanvasDrawCallDuration =
-        extractDuration(metrics, ToCanvasDrawCallLengthStartMetric.name, ToCanvasDrawCallLengthEndMetric.name)
+      val toWindowDrawCallDuration =
+        extractDuration(metrics, ToWindowDrawCallLengthStartMetric.name, ToWindowDrawCallLengthEndMetric.name)
 
       // Percentages
       val drawGameLayerPercentage     = asPercentOfFrameDuration(fd, drawGameLayerDuration)
       val drawLightingLayerPercentage = asPercentOfFrameDuration(fd, drawLightingLayerDuration)
       val drawUiLayerPercentage       = asPercentOfFrameDuration(fd, drawUiLayerDuration)
-      val renderToCanvasPercentage    = asPercentOfFrameDuration(fd, renderToCanvasDuration)
+      val renderToWindowPercentage    = asPercentOfFrameDuration(fd, renderToWindowDuration)
 
       // Draw Call Counts
       val lightingDrawCalls: Int = metrics.count(_.metric.name === LightingDrawCallMetric.name)
       val normalDrawCalls: Int   = metrics.count(_.metric.name === NormalLayerDrawCallMetric.name)
-      val toCanvasDrawCalls: Int = metrics.count(_.metric.name === ToCanvasDrawCallMetric.name)
+      val toWindowDrawCalls: Int = metrics.count(_.metric.name === ToWindowDrawCallMetric.name)
 
       // Build results
       val general = FrameStatsGeneral(
@@ -131,17 +131,17 @@ object MetricsLogReporter {
         drawGameLayerDuration,
         drawLightingLayerDuration,
         drawUiLayerDuration,
-        renderToCanvasDuration,
+        renderToWindowDuration,
         drawGameLayerPercentage,
         drawLightingLayerPercentage,
         drawUiLayerPercentage,
-        renderToCanvasPercentage,
+        renderToWindowPercentage,
         lightingDrawCalls,
         normalDrawCalls,
-        toCanvasDrawCalls,
+        toWindowDrawCalls,
         normalDrawCallDuration,
         lightingDrawCallDuration,
-        toCanvasDrawCallDuration
+        toWindowDrawCallDuration
       )
 
       FrameStats(general, processView, renderer)
@@ -297,9 +297,9 @@ object MetricsLogReporter {
       s"""$a\t($b%)"""
     }
 
-    val meanRenderToCanvasLayer: String = {
-      val a = calcMeanDuration(frames.map(_.renderer.renderToCanvasDuration)).toString
-      val b = calcMeanPercentage(frames.map(_.renderer.renderToCanvasPercentage)).toString
+    val meanRenderToWindowLayer: String = {
+      val a = calcMeanDuration(frames.map(_.renderer.renderToWindowDuration)).toString
+      val b = calcMeanPercentage(frames.map(_.renderer.renderToWindowPercentage)).toString
 
       s"""$a\t($b%)"""
     }
@@ -314,8 +314,8 @@ object MetricsLogReporter {
 
       s"""$a"""
     }
-    val meanToCanvasDrawCalls: String = {
-      val a = calcMeanCount(frames.map(_.renderer.toCanvasDrawCalls)).toString
+    val meanToWindowDrawCalls: String = {
+      val a = calcMeanCount(frames.map(_.renderer.toWindowDrawCalls)).toString
 
       s"""$a"""
     }
@@ -332,7 +332,7 @@ object MetricsLogReporter {
       s"""$a"""
     }
 
-    val meanToCanvasDrawCallTime: String = {
+    val meanToWindowDrawCallTime: String = {
       val a = calcMeanDuration(frames.map(_.renderer.normalDrawCallDuration)).toString
 
       s"""$a"""
@@ -372,15 +372,15 @@ object MetricsLogReporter {
          |Mean draw game layer:      $meanDrawGameLayer
          |Mean draw lighting layer:  $meanDrawLightingLayer
          |Mean draw ui layer:        $meanDrawUiLayer
-         |Mean render to canvas:     $meanRenderToCanvasLayer
+         |Mean render to window:     $meanRenderToWindowLayer
          |
          |Mean lighting draw calls:  $meanLightingDrawCalls
          |Mean normal draw calls:    $meanNormalDrawCalls
-         |Mean to canvas draw calls: $meanToCanvasDrawCalls
+         |Mean to window draw calls: $meanToWindowDrawCalls
          |
          |Mean lighting draw time:   $meanLightingDrawCallTime
          |Mean normal draw time:     $meanNormalDrawCallTime
-         |Mean to canvas draw time:  $meanToCanvasDrawCallTime
+         |Mean to window draw time:  $meanToWindowDrawCallTime
          |**********************
         """.stripMargin
     )
@@ -420,14 +420,14 @@ final case class FrameStatsProcessView(persistGlobalViewEventsDuration: Option[L
 final case class FrameStatsRenderer(drawGameLayerDuration: Option[Long],
                                     drawLightingLayerDuration: Option[Long],
                                     drawUiLayerDuration: Option[Long],
-                                    renderToCanvasDuration: Option[Long],
+                                    renderToWindowDuration: Option[Long],
                                     drawGameLayerPercentage: Option[Double],
                                     drawLightingLayerPercentage: Option[Double],
                                     drawUiLayerPercentage: Option[Double],
-                                    renderToCanvasPercentage: Option[Double],
+                                    renderToWindowPercentage: Option[Double],
                                     lightingDrawCalls: Int,
                                     normalDrawCalls: Int,
-                                    toCanvasDrawCalls: Int,
+                                    toWindowDrawCalls: Int,
                                     normalDrawCallDuration: Option[Long],
                                     lightingDrawCallDuration: Option[Long],
-                                    toCanvasDrawCallDuration: Option[Long])
+                                    toWindowDrawCallDuration: Option[Long])

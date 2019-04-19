@@ -417,6 +417,8 @@ addCommandAlias(
   "buildIndigo",
   List(
     "shared/compile",
+    "circe9/compile",
+    "indigoJS/compile",
     "indigo/compile",
     "indigoExts/compile"
   ).mkString(";", ";", "")
@@ -585,12 +587,19 @@ addCommandAlias(
   "sandboxBuild",
   List(
     "buildIndigo",
-    "shared/compile",
-    "indigo/compile",
-    "indigoExts/compile",
     "sandbox/test",
     "sandbox/fastOptJS",
     "sandbox/indigoBuild"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "perfBuild",
+  List(
+    "buildIndigo",
+    "perf/test",
+    "perf/fastOptJS",
+    "perf/indigoBuild"
   ).mkString(";", ";", "")
 )
 

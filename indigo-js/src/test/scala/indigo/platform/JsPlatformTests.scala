@@ -1,4 +1,4 @@
-package indigo.json
+package indigo.platform
 
 import utest._
 
