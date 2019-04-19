@@ -1,9 +1,9 @@
 package com.example.sandbox
 
 import indigo._
+import indigo.json._
 import indigoexts.entrypoint._
 import indigoexts.formats._
-
 import indigo.shared.EqualTo._
 
 object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
@@ -33,7 +33,7 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
             Dude(
               aseprite,
               spriteAndAnimations.sprite
-                .withRef(16, 16)                                                                         // Initial offset, so when talk about his position it's the center of the sprite
+                .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
                 .moveTo(viewportWidth / 2 / magnificationLevel, viewportHeight / 2 / magnificationLevel) // Also place him in the middle of the screen initially
             )
           )
@@ -42,8 +42,8 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
 
     val res: Option[Startup.Success[MyStartupData]] = for {
       json                <- assetCollection.texts.find(p => p.name === MyAssets.dudeName + "-json").map(_.contents)
-      aseprite            <- Aseprite.fromJson(json)
-      spriteAndAnimations <- Aseprite.toSpriteAndAnimations(aseprite, Depth(3), MyAssets.dudeName)
+      aseprite            <- Circe9.asepriteFromJson(json)
+      spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, Depth(3), MyAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)
 
     res.getOrElse(Startup.Failure(StartupErrors("Failed to load the dude")))

@@ -25,4 +25,12 @@ trait SharedTypeAliases {
   type AdvancedGameConfig = shared.AdvancedGameConfig
   val AdvancedGameConfig: shared.AdvancedGameConfig.type = shared.AdvancedGameConfig
 
+  val IndigoLogger: shared.IndigoLogger.type = shared.IndigoLogger
+
+  type Aseprite = shared.formats.Aseprite
+  val Aseprite: shared.formats.Aseprite.type = shared.formats.Aseprite
+
+  type TiledMap = shared.formats.TiledMap
+  val TiledMap: shared.formats.TiledMap.type = shared.formats.TiledMap
+
 }

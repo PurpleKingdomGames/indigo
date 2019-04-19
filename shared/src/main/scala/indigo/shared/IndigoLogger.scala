@@ -1,6 +1,4 @@
-package indigo.runtime
-
-import indigo.shared.AsString
+package indigo.shared
 
 /**
   * This is the dumbest logger ever.
@@ -29,7 +27,7 @@ object IndigoLogger {
     if (!errorLogs.iterator.contains(message)) {
       errorLogs.push(message)
       println(formatMessage(ERROR, message))
-  }
+    }
 
   private val debugString: String => Unit = message => println(formatMessage(DEBUG, message))
 
@@ -38,7 +36,7 @@ object IndigoLogger {
     if (!debugLogs.iterator.contains(message)) {
       debugLogs.push(message)
       println(formatMessage(DEBUG, message))
-  }
+    }
 
   def consoleLog[A](valueA: A)(implicit showA: AsString[A]): Unit =
     consoleLogString(s"${showA.show(valueA)}")
@@ -48,11 +46,13 @@ object IndigoLogger {
     consoleLogString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}")
   def consoleLog[A, B, C, D](valueA: A, valueB: B, valueC: C, valueD: D)(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C], showD: AsString[D]): Unit =
     consoleLogString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}, ${showD.show(valueD)}")
-  def consoleLog[A, B, C, D, E](valueA: A, valueB: B, valueC: C, valueD: D, valueE: E)(implicit showA: AsString[A],
-                                                                                       showB: AsString[B],
-                                                                                       showC: AsString[C],
-                                                                                       showD: AsString[D],
-                                                                                       showE: AsString[E]): Unit =
+  def consoleLog[A, B, C, D, E](
+      valueA: A,
+      valueB: B,
+      valueC: C,
+      valueD: D,
+      valueE: E
+  )(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C], showD: AsString[D], showE: AsString[E]): Unit =
     consoleLogString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}, ${showD.show(valueD)}, ${showE.show(valueE)}")
 
   def info[A](valueA: A)(implicit showA: AsString[A]): Unit =
@@ -85,11 +85,13 @@ object IndigoLogger {
     errorOnceString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}")
   def errorOnce[A, B, C, D](valueA: A, valueB: B, valueC: C, valueD: D)(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C], showD: AsString[D]): Unit =
     errorOnceString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}, ${showD.show(valueD)}")
-  def errorOnce[A, B, C, D, E](valueA: A, valueB: B, valueC: C, valueD: D, valueE: E)(implicit showA: AsString[A],
-                                                                                      showB: AsString[B],
-                                                                                      showC: AsString[C],
-                                                                                      showD: AsString[D],
-                                                                                      showE: AsString[E]): Unit =
+  def errorOnce[A, B, C, D, E](
+      valueA: A,
+      valueB: B,
+      valueC: C,
+      valueD: D,
+      valueE: E
+  )(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C], showD: AsString[D], showE: AsString[E]): Unit =
     errorOnceString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}, ${showD.show(valueD)}, ${showE.show(valueE)}")
 
   def debug[A](valueA: A)(implicit showA: AsString[A]): Unit =
@@ -111,11 +113,13 @@ object IndigoLogger {
     debugOnceString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}")
   def debugOnce[A, B, C, D](valueA: A, valueB: B, valueC: C, valueD: D)(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C], showD: AsString[D]): Unit =
     debugOnceString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}, ${showD.show(valueD)}")
-  def debugOnce[A, B, C, D, E](valueA: A, valueB: B, valueC: C, valueD: D, valueE: E)(implicit showA: AsString[A],
-                                                                                      showB: AsString[B],
-                                                                                      showC: AsString[C],
-                                                                                      showD: AsString[D],
-                                                                                      showE: AsString[E]): Unit =
+  def debugOnce[A, B, C, D, E](
+      valueA: A,
+      valueB: B,
+      valueC: C,
+      valueD: D,
+      valueE: E
+  )(implicit showA: AsString[A], showB: AsString[B], showC: AsString[C], showD: AsString[D], showE: AsString[E]): Unit =
     debugOnceString(s"${showA.show(valueA)}, ${showB.show(valueB)}, ${showC.show(valueC)}, ${showD.show(valueD)}, ${showE.show(valueE)}")
 
 }

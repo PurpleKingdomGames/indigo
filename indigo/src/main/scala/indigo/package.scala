@@ -2,12 +2,11 @@ import indigo.gameengine.events.EventTypeAliases
 import indigo.gameengine.scenegraph.SceneGraphTypeAliases
 import indigo.gameengine.scenegraph.datatypes.DataTypeAliases
 import indigo.networking.NetworkingTypeAliases
-import indigo.runtime.IndigoLogger
 import indigo.shared.SharedTypeAliases
 
 package object indigo extends DataTypeAliases with SceneGraphTypeAliases with NetworkingTypeAliases with SharedTypeAliases with EventTypeAliases {
 
-  val logger: IndigoLogger.type = IndigoLogger
+  val logger: indigo.shared.IndigoLogger.type = indigo.shared.IndigoLogger
 
   type Startup[ErrorType, SuccessType] = gameengine.Startup[ErrorType, SuccessType]
   val Startup: gameengine.Startup.type = gameengine.Startup

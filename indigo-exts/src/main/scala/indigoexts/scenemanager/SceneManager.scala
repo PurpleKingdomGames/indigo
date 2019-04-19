@@ -4,7 +4,7 @@ import indigo.time.GameTime
 import indigo.gameengine.Outcome
 import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
 import indigo.gameengine.scenegraph.SceneUpdateFragment
-import indigo.runtime.IndigoLogger
+import indigo.shared.IndigoLogger
 import indigo.collections.NonEmptyList
 import indigo.shared.EqualTo._
 import indigo.dice.Dice

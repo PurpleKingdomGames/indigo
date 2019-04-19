@@ -1,8 +1,5 @@
 package indigo.shared
 
-import io.circe.generic.auto._
-import io.circe.parser._
-
 final class AssetList(val images: List[SimpleAssetType], val texts: List[SimpleAssetType]) {
   def toSet: Set[AssetType] = texts.map(_.toTextAsset).toSet ++ images.map(_.toImageAsset).toSet
 
@@ -17,16 +14,6 @@ object AssetList {
 
   def apply(images: List[SimpleAssetType], texts: List[SimpleAssetType]): AssetList =
     new AssetList(images, texts)
-
-  @SuppressWarnings(Array("org.wartremover.warts.PublicInference"))
-  def fromJson(json: String): Either[String, AssetList] =
-    decode[AssetList](json) match {
-      case Right(al) =>
-        Right[String, AssetList](al)
-
-      case Left(e) =>
-        Left[String, AssetList]("Failed to deserialise json into AssetList: " + e.getMessage)
-    }
 
   val empty: AssetList =
     AssetList(Nil, Nil)

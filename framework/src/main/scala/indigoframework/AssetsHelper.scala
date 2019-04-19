@@ -1,8 +1,9 @@
 package indigoframework
 
 import indigo.gameengine.assets.AssetManager
-import indigo.runtime.IndigoLogger
+import indigo.shared.IndigoLogger
 import indigo.shared.{AssetList, AssetType}
+import indigo.json._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -26,7 +27,7 @@ object AssetsHelper {
       }
 
   def fromJson(json: String): Option[AssetList] =
-    AssetList.fromJson(json) match {
+    assetListFromJson(json) match {
       case Right(al) =>
         Some(al)
 

@@ -4,17 +4,16 @@ import indigo.gameengine.events.GlobalEvent
 import indigo.gameengine.scenegraph._
 import indigo.gameengine.scenegraph.animation._
 import indigo.gameengine.scenegraph.datatypes._
+
+import indigo.shared.formats._
+
 import utest._
 
-object AsepriteHelperTests extends TestSuite {
+object AsepriteConverterTests extends TestSuite {
 
   val tests: Tests =
     Tests {
       "Create an Aseprite asset" - {
-
-        "should be able to parse the json definition" - {
-          Aseprite.fromJson(AsepriteSampleData.json) ==> AsepriteSampleData.aseprite
-        }
 
         // "should be able to convert the loaded definition into a renderable Sprite object" - {
         //   pending

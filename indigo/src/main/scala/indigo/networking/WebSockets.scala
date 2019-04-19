@@ -3,7 +3,7 @@ package indigo.networking
 import indigo.gameengine.events._
 import indigo.gameengine.scenegraph.datatypes.BindingKey
 import indigo.networking.WebSocketReadyState.{CLOSED, CLOSING}
-import indigo.runtime.IndigoLogger
+import indigo.shared.IndigoLogger
 import org.scalajs.dom
 
 import indigo.shared.EqualTo

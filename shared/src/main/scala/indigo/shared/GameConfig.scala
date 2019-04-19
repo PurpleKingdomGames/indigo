@@ -1,8 +1,5 @@
 package indigo.shared
 
-import io.circe.generic.auto._
-import io.circe.parser._
-
 final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int, advanced: AdvancedGameConfig) {
   val frameRateDeltaMillis: Int = 1000 / frameRate
 
@@ -44,16 +41,6 @@ object GameConfig {
 
   def apply(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int): GameConfig =
     GameConfig(viewport, frameRate, clearColor, magnification, AdvancedGameConfig.default)
-
-  @SuppressWarnings(Array("org.wartremover.warts.PublicInference"))
-  def fromJson(json: String): Either[String, GameConfig] =
-    decode[GameConfig](json) match {
-      case Right(c) =>
-        Right[String, GameConfig](c)
-
-      case Left(e) =>
-        Left[String, GameConfig]("Failed to deserialise json into GameConfig: " + e.getMessage)
-    }
 
 }
 

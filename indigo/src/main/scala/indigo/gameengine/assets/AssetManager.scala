@@ -1,6 +1,6 @@
 package indigo.gameengine.assets
 
-import indigo.runtime.IndigoLogger
+import indigo.shared.IndigoLogger
 import indigo.shared.AssetType
 import org.scalajs.dom
 import org.scalajs.dom.ext.Ajax

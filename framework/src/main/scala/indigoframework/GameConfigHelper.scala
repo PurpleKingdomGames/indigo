@@ -1,8 +1,9 @@
 package indigoframework
 
 import indigo.gameengine.assets.AssetManager
-import indigo.runtime.IndigoLogger
+import indigo.shared.IndigoLogger
 import indigo.shared.{AssetType, GameConfig}
+import indigo.json._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -35,7 +36,7 @@ xhr.send()
       }
 
   def fromJson(json: String): Option[GameConfig] =
-    GameConfig.fromJson(json) match {
+    gameConfigFromJson(json) match {
       case Right(c) => Some(c)
       case Left(e) =>
         IndigoLogger.info(e)

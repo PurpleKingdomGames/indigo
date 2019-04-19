@@ -4,6 +4,7 @@ import indigo._
 import indigo.shared.EqualTo._
 import indigoexts.entrypoint._
 import indigoexts.formats._
+import indigo.json._
 
 object PerfGame {
 
@@ -36,7 +37,7 @@ object PerfGame {
             Dude(
               aseprite,
               spriteAndAnimations.sprite
-                .withRef(16, 16)                                                                         // Initial offset, so when talk about his position it's the center of the sprite
+                .withRef(16, 16) // Initial offset, so when talk about his position it's the center of the sprite
                 .moveTo(viewportWidth / 2 / magnificationLevel, viewportHeight / 2 / magnificationLevel) // Also place him in the middle of the screen initially
             )
           )
@@ -45,8 +46,8 @@ object PerfGame {
 
     val res: Option[Startup.Success[MyStartupData]] = for {
       json                <- assetCollection.texts.find(p => p.name === PerfAssets.dudeName + "-json").map(_.contents)
-      aseprite            <- Aseprite.fromJson(json)
-      spriteAndAnimations <- Aseprite.toSpriteAndAnimations(aseprite, Depth(3), PerfAssets.dudeName)
+      aseprite            <- asepriteFromJson(json)
+      spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, Depth(3), PerfAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)
 
     res.getOrElse(Startup.Failure(MyErrorReport("Failed to load the dude")))

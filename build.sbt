@@ -285,6 +285,7 @@ lazy val indigoExts =
   (project in file("indigo-exts"))
     .settings(commonSettings: _*)
     .dependsOn(indigo)
+    .dependsOn(circe9 % "provided")
     .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "indigo-exts",
@@ -296,6 +297,7 @@ lazy val sandbox =
   project
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
+    .dependsOn(circe9)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(
       name := "indigo-sandbox",
@@ -308,6 +310,7 @@ lazy val sandbox =
 lazy val perf =
   project
     .settings(commonSettings: _*)
+    .dependsOn(circe9)
     .dependsOn(indigoExts)
     .settings(
       name := "indigo-perf",
@@ -322,6 +325,7 @@ lazy val framework =
   project
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
+    .dependsOn(circe9)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
     .settings(
       name := "indigo-framework",
@@ -360,13 +364,23 @@ lazy val shared =
     .settings(commonSettings: _*)
     .enablePlugins(ScalaJSPlugin)
     .settings(
-      name := "shared",
+      name := "shared"
+    )
+
+// Circe 0.9.x
+lazy val circe9 =
+  project
+    .settings(commonSettings: _*)
+    .enablePlugins(ScalaJSPlugin)
+    .settings(
+      name := "circe9",
       libraryDependencies ++= Seq(
         "io.circe" %%% "circe-core",
         "io.circe" %%% "circe-generic",
         "io.circe" %%% "circe-parser"
       ).map(_ % "0.9.3")
     )
+    .dependsOn(shared)
 
 // Root
 lazy val indigoProject =
@@ -378,7 +392,7 @@ lazy val indigoProject =
       openindigodocs := { "open -a Firefox indigo/target/scala-2.12/api/indigo/index.html" ! },
       openindigoextsdocs := { "open -a Firefox indigo-exts/target/scala-2.12/api/indigoexts/index.html" ! }
     )
-    .aggregate(shared, indigo, indigoExts) //core
+    .aggregate(shared, circe9, indigo, indigoExts) //core
     .aggregate(sandbox)
 
 addCommandAlias(
@@ -527,8 +541,7 @@ addCommandAlias(
   List(
     "testCompileIndigo",
     "testCompileDev",
-    "testCompileExamples1",
-    "testCompileExamples2"
+    "testCompileExamples"
   ).mkString(";", ";", "")
 )
 addCommandAlias(

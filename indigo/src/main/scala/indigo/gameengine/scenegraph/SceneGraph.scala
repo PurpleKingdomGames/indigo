@@ -6,7 +6,7 @@ import indigo.gameengine.scenegraph.animation.AnimationAction._
 import indigo.gameengine.scenegraph.animation.AnimationKey
 import indigo.gameengine.scenegraph.animation.CycleLabel
 import indigo.gameengine.scenegraph.datatypes._
-import indigo.runtime.IndigoLogger
+import indigo.shared.IndigoLogger
 
 object SceneGraphNode {
   def empty: Group = Group(Point.zero, Depth.Base, Nil)
@@ -194,14 +194,15 @@ object Graphic {
     )
 }
 
-final case class Sprite(bindingKey: BindingKey,
-                        bounds: Rectangle,
-                        depth: Depth,
-                        animationsKey: AnimationKey,
-                        ref: Point,
-                        effects: Effects,
-                        eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent])
-    extends Renderable {
+final case class Sprite(
+    bindingKey: BindingKey,
+    bounds: Rectangle,
+    depth: Depth,
+    animationsKey: AnimationKey,
+    ref: Point,
+    effects: Effects,
+    eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
+) extends Renderable {
 
   def x: Int = bounds.position.x - ref.x
   def y: Int = bounds.position.y - ref.y

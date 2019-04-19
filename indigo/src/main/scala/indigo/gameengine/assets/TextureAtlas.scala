@@ -3,7 +3,7 @@ package indigo.gameengine.assets
 import indigo.gameengine.PowerOfTwo
 import indigo.gameengine.assets.TextureAtlas.supportedSizes
 import indigo.gameengine.scenegraph.datatypes.Point
-import indigo.runtime.IndigoLogger
+import indigo.shared.IndigoLogger
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import org.scalajs.dom
@@ -21,10 +21,12 @@ object TextureAtlas {
 
   val supportedSizes: Set[PowerOfTwo] = PowerOfTwo.all
 
-  def createWithMaxSize(max: PowerOfTwo,
-                        imageRefs: List[ImageRef],
-                        lookupByName: String => Option[LoadedImageAsset],
-                        createAtlasFunc: (TextureMap, String => Option[LoadedImageAsset]) => Atlas): TextureAtlas =
+  def createWithMaxSize(
+      max: PowerOfTwo,
+      imageRefs: List[ImageRef],
+      lookupByName: String => Option[LoadedImageAsset],
+      createAtlasFunc: (TextureMap, String => Option[LoadedImageAsset]) => Atlas
+  ): TextureAtlas =
     (inflateAndSortByPowerOfTwo andThen groupTexturesIntoAtlasBuckets(max) andThen convertToAtlas(createAtlasFunc)(lookupByName))(
       imageRefs
     )
@@ -64,7 +66,7 @@ final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, 
         val relevant = leg.filter(k => k._2.id === at._1)
 
         s"Atlas [${at._1.id}] [${at._2.size.value}] contains images: ${relevant.toList.map(_._1).mkString(", ")}"
-    }
+      }
 
     s"""Atlas details:
     |Number of atlases: ${atlases.keys.toList.length}
@@ -189,7 +191,7 @@ object TextureAtlasFunctions {
               ),
               legend = legend
             )
-  }
+        }
 
   val combineTextureAtlases: List[TextureAtlas] => TextureAtlas = list => list.foldLeft(TextureAtlas.identity)(_ + _)
 
@@ -201,7 +203,7 @@ object TextureAtlasFunctions {
         combineTextureAtlases(
           list.zipWithIndex
             .map(p => convertToTextureAtlas(createAtlasFunc)(lookupByName)(AtlasId(TextureAtlas.IdPrefix + p._2.toString), p._1))
-  )
+        )
 
   def mergeTrees(a: AtlasQuadTree, b: AtlasQuadTree, max: PowerOfTwo): Option[AtlasQuadTree] =
     (a, b) match {

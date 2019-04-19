@@ -1,6 +1,6 @@
 package indigo.runtime.metrics
 
-import indigo.runtime._
+import indigo.shared.IndigoLogger
 
 import indigo.shared.EqualTo._
 

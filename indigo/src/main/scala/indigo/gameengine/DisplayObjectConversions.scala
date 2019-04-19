@@ -6,7 +6,7 @@ import indigo.gameengine.scenegraph._
 import indigo.gameengine.scenegraph.animation._
 import indigo.renderer.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import indigo.renderer.{AssetMapping, DisplayObject, SpriteSheetFrame, Vector2}
-import indigo.runtime.IndigoLogger
+import indigo.shared.IndigoLogger
 import indigo.runtime.metrics.Metrics
 import indigo.time.GameTime
 

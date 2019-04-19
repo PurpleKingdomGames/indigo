@@ -9,6 +9,8 @@ import indigo.renderer._
 import indigo.runtime._
 import indigo.runtime.metrics._
 import indigo.shared.{AssetType, GameConfig}
+import indigo.shared.IndigoLogger
+
 import org.scalajs.dom
 import org.scalajs.dom.html.Canvas
 
