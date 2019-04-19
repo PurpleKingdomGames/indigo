@@ -1,4 +1,4 @@
-package indigo.renderer
+package indigo.gameengine.display
 
 final case class Vector4(x: Double, y: Double, z: Double, w: Double) {
 
@@ -11,9 +11,6 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) {
   def round: Vector4 = Vector4(Math.round(x).toDouble, Math.round(y).toDouble, Math.round(z).toDouble, Math.round(w).toDouble)
 
   def toList: List[Double] = List(x, y, z, w)
-
-  def toScalaJSArrayDouble: scalajs.js.Array[Double]            = scalajs.js.Array[Double](x, y, z)
-  def toHomogeneousScalaJSArrayDouble: scalajs.js.Array[Double] = scalajs.js.Array[Double](x, y, z, w)
 
   def +(other: Vector4): Vector4 = Vector4.add(this, other)
   def -(other: Vector4): Vector4 = Vector4.subtract(this, other)

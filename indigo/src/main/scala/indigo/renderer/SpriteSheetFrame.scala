@@ -1,5 +1,7 @@
 package indigo.renderer
 
+import indigo.gameengine.display.Vector2
+
 object SpriteSheetFrame {
 
   def calculateFrameOffset(imageSize: Vector2, frameSize: Vector2, framePosition: Vector2, textureOffset: Vector2): SpriteSheetFrameCoordinateOffsets = {

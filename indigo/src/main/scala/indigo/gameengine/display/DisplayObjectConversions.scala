@@ -1,11 +1,11 @@
-package indigo.gameengine
+package indigo.gameengine.display
 
 import indigo.gameengine.assets.{AnimationsRegister, FontRegister}
 import indigo.gameengine.scenegraph.datatypes._
 import indigo.gameengine.scenegraph._
 import indigo.gameengine.scenegraph.animation._
 import indigo.renderer.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
-import indigo.renderer.{AssetMapping, DisplayObject, SpriteSheetFrame, Vector2}
+import indigo.renderer.{AssetMapping, SpriteSheetFrame}
 import indigo.shared.IndigoLogger
 import indigo.runtime.metrics.Metrics
 import indigo.time.GameTime

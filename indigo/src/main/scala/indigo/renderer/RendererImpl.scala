@@ -6,14 +6,11 @@ import indigo.shared.ClearColor
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
 
+import indigo.gameengine.display.{DisplayObject, Displayable, DisplayLayer}
+
 import indigo.shared.EqualTo._
 
-trait IRenderer {
-  def init(): Unit
-  def drawScene(displayable: Displayable, metrics: Metrics): Unit
-}
-
-final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends IRenderer {
+final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends Renderer {
 
   import RendererFunctions._
 
@@ -109,7 +106,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     setupVertexShader(cNc, lightingShaderProgram, RendererFunctions.orthographicProjectionMatrix)
 
     // Draw as normal
-    DisplayObject.sortAndCompress(displayLayer.displayObjects).foreach { displayObject =>
+    CompressedDisplayObject.sortAndCompress(displayLayer.displayObjects).foreach { displayObject =>
       metrics.record(LightingDrawCallLengthStartMetric)
 
       bindToBuffer(cNc.context, vertexBuffer, displayObject.vertices)
@@ -144,7 +141,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     setupVertexShader(cNc, shaderProgram, RendererFunctions.orthographicProjectionMatrix)
 
     // Draw as normal
-    val compressed = DisplayObject.sortAndCompress(displayLayer.displayObjects)
+    val compressed = CompressedDisplayObject.sortAndCompress(displayLayer.displayObjects)
 
     compressed.foreach { displayObject =>
       metrics.record(NormalDrawCallLengthStartMetric)
@@ -173,7 +170,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   private def renderToWindow(displayObject: DisplayObject, metrics: Metrics): Unit = {
 
-    val compressed = displayObject.toCompressed
+    val compressed = CompressedDisplayObject.compressSingle(displayObject)
 
     metrics.record(ToWindowDrawCallLengthStartMetric)
 

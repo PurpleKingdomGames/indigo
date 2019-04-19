@@ -1,4 +1,4 @@
-package indigo.renderer
+package indigo.gameengine.display
 
 final case class Matrix4(mat: List[Double]) {
 
@@ -36,17 +36,9 @@ final case class Matrix4(mat: List[Double]) {
   def flip(horizontal: Boolean, vertical: Boolean): Matrix4 =
     this * Matrix4.flip(horizontal, vertical)
 
-  def toJsArray: scalajs.js.Array[Double] = Matrix4.toJsArray(this)
-
 }
 
-case object Matrix4 {
-
-  def toJsArray(mat4d: Matrix4): scalajs.js.Array[Double] = {
-    val a = new scalajs.js.Array[Double]()
-    mat4d.mat.foreach(d => a.push(d))
-    a
-  }
+object Matrix4 {
 
   def identity: Matrix4 = Matrix4(
     mat = List(

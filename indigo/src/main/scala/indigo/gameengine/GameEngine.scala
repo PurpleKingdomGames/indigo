@@ -10,6 +10,7 @@ import indigo.runtime._
 import indigo.runtime.metrics._
 import indigo.shared.{AssetType, GameConfig}
 import indigo.shared.IndigoLogger
+import indigo.gameengine.display.Vector2
 
 import org.scalajs.dom
 import org.scalajs.dom.html.Canvas
@@ -199,7 +200,7 @@ object GameEngine {
     GameContext.delay(WorldEvents(canvas, magnification, globalEventStream))
   }
 
-  def startRenderer(gameConfig: GameConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: Canvas): GameContext[IRenderer] =
+  def startRenderer(gameConfig: GameConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: Canvas): GameContext[Renderer] =
     GameContext.delay {
       IndigoLogger.info("Starting renderer")
       Renderer(
@@ -219,14 +220,15 @@ object GameEngine {
   def initialiseGameLoop[GameModel, ViewModel](
       gameConfig: GameConfig,
       assetMapping: AssetMapping,
-      renderer: IRenderer,
+      renderer: Renderer,
       audioPlayer: AudioPlayer,
       initialModel: GameModel,
       initialViewModel: GameModel => ViewModel,
       frameProccessor: FrameProcessor[GameModel, ViewModel],
       metrics: Metrics,
       globalEventStream: GlobalEventStream,
-      globalSignals: GlobalSignals): GameContext[GameLoop[GameModel, ViewModel]] =
+      globalSignals: GlobalSignals
+  ): GameContext[GameLoop[GameModel, ViewModel]] =
     GameContext.delay(
       new GameLoop[GameModel, ViewModel](
         gameConfig,

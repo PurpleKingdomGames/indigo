@@ -1,4 +1,4 @@
-package indigo.renderer
+package indigo.gameengine.display
 
 import utest._
 

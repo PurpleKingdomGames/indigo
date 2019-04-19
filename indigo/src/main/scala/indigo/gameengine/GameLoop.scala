@@ -5,7 +5,7 @@ import indigo.gameengine.audio.AudioPlayer
 import indigo.gameengine.events._
 import indigo.gameengine.scenegraph.datatypes.AmbientLight
 import indigo.gameengine.scenegraph.{SceneAudio, SceneGraphRootNode, SceneGraphRootNodeFlat, SceneUpdateFragment}
-import indigo.renderer.{AssetMapping, DisplayLayer, Displayable, IRenderer}
+import indigo.renderer.{AssetMapping, Renderer}
 import indigo.runtime.GameContext
 import indigo.runtime.metrics._
 import indigo.shared.GameConfig
@@ -13,13 +13,14 @@ import indigo.dice.Dice
 import org.scalajs.dom
 import indigo.time.GameTime
 import indigo.time.Millis
+import indigo.gameengine.display.{DisplayObjectConversions, Displayable, DisplayLayer}
 
 import scala.annotation.tailrec
 
 class GameLoop[GameModel, ViewModel](
     gameConfig: GameConfig,
     assetMapping: AssetMapping,
-    renderer: IRenderer,
+    renderer: Renderer,
     audioPlayer: AudioPlayer,
     initialModel: GameModel,
     initialViewModel: ViewModel,
@@ -244,7 +245,7 @@ object GameLoop {
       ambientLight
     )
 
-  def drawScene(renderer: IRenderer, displayable: Displayable, metrics: Metrics): GameContext[Unit] =
+  def drawScene(renderer: Renderer, displayable: Displayable, metrics: Metrics): GameContext[Unit] =
     GameContext.delay {
       metrics.record(RenderStartMetric)
 

@@ -1,8 +1,16 @@
 package indigo.renderer
 
+import indigo.gameengine.display.DisplayObject
+
 import utest._
 
-object DisplayObjectTests extends TestSuite {
+object CompressedDisplayObjectTests extends TestSuite {
+
+  val modifyZ: Int => DisplayObject => DisplayObject = newZ =>
+    d => DisplayObject(d.x, d.y, newZ, d.width, d.height, d.imageRef, d.alpha, d.tintR, d.tintG, d.tintB, d.flipHorizontal, d.flipVertical, d.frame)
+
+  val modifyImageRef: String => DisplayObject => DisplayObject = newImageRef =>
+    d => DisplayObject(d.x, d.y, d.z, d.width, d.height, newImageRef, d.alpha, d.tintR, d.tintG, d.tintB, d.flipHorizontal, d.flipVertical, d.frame)
 
   val tests: Tests =
     Tests {
@@ -13,42 +21,42 @@ object DisplayObjectTests extends TestSuite {
         "should be able to order a list by depth" - {
 
           val list = List(
-            base.copy(z = 6),
-            base.copy(z = 100),
-            base.copy(z = -50),
-            base.copy(z = 4),
-            base.copy(z = 1),
-            base.copy(z = 12),
-            base.copy(z = 2)
+            modifyZ(6)(base),
+            modifyZ(100)(base),
+            modifyZ(-50)(base),
+            modifyZ(4)(base),
+            modifyZ(1)(base),
+            modifyZ(12)(base),
+            modifyZ(2)(base)
           )
 
           val expected = List(
-            base.copy(z = -50),
-            base.copy(z = 1),
-            base.copy(z = 2),
-            base.copy(z = 4),
-            base.copy(z = 6),
-            base.copy(z = 12),
-            base.copy(z = 100)
+            modifyZ(-50)(base),
+            modifyZ(1)(base),
+            modifyZ(2)(base),
+            modifyZ(4)(base),
+            modifyZ(6)(base),
+            modifyZ(12)(base),
+            modifyZ(100)(base)
           ).reverse
 
-          DisplayObject.sortByDepth(list) ==> expected
+          CompressedDisplayObject.sortByDepth(list) ==> expected
 
         }
 
         "should be able to compress a display object list" - {
 
           val list: List[DisplayObject] = List(
-            base.copy(imageRef = "a"),
-            base.copy(imageRef = "a"),
-            base.copy(imageRef = "a"),
-            base.copy(imageRef = "b"),
-            base.copy(imageRef = "b"),
-            base.copy(imageRef = "a"),
-            base.copy(imageRef = "b")
+            modifyImageRef("a")(base),
+            modifyImageRef("a")(base),
+            modifyImageRef("a")(base),
+            modifyImageRef("b")(base),
+            modifyImageRef("b")(base),
+            modifyImageRef("a")(base),
+            modifyImageRef("b")(base)
           )
 
-          val result: List[CompressedDisplayObject] = DisplayObject.compress(list)
+          val result: List[CompressedDisplayObject] = CompressedDisplayObject.compress(list)
 
           result.length ==> 4
           result(3).imageRef ==> "a"

@@ -4,6 +4,7 @@ import indigo.shared.IndigoLogger
 import org.scalajs.dom.{html, raw}
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram, WebGLTexture, WebGLUniformLocation}
+import indigo.gameengine.display.Matrix4
 
 import indigo.shared.EqualTo._
 
@@ -374,8 +375,14 @@ object RendererFunctions {
     cNc.context.uniformMatrix4fv(
       location = translation,
       transpose = false,
-      value = projectionMatrix.toJsArray //Matrix4.multiply(matrix4, flipMatrix((displayObject.flipHorizontal, displayObject.flipVertical)))
+      value = mat4ToJsArray(projectionMatrix)
     )
+  }
+
+  def mat4ToJsArray(mat4d: Matrix4): scalajs.js.Array[Double] = {
+    val a = new scalajs.js.Array[Double]()
+    mat4d.mat.foreach(d => a.push(d))
+    a
   }
 
 }
