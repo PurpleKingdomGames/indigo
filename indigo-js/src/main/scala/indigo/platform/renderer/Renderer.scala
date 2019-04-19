@@ -1,7 +1,7 @@
 package indigo.platform.renderer
 
-import indigo.runtime.metrics._
-import indigo.gameengine.display.Displayable
+import indigo.shared.metrics._
+import indigo.shared.display.Displayable
 
 import org.scalajs.dom
 import org.scalajs.dom.raw.WebGLRenderingContext

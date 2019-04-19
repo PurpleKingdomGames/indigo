@@ -305,6 +305,7 @@ lazy val indigoJS =
         "org.scalacheck" %%% "scalacheck"  % "1.13.4" % "test"
       )
     )
+    .dependsOn(shared)
 
 // Games
 lazy val sandbox =

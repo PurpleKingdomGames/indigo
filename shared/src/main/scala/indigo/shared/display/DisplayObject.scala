@@ -1,7 +1,6 @@
-package indigo.shared.platform.display
+package indigo.shared.display
 
 import indigo.shared.scenegraph.datatypes.AmbientLight
-import indigo.shared.display.SpriteSheetFrame
 
 import indigo.shared.AsString
 import indigo.shared.EqualTo

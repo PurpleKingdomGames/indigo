@@ -1,11 +1,11 @@
 package indigo.platform.renderer
 
-import indigo.gameengine.scenegraph.datatypes.AmbientLight
-import indigo.runtime.metrics._
+import indigo.shared.scenegraph.datatypes.AmbientLight
+import indigo.shared.metrics._
 import indigo.shared.ClearColor
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
-import indigo.gameengine.display.{DisplayLayer, DisplayObject, Displayable}
+import indigo.shared.display.{DisplayLayer, DisplayObject, Displayable, SpriteSheetFrame}
 import indigo.shared.EqualTo._
 
 final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends Renderer {

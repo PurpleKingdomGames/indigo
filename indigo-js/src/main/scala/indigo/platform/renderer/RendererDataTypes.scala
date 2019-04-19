@@ -1,10 +1,10 @@
 package indigo.platform.renderer
 
-import indigo.gameengine.scenegraph.datatypes.Point
+import indigo.shared.scenegraph.datatypes.Point
 import indigo.shared.ClearColor
 import org.scalajs.dom.{html, raw}
 import org.scalajs.dom.raw.WebGLTexture
-import indigo.gameengine.display.Vector2
+import indigo.shared.display.Vector2
 
 final class ContextAndCanvas(val context: raw.WebGLRenderingContext, val canvas: html.Canvas, val width: Int,val  height: Int, val aspect: Float, val magnification: Int)
 

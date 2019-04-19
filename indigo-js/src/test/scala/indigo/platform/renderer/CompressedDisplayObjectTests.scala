@@ -1,6 +1,6 @@
 package indigo.platform.renderer
 
-import indigo.gameengine.display.DisplayObject
+import indigo.shared.display.{DisplayObject, SpriteSheetFrame}
 import indigo.shared.EqualTo._
 
 import utest._
