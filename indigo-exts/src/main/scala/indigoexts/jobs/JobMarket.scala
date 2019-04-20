@@ -5,7 +5,7 @@ import indigo.shared.dice.Dice
 import indigo.shared.time.GameTime
 import indigo.shared.events.GlobalEvent
 import indigo.shared.Outcome
-import indigo.scenegraph.SceneUpdateFragment
+import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.datatypes.BindingKey
 
 final case class JobMarket(jobs: List[Job]) extends SubSystem {

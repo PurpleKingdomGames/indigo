@@ -1,6 +1,6 @@
 package indigoexts.uicomponents
 
-import indigo.scenegraph.{Graphic, SceneUpdateFragment}
+import indigo.shared.scenegraph.{Graphic, SceneUpdateFragment}
 import indigo.shared.datatypes.{BindingKey, Depth, Rectangle}
 import indigo.shared.EqualTo._
 import indigo.shared.events.{FrameInputEvents, MouseEvent, GlobalEvent}

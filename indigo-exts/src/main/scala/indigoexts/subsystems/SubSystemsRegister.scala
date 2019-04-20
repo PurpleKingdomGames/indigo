@@ -4,7 +4,7 @@ import indigo.shared.time.GameTime
 import indigo.shared.Outcome
 import indigo.shared.Outcome._
 import indigo.shared.events.GlobalEvent
-import indigo.scenegraph.SceneUpdateFragment
+import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.dice.Dice
 
 final class SubSystemsRegister(val registeredSubSystems: List[SubSystem]) {

@@ -1,4 +1,4 @@
-package indigo.gameengine
+package indigo.platform.networking
 
 import indigo.shared.networking.HttpReceiveEvent.{HttpError, HttpResponse}
 import indigo.shared.networking.HttpRequest

@@ -1,11 +1,11 @@
 package indigoexts.uicomponents
 
 import indigo.shared.time.GameTime
-import indigo.gameengine.FontRegister
+import indigo.shared.FontRegister
 import indigo.shared.constants.Keys
 import indigo.shared.events.{FrameInputEvents, KeyboardEvent, MouseEvent, GlobalEvent}
 import indigo.shared.datatypes._
-import indigo.scenegraph.{Graphic, SceneGraphNode, SceneUpdateFragment, Text}
+import indigo.shared.scenegraph.{Graphic, SceneGraphNode, SceneUpdateFragment, Text}
 
 import indigo.shared.EqualTo._
 

@@ -1,11 +1,12 @@
-package indigo.gameengine
+package indigo.platform
 
 import utest._
 
 import indigo.shared.PowerOfTwo
 import indigo.shared.datatypes.Point
 import indigo.TestFail._
-import indigo.EqualTo._
+import indigo.shared.EqualTo._
+import indigo.platform.assets._
 
 object TextureAtlasTests extends TestSuite {
 

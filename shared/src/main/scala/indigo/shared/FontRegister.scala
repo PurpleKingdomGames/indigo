@@ -1,4 +1,4 @@
-package indigo.gameengine
+package indigo.shared
 
 import indigo.shared.datatypes.{FontInfo, FontKey}
 

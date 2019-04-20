@@ -1,6 +1,6 @@
 package indigoframework
 
-import indigo.gameengine.AssetManager
+import indigo.platform.assets.AssetCollection
 import indigo.shared.IndigoLogger
 import indigo.shared.{AssetList, AssetType}
 import indigo.json._
@@ -13,10 +13,10 @@ object AssetsHelper {
   def assets: Set[AssetType] = Set()
 
   def assetsAsync: Future[Set[AssetType]] =
-    AssetManager
+    AssetCollection
       .loadTextAsset(AssetType.Text("assetsList", "assets/assets.json"))
       .map { p =>
-        fromJson(p.contents).map(_.toSet) match {
+        fromJson(p.data).map(_.toSet) match {
           case Some(as) =>
             as
 

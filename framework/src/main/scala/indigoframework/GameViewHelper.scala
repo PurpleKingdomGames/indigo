@@ -1,6 +1,6 @@
 package indigoframework
 
-import indigo.scenegraph._
+import indigo.shared.scenegraph._
 import indigo.shared.datatypes.{AmbientLight, Rectangle}
 import indigo.shared.EntityRectangle
 

@@ -8,10 +8,12 @@ import indigo.shared.IndigoLogger
 import indigo.shared.metrics.Metrics
 import indigo.shared.time.GameTime
 import indigo.shared.display.Vector2
+import indigo.shared.AnimationsRegister
+import indigo.shared.FontRegister
 
 import indigo.platform.renderer.AssetMapping
 
-import indigo.scenegraph.{Renderable, Graphic, Sprite, Text, TextLine}
+import indigo.shared.scenegraph.{Renderable, Graphic, Sprite, Text, TextLine}
 
 import scala.annotation.tailrec
 import scala.collection.mutable

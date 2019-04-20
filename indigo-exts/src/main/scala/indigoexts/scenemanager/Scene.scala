@@ -3,7 +3,7 @@ package indigoexts.scenemanager
 import indigo.shared.Outcome
 import indigo.shared.time.GameTime
 import indigo.shared.events.{FrameInputEvents, GlobalEvent}
-import indigo.scenegraph.SceneUpdateFragment
+import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.EqualTo
 import indigoexts.lenses.Lens
 import indigo.shared.dice.Dice

@@ -1,5 +1,5 @@
 import indigo.shared.events.EventTypeAliases
-import indigo.scenegraph.SceneGraphTypeAliases
+import indigo.shared.scenegraph.SceneGraphTypeAliases
 import indigo.shared.datatypes.DataTypeAliases
 import indigo.shared.networking.NetworkingTypeAliases
 import indigo.shared.SharedTypeAliases
@@ -16,17 +16,17 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
       def map[B](f: A => B): F[B] =
         ev.map(fa)(f)
     }
-  
+
     implicit class ApplySyntax[F[_], A](fa: F[A])(implicit ev: Apply[F]) {
       def ap[B](f: F[A => B]): F[B] =
         ev.ap(fa)(f)
     }
-  
+
     implicit class ApplicativeSyntax[F[_], A, B](ft: (F[A], F[B]))(implicit ev: Applicative[F]) {
       def map2[C](f: (A, B) => C): F[C] =
         ev.apply2(ft._1, ft._2)(f)
     }
-  
+
     implicit class MonadSyntax[F[_], A](fa: F[A])(implicit ev: Monad[F]) {
       def flatMap[B](f: A => F[B]): F[B] =
         ev.flatMap(fa)(f)
@@ -51,8 +51,10 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   type Dice = shared.dice.Dice
   val Dice: shared.dice.Dice.type = shared.dice.Dice
 
-  type AssetCollection = gameengine.AssetCollection
-  val AssetCollection: gameengine.AssetCollection.type = gameengine.AssetCollection
+  type AssetCollection = platform.assets.AssetCollection
+
+  type AssetName = platform.assets.AssetName
+  val AssetName: platform.assets.AssetName.type = platform.assets.AssetName
 
   type ToReportable[T] = shared.ToReportable[T]
   val ToReportable: shared.ToReportable.type = shared.ToReportable

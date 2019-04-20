@@ -1,7 +1,7 @@
 package indigoexts.subsystems
 
 import indigo.shared.time.GameTime
-import indigo.scenegraph.Text
+import indigo.shared.scenegraph.Text
 import indigo.shared.dice.Dice
 
 import utest._

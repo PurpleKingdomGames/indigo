@@ -4,7 +4,7 @@ import indigo.shared.time.GameTime
 import indigo.shared.time.Millis
 import indigo.shared.Outcome
 import indigo.shared.events.{FrameTick, GlobalEvent}
-import indigo.scenegraph._
+import indigo.shared.scenegraph._
 import indigo.shared.datatypes.Point
 import indigoexts.subsystems.SubSystem
 import indigoexts.subsystems.automata.AutomataEvent._

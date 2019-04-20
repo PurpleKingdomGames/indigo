@@ -1,7 +1,7 @@
 package indigoexts.formats
 
 import indigo.shared.datatypes._
-import indigo.scenegraph.{Graphic, Group}
+import indigo.shared.scenegraph.{Graphic, Group}
 import indigo.shared.formats.{TiledMap}
 
 import indigo.shared.EqualTo._

@@ -2,7 +2,7 @@ package indigo.gameengine
 
 import indigo.shared.events._
 import indigo.shared.datatypes.AmbientLight
-import indigo.scenegraph.{SceneAudio, SceneGraphRootNode, SceneGraphRootNodeFlat, SceneUpdateFragment}
+import indigo.shared.scenegraph.{SceneAudio, SceneGraphRootNode, SceneGraphRootNodeFlat, SceneUpdateFragment}
 import indigo.shared.GameContext
 import indigo.shared.metrics._
 import indigo.shared.GameConfig
@@ -10,7 +10,9 @@ import indigo.shared.Outcome
 import indigo.shared.dice.Dice
 import indigo.shared.time.GameTime
 import indigo.shared.time.Millis
+import indigo.shared.AnimationsRegister
 import indigo.shared.display.{Displayable, DisplayLayer}
+import indigo.shared.platform.AudioPlayer
 
 import indigo.platform.renderer.AssetMapping
 import indigo.platform.renderer.Renderer

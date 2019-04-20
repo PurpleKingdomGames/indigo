@@ -7,8 +7,6 @@ import indigo.shared.{GameDefinition}
 import scala.concurrent.Future
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 
-import indigo.shared.EqualTo._
-
 @JSExportTopLevel("Indigo")
 object Framework {
 
@@ -25,9 +23,8 @@ object Framework {
     AssetsHelper.assetsAsync
 
   val initialise: AssetCollection => Startup[StartupErrorReport, StartupData] = assetCollection =>
-    assetCollection.texts
-      .find(p => p.name === "indigoJson")
-      .flatMap(json => GameDefinitionHelper.fromJson(json.contents)) match {
+    assetCollection.findTextDataByName(AssetName("indigoJson"))
+      .flatMap(json => GameDefinitionHelper.fromJson(json)) match {
       case Some(gd) =>
         Startup.Success(StartupData(gd))
 

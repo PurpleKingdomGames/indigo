@@ -1,4 +1,4 @@
-package indigo.scenegraph
+package indigo.shared.scenegraph
 
 import indigo.shared.events.GlobalEvent
 import indigo.shared.animation.AnimationAction._
@@ -7,7 +7,7 @@ import indigo.shared.animation.CycleLabel
 import indigo.shared.datatypes._
 import indigo.shared.IndigoLogger
 
-import indigo.gameengine.{AnimationsRegister, FontRegister}
+import indigo.shared.{AnimationsRegister, FontRegister}
 
 object SceneGraphNode {
   def empty: Group = Group(Point.zero, Depth.Base, Nil)

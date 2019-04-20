@@ -1,10 +1,11 @@
-package indigo.gameengine
+package indigo.platform
 
 import indigo.shared.PowerOfTwo
-import indigo.gameengine.TextureAtlas.supportedSizes
 import indigo.shared.datatypes.Point
 import indigo.shared.IndigoLogger
 import indigo.shared.EqualTo
+import indigo.platform.assets._
+
 import org.scalajs.dom
 import org.scalajs.dom.{html, raw}
 
@@ -152,7 +153,7 @@ object TextureAtlasFunctions {
 
   val inflateAndSortByPowerOfTwo: List[ImageRef] => List[TextureDetails] = images =>
     images
-      .map(i => TextureDetails(i, TextureAtlasFunctions.pickPowerOfTwoSizeFor(supportedSizes, i.width, i.height)))
+      .map(i => TextureDetails(i, TextureAtlasFunctions.pickPowerOfTwoSizeFor(TextureAtlas.supportedSizes, i.width, i.height)))
       .sortBy(_.size.value)
       .reverse
 

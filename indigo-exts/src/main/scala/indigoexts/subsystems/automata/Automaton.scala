@@ -1,7 +1,7 @@
 package indigoexts.subsystems.automata
 
 import indigo.Outcome
-import indigo.scenegraph.Renderable
+import indigo.shared.scenegraph.Renderable
 import indigo.shared.datatypes.BindingKey
 import indigo.Millis
 import indigo.shared.temporal.Signal

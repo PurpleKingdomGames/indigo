@@ -1,29 +1,26 @@
-package indigo.gameengine
+package indigo.platform.audio
 
 import indigo.shared.datatypes.BindingKey
-import indigo.scenegraph.{PlaybackPattern, SceneAudio, SceneAudioSource}
+import indigo.shared.scenegraph.{PlaybackPattern, SceneAudio, SceneAudioSource}
+import indigo.shared.platform.AudioPlayer
 import indigo.shared.audio.Volume
-import org.scalajs.dom
+import indigo.platform.assets.{AssetCollection, AssetName}
+
 import org.scalajs.dom.{AudioBufferSourceNode, GainNode}
 import org.scalajs.dom.raw.AudioContext
 
 import indigo.shared.EqualTo._
 
-object AudioPlayer {
+object AudioPlayerImpl {
 
-  def apply(loadedAudioAssets: List[LoadedAudioAsset]): AudioPlayer =
-    new AudioPlayerImpl(loadedAudioAssets, new AudioContext())
+  def apply(assetCollection: AssetCollection): AudioPlayer =
+    new AudioPlayerImpl(assetCollection, new AudioContext())
 
 }
 
-trait AudioPlayer {
-  def playSound(assetRef: String, volume: Volume): Unit
-  def playAudio(sceneAudio: SceneAudio): Unit
-}
+final class AudioPlayerImpl(assetCollection: AssetCollection, context: AudioContext) extends AudioPlayer {
 
-final class AudioPlayerImpl(loadedAudioAssets: List[LoadedAudioAsset], context: AudioContext) extends AudioPlayer {
-
-  private def setupNodes(audioBuffer: dom.AudioBuffer, volume: Volume, loop: Boolean): AudioNodes = {
+  private def setupNodes(audioBuffer: AssetCollection.AudioDataFormat, volume: Volume, loop: Boolean): AudioNodes = {
     val source = context.createBufferSource()
     source.buffer = audioBuffer
     source.loop = loop
@@ -37,8 +34,8 @@ final class AudioPlayerImpl(loadedAudioAssets: List[LoadedAudioAsset], context: 
   }
 
   def playSound(assetRef: String, volume: Volume): Unit =
-    loadedAudioAssets.find(_.name === assetRef).foreach { sound =>
-      setupNodes(sound.data, volume, loop = false).audioBufferSourceNode.start(0)
+    assetCollection.findAudioDataByName(AssetName(assetRef)).foreach { sound =>
+      setupNodes(sound, volume, loop = false).audioBufferSourceNode.start(0)
     }
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
@@ -73,9 +70,9 @@ final class AudioPlayerImpl(loadedAudioAssets: List[LoadedAudioAsset], context: 
             currentSource.audioNodes.foreach(_.audioBufferSourceNode.stop(0))
 
             val nodes =
-              loadedAudioAssets
-                .find(_.name === track.assetRef)
-                .map(asset => setupNodes(asset.data, track.volume * sceneAudioSource.masterVolume, loop = true))
+              assetCollection
+                .findAudioDataByName(AssetName(track.assetRef))
+                .map(asset => setupNodes(asset, track.volume * sceneAudioSource.masterVolume, loop = true))
 
             nodes.foreach(_.audioBufferSourceNode.start(0))
 

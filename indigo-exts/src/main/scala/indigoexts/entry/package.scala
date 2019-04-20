@@ -1,6 +1,6 @@
 package indigoexts
 
-import indigo.scenegraph.SceneUpdateFragment
+import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.{AssetType, GameConfig}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -14,6 +14,6 @@ package object entry {
 
   val defaultGameConfig: GameConfig = indigo.shared.GameConfig.default
 
-  val noRender: SceneUpdateFragment = indigo.scenegraph.SceneUpdateFragment.empty
+  val noRender: SceneUpdateFragment = indigo.shared.scenegraph.SceneUpdateFragment.empty
 
 }

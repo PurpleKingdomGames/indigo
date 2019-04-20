@@ -1,7 +1,6 @@
 package com.example.perf
 
 import indigo._
-import indigo.shared.EqualTo._
 import indigoexts.entrypoint._
 import indigoexts.formats._
 import indigo.json._
@@ -45,7 +44,7 @@ object PerfGame {
         .addAnimations(spriteAndAnimations.animations)
 
     val res: Option[Startup.Success[MyStartupData]] = for {
-      json                <- assetCollection.texts.find(p => p.name === PerfAssets.dudeName + "-json").map(_.contents)
+      json                <- assetCollection.findTextDataByName(AssetName(PerfAssets.dudeName + "-json"))
       aseprite            <- asepriteFromJson(json)
       spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, Depth(3), PerfAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)

@@ -1,4 +1,4 @@
-package indigo.scenegraph
+package indigo.shared.scenegraph
 
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.audio.{Track, Volume}

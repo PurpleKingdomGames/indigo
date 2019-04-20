@@ -1,4 +1,4 @@
-package indigo.scenegraph
+package indigo.shared.scenegraph
 
 import indigo.shared.events.GlobalEvent
 import indigo.shared.datatypes.{AmbientLight, Tint}

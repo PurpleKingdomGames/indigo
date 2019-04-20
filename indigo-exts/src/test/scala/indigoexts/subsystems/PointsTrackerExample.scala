@@ -4,7 +4,7 @@ import indigo.shared.time.GameTime
 import indigo.shared.Outcome
 import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
-import indigo.scenegraph.{SceneUpdateFragment, Text}
+import indigo.shared.scenegraph.{SceneUpdateFragment, Text}
 import indigo.shared.datatypes.FontKey
 
 final case class PointsTrackerExample(points: Int) extends SubSystem {

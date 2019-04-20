@@ -1,6 +1,6 @@
-package indigo.scenegraph
+package indigo.shared.scenegraph
 
-import indigo.scenegraph
+import indigo.shared.scenegraph
 
 trait SceneGraphTypeAliases {
 

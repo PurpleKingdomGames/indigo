@@ -1,6 +1,6 @@
 package indigoframework
 
-import indigo.gameengine.AssetManager
+import indigo.platform.assets.AssetCollection
 import indigo.shared.IndigoLogger
 import indigo.shared.{AssetType, GameConfig}
 import indigo.json._
@@ -29,10 +29,10 @@ xhr.send()
    */
 
   def load: Future[Option[GameConfig]] =
-    AssetManager
+    AssetCollection
       .loadTextAsset(AssetType.Text("assetsList", "assets/config.json"))
       .map { p =>
-        fromJson(p.contents)
+        fromJson(p.data)
       }
 
   def fromJson(json: String): Option[GameConfig] =

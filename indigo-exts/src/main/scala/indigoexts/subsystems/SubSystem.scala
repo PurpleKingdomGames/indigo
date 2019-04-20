@@ -3,7 +3,7 @@ package indigoexts.subsystems
 import indigo.shared.time.GameTime
 import indigo.shared.Outcome
 import indigo.shared.events.GlobalEvent
-import indigo.scenegraph.SceneUpdateFragment
+import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.dice.Dice
 
 trait SubSystem {

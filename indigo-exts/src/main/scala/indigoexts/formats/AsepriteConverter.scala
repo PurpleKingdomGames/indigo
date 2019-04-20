@@ -1,7 +1,7 @@
 package indigoexts.formats
 
 import indigo.shared.events.GlobalEvent
-import indigo.scenegraph._
+import indigo.shared.scenegraph._
 import indigo.shared.animation._
 import indigo.shared.datatypes._
 import indigo.shared.IndigoLogger

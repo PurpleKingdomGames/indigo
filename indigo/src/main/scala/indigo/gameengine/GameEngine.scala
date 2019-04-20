@@ -9,6 +9,12 @@ import indigo.shared.IndigoLogger
 import indigo.shared.display.Vector2
 import indigo.shared.Startup
 import indigo.shared.GameContext
+import indigo.shared.AnimationsRegister
+import indigo.shared.FontRegister
+import indigo.platform.assets._
+import indigo.platform.audio.AudioPlayerImpl
+import indigo.shared.platform.AudioPlayer
+import indigo.platform.{TextureAtlas, ImageRef, TextureAtlasFunctions}
 
 import org.scalajs.dom
 import org.scalajs.dom.html.Canvas
@@ -75,11 +81,11 @@ object GameEngine {
         )
 
       // Arrange assets
-      assetsAsync.flatMap(aa => AssetManager.loadAssets(aa ++ assets)).foreach { assetCollection =>
+      assetsAsync.flatMap(aa => AssetCollection.loadAssets(aa ++ assets)).foreach { assetCollection =>
         IndigoLogger.info("Asset load complete")
 
         val audioPlayer: AudioPlayer =
-          GameEngine.startAudioPlayer(assetCollection.sounds)
+          AudioPlayerImpl(assetCollection)
 
         val metrics: Metrics =
           Metrics.getInstance(gameConfig.advanced.recordMetrics, gameConfig.advanced.logMetricsReportIntervalMs)
@@ -145,8 +151,8 @@ object GameEngine {
   def createTextureAtlas(assetCollection: AssetCollection): GameContext[TextureAtlas] =
     GameContext.delay(
       TextureAtlas.create(
-        assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height)),
-        AssetManager.findByName(assetCollection),
+        assetCollection.images.map(i => ImageRef(i.name.name, i.data.width, i.data.height)),
+        (name: String) => assetCollection.images.find(_.name.name === name),
         TextureAtlasFunctions.createAtlasData
       )
     )
@@ -211,9 +217,6 @@ object GameEngine {
         canvas
       )
     }
-
-  def startAudioPlayer(sounds: List[LoadedAudioAsset]): AudioPlayer =
-    AudioPlayer(sounds)
 
   def initialiseGameLoop[GameModel, ViewModel](
       gameConfig: GameConfig,

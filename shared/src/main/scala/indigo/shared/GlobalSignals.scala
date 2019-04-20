@@ -1,4 +1,4 @@
-package indigo.gameengine
+package indigo.shared
 
 import indigo.shared.events.Signals
 import indigo.shared.EqualTo._
