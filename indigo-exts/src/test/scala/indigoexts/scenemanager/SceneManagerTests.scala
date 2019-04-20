@@ -1,9 +1,11 @@
 package indigoexts.scenemanager
 
-import indigo.time.GameTime
-import indigo.gameengine.events.{FrameTick, GlobalEvent}
+import indigo.shared.time.GameTime
+import indigo.shared.events.{FrameTick, GlobalEvent}
+import indigo.shared.collections.NonEmptyList
+import indigo.shared.dice.Dice
+
 import utest._
-import indigo.collections.NonEmptyList
 
 object SceneManagerTests extends TestSuite {
 
@@ -78,7 +80,6 @@ object SceneManagerTests extends TestSuite {
       }
     }
 
-  import indigo.dice.Dice
   private def runModel(events: List[GlobalEvent], model: TestGameModel, sceneManager: SceneManager[TestGameModel, TestViewModel]): TestGameModel =
     events.foldLeft(model)((m, e) => sceneManager.updateModel(GameTime.zero, m, Dice.loaded(0))(e).state)
 

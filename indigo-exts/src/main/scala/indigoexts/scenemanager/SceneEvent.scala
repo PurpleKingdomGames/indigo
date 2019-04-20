@@ -1,6 +1,6 @@
 package indigoexts.scenemanager
 
-import indigo.gameengine.events.GlobalEvent
+import indigo.shared.events.GlobalEvent
 
 sealed trait SceneEvent extends GlobalEvent
 object SceneEvent {

@@ -1,14 +1,14 @@
 package indigoexts.subsystems.automata
 
-import indigo.time.GameTime
-import indigo.time.Millis
-import indigo.gameengine.Outcome
-import indigo.gameengine.events.{FrameTick, GlobalEvent}
-import indigo.gameengine.scenegraph._
-import indigo.gameengine.scenegraph.datatypes.Point
+import indigo.shared.time.GameTime
+import indigo.shared.time.Millis
+import indigo.shared.Outcome
+import indigo.shared.events.{FrameTick, GlobalEvent}
+import indigo.scenegraph._
+import indigo.shared.datatypes.Point
 import indigoexts.subsystems.SubSystem
 import indigoexts.subsystems.automata.AutomataEvent._
-import indigo.dice.Dice
+import indigo.shared.dice.Dice
 
 import indigo.shared.EqualTo._
 

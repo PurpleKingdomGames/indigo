@@ -1,7 +1,7 @@
 package indigoexts.jobs
 
-import indigo.time.GameTime
-import indigo.gameengine.events.GlobalEvent
+import indigo.shared.time.GameTime
+import indigo.shared.events.GlobalEvent
 
 trait Worker[Actor, Context] {
   def isJobComplete(actor: Actor): Job => Boolean

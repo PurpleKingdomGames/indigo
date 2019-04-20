@@ -1,6 +1,6 @@
 package indigoexts.grid
 
-import indigo.gameengine.scenegraph.datatypes.Point
+import indigo.shared.datatypes.Point
 import indigo.shared.AsString
 import indigo.shared.EqualTo
 
@@ -25,7 +25,7 @@ final case class GridPoint(x: Int, y: Int) {
 
 }
 object GridPoint {
-  
+
   implicit def show(implicit showI: AsString[Int]): AsString[GridPoint] =
     AsString.create(p => s"""GridPoint(${showI.show(p.x)}, ${showI.show(p.y)})""")
 

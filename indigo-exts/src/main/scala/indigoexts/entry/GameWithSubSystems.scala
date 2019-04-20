@@ -7,10 +7,10 @@ import indigo.Outcome
 import indigo.FrameInputEvents
 import indigo.SceneUpdateFragment
 import indigoexts.subsystems.SubSystemsRegister
+import indigo.shared.abstractions.syntax._
 
 final class GameWithSubSystems[Model](val model: Model, val subSystemsRegister: SubSystemsRegister)
 object GameWithSubSystems {
-  import indigo.abstractions.syntax._
 
   def apply[Model](model: Model, subSystemsRegister: SubSystemsRegister): GameWithSubSystems[Model] =
     new GameWithSubSystems[Model](model, subSystemsRegister)

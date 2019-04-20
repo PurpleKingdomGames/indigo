@@ -2,7 +2,7 @@ package indigoexts.quadtrees
 
 import utest._
 
-import indigo.gameengine.scenegraph.datatypes.Point
+import indigo.shared.datatypes.Point
 import indigoexts.grid.GridPoint
 import indigoexts.line.LineSegment
 import indigo.shared.EqualTo._

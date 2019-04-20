@@ -1,8 +1,8 @@
 package indigoexts.subsystems
 
-import indigo.time.GameTime
-import indigo.gameengine.scenegraph.Text
-import indigo.dice.Dice
+import indigo.shared.time.GameTime
+import indigo.scenegraph.Text
+import indigo.shared.dice.Dice
 
 import utest._
 

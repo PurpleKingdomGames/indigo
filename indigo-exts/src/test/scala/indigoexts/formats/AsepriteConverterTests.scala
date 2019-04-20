@@ -1,9 +1,9 @@
 package indigoexts.formats
 
-import indigo.gameengine.events.GlobalEvent
-import indigo.gameengine.scenegraph._
-import indigo.gameengine.scenegraph.animation._
-import indigo.gameengine.scenegraph.datatypes._
+import indigo.shared.events.GlobalEvent
+import indigo.scenegraph._
+import indigo.shared.animation._
+import indigo.shared.datatypes._
 
 import indigo.shared.formats._
 

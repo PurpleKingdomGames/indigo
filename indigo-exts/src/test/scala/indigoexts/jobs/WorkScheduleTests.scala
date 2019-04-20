@@ -1,10 +1,10 @@
 package indigoexts.jobs
 
 import utest._
-import indigo.time.GameTime
-import indigo.time.Millis
-import indigo.gameengine.events.FrameTick
-import indigo.gameengine.scenegraph.datatypes.BindingKey
+import indigo.shared.time.GameTime
+import indigo.shared.time.Millis
+import indigo.shared.events.FrameTick
+import indigo.shared.datatypes.BindingKey
 import indigo.GlobalEvent
 import indigoexts.TestFail._
 

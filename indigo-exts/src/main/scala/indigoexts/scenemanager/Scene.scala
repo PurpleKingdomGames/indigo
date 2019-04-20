@@ -1,12 +1,12 @@
 package indigoexts.scenemanager
 
-import indigo.gameengine.Outcome
-import indigo.time.GameTime
-import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
-import indigo.gameengine.scenegraph.SceneUpdateFragment
+import indigo.shared.Outcome
+import indigo.shared.time.GameTime
+import indigo.shared.events.{FrameInputEvents, GlobalEvent}
+import indigo.scenegraph.SceneUpdateFragment
 import indigo.shared.EqualTo
 import indigoexts.lenses.Lens
-import indigo.dice.Dice
+import indigo.shared.dice.Dice
 
 trait Scene[GameModel, ViewModel] {
   type SceneModel
@@ -39,7 +39,7 @@ object Scene {
 
 }
 
-final class SceneName(val name: String) extends AnyVal 
+final class SceneName(val name: String) extends AnyVal
 object SceneName {
 
   def apply(name: String): SceneName =

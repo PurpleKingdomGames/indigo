@@ -1,6 +1,6 @@
 package indigoexts.line
 
-import indigo.gameengine.scenegraph.datatypes.Point
+import indigo.shared.datatypes.Point
 import indigoexts.line.IntersectionResult._
 import indigoexts.line.LineProperties._
 import utest._

@@ -1,10 +1,10 @@
 package indigoexts.subsystems.automata
 
 import indigo.Outcome
-import indigo.gameengine.scenegraph.Renderable
-import indigo.gameengine.scenegraph.datatypes.BindingKey
+import indigo.scenegraph.Renderable
+import indigo.shared.datatypes.BindingKey
 import indigo.Millis
-import indigo.temporal.Signal
+import indigo.shared.temporal.Signal
 
 import indigo.shared.EqualTo
 

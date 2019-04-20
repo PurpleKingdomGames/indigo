@@ -1,6 +1,6 @@
 package indigoexts.jobs
 
-import indigo.time.GameTime
+import indigo.shared.time.GameTime
 import indigoexts.jobs.SampleJobs.Fishing
 
 sealed trait SampleJobs extends Job

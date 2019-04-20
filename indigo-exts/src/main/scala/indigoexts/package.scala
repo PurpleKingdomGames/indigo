@@ -30,7 +30,7 @@ package object indigoexts {
       * noRender Convenience value, alias for SceneUpdateFragment.empty
       * @return An Empty SceneUpdateFragment
       */
-    val noRender: indigo.gameengine.scenegraph.SceneUpdateFragment = entry.noRender
+    val noRender: indigo.scenegraph.SceneUpdateFragment = entry.noRender
 
     type SubSystem = subsystems.SubSystem
 

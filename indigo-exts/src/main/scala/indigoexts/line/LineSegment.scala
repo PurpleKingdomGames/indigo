@@ -1,7 +1,7 @@
 package indigoexts.line
 
 import indigo.shared.EqualTo._
-import indigo.gameengine.scenegraph.datatypes.Point
+import indigo.shared.datatypes.Point
 
 final case class LineSegment(start: Point, end: Point) {
   val center: Point = end - start

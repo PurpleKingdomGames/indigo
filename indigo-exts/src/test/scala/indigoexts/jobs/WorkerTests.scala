@@ -1,6 +1,6 @@
 package indigoexts.jobs
 
-import indigo.time.GameTime
+import indigo.shared.time.GameTime
 import utest._
 import indigoexts.jobs.SampleJobs.{CantHave, Fishing, WanderTo}
 

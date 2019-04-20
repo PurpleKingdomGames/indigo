@@ -1,8 +1,8 @@
 package indigoexts.jobs
 
-import indigo.time.GameTime
-import indigo.gameengine.events.{FrameTick, GlobalEvent}
-import indigo.gameengine.scenegraph.datatypes.BindingKey
+import indigo.shared.time.GameTime
+import indigo.shared.events.{FrameTick, GlobalEvent}
+import indigo.shared.datatypes.BindingKey
 import indigo.shared.EqualTo._
 
 final class WorkSchedule[Actor, Context](val id: BindingKey, val jobStack: List[Job]) {

@@ -1,10 +1,10 @@
 package indigoexts.subsystems
 
-import indigo.time.GameTime
-import indigo.gameengine.Outcome
-import indigo.gameengine.events.GlobalEvent
-import indigo.gameengine.scenegraph.SceneUpdateFragment
-import indigo.dice.Dice
+import indigo.shared.time.GameTime
+import indigo.shared.Outcome
+import indigo.shared.events.GlobalEvent
+import indigo.scenegraph.SceneUpdateFragment
+import indigo.shared.dice.Dice
 
 trait SubSystem {
   type EventType

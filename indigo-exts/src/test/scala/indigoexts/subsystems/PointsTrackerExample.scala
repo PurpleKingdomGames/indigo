@@ -1,11 +1,11 @@
 package indigoexts.subsystems
 
-import indigo.time.GameTime
-import indigo.gameengine.Outcome
-import indigo.dice.Dice
-import indigo.gameengine.events.GlobalEvent
-import indigo.gameengine.scenegraph.{SceneUpdateFragment, Text}
-import indigo.gameengine.scenegraph.datatypes.FontKey
+import indigo.shared.time.GameTime
+import indigo.shared.Outcome
+import indigo.shared.dice.Dice
+import indigo.shared.events.GlobalEvent
+import indigo.scenegraph.{SceneUpdateFragment, Text}
+import indigo.shared.datatypes.FontKey
 
 final case class PointsTrackerExample(points: Int) extends SubSystem {
   type EventType = PointsTrackerEvent

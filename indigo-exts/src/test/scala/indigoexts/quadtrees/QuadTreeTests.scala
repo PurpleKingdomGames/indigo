@@ -1,7 +1,7 @@
 package indigoexts.quadtrees
 
-import indigo.gameengine.PowerOfTwo
-import indigo.gameengine.scenegraph.datatypes.{Point, Rectangle}
+import indigo.shared.PowerOfTwo
+import indigo.shared.datatypes.{Point, Rectangle}
 import indigo.shared.EqualTo._
 import indigo.shared.AsString._
 import indigoexts.grid.GridPoint

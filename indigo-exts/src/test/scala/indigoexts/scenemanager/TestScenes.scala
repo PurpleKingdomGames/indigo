@@ -1,11 +1,11 @@
 package indigoexts.scenemanager
 
-import indigo.time.GameTime
-import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
-import indigo.gameengine.scenegraph.SceneUpdateFragment
+import indigo.shared.time.GameTime
+import indigo.shared.events.{FrameInputEvents, GlobalEvent}
+import indigo.scenegraph.SceneUpdateFragment
 import indigo.Outcome
 import indigoexts.lenses.Lens
-import indigo.dice.Dice
+import indigo.shared.dice.Dice
 
 object TestScenes {
 

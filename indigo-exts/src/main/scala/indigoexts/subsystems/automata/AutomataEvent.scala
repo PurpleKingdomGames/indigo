@@ -1,7 +1,7 @@
 package indigoexts.subsystems.automata
 
-import indigo.gameengine.events.GlobalEvent
-import indigo.gameengine.scenegraph.datatypes.{BindingKey, Point}
+import indigo.shared.events.GlobalEvent
+import indigo.shared.datatypes.{BindingKey, Point}
 
 sealed trait AutomataEvent extends GlobalEvent
 object AutomataEvent {

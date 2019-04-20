@@ -1,11 +1,11 @@
 package indigoexts.subsystems
 
-import indigo.time.GameTime
-import indigo.gameengine.Outcome
-import indigo.gameengine.Outcome._
-import indigo.gameengine.events.GlobalEvent
-import indigo.gameengine.scenegraph.SceneUpdateFragment
-import indigo.dice.Dice
+import indigo.shared.time.GameTime
+import indigo.shared.Outcome
+import indigo.shared.Outcome._
+import indigo.shared.events.GlobalEvent
+import indigo.scenegraph.SceneUpdateFragment
+import indigo.shared.dice.Dice
 
 final class SubSystemsRegister(val registeredSubSystems: List[SubSystem]) {
 

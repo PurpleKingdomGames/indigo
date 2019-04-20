@@ -1,13 +1,13 @@
 package indigoexts.scenemanager
 
-import indigo.time.GameTime
-import indigo.gameengine.Outcome
-import indigo.gameengine.events.{FrameInputEvents, GlobalEvent}
-import indigo.gameengine.scenegraph.SceneUpdateFragment
+import indigo.shared.time.GameTime
+import indigo.shared.Outcome
+import indigo.shared.events.{FrameInputEvents, GlobalEvent}
+import indigo.scenegraph.SceneUpdateFragment
 import indigo.shared.IndigoLogger
-import indigo.collections.NonEmptyList
+import indigo.shared.collections.NonEmptyList
 import indigo.shared.EqualTo._
-import indigo.dice.Dice
+import indigo.shared.dice.Dice
 
 class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, ViewModel]], scenesFinder: SceneFinder) {
 

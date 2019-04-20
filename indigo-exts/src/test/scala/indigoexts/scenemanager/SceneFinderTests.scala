@@ -2,7 +2,7 @@ package indigoexts.scenemanager
 
 import utest._
 
-import indigo.collections.NonEmptyList
+import indigo.shared.collections.NonEmptyList
 import indigo.EqualTo._
 
 object SceneFinderTests extends TestSuite {
