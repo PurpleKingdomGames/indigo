@@ -195,7 +195,7 @@ object GameEngine {
 
   def listenToWorldEvents(canvas: Canvas, magnification: Int, globalEventStream: GlobalEventStream): GameContext[Unit] = {
     IndigoLogger.info("Starting world events")
-    GameContext.delay(WorldEvents(canvas, magnification, globalEventStream))
+    GameContext.delay(WorldEvents.init(canvas, magnification, globalEventStream))
   }
 
   def startRenderer(gameConfig: GameConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: Canvas): GameContext[Renderer] =
