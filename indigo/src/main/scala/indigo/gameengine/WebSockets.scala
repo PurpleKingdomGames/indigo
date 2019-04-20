@@ -19,18 +19,18 @@ object WebSockets {
   private val configs: mutable.HashMap[WebSocketId, WebSocketConfig] = mutable.HashMap()
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-  def processSendEvent(event: WebSocketEvent with NetworkSendEvent)(implicit globalEventStream: GlobalEventStream): Unit =
+  def processSendEvent(event: WebSocketEvent with NetworkSendEvent, globalEventStream: GlobalEventStream): Unit =
     try event match {
       case WebSocketEvent.ConnectOnly(config) =>
-        reEstablishConnection(insertUpdateConfig(config), None)
+        reEstablishConnection(insertUpdateConfig(config), None, globalEventStream)
         ()
 
       case WebSocketEvent.Open(message, config) =>
-        reEstablishConnection(insertUpdateConfig(config), Option(message))
+        reEstablishConnection(insertUpdateConfig(config), Option(message), globalEventStream)
         ()
 
       case WebSocketEvent.Send(message, config) =>
-        reEstablishConnection(insertUpdateConfig(config), None).foreach { socket =>
+        reEstablishConnection(insertUpdateConfig(config), None, globalEventStream).foreach { socket =>
           socket.send(message)
         }
 
@@ -58,13 +58,13 @@ object WebSockets {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-  private def reEstablishConnection(config: WebSocketConfig, onOpenSendMessage: Option[String])(implicit globalEventStream: GlobalEventStream): Option[dom.WebSocket] =
+  private def reEstablishConnection(config: WebSocketConfig, onOpenSendMessage: Option[String], globalEventStream: GlobalEventStream): Option[dom.WebSocket] =
     connections
       .get(config.id)
       .flatMap { conn =>
         WebSocketReadyState.fromInt(conn.readyState) match {
           case CLOSING | CLOSED =>
-            newConnection(config, onOpenSendMessage).flatMap { newConn =>
+            newConnection(config, onOpenSendMessage, globalEventStream).flatMap { newConn =>
               connections.remove(config.id)
               connections.put(config.id, newConn)
             }
@@ -74,14 +74,14 @@ object WebSockets {
         }
       }
       .orElse {
-        newConnection(config, onOpenSendMessage).flatMap { newConn =>
+        newConnection(config, onOpenSendMessage, globalEventStream).flatMap { newConn =>
           connections.remove(config.id)
           connections.put(config.id, newConn)
         }
       }
 
   @SuppressWarnings(Array("org.wartremover.warts.ToString"))
-  private def newConnection(config: WebSocketConfig, onOpenSendMessage: Option[String])(implicit globalEventStream: GlobalEventStream): Option[dom.WebSocket] =
+  private def newConnection(config: WebSocketConfig, onOpenSendMessage: Option[String], globalEventStream: GlobalEventStream): Option[dom.WebSocket] =
     try {
       val socket = new dom.WebSocket(config.address)
 

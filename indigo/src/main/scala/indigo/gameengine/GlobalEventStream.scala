@@ -29,13 +29,13 @@ object GlobalEventStream {
 
   object NetworkEventProcessor {
 
-    def filter(implicit globalEventStream: GlobalEventStream): GlobalEvent => Option[GlobalEvent] = {
+    def filter(globalEventStream: GlobalEventStream): GlobalEvent => Option[GlobalEvent] = {
       case httpRequest: HttpRequest =>
-        Http.processRequest(httpRequest)
+        Http.processRequest(httpRequest, globalEventStream)
         None
 
       case webSocketEvent: WebSocketEvent with NetworkSendEvent =>
-        WebSockets.processSendEvent(webSocketEvent)
+        WebSockets.processSendEvent(webSocketEvent, globalEventStream)
         None
 
       case e =>

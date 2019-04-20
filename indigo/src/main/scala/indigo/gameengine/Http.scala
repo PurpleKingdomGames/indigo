@@ -7,7 +7,7 @@ import org.scalajs.dom.XMLHttpRequest
 
 object Http {
 
-  def processRequest(request: HttpRequest)(implicit globalEventStream: GlobalEventStream): Unit =
+  def processRequest(request: HttpRequest, globalEventStream: GlobalEventStream): Unit =
     try {
 
       val xhr = new XMLHttpRequest
