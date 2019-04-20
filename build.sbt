@@ -582,6 +582,8 @@ addCommandAlias(
     "clean",
     "buildIndigo",
     "shared/publishLocal",
+    "circe9/publishLocal",
+    "indigoJS/publishLocal",
     "indigo/publishLocal",
     "indigoExts/publishLocal"
   ).mkString(";", ";", "")
