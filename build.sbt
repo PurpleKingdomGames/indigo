@@ -273,8 +273,7 @@ lazy val indigo =
     .settings(
       name := "indigo",
       libraryDependencies ++= Seq(
-        "org.scala-js"   %%% "scalajs-dom" % "0.9.6", //TODO: remove!
-        "org.scalacheck" %%% "scalacheck"  % "1.13.4" % "test"
+        "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
       )
     )
     .enablePlugins(ScalaJSPlugin)
