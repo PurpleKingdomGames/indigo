@@ -33,7 +33,7 @@ final class AudioPlayerImpl(loadedAudioAssets: List[LoadedAudioAsset], context: 
     gainNode.connect(context.destination)
     gainNode.gain.value = volume.amount
 
-    AudioNodes(source, gainNode)
+    new AudioNodes(source, gainNode)
   }
 
   def playSound(assetRef: String, volume: Volume): Unit =
@@ -42,11 +42,11 @@ final class AudioPlayerImpl(loadedAudioAssets: List[LoadedAudioAsset], context: 
     }
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var sourceA: AudioSourceState = AudioSourceState(BindingKey("none"), None)
+  private var sourceA: AudioSourceState = new AudioSourceState(BindingKey("none"), None)
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var sourceB: AudioSourceState = AudioSourceState(BindingKey("none"), None)
+  private var sourceB: AudioSourceState = new AudioSourceState(BindingKey("none"), None)
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var sourceC: AudioSourceState = AudioSourceState(BindingKey("none"), None)
+  private var sourceC: AudioSourceState = new AudioSourceState(BindingKey("none"), None)
 
   def playAudio(sceneAudio: SceneAudio): Unit = {
     updateSource(sceneAudio.sourceA, sourceA).foreach { src =>
@@ -67,7 +67,7 @@ final class AudioPlayerImpl(loadedAudioAssets: List[LoadedAudioAsset], context: 
         sceneAudioSource.playbackPattern match {
           case PlaybackPattern.Silent =>
             currentSource.audioNodes.foreach(_.audioBufferSourceNode.stop(0))
-            AudioSourceState(sceneAudioSource.bindingKey, None)
+            new AudioSourceState(sceneAudioSource.bindingKey, None)
 
           case PlaybackPattern.SingleTrackLoop(track) =>
             currentSource.audioNodes.foreach(_.audioBufferSourceNode.stop(0))
@@ -79,14 +79,14 @@ final class AudioPlayerImpl(loadedAudioAssets: List[LoadedAudioAsset], context: 
 
             nodes.foreach(_.audioBufferSourceNode.start(0))
 
-            AudioSourceState(
+            new AudioSourceState(
               bindingKey = sceneAudioSource.bindingKey,
               audioNodes = nodes
             )
         }
       }
 
-  private case class AudioSourceState(bindingKey: BindingKey, audioNodes: Option[AudioNodes])
-  private case class AudioNodes(audioBufferSourceNode: AudioBufferSourceNode, gainNode: GainNode)
+  private class AudioSourceState(val bindingKey: BindingKey, val audioNodes: Option[AudioNodes])
+  private class AudioNodes(val audioBufferSourceNode: AudioBufferSourceNode, val gainNode: GainNode)
 
 }
