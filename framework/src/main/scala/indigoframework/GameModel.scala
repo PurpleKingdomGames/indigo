@@ -1,7 +1,7 @@
 package indigoframework
 
 import indigo.Outcome
-import indigo.gameengine.events.GlobalEvent
+import indigo.shared.events.GlobalEvent
 import indigo.shared.GameDefinition
 
 object GameModelHelper {

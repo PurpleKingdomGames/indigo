@@ -2,8 +2,7 @@ package ingidoexamples
 
 import indigo._
 import indigoexts.subsystems.automata._
-import indigo.temporal._
-import indigo.abstractions.syntax._
+import indigo.syntax._
 
 object Score {
 

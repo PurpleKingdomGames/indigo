@@ -1,6 +1,6 @@
 package indigoframework
 
-import indigo.gameengine.assets.AssetManager
+import indigo.gameengine.AssetManager
 import indigo.shared.IndigoLogger
 import indigo.shared.{AssetList, AssetType}
 import indigo.json._

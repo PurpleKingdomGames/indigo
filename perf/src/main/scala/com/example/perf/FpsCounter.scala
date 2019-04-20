@@ -1,5 +1,6 @@
 package com.example.perf
-import indigo.time.GameTime
+
+import indigo.GameTime
 
 final case class FpsCounter(fps: Int, lastInterval: Double, frameCountSinceInterval: Int) {
   def asString: String = s"FPS: ${fps.toString}"

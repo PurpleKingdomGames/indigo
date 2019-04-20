@@ -1,7 +1,7 @@
 package indigoframework
 
 import indigo.scenegraph._
-import indigo.scenegraph.datatypes.{AmbientLight, Rectangle}
+import indigo.shared.datatypes.{AmbientLight, Rectangle}
 import indigo.shared.EntityRectangle
 
 import indigo.shared.EqualTo._

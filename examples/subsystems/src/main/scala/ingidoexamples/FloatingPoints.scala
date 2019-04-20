@@ -1,8 +1,6 @@
 package ingidoexamples
 
 import indigo._
-import indigo.time.Millis
-import indigo.temporal.{Signal, SignalFunction, TimeVaryingValue}
 import indigoexts.subsystems.SubSystem
 
 final case class FloatingPoints(fontKey: FontKey, entities: List[FloatingPointEntity]) extends SubSystem {

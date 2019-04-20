@@ -2,10 +2,8 @@ package ingidoexamples
 
 import indigo._
 import indigoexts.entrypoint._
-import indigoexts.scenemanager.SceneEvent
 import indigoexts.scenes._
 import indigoexts.lens._
-import indigo.collections.NonEmptyList
 import indigoexts.subsystems.fpscounter.FPSCounter
 
 object ScenesSetup extends IndigoGameWithScenes[MyStartUpData, MyGameModel, MyViewModel] {
