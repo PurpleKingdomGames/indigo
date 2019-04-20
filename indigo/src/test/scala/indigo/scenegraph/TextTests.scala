@@ -1,6 +1,6 @@
-package indigo.shared.scenegraph
+package indigo.scenegraph
 
-import indigo.gameengine.assets.FontRegister
+import indigo.gameengine.FontRegister
 import indigo.shared.datatypes.{FontChar, FontInfo, FontKey, Rectangle}
 import utest._
 

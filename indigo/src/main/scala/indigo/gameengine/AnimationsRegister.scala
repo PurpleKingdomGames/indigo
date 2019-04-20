@@ -16,7 +16,7 @@ object AnimationsRegister {
   @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   private val animationsRegistry: mutable.HashMap[AnimationKey, Animation] = mutable.HashMap()
 
-  private[gameengine] def register(animations: Animation): Unit = {
+  def register(animations: Animation): Unit = {
     animationsRegistry.update(animations.animationsKey, animations)
     ()
   }
@@ -28,10 +28,10 @@ object AnimationsRegister {
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var animationStates: AnimationStates = AnimationStates(Nil)
 
-  private[gameengine] def getAnimationStates: AnimationStates =
+  def getAnimationStates: AnimationStates =
     animationStates
 
-  private[gameengine] def setAnimationStates(updatedAnimationStates: AnimationStates): Unit =
+  def setAnimationStates(updatedAnimationStates: AnimationStates): Unit =
     animationStates = updatedAnimationStates
 
   // Frame animation actions queue

@@ -1,7 +1,7 @@
-package indigo.gameengine.assets
+package indigo.gameengine
 
-import indigo.gameengine.PowerOfTwo
-import indigo.gameengine.scenegraph.datatypes.Point
+import indigo.shared.PowerOfTwo
+import indigo.shared.datatypes.Point
 import utest._
 import indigo.TestFail._
 

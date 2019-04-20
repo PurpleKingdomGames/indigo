@@ -1,8 +1,9 @@
 package indigo.gameengine
 
-import indigo.gameengine.events._
+import indigo.shared.events._
+import indigo.shared.Outcome
 import utest._
-import indigo.time.{GameTime, Millis}
+import indigo.shared.time.{GameTime, Millis}
 
 object GameLoopTests extends TestSuite {
 

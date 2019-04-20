@@ -9,7 +9,7 @@ object FontRegister {
   @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   private val fontRegistry: mutable.HashMap[FontKey, FontInfo] = mutable.HashMap()
 
-  private[gameengine] def register(fontInfo: FontInfo): Unit = {
+  def register(fontInfo: FontInfo): Unit = {
     fontRegistry.update(fontInfo.fontKey, fontInfo)
     ()
   }
