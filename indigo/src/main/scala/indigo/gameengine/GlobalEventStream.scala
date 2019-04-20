@@ -1,7 +1,7 @@
-package indigo.gameengine.events
+package indigo.gameengine
 
-import indigo.gameengine.audio.AudioPlayer
-import indigo.networking._
+import indigo.shared.events.{GlobalEvent, NetworkSendEvent, PlaySound}
+import indigo.shared.networking.{HttpRequest, WebSocketEvent}
 
 import scala.collection.mutable
 

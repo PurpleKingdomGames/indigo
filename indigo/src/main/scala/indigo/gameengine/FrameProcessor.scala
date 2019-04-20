@@ -1,9 +1,10 @@
 package indigo.gameengine
 
-import indigo.dice.Dice
-import indigo.time.GameTime
-import indigo.gameengine.events.{FrameInputEvents, GlobalEvent, Signals}
-import indigo.gameengine.scenegraph.SceneUpdateFragment
+import indigo.shared.dice.Dice
+import indigo.shared.Outcome
+import indigo.shared.time.GameTime
+import indigo.shared.events.{FrameInputEvents, GlobalEvent, Signals}
+import indigo.scenegraph.SceneUpdateFragment
 
 trait FrameProcessor[Model, ViewModel] {
   def run: (Model, ViewModel) => (GameTime, List[GlobalEvent], Signals, Dice) => (Outcome[(Model, ViewModel)], SceneUpdateFragment)

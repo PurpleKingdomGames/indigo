@@ -1,6 +1,6 @@
 package indigo.platform.renderer
 
-import indigo.shared.scenegraph.datatypes.AmbientLight
+import indigo.shared.datatypes.AmbientLight
 import indigo.shared.metrics._
 import indigo.shared.ClearColor
 import org.scalajs.dom.raw.WebGLBuffer

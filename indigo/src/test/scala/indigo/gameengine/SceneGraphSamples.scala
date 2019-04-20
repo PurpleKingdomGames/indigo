@@ -1,8 +1,8 @@
 // package indigo.shared.scenegraph
 
 // import indigo.gameengine.assets.{AnimationsRegister, FontRegister}
-// import indigo.shared.scenegraph.datatypes._
-// import indigo.shared.scenegraph.animation._
+// import indigo.shared.datatypes._
+// import indigo.shared.animation._
 // import indigo.shared.collections.NonEmptyList
 
 // object SceneGraphSamples {

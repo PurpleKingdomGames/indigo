@@ -1,7 +1,7 @@
-package indigo.networking
+package indigo.gameengine
 
-import indigo.gameengine.events.{GlobalEventStream, NetworkReceiveEvent, NetworkSendEvent}
-import indigo.networking.HttpReceiveEvent.{HttpError, HttpResponse}
+import indigo.shared.networking.HttpReceiveEvent.{HttpError, HttpResponse}
+import indigo.shared.networking.HttpRequest
 import org.scalajs.dom
 import org.scalajs.dom.XMLHttpRequest
 

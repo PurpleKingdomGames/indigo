@@ -1,7 +1,7 @@
 package indigo.shared.scenegraph
 
 import indigo.gameengine.assets.FontRegister
-import indigo.shared.scenegraph.datatypes.{FontChar, FontInfo, FontKey, Rectangle}
+import indigo.shared.datatypes.{FontChar, FontInfo, FontKey, Rectangle}
 import utest._
 
 object TextTests extends TestSuite {

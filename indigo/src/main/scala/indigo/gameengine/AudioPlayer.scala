@@ -1,8 +1,8 @@
-package indigo.gameengine.audio
+package indigo.gameengine
 
-import indigo.gameengine.assets.LoadedAudioAsset
-import indigo.gameengine.scenegraph.datatypes.BindingKey
-import indigo.gameengine.scenegraph.{PlaybackPattern, SceneAudio, SceneAudioSource, Volume}
+import indigo.shared.datatypes.BindingKey
+import indigo.scenegraph.{PlaybackPattern, SceneAudio, SceneAudioSource}
+import indigo.shared.audio.Volume
 import org.scalajs.dom
 import org.scalajs.dom.{AudioBufferSourceNode, GainNode}
 import org.scalajs.dom.raw.AudioContext

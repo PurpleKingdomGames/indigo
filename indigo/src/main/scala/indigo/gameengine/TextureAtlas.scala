@@ -1,8 +1,8 @@
-package indigo.gameengine.assets
+package indigo.gameengine
 
-import indigo.gameengine.PowerOfTwo
-import indigo.gameengine.assets.TextureAtlas.supportedSizes
-import indigo.gameengine.scenegraph.datatypes.Point
+import indigo.shared.PowerOfTwo
+import indigo.gameengine.TextureAtlas.supportedSizes
+import indigo.shared.datatypes.Point
 import indigo.shared.IndigoLogger
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._

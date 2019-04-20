@@ -1,9 +1,10 @@
-package indigo.gameengine.assets
+package indigo.gameengine
 
-import indigo.time.GameTime
-import indigo.gameengine.scenegraph.datatypes.BindingKey
-import indigo.gameengine.scenegraph.animation.{AnimationAction, Animation, AnimationKey}
-import indigo.runtime.metrics._
+import indigo.shared.time.GameTime
+import indigo.shared.datatypes.BindingKey
+import indigo.shared.animation.{AnimationAction, Animation, AnimationKey}
+import indigo.shared.assets.AnimationStates
+import indigo.shared.metrics._
 import indigo.shared.EqualTo._
 
 import scala.annotation.tailrec

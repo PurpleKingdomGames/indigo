@@ -1,8 +1,8 @@
 package indigo.shared.events
 
 import indigo.shared.constants.KeyCode
-import indigo.shared.scenegraph.Volume
-import indigo.shared.scenegraph.datatypes.Point
+import indigo.shared.audio.Volume
+import indigo.shared.datatypes.Point
 
 // Events that are passed to the GlobalEventStream
 trait GlobalEvent

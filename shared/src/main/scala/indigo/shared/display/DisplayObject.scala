@@ -1,6 +1,6 @@
 package indigo.shared.display
 
-import indigo.shared.scenegraph.datatypes.AmbientLight
+import indigo.shared.datatypes.AmbientLight
 
 import indigo.shared.AsString
 import indigo.shared.EqualTo

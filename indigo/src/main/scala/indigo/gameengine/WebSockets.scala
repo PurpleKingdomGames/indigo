@@ -1,14 +1,13 @@
-package indigo.networking
+package indigo.gameengine
 
-import indigo.gameengine.events._
-import indigo.gameengine.scenegraph.datatypes.BindingKey
-import indigo.networking.WebSocketReadyState.{CLOSED, CLOSING}
+import indigo.shared.events._
+import indigo.shared.networking.WebSocketReadyState
+import indigo.shared.networking.WebSocketReadyState.{CLOSED, CLOSING}
+import indigo.shared.networking.{WebSocketId, WebSocketConfig, WebSocketEvent}
 import indigo.shared.IndigoLogger
 import org.scalajs.dom
 
-import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
-import indigo.shared.AsString
 
 import scala.collection.mutable
 

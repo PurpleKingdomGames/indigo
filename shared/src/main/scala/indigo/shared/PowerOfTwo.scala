@@ -1,6 +1,6 @@
 package indigo.shared
 
-import indigo.shared.scenegraph.datatypes.Point
+import indigo.shared.datatypes.Point
 
 import indigo.shared.EqualTo._
 

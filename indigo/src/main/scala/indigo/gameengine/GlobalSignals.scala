@@ -1,8 +1,8 @@
-package indigo.gameengine.events
+package indigo.gameengine
 
-import indigo.gameengine.constants.KeyCode
-import indigo.gameengine.scenegraph.datatypes.Point
+import indigo.shared.events.Signals
 import indigo.shared.EqualTo._
+import indigo.shared.events.{GlobalEvent, MouseEvent, KeyboardEvent}
 
 trait GlobalSignals {
   def calculate(previous: Signals, events: List[GlobalEvent]): Signals

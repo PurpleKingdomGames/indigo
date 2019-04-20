@@ -1,7 +1,7 @@
 package indigo.shared.events
 
 import indigo.shared.constants.KeyCode
-import indigo.shared.scenegraph.datatypes.{Point, Rectangle}
+import indigo.shared.datatypes.{Point, Rectangle}
 import indigo.shared.EqualTo._
 
 /**

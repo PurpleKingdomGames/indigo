@@ -1,7 +1,7 @@
 package indigo.shared
 
-import indigo.shared.scenegraph.animation.Animation
-import indigo.shared.scenegraph.datatypes.FontInfo
+import indigo.shared.animation.Animation
+import indigo.shared.datatypes.FontInfo
 
 sealed trait Startup[+ErrorType, +SuccessType] extends Product with Serializable {
   def additionalAnimations: Set[Animation] =

@@ -3,7 +3,7 @@ package indigo.shared.networking
 import indigo.shared.events.{NetworkSendEvent, NetworkReceiveEvent}
 import indigo.shared.EqualTo
 import indigo.shared.AsString
-import indigo.shared.scenegraph.datatypes.BindingKey
+import indigo.shared.datatypes.BindingKey
 
 final case class WebSocketId(id: String)
 object WebSocketId {

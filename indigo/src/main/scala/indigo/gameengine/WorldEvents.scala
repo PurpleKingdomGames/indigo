@@ -1,6 +1,7 @@
-package indigo.gameengine.events
+package indigo.gameengine
 
-import indigo.gameengine.constants.Keys
+import indigo.shared.constants.Keys
+import indigo.shared.events.{MouseEvent, KeyboardEvent}
 import org.scalajs.dom
 import org.scalajs.dom.html
 

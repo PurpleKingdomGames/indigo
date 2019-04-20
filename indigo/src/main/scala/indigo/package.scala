@@ -1,48 +1,51 @@
-import indigo.gameengine.events.EventTypeAliases
-import indigo.gameengine.scenegraph.SceneGraphTypeAliases
-import indigo.gameengine.scenegraph.datatypes.DataTypeAliases
-import indigo.networking.NetworkingTypeAliases
+import indigo.shared.events.EventTypeAliases
+import indigo.scenegraph.SceneGraphTypeAliases
+import indigo.shared.datatypes.DataTypeAliases
+import indigo.shared.networking.NetworkingTypeAliases
 import indigo.shared.SharedTypeAliases
 
 package object indigo extends DataTypeAliases with SceneGraphTypeAliases with NetworkingTypeAliases with SharedTypeAliases with EventTypeAliases {
 
   val logger: indigo.shared.IndigoLogger.type = indigo.shared.IndigoLogger
 
-  type Startup[ErrorType, SuccessType] = gameengine.Startup[ErrorType, SuccessType]
-  val Startup: gameengine.Startup.type = gameengine.Startup
+  type Startup[ErrorType, SuccessType] = shared.Startup[ErrorType, SuccessType]
+  val Startup: shared.Startup.type = shared.Startup
 
-  type GameTime = time.GameTime
-  val GameTime: time.GameTime.type = time.GameTime
+  type GameTime = shared.time.GameTime
+  val GameTime: shared.time.GameTime.type = shared.time.GameTime
 
-  type Millis = time.Millis
-  val Millis: time.Millis.type = time.Millis
+  type Millis = shared.time.Millis
+  val Millis: shared.time.Millis.type = shared.time.Millis
 
-  type Seconds = time.Seconds
-  val Seconds: time.Seconds.type = time.Seconds
+  type Seconds = shared.time.Seconds
+  val Seconds: shared.time.Seconds.type = shared.time.Seconds
 
-  type Dice = dice.Dice
-  val Dice: dice.Dice.type = dice.Dice
+  type Dice = shared.dice.Dice
+  val Dice: shared.dice.Dice.type = shared.dice.Dice
 
-  type AssetCollection = gameengine.assets.AssetCollection
-  val AssetCollection: gameengine.assets.AssetCollection.type = gameengine.assets.AssetCollection
+  type AssetCollection = gameengine.AssetCollection
+  val AssetCollection: gameengine.AssetCollection.type = gameengine.AssetCollection
 
-  type ToReportable[T] = gameengine.ToReportable[T]
-  val ToReportable: gameengine.ToReportable.type = gameengine.ToReportable
+  type ToReportable[T] = shared.ToReportable[T]
+  val ToReportable: shared.ToReportable.type = shared.ToReportable
 
-  type StartupErrors = gameengine.StartupErrors
-  val StartupErrors: gameengine.StartupErrors.type = gameengine.StartupErrors
+  type StartupErrors = shared.StartupErrors
+  val StartupErrors: shared.StartupErrors.type = shared.StartupErrors
 
-  type Outcome[T] = gameengine.Outcome[T]
-  val Outcome: gameengine.Outcome.type = gameengine.Outcome
+  type Outcome[T] = shared.Outcome[T]
+  val Outcome: shared.Outcome.type = shared.Outcome
 
-  val Keys: gameengine.constants.Keys.type = gameengine.constants.Keys
+  val Keys: shared.constants.Keys.type = shared.constants.Keys
 
-  type KeyCode = gameengine.constants.KeyCode
-  val KeyCode: gameengine.constants.KeyCode.type = gameengine.constants.KeyCode
+  type KeyCode = shared.constants.KeyCode
+  val KeyCode: shared.constants.KeyCode.type = shared.constants.KeyCode
 
-  type PowerOfTwo = gameengine.PowerOfTwo
-  val PowerOfTwo: gameengine.PowerOfTwo.type = gameengine.PowerOfTwo
+  type PowerOfTwo = shared.PowerOfTwo
+  val PowerOfTwo: shared.PowerOfTwo.type = shared.PowerOfTwo
 
-  type NonEmptyList[A] = indigo.collections.NonEmptyList[A]
-  val NonEmptyList: indigo.collections.NonEmptyList.type = indigo.collections.NonEmptyList
+  type NonEmptyList[A] = shared.collections.NonEmptyList[A]
+  val NonEmptyList: shared.collections.NonEmptyList.type = shared.collections.NonEmptyList
+
+  val WebSockets: gameengine.WebSockets.type = gameengine.WebSockets
+  val Http: gameengine.Http.type             = gameengine.Http
 }

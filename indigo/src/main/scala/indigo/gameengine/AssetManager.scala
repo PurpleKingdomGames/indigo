@@ -1,4 +1,4 @@
-package indigo.gameengine.assets
+package indigo.gameengine
 
 import indigo.shared.IndigoLogger
 import indigo.shared.AssetType

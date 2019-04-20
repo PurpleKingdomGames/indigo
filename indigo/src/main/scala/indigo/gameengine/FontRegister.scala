@@ -1,6 +1,6 @@
-package indigo.gameengine.assets
+package indigo.gameengine
 
-import indigo.gameengine.scenegraph.datatypes.{FontInfo, FontKey}
+import indigo.shared.datatypes.{FontInfo, FontKey}
 
 import scala.collection.mutable
 

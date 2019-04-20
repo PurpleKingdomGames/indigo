@@ -1,16 +1,14 @@
 package indigo.gameengine
 
-import indigo.gameengine.assets._
-import indigo.gameengine.audio.AudioPlayer
-import indigo.gameengine.events._
-import indigo.gameengine.scenegraph.animation._
-import indigo.gameengine.scenegraph.datatypes.FontInfo
+import indigo.shared.animation._
+import indigo.shared.datatypes.FontInfo
 import indigo.platform.renderer._
-import indigo.runtime._
-import indigo.runtime.metrics._
+import indigo.shared.metrics._
 import indigo.shared.{AssetType, GameConfig}
 import indigo.shared.IndigoLogger
-import indigo.gameengine.display.Vector2
+import indigo.shared.display.Vector2
+import indigo.shared.Startup
+import indigo.shared.GameContext
 
 import org.scalajs.dom
 import org.scalajs.dom.html.Canvas

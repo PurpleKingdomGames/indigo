@@ -1,7 +1,7 @@
 package indigo.shared.assets
 
-import indigo.shared.scenegraph.animation.AnimationMemento
-import indigo.shared.scenegraph.datatypes.BindingKey
+import indigo.shared.animation.AnimationMemento
+import indigo.shared.datatypes.BindingKey
 
 import indigo.shared.EqualTo._
 

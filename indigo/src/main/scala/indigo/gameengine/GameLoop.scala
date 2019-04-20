@@ -1,19 +1,21 @@
 package indigo.gameengine
 
-import indigo.gameengine.assets.AnimationsRegister
-import indigo.gameengine.audio.AudioPlayer
-import indigo.gameengine.events._
-import indigo.gameengine.scenegraph.datatypes.AmbientLight
-import indigo.gameengine.scenegraph.{SceneAudio, SceneGraphRootNode, SceneGraphRootNodeFlat, SceneUpdateFragment}
-import indigo.renderer.{AssetMapping, Renderer}
-import indigo.runtime.GameContext
-import indigo.runtime.metrics._
+import indigo.shared.events._
+import indigo.shared.datatypes.AmbientLight
+import indigo.scenegraph.{SceneAudio, SceneGraphRootNode, SceneGraphRootNodeFlat, SceneUpdateFragment}
+import indigo.shared.GameContext
+import indigo.shared.metrics._
 import indigo.shared.GameConfig
-import indigo.dice.Dice
+import indigo.shared.Outcome
+import indigo.shared.dice.Dice
+import indigo.shared.time.GameTime
+import indigo.shared.time.Millis
+import indigo.shared.display.{Displayable, DisplayLayer}
+
+import indigo.platform.renderer.AssetMapping
+import indigo.platform.renderer.Renderer
+
 import org.scalajs.dom
-import indigo.time.GameTime
-import indigo.time.Millis
-import indigo.gameengine.display.{DisplayObjectConversions, Displayable, DisplayLayer}
 
 import scala.annotation.tailrec
 

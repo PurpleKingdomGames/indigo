@@ -1,17 +1,21 @@
-package indigo.shared.display
+package indigo.gameengine
 
-import indigo.gameengine.assets.{AnimationsRegister, FontRegister}
-import indigo.gameengine.scenegraph.datatypes._
-import indigo.gameengine.scenegraph._
-import indigo.gameengine.scenegraph.animation._
-import indigo.platform.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
-import indigo.renderer.AssetMapping
+import indigo.shared.display.{DisplayObject, SpriteSheetFrame}
+import indigo.shared.datatypes.{FontInfo, Rectangle, TextAlignment, FontChar}
+import indigo.shared.animation.Animation
+import indigo.shared.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import indigo.shared.IndigoLogger
-import indigo.runtime.metrics.Metrics
-import indigo.time.GameTime
+import indigo.shared.metrics.Metrics
+import indigo.shared.time.GameTime
+import indigo.shared.display.Vector2
+
+import indigo.platform.renderer.AssetMapping
+
+import indigo.scenegraph.{Renderable, Graphic, Sprite, Text, TextLine}
 
 import scala.annotation.tailrec
 import scala.collection.mutable
+
 import indigo.shared.EqualTo._
 
 object DisplayObjectConversions {
@@ -38,7 +42,7 @@ object DisplayObjectConversions {
             Vector2.zero
           }
       }
-  )
+    )
 
   private val lookupAtlasName: (AssetMapping, String) => String = (assetMapping, name) =>
     lookupAtlasNameCache.getOrElseUpdate(name, {
@@ -56,7 +60,7 @@ object DisplayObjectConversions {
           Vector2.one
         }
       }
-  )
+    )
 
   def leafToDisplayObject(gameTime: GameTime, assetMapping: AssetMapping, metrics: Metrics): Renderable => List[DisplayObject] = {
     case leaf: Graphic =>
@@ -133,7 +137,7 @@ object DisplayObjectConversions {
           case TextAlignment.Center => -(lineBounds.size.x / 2)
 
           case TextAlignment.Right => -lineBounds.size.x
-      }
+        }
 
       val converterFunc: (TextLine, Int, Int) => List[DisplayObject] =
         DisplayObjectConversions.textLineToDisplayObjects(leaf, assetMapping)
@@ -182,7 +186,7 @@ object DisplayObjectConversions {
         .getOrElse {
           IndigoLogger.errorOnce(s"Cannot render Text, missing Font with key: ${leaf.fontKey}")
           Nil
-      }
+        }
 
   private def zipWithCharDetails(charList: List[Char], fontInfo: FontInfo): List[(FontChar, Int)] = {
     @tailrec
