@@ -24,6 +24,22 @@ sealed trait PowerOfTwo {
   def toPoint: Point = Point(value, value)
 }
 object PowerOfTwo {
+
+  implicit val eq: EqualTo[PowerOfTwo] = {
+    val e = implicitly[EqualTo[Int]]
+
+    EqualTo.create { (a, b) =>
+      e.equal(a.value, b.value)
+    }
+  }
+
+  implicit val show: AsString[PowerOfTwo] = {
+    val s = implicitly[AsString[Int]]
+    AsString.create { v =>
+      s"PowerOfTwo(${s.show(v.value)})"
+    }
+  }
+
   case object _2 extends PowerOfTwo {
     val value: Int          = 2
     val halved: PowerOfTwo  = _2

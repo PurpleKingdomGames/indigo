@@ -124,7 +124,7 @@ object InputField {
 
       InputFieldViewUpdate(
         rendered.toNodes,
-        applyEvent(rendered.field.bounds.moveTo(position), inputField, frameEvents)
+        applyEvent(rendered.field.bounds.moveBy(position), inputField, frameEvents)
       )
     }
 

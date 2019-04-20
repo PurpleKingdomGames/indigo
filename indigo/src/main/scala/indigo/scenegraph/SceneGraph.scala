@@ -122,15 +122,13 @@ final case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String,
   def y: Int = bounds.position.y - ref.y
 
   def moveTo(pt: Point): Graphic =
-    this.copy(bounds = bounds.copy(position = pt))
+    this.copy(bounds = bounds.moveTo(pt))
   def moveTo(x: Int, y: Int): Graphic =
     moveTo(Point(x, y))
 
   def moveBy(pt: Point): Graphic =
     this.copy(
-      bounds = bounds.copy(
-        position = this.bounds.position + pt
-      )
+      bounds = bounds.moveTo(this.bounds.position + pt)
     )
   def moveBy(x: Int, y: Int): Graphic =
     moveBy(Point(x, y))
@@ -212,15 +210,13 @@ final case class Sprite(
     this.copy(depth = depth)
 
   def moveTo(pt: Point): Sprite =
-    this.copy(bounds = bounds.copy(position = pt))
+    this.copy(bounds = bounds.moveTo(pt))
   def moveTo(x: Int, y: Int): Sprite =
     moveTo(Point(x, y))
 
   def moveBy(pt: Point): Sprite =
     this.copy(
-      bounds = bounds.copy(
-        position = this.bounds.position + pt
-      )
+      bounds = bounds.moveTo(this.bounds.position + pt)
     )
   def moveBy(x: Int, y: Int): Sprite =
     moveBy(Point(x, y))
@@ -317,7 +313,7 @@ final case class Text(text: String, alignment: TextAlignment, position: Point, d
 
   val bounds: Rectangle =
     lines.map(_.lineBounds).fold(Rectangle.zero) { (acc, next) =>
-      acc.copy(size = Point(Math.max(acc.width, next.width), acc.height + next.height))
+      acc.resize(Point(Math.max(acc.width, next.width), acc.height + next.height))
     }
 
   def moveTo(pt: Point): Text =
@@ -367,10 +363,10 @@ final case class Text(text: String, alignment: TextAlignment, position: Point, d
     this.copy(eventHandler = e)
 
   private val realBound: Rectangle =
-    (alignment, bounds.copy(position = position)) match {
+    (alignment, bounds.moveTo(position)) match {
       case (TextAlignment.Left, b)   => b
-      case (TextAlignment.Center, b) => b.copy(position = Point(b.x - (b.width / 2), b.y))
-      case (TextAlignment.Right, b)  => b.copy(position = Point(b.x - b.width, b.y))
+      case (TextAlignment.Center, b) => b.moveTo(Point(b.x - (b.width / 2), b.y))
+      case (TextAlignment.Right, b)  => b.moveTo(Point(b.x - b.width, b.y))
     }
 
   def eventHandlerWithBoundsApplied(e: GlobalEvent): Option[GlobalEvent] =

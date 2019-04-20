@@ -5,7 +5,6 @@ import indigo.gameengine.TextureAtlas.supportedSizes
 import indigo.shared.datatypes.Point
 import indigo.shared.IndigoLogger
 import indigo.shared.EqualTo
-import indigo.shared.EqualTo._
 import org.scalajs.dom
 import org.scalajs.dom.{html, raw}
 
@@ -56,14 +55,14 @@ final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, 
   def lookUpByName(name: String): Option[AtlasLookupResult] =
     legend.get(name).flatMap { i =>
       atlases.get(i.id).map { a =>
-        AtlasLookupResult(name, i.id, a, i.offset)
+        new AtlasLookupResult(name, i.id, a, i.offset)
       }
     }
 
   def report: String = {
     val atlasRecordToString: Map[String, AtlasIndex] => ((AtlasId, Atlas)) => String = leg =>
       at => {
-        val relevant = leg.filter(k => k._2.id === at._1)
+        val relevant = leg.filter(k => implicitly[EqualTo[AtlasId]].equal(k._2.id, at._1))
 
         s"Atlas [${at._1.id}] [${at._2.size.value}] contains images: ${relevant.toList.map(_._1).mkString(", ")}"
       }
@@ -78,19 +77,65 @@ final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, 
 
 }
 
-final case class AtlasId(id: String) extends AnyVal
+final class AtlasId(val id: String) extends AnyVal
 object AtlasId {
 
-  implicit def eq(implicit eqS: EqualTo[String]): EqualTo[AtlasId] =
+  implicit val equalTo: EqualTo[AtlasId] = {
+    val eqS = implicitly[EqualTo[String]]
+
     EqualTo.create { (a, b) =>
       eqS.equal(a.id, b.id)
     }
+  }
 
 }
 
-final case class AtlasIndex(id: AtlasId, offset: Point)
-final case class Atlas(size: PowerOfTwo, imageData: Option[raw.ImageData]) // Yuk. Only optional so that testing is bearable.
-final case class AtlasLookupResult(name: String, atlasId: AtlasId, atlas: Atlas, offset: Point)
+final class AtlasIndex(val id: AtlasId, val offset: Point)
+object AtlasIndex {
+
+  implicit val equalTo: EqualTo[AtlasIndex] = {
+    val eqId = implicitly[EqualTo[AtlasId]]
+    val eqPt = implicitly[EqualTo[Point]]
+
+    EqualTo.create { (a, b) =>
+      eqId.equal(a.id, b.id) && eqPt.equal(a.offset, b.offset)
+    }
+  }
+
+}
+
+final class Atlas(val size: PowerOfTwo, val imageData: Option[raw.ImageData]) // Yuk. Only optional so that testing is bearable.
+object Atlas {
+
+  implicit val equalTo: EqualTo[Atlas] = {
+    val eqP2 = implicitly[EqualTo[PowerOfTwo]]
+    val eqB  = implicitly[EqualTo[Boolean]]
+
+    EqualTo.create { (a, b) =>
+      eqP2.equal(a.size, b.size) && eqB.equal(a.imageData.isDefined, b.imageData.isDefined)
+    }
+  }
+
+}
+
+final class AtlasLookupResult(val name: String, val atlasId: AtlasId, val atlas: Atlas, val offset: Point)
+object AtlasLookupResult {
+
+  implicit val equalTo: EqualTo[AtlasLookupResult] = {
+    val eqS  = implicitly[EqualTo[String]]
+    val eqId = implicitly[EqualTo[AtlasId]]
+    val eqAt = implicitly[EqualTo[Atlas]]
+    val eqPt = implicitly[EqualTo[Point]]
+
+    EqualTo.create { (a, b) =>
+      eqS.equal(a.name, b.name) &&
+      eqId.equal(a.atlasId, b.atlasId) &&
+      eqAt.equal(a.atlas, b.atlas) &&
+      eqPt.equal(a.offset, b.offset)
+    }
+  }
+
+}
 
 object TextureAtlasFunctions {
 
@@ -163,7 +208,7 @@ object TextureAtlasFunctions {
     val imageData: raw.ImageData =
       ctx.getImageData(0, 0, textureMap.size.value, textureMap.size.value).asInstanceOf[raw.ImageData]
 
-    Atlas(textureMap.size, Option(imageData))
+    new Atlas(textureMap.size, Option(imageData))
   }
 
   val convertTextureDetailsToTree: TextureDetails => AtlasQuadTree = textureDetails => AtlasQuadNode(textureDetails.size, AtlasTexture(textureDetails.imageRef))
@@ -180,7 +225,7 @@ object TextureAtlasFunctions {
 
             val legend: Map[String, AtlasIndex] =
               textureMap.textureCoords.foldLeft(Map.empty[String, AtlasIndex])(
-                (m, t) => m ++ Map(t.imageRef.name -> AtlasIndex(atlasId, t.coords))
+                (m, t) => m ++ Map(t.imageRef.name -> new AtlasIndex(atlasId, t.coords))
               )
 
             val atlas = createAtlasFunc(textureMap, lookupByName)
@@ -202,7 +247,7 @@ object TextureAtlasFunctions {
       list =>
         combineTextureAtlases(
           list.zipWithIndex
-            .map(p => convertToTextureAtlas(createAtlasFunc)(lookupByName)(AtlasId(TextureAtlas.IdPrefix + p._2.toString), p._1))
+            .map(p => convertToTextureAtlas(createAtlasFunc)(lookupByName)(new AtlasId(TextureAtlas.IdPrefix + p._2.toString), p._1))
         )
 
   def mergeTrees(a: AtlasQuadTree, b: AtlasQuadTree, max: PowerOfTwo): Option[AtlasQuadTree] =

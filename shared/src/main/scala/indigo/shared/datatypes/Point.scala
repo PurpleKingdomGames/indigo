@@ -2,7 +2,7 @@ package indigo.shared.datatypes
 
 import indigo.shared.{AsString, EqualTo}
 
-final case class Point(x: Int, y: Int) {
+final class Point(val x: Int, val y: Int) {
   def +(pt: Point): Point = Point(x + pt.x, y + pt.y)
   def +(i: Int): Point    = Point(x + i, y + i)
   def -(pt: Point): Point = Point(x - pt.x, y - pt.y)
@@ -12,8 +12,8 @@ final case class Point(x: Int, y: Int) {
   def /(pt: Point): Point = Point(x / pt.x, y / pt.y)
   def /(i: Int): Point    = Point(x / i, y / i)
 
-  def withX(x: Int): Point = this.copy(x = x)
-  def withY(y: Int): Point = this.copy(y = y)
+  def withX(newX: Int): Point = Point(newX, y)
+  def withY(newY: Int): Point = Point(x, newY)
 
   def invert: Point =
     Point(-x, -y)
@@ -23,6 +23,13 @@ final case class Point(x: Int, y: Int) {
 }
 
 object Point {
+
+  def apply(x: Int, y: Int): Point =
+    new Point(x, y)
+
+  def unapply(pt: Point): Option[(Int, Int)] =
+    Option((pt.x, pt.y))
+
   val zero: Point = Point(0, 0)
 
   def tuple2ToPoint(t: (Int, Int)): Point = Point(t._1, t._2)
@@ -30,7 +37,7 @@ object Point {
   implicit def show(implicit showI: AsString[Int]): AsString[Point] =
     AsString.create(p => s"""Point(${showI.show(p.x)}, ${showI.show(p.y)})""")
 
-  implicit def eq(implicit eqI: EqualTo[Int]): EqualTo[Point] =
+  implicit def equalTo(implicit eqI: EqualTo[Int]): EqualTo[Point] =
     EqualTo.create { (a, b) =>
       eqI.equal(a.x, b.x) && eqI.equal(a.y, b.y)
     }

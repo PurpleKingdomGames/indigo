@@ -3,7 +3,7 @@ package indigo.shared.datatypes
 import indigo.shared.{AsString, EqualTo}
 import indigo.shared.AsString._
 
-final case class Rectangle(position: Point, size: Point) {
+final class Rectangle(val position: Point, val size: Point) {
   val x: Int       = position.x
   val y: Int       = position.y
   val width: Int   = size.x
@@ -49,15 +49,28 @@ final case class Rectangle(position: Point, size: Point) {
   def overlaps(other: Rectangle): Boolean =
     Rectangle.overlapping(this, other)
 
-  def moveTo(point: Point): Rectangle =
+  def moveBy(point: Point): Rectangle =
     Rectangle(x + point.x, y + point.y, width, height)
+
+  def moveTo(point: Point): Rectangle =
+    Rectangle(point, size)
+
+  def resize(point: Point): Rectangle =
+    Rectangle(position, point)
 }
 
 object Rectangle {
 
   val zero: Rectangle = Rectangle(0, 0, 0, 0)
 
-  def apply(x: Int, y: Int, width: Int, height: Int): Rectangle = Rectangle(Point(x, y), Point(width, height))
+  def apply(position: Point, size: Point): Rectangle =
+    new Rectangle(position, size)
+
+  def apply(x: Int, y: Int, width: Int, height: Int): Rectangle =
+    Rectangle(Point(x, y), Point(width, height))
+
+  def unapply(rectangle: Rectangle): Option[(Point, Point)] =
+    Option((rectangle.position, rectangle.size))
 
   def fromTwoPoints(pt1: Point, pt2: Point): Rectangle = {
     val x = Math.min(pt1.x, pt2.x)
