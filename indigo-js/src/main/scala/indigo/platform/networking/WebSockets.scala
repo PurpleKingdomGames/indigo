@@ -1,10 +1,12 @@
-package indigo.gameengine
+package indigo.platform.networking
 
 import indigo.shared.events._
 import indigo.shared.networking.WebSocketReadyState
 import indigo.shared.networking.WebSocketReadyState.{CLOSED, CLOSING}
 import indigo.shared.networking.{WebSocketId, WebSocketConfig, WebSocketEvent}
 import indigo.shared.IndigoLogger
+import indigo.shared.platform.GlobalEventStream
+
 import org.scalajs.dom
 
 import indigo.shared.EqualTo._

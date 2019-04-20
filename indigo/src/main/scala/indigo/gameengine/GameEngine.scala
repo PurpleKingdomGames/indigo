@@ -14,7 +14,10 @@ import indigo.shared.FontRegister
 import indigo.platform.assets._
 import indigo.platform.audio.AudioPlayerImpl
 import indigo.shared.platform.AudioPlayer
-import indigo.platform.{TextureAtlas, ImageRef, TextureAtlasFunctions}
+import indigo.shared.platform.GlobalEventStream
+import indigo.shared.platform.GlobalSignals
+import indigo.platform.events.GlobalEventStreamImpl
+import indigo.platform.events.WorldEvents
 
 import org.scalajs.dom
 import org.scalajs.dom.html.Canvas
@@ -91,7 +94,7 @@ object GameEngine {
           Metrics.getInstance(gameConfig.advanced.recordMetrics, gameConfig.advanced.logMetricsReportIntervalMs)
 
         val globalEventStream: GlobalEventStream =
-          GlobalEventStream.default(audioPlayer)
+          GlobalEventStreamImpl.default(audioPlayer)
 
         val globalSignals: GlobalSignals =
           GlobalSignals.default

@@ -1,4 +1,4 @@
-package indigo.platform
+package indigo.platform.assets
 
 import utest._
 

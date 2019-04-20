@@ -1,10 +1,9 @@
-package indigo.platform
+package indigo.platform.assets
 
 import indigo.shared.PowerOfTwo
 import indigo.shared.datatypes.Point
 import indigo.shared.IndigoLogger
 import indigo.shared.EqualTo
-import indigo.platform.assets._
 
 import org.scalajs.dom
 import org.scalajs.dom.{html, raw}

@@ -1,17 +1,15 @@
-package indigo.gameengine
+package indigo.platform.events
 
+import indigo.shared.platform.GlobalEventStream
 import indigo.shared.events.{GlobalEvent, NetworkSendEvent, PlaySound}
 import indigo.shared.networking.{HttpRequest, WebSocketEvent}
 import indigo.shared.platform.AudioPlayer
 
+import indigo.platform.networking.{Http, WebSockets}
+
 import scala.collection.mutable
 
-trait GlobalEventStream {
-  def pushGlobalEvent(e: GlobalEvent): Unit
-  def collect: List[GlobalEvent]
-}
-
-object GlobalEventStream {
+object GlobalEventStreamImpl {
 
   def default(audioPlayer: AudioPlayer): GlobalEventStream =
     new GlobalEventStream {

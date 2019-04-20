@@ -16,6 +16,8 @@ import indigo.shared.platform.AudioPlayer
 
 import indigo.platform.renderer.AssetMapping
 import indigo.platform.renderer.Renderer
+import indigo.shared.platform.GlobalEventStream
+import indigo.shared.platform.GlobalSignals
 
 import org.scalajs.dom
 

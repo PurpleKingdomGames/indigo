@@ -85,6 +85,6 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   type TimeVaryingValue[A] = shared.temporal.TimeVaryingValue[A]
   val TimeVaryingValue: shared.temporal.TimeVaryingValue.type = shared.temporal.TimeVaryingValue
 
-  val WebSockets: gameengine.WebSockets.type = gameengine.WebSockets
-  val Http: gameengine.Http.type             = gameengine.Http
+  val WebSockets: platform.networking.WebSockets.type = platform.networking.WebSockets
+  val Http: platform.networking.Http.type             = platform.networking.Http
 }
