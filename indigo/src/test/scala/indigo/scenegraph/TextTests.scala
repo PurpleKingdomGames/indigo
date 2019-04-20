@@ -2,6 +2,8 @@ package indigo.scenegraph
 
 import indigo.gameengine.FontRegister
 import indigo.shared.datatypes.{FontChar, FontInfo, FontKey, Rectangle}
+import indigo.shared.EqualTo._
+
 import utest._
 
 object TextTests extends TestSuite {
@@ -26,7 +28,7 @@ object TextTests extends TestSuite {
 
           val t = Text("abc", 10, 20, 1, fontKey)
 
-          t.bounds ==> Rectangle(0, 0, 16 * 3, 16)
+          t.bounds === Rectangle(0, 0, 16 * 3, 16) ==> true
 
         }
 
@@ -46,7 +48,7 @@ object TextTests extends TestSuite {
 
           val t = Text("abc", 10, 20, 1, fontKey)
 
-          t.bounds ==> Rectangle(0, 0, 10 + 20 + 30, 30)
+          t.bounds === Rectangle(0, 0, 10 + 20 + 30, 30) ==> true
 
         }
 

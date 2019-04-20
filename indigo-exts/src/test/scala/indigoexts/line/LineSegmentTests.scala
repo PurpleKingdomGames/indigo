@@ -3,6 +3,8 @@ package indigoexts.line
 import indigo.shared.datatypes.Point
 import indigoexts.line.IntersectionResult._
 import indigoexts.line.LineProperties._
+import indigo.shared.EqualTo._
+
 import utest._
 
 object LineSegmentTests extends TestSuite {
@@ -149,35 +151,35 @@ object LineSegmentTests extends TestSuite {
           val start: Point = Point(-10, 1)
           val end: Point   = Point(10, 1)
 
-          LineSegment.calculateNormal(start, end) ==> Point(0, 1)
+          LineSegment.calculateNormal(start, end) === Point(0, 1) ==> true
         }
 
         "should calculate the normal for a horizontal line (Right -> Left)" - {
           val start: Point = Point(5, 2)
           val end: Point   = Point(-5, 2)
 
-          LineSegment.calculateNormal(start, end) ==> Point(0, -1)
+          LineSegment.calculateNormal(start, end) === Point(0, -1) ==> true
         }
 
         "should calculate the normal for a vertical line (Top -> Bottom" - {
           val start: Point = Point(-1, 10)
           val end: Point   = Point(-1, -10)
 
-          LineSegment.calculateNormal(start, end) ==> Point(1, 0)
+          LineSegment.calculateNormal(start, end) === Point(1, 0) ==> true
         }
 
         "should calculate the normal for a vertical line (Bottom -> Top" - {
           val start: Point = Point(1, -10)
           val end: Point   = Point(1, 10)
 
-          LineSegment.calculateNormal(start, end) ==> Point(-1, 0)
+          LineSegment.calculateNormal(start, end) === Point(-1, 0) ==> true
         }
 
         "should calculate the normal for a diagonal line" - {
           val start: Point = Point(2, 2)
           val end: Point   = Point(-2, -2)
 
-          LineSegment.calculateNormal(start, end) ==> Point(1, -1)
+          LineSegment.calculateNormal(start, end) === Point(1, -1) ==> true
         }
 
       }
@@ -187,23 +189,23 @@ object LineSegmentTests extends TestSuite {
         "should be able to normalise a point" - {
 
           "10, 10" - {
-            LineSegment.normalisePoint(Point(10, 10)) ==> Point(1, 1)
+            LineSegment.normalisePoint(Point(10, 10)) === Point(1, 1) ==> true
           }
 
           "-10, -10" - {
-            LineSegment.normalisePoint(Point(-10, -10)) ==> Point(-1, -1)
+            LineSegment.normalisePoint(Point(-10, -10)) === Point(-1, -1) ==> true
           }
 
           "10, 0" - {
-            LineSegment.normalisePoint(Point(10, 0)) ==> Point(1, 0)
+            LineSegment.normalisePoint(Point(10, 0)) === Point(1, 0) ==> true
           }
 
           "0, 10" - {
-            LineSegment.normalisePoint(Point(0, 10)) ==> Point(0, 1)
+            LineSegment.normalisePoint(Point(0, 10)) === Point(0, 1) ==> true
           }
 
           "-50, 1000" - {
-            LineSegment.normalisePoint(Point(-50, 1000)) ==> Point(-1, 1)
+            LineSegment.normalisePoint(Point(-50, 1000)) === Point(-1, 1) ==> true
           }
 
         }

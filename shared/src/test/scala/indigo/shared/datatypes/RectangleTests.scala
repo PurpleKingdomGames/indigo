@@ -1,5 +1,7 @@
 package indigo.shared.datatypes
 
+import indigo.shared.EqualTo._
+
 import utest._
 
 object RectangleTests extends TestSuite {
@@ -14,7 +16,7 @@ object RectangleTests extends TestSuite {
 
           val expected = Rectangle(1, 3, 4, 3)
 
-          Rectangle.fromTwoPoints(pt1, pt2) ==> expected
+          Rectangle.fromTwoPoints(pt1, pt2) === expected ==> true
         }
 
       }
@@ -25,14 +27,14 @@ object RectangleTests extends TestSuite {
           val a = Rectangle(10, 20, 100, 200)
           val b = Rectangle(20, 20, 50, 50)
 
-          Rectangle.expandToInclude(a, b) ==> a
+          Rectangle.expandToInclude(a, b) === a ==> true
         }
 
         "should expand to meet the bounds of both" - {
           val a = Rectangle(10, 10, 20, 20)
           val b = Rectangle(100, 100, 100, 100)
 
-          Rectangle.expandToInclude(a, b) ==> Rectangle(10, 10, 190, 190)
+          Rectangle.expandToInclude(a, b) === Rectangle(10, 10, 190, 190) ==> true
         }
 
       }

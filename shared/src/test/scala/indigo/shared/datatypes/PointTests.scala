@@ -1,5 +1,7 @@
 package indigo.shared.datatypes
 
+import indigo.shared.EqualTo._
+
 import utest._
 
 object PointTests extends TestSuite {
@@ -10,11 +12,11 @@ object PointTests extends TestSuite {
 
         "should be able to calculate a linear interpolation" - {
 
-          Point.linearInterpolation(Point(10, 10), Point(20, 20), 10, 5) ==> Point(15, 15)
-          Point.linearInterpolation(Point(10, 20), Point(20, 20), 10, 5) ==> Point(15, 20)
-          Point.linearInterpolation(Point(20, 10), Point(20, 20), 10, 5) ==> Point(20, 15)
-          Point.linearInterpolation(Point(10, 10), Point(20, 20), 10, 1) ==> Point(11, 11)
-          Point.linearInterpolation(Point(10, 10), Point(-10, -10), 100, 99) ==> Point(-9, -9)
+          Point.linearInterpolation(Point(10, 10), Point(20, 20), 10, 5) === Point(15, 15) ==> true
+          Point.linearInterpolation(Point(10, 20), Point(20, 20), 10, 5) === Point(15, 20) ==> true
+          Point.linearInterpolation(Point(20, 10), Point(20, 20), 10, 5) === Point(20, 15) ==> true
+          Point.linearInterpolation(Point(10, 10), Point(20, 20), 10, 1) === Point(11, 11) ==> true
+          Point.linearInterpolation(Point(10, 10), Point(-10, -10), 100, 99) === Point(-9, -9) ==> true
 
         }
 

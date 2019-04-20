@@ -465,12 +465,12 @@ object TextureAtlasTests extends TestSuite {
             case node: AtlasQuadNode =>
               val textureMap = node.toTextureMap
 
-              textureMap.size ==> PowerOfTwo._16
+              textureMap.size === PowerOfTwo._16 ==> true
 
-              textureMap.textureCoords.find(_.imageRef.name == "8_1").map(_.coords) ==> Some(Point(0, 0))
-              textureMap.textureCoords.find(_.imageRef.name == "8_2").map(_.coords) ==> Some(Point(8, 0))
-              textureMap.textureCoords.find(_.imageRef.name == "8_3").map(_.coords) ==> Some(Point(0, 8))
-              textureMap.textureCoords.find(_.imageRef.name == "8_4").map(_.coords) ==> Some(Point(8, 8))
+              textureMap.textureCoords.find(_.imageRef.name == "8_1").map(_.coords) === Some(Point(0, 0)) ==> true
+              textureMap.textureCoords.find(_.imageRef.name == "8_2").map(_.coords) === Some(Point(8, 0)) ==> true
+              textureMap.textureCoords.find(_.imageRef.name == "8_3").map(_.coords) === Some(Point(0, 8)) ==> true
+              textureMap.textureCoords.find(_.imageRef.name == "8_4").map(_.coords) === Some(Point(8, 8)) ==> true
 
             case _ =>
               fail("error")

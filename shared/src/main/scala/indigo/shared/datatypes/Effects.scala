@@ -4,7 +4,16 @@ import indigo.shared.AsString
 import indigo.shared.EqualTo
 
 // Graphical effects
-final case class Effects(alpha: Double, tint: Tint, flip: Flip)
+final class Effects(val alpha: Double, val tint: Tint, val flip: Flip) {
+  def withAlpha(newAlpha: Double): Effects =
+    Effects(newAlpha, tint, flip)
+
+  def withTint(newTint: Tint): Effects =
+    Effects(alpha, newTint, flip)
+
+  def withFlip(newFlip: Flip): Effects =
+    Effects(alpha, tint, newFlip)
+}
 object Effects {
   val default: Effects = Effects(
     alpha = 1.0,
@@ -14,15 +23,46 @@ object Effects {
       vertical = false
     )
   )
+
+  def apply(alpha: Double, tint: Tint, flip: Flip): Effects =
+    new Effects(alpha, tint, flip)
 }
 
-final case class Flip(horizontal: Boolean, vertical: Boolean)
+final class Flip(val horizontal: Boolean, val vertical: Boolean) {
+  def flipH: Flip =
+    new Flip(!horizontal, vertical)
 
-final case class Tint(r: Double, g: Double, b: Double) {
+  def flipV: Flip =
+    new Flip(horizontal, !vertical)
+
+  def withFlipH(value: Boolean) =
+    new Flip(value, vertical)
+
+  def withFlipV(value: Boolean) =
+    new Flip(horizontal, value)
+}
+object Flip {
+  def apply(horizontal: Boolean, vertical: Boolean): Flip =
+    new Flip(horizontal, vertical)
+}
+
+final class Tint(val r: Double, val g: Double, val b: Double) {
   def +(other: Tint): Tint =
     Tint.combine(this, other)
+
+  def withRed(newRed: Double): Tint =
+    Tint(newRed, g, b)
+
+  def withGree(newGreen: Double): Tint =
+    Tint(r, newGreen, b)
+
+  def withBlue(newBlue: Double): Tint =
+    Tint(r, g, newBlue)
 }
 object Tint {
+
+  def apply(r: Double, g: Double, b: Double): Tint =
+    new Tint(r, g, b)
 
   implicit val show: AsString[Tint] = {
     val ev = implicitly[AsString[Double]]

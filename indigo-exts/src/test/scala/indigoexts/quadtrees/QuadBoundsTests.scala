@@ -68,7 +68,7 @@ object QuadBoundsTests extends TestSuite {
           val bounds: QuadBounds = QuadBounds(10, 10, 20, 20)
           val line: LineSegment  = LineSegment(0, 15, 50, 15)
 
-          QuadBounds.rayCollisionPosition(bounds, line) ==> Some(Point(10, 15))
+          QuadBounds.rayCollisionPosition(bounds, line) === Some(Point(10, 15)) ==> true
         }
 
         "should report where a line segment did not pass through the bounds" - {

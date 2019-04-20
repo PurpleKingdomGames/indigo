@@ -13,7 +13,7 @@ object SceneGraphNode {
   def empty: Group = Group(Point.zero, Depth.Base, Nil)
 }
 
-sealed trait SceneGraphNode extends Product with Serializable {
+sealed trait SceneGraphNode {
   def bounds: Rectangle
   val depth: Depth
 
@@ -40,20 +40,18 @@ sealed trait SceneGraphNode extends Product with Serializable {
   }
 }
 
-final case class Group(positionOffset: Point, depth: Depth, children: List[SceneGraphNode]) extends SceneGraphNode {
+final class Group(val positionOffset: Point, val depth: Depth, val children: List[SceneGraphNode]) extends SceneGraphNode {
 
-  def withDepth(depth: Depth): Group =
-    this.copy(depth = depth)
+  def withDepth(newDepth: Depth): Group =
+    Group(positionOffset, newDepth, children)
 
   def moveTo(pt: Point): Group =
-    this.copy(positionOffset = pt)
+    Group(pt, depth, children)
   def moveTo(x: Int, y: Int): Group =
     moveTo(Point(x, y))
 
   def moveBy(pt: Point): Group =
-    this.copy(
-      positionOffset = this.positionOffset + pt
-    )
+    moveTo(positionOffset + pt)
   def moveBy(x: Int, y: Int): Group =
     moveBy(Point(x, y))
 
@@ -69,14 +67,18 @@ final case class Group(positionOffset: Point, depth: Depth, children: List[Scene
     }
 
   def addChild(child: SceneGraphNode): Group =
-    this.copy(children = children :+ child)
+    Group(positionOffset, depth, children :+ child)
 
   def addChildren(additionalChildren: List[SceneGraphNode]): Group =
-    this.copy(children = children ++ additionalChildren)
+    Group(positionOffset, depth, children ++ additionalChildren)
 
 }
 
 object Group {
+
+  def apply(positionOffset: Point, depth: Depth, children: List[SceneGraphNode]): Group =
+    new Group(positionOffset, depth, children.toList)
+
   def apply(position: Point, depth: Depth, children: SceneGraphNode*): Group =
     Group(position, depth, children.toList)
 
@@ -115,54 +117,59 @@ sealed trait Renderable extends SceneGraphNode {
 
 }
 
-final case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent])
-    extends Renderable {
+final class Graphic(
+    val bounds: Rectangle,
+    val depth: Depth,
+    val imageAssetRef: String,
+    val ref: Point,
+    val crop: Rectangle,
+    val effects: Effects,
+    val eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
+) extends Renderable {
 
   def x: Int = bounds.position.x - ref.x
   def y: Int = bounds.position.y - ref.y
 
   def moveTo(pt: Point): Graphic =
-    this.copy(bounds = bounds.moveTo(pt))
+    Graphic(bounds.moveTo(pt), depth, imageAssetRef, ref, crop, effects, eventHandler)
   def moveTo(x: Int, y: Int): Graphic =
     moveTo(Point(x, y))
 
   def moveBy(pt: Point): Graphic =
-    this.copy(
-      bounds = bounds.moveTo(this.bounds.position + pt)
-    )
+    Graphic(bounds.moveTo(bounds.position + pt), depth, imageAssetRef, ref, crop, effects, eventHandler)
   def moveBy(x: Int, y: Int): Graphic =
     moveBy(Point(x, y))
 
-  def withDepth(depth: Depth): Graphic =
-    this.copy(depth = depth)
+  def withDepth(depthValue: Depth): Graphic =
+    Graphic(bounds, depthValue, imageAssetRef, ref, crop, effects, eventHandler)
 
   def withAlpha(a: Double): Graphic =
-    this.copy(effects = effects.copy(alpha = a))
+    Graphic(bounds, depth, imageAssetRef, ref, crop, effects.withAlpha(a), eventHandler)
 
   def withTint(tint: Tint): Graphic =
-    this.copy(effects = effects.copy(tint = tint))
+    Graphic(bounds, depth, imageAssetRef, ref, crop, effects.withTint(tint), eventHandler)
 
   def withTint(red: Double, green: Double, blue: Double): Graphic =
-    this.copy(effects = effects.copy(tint = Tint(red, green, blue)))
+    Graphic(bounds, depth, imageAssetRef, ref, crop, effects.withTint(Tint(red, green, blue)), eventHandler)
 
-  def flipHorizontal(h: Boolean): Graphic =
-    this.copy(effects = effects.copy(flip = Flip(horizontal = h, vertical = effects.flip.vertical)))
+  def flipHorizontal(hValue: Boolean): Graphic =
+    Graphic(bounds, depth, imageAssetRef, ref, crop, effects.withFlip(Flip(hValue, effects.flip.vertical)), eventHandler)
 
-  def flipVertical(v: Boolean): Graphic =
-    this.copy(effects = effects.copy(flip = Flip(horizontal = effects.flip.horizontal, vertical = v)))
+  def flipVertical(vValue: Boolean): Graphic =
+    Graphic(bounds, depth, imageAssetRef, ref, crop, effects.withFlip(Flip(effects.flip.horizontal, vValue)), eventHandler)
 
-  def withRef(ref: Point): Graphic =
-    this.copy(ref = ref)
-  def withRef(x: Int, y: Int): Graphic =
-    this.copy(ref = Point(x, y))
+  def withRef(refValue: Point): Graphic =
+    Graphic(bounds, depth, imageAssetRef, refValue, crop, effects, eventHandler)
+  def withRef(xValue: Int, yValue: Int): Graphic =
+    withRef(Point(xValue, yValue))
 
   def withCrop(crop: Rectangle): Graphic =
-    this.copy(crop = crop)
-  def withCrop(x: Int, y: Int, width: Int, height: Int): Graphic =
-    this.copy(crop = Rectangle(x, y, width, height))
+    Graphic(bounds, depth, imageAssetRef, ref, crop, effects, eventHandler)
+  def withCrop(xValue: Int, yValue: Int, widthValue: Int, heightValue: Int): Graphic =
+    withCrop(Rectangle(xValue, yValue, widthValue, heightValue))
 
-  def onEvent(e: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]): Graphic =
-    this.copy(eventHandler = e)
+  def onEvent(eventHandlerValue: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]): Graphic =
+    Graphic(bounds, depth, imageAssetRef, ref, crop, effects, eventHandlerValue)
 
   def eventHandlerWithBoundsApplied(e: GlobalEvent): Option[GlobalEvent] =
     eventHandler((bounds, e))
@@ -170,6 +177,18 @@ final case class Graphic(bounds: Rectangle, depth: Depth, imageAssetRef: String,
 }
 
 object Graphic {
+
+  def apply(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]): Graphic =
+    new Graphic(
+      bounds,
+      depth,
+      imageAssetRef,
+      ref,
+      crop,
+      effects,
+      eventHandler
+    )
+
   def apply(x: Int, y: Int, width: Int, height: Int, depth: Int, imageAssetRef: String): Graphic =
     Graphic(
       bounds = Rectangle(x, y, width, height),
@@ -225,19 +244,19 @@ final case class Sprite(
     this.copy(bindingKey = bindingKey)
 
   def withAlpha(a: Double): Sprite =
-    this.copy(effects = effects.copy(alpha = a))
+    this.copy(effects = effects.withAlpha(a))
 
   def withTint(tint: Tint): Sprite =
-    this.copy(effects = effects.copy(tint = tint))
+    this.copy(effects = effects.withTint(tint))
 
   def withTint(red: Double, green: Double, blue: Double): Sprite =
-    this.copy(effects = effects.copy(tint = Tint(red, green, blue)))
+    this.copy(effects = effects.withTint(Tint(red, green, blue)))
 
   def flipHorizontal(h: Boolean): Sprite =
-    this.copy(effects = effects.copy(flip = Flip(horizontal = h, vertical = effects.flip.vertical)))
+    this.copy(effects = effects.withFlip(Flip(horizontal = h, vertical = effects.flip.vertical)))
 
   def flipVertical(v: Boolean): Sprite =
-    this.copy(effects = effects.copy(flip = Flip(horizontal = effects.flip.horizontal, vertical = v)))
+    this.copy(effects = effects.withFlip(Flip(horizontal = effects.flip.horizontal, vertical = v)))
 
   def withRef(ref: Point): Sprite =
     this.copy(ref = ref)
@@ -332,19 +351,19 @@ final case class Text(text: String, alignment: TextAlignment, position: Point, d
     this.copy(depth = depth)
 
   def withAlpha(a: Double): Text =
-    this.copy(effects = effects.copy(alpha = a))
+    this.copy(effects = effects.withAlpha(a))
 
   def withTint(tint: Tint): Text =
-    this.copy(effects = effects.copy(tint = tint))
+    this.copy(effects = effects.withTint(tint))
 
   def withTint(red: Double, green: Double, blue: Double): Text =
-    this.copy(effects = effects.copy(tint = Tint(red, green, blue)))
+    this.copy(effects = effects.withTint(Tint(red, green, blue)))
 
   def flipHorizontal(h: Boolean): Text =
-    this.copy(effects = effects.copy(flip = Flip(horizontal = h, vertical = effects.flip.vertical)))
+    this.copy(effects = effects.withFlip(Flip(horizontal = h, vertical = effects.flip.vertical)))
 
   def flipVertical(v: Boolean): Text =
-    this.copy(effects = effects.copy(flip = Flip(horizontal = effects.flip.horizontal, vertical = v)))
+    this.copy(effects = effects.withFlip(Flip(horizontal = effects.flip.horizontal, vertical = v)))
 
   def withAlignment(alignment: TextAlignment): Text =
     this.copy(alignment = alignment)

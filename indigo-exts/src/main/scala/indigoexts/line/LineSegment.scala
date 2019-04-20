@@ -1,9 +1,10 @@
 package indigoexts.line
 
+import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Point
 
-final case class LineSegment(start: Point, end: Point) {
+final class LineSegment(val start: Point, val end: Point) {
   val center: Point = end - start
 
   def left: Int   = Math.min(start.x, end.x)
@@ -11,7 +12,7 @@ final case class LineSegment(start: Point, end: Point) {
   def top: Int    = Math.min(start.y, end.y)
   def bottom: Int = Math.max(start.y, end.y)
 
-  val normal: Point =
+  def normal: Point =
     LineSegment.calculateNormal(start, end)
 
   def lineProperties: LineProperties =
@@ -25,6 +26,17 @@ final case class LineSegment(start: Point, end: Point) {
 }
 
 object LineSegment {
+
+  implicit val equalTo: EqualTo[LineSegment] = {
+    val eqPt = implicitly[EqualTo[Point]]
+
+    EqualTo.create { (a, b) =>
+      eqPt.equal(a.start, b.start) && eqPt.equal(a.end, b.end)
+    }
+  }
+
+  def apply(start: Point, end: Point): LineSegment =
+    new LineSegment(start, end)
 
   def apply(x1: Int, y1: Int, x2: Int, y2: Int): LineSegment =
     LineSegment(Point(x1, y1), Point(x2, y2))
