@@ -81,7 +81,7 @@ object GameEngine {
         )
 
       // Arrange assets
-      assetsAsync.flatMap(aa => AssetCollection.loadAssets(aa ++ assets)).foreach { assetCollection =>
+      assetsAsync.flatMap(aa => AssetLoader.loadAssets(aa ++ assets)).foreach { assetCollection =>
         IndigoLogger.info("Asset load complete")
 
         val audioPlayer: AudioPlayer =

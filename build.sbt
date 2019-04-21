@@ -76,7 +76,7 @@ lazy val basicSetup =
     .in(file("examples/basic-setup"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .enablePlugins(SbtIndigo)
     .settings(
       name := "basic-setup",
       showCursor := true,
@@ -94,7 +94,7 @@ lazy val subSystems =
     .in(file("examples/subsystems"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .enablePlugins(SbtIndigo)
     .settings(
       name := "subsystems",
       showCursor := true,
@@ -112,7 +112,7 @@ lazy val scenesSetup =
     .in(file("examples/scenes-setup"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .enablePlugins(SbtIndigo)
     .settings(
       name := "scenes-setup",
       showCursor := true,
@@ -130,7 +130,7 @@ lazy val text =
     .in(file("examples/text"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .enablePlugins(SbtIndigo)
     .settings(
       name := "text-example",
       showCursor := true,
@@ -148,7 +148,7 @@ lazy val inputfield =
     .in(file("examples/inputfield"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .enablePlugins(SbtIndigo)
     .settings(
       name := "input-field-example",
       showCursor := true,
@@ -166,7 +166,7 @@ lazy val fullSetup =
     .in(file("examples/full-setup"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .enablePlugins(SbtIndigo)
     .settings(
       name := "full-setup",
       showCursor := true,
@@ -184,7 +184,7 @@ lazy val button =
     .in(file("examples/button"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .enablePlugins(SbtIndigo)
     .settings(
       name := "button-example",
       showCursor := true,
@@ -202,7 +202,7 @@ lazy val graphic =
     .in(file("examples/graphic"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .enablePlugins(SbtIndigo)
     .settings(
       name := "graphic-example",
       showCursor := true,
@@ -220,7 +220,7 @@ lazy val group =
     .in(file("examples/group"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .enablePlugins(SbtIndigo)
     .settings(
       name := "group-example",
       showCursor := true,
@@ -238,7 +238,7 @@ lazy val sprite =
     .in(file("examples/sprite"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .enablePlugins(SbtIndigo)
     .settings(
       name := "sprite-example",
       showCursor := true,
@@ -256,7 +256,7 @@ lazy val http =
     .in(file("examples/http"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .enablePlugins(SbtIndigo)
     .settings(
       name := "http-example",
       showCursor := true,
@@ -274,7 +274,7 @@ lazy val websocket =
     .in(file("examples/websocket"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .enablePlugins(SbtIndigo)
     .settings(
       name := "websocket-example",
       showCursor := true,
@@ -292,7 +292,7 @@ lazy val automata =
     .in(file("examples/automata"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .enablePlugins(SbtIndigo)
     .settings(
       name := "automata-example",
       showCursor := true,
@@ -310,7 +310,7 @@ lazy val audio =
     .in(file("examples/audio"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .enablePlugins(SbtIndigo)
     .settings(
       name := "audio-example",
       showCursor := true,
@@ -332,7 +332,6 @@ lazy val indigo =
         "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
       )
     )
-    .enablePlugins(ScalaJSPlugin/*, ScalaNativePlugin*/) // NO 2.12 support :-(
     .dependsOn(shared)
     .dependsOn(indigoPlatforms)
 
@@ -344,7 +343,6 @@ lazy val indigoExts =
     .settings(commonSettings: _*)
     .dependsOn(indigo)
     .dependsOn(circe9 % "provided")
-    .enablePlugins(ScalaJSPlugin/*, ScalaNativePlugin*/) // NO 2.12 support :-(
     .settings(
       name := "indigo-exts",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
@@ -356,12 +354,15 @@ lazy val indigoPlatforms =
     .crossType(CrossType.Full)
     .in(file("indigo-platforms"))
     .settings(commonSettings: _*)
-    .enablePlugins(ScalaJSPlugin/*, ScalaNativePlugin*/) // NO 2.12 support :-(
     .settings(
       name := "indigo-platforms",
       libraryDependencies ++= Seq(
-        "org.scala-js"   %%% "scalajs-dom" % "0.9.6",
         "org.scalacheck" %%% "scalacheck"  % "1.13.4" % "test"
+      )
+    )
+    .jsSettings(
+      libraryDependencies ++= Seq(
+        "org.scala-js"   %%% "scalajs-dom" % "0.9.6"
       )
     )
     .dependsOn(shared)
@@ -401,7 +402,7 @@ lazy val perf =
     .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .enablePlugins(SbtIndigo)
 
 lazy val framework =
   crossProject(JSPlatform)
@@ -409,7 +410,7 @@ lazy val framework =
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .dependsOn(circe9)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .enablePlugins(SbtIndigo)
     .settings(
       name := "indigo-framework",
       showCursor := true,
@@ -448,7 +449,6 @@ lazy val shared =
   crossProject(JSPlatform, JVMPlatform, NativePlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
-    .enablePlugins(ScalaJSPlugin/*, ScalaNativePlugin*/) // NO 2.12 support :-(
     .settings(
       name := "shared",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
@@ -459,7 +459,6 @@ lazy val circe9 =
   crossProject(JSPlatform, JVMPlatform, NativePlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
-    .enablePlugins(ScalaJSPlugin/*, ScalaNativePlugin*/) // NO 2.12 support :-(
     .settings(
       name := "circe9",
       libraryDependencies ++= Seq(

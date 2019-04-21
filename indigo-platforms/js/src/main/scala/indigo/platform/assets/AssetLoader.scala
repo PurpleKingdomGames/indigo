@@ -11,38 +11,15 @@ import scala.concurrent.{Future, Promise}
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js.typedarray.ArrayBuffer
 
-import indigo.shared.EqualTo._
-
-final class AssetCollection(
-    val images: List[LoadedImageAsset],
-    val texts: List[LoadedTextAsset],
-    val sounds: List[LoadedAudioAsset]
-) {
-
-  def findImageDataByName(name: AssetName): Option[AssetCollection.ImageDataFormat] =
-    images.find(_.name === name).map(_.data)
-
-  def findTextDataByName(name: AssetName): Option[AssetCollection.TextDataFormat] =
-    texts.find(_.name === name).map(_.data)
-
-  def findAudioDataByName(name: AssetName): Option[AssetCollection.AudioDataFormat] =
-    sounds.find(_.name === name).map(_.data)
-
-}
-
-object AssetCollection {
-
-  type ImageDataFormat = html.Image
-  type TextDataFormat  = String
-  type AudioDataFormat = dom.AudioBuffer
+object AssetLoader {
 
   def loadAssets(assets: Set[AssetType]): Future[AssetCollection] = {
     IndigoLogger.info(s"Loading ${assets.toList.length} assets")
 
     for {
-      t <- AssetCollection.loadTextAssets(AssetCollection.filterOutTextAssets(assets.toList))
-      i <- AssetCollection.loadImageAssets(AssetCollection.filterOutImageAssets(assets.toList))
-      a <- AssetCollection.loadAudioAssets(AssetCollection.filterOutAudioAssets(assets.toList))
+      t <- loadTextAssets(filterOutTextAssets(assets.toList))
+      i <- loadImageAssets(filterOutImageAssets(assets.toList))
+      a <- loadAudioAssets(filterOutAudioAssets(assets.toList))
     } yield new AssetCollection(i, t, a)
   }
 
