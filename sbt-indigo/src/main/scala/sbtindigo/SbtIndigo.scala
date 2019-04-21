@@ -49,7 +49,7 @@ object SbtIndigo extends sbt.AutoPlugin {
           scriptPathBase = scriptPathBase,
           gameAssetsDirectoryPath =
             if (gameAssetsDirectory.value.startsWith("/")) gameAssetsDirectory.value
-            else baseDir + "/" + gameAssetsDirectory.value
+            else baseDir.replace("/.js", "") + "/" + gameAssetsDirectory.value
         )
       )
 

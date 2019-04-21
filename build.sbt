@@ -1,3 +1,5 @@
+// shadow sbt-scalajs' crossProject and CrossType from Scala.js 0.6.x
+import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 import scala.sys.process._
 
 lazy val code =
@@ -79,13 +81,14 @@ lazy val commonSettings = Seq(
     Wart.Overloading,
     Wart.ImplicitParameter
   ),
-  scalacOptions += "-Yrangepos",
-  concurrentRestrictions in Global += Tags.limit(ScalaJSTags.Link, 2)
+  scalacOptions += "-Yrangepos"
 )
 
 // Examples
 lazy val basicSetup =
-  (project in file("examples/basic-setup"))
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("examples/basic-setup"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
@@ -93,12 +96,16 @@ lazy val basicSetup =
       name := "basic-setup",
       showCursor := true,
       title := "Basic Setup",
-      gameAssetsDirectory := "assets",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
 
 lazy val subSystems =
-  (project in file("examples/subsystems"))
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("examples/subsystems"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
@@ -106,12 +113,16 @@ lazy val subSystems =
       name := "subsystems",
       showCursor := true,
       title := "SubSystems Example",
-      gameAssetsDirectory := "assets",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
 
 lazy val scenesSetup =
-  (project in file("examples/scenes-setup"))
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("examples/scenes-setup"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
@@ -119,12 +130,16 @@ lazy val scenesSetup =
       name := "scenes-setup",
       showCursor := true,
       title := "Scene Manager Setup",
-      gameAssetsDirectory := "assets",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
 
 lazy val text =
-  (project in file("examples/text"))
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("examples/text"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
@@ -132,12 +147,16 @@ lazy val text =
       name := "text-example",
       showCursor := true,
       title := "Text example",
-      gameAssetsDirectory := "assets",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
 
 lazy val inputfield =
-  (project in file("examples/inputfield"))
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("examples/inputfield"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
@@ -145,12 +164,16 @@ lazy val inputfield =
       name := "input-field-example",
       showCursor := true,
       title := "Input field example",
-      gameAssetsDirectory := "assets",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
 
 lazy val fullSetup =
-  (project in file("examples/full-setup"))
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("examples/full-setup"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
@@ -158,12 +181,16 @@ lazy val fullSetup =
       name := "full-setup",
       showCursor := true,
       title := "Full Setup",
-      gameAssetsDirectory := "assets",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
 
 lazy val button =
-  (project in file("examples/button"))
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("examples/button"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
@@ -171,12 +198,16 @@ lazy val button =
       name := "button-example",
       showCursor := true,
       title := "Button example",
-      gameAssetsDirectory := "assets",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
 
 lazy val graphic =
-  (project in file("examples/graphic"))
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("examples/graphic"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
@@ -184,12 +215,16 @@ lazy val graphic =
       name := "graphic-example",
       showCursor := true,
       title := "Graphic example",
-      gameAssetsDirectory := "assets",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
 
 lazy val group =
-  (project in file("examples/group"))
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("examples/group"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
@@ -197,12 +232,16 @@ lazy val group =
       name := "group-example",
       showCursor := true,
       title := "Group example",
-      gameAssetsDirectory := "assets",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
 
 lazy val sprite =
-  (project in file("examples/sprite"))
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("examples/sprite"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
@@ -210,12 +249,16 @@ lazy val sprite =
       name := "sprite-example",
       showCursor := true,
       title := "Sprite example",
-      gameAssetsDirectory := "assets",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
 
 lazy val http =
-  (project in file("examples/http"))
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("examples/http"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
@@ -223,12 +266,16 @@ lazy val http =
       name := "http-example",
       showCursor := true,
       title := "Http example",
-      gameAssetsDirectory := "assets",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
 
 lazy val websocket =
-  (project in file("examples/websocket"))
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("examples/websocket"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
@@ -236,12 +283,16 @@ lazy val websocket =
       name := "websocket-example",
       showCursor := true,
       title := "WebSocket example",
-      gameAssetsDirectory := "assets",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
 
 lazy val automata =
-  (project in file("examples/automata"))
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("examples/automata"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
@@ -249,12 +300,16 @@ lazy val automata =
       name := "automata-example",
       showCursor := true,
       title := "Automata example",
-      gameAssetsDirectory := "assets",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
 
 lazy val audio =
-  (project in file("examples/audio"))
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("examples/audio"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
@@ -262,13 +317,16 @@ lazy val audio =
       name := "audio-example",
       showCursor := true,
       title := "Audio example",
-      gameAssetsDirectory := "assets",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
 
 // Indigo
 lazy val indigo =
-  project
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .settings(
       name := "indigo",
@@ -282,7 +340,9 @@ lazy val indigo =
 
 // Indigo Extensions
 lazy val indigoExts =
-  (project in file("indigo-exts"))
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("indigo-exts"))
     .settings(commonSettings: _*)
     .dependsOn(indigo)
     .dependsOn(circe9 % "provided")
@@ -294,7 +354,9 @@ lazy val indigoExts =
 
 // Indigo Extensions
 lazy val indigoJS =
-  (project in file("indigo-js"))
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("indigo-js"))
     .settings(commonSettings: _*)
     .enablePlugins(ScalaJSPlugin)
     .settings(
@@ -308,7 +370,8 @@ lazy val indigoJS =
 
 // Games
 lazy val sandbox =
-  project
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .dependsOn(circe9)
@@ -317,12 +380,15 @@ lazy val sandbox =
       name := "indigo-sandbox",
       showCursor := true,
       title := "Sandbox",
-      gameAssetsDirectory := "assets",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
 
 lazy val perf =
-  project
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .dependsOn(circe9)
     .dependsOn(indigoExts)
@@ -330,13 +396,16 @@ lazy val perf =
       name := "indigo-perf",
       showCursor := true,
       title := "Perf",
-      gameAssetsDirectory := "assets",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
     .enablePlugins(ScalaJSPlugin, SbtIndigo)
 
 lazy val framework =
-  project
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .dependsOn(circe9)
@@ -351,7 +420,8 @@ lazy val framework =
 
 // Server
 lazy val server =
-  project
+  crossProject(JVMPlatform)
+    .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .settings(
       name := "server",
@@ -374,7 +444,8 @@ lazy val server =
 
 // Shared
 lazy val shared =
-  project
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .enablePlugins(ScalaJSPlugin)
     .settings(
@@ -384,7 +455,8 @@ lazy val shared =
 
 // Circe 0.9.x
 lazy val circe9 =
-  project
+  crossProject(JSPlatform)
+    .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .enablePlugins(ScalaJSPlugin)
     .settings(
@@ -399,7 +471,9 @@ lazy val circe9 =
 
 // Root
 lazy val indigoProject =
-  (project in file("."))
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("."))
     .settings(commonSettings: _*)
     .settings(
       code := { "code ." ! },
@@ -414,6 +488,9 @@ lazy val indigoProject =
       indigo,
       indigoExts,
       sandbox
+    )
+    .jsSettings(
+      concurrentRestrictions in Global += Tags.limit(ScalaJSTags.Link, 2)
     )
 
 addCommandAlias(
