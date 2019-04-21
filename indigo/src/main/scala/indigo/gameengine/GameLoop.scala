@@ -14,12 +14,10 @@ import indigo.shared.AnimationsRegister
 import indigo.shared.display.{Displayable, DisplayLayer}
 import indigo.shared.platform.AudioPlayer
 
-import indigo.platform.renderer.AssetMapping
-import indigo.platform.renderer.Renderer
+import indigo.shared.platform.AssetMapping
+import indigo.shared.platform.Renderer
 import indigo.shared.platform.GlobalEventStream
 import indigo.shared.platform.GlobalSignals
-
-import org.scalajs.dom
 
 import scala.annotation.tailrec
 
@@ -33,7 +31,8 @@ class GameLoop[GameModel, ViewModel](
     frameProcessor: FrameProcessor[GameModel, ViewModel],
     metrics: Metrics,
     globalEventStream: GlobalEventStream,
-    globalSignals: GlobalSignals
+    globalSignals: GlobalSignals,
+    callTick: (Long => Unit) => Unit
 ) {
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
@@ -46,7 +45,7 @@ class GameLoop[GameModel, ViewModel](
   private var signalsState: Signals = Signals.default
 
   @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
-  def loop(lastUpdateTime: Long): Long => Int = { time =>
+  def loop(lastUpdateTime: Long): Long => Unit = { time =>
     val timeDelta: Long = time - lastUpdateTime
 
     // PUT NOTHING ABOVE THIS LINE!! Major performance penalties!!
@@ -126,9 +125,9 @@ class GameLoop[GameModel, ViewModel](
 
       metrics.record(FrameEndMetric)
 
-      dom.window.requestAnimationFrame(t => loop(time)(t.toLong))
+      callTick(loop(time))
     } else {
-      dom.window.requestAnimationFrame(t => loop(lastUpdateTime)(t.toLong))
+      callTick(loop(lastUpdateTime))
     }
   }
 

@@ -7,6 +7,8 @@ import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import indigo.shared.display.{DisplayLayer, DisplayObject, Displayable, SpriteSheetFrame}
 import indigo.shared.EqualTo._
+import indigo.shared.platform.Renderer
+import indigo.shared.platform.RendererConfig
 
 final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends Renderer {
 

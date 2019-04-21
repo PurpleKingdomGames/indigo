@@ -11,7 +11,7 @@ import indigo.shared.display.Vector2
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 
-import indigo.platform.renderer.AssetMapping
+import indigo.shared.platform.AssetMapping
 
 import indigo.shared.scenegraph.{Renderable, Graphic, Sprite, Text, TextLine}
 

@@ -1,5 +1,7 @@
 package indigo.shared
 
+import scala.collection.mutable.ArrayBuffer
+
 /**
   * This is the dumbest logger ever.
   * We're just logging to the Browsers console, I just wanted a few standard headers with the message.
@@ -10,8 +12,8 @@ object IndigoLogger {
   private val ERROR: String = "ERROR"
   private val DEBUG: String = "DEBUG"
 
-  private val errorLogs: scalajs.js.Array[String] = new scalajs.js.Array[String]()
-  private val debugLogs: scalajs.js.Array[String] = new scalajs.js.Array[String]()
+  private val errorLogs: ArrayBuffer[String] = new ArrayBuffer[String]()
+  private val debugLogs: ArrayBuffer[String] = new ArrayBuffer[String]()
 
   private def formatMessage(level: String, message: String): String =
     s"""[${System.currentTimeMillis()}] [$level] [Indigo] $message"""
@@ -24,8 +26,8 @@ object IndigoLogger {
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   private val errorOnceString: String => Unit = message =>
-    if (!errorLogs.iterator.contains(message)) {
-      errorLogs.push(message)
+    if (!errorLogs.contains(message)) {
+      errorLogs += message
       println(formatMessage(ERROR, message))
     }
 
@@ -33,8 +35,8 @@ object IndigoLogger {
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   private val debugOnceString: String => Unit = message =>
-    if (!debugLogs.iterator.contains(message)) {
-      debugLogs.push(message)
+    if (!debugLogs.contains(message)) {
+      debugLogs += message
       println(formatMessage(DEBUG, message))
     }
 

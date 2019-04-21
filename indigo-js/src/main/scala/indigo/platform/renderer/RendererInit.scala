@@ -1,18 +1,13 @@
 package indigo.platform.renderer
 
-import indigo.shared.metrics._
-import indigo.shared.display.Displayable
+import indigo.shared.platform.Renderer
+import indigo.shared.platform.RendererConfig
 
 import org.scalajs.dom
 import org.scalajs.dom.raw.WebGLRenderingContext
 import org.scalajs.dom.{Element, html, raw}
 
-trait Renderer {
-  def init(): Unit
-  def drawScene(displayable: Displayable, metrics: Metrics): Unit
-}
-
-object Renderer {
+object RendererInit {
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var renderer: Option[Renderer] = None
