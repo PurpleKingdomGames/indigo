@@ -323,7 +323,7 @@ lazy val audio =
 
 // Indigo
 lazy val indigo =
-  crossProject(JSPlatform)
+  crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .settings(
@@ -338,7 +338,7 @@ lazy val indigo =
 
 // Indigo Extensions
 lazy val indigoExts =
-  crossProject(JSPlatform)
+  crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
     .in(file("indigo-exts"))
     .settings(commonSettings: _*)
@@ -368,13 +368,13 @@ lazy val indigoPlatforms =
 
 // Games
 lazy val sandbox =
-  crossProject(JSPlatform)
+  crossProject(JSPlatform, JVMPlatform)
     .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .dependsOn(circe9)
-    .enablePlugins(ScalaJSPlugin, SbtIndigo)
+    .enablePlugins(SbtIndigo)
     .settings(
       name := "indigo-sandbox",
       showCursor := true,
@@ -382,11 +382,12 @@ lazy val sandbox =
       gameAssetsDirectory := "assets"
     )
     .jsSettings(
-      scalaJSUseMainModuleInitializer := true
+      scalaJSUseMainModuleInitializer := true//,
+      // enablePlugins(ScalaJSPlugin)
     )
 
 lazy val perf =
-  crossProject(JSPlatform)
+  crossProject(JSPlatform, JVMPlatform)
     .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
@@ -456,7 +457,7 @@ lazy val shared =
 
 // Circe 0.9.x
 lazy val circe9 =
-  crossProject(JSPlatform)
+  crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .enablePlugins(ScalaJSPlugin)
