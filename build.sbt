@@ -2,22 +2,6 @@
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 import scala.sys.process._
 
-lazy val code =
-  taskKey[Unit]("Launch VSCode in the current directory")
-
-// Rebuild ScalaDocs and open in Firefox
-addCommandAlias(
-  "readdocs",
-  List(
-    "shared/doc",
-    "indigo/doc",
-    "indigoExts/doc",
-    "openshareddocs",
-    "openindigodocs",
-    "openindigoextsdocs"
-  ).mkString(";", ";", "")
-)
-
 val indigoVersion = "0.0.10-SNAPSHOT"
 
 lazy val commonSettings = Seq(
@@ -87,6 +71,7 @@ lazy val commonSettings = Seq(
 // Examples
 lazy val basicSetup =
   crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .in(file("examples/basic-setup"))
     .settings(commonSettings: _*)
@@ -104,6 +89,7 @@ lazy val basicSetup =
 
 lazy val subSystems =
   crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .in(file("examples/subsystems"))
     .settings(commonSettings: _*)
@@ -121,6 +107,7 @@ lazy val subSystems =
 
 lazy val scenesSetup =
   crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .in(file("examples/scenes-setup"))
     .settings(commonSettings: _*)
@@ -138,6 +125,7 @@ lazy val scenesSetup =
 
 lazy val text =
   crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .in(file("examples/text"))
     .settings(commonSettings: _*)
@@ -155,6 +143,7 @@ lazy val text =
 
 lazy val inputfield =
   crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .in(file("examples/inputfield"))
     .settings(commonSettings: _*)
@@ -172,6 +161,7 @@ lazy val inputfield =
 
 lazy val fullSetup =
   crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .in(file("examples/full-setup"))
     .settings(commonSettings: _*)
@@ -189,6 +179,7 @@ lazy val fullSetup =
 
 lazy val button =
   crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .in(file("examples/button"))
     .settings(commonSettings: _*)
@@ -206,6 +197,7 @@ lazy val button =
 
 lazy val graphic =
   crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .in(file("examples/graphic"))
     .settings(commonSettings: _*)
@@ -223,6 +215,7 @@ lazy val graphic =
 
 lazy val group =
   crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .in(file("examples/group"))
     .settings(commonSettings: _*)
@@ -240,6 +233,7 @@ lazy val group =
 
 lazy val sprite =
   crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .in(file("examples/sprite"))
     .settings(commonSettings: _*)
@@ -257,6 +251,7 @@ lazy val sprite =
 
 lazy val http =
   crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .in(file("examples/http"))
     .settings(commonSettings: _*)
@@ -274,6 +269,7 @@ lazy val http =
 
 lazy val websocket =
   crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .in(file("examples/websocket"))
     .settings(commonSettings: _*)
@@ -291,6 +287,7 @@ lazy val websocket =
 
 lazy val automata =
   crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .in(file("examples/automata"))
     .settings(commonSettings: _*)
@@ -308,6 +305,7 @@ lazy val automata =
 
 lazy val audio =
   crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .in(file("examples/audio"))
     .settings(commonSettings: _*)
@@ -336,7 +334,7 @@ lazy val indigo =
     )
     .enablePlugins(ScalaJSPlugin)
     .dependsOn(shared)
-    .dependsOn(indigoJS)
+    .dependsOn(indigoPlatforms)
 
 // Indigo Extensions
 lazy val indigoExts =
@@ -353,14 +351,14 @@ lazy val indigoExts =
     )
 
 // Indigo Extensions
-lazy val indigoJS =
-  crossProject(JSPlatform)
-    .crossType(CrossType.Pure)
-    .in(file("indigo-js"))
+lazy val indigoPlatforms =
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Full)
+    .in(file("indigo-platforms"))
     .settings(commonSettings: _*)
     .enablePlugins(ScalaJSPlugin)
     .settings(
-      name := "indigo-js",
+      name := "indigo-platforms",
       libraryDependencies ++= Seq(
         "org.scala-js"   %%% "scalajs-dom" % "0.9.6",
         "org.scalacheck" %%% "scalacheck"  % "1.13.4" % "test"
@@ -371,6 +369,7 @@ lazy val indigoJS =
 // Games
 lazy val sandbox =
   crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
@@ -388,6 +387,7 @@ lazy val sandbox =
 
 lazy val perf =
   crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .dependsOn(circe9)
@@ -421,6 +421,7 @@ lazy val framework =
 // Server
 lazy val server =
   crossProject(JVMPlatform)
+    .withoutSuffixFor(JVMPlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .settings(
@@ -483,7 +484,7 @@ lazy val indigoProject =
     )
     .aggregate(
       shared,
-      indigoJS,
+      indigoPlatforms,
       circe9,
       indigo,
       indigoExts,
@@ -493,197 +494,8 @@ lazy val indigoProject =
       concurrentRestrictions in Global += Tags.limit(ScalaJSTags.Link, 2)
     )
 
-addCommandAlias(
-  "buildIndigo",
-  List(
-    "shared/compile",
-    "circe9/compile",
-    "indigoJS/compile",
-    "indigo/compile",
-    "indigoExts/compile"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "buildDev",
-  List(
-    "sandbox/compile",
-    "perf/compile",
-    "framework/compile",
-    "server/compile"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "buildExamples",
-  List(
-    "basicSetup/compile",
-    "subSystems/compile",
-    "scenesSetup/compile",
-    "fullSetup/compile",
-    "button/compile",
-    "http/compile",
-    "text/compile",
-    "graphic/compile",
-    "sprite/compile",
-    "websocket/compile",
-    "inputfield/compile",
-    "audio/compile",
-    "group/compile",
-    "automata/compile"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "buildAllNoClean",
-  List(
-    "buildIndigo",
-    "buildDev",
-    "buildExamples"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "buildAll",
-  List(
-    "clean",
-    "buildAllNoClean"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "testIndigo",
-  List(
-    "shared/test",
-    "indigo/test",
-    "indigoExts/test"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testDev",
-  List(
-    "sandbox/test",
-    "perf/test",
-    "framework/test",
-    "server/test"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testExamples",
-  List(
-    "basicSetup/test",
-    "subSystems/test",
-    "scenesSetup/test",
-    "fullSetup/test",
-    "button/test",
-    "http/test",
-    "text/test",
-    "graphic/test",
-    "sprite/test",
-    "websocket/test",
-    "inputfield/test",
-    "audio/test",
-    "group/test",
-    "automata/test"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testAllNoClean",
-  List(
-    "testIndigo",
-    "testDev",
-    "testExamples"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testAll",
-  List(
-    "clean",
-    "testAllNoClean"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "testCompileIndigo",
-  List(
-    "shared/test:compile",
-    "indigo/test:compile",
-    "indigoExts/test:compile"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testCompileDev",
-  List(
-    "sandbox/test:compile",
-    "perf/test:compile",
-    "framework/test:compile",
-    "server/test:compile"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testCompileExamples",
-  List(
-    "basicSetup/test:compile",
-    "subSystems/test:compile",
-    "scenesSetup/test:compile",
-    "fullSetup/test:compile",
-    "button/test:compile",
-    "http/test:compile",
-    "text/test:compile",
-    "graphic/test:compile",
-    "sprite/test:compile",
-    "websocket/test:compile",
-    "inputfield/test:compile",
-    "audio/test:compile",
-    "group/test:compile",
-    "automata/test:compile"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testCompileAllNoClean",
-  List(
-    "testCompileIndigo",
-    "testCompileDev",
-    "testCompileExamples"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testCompileAll",
-  List(
-    "clean",
-    "testCompileAllNoClean"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "localPublish",
-  List(
-    "clean",
-    "buildIndigo",
-    "shared/publishLocal",
-    "circe9/publishLocal",
-    "indigoJS/publishLocal",
-    "indigo/publishLocal",
-    "indigoExts/publishLocal"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "sandboxBuild",
-  List(
-    "buildIndigo",
-    "sandbox/test",
-    "sandbox/fastOptJS",
-    "sandbox/indigoBuild"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "perfBuild",
-  List(
-    "buildIndigo",
-    "perf/test",
-    "perf/fastOptJS",
-    "perf/indigoBuild"
-  ).mkString(";", ";", "")
-)
+lazy val code =
+  taskKey[Unit]("Launch VSCode in the current directory")
 
 // Don't call this, call readdocs
 lazy val openshareddocs =
