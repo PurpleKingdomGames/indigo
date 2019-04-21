@@ -29,7 +29,6 @@ bin
 .vagrant
 operations/pipeline/projectvars.sh
 env.properties
-native
 
 node_modules
 

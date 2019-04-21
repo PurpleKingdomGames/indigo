@@ -94,7 +94,7 @@ def mirrorScalaSource(baseDirectory: File): Seq[File] = {
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject"      % "0.6.0")
 addSbtPlugin("org.portable-scala" % "sbt-scala-native-crossproject" % "0.6.0")
 addSbtPlugin("org.scala-js"       % "sbt-scalajs"                   % "0.6.27")
-addSbtPlugin("org.scala-native"   % "sbt-scala-native"              % "0.3.7")
+addSbtPlugin("org.scala-native"   % "sbt-scala-native"              % "0.3.8") // NO 2.12 support :-(
 
 addSbtPlugin("indigo" % "sbt-indigo" % indigoVersion)
 

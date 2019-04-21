@@ -323,7 +323,7 @@ lazy val audio =
 
 // Indigo
 lazy val indigo =
-  crossProject(JSPlatform, JVMPlatform)
+  crossProject(JSPlatform, JVMPlatform, NativePlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .settings(
@@ -332,19 +332,19 @@ lazy val indigo =
         "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
       )
     )
-    .enablePlugins(ScalaJSPlugin)
+    .enablePlugins(ScalaJSPlugin/*, ScalaNativePlugin*/) // NO 2.12 support :-(
     .dependsOn(shared)
     .dependsOn(indigoPlatforms)
 
 // Indigo Extensions
 lazy val indigoExts =
-  crossProject(JSPlatform, JVMPlatform)
+  crossProject(JSPlatform, JVMPlatform, NativePlatform)
     .crossType(CrossType.Pure)
     .in(file("indigo-exts"))
     .settings(commonSettings: _*)
     .dependsOn(indigo)
     .dependsOn(circe9 % "provided")
-    .enablePlugins(ScalaJSPlugin)
+    .enablePlugins(ScalaJSPlugin/*, ScalaNativePlugin*/) // NO 2.12 support :-(
     .settings(
       name := "indigo-exts",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
@@ -352,11 +352,11 @@ lazy val indigoExts =
 
 // Indigo Extensions
 lazy val indigoPlatforms =
-  crossProject(JSPlatform, JVMPlatform)
+  crossProject(JSPlatform, JVMPlatform, NativePlatform)
     .crossType(CrossType.Full)
     .in(file("indigo-platforms"))
     .settings(commonSettings: _*)
-    .enablePlugins(ScalaJSPlugin)
+    .enablePlugins(ScalaJSPlugin/*, ScalaNativePlugin*/) // NO 2.12 support :-(
     .settings(
       name := "indigo-platforms",
       libraryDependencies ++= Seq(
@@ -368,7 +368,7 @@ lazy val indigoPlatforms =
 
 // Games
 lazy val sandbox =
-  crossProject(JSPlatform, JVMPlatform)
+  crossProject(JSPlatform, JVMPlatform, NativePlatform)
     .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
@@ -382,12 +382,11 @@ lazy val sandbox =
       gameAssetsDirectory := "assets"
     )
     .jsSettings(
-      scalaJSUseMainModuleInitializer := true//,
-      // enablePlugins(ScalaJSPlugin)
+      scalaJSUseMainModuleInitializer := true
     )
 
 lazy val perf =
-  crossProject(JSPlatform, JVMPlatform)
+  crossProject(JSPlatform, JVMPlatform, NativePlatform)
     .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
@@ -446,10 +445,10 @@ lazy val server =
 
 // Shared
 lazy val shared =
-  crossProject(JSPlatform, JVMPlatform)
+  crossProject(JSPlatform, JVMPlatform, NativePlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
-    .enablePlugins(ScalaJSPlugin)
+    .enablePlugins(ScalaJSPlugin/*, ScalaNativePlugin*/) // NO 2.12 support :-(
     .settings(
       name := "shared",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
@@ -457,10 +456,10 @@ lazy val shared =
 
 // Circe 0.9.x
 lazy val circe9 =
-  crossProject(JSPlatform, JVMPlatform)
+  crossProject(JSPlatform, JVMPlatform, NativePlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
-    .enablePlugins(ScalaJSPlugin)
+    .enablePlugins(ScalaJSPlugin/*, ScalaNativePlugin*/) // NO 2.12 support :-(
     .settings(
       name := "circe9",
       libraryDependencies ++= Seq(
@@ -473,7 +472,7 @@ lazy val circe9 =
 
 // Root
 lazy val indigoProject =
-  crossProject(JSPlatform, JVMPlatform)
+  crossProject(JSPlatform, JVMPlatform, NativePlatform)
     .crossType(CrossType.Pure)
     .in(file("."))
     .settings(commonSettings: _*)

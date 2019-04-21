@@ -1,0 +1,139 @@
+package indigo.platform.assets
+
+import indigo.shared.IndigoLogger
+import indigo.shared.AssetType
+// import org.scalajs.dom
+// import org.scalajs.dom.ext.Ajax
+// import org.scalajs.dom.raw.HTMLImageElement
+// import org.scalajs.dom.{html, _}
+
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+// import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+// import scala.scalajs.js.typedarray.ArrayBuffer
+
+import indigo.shared.EqualTo._
+
+final class AssetCollection(
+    val images: List[LoadedImageAsset],
+    val texts: List[LoadedTextAsset],
+    val sounds: List[LoadedAudioAsset]
+) {
+
+  def findImageDataByName(name: AssetName): Option[AssetCollection.ImageDataFormat] =
+    images.find(_.name === name).map(_.data)
+
+  def findTextDataByName(name: AssetName): Option[AssetCollection.TextDataFormat] =
+    texts.find(_.name === name).map(_.data)
+
+  def findAudioDataByName(name: AssetName): Option[AssetCollection.AudioDataFormat] =
+    sounds.find(_.name === name).map(_.data)
+
+}
+
+object AssetCollection {
+
+  type ImageDataFormat = String
+  type TextDataFormat  = String
+  type AudioDataFormat = String
+
+  def loadAssets(assets: Set[AssetType]): Future[AssetCollection] = {
+    IndigoLogger.info(s"Loading ${assets.toList.length} assets")
+
+    // for {
+    //   t <- AssetCollection.loadTextAssets(AssetCollection.filterOutTextAssets(assets.toList))
+    //   i <- AssetCollection.loadImageAssets(AssetCollection.filterOutImageAssets(assets.toList))
+    //   a <- AssetCollection.loadAudioAssets(AssetCollection.filterOutAudioAssets(assets.toList))
+    // } yield new AssetCollection(i, t, a)
+
+    Future(new AssetCollection(Nil, Nil, Nil))
+  }
+
+  def filterOutTextAssets(l: List[AssetType]): List[AssetType.Text] =
+    l.flatMap { at =>
+      at match {
+        case t: AssetType.Text => List(t)
+        case _                 => Nil
+      }
+    }
+
+  def filterOutImageAssets(l: List[AssetType]): List[AssetType.Image] =
+    l.flatMap { at =>
+      at match {
+        case t: AssetType.Image => List(t)
+        case _                  => Nil
+      }
+    }
+
+  def filterOutAudioAssets(l: List[AssetType]): List[AssetType.Audio] =
+    l.flatMap { at =>
+      at match {
+        case t: AssetType.Audio => List(t)
+        case _                  => Nil
+      }
+    }
+
+  val loadImageAssets: List[AssetType.Image] => Future[List[LoadedImageAsset]] =
+    imageAssets => Future.sequence(imageAssets.map(loadImageAsset))
+
+  // def onLoadFuture(image: HTMLImageElement): Future[HTMLImageElement] =
+  //   if (image.complete) Future.successful(image)
+  //   else {
+  //     val p = Promise[HTMLImageElement]()
+  //     image.onload = { _: Event =>
+  //       p.success(image)
+  //     }
+  //     p.future
+  //   }
+
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+  def loadImageAsset(imageAsset: AssetType.Image): Future[LoadedImageAsset] = {
+    IndigoLogger.info(s"[Image] Loading ${imageAsset.path}")
+
+    // val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
+    // image.src = imageAsset.path
+
+    // onLoadFuture(image).map { i =>
+    //   IndigoLogger.info(s"[Image] Success ${imageAsset.path}")
+    //   new LoadedImageAsset(AssetName(imageAsset.name), i)
+    // }
+    Future(new LoadedImageAsset(AssetName(imageAsset.name), ""))
+  }
+
+  val loadTextAssets: List[AssetType.Text] => Future[List[LoadedTextAsset]] =
+    textAssets => Future.sequence(textAssets.map(loadTextAsset))
+
+  def loadTextAsset(textAsset: AssetType.Text): Future[LoadedTextAsset] = {
+    IndigoLogger.info(s"[Text] Loading ${textAsset.path}")
+
+    // Ajax.get(textAsset.path, responseType = "text").map { xhr =>
+    //   IndigoLogger.info(s"[Text] Success ${textAsset.path}")
+    //   new LoadedTextAsset(AssetName(textAsset.name), xhr.responseText)
+    // }
+
+    Future(new LoadedTextAsset(AssetName(textAsset.name), ""))
+  }
+
+  val loadAudioAssets: List[AssetType.Audio] => Future[List[LoadedAudioAsset]] =
+    audioAssets => Future.sequence(audioAssets.map(loadAudioAsset))
+
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+  def loadAudioAsset(audioAsset: AssetType.Audio): Future[LoadedAudioAsset] = {
+    IndigoLogger.info(s"[Audio] Loading ${audioAsset.path}")
+
+    // Ajax.get(audioAsset.path, responseType = "arraybuffer").flatMap { xhr =>
+    //   IndigoLogger.info(s"[Audio] Success ${audioAsset.path}")
+    //   val context = new AudioContext()
+    //   val p = context.decodeAudioData(
+    //     xhr.response.asInstanceOf[ArrayBuffer],
+    //     (audioBuffer: AudioBuffer) => audioBuffer,
+    //     () => IndigoLogger.info("Error decoding audio from: " + audioAsset.path)
+    //   )
+
+    //   p.toFuture.map(audioBuffer => new LoadedAudioAsset(AssetName(audioAsset.name), audioBuffer))
+
+    // }
+    Future(new LoadedAudioAsset(AssetName(audioAsset.name), ""))
+  }
+
+}
