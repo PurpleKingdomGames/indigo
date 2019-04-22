@@ -130,6 +130,6 @@ object LWJGLTest {
   }
 
   def main(args: Array[String]): Unit =
-    LWJGLTest.run()
+    run()
 
 }
