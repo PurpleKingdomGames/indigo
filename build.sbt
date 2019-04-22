@@ -365,6 +365,10 @@ lazy val indigoPlatforms =
         "org.scala-js" %%% "scalajs-dom" % "0.9.6"
       )
     )
+    .jvmSettings(
+      fork := true,
+      javaOptions ++= Seq("-XstartOnFirstThread")
+    )
     .dependsOn(shared)
 
 // Games

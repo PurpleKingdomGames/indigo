@@ -1,0 +1,19 @@
+{
+  "build": "release",
+  "mode": "zip",
+  "selectedAddons": [],
+  "platform": [
+    "macos"
+  ],
+  "descriptions": false,
+  "compact": true,
+  "hardcoded": false,
+  "javadoc": true,
+  "includeJSON": true,
+  "source": true,
+  "osgi": false,
+  "language": "groovy",
+  "preset": "minimal-opengl",
+  "version": "3.2.1",
+  "versionLatest": "3.2.1"
+}
