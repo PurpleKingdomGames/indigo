@@ -377,7 +377,7 @@ lazy val sandbox =
     .dependsOn(circe9)
     .enablePlugins(SbtIndigo)
     .settings(
-      name := "indigo-sandbox",
+      name := "sandbox",
       showCursor := true,
       title := "Sandbox",
       gameAssetsDirectory := "assets"

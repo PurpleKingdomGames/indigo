@@ -81,6 +81,8 @@ object GameEngine {
         )
 
       // Arrange assets
+      IndigoLogger.info("Attempting to load assets")
+      
       assetsAsync.flatMap(aa => AssetLoader.loadAssets(aa ++ assets)).foreach { assetCollection =>
         IndigoLogger.info("Asset load complete")
 

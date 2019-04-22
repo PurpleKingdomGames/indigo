@@ -11,13 +11,13 @@ object IndigoBuildJS {
   def build(baseDir: String, templateOptions: TemplateOptions): Unit = {
 
     // create directory structure
-    val directoryStructure = createDirectoryStructure(baseDir, "indigo")
+    val directoryStructure = createDirectoryStructure(baseDir, "indigo-js")
 
     // copy built js file into scripts dir
-    val newScriptPath = copyScript(templateOptions, directoryStructure.scripts, "fastopt")
+    val newScriptPath = copyScript(templateOptions, directoryStructure.artefacts, "fastopt")
 
     // copy built js source map file into scripts dir
-    copySourceMap(templateOptions, directoryStructure.scripts)
+    copySourceMap(templateOptions, directoryStructure.artefacts)
 
     // copy assets into folder
     copyAssets(templateOptions.gameAssetsDirectoryPath, directoryStructure.assets)
@@ -37,7 +37,7 @@ object IndigoBuildJS {
     val directoryStructure = createDirectoryStructure(baseDir, "indigo-published")
 
     // copy built js file into scripts dir
-    val newScriptPath = copyScript(templateOptions, directoryStructure.scripts, "opt")
+    val newScriptPath = copyScript(templateOptions, directoryStructure.artefacts, "opt")
 
     // copy assets into folder
     copyAssets(templateOptions.gameAssetsDirectoryPath, directoryStructure.assets)
@@ -51,17 +51,15 @@ object IndigoBuildJS {
     println(outputPath)
   }
 
-  case class DirectoryStructure(base: File, assets: File, scripts: File)
-
   def createDirectoryStructure(baseDir: String, outputFolderName: String): DirectoryStructure = {
     val dirPath = baseDir + "/target/" + outputFolderName
 
     println("dirPath: " + dirPath)
 
     DirectoryStructure(
-      ensureDirectoryAt(dirPath),
-      ensureDirectoryAt(dirPath + "/assets"),
-      ensureDirectoryAt(dirPath + "/scripts")
+      Utils.ensureDirectoryAt(dirPath),
+      Utils.ensureDirectoryAt(dirPath + "/assets"),
+      Utils.ensureDirectoryAt(dirPath + "/scripts")
     )
   }
 
@@ -106,15 +104,6 @@ object IndigoBuildJS {
     FileUtils.copyFileToDirectory(scriptPath, desScriptsFolder)
 
     desScriptsFolder.getCanonicalPath + "/" + fileName
-  }
-
-  private def ensureDirectoryAt(path: String): File = {
-    val dirFile = new File(path)
-
-    if (!dirFile.exists())
-      dirFile.mkdir()
-
-    dirFile
   }
 
   def writeHtml(directoryStructure: DirectoryStructure, html: String): String = {

@@ -186,12 +186,22 @@ addCommandAlias(
 )
 
 addCommandAlias(
-  "sandboxBuild",
+  "sandboxBuildJS",
   List(
     "buildIndigo",
     "sandbox/test",
     "sandbox/fastOptJS",
     "sandbox/indigoBuild"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "sandboxBuildJVM",
+  List(
+    "sandboxJVM/clean",
+    "sandboxJVM/compile",
+    "sandboxJVM/assembly",
+    "sandboxJVM/indigoBuildJVM"
   ).mkString(";", ";", "")
 )
 
