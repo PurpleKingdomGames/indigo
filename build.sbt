@@ -1,6 +1,7 @@
 // shadow sbt-scalajs' crossProject and CrossType from Scala.js 0.6.x
 import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 import scala.sys.process._
+import scala.language.postfixOps
 
 val indigoVersion = "0.0.10-SNAPSHOT"
 
@@ -323,7 +324,7 @@ lazy val audio =
 
 // Indigo
 lazy val indigo =
-  crossProject(JSPlatform, JVMPlatform, NativePlatform)
+  crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .settings(
@@ -337,7 +338,7 @@ lazy val indigo =
 
 // Indigo Extensions
 lazy val indigoExts =
-  crossProject(JSPlatform, JVMPlatform, NativePlatform)
+  crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
     .in(file("indigo-exts"))
     .settings(commonSettings: _*)
@@ -350,7 +351,7 @@ lazy val indigoExts =
 
 // Indigo Extensions
 lazy val indigoPlatforms =
-  crossProject(JSPlatform, JVMPlatform, NativePlatform)
+  crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Full)
     .in(file("indigo-platforms"))
     .settings(commonSettings: _*)
@@ -367,13 +368,20 @@ lazy val indigoPlatforms =
     )
     .jvmSettings(
       fork := true,
-      javaOptions ++= Seq("-XstartOnFirstThread")
+      javaOptions ++= Seq("-XstartOnFirstThread"),
+      libraryDependencies ++= Seq(
+        "org.lwjgl"      % "lwjgl-opengl"     % "3.2.1",
+        "org.lwjgl"      % "lwjgl-openal"     % "3.2.1",
+        "org.lwjgl.osgi" % "org.lwjgl.stb"    % "3.2.1.1",
+        "org.lwjgl.osgi" % "org.lwjgl.assimp" % "3.2.1.1",
+        "org.lwjgl"      % "lwjgl-glfw"       % "3.2.1"
+      )
     )
     .dependsOn(shared)
 
 // Games
 lazy val sandbox =
-  crossProject(JSPlatform, JVMPlatform, NativePlatform)
+  crossProject(JSPlatform, JVMPlatform)
     .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
@@ -391,7 +399,7 @@ lazy val sandbox =
     )
 
 lazy val perf =
-  crossProject(JSPlatform, JVMPlatform, NativePlatform)
+  crossProject(JSPlatform, JVMPlatform)
     .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
@@ -451,7 +459,7 @@ lazy val server =
 
 // Shared
 lazy val shared =
-  crossProject(JSPlatform, JVMPlatform, NativePlatform)
+  crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .settings(
@@ -461,7 +469,7 @@ lazy val shared =
 
 // Circe 0.9.x
 lazy val circe9 =
-  crossProject(JSPlatform, JVMPlatform, NativePlatform)
+  crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .settings(
@@ -476,14 +484,12 @@ lazy val circe9 =
 
 // Root
 lazy val indigoProject =
-  crossProject(JSPlatform, JVMPlatform, NativePlatform)
+  crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
     .in(file("."))
     .settings(commonSettings: _*)
-    .settings(
-      code := { "code ." ! }
-    )
     .jvmSettings(
+      code := { "code ." ! },
       openshareddocs := { "open -a Firefox shared/.jvm/target/scala-2.12/api/indigo/index.html" ! },
       openindigodocs := { "open -a Firefox indigo/.jvm/target/scala-2.12/api/indigo/index.html" ! },
       openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-2.12/api/indigoexts/index.html" ! }
