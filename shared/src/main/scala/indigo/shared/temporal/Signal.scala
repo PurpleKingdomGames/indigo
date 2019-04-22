@@ -77,7 +77,7 @@ object Signal {
 /**
   * A Signal Function maps Signal[A] -> Signal[B]
   */
-final class SignalFunction[A, B](val run: Signal[A] => Signal[B]) {
+final class SignalFunction[A, B](val run: Signal[A] => Signal[B]) extends AnyVal {
 
   def >>>[C](other: SignalFunction[B, C]): SignalFunction[A, C] =
     SignalFunction.andThen(this, other)
