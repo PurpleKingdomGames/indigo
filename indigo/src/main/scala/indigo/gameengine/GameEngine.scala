@@ -82,7 +82,7 @@ object GameEngine {
 
       // Arrange assets
       IndigoLogger.info("Attempting to load assets")
-      
+
       assetsAsync.flatMap(aa => AssetLoader.loadAssets(aa ++ assets)).foreach { assetCollection =>
         IndigoLogger.info("Asset load complete")
 
@@ -105,21 +105,10 @@ object GameEngine {
 
         val gameLoop: GameContext[Long => Unit] =
           for {
-            _ <- GameEngine.registerAnimations(animations ++ startupData.additionalAnimations)
-            _ <- GameEngine.registerFonts(fonts ++ startupData.additionalFonts)
-
-            // textureAtlas        <- GameEngine.createTextureAtlas(assetCollection)
-            // loadedTextureAssets <- GameEngine.extractLoadedTextures(textureAtlas)
-            // assetMapping        <- GameEngine.setupAssetMapping(textureAtlas)
-
-            startUpSuccessData <- GameEngine.initialisedGame(startupData)
-
-            // canvas   <- GameEngine.createCanvas(gameConfig)
-            // _        <- GameEngine.listenToWorldEvents(canvas, gameConfig.magnification, globalEventStream)
-            // renderer <- GameEngine.startRenderer(gameConfig, loadedTextureAssets, canvas)
-
+            _                       <- GameEngine.registerAnimations(animations ++ startupData.additionalAnimations)
+            _                       <- GameEngine.registerFonts(fonts ++ startupData.additionalFonts)
+            startUpSuccessData      <- GameEngine.initialisedGame(startupData)
             rendererAndAssetMapping <- platform.initialiseRenderer(gameConfig)
-
             gameLoopInstance <- GameEngine.initialiseGameLoop(
               gameConfig,
               rendererAndAssetMapping._2,
@@ -158,36 +147,6 @@ object GameEngine {
   def registerFonts(fonts: Set[FontInfo]): GameContext[Unit] =
     GameContext.delay(fonts.foreach(FontRegister.register))
 
-  // def createTextureAtlas(assetCollection: AssetCollection): GameContext[TextureAtlas] =
-  //   GameContext.delay(
-  //     TextureAtlas.create(
-  //       assetCollection.images.map(i => ImageRef(i.name.name, i.data.width, i.data.height)),
-  //       (name: String) => assetCollection.images.find(_.name.name === name),
-  //       TextureAtlasFunctions.createAtlasData
-  //     )
-  //   )
-
-  // def extractLoadedTextures(textureAtlas: TextureAtlas): GameContext[List[LoadedTextureAsset]] =
-  //   GameContext.delay(
-  //     textureAtlas.atlases.toList
-  //       .map(a => a._2.imageData.map(data => new LoadedTextureAsset(a._1.id, data)))
-  //       .collect { case Some(s) => s }
-  //   )
-
-  // def setupAssetMapping(textureAtlas: TextureAtlas): GameContext[AssetMapping] =
-  //   GameContext.delay(
-  //     new AssetMapping(
-  //       mappings = textureAtlas.legend
-  //         .map { p =>
-  //           p._1 -> new TextureRefAndOffset(
-  //             atlasName = p._2.id.id,
-  //             atlasSize = textureAtlas.atlases.get(p._2.id).map(_.size.value).map(Vector2.apply).getOrElse(Vector2.one),
-  //             offset = p._2.offset
-  //           )
-  //         }
-  //     )
-  //   )
-
   def initialisedGame[StartupError, StartupData](startupData: Startup[StartupError, StartupData]): GameContext[StartupData] =
     startupData match {
       case e: Startup.Failure[_] =>
@@ -199,34 +158,6 @@ object GameEngine {
         IndigoLogger.info("Game initialisation succeeded")
         GameContext.delay(x.success)
     }
-
-  // def createCanvas(gameConfig: GameConfig): GameContext[Canvas] =
-  //   Option(dom.document.getElementById("indigo-container")) match {
-  //     case None =>
-  //       GameContext.raiseError[Canvas](new Exception("""Parent element "indigo-container" could not be found on page."""))
-
-  //     case Some(parent) =>
-  //       GameContext.delay(Renderer.createCanvas(gameConfig.viewport.width, gameConfig.viewport.height, parent))
-  //   }
-
-  // def listenToWorldEvents(canvas: Canvas, magnification: Int, globalEventStream: GlobalEventStream): GameContext[Unit] = {
-  //   IndigoLogger.info("Starting world events")
-  //   GameContext.delay(WorldEvents.init(canvas, magnification, globalEventStream))
-  // }
-
-  // def startRenderer(gameConfig: GameConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: Canvas): GameContext[Renderer] =
-  //   GameContext.delay {
-  //     IndigoLogger.info("Starting renderer")
-  //     Renderer(
-  //       new RendererConfig(
-  //         viewport = new Viewport(gameConfig.viewport.width, gameConfig.viewport.height),
-  //         clearColor = gameConfig.clearColor,
-  //         magnification = gameConfig.magnification
-  //       ),
-  //       loadedTextureAssets,
-  //       canvas
-  //     )
-  //   }
 
   def initialiseGameLoop[GameModel, ViewModel](
       gameConfig: GameConfig,
