@@ -477,10 +477,12 @@ lazy val indigoProject =
     .in(file("."))
     .settings(commonSettings: _*)
     .settings(
-      code := { "code ." ! },
-      openshareddocs := { "open -a Firefox shared/target/scala-2.12/api/indigo/index.html" ! },
-      openindigodocs := { "open -a Firefox indigo/target/scala-2.12/api/indigo/index.html" ! },
-      openindigoextsdocs := { "open -a Firefox indigo-exts/target/scala-2.12/api/indigoexts/index.html" ! }
+      code := { "code ." ! }
+    )
+    .jvmSettings(
+      openshareddocs := { "open -a Firefox shared/.jvm/target/scala-2.12/api/indigo/index.html" ! },
+      openindigodocs := { "open -a Firefox indigo/.jvm/target/scala-2.12/api/indigo/index.html" ! },
+      openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-2.12/api/indigoexts/index.html" ! }
     )
     .aggregate(
       shared,

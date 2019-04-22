@@ -47,11 +47,11 @@ def applyCommand(projects: List[String], command: String, platforms: List[Platfo
 addCommandAlias(
   "readdocs",
   applyCommand(coreProjects, "doc", PlatformSuffix.JVMOnly) +
-    (List(
+    List(
       "openshareddocs",
       "openindigodocs",
       "openindigoextsdocs"
-    ).mkString(";", ";", ""))
+    ).mkString(";", ";", "")
 )
 
 addCommandAlias(
