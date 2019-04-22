@@ -357,12 +357,12 @@ lazy val indigoPlatforms =
     .settings(
       name := "indigo-platforms",
       libraryDependencies ++= Seq(
-        "org.scalacheck" %%% "scalacheck"  % "1.13.4" % "test"
+        "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
       )
     )
     .jsSettings(
       libraryDependencies ++= Seq(
-        "org.scala-js"   %%% "scalajs-dom" % "0.9.6"
+        "org.scala-js" %%% "scalajs-dom" % "0.9.6"
       )
     )
     .dependsOn(shared)
@@ -406,6 +406,7 @@ lazy val perf =
 
 lazy val framework =
   crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)

@@ -1,55 +1,74 @@
+lazy val coreProjects: List[String] =
+  List(
+    "shared",
+    "circe9",
+    "indigoPlatforms",
+    "indigo",
+    "indigoExts"
+  )
+
+lazy val devProjects: List[String] =
+  List("sandbox", "perf")
+
+lazy val exampleProjects: List[String] =
+  List(
+    "basicSetup",
+    "subSystems",
+    "scenesSetup",
+    "fullSetup",
+    "button",
+    "http",
+    "text",
+    "graphic",
+    "sprite",
+    "websocket",
+    "inputfield",
+    "audio",
+    "group",
+    "automata"
+  )
+
+def applyCommand(projects: List[String], command: String, platforms: List[PlatformSuffix]): String =
+  platforms match {
+    case Nil =>
+      projects.map(p => p + "/" + command).mkString(";", ";", "")
+
+    case ps =>
+      projects
+        .flatMap { p =>
+          ps.map { plt =>
+            p + plt.suffix + "/" + command
+          }
+        }
+        .mkString(";", ";", "")
+  }
 
 // Rebuild ScalaDocs and open in Firefox
 addCommandAlias(
   "readdocs",
-  List(
-    "shared/doc",
-    "indigo/doc",
-    "indigoExts/doc",
-    "openshareddocs",
-    "openindigodocs",
-    "openindigoextsdocs"
-  ).mkString(";", ";", "")
+  applyCommand(coreProjects, "doc", PlatformSuffix.JVMOnly) +
+    (List(
+      "openshareddocs",
+      "openindigodocs",
+      "openindigoextsdocs"
+    ).mkString(";", ";", ""))
 )
-
 
 addCommandAlias(
   "buildIndigo",
-  List(
-    "shared/compile",
-    "circe9/compile",
-    "indigoPlatforms/compile",
-    "indigo/compile",
-    "indigoExts/compile"
-  ).mkString(";", ";", "")
+  applyCommand(coreProjects, "compile", PlatformSuffix.All)
 )
 addCommandAlias(
   "buildDev",
-  List(
-    "sandbox/compile",
-    "perf/compile",
-    "framework/compile",
-    "server/compile"
-  ).mkString(";", ";", "")
+  applyCommand(devProjects, "compile", List(PlatformSuffix.Ignore, PlatformSuffix.JVM)) +
+    List(
+      "framework/compile",
+      "server/compile"
+    ).mkString(";", ";", "")
 )
 addCommandAlias(
   "buildExamples",
-  List(
-    "basicSetup/compile",
-    "subSystems/compile",
-    "scenesSetup/compile",
-    "fullSetup/compile",
-    "button/compile",
-    "http/compile",
-    "text/compile",
-    "graphic/compile",
-    "sprite/compile",
-    "websocket/compile",
-    "inputfield/compile",
-    "audio/compile",
-    "group/compile",
-    "automata/compile"
-  ).mkString(";", ";", "")
+  applyCommand(exampleProjects, "compile", PlatformSuffix.Omit)
 )
 
 addCommandAlias(
@@ -69,92 +88,83 @@ addCommandAlias(
 )
 
 addCommandAlias(
-  "testIndigo",
+  "testIndigoJS",
+  applyCommand(coreProjects, "test", PlatformSuffix.JSOnly)
+)
+addCommandAlias(
+  "testIndigoJVM",
+  applyCommand(coreProjects, "test", PlatformSuffix.JVMOnly)
+)
+addCommandAlias(
+  "testDevJS",
+  applyCommand(devProjects, "test", PlatformSuffix.JSOnly) +
+    List(
+      "framework/test",
+      "server/test"
+    ).mkString(";", ";", "")
+)
+addCommandAlias(
+  "testDevJVM",
+  applyCommand(devProjects, "test", PlatformSuffix.JVMOnly) +
+    List(
+      "framework/test",
+      "server/test"
+    ).mkString(";", ";", "")
+)
+addCommandAlias(
+  "testExamplesJS",
+  applyCommand(exampleProjects, "test", PlatformSuffix.Omit)
+)
+addCommandAlias(
+  "testExamplesJVM",
+  applyCommand(exampleProjects, "test", PlatformSuffix.JVMOnly)
+)
+addCommandAlias(
+  "testAllNoCleanJS",
   List(
-    "shared/test",
-    "indigo/test",
-    "indigoExts/test"
+    "testIndigoJS",
+    "testDevJS",
+    "testExamplesJS"
   ).mkString(";", ";", "")
 )
 addCommandAlias(
-  "testDev",
-  List(
-    "sandbox/test",
-    "perf/test",
-    "framework/test",
-    "server/test"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testExamples",
-  List(
-    "basicSetup/test",
-    "subSystems/test",
-    "scenesSetup/test",
-    "fullSetup/test",
-    "button/test",
-    "http/test",
-    "text/test",
-    "graphic/test",
-    "sprite/test",
-    "websocket/test",
-    "inputfield/test",
-    "audio/test",
-    "group/test",
-    "automata/test"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testAllNoClean",
-  List(
-    "testIndigo",
-    "testDev",
-    "testExamples"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testAll",
+  "testAllJS",
   List(
     "clean",
-    "testAllNoClean"
+    "testAllNoCleanJS"
+  ).mkString(";", ";", "")
+)
+addCommandAlias(
+  "testAllNoCleanJVM",
+  List(
+    "testIndigoJVM",
+    "testDevJVM",
+    "testExamplesJVM"
+  ).mkString(";", ";", "")
+)
+addCommandAlias(
+  "testAllJVM",
+  List(
+    "clean",
+    "testAllNoCleanJVM"
   ).mkString(";", ";", "")
 )
 
 addCommandAlias(
   "testCompileIndigo",
-  List(
-    "shared/test:compile",
-    "indigo/test:compile",
-    "indigoExts/test:compile"
-  ).mkString(";", ";", "")
+  applyCommand(coreProjects, "test:compile", PlatformSuffix.All)
 )
 addCommandAlias(
   "testCompileDev",
-  List(
-    "sandbox/test:compile",
-    "perf/test:compile",
-    "framework/test:compile",
-    "server/test:compile"
-  ).mkString(";", ";", "")
+  applyCommand(devProjects, "test:compile", List(PlatformSuffix.Ignore, PlatformSuffix.JVM)) +
+    List(
+      "framework/test",
+      "server/test"
+    ).mkString(";", ";", "")
 )
 addCommandAlias(
   "testCompileExamples",
-  List(
-    "basicSetup/test:compile",
-    "subSystems/test:compile",
-    "scenesSetup/test:compile",
-    "fullSetup/test:compile",
-    "button/test:compile",
-    "http/test:compile",
-    "text/test:compile",
-    "graphic/test:compile",
-    "sprite/test:compile",
-    "websocket/test:compile",
-    "inputfield/test:compile",
-    "audio/test:compile",
-    "group/test:compile",
-    "automata/test:compile"
-  ).mkString(";", ";", "")
+  applyCommand(exampleProjects, "test:compile", PlatformSuffix.Omit)
 )
 addCommandAlias(
   "testCompileAllNoClean",
@@ -176,13 +186,9 @@ addCommandAlias(
   "localPublish",
   List(
     "clean",
-    "buildIndigo",
-    "shared/publishLocal",
-    "circe9/publishLocal",
-    "indigoPlatforms/publishLocal",
-    "indigo/publishLocal",
-    "indigoExts/publishLocal"
-  ).mkString(";", ";", "")
+    "buildIndigo"
+  ).mkString(";", ";", "") +
+    applyCommand(coreProjects, "test:publishLocal", PlatformSuffix.All)
 )
 
 addCommandAlias(
@@ -191,7 +197,7 @@ addCommandAlias(
     "buildIndigo",
     "sandbox/test",
     "sandbox/fastOptJS",
-    "sandbox/indigoBuild"
+    "sandbox/indigoBuildJS"
   ).mkString(";", ";", "")
 )
 
@@ -206,11 +212,21 @@ addCommandAlias(
 )
 
 addCommandAlias(
-  "perfBuild",
+  "perfBuildJS",
   List(
     "buildIndigo",
     "perf/test",
     "perf/fastOptJS",
-    "perf/indigoBuild"
+    "perf/indigoBuildJS"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "perfBuildJVM",
+  List(
+    "buildIndigo",
+    "perfJVM/test",
+    "perfJVM/assembly",
+    "perfJVM/indigoBuildJVM"
   ).mkString(";", ";", "")
 )

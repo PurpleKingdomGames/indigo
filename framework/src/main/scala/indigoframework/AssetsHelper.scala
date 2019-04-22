@@ -1,11 +1,11 @@
 package indigoframework
 
-import indigo.platform.assets.AssetCollection
+import indigo.platform.assets.AssetLoader
 import indigo.shared.IndigoLogger
 import indigo.shared.{AssetList, AssetType}
 import indigo.json._
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.concurrent.Future
 
 object AssetsHelper {
@@ -13,7 +13,7 @@ object AssetsHelper {
   def assets: Set[AssetType] = Set()
 
   def assetsAsync: Future[Set[AssetType]] =
-    AssetCollection
+    AssetLoader
       .loadTextAsset(AssetType.Text("assetsList", "assets/assets.json"))
       .map { p =>
         fromJson(p.data).map(_.toSet) match {
