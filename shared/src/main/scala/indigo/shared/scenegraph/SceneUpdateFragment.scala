@@ -73,6 +73,6 @@ object SceneUpdateFragment {
       a.uiLayer ++ b.uiLayer,
       a.ambientLight + b.ambientLight,
       a.viewEvents ++ b.viewEvents,
-      SceneAudio.None
+      a.audio |+| b.audio
     )
 }
