@@ -4,6 +4,7 @@ nav:
     - Installation: installation.md
     - Getting Started: getting-started.md
     - Constraints & Motivation: constraints-and-motivation.md
+    - Prior Art: prior-art.md
     - Key Concepts: key-concepts.md
     - Configuration: configuration.md
     - Entry Point Types: entry-point-types.md
@@ -12,7 +13,8 @@ nav:
     - Time & Temporal Values: time-and-temporal-values.md
     - Audio: audio.md
     - Networking: networking.md
-    - Events: events.md
+    - Events & Signals: events-and-signals.md
+    - Outcome: outcome.md
     - Collections, Abstractions & TypeClasses: collections-abstractions-and-typeclasses.md
     - Renderable Primitives: renderable-primitives.md
     - Primitive Types: primitive-types.md
