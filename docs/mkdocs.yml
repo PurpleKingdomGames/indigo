@@ -7,6 +7,7 @@ nav:
     - Prior Art: prior-art.md
     - Key Concepts: key-concepts.md
     - Configuration: configuration.md
+    - Start Up: start-up.md
     - Entry Point Types: entry-point-types.md
     - Asset Management: asset-management.md
     - Logging: logging.md
