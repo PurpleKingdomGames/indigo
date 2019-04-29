@@ -9,6 +9,15 @@ sealed trait Polygon {
   def bounds: Rectangle =
     Rectangle.fromPointCloud(vertices)
 
+  def edgeCount: Int =
+    this match {
+      case Polygon.Open(vs) =>
+        vs.length - 1
+
+      case Polygon.Closed(vs) =>
+        vs.length
+    }
+
   //TODO: Order is important, verts and indices? Or assume ordered?
   //TODO: As line segments
   //TODO: Propatage line segment-type functions to lines.
@@ -35,6 +44,9 @@ object Polygon {
     def apply(vertices: List[Point]): Open =
       new Open(vertices)
 
+    def apply(vertices: Point*): Open =
+      new Open(vertices.toList)
+
     def unapply(polygon: Open): Option[List[Point]] =
       Option(polygon.vertices)
   }
@@ -46,6 +58,9 @@ object Polygon {
 
     def apply(vertices: List[Point]): Closed =
       new Closed(vertices)
+
+    def apply(vertices: Point*): Closed =
+      new Closed(vertices.toList)
 
     def unapply(polygon: Closed): Option[List[Point]] =
       Option(polygon.vertices)
