@@ -60,15 +60,15 @@ package object indigoexts {
     }
   }
 
-  object lines {
-    type LineSegment = line.LineSegment
-    val LineSegment: line.LineSegment.type = line.LineSegment
+  object shapes {
+    type LineSegment = geometry.LineSegment
+    val LineSegment: geometry.LineSegment.type = geometry.LineSegment
 
-    type LineProperties = line.LineProperties
-    val LineProperties: line.LineProperties.type = line.LineProperties
+    type LineProperties = geometry.LineProperties
+    val LineProperties: geometry.LineProperties.type = geometry.LineProperties
 
-    type IntersectionResult = line.IntersectionResult
-    val IntersectionResult: line.IntersectionResult.type = line.IntersectionResult
+    type IntersectionResult = geometry.IntersectionResult
+    val IntersectionResult: geometry.IntersectionResult.type = geometry.IntersectionResult
   }
 
   object quadtree {

@@ -19,6 +19,27 @@ object RectangleTests extends TestSuite {
           Rectangle.fromTwoPoints(pt1, pt2) === expected ==> true
         }
 
+        "should be able to construct a rectangle from a cloud of points" - {
+          val points: List[Point] =
+            List(
+              Point(4, 11),
+              Point(6, 8),
+              Point(2, 9),
+              Point(1, 13),
+              Point(3, 10),
+              Point(0, 12),
+              Point(5, 7)
+            )
+
+          val expected: Rectangle =
+            Rectangle(0, 7, 6, 13)
+
+          val actual: Rectangle =
+            Rectangle.fromPointCloud(points)
+
+          actual === expected ==> true
+        }
+
       }
 
       "Expand to include two rectangles" - {

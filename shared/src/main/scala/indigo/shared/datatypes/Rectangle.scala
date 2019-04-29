@@ -3,6 +3,8 @@ package indigo.shared.datatypes
 import indigo.shared.{AsString, EqualTo}
 import indigo.shared.AsString._
 
+import scala.annotation.tailrec
+
 final class Rectangle(val position: Point, val size: Point) {
   val x: Int       = position.x
   val y: Int       = position.y
@@ -79,6 +81,26 @@ object Rectangle {
     val h = Math.max(pt1.y, pt2.y) - y
 
     Rectangle(x, y, w, h)
+  }
+
+  def fromPointCloud(points: List[Point]): Rectangle = {
+    @tailrec
+    def rec(remaining: List[Point], x: Int, y: Int, width: Int, height: Int): Rectangle =
+      remaining match {
+        case Nil =>
+          Rectangle(x, y, width, height)
+
+        case p :: ps =>
+          rec(
+            ps,
+            Math.min(x, p.x),
+            Math.min(y, p.y),
+            Math.max(width, p.x),
+            Math.max(height, p.y)
+          )
+      }
+
+    rec(points, Int.MaxValue, Int.MaxValue, Int.MinValue, Int.MinValue)
   }
 
   implicit val rectangleShow: AsString[Rectangle] =

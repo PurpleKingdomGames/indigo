@@ -1,8 +1,8 @@
-package indigoexts.line
+package indigoexts.geometry
 
 import indigo.shared.datatypes.Point
-import indigoexts.line.IntersectionResult._
-import indigoexts.line.LineProperties._
+import indigoexts.geometry.IntersectionResult._
+import indigoexts.geometry.LineProperties._
 import indigo.shared.EqualTo._
 
 import utest._

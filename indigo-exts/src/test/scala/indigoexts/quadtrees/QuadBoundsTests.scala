@@ -4,7 +4,7 @@ import utest._
 
 import indigo.shared.datatypes.Point
 import indigoexts.grid.GridPoint
-import indigoexts.line.LineSegment
+import indigoexts.geometry.LineSegment
 import indigo.shared.EqualTo._
 
 object QuadBoundsTests extends TestSuite {

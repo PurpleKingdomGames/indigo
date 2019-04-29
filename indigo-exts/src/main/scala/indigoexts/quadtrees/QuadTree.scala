@@ -7,7 +7,7 @@ import indigo.shared.AsString._
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import indigoexts.grid.{GridPoint, GridSize}
-import indigoexts.line.LineSegment
+import indigoexts.geometry.LineSegment
 
 import scala.annotation.tailrec
 

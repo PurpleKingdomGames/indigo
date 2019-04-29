@@ -1,4 +1,4 @@
-package indigoexts.line
+package indigoexts.geometry
 
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._

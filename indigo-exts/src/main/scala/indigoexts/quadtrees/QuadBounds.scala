@@ -3,7 +3,7 @@ package indigoexts.quadtrees
 import indigo.shared.datatypes.{Point, Rectangle}
 import indigo.shared.AsString
 import indigoexts.grid.GridPoint
-import indigoexts.line.{IntersectionResult, LineSegment}
+import indigoexts.geometry.{IntersectionResult, LineSegment}
 
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
