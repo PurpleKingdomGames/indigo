@@ -90,9 +90,9 @@ object Group {
 }
 
 sealed trait Renderable extends SceneGraphNode {
-  val bounds: Rectangle
-  val effects: Effects
-  val eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
+  def bounds: Rectangle
+  def effects: Effects
+  def eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
 
   def x: Int
   def y: Int
@@ -330,7 +330,7 @@ final case class Text(text: String, alignment: TextAlignment, position: Point, d
         Nil
       }
 
-  val bounds: Rectangle =
+  def bounds: Rectangle =
     lines.map(_.lineBounds).fold(Rectangle.zero) { (acc, next) =>
       acc.resize(Point(Math.max(acc.width, next.width), acc.height + next.height))
     }
@@ -381,7 +381,7 @@ final case class Text(text: String, alignment: TextAlignment, position: Point, d
   def onEvent(e: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]): Text =
     this.copy(eventHandler = e)
 
-  private val realBound: Rectangle =
+  def alignedBounds: Rectangle =
     (alignment, bounds.moveTo(position)) match {
       case (TextAlignment.Left, b)   => b
       case (TextAlignment.Center, b) => b.moveTo(Point(b.x - (b.width / 2), b.y))
@@ -389,7 +389,7 @@ final case class Text(text: String, alignment: TextAlignment, position: Point, d
     }
 
   def eventHandlerWithBoundsApplied(e: GlobalEvent): Option[GlobalEvent] =
-    eventHandler((realBound, e))
+    eventHandler((alignedBounds, e))
 
 }
 
