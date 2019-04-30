@@ -59,6 +59,12 @@ final class Rectangle(val position: Point, val size: Point) {
 
   def resize(point: Point): Rectangle =
     Rectangle(position, point)
+
+  def asString: String =
+    implicitly[AsString[Rectangle]].show(this)
+
+  def ===(other: Rectangle): Boolean =
+    implicitly[EqualTo[Rectangle]].equal(this, other)
 }
 
 object Rectangle {
@@ -85,18 +91,18 @@ object Rectangle {
 
   def fromPointCloud(points: List[Point]): Rectangle = {
     @tailrec
-    def rec(remaining: List[Point], x: Int, y: Int, width: Int, height: Int): Rectangle =
+    def rec(remaining: List[Point], left: Int, top: Int, right: Int, bottom: Int): Rectangle =
       remaining match {
         case Nil =>
-          Rectangle(x, y, width, height)
+          Rectangle(left, top, right - left, bottom - top)
 
         case p :: ps =>
           rec(
             ps,
-            Math.min(x, p.x),
-            Math.min(y, p.y),
-            Math.max(width, p.x),
-            Math.max(height, p.y)
+            Math.min(left, p.x),
+            Math.min(top, p.y),
+            Math.max(right, p.x),
+            Math.max(bottom, p.y)
           )
       }
 

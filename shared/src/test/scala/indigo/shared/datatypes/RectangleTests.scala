@@ -20,6 +20,7 @@ object RectangleTests extends TestSuite {
         }
 
         "should be able to construct a rectangle from a cloud of points" - {
+          //left 0, right 6, top 7, bottom 13
           val points: List[Point] =
             List(
               Point(4, 11),
@@ -32,7 +33,7 @@ object RectangleTests extends TestSuite {
             )
 
           val expected: Rectangle =
-            Rectangle(0, 7, 6, 13)
+            Rectangle(0, 7, 6, 6)
 
           val actual: Rectangle =
             Rectangle.fromPointCloud(points)
@@ -56,6 +57,18 @@ object RectangleTests extends TestSuite {
           val b = Rectangle(100, 100, 100, 100)
 
           Rectangle.expandToInclude(a, b) === Rectangle(10, 10, 190, 190) ==> true
+        }
+
+      }
+
+      "intersecting points" - {
+
+        "should be able to detect if the point is inside the Rectangle" - {
+          Rectangle(0, 0, 10, 10).isPointWithin(Point(5, 5)) ==> true
+        }
+
+        "should be able to detect that a point is outside the Rectangle" - {
+          Rectangle(0, 0, 10, 10).isPointWithin(Point(20, 5)) ==> false
         }
 
       }

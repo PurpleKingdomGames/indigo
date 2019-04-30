@@ -20,6 +20,12 @@ final class Point(val x: Int, val y: Int) {
 
   def distanceTo(other: Point): Double =
     Point.distanceBetween(this, other)
+
+  def asString: String =
+    implicitly[AsString[Point]].show(this)
+
+  def ===(other: Point): Boolean =
+    implicitly[EqualTo[Point]].equal(this, other)
 }
 
 object Point {

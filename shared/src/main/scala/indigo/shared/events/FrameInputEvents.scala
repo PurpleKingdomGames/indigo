@@ -2,7 +2,6 @@ package indigo.shared.events
 
 import indigo.shared.constants.KeyCode
 import indigo.shared.datatypes.{Point, Rectangle}
-import indigo.shared.EqualTo._
 
 /**
   * Holds all the events that will be passed on to the view. These are world events only! View events go to the model.

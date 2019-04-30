@@ -3,6 +3,7 @@ package indigoexts.geometry
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Point
+import indigo.shared.AsString
 
 final class LineSegment(val start: Point, val end: Point) {
   val center: Point = end - start
@@ -23,15 +24,29 @@ final class LineSegment(val start: Point, val end: Point) {
 
   def containsPoint(point: Point): Boolean =
     LineSegment.lineContainsPoint(this, point)
+
+  def asString: String =
+    implicitly[AsString[LineSegment]].show(this)
+
+  def ===(other: LineSegment): Boolean =
+    implicitly[EqualTo[LineSegment]].equal(this, other)
 }
 
 object LineSegment {
 
-  implicit val equalTo: EqualTo[LineSegment] = {
+  implicit val lsEqualTo: EqualTo[LineSegment] = {
     val eqPt = implicitly[EqualTo[Point]]
 
     EqualTo.create { (a, b) =>
       eqPt.equal(a.start, b.start) && eqPt.equal(a.end, b.end)
+    }
+  }
+
+  implicit val lsAsString: AsString[LineSegment] = {
+    val s = implicitly[AsString[Point]]
+
+    AsString.create { ls =>
+      s"LineSegment(start = ${s.show(ls.start)}, end = ${s.show(ls.end)})"
     }
   }
 

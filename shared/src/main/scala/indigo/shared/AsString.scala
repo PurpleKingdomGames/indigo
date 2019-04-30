@@ -13,6 +13,7 @@ trait AsString[A] {
     * @return
     */
   def show(a: A): String
+  def asString(a: A): String = show(a)
 }
 object AsString {
 
@@ -69,6 +70,9 @@ object AsString {
     */
   implicit class AsStringSyntax[A](val a: A)(implicit val s: AsString[A]) {
     def show: String =
+      s.show(a)
+
+    def asString: String =
       s.show(a)
   }
 }
