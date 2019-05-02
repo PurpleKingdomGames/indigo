@@ -1,6 +1,7 @@
 package indigo.shared.datatypes
 
 import indigo.shared.{AsString, EqualTo}
+import indigo.shared.display.Vector2
 
 final class Point(val x: Int, val y: Int) {
   def +(pt: Point): Point = Point(x + pt.x, y + pt.y)
@@ -20,6 +21,9 @@ final class Point(val x: Int, val y: Int) {
 
   def distanceTo(other: Point): Double =
     Point.distanceBetween(this, other)
+
+  def toVector: Vector2 =
+    Vector2(x.toDouble, y.toDouble)
 
   def asString: String =
     implicitly[AsString[Point]].show(this)

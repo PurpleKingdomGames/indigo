@@ -41,9 +41,7 @@ sealed trait Polygon {
         false
 
       case Polygon.Closed(_) =>
-      println(point.asString)
-        ???
-      // bounds.isPointWithin(point) //&&  for all line segments is point on wrong side of normal?
+      bounds.isPointWithin(point) //&&  for all line segments is point on wrong side of normal?
     }
 
   def asString: String =
@@ -64,7 +62,7 @@ object Polygon {
     def rec(remaining: List[Point], current: Point, acc: List[LineSegment]): List[LineSegment] =
       remaining match {
         case Nil =>
-          acc
+          acc.reverse
 
         case x :: xs =>
           rec(xs, x, LineSegment(current, x) :: acc)

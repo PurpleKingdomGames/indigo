@@ -4,9 +4,14 @@ import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Point
 import indigo.shared.AsString
+import indigo.shared.display.Vector2
 
 final class LineSegment(val start: Point, val end: Point) {
-  val center: Point = end - start
+  val center: Point =
+    Point(
+      ((end.x - start.x) / 2) + start.x,
+      ((end.y - start.y) / 2) + start.y
+    )
 
   def left: Int   = Math.min(start.x, end.x)
   def right: Int  = Math.max(start.x, end.x)
@@ -24,6 +29,9 @@ final class LineSegment(val start: Point, val end: Point) {
 
   def containsPoint(point: Point): Boolean =
     LineSegment.lineContainsPoint(this, point)
+
+  def isFacingPoint(point: Point): Boolean =
+    LineSegment.isFacingPoint(this, point)
 
   def asString: String =
     implicitly[AsString[LineSegment]].show(this)
@@ -185,6 +193,9 @@ object LineSegment {
           mDelta >= -tolerance && mDelta <= tolerance
         } else false
     }
+
+  def isFacingPoint(line: LineSegment, point: Point): Boolean =
+    (line.normal.toVector dot Vector2.fromPoints(line.center, point)) < 0
 
 }
 

@@ -89,16 +89,11 @@ object PolygonTests extends TestSuite {
             List(
               LineSegment(Point(0, 0), Point(5, 5)),
               LineSegment(Point(5, 5), Point(10, 0)),
-              LineSegment(Point(10, 0), Point(-5, -5))
+              LineSegment(Point(10, 0), Point(5, -5))
             )
 
           val actual: List[LineSegment] =
             open.lineSegments
-
-          import indigo.shared.AsString._
-
-          println(expected.asString)
-          println(actual.asString)
 
           actual === expected ==> true
         }
@@ -109,8 +104,8 @@ object PolygonTests extends TestSuite {
             List(
               LineSegment(Point(0, 0), Point(5, 5)),
               LineSegment(Point(5, 5), Point(10, 0)),
-              LineSegment(Point(10, 0), Point(-5, -5)),
-              LineSegment(Point(-5, -5), Point(0, 0))
+              LineSegment(Point(10, 0), Point(5, -5)),
+              LineSegment(Point(5, -5), Point(0, 0))
             )
 
           val actual: List[LineSegment] =
@@ -121,13 +116,24 @@ object PolygonTests extends TestSuite {
 
       }
 
+      // import indigo.shared.AsString._
+
+      // println(expected.asString)
+      // println(actual.asString)
+
       "Intersections" - {
         "contains point (open shapes can't contain)" - {
           open.contains(Point(2, 1)) ==> false
         }
 
         "contains point (closed)" - {
-          closed.contains(Point(2, 1)) ==> true
+          "totally enclosed" - {
+            closed.contains(Point(2, 1)) ==> true
+          }
+
+          "withing bounds by not inside polygon" - {
+            closed.contains(Point(2, 1)) ==> true
+          }
         }
 
         // "intersets with line (open)" - {

@@ -1,5 +1,7 @@
 package indigo.shared.display
 
+import indigo.shared.datatypes.Point
+
 import utest._
 
 object Vector2Tests extends TestSuite {
@@ -39,6 +41,35 @@ object Vector2Tests extends TestSuite {
           res.x ==> 25
           res.y ==> 25
 
+        }
+
+        "should be able to calculate the dot product between two Vector2s" - {
+
+          "parallel" - {
+            (Vector2(0, 0) dot Vector2(0, 0)) ==> 0f
+          }
+
+          "facing" - {
+            (Vector2(2, 2) dot Vector2(-1, -1)) < 0 ==> true
+          }
+
+          "not facing" - {
+            (Vector2(2, 2) dot Vector2(1, 1)) > 0 ==> true
+          }
+
+          "value" - {
+            Math.round((Vector2(-6, 8) dot Vector2(5, 12))) ==> 66
+          }
+
+        }
+
+      }
+
+      "Construction" - {
+
+        "build a vector from two points" - {
+          Vector2.fromPoints(Point.zero, Point(2, 2)) === Vector2(2, 2) ==> true
+          Vector2.fromPoints(Point(10, 2), Point(2, 2)) === Vector2(-8, 0) ==> true
         }
 
       }

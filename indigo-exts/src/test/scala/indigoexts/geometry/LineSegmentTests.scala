@@ -212,40 +212,61 @@ object LineSegmentTests extends TestSuite {
 
       }
 
-      "Point on a line" - {
+      "Points & Lines" - {
 
-        //TODO: Can do a property based check here. Forall points on a line
-        // (i.e. start point * slope m < end point)
-        "should be able to check if a point is on a line" - {
-          "horizontal" - {
-            val line: LineSegment = LineSegment((10, 10), (20, 10))
-            val point: Point      = Point(15, 10)
+        "Facing a point" - {
 
-            LineSegment.lineContainsPoint(line, point) ==> true
+          val line: LineSegment = LineSegment((1, 5), (9, 5))
+
+          "facing" - {
+            val point: Point = Point(5, 2)
+
+            line.isFacingPoint(point) ==> true
           }
 
-          "vertical" - {
-            val line: LineSegment = LineSegment((10, 10), (10, 20))
-            val point: Point      = Point(10, 15)
+          "not facing" - {
+            val point: Point = Point(5, 20)
 
-            LineSegment.lineContainsPoint(line, point) ==> true
+            line.isFacingPoint(point) ==> false
           }
 
-          "diagonal" - {
+        }
+
+        "Point on a line" - {
+
+          //TODO: Can do a property based check here. Forall points on a line
+          // (i.e. start point * slope m < end point)
+          "should be able to check if a point is on a line" - {
+            "horizontal" - {
+              val line: LineSegment = LineSegment((10, 10), (20, 10))
+              val point: Point      = Point(15, 10)
+
+              LineSegment.lineContainsPoint(line, point) ==> true
+            }
+
+            "vertical" - {
+              val line: LineSegment = LineSegment((10, 10), (10, 20))
+              val point: Point      = Point(10, 15)
+
+              LineSegment.lineContainsPoint(line, point) ==> true
+            }
+
+            "diagonal" - {
+              val line: LineSegment = LineSegment((10, 10), (20, 20))
+              val point: Point      = Point(15, 15)
+
+              LineSegment.lineContainsPoint(line, point) ==> true
+            }
+          }
+
+          "should be able to check if a point is NOT on a line" - {
             val line: LineSegment = LineSegment((10, 10), (20, 20))
-            val point: Point      = Point(15, 15)
+            val point: Point      = Point(1, 5)
 
-            LineSegment.lineContainsPoint(line, point) ==> true
+            LineSegment.lineContainsPoint(line, point) ==> false
           }
+
         }
-
-        "should be able to check if a point is NOT on a line" - {
-          val line: LineSegment = LineSegment((10, 10), (20, 20))
-          val point: Point      = Point(1, 5)
-
-          LineSegment.lineContainsPoint(line, point) ==> false
-        }
-
       }
     }
 
