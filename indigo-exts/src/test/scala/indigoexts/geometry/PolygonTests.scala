@@ -116,11 +116,6 @@ object PolygonTests extends TestSuite {
 
       }
 
-      // import indigo.shared.AsString._
-
-      // println(expected.asString)
-      // println(actual.asString)
-
       "Intersections" - {
         "contains point (open shapes can't contain)" - {
           open.contains(Point(2, 1)) ==> false
@@ -128,11 +123,11 @@ object PolygonTests extends TestSuite {
 
         "contains point (closed)" - {
           "totally enclosed" - {
-            closed.contains(Point(2, 1)) ==> true
+            closed.contains(Point(2, 0)) ==> true
           }
 
-          "withing bounds by not inside polygon" - {
-            closed.contains(Point(2, 1)) ==> true
+          "within bounds but not inside polygon" - {
+            closed.contains(Point(1, 4)) ==> false
           }
         }
 

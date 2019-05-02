@@ -18,7 +18,7 @@ final class LineSegment(val start: Point, val end: Point) {
   def top: Int    = Math.min(start.y, end.y)
   def bottom: Int = Math.max(start.y, end.y)
 
-  def normal: Point =
+  def normal: Vector2 =
     LineSegment.calculateNormal(start, end)
 
   def lineProperties: LineProperties =
@@ -155,14 +155,17 @@ object LineSegment {
         IntersectionResult.NoIntersection
     }
 
-  def calculateNormal(start: Point, end: Point): Point =
-    normalisePoint(Point(-(end.y - start.y), end.x - start.x))
+  def calculateNormal(start: Point, end: Point): Vector2 =
+    normalisePoint(Vector2(-(end.y - start.y).toDouble, (end.x - start.x).toDouble))
 
-  def normalisePoint(point: Point): Point = {
-    val x: Double = point.x.toDouble
-    val y: Double = point.y.toDouble
+  def normalisePoint(vec2: Vector2): Vector2 = {
+    val x: Double = vec2.x.toDouble
+    val y: Double = vec2.y.toDouble
 
-    Point((x / Math.abs(x)).toInt, (y / Math.abs(y)).toInt)
+    Vector2(
+      if(x === 0 ) 0 else (x / Math.abs(x)),
+      if(y === 0 ) 0 else (y / Math.abs(y))
+    )
   }
 
   def lineContainsPoint(lineSegment: LineSegment, point: Point): Boolean =
@@ -195,7 +198,7 @@ object LineSegment {
     }
 
   def isFacingPoint(line: LineSegment, point: Point): Boolean =
-    (line.normal.toVector dot Vector2.fromPoints(line.center, point)) < 0
+    (line.normal dot Vector2.fromPoints(point, line.center)) < 0
 
 }
 

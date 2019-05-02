@@ -40,8 +40,8 @@ sealed trait Polygon {
       case Polygon.Open(_) =>
         false
 
-      case Polygon.Closed(_) =>
-      bounds.isPointWithin(point) //&&  for all line segments is point on wrong side of normal?
+      case p @ Polygon.Closed(_) =>
+        bounds.isPointWithin(point) && p.lineSegments.forall(l => !l.isFacingPoint(point))
     }
 
   def asString: String =
