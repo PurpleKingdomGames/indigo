@@ -3,19 +3,25 @@ package ingidoexamples
 import indigo._
 import indigoexts.entrypoint._
 
-object TextExample extends IndigoGameBasic[Unit, Unit, Unit] {
+object TextExample extends IndigoGameBasic[Unit, Unit, ViewModel] {
 
-  val fontName: String = "My boxy font"
+  import FontStuff._
 
-  val config: GameConfig = defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399"))
+  val config: GameConfig =
+    defaultGameConfig
+      .withClearColor(ClearColor.fromHexString("0xAA3399"))
 
-  val assets: Set[AssetType] = Set(AssetType.Image(fontName, "assets/boxy_font.png"))
+  val assets: Set[AssetType] =
+    Set(AssetType.Image(fontName, "assets/boxy_font.png"))
 
-  val fonts: Set[FontInfo] = Set(fontInfo)
+  val fonts: Set[FontInfo] =
+    Set(fontInfo)
 
-  val animations: Set[Animation] = Set()
+  val animations: Set[Animation] =
+    Set()
 
-  val subSystems: Set[SubSystem] = Set()
+  val subSystems: Set[SubSystem] =
+    Set()
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
     Startup.Success(())
@@ -23,17 +29,60 @@ object TextExample extends IndigoGameBasic[Unit, Unit, Unit] {
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(gameTime: GameTime, model: Unit, dice: Dice): GlobalEvent => Outcome[Unit] = _ => Outcome(model)
+  def update(gameTime: GameTime, model: Unit, dice: Dice): GlobalEvent => Outcome[Unit] =
+    _ => Outcome(model)
 
-  val text: Text = Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontKey).alignRight
+  def createText(frameInputEvents: FrameInputEvents, tint: Tint): Text =
+    Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontKey)
+      .withTint(tint)
+      .alignRight
+      .onEvent {
+        case (bounds, MouseEvent.Click(_, _)) if frameInputEvents.wasMouseClickedWithin(bounds) =>
+          Some(ChangeColour)
 
-  def initialViewModel(startupData: Unit): Unit => Unit = _ => ()
+        case _ =>
+          None
+      }
 
-  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[Unit] =
-    Outcome(())
+  def initialViewModel(startupData: Unit): Unit => ViewModel =
+    _ => ViewModel(Tint.None)
 
-  def present(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
-    SceneUpdateFragment().addGameLayerNodes(text)
+  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: ViewModel, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[ViewModel] =
+    if (frameInputEvents.globalEvents.contains(ChangeColour))
+      Outcome(viewModel.changeTint(dice))
+    else
+      Outcome(viewModel)
+
+  def present(gameTime: GameTime, model: Unit, viewModel: ViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
+    SceneUpdateFragment().addGameLayerNodes(createText(frameInputEvents, viewModel.tint))
+
+}
+
+case object ChangeColour extends GlobalEvent
+
+final case class ViewModel(tint: Tint) {
+  def changeTint(dice: Dice): ViewModel = {
+    val roll = dice.roll(3)
+
+    println(roll.toString())
+
+    roll match {
+      case 1 =>
+        this.copy(tint = Tint.Red)
+
+      case 2 =>
+        this.copy(tint = Tint.Green)
+        
+      case 3 =>
+        this.copy(tint = Tint.Blue)
+    }
+  }
+
+}
+
+object FontStuff {
+
+  val fontName: String = "My boxy font"
 
   def fontKey: FontKey = FontKey("My Font")
 
@@ -80,5 +129,4 @@ object TextExample extends IndigoGameBasic[Unit, Unit, Unit] {
       .addChar(FontChar(".", 286, 0, 15, 23))
       .addChar(FontChar(",", 248, 0, 15, 23))
       .addChar(FontChar(" ", 145, 52, 23, 23))
-
 }

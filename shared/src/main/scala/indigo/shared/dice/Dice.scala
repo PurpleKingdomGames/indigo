@@ -17,11 +17,14 @@ trait Dice {
 
 object Dice {
 
-  val default: Long => Dice = Sides.MaxInt
+  val default: Long => Dice =
+    Sides.MaxInt
 
-  val isPositive: Int => Boolean = _ > 0
+  val isPositive: Int => Boolean =
+    _ > 0
 
-  val sanitise: Int => Int = i => Math.max(1, Math.abs(i))
+  val sanitise: Int => Int =
+    i => Math.max(1, Math.abs(i))
 
   def roll(dice: Int, sides: Int, seed: Long): Option[NonEmptyList[Int]] = {
     @tailrec
@@ -69,10 +72,10 @@ object Dice {
       val seed: Long = seedValue
 
       def roll: Int =
-        r.nextInt(sanitise(sides - 1)) + 1
+        r.nextInt(sanitise(sides)) + 1
 
       def roll(sides: Int): Int =
-        r.nextInt(sanitise(sides - 1)) + 1
+        r.nextInt(sanitise(sides)) + 1
     }
   }
 

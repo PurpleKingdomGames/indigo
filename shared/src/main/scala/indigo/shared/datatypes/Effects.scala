@@ -81,6 +81,9 @@ object Tint {
   }
 
   val None: Tint = Tint(1, 1, 1)
+  val Red: Tint = Tint(1, 0, 0)
+  val Green: Tint = Tint(0, 1, 0)
+  val Blue: Tint = Tint(0, 0, 1)
 
   def combine(a: Tint, b: Tint): Tint =
     (a, b) match {
