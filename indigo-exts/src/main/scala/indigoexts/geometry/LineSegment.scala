@@ -27,6 +27,17 @@ final class LineSegment(val start: Point, val end: Point) {
   def intersectWith(other: LineSegment): IntersectionResult =
     LineSegment.intersection(this, other)
 
+  def intersectWithLine(other: LineSegment): Boolean =
+    LineSegment.intersection(this, other) match {
+      case IntersectionResult.NoIntersection =>
+        false
+
+      case r @ IntersectionResult.IntersectionPoint(_, _) =>
+        val pt = r.toPoint
+        containsPoint(pt) && other.containsPoint(pt)
+
+    }
+
   def containsPoint(point: Point): Boolean =
     LineSegment.lineContainsPoint(this, point)
 
@@ -163,8 +174,8 @@ object LineSegment {
     val y: Double = vec2.y.toDouble
 
     Vector2(
-      if(x === 0 ) 0 else (x / Math.abs(x)),
-      if(y === 0 ) 0 else (y / Math.abs(y))
+      if (x === 0) 0 else (x / Math.abs(x)),
+      if (y === 0) 0 else (y / Math.abs(y))
     )
   }
 

@@ -131,11 +131,11 @@ object PolygonTests extends TestSuite {
           }
         }
 
-        // "intersets with line (open)" - {
-        //   open.lineIntersectCheck(intersectingLine) ==> true
-        //   open.lineIntersectCheck(noneIntersectingLine) ==> false
-        //   open.lineIntersectCheck(intersectingLineWithClosed) ==> false
-        // }
+        "intersets with line (open)" - {
+          open.lineIntersectCheck(intersectingLine) ==> true
+          open.lineIntersectCheck(noneIntersectingLine) ==> false
+          // open.lineIntersectCheck(intersectingLineWithClosed) ==> false
+        }
 
         // "intersets with line (closed)" - {
         //   closed.lineIntersectCheck(intersectingLine) ==> true

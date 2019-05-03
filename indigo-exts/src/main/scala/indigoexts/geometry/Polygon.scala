@@ -44,6 +44,9 @@ sealed trait Polygon {
         bounds.isPointWithin(point) && p.lineSegments.forall(l => !l.isFacingPoint(point))
     }
 
+  def lineIntersectCheck(lineSegment: LineSegment): Boolean =
+    lineSegments.exists(_.intersectWithLine(lineSegment))
+
   def asString: String =
     implicitly[AsString[Polygon]].show(this)
 
