@@ -156,12 +156,22 @@ addCommandAlias(
 )
 
 addCommandAlias(
+  "buildIndigo",
+  applyCommand(coreProjects, "compile", PlatformSuffix.All)
+)
+addCommandAlias(
+  "localPublishIndigo",
+  applyCommand(coreProjects, "publishLocal", PlatformSuffix.All)
+)
+
+addCommandAlias(
   "localPublish",
   List(
     "cleanAll",
-    "buildIndigo"
-  ).mkString(";", ";", "") +
-    applyCommand(coreProjects, "test:publishLocal", PlatformSuffix.All)
+    "buildIndigo",
+    "localPublishIndigo"
+  ).mkString(";", ";", "")
+    
 )
 
 addCommandAlias(
