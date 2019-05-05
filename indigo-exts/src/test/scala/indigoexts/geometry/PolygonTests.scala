@@ -143,29 +143,29 @@ object PolygonTests extends TestSuite {
           closed.lineIntersectCheck(intersectingLineWithClosed) ==> true
         }
 
-        // "intersets with rectangle (open)" - {
-        //   open.rectangleIntersectCheck(intersectingRectangle) ==> true
-        //   open.rectangleIntersectCheck(noneIntersectingRectangle) ==> false
-        //   open.rectangleIntersectCheck(intersectingRectangleWithClosed) ==> false
-        // }
+        "intersets with rectangle (open)" - {
+          open.rectangleIntersectCheck(intersectingRectangle) ==> true
+          open.rectangleIntersectCheck(noneIntersectingRectangle) ==> false
+          open.rectangleIntersectCheck(intersectingRectangleWithClosed) ==> false
+        }
 
-        // "intersets with rectangle (closed)" - {
-        //   closed.rectangleIntersectCheck(intersectingRectangle) ==> true
-        //   closed.rectangleIntersectCheck(noneIntersectingRectangle) ==> false
-        //   closed.rectangleIntersectCheck(intersectingRectangleWithClosed) ==> true
-        // }
+        "intersets with rectangle (closed)" - {
+          closed.rectangleIntersectCheck(intersectingRectangle) ==> true
+          closed.rectangleIntersectCheck(noneIntersectingRectangle) ==> false
+          closed.rectangleIntersectCheck(intersectingRectangleWithClosed) ==> true
+        }
 
-        // "intersets with polygon (open)" - {
-        //   open.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangle)) ==> true
-        //   open.polygonIntersectCheck(Polygon.fromRectangle(noneIntersectingRectangle)) ==> false
-        //   open.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangleWithClosed)) ==> false
-        // }
+        "intersets with polygon (open)" - {
+          open.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangle)) ==> true
+          open.polygonIntersectCheck(Polygon.fromRectangle(noneIntersectingRectangle)) ==> false
+          open.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangleWithClosed)) ==> false
+        }
 
-        // "intersets with polygon (closed)" - {
-        //   closed.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangle)) ==> true
-        //   closed.polygonIntersectCheck(Polygon.fromRectangle(noneIntersectingRectangle)) ==> false
-        //   closed.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangleWithClosed)) ==> true
-        // }
+        "intersets with polygon (closed)" - {
+          closed.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangle)) ==> true
+          closed.polygonIntersectCheck(Polygon.fromRectangle(noneIntersectingRectangle)) ==> false
+          closed.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangleWithClosed)) ==> true
+        }
       }
 
     }
