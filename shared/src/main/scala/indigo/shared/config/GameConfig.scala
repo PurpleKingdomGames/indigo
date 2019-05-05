@@ -1,4 +1,6 @@
-package indigo.shared
+package indigo.shared.config
+
+import indigo.shared.ClearColor
 
 final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int, advanced: AdvancedGameConfig) {
   val frameRateDeltaMillis: Int = 1000 / frameRate
@@ -16,6 +18,7 @@ final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: 
        |""".stripMargin
 
   def withViewport(width: Int, height: Int): GameConfig  = this.copy(viewport = GameViewport(width, height))
+  def withViewport(newViewport: GameViewport): GameConfig  = this.copy(viewport = newViewport)
   def withFrameRate(frameRate: Int): GameConfig          = this.copy(frameRate = frameRate)
   def withClearColor(clearColor: ClearColor): GameConfig = this.copy(clearColor = clearColor)
   def withMagnification(magnification: Int): GameConfig  = this.copy(magnification = magnification)
@@ -42,36 +45,4 @@ object GameConfig {
   def apply(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int): GameConfig =
     GameConfig(viewport, frameRate, clearColor, magnification, AdvancedGameConfig.default)
 
-}
-
-final case class GameViewport(width: Int, height: Int) {
-  val horizontalMiddle: Int = width / 2
-  val verticalMiddle: Int   = height / 2
-  val center: (Int, Int)    = (horizontalMiddle, verticalMiddle)
-}
-object GameViewport {
-  val atWUXGA: GameViewport =
-    GameViewport(1920, 1200)
-  val atWUXGABy2: GameViewport =
-    GameViewport(960, 600)
-
-  val at1080p: GameViewport =
-    GameViewport(1920, 1080)
-  val at1080pBy2: GameViewport =
-    GameViewport(960, 540)
-
-  val at720p: GameViewport =
-    GameViewport(1280, 720)
-  val at720pBy2: GameViewport =
-    GameViewport(640, 360)
-}
-
-final case class AdvancedGameConfig(recordMetrics: Boolean, logMetricsReportIntervalMs: Int, disableSkipModelUpdates: Boolean, disableSkipViewUpdates: Boolean)
-object AdvancedGameConfig {
-  val default: AdvancedGameConfig = AdvancedGameConfig(
-    recordMetrics = false,
-    logMetricsReportIntervalMs = 10000,
-    disableSkipModelUpdates = false,
-    disableSkipViewUpdates = false
-  )
 }

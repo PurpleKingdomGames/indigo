@@ -2,7 +2,8 @@ package indigoframework
 
 import indigo.platform.assets.AssetLoader
 import indigo.shared.IndigoLogger
-import indigo.shared.{AssetType, GameConfig}
+import indigo.shared.AssetType
+import indigo.shared.config.GameConfig
 import indigo.json._
 
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue

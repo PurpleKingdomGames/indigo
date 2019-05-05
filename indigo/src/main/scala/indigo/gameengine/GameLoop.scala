@@ -5,7 +5,7 @@ import indigo.shared.datatypes.AmbientLight
 import indigo.shared.scenegraph.{SceneAudio, SceneGraphRootNode, SceneGraphRootNodeFlat, SceneUpdateFragment}
 import indigo.shared.GameContext
 import indigo.shared.metrics._
-import indigo.shared.GameConfig
+import indigo.shared.config.GameConfig
 import indigo.shared.Outcome
 import indigo.shared.dice.Dice
 import indigo.shared.time.GameTime

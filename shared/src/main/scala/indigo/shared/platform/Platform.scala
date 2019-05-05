@@ -1,6 +1,6 @@
 package indigo.shared.platform
 
-import indigo.shared.GameConfig
+import indigo.shared.config.GameConfig
 import indigo.shared.GameContext
 
 trait Platform {

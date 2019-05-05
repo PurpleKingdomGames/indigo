@@ -16,14 +16,14 @@ trait SharedTypeAliases {
   type ClearColor = shared.ClearColor
   val ClearColor: shared.ClearColor.type = shared.ClearColor
 
-  type GameConfig = shared.GameConfig
-  val GameConfig: shared.GameConfig.type = shared.GameConfig
+  type GameConfig = shared.config.GameConfig
+  val GameConfig: shared.config.GameConfig.type = shared.config.GameConfig
 
-  type GameViewport = shared.GameViewport
-  val GameViewport: shared.GameViewport.type = shared.GameViewport
+  type GameViewport = shared.config.GameViewport
+  val GameViewport: shared.config.GameViewport.type = shared.config.GameViewport
 
-  type AdvancedGameConfig = shared.AdvancedGameConfig
-  val AdvancedGameConfig: shared.AdvancedGameConfig.type = shared.AdvancedGameConfig
+  type AdvancedGameConfig = shared.config.AdvancedGameConfig
+  val AdvancedGameConfig: shared.config.AdvancedGameConfig.type = shared.config.AdvancedGameConfig
 
   val IndigoLogger: shared.IndigoLogger.type = shared.IndigoLogger
 

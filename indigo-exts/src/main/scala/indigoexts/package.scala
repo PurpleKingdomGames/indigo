@@ -11,7 +11,7 @@ package object indigoexts {
 
     type IndigoGame[StartupData, StartupError, GameModel, ViewModel] = entry.IndigoGameBase.IndigoGame[StartupData, StartupError, GameModel, ViewModel]
 
-    implicit val emptyConfigAsync: Future[Option[indigo.shared.GameConfig]] = entry.emptyConfigAsync
+    implicit val emptyConfigAsync: Future[Option[indigo.shared.config.GameConfig]] = entry.emptyConfigAsync
 
     implicit val emptyAssetsAsync: Future[Set[indigo.shared.AssetType]] = entry.emptyAssetsAsync
 
@@ -24,7 +24,7 @@ package object indigoexts {
       * - No advanced settings enabled
       * @return A GameConfig instance
       */
-    val defaultGameConfig: indigo.shared.GameConfig = entry.defaultGameConfig
+    val defaultGameConfig: indigo.shared.config.GameConfig = entry.defaultGameConfig
 
     /**
       * noRender Convenience value, alias for SceneUpdateFragment.empty

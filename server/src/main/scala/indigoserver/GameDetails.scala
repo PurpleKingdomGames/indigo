@@ -1,6 +1,7 @@
 package indigoserver
 
 import indigo.shared._
+import indigo.shared.config.GameConfig
 
 object GameDetails {
 

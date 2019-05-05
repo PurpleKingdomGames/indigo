@@ -1,5 +1,6 @@
 package indigo.shared
 
+import indigo.shared.config.GameConfig
 import indigo.shared.formats.{Aseprite, TiledMap}
 
 trait JsonSupportFunctions {

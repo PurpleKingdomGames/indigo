@@ -4,7 +4,7 @@ import indigo.shared.platform.Platform
 import indigo.shared.platform.Renderer
 import indigo.shared.platform.GlobalEventStream
 import indigo.shared.GameContext
-import indigo.shared.GameConfig
+import indigo.shared.config.GameConfig
 // import indigo.shared.IndigoLogger
 // import indigo.shared.display.Vector2
 import indigo.shared.display.Displayable
