@@ -5,7 +5,7 @@ import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import indigo.shared.AsString
 
-class TimeVaryingValue[T](val value: T, val startValue: T, val createdAt: Millis)(implicit vot: ValueOverTime[T], millisAsString: AsString[Millis]) {
+class TimeVaryingValue[@specialized(Int, Long, Float, Double) T](val value: T, val startValue: T, val createdAt: Millis)(implicit vot: ValueOverTime[T], millisAsString: AsString[Millis]) {
 
   def increase(unitsPerSecond: T, runningTime: Millis): TimeVaryingValue[T] =
     TimeVaryingValue.increase(this, unitsPerSecond, runningTime)
@@ -31,23 +31,23 @@ class TimeVaryingValue[T](val value: T, val startValue: T, val createdAt: Millis
 }
 object TimeVaryingValue {
 
-  implicit def eqTimeVaryingValue[T](implicit vot: ValueOverTime[T]): EqualTo[TimeVaryingValue[T]] =
+  implicit def eqTimeVaryingValue[@specialized(Int, Long, Float, Double) T](implicit vot: ValueOverTime[T]): EqualTo[TimeVaryingValue[T]] =
     EqualTo.create[TimeVaryingValue[T]] { (a, b) =>
       vot.equal(a.value, b.value) && vot.equal(a.startValue, b.startValue) && a.createdAt === b.createdAt
     }
 
   import ValueOverTime._
 
-  def apply[T](value: T, createdAt: Millis)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
+  def apply[@specialized(Int, Long, Float, Double) T](value: T, createdAt: Millis)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
     new TimeVaryingValue(value, value, createdAt)
 
-  def withStartingValue[T](value: T, startValue: T, createdAt: Millis)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
+  def withStartingValue[@specialized(Int, Long, Float, Double) T](value: T, startValue: T, createdAt: Millis)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
     new TimeVaryingValue(value, startValue, createdAt)
 
-  def modifyValue[T](timeVaryingValue: TimeVaryingValue[T], newValue: T)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
+  def modifyValue[@specialized(Int, Long, Float, Double) T](timeVaryingValue: TimeVaryingValue[T], newValue: T)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
     new TimeVaryingValue(newValue, timeVaryingValue.startValue, timeVaryingValue.createdAt)
 
-  def increase[T](timeVaryingValue: TimeVaryingValue[T], unitsPerSecond: T, runningTime: Millis)(
+  def increase[@specialized(Int, Long, Float, Double) T](timeVaryingValue: TimeVaryingValue[T], unitsPerSecond: T, runningTime: Millis)(
       implicit vot: ValueOverTime[T]
   ): TimeVaryingValue[T] =
     modifyValue(
@@ -55,7 +55,7 @@ object TimeVaryingValue {
       timeVaryingValue.startValue + vot.changeAmount(runningTime, unitsPerSecond, timeVaryingValue.createdAt)
     )
 
-  def increaseTo[T](timeVaryingValue: TimeVaryingValue[T], limit: T, unitsPerSecond: T, runningTime: Millis)(
+  def increaseTo[@specialized(Int, Long, Float, Double) T](timeVaryingValue: TimeVaryingValue[T], limit: T, unitsPerSecond: T, runningTime: Millis)(
       implicit vot: ValueOverTime[T]
   ): TimeVaryingValue[T] =
     timeVaryingValue.startValue + vot.changeAmount(runningTime, unitsPerSecond, timeVaryingValue.createdAt) match {
@@ -66,7 +66,7 @@ object TimeVaryingValue {
         modifyValue(timeVaryingValue, x)
     }
 
-  def increaseWrapAt[T](timeVaryingValue: TimeVaryingValue[T], limit: T, unitsPerSecond: T, runningTime: Millis)(
+  def increaseWrapAt[@specialized(Int, Long, Float, Double) T](timeVaryingValue: TimeVaryingValue[T], limit: T, unitsPerSecond: T, runningTime: Millis)(
       implicit vot: ValueOverTime[T]
   ): TimeVaryingValue[T] =
     modifyValue(
@@ -74,7 +74,7 @@ object TimeVaryingValue {
       (timeVaryingValue.startValue + vot.changeAmount(runningTime, unitsPerSecond, timeVaryingValue.createdAt)) % (limit + vot.one)
     )
 
-  def decrease[T](timeVaryingValue: TimeVaryingValue[T], unitsPerSecond: T, runningTime: Millis)(
+  def decrease[@specialized(Int, Long, Float, Double) T](timeVaryingValue: TimeVaryingValue[T], unitsPerSecond: T, runningTime: Millis)(
       implicit vot: ValueOverTime[T]
   ): TimeVaryingValue[T] =
     modifyValue(
@@ -82,7 +82,7 @@ object TimeVaryingValue {
       timeVaryingValue.startValue - vot.changeAmount(runningTime, unitsPerSecond, timeVaryingValue.createdAt)
     )
 
-  def decreaseTo[T](timeVaryingValue: TimeVaryingValue[T], limit: T, unitsPerSecond: T, runningTime: Millis)(
+  def decreaseTo[@specialized(Int, Long, Float, Double) T](timeVaryingValue: TimeVaryingValue[T], limit: T, unitsPerSecond: T, runningTime: Millis)(
       implicit vot: ValueOverTime[T]
   ): TimeVaryingValue[T] =
     timeVaryingValue.startValue - vot.changeAmount(runningTime, unitsPerSecond, timeVaryingValue.createdAt) match {
@@ -93,7 +93,7 @@ object TimeVaryingValue {
         modifyValue(timeVaryingValue, x)
     }
 
-  def decreaseWrapAt[T](timeVaryingValue: TimeVaryingValue[T], limit: T, unitsPerSecond: T, runningTime: Millis)(
+  def decreaseWrapAt[@specialized(Int, Long, Float, Double) T](timeVaryingValue: TimeVaryingValue[T], limit: T, unitsPerSecond: T, runningTime: Millis)(
       implicit vot: ValueOverTime[T]
   ): TimeVaryingValue[T] =
     modifyValue(

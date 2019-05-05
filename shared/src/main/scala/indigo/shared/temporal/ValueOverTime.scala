@@ -7,7 +7,7 @@ import indigo.shared.EqualTo
   * A [ValueOverTime[T]] manages the time based
   * rate of change logic for numeric values.
   */
-sealed trait ValueOverTime[T] {
+sealed trait ValueOverTime[@specialized(Int, Long, Float, Double) T] {
   def zero: T
   def one: T
   def changeAmount(runningTime: Millis, unitsPerSecond: T, creationTime: Millis): T
