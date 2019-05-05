@@ -43,6 +43,15 @@ def applyCommand(projects: List[String], command: String, platforms: List[Platfo
         .mkString(";", ";", "")
   }
 
+def applyToAll(command: String): String =
+  List(
+    applyCommand(coreProjects, command, PlatformSuffix.All),
+    applyCommand(devProjects, command, List(PlatformSuffix.Ignore, PlatformSuffix.JVM)),
+    applyCommand(exampleProjects, command, PlatformSuffix.Omit),
+    ";framework/clean",
+    ";server/clean"
+  ).mkString
+
 // Rebuild ScalaDocs and open in Firefox
 addCommandAlias(
   "readdocs",
@@ -55,34 +64,18 @@ addCommandAlias(
 )
 
 addCommandAlias(
-  "buildIndigo",
-  applyCommand(coreProjects, "compile", PlatformSuffix.All)
-)
-addCommandAlias(
-  "buildDev",
-  applyCommand(devProjects, "compile", List(PlatformSuffix.Ignore, PlatformSuffix.JVM)) +
-    List(
-      "framework/compile",
-      "server/compile"
-    ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "buildExamples",
-  applyCommand(exampleProjects, "compile", PlatformSuffix.Omit)
+  "cleanAll",
+  applyToAll("clean")
 )
 
 addCommandAlias(
   "buildAllNoClean",
-  List(
-    "buildIndigo",
-    "buildDev",
-    "buildExamples"
-  ).mkString(";", ";", "")
+  applyToAll("compile")
 )
 addCommandAlias(
   "buildAll",
   List(
-    "clean",
+    "cleanAll",
     "buildAllNoClean"
   ).mkString(";", ";", "")
 )
@@ -117,7 +110,7 @@ addCommandAlias(
 )
 addCommandAlias(
   "testExamplesJVM",
-  applyCommand(exampleProjects, "test", PlatformSuffix.JVMOnly)
+  applyCommand(exampleProjects, "test", PlatformSuffix.Omit) // Currently not compiling examples to JVM
 )
 addCommandAlias(
   "testAllNoCleanJS",
@@ -130,7 +123,7 @@ addCommandAlias(
 addCommandAlias(
   "testAllJS",
   List(
-    "clean",
+    "cleanAll",
     "testAllNoCleanJS"
   ).mkString(";", ";", "")
 )
@@ -145,39 +138,19 @@ addCommandAlias(
 addCommandAlias(
   "testAllJVM",
   List(
-    "clean",
+    "cleanAll",
     "testAllNoCleanJVM"
   ).mkString(";", ";", "")
 )
 
 addCommandAlias(
-  "testCompileIndigo",
-  applyCommand(coreProjects, "test:compile", PlatformSuffix.All)
-)
-addCommandAlias(
-  "testCompileDev",
-  applyCommand(devProjects, "test:compile", List(PlatformSuffix.Ignore, PlatformSuffix.JVM)) +
-    List(
-      "framework/test",
-      "server/test"
-    ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testCompileExamples",
-  applyCommand(exampleProjects, "test:compile", PlatformSuffix.Omit)
-)
-addCommandAlias(
   "testCompileAllNoClean",
-  List(
-    "testCompileIndigo",
-    "testCompileDev",
-    "testCompileExamples"
-  ).mkString(";", ";", "")
+  applyToAll("test:compile")
 )
 addCommandAlias(
   "testCompileAll",
   List(
-    "clean",
+    "cleanAll",
     "testCompileAllNoClean"
   ).mkString(";", ";", "")
 )
@@ -185,7 +158,7 @@ addCommandAlias(
 addCommandAlias(
   "localPublish",
   List(
-    "clean",
+    "cleanAll",
     "buildIndigo"
   ).mkString(";", ";", "") +
     applyCommand(coreProjects, "test:publishLocal", PlatformSuffix.All)
