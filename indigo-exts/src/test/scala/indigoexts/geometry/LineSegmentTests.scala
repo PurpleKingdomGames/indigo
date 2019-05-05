@@ -145,6 +145,17 @@ object LineSegmentTests extends TestSuite {
           actual1 ==> actual2
         }
 
+        "should intersect diagonally right angle lines (again)" - {
+          val actual: IntersectionResult = LineSegment.intersection(
+            LineSegment((0, 0), (5, 5)),
+            LineSegment((0, 5), (5, 0))
+          )
+
+          val expected: IntersectionPoint = IntersectionPoint(2.5f, 2.5f)
+
+          actual ==> expected
+        }
+
       }
 
       "normals" - {

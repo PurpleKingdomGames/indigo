@@ -30,7 +30,7 @@ object PolygonTests extends TestSuite {
     LineSegment(Point(0, 5), Point(5, 0))
 
   val noneIntersectingLine: LineSegment =
-    LineSegment(Point(0, 5), Point(1, 1))
+    LineSegment(Point(0, 5), Point(0, 4))
 
   val intersectingLineWithClosed: LineSegment =
     LineSegment(Point(0, -5), Point(5, 0))
@@ -134,14 +134,14 @@ object PolygonTests extends TestSuite {
         "intersets with line (open)" - {
           open.lineIntersectCheck(intersectingLine) ==> true
           open.lineIntersectCheck(noneIntersectingLine) ==> false
-          // open.lineIntersectCheck(intersectingLineWithClosed) ==> false
+          open.lineIntersectCheck(intersectingLineWithClosed) ==> false
         }
 
-        // "intersets with line (closed)" - {
-        //   closed.lineIntersectCheck(intersectingLine) ==> true
-        //   closed.lineIntersectCheck(noneIntersectingLine) ==> false
-        //   closed.lineIntersectCheck(intersectingLineWithClosed) ==> true
-        // }
+        "intersets with line (closed)" - {
+          closed.lineIntersectCheck(intersectingLine) ==> true
+          closed.lineIntersectCheck(noneIntersectingLine) ==> false
+          closed.lineIntersectCheck(intersectingLineWithClosed) ==> true
+        }
 
         // "intersets with rectangle (open)" - {
         //   open.rectangleIntersectCheck(intersectingRectangle) ==> true

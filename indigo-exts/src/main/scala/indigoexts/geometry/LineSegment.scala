@@ -39,7 +39,7 @@ final class LineSegment(val start: Point, val end: Point) {
     }
 
   def containsPoint(point: Point): Boolean =
-    LineSegment.lineContainsPoint(this, point)
+    LineSegment.lineContainsPoint(this, point, 0.5f)
 
   def isFacingPoint(point: Point): Boolean =
     LineSegment.isFacingPoint(this, point)
