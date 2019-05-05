@@ -335,6 +335,8 @@ lazy val indigo =
     )
     .dependsOn(shared)
     .dependsOn(indigoPlatforms)
+lazy val indigoJS  = indigo.js
+lazy val indigoJVM = indigo.jvm
 
 // Indigo Extensions
 lazy val indigoExts =
@@ -348,6 +350,8 @@ lazy val indigoExts =
       name := "indigo-exts",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
     )
+lazy val indigoExtsJS  = indigoExts.js
+lazy val indigoExtsJVM = indigoExts.jvm
 
 // Indigo Extensions
 lazy val indigoPlatforms =
@@ -378,6 +382,8 @@ lazy val indigoPlatforms =
       )
     )
     .dependsOn(shared)
+lazy val indigoPlatformsJS  = indigoPlatforms.js
+lazy val indigoPlatformsJVM = indigoPlatforms.jvm
 
 // Games
 lazy val sandbox =
@@ -397,6 +403,8 @@ lazy val sandbox =
     .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
+lazy val sandboxJS  = sandbox.js
+lazy val sandboxJVM = sandbox.jvm
 
 lazy val perf =
   crossProject(JSPlatform, JVMPlatform)
@@ -466,6 +474,8 @@ lazy val shared =
       name := "shared",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
     )
+lazy val sharedJS  = shared.js
+lazy val sharedJVM = shared.jvm
 
 // Circe 0.9.x
 lazy val circe9 =
@@ -481,30 +491,36 @@ lazy val circe9 =
       ).map(_ % "0.9.3")
     )
     .dependsOn(shared)
+lazy val circe9JS  = circe9.js
+lazy val circe9JVM = circe9.jvm
 
 // Root
 lazy val indigoProject =
-  crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Pure)
-    .in(file("."))
+  (project in file("."))
     .settings(commonSettings: _*)
-    .jvmSettings(
+    .settings(
       code := { "code ." ! },
       openshareddocs := { "open -a Firefox shared/.jvm/target/scala-2.12/api/indigo/index.html" ! },
       openindigodocs := { "open -a Firefox indigo/.jvm/target/scala-2.12/api/indigo/index.html" ! },
       openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-2.12/api/indigoexts/index.html" ! }
     )
     .aggregate(
-      shared,
-      indigoPlatforms,
-      circe9,
-      indigo,
-      indigoExts,
-      sandbox
+      sharedJVM,
+      indigoPlatformsJVM,
+      circe9JVM,
+      indigoJVM,
+      indigoExtsJVM,
+      sandboxJVM
     )
-    .jsSettings(
-      concurrentRestrictions in Global += Tags.limit(ScalaJSTags.Link, 2)
-    )
+
+// Cross build version - better or worse?
+// crossProject(JSPlatform, JVMPlatform)
+//   .crossType(CrossType.Pure)
+//   .in(file("."))
+// .jsSettings(
+//   concurrentRestrictions in Global += Tags.limit(ScalaJSTags.Link, 2)
+// )
+// .jvmSettings(...
 
 lazy val code =
   taskKey[Unit]("Launch VSCode in the current directory")
