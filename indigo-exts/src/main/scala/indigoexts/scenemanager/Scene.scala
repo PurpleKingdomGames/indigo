@@ -7,6 +7,7 @@ import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.EqualTo
 import indigoexts.lenses.Lens
 import indigo.shared.dice.Dice
+import indigoexts.subsystems.SubSystem
 
 trait Scene[GameModel, ViewModel] {
   type SceneModel
@@ -15,6 +16,8 @@ trait Scene[GameModel, ViewModel] {
   val name: SceneName
   val sceneModelLens: Lens[GameModel, SceneModel]
   val sceneViewModelLens: Lens[ViewModel, SceneViewModel]
+
+  val sceneSubSystems: Set[SubSystem]
 
   def updateSceneModel(gameTime: GameTime, sceneModel: SceneModel, dice: Dice): GlobalEvent => Outcome[SceneModel]
   def updateSceneViewModel(gameTime: GameTime, sceneModel: SceneModel, sceneViewModel: SceneViewModel, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[SceneViewModel]

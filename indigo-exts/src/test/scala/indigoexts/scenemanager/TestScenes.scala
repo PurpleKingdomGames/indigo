@@ -6,6 +6,7 @@ import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.Outcome
 import indigoexts.lenses.Lens
 import indigo.shared.dice.Dice
+import indigoexts.subsystems.SubSystem
 
 object TestScenes {
 
@@ -37,6 +38,8 @@ final case class TestSceneA() extends Scene[TestGameModel, TestViewModel] {
       (m, mm) => m.copy(sceneA = mm)
     )
 
+  val sceneSubSystems: Set[SubSystem] = Set()
+
   def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelA, dice: Dice): GlobalEvent => Outcome[TestSceneModelA] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 1))
 
@@ -67,6 +70,8 @@ final case class TestSceneB() extends Scene[TestGameModel, TestViewModel] {
       m => m.sceneB,
       (m, mm) => m.copy(sceneB = mm)
     )
+
+  val sceneSubSystems: Set[SubSystem] = Set()
 
   def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelB, dice: Dice): GlobalEvent => Outcome[TestSceneModelB] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 10))

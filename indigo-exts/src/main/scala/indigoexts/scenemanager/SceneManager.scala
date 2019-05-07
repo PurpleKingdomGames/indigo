@@ -8,6 +8,8 @@ import indigo.shared.IndigoLogger
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.EqualTo._
 import indigo.shared.dice.Dice
+import scala.collection.mutable
+import indigoexts.subsystems.SubSystemsRegister
 
 class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, ViewModel]], scenesFinder: SceneFinder) {
 
@@ -15,7 +17,17 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var finderInstance: SceneFinder = scenesFinder
 
+  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
+  private val subSystemStates: mutable.HashMap[SceneName, SubSystemsRegister] = {
+    val m = mutable.HashMap[SceneName, SubSystemsRegister]()
+    scenes.toList.foreach { s =>
+      m.put(s.name, SubSystemsRegister(s.sceneSubSystems.toList))
+    }
+    m
+  }
+
   // Scene delegation
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def updateModel(gameTime: GameTime, model: GameModel, dice: Dice): GlobalEvent => Outcome[GameModel] = {
     case SceneEvent.Next =>
       finderInstance = finderInstance.forward
@@ -36,7 +48,18 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
           Outcome(model)
 
         case Some(scene) =>
-          Scene.updateModel(scene, gameTime, model, dice)(event)
+          val subsystemOutcomeEvents = subSystemStates
+            .get(scene.name)
+            .map { ssr =>
+              val out = ssr.update(gameTime, dice)(event)
+              subSystemStates.put(scene.name, out.state)
+              out.globalEvents
+            }
+            .getOrElse(Nil)
+
+          Scene
+            .updateModel(scene, gameTime, model, dice)(event)
+            .addGlobalEvents(subsystemOutcomeEvents)
       }
   }
 
@@ -57,7 +80,14 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
         SceneUpdateFragment.empty
 
       case Some(scene) =>
-        Scene.updateView(scene, gameTime, model, viewModel, frameInputEvents)
+        val subsystemView = subSystemStates
+          .get(scene.name)
+          .map { ssr =>
+            ssr.render(gameTime)
+          }
+          .getOrElse(SceneUpdateFragment.empty)
+
+        Scene.updateView(scene, gameTime, model, viewModel, frameInputEvents) |+| subsystemView
     }
 
 }
