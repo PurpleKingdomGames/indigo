@@ -4,26 +4,24 @@ import indigo._
 import indigoexts.subsystems.automata._
 import indigo.syntax._
 
-object Score {
+object FireworksAutomata {
 
-  def automataSubSystem(fontKey: FontKey): Automata =
+  def subSystem: Automata =
     Automata.empty
-      .add(
-        Automaton(
-          AutomataPoolKey("points"),
-          Text("0", 0, 0, 1, fontKey).alignCenter,
-          Millis(1500)
-        ).withModifier(ModiferFunctions.signal)
-      )
+      .add(CrossAutomaton.automaton)
 
-  val spawnEvent: Point => AutomataEvent =
-    position => AutomataEvent.Spawn(AutomataPoolKey("points"), position)
+}
 
-  def generateLocation(config: GameConfig, dice: Dice): Point =
-    Point(dice.roll(config.viewport.width - 50) + 25, dice.roll(config.viewport.height - 50) + 25)
+object CrossAutomaton {
 
-  def generatePoints(dice: Dice): String =
-    (dice.roll(10) * 100).toString + "!!"
+  val poolKey: AutomataPoolKey = AutomataPoolKey("cross")
+
+  val automaton: Automaton =
+    Automaton(
+      poolKey,
+      Assets.cross,
+      Millis(1500)
+    ).withModifier(ModiferFunctions.signal)
 
   object ModiferFunctions {
 
@@ -42,37 +40,17 @@ object Score {
           spawnedAt + Point(0, -(30 * multiplier).toInt)
       }
 
-    val alphaSF: SignalFunction[(Double, Renderable), Double] =
-      SignalFunction {
-        case (multiplier, renderable) =>
-          renderable.effects.alpha * multiplier
-      }
-
-    val tintSF: SignalFunction[Double, Tint] =
-      SignalFunction { multiplier =>
-        Tint(1 * multiplier, 0, 0)
-      }
-
     val newPosition: AutomatonSeedValues => Signal[Point] =
       seed => Signal.product(multiplierS(seed), spawnPositionS(seed)) |> positionSF
 
-    val newAlpha: (AutomatonSeedValues, Renderable) => Signal[Double] =
-      (seed, renderable) => Signal.product(multiplierS(seed), renderableS(renderable)) |> alphaSF
-
-    val newTint: AutomatonSeedValues => Signal[Tint] =
-      seed => multiplierS(seed) |> tintSF
-
     val signal: (AutomatonSeedValues, Renderable) => Signal[Outcome[Renderable]] =
       (seed, renderable) =>
-        Signal.triple(newPosition(seed), newAlpha(seed, renderable), newTint(seed)).map {
-          case (position, alpha, tint) =>
+        newPosition(seed).map {
+          case position =>
             Outcome(
               renderable match {
-                case t: Text =>
-                  t.moveTo(position)
-                    .withAlpha(alpha)
-                    .withTint(tint)
-                    .withText(generatePoints(Dice.Sides.Ten(seed.randomSeed.toLong)))
+                case g: Graphic =>
+                  g.moveTo(position)
 
                 case r =>
                   r
@@ -81,5 +59,4 @@ object Score {
         }
 
   }
-
 }

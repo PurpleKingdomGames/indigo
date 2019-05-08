@@ -2,68 +2,51 @@ package ingidoexamples
 
 import indigo._
 import indigoexts.entrypoint._
-import indigoexts.ui._
+import indigoexts.subsystems.automata.AutomataEvent
+import indigoexts.subsystems.fpscounter.FPSCounter
 
-object Fireworks extends IndigoGameBasic[Unit, MyGameModel, Unit] {
+object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
 
-  val config: GameConfig = defaultGameConfig
+  val config: GameConfig = defaultGameConfig.withMagnification(2)
 
-  val assets: Set[AssetType] = Set(
-    AssetType.Image("graphics", "assets/graphics.png"),
-    AssetType.Image(FontStuff.fontName, "assets/boxy_font.png")
-  )
+  val assets: Set[AssetType] = Assets.assets
 
-  val fonts: Set[FontInfo] = Set(FontStuff.fontInfo)
+  val fonts: Set[FontInfo] =
+    Set(
+      FontStuff.fontInfo
+    )
 
   val animations: Set[Animation] = Set()
 
   val subSystems: Set[SubSystem] =
-    Set(Score.automataSubSystem(FontStuff.fontKey))
+    Set(
+      FPSCounter.subSystem(FontStuff.fontKey, Point(5, 5)),
+      FireworksAutomata.subSystem
+    )
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
-  def initialModel(startupData: Unit): MyGameModel =
-    MyGameModel(
-      button = Button(ButtonState.Up)
-    )
+  def initialModel(startupData: Unit): FireworksModel =
+    FireworksModel()
 
-  def update(gameTime: GameTime, model: MyGameModel, dice: Dice): GlobalEvent => Outcome[MyGameModel] = {
-    case e: ButtonEvent =>
-      Outcome(
-        model.copy(
-          button = model.button
-            .withUpAction { () =>
-              Option(Score.spawnEvent(Score.generateLocation(config, dice)))
-            }
-            .update(e)
-        )
-      )
+  def update(gameTime: GameTime, model: FireworksModel, dice: Dice): GlobalEvent => Outcome[FireworksModel] = {
+    case e: MouseEvent.Click =>
+      Outcome(model)
+        .addGlobalEvents(AutomataEvent.Spawn(CrossAutomaton.poolKey, e.position))
 
     case _ =>
       Outcome(model)
   }
 
-  def initialViewModel(startupData: Unit): MyGameModel => Unit = _ => ()
+  def initialViewModel(startupData: Unit): FireworksModel => Unit = _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[Unit] =
+  def updateViewModel(gameTime: GameTime, model: FireworksModel, viewModel: Unit, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[Unit] =
     Outcome(())
 
-  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
-    model.button
-      .draw(
-        bounds = Rectangle(10, 10, 16, 16),
-        depth = Depth(2),
-        frameInputEvents = frameInputEvents,
-        buttonAssets = ButtonAssets(
-          up = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 0, 16, 16),
-          over = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 16, 16, 16),
-          down = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 32, 16, 16)
-        )
-      )
-      .toSceneUpdateFragment
-      .addGameLayerNodes(Text("click to win!", 30, 10, 1, FontStuff.fontKey))
+  def present(gameTime: GameTime, model: FireworksModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
+    SceneUpdateFragment.empty
 
 }
 
-final case class MyGameModel(button: Button)
+final case class FireworksModel()
