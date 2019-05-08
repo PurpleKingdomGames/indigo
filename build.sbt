@@ -304,6 +304,24 @@ lazy val automata =
       scalaJSUseMainModuleInitializer := true
     )
 
+lazy val fireworks =
+  crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("examples/fireworks"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoExts)
+    .enablePlugins(SbtIndigo)
+    .settings(
+      name := "fireworks-example",
+      showCursor := true,
+      title := "Fireworks!",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
+      scalaJSUseMainModuleInitializer := true
+    )
+
 lazy val audio =
   crossProject(JSPlatform)
     .withoutSuffixFor(JSPlatform)
