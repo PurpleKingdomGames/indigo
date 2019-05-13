@@ -5,7 +5,6 @@ import indigo.shared.time.Millis
 import indigo.shared.Outcome
 import indigo.shared.events.{FrameTick, GlobalEvent}
 import indigo.shared.scenegraph._
-import indigo.shared.datatypes.Point
 import indigoexts.subsystems.SubSystem
 import indigoexts.subsystems.automata.AutomataEvent._
 import indigo.shared.dice.Dice
@@ -119,13 +118,3 @@ object Automata {
       sa.automaton.modifier(sa.seedValues, sa.automaton.renderable).at(gameTime.running)
     }
 }
-
-final case class SpawnedAutomaton(automaton: Automaton, seedValues: AutomatonSeedValues) {
-  def isAlive(currentTime: Millis): Boolean =
-    seedValues.createdAt + automaton.lifespan > currentTime
-
-  def updateDelta(frameDelta: Millis): SpawnedAutomaton =
-    this.copy(seedValues = seedValues.copy(timeAliveDelta = seedValues.timeAliveDelta + frameDelta))
-}
-
-final case class AutomatonSeedValues(spawnedAt: Point, createdAt: Millis, lifeSpan: Millis, timeAliveDelta: Millis, randomSeed: Int)
