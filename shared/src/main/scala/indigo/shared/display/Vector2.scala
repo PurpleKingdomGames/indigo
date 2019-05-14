@@ -19,8 +19,16 @@ final class Vector2(val x: Double, val y: Double) {
   def *(other: Vector2): Vector2 = Vector2.multiply(this, other)
   def /(other: Vector2): Vector2 = Vector2.divide(this, other)
 
+  def +(value: Double): Vector2 = Vector2.add(this, Vector2(value, value))
+  def -(value: Double): Vector2 = Vector2.subtract(this, Vector2(value, value))
+  def *(value: Double): Vector2 = Vector2.multiply(this, Vector2(value, value))
+  def /(value: Double): Vector2 = Vector2.divide(this, Vector2(value, value))
+
   def dot(other: Vector2): Double =
     Vector2.dotProduct(this, other)
+
+  def toPoint: Point =
+    Point(x.toInt, y.toInt)
 
   def asString: String =
     implicitly[AsString[Vector2]].show(this)
