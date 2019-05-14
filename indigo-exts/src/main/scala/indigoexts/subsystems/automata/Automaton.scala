@@ -1,31 +1,49 @@
 package indigoexts.subsystems.automata
 
-import indigo.Outcome
 import indigo.shared.scenegraph.Renderable
 import indigo.shared.datatypes.BindingKey
 import indigo.Millis
 import indigo.shared.temporal.Signal
 
 import indigo.shared.EqualTo
+import indigo.shared.scenegraph.SceneUpdateFragment
 
-final class Automaton(
-    val key: AutomataPoolKey,
-    val renderable: Renderable,
-    val lifespan: Millis,
-    val bindingKey: BindingKey,
-    val modifier: (AutomatonSeedValues, Renderable) => Signal[Outcome[Renderable]]
-) {
-  def withModifier(modifier: (AutomatonSeedValues, Renderable) => Signal[Outcome[Renderable]]): Automaton =
-    new Automaton(key, renderable, lifespan, bindingKey, modifier)
+sealed trait Automaton {
+
+  type PayloadType
+
+  val key: AutomataPoolKey
+  val renderable: Renderable
+  val lifespan: Millis
+  val bindingKey: BindingKey
+  val modifier: (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment]
+
+  def withModifier(modifier: (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment]): Automaton =
+    Automaton.createWithModififer(key, renderable, lifespan, bindingKey, modifier)
 }
 
 object Automaton {
 
-  val NoModifySignal: (AutomatonSeedValues, Renderable) => Signal[Outcome[Renderable]] =
-    (_, r) => Signal.fixed(Outcome(r))
+  val NoModifySignal: (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment] =
+    (_, r) => Signal.fixed(SceneUpdateFragment.empty.addGameLayerNodes(r))
 
   def apply(key: AutomataPoolKey, renderable: Renderable, lifespan: Millis): Automaton =
-    new Automaton(key, renderable, lifespan, BindingKey.generate, NoModifySignal)
+    createWithModififer(key, renderable, lifespan, BindingKey.generate, NoModifySignal)
+
+  def createWithModififer(
+      poolKey: AutomataPoolKey,
+      renderableEntity: Renderable,
+      lifeExpectancy: Millis,
+      bindingKeyValue: BindingKey,
+      modifierSignal: (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment]
+  ): Automaton =
+    new Automaton {
+      val key: AutomataPoolKey                                                       = poolKey
+      val renderable: Renderable                                                     = renderableEntity
+      val lifespan: Millis                                                           = lifeExpectancy
+      val bindingKey: BindingKey                                                     = bindingKeyValue
+      val modifier: (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment] = modifierSignal
+    }
 
 }
 

@@ -12,7 +12,26 @@ object FireworksAutomata {
 
 }
 
+object Boom {
+
+  val poolKey: AutomataPoolKey =
+    AutomataPoolKey("boom")
+
+  val automaton: Automaton =
+    Automaton(
+      poolKey,
+      Assets.cross,
+      Millis(1)
+    ).withModifier(
+      (_, renderable) => Signal.fixed(SceneUpdateFragment.empty.addGameLayerNodes(renderable))
+    )
+
+}
+
 object CrossAutomaton {
+
+  def spawnAt(position: Point): AutomataEvent.Spawn =
+    AutomataEvent.Spawn(CrossAutomaton.poolKey, position, None)
 
   val poolKey: AutomataPoolKey = AutomataPoolKey("cross")
 
@@ -43,11 +62,11 @@ object CrossAutomaton {
     val newPosition: AutomatonSeedValues => Signal[Point] =
       seed => Signal.product(multiplierS(seed), spawnPositionS(seed)) |> positionSF
 
-    val signal: (AutomatonSeedValues, Renderable) => Signal[Outcome[Renderable]] =
+    val signal: (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment] =
       (seed, renderable) =>
         newPosition(seed).map {
           case position =>
-            Outcome(
+            SceneUpdateFragment.empty.addGameLayerNodes(
               renderable match {
                 case g: Graphic =>
                   g.moveTo(position)

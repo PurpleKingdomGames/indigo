@@ -7,5 +7,5 @@ final case class SpawnedAutomaton(automaton: Automaton, seedValues: AutomatonSee
     seedValues.createdAt + automaton.lifespan > currentTime
 
   def updateDelta(frameDelta: Millis): SpawnedAutomaton =
-    this.copy(seedValues = seedValues.copy(timeAliveDelta = seedValues.timeAliveDelta + frameDelta))
+    this.copy(seedValues = seedValues.updateDelta(frameDelta))
 }

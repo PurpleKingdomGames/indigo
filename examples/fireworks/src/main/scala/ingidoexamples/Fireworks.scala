@@ -2,7 +2,6 @@ package ingidoexamples
 
 import indigo._
 import indigoexts.entrypoint._
-import indigoexts.subsystems.automata.AutomataEvent
 import indigoexts.subsystems.fpscounter.FPSCounter
 
 object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
@@ -33,7 +32,7 @@ object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
   def update(gameTime: GameTime, model: FireworksModel, dice: Dice): GlobalEvent => Outcome[FireworksModel] = {
     case e: MouseEvent.Click =>
       Outcome(model)
-        .addGlobalEvents(AutomataEvent.Spawn(CrossAutomaton.poolKey, e.position))
+        .addGlobalEvents(CrossAutomaton.spawnAt(e.position))
 
     case _ =>
       Outcome(model)

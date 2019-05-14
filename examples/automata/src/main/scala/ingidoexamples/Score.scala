@@ -6,6 +6,8 @@ import indigo.syntax._
 
 object Score {
 
+  final case class ScoreAmount(value: String) extends AutomatonPayload
+
   def automataSubSystem(fontKey: FontKey): Automata =
     Automata.empty
       .add(
@@ -16,14 +18,14 @@ object Score {
         ).withModifier(ModiferFunctions.signal)
       )
 
-  val spawnEvent: Point => AutomataEvent =
-    position => AutomataEvent.Spawn(AutomataPoolKey("points"), position)
+  def spawnEvent(position: Point, dice: Dice): AutomataEvent =
+    AutomataEvent.Spawn(AutomataPoolKey("points"), position, Some(ScoreAmount(generatePoints(dice))))
 
   def generateLocation(config: GameConfig, dice: Dice): Point =
     Point(dice.roll(config.viewport.width - 50) + 25, dice.roll(config.viewport.height - 50) + 25)
 
   def generatePoints(dice: Dice): String =
-    (dice.roll(10) * 100).toString + "!!"
+    (dice.roll(10) * 100).toString + "!"
 
   object ModiferFunctions {
 
@@ -62,22 +64,27 @@ object Score {
     val newTint: AutomatonSeedValues => Signal[Tint] =
       seed => multiplierS(seed) |> tintSF
 
-    val signal: (AutomatonSeedValues, Renderable) => Signal[Outcome[Renderable]] =
+    val signal: (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment] =
       (seed, renderable) =>
-        Signal.triple(newPosition(seed), newAlpha(seed, renderable), newTint(seed)).map {
-          case (position, alpha, tint) =>
-            Outcome(
-              renderable match {
-                case t: Text =>
-                  t.moveTo(position)
-                    .withAlpha(alpha)
-                    .withTint(tint)
-                    .withText(generatePoints(Dice.Sides.Ten(seed.randomSeed.toLong)))
+        seed.payload match {
+          case Some(ScoreAmount(score)) =>
+            Signal.triple(newPosition(seed), newAlpha(seed, renderable), newTint(seed)).map {
+              case (position, alpha, tint) =>
+                renderable match {
+                  case t: Text =>
+                    SceneUpdateFragment.empty.addGameLayerNodes(
+                      t.moveTo(position)
+                        .withAlpha(alpha)
+                        .withTint(tint)
+                        .withText(score)
+                    )
 
-                case r =>
-                  r
-              }
-            )
+                  case r =>
+                    SceneUpdateFragment.empty.addGameLayerNodes(r)
+                }
+            }
+          case _ =>
+            Signal.fixed(SceneUpdateFragment.empty.addGameLayerNodes(renderable))
         }
 
   }

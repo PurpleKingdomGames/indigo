@@ -52,7 +52,7 @@ object Automata {
     Automata(Map.empty[AutomataPoolKey, Automaton], Nil)
 
   def update(farm: Automata, gameTime: GameTime, dice: Dice): AutomataEvent => Outcome[SubSystem] = {
-    case Spawn(key, pt) =>
+    case Spawn(key, pt, pl) =>
       Outcome(
         farm.copy(
           paddock =
@@ -67,7 +67,8 @@ object Automata {
                       gameTime.running,
                       k.lifespan,
                       Millis.zero,
-                      dice.roll
+                      dice.roll,
+                      pl
                     )
                   )
                 }
@@ -104,16 +105,10 @@ object Automata {
       )
   }
 
-  def render(farm: Automata, gameTime: GameTime): SceneUpdateFragment = {
-    val f =
-      (p: List[Outcome[SceneGraphNode]]) =>
-        p.map(q => SceneUpdateFragment.empty.addGameLayerNodes(q.state).addViewEvents(q.globalEvents))
-          .foldLeft(SceneUpdateFragment.empty)(_ |+| _)
+  def render(farm: Automata, gameTime: GameTime): SceneUpdateFragment =
+    renderNoLayer(farm, gameTime).foldLeft(SceneUpdateFragment.empty)(_ |+| _)
 
-    f(renderNoLayer(farm, gameTime))
-  }
-
-  def renderNoLayer(farm: Automata, gameTime: GameTime): List[Outcome[SceneGraphNode]] =
+  def renderNoLayer(farm: Automata, gameTime: GameTime): List[SceneUpdateFragment] =
     farm.paddock.map { sa =>
       sa.automaton.modifier(sa.seedValues, sa.automaton.renderable).at(gameTime.running)
     }
