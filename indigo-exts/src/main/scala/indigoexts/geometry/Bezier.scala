@@ -2,15 +2,18 @@ package indigoexts.geometry
 
 import indigo.shared.datatypes.Point
 import scala.annotation.tailrec
+import indigo.shared.temporal.Signal
 
 final class Bezier(val points: List[Point]) {
 
   def at(unitInterval: Double): Point =
     Bezier.at(this, unitInterval)
 
-  // to line segments
+  def toLineSegments(subdivisions: Int): List[LineSegment] =
+    Bezier.toLineSegments(this, subdivisions)
 
-  // to signal
+  def toSignal: Signal[Point] =
+    Bezier.toSignal(this)
 
 }
 
@@ -53,5 +56,16 @@ object Bezier {
       case ps =>
         reduce(pair(ps, Nil).map(p => interpolate(p._1, p._2, unitInterval)), unitInterval)
     }
+  }
+
+  def toLineSegments(bezier: Bezier, subdivisions: Int): List[LineSegment] = {
+    println(bezier)
+    println(subdivisions.toString)
+    Nil
+  }
+
+  def toSignal(bezier: Bezier): Signal[Point] = {
+    println(bezier)
+    Signal.fixed(Point.zero)
   }
 }

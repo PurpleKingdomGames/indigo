@@ -3,6 +3,7 @@ package indigoexts.geometry
 import utest._
 import indigo.shared.datatypes.Point
 import indigo.EqualTo._
+import indigo.shared.time.Millis
 
 object BezierTests extends TestSuite {
 
@@ -108,6 +109,31 @@ object BezierTests extends TestSuite {
         bezier.at(0.5d) === Point(9, 18) ==> true
         bezier.at(1d) === Point(3, 100) ==> true
 
+      }
+
+      "to line segments" - {
+        val bezier =
+          Bezier(Point(2, 2), Point(4, 7), Point(20, 10), Point(3, 100))
+
+        val lineSegments = bezier.toLineSegments(2)
+
+        lineSegments.length ==> 2
+        lineSegments(0) === LineSegment(Point(2, 2), Point(9, 18)) ==> true
+        lineSegments(1) === LineSegment(Point(9, 18), Point(3, 100)) ==> true
+      }
+
+      "to signal" - {
+        val bezier =
+          Bezier(Point(2, 2), Point(4, 7), Point(20, 10), Point(3, 100))
+
+        val signal =
+          bezier.toSignal
+
+        signal.at(Millis(0))
+
+        signal.at(Millis(0)) === Point(2, 2) ==> true
+        signal.at(Millis(0)) === Point(9, 18) ==> true
+        signal.at(Millis(0)) === Point(3, 100) ==> true
       }
 
     }
