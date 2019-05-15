@@ -3,17 +3,24 @@ package indigoexts.geometry
 import indigo.shared.datatypes.Point
 import scala.annotation.tailrec
 import indigo.shared.temporal.Signal
+import indigo.shared.time.Millis
 
 final class Bezier(val points: List[Point]) {
 
   def at(unitInterval: Double): Point =
     Bezier.at(this, unitInterval)
 
+  def toPoints(subdivisions: Int): List[Point] =
+    Bezier.toPoints(this, subdivisions)
+
+  def toPolygon(subdivisions: Int): Polygon =
+    Bezier.toPolygon(this, subdivisions)
+
   def toLineSegments(subdivisions: Int): List[LineSegment] =
     Bezier.toLineSegments(this, subdivisions)
 
-  def toSignal: Signal[Point] =
-    Bezier.toSignal(this)
+  def toSignal(duration: Millis): Signal[Point] =
+    Bezier.toSignal(this, duration)
 
 }
 
@@ -58,14 +65,19 @@ object Bezier {
     }
   }
 
-  def toLineSegments(bezier: Bezier, subdivisions: Int): List[LineSegment] = {
-    println(bezier)
-    println(subdivisions.toString)
-    Nil
-  }
+  def toPoints(bezier: Bezier, subdivisions: Int): List[Point] =
+    (0 to subdivisions).toList.map { i =>
+      bezier.at((1 / subdivisions.toDouble) * i.toDouble)
+    }
 
-  def toSignal(bezier: Bezier): Signal[Point] = {
-    println(bezier)
-    Signal.fixed(Point.zero)
-  }
+  def toPolygon(bezier: Bezier, subdivisions: Int): Polygon =
+    Polygon.Open(toPoints(bezier, subdivisions))
+
+  def toLineSegments(bezier: Bezier, subdivisions: Int): List[LineSegment] =
+    Polygon.Open(toPoints(bezier, subdivisions)).lineSegments
+
+  def toSignal(bezier: Bezier, duration: Millis): Signal[Point] =
+    Signal { t =>
+      bezier.at(t.toDouble / duration.toDouble)
+    }
 }
