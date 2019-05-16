@@ -316,7 +316,10 @@ lazy val fireworks =
       name := "fireworks-example",
       showCursor := true,
       title := "Fireworks!",
-      gameAssetsDirectory := "assets"
+      gameAssetsDirectory := "assets",
+      libraryDependencies ++= Seq(
+        "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
+      )
     )
     .jsSettings(
       scalaJSUseMainModuleInitializer := true

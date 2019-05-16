@@ -47,5 +47,3 @@ object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
     SceneUpdateFragment.empty
 
 }
-
-final case class FireworksModel()
