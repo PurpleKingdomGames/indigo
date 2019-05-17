@@ -4,6 +4,10 @@ import indigo._
 import indigoexts.entrypoint._
 import indigoexts.subsystems.fpscounter.FPSCounter
 
+import ingidoexamples.model.FireworksModel
+import ingidoexamples.automata.FireworksAutomata
+import ingidoexamples.automata.CrossAutomaton
+
 object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
 
   val config: GameConfig = defaultGameConfig.withMagnification(2)

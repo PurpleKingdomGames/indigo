@@ -1,19 +1,13 @@
-package indigoexamples
+package indigoexamples.model
 
 import org.scalacheck._
 
 import indigo.Dice
-import ingidoexamples.FireworksModel
+import ingidoexamples.model.Fuse
 import indigo.shared.datatypes.Point
 import indigo.EqualTo._
 
-class FireworksModelSpecification extends Properties("FireworksModel") {
-
-  /*
-  calculate the middle control point for a given start and end
-
-  create a bezier between the start, end and a
-   */
+class FuseSpecification extends Properties("Fuse") {
 
   val diceGen: Gen[Dice] =
     for {
@@ -30,11 +24,13 @@ class FireworksModelSpecification extends Properties("FireworksModel") {
 
   final case class PointsOnLine(start: Point, end: Point)
 
-  property("generate a start point along the base line") = Prop.forAll(diceGen, pointsGen(1920, 1080)) { (dice, points) =>
-    val position: Point =
-      FireworksModel.generateStartPosition(dice, points.start, points.end)
+  property("generate a fuse point along the base line") = Prop.forAll(diceGen, pointsGen(1920, 1080)) { (dice, points) =>
+    val fuse: Fuse =
+      Fuse.generateFuse(dice, points.start, points.end)
 
-    position.y === points.end.y && position.x >= points.start.x && position.x <= points.end.x
+    fuse.length.value >= 1 && fuse.length.value <= 1000
+
+    fuse.position.y === points.end.y && fuse.position.x >= points.start.x && fuse.position.x <= points.end.x
   }
 
 }
