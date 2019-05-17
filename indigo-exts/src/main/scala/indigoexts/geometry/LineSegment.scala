@@ -197,16 +197,43 @@ object LineSegment {
 
       case LineProperties.LineComponents(m, b) =>
         if (point.x >= lineSegment.left && point.x <= lineSegment.right && point.y >= lineSegment.top && point.y <= lineSegment.bottom) {
-          // This is a slope comparison.. Any point on the line should have the same slope as the line.
-          val m2: Float =
-            if (point.x === 0) 0
-            else (b - point.y.toFloat) / (0 - point.x.toFloat)
-
-          val mDelta: Float = m - m2
-
-          mDelta >= -tolerance && mDelta <= tolerance
+          slopeCheck(point.x.toDouble, point.y.toDouble, m, b, tolerance)
         } else false
     }
+
+  def lineContainsCoords(lineSegment: LineSegment, coords: (Double, Double), tolerance: Float): Boolean =
+    lineContainsXY(lineSegment, coords._1, coords._2, tolerance)
+
+  def lineContainsXY(lineSegment: LineSegment, x: Double, y: Double, tolerance: Float): Boolean =
+    lineSegment.lineProperties match {
+      case LineProperties.InvalidLine =>
+        false
+
+      case LineProperties.ParallelToAxisX =>
+        if (y.toInt === lineSegment.start.y && x.toInt >= lineSegment.left && x.toInt <= lineSegment.right) true
+        else false
+
+      case LineProperties.ParallelToAxisY =>
+        if (x.toInt === lineSegment.start.x && y.toInt >= lineSegment.top && y.toInt <= lineSegment.bottom) true
+        else false
+
+      case LineProperties.LineComponents(m, b) =>
+        if (x >= lineSegment.left.toDouble && x <= lineSegment.right.toDouble && y >= lineSegment.top.toDouble && y <= lineSegment.bottom.toDouble)
+          slopeCheck(x, y, m, b, tolerance)
+        else false
+    }
+
+  def slopeCheck(x: Double, y: Double, m: Float, b: Float, tolerance: Float): Boolean = {
+    // This is a slope comparison.. Any point on the line should have the same slope as the line.
+    val m2: Double =
+      if (x === 0) 0
+      else (b - y) / (0 - x)
+
+    val mDelta: Double =
+      m.toDouble - m2
+
+    mDelta >= -tolerance.toDouble && mDelta <= tolerance.toDouble
+  }
 
   def isFacingPoint(line: LineSegment, point: Point): Boolean =
     (line.normal dot Vector2.fromPoints(point, line.center)) < 0

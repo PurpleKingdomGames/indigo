@@ -311,7 +311,7 @@ object QuadTree {
         case QuadLeaf(bounds, value) if lineSegment.end === bounds.position.toPoint =>
           List(value)
 
-        case QuadLeaf(bounds, value) if LineSegment.lineContainsPoint(lineSegment, bounds.position.toPoint, 0.35f) =>
+        case QuadLeaf(bounds, value) if LineSegment.lineContainsCoords(lineSegment, bounds.centerAsDoubles, 0.35f) =>
           List(value)
 
         case _ =>

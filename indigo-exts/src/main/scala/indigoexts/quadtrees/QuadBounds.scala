@@ -7,6 +7,7 @@ import indigoexts.geometry.{IntersectionResult, LineSegment}
 
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
+import indigoexts.geometry.Polygon
 
 trait QuadBounds {
   val x: Int
@@ -19,8 +20,14 @@ trait QuadBounds {
   def right: Int  = x + width
   def bottom: Int = y + height
 
-  def position: GridPoint = GridPoint(x, y)
-  def center: GridPoint   = GridPoint(x + (width / 2), y + (height / 2))
+  def position: GridPoint =
+    GridPoint(x, y)
+
+  def center: GridPoint =
+    GridPoint(x + (width / 2), y + (height / 2))
+
+  def centerAsDoubles: (Double, Double) =
+    (x.toDouble + (width.toDouble / 2d), y.toDouble + (height.toDouble / 2d))
 
   // Left, Bottom, Right, Top, following points counter clockwise.
   def edges: List[LineSegment] =
@@ -42,6 +49,9 @@ trait QuadBounds {
 
   def toRectangle: Rectangle =
     Rectangle(x, y, width, height)
+
+  def toPolygon: Polygon =
+    Polygon.fromRectangle(toRectangle)
 
   def collidesWithRay(lineSegment: LineSegment): Boolean =
     QuadBounds.rayCollisionCheck(this, lineSegment)

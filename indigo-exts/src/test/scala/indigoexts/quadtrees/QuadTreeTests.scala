@@ -229,10 +229,10 @@ object QuadTreeTests extends TestSuite {
 
           val expected: List[String] =
             List(
-              "3,2",
-              "2,2",
+              "0,1",
               "1,1",
-              "0,1"
+              "2,1",
+              "3,2"
             )
 
           actual.length ==> expected.length
