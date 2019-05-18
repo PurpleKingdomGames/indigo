@@ -10,16 +10,21 @@ import ingidoexamples.automata.CrossAutomaton
 
 object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
 
-  val config: GameConfig = defaultGameConfig.withMagnification(2)
+  val config: GameConfig =
+    defaultGameConfig
+    .withMagnification(3)
+    .withViewport(GameViewport.at720p)
 
-  val assets: Set[AssetType] = Assets.assets
+  val assets: Set[AssetType] =
+    Assets.assets
 
   val fonts: Set[FontInfo] =
     Set(
       FontStuff.fontInfo
     )
 
-  val animations: Set[Animation] = Set()
+  val animations: Set[Animation] =
+    Set()
 
   val subSystems: Set[SubSystem] =
     Set(
