@@ -13,6 +13,9 @@ trait Dice {
   val seed: Long
   def roll: Int
   def roll(sides: Int): Int
+
+  override def toString: String =
+    s"Dice(seed = $seed)"
 }
 
 object Dice {

@@ -28,6 +28,9 @@ final class Point(val x: Int, val y: Int) {
   def asString: String =
     implicitly[AsString[Point]].show(this)
 
+  override def toString: String =
+    asString
+
   def ===(other: Point): Boolean =
     implicitly[EqualTo[Point]].equal(this, other)
 }
