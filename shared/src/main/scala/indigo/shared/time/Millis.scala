@@ -46,6 +46,15 @@ final class Millis(val value: Long) extends AnyVal {
   def toSeconds: Seconds =
     Seconds(value.toDouble / 1000)
 
+  def asString: String =
+    implicitly[AsString[Millis]].show(this)
+
+  override def toString: String =
+    asString
+
+  def ===(other: Millis): Boolean =
+    implicitly[EqualTo[Millis]].equal(this, other)
+
 }
 object Millis {
 
@@ -62,6 +71,9 @@ object Millis {
 
   def apply(value: Long): Millis =
     new Millis(value)
+
+  def unapply(millis: Millis): Option[Long] =
+    Some(millis.value)
 
   def plus(a: Millis, b: Millis): Millis =
     Millis(a.value + b.value)
