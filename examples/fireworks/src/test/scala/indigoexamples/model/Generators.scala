@@ -17,4 +17,7 @@ object Generators {
       x <- Gen.choose(0, Int.MaxValue)
       y <- Gen.choose(0, Int.MaxValue)
     } yield Point(x, y)
+
+  val millisGen: Gen[Millis] =
+    Gen.choose(Long.MinValue, Long.MaxValue).map(Millis.apply)
 }
