@@ -215,6 +215,15 @@ object NonEmptyList {
   def point[A](a: A): NonEmptyList[A] =
     pure(a, List.empty[A])
 
+  def fromList[A](l: List[A]): Option[NonEmptyList[A]] =
+    l match {
+      case Nil =>
+        None
+
+      case x :: xs =>
+        Some(pure(x, xs))
+    }
+
   def equality[A](a: NonEmptyList[A], b: NonEmptyList[A])(implicit eq: EqualTo[A]): Boolean =
     a.length === b.length && a.zip(b).forall(as => eq.equal(as._1, as._2))
 
