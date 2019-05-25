@@ -5,8 +5,9 @@ import scala.annotation.tailrec
 import indigo.shared.temporal.Signal
 import indigo.shared.time.Millis
 import indigo.shared.datatypes.Rectangle
+import indigo.shared.collections.NonEmptyList
 
-final class Bezier(val points: List[Point]) {
+final class Bezier(private val points: List[Point]) {
 
   def at(unitInterval: Double): Point =
     Bezier.at(this, unitInterval)
@@ -32,6 +33,15 @@ object Bezier {
 
   def apply(start: Point, points: Point*): Bezier =
     new Bezier(start :: points.toList)
+
+  def pure(start: Point, points: List[Point]): Bezier =
+    new Bezier(start :: points.toList)
+
+  def fromPoints(points: List[Point]): Option[Bezier] =
+    NonEmptyList.fromList(points).map(fromPointsNel)
+
+  def fromPointsNel(points: NonEmptyList[Point]): Bezier =
+    new Bezier(points.toList)
 
   def at(bezier: Bezier, unitInterval: Double): Point =
     reduce(bezier.points, Math.max(0, Math.min(1, unitInterval)))
