@@ -8,11 +8,28 @@ import indigo.shared.EqualTo._
   * A Signal, or Time Varying Value is function t: Millis -> A
   */
 sealed trait Signal[A] {
+
   def at(t: Millis): A
+
   def merge[B, C](other: Signal[B])(f: (A, B) => C): Signal[C]
+
   def |>[B](sf: SignalFunction[A, B]): Signal[B] = pipe(sf)
+
   def pipe[B](sf: SignalFunction[A, B]): Signal[B]
+
   def |*|[B](other: Signal[B]): Signal[(A, B)]
+
+  def clampTime(from: Millis, to: Millis): Signal[A] =
+    Signal.clampTime(this, from, to)
+
+  def wrapTime(at: Millis): Signal[A] =
+    Signal.wrapTime(this, at)
+
+  def map[B](f: A => B): Signal[B] =
+    implicitly[Applicative[Signal]].map(this)(f)
+
+  def ap[B](f: Signal[A => B]): Signal[B] =
+    implicitly[Applicative[Signal]].ap(this)(f)
 }
 object Signal {
 
@@ -41,6 +58,28 @@ object Signal {
 
   def Pulse(interval: Millis): Signal[Boolean] =
     Signal.create(t => (t / interval).value % 2 === 0)
+
+  def clampTime[A](signal: Signal[A], from: Millis, to: Millis): Signal[A] =
+    Signal
+      .create { t =>
+        if (from < to) {
+          if (t < from) from
+          else if (t > to) to
+          else t
+        } else {
+          if (t < to) to
+          else if (t > from) from
+          else t
+        }
+      }
+      .map { t =>
+        signal.at(t)
+      }
+
+  def wrapTime[A](signal: Signal[A], at: Millis): Signal[A] =
+    Signal.create { t =>
+      signal.at(t % at)
+    }
 
   def fixed[A](a: A): Signal[A] =
     create(_ => a)

@@ -2,7 +2,6 @@ package ingidoexamples.automata
 
 import indigo._
 import indigoexts.subsystems.automata._
-import indigo.syntax._
 
 import ingidoexamples.Assets
 

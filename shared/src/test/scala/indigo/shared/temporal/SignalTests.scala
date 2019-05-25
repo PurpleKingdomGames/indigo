@@ -147,6 +147,93 @@ Where a thing moves in a circle for 2 seconds and then stops.
 
       }
 
+      "Utils" - {
+
+        "Pulse produces a signal of true and false values" - {
+
+          val pulse = Signal.Pulse(Millis(10))
+
+          pulse.at(Millis(0)) ==> true
+          pulse.at(Millis(5)) ==> true
+          pulse.at(Millis(10)) ==> false
+          pulse.at(Millis(15)) ==> false
+          pulse.at(Millis(20)) ==> true
+
+        }
+
+        "clamping time limits the time so that any time passed can be valid" - {
+
+          val days =
+            List(
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            )
+
+          val daysOfTheWeek =
+            Signal.create { t =>
+              // Clearly this will blow up for < 0 or > 6
+              days(t.value.toInt)
+            }
+
+          val clamped =
+            daysOfTheWeek.clampTime(Millis(0), Millis(6))
+
+          clamped.at(Millis(-100)) ==> days(0)
+          clamped.at(Millis(-1)) ==> days(0)
+          clamped.at(Millis(0)) ==> days(0)
+          clamped.at(Millis(1)) ==> days(1)
+          clamped.at(Millis(2)) ==> days(2)
+          clamped.at(Millis(3)) ==> days(3)
+          clamped.at(Millis(4)) ==> days(4)
+          clamped.at(Millis(5)) ==> days(5)
+          clamped.at(Millis(6)) ==> days(6)
+          clamped.at(Millis(7)) ==> days(6)
+          clamped.at(Millis(50)) ==> days(6)
+          clamped.at(Millis(1000)) ==> days(6)
+        }
+
+        "wrapping time keeps time looping round a fixed point" - {
+
+          val days =
+            List(
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            )
+
+          val daysOfTheWeek =
+            Signal.create { t =>
+              // Clearly this will blow up for < 0 or > 6
+              days(t.value.toInt)
+            }
+
+          val wrapped =
+            daysOfTheWeek
+              .clampTime(Millis(0), Millis(1000)) // So now we can't be less than 0, the 1000 would still break
+              .wrapTime(Millis(7))                // ...but we wrap at day 7
+
+          wrapped.at(Millis(0)) ==> days(0)
+          wrapped.at(Millis(1)) ==> days(1)
+          wrapped.at(Millis(2)) ==> days(2)
+          wrapped.at(Millis(3)) ==> days(3)
+          wrapped.at(Millis(4)) ==> days(4)
+          wrapped.at(Millis(5)) ==> days(5)
+          wrapped.at(Millis(6)) ==> days(6)
+          wrapped.at(Millis(7)) ==> days(0)
+
+        }
+
+      }
+
     }
 
 }
