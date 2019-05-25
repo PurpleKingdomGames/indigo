@@ -4,6 +4,7 @@ import indigo.shared.datatypes.Point
 import scala.annotation.tailrec
 import indigo.shared.temporal.Signal
 import indigo.shared.time.Millis
+import indigo.shared.datatypes.Rectangle
 
 final class Bezier(val points: List[Point]) {
 
@@ -21,6 +22,9 @@ final class Bezier(val points: List[Point]) {
 
   def toSignal(duration: Millis): Signal[Point] =
     Bezier.toSignal(this, duration)
+
+  def bounds: Rectangle =
+    Rectangle.fromPointCloud(points)
 
 }
 

@@ -4,6 +4,7 @@ import utest._
 import indigo.shared.datatypes.Point
 import indigo.EqualTo._
 import indigo.shared.time.Millis
+import indigo.shared.datatypes.Rectangle
 
 object BezierTests extends TestSuite {
 
@@ -190,6 +191,20 @@ object BezierTests extends TestSuite {
         signal.at(Millis(0)) === Point(2, 2) ==> true
         signal.at(Millis(750)) === Point(9, 18) ==> true
         signal.at(Millis(1500)) === Point(3, 100) ==> true
+      }
+
+      "give bounding rectangle" - {
+
+        val bezier =
+          Bezier(Point(20, 10), Point(3, 100), Point(2, 2))
+
+        val actual =
+          bezier.bounds
+
+        val expected: Rectangle =
+          Rectangle(2, 2, 18, 98)
+
+        actual === expected ==> true
       }
 
     }
