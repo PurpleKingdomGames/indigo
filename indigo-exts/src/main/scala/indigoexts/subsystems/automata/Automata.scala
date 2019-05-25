@@ -8,8 +8,10 @@ import indigo.shared.scenegraph._
 import indigoexts.subsystems.SubSystem
 import indigoexts.subsystems.automata.AutomataEvent._
 import indigo.shared.dice.Dice
+import indigo.shared.datatypes.Point
 
 import indigo.shared.EqualTo._
+import indigo.shared.datatypes.BindingKey
 
 /*
 Properties of an automaton:
@@ -53,56 +55,61 @@ object Automata {
 
   def update(farm: Automata, gameTime: GameTime, dice: Dice): AutomataEvent => Outcome[SubSystem] = {
     case Spawn(key, pt, pl) =>
-      Outcome(
-        farm.copy(
-          paddock =
-            farm.paddock ++
-              farm.inventory
-                .get(key)
-                .map { k =>
-                  SpawnedAutomaton(
-                    k,
-                    AutomatonSeedValues(
-                      pt,
-                      gameTime.running,
-                      k.lifespan,
-                      Millis.zero,
-                      dice.roll,
-                      pl
-                    )
-                  )
-                }
-                .toList
-        )
-      )
+      spawn(farm, gameTime, dice, key, pt, pl)
 
     case KillAllInPool(key) =>
-      Outcome(
-        farm.copy(
-          paddock = farm.paddock.filterNot(p => p.automaton.key === key)
-        )
-      )
+      killAllInPool(farm, key)
 
     case KillByKey(bindingKey) =>
-      Outcome(
-        farm.copy(
-          paddock = farm.paddock.filterNot(p => p.automaton.bindingKey === bindingKey)
-        )
-      )
+      killByKey(farm, bindingKey)
 
     case KillAll =>
-      Outcome(
-        farm.copy(
-          paddock = Nil
-        )
-      )
+      killAll(farm)
 
     case Cull =>
-      Outcome(
-        farm.copy(
-          paddock = farm.paddock.filter(_.isAlive(gameTime.running)).map(_.updateDelta(gameTime.delta))
-        )
+      cullPaddock(farm, gameTime)
+  }
+
+  def spawn(farm: Automata, gameTime: GameTime, dice: Dice, poolKey: AutomataPoolKey, position: Point, payload: Option[AutomatonPayload]): Outcome[Automata] =
+    Outcome(
+      farm.copy(
+        paddock =
+          farm.paddock ++
+            farm.inventory
+              .get(poolKey)
+              .map { k =>
+                SpawnedAutomaton(
+                  k,
+                  AutomatonSeedValues(
+                    position,
+                    gameTime.running,
+                    k.lifespan,
+                    Millis.zero,
+                    dice.roll,
+                    payload
+                  )
+                )
+              }
+              .toList
       )
+    )
+
+  def killAllInPool(farm: Automata, poolKey: AutomataPoolKey): Outcome[Automata] =
+    Outcome(farm.copy(paddock = farm.paddock.filterNot(p => p.automaton.key === poolKey)))
+
+  def killByKey(farm: Automata, bindingKey: BindingKey): Outcome[Automata] =
+    Outcome(farm.copy(paddock = farm.paddock.filterNot(p => p.automaton.bindingKey === bindingKey)))
+
+  def killAll(farm: Automata): Outcome[Automata] =
+    Outcome(farm.copy(paddock = Nil))
+
+  def cullPaddock(farm: Automata, gameTime: GameTime): Outcome[Automata] = {
+    val (l, r) = farm.paddock
+      .partition(_.isAlive(gameTime.running))
+
+    Outcome(
+      farm.copy(paddock = l.map(_.updateDelta(gameTime.delta)))
+    ).addGlobalEvents(r.map(sa => sa.automaton.onCull(sa.seedValues)).collect { case Some(s) => s })
   }
 
   def render(farm: Automata, gameTime: GameTime): SceneUpdateFragment =
