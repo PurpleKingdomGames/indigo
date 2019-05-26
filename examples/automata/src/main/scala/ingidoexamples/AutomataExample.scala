@@ -33,7 +33,7 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       Outcome(
         model.copy(
           button = model.button.withUpAction { () =>
-            Option(Score.spawnEvent(Score.generateLocation(config, dice), dice))
+            List(Score.spawnEvent(Score.generateLocation(config, dice), dice))
           }.update(e)
         )
       )

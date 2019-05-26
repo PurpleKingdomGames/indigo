@@ -26,7 +26,7 @@ object AudioExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(
       button = Button(ButtonState.Up).withUpAction { () =>
-        Option(PlaySound("bounce", Volume.Max))
+        List(PlaySound("bounce", Volume.Max))
       },
       count = 0
     )

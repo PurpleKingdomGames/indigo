@@ -22,7 +22,7 @@ object HttpExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(
       button = Button(ButtonState.Up).withUpAction { () =>
-        Option(HttpRequest.GET("http://localhost:8080/ping"))
+        List(HttpRequest.GET("http://localhost:8080/ping"))
       },
       count = 0
     )

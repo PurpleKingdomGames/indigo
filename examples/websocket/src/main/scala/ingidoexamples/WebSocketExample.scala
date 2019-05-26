@@ -43,10 +43,10 @@ object WebSocketExample extends IndigoGameBasic[MySetupData, MyGameModel, Unit] 
   def initialModel(startupData: MySetupData): MyGameModel =
     MyGameModel(
       ping = Button(ButtonState.Up).withUpAction { () =>
-        Option(WebSocketEvent.ConnectOnly(startupData.pingSocket))
+        List(WebSocketEvent.ConnectOnly(startupData.pingSocket))
       },
       echo = Button(ButtonState.Up).withUpAction { () =>
-        Option(WebSocketEvent.Send("Hello!", startupData.echoSocket))
+        List(WebSocketEvent.Send("Hello!", startupData.echoSocket))
       },
       count = 0
     )

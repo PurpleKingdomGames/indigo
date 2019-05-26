@@ -8,7 +8,10 @@ import indigo.shared.events.{FrameInputEvents, MouseEvent, GlobalEvent}
 object Button {
 
   def apply(state: ButtonState): Button =
-    Button(state, ButtonActions(() => None, () => None, () => None, () => None), BindingKey.generate)
+    Button(state, ButtonActions(() => Nil, () => Nil, () => Nil, () => Nil), BindingKey.generate)
+
+  def default: Button =
+    apply(ButtonState.Up)
 
   object Model {
 
@@ -35,13 +38,13 @@ object Button {
       frameInputEvents.globalEvents.foldLeft[List[GlobalEvent]](Nil) { (acc, e) =>
         e match {
           case MouseEvent.MouseUp(x, y) if bounds.isPointWithin(x, y) =>
-            acc ++ button.actions.onUp().toList :+ ButtonEvent(button.bindingKey, ButtonState.Over)
+            acc ++ button.actions.onUp() :+ ButtonEvent(button.bindingKey, ButtonState.Over)
 
           case MouseEvent.MouseUp(_, _) =>
             acc :+ ButtonEvent(button.bindingKey, ButtonState.Up)
 
           case MouseEvent.MouseDown(x, y) if bounds.isPointWithin(x, y) =>
-            acc ++ button.actions.onDown().toList :+ ButtonEvent(button.bindingKey, ButtonState.Down)
+            acc ++ button.actions.onDown() :+ ButtonEvent(button.bindingKey, ButtonState.Down)
 
           case MouseEvent.Move(x, y) if bounds.isPointWithin(x, y) && button.state.isDown =>
             acc :+ ButtonEvent(button.bindingKey, ButtonState.Down)
@@ -50,7 +53,7 @@ object Button {
             acc :+ ButtonEvent(button.bindingKey, ButtonState.Over)
 
           case MouseEvent.Move(x, y) if bounds.isPointWithin(x, y) =>
-            acc ++ button.actions.onHoverOver().toList :+ ButtonEvent(button.bindingKey, ButtonState.Over)
+            acc ++ button.actions.onHoverOver() :+ ButtonEvent(button.bindingKey, ButtonState.Over)
 
           case MouseEvent.Move(_, _) if button.state.isDown =>
             acc :+ ButtonEvent(button.bindingKey, ButtonState.Down)
@@ -93,16 +96,16 @@ final case class Button(state: ButtonState, actions: ButtonActions, bindingKey: 
   def draw(bounds: Rectangle, depth: Depth, frameInputEvents: FrameInputEvents, buttonAssets: ButtonAssets): ButtonViewUpdate =
     Button.View.update(bounds, depth, this, frameInputEvents, buttonAssets)
 
-  def withUpAction(action: () => Option[GlobalEvent]): Button =
+  def withUpAction(action: () => List[GlobalEvent]): Button =
     this.copy(actions = actions.copy(onUp = action))
 
-  def withDownAction(action: () => Option[GlobalEvent]): Button =
+  def withDownAction(action: () => List[GlobalEvent]): Button =
     this.copy(actions = actions.copy(onDown = action))
 
-  def withHoverOverAction(action: () => Option[GlobalEvent]): Button =
+  def withHoverOverAction(action: () => List[GlobalEvent]): Button =
     this.copy(actions = actions.copy(onHoverOver = action))
 
-  def withHoverOutAction(action: () => Option[GlobalEvent]): Button =
+  def withHoverOutAction(action: () => List[GlobalEvent]): Button =
     this.copy(actions = actions.copy(onHoverOut = action))
 
   def toUpState: Button =
@@ -115,7 +118,7 @@ final case class Button(state: ButtonState, actions: ButtonActions, bindingKey: 
     this.copy(state = ButtonState.Down)
 }
 
-final case class ButtonActions(onUp: () => Option[GlobalEvent], onDown: () => Option[GlobalEvent], onHoverOver: () => Option[GlobalEvent], onHoverOut: () => Option[GlobalEvent])
+final case class ButtonActions(onUp: () => List[GlobalEvent], onDown: () => List[GlobalEvent], onHoverOver: () => List[GlobalEvent], onHoverOut: () => List[GlobalEvent])
 
 sealed trait ButtonState {
   def isDown: Boolean

@@ -24,7 +24,7 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(
       button = Button(ButtonState.Up).withUpAction { () =>
-        Option(MyButtonEvent) // On mouse release will emit this event.
+        List(MyButtonEvent) // On mouse release will emit this event.
       },
       count = 0
     )
