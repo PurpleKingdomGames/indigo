@@ -2,12 +2,13 @@ package ingidoexamples.model
 
 import indigo._
 import indigoexts.uicomponents._
+import indigoexts.subsystems.automata._
 import ingidoexamples.automata.FuseAutomaton
 
 final case class FireworksModel(launchButton: Button) {
-  def update(dice: Dice, min: Point, max: Point): Outcome[FireworksModel] =
+  def update(dice: Dice, viewportSize: Point): Outcome[FireworksModel] =
     Outcome(
-      FireworksModel.update(this, dice, min, max)
+      FireworksModel.update(this, dice, viewportSize)
     )
 }
 
@@ -16,10 +17,19 @@ object FireworksModel {
   def initialModel: FireworksModel =
     FireworksModel(Button.default)
 
-  def launchFireworks(dice: Dice, min: Point, max: Point): () => List[GlobalEvent] =
-    () => List.fill(dice.roll(5))(FuseAutomaton.spawnEvent(Fuse.generateFuse(dice, min, max)))
+  def launchFireworks(dice: Dice, viewportSize: Point): () => List[AutomataEvent.Spawn] = {
+    // Only launch from the central third of the baseline.
+    val diff = viewportSize.x / 3
+    val p1   = Point(diff, viewportSize.y - 5)
+    val p2   = Point(diff + diff, viewportSize.y - 5)
 
-  def update(state: FireworksModel, dice: Dice, min: Point, max: Point): FireworksModel =
-    state.copy(launchButton = state.launchButton.withUpAction(launchFireworks(dice, min, max)))
+    val events =
+      List.fill(dice.roll(5))(FuseAutomaton.spawnEvent(Fuse.generateFuse(dice, p1, p2)))
+
+    () => events
+  }
+
+  def update(state: FireworksModel, dice: Dice, viewportSize: Point): FireworksModel =
+    state.copy(launchButton = state.launchButton.withUpAction(launchFireworks(dice, viewportSize)))
 
 }

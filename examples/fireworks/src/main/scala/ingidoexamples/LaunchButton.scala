@@ -5,19 +5,16 @@ import indigoexts.uicomponents._
 
 object LaunchButton {
 
-  def present(launchButton: Button, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
-    val button: ButtonViewUpdate = launchButton.draw(
-      bounds = Rectangle(10, 100, 16, 16), // Where should the button be on the screen?
-      depth = Depth(2),                    // At what depth?
-      frameInputEvents = frameInputEvents, // delegate events
-      buttonAssets = ButtonAssets(         // We could cache the graphics much earlier
-        up = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 0, 16, 16),
-        over = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 16, 16, 16),
-        down = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 32, 16, 16)
-      )
+  val buttonAssets: ButtonAssets =
+    ButtonAssets(
+      up = Graphic(0, 0, 80, 30, 2, "button").withCrop(0, 0, 80, 30),
+      over = Graphic(0, 0, 80, 30, 2, "button").withCrop(0, 30, 80, 30),
+      down = Graphic(0, 0, 80, 30, 2, "button").withCrop(0, 60, 80, 30)
     )
 
-    button.toSceneUpdateFragment
-  }
+  def present(launchButton: Button, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
+    launchButton
+      .draw(Rectangle(10, 100, 80, 30), Depth(2), frameInputEvents, buttonAssets)
+      .toSceneUpdateFragment
 
 }

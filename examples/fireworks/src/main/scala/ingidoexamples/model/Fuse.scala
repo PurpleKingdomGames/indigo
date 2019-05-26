@@ -25,7 +25,7 @@ object Fuse {
 
     Fuse(
       position,
-      Millis(dice.roll(FuseAutomaton.MaxFuseLength).toLong),
+      Millis(dice.roll(FuseAutomaton.MaxFuseLength - 500).toLong + 500L),
       rocket
     )
   }

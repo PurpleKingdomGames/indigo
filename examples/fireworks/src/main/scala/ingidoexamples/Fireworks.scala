@@ -46,8 +46,7 @@ object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
     case FrameTick =>
       model.update(
         dice,
-        Point(0, config.viewport.height - 5),
-        Point(config.viewport.width - 1, config.viewport.height - 5)
+        Point(config.viewport.width, config.viewport.height)
       )
 
     case e: ButtonEvent =>

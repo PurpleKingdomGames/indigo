@@ -11,26 +11,26 @@ class FuseSpecification extends Properties("Fuse") {
 
   import Generators._
 
-  def pointsGen(maxX: Int, maxY: Int): Gen[PointsOnLine] =
+  def fuseGen: Gen[Fuse] =
+    for {
+      dice   <- diceGen
+      points <- pointsOnALineGen
+    } yield Fuse.generateFuse(dice, points.start, points.end)
+
+  def pointsOnALineGen: Gen[PointsOnLine] =
     for {
       x1 <- Gen.choose(0, Int.MaxValue)
       x2 <- Gen.choose(x1, Int.MaxValue)
       y  <- Gen.choose(0, Int.MaxValue)
     } yield PointsOnLine(Point(x1, y), Point(x2, y))
 
-  def fuseGen(maxX: Int, maxY: Int): Gen[Fuse] =
-    for {
-      dice   <- diceGen
-      points <- pointsGen(maxX, maxY)
-    } yield Fuse.generateFuse(dice, points.start, points.end)
-
   final case class PointsOnLine(start: Point, end: Point)
 
-  property("generate a fuse with a timer up to 1 second") = Prop.forAll(fuseGen(1920, 1080)) { fuse =>
-    fuse.length.value >= 1 && fuse.length.value <= 1000
+  property("generate a fuse with a timer up to 1.5 seconds") = Prop.forAll(fuseGen) { fuse =>
+    fuse.length.value >= 1 && fuse.length.value <= 1500
   }
 
-  property("generate a fuse point along the base line") = Prop.forAll(diceGen, pointsGen(1920, 1080)) { (dice, points) =>
+  property("generate a fuse point along the base line") = Prop.forAll(diceGen, pointsOnALineGen) { (dice, points) =>
     val fuse: Fuse =
       Fuse.generateFuse(dice, points.start, points.end)
 

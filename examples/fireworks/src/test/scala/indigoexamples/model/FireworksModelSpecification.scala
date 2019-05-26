@@ -5,38 +5,53 @@ import org.scalacheck._
 import indigo.Dice
 import indigo.shared.datatypes.Point
 import indigo.EqualTo._
+import ingidoexamples.model.FireworksModel
+import indigo.shared.time.Millis
+import ingidoexamples.automata.FuseAutomaton
 
 class FireworksModelSpecification extends Properties("FireworksModel") {
 
-  /*
-  calculate the middle control point for a given start and end
+  import Generators._
 
-  create a bezier between the start, end and a
-   */
+  val viewportSize: Point =
+    Point(1920, 1080)
 
-  //------------------------------
-  // Fuse
-  //------------------------------
-  // val diceGen: Gen[Dice] =
-  //   for {
-  //     sides <- Gen.choose(1, Int.MaxValue)
-  //     seed  <- Gen.choose(0, Long.MaxValue)
-  //   } yield Dice.diceSidesN(sides, seed)
+  property("generate between 1 and 5 fireworks") = Prop.forAll(diceGen) { dice =>
+    val events = FireworksModel.launchFireworks(dice, viewportSize)()
 
-  // def pointsGen(maxX: Int, maxY: Int): Gen[PointsOnLine] =
-  //   for {
-  //     x1 <- Gen.choose(0, Int.MaxValue)
-  //     x2 <- Gen.choose(x1, Int.MaxValue)
-  //     y  <- Gen.choose(0, Int.MaxValue)
-  //   } yield PointsOnLine(Point(x1, y), Point(x2, y))
+    events.length >= 1 && events.length <= 5
+  }
 
-  // final case class PointsOnLine(start: Point, end: Point)
+  property("generated fireworks will launch from 5 pixels up from the baseline") = Prop.forAll(diceGen) { dice =>
+    val start  = Point.zero
+    val end    = Point(1920, 1080)
+    val events = FireworksModel.launchFireworks(dice, viewportSize)()
 
-  // property("generate a fuse point along the base line") = Prop.forAll(diceGen, pointsGen(1920, 1080)) { (dice, points) =>
-  //   val position: Fuse =
-  //     FireworksModel.generateFuse(dice, points.start, points.end)
+    events.map(_.at.y).mkString("[", ",", "]") |:
+      Prop.all(events.map(_.at).forall(pt => pt.y == end.y - 5))
+  }
 
-  //   position.y === points.end.y && position.x >= points.start.x && position.x <= points.end.x
-  // }
+  property("generated fireworks will launch from the center third of the baseline") = Prop.forAll(diceGen) { dice =>
+    val events = FireworksModel.launchFireworks(dice, viewportSize)()
+
+    val diff: Int = viewportSize.x
+    val minX      = diff / 3
+    val maxX      = (diff / 3) * 2
+
+    "minX: " + minX + ", maxX: " + maxX + ", xs: " + events.map(_.at.x).mkString("[", ",", "]") |:
+      Prop.all(events.map(_.at).forall(pt => pt.x >= minX && pt.x <= maxX))
+  }
+
+  property(s"generated fireworks will live from between 500ms and ${FuseAutomaton.MaxFuseLength}ms") = Prop.forAll(diceGen) { dice =>
+    val events = FireworksModel.launchFireworks(dice, viewportSize)()
+
+    events.map(_.lifeSpan).mkString("[", ",", "]") |: Prop.all(
+      events.forall(_.lifeSpan.isDefined),
+      events
+        .map(_.lifeSpan)
+        .collect { case Some(life) => life }
+        .forall(ms => ms >= Millis(500) && ms <= Millis(FuseAutomaton.MaxFuseLength))
+    )
+  }
 
 }
