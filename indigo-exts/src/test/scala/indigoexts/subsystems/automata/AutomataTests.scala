@@ -50,6 +50,7 @@ object AutomataTests extends TestSuite {
               Dice.loaded(1),
               poolKey,
               Point.zero,
+              None,
               None
             )
             .state

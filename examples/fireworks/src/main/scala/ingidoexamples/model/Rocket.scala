@@ -2,6 +2,9 @@ package ingidoexamples.model
 
 import indigo._
 import indigoexts.geometry.Bezier
+import indigoexts.subsystems.automata.AutomatonPayload
+
+final case class Rocket(startPosition: Point, movementSignal: Signal[Point]) extends AutomatonPayload
 
 object Rocket {
 

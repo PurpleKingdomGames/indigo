@@ -2,18 +2,18 @@ package ingidoexamples
 
 import indigo._
 import indigoexts.entrypoint._
+import indigoexts.uicomponents._
 import indigoexts.subsystems.fpscounter.FPSCounter
 
 import ingidoexamples.model.FireworksModel
 import ingidoexamples.automata.FireworksAutomata
-import ingidoexamples.automata.CrossAutomaton
 
 object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
 
   val config: GameConfig =
     defaultGameConfig
-    .withMagnification(3)
-    .withViewport(GameViewport.at720p)
+      .withMagnification(3)
+      .withViewport(GameViewport.at720p)
 
   val assets: Set[AssetType] =
     Assets.assets
@@ -36,23 +36,38 @@ object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
     Startup.Success(())
 
   def initialModel(startupData: Unit): FireworksModel =
-    FireworksModel()
+    FireworksModel.initialModel
 
   def update(gameTime: GameTime, model: FireworksModel, dice: Dice): GlobalEvent => Outcome[FireworksModel] = {
-    case e: MouseEvent.Click =>
-      Outcome(model)
-        .addGlobalEvents(CrossAutomaton.spawnAt(e.position))
+    // case e: MouseEvent.Click =>
+    //   Outcome(model)
+    //     .addGlobalEvents(CrossAutomaton.spawnAt(e.position))
+
+    case FrameTick =>
+      model.update(
+        dice,
+        Point(0, config.viewport.height - 5),
+        Point(config.viewport.width - 1, config.viewport.height - 5)
+      )
+
+    case e: ButtonEvent =>
+      Outcome(
+        model.copy(
+          launchButton = model.launchButton.update(e)
+        )
+      )
 
     case _ =>
       Outcome(model)
   }
 
-  def initialViewModel(startupData: Unit): FireworksModel => Unit = _ => ()
+  def initialViewModel(startupData: Unit): FireworksModel => Unit =
+    _ => ()
 
   def updateViewModel(gameTime: GameTime, model: FireworksModel, viewModel: Unit, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[Unit] =
     Outcome(())
 
   def present(gameTime: GameTime, model: FireworksModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
-    SceneUpdateFragment.empty
+    LaunchButton.present(model.launchButton, frameInputEvents)
 
 }

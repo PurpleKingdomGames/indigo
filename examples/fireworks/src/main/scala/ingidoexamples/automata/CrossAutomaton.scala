@@ -8,7 +8,7 @@ import ingidoexamples.Assets
 object CrossAutomaton {
 
   def spawnAt(position: Point): AutomataEvent.Spawn =
-    AutomataEvent.Spawn(CrossAutomaton.poolKey, position, None)
+    AutomataEvent.Spawn(CrossAutomaton.poolKey, position, None, None)
 
   val poolKey: AutomataPoolKey = AutomataPoolKey("cross")
 

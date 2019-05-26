@@ -54,8 +54,8 @@ object Automata {
     Automata(Map.empty[AutomataPoolKey, Automaton], Nil)
 
   def update(farm: Automata, gameTime: GameTime, dice: Dice): AutomataEvent => Outcome[SubSystem] = {
-    case Spawn(key, pt, pl) =>
-      spawn(farm, gameTime, dice, key, pt, pl)
+    case Spawn(key, pt, ls, pl) =>
+      spawn(farm, gameTime, dice, key, pt, ls, pl)
 
     case KillAllInPool(key) =>
       killAllInPool(farm, key)
@@ -70,7 +70,7 @@ object Automata {
       cullPaddock(farm, gameTime)
   }
 
-  def spawn(farm: Automata, gameTime: GameTime, dice: Dice, poolKey: AutomataPoolKey, position: Point, payload: Option[AutomatonPayload]): Outcome[Automata] =
+  def spawn(farm: Automata, gameTime: GameTime, dice: Dice, poolKey: AutomataPoolKey, position: Point, lifeSpan: Option[Millis], payload: Option[AutomatonPayload]): Outcome[Automata] =
     Outcome(
       farm.copy(
         paddock =
@@ -83,7 +83,7 @@ object Automata {
                   AutomatonSeedValues(
                     position,
                     gameTime.running,
-                    k.lifespan,
+                    lifeSpan.getOrElse(k.lifespan),
                     Millis.zero,
                     dice.roll,
                     payload
