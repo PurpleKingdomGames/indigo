@@ -8,25 +8,14 @@ final case class LaunchPad(position: Point, length: Millis, rocket: Rocket) exte
 
 object LaunchPad {
 
-  def generateLaunchPad(dice: Dice, min: Point, max: Point): LaunchPad = {
-    val position: Point =
+  def generateLaunchPad(dice: Dice, min: Point, max: Point, screenDimensions: Rectangle): LaunchPad = {
+    val startPosition: Point =
       Point(min.x + dice.roll(max.x - min.x), min.y)
 
-    val rocket: Rocket =
-      Rocket(
-        position,
-        Rocket.createRocketArcSignal(
-          dice,
-          position,
-          position - Point(0, 100) - Point(dice.roll(200) - 100, dice.roll(100)),
-          Millis(((dice.roll(20) + 10) * 100).toLong) // between 1 and 3 seconds...
-        )
-      )
-
     LaunchPad(
-      position,
+      startPosition,
       Millis(dice.roll(LaunchPadAutomaton.MaxCountDown - 500).toLong + 500L),
-      rocket
+      Rocket.generateRocket(dice, startPosition, screenDimensions)
     )
   }
 

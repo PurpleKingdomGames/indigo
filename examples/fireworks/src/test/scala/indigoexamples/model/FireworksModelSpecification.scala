@@ -8,16 +8,17 @@ import indigo.EqualTo._
 import ingidoexamples.model.FireworksModel
 import indigo.shared.time.Millis
 import ingidoexamples.automata.LaunchPadAutomaton
+import indigo.shared.datatypes.Rectangle
 
 class FireworksModelSpecification extends Properties("FireworksModel") {
 
   import Generators._
 
-  val viewportSize: Point =
-    Point(1920, 1080)
+  val screenDimensions: Rectangle =
+    Rectangle(0, 0, 1920, 1080)
 
   property("generate between 1 and 5 fireworks") = Prop.forAll(diceGen) { dice =>
-    val events = FireworksModel.launchFireworks(dice, viewportSize)()
+    val events = FireworksModel.launchFireworks(dice, screenDimensions)()
 
     events.length >= 1 && events.length <= 5
   }
@@ -25,16 +26,16 @@ class FireworksModelSpecification extends Properties("FireworksModel") {
   property("generated fireworks will launch from 5 pixels up from the baseline") = Prop.forAll(diceGen) { dice =>
     val start  = Point.zero
     val end    = Point(1920, 1080)
-    val events = FireworksModel.launchFireworks(dice, viewportSize)()
+    val events = FireworksModel.launchFireworks(dice, screenDimensions)()
 
     events.map(_.at.y).mkString("[", ",", "]") |:
       Prop.all(events.map(_.at).forall(pt => pt.y == end.y - 5))
   }
 
   property("generated fireworks will launch from the center third of the baseline") = Prop.forAll(diceGen) { dice =>
-    val events = FireworksModel.launchFireworks(dice, viewportSize)()
+    val events = FireworksModel.launchFireworks(dice, screenDimensions)()
 
-    val diff: Int = viewportSize.x
+    val diff: Int = screenDimensions.width
     val minX      = diff / 3
     val maxX      = (diff / 3) * 2
 
@@ -43,7 +44,7 @@ class FireworksModelSpecification extends Properties("FireworksModel") {
   }
 
   property(s"generated fireworks will live from between 500ms and ${LaunchPadAutomaton.MaxCountDown}ms") = Prop.forAll(diceGen) { dice =>
-    val events = FireworksModel.launchFireworks(dice, viewportSize)()
+    val events = FireworksModel.launchFireworks(dice, screenDimensions)()
 
     events.map(_.lifeSpan).mkString("[", ",", "]") |: Prop.all(
       events.forall(_.lifeSpan.isDefined),

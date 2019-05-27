@@ -8,6 +8,17 @@ final case class Rocket(startPosition: Point, movementSignal: Signal[Point]) ext
 
 object Rocket {
 
+  def generateRocket(dice: Dice, startPosition: Point, screenDimensions: Rectangle): Rocket =
+    Rocket(
+      startPosition,
+      Rocket.createRocketArcSignal(
+        dice,
+        startPosition,
+        Rocket.pickEndPoint(dice, startPosition, screenDimensions),
+        Rocket.pickFlightTime(dice)
+      )
+    )
+
   def createRocketArcSignal(dice: Dice, start: Point, end: Point, lifeSpan: Millis): Signal[Point] =
     createRocketArcBezier(dice, start, end).toSignal(lifeSpan).clampTime(Millis(0), lifeSpan)
 
@@ -20,5 +31,22 @@ object Rocket {
 
     NonEmptyList(start, Point(x, y), end)
   }
+
+  def pickEndPoint(dice: Dice, start: Point, screenDimensions: Rectangle): Point =
+    Point(
+      x = Math.min(
+        screenDimensions.right,
+        Math.max(
+          screenDimensions.left,
+          start.x + dice.roll(start.y - (start.y / 2))
+        )
+      ),
+      y = ({ (div5: Int) =>
+        start.y - div5 - dice.roll(div5 * 3)
+      })(start.y / 5)
+    )
+
+  def pickFlightTime(dice: Dice): Millis =
+    Millis(((dice.roll(20) + 10) * 100).toLong) // between 1 and 3 seconds...
 
 }

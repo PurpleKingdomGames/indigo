@@ -74,4 +74,34 @@ class RocketSpecification extends Properties("Rocket") {
       "" |: true =? (bounds + Rectangle(0, 0, 1, 1)).isPointWithin(signal.at(time))
   }
 
+  /*
+  There are some things to know here.
+  Screen coords are TL to BR.
+  The start points are assumed to be at the bottom of the screen somewhere, which is several hundred pixels,
+  thus end points must be higher (rockets fly up!) which is a y value < start.y and > 0 + some margin.
+  The x should be proportial to the height i.e. at most a 45 degree drift.
+   */
+  // for a window of 3000 x 2000
+  property("able to generate a good endpoint based on a start point") = Prop.forAll(diceGen, pointGenWithBounds(1000, 2000, 1000, 2000)) { (dice, start) =>
+    val end: Point =
+      Rocket.pickEndPoint(dice, start, Rectangle(Point.zero, Point(3000, 2000)))
+
+    "start: " + start + ", end: " + end |: Prop.all(
+      s"y:  ${end.y} < ${start.y}" |: end.y < start.y,
+      s"y: ${end.y} >= 0" |: end.y >= 0,
+      s"x: ${end.x} >= ${start.x - (start.y / 2)}" |: end.x >= start.x - (start.y / 2),
+      s"x: ${end.x} <= ${start.x + (start.y / 2)}" |: end.x <= start.x + (start.y / 2)
+    )
+  }
+
+  property("able to generate a flight time") = Prop.forAll(diceGen) { dice =>
+    val flightTime: Millis =
+      Rocket.pickFlightTime(dice)
+
+    Prop.all(
+      flightTime >= Millis(1000),
+      flightTime <= Millis(3000)
+    )
+  }
+
 }

@@ -9,7 +9,7 @@ final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: 
   val haltViewUpdatesAt: Int  = frameRateDeltaMillis * 2
   val haltModelUpdatesAt: Int = frameRateDeltaMillis * 3
 
-  def viewportDimensions: Rectangle =
+  def screenDimensions: Rectangle =
     viewport.giveDimensions(magnification)
 
   val asString: String =

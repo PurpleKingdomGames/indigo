@@ -6,6 +6,7 @@ import indigo.Dice
 import ingidoexamples.model.LaunchPad
 import indigo.shared.datatypes.Point
 import indigo.EqualTo._
+import indigo.shared.datatypes.Rectangle
 
 class LaunchPadSpecification extends Properties("LaunchPad") {
 
@@ -15,7 +16,7 @@ class LaunchPadSpecification extends Properties("LaunchPad") {
     for {
       dice   <- diceGen
       points <- pointsOnALineGen
-    } yield LaunchPad.generateLaunchPad(dice, points.start, points.end)
+    } yield LaunchPad.generateLaunchPad(dice, points.start, points.end, Rectangle.zero)
 
   def pointsOnALineGen: Gen[PointsOnLine] =
     for {
@@ -32,7 +33,7 @@ class LaunchPadSpecification extends Properties("LaunchPad") {
 
   property("generate a launch pad point along the base line") = Prop.forAll(diceGen, pointsOnALineGen) { (dice, points) =>
     val launchPad: LaunchPad =
-      LaunchPad.generateLaunchPad(dice, points.start, points.end)
+      LaunchPad.generateLaunchPad(dice, points.start, points.end, Rectangle.zero)
 
     launchPad.position.y === points.end.y && launchPad.position.x >= points.start.x && launchPad.position.x <= points.end.x
   }
