@@ -7,7 +7,7 @@ object FireworksAutomata {
   def subSystem: Automata =
     Automata.empty
       .add(CrossAutomaton.automaton)
-      .add(FuseAutomaton.automaton)
+      .add(LaunchPadAutomaton.automaton)
       .add(RocketAutomaton.automaton)
 
 }

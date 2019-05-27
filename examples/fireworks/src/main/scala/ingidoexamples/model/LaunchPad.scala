@@ -2,13 +2,13 @@ package ingidoexamples.model
 
 import indigo._
 import indigoexts.subsystems.automata.AutomatonPayload
-import ingidoexamples.automata.FuseAutomaton
+import ingidoexamples.automata.LaunchPadAutomaton
 
-final case class Fuse(position: Point, length: Millis, rocket: Rocket) extends AutomatonPayload
+final case class LaunchPad(position: Point, length: Millis, rocket: Rocket) extends AutomatonPayload
 
-object Fuse {
+object LaunchPad {
 
-  def generateFuse(dice: Dice, min: Point, max: Point): Fuse = {
+  def generateLaunchPad(dice: Dice, min: Point, max: Point): LaunchPad = {
     val position: Point =
       Point(min.x + dice.roll(max.x - min.x), min.y)
 
@@ -23,9 +23,9 @@ object Fuse {
         )
       )
 
-    Fuse(
+    LaunchPad(
       position,
-      Millis(dice.roll(FuseAutomaton.MaxFuseLength - 500).toLong + 500L),
+      Millis(dice.roll(LaunchPadAutomaton.MaxCountDown - 500).toLong + 500L),
       rocket
     )
   }

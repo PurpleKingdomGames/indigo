@@ -3,7 +3,7 @@ package ingidoexamples.model
 import indigo._
 import indigoexts.uicomponents._
 import indigoexts.subsystems.automata._
-import ingidoexamples.automata.FuseAutomaton
+import ingidoexamples.automata.LaunchPadAutomaton
 
 final case class FireworksModel(launchButton: Button) {
   def update(dice: Dice, viewportSize: Point): Outcome[FireworksModel] =
@@ -24,7 +24,7 @@ object FireworksModel {
     val p2   = Point(diff + diff, viewportSize.y - 5)
 
     val events =
-      List.fill(dice.roll(5))(FuseAutomaton.spawnEvent(Fuse.generateFuse(dice, p1, p2)))
+      List.fill(dice.roll(5))(LaunchPadAutomaton.spawnEvent(LaunchPad.generateLaunchPad(dice, p1, p2)))
 
     () => events
   }
