@@ -61,26 +61,27 @@ object Dice {
     new Dice {
       val seed: Long = seedValue
 
+      val r: Random = new Random(seed)
+
       def roll: Int =
-        new Random(seed).nextInt(sanitise(to) - sanitise(from)) + sanitise(from)
+        r.nextInt(sanitise(to) - sanitise(from)) + sanitise(from)
 
       def roll(sides: Int): Int =
-        diceSidesN(sides, seedValue).roll
+        r.nextInt(sanitise(sides)) + 1
     }
 
-  def diceSidesN(sides: Int, seedValue: Long): Dice = {
-    val r: Random = new Random(seedValue)
-
+  def diceSidesN(sides: Int, seedValue: Long): Dice =
     new Dice {
       val seed: Long = seedValue
 
+      val r: Random = new Random(seed)
+
       def roll: Int =
         r.nextInt(sanitise(sides)) + 1
 
       def roll(sides: Int): Int =
         r.nextInt(sanitise(sides)) + 1
     }
-  }
 
   val ZeroIndexed: Long => Dice =
     (seed: Long) => arbitrary(0, Int.MaxValue, seed)
