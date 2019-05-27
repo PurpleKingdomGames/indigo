@@ -30,7 +30,12 @@ sealed trait Automaton {
 object Automaton {
 
   val NoModifySignal: (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment] =
-    (_, r) => Signal.fixed(SceneUpdateFragment.empty.addGameLayerNodes(r))
+    (sa, r) => {
+      Signal.fixed(
+        SceneUpdateFragment.empty
+          .addGameLayerNodes(r.moveTo(sa.spawnedAt))
+      )
+    }
 
   val NoCullEvent: AutomatonSeedValues => Option[GlobalEvent] =
     _ => None
