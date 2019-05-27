@@ -1,9 +1,13 @@
 package indigo.shared.config
+import indigo.shared.datatypes.Rectangle
 
 final case class GameViewport(width: Int, height: Int) {
   val horizontalMiddle: Int = width / 2
   val verticalMiddle: Int   = height / 2
   val center: (Int, Int)    = (horizontalMiddle, verticalMiddle)
+
+  def giveDimensions(magnification: Int): Rectangle =
+    Rectangle(0, 0, width / magnification, height / magnification)
 }
 object GameViewport {
   val atWUXGA: GameViewport =

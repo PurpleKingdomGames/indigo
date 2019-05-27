@@ -1,12 +1,16 @@
 package indigo.shared.config
 
 import indigo.shared.ClearColor
+import indigo.shared.datatypes.Rectangle
 
 final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int, advanced: AdvancedGameConfig) {
   val frameRateDeltaMillis: Int = 1000 / frameRate
 
   val haltViewUpdatesAt: Int  = frameRateDeltaMillis * 2
   val haltModelUpdatesAt: Int = frameRateDeltaMillis * 3
+
+  def viewportDimensions: Rectangle =
+    viewport.giveDimensions(magnification)
 
   val asString: String =
     s"""
@@ -17,11 +21,11 @@ final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: 
        |Magnification:  $magnification
        |""".stripMargin
 
-  def withViewport(width: Int, height: Int): GameConfig  = this.copy(viewport = GameViewport(width, height))
-  def withViewport(newViewport: GameViewport): GameConfig  = this.copy(viewport = newViewport)
-  def withFrameRate(frameRate: Int): GameConfig          = this.copy(frameRate = frameRate)
-  def withClearColor(clearColor: ClearColor): GameConfig = this.copy(clearColor = clearColor)
-  def withMagnification(magnification: Int): GameConfig  = this.copy(magnification = magnification)
+  def withViewport(width: Int, height: Int): GameConfig   = this.copy(viewport = GameViewport(width, height))
+  def withViewport(newViewport: GameViewport): GameConfig = this.copy(viewport = newViewport)
+  def withFrameRate(frameRate: Int): GameConfig           = this.copy(frameRate = frameRate)
+  def withClearColor(clearColor: ClearColor): GameConfig  = this.copy(clearColor = clearColor)
+  def withMagnification(magnification: Int): GameConfig   = this.copy(magnification = magnification)
 
   def withAdvancedSettings(advanced: AdvancedGameConfig): GameConfig = this.copy(advanced = advanced)
   def metricsEnabled: GameConfig                                     = this.copy(advanced = advanced.copy(recordMetrics = true))
