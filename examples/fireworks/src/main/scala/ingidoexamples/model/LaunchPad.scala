@@ -4,7 +4,7 @@ import indigo._
 import indigoexts.subsystems.automata.AutomatonPayload
 import ingidoexamples.automata.LaunchPadAutomaton
 
-final case class LaunchPad(position: Point, length: Millis, rocket: Rocket) extends AutomatonPayload
+final case class LaunchPad(position: Point, countDown: Millis, rocket: Rocket) extends AutomatonPayload
 
 object LaunchPad {
 
@@ -14,7 +14,7 @@ object LaunchPad {
 
     LaunchPad(
       startPosition,
-      Millis(dice.roll(LaunchPadAutomaton.MaxCountDown - 500).toLong + 500L),
+      Millis(dice.roll(LaunchPadAutomaton.MaxCountDown - LaunchPadAutomaton.MinCountDown).toLong + LaunchPadAutomaton.MinCountDown),
       Rocket.generateRocket(dice, startPosition, screenDimensions)
     )
   }

@@ -7,11 +7,11 @@ import ingidoexamples.model.LaunchPad
 
 object LaunchPadAutomaton {
 
-  val MaxCountDown: Int =
-    1500
+  val MinCountDown: Int = 100
+  val MaxCountDown: Int = 750
 
   val poolKey: AutomataPoolKey =
-    AutomataPoolKey("fuse")
+    AutomataPoolKey("launchPad")
 
   val automaton: Automaton =
     Automaton(
@@ -31,7 +31,7 @@ object LaunchPadAutomaton {
 
     }
 
-  def spawnEvent(fuse: LaunchPad): AutomataEvent.Spawn =
-    AutomataEvent.Spawn(poolKey, fuse.position, Some(fuse.length), Some(fuse))
+  def spawnEvent(launchPad: LaunchPad): AutomataEvent.Spawn =
+    AutomataEvent.Spawn(poolKey, launchPad.position, Some(launchPad.countDown), Some(launchPad))
 
 }

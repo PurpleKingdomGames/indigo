@@ -28,7 +28,7 @@ class LaunchPadSpecification extends Properties("LaunchPad") {
   final case class PointsOnLine(start: Point, end: Point)
 
   property("generate a launch pad with a timer up to 1.5 seconds") = Prop.forAll(launchPadGen) { launchPad =>
-    launchPad.length.value >= 1 && launchPad.length.value <= 1500
+    launchPad.countDown.value >= 1 && launchPad.countDown.value <= 1500
   }
 
   property("generate a launch pad point along the base line") = Prop.forAll(diceGen, pointsOnALineGen) { (dice, points) =>

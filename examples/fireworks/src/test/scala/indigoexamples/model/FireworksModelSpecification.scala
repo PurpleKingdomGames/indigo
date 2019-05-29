@@ -43,7 +43,7 @@ class FireworksModelSpecification extends Properties("FireworksModel") {
       Prop.all(events.map(_.at).forall(pt => pt.x >= minX && pt.x <= maxX))
   }
 
-  property(s"generated fireworks will live from between 500ms and ${LaunchPadAutomaton.MaxCountDown}ms") = Prop.forAll(diceGen) { dice =>
+  property(s"generated fireworks will live from between ${LaunchPadAutomaton.MinCountDown}ms and ${LaunchPadAutomaton.MaxCountDown}ms") = Prop.forAll(diceGen) { dice =>
     val events = FireworksModel.launchFireworks(dice, screenDimensions)()
 
     events.map(_.lifeSpan).mkString("[", ",", "]") |: Prop.all(
@@ -51,7 +51,7 @@ class FireworksModelSpecification extends Properties("FireworksModel") {
       events
         .map(_.lifeSpan)
         .collect { case Some(life) => life }
-        .forall(ms => ms >= Millis(500) && ms <= Millis(LaunchPadAutomaton.MaxCountDown))
+        .forall(ms => ms >= Millis(LaunchPadAutomaton.MinCountDown) && ms <= Millis(LaunchPadAutomaton.MaxCountDown))
     )
   }
 
