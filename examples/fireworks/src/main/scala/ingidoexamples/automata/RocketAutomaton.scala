@@ -18,14 +18,14 @@ object RocketAutomaton {
     ).withModifier(ModifierFunctions.signal)
 
   def spawnEvent(rocket: Rocket): AutomataEvent.Spawn =
-    AutomataEvent.Spawn(poolKey, rocket.startPosition, None, Some(rocket))
+    AutomataEvent.Spawn(poolKey, rocket.startPosition, Some(rocket.flightTime), Some(rocket))
 
   object ModifierFunctions {
 
     val signal: (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment] =
       (sa, r) =>
         sa.payload match {
-          case Some(Rocket(_, moveSignal)) =>
+          case Some(Rocket(_, _, moveSignal)) =>
             Signal.create { t =>
               SceneUpdateFragment.empty
                 .addGameLayerNodes(r.moveTo(moveSignal.at(t)))

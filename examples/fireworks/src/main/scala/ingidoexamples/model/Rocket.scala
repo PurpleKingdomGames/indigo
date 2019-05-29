@@ -4,20 +4,24 @@ import indigo._
 import indigoexts.geometry.Bezier
 import indigoexts.subsystems.automata.AutomatonPayload
 
-final case class Rocket(startPosition: Point, movementSignal: Signal[Point]) extends AutomatonPayload
+final case class Rocket(startPosition: Point, flightTime: Millis, movementSignal: Signal[Point]) extends AutomatonPayload
 
 object Rocket {
 
-  def generateRocket(dice: Dice, startPosition: Point, screenDimensions: Rectangle): Rocket =
+  def generateRocket(dice: Dice, startPosition: Point, screenDimensions: Rectangle): Rocket = {
+    val flightTime = Rocket.pickFlightTime(dice)
+
     Rocket(
       startPosition,
+      flightTime,
       Rocket.createRocketArcSignal(
         dice,
         startPosition,
         Rocket.pickEndPoint(dice, startPosition, screenDimensions),
-        Rocket.pickFlightTime(dice)
+        flightTime
       )
     )
+  }
 
   def createRocketArcSignal(dice: Dice, start: Point, end: Point, lifeSpan: Millis): Signal[Point] =
     createRocketArcBezier(dice, start, end).toSignal(lifeSpan).clampTime(Millis(0), lifeSpan)
