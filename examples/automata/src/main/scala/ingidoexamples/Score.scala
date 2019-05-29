@@ -18,7 +18,7 @@ object Score {
       )
 
   def spawnEvent(position: Point, dice: Dice): AutomataEvent =
-    AutomataEvent.Spawn(AutomataPoolKey("points"), position, Some(ScoreAmount(generatePoints(dice))))
+    AutomataEvent.Spawn(AutomataPoolKey("points"), position, None, Some(ScoreAmount(generatePoints(dice))))
 
   def generateLocation(config: GameConfig, dice: Dice): Point =
     Point(dice.roll(config.viewport.width - 50) + 25, dice.roll(config.viewport.height - 50) + 25)

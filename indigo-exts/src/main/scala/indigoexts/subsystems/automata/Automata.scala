@@ -117,6 +117,6 @@ object Automata {
 
   def renderNoLayer(farm: Automata, gameTime: GameTime): List[SceneUpdateFragment] =
     farm.paddock.map { sa =>
-      sa.automaton.modifier(sa.seedValues, sa.automaton.renderable).at(gameTime.running)
+      sa.automaton.modifier(sa.seedValues, sa.automaton.renderable).at(gameTime.running - sa.seedValues.createdAt)
     }
 }
