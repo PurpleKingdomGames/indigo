@@ -6,7 +6,7 @@ import indigo.shared.platform.GlobalEventStream
 import indigo.shared.GameContext
 import indigo.shared.config.GameConfig
 import indigo.shared.IndigoLogger
-import indigo.shared.display.Vector2
+import indigo.shared.datatypes.Vector2
 import indigo.platform.renderer.RendererInit
 import indigo.platform.renderer.LoadedTextureAsset
 import indigo.shared.platform.RendererConfig

@@ -1,4 +1,4 @@
-package indigo.shared.display
+package indigo.shared.datatypes
 
 import indigo.shared.AsString
 import indigo.shared.EqualTo
@@ -11,16 +11,41 @@ final class Vector4(val x: Double, val y: Double, val z: Double, val w: Double) 
   def scale(vec: Vector4): Vector4 =
     Vector4.multiply(this, vec)
 
-  def round: Vector4 = Vector4(Math.round(x).toDouble, Math.round(y).toDouble, Math.round(z).toDouble, Math.round(w).toDouble)
+  def round: Vector4 =
+    Vector4(Math.round(x).toDouble, Math.round(y).toDouble, Math.round(z).toDouble, Math.round(w).toDouble)
 
-  def toList: List[Double] = List(x, y, z, w)
+  def toList: List[Double] =
+    List(x, y, z, w)
 
   def +(other: Vector4): Vector4 = Vector4.add(this, other)
   def -(other: Vector4): Vector4 = Vector4.subtract(this, other)
   def *(other: Vector4): Vector4 = Vector4.multiply(this, other)
   def /(other: Vector4): Vector4 = Vector4.divide(this, other)
 
+  def +(value: Double): Vector4 = Vector4.add(this, Vector4(value, value, value, value))
+  def -(value: Double): Vector4 = Vector4.subtract(this, Vector4(value, value, value, value))
+  def *(value: Double): Vector4 = Vector4.multiply(this, Vector4(value, value, value, value))
+  def /(value: Double): Vector4 = Vector4.divide(this, Vector4(value, value, value, value))
+
+  def dot(other: Vector4): Double =
+    Vector4.dotProduct(this, other)
+
   def applyMatrix4(matrix4: Matrix4): Vector4 = Vector4.applyMatrix4(this, matrix4)
+
+  def toVector2: Vector2 =
+    Vector2(x, y)
+
+  def toVector3: Vector3 =
+    Vector3(x, y, x)
+
+  override def toString: String =
+    asString
+
+  def asString: String =
+    implicitly[AsString[Vector4]].show(this)
+
+  def ===(other: Vector4): Boolean =
+    implicitly[EqualTo[Vector4]].equal(this, other)
 }
 
 object Vector4 {
@@ -44,6 +69,9 @@ object Vector4 {
   def apply(x: Double, y: Double, z: Double, w: Double): Vector4 =
     new Vector4(x, y, z, w)
 
+  def apply(i: Int): Vector4 =
+    Vector4(i.toDouble, i.toDouble, i.toDouble, i.toDouble)
+
   val zero: Vector4 = Vector4(0d, 0d, 0d, 0d)
   val one: Vector4  = Vector4(1d, 1d, 1d, 1d)
 
@@ -59,9 +87,14 @@ object Vector4 {
   def divide(vec1: Vector4, vec2: Vector4): Vector4 =
     Vector4(vec1.x / vec2.x, vec1.y / vec2.y, vec1.z / vec2.z, vec1.w / vec2.w)
 
-  def position(x: Double, y: Double, z: Double): Vector4 = Vector4(x, y, z, 1)
+  def position(x: Double, y: Double, z: Double): Vector4 =
+    Vector4(x, y, z, 1)
 
-  def direction(x: Double, y: Double, z: Double): Vector4 = Vector4(x, y, z, 0)
+  def direction(x: Double, y: Double, z: Double): Vector4 =
+    Vector4(x, y, z, 0)
+
+  def dotProduct(vec1: Vector4, vec2: Vector4): Double =
+    (vec1.x * vec2.x) + (vec1.y * vec2.y) + (vec1.z * vec2.z) + (vec1.w * vec2.w)
 
   def applyMatrix4(vector4: Vector4, matrix4: Matrix4): Vector4 = {
     val m  = matrix4.transpose

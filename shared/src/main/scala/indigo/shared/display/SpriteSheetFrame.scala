@@ -1,5 +1,7 @@
 package indigo.shared.display
 
+import indigo.shared.datatypes.Vector2
+
 import indigo.shared.{AsString, EqualTo}
 
 object SpriteSheetFrame {

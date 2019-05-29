@@ -1,6 +1,5 @@
-package indigo.shared.display
+package indigo.shared.datatypes
 
-import indigo.shared.datatypes.Point
 import indigo.shared.AsString
 import indigo.shared.EqualTo
 
@@ -12,7 +11,11 @@ final class Vector2(val x: Double, val y: Double) {
   def scale(vec: Vector2): Vector2 =
     Vector2.multiply(this, vec)
 
-  def round: Vector2 = Vector2(Math.round(x).toDouble, Math.round(y).toDouble)
+  def round: Vector2 =
+    Vector2(Math.round(x).toDouble, Math.round(y).toDouble)
+
+  def toList: List[Double] =
+    List(x, y)
 
   def +(other: Vector2): Vector2 = Vector2.add(this, other)
   def -(other: Vector2): Vector2 = Vector2.subtract(this, other)
@@ -29,6 +32,11 @@ final class Vector2(val x: Double, val y: Double) {
 
   def toPoint: Point =
     Point(x.toInt, y.toInt)
+
+  def applyMatrix4(matrix4: Matrix4): Vector2 = Vector2.applyMatrix4(this, matrix4)
+
+  override def toString: String =
+    asString
 
   def asString: String =
     implicitly[AsString[Vector2]].show(this)
@@ -58,6 +66,9 @@ object Vector2 {
   def apply(x: Double, y: Double): Vector2 =
     new Vector2(x, y)
 
+  def apply(i: Int): Vector2 =
+    Vector2(i.toDouble, i.toDouble)
+
   val zero: Vector2 = Vector2(0d, 0d)
   val one: Vector2  = Vector2(1d, 1d)
 
@@ -79,6 +90,14 @@ object Vector2 {
   def dotProduct(vec1: Vector2, vec2: Vector2): Double =
     (vec1.x * vec2.x) + (vec1.y * vec2.y)
 
-  def apply(i: Int): Vector2 = Vector2(i.toDouble, i.toDouble)
+  def applyMatrix4(vector2: Vector2, matrix4: Matrix4): Vector2 = {
+    val m  = matrix4.transpose
+    val vl = vector2.toList
+
+    Vector2(
+      x = m.row1.zip(vl).map(p => p._1 * p._2).sum,
+      y = m.row2.zip(vl).map(p => p._1 * p._2).sum
+    )
+  }
 
 }

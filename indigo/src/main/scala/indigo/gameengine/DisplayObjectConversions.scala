@@ -7,7 +7,7 @@ import indigo.shared.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import indigo.shared.IndigoLogger
 import indigo.shared.metrics.Metrics
 import indigo.shared.time.GameTime
-import indigo.shared.display.Vector2
+import indigo.shared.datatypes.Vector2
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 

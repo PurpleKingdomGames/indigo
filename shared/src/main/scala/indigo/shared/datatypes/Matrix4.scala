@@ -1,4 +1,4 @@
-package indigo.shared.display
+package indigo.shared.datatypes
 
 import indigo.shared.AsString
 import indigo.shared.EqualTo

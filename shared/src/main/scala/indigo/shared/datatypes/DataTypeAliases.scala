@@ -22,6 +22,18 @@ trait DataTypeAliases {
   type Point = shared.datatypes.Point
   val Point: shared.datatypes.Point.type = shared.datatypes.Point
 
+  type Vector2 = shared.datatypes.Vector2
+  val Vector2: shared.datatypes.Vector2.type = shared.datatypes.Vector2
+
+  type Vector3 = shared.datatypes.Vector3
+  val Vector3: shared.datatypes.Vector3.type = shared.datatypes.Vector3
+
+  type Vector4 = shared.datatypes.Vector4
+  val Vector4: shared.datatypes.Vector4.type = shared.datatypes.Vector4
+
+  type Matrix4 = shared.datatypes.Matrix4
+  val Matrix4: shared.datatypes.Matrix4.type = shared.datatypes.Matrix4
+
   type Depth = shared.datatypes.Depth
   val Depth: shared.datatypes.Depth.type = shared.datatypes.Depth
 

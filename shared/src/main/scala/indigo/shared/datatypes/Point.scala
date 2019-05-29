@@ -1,7 +1,6 @@
 package indigo.shared.datatypes
 
 import indigo.shared.{AsString, EqualTo}
-import indigo.shared.display.Vector2
 
 final class Point(val x: Int, val y: Int) {
   def +(pt: Point): Point = Point(x + pt.x, y + pt.y)

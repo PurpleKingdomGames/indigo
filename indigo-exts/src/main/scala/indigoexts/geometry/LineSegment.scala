@@ -4,7 +4,7 @@ import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Point
 import indigo.shared.AsString
-import indigo.shared.display.Vector2
+import indigo.shared.datatypes.Vector2
 
 final class LineSegment(val start: Point, val end: Point) {
   val center: Point =
