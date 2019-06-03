@@ -1,7 +1,7 @@
 package indigoexts.geometry
 
 import indigo.shared.datatypes.Point
-import indigo.shared.display.Vector2
+import indigo.shared.datatypes.Vector2
 import indigoexts.geometry.IntersectionResult._
 import indigoexts.geometry.LineProperties._
 import indigo.shared.EqualTo._

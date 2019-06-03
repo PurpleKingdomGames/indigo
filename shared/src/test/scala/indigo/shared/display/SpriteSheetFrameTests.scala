@@ -3,6 +3,7 @@ package indigo.shared.display
 import utest._
 
 import indigo.shared.EqualTo._
+import indigo.shared.datatypes.Vector2
 
 object SpriteSheetFrameTests extends TestSuite {
 

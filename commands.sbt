@@ -91,7 +91,7 @@ addCommandAlias(
 )
 addCommandAlias(
   "testDevJS",
-  applyCommand(devProjects, "test", PlatformSuffix.JSOnly) +
+  applyCommand(devProjects, "test", PlatformSuffix.Omit) +
     List(
       "framework/test",
       "server/test"

@@ -1,6 +1,7 @@
 package indigo.shared.display
 
 import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Vector2
 
 import utest._
 

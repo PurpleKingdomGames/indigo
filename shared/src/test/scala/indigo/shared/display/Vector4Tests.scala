@@ -1,6 +1,7 @@
 package indigo.shared.display
 
 import indigo.shared.EqualTo._
+import indigo.shared.datatypes.{Vector4, Matrix4}
 
 import utest._
 
