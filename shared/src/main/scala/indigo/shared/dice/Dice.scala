@@ -13,6 +13,7 @@ trait Dice {
   val seed: Long
   def roll: Int
   def roll(sides: Int): Int
+  def rollDouble: Double
 
   override def toString: String =
     s"Dice(seed = $seed)"
@@ -55,6 +56,9 @@ object Dice {
 
       def roll(sides: Int): Int =
         fixedTo
+
+      def rollDouble: Double =
+        if (fixedTo == 0) 0 else 1
     }
 
   def arbitrary(from: Int, to: Int, seedValue: Long): Dice =
@@ -68,6 +72,9 @@ object Dice {
 
       def roll(sides: Int): Int =
         r.nextInt(sanitise(sides)) + 1
+
+      def rollDouble: Double =
+        r.nextDouble()
     }
 
   def diceSidesN(sides: Int, seedValue: Long): Dice =
@@ -81,6 +88,9 @@ object Dice {
 
       def roll(sides: Int): Int =
         r.nextInt(sanitise(sides)) + 1
+
+      def rollDouble: Double =
+        r.nextDouble()
     }
 
   val ZeroIndexed: Long => Dice =
