@@ -13,10 +13,7 @@ object Generators {
     } yield Dice.diceSidesN(sides, seed)
 
   val pointGen: Gen[Point] =
-    for {
-      x <- Gen.choose(0, Int.MaxValue)
-      y <- Gen.choose(0, Int.MaxValue)
-    } yield Point(x, y)
+    pointGenWithBounds(0, Int.MaxValue, 0, Int.MaxValue)
 
   def pointGenWithBounds(minX: Int, maxX: Int, minY: Int, maxY: Int): Gen[Point] =
     for {
