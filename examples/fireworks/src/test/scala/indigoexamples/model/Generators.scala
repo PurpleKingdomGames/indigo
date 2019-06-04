@@ -21,6 +21,15 @@ object Generators {
       y <- Gen.choose(minY, maxY)
     } yield Point(x, y)
 
+  def pointsOnALineGen: Gen[PointsOnLine] =
+    for {
+      x1 <- Gen.choose(0, Int.MaxValue)
+      x2 <- Gen.choose(x1, Int.MaxValue)
+      y  <- Gen.choose(0, Int.MaxValue)
+    } yield PointsOnLine(Point(x1, y), Point(x2, y))
+
+  final case class PointsOnLine(start: Point, end: Point)
+
   val millisGen: Gen[Millis] =
     Gen.choose(Long.MinValue, Long.MaxValue).map(Millis.apply)
 }

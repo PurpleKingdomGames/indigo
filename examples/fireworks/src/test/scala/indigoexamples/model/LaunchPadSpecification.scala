@@ -18,15 +18,6 @@ class LaunchPadSpecification extends Properties("LaunchPad") {
       points <- pointsOnALineGen
     } yield LaunchPad.generateLaunchPad(dice, points.start, points.end, Rectangle.zero)
 
-  def pointsOnALineGen: Gen[PointsOnLine] =
-    for {
-      x1 <- Gen.choose(0, Int.MaxValue)
-      x2 <- Gen.choose(x1, Int.MaxValue)
-      y  <- Gen.choose(0, Int.MaxValue)
-    } yield PointsOnLine(Point(x1, y), Point(x2, y))
-
-  final case class PointsOnLine(start: Point, end: Point)
-
   property("generate a launch pad with a timer up to 1.5 seconds") = Prop.forAll(launchPadGen) { launchPad =>
     launchPad.countDown.value >= 1 && launchPad.countDown.value <= 1500
   }
