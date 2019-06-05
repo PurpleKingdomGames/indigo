@@ -1,6 +1,5 @@
 package indigoexts.geometry
 
-import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Vector2
 import indigoexts.geometry.IntersectionResult._
 import indigoexts.geometry.LineProperties._
@@ -27,13 +26,13 @@ object LineSegmentTests extends TestSuite {
           "(0, 0) -> (2, 2)" - {
             val expected: LineComponents = LineComponents(1, 0)
 
-            LineSegment.calculateLineComponents(Point(0, 0), Point(2, 2)) ==> expected
+            LineSegment.calculateLineComponents(Vertex(0, 0), Vertex(2, 2)) ==> expected
           }
 
           "(2, 1) -> (3, 4)" - {
             val expected: LineComponents = LineComponents(3, -5)
 
-            LineSegment.calculateLineComponents(Point(2, 1), Point(3, 4)) ==> expected
+            LineSegment.calculateLineComponents(Vertex(2, 1), Vertex(3, 4)) ==> expected
           }
 
           "(2, 2) -> (2, -3)" - {
@@ -42,19 +41,19 @@ object LineSegmentTests extends TestSuite {
             // We're also getting a divide by 0 because ... / x - x = 0
             val expected = ParallelToAxisY
 
-            LineSegment.calculateLineComponents(Point(2, 2), Point(2, -3)) ==> expected
+            LineSegment.calculateLineComponents(Vertex(2, 2), Vertex(2, -3)) ==> expected
           }
 
         }
 
         "should correctly identify a line parallel to the x-axis" - {
           //m = 0
-          LineSegment.calculateLineComponents(Point(-1, 2), Point(1, 2)) ==> ParallelToAxisX
+          LineSegment.calculateLineComponents(Vertex(-1, 2), Vertex(1, 2)) ==> ParallelToAxisX
         }
 
         "should correctly identify a line parallel to the y-axis" - {
           //b = Infinity (or -Infinity)
-          LineSegment.calculateLineComponents(Point(1, 2), Point(1, -3)) ==> ParallelToAxisY
+          LineSegment.calculateLineComponents(Vertex(1, 2), Vertex(1, -3)) ==> ParallelToAxisY
         }
 
       }
@@ -63,8 +62,8 @@ object LineSegmentTests extends TestSuite {
 
         "should not intersect with a parallel lines" - {
           val actual: IntersectionResult = LineSegment.intersection(
-            LineSegment((-3, 3), (2, 3)),
-            LineSegment((1, 1), (-2, 1))
+            LineSegment((-3d, 3d), (2d, 3d)),
+            LineSegment((1d, 1d), (-2d, 1d))
           )
 
           val expected = NoIntersection
@@ -74,71 +73,71 @@ object LineSegmentTests extends TestSuite {
 
         "should intersect lines at right angles to each other" - {
           val actual: IntersectionResult = LineSegment.intersection(
-            LineSegment((2, 2), (2, -3)),
-            LineSegment((-1, -2), (3, -2))
+            LineSegment((2d, 2d), (2d, -3d)),
+            LineSegment((-1d, -2d), (3d, -2d))
           )
 
-          val expected: IntersectionPoint = IntersectionPoint(2, -2)
+          val expected: IntersectionVertex = IntersectionVertex(2, -2)
 
           actual ==> expected
         }
 
         "should intersect diagonally right angle lines" - {
           val actual: IntersectionResult = LineSegment.intersection(
-            LineSegment((1, 1), (5, 5)),
-            LineSegment((1, 5), (4, 2))
+            LineSegment((1d, 1d), (5d, 5d)),
+            LineSegment((1d, 5d), (4d, 2d))
           )
 
-          val expected: IntersectionPoint = IntersectionPoint(3, 3)
+          val expected: IntersectionVertex = IntersectionVertex(3, 3)
 
           actual ==> expected
         }
 
         "should intersect diagonally non-right angle lines" - {
           val actual: IntersectionResult = LineSegment.intersection(
-            LineSegment((1, 5), (3, 1)),
-            LineSegment((1, 2), (4, 5))
+            LineSegment((1d, 5d), (3d, 1d)),
+            LineSegment((1d, 2d), (4d, 5d))
           )
 
-          val expected: IntersectionPoint = IntersectionPoint(2, 3)
+          val expected: IntersectionVertex = IntersectionVertex(2, 3)
 
           actual ==> expected
         }
 
         "should intersect where one line is parallel to the y-axis" - {
           val actual: IntersectionResult = LineSegment.intersection(
-            LineSegment((4, 1), (4, 4)),
-            LineSegment((2, 1), (5, 4))
+            LineSegment((4d, 1d), (4d, 4d)),
+            LineSegment((2d, 1d), (5d, 4d))
           )
 
-          val expected: IntersectionPoint = IntersectionPoint(4, 3)
+          val expected: IntersectionVertex = IntersectionVertex(4, 3)
 
           actual ==> expected
         }
 
         "should intersect where one line is parallel to the x-axis" - {
           val actual: IntersectionResult = LineSegment.intersection(
-            LineSegment((1, 2), (5, 2)),
-            LineSegment((2, 4), (5, 1))
+            LineSegment((1d, 2d), (5d, 2d)),
+            LineSegment((2d, 4d), (5d, 1d))
           )
 
-          val expected: IntersectionPoint = IntersectionPoint(4, 2)
+          val expected: IntersectionVertex = IntersectionVertex(4, 2)
 
           actual ==> expected
         }
 
         "should give the same intersection regardless of order" - {
           val actual1: IntersectionResult = LineSegment.intersection(
-            LineSegment((0, 15), (50, 15)),
-            LineSegment((10, 10), (10, 30))
+            LineSegment((0d, 15d), (50d, 15d)),
+            LineSegment((10d, 10d), (10d, 30d))
           )
 
           val actual2: IntersectionResult = LineSegment.intersection(
-            LineSegment((0, 15), (50, 15)),
-            LineSegment((10, 10), (10, 30))
+            LineSegment((0d, 15d), (50d, 15d)),
+            LineSegment((10d, 10d), (10d, 30d))
           )
 
-          val expected: IntersectionPoint = IntersectionPoint(10, 15)
+          val expected: IntersectionVertex = IntersectionVertex(10, 15)
 
           actual1 ==> expected
           actual2 ==> expected
@@ -147,11 +146,11 @@ object LineSegmentTests extends TestSuite {
 
         "should intersect diagonally right angle lines (again)" - {
           val actual: IntersectionResult = LineSegment.intersection(
-            LineSegment((0, 0), (5, 5)),
-            LineSegment((0, 5), (5, 0))
+            LineSegment((0d, 0d), (5d, 5d)),
+            LineSegment((0d, 5d), (5d, 0d))
           )
 
-          val expected: IntersectionPoint = IntersectionPoint(2.5f, 2.5f)
+          val expected: IntersectionVertex = IntersectionVertex(2.5f, 2.5f)
 
           actual ==> expected
         }
@@ -160,36 +159,36 @@ object LineSegmentTests extends TestSuite {
 
       "normals" - {
         "should calculate the normal for a horizontal line (Left -> Right)" - {
-          val start: Point = Point(-10, 1)
-          val end: Point   = Point(10, 1)
+          val start: Vertex = Vertex(-10, 1)
+          val end: Vertex   = Vertex(10, 1)
 
           LineSegment.calculateNormal(start, end) === Vector2(0, 1) ==> true
         }
 
         "should calculate the normal for a horizontal line (Right -> Left)" - {
-          val start: Point = Point(5, 2)
-          val end: Point   = Point(-5, 2)
+          val start: Vertex = Vertex(5, 2)
+          val end: Vertex   = Vertex(-5, 2)
 
           LineSegment.calculateNormal(start, end) === Vector2(0, -1) ==> true
         }
 
         "should calculate the normal for a vertical line (Top -> Bottom" - {
-          val start: Point = Point(-1, 10)
-          val end: Point   = Point(-1, -10)
+          val start: Vertex = Vertex(-1, 10)
+          val end: Vertex   = Vertex(-1, -10)
 
           LineSegment.calculateNormal(start, end) === Vector2(1, 0) ==> true
         }
 
         "should calculate the normal for a vertical line (Bottom -> Top" - {
-          val start: Point = Point(1, -10)
-          val end: Point   = Point(1, 10)
+          val start: Vertex = Vertex(1, -10)
+          val end: Vertex   = Vertex(1, 10)
 
           LineSegment.calculateNormal(start, end) === Vector2(-1, 0) ==> true
         }
 
         "should calculate the normal for a diagonal line" - {
-          val start: Point = Point(2, 2)
-          val end: Point   = Point(-2, -2)
+          val start: Vertex = Vertex(2, 2)
+          val end: Vertex   = Vertex(-2, -2)
 
           LineSegment.calculateNormal(start, end) === Vector2(1, -1) ==> true
         }
@@ -201,81 +200,81 @@ object LineSegmentTests extends TestSuite {
         "should be able to normalise a point" - {
 
           "10, 10" - {
-            LineSegment.normalisePoint(Vector2(10, 10)) === Vector2(1, 1) ==> true
+            LineSegment.normaliseVertex(Vector2(10, 10)) === Vector2(1, 1) ==> true
           }
 
           "-10, -10" - {
-            LineSegment.normalisePoint(Vector2(-10, -10)) === Vector2(-1, -1) ==> true
+            LineSegment.normaliseVertex(Vector2(-10, -10)) === Vector2(-1, -1) ==> true
           }
 
           "10, 0" - {
-            LineSegment.normalisePoint(Vector2(10, 0)) === Vector2(1, 0) ==> true
+            LineSegment.normaliseVertex(Vector2(10, 0)) === Vector2(1, 0) ==> true
           }
 
           "0, 10" - {
-            LineSegment.normalisePoint(Vector2(0, 10)) === Vector2(0, 1) ==> true
+            LineSegment.normaliseVertex(Vector2(0, 10)) === Vector2(0, 1) ==> true
           }
 
           "-50, 1000" - {
-            LineSegment.normalisePoint(Vector2(-50, 1000)) === Vector2(-1, 1) ==> true
+            LineSegment.normaliseVertex(Vector2(-50, 1000)) === Vector2(-1, 1) ==> true
           }
 
         }
 
       }
 
-      "Points & Lines" - {
+      "Vertexs & Lines" - {
 
         "Facing a point" - {
 
-          val line: LineSegment = LineSegment((1, 5), (9, 5))
+          val line: LineSegment = LineSegment((1d, 5d), (9d, 5d))
 
           "facing" - {
-            val point: Point = Point(5, 20)
+            val point: Vertex = Vertex(5, 20)
 
-            line.isFacingPoint(point) ==> true
+            line.isFacingVertex(point) ==> true
           }
 
           "not facing" - {
-            val point: Point = Point(5, 2)
+            val point: Vertex = Vertex(5, 2)
 
-            line.isFacingPoint(point) ==> false
+            line.isFacingVertex(point) ==> false
           }
 
         }
 
-        "Point on a line" - {
+        "Vertex on a line" - {
 
           //TODO: Can do a property based check here. Forall points on a line
           // (i.e. start point * slope m < end point)
           "should be able to check if a point is on a line" - {
             "horizontal" - {
-              val line: LineSegment = LineSegment((10, 10), (20, 10))
-              val point: Point      = Point(15, 10)
+              val line: LineSegment = LineSegment((10d, 10d), (20d, 10d))
+              val point: Vertex      = Vertex(15, 10)
 
-              LineSegment.lineContainsPoint(line, point) ==> true
+              LineSegment.lineContainsVertex(line, point) ==> true
             }
 
             "vertical" - {
-              val line: LineSegment = LineSegment((10, 10), (10, 20))
-              val point: Point      = Point(10, 15)
+              val line: LineSegment = LineSegment((10d, 10d), (10d, 20d))
+              val point: Vertex      = Vertex(10, 15)
 
-              LineSegment.lineContainsPoint(line, point) ==> true
+              LineSegment.lineContainsVertex(line, point) ==> true
             }
 
             "diagonal" - {
-              val line: LineSegment = LineSegment((10, 10), (20, 20))
-              val point: Point      = Point(15, 15)
+              val line: LineSegment = LineSegment((10d, 10d), (20d, 20d))
+              val point: Vertex      = Vertex(15, 15)
 
-              LineSegment.lineContainsPoint(line, point) ==> true
+              LineSegment.lineContainsVertex(line, point) ==> true
             }
           }
 
           "should be able to check if a point is NOT on a line" - {
-            val line: LineSegment = LineSegment((10, 10), (20, 20))
-            val point: Point      = Point(1, 5)
+            val line: LineSegment = LineSegment((10d, 10d), (20d, 20d))
+            val point: Vertex      = Vertex(1, 5)
 
-            LineSegment.lineContainsPoint(line, point) ==> false
+            LineSegment.lineContainsVertex(line, point) ==> false
           }
 
         }

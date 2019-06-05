@@ -1,39 +1,38 @@
 package indigoexts.geometry
 
-import indigo.shared.datatypes.Point
-
 import utest._
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.EqualTo._
+import indigo.shared.datatypes.Point
 
 object PolygonTests extends TestSuite {
 
   // Polygons
   val open: Polygon.Open =
     Polygon.Open(
-      Point(0, 0),
-      Point(5, 5),
-      Point(10, 0),
-      Point(5, -5)
+      Vertex(0, 0),
+      Vertex(5, 5),
+      Vertex(10, 0),
+      Vertex(5, -5)
     )
 
   val closed: Polygon.Closed =
     Polygon.Closed(
-      Point(0, 0),
-      Point(5, 5),
-      Point(10, 0),
-      Point(5, -5)
+      Vertex(0, 0),
+      Vertex(5, 5),
+      Vertex(10, 0),
+      Vertex(5, -5)
     )
 
   // Lines
   val intersectingLine: LineSegment =
-    LineSegment(Point(0, 5), Point(5, 0))
+    LineSegment(Vertex(0, 5), Vertex(5, 0))
 
   val noneIntersectingLine: LineSegment =
-    LineSegment(Point(0, 5), Point(0, 4))
+    LineSegment(Vertex(0, 5), Vertex(0, 4))
 
   val intersectingLineWithClosed: LineSegment =
-    LineSegment(Point(0, -5), Point(5, 0))
+    LineSegment(Vertex(0, -5), Vertex(5, 0))
 
   // Rectangles
   val intersectingRectangle: Rectangle =
@@ -58,20 +57,20 @@ object PolygonTests extends TestSuite {
         }
 
         "should be able to add a vertex" - {
-          Polygon.Open.empty.addVertex(Point.zero).vertices.length ==> 1
+          Polygon.Open.empty.addVertex(Vertex.zero).vertices.length ==> 1
         }
 
         "should be able to produce a bounding rectangle" - {
-          closed.bounds === Rectangle(0, -5, 10, 10) ==> true
+          closed.bounds.toRectangle === Rectangle(0, -5, 10, 10) ==> true
         }
 
         "should be able to create a polygon from a rectangle" - {
           val expected: Polygon =
             Polygon.Closed(
-              Point(0, 0),
-              Point(0, 10),
-              Point(10, 10),
-              Point(10, 0)
+              Vertex(0, 0),
+              Vertex(0, 10),
+              Vertex(10, 10),
+              Vertex(10, 0)
             )
 
           val actual: Polygon =
@@ -87,9 +86,9 @@ object PolygonTests extends TestSuite {
 
           val expected: List[LineSegment] =
             List(
-              LineSegment(Point(0, 0), Point(5, 5)),
-              LineSegment(Point(5, 5), Point(10, 0)),
-              LineSegment(Point(10, 0), Point(5, -5))
+              LineSegment(Vertex(0, 0), Vertex(5, 5)),
+              LineSegment(Vertex(5, 5), Vertex(10, 0)),
+              LineSegment(Vertex(10, 0), Vertex(5, -5))
             )
 
           val actual: List[LineSegment] =
@@ -102,10 +101,10 @@ object PolygonTests extends TestSuite {
 
           val expected: List[LineSegment] =
             List(
-              LineSegment(Point(0, 0), Point(5, 5)),
-              LineSegment(Point(5, 5), Point(10, 0)),
-              LineSegment(Point(10, 0), Point(5, -5)),
-              LineSegment(Point(5, -5), Point(0, 0))
+              LineSegment(Vertex(0, 0), Vertex(5, 5)),
+              LineSegment(Vertex(5, 5), Vertex(10, 0)),
+              LineSegment(Vertex(10, 0), Vertex(5, -5)),
+              LineSegment(Vertex(5, -5), Vertex(0, 0))
             )
 
           val actual: List[LineSegment] =
@@ -118,16 +117,16 @@ object PolygonTests extends TestSuite {
 
       "Intersections" - {
         "contains point (open shapes can't contain)" - {
-          open.contains(Point(2, 1)) ==> false
+          open.contains(Vertex(2, 1)) ==> false
         }
 
         "contains point (closed)" - {
           "totally enclosed" - {
-            closed.contains(Point(2, 0)) ==> true
+            closed.contains(Vertex(2, 0)) ==> true
           }
 
           "within bounds but not inside polygon" - {
-            closed.contains(Point(1, 4)) ==> false
+            closed.contains(Vertex(1, 4)) ==> false
           }
         }
 

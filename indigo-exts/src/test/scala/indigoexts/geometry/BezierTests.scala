@@ -1,7 +1,6 @@
 package indigoexts.geometry
 
 import utest._
-import indigo.shared.datatypes.Point
 import indigo.EqualTo._
 import indigo.shared.time.Millis
 import indigo.shared.datatypes.Rectangle
@@ -12,31 +11,31 @@ object BezierTests extends TestSuite {
     Tests {
 
       "Interpolation" - {
-        Bezier.interpolate(Point(0, 0), Point(10, 10), 0d) === Point(0, 0) ==> true
-        Bezier.interpolate(Point(0, 0), Point(10, 10), 0.5d) === Point(5, 5) ==> true
-        Bezier.interpolate(Point(0, 0), Point(10, 10), 1d) === Point(10, 10) ==> true
+        Bezier.interpolate(Vertex(0, 0), Vertex(10, 10), 0d) === Vertex(0, 0) ==> true
+        Bezier.interpolate(Vertex(0, 0), Vertex(10, 10), 0.5d) === Vertex(5, 5) ==> true
+        Bezier.interpolate(Vertex(0, 0), Vertex(10, 10), 1d) === Vertex(10, 10) ==> true
       }
 
       "Reduction" - {
 
         "Empty list" - {
-          Bezier.reduce(Nil, 0d) === Point.zero ==> true
+          Bezier.reduce(Nil, 0d) === Vertex.zero ==> true
         }
 
         "one point" - {
-          Bezier.reduce(List(Point(1, 1)), 0d) === Point(1, 1) ==> true
+          Bezier.reduce(List(Vertex(1, 1)), 0d) === Vertex(1, 1) ==> true
         }
 
         "two points" - {
-          Bezier.reduce(List(Point(0, 0), Point(10, 10)), 0d) === Point(0, 0) ==> true
-          Bezier.reduce(List(Point(0, 0), Point(10, 10)), 0.5d) === Point(5, 5) ==> true
-          Bezier.reduce(List(Point(0, 0), Point(10, 10)), 1d) === Point(10, 10) ==> true
+          Bezier.reduce(List(Vertex(0, 0), Vertex(10, 10)), 0d) === Vertex(0, 0) ==> true
+          Bezier.reduce(List(Vertex(0, 0), Vertex(10, 10)), 0.5d) === Vertex(5, 5) ==> true
+          Bezier.reduce(List(Vertex(0, 0), Vertex(10, 10)), 1d) === Vertex(10, 10) ==> true
         }
 
         "three points" - {
-          Bezier.reduce(List(Point(0, 0), Point(5, 5), Point(10, 0)), 0d) === Point(0, 0) ==> true
-          Bezier.reduce(List(Point(0, 0), Point(5, 5), Point(10, 0)), 0.5d) === Point(4, 2) ==> true
-          Bezier.reduce(List(Point(0, 0), Point(5, 5), Point(10, 0)), 1d) === Point(10, 0) ==> true
+          Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 0d) === Vertex(0, 0) ==> true
+          Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 0.5d) === Vertex(4, 2) ==> true
+          Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 1d) === Vertex(10, 0) ==> true
         }
 
       }
@@ -44,33 +43,33 @@ object BezierTests extends TestSuite {
       "One dimensional (1 point)" - {
 
         val bezier =
-          Bezier(Point(5, 5))
+          Bezier(Vertex(5, 5))
 
-        bezier.at(0d) === Point(5, 5) ==> true
-        bezier.at(0.5d) === Point(5, 5) ==> true
-        bezier.at(1d) === Point(5, 5) ==> true
+        bezier.at(0d) === Vertex(5, 5) ==> true
+        bezier.at(0.5d) === Vertex(5, 5) ==> true
+        bezier.at(1d) === Vertex(5, 5) ==> true
 
       }
 
       "Linear (2 points)" - {
 
         val bezier =
-          Bezier(Point(0, 0), Point(10, 10))
+          Bezier(Vertex(0, 0), Vertex(10, 10))
 
-        bezier.at(-50d) === Point(0, 0) ==> true
-        bezier.at(0d) === Point(0, 0) ==> true
-        bezier.at(0.25d) === Point(2, 2) ==> true
-        bezier.at(0.5d) === Point(5, 5) ==> true
-        bezier.at(0.75d) === Point(7, 7) ==> true
-        bezier.at(1d) === Point(10, 10) ==> true
-        bezier.at(100d) === Point(10, 10) ==> true
+        bezier.at(-50d) === Vertex(0, 0) ==> true
+        bezier.at(0d) === Vertex(0, 0) ==> true
+        bezier.at(0.25d) === Vertex(2, 2) ==> true
+        bezier.at(0.5d) === Vertex(5, 5) ==> true
+        bezier.at(0.75d) === Vertex(7, 7) ==> true
+        bezier.at(1d) === Vertex(10, 10) ==> true
+        bezier.at(100d) === Vertex(10, 10) ==> true
 
       }
 
       "Quadtratic (3 points)" - {
 
         val bezier =
-          Bezier(Point(2, 2), Point(4, 7), Point(20, 10))
+          Bezier(Vertex(2, 2), Vertex(4, 7), Vertex(20, 10))
 
         /*
           For 0.5d:
@@ -82,16 +81,16 @@ object BezierTests extends TestSuite {
 
          */
 
-        bezier.at(0d) === Point(2, 2) ==> true
-        bezier.at(0.5d) === Point(7, 6) ==> true
-        bezier.at(1d) === Point(20, 10) ==> true
+        bezier.at(0d) === Vertex(2, 2) ==> true
+        bezier.at(0.5d) === Vertex(7, 6) ==> true
+        bezier.at(1d) === Vertex(20, 10) ==> true
 
       }
 
       "Higher-Order (4 or more points)" - {
 
         val bezier =
-          Bezier(Point(2, 2), Point(4, 7), Point(20, 10), Point(3, 100))
+          Bezier(Vertex(2, 2), Vertex(4, 7), Vertex(20, 10), Vertex(3, 100))
 
         /*
           For 0.5d:
@@ -106,9 +105,9 @@ object BezierTests extends TestSuite {
 
          */
 
-        bezier.at(0d) === Point(2, 2) ==> true
-        bezier.at(0.5d) === Point(9, 18) ==> true
-        bezier.at(1d) === Point(3, 100) ==> true
+        bezier.at(0d) === Vertex(2, 2) ==> true
+        bezier.at(0.5d) === Vertex(9, 18) ==> true
+        bezier.at(1d) === Vertex(3, 100) ==> true
 
       }
 
@@ -116,23 +115,23 @@ object BezierTests extends TestSuite {
 
         "linear" - {
           val bezier =
-            Bezier(Point.zero, Point(100, 0))
+            Bezier(Vertex.zero, Vertex(100, 0))
 
-          val actual = bezier.toPoints(10)
+          val actual = bezier.toVertices(10)
 
           val expected =
             List(
-              Point(0, 0),
-              Point(10, 0),
-              Point(20, 0),
-              Point(30, 0),
-              Point(40, 0),
-              Point(50, 0),
-              Point(60, 0),
-              Point(70, 0),
-              Point(80, 0),
-              Point(90, 0),
-              Point(100, 0)
+              Vertex(0, 0),
+              Vertex(10, 0),
+              Vertex(20, 0),
+              Vertex(30, 0),
+              Vertex(40, 0),
+              Vertex(50, 0),
+              Vertex(60, 0),
+              Vertex(70, 0),
+              Vertex(80, 0),
+              Vertex(90, 0),
+              Vertex(100, 0)
             )
 
           actual === expected ==> true
@@ -140,15 +139,15 @@ object BezierTests extends TestSuite {
 
         "higher order" - {
           val bezier =
-            Bezier(Point(2, 2), Point(4, 7), Point(20, 10), Point(3, 100))
+            Bezier(Vertex(2, 2), Vertex(4, 7), Vertex(20, 10), Vertex(3, 100))
 
-          val actual = bezier.toPoints(2)
+          val actual = bezier.toVertices(2)
 
           val expected =
             List(
-              Point(2, 2),
-              Point(9, 18),
-              Point(3, 100)
+              Vertex(2, 2),
+              Vertex(9, 18),
+              Vertex(3, 100)
             )
 
           actual === expected ==> true
@@ -159,7 +158,7 @@ object BezierTests extends TestSuite {
 
         "linear" - {
           val bezier =
-            Bezier(Point.zero, Point(100, 0))
+            Bezier(Vertex.zero, Vertex(100, 0))
 
           val actual: Int = bezier.toPolygon(10).edgeCount
 
@@ -172,37 +171,37 @@ object BezierTests extends TestSuite {
 
       "to line segments" - {
         val bezier =
-          Bezier(Point(2, 2), Point(4, 7), Point(20, 10), Point(3, 100))
+          Bezier(Vertex(2, 2), Vertex(4, 7), Vertex(20, 10), Vertex(3, 100))
 
         val lineSegments = bezier.toLineSegments(2)
 
         lineSegments.length ==> 2
-        lineSegments(0) === LineSegment(Point(2, 2), Point(9, 18)) ==> true
-        lineSegments(1) === LineSegment(Point(9, 18), Point(3, 100)) ==> true
+        lineSegments(0) === LineSegment(Vertex(2, 2), Vertex(9, 18)) ==> true
+        lineSegments(1) === LineSegment(Vertex(9, 18), Vertex(3, 100)) ==> true
       }
 
       "to signal" - {
         val bezier =
-          Bezier(Point(2, 2), Point(4, 7), Point(20, 10), Point(3, 100))
+          Bezier(Vertex(2, 2), Vertex(4, 7), Vertex(20, 10), Vertex(3, 100))
 
         val signal =
           bezier.toSignal(Millis(1500))
 
-        signal.at(Millis(0)) === Point(2, 2) ==> true
-        signal.at(Millis(750)) === Point(9, 18) ==> true
-        signal.at(Millis(1500)) === Point(3, 100) ==> true
+        signal.at(Millis(0)) === Vertex(2, 2) ==> true
+        signal.at(Millis(750)) === Vertex(9, 18) ==> true
+        signal.at(Millis(1500)) === Vertex(3, 100) ==> true
       }
 
       "give bounding rectangle" - {
 
         val bezier =
-          Bezier(Point(20, 10), Point(3, 100), Point(2, 2))
+          Bezier(Vertex(20, 10), Vertex(3, 100), Vertex(2, 2))
 
         val actual =
           bezier.bounds
 
-        val expected: Rectangle =
-          Rectangle(2, 2, 18, 98)
+        val expected: BoundingBox =
+          BoundingBox(2, 2, 18, 98)
 
         actual === expected ==> true
       }

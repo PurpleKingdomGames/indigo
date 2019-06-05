@@ -4,6 +4,7 @@ import indigo.shared.{AsString, EqualTo}
 import indigo.shared.AsString._
 
 import scala.annotation.tailrec
+import indigo.shared.datatypes.Rectangle
 
 final class BoundingBox(val position: Vertex, val size: Vertex) {
   val x: Double      = position.x
@@ -60,6 +61,9 @@ final class BoundingBox(val position: Vertex, val size: Vertex) {
   def resize(point: Vertex): BoundingBox =
     BoundingBox(position, point)
 
+  def toRectangle: Rectangle =
+    Rectangle(position.toPoint, size.toPoint)
+
   def asString: String =
     implicitly[AsString[BoundingBox]].show(this)
 
@@ -89,7 +93,7 @@ object BoundingBox {
     BoundingBox(x, y, w, h)
   }
 
-  def fromVertices(points: List[Vertex]): BoundingBox = {
+  def fromVertices(vertices: List[Vertex]): BoundingBox = {
     @tailrec
     def rec(remaining: List[Vertex], left: Double, top: Double, right: Double, bottom: Double): BoundingBox =
       remaining match {
@@ -106,7 +110,7 @@ object BoundingBox {
           )
       }
 
-    rec(points, Double.MaxValue, Double.MaxValue, Double.MinValue, Double.MinValue)
+    rec(vertices, Double.MaxValue, Double.MaxValue, Double.MinValue, Double.MinValue)
   }
 
   implicit val rectangleShow: AsString[BoundingBox] =

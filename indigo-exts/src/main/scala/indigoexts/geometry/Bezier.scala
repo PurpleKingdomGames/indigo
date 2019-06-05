@@ -10,7 +10,7 @@ final class Bezier(private val vertices: List[Vertex]) {
   def at(unitInterval: Double): Vertex =
     Bezier.at(this, unitInterval)
 
-  def toPoints(subdivisions: Int): List[Vertex] =
+  def toVertices(subdivisions: Int): List[Vertex] =
     Bezier.toVertices(this, subdivisions)
 
   def toPolygon(subdivisions: Int): Polygon =
