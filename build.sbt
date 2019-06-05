@@ -3,7 +3,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 import scala.sys.process._
 import scala.language.postfixOps
 
-val indigoVersion = "0.0.10-SNAPSHOT"
+val indigoVersion = "0.0.11-SNAPSHOT"
 
 lazy val commonSettings = Seq(
   version := indigoVersion,

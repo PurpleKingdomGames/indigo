@@ -1,4 +1,4 @@
-lazy val indigoVersion = "0.0.10-SNAPSHOT"
+lazy val indigoVersion = "0.0.11-SNAPSHOT"
 
 lazy val commonSettings = Seq(
   version := indigoVersion,
