@@ -4,13 +4,13 @@ import indigo._
 import indigoexts.subsystems.automata.AutomatonPayload
 import ingidoexamples.automata.LaunchPadAutomaton
 
-final case class LaunchPad(position: Point, countDown: Millis, rocket: Rocket) extends AutomatonPayload
+final case class LaunchPad(position: Vector2, countDown: Millis, rocket: Rocket) extends AutomatonPayload
 
 object LaunchPad {
 
   def generateLaunchPad(dice: Dice, min: Point, max: Point, screenDimensions: Rectangle): LaunchPad = {
-    val startPosition: Point =
-      Point(min.x + dice.roll(max.x - min.x), min.y)
+    val startPosition: Vector2 =
+      Vector2(dice.rollDouble, 0)
 
     LaunchPad(
       startPosition,
