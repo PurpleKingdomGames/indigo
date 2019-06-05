@@ -1,16 +1,15 @@
 package indigoexts.geometry
 
-import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.AsString
 import indigo.shared.EqualTo
 import scala.annotation.tailrec
 
 sealed trait Polygon {
-  val vertices: List[Point]
+  val vertices: List[Vertex]
 
-  def bounds: Rectangle =
-    Rectangle.fromPointCloud(vertices)
+  def bounds: BoundingBox =
+    BoundingBox.fromVertices(vertices)
 
   def edgeCount: Int =
     this match {
@@ -26,7 +25,7 @@ sealed trait Polygon {
 
   //TODO: Propatage line segment-type functions to lines.
 
-  def addVertex(vertex: Point): Polygon =
+  def addVertex(vertex: Vertex): Polygon =
     this match {
       case Polygon.Open(vs) =>
         Polygon.Open(vs :+ vertex)
@@ -35,13 +34,13 @@ sealed trait Polygon {
         Polygon.Closed(vs :+ vertex)
     }
 
-  def contains(point: Point): Boolean =
+  def contains(vertex: Vertex): Boolean =
     this match {
       case Polygon.Open(_) =>
         false
 
       case p @ Polygon.Closed(_) =>
-        bounds.isPointWithin(point) && p.lineSegments.forall(l => !l.isFacingPoint(point))
+        bounds.isVertexWithin(vertex) && p.lineSegments.forall(l => !l.isFacingVertex(vertex))
     }
 
   def lineIntersectCheck(lineSegment: LineSegment): Boolean =
@@ -64,11 +63,16 @@ sealed trait Polygon {
 object Polygon {
 
   def fromRectangle(rectangle: Rectangle): Closed =
-    Closed(rectangle.topLeft, rectangle.bottomLeft, rectangle.bottomRight, rectangle.topRight)
+    Closed(
+      Vertex.fromPoint(rectangle.topLeft),
+      Vertex.fromPoint(rectangle.bottomLeft),
+      Vertex.fromPoint(rectangle.bottomRight),
+      Vertex.fromPoint(rectangle.topRight)
+    )
 
   def toLineSegments(polygon: Polygon): List[LineSegment] = {
     @tailrec
-    def rec(remaining: List[Point], current: Point, acc: List[LineSegment]): List[LineSegment] =
+    def rec(remaining: List[Vertex], current: Vertex, acc: List[LineSegment]): List[LineSegment] =
       remaining match {
         case Nil =>
           acc.reverse
@@ -93,7 +97,7 @@ object Polygon {
   }
 
   implicit val polygonAsString: AsString[Polygon] = {
-    val s = implicitly[AsString[List[Point]]]
+    val s = implicitly[AsString[List[Vertex]]]
 
     AsString.create {
       case Open(vs) =>
@@ -105,7 +109,7 @@ object Polygon {
   }
 
   implicit val polygonEqualTo: EqualTo[Polygon] = {
-    val e = implicitly[EqualTo[List[Point]]]
+    val e = implicitly[EqualTo[List[Vertex]]]
 
     EqualTo.create {
       case (Open(vsA), Open(vsB)) =>
@@ -119,7 +123,7 @@ object Polygon {
     }
   }
 
-  final class Open(val vertices: List[Point]) extends Polygon
+  final class Open(val vertices: List[Vertex]) extends Polygon
   object Open {
 
     implicit val openEqualTo: EqualTo[Closed] =
@@ -130,17 +134,17 @@ object Polygon {
     val empty: Open =
       Open(Nil)
 
-    def apply(vertices: List[Point]): Open =
+    def apply(vertices: List[Vertex]): Open =
       new Open(vertices)
 
-    def apply(vertices: Point*): Open =
+    def apply(vertices: Vertex*): Open =
       new Open(vertices.toList)
 
-    def unapply(polygon: Open): Option[List[Point]] =
+    def unapply(polygon: Open): Option[List[Vertex]] =
       Option(polygon.vertices)
   }
 
-  final class Closed(val vertices: List[Point]) extends Polygon
+  final class Closed(val vertices: List[Vertex]) extends Polygon
   object Closed {
 
     implicit val closedEqualTo: EqualTo[Closed] =
@@ -151,13 +155,13 @@ object Polygon {
     val empty: Closed =
       Closed(Nil)
 
-    def apply(vertices: List[Point]): Closed =
+    def apply(vertices: List[Vertex]): Closed =
       new Closed(vertices)
 
-    def apply(vertices: Point*): Closed =
+    def apply(vertices: Vertex*): Closed =
       new Closed(vertices.toList)
 
-    def unapply(polygon: Closed): Option[List[Point]] =
+    def unapply(polygon: Closed): Option[List[Vertex]] =
       Option(polygon.vertices)
   }
 

@@ -2,21 +2,20 @@ package indigoexts.geometry
 
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
-import indigo.shared.datatypes.Point
 import indigo.shared.AsString
 import indigo.shared.datatypes.Vector2
 
-final class LineSegment(val start: Point, val end: Point) {
-  val center: Point =
-    Point(
+final class LineSegment(val start: Vertex, val end: Vertex) {
+  val center: Vertex =
+    Vertex(
       ((end.x - start.x) / 2) + start.x,
       ((end.y - start.y) / 2) + start.y
     )
 
-  def left: Int   = Math.min(start.x, end.x)
-  def right: Int  = Math.max(start.x, end.x)
-  def top: Int    = Math.min(start.y, end.y)
-  def bottom: Int = Math.max(start.y, end.y)
+  def left: Double   = Math.min(start.x, end.x)
+  def right: Double  = Math.max(start.x, end.x)
+  def top: Double    = Math.min(start.y, end.y)
+  def bottom: Double = Math.max(start.y, end.y)
 
   def normal: Vector2 =
     LineSegment.calculateNormal(start, end)
@@ -32,17 +31,17 @@ final class LineSegment(val start: Point, val end: Point) {
       case IntersectionResult.NoIntersection =>
         false
 
-      case r @ IntersectionResult.IntersectionPoint(_, _) =>
-        val pt = r.toPoint
-        containsPoint(pt) && other.containsPoint(pt)
+      case r @ IntersectionResult.IntersectionVertex(_, _) =>
+        val pt = r.toVertex
+        containsVertex(pt) && other.containsVertex(pt)
 
     }
 
-  def containsPoint(point: Point): Boolean =
-    LineSegment.lineContainsPoint(this, point, 0.5f)
+  def containsVertex(vertex: Vertex): Boolean =
+    LineSegment.lineContainsVertex(this, vertex, 0.5f)
 
-  def isFacingPoint(point: Point): Boolean =
-    LineSegment.isFacingPoint(this, point)
+  def isFacingVertex(vertex: Vertex): Boolean =
+    LineSegment.isFacingVertex(this, vertex)
 
   def asString: String =
     implicitly[AsString[LineSegment]].show(this)
@@ -54,7 +53,7 @@ final class LineSegment(val start: Point, val end: Point) {
 object LineSegment {
 
   implicit val lsEqualTo: EqualTo[LineSegment] = {
-    val eqPt = implicitly[EqualTo[Point]]
+    val eqPt = implicitly[EqualTo[Vertex]]
 
     EqualTo.create { (a, b) =>
       eqPt.equal(a.start, b.start) && eqPt.equal(a.end, b.end)
@@ -62,21 +61,21 @@ object LineSegment {
   }
 
   implicit val lsAsString: AsString[LineSegment] = {
-    val s = implicitly[AsString[Point]]
+    val s = implicitly[AsString[Vertex]]
 
     AsString.create { ls =>
       s"LineSegment(start = ${s.show(ls.start)}, end = ${s.show(ls.end)})"
     }
   }
 
-  def apply(start: Point, end: Point): LineSegment =
+  def apply(start: Vertex, end: Vertex): LineSegment =
     new LineSegment(start, end)
 
-  def apply(x1: Int, y1: Int, x2: Int, y2: Int): LineSegment =
-    LineSegment(Point(x1, y1), Point(x2, y2))
+  def apply(x1: Double, y1: Double, x2: Double, y2: Double): LineSegment =
+    LineSegment(Vertex(x1, y1), Vertex(x2, y2))
 
-  def apply(start: (Int, Int), end: (Int, Int)): LineSegment =
-    LineSegment(Point.tuple2ToPoint(start), Point.tuple2ToPoint(end))
+  def apply(start: (Double, Double), end: (Double, Double)): LineSegment =
+    LineSegment(Vertex.tuple2ToVertex(start), Vertex.tuple2ToVertex(end))
 
   /*
   y = mx + b
@@ -85,19 +84,19 @@ object LineSegment {
   m is the slope i.e. number of y units per x unit
   b is the y-intersect i.e. the point on the y-axis where the line passes through it
    */
-  def calculateLineComponents(start: Point, end: Point): LineProperties =
+  def calculateLineComponents(start: Vertex, end: Vertex): LineProperties =
     (start, end) match {
-      case (Point(x1, y1), Point(x2, y2)) if x1 === x2 && y1 === y2 =>
+      case (Vertex(x1, y1), Vertex(x2, y2)) if x1 === x2 && y1 === y2 =>
         LineProperties.InvalidLine
 
-      case (Point(x1, _), Point(x2, _)) if x1 === x2 =>
+      case (Vertex(x1, _), Vertex(x2, _)) if x1 === x2 =>
         LineProperties.ParallelToAxisY
 
-      case (Point(_, y1), Point(_, y2)) if y1 === y2 =>
+      case (Vertex(_, y1), Vertex(_, y2)) if y1 === y2 =>
         LineProperties.ParallelToAxisX
 
-      case (Point(x1, y1), Point(x2, y2)) =>
-        val m: Float = (y2.toFloat - y1.toFloat) / (x2.toFloat - x1.toFloat)
+      case (Vertex(x1, y1), Vertex(x2, y2)) =>
+        val m: Double = (y2 - y1) / (x2 - x1)
 
         LineProperties.LineComponents(m, y1 - (m * x1))
     }
@@ -110,12 +109,12 @@ object LineSegment {
     (l1.lineProperties, l2.lineProperties) match {
       case (LineProperties.LineComponents(m1, b1), LineProperties.LineComponents(m2, b2)) =>
         //x = -b/m
-        val x: Float = (b2 - b1) / (m1 - m2)
+        val x: Double = (b2 - b1) / (m1 - m2)
 
         //y = mx + b
-        val y: Float = (m1 * x) + b1
+        val y: Double = (m1 * x) + b1
 
-        IntersectionResult.IntersectionPoint(x, y)
+        IntersectionResult.IntersectionVertex(x, y)
 
       case (LineProperties.ParallelToAxisX, LineProperties.ParallelToAxisX) =>
         IntersectionResult.NoIntersection
@@ -124,32 +123,32 @@ object LineSegment {
         IntersectionResult.NoIntersection
 
       case (LineProperties.ParallelToAxisX, LineProperties.ParallelToAxisY) =>
-        IntersectionResult.IntersectionPoint(l2.start.x.toFloat, l1.start.y.toFloat)
+        IntersectionResult.IntersectionVertex(l2.start.x, l1.start.y)
 
       case (LineProperties.ParallelToAxisY, LineProperties.ParallelToAxisX) =>
-        IntersectionResult.IntersectionPoint(l1.start.x.toFloat, l2.start.y.toFloat)
+        IntersectionResult.IntersectionVertex(l1.start.x, l2.start.y)
 
       case (LineProperties.ParallelToAxisX, LineProperties.LineComponents(m, b)) =>
-        IntersectionResult.IntersectionPoint(
-          x = (-b / m) - l1.start.y.toFloat,
-          y = l1.start.y.toFloat
+        IntersectionResult.IntersectionVertex(
+          x = (-b / m) - l1.start.y,
+          y = l1.start.y
         )
 
       case (LineProperties.LineComponents(m, b), LineProperties.ParallelToAxisX) =>
-        IntersectionResult.IntersectionPoint(
-          x = (-b / m) - l2.start.y.toFloat,
-          y = l2.start.y.toFloat
+        IntersectionResult.IntersectionVertex(
+          x = (-b / m) - l2.start.y,
+          y = l2.start.y
         )
 
       case (LineProperties.ParallelToAxisY, LineProperties.LineComponents(m, b)) =>
-        IntersectionResult.IntersectionPoint(
-          x = l1.start.x.toFloat,
+        IntersectionResult.IntersectionVertex(
+          x = l1.start.x,
           y = (m * l1.start.x) + b
         )
 
       case (LineProperties.LineComponents(m, b), LineProperties.ParallelToAxisY) =>
-        IntersectionResult.IntersectionPoint(
-          x = l2.start.x.toFloat,
+        IntersectionResult.IntersectionVertex(
+          x = l2.start.x,
           y = (m * l2.start.x) + b
         )
 
@@ -166,12 +165,12 @@ object LineSegment {
         IntersectionResult.NoIntersection
     }
 
-  def calculateNormal(start: Point, end: Point): Vector2 =
-    normalisePoint(Vector2(-(end.y - start.y).toDouble, (end.x - start.x).toDouble))
+  def calculateNormal(start: Vertex, end: Vertex): Vector2 =
+    normaliseVertex(Vector2(-(end.y - start.y), (end.x - start.x)))
 
-  def normalisePoint(vec2: Vector2): Vector2 = {
-    val x: Double = vec2.x.toDouble
-    val y: Double = vec2.y.toDouble
+  def normaliseVertex(vec2: Vector2): Vector2 = {
+    val x: Double = vec2.x
+    val y: Double = vec2.y
 
     Vector2(
       if (x === 0) 0 else (x / Math.abs(x)),
@@ -179,10 +178,10 @@ object LineSegment {
     )
   }
 
-  def lineContainsPoint(lineSegment: LineSegment, point: Point): Boolean =
-    lineContainsPoint(lineSegment, point, 0.01f)
+  def lineContainsVertex(lineSegment: LineSegment, point: Vertex): Boolean =
+    lineContainsVertex(lineSegment, point, 0.01f)
 
-  def lineContainsPoint(lineSegment: LineSegment, point: Point, tolerance: Float): Boolean =
+  def lineContainsVertex(lineSegment: LineSegment, point: Vertex, tolerance: Double): Boolean =
     lineSegment.lineProperties match {
       case LineProperties.InvalidLine =>
         false
@@ -197,63 +196,63 @@ object LineSegment {
 
       case LineProperties.LineComponents(m, b) =>
         if (point.x >= lineSegment.left && point.x <= lineSegment.right && point.y >= lineSegment.top && point.y <= lineSegment.bottom) {
-          slopeCheck(point.x.toDouble, point.y.toDouble, m, b, tolerance)
+          slopeCheck(point.x, point.y, m, b, tolerance)
         } else false
     }
 
-  def lineContainsCoords(lineSegment: LineSegment, coords: (Double, Double), tolerance: Float): Boolean =
+  def lineContainsCoords(lineSegment: LineSegment, coords: (Double, Double), tolerance: Double): Boolean =
     lineContainsXY(lineSegment, coords._1, coords._2, tolerance)
 
-  def lineContainsXY(lineSegment: LineSegment, x: Double, y: Double, tolerance: Float): Boolean =
+  def lineContainsXY(lineSegment: LineSegment, x: Double, y: Double, tolerance: Double): Boolean =
     lineSegment.lineProperties match {
       case LineProperties.InvalidLine =>
         false
 
       case LineProperties.ParallelToAxisX =>
-        if (y.toInt === lineSegment.start.y && x.toInt >= lineSegment.left && x.toInt <= lineSegment.right) true
+        if (y === lineSegment.start.y && x >= lineSegment.left && x <= lineSegment.right) true
         else false
 
       case LineProperties.ParallelToAxisY =>
-        if (x.toInt === lineSegment.start.x && y.toInt >= lineSegment.top && y.toInt <= lineSegment.bottom) true
+        if (x === lineSegment.start.x && y >= lineSegment.top && y <= lineSegment.bottom) true
         else false
 
       case LineProperties.LineComponents(m, b) =>
-        if (x >= lineSegment.left.toDouble && x <= lineSegment.right.toDouble && y >= lineSegment.top.toDouble && y <= lineSegment.bottom.toDouble)
+        if (x >= lineSegment.left && x <= lineSegment.right && y >= lineSegment.top && y <= lineSegment.bottom)
           slopeCheck(x, y, m, b, tolerance)
         else false
     }
 
-  def slopeCheck(x: Double, y: Double, m: Float, b: Float, tolerance: Float): Boolean = {
+  def slopeCheck(x: Double, y: Double, m: Double, b: Double, tolerance: Double): Boolean = {
     // This is a slope comparison.. Any point on the line should have the same slope as the line.
     val m2: Double =
       if (x === 0) 0
       else (b - y) / (0 - x)
 
     val mDelta: Double =
-      m.toDouble - m2
+      m - m2
 
-    mDelta >= -tolerance.toDouble && mDelta <= tolerance.toDouble
+    mDelta >= -tolerance && mDelta <= tolerance
   }
 
-  def isFacingPoint(line: LineSegment, point: Point): Boolean =
-    (line.normal dot Vector2.fromPoints(point, line.center)) < 0
+  def isFacingVertex(line: LineSegment, vertex: Vertex): Boolean =
+    (line.normal dot Vertex.twoVerticesToVector2(vertex, line.center)) < 0
 
 }
 
 sealed trait LineProperties
 object LineProperties {
 // y = mx + b
-  final case class LineComponents(m: Float, b: Float) extends LineProperties
-  case object ParallelToAxisX                         extends LineProperties
-  case object ParallelToAxisY                         extends LineProperties
-  case object InvalidLine                             extends LineProperties
+  final case class LineComponents(m: Double, b: Double) extends LineProperties
+  case object ParallelToAxisX                           extends LineProperties
+  case object ParallelToAxisY                           extends LineProperties
+  case object InvalidLine                               extends LineProperties
 }
 
 sealed trait IntersectionResult
 object IntersectionResult {
-  final case class IntersectionPoint(x: Float, y: Float) extends IntersectionResult {
-    def toPoint: Point =
-      Point(x.toInt, y.toInt)
+  final case class IntersectionVertex(x: Double, y: Double) extends IntersectionResult {
+    def toVertex: Vertex =
+      Vertex(x, y)
   }
   case object NoIntersection extends IntersectionResult
 }

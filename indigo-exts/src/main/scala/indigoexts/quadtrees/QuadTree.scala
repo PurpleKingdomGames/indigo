@@ -10,6 +10,7 @@ import indigoexts.grid.{GridPoint, GridSize}
 import indigoexts.geometry.LineSegment
 
 import scala.annotation.tailrec
+import indigoexts.geometry.Vertex
 
 sealed trait QuadTree[T] {
 
@@ -280,20 +281,20 @@ object QuadTree {
     }
 
   def searchByLine[T](quadTree: QuadTree[T], start: Point, end: Point): List[T] =
-    searchByLine(quadTree, LineSegment(start, end))
+    searchByLine(quadTree, LineSegment(Vertex.fromPoint(start), Vertex.fromPoint(end)))
 
   @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def searchByLine[T](quadTree: QuadTree[T], lineSegment: LineSegment): List[T] =
-    if (lineSegment.start === lineSegment.end) searchByPoint(quadTree, lineSegment.start)
+    if (lineSegment.start === lineSegment.end) searchByPoint(quadTree, lineSegment.start.toPoint)
     else {
       quadTree match {
-        case QuadBranch(bounds, a, b, c, d) if bounds.toRectangle.isPointWithin(lineSegment.start) =>
+        case QuadBranch(bounds, a, b, c, d) if bounds.toRectangle.isPointWithin(lineSegment.start.toPoint) =>
           searchByLine(a, lineSegment) ++
             searchByLine(b, lineSegment) ++
             searchByLine(c, lineSegment) ++
             searchByLine(d, lineSegment)
 
-        case QuadBranch(bounds, a, b, c, d) if bounds.toRectangle.isPointWithin(lineSegment.end) =>
+        case QuadBranch(bounds, a, b, c, d) if bounds.toRectangle.isPointWithin(lineSegment.end.toPoint) =>
           searchByLine(a, lineSegment) ++
             searchByLine(b, lineSegment) ++
             searchByLine(c, lineSegment) ++
@@ -305,10 +306,10 @@ object QuadTree {
             searchByLine(c, lineSegment) ++
             searchByLine(d, lineSegment)
 
-        case QuadLeaf(bounds, value) if lineSegment.start === bounds.position.toPoint =>
+        case QuadLeaf(bounds, value) if lineSegment.start.toPoint === bounds.position.toPoint =>
           List(value)
 
-        case QuadLeaf(bounds, value) if lineSegment.end === bounds.position.toPoint =>
+        case QuadLeaf(bounds, value) if lineSegment.end.toPoint === bounds.position.toPoint =>
           List(value)
 
         case QuadLeaf(bounds, value) if LineSegment.lineContainsCoords(lineSegment, bounds.centerAsDoubles, 0.35f) =>

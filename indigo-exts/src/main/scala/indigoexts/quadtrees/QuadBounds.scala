@@ -32,10 +32,10 @@ trait QuadBounds {
   // Left, Bottom, Right, Top, following points counter clockwise.
   def edges: List[LineSegment] =
     List(
-      LineSegment((left, top), (left, bottom)),
-      LineSegment((left, bottom), (right, bottom)),
-      LineSegment((right, bottom), (right, top)),
-      LineSegment((right, top), (left, top))
+      LineSegment((left.toDouble, top.toDouble), (left.toDouble, bottom.toDouble)),
+      LineSegment((left.toDouble, bottom.toDouble), (right.toDouble, bottom.toDouble)),
+      LineSegment((right.toDouble, bottom.toDouble), (right.toDouble, top.toDouble)),
+      LineSegment((right.toDouble, top.toDouble), (left.toDouble, top.toDouble))
     )
 
   def isOneUnitSquare: Boolean =
@@ -129,8 +129,8 @@ object QuadBounds {
   def rayCollisionCheck(bounds: QuadBounds, line: LineSegment): Boolean =
     bounds.edges.exists { edge =>
       line.intersectWith(edge) match {
-        case ip: IntersectionResult.IntersectionPoint =>
-          line.containsPoint(ip.toPoint)
+        case ip: IntersectionResult.IntersectionVertex =>
+          line.containsVertex(ip.toVertex)
 
         case IntersectionResult.NoIntersection =>
           false
@@ -141,10 +141,10 @@ object QuadBounds {
     bounds.edges
       .map { edge =>
         line.intersectWith(edge) match {
-          case ip @ IntersectionResult.IntersectionPoint(_, _) if line.containsPoint(ip.toPoint) =>
-            Some(ip.toPoint)
+          case ip @ IntersectionResult.IntersectionVertex(_, _) if line.containsVertex(ip.toVertex) =>
+            Some(ip.toVertex)
 
-          case IntersectionResult.IntersectionPoint(_, _) =>
+          case IntersectionResult.IntersectionVertex(_, _) =>
             None
 
           case IntersectionResult.NoIntersection =>
@@ -154,4 +154,5 @@ object QuadBounds {
       .collect { case Some(s) => s }
       .sortWith((p1, p2) => line.start.distanceTo(p1) < line.start.distanceTo(p2))
       .headOption
+      .map(_.toPoint)
 }
