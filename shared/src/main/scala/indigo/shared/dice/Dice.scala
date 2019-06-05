@@ -1,6 +1,7 @@
 package indigo.shared.dice
 
 import indigo.shared.collections.NonEmptyList
+import indigo.shared.EqualTo._
 
 import scala.annotation.tailrec
 import scala.util.Random
@@ -58,7 +59,7 @@ object Dice {
         fixedTo
 
       def rollDouble: Double =
-        if (fixedTo == 0) 0 else 1
+        if (fixedTo === 0) 0 else 1
     }
 
   def arbitrary(from: Int, to: Int, seedValue: Long): Dice =
