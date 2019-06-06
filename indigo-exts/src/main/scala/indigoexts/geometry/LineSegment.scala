@@ -46,6 +46,9 @@ final class LineSegment(val start: Vertex, val end: Vertex) {
   def asString: String =
     implicitly[AsString[LineSegment]].show(this)
 
+  override def toString: String =
+    asString
+
   def ===(other: LineSegment): Boolean =
     implicitly[EqualTo[LineSegment]].equal(this, other)
 }
@@ -179,7 +182,7 @@ object LineSegment {
   }
 
   def lineContainsVertex(lineSegment: LineSegment, point: Vertex): Boolean =
-    lineContainsVertex(lineSegment, point, 0.01f)
+    lineContainsVertex(lineSegment, point, 0.01d)
 
   def lineContainsVertex(lineSegment: LineSegment, point: Vertex, tolerance: Double): Boolean =
     lineSegment.lineProperties match {

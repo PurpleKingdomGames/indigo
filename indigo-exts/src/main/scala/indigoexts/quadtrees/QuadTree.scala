@@ -5,7 +5,6 @@ import indigo.shared.datatypes.{Point, Rectangle}
 import indigo.shared.AsString
 import indigo.shared.AsString._
 import indigo.shared.EqualTo
-import indigo.shared.EqualTo._
 import indigoexts.grid.{GridPoint, GridSize}
 import indigoexts.geometry.LineSegment
 
@@ -312,7 +311,10 @@ object QuadTree {
         case QuadLeaf(bounds, value) if lineSegment.end.toPoint === bounds.position.toPoint =>
           List(value)
 
-        case QuadLeaf(bounds, value) if LineSegment.lineContainsCoords(lineSegment, bounds.centerAsDoubles, 0.35f) =>
+        case QuadLeaf(bounds, value) if LineSegment.lineContainsVertex(lineSegment, bounds.centerAsVertex, 0.15d) =>
+          List(value)
+
+        case QuadLeaf(bounds, value) if LineSegment.lineContainsVertex(lineSegment, Vertex.fromPoint(bounds.position.toPoint), 0.25f) =>
           List(value)
 
         case _ =>

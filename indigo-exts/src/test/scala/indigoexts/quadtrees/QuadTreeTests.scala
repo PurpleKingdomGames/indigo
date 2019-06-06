@@ -224,14 +224,23 @@ object QuadTreeTests extends TestSuite {
           assert(actual.length <= expected.length + 2)
         }
 
+  /*
+     0 1 2 3
+     _ _ _ _
+  0 |_|_|_|_|
+  1 |s|_|_|_|
+  2 |_|_|_|e|
+  3 |_|_|_|_|
+  */
         "should allow a search of squares between two diagonal degree points" - {
-          val actual = QuadTree.searchByLine(SampleTree.tree, Point(3, 2), Point(0, 1))
+          val actual = QuadTree.searchByLine(SampleTree.tree, Point(0, 1), Point(3, 2))
 
           val expected: List[String] =
             List(
               "0,1",
               "1,1",
               "2,1",
+              "2,2",
               "3,2"
             )
 

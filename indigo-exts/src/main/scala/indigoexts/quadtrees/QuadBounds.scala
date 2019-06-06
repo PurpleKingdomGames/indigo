@@ -8,6 +8,7 @@ import indigoexts.geometry.{IntersectionResult, LineSegment}
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import indigoexts.geometry.Polygon
+import indigoexts.geometry.Vertex
 
 trait QuadBounds {
   val x: Int
@@ -26,8 +27,8 @@ trait QuadBounds {
   def center: GridPoint =
     GridPoint(x + (width / 2), y + (height / 2))
 
-  def centerAsDoubles: (Double, Double) =
-    (x.toDouble + (width.toDouble / 2d), y.toDouble + (height.toDouble / 2d))
+  def centerAsVertex: Vertex =
+    Vertex(x.toDouble + (width.toDouble / 2d), y.toDouble + (height.toDouble / 2d))
 
   // Left, Bottom, Right, Top, following points counter clockwise.
   def edges: List[LineSegment] =
@@ -59,6 +60,15 @@ trait QuadBounds {
   def collidesWithRayAt(lineSegment: LineSegment): Option[Point] =
     QuadBounds.rayCollisionPosition(this, lineSegment)
 
+  def asString: String =
+    implicitly[AsString[QuadBounds]].show(this)
+
+  override def toString: String =
+    asString
+
+  def ===(other: QuadBounds): Boolean =
+    implicitly[EqualTo[QuadBounds]].equal(this, other)
+
 }
 
 object QuadBounds {
@@ -68,7 +78,7 @@ object QuadBounds {
       s"""QuadBounds(${s.show(qb.x)}, ${s.show(qb.y)}, ${s.show(qb.width)}, ${s.show(qb.height)})"""
     }
 
-  implicit def eq(implicit eqI: EqualTo[Int]): EqualTo[QuadBounds] =
+  implicit def equalTo(implicit eqI: EqualTo[Int]): EqualTo[QuadBounds] =
     EqualTo.create { (a, b) =>
       eqI.equal(a.x, b.x) && eqI.equal(a.y, b.y) && eqI.equal(a.width, b.width) && eqI.equal(a.height, b.height)
     }
