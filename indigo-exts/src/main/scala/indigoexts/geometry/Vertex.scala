@@ -46,6 +46,9 @@ final class Vertex(val x: Double, val y: Double) {
 
   def ===(other: Vertex): Boolean =
     implicitly[EqualTo[Vertex]].equal(this, other)
+
+  def ~==(other: Vertex): Boolean =
+    Vertex.nearEnoughEqual(this, other, 0.001)
 }
 
 object Vertex {
@@ -106,5 +109,11 @@ object Vertex {
 
     Math.sqrt(Math.abs(cc))
   }
+
+  def nearEnoughEqual(v1: Vertex, v2: Vertex, tolerance: Double): Boolean =
+    v1.x >= v2.x - tolerance &&
+    v1.x <= v2.x + tolerance &&
+    v1.y >= v2.y - tolerance &&
+    v1.y <= v2.y + tolerance
 
 }

@@ -34,7 +34,7 @@ object BezierTests extends TestSuite {
 
         "three points" - {
           Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 0d) === Vertex(0, 0) ==> true
-          Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 0.5d) === Vertex(4, 2) ==> true
+          Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 0.5d) === Vertex(5, 2.5) ==> true
           Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 1d) === Vertex(10, 0) ==> true
         }
 
@@ -58,9 +58,9 @@ object BezierTests extends TestSuite {
 
         bezier.at(-50d) === Vertex(0, 0) ==> true
         bezier.at(0d) === Vertex(0, 0) ==> true
-        bezier.at(0.25d) === Vertex(2, 2) ==> true
+        bezier.at(0.25d) === Vertex(2.5, 2.5) ==> true
         bezier.at(0.5d) === Vertex(5, 5) ==> true
-        bezier.at(0.75d) === Vertex(7, 7) ==> true
+        bezier.at(0.75d) === Vertex(7.5, 7.5) ==> true
         bezier.at(1d) === Vertex(10, 10) ==> true
         bezier.at(100d) === Vertex(10, 10) ==> true
 
@@ -76,13 +76,13 @@ object BezierTests extends TestSuite {
 
           2,2 4,7 20,10
           (2,2 4,7) (4,7 20,10)
-          3,4 12,8
-          7,6
+          (3,4.5 12,8.5)
+          7.5,6.5
 
          */
 
         bezier.at(0d) === Vertex(2, 2) ==> true
-        bezier.at(0.5d) === Vertex(7, 6) ==> true
+        bezier.at(0.5d) === Vertex(7.5, 6.5) ==> true
         bezier.at(1d) === Vertex(20, 10) ==> true
 
       }
@@ -97,16 +97,15 @@ object BezierTests extends TestSuite {
 
           2,2 4,7 20,10 3,100
           (2,2 4,7) (4,7 20,10) (20,10 3,100)
-          (3,4 12,8) (12,8 [((3-20)/2)+20 = 11],55)
-          7,6 11,31
+          (3,4.5 12,8.5) (12,8.5 [((3-20)/2)+20 = 11],55)
+          (7.5,6.5 11.5,31.5)
 
-          [((11-7)/2)+7 = 9] , ((31-6)/2)+6 = 18
-          0,12
+          [((11.5-7.5)/2)+7.5 = 9.5] , ((31.5-6.5)/2)+6.5 = 19
 
          */
 
         bezier.at(0d) === Vertex(2, 2) ==> true
-        bezier.at(0.5d) === Vertex(9, 18) ==> true
+        bezier.at(0.5d) === Vertex(9.625, 19.125) ==> true
         bezier.at(1d) === Vertex(3, 100) ==> true
 
       }
@@ -134,7 +133,8 @@ object BezierTests extends TestSuite {
               Vertex(100, 0)
             )
 
-          actual === expected ==> true
+          actual.length ==> expected.length
+          actual.zip(expected).forall(vs => vs._1 ~== vs._2) ==> true
         }
 
         "higher order" - {
@@ -146,11 +146,12 @@ object BezierTests extends TestSuite {
           val expected =
             List(
               Vertex(2, 2),
-              Vertex(9, 18),
+              Vertex(9.625, 19.125),
               Vertex(3, 100)
             )
 
-          actual === expected ==> true
+          actual.length ==> expected.length
+          actual.zip(expected).forall(vs => vs._1 ~== vs._2) ==> true
         }
       }
 
@@ -176,8 +177,8 @@ object BezierTests extends TestSuite {
         val lineSegments = bezier.toLineSegments(2)
 
         lineSegments.length ==> 2
-        lineSegments(0) === LineSegment(Vertex(2, 2), Vertex(9, 18)) ==> true
-        lineSegments(1) === LineSegment(Vertex(9, 18), Vertex(3, 100)) ==> true
+        lineSegments(0) === LineSegment(Vertex(2, 2), Vertex(9.625, 19.125)) ==> true
+        lineSegments(1) === LineSegment(Vertex(9.625, 19.125), Vertex(3, 100)) ==> true
       }
 
       "to signal" - {
@@ -188,7 +189,7 @@ object BezierTests extends TestSuite {
           bezier.toSignal(Millis(1500))
 
         signal.at(Millis(0)) === Vertex(2, 2) ==> true
-        signal.at(Millis(750)) === Vertex(9, 18) ==> true
+        signal.at(Millis(750)) === Vertex(9.625, 19.125) ==> true
         signal.at(Millis(1500)) === Vertex(3, 100) ==> true
       }
 
