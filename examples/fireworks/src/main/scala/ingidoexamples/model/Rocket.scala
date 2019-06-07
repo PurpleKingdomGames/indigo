@@ -30,7 +30,12 @@ object Rocket {
 
   def createArcControlVertices(dice: Dice, target: Vertex): NonEmptyList[Vertex] = {
     val x: Double =
-      Math.max(Double.MinValue, Math.min(Double.MaxValue, dice.rollDouble))
+      ({ (positiveX: Double) =>
+        if (target.x < 0)
+          -(positiveX * target.x)
+        else
+          positiveX * target.x
+      })(Math.max(0, Math.min(1.0d, dice.rollDouble)))
 
     val y: Double =
       target.y

@@ -35,7 +35,7 @@ object LaunchPadAutomaton {
     AutomataEvent.Spawn(
       poolKey,
       Point(
-        (((screenDimensions.width / 2).toDouble * launchPad.position.x) + (screenDimensions.width / 2)).toInt,
+        (((screenDimensions.width / 2).toDouble * launchPad.position.x) + (screenDimensions.width / 4)).toInt,
         screenDimensions.height - 5
       ),
       Some(launchPad.countDown),

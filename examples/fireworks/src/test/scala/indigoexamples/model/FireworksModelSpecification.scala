@@ -20,7 +20,7 @@ class FireworksModelSpecification extends Properties("FireworksModel") {
   property("generate between 1 and 5 fireworks") = Prop.forAll(diceGen) { dice =>
     val events = FireworksModel.launchFireworks(dice, screenDimensions)()
 
-    events.length >= 1 && events.length <= 5
+    events.length >= 5 && events.length <= 10
   }
 
   property("generated fireworks will launch from 5 pixels up from the baseline") = Prop.forAll(diceGen) { dice =>
@@ -32,12 +32,12 @@ class FireworksModelSpecification extends Properties("FireworksModel") {
       Prop.all(events.map(_.at).forall(pt => pt.y == end.y - 5))
   }
 
-  property("generated fireworks will launch from the center third of the baseline") = Prop.forAll(diceGen) { dice =>
+  property("generated fireworks will launch from the central middle half of the baseline") = Prop.forAll(diceGen) { dice =>
     val events = FireworksModel.launchFireworks(dice, screenDimensions)()
 
     val diff: Int = screenDimensions.width
-    val minX      = diff / 3
-    val maxX      = (diff / 3) * 2
+    val minX      = diff / 4
+    val maxX      = (diff / 4) * 3
 
     "minX: " + minX + ", maxX: " + maxX + ", xs: " + events.map(_.at.x).mkString("[", ",", "]") |:
       Prop.all(events.map(_.at).forall(pt => pt.x >= minX && pt.x <= maxX))

@@ -39,10 +39,6 @@ object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
     FireworksModel.initialModel
 
   def update(gameTime: GameTime, model: FireworksModel, dice: Dice): GlobalEvent => Outcome[FireworksModel] = {
-    // case e: MouseEvent.Click =>
-    //   Outcome(model)
-    //     .addGlobalEvents(CrossAutomaton.spawnAt(e.position))
-
     case FrameTick =>
       model.update(
         dice,

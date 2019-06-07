@@ -13,20 +13,17 @@ class LaunchPadSpecification extends Properties("LaunchPad") {
   import Generators._
 
   def launchPadGen: Gen[LaunchPad] =
-    for {
-      dice   <- diceGen
-      points <- pointsOnALineGen
-    } yield LaunchPad.generateLaunchPad(dice, points.start, points.end, Rectangle.zero)
+    diceGen.map(dice => LaunchPad.generateLaunchPad(dice))
 
   property("generate a launch pad with a timer up to 1.5 seconds") = Prop.forAll(launchPadGen) { launchPad =>
     launchPad.countDown.value >= 1 && launchPad.countDown.value <= 1500
   }
 
-  property("generate a launch pad point along the base line") = Prop.forAll(diceGen, pointsOnALineGen) { (dice, points) =>
+  property("generate a launch pad vertex y=0 and x=0 to 1") = Prop.forAll(diceGen) { dice =>
     val launchPad: LaunchPad =
-      LaunchPad.generateLaunchPad(dice, points.start, points.end, Rectangle.zero)
+      LaunchPad.generateLaunchPad(dice)
 
-    launchPad.position.y === points.end.y && launchPad.position.x >= points.start.x && launchPad.position.x <= points.end.x
+    launchPad.position.y === 0 && launchPad.position.x >= 0 && launchPad.position.x <= 1
   }
 
 }
