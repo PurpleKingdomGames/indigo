@@ -3,52 +3,43 @@ package ingidoexamples.model
 import indigo._
 import indigoexts.geometry.Bezier
 import indigoexts.subsystems.automata.AutomatonPayload
+import indigoexts.geometry.Vertex
 
-final case class Rocket(startPosition: Point, flightTime: Millis, movementSignal: Signal[Point]) extends AutomatonPayload
+final case class Rocket(flightTime: Millis, movementSignal: Signal[Vertex]) extends AutomatonPayload
 
 object Rocket {
 
-  def generateRocket(dice: Dice, startPosition: Point, screenDimensions: Rectangle): Rocket = {
+  def generateRocket(dice: Dice): Rocket = {
     val flightTime = Rocket.pickFlightTime(dice)
 
     Rocket(
-      startPosition,
       flightTime,
       Rocket.createRocketArcSignal(
         dice,
-        startPosition,
-        Rocket.pickEndPoint(dice, startPosition, screenDimensions),
+        Rocket.pickEndPoint(dice),
         flightTime
       )
     )
   }
 
-  def createRocketArcSignal(dice: Dice, start: Point, end: Point, lifeSpan: Millis): Signal[Point] =
-    createRocketArcBezier(dice, start, end).toSignal(lifeSpan).clampTime(Millis(0), lifeSpan)
+  def createRocketArcSignal(dice: Dice, target: Vertex, lifeSpan: Millis): Signal[Vertex] =
+    createRocketArcBezier(dice, target).toSignal(lifeSpan).clampTime(Millis(0), lifeSpan)
 
-  def createRocketArcBezier(dice: Dice, start: Point, end: Point): Bezier =
-    Bezier.fromPointsNel(createArcControlPoints(dice, start, end))
+  def createRocketArcBezier(dice: Dice, target: Vertex): Bezier =
+    Bezier.fromVerticesNel(createArcControlVertices(dice, target))
 
-  def createArcControlPoints(dice: Dice, start: Point, end: Point): NonEmptyList[Point] = {
-    val x = Math.max(Int.MinValue, Math.min(Int.MaxValue, (dice.roll(end.x - start.x) - 1) + (if (start.x <= end.x) start.x else end.x)))
-    val y = end.y
+  def createArcControlVertices(dice: Dice, target: Vertex): NonEmptyList[Vertex] = {
+    val x: Double =
+      Math.max(Double.MinValue, Math.min(Double.MaxValue, dice.rollDouble))
 
-    NonEmptyList(start, Point(x, y), end)
+    val y: Double =
+      target.y
+
+    NonEmptyList(Vertex.zero, Vertex(x, y), target)
   }
 
-  def pickEndPoint(dice: Dice, start: Point, screenDimensions: Rectangle): Point =
-    Point(
-      x = Math.min(
-        screenDimensions.right,
-        Math.max(
-          screenDimensions.left,
-          start.x + dice.roll(start.y - (start.y / 2))
-        )
-      ),
-      y = ({ (div5: Int) =>
-        start.y - div5 - dice.roll(div5 * 3)
-      })(start.y / 5)
-    )
+  def pickEndPoint(dice: Dice): Vertex =
+    Vertex(-1d + (dice.rollDouble * 2), (dice.rollDouble * 0.5d) + 0.5d)
 
   def pickFlightTime(dice: Dice): Millis =
     Millis(((dice.roll(20) + 10) * 100).toLong) // between 1 and 3 seconds...

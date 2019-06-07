@@ -22,7 +22,7 @@ object LaunchPadAutomaton {
       seed.payload match {
         case Some(LaunchPad(_, _, rocket)) =>
           Option(
-            RocketAutomaton.spawnEvent(rocket)
+            RocketAutomaton.spawnEvent(rocket, seed.spawnedAt)
           )
 
         case _ =>
@@ -31,7 +31,15 @@ object LaunchPadAutomaton {
 
     }
 
-  def spawnEvent(launchPad: LaunchPad): AutomataEvent.Spawn =
-    AutomataEvent.Spawn(poolKey, launchPad.position, Some(launchPad.countDown), Some(launchPad))
+  def spawnEvent(launchPad: LaunchPad, screenDimensions: Rectangle): AutomataEvent.Spawn =
+    AutomataEvent.Spawn(
+      poolKey,
+      Point(
+        (((screenDimensions.width / 2).toDouble * launchPad.position.x) + (screenDimensions.width / 2)).toInt,
+        screenDimensions.height - 5
+      ),
+      Some(launchPad.countDown),
+      Some(launchPad)
+    )
 
 }
