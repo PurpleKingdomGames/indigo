@@ -24,6 +24,9 @@ object SignalFunction {
   def apply[A, B](f: A => B): SignalFunction[A, B] =
     lift(f)
 
+  /**
+   * Equvilent to `pure` but for SignalFunctions
+   */
   def arr[A, B](f: A => B): SignalFunction[A, B] =
     lift[A, B](f)
 
