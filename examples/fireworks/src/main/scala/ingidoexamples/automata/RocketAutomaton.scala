@@ -40,8 +40,12 @@ object RocketAutomaton {
         sa.payload match {
           case Some(Rocket(_, moveSignal)) =>
             Signal.create { t =>
+              val position: Point =
+                (moveSignal |> toScreenSpace(sa.spawnedAt, screenDimensions)).at(t)
+
               SceneUpdateFragment.empty
-                .addGameLayerNodes(r.moveTo((moveSignal |> toScreenSpace(sa.spawnedAt, screenDimensions)).at(t)))
+                .addGameLayerNodes(r.moveTo(position))
+                .addGlobalEvents(TrailAutomaton.spawnEvent(position))
             }
 
           case _ =>

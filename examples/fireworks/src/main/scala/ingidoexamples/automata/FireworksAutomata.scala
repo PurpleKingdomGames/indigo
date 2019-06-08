@@ -7,8 +7,8 @@ object FireworksAutomata {
 
   def subSystem(screenDimensions: Rectangle): Automata =
     Automata.empty
-      .add(CrossAutomaton.automaton)
       .add(LaunchPadAutomaton.automaton)
       .add(RocketAutomaton.automaton(screenDimensions))
+      .add(TrailAutomaton.automaton)
 
 }
