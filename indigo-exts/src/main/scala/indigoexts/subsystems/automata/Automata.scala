@@ -12,6 +12,7 @@ import indigo.shared.datatypes.Point
 
 import indigo.shared.EqualTo._
 import indigo.shared.datatypes.BindingKey
+import indigo.shared.IndigoLogger
 
 /*
 Properties of an automaton:
@@ -34,6 +35,9 @@ final case class Automata(inventory: Map[AutomataPoolKey, Automaton], paddock: L
       None
   }
 
+  def isRegistered(poolKey: AutomataPoolKey): Boolean =
+    inventory.contains(poolKey)
+
   def update(gameTime: GameTime, dice: Dice): AutomataEvent => Outcome[SubSystem] =
     Automata.update(this, gameTime, dice)
 
@@ -54,11 +58,19 @@ object Automata {
     Automata(Map.empty[AutomataPoolKey, Automaton], Nil)
 
   def update(farm: Automata, gameTime: GameTime, dice: Dice): AutomataEvent => Outcome[SubSystem] = {
-    case Spawn(key, pt, ls, pl) =>
+    case Spawn(key, pt, ls, pl) if farm.isRegistered(key) =>
       spawn(farm, gameTime, dice, key, pt, ls, pl)
 
-    case KillAllInPool(key) =>
+    case Spawn(key, _, _, _) =>
+      IndigoLogger.errorOnce("Attempt to spawn automata with unregistered pool key: " + key.toString)
+      Outcome(farm)
+
+    case KillAllInPool(key) if farm.isRegistered(key) =>
       killAllInPool(farm, key)
+
+    case KillAllInPool(key) =>
+      IndigoLogger.errorOnce("Attempt to kill all automata with unregistered pool key: " + key.toString)
+      Outcome(farm)
 
     case KillByKey(bindingKey) =>
       killByKey(farm, bindingKey)
