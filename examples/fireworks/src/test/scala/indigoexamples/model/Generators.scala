@@ -20,5 +20,8 @@ object Generators {
     } yield Vertex(x, y)
 
   val millisGen: Gen[Millis] =
-    Gen.choose(Long.MinValue, Long.MaxValue).map(Millis.apply)
+    clampedMillisGen(Long.MinValue, Long.MaxValue)
+
+  def clampedMillisGen(start: Long, end: Long): Gen[Millis] =
+    Gen.choose(start, end).map(Millis.apply)
 }
