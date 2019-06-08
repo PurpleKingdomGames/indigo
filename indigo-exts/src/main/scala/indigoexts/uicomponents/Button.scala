@@ -150,7 +150,7 @@ final case class ButtonViewUpdate(buttonGraphic: Graphic, buttonEvents: List[Glo
   def toSceneUpdateFragment: SceneUpdateFragment =
     SceneUpdateFragment()
       .addGameLayerNodes(buttonGraphic)
-      .addViewEvents(buttonEvents)
+      .addGlobalEvents(buttonEvents)
 
   def toTuple: (Graphic, List[GlobalEvent]) =
     (buttonGraphic, buttonEvents)

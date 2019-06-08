@@ -243,7 +243,7 @@ final case class InputFieldViewUpdate(sceneGraphNodes: List[SceneGraphNode], inp
   def toSceneUpdateFragment: SceneUpdateFragment =
     SceneUpdateFragment()
       .addGameLayerNodes(sceneGraphNodes)
-      .addViewEvents(inputFieldEvents)
+      .addGlobalEvents(inputFieldEvents)
 
   def toTuple: (List[SceneGraphNode], List[InputFieldEvent]) =
     (sceneGraphNodes, inputFieldEvents)

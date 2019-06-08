@@ -8,7 +8,7 @@ final case class SceneUpdateFragment(
     lightingLayer: List[SceneGraphNode],
     uiLayer: List[SceneGraphNode],
     ambientLight: AmbientLight,
-    viewEvents: List[GlobalEvent],
+    globalEvents: List[GlobalEvent],
     audio: SceneAudio
 ) {
   def |+|(other: SceneUpdateFragment): SceneUpdateFragment =
@@ -49,11 +49,11 @@ final case class SceneUpdateFragment(
       )
     )
 
-  def addViewEvents(events: GlobalEvent*): SceneUpdateFragment =
-    this.copy(viewEvents = viewEvents ++ events.toList)
+  def addGlobalEvents(events: GlobalEvent*): SceneUpdateFragment =
+    this.copy(globalEvents = globalEvents ++ events.toList)
 
-  def addViewEvents(events: List[GlobalEvent]): SceneUpdateFragment =
-    this.copy(viewEvents = viewEvents ++ events)
+  def addGlobalEvents(events: List[GlobalEvent]): SceneUpdateFragment =
+    this.copy(globalEvents = globalEvents ++ events)
 
   def withAudio(sceneAudio: SceneAudio): SceneUpdateFragment =
     this.copy(audio = sceneAudio)
@@ -72,7 +72,7 @@ object SceneUpdateFragment {
       a.lightingLayer ++ b.lightingLayer,
       a.uiLayer ++ b.uiLayer,
       a.ambientLight + b.ambientLight,
-      a.viewEvents ++ b.viewEvents,
+      a.globalEvents ++ b.globalEvents,
       a.audio |+| b.audio
     )
 }

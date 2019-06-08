@@ -45,7 +45,7 @@ object SceneA extends Scene[GameModel, Unit] {
 
     SceneUpdateFragment.empty
       .addGameLayerNodes(text)
-      .addViewEvents(events)
+      .addGlobalEvents(events)
   }
 
 }

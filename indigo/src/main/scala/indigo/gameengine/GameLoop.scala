@@ -222,7 +222,7 @@ object GameLoop {
 
   def persistGlobalViewEvents(metrics: Metrics, globalEventStream: GlobalEventStream): SceneUpdateFragment => SceneGraphRootNode = update => {
     metrics.record(PersistGlobalViewEventsStartMetric)
-    update.viewEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
+    update.globalEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
     metrics.record(PersistGlobalViewEventsEndMetric)
     SceneGraphRootNode.fromFragment(update)
   }
