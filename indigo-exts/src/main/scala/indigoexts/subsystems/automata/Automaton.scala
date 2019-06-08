@@ -5,7 +5,6 @@ import indigo.shared.datatypes.BindingKey
 import indigo.Millis
 import indigo.shared.temporal.Signal
 
-import indigo.shared.EqualTo
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.events.GlobalEvent
 
@@ -59,21 +58,5 @@ object Automaton {
       val modifier: (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment] = modifierSignal
       val onCull: AutomatonSeedValues => Option[GlobalEvent]                         = onCullEvent
     }
-
-}
-
-final class AutomataPoolKey(val key: String) extends AnyVal
-object AutomataPoolKey {
-
-  implicit val eq: EqualTo[AutomataPoolKey] =
-    EqualTo.create { (a, b) =>
-      implicitly[EqualTo[String]].equal(a.key, b.key)
-    }
-
-  def apply(key: String): AutomataPoolKey =
-    new AutomataPoolKey(key)
-
-  def generate: AutomataPoolKey =
-    AutomataPoolKey(BindingKey.generate.value)
 
 }
