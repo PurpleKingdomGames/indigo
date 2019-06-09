@@ -51,6 +51,6 @@ object Rocket {
     Vertex(-1d + (dice.rollDouble * 2), (dice.rollDouble * 0.5d) + 0.5d)
 
   def pickFlightTime(dice: Dice): Millis =
-    Millis(((dice.roll(20) + 10) * 100).toLong) // between 1 and 3 seconds...
+    Millis(((dice.roll(10) + 10) * 100).toLong) // between 1 and 3 seconds...
 
 }

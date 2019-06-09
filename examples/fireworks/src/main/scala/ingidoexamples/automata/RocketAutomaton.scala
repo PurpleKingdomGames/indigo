@@ -15,7 +15,7 @@ object RocketAutomaton {
     Automaton(
       poolKey,
       Assets.cross,
-      Millis(1000)
+      Millis(0)
     ).withModifier(ModifierFunctions.signal(screenDimensions))
 
   def spawnEvent(rocket: Rocket, launchPadPosition: Point): AutomataEvent.Spawn =

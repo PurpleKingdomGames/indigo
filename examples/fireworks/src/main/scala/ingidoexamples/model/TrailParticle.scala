@@ -20,12 +20,12 @@ object TrailParticle {
   def unapply(trailParticle: TrailParticle): Option[(Double, Double)] =
     Some((trailParticle.fallen, trailParticle.alpha))
 
-  def init: TrailParticle =
+  def create: TrailParticle =
     TrailParticle(0.0d, 1.0d)
 
-  val fall: SignalFunction[Millis, Double] =
-    SignalFunction {
-      _.toDouble / 1000
+  def fall(lifeSpan: Millis): SignalFunction[Millis, Double] =
+    SignalFunction { t =>
+      (t.toDouble / 1000) * ((t.toDouble / lifeSpan.toDouble) * 2)
     }
 
   def fade(lifeSpan: Millis): SignalFunction[Millis, Double] =
@@ -38,6 +38,6 @@ object TrailParticle {
 
   def particle(lifeSpan: Millis): Signal[TrailParticle] =
     Signal.clampTime(Signal.Time, Millis.zero, lifeSpan) |>
-      ((fall &&& fade(lifeSpan)) >>> combine)
+      ((fall(lifeSpan) &&& fade(lifeSpan)) >>> combine)
 
 }

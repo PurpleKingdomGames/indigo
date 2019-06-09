@@ -105,7 +105,7 @@ class RocketSpecification extends Properties("Rocket") {
 
     Prop.all(
       flightTime >= Millis(1000),
-      flightTime <= Millis(3000)
+      flightTime <= Millis(2000)
     )
   }
 

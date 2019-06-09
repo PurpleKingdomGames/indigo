@@ -8,7 +8,7 @@ import ingidoexamples.model.LaunchPad
 object LaunchPadAutomaton {
 
   val MinCountDown: Int = 100
-  val MaxCountDown: Int = 750
+  val MaxCountDown: Int = 1000
 
   val poolKey: AutomataPoolKey =
     AutomataPoolKey("launchPad")
@@ -17,7 +17,7 @@ object LaunchPadAutomaton {
     Automaton(
       poolKey,
       Assets.cross,
-      Millis(MaxCountDown.toLong)
+      Millis(0)
     ).withOnCullEvent { seed =>
       seed.payload match {
         case Some(LaunchPad(_, _, rocket)) =>

@@ -15,7 +15,7 @@ class TrailParticleSpecification extends Properties("TrailParticle") {
 
   property("particle should fall at a rate of 1 per second") = Prop.forAll(clampedMillisGen(0, 5000)) { t =>
     val fallAmount: Double =
-      (Signal.Time |> TrailParticle.fall).at(t)
+      (Signal.Time |> TrailParticle.fall(Millis(5000))).at(t)
 
     Prop.all(
       "0 <= fallAmount <= 1" |: fallAmount >= 0.0d && fallAmount <= 5.0d // Because clamped to 5000 millis

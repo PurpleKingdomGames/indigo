@@ -20,7 +20,7 @@ object TrailAutomaton {
       poolKey,
       at,
       None,
-      Some(TrailParticle.init)
+      Some(TrailParticle.create)
     )
 
   val automaton: Automaton =
