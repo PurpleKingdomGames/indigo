@@ -29,13 +29,17 @@ object Rocket {
     Bezier.fromVerticesNel(createArcControlVertices(dice, target))
 
   def createArcControlVertices(dice: Dice, target: Vertex): NonEmptyList[Vertex] = {
+
+    val baseValue: Double =
+      (0.5d * Math.max(0, Math.min(1.0d, dice.rollDouble))) + 0.5d
+
     val x: Double =
       ({ (positiveX: Double) =>
         if (target.x < 0)
           -(positiveX * target.x)
         else
           positiveX * target.x
-      })(Math.max(0, Math.min(1.0d, dice.rollDouble)))
+      })(baseValue)
 
     val y: Double =
       target.y

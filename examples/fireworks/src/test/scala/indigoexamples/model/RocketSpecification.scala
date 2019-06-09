@@ -43,17 +43,14 @@ class RocketSpecification extends Properties("Rocket") {
     }
   }
 
-  property("arc mid control point x is always between 0 and target vertex x") = Prop.forAll(diceGen, vertexGen) { (dice, target) =>
+  property("arc mid control point x is always more than half way between 0 and 1") = Prop.forAll(diceGen, vertexGen) { (dice, target) =>
     val vertices =
       Rocket.createArcControlVertices(dice, target)
 
     "Vertices X's: " + vertices.toList.map(_.x).mkString("[", ", ", "]") |: Prop.all(
       vertices match {
         case NonEmptyList(s, m :: e :: Nil) =>
-          val min = if (e.x < 0) e.x else 0
-          val max = if (e.x > 0) e.x else 0
-
-          m.x >= min && m.x <= max
+          Math.abs(m.x) >= (Math.abs(e.x) - Math.abs(s.x)) / 2
 
         case _ =>
           false
