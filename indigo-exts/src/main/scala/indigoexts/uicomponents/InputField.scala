@@ -242,7 +242,7 @@ final case class InputFieldAssets(text: Text, cursor: Graphic)
 final case class InputFieldViewUpdate(sceneGraphNodes: List[SceneGraphNode], inputFieldEvents: List[InputFieldEvent]) {
   def toSceneUpdateFragment: SceneUpdateFragment =
     SceneUpdateFragment()
-      .addGameLayerNodes(sceneGraphNodes)
+      .addUiLayerNodes(sceneGraphNodes)
       .addGlobalEvents(inputFieldEvents)
 
   def toTuple: (List[SceneGraphNode], List[InputFieldEvent]) =
