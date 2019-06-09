@@ -28,7 +28,7 @@ class TrailParticleSpecification extends Properties("TrailParticle") {
 
     Prop.all(
       "1 >= fadeAmount >= 0" |: fadeAmount >= 0.0d && fadeAmount <= 1.0d,
-      fadeAmount + "==" + t.toDouble / 5000 |: fadeAmount == t.toDouble / 5000
+      fadeAmount ?= 1 - (t.toDouble / 5000)
     )
   }
 

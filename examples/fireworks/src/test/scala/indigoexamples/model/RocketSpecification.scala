@@ -17,6 +17,8 @@ class RocketSpecification extends Properties("Rocket") {
 
   import Generators._
 
+  // TODO: As time progresses, the distance from rocket to target will be reduced.
+
   property("always creates three control points") = Prop.forAll(diceGen, vertexGen) { (dice, target) =>
     Rocket.createArcControlVertices(dice, target).length === 3
   }
