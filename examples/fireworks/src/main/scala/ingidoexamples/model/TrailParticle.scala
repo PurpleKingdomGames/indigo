@@ -30,7 +30,7 @@ object TrailParticle {
 
   def fade(lifeSpan: Millis): SignalFunction[Millis, Double] =
     SignalFunction { t =>
-      t.toDouble / lifeSpan.toDouble
+      1 - (t.toDouble / lifeSpan.toDouble)
     }
 
   val combine: SignalFunction[(Double, Double), TrailParticle] =
