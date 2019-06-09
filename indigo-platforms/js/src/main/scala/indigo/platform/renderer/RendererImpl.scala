@@ -54,8 +54,8 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
   def init(): Unit = {
     cNc.context.disable(DEPTH_TEST)
     cNc.context.viewport(0, 0, cNc.width.toDouble, cNc.height.toDouble)
-    cNc.context.blendFunc(ONE, ONE_MINUS_SRC_ALPHA)
     cNc.context.enable(BLEND)
+    cNc.context.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
   }
 
   def drawScene(displayable: Displayable, metrics: Metrics): Unit = {
