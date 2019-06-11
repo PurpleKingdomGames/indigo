@@ -33,4 +33,10 @@ object Generators {
 
   def clampedMillisGen(start: Long, end: Long): Gen[Millis] =
     Gen.choose(start, end).map(Millis.apply)
+
+  def nowNextMillis(min: Long, max: Long): Gen[(Millis, Millis)] =
+    for {
+      t1 <- clampedMillisGen(min, max - 1)
+      t2 <- clampedMillisGen(t1.value + 1, max)
+    } yield (t1, t2)
 }

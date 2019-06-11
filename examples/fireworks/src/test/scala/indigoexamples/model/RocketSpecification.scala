@@ -18,8 +18,6 @@ class RocketSpecification extends Properties("Rocket") {
 
   import Generators._
 
-  // TODO: As time progresses, the distance from rocket to target will be reduced.
-
   property("always creates three control points") = Prop.forAll { (dice: Dice, target: Vertex) =>
     Rocket.createArcControlVertices(dice, target).length === 3
   }
@@ -78,6 +76,30 @@ class RocketSpecification extends Properties("Rocket") {
       "\n-- Point: " + point.asString +
       "\n-- Time: " + time.asString +
       "" |: true =? (bounds + BoundingBox(0, 0, 1, 1)).isVertexWithin(signal.at(time))
+  }
+
+  // Previous test guarantees we're always inside the bounds, so we can limit the test cases a bit here.
+  property("Over time, the signal should always generate values moving closer to the target") = Prop.forAll { (dice: Dice, target: Vertex) =>
+    Prop.forAll(nowNextMillis(0, 1000)) {
+      case (now, next) =>
+        val signal: Signal[Vertex] =
+          Rocket.createRocketArcSignal(dice, target, Millis(1000))
+
+        val v1: Vertex =
+          signal.at(now)
+
+        val v2: Vertex =
+          signal.at(next)
+
+        "t1: " + now +
+          "\nt2: " + next +
+          "\nv1: " + v1 +
+          "\nv2: " + v2 +
+          "\ntarget: " + target +
+          "\nv1 distance: " + v1.distanceTo(target) +
+          "\nv2 distance: " + v2.distanceTo(target) +
+          "" |: v2.distanceTo(target) < v1.distanceTo(target)
+    }
   }
 
   /*
