@@ -13,14 +13,23 @@ object Generators {
       seed  <- Gen.choose(0, Long.MaxValue)
     } yield Dice.diceSidesN(sides, seed)
 
+  implicit val arbDice: Arbitrary[Dice] =
+    Arbitrary(diceGen)
+
   val vertexGen: Gen[Vertex] =
     for {
       x <- Gen.choose(0d, 1d)
       y <- Gen.choose(0d, 1d)
     } yield Vertex(x, y)
 
+  implicit val arbVertex: Arbitrary[Vertex] =
+    Arbitrary(vertexGen)
+
   val millisGen: Gen[Millis] =
     clampedMillisGen(Long.MinValue, Long.MaxValue)
+
+  implicit val arbMillis: Arbitrary[Millis] =
+    Arbitrary(millisGen)
 
   def clampedMillisGen(start: Long, end: Long): Gen[Millis] =
     Gen.choose(start, end).map(Millis.apply)

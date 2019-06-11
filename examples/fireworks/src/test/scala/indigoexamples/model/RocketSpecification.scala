@@ -12,6 +12,7 @@ import indigo.shared.collections.NonEmptyList
 import indigo.shared.time.Millis
 import indigoexts.geometry.Vertex
 import indigoexts.geometry.BoundingBox
+import indigo.shared.dice.Dice
 
 class RocketSpecification extends Properties("Rocket") {
 
@@ -19,11 +20,11 @@ class RocketSpecification extends Properties("Rocket") {
 
   // TODO: As time progresses, the distance from rocket to target will be reduced.
 
-  property("always creates three control points") = Prop.forAll(diceGen, vertexGen) { (dice, target) =>
+  property("always creates three control points") = Prop.forAll { (dice: Dice, target: Vertex) =>
     Rocket.createArcControlVertices(dice, target).length === 3
   }
 
-  property("control points are always in order [start, mid, target]") = Prop.forAll(diceGen, vertexGen) { (dice, target) =>
+  property("control points are always in order [start, mid, target]") = Prop.forAll { (dice: Dice, target: Vertex) =>
     Rocket.createArcControlVertices(dice, target) match {
       case NonEmptyList(s, _ :: e :: Nil) =>
         s === Vertex.zero && e === target
@@ -33,7 +34,7 @@ class RocketSpecification extends Properties("Rocket") {
     }
   }
 
-  property("arc mid control point y is always in line with the target y position") = Prop.forAll(diceGen, vertexGen) { (dice, target) =>
+  property("arc mid control point y is always in line with the target y position") = Prop.forAll { (dice: Dice, target: Vertex) =>
     Rocket.createArcControlVertices(dice, target) match {
       case NonEmptyList(s, m :: e :: Nil) =>
         m.y === e.y
@@ -43,7 +44,7 @@ class RocketSpecification extends Properties("Rocket") {
     }
   }
 
-  property("arc mid control point x is always more than half way between 0 and 1") = Prop.forAll(diceGen, vertexGen) { (dice, target) =>
+  property("arc mid control point x is always more than half way between 0 and 1") = Prop.forAll { (dice: Dice, target: Vertex) =>
     val vertices =
       Rocket.createArcControlVertices(dice, target)
 
@@ -58,7 +59,7 @@ class RocketSpecification extends Properties("Rocket") {
     )
   }
 
-  property("arc signal should always produce a value inside the beziers bounds") = Prop.forAll(diceGen, vertexGen, millisGen) { (dice, target, time) =>
+  property("arc signal should always produce a value inside the beziers bounds") = Prop.forAll { (dice: Dice, target: Vertex, time: Millis) =>
     val bounds: BoundingBox =
       Rocket.createRocketArcBezier(dice, target).bounds
 
@@ -87,7 +88,7 @@ class RocketSpecification extends Properties("Rocket") {
   The x should be proportial to the height i.e. at most a 45 degree drift.
    */
   // for a window of 3000 x 2000
-  property("able to generate a good target vertex based on a start point") = Prop.forAll(diceGen) { (dice) =>
+  property("able to generate a good target vertex based on a start point") = Prop.forAll { dice: Dice =>
     val target: Vertex =
       Rocket.pickEndPoint(dice)
 
@@ -99,7 +100,7 @@ class RocketSpecification extends Properties("Rocket") {
     )
   }
 
-  property("able to generate a flight time") = Prop.forAll(diceGen) { dice =>
+  property("able to generate a flight time") = Prop.forAll { dice: Dice =>
     val flightTime: Millis =
       Rocket.pickFlightTime(dice)
 
