@@ -10,7 +10,7 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.12.8",
   organization := "indigo",
   libraryDependencies ++= Seq(
-    "com.lihaoyi" %%% "utest" % "0.6.6" % "test"
+    "com.lihaoyi" %%% "utest" % "0.6.9" % "test"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
   scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits"),
@@ -366,7 +366,7 @@ lazy val fireworks =
       title := "Fireworks!",
       gameAssetsDirectory := "assets",
       libraryDependencies ++= Seq(
-        "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
+        "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
       )
     )
     .jsSettings(
@@ -399,7 +399,7 @@ lazy val indigo =
     .settings(
       name := "indigo",
       libraryDependencies ++= Seq(
-        "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
+        "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
       )
     )
     .dependsOn(shared)
@@ -417,7 +417,7 @@ lazy val indigoExts =
     .dependsOn(circe9 % "provided")
     .settings(
       name := "indigo-exts",
-      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
+      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
     )
 lazy val indigoExtsJS  = indigoExts.js
 lazy val indigoExtsJVM = indigoExts.jvm
@@ -431,12 +431,12 @@ lazy val indigoPlatforms =
     .settings(
       name := "indigo-platforms",
       libraryDependencies ++= Seq(
-        "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
+        "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
       )
     )
     .jsSettings(
       libraryDependencies ++= Seq(
-        "org.scala-js" %%% "scalajs-dom" % "0.9.6"
+        "org.scala-js" %%% "scalajs-dom" % "0.9.7"
       )
     )
     .jvmSettings(
@@ -541,7 +541,7 @@ lazy val shared =
     .settings(commonSettings: _*)
     .settings(
       name := "shared",
-      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.13.4" % "test"
+      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
     )
 lazy val sharedJS  = shared.js
 lazy val sharedJVM = shared.jvm

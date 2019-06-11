@@ -62,7 +62,7 @@ lazy val sbtIndigo =
       name := "sbt-indigo",
       sbtPlugin := true,
       libraryDependencies ++= Seq(
-        "commons-io" % "commons-io" % "2.5"
+        "commons-io" % "commons-io" % "2.6"
       ),
       libraryDependencies ++= Seq(
         "io.circe" %%% "circe-core",
