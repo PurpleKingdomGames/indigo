@@ -42,7 +42,7 @@ object PointTests extends TestSuite {
           val p1: Point = Point(10, 10)
           val p2: Point = Point(30, 30)
 
-          p1.distanceTo(p2) ==> Math.sqrt((20d * 20d) - (20d * 20d))
+          p1.distanceTo(p2) ==> Math.sqrt((20d * 20d) * (20d * 20d))
         }
 
       }

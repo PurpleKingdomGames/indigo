@@ -1,6 +1,7 @@
 package indigo.shared.datatypes
 
 import indigo.shared.{AsString, EqualTo}
+import indigo.shared.EqualTo._
 
 final class Point(val x: Int, val y: Int) {
   def +(pt: Point): Point = Point(x + pt.x, y + pt.y)
@@ -57,11 +58,18 @@ object Point {
   def linearInterpolation(a: Point, b: Point, divisor: Double, multiplier: Double): Point =
     Point(a.x + (((b.x - a.x) / divisor) * multiplier).toInt, a.y + (((b.y - a.y) / divisor) * multiplier).toInt)
 
-  def distanceBetween(a: Point, b: Point): Double = {
-    val aa = b.x.toDouble - a.x.toDouble
-    val bb = b.y.toDouble - a.y.toDouble
-    val cc = (aa * aa) - (bb * bb)
+  def distanceBetween(a: Point, b: Point): Double =
+    (a, b) match {
+      case (Point(x1, y1), Point(x2, y2)) if x1 === x2 =>
+        Math.abs((y2 - y1).toDouble)
 
-    Math.sqrt(Math.abs(cc))
-  }
+      case (Point(x1, y1), Point(x2, y2)) if y1 === y2 =>
+        Math.abs((x2 - x1).toDouble)
+
+      case (Point(x1, y1), Point(x2, y2)) =>
+        val aa = x2.toDouble - x1.toDouble
+        val bb = y2.toDouble - y1.toDouble
+
+        Math.sqrt(Math.abs((aa * aa) * (bb * bb)))
+    }
 }

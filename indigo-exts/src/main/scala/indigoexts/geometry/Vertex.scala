@@ -2,6 +2,7 @@ package indigoexts.geometry
 
 import indigo.shared.AsString
 import indigo.shared.EqualTo
+import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Vector2
 
@@ -102,18 +103,25 @@ object Vertex {
   def twoVerticesToVector2(start: Vertex, end: Vertex): Vector2 =
     Vector2((end.x - start.x).toDouble, (end.y - start.y).toDouble)
 
-  def distanceBetween(a: Vertex, b: Vertex): Double = {
-    val aa = b.x - a.x
-    val bb = b.y - a.y
-    val cc = (aa * aa) - (bb * bb)
+  def distanceBetween(a: Vertex, b: Vertex): Double =
+    (a, b) match {
+      case (Vertex(x1, y1), Vertex(x2, y2)) if x1 === x2 =>
+        Math.abs(y2 - y1)
 
-    Math.sqrt(Math.abs(cc))
-  }
+      case (Vertex(x1, y1), Vertex(x2, y2)) if y1 === y2 =>
+        Math.abs(x2 - x1)
+
+      case (Vertex(x1, y1), Vertex(x2, y2)) =>
+        val aa = x2.toDouble - x1.toDouble
+        val bb = y2.toDouble - y1.toDouble
+
+        Math.sqrt(Math.abs((aa * aa) * (bb * bb)))
+    }
 
   def nearEnoughEqual(v1: Vertex, v2: Vertex, tolerance: Double): Boolean =
     v1.x >= v2.x - tolerance &&
-    v1.x <= v2.x + tolerance &&
-    v1.y >= v2.y - tolerance &&
-    v1.y <= v2.y + tolerance
+      v1.x <= v2.x + tolerance &&
+      v1.y >= v2.y - tolerance &&
+      v1.y <= v2.y + tolerance
 
 }
