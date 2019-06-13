@@ -19,6 +19,7 @@ import indigo.platform.events.GlobalEventStreamImpl
 import indigo.shared.platform.Platform
 import indigo.shared.platform.Renderer
 import indigo.platform.PlatformImpl
+import indigo.platform.PlatformWindow
 import indigo.shared.platform.AssetMapping
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -71,6 +72,8 @@ object GameEngine {
   ): Unit = {
 
     IndigoLogger.info("Starting Indigo")
+
+    PlatformWindow.windowSetup(config) // haha doesn't work :(
 
     // Arrange config
     configAsync.map(_.getOrElse(config)).foreach { gameConfig =>

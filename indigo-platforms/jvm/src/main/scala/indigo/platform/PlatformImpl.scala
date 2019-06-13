@@ -17,6 +17,7 @@ import indigo.shared.platform.AssetMapping
 import indigo.shared.platform.TextureRefAndOffset
 // import indigo.platform.events.WorldEvents
 import indigo.platform.assets.AssetCollection
+import indigo.shared.IndigoLogger
 // import indigo.platform.assets.TextureAtlas
 // import indigo.platform.assets.TextureAtlasFunctions
 // import indigo.platform.assets.ImageRef
@@ -30,6 +31,11 @@ class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEv
 
   // import PlatformImpl._
 
+  def windowSetup(gameConfig: GameConfig): Unit = {
+    IndigoLogger.info("Running experimental LWJGL startup...")
+    Experiment.run(gameConfig)
+  }
+
   def initialiseRenderer(gameConfig: GameConfig): GameContext[(Renderer, AssetMapping)] =
     GameContext.delay({
       println(gameConfig.magnification.toString)
@@ -38,29 +44,31 @@ class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEv
 
       val renderer: Renderer =
         new Renderer {
-          def init(): Unit = ()
+          def init(): Unit                                                = ()
           def drawScene(displayable: Displayable, metrics: Metrics): Unit = ()
         }
 
       val assetMapping: AssetMapping =
         new AssetMapping(Map.empty[String, TextureRefAndOffset])
 
+      // println("Running experimental LWJGL startup...")
+      // Experiment.run()
+
       (renderer, assetMapping)
     })
-    // for {
-    //   textureAtlas        <- createTextureAtlas(assetCollection)
-    //   loadedTextureAssets <- extractLoadedTextures(textureAtlas)
-    //   assetMapping        <- setupAssetMapping(textureAtlas)
-    //   canvas              <- createCanvas(gameConfig)
-    //   _                   <- listenToWorldEvents(canvas, gameConfig.magnification, globalEventStream)
-    //   renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas)
-    // } yield (renderer, assetMapping)
+  // for {
+  //   textureAtlas        <- createTextureAtlas(assetCollection)
+  //   loadedTextureAssets <- extractLoadedTextures(textureAtlas)
+  //   assetMapping        <- setupAssetMapping(textureAtlas)
+  //   canvas              <- createCanvas(gameConfig)
+  //   _                   <- listenToWorldEvents(canvas, gameConfig.magnification, globalEventStream)
+  //   renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas)
+  // } yield (renderer, assetMapping)
 
   // @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-  def tick(loop: Long => Unit): Unit = {
+  def tick(loop: Long => Unit): Unit =
     // dom.window.requestAnimationFrame(t => loop(t.toLong))
     loop(0)
-  }
 
 }
 
