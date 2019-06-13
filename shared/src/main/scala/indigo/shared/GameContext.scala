@@ -23,9 +23,6 @@ sealed trait GameContext[+A] {
         false
     }
 
-  def recover[B >: A](default: GameContext[B]): GameContext[B] =
-    cata(a => this.pure(a), default)
-
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   def unsafeRun(): A =
     this match {
@@ -47,50 +44,13 @@ sealed trait GameContext[+A] {
         Left[Throwable, A](t)
     }
 
-  def cata[B](f: A => B, default: B): B =
-    this match {
-      case GameContext.Pure(a) =>
-        f(a)
+  def map[B](f: A => B): GameContext[B]
 
-      case GameContext.Delay(thunk) =>
-        try {
-          f(thunk())
-        } catch {
-          case _: Throwable =>
-            default
-        }
+  def flatMap[B](f: A => GameContext[B]): GameContext[B]
 
-      case GameContext.RaiseError(_) =>
-        default
-    }
+  def flatten[B](implicit ev: A <:< GameContext[B]): GameContext[B]
 
-  def map[B](f: A => B): GameContext[B] =
-    this match {
-      case GameContext.RaiseError(e) =>
-        cata(x => pure[B](f(x)), GameContext.raiseError[B](e))
-
-      case _ =>
-        cata(x => pure[B](f(x)), GameContext.raiseError[B](new Exception("Invalid map of an IIO.")))
-    }
-
-  def flatMap[B](f: A => GameContext[B]): GameContext[B] =
-    this match {
-      case GameContext.RaiseError(e) =>
-        cata(x => f(x), GameContext.raiseError[B](e))
-
-      case _ =>
-        cata(x => f(x), GameContext.raiseError[B](new Exception("Invalid flatMap of an IIO.")))
-    }
-
-  def flatten[B](implicit ev: A <:< GameContext[B]): GameContext[B] =
-    this match {
-      case GameContext.RaiseError(e) =>
-        cata(x => ev(x), GameContext.raiseError[B](e))
-
-      case _ =>
-        cata(x => ev(x), GameContext.raiseError[B](new Exception("Invalid flatten of an IIO.")))
-    }
-
+  def recover[B >: A](value: GameContext[B]): GameContext[B]
 }
 
 object GameContext {
@@ -116,9 +76,77 @@ object GameContext {
         false
     }
 
-  final case class Pure[A](a: A)               extends GameContext[A]
-  final case class Delay[A](thunk: () => A)    extends GameContext[A]
-  final case class RaiseError[A](e: Throwable) extends GameContext[A]
+  final case class Pure[A](a: A) extends GameContext[A] {
+    def map[B](f: A => B): GameContext[B] =
+      try {
+        Pure(f(a))
+      } catch {
+        case e: Throwable =>
+          RaiseError[B](e)
+      }
+
+    def flatMap[B](f: A => GameContext[B]): GameContext[B] =
+      try {
+        f(a)
+      } catch {
+        case e: Throwable =>
+          RaiseError[B](e)
+      }
+
+    def flatten[B](implicit ev: A <:< GameContext[B]): GameContext[B] =
+      ev(a)
+
+    def recover[B >: A](value: GameContext[B]): GameContext[B] =
+      this
+  }
+
+  final case class Delay[A](thunk: () => A) extends GameContext[A] {
+    def map[B](f: A => B): GameContext[B] =
+      try {
+        Delay(() => f(thunk()))
+      } catch {
+        case e: Throwable =>
+          RaiseError[B](e)
+      }
+
+    def flatMap[B](f: A => GameContext[B]): GameContext[B] =
+      try {
+        f(thunk())
+      } catch {
+        case e: Throwable =>
+          RaiseError[B](e)
+      }
+
+    def flatten[B](implicit ev: A <:< GameContext[B]): GameContext[B] =
+      try {
+        ev(thunk())
+      } catch {
+        case e: Throwable =>
+          RaiseError[B](e)
+      }
+
+    def recover[B >: A](value: GameContext[B]): GameContext[B] =
+      try {
+        Delay(() => thunk())
+      } catch {
+        case _: Throwable =>
+          value
+      }
+  }
+
+  final case class RaiseError[A](e: Throwable) extends GameContext[A] {
+    def map[B](f: A => B): GameContext[B] =
+      RaiseError[B](e)
+
+    def flatMap[B](f: A => GameContext[B]): GameContext[B] =
+      RaiseError[B](e)
+
+    def flatten[B](implicit ev: A <:< GameContext[B]): GameContext[B] =
+      RaiseError[B](e)
+
+    def recover[B >: A](value: GameContext[B]): GameContext[B] =
+      value
+  }
 
   def apply[A](a: => A): GameContext[A] =
     pure(a)
