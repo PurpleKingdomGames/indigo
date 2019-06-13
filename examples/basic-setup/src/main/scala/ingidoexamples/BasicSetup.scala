@@ -5,15 +5,21 @@ import indigoexts.entrypoint._
 
 object BasicSetup extends IndigoGameBasic[MyStartUpData, MyGameModel, MyViewModel] {
 
-  val config: GameConfig = defaultGameConfig
+  val config: GameConfig =
+    defaultGameConfig
+      .withClearColor(ClearColor.fromHexString("0xAA191E"))
 
-  val assets: Set[AssetType] = Set()
+  val assets: Set[AssetType] =
+    Set()
 
-  val fonts: Set[FontInfo] = Set()
+  val fonts: Set[FontInfo] =
+    Set()
 
-  val animations: Set[Animation] = Set()
+  val animations: Set[Animation] =
+    Set()
 
-  val subSystems: Set[SubSystem] = Set()
+  val subSystems: Set[SubSystem] =
+    Set()
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, MyStartUpData] =
     Startup.Success(MyStartUpData())
