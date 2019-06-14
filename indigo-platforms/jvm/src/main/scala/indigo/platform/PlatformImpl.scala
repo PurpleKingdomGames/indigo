@@ -45,24 +45,21 @@ class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEv
       val assetMapping: AssetMapping =
         new AssetMapping(Map.empty[String, TextureRefAndOffset])
 
-      // println("Running experimental LWJGL startup...")
-      // Experiment.run()
+      // for {
+      //   textureAtlas        <- createTextureAtlas(assetCollection)
+      //   loadedTextureAssets <- extractLoadedTextures(textureAtlas)
+      //   assetMapping        <- setupAssetMapping(textureAtlas)
+      //   canvas              <- createCanvas(gameConfig)
+      //   _                   <- listenToWorldEvents(canvas, gameConfig.magnification, globalEventStream)
+      //   renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas)
+      // } yield (renderer, assetMapping)
 
       (renderer, assetMapping)
     })
-  // for {
-  //   textureAtlas        <- createTextureAtlas(assetCollection)
-  //   loadedTextureAssets <- extractLoadedTextures(textureAtlas)
-  //   assetMapping        <- setupAssetMapping(textureAtlas)
-  //   canvas              <- createCanvas(gameConfig)
-  //   _                   <- listenToWorldEvents(canvas, gameConfig.magnification, globalEventStream)
-  //   renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas)
-  // } yield (renderer, assetMapping)
 
-  // @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def tick(loop: Long => Unit): Unit =
-    // dom.window.requestAnimationFrame(t => loop(t.toLong))
-    loop(0)
+    IndigoJVMStartup.requestAnimationFrame(t => loop(t.toLong))
 
 }
 

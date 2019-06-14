@@ -11,10 +11,14 @@ import indigo.shared.config.GameConfig
   Array(
     "org.wartremover.warts.NonUnitStatements",
     "org.wartremover.warts.Null",
-    "org.wartremover.warts.While"
+    "org.wartremover.warts.While",
+    "org.wartremover.warts.Var"
   )
 )
 final class IndigoJVMStartup {
+
+  val startTime: Long =
+    System.currentTimeMillis()
 
   val windowInstance: WindowOpenGL =
     new WindowOpenGL
@@ -43,10 +47,40 @@ final class IndigoJVMStartup {
     while (!glfwWindowShouldClose(windowInstance.window)) {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
+      IndigoJVMStartup.fetchCallback() match {
+        case Some(loop) =>
+          loop(System.currentTimeMillis() - startTime)
+          IndigoJVMStartup.resetCallback()
+
+        case None =>
+          ()
+      }
+
       glfwSwapBuffers(windowInstance.window)
 
       glfwPollEvents()
     }
   }
+
+}
+
+@SuppressWarnings(
+  Array(
+    "org.wartremover.warts.Var"
+  )
+)
+object IndigoJVMStartup {
+
+  private var currentFrameCallback: Option[Long => Unit] =
+    None
+
+  def requestAnimationFrame(loop: Long => Unit): Unit =
+    currentFrameCallback = Some(loop)
+
+  def fetchCallback(): Option[Long => Unit] =
+    currentFrameCallback
+
+  def resetCallback(): Unit =
+    currentFrameCallback = None
 
 }
