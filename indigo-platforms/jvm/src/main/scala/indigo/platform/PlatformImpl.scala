@@ -17,7 +17,6 @@ import indigo.shared.platform.AssetMapping
 import indigo.shared.platform.TextureRefAndOffset
 // import indigo.platform.events.WorldEvents
 import indigo.platform.assets.AssetCollection
-import indigo.shared.IndigoLogger
 // import indigo.platform.assets.TextureAtlas
 // import indigo.platform.assets.TextureAtlasFunctions
 // import indigo.platform.assets.ImageRef
@@ -30,11 +29,6 @@ import indigo.shared.IndigoLogger
 class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEventStream) extends Platform {
 
   // import PlatformImpl._
-
-  def windowSetup(gameConfig: GameConfig): Unit = {
-    IndigoLogger.info("Running experimental LWJGL startup...")
-    Experiment.run(gameConfig)
-  }
 
   def initialiseRenderer(gameConfig: GameConfig): GameContext[(Renderer, AssetMapping)] =
     GameContext.delay({
