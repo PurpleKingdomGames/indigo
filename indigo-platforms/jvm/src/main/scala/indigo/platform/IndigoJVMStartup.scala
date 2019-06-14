@@ -45,18 +45,18 @@ final class IndigoJVMStartup {
     )
 
     while (!glfwWindowShouldClose(windowInstance.window)) {
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-
       IndigoJVMStartup.fetchCallback() match {
-        case Some(loop) =>
-          loop(System.currentTimeMillis() - startTime)
+        case Some(loopCallback) =>
+          glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+          loopCallback(System.currentTimeMillis() - startTime)
           IndigoJVMStartup.resetCallback()
+
+          glfwSwapBuffers(windowInstance.window)
 
         case None =>
           ()
       }
-
-      glfwSwapBuffers(windowInstance.window)
 
       glfwPollEvents()
     }
