@@ -12,6 +12,8 @@ import scala.scalajs.js.typedarray.Float32Array
 
 object RendererFunctions {
 
+  import indigo.platform.shaders._
+
   def createVertexBuffer(gl: raw.WebGLRenderingContext): WebGLBuffer =
     gl.createBuffer()
 
@@ -25,26 +27,9 @@ object RendererFunctions {
 
   @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
   def shaderProgramSetup(gl: raw.WebGLRenderingContext): WebGLProgram = {
+
     //vertex shader source code
-    val vertCode =
-      """
-        |attribute vec4 coordinates;
-        |attribute vec2 a_texcoord;
-        |attribute vec4 a_effectValues;
-        |
-        |uniform mat4 u_matrix;
-        |
-        |varying vec2 v_texcoord;
-        |varying vec4 v_effectValues;
-        |
-        |void main(void) {
-        |  gl_Position = u_matrix * coordinates;
-        |
-        |  // Pass the texcoord to the fragment shader.
-        |  v_texcoord = a_texcoord;
-        |  v_effectValues = a_effectValues;
-        |}
-      """.stripMargin
+    val vertCode = StandardPixelArtVert.shader
 
     //Create a vertex shader program object and compile it
     val vertShader = gl.createShader(VERTEX_SHADER)
@@ -54,22 +39,7 @@ object RendererFunctions {
     IndigoLogger.info("Pixel vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
 
     //fragment shader source code
-    val fragCode =
-      """
-        |precision mediump float;
-        |
-        |// Passed in from the vertex shader.
-        |varying vec2 v_texcoord;
-        |varying vec4 v_effectValues;
-        |
-        |// The texture.
-        |uniform sampler2D u_texture;
-        |
-        |void main(void) {
-        |   vec4 textureColor = texture2D(u_texture, v_texcoord);
-        |   gl_FragColor = textureColor * v_effectValues;
-        |}
-      """.stripMargin
+    val fragCode = StandardPixelArtFrag.shader
 
     //Create a fragment shader program object and compile it
     val fragShader = gl.createShader(FRAGMENT_SHADER)
@@ -90,25 +60,7 @@ object RendererFunctions {
   @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
   def lightingShaderProgramSetup(gl: raw.WebGLRenderingContext): WebGLProgram = {
     //vertex shader source code
-    val vertCode =
-      """
-        |attribute vec4 coordinates;
-        |attribute vec2 a_texcoord;
-        |attribute vec4 a_effectValues;
-        |
-        |uniform mat4 u_matrix;
-        |
-        |varying vec2 v_texcoord;
-        |varying vec4 v_effectValues;
-        |
-        |void main(void) {
-        |  gl_Position = u_matrix * coordinates;
-        |
-        |  // Pass the texcoord to the fragment shader.
-        |  v_texcoord = a_texcoord;
-        |  v_effectValues = a_effectValues;
-        |}
-      """.stripMargin
+    val vertCode = StandardLightingPixelArtVert.shader
 
     //Create a vertex shader program object and compile it
     val vertShader = gl.createShader(VERTEX_SHADER)
@@ -118,25 +70,7 @@ object RendererFunctions {
     IndigoLogger.info("Light vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
 
     //fragment shader source code
-    val fragCode =
-      """
-        |precision mediump float;
-        |
-        |// Passed in from the vertex shader.
-        |varying vec2 v_texcoord;
-        |varying vec4 v_effectValues;
-        |
-        |// The texture.
-        |uniform sampler2D u_texture;
-        |
-        |void main(void) {
-        |   vec4 textureColor = texture2D(u_texture, v_texcoord);
-        |
-        |   float average = (textureColor.r + textureColor.g + textureColor.b) / float(3);
-        |
-        |   gl_FragColor = vec4(textureColor.rgb * v_effectValues.rgb, average * v_effectValues.a);
-        |}
-      """.stripMargin
+    val fragCode = StandardLightingPixelArtFrag.shader
 
     //Create a fragment shader program object and compile it
     val fragShader = gl.createShader(FRAGMENT_SHADER)
@@ -157,25 +91,7 @@ object RendererFunctions {
   @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
   def mergeShaderProgramSetup(gl: raw.WebGLRenderingContext): WebGLProgram = {
     //vertex shader source code
-    val vertCode =
-      """
-        |attribute vec4 coordinates;
-        |attribute vec2 a_texcoord;
-        |attribute vec4 a_effectValues;
-        |
-        |uniform mat4 u_matrix;
-        |
-        |varying vec2 v_texcoord;
-        |varying vec4 v_effectValues;
-        |
-        |void main(void) {
-        |  gl_Position = u_matrix * coordinates;
-        |
-        |  // Pass the texcoord to the fragment shader.
-        |  v_texcoord = a_texcoord;
-        |  v_effectValues = a_effectValues;
-        |}
-      """.stripMargin
+    val vertCode = StandardMergeVert.shader
 
     //Create a vertex shader program object and compile it
     val vertShader = gl.createShader(VERTEX_SHADER)
@@ -186,29 +102,7 @@ object RendererFunctions {
 
     //fragment shader source code
 
-    val fragCode =
-      """
-        |precision mediump float;
-        |
-        |// Passed in from the vertex shader.
-        |varying vec2 v_texcoord;
-        |varying vec4 v_effectValues;
-        |
-        |// The textures.
-        |uniform sampler2D u_texture_game;
-        |uniform sampler2D u_texture_lighting;
-        |uniform sampler2D u_texture_ui;
-        |
-        |void main(void) {
-        |   vec4 textureColorGame = texture2D(u_texture_game, v_texcoord);
-        |   vec4 textureColorLighting = texture2D(u_texture_lighting, v_texcoord);
-        |   vec4 textureColorUi = texture2D(u_texture_ui, v_texcoord);
-        |
-        |   vec4 gameAndLighting = textureColorGame * textureColorLighting;
-        |
-        |   gl_FragColor = mix(gameAndLighting, textureColorUi, textureColorUi.a);
-        |}
-      """.stripMargin
+    val fragCode = StandardMergeFrag.shader
 
     //Create a fragment shader program object and compile it
     val fragShader = gl.createShader(FRAGMENT_SHADER)

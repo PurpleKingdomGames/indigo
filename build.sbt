@@ -442,6 +442,17 @@ lazy val indigoPlatforms =
         "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
       )
     )
+    .settings(
+      sourceGenerators in Compile += Def.task {
+        val cachedFun = FileFunction.cached(
+          streams.value.cacheDirectory / "shaders"
+        ) { (files: Set[File]) =>
+          ShaderGen.makeShader(files, (sourceManaged in Compile).value).toSet
+        }
+
+        cachedFun(IO.listFiles((baseDirectory.value / "shaders")).toSet).toSeq
+      }.taskValue
+    )
     .jsSettings(
       libraryDependencies ++= Seq(
         "org.scala-js" %%% "scalajs-dom" % "0.9.7"
