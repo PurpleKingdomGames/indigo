@@ -66,65 +66,13 @@ object DisplayObjectConversions {
 
   def leafToDisplayObject(gameTime: GameTime, assetMapping: AssetMapping, metrics: Metrics): Renderable => List[DisplayObject] = {
     case leaf: Graphic =>
-      List(
-        DisplayObject(
-          x = leaf.x,
-          y = leaf.y,
-          z = leaf.depth.zIndex,
-          width = leaf.crop.size.x,
-          height = leaf.crop.size.y,
-          imageRef = lookupAtlasName(assetMapping, leaf.imageAssetRef),
-          alpha = leaf.effects.alpha,
-          tintR = leaf.effects.tint.r,
-          tintG = leaf.effects.tint.g,
-          tintB = leaf.effects.tint.b,
-          flipHorizontal = leaf.effects.flip.horizontal,
-          flipVertical = leaf.effects.flip.vertical,
-          frame = frameOffsetsCache.getOrElseUpdate(
-            s"${leaf.crop.hash}_${leaf.imageAssetRef}", {
-              SpriteSheetFrame.calculateFrameOffset(
-                imageSize = lookupAtlasSize(assetMapping, leaf.imageAssetRef),
-                frameSize = Vector2(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble),
-                framePosition = Vector2(leaf.crop.position.x.toDouble, leaf.crop.position.y.toDouble),
-                textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
-              )
-            }
-          )
-        )
-      )
+      List(graphicToDisplayObject(leaf, assetMapping))
 
     case leaf: Sprite =>
-      val animations: Option[Animation] =
-        AnimationsRegister.fetchFromCache(gameTime, leaf.bindingKey, leaf.animationsKey, metrics)
-
-      animations
+      AnimationsRegister
+        .fetchFromCache(gameTime, leaf.bindingKey, leaf.animationsKey, metrics)
         .map { anim =>
-          List(
-            DisplayObject(
-              x = leaf.x,
-              y = leaf.y,
-              z = leaf.depth.zIndex,
-              width = leaf.bounds.size.x,
-              height = leaf.bounds.size.y,
-              imageRef = lookupAtlasName(assetMapping, anim.imageAssetRef.ref),
-              alpha = leaf.effects.alpha,
-              tintR = leaf.effects.tint.r,
-              tintG = leaf.effects.tint.g,
-              tintB = leaf.effects.tint.b,
-              flipHorizontal = leaf.effects.flip.horizontal,
-              flipVertical = leaf.effects.flip.vertical,
-              frame = frameOffsetsCache.getOrElseUpdate(
-                anim.frameHash, {
-                  SpriteSheetFrame.calculateFrameOffset(
-                    imageSize = lookupAtlasSize(assetMapping, anim.imageAssetRef.ref),
-                    frameSize = Vector2(anim.currentFrame.bounds.size.x.toDouble, anim.currentFrame.bounds.size.y.toDouble),
-                    framePosition = Vector2(anim.currentFrame.bounds.position.x.toDouble, anim.currentFrame.bounds.position.y.toDouble),
-                    textureOffset = lookupTextureOffset(assetMapping, anim.imageAssetRef.ref)
-                  )
-                }
-              )
-            )
-          )
+          List(spriteToDisplayObjects(leaf, assetMapping, anim))
         }
         .getOrElse {
           IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${leaf.animationsKey}")
@@ -151,6 +99,58 @@ object DisplayObjectConversions {
         ._2
 
   }
+
+  def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject =
+    DisplayObject(
+      x = leaf.x,
+      y = leaf.y,
+      z = leaf.depth.zIndex,
+      width = leaf.crop.size.x,
+      height = leaf.crop.size.y,
+      imageRef = lookupAtlasName(assetMapping, leaf.imageAssetRef),
+      alpha = leaf.effects.alpha,
+      tintR = leaf.effects.tint.r,
+      tintG = leaf.effects.tint.g,
+      tintB = leaf.effects.tint.b,
+      flipHorizontal = leaf.effects.flip.horizontal,
+      flipVertical = leaf.effects.flip.vertical,
+      frame = frameOffsetsCache.getOrElseUpdate(
+        s"${leaf.crop.hash}_${leaf.imageAssetRef}", {
+          SpriteSheetFrame.calculateFrameOffset(
+            imageSize = lookupAtlasSize(assetMapping, leaf.imageAssetRef),
+            frameSize = Vector2(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble),
+            framePosition = Vector2(leaf.crop.position.x.toDouble, leaf.crop.position.y.toDouble),
+            textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
+          )
+        }
+      )
+    )
+
+  def spriteToDisplayObjects(leaf: Sprite, assetMapping: AssetMapping, anim: Animation): DisplayObject =
+    DisplayObject(
+      x = leaf.x,
+      y = leaf.y,
+      z = leaf.depth.zIndex,
+      width = leaf.bounds.size.x,
+      height = leaf.bounds.size.y,
+      imageRef = lookupAtlasName(assetMapping, anim.imageAssetRef.ref),
+      alpha = leaf.effects.alpha,
+      tintR = leaf.effects.tint.r,
+      tintG = leaf.effects.tint.g,
+      tintB = leaf.effects.tint.b,
+      flipHorizontal = leaf.effects.flip.horizontal,
+      flipVertical = leaf.effects.flip.vertical,
+      frame = frameOffsetsCache.getOrElseUpdate(
+        anim.frameHash, {
+          SpriteSheetFrame.calculateFrameOffset(
+            imageSize = lookupAtlasSize(assetMapping, anim.imageAssetRef.ref),
+            frameSize = Vector2(anim.currentFrame.bounds.size.x.toDouble, anim.currentFrame.bounds.size.y.toDouble),
+            framePosition = Vector2(anim.currentFrame.bounds.position.x.toDouble, anim.currentFrame.bounds.position.y.toDouble),
+            textureOffset = lookupTextureOffset(assetMapping, anim.imageAssetRef.ref)
+          )
+        }
+      )
+    )
 
   def textLineToDisplayObjects(leaf: Text, assetMapping: AssetMapping): (TextLine, Int, Int) => List[DisplayObject] =
     (line, alignmentOffsetX, yOffset) =>
