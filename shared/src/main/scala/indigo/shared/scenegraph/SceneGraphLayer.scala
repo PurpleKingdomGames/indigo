@@ -2,20 +2,18 @@ package indigo.shared.scenegraph
 
 import indigo.shared.events.GlobalEvent
 
-final class SceneGraphLayer(val nodes: List[SceneGraphNode]) extends AnyVal {
-
-  def flatten: SceneGraphLayerFlat =
-    new SceneGraphLayerFlat(nodes.flatMap(_.flatten))
-
-}
+final class SceneGraphLayer(val nodes: List[SceneGraphNode]) extends AnyVal
 object SceneGraphLayer {
   val empty: SceneGraphLayer =
     new SceneGraphLayer(Nil)
-}
 
-final class SceneGraphLayerFlat(val nodes: List[Renderable]) extends AnyVal {
+  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+  def collectViewEvents(nodes: List[SceneGraphNode], gameEvents: List[GlobalEvent]): List[GlobalEvent] =
+    nodes.flatMap {
+      case group: Group =>
+        collectViewEvents(group.children, gameEvents)
 
-  def collectViewEvents(gameEvents: List[GlobalEvent]): List[GlobalEvent] =
-    nodes.flatMap(n => gameEvents.flatMap(e => n.eventHandlerWithBoundsApplied(e).toList))
-
+      case n: Renderable =>
+        gameEvents.flatMap(e => n.eventHandlerWithBoundsApplied(e).toList)
+    }
 }

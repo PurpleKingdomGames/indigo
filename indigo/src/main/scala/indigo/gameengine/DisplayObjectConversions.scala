@@ -13,12 +13,14 @@ import indigo.shared.FontRegister
 
 import indigo.shared.platform.AssetMapping
 
-import indigo.shared.scenegraph.{Renderable, Graphic, Sprite, Text, TextLine}
+import indigo.shared.scenegraph.{Graphic, Sprite, Text, TextLine}
 
 import scala.annotation.tailrec
 import scala.collection.mutable
 
 import indigo.shared.EqualTo._
+import indigo.shared.scenegraph.SceneGraphNode
+import indigo.shared.scenegraph.Group
 
 object DisplayObjectConversions {
 
@@ -64,7 +66,13 @@ object DisplayObjectConversions {
       }
     )
 
-  def leafToDisplayObject(gameTime: GameTime, assetMapping: AssetMapping, metrics: Metrics): Renderable => List[DisplayObject] = {
+  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+  def leafToDisplayObject(gameTime: GameTime, assetMapping: AssetMapping, metrics: Metrics): SceneGraphNode => List[DisplayObject] = {
+    case g: Group =>
+      g.children
+        .map(c => c.withDepth(c.depth + g.depth).moveBy(g.positionOffset))
+        .flatMap(leafToDisplayObject(gameTime, assetMapping, metrics))
+
     case leaf: Graphic =>
       List(graphicToDisplayObject(leaf, assetMapping))
 

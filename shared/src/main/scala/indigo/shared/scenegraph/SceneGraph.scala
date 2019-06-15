@@ -22,22 +22,7 @@ sealed trait SceneGraphNode {
   def moveTo(x: Int, y: Int): SceneGraphNode
   def moveBy(pt: Point): SceneGraphNode
   def moveBy(x: Int, y: Int): SceneGraphNode
-
-  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
-  def flatten: List[Renderable] = {
-    def rec(acc: List[Renderable]): List[Renderable] =
-      this match {
-        case l: Renderable =>
-          l :: acc
-
-        case b: Group =>
-          b.children
-            .map(c => c.withDepth(c.depth + b.depth).moveBy(b.positionOffset))
-            .flatMap(n => n.flatten) ++ acc
-      }
-
-    rec(Nil)
-  }
+  
 }
 
 final class Group(val positionOffset: Point, val depth: Depth, val children: List[SceneGraphNode]) extends SceneGraphNode {

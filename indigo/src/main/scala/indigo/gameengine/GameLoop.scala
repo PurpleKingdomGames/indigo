@@ -2,7 +2,7 @@ package indigo.gameengine
 
 import indigo.shared.events._
 import indigo.shared.datatypes.AmbientLight
-import indigo.shared.scenegraph.{SceneAudio, SceneGraphRootNode, SceneGraphRootNodeFlat, SceneUpdateFragment}
+import indigo.shared.scenegraph.{SceneAudio, SceneGraphRootNode, SceneUpdateFragment}
 import indigo.shared.GameContext
 import indigo.shared.metrics._
 import indigo.shared.config.GameConfig
@@ -20,6 +20,7 @@ import indigo.shared.platform.GlobalEventStream
 import indigo.shared.platform.GlobalSignals
 
 import scala.annotation.tailrec
+import indigo.shared.scenegraph.SceneGraphLayer
 
 class GameLoop[GameModel, ViewModel](
     gameConfig: GameConfig,
@@ -157,23 +158,22 @@ object GameLoop {
     view
   }
 
-  def processUpdatedView(view: SceneUpdateFragment, collectedEvents: List[GlobalEvent], metrics: Metrics, globalEventStream: GlobalEventStream): GameContext[SceneGraphRootNodeFlat] =
+  def processUpdatedView(view: SceneUpdateFragment, collectedEvents: List[GlobalEvent], metrics: Metrics, globalEventStream: GlobalEventStream): GameContext[SceneGraphRootNode] =
     GameContext.delay {
       metrics.record(ProcessViewStartMetric)
 
-      val processUpdatedView: SceneUpdateFragment => SceneGraphRootNodeFlat =
+      val processUpdatedView: SceneUpdateFragment => SceneGraphRootNode =
         GameLoop.persistGlobalViewEvents(metrics, globalEventStream) andThen
-          GameLoop.flattenNodes andThen
           GameLoop.persistNodeViewEvents(collectedEvents, metrics, globalEventStream)
 
-      val processedView: SceneGraphRootNodeFlat = processUpdatedView(view)
+      val processedView: SceneGraphRootNode = processUpdatedView(view)
 
       metrics.record(ProcessViewEndMetric)
 
       processedView
     }
 
-  def viewToDisplayable(gameTime: GameTime, processedView: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight, metrics: Metrics): GameContext[Displayable] =
+  def viewToDisplayable(gameTime: GameTime, processedView: SceneGraphRootNode, assetMapping: AssetMapping, ambientLight: AmbientLight, metrics: Metrics): GameContext[Displayable] =
     GameContext.delay {
       metrics.record(ToDisplayableStartMetric)
 
@@ -227,16 +227,16 @@ object GameLoop {
     SceneGraphRootNode.fromFragment(update)
   }
 
-  val flattenNodes: SceneGraphRootNode => SceneGraphRootNodeFlat = root => root.flatten
-
-  def persistNodeViewEvents(gameEvents: List[GlobalEvent], metrics: Metrics, globalEventStream: GlobalEventStream): SceneGraphRootNodeFlat => SceneGraphRootNodeFlat = rootNode => {
+  def persistNodeViewEvents(gameEvents: List[GlobalEvent], metrics: Metrics, globalEventStream: GlobalEventStream): SceneGraphRootNode => SceneGraphRootNode = rootNode => {
     metrics.record(PersistNodeViewEventsStartMetric)
-    rootNode.collectViewEvents(gameEvents).foreach(globalEventStream.pushGlobalEvent)
+    SceneGraphLayer.collectViewEvents(rootNode.game.nodes, gameEvents).foreach(globalEventStream.pushGlobalEvent)
+    SceneGraphLayer.collectViewEvents(rootNode.lighting.nodes, gameEvents).foreach(globalEventStream.pushGlobalEvent)
+    SceneGraphLayer.collectViewEvents(rootNode.ui.nodes, gameEvents).foreach(globalEventStream.pushGlobalEvent)
     metrics.record(PersistNodeViewEventsEndMetric)
     rootNode
   }
 
-  def convertSceneGraphToDisplayable(gameTime: GameTime, rootNode: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight, metrics: Metrics): Displayable =
+  def convertSceneGraphToDisplayable(gameTime: GameTime, rootNode: SceneGraphRootNode, assetMapping: AssetMapping, ambientLight: AmbientLight, metrics: Metrics): Displayable =
     Displayable(
       rootNode.game.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping, metrics)),
       rootNode.lighting.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping, metrics)),

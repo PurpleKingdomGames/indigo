@@ -32,19 +32,21 @@ object GraphicExample extends IndigoGameBasic[Unit, Unit, Unit] {
   def present(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
-        Graphic(0, 0, 256, 256, 1, "graphics")
-          .withRef(48, 48)
-          .withCrop(128, 0, 96, 96)
-          .moveTo(137 * 1, 200),
-        Graphic(0, 0, 256, 256, 1, "graphics")
-          .withRef(48, 48)
-          .withCrop(128, 0, 96, 96)
-          .moveTo(137 * 2, 200)
-          .rotate(Radians(Math.PI / 2)),
-        Graphic(0, 0, 256, 256, 1, "graphics")
-          .withRef(48, 48)
-          .withCrop(128, 0, 96, 96)
-          .moveTo(137 * 3, 200)
-          .scaleBy(0.5, 0.5)
+        Group(
+          Graphic(0, 0, 256, 256, 1, "graphics")
+            .withRef(48, 48)
+            .withCrop(128, 0, 96, 96)
+            .moveTo(137 * 1, 0),
+          Graphic(0, 0, 256, 256, 1, "graphics")
+            .withRef(48, 48)
+            .withCrop(128, 0, 96, 96)
+            .moveTo(137 * 2, 0)
+            .rotate(Radians(Math.PI / 2)),
+          Graphic(0, 0, 256, 256, 1, "graphics")
+            .withRef(48, 48)
+            .withCrop(128, 0, 96, 96)
+            .moveTo(137 * 3, 0)
+            .scaleBy(0.5, 0.5)
+        ).moveBy(0, 200)
       )
 }
