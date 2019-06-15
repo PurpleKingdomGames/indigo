@@ -13,13 +13,10 @@ final class Matrix4(val mat: List[Double]) {
   def identity: Matrix4 = Matrix4.identity
 
   def translate(tx: Double, ty: Double, tz: Double): Matrix4 =
-    Matrix4.multiply(this, Matrix4.translation(tx, ty, tz))
+    this * Matrix4.translation(tx, ty, tz)
 
-  def xRotate(angleInRadians: Double): Matrix4 = this * Matrix4.xRotation(angleInRadians)
-
-  def yRotate(angleInRadians: Double): Matrix4 = this * Matrix4.yRotation(angleInRadians)
-
-  def zRotate(angleInRadians: Double): Matrix4 = this * Matrix4.zRotation(angleInRadians)
+  def rotate(angleInRadians: Double): Matrix4 =
+    this * Matrix4.zRotation(angleInRadians)
 
   def scale(sx: Double, sy: Double, sz: Double): Matrix4 = this * Matrix4.scale(sx, sy, sz)
 

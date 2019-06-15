@@ -9,16 +9,18 @@ object Matrix4Tests extends TestSuite {
 
   val tests: Tests =
     Tests {
-      "Translation" - {
 
-        /*
-      val expected: List[Double] = List(
-        1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1
-      )
-         */
+      "Identity" - {
+
+        val expected: List[Double] = List(
+          1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
+        )
+
+        Matrix4.identity.mat === expected ==> true
+
+      }
+
+      "Translation" - {
 
         "should be able to translate in the X direction" - {
 
@@ -30,6 +32,66 @@ object Matrix4Tests extends TestSuite {
 
         }
 
+        "should be able to translate in the Y direction" - {
+
+          val expected: List[Double] = List(
+            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 2, 0, 1
+          )
+
+          Matrix4.identity.translate(0, 2.0, 0).mat === expected ==> true
+
+        }
+
+        "should be able to translate in the Z direction" - {
+
+          val expected: List[Double] = List(
+            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 2, 1
+          )
+
+          Matrix4.identity.translate(0, 0, 2.0).mat === expected ==> true
+
+        }
+
+      }
+
+      "Rotation" - {
+
+        val s = Math.sin(Math.PI)
+        val c = Math.cos(Math.PI)
+
+        val expected: List[Double] = List(
+          c,
+          s,
+          0,
+          0,
+          -s,
+          c,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        )
+
+        Matrix4.identity.rotate(Math.PI).mat === expected ==> true
+      }
+
+      "Scale" - {
+
+        "should be able to translate in the X direction" - {
+
+          val expected: List[Double] = List(
+            2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1
+          )
+
+          Matrix4.identity.scale(2.0, 3.0, 4.0).mat === expected ==> true
+
+        }
       }
     }
 
