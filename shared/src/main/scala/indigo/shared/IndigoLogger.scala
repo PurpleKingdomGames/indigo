@@ -16,7 +16,7 @@ object IndigoLogger {
   private val debugLogs: ArrayBuffer[String] = new ArrayBuffer[String]()
 
   private def formatMessage(level: String, message: String): String =
-    s"""[${System.currentTimeMillis()}] [$level] [Indigo] $message"""
+    s"""[$level] [Indigo] $message"""
 
   private val consoleLogString: String => Unit = message => println(message)
 
