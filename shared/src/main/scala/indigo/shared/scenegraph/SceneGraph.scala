@@ -108,6 +108,7 @@ sealed trait Renderable extends SceneGraphNode {
   def rotate(angle: Radians): Renderable
   def rotateBy(angle: Radians): Renderable
 
+  def scaleBy(amount: Vector2): Renderable
   def scaleBy(x: Double, y: Double): Renderable
 
   def withDepth(depth: Depth): Renderable
@@ -154,8 +155,10 @@ final class Graphic(
   def rotateBy(angle: Radians): Renderable =
     rotate(rotation + angle)
 
+  def scaleBy(amount: Vector2): Renderable =
+    Graphic(bounds, depth, rotation, amount, imageAssetRef, ref, crop, effects, eventHandler)
   def scaleBy(x: Double, y: Double): Renderable =
-    Graphic(bounds, depth, rotation, Vector2(x, y), imageAssetRef, ref, crop, effects, eventHandler)
+    scaleBy(Vector2(x, y))
 
   def withDepth(depthValue: Depth): Graphic =
     Graphic(bounds, depthValue, rotation, scale, imageAssetRef, ref, crop, effects, eventHandler)
@@ -275,12 +278,15 @@ final case class Sprite(
   def moveBy(x: Int, y: Int): Sprite =
     moveBy(Point(x, y))
 
-  def rotate(angle: Radians): Renderable = ???
+  def rotate(angle: Radians): Renderable =
+    this.copy(rotation = angle)
   def rotateBy(angle: Radians): Renderable =
     rotate(rotation + angle)
 
+  def scaleBy(amount: Vector2): Renderable =
+    this.copy(scale = amount)
   def scaleBy(x: Double, y: Double): Renderable =
-    this.copy(scale = Vector2(x, y))
+    scaleBy(Vector2(x, y))
 
   def withBindingKey(bindingKey: BindingKey): Sprite =
     this.copy(bindingKey = bindingKey)
@@ -400,12 +406,15 @@ final case class Text(
   def moveBy(x: Int, y: Int): Text =
     moveBy(Point(x, y))
 
-  def rotate(angle: Radians): Renderable = ???
+  def rotate(angle: Radians): Renderable =
+    this.copy(rotation = angle)
   def rotateBy(angle: Radians): Renderable =
     rotate(rotation + angle)
 
+  def scaleBy(amount: Vector2): Renderable =
+    this.copy(scale = amount)
   def scaleBy(x: Double, y: Double): Renderable =
-    this.copy(scale = Vector2(x, y))
+    scaleBy(Vector2(x, y))
 
   def withDepth(depth: Depth): Text =
     this.copy(depth = depth)

@@ -37,6 +37,9 @@ trait DataTypeAliases {
   type Depth = shared.datatypes.Depth
   val Depth: shared.datatypes.Depth.type = shared.datatypes.Depth
 
+  type Radians = shared.datatypes.Radians
+  val Radians: shared.datatypes.Radians.type = shared.datatypes.Radians
+
   type BindingKey = shared.datatypes.BindingKey
   val BindingKey: shared.datatypes.BindingKey.type = shared.datatypes.BindingKey
 

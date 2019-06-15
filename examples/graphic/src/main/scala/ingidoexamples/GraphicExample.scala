@@ -40,11 +40,11 @@ object GraphicExample extends IndigoGameBasic[Unit, Unit, Unit] {
           .withRef(48, 48)
           .withCrop(128, 0, 96, 96)
           .moveTo(137 * 2, 200)
-          .rotate(Math.PI / 2),
+          .rotate(Radians(Math.PI / 2)),
         Graphic(0, 0, 256, 256, 1, "graphics")
           .withRef(48, 48)
           .withCrop(128, 0, 96, 96)
           .moveTo(137 * 3, 200)
-          .scale(0.5, 0.5)
+          .scaleBy(0.5, 0.5)
       )
 }

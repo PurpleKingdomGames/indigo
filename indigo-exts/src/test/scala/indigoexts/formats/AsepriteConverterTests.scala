@@ -163,6 +163,8 @@ object AsepriteSampleData {
       bindingKey = BindingKey("test"),
       bounds = Rectangle(Point(0, 0), Point(64, 64)),
       depth = depth,
+      rotation = Radians.zero,
+      scale = Vector2.one,
       animationsKey = animationsKey,
       ref = Point.zero,
       effects = Effects.default,

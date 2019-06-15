@@ -18,7 +18,7 @@ object CompressedDisplayObject {
   val sortByDepth: List[DisplayObject] => List[DisplayObject] = displayObjects => displayObjects.sortWith((d1, d2) => d1.z > d2.z)
 
   // Entirely for performance reasons
-  def compress: List[DisplayObject] => List[CompressedDisplayObject] = displayObjects => {
+  def compress(displayObjects: List[DisplayObject]): List[CompressedDisplayObject] = {
     @SuppressWarnings(Array("org.wartremover.warts.Var"))
     var imageRef: String = ""
     @SuppressWarnings(Array("org.wartremover.warts.Var"))

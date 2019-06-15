@@ -2,39 +2,39 @@ package indigo.shared.scenegraph
 
 import indigo.shared.events.GlobalEvent
 
-final case class SceneGraphRootNode(game: SceneGraphLayer, lighting: SceneGraphLayer, ui: SceneGraphLayer) {
+final class SceneGraphRootNode(val game: SceneGraphLayer, val lighting: SceneGraphLayer, val ui: SceneGraphLayer) {
 
   def flatten: SceneGraphRootNodeFlat =
-    SceneGraphRootNodeFlat(
+    new SceneGraphRootNodeFlat(
       game.flatten,
       lighting.flatten,
       ui.flatten
     )
 
-  def addLightingLayer(lighting: SceneGraphLayer): SceneGraphRootNode =
-    this.copy(lighting = lighting)
+  def addLightingLayer(lightingLayer: SceneGraphLayer): SceneGraphRootNode =
+    new SceneGraphRootNode(game, lightingLayer, ui)
 
-  def addUiLayer(ui: SceneGraphLayer): SceneGraphRootNode =
-    this.copy(ui = ui)
+  def addUiLayer(uiLayer: SceneGraphLayer): SceneGraphRootNode =
+    new SceneGraphRootNode(game, lighting, uiLayer)
 
 }
 
 object SceneGraphRootNode {
-  def apply(game: SceneGraphLayer): SceneGraphRootNode =
-    SceneGraphRootNode(game, SceneGraphLayer(Nil), SceneGraphLayer(Nil))
+  def apply(game: SceneGraphLayer, lighting: SceneGraphLayer, ui: SceneGraphLayer): SceneGraphRootNode =
+    new SceneGraphRootNode(game, lighting, ui)
 
   def empty: SceneGraphRootNode =
-    SceneGraphRootNode(SceneGraphLayer(Nil), SceneGraphLayer(Nil), SceneGraphLayer(Nil))
+    SceneGraphRootNode(SceneGraphLayer.empty, SceneGraphLayer.empty, SceneGraphLayer.empty)
 
   def fromFragment(sceneUpdateFragment: SceneUpdateFragment): SceneGraphRootNode =
     SceneGraphRootNode(
-      SceneGraphLayer(sceneUpdateFragment.gameLayer),
-      SceneGraphLayer(sceneUpdateFragment.lightingLayer),
-      SceneGraphLayer(sceneUpdateFragment.uiLayer)
+      new SceneGraphLayer(sceneUpdateFragment.gameLayer),
+      new SceneGraphLayer(sceneUpdateFragment.lightingLayer),
+      new SceneGraphLayer(sceneUpdateFragment.uiLayer)
     )
 }
 
-final case class SceneGraphRootNodeFlat(game: SceneGraphLayerFlat, lighting: SceneGraphLayerFlat, ui: SceneGraphLayerFlat) {
+final class SceneGraphRootNodeFlat(val game: SceneGraphLayerFlat, val lighting: SceneGraphLayerFlat, val ui: SceneGraphLayerFlat) {
 
   def collectViewEvents(gameEvents: List[GlobalEvent]): List[GlobalEvent] =
     game.collectViewEvents(gameEvents) ++

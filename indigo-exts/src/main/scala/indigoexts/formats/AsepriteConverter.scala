@@ -37,6 +37,8 @@ object AsepriteConverter {
                 size = Point(x.frames.head.bounds.size.x, x.frames.head.bounds.size.y)
               ),
               depth = depth,
+              rotation = Radians.zero,
+              scale = Vector2.one,
               animationsKey = animations.animationsKey,
               ref = Point(0, 0),
               effects = Effects.default,
