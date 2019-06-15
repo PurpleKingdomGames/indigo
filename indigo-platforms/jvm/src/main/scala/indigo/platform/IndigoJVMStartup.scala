@@ -72,7 +72,7 @@ final class IndigoJVMStartup {
 object IndigoJVMStartup {
 
   private var currentFrameCallback: Option[Long => Unit] =
-    None
+    Some(_ => ()) // Kind of a hack. On first run, a frame that does nothing lets the clear colour be set.
 
   def requestAnimationFrame(loop: Long => Unit): Unit =
     currentFrameCallback = Some(loop)
