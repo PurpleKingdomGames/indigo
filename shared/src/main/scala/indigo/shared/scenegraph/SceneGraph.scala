@@ -96,12 +96,19 @@ sealed trait Renderable extends SceneGraphNode {
 
   def x: Int
   def y: Int
+  def rotation: Radians
+  def scale: Vector2
 
   def moveTo(pt: Point): Renderable
   def moveTo(x: Int, y: Int): Renderable
 
   def moveBy(pt: Point): Renderable
   def moveBy(x: Int, y: Int): Renderable
+
+  def rotate(angle: Radians): Renderable
+  def rotateBy(angle: Radians): Renderable
+
+  def scaleBy(x: Double, y: Double): Renderable
 
   def withDepth(depth: Depth): Renderable
   def withAlpha(a: Double): Renderable
@@ -120,6 +127,8 @@ sealed trait Renderable extends SceneGraphNode {
 final class Graphic(
     val bounds: Rectangle,
     val depth: Depth,
+    val rotation: Radians,
+    val scale: Vector2,
     val imageAssetRef: String,
     val ref: Point,
     val crop: Rectangle,
@@ -131,45 +140,53 @@ final class Graphic(
   def y: Int = bounds.position.y - ref.y
 
   def moveTo(pt: Point): Graphic =
-    Graphic(bounds.moveTo(pt), depth, imageAssetRef, ref, crop, effects, eventHandler)
+    Graphic(bounds.moveTo(pt), depth, rotation, scale, imageAssetRef, ref, crop, effects, eventHandler)
   def moveTo(x: Int, y: Int): Graphic =
     moveTo(Point(x, y))
 
   def moveBy(pt: Point): Graphic =
-    Graphic(bounds.moveTo(bounds.position + pt), depth, imageAssetRef, ref, crop, effects, eventHandler)
+    Graphic(bounds.moveTo(bounds.position + pt), depth, rotation, scale, imageAssetRef, ref, crop, effects, eventHandler)
   def moveBy(x: Int, y: Int): Graphic =
     moveBy(Point(x, y))
 
+  def rotate(angle: Radians): Renderable =
+    Graphic(bounds, depth, angle, scale, imageAssetRef, ref, crop, effects, eventHandler)
+  def rotateBy(angle: Radians): Renderable =
+    rotate(rotation + angle)
+
+  def scaleBy(x: Double, y: Double): Renderable =
+    Graphic(bounds, depth, rotation, Vector2(x, y), imageAssetRef, ref, crop, effects, eventHandler)
+
   def withDepth(depthValue: Depth): Graphic =
-    Graphic(bounds, depthValue, imageAssetRef, ref, crop, effects, eventHandler)
+    Graphic(bounds, depthValue, rotation, scale, imageAssetRef, ref, crop, effects, eventHandler)
 
   def withAlpha(a: Double): Graphic =
-    Graphic(bounds, depth, imageAssetRef, ref, crop, effects.withAlpha(a), eventHandler)
+    Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects.withAlpha(a), eventHandler)
 
   def withTint(tint: Tint): Graphic =
-    Graphic(bounds, depth, imageAssetRef, ref, crop, effects.withTint(tint), eventHandler)
+    Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects.withTint(tint), eventHandler)
 
   def withTint(red: Double, green: Double, blue: Double): Graphic =
-    Graphic(bounds, depth, imageAssetRef, ref, crop, effects.withTint(Tint(red, green, blue)), eventHandler)
+    Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects.withTint(Tint(red, green, blue)), eventHandler)
 
   def flipHorizontal(hValue: Boolean): Graphic =
-    Graphic(bounds, depth, imageAssetRef, ref, crop, effects.withFlip(Flip(hValue, effects.flip.vertical)), eventHandler)
+    Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects.withFlip(Flip(hValue, effects.flip.vertical)), eventHandler)
 
   def flipVertical(vValue: Boolean): Graphic =
-    Graphic(bounds, depth, imageAssetRef, ref, crop, effects.withFlip(Flip(effects.flip.horizontal, vValue)), eventHandler)
+    Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects.withFlip(Flip(effects.flip.horizontal, vValue)), eventHandler)
 
   def withRef(refValue: Point): Graphic =
-    Graphic(bounds, depth, imageAssetRef, refValue, crop, effects, eventHandler)
+    Graphic(bounds, depth, rotation, scale, imageAssetRef, refValue, crop, effects, eventHandler)
   def withRef(xValue: Int, yValue: Int): Graphic =
     withRef(Point(xValue, yValue))
 
   def withCrop(crop: Rectangle): Graphic =
-    Graphic(bounds, depth, imageAssetRef, ref, crop, effects, eventHandler)
+    Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects, eventHandler)
   def withCrop(xValue: Int, yValue: Int, widthValue: Int, heightValue: Int): Graphic =
     withCrop(Rectangle(xValue, yValue, widthValue, heightValue))
 
   def onEvent(eventHandlerValue: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]): Graphic =
-    Graphic(bounds, depth, imageAssetRef, ref, crop, effects, eventHandlerValue)
+    Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects, eventHandlerValue)
 
   def eventHandlerWithBoundsApplied(e: GlobalEvent): Option[GlobalEvent] =
     eventHandler((bounds, e))
@@ -178,10 +195,22 @@ final class Graphic(
 
 object Graphic {
 
-  def apply(bounds: Rectangle, depth: Depth, imageAssetRef: String, ref: Point, crop: Rectangle, effects: Effects, eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]): Graphic =
+  def apply(
+      bounds: Rectangle,
+      depth: Depth,
+      rotation: Radians,
+      scale: Vector2,
+      imageAssetRef: String,
+      ref: Point,
+      crop: Rectangle,
+      effects: Effects,
+      eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
+  ): Graphic =
     new Graphic(
       bounds,
       depth,
+      rotation,
+      scale,
       imageAssetRef,
       ref,
       crop,
@@ -193,6 +222,8 @@ object Graphic {
     Graphic(
       bounds = Rectangle(x, y, width, height),
       depth = Depth(depth),
+      rotation = Radians.zero,
+      scale = Vector2.one,
       imageAssetRef = imageAssetRef,
       ref = Point.zero,
       crop = Rectangle(0, 0, width, height),
@@ -204,6 +235,8 @@ object Graphic {
     Graphic(
       bounds = bounds,
       depth = Depth(depth),
+      rotation = Radians.zero,
+      scale = Vector2.one,
       imageAssetRef = imageAssetRef,
       ref = Point.zero,
       crop = bounds,
@@ -216,6 +249,8 @@ final case class Sprite(
     bindingKey: BindingKey,
     bounds: Rectangle,
     depth: Depth,
+    rotation: Radians,
+    scale: Vector2,
     animationsKey: AnimationKey,
     ref: Point,
     effects: Effects,
@@ -239,6 +274,13 @@ final case class Sprite(
     )
   def moveBy(x: Int, y: Int): Sprite =
     moveBy(Point(x, y))
+
+  def rotate(angle: Radians): Renderable = ???
+  def rotateBy(angle: Radians): Renderable =
+    rotate(rotation + angle)
+
+  def scaleBy(x: Double, y: Double): Renderable =
+    this.copy(scale = Vector2(x, y))
 
   def withBindingKey(bindingKey: BindingKey): Sprite =
     this.copy(bindingKey = bindingKey)
@@ -302,6 +344,8 @@ object Sprite {
       bindingKey = bindingKey,
       bounds = Rectangle(x, y, width, height),
       depth = Depth(depth),
+      rotation = Radians.zero,
+      scale = Vector2.one,
       animationsKey = animationsKey,
       ref = Point.zero,
       effects = Effects.default,
@@ -309,8 +353,17 @@ object Sprite {
     )
 }
 
-final case class Text(text: String, alignment: TextAlignment, position: Point, depth: Depth, fontKey: FontKey, effects: Effects, eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent])
-    extends Renderable {
+final case class Text(
+    text: String,
+    alignment: TextAlignment,
+    position: Point,
+    depth: Depth,
+    rotation: Radians,
+    scale: Vector2,
+    fontKey: FontKey,
+    effects: Effects,
+    eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
+) extends Renderable {
 
   def x: Int = bounds.position.x
   def y: Int = bounds.position.y
@@ -346,6 +399,13 @@ final case class Text(text: String, alignment: TextAlignment, position: Point, d
     )
   def moveBy(x: Int, y: Int): Text =
     moveBy(Point(x, y))
+
+  def rotate(angle: Radians): Renderable = ???
+  def rotateBy(angle: Radians): Renderable =
+    rotate(rotation + angle)
+
+  def scaleBy(x: Double, y: Double): Renderable =
+    this.copy(scale = Vector2(x, y))
 
   def withDepth(depth: Depth): Text =
     this.copy(depth = depth)
@@ -408,6 +468,8 @@ object Text {
       alignment = TextAlignment.Left,
       position = Point(x, y),
       depth = Depth(depth),
+      rotation = Radians.zero,
+      scale = Vector2.one,
       fontKey = fontKey,
       effects = Effects.default,
       eventHandler = (_: (Rectangle, GlobalEvent)) => None
