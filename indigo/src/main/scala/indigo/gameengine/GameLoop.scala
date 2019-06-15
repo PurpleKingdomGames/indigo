@@ -11,7 +11,7 @@ import indigo.shared.dice.Dice
 import indigo.shared.time.GameTime
 import indigo.shared.time.Millis
 import indigo.shared.AnimationsRegister
-import indigo.shared.display.{Displayable, DisplayLayer}
+import indigo.shared.display.Displayable
 import indigo.shared.platform.AudioPlayer
 
 import indigo.shared.platform.AssetMapping
@@ -238,15 +238,9 @@ object GameLoop {
 
   def convertSceneGraphToDisplayable(gameTime: GameTime, rootNode: SceneGraphRootNodeFlat, assetMapping: AssetMapping, ambientLight: AmbientLight, metrics: Metrics): Displayable =
     Displayable(
-      DisplayLayer(
-        rootNode.game.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping, metrics))
-      ),
-      DisplayLayer(
-        rootNode.lighting.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping, metrics))
-      ),
-      DisplayLayer(
-        rootNode.ui.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping, metrics))
-      ),
+      rootNode.game.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping, metrics)),
+      rootNode.lighting.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping, metrics)),
+      rootNode.ui.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping, metrics)),
       ambientLight
     )
 

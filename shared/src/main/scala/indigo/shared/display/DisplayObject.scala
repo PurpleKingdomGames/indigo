@@ -5,11 +5,11 @@ import indigo.shared.datatypes.AmbientLight
 import indigo.shared.AsString
 import indigo.shared.EqualTo
 
-final class Displayable(val game: DisplayLayer, val lighting: DisplayLayer, val ui: DisplayLayer, val ambientLight: AmbientLight)
+final class Displayable(val game: List[DisplayObject], val lighting: List[DisplayObject], val ui: List[DisplayObject], val ambientLight: AmbientLight)
 object Displayable {
 
   implicit val show: AsString[Displayable] = {
-    val sd = implicitly[AsString[DisplayLayer]]
+    val sd = implicitly[AsString[List[DisplayObject]]]
     val sa = implicitly[AsString[AmbientLight]]
 
     AsString.create { v =>
@@ -18,7 +18,7 @@ object Displayable {
   }
 
   implicit val eq: EqualTo[Displayable] = {
-    val ed = implicitly[EqualTo[DisplayLayer]]
+    val ed = implicitly[EqualTo[List[DisplayObject]]]
     val ea = implicitly[EqualTo[AmbientLight]]
 
     EqualTo.create { (a, b) =>
@@ -29,31 +29,8 @@ object Displayable {
     }
   }
 
-  def apply(game: DisplayLayer, lighting: DisplayLayer, ui: DisplayLayer, ambientLight: AmbientLight): Displayable =
+  def apply(game: List[DisplayObject], lighting: List[DisplayObject], ui: List[DisplayObject], ambientLight: AmbientLight): Displayable =
     new Displayable(game, lighting, ui, ambientLight)
-}
-
-final class DisplayLayer(val displayObjects: List[DisplayObject]) extends AnyVal
-object DisplayLayer {
-
-  implicit val show: AsString[DisplayLayer] = {
-    val ev = implicitly[AsString[List[DisplayObject]]]
-
-    AsString.create { v =>
-      s"DisplayLayer(${ev.show(v.displayObjects)})"
-    }
-  }
-
-  implicit val eq: EqualTo[DisplayLayer] = {
-    val ev = implicitly[EqualTo[List[DisplayObject]]]
-
-    EqualTo.create { (a, b) =>
-      ev.equal(a.displayObjects, b.displayObjects)
-    }
-  }
-
-  def apply(displayObjects: List[DisplayObject]): DisplayLayer =
-    new DisplayLayer(displayObjects)
 }
 
 final class DisplayObject(

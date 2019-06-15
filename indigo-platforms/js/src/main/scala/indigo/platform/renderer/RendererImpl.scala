@@ -5,7 +5,7 @@ import indigo.shared.metrics._
 import indigo.shared.ClearColor
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
-import indigo.shared.display.{DisplayLayer, DisplayObject, Displayable, SpriteSheetFrame}
+import indigo.shared.display.{DisplayObject, Displayable, SpriteSheetFrame}
 import indigo.shared.EqualTo._
 import indigo.shared.platform.Renderer
 import indigo.shared.platform.RendererConfig
@@ -79,7 +79,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(RenderToWindowEndMetric)
   }
 
-  private def drawLightingLayerToTexture(displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor, metrics: Metrics): Unit = {
+  private def drawLightingLayerToTexture(displayObjects: List[DisplayObject], frameBufferComponents: FrameBufferComponents, clearColor: ClearColor, metrics: Metrics): Unit = {
 
     /*
 
@@ -106,7 +106,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     setupVertexShader(cNc, lightingShaderProgram, RendererFunctions.orthographicProjectionMatrix)
 
     // Draw as normal
-    CompressedDisplayObject.sortAndCompress(displayLayer.displayObjects).foreach { displayObject =>
+    CompressedDisplayObject.sortAndCompress(displayObjects).foreach { displayObject =>
       metrics.record(LightingDrawCallLengthStartMetric)
 
       bindToBuffer(cNc.context, vertexBuffer, displayObject.vertices)
@@ -131,7 +131,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   }
 
-  private def drawLayerToTexture(displayLayer: DisplayLayer, frameBufferComponents: FrameBufferComponents, clearColor: ClearColor, metrics: Metrics): Unit = {
+  private def drawLayerToTexture(displayObjects: List[DisplayObject], frameBufferComponents: FrameBufferComponents, clearColor: ClearColor, metrics: Metrics): Unit = {
 
     // Switch to the frameBuffer
     FrameBufferFunctions.switchToFramebuffer(cNc, frameBufferComponents.frameBuffer, clearColor)
@@ -141,7 +141,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     setupVertexShader(cNc, shaderProgram, RendererFunctions.orthographicProjectionMatrix)
 
     // Draw as normal
-    val compressed = CompressedDisplayObject.sortAndCompress(displayLayer.displayObjects)
+    val compressed = CompressedDisplayObject.sortAndCompress(displayObjects)
 
     compressed.foreach { displayObject =>
       metrics.record(NormalDrawCallLengthStartMetric)
