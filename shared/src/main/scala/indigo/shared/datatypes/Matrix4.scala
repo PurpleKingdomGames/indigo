@@ -121,6 +121,32 @@ object Matrix4 {
   def orthographic(width: Double, height: Double): Matrix4 =
     orthographic(0, width, height, 0, -10000, 10000)
 
+  def transform2d(tx: Double, ty: Double, sx: Double, sy: Double, r: Double): Matrix4 = {
+    val c = Math.cos(r)
+    val s = Math.sin(r)
+
+    Matrix4(
+      List(
+        sx * c,
+        s,
+        0,
+        0,
+        -s,
+        sy * c,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        tx,
+        ty,
+        0,
+        1
+      )
+    )
+  }
+
   def translation(tx: Double, ty: Double, tz: Double): Matrix4 =
     Matrix4(
       List(
