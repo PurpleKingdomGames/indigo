@@ -7,6 +7,7 @@ varying vec2 v_texcoord;
 uniform sampler2D u_texture_game;
 uniform sampler2D u_texture_lighting;
 uniform sampler2D u_texture_ui;
+uniform vec4 u_tint;
 
 void main(void) {
   //

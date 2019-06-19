@@ -3,14 +3,14 @@ package indigo.platform.renderer
 import indigo.shared.IndigoLogger
 import org.scalajs.dom.{html, raw}
 import org.scalajs.dom.raw.WebGLRenderingContext._
-import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram, WebGLTexture}
+import org.scalajs.dom.raw.{WebGLProgram, WebGLTexture}
 import indigo.shared.datatypes.Matrix4
 
 import indigo.shared.EqualTo._
 
-import scala.scalajs.js.typedarray.Float32Array
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.SpriteSheetFrame
+import org.scalajs.dom.raw.WebGLUniformLocation
 
 object RendererFunctions {
 
@@ -30,17 +30,6 @@ object RendererFunctions {
       flipVertical = true,
       frame = SpriteSheetFrame.defaultOffset
     )
-
-  def createVertexBuffer(gl: raw.WebGLRenderingContext): WebGLBuffer =
-    gl.createBuffer()
-
-  def bindToBuffer(gl: raw.WebGLRenderingContext, vertexBuffer: WebGLBuffer, vertices: scalajs.js.Array[Double]): Unit = {
-    //Create a new buffer
-    gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
-
-    //bind it to the current buffer
-    gl.bufferData(ARRAY_BUFFER, new Float32Array(vertices), STATIC_DRAW)
-  }
 
   @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
   def shaderProgramSetup(gl: raw.WebGLRenderingContext, layerLabel: String, vertexShaderCode: String, fragmentShaderCode: String): WebGLProgram = {
@@ -68,21 +57,16 @@ object RendererFunctions {
     shaderProgram
   }
 
-  def bindAttibuteBuffer(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, attributeName: String, buffer: WebGLBuffer, size: Int): Unit = {
-    gl.bindBuffer(ARRAY_BUFFER, buffer)
-
-    val location = gl.getAttribLocation(shaderProgram, attributeName)
-
+  def bindAttibuteBuffer(gl: raw.WebGLRenderingContext, attributeLocation: Int, size: Int): Unit = {
+    gl.enableVertexAttribArray(attributeLocation)
     gl.vertexAttribPointer(
-      indx = location,
+      indx = attributeLocation,
       size = size,
       `type` = FLOAT,
       normalized = false,
       stride = 0,
       offset = 0
     )
-
-    gl.enableVertexAttribArray(location)
   }
 
   def createAndBindTexture(gl: raw.WebGLRenderingContext): WebGLTexture = {
@@ -110,25 +94,13 @@ object RendererFunctions {
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var lastTextureName: String = ""
 
-  def setupFragmentShaderState(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, displayObject: DisplayObject): Unit = {
-
+  def setupFragmentShaderState(gl: raw.WebGLRenderingContext, texture: WebGLTexture, displayObject: DisplayObject, tintLocation: WebGLUniformLocation): Unit = {
     if (displayObject.imageRef !== lastTextureName) {
       gl.bindTexture(TEXTURE_2D, texture)
       lastTextureName = displayObject.imageRef
     }
 
-    gl.uniform4f(
-      gl.getUniformLocation(shaderProgram, "u_tint"),
-      displayObject.tintR.toDouble,
-      displayObject.tintG.toDouble,
-      displayObject.tintB.toDouble,
-      displayObject.alpha.toDouble
-    )
-
-    gl.uniform1i(
-      gl.getUniformLocation(shaderProgram, "u_texture"),
-      0
-    )
+    gl.uniform4f(tintLocation, displayObject.tintR.toDouble, displayObject.tintG.toDouble, displayObject.tintB.toDouble, displayObject.alpha.toDouble)
   }
 
   val sortByDepth: List[DisplayObject] => List[DisplayObject] =
@@ -179,34 +151,16 @@ object RendererFunctions {
     case (false, false) => Matrix4.identity
   }
 
-  def setupVertexShaderState(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, projectionMatrix: Matrix4, displayObject: DisplayObject): Unit = {
-    // Projection
-    gl.uniformMatrix4fv(
-      location = gl.getUniformLocation(shaderProgram, "u_projection"),
-      transpose = false,
-      value = mat4ToJsArray(projectionMatrix)
-    )
-
-    // Position
-    gl.uniform2f(
-      gl.getUniformLocation(shaderProgram, "u_translation"),
-      displayObject.x.toDouble,
-      displayObject.y.toDouble
-    )
-
-    // Rotation
-    gl.uniform1f(
-      gl.getUniformLocation(shaderProgram, "u_rotation"),
-      0.0d
-    )
-
-    // Scale
-    gl.uniform2f(
-      gl.getUniformLocation(shaderProgram, "u_scale"),
-      displayObject.width.toDouble,
-      displayObject.height.toDouble
-    )
-
+  def setupVertexShaderState(
+      gl: raw.WebGLRenderingContext,
+      displayObject: DisplayObject,
+      translationLocation: WebGLUniformLocation,
+      rotationLocation: WebGLUniformLocation,
+      scaleLocation: WebGLUniformLocation
+  ): Unit = {
+    gl.uniform2f(translationLocation, displayObject.x.toDouble, displayObject.y.toDouble)
+    gl.uniform1f(rotationLocation, 0.0d)
+    gl.uniform2f(scaleLocation, displayObject.width.toDouble, displayObject.height.toDouble)
   }
 
   def mat4ToJsArray(mat4d: Matrix4): scalajs.js.Array[Double] = {

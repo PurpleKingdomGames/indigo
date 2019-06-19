@@ -12,6 +12,7 @@ import indigo.shared.platform.RendererConfig
 import org.scalajs.dom.raw.WebGLRenderingContext
 import org.scalajs.dom.raw.WebGLProgram
 import indigo.shared.datatypes.Matrix4
+import scala.scalajs.js.typedarray.Float32Array
 
 final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends Renderer {
 
@@ -57,8 +58,8 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   private val vertexCount: Int = vertices.length / 3
 
-  private val vertexBuffer: WebGLBuffer  = createVertexBuffer(gl)
-  private val textureBuffer: WebGLBuffer = createVertexBuffer(gl)
+  private val vertexBuffer: WebGLBuffer  = gl.createBuffer()
+  private val textureBuffer: WebGLBuffer = gl.createBuffer()
 
   private val standardShaderProgram = shaderProgramSetup(gl, "Pixel", StandardPixelArtVert.shader, StandardPixelArtFrag.shader)
   private val lightingShaderProgram = shaderProgramSetup(gl, "Lighting", StandardLightingPixelArtVert.shader, StandardLightingPixelArtFrag.shader)
@@ -77,7 +78,8 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     gl.enable(BLEND)
     gl.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
 
-    bindToBuffer(gl, vertexBuffer, vertices)
+    gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
+    gl.bufferData(ARRAY_BUFFER, new Float32Array(vertices), STATIC_DRAW)
   }
 
   def drawScene(displayable: Displayable, metrics: Metrics): Unit = {
@@ -127,20 +129,44 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     gl.useProgram(shaderProgram)
 
-    bindAttibuteBuffer(gl, shaderProgram, "a_vertices", vertexBuffer, 3)
+    // Projection
+    val projectionMatrix: Matrix4 =
+      if (layer.isMerge) RendererFunctions.orthographicProjectionMatrixNoMag
+      else RendererFunctions.orthographicProjectionMatrix
+
+    gl.uniformMatrix4fv(
+      location = gl.getUniformLocation(shaderProgram, "u_projection"),
+      transpose = false,
+      value = mat4ToJsArray(projectionMatrix)
+    )
+
+    // Attribute locations
+    val verticesLocation = gl.getAttribLocation(shaderProgram, "a_vertices")
+    val texcoordLocation = gl.getAttribLocation(shaderProgram, "a_texcoord")
+
+    // Uniform locations (vertex)
+    val translationLocation = gl.getUniformLocation(shaderProgram, "u_translation")
+    val rotationLocation = gl.getUniformLocation(shaderProgram, "u_rotation")
+    val scaleLocation = gl.getUniformLocation(shaderProgram, "u_scale")
+
+    // Uniform locations (fragment)
+    val tintLocation = gl.getUniformLocation(shaderProgram, "u_tint")
+    val textureLocation = gl.getUniformLocation(shaderProgram, "u_texture")
+
+    gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
+    bindAttibuteBuffer(gl, verticesLocation, 3)
+
+    // Set once
+    gl.uniform1i(textureLocation, 0)
 
     sortByDepth(displayObjects).foreach { displayObject =>
       metrics.record(layer.metricStart)
 
-      bindToBuffer(gl, textureBuffer, RendererFunctions.textureCoordinates(displayObject))
+      gl.bindBuffer(ARRAY_BUFFER, textureBuffer)
+      gl.bufferData(ARRAY_BUFFER, new Float32Array(RendererFunctions.textureCoordinates(displayObject)), STATIC_DRAW)
+      bindAttibuteBuffer(gl, texcoordLocation, 2)
 
-      val projectionMatrix: Matrix4 =
-        if (layer.isMerge) RendererFunctions.orthographicProjectionMatrixNoMag
-        else RendererFunctions.orthographicProjectionMatrix
-
-      setupVertexShaderState(gl, shaderProgram, projectionMatrix, displayObject)
-
-      bindAttibuteBuffer(gl, shaderProgram, "a_texcoord", textureBuffer, 2)
+      setupVertexShaderState(gl, displayObject, translationLocation, rotationLocation, scaleLocation)
 
       layer match {
         case CurrentDrawLayer.Merge =>
@@ -148,7 +174,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
         case _ =>
           textureLocations.find(t => t.name === displayObject.imageRef).foreach { textureLookup =>
-            setupFragmentShaderState(gl, shaderProgram, textureLookup.texture, displayObject)
+            setupFragmentShaderState(gl, textureLookup.texture, displayObject, tintLocation)
           }
       }
 
