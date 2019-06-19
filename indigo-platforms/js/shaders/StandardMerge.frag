@@ -2,7 +2,6 @@ precision mediump float;
 
 // Passed in from the vertex shader.
 varying vec2 v_texcoord;
-varying vec4 v_effectValues;
 
 // The textures.
 uniform sampler2D u_texture_game;

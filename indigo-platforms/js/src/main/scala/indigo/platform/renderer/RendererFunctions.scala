@@ -3,16 +3,33 @@ package indigo.platform.renderer
 import indigo.shared.IndigoLogger
 import org.scalajs.dom.{html, raw}
 import org.scalajs.dom.raw.WebGLRenderingContext._
-import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram, WebGLTexture, WebGLUniformLocation}
+import org.scalajs.dom.raw.{WebGLBuffer, WebGLProgram, WebGLTexture}
 import indigo.shared.datatypes.Matrix4
 
 import indigo.shared.EqualTo._
 
 import scala.scalajs.js.typedarray.Float32Array
+import indigo.shared.display.DisplayObject
+import indigo.shared.display.SpriteSheetFrame
 
 object RendererFunctions {
 
-  import indigo.platform.shaders._
+  def screenDisplayObject(w: Int, h: Int): DisplayObject =
+    DisplayObject(
+      x = 0,
+      y = 0,
+      z = 1,
+      width = w,
+      height = h,
+      imageRef = "",
+      alpha = 1,
+      tintR = 1,
+      tintG = 1,
+      tintB = 1,
+      flipHorizontal = false,
+      flipVertical = true,
+      frame = SpriteSheetFrame.defaultOffset
+    )
 
   def createVertexBuffer(gl: raw.WebGLRenderingContext): WebGLBuffer =
     gl.createBuffer()
@@ -26,27 +43,21 @@ object RendererFunctions {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
-  def shaderProgramSetup(gl: raw.WebGLRenderingContext): WebGLProgram = {
-
-    //vertex shader source code
-    val vertCode = StandardPixelArtVert.shader
+  def shaderProgramSetup(gl: raw.WebGLRenderingContext, layerLabel: String, vertexShaderCode: String, fragmentShaderCode: String): WebGLProgram = {
 
     //Create a vertex shader program object and compile it
     val vertShader = gl.createShader(VERTEX_SHADER)
-    gl.shaderSource(vertShader, vertCode)
+    gl.shaderSource(vertShader, vertexShaderCode)
     gl.compileShader(vertShader)
 
-    IndigoLogger.info("Pixel vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
-
-    //fragment shader source code
-    val fragCode = StandardPixelArtFrag.shader
+    IndigoLogger.info(s"$layerLabel vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
 
     //Create a fragment shader program object and compile it
     val fragShader = gl.createShader(FRAGMENT_SHADER)
-    gl.shaderSource(fragShader, fragCode)
+    gl.shaderSource(fragShader, fragmentShaderCode)
     gl.compileShader(fragShader)
 
-    IndigoLogger.info("Pixel fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
+    IndigoLogger.info(s"$layerLabel fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
 
     //Create and use combined shader program
     val shaderProgram = gl.createProgram()
@@ -57,117 +68,21 @@ object RendererFunctions {
     shaderProgram
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
-  def lightingShaderProgramSetup(gl: raw.WebGLRenderingContext): WebGLProgram = {
-    //vertex shader source code
-    val vertCode = StandardLightingPixelArtVert.shader
+  def bindAttibuteBuffer(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, attributeName: String, buffer: WebGLBuffer, size: Int): Unit = {
+    gl.bindBuffer(ARRAY_BUFFER, buffer)
 
-    //Create a vertex shader program object and compile it
-    val vertShader = gl.createShader(VERTEX_SHADER)
-    gl.shaderSource(vertShader, vertCode)
-    gl.compileShader(vertShader)
-
-    IndigoLogger.info("Light vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
-
-    //fragment shader source code
-    val fragCode = StandardLightingPixelArtFrag.shader
-
-    //Create a fragment shader program object and compile it
-    val fragShader = gl.createShader(FRAGMENT_SHADER)
-    gl.shaderSource(fragShader, fragCode)
-    gl.compileShader(fragShader)
-
-    IndigoLogger.info("Light fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
-
-    //Create and use combined shader program
-    val shaderProgram = gl.createProgram()
-    gl.attachShader(shaderProgram, vertShader)
-    gl.attachShader(shaderProgram, fragShader)
-    gl.linkProgram(shaderProgram)
-
-    shaderProgram
-  }
-
-  @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
-  def mergeShaderProgramSetup(gl: raw.WebGLRenderingContext): WebGLProgram = {
-    //vertex shader source code
-    val vertCode = StandardMergeVert.shader
-
-    //Create a vertex shader program object and compile it
-    val vertShader = gl.createShader(VERTEX_SHADER)
-    gl.shaderSource(vertShader, vertCode)
-    gl.compileShader(vertShader)
-
-    IndigoLogger.info("Merge vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
-
-    //fragment shader source code
-
-    val fragCode = StandardMergeFrag.shader
-
-    //Create a fragment shader program object and compile it
-    val fragShader = gl.createShader(FRAGMENT_SHADER)
-    gl.shaderSource(fragShader, fragCode)
-    gl.compileShader(fragShader)
-
-    IndigoLogger.info("Merge fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
-
-    //Create and use combined shader program
-    val shaderProgram = gl.createProgram()
-    gl.attachShader(shaderProgram, vertShader)
-    gl.attachShader(shaderProgram, fragShader)
-    gl.linkProgram(shaderProgram)
-
-    shaderProgram
-  }
-
-  def bindShaderToBuffer(cNc: ContextAndCanvas, shaderProgram: WebGLProgram, vertexBuffer: WebGLBuffer, textureBuffer: WebGLBuffer, effectsBuffer: WebGLBuffer): Unit = {
-
-    val gl = cNc.context
-
-    // Vertices
-    gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
-
-    val coordinatesVar = gl.getAttribLocation(shaderProgram, "coordinates")
+    val location = gl.getAttribLocation(shaderProgram, attributeName)
 
     gl.vertexAttribPointer(
-      indx = coordinatesVar,
-      size = 3,
+      indx = location,
+      size = size,
       `type` = FLOAT,
       normalized = false,
       stride = 0,
       offset = 0
     )
 
-    gl.enableVertexAttribArray(coordinatesVar)
-
-    // Texture info
-    gl.bindBuffer(ARRAY_BUFFER, textureBuffer)
-
-    val texCoOrdLocation = gl.getAttribLocation(shaderProgram, "a_texcoord")
-    gl.vertexAttribPointer(
-      indx = texCoOrdLocation,
-      size = 2,
-      `type` = FLOAT,
-      normalized = false,
-      stride = 0,
-      offset = 0
-    )
-    gl.enableVertexAttribArray(texCoOrdLocation)
-
-    // Effects info
-    gl.bindBuffer(ARRAY_BUFFER, effectsBuffer)
-
-    val effectValuesLocation = gl.getAttribLocation(shaderProgram, "a_effectValues")
-    gl.vertexAttribPointer(
-      indx = effectValuesLocation,
-      size = 4,
-      `type` = FLOAT,
-      normalized = false,
-      stride = 0,
-      offset = 0
-    )
-    gl.enableVertexAttribArray(effectValuesLocation)
-
+    gl.enableVertexAttribArray(location)
   }
 
   def createAndBindTexture(gl: raw.WebGLRenderingContext): WebGLTexture = {
@@ -195,30 +110,31 @@ object RendererFunctions {
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var lastTextureName: String = ""
 
-  def setupFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, imageRef: String): Unit = {
+  def setupFragmentShaderState(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, displayObject: DisplayObject): Unit = {
 
-    if (imageRef !== lastTextureName) {
+    if (displayObject.imageRef !== lastTextureName) {
       gl.bindTexture(TEXTURE_2D, texture)
-      lastTextureName = imageRef
+      lastTextureName = displayObject.imageRef
     }
 
-    val u_texture = gl.getUniformLocation(shaderProgram, "u_texture")
-    gl.uniform1i(u_texture, 0)
+    gl.uniform4f(
+      gl.getUniformLocation(shaderProgram, "u_tint"),
+      displayObject.tintR.toDouble,
+      displayObject.tintG.toDouble,
+      displayObject.tintB.toDouble,
+      displayObject.alpha.toDouble
+    )
+
+    gl.uniform1i(
+      gl.getUniformLocation(shaderProgram, "u_texture"),
+      0
+    )
   }
 
-  def setupLightingFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, texture: WebGLTexture, imageRef: String): Unit = {
+  val sortByDepth: List[DisplayObject] => List[DisplayObject] =
+    displayObjects => displayObjects.sortWith((d1, d2) => d1.z > d2.z)
 
-    if (imageRef !== lastTextureName) {
-      gl.bindTexture(TEXTURE_2D, texture)
-      lastTextureName = imageRef
-    }
-
-    val u_texture = gl.getUniformLocation(shaderProgram, "u_texture")
-    gl.uniform1i(u_texture, 0)
-
-  }
-
-  def setupMergeFragmentShader(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, textureGame: WebGLTexture, textureLighting: WebGLTexture, textureUi: WebGLTexture): Unit = {
+  def setupMergeFragmentShaderState(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, textureGame: WebGLTexture, textureLighting: WebGLTexture, textureUi: WebGLTexture): Unit = {
 
     val u_texture_game = gl.getUniformLocation(shaderProgram, "u_texture_game")
     gl.uniform1i(u_texture_game, 1)
@@ -263,20 +179,62 @@ object RendererFunctions {
     case (false, false) => Matrix4.identity
   }
 
-  def setupVertexShader(cNc: ContextAndCanvas, shaderProgram: WebGLProgram, projectionMatrix: Matrix4): Unit = {
-    val translation: WebGLUniformLocation = cNc.context.getUniformLocation(shaderProgram, "u_matrix")
-
-    cNc.context.uniformMatrix4fv(
-      location = translation,
+  def setupVertexShaderState(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, projectionMatrix: Matrix4, displayObject: DisplayObject): Unit = {
+    // Projection
+    gl.uniformMatrix4fv(
+      location = gl.getUniformLocation(shaderProgram, "u_projection"),
       transpose = false,
       value = mat4ToJsArray(projectionMatrix)
     )
+
+    // Position
+    gl.uniform2f(
+      gl.getUniformLocation(shaderProgram, "u_translation"),
+      displayObject.x.toDouble,
+      displayObject.y.toDouble
+    )
+
+    // Rotation
+    gl.uniform1f(
+      gl.getUniformLocation(shaderProgram, "u_rotation"),
+      0.0d
+    )
+
+    // Scale
+    gl.uniform2f(
+      gl.getUniformLocation(shaderProgram, "u_scale"),
+      displayObject.width.toDouble,
+      displayObject.height.toDouble
+    )
+
   }
 
   def mat4ToJsArray(mat4d: Matrix4): scalajs.js.Array[Double] = {
     val a = new scalajs.js.Array[Double]()
     mat4d.mat.foreach(d => a.push(d))
     a
+  }
+
+  def textureCoordinates(d: DisplayObject): scalajs.js.Array[Double] = {
+    val tx1 = if (d.flipHorizontal) 1 - d.frame.translate.x else d.frame.translate.x
+    val tx2 = if (d.flipHorizontal) 1 - (d.frame.scale.x + d.frame.translate.x) else d.frame.scale.x + d.frame.translate.x
+    val ty1 = if (d.flipVertical) 1 - d.frame.translate.y else d.frame.translate.y
+    val ty2 = if (d.flipVertical) 1 - (d.frame.scale.y + d.frame.translate.y) else d.frame.scale.y + d.frame.translate.y
+
+    scalajs.js.Array[Double](
+      tx1,
+      ty1,
+      tx1,
+      ty2,
+      tx2,
+      ty1,
+      tx1,
+      ty2,
+      tx2,
+      ty1,
+      tx2,
+      ty2
+    )
   }
 
 }

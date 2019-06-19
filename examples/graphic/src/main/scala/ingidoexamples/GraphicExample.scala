@@ -5,7 +5,7 @@ import indigoexts.entrypoint._
 
 object GraphicExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
-  val config: GameConfig = defaultGameConfig
+  val config: GameConfig = defaultGameConfig//.withMagnification(1)
 
   val assets: Set[AssetType] = Set(AssetType.Image("graphics", "assets/graphics.png"))
 
@@ -36,17 +36,17 @@ object GraphicExample extends IndigoGameBasic[Unit, Unit, Unit] {
           Graphic(0, 0, 256, 256, 1, "graphics")
             .withRef(48, 48)
             .withCrop(128, 0, 96, 96)
-            .moveTo(137 * 1, 0),
-          Graphic(0, 0, 256, 256, 1, "graphics")
-            .withRef(48, 48)
-            .withCrop(128, 0, 96, 96)
-            .moveTo(137 * 2, 0)
-            .rotate(Radians(Math.PI / 2)),
-          Graphic(0, 0, 256, 256, 1, "graphics")
-            .withRef(48, 48)
-            .withCrop(128, 0, 96, 96)
-            .moveTo(137 * 3, 0)
-            .scaleBy(0.5, 0.5)
+            .moveTo(137 * 1, 0)//,
+          // Graphic(0, 0, 256, 256, 1, "graphics")
+          //   .withRef(48, 48)
+          //   .withCrop(128, 0, 96, 96)
+          //   .moveTo(137 * 2, 0)
+          //   .rotate(Radians(Math.PI / 2)),
+          // Graphic(0, 0, 256, 256, 1, "graphics")
+          //   .withRef(48, 48)
+          //   .withCrop(128, 0, 96, 96)
+          //   .moveTo(137 * 3, 0)
+          //   .scaleBy(0.5, 0.5)
         ).moveBy(0, 200)
       )
 }
