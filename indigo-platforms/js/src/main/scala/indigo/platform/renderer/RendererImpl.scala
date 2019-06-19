@@ -84,18 +84,6 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight, cNc.magnification)
 
-    // drawLayer(displayable.game, None, config.clearColor, standardShaderProgram, CurrentDrawLayer.Game, metrics)
-
-    // drawLayer(
-    //   displayable.lighting,
-    //   None,
-    //   AmbientLight.toClearColor(displayable.ambientLight),
-    //   lightingShaderProgram,
-    //   CurrentDrawLayer.Lighting,
-    //   metrics
-    // )
-    // drawLayer(displayable.ui, None, ClearColor.Black.forceTransparent, standardShaderProgram, CurrentDrawLayer.UI, metrics)
-
     metrics.record(DrawGameLayerStartMetric)
     drawLayer(displayable.game, Some(gameFrameBuffer), config.clearColor, standardShaderProgram, CurrentDrawLayer.Game, metrics)
     metrics.record(DrawGameLayerEndMetric)
