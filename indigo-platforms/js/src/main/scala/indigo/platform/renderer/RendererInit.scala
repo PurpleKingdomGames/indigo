@@ -39,7 +39,7 @@ object RendererInit {
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   private def getContext(canvas: html.Canvas): WebGLRenderingContext = {
     val args =
-      Dynamic.literal("premultipliedAlpha" -> false, "alpha" -> false)
+      Dynamic.literal("premultipliedAlpha" -> false, "alpha" -> false, "antialias" -> false)
 
     (canvas.getContext("webgl", args) || canvas.getContext("experimental-webgl", args)).asInstanceOf[raw.WebGLRenderingContext]
   }
