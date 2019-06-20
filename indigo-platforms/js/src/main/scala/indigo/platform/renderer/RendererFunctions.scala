@@ -31,7 +31,7 @@ object RendererFunctions {
       frame = SpriteSheetFrame.defaultOffset
     )
 
-  @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
+  @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny", "org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.Throw"))
   def shaderProgramSetup(gl: raw.WebGLRenderingContext, layerLabel: String, vertexShaderCode: String, fragmentShaderCode: String): WebGLProgram = {
 
     //Create a vertex shader program object and compile it
@@ -39,14 +39,28 @@ object RendererFunctions {
     gl.shaderSource(vertShader, vertexShaderCode)
     gl.compileShader(vertShader)
 
-    IndigoLogger.info(s"$layerLabel vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
+    if(gl.getShaderParameter(vertShader, COMPILE_STATUS).asInstanceOf[Boolean]) {
+      IndigoLogger.info(s"$layerLabel vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
+    } else {
+      IndigoLogger.info(s"$layerLabel vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
+      IndigoLogger.error(gl.getShaderInfoLog(vertShader));
+      gl.deleteShader(vertShader);
+      throw new Exception("Fatal: Vertex shader compile error")
+    }
 
     //Create a fragment shader program object and compile it
     val fragShader = gl.createShader(FRAGMENT_SHADER)
     gl.shaderSource(fragShader, fragmentShaderCode)
     gl.compileShader(fragShader)
 
-    IndigoLogger.info(s"$layerLabel fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
+    if(gl.getShaderParameter(fragShader, COMPILE_STATUS).asInstanceOf[Boolean]) {
+      IndigoLogger.info(s"$layerLabel fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
+    } else {
+      IndigoLogger.info(s"$layerLabel fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
+      IndigoLogger.error(gl.getShaderInfoLog(fragShader));
+      gl.deleteShader(fragShader);
+      throw new Exception("Fatal: Fragment shader compile error")
+    }
 
     //Create and use combined shader program
     val shaderProgram = gl.createProgram()
@@ -54,7 +68,13 @@ object RendererFunctions {
     gl.attachShader(shaderProgram, fragShader)
     gl.linkProgram(shaderProgram)
 
-    shaderProgram
+    if(gl.getProgramParameter(shaderProgram, LINK_STATUS).asInstanceOf[Boolean]) {
+      shaderProgram
+    } else {
+      IndigoLogger.error(gl.getProgramInfoLog(shaderProgram));
+      gl.deleteProgram(shaderProgram);
+      throw new Exception("Fatal: Shader program link error")
+    }
   }
 
   def bindAttibuteBuffer(gl: raw.WebGLRenderingContext, attributeLocation: Int, size: Int): Unit = {

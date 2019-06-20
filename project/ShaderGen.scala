@@ -14,9 +14,7 @@ object ShaderGen {
     s"""package indigo.platform.shaders
     |object $name {
     |  val shader: String =
-    |    $tripleQuotes
-    |    $contents
-    |    $tripleQuotes
+    |    ${tripleQuotes}${contents}${tripleQuotes}
     |}
     """.stripMargin
 

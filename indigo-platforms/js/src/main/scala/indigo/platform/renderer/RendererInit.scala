@@ -41,7 +41,7 @@ object RendererInit {
     val args =
       Dynamic.literal("premultipliedAlpha" -> false, "alpha" -> false, "antialias" -> false)
 
-    (canvas.getContext("webgl", args) || canvas.getContext("experimental-webgl", args)).asInstanceOf[raw.WebGLRenderingContext]
+    (canvas.getContext("webgl2", args)).asInstanceOf[raw.WebGLRenderingContext]
   }
 
   private def setupContextAndCanvas(canvas: html.Canvas, magnification: Int): ContextAndCanvas =

@@ -1,6 +1,8 @@
+#version 300 es
+
 // Attributes
-attribute vec4 a_vertices;
-attribute vec2 a_texcoord;
+in vec4 a_vertices;
+in vec2 a_texcoord;
 
 // Uniforms
 uniform mat4 u_projection;
@@ -8,7 +10,7 @@ uniform vec2 u_translation;
 uniform float u_rotation;
 uniform vec2 u_scale;
 
-varying vec2 v_texcoord;
+out vec2 v_texcoord;
 
 mat4 translate2d(vec2 t){
     return mat4(1, 0, 0, 0,
