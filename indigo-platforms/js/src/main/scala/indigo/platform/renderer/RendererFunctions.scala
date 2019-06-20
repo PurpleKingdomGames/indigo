@@ -91,18 +91,6 @@ object RendererFunctions {
     texture
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var lastTextureName: String = ""
-
-  def setupFragmentShaderState(gl: raw.WebGLRenderingContext, texture: WebGLTexture, displayObject: DisplayObject, tintLocation: WebGLUniformLocation): Unit = {
-    if (displayObject.imageRef !== lastTextureName) {
-      gl.bindTexture(TEXTURE_2D, texture)
-      lastTextureName = displayObject.imageRef
-    }
-
-    gl.uniform4f(tintLocation, displayObject.tintR.toDouble, displayObject.tintG.toDouble, displayObject.tintB.toDouble, displayObject.alpha.toDouble)
-  }
-
   val sortByDepth: List[DisplayObject] => List[DisplayObject] =
     displayObjects => displayObjects.sortWith((d1, d2) => d1.z > d2.z)
 
@@ -167,6 +155,18 @@ object RendererFunctions {
     val a = new scalajs.js.Array[Double]()
     mat4d.mat.foreach(d => a.push(d))
     a
+  }
+
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  private var lastTextureName: String = ""
+
+  def setupFragmentShaderState(gl: raw.WebGLRenderingContext, texture: WebGLTexture, displayObject: DisplayObject, tintLocation: WebGLUniformLocation): Unit = {
+    if (displayObject.imageRef !== lastTextureName) {
+      gl.bindTexture(TEXTURE_2D, texture)
+      lastTextureName = displayObject.imageRef
+    }
+
+    gl.uniform4f(tintLocation, displayObject.tintR.toDouble, displayObject.tintG.toDouble, displayObject.tintB.toDouble, displayObject.alpha.toDouble)
   }
 
   def textureCoordinates(d: DisplayObject): scalajs.js.Array[Double] = {
