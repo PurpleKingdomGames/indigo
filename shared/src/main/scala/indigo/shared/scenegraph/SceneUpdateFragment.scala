@@ -3,58 +3,65 @@ package indigo.shared.scenegraph
 import indigo.shared.events.GlobalEvent
 import indigo.shared.datatypes.AmbientLight
 
-final case class SceneUpdateFragment(
-    gameLayer: List[SceneGraphNode],
-    lightingLayer: List[SceneGraphNode],
-    uiLayer: List[SceneGraphNode],
-    ambientLight: AmbientLight,
-    globalEvents: List[GlobalEvent],
-    audio: SceneAudio
+final class SceneUpdateFragment(
+    val gameLayer: List[SceneGraphNode],
+    val lightingLayer: List[SceneGraphNode],
+    val uiLayer: List[SceneGraphNode],
+    val ambientLight: AmbientLight,
+    val globalEvents: List[GlobalEvent],
+    val audio: SceneAudio
 ) {
   def |+|(other: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment.append(this, other)
 
   def addGameLayerNodes(nodes: SceneGraphNode*): SceneUpdateFragment =
-    this.copy(gameLayer = gameLayer ++ nodes.toList)
+    addGameLayerNodes(nodes.toList)
 
   def addGameLayerNodes(nodes: List[SceneGraphNode]): SceneUpdateFragment =
-    this.copy(gameLayer = gameLayer ++ nodes)
+    SceneUpdateFragment(gameLayer ++ nodes, lightingLayer, uiLayer, ambientLight, globalEvents, audio)
 
   def addLightingLayerNodes(nodes: SceneGraphNode*): SceneUpdateFragment =
-    this.copy(lightingLayer = lightingLayer ++ nodes.toList)
+    addLightingLayerNodes(nodes.toList)
 
   def addLightingLayerNodes(nodes: List[SceneGraphNode]): SceneUpdateFragment =
-    this.copy(lightingLayer = lightingLayer ++ nodes)
+    SceneUpdateFragment(gameLayer, lightingLayer ++ nodes, uiLayer, ambientLight, globalEvents, audio)
 
   def addUiLayerNodes(nodes: SceneGraphNode*): SceneUpdateFragment =
-    this.copy(uiLayer = uiLayer ++ nodes.toList)
+    addUiLayerNodes(nodes.toList)
 
   def addUiLayerNodes(nodes: List[SceneGraphNode]): SceneUpdateFragment =
-    this.copy(uiLayer = uiLayer ++ nodes)
+    SceneUpdateFragment(gameLayer, lightingLayer, uiLayer ++ nodes, ambientLight, globalEvents, audio)
 
   def withAmbientLight(light: AmbientLight): SceneUpdateFragment =
-    this.copy(ambientLight = light)
+    SceneUpdateFragment(gameLayer, lightingLayer, uiLayer, light, globalEvents, audio)
 
   def withAmbientLightAmount(amount: Double): SceneUpdateFragment =
-    this.copy(
-      ambientLight = this.ambientLight.withAmount(amount)
-    )
+    SceneUpdateFragment(gameLayer, lightingLayer, uiLayer, ambientLight.withAmount(amount), globalEvents, audio)
 
   def withAmbientLightTint(r: Double, g: Double, b: Double): SceneUpdateFragment =
-    this.copy(
-      ambientLight = this.ambientLight.withTint(r, g, b)
-    )
+    SceneUpdateFragment(gameLayer, lightingLayer, uiLayer, ambientLight.withTint(r, g, b), globalEvents, audio)
 
   def addGlobalEvents(events: GlobalEvent*): SceneUpdateFragment =
-    this.copy(globalEvents = globalEvents ++ events.toList)
+    addGlobalEvents(events.toList)
 
   def addGlobalEvents(events: List[GlobalEvent]): SceneUpdateFragment =
-    this.copy(globalEvents = globalEvents ++ events)
+    SceneUpdateFragment(gameLayer, lightingLayer, uiLayer, ambientLight, globalEvents ++ events, audio)
 
   def withAudio(sceneAudio: SceneAudio): SceneUpdateFragment =
-    this.copy(audio = sceneAudio)
+    SceneUpdateFragment(gameLayer, lightingLayer, uiLayer, ambientLight, globalEvents, sceneAudio)
+
 }
 object SceneUpdateFragment {
+
+  def apply(
+      gameLayer: List[SceneGraphNode],
+      lightingLayer: List[SceneGraphNode],
+      uiLayer: List[SceneGraphNode],
+      ambientLight: AmbientLight,
+      globalEvents: List[GlobalEvent],
+      audio: SceneAudio
+  ): SceneUpdateFragment =
+    new SceneUpdateFragment(gameLayer, lightingLayer, uiLayer, ambientLight, globalEvents, audio)
 
   def apply(): SceneUpdateFragment =
     empty
