@@ -1,7 +1,7 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.events.GlobalEvent
-import indigo.shared.datatypes.{AmbientLight, Tint}
+import indigo.shared.datatypes.AmbientLight
 
 final case class SceneUpdateFragment(
     gameLayer: List[SceneGraphNode],
@@ -37,16 +37,12 @@ final case class SceneUpdateFragment(
 
   def withAmbientLightAmount(amount: Double): SceneUpdateFragment =
     this.copy(
-      ambientLight = this.ambientLight.copy(
-        amount = amount
-      )
+      ambientLight = this.ambientLight.withAmount(amount)
     )
 
   def withAmbientLightTint(r: Double, g: Double, b: Double): SceneUpdateFragment =
     this.copy(
-      ambientLight = this.ambientLight.copy(
-        tint = Tint(r, g, b)
-      )
+      ambientLight = this.ambientLight.withTint(r, g, b)
     )
 
   def addGlobalEvents(events: GlobalEvent*): SceneUpdateFragment =

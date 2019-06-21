@@ -5,15 +5,15 @@ import indigo.shared.EqualTo
 
 import indigo.shared.ClearColor
 
-final case class AmbientLight(tint: Tint, amount: Double) {
+final class AmbientLight(val tint: Tint, val amount: Double) {
   def +(other: AmbientLight): AmbientLight =
     AmbientLight.combine(this, other)
 
   def withAmount(value: Double): AmbientLight =
-    this.copy(amount = value)
+    AmbientLight(tint, value)
 
   def withTint(r: Double, g: Double, b: Double): AmbientLight =
-    this.copy(tint = Tint(r, g, b))
+    AmbientLight(Tint(r, g, b), amount)
 
 }
 
@@ -36,6 +36,9 @@ object AmbientLight {
       et.equal(a.tint, b.tint) && ed.equal(a.amount, b.amount)
     }
   }
+
+  def apply(tint: Tint, amount: Double): AmbientLight =
+    new AmbientLight(tint, amount)
 
   val Normal: AmbientLight = AmbientLight(Tint.None, 1)
 
