@@ -13,7 +13,7 @@ final class QuickCache[A](private val cache: mutable.Map[CacheKey, A]) {
     value
   }
 
-  def fetchOrAdd(key: CacheKey, value: A): A =
+  def fetchOrAdd(key: CacheKey, value: => A): A =
     cache.getOrElse(key, value)
 
   def purgeAll(): QuickCache[A] = {
@@ -31,11 +31,14 @@ final class QuickCache[A](private val cache: mutable.Map[CacheKey, A]) {
 @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
 object QuickCache {
 
-  def apply[A](key: CacheKey)(value: A)(implicit cache: QuickCache[A]): A =
-    cache.add(key, value)
+  def apply[A](key: String)(value: A)(implicit cache: QuickCache[A]): A =
+    cache.fetchOrAdd(CacheKey(key), value)
 
   def apply[A](value: A)(implicit cache: QuickCache[A], key: ToCacheKey[A]): A =
-    cache.add(key.toKey(value), value)
+    cache.fetchOrAdd(key.toKey(value), value)
+
+  def apply[A](cache: QuickCache[A], key: String, value: A): A =
+    cache.fetchOrAdd(CacheKey(key), value)
 
   def empty[A]: QuickCache[A] =
     new QuickCache[A](mutable.Map.empty[CacheKey, A])
@@ -43,6 +46,10 @@ object QuickCache {
 }
 
 final class CacheKey(val value: String) extends AnyVal
+object CacheKey {
+  def apply(value: String): CacheKey =
+    new CacheKey(value)
+}
 
 trait ToCacheKey[A] {
   def toKey(a: A): CacheKey
@@ -52,4 +59,11 @@ object ToCacheKey {
     new ToCacheKey[A] {
       def toKey(a: A): CacheKey = f(a)
     }
+
+  implicit val s: ToCacheKey[String] =
+    ToCacheKey(CacheKey.apply)
+
+  implicit val i: ToCacheKey[Int] =
+    ToCacheKey(p => CacheKey(p.toString))
+
 }
