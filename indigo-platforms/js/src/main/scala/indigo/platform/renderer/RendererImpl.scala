@@ -146,11 +146,11 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     // Uniform locations (vertex)
     val translationLocation = gl.getUniformLocation(shaderProgram, "u_translation")
-    val rotationLocation = gl.getUniformLocation(shaderProgram, "u_rotation")
-    val scaleLocation = gl.getUniformLocation(shaderProgram, "u_scale")
+    val rotationLocation    = gl.getUniformLocation(shaderProgram, "u_rotation")
+    val scaleLocation       = gl.getUniformLocation(shaderProgram, "u_scale")
 
     // Uniform locations (fragment)
-    val tintLocation = gl.getUniformLocation(shaderProgram, "u_tint")
+    val tintLocation    = gl.getUniformLocation(shaderProgram, "u_tint")
     val textureLocation = gl.getUniformLocation(shaderProgram, "u_texture")
 
     gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)

@@ -10,28 +10,40 @@ import indigo.shared.IndigoLogger
 import indigo.shared.{AnimationsRegister, FontRegister}
 
 object SceneGraphNode {
-  def empty: Group = Group(Point.zero, Depth.Base, Nil)
+  def empty: Group = Group.empty
 }
 
 sealed trait SceneGraphNode {
   def bounds: Rectangle
   val depth: Depth
 
+  def x: Int
+  def y: Int
+  def rotation: Radians
+  def scale: Vector2
+
   def withDepth(depth: Depth): SceneGraphNode
   def moveTo(pt: Point): SceneGraphNode
   def moveTo(x: Int, y: Int): SceneGraphNode
   def moveBy(pt: Point): SceneGraphNode
   def moveBy(x: Int, y: Int): SceneGraphNode
+  def rotate(angle: Radians): SceneGraphNode
+  def rotateBy(angle: Radians): SceneGraphNode
+  def scaleBy(amount: Vector2): SceneGraphNode
+  def scaleBy(x: Double, y: Double): SceneGraphNode
 
 }
 
-final class Group(val positionOffset: Point, val depth: Depth, val children: List[SceneGraphNode]) extends SceneGraphNode {
+final class Group(val positionOffset: Point, val rotation: Radians, val scale: Vector2, val depth: Depth, val children: List[SceneGraphNode]) extends SceneGraphNode {
+
+  def x: Int = positionOffset.x
+  def y: Int = positionOffset.y
 
   def withDepth(newDepth: Depth): Group =
-    Group(positionOffset, newDepth, children)
+    Group(positionOffset, rotation, scale, newDepth, children)
 
   def moveTo(pt: Point): Group =
-    Group(pt, depth, children)
+    Group(pt, rotation, scale, depth, children)
   def moveTo(x: Int, y: Int): Group =
     moveTo(Point(x, y))
 
@@ -39,6 +51,16 @@ final class Group(val positionOffset: Point, val depth: Depth, val children: Lis
     moveTo(positionOffset + pt)
   def moveBy(x: Int, y: Int): Group =
     moveBy(Point(x, y))
+
+  def rotate(angle: Radians): Group =
+    Group(positionOffset, angle, scale, depth, children)
+  def rotateBy(angle: Radians): Group =
+    rotate(rotation + angle)
+
+  def scaleBy(amount: Vector2): Group =
+    Group(positionOffset, rotation, amount, depth, children)
+  def scaleBy(x: Double, y: Double): Group =
+    scaleBy(Vector2(x, y))
 
   def bounds: Rectangle =
     children match {
@@ -52,61 +74,54 @@ final class Group(val positionOffset: Point, val depth: Depth, val children: Lis
     }
 
   def addChild(child: SceneGraphNode): Group =
-    Group(positionOffset, depth, children :+ child)
+    Group(positionOffset, rotation, scale, depth, children :+ child)
 
   def addChildren(additionalChildren: List[SceneGraphNode]): Group =
-    Group(positionOffset, depth, children ++ additionalChildren)
+    Group(positionOffset, rotation, scale, depth, children ++ additionalChildren)
 
 }
 
 object Group {
 
-  def apply(positionOffset: Point, depth: Depth, children: List[SceneGraphNode]): Group =
-    new Group(positionOffset, depth, children.toList)
+  def apply(positionOffset: Point, rotation: Radians, scale: Vector2, depth: Depth, children: List[SceneGraphNode]): Group =
+    new Group(positionOffset, rotation, scale, depth, children.toList)
 
-  def apply(position: Point, depth: Depth, children: SceneGraphNode*): Group =
-    Group(position, depth, children.toList)
+  def apply(position: Point, rotation: Radians, scale: Vector2, depth: Depth, children: SceneGraphNode*): Group =
+    Group(position, rotation, scale, depth, children.toList)
 
   def apply(children: SceneGraphNode*): Group =
-    Group(Point.zero, Depth.Base, children.toList)
+    Group(Point.zero, Radians.zero, Vector2.one, Depth.Base, children.toList)
 
   def apply(children: List[SceneGraphNode]): Group =
-    Group(Point.zero, Depth.Base, children)
+    Group(Point.zero, Radians.zero, Vector2.one, Depth.Base, children)
+
+  def empty: Group =
+    apply(Nil)
 }
 
 sealed trait Renderable extends SceneGraphNode {
-  def bounds: Rectangle
   def effects: Effects
-  def eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
 
-  def x: Int
-  def y: Int
-  def rotation: Radians
-  def scale: Vector2
-
-  def moveTo(pt: Point): Renderable
-  def moveTo(x: Int, y: Int): Renderable
-
-  def moveBy(pt: Point): Renderable
-  def moveBy(x: Int, y: Int): Renderable
-
-  def rotate(angle: Radians): Renderable
-  def rotateBy(angle: Radians): Renderable
-
-  def scaleBy(amount: Vector2): Renderable
-  def scaleBy(x: Double, y: Double): Renderable
-
-  def withDepth(depth: Depth): Renderable
   def withAlpha(a: Double): Renderable
   def withTint(tint: Tint): Renderable
   def withTint(red: Double, green: Double, blue: Double): Renderable
+
   def flipHorizontal(h: Boolean): Renderable
   def flipVertical(v: Boolean): Renderable
 
+  def eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
   def onEvent(e: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]): Renderable
-
-  //TODO: Review this.
   def eventHandlerWithBoundsApplied(e: GlobalEvent): Option[GlobalEvent]
+
+  override def withDepth(depth: Depth): Renderable
+  override def moveTo(pt: Point): Renderable
+  override def moveTo(x: Int, y: Int): Renderable
+  override def moveBy(pt: Point): Renderable
+  override def moveBy(x: Int, y: Int): Renderable
+  override def rotate(angle: Radians): Renderable
+  override def rotateBy(angle: Radians): Renderable
+  override def scaleBy(amount: Vector2): Renderable
+  override def scaleBy(x: Double, y: Double): Renderable
 
 }
 

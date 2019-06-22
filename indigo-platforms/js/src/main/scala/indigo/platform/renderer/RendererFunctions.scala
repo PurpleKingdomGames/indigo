@@ -21,6 +21,9 @@ object RendererFunctions {
       z = 1,
       width = w,
       height = h,
+      rotation = 0,
+      scaleX = 1,
+      scaleY = 1,
       imageRef = "",
       alpha = 1,
       tintR = 1,
@@ -39,7 +42,7 @@ object RendererFunctions {
     gl.shaderSource(vertShader, vertexShaderCode)
     gl.compileShader(vertShader)
 
-    if(gl.getShaderParameter(vertShader, COMPILE_STATUS).asInstanceOf[Boolean]) {
+    if (gl.getShaderParameter(vertShader, COMPILE_STATUS).asInstanceOf[Boolean]) {
       IndigoLogger.info(s"$layerLabel vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
     } else {
       IndigoLogger.info(s"$layerLabel vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
@@ -53,7 +56,7 @@ object RendererFunctions {
     gl.shaderSource(fragShader, fragmentShaderCode)
     gl.compileShader(fragShader)
 
-    if(gl.getShaderParameter(fragShader, COMPILE_STATUS).asInstanceOf[Boolean]) {
+    if (gl.getShaderParameter(fragShader, COMPILE_STATUS).asInstanceOf[Boolean]) {
       IndigoLogger.info(s"$layerLabel fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
     } else {
       IndigoLogger.info(s"$layerLabel fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
@@ -68,7 +71,7 @@ object RendererFunctions {
     gl.attachShader(shaderProgram, fragShader)
     gl.linkProgram(shaderProgram)
 
-    if(gl.getProgramParameter(shaderProgram, LINK_STATUS).asInstanceOf[Boolean]) {
+    if (gl.getProgramParameter(shaderProgram, LINK_STATUS).asInstanceOf[Boolean]) {
       shaderProgram
     } else {
       IndigoLogger.error(gl.getProgramInfoLog(shaderProgram));
@@ -167,8 +170,8 @@ object RendererFunctions {
       scaleLocation: WebGLUniformLocation
   ): Unit = {
     gl.uniform2f(translationLocation, displayObject.x.toDouble, displayObject.y.toDouble)
-    gl.uniform1f(rotationLocation, 0.0d)
-    gl.uniform2f(scaleLocation, displayObject.width.toDouble, displayObject.height.toDouble)
+    gl.uniform1f(rotationLocation,displayObject.rotation)
+    gl.uniform2f(scaleLocation, displayObject.width.toDouble * displayObject.scaleX, displayObject.height.toDouble * displayObject.scaleY)
   }
 
   def mat4ToJsArray(mat4d: Matrix4): scalajs.js.Array[Double] = {

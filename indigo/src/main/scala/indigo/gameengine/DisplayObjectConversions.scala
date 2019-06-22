@@ -56,7 +56,12 @@ object DisplayObjectConversions {
   def leafToDisplayObject(gameTime: GameTime, assetMapping: AssetMapping, metrics: Metrics): SceneGraphNode => List[DisplayObject] = {
     case g: Group =>
       g.children
-        .map(c => c.withDepth(c.depth + g.depth).moveBy(g.positionOffset))
+        .map { c =>
+          c.withDepth(c.depth + g.depth)
+            .moveBy(g.positionOffset)
+            .rotateBy(g.rotation)
+            .scaleBy(g.scale)
+        }
         .flatMap(leafToDisplayObject(gameTime, assetMapping, metrics))
 
     case leaf: Graphic =>
@@ -101,6 +106,9 @@ object DisplayObjectConversions {
       z = leaf.depth.zIndex,
       width = leaf.crop.size.x,
       height = leaf.crop.size.y,
+      rotation = leaf.rotation.value,
+      scaleX = leaf.scale.x,
+      scaleY = leaf.scale.y,
       imageRef = lookupAtlasName(assetMapping, leaf.imageAssetRef),
       alpha = leaf.effects.alpha,
       tintR = leaf.effects.tint.r,
@@ -125,6 +133,9 @@ object DisplayObjectConversions {
       z = leaf.depth.zIndex,
       width = leaf.bounds.size.x,
       height = leaf.bounds.size.y,
+      rotation = leaf.rotation.value,
+      scaleX = leaf.scale.x,
+      scaleY = leaf.scale.y,
       imageRef = lookupAtlasName(assetMapping, anim.imageAssetRef.ref),
       alpha = leaf.effects.alpha,
       tintR = leaf.effects.tint.r,
@@ -155,6 +166,9 @@ object DisplayObjectConversions {
                 z = leaf.depth.zIndex,
                 width = fontChar.bounds.width,
                 height = fontChar.bounds.height,
+                rotation = leaf.rotation.value,
+                scaleX = leaf.scale.x,
+                scaleY = leaf.scale.y,
                 imageRef = lookupAtlasName(assetMapping, fontInfo.fontSpriteSheet.imageAssetRef),
                 alpha = leaf.effects.alpha,
                 tintR = leaf.effects.tint.r,
