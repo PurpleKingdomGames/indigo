@@ -233,68 +233,66 @@ object Graphic {
     )
 }
 
-final case class Sprite(
-    bindingKey: BindingKey,
-    bounds: Rectangle,
-    depth: Depth,
-    rotation: Radians,
-    scale: Vector2,
-    animationsKey: AnimationKey,
-    ref: Point,
-    effects: Effects,
-    eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
+final class Sprite(
+    val bindingKey: BindingKey,
+    val bounds: Rectangle,
+    val depth: Depth,
+    val rotation: Radians,
+    val scale: Vector2,
+    val animationsKey: AnimationKey,
+    val ref: Point,
+    val effects: Effects,
+    val eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
 ) extends Renderable {
 
   def x: Int = bounds.position.x - ref.x
   def y: Int = bounds.position.y - ref.y
 
-  def withDepth(depth: Depth): Sprite =
-    this.copy(depth = depth)
+  def withDepth(newDepth: Depth): Sprite =
+    Sprite(bindingKey, bounds, newDepth, rotation, scale, animationsKey, ref, effects, eventHandler)
 
   def moveTo(pt: Point): Sprite =
-    this.copy(bounds = bounds.moveTo(pt))
+    Sprite(bindingKey, bounds.moveTo(pt), depth, rotation, scale, animationsKey, ref, effects, eventHandler)
   def moveTo(x: Int, y: Int): Sprite =
     moveTo(Point(x, y))
 
   def moveBy(pt: Point): Sprite =
-    this.copy(
-      bounds = bounds.moveTo(this.bounds.position + pt)
-    )
+    Sprite(bindingKey, bounds.moveTo(this.bounds.position + pt), depth, rotation, scale, animationsKey, ref, effects, eventHandler)
   def moveBy(x: Int, y: Int): Sprite =
     moveBy(Point(x, y))
 
   def rotate(angle: Radians): Renderable =
-    this.copy(rotation = angle)
+    Sprite(bindingKey, bounds, depth, angle, scale, animationsKey, ref, effects, eventHandler)
   def rotateBy(angle: Radians): Renderable =
     rotate(rotation + angle)
 
   def scaleBy(amount: Vector2): Renderable =
-    this.copy(scale = amount)
+    Sprite(bindingKey, bounds, depth, rotation, amount, animationsKey, ref, effects, eventHandler)
   def scaleBy(x: Double, y: Double): Renderable =
     scaleBy(Vector2(x, y))
 
-  def withBindingKey(bindingKey: BindingKey): Sprite =
-    this.copy(bindingKey = bindingKey)
+  def withBindingKey(newBindingKey: BindingKey): Sprite =
+    Sprite(newBindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects, eventHandler)
 
   def withAlpha(a: Double): Sprite =
-    this.copy(effects = effects.withAlpha(a))
+    Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects.withAlpha(a), eventHandler)
 
   def withTint(tint: Tint): Sprite =
-    this.copy(effects = effects.withTint(tint))
+    Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects.withTint(tint), eventHandler)
 
   def withTint(red: Double, green: Double, blue: Double): Sprite =
-    this.copy(effects = effects.withTint(Tint(red, green, blue)))
+    withTint(Tint(red, green, blue))
 
   def flipHorizontal(h: Boolean): Sprite =
-    this.copy(effects = effects.withFlip(Flip(horizontal = h, vertical = effects.flip.vertical)))
+    Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects.withFlip(Flip(horizontal = h, vertical = effects.flip.vertical)), eventHandler)
 
   def flipVertical(v: Boolean): Sprite =
-    this.copy(effects = effects.withFlip(Flip(horizontal = effects.flip.horizontal, vertical = v)))
+    Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects.withFlip(Flip(horizontal = effects.flip.horizontal, vertical = v)), eventHandler)
 
-  def withRef(ref: Point): Sprite =
-    this.copy(ref = ref)
+  def withRef(newRef: Point): Sprite =
+    Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, newRef, effects, eventHandler)
   def withRef(x: Int, y: Int): Sprite =
-    this.copy(ref = Point(x, y))
+    withRef(Point(x, y))
 
   def play(): Sprite = {
     AnimationsRegister.addAction(bindingKey, animationsKey, Play)
@@ -322,7 +320,7 @@ final case class Sprite(
   }
 
   def onEvent(e: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]): Sprite =
-    this.copy(eventHandler = e)
+    Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects, e)
 
   def eventHandlerWithBoundsApplied(e: GlobalEvent): Option[GlobalEvent] =
     eventHandler((bounds, e))
@@ -342,6 +340,20 @@ object Sprite {
       effects = Effects.default,
       eventHandler = (_: (Rectangle, GlobalEvent)) => None
     )
+
+  def apply(
+      bindingKey: BindingKey,
+      bounds: Rectangle,
+      depth: Depth,
+      rotation: Radians,
+      scale: Vector2,
+      animationsKey: AnimationKey,
+      ref: Point,
+      effects: Effects,
+      eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
+  ): Sprite =
+    new Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects, eventHandler)
+
 }
 
 final class Text(
