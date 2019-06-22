@@ -22,7 +22,7 @@ sealed trait SceneGraphNode {
   def moveTo(x: Int, y: Int): SceneGraphNode
   def moveBy(pt: Point): SceneGraphNode
   def moveBy(x: Int, y: Int): SceneGraphNode
-  
+
 }
 
 final class Group(val positionOffset: Point, val depth: Depth, val children: List[SceneGraphNode]) extends SceneGraphNode {
@@ -344,16 +344,16 @@ object Sprite {
     )
 }
 
-final case class Text(
-    text: String,
-    alignment: TextAlignment,
-    position: Point,
-    depth: Depth,
-    rotation: Radians,
-    scale: Vector2,
-    fontKey: FontKey,
-    effects: Effects,
-    eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
+final class Text(
+    val text: String,
+    val alignment: TextAlignment,
+    val position: Point,
+    val depth: Depth,
+    val rotation: Radians,
+    val scale: Vector2,
+    val fontKey: FontKey,
+    val effects: Effects,
+    val eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
 ) extends Renderable {
 
   def x: Int = bounds.position.x
@@ -367,7 +367,7 @@ final case class Text(
           .split('\n')
           .toList
           .map(_.replace("\n", ""))
-          .map(line => TextLine(line, Text.calculateBoundsOfLine(line, fontInfo)))
+          .map(line => new TextLine(line, Text.calculateBoundsOfLine(line, fontInfo)))
       }
       .getOrElse {
         IndigoLogger.errorOnce(s"Cannot build Text lines, missing Font with key: $fontKey")
@@ -380,60 +380,61 @@ final case class Text(
     }
 
   def moveTo(pt: Point): Text =
-    this.copy(position = pt)
+    Text(text, alignment, pt, depth, rotation, scale, fontKey, effects, eventHandler)
   def moveTo(x: Int, y: Int): Text =
     moveTo(Point(x, y))
 
   def moveBy(pt: Point): Text =
-    this.copy(
-      position = this.position + pt
-    )
+    Text(text, alignment, position + pt, depth, rotation, scale, fontKey, effects, eventHandler)
   def moveBy(x: Int, y: Int): Text =
     moveBy(Point(x, y))
 
   def rotate(angle: Radians): Renderable =
-    this.copy(rotation = angle)
+    Text(text, alignment, position, depth, angle, scale, fontKey, effects, eventHandler)
   def rotateBy(angle: Radians): Renderable =
     rotate(rotation + angle)
 
   def scaleBy(amount: Vector2): Renderable =
-    this.copy(scale = amount)
+    Text(text, alignment, position, depth, rotation, amount, fontKey, effects, eventHandler)
   def scaleBy(x: Double, y: Double): Renderable =
     scaleBy(Vector2(x, y))
 
-  def withDepth(depth: Depth): Text =
-    this.copy(depth = depth)
+  def withDepth(newDepth: Depth): Text =
+    Text(text, alignment, position, newDepth, rotation, scale, fontKey, effects, eventHandler)
 
   def withAlpha(a: Double): Text =
-    this.copy(effects = effects.withAlpha(a))
+    Text(text, alignment, position, depth, rotation, scale, fontKey, effects.withAlpha(a), eventHandler)
 
   def withTint(tint: Tint): Text =
-    this.copy(effects = effects.withTint(tint))
+    Text(text, alignment, position, depth, rotation, scale, fontKey, effects.withTint(tint), eventHandler)
 
   def withTint(red: Double, green: Double, blue: Double): Text =
-    this.copy(effects = effects.withTint(Tint(red, green, blue)))
+    Text(text, alignment, position, depth, rotation, scale, fontKey, effects.withTint(Tint(red, green, blue)), eventHandler)
 
   def flipHorizontal(h: Boolean): Text =
-    this.copy(effects = effects.withFlip(Flip(horizontal = h, vertical = effects.flip.vertical)))
+    Text(text, alignment, position, depth, rotation, scale, fontKey, effects.withFlip(Flip(horizontal = h, vertical = effects.flip.vertical)), eventHandler)
 
   def flipVertical(v: Boolean): Text =
-    this.copy(effects = effects.withFlip(Flip(horizontal = effects.flip.horizontal, vertical = v)))
+    Text(text, alignment, position, depth, rotation, scale, fontKey, effects.withFlip(Flip(horizontal = effects.flip.horizontal, vertical = v)), eventHandler)
 
-  def withAlignment(alignment: TextAlignment): Text =
-    this.copy(alignment = alignment)
+  def withAlignment(newAlignment: TextAlignment): Text =
+    Text(text, newAlignment, position, depth, rotation, scale, fontKey, effects, eventHandler)
 
-  def alignLeft: Text   = copy(alignment = TextAlignment.Left)
-  def alignCenter: Text = copy(alignment = TextAlignment.Center)
-  def alignRight: Text  = copy(alignment = TextAlignment.Right)
+  def alignLeft: Text =
+    Text(text, TextAlignment.Left, position, depth, rotation, scale, fontKey, effects, eventHandler)
+  def alignCenter: Text =
+    Text(text, TextAlignment.Center, position, depth, rotation, scale, fontKey, effects, eventHandler)
+  def alignRight: Text =
+    Text(text, TextAlignment.Right, position, depth, rotation, scale, fontKey, effects, eventHandler)
 
-  def withText(text: String): Text =
-    this.copy(text = text)
+  def withText(newText: String): Text =
+    Text(newText, alignment, position, depth, rotation, scale, fontKey, effects, eventHandler)
 
-  def withFontKey(fontKey: FontKey): Text =
-    this.copy(fontKey = fontKey)
+  def withFontKey(newFontKey: FontKey): Text =
+    Text(text, alignment, position, depth, rotation, scale, newFontKey, effects, eventHandler)
 
   def onEvent(e: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]): Text =
-    this.copy(eventHandler = e)
+    Text(text, alignment, position, depth, rotation, scale, fontKey, effects, e)
 
   def alignedBounds: Rectangle =
     (alignment, bounds.moveTo(position)) match {
@@ -447,7 +448,7 @@ final case class Text(
 
 }
 
-final case class TextLine(text: String, lineBounds: Rectangle)
+final class TextLine(val text: String, val lineBounds: Rectangle)
 
 object Text {
 
@@ -468,4 +469,18 @@ object Text {
       effects = Effects.default,
       eventHandler = (_: (Rectangle, GlobalEvent)) => None
     )
+
+  def apply(
+      text: String,
+      alignment: TextAlignment,
+      position: Point,
+      depth: Depth,
+      rotation: Radians,
+      scale: Vector2,
+      fontKey: FontKey,
+      effects: Effects,
+      eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
+  ) =
+    new Text(text, alignment, position, depth, rotation, scale, fontKey, effects, eventHandler)
+
 }
