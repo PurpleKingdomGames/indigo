@@ -3,7 +3,7 @@ package indigo.gameengine
 import scala.collection.mutable
 
 @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures", "org.wartremover.warts.NonUnitStatements"))
-final class QuickCache[A](private val cache: mutable.Map[CacheKey, A]) {
+final class QuickCache[A](private val cache: mutable.HashMap[CacheKey, A]) {
 
   def fetch(key: CacheKey): Option[A] =
     cache.get(key)
@@ -14,7 +14,7 @@ final class QuickCache[A](private val cache: mutable.Map[CacheKey, A]) {
   }
 
   def fetchOrAdd(key: CacheKey, value: => A): A =
-    cache.getOrElse(key, value)
+    fetch(key).getOrElse(add(key, value))
 
   def purgeAll(): QuickCache[A] = {
     cache.clear()
@@ -25,6 +25,12 @@ final class QuickCache[A](private val cache: mutable.Map[CacheKey, A]) {
     cache.remove(key)
     this
   }
+
+  def keys: List[CacheKey] =
+    cache.keys.toList
+
+  def all: List[(CacheKey, A)] =
+    cache.toList
 
 }
 
@@ -41,7 +47,7 @@ object QuickCache {
     cache.fetchOrAdd(CacheKey(key), value)
 
   def empty[A]: QuickCache[A] =
-    new QuickCache[A](mutable.Map.empty[CacheKey, A])
+    new QuickCache[A](mutable.HashMap.empty[CacheKey, A])
 
 }
 
