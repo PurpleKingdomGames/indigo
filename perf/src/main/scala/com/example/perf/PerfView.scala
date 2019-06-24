@@ -6,7 +6,7 @@ import scala.util.Random
 
 object PerfView {
 
-  def updateView(model: MyGameModel, fpsCounter: FpsCounter, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
+  def updateView(model: MyGameModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     frameInputEvents.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + implicitly[AsString[Point]].show(position))
       case None           => ()
@@ -15,7 +15,7 @@ object PerfView {
     SceneUpdateFragment(
       gameLayer(model),
       lightingLayer(frameInputEvents.signals),
-      uiLayer(fpsCounter),
+      uiLayer(),
       AmbientLight.Normal.withAmount(0.5).withTint(1, 1, 0),
       Nil,
       SceneAudio.None
@@ -119,11 +119,10 @@ object PerfView {
       .addChar(FontChar(",", 248, 0, 15, 23))
       .addChar(FontChar(" ", 145, 52, 23, 23))
 
-  def uiLayer(fpsCounter: FpsCounter): List[SceneGraphNode] =
+  def uiLayer(): List[SceneGraphNode] =
     List(
       Text((herdCount + 1).toString + " Naked dudes!", PerfGame.viewportWidth / 2, 40, 5, fontKey).alignCenter,
-      Text("Thundering Herd!", PerfGame.viewportWidth / 2, 10, 5, fontKey).alignCenter,
-      Text(fpsCounter.asString, 10, 565, 5, fontKey).alignLeft
+      Text("Thundering Herd!", PerfGame.viewportWidth / 2, 10, 5, fontKey).alignCenter
     )
 
 }
