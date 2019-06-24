@@ -29,6 +29,28 @@ object QuickCacheTests extends TestSuite {
         cache.fetch(CacheKey("ten")) ==> Some(20)
       }
 
+      "values are lazily evaluated" - {
+
+        var message: String = "nada"
+
+        implicit val cache = QuickCache.empty[Int]
+
+        QuickCache("ten") {
+          message = "a"
+          10
+        } ==> 10
+
+        message ==> "a"
+
+        QuickCache("ten") {
+          message = "b"
+          20
+        } ==> 10
+
+        message ==> "a"
+
+      }
+
     }
 
 }

@@ -8,7 +8,7 @@ final class QuickCache[A](private val cache: mutable.HashMap[CacheKey, A]) {
   def fetch(key: CacheKey): Option[A] =
     cache.get(key)
 
-  def add(key: CacheKey, value: A): A = {
+  def add(key: CacheKey, value: => A): A = {
     cache.update(key, value)
     value
   }
@@ -37,13 +37,7 @@ final class QuickCache[A](private val cache: mutable.HashMap[CacheKey, A]) {
 @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
 object QuickCache {
 
-  def apply[A](key: String)(value: A)(implicit cache: QuickCache[A]): A =
-    cache.fetchOrAdd(CacheKey(key), value)
-
-  def apply[A](value: A)(implicit cache: QuickCache[A], key: ToCacheKey[A]): A =
-    cache.fetchOrAdd(key.toKey(value), value)
-
-  def apply[A](cache: QuickCache[A], key: String, value: A): A =
+  def apply[A](key: String)(value: => A)(implicit cache: QuickCache[A]): A =
     cache.fetchOrAdd(CacheKey(key), value)
 
   def empty[A]: QuickCache[A] =
