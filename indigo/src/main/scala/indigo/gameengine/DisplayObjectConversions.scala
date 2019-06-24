@@ -23,8 +23,10 @@ object DisplayObjectConversions {
   implicit private val stringCache: QuickCache[String]                           = QuickCache.empty
   implicit private val vector2Cache: QuickCache[Vector2]                         = QuickCache.empty
   implicit private val frameCache: QuickCache[SpriteSheetFrameCoordinateOffsets] = QuickCache.empty
+  implicit private val doCache: QuickCache[DisplayObject]                        = QuickCache.empty
+  implicit private val listDoCache: QuickCache[List[DisplayObject]]              = QuickCache.empty
 
-  private val lookupTextureOffset: (AssetMapping, String) => Vector2 = (assetMapping, name) =>
+  def lookupTextureOffset(assetMapping: AssetMapping, name: String): Vector2 =
     QuickCache("tex-offset-" + name) {
       assetMapping.mappings
         .find(p => p._1 === name)
@@ -36,7 +38,7 @@ object DisplayObjectConversions {
         }
     }
 
-  private val lookupAtlasName: (AssetMapping, String) => String = (assetMapping, name) =>
+  def lookupAtlasName(assetMapping: AssetMapping, name: String): String =
     QuickCache("atlas-" + name) {
       assetMapping.mappings.find(p => p._1 === name).map(_._2.atlasName).getOrElse {
         IndigoLogger.info("Failed to find atlas name for texture: " + name)
@@ -155,42 +157,46 @@ object DisplayObjectConversions {
 
   def textLineToDisplayObjects(leaf: Text, assetMapping: AssetMapping): (TextLine, Int, Int) => List[DisplayObject] =
     (line, alignmentOffsetX, yOffset) =>
-      FontRegister
-        .findByFontKey(leaf.fontKey)
-        .map { fontInfo =>
-          zipWithCharDetails(line.text.toList, fontInfo).map {
-            case (fontChar, xPosition) =>
-              DisplayObject(
-                x = leaf.position.x + xPosition + alignmentOffsetX,
-                y = leaf.position.y + yOffset,
-                z = leaf.depth.zIndex,
-                width = fontChar.bounds.width,
-                height = fontChar.bounds.height,
-                rotation = leaf.rotation.value,
-                scaleX = leaf.scale.x,
-                scaleY = leaf.scale.y,
-                imageRef = lookupAtlasName(assetMapping, fontInfo.fontSpriteSheet.imageAssetRef),
-                alpha = leaf.effects.alpha,
-                tintR = leaf.effects.tint.r,
-                tintG = leaf.effects.tint.g,
-                tintB = leaf.effects.tint.b,
-                flipHorizontal = leaf.effects.flip.horizontal,
-                flipVertical = leaf.effects.flip.vertical,
-                frame = QuickCache(fontChar.bounds.hash + "_" + fontInfo.fontSpriteSheet.imageAssetRef) {
-                  SpriteSheetFrame.calculateFrameOffset(
-                    imageSize = lookupAtlasSize(assetMapping, fontInfo.fontSpriteSheet.imageAssetRef),
-                    frameSize = Vector2(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble),
-                    framePosition = Vector2(fontChar.bounds.x.toDouble, fontChar.bounds.y.toDouble),
-                    textureOffset = lookupTextureOffset(assetMapping, fontInfo.fontSpriteSheet.imageAssetRef)
-                  )
-                }
-              )
+      QuickCache(line.hash + ":" + alignmentOffsetX.toString() + ":" + yOffset.toString()) {
+        FontRegister
+          .findByFontKey(leaf.fontKey)
+          .map { fontInfo =>
+            zipWithCharDetails(line.text.toList, fontInfo).map {
+              case (fontChar, xPosition) =>
+              QuickCache(leaf.fontKey.key + ":" + fontChar.character.toString() + ":" + fontChar.bounds.hash + ":" + xPosition.toString()) {
+                DisplayObject(
+                  x = leaf.position.x + xPosition + alignmentOffsetX,
+                  y = leaf.position.y + yOffset,
+                  z = leaf.depth.zIndex,
+                  width = fontChar.bounds.width,
+                  height = fontChar.bounds.height,
+                  rotation = leaf.rotation.value,
+                  scaleX = leaf.scale.x,
+                  scaleY = leaf.scale.y,
+                  imageRef = lookupAtlasName(assetMapping, fontInfo.fontSpriteSheet.imageAssetRef),
+                  alpha = leaf.effects.alpha,
+                  tintR = leaf.effects.tint.r,
+                  tintG = leaf.effects.tint.g,
+                  tintB = leaf.effects.tint.b,
+                  flipHorizontal = leaf.effects.flip.horizontal,
+                  flipVertical = leaf.effects.flip.vertical,
+                  frame = QuickCache(fontChar.bounds.hash + "_" + fontInfo.fontSpriteSheet.imageAssetRef) {
+                    SpriteSheetFrame.calculateFrameOffset(
+                      imageSize = lookupAtlasSize(assetMapping, fontInfo.fontSpriteSheet.imageAssetRef),
+                      frameSize = Vector2(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble),
+                      framePosition = Vector2(fontChar.bounds.x.toDouble, fontChar.bounds.y.toDouble),
+                      textureOffset = lookupTextureOffset(assetMapping, fontInfo.fontSpriteSheet.imageAssetRef)
+                    )
+                  }
+                )
+              }
+            }
           }
-        }
-        .getOrElse {
-          IndigoLogger.errorOnce(s"Cannot render Text, missing Font with key: ${leaf.fontKey}")
-          Nil
-        }
+          .getOrElse {
+            IndigoLogger.errorOnce(s"Cannot render Text, missing Font with key: ${leaf.fontKey}")
+            Nil
+          }
+      }
 
   private def zipWithCharDetails(charList: List[Char], fontInfo: FontInfo): List[(FontChar, Int)] = {
     @tailrec

@@ -475,7 +475,9 @@ final class Text(
 
 }
 
-final class TextLine(val text: String, val lineBounds: Rectangle)
+final class TextLine(val text: String, val lineBounds: Rectangle) {
+  def hash: String = text+lineBounds.hash
+}
 
 object Text {
 
