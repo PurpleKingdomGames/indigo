@@ -4,7 +4,7 @@ import indigo._
 import indigoexts.entrypoint._
 import indigoexts.formats._
 import indigo.json._
-// import indigoexts.subsystems.fpscounter.FPSCounter
+import indigoexts.subsystems.fpscounter.FPSCounter
 
 object PerfGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
 
@@ -36,8 +36,7 @@ object PerfGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
     Set(PerfView.fontInfo)
 
   val subSystems: Set[indigoexts.subsystems.SubSystem] =
-    // Set(FPSCounter.subSystem(PerfView.fontKey, Point(10, 565)))
-    Set()
+    Set(FPSCounter.subSystem(PerfView.fontKey, Point(10, 565)))
 
   def initialModel(startupData: MyStartupData): MyGameModel =
     PerfModel.initialModel(startupData)

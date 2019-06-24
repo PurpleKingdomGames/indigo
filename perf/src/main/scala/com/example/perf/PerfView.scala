@@ -14,12 +14,9 @@ object PerfView {
 
     SceneUpdateFragment(
       gameLayer(model),
-      // lightingLayer(frameInputEvents.signals),
-      Nil,
-      // uiLayer(),
-      Nil,
-      // AmbientLight.Normal.withAmount(0.5).withTint(1, 1, 0),
-      AmbientLight.Normal,//.withAmount(0.5).withTint(1, 1, 0),
+      lightingLayer(frameInputEvents.signals),
+      uiLayer(),
+      AmbientLight.Normal.withAmount(0.5),
       Nil,
       SceneAudio.None
     )
