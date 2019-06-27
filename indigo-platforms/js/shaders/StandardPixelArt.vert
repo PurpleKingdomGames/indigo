@@ -6,13 +6,11 @@ in vec2 a_texcoord;
 
 // Uniforms
 layout (std140) uniform DisplayObjectUBO {
-  vec2 across;
-  vec2 down;
+  vec2 u_translation;
+  vec2 u_scale;
+  float u_rotation;
 };
 uniform mat4 u_projection;
-uniform vec2 u_translation;
-uniform float u_rotation;
-uniform vec2 u_scale;
 
 // Varying
 out vec2 v_texcoord;
@@ -45,7 +43,7 @@ void main(void) {
 
   vec2 moveToTopLeft = u_scale / 2.0;
 
-  mat4 transform = translate2d(moveToTopLeft + u_translation + across + down) * rotate2d(u_rotation) * scale2d(u_scale);
+  mat4 transform = translate2d(moveToTopLeft + u_translation) * rotate2d(u_rotation) * scale2d(u_scale);
 
   gl_Position = u_projection * transform * a_vertices;
 

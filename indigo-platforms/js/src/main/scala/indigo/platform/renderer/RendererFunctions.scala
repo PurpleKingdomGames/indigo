@@ -162,18 +162,6 @@ object RendererFunctions {
     case (false, false) => Matrix4.identity
   }
 
-  def setupVertexShaderState(
-      gl: raw.WebGLRenderingContext,
-      displayObject: DisplayObject,
-      translationLocation: WebGLUniformLocation,
-      rotationLocation: WebGLUniformLocation,
-      scaleLocation: WebGLUniformLocation
-  ): Unit = {
-    gl.uniform2f(translationLocation, displayObject.x.toDouble, displayObject.y.toDouble)
-    gl.uniform1f(rotationLocation,displayObject.rotation)
-    gl.uniform2f(scaleLocation, displayObject.width.toDouble * displayObject.scaleX, displayObject.height.toDouble * displayObject.scaleY)
-  }
-
   def mat4ToJsArray(mat4d: Matrix4): scalajs.js.Array[Double] = {
     val a = new scalajs.js.Array[Double]()
     mat4d.mat.foreach(d => a.push(d))
@@ -213,5 +201,17 @@ object RendererFunctions {
       ty2
     )
   }
+
+  def makeUBOData(displayObject: DisplayObject): scalajs.js.Array[Double] =
+    scalajs.js.Array[Double](
+      displayObject.x.toDouble,
+      displayObject.y.toDouble,
+      displayObject.width.toDouble * displayObject.scaleX,
+      displayObject.height.toDouble * displayObject.scaleY,
+      displayObject.rotation,
+      0,
+      0,
+      0
+    )
 
 }

@@ -5,10 +5,12 @@ in vec4 a_vertices;
 in vec2 a_texcoord;
 
 // Uniforms
+layout (std140) uniform DisplayObjectUBO {
+  vec2 u_translation;
+  vec2 u_scale;
+  float u_rotation;
+};
 uniform mat4 u_projection;
-uniform vec2 u_translation;
-uniform float u_rotation;
-uniform vec2 u_scale;
 
 out vec2 v_texcoord;
 
