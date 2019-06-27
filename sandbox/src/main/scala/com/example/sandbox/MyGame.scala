@@ -4,6 +4,7 @@ import indigo._
 import indigo.json._
 import indigoexts.entrypoint._
 import indigoexts.formats._
+import indigoexts.subsystems.fpscounter.FPSCounter
 
 object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
 
@@ -11,18 +12,25 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
   private val viewportHeight: Int     = 256
   private val magnificationLevel: Int = 2
 
-  val config: GameConfig = GameConfig(
-    viewport = GameViewport(viewportWidth, viewportHeight),
-    frameRate = 30,
-    clearColor = ClearColor(0.4, 0.2, 0.5, 1),
-    magnification = magnificationLevel
-  )
+  val config: GameConfig =
+    GameConfig(
+      viewport = GameViewport(viewportWidth, viewportHeight),
+      frameRate = 60,
+      clearColor = ClearColor(0.4, 0.2, 0.5, 1),
+      magnification = magnificationLevel
+    )
 
-  val assets: Set[AssetType] = MyAssets.assets
+  val assets: Set[AssetType] =
+    MyAssets.assets
 
-  val fonts: Set[FontInfo]       = Set(MyView.fontInfo)
-  val animations: Set[Animation] = Set()
-  val subSystems: Set[SubSystem] = Set()
+  val fonts: Set[FontInfo] =
+    Set(MyView.fontInfo)
+
+  val animations: Set[Animation] =
+    Set()
+
+  val subSystems: Set[SubSystem] =
+    Set(FPSCounter.subSystem(MyView.fontKey, Point(3, 100)))
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, MyStartupData] = {
     def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[MyStartupData] =
