@@ -78,8 +78,20 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     gl.enable(BLEND)
     gl.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
 
+    oneTimeVertexArraySetup()
+  }
+
+  def oneTimeVertexArraySetup(): Unit = {
+
     gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
     gl.bufferData(ARRAY_BUFFER, new Float32Array(vertices), STATIC_DRAW)
+
+    List(standardShaderProgram, lightingShaderProgram, mergeShaderProgram).foreach { shaderProgram =>
+      val verticesLocation = gl.getAttribLocation(shaderProgram, "a_vertices")
+      gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
+      bindAttibuteBuffer(gl, verticesLocation, 3)
+    }
+
   }
 
   def drawScene(displayable: Displayable, metrics: Metrics): Unit = {
@@ -140,9 +152,10 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       value = mat4ToJsArray(projectionMatrix)
     )
 
-    // Attribute locations
-    val verticesLocation = gl.getAttribLocation(shaderProgram, "a_vertices")
+    // Texture attribute and uniform
     val texcoordLocation = gl.getAttribLocation(shaderProgram, "a_texcoord")
+    val textureLocation  = gl.getUniformLocation(shaderProgram, "u_texture")
+    gl.uniform1i(textureLocation, 0)
 
     // Uniform locations (vertex)
     val translationLocation = gl.getUniformLocation(shaderProgram, "u_translation")
@@ -150,18 +163,12 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     val scaleLocation       = gl.getUniformLocation(shaderProgram, "u_scale")
 
     // Uniform locations (fragment)
-    val tintLocation    = gl.getUniformLocation(shaderProgram, "u_tint")
-    val textureLocation = gl.getUniformLocation(shaderProgram, "u_texture")
-
-    gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
-    bindAttibuteBuffer(gl, verticesLocation, 3)
-
-    // Set once
-    gl.uniform1i(textureLocation, 0)
+    val tintLocation = gl.getUniformLocation(shaderProgram, "u_tint")
 
     sortByDepth(displayObjects).foreach { displayObject =>
       metrics.record(layer.metricStart)
 
+      // Bind texture coords
       gl.bindBuffer(ARRAY_BUFFER, textureBuffer)
       gl.bufferData(ARRAY_BUFFER, new Float32Array(RendererFunctions.textureCoordinates(displayObject)), STATIC_DRAW)
       bindAttibuteBuffer(gl, texcoordLocation, 2)
