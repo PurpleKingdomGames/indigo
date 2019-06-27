@@ -74,7 +74,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   def init(): Unit = {
     gl.disable(DEPTH_TEST)
-    gl.viewport(0, 0, cNc.width.toDouble, cNc.height.toDouble)
+    gl.viewport(0, 0, gl.drawingBufferWidth.toDouble, gl.drawingBufferHeight.toDouble)
     gl.enable(BLEND)
     gl.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
 
