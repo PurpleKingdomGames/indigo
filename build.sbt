@@ -430,7 +430,27 @@ lazy val indigoExts =
 lazy val indigoExtsJS  = indigoExts.js
 lazy val indigoExtsJVM = indigoExts.jvm
 
-// Indigo Extensions
+// Indigo Facades
+lazy val facades =
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Full)
+    .in(file("facades"))
+    .settings(
+      name := "facades",
+      version := indigoVersion,
+      scalaVersion := "2.12.8",
+      organization := "indigo",
+      scalacOptions += "-Yrangepos",
+      scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits")
+    )
+    .jsSettings(
+      libraryDependencies ++= Seq(
+        "org.scala-js" %%% "scalajs-dom" % "0.9.7"
+      )
+    )
+lazy val facadesJS = facades.js
+
+// Indigo Platforms
 lazy val indigoPlatforms =
   crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Full)
@@ -475,6 +495,7 @@ lazy val indigoPlatforms =
       )
     )
     .dependsOn(shared)
+    .dependsOn(facades)
 lazy val indigoPlatformsJS  = indigoPlatforms.js
 lazy val indigoPlatformsJVM = indigoPlatforms.jvm
 
