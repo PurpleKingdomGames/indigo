@@ -14,11 +14,9 @@ import org.scalajs.dom.raw.WebGLProgram
 import indigo.shared.datatypes.Matrix4
 import scala.scalajs.js.typedarray.Float32Array
 import indigo.facades.WebGL2RenderingContext
+import indigo.platform.shaders._
 
 final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends Renderer {
-
-  import RendererFunctions._
-  import indigo.platform.shaders._
 
   private val gl: WebGLRenderingContext =
     cNc.context
@@ -28,47 +26,21 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   private val textureLocations: List[TextureLookupResult] =
     loadedTextureAssets.map { li =>
-      new TextureLookupResult(li.name, organiseImage(gl, li.data))
+      new TextureLookupResult(li.name, RendererFunctions.organiseImage(gl, li.data))
     }
-
-  val vertices: scalajs.js.Array[Double] = {
-    val xd: Double = -0.5d
-    val yd: Double = -0.5d
-    val zd: Double = 1.0d
-    val wd: Double = 1.0d
-    val hd: Double = 1.0d
-
-    scalajs.js.Array[Double](
-      xd,
-      yd,
-      zd,
-      xd,
-      hd + yd,
-      zd,
-      wd + xd,
-      yd,
-      zd,
-      xd,
-      hd + yd,
-      zd,
-      wd + xd,
-      yd,
-      zd,
-      wd + xd,
-      hd + yd,
-      zd
-    )
-  }
-
-  private val vertexCount: Int = vertices.length / 3
 
   private val vertexBuffer: WebGLBuffer           = gl.createBuffer()
   private val textureBuffer: WebGLBuffer          = gl.createBuffer()
   private val displayObjectUBOBuffer: WebGLBuffer = gl.createBuffer()
 
-  private val standardShaderProgram = shaderProgramSetup(gl, "Pixel", StandardPixelArtVert.shader, StandardPixelArtFrag.shader)
-  private val lightingShaderProgram = shaderProgramSetup(gl, "Lighting", StandardLightingPixelArtVert.shader, StandardLightingPixelArtFrag.shader)
-  private val mergeShaderProgram    = shaderProgramSetup(gl, "Merge", StandardMergeVert.shader, StandardMergeFrag.shader)
+  private val standardShaderProgram =
+    RendererFunctions.shaderProgramSetup(gl, "Pixel", StandardPixelArtVert.shader, StandardPixelArtFrag.shader)
+
+  private val lightingShaderProgram =
+    RendererFunctions.shaderProgramSetup(gl, "Lighting", StandardLightingPixelArtVert.shader, StandardLightingPixelArtFrag.shader)
+
+  private val mergeShaderProgram =
+    RendererFunctions.shaderProgramSetup(gl, "Merge", StandardMergeVert.shader, StandardMergeFrag.shader)
 
   private val gameFrameBuffer: FrameBufferComponents =
     FrameBufferFunctions.createFrameBuffer(gl, FrameBufferFunctions.createAndSetupTexture(cNc))
@@ -83,22 +55,17 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     gl.enable(BLEND)
     gl.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
 
-    vertexArraySetup()
-  }
-
-  def vertexArraySetup(): Unit = {
     gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
-    gl.bufferData(ARRAY_BUFFER, new Float32Array(vertices), STATIC_DRAW)
+    gl.bufferData(ARRAY_BUFFER, new Float32Array(RendererFunctions.vertices), STATIC_DRAW)
 
     List(standardShaderProgram, lightingShaderProgram, mergeShaderProgram).foreach { shaderProgram =>
       val verticesLocation = gl.getAttribLocation(shaderProgram, "a_vertices")
-      bindAttibuteBuffer(gl, verticesLocation, 3)
+      RendererFunctions.bindAttibuteBuffer(gl, verticesLocation, 3)
     }
   }
 
   def drawScene(displayable: Displayable, metrics: Metrics): Unit = {
-
-    resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight, cNc.magnification)
+    RendererFunctions.resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight, cNc.magnification)
 
     metrics.record(DrawGameLayerStartMetric)
     drawLayer(displayable.game, Some(gameFrameBuffer), config.clearColor, standardShaderProgram, CurrentDrawLayer.Game, metrics)
@@ -120,7 +87,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(DrawUiLayerEndMetric)
 
     metrics.record(RenderToWindowStartMetric)
-    drawLayer(List(screenDisplayObject(cNc.width, cNc.height)), None, config.clearColor, mergeShaderProgram, CurrentDrawLayer.Merge, metrics)
+    drawLayer(List(RendererFunctions.screenDisplayObject(cNc.width, cNc.height)), None, config.clearColor, mergeShaderProgram, CurrentDrawLayer.Merge, metrics)
     metrics.record(RenderToWindowEndMetric)
   }
 
@@ -151,7 +118,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     gl.uniformMatrix4fv(
       location = gl.getUniformLocation(shaderProgram, "u_projection"),
       transpose = false,
-      value = mat4ToJsArray(projectionMatrix)
+      value = RendererFunctions.mat4ToJsArray(projectionMatrix)
     )
 
     // Texture attribute and uniform
@@ -159,10 +126,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     val textureLocation  = gl.getUniformLocation(shaderProgram, "u_texture")
     gl.uniform1i(textureLocation, 0)
 
-    // Uniform locations (fragment)
-    // val tintLocation = gl.getUniformLocation(shaderProgram, "u_tint")
-
-    sortByDepth(displayObjects).foreach { displayObject =>
+    RendererFunctions.sortByDepth(displayObjects).foreach { displayObject =>
       metrics.record(layer.metricStart)
 
       val data: scalajs.js.Array[Double] = RendererFunctions.makeUBOData(displayObject)
@@ -173,19 +137,19 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       // Bind texture coords
       gl.bindBuffer(ARRAY_BUFFER, textureBuffer)
       gl.bufferData(ARRAY_BUFFER, new Float32Array(RendererFunctions.textureCoordinates(displayObject)), STATIC_DRAW)
-      bindAttibuteBuffer(gl, texcoordLocation, 2)
+      RendererFunctions.bindAttibuteBuffer(gl, texcoordLocation, 2)
 
       layer match {
         case CurrentDrawLayer.Merge =>
-          setupMergeFragmentShaderState(gl, mergeShaderProgram, gameFrameBuffer.texture, lightingFrameBuffer.texture, uiFrameBuffer.texture)
+          RendererFunctions.setupMergeFragmentShaderState(gl, mergeShaderProgram, gameFrameBuffer.texture, lightingFrameBuffer.texture, uiFrameBuffer.texture)
 
         case _ =>
           textureLocations.find(t => t.name === displayObject.imageRef).foreach { textureLookup =>
-            setupFragmentShaderState(gl, textureLookup.texture, displayObject)
+            RendererFunctions.setupFragmentShaderState(gl, textureLookup.texture, displayObject)
           }
       }
 
-      gl.drawArrays(TRIANGLES, 0, vertexCount)
+      gl.drawArrays(TRIANGLES, 0, RendererFunctions.vertexCount)
 
       metrics.record(layer.metricDraw)
 

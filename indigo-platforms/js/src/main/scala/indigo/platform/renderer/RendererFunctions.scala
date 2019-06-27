@@ -33,9 +33,40 @@ object RendererFunctions {
       frame = SpriteSheetFrame.defaultOffset
     )
 
+  val vertices: scalajs.js.Array[Double] = {
+    val xd: Double = -0.5d
+    val yd: Double = -0.5d
+    val zd: Double = 1.0d
+    val wd: Double = 1.0d
+    val hd: Double = 1.0d
+
+    scalajs.js.Array[Double](
+      xd,
+      yd,
+      zd,
+      xd,
+      hd + yd,
+      zd,
+      wd + xd,
+      yd,
+      zd,
+      xd,
+      hd + yd,
+      zd,
+      wd + xd,
+      yd,
+      zd,
+      wd + xd,
+      hd + yd,
+      zd
+    )
+  }
+
+  val vertexCount: Int =
+    vertices.length / 3
+
   @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny", "org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.Throw"))
   def shaderProgramSetup(gl: raw.WebGLRenderingContext, layerLabel: String, vertexShaderCode: String, fragmentShaderCode: String): WebGLProgram = {
-
     //Create a vertex shader program object and compile it
     val vertShader = gl.createShader(VERTEX_SHADER)
     gl.shaderSource(vertShader, vertexShaderCode)
@@ -104,7 +135,6 @@ object RendererFunctions {
   }
 
   def organiseImage(gl: raw.WebGLRenderingContext, image: raw.ImageData): WebGLTexture = {
-
     val texture = createAndBindTexture(gl)
 
     gl.texImage2D(TEXTURE_2D, 0, RGBA, RGBA, UNSIGNED_BYTE, image)
@@ -117,7 +147,6 @@ object RendererFunctions {
     displayObjects => displayObjects.sortWith((d1, d2) => d1.z > d2.z)
 
   def setupMergeFragmentShaderState(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, textureGame: WebGLTexture, textureLighting: WebGLTexture, textureUi: WebGLTexture): Unit = {
-
     val u_texture_game = gl.getUniformLocation(shaderProgram, "u_texture_game")
     gl.uniform1i(u_texture_game, 1)
     gl.activeTexture(TEXTURE1)
@@ -153,13 +182,6 @@ object RendererFunctions {
       orthographicProjectionMatrix = Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
       orthographicProjectionMatrixNoMag = Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)
     }
-
-  val flipMatrix: ((Boolean, Boolean)) => Matrix4 = {
-    case (true, true)   => Matrix4.identity.translate(1, 1, 0).scale(-1, -1, -1)
-    case (true, false)  => Matrix4.identity.translate(1, 0, 0).scale(-1, 1, -1)
-    case (false, true)  => Matrix4.identity.translate(0, 1, 0).scale(1, -1, -1)
-    case (false, false) => Matrix4.identity
-  }
 
   def mat4ToJsArray(mat4d: Matrix4): scalajs.js.Array[Double] = {
     val a = new scalajs.js.Array[Double]()
