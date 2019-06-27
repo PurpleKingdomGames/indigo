@@ -160,7 +160,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     gl.uniform1i(textureLocation, 0)
 
     // Uniform locations (fragment)
-    val tintLocation = gl.getUniformLocation(shaderProgram, "u_tint")
+    // val tintLocation = gl.getUniformLocation(shaderProgram, "u_tint")
 
     sortByDepth(displayObjects).foreach { displayObject =>
       metrics.record(layer.metricStart)
@@ -181,7 +181,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
         case _ =>
           textureLocations.find(t => t.name === displayObject.imageRef).foreach { textureLookup =>
-            setupFragmentShaderState(gl, textureLookup.texture, displayObject, tintLocation)
+            setupFragmentShaderState(gl, textureLookup.texture, displayObject)
           }
       }
 

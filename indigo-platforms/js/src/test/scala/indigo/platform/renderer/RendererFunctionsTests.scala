@@ -23,9 +23,9 @@ object RendererFunctionsTests extends TestSuite {
             0.5,   // scale Y
             "",    // imageref
             1,     // a
-            1,     // r
-            1,     // g
-            1,     // b
+            2,     // r
+            3,     // g
+            4,     // b
             false, //flip h
             false, // flip v
             SpriteSheetFrame.defaultOffset
@@ -37,6 +37,10 @@ object RendererFunctionsTests extends TestSuite {
             10,        // y
             300 * 0.5, // scale x
             200 * 0.5, // scale y
+            2,         // r
+            3,         // g
+            4,         // b
+            1,         // a
             2,         // rotation
             0,
             0,

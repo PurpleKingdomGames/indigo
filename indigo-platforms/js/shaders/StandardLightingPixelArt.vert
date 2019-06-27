@@ -8,12 +8,14 @@ in vec2 a_texcoord;
 layout (std140) uniform DisplayObjectUBO {
   vec2 u_translation;
   vec2 u_scale;
+  vec4 u_tint;
   float u_rotation;
 };
 uniform mat4 u_projection;
 
 // Varying
 out vec2 v_texcoord;
+out vec4 v_tint;
 
 mat4 rotate2d(float angle){
     return mat4(cos(angle), -sin(angle), 0, 0,
@@ -49,4 +51,5 @@ void main(void) {
 
   // Pass the texcoord to the fragment shader.
   v_texcoord = a_texcoord;
+  v_tint = u_tint;
 }

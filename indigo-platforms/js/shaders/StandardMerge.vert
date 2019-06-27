@@ -8,11 +8,13 @@ in vec2 a_texcoord;
 layout (std140) uniform DisplayObjectUBO {
   vec2 u_translation;
   vec2 u_scale;
+  vec4 u_tint;
   float u_rotation;
 };
 uniform mat4 u_projection;
 
 out vec2 v_texcoord;
+out vec4 v_tint;
 
 mat4 translate2d(vec2 t){
     return mat4(1, 0, 0, 0,
@@ -39,4 +41,5 @@ void main(void) {
   gl_Position = u_projection * transform * a_vertices;
 
   v_texcoord = a_texcoord;
+  v_tint = u_tint;
 }

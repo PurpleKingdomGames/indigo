@@ -4,10 +4,11 @@ precision mediump float;
 
 // Uniforms
 uniform sampler2D u_texture;
-uniform vec4 u_tint;
 
 // Varying
 in vec2 v_texcoord;
+in vec4 v_tint;
+
 out vec4 fragColor;
 
 void main(void) {
@@ -15,5 +16,5 @@ void main(void) {
 
   float average = (textureColor.r + textureColor.g + textureColor.b) / float(3);
 
-  fragColor = vec4(textureColor.rgb * u_tint.rgb, average * u_tint.a);
+  fragColor = vec4(textureColor.rgb * v_tint.rgb, average * v_tint.a);
 }

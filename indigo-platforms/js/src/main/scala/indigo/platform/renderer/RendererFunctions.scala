@@ -10,7 +10,6 @@ import indigo.shared.EqualTo._
 
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.SpriteSheetFrame
-import org.scalajs.dom.raw.WebGLUniformLocation
 
 object RendererFunctions {
 
@@ -171,14 +170,11 @@ object RendererFunctions {
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var lastTextureName: String = ""
 
-  def setupFragmentShaderState(gl: raw.WebGLRenderingContext, texture: WebGLTexture, displayObject: DisplayObject, tintLocation: WebGLUniformLocation): Unit = {
+  def setupFragmentShaderState(gl: raw.WebGLRenderingContext, texture: WebGLTexture, displayObject: DisplayObject): Unit =
     if (displayObject.imageRef !== lastTextureName) {
       gl.bindTexture(TEXTURE_2D, texture)
       lastTextureName = displayObject.imageRef
     }
-
-    gl.uniform4f(tintLocation, displayObject.tintR.toDouble, displayObject.tintG.toDouble, displayObject.tintB.toDouble, displayObject.alpha.toDouble)
-  }
 
   def textureCoordinates(d: DisplayObject): scalajs.js.Array[Double] = {
     val tx1 = if (d.flipHorizontal) 1 - d.frame.translate.x else d.frame.translate.x
@@ -208,6 +204,10 @@ object RendererFunctions {
       displayObject.y.toDouble,
       displayObject.width.toDouble * displayObject.scaleX,
       displayObject.height.toDouble * displayObject.scaleY,
+      displayObject.tintR.toDouble,
+      displayObject.tintG.toDouble,
+      displayObject.tintB.toDouble,
+      displayObject.alpha.toDouble,
       displayObject.rotation,
       0,
       0,
