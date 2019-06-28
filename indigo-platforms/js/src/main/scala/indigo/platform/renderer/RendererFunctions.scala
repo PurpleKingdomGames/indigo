@@ -29,63 +29,30 @@ object RendererFunctions {
       tintG = 1,
       tintB = 1,
       flipHorizontal = false,
-      flipVertical = true,
+      flipVertical = false,
       frame = SpriteSheetFrame.defaultOffset
     )
 
   val vertices: scalajs.js.Array[Double] = {
-    val xd: Double = -0.5d
-    val yd: Double = -0.5d
-    val zd: Double = 1.0d
-    val wd: Double = 1.0d
-    val hd: Double = 1.0d
+    val vert0 = scalajs.js.Array[Double](-0.5, -0.5, 1.0d)
+    val vert1 = scalajs.js.Array[Double](-0.5, 0.5, 1.0d)
+    val vert2 = scalajs.js.Array[Double](0.5, -0.5, 1.0d)
+    val vert3 = scalajs.js.Array[Double](0.5, 0.5, 1.0d)
 
-    scalajs.js.Array[Double](
-      xd,
-      yd,
-      zd,
-      xd,
-      yd + hd,
-      zd,
-      xd + wd,
-      yd,
-      zd,
-      xd,
-      yd + hd,
-      zd,
-      xd + wd,
-      yd,
-      zd,
-      xd + wd,
-      yd + hd,
-      zd
-    )
+    vert0 ++ vert1 ++ vert2 ++ vert3
   }
 
   val textureCoordinates: scalajs.js.Array[Double] = {
-    val tx1: Double = 0d
-    val tx2: Double = 1d
-    val ty1: Double = 0d
-    val ty2: Double = 1d
+    val tx0 = scalajs.js.Array[Double](0.0, 1.0)
+    val tx1 = scalajs.js.Array[Double](0.0, 0.0)
+    val tx2 = scalajs.js.Array[Double](1.0, 1.0)
+    val tx3 = scalajs.js.Array[Double](1.0, 0.0)
 
-    scalajs.js.Array[Double](
-      tx1,
-      ty2,
-      tx1,
-      ty1,
-      tx2,
-      ty2,
-      tx1,
-      ty1,
-      tx2,
-      ty2,
-      tx2,
-      ty1
-    )
+    tx0 ++ tx1 ++ tx2 ++ tx3
   }
 
   val vertexCount: Int =
-    vertices.length / 3
+    vertices.length
 
   @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny", "org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.Throw"))
   def shaderProgramSetup(gl: raw.WebGLRenderingContext, layerLabel: String, vertexShaderCode: String, fragmentShaderCode: String): WebGLProgram = {
@@ -211,25 +178,36 @@ object RendererFunctions {
     a
   }
 
-  def makeUBOData(displayObject: DisplayObject): scalajs.js.Array[Double] =
-    scalajs.js.Array[Double](
-      displayObject.x.toDouble,
-      displayObject.y.toDouble,
-      displayObject.width.toDouble * displayObject.scaleX,
-      displayObject.height.toDouble * displayObject.scaleY,
-      displayObject.tintR.toDouble,
-      displayObject.tintG.toDouble,
-      displayObject.tintB.toDouble,
-      displayObject.alpha.toDouble,
-      displayObject.frame.translate.x,
-      displayObject.frame.translate.y,
-      displayObject.frame.scale.x,
-      displayObject.frame.scale.y,
-      displayObject.rotation,
-      0,
-      0,
-      0
-    )
+  def makeUBOData(displayObject: DisplayObject): scalajs.js.Array[Double] = {
+    val rowOf16_0 =
+      scalajs.js.Array[Double](
+        displayObject.x.toDouble,
+        displayObject.y.toDouble,
+        displayObject.width.toDouble * displayObject.scaleX,
+        displayObject.height.toDouble * displayObject.scaleY
+      )
+
+    val rowOf16_1 =
+      scalajs.js.Array[Double](
+        displayObject.tintR.toDouble,
+        displayObject.tintG.toDouble,
+        displayObject.tintB.toDouble,
+        displayObject.alpha.toDouble
+      )
+
+    val rowOf16_2 =
+      scalajs.js.Array[Double](
+        displayObject.frame.translate.x,
+        displayObject.frame.translate.y,
+        displayObject.frame.scale.x,
+        displayObject.frame.scale.y
+      )
+
+    val rowOf16_3 =
+      scalajs.js.Array[Double](displayObject.rotation, 0, 0, 0)
+
+    rowOf16_0 ++ rowOf16_1 ++ rowOf16_2 ++ rowOf16_3
+  }
 
   // Must equal the number of elements in the makeUBOData(...) array
   val displayObjectUBODataSize: Int = 16

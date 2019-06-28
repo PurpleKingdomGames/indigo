@@ -175,7 +175,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
           ()
       }
 
-      gl.drawArrays(TRIANGLES, 0, RendererFunctions.vertexCount)
+      gl.drawArrays(TRIANGLE_STRIP, 0, 4)
 
       metrics.record(layer.metricDraw)
 
