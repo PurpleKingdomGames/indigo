@@ -9,6 +9,8 @@ layout (std140) uniform DisplayObjectUBO {
   vec2 u_translation;
   vec2 u_scale;
   vec4 u_tint;
+  vec2 u_frameTranslation;
+  vec2 u_frameScale;
   float u_rotation;
 };
 uniform mat4 u_projection;
@@ -32,6 +34,11 @@ mat4 scale2d(vec2 s){
                 );
 }
 
+vec2 scaleTextCoords(){
+  mat4 transform = translate2d(u_frameTranslation) * scale2d(u_frameScale);
+  return (transform * vec4(a_texcoord.x, a_texcoord.y, 1, 1)).xy;
+}
+
 void main(void) {
 
   vec2 moveToTopLeft = u_scale / 2.0;
@@ -40,6 +47,6 @@ void main(void) {
 
   gl_Position = u_projection * transform * a_vertices;
 
-  v_texcoord = a_texcoord;
+  v_texcoord = scaleTextCoords();
   v_tint = u_tint;
 }

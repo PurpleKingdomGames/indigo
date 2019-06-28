@@ -23,6 +23,9 @@ object SpriteSheetFrame {
   final class SpriteSheetFrameCoordinateOffsets(val scale: Vector2, val translate: Vector2)
   object SpriteSheetFrameCoordinateOffsets {
 
+    def apply(scale: Vector2, translate: Vector2): SpriteSheetFrameCoordinateOffsets =
+      new SpriteSheetFrameCoordinateOffsets(scale, translate)
+
     implicit val show: AsString[SpriteSheetFrameCoordinateOffsets] = {
       val sv = implicitly[AsString[Vector2]]
       AsString.create(v => s"SpriteSheetFrameCoordinateOffsets(scale = ${sv.show(v.scale)}, translate = ${sv.show(v.translate)})")

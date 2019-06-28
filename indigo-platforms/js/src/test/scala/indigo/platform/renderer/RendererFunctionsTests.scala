@@ -26,11 +26,21 @@ object RendererFunctionsTests extends TestSuite {
             2,     // r
             3,     // g
             4,     // b
-            false, //flip h
-            false, // flip v
-            SpriteSheetFrame.defaultOffset
+            false, // flip h
+            true,  // flip v
+            SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets(Vector2(0.5, 0.5), Vector2(0.1, 0.1))
           )
 
+        /*
+          layout (std140) uniform DisplayObjectUBO {
+            vec2 u_translation;
+            vec2 u_scale;
+            vec4 u_tint;
+            vec2 u_frameTranslation;
+            vec2 u_frameScale;
+            float u_rotation;
+          };
+         */
         val expected: scalajs.js.Array[Double] =
           scalajs.js.Array[Double](
             10,        // x
@@ -41,10 +51,14 @@ object RendererFunctionsTests extends TestSuite {
             3,         // g
             4,         // b
             1,         // a
+            0.1,       // frame x
+            0.1,       // frame y
+            0.5,       // frame scale x
+            0.5,       // frame scale y
             2,         // rotation
-            0,
-            0,
-            0
+            0,         //
+            0,         //
+            0          //
           )
 
         val actual = RendererFunctions.makeUBOData(displyObject)

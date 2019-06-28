@@ -55,12 +55,22 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     gl.enable(BLEND)
     gl.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
 
+    // Vertex
     gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
     gl.bufferData(ARRAY_BUFFER, new Float32Array(RendererFunctions.vertices), STATIC_DRAW)
 
     List(standardShaderProgram, lightingShaderProgram, mergeShaderProgram).foreach { shaderProgram =>
       val verticesLocation = gl.getAttribLocation(shaderProgram, "a_vertices")
       RendererFunctions.bindAttibuteBuffer(gl, verticesLocation, 3)
+    }
+
+    // Bind texture coords
+    gl.bindBuffer(ARRAY_BUFFER, textureBuffer)
+    gl.bufferData(ARRAY_BUFFER, new Float32Array(RendererFunctions.textureCoordinates), STATIC_DRAW)
+
+    List(standardShaderProgram, lightingShaderProgram, mergeShaderProgram).foreach { shaderProgram =>
+      val texcoordLocation = gl.getAttribLocation(shaderProgram, "a_texcoord")
+      RendererFunctions.bindAttibuteBuffer(gl, texcoordLocation, 2)
     }
   }
 
@@ -91,6 +101,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(RenderToWindowEndMetric)
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
   def drawLayer(
       displayObjects: List[DisplayObject],
       frameBufferComponents: Option[FrameBufferComponents],
@@ -122,31 +133,46 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     )
 
     // Texture attribute and uniform
-    val texcoordLocation = gl.getAttribLocation(shaderProgram, "a_texcoord")
-    val textureLocation  = gl.getUniformLocation(shaderProgram, "u_texture")
+    val textureLocation = gl.getUniformLocation(shaderProgram, "u_texture")
     gl.uniform1i(textureLocation, 0)
+
+    // Bind UBO buffer
+    gl.bindBuffer(ARRAY_BUFFER, displayObjectUBOBuffer)
+    gl2.bindBufferRange(gl2.UNIFORM_BUFFER, 0, displayObjectUBOBuffer, 0, RendererFunctions.displayObjectUBODataSize * Float32Array.BYTES_PER_ELEMENT)
+
+    var lastTextureName: String = ""
 
     RendererFunctions.sortByDepth(displayObjects).foreach { displayObject =>
       metrics.record(layer.metricStart)
 
-      val data: scalajs.js.Array[Double] = RendererFunctions.makeUBOData(displayObject)
-      gl.bindBuffer(ARRAY_BUFFER, displayObjectUBOBuffer)
-      gl.bufferData(ARRAY_BUFFER, new Float32Array(data), STATIC_DRAW)
-      gl2.bindBufferRange(gl2.UNIFORM_BUFFER, 0, displayObjectUBOBuffer, 0, data.length * Float32Array.BYTES_PER_ELEMENT)
+      // Set all the uniforms
+      gl.bufferData(
+        ARRAY_BUFFER,
+        new Float32Array(
+          RendererFunctions.makeUBOData(displayObject)
+        ),
+        STATIC_DRAW
+      )
 
-      // Bind texture coords
-      gl.bindBuffer(ARRAY_BUFFER, textureBuffer)
-      gl.bufferData(ARRAY_BUFFER, new Float32Array(RendererFunctions.textureCoordinates(displayObject)), STATIC_DRAW)
-      RendererFunctions.bindAttibuteBuffer(gl, texcoordLocation, 2)
-
+      // If needed, update texture state
       layer match {
         case CurrentDrawLayer.Merge =>
-          RendererFunctions.setupMergeFragmentShaderState(gl, mergeShaderProgram, gameFrameBuffer.texture, lightingFrameBuffer.texture, uiFrameBuffer.texture)
+          RendererFunctions.setupMergeFragmentShaderState(
+            gl,
+            mergeShaderProgram,
+            gameFrameBuffer.texture,
+            lightingFrameBuffer.texture,
+            uiFrameBuffer.texture
+          )
+
+        case _ if displayObject.imageRef !== lastTextureName =>
+          textureLocations.find(t => t.name === displayObject.imageRef).foreach { textureLookup =>
+            gl.bindTexture(TEXTURE_2D, textureLookup.texture)
+            lastTextureName = displayObject.imageRef
+          }
 
         case _ =>
-          textureLocations.find(t => t.name === displayObject.imageRef).foreach { textureLookup =>
-            RendererFunctions.setupFragmentShaderState(gl, textureLookup.texture, displayObject)
-          }
+          ()
       }
 
       gl.drawArrays(TRIANGLES, 0, RendererFunctions.vertexCount)

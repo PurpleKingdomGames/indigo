@@ -45,20 +45,42 @@ object RendererFunctions {
       yd,
       zd,
       xd,
-      hd + yd,
+      yd + hd,
       zd,
-      wd + xd,
+      xd + wd,
       yd,
       zd,
       xd,
-      hd + yd,
+      yd + hd,
       zd,
-      wd + xd,
+      xd + wd,
       yd,
       zd,
-      wd + xd,
-      hd + yd,
+      xd + wd,
+      yd + hd,
       zd
+    )
+  }
+
+  val textureCoordinates: scalajs.js.Array[Double] = {
+    val tx1: Double = 0d
+    val tx2: Double = 1d
+    val ty1: Double = 0d
+    val ty2: Double = 1d
+
+    scalajs.js.Array[Double](
+      tx1,
+      ty2,
+      tx1,
+      ty1,
+      tx2,
+      ty2,
+      tx1,
+      ty1,
+      tx2,
+      ty2,
+      tx2,
+      ty1
     )
   }
 
@@ -189,37 +211,6 @@ object RendererFunctions {
     a
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var lastTextureName: String = ""
-
-  def setupFragmentShaderState(gl: raw.WebGLRenderingContext, texture: WebGLTexture, displayObject: DisplayObject): Unit =
-    if (displayObject.imageRef !== lastTextureName) {
-      gl.bindTexture(TEXTURE_2D, texture)
-      lastTextureName = displayObject.imageRef
-    }
-
-  def textureCoordinates(d: DisplayObject): scalajs.js.Array[Double] = {
-    val tx1 = if (d.flipHorizontal) 1 - d.frame.translate.x else d.frame.translate.x
-    val tx2 = if (d.flipHorizontal) 1 - (d.frame.scale.x + d.frame.translate.x) else d.frame.scale.x + d.frame.translate.x
-    val ty1 = if (d.flipVertical) 1 - d.frame.translate.y else d.frame.translate.y
-    val ty2 = if (d.flipVertical) 1 - (d.frame.scale.y + d.frame.translate.y) else d.frame.scale.y + d.frame.translate.y
-
-    scalajs.js.Array[Double](
-      tx1,
-      ty1,
-      tx1,
-      ty2,
-      tx2,
-      ty1,
-      tx1,
-      ty2,
-      tx2,
-      ty1,
-      tx2,
-      ty2
-    )
-  }
-
   def makeUBOData(displayObject: DisplayObject): scalajs.js.Array[Double] =
     scalajs.js.Array[Double](
       displayObject.x.toDouble,
@@ -230,10 +221,17 @@ object RendererFunctions {
       displayObject.tintG.toDouble,
       displayObject.tintB.toDouble,
       displayObject.alpha.toDouble,
+      displayObject.frame.translate.x,
+      displayObject.frame.translate.y,
+      displayObject.frame.scale.x,
+      displayObject.frame.scale.y,
       displayObject.rotation,
       0,
       0,
       0
     )
+
+  // Must equal the number of elements in the makeUBOData(...) array
+  val displayObjectUBODataSize: Int = 16
 
 }
