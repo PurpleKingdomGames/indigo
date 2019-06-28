@@ -150,14 +150,14 @@ final class Graphic(
   def moveBy(x: Int, y: Int): Graphic =
     moveBy(Point(x, y))
 
-  def rotate(angle: Radians): Renderable =
+  def rotate(angle: Radians): Graphic =
     Graphic(bounds, depth, angle, scale, imageAssetRef, ref, crop, effects, eventHandler)
-  def rotateBy(angle: Radians): Renderable =
+  def rotateBy(angle: Radians): Graphic =
     rotate(rotation + angle)
 
-  def scaleBy(amount: Vector2): Renderable =
+  def scaleBy(amount: Vector2): Graphic =
     Graphic(bounds, depth, rotation, amount, imageAssetRef, ref, crop, effects, eventHandler)
-  def scaleBy(x: Double, y: Double): Renderable =
+  def scaleBy(x: Double, y: Double): Graphic =
     scaleBy(Vector2(x, y))
 
   def withDepth(depthValue: Depth): Graphic =
@@ -276,14 +276,14 @@ final class Sprite(
   def moveBy(x: Int, y: Int): Sprite =
     moveBy(Point(x, y))
 
-  def rotate(angle: Radians): Renderable =
+  def rotate(angle: Radians): Sprite =
     Sprite(bindingKey, bounds, depth, angle, scale, animationsKey, ref, effects, eventHandler)
-  def rotateBy(angle: Radians): Renderable =
+  def rotateBy(angle: Radians): Sprite =
     rotate(rotation + angle)
 
-  def scaleBy(amount: Vector2): Renderable =
+  def scaleBy(amount: Vector2): Sprite =
     Sprite(bindingKey, bounds, depth, rotation, amount, animationsKey, ref, effects, eventHandler)
-  def scaleBy(x: Double, y: Double): Renderable =
+  def scaleBy(x: Double, y: Double): Sprite =
     scaleBy(Vector2(x, y))
 
   def withBindingKey(newBindingKey: BindingKey): Sprite =
@@ -416,14 +416,14 @@ final class Text(
   def moveBy(x: Int, y: Int): Text =
     moveBy(Point(x, y))
 
-  def rotate(angle: Radians): Renderable =
+  def rotate(angle: Radians): Text =
     Text(text, alignment, position, depth, angle, scale, fontKey, effects, eventHandler)
-  def rotateBy(angle: Radians): Renderable =
+  def rotateBy(angle: Radians): Text =
     rotate(rotation + angle)
 
-  def scaleBy(amount: Vector2): Renderable =
+  def scaleBy(amount: Vector2): Text =
     Text(text, alignment, position, depth, rotation, amount, fontKey, effects, eventHandler)
-  def scaleBy(x: Double, y: Double): Renderable =
+  def scaleBy(x: Double, y: Double): Text =
     scaleBy(Vector2(x, y))
 
   def withDepth(newDepth: Depth): Text =
