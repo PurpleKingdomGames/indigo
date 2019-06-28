@@ -52,7 +52,7 @@ void main(void) {
 
   vec2 moveToTopLeft = u_scale / 2.0;
 
-  mat4 transform = translate2d(moveToTopLeft + u_translation) * rotate2d(u_rotation) * scale2d(u_scale);
+  mat4 transform = translate2d(moveToTopLeft + u_translation) * rotate2d(u_rotation) * scale2d(u_scale) * scale2d(vec2(1.0, -1.0));
 
   gl_Position = u_projection * transform * a_vertices;
 
