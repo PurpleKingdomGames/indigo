@@ -178,36 +178,25 @@ object RendererFunctions {
     a
   }
 
-  def makeUBOData(displayObject: DisplayObject): scalajs.js.Array[Double] = {
-    val rowOf16_0 =
-      scalajs.js.Array[Double](
-        displayObject.x.toDouble,
-        displayObject.y.toDouble,
-        displayObject.width.toDouble * displayObject.scaleX,
-        displayObject.height.toDouble * displayObject.scaleY
-      )
-
-    val rowOf16_1 =
-      scalajs.js.Array[Double](
-        displayObject.tintR.toDouble,
-        displayObject.tintG.toDouble,
-        displayObject.tintB.toDouble,
-        displayObject.alpha.toDouble
-      )
-
-    val rowOf16_2 =
-      scalajs.js.Array[Double](
-        displayObject.frame.translate.x,
-        displayObject.frame.translate.y,
-        displayObject.frame.scale.x,
-        displayObject.frame.scale.y
-      )
-
-    val rowOf16_3 =
-      scalajs.js.Array[Double](displayObject.rotation, 0, 0, 0)
-
-    rowOf16_0 ++ rowOf16_1 ++ rowOf16_2 ++ rowOf16_3
-  }
+  def makeUBOData(displayObject: DisplayObject): scalajs.js.Array[Double] =
+    scalajs.js.Array[Double](
+      displayObject.x.toDouble,
+      displayObject.y.toDouble,
+      displayObject.width.toDouble * displayObject.scaleX,
+      displayObject.height.toDouble * displayObject.scaleY,
+      displayObject.tintR.toDouble,
+      displayObject.tintG.toDouble,
+      displayObject.tintB.toDouble,
+      displayObject.alpha.toDouble,
+      displayObject.frame.translate.x,
+      displayObject.frame.translate.y,
+      displayObject.frame.scale.x,
+      displayObject.frame.scale.y,
+      displayObject.rotation,
+      0,
+      0,
+      0
+    )
 
   // Must equal the number of elements in the makeUBOData(...) array
   val displayObjectUBODataSize: Int = 16
