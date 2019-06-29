@@ -178,25 +178,27 @@ object RendererFunctions {
     a
   }
 
-  def makeUBOData(displayObject: DisplayObject): scalajs.js.Array[Double] =
-    scalajs.js.Array[Double](
-      displayObject.x.toDouble,
-      displayObject.y.toDouble,
-      displayObject.width.toDouble * displayObject.scaleX,
-      displayObject.height.toDouble * displayObject.scaleY,
-      displayObject.tintR.toDouble,
-      displayObject.tintG.toDouble,
-      displayObject.tintB.toDouble,
-      displayObject.alpha.toDouble,
-      displayObject.frame.translate.x,
-      displayObject.frame.translate.y,
-      displayObject.frame.scale.x,
-      displayObject.frame.scale.y,
-      displayObject.rotation,
-      0,
-      0,
-      0
-    )
+  val uboData: scalajs.js.Array[Double] =
+    scalajs.js.Array[Double](0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+  def updateUBOData(displayObject: DisplayObject): Unit = {
+    uboData(0) = displayObject.x.toDouble
+    uboData(1) = displayObject.y.toDouble
+    uboData(2) = displayObject.width.toDouble * displayObject.scaleX
+    uboData(3) = displayObject.height.toDouble * displayObject.scaleY
+
+    uboData(4) = displayObject.tintR.toDouble
+    uboData(5) = displayObject.tintG.toDouble
+    uboData(6) = displayObject.tintB.toDouble
+    uboData(7) = displayObject.alpha.toDouble
+
+    uboData(8) = displayObject.frame.translate.x
+    uboData(9) = displayObject.frame.translate.y
+    uboData(10) = displayObject.frame.scale.x
+    uboData(11) = displayObject.frame.scale.y
+
+    uboData(12) = displayObject.rotation
+  }
 
   // Must equal the number of elements in the makeUBOData(...) array
   val displayObjectUBODataSize: Int = 16

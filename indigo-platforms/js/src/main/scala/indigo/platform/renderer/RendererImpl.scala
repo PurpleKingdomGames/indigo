@@ -146,11 +146,10 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       metrics.record(layer.metricStart)
 
       // Set all the uniforms
+      RendererFunctions.updateUBOData(displayObject)
       gl.bufferData(
         ARRAY_BUFFER,
-        new Float32Array(
-          RendererFunctions.makeUBOData(displayObject)
-        ),
+        new Float32Array(RendererFunctions.uboData),
         STATIC_DRAW
       )
 
