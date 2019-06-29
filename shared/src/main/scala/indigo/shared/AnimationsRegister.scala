@@ -14,15 +14,15 @@ object AnimationsRegister {
 
   // Base registry
   @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
-  private val animationsRegistry: mutable.HashMap[AnimationKey, Animation] = mutable.HashMap()
+  private val animationsRegistry: mutable.HashMap[String, Animation] = mutable.HashMap()
 
   def register(animations: Animation): Unit = {
-    animationsRegistry.update(animations.animationsKey, animations)
+    animationsRegistry.update(animations.animationsKey.value, animations)
     ()
   }
 
   def findByAnimationKey(animationsKey: AnimationKey): Option[Animation] =
-    animationsRegistry.get(animationsKey)
+    animationsRegistry.get(animationsKey.value)
 
   // Animation states
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
@@ -77,7 +77,7 @@ object AnimationsRegister {
   def fetchFromCache(gameTime: GameTime, bindingKey: BindingKey, animationsKey: AnimationKey, metrics: Metrics): Option[Animation] = {
     val key: String = s"${bindingKey.value}_${animationsKey.value}"
 
-    val cacheEntry: Option[AnimationCacheEntry] = animationsCache.get(key).orElse {
+    animationsCache.get(key).map(_.animations).orElse {
       findByAnimationKey(animationsKey).map { anim =>
         metrics.record(ApplyAnimationMementoStartMetric)
         val updated = animationStates.findStateWithBindingKey(bindingKey).map(m => anim.applyMemento(m)).getOrElse(anim)
@@ -88,15 +88,11 @@ object AnimationsRegister {
         val newAnim  = commands.foldLeft(updated)((a, action) => a.addAction(action.action)).runActions(gameTime)
         metrics.record(RunAnimationActionsEndMetric)
 
-        AnimationCacheEntry(bindingKey, newAnim)
+        animationsCache.update(key, AnimationCacheEntry(bindingKey, newAnim))
+
+        newAnim
       }
     }
-
-    cacheEntry.foreach { e =>
-      animationsCache.update(key, e)
-    }
-
-    cacheEntry.map(_.animations)
   }
 
   private def clearCache(): Unit =
