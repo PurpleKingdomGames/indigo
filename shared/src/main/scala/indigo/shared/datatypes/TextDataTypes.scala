@@ -4,12 +4,17 @@ import indigo.shared.EqualTo
 
 import indigo.shared.EqualTo._
 
-final case class FontInfo(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean) {
+final class FontInfo(val fontKey: FontKey, val fontSpriteSheet: FontSpriteSheet, val unknownChar: FontChar, val fontChars: List[FontChar], val caseSensitive: Boolean) {
   private val nonEmptyChars: List[FontChar] = unknownChar +: fontChars
 
-  def addChar(fontChar: FontChar): FontInfo     = FontInfo(fontKey, fontSpriteSheet, fontChar, nonEmptyChars, caseSensitive)
-  def addChars(chars: List[FontChar]): FontInfo = this.copy(fontChars = fontChars ++ chars)
-  def addChars(chars: FontChar*): FontInfo      = this.copy(fontChars = fontChars ++ chars)
+  def addChar(fontChar: FontChar): FontInfo =
+    FontInfo(fontKey, fontSpriteSheet, fontChar, nonEmptyChars, caseSensitive)
+
+  def addChars(chars: List[FontChar]): FontInfo =
+    FontInfo(fontKey, fontSpriteSheet, unknownChar, fontChars ++ chars, caseSensitive)
+
+  def addChars(chars: FontChar*): FontInfo =
+    addChars(chars.toList)
 
   def findByCharacter(character: String): FontChar =
     nonEmptyChars
@@ -17,14 +22,23 @@ final case class FontInfo(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, un
         if (caseSensitive) p.character === character else p.character.toLowerCase === character.toLowerCase
       }
       .getOrElse(unknownChar)
-  def findByCharacter(character: Char): FontChar = findByCharacter(character.toString)
+  def findByCharacter(character: Char): FontChar =
+    findByCharacter(character.toString)
 
-  def makeCaseSensitive(sensitive: Boolean): FontInfo = this.copy(caseSensitive = sensitive)
-  def isCaseSensitive: FontInfo                       = makeCaseSensitive(true)
-  def isCaseInSensitive: FontInfo                     = makeCaseSensitive(false)
+  def makeCaseSensitive(sensitive: Boolean): FontInfo =
+    FontInfo(fontKey, fontSpriteSheet, unknownChar, fontChars, sensitive)
+
+  def isCaseSensitive: FontInfo =
+    makeCaseSensitive(true)
+  def isCaseInSensitive: FontInfo =
+    makeCaseSensitive(false)
 }
 
 object FontInfo {
+
+  def apply(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean): FontInfo =
+    new FontInfo(fontKey, fontSpriteSheet, unknownChar, fontChars, caseSensitive)
+
   def apply(fontKey: FontKey, imageAssetRef: String, sheetWidth: Int, sheetHeight: Int, unknownChar: FontChar, chars: FontChar*): FontInfo =
     FontInfo(
       fontKey = fontKey,
@@ -35,7 +49,7 @@ object FontInfo {
     )
 }
 
-final case class FontKey(key: String) extends AnyVal
+final class FontKey(val key: String) extends AnyVal
 object FontKey {
 
   implicit def eq(implicit eqS: EqualTo[String]): EqualTo[FontKey] =
@@ -43,11 +57,23 @@ object FontKey {
       eqS.equal(a.key, b.key)
     }
 
+  def apply(key: String): FontKey =
+    new FontKey(key)
+
 }
 
-final case class FontSpriteSheet(imageAssetRef: String, size: Point)
-final case class FontChar(character: String, bounds: Rectangle)
+final class FontSpriteSheet(val imageAssetRef: String, val size: Point)
+object FontSpriteSheet {
+  def apply(imageAssetRef: String, size: Point): FontSpriteSheet =
+    new FontSpriteSheet(imageAssetRef, size)
+}
+
+final class FontChar(val character: String, val bounds: Rectangle)
 object FontChar {
+
+  def apply(character: String, bounds: Rectangle): FontChar =
+    new FontChar(character, bounds)
+
   def apply(character: String, x: Int, y: Int, width: Int, height: Int): FontChar =
     FontChar(character, Rectangle(x, y, width, height))
 }
