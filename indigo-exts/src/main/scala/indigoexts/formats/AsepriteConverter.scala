@@ -42,7 +42,7 @@ object AsepriteConverter {
               animationsKey = animations.animationsKey,
               ref = Point(0, 0),
               effects = Effects.default,
-              eventHandler = (_: (Rectangle, GlobalEvent)) => None
+              eventHandler = (_: (Rectangle, GlobalEvent)) => Nil
             ),
             animations
           )

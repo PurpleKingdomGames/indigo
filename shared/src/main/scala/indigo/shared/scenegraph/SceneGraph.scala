@@ -109,9 +109,9 @@ sealed trait Renderable extends SceneGraphNode {
   def flipHorizontal(h: Boolean): Renderable
   def flipVertical(v: Boolean): Renderable
 
-  def eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
-  def onEvent(e: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]): Renderable
-  def eventHandlerWithBoundsApplied(e: GlobalEvent): Option[GlobalEvent]
+  def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
+  def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Renderable
+  def eventHandlerWithBoundsApplied(e: GlobalEvent): List[GlobalEvent]
 
   override def withDepth(depth: Depth): Renderable
   override def moveTo(pt: Point): Renderable
@@ -134,7 +134,7 @@ final class Graphic(
     val ref: Point,
     val crop: Rectangle,
     val effects: Effects,
-    val eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
+    val eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
 ) extends Renderable {
 
   def x: Int = bounds.position.x - ref.x
@@ -188,10 +188,10 @@ final class Graphic(
   def withCrop(xValue: Int, yValue: Int, widthValue: Int, heightValue: Int): Graphic =
     withCrop(Rectangle(xValue, yValue, widthValue, heightValue))
 
-  def onEvent(eventHandlerValue: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]): Graphic =
+  def onEvent(eventHandlerValue: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Graphic =
     Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects, eventHandlerValue)
 
-  def eventHandlerWithBoundsApplied(e: GlobalEvent): Option[GlobalEvent] =
+  def eventHandlerWithBoundsApplied(e: GlobalEvent): List[GlobalEvent] =
     eventHandler((bounds, e))
 
 }
@@ -207,7 +207,7 @@ object Graphic {
       ref: Point,
       crop: Rectangle,
       effects: Effects,
-      eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
+      eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
   ): Graphic =
     new Graphic(
       bounds,
@@ -231,7 +231,7 @@ object Graphic {
       ref = Point.zero,
       crop = Rectangle(0, 0, width, height),
       effects = Effects.default,
-      eventHandler = (_: (Rectangle, GlobalEvent)) => None
+      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil
     )
 
   def apply(bounds: Rectangle, depth: Int, imageAssetRef: String): Graphic =
@@ -244,7 +244,7 @@ object Graphic {
       ref = Point.zero,
       crop = bounds,
       effects = Effects.default,
-      eventHandler = (_: (Rectangle, GlobalEvent)) => None
+      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil
     )
 }
 
@@ -257,7 +257,7 @@ final class Sprite(
     val animationsKey: AnimationKey,
     val ref: Point,
     val effects: Effects,
-    val eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
+    val eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
 ) extends Renderable {
 
   def x: Int = bounds.position.x - ref.x
@@ -334,10 +334,10 @@ final class Sprite(
     this
   }
 
-  def onEvent(e: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]): Sprite =
+  def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Sprite =
     Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects, e)
 
-  def eventHandlerWithBoundsApplied(e: GlobalEvent): Option[GlobalEvent] =
+  def eventHandlerWithBoundsApplied(e: GlobalEvent): List[GlobalEvent] =
     eventHandler((bounds, e))
 
 }
@@ -353,7 +353,7 @@ object Sprite {
       animationsKey = animationsKey,
       ref = Point.zero,
       effects = Effects.default,
-      eventHandler = (_: (Rectangle, GlobalEvent)) => None
+      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil
     )
 
   def apply(
@@ -365,7 +365,7 @@ object Sprite {
       animationsKey: AnimationKey,
       ref: Point,
       effects: Effects,
-      eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
+      eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
   ): Sprite =
     new Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects, eventHandler)
 
@@ -380,7 +380,7 @@ final class Text(
     val scale: Vector2,
     val fontKey: FontKey,
     val effects: Effects,
-    val eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
+    val eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
 ) extends Renderable {
 
   def x: Int = bounds.position.x
@@ -460,7 +460,7 @@ final class Text(
   def withFontKey(newFontKey: FontKey): Text =
     Text(text, alignment, position, depth, rotation, scale, newFontKey, effects, eventHandler)
 
-  def onEvent(e: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]): Text =
+  def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Text =
     Text(text, alignment, position, depth, rotation, scale, fontKey, effects, e)
 
   def alignedBounds: Rectangle =
@@ -470,13 +470,13 @@ final class Text(
       case (TextAlignment.Right, b)  => b.moveTo(Point(b.x - b.width, b.y))
     }
 
-  def eventHandlerWithBoundsApplied(e: GlobalEvent): Option[GlobalEvent] =
+  def eventHandlerWithBoundsApplied(e: GlobalEvent): List[GlobalEvent] =
     eventHandler((alignedBounds, e))
 
 }
 
 final class TextLine(val text: String, val lineBounds: Rectangle) {
-  def hash: String = text+lineBounds.hash
+  def hash: String = text + lineBounds.hash
 }
 
 object Text {
@@ -496,7 +496,7 @@ object Text {
       scale = Vector2.one,
       fontKey = fontKey,
       effects = Effects.default,
-      eventHandler = (_: (Rectangle, GlobalEvent)) => None
+      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil
     )
 
   def apply(
@@ -508,7 +508,7 @@ object Text {
       scale: Vector2,
       fontKey: FontKey,
       effects: Effects,
-      eventHandler: ((Rectangle, GlobalEvent)) => Option[GlobalEvent]
+      eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
   ) =
     new Text(text, alignment, position, depth, rotation, scale, fontKey, effects, eventHandler)
 
