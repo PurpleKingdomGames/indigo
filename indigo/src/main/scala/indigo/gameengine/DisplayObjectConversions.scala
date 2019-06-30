@@ -15,6 +15,7 @@ import indigo.shared.scenegraph.{Graphic, Sprite, Text, TextLine}
 import indigo.shared.EqualTo._
 import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.scenegraph.Group
+import indigo.shared.QuickCache
 
 import scala.annotation.tailrec
 
@@ -26,6 +27,7 @@ object DisplayObjectConversions {
   implicit private val doCache: QuickCache[DisplayObject]                        = QuickCache.empty
   implicit private val listDoCache: QuickCache[List[DisplayObject]]              = QuickCache.empty
 
+  @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   def lookupTextureOffset(assetMapping: AssetMapping, name: String): Vector2 =
     QuickCache("tex-offset-" + name) {
       assetMapping.mappings
@@ -33,24 +35,23 @@ object DisplayObjectConversions {
         .map(_._2.offset)
         .map(pt => Vector2(pt.x.toDouble, pt.y.toDouble))
         .getOrElse {
-          IndigoLogger.info("Failed to find atlas offset for texture: " + name)
-          Vector2.zero
+          throw new Exception("Failed to find atlas offset for texture: " + name)
         }
     }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   def lookupAtlasName(assetMapping: AssetMapping, name: String): String =
     QuickCache("atlas-" + name) {
       assetMapping.mappings.find(p => p._1 === name).map(_._2.atlasName).getOrElse {
-        IndigoLogger.info("Failed to find atlas name for texture: " + name)
-        ""
+        throw new Exception("Failed to find atlas name for texture: " + name)
       }
     }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   private def lookupAtlasSize(assetMapping: AssetMapping, name: String): Vector2 =
     QuickCache("atlas-size-" + name) {
       assetMapping.mappings.find(p => p._1 === name).map(_._2.atlasSize).getOrElse {
-        IndigoLogger.info("Failed to find atlas size for texture: " + name)
-        Vector2.one
+        throw new Exception("Failed to find atlas size for texture: " + name)
       }
     }
 

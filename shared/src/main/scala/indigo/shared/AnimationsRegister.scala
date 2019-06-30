@@ -13,16 +13,22 @@ import scala.collection.mutable
 object AnimationsRegister {
 
   // Base registry
-  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
-  private val animationsRegistry: mutable.HashMap[String, Animation] = mutable.HashMap()
+  private implicit val animationsRegistry: QuickCache[Animation]        = QuickCache.empty
+  private implicit val animationsCache: QuickCache[AnimationCacheEntry] = QuickCache.empty
 
+  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
+  private val actionsQueue: mutable.Queue[AnimationActionCommand] =
+    new mutable.Queue[AnimationActionCommand]()
+
+  //
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def register(animations: Animation): Unit = {
-    animationsRegistry.update(animations.animationsKey.value, animations)
+    QuickCache(animations.animationsKey.value)(animations)
     ()
   }
 
   def findByAnimationKey(animationsKey: AnimationKey): Option[Animation] =
-    animationsRegistry.get(animationsKey.value)
+    animationsRegistry.fetch(CacheKey(animationsKey.value))
 
   // Animation states
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
@@ -35,10 +41,6 @@ object AnimationsRegister {
     animationStates = updatedAnimationStates
 
   // Frame animation actions queue
-  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
-  private val actionsQueue: mutable.Queue[AnimationActionCommand] =
-    new mutable.Queue[AnimationActionCommand]()
-
   def addAction(bindingKey: BindingKey, animationsKey: AnimationKey, action: AnimationAction): Unit =
     actionsQueue.enqueue(AnimationActionCommand(bindingKey, animationsKey, action))
 
@@ -66,46 +68,44 @@ object AnimationsRegister {
   }
 
   // The running animation cache
-  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
-  private val animationsCache: mutable.HashMap[String, AnimationCacheEntry] = mutable.HashMap()
 
   /*
     Look up of the cache entry means:
   - Inserting or fetching the entry for binding key x and animation key y
   - Applying an animation memento if one doesn't exist and running the commands queued against it.
    */
-  def fetchFromCache(gameTime: GameTime, bindingKey: BindingKey, animationsKey: AnimationKey, metrics: Metrics): Option[Animation] = {
-    val key: String = s"${bindingKey.value}_${animationsKey.value}"
+  def fetchFromCache(gameTime: GameTime, bindingKey: BindingKey, animationsKey: AnimationKey, metrics: Metrics): Option[Animation] =
+    findByAnimationKey(animationsKey)
+      .map { anim =>
+        QuickCache(s"${bindingKey.value}_${animationsKey.value}") {
+          metrics.record(ApplyAnimationMementoStartMetric)
+          val updated = animationStates.findStateWithBindingKey(bindingKey).map(m => anim.applyMemento(m)).getOrElse(anim)
+          metrics.record(ApplyAnimationMementoEndMetric)
 
-    animationsCache.get(key).map(_.animations).orElse {
-      findByAnimationKey(animationsKey).map { anim =>
-        metrics.record(ApplyAnimationMementoStartMetric)
-        val updated = animationStates.findStateWithBindingKey(bindingKey).map(m => anim.applyMemento(m)).getOrElse(anim)
-        metrics.record(ApplyAnimationMementoEndMetric)
+          metrics.record(RunAnimationActionsStartMetric)
+          val commands = dequeueAndDeduplicateActions(bindingKey, animationsKey).reverse
+          val newAnim  = commands.foldLeft(updated)((a, action) => a.addAction(action.action)).runActions(gameTime)
+          metrics.record(RunAnimationActionsEndMetric)
 
-        metrics.record(RunAnimationActionsStartMetric)
-        val commands = dequeueAndDeduplicateActions(bindingKey, animationsKey).reverse
-        val newAnim  = commands.foldLeft(updated)((a, action) => a.addAction(action.action)).runActions(gameTime)
-        metrics.record(RunAnimationActionsEndMetric)
-
-        animationsCache.update(key, AnimationCacheEntry(bindingKey, newAnim))
-
-        newAnim
+          AnimationCacheEntry(bindingKey, newAnim)
+        }
       }
-    }
-  }
-
-  private def clearCache(): Unit =
-    animationsCache.keys.foreach { key =>
-      animationsCache.remove(key)
-    }
+      .map(_.animations)
 
   private def saveAnimationMementos(): Unit =
-    setAnimationStates(AnimationStates(animationsCache.map(e => e._2.animations.saveMemento(e._2.bindingKey)).toList))
+    setAnimationStates(
+      AnimationStates(
+        animationsCache.all
+          .map(_._2)
+          .map(e => e.animations.saveMemento(e.bindingKey))
+          .toList
+      )
+    )
 
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def persistAnimationStates(): Unit = {
     saveAnimationMementos()
-    clearCache()
+    animationsCache.purgeAll()
     clearActionsQueue()
   }
 }
