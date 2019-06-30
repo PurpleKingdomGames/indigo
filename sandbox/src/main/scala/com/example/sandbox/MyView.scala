@@ -113,9 +113,9 @@ object MyView {
         case (bounds, MouseEvent.Click(_, _)) =>
           if (frameInputEvents.wasMouseClickedWithin(bounds))
             println("Hit me! Oh yeah!")
-          None
+          Nil
 
-        case _ => None
+        case _ => Nil
       }
     )
 

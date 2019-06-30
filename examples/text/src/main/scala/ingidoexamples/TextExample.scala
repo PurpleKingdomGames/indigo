@@ -38,10 +38,10 @@ object TextExample extends IndigoGameBasic[Unit, Unit, ViewModel] {
       .alignRight
       .onEvent {
         case (bounds, MouseEvent.Click(_, _)) if frameInputEvents.wasMouseClickedWithin(bounds) =>
-          Some(ChangeColour)
+          List(ChangeColour)
 
         case _ =>
-          None
+          Nil
       }
 
   def initialViewModel(startupData: Unit): Unit => ViewModel =
@@ -72,7 +72,7 @@ final case class ViewModel(tint: Tint) {
 
       case 2 =>
         this.copy(tint = Tint.Green)
-        
+
       case 3 =>
         this.copy(tint = Tint.Blue)
     }
