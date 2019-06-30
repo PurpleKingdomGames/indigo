@@ -54,51 +54,62 @@ object DisplayObjectConversions {
       }
     }
 
-  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
-  def leafToDisplayObject(gameTime: GameTime, assetMapping: AssetMapping, metrics: Metrics): SceneGraphNode => List[DisplayObject] = {
-    case g: Group =>
-      g.children
-        .map { c =>
-          c.withDepth(c.depth + g.depth)
-            .moveBy(g.positionOffset)
-            .rotateBy(g.rotation)
-            .scaleBy(g.scale)
-        }
-        .flatMap(leafToDisplayObject(gameTime, assetMapping, metrics))
+  def sceneNodesToDisplayObjects(sceneNodes: List[SceneGraphNode], gameTime: GameTime, assetMapping: AssetMapping, metrics: Metrics): List[DisplayObject] = {
+    @tailrec
+    def rec(remaining: List[SceneGraphNode], acc: List[DisplayObject]): List[DisplayObject] =
+      remaining match {
+        case Nil =>
+          acc
 
-    case leaf: Graphic =>
-      List(graphicToDisplayObject(leaf, assetMapping))
+        case (x: Group) :: xs =>
+          val childNodes =
+            x.children
+              .map { c =>
+                c.withDepth(c.depth + x.depth)
+                  .moveBy(x.positionOffset)
+                  .rotateBy(x.rotation)
+                  .scaleBy(x.scale)
+              }
 
-    case leaf: Sprite =>
-      AnimationsRegister
-        .fetchFromCache(gameTime, leaf.bindingKey, leaf.animationsKey, metrics)
-        .map { anim =>
-          List(spriteToDisplayObjects(leaf, assetMapping, anim))
-        }
-        .getOrElse {
-          IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${leaf.animationsKey}")
-          Nil
-        }
+          rec(childNodes ++ xs, acc)
 
-    case leaf: Text =>
-      val alignmentOffsetX: Rectangle => Int = lineBounds =>
-        leaf.alignment match {
-          case TextAlignment.Left => 0
+        case (x: Graphic) :: xs =>
+          rec(xs, graphicToDisplayObject(x, assetMapping) :: acc)
 
-          case TextAlignment.Center => -(lineBounds.size.x / 2)
+        case (x: Sprite) :: xs =>
+          AnimationsRegister.fetchFromCache(gameTime, x.bindingKey, x.animationsKey, metrics) match {
+            case None =>
+              IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${x.animationsKey}")
+              rec(xs, acc)
 
-          case TextAlignment.Right => -lineBounds.size.x
-        }
+            case Some(anim) =>
+              rec(xs, spriteToDisplayObject(x, assetMapping, anim) :: acc)
+          }
 
-      val converterFunc: (TextLine, Int, Int) => List[DisplayObject] =
-        DisplayObjectConversions.textLineToDisplayObjects(leaf, assetMapping)
+        case (x: Text) :: xs =>
+          val alignmentOffsetX: Rectangle => Int = lineBounds =>
+            x.alignment match {
+              case TextAlignment.Left => 0
 
-      leaf.lines
-        .foldLeft(0 -> List[DisplayObject]()) { (acc, textLine) =>
-          (acc._1 + textLine.lineBounds.height, acc._2 ++ converterFunc(textLine, alignmentOffsetX(textLine.lineBounds), acc._1))
-        }
-        ._2
+              case TextAlignment.Center => -(lineBounds.size.x / 2)
 
+              case TextAlignment.Right => -lineBounds.size.x
+            }
+
+          val converterFunc: (TextLine, Int, Int) => List[DisplayObject] =
+            DisplayObjectConversions.textLineToDisplayObjects(x, assetMapping)
+
+          val letters =
+            x.lines
+              .foldLeft(0 -> List[DisplayObject]()) { (acc, textLine) =>
+                (acc._1 + textLine.lineBounds.height, acc._2 ++ converterFunc(textLine, alignmentOffsetX(textLine.lineBounds), acc._1))
+              }
+              ._2
+
+          rec(xs, letters ++ acc)
+      }
+
+    rec(sceneNodes, Nil)
   }
 
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject =
@@ -128,7 +139,7 @@ object DisplayObjectConversions {
       }
     )
 
-  def spriteToDisplayObjects(leaf: Sprite, assetMapping: AssetMapping, anim: Animation): DisplayObject =
+  def spriteToDisplayObject(leaf: Sprite, assetMapping: AssetMapping, anim: Animation): DisplayObject =
     DisplayObject(
       x = leaf.x,
       y = leaf.y,

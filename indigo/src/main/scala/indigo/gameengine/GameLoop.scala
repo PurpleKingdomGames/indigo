@@ -238,9 +238,9 @@ object GameLoop {
 
   def convertSceneGraphToDisplayable(gameTime: GameTime, rootNode: SceneGraphRootNode, assetMapping: AssetMapping, ambientLight: AmbientLight, metrics: Metrics): Displayable =
     Displayable(
-      rootNode.game.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping, metrics)),
-      rootNode.lighting.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping, metrics)),
-      rootNode.ui.nodes.flatMap(DisplayObjectConversions.leafToDisplayObject(gameTime, assetMapping, metrics)),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(rootNode.game.nodes, gameTime, assetMapping, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(rootNode.lighting.nodes, gameTime, assetMapping, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(rootNode.ui.nodes, gameTime, assetMapping, metrics),
       ambientLight
     )
 
