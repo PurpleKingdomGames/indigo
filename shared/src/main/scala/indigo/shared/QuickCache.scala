@@ -52,6 +52,23 @@ object QuickCache {
 
 }
 
+object QuickCacheMaybe {
+  def apply[A](key: String)(value: => Option[A])(implicit cache: QuickCache[A]): Option[A] =
+    cache.fetch(CacheKey(key)) match {
+      case Some(v) =>
+        Some(v)
+
+      case None =>
+        value match {
+          case None =>
+            None
+
+          case Some(v) =>
+            Some(cache.add(CacheKey(key), v))
+        }
+    }
+}
+
 final class CacheKey(val value: String) extends AnyVal
 object CacheKey {
   def apply(value: String): CacheKey =

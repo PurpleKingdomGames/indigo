@@ -75,9 +75,9 @@ object AnimationsRegister {
   - Applying an animation memento if one doesn't exist and running the commands queued against it.
    */
   def fetchFromCache(gameTime: GameTime, bindingKey: BindingKey, animationsKey: AnimationKey, metrics: Metrics): Option[Animation] =
-    findByAnimationKey(animationsKey)
-      .map { anim =>
-        QuickCache(s"${bindingKey.value}_${animationsKey.value}") {
+    QuickCacheMaybe(s"${bindingKey.value}_${animationsKey.value}") {
+      findByAnimationKey(animationsKey)
+        .map { anim =>
           metrics.record(ApplyAnimationMementoStartMetric)
           val updated = animationStates.findStateWithBindingKey(bindingKey).map(m => anim.applyMemento(m)).getOrElse(anim)
           metrics.record(ApplyAnimationMementoEndMetric)
@@ -89,8 +89,7 @@ object AnimationsRegister {
 
           AnimationCacheEntry(bindingKey, newAnim)
         }
-      }
-      .map(_.animations)
+    }.map(_.animations)
 
   private def saveAnimationMementos(): Unit =
     setAnimationStates(
