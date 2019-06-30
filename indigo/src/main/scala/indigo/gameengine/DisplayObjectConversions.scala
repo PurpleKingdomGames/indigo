@@ -75,7 +75,7 @@ object DisplayObjectConversions {
           rec(childNodes ++ xs, acc)
 
         case (x: Graphic) :: xs =>
-          rec(xs, graphicToDisplayObject(x, assetMapping) :: acc)
+          rec(xs, acc :+ graphicToDisplayObject(x, assetMapping))
 
         case (x: Sprite) :: xs =>
           AnimationsRegister.fetchFromCache(gameTime, x.bindingKey, x.animationsKey, metrics) match {
@@ -84,7 +84,7 @@ object DisplayObjectConversions {
               rec(xs, acc)
 
             case Some(anim) =>
-              rec(xs, spriteToDisplayObject(x, assetMapping, anim) :: acc)
+              rec(xs, acc :+ spriteToDisplayObject(x, assetMapping, anim))
           }
 
         case (x: Text) :: xs =>
@@ -107,7 +107,7 @@ object DisplayObjectConversions {
               }
               ._2
 
-          rec(xs, letters ++ acc)
+          rec(xs, acc ++ letters)
       }
 
     rec(sceneNodes, Nil)
