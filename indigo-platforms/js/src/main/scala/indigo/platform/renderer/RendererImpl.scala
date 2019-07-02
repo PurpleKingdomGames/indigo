@@ -53,7 +53,6 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     gl.disable(DEPTH_TEST)
     gl.viewport(0, 0, gl.drawingBufferWidth.toDouble, gl.drawingBufferHeight.toDouble)
     gl.enable(BLEND)
-    gl.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
 
     // Vertex
     gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
@@ -74,14 +73,22 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     }
   }
 
+  def setNormalBlend(): Unit =
+    gl.blendFuncSeparate(SRC_ALPHA, ONE_MINUS_SRC_ALPHA, ONE, ONE_MINUS_SRC_ALPHA)
+
+  def setLightingBlend(): Unit =
+    gl.blendFunc(SRC_ALPHA, DST_ALPHA)
+
   def drawScene(displayable: Displayable, metrics: Metrics): Unit = {
     RendererFunctions.resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight, cNc.magnification)
 
     metrics.record(DrawGameLayerStartMetric)
+    setNormalBlend()
     drawLayer(displayable.game, Some(gameFrameBuffer), config.clearColor, standardShaderProgram, CurrentDrawLayer.Game, metrics)
     metrics.record(DrawGameLayerEndMetric)
 
     metrics.record(DrawLightingLayerStartMetric)
+    setLightingBlend()
     drawLayer(
       displayable.lighting,
       Some(lightingFrameBuffer),
@@ -93,10 +100,12 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(DrawLightingLayerEndMetric)
 
     metrics.record(DrawUiLayerStartMetric)
+    setNormalBlend()
     drawLayer(displayable.ui, Some(uiFrameBuffer), ClearColor.Black.forceTransparent, standardShaderProgram, CurrentDrawLayer.UI, metrics)
     metrics.record(DrawUiLayerEndMetric)
 
     metrics.record(RenderToWindowStartMetric)
+    setNormalBlend()
     drawLayer(List(RendererFunctions.screenDisplayObject(cNc.width, cNc.height)), None, config.clearColor, mergeShaderProgram, CurrentDrawLayer.Merge, metrics)
     metrics.record(RenderToWindowEndMetric)
   }

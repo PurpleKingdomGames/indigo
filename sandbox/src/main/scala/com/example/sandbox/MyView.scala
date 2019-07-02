@@ -15,7 +15,7 @@ object MyView {
       gameLayer(model),
       lightingLayer(frameInputEvents.signals),
       uiLayer(frameInputEvents),
-      AmbientLight.Normal.withAmount(0.5).withTint(1, 1, 0),
+      AmbientLight.Normal.withAmount(0.25),
       Nil,
       SceneAudio.None
     )
@@ -54,9 +54,13 @@ object MyView {
 
   def lightingLayer(signals: Signals): List[SceneGraphNode] =
     List(
-      Graphic(0, 0, 320, 240, 1, MyAssets.light).withTint(1, 0, 0),
-      Graphic(-115, -100, 320, 240, 1, MyAssets.light),
-      Graphic(signals.mousePosition.x - 160, signals.mousePosition.y - 120, 320, 240, 1, MyAssets.light)
+      Graphic(114, 64 - 20, 320, 240, 1, MyAssets.light).withRef(Point(160, 120)).withTint(Tint.Red),
+      Graphic(114 - 20, 64 + 20, 320, 240, 1, MyAssets.light).withRef(Point(160, 120)).withTint(Tint.Green),
+      Graphic(114 + 20, 64 + 20, 320, 240, 1, MyAssets.light).withRef(Point(160, 120)).withTint(Tint.Blue),
+      Graphic(0, 0, 320, 240, 1, MyAssets.light)
+        .withTint(1, 1, 0.0)
+        .withRef(Point(160, 120))
+        .moveTo(signals.mousePosition.x, signals.mousePosition.y)
     )
 
   val fontKey: FontKey = FontKey("My font")
