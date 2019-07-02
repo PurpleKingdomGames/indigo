@@ -29,26 +29,36 @@ object GraphicExample extends IndigoGameBasic[Unit, Unit, Unit] {
   def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[Unit] =
     Outcome(())
 
+  val graphic: Graphic =
+    Graphic(0, 0, 256, 256, 1, "graphics")
+      .withRef(48, 48)
+
   def present(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
-        Group(
-          Graphic(0, 0, 256, 256, 1, "graphics")
-            .withRef(48, 48)
-            .withCrop(128, 0, 96, 96)
-            .moveTo(137 * 1, 0),
-          Graphic(0, 0, 256, 256, 1, "graphics")
-            .withRef(48, 48)
-            .withCrop(128, 0, 96, 96)
-            .moveTo(137 * 2, 0)
-            .rotate(Radians(Math.PI / 4)),
-          Graphic(0, 0, 256, 256, 1, "graphics")
-            .withRef(48, 48)
-            .withCrop(128, 0, 96, 96)
-            .moveTo(137 * 3, 0)
-            .scaleBy(0.5, 0.5)
-        ).moveBy(0, 200)
-          .rotateBy(Radians(0.1d))
-          .scaleBy(0.5d, 0.5d)
+        graphic
+          .withCrop(128, 0, 96, 96)
+          .moveTo(137 * 1, 100),
+        graphic
+          .withCrop(128, 0, 96, 96)
+          .moveTo(137 * 2, 100)
+          .rotate(Radians(Math.PI / 4)),
+        graphic
+          .withCrop(128, 0, 96, 96)
+          .moveTo(137 * 3, 100)
+          .flipHorizontal(true)
+          .flipVertical(true),
+        graphic
+          .withCrop(128, 0, 96, 96)
+          .moveTo(137 * 1, 300)
+          .withAlpha(0.5),
+        graphic
+          .withCrop(128, 0, 96, 96)
+          .moveTo(137 * 2, 300)
+          .withTint(Tint.Red),
+        graphic
+          .withCrop(128, 0, 96, 96)
+          .moveTo(137 * 3, 300)
+          .scaleBy(2.0, 2.0)
       )
 }
