@@ -12,6 +12,8 @@ layout (std140) uniform DisplayObjectUBO {
   vec2 u_frameTranslation;
   vec2 u_frameScale;
   float u_rotation;
+  float u_fliph;
+  float u_flipv;
 };
 uniform mat4 u_projection;
 
@@ -52,7 +54,7 @@ void main(void) {
 
   vec2 moveToTopLeft = u_scale / 2.0;
 
-  mat4 transform = translate2d(moveToTopLeft + u_translation) * rotate2d(u_rotation) * scale2d(u_scale) * scale2d(vec2(1.0, -1.0));
+  mat4 transform = translate2d(moveToTopLeft + u_translation) * rotate2d(u_rotation) * scale2d(u_scale) * scale2d(vec2(u_fliph, u_flipv));
 
   gl_Position = u_projection * transform * a_vertices;
 

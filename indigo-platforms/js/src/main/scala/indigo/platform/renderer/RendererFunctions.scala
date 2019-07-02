@@ -198,6 +198,8 @@ object RendererFunctions {
     uboData(11) = displayObject.frame.scale.y
 
     uboData(12) = displayObject.rotation
+    uboData(13) = if(displayObject.flipHorizontal) -1.0d else 1.0d
+    uboData(14) = if(displayObject.flipVertical) 1.0d else -1.0d
   }
 
   // Must equal the number of elements in the makeUBOData(...) array

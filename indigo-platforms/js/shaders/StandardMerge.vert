@@ -12,6 +12,8 @@ layout (std140) uniform DisplayObjectUBO {
   vec2 u_frameTranslation;
   vec2 u_frameScale;
   float u_rotation;
+  float u_fliph;
+  float u_flipv;
 };
 uniform mat4 u_projection;
 
