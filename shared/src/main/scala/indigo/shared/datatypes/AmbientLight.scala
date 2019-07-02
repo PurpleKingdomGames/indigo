@@ -41,6 +41,7 @@ object AmbientLight {
     new AmbientLight(tint, amount)
 
   val Normal: AmbientLight = AmbientLight(Tint.None, 1)
+  val None: AmbientLight = AmbientLight(Tint.None, 0)
 
   def combine(a: AmbientLight, b: AmbientLight): AmbientLight =
     (a, b) match {
