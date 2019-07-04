@@ -1,4 +1,4 @@
-package indigo.gameengine
+package indigo.shared
 
 import utest._
 
