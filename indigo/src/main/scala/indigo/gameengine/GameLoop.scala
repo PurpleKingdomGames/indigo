@@ -2,7 +2,7 @@ package indigo.gameengine
 
 import indigo.shared.events._
 import indigo.shared.datatypes.AmbientLight
-import indigo.shared.scenegraph.{SceneAudio, SceneGraphRootNode, SceneUpdateFragment}
+import indigo.shared.scenegraph.{SceneAudio, SceneUpdateFragment}
 import indigo.shared.GameContext
 import indigo.shared.metrics._
 import indigo.shared.config.GameConfig
@@ -158,22 +158,20 @@ object GameLoop {
     view
   }
 
-  def processUpdatedView(view: SceneUpdateFragment, collectedEvents: List[GlobalEvent], metrics: Metrics, globalEventStream: GlobalEventStream): GameContext[SceneGraphRootNode] =
+  def processUpdatedView(view: SceneUpdateFragment, collectedEvents: List[GlobalEvent], metrics: Metrics, globalEventStream: GlobalEventStream): GameContext[SceneUpdateFragment] =
     GameContext.delay {
       metrics.record(ProcessViewStartMetric)
 
-      val processUpdatedView: SceneUpdateFragment => SceneGraphRootNode =
-        GameLoop.persistGlobalViewEvents(metrics, globalEventStream) andThen
-          GameLoop.persistNodeViewEvents(collectedEvents, metrics, globalEventStream)
-
-      val processedView: SceneGraphRootNode = processUpdatedView(view)
+      val processedView: SceneUpdateFragment =
+        (GameLoop.persistGlobalViewEvents(metrics, globalEventStream) andThen
+          GameLoop.persistNodeViewEvents(collectedEvents, metrics, globalEventStream))(view)
 
       metrics.record(ProcessViewEndMetric)
 
       processedView
     }
 
-  def viewToDisplayable(gameTime: GameTime, processedView: SceneGraphRootNode, assetMapping: AssetMapping, ambientLight: AmbientLight, metrics: Metrics): GameContext[Displayable] =
+  def viewToDisplayable(gameTime: GameTime, processedView: SceneUpdateFragment, assetMapping: AssetMapping, ambientLight: AmbientLight, metrics: Metrics): GameContext[Displayable] =
     GameContext.delay {
       metrics.record(ToDisplayableStartMetric)
 
@@ -220,27 +218,27 @@ object GameLoop {
     (res.state, FrameInputEvents(res.globalEvents, signals))
   }
 
-  def persistGlobalViewEvents(metrics: Metrics, globalEventStream: GlobalEventStream): SceneUpdateFragment => SceneGraphRootNode = update => {
+  def persistGlobalViewEvents(metrics: Metrics, globalEventStream: GlobalEventStream): SceneUpdateFragment => SceneUpdateFragment = update => {
     metrics.record(PersistGlobalViewEventsStartMetric)
     update.globalEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
     metrics.record(PersistGlobalViewEventsEndMetric)
-    SceneGraphRootNode.fromFragment(update)
+    update
   }
 
-  def persistNodeViewEvents(gameEvents: List[GlobalEvent], metrics: Metrics, globalEventStream: GlobalEventStream): SceneGraphRootNode => SceneGraphRootNode = rootNode => {
+  def persistNodeViewEvents(gameEvents: List[GlobalEvent], metrics: Metrics, globalEventStream: GlobalEventStream): SceneUpdateFragment => SceneUpdateFragment = rootNode => {
     metrics.record(PersistNodeViewEventsStartMetric)
-    SceneGraphLayer.collectViewEvents(rootNode.game.nodes, gameEvents).foreach(globalEventStream.pushGlobalEvent)
-    SceneGraphLayer.collectViewEvents(rootNode.lighting.nodes, gameEvents).foreach(globalEventStream.pushGlobalEvent)
-    SceneGraphLayer.collectViewEvents(rootNode.ui.nodes, gameEvents).foreach(globalEventStream.pushGlobalEvent)
+    SceneGraphLayer.collectViewEvents(rootNode.gameLayer, gameEvents).foreach(globalEventStream.pushGlobalEvent)
+    SceneGraphLayer.collectViewEvents(rootNode.lightingLayer, gameEvents).foreach(globalEventStream.pushGlobalEvent)
+    SceneGraphLayer.collectViewEvents(rootNode.uiLayer, gameEvents).foreach(globalEventStream.pushGlobalEvent)
     metrics.record(PersistNodeViewEventsEndMetric)
     rootNode
   }
 
-  def convertSceneGraphToDisplayable(gameTime: GameTime, rootNode: SceneGraphRootNode, assetMapping: AssetMapping, ambientLight: AmbientLight, metrics: Metrics): Displayable =
+  def convertSceneGraphToDisplayable(gameTime: GameTime, rootNode: SceneUpdateFragment, assetMapping: AssetMapping, ambientLight: AmbientLight, metrics: Metrics): Displayable =
     Displayable(
-      DisplayObjectConversions.sceneNodesToDisplayObjects(rootNode.game.nodes, gameTime, assetMapping, metrics),
-      DisplayObjectConversions.sceneNodesToDisplayObjects(rootNode.lighting.nodes, gameTime, assetMapping, metrics),
-      DisplayObjectConversions.sceneNodesToDisplayObjects(rootNode.ui.nodes, gameTime, assetMapping, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(rootNode.gameLayer, gameTime, assetMapping, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(rootNode.lightingLayer, gameTime, assetMapping, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(rootNode.uiLayer, gameTime, assetMapping, metrics),
       ambientLight
     )
 
