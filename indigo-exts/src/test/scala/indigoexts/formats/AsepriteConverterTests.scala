@@ -168,7 +168,7 @@ object AsepriteSampleData {
       animationsKey = animationsKey,
       ref = Point.zero,
       effects = Effects.default,
-      (_: (Rectangle, GlobalEvent)) => None
+      (_: (Rectangle, GlobalEvent)) => Nil
     )
 
   }
