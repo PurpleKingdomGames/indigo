@@ -15,4 +15,10 @@ object FontRegister {
   def findByFontKey(fontKey: FontKey): Option[FontInfo] =
     cache.fetch(CacheKey(fontKey.key))
 
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
+  def clearRegister(): Unit = {
+    cache.purgeAll()
+    ()
+  }
+
 }

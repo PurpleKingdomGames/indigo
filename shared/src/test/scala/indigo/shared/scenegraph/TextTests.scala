@@ -30,6 +30,7 @@ object TextTests extends TestSuite {
 
           t.bounds === Rectangle(0, 0, 16 * 3, 16) ==> true
 
+          FontRegister.clearRegister()
         }
 
         "should be able to correctly calculate the bounds with different sized chars" - {
@@ -48,8 +49,12 @@ object TextTests extends TestSuite {
 
           val t = Text("abc", 10, 20, 1, fontKey)
 
-          t.bounds === Rectangle(0, 0, 10 + 20 + 30, 30) ==> true
+          val actual = t.bounds // 48 x 16
+          val expected = Rectangle(0, 0, 10 + 20 + 30, 30) // 60 x 30
 
+          actual === expected ==> true
+
+          FontRegister.clearRegister()
         }
 
       }
