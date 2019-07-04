@@ -3,6 +3,8 @@ package indigoexts.jobs
 import indigo._
 import utest._
 
+import indigo.EqualTo._
+
 object JobMarketTests extends TestSuite {
 
 val dice: Dice =
@@ -57,7 +59,12 @@ val dice: Dice =
           val market: JobMarket = JobMarket(List(job))
           val gameTime          = GameTime.zero
 
-          market.render(gameTime) ==> SceneUpdateFragment.empty
+          market.render(gameTime).gameLayer.isEmpty ==> true
+          market.render(gameTime).lightingLayer.isEmpty ==> true
+          market.render(gameTime).uiLayer.isEmpty ==> true
+          market.render(gameTime).globalEvents.isEmpty ==> true
+          market.render(gameTime).ambientLight === AmbientLight.Normal ==> true
+          market.render(gameTime).audio ==> SceneAudio.None
         }
 
         "should have an empty subsystem representation" - {
