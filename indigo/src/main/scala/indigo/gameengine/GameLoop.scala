@@ -20,7 +20,7 @@ import indigo.shared.platform.GlobalEventStream
 import indigo.shared.platform.GlobalSignals
 
 import scala.annotation.tailrec
-import indigo.shared.scenegraph.SceneGraphLayer
+import indigo.shared.scenegraph.SceneGraphViewEvents
 
 class GameLoop[GameModel, ViewModel](
     gameConfig: GameConfig,
@@ -227,9 +227,9 @@ object GameLoop {
 
   def persistNodeViewEvents(gameEvents: List[GlobalEvent], metrics: Metrics, globalEventStream: GlobalEventStream): SceneUpdateFragment => SceneUpdateFragment = rootNode => {
     metrics.record(PersistNodeViewEventsStartMetric)
-    SceneGraphLayer.collectViewEvents(rootNode.gameLayer, gameEvents).foreach(globalEventStream.pushGlobalEvent)
-    SceneGraphLayer.collectViewEvents(rootNode.lightingLayer, gameEvents).foreach(globalEventStream.pushGlobalEvent)
-    SceneGraphLayer.collectViewEvents(rootNode.uiLayer, gameEvents).foreach(globalEventStream.pushGlobalEvent)
+    SceneGraphViewEvents.collectViewEvents(rootNode.gameLayer, gameEvents, globalEventStream.pushGlobalEvent)
+    SceneGraphViewEvents.collectViewEvents(rootNode.lightingLayer, gameEvents, globalEventStream.pushGlobalEvent)
+    SceneGraphViewEvents.collectViewEvents(rootNode.uiLayer, gameEvents, globalEventStream.pushGlobalEvent)
     metrics.record(PersistNodeViewEventsEndMetric)
     rootNode
   }
