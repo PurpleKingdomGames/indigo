@@ -11,7 +11,7 @@ object RendererFunctionsTests extends TestSuite {
     Tests {
 
       "Should create correct UBO data" - {
-        val displyObject: DisplayObject =
+        val displayObject: DisplayObject =
           DisplayObject(
             10,    // x
             10,    // y
@@ -61,7 +61,9 @@ object RendererFunctionsTests extends TestSuite {
             0          //
           )
 
-        val actual = RendererFunctions.makeUBOData(displyObject)
+        RendererFunctions.updateUBOData(displayObject)
+        
+        val actual = RendererFunctions.uboData
 
         expected.toList ==> actual.toList
       }
