@@ -63,6 +63,9 @@ final class Rectangle(val position: Point, val size: Point) {
   def asString: String =
     implicitly[AsString[Rectangle]].show(this)
 
+  override def toString: String =
+    asString
+
   def ===(other: Rectangle): Boolean =
     implicitly[EqualTo[Rectangle]].equal(this, other)
 }
