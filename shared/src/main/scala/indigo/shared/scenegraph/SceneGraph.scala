@@ -36,8 +36,8 @@ sealed trait SceneGraphNode {
 
 final class Group(val positionOffset: Point, val rotation: Radians, val scale: Vector2, val depth: Depth, val children: List[SceneGraphNode]) extends SceneGraphNode {
 
-  def x: Int = positionOffset.x
-  def y: Int = positionOffset.y
+  lazy val x: Int = positionOffset.x
+  lazy val y: Int = positionOffset.y
 
   def withDepth(newDepth: Depth): Group =
     Group(positionOffset, rotation, scale, newDepth, children)
@@ -137,8 +137,8 @@ final class Graphic(
     val eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
 ) extends Renderable {
 
-  def x: Int = bounds.position.x - ref.x
-  def y: Int = bounds.position.y - ref.y
+  lazy val x: Int = bounds.position.x - ref.x
+  lazy val y: Int = bounds.position.y - ref.y
 
   def moveTo(pt: Point): Graphic =
     Graphic(bounds.moveTo(pt), depth, rotation, scale, imageAssetRef, ref, crop, effects, eventHandler)
@@ -260,8 +260,8 @@ final class Sprite(
     val eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
 ) extends Renderable {
 
-  def x: Int = bounds.position.x - ref.x
-  def y: Int = bounds.position.y - ref.y
+  lazy val x: Int = bounds.position.x - ref.x
+  lazy val y: Int = bounds.position.y - ref.y
 
   def withDepth(newDepth: Depth): Sprite =
     Sprite(bindingKey, bounds, newDepth, rotation, scale, animationsKey, ref, effects, eventHandler)
@@ -383,10 +383,10 @@ final class Text(
     val eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
 ) extends Renderable {
 
-  def x: Int = bounds.position.x
-  def y: Int = bounds.position.y
+  lazy val  x: Int = bounds.position.x
+  lazy val  y: Int = bounds.position.y
 
-  def lines: List[TextLine] =
+  lazy val lines: List[TextLine] =
     FontRegister
       .findByFontKey(fontKey)
       .map { fontInfo =>
@@ -401,7 +401,7 @@ final class Text(
         Nil
       }
 
-  def bounds: Rectangle =
+  lazy val bounds: Rectangle =
     lines.map(_.lineBounds).fold(Rectangle.zero) { (acc, next) =>
       acc.resize(Point(Math.max(acc.width, next.width), acc.height + next.height))
     }
@@ -463,7 +463,7 @@ final class Text(
   def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Text =
     Text(text, alignment, position, depth, rotation, scale, fontKey, effects, e)
 
-  def alignedBounds: Rectangle =
+  lazy val alignedBounds: Rectangle =
     (alignment, bounds.moveTo(position)) match {
       case (TextAlignment.Left, b)   => b
       case (TextAlignment.Center, b) => b.moveTo(Point(b.x - (b.width / 2), b.y))
