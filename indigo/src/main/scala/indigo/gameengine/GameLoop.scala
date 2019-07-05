@@ -1,7 +1,6 @@
 package indigo.gameengine
 
 import indigo.shared.events._
-import indigo.shared.datatypes.AmbientLight
 import indigo.shared.scenegraph.{SceneAudio, SceneUpdateFragment}
 import indigo.shared.GameContext
 import indigo.shared.metrics._
@@ -95,7 +94,7 @@ class GameLoop[GameModel, ViewModel](
 
           val frameSideEffects = for {
             processedView <- GameLoop.processUpdatedView(view, collectedEvents, metrics, globalEventStream)
-            displayable   <- GameLoop.viewToDisplayable(gameTime, processedView, assetMapping, view.ambientLight, metrics)
+            displayable   <- GameLoop.viewToDisplayable(gameTime, processedView, assetMapping, metrics)
             _             <- GameLoop.persistAnimationStates(metrics)
             _             <- GameLoop.drawScene(renderer, displayable, metrics)
             _             <- GameLoop.playAudio(audioPlayer, view.audio, metrics)
@@ -171,12 +170,12 @@ object GameLoop {
       processedView
     }
 
-  def viewToDisplayable(gameTime: GameTime, processedView: SceneUpdateFragment, assetMapping: AssetMapping, ambientLight: AmbientLight, metrics: Metrics): GameContext[Displayable] =
+  def viewToDisplayable(gameTime: GameTime, processedView: SceneUpdateFragment, assetMapping: AssetMapping, metrics: Metrics): GameContext[Displayable] =
     GameContext.delay {
       metrics.record(ToDisplayableStartMetric)
 
       val displayable: Displayable =
-        GameLoop.convertSceneGraphToDisplayable(gameTime, processedView, assetMapping, ambientLight, metrics)
+        GameLoop.convertSceneGraphToDisplayable(gameTime, processedView, assetMapping, metrics)
 
       metrics.record(ToDisplayableEndMetric)
 
@@ -234,12 +233,12 @@ object GameLoop {
     rootNode
   }
 
-  def convertSceneGraphToDisplayable(gameTime: GameTime, rootNode: SceneUpdateFragment, assetMapping: AssetMapping, ambientLight: AmbientLight, metrics: Metrics): Displayable =
+  def convertSceneGraphToDisplayable(gameTime: GameTime, rootNode: SceneUpdateFragment, assetMapping: AssetMapping, metrics: Metrics): Displayable =
     Displayable(
       DisplayObjectConversions.sceneNodesToDisplayObjects(rootNode.gameLayer, gameTime, assetMapping, metrics),
       DisplayObjectConversions.sceneNodesToDisplayObjects(rootNode.lightingLayer, gameTime, assetMapping, metrics),
       DisplayObjectConversions.sceneNodesToDisplayObjects(rootNode.uiLayer, gameTime, assetMapping, metrics),
-      ambientLight
+      rootNode.ambientLight
     )
 
   def drawScene(renderer: Renderer, displayable: Displayable, metrics: Metrics): GameContext[Unit] =
