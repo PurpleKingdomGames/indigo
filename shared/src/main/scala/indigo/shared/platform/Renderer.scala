@@ -1,9 +1,10 @@
 package indigo.shared.platform
 
-import indigo.shared.display.Displayable
 import indigo.shared.metrics.Metrics
+import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.shared.time.GameTime
 
 trait Renderer {
   def init(): Unit
-  def drawScene(displayable: Displayable, metrics: Metrics): Unit
+  def drawScene(gameTime: GameTime, scene: SceneUpdateFragment, assetMapping: AssetMapping, metrics: Metrics): Unit
 }

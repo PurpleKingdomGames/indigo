@@ -15,6 +15,11 @@ import indigo.shared.datatypes.Matrix4
 import scala.scalajs.js.typedarray.Float32Array
 import indigo.facades.WebGL2RenderingContext
 import indigo.platform.shaders._
+import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.shared.time.GameTime
+import indigo.shared.platform.AssetMapping
+import indigo.platform.DisplayObjectConversions
+import indigo.shared.AnimationsRegister
 
 final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends Renderer {
 
@@ -79,7 +84,13 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
   def setLightingBlend(): Unit =
     gl.blendFunc(SRC_ALPHA, DST_ALPHA)
 
-  def drawScene(displayable: Displayable, metrics: Metrics): Unit = {
+  def drawScene(gameTime: GameTime, scene: SceneUpdateFragment, assetMapping: AssetMapping, metrics: Metrics): Unit = {
+
+    val displayable: Displayable =
+      viewToDisplayable(gameTime, scene, assetMapping, metrics)
+
+    persistAnimationStates(metrics)
+
     RendererFunctions.resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight, cNc.magnification)
 
     metrics.record(DrawGameLayerStartMetric)
@@ -190,6 +201,28 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       metrics.record(layer.metricEnd)
     }
 
+  }
+
+  def viewToDisplayable(gameTime: GameTime, scene: SceneUpdateFragment, assetMapping: AssetMapping, metrics: Metrics): Displayable = {
+    metrics.record(ToDisplayableStartMetric)
+
+    val displayable: Displayable =
+      Displayable(
+        DisplayObjectConversions.sceneNodesToDisplayObjects(scene.gameLayer, gameTime, assetMapping, metrics),
+        DisplayObjectConversions.sceneNodesToDisplayObjects(scene.lightingLayer, gameTime, assetMapping, metrics),
+        DisplayObjectConversions.sceneNodesToDisplayObjects(scene.uiLayer, gameTime, assetMapping, metrics),
+        scene.ambientLight
+      )
+
+    metrics.record(ToDisplayableEndMetric)
+
+    displayable
+  }
+
+  def persistAnimationStates(metrics: Metrics): Unit = {
+    metrics.record(PersistAnimationStatesStartMetric)
+    AnimationsRegister.persistAnimationStates()
+    metrics.record(PersistAnimationStatesEndMetric)
   }
 
 }

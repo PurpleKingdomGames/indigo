@@ -1,4 +1,4 @@
-package indigo.gameengine
+package indigo.platform
 
 import indigo.shared.display.{DisplayObject, SpriteSheetFrame}
 import indigo.shared.datatypes.{FontInfo, Rectangle, TextAlignment, FontChar}

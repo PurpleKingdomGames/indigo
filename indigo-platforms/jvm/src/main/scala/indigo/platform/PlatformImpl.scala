@@ -7,7 +7,7 @@ import indigo.shared.GameContext
 import indigo.shared.config.GameConfig
 // import indigo.shared.IndigoLogger
 // import indigo.shared.display.Vector2
-import indigo.shared.display.Displayable
+// import indigo.shared.display.Displayable
 import indigo.shared.metrics.Metrics
 // import indigo.platform.renderer.RendererInit
 // import indigo.platform.renderer.LoadedTextureAsset
@@ -17,6 +17,8 @@ import indigo.shared.platform.AssetMapping
 import indigo.shared.platform.TextureRefAndOffset
 // import indigo.platform.events.WorldEvents
 import indigo.platform.assets.AssetCollection
+import indigo.shared.time.GameTime
+import indigo.shared.scenegraph.SceneUpdateFragment
 // import indigo.platform.assets.TextureAtlas
 // import indigo.platform.assets.TextureAtlasFunctions
 // import indigo.platform.assets.ImageRef
@@ -39,7 +41,7 @@ class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEv
       val renderer: Renderer =
         new Renderer {
           def init(): Unit                                                = ()
-          def drawScene(displayable: Displayable, metrics: Metrics): Unit = ()
+          def drawScene(gameTime: GameTime, scene: SceneUpdateFragment, assetMapping: AssetMapping, metrics: Metrics): Unit = ()
         }
 
       val assetMapping: AssetMapping =
