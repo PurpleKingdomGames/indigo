@@ -89,8 +89,6 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     val displayable: Displayable =
       viewToDisplayable(gameTime, scene, assetMapping, metrics)
 
-    persistAnimationStates(metrics)
-
     RendererFunctions.resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight, cNc.magnification)
 
     metrics.record(DrawGameLayerStartMetric)
@@ -119,6 +117,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     setNormalBlend()
     drawLayer(List(RendererFunctions.screenDisplayObject(cNc.width, cNc.height)), None, config.clearColor, mergeShaderProgram, CurrentDrawLayer.Merge, metrics)
     metrics.record(RenderToWindowEndMetric)
+
+    // Finally, persist animation states...
+    persistAnimationStates(metrics)
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
