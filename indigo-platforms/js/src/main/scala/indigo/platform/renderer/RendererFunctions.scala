@@ -13,6 +13,9 @@ import indigo.shared.display.SpriteSheetFrame
 
 object RendererFunctions {
 
+  val VertexAtrributeLocation = 0
+  val TextureAtrributeLocation = 1
+
   def screenDisplayObject(w: Int, h: Int): DisplayObject =
     DisplayObject(
       x = 0,

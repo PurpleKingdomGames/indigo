@@ -61,19 +61,16 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     // Vertex
     gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
     gl.bufferData(ARRAY_BUFFER, new Float32Array(RendererFunctions.vertices), STATIC_DRAW)
-
-    List(standardShaderProgram, lightingShaderProgram, mergeShaderProgram).foreach { shaderProgram =>
-      val verticesLocation = gl.getAttribLocation(shaderProgram, "a_vertices")
-      RendererFunctions.bindAttibuteBuffer(gl, verticesLocation, 3)
-    }
+    RendererFunctions.bindAttibuteBuffer(gl, RendererFunctions.VertexAtrributeLocation, 3)
 
     // Bind texture coords
     gl.bindBuffer(ARRAY_BUFFER, textureBuffer)
     gl.bufferData(ARRAY_BUFFER, new Float32Array(RendererFunctions.textureCoordinates), STATIC_DRAW)
+    RendererFunctions.bindAttibuteBuffer(gl, RendererFunctions.TextureAtrributeLocation, 2)
 
     List(standardShaderProgram, lightingShaderProgram, mergeShaderProgram).foreach { shaderProgram =>
-      val texcoordLocation = gl.getAttribLocation(shaderProgram, "a_texcoord")
-      RendererFunctions.bindAttibuteBuffer(gl, texcoordLocation, 2)
+      val textureLocation = gl.getUniformLocation(shaderProgram, "u_texture")
+      gl.uniform1i(textureLocation, 0)
     }
   }
 
@@ -145,10 +142,6 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     val projectionMatrix: scalajs.js.Array[Double] =
       if (layer.isMerge) RendererFunctions.orthographicProjectionMatrixNoMag
       else RendererFunctions.orthographicProjectionMatrix
-
-    // Texture attribute and uniform
-    val textureLocation = gl.getUniformLocation(shaderProgram, "u_texture")
-    gl.uniform1i(textureLocation, 0)
 
     // Bind UBO buffer
     gl.bindBuffer(ARRAY_BUFFER, displayObjectUBOBuffer)
