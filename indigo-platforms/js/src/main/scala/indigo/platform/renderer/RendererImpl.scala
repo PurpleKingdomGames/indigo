@@ -11,7 +11,6 @@ import indigo.shared.platform.Renderer
 import indigo.shared.platform.RendererConfig
 import org.scalajs.dom.raw.WebGLRenderingContext
 import org.scalajs.dom.raw.WebGLProgram
-import indigo.shared.datatypes.Matrix4
 import scala.scalajs.js.typedarray.Float32Array
 import indigo.facades.WebGL2RenderingContext
 import indigo.platform.shaders._
@@ -143,15 +142,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     gl.useProgram(shaderProgram)
 
     // Projection
-    val projectionMatrix: Matrix4 =
+    val projectionMatrix: scalajs.js.Array[Double] =
       if (layer.isMerge) RendererFunctions.orthographicProjectionMatrixNoMag
       else RendererFunctions.orthographicProjectionMatrix
-
-    gl.uniformMatrix4fv(
-      location = gl.getUniformLocation(shaderProgram, "u_projection"),
-      transpose = false,
-      value = RendererFunctions.mat4ToJsArray(projectionMatrix)
-    )
 
     // Texture attribute and uniform
     val textureLocation = gl.getUniformLocation(shaderProgram, "u_texture")
@@ -159,7 +152,13 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     // Bind UBO buffer
     gl.bindBuffer(ARRAY_BUFFER, displayObjectUBOBuffer)
-    gl2.bindBufferRange(gl2.UNIFORM_BUFFER, 0, displayObjectUBOBuffer, 0, RendererFunctions.displayObjectUBODataSize * Float32Array.BYTES_PER_ELEMENT)
+    gl2.bindBufferRange(
+      gl2.UNIFORM_BUFFER,
+      0,
+      displayObjectUBOBuffer,
+      0,
+      RendererFunctions.uboDataSize * Float32Array.BYTES_PER_ELEMENT
+    )
 
     var lastTextureName: String = ""
 
@@ -170,7 +169,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       RendererFunctions.updateUBOData(displayObject)
       gl.bufferData(
         ARRAY_BUFFER,
-        new Float32Array(RendererFunctions.uboData),
+        new Float32Array(projectionMatrix ++ RendererFunctions.uboData),
         STATIC_DRAW
       )
 
@@ -185,17 +184,19 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
             uiFrameBuffer.texture
           )
 
+          gl.drawArrays(TRIANGLE_STRIP, 0, 4)
+
         case _ if displayObject.imageRef !== lastTextureName =>
           textureLocations.find(t => t.name === displayObject.imageRef).foreach { textureLookup =>
             gl.bindTexture(TEXTURE_2D, textureLookup.texture)
             lastTextureName = displayObject.imageRef
           }
 
-        case _ =>
-          ()
-      }
+          gl.drawArrays(TRIANGLE_STRIP, 0, 4)
 
-      gl.drawArrays(TRIANGLE_STRIP, 0, 4)
+        case _ =>
+          gl.drawArrays(TRIANGLE_STRIP, 0, 4)
+      }
 
       metrics.record(layer.metricDraw)
 

@@ -158,9 +158,9 @@ object RendererFunctions {
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var resizeRun: Boolean = false
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  var orthographicProjectionMatrix: Matrix4 = Matrix4.identity
+  var orthographicProjectionMatrix: scalajs.js.Array[Double] = mat4ToJsArray(Matrix4.identity)
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  var orthographicProjectionMatrixNoMag: Matrix4 = Matrix4.identity
+  var orthographicProjectionMatrixNoMag: scalajs.js.Array[Double] = mat4ToJsArray(Matrix4.identity)
 
   def resize(canvas: html.Canvas, actualWidth: Int, actualHeight: Int, magnification: Int): Unit =
     if (!resizeRun || (canvas.width !== actualWidth) || (canvas.height !== actualHeight)) {
@@ -168,8 +168,8 @@ object RendererFunctions {
       canvas.width = actualWidth
       canvas.height = actualHeight
 
-      orthographicProjectionMatrix = Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
-      orthographicProjectionMatrixNoMag = Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)
+      orthographicProjectionMatrix = mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification))
+      orthographicProjectionMatrixNoMag = mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble))
     }
 
   def mat4ToJsArray(mat4d: Matrix4): scalajs.js.Array[Double] = {
@@ -203,6 +203,8 @@ object RendererFunctions {
   }
 
   // Must equal the number of elements in the makeUBOData(...) array
+  val projectionMatrixUBODataSize: Int = 16
   val displayObjectUBODataSize: Int = 16
+  val uboDataSize: Int = projectionMatrixUBODataSize + displayObjectUBODataSize
 
 }

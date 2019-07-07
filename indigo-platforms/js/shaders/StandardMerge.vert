@@ -6,6 +6,7 @@ in vec2 a_texcoord;
 
 // Uniforms
 layout (std140) uniform DisplayObjectUBO {
+  mat4 u_projection;
   vec2 u_translation;
   vec2 u_scale;
   vec4 u_tint;
@@ -15,7 +16,6 @@ layout (std140) uniform DisplayObjectUBO {
   float u_fliph;
   float u_flipv;
 };
-uniform mat4 u_projection;
 
 out vec2 v_texcoord;
 out vec4 v_tint;
