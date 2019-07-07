@@ -69,6 +69,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     RendererFunctions.bindAttibuteBuffer(gl, RendererFunctions.TextureAtrributeLocation, 2)
 
     List(standardShaderProgram, lightingShaderProgram, mergeShaderProgram).foreach { shaderProgram =>
+      gl.useProgram(shaderProgram)
       val textureLocation = gl.getUniformLocation(shaderProgram, "u_texture")
       gl.uniform1i(textureLocation, 0)
     }
@@ -118,6 +119,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     persistAnimationStates(metrics)
   }
 
+  private val initialBufferData: Float32Array =
+    new Float32Array(RendererFunctions.uboDataSize)
+
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   def drawLayer(
       displayObjects: List[DisplayObject],
@@ -152,6 +156,8 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       0,
       RendererFunctions.uboDataSize * Float32Array.BYTES_PER_ELEMENT
     )
+    gl.bufferData(ARRAY_BUFFER, initialBufferData, STATIC_DRAW)
+    gl.bufferSubData(ARRAY_BUFFER, 0, new Float32Array(projectionMatrix))
 
     var lastTextureName: String = ""
 
@@ -160,10 +166,10 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
       // Set all the uniforms
       RendererFunctions.updateUBOData(displayObject)
-      gl.bufferData(
+      gl.bufferSubData(
         ARRAY_BUFFER,
-        new Float32Array(projectionMatrix ++ RendererFunctions.uboData),
-        STATIC_DRAW
+        RendererFunctions.projectionMatrixUBODataSize * Float32Array.BYTES_PER_ELEMENT,
+        new Float32Array(RendererFunctions.uboData)
       )
 
       // If needed, update texture state
