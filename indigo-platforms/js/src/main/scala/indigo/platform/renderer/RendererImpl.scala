@@ -36,6 +36,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
   private val vertexBuffer: WebGLBuffer           = gl.createBuffer()
   private val textureBuffer: WebGLBuffer          = gl.createBuffer()
   private val displayObjectUBOBuffer: WebGLBuffer = gl.createBuffer()
+  private val instanceDataBuffer: WebGLBuffer     = gl.createBuffer()
 
   private val standardShaderProgram =
     RendererFunctions.shaderProgramSetup(gl, "Pixel", StandardPixelArtVert.shader, StandardPixelArtFrag.shader)
@@ -166,11 +167,47 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
       // Set all the uniforms
       RendererFunctions.updateUBOData(displayObject)
+      gl.bindBuffer(ARRAY_BUFFER, displayObjectUBOBuffer)
       gl.bufferSubData(
         ARRAY_BUFFER,
         RendererFunctions.projectionMatrixUBODataSize * Float32Array.BYTES_PER_ELEMENT,
         new Float32Array(RendererFunctions.uboData)
       )
+
+      // test
+      gl.bindBuffer(ARRAY_BUFFER, instanceDataBuffer)
+      gl.bufferData(ARRAY_BUFFER, new Float32Array(scalajs.js.Array[Double](20.0, 0.0)), STATIC_DRAW)
+      RendererFunctions.bindAttibuteBuffer(gl, RendererFunctions.InstanceAtrributeLocation, 2)
+      gl2.vertexAttribDivisor(RendererFunctions.InstanceAtrributeLocation, 1)
+
+/*
+// position attribute
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+glEnableVertexAttribArray(0);
+// color attribute
+glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
+glEnableVertexAttribArray(1);
+
+    gl.vertexAttribPointer(
+      indx = attributeLocation,
+      size = size,
+      `type` = FLOAT,
+      normalized = false,
+      stride = 0,
+      offset = 0
+    )
+    gl.enableVertexAttribArray(attributeLocation)
+
+    while nothing needs to change (i.e. images or < batch size), keep piling data into our array.
+    On state change or batch size met:
+    - bind the buffer
+    - bind all the data to the buffer
+    - set the attribute pointers (done?)
+    - enable the arrays
+    - set the divisor
+    - draw the instance count.
+
+*/
 
       // If needed, update texture state
       layer match {
@@ -191,10 +228,10 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
             lastTextureName = displayObject.imageRef
           }
 
-          gl.drawArrays(TRIANGLE_STRIP, 0, 4)
+          gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, 1)
 
         case _ =>
-          gl.drawArrays(TRIANGLE_STRIP, 0, 4)
+          gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, 1)
       }
 
       metrics.record(layer.metricDraw)

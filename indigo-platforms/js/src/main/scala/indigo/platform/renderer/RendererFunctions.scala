@@ -15,6 +15,7 @@ object RendererFunctions {
 
   val VertexAtrributeLocation = 0
   val TextureAtrributeLocation = 1
+  val InstanceAtrributeLocation = 2
 
   def screenDisplayObject(w: Int, h: Int): DisplayObject =
     DisplayObject(
