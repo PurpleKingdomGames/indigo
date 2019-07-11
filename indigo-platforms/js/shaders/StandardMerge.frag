@@ -4,13 +4,11 @@ precision mediump float;
 
 // Passed in from the vertex shader.
 in vec2 v_texcoord;
-in vec4 v_tint;
 
 // The textures.
 uniform sampler2D u_texture_game;
 uniform sampler2D u_texture_lighting;
 uniform sampler2D u_texture_ui;
-uniform vec4 u_tint;
 
 out vec4 fragColor;
 

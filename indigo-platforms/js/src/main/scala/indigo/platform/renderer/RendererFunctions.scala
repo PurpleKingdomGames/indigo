@@ -13,8 +13,8 @@ import indigo.shared.display.SpriteSheetFrame
 
 object RendererFunctions {
 
-  val VertexAtrributeLocation = 0
-  val TextureAtrributeLocation = 1
+  val VertexAtrributeLocation   = 0
+  val TextureAtrributeLocation  = 1
   val InstanceAtrributeLocation = 2
 
   def screenDisplayObject(w: Int, h: Int): DisplayObject =
@@ -127,6 +127,12 @@ object RendererFunctions {
     texture
   }
 
+  def setNormalBlend(gl: raw.WebGLRenderingContext): Unit =
+    gl.blendFuncSeparate(SRC_ALPHA, ONE_MINUS_SRC_ALPHA, ONE, ONE_MINUS_SRC_ALPHA)
+
+  def setLightingBlend(gl: raw.WebGLRenderingContext): Unit =
+    gl.blendFunc(SRC_ALPHA, DST_ALPHA)
+
   def organiseImage(gl: raw.WebGLRenderingContext, image: raw.ImageData): WebGLTexture = {
     val texture = createAndBindTexture(gl)
 
@@ -138,26 +144,6 @@ object RendererFunctions {
 
   val sortByDepth: List[DisplayObject] => List[DisplayObject] =
     displayObjects => displayObjects.sortWith((d1, d2) => d1.z > d2.z)
-
-  def setupMergeFragmentShaderState(gl: raw.WebGLRenderingContext, shaderProgram: WebGLProgram, textureGame: WebGLTexture, textureLighting: WebGLTexture, textureUi: WebGLTexture): Unit = {
-    val u_texture_game = gl.getUniformLocation(shaderProgram, "u_texture_game")
-    gl.uniform1i(u_texture_game, 1)
-    gl.activeTexture(TEXTURE1)
-    gl.bindTexture(TEXTURE_2D, textureGame)
-
-    val u_texture_lighting = gl.getUniformLocation(shaderProgram, "u_texture_lighting")
-    gl.uniform1i(u_texture_lighting, 2)
-    gl.activeTexture(TEXTURE2)
-    gl.bindTexture(TEXTURE_2D, textureLighting)
-
-    val u_texture_ui = gl.getUniformLocation(shaderProgram, "u_texture_ui")
-    gl.uniform1i(u_texture_ui, 3)
-    gl.activeTexture(TEXTURE3)
-    gl.bindTexture(TEXTURE_2D, textureUi)
-
-    // Reset to TEXTURE0 before the next round of rendering happens.
-    gl.activeTexture(TEXTURE0)
-  }
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var resizeRun: Boolean = false
@@ -174,6 +160,8 @@ object RendererFunctions {
 
       orthographicProjectionMatrix = mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification))
       orthographicProjectionMatrixNoMag = mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble))
+
+      ()
     }
 
   def mat4ToJsArray(mat4d: Matrix4): scalajs.js.Array[Double] = {
@@ -202,13 +190,13 @@ object RendererFunctions {
     uboData(11) = displayObject.frame.scale.y
 
     uboData(12) = displayObject.rotation
-    uboData(13) = if(displayObject.flipHorizontal) -1.0d else 1.0d
-    uboData(14) = if(displayObject.flipVertical) 1.0d else -1.0d
+    uboData(13) = if (displayObject.flipHorizontal) -1.0d else 1.0d
+    uboData(14) = if (displayObject.flipVertical) 1.0d else -1.0d
   }
 
   // Must equal the number of elements in the makeUBOData(...) array
   val projectionMatrixUBODataSize: Int = 16
-  val displayObjectUBODataSize: Int = 16
-  val uboDataSize: Int = projectionMatrixUBODataSize + displayObjectUBODataSize
+  val displayObjectUBODataSize: Int    = 16
+  val uboDataSize: Int                 = projectionMatrixUBODataSize + displayObjectUBODataSize
 
 }

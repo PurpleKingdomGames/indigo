@@ -3,23 +3,17 @@
 // Attributes
 layout (location = 0) in vec4 a_vertices;
 layout (location = 1) in vec2 a_texcoord;
-layout (location = 2) in vec2 a_moveme;
 
 // Uniforms
 layout (std140) uniform DisplayObjectUBO {
   mat4 u_projection;
   vec2 u_translation;
   vec2 u_scale;
-  vec4 u_tint;
   vec2 u_frameTranslation;
   vec2 u_frameScale;
-  float u_rotation;
-  float u_fliph;
-  float u_flipv;
 };
 
 out vec2 v_texcoord;
-out vec4 v_tint;
 
 mat4 translate2d(vec2 t){
     return mat4(1, 0, 0, 0,
@@ -51,5 +45,4 @@ void main(void) {
   gl_Position = u_projection * transform * a_vertices;
 
   v_texcoord = scaleTextCoords();
-  v_tint = u_tint;
 }
