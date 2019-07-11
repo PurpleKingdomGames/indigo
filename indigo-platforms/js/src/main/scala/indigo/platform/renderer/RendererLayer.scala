@@ -15,9 +15,6 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val displayObjectUBOBuffer: WebGLBuffer = gl2.createBuffer()
   private val instanceDataBuffer: WebGLBuffer     = gl2.createBuffer()
 
-  private val initialBufferData: Float32Array =
-    new Float32Array(RendererFunctions.uboDataSize)
-
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.NonUnitStatements"))
   def drawLayer(
       displayObjects: List[DisplayObject],
@@ -46,10 +43,13 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       0,
       displayObjectUBOBuffer,
       0,
-      RendererFunctions.uboDataSize * Float32Array.BYTES_PER_ELEMENT
+      RendererFunctions.projectionMatrixUBODataSize * Float32Array.BYTES_PER_ELEMENT
     )
-    gl2.bufferData(ARRAY_BUFFER, initialBufferData, STATIC_DRAW)
-    gl2.bufferSubData(ARRAY_BUFFER, 0, new Float32Array(projectionMatrix))
+    gl2.bufferData(ARRAY_BUFFER, new Float32Array(projectionMatrix), STATIC_DRAW)
+
+    // Instance attributes
+    gl2.bindBuffer(ARRAY_BUFFER, instanceDataBuffer)
+    RendererFunctions.bindInstanceAttributes(gl2, 2, List(2, 2, 4, 2, 2, 1, 1, 1))
 
     var lastTextureName: String = ""
 
@@ -58,18 +58,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
       // Set all the uniforms
       RendererFunctions.updateUBOData(displayObject)
-      gl2.bindBuffer(ARRAY_BUFFER, displayObjectUBOBuffer)
-      gl2.bufferSubData(
-        ARRAY_BUFFER,
-        RendererFunctions.projectionMatrixUBODataSize * Float32Array.BYTES_PER_ELEMENT,
-        new Float32Array(RendererFunctions.uboData)
-      )
-
-      // test
-      gl2.bindBuffer(ARRAY_BUFFER, instanceDataBuffer)
-      gl2.bufferData(ARRAY_BUFFER, new Float32Array(scalajs.js.Array[Double](20.0, 0.0, 0.0, 30.0)), STATIC_DRAW)
-
-      RendererFunctions.bindInstanceAttributes(gl2, 2, List(2, 2))
+      gl2.bufferData(ARRAY_BUFFER, new Float32Array(RendererFunctions.uboData), STATIC_DRAW)
 
       /*
 // // position attribute
