@@ -67,12 +67,9 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
       // test
       gl2.bindBuffer(ARRAY_BUFFER, instanceDataBuffer)
-      gl2.bufferData(ARRAY_BUFFER, new Float32Array(scalajs.js.Array[Double](20.0, 0.0, 0.0, 20.0)), STATIC_DRAW)
+      gl2.bufferData(ARRAY_BUFFER, new Float32Array(scalajs.js.Array[Double](20.0, 0.0, 0.0, 30.0)), STATIC_DRAW)
 
-      for {
-        offset <- RendererFunctions.bindInstanceAttibute(gl2, 2, 2, 0)
-        _      <- RendererFunctions.bindInstanceAttibute(gl2, 3, 2, offset)
-      } yield ()
+      RendererFunctions.bindInstanceAttributes(gl2, 2, List(2, 2))
 
       /*
 // // position attribute
