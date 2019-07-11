@@ -1,4 +1,4 @@
-package indigoexts.abstractions
+package shared.abstractions
 
 import utest._
 

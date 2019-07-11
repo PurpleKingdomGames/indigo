@@ -10,6 +10,9 @@ import indigo.shared.EqualTo._
 
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.SpriteSheetFrame
+import shared.abstractions.Id
+import scala.scalajs.js.typedarray.Float32Array
+import indigo.facades.WebGL2RenderingContext
 
 object RendererFunctions {
 
@@ -113,6 +116,20 @@ object RendererFunctions {
       stride = 0,
       offset = 0
     )
+  }
+
+  def bindInstanceAttibute(gl2: WebGL2RenderingContext, attributeLocation: Int, size: Int, offset: Int): Id[Int] = {
+    gl2.vertexAttribPointer(
+      indx = attributeLocation,
+      size = size,
+      `type` = FLOAT,
+      normalized = false,
+      stride = size * Float32Array.BYTES_PER_ELEMENT,
+      offset = offset
+    )
+    gl2.enableVertexAttribArray(attributeLocation)
+    gl2.vertexAttribDivisor(attributeLocation, 1)
+    Id(offset + (size * Float32Array.BYTES_PER_ELEMENT))
   }
 
   def createAndBindTexture(gl: raw.WebGLRenderingContext): WebGLTexture = {

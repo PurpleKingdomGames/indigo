@@ -3,7 +3,8 @@
 // Attributes
 layout (location = 0) in vec4 a_vertices;
 layout (location = 1) in vec2 a_texcoord;
-layout (location = 2) in vec2 a_moveme;
+layout (location = 2) in vec2 a_moveAcross;
+layout (location = 3) in vec2 a_moveDown;
 
 // Uniforms
 layout (std140) uniform DisplayObjectUBO {
@@ -55,7 +56,7 @@ void main(void) {
 
   vec2 moveToTopLeft = u_scale / 2.0;
 
-  mat4 transform = translate2d(moveToTopLeft + u_translation + a_moveme) * rotate2d(u_rotation) * scale2d(u_scale) * scale2d(vec2(u_fliph, u_flipv));
+  mat4 transform = translate2d(moveToTopLeft + u_translation + a_moveAcross + a_moveDown) * rotate2d(u_rotation) * scale2d(u_scale) * scale2d(vec2(u_fliph, u_flipv));
 
   gl_Position = u_projection * transform * a_vertices;
 

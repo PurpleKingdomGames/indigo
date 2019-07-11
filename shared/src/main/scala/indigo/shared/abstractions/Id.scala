@@ -1,4 +1,4 @@
-package indigoexts.abstractions
+package shared.abstractions
 
 import indigo.shared.EqualTo
 import indigo.shared.AsString

@@ -18,7 +18,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val initialBufferData: Float32Array =
     new Float32Array(RendererFunctions.uboDataSize)
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.NonUnitStatements"))
   def drawLayer(
       displayObjects: List[DisplayObject],
       frameBufferComponents: FrameBufferComponents,
@@ -67,27 +67,30 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
       // test
       gl2.bindBuffer(ARRAY_BUFFER, instanceDataBuffer)
-      gl2.bufferData(ARRAY_BUFFER, new Float32Array(scalajs.js.Array[Double](20.0, 0.0)), STATIC_DRAW)
-      RendererFunctions.bindAttibuteBuffer(gl2, RendererFunctions.InstanceAtrributeLocation, 2)
-      gl2.vertexAttribDivisor(RendererFunctions.InstanceAtrributeLocation, 1)
+      gl2.bufferData(ARRAY_BUFFER, new Float32Array(scalajs.js.Array[Double](20.0, 0.0, 0.0, 20.0)), STATIC_DRAW)
+
+      for {
+        offset <- RendererFunctions.bindInstanceAttibute(gl2, 2, 2, 0)
+        _      <- RendererFunctions.bindInstanceAttibute(gl2, 3, 2, offset)
+      } yield ()
 
       /*
-// position attribute
-glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-glEnableVertexAttribArray(0);
-// color attribute
-glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
-glEnableVertexAttribArray(1);
+// // position attribute
+// glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+// glEnableVertexAttribArray(0);
+// // color attribute
+// glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
+// glEnableVertexAttribArray(1);
 
-    gl.vertexAttribPointer(
-      indx = attributeLocation,
-      size = size,
-      `type` = FLOAT,
-      normalized = false,
-      stride = 0,
-      offset = 0
-    )
-    gl.enableVertexAttribArray(attributeLocation)
+    // gl.vertexAttribPointer(
+    //   indx = attributeLocation,
+    //   size = size,
+    //   `type` = FLOAT,
+    //   normalized = false,
+    //   stride = 0,
+    //   offset = 0
+    // )
+    // gl.enableVertexAttribArray(attributeLocation)
 
     while nothing needs to change (i.e. images or < batch size), keep piling data into our array.
     On state change or batch size met:
