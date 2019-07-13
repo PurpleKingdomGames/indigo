@@ -11,8 +11,29 @@ import indigo.platform.shaders.StandardMergeVert
 import indigo.platform.shaders.StandardMergeFrag
 import org.scalajs.dom.raw.WebGLTexture
 import indigo.shared.ClearColor
+import indigo.shared.display.SpriteSheetFrame
 
 class RendererMerge(gl2: WebGL2RenderingContext) {
+
+  private def screenDisplayObject(w: Int, h: Int): DisplayObject =
+    DisplayObject(
+      x = 0,
+      y = 0,
+      z = 1,
+      width = w,
+      height = h,
+      rotation = 0,
+      scaleX = 1,
+      scaleY = 1,
+      imageRef = "",
+      alpha = 1,
+      tintR = 1,
+      tintG = 1,
+      tintB = 1,
+      flipHorizontal = false,
+      flipVertical = false,
+      frame = SpriteSheetFrame.defaultOffset
+    )
 
   private val mergeShaderProgram: WebGLProgram =
     RendererFunctions.shaderProgramSetup(gl2, "Merge", StandardMergeVert.shader, StandardMergeFrag.shader)
@@ -52,7 +73,7 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
 
     gl2.useProgram(mergeShaderProgram)
 
-    updateUBOData(RendererFunctions.screenDisplayObject(width, height))
+    updateUBOData(screenDisplayObject(width, height))
 
     // UBO data
     gl2.bindBuffer(ARRAY_BUFFER, displayObjectUBOBuffer)

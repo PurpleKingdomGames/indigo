@@ -61,9 +61,7 @@ object RendererFunctionsTests extends TestSuite {
             0          //
           )
 
-        RendererFunctions.updateUBOData(displayObject)
-        
-        val actual = RendererFunctions.uboData
+        val actual = RendererFunctions.updateUBOData(displayObject)
 
         expected.toList ==> actual.toList
       }

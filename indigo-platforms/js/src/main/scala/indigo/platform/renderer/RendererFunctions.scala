@@ -9,58 +9,12 @@ import indigo.shared.datatypes.Matrix4
 import indigo.shared.EqualTo._
 
 import indigo.shared.display.DisplayObject
-import indigo.shared.display.SpriteSheetFrame
 import shared.abstractions.Id
 import scala.scalajs.js.typedarray.Float32Array
 import indigo.facades.WebGL2RenderingContext
 import scala.annotation.tailrec
 
 object RendererFunctions {
-
-  val VertexAtrributeLocation   = 0
-  val TextureAtrributeLocation  = 1
-  val InstanceAtrributeLocation = 2
-
-  def screenDisplayObject(w: Int, h: Int): DisplayObject =
-    DisplayObject(
-      x = 0,
-      y = 0,
-      z = 1,
-      width = w,
-      height = h,
-      rotation = 0,
-      scaleX = 1,
-      scaleY = 1,
-      imageRef = "",
-      alpha = 1,
-      tintR = 1,
-      tintG = 1,
-      tintB = 1,
-      flipHorizontal = false,
-      flipVertical = false,
-      frame = SpriteSheetFrame.defaultOffset
-    )
-
-  val vertices: scalajs.js.Array[Double] = {
-    val vert0 = scalajs.js.Array[Double](-0.5, -0.5, 1.0d)
-    val vert1 = scalajs.js.Array[Double](-0.5, 0.5, 1.0d)
-    val vert2 = scalajs.js.Array[Double](0.5, -0.5, 1.0d)
-    val vert3 = scalajs.js.Array[Double](0.5, 0.5, 1.0d)
-
-    vert0 ++ vert1 ++ vert2 ++ vert3
-  }
-
-  val textureCoordinates: scalajs.js.Array[Double] = {
-    val tx0 = scalajs.js.Array[Double](0.0, 1.0)
-    val tx1 = scalajs.js.Array[Double](0.0, 0.0)
-    val tx2 = scalajs.js.Array[Double](1.0, 1.0)
-    val tx3 = scalajs.js.Array[Double](1.0, 0.0)
-
-    tx0 ++ tx1 ++ tx2 ++ tx3
-  }
-
-  val vertexCount: Int =
-    vertices.length
 
   @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny", "org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.Throw"))
   def shaderProgramSetup(gl: raw.WebGLRenderingContext, layerLabel: String, vertexShaderCode: String, fragmentShaderCode: String): WebGLProgram = {
@@ -135,6 +89,7 @@ object RendererFunctions {
   }
 
   def bindInstanceAttibute(gl2: WebGL2RenderingContext, attributeLocation: Int, size: Int, offset: Int): Id[Int] = {
+    gl2.enableVertexAttribArray(attributeLocation)
     gl2.vertexAttribPointer(
       indx = attributeLocation,
       size = size,
@@ -143,7 +98,6 @@ object RendererFunctions {
       stride = size * Float32Array.BYTES_PER_ELEMENT,
       offset = offset
     )
-    gl2.enableVertexAttribArray(attributeLocation)
     gl2.vertexAttribDivisor(attributeLocation, 1)
     Id(offset + (size * Float32Array.BYTES_PER_ELEMENT))
   }
@@ -203,10 +157,9 @@ object RendererFunctions {
     a
   }
 
-  val uboData: scalajs.js.Array[Double] =
-    scalajs.js.Array[Double](0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+  def updateUBOData(displayObject: DisplayObject): scalajs.js.Array[Double] = {
+    val uboData = scalajs.js.Array[Double]()
 
-  def updateUBOData(displayObject: DisplayObject): Unit = {
     uboData(0) = displayObject.x.toDouble
     uboData(1) = displayObject.y.toDouble
     uboData(2) = displayObject.width.toDouble * displayObject.scaleX
@@ -225,9 +178,12 @@ object RendererFunctions {
     uboData(12) = displayObject.rotation
     uboData(13) = if (displayObject.flipHorizontal) -1.0d else 1.0d
     uboData(14) = if (displayObject.flipVertical) 1.0d else -1.0d
+    uboData(15) = 0d
+
+    uboData
   }
 
-  // Must equal the number of elements in the makeUBOData(...) array
+  // They're all blocks of 16, it's the only block length allowed in WebGL.
   val projectionMatrixUBODataSize: Int = 16
   val displayObjectUBODataSize: Int    = 16
   val uboDataSize: Int                 = projectionMatrixUBODataSize + displayObjectUBODataSize

@@ -5,7 +5,7 @@ import org.scalajs.dom.raw.WebGLProgram
 import org.scalajs.dom.raw.WebGLRenderingContext
 
 import scala.scalajs.js
-// import scala.scalajs.js.annotation._
+import scala.scalajs.js.annotation._
 // import scala.scalajs.js.typedarray._
 
 @js.native
@@ -52,4 +52,14 @@ trait WebGL2RenderingContext extends WebGLRenderingContext {
   def vertexAttribDivisor(index: Int, divisor: Int): Unit =
     js.native
 
+  def createVertexArray(): WebGLVertexArrayObject =
+    js.native
+
+  def bindVertexArray(vertexArray: WebGLVertexArrayObject): Unit =
+    js.native
+
 }
+
+@js.native
+@JSGlobal
+class WebGLVertexArrayObject private[this] () extends js.Object

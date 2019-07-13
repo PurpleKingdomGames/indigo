@@ -9,13 +9,14 @@ import indigo.shared.metrics.Metrics
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
 import indigo.shared.EqualTo._
+import scala.annotation.tailrec
 
 class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult]) {
 
   private val displayObjectUBOBuffer: WebGLBuffer = gl2.createBuffer()
   private val instanceDataBuffer: WebGLBuffer     = gl2.createBuffer()
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.NonUnitStatements"))
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.NonUnitStatements", "org.wartremover.warts.While", "org.wartremover.warts.Null"))
   def drawLayer(
       displayObjects: List[DisplayObject],
       frameBufferComponents: FrameBufferComponents,
@@ -51,60 +52,41 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     gl2.bindBuffer(ARRAY_BUFFER, instanceDataBuffer)
     RendererFunctions.bindInstanceAttributes(gl2, 2, List(2, 2, 4, 2, 2, 1, 1, 1))
 
-    var lastTextureName: String = ""
+    val maxBatchSize: Int = 2
 
-    RendererFunctions.sortByDepth(displayObjects).foreach { displayObject =>
-      metrics.record(layer.metricStart)
+    val sorted = RendererFunctions.sortByDepth(displayObjects)
 
-      // Set all the uniforms
-      RendererFunctions.updateUBOData(displayObject)
-      gl2.bufferData(ARRAY_BUFFER, new Float32Array(RendererFunctions.uboData), STATIC_DRAW)
-
-      /*
-// // position attribute
-// glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-// glEnableVertexAttribArray(0);
-// // color attribute
-// glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
-// glEnableVertexAttribArray(1);
-
-    // gl.vertexAttribPointer(
-    //   indx = attributeLocation,
-    //   size = size,
-    //   `type` = FLOAT,
-    //   normalized = false,
-    //   stride = 0,
-    //   offset = 0
-    // )
-    // gl.enableVertexAttribArray(attributeLocation)
-
-    while nothing needs to change (i.e. images or < batch size), keep piling data into our array.
-    On state change or batch size met:
-    - bind the buffer
-    - bind all the data to the buffer
-    - set the attribute pointers (done?)
-    - enable the arrays
-    - set the divisor
-    - draw the instance count.
-
-       */
-
-      // If needed, update texture state
-      if (displayObject.imageRef !== lastTextureName) {
-        textureLocations.find(t => t.name === displayObject.imageRef).foreach { textureLookup =>
-          gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
-          lastTextureName = displayObject.imageRef
-        }
-
-        gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, 1)
-      } else {
-        gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, 1)
+    def drawBufferer(instanceCount: Int, buffer: scalajs.js.Array[Double]): Unit =
+      if (instanceCount > 0 && buffer.nonEmpty) {
+        gl2.bufferData(ARRAY_BUFFER, new Float32Array(buffer), STATIC_DRAW)
+        gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
+        metrics.record(layer.metricDraw)
       }
 
-      metrics.record(layer.metricDraw)
+    @tailrec
+    def rec(remaining: List[DisplayObject], batchCount: Int, textureName: String, buffer: scalajs.js.Array[Double]): Unit =
+      remaining match {
+        case Nil =>
+          drawBufferer(batchCount, buffer)
 
-      metrics.record(layer.metricEnd)
-    }
+        case d :: _ if d.imageRef !== textureName =>
+          drawBufferer(batchCount, buffer)
+          textureLocations.find(t => t.name === d.imageRef).foreach { textureLookup =>
+            gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
+          }
+          rec(remaining, 0, d.imageRef, scalajs.js.Array[Double]())
+
+        case _ if batchCount === maxBatchSize =>
+          drawBufferer(batchCount, buffer)
+          rec(remaining, 0, textureName, scalajs.js.Array[Double]())
+
+        case d :: ds =>
+          rec(ds, batchCount + 1, textureName, buffer.concat(RendererFunctions.updateUBOData(d)))
+      }
+
+    metrics.record(layer.metricStart)
+    rec(sorted, 0, "", scalajs.js.Array[Double]())
+    metrics.record(layer.metricEnd)
 
   }
 

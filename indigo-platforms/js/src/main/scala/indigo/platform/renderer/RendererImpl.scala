@@ -17,6 +17,7 @@ import indigo.shared.platform.AssetMapping
 import indigo.platform.DisplayObjectConversions
 import indigo.shared.AnimationsRegister
 
+@SuppressWarnings(Array("org.wartremover.warts.Null"))
 final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends Renderer {
 
   private val gl: WebGLRenderingContext =
@@ -39,6 +40,8 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
   private val vertexBuffer: WebGLBuffer  = gl.createBuffer()
   private val textureBuffer: WebGLBuffer = gl.createBuffer()
 
+  private val vao = gl2.createVertexArray()
+
   private val standardShaderProgram =
     RendererFunctions.shaderProgramSetup(gl, "Pixel", StandardPixelArtVert.shader, StandardPixelArtFrag.shader)
   private val lightingShaderProgram =
@@ -52,19 +55,42 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     FrameBufferFunctions.createFrameBuffer(gl, FrameBufferFunctions.createAndSetupTexture(cNc))
 
   def init(): Unit = {
+
+    val vertices: scalajs.js.Array[Double] = {
+      val vert0 = scalajs.js.Array[Double](-0.5, -0.5, 1.0d)
+      val vert1 = scalajs.js.Array[Double](-0.5, 0.5, 1.0d)
+      val vert2 = scalajs.js.Array[Double](0.5, -0.5, 1.0d)
+      val vert3 = scalajs.js.Array[Double](0.5, 0.5, 1.0d)
+  
+      vert0 ++ vert1 ++ vert2 ++ vert3
+    }
+  
+    val textureCoordinates: scalajs.js.Array[Double] = {
+      val tx0 = scalajs.js.Array[Double](0.0, 1.0)
+      val tx1 = scalajs.js.Array[Double](0.0, 0.0)
+      val tx2 = scalajs.js.Array[Double](1.0, 1.0)
+      val tx3 = scalajs.js.Array[Double](1.0, 0.0)
+  
+      tx0 ++ tx1 ++ tx2 ++ tx3
+    }
+
     gl.disable(DEPTH_TEST)
     gl.viewport(0, 0, gl.drawingBufferWidth.toDouble, gl.drawingBufferHeight.toDouble)
     gl.enable(BLEND)
 
+    gl2.bindVertexArray(vao)
+
     // Vertex
     gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
-    gl.bufferData(ARRAY_BUFFER, new Float32Array(RendererFunctions.vertices), STATIC_DRAW)
-    RendererFunctions.bindAttibuteBuffer(gl, RendererFunctions.VertexAtrributeLocation, 3)
+    gl.bufferData(ARRAY_BUFFER, new Float32Array(vertices), STATIC_DRAW)
+    RendererFunctions.bindAttibuteBuffer(gl, 0, 3)
 
     // Bind texture coords
     gl.bindBuffer(ARRAY_BUFFER, textureBuffer)
-    gl.bufferData(ARRAY_BUFFER, new Float32Array(RendererFunctions.textureCoordinates), STATIC_DRAW)
-    RendererFunctions.bindAttibuteBuffer(gl, RendererFunctions.TextureAtrributeLocation, 2)
+    gl.bufferData(ARRAY_BUFFER, new Float32Array(textureCoordinates), STATIC_DRAW)
+    RendererFunctions.bindAttibuteBuffer(gl, 1, 2)
+
+    gl2.bindVertexArray(null)
 
     List(standardShaderProgram, lightingShaderProgram).foreach { shaderProgram =>
       gl.useProgram(shaderProgram)
@@ -74,6 +100,8 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
   }
 
   def drawScene(gameTime: GameTime, scene: SceneUpdateFragment, assetMapping: AssetMapping, metrics: Metrics): Unit = {
+
+    gl2.bindVertexArray(vao)
 
     RendererFunctions.resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight, cNc.magnification)
 

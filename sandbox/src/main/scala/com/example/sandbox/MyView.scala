@@ -13,9 +13,9 @@ object MyView {
 
     SceneUpdateFragment(
       gameLayer(model),
-      lightingLayer(frameInputEvents.signals),
-      uiLayer(frameInputEvents),
-      AmbientLight.Normal.withAmount(0.25),
+      Nil,//lightingLayer(frameInputEvents.signals),
+      Nil,//uiLayer(frameInputEvents),
+      AmbientLight.Normal,//AmbientLight.Normal.withAmount(0.25),
       Nil,
       SceneAudio.None
     )
@@ -25,31 +25,32 @@ object MyView {
     List(
       currentState.dude.walkDirection match {
         case d @ DudeLeft =>
-          currentState.dude.dude.sprite
+          currentState.dude.dude.sprite.withAlpha(0.5)
             .changeCycle(d.cycleName)
             .play()
 
         case d @ DudeRight =>
-          currentState.dude.dude.sprite
+          currentState.dude.dude.sprite.withAlpha(0.5)
             .changeCycle(d.cycleName)
             .play()
 
         case d @ DudeUp =>
-          currentState.dude.dude.sprite
+          currentState.dude.dude.sprite.withAlpha(0.5)
             .changeCycle(d.cycleName)
             .play()
 
         case d @ DudeDown =>
-          currentState.dude.dude.sprite
+          currentState.dude.dude.sprite.withAlpha(0.5)
             .changeCycle(d.cycleName)
             .play()
 
         case d @ DudeIdle =>
-          currentState.dude.dude.sprite
+          currentState.dude.dude.sprite.withAlpha(0.5)
             .changeCycle(d.cycleName)
             .play()
       },
-      currentState.dude.dude.sprite.moveBy(8, 10).withAlpha(0.5).withTint(0, 1, 0)
+      currentState.dude.dude.sprite.moveBy(8, 10).withAlpha(0.5).withTint(0, 1, 0),
+      currentState.dude.dude.sprite.moveBy(8, -10).withAlpha(0.5).withTint(1, 0, 0)
     )
 
   def lightingLayer(signals: Signals): List[SceneGraphNode] =
