@@ -2,10 +2,8 @@
 
 precision mediump float;
 
-// Uniforms
 uniform sampler2D u_texture;
 
-// Varying
 in vec2 v_texcoord;
 in vec4 v_tint;
 

@@ -61,16 +61,16 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       val vert1 = scalajs.js.Array[Double](-0.5, 0.5, 1.0d)
       val vert2 = scalajs.js.Array[Double](0.5, -0.5, 1.0d)
       val vert3 = scalajs.js.Array[Double](0.5, 0.5, 1.0d)
-  
+
       vert0 ++ vert1 ++ vert2 ++ vert3
     }
-  
+
     val textureCoordinates: scalajs.js.Array[Double] = {
       val tx0 = scalajs.js.Array[Double](0.0, 1.0)
       val tx1 = scalajs.js.Array[Double](0.0, 0.0)
       val tx2 = scalajs.js.Array[Double](1.0, 1.0)
       val tx3 = scalajs.js.Array[Double](1.0, 0.0)
-  
+
       tx0 ++ tx1 ++ tx2 ++ tx3
     }
 
@@ -83,12 +83,28 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     // Vertex
     gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
     gl.bufferData(ARRAY_BUFFER, new Float32Array(vertices), STATIC_DRAW)
-    RendererFunctions.bindAttibuteBuffer(gl, 0, 3)
+    gl.enableVertexAttribArray(0)
+    gl.vertexAttribPointer(
+      indx = 0,
+      size = 3,
+      `type` = FLOAT,
+      normalized = false,
+      stride = 0,
+      offset = 0
+    )
 
     // Bind texture coords
     gl.bindBuffer(ARRAY_BUFFER, textureBuffer)
     gl.bufferData(ARRAY_BUFFER, new Float32Array(textureCoordinates), STATIC_DRAW)
-    RendererFunctions.bindAttibuteBuffer(gl, 1, 2)
+    gl.enableVertexAttribArray(1)
+    gl.vertexAttribPointer(
+      indx = 1,
+      size = 2,
+      `type` = FLOAT,
+      normalized = false,
+      stride = 0,
+      offset = 0
+    )
 
     gl2.bindVertexArray(null)
 

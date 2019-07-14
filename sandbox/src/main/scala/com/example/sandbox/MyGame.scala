@@ -4,7 +4,7 @@ import indigo._
 import indigo.json._
 import indigoexts.entrypoint._
 import indigoexts.formats._
-// import indigoexts.subsystems.fpscounter.FPSCounter
+import indigoexts.subsystems.fpscounter.FPSCounter
 
 object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
 
@@ -30,8 +30,7 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
     Set()
 
   val subSystems: Set[SubSystem] =
-    Set()
-  //Set(FPSCounter.subSystem(MyView.fontKey, Point(3, 100)))
+    Set(FPSCounter.subSystem(MyView.fontKey, Point(3, 100)))
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, MyStartupData] = {
     def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[MyStartupData] =

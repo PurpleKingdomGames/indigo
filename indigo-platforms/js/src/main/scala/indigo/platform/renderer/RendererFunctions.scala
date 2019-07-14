@@ -9,10 +9,6 @@ import indigo.shared.datatypes.Matrix4
 import indigo.shared.EqualTo._
 
 import indigo.shared.display.DisplayObject
-import shared.abstractions.Id
-import scala.scalajs.js.typedarray.Float32Array
-import indigo.facades.WebGL2RenderingContext
-import scala.annotation.tailrec
 
 object RendererFunctions {
 
@@ -59,47 +55,6 @@ object RendererFunctions {
       gl.deleteProgram(shaderProgram);
       throw new Exception("Fatal: Shader program link error")
     }
-  }
-
-  def bindAttibuteBuffer(gl: raw.WebGLRenderingContext, attributeLocation: Int, size: Int): Unit = {
-    gl.enableVertexAttribArray(attributeLocation)
-    gl.vertexAttribPointer(
-      indx = attributeLocation,
-      size = size,
-      `type` = FLOAT,
-      normalized = false,
-      stride = 0,
-      offset = 0
-    )
-  }
-
-  def bindInstanceAttributes(gl2: WebGL2RenderingContext, startLocation: Int, sizes: List[Int]): Unit = {
-    @tailrec
-    def rec(remaining: List[Int], count: Int, offset: Int): Unit =
-      remaining match {
-        case Nil =>
-          ()
-
-        case s :: ss =>
-          val nextOffset = bindInstanceAttibute(gl2, startLocation + count, s, offset)
-          rec(ss, count + 1, nextOffset.value)
-      }
-
-    rec(sizes, 0, 0)
-  }
-
-  def bindInstanceAttibute(gl2: WebGL2RenderingContext, attributeLocation: Int, size: Int, offset: Int): Id[Int] = {
-    gl2.enableVertexAttribArray(attributeLocation)
-    gl2.vertexAttribPointer(
-      indx = attributeLocation,
-      size = size,
-      `type` = FLOAT,
-      normalized = false,
-      stride = size * Float32Array.BYTES_PER_ELEMENT,
-      offset = offset
-    )
-    gl2.vertexAttribDivisor(attributeLocation, 1)
-    Id(offset + (size * Float32Array.BYTES_PER_ELEMENT))
   }
 
   def createAndBindTexture(gl: raw.WebGLRenderingContext): WebGLTexture = {

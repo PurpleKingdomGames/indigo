@@ -1,6 +1,5 @@
 #version 300 es
 
-// Attributes
 layout (location = 0) in vec4 a_vertices;
 layout (location = 1) in vec2 a_texcoord;
 layout (location = 2) in vec2 a_translation;
@@ -12,12 +11,8 @@ layout (location = 7) in float a_rotation;
 layout (location = 8) in float a_fliph;
 layout (location = 9) in float a_flipv;
 
-// Uniforms
-layout (std140) uniform DisplayObjectUBO {
-  mat4 u_projection;
-};
+uniform mat4 u_projection;
 
-// Varying
 out vec2 v_texcoord;
 out vec4 v_tint;
 

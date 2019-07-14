@@ -13,9 +13,9 @@ object MyView {
 
     SceneUpdateFragment(
       gameLayer(model),
-      Nil,//lightingLayer(frameInputEvents.signals),
-      Nil,//uiLayer(frameInputEvents),
-      AmbientLight.Normal,//AmbientLight.Normal.withAmount(0.25),
+      lightingLayer(frameInputEvents.signals),
+      uiLayer(frameInputEvents),
+      AmbientLight.Normal.withAmount(0.25),
       Nil,
       SceneAudio.None
     )
@@ -25,27 +25,27 @@ object MyView {
     List(
       currentState.dude.walkDirection match {
         case d @ DudeLeft =>
-          currentState.dude.dude.sprite.withAlpha(0.5)
+          currentState.dude.dude.sprite
             .changeCycle(d.cycleName)
             .play()
 
         case d @ DudeRight =>
-          currentState.dude.dude.sprite.withAlpha(0.5)
+          currentState.dude.dude.sprite
             .changeCycle(d.cycleName)
             .play()
 
         case d @ DudeUp =>
-          currentState.dude.dude.sprite.withAlpha(0.5)
+          currentState.dude.dude.sprite
             .changeCycle(d.cycleName)
             .play()
 
         case d @ DudeDown =>
-          currentState.dude.dude.sprite.withAlpha(0.5)
+          currentState.dude.dude.sprite
             .changeCycle(d.cycleName)
             .play()
 
         case d @ DudeIdle =>
-          currentState.dude.dude.sprite.withAlpha(0.5)
+          currentState.dude.dude.sprite
             .changeCycle(d.cycleName)
             .play()
       },

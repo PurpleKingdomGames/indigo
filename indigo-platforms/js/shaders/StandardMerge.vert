@@ -1,10 +1,8 @@
 #version 300 es
 
-// Attributes
 layout (location = 0) in vec4 a_vertices;
 layout (location = 1) in vec2 a_texcoord;
 
-// Uniforms
 layout (std140) uniform DisplayObjectUBO {
   mat4 u_projection;
   vec2 u_translation;
