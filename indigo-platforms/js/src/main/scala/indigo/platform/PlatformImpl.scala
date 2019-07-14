@@ -98,7 +98,9 @@ object PlatformImpl {
         new RendererConfig(
           viewport = new Viewport(gameConfig.viewport.width, gameConfig.viewport.height),
           clearColor = gameConfig.clearColor,
-          magnification = gameConfig.magnification
+          magnification = gameConfig.magnification,
+          maxBatchSize = gameConfig.advanced.batchSize,
+          antiAliasing = gameConfig.advanced.antiAliasing
         ),
         loadedTextureAssets,
         canvas

@@ -17,7 +17,7 @@ object RendererInit {
     renderer match {
       case Some(r) => r
       case None =>
-        val cNc = setupContextAndCanvas(canvas, config.magnification)
+        val cNc = setupContextAndCanvas(canvas, config.magnification, config.antiAliasing)
 
         val r = new RendererImpl(config, loadedTextureAssets, cNc)
         r.init()
@@ -37,16 +37,16 @@ object RendererInit {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
-  private def getContext(canvas: html.Canvas): WebGLRenderingContext = {
+  private def getContext(canvas: html.Canvas, antiAliasing: Boolean): WebGLRenderingContext = {
     val args =
-      Dynamic.literal("premultipliedAlpha" -> false, "alpha" -> false, "antialias" -> false)
+      Dynamic.literal("premultipliedAlpha" -> false, "alpha" -> false, "antialias" -> antiAliasing)
 
     (canvas.getContext("webgl2", args)).asInstanceOf[raw.WebGLRenderingContext]
   }
 
-  private def setupContextAndCanvas(canvas: html.Canvas, magnification: Int): ContextAndCanvas =
+  private def setupContextAndCanvas(canvas: html.Canvas, magnification: Int, antiAliasing: Boolean): ContextAndCanvas =
     new ContextAndCanvas(
-      context = getContext(canvas),
+      context = getContext(canvas, antiAliasing),
       canvas = canvas,
       width = canvas.clientWidth,
       height = canvas.clientHeight,

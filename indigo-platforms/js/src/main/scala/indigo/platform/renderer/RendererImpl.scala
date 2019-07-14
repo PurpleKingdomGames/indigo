@@ -127,6 +127,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       DisplayObjectConversions.sceneNodesToDisplayObjects(scene.gameLayer, gameTime, assetMapping, metrics),
       gameFrameBuffer,
       config.clearColor,
+      config.maxBatchSize,
       standardShaderProgram,
       CurrentDrawLayer.Game,
       metrics
@@ -139,6 +140,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       DisplayObjectConversions.sceneNodesToDisplayObjects(scene.lightingLayer, gameTime, assetMapping, metrics),
       lightingFrameBuffer,
       AmbientLight.toClearColor(scene.ambientLight),
+      config.maxBatchSize,
       lightingShaderProgram,
       CurrentDrawLayer.Lighting,
       metrics
@@ -151,6 +153,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       DisplayObjectConversions.sceneNodesToDisplayObjects(scene.uiLayer, gameTime, assetMapping, metrics),
       uiFrameBuffer,
       ClearColor.Black.forceTransparent,
+      config.maxBatchSize,
       standardShaderProgram,
       CurrentDrawLayer.UI,
       metrics

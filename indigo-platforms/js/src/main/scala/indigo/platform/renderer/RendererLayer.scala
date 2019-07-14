@@ -36,6 +36,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       displayObjects: List[DisplayObject],
       frameBufferComponents: FrameBufferComponents,
       clearColor: ClearColor,
+      maxBatchSize: Int,
       shaderProgram: WebGLProgram,
       layer: CurrentDrawLayer,
       metrics: Metrics
@@ -95,9 +96,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     gl2.vertexAttribPointer(9, 1, FLOAT, false, Float32Array.BYTES_PER_ELEMENT, 0)
     gl2.vertexAttribDivisor(9, 1)
     //
-
-    val maxBatchSize: Int = 10000
-
+    
     val sorted = RendererFunctions.sortByDepth(displayObjects)
 
     def drawBufferer(instanceCount: Int, buffers: InstanceBuffers): Unit =
