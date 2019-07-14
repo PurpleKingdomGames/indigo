@@ -42,7 +42,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val hFlipData: scalajs.js.Array[Double]            = scalajs.js.Array[Double](1d * maxBatchSize)
   private val vFlipData: scalajs.js.Array[Double]            = scalajs.js.Array[Double](1d * maxBatchSize)
 
-  private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Double]) = {
+  @inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Double]) = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
     gl2.bufferData(ARRAY_BUFFER, new Float32Array(data), STATIC_DRAW)
   }
@@ -116,7 +116,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     val sorted: ListBuffer[DisplayObject] =
       RendererFunctions.sortByDepth(displayObjects)
 
-    def drawBufferer(instanceCount: Int): Unit =
+    @inline def drawBuffer(instanceCount: Int): Unit =
       if (instanceCount > 0) {
         bindData(translationInstanceArray, translationData)
         bindData(scaleInstanceArray, scaleData)
@@ -137,17 +137,17 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     def rec(remaining: List[DisplayObject], batchCount: Int, textureName: String): Unit =
       remaining match {
         case Nil =>
-          drawBufferer(batchCount)
+          drawBuffer(batchCount)
 
         case d :: _ if d.imageRef !== textureName =>
-          drawBufferer(batchCount)
+          drawBuffer(batchCount)
           textureLocations.find(t => t.name === d.imageRef).foreach { textureLookup =>
             gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
           }
           rec(remaining, 0, d.imageRef)
 
         case _ if batchCount === maxBatchSize =>
-          drawBufferer(batchCount)
+          drawBuffer(batchCount)
           rec(remaining, 0, textureName)
 
         case d :: ds =>
