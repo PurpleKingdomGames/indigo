@@ -25,17 +25,12 @@ object AutomataTests extends TestSuite {
       Graphic(0, 0, 10, 10, 1, "fish"),
       Millis(100)
     ).withOnCullEvent { _ =>
-      Some(eventInstance)
+      List(eventInstance)
     }
 
-  val inventory: Map[AutomataPoolKey, Automaton] =
-    Map(poolKey -> automaton)
-
-  val farm: Automata =
-    Automata(
-      inventory,
-      paddock = Nil
-    )
+  val automata: Automata =
+    Automata()
+      .add(automaton)
 
   val tests: Tests =
     Tests {
@@ -43,25 +38,16 @@ object AutomataTests extends TestSuite {
       "culling an automaton should result in an event" - {
 
         val farmWithAutomaton: Automata =
-          Automata
-            .spawn(
-              farm,
-              GameTime.zero,
-              Dice.loaded(1),
-              poolKey,
-              Point.zero,
-              None,
-              None
-            )
+          automata
+            .update(GameTime.zero, Dice.loaded(1))(AutomataEvent.Spawn(poolKey, Point.zero, None, None))
             .state
 
+        // 1 ms over the lifespan, so should be culled
         val outcome: Outcome[Automata] =
-          Automata.cullPaddock(
-            farmWithAutomaton,
-            GameTime.is(Millis(101)) // 1 ms over the lifespan, so should be culled
-          )
+          automata
+            .update(GameTime.is(Millis(101)), Dice.loaded(1))(AutomataEvent.Cull)
 
-        outcome.state.paddock.isEmpty ==> true
+        outcome.state.liveAutomataCount ==> 0
         outcome.globalEvents.head ==> eventInstance
 
       }

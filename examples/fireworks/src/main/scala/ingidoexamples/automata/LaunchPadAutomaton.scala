@@ -21,12 +21,12 @@ object LaunchPadAutomaton {
     ).withOnCullEvent { seed =>
       seed.payload match {
         case Some(LaunchPad(_, _, rocket)) =>
-          Option(
+          List(
             RocketAutomaton.spawnEvent(rocket, seed.spawnedAt)
           )
 
         case _ =>
-          None
+          Nil
       }
 
     }

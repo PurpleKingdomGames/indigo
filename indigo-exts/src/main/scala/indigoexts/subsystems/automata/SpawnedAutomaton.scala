@@ -2,10 +2,17 @@ package indigoexts.subsystems.automata
 
 import indigo.shared.time.Millis
 
-final case class SpawnedAutomaton(automaton: Automaton, seedValues: AutomatonSeedValues) {
+final class SpawnedAutomaton(val automaton: Automaton, val seedValues: AutomatonSeedValues) {
   def isAlive(currentTime: Millis): Boolean =
     seedValues.createdAt + seedValues.lifeSpan > currentTime
 
   def updateDelta(frameDelta: Millis): SpawnedAutomaton =
-    this.copy(seedValues = seedValues.updateDelta(frameDelta))
+    SpawnedAutomaton(automaton, seedValues.updateDelta(frameDelta))
+}
+
+object SpawnedAutomaton {
+
+  def apply(automaton: Automaton, seedValues: AutomatonSeedValues): SpawnedAutomaton =
+    new SpawnedAutomaton(automaton, seedValues)
+
 }
