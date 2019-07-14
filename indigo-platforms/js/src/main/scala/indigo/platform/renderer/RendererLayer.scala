@@ -12,16 +12,57 @@ import indigo.shared.EqualTo._
 import scala.annotation.tailrec
 import scala.scalajs.js.typedarray.Float32Array
 
-class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult]) {
+class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int) {
 
-  private val buffer2: WebGLBuffer = gl2.createBuffer()
-  private val buffer3: WebGLBuffer = gl2.createBuffer()
-  private val buffer4: WebGLBuffer = gl2.createBuffer()
-  private val buffer5: WebGLBuffer = gl2.createBuffer()
-  private val buffer6: WebGLBuffer = gl2.createBuffer()
-  private val buffer7: WebGLBuffer = gl2.createBuffer()
-  private val buffer8: WebGLBuffer = gl2.createBuffer()
-  private val buffer9: WebGLBuffer = gl2.createBuffer()
+  // Instance Array Buffers
+  private val translationInstanceArray: WebGLBuffer      = gl2.createBuffer()
+  private val scaleInstanceArray: WebGLBuffer            = gl2.createBuffer()
+  private val tintInstanceArray: WebGLBuffer             = gl2.createBuffer()
+  private val frameTranslationInstanceArray: WebGLBuffer = gl2.createBuffer()
+  private val frameScaleInstanceArray: WebGLBuffer       = gl2.createBuffer()
+  private val rotationInstanceArray: WebGLBuffer         = gl2.createBuffer()
+  private val hFlipInstanceArray: WebGLBuffer            = gl2.createBuffer()
+  private val vFlipInstanceArray: WebGLBuffer            = gl2.createBuffer()
+
+  def setupInstanceArray(buffer: WebGLBuffer, location: Int, size: Int): Unit = {
+    gl2.bindBuffer(ARRAY_BUFFER, buffer)
+    gl2.enableVertexAttribArray(location)
+    gl2.vertexAttribPointer(location, size, FLOAT, false, size * Float32Array.BYTES_PER_ELEMENT, 0)
+    gl2.vertexAttribDivisor(location, 1)
+  }
+
+  // Instance Data Arrays
+  private val translationData: scalajs.js.Array[Double]      = scalajs.js.Array[Double](2d * maxBatchSize)
+  private val scaleData: scalajs.js.Array[Double]            = scalajs.js.Array[Double](2d * maxBatchSize)
+  private val tintData: scalajs.js.Array[Double]             = scalajs.js.Array[Double](4d * maxBatchSize)
+  private val frameTranslationData: scalajs.js.Array[Double] = scalajs.js.Array[Double](2d * maxBatchSize)
+  private val frameScaleData: scalajs.js.Array[Double]       = scalajs.js.Array[Double](2d * maxBatchSize)
+  private val rotationData: scalajs.js.Array[Double]         = scalajs.js.Array[Double](1d * maxBatchSize)
+  private val hFlipData: scalajs.js.Array[Double]            = scalajs.js.Array[Double](1d * maxBatchSize)
+  private val vFlipData: scalajs.js.Array[Double]            = scalajs.js.Array[Double](1d * maxBatchSize)
+
+  private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Double]) = {
+    gl2.bindBuffer(ARRAY_BUFFER, buffer)
+    gl2.bufferData(ARRAY_BUFFER, new Float32Array(data), STATIC_DRAW)
+  }
+
+  private def updateData(d: DisplayObject, i: Int): Unit = {
+    translationData((i * 2) + 0) = d.x.toDouble
+    translationData((i * 2) + 1) = d.y.toDouble
+    scaleData((i * 2) + 0) = d.width.toDouble * d.scaleX
+    scaleData((i * 2) + 1) = d.height.toDouble * d.scaleY
+    tintData((i * 4) + 0) = d.tintR.toDouble
+    tintData((i * 4) + 1) = d.tintG.toDouble
+    tintData((i * 4) + 2) = d.tintB.toDouble
+    tintData((i * 4) + 3) = d.alpha.toDouble
+    frameTranslationData((i * 2) + 0) = d.frame.translate.x
+    frameTranslationData((i * 2) + 1) = d.frame.translate.y
+    frameScaleData((i * 2) + 0) = d.frame.scale.x
+    frameScaleData((i * 2) + 1) = d.frame.scale.y
+    rotationData(i) = d.rotation
+    hFlipData(i) = if (d.flipHorizontal) -1.0d else 1.0d
+    vFlipData(i) = if (d.flipVertical) 1.0d else -1.0d
+  }
 
   @SuppressWarnings(
     Array(
@@ -36,7 +77,6 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       displayObjects: List[DisplayObject],
       frameBufferComponents: FrameBufferComponents,
       clearColor: ClearColor,
-      maxBatchSize: Int,
       shaderProgram: WebGLProgram,
       layer: CurrentDrawLayer,
       metrics: Metrics
@@ -54,153 +94,67 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     gl2.uniformMatrix4fv(projectionLocation, false, RendererFunctions.orthographicProjectionMatrix)
 
     // Instance attributes
-
     // vec2 a_translation
-    gl2.bindBuffer(ARRAY_BUFFER, buffer2)
-    gl2.enableVertexAttribArray(2)
-    gl2.vertexAttribPointer(2, 2, FLOAT, false, 2 * Float32Array.BYTES_PER_ELEMENT, 0)
-    gl2.vertexAttribDivisor(2, 1)
+    setupInstanceArray(translationInstanceArray, 2, 2)
     // vec2 a_scale
-    gl2.bindBuffer(ARRAY_BUFFER, buffer3)
-    gl2.enableVertexAttribArray(3)
-    gl2.vertexAttribPointer(3, 2, FLOAT, false, 2 * Float32Array.BYTES_PER_ELEMENT, 0)
-    gl2.vertexAttribDivisor(3, 1)
+    setupInstanceArray(scaleInstanceArray, 3, 2)
     // vec4 a_tint
-    gl2.bindBuffer(ARRAY_BUFFER, buffer4)
-    gl2.enableVertexAttribArray(4)
-    gl2.vertexAttribPointer(4, 4, FLOAT, false, 4 * Float32Array.BYTES_PER_ELEMENT, 0)
-    gl2.vertexAttribDivisor(4, 1)
+    setupInstanceArray(tintInstanceArray, 4, 4)
     // vec2 a_frameTranslation
-    gl2.bindBuffer(ARRAY_BUFFER, buffer5)
-    gl2.enableVertexAttribArray(5)
-    gl2.vertexAttribPointer(5, 2, FLOAT, false, 2 * Float32Array.BYTES_PER_ELEMENT, 0)
-    gl2.vertexAttribDivisor(5, 1)
+    setupInstanceArray(frameTranslationInstanceArray, 5, 2)
     // vec2 a_frameScale
-    gl2.bindBuffer(ARRAY_BUFFER, buffer6)
-    gl2.enableVertexAttribArray(6)
-    gl2.vertexAttribPointer(6, 2, FLOAT, false, 2 * Float32Array.BYTES_PER_ELEMENT, 0)
-    gl2.vertexAttribDivisor(6, 1)
+    setupInstanceArray(frameScaleInstanceArray, 6, 2)
     // float a_rotation
-    gl2.bindBuffer(ARRAY_BUFFER, buffer7)
-    gl2.enableVertexAttribArray(7)
-    gl2.vertexAttribPointer(7, 1, FLOAT, false, Float32Array.BYTES_PER_ELEMENT, 0)
-    gl2.vertexAttribDivisor(7, 1)
+    setupInstanceArray(rotationInstanceArray, 7, 1)
     // float a_fliph
-    gl2.bindBuffer(ARRAY_BUFFER, buffer8)
-    gl2.enableVertexAttribArray(8)
-    gl2.vertexAttribPointer(8, 1, FLOAT, false, Float32Array.BYTES_PER_ELEMENT, 0)
-    gl2.vertexAttribDivisor(8, 1)
+    setupInstanceArray(hFlipInstanceArray, 8, 1)
     // float a_flipv
-    gl2.bindBuffer(ARRAY_BUFFER, buffer9)
-    gl2.enableVertexAttribArray(9)
-    gl2.vertexAttribPointer(9, 1, FLOAT, false, Float32Array.BYTES_PER_ELEMENT, 0)
-    gl2.vertexAttribDivisor(9, 1)
+    setupInstanceArray(vFlipInstanceArray, 9, 1)
     //
-    
+
     val sorted = RendererFunctions.sortByDepth(displayObjects)
 
-    def drawBufferer(instanceCount: Int, buffers: InstanceBuffers): Unit =
+    def drawBufferer(instanceCount: Int): Unit =
       if (instanceCount > 0) {
-
-        gl2.bindBuffer(ARRAY_BUFFER, buffer2)
-        gl2.bufferData(ARRAY_BUFFER, new Float32Array(buffers.b2), STATIC_DRAW)
-
-        gl2.bindBuffer(ARRAY_BUFFER, buffer3)
-        gl2.bufferData(ARRAY_BUFFER, new Float32Array(buffers.b3), STATIC_DRAW)
-
-        gl2.bindBuffer(ARRAY_BUFFER, buffer4)
-        gl2.bufferData(ARRAY_BUFFER, new Float32Array(buffers.b4), STATIC_DRAW)
-
-        gl2.bindBuffer(ARRAY_BUFFER, buffer5)
-        gl2.bufferData(ARRAY_BUFFER, new Float32Array(buffers.b5), STATIC_DRAW)
-
-        gl2.bindBuffer(ARRAY_BUFFER, buffer6)
-        gl2.bufferData(ARRAY_BUFFER, new Float32Array(buffers.b6), STATIC_DRAW)
-
-        gl2.bindBuffer(ARRAY_BUFFER, buffer7)
-        gl2.bufferData(ARRAY_BUFFER, new Float32Array(buffers.b7), STATIC_DRAW)
-
-        gl2.bindBuffer(ARRAY_BUFFER, buffer8)
-        gl2.bufferData(ARRAY_BUFFER, new Float32Array(buffers.b8), STATIC_DRAW)
-
-        gl2.bindBuffer(ARRAY_BUFFER, buffer9)
-        gl2.bufferData(ARRAY_BUFFER, new Float32Array(buffers.b9), STATIC_DRAW)
+        bindData(translationInstanceArray, translationData)
+        bindData(scaleInstanceArray, scaleData)
+        bindData(tintInstanceArray, tintData)
+        bindData(frameTranslationInstanceArray, frameTranslationData)
+        bindData(frameScaleInstanceArray, frameScaleData)
+        bindData(rotationInstanceArray, rotationData)
+        bindData(hFlipInstanceArray, hFlipData)
+        bindData(vFlipInstanceArray, vFlipData)
 
         gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
         metrics.record(layer.metricDraw)
-
       }
-
-    sorted.headOption.foreach { d =>
-      textureLocations.find(t => t.name === d.imageRef).foreach { textureLookup =>
-        gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
-      }
-    }
 
     @tailrec
-    def rec(remaining: List[DisplayObject], batchCount: Int, textureName: String, buffers: InstanceBuffers): Unit =
+    def rec(remaining: List[DisplayObject], batchCount: Int, textureName: String): Unit =
       remaining match {
         case Nil =>
-          drawBufferer(batchCount, buffers)
+          drawBufferer(batchCount)
 
         case d :: _ if d.imageRef !== textureName =>
-          drawBufferer(batchCount, buffers)
+          drawBufferer(batchCount)
           textureLocations.find(t => t.name === d.imageRef).foreach { textureLookup =>
             gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
           }
-          rec(remaining, 0, d.imageRef, InstanceBuffers.empty)
+          rec(remaining, 0, d.imageRef)
 
         case _ if batchCount === maxBatchSize =>
-          drawBufferer(batchCount, buffers)
-          rec(remaining, 0, textureName, InstanceBuffers.empty)
+          drawBufferer(batchCount)
+          rec(remaining, 0, textureName)
 
         case d :: ds =>
-          rec(ds, batchCount + 1, textureName, buffers.add(d))
+          updateData(d, batchCount)
+          rec(ds, batchCount + 1, textureName)
       }
 
     metrics.record(layer.metricStart)
-    rec(sorted, 0, "", InstanceBuffers.empty)
+    rec(sorted, 0, "")
     metrics.record(layer.metricEnd)
 
   }
 
-}
-
-final class InstanceBuffers(
-    val b2: scalajs.js.Array[Double],
-    val b3: scalajs.js.Array[Double],
-    val b4: scalajs.js.Array[Double],
-    val b5: scalajs.js.Array[Double],
-    val b6: scalajs.js.Array[Double],
-    val b7: scalajs.js.Array[Double],
-    val b8: scalajs.js.Array[Double],
-    val b9: scalajs.js.Array[Double]
-) {
-
-  def add(d: DisplayObject): InstanceBuffers =
-    new InstanceBuffers(
-      b2.concat(scalajs.js.Array[Double](d.x.toDouble, d.y.toDouble)),
-      b3.concat(scalajs.js.Array[Double](d.width.toDouble * d.scaleX, d.height.toDouble * d.scaleY)),
-      b4.concat(scalajs.js.Array[Double](d.tintR.toDouble, d.tintG.toDouble, d.tintB.toDouble, d.alpha.toDouble)),
-      b5.concat(scalajs.js.Array[Double](d.frame.translate.x, d.frame.translate.y)),
-      b6.concat(scalajs.js.Array[Double](d.frame.scale.x, d.frame.scale.y)),
-      b7.concat(scalajs.js.Array[Double](d.rotation)),
-      b8.concat(scalajs.js.Array[Double](if (d.flipHorizontal) -1.0d else 1.0d)),
-      b9.concat(scalajs.js.Array[Double](if (d.flipVertical) 1.0d else -1.0d))
-    )
-
-}
-
-object InstanceBuffers {
-  val empty: InstanceBuffers =
-    new InstanceBuffers(
-      scalajs.js.Array[Double](),
-      scalajs.js.Array[Double](),
-      scalajs.js.Array[Double](),
-      scalajs.js.Array[Double](),
-      scalajs.js.Array[Double](),
-      scalajs.js.Array[Double](),
-      scalajs.js.Array[Double](),
-      scalajs.js.Array[Double]()
-    )
 }
