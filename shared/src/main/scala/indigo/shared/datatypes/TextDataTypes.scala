@@ -3,8 +3,11 @@ package indigo.shared.datatypes
 import indigo.shared.EqualTo
 
 import indigo.shared.EqualTo._
+import indigo.shared.QuickCache
 
 final class FontInfo(val fontKey: FontKey, val fontSpriteSheet: FontSpriteSheet, val unknownChar: FontChar, val fontChars: List[FontChar], val caseSensitive: Boolean) {
+  import FontInfo._
+
   private val nonEmptyChars: List[FontChar] = unknownChar +: fontChars
 
   def addChar(fontChar: FontChar): FontInfo =
@@ -17,11 +20,13 @@ final class FontInfo(val fontKey: FontKey, val fontSpriteSheet: FontSpriteSheet,
     addChars(chars.toList)
 
   def findByCharacter(character: String): FontChar =
-    nonEmptyChars
-      .find { p =>
-        if (caseSensitive) p.character === character else p.character.toLowerCase === character.toLowerCase
-      }
-      .getOrElse(unknownChar)
+    QuickCache("char-" + character + "-" + fontKey.key) {
+      nonEmptyChars
+        .find { p =>
+          if (caseSensitive) p.character === character else p.character.toLowerCase === character.toLowerCase
+        }
+        .getOrElse(unknownChar)
+    }
   def findByCharacter(character: Char): FontChar =
     findByCharacter(character.toString)
 
@@ -35,6 +40,8 @@ final class FontInfo(val fontKey: FontKey, val fontSpriteSheet: FontSpriteSheet,
 }
 
 object FontInfo {
+
+  implicit val fontCharCache: QuickCache[FontChar] = QuickCache.empty
 
   def apply(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean): FontInfo =
     new FontInfo(fontKey, fontSpriteSheet, unknownChar, fontChars, caseSensitive)

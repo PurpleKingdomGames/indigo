@@ -8,6 +8,7 @@ import indigo.shared.datatypes._
 import indigo.shared.IndigoLogger
 
 import indigo.shared.{AnimationsRegister, FontRegister}
+import indigo.shared.QuickCache
 
 object SceneGraphNode {
   def empty: Group = Group.empty
@@ -383,8 +384,8 @@ final class Text(
     val eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
 ) extends Renderable {
 
-  lazy val  x: Int = bounds.position.x
-  lazy val  y: Int = bounds.position.y
+  lazy val x: Int = bounds.position.x
+  lazy val y: Int = bounds.position.y
 
   lazy val lines: List[TextLine] =
     FontRegister
@@ -481,10 +482,14 @@ final class TextLine(val text: String, val lineBounds: Rectangle) {
 
 object Text {
 
+  implicit val lineBoundsCache: QuickCache[Rectangle] = QuickCache.empty
+
   def calculateBoundsOfLine(lineText: String, fontInfo: FontInfo): Rectangle =
-    lineText.toList
-      .map(c => fontInfo.findByCharacter(c).bounds)
-      .fold(Rectangle.zero)((acc, curr) => Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height)))
+    QuickCache("line-bounds-" + fontInfo.fontKey.key + "-" + lineText) {
+      lineText.toList
+        .map(c => fontInfo.findByCharacter(c).bounds)
+        .fold(Rectangle.zero)((acc, curr) => Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height)))
+    }
 
   def apply(text: String, x: Int, y: Int, depth: Int, fontKey: FontKey): Text =
     Text(
