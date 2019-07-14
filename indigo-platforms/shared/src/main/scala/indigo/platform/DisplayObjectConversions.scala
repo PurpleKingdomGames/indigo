@@ -185,7 +185,7 @@ object DisplayObjectConversions {
         FontRegister
           .findByFontKey(leaf.fontKey)
           .map { fontInfo =>
-            zipWithCharDetails(line.text.toList, fontInfo).map {
+            zipWithCharDetails(line.text.toList, fontInfo).toList.map {
               case (fontChar, xPosition) =>
                 QuickCache(lineHash + ":" + leaf.fontKey.key + ":" + fontChar.character.toString() + ":" + fontChar.bounds.hash + ":" + xPosition.toString()) {
                   DisplayObject(
@@ -222,16 +222,23 @@ object DisplayObjectConversions {
           }
       }
     }
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  private var accCharDetails: ListBuffer[(FontChar, Int)] = new ListBuffer()
 
-  private def zipWithCharDetails(charList: List[Char], fontInfo: FontInfo): List[(FontChar, Int)] = {
+  private def zipWithCharDetails(charList: List[Char], fontInfo: FontInfo): ListBuffer[(FontChar, Int)] = {
     @tailrec
-    def rec(remaining: List[(Char, FontChar)], nextX: Int, acc: List[(FontChar, Int)]): List[(FontChar, Int)] =
+    def rec(remaining: List[(Char, FontChar)], nextX: Int): ListBuffer[(FontChar, Int)] =
       remaining match {
-        case Nil     => acc
-        case x :: xs => rec(xs, nextX + x._2.bounds.width, (x._2, nextX) :: acc)
+        case Nil =>
+          accCharDetails
+
+        case x :: xs =>
+          (x._2, nextX) +=: accCharDetails
+          rec(xs, nextX + x._2.bounds.width)
       }
 
-    rec(charList.map(c => (c, fontInfo.findByCharacter(c))), 0, Nil)
+    accCharDetails = new ListBuffer()
+    rec(charList.map(c => (c, fontInfo.findByCharacter(c))), 0)
   }
 
 }
