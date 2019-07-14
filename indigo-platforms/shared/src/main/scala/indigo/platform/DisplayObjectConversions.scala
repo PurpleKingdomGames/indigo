@@ -179,7 +179,7 @@ object DisplayObjectConversions {
   def textLineToDisplayObjects(leaf: Text, assetMapping: AssetMapping): (TextLine, Int, Int) => List[DisplayObject] =
     (line, alignmentOffsetX, yOffset) => {
       val lineHash: String =
-        line.hash + ":" + alignmentOffsetX.toString() + ":" + yOffset.toString()
+        leaf.fontKey.key + ":" + line.hash + ":" + alignmentOffsetX.toString() + ":" + yOffset.toString()
 
       QuickCache(lineHash) {
         FontRegister
