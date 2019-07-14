@@ -132,34 +132,6 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
     metrics.record(layer.metricStart)
 
-    // val count: Int          = sorted.length
-    // var i: Int              = 0
-    // var batchCount: Int     = 0
-    // var textureName: String = ""
-
-    // while (i < count) {
-    //   val d: DisplayObject = sorted(i)
-
-    //   if (sorted.isEmpty) {
-    //     drawBufferer(batchCount)
-    //     i = count
-    //   } else if (d.imageRef !== textureName) {
-    //     drawBufferer(batchCount)
-    //     textureLocations.find(t => t.name === d.imageRef).foreach { textureLookup =>
-    //       gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
-    //     }
-    //     batchCount = 0
-    //     textureName = d.imageRef
-    //   } else if (batchCount === maxBatchSize) {
-    //     drawBufferer(batchCount)
-    //     batchCount = 0
-    //   } else {
-    //     updateData(d, batchCount)
-    //     batchCount += 1
-    //     i += 1
-    //   }
-    // }
-
     @tailrec
     def rec(remaining: List[DisplayObject], batchCount: Int, textureName: String): Unit =
       remaining match {
