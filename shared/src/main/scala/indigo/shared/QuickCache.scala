@@ -39,6 +39,9 @@ final class QuickCache[A](private val cache: mutable.HashMap[CacheKey, A]) {
   def unsafeFetch(key: CacheKey): A =
     cache(key)
 
+  def size: Int =
+    cache.size
+
 }
 
 @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
