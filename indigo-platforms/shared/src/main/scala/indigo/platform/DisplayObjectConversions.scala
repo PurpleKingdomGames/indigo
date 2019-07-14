@@ -18,6 +18,7 @@ import indigo.shared.scenegraph.Group
 import indigo.shared.QuickCache
 
 import scala.annotation.tailrec
+import scala.collection.mutable.ListBuffer
 
 object DisplayObjectConversions {
 
@@ -55,12 +56,16 @@ object DisplayObjectConversions {
       }
     }
 
-  def sceneNodesToDisplayObjects(sceneNodes: List[SceneGraphNode], gameTime: GameTime, assetMapping: AssetMapping, metrics: Metrics): List[DisplayObject] = {
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  private var accDisplayObjects: ListBuffer[DisplayObject] = new ListBuffer()
+
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
+  def sceneNodesToDisplayObjects(sceneNodes: List[SceneGraphNode], gameTime: GameTime, assetMapping: AssetMapping, metrics: Metrics): ListBuffer[DisplayObject] = {
     @tailrec
-    def rec(remaining: List[SceneGraphNode], acc: List[DisplayObject]): List[DisplayObject] =
+    def rec(remaining: List[SceneGraphNode]): ListBuffer[DisplayObject] =
       remaining match {
         case Nil =>
-          acc
+          accDisplayObjects
 
         case (x: Group) :: xs =>
           val childNodes =
@@ -72,19 +77,21 @@ object DisplayObjectConversions {
                   .scaleBy(x.scale)
               }
 
-          rec(childNodes ++ xs, acc)
+          rec(childNodes ++ xs)
 
         case (x: Graphic) :: xs =>
-          rec(xs, acc :+ graphicToDisplayObject(x, assetMapping))
+          accDisplayObjects += graphicToDisplayObject(x, assetMapping)
+          rec(xs)
 
         case (x: Sprite) :: xs =>
           AnimationsRegister.fetchFromCache(gameTime, x.bindingKey, x.animationsKey, metrics) match {
             case None =>
               IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${x.animationsKey}")
-              rec(xs, acc)
+              rec(xs)
 
             case Some(anim) =>
-              rec(xs, acc :+ spriteToDisplayObject(x, assetMapping, anim))
+              accDisplayObjects += spriteToDisplayObject(x, assetMapping, anim)
+              rec(xs)
           }
 
         case (x: Text) :: xs =>
@@ -107,10 +114,12 @@ object DisplayObjectConversions {
               }
               ._2
 
-          rec(xs, acc ++ letters)
+          accDisplayObjects ++= letters
+          rec(xs)
       }
 
-    rec(sceneNodes, Nil)
+    accDisplayObjects = new ListBuffer()
+    rec(sceneNodes)
   }
 
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject =

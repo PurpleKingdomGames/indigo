@@ -11,6 +11,7 @@ import org.scalajs.dom.raw.WebGLBuffer
 import indigo.shared.EqualTo._
 import scala.annotation.tailrec
 import scala.scalajs.js.typedarray.Float32Array
+import scala.collection.mutable.ListBuffer
 
 class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int) {
 
@@ -74,7 +75,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     )
   )
   def drawLayer(
-      displayObjects: List[DisplayObject],
+      displayObjects: ListBuffer[DisplayObject],
       frameBufferComponents: FrameBufferComponents,
       clearColor: ClearColor,
       shaderProgram: WebGLProgram,
@@ -112,7 +113,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     setupInstanceArray(vFlipInstanceArray, 9, 1)
     //
 
-    val sorted = RendererFunctions.sortByDepth(displayObjects)
+    val sorted: ListBuffer[DisplayObject] = RendererFunctions.sortByDepth(displayObjects)
 
     def drawBufferer(instanceCount: Int): Unit =
       if (instanceCount > 0) {
@@ -128,6 +129,36 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
         gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
         metrics.record(layer.metricDraw)
       }
+
+    metrics.record(layer.metricStart)
+
+    // val count: Int          = sorted.length
+    // var i: Int              = 0
+    // var batchCount: Int     = 0
+    // var textureName: String = ""
+
+    // while (i < count) {
+    //   val d: DisplayObject = sorted(i)
+
+    //   if (sorted.isEmpty) {
+    //     drawBufferer(batchCount)
+    //     i = count
+    //   } else if (d.imageRef !== textureName) {
+    //     drawBufferer(batchCount)
+    //     textureLocations.find(t => t.name === d.imageRef).foreach { textureLookup =>
+    //       gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
+    //     }
+    //     batchCount = 0
+    //     textureName = d.imageRef
+    //   } else if (batchCount === maxBatchSize) {
+    //     drawBufferer(batchCount)
+    //     batchCount = 0
+    //   } else {
+    //     updateData(d, batchCount)
+    //     batchCount += 1
+    //     i += 1
+    //   }
+    // }
 
     @tailrec
     def rec(remaining: List[DisplayObject], batchCount: Int, textureName: String): Unit =
@@ -151,8 +182,8 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
           rec(ds, batchCount + 1, textureName)
       }
 
-    metrics.record(layer.metricStart)
-    rec(sorted, 0, "")
+    rec(sorted.toList, 0, "")
+
     metrics.record(layer.metricEnd)
 
   }

@@ -9,6 +9,7 @@ import indigo.shared.datatypes.Matrix4
 import indigo.shared.EqualTo._
 
 import indigo.shared.display.DisplayObject
+import scala.collection.mutable.ListBuffer
 
 object RendererFunctions {
 
@@ -84,7 +85,7 @@ object RendererFunctions {
     texture
   }
 
-  val sortByDepth: List[DisplayObject] => List[DisplayObject] =
+  val sortByDepth: ListBuffer[DisplayObject] => ListBuffer[DisplayObject] =
     displayObjects => displayObjects.sortWith((d1, d2) => d1.z > d2.z)
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
