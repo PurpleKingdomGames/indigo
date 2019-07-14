@@ -50,10 +50,10 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
     uboData(2) = displayObject.width.toDouble * displayObject.scaleX
     uboData(3) = displayObject.height.toDouble * displayObject.scaleY
 
-    uboData(4) = displayObject.frame.translate.x
-    uboData(5) = displayObject.frame.translate.y
-    uboData(6) = displayObject.frame.scale.x
-    uboData(7) = displayObject.frame.scale.y
+    uboData(4) = displayObject.frameX
+    uboData(5) = displayObject.frameY
+    uboData(6) = displayObject.frameScaleX
+    uboData(7) = displayObject.frameScaleY
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))

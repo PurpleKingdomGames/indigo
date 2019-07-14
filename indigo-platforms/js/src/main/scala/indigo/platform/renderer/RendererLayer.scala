@@ -48,21 +48,21 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   }
 
   private def updateData(d: DisplayObject, i: Int): Unit = {
-    translationData((i * 2) + 0) = d.x.toDouble
-    translationData((i * 2) + 1) = d.y.toDouble
-    scaleData((i * 2) + 0) = d.width.toDouble * d.scaleX
-    scaleData((i * 2) + 1) = d.height.toDouble * d.scaleY
-    tintData((i * 4) + 0) = d.tintR.toDouble
-    tintData((i * 4) + 1) = d.tintG.toDouble
-    tintData((i * 4) + 2) = d.tintB.toDouble
-    tintData((i * 4) + 3) = d.alpha.toDouble
-    frameTranslationData((i * 2) + 0) = d.frame.translate.x
-    frameTranslationData((i * 2) + 1) = d.frame.translate.y
-    frameScaleData((i * 2) + 0) = d.frame.scale.x
-    frameScaleData((i * 2) + 1) = d.frame.scale.y
+    translationData((i * 2) + 0) = d.x
+    translationData((i * 2) + 1) = d.y
+    scaleData((i * 2) + 0) = d.width * d.scaleX
+    scaleData((i * 2) + 1) = d.height * d.scaleY
+    tintData((i * 4) + 0) = d.tintR
+    tintData((i * 4) + 1) = d.tintG
+    tintData((i * 4) + 2) = d.tintB
+    tintData((i * 4) + 3) = d.alpha
+    frameTranslationData((i * 2) + 0) = d.frameX
+    frameTranslationData((i * 2) + 1) = d.frameY
+    frameScaleData((i * 2) + 0) = d.frameScaleX
+    frameScaleData((i * 2) + 1) = d.frameScaleY
     rotationData(i) = d.rotation
-    hFlipData(i) = if (d.flipHorizontal) -1.0d else 1.0d
-    vFlipData(i) = if (d.flipVertical) 1.0d else -1.0d
+    hFlipData(i) = d.flipHorizontal
+    vFlipData(i) = d.flipVertical
   }
 
   @SuppressWarnings(
@@ -113,7 +113,8 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     setupInstanceArray(vFlipInstanceArray, 9, 1)
     //
 
-    val sorted: ListBuffer[DisplayObject] = RendererFunctions.sortByDepth(displayObjects)
+    val sorted: ListBuffer[DisplayObject] =
+      RendererFunctions.sortByDepth(displayObjects)
 
     def drawBufferer(instanceCount: Int): Unit =
       if (instanceCount > 0) {

@@ -126,14 +126,14 @@ object RendererFunctions {
     uboData(6) = displayObject.tintB.toDouble
     uboData(7) = displayObject.alpha.toDouble
 
-    uboData(8) = displayObject.frame.translate.x
-    uboData(9) = displayObject.frame.translate.y
-    uboData(10) = displayObject.frame.scale.x
-    uboData(11) = displayObject.frame.scale.y
+    uboData(8) = displayObject.frameX
+    uboData(9) = displayObject.frameY
+    uboData(10) = displayObject.frameScaleX
+    uboData(11) = displayObject.frameScaleY
 
     uboData(12) = displayObject.rotation
-    uboData(13) = if (displayObject.flipHorizontal) -1.0d else 1.0d
-    uboData(14) = if (displayObject.flipVertical) 1.0d else -1.0d
+    uboData(13) = displayObject.flipHorizontal
+    uboData(14) = displayObject.flipVertical
     uboData(15) = 0d
 
     uboData

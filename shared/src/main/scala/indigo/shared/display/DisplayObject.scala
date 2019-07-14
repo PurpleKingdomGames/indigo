@@ -1,14 +1,11 @@
 package indigo.shared.display
 
-import indigo.shared.AsString
-import indigo.shared.EqualTo
-
 final class DisplayObject(
-    val x: Int,
-    val y: Int,
-    val z: Int,
-    val width: Int,
-    val height: Int,
+    val x: Double,
+    val y: Double,
+    val z: Double,
+    val width: Double,
+    val height: Double,
     val rotation: Double,
     val scaleX: Double,
     val scaleY: Double,
@@ -17,64 +14,14 @@ final class DisplayObject(
     val tintR: Double,
     val tintG: Double,
     val tintB: Double,
-    val flipHorizontal: Boolean,
-    val flipVertical: Boolean,
-    val frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
+    val flipHorizontal: Double,
+    val flipVertical: Double,
+    val frameX: Double,
+    val frameY: Double,
+    val frameScaleX: Double,
+    val frameScaleY: Double
 )
 object DisplayObject {
-
-  implicit val show: AsString[DisplayObject] = {
-    val si = implicitly[AsString[Int]]
-    val sd = implicitly[AsString[Double]]
-    val ss = implicitly[AsString[String]]
-    val sb = implicitly[AsString[Boolean]]
-    val sf = implicitly[AsString[SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets]]
-
-    AsString.create { v =>
-      val p: String =
-        List(
-          si.show(v.x),
-          si.show(v.y),
-          si.show(v.z),
-          si.show(v.width),
-          si.show(v.height),
-          ss.show(v.imageRef),
-          sd.show(v.alpha),
-          sd.show(v.tintR),
-          sd.show(v.tintG),
-          sd.show(v.tintB),
-          sb.show(v.flipHorizontal),
-          sb.show(v.flipVertical),
-          sf.show(v.frame)
-        ).mkString(", ")
-
-      s"DisplayObject($p)"
-    }
-  }
-
-  implicit val eq: EqualTo[DisplayObject] = {
-    val ei = implicitly[EqualTo[Int]]
-    val ed = implicitly[EqualTo[Double]]
-    val es = implicitly[EqualTo[String]]
-    val eb = implicitly[EqualTo[Boolean]]
-    val ef = implicitly[EqualTo[SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets]]
-
-    EqualTo.create { (a, b) =>
-      ei.equal(a.x, b.x) &&
-      ei.equal(a.y, b.y) &&
-      ei.equal(a.z, b.z) &&
-      ei.equal(a.width, b.width) &&
-      ei.equal(a.height, b.height) &&
-      es.equal(a.imageRef, b.imageRef) &&
-      ed.equal(a.alpha, b.alpha) &&
-      ed.equal(a.tintR, b.tintR) &&
-      ed.equal(a.tintG, b.tintG) &&
-      ed.equal(a.tintB, b.tintB) &&
-      eb.equal(a.flipHorizontal, b.flipHorizontal) &&
-      eb.equal(a.flipVertical, b.flipVertical) &&
-      ef.equal(a.frame, b.frame)
-    }
-  }
 
   def apply(
       x: Int,
@@ -95,11 +42,11 @@ object DisplayObject {
       frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
   ): DisplayObject =
     new DisplayObject(
-      x,
-      y,
-      z,
-      width,
-      height,
+      x.toDouble,
+      y.toDouble,
+      z.toDouble,
+      width.toDouble,
+      height.toDouble,
       rotation,
       scaleX,
       scaleY,
@@ -108,8 +55,11 @@ object DisplayObject {
       tintR,
       tintG,
       tintB,
-      flipHorizontal,
-      flipVertical,
-      frame
+      if (flipHorizontal) -1 else 1,
+      if (flipVertical) 1 else -1,
+      frame.translate.x,
+      frame.translate.y,
+      frame.scale.x,
+      frame.scale.y
     )
 }
