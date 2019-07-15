@@ -146,10 +146,10 @@ object GameEngine {
   }
 
   def registerAnimations(animations: Set[Animation]): GameContext[Unit] =
-    GameContext.delay(animations.foreach(AnimationsRegister.register))
+    GameContext(animations.foreach(AnimationsRegister.register))
 
   def registerFonts(fonts: Set[FontInfo]): GameContext[Unit] =
-    GameContext.delay(fonts.foreach(FontRegister.register))
+    GameContext(fonts.foreach(FontRegister.register))
 
   def initialisedGame[StartupError, StartupData](startupData: Startup[StartupError, StartupData]): GameContext[StartupData] =
     startupData match {
@@ -160,7 +160,7 @@ object GameEngine {
 
       case x: Startup.Success[StartupData] =>
         IndigoLogger.info("Game initialisation succeeded")
-        GameContext.delay(x.success)
+        GameContext(x.success)
     }
 
   def initialiseGameLoop[GameModel, ViewModel](
@@ -176,7 +176,7 @@ object GameEngine {
       globalSignals: GlobalSignals,
       callTick: (Long => Unit) => Unit
   ): GameContext[GameLoop[GameModel, ViewModel]] =
-    GameContext.delay(
+    GameContext(
       new GameLoop[GameModel, ViewModel](
         gameConfig,
         assetMapping,

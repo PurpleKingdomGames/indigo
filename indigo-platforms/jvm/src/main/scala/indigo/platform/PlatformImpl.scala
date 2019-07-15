@@ -33,14 +33,14 @@ class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEv
   // import PlatformImpl._
 
   def initialiseRenderer(gameConfig: GameConfig): GameContext[(Renderer, AssetMapping)] =
-    GameContext.delay({
+    GameContext({
       println(gameConfig.magnification.toString)
       println(assetCollection.images.length.toString)
       println(globalEventStream.collect.length.toString())
 
       val renderer: Renderer =
         new Renderer {
-          def init(): Unit                                                = ()
+          def init(): Unit                                                                                                  = ()
           def drawScene(gameTime: GameTime, scene: SceneUpdateFragment, assetMapping: AssetMapping, metrics: Metrics): Unit = ()
         }
 

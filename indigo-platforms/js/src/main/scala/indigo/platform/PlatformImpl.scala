@@ -48,7 +48,7 @@ class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEv
 
 object PlatformImpl {
   def createTextureAtlas(assetCollection: AssetCollection): GameContext[TextureAtlas] =
-    GameContext.delay(
+    GameContext(
       TextureAtlas.create(
         assetCollection.images.map(i => ImageRef(i.name.name, i.data.width, i.data.height)),
         (name: String) => assetCollection.images.find(_.name.name === name),
@@ -57,14 +57,14 @@ object PlatformImpl {
     )
 
   def extractLoadedTextures(textureAtlas: TextureAtlas): GameContext[List[LoadedTextureAsset]] =
-    GameContext.delay(
+    GameContext(
       textureAtlas.atlases.toList
         .map(a => a._2.imageData.map(data => new LoadedTextureAsset(a._1.id, data)))
         .collect { case Some(s) => s }
     )
 
   def setupAssetMapping(textureAtlas: TextureAtlas): GameContext[AssetMapping] =
-    GameContext.delay(
+    GameContext(
       new AssetMapping(
         mappings = textureAtlas.legend
           .map { p =>
@@ -83,16 +83,16 @@ object PlatformImpl {
         GameContext.raiseError[Canvas](new Exception("""Parent element "indigo-container" could not be found on page."""))
 
       case Some(parent) =>
-        GameContext.delay(RendererInit.createCanvas(gameConfig.viewport.width, gameConfig.viewport.height, parent))
+        GameContext(RendererInit.createCanvas(gameConfig.viewport.width, gameConfig.viewport.height, parent))
     }
 
   def listenToWorldEvents(canvas: Canvas, magnification: Int, globalEventStream: GlobalEventStream): GameContext[Unit] = {
     IndigoLogger.info("Starting world events")
-    GameContext.delay(WorldEvents.init(canvas, magnification, globalEventStream))
+    GameContext(WorldEvents.init(canvas, magnification, globalEventStream))
   }
 
   def startRenderer(gameConfig: GameConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: Canvas): GameContext[Renderer] =
-    GameContext.delay {
+    GameContext {
       IndigoLogger.info("Starting renderer")
       RendererInit(
         new RendererConfig(
