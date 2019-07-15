@@ -3,7 +3,12 @@ package indigoexts.subsystems.fpscounter
 import indigo._
 import indigoexts.subsystems.SubSystem
 
-final case class FPSCounter(fps: Int, lastInterval: Millis, frameCountSinceInterval: Int, fontKey: FontKey, position: Point) extends SubSystem {
+@SuppressWarnings(Array("org.wartremover.warts.Var"))
+final class FPSCounter(fontKey: FontKey, position: Point) extends SubSystem {
+
+  var fps: Int                     = 0
+  var lastInterval: Millis         = Millis(0)
+  var frameCountSinceInterval: Int = 0
 
   type EventType = GlobalEvent
 
@@ -12,19 +17,16 @@ final case class FPSCounter(fps: Int, lastInterval: Millis, frameCountSinceInter
     case _            => None
   }
 
-  def update(gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[SubSystem] = {
+  def update(gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[FPSCounter] = {
     case FrameTick =>
-      Outcome(
-        if (gameTime.running >= (this.lastInterval + Millis(1000))) {
-          this.copy(
-            fps = this.frameCountSinceInterval + 1,
-            lastInterval = gameTime.running,
-            frameCountSinceInterval = 0
-          )
-        } else {
-          this.copy(frameCountSinceInterval = this.frameCountSinceInterval + 1)
-        }
-      )
+      if (gameTime.running >= (this.lastInterval + Millis(1000))) {
+        fps = frameCountSinceInterval + 1
+        lastInterval = gameTime.running
+        frameCountSinceInterval = 0
+      } else {
+        frameCountSinceInterval += 1
+      }
+      Outcome(this)
   }
 
   def render(gameTime: GameTime): SceneUpdateFragment =
@@ -40,7 +42,10 @@ final case class FPSCounter(fps: Int, lastInterval: Millis, frameCountSinceInter
 
 object FPSCounter {
 
+  def apply(fontKey: FontKey, position: Point): FPSCounter =
+    new FPSCounter(fontKey, position)
+
   def subSystem(fontKey: FontKey, position: Point): FPSCounter =
-    FPSCounter(0, Millis(0), 0, fontKey, position)
+    FPSCounter(fontKey, position)
 
 }
