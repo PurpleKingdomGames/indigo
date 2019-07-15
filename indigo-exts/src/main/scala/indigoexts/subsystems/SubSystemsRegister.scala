@@ -6,53 +6,56 @@ import indigo.shared.Outcome._
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.dice.Dice
+import scala.collection.mutable.ListBuffer
 
-final class SubSystemsRegister(val registeredSubSystems: List[SubSystem]) {
+@SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
+final class SubSystemsRegister {
+
+  private val registeredSubSystems: ListBuffer[SubSystem] = new ListBuffer()
 
   def add(subSystems: SubSystem*): SubSystemsRegister =
-    SubSystemsRegister.add(this, subSystems.toList)
+    add(subSystems.toList)
+  def add(subSystems: List[SubSystem]): SubSystemsRegister = {
+    registeredSubSystems ++= subSystems
+    this
+  }
 
-  def update(gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[SubSystemsRegister] =
-    SubSystemsRegister.update(this, gameTime, dice)
-
-  def render(gameTime: GameTime): SceneUpdateFragment =
-    SubSystemsRegister.render(this, gameTime)
-
-  def reports: List[String] =
-    SubSystemsRegister.reports(this)
-
-}
-
-object SubSystemsRegister {
-
-  def apply(subSystems: List[SubSystem]): SubSystemsRegister =
-    new SubSystemsRegister(subSystems)
-
-  val empty: SubSystemsRegister =
-    SubSystemsRegister(Nil)
-
-  def add(register: SubSystemsRegister, subSystems: List[SubSystem]): SubSystemsRegister =
-    SubSystemsRegister(register.registeredSubSystems ++ subSystems)
-
-  def update(register: SubSystemsRegister, gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[SubSystemsRegister] = {
+  def update(gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[SubSystemsRegister] = {
     case e: GlobalEvent =>
-      register.registeredSubSystems
+      registeredSubSystems.toList
         .map { ss =>
           ss.eventFilter(e)
             .map(ee => ss.update(gameTime, dice)(ee))
             .getOrElse(Outcome(ss, Nil))
         }
         .sequence
-        .mapState(ss => SubSystemsRegister(ss))
+        .mapState { l =>
+          registeredSubSystems.clear()
+          registeredSubSystems ++= l
+          this
+        }
 
     case _ =>
-      Outcome(register)
+      Outcome(this)
   }
 
-  def render(register: SubSystemsRegister, gameTime: GameTime): SceneUpdateFragment =
-    register.registeredSubSystems.map(_.render(gameTime)).foldLeft(SceneUpdateFragment.empty)(_ |+| _)
+  def render(gameTime: GameTime): SceneUpdateFragment =
+    registeredSubSystems.map(_.render(gameTime)).foldLeft(SceneUpdateFragment.empty)(_ |+| _)
 
-  def reports(register: SubSystemsRegister): List[String] =
-    register.registeredSubSystems.map(_.report)
+  def reports: List[String] =
+    registeredSubSystems.map(_.report).toList
+
+  def size: Int =
+    registeredSubSystems.size
+
+}
+
+object SubSystemsRegister {
+
+  def apply(): SubSystemsRegister =
+    new SubSystemsRegister()
+
+  def empty: SubSystemsRegister =
+    new SubSystemsRegister()
 
 }

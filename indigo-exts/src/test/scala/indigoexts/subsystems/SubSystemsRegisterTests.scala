@@ -18,7 +18,7 @@ object SubSystemsRegisterTests extends TestSuite {
         "should allow you to add sub systems" - {
           val r = SubSystemsRegister.empty.add(PointsTrackerExample(10), PointsTrackerExample(20))
 
-          r.registeredSubSystems.length ==> 2
+          r.size ==> 2
         }
 
         "should allow you to update sub systems" - {

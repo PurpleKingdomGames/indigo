@@ -21,7 +21,7 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
   private val subSystemStates: mutable.HashMap[SceneName, SubSystemsRegister] = {
     val m = mutable.HashMap[SceneName, SubSystemsRegister]()
     scenes.toList.foreach { s =>
-      m.put(s.name, SubSystemsRegister(s.sceneSubSystems.toList))
+      m.put(s.name, SubSystemsRegister().add(s.sceneSubSystems.toList))
     }
     m
   }

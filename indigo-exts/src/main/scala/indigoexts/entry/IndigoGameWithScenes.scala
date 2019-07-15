@@ -115,7 +115,7 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
       fonts,
       animations,
       (ac: AssetCollection) => setup(ac),
-      (sd: StartupData) => GameWithSubSystems(initialModel(sd), SubSystemsRegister(subSystems.toList)),
+      (sd: StartupData) => GameWithSubSystems(initialModel(sd), SubSystemsRegister().add(subSystems.toList)),
       (sd: StartupData) => (m: GameWithSubSystems[Model]) => initialViewModel(sd)(m.model),
       frameProcessor
     )
