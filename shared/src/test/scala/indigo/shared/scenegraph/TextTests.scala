@@ -20,7 +20,7 @@ object TextTests extends TestSuite {
             FontChar("c", 32, 16, 16, 16)
           )
 
-          val fontKey = FontKey("test")
+          val fontKey = FontKey("test1")
 
           val fontInfo = FontInfo(fontKey, "font-sheet", 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
 
@@ -41,7 +41,7 @@ object TextTests extends TestSuite {
             FontChar("c", 60, 16, 30, 30)
           )
 
-          val fontKey = FontKey("test")
+          val fontKey = FontKey("test2")
 
           val fontInfo = FontInfo(fontKey, "font-sheet", 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
 
@@ -49,7 +49,7 @@ object TextTests extends TestSuite {
 
           val t = Text("abc", 10, 20, 1, fontKey)
 
-          val actual = t.bounds // 48 x 16
+          val actual   = t.bounds                          // 48 x 16
           val expected = Rectangle(0, 0, 10 + 20 + 30, 30) // 60 x 30
 
           actual === expected ==> true
