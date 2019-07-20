@@ -41,7 +41,7 @@ final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: 
 object GameConfig {
 
   val default: GameConfig =
-    GameConfig(GameViewport(550, 400), 30, ClearColor.Black, 1, AdvancedGameConfig.default)
+    GameConfig(GameViewport(550, 400), 60, ClearColor.Black, 1, AdvancedGameConfig.default)
 
   def apply(width: Int, height: Int, frameRate: Int): GameConfig =
     GameConfig(GameViewport(width, height), frameRate, ClearColor.Black, 1, AdvancedGameConfig.default)
