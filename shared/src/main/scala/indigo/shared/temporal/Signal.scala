@@ -1,8 +1,10 @@
 package indigo.shared.temporal
 
 import indigo.shared.time.{Millis, Seconds}
-import indigo.shared.abstractions.Applicative
 import indigo.shared.EqualTo._
+import indigo.shared.abstractions.Monad
+import indigo.shared.abstractions.Functor
+import indigo.shared.abstractions.Apply
 
 /**
   * A Signal, or Time Varying Value is function t: Millis -> A
@@ -26,15 +28,18 @@ sealed trait Signal[A] {
     Signal.wrapTime(this, at)
 
   def map[B](f: A => B): Signal[B] =
-    implicitly[Applicative[Signal]].map(this)(f)
+    implicitly[Functor[Signal]].map(this)(f)
 
   def ap[B](f: Signal[A => B]): Signal[B] =
-    implicitly[Applicative[Signal]].ap(this)(f)
+    implicitly[Apply[Signal]].ap(this)(f)
+
+  def flatMap[B](f: A => Signal[B]): Signal[B] =
+    implicitly[Monad[Signal]].flatMap(this)(f)
 }
 object Signal {
 
-  implicit val applicativeSignal: Applicative[Signal] =
-    new Applicative[Signal] {
+  implicit val monadSignal: Monad[Signal] =
+    new Monad[Signal] {
       def pure[A](a: A): Signal[A] =
         Signal.fixed(a)
 
@@ -48,6 +53,8 @@ object Signal {
           }.at(t)
         }
 
+      def flatMap[A, B](fa: Signal[A])(f: A => Signal[B]): Signal[B] =
+        Signal.create(t => f(fa.at(t)).at(t))
     }
 
   val Time: Signal[Millis] =
@@ -93,7 +100,7 @@ object Signal {
         f(t)
 
       def merge[B, C](other: Signal[B])(f: (A, B) => C): Signal[C] =
-        applicativeSignal.apply2(this, other)(f)
+        monadSignal.apply2(this, other)(f)
 
       def pipe[B](sf: SignalFunction[A, B]): Signal[B] =
         sf.run(this)
@@ -103,7 +110,7 @@ object Signal {
     }
 
   def merge[A, B, C](sa: Signal[A], sb: Signal[B])(f: (A, B) => C): Signal[C] =
-    applicativeSignal.apply2(sa, sb)(f)
+    monadSignal.apply2(sa, sb)(f)
 
   def product[A, B](sa: Signal[A], sb: Signal[B]): Signal[(A, B)] =
     merge(sa, sb)((_, _))
