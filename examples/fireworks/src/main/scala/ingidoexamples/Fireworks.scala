@@ -12,6 +12,7 @@ object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
 
   val config: GameConfig =
     defaultGameConfig
+      .withFrameRate(60)
       .withMagnification(3)
       .withViewport(GameViewport.at720p)
 

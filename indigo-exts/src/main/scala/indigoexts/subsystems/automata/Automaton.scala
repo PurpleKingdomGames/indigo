@@ -1,58 +1,71 @@
 package indigoexts.subsystems.automata
 
-import indigo.shared.scenegraph.Renderable
+import indigo.shared.scenegraph.{SceneGraphNode, Renderable}
 import indigo.Millis
 import indigo.shared.temporal.Signal
 
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.events.GlobalEvent
+import indigo.shared.scenegraph.Clone
 
 sealed trait Automaton {
 
   type PayloadType
 
   val key: AutomataPoolKey
-  val renderable: Renderable
+  val sceneGraphNode: SceneGraphNode
   val lifespan: Millis
-  val modifier: (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment]
+  val modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment]
   val onCull: AutomatonSeedValues => List[GlobalEvent]
 
-  def withModifier(modifier: (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment]): Automaton =
-    Automaton.create(key, renderable, lifespan, modifier, onCull)
+  def withModifier(modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment]): Automaton =
+    Automaton.create(key, sceneGraphNode, lifespan, modifier, onCull)
 
   def withOnCullEvent(onCullEvent: AutomatonSeedValues => List[GlobalEvent]): Automaton =
-    Automaton.create(key, renderable, lifespan, modifier, onCullEvent)
+    Automaton.create(key, sceneGraphNode, lifespan, modifier, onCullEvent)
 }
 
 object Automaton {
 
-  val NoModifySignal: (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment] =
-    (sa, r) => {
+  val NoModifySignal: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment] =
+    (sa, n) => {
       Signal.fixed(
         SceneUpdateFragment.empty
-          .addGameLayerNodes(r.moveTo(sa.spawnedAt))
+          .addGameLayerNodes {
+            n match {
+              case r: Renderable =>
+                r.moveTo(sa.spawnedAt)
+
+              case c: Clone =>
+                c.withTransforms(sa.spawnedAt, c.rotation, c.scale)
+
+              case _ =>
+                n
+            }
+
+          }
       )
     }
 
   val NoCullEvent: AutomatonSeedValues => List[GlobalEvent] =
     _ => Nil
 
-  def apply(key: AutomataPoolKey, renderable: Renderable, lifespan: Millis): Automaton =
-    create(key, renderable, lifespan, NoModifySignal, NoCullEvent)
+  def apply(key: AutomataPoolKey, SceneGraphNode: SceneGraphNode, lifespan: Millis): Automaton =
+    create(key, SceneGraphNode, lifespan, NoModifySignal, NoCullEvent)
 
   def create(
       poolKey: AutomataPoolKey,
-      renderableEntity: Renderable,
+      sceneGraphNodeEntity: SceneGraphNode,
       lifeExpectancy: Millis,
-      modifierSignal: (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment],
+      modifierSignal: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment],
       onCullEvent: AutomatonSeedValues => List[GlobalEvent]
   ): Automaton =
     new Automaton {
-      val key: AutomataPoolKey                                                       = poolKey
-      val renderable: Renderable                                                     = renderableEntity
-      val lifespan: Millis                                                           = lifeExpectancy
-      val modifier: (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment] = modifierSignal
-      val onCull: AutomatonSeedValues => List[GlobalEvent]                           = onCullEvent
+      val key: AutomataPoolKey                                                           = poolKey
+      val sceneGraphNode: SceneGraphNode                                                 = sceneGraphNodeEntity
+      val lifespan: Millis                                                               = lifeExpectancy
+      val modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment] = modifierSignal
+      val onCull: AutomatonSeedValues => List[GlobalEvent]                               = onCullEvent
     }
 
 }

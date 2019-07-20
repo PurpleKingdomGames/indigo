@@ -27,7 +27,7 @@ object CrossAutomaton {
     val spawnPositionS: AutomatonSeedValues => Signal[Point] =
       seed => Signal.fixed(seed.spawnedAt)
 
-    val renderableS: Renderable => Signal[Renderable] =
+    val renderableS: Graphic => Signal[Graphic] =
       renderable => Signal.fixed(renderable)
 
     val positionSF: SignalFunction[(Double, Point), Point] =
@@ -39,19 +39,19 @@ object CrossAutomaton {
     val newPosition: AutomatonSeedValues => Signal[Point] =
       seed => Signal.product(multiplierS(seed), spawnPositionS(seed)) |> positionSF
 
-    val signal: (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment] =
+    val signal: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment] =
       (seed, renderable) =>
-        newPosition(seed).map {
-          case position =>
-            SceneUpdateFragment.empty.addGameLayerNodes(
-              renderable match {
-                case g: Graphic =>
+        renderable match {
+          case g: Graphic =>
+            newPosition(seed).map {
+              case position =>
+                SceneUpdateFragment.empty.addGameLayerNodes(
                   g.moveTo(position)
+                )
+            }
 
-                case r =>
-                  r
-              }
-            )
+          case _ =>
+            Signal.fixed(SceneUpdateFragment.empty)
         }
 
   }

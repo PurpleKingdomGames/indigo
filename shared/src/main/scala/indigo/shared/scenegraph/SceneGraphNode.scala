@@ -146,6 +146,9 @@ final class Clone(val id: CloneId, val depth: Depth, val transform: CloneTransfo
   lazy val y: Int            = transform.position.y
   lazy val rotation: Radians = transform.rotation
   lazy val scale: Vector2    = transform.scale
+
+  def withTransforms(newPosition: Point, newRotation: Radians, newScale: Vector2): Clone =
+    new Clone(id, depth, CloneTransformData(newPosition, newRotation, newScale))
 }
 object Clone {
   def apply(id: CloneId, depth: Depth, transform: CloneTransformData): Clone =

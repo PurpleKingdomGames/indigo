@@ -34,7 +34,7 @@ object Score {
     val spawnPositionS: AutomatonSeedValues => Signal[Point] =
       seed => Signal.fixed(seed.spawnedAt)
 
-    val renderableS: Renderable => Signal[Renderable] =
+    val renderableS: Text => Signal[Text] =
       renderable => Signal.fixed(renderable)
 
     val positionSF: SignalFunction[(Double, Point), Point] =
@@ -43,10 +43,10 @@ object Score {
           spawnedAt + Point(0, -(30 * multiplier).toInt)
       }
 
-    val alphaSF: SignalFunction[(Double, Renderable), Double] =
+    val alphaSF: SignalFunction[(Double, Text), Double] =
       SignalFunction {
-        case (multiplier, renderable) =>
-          renderable.effects.alpha * multiplier
+        case (multiplier, sceneGraphNode) =>
+          sceneGraphNode.effects.alpha * multiplier
       }
 
     val tintSF: SignalFunction[Double, Tint] =
@@ -57,33 +57,33 @@ object Score {
     val newPosition: AutomatonSeedValues => Signal[Point] =
       seed => Signal.product(multiplierS(seed), spawnPositionS(seed)) |> positionSF
 
-    val newAlpha: (AutomatonSeedValues, Renderable) => Signal[Double] =
-      (seed, renderable) => Signal.product(multiplierS(seed), renderableS(renderable)) |> alphaSF
+    val newAlpha: (AutomatonSeedValues, Text) => Signal[Double] =
+      (seed, sceneGraphNode) => Signal.product(multiplierS(seed), renderableS(sceneGraphNode)) |> alphaSF
 
     val newTint: AutomatonSeedValues => Signal[Tint] =
       seed => multiplierS(seed) |> tintSF
 
-    val signal: (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment] =
-      (seed, renderable) =>
-        seed.payload match {
-          case Some(ScoreAmount(score)) =>
-            Signal.triple(newPosition(seed), newAlpha(seed, renderable), newTint(seed)).map {
-              case (position, alpha, tint) =>
-                renderable match {
-                  case t: Text =>
+    val signal: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment] =
+      (seed, sceneGraphNode) =>
+        sceneGraphNode match {
+          case t: Text =>
+            seed.payload match {
+              case Some(ScoreAmount(score)) =>
+                Signal.triple(newPosition(seed), newAlpha(seed, t), newTint(seed)).map {
+                  case (position, alpha, tint) =>
                     SceneUpdateFragment.empty.addGameLayerNodes(
                       t.moveTo(position)
                         .withAlpha(alpha)
                         .withTint(tint)
                         .withText(score)
                     )
-
-                  case r =>
-                    SceneUpdateFragment.empty.addGameLayerNodes(r)
                 }
+              case _ =>
+                Signal.fixed(SceneUpdateFragment.empty.addGameLayerNodes(sceneGraphNode))
             }
+
           case _ =>
-            Signal.fixed(SceneUpdateFragment.empty.addGameLayerNodes(renderable))
+            Signal.fixed(SceneUpdateFragment.empty)
         }
 
   }

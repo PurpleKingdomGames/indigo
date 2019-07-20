@@ -117,53 +117,11 @@ object Automata {
   def empty: Automata =
     Automata()
 
-  // def spawn(farm: Automata, gameTime: GameTime, dice: Dice, poolKey: AutomataPoolKey, position: Point, lifeSpan: Option[Millis], payload: Option[AutomatonPayload]): Outcome[Automata] =
-  //   Outcome(
-  //     farm.copy(
-  //       paddock =
-  //         farm.paddock ++
-  //           farm.inventory
-  //             .get(poolKey)
-  //             .map { k =>
-  //               SpawnedAutomaton(
-  //                 k,
-  //                 AutomatonSeedValues(
-  //                   position,
-  //                   gameTime.running,
-  //                   lifeSpan.getOrElse(k.lifespan),
-  //                   Millis.zero,
-  //                   dice.roll,
-  //                   payload
-  //                 )
-  //               )
-  //             }
-  //             .toList
-  //     )
-  //   )
-
-  // def killAllInPool(farm: Automata, poolKey: AutomataPoolKey): Outcome[Automata] =
-  //   Outcome(Automata(farm.inventory, farm.paddock.filterNot(p => p.automaton.key === poolKey)))
-
-  // def killByKey(farm: Automata, bindingKey: BindingKey): Outcome[Automata] =
-  //   Outcome(Automata(farm.inventory, farm.paddock.filterNot(p => p.automaton.bindingKey === bindingKey)))
-
-  // def killAll(farm: Automata): Outcome[Automata] =
-  //   Outcome(Automata(farm.inventory, Nil))
-
-  // def cullPaddock(farm: Automata, gameTime: GameTime): Outcome[Automata] = {
-  //   val (l, r) = farm.paddock
-  //     .partition(_.isAlive(gameTime.running))
-
-  //   Outcome(
-  //     Automata(farm.inventory, l.map(_.updateDelta(gameTime.delta)))
-  //   ).addGlobalEvents(r.flatMap(sa => sa.automaton.onCull(sa.seedValues)))
-  // }
-
   def render(farm: Automata, gameTime: GameTime): SceneUpdateFragment =
     renderNoLayer(farm, gameTime).foldLeft(SceneUpdateFragment.empty)(_ |+| _)
 
   def renderNoLayer(farm: Automata, gameTime: GameTime): List[SceneUpdateFragment] =
     farm.paddock.toList.map { sa =>
-      sa.automaton.modifier(sa.seedValues, sa.automaton.renderable).at(gameTime.running - sa.seedValues.createdAt)
+      sa.automaton.modifier(sa.seedValues, sa.automaton.sceneGraphNode).at(gameTime.running - sa.seedValues.createdAt)
     }
 }

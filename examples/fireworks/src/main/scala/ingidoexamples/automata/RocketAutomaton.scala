@@ -35,24 +35,30 @@ object RocketAutomaton {
         )
       }
 
-    def signal(screenDimensions: Rectangle): (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment] =
-      (sa, r) =>
-        sa.payload match {
-          case Some(Rocket(_, moveSignal)) =>
-            Signal.create { t =>
-              val position: Point =
-                (moveSignal |> toScreenSpace(sa.spawnedAt, screenDimensions)).at(t)
+    def signal(screenDimensions: Rectangle): (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment] =
+      (sa, n) =>
+        n match {
+          case r: Renderable =>
+            sa.payload match {
+              case Some(Rocket(_, moveSignal)) =>
+                Signal.create { t =>
+                  val position: Point =
+                    (moveSignal |> toScreenSpace(sa.spawnedAt, screenDimensions)).at(t)
 
-              SceneUpdateFragment.empty
-                .addGameLayerNodes(r.moveTo(position))
-                .addGlobalEvents(TrailAutomaton.spawnEvent(position))
+                  SceneUpdateFragment.empty
+                    .addGameLayerNodes(r.moveTo(position))
+                    .addGlobalEvents(TrailAutomaton.spawnEvent(position))
+                }
+
+              case _ =>
+                Signal.fixed(
+                  SceneUpdateFragment.empty
+                    .addGameLayerNodes(r.moveTo(sa.spawnedAt))
+                )
             }
 
           case _ =>
-            Signal.fixed(
-              SceneUpdateFragment.empty
-                .addGameLayerNodes(r.moveTo(sa.spawnedAt))
-            )
+            Signal.fixed(SceneUpdateFragment.empty)
         }
 
   }

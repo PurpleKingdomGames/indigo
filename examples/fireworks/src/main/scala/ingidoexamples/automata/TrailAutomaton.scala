@@ -2,13 +2,8 @@ package ingidoexamples.automata
 
 import indigoexts.subsystems.automata._
 import ingidoexamples.model.TrailParticle
-import indigo.shared.datatypes.Point
-import indigo.shared.time.Millis
+import indigo._
 import ingidoexamples.Assets
-import indigo.shared.scenegraph.Renderable
-import indigo.shared.temporal.Signal
-import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.temporal.SignalFunction
 
 object TrailAutomaton {
 
@@ -32,7 +27,7 @@ object TrailAutomaton {
 
   object Modifer {
 
-    def present(r: Renderable, position: Point): SignalFunction[TrailParticle, SceneUpdateFragment] =
+    def present(r: Graphic, position: Point): SignalFunction[TrailParticle, SceneUpdateFragment] =
       SignalFunction { tp =>
         SceneUpdateFragment.empty.addGameLayerNodes(
           r.moveTo(position + Point(0, (30 * tp.fallen).toInt))
@@ -40,8 +35,15 @@ object TrailAutomaton {
         )
       }
 
-    val signal: (AutomatonSeedValues, Renderable) => Signal[SceneUpdateFragment] =
-      (sa, r) => TrailParticle.particle(sa.lifeSpan) |> present(r, sa.spawnedAt)
+    val signal: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment] =
+      (sa, r) =>
+        r match {
+          case g: Graphic =>
+            TrailParticle.particle(sa.lifeSpan) |> present(g, sa.spawnedAt)
+
+          case _ =>
+            Signal.fixed(SceneUpdateFragment.empty)
+        }
 
   }
 
