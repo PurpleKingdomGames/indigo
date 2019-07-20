@@ -152,15 +152,15 @@ object Clone {
     new Clone(id, depth, transform)
 }
 
-final class CloneBatch(val id: CloneId, val depth: Depth, val transform: CloneTransformData, val clones: List[CloneTransformData]) extends SceneGraphNode {
+final class CloneBatch(val id: CloneId, val depth: Depth, val transform: CloneTransformData, val clones: List[CloneTransformData], val staticBatchId: Option[BindingKey]) extends SceneGraphNode {
   lazy val x: Int            = transform.position.x
   lazy val y: Int            = transform.position.y
   lazy val rotation: Radians = transform.rotation
   lazy val scale: Vector2    = transform.scale
 }
 object CloneBatch {
-  def apply(id: CloneId, depth: Depth, transform: CloneTransformData, clones: List[CloneTransformData]): CloneBatch =
-    new CloneBatch(id, depth, transform, clones)
+  def apply(id: CloneId, depth: Depth, transform: CloneTransformData, clones: List[CloneTransformData], staticBatchId: Option[BindingKey]): CloneBatch =
+    new CloneBatch(id, depth, transform, clones, staticBatchId)
 }
 
 sealed trait Renderable extends SceneGraphNodePrimitive {

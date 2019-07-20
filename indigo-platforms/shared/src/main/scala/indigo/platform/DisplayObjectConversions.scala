@@ -33,6 +33,7 @@ object DisplayObjectConversions {
   implicit private val frameCache: QuickCache[SpriteSheetFrameCoordinateOffsets] = QuickCache.empty
   implicit private val doCache: QuickCache[DisplayObject]                        = QuickCache.empty
   implicit private val listDoCache: QuickCache[List[DisplayObject]]              = QuickCache.empty
+  implicit private val cloneBatchCache: QuickCache[DisplayCloneBatch]            = QuickCache.empty
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   def lookupTextureOffset(assetMapping: AssetMapping, name: String): Vector2 =
@@ -73,20 +74,31 @@ object DisplayObjectConversions {
       scaleY = data.scale.y
     )
 
-  private def cloneBatchDataToDisplayEntities(batch: CloneBatch): DisplayCloneBatch =
-    new DisplayCloneBatch(
-      id = batch.id.value,
-      z = batch.depth.zIndex.toDouble,
-      clones = batch.clones.map { td =>
-        new DisplayCloneBatchData(
-          x = batch.transform.position.x + td.position.x.toDouble,
-          y = batch.transform.position.y + td.position.y.toDouble,
-          rotation = batch.transform.rotation.value + td.rotation.value,
-          scaleX = batch.transform.scale.x * td.scale.x,
-          scaleY = batch.transform.scale.x * td.scale.y
-        )
-      }
-    )
+  private def cloneBatchDataToDisplayEntities(batch: CloneBatch): DisplayCloneBatch = {
+    def convert(): DisplayCloneBatch =
+      new DisplayCloneBatch(
+        id = batch.id.value,
+        z = batch.depth.zIndex.toDouble,
+        clones = batch.clones.map { td =>
+          new DisplayCloneBatchData(
+            x = batch.transform.position.x + td.position.x.toDouble,
+            y = batch.transform.position.y + td.position.y.toDouble,
+            rotation = batch.transform.rotation.value + td.rotation.value,
+            scaleX = batch.transform.scale.x * td.scale.x,
+            scaleY = batch.transform.scale.x * td.scale.y
+          )
+        }
+      )
+    batch.staticBatchId match {
+      case None =>
+        convert()
+
+      case Some(bindingKey) =>
+        QuickCache(bindingKey.value) {
+          convert()
+        }
+    }
+  }
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var accDisplayObjects: ListBuffer[DisplayEntity] = new ListBuffer()

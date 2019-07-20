@@ -4,7 +4,7 @@ final case class AdvancedGameConfig(antiAliasing: Boolean, batchSize: Int, recor
 object AdvancedGameConfig {
   val default: AdvancedGameConfig = AdvancedGameConfig(
     antiAliasing = false,
-    batchSize = 64,
+    batchSize = 256,
     recordMetrics = false,
     logMetricsReportIntervalMs = 10000,
     disableSkipModelUpdates = false,
