@@ -1,6 +1,7 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.events.GlobalEvent
+import indigo.shared.datatypes.Rectangle
 
 object SceneGraphViewEvents {
 
@@ -16,12 +17,12 @@ object SceneGraphViewEvents {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var"))
-  def applyInputEvents(node: Renderable, inputEvents: List[GlobalEvent], sendEvent: GlobalEvent => Unit): Unit = {
+  def applyInputEvents(node: Renderable, bounds: Rectangle, inputEvents: List[GlobalEvent], sendEvent: GlobalEvent => Unit): Unit = {
     val count = inputEvents.length
     var index = 0
 
     while (index < count) {
-      pushEvents(node.eventHandlerWithBoundsApplied(inputEvents(index)), sendEvent)
+      pushEvents(node.eventHandler((bounds, inputEvents(index))), sendEvent)
       index += 1
     }
   }
@@ -34,10 +35,16 @@ object SceneGraphViewEvents {
     while (index < count) {
       nodes(index) match {
         case r: Renderable =>
-          applyInputEvents(r, inputEvents, sendEvent)
+          applyInputEvents(r, r.bounds, inputEvents, sendEvent)
 
         case g: Group =>
           collectViewEvents(g.children, inputEvents, sendEvent)
+
+        case _: Clone =>
+          ()
+
+        case _: CloneBatch =>
+          ()
       }
 
       index += 1

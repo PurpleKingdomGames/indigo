@@ -1,6 +1,6 @@
 package indigo.platform
 
-import indigo.shared.display.{DisplayObject, SpriteSheetFrame}
+import indigo.shared.display.{DisplayObject, SpriteSheetFrame, DisplayClone, DisplayCloneBatch}
 import indigo.shared.datatypes.{FontInfo, Rectangle, TextAlignment, FontChar}
 import indigo.shared.animation.Animation
 import indigo.shared.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
@@ -19,6 +19,12 @@ import indigo.shared.QuickCache
 
 import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
+import indigo.shared.display.DisplayEntity
+import indigo.shared.scenegraph.Clone
+import indigo.shared.scenegraph.CloneBatch
+import indigo.shared.display.DisplayClone
+import indigo.shared.scenegraph.CloneTransformData
+import indigo.shared.display.DisplayCloneBatchData
 
 object DisplayObjectConversions {
 
@@ -56,25 +62,57 @@ object DisplayObjectConversions {
       }
     }
 
+  private def cloneDataToDisplayEntity(id: String, cloneDepth: Double, data: CloneTransformData): DisplayClone =
+    new DisplayClone(
+      id = id.value,
+      x = data.position.x.toDouble,
+      y = data.position.y.toDouble,
+      z = cloneDepth,
+      rotation = data.rotation.value,
+      scaleX = data.scale.x,
+      scaleY = data.scale.y
+    )
+
+  private def cloneBatchDataToDisplayEntities(batch: CloneBatch): DisplayCloneBatch =
+    new DisplayCloneBatch(
+      id = batch.id.value,
+      z = batch.depth.zIndex.toDouble,
+      clones = batch.clones.map { td =>
+        new DisplayCloneBatchData(
+          x = batch.transform.position.x + td.position.x.toDouble,
+          y = batch.transform.position.y + td.position.y.toDouble,
+          rotation = batch.transform.rotation.value + td.rotation.value,
+          scaleX = batch.transform.scale.x * td.scale.x,
+          scaleY = batch.transform.scale.x * td.scale.y
+        )
+      }
+    )
+
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var accDisplayObjects: ListBuffer[DisplayObject] = new ListBuffer()
+  private var accDisplayObjects: ListBuffer[DisplayEntity] = new ListBuffer()
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-  def sceneNodesToDisplayObjects(sceneNodes: List[SceneGraphNode], gameTime: GameTime, assetMapping: AssetMapping, metrics: Metrics): ListBuffer[DisplayObject] = {
+  def sceneNodesToDisplayObjects(sceneNodes: List[SceneGraphNode], gameTime: GameTime, assetMapping: AssetMapping, metrics: Metrics): ListBuffer[DisplayEntity] = {
     @tailrec
-    def rec(remaining: List[SceneGraphNode]): ListBuffer[DisplayObject] =
+    def rec(remaining: List[SceneGraphNode]): ListBuffer[DisplayEntity] =
       remaining match {
         case Nil =>
           accDisplayObjects
+
+        case (c: Clone) :: xs =>
+          accDisplayObjects += cloneDataToDisplayEntity(c.id.value, c.depth.zIndex.toDouble, c.transform)
+          rec(xs)
+
+        case (c: CloneBatch) :: xs =>
+          accDisplayObjects += cloneBatchDataToDisplayEntities(c)
+          rec(xs)
 
         case (x: Group) :: xs =>
           val childNodes =
             x.children
               .map { c =>
                 c.withDepth(c.depth + x.depth)
-                  .moveBy(x.positionOffset)
-                  .rotateBy(x.rotation)
-                  .scaleBy(x.scale)
+                  .transformBy(x.positionOffset, x.rotation, x.scale)
               }
 
           rec(childNodes ++ xs)

@@ -12,6 +12,10 @@ import indigo.shared.EqualTo._
 import scala.annotation.tailrec
 import scala.scalajs.js.typedarray.Float32Array
 import scala.collection.mutable.ListBuffer
+import indigo.shared.display.DisplayEntity
+import indigo.shared.display.DisplayClone
+import indigo.shared.display.DisplayCloneBatch
+import indigo.shared.display.DisplayCloneBatchData
 
 class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int) {
 
@@ -65,17 +69,17 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     vFlipData(i) = d.flipVertical
   }
 
-  @SuppressWarnings(
-    Array(
-      "org.wartremover.warts.Var",
-      "org.wartremover.warts.NonUnitStatements",
-      "org.wartremover.warts.While",
-      "org.wartremover.warts.Null",
-      "org.wartremover.warts.TraversableOps"
-    )
-  )
+  private def overwriteFromDisplayBatchClone(refWidth: Double, refHeight: Double, cloneData: DisplayCloneBatchData, i: Int): Unit = {
+    translationData((i * 2) + 0) = cloneData.x
+    translationData((i * 2) + 1) = cloneData.y
+    scaleData((i * 2) + 0) = refWidth * cloneData.scaleX
+    scaleData((i * 2) + 1) = refHeight * cloneData.scaleY
+    rotationData(i) = cloneData.rotation
+  }
+
   def drawLayer(
-      displayObjects: ListBuffer[DisplayObject],
+      cloneBlankDisplayObjects: Map[String, DisplayObject],
+      displayEntities: ListBuffer[DisplayEntity],
       frameBufferComponents: FrameBufferComponents,
       clearColor: ClearColor,
       shaderProgram: WebGLProgram,
@@ -113,8 +117,8 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     setupInstanceArray(vFlipInstanceArray, 9, 1)
     //
 
-    val sorted: ListBuffer[DisplayObject] =
-      RendererFunctions.sortByDepth(displayObjects)
+    val sorted: ListBuffer[DisplayEntity] =
+      RendererFunctions.sortByDepth(displayEntities)
 
     @inline def drawBuffer(instanceCount: Int): Unit =
       if (instanceCount > 0) {
@@ -134,12 +138,12 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     metrics.record(layer.metricStart)
 
     @tailrec
-    def rec(remaining: List[DisplayObject], batchCount: Int, textureName: String): Unit =
+    def rec(remaining: List[DisplayEntity], batchCount: Int, textureName: String): Unit =
       remaining match {
         case Nil =>
           drawBuffer(batchCount)
 
-        case d :: _ if d.imageRef !== textureName =>
+        case (d: DisplayObject) :: _ if d.imageRef !== textureName =>
           drawBuffer(batchCount)
           textureLocations.find(t => t.name === d.imageRef).foreach { textureLookup =>
             gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
@@ -150,15 +154,54 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
           drawBuffer(batchCount)
           rec(remaining, 0, textureName)
 
-        case d :: ds =>
+        case (d: DisplayObject) :: ds =>
           updateData(d, batchCount)
           rec(ds, batchCount + 1, textureName)
+
+        case (c: DisplayClone) :: ds =>
+          cloneBlankDisplayObjects.get(c.id) match {
+            case None =>
+              rec(ds, batchCount, textureName)
+
+            case Some(refDisplayObject) =>
+              updateData(refDisplayObject, batchCount)
+              overwriteFromDisplayBatchClone(refDisplayObject.width, refDisplayObject.height, c.asBatchData, batchCount)
+              rec(ds, batchCount + 1, textureName)
+          }
+
+        case (c: DisplayCloneBatch) :: ds =>
+          cloneBlankDisplayObjects.get(c.id) match {
+            case None =>
+              rec(ds, batchCount, textureName)
+
+            case Some(refDisplayObject) =>
+              val numberProcessed: Int =
+                processCloneBatch(c, refDisplayObject, batchCount)
+
+              rec(ds, batchCount + numberProcessed, textureName)
+          }
+
       }
 
     rec(sorted.toList, 0, "")
 
     metrics.record(layer.metricEnd)
 
+  }
+
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.While"))
+  private def processCloneBatch(c: DisplayCloneBatch, refDisplayObject: DisplayObject, batchCount: Int): Int = {
+
+    val count: Int = c.clones.length
+    var i: Int     = 0
+
+    while (i < count) {
+      updateData(refDisplayObject, batchCount + i)
+      overwriteFromDisplayBatchClone(refDisplayObject.width, refDisplayObject.height, c.clones(i), batchCount + i)
+      i += 1
+    }
+
+    count
   }
 
 }

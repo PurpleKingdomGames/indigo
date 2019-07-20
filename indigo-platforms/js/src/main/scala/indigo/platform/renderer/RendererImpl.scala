@@ -16,6 +16,9 @@ import indigo.shared.time.GameTime
 import indigo.shared.platform.AssetMapping
 import indigo.platform.DisplayObjectConversions
 import indigo.shared.AnimationsRegister
+import indigo.shared.display.DisplayObject
+import indigo.shared.scenegraph.Graphic
+import indigo.shared.scenegraph.Sprite
 
 @SuppressWarnings(Array("org.wartremover.warts.Null"))
 final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends Renderer {
@@ -119,11 +122,29 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     gl2.bindVertexArray(vao)
 
+    val cloneBlankDisplayObjects: Map[String, DisplayObject] =
+      scene.cloneBlanks.foldLeft(Map.empty[String, DisplayObject]) { (acc, blank) =>
+        blank.cloneable match {
+          case g: Graphic =>
+            acc + (blank.id.value -> DisplayObjectConversions.graphicToDisplayObject(g, assetMapping))
+
+          case s: Sprite =>
+            AnimationsRegister.fetchFromCache(gameTime, s.bindingKey, s.animationsKey, metrics) match {
+              case None =>
+                acc
+
+              case Some(anim) =>
+                acc + (blank.id.value -> DisplayObjectConversions.spriteToDisplayObject(s, assetMapping, anim))
+            }
+        }
+      }
+
     RendererFunctions.resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight, cNc.magnification)
 
     metrics.record(DrawGameLayerStartMetric)
     RendererFunctions.setNormalBlend(gl)
     layerRenderer.drawLayer(
+      cloneBlankDisplayObjects,
       DisplayObjectConversions.sceneNodesToDisplayObjects(scene.gameLayer, gameTime, assetMapping, metrics),
       gameFrameBuffer,
       config.clearColor,
@@ -136,6 +157,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(DrawLightingLayerStartMetric)
     RendererFunctions.setLightingBlend(gl)
     layerRenderer.drawLayer(
+      cloneBlankDisplayObjects,
       DisplayObjectConversions.sceneNodesToDisplayObjects(scene.lightingLayer, gameTime, assetMapping, metrics),
       lightingFrameBuffer,
       AmbientLight.toClearColor(scene.ambientLight),
@@ -148,6 +170,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(DrawUiLayerStartMetric)
     RendererFunctions.setNormalBlend(gl)
     layerRenderer.drawLayer(
+      cloneBlankDisplayObjects,
       DisplayObjectConversions.sceneNodesToDisplayObjects(scene.uiLayer, gameTime, assetMapping, metrics),
       uiFrameBuffer,
       ClearColor.Black.forceTransparent,

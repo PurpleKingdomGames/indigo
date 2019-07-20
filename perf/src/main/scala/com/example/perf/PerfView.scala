@@ -6,6 +6,8 @@ import scala.util.Random
 
 object PerfView {
 
+  val cloneId: CloneId = CloneId("Dude")
+
   def updateView(model: MyGameModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     frameInputEvents.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + implicitly[AsString[Point]].show(position))
@@ -18,7 +20,10 @@ object PerfView {
       uiLayer(),
       AmbientLight.Normal.withAmount(0.5),
       Nil,
-      SceneAudio.None
+      SceneAudio.None,
+      Nil
+    ).addCloneBlanks(
+      CloneBlank(cloneId, model.dude.dude.sprite)
     )
   }
 
@@ -29,12 +34,13 @@ object PerfView {
       Point((Random.nextFloat() * PerfGame.viewportWidth).toInt, (Random.nextFloat() * PerfGame.viewportHeight).toInt)
     }
 
-  private val theHerd: MyGameModel => List[Sprite] = currentState =>
-    positions.map { pt =>
-      currentState.dude.dude.sprite
-        .moveTo(pt)
-        .withDepth(Depth(herdCount - pt.y))
-  }
+  private val theHerd: CloneBatch =
+    CloneBatch(
+      cloneId,
+      Depth(1),
+      CloneTransformData.identity,
+      positions.map(CloneTransformData.startAt)
+    )
 
   def gameLayer(currentState: MyGameModel): List[SceneGraphNode] =
     List(
@@ -63,8 +69,9 @@ object PerfView {
           currentState.dude.dude.sprite
             .changeCycle(d.cycleName)
             .play()
-      }
-    ) ++ theHerd(currentState)
+      },
+      theHerd
+    )
 
   def lightingLayer(signals: Signals): List[SceneGraphNode] =
     List(

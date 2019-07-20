@@ -10,6 +10,7 @@ import indigo.shared.EqualTo._
 
 import indigo.shared.display.DisplayObject
 import scala.collection.mutable.ListBuffer
+import indigo.shared.display.DisplayEntity
 
 object RendererFunctions {
 
@@ -85,8 +86,8 @@ object RendererFunctions {
     texture
   }
 
-  val sortByDepth: ListBuffer[DisplayObject] => ListBuffer[DisplayObject] =
-    displayObjects => displayObjects.sortWith((d1, d2) => d1.z > d2.z)
+  val sortByDepth: ListBuffer[DisplayEntity] => ListBuffer[DisplayEntity] =
+    _.sortWith((d1, d2) => d1.z > d2.z)
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var resizeRun: Boolean = false

@@ -5,6 +5,8 @@ import indigo.AsString._
 
 object MyView {
 
+  val dudeCloneId: CloneId = CloneId("Dude")
+
   def updateView(model: MyGameModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     frameInputEvents.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + position.show)
@@ -17,8 +19,9 @@ object MyView {
       uiLayer(frameInputEvents),
       AmbientLight.Normal.withAmount(0.25),
       Nil,
-      SceneAudio.None
-    )
+      SceneAudio.None,
+      Nil
+    ).addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
   }
 
   def gameLayer(currentState: MyGameModel): List[SceneGraphNode] =
@@ -50,7 +53,8 @@ object MyView {
             .play()
       },
       currentState.dude.dude.sprite.moveBy(8, 10).withAlpha(0.5).withTint(0, 1, 0),
-      currentState.dude.dude.sprite.moveBy(8, -10).withAlpha(0.5).withTint(1, 0, 0)
+      currentState.dude.dude.sprite.moveBy(8, -10).withAlpha(0.5).withTint(1, 0, 0),
+      Clone(dudeCloneId, Depth(1), CloneTransformData.startAt(Point(10, 50)))
     )
 
   def lightingLayer(signals: Signals): List[SceneGraphNode] =

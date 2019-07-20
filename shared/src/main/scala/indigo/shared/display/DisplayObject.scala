@@ -1,5 +1,17 @@
 package indigo.shared.display
 
+sealed trait DisplayEntity {
+  val z: Double
+}
+
+final class DisplayClone(val id: String, val x: Double, val y: Double, val z: Double, val rotation: Double, val scaleX: Double, val scaleY: Double) extends DisplayEntity {
+  def asBatchData: DisplayCloneBatchData =
+    new DisplayCloneBatchData(x, y, rotation, scaleX, scaleY)
+}
+
+final class DisplayCloneBatchData(val x: Double, val y: Double, val rotation: Double, val scaleX: Double, val scaleY: Double)
+final class DisplayCloneBatch(val id: String, val z: Double, val clones: List[DisplayCloneBatchData]) extends DisplayEntity
+
 final class DisplayObject(
     val x: Double,
     val y: Double,
@@ -20,7 +32,7 @@ final class DisplayObject(
     val frameY: Double,
     val frameScaleX: Double,
     val frameScaleY: Double
-)
+) extends DisplayEntity
 object DisplayObject {
 
   def apply(

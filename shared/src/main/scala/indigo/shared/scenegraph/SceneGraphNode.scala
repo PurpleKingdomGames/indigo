@@ -9,33 +9,37 @@ import indigo.shared.IndigoLogger
 
 import indigo.shared.{AnimationsRegister, FontRegister}
 import indigo.shared.QuickCache
+import indigo.shared.EqualTo
+import indigo.shared.EqualTo._
 
 object SceneGraphNode {
   def empty: Group = Group.empty
 }
 
 sealed trait SceneGraphNode {
-  def bounds: Rectangle
   val depth: Depth
-
   def x: Int
   def y: Int
   def rotation: Radians
   def scale: Vector2
-
-  def withDepth(depth: Depth): SceneGraphNode
-  def moveTo(pt: Point): SceneGraphNode
-  def moveTo(x: Int, y: Int): SceneGraphNode
-  def moveBy(pt: Point): SceneGraphNode
-  def moveBy(x: Int, y: Int): SceneGraphNode
-  def rotate(angle: Radians): SceneGraphNode
-  def rotateBy(angle: Radians): SceneGraphNode
-  def scaleBy(amount: Vector2): SceneGraphNode
-  def scaleBy(x: Double, y: Double): SceneGraphNode
-
 }
 
-final class Group(val positionOffset: Point, val rotation: Radians, val scale: Vector2, val depth: Depth, val children: List[SceneGraphNode]) extends SceneGraphNode {
+sealed trait SceneGraphNodePrimitive extends SceneGraphNode {
+  def bounds: Rectangle
+  def withDepth(depth: Depth): SceneGraphNodePrimitive
+  def moveTo(pt: Point): SceneGraphNodePrimitive
+  def moveTo(x: Int, y: Int): SceneGraphNodePrimitive
+  def moveBy(pt: Point): SceneGraphNodePrimitive
+  def moveBy(x: Int, y: Int): SceneGraphNodePrimitive
+  def rotate(angle: Radians): SceneGraphNodePrimitive
+  def rotateBy(angle: Radians): SceneGraphNodePrimitive
+  def scaleBy(amount: Vector2): SceneGraphNodePrimitive
+  def scaleBy(x: Double, y: Double): SceneGraphNodePrimitive
+  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): SceneGraphNodePrimitive
+  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): SceneGraphNodePrimitive
+}
+
+final class Group(val positionOffset: Point, val rotation: Radians, val scale: Vector2, val depth: Depth, val children: List[SceneGraphNodePrimitive]) extends SceneGraphNodePrimitive {
 
   lazy val x: Int = positionOffset.x
   lazy val y: Int = positionOffset.y
@@ -59,9 +63,15 @@ final class Group(val positionOffset: Point, val rotation: Radians, val scale: V
     rotate(rotation + angle)
 
   def scaleBy(amount: Vector2): Group =
-    Group(positionOffset, rotation, amount, depth, children)
+    Group(positionOffset, rotation, scale + amount, depth, children)
   def scaleBy(x: Double, y: Double): Group =
     scaleBy(Vector2(x, y))
+
+  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): SceneGraphNodePrimitive =
+    Group(newPosition, newRotation, newScale, depth, children)
+
+  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): SceneGraphNodePrimitive =
+    Group(positionOffset + positionDiff, rotation + rotationDiff, scale + scaleDiff, depth, children)
 
   def bounds: Rectangle =
     children match {
@@ -74,33 +84,86 @@ final class Group(val positionOffset: Point, val rotation: Radians, val scale: V
         }
     }
 
-  def addChild(child: SceneGraphNode): Group =
+  def addChild(child: SceneGraphNodePrimitive): Group =
     Group(positionOffset, rotation, scale, depth, children :+ child)
 
-  def addChildren(additionalChildren: List[SceneGraphNode]): Group =
+  def addChildren(additionalChildren: List[SceneGraphNodePrimitive]): Group =
     Group(positionOffset, rotation, scale, depth, children ++ additionalChildren)
 
 }
 
 object Group {
 
-  def apply(positionOffset: Point, rotation: Radians, scale: Vector2, depth: Depth, children: List[SceneGraphNode]): Group =
+  def apply(positionOffset: Point, rotation: Radians, scale: Vector2, depth: Depth, children: List[SceneGraphNodePrimitive]): Group =
     new Group(positionOffset, rotation, scale, depth, children.toList)
 
-  def apply(position: Point, rotation: Radians, scale: Vector2, depth: Depth, children: SceneGraphNode*): Group =
+  def apply(position: Point, rotation: Radians, scale: Vector2, depth: Depth, children: SceneGraphNodePrimitive*): Group =
     Group(position, rotation, scale, depth, children.toList)
 
-  def apply(children: SceneGraphNode*): Group =
+  def apply(children: SceneGraphNodePrimitive*): Group =
     Group(Point.zero, Radians.zero, Vector2.one, Depth.Base, children.toList)
 
-  def apply(children: List[SceneGraphNode]): Group =
+  def apply(children: List[SceneGraphNodePrimitive]): Group =
     Group(Point.zero, Radians.zero, Vector2.one, Depth.Base, children)
 
   def empty: Group =
     apply(Nil)
 }
 
-sealed trait Renderable extends SceneGraphNode {
+final class CloneId(val value: String) extends AnyVal
+object CloneId {
+  def apply(id: String): CloneId =
+    new CloneId(id)
+
+  implicit val equalTo: EqualTo[CloneId] =
+    EqualTo.create(_.value === _.value)
+}
+
+sealed trait Cloneable
+final class CloneBlank(val id: CloneId, val cloneable: Cloneable)
+object CloneBlank {
+  def apply(id: CloneId, cloneable: Cloneable): CloneBlank =
+    new CloneBlank(id, cloneable)
+
+  def unapply(c: CloneBlank): Option[(CloneId, Cloneable)] =
+    Some((c.id, c.cloneable))
+}
+
+final class CloneTransformData(val position: Point, val rotation: Radians, val scale: Vector2)
+object CloneTransformData {
+  def apply(position: Point, rotation: Radians, scale: Vector2): CloneTransformData =
+    new CloneTransformData(position, rotation, scale)
+
+  def startAt(position: Point): CloneTransformData =
+    new CloneTransformData(position, Radians.zero, Vector2.one)
+
+  val identity: CloneTransformData =
+    CloneTransformData(Point.zero, Radians.zero, Vector2.one)
+}
+
+final class Clone(val id: CloneId, val depth: Depth, val transform: CloneTransformData) extends SceneGraphNode {
+  lazy val x: Int            = transform.position.x
+  lazy val y: Int            = transform.position.y
+  lazy val rotation: Radians = transform.rotation
+  lazy val scale: Vector2    = transform.scale
+}
+object Clone {
+  def apply(id: CloneId, depth: Depth, transform: CloneTransformData): Clone =
+    new Clone(id, depth, transform)
+}
+
+final class CloneBatch(val id: CloneId, val depth: Depth, val transform: CloneTransformData, val clones: List[CloneTransformData]) extends SceneGraphNode {
+  lazy val x: Int            = transform.position.x
+  lazy val y: Int            = transform.position.y
+  lazy val rotation: Radians = transform.rotation
+  lazy val scale: Vector2    = transform.scale
+}
+object CloneBatch {
+  def apply(id: CloneId, depth: Depth, transform: CloneTransformData, clones: List[CloneTransformData]): CloneBatch =
+    new CloneBatch(id, depth, transform, clones)
+}
+
+sealed trait Renderable extends SceneGraphNodePrimitive {
   def effects: Effects
 
   def withAlpha(a: Double): Renderable
@@ -112,7 +175,7 @@ sealed trait Renderable extends SceneGraphNode {
 
   def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
   def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Renderable
-  def eventHandlerWithBoundsApplied(e: GlobalEvent): List[GlobalEvent]
+  // def eventHandlerWithBoundsApplied(e: GlobalEvent): List[GlobalEvent]
 
   override def withDepth(depth: Depth): Renderable
   override def moveTo(pt: Point): Renderable
@@ -136,7 +199,8 @@ final class Graphic(
     val crop: Rectangle,
     val effects: Effects,
     val eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
-) extends Renderable {
+) extends Renderable
+    with Cloneable {
 
   lazy val x: Int = bounds.position.x - ref.x
   lazy val y: Int = bounds.position.y - ref.y
@@ -157,9 +221,15 @@ final class Graphic(
     rotate(rotation + angle)
 
   def scaleBy(amount: Vector2): Graphic =
-    Graphic(bounds, depth, rotation, amount, imageAssetRef, ref, crop, effects, eventHandler)
+    Graphic(bounds, depth, rotation, scale * amount, imageAssetRef, ref, crop, effects, eventHandler)
   def scaleBy(x: Double, y: Double): Graphic =
     scaleBy(Vector2(x, y))
+
+  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): SceneGraphNodePrimitive =
+    Graphic(bounds.moveTo(newPosition), depth, newRotation, newScale, imageAssetRef, ref, crop, effects, eventHandler)
+
+  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): SceneGraphNodePrimitive =
+    Graphic(bounds.moveTo(this.bounds.position + positionDiff), depth, rotation + rotationDiff, scale * scaleDiff, imageAssetRef, ref, crop, effects, eventHandler)
 
   def withDepth(depthValue: Depth): Graphic =
     Graphic(bounds, depthValue, rotation, scale, imageAssetRef, ref, crop, effects, eventHandler)
@@ -259,7 +329,8 @@ final class Sprite(
     val ref: Point,
     val effects: Effects,
     val eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
-) extends Renderable {
+) extends Renderable
+    with Cloneable {
 
   lazy val x: Int = bounds.position.x - ref.x
   lazy val y: Int = bounds.position.y - ref.y
@@ -283,9 +354,15 @@ final class Sprite(
     rotate(rotation + angle)
 
   def scaleBy(amount: Vector2): Sprite =
-    Sprite(bindingKey, bounds, depth, rotation, amount, animationsKey, ref, effects, eventHandler)
+    Sprite(bindingKey, bounds, depth, rotation, scale * amount, animationsKey, ref, effects, eventHandler)
   def scaleBy(x: Double, y: Double): Sprite =
     scaleBy(Vector2(x, y))
+
+  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): SceneGraphNodePrimitive =
+    Sprite(bindingKey, bounds.moveTo(newPosition), depth, newRotation, newScale, animationsKey, ref, effects, eventHandler)
+
+  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): SceneGraphNodePrimitive =
+    Sprite(bindingKey, bounds.moveTo(this.bounds.position + positionDiff), depth, rotation + rotationDiff, scale * scaleDiff, animationsKey, ref, effects, eventHandler)
 
   def withBindingKey(newBindingKey: BindingKey): Sprite =
     Sprite(newBindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects, eventHandler)
@@ -423,9 +500,15 @@ final class Text(
     rotate(rotation + angle)
 
   def scaleBy(amount: Vector2): Text =
-    Text(text, alignment, position, depth, rotation, amount, fontKey, effects, eventHandler)
+    Text(text, alignment, position, depth, rotation, scale * amount, fontKey, effects, eventHandler)
   def scaleBy(x: Double, y: Double): Text =
     scaleBy(Vector2(x, y))
+
+  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): SceneGraphNodePrimitive =
+    Text(text, alignment, newPosition, depth, newRotation, newScale, fontKey, effects, eventHandler)
+
+  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): SceneGraphNodePrimitive =
+    Text(text, alignment, position + positionDiff, depth, rotation + rotationDiff, scale * scaleDiff, fontKey, effects, eventHandler)
 
   def withDepth(newDepth: Depth): Text =
     Text(text, alignment, position, newDepth, rotation, scale, fontKey, effects, eventHandler)

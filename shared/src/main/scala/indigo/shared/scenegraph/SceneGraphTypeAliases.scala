@@ -60,4 +60,20 @@ trait SceneGraphTypeAliases {
   type Group = scenegraph.Group
   val Group: scenegraph.Group.type = scenegraph.Group
 
+  // Clones
+  type CloneBlank = scenegraph.CloneBlank
+  val CloneBlank: scenegraph.CloneBlank.type = scenegraph.CloneBlank
+
+  type CloneId = scenegraph.CloneId
+  val CloneId: scenegraph.CloneId.type = scenegraph.CloneId
+
+  type Clone = scenegraph.Clone
+  val Clone: scenegraph.Clone.type = scenegraph.Clone
+
+  type CloneBatch = scenegraph.CloneBatch
+  val CloneBatch: scenegraph.CloneBatch.type = scenegraph.CloneBatch
+
+  type CloneTransformData = scenegraph.CloneTransformData
+  val CloneTransformData: scenegraph.CloneTransformData.type = scenegraph.CloneTransformData
+
 }
