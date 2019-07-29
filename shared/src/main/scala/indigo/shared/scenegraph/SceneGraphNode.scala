@@ -149,6 +149,15 @@ final class Clone(val id: CloneId, val depth: Depth, val transform: CloneTransfo
 
   def withTransforms(newPosition: Point, newRotation: Radians, newScale: Vector2): Clone =
     new Clone(id, depth, CloneTransformData(newPosition, newRotation, newScale))
+
+  def withPosition(newPosition: Point): Clone =
+    new Clone(id, depth, CloneTransformData(newPosition, transform.rotation, transform.scale))
+
+  def withRotation(newRotation: Radians): Clone =
+    new Clone(id, depth, CloneTransformData(transform.position, newRotation, transform.scale))
+
+  def withScale(newScale: Vector2): Clone =
+    new Clone(id, depth, CloneTransformData(transform.position, transform.rotation, newScale))
 }
 object Clone {
   def apply(id: CloneId, depth: Depth, transform: CloneTransformData): Clone =
