@@ -52,9 +52,8 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
       width: Int,
       height: Int,
       clearColor: ClearColor,
-      gameLayerOverlay: Tint,
-      lightingLayerOverlay: Tint,
-      uiLayerOverlay: Tint,
+      gameOverlay: Tint,
+      uiOverlay: Tint,
       gameLayerTint: Tint,
       lightingLayerTint: Tint,
       uiLayerTint: Tint,
@@ -72,9 +71,8 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
 
     RendererMerge.updateUBOData(
       screenDisplayObject(width, height),
-      gameLayerOverlay,
-      lightingLayerOverlay,
-      uiLayerOverlay,
+      gameOverlay,
+      uiOverlay,
       gameLayerTint,
       lightingLayerTint,
       uiLayerTint,
@@ -138,7 +136,7 @@ object RendererMerge {
 
   // They're all blocks of 16, it's the only block length allowed in WebGL.
   val projectionMatrixUBODataSize: Int = 16
-  val displayObjectUBODataSize: Int    = 16 * 3
+  val displayObjectUBODataSize: Int    = 16 * 2
   val uboDataSize: Int                 = projectionMatrixUBODataSize + displayObjectUBODataSize
 
   val uboData: scalajs.js.Array[Double] =
@@ -146,9 +144,8 @@ object RendererMerge {
 
   def updateUBOData(
       displayObject: DisplayObject,
-      gameLayerOverlay: Tint,
-      lightingLayerOverlay: Tint,
-      uiLayerOverlay: Tint,
+      gameOverlay: Tint,
+      uiOverlay: Tint,
       gameLayerTint: Tint,
       lightingLayerTint: Tint,
       uiLayerTint: Tint,
@@ -166,39 +163,34 @@ object RendererMerge {
     uboData(6) = displayObject.frameScaleX
     uboData(7) = displayObject.frameScaleY
 
-    uboData(8) = gameLayerOverlay.r
-    uboData(9) = gameLayerOverlay.g
-    uboData(10) = gameLayerOverlay.b
-    uboData(11) = gameLayerOverlay.a
+    uboData(8) = gameOverlay.r
+    uboData(9) = gameOverlay.g
+    uboData(10) = gameOverlay.b
+    uboData(11) = gameOverlay.a
 
-    uboData(12) = lightingLayerOverlay.r
-    uboData(13) = lightingLayerOverlay.g
-    uboData(14) = lightingLayerOverlay.b
-    uboData(15) = lightingLayerOverlay.a
+    uboData(12) = uiOverlay.r
+    uboData(13) = uiOverlay.g
+    uboData(14) = uiOverlay.b
+    uboData(15) = uiOverlay.a
 
-    uboData(16) = uiLayerOverlay.r
-    uboData(17) = uiLayerOverlay.g
-    uboData(18) = uiLayerOverlay.b
-    uboData(19) = uiLayerOverlay.a
+    uboData(16) = gameLayerTint.r
+    uboData(17) = gameLayerTint.g
+    uboData(18) = gameLayerTint.b
+    uboData(19) = gameLayerTint.a
 
-    uboData(20) = gameLayerTint.r
-    uboData(21) = gameLayerTint.g
-    uboData(22) = gameLayerTint.b
-    uboData(23) = gameLayerTint.a
+    uboData(20) = lightingLayerTint.r
+    uboData(21) = lightingLayerTint.g
+    uboData(22) = lightingLayerTint.b
+    uboData(23) = lightingLayerTint.a
 
-    uboData(24) = lightingLayerTint.r
-    uboData(25) = lightingLayerTint.g
-    uboData(26) = lightingLayerTint.b
-    uboData(27) = lightingLayerTint.a
+    uboData(24) = uiLayerTint.r
+    uboData(25) = uiLayerTint.g
+    uboData(26) = uiLayerTint.b
+    uboData(27) = uiLayerTint.a
 
-    uboData(28) = uiLayerTint.r
-    uboData(29) = uiLayerTint.g
-    uboData(30) = uiLayerTint.b
-    uboData(31) = uiLayerTint.a
-
-    uboData(32) = gameLayerSaturation
-    uboData(33) = lightingLayerSaturation
-    uboData(34) = uiLayerSaturation
-    // uboData(35) = 0d
+    uboData(28) = gameLayerSaturation
+    uboData(29) = lightingLayerSaturation
+    uboData(30) = uiLayerSaturation
+    // uboData(31) = 0d
   }
 }

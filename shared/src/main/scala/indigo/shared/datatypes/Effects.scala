@@ -98,7 +98,7 @@ object Tint {
 
   val Normal: Tint = White
   val None: Tint   = White
-  val Zero: Tint   = Tint(1, 1, 1, 0)
+  val Zero: Tint   = Tint(0, 0, 0, 0)
 
   def combine(a: Tint, b: Tint): Tint =
     (a, b) match {

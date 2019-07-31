@@ -22,6 +22,7 @@ object PerfView {
       Tint.White.withAmount(0.5),
       Nil,
       SceneAudio.None,
+      ScreenEffects.None,
       Nil
     ).addCloneBlanks(
       CloneBlank(cloneId, model.dude.dude.sprite)

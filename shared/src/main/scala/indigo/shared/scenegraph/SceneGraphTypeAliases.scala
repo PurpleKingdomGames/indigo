@@ -7,6 +7,12 @@ trait SceneGraphTypeAliases {
   type SceneUpdateFragment = scenegraph.SceneUpdateFragment
   val SceneUpdateFragment: scenegraph.SceneUpdateFragment.type = scenegraph.SceneUpdateFragment
 
+  type ScreenEffects = scenegraph.ScreenEffects
+  val ScreenEffects: scenegraph.ScreenEffects.type = scenegraph.ScreenEffects
+
+  type SceneLayer = scenegraph.SceneLayer
+  val SceneLayer: scenegraph.SceneLayer.type = scenegraph.SceneLayer
+
   type SceneGraphNode = scenegraph.SceneGraphNode
   val SceneGraphNode: scenegraph.SceneGraphNode.type = scenegraph.SceneGraphNode
 

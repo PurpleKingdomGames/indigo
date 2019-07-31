@@ -9,9 +9,8 @@ layout (std140) uniform DisplayObjectUBO {
   vec2 u_scale;
   vec2 u_frameTranslation;
   vec2 u_frameScale;
-  vec4 u_gameLayerOverlay;
-  vec4 u_lightingLayerOverlay;
-  vec4 u_uiLayerOverlay;
+  vec4 u_gameOverlay;
+  vec4 u_uiOverlay;
   vec4 u_gameLayerTint;
   vec4 u_lightingLayerTint;
   vec4 u_uiLayerTint;
@@ -21,9 +20,8 @@ layout (std140) uniform DisplayObjectUBO {
 };
 
 out vec2 v_texcoord;
-out vec4 v_gameLayerOverlay;
-out vec4 v_lightingLayerOverlay;
-out vec4 v_uiLayerOverlay;
+out vec4 v_gameOverlay;
+out vec4 v_uiOverlay;
 
 out vec4 v_gameLayerTint;
 out vec4 v_lightingLayerTint;
@@ -64,9 +62,8 @@ void main(void) {
 
   v_texcoord = scaleTextCoords();
 
-  v_gameLayerOverlay = u_gameLayerOverlay;
-  v_lightingLayerOverlay = u_lightingLayerOverlay;
-  v_uiLayerOverlay = u_uiLayerOverlay;
+  v_gameOverlay = u_gameOverlay;
+  v_uiOverlay = u_uiOverlay;
 
   v_gameLayerTint = u_gameLayerTint;
   v_lightingLayerTint = u_lightingLayerTint;

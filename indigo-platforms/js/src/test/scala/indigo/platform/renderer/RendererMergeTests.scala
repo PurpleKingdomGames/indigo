@@ -44,7 +44,7 @@ object RendererMergeTests extends TestSuite {
           };
          */
         val expected: scalajs.js.Array[Double] =
-          List.fill(16 * 3)(0.0d).toJSArray
+          List.fill(16 * 2)(0.0d).toJSArray
 
         expected(0) = 10
         expected(1) = 10
@@ -81,15 +81,10 @@ object RendererMergeTests extends TestSuite {
         expected(26) = 22
         expected(27) = 23
 
-        expected(28) = 24
-        expected(29) = 25
-        expected(30) = 26
-        expected(31) = 27
-
-        expected(32) = 1
-        expected(33) = 2
-        expected(34) = 3
-        // expected(35) = 0
+        expected(28) = 1
+        expected(29) = 2
+        expected(30) = 3
+        // expected(31) = 0
 
         RendererMerge.updateUBOData(
           displayObject,
@@ -98,7 +93,6 @@ object RendererMergeTests extends TestSuite {
           Tint(12, 13, 14, 15),
           Tint(16, 17, 18, 19),
           Tint(20, 21, 22, 23),
-          Tint(24, 25, 26, 27),
           1,
           2,
           3
