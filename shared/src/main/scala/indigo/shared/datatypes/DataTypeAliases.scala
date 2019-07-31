@@ -43,9 +43,6 @@ trait DataTypeAliases {
   type BindingKey = shared.datatypes.BindingKey
   val BindingKey: shared.datatypes.BindingKey.type = shared.datatypes.BindingKey
 
-  type AmbientLight = shared.datatypes.AmbientLight
-  val AmbientLight: shared.datatypes.AmbientLight.type = shared.datatypes.AmbientLight
-
   type Effects = shared.datatypes.Effects
   val Effects: shared.datatypes.Effects.type = shared.datatypes.Effects
 

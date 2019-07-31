@@ -17,14 +17,14 @@ object MyView {
       gameLayer(model),
       lightingLayer(frameInputEvents.signals),
       uiLayer(frameInputEvents),
-      AmbientLight.Normal.withAmount(0.25),
+      Tint.White.withAmount(0.25),
       Nil,
       SceneAudio.None,
       Nil
     ).addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
-      .withSaturationLevel(0.5)
-      .withTint(Tint.Cyan.withAmount(0.25))
-      .withLightingLayerColorOverlay(Tint.White.withAmount(1))
+      // .withSaturationLevel(0.5)
+      // .withTint(Tint.Cyan.withAmount(0.25))
+      // .withLightingLayerColorOverlay(Tint.White.withAmount(1))
   }
 
   def gameLayer(currentState: MyGameModel): List[SceneGraphNode] =

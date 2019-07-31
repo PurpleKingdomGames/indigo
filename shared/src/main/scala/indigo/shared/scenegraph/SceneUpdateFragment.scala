@@ -1,14 +1,13 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.events.GlobalEvent
-import indigo.shared.datatypes.AmbientLight
 import indigo.shared.datatypes.Tint
 
 final class SceneUpdateFragment(
     val gameLayer: SceneLayer,
     val lightingLayer: SceneLayer,
     val uiLayer: SceneLayer,
-    val ambientLight: AmbientLight,
+    val ambientLight: Tint,
     val globalEvents: List[GlobalEvent],
     val audio: SceneAudio,
     val cloneBlanks: List[CloneBlank]
@@ -34,14 +33,14 @@ final class SceneUpdateFragment(
   def addUiLayerNodes(nodes: List[SceneGraphNode]): SceneUpdateFragment =
     SceneUpdateFragment(gameLayer, lightingLayer, uiLayer ++ nodes, ambientLight, globalEvents, audio, cloneBlanks)
 
-  def withAmbientLight(light: AmbientLight): SceneUpdateFragment =
+  def withAmbientLight(light: Tint): SceneUpdateFragment =
     SceneUpdateFragment(gameLayer, lightingLayer, uiLayer, light, globalEvents, audio, cloneBlanks)
 
   def withAmbientLightAmount(amount: Double): SceneUpdateFragment =
     SceneUpdateFragment(gameLayer, lightingLayer, uiLayer, ambientLight.withAmount(amount), globalEvents, audio, cloneBlanks)
 
   def withAmbientLightTint(r: Double, g: Double, b: Double): SceneUpdateFragment =
-    SceneUpdateFragment(gameLayer, lightingLayer, uiLayer, ambientLight.withTint(r, g, b), globalEvents, audio, cloneBlanks)
+    SceneUpdateFragment(gameLayer, lightingLayer, uiLayer, Tint(r, g, b, 1), globalEvents, audio, cloneBlanks)
 
   def addGlobalEvents(events: GlobalEvent*): SceneUpdateFragment =
     addGlobalEvents(events.toList)
@@ -117,7 +116,7 @@ object SceneUpdateFragment {
       gameLayer: SceneLayer,
       lightingLayer: SceneLayer,
       uiLayer: SceneLayer,
-      ambientLight: AmbientLight,
+      ambientLight: Tint,
       globalEvents: List[GlobalEvent],
       audio: SceneAudio,
       cloneBlanks: List[CloneBlank]
@@ -128,7 +127,7 @@ object SceneUpdateFragment {
       gameLayer: List[SceneGraphNode],
       lightingLayer: List[SceneGraphNode],
       uiLayer: List[SceneGraphNode],
-      ambientLight: AmbientLight,
+      ambientLight: Tint,
       globalEvents: List[GlobalEvent],
       audio: SceneAudio,
       cloneBlanks: List[CloneBlank]
@@ -139,7 +138,7 @@ object SceneUpdateFragment {
     empty
 
   def empty: SceneUpdateFragment =
-    SceneUpdateFragment(Nil, Nil, Nil, AmbientLight.Normal, Nil, SceneAudio.None, Nil)
+    SceneUpdateFragment(Nil, Nil, Nil, Tint.None, Nil, SceneAudio.None, Nil)
 
   def append(a: SceneUpdateFragment, b: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment(

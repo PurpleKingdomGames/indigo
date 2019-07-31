@@ -2,6 +2,7 @@ package indigo.shared.datatypes
 
 import indigo.shared.AsString
 import indigo.shared.EqualTo
+import indigo.shared.ClearColor
 
 // Graphical effects
 final class Effects(val alpha: Double, val tint: Tint, val flip: Flip) {
@@ -61,6 +62,9 @@ final class Tint(val r: Double, val g: Double, val b: Double, val a: Double) {
 
   def withAmount(amount: Double): Tint =
     Tint(r, g, b, amount)
+
+  def toClearColor: ClearColor =
+    ClearColor(r * a, g * a, b * a, 1)
 }
 object Tint {
 
@@ -83,9 +87,6 @@ object Tint {
     }
   }
 
-  val None: Tint    = Tint(1, 1, 1, 1)
-  val Zero: Tint    = Tint(1, 1, 1, 0)
-
   val Red: Tint     = Tint(1, 0, 0, 1)
   val Green: Tint   = Tint(0, 1, 0, 1)
   val Blue: Tint    = Tint(0, 0, 1, 1)
@@ -94,6 +95,10 @@ object Tint {
   val Cyan: Tint    = Tint(0, 1, 1, 1)
   val White: Tint   = Tint(1, 1, 1, 1)
   val Black: Tint   = Tint(0, 0, 0, 1)
+
+  val Normal: Tint = White
+  val None: Tint   = White
+  val Zero: Tint   = Tint(1, 1, 1, 0)
 
   def combine(a: Tint, b: Tint): Tint =
     (a, b) match {

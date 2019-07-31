@@ -1,6 +1,5 @@
 package indigo.platform.renderer
 
-import indigo.shared.datatypes.AmbientLight
 import indigo.shared.metrics._
 import indigo.shared.ClearColor
 import org.scalajs.dom.raw.WebGLBuffer
@@ -160,7 +159,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       cloneBlankDisplayObjects,
       DisplayObjectConversions.sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping, metrics),
       lightingFrameBuffer,
-      AmbientLight.toClearColor(scene.ambientLight),
+      scene.ambientLight.toClearColor,
       lightingShaderProgram,
       CurrentDrawLayer.Lighting,
       metrics
