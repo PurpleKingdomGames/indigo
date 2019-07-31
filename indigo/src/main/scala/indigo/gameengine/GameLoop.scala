@@ -167,9 +167,9 @@ object GameLoop {
 
   def persistNodeViewEvents(gameEvents: List[GlobalEvent], metrics: Metrics, globalEventStream: GlobalEventStream, scene: SceneUpdateFragment): Unit = {
     metrics.record(PersistNodeViewEventsStartMetric)
-    SceneGraphViewEvents.collectViewEvents(scene.gameLayer, gameEvents, globalEventStream.pushGlobalEvent)
-    SceneGraphViewEvents.collectViewEvents(scene.lightingLayer, gameEvents, globalEventStream.pushGlobalEvent)
-    SceneGraphViewEvents.collectViewEvents(scene.uiLayer, gameEvents, globalEventStream.pushGlobalEvent)
+    SceneGraphViewEvents.collectViewEvents(scene.gameLayer.nodes, gameEvents, globalEventStream.pushGlobalEvent)
+    SceneGraphViewEvents.collectViewEvents(scene.lightingLayer.nodes, gameEvents, globalEventStream.pushGlobalEvent)
+    SceneGraphViewEvents.collectViewEvents(scene.uiLayer.nodes, gameEvents, globalEventStream.pushGlobalEvent)
     metrics.record(PersistNodeViewEventsEndMetric)
   }
 

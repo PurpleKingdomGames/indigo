@@ -13,7 +13,7 @@ final class AmbientLight(val tint: Tint, val amount: Double) {
     AmbientLight(tint, value)
 
   def withTint(r: Double, g: Double, b: Double): AmbientLight =
-    AmbientLight(Tint(r, g, b), amount)
+    AmbientLight(Tint(r, g, b, amount), amount)
 
 }
 

@@ -9,9 +9,29 @@ layout (std140) uniform DisplayObjectUBO {
   vec2 u_scale;
   vec2 u_frameTranslation;
   vec2 u_frameScale;
+  vec4 u_gameLayerOverlay;
+  vec4 u_lightingLayerOverlay;
+  vec4 u_uiLayerOverlay;
+  vec4 u_gameLayerTint;
+  vec4 u_lightingLayerTint;
+  vec4 u_uiLayerTint;
+  float u_gameLayerSaturation;
+  float u_lightingLayerSaturation;
+  float u_uiLayerSaturation;
 };
 
 out vec2 v_texcoord;
+out vec4 v_gameLayerOverlay;
+out vec4 v_lightingLayerOverlay;
+out vec4 v_uiLayerOverlay;
+
+out vec4 v_gameLayerTint;
+out vec4 v_lightingLayerTint;
+out vec4 v_uiLayerTint;
+
+out float v_gameLayerSaturation;
+out float v_lightingLayerSaturation;
+out float v_uiLayerSaturation;
 
 mat4 translate2d(vec2 t){
     return mat4(1, 0, 0, 0,
@@ -43,4 +63,16 @@ void main(void) {
   gl_Position = u_projection * transform * a_vertices;
 
   v_texcoord = scaleTextCoords();
+
+  v_gameLayerOverlay = u_gameLayerOverlay;
+  v_lightingLayerOverlay = u_lightingLayerOverlay;
+  v_uiLayerOverlay = u_uiLayerOverlay;
+
+  v_gameLayerTint = u_gameLayerTint;
+  v_lightingLayerTint = u_lightingLayerTint;
+  v_uiLayerTint = u_uiLayerTint;
+
+  v_gameLayerSaturation = u_gameLayerSaturation;
+  v_lightingLayerSaturation = u_lightingLayerSaturation;
+  v_uiLayerSaturation = u_uiLayerSaturation;
 }

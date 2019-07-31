@@ -7,8 +7,8 @@ import indigo.EqualTo._
 
 object JobMarketTests extends TestSuite {
 
-val dice: Dice =
-  Dice.loaded(6)
+  val dice: Dice =
+    Dice.loaded(6)
 
   def tests: Tests =
     Tests {
@@ -59,9 +59,9 @@ val dice: Dice =
           val market: JobMarket = JobMarket(List(job))
           val gameTime          = GameTime.zero
 
-          market.render(gameTime).gameLayer.isEmpty ==> true
-          market.render(gameTime).lightingLayer.isEmpty ==> true
-          market.render(gameTime).uiLayer.isEmpty ==> true
+          market.render(gameTime).gameLayer.nodes.isEmpty ==> true
+          market.render(gameTime).lightingLayer.nodes.isEmpty ==> true
+          market.render(gameTime).uiLayer.nodes.isEmpty ==> true
           market.render(gameTime).globalEvents.isEmpty ==> true
           market.render(gameTime).ambientLight === AmbientLight.Normal ==> true
           market.render(gameTime).audio ==> SceneAudio.None

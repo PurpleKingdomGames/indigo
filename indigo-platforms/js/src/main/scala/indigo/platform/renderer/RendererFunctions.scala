@@ -8,7 +8,6 @@ import indigo.shared.datatypes.Matrix4
 
 import indigo.shared.EqualTo._
 
-import indigo.shared.display.DisplayObject
 import scala.collection.mutable.ListBuffer
 import indigo.shared.display.DisplayEntity
 
@@ -113,36 +112,5 @@ object RendererFunctions {
     mat4d.mat.foreach(d => a.push(d))
     a
   }
-
-  def updateUBOData(displayObject: DisplayObject): scalajs.js.Array[Double] = {
-    val uboData = scalajs.js.Array[Double]()
-
-    uboData(0) = displayObject.x.toDouble
-    uboData(1) = displayObject.y.toDouble
-    uboData(2) = displayObject.width.toDouble * displayObject.scaleX
-    uboData(3) = displayObject.height.toDouble * displayObject.scaleY
-
-    uboData(4) = displayObject.tintR.toDouble
-    uboData(5) = displayObject.tintG.toDouble
-    uboData(6) = displayObject.tintB.toDouble
-    uboData(7) = displayObject.alpha.toDouble
-
-    uboData(8) = displayObject.frameX
-    uboData(9) = displayObject.frameY
-    uboData(10) = displayObject.frameScaleX
-    uboData(11) = displayObject.frameScaleY
-
-    uboData(12) = displayObject.rotation
-    uboData(13) = displayObject.flipHorizontal
-    uboData(14) = displayObject.flipVertical
-    uboData(15) = 0d
-
-    uboData
-  }
-
-  // They're all blocks of 16, it's the only block length allowed in WebGL.
-  val projectionMatrixUBODataSize: Int = 16
-  val displayObjectUBODataSize: Int    = 16
-  val uboDataSize: Int                 = projectionMatrixUBODataSize + displayObjectUBODataSize
 
 }

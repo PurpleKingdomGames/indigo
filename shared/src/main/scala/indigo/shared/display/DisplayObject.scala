@@ -26,6 +26,7 @@ final class DisplayObject(
     val tintR: Double,
     val tintG: Double,
     val tintB: Double,
+    val tintA: Double,
     val flipHorizontal: Double,
     val flipVertical: Double,
     val frameX: Double,
@@ -49,6 +50,7 @@ object DisplayObject {
       tintR: Double,
       tintG: Double,
       tintB: Double,
+      tintA: Double,
       flipHorizontal: Boolean,
       flipVertical: Boolean,
       frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
@@ -67,6 +69,7 @@ object DisplayObject {
       tintR,
       tintG,
       tintB,
+      tintA,
       if (flipHorizontal) -1 else 1,
       if (flipVertical) 1 else -1,
       frame.translate.x,

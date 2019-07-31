@@ -22,6 +22,9 @@ object MyView {
       SceneAudio.None,
       Nil
     ).addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
+      .withSaturationLevel(0.5)
+      .withTint(Tint.Cyan.withAmount(0.25))
+      .withLightingLayerColorOverlay(Tint.White.withAmount(1))
   }
 
   def gameLayer(currentState: MyGameModel): List[SceneGraphNode] =
@@ -52,8 +55,8 @@ object MyView {
             .changeCycle(d.cycleName)
             .play()
       },
-      currentState.dude.dude.sprite.moveBy(8, 10).withAlpha(0.5).withTint(0, 1, 0),
-      currentState.dude.dude.sprite.moveBy(8, -10).withAlpha(0.5).withTint(1, 0, 0),
+      currentState.dude.dude.sprite.moveBy(8, 10).withAlpha(1).withTint(Tint.Green.withAmount(0.25)),
+      currentState.dude.dude.sprite.moveBy(8, -10).withAlpha(0.5).withTint(Tint.Red.withAmount(0.75)),
       Clone(dudeCloneId, Depth(1), CloneTransformData.startAt(Point(10, 50)))
     )
 
@@ -63,7 +66,8 @@ object MyView {
       Graphic(114 - 20, 64 + 20, 320, 240, 1, MyAssets.light).withRef(Point(160, 120)).withTint(Tint.Green),
       Graphic(114 + 20, 64 + 20, 320, 240, 1, MyAssets.light).withRef(Point(160, 120)).withTint(Tint.Blue),
       Graphic(0, 0, 320, 240, 1, MyAssets.light)
-        .withTint(1, 1, 0.0)
+        .withTint(1, 1, 0.0, 1)
+        .withAlpha(1)
         .withRef(Point(160, 120))
         .moveTo(signals.mousePosition.x, signals.mousePosition.y)
     )

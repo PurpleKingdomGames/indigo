@@ -10,11 +10,13 @@ layout (location = 6) in vec2 a_frameScale;
 layout (location = 7) in float a_rotation;
 layout (location = 8) in float a_fliph;
 layout (location = 9) in float a_flipv;
+layout (location = 10) in float a_alpha;
 
 uniform mat4 u_projection;
 
 out vec2 v_texcoord;
 out vec4 v_tint;
+out float v_alpha;
 
 mat4 rotate2d(float angle){
     return mat4(cos(angle), -sin(angle), 0, 0,
@@ -56,4 +58,5 @@ void main(void) {
   // Pass the texcoord to the fragment shader.
   v_texcoord = scaleTextCoords();
   v_tint = a_tint;
+  v_alpha = a_alpha;
 }

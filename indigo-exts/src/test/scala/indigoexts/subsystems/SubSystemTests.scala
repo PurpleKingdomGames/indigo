@@ -16,7 +16,7 @@ object SubSystemTests extends TestSuite {
       "A SubSystem (PointsTracker example)" - {
 
         "should render the initial state correctly" - {
-          val expected = PointsTrackerExample(1230).render(GameTime.zero).gameLayer.head.asInstanceOf[Text].text
+          val expected = PointsTrackerExample(1230).render(GameTime.zero).gameLayer.nodes.head.asInstanceOf[Text].text
 
           assert(expected == "1230")
         }
@@ -28,6 +28,7 @@ object SubSystemTests extends TestSuite {
               .state
               .render(GameTime.zero)
               .gameLayer
+              .nodes
               .head
               .asInstanceOf[Text]
               .text
@@ -42,6 +43,7 @@ object SubSystemTests extends TestSuite {
               .state
               .render(GameTime.zero)
               .gameLayer
+              .nodes
               .head
               .asInstanceOf[Text]
               .text

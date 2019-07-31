@@ -28,6 +28,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val rotationInstanceArray: WebGLBuffer         = gl2.createBuffer()
   private val hFlipInstanceArray: WebGLBuffer            = gl2.createBuffer()
   private val vFlipInstanceArray: WebGLBuffer            = gl2.createBuffer()
+  private val alphaInstanceArray: WebGLBuffer            = gl2.createBuffer()
 
   def setupInstanceArray(buffer: WebGLBuffer, location: Int, size: Int): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -45,6 +46,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val rotationData: scalajs.js.Array[Double]         = scalajs.js.Array[Double](1d * maxBatchSize)
   private val hFlipData: scalajs.js.Array[Double]            = scalajs.js.Array[Double](1d * maxBatchSize)
   private val vFlipData: scalajs.js.Array[Double]            = scalajs.js.Array[Double](1d * maxBatchSize)
+  private val alphaData: scalajs.js.Array[Double]            = scalajs.js.Array[Double](1d * maxBatchSize)
 
   @inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Double]) = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -59,7 +61,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     tintData((i * 4) + 0) = d.tintR
     tintData((i * 4) + 1) = d.tintG
     tintData((i * 4) + 2) = d.tintB
-    tintData((i * 4) + 3) = d.alpha
+    tintData((i * 4) + 3) = d.tintA
     frameTranslationData((i * 2) + 0) = d.frameX
     frameTranslationData((i * 2) + 1) = d.frameY
     frameScaleData((i * 2) + 0) = d.frameScaleX
@@ -67,6 +69,8 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     rotationData(i) = d.rotation
     hFlipData(i) = d.flipHorizontal
     vFlipData(i) = d.flipVertical
+    alphaData(i) = d.alpha
+
   }
 
   private def overwriteFromDisplayBatchClone(refWidth: Double, refHeight: Double, cloneData: DisplayCloneBatchData, i: Int): Unit = {
@@ -115,6 +119,8 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     setupInstanceArray(hFlipInstanceArray, 8, 1)
     // float a_flipv
     setupInstanceArray(vFlipInstanceArray, 9, 1)
+    // float a_alpha
+    setupInstanceArray(alphaInstanceArray, 10, 1)
     //
 
     val sorted: ListBuffer[DisplayEntity] =
@@ -130,6 +136,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
         bindData(rotationInstanceArray, rotationData)
         bindData(hFlipInstanceArray, hFlipData)
         bindData(vFlipInstanceArray, vFlipData)
+        bindData(alphaInstanceArray, alphaData)
 
         gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
         metrics.record(layer.metricDraw)

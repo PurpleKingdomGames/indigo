@@ -51,7 +51,7 @@ object Score {
 
     val tintSF: SignalFunction[Double, Tint] =
       SignalFunction { multiplier =>
-        Tint(1 * multiplier, 0, 0)
+        Tint(1, 0, 0, multiplier)
       }
 
     val newPosition: AutomatonSeedValues => Signal[Point] =

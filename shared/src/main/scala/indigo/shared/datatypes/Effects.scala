@@ -46,23 +46,26 @@ object Flip {
     new Flip(horizontal, vertical)
 }
 
-final class Tint(val r: Double, val g: Double, val b: Double) {
+final class Tint(val r: Double, val g: Double, val b: Double, val a: Double) {
   def +(other: Tint): Tint =
     Tint.combine(this, other)
 
   def withRed(newRed: Double): Tint =
-    Tint(newRed, g, b)
+    Tint(newRed, g, b, a)
 
-  def withGree(newGreen: Double): Tint =
-    Tint(r, newGreen, b)
+  def withGreen(newGreen: Double): Tint =
+    Tint(r, newGreen, b, a)
 
   def withBlue(newBlue: Double): Tint =
-    Tint(r, g, newBlue)
+    Tint(r, g, newBlue, a)
+
+  def withAmount(amount: Double): Tint =
+    Tint(r, g, b, amount)
 }
 object Tint {
 
-  def apply(r: Double, g: Double, b: Double): Tint =
-    new Tint(r, g, b)
+  def apply(red: Double, green: Double, blue: Double, amount: Double): Tint =
+    new Tint(red, green, blue, amount)
 
   implicit val show: AsString[Tint] = {
     val ev = implicitly[AsString[Double]]
@@ -80,10 +83,17 @@ object Tint {
     }
   }
 
-  val None: Tint = Tint(1, 1, 1)
-  val Red: Tint = Tint(1, 0, 0)
-  val Green: Tint = Tint(0, 1, 0)
-  val Blue: Tint = Tint(0, 0, 1)
+  val None: Tint    = Tint(1, 1, 1, 1)
+  val Zero: Tint    = Tint(1, 1, 1, 0)
+
+  val Red: Tint     = Tint(1, 0, 0, 1)
+  val Green: Tint   = Tint(0, 1, 0, 1)
+  val Blue: Tint    = Tint(0, 0, 1, 1)
+  val Yellow: Tint  = Tint(1, 1, 0, 1)
+  val Magenta: Tint = Tint(1, 0, 1, 1)
+  val Cyan: Tint    = Tint(0, 1, 1, 1)
+  val White: Tint   = Tint(1, 1, 1, 1)
+  val Black: Tint   = Tint(0, 0, 0, 1)
 
   def combine(a: Tint, b: Tint): Tint =
     (a, b) match {
@@ -92,7 +102,7 @@ object Tint {
       case (x, Tint.None) =>
         x
       case (x, y) =>
-        Tint(x.r + y.r, x.g + y.g, x.b + y.b)
+        Tint(x.r + y.r, x.g + y.g, x.b + y.b, x.a + y.a)
     }
 
 }

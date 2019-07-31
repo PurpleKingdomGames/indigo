@@ -253,7 +253,10 @@ final class Graphic(
     Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects.withTint(tint), eventHandler)
 
   def withTint(red: Double, green: Double, blue: Double): Graphic =
-    Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects.withTint(Tint(red, green, blue)), eventHandler)
+    Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects.withTint(Tint(red, green, blue, 1)), eventHandler)
+
+  def withTint(red: Double, green: Double, blue: Double, amount: Double): Graphic =
+    Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects.withTint(Tint(red, green, blue, amount)), eventHandler)
 
   def flipHorizontal(hValue: Boolean): Graphic =
     Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects.withFlip(Flip(hValue, effects.flip.vertical)), eventHandler)
@@ -386,7 +389,10 @@ final class Sprite(
     Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects.withTint(tint), eventHandler)
 
   def withTint(red: Double, green: Double, blue: Double): Sprite =
-    withTint(Tint(red, green, blue))
+    withTint(Tint(red, green, blue, 1))
+
+  def withTint(red: Double, green: Double, blue: Double, amount: Double): Sprite =
+    withTint(Tint(red, green, blue, amount))
 
   def flipHorizontal(h: Boolean): Sprite =
     Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects.withFlip(Flip(horizontal = h, vertical = effects.flip.vertical)), eventHandler)
@@ -532,7 +538,10 @@ final class Text(
     Text(text, alignment, position, depth, rotation, scale, fontKey, effects.withTint(tint), eventHandler)
 
   def withTint(red: Double, green: Double, blue: Double): Text =
-    Text(text, alignment, position, depth, rotation, scale, fontKey, effects.withTint(Tint(red, green, blue)), eventHandler)
+    Text(text, alignment, position, depth, rotation, scale, fontKey, effects.withTint(Tint(red, green, blue, 1)), eventHandler)
+
+  def withTint(red: Double, green: Double, blue: Double, amount: Double): Text =
+    Text(text, alignment, position, depth, rotation, scale, fontKey, effects.withTint(Tint(red, green, blue, amount)), eventHandler)
 
   def flipHorizontal(h: Boolean): Text =
     Text(text, alignment, position, depth, rotation, scale, fontKey, effects.withFlip(Flip(horizontal = h, vertical = effects.flip.vertical)), eventHandler)

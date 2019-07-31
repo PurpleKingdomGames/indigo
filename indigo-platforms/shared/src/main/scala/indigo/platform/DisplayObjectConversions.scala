@@ -187,6 +187,7 @@ object DisplayObjectConversions {
       tintR = leaf.effects.tint.r,
       tintG = leaf.effects.tint.g,
       tintB = leaf.effects.tint.b,
+      tintA = leaf.effects.tint.a,
       flipHorizontal = leaf.effects.flip.horizontal,
       flipVertical = leaf.effects.flip.vertical,
       frame = QuickCache(s"${leaf.crop.hash}_${leaf.imageAssetRef}") {
@@ -214,6 +215,7 @@ object DisplayObjectConversions {
       tintR = leaf.effects.tint.r,
       tintG = leaf.effects.tint.g,
       tintB = leaf.effects.tint.b,
+      tintA = leaf.effects.tint.a,
       flipHorizontal = leaf.effects.flip.horizontal,
       flipVertical = leaf.effects.flip.vertical,
       frame = QuickCache(anim.frameHash) {
@@ -252,6 +254,7 @@ object DisplayObjectConversions {
                     tintR = leaf.effects.tint.r,
                     tintG = leaf.effects.tint.g,
                     tintB = leaf.effects.tint.b,
+                    tintA = leaf.effects.tint.a,
                     flipHorizontal = leaf.effects.flip.horizontal,
                     flipVertical = leaf.effects.flip.vertical,
                     frame = QuickCache(fontChar.bounds.hash + "_" + fontInfo.fontSpriteSheet.imageAssetRef) {

@@ -145,7 +145,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     RendererFunctions.setNormalBlend(gl)
     layerRenderer.drawLayer(
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.gameLayer, gameTime, assetMapping, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, metrics),
       gameFrameBuffer,
       config.clearColor,
       standardShaderProgram,
@@ -158,7 +158,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     RendererFunctions.setLightingBlend(gl)
     layerRenderer.drawLayer(
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.lightingLayer, gameTime, assetMapping, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping, metrics),
       lightingFrameBuffer,
       AmbientLight.toClearColor(scene.ambientLight),
       lightingShaderProgram,
@@ -171,7 +171,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     RendererFunctions.setNormalBlend(gl)
     layerRenderer.drawLayer(
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.uiLayer, gameTime, assetMapping, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping, metrics),
       uiFrameBuffer,
       ClearColor.Black.forceTransparent,
       standardShaderProgram,
@@ -189,6 +189,15 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       cNc.width,
       cNc.height,
       config.clearColor,
+      scene.gameLayer.colorOverlay,
+      scene.lightingLayer.colorOverlay,
+      scene.uiLayer.colorOverlay,
+      scene.gameLayer.tint,
+      scene.lightingLayer.tint,
+      scene.uiLayer.tint,
+      scene.gameLayer.saturation,
+      scene.lightingLayer.saturation,
+      scene.uiLayer.saturation,
       metrics
     )
     metrics.record(RenderToWindowEndMetric)

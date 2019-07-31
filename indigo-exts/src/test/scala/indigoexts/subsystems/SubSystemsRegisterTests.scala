@@ -47,6 +47,7 @@ object SubSystemsRegisterTests extends TestSuite {
               .state
               .render(GameTime.zero)
               .gameLayer
+              .nodes
               .map(_.asInstanceOf[Text].text)
 
           assert(rendered.contains("20"))
