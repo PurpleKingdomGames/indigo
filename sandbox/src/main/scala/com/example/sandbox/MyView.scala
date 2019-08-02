@@ -19,10 +19,10 @@ object MyView {
       .addUiLayerNodes(uiLayer(frameInputEvents))
       .withAmbientLight(Tint.White.withAmount(0.25))
       .addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
-      .withSaturationLevel(0.5)
-      .withTint(Tint.Cyan.withAmount(0.25))
-      .withUiColorOverlay(Tint.Black.withAmount(0.5))
-      .withGameColorOverlay(Tint.Red.withAmount(0.5))
+      // .withSaturationLevel(0.5)
+      // .withTint(Tint.Cyan.withAmount(0.25))
+      // .withUiColorOverlay(Tint.Black.withAmount(0.5))
+      // .withGameColorOverlay(Tint.Red.withAmount(0.5))
   }
 
   def gameLayer(currentState: MyGameModel): List[SceneGraphNode] =

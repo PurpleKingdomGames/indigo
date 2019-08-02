@@ -32,7 +32,9 @@ final class DisplayObject(
     val frameX: Double,
     val frameY: Double,
     val frameScaleX: Double,
-    val frameScaleY: Double
+    val frameScaleY: Double,
+    val refX: Double,
+    val refY: Double
 ) extends DisplayEntity
 object DisplayObject {
 
@@ -53,7 +55,9 @@ object DisplayObject {
       tintA: Double,
       flipHorizontal: Boolean,
       flipVertical: Boolean,
-      frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
+      frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets,
+      refX: Int,
+      refY: Int
   ): DisplayObject =
     new DisplayObject(
       x.toDouble,
@@ -75,6 +79,8 @@ object DisplayObject {
       frame.translate.x,
       frame.translate.y,
       frame.scale.x,
-      frame.scale.y
+      frame.scale.y,
+      refX.toDouble,
+      refY.toDouble
     )
 }

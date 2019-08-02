@@ -197,7 +197,9 @@ object DisplayObjectConversions {
           framePosition = Vector2(leaf.crop.position.x.toDouble, leaf.crop.position.y.toDouble),
           textureOffset = lookupTextureOffset(assetMapping, leaf.imageAssetRef)
         )
-      }
+      },
+      refX = leaf.ref.x,
+      refY = leaf.ref.y
     )
 
   def spriteToDisplayObject(leaf: Sprite, assetMapping: AssetMapping, anim: Animation): DisplayObject =
@@ -225,7 +227,9 @@ object DisplayObjectConversions {
           framePosition = Vector2(anim.currentFrame.bounds.position.x.toDouble, anim.currentFrame.bounds.position.y.toDouble),
           textureOffset = lookupTextureOffset(assetMapping, anim.imageAssetRef.ref)
         )
-      }
+      },
+      refX = leaf.ref.x,
+      refY = leaf.ref.y
     )
 
   def textLineToDisplayObjects(leaf: Text, assetMapping: AssetMapping): (TextLine, Int, Int) => List[DisplayObject] =
@@ -264,7 +268,9 @@ object DisplayObjectConversions {
                         framePosition = Vector2(fontChar.bounds.x.toDouble, fontChar.bounds.y.toDouble),
                         textureOffset = lookupTextureOffset(assetMapping, fontInfo.fontSpriteSheet.imageAssetRef)
                       )
-                    }
+                    },
+                    refX = leaf.ref.x,
+                    refY = leaf.ref.y
                   )
                 }
             }

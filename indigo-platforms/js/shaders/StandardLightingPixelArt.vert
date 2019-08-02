@@ -11,6 +11,8 @@ layout (location = 7) in float a_rotation;
 layout (location = 8) in float a_fliph;
 layout (location = 9) in float a_flipv;
 layout (location = 10) in float a_alpha;
+layout (location = 11) in vec2 a_ref;
+layout (location = 12) in vec2 a_size;
 
 uniform mat4 u_projection;
 
@@ -49,9 +51,14 @@ vec2 scaleTextCoords(){
 
 void main(void) {
 
-  vec2 moveToTopLeft = a_scale / 2.0;
+  vec2 moveToReferencePoint = -(a_ref / a_size) + 0.5;
 
-  mat4 transform = translate2d(moveToTopLeft + a_translation) * rotate2d(a_rotation) * scale2d(a_scale) * scale2d(vec2(a_fliph, a_flipv));
+  mat4 transform = 
+    translate2d(a_translation) * 
+    rotate2d(a_rotation) * 
+    scale2d(a_size * a_scale) * 
+    translate2d(moveToReferencePoint) * 
+    scale2d(vec2(a_fliph, a_flipv));
 
   gl_Position = u_projection * transform * a_vertices;
 

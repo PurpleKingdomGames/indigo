@@ -177,6 +177,7 @@ object CloneBatch {
 
 sealed trait Renderable extends SceneGraphNodePrimitive {
   def effects: Effects
+  def ref: Point
 
   def withAlpha(a: Double): Renderable
   def withTint(tint: Tint): Renderable
@@ -214,8 +215,8 @@ final class Graphic(
 ) extends Renderable
     with Cloneable {
 
-  lazy val x: Int = bounds.position.x - ref.x
-  lazy val y: Int = bounds.position.y - ref.y
+  lazy val x: Int = bounds.position.x
+  lazy val y: Int = bounds.position.y
 
   def moveTo(pt: Point): Graphic =
     Graphic(bounds.moveTo(pt), depth, rotation, scale, imageAssetRef, ref, crop, effects, eventHandler)
@@ -347,8 +348,8 @@ final class Sprite(
 ) extends Renderable
     with Cloneable {
 
-  lazy val x: Int = bounds.position.x - ref.x
-  lazy val y: Int = bounds.position.y - ref.y
+  lazy val x: Int = bounds.position.x
+  lazy val y: Int = bounds.position.y
 
   def withDepth(newDepth: Depth): Sprite =
     Sprite(bindingKey, bounds, newDepth, rotation, scale, animationsKey, ref, effects, eventHandler)
@@ -478,6 +479,8 @@ final class Text(
     val effects: Effects,
     val eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
 ) extends Renderable {
+
+  val ref: Point = Point.zero
 
   lazy val x: Int = bounds.position.x
   lazy val y: Int = bounds.position.y

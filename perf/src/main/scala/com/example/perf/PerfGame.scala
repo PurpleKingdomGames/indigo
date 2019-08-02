@@ -26,8 +26,8 @@ object PerfGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
       magnification = magnificationLevel,
       advanced = AdvancedGameConfig(
         antiAliasing = false,
-        batchSize = 256,
-        recordMetrics = true,
+        batchSize = 512,
+        recordMetrics = false,
         logMetricsReportIntervalMs = 5000,
         disableSkipModelUpdates = true,
         disableSkipViewUpdates = true

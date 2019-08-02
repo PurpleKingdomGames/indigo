@@ -29,6 +29,8 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val hFlipInstanceArray: WebGLBuffer            = gl2.createBuffer()
   private val vFlipInstanceArray: WebGLBuffer            = gl2.createBuffer()
   private val alphaInstanceArray: WebGLBuffer            = gl2.createBuffer()
+  private val refInstanceArray: WebGLBuffer              = gl2.createBuffer()
+  private val sizeInstanceArray: WebGLBuffer              = gl2.createBuffer()
 
   def setupInstanceArray(buffer: WebGLBuffer, location: Int, size: Int): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -47,6 +49,8 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val hFlipData: scalajs.js.Array[Double]            = scalajs.js.Array[Double](1d * maxBatchSize)
   private val vFlipData: scalajs.js.Array[Double]            = scalajs.js.Array[Double](1d * maxBatchSize)
   private val alphaData: scalajs.js.Array[Double]            = scalajs.js.Array[Double](1d * maxBatchSize)
+  private val refData: scalajs.js.Array[Double]              = scalajs.js.Array[Double](2d * maxBatchSize)
+  private val sizeData: scalajs.js.Array[Double]              = scalajs.js.Array[Double](2d * maxBatchSize)
 
   @inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Double]) = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -56,8 +60,8 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private def updateData(d: DisplayObject, i: Int): Unit = {
     translationData((i * 2) + 0) = d.x
     translationData((i * 2) + 1) = d.y
-    scaleData((i * 2) + 0) = d.width * d.scaleX
-    scaleData((i * 2) + 1) = d.height * d.scaleY
+    scaleData((i * 2) + 0) = d.scaleX
+    scaleData((i * 2) + 1) = d.scaleY
     tintData((i * 4) + 0) = d.tintR
     tintData((i * 4) + 1) = d.tintG
     tintData((i * 4) + 2) = d.tintB
@@ -70,14 +74,17 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     hFlipData(i) = d.flipHorizontal
     vFlipData(i) = d.flipVertical
     alphaData(i) = d.alpha
-
+    refData((i * 2) + 0) = d.refX
+    refData((i * 2) + 1) = d.refY
+    sizeData((i * 2) + 0) = d.width
+    sizeData((i * 2) + 1) = d.height
   }
 
-  private def overwriteFromDisplayBatchClone(refWidth: Double, refHeight: Double, cloneData: DisplayCloneBatchData, i: Int): Unit = {
+  private def overwriteFromDisplayBatchClone(cloneData: DisplayCloneBatchData, i: Int): Unit = {
     translationData((i * 2) + 0) = cloneData.x
     translationData((i * 2) + 1) = cloneData.y
-    scaleData((i * 2) + 0) = refWidth * cloneData.scaleX
-    scaleData((i * 2) + 1) = refHeight * cloneData.scaleY
+    scaleData((i * 2) + 0) = cloneData.scaleX
+    scaleData((i * 2) + 1) = cloneData.scaleY
     rotationData(i) = cloneData.rotation
   }
 
@@ -121,6 +128,10 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     setupInstanceArray(vFlipInstanceArray, 9, 1)
     // float a_alpha
     setupInstanceArray(alphaInstanceArray, 10, 1)
+    // float a_ref
+    setupInstanceArray(refInstanceArray, 11, 2)
+    // float a_size
+    setupInstanceArray(sizeInstanceArray, 12, 2)
     //
 
     val sorted: ListBuffer[DisplayEntity] =
@@ -137,6 +148,8 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
         bindData(hFlipInstanceArray, hFlipData)
         bindData(vFlipInstanceArray, vFlipData)
         bindData(alphaInstanceArray, alphaData)
+        bindData(refInstanceArray, refData)
+        bindData(sizeInstanceArray, sizeData)
 
         gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
         metrics.record(layer.metricDraw)
@@ -172,7 +185,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
             case Some(refDisplayObject) =>
               updateData(refDisplayObject, batchCount)
-              overwriteFromDisplayBatchClone(refDisplayObject.width, refDisplayObject.height, c.asBatchData, batchCount)
+              overwriteFromDisplayBatchClone(c.asBatchData, batchCount)
               rec(ds, batchCount + 1, textureName)
           }
 
@@ -204,7 +217,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
     while (i < count) {
       updateData(refDisplayObject, batchCount + i)
-      overwriteFromDisplayBatchClone(refDisplayObject.width, refDisplayObject.height, c.clones(i), batchCount + i)
+      overwriteFromDisplayBatchClone(c.clones(i), batchCount + i)
       i += 1
     }
 

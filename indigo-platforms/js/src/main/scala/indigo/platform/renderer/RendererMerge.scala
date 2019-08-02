@@ -35,7 +35,9 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
       tintA = 1,
       flipHorizontal = false,
       flipVertical = false,
-      frame = SpriteSheetFrame.defaultOffset
+      frame = SpriteSheetFrame.defaultOffset,
+      refX = 0,
+      refY = 0
     )
 
   private val mergeShaderProgram: WebGLProgram =

@@ -33,9 +33,23 @@ object GraphicExample extends IndigoGameBasic[Unit, Unit, Unit] {
     Graphic(0, 0, 256, 256, 1, "graphics")
       .withRef(48, 48)
 
+  val basic =
+    graphic
+      .withCrop(128, 0, 96, 96)
+      .moveTo(200, 200)
+      .scaleBy(1.5, 1.5)
+      .withRef(96, 96)
+
   def present(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
+        basic.withAlpha(0.5),
+        basic
+          .rotate(Radians(Math.PI / 8))
+          .withAlpha(0.75),
+        basic
+          .rotate(Radians(Math.PI / 4))
+          .withAlpha(0.75),
         graphic
           .withCrop(128, 0, 96, 96)
           .moveTo(137 * 1, 100),

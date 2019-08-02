@@ -31,7 +31,9 @@ object RendererMergeTests extends TestSuite {
             5,     // tint amount
             false, // flip h
             true,  // flip v
-            SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets(Vector2(0.5, 0.5), Vector2(0.1, 0.1))
+            SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets(Vector2(0.5, 0.5), Vector2(0.1, 0.1)),
+            40, // refX
+            30  // refY
           )
 
         /*
