@@ -3,11 +3,11 @@ package com.example.sandbox
 import indigo._
 import indigo.AsString._
 
-object MyView {
+object SandboxView {
 
   val dudeCloneId: CloneId = CloneId("Dude")
 
-  def updateView(model: MyGameModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
+  def updateView(model: SandboxGameModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
     frameInputEvents.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + position.show)
       case None           => ()
@@ -19,13 +19,13 @@ object MyView {
       .addUiLayerNodes(uiLayer(frameInputEvents))
       .withAmbientLight(Tint.White.withAmount(0.25))
       .addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
-      // .withSaturationLevel(0.5)
-      // .withTint(Tint.Cyan.withAmount(0.25))
-      // .withUiColorOverlay(Tint.Black.withAmount(0.5))
-      // .withGameColorOverlay(Tint.Red.withAmount(0.5))
+    // .withSaturationLevel(0.5)
+    // .withTint(Tint.Cyan.withAmount(0.25))
+    // .withUiColorOverlay(Tint.Black.withAmount(0.5))
+    // .withGameColorOverlay(Tint.Red.withAmount(0.5))
   }
 
-  def gameLayer(currentState: MyGameModel): List[SceneGraphNode] =
+  def gameLayer(currentState: SandboxGameModel): List[SceneGraphNode] =
     List(
       currentState.dude.walkDirection match {
         case d @ DudeLeft =>
@@ -60,20 +60,20 @@ object MyView {
 
   def lightingLayer(signals: Signals): List[SceneGraphNode] =
     List(
-      Graphic(114, 64 - 20, 320, 240, 1, MyAssets.light).withRef(Point(160, 120)).withTint(Tint.Red),
-      Graphic(114 - 20, 64 + 20, 320, 240, 1, MyAssets.light).withRef(Point(160, 120)).withTint(Tint.Green),
-      Graphic(114 + 20, 64 + 20, 320, 240, 1, MyAssets.light).withRef(Point(160, 120)).withTint(Tint.Blue),
-      Graphic(0, 0, 320, 240, 1, MyAssets.light)
+      Graphic(114, 64 - 20, 320, 240, 1, SandboxAssets.light).withRef(Point(160, 120)).withTint(Tint.Red),
+      Graphic(114 - 20, 64 + 20, 320, 240, 1, SandboxAssets.light).withRef(Point(160, 120)).withTint(Tint.Green),
+      Graphic(114 + 20, 64 + 20, 320, 240, 1, SandboxAssets.light).withRef(Point(160, 120)).withTint(Tint.Blue),
+      Graphic(0, 0, 320, 240, 1, SandboxAssets.light)
         .withTint(1, 1, 0.0, 1)
         .withAlpha(1)
         .withRef(Point(160, 120))
         .moveTo(signals.mousePosition.x, signals.mousePosition.y)
     )
 
-  val fontKey: FontKey = FontKey("My font")
+  val fontKey: FontKey = FontKey("Sandbox font")
 
   val fontInfo: FontInfo =
-    FontInfo(fontKey, MyAssets.smallFontName, 320, 230, FontChar("a", 3, 78, 23, 23)).isCaseInSensitive
+    FontInfo(fontKey, SandboxAssets.smallFontName, 320, 230, FontChar("a", 3, 78, 23, 23)).isCaseInSensitive
       .addChar(FontChar("A", 3, 78, 23, 23))
       .addChar(FontChar("B", 26, 78, 23, 23))
       .addChar(FontChar("C", 50, 78, 23, 23))

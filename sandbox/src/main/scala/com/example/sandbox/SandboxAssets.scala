@@ -2,7 +2,7 @@ package com.example.sandbox
 
 import indigo._
 
-object MyAssets {
+object SandboxAssets {
 
   val smallFontName: String = "smallFontName"
   val dudeName: String      = "base_charactor"

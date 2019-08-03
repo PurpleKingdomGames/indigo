@@ -6,7 +6,7 @@ import indigoexts.entrypoint._
 import indigoexts.formats._
 import indigoexts.subsystems.fpscounter.FPSCounter
 
-object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
+object SandboxGame extends IndigoGameBasic[SandboxStartupData, SandboxGameModel, Unit] {
 
   private val viewportWidth: Int      = 456
   private val viewportHeight: Int     = 256
@@ -21,22 +21,22 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
     )
 
   val assets: Set[AssetType] =
-    MyAssets.assets
+    SandboxAssets.assets
 
   val fonts: Set[FontInfo] =
-    Set(MyView.fontInfo)
+    Set(SandboxView.fontInfo)
 
   val animations: Set[Animation] =
     Set()
 
   val subSystems: Set[SubSystem] =
-    Set(FPSCounter.subSystem(MyView.fontKey, Point(3, 100)))
+    Set(FPSCounter.subSystem(SandboxView.fontKey, Point(3, 100)))
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, MyStartupData] = {
-    def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[MyStartupData] =
+  def setup(assetCollection: AssetCollection): Startup[StartupErrors, SandboxStartupData] = {
+    def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[SandboxStartupData] =
       Startup
         .Success(
-          MyStartupData(
+          SandboxStartupData(
             Dude(
               aseprite,
               spriteAndAnimations.sprite
@@ -47,29 +47,29 @@ object MyGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
         )
         .addAnimations(spriteAndAnimations.animations)
 
-    val res: Option[Startup.Success[MyStartupData]] = for {
-      json                <- assetCollection.findTextDataByName(AssetName(MyAssets.dudeName + "-json"))
+    val res: Option[Startup.Success[SandboxStartupData]] = for {
+      json                <- assetCollection.findTextDataByName(AssetName(SandboxAssets.dudeName + "-json"))
       aseprite            <- Circe9.asepriteFromJson(json)
-      spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, Depth(3), MyAssets.dudeName)
+      spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, Depth(3), SandboxAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)
 
     res.getOrElse(Startup.Failure(StartupErrors("Failed to load the dude")))
   }
 
-  def initialModel(startupData: MyStartupData): MyGameModel =
-    MyModel.initialModel(startupData)
+  def initialModel(startupData: SandboxStartupData): SandboxGameModel =
+    SandboxModel.initialModel(startupData)
 
-  def update(gameTime: GameTime, model: MyGameModel, dice: Dice): GlobalEvent => Outcome[MyGameModel] =
-    MyModel.updateModel(model)
+  def update(gameTime: GameTime, model: SandboxGameModel, dice: Dice): GlobalEvent => Outcome[SandboxGameModel] =
+    SandboxModel.updateModel(model)
 
-  def initialViewModel(startupData: MyStartupData): MyGameModel => Unit = _ => ()
+  def initialViewModel(startupData: SandboxStartupData): SandboxGameModel => Unit = _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[Unit] =
+  def updateViewModel(gameTime: GameTime, model: SandboxGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[Unit] =
     Outcome(viewModel)
 
-  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
-    MyView.updateView(model, frameInputEvents)
+  def present(gameTime: GameTime, model: SandboxGameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
+    SandboxView.updateView(model, frameInputEvents)
 }
 
 final case class Dude(aseprite: Aseprite, sprite: Sprite)
-final case class MyStartupData(dude: Dude)
+final case class SandboxStartupData(dude: Dude)

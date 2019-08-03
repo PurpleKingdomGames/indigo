@@ -2,14 +2,14 @@ package com.example.sandbox
 
 import indigo._
 
-object MyModel {
+object SandboxModel {
 
-  def initialModel(startupData: MyStartupData): MyGameModel =
-    MyGameModel(
+  def initialModel(startupData: SandboxStartupData): SandboxGameModel =
+    SandboxGameModel(
       DudeModel(startupData.dude, DudeIdle)
     )
 
-  def updateModel(state: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
+  def updateModel(state: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] = {
     case FrameTick =>
       Outcome(state)
 
@@ -34,7 +34,7 @@ object MyModel {
 
 }
 
-final case class MyGameModel(dude: DudeModel)
+final case class SandboxGameModel(dude: DudeModel)
 
 final case class DudeModel(dude: Dude, walkDirection: DudeDirection) {
   def idle: DudeModel      = this.copy(walkDirection = DudeIdle)
