@@ -59,7 +59,7 @@
       console.log(foo.age);
     }
 
-    var smaller = { width: 550, height: 400 };
+    var smaller = { width: 456, height: 256 };
     var bigger = { width: 640, height: 480 };
 
     var isNormalSize = true;
@@ -77,10 +77,33 @@
         indigo.height = smaller.height;
       }
     }
+
+    document.onfullscreenchange = function (event) {
+      if (document.fullscreenElement) {
+        indigo.width = innerWidth;
+        indigo.height = innerHeight;
+      } else {
+        if (isNormalSize) {
+          indigo.width = smaller.width;
+          indigo.height = smaller.height;
+        } else {
+          indigo.width = bigger.width;
+          indigo.height = bigger.height;
+        }
+      }
+    };
+
+    function fullscreenIndigo() {
+      var indigo = document.getElementById("indigo");
+
+      // indigo.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT); //Chrome
+      indigo.mozRequestFullScreen(); //Firefox
+    }
   </script>
   <div>
     <input type="submit" onclick="pokeIndigo()" value="poke"></input>
     <input type="submit" onclick="resizeTheGame()" value="change size"></input>
+    <input type="submit" onclick="fullscreenIndigo()" value="fullscreen"></input>
   </div>
 </body>
 
