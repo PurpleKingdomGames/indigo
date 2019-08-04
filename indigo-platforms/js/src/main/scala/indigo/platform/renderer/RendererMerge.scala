@@ -48,6 +48,7 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   def drawLayer(
+      projection: scalajs.js.Array[Double],
       gameFrameBuffer: FrameBufferComponents,
       lightingFrameBuffer: FrameBufferComponents,
       uiFrameBuffer: FrameBufferComponents,
@@ -94,7 +95,7 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
     )
     gl2.bufferData(
       ARRAY_BUFFER,
-      new Float32Array(RendererFunctions.orthographicProjectionMatrixNoMag ++ RendererMerge.uboData),
+      new Float32Array(projection ++ RendererMerge.uboData),
       STATIC_DRAW
     )
 

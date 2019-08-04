@@ -13,7 +13,7 @@ object FrameBufferFunctions {
 
     val texture = RendererFunctions.createAndBindTexture(gl)
 
-    gl.texImage2D(TEXTURE_2D, 0, RGBA, cNc.width, cNc.height, 0, RGBA, UNSIGNED_BYTE, null)
+    gl.texImage2D(TEXTURE_2D, 0, RGBA, cNc.canvas.width, cNc.canvas.height, 0, RGBA, UNSIGNED_BYTE, null)
 
     texture
   }

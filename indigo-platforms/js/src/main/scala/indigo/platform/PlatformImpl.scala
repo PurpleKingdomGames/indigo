@@ -10,7 +10,6 @@ import indigo.shared.datatypes.Vector2
 import indigo.platform.renderer.RendererInit
 import indigo.platform.renderer.LoadedTextureAsset
 import indigo.shared.platform.RendererConfig
-import indigo.shared.platform.Viewport
 import indigo.shared.platform.AssetMapping
 import indigo.shared.platform.TextureRefAndOffset
 import indigo.platform.events.WorldEvents
@@ -96,7 +95,6 @@ object PlatformImpl {
       IndigoLogger.info("Starting renderer")
       RendererInit(
         new RendererConfig(
-          viewport = new Viewport(gameConfig.viewport.width, gameConfig.viewport.height),
           clearColor = gameConfig.clearColor,
           magnification = gameConfig.magnification,
           maxBatchSize = gameConfig.advanced.batchSize,

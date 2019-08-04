@@ -89,6 +89,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   }
 
   def drawLayer(
+      projection: scalajs.js.Array[Double],
       cloneBlankDisplayObjects: Map[String, DisplayObject],
       displayEntities: ListBuffer[DisplayEntity],
       frameBufferComponents: FrameBufferComponents,
@@ -107,7 +108,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
     // Projection
     val projectionLocation = gl2.getUniformLocation(shaderProgram, "u_projection")
-    gl2.uniformMatrix4fv(projectionLocation, false, RendererFunctions.orthographicProjectionMatrix)
+    gl2.uniformMatrix4fv(projectionLocation, false, projection)
 
     // Instance attributes
     // vec2 a_translation

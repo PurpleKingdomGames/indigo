@@ -30,6 +30,7 @@ object RendererInit {
   def createCanvas(width: Int, height: Int, parent: Element): html.Canvas = {
     val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
     parent.appendChild(canvas)
+    canvas.id = "indigo"
     canvas.width = width
     canvas.height = height
 
@@ -48,9 +49,6 @@ object RendererInit {
     new ContextAndCanvas(
       context = getContext(canvas, antiAliasing),
       canvas = canvas,
-      width = canvas.clientWidth,
-      height = canvas.clientHeight,
-      aspect = canvas.clientWidth.toFloat / canvas.clientHeight.toFloat,
       magnification = magnification
     )
 

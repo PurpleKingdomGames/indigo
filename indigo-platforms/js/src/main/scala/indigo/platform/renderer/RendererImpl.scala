@@ -18,6 +18,9 @@ import indigo.shared.AnimationsRegister
 import indigo.shared.display.DisplayObject
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Sprite
+import indigo.shared.datatypes.Matrix4
+import org.scalajs.dom.html
+import indigo.shared.EqualTo._
 
 @SuppressWarnings(Array("org.wartremover.warts.Null"))
 final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends Renderer {
@@ -49,12 +52,26 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
   private val lightingShaderProgram =
     RendererFunctions.shaderProgramSetup(gl, "Lighting", StandardLightingPixelArtVert.shader, StandardLightingPixelArtFrag.shader)
 
-  private val gameFrameBuffer: FrameBufferComponents =
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  private var gameFrameBuffer: FrameBufferComponents =
     FrameBufferFunctions.createFrameBuffer(gl, FrameBufferFunctions.createAndSetupTexture(cNc))
-  private val lightingFrameBuffer: FrameBufferComponents =
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  private var lightingFrameBuffer: FrameBufferComponents =
     FrameBufferFunctions.createFrameBuffer(gl, FrameBufferFunctions.createAndSetupTexture(cNc))
-  private val uiFrameBuffer: FrameBufferComponents =
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  private var uiFrameBuffer: FrameBufferComponents =
     FrameBufferFunctions.createFrameBuffer(gl, FrameBufferFunctions.createAndSetupTexture(cNc))
+
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  private var resizeRun: Boolean = false
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  private var lastWidth: Int = 0
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  private var lastHeight: Int = 0
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  var orthographicProjectionMatrix: scalajs.js.Array[Double] = RendererFunctions.mat4ToJsArray(Matrix4.identity)
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  var orthographicProjectionMatrixNoMag: scalajs.js.Array[Double] = RendererFunctions.mat4ToJsArray(Matrix4.identity)
 
   def init(): Unit = {
 
@@ -138,11 +155,12 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
         }
       }
 
-    RendererFunctions.resize(cNc.canvas, cNc.canvas.clientWidth, cNc.canvas.clientHeight, cNc.magnification)
+    resize(cNc.canvas, cNc.magnification)
 
     metrics.record(DrawGameLayerStartMetric)
     RendererFunctions.setNormalBlend(gl)
     layerRenderer.drawLayer(
+      orthographicProjectionMatrix,
       cloneBlankDisplayObjects,
       DisplayObjectConversions.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, metrics),
       gameFrameBuffer,
@@ -156,6 +174,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(DrawLightingLayerStartMetric)
     RendererFunctions.setLightingBlend(gl)
     layerRenderer.drawLayer(
+      orthographicProjectionMatrix,
       cloneBlankDisplayObjects,
       DisplayObjectConversions.sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping, metrics),
       lightingFrameBuffer,
@@ -169,6 +188,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(DrawUiLayerStartMetric)
     RendererFunctions.setNormalBlend(gl)
     layerRenderer.drawLayer(
+      orthographicProjectionMatrix,
       cloneBlankDisplayObjects,
       DisplayObjectConversions.sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping, metrics),
       uiFrameBuffer,
@@ -182,11 +202,12 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(RenderToWindowStartMetric)
     RendererFunctions.setNormalBlend(gl2)
     mergeRenderer.drawLayer(
+      orthographicProjectionMatrixNoMag,
       gameFrameBuffer,
       lightingFrameBuffer,
       uiFrameBuffer,
-      cNc.width,
-      cNc.height,
+      cNc.canvas.width,
+      cNc.canvas.height,
       config.clearColor,
       scene.screenEffects.gameColorOverlay,
       scene.screenEffects.uiColorOverlay,
@@ -204,6 +225,28 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(PersistAnimationStatesStartMetric)
     AnimationsRegister.persistAnimationStates()
     metrics.record(PersistAnimationStatesEndMetric)
+  }
+
+  def resize(canvas: html.Canvas, magnification: Int): Unit = {
+    val actualWidth  = canvas.width
+    val actualHeight = canvas.height
+
+    if (!resizeRun || (lastWidth !== actualWidth) || (lastHeight !== actualHeight)) {
+      resizeRun = true
+      lastWidth = actualWidth
+      lastHeight = actualHeight
+
+      orthographicProjectionMatrix = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification))
+      orthographicProjectionMatrixNoMag = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble))
+
+      gameFrameBuffer = FrameBufferFunctions.createFrameBuffer(gl, FrameBufferFunctions.createAndSetupTexture(cNc))
+      lightingFrameBuffer = FrameBufferFunctions.createFrameBuffer(gl, FrameBufferFunctions.createAndSetupTexture(cNc))
+      uiFrameBuffer = FrameBufferFunctions.createFrameBuffer(gl, FrameBufferFunctions.createAndSetupTexture(cNc))
+
+      gl.viewport(0, 0, actualWidth.toDouble, actualHeight.toDouble)
+
+      ()
+    }
   }
 
 }

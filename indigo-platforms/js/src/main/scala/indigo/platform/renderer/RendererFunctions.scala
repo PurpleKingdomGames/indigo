@@ -1,15 +1,14 @@
 package indigo.platform.renderer
 
 import indigo.shared.IndigoLogger
-import org.scalajs.dom.{html, raw}
+import org.scalajs.dom.raw
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.{WebGLProgram, WebGLTexture}
 import indigo.shared.datatypes.Matrix4
 
-import indigo.shared.EqualTo._
-
 import scala.collection.mutable.ListBuffer
 import indigo.shared.display.DisplayEntity
+import scalajs.js.JSConverters._
 
 object RendererFunctions {
 
@@ -88,29 +87,7 @@ object RendererFunctions {
   val sortByDepth: ListBuffer[DisplayEntity] => ListBuffer[DisplayEntity] =
     _.sortWith((d1, d2) => d1.z > d2.z)
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var resizeRun: Boolean = false
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  var orthographicProjectionMatrix: scalajs.js.Array[Double] = mat4ToJsArray(Matrix4.identity)
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  var orthographicProjectionMatrixNoMag: scalajs.js.Array[Double] = mat4ToJsArray(Matrix4.identity)
-
-  def resize(canvas: html.Canvas, actualWidth: Int, actualHeight: Int, magnification: Int): Unit =
-    if (!resizeRun || (canvas.width !== actualWidth) || (canvas.height !== actualHeight)) {
-      resizeRun = true
-      canvas.width = actualWidth
-      canvas.height = actualHeight
-
-      orthographicProjectionMatrix = mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification))
-      orthographicProjectionMatrixNoMag = mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble))
-
-      ()
-    }
-
-  def mat4ToJsArray(mat4d: Matrix4): scalajs.js.Array[Double] = {
-    val a = new scalajs.js.Array[Double]()
-    mat4d.mat.foreach(d => a.push(d))
-    a
-  }
+  def mat4ToJsArray(mat4d: Matrix4): scalajs.js.Array[Double] =
+    mat4d.mat.toJSArray
 
 }
