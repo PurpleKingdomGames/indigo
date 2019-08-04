@@ -52,9 +52,35 @@
     function pokeBack() {
       console.log("(JS) Indigo poked me back!");
     }
+
+    function pokeBackWithFeeling(foo) {
+      console.log("(JS) Indigo poked me back with: " + foo);
+      console.log(foo.name);
+      console.log(foo.age);
+    }
+
+    var smaller = { width: 550, height: 400 };
+    var bigger = { width: 640, height: 480 };
+
+    var isNormalSize = true;
+
+    function resizeTheGame() {
+      var indigo = document.getElementById("indigo");
+
+      if (isNormalSize) {
+        isNormalSize = false;
+        indigo.width = bigger.width;
+        indigo.height = bigger.height;
+      } else {
+        isNormalSize = true;
+        indigo.width = smaller.width;
+        indigo.height = smaller.height;
+      }
+    }
   </script>
   <div>
     <input type="submit" onclick="pokeIndigo()" value="poke"></input>
+    <input type="submit" onclick="resizeTheGame()" value="change size"></input>
   </div>
 </body>
 
