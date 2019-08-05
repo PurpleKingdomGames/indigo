@@ -30,7 +30,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val vFlipInstanceArray: WebGLBuffer            = gl2.createBuffer()
   private val alphaInstanceArray: WebGLBuffer            = gl2.createBuffer()
   private val refInstanceArray: WebGLBuffer              = gl2.createBuffer()
-  private val sizeInstanceArray: WebGLBuffer              = gl2.createBuffer()
+  private val sizeInstanceArray: WebGLBuffer             = gl2.createBuffer()
 
   def setupInstanceArray(buffer: WebGLBuffer, location: Int, size: Int): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -50,7 +50,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val vFlipData: scalajs.js.Array[Double]            = scalajs.js.Array[Double](1d * maxBatchSize)
   private val alphaData: scalajs.js.Array[Double]            = scalajs.js.Array[Double](1d * maxBatchSize)
   private val refData: scalajs.js.Array[Double]              = scalajs.js.Array[Double](2d * maxBatchSize)
-  private val sizeData: scalajs.js.Array[Double]              = scalajs.js.Array[Double](2d * maxBatchSize)
+  private val sizeData: scalajs.js.Array[Double]             = scalajs.js.Array[Double](2d * maxBatchSize)
 
   @inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Double]) = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
