@@ -8,7 +8,8 @@ in vec2 v_texcoord;
 in vec4 v_tint;
 in float v_alpha;
 
-out vec4 fragColor;
+layout(location = 0) out vec4 fragColor0;
+layout(location = 1) out vec4 fragColor1;
 
 void main(void) {
   vec4 textureColor = texture(u_texture, v_texcoord);
@@ -17,5 +18,6 @@ void main(void) {
 
   vec4 tintedVersion = vec4(withAlpha.rgb * v_tint.rgb, withAlpha.a);
 
-  fragColor = mix(withAlpha, tintedVersion, max(0.0, v_tint.a));
+  fragColor0 = mix(withAlpha, tintedVersion, max(0.0, v_tint.a));
+  fragColor1 = vec4(0.0, 1.0, 0.0, withAlpha.a);
 }
