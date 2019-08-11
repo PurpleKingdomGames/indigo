@@ -21,9 +21,14 @@ main =
 
 
 type alias Model =
-    { srcWidth : Int
-    , srcHeight : Int
+    { size : ImageSize
     , runningTime : Float
+    }
+
+
+type alias ImageSize =
+    { width : Int
+    , height : Int
     }
 
 
@@ -33,8 +38,7 @@ type Msg
 
 initialModel : Model
 initialModel =
-    { srcWidth = 359
-    , srcHeight = 356
+    { size = { width = 359, height = 356 }
     , runningTime = 0
     }
 
@@ -62,7 +66,7 @@ view : Model -> Html.Html Msg
 view model =
     div [ style "display" "block" ]
         [ modeSelectView
-        , bumpSource model
+        , bumpSource model.size
         , outputCanvas model
         ]
 
@@ -80,10 +84,10 @@ modeSelectView =
         ]
 
 
-bumpSource : Model -> Html.Html Msg
-bumpSource model =
+bumpSource : ImageSize -> Html.Html Msg
+bumpSource size =
     div [ style "display" "block" ]
-        [ img [ src "assets/bump-example.jpg", width model.srcWidth, height model.srcHeight ] []
+        [ img [ src "assets/bump-example.jpg", width size.width, height size.height ] []
         ]
 
 
@@ -96,8 +100,8 @@ outputCanvas model =
             [ clearColor 0 1 0 1
             , alpha False
             ]
-            [ width model.srcWidth
-            , height model.srcHeight
+            [ width model.size.width
+            , height model.size.height
             , style "display" "block"
             ]
             [ WebGL.entity vertexShader fragmentShader mesh { perspective = perspective (model.runningTime / 1000) }
