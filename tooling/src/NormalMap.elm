@@ -102,18 +102,21 @@ outputCanvas model =
             , height model.size.height
             , style "display" "block"
             ]
-            [ WebGL.entity vertexShader fragmentShader mesh { projection = projection, transform = Mat4.identity }
+            [ WebGL.entity vertexShader fragmentShader mesh { projection = projection model.size, transform = transform model.size }
             ]
         ]
 
 
-projection : Mat4
-projection =
-    Mat4.makeOrtho -0.5 0.5 0.5 -0.5 -10000 10000
+projection : ImageSize -> Mat4
+projection size =
+    Mat4.makeOrtho 0 (toFloat size.width) (toFloat size.height) 0 -10000 10000
 
 
-
--- Mesh
+transform : ImageSize -> Mat4
+transform size =
+    Mat4.identity
+        |> Mat4.scale (vec3 (toFloat size.width) (toFloat size.height) 1)
+        |> Mat4.translate (vec3 0.5 0.5 1)
 
 
 type alias Vertex =
