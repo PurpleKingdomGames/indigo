@@ -102,13 +102,13 @@ outputCanvas model =
             , height model.size.height
             , style "display" "block"
             ]
-            [ WebGL.entity vertexShader fragmentShader mesh { perspective = perspective }
+            [ WebGL.entity vertexShader fragmentShader mesh { projection = projection }
             ]
         ]
 
 
-perspective : Mat4
-perspective =
+projection : Mat4
+projection =
     Mat4.makeOrtho -0.5 0.5 0.5 -0.5 -10000 10000
 
 
@@ -137,7 +137,7 @@ mesh =
 
 
 type alias Uniforms =
-    { perspective : Mat4 }
+    { projection : Mat4 }
 
 
 vertexShader : Shader Vertex Uniforms { vcolor : Vec3 }
@@ -145,10 +145,13 @@ vertexShader =
     [glsl|
         attribute vec3 position;
         attribute vec3 color;
-        uniform mat4 perspective;
+        
+        uniform mat4 projection;
+
         varying vec3 vcolor;
+        
         void main () {
-            gl_Position = perspective * vec4(position, 1.0);
+            gl_Position = projection * vec4(position, 1.0);
             vcolor = color;
         }
     |]
@@ -158,7 +161,9 @@ fragmentShader : Shader {} Uniforms { vcolor : Vec3 }
 fragmentShader =
     [glsl|
         precision mediump float;
+        
         varying vec3 vcolor;
+
         void main () {
             gl_FragColor = vec4(vcolor, 1.0);
         }
