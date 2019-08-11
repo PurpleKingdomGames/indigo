@@ -7,7 +7,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Math.Matrix4 as Mat4 exposing (Mat4)
 import Math.Vector3 as Vec3 exposing (Vec3, vec3)
-import WebGL exposing (Mesh, Shader)
+import WebGL exposing (..)
 
 
 main : Program () Model Msg
@@ -92,7 +92,10 @@ outputCanvas model =
     div
         [ style "display" "block"
         ]
-        [ WebGL.toHtml
+        [ WebGL.toHtmlWith
+            [ clearColor 0 1 0 1
+            , alpha False
+            ]
             [ width model.srcWidth
             , height model.srcHeight
             , style "display" "block"
@@ -104,9 +107,7 @@ outputCanvas model =
 
 perspective : Float -> Mat4
 perspective t =
-    Mat4.mul
-        (Mat4.makePerspective 45 1 0.01 100)
-        (Mat4.makeLookAt (vec3 (4 * cos t) 0 (4 * sin t)) (vec3 0 0 0) (vec3 0 1 0))
+    Mat4.makeOrtho -0.5 0.5 0.5 -0.5 -10000 10000
 
 
 
@@ -121,11 +122,11 @@ type alias Vertex =
 
 mesh : Mesh Vertex
 mesh =
-    WebGL.triangles
-        [ ( Vertex (vec3 0 0 0) (vec3 1 0 0)
-          , Vertex (vec3 1 1 0) (vec3 0 1 0)
-          , Vertex (vec3 1 -1 0) (vec3 0 0 1)
-          )
+    WebGL.triangleStrip
+        [ Vertex (vec3 -0.5 -0.5 1) (vec3 1 0 0)
+        , Vertex (vec3 -0.5 0.5 1) (vec3 0 1 0)
+        , Vertex (vec3 0.5 -0.5 1) (vec3 0 0 1)
+        , Vertex (vec3 0.5 0.5 1) (vec3 1 0 1)
         ]
 
 
