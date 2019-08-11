@@ -22,7 +22,6 @@ main =
 
 type alias Model =
     { size : ImageSize
-    , runningTime : Float
     }
 
 
@@ -39,7 +38,6 @@ type Msg
 initialModel : Model
 initialModel =
     { size = { width = 359, height = 356 }
-    , runningTime = 0
     }
 
 
@@ -50,14 +48,14 @@ init =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.map (\t -> TimeDelta t) (onAnimationFrameDelta Basics.identity)
+    Sub.none
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        TimeDelta t ->
-            ( { model | runningTime = model.runningTime + t }
+        TimeDelta _ ->
+            ( model
             , Cmd.none
             )
 
@@ -104,13 +102,13 @@ outputCanvas model =
             , height model.size.height
             , style "display" "block"
             ]
-            [ WebGL.entity vertexShader fragmentShader mesh { perspective = perspective (model.runningTime / 1000) }
+            [ WebGL.entity vertexShader fragmentShader mesh { perspective = perspective }
             ]
         ]
 
 
-perspective : Float -> Mat4
-perspective t =
+perspective : Mat4
+perspective =
     Mat4.makeOrtho -0.5 0.5 0.5 -0.5 -10000 10000
 
 
