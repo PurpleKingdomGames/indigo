@@ -27,6 +27,7 @@ main =
 type alias Model =
     { size : ImageSize
     , texture : Maybe Texture
+    , imagePath : String
     }
 
 
@@ -40,17 +41,46 @@ type Msg
     = TextureLoaded (Result Error Texture)
 
 
-initialModel : Model
-initialModel =
-    { size = { width = 359, height = 356 }
+initialModel : ImageDetails -> Model
+initialModel details =
+    { size = { width = details.width, height = details.height }
+    , imagePath = details.path
     , texture = Nothing
     }
+
+
+type alias ImageDetails =
+    { width : Int
+    , height : Int
+    , path : String
+    }
+
+
+file1 : ImageDetails
+file1 =
+    { width = 359
+    , height = 356
+    , path = "assets/bump-example.jpg"
+    }
+
+
+file2 : ImageDetails
+file2 =
+    { width = 300
+    , height = 300
+    , path = "assets/untitled.png"
+    }
+
+
+currentFile : ImageDetails
+currentFile =
+    file2
 
 
 init : () -> ( Model, Cmd Msg )
 init =
     \() ->
-        ( initialModel
+        ( initialModel currentFile
         , Task.attempt TextureLoaded
             (Texture.loadWith
                 { magnify = linear
@@ -59,7 +89,7 @@ init =
                 , verticalWrap = clampToEdge
                 , flipY = True
                 }
-                "assets/bump-example.jpg"
+                currentFile.path
             )
         )
 
@@ -92,7 +122,7 @@ update msg model =
 view : Model -> Html.Html Msg
 view model =
     div [ style "display" "block" ]
-        [ bumpSource model.size
+        [ bumpSource model
         , outputCanvas model
         ]
 
@@ -110,10 +140,10 @@ modeSelectView =
         ]
 
 
-bumpSource : ImageSize -> Html.Html Msg
-bumpSource size =
+bumpSource : Model -> Html.Html Msg
+bumpSource model =
     div [ style "display" "block" ]
-        [ img [ src "assets/bump-example.jpg", width size.width, height size.height ] []
+        [ img [ src model.imagePath, width model.size.width, height model.size.height ] []
         ]
 
 
