@@ -133,11 +133,16 @@ outputCanvas model =
                         , height model.size.height
                         , style "display" "block"
                         ]
-                        [ WebGL.entity vertexShader fragmentShader mesh { projection = projection model.size, transform = transform model.size, texture = tx }
+                        [ WebGL.entity vertexShader fragmentShader mesh { projection = projection model.size, transform = transform model.size, texture = tx, size = imageSizeToVec2 model.size }
                         ]
                     ]
             )
         |> Maybe.withDefault (div [] [ text "Texture not loaded" ])
+
+
+imageSizeToVec2 : ImageSize -> Vec2
+imageSizeToVec2 size =
+    vec2 (toFloat size.width) (toFloat size.height)
 
 
 projection : ImageSize -> Mat4
@@ -176,10 +181,11 @@ type alias Uniforms =
     { projection : Mat4
     , transform : Mat4
     , texture : Texture
+    , size : Vec2
     }
 
 
-vertexShader : Shader Vertex Uniforms { vcoord : Vec2 }
+vertexShader : Shader Vertex Uniforms { vcoord : Vec2, vsize : Vec2 }
 vertexShader =
     [glsl|
         attribute vec3 position;
@@ -187,17 +193,20 @@ vertexShader =
         
         uniform mat4 projection;
         uniform mat4 transform;
+        uniform vec2 size;
 
         varying vec2 vcoord;
+        varying vec2 vsize;
         
         void main () {
             gl_Position = projection * transform * vec4(position, 1.0);
             vcoord = coord;
+            vsize = size;
         }
     |]
 
 
-fragmentShader : Shader {} Uniforms { vcoord : Vec2 }
+fragmentShader : Shader {} Uniforms { vcoord : Vec2, vsize : Vec2 }
 fragmentShader =
     [glsl|
         precision mediump float;
@@ -205,8 +214,29 @@ fragmentShader =
         uniform sampler2D texture;
         
         varying vec2 vcoord;
+        varying vec2 vsize;
+
+        float grayscale(vec4 colour) {
+          return (colour.r + colour.g + colour.b) / 3.0;
+        }
+
+        float makeSample(vec2 at) {
+          return grayscale(texture2D(texture, at));
+        }
+
+        float rateOfChange(float sample1, float sample2, float sample3) {
+          return (((sample2 - sample1) + (sample3 - sample2)) / 2.0) + 0.5;
+        }
 
         void main () {
-            gl_FragColor = texture2D(texture, vcoord);
+
+          float oneWidth = 1.0 / vsize.x;
+          float oneHeight = 1.0 / vsize.y;
+
+          float r = rateOfChange(makeSample(vec2(vcoord.x + oneWidth, vcoord.y)), makeSample(vcoord), makeSample(vec2(vcoord.x - oneWidth, vcoord.y)));
+          float g = rateOfChange(makeSample(vec2(vcoord.x, vcoord.y - oneHeight)), makeSample(vcoord), makeSample(vec2(vcoord.x, vcoord.y + oneHeight)));
+          float b = 1.0;
+
+          gl_FragColor = vec4(r, g, b, 1.0);
         }
     |]
