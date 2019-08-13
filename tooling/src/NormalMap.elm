@@ -247,6 +247,11 @@ fragmentShader =
         varying vec2 vcoord;
         varying vec2 vsize;
 
+        float strength = 0.5;
+        float minLevel = 0.0;
+        float maxLevel = 255.0;
+        float gamma = 1.5;
+
         float grayscale(vec4 colour) {
           return (colour.r + colour.g + colour.b) / 3.0;
         }
@@ -256,7 +261,19 @@ fragmentShader =
         }
 
         float rateOfChange(float sample1, float sample2, float sample3) {
-          return ((sample1 - sample2) + (sample2 - sample3)) / 2.0;
+          return ((sample1 - sample2) + (sample2 - sample3)) / strength;
+        }
+
+        float levelRange(float color, float minInput, float maxInput){
+            return min(max(color - minInput, 0.0) / (maxInput - minInput), 1.0);
+        }
+
+        float gammaCorrect(float value, float gamma){
+          return pow(value, 1.0 / gamma);
+        }
+
+        float finalLevels(float color, float minInput, float gamma, float maxInput){
+            return gammaCorrect(levelRange(color, minInput, maxInput), gamma);
         }
 
         void main () {
@@ -278,6 +295,9 @@ fragmentShader =
 
           float b = 1.0 - ((r + g) / 2.0);
 
-          gl_FragColor = vec4(r + 0.5, g + 0.5, b, 1.0);
+          float rGamma = finalLevels(r + 0.5, minLevel/255.0, gamma, maxLevel/255.0);
+          float gGamma = finalLevels(g + 0.5, minLevel/255.0, gamma, maxLevel/255.0);
+
+          gl_FragColor = vec4(rGamma, gGamma, b, 1.0);
         }
     |]
