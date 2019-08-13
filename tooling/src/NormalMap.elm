@@ -74,7 +74,7 @@ file2 =
 
 currentFile : ImageDetails
 currentFile =
-    file2
+    file1
 
 
 init : () -> ( Model, Cmd Msg )
@@ -185,6 +185,7 @@ transform size =
     Mat4.identity
         |> Mat4.scale (vec3 (toFloat size.width) (toFloat size.height) 1)
         |> Mat4.translate (vec3 0.5 0.5 1)
+        |> Mat4.scale (vec3 1 -1 1)
 
 
 type alias Vertex =
@@ -255,7 +256,7 @@ fragmentShader =
         }
 
         float rateOfChange(float sample1, float sample2, float sample3) {
-          return (((sample2 - sample1) + (sample3 - sample2)) / 2.0) + 0.5;
+          return ((sample1 - sample2) + (sample2 - sample3)) / 2.0;
         }
 
         void main () {
@@ -263,10 +264,20 @@ fragmentShader =
           float oneWidth = 1.0 / vsize.x;
           float oneHeight = 1.0 / vsize.y;
 
-          float r = rateOfChange(makeSample(vec2(vcoord.x + oneWidth, vcoord.y)), makeSample(vcoord), makeSample(vec2(vcoord.x - oneWidth, vcoord.y)));
-          float g = rateOfChange(makeSample(vec2(vcoord.x, vcoord.y - oneHeight)), makeSample(vcoord), makeSample(vec2(vcoord.x, vcoord.y + oneHeight)));
-          float b = 1.0;
+          float r = rateOfChange(
+            makeSample(vec2(vcoord.x - oneWidth, vcoord.y)),
+            makeSample(vcoord),
+            makeSample(vec2(vcoord.x + oneWidth, vcoord.y))
+          );
 
-          gl_FragColor = vec4(r, g, b, 1.0);
+          float g = rateOfChange(
+            makeSample(vec2(vcoord.x, vcoord.y - oneHeight)),
+            makeSample(vcoord),
+            makeSample(vec2(vcoord.x, vcoord.y + oneHeight))
+          );
+
+          float b = 1.0 - ((r + g) / 2.0);
+
+          gl_FragColor = vec4(r + 0.5, g + 0.5, b, 1.0);
         }
     |]
