@@ -12,6 +12,7 @@ import Math.Vector3 as Vec3 exposing (Vec3, vec3)
 import Task
 import WebGL exposing (..)
 import WebGL.Texture as Texture exposing (..)
+import Canvas
 
 
 main : Program () Model Msg
@@ -39,6 +40,7 @@ type alias ImageSize =
 
 type Msg
     = TextureLoaded (Result Error Texture)
+    | Download
 
 
 initialModel : ImageDetails -> Model
@@ -118,6 +120,9 @@ update msg model =
                 )
                 ( model, Cmd.none )
 
+        Download ->
+            ( model, Cmd.none )
+
 
 view : Model -> Html.Html Msg
 view model =
@@ -162,9 +167,11 @@ outputCanvas model =
                         [ width model.size.width
                         , height model.size.height
                         , style "display" "block"
+                        , id "image-output"
                         ]
                         [ WebGL.entity vertexShader fragmentShader mesh { projection = projection model.size, transform = transform model.size, texture = tx, size = imageSizeToVec2 model.size }
                         ]
+                    , input [ type_ "submit", value "Download", onClick Download ] []
                     ]
             )
         |> Maybe.withDefault (div [] [ text "Texture not loaded" ])
