@@ -27,7 +27,7 @@ type alias Model =
 
 
 type alias Flags =
-    ()
+    {}
 
 
 type alias MenuItem =
@@ -65,8 +65,7 @@ urlUpdate url model =
 
 decode : Url -> Maybe Page
 decode url =
-    { url | path = Maybe.withDefault "" url.fragment, fragment = Nothing }
-        |> UrlParser.parse routeParser
+    UrlParser.parse routeParser url
 
 
 routeParser : Parser (Page -> a) a
