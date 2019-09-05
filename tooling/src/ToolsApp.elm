@@ -1,13 +1,14 @@
 module Main exposing (..)
 
+import App.Model exposing (..)
+import App.Msg exposing (..)
+import App.PageRouting exposing (pageContent, urlUpdate)
+import App.SubMenu exposing (subMenu)
 import Browser exposing (..)
 import Browser.Navigation as Nav
 import Html exposing (..)
 import Html.Attributes exposing (href)
-import Model exposing (..)
-import Msg exposing (..)
-import PageRouting exposing (pageContent, urlUpdate)
-import SubMenu exposing (subMenu)
+import Modules.BumpToNormal as BumpToNormal
 import Url exposing (Url)
 
 
@@ -29,19 +30,7 @@ main =
 
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ _ navKey =
-    ( Model Home navKey, Cmd.none )
-
-
-view : Model -> Document Msg
-view model =
-    { title = "Indigo Tools"
-    , body =
-        [ div []
-            [ subMenu
-            , pageContent model.page
-            ]
-        ]
-    }
+    ( Model Home navKey BumpToNormal.initialModel, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -55,6 +44,21 @@ update msg model =
 
         ClickedLink (Browser.External href) ->
             ( model, Nav.load href )
+
+        BumpToNormalMsgWrapper b2nMsg ->
+            ( { model | bumpToNormal = BumpToNormal.update b2nMsg model.bumpToNormal }, Cmd.none )
+
+
+view : Model -> Document Msg
+view model =
+    { title = "Indigo Tools"
+    , body =
+        [ div []
+            [ subMenu
+            , pageContent model
+            ]
+        ]
+    }
 
 
 subscriptions : Model -> Sub Msg

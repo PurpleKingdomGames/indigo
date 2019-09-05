@@ -1,8 +1,9 @@
-module SubMenu exposing (subMenu)
+module App.SubMenu exposing (subMenu)
 
+import App.Msg exposing (Msg)
+import App.PageRouting exposing (bumpToNormalSlug)
 import Html exposing (..)
 import Html.Attributes exposing (href)
-import Msg exposing (Msg)
 
 
 type alias MenuItem =
@@ -14,9 +15,8 @@ type alias MenuItem =
 subMenu : Html Msg
 subMenu =
     navMenu
-        [ MenuItem "a" "/"
-        , MenuItem "b" "/page-1"
-        , MenuItem "c" "/page-2"
+        [ MenuItem "Home" "/"
+        , MenuItem "Bump To Normal" ("/" ++ bumpToNormalSlug)
         ]
 
 

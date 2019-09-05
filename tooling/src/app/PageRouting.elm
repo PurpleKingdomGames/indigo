@@ -1,23 +1,26 @@
-module PageRouting exposing (pageContent, urlUpdate)
+module App.PageRouting exposing (bumpToNormalSlug, pageContent, urlUpdate)
 
+import App.Model exposing (..)
+import App.Msg exposing (..)
 import Html exposing (Html, text)
-import Model exposing (..)
-import Msg exposing (Msg)
+import Modules.BumpToNormal as BumpToNormal
 import Url exposing (Url)
 import Url.Parser as UrlParser exposing ((</>), Parser, s, top)
 
 
-pageContent : Page -> Html Msg
-pageContent page =
-    case page of
+bumpToNormalSlug : String
+bumpToNormalSlug =
+    "bump-2-normal"
+
+
+pageContent : Model -> Html Msg
+pageContent model =
+    case model.page of
         Home ->
             text "Home"
 
-        Page1 ->
-            text "Page 1"
-
-        Page2 ->
-            text "Page 2"
+        Bump2Normal ->
+            Html.map (\m -> BumpToNormalMsgWrapper m) (BumpToNormal.view model.bumpToNormal)
 
         NotFound ->
             text "Not Found"
@@ -42,6 +45,5 @@ routeParser : Parser (Page -> a) a
 routeParser =
     UrlParser.oneOf
         [ UrlParser.map Home top
-        , UrlParser.map Page1 (s "page-1")
-        , UrlParser.map Page2 (s "page-2")
+        , UrlParser.map Bump2Normal (s bumpToNormalSlug)
         ]
