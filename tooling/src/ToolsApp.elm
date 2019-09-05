@@ -2,8 +2,8 @@ module Main exposing (..)
 
 import App.Model exposing (..)
 import App.Msg exposing (..)
-import App.PageRouting exposing (pageContent, urlUpdate)
-import App.SubMenu exposing (subMenu)
+import App.PageRouting as PageRouting
+import App.SubMenu as SubMenu
 import Browser exposing (..)
 import Browser.Navigation as Nav
 import Html exposing (..)
@@ -37,7 +37,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         UrlChange url ->
-            urlUpdate url model
+            PageRouting.urlUpdate url model
 
         ClickedLink (Browser.Internal url) ->
             ( model, Nav.pushUrl model.navKey <| Url.toString url )
@@ -54,8 +54,8 @@ view model =
     { title = "Indigo Tools"
     , body =
         [ div []
-            [ subMenu
-            , pageContent model
+            [ SubMenu.view
+            , PageRouting.pageContent model
             ]
         ]
     }

@@ -87,19 +87,6 @@ loadImage =
             currentFile.path
         )
 
-
-
--- init : () -> ( BumpToNormal, Cmd BumpToNormalMsg )
--- init =
---     \() ->
---         ( initialModel
---         , initCommand
---         )
--- subscriptions : BumpToNormal -> Sub BumpToNormalMsg
--- subscriptions model =
---     Sub.none
-
-
 update : BumpToNormalMsg -> BumpToNormal -> BumpToNormal
 update msg model =
     case msg of

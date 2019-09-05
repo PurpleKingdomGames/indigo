@@ -1,7 +1,7 @@
-module App.SubMenu exposing (subMenu)
+module App.SubMenu exposing (view)
 
 import App.Msg exposing (Msg)
-import App.PageRouting exposing (bumpToNormalSlug)
+import App.PageRouting as PageRouting
 import Html exposing (..)
 import Html.Attributes exposing (href)
 
@@ -12,11 +12,11 @@ type alias MenuItem =
     }
 
 
-subMenu : Html Msg
-subMenu =
+view : Html Msg
+view =
     navMenu
         [ MenuItem "Home" "/"
-        , MenuItem "Bump To Normal" ("/" ++ bumpToNormalSlug)
+        , MenuItem "Bump To Normal" ("/" ++ PageRouting.bumpToNormalSlug)
         ]
 
 

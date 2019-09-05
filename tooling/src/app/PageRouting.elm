@@ -1,4 +1,4 @@
-module App.PageRouting exposing (bumpToNormalSlug, pageContent, urlUpdate)
+module App.PageRouting exposing (pageContent, urlUpdate, bumpToNormalSlug)
 
 import App.Model exposing (..)
 import App.Msg exposing (..)
