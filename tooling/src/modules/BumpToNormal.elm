@@ -1,4 +1,4 @@
-module Modules.BumpToNormal exposing (BumpToNormal, BumpToNormalMsg, initialModel, update, view)
+module Modules.BumpToNormal exposing (BumpToNormal, BumpToNormalMsg, initialModel, loadImage, update, view)
 
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta)
@@ -44,7 +44,7 @@ file1 : ImageDetails
 file1 =
     { width = 359
     , height = 356
-    , path = "assets/bump-example.jpg"
+    , path = "/src/assets/bump-example.jpg"
     }
 
 
@@ -52,7 +52,7 @@ file2 : ImageDetails
 file2 =
     { width = 300
     , height = 300
-    , path = "assets/untitled.png"
+    , path = "/src/assets/untitled.png"
     }
 
 
@@ -74,8 +74,8 @@ initialiseModelWithFile details =
     }
 
 
-initCommand : Cmd BumpToNormalMsg
-initCommand =
+loadImage : Cmd BumpToNormalMsg
+loadImage =
     Task.attempt TextureLoaded
         (Texture.loadWith
             { magnify = linear
@@ -88,15 +88,13 @@ initCommand =
         )
 
 
+
 -- init : () -> ( BumpToNormal, Cmd BumpToNormalMsg )
 -- init =
 --     \() ->
 --         ( initialModel
 --         , initCommand
 --         )
-
-
-
 -- subscriptions : BumpToNormal -> Sub BumpToNormalMsg
 -- subscriptions model =
 --     Sub.none

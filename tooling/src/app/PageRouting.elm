@@ -32,6 +32,9 @@ urlUpdate url model =
         Nothing ->
             ( { model | page = NotFound }, Cmd.none )
 
+        Just Bump2Normal ->
+            ( { model | page = Bump2Normal }, Cmd.map (\m -> BumpToNormalMsgWrapper m) BumpToNormal.loadImage )
+
         Just route ->
             ( { model | page = route }, Cmd.none )
 
