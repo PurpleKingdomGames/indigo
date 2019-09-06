@@ -10,11 +10,13 @@
             "elm/browser": "1.0.1",
             "elm/core": "1.0.2",
             "elm/html": "1.0.0",
+            "elm/svg": "1.0.1",
             "elm/url": "1.0.0",
             "elm-explorations/linear-algebra": "1.0.3",
             "elm-explorations/test": "1.2.2",
             "elm-explorations/webgl": "1.1.0",
             "joakin/elm-canvas": "4.0.1",
+            "proda-ai/elm-dropzone": "1.0.1",
             "rtfeldman/elm-css": "16.0.1"
         },
         "indirect": {
