@@ -1,4 +1,4 @@
-module App.PageRouting exposing (pageContent, urlUpdate, bumpToNormalSlug)
+module App.PageRouting exposing (bumpToNormalSlug, pageContent, urlUpdate)
 
 import App.Model exposing (..)
 import App.Msg exposing (..)
@@ -33,7 +33,7 @@ urlUpdate url model =
             ( { model | page = NotFound }, Cmd.none )
 
         Just Bump2Normal ->
-            ( { model | page = Bump2Normal }, Cmd.map (\m -> BumpToNormalMsgWrapper m) BumpToNormal.loadImage )
+            ( { model | page = Bump2Normal }, Cmd.none )
 
         Just route ->
             ( { model | page = route }, Cmd.none )

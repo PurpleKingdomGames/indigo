@@ -30,7 +30,7 @@ main =
 
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ _ navKey =
-    ( Model Home navKey BumpToNormal.initialModel, Cmd.none )
+    ( Model Bump2Normal navKey BumpToNormal.initialModel, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -46,7 +46,9 @@ update msg model =
             ( model, Nav.load href )
 
         BumpToNormalMsgWrapper b2nMsg ->
-            ( { model | bumpToNormal = BumpToNormal.update b2nMsg model.bumpToNormal }, Cmd.none )
+            case BumpToNormal.update b2nMsg model.bumpToNormal of
+                ( m, cmd ) ->
+                    ( { model | bumpToNormal = m }, Cmd.map (\e -> BumpToNormalMsgWrapper e) cmd )
 
 
 view : Model -> Document Msg

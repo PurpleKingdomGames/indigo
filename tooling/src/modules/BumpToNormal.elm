@@ -1,9 +1,8 @@
-module Modules.BumpToNormal exposing (BumpToNormal, BumpToNormalMsg, initialModel, loadImage, update, view)
+module Modules.BumpToNormal exposing (BumpToNormal, BumpToNormalMsg, initialModel, update, view)
 
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta)
 import Canvas
-import Debug exposing (log)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -18,7 +17,7 @@ import WebGL.Texture as Texture exposing (..)
 type alias BumpToNormal =
     { size : ImageSize
     , texture : Maybe Texture
-    , imagePath : String
+    , imagePath : Maybe String
     }
 
 
@@ -31,6 +30,7 @@ type alias ImageSize =
 type BumpToNormalMsg
     = TextureLoaded (Result Error Texture)
     | Download
+    | SwapToImage ImageDetails
 
 
 type alias ImageDetails =
@@ -56,26 +56,24 @@ file2 =
     }
 
 
-currentFile : ImageDetails
-currentFile =
-    file1
-
-
 initialModel : BumpToNormal
 initialModel =
-    initialiseModelWithFile currentFile
+    { size = { width = 100, height = 100 }
+    , texture = Nothing
+    , imagePath = Nothing
+    }
 
 
 initialiseModelWithFile : ImageDetails -> BumpToNormal
 initialiseModelWithFile details =
     { size = { width = details.width, height = details.height }
-    , imagePath = details.path
     , texture = Nothing
+    , imagePath = Just details.path
     }
 
 
-loadImage : Cmd BumpToNormalMsg
-loadImage =
+loadSpecificImage : ImageDetails -> Cmd BumpToNormalMsg
+loadSpecificImage details =
     Task.attempt TextureLoaded
         (Texture.loadWith
             { magnify = linear
@@ -84,36 +82,40 @@ loadImage =
             , verticalWrap = clampToEdge
             , flipY = True
             }
-            currentFile.path
+            details.path
         )
 
-update : BumpToNormalMsg -> BumpToNormal -> BumpToNormal
+
+update : BumpToNormalMsg -> BumpToNormal -> ( BumpToNormal, Cmd BumpToNormalMsg )
 update msg model =
     case msg of
         TextureLoaded (Ok textureResult) ->
-            { model | texture = Just textureResult }
+            ( { model | texture = Just textureResult }, Cmd.none )
 
         TextureLoaded (Err LoadError) ->
-            log "Couldn't load the texture"
-                model
+            ( model, Cmd.none )
 
         TextureLoaded (Err (SizeError w h)) ->
-            log
-                ("Couldn't load the texture, size error: "
-                    ++ String.fromInt w
-                    ++ " x "
-                    ++ String.fromInt h
-                )
-                model
+            ( model, Cmd.none )
 
         Download ->
-            model
+            ( model, Cmd.none )
+
+        SwapToImage details ->
+            ( { model
+                | size = { width = details.width, height = details.height }
+                , imagePath = Just details.path
+                , texture = Nothing
+              }
+            , loadSpecificImage details
+            )
 
 
 view : BumpToNormal -> Html.Html BumpToNormalMsg
 view model =
     div [ style "display" "block" ]
-        [ bumpSource model
+        [ chooseImage
+        , bumpSource model
         , outputCanvas model
         ]
 
@@ -131,11 +133,27 @@ modeSelectView =
         ]
 
 
+chooseImage : Html BumpToNormalMsg
+chooseImage =
+    div []
+        [ text "Which image would you like?"
+        , ul []
+            [ li [] [ input [ type_ "submit", value "Weave", onClick <| SwapToImage file1 ] [] ]
+            , li [] [ input [ type_ "submit", value "Shapes", onClick <| SwapToImage file2 ] [] ]
+            ]
+        ]
+
+
 bumpSource : BumpToNormal -> Html.Html BumpToNormalMsg
 bumpSource model =
-    div [ style "display" "block" ]
-        [ img [ src model.imagePath, width model.size.width, height model.size.height ] []
-        ]
+    case model.imagePath of
+        Just path ->
+            div [ style "display" "block" ]
+                [ img [ src path, width model.size.width, height model.size.height ] []
+                ]
+
+        Nothing ->
+            div [ style "display" "block" ] [ text "No image" ]
 
 
 outputCanvas : BumpToNormal -> Html.Html BumpToNormalMsg
