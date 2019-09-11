@@ -8,9 +8,9 @@ import indigoexts.subsystems.fpscounter.FPSCounter
 
 object SandboxGame extends IndigoGameBasic[SandboxStartupData, SandboxGameModel, Unit] {
 
-  private val viewportWidth: Int      = 456
-  private val viewportHeight: Int     = 256
   private val magnificationLevel: Int = 2
+  private val viewportWidth: Int      = 228 * magnificationLevel
+  private val viewportHeight: Int     = 128 * magnificationLevel
 
   val config: GameConfig =
     GameConfig(
