@@ -8,6 +8,8 @@ import WebGL.Texture as Texture exposing (..)
 type Page
     = Home
     | Bump2Normal
+    | Lighting2Normal
+    | FontSheet
     | NotFound
 
 

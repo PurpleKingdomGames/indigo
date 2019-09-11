@@ -17,6 +17,8 @@ view =
     navMenu
         [ MenuItem "Home" "/"
         , MenuItem "Bump To Normal" ("/" ++ PageRouting.bumpToNormalSlug)
+        , MenuItem "Lighting To Normal" ("/" ++ PageRouting.lightingToNormalSlug)
+        , MenuItem "Font Sheet" ("/" ++ PageRouting.fontSheetSlug)
         ]
 
 
