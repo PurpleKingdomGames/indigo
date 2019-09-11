@@ -1,4 +1,4 @@
-module Modules.BumpToNormal exposing (BumpToNormal, BumpToNormalMsg, initialModel, update, view)
+port module Modules.BumpToNormal exposing (BumpToNormal, BumpToNormalMsg, initialModel, update, view)
 
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta)
@@ -29,7 +29,7 @@ type alias ImageSize =
 
 type BumpToNormalMsg
     = TextureLoaded (Result Error Texture)
-    | Download
+    | Download String
     | SwapToImage ImageDetails
 
 
@@ -38,6 +38,9 @@ type alias ImageDetails =
     , height : Int
     , path : String
     }
+
+
+port onDownload : String -> Cmd msg
 
 
 file1 : ImageDetails
@@ -98,8 +101,8 @@ update msg model =
         TextureLoaded (Err (SizeError w h)) ->
             ( model, Cmd.none )
 
-        Download ->
-            ( model, Cmd.none )
+        Download canvasId ->
+            ( model, onDownload canvasId )
 
         SwapToImage details ->
             ( { model
@@ -167,6 +170,7 @@ outputCanvas model =
                     [ WebGL.toHtmlWith
                         [ clearColor 0 1 0 1
                         , alpha False
+                        , preserveDrawingBuffer
                         ]
                         [ width model.size.width
                         , height model.size.height
@@ -175,7 +179,7 @@ outputCanvas model =
                         ]
                         [ WebGL.entity vertexShader fragmentShader mesh { projection = projection model.size, transform = transform model.size, texture = tx, size = imageSizeToVec2 model.size }
                         ]
-                    , input [ type_ "submit", value "Download", onClick Download ] []
+                    , a [ id "downloadLink", href "", download "normal-map.png", target "_blank", onClick <| Download "image-output" ] [ text "download me" ]
                     ]
             )
         |> Maybe.withDefault (div [] [ text "Texture not loaded" ])
