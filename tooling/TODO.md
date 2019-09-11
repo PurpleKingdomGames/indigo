@@ -1,9 +1,18 @@
-# Tools for Indigo
+# TODOs
+
+- Features
+  - Dropzone for bump to normal
+- Elm Tooling
+  - Parcel.js for packaging?
+  - elm-live for running the debug version?
+- Prettiness?
+
+## Tools for Indigo
 
 1. Normal map generator
 2. Font sprite sheet generator
 
-## Normal Maps
+### Normal Maps
 
 Two modes:
 
