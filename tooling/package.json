@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "parcel index.html",
+    "start": "parcel index.html --no-cache --out-dir target --log-level 4",
     "build": "parcel build index.html",
     "clean": "rm -rf dist/*",
     "test": "elm-test"
