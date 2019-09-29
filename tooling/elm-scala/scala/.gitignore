@@ -1,0 +1,14 @@
+logs
+target
+/RUNNING_PID
+/.sbtserver
+/project/.sbtserver
+/.ensime
+/.ensime_cache
+/.idea
+/.idea_modules
+/.classpath
+/.project
+/.settings
+.metals/
+.bloop/

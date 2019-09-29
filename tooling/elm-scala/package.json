@@ -1,0 +1,27 @@
+{
+  "name": "indigo-tools",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel index.html --no-cache --out-dir target --log-level 4",
+    "build": "parcel build index.html",
+    "clean": "rm -rf target/*",
+    "test": "elm-test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "elm-hot": "^1.1.2",
+    "elm-test": "^0.19.0",
+    "node-elm-compiler": "^5.0.4",
+    "parcel-bundler": "^1.12.3"
+  },
+  "dependencies": {
+    "bootstrap": "^4.3.1",
+    "jquery": "^3.4.1",
+    "popper.js": "^1.15.0",
+    "src": "^1.1.2"
+  }
+}
