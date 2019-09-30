@@ -8,7 +8,7 @@ lazy val root = project
       List(
         organization := "com.example",
         version := "0.1-SNAPSHOT",
-        scalaVersion := "2.12.8"
+        scalaVersion := "2.12.10"
       )
     ),
     name := "scala-elm",
