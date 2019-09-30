@@ -5,8 +5,10 @@ var app = Elm.Main.init({
     flags: "Elm Scala"
   });
 
-app.ports.fromElm.subscribe(function(count) {
-    console.log("count: " + count);
-    console.log("doubled by scala: " + Mailbox.double(count));
-    app.ports.toElm.send(Mailbox.double(count));
+app.ports.toScala.subscribe(function(msg) {
+    var asString = JSON.stringify(msg);
+    console.log("msg: " + asString);
+    var got = Mailbox.post(asString);
+    console.log("got: " + got);
+    app.ports.fromScala.send(got);
 });
