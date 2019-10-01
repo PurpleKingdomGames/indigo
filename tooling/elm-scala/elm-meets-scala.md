@@ -132,6 +132,34 @@ Take a deep breath, repeat after me:
 
 Gah! :-)
 
-## Really real problems
+## A really real, actual problem
 
-### FFI
+Having got over the typeclass disappointment, lets look at an actual thing that definitely is a problem.
+
+Elm works in a browser and is compiled to JavaScript. JavaScript communicates with the browser and exposes browser functionality via APIs. So far so good.
+
+The whole entire point of Elm, is to be able to give guarantees. Pretty strong guarantees about correctness and errors (or the lack of them) specifically. If your code compiles in Elm, it almost certainly won't error.
+
+However, JavaScript and a myriad JavaScript frameworks offer no such guarantees, therefore, allowing people to call JavaScript directly from Elm would obliterate the purpose of Elm. So you can't do it. You cannot produce a type definition wrapping the AWS js lib, or React or anything else. You just can't.
+
+There is no Foreign Function Interface (FFI) to JavaScript because it would be unsound.
+
+> Everything in Elm makes sense when taken holistically.
+
+Deep breath: Ok, but I *need* to call JavaScript.
+
+### Ports
+
+Elm's solution to the problem is to use Ports.
+
+Ports are little holes in Elm that allow messages to flow to and from JavaScript. This allows communication without breaking guarantees.
+
+Elm ensures that if there is going to be an error, it never make it into the Elm part of the codebase, meaning that you can focus all your debugging efforts on the JS side of the fence.
+
+So, the Elm codebase is the ordered, policed part of your codebase, and everything on the otherside is the badlands.
+
+You could just write JavaScript at this point, but why not introduce a language that can handle the rugged outdoors a little better?
+
+### Scala.js
+
+There are lots of languages you could choose but I'm going with Scala.
