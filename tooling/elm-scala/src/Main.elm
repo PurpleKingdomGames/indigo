@@ -8,15 +8,6 @@ import Json.Decode as Decode exposing (..)
 import Json.Encode as Encode
 
 
-main =
-    Browser.element
-        { init = init
-        , update = update
-        , view = view
-        , subscriptions = subscriptions
-        }
-
-
 type Msg
     = Increment
     | Decrement
@@ -38,6 +29,16 @@ port toScala : ScalaMsg -> Cmd msg
 
 
 port fromScala : (String -> msg) -> Sub msg
+
+
+main : Program String Model Msg
+main =
+    Browser.element
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        }
 
 
 init : String -> ( Model, Cmd Msg )

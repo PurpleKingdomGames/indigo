@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "parcel index.html --no-cache --out-dir target --log-level 4",
+    "start": "parcel index.html --no-cache --out-dir target --log-level 4 --no-source-maps",
     "test": "elm-test"
   },
   "keywords": [],

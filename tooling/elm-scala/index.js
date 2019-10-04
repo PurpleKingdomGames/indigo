@@ -6,9 +6,5 @@ var app = Elm.Main.init({
   });
 
 app.ports.toScala.subscribe(function(msg) {
-    var asString = JSON.stringify(msg);
-    console.log("msg: " + asString);
-    var got = Mailbox.post(asString);
-    console.log("got: " + got);
-    app.ports.fromScala.send(got);
+    app.ports.fromScala.send(Mailbox.post(JSON.stringify(msg)));
 });
