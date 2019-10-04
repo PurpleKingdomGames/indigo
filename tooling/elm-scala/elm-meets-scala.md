@@ -124,7 +124,7 @@ The use cases for TypeClasses are far fewer and less frequent, and as such, for 
 
 Just so we're clear: Acceptance of that reality doesn't mean I *like* programming this way, it feels counter intuitive to someone who has been sold on the idea that constrained types are empowering.
 
-The mostlegitimate use case for a typeclass that I can think of in Elm, would be for a `Comparable a` instance. Elm dictionary's (because JavaScript) can only accept certain "comparable" primitive types as keys, and being able to summon a `Comparable` for `a` would have been preferable. But if that's the only use case then the Elm authors working for the general good and not for the exceptions is the smart move.
+The most legitimate use case for a typeclass that I can think of in Elm, would be for a `Comparable a` instance. Elm dictionary's (because JavaScript presumably) can only accept certain "comparable" primitive types as keys, and being able to summon a `Comparable` for `a` would have been preferable. ...but if that and a couple of other like it are the only use case then the Elm authors designing for the general good and not for the exceptions is the smart move.
 
 Take a deep breath, repeat after me:
 
@@ -138,11 +138,15 @@ Having got over the typeclass disappointment, lets look at an actual thing that 
 
 Elm works in a browser and is compiled to JavaScript. JavaScript communicates with the browser and exposes browser functionality via APIs. So far so good.
 
+Mostly, when you need to do some interaction with the browser - such as draw to a canvas element - you'll find there is a nice safe Elm package to give you what you need. That does mean you're utterly dependant on their being a library though, and that the library exposes / wraps the specific functionality you need.
+
+Some times that isn't the case though, and the normal solution is to use a Foreign Function Interface (FFI) that lets you call the thing you need. Elm does not have an FFI.
+
 The whole entire point of Elm, is to be able to give guarantees. Pretty strong guarantees about correctness and errors (or the lack of them) specifically. If your code compiles in Elm, it almost certainly won't error.
 
-However, JavaScript and a myriad JavaScript frameworks offer no such guarantees, therefore, allowing people to call JavaScript directly from Elm would obliterate the purpose of Elm. So you can't do it. You cannot produce a type definition wrapping the AWS js lib, or React or anything else. You just can't.
+However, JavaScript and a myriad JavaScript frameworks offer no such guarantees, therefore, allowing people to call JavaScript directly from Elm would obliterate the entire point of Elm's existance. So you can't do it. You cannot produce a type definition wrapping the AWS js lib, or React or anything else. You just can't.
 
-There is no Foreign Function Interface (FFI) to JavaScript because it would be unsound.
+There is no FFI to JavaScript because it would be unsound.
 
 > Everything in Elm makes sense when taken holistically.
 
@@ -152,7 +156,7 @@ Deep breath: Ok, but I *need* to call JavaScript.
 
 Elm's solution to the problem is to use Ports.
 
-Ports are little holes in Elm that allow messages to flow to and from JavaScript. This allows communication without breaking guarantees.
+Ports are little holes in Elm that allow messages to flow to and from JavaScript. This allows communication without breaking guarantees. The main thing to know about this process is that i
 
 Elm ensures that if there is going to be an error, it never make it into the Elm part of the codebase, meaning that you can focus all your debugging efforts on the JS side of the fence.
 
