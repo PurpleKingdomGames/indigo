@@ -5,6 +5,6 @@ var app = Elm.Main.init({
     flags: "Elm Scala"
   });
 
-app.ports.toScala.subscribe(function(msg) {
-    app.ports.fromScala.send(Mailbox.post(JSON.stringify(msg)));
+app.ports.sendToScalaJS.subscribe(function(msg) {
+    app.ports.receiveFromScalaJS.send(ElmMailbox.post(JSON.stringify(msg)));
 });
