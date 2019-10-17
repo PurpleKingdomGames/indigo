@@ -6,16 +6,16 @@
   "scripts": {
     "start": "parcel index.html --no-cache --out-dir target --log-level 4",
     "build": "parcel build index.html",
-    "clean": "rm -rf dist/*",
+    "clean": "rm -rf target/*",
+    "watch": "chokidar '**/*.elm' -c 'elm make ./src/Main.elm --output elm.compiled.js' --initial",
     "test": "elm-test"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "elm-hot": "^1.1.2",
+    "chokidar-cli": "^2.0.0",
     "elm-test": "^0.19.0",
-    "node-elm-compiler": "^5.0.4",
     "parcel-bundler": "^1.12.3",
     "parcel-plugin-static-files-copy": "^2.2.1"
   },

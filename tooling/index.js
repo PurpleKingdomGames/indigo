@@ -1,4 +1,5 @@
-import { Elm } from './src/ToolsApp.elm'
+
+import { Elm } from "./elm.compiled.js"
 
 var app = Elm.Main.init({
     node: document.querySelector('main'),
