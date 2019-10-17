@@ -2,7 +2,8 @@ module App.PageRouting exposing (bumpToNormalSlug, fontSheetSlug, lightingToNorm
 
 import App.Model exposing (..)
 import App.Msg exposing (..)
-import Html exposing (Html, text)
+import Element exposing (..)
+import Html exposing (Html)
 import Modules.BumpToNormal as BumpToNormal
 import Url exposing (Url)
 import Url.Parser as UrlParser exposing ((</>), Parser, s, top)
@@ -23,14 +24,14 @@ fontSheetSlug =
     "font-sheet"
 
 
-pageContent : Model -> Html Msg
+pageContent : Model -> Element Msg
 pageContent model =
     case model.page of
         Home ->
             text "Home"
 
         Bump2Normal ->
-            Html.map (\m -> BumpToNormalMsgWrapper m) (BumpToNormal.view model.bumpToNormal)
+            Element.map (\m -> BumpToNormalMsgWrapper m) (BumpToNormal.view model.bumpToNormal)
 
         Lighting2Normal ->
             text "Lighting to Normal"

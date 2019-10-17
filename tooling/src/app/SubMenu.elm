@@ -2,8 +2,8 @@ module App.SubMenu exposing (view)
 
 import App.Msg exposing (Msg)
 import App.PageRouting as PageRouting
-import Html exposing (..)
-import Html.Attributes exposing (href)
+import Element exposing (..)
+import Html exposing (Html)
 
 
 type alias MenuItem =
@@ -14,24 +14,23 @@ type alias MenuItem =
 
 view : Html Msg
 view =
-    navMenu
-        [ MenuItem "Home" "/"
-        , MenuItem "Bump To Normal" ("/" ++ PageRouting.bumpToNormalSlug)
-        , MenuItem "Lighting To Normal" ("/" ++ PageRouting.lightingToNormalSlug)
-        , MenuItem "Font Sheet" ("/" ++ PageRouting.fontSheetSlug)
-        ]
+    Element.layout [] <|
+        navMenu
+            [ MenuItem "Home" "/"
+            , MenuItem "Bump To Normal" ("/" ++ PageRouting.bumpToNormalSlug)
+            , MenuItem "Lighting To Normal" ("/" ++ PageRouting.lightingToNormalSlug)
+            , MenuItem "Font Sheet" ("/" ++ PageRouting.fontSheetSlug)
+            ]
 
 
-navMenu : List MenuItem -> Html Msg
+navMenu : List MenuItem -> Element Msg
 navMenu items =
-    div []
-        [ ul [] (List.map navItem items)
-        ]
+    row [] (List.map navItem items)
 
 
-navItem : MenuItem -> Html Msg
+navItem : MenuItem -> Element Msg
 navItem item =
-    li []
-        [ a [ href item.url ]
-            [ text item.label ]
-        ]
+    link [ spacing 20, padding 10 ]
+        { url = item.url
+        , label = text item.label
+        }

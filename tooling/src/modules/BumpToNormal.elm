@@ -3,9 +3,11 @@ port module Modules.BumpToNormal exposing (BumpToNormal, BumpToNormalMsg, initia
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta)
 import Canvas
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Element exposing (..)
+import Element.Input as Input
+import Html as H exposing (Html)
+import Html.Attributes as HA exposing (height, id, style, width)
+import Html.Events as HE exposing (onClick)
 import Math.Matrix4 as Mat4 exposing (Mat4)
 import Math.Vector2 as Vec2 exposing (Vec2, vec2)
 import Math.Vector3 as Vec3 exposing (Vec3, vec3)
@@ -114,75 +116,71 @@ update msg model =
             )
 
 
-view : BumpToNormal -> Html.Html BumpToNormalMsg
+view : BumpToNormal -> Element BumpToNormalMsg
 view model =
-    div [ style "display" "block" ]
-        [ chooseImage
-        , bumpSource model
-        , outputCanvas model
-        ]
-
-
-modeSelectView : Html.Html BumpToNormalMsg
-modeSelectView =
-    div [ style "display" "block" ]
-        [ text "Choose a mode: "
-        , br [] []
-        , input [ type_ "radio", name "mode", value "bump mode" ] []
-        , text "Bump mode!"
-        , br [] []
-        , input [ type_ "radio", name "mode", value "lighting mode" ] []
-        , text "Lighting mode!"
-        ]
-
-
-chooseImage : Html BumpToNormalMsg
-chooseImage =
-    div []
-        [ text "Which image would you like?"
-        , ul []
-            [ li [] [ input [ type_ "submit", value "Weave", onClick <| SwapToImage file1 ] [] ]
-            , li [] [ input [ type_ "submit", value "Shapes", onClick <| SwapToImage file2 ] [] ]
+    column []
+        [ row []
+            [ chooseImage ]
+        , row []
+            [ bumpSource model
+            , outputCanvas model
             ]
         ]
 
 
-bumpSource : BumpToNormal -> Html.Html BumpToNormalMsg
+chooseImage : Element BumpToNormalMsg
+chooseImage =
+    column []
+        [ text "Which image would you like?"
+        , Input.button []
+            { onPress = Just (SwapToImage file1)
+            , label = text "Weave"
+            }
+        , Input.button []
+            { onPress = Just (SwapToImage file2)
+            , label = text "Shapes"
+            }
+        ]
+
+
+bumpSource : BumpToNormal -> Element BumpToNormalMsg
 bumpSource model =
     case model.imagePath of
         Just path ->
-            div [ style "display" "block" ]
-                [ img [ src path, width model.size.width, height model.size.height ] []
-                ]
+            image []
+                { src = path
+                , description = ""
+                }
 
         Nothing ->
-            div [ style "display" "block" ] [ text "No image" ]
+            text "No source image"
 
 
-outputCanvas : BumpToNormal -> Html.Html BumpToNormalMsg
+outputCanvas : BumpToNormal -> Element BumpToNormalMsg
 outputCanvas model =
     model.texture
         |> Maybe.map
             (\tx ->
-                div
-                    [ style "display" "block"
-                    ]
-                    [ WebGL.toHtmlWith
-                        [ clearColor 0 1 0 1
-                        , alpha False
-                        , preserveDrawingBuffer
-                        ]
-                        [ width model.size.width
-                        , height model.size.height
-                        , style "display" "block"
-                        , id "image-output"
-                        ]
-                        [ WebGL.entity vertexShader fragmentShader mesh { projection = projection model.size, transform = transform model.size, texture = tx, size = imageSizeToVec2 model.size }
-                        ]
-                    , a [ id "downloadLink", href "", download "normal-map.png", target "_blank", onClick <| Download "image-output" ] [ text "download me" ]
+                column []
+                    [ Element.html
+                        (WebGL.toHtmlWith
+                            [ clearColor 0 1 0 1
+                            , WebGL.alpha False
+                            , preserveDrawingBuffer
+                            ]
+                            [ width model.size.width
+                            , height model.size.height
+                            , HA.style "display" "block"
+                            , id "image-output"
+                            ]
+                            [ WebGL.entity vertexShader fragmentShader mesh { projection = projection model.size, transform = transform model.size, texture = tx, size = imageSizeToVec2 model.size }
+                            ]
+                        )
+                    , Element.html
+                        (H.a [ id "downloadLink", HA.href "", HA.download "normal-map.png", HA.target "_blank", HE.onClick <| Download "image-output" ] [ H.text "download me" ])
                     ]
             )
-        |> Maybe.withDefault (div [] [ text "Texture not loaded" ])
+        |> Maybe.withDefault (text "Texture not loaded")
 
 
 imageSizeToVec2 : ImageSize -> Vec2

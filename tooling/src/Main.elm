@@ -6,6 +6,7 @@ import App.PageRouting as PageRouting
 import App.SubMenu as SubMenu
 import Browser exposing (..)
 import Browser.Navigation as Nav
+import Element exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (href)
 import Modules.BumpToNormal as BumpToNormal
@@ -57,7 +58,7 @@ view model =
     , body =
         [ div []
             [ SubMenu.view
-            , PageRouting.pageContent model
+            , Element.layout [] (PageRouting.pageContent model)
             ]
         ]
     }

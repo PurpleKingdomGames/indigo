@@ -39,7 +39,7 @@ update msg model =
 
 view : Model -> Html.Html Msg
 view model =
-    Element.layout [] (counteElements model)
+    Element.layout [] (counterElements model)
 
 
 blue =
@@ -56,8 +56,8 @@ myButton label msg =
         }
 
 
-counteElements : Model -> Element Msg
-counteElements model =
+counterElements : Model -> Element Msg
+counterElements model =
     row [ spacing 30, padding 10 ]
         [ myButton "Increment" Increment
         , text <| String.fromInt model.amount

@@ -7,7 +7,5 @@ var app = Elm.Main.init({
   });
 
 app.ports.onDownload.subscribe(function(canvasId) {
-    console.log(canvasId);
-    // window.location.href = document.getElementById(canvasId).toDataURL("image/png");
     document.getElementById("downloadLink").setAttribute("href", document.getElementById(canvasId).toDataURL("image/png"));
 });
