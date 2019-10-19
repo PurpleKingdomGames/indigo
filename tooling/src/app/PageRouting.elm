@@ -6,7 +6,7 @@ import Element exposing (..)
 import Html exposing (Html)
 import Modules.BumpToNormal as BumpToNormal
 import Url exposing (Url)
-import Url.Parser as UrlParser exposing ((</>), Parser, s, top)
+import Url.Parser as UrlParser exposing (Parser, s, top)
 
 
 bumpToNormalSlug : String
