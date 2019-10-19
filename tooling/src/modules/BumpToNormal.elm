@@ -49,7 +49,7 @@ file1 : ImageDetails
 file1 =
     { width = 359
     , height = 356
-    , path = "/src/assets/bump-example.jpg"
+    , path = "/assets/bump-example.jpg"
     }
 
 
@@ -57,7 +57,7 @@ file2 : ImageDetails
 file2 =
     { width = 300
     , height = 300
-    , path = "/src/assets/untitled.png"
+    , path = "/assets/shapes.png"
     }
 
 
@@ -118,19 +118,17 @@ update msg model =
 
 view : BumpToNormal -> Element BumpToNormalMsg
 view model =
-    column []
+    column [ padding 10, spacing 10 ]
         [ row []
             [ chooseImage ]
-        , row []
-            [ bumpSource model
-            , outputCanvas model
-            ]
+        , bumpSource model
+        , outputCanvas model
         ]
 
 
 chooseImage : Element BumpToNormalMsg
 chooseImage =
-    column []
+    column [ spacing 10 ]
         [ text "Which image would you like?"
         , Input.button []
             { onPress = Just (SwapToImage file1)

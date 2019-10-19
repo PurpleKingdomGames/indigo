@@ -18,3 +18,21 @@ type alias Model =
     , navKey : Nav.Key
     , bumpToNormal : BumpToNormal
     }
+
+pageToString : Page -> String
+pageToString page =
+    case page of
+        Home ->
+            "Home"
+
+        Bump2Normal ->
+            "Bump To Normal"
+
+        Lighting2Normal ->
+            "Lighting To Normal"
+
+        FontSheet ->
+            "Font Sheet"
+
+        NotFound ->
+            "Not Found"

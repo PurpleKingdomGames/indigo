@@ -3,10 +3,13 @@ module Main exposing (..)
 import App.Model exposing (..)
 import App.Msg exposing (..)
 import App.PageRouting as PageRouting
+import App.Styles as Styles
 import App.SubMenu as SubMenu
 import Browser exposing (..)
 import Browser.Navigation as Nav
 import Element exposing (..)
+import Element.Background as Background
+import Element.Font as Font
 import Html exposing (..)
 import Html.Attributes exposing (href)
 import Modules.BumpToNormal as BumpToNormal
@@ -31,7 +34,7 @@ main =
 
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ _ navKey =
-    ( Model Bump2Normal navKey BumpToNormal.initialModel, Cmd.none )
+    ( Model Home navKey BumpToNormal.initialModel, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -55,13 +58,16 @@ update msg model =
 view : Model -> Document Msg
 view model =
     { title = "Indigo Tools"
-    , body =
-        [ div []
-            [ SubMenu.view
-            , Element.layout [] (PageRouting.pageContent model)
-            ]
-        ]
+    , body = [ Element.layout [ Background.color Styles.black, Styles.pixelFont ] (basicLayout model) ]
     }
+
+
+basicLayout : Model -> Element Msg
+basicLayout model =
+    column [ width fill, Font.color Styles.white, Font.size 12 ]
+        [ SubMenu.view model.page
+        , PageRouting.pageContent model
+        ]
 
 
 subscriptions : Model -> Sub Msg

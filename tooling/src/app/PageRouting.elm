@@ -28,19 +28,24 @@ pageContent : Model -> Element Msg
 pageContent model =
     case model.page of
         Home ->
-            text "Home"
+            row [ width fill, centerY ]
+                [ image [ centerX, width (px 512), height (px 512) ]
+                    { src = "assets/pk_games_pixel.png"
+                    , description = "Purple Kingdom Games"
+                    }
+                ]
 
         Bump2Normal ->
             Element.map (\m -> BumpToNormalMsgWrapper m) (BumpToNormal.view model.bumpToNormal)
 
         Lighting2Normal ->
-            text "Lighting to Normal"
+            row [ padding 10 ] [ text "Lighting to Normal" ]
 
         FontSheet ->
-            text "Font sheet generator"
+            row [ padding 10 ] [ text "Font sheet generator" ]
 
         NotFound ->
-            text "Not Found"
+            row [ padding 10 ] [ text "Not Found" ]
 
 
 urlUpdate : Url -> Model -> ( Model, Cmd Msg )
