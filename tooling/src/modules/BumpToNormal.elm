@@ -6,8 +6,11 @@ import Browser.Events exposing (onAnimationFrameDelta)
 import Canvas
 import Element exposing (..)
 import Element.Border as Border
+import Element.Events as Events
 import Element.Font as Font
 import Element.Input as Input
+import File exposing (File)
+import File.Select as Select
 import Html as H exposing (Html)
 import Html.Attributes as HA
 import Html.Events as HE exposing (onClick)
@@ -36,6 +39,9 @@ type BumpToNormalMsg
     = TextureLoaded (Result Error Texture)
     | Download String
     | SwapToImage ImageDetails
+    | ImageUploadRequested
+    | ImageUploadSelected File
+    | ImageUploadLoaded String
 
 
 type alias ImageDetails =
@@ -118,6 +124,21 @@ update msg model =
             , loadSpecificImage details
             )
 
+        ImageUploadRequested ->
+            ( model
+            , Select.file [ "image/png", "image/jpeg" ] ImageUploadSelected
+            )
+
+        ImageUploadSelected file ->
+            ( model
+            , Task.perform ImageUploadLoaded (File.toString file)
+            )
+
+        ImageUploadLoaded content ->
+            ( model
+            , Cmd.none
+            )
+
 
 view : BumpToNormal -> Element BumpToNormalMsg
 view model =
@@ -130,7 +151,7 @@ view model =
 
 holder : BumpToNormal -> Element BumpToNormalMsg
 holder model =
-    row [ width fill ]
+    row [ width fill, spacing 10 ]
         [ boxHolder uploadLink (bumpSource model)
         , text ">>"
         , boxHolder downloadLink (outputCanvas model)
@@ -207,7 +228,10 @@ outputCanvas model =
 
 uploadLink : Element BumpToNormalMsg
 uploadLink =
-    text "upload"
+    link [ Events.onClick ImageUploadRequested ]
+        { url = "#"
+        , label = text "upload"
+        }
 
 
 downloadLink : Element BumpToNormalMsg
