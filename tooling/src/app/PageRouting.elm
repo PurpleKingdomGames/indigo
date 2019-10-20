@@ -2,7 +2,11 @@ module App.PageRouting exposing (bumpToNormalSlug, fontSheetSlug, lightingToNorm
 
 import App.Model exposing (..)
 import App.Msg exposing (..)
+import App.Styles as Styles
 import Element exposing (..)
+import Element.Background as Background
+import Element.Border as Border
+import Element.Input as Input
 import Html exposing (Html)
 import Modules.BumpToNormal as BumpToNormal
 import Url exposing (Url)
@@ -39,7 +43,15 @@ pageContent model =
             Element.map (\m -> BumpToNormalMsgWrapper m) (BumpToNormal.view model.bumpToNormal)
 
         Lighting2Normal ->
-            row [ padding 10 ] [ text "Lighting to Normal" ]
+            row [ padding 10 ]
+                [ column [ spacing 10 ]
+                    [ text "Lighting to Normal"
+                    , Input.button [ Background.color Styles.darkPurple, Border.rounded 5, padding 10 ]
+                        { onPress = Just (LogMessage "Log this elm!")
+                        , label = text "Get Scala to Log Something!"
+                        }
+                    ]
+                ]
 
         FontSheet ->
             row [ padding 10 ] [ text "Font sheet generator" ]

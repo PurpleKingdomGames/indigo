@@ -6,13 +6,11 @@ import Url exposing (Url)
 
 
 type FromScala
-    = Doubled Int
-    | Ignore
+    = Ignore
 
 
 type SendToScala
-    = DoubleIt Int
-    | LogIt String
+    = LogIt String
 
 
 type Msg
@@ -20,3 +18,4 @@ type Msg
     | ClickedLink UrlRequest
     | BumpToNormalMsgWrapper BumpToNormalMsg
     | ScalaCallback FromScala
+    | LogMessage String

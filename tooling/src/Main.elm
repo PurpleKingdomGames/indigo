@@ -3,6 +3,7 @@ module Main exposing (..)
 import App.Model exposing (..)
 import App.Msg exposing (..)
 import App.PageRouting as PageRouting
+import App.ScalaJSMailbox as ScalaJSMailbox
 import App.Styles as Styles
 import App.SubMenu as SubMenu
 import Browser exposing (..)
@@ -54,8 +55,8 @@ update msg model =
                 ( m, cmd ) ->
                     ( { model | bumpToNormal = m }, Cmd.map (\e -> BumpToNormalMsgWrapper e) cmd )
 
-        ScalaCallback (Doubled d) ->
-            ( model, Cmd.none )
+        LogMessage m ->
+            ( model, ScalaJSMailbox.send <| LogIt m )
 
         ScalaCallback Ignore ->
             ( model, Cmd.none )
@@ -78,4 +79,4 @@ basicLayout model =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Sub.none
+    Sub.map (\m -> ScalaCallback m) ScalaJSMailbox.receive

@@ -19,9 +19,6 @@ type alias ForScala =
 send : SendToScala -> Cmd msg
 send toSend =
     case toSend of
-        DoubleIt d ->
-            sendToScalaJS <| doubleItEncoder d
-
         LogIt s ->
             sendToScalaJS <| logItEncoder s
 
@@ -46,12 +43,6 @@ decodeScalaMessage msg =
 -- Encoders
 
 
-doubleItEncoder : Int -> ForScala
-doubleItEncoder i =
-    Encode.object
-        [ ( "amount", Encode.int i ) ]
-
-
 logItEncoder : String -> ForScala
 logItEncoder s =
     Encode.object
@@ -65,14 +56,8 @@ logItEncoder s =
 decoders : Decoder FromScala
 decoders =
     Decode.oneOf
-        [ doubledDecoder
-        , ignoreDecoder
+        [ ignoreDecoder
         ]
-
-
-doubledDecoder : Decode.Decoder FromScala
-doubledDecoder =
-    Decode.map (\i -> Doubled i) (Decode.field "amount" Decode.int)
 
 
 ignoreDecoder : Decode.Decoder FromScala

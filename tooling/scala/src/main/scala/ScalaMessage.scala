@@ -7,18 +7,16 @@ import io.circe.Json
 
 sealed trait ScalaMessage
 case object Noop extends ScalaMessage
-final case class Doubled(amount: Int) extends ScalaMessage
 
 object ScalaMessage {
 
   implicit val encodeEvent: Encoder[ScalaMessage] = Encoder.instance {
-    case Noop                  => Json.fromString("noop")
-    case doubleIt @ Doubled(_) => doubleIt.asJson
+    case Noop => Json.fromString("noop")
   }
 
   implicit val decodeEvent: Decoder[ScalaMessage] =
     List[Decoder[ScalaMessage]](
-      Decoder[Doubled].widen
+      // Decoder[Doubled].widen
     ).reduceLeft(_ or _)
 
 }

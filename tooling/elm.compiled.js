@@ -6764,13 +6764,61 @@ var author$project$Main$init = F3(
 			A3(author$project$App$Model$Model, author$project$App$Model$Home, navKey, author$project$Modules$BumpToNormal$initialModel),
 			elm$core$Platform$Cmd$none);
 	});
-var elm$core$Platform$Sub$batch = _Platform_batch;
-var elm$core$Platform$Sub$none = elm$core$Platform$Sub$batch(_List_Nil);
+var author$project$App$Msg$ScalaCallback = function (a) {
+	return {$: 'ScalaCallback', a: a};
+};
+var author$project$App$Msg$Ignore = {$: 'Ignore'};
+var elm$json$Json$Decode$fail = _Json_fail;
+var elm$json$Json$Decode$succeed = _Json_succeed;
+var author$project$App$ScalaJSMailbox$ignoreStringDecoder = function (s) {
+	switch (s) {
+		case '':
+			return elm$json$Json$Decode$succeed(author$project$App$Msg$Ignore);
+		case 'noop':
+			return elm$json$Json$Decode$succeed(author$project$App$Msg$Ignore);
+		case 'ignore':
+			return elm$json$Json$Decode$succeed(author$project$App$Msg$Ignore);
+		default:
+			return elm$json$Json$Decode$fail('Tried to decide if this action should be ignored, but couldn\'t.');
+	}
+};
+var elm$json$Json$Decode$andThen = _Json_andThen;
+var elm$json$Json$Decode$string = _Json_decodeString;
+var author$project$App$ScalaJSMailbox$ignoreDecoder = A2(elm$json$Json$Decode$andThen, author$project$App$ScalaJSMailbox$ignoreStringDecoder, elm$json$Json$Decode$string);
+var elm$json$Json$Decode$oneOf = _Json_oneOf;
+var author$project$App$ScalaJSMailbox$decoders = elm$json$Json$Decode$oneOf(
+	_List_fromArray(
+		[author$project$App$ScalaJSMailbox$ignoreDecoder]));
+var elm$core$Debug$log = _Debug_log;
+var elm$core$Debug$toString = _Debug_toString;
+var elm$json$Json$Decode$decodeString = _Json_runOnString;
+var author$project$App$ScalaJSMailbox$decodeScalaMessage = function (msg) {
+	var _n0 = A2(elm$json$Json$Decode$decodeString, author$project$App$ScalaJSMailbox$decoders, msg);
+	if (_n0.$ === 'Err') {
+		var e = _n0.a;
+		return elm$core$Debug$log(
+			elm$core$Debug$toString(e))(author$project$App$Msg$Ignore);
+	} else {
+		var result = _n0.a;
+		return result;
+	}
+};
+var author$project$App$ScalaJSMailbox$receiveFromScalaJS = _Platform_incomingPort('receiveFromScalaJS', elm$json$Json$Decode$string);
+var author$project$App$ScalaJSMailbox$receive = author$project$App$ScalaJSMailbox$receiveFromScalaJS(author$project$App$ScalaJSMailbox$decodeScalaMessage);
+var elm$core$Platform$Sub$map = _Platform_map;
 var author$project$Main$subscriptions = function (_n0) {
-	return elm$core$Platform$Sub$none;
+	return A2(
+		elm$core$Platform$Sub$map,
+		function (m) {
+			return author$project$App$Msg$ScalaCallback(m);
+		},
+		author$project$App$ScalaJSMailbox$receive);
 };
 var author$project$App$Msg$BumpToNormalMsgWrapper = function (a) {
 	return {$: 'BumpToNormalMsgWrapper', a: a};
+};
+var author$project$App$Msg$LogIt = function (a) {
+	return {$: 'LogIt', a: a};
 };
 var author$project$App$Model$Bump2Normal = {$: 'Bump2Normal'};
 var author$project$App$Model$FontSheet = {$: 'FontSheet'};
@@ -7641,6 +7689,35 @@ var author$project$App$PageRouting$urlUpdate = F2(
 			}
 		}
 	});
+var elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			elm$core$List$foldl,
+			F2(
+				function (_n0, obj) {
+					var k = _n0.a;
+					var v = _n0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
+var elm$json$Json$Encode$string = _Json_wrap;
+var author$project$App$ScalaJSMailbox$logItEncoder = function (s) {
+	return elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'message',
+				elm$json$Json$Encode$string(s))
+			]));
+};
+var author$project$App$ScalaJSMailbox$sendToScalaJS = _Platform_outgoingPort('sendToScalaJS', elm$core$Basics$identity);
+var author$project$App$ScalaJSMailbox$send = function (toSend) {
+	var s = toSend.a;
+	return author$project$App$ScalaJSMailbox$sendToScalaJS(
+		author$project$App$ScalaJSMailbox$logItEncoder(s));
+};
 var author$project$Modules$BumpToNormal$ImageUploadLoaded = function (a) {
 	return {$: 'ImageUploadLoaded', a: a};
 };
@@ -7787,7 +7864,6 @@ var author$project$Modules$BumpToNormal$loadSpecificImage = function (details) {
 			{flipY: true, horizontalWrap: elm_explorations$webgl$WebGL$Texture$clampToEdge, magnify: elm_explorations$webgl$WebGL$Texture$linear, minify: elm_explorations$webgl$WebGL$Texture$nearest, verticalWrap: elm_explorations$webgl$WebGL$Texture$clampToEdge},
 			details.path));
 };
-var elm$json$Json$Encode$string = _Json_wrap;
 var author$project$Modules$BumpToNormal$onDownload = _Platform_outgoingPort('onDownload', elm$json$Json$Encode$string);
 var elm$core$Task$perform = F2(
 	function (toMessage, task) {
@@ -7888,7 +7964,6 @@ var elm$core$Basics$never = function (_n0) {
 };
 var elm$json$Json$Decode$map = _Json_map1;
 var elm$json$Json$Decode$map2 = _Json_map2;
-var elm$json$Json$Decode$succeed = _Json_succeed;
 var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	switch (handler.$) {
 		case 'Normal':
@@ -8113,14 +8188,15 @@ var author$project$Main$update = F2(
 							return author$project$App$Msg$BumpToNormalMsgWrapper(e);
 						},
 						cmd));
+			case 'LogMessage':
+				var m = msg.a;
+				return _Utils_Tuple2(
+					model,
+					author$project$App$ScalaJSMailbox$send(
+						author$project$App$Msg$LogIt(m)));
 			default:
-				if (msg.a.$ === 'Doubled') {
-					var d = msg.a.a;
-					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
-				} else {
-					var _n2 = msg.a;
-					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
-				}
+				var _n2 = msg.a;
+				return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
 		}
 	});
 var mdgriffith$elm_ui$Internal$Model$Rgba = F4(
@@ -8211,6 +8287,10 @@ var author$project$App$Styles$pixelFont = mdgriffith$elm_ui$Element$Font$family(
 			mdgriffith$elm_ui$Element$Font$typeface('pixelFont'),
 			mdgriffith$elm_ui$Element$Font$sansSerif
 		]));
+var author$project$App$Msg$LogMessage = function (a) {
+	return {$: 'LogMessage', a: a};
+};
+var author$project$App$Styles$darkPurple = A3(mdgriffith$elm_ui$Element$rgb255, 80, 1, 120);
 var author$project$App$Styles$lightPurple = A3(mdgriffith$elm_ui$Element$rgb255, 171, 121, 198);
 var author$project$Modules$BumpToNormal$SwapToImage = function (a) {
 	return {$: 'SwapToImage', a: a};
@@ -10776,19 +10856,6 @@ var elm$json$Json$Encode$list = F2(
 				_Json_emptyArray(_Utils_Tuple0),
 				entries));
 	});
-var elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			elm$core$List$foldl,
-			F2(
-				function (_n0, obj) {
-					var k = _n0.a;
-					var v = _n0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(_Utils_Tuple0),
-			pairs));
-};
 var elm$core$Basics$min = F2(
 	function (x, y) {
 		return (_Utils_cmp(x, y) < 0) ? x : y;
@@ -13736,10 +13803,7 @@ var elm$html$Html$Events$preventDefaultOn = F2(
 			event,
 			elm$virtual_dom$VirtualDom$MayPreventDefault(decoder));
 	});
-var elm$json$Json$Decode$andThen = _Json_andThen;
-var elm$json$Json$Decode$fail = _Json_fail;
 var elm$json$Json$Decode$field = _Json_decodeField;
-var elm$json$Json$Decode$string = _Json_decodeString;
 var mdgriffith$elm_ui$Element$Input$onKey = F2(
 	function (desiredCode, msg) {
 		var decode = function (code) {
@@ -14411,6 +14475,28 @@ var mdgriffith$elm_ui$Internal$Model$map = F2(
 		}
 	});
 var mdgriffith$elm_ui$Element$map = mdgriffith$elm_ui$Internal$Model$map;
+var mdgriffith$elm_ui$Internal$Flag$bgColor = mdgriffith$elm_ui$Internal$Flag$flag(8);
+var mdgriffith$elm_ui$Element$Background$color = function (clr) {
+	return A2(
+		mdgriffith$elm_ui$Internal$Model$StyleClass,
+		mdgriffith$elm_ui$Internal$Flag$bgColor,
+		A3(
+			mdgriffith$elm_ui$Internal$Model$Colored,
+			'bg-' + mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
+			'background-color',
+			clr));
+};
+var mdgriffith$elm_ui$Internal$Flag$borderRound = mdgriffith$elm_ui$Internal$Flag$flag(17);
+var mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
+	return A2(
+		mdgriffith$elm_ui$Internal$Model$StyleClass,
+		mdgriffith$elm_ui$Internal$Flag$borderRound,
+		A3(
+			mdgriffith$elm_ui$Internal$Model$Single,
+			'br-' + elm$core$String$fromInt(radius),
+			'border-radius',
+			elm$core$String$fromInt(radius) + 'px'));
+};
 var author$project$App$PageRouting$pageContent = function (model) {
 	var _n0 = model.page;
 	switch (_n0.$) {
@@ -14452,7 +14538,29 @@ var author$project$App$PageRouting$pageContent = function (model) {
 					]),
 				_List_fromArray(
 					[
-						mdgriffith$elm_ui$Element$text('Lighting to Normal')
+						A2(
+						mdgriffith$elm_ui$Element$column,
+						_List_fromArray(
+							[
+								mdgriffith$elm_ui$Element$spacing(10)
+							]),
+						_List_fromArray(
+							[
+								mdgriffith$elm_ui$Element$text('Lighting to Normal'),
+								A2(
+								mdgriffith$elm_ui$Element$Input$button,
+								_List_fromArray(
+									[
+										mdgriffith$elm_ui$Element$Background$color(author$project$App$Styles$darkPurple),
+										mdgriffith$elm_ui$Element$Border$rounded(5),
+										mdgriffith$elm_ui$Element$padding(10)
+									]),
+								{
+									label: mdgriffith$elm_ui$Element$text('Get Scala to Log Something!'),
+									onPress: elm$core$Maybe$Just(
+										author$project$App$Msg$LogMessage('Log this elm!'))
+								})
+							]))
 					]));
 		case 'FontSheet':
 			return A2(
@@ -14497,7 +14605,6 @@ var author$project$App$SubMenu$MenuItem = F2(
 	function (label, url) {
 		return {label: label, url: url};
 	});
-var author$project$App$Styles$darkPurple = A3(mdgriffith$elm_ui$Element$rgb255, 80, 1, 120);
 var mdgriffith$elm_ui$Internal$Flag$hover = mdgriffith$elm_ui$Internal$Flag$flag(33);
 var mdgriffith$elm_ui$Internal$Model$Hover = {$: 'Hover'};
 var mdgriffith$elm_ui$Internal$Model$PseudoSelector = F2(
@@ -14603,17 +14710,6 @@ var mdgriffith$elm_ui$Element$mouseOver = function (decs) {
 			mdgriffith$elm_ui$Internal$Model$PseudoSelector,
 			mdgriffith$elm_ui$Internal$Model$Hover,
 			mdgriffith$elm_ui$Internal$Model$unwrapDecorations(decs)));
-};
-var mdgriffith$elm_ui$Internal$Flag$bgColor = mdgriffith$elm_ui$Internal$Flag$flag(8);
-var mdgriffith$elm_ui$Element$Background$color = function (clr) {
-	return A2(
-		mdgriffith$elm_ui$Internal$Model$StyleClass,
-		mdgriffith$elm_ui$Internal$Flag$bgColor,
-		A3(
-			mdgriffith$elm_ui$Internal$Model$Colored,
-			'bg-' + mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
-			'background-color',
-			clr));
 };
 var mdgriffith$elm_ui$Internal$Flag$fontSize = mdgriffith$elm_ui$Internal$Flag$flag(4);
 var mdgriffith$elm_ui$Internal$Model$FontSize = function (a) {
