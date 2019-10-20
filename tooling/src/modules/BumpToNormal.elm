@@ -1,12 +1,15 @@
 port module Modules.BumpToNormal exposing (BumpToNormal, BumpToNormalMsg, initialModel, update, view)
 
+import App.Styles as Styles
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta)
 import Canvas
 import Element exposing (..)
+import Element.Border as Border
+import Element.Font as Font
 import Element.Input as Input
 import Html as H exposing (Html)
-import Html.Attributes as HA exposing (height, id, style, width)
+import Html.Attributes as HA
 import Html.Events as HE exposing (onClick)
 import Math.Matrix4 as Mat4 exposing (Mat4)
 import Math.Vector2 as Vec2 exposing (Vec2, vec2)
@@ -121,20 +124,43 @@ view model =
     column [ padding 10, spacing 10 ]
         [ row []
             [ chooseImage ]
-        , bumpSource model
-        , outputCanvas model
+        , holder model
+        ]
+
+
+holder : BumpToNormal -> Element BumpToNormalMsg
+holder model =
+    row [ width fill ]
+        [ boxHolder uploadLink (bumpSource model)
+        , text ">>"
+        , boxHolder downloadLink (outputCanvas model)
+        ]
+
+
+boxHolder : Element BumpToNormalMsg -> Element BumpToNormalMsg -> Element BumpToNormalMsg
+boxHolder link content =
+    column [ spacing 10 ]
+        [ Element.el
+            [ Border.solid
+            , Border.width 2
+            , Border.color Styles.purple
+            , width (px 512)
+            , height (px 512)
+            ]
+            (row [ centerX, centerY ] [ content ])
+        , Element.el [] link
         ]
 
 
 chooseImage : Element BumpToNormalMsg
 chooseImage =
-    column [ spacing 10 ]
-        [ text "Which image would you like?"
-        , Input.button []
+    row [ spacing 20 ]
+        [ text "Try a sample image?"
+        , Input.button [ Font.color Styles.lightPurple ]
             { onPress = Just (SwapToImage file1)
             , label = text "Weave"
             }
-        , Input.button []
+        , Input.button [ Font.color Styles.lightPurple ]
             { onPress = Just (SwapToImage file2)
             , label = text "Shapes"
             }
@@ -159,26 +185,35 @@ outputCanvas model =
     model.texture
         |> Maybe.map
             (\tx ->
-                column []
-                    [ Element.html
-                        (WebGL.toHtmlWith
-                            [ clearColor 0 1 0 1
-                            , WebGL.alpha False
-                            , preserveDrawingBuffer
-                            ]
-                            [ width model.size.width
-                            , height model.size.height
-                            , HA.style "display" "block"
-                            , id "image-output"
-                            ]
-                            [ WebGL.entity vertexShader fragmentShader mesh { projection = projection model.size, transform = transform model.size, texture = tx, size = imageSizeToVec2 model.size }
-                            ]
-                        )
-                    , Element.html
-                        (H.a [ id "downloadLink", HA.href "", HA.download "normal-map.png", HA.target "_blank", HE.onClick <| Download "image-output" ] [ H.text "download me" ])
-                    ]
+                Element.html
+                    (WebGL.toHtmlWith
+                        [ clearColor 0 1 0 1
+                        , WebGL.alpha False
+                        , preserveDrawingBuffer
+                        ]
+                        [ HA.width model.size.width
+                        , HA.height model.size.height
+                        , HA.style "display" "block"
+                        , HA.id "image-output"
+                        ]
+                        [ WebGL.entity vertexShader fragmentShader mesh { projection = projection model.size, transform = transform model.size, texture = tx, size = imageSizeToVec2 model.size }
+                        ]
+                    )
             )
-        |> Maybe.withDefault (text "Texture not loaded")
+        |> (Maybe.withDefault <|
+                text "Texture not loaded"
+           )
+
+
+uploadLink : Element BumpToNormalMsg
+uploadLink =
+    text "upload"
+
+
+downloadLink : Element BumpToNormalMsg
+downloadLink =
+    Element.html
+        (H.a [ HA.id "downloadLink", HA.href "", HA.download "normal-map.png", HA.target "_blank", HE.onClick <| Download "image-output" ] [ H.text "download me" ])
 
 
 imageSizeToVec2 : ImageSize -> Vec2

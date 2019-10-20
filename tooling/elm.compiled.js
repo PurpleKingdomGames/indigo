@@ -7988,42 +7988,27 @@ var author$project$App$Styles$pixelFont = mdgriffith$elm_ui$Element$Font$family(
 			mdgriffith$elm_ui$Element$Font$typeface('pixelFont'),
 			mdgriffith$elm_ui$Element$Font$sansSerif
 		]));
-var elm$core$List$filter = F2(
-	function (isGood, list) {
-		return A3(
-			elm$core$List$foldr,
-			F2(
-				function (x, xs) {
-					return isGood(x) ? A2(elm$core$List$cons, x, xs) : xs;
-				}),
-			_List_Nil,
-			list);
-	});
-var elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			elm$json$Json$Encode$string(string));
-	});
-var elm$html$Html$Attributes$alt = elm$html$Html$Attributes$stringProperty('alt');
-var elm$html$Html$Attributes$src = function (url) {
-	return A2(
-		elm$html$Html$Attributes$stringProperty,
-		'src',
-		_VirtualDom_noJavaScriptOrHtmlUri(url));
+var author$project$App$Styles$lightPurple = A3(mdgriffith$elm_ui$Element$rgb255, 171, 121, 198);
+var author$project$Modules$BumpToNormal$SwapToImage = function (a) {
+	return {$: 'SwapToImage', a: a};
 };
-var mdgriffith$elm_ui$Internal$Model$Attr = function (a) {
-	return {$: 'Attr', a: a};
+var author$project$Modules$BumpToNormal$file1 = {height: 356, path: '/assets/bump-example.jpg', width: 359};
+var author$project$Modules$BumpToNormal$file2 = {height: 300, path: '/assets/shapes.png', width: 300};
+var mdgriffith$elm_ui$Internal$Model$Height = function (a) {
+	return {$: 'Height', a: a};
 };
-var mdgriffith$elm_ui$Internal$Model$NodeName = function (a) {
-	return {$: 'NodeName', a: a};
+var mdgriffith$elm_ui$Element$height = mdgriffith$elm_ui$Internal$Model$Height;
+var mdgriffith$elm_ui$Internal$Model$Content = {$: 'Content'};
+var mdgriffith$elm_ui$Element$shrink = mdgriffith$elm_ui$Internal$Model$Content;
+var mdgriffith$elm_ui$Internal$Model$Width = function (a) {
+	return {$: 'Width', a: a};
 };
+var mdgriffith$elm_ui$Element$width = mdgriffith$elm_ui$Internal$Model$Width;
 var mdgriffith$elm_ui$Internal$Model$Unkeyed = function (a) {
 	return {$: 'Unkeyed', a: a};
 };
-var mdgriffith$elm_ui$Internal$Model$AsEl = {$: 'AsEl'};
-var mdgriffith$elm_ui$Internal$Model$asEl = mdgriffith$elm_ui$Internal$Model$AsEl;
+var mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
+var mdgriffith$elm_ui$Internal$Model$asRow = mdgriffith$elm_ui$Internal$Model$AsRow;
 var mdgriffith$elm_ui$Internal$Model$Generic = {$: 'Generic'};
 var mdgriffith$elm_ui$Internal$Model$div = mdgriffith$elm_ui$Internal$Model$Generic;
 var mdgriffith$elm_ui$Internal$Flag$Field = F2(
@@ -8136,6 +8121,8 @@ var mdgriffith$elm_ui$Internal$Model$addKeyedChildren = F3(
 							inFront)));
 		}
 	});
+var mdgriffith$elm_ui$Internal$Model$AsEl = {$: 'AsEl'};
+var mdgriffith$elm_ui$Internal$Model$asEl = mdgriffith$elm_ui$Internal$Model$AsEl;
 var mdgriffith$elm_ui$Internal$Model$AsParagraph = {$: 'AsParagraph'};
 var mdgriffith$elm_ui$Internal$Model$asParagraph = mdgriffith$elm_ui$Internal$Model$AsParagraph;
 var elm$core$Basics$not = _Basics_not;
@@ -8143,6 +8130,13 @@ var elm$html$Html$div = _VirtualDom_node('div');
 var elm$html$Html$p = _VirtualDom_node('p');
 var elm$html$Html$s = _VirtualDom_node('s');
 var elm$html$Html$u = _VirtualDom_node('u');
+var elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			elm$json$Json$Encode$string(string));
+	});
 var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
 var elm$virtual_dom$VirtualDom$keyedNode = function (tag) {
 	return _VirtualDom_keyedNode(
@@ -11318,6 +11312,17 @@ var mdgriffith$elm_ui$Internal$Model$renderNullAdjustmentRule = F2(
 				]));
 	});
 var elm$core$Basics$neq = _Utils_notEqual;
+var elm$core$List$filter = F2(
+	function (isGood, list) {
+		return A3(
+			elm$core$List$foldr,
+			F2(
+				function (x, xs) {
+					return isGood(x) ? A2(elm$core$List$cons, x, xs) : xs;
+				}),
+			_List_Nil,
+			list);
+	});
 var elm$core$List$maximum = function (list) {
 	if (list.b) {
 		var x = list.a;
@@ -12130,6 +12135,9 @@ var mdgriffith$elm_ui$Internal$Model$Embedded = F2(
 	function (a, b) {
 		return {$: 'Embedded', a: a, b: b};
 	});
+var mdgriffith$elm_ui$Internal$Model$NodeName = function (a) {
+	return {$: 'NodeName', a: a};
+};
 var mdgriffith$elm_ui$Internal$Model$addNodeName = F2(
 	function (newNode, old) {
 		switch (old.$) {
@@ -13370,104 +13378,28 @@ var mdgriffith$elm_ui$Internal$Model$element = F4(
 				mdgriffith$elm_ui$Internal$Model$NoNearbyChildren,
 				elm$core$List$reverse(attributes)));
 	});
+var mdgriffith$elm_ui$Internal$Model$Attr = function (a) {
+	return {$: 'Attr', a: a};
+};
 var mdgriffith$elm_ui$Internal$Model$htmlClass = function (cls) {
 	return mdgriffith$elm_ui$Internal$Model$Attr(
 		elm$html$Html$Attributes$class(cls));
 };
-var mdgriffith$elm_ui$Element$image = F2(
-	function (attrs, _n0) {
-		var src = _n0.src;
-		var description = _n0.description;
-		var imageAttributes = A2(
-			elm$core$List$filter,
-			function (a) {
-				switch (a.$) {
-					case 'Width':
-						return true;
-					case 'Height':
-						return true;
-					default:
-						return false;
-				}
-			},
-			attrs);
-		return A4(
-			mdgriffith$elm_ui$Internal$Model$element,
-			mdgriffith$elm_ui$Internal$Model$asEl,
-			mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				elm$core$List$cons,
-				mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.imageContainer),
-				attrs),
-			mdgriffith$elm_ui$Internal$Model$Unkeyed(
-				_List_fromArray(
-					[
-						A4(
-						mdgriffith$elm_ui$Internal$Model$element,
-						mdgriffith$elm_ui$Internal$Model$asEl,
-						mdgriffith$elm_ui$Internal$Model$NodeName('img'),
-						_Utils_ap(
-							_List_fromArray(
-								[
-									mdgriffith$elm_ui$Internal$Model$Attr(
-									elm$html$Html$Attributes$src(src)),
-									mdgriffith$elm_ui$Internal$Model$Attr(
-									elm$html$Html$Attributes$alt(description))
-								]),
-							imageAttributes),
-						mdgriffith$elm_ui$Internal$Model$Unkeyed(_List_Nil))
-					])));
-	});
-var mdgriffith$elm_ui$Internal$Model$Text = function (a) {
-	return {$: 'Text', a: a};
-};
-var mdgriffith$elm_ui$Element$text = function (content) {
-	return mdgriffith$elm_ui$Internal$Model$Text(content);
-};
-var author$project$Modules$BumpToNormal$bumpSource = function (model) {
-	var _n0 = model.imagePath;
-	if (_n0.$ === 'Just') {
-		var path = _n0.a;
-		return A2(
-			mdgriffith$elm_ui$Element$image,
-			_List_Nil,
-			{description: '', src: path});
-	} else {
-		return mdgriffith$elm_ui$Element$text('No source image');
-	}
-};
-var author$project$Modules$BumpToNormal$SwapToImage = function (a) {
-	return {$: 'SwapToImage', a: a};
-};
-var author$project$Modules$BumpToNormal$file1 = {height: 356, path: '/assets/bump-example.jpg', width: 359};
-var author$project$Modules$BumpToNormal$file2 = {height: 300, path: '/assets/shapes.png', width: 300};
-var mdgriffith$elm_ui$Internal$Model$Height = function (a) {
-	return {$: 'Height', a: a};
-};
-var mdgriffith$elm_ui$Element$height = mdgriffith$elm_ui$Internal$Model$Height;
-var mdgriffith$elm_ui$Internal$Model$Content = {$: 'Content'};
-var mdgriffith$elm_ui$Element$shrink = mdgriffith$elm_ui$Internal$Model$Content;
-var mdgriffith$elm_ui$Internal$Model$Width = function (a) {
-	return {$: 'Width', a: a};
-};
-var mdgriffith$elm_ui$Element$width = mdgriffith$elm_ui$Internal$Model$Width;
-var mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
-var mdgriffith$elm_ui$Internal$Model$asColumn = mdgriffith$elm_ui$Internal$Model$AsColumn;
-var mdgriffith$elm_ui$Element$column = F2(
+var mdgriffith$elm_ui$Element$row = F2(
 	function (attrs, children) {
 		return A4(
 			mdgriffith$elm_ui$Internal$Model$element,
-			mdgriffith$elm_ui$Internal$Model$asColumn,
+			mdgriffith$elm_ui$Internal$Model$asRow,
 			mdgriffith$elm_ui$Internal$Model$div,
 			A2(
 				elm$core$List$cons,
-				mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.contentTop + (' ' + mdgriffith$elm_ui$Internal$Style$classes.contentLeft)),
+				mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + mdgriffith$elm_ui$Internal$Style$classes.contentCenterY)),
 				A2(
 					elm$core$List$cons,
-					mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
+					mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
 					A2(
 						elm$core$List$cons,
-						mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
+						mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
 						attrs))),
 			mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
 	});
@@ -13489,6 +13421,34 @@ var mdgriffith$elm_ui$Element$spacing = function (x) {
 			A2(mdgriffith$elm_ui$Internal$Model$spacingName, x, x),
 			x,
 			x));
+};
+var mdgriffith$elm_ui$Internal$Model$Text = function (a) {
+	return {$: 'Text', a: a};
+};
+var mdgriffith$elm_ui$Element$text = function (content) {
+	return mdgriffith$elm_ui$Internal$Model$Text(content);
+};
+var mdgriffith$elm_ui$Internal$Flag$fontColor = mdgriffith$elm_ui$Internal$Flag$flag(14);
+var mdgriffith$elm_ui$Internal$Model$Colored = F3(
+	function (a, b, c) {
+		return {$: 'Colored', a: a, b: b, c: c};
+	});
+var mdgriffith$elm_ui$Internal$Model$formatColorClass = function (_n0) {
+	var red = _n0.a;
+	var green = _n0.b;
+	var blue = _n0.c;
+	var alpha = _n0.d;
+	return mdgriffith$elm_ui$Internal$Model$floatClass(red) + ('-' + (mdgriffith$elm_ui$Internal$Model$floatClass(green) + ('-' + (mdgriffith$elm_ui$Internal$Model$floatClass(blue) + ('-' + mdgriffith$elm_ui$Internal$Model$floatClass(alpha))))));
+};
+var mdgriffith$elm_ui$Element$Font$color = function (fontColor) {
+	return A2(
+		mdgriffith$elm_ui$Internal$Model$StyleClass,
+		mdgriffith$elm_ui$Internal$Flag$fontColor,
+		A3(
+			mdgriffith$elm_ui$Internal$Model$Colored,
+			'fc-' + mdgriffith$elm_ui$Internal$Model$formatColorClass(fontColor),
+			'color',
+			fontColor));
 };
 var elm$json$Json$Encode$bool = _Json_wrap;
 var elm$html$Html$Attributes$boolProperty = F2(
@@ -13637,17 +13597,20 @@ var mdgriffith$elm_ui$Element$Input$button = F2(
 					[label])));
 	});
 var author$project$Modules$BumpToNormal$chooseImage = A2(
-	mdgriffith$elm_ui$Element$column,
+	mdgriffith$elm_ui$Element$row,
 	_List_fromArray(
 		[
-			mdgriffith$elm_ui$Element$spacing(10)
+			mdgriffith$elm_ui$Element$spacing(20)
 		]),
 	_List_fromArray(
 		[
-			mdgriffith$elm_ui$Element$text('Which image would you like?'),
+			mdgriffith$elm_ui$Element$text('Try a sample image?'),
 			A2(
 			mdgriffith$elm_ui$Element$Input$button,
-			_List_Nil,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$Font$color(author$project$App$Styles$lightPurple)
+				]),
 			{
 				label: mdgriffith$elm_ui$Element$text('Weave'),
 				onPress: elm$core$Maybe$Just(
@@ -13655,16 +13618,228 @@ var author$project$Modules$BumpToNormal$chooseImage = A2(
 			}),
 			A2(
 			mdgriffith$elm_ui$Element$Input$button,
-			_List_Nil,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$Font$color(author$project$App$Styles$lightPurple)
+				]),
 			{
 				label: mdgriffith$elm_ui$Element$text('Shapes'),
 				onPress: elm$core$Maybe$Just(
 					author$project$Modules$BumpToNormal$SwapToImage(author$project$Modules$BumpToNormal$file2))
 			})
 		]));
+var author$project$App$Styles$purple = A3(mdgriffith$elm_ui$Element$rgb255, 116, 32, 160);
+var mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
+	return {$: 'AlignX', a: a};
+};
+var mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
+var mdgriffith$elm_ui$Element$centerX = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$CenterX);
+var mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
+	return {$: 'AlignY', a: a};
+};
+var mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
+var mdgriffith$elm_ui$Element$centerY = mdgriffith$elm_ui$Internal$Model$AlignY(mdgriffith$elm_ui$Internal$Model$CenterY);
+var mdgriffith$elm_ui$Internal$Model$AsColumn = {$: 'AsColumn'};
+var mdgriffith$elm_ui$Internal$Model$asColumn = mdgriffith$elm_ui$Internal$Model$AsColumn;
+var mdgriffith$elm_ui$Element$column = F2(
+	function (attrs, children) {
+		return A4(
+			mdgriffith$elm_ui$Internal$Model$element,
+			mdgriffith$elm_ui$Internal$Model$asColumn,
+			mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				elm$core$List$cons,
+				mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.contentTop + (' ' + mdgriffith$elm_ui$Internal$Style$classes.contentLeft)),
+				A2(
+					elm$core$List$cons,
+					mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
+					A2(
+						elm$core$List$cons,
+						mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
+						attrs))),
+			mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
+	});
+var mdgriffith$elm_ui$Element$el = F2(
+	function (attrs, child) {
+		return A4(
+			mdgriffith$elm_ui$Internal$Model$element,
+			mdgriffith$elm_ui$Internal$Model$asEl,
+			mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				elm$core$List$cons,
+				mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
+				A2(
+					elm$core$List$cons,
+					mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
+					attrs)),
+			mdgriffith$elm_ui$Internal$Model$Unkeyed(
+				_List_fromArray(
+					[child])));
+	});
+var mdgriffith$elm_ui$Internal$Model$Px = function (a) {
+	return {$: 'Px', a: a};
+};
+var mdgriffith$elm_ui$Element$px = mdgriffith$elm_ui$Internal$Model$Px;
+var mdgriffith$elm_ui$Internal$Flag$borderColor = mdgriffith$elm_ui$Internal$Flag$flag(28);
+var mdgriffith$elm_ui$Element$Border$color = function (clr) {
+	return A2(
+		mdgriffith$elm_ui$Internal$Model$StyleClass,
+		mdgriffith$elm_ui$Internal$Flag$borderColor,
+		A3(
+			mdgriffith$elm_ui$Internal$Model$Colored,
+			'bc-' + mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
+			'border-color',
+			clr));
+};
+var mdgriffith$elm_ui$Internal$Flag$borderStyle = mdgriffith$elm_ui$Internal$Flag$flag(11);
+var mdgriffith$elm_ui$Element$Border$solid = A2(mdgriffith$elm_ui$Internal$Model$Class, mdgriffith$elm_ui$Internal$Flag$borderStyle, mdgriffith$elm_ui$Internal$Style$classes.borderSolid);
+var mdgriffith$elm_ui$Internal$Model$BorderWidth = F5(
+	function (a, b, c, d, e) {
+		return {$: 'BorderWidth', a: a, b: b, c: c, d: d, e: e};
+	});
+var mdgriffith$elm_ui$Element$Border$width = function (v) {
+	return A2(
+		mdgriffith$elm_ui$Internal$Model$StyleClass,
+		mdgriffith$elm_ui$Internal$Flag$borderWidth,
+		A5(
+			mdgriffith$elm_ui$Internal$Model$BorderWidth,
+			'b-' + elm$core$String$fromInt(v),
+			v,
+			v,
+			v,
+			v));
+};
+var author$project$Modules$BumpToNormal$boxHolder = F2(
+	function (link, content) {
+		return A2(
+			mdgriffith$elm_ui$Element$column,
+			_List_fromArray(
+				[
+					mdgriffith$elm_ui$Element$spacing(10)
+				]),
+			_List_fromArray(
+				[
+					A2(
+					mdgriffith$elm_ui$Element$el,
+					_List_fromArray(
+						[
+							mdgriffith$elm_ui$Element$Border$solid,
+							mdgriffith$elm_ui$Element$Border$width(2),
+							mdgriffith$elm_ui$Element$Border$color(author$project$App$Styles$purple),
+							mdgriffith$elm_ui$Element$width(
+							mdgriffith$elm_ui$Element$px(512)),
+							mdgriffith$elm_ui$Element$height(
+							mdgriffith$elm_ui$Element$px(512))
+						]),
+					A2(
+						mdgriffith$elm_ui$Element$row,
+						_List_fromArray(
+							[mdgriffith$elm_ui$Element$centerX, mdgriffith$elm_ui$Element$centerY]),
+						_List_fromArray(
+							[content]))),
+					A2(mdgriffith$elm_ui$Element$el, _List_Nil, link)
+				]));
+	});
+var elm$html$Html$Attributes$alt = elm$html$Html$Attributes$stringProperty('alt');
+var elm$html$Html$Attributes$src = function (url) {
+	return A2(
+		elm$html$Html$Attributes$stringProperty,
+		'src',
+		_VirtualDom_noJavaScriptOrHtmlUri(url));
+};
+var mdgriffith$elm_ui$Element$image = F2(
+	function (attrs, _n0) {
+		var src = _n0.src;
+		var description = _n0.description;
+		var imageAttributes = A2(
+			elm$core$List$filter,
+			function (a) {
+				switch (a.$) {
+					case 'Width':
+						return true;
+					case 'Height':
+						return true;
+					default:
+						return false;
+				}
+			},
+			attrs);
+		return A4(
+			mdgriffith$elm_ui$Internal$Model$element,
+			mdgriffith$elm_ui$Internal$Model$asEl,
+			mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				elm$core$List$cons,
+				mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.imageContainer),
+				attrs),
+			mdgriffith$elm_ui$Internal$Model$Unkeyed(
+				_List_fromArray(
+					[
+						A4(
+						mdgriffith$elm_ui$Internal$Model$element,
+						mdgriffith$elm_ui$Internal$Model$asEl,
+						mdgriffith$elm_ui$Internal$Model$NodeName('img'),
+						_Utils_ap(
+							_List_fromArray(
+								[
+									mdgriffith$elm_ui$Internal$Model$Attr(
+									elm$html$Html$Attributes$src(src)),
+									mdgriffith$elm_ui$Internal$Model$Attr(
+									elm$html$Html$Attributes$alt(description))
+								]),
+							imageAttributes),
+						mdgriffith$elm_ui$Internal$Model$Unkeyed(_List_Nil))
+					])));
+	});
+var author$project$Modules$BumpToNormal$bumpSource = function (model) {
+	var _n0 = model.imagePath;
+	if (_n0.$ === 'Just') {
+		var path = _n0.a;
+		return A2(
+			mdgriffith$elm_ui$Element$image,
+			_List_Nil,
+			{description: '', src: path});
+	} else {
+		return mdgriffith$elm_ui$Element$text('No source image');
+	}
+};
 var author$project$Modules$BumpToNormal$Download = function (a) {
 	return {$: 'Download', a: a};
 };
+var elm$html$Html$a = _VirtualDom_node('a');
+var elm$html$Html$Attributes$download = function (fileName) {
+	return A2(elm$html$Html$Attributes$stringProperty, 'download', fileName);
+};
+var elm$html$Html$Attributes$href = function (url) {
+	return A2(
+		elm$html$Html$Attributes$stringProperty,
+		'href',
+		_VirtualDom_noJavaScriptUri(url));
+};
+var elm$html$Html$Attributes$id = elm$html$Html$Attributes$stringProperty('id');
+var elm$html$Html$Attributes$target = elm$html$Html$Attributes$stringProperty('target');
+var elm$core$Basics$always = F2(
+	function (a, _n0) {
+		return a;
+	});
+var mdgriffith$elm_ui$Internal$Model$unstyled = A2(elm$core$Basics$composeL, mdgriffith$elm_ui$Internal$Model$Unstyled, elm$core$Basics$always);
+var mdgriffith$elm_ui$Element$html = mdgriffith$elm_ui$Internal$Model$unstyled;
+var author$project$Modules$BumpToNormal$downloadLink = mdgriffith$elm_ui$Element$html(
+	A2(
+		elm$html$Html$a,
+		_List_fromArray(
+			[
+				elm$html$Html$Attributes$id('downloadLink'),
+				elm$html$Html$Attributes$href(''),
+				elm$html$Html$Attributes$download('normal-map.png'),
+				elm$html$Html$Attributes$target('_blank'),
+				elm$html$Html$Events$onClick(
+				author$project$Modules$BumpToNormal$Download('image-output'))
+			]),
+		_List_fromArray(
+			[
+				elm$html$Html$text('download me')
+			])));
 var author$project$Modules$BumpToNormal$fragmentShader = {
 	src: '\n        precision mediump float;\n\n        uniform sampler2D texture;\n        \n        varying vec2 vcoord;\n        varying vec2 vsize;\n\n        float strength = 0.5;\n        float minLevel = 0.0;\n        float maxLevel = 255.0;\n        float gamma = 1.5;\n\n        float grayscale(vec4 colour) {\n          return (colour.r + colour.g + colour.b) / 3.0;\n        }\n\n        float makeSample(vec2 at) {\n          return grayscale(texture2D(texture, at));\n        }\n\n        float rateOfChange(float sample1, float sample2, float sample3) {\n          return ((sample1 - sample2) + (sample2 - sample3)) / strength;\n        }\n\n        float levelRange(float color, float minInput, float maxInput){\n            return min(max(color - minInput, 0.0) / (maxInput - minInput), 1.0);\n        }\n\n        float gammaCorrect(float value, float gamma){\n          return pow(value, 1.0 / gamma);\n        }\n\n        float finalLevels(float color, float minInput, float gamma, float maxInput){\n            return gammaCorrect(levelRange(color, minInput, maxInput), gamma);\n        }\n\n        void main () {\n\n          float oneWidth = 1.0 / vsize.x;\n          float oneHeight = 1.0 / vsize.y;\n\n          float r = rateOfChange(\n            makeSample(vec2(vcoord.x - oneWidth, vcoord.y)),\n            makeSample(vcoord),\n            makeSample(vec2(vcoord.x + oneWidth, vcoord.y))\n          );\n\n          float g = rateOfChange(\n            makeSample(vec2(vcoord.x, vcoord.y - oneHeight)),\n            makeSample(vcoord),\n            makeSample(vec2(vcoord.x, vcoord.y + oneHeight))\n          );\n\n          float b = 1.0 - ((r + g) / 2.0);\n\n          float rGamma = finalLevels(r + 0.5, minLevel/255.0, gamma, maxLevel/255.0);\n          float gGamma = finalLevels(g + 0.5, minLevel/255.0, gamma, maxLevel/255.0);\n\n          gl_FragColor = vec4(rGamma, gGamma, b, 1.0);\n        }\n    ',
 	attributes: {},
@@ -13729,26 +13904,14 @@ var author$project$Modules$BumpToNormal$vertexShader = {
 	attributes: {coord: 'coord', position: 'position'},
 	uniforms: {projection: 'projection', size: 'size', transform: 'transform'}
 };
-var elm$html$Html$a = _VirtualDom_node('a');
-var elm$html$Html$Attributes$download = function (fileName) {
-	return A2(elm$html$Html$Attributes$stringProperty, 'download', fileName);
-};
 var elm$html$Html$Attributes$height = function (n) {
 	return A2(
 		_VirtualDom_attribute,
 		'height',
 		elm$core$String$fromInt(n));
 };
-var elm$html$Html$Attributes$href = function (url) {
-	return A2(
-		elm$html$Html$Attributes$stringProperty,
-		'href',
-		_VirtualDom_noJavaScriptUri(url));
-};
-var elm$html$Html$Attributes$id = elm$html$Html$Attributes$stringProperty('id');
 var elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var elm$html$Html$Attributes$style = elm$virtual_dom$VirtualDom$style;
-var elm$html$Html$Attributes$target = elm$html$Html$Attributes$stringProperty('target');
 var elm$html$Html$Attributes$width = function (n) {
 	return A2(
 		_VirtualDom_attribute,
@@ -13849,73 +14012,71 @@ var elm_explorations$webgl$WebGL$toHtmlWith = F3(
 	function (options, attributes, entities) {
 		return A3(_WebGL_toHtml, options, attributes, entities);
 	});
-var elm$core$Basics$always = F2(
-	function (a, _n0) {
-		return a;
-	});
-var mdgriffith$elm_ui$Internal$Model$unstyled = A2(elm$core$Basics$composeL, mdgriffith$elm_ui$Internal$Model$Unstyled, elm$core$Basics$always);
-var mdgriffith$elm_ui$Element$html = mdgriffith$elm_ui$Internal$Model$unstyled;
 var author$project$Modules$BumpToNormal$outputCanvas = function (model) {
-	return A2(
+	return A3(
+		elm$core$Basics$apL,
 		elm$core$Maybe$withDefault,
 		mdgriffith$elm_ui$Element$text('Texture not loaded'),
 		A2(
 			elm$core$Maybe$map,
 			function (tx) {
-				return A2(
-					mdgriffith$elm_ui$Element$column,
-					_List_Nil,
-					_List_fromArray(
-						[
-							mdgriffith$elm_ui$Element$html(
-							A3(
-								elm_explorations$webgl$WebGL$toHtmlWith,
-								_List_fromArray(
-									[
-										A4(elm_explorations$webgl$WebGL$clearColor, 0, 1, 0, 1),
-										elm_explorations$webgl$WebGL$alpha(false),
-										elm_explorations$webgl$WebGL$preserveDrawingBuffer
-									]),
-								_List_fromArray(
-									[
-										elm$html$Html$Attributes$width(model.size.width),
-										elm$html$Html$Attributes$height(model.size.height),
-										A2(elm$html$Html$Attributes$style, 'display', 'block'),
-										elm$html$Html$Attributes$id('image-output')
-									]),
-								_List_fromArray(
-									[
-										A4(
-										elm_explorations$webgl$WebGL$entity,
-										author$project$Modules$BumpToNormal$vertexShader,
-										author$project$Modules$BumpToNormal$fragmentShader,
-										author$project$Modules$BumpToNormal$mesh,
-										{
-											projection: author$project$Modules$BumpToNormal$projection(model.size),
-											size: author$project$Modules$BumpToNormal$imageSizeToVec2(model.size),
-											texture: tx,
-											transform: author$project$Modules$BumpToNormal$transform(model.size)
-										})
-									]))),
-							mdgriffith$elm_ui$Element$html(
-							A2(
-								elm$html$Html$a,
-								_List_fromArray(
-									[
-										elm$html$Html$Attributes$id('downloadLink'),
-										elm$html$Html$Attributes$href(''),
-										elm$html$Html$Attributes$download('normal-map.png'),
-										elm$html$Html$Attributes$target('_blank'),
-										elm$html$Html$Events$onClick(
-										author$project$Modules$BumpToNormal$Download('image-output'))
-									]),
-								_List_fromArray(
-									[
-										elm$html$Html$text('download me')
-									])))
-						]));
+				return mdgriffith$elm_ui$Element$html(
+					A3(
+						elm_explorations$webgl$WebGL$toHtmlWith,
+						_List_fromArray(
+							[
+								A4(elm_explorations$webgl$WebGL$clearColor, 0, 1, 0, 1),
+								elm_explorations$webgl$WebGL$alpha(false),
+								elm_explorations$webgl$WebGL$preserveDrawingBuffer
+							]),
+						_List_fromArray(
+							[
+								elm$html$Html$Attributes$width(model.size.width),
+								elm$html$Html$Attributes$height(model.size.height),
+								A2(elm$html$Html$Attributes$style, 'display', 'block'),
+								elm$html$Html$Attributes$id('image-output')
+							]),
+						_List_fromArray(
+							[
+								A4(
+								elm_explorations$webgl$WebGL$entity,
+								author$project$Modules$BumpToNormal$vertexShader,
+								author$project$Modules$BumpToNormal$fragmentShader,
+								author$project$Modules$BumpToNormal$mesh,
+								{
+									projection: author$project$Modules$BumpToNormal$projection(model.size),
+									size: author$project$Modules$BumpToNormal$imageSizeToVec2(model.size),
+									texture: tx,
+									transform: author$project$Modules$BumpToNormal$transform(model.size)
+								})
+							])));
 			},
 			model.texture));
+};
+var author$project$Modules$BumpToNormal$uploadLink = mdgriffith$elm_ui$Element$text('upload');
+var mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
+	return {$: 'Fill', a: a};
+};
+var mdgriffith$elm_ui$Element$fill = mdgriffith$elm_ui$Internal$Model$Fill(1);
+var author$project$Modules$BumpToNormal$holder = function (model) {
+	return A2(
+		mdgriffith$elm_ui$Element$row,
+		_List_fromArray(
+			[
+				mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$fill)
+			]),
+		_List_fromArray(
+			[
+				A2(
+				author$project$Modules$BumpToNormal$boxHolder,
+				author$project$Modules$BumpToNormal$uploadLink,
+				author$project$Modules$BumpToNormal$bumpSource(model)),
+				mdgriffith$elm_ui$Element$text('>>'),
+				A2(
+				author$project$Modules$BumpToNormal$boxHolder,
+				author$project$Modules$BumpToNormal$downloadLink,
+				author$project$Modules$BumpToNormal$outputCanvas(model))
+			]));
 };
 var mdgriffith$elm_ui$Internal$Flag$padding = mdgriffith$elm_ui$Internal$Flag$flag(2);
 var mdgriffith$elm_ui$Internal$Model$PaddingStyle = F5(
@@ -13934,26 +14095,6 @@ var mdgriffith$elm_ui$Element$padding = function (x) {
 			x,
 			x));
 };
-var mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
-var mdgriffith$elm_ui$Internal$Model$asRow = mdgriffith$elm_ui$Internal$Model$AsRow;
-var mdgriffith$elm_ui$Element$row = F2(
-	function (attrs, children) {
-		return A4(
-			mdgriffith$elm_ui$Internal$Model$element,
-			mdgriffith$elm_ui$Internal$Model$asRow,
-			mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				elm$core$List$cons,
-				mdgriffith$elm_ui$Internal$Model$htmlClass(mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + mdgriffith$elm_ui$Internal$Style$classes.contentCenterY)),
-				A2(
-					elm$core$List$cons,
-					mdgriffith$elm_ui$Element$width(mdgriffith$elm_ui$Element$shrink),
-					A2(
-						elm$core$List$cons,
-						mdgriffith$elm_ui$Element$height(mdgriffith$elm_ui$Element$shrink),
-						attrs))),
-			mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-	});
 var author$project$Modules$BumpToNormal$view = function (model) {
 	return A2(
 		mdgriffith$elm_ui$Element$column,
@@ -13969,24 +14110,9 @@ var author$project$Modules$BumpToNormal$view = function (model) {
 				_List_Nil,
 				_List_fromArray(
 					[author$project$Modules$BumpToNormal$chooseImage])),
-				author$project$Modules$BumpToNormal$bumpSource(model),
-				author$project$Modules$BumpToNormal$outputCanvas(model)
+				author$project$Modules$BumpToNormal$holder(model)
 			]));
 };
-var mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
-	return {$: 'AlignX', a: a};
-};
-var mdgriffith$elm_ui$Internal$Model$CenterX = {$: 'CenterX'};
-var mdgriffith$elm_ui$Element$centerX = mdgriffith$elm_ui$Internal$Model$AlignX(mdgriffith$elm_ui$Internal$Model$CenterX);
-var mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
-	return {$: 'AlignY', a: a};
-};
-var mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
-var mdgriffith$elm_ui$Element$centerY = mdgriffith$elm_ui$Internal$Model$AlignY(mdgriffith$elm_ui$Internal$Model$CenterY);
-var mdgriffith$elm_ui$Internal$Model$Fill = function (a) {
-	return {$: 'Fill', a: a};
-};
-var mdgriffith$elm_ui$Element$fill = mdgriffith$elm_ui$Internal$Model$Fill(1);
 var elm$virtual_dom$VirtualDom$map = _VirtualDom_map;
 var mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
 var mdgriffith$elm_ui$Internal$Model$map = F2(
@@ -14020,10 +14146,6 @@ var mdgriffith$elm_ui$Internal$Model$map = F2(
 		}
 	});
 var mdgriffith$elm_ui$Element$map = mdgriffith$elm_ui$Internal$Model$map;
-var mdgriffith$elm_ui$Internal$Model$Px = function (a) {
-	return {$: 'Px', a: a};
-};
-var mdgriffith$elm_ui$Element$px = mdgriffith$elm_ui$Internal$Model$Px;
 var author$project$App$PageRouting$pageContent = function (model) {
 	var _n0 = model.page;
 	switch (_n0.$) {
@@ -14111,8 +14233,6 @@ var author$project$App$SubMenu$MenuItem = F2(
 		return {label: label, url: url};
 	});
 var author$project$App$Styles$darkPurple = A3(mdgriffith$elm_ui$Element$rgb255, 80, 1, 120);
-var author$project$App$Styles$lightPurple = A3(mdgriffith$elm_ui$Element$rgb255, 171, 121, 198);
-var author$project$App$Styles$purple = A3(mdgriffith$elm_ui$Element$rgb255, 116, 32, 160);
 var elm$html$Html$Attributes$rel = _VirtualDom_attribute('rel');
 var mdgriffith$elm_ui$Element$link = F2(
 	function (attrs, _n0) {
@@ -14251,17 +14371,6 @@ var mdgriffith$elm_ui$Element$mouseOver = function (decs) {
 			mdgriffith$elm_ui$Internal$Model$unwrapDecorations(decs)));
 };
 var mdgriffith$elm_ui$Internal$Flag$bgColor = mdgriffith$elm_ui$Internal$Flag$flag(8);
-var mdgriffith$elm_ui$Internal$Model$Colored = F3(
-	function (a, b, c) {
-		return {$: 'Colored', a: a, b: b, c: c};
-	});
-var mdgriffith$elm_ui$Internal$Model$formatColorClass = function (_n0) {
-	var red = _n0.a;
-	var green = _n0.b;
-	var blue = _n0.c;
-	var alpha = _n0.d;
-	return mdgriffith$elm_ui$Internal$Model$floatClass(red) + ('-' + (mdgriffith$elm_ui$Internal$Model$floatClass(green) + ('-' + (mdgriffith$elm_ui$Internal$Model$floatClass(blue) + ('-' + mdgriffith$elm_ui$Internal$Model$floatClass(alpha))))));
-};
 var mdgriffith$elm_ui$Element$Background$color = function (clr) {
 	return A2(
 		mdgriffith$elm_ui$Internal$Model$StyleClass,
@@ -14271,17 +14380,6 @@ var mdgriffith$elm_ui$Element$Background$color = function (clr) {
 			'bg-' + mdgriffith$elm_ui$Internal$Model$formatColorClass(clr),
 			'background-color',
 			clr));
-};
-var mdgriffith$elm_ui$Internal$Flag$fontColor = mdgriffith$elm_ui$Internal$Flag$flag(14);
-var mdgriffith$elm_ui$Element$Font$color = function (fontColor) {
-	return A2(
-		mdgriffith$elm_ui$Internal$Model$StyleClass,
-		mdgriffith$elm_ui$Internal$Flag$fontColor,
-		A3(
-			mdgriffith$elm_ui$Internal$Model$Colored,
-			'fc-' + mdgriffith$elm_ui$Internal$Model$formatColorClass(fontColor),
-			'color',
-			fontColor));
 };
 var mdgriffith$elm_ui$Internal$Flag$fontSize = mdgriffith$elm_ui$Internal$Flag$flag(4);
 var mdgriffith$elm_ui$Internal$Model$FontSize = function (a) {
