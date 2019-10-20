@@ -54,6 +54,12 @@ update msg model =
                 ( m, cmd ) ->
                     ( { model | bumpToNormal = m }, Cmd.map (\e -> BumpToNormalMsgWrapper e) cmd )
 
+        ScalaCallback (Doubled d) ->
+            ( model, Cmd.none )
+
+        ScalaCallback Ignore ->
+            ( model, Cmd.none )
+
 
 view : Model -> Document Msg
 view model =

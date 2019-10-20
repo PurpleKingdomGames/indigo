@@ -8098,7 +8098,7 @@ var author$project$Main$update = F2(
 						model,
 						elm$browser$Browser$Navigation$load(href));
 				}
-			default:
+			case 'BumpToNormalMsgWrapper':
 				var b2nMsg = msg.a;
 				var _n1 = A2(author$project$Modules$BumpToNormal$update, b2nMsg, model.bumpToNormal);
 				var m = _n1.a;
@@ -8113,6 +8113,14 @@ var author$project$Main$update = F2(
 							return author$project$App$Msg$BumpToNormalMsgWrapper(e);
 						},
 						cmd));
+			default:
+				if (msg.a.$ === 'Doubled') {
+					var d = msg.a.a;
+					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+				} else {
+					var _n2 = msg.a;
+					return _Utils_Tuple2(model, elm$core$Platform$Cmd$none);
+				}
 		}
 	});
 var mdgriffith$elm_ui$Internal$Model$Rgba = F4(
