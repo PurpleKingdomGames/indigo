@@ -1,8 +1,9 @@
 package indigoframework
 
 import indigo.shared.scenegraph._
-import indigo.shared.datatypes.{AmbientLight, Rectangle}
+import indigo.shared.datatypes.Rectangle
 import indigo.shared.EntityRectangle
+import indigo.shared.datatypes.Tint
 
 import indigo.shared.EqualTo._
 
@@ -45,9 +46,11 @@ object GameViewHelper {
       graphics,
       Nil,
       Nil,
-      AmbientLight.Normal,
+      Tint.None,
       Nil,
-      SceneAudio.None
+      SceneAudio.None,
+      ScreenEffects.None,
+      Nil
     )
   }
 
