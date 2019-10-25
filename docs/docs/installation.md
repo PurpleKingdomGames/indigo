@@ -37,7 +37,7 @@ lazy val snake =
     .settings( // Standard SBT settings
       name := "snake",
       version := "0.0.1",
-      scalaVersion := "2.12.8",
+      scalaVersion := "2.12.10",
       organization := "snake",
       libraryDependencies ++= Seq(
         "com.lihaoyi"    %%% "utest"      % "0.6.6"  % "test",
