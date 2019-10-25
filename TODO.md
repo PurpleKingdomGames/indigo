@@ -1,3 +1,5 @@
+Per layer magnification
+Ability to use WebGL 1 or 2.
 
 # Building a 2D pixel art game engine
 This kind of engine has some interesting properties.
