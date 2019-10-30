@@ -46,8 +46,13 @@ object BezierTests extends TestSuite {
           Bezier(Vertex(5, 5))
 
         bezier.at(0d) === Vertex(5, 5) ==> true
+        bezier.at(0d) === Bezier.atUnspecialised(bezier, 0d) ==> true
+
         bezier.at(0.5d) === Vertex(5, 5) ==> true
+        bezier.at(0.5d) === Bezier.atUnspecialised(bezier, 0.5d) ==> true
+
         bezier.at(1d) === Vertex(5, 5) ==> true
+        bezier.at(1d) === Bezier.atUnspecialised(bezier, 1d) ==> true
 
       }
 
@@ -57,12 +62,25 @@ object BezierTests extends TestSuite {
           Bezier(Vertex(0, 0), Vertex(10, 10))
 
         bezier.at(-50d) === Vertex(0, 0) ==> true
+        bezier.at(-50d) === Bezier.atUnspecialised(bezier, -50d) ==> true
+
         bezier.at(0d) === Vertex(0, 0) ==> true
+        bezier.at(0d) === Bezier.atUnspecialised(bezier, 0d) ==> true
+
         bezier.at(0.25d) === Vertex(2.5, 2.5) ==> true
+        bezier.at(0.25d) === Bezier.atUnspecialised(bezier, 0.25d) ==> true
+
         bezier.at(0.5d) === Vertex(5, 5) ==> true
+        bezier.at(0.5d) === Bezier.atUnspecialised(bezier, 0.5d) ==> true
+
         bezier.at(0.75d) === Vertex(7.5, 7.5) ==> true
+        bezier.at(0.75d) === Bezier.atUnspecialised(bezier, 0.75d) ==> true
+
         bezier.at(1d) === Vertex(10, 10) ==> true
+        bezier.at(1d) === Bezier.atUnspecialised(bezier, 1d) ==> true
+
         bezier.at(100d) === Vertex(10, 10) ==> true
+        bezier.at(100d) === Bezier.atUnspecialised(bezier, 100d) ==> true
 
       }
 
@@ -82,12 +100,16 @@ object BezierTests extends TestSuite {
          */
 
         bezier.at(0d) === Vertex(2, 2) ==> true
+        bezier.at(0d) === Bezier.atUnspecialised(bezier, 0d) ==> true
+
         bezier.at(0.5d) === Vertex(7.5, 6.5) ==> true
+        bezier.at(0.5d) === Bezier.atUnspecialised(bezier, 0.5d) ==> true
+
         bezier.at(1d) === Vertex(20, 10) ==> true
 
       }
 
-      "Higher-Order (4 or more points)" - {
+      "Cubic (4 points)" - {
 
         val bezier =
           Bezier(Vertex(2, 2), Vertex(4, 7), Vertex(20, 10), Vertex(3, 100))
@@ -105,8 +127,13 @@ object BezierTests extends TestSuite {
          */
 
         bezier.at(0d) === Vertex(2, 2) ==> true
+        bezier.at(0d) === Bezier.atUnspecialised(bezier, 0d) ==> true
+
         bezier.at(0.5d) === Vertex(9.625, 19.125) ==> true
+        bezier.at(0.5d) === Bezier.atUnspecialised(bezier, 0.5d) ==> true
+
         bezier.at(1d) === Vertex(3, 100) ==> true
+        bezier.at(1d) === Bezier.atUnspecialised(bezier, 1d) ==> true
 
       }
 
