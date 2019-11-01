@@ -2,6 +2,7 @@ package indigoexts.primitive
 
 import utest._
 import indigoexts.primitives.UpdateList
+import indigoexts.primitives.UpdatePattern
 
 object UpdateListTests extends TestSuite {
 
@@ -26,7 +27,7 @@ object UpdateListTests extends TestSuite {
       "interleaved update" - {
 
         val p =
-          UpdateList.Pattern.Interleave()
+          UpdatePattern.Interleave()
 
         val l: UpdateList[Int] =
           UpdateList(List(1, 2, 3)).withPattern(p)
@@ -61,7 +62,7 @@ object UpdateListTests extends TestSuite {
       "update every" - {
 
         val p =
-          UpdateList.Pattern.Every(3)
+          UpdatePattern.Every(3)
 
         val l: UpdateList[Int] =
           UpdateList(List(1, 2, 3)).withPattern(p)
@@ -103,7 +104,7 @@ object UpdateListTests extends TestSuite {
       "batch update" - {
 
         val p =
-          UpdateList.Pattern.Batch(4)
+          UpdatePattern.Batch(4)
 
         val list: List[Int] =
           List(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
