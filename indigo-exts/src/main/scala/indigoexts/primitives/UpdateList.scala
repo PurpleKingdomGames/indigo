@@ -1,54 +1,94 @@
 package indigoexts.primitives
 
 import indigo.shared.EqualTo._
+import scala.collection.mutable.ListBuffer
 
-final class UpdateList[A](list: List[UpdateList.Updateable[A]], pattern: UpdateList.Pattern) {
+final class UpdateList[A](list: List[A], pattern: UpdateList.Pattern) {
 
-  def update(f: A => A): UpdateList[A] =
-    new UpdateList(
-      list.map { x =>
-        if (pattern(x)) new UpdateList.Updateable(f(x.value), x.updateCount + 1, x.position)
-        else x
-      },
-      pattern
-    )
+  def update(f: A => A): UpdateList[A] = {
+    val (v, p) = UpdateList.updateList(list, f, pattern)
+
+    new UpdateList(v, p)
+  }
 
   def withPattern(newPattern: UpdateList.Pattern): UpdateList[A] =
     new UpdateList[A](list, newPattern)
 
   def toList: List[A] =
-    list.map(_.value)
+    list
 }
 
 object UpdateList {
 
-  final class Updateable[A](val value: A, val updateCount: Long, val position: Long)
-
-  def apply[A](l: List[A]): UpdateList[A] = {
-    val inits: List[(Long, Long)] =
-      List.fill(l.length)(0L).zipWithIndex.map(p => (p._1, p._2.toLong))
-
+  def apply[A](l: List[A]): UpdateList[A] =
     new UpdateList(
-      tupledToUpdateable(l.zip(inits)),
-      Pattern.none
+      l,
+      Pattern.Constant
     )
-  }
 
-  def tupledToUpdateable[A]: List[(A, (Long, Long))] => List[Updateable[A]] =
-    _.map { p =>
-      new Updateable[A](p._1, p._2._1, p._2._2)
+  @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var", "org.wartremover.warts.MutableDataStructures"))
+  def updateList[A](l: List[A], f: A => A, pattern: Pattern): (List[A], Pattern) = {
+    var i: Int             = 0
+    val res: ListBuffer[A] = new ListBuffer[A]
+
+    while (i < l.length) {
+      res.insert(i, pattern.update(l(i), f, i))
+
+      i = i + 1
     }
 
-  type Pattern = Updateable[_] => Boolean
+    (res.toList, pattern.step)
+  }
+
+  sealed trait Pattern {
+    def update[A](value: A, f: A => A, position: Int): A
+    def step: Pattern
+  }
 
   object Pattern {
 
-    val none: Pattern =
-      _ => true
+    case object Constant extends Pattern {
+      def update[A](value: A, f: A => A, position: Int): A =
+        f(value)
 
-    def interleave(every: Int): Pattern =
-      _.position % every === 0
+      def step: Pattern = this
+    }
+
+    final class Interleave(flip: Boolean) extends Pattern {
+      def update[A](value: A, f: A => A, position: Int): A =
+        if (position % 2 === 0 ^ flip) f(value) else value
+
+      def step: Pattern =
+        new Interleave(!flip)
+    }
+    object Interleave {
+      def apply(): Interleave =
+        new Interleave(false)
+    }
+
+    final class Every(every: Int, count: Int) extends Pattern {
+      def update[A](value: A, f: A => A, position: Int): A =
+        if ((position - count) % every === 0) f(value) else value
+
+      def step: Pattern =
+        new Every(every, (count + 1) % every)
+    }
+    object Every {
+      def apply(every: Int): Every =
+        new Every(every, 0)
+    }
+
+    final class Batch(size: Int, count: Int) extends Pattern {
+      def update[A](value: A, f: A => A, position: Int): A =
+        if (((position / size) - count) % size === 0) f(value) else value
+
+      def step: Pattern =
+        new Batch(size, (count + 1) % size)
+    }
+    object Batch {
+      def apply(size: Int): Batch =
+        new Batch(size, 0)
+    }
 
   }
-
 }
