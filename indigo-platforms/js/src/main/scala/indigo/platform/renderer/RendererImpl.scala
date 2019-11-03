@@ -134,6 +134,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     }
   }
 
+  def calculateProjectionMatrix(width: Double, height: Double, magnification: Int): scalajs.js.Array[Double] =
+    RendererFunctions.mat4ToJsArray(Matrix4.orthographic(width.toDouble / magnification, height.toDouble / magnification))
+
   def drawScene(gameTime: GameTime, scene: SceneUpdateFragment, assetMapping: AssetMapping, metrics: Metrics): Unit = {
 
     gl2.bindVertexArray(vao)
@@ -157,10 +160,31 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     resize(cNc.canvas, cNc.magnification)
 
+    val gameProjection =
+      scene.gameLayer.magnification
+        .map { m =>
+          calculateProjectionMatrix(cNc.canvas.width.toDouble, cNc.canvas.height.toDouble, m)
+        }
+        .getOrElse(orthographicProjectionMatrix)
+
+    val lightingProjection =
+      scene.lightingLayer.magnification
+        .map { m =>
+          calculateProjectionMatrix(cNc.canvas.width.toDouble, cNc.canvas.height.toDouble, m)
+        }
+        .getOrElse(orthographicProjectionMatrix)
+
+    val uiProjection =
+      scene.uiLayer.magnification
+        .map { m =>
+          calculateProjectionMatrix(cNc.canvas.width.toDouble, cNc.canvas.height.toDouble, m)
+        }
+        .getOrElse(orthographicProjectionMatrix)
+
     metrics.record(DrawGameLayerStartMetric)
     RendererFunctions.setNormalBlend(gl)
     layerRenderer.drawLayer(
-      orthographicProjectionMatrix,
+      gameProjection,
       cloneBlankDisplayObjects,
       DisplayObjectConversions.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, metrics),
       gameFrameBuffer,
@@ -174,7 +198,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(DrawLightingLayerStartMetric)
     RendererFunctions.setLightingBlend(gl)
     layerRenderer.drawLayer(
-      orthographicProjectionMatrix,
+      lightingProjection,
       cloneBlankDisplayObjects,
       DisplayObjectConversions.sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping, metrics),
       lightingFrameBuffer,
@@ -188,7 +212,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(DrawUiLayerStartMetric)
     RendererFunctions.setNormalBlend(gl)
     layerRenderer.drawLayer(
-      orthographicProjectionMatrix,
+      uiProjection,
       cloneBlankDisplayObjects,
       DisplayObjectConversions.sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping, metrics),
       uiFrameBuffer,

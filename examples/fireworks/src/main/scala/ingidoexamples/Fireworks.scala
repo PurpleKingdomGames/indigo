@@ -13,7 +13,7 @@ object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
   val config: GameConfig =
     defaultGameConfig
       .withFrameRate(60)
-      .withMagnification(3)
+      .withMagnification(1)
       .withViewport(GameViewport.at720p)
 
   val assets: Set[AssetType] =
@@ -30,7 +30,7 @@ object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
   val subSystems: Set[SubSystem] =
     Set(
       FPSCounter.subSystem(FontStuff.fontKey, Point(5, 5)),
-      FireworksAutomata.subSystem(config.screenDimensions)
+      FireworksAutomata.subSystem(config.viewport.giveDimensions(3))
     )
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
@@ -43,7 +43,7 @@ object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
     case FrameTick =>
       model.update(
         dice,
-        config.screenDimensions
+        config.viewport.giveDimensions(3)
       )
 
     case e: ButtonEvent =>
@@ -64,6 +64,6 @@ object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
     Outcome(())
 
   def present(gameTime: GameTime, model: FireworksModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
-    LaunchButton.present(model.launchButton, frameInputEvents)
+    LaunchButton.present(model.launchButton, frameInputEvents) |+| SceneUpdateFragment.empty.withGameLayerMagnification(3)
 
 }

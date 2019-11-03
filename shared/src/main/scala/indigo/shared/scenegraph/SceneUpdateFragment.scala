@@ -109,6 +109,53 @@ final class SceneUpdateFragment(
   def withUiLayerTint(tint: Tint): SceneUpdateFragment =
     SceneUpdateFragment(gameLayer, lightingLayer, uiLayer.withTint(tint), ambientLight, globalEvents, audio, screenEffects, cloneBlanks)
 
+  def withMagnification(level: Int): SceneUpdateFragment =
+    SceneUpdateFragment(
+      gameLayer.withMagnification(level),
+      lightingLayer.withMagnification(level),
+      uiLayer.withMagnification(level),
+      ambientLight,
+      globalEvents,
+      audio,
+      screenEffects,
+      cloneBlanks
+    )
+
+  def withGameLayerMagnification(level: Int): SceneUpdateFragment =
+    SceneUpdateFragment(
+      gameLayer.withMagnification(level),
+      lightingLayer,
+      uiLayer,
+      ambientLight,
+      globalEvents,
+      audio,
+      screenEffects,
+      cloneBlanks
+    )
+
+  def withLightingLayerMagnification(level: Int): SceneUpdateFragment =
+    SceneUpdateFragment(
+      gameLayer,
+      lightingLayer.withMagnification(level),
+      uiLayer,
+      ambientLight,
+      globalEvents,
+      audio,
+      screenEffects,
+      cloneBlanks
+    )
+
+  def withUiLayerMagnification(level: Int): SceneUpdateFragment =
+    SceneUpdateFragment(
+      gameLayer,
+      lightingLayer,
+      uiLayer.withMagnification(level),
+      ambientLight,
+      globalEvents,
+      audio,
+      screenEffects,
+      cloneBlanks
+    )
 }
 object SceneUpdateFragment {
 
@@ -155,7 +202,7 @@ object SceneUpdateFragment {
     )
 }
 
-final class SceneLayer(val nodes: List[SceneGraphNode], val tint: Tint, val saturation: Double) {
+final class SceneLayer(val nodes: List[SceneGraphNode], val tint: Tint, val saturation: Double, val magnification: Option[Int]) {
 
   def |+|(other: SceneLayer): SceneLayer = {
     val newSaturation: Double =
@@ -165,29 +212,35 @@ final class SceneLayer(val nodes: List[SceneGraphNode], val tint: Tint, val satu
         case (a, b)  => Math.min(a, b)
       }
 
-    SceneLayer(nodes ++ other.nodes, tint + other.tint, newSaturation)
+    SceneLayer(nodes ++ other.nodes, tint + other.tint, newSaturation, magnification.orElse(other.magnification))
   }
 
   def ++(moreNodes: List[SceneGraphNode]): SceneLayer =
-    SceneLayer(nodes ++ moreNodes, tint, saturation)
+    SceneLayer(nodes ++ moreNodes, tint, saturation, magnification)
 
   def withTint(newTint: Tint): SceneLayer =
-    SceneLayer(nodes, newTint, saturation)
+    SceneLayer(nodes, newTint, saturation, magnification)
 
   def withSaturationLevel(amount: Double): SceneLayer =
-    SceneLayer(nodes, tint, amount)
+    SceneLayer(nodes, tint, amount, magnification)
+
+  def withMagnification(level: Int): SceneLayer =
+    SceneLayer(nodes, tint, saturation, SceneLayer.sanitiseMagnification(level))
 }
 
 object SceneLayer {
 
   def apply(nodes: List[SceneGraphNode]): SceneLayer =
-    new SceneLayer(nodes, Tint.None, 1.0d)
+    new SceneLayer(nodes, Tint.None, 1.0d, Option.empty[Int])
 
-  def apply(nodes: List[SceneGraphNode], tint: Tint, saturation: Double): SceneLayer =
-    new SceneLayer(nodes, tint, saturation)
+  def apply(nodes: List[SceneGraphNode], tint: Tint, saturation: Double, magnification: Option[Int]): SceneLayer =
+    new SceneLayer(nodes, tint, saturation, magnification.flatMap(sanitiseMagnification))
 
   def None: SceneLayer =
-    SceneLayer(Nil, Tint.None, 1.0d)
+    SceneLayer(Nil, Tint.None, 1.0d, Option.empty[Int])
+
+  def sanitiseMagnification(level: Int): Option[Int] =
+    Option(Math.max(1, Math.min(256, level)))
 
 }
 
