@@ -21,7 +21,6 @@ object AutomataTests extends TestSuite {
 
   val automaton: Automaton =
     Automaton(
-      poolKey,
       Graphic(0, 0, 10, 10, 1, "fish"),
       Millis(100)
     ).withOnCullEvent { _ =>
@@ -29,8 +28,7 @@ object AutomataTests extends TestSuite {
     }
 
   val automata: Automata =
-    Automata()
-      .add(automaton)
+    Automata(poolKey, automaton, Automata.Layer.Game)
 
   val tests: Tests =
     Tests {
@@ -44,8 +42,8 @@ object AutomataTests extends TestSuite {
 
         // 1 ms over the lifespan, so should be culled
         val outcome: Outcome[Automata] =
-          automata
-            .update(GameTime.is(Millis(101)), Dice.loaded(1))(AutomataEvent.Cull)
+          farmWithAutomaton
+            .update(GameTime.is(Millis(150)), Dice.loaded(1))(AutomataEvent.Cull)
 
         outcome.state.liveAutomataCount ==> 0
         outcome.globalEvents.head ==> eventInstance
