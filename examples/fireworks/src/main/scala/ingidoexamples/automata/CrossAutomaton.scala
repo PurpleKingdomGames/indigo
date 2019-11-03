@@ -38,19 +38,19 @@ object CrossAutomaton {
     val newPosition: AutomatonSeedValues => Signal[Point] =
       seed => Signal.product(multiplierS(seed), spawnPositionS(seed)) |> positionSF
 
-    val signal: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment] =
+    val signal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
       (seed, renderable) =>
         renderable match {
           case g: Graphic =>
             newPosition(seed).map {
               case position =>
-                SceneUpdateFragment.empty.addGameLayerNodes(
+                AutomatonUpdate.withNodes(
                   g.moveTo(position)
                 )
             }
 
           case _ =>
-            Signal.fixed(SceneUpdateFragment.empty)
+            Signal.fixed(AutomatonUpdate.empty)
         }
 
   }

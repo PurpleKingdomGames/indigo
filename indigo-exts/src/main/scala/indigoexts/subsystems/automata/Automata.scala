@@ -12,8 +12,9 @@ import indigo.shared.dice.Dice
 import indigo.shared.EqualTo._
 
 import indigoexts.primitives.UpdateList
+import indigoexts.subsystems.automata.Automata.Layer
 
-final class Automata(poolKey: AutomataPoolKey, automaton: Automaton, val paddock: UpdateList[SpawnedAutomaton]) extends SubSystem {
+final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val layer: Layer, val paddock: UpdateList[SpawnedAutomaton]) extends SubSystem {
   type EventType = AutomataEvent
 
   def liveAutomataCount: Int =
@@ -46,19 +47,19 @@ final class Automata(poolKey: AutomataPoolKey, automaton: Automaton, val paddock
           )
         )
 
-      Outcome(new Automata(poolKey, automaton, paddock.append(spawned)))
+      Outcome(new Automata(poolKey, automaton, layer, paddock.append(spawned)))
 
     case KillAllInPool(key) if key === poolKey =>
-      Outcome(Automata(poolKey, automaton))
+      Outcome(Automata(poolKey, automaton, layer))
 
     case KillAll =>
-      Outcome(Automata(poolKey, automaton))
+      Outcome(Automata(poolKey, automaton, layer))
 
     case Cull =>
       val (l, r) =
         paddock.toList.partition(_.isAlive(gameTime.running))
 
-      Outcome(new Automata(poolKey, automaton, paddock.replaceList(l.map(_.updateDelta(gameTime.delta)))))
+      Outcome(new Automata(poolKey, automaton, layer, paddock.replaceList(l.map(_.updateDelta(gameTime.delta)))))
         .addGlobalEvents(r.toList.flatMap(sa => sa.automaton.onCull(sa.seedValues)))
 
     case _ =>
@@ -74,13 +75,41 @@ final class Automata(poolKey: AutomataPoolKey, automaton: Automaton, val paddock
 }
 object Automata {
 
-  def apply(poolKey: AutomataPoolKey, automaton: Automaton): Automata =
-    new Automata(poolKey, automaton, UpdateList.empty)
+  sealed trait Layer {
+    def emptyScene(automatonUpdate: AutomatonUpdate): SceneUpdateFragment =
+      this match {
+        case Layer.Game =>
+          SceneUpdateFragment.empty
+            .addGameLayerNodes(automatonUpdate.nodes)
+            .addGlobalEvents(automatonUpdate.events)
+
+        case Layer.Lighting =>
+          SceneUpdateFragment.empty
+            .addLightingLayerNodes(automatonUpdate.nodes)
+            .addGlobalEvents(automatonUpdate.events)
+
+        case Layer.UI =>
+          SceneUpdateFragment.empty
+            .addUiLayerNodes(automatonUpdate.nodes)
+            .addGlobalEvents(automatonUpdate.events)
+      }
+
+  }
+  object Layer {
+    case object Game     extends Layer
+    case object Lighting extends Layer
+    case object UI       extends Layer
+  }
+
+  def apply(poolKey: AutomataPoolKey, automaton: Automaton, layer: Layer): Automata =
+    new Automata(poolKey, automaton, layer, UpdateList.empty)
 
   def render(farm: Automata, gameTime: GameTime): SceneUpdateFragment =
-    renderNoLayer(farm, gameTime).foldLeft(SceneUpdateFragment.empty)(_ |+| _)
+    farm.layer.emptyScene(
+      renderNoLayer(farm, gameTime).foldLeft(AutomatonUpdate.empty)(_ |+| _)
+    )
 
-  def renderNoLayer(farm: Automata, gameTime: GameTime): List[SceneUpdateFragment] =
+  def renderNoLayer(farm: Automata, gameTime: GameTime): List[AutomatonUpdate] =
     farm.paddock.toList.map { sa =>
       sa.automaton.modifier(sa.seedValues, sa.automaton.sceneGraphNode).at(gameTime.running - sa.seedValues.createdAt)
     }

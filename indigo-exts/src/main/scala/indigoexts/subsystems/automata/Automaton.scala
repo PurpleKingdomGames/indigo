@@ -4,7 +4,6 @@ import indigo.shared.scenegraph.{SceneGraphNode, Renderable}
 import indigo.Millis
 import indigo.shared.temporal.Signal
 
-import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.Clone
 
@@ -12,10 +11,10 @@ sealed trait Automaton {
 
   val sceneGraphNode: SceneGraphNode
   val lifespan: Millis
-  val modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment]
+  val modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate]
   val onCull: AutomatonSeedValues => List[GlobalEvent]
 
-  def withModifier(modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment]): Automaton =
+  def withModifier(modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate]): Automaton =
     Automaton.create(sceneGraphNode, lifespan, modifier, onCull)
 
   def withOnCullEvent(onCullEvent: AutomatonSeedValues => List[GlobalEvent]): Automaton =
@@ -24,23 +23,19 @@ sealed trait Automaton {
 
 object Automaton {
 
-  val NoModifySignal: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment] =
+  val NoModifySignal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
     (sa, n) => {
       Signal.fixed(
-        SceneUpdateFragment.empty
-          .addGameLayerNodes {
-            n match {
-              case r: Renderable =>
-                r.moveTo(sa.spawnedAt)
+        n match {
+          case r: Renderable =>
+            AutomatonUpdate.withNodes(r.moveTo(sa.spawnedAt))
 
-              case c: Clone =>
-                c.withTransforms(sa.spawnedAt, c.rotation, c.scale)
+          case c: Clone =>
+            AutomatonUpdate.withNodes(c.withTransforms(sa.spawnedAt, c.rotation, c.scale))
 
-              case _ =>
-                n
-            }
-
-          }
+          case _ =>
+            AutomatonUpdate.withNodes(n)
+        }
       )
     }
 
@@ -53,14 +48,14 @@ object Automaton {
   def create(
       sceneGraphNodeEntity: SceneGraphNode,
       lifeExpectancy: Millis,
-      modifierSignal: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment],
+      modifierSignal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate],
       onCullEvent: AutomatonSeedValues => List[GlobalEvent]
   ): Automaton =
     new Automaton {
-      val sceneGraphNode: SceneGraphNode                                                 = sceneGraphNodeEntity
-      val lifespan: Millis                                                               = lifeExpectancy
-      val modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment] = modifierSignal
-      val onCull: AutomatonSeedValues => List[GlobalEvent]                               = onCullEvent
+      val sceneGraphNode: SceneGraphNode                                             = sceneGraphNodeEntity
+      val lifespan: Millis                                                           = lifeExpectancy
+      val modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] = modifierSignal
+      val onCull: AutomatonSeedValues => List[GlobalEvent]                           = onCullEvent
     }
 
 }

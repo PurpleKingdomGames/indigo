@@ -15,7 +15,7 @@ object Boom {
       Assets.cross,
       Millis(1)
     ).withModifier(
-      (_, renderable) => Signal.fixed(SceneUpdateFragment.empty.addGameLayerNodes(renderable))
+      (_, renderable) => Signal.fixed(AutomatonUpdate.withNodes(renderable))
     )
 
 }

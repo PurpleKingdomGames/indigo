@@ -26,22 +26,22 @@ object TrailAutomaton {
 
   object Modifer {
 
-    def present(r: Graphic, position: Point): SignalFunction[TrailParticle, SceneUpdateFragment] =
+    def present(r: Graphic, position: Point): SignalFunction[TrailParticle, AutomatonUpdate] =
       SignalFunction { tp =>
-        SceneUpdateFragment.empty.addGameLayerNodes(
+        AutomatonUpdate.withNodes(
           r.moveTo(position + Point(0, (30 * tp.fallen).toInt))
             .withAlpha(tp.alpha)
         )
       }
 
-    val signal: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment] =
+    val signal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
       (sa, r) =>
         r match {
           case g: Graphic =>
             TrailParticle.particle(sa.lifeSpan) |> present(g, sa.spawnedAt)
 
           case _ =>
-            Signal.fixed(SceneUpdateFragment.empty)
+            Signal.fixed(AutomatonUpdate.empty)
         }
 
   }

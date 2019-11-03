@@ -13,7 +13,8 @@ object Score {
       Automaton(
         Text("0", 0, 0, 1, fontKey).alignCenter,
         Millis(1500)
-      ).withModifier(ModiferFunctions.signal)
+      ).withModifier(ModiferFunctions.signal),
+      Automata.Layer.Game
     )
 
   def spawnEvent(position: Point, dice: Dice): AutomataEvent =
@@ -62,7 +63,7 @@ object Score {
     val newTint: AutomatonSeedValues => Signal[Tint] =
       seed => multiplierS(seed) |> tintSF
 
-    val signal: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment] =
+    val signal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
       (seed, sceneGraphNode) =>
         sceneGraphNode match {
           case t: Text =>
@@ -70,7 +71,7 @@ object Score {
               case Some(ScoreAmount(score)) =>
                 Signal.triple(newPosition(seed), newAlpha(seed, t), newTint(seed)).map {
                   case (position, alpha, tint) =>
-                    SceneUpdateFragment.empty.addGameLayerNodes(
+                    AutomatonUpdate.withNodes(
                       t.moveTo(position)
                         .withAlpha(alpha)
                         .withTint(tint)
@@ -78,11 +79,11 @@ object Score {
                     )
                 }
               case _ =>
-                Signal.fixed(SceneUpdateFragment.empty.addGameLayerNodes(sceneGraphNode))
+                Signal.fixed(AutomatonUpdate.withNodes(sceneGraphNode))
             }
 
           case _ =>
-            Signal.fixed(SceneUpdateFragment.empty)
+            Signal.fixed(AutomatonUpdate.empty)
         }
 
   }
