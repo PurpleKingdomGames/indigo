@@ -13,7 +13,7 @@ object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
   val config: GameConfig =
     defaultGameConfig
       .withFrameRate(60)
-      .withMagnification(1)
+      .withMagnification(2)
       .withViewport(GameViewport.at720p)
 
   val assets: Set[AssetType] =
@@ -29,7 +29,7 @@ object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
 
   val subSystems: Set[SubSystem] =
     Set(
-      FPSCounter.subSystem(FontStuff.fontKey, Point(5, 5)),
+      FPSCounter.subSystem(FontStuff.fontKey, Point(5, 40)),
       FireworksAutomata.launchPad,
       FireworksAutomata.rocket(config.viewport.giveDimensions(3)),
       FireworksAutomata.trail

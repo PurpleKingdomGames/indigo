@@ -117,8 +117,8 @@ class RocketSpecification extends Properties("Rocket") {
     "target: " + target |: Prop.all(
       s"y:  ${target.y} < 1.0" |: target.y < 1,
       s"y: ${target.y} >= 0.5" |: target.y >= 0.5,
-      s"x: ${target.x} >= -1.0" |: target.x >= -1.0d,
-      s"x: ${target.x} <= 1.0" |: target.x <= 1.0d
+      s"x: ${target.x} >= -0.5" |: target.x >= -0.5d,
+      s"x: ${target.x} <= 0.5" |: target.x <= 0.5d
     )
   }
 

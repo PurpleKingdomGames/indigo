@@ -14,7 +14,7 @@ object LaunchButton {
 
   def present(launchButton: Button, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     launchButton
-      .draw(Rectangle(10, 100, 80, 30), Depth(2), frameInputEvents, buttonAssets)
+      .draw(Rectangle(5, 5, 80, 30), Depth(2), frameInputEvents, buttonAssets)
       .toSceneUpdateFragment
 
 }

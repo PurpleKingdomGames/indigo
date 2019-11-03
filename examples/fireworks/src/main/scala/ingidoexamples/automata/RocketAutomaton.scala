@@ -5,6 +5,7 @@ import indigoexts.subsystems.automata._
 import ingidoexamples.Assets
 import ingidoexamples.model.Rocket
 import indigoexts.geometry.Vertex
+import indigo.EqualTo._
 
 object RocketAutomaton {
 
@@ -46,7 +47,7 @@ object RocketAutomaton {
 
                   AutomatonUpdate(
                     List(r.moveTo(position)),
-                    List(TrailAutomaton.spawnEvent(position))
+                    if(t.toInt % 2 === 0 ) List(TrailAutomaton.spawnEvent(position)) else Nil
                   )
                 }
 

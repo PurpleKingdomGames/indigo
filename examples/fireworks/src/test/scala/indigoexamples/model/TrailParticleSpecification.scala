@@ -11,19 +11,6 @@ class TrailParticleSpecification extends Properties("TrailParticle") {
 
   import Generators._
 
-  property("particle should fall downwards over time") = Prop.forAll(nowNextMillis(0, 1000)) {
-    case (t1, t2) =>
-      val fallAmount1: Double =
-        (Signal.Time |> TrailParticle.fall(Millis(1000))).at(t1)
-
-      val fallAmount2: Double =
-        (Signal.Time |> TrailParticle.fall(Millis(1000))).at(t2)
-
-      Prop.all(
-        fallAmount2 > fallAmount1
-      )
-  }  
-  
   property("particle should fade over time") = Prop.forAll(nowNextMillis(0, 1000)) {
     case (t1, t2) =>
       val fade1: Double =
@@ -43,7 +30,7 @@ class TrailParticleSpecification extends Properties("TrailParticle") {
 
     Prop.all(
       "1 >= fadeAmount >= 0" |: fadeAmount >= 0.0d && fadeAmount <= 1.0d,
-      fadeAmount ?= 1 - (t.toDouble / 5000)
+      fadeAmount ?= TrailParticle.initialAlpha * (1 - (t.toDouble / 5000))
     )
   }
 

@@ -21,7 +21,7 @@ object TrailAutomaton {
   val automaton: Automaton =
     Automaton(
       Assets.cross,
-      Millis(1000)
+      Millis(500)
     ).withModifier(Modifer.signal)
 
   object Modifer {
@@ -29,8 +29,9 @@ object TrailAutomaton {
     def present(r: Graphic, position: Point): SignalFunction[TrailParticle, AutomatonUpdate] =
       SignalFunction { tp =>
         AutomatonUpdate.withNodes(
-          r.moveTo(position + Point(0, (30 * tp.fallen).toInt))
+          r.moveTo(position)
             .withAlpha(tp.alpha)
+            .withTint(Tint.Cyan)
         )
       }
 
