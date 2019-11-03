@@ -13,8 +13,20 @@ final class UpdateList[A](list: List[A], pattern: UpdatePattern) {
   def withPattern(newPattern: UpdatePattern): UpdateList[A] =
     new UpdateList[A](list, newPattern)
 
+  def prepend(a: A): UpdateList[A] =
+    new UpdateList[A](a :: list, pattern)
+
+  def append(a: A): UpdateList[A] =
+    new UpdateList[A](list :+ a, pattern)
+
+  def replaceList(newList: List[A]): UpdateList[A] =
+    new UpdateList[A](newList, pattern)
+
   def toList: List[A] =
     list
+
+  def size: Int =
+    list.size
 }
 
 object UpdateList {
@@ -24,6 +36,9 @@ object UpdateList {
       l,
       UpdatePattern.Constant
     )
+
+  def empty[A]: UpdateList[A] =
+    apply(Nil)
 
   @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var", "org.wartremover.warts.MutableDataStructures"))
   def updateList[A](l: List[A], f: A => A, pattern: UpdatePattern): (List[A], UpdatePattern) = {
