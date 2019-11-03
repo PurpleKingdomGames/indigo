@@ -188,7 +188,6 @@ sealed trait Renderable extends SceneGraphNodePrimitive {
 
   def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
   def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Renderable
-  // def eventHandlerWithBoundsApplied(e: GlobalEvent): List[GlobalEvent]
 
   override def withDepth(depth: Depth): Renderable
   override def moveTo(pt: Point): Renderable
@@ -277,9 +276,6 @@ final class Graphic(
 
   def onEvent(eventHandlerValue: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Graphic =
     Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects, eventHandlerValue)
-
-  def eventHandlerWithBoundsApplied(e: GlobalEvent): List[GlobalEvent] =
-    eventHandler((bounds, e))
 
 }
 
@@ -434,9 +430,6 @@ final class Sprite(
   def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Sprite =
     Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects, e)
 
-  def eventHandlerWithBoundsApplied(e: GlobalEvent): List[GlobalEvent] =
-    eventHandler((bounds, e))
-
 }
 
 object Sprite {
@@ -577,9 +570,6 @@ final class Text(
       case (TextAlignment.Center, b) => b.moveTo(Point(b.x - (b.width / 2), b.y))
       case (TextAlignment.Right, b)  => b.moveTo(Point(b.x - b.width, b.y))
     }
-
-  def eventHandlerWithBoundsApplied(e: GlobalEvent): List[GlobalEvent] =
-    eventHandler((alignedBounds, e))
 
 }
 
