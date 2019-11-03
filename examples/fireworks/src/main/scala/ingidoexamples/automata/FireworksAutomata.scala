@@ -5,10 +5,13 @@ import indigo.shared.datatypes.Rectangle
 
 object FireworksAutomata {
 
-  def subSystem(screenDimensions: Rectangle): Automata =
-    Automata.empty
-      .add(LaunchPadAutomaton.automaton)
-      .add(RocketAutomaton.automaton(screenDimensions))
-      .add(TrailAutomaton.automaton)
+  def launchPad: Automata =
+    Automata(LaunchPadAutomaton.poolKey, LaunchPadAutomaton.automaton)
+
+  def rocket(screenDimensions: Rectangle): Automata =
+    Automata(RocketAutomaton.poolKey, RocketAutomaton.automaton(screenDimensions))
+
+  def trail: Automata =
+    Automata(TrailAutomaton.poolKey, TrailAutomaton.automaton)
 
 }

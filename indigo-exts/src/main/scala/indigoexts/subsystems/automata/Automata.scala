@@ -12,21 +12,13 @@ import indigo.shared.dice.Dice
 import indigo.shared.EqualTo._
 import indigo.shared.IndigoLogger
 
-import scala.collection.mutable.{HashMap, ListBuffer}
+import scala.collection.mutable.{ListBuffer}
 
-/*
-Properties of an automaton:
-They have a fixed lifespan
-They have a thing to render
-They have procedural modifiers based on time and previous value
-They can emit events
- */
 @SuppressWarnings(Array("org.wartremover.warts.Var"))
-final class Automata() extends SubSystem {
+final class Automata(poolKey: AutomataPoolKey, automaton: Automaton) extends SubSystem {
   type EventType = AutomataEvent
 
-  private val inventory: HashMap[AutomataPoolKey, Automaton] = new HashMap()
-  private var paddock: ListBuffer[SpawnedAutomaton]          = new ListBuffer()
+  private var paddock: ListBuffer[SpawnedAutomaton] = new ListBuffer()
 
   def liveAutomataCount: Int =
     paddock.size
@@ -42,30 +34,23 @@ final class Automata() extends SubSystem {
       None
   }
 
-  def isRegistered(poolKey: AutomataPoolKey): Boolean =
-    inventory.contains(poolKey)
-
   @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
   def update(gameTime: GameTime, dice: Dice): AutomataEvent => Outcome[Automata] = {
-    case Spawn(poolKey, position, lifeSpan, payload) if isRegistered(poolKey) =>
-      val maybeA =
-        inventory.get(poolKey).map { k =>
-          SpawnedAutomaton(
-            k,
-            AutomatonSeedValues(
-              position,
-              gameTime.running,
-              lifeSpan.getOrElse(k.lifespan),
-              Millis.zero,
-              dice.roll,
-              payload
-            )
+    case Spawn(key, position, lifeSpan, payload) if key === poolKey =>
+      val x =
+        SpawnedAutomaton(
+          automaton,
+          AutomatonSeedValues(
+            position,
+            gameTime.running,
+            lifeSpan.getOrElse(automaton.lifespan),
+            Millis.zero,
+            dice.roll,
+            payload
           )
-        }
+        )
 
-      if (maybeA.isDefined) {
-        paddock = paddock += maybeA.get
-      }
+      paddock = paddock += x
 
       Outcome(this)
 
@@ -73,8 +58,8 @@ final class Automata() extends SubSystem {
       IndigoLogger.errorOnce("Attempt to spawn automata with unregistered pool key: " + key.toString)
       Outcome(this)
 
-    case KillAllInPool(key) if isRegistered(key) =>
-      paddock = paddock.filterNot(p => p.automaton.key === key)
+    case KillAllInPool(key) if key === poolKey =>
+      paddock = new ListBuffer()
       Outcome(this)
 
     case KillAllInPool(key) =>
@@ -102,20 +87,11 @@ final class Automata() extends SubSystem {
   def report: String =
     "Automata farm"
 
-  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-  def add(automaton: Automaton): Automata = {
-    inventory += (automaton.key -> automaton)
-    this
-  }
-
 }
 object Automata {
 
-  def apply(): Automata =
-    new Automata()
-
-  def empty: Automata =
-    Automata()
+  def apply(poolKey: AutomataPoolKey, automaton: Automaton): Automata =
+    new Automata(poolKey, automaton)
 
   def render(farm: Automata, gameTime: GameTime): SceneUpdateFragment =
     renderNoLayer(farm, gameTime).foldLeft(SceneUpdateFragment.empty)(_ |+| _)

@@ -15,7 +15,6 @@ object LaunchPadAutomaton {
 
   val automaton: Automaton =
     Automaton(
-      poolKey,
       Assets.cross,
       Millis(0)
     ).withOnCullEvent { seed =>

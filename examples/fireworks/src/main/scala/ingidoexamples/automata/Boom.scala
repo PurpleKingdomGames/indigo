@@ -12,7 +12,6 @@ object Boom {
 
   val automaton: Automaton =
     Automaton(
-      poolKey,
       Assets.cross,
       Millis(1)
     ).withModifier(

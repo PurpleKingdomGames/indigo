@@ -13,7 +13,6 @@ object RocketAutomaton {
 
   def automaton(screenDimensions: Rectangle): Automaton =
     Automaton(
-      poolKey,
       Assets.cross,
       Millis(0)
     ).withModifier(ModifierFunctions.signal(screenDimensions))

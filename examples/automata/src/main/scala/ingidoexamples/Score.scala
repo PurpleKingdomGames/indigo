@@ -8,14 +8,13 @@ object Score {
   final case class ScoreAmount(value: String) extends AutomatonPayload
 
   def automataSubSystem(fontKey: FontKey): Automata =
-    Automata.empty
-      .add(
-        Automaton(
-          AutomataPoolKey("points"),
-          Text("0", 0, 0, 1, fontKey).alignCenter,
-          Millis(1500)
-        ).withModifier(ModiferFunctions.signal)
-      )
+    Automata(
+      AutomataPoolKey("points"),
+      Automaton(
+        Text("0", 0, 0, 1, fontKey).alignCenter,
+        Millis(1500)
+      ).withModifier(ModiferFunctions.signal)
+    )
 
   def spawnEvent(position: Point, dice: Dice): AutomataEvent =
     AutomataEvent.Spawn(AutomataPoolKey("points"), position, None, Some(ScoreAmount(generatePoints(dice))))

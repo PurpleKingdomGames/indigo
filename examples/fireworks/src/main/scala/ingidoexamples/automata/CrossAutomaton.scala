@@ -14,7 +14,6 @@ object CrossAutomaton {
 
   val automaton: Automaton =
     Automaton(
-      poolKey,
       Assets.cross,
       Millis(1500)
     ).withModifier(ModiferFunctions.signal)

@@ -10,17 +10,16 @@ import indigo.shared.scenegraph.Clone
 
 sealed trait Automaton {
 
-  val key: AutomataPoolKey
   val sceneGraphNode: SceneGraphNode
   val lifespan: Millis
   val modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment]
   val onCull: AutomatonSeedValues => List[GlobalEvent]
 
   def withModifier(modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment]): Automaton =
-    Automaton.create(key, sceneGraphNode, lifespan, modifier, onCull)
+    Automaton.create(sceneGraphNode, lifespan, modifier, onCull)
 
   def withOnCullEvent(onCullEvent: AutomatonSeedValues => List[GlobalEvent]): Automaton =
-    Automaton.create(key, sceneGraphNode, lifespan, modifier, onCullEvent)
+    Automaton.create(sceneGraphNode, lifespan, modifier, onCullEvent)
 }
 
 object Automaton {
@@ -48,18 +47,16 @@ object Automaton {
   val NoCullEvent: AutomatonSeedValues => List[GlobalEvent] =
     _ => Nil
 
-  def apply(key: AutomataPoolKey, SceneGraphNode: SceneGraphNode, lifespan: Millis): Automaton =
-    create(key, SceneGraphNode, lifespan, NoModifySignal, NoCullEvent)
+  def apply(SceneGraphNode: SceneGraphNode, lifespan: Millis): Automaton =
+    create(SceneGraphNode, lifespan, NoModifySignal, NoCullEvent)
 
   def create(
-      poolKey: AutomataPoolKey,
       sceneGraphNodeEntity: SceneGraphNode,
       lifeExpectancy: Millis,
       modifierSignal: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment],
       onCullEvent: AutomatonSeedValues => List[GlobalEvent]
   ): Automaton =
     new Automaton {
-      val key: AutomataPoolKey                                                           = poolKey
       val sceneGraphNode: SceneGraphNode                                                 = sceneGraphNodeEntity
       val lifespan: Millis                                                               = lifeExpectancy
       val modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[SceneUpdateFragment] = modifierSignal

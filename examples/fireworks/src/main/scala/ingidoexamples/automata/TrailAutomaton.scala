@@ -20,7 +20,6 @@ object TrailAutomaton {
 
   val automaton: Automaton =
     Automaton(
-      poolKey,
       Assets.cross,
       Millis(1000)
     ).withModifier(Modifer.signal)
