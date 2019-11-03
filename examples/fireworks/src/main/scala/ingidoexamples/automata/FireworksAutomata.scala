@@ -13,5 +13,6 @@ object FireworksAutomata {
 
   def trail: Automata =
     Automata(TrailAutomaton.poolKey, TrailAutomaton.automaton, Automata.Layer.Game)
+      .withMaxPoolSize(500)
 
 }

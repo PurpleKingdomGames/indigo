@@ -11,11 +11,14 @@ import indigo.shared.dice.Dice
 import indigoexts.subsystems.automata.Automata.Layer
 import indigo.shared.EqualTo._
 
-final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val layer: Layer, val paddock: List[SpawnedAutomaton]) extends SubSystem {
+final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val layer: Layer, maxPoolSize: Option[Int], val pool: List[SpawnedAutomaton]) extends SubSystem {
   type EventType = AutomataEvent
 
   def liveAutomataCount: Int =
-    paddock.size
+    pool.size
+
+  def withMaxPoolSize(limit: Int): Automata =
+    new Automata(poolKey, automaton, layer, Option(limit), pool)
 
   val eventFilter: GlobalEvent => Option[AutomataEvent] = {
     case e: AutomataEvent =>
@@ -44,7 +47,23 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
           )
         )
 
-      Outcome(new Automata(poolKey, automaton, layer, paddock :+ spawned))
+      val newPool: List[SpawnedAutomaton] =
+        maxPoolSize match {
+          case None =>
+            pool :+ spawned
+
+          case Some(limit) if pool.length < limit =>
+            pool :+ spawned
+
+          case Some(limit) if pool.length === limit =>
+            pool.drop(1) :+ spawned
+
+          case Some(limit) =>
+            pool.drop(limit - pool.length + 1) :+ spawned
+
+        }
+
+      Outcome(new Automata(poolKey, automaton, layer, maxPoolSize, newPool))
 
     case KillAllInPool(key) if key === poolKey =>
       Outcome(Automata(poolKey, automaton, layer))
@@ -54,9 +73,9 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
 
     case Cull =>
       val (l, r) =
-        paddock.toList.partition(_.isAlive(gameTime.running))
+        pool.toList.partition(_.isAlive(gameTime.running))
 
-      Outcome(new Automata(poolKey, automaton, layer, l.map(_.updateDelta(gameTime.delta))))
+      Outcome(new Automata(poolKey, automaton, layer, maxPoolSize, l.map(_.updateDelta(gameTime.delta))))
         .addGlobalEvents(r.toList.flatMap(sa => sa.automaton.onCull(sa.seedValues)))
 
     case _ =>
@@ -99,7 +118,7 @@ object Automata {
   }
 
   def apply(poolKey: AutomataPoolKey, automaton: Automaton, layer: Layer): Automata =
-    new Automata(poolKey, automaton, layer, Nil)
+    new Automata(poolKey, automaton, layer, None, Nil)
 
   def render(farm: Automata, gameTime: GameTime): SceneUpdateFragment =
     farm.layer.emptyScene(
@@ -107,7 +126,7 @@ object Automata {
     )
 
   def renderNoLayer(farm: Automata, gameTime: GameTime): List[AutomatonUpdate] =
-    farm.paddock.toList.map { sa =>
+    farm.pool.toList.map { sa =>
       sa.automaton.modifier(sa.seedValues, sa.automaton.sceneGraphNode).at(gameTime.running - sa.seedValues.createdAt)
     }
 }
