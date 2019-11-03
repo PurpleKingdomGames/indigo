@@ -10,7 +10,6 @@ import indigoexts.subsystems.automata.AutomataEvent._
 import indigo.shared.dice.Dice
 
 import indigo.shared.EqualTo._
-import indigo.shared.IndigoLogger
 
 import scala.collection.mutable.{ListBuffer}
 
@@ -54,16 +53,14 @@ final class Automata(poolKey: AutomataPoolKey, automaton: Automaton) extends Sub
 
       Outcome(this)
 
-    case Spawn(key, _, _, _) =>
-      IndigoLogger.errorOnce("Attempt to spawn automata with unregistered pool key: " + key.toString)
+    case Spawn(_, _, _, _) =>
       Outcome(this)
 
     case KillAllInPool(key) if key === poolKey =>
       paddock = new ListBuffer()
       Outcome(this)
 
-    case KillAllInPool(key) =>
-      IndigoLogger.errorOnce("Attempt to kill all automata with unregistered pool key: " + key.toString)
+    case KillAllInPool(_) =>
       Outcome(this)
 
     case KillAll =>
