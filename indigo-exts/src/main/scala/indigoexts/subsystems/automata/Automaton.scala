@@ -10,8 +10,6 @@ import indigo.shared.scenegraph.Clone
 
 sealed trait Automaton {
 
-  type PayloadType
-
   val key: AutomataPoolKey
   val sceneGraphNode: SceneGraphNode
   val lifespan: Millis
