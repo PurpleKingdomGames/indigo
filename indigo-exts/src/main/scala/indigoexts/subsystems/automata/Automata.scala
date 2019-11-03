@@ -8,13 +8,10 @@ import indigo.shared.scenegraph._
 import indigoexts.subsystems.SubSystem
 import indigoexts.subsystems.automata.AutomataEvent._
 import indigo.shared.dice.Dice
-
+import indigoexts.subsystems.automata.Automata.Layer
 import indigo.shared.EqualTo._
 
-import indigoexts.primitives.UpdateList
-import indigoexts.subsystems.automata.Automata.Layer
-
-final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val layer: Layer, val paddock: UpdateList[SpawnedAutomaton]) extends SubSystem {
+final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val layer: Layer, val paddock: List[SpawnedAutomaton]) extends SubSystem {
   type EventType = AutomataEvent
 
   def liveAutomataCount: Int =
@@ -47,7 +44,7 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
           )
         )
 
-      Outcome(new Automata(poolKey, automaton, layer, paddock.append(spawned)))
+      Outcome(new Automata(poolKey, automaton, layer, paddock :+ spawned))
 
     case KillAllInPool(key) if key === poolKey =>
       Outcome(Automata(poolKey, automaton, layer))
@@ -59,7 +56,7 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
       val (l, r) =
         paddock.toList.partition(_.isAlive(gameTime.running))
 
-      Outcome(new Automata(poolKey, automaton, layer, paddock.replaceList(l.map(_.updateDelta(gameTime.delta)))))
+      Outcome(new Automata(poolKey, automaton, layer, l.map(_.updateDelta(gameTime.delta))))
         .addGlobalEvents(r.toList.flatMap(sa => sa.automaton.onCull(sa.seedValues)))
 
     case _ =>
@@ -102,7 +99,7 @@ object Automata {
   }
 
   def apply(poolKey: AutomataPoolKey, automaton: Automaton, layer: Layer): Automata =
-    new Automata(poolKey, automaton, layer, UpdateList.empty)
+    new Automata(poolKey, automaton, layer, Nil)
 
   def render(farm: Automata, gameTime: GameTime): SceneUpdateFragment =
     farm.layer.emptyScene(
