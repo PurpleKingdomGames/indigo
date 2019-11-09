@@ -518,6 +518,17 @@ lazy val circe9 =
 lazy val circe9JS  = circe9.js
 lazy val circe9JVM = circe9.jvm
 
+// JS Interface
+
+lazy val indigojsinterface =
+  crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("indigojs"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigo)
+lazy val indigojsinterfaceJS = indigojsinterface.js
+
 // Root
 lazy val indigoProject =
   (project in file("."))
@@ -534,7 +545,8 @@ lazy val indigoProject =
       circe9JVM,
       indigoJVM,
       indigoExtsJVM,
-      sandboxJVM
+      sandboxJVM,
+      indigojsinterfaceJS
     )
 
 // Cross build version - better or worse?
