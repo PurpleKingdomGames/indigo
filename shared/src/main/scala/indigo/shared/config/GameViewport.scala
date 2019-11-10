@@ -1,6 +1,12 @@
 package indigo.shared.config
+
 import indigo.shared.datatypes.Rectangle
 
+import scala.scalajs.js.annotation._
+
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
+@JSExportTopLevel("GameViewport")
+@JSExportAll
 final case class GameViewport(width: Int, height: Int) {
   val horizontalMiddle: Int = width / 2
   val verticalMiddle: Int   = height / 2
@@ -9,6 +15,9 @@ final case class GameViewport(width: Int, height: Int) {
   def giveDimensions(magnification: Int): Rectangle =
     Rectangle(0, 0, width / magnification, height / magnification)
 }
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
+@JSExportTopLevel("GameViewportOps")
+@JSExportAll
 object GameViewport {
   val atWUXGA: GameViewport =
     GameViewport(1920, 1200)

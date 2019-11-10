@@ -3,6 +3,11 @@ package indigo.shared.config
 import indigo.shared.ClearColor
 import indigo.shared.datatypes.Rectangle
 
+import scala.scalajs.js.annotation._
+
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
+@JSExportTopLevel("GameConfig")
+@JSExportAll
 final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int, advanced: AdvancedGameConfig) {
   val frameRateDeltaMillis: Int = 1000 / frameRate
 
@@ -38,8 +43,11 @@ final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: 
   def enableSkipViewUpdates: GameConfig   = this.copy(advanced = advanced.copy(disableSkipViewUpdates = false))
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
+@JSExportTopLevel("GameConfigOps")
 object GameConfig {
 
+  @JSExport
   val default: GameConfig =
     GameConfig(GameViewport(550, 400), 60, ClearColor.Black, 1, AdvancedGameConfig.default)
 

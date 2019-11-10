@@ -1,10 +1,12 @@
 package indigo.shared
 
-import scala.scalajs.js.annotation._
-
 import EqualTo._
 
+import scala.scalajs.js.annotation._
+
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("ClearColor")
+@JSExportAll
 final case class ClearColor(r: Double, g: Double, b: Double, a: Double) {
   def forceOpaque: ClearColor                = this.copy(a = 1d)
   def forceTransparent: ClearColor           = this.copy(a = 0d)
@@ -16,14 +18,18 @@ final case class ClearColor(r: Double, g: Double, b: Double, a: Double) {
   def withA(v: Double): ClearColor           = this.copy(a = v)
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
+@JSExportTopLevel("ClearColorOps")
+@JSExportAll
 object ClearColor {
-  def apply(r: Double, g: Double, b: Double): ClearColor = ClearColor(r, g, b, 1d)
 
-  val Red: ClearColor   = ClearColor(1, 0, 0)
-  val Green: ClearColor = ClearColor(0, 1, 0)
-  val Blue: ClearColor  = ClearColor(0, 0, 1)
-  val Black: ClearColor = ClearColor(0, 0, 0)
-  val White: ClearColor = ClearColor(1, 1, 1)
+  def fromRGB(r: Double, g: Double, b: Double): ClearColor = ClearColor(r, g, b, 1d)
+
+  val Red: ClearColor   = ClearColor.fromRGB(1, 0, 0)
+  val Green: ClearColor = ClearColor.fromRGB(0, 1, 0)
+  val Blue: ClearColor  = ClearColor.fromRGB(0, 0, 1)
+  val Black: ClearColor = ClearColor.fromRGB(0, 0, 0)
+  val White: ClearColor = ClearColor.fromRGB(1, 1, 1)
 
   def fromHexString(hex: String): ClearColor =
     hex.trim match {

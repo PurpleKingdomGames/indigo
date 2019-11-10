@@ -72,12 +72,8 @@ object IndigoJS {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
   @JSExport
-  def init(width: Int, height: Int, clearColor: ClearColor): Unit =
-    indigoGame(
-      GameConfig.default
-        .withViewport(width, height)
-        .withClearColor(clearColor)
-    ).start()
+  def init(config: GameConfig): Unit =
+    indigoGame(config).start()
 
 }
 
