@@ -72,19 +72,13 @@ object IndigoJS {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
   @JSExport
-  def init(width: Int, height: Int, clearColor: ClearColorJS): Unit =
+  def init(width: Int, height: Int, clearColor: ClearColor): Unit =
     indigoGame(
       GameConfig.default
         .withViewport(width, height)
-        .withClearColor(clearColor.toClearColor)
+        .withClearColor(clearColor)
     ).start()
 
-}
-
-@JSExportTopLevel("ClearColor")
-final class ClearColorJS(r: Double, g: Double, b: Double, a: Double) {
-  def toClearColor: ClearColor =
-    ClearColor(r, g, b, a)
 }
 
 /*

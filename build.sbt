@@ -498,6 +498,10 @@ lazy val shared =
       name := "shared",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
     )
+    .jvmSettings(
+      libraryDependencies += "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided"
+    )
+
 lazy val sharedJS  = shared.js
 lazy val sharedJVM = shared.jvm
 

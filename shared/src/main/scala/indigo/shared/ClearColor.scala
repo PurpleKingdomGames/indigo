@@ -1,7 +1,10 @@
 package indigo.shared
 
+import scala.scalajs.js.annotation._
+
 import EqualTo._
 
+@JSExportTopLevel("ClearColor")
 final case class ClearColor(r: Double, g: Double, b: Double, a: Double) {
   def forceOpaque: ClearColor                = this.copy(a = 1d)
   def forceTransparent: ClearColor           = this.copy(a = 0d)
