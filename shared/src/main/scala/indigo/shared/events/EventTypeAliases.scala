@@ -6,6 +6,7 @@ trait EventTypeAliases {
 
   type FrameInputEvents = events.FrameInputEvents
   type GlobalEvent      = events.GlobalEvent
+  type InputEvent       = events.InputEvent
 
   type Signals = events.Signals
   val Signals: events.Signals.type = events.Signals

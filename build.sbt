@@ -108,6 +108,24 @@ lazy val text =
       scalaJSUseMainModuleInitializer := true
     )
 
+lazy val inputmapping =
+  crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("examples/inputmapping"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoExts)
+    .enablePlugins(SbtIndigo)
+    .settings(
+      name := "inputmapping-example",
+      showCursor := true,
+      title := "Input mapping example",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
+      scalaJSUseMainModuleInitializer := true
+    )
+
 lazy val inputfield =
   crossProject(JSPlatform)
     .withoutSuffixFor(JSPlatform)

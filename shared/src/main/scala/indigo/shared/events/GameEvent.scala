@@ -9,7 +9,9 @@ trait GlobalEvent
 
 case object FrameTick extends GlobalEvent
 
-sealed trait MouseEvent extends GlobalEvent {
+sealed trait InputEvent extends GlobalEvent
+
+sealed trait MouseEvent extends InputEvent {
   val x: Int
   val y: Int
   def position: Point = Point(x, y)
@@ -21,7 +23,7 @@ object MouseEvent {
   final case class Move(x: Int, y: Int)      extends MouseEvent
 }
 
-sealed trait KeyboardEvent extends GlobalEvent {
+sealed trait KeyboardEvent extends InputEvent {
   val keyCode: KeyCode
 }
 object KeyboardEvent {
