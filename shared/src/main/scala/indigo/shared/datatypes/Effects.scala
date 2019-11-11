@@ -65,6 +65,9 @@ final class Tint(val r: Double, val g: Double, val b: Double, val a: Double) {
 
   def toClearColor: ClearColor =
     ClearColor(r * a, g * a, b * a, 1)
+
+  override def toString: String =
+    implicitly[AsString[Tint]].show(this)
 }
 object Tint {
 
@@ -75,7 +78,7 @@ object Tint {
     val ev = implicitly[AsString[Double]]
 
     AsString.create { v =>
-      s"Displayable(${ev.show(v.r)}, ${ev.show(v.g)}, ${ev.show(v.b)})"
+      s"Tint(${ev.show(v.r)}, ${ev.show(v.g)}, ${ev.show(v.b)}, ${ev.show(v.a)})"
     }
   }
 
