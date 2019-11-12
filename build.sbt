@@ -551,6 +551,19 @@ lazy val indigojsinterface =
     .dependsOn(indigo)
 lazy val indigojsinterfaceJS = indigojsinterface.js
 
+// API Generation
+
+lazy val apigen =
+  crossProject(JVMPlatform)
+    .withoutSuffixFor(JVMPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("apigen"))
+    .settings(commonSettings: _*)
+    .settings(
+      libraryDependencies += "com.lihaoyi" %% "fastparse" % "2.1.3"
+    )
+lazy val apigenJVM = apigen.jvm
+
 // Root
 lazy val indigoProject =
   (project in file("."))

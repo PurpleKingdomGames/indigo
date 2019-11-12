@@ -1,0 +1,5 @@
+package apigen
+
+object ApiGen {
+
+}
