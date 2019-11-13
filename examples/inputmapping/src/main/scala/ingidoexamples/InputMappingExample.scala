@@ -2,14 +2,18 @@ package ingidoexamples
 
 import indigo._
 import indigoexts.entrypoint._
+import indigoexts.subsystems.inputmapper.InputMapper
+import indigoexts.subsystems.inputmapper.InputAction
+import indigoexts.subsystems.inputmapper.InputMapperEvent
 
-object InputMappingExample extends IndigoGameBasic[Unit, Unit, Unit] {
+object InputMappingExample extends IndigoGameBasic[Unit, GameModel, Unit] {
 
   import FontStuff._
 
   val config: GameConfig =
     defaultGameConfig
       .withClearColor(ClearColor.fromHexString("0xAA3399"))
+      .withMagnification(1)
 
   val assets: Set[AssetType] =
     Set(AssetType.Image(fontName, "assets/boxy_font.png"))
@@ -21,30 +25,69 @@ object InputMappingExample extends IndigoGameBasic[Unit, Unit, Unit] {
     Set()
 
   val subSystems: Set[SubSystem] =
-    Set()
+    Set(
+      InputMapper.subsystem(
+        KeyboardEvent.KeyDown(Keys.UP_ARROW) -> Up
+      )
+    )
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
-  def initialModel(startupData: Unit): Unit =
-    ()
+  def initialModel(startupData: Unit): GameModel =
+    GameModel(None)
 
-  def update(gameTime: GameTime, model: Unit, dice: Dice): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(model)
+  def update(gameTime: GameTime, model: GameModel, dice: Dice): GlobalEvent => Outcome[GameModel] = {
+    case KeyboardEvent.KeyDown(Keys.KEY_A) =>
+      println("Added Down Arrow input mapping")
+      Outcome(model).addGlobalEvents(
+        InputMapperEvent.AddMappings(List(KeyboardEvent.KeyDown(Keys.DOWN_ARROW) -> Down))
+      )
 
-  def initialViewModel(startupData: Unit): Unit => Unit =
+    case KeyboardEvent.KeyDown(Keys.KEY_D) =>
+      println("Removed Down Arrow input mapping")
+      Outcome(model).addGlobalEvents(
+        InputMapperEvent.RemoveMappings(List(KeyboardEvent.KeyDown(Keys.DOWN_ARROW)))
+      )
+
+    case InputMapperEvent.Action(Up) =>
+      println("Up action")
+      Outcome(GameModel(Some(Up)))
+
+    case InputMapperEvent.Action(Down) =>
+      println("Down action")
+      Outcome(GameModel(Some(Down)))
+
+    case _ =>
+      Outcome(model)
+  }
+
+  def initialViewModel(startupData: Unit): GameModel => Unit =
     _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[Unit] =
+  def updateViewModel(gameTime: GameTime, model: GameModel, viewModel: Unit, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[Unit] =
     Outcome(())
 
-  def present(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: GameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
-        Text("Action: ", 10, 20, 1, fontKey)
+        Text("Press up arrow, or\npress a to add or\nd to remove a mapping\nfor down, then you can\npress the down arrow.", 10, 20, 1, fontKey),
+        Text("Action is " + model.action.map(_.asString).getOrElse("None"), 10, config.viewport.height - 30, 1, fontKey)
       )
 
 }
+
+final case class GameModel(action: Option[Action])
+
+sealed trait Action extends InputAction {
+  def asString: String =
+    this match {
+      case Up   => "Up"
+      case Down => "Down"
+    }
+}
+final case object Up   extends Action
+final case object Down extends Action
 
 object FontStuff {
 

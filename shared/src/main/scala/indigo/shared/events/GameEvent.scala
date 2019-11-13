@@ -9,7 +9,7 @@ trait GlobalEvent
 
 case object FrameTick extends GlobalEvent
 
-sealed trait InputEvent extends GlobalEvent
+sealed trait InputEvent extends GlobalEvent with Product with Serializable
 
 sealed trait MouseEvent extends InputEvent {
   val x: Int
