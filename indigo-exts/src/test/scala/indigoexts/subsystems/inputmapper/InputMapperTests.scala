@@ -7,11 +7,12 @@ import indigo.shared.constants.Keys
 import indigo.shared.events.InputEvent
 import indigo.shared.time.GameTime
 import indigo.shared.dice.Dice
+import indigo.shared.events.GlobalEvent
 
 object InputMapperTests extends TestSuite {
 
-  case object Jump extends InputAction
-  case object Duck extends InputAction
+  case object Jump extends GlobalEvent
+  case object Duck extends GlobalEvent
 
   val tests: Tests =
     Tests {
@@ -20,19 +21,19 @@ object InputMapperTests extends TestSuite {
 
         val mapper =
           InputMapper.subsystem(
-            KeyboardEvent.KeyPress(Keys.UP_ARROW)  -> Jump,
-            KeyboardEvent.KeyPress(Keys.KEY_W)     -> Jump,
-            KeyboardEvent.KeyDown(Keys.DOWN_ARROW) -> Duck
+            KeyboardEvent.KeyPress(Keys.UP_ARROW)  -> List(Jump),
+            KeyboardEvent.KeyPress(Keys.KEY_W)     -> List(Jump),
+            KeyboardEvent.KeyDown(Keys.DOWN_ARROW) -> List(Duck)
           )
 
-        val actual: List[(InputEvent, InputAction)] =
+        val actual: List[(InputEvent, List[GlobalEvent])] =
           mapper.toMappingsList
 
         val expected =
           List(
-            KeyboardEvent.KeyPress(Keys.UP_ARROW)  -> Jump,
-            KeyboardEvent.KeyDown(Keys.DOWN_ARROW) -> Duck,
-            KeyboardEvent.KeyPress(Keys.KEY_W)     -> Jump
+            KeyboardEvent.KeyPress(Keys.UP_ARROW)  -> List(Jump),
+            KeyboardEvent.KeyDown(Keys.DOWN_ARROW) -> List(Duck),
+            KeyboardEvent.KeyPress(Keys.KEY_W)     -> List(Jump)
           )
 
         mappingsEqual(actual, expected) ==> true
@@ -43,17 +44,15 @@ object InputMapperTests extends TestSuite {
 
         val mapper =
           InputMapper.subsystem(
-            KeyboardEvent.KeyPress(Keys.UP_ARROW) -> Jump,
-            KeyboardEvent.KeyPress(Keys.KEY_W)    -> Jump
+            KeyboardEvent.KeyPress(Keys.UP_ARROW) -> List(Jump),
+            KeyboardEvent.KeyPress(Keys.KEY_W)    -> List(Jump)
           )
 
         // Remap Up arrow to Duck, add Down arrow as Jump.
         val event =
           InputMapperEvent.AddMappings(
-            List(
-              KeyboardEvent.KeyPress(Keys.UP_ARROW)  -> Duck,
-              KeyboardEvent.KeyDown(Keys.DOWN_ARROW) -> Jump
-            )
+            KeyboardEvent.KeyPress(Keys.UP_ARROW)  -> List(Duck),
+            KeyboardEvent.KeyDown(Keys.DOWN_ARROW) -> List(Jump)
           )
 
         val actual =
@@ -61,9 +60,9 @@ object InputMapperTests extends TestSuite {
 
         val expected =
           List(
-            KeyboardEvent.KeyPress(Keys.UP_ARROW)  -> Duck,
-            KeyboardEvent.KeyDown(Keys.DOWN_ARROW) -> Jump,
-            KeyboardEvent.KeyPress(Keys.KEY_W)     -> Jump
+            KeyboardEvent.KeyPress(Keys.UP_ARROW)  -> List(Duck),
+            KeyboardEvent.KeyDown(Keys.DOWN_ARROW) -> List(Jump),
+            KeyboardEvent.KeyPress(Keys.KEY_W)     -> List(Jump)
           )
 
         mappingsEqual(actual, expected) ==> true
@@ -74,9 +73,9 @@ object InputMapperTests extends TestSuite {
 
         val mapper =
           InputMapper.subsystem(
-            KeyboardEvent.KeyPress(Keys.UP_ARROW)  -> Jump,
-            KeyboardEvent.KeyPress(Keys.KEY_W)     -> Jump,
-            KeyboardEvent.KeyDown(Keys.DOWN_ARROW) -> Duck
+            KeyboardEvent.KeyPress(Keys.UP_ARROW)  -> List(Jump),
+            KeyboardEvent.KeyPress(Keys.KEY_W)     -> List(Jump),
+            KeyboardEvent.KeyDown(Keys.DOWN_ARROW) -> List(Duck)
           )
 
         // Remove all arrow key mappings
@@ -88,7 +87,7 @@ object InputMapperTests extends TestSuite {
 
         val expected =
           List(
-            KeyboardEvent.KeyPress(Keys.KEY_W) -> Jump
+            KeyboardEvent.KeyPress(Keys.KEY_W) -> List(Jump)
           )
 
         mappingsEqual(actual, expected) ==> true
@@ -103,21 +102,21 @@ object InputMapperTests extends TestSuite {
 
         val mapper =
           InputMapper.subsystem(
-            eUp -> Jump,
-            eDn -> Duck,
-            eKw -> Jump
+            eUp -> List(Jump),
+            eDn -> List(Duck),
+            eKw -> List(Jump)
           )
 
         (mapper.update(GameTime.zero, Dice.loaded(1))(InputMapperEvent.Input(eUp))).globalEvents.length ==> 1
-        (mapper.update(GameTime.zero, Dice.loaded(1))(InputMapperEvent.Input(eUp))).globalEvents.head ==> InputMapperEvent.Action(Jump)
-        (mapper.update(GameTime.zero, Dice.loaded(1))(InputMapperEvent.Input(eDn))).globalEvents.head ==> InputMapperEvent.Action(Duck)
-        (mapper.update(GameTime.zero, Dice.loaded(1))(InputMapperEvent.Input(eKw))).globalEvents.head ==> InputMapperEvent.Action(Jump)
+        (mapper.update(GameTime.zero, Dice.loaded(1))(InputMapperEvent.Input(eUp))).globalEvents.head ==> Jump
+        (mapper.update(GameTime.zero, Dice.loaded(1))(InputMapperEvent.Input(eDn))).globalEvents.head ==> Duck
+        (mapper.update(GameTime.zero, Dice.loaded(1))(InputMapperEvent.Input(eKw))).globalEvents.head ==> Jump
 
       }
 
     }
 
-  def mappingsEqual(a: List[InputMapper.Mapping], b: List[InputMapper.Mapping]): Boolean = {
+  def mappingsEqual(a: List[(InputEvent, List[GlobalEvent])], b: List[(InputEvent, List[GlobalEvent])]): Boolean = {
     val res = a.length == b.length && a.forall(b.contains)
 
     if (res) res

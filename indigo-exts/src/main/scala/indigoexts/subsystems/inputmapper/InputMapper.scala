@@ -8,7 +8,7 @@ import indigo.shared.Outcome
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.events.InputEvent
 
-final class InputMapper(mappings: Map[InputEvent, InputAction]) extends SubSystem {
+final class InputMapper(mappings: Map[InputEvent, List[GlobalEvent]]) extends SubSystem {
 
   type EventType = InputMapperEvent
 
@@ -25,25 +25,19 @@ final class InputMapper(mappings: Map[InputEvent, InputAction]) extends SubSyste
     case e: InputMapperEvent.RemoveMappings =>
       Some(e)
 
-    case _: InputMapperEvent.Action =>
-      None
-
     case _ =>
       None
   }
 
   def update(gameTime: GameTime, dice: Dice): InputMapperEvent => Outcome[InputMapper] = {
     case InputMapperEvent.Input(e) =>
-      Outcome(this).addGlobalEvents(mappings.get(e).map(InputMapperEvent.Action.apply).toList)
+      Outcome(this).addGlobalEvents(mappings.get(e).toList.flatten)
 
     case InputMapperEvent.AddMappings(inputMappings) =>
-      Outcome(new InputMapper(mappings ++ inputMappings.toMap))
+      Outcome(new InputMapper(mappings ++ inputMappings))
 
     case InputMapperEvent.RemoveMappings(inputEvents) =>
       Outcome(new InputMapper(mappings -- inputEvents))
-
-    case InputMapperEvent.Action(_) =>
-      Outcome(this)
   }
 
   def render(gameTime: GameTime): SceneUpdateFragment =
@@ -52,30 +46,29 @@ final class InputMapper(mappings: Map[InputEvent, InputAction]) extends SubSyste
   def report: String =
     "Input Mapper"
 
-  def toMappingsList: List[InputMapper.Mapping] =
+  def toMappingsList: List[(InputEvent, List[GlobalEvent])] =
     mappings.toList
 
 }
 
 object InputMapper {
 
-  type Mapping = (InputEvent, InputAction)
-
-  def subsystem[Event <: InputEvent, Action <: InputAction](inputMappings: (Event, Action)*): InputMapper =
+  def subsystem(inputMappings: (InputEvent, List[GlobalEvent])*): InputMapper =
     new InputMapper(inputMappings.toMap)
 
 }
 
-trait InputAction
-
 sealed trait InputMapperEvent extends GlobalEvent
 object InputMapperEvent {
-  final case class Input(event: InputEvent)                               extends InputMapperEvent
-  final case class Action(event: InputAction)                             extends InputMapperEvent
-  final case class RemoveMappings(inputEvent: List[InputEvent])           extends InputMapperEvent
-  final case class AddMappings(mappings: List[(InputEvent, InputAction)]) extends InputMapperEvent
+  final case class Input(event: InputEvent)                      extends InputMapperEvent
+  final case class RemoveMappings(inputEvents: List[InputEvent]) extends InputMapperEvent
+  object RemoveMappings {
+    def apply(inputMappings: InputEvent*): RemoveMappings =
+      RemoveMappings(inputMappings.toList)
+  }
+  final case class AddMappings(mappings: List[(InputEvent, List[GlobalEvent])]) extends InputMapperEvent
   object AddMappings {
-    def apply(inputMappings: (InputEvent, InputAction)*): AddMappings =
+    def apply(inputMappings: (InputEvent, List[GlobalEvent])*): AddMappings =
       AddMappings(inputMappings.toList)
   }
 }

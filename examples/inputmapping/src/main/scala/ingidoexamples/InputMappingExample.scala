@@ -3,7 +3,6 @@ package ingidoexamples
 import indigo._
 import indigoexts.entrypoint._
 import indigoexts.subsystems.inputmapper.InputMapper
-import indigoexts.subsystems.inputmapper.InputAction
 import indigoexts.subsystems.inputmapper.InputMapperEvent
 
 object InputMappingExample extends IndigoGameBasic[Unit, GameModel, Unit] {
@@ -27,7 +26,7 @@ object InputMappingExample extends IndigoGameBasic[Unit, GameModel, Unit] {
   val subSystems: Set[SubSystem] =
     Set(
       InputMapper.subsystem(
-        KeyboardEvent.KeyDown(Keys.UP_ARROW) -> Up
+        KeyboardEvent.KeyDown(Keys.UP_ARROW) -> List(Up)
       )
     )
 
@@ -41,20 +40,20 @@ object InputMappingExample extends IndigoGameBasic[Unit, GameModel, Unit] {
     case KeyboardEvent.KeyDown(Keys.KEY_A) =>
       println("Added Down Arrow input mapping")
       Outcome(model).addGlobalEvents(
-        InputMapperEvent.AddMappings(List(KeyboardEvent.KeyDown(Keys.DOWN_ARROW) -> Down))
+        InputMapperEvent.AddMappings(KeyboardEvent.KeyDown(Keys.DOWN_ARROW) -> List(Down))
       )
 
     case KeyboardEvent.KeyDown(Keys.KEY_D) =>
       println("Removed Down Arrow input mapping")
       Outcome(model).addGlobalEvents(
-        InputMapperEvent.RemoveMappings(List(KeyboardEvent.KeyDown(Keys.DOWN_ARROW)))
+        InputMapperEvent.RemoveMappings(KeyboardEvent.KeyDown(Keys.DOWN_ARROW))
       )
 
-    case InputMapperEvent.Action(Up) =>
+    case Up =>
       println("Up action")
       Outcome(GameModel(Some(Up)))
 
-    case InputMapperEvent.Action(Down) =>
+    case Down =>
       println("Down action")
       Outcome(GameModel(Some(Down)))
 
@@ -79,7 +78,7 @@ object InputMappingExample extends IndigoGameBasic[Unit, GameModel, Unit] {
 
 final case class GameModel(action: Option[Action])
 
-sealed trait Action extends InputAction {
+sealed trait Action extends GlobalEvent {
   def asString: String =
     this match {
       case Up   => "Up"
