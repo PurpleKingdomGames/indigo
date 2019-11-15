@@ -25,11 +25,11 @@ object ClearColor {
 
   def fromRGB(r: Double, g: Double, b: Double): ClearColor = ClearColor(r, g, b, 1d)
 
-  val Red: ClearColor   = ClearColor.fromRGB(1, 0, 0)
-  val Green: ClearColor = ClearColor.fromRGB(0, 1, 0)
-  val Blue: ClearColor  = ClearColor.fromRGB(0, 0, 1)
+  val Red: ClearColor   = ClearColor.fromRGB(1d, 0, 0)
+  val Green: ClearColor = ClearColor.fromRGB(0, 1d, 0)
+  val Blue: ClearColor  = ClearColor.fromRGB(0, 0, 1d)
   val Black: ClearColor = ClearColor.fromRGB(0, 0, 0)
-  val White: ClearColor = ClearColor.fromRGB(1, 1, 1)
+  val White: ClearColor = ClearColor.fromRGB(1d, 1d, 1d)
 
   def fromHexString(hex: String): ClearColor =
     hex.trim match {
