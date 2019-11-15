@@ -32,18 +32,6 @@ object TextExample extends IndigoGameBasic[Unit, Unit, ViewModel] {
   def update(gameTime: GameTime, model: Unit, dice: Dice): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
 
-  def createText(frameInputEvents: FrameInputEvents, tint: Tint): Text =
-    Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontKey)
-      .withTint(tint)
-      .alignRight
-      .onEvent {
-        case (bounds, MouseEvent.Click(_, _)) if frameInputEvents.wasMouseClickedWithin(bounds) =>
-          List(ChangeColour)
-
-        case _ =>
-          Nil
-      }
-
   def initialViewModel(startupData: Unit): Unit => ViewModel =
     _ => ViewModel(Tint.None)
 
@@ -54,19 +42,27 @@ object TextExample extends IndigoGameBasic[Unit, Unit, ViewModel] {
       Outcome(viewModel)
 
   def present(gameTime: GameTime, model: Unit, viewModel: ViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
-    SceneUpdateFragment().addGameLayerNodes(createText(frameInputEvents, viewModel.tint))
+    SceneUpdateFragment()
+      .addGameLayerNodes(
+        Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontKey)
+          .withTint(viewModel.tint)
+          .alignRight
+          .onEvent {
+            case (bounds, MouseEvent.Click(_, _)) if frameInputEvents.wasMouseClickedWithin(bounds) =>
+              List(ChangeColour)
+
+            case _ =>
+              Nil
+          }
+      )
 
 }
 
 case object ChangeColour extends GlobalEvent
 
 final case class ViewModel(tint: Tint) {
-  def changeTint(dice: Dice): ViewModel = {
-    val roll = dice.roll(3)
-
-    println(roll.toString())
-
-    roll match {
+  def changeTint(dice: Dice): ViewModel =
+    dice.roll(3) match {
       case 1 =>
         this.copy(tint = Tint.Red)
 
@@ -76,7 +72,6 @@ final case class ViewModel(tint: Tint) {
       case 3 =>
         this.copy(tint = Tint.Blue)
     }
-  }
 
 }
 

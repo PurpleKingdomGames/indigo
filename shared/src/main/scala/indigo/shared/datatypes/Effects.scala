@@ -14,6 +14,9 @@ final class Effects(val alpha: Double, val tint: Tint, val flip: Flip) {
 
   def withFlip(newFlip: Flip): Effects =
     Effects(alpha, tint, newFlip)
+
+  def hash: String =
+    alpha.toString() + tint.hash + flip.hash
 }
 object Effects {
   val default: Effects = Effects(
@@ -41,6 +44,14 @@ final class Flip(val horizontal: Boolean, val vertical: Boolean) {
 
   def withFlipV(value: Boolean) =
     new Flip(horizontal, value)
+
+  def hash: String =
+    (horizontal, vertical) match {
+      case (false, false) => "00"
+      case (true, false)  => "10"
+      case (false, true)  => "01"
+      case (true, true)   => "11"
+    }
 }
 object Flip {
   def apply(horizontal: Boolean, vertical: Boolean): Flip =
@@ -65,6 +76,9 @@ final class Tint(val r: Double, val g: Double, val b: Double, val a: Double) {
 
   def toClearColor: ClearColor =
     ClearColor(r * a, g * a, b * a, 1)
+
+  def hash: String =
+    r.toString() + g.toString() + b.toString() + a.toString()
 
   override def toString: String =
     implicitly[AsString[Tint]].show(this)

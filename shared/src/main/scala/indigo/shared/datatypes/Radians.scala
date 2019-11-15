@@ -14,6 +14,9 @@ final class Radians(val value: Double) extends AnyVal {
   def /(other: Radians): Radians =
     Radians.divide(this, other)
 
+  def hash: String =
+    value.toString()
+
 }
 object Radians {
 

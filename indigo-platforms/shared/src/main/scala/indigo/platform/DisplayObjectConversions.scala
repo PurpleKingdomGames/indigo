@@ -31,9 +31,8 @@ object DisplayObjectConversions {
   implicit private val stringCache: QuickCache[String]                           = QuickCache.empty
   implicit private val vector2Cache: QuickCache[Vector2]                         = QuickCache.empty
   implicit private val frameCache: QuickCache[SpriteSheetFrameCoordinateOffsets] = QuickCache.empty
-  implicit private val doCache: QuickCache[DisplayObject]                        = QuickCache.empty
-  implicit private val listDoCache: QuickCache[List[DisplayObject]]              = QuickCache.empty
-  implicit private val cloneBatchCache: QuickCache[DisplayCloneBatch]            = QuickCache.empty
+  implicit private val listDoCache: QuickCache[List[DisplayObject]]   = QuickCache.empty
+  implicit private val cloneBatchCache: QuickCache[DisplayCloneBatch] = QuickCache.empty
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   def lookupTextureOffset(assetMapping: AssetMapping, name: String): Vector2 =
@@ -234,45 +233,52 @@ object DisplayObjectConversions {
 
   def textLineToDisplayObjects(leaf: Text, assetMapping: AssetMapping): (TextLine, Int, Int) => List[DisplayObject] =
     (line, alignmentOffsetX, yOffset) => {
+      val fontInfo = FontRegister.findByFontKey(leaf.fontKey)
+
       val lineHash: String =
-        leaf.fontKey.key + ":" + line.hash + ":" + alignmentOffsetX.toString() + ":" + yOffset.toString()
+        leaf.fontKey.key +
+          ":" + line.hash +
+          ":" + alignmentOffsetX.toString() +
+          ":" + yOffset.toString() +
+          ":" + leaf.bounds.hash +
+          ":" + leaf.rotation.hash +
+          ":" + leaf.scale.hash +
+          ":" + fontInfo.map(_.fontSpriteSheet.imageAssetRef).getOrElse("") +
+          ":" + leaf.effects.hash
 
       QuickCache(lineHash) {
-        FontRegister
-          .findByFontKey(leaf.fontKey)
+        fontInfo
           .map { fontInfo =>
             zipWithCharDetails(line.text.toList, fontInfo).toList.map {
               case (fontChar, xPosition) =>
-                QuickCache(lineHash + ":" + leaf.fontKey.key + ":" + fontChar.character.toString() + ":" + fontChar.bounds.hash + ":" + xPosition.toString()) {
-                  DisplayObject(
-                    x = leaf.position.x + xPosition + alignmentOffsetX,
-                    y = leaf.position.y + yOffset,
-                    z = leaf.depth.zIndex,
-                    width = fontChar.bounds.width,
-                    height = fontChar.bounds.height,
-                    rotation = leaf.rotation.value,
-                    scaleX = leaf.scale.x,
-                    scaleY = leaf.scale.y,
-                    imageRef = lookupAtlasName(assetMapping, fontInfo.fontSpriteSheet.imageAssetRef),
-                    alpha = leaf.effects.alpha,
-                    tintR = leaf.effects.tint.r,
-                    tintG = leaf.effects.tint.g,
-                    tintB = leaf.effects.tint.b,
-                    tintA = leaf.effects.tint.a,
-                    flipHorizontal = leaf.effects.flip.horizontal,
-                    flipVertical = leaf.effects.flip.vertical,
-                    frame = QuickCache(fontChar.bounds.hash + "_" + fontInfo.fontSpriteSheet.imageAssetRef) {
-                      SpriteSheetFrame.calculateFrameOffset(
-                        imageSize = lookupAtlasSize(assetMapping, fontInfo.fontSpriteSheet.imageAssetRef),
-                        frameSize = Vector2(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble),
-                        framePosition = Vector2(fontChar.bounds.x.toDouble, fontChar.bounds.y.toDouble),
-                        textureOffset = lookupTextureOffset(assetMapping, fontInfo.fontSpriteSheet.imageAssetRef)
-                      )
-                    },
-                    refX = leaf.ref.x,
-                    refY = leaf.ref.y
-                  )
-                }
+                DisplayObject(
+                  x = leaf.position.x + xPosition + alignmentOffsetX,
+                  y = leaf.position.y + yOffset,
+                  z = leaf.depth.zIndex,
+                  width = fontChar.bounds.width,
+                  height = fontChar.bounds.height,
+                  rotation = leaf.rotation.value,
+                  scaleX = leaf.scale.x,
+                  scaleY = leaf.scale.y,
+                  imageRef = lookupAtlasName(assetMapping, fontInfo.fontSpriteSheet.imageAssetRef),
+                  alpha = leaf.effects.alpha,
+                  tintR = leaf.effects.tint.r,
+                  tintG = leaf.effects.tint.g,
+                  tintB = leaf.effects.tint.b,
+                  tintA = leaf.effects.tint.a,
+                  flipHorizontal = leaf.effects.flip.horizontal,
+                  flipVertical = leaf.effects.flip.vertical,
+                  frame = QuickCache(fontChar.bounds.hash + "_" + fontInfo.fontSpriteSheet.imageAssetRef) {
+                    SpriteSheetFrame.calculateFrameOffset(
+                      imageSize = lookupAtlasSize(assetMapping, fontInfo.fontSpriteSheet.imageAssetRef),
+                      frameSize = Vector2(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble),
+                      framePosition = Vector2(fontChar.bounds.x.toDouble, fontChar.bounds.y.toDouble),
+                      textureOffset = lookupTextureOffset(assetMapping, fontInfo.fontSpriteSheet.imageAssetRef)
+                    )
+                  },
+                  refX = leaf.ref.x,
+                  refY = leaf.ref.y
+                )
             }
           }
           .getOrElse {

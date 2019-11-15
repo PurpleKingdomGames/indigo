@@ -43,6 +43,9 @@ final class Vector2(val x: Double, val y: Double) {
 
   def ===(other: Vector2): Boolean =
     implicitly[EqualTo[Vector2]].equal(this, other)
+
+  def hash: String =
+    x.toString() + y.toString()
 }
 
 object Vector2 {

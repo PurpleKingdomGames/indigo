@@ -475,9 +475,6 @@ final class Text(
 
   val ref: Point = Point.zero
 
-  lazy val x: Int = bounds.position.x
-  lazy val y: Int = bounds.position.y
-
   lazy val lines: List[TextLine] =
     FontRegister
       .findByFontKey(fontKey)
@@ -493,10 +490,23 @@ final class Text(
         Nil
       }
 
+  lazy val unalignedBounds: Rectangle =
+    lines
+      .map(_.lineBounds)
+      .fold(Rectangle.zero) { (acc, next) =>
+        acc.resize(Point(Math.max(acc.width, next.width), acc.height + next.height))
+      }
+      .moveTo(position)
+
   lazy val bounds: Rectangle =
-    lines.map(_.lineBounds).fold(Rectangle.zero) { (acc, next) =>
-      acc.resize(Point(Math.max(acc.width, next.width), acc.height + next.height))
+    (alignment, unalignedBounds) match {
+      case (TextAlignment.Left, b)   => b
+      case (TextAlignment.Center, b) => b.moveTo(Point(b.x - (b.width / 2), b.y))
+      case (TextAlignment.Right, b)  => b.moveTo(Point(b.x - b.width, b.y))
     }
+
+  lazy val x: Int = bounds.position.x
+  lazy val y: Int = bounds.position.y
 
   def moveTo(pt: Point): Text =
     Text(text, alignment, pt, depth, rotation, scale, fontKey, effects, eventHandler)
@@ -563,13 +573,6 @@ final class Text(
 
   def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Text =
     Text(text, alignment, position, depth, rotation, scale, fontKey, effects, e)
-
-  lazy val alignedBounds: Rectangle =
-    (alignment, bounds.moveTo(position)) match {
-      case (TextAlignment.Left, b)   => b
-      case (TextAlignment.Center, b) => b.moveTo(Point(b.x - (b.width / 2), b.y))
-      case (TextAlignment.Right, b)  => b.moveTo(Point(b.x - b.width, b.y))
-    }
 
 }
 
