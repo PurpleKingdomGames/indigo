@@ -73,7 +73,7 @@ object GameEngine {
 
     IndigoLogger.info("Starting Indigo")
 
-    PlatformWindow.windowSetup(config) // haha doesn't work :(
+    PlatformWindow.windowSetup(config)
 
     // Arrange config
     configAsync.map(_.getOrElse(config)).foreach { gameConfig =>
