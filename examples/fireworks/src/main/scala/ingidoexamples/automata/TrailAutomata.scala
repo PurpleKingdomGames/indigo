@@ -5,10 +5,14 @@ import ingidoexamples.model.TrailParticle
 import indigo._
 import ingidoexamples.Assets
 
-object TrailAutomaton {
+object TrailAutomata {
 
   val poolKey: AutomataPoolKey =
     AutomataPoolKey("trail")
+
+  def automata: Automata =
+    Automata(poolKey, automaton, Automata.Layer.Game)
+      .withMaxPoolSize(500)
 
   def spawnEvent(at: Point): AutomataEvent.Spawn =
     AutomataEvent.Spawn(

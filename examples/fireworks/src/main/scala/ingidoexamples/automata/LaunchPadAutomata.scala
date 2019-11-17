@@ -5,13 +5,16 @@ import indigoexts.subsystems.automata._
 import ingidoexamples.Assets
 import ingidoexamples.model.LaunchPad
 
-object LaunchPadAutomaton {
+object LaunchPadAutomata {
 
   val MinCountDown: Int = 100
   val MaxCountDown: Int = 1000
 
   val poolKey: AutomataPoolKey =
     AutomataPoolKey("launchPad")
+
+  def automata: Automata =
+    Automata(poolKey, automaton, Automata.Layer.Game)
 
   val automaton: Automaton =
     Automaton(
@@ -21,7 +24,7 @@ object LaunchPadAutomaton {
       seed.payload match {
         case Some(LaunchPad(_, _, rocket)) =>
           List(
-            RocketAutomaton.spawnEvent(rocket, seed.spawnedAt)
+            RocketAutomata.spawnEvent(rocket, seed.spawnedAt)
           )
 
         case _ =>

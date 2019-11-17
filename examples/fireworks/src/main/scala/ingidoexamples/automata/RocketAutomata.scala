@@ -7,10 +7,13 @@ import ingidoexamples.model.Rocket
 import indigoexts.geometry.Vertex
 import indigo.EqualTo._
 
-object RocketAutomaton {
+object RocketAutomata {
 
   val poolKey: AutomataPoolKey =
     AutomataPoolKey("rocket")
+
+  def automata(screenDimensions: Rectangle): Automata =
+    Automata(poolKey, automaton(screenDimensions), Automata.Layer.Game)
 
   def automaton(screenDimensions: Rectangle): Automaton =
     Automaton(
@@ -47,7 +50,7 @@ object RocketAutomaton {
 
                   AutomatonUpdate(
                     List(r.moveTo(position)),
-                    if(t.toInt % 2 === 0 ) List(TrailAutomaton.spawnEvent(position)) else Nil
+                    if (t.toInt % 2 === 0) List(TrailAutomata.spawnEvent(position)) else Nil
                   )
                 }
 

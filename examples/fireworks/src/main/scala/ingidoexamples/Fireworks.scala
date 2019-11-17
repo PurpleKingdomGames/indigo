@@ -6,7 +6,9 @@ import indigoexts.uicomponents._
 import indigoexts.subsystems.fpscounter.FPSCounter
 
 import ingidoexamples.model.FireworksModel
-import ingidoexamples.automata.FireworksAutomata
+import ingidoexamples.automata.LaunchPadAutomata
+import ingidoexamples.automata.RocketAutomata
+import ingidoexamples.automata.TrailAutomata
 
 object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
 
@@ -30,9 +32,9 @@ object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
   val subSystems: Set[SubSystem] =
     Set(
       FPSCounter.subSystem(FontStuff.fontKey, Point(5, 40)),
-      FireworksAutomata.launchPad,
-      FireworksAutomata.rocket(config.viewport.giveDimensions(3)),
-      FireworksAutomata.trail
+      LaunchPadAutomata.automata,
+      RocketAutomata.automata(config.viewport.giveDimensions(3)),
+      TrailAutomata.automata
     )
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =

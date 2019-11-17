@@ -3,7 +3,7 @@ package ingidoexamples.model
 import indigo._
 import indigoexts.uicomponents._
 import indigoexts.subsystems.automata._
-import ingidoexamples.automata.LaunchPadAutomaton
+import ingidoexamples.automata.LaunchPadAutomata
 
 final case class FireworksModel(launchButton: Button) {
   def update(dice: Dice, screenDimensions: Rectangle): Outcome[FireworksModel] =
@@ -21,6 +21,6 @@ object FireworksModel {
     state.copy(launchButton = state.launchButton.withUpAction(launchFireworks(dice, screenDimensions)))
 
   def launchFireworks(dice: Dice, screenDimensions: Rectangle): () => List[AutomataEvent.Spawn] =
-    () => List.fill(dice.roll(5) + 5)(LaunchPadAutomaton.spawnEvent(LaunchPad.generateLaunchPad(dice), screenDimensions))
+    () => List.fill(dice.roll(5) + 5)(LaunchPadAutomata.spawnEvent(LaunchPad.generateLaunchPad(dice), screenDimensions))
 
 }

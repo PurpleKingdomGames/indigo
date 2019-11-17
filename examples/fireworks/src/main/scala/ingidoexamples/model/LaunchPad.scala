@@ -2,7 +2,7 @@ package ingidoexamples.model
 
 import indigo._
 import indigoexts.subsystems.automata.AutomatonPayload
-import ingidoexamples.automata.LaunchPadAutomaton
+import ingidoexamples.automata.LaunchPadAutomata
 import indigoexts.geometry.Vertex
 
 final case class LaunchPad(position: Vertex, countDown: Millis, rocket: Rocket) extends AutomatonPayload
@@ -14,7 +14,7 @@ object LaunchPad {
       Vertex(dice.rollDouble, 0)
 
     val countDown: Millis =
-      Millis(LaunchPadAutomaton.MinCountDown + dice.roll(LaunchPadAutomaton.MaxCountDown - LaunchPadAutomaton.MinCountDown).toLong)
+      Millis(LaunchPadAutomata.MinCountDown + dice.roll(LaunchPadAutomata.MaxCountDown - LaunchPadAutomata.MinCountDown).toLong)
 
     LaunchPad(startPosition, countDown, Rocket.generateRocket(dice))
   }
