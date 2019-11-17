@@ -7,7 +7,7 @@ import indigo.shared.datatypes.Point
 import indigo.EqualTo._
 import ingidoexamples.model.FireworksModel
 import indigo.shared.time.Millis
-import ingidoexamples.automata.LaunchPadAutomaton
+import ingidoexamples.automata.LaunchPadAutomata
 import indigo.shared.datatypes.Rectangle
 
 class FireworksModelSpecification extends Properties("FireworksModel") {
@@ -43,7 +43,7 @@ class FireworksModelSpecification extends Properties("FireworksModel") {
       Prop.all(events.map(_.at).forall(pt => pt.x >= minX && pt.x <= maxX))
   }
 
-  property(s"generated fireworks will live from between ${LaunchPadAutomaton.MinCountDown}ms and ${LaunchPadAutomaton.MaxCountDown}ms") = Prop.forAll { dice: Dice =>
+  property(s"generated fireworks will live from between ${LaunchPadAutomata.MinCountDown}ms and ${LaunchPadAutomata.MaxCountDown}ms") = Prop.forAll { dice: Dice =>
     val events = FireworksModel.launchFireworks(dice, screenDimensions)()
 
     events.map(_.lifeSpan).mkString("[", ",", "]") |: Prop.all(
@@ -51,7 +51,7 @@ class FireworksModelSpecification extends Properties("FireworksModel") {
       events
         .map(_.lifeSpan)
         .collect { case Some(life) => life }
-        .forall(ms => ms >= Millis(LaunchPadAutomaton.MinCountDown) && ms <= Millis(LaunchPadAutomaton.MaxCountDown))
+        .forall(ms => ms >= Millis(LaunchPadAutomata.MinCountDown) && ms <= Millis(LaunchPadAutomata.MaxCountDown))
     )
   }
 
