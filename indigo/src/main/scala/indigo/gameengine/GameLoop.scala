@@ -79,8 +79,8 @@ class GameLoop[GameModel, ViewModel](
             metrics
           )
 
-          state <- GameContext { processedFrame._1 }
-          scene <- GameContext { processedFrame._2 }
+          state <- GameContext { processedFrame.mapState(p => (p._1, p._2)) }
+          scene <- GameContext { processedFrame.state._3 }
           _     <- persistFrameState(state)
           _     <- GameLoop.processUpdatedView(scene, collectedEvents, metrics, globalEventStream)
           _     <- GameLoop.drawScene(renderer, gameTime, scene, assetMapping, metrics)
@@ -128,16 +128,16 @@ object GameLoop {
       signalsState: Signals,
       dice: Dice,
       metrics: Metrics
-  ): GameContext[(Outcome[(GameModel, ViewModel)], Option[SceneUpdateFragment])] =
+  ): GameContext[Outcome[(GameModel, ViewModel, Option[SceneUpdateFragment])]] =
     GameContext {
       metrics.record(CallFrameProcessorStartMetric)
 
-      val res: (Outcome[(GameModel, ViewModel)], Option[SceneUpdateFragment]) =
+      val res: Outcome[(GameModel, ViewModel, Option[SceneUpdateFragment])] =
         if (renderView) {
-          frameProcessor.run(gameModelState, viewModelState)(gameTime, collectedEvents, signalsState, dice)
+          frameProcessor.run(gameModelState, viewModelState, gameTime, collectedEvents, signalsState, dice)
         } else {
           metrics.record(UpdateEndMetric)
-          frameProcessor.runSkipView(gameModelState, viewModelState)(gameTime, collectedEvents, signalsState, dice)
+          frameProcessor.runSkipView(gameModelState, viewModelState, gameTime, collectedEvents, signalsState, dice)
         }
 
       metrics.record(CallFrameProcessorEndMetric)

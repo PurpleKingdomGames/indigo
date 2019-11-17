@@ -133,6 +133,9 @@ object Outcome {
   def combine[A, B](oa: Outcome[A], ob: Outcome[B]): Outcome[(A, B)] =
     Outcome((oa.state, ob.state)).addGlobalEvents(oa.globalEvents ++ ob.globalEvents)
 
+  def combine3[A, B, C](oa: Outcome[A], ob: Outcome[B], oc: Outcome[C]): Outcome[(A, B, C)] =
+    Outcome((oa.state, ob.state, oc.state)).addGlobalEvents(oa.globalEvents ++ ob.globalEvents ++ oc.globalEvents)
+
   def join[A](faa: Outcome[Outcome[A]]): Outcome[A] =
     faa.state.addGlobalEvents(faa.globalEvents)
 
