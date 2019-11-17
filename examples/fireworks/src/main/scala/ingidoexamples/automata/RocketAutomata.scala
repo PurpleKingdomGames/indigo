@@ -20,6 +20,10 @@ object RocketAutomata {
       Assets.cross,
       Millis(0)
     ).withModifier(ModifierFunctions.signal(screenDimensions))
+      .withOnCullEvent(launchFlares)
+
+  val launchFlares: AutomatonSeedValues => List[GlobalEvent] =
+    _ => List(FlareAutomata.spawnEvent)
 
   def spawnEvent(rocket: Rocket, launchPadPosition: Point): AutomataEvent.Spawn =
     AutomataEvent.Spawn(poolKey, launchPadPosition, Some(rocket.flightTime), Some(rocket))

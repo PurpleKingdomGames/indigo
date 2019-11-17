@@ -10,7 +10,13 @@ object TrailAutomata {
   val poolKey: AutomataPoolKey =
     AutomataPoolKey("trail")
 
-  def automata: Automata =
+  val automaton: Automaton =
+    Automaton(
+      Assets.cross,
+      Millis(500)
+    ).withModifier(Modifer.signal)
+
+  val automata: Automata =
     Automata(poolKey, automaton, Automata.Layer.Game)
       .withMaxPoolSize(500)
 
@@ -21,12 +27,6 @@ object TrailAutomata {
       None,
       Some(TrailParticle.create)
     )
-
-  val automaton: Automaton =
-    Automaton(
-      Assets.cross,
-      Millis(500)
-    ).withModifier(Modifer.signal)
 
   object Modifer {
 

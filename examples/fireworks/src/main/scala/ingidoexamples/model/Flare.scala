@@ -1,23 +1,27 @@
 package ingidoexamples.model
 
-import indigo._
-import indigoexts.geometry.Bezier
-import indigoexts.subsystems.automata.AutomatonPayload
+import indigo.shared.temporal.Signal
 import indigoexts.geometry.Vertex
+import indigo.shared.dice.Dice
+import indigo.shared.time.Millis
+import indigoexts.geometry.Bezier
+import indigo.shared.collections.NonEmptyList
+import indigo.shared.datatypes.Radians
 
-final case class Rocket(flightTime: Millis, movementSignal: Signal[Vertex]) extends AutomatonPayload
+// TODO: Test all the things.
+final case class Flare(flightTime: Millis, movementSignal: Signal[Vertex])
 
-object Rocket {
+object Flare {
 
-  def generateRocket(dice: Dice): Rocket = {
+  def generate(dice: Dice, initialAngle: Radians): Flare = {
     val flightTime = pickFlightTime(dice)
 
     val signalFunction: Dice => Signal[Vertex] =
-      pickEndPoint andThen
+      pickEndPoint(initialAngle) andThen
         createArcControlVertices(dice) andThen
         createArcSignal(flightTime)
 
-    Rocket(flightTime, signalFunction(dice))
+    Flare(flightTime, signalFunction(dice))
   }
 
   def createArcSignal(lifeSpan: Millis): NonEmptyList[Vertex] => Signal[Vertex] =
@@ -45,9 +49,19 @@ object Rocket {
       NonEmptyList(Vertex.zero, Vertex(x, y), target)
     }
 
-  def pickEndPoint: Dice => Vertex =
-    dice => Vertex(-0.5d + (dice.rollDouble * 1), (dice.rollDouble * 0.5d) + 0.5d)
+  // to test
+  def pickEndPoint(initialAngle: Radians): Dice => Vertex =
+    dice =>
+      Vertex(
+        Math.sin(wobble(dice, initialAngle.value - 0.2d, initialAngle.value + 0.2d)),
+        Math.cos(wobble(dice, initialAngle.value - 0.2d, initialAngle.value + 0.2d))
+      )
 
+  // to test
+  def wobble(dice: Dice, low: Double, high: Double): Double =
+    low + ((high - low) * dice.rollDouble)
+
+  // to test
   def pickFlightTime(dice: Dice): Millis =
     Millis(((dice.roll(10) + 10) * 100).toLong)
 

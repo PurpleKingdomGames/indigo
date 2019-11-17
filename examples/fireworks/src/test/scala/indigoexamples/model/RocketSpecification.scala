@@ -13,17 +13,18 @@ import indigo.shared.time.Millis
 import indigoexts.geometry.Vertex
 import indigoexts.geometry.BoundingBox
 import indigo.shared.dice.Dice
+import indigoexts.geometry.Bezier
 
 class RocketSpecification extends Properties("Rocket") {
 
   import Generators._
 
   property("always creates three control points") = Prop.forAll { (dice: Dice, target: Vertex) =>
-    Rocket.createArcControlVertices(dice, target).length === 3
+    Rocket.createArcControlVertices(dice)(target).length === 3
   }
 
   property("control points are always in order [start, mid, target]") = Prop.forAll { (dice: Dice, target: Vertex) =>
-    Rocket.createArcControlVertices(dice, target) match {
+    Rocket.createArcControlVertices(dice)(target) match {
       case NonEmptyList(s, _ :: e :: Nil) =>
         s === Vertex.zero && e === target
 
@@ -33,7 +34,7 @@ class RocketSpecification extends Properties("Rocket") {
   }
 
   property("arc mid control point y is always in line with the target y position") = Prop.forAll { (dice: Dice, target: Vertex) =>
-    Rocket.createArcControlVertices(dice, target) match {
+    Rocket.createArcControlVertices(dice)(target) match {
       case NonEmptyList(s, m :: e :: Nil) =>
         m.y === e.y
 
@@ -44,7 +45,7 @@ class RocketSpecification extends Properties("Rocket") {
 
   property("arc mid control point x is always more than half way between 0 and 1") = Prop.forAll { (dice: Dice, target: Vertex) =>
     val vertices =
-      Rocket.createArcControlVertices(dice, target)
+      Rocket.createArcControlVertices(dice)(target)
 
     "Vertices X's: " + vertices.toList.map(_.x).mkString("[", ", ", "]") |: Prop.all(
       vertices match {
@@ -58,11 +59,14 @@ class RocketSpecification extends Properties("Rocket") {
   }
 
   property("arc signal should always produce a value inside the beziers bounds") = Prop.forAll { (dice: Dice, target: Vertex, time: Millis) =>
+    val vertices: NonEmptyList[Vertex] =
+      Rocket.createArcControlVertices(dice)(target)
+
     val bounds: BoundingBox =
-      Rocket.createRocketArcBezier(dice, target).bounds
+      Bezier.fromVerticesNel(vertices).bounds
 
     val signal: Signal[Vertex] =
-      Rocket.createRocketArcSignal(dice, target, Millis(1000))
+      Rocket.createArcSignal(Millis(1000))(vertices)
 
     val point: Vertex =
       signal.at(time)
@@ -82,8 +86,11 @@ class RocketSpecification extends Properties("Rocket") {
   property("Over time, the signal should always generate values moving closer to the target") = Prop.forAll { (dice: Dice, target: Vertex) =>
     Prop.forAll(nowNextMillis(0, 1000)) {
       case (now, next) =>
+        val vertices: NonEmptyList[Vertex] =
+          Rocket.createArcControlVertices(dice)(target)
+
         val signal: Signal[Vertex] =
-          Rocket.createRocketArcSignal(dice, target, Millis(1000))
+          Rocket.createArcSignal(Millis(1000))(vertices)
 
         val v1: Vertex =
           signal.at(now)

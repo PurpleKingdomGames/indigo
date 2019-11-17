@@ -13,9 +13,6 @@ object LaunchPadAutomata {
   val poolKey: AutomataPoolKey =
     AutomataPoolKey("launchPad")
 
-  def automata: Automata =
-    Automata(poolKey, automaton, Automata.Layer.Game)
-
   val automaton: Automaton =
     Automaton(
       Assets.cross,
@@ -30,8 +27,10 @@ object LaunchPadAutomata {
         case _ =>
           Nil
       }
-
     }
+
+  val automata: Automata =
+    Automata(poolKey, automaton, Automata.Layer.Game)
 
   def spawnEvent(launchPad: LaunchPad, screenDimensions: Rectangle): AutomataEvent.Spawn =
     AutomataEvent.Spawn(
