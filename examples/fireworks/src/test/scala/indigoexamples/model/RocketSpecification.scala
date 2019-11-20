@@ -58,57 +58,6 @@ class RocketSpecification extends Properties("Rocket") {
     )
   }
 
-  property("arc signal should always produce a value inside the beziers bounds") = Prop.forAll { (dice: Dice, target: Vertex, time: Millis) =>
-    val vertices: NonEmptyList[Vertex] =
-      Rocket.createArcControlVertices(dice)(target)
-
-    val bounds: BoundingBox =
-      Bezier.fromVerticesNel(vertices).bounds
-
-    val signal: Signal[Vertex] =
-      Rocket.createArcSignal(Millis(1000))(vertices)
-
-    val point: Vertex =
-      signal.at(time)
-
-    "-- Bounds: " + bounds.asString +
-      "\n-- Bounds (left): " + bounds.left.toString +
-      "\n-- Bounds (right): " + bounds.right.toString +
-      "\n-- Bounds (top): " + bounds.top.toString +
-      "\n-- Bounds (bottom): " + bounds.bottom.toString +
-      "\n-- target: " + target.asString +
-      "\n-- Point: " + point.asString +
-      "\n-- Time: " + time.asString +
-      "" |: true =? (bounds + BoundingBox(0, 0, 1, 1)).isVertexWithin(signal.at(time))
-  }
-
-  // Previous test guarantees we're always inside the bounds, so we can limit the test cases a bit here.
-  property("Over time, the signal should always generate values moving closer to the target") = Prop.forAll { (dice: Dice, target: Vertex) =>
-    Prop.forAll(nowNextMillis(0, 1000)) {
-      case (now, next) =>
-        val vertices: NonEmptyList[Vertex] =
-          Rocket.createArcControlVertices(dice)(target)
-
-        val signal: Signal[Vertex] =
-          Rocket.createArcSignal(Millis(1000))(vertices)
-
-        val v1: Vertex =
-          signal.at(now)
-
-        val v2: Vertex =
-          signal.at(next)
-
-        "t1: " + now +
-          "\nt2: " + next +
-          "\nv1: " + v1 +
-          "\nv2: " + v2 +
-          "\ntarget: " + target +
-          "\nv1 distance: " + v1.distanceTo(target) +
-          "\nv2 distance: " + v2.distanceTo(target) +
-          "" |: v2.distanceTo(target) < v1.distanceTo(target)
-    }
-  }
-
   /*
   There are some things to know here.
   Screen coords are TL to BR.
@@ -126,16 +75,6 @@ class RocketSpecification extends Properties("Rocket") {
       s"y: ${target.y} >= 0.5" |: target.y >= 0.5,
       s"x: ${target.x} >= -0.5" |: target.x >= -0.5d,
       s"x: ${target.x} <= 0.5" |: target.x <= 0.5d
-    )
-  }
-
-  property("able to generate a flight time") = Prop.forAll { dice: Dice =>
-    val flightTime: Millis =
-      Rocket.pickFlightTime(dice)
-
-    Prop.all(
-      flightTime >= Millis(1000),
-      flightTime <= Millis(2000)
     )
   }
 

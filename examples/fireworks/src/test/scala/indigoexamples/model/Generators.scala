@@ -39,4 +39,16 @@ object Generators {
       t1 <- clampedMillisGen(min, max - 1)
       t2 <- clampedMillisGen(t1.value + 1, max)
     } yield (t1, t2)
+
+  def minMaxDoubles(lower: Double, upper: Double): Gen[(Double, Double)] =
+    for {
+      d1 <- Gen.choose(lower, upper - 1)
+      d2 <- Gen.choose(d1, upper)
+    } yield (d1, d2)
+
+  val radiansGen: Gen[Radians] =
+    Gen.choose(0d, (2 * Math.PI)).map(Radians.apply)
+
+  implicit val arbRadians: Arbitrary[Radians] =
+    Arbitrary(radiansGen)
 }
