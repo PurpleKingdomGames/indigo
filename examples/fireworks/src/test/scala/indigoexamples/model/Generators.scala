@@ -51,4 +51,18 @@ object Generators {
 
   implicit val arbRadians: Arbitrary[Radians] =
     Arbitrary(radiansGen)
+
+  val pointGen: Gen[Point] =
+    for {
+      x <- Gen.choose(-10000, 10000)
+      y <- Gen.choose(-10000, 10000)
+    } yield Point(x, y)
+
+  implicit val arbPoint: Arbitrary[Point] =
+    Arbitrary(pointGen)
+
+  final case class Radius(value: Double)
+
+  val clampedRadiusGen: Gen[Radius] =
+    Gen.choose(10.0d, 100.0d).map(Radius.apply)
 }

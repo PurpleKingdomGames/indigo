@@ -10,7 +10,7 @@ import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.temporal.Signal
 import indigoexts.subsystems.automata.AutomatonUpdate
 import indigoexts.subsystems.automata.AutomataEvent
-import indigo.shared.datatypes.Point
+import ingidoexamples.model.Flare
 
 object FlareAutomata {
 
@@ -26,18 +26,18 @@ object FlareAutomata {
   val automata: Automata =
     Automata(poolKey, automaton, Automata.Layer.Game)
 
-  def spawnEvent: AutomataEvent.Spawn =
+  def spawnEvent(flare: Flare): AutomataEvent.Spawn =
     AutomataEvent.Spawn(
       poolKey,
-      Point.zero,
-      Some(Millis(1000)),
-      None
+      flare.startPosition,
+      Some(flare.flightTime),
+      Some(flare)
     )
 
   object ModifierFunctions {
 
     def signal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
-      ???
+      None
 
   }
 

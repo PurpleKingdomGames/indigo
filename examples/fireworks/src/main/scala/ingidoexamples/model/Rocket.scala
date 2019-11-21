@@ -3,19 +3,21 @@ package ingidoexamples.model
 import indigo._
 import indigoexts.geometry.Vertex
 
-final case class Rocket(flightTime: Millis, movementSignal: Signal[Vertex]) extends Projectile
+final case class Rocket(flightTime: Millis, movementSignal: Signal[Vertex], flares: List[Flare]) extends Projectile
 
 object Rocket {
 
+  val PI2: Double = Math.PI * 2
+
   def generateRocket(dice: Dice): Rocket = {
     val flightTime = Projectiles.pickFlightTime(dice, Millis(1000L), Millis(2000L))
+    val endPoint   = pickEndPoint(dice)
 
-    val signalFunction: Dice => Signal[Vertex] =
-      pickEndPoint andThen
-        createArcControlVertices(dice) andThen
-        Projectiles.createArcSignal(flightTime)
+    val signalFunction: Signal[Vertex] =
+      (createArcControlVertices(dice) andThen
+        Projectiles.createArcSignal(flightTime))(endPoint)
 
-    Rocket(flightTime, signalFunction(dice))
+    Rocket(flightTime, signalFunction, generateFlares(dice, endPoint.toPoint))
   }
 
   def createArcControlVertices(dice: Dice): Vertex => NonEmptyList[Vertex] =
@@ -39,5 +41,10 @@ object Rocket {
 
   def pickEndPoint: Dice => Vertex =
     dice => Vertex(-0.5d + (dice.rollDouble * 1), (dice.rollDouble * 0.5d) + 0.5d)
+
+  def generateFlares(dice: Dice, startPoint: Point): List[Flare] =
+    List.fill(dice.roll(3) + 4)(dice.rollDouble * PI2).map { angle =>
+      Flare.generateFlare(dice, startPoint, Radians(angle), (dice.roll(90) + 10).toDouble)
+    }
 
 }

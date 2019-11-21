@@ -22,8 +22,15 @@ object RocketAutomata {
     ).withModifier(ModifierFunctions.signal(screenDimensions))
       .withOnCullEvent(launchFlares)
 
-  val launchFlares: AutomatonSeedValues => List[GlobalEvent] =
-    _ => List(FlareAutomata.spawnEvent)
+  val launchFlares: AutomatonSeedValues => List[GlobalEvent] = seed => {
+    seed.payload match {
+      case Some(Rocket(_, _, flares)) =>
+        flares.map(f => FlareAutomata.spawnEvent(f))
+
+      case _ =>
+        Nil
+    }
+  }
 
   def spawnEvent(rocket: Rocket, launchPadPosition: Point): AutomataEvent.Spawn =
     AutomataEvent.Spawn(poolKey, launchPadPosition, Some(rocket.flightTime), Some(rocket))
@@ -47,7 +54,7 @@ object RocketAutomata {
         n match {
           case r: Renderable =>
             sa.payload match {
-              case Some(Rocket(_, moveSignal)) =>
+              case Some(Rocket(_, moveSignal, _)) =>
                 Signal.create { t =>
                   val position: Point =
                     (moveSignal |> toScreenSpace(sa.spawnedAt, screenDimensions)).at(t)

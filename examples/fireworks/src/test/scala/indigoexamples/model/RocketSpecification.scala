@@ -78,4 +78,16 @@ class RocketSpecification extends Properties("Rocket") {
     )
   }
 
+  // Flare generation
+
+  property("creates between 5 and 8 flares that all share the rockets end point and blast radius") = Prop.forAll { (dice: Dice, start: Point) =>
+    val flares = Rocket.generateFlares(dice, start)
+
+    Prop.all(
+      flares.length >= 5,
+      flares.length <= 8,
+      flares.forall(_.startPosition === start)
+    )
+  }
+
 }
