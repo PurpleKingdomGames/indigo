@@ -70,6 +70,6 @@ object Point {
         val aa = x2.toDouble - x1.toDouble
         val bb = y2.toDouble - y1.toDouble
 
-        Math.sqrt(Math.abs((aa * aa) * (bb * bb)))
+        Math.sqrt(Math.abs((aa * aa) + (bb * bb)))
     }
 }

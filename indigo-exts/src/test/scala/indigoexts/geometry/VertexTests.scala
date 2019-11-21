@@ -23,9 +23,19 @@ object VertexTests extends TestSuite {
         "diagonal distance" - {
           val a = (0.9d - 0.1d) * (0.9d) - 0.1d
           val b = (0.9d - 0.1d) * (0.9d) - 0.1d
-          val c = Math.sqrt(a * b)
+          val c = Math.sqrt(a + b)
 
           nearEnoughEqual(Vertex(0.1, 0.1).distanceTo(Vertex(0.9, 0.9)), c, 0.025d) ==> true
+        }
+
+        "diagonal distance > 1" - {
+          val a = Math.pow(100.0d, 2)
+          val b = Math.pow(100.0d, 2)
+          val c = Math.sqrt(a + b)
+
+          println(c)
+
+          nearEnoughEqual(Vertex(0.0, 0.0).distanceTo(Vertex(100.0, 100.0)), c, 0.025d) ==> true
         }
 
       }
