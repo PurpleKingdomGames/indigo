@@ -1,16 +1,17 @@
 package ingidoexamples.automata
 
+import indigo._
 import indigoexts.subsystems.automata.AutomataPoolKey
 import indigoexts.subsystems.automata.Automata
 import indigoexts.subsystems.automata.Automaton
-import ingidoexamples.Assets
-import indigo.shared.time.Millis
-import indigoexts.subsystems.automata.AutomatonSeedValues
-import indigo.shared.scenegraph.SceneGraphNode
-import indigo.shared.temporal.Signal
 import indigoexts.subsystems.automata.AutomatonUpdate
 import indigoexts.subsystems.automata.AutomataEvent
+import indigoexts.subsystems.automata.AutomatonSeedValues
+import indigoexts.geometry.Vertex
+
+import ingidoexamples.Assets
 import ingidoexamples.model.Flare
+import ingidoexamples.model.Projectiles
 
 object FlareAutomata {
 
@@ -36,8 +37,29 @@ object FlareAutomata {
 
   object ModifierFunctions {
 
+    val makeElements: SignalFunction[(Point, Renderable, Vertex), (Point, Renderable)] =
+      SignalFunction {
+        case (startPosition, renderable, vertex) =>
+          (vertex.toPoint + startPosition, renderable)
+      }
+
+    val createUpdate: SignalFunction[(Point, Renderable), AutomatonUpdate] =
+      SignalFunction.flatLift {
+        case (pt, r) =>
+          Projectiles.emitTrailEvents(pt).map { es =>
+            AutomatonUpdate(List(r.moveTo(pt)), es)
+          }
+      }
+
     def signal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
-      None
+      (seed, node) =>
+        (seed.payload, node) match {
+          case (Some(Flare(startPosition, _, signal)), r: Renderable) =>
+            signal.map(v => (startPosition, r, v)) |> makeElements >>> createUpdate
+
+          case _ =>
+            Signal.fixed(AutomatonUpdate.empty)
+        }
 
   }
 

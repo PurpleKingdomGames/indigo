@@ -4,8 +4,7 @@ import indigo._
 import indigoexts.subsystems.automata._
 import ingidoexamples.Assets
 import ingidoexamples.model.Rocket
-import indigoexts.geometry.Vertex
-import indigo.EqualTo._
+import ingidoexamples.model.Projectiles
 
 object RocketAutomata {
 
@@ -37,39 +36,14 @@ object RocketAutomata {
 
   object ModifierFunctions {
 
-    def toScreenSpace(launchPosition: Point, screenDimensions: Rectangle): SignalFunction[Vertex, Point] =
-      SignalFunction { vertex =>
-        // This is a positive value, but "Up" is a subtraction...
-        val maxAltitude: Int        = ((screenDimensions.height - 5) / 6) * 5
-        val maxHorizonalTravel: Int = screenDimensions.width / 2
-
-        Point(
-          x = launchPosition.x + (maxHorizonalTravel * vertex.x).toInt,
-          y = launchPosition.y - (maxAltitude * vertex.y).toInt
-        )
-      }
-
     def signal(screenDimensions: Rectangle): (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
       (sa, n) =>
-        n match {
-          case r: Renderable =>
-            sa.payload match {
-              case Some(Rocket(_, moveSignal, _)) =>
-                Signal.create { t =>
-                  val position: Point =
-                    (moveSignal |> toScreenSpace(sa.spawnedAt, screenDimensions)).at(t)
-
-                  AutomatonUpdate(
-                    List(r.moveTo(position)),
-                    if (t.toInt % 2 === 0) List(TrailAutomata.spawnEvent(position)) else Nil
-                  )
-                }
-
-              case _ =>
-                Signal.fixed(
-                  AutomatonUpdate.withNodes(r.moveTo(sa.spawnedAt))
-                )
-            }
+        (sa.payload, n) match {
+          case (Some(Rocket(_, moveSignal, _)), r: Renderable) =>
+            for {
+              position <- moveSignal |> Projectiles.toScreenSpace(sa.spawnedAt, screenDimensions)
+              events   <- Projectiles.emitTrailEvents(position)
+            } yield AutomatonUpdate(List(r.moveTo(position)), events)
 
           case _ =>
             Signal.fixed(AutomatonUpdate.empty)

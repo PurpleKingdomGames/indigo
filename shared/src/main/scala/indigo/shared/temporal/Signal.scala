@@ -57,6 +57,31 @@ object Signal {
         Signal.create(t => f(fa.at(t)).at(t))
     }
 
+  implicit class SignalTuple2ToSignal[A, B](t: (Signal[A], Signal[B])) {
+    def toSignal: Signal[(A, B)] =
+      Signal.product(t._1, t._2)
+  }
+
+  implicit class SignalTuple3ToSignal[A, B, C](t: (Signal[A], Signal[B], Signal[C])) {
+    def toSignal: Signal[(A, B, C)] =
+      Signal.triple(t._1, t._2, t._3)
+  }
+
+  implicit class SignalTuple4ToSignal[A, B, C, D](t: (Signal[A], Signal[B], Signal[C], Signal[D])) {
+    def toSignal: Signal[(A, B, C, D)] =
+      for {
+        a <- t._1
+        b <- t._2
+        c <- t._3
+        d <- t._4
+      } yield (a, b, c, d)
+  }
+
+  implicit class ValueToSignal[A](a: A) {
+    def toSignal: Signal[A] =
+      Signal.fixed(a)
+  }
+
   val Time: Signal[Millis] =
     Signal.create(identity)
 
