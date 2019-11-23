@@ -22,11 +22,25 @@ class LaunchPadSpecification extends Properties("LaunchPad") {
     launchPad.countDown.value >= 1 && launchPad.countDown.value <= 1500
   }
 
-  property("generate a launch pad vertex y=0 and x=0 to 1") = Prop.forAll { dice: Dice =>
+  property("generate a launch pad vertex y=0 and x=-1 to 1") = Prop.forAll { dice: Dice =>
     val launchPad: LaunchPad =
       LaunchPad.generateLaunchPad(dice)
 
-    launchPad.position.y === 0 && launchPad.position.x >= 0 && launchPad.position.x <= 1
+    launchPad.position.y === 0 && launchPad.position.x >= -1 && launchPad.position.x <= 1
+  }
+
+  property("generate a launch pad at x < 0") = Prop.exists { dice: Dice =>
+    val launchPad: LaunchPad =
+      LaunchPad.generateLaunchPad(dice)
+
+    launchPad.position.x < 0
+  }
+
+  property("generate a launch pad at x > 0") = Prop.exists { dice: Dice =>
+    val launchPad: LaunchPad =
+      LaunchPad.generateLaunchPad(dice)
+
+    launchPad.position.x > 0
   }
 
 }

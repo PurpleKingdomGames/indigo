@@ -41,7 +41,7 @@ object RocketAutomata {
         (sa.payload, n) match {
           case (Some(Rocket(_, moveSignal, _)), r: Renderable) =>
             for {
-              position <- moveSignal |> Projectiles.toScreenSpace(sa.spawnedAt, screenDimensions)
+              position <- moveSignal |> Projectiles.toScreenSpace(screenDimensions)
               events   <- Projectiles.emitTrailEvents(position)
             } yield AutomatonUpdate(List(r.moveTo(position)), events)
 

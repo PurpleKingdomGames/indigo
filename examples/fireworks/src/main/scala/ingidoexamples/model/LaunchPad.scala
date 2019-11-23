@@ -11,12 +11,12 @@ object LaunchPad {
 
   def generateLaunchPad(dice: Dice): LaunchPad = {
     val startPosition: Vertex =
-      Vertex(dice.rollDouble, 0)
+      Vertex((dice.rollDouble * 2) - 1.0d, 0)
 
     val countDown: Millis =
       Millis(LaunchPadAutomata.MinCountDown + dice.roll(LaunchPadAutomata.MaxCountDown - LaunchPadAutomata.MinCountDown).toLong)
 
-    LaunchPad(startPosition, countDown, Rocket.generateRocket(dice))
+    LaunchPad(startPosition, countDown, Rocket.generateRocket(dice, startPosition))
   }
 
 }

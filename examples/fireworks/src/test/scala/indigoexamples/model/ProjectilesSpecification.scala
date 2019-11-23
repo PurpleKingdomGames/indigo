@@ -10,10 +10,51 @@ import indigoexts.geometry.Vertex
 import indigoexts.geometry.BoundingBox
 import indigoexts.geometry.Bezier
 import indigo.shared.temporal.Signal
+import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.Point
 
 class ProjectilesSpecification extends Properties("Projectiles") {
 
   import Generators._
+
+  val screenDimensions: Rectangle =
+    Rectangle(0, 0, 1920, 1080)
+
+  val safeSpace: Rectangle =
+    Rectangle(
+      1920 / 4,
+      (1080 - ((1080 / 6) * 5)) / 2,
+      1920 / 2,
+      (1080 / 6) * 5
+    )
+
+  property("toScreenSpace should always put vertices on the screen") = Prop.forAll(vertexClamped(-1, 1, 0, 1)) { vertex: Vertex =>
+    val position: Point =
+      (Signal.fixed(vertex) |> Projectiles.toScreenSpace(screenDimensions)).at(Millis.zero)
+
+    Prop.all(
+      s"within screen ${position}: " |: screenDimensions.isPointWithin(position),
+      s"within safe space: ${position}" |: safeSpace.isPointWithin(position)
+    )
+  }
+
+  property("specific toScreenSpace checks") = Prop.all(
+    s"0,0 was ${vertexToScreenPoint(Vertex(0, 0))} not ${Point(safeSpace.horizontalCenter, safeSpace.bottom)}" |:
+      vertexToScreenPoint(Vertex(0, 0)) === Point(safeSpace.horizontalCenter, safeSpace.bottom),
+    s"0,1 was ${vertexToScreenPoint(Vertex(0, 1))} not ${Point(safeSpace.horizontalCenter, safeSpace.top)}" |:
+      vertexToScreenPoint(Vertex(0, 1)) === Point(safeSpace.horizontalCenter, safeSpace.top),
+    s"-1,0 was ${vertexToScreenPoint(Vertex(-1, 0))} not ${Point(safeSpace.left, safeSpace.bottom)}" |:
+      vertexToScreenPoint(Vertex(-1, 0)) === Point(safeSpace.left, safeSpace.bottom),
+    s"-1,1 was ${vertexToScreenPoint(Vertex(-1, 1))} not ${Point(safeSpace.left, safeSpace.top)}" |:
+      vertexToScreenPoint(Vertex(-1, 1)) === Point(safeSpace.left, safeSpace.top),
+    s"1,0 was ${vertexToScreenPoint(Vertex(1, 0))} not ${Point(safeSpace.right, safeSpace.bottom)}" |:
+      vertexToScreenPoint(Vertex(1, 0)) === Point(safeSpace.right, safeSpace.bottom),
+    s"1,1 was ${vertexToScreenPoint(Vertex(1, 1))} not ${Point(safeSpace.right, safeSpace.top)}" |:
+      vertexToScreenPoint(Vertex(1, 1)) === Point(safeSpace.right, safeSpace.top)
+  )
+
+  def vertexToScreenPoint(vertex: Vertex): Point =
+    (Signal.fixed(vertex) |> Projectiles.toScreenSpace(screenDimensions)).at(Millis.zero)
 
   property("arc signal should always produce a value inside the beziers bounds") = Prop.forAll { (dice: Dice, target: Vertex, time: Millis) =>
     Prop.forAll(vertexGen, vertexGen) {

@@ -17,6 +17,9 @@ final class Rectangle(val position: Point, val size: Point) {
   val top: Int    = y
   val bottom: Int = y + height
 
+  val horizontalCenter: Int  = x + (width / 2)
+  val verticalCenter: Int  = y + (height / 2)
+
   def topLeft: Point     = Point(left, top)
   def topRight: Point    = Point(right, top)
   def bottomRight: Point = Point(right, bottom)

@@ -4,6 +4,7 @@ import indigo._
 import indigoexts.subsystems.automata._
 import ingidoexamples.Assets
 import ingidoexamples.model.LaunchPad
+import indigoexts.geometry.Vertex
 
 object LaunchPadAutomata {
 
@@ -32,13 +33,10 @@ object LaunchPadAutomata {
   val automata: Automata =
     Automata(poolKey, automaton, Automata.Layer.Game)
 
-  def spawnEvent(launchPad: LaunchPad, screenDimensions: Rectangle): AutomataEvent.Spawn =
+  def spawnEvent(launchPad: LaunchPad, toScreenSpace: SignalFunction[Vertex, Point]): AutomataEvent.Spawn =
     AutomataEvent.Spawn(
       poolKey,
-      Point(
-        (((screenDimensions.width / 2).toDouble * launchPad.position.x) + (screenDimensions.width / 4)).toInt,
-        screenDimensions.height - 5
-      ),
+      (Signal.fixed(launchPad.position) |> toScreenSpace).at(Millis.zero),
       Some(launchPad.countDown),
       Some(launchPad)
     )

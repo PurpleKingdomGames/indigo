@@ -23,25 +23,25 @@ class FireworksModelSpecification extends Properties("FireworksModel") {
     events.length >= 5 && events.length <= 10
   }
 
-  property("generated fireworks will launch from 5 pixels up from the baseline") = Prop.forAll { dice: Dice =>
-    val start  = Point.zero
-    val end    = Point(1920, 1080)
-    val events = FireworksModel.launchFireworks(dice, screenDimensions)()
+  // property("generated fireworks will launch from 5 pixels up from the baseline") = Prop.forAll { dice: Dice =>
+  //   val start  = Point.zero
+  //   val end    = Point(1920, 1080)
+  //   val events = FireworksModel.launchFireworks(dice, screenDimensions)()
 
-    events.map(_.at.y).mkString("[", ",", "]") |:
-      Prop.all(events.map(_.at).forall(pt => pt.y == end.y - 5))
-  }
+  //   events.map(_.at.y).mkString("[", ",", "]") |:
+  //     Prop.all(events.map(_.at).forall(pt => pt.y == end.y - 5))
+  // }
 
-  property("generated fireworks will launch from the central middle half of the baseline") = Prop.forAll { dice: Dice =>
-    val events = FireworksModel.launchFireworks(dice, screenDimensions)()
+  // property("generated fireworks will launch from the central middle half of the baseline") = Prop.forAll { dice: Dice =>
+  //   val events = FireworksModel.launchFireworks(dice, screenDimensions)()
 
-    val diff: Int = screenDimensions.width
-    val minX      = diff / 4
-    val maxX      = (diff / 4) * 3
+  //   val diff: Int = screenDimensions.width
+  //   val minX      = diff / 4
+  //   val maxX      = (diff / 4) * 3
 
-    "minX: " + minX + ", maxX: " + maxX + ", xs: " + events.map(_.at.x).mkString("[", ",", "]") |:
-      Prop.all(events.map(_.at).forall(pt => pt.x >= minX && pt.x <= maxX))
-  }
+  //   "minX: " + minX + ", maxX: " + maxX + ", xs: " + events.map(_.at.x).mkString("[", ",", "]") |:
+  //     Prop.all(events.map(_.at).forall(pt => pt.x >= minX && pt.x <= maxX))
+  // }
 
   property(s"generated fireworks will live from between ${LaunchPadAutomata.MinCountDown}ms and ${LaunchPadAutomata.MaxCountDown}ms") = Prop.forAll { dice: Dice =>
     val events = FireworksModel.launchFireworks(dice, screenDimensions)()

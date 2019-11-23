@@ -21,6 +21,12 @@ object FireworksModel {
     state.copy(launchButton = state.launchButton.withUpAction(launchFireworks(dice, screenDimensions)))
 
   def launchFireworks(dice: Dice, screenDimensions: Rectangle): () => List[AutomataEvent.Spawn] =
-    () => List.fill(dice.roll(5) + 5)(LaunchPadAutomata.spawnEvent(LaunchPad.generateLaunchPad(dice), screenDimensions))
+    () =>
+      List.fill(dice.roll(5) + 5)(
+        LaunchPadAutomata.spawnEvent(
+          LaunchPad.generateLaunchPad(dice),
+          Projectiles.toScreenSpace(screenDimensions)
+        )
+      )
 
 }
