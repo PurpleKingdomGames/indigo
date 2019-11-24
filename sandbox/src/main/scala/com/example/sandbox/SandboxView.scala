@@ -123,7 +123,7 @@ object SandboxView {
       Text("AB!\n!C", 200, 2, 5, fontKey).alignRight.onEvent {
         case (bounds, MouseEvent.Click(_, _)) =>
           if (frameInputEvents.wasMouseClickedWithin(bounds))
-            println("Hit me! Oh yeah!")
+            println("Hit me!")
           Nil
 
         case _ => Nil
