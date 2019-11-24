@@ -27,6 +27,15 @@ sealed trait Signal[A] {
   def wrapTime(at: Millis): Signal[A] =
     Signal.wrapTime(this, at)
 
+  def affectTime(multiplyBy: Double): Signal[A] =
+    Signal.affectTime(this, multiplyBy)
+
+  def easeIn(target: Millis, divisor: Int): Signal[A] =
+    Signal.easeIn(this, target, divisor)
+
+  def easeOut(target: Millis, divisor: Int): Signal[A] =
+    Signal.easeOut(this, target, divisor)
+
   def map[B](f: A => B): Signal[B] =
     implicitly[Functor[Signal]].map(this)(f)
 
@@ -111,6 +120,47 @@ object Signal {
   def wrapTime[A](signal: Signal[A], at: Millis): Signal[A] =
     Signal.create { t =>
       signal.at(t % at)
+    }
+
+  def affectTime[A](sa: Signal[A], multiplyBy: Double): Signal[A] =
+    Signal.create { t =>
+      sa.at(Millis((t.toDouble * multiplyBy).toLong))
+    }
+
+  def easeOut[A](sa: Signal[A], target: Millis, divisor: Int): Signal[A] =
+    if (divisor === 0) sa
+    else {
+      Signal.create {
+        case t @ Millis.zero =>
+          sa.at(t)
+
+        case t =>
+          val targetChecked: Millis =
+            Millis(Math.min(t.value, target.value))
+
+          val next: Millis =
+            t + ((target - targetChecked) / Millis(divisor.toLong))
+
+          sa.at(next)
+      }
+    }
+
+  def easeIn[A](sa: Signal[A], target: Millis, divisor: Int): Signal[A] =
+    if (divisor === 0) sa
+    else {
+      Signal.create {
+        case t @ Millis.zero =>
+          sa.at(t)
+
+        case t =>
+          val targetChecked: Long =
+            Math.min(t.value, target.value)
+
+          val next: Long =
+            t.value / Math.max(1, (target.value - targetChecked) / divisor.toLong)
+
+          sa.at(Millis(next))
+      }
     }
 
   def fixed[A](a: A): Signal[A] =

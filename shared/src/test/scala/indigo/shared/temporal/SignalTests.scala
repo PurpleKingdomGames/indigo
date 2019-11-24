@@ -230,6 +230,49 @@ Where a thing moves in a circle for 2 seconds and then stops.
 
         }
 
+        "affect time" - {
+
+          val double = Signal.Time.affectTime(2.0d)
+          val half = Signal.Time.affectTime(0.5d)
+
+          val times: List[Millis] =
+            (1 to 10).map(_ * 10).map(_.toLong).toList.map(Millis.apply)
+
+          times.foreach { t =>
+            double.at(t) ==> t * Millis(2l)
+            half.at(t) ==> t / Millis(2l)
+          }
+
+        }
+
+        "ease out" - {
+
+          val target = Millis(100)
+
+          val time = Signal.Time.easeOut(target, 2)
+
+          time.at(Millis(0)) ==> Millis(0)
+          time.at(Millis(50)) ==> Millis(75)
+          time.at(Millis(100)) ==> Millis(100)
+          time.at(Millis(1000)) ==> Millis(1000)
+
+        }
+
+        "ease in" - {
+
+          val target = Millis(100)
+
+          val time = Signal.Time.easeIn(target, 2)
+
+          time.at(Millis(0)) ==> Millis(0)
+          time.at(Millis(50)) ==> Millis(2)
+          time.at(Millis(75)) ==> Millis(6)
+          time.at(Millis(90)) ==> Millis(18)
+          time.at(Millis(100)) ==> Millis(100)
+          time.at(Millis(1000)) ==> Millis(1000)
+
+        }
+
       }
 
     }
