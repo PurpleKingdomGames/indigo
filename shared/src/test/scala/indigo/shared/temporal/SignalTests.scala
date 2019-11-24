@@ -252,7 +252,9 @@ Where a thing moves in a circle for 2 seconds and then stops.
           val time = Signal.Time.easeOut(target, 2)
 
           time.at(Millis(0)) ==> Millis(0)
+          time.at(Millis(25)) ==> Millis(62)
           time.at(Millis(50)) ==> Millis(75)
+          time.at(Millis(75)) ==> Millis(87)
           time.at(Millis(100)) ==> Millis(100)
           time.at(Millis(1000)) ==> Millis(1000)
 
@@ -268,6 +270,7 @@ Where a thing moves in a circle for 2 seconds and then stops.
           time.at(Millis(50)) ==> Millis(2)
           time.at(Millis(75)) ==> Millis(6)
           time.at(Millis(90)) ==> Millis(18)
+          time.at(Millis(95)) ==> Millis(47)
           time.at(Millis(100)) ==> Millis(100)
           time.at(Millis(1000)) ==> Millis(1000)
 
