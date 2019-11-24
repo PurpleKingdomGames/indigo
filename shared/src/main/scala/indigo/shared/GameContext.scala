@@ -76,7 +76,7 @@ object GameContext {
         false
     }
 
-  final case class Pure[A](a: A) extends GameContext[A] {
+  final class Pure[A](val a: A) extends GameContext[A] {
     def map[B](f: A => B): GameContext[B] =
       try {
         Pure(f(a))
@@ -99,8 +99,15 @@ object GameContext {
     def recover[B >: A](value: GameContext[B]): GameContext[B] =
       this
   }
+  object Pure {
+    def apply[A](a: A): Pure[A] =
+      new Pure(a)
 
-  final case class Delay[A](thunk: () => A) extends GameContext[A] {
+    def unapply[A](p: Pure[A]): Option[A] =
+      Some(p.a)
+  }
+
+  final class Delay[A](val thunk: () => A) extends GameContext[A] {
     def map[B](f: A => B): GameContext[B] =
       try {
         Delay(() => f(thunk()))
@@ -133,8 +140,15 @@ object GameContext {
           value
       }
   }
+  object Delay {
+    def apply[A](thunk: () => A): Delay[A] =
+      new Delay(thunk)
 
-  final case class RaiseError[A](e: Throwable) extends GameContext[A] {
+    def unapply[A](d: Delay[A]): Option[() => A] =
+      Some(d.thunk)
+  }
+
+  final class RaiseError[A](val e: Throwable) extends GameContext[A] {
     def map[B](f: A => B): GameContext[B] =
       RaiseError[B](e)
 
@@ -146,6 +160,13 @@ object GameContext {
 
     def recover[B >: A](value: GameContext[B]): GameContext[B] =
       value
+  }
+  object RaiseError {
+    def apply[A](e: Throwable): RaiseError[A] =
+      new RaiseError(e)
+
+    def unapply[A](r: RaiseError[A]): Option[Throwable] =
+      Some(r.e)
   }
 
   def apply[A](a: => A): GameContext[A] =

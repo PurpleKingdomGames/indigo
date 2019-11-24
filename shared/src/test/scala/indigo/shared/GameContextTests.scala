@@ -3,6 +3,7 @@ package indigo.shared
 import indigo.shared.EqualTo._
 import utest._
 import indigo.shared.TestFail._
+import indigo.shared.GameContext.Pure
 
 object GameContextTests extends TestSuite {
 
@@ -42,7 +43,10 @@ object GameContextTests extends TestSuite {
         }
 
         "should be flattenable" - {
-          GameContext.pure(GameContext.pure("hello")).flatten ==> GameContext.pure("hello")
+          (GameContext.pure(GameContext.pure("hello")).flatten, GameContext.pure("hello")) match {
+            case (Pure(p1), Pure(p2)) =>
+              p1 ==> p2
+          }
         }
 
       }
