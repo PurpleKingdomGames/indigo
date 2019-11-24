@@ -37,41 +37,19 @@ object FlareAutomata {
 
   object ModifierFunctions {
 
-    // val makeElements: SignalFunction[(Point, Renderable, Vertex), (Point, Renderable)] =
-    //   SignalFunction {
-    //     case (startPosition, renderable, vertex) =>
-    //       (vertex.toPoint + startPosition, renderable)
-    //   }
-
-    // val createUpdate: SignalFunction[(Point, Renderable), AutomatonUpdate] =
-    //   SignalFunction.flatLift {
-    //     case (pt, r) =>
-    //       Projectiles.emitTrailEvents(pt).map { es =>
-    //         AutomatonUpdate(List(r.moveTo(pt)), es)
-    //       }
-    //   }
-
     def signal(toScreenSpace: Vertex => Point): (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
       (sa, n) =>
         (sa.payload, n) match {
-          case (Some(Flare(_, moveSignal)), r: Renderable) =>
+          case (Some(Flare(_, moveSignal, tint)), r: Renderable) =>
             for {
               position <- moveSignal |> SignalFunction(toScreenSpace)
-              events   <- Projectiles.emitTrailEvents(position)
+              events   <- Projectiles.emitTrailEvents(position, tint, 3l)
             } yield AutomatonUpdate(List(r.moveTo(position)), events)
 
           case _ =>
             Signal.fixed(AutomatonUpdate.empty)
 
         }
-    // (seed, node) =>
-    //   (seed.payload, node) match {
-    //     case (Some(Flare(startPosition, _, signal)), r: Renderable) =>
-    //       signal.map(v => (startPosition, r, v)) |> makeElements >>> createUpdate
-
-    //     case _ =>
-    //       Signal.fixed(AutomatonUpdate.empty)
-    //   }
 
   }
 

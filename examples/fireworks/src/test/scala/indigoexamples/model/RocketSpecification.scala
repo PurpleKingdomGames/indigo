@@ -14,6 +14,7 @@ import indigoexts.geometry.Vertex
 import indigoexts.geometry.BoundingBox
 import indigo.shared.dice.Dice
 import indigoexts.geometry.Bezier
+import indigo.shared.datatypes.Tint
 
 class RocketSpecification extends Properties("Rocket") {
 
@@ -79,12 +80,16 @@ class RocketSpecification extends Properties("Rocket") {
   // Flare generation
 
   property("creates between 5 and 8 flares that all share the rockets end point and blast radius") = Prop.forAll { (dice: Dice, start: Vertex) =>
-    val flares = Rocket.generateFlares(dice, start)
+    val flares = Rocket.generateFlares(dice, start, Tint.Cyan)
 
     Prop.all(
       flares.length >= 5,
       flares.length <= 8
     )
+  }
+
+  property("pickColor always generates a valid Tint") = Prop.forAll { dice: Dice =>
+    Rocket.pickColour(dice).toString().toLowerCase().contains("tint") ==> true
   }
 
 }

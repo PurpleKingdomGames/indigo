@@ -55,9 +55,9 @@ object Projectiles {
       Millis(max.value + (dice.rollDouble * diff).toLong)
     }
 
-  def emitTrailEvents(position: Point): Signal[List[AutomataEvent.Spawn]] =
-    Signal.Pulse(Millis(2)).map { predicate =>
-      if (predicate) List(TrailAutomata.spawnEvent(position)) else Nil
+  def emitTrailEvents(position: Point, tint: Tint, interval: Long): Signal[List[AutomataEvent.Spawn]] =
+    Signal.Pulse(Millis(interval)).map { predicate =>
+      if (predicate) List(TrailAutomata.spawnEvent(position, tint)) else Nil
     }
 
 }

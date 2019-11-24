@@ -3,7 +3,7 @@ package ingidoexamples.model
 import indigo._
 import indigoexts.geometry.Vertex
 
-final case class Rocket(flightTime: Millis, movementSignal: Signal[Vertex], flares: List[Flare]) extends Projectile
+final case class Rocket(flightTime: Millis, movementSignal: Signal[Vertex], flares: List[Flare], tint: Tint) extends Projectile
 
 object Rocket {
 
@@ -17,8 +17,20 @@ object Rocket {
       (createArcControlVertices(dice, launchPadStartPosition) andThen
         Projectiles.createArcSignal(flightTime))(endPoint)
 
-    Rocket(flightTime, signalFunction, generateFlares(dice, endPoint))
+    val tint: Tint =
+      pickColour(dice)
+
+    Rocket(flightTime, signalFunction.easeOut(flightTime, 25), generateFlares(dice, endPoint, tint), tint)
   }
+
+  def pickColour(dice: Dice): Tint =
+    dice.roll(5) match {
+      case 1 => Tint.Red
+      case 2 => Tint.Green
+      case 3 => Tint.Blue
+      case 4 => Tint.Magenta
+      case 5 => Tint.Cyan
+    }
 
   def createArcControlVertices(dice: Dice, launchPadStartPosition: Vertex): Vertex => NonEmptyList[Vertex] =
     target => {
@@ -42,10 +54,10 @@ object Rocket {
   def pickEndPoint(dice: Dice, launchPadStartPosition: Vertex): Vertex =
     launchPadStartPosition + Vertex(dice.rollDouble - 0.5d, (dice.rollDouble * 0.5d) + 0.5d)
 
-  def generateFlares(dice: Dice, startPosition: Vertex): List[Flare] = {
+  def generateFlares(dice: Dice, startPosition: Vertex, tint: Tint): List[Flare] = {
     val count = dice.roll(3) + 4
     (0 to count).toList.map(c => (PI2 / count) * c).map { angle =>
-      Flare.generateFlare(dice, startPosition, Radians(angle))
+      Flare.generateFlare(dice, startPosition, Radians(angle), tint)
     }
   }
 

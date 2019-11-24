@@ -24,7 +24,7 @@ object RocketAutomata {
 
   val launchFlares: AutomatonSeedValues => List[GlobalEvent] = seed => {
     seed.payload match {
-      case Some(Rocket(_, _, flares)) =>
+      case Some(Rocket(_, _, flares, _)) =>
         flares.map(f => FlareAutomata.spawnEvent(f))
 
       case _ =>
@@ -40,10 +40,10 @@ object RocketAutomata {
     def signal(toScreenSpace: Vertex => Point): (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
       (sa, n) =>
         (sa.payload, n) match {
-          case (Some(Rocket(_, moveSignal, _)), r: Renderable) =>
+          case (Some(Rocket(_, moveSignal, _, tint)), r: Renderable) =>
             for {
               position <- moveSignal |> SignalFunction(toScreenSpace)
-              events   <- Projectiles.emitTrailEvents(position)
+              events   <- Projectiles.emitTrailEvents(position, tint, 1l)
             } yield AutomatonUpdate(List(r.moveTo(position)), events)
 
           case _ =>

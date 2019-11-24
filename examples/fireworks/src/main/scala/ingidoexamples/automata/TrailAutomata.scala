@@ -18,14 +18,14 @@ object TrailAutomata {
 
   val automata: Automata =
     Automata(poolKey, automaton, Automata.Layer.Game)
-      .withMaxPoolSize(500)
+      .withMaxPoolSize(1000)
 
-  def spawnEvent(at: Point): AutomataEvent.Spawn =
+  def spawnEvent(at: Point, tint: Tint): AutomataEvent.Spawn =
     AutomataEvent.Spawn(
       poolKey,
       at,
       None,
-      Some(TrailParticle.create(Tint.Cyan))
+      Some(TrailParticle.create(tint))
     )
 
   object Modifer {

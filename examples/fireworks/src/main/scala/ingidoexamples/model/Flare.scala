@@ -6,20 +6,21 @@ import indigo.shared.dice.Dice
 import indigo.shared.time.Millis
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Tint
 
-final case class Flare(flightTime: Millis, movementSignal: Signal[Vertex]) extends Projectile
+final case class Flare(flightTime: Millis, movementSignal: Signal[Vertex], tint: Tint) extends Projectile
 
 object Flare {
 
-  def generateFlare(dice: Dice, startPosition: Vertex, initialAngle: Radians): Flare = {
-    val flightTime = Projectiles.pickFlightTime(dice, Millis(750L), Millis(1250L))
+  def generateFlare(dice: Dice, startPosition: Vertex, initialAngle: Radians, tint: Tint): Flare = {
+    val flightTime = Projectiles.pickFlightTime(dice, Millis(500L), Millis(750L))
 
     val signalFunction: Dice => Signal[Vertex] =
       pickEndPoint(initialAngle) andThen
         createArcControlVertices(startPosition) andThen
         Projectiles.createArcSignal(flightTime)
 
-    Flare(flightTime, signalFunction(dice))
+    Flare(flightTime, signalFunction(dice).easeOut(flightTime, 5), tint)
   }
 
   def createArcControlVertices(startPosition: Vertex): Vertex => NonEmptyList[Vertex] =
@@ -28,7 +29,7 @@ object Flare {
   def pickEndPoint(initialAngle: Radians): Dice => Vertex =
     dice => {
       val radius: Double =
-        dice.rollDouble * 0.6d
+        dice.rollDouble * 0.3d
 
       Vertex(
         Math.sin(wobble(dice, initialAngle.value - 0.2d, initialAngle.value + 0.2d)),
