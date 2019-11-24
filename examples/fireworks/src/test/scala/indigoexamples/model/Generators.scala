@@ -69,19 +69,6 @@ object Generators {
   val radiansGen: Gen[Radians] =
     Gen.choose(0d, (2 * Math.PI)).map(Radians.apply)
 
-  implicit val arbRadians: Arbitrary[Radians] =
-    Arbitrary(radiansGen)
-
-  // Points
-  val pointGen: Gen[Point] =
-    for {
-      x <- Gen.choose(-10000, 10000)
-      y <- Gen.choose(-10000, 10000)
-    } yield Point(x, y)
-
-  implicit val arbPoint: Arbitrary[Point] =
-    Arbitrary(pointGen)
-
   // Radius
   final case class Radius(value: Double)
 
