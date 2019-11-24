@@ -17,7 +17,7 @@ object SceneGraphViewEvents {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var"))
-  def applyInputEvents(node: Renderable, bounds: Rectangle, inputEvents: List[GlobalEvent], sendEvent: GlobalEvent => Unit): Unit = {
+  def applyInputEvents(node: EventHandling, bounds: Rectangle, inputEvents: List[GlobalEvent], sendEvent: GlobalEvent => Unit): Unit = {
     val count = inputEvents.length
     var index = 0
 
@@ -34,8 +34,14 @@ object SceneGraphViewEvents {
 
     while (index < count) {
       nodes(index) match {
-        case r: Renderable =>
-          applyInputEvents(r, r.bounds, inputEvents, sendEvent)
+        case s: Sprite =>
+          applyInputEvents(s, s.bounds, inputEvents, sendEvent)
+
+        case t: Text =>
+          applyInputEvents(t, t.bounds, inputEvents, sendEvent)
+
+        case _: Graphic =>
+          ()
 
         case g: Group =>
           collectViewEvents(g.children, inputEvents, sendEvent)
