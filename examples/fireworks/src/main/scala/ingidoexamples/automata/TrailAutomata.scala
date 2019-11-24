@@ -25,7 +25,7 @@ object TrailAutomata {
       poolKey,
       at,
       None,
-      Some(TrailParticle.create)
+      Some(TrailParticle.create(Tint.Cyan))
     )
 
   object Modifer {
@@ -35,15 +35,15 @@ object TrailAutomata {
         AutomatonUpdate.withNodes(
           r.moveTo(position)
             .withAlpha(tp.alpha)
-            .withTint(Tint.Cyan)
+            .withTint(tp.tint)
         )
       }
 
     val signal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
-      (sa, r) =>
-        r match {
-          case g: Graphic =>
-            TrailParticle.particle(sa.lifeSpan) |> present(g, sa.spawnedAt)
+      (sa, n) =>
+        (sa.payload, n) match {
+          case (Some(TrailParticle(_, t)), g: Graphic) =>
+            TrailParticle.particle(sa.lifeSpan, t) |> present(g, sa.spawnedAt)
 
           case _ =>
             Signal.fixed(AutomatonUpdate.empty)
