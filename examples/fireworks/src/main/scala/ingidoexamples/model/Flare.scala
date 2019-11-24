@@ -11,11 +11,11 @@ final case class Flare(flightTime: Millis, movementSignal: Signal[Vertex]) exten
 
 object Flare {
 
-  def generateFlare(dice: Dice, startPosition: Vertex, initialAngle: Radians, radius: Double): Flare = {
+  def generateFlare(dice: Dice, startPosition: Vertex, initialAngle: Radians): Flare = {
     val flightTime = Projectiles.pickFlightTime(dice, Millis(750L), Millis(1250L))
 
     val signalFunction: Dice => Signal[Vertex] =
-      pickEndPoint(initialAngle, radius) andThen
+      pickEndPoint(initialAngle) andThen
         createArcControlVertices(startPosition) andThen
         Projectiles.createArcSignal(flightTime)
 
@@ -25,12 +25,17 @@ object Flare {
   def createArcControlVertices(startPosition: Vertex): Vertex => NonEmptyList[Vertex] =
     target => NonEmptyList(startPosition, startPosition + target)
 
-  def pickEndPoint(initialAngle: Radians, radius: Double): Dice => Vertex =
-    dice =>
+  def pickEndPoint(initialAngle: Radians): Dice => Vertex =
+    dice => {
+      val radius: Double =
+        dice.rollDouble * 0.6d
+
       Vertex(
         Math.sin(wobble(dice, initialAngle.value - 0.2d, initialAngle.value + 0.2d)),
         Math.cos(wobble(dice, initialAngle.value - 0.2d, initialAngle.value + 0.2d))
-      ) * Vertex(radius, radius)
+      ) * Vertex(radius * 2.0d, radius)
+
+    }
 
   def wobble(dice: Dice, low: Double, high: Double): Double =
     low + ((high - low) * dice.rollDouble)

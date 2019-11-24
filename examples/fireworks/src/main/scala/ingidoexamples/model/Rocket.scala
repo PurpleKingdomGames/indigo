@@ -45,7 +45,7 @@ object Rocket {
   def generateFlares(dice: Dice, startPosition: Vertex): List[Flare] = {
     val count = dice.roll(3) + 4
     (0 to count).toList.map(c => (PI2 / count) * c).map { angle =>
-      Flare.generateFlare(dice, startPosition, Radians(angle), dice.rollDouble / 4)
+      Flare.generateFlare(dice, startPosition, Radians(angle))
     }
   }
 

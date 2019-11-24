@@ -86,5 +86,5 @@ object Generators {
   final case class Radius(value: Double)
 
   val clampedRadiusGen: Gen[Radius] =
-    Gen.choose(10.0d, 100.0d).map(Radius.apply)
+    Gen.choose(0.0d, 1.0d).map(Radius.apply)
 }

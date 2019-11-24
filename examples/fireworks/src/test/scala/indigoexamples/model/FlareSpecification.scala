@@ -23,20 +23,24 @@ class FlareSpecification extends Properties("Flare") {
   }
 
   property("able to generate a good target vertex based on a start point") = Prop.forAll(radiansGen, diceGen, clampedRadiusGen) { (angle: Radians, dice: Dice, radius: Radius) =>
+
+    val maxX: Double = 1.21d
+    val maxY: Double = 0.61d
+
     val target: Vertex =
-      Flare.pickEndPoint(angle, radius.value)(dice)
+      Flare.pickEndPoint(angle)(dice)
 
     val distance: Double =
       Vertex.distanceBetween(Vertex.zero, target)
 
     val maxDistance: Double =
-      Vertex.zero.distanceTo(Vertex(100, 100))
+      Vertex.zero.distanceTo(Vertex(maxX, maxY))
 
     "target: " + target |: Prop.all(
-      s"y: ${target.y} <=  100.0" |: target.y <= 100.0d,
-      s"y: ${target.y} >= -100.0" |: target.y >= -100.0d,
-      s"x: ${target.x} >= -100.0" |: target.x >= -100.0d,
-      s"x: ${target.x} <=  100.0" |: target.x <= 100.0d,
+      s"y: ${target.y} <=  $maxY" |: target.y <= maxY,
+      s"y: ${target.y} >= -$maxY" |: target.y >= -maxY,
+      s"x: ${target.x} >= -$maxX" |: target.x >= -maxX,
+      s"x: ${target.x} <=  $maxX" |: target.x <= maxX,
       s"distance: $distance <= maxDistance: $maxDistance" |: distance <= maxDistance
     )
   }
