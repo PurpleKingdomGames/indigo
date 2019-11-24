@@ -15,11 +15,11 @@ class FlareSpecification extends Properties("Flare") {
   import Generators._
 
   property("always creates two control points") = Prop.forAll { target: Vertex =>
-    Flare.createArcControlVertices(target).length === 2
+    Flare.createArcControlVertices(Vertex.zero)(target).length === 2
   }
 
-  property("Zero vertex is always first") = Prop.forAll { target: Vertex =>
-    Flare.createArcControlVertices(target).head === Vertex.zero
+  property("Supplied vertex is always first") = Prop.forAll { target: Vertex =>
+    Flare.createArcControlVertices(Vertex.zero)(target).head === Vertex.zero
   }
 
   property("able to generate a good target vertex based on a start point") = Prop.forAll(radiansGen, diceGen, clampedRadiusGen) { (angle: Radians, dice: Dice, radius: Radius) =>

@@ -5,20 +5,21 @@ import indigoexts.subsystems.automata._
 import ingidoexamples.Assets
 import ingidoexamples.model.Rocket
 import ingidoexamples.model.Projectiles
+import indigoexts.geometry.Vertex
 
 object RocketAutomata {
 
   val poolKey: AutomataPoolKey =
     AutomataPoolKey("rocket")
 
-  def automata(screenDimensions: Rectangle): Automata =
-    Automata(poolKey, automaton(screenDimensions), Automata.Layer.Game)
+  def automata(toScreenSpace: Vertex => Point): Automata =
+    Automata(poolKey, automaton(toScreenSpace), Automata.Layer.Game)
 
-  def automaton(screenDimensions: Rectangle): Automaton =
+  def automaton(toScreenSpace: Vertex => Point): Automaton =
     Automaton(
       Assets.cross,
       Millis(0)
-    ).withModifier(ModifierFunctions.signal(screenDimensions))
+    ).withModifier(ModifierFunctions.signal(toScreenSpace))
       .withOnCullEvent(launchFlares)
 
   val launchFlares: AutomatonSeedValues => List[GlobalEvent] = seed => {
@@ -36,12 +37,12 @@ object RocketAutomata {
 
   object ModifierFunctions {
 
-    def signal(screenDimensions: Rectangle): (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
+    def signal(toScreenSpace: Vertex => Point): (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
       (sa, n) =>
         (sa.payload, n) match {
           case (Some(Rocket(_, moveSignal, _)), r: Renderable) =>
             for {
-              position <- moveSignal |> Projectiles.toScreenSpace(screenDimensions)
+              position <- moveSignal |> SignalFunction(toScreenSpace)
               events   <- Projectiles.emitTrailEvents(position)
             } yield AutomatonUpdate(List(r.moveTo(position)), events)
 

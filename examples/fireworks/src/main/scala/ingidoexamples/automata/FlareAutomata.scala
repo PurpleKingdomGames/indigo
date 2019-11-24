@@ -18,48 +18,60 @@ object FlareAutomata {
   val poolKey: AutomataPoolKey =
     AutomataPoolKey("flare")
 
-  val automaton: Automaton =
+  def automata(toScreenSpace: Vertex => Point): Automata =
+    Automata(poolKey, automaton(toScreenSpace), Automata.Layer.Game)
+
+  def automaton(toScreenSpace: Vertex => Point): Automaton =
     Automaton(
       Assets.cross,
       Millis(0)
-    ).withModifier(ModifierFunctions.signal)
-
-  val automata: Automata =
-    Automata(poolKey, automaton, Automata.Layer.Game)
+    ).withModifier(ModifierFunctions.signal(toScreenSpace))
 
   def spawnEvent(flare: Flare): AutomataEvent.Spawn =
     AutomataEvent.Spawn(
       poolKey,
-      flare.startPosition,
+      Point.zero,
       Some(flare.flightTime),
       Some(flare)
     )
 
   object ModifierFunctions {
 
-    val makeElements: SignalFunction[(Point, Renderable, Vertex), (Point, Renderable)] =
-      SignalFunction {
-        case (startPosition, renderable, vertex) =>
-          (vertex.toPoint + startPosition, renderable)
-      }
+    // val makeElements: SignalFunction[(Point, Renderable, Vertex), (Point, Renderable)] =
+    //   SignalFunction {
+    //     case (startPosition, renderable, vertex) =>
+    //       (vertex.toPoint + startPosition, renderable)
+    //   }
 
-    val createUpdate: SignalFunction[(Point, Renderable), AutomatonUpdate] =
-      SignalFunction.flatLift {
-        case (pt, r) =>
-          Projectiles.emitTrailEvents(pt).map { es =>
-            AutomatonUpdate(List(r.moveTo(pt)), es)
-          }
-      }
+    // val createUpdate: SignalFunction[(Point, Renderable), AutomatonUpdate] =
+    //   SignalFunction.flatLift {
+    //     case (pt, r) =>
+    //       Projectiles.emitTrailEvents(pt).map { es =>
+    //         AutomatonUpdate(List(r.moveTo(pt)), es)
+    //       }
+    //   }
 
-    def signal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
-      (seed, node) =>
-        (seed.payload, node) match {
-          case (Some(Flare(startPosition, _, signal)), r: Renderable) =>
-            signal.map(v => (startPosition, r, v)) |> makeElements >>> createUpdate
+    def signal(toScreenSpace: Vertex => Point): (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
+      (sa, n) =>
+        (sa.payload, n) match {
+          case (Some(Flare(_, moveSignal)), r: Renderable) =>
+            for {
+              position <- moveSignal |> SignalFunction(toScreenSpace)
+              events   <- Projectiles.emitTrailEvents(position)
+            } yield AutomatonUpdate(List(r.moveTo(position)), events)
 
           case _ =>
             Signal.fixed(AutomatonUpdate.empty)
+
         }
+    // (seed, node) =>
+    //   (seed.payload, node) match {
+    //     case (Some(Flare(startPosition, _, signal)), r: Renderable) =>
+    //       signal.map(v => (startPosition, r, v)) |> makeElements >>> createUpdate
+
+    //     case _ =>
+    //       Signal.fixed(AutomatonUpdate.empty)
+    //   }
 
   }
 

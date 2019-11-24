@@ -10,6 +10,8 @@ import ingidoexamples.automata.LaunchPadAutomata
 import ingidoexamples.automata.RocketAutomata
 import ingidoexamples.automata.TrailAutomata
 import ingidoexamples.automata.FlareAutomata
+import ingidoexamples.model.Projectiles
+import indigoexts.geometry.Vertex
 
 object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
 
@@ -30,13 +32,16 @@ object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
   val animations: Set[Animation] =
     Set()
 
+  val toScreenSpace: Vertex => Point =
+    Projectiles.toScreenSpace(config.viewport.giveDimensions(3))
+
   val subSystems: Set[SubSystem] =
     Set(
       FPSCounter.subSystem(FontStuff.fontKey, Point(5, 40)),
       LaunchPadAutomata.automata,
-      RocketAutomata.automata(config.viewport.giveDimensions(3)),
+      RocketAutomata.automata(toScreenSpace),
       TrailAutomata.automata,
-      FlareAutomata.automata
+      FlareAutomata.automata(toScreenSpace)
     )
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
@@ -49,7 +54,7 @@ object Fireworks extends IndigoGameBasic[Unit, FireworksModel, Unit] {
     case FrameTick =>
       model.update(
         dice,
-        config.viewport.giveDimensions(3)
+        toScreenSpace
       )
 
     case e: ButtonEvent =>

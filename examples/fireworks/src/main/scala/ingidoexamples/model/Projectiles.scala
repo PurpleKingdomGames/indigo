@@ -14,47 +14,29 @@ trait Projectile extends AutomatonPayload {
 
 object Projectiles {
 
-  def toScreenSpace(screenDimensions: Rectangle): SignalFunction[Vertex, Point] =
-    SignalFunction { vertex =>
-      val maxWidth: Int  = screenDimensions.width / 2
-      val maxHeight: Int = (screenDimensions.height / 6) * 5
+  def toScreenSpace(screenDimensions: Rectangle): Vertex => Point = { vertex =>
+    val maxWidth: Int  = screenDimensions.width / 2
+    val maxHeight: Int = (screenDimensions.height / 6) * 5
 
-      val bounds: Rectangle =
-        Rectangle(
-          x = (screenDimensions.width - maxWidth) / 2,
-          y = (screenDimensions.height - maxHeight) / 2,
-          width = maxWidth,
-          height = maxHeight
-        )
+    val bounds: Rectangle =
+      Rectangle(
+        x = (screenDimensions.width - maxWidth) / 2,
+        y = (screenDimensions.height - maxHeight) / 2,
+        width = maxWidth,
+        height = maxHeight
+      )
 
-      val offset: Point =
-        Point(bounds.horizontalCenter, bounds.bottom)
+    val offset: Point =
+      Point(bounds.horizontalCenter, bounds.bottom)
 
-      // println(">> " + vertex.toString())
-      // println(offset)
+    val position =
+      Point(
+        x = ((maxWidth.toDouble / 2) * vertex.x).toInt,
+        y = -(maxHeight.toDouble * vertex.y).toInt
+      )
 
-      val position =
-        Point(
-          x = ((maxWidth.toDouble / 2) * vertex.x).toInt,
-          y = -(maxHeight.toDouble * vertex.y).toInt
-        )
-
-      // println(position)
-
-      position + offset
-    }
-
-  // def toScreenSpace(launchPosition: Point, screenDimensions: Rectangle): SignalFunction[Vertex, Point] =
-  //   SignalFunction { vertex =>
-  //     // This is a positive value, but "Up" is a subtraction...
-  //     val maxAltitude: Int        = ((screenDimensions.height - 5) / 6) * 5
-  //     val maxHorizonalTravel: Int = screenDimensions.width / 2
-
-  //     Point(
-  //       x = launchPosition.x + (maxHorizonalTravel * vertex.x).toInt,
-  //       y = launchPosition.y - (maxAltitude * vertex.y).toInt
-  //     )
-  //   }
+    position + offset
+  }
 
   def createArcSignal(lifeSpan: Millis): NonEmptyList[Vertex] => Signal[Vertex] =
     Bezier

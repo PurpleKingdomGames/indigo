@@ -4,11 +4,12 @@ import indigo._
 import indigoexts.uicomponents._
 import indigoexts.subsystems.automata._
 import ingidoexamples.automata.LaunchPadAutomata
+import indigoexts.geometry.Vertex
 
 final case class FireworksModel(launchButton: Button) {
-  def update(dice: Dice, screenDimensions: Rectangle): Outcome[FireworksModel] =
+  def update(dice: Dice, toScreenSpace: Vertex => Point): Outcome[FireworksModel] =
     Outcome(
-      FireworksModel.update(this, dice, screenDimensions)
+      FireworksModel.update(this, dice, toScreenSpace)
     )
 }
 
@@ -17,15 +18,15 @@ object FireworksModel {
   def initialModel: FireworksModel =
     FireworksModel(Button.default)
 
-  def update(state: FireworksModel, dice: Dice, screenDimensions: Rectangle): FireworksModel =
-    state.copy(launchButton = state.launchButton.withUpAction(launchFireworks(dice, screenDimensions)))
+  def update(state: FireworksModel, dice: Dice, toScreenSpace: Vertex => Point): FireworksModel =
+    state.copy(launchButton = state.launchButton.withUpAction(launchFireworks(dice, toScreenSpace)))
 
-  def launchFireworks(dice: Dice, screenDimensions: Rectangle): () => List[AutomataEvent.Spawn] =
+  def launchFireworks(dice: Dice, toScreenSpace: Vertex => Point): () => List[AutomataEvent.Spawn] =
     () =>
       List.fill(dice.roll(5) + 5)(
         LaunchPadAutomata.spawnEvent(
           LaunchPad.generateLaunchPad(dice),
-          Projectiles.toScreenSpace(screenDimensions)
+          toScreenSpace
         )
       )
 

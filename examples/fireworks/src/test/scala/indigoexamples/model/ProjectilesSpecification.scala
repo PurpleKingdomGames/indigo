@@ -30,7 +30,7 @@ class ProjectilesSpecification extends Properties("Projectiles") {
 
   property("toScreenSpace should always put vertices on the screen") = Prop.forAll(vertexClamped(-1, 1, 0, 1)) { vertex: Vertex =>
     val position: Point =
-      (Signal.fixed(vertex) |> Projectiles.toScreenSpace(screenDimensions)).at(Millis.zero)
+      Projectiles.toScreenSpace(screenDimensions)(vertex)
 
     Prop.all(
       s"within screen ${position}: " |: screenDimensions.isPointWithin(position),
@@ -54,7 +54,7 @@ class ProjectilesSpecification extends Properties("Projectiles") {
   )
 
   def vertexToScreenPoint(vertex: Vertex): Point =
-    (Signal.fixed(vertex) |> Projectiles.toScreenSpace(screenDimensions)).at(Millis.zero)
+    Projectiles.toScreenSpace(screenDimensions)(vertex)
 
   property("arc signal should always produce a value inside the beziers bounds") = Prop.forAll { (dice: Dice, target: Vertex, time: Millis) =>
     Prop.forAll(vertexGen, vertexGen) {

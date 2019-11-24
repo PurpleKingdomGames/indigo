@@ -33,10 +33,10 @@ object LaunchPadAutomata {
   val automata: Automata =
     Automata(poolKey, automaton, Automata.Layer.Game)
 
-  def spawnEvent(launchPad: LaunchPad, toScreenSpace: SignalFunction[Vertex, Point]): AutomataEvent.Spawn =
+  def spawnEvent(launchPad: LaunchPad, toScreenSpace: Vertex => Point): AutomataEvent.Spawn =
     AutomataEvent.Spawn(
       poolKey,
-      (Signal.fixed(launchPad.position) |> toScreenSpace).at(Millis.zero),
+      toScreenSpace(launchPad.position),
       Some(launchPad.countDown),
       Some(launchPad)
     )

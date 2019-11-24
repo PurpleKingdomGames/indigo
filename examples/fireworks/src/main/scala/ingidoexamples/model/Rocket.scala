@@ -17,7 +17,7 @@ object Rocket {
       (createArcControlVertices(dice, launchPadStartPosition) andThen
         Projectiles.createArcSignal(flightTime))(endPoint)
 
-    Rocket(flightTime, signalFunction, generateFlares(dice, endPoint.toPoint))
+    Rocket(flightTime, signalFunction, generateFlares(dice, endPoint))
   }
 
   def createArcControlVertices(dice: Dice, launchPadStartPosition: Vertex): Vertex => NonEmptyList[Vertex] =
@@ -42,9 +42,11 @@ object Rocket {
   def pickEndPoint(dice: Dice, launchPadStartPosition: Vertex): Vertex =
     launchPadStartPosition + Vertex(dice.rollDouble - 0.5d, (dice.rollDouble * 0.5d) + 0.5d)
 
-  def generateFlares(dice: Dice, startPoint: Point): List[Flare] =
-    List.fill(dice.roll(3) + 4)(dice.rollDouble * PI2).map { angle =>
-      Flare.generateFlare(dice, startPoint, Radians(angle), (dice.roll(90) + 10).toDouble)
+  def generateFlares(dice: Dice, startPosition: Vertex): List[Flare] = {
+    val count = dice.roll(3) + 4
+    (0 to count).toList.map(c => (PI2 / count) * c).map { angle =>
+      Flare.generateFlare(dice, startPosition, Radians(angle), dice.rollDouble / 4)
     }
+  }
 
 }
