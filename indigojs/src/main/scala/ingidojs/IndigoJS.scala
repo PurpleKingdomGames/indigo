@@ -1,4 +1,4 @@
-package ingidoexamples
+package indigoexamples
 
 import indigo._
 import indigo.gameengine.GameEngine

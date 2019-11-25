@@ -3,7 +3,7 @@ package indigoexamples.model
 import org.scalacheck._
 
 import indigo.Dice
-import ingidoexamples.model.LaunchPad
+import indigoexamples.model.LaunchPad
 import indigo.shared.datatypes.Point
 import indigo.EqualTo._
 import indigo.shared.datatypes.Rectangle

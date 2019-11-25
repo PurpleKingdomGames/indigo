@@ -5,12 +5,12 @@ import org.scalacheck._
 import indigo.Dice
 import indigo.shared.datatypes.Point
 import indigo.EqualTo._
-import ingidoexamples.model.FireworksModel
+import indigoexamples.model.FireworksModel
 import indigo.shared.time.Millis
-import ingidoexamples.automata.LaunchPadAutomata
+import indigoexamples.automata.LaunchPadAutomata
 import indigo.shared.datatypes.Rectangle
 import indigoexts.geometry.Vertex
-import ingidoexamples.model.Projectiles
+import indigoexamples.model.Projectiles
 
 class FireworksModelSpecification extends Properties("FireworksModel") {
 
