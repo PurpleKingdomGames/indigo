@@ -4,7 +4,6 @@ import org.scalacheck._
 import org.scalacheck.Prop._
 
 import indigo.shared.datatypes.Point
-import indigoexamples.model.Rocket
 import indigo.EqualTo._
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.temporal.Signal

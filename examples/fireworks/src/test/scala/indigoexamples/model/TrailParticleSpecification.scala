@@ -2,7 +2,6 @@ package indigoexamples.model
 
 import org.scalacheck._
 import org.scalacheck.Prop._
-import indigoexamples.model.TrailParticle
 import indigo.shared.temporal.Signal
 import indigoexts.geometry.Vertex
 import indigo.shared.time.Millis

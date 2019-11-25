@@ -4,7 +4,6 @@ import org.scalacheck._
 import org.scalacheck.Prop._
 import indigo.shared.dice.Dice
 import indigo.shared.time.Millis
-import indigoexamples.model.Projectiles
 import indigo.shared.collections.NonEmptyList
 import indigoexts.geometry.Vertex
 import indigoexts.geometry.BoundingBox
