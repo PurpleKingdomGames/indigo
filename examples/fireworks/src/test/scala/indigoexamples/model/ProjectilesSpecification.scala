@@ -31,9 +31,18 @@ class ProjectilesSpecification extends Properties("Projectiles") {
     val position: Point =
       Projectiles.toScreenSpace(screenDimensions)(vertex)
 
+    // I'm using `isPointWithin` below, but that
+    // method is exclusive of the upper bound, but
+    // there's nothing wrong with a screen coordinate
+    // of exactly 1920 or 1080, for example.
+    val padding: Rectangle =
+      Rectangle(0, 0, 1, 1)
+
     Prop.all(
-      s"within screen ${position}: " |: screenDimensions.isPointWithin(position),
-      s"within safe space: ${position}" |: safeSpace.isPointWithin(position)
+      s"within screen ${position} not within $screenDimensions" |:
+        (screenDimensions + padding).isPointWithin(position),
+      s"within safe space: ${position} not within $safeSpace" |:
+        (safeSpace + padding).isPointWithin(position)
     )
   }
 
