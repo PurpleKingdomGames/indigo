@@ -3,7 +3,7 @@ package com.example.perf
 import indigo._
 import indigoexts.entrypoint._
 import indigoexts.formats._
-import indigo.json._
+import indigo.json.Json
 import indigoexts.subsystems.fpscounter.FPSCounter
 
 object PerfGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
@@ -63,7 +63,7 @@ object PerfGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
 
     val res: Option[Startup.Success[MyStartupData]] = for {
       json                <- assetCollection.findTextDataByName(AssetName(PerfAssets.dudeName + "-json"))
-      aseprite            <- asepriteFromJson(json)
+      aseprite            <- Json.asepriteFromJson(json)
       spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, Depth(3), PerfAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)
 

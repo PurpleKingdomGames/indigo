@@ -8,7 +8,7 @@ import indigo.shared.IndigoLogger
 import io.circe.generic.auto._
 import io.circe.parser._
 
-object Circe9 extends JsonSupportFunctions {
+object Json extends JsonSupportFunctions {
 
   @SuppressWarnings(Array("org.wartremover.warts.PublicInference"))
   def assetListFromJson(json: String): Either[String, AssetList] =

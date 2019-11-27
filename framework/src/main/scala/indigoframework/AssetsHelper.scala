@@ -3,7 +3,7 @@ package indigoframework
 import indigo.platform.assets.AssetLoader
 import indigo.shared.IndigoLogger
 import indigo.shared.{AssetList, AssetType}
-import indigo.json._
+import indigo.json.Json
 
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.concurrent.Future
@@ -27,7 +27,7 @@ object AssetsHelper {
       }
 
   def fromJson(json: String): Option[AssetList] =
-    assetListFromJson(json) match {
+    Json.assetListFromJson(json) match {
       case Right(al) =>
         Some(al)
 

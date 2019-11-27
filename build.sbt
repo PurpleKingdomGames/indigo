@@ -350,7 +350,7 @@ lazy val indigoExts =
     .in(file("indigo-exts"))
     .settings(commonSettings: _*)
     .dependsOn(indigo)
-    .dependsOn(circe9 % "provided")
+    .dependsOn(circe12 % "provided")
     .settings(
       name := "indigo-exts",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
@@ -434,7 +434,7 @@ lazy val sandbox =
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
-    .dependsOn(circe9)
+    .dependsOn(circe12)
     .enablePlugins(SbtIndigo)
     .settings(
       name := "sandbox",
@@ -453,7 +453,7 @@ lazy val perf =
     .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
-    .dependsOn(circe9)
+    .dependsOn(circe12)
     .dependsOn(indigoExts)
     .settings(
       name := "indigo-perf",
@@ -472,7 +472,7 @@ lazy val framework =
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
-    .dependsOn(circe9)
+    .dependsOn(circe12)
     .enablePlugins(SbtIndigo)
     .settings(
       name := "indigo-framework",
@@ -523,22 +523,22 @@ lazy val shared =
 lazy val sharedJS  = shared.js
 lazy val sharedJVM = shared.jvm
 
-// Circe 0.9.x
-lazy val circe9 =
+// Circe
+lazy val circe12 =
   crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
     .settings(
-      name := "circe9",
+      name := "circe12",
       libraryDependencies ++= Seq(
         "io.circe" %%% "circe-core",
         "io.circe" %%% "circe-generic",
         "io.circe" %%% "circe-parser"
-      ).map(_ % "0.9.3")
+      ).map(_ % "0.12.3")
     )
     .dependsOn(shared)
-lazy val circe9JS  = circe9.js
-lazy val circe9JVM = circe9.jvm
+lazy val circe12JS  = circe12.js
+lazy val circe12JVM = circe12.jvm
 
 // JS Interface
 
@@ -577,7 +577,7 @@ lazy val indigoProject =
     .aggregate(
       sharedJVM,
       indigoPlatformsJVM,
-      circe9JVM,
+      circe12JVM,
       indigoJVM,
       indigoExtsJVM,
       sandboxJVM,

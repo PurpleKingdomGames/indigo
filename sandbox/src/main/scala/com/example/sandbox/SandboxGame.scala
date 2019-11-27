@@ -1,7 +1,7 @@
 package com.example.sandbox
 
 import indigo._
-import indigo.json._
+import indigo.json.Json
 import indigoexts.entrypoint._
 import indigoexts.formats._
 import indigoexts.subsystems.fpscounter.FPSCounter
@@ -49,7 +49,7 @@ object SandboxGame extends IndigoGameBasic[SandboxStartupData, SandboxGameModel,
 
     val res: Option[Startup.Success[SandboxStartupData]] = for {
       json                <- assetCollection.findTextDataByName(AssetName(SandboxAssets.dudeName + "-json"))
-      aseprite            <- Circe9.asepriteFromJson(json)
+      aseprite            <- Json.asepriteFromJson(json)
       spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, Depth(3), SandboxAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)
 

@@ -1,15 +1,16 @@
 package indigo.json
+
 import indigo.shared.formats._
 import utest._
 
-object Circe9Tests extends TestSuite {
+object JsonTests extends TestSuite {
 
   val tests: Tests =
     Tests {
       "Create an Aseprite asset" - {
 
         "should be able to parse the json definition" - {
-          Circe9.asepriteFromJson(AsepriteSampleData.json) ==> AsepriteSampleData.aseprite
+          Json.asepriteFromJson(AsepriteSampleData.json) ==> AsepriteSampleData.aseprite
         }
 
       }
