@@ -1,4 +1,4 @@
-lazy val circeVersion = "0.11.1"
+lazy val circeVersion = "0.12.3"
 
 lazy val root = project
   .in(file("."))
@@ -8,13 +8,13 @@ lazy val root = project
       List(
         organization := "com.example",
         version := "0.1-SNAPSHOT",
-        scalaVersion := "2.12.10"
+        scalaVersion := "2.13.1"
       )
     ),
     name := "scala-elm",
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % "0.9.7",
-      "org.scalatest" %%% "scalatest" % "3.0.5" % "test"
+      "org.scala-js"  %%% "scalajs-dom" % "0.9.7",
+      "org.scalatest" %%% "scalatest"   % "3.0.8" % "test"
     ),
     libraryDependencies ++= Seq(
       "io.circe" %%% "circe-core",
