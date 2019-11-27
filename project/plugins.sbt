@@ -6,5 +6,5 @@ addSbtPlugin("org.scala-js"       % "sbt-scalajs"                   % "0.6.29")
 // addSbtPlugin("org.scala-native"   % "sbt-scala-native"              % "0.3.8") // NO 2.12 support :-(
 addSbtPlugin("indigo" % "sbt-indigo" % indigoVersion)
 addSbtPlugin("org.lyranthe.sbt" % "partial-unification" % "1.1.2")
-addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.4.2")
+addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.4.3")
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "0.14.9")
