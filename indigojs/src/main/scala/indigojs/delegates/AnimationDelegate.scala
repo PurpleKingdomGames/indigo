@@ -46,7 +46,7 @@ final class AnimationDelegate(
 
 @SuppressWarnings(Array("org.wartremover.warts.Throw"))
 @JSExportTopLevel("Cycle")
-final class CycleDelegate(val label: String, val frames: js.Array[FrameDelegate], val playheadPosition: Int, val lastFrameAdvance: Long) {
+final class CycleDelegate(val label: String, val frames: js.Array[FrameDelegate], val playheadPosition: Int, val lastFrameAdvance: Double) {
   def toInternal: Cycle =
     NonEmptyList.fromList(frames.map(_.toInternal).toList) match {
       case None =>
@@ -57,7 +57,7 @@ final class CycleDelegate(val label: String, val frames: js.Array[FrameDelegate]
           CycleLabel(label),
           framesNel,
           playheadPosition,
-          lastFrameAdvance
+          lastFrameAdvance.toLong
         )
     }
 }

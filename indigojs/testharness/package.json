@@ -14,12 +14,21 @@
     "@typescript-eslint/parser": "^2.9.0",
     "eslint": "^6.7.1",
     "eslint-config-google": "^0.14.0",
-    "parcel-bundler": "^1.12.4"
+    "parcel-bundler": "^1.12.4",
+    "parcel-plugin-static-files-copy": "^2.2.1"
   },
   "dependencies": {
     "bootstrap": "^4.3.1",
     "jquery": "^3.4.1",
     "popper.js": "^1.15.0",
     "src": "^1.1.2"
+  },
+  "staticFiles": {
+    "staticPath": [
+      {
+        "staticPath": "assets",
+        "staticOutDir": "assets"
+      }
+    ]
   }
 }

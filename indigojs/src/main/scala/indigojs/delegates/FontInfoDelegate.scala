@@ -7,35 +7,26 @@ import indigo.shared.datatypes.FontInfo
 import indigo.shared.datatypes.FontKey
 import indigo.shared.datatypes.FontSpriteSheet
 import indigo.shared.datatypes.FontChar
+import indigo.shared.datatypes.Point
 
 @JSExportTopLevel("FontInfo")
 final class FontInfoDelegate(
-    val fontKey: FontKeyDelegate,
-    val fontSpriteSheet: FontSpriteSheetDelegate,
+    val fontKey: String,
+    val imageAssetRef: String,
+    val sheetWidth: Int,
+    val sheetHeight: Int,
     val unknownChar: FontCharDelegate,
     val fontChars: js.Array[FontCharDelegate],
     val caseSensitive: Boolean
 ) {
   def toInternal: FontInfo =
     FontInfo(
-      fontKey.toInternal,
-      fontSpriteSheet.toInternal,
+      FontKey(fontKey),
+      FontSpriteSheet(imageAssetRef, Point(sheetWidth, sheetHeight)),
       unknownChar.toInternal,
       fontChars.map(_.toInternal).toList,
       caseSensitive
     )
-}
-
-@JSExportTopLevel("FontKey")
-final class FontKeyDelegate(val key: String) {
-  def toInternal: FontKey =
-    FontKey(key)
-}
-
-@JSExportTopLevel("FontSpriteSheet")
-final class FontSpriteSheetDelegate(val imageAssetRef: String, val size: PointDelegate) {
-  def toInternal: FontSpriteSheet =
-    FontSpriteSheet(imageAssetRef, size.toInternal)
 }
 
 @JSExportTopLevel("FontChar")
