@@ -2,11 +2,6 @@ package indigo.shared
 
 import EqualTo._
 
-import scala.scalajs.js.annotation._
-
-@SuppressWarnings(Array("org.wartremover.warts.Any"))
-@JSExportTopLevel("ClearColor")
-@JSExportAll
 final case class ClearColor(r: Double, g: Double, b: Double, a: Double) {
   def forceOpaque: ClearColor                = this.copy(a = 1d)
   def forceTransparent: ClearColor           = this.copy(a = 0d)
@@ -18,9 +13,6 @@ final case class ClearColor(r: Double, g: Double, b: Double, a: Double) {
   def withA(v: Double): ClearColor           = this.copy(a = v)
 }
 
-@SuppressWarnings(Array("org.wartremover.warts.Any"))
-@JSExportTopLevel("ClearColorOps")
-@JSExportAll
 object ClearColor {
 
   def fromRGB(r: Double, g: Double, b: Double): ClearColor = ClearColor(r, g, b, 1d)
