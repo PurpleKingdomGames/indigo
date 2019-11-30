@@ -107,7 +107,35 @@ const initialViewModel = function(startupData, gameModel) {
   console.log('initialViewModel');
   console.log(startupData);
   console.log(gameModel);
-  return {};
+  return {num: -1};
+};
+
+const updateModel = function(gameTime, model, dice) {
+  return function(event) {
+    if (!model.hasRun) {
+      console.log(gameTime.running);
+      console.log('Has run? ' + model.hasRun);
+      model.hasRun = true;
+      console.log('Has now? ' + model.hasRun);
+    }
+
+    return OutcomeOps.of(model);
+  };
+};
+
+const updateViewModel =
+  function(gameTime, model, viewModel, frameEvents, dice) {
+    if (viewModel.num == -1) {
+      console.log('Before: ' + viewModel.num);
+      viewModel.num = dice.roll(6);
+      console.log('After : ' + viewModel.num);
+    }
+
+    return OutcomeOps.of(viewModel);
+  };
+
+const present = function(gameTime, model, viewModel, frameEvents) {
+  return SceneUpdateFragmentOps.empty;
 };
 
 Indigo.init(
@@ -117,5 +145,8 @@ Indigo.init(
     animations,
     initialise,
     initialModel,
-    initialViewModel
+    initialViewModel,
+    updateModel,
+    updateViewModel,
+    present
 );
