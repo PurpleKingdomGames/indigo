@@ -89,9 +89,33 @@ const animations = [
   new Animation('traffic-lights', spriteName, 128, 128, cycles),
 ];
 
+const initialise = function(assetCollection) {
+  console.log('initialise');
+
+  const startupData = {foo: 10};
+
+  return StartUp.succeedWith(startupData);
+};
+
+const initialModel = function(startupData) {
+  console.log('initialModel');
+  console.log(startupData);
+  return {hasRun: false};
+};
+
+const initialViewModel = function(startupData, gameModel) {
+  console.log('initialViewModel');
+  console.log(startupData);
+  console.log(gameModel);
+  return {};
+};
+
 Indigo.init(
     config,
     assets,
     fonts,
-    animations
+    animations,
+    initialise,
+    initialModel,
+    initialViewModel
 );
