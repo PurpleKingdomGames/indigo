@@ -16,16 +16,16 @@ import indigo.shared.datatypes.ImageAssetRef
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.animation.Frame
 import indigo.shared.animation.Cycle
+import indigo.shared.datatypes.Point
 
 @SuppressWarnings(Array("org.wartremover.warts.Throw"))
 @JSExportTopLevel("Animation")
 final class AnimationDelegate(
     val animationsKey: String,
     val imageAssetRef: String,
-    val spriteSheetSize: PointDelegate,
-    val currentCycleLabel: String,
-    val cycles: js.Array[CycleDelegate],
-    val actions: js.Array[AnimationActionDelegate]
+    val spriteSheetWidth: Int,
+    val spriteSheetHeight: Int,
+    val cycles: js.Array[CycleDelegate]
 ) {
   def toInternal: Animation =
     NonEmptyList.fromList(cycles.map(_.toInternal).toList) match {
@@ -36,17 +36,17 @@ final class AnimationDelegate(
         new Animation(
           AnimationKey(animationsKey),
           ImageAssetRef(imageAssetRef),
-          spriteSheetSize.toInternal,
-          CycleLabel(currentCycleLabel),
+          Point(spriteSheetWidth, spriteSheetHeight),
+          animationsNel.head.label,
           animationsNel,
-          actions.map(_.toInternal).toList
+          Nil
         )
     }
 }
 
 @SuppressWarnings(Array("org.wartremover.warts.Throw"))
 @JSExportTopLevel("Cycle")
-final class CycleDelegate(val label: String, val frames: js.Array[FrameDelegate], val playheadPosition: Int, val lastFrameAdvance: Double) {
+final class CycleDelegate(val label: String, val frames: js.Array[FrameDelegate]) {
   def toInternal: Cycle =
     NonEmptyList.fromList(frames.map(_.toInternal).toList) match {
       case None =>
@@ -56,8 +56,8 @@ final class CycleDelegate(val label: String, val frames: js.Array[FrameDelegate]
         new Cycle(
           CycleLabel(label),
           framesNel,
-          playheadPosition,
-          lastFrameAdvance.toLong
+          0,
+          0
         )
     }
 }

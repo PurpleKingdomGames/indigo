@@ -8,10 +8,14 @@ const config =
         .withFrameRate(30)
         .withMagnification(2);
 
+const fontName = 'boxyFont';
+const spriteName = 'trafficLights';
+const graphicName = 'graphics';
+
 const assets = [
-  new ImageAsset('boxyFont', 'assets/boxy_font.png'),
-  new ImageAsset('trafficLights', 'assets/trafficlights.png'),
-  new ImageAsset('graphics', 'assets/graphics.png'),
+  new ImageAsset(fontName, 'assets/boxy_font.png'),
+  new ImageAsset(spriteName, 'assets/trafficlights.png'),
+  new ImageAsset(graphicName, 'assets/graphics.png'),
 ];
 
 const fontChars = [
@@ -61,7 +65,7 @@ const fontChars = [
 const fonts = [
   new FontInfo(
       'My Font',
-      'boxyFont',
+      fontName,
       320,
       230,
       new FontChar('?', new Rectangle(93, 52, 23, 23)),
@@ -70,26 +74,19 @@ const fonts = [
   ),
 ];
 
-const animations = [
-  new Animation(
-      'traffic-lights',
-      'trafficLights',
-      new Point(128, 128),
+const cycles = [
+  new Cycle(
       'lights',
       [
-        new Cycle(
-            'lights',
-            [
-              new Frame(new Rectangle(0, 0, 64, 64), 250),
-              new Frame(new Rectangle(64, 0, 64, 64), 250),
-              new Frame(new Rectangle(0, 64, 64, 64), 250),
-            ],
-            0,
-            0
-        ),
-      ],
-      [],
+        new Frame(new Rectangle(0, 0, 64, 64), 250),
+        new Frame(new Rectangle(64, 0, 64, 64), 250),
+        new Frame(new Rectangle(0, 64, 64, 64), 250),
+      ]
   ),
+];
+
+const animations = [
+  new Animation('traffic-lights', spriteName, 128, 128, cycles),
 ];
 
 Indigo.init(
