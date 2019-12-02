@@ -22,7 +22,7 @@ final class OutcomeDelegate(val state: js.Object, val globalEvents: js.Array[Glo
 }
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
-@JSExportTopLevel("OutcomeOps")
+@JSExportTopLevel("OutcomeHelper")
 object OutcomeDelegame {
 
   @JSExport

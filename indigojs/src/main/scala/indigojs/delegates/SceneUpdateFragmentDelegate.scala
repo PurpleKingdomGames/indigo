@@ -23,7 +23,7 @@ final class SceneUpdateFragmentDelegate(
 }
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
-@JSExportTopLevel("SceneUpdateFragmentOps")
+@JSExportTopLevel("SceneUpdateFragmentHelper")
 object SceneUpdateFragmentDelegate {
 
   @JSExport

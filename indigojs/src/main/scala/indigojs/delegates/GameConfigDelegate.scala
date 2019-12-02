@@ -32,7 +32,7 @@ final class GameConfigDelegate(viewport: GameViewportDelegate, frameRate: Int, c
 }
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
-@JSExportTopLevel("GameConfigOps")
+@JSExportTopLevel("GameConfigHelper")
 object GameConfigDelegate {
 
   @JSExport
