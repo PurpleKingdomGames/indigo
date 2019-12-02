@@ -2,7 +2,7 @@
 'use strict';
 
 const config =
-    GameConfigOps.default
+    GameConfigHelper.default
         .withViewport(new GameViewport(200, 100))
         .withClearColor(new ClearColor(1, 0, 1, 1))
         .withFrameRate(30)
@@ -70,7 +70,7 @@ const fonts = [
       230,
       new FontChar('?', new Rectangle(93, 52, 23, 23)),
       fontChars,
-      false
+      false,
   ),
 ];
 
@@ -81,7 +81,7 @@ const cycles = [
         new Frame(new Rectangle(0, 0, 64, 64), 250),
         new Frame(new Rectangle(64, 0, 64, 64), 250),
         new Frame(new Rectangle(0, 64, 64, 64), 250),
-      ]
+      ],
   ),
 ];
 
@@ -119,7 +119,7 @@ const updateModel = function(gameTime, model, dice) {
       console.log('Has now? ' + model.hasRun);
     }
 
-    return OutcomeOps.of(model);
+    return OutcomeHelper.of(model);
   };
 };
 
@@ -131,11 +131,11 @@ const updateViewModel =
       console.log('After : ' + viewModel.num);
     }
 
-    return OutcomeOps.of(viewModel);
+    return OutcomeHelper.of(viewModel);
   };
 
 const present = function(gameTime, model, viewModel, frameEvents) {
-  return SceneUpdateFragmentOps.empty;
+  return SceneUpdateFragmentHelper.empty;
 };
 
 Indigo.init(
@@ -148,5 +148,5 @@ Indigo.init(
     initialViewModel,
     updateModel,
     updateViewModel,
-    present
+    present,
 );
