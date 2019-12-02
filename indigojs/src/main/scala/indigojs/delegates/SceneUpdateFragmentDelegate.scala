@@ -2,23 +2,23 @@ package indigojs.delegates
 
 import scala.scalajs.js.annotation._
 import indigo.shared.scenegraph.SceneUpdateFragment
-// import scala.scalajs.js
+import scala.scalajs.js
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("SceneUpdateFragment")
 final class SceneUpdateFragmentDelegate(
-    // val gameLayer: SceneLayer,
-    // val lightingLayer: SceneLayer,
-    // val uiLayer: SceneLayer,
-    // val ambientLight: Tint,
-    // val globalEvents: List[GlobalEvent],
-    // val audio: SceneAudio,
-    // val screenEffects: ScreenEffects,
-    // val cloneBlanks: List[CloneBlank]
+    val gameLayer: SceneLayerDelegate,
+    val lightingLayer: SceneLayerDelegate,
+    val uiLayer: SceneLayerDelegate,
+    val ambientLight: TintDelegate,
+    val globalEvents: js.Array[GlobalEventDelegate],
+    val audio: SceneAudioDelegate,
+    val screenEffects: ScreenEffectsDelegate,
+    val cloneBlanks: js.Array[CloneBlank]
 ) {
 
   def toInternal: SceneUpdateFragment =
-    SceneUpdateFragment.empty
+    ??? // TODO
 
 }
 

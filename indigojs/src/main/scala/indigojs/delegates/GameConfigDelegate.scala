@@ -44,15 +44,3 @@ object GameConfigDelegate {
       1
     )
 }
-
-@JSExportTopLevel("GameViewport")
-final class GameViewportDelegate(width: Int, height: Int) {
-  def toInternal: GameViewport =
-    new GameViewport(width, height)
-}
-
-@JSExportTopLevel("ClearColor")
-final class ClearColorDelegate(r: Double, g: Double, b: Double, a: Double) {
-  def toInternal: ClearColor =
-    new ClearColor(r, g, b, a)
-}

@@ -1,6 +1,6 @@
 package indigo.shared.audio
 
-class Volume(val amount: Double) extends AnyVal {
+final class Volume(val amount: Double) extends AnyVal {
   def *(other: Volume): Volume =
     Volume.product(this, other)
 }
