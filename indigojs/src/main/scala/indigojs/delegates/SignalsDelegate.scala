@@ -8,14 +8,18 @@ import scala.scalajs.js.annotation._
 final class SignalsDelegate(signals: Signals) {
 
   @JSExport
-  val mousePosition: PointDelegate = PointDelegate.fromPoint(signals.mousePosition)
-
-  // @JSExport
-  // val keysDown: Set[KeyCode]
-
-  // @JSExport
-  // val lastKeyHeldDown: Option[KeyCode]
+  val mousePosition: PointDelegate =
+    PointDelegate.fromPoint(signals.mousePosition)
 
   @JSExport
-  val leftMouseHeldDown: Boolean = signals.leftMouseHeldDown
+  val keysDown: Set[KeyCodeDelegate] =
+    signals.keysDown.map(KeyCodeDelegate.fromKeyCode)
+
+  @JSExport
+  val lastKeyHeldDown: Option[KeyCodeDelegate] =
+    signals.lastKeyHeldDown.map(KeyCodeDelegate.fromKeyCode)
+
+  @JSExport
+  val leftMouseHeldDown: Boolean =
+    signals.leftMouseHeldDown
 }
