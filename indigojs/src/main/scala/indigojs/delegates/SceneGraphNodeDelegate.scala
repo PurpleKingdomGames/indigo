@@ -1,6 +1,6 @@
 package indigojs.delegates
 
-// import scala.scalajs.js.annotation._
+import scala.scalajs.js.annotation._
 import scala.scalajs.js
 import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.scenegraph.Text

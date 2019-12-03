@@ -1,7 +1,8 @@
 package indigojs.delegates
 
-import scala.scalajs.js.annotation._
 import indigo.shared.scenegraph.SceneUpdateFragment
+
+import scala.scalajs.js.annotation._
 import scala.scalajs.js
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))

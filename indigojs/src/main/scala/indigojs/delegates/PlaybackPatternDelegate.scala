@@ -1,5 +1,8 @@
 package indigojs.delegates
+
 import indigo.shared.scenegraph.PlaybackPattern
+
+import scala.scalajs.js.annotation._
 
 sealed trait PlaybackPatternDelegate {
   val playbackType: String
@@ -14,14 +17,26 @@ sealed trait PlaybackPatternDelegate {
         PlaybackPattern.SingleTrackLoop(this.asInstanceOf[SingleTrackLoopDelegate].track.toInternal)
     }
 }
+
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
+@JSExportTopLevel("PlaybackPatternHelper")
 object PlaybackPatternDelegate {
-  val Silent: SlientDelegate =
-    new SlientDelegate
+
+  @JSExport
+  val Silent: SilentDelegate =
+    new SilentDelegate
 }
 
-final class SlientDelegate extends PlaybackPatternDelegate {
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
+@JSExportTopLevel("Silent")
+final class SilentDelegate extends PlaybackPatternDelegate {
+  @JSExport
   val playbackType: String = "silent"
 }
+
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
+@JSExportTopLevel("SingleTrackLoop")
 final class SingleTrackLoopDelegate(val track: TrackDelegate) extends PlaybackPatternDelegate {
+  @JSExport
   val playbackType: String = "single"
 }

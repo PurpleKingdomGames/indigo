@@ -1,5 +1,8 @@
 package indigojs.delegates
+
 import indigo.shared.audio.Volume
+
+import scala.scalajs.js.annotation._
 
 final class VolumeDelegate(val amount: Double) {
   def toInternal: Volume =

@@ -16,3 +16,13 @@ final class DiceDelegate(dice: Dice) {
   def rollDouble: Double = dice.rollDouble
 
 }
+
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
+@JSExportTopLevel("DiceHelper")
+object DiceDelegate {
+
+  @JSExport
+  def loaded(n: Int): DiceDelegate =
+    new DiceDelegate(Dice.loaded(n))
+
+}
