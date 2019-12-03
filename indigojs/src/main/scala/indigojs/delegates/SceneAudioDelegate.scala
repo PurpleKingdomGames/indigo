@@ -1,8 +1,8 @@
 package indigojs.delegates
 
-final class SceneAudioDelegate(sourceA: SceneAudioSourceDelegate, sourceB: SceneAudioSourceDelegate, sourceC: SceneAudioSourceDelegate)
+final class SceneAudioDelegate(val sourceA: SceneAudioSourceDelegate, val sourceB: SceneAudioSourceDelegate, val sourceC: SceneAudioSourceDelegate)
 
-object SceneAudio {
+object SceneAudioDelegate {
 
   val None: SceneAudioDelegate =
     new SceneAudioDelegate(SceneAudioSourceDelegate.None, SceneAudioSourceDelegate.None, SceneAudioSourceDelegate.None)

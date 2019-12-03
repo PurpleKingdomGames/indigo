@@ -4,6 +4,7 @@ import indigo.shared.scenegraph.PlaybackPattern
 sealed trait PlaybackPatternDelegate {
   val playbackType: String
 
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   def toInternal: PlaybackPattern =
     this.playbackType match {
       case "silent" =>

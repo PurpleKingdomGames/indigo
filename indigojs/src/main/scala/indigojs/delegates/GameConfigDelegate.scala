@@ -3,8 +3,6 @@ package indigojs.delegates
 import scala.scalajs.js.annotation._
 
 import indigo.shared.config.GameConfig
-import indigo.shared.config.GameViewport
-import indigo.shared.ClearColor
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("GameConfig")

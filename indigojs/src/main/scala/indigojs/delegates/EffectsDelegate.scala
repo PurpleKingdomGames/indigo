@@ -3,6 +3,7 @@ package indigojs.delegates
 import indigo.shared.datatypes.Effects
 import scala.scalajs.js.annotation._
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Effects")
 final class EffectsDelegate(val alpha: Double, val tint: TintDelegate, val flip: FlipDelegate) {
 

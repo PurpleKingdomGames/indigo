@@ -1,9 +1,9 @@
 package indigojs.delegates
 
 import scala.scalajs.js.annotation._
-import indigo.shared.ClearColor
 import indigo.shared.datatypes.Tint
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Tint")
 final class TintDelegate(val r: Double, val g: Double, val b: Double, val a: Double) {
 
@@ -32,6 +32,7 @@ final class TintDelegate(val r: Double, val g: Double, val b: Double, val a: Dou
 
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("TintHelper")
 @JSExportAll
 object TintDelegate {

@@ -17,6 +17,7 @@ final class ScreenEffectsDelegate(val gameColorOverlay: TintDelegate, val uiColo
 
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("ScreenEffectsHelper")
 @JSExportAll
 object ScreenEffectsDelegate {

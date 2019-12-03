@@ -3,6 +3,7 @@ package indigojs.delegates
 import indigo.shared.datatypes.Flip
 import scala.scalajs.js.annotation._
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Flip")
 final class FlipDelegate(val horizontal: Boolean, val vertical: Boolean) {
 

@@ -14,7 +14,7 @@ final class SceneUpdateFragmentDelegate(
     val globalEvents: js.Array[GlobalEventDelegate],
     val audio: SceneAudioDelegate,
     val screenEffects: ScreenEffectsDelegate,
-    val cloneBlanks: js.Array[CloneBlank]
+    val cloneBlanks: js.Array[CloneBlankDelegate]
 ) {
 
   def toInternal: SceneUpdateFragment =
@@ -28,6 +28,15 @@ object SceneUpdateFragmentDelegate {
 
   @JSExport
   val empty: SceneUpdateFragmentDelegate =
-    new SceneUpdateFragmentDelegate()
+    new SceneUpdateFragmentDelegate(
+      SceneLayerDelegate.None,
+      SceneLayerDelegate.None,
+      SceneLayerDelegate.None,
+      TintDelegate.None,
+      new js.Array(),
+      SceneAudioDelegate.None,
+      ScreenEffectsDelegate.None,
+      new js.Array()
+    )
 
 }

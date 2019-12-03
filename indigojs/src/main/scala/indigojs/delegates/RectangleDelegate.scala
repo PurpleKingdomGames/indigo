@@ -10,3 +10,10 @@ final class RectangleDelegate(val x: Int, val y: Int, val width: Int, val height
   def toInternal: Rectangle =
     Rectangle(Point(x, y), Point(width, height))
 }
+
+object RectangleDelegate {
+
+  def fromRectangle(r: Rectangle): RectangleDelegate =
+    new RectangleDelegate(r.x, r.y, r.width, r.height)
+
+}

@@ -120,6 +120,7 @@ object CloneId {
 }
 
 sealed trait Cloneable
+
 final class CloneBlank(val id: CloneId, val cloneable: Cloneable)
 object CloneBlank {
   def apply(id: CloneId, cloneable: Cloneable): CloneBlank =

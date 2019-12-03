@@ -1,10 +1,10 @@
 package indigojs.delegates
 
-import scala.scalajs.js.annotation._
+// import scala.scalajs.js.annotation._
 import scala.scalajs.js
 import indigo.shared.scenegraph.SceneLayer
 
-final class SceneLayerDelegate(val nodes: js.Array[SceneGraphNode], val tint: TintDelegate, val saturation: Double, val magnification: Option[Int]) {
+final class SceneLayerDelegate(val nodes: js.Array[SceneGraphNodeDelegate], val tint: TintDelegate, val saturation: Double, val magnification: Option[Int]) {
 
   def withTint(newTint: TintDelegate): SceneLayerDelegate =
     new SceneLayerDelegate(nodes, newTint, saturation, magnification)
