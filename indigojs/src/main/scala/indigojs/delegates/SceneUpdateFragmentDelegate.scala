@@ -19,7 +19,16 @@ final class SceneUpdateFragmentDelegate(
 ) {
 
   def toInternal: SceneUpdateFragment =
-    ??? // TODO
+    new SceneUpdateFragment(
+      gameLayer.toInternal,
+      lightingLayer.toInternal,
+      uiLayer.toInternal,
+      ambientLight.toInternal,
+      globalEvents.toList,
+      audio.toInternal,
+      screenEffects.toInternal,
+      cloneBlanks.map(_.toInternal).toList
+    )
 
 }
 

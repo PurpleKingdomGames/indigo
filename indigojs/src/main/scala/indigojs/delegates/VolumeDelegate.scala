@@ -4,11 +4,15 @@ import indigo.shared.audio.Volume
 
 import scala.scalajs.js.annotation._
 
+@JSExportTopLevel("Volume")
 final class VolumeDelegate(val amount: Double) {
   def toInternal: Volume =
     Volume(amount)
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
+@JSExportTopLevel("VolumeHelper")
+@JSExportAll
 object VolumeDelegate {
   val Min: VolumeDelegate = new VolumeDelegate(0)
   val Max: VolumeDelegate = new VolumeDelegate(1)
