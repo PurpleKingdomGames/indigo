@@ -27,7 +27,7 @@ object Rocket {
     dice.roll(5) match {
       case 1 => Tint.Red
       case 2 => Tint.Green
-      case 3 => Tint.Blue
+      case 3 => Tint.Yellow
       case 4 => Tint.Magenta
       case 5 => Tint.Cyan
     }
