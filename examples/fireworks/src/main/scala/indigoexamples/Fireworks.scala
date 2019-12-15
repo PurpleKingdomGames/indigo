@@ -14,9 +14,11 @@ import indigoexts.subsystems.automata.AutomataEvent
 
 object Fireworks extends IndigoGameBasic[Unit, Unit, Unit] {
 
+  val targetFPS: Int = 30
+
   val config: GameConfig =
     defaultGameConfig
-      .withFrameRate(30)
+      .withFrameRate(targetFPS)
       .withMagnification(3)
       .withViewport(GameViewport.at720p)
 
@@ -42,7 +44,7 @@ object Fireworks extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val subSystems: Set[SubSystem] =
     Set(
-      FPSCounter.subSystem(FontDetails.fontKey, Point(5, 5)),
+      FPSCounter.subSystem(FontDetails.fontKey, Point(5, 5), targetFPS),
       LaunchPadAutomata.automata,
       RocketAutomata.automata(toScreenSpace),
       TrailAutomata.automata,

@@ -7,12 +7,17 @@ import indigoexts.subsystems.fpscounter.FPSCounter
 
 object ScenesSetup extends IndigoGameWithScenes[StartUpData, GameModel, Unit] {
 
+  val targetFPS: Int = 30
+
   val scenes: NonEmptyList[Scene[GameModel, Unit]] =
     NonEmptyList(SceneA, SceneB)
 
   val initialScene: Option[SceneName] = Option(SceneA.name)
 
-  val config: GameConfig = defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399"))
+  val config: GameConfig =
+    defaultGameConfig
+      .withClearColor(ClearColor.fromHexString("0xAA3399"))
+      .withFrameRate(targetFPS)
 
   val assets: Set[AssetType] = Set(AssetType.Image(FontStuff.fontName, "assets/boxy_font.png"))
 
@@ -20,7 +25,7 @@ object ScenesSetup extends IndigoGameWithScenes[StartUpData, GameModel, Unit] {
 
   val animations: Set[Animation] = Set()
 
-  val subSystems: Set[SubSystem] = Set(FPSCounter.subSystem(FontStuff.fontKey, Point(10, 360)))
+  val subSystems: Set[SubSystem] = Set(FPSCounter.subSystem(FontStuff.fontKey, Point(10, 360), targetFPS))
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, StartUpData] =
     Startup.Success(StartUpData("Scene A!", "Scene B?"))

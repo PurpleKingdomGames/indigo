@@ -8,6 +8,8 @@ import indigoexts.subsystems.fpscounter.FPSCounter
 
 object SandboxGame extends IndigoGameBasic[SandboxStartupData, SandboxGameModel, Unit] {
 
+  val targetFPS: Int = 60
+
   private val magnificationLevel: Int = 2
   private val viewportWidth: Int      = 228 * magnificationLevel
   private val viewportHeight: Int     = 128 * magnificationLevel
@@ -15,7 +17,7 @@ object SandboxGame extends IndigoGameBasic[SandboxStartupData, SandboxGameModel,
   val config: GameConfig =
     GameConfig(
       viewport = GameViewport(viewportWidth, viewportHeight),
-      frameRate = 60,
+      frameRate = targetFPS,
       clearColor = ClearColor(0.4, 0.2, 0.5, 1),
       magnification = magnificationLevel
     )
@@ -30,7 +32,7 @@ object SandboxGame extends IndigoGameBasic[SandboxStartupData, SandboxGameModel,
     Set()
 
   val subSystems: Set[SubSystem] =
-    Set(FPSCounter.subSystem(SandboxView.fontKey, Point(3, 100)))
+    Set(FPSCounter.subSystem(SandboxView.fontKey, Point(3, 100), targetFPS))
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, SandboxStartupData] = {
     def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[SandboxStartupData] =

@@ -8,6 +8,8 @@ import indigoexts.subsystems.fpscounter.FPSCounter
 
 object PerfGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
 
+  val targetFPS: Int = 60
+
   val viewportWidth: Int      = 800
   val viewportHeight: Int     = 600
   val magnificationLevel: Int = 1
@@ -21,7 +23,7 @@ object PerfGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
   val config: GameConfig =
     GameConfig(
       viewport = GameViewport(viewportWidth, viewportHeight),
-      frameRate = 60,
+      frameRate = targetFPS,
       clearColor = ClearColor(0.4, 0.2, 0.5, 1),
       magnification = magnificationLevel,
       advanced = AdvancedGameConfig(
@@ -38,7 +40,7 @@ object PerfGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
     Set(PerfView.fontInfo)
 
   val subSystems: Set[indigoexts.subsystems.SubSystem] =
-    Set(FPSCounter.subSystem(PerfView.fontKey, Point(10, 565)))
+    Set(FPSCounter.subSystem(PerfView.fontKey, Point(10, 565), targetFPS))
 
   def initialModel(startupData: MyStartupData): MyGameModel =
     PerfModel.initialModel(startupData)
