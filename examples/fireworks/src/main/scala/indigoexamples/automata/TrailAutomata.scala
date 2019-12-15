@@ -18,7 +18,7 @@ object TrailAutomata {
 
   val automata: Automata =
     Automata(poolKey, automaton, Automata.Layer.Game)
-      .withMaxPoolSize(1000)
+      .withMaxPoolSize(500)
 
   def spawnEvent(at: Point, tint: Tint): AutomataEvent.Spawn =
     AutomataEvent.Spawn(
@@ -30,12 +30,12 @@ object TrailAutomata {
 
   object Modifer {
 
-    def present(r: Graphic, position: Point): SignalFunction[TrailParticle, AutomatonUpdate] =
-      SignalFunction { tp =>
+    def present(r: Graphic, position: Point, tint: Tint): SignalFunction[Double, AutomatonUpdate] =
+      SignalFunction { alpha =>
         AutomatonUpdate.withNodes(
           r.moveTo(position)
-            .withAlpha(tp.alpha)
-            .withTint(tp.tint)
+            .withAlpha(alpha)
+            .withTint(tint)
         )
       }
 
@@ -43,7 +43,7 @@ object TrailAutomata {
       (sa, n) =>
         (sa.payload, n) match {
           case (Some(TrailParticle(_, t)), g: Graphic) =>
-            TrailParticle.particle(sa.lifeSpan, t) |> present(g, sa.spawnedAt)
+            TrailParticle.fade(sa.lifeSpan) |> present(g, sa.spawnedAt, t)
 
           case _ =>
             Signal.fixed(AutomatonUpdate.empty)

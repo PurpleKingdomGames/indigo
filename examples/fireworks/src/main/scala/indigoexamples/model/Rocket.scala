@@ -13,14 +13,14 @@ object Rocket {
     val flightTime = Projectiles.pickFlightTime(dice, Millis(1000L), Millis(2000L))
     val endPoint   = pickEndPoint(dice, launchPadStartPosition)
 
-    val signalFunction: Signal[Vertex] =
-      (createArcControlVertices(dice, launchPadStartPosition) andThen
-        Projectiles.createArcSignal(flightTime))(endPoint)
+    val signalFunction: Vertex => Signal[Vertex] =
+      createArcControlVertices(dice, launchPadStartPosition) andThen
+        Projectiles.createArcSignal(flightTime)
 
     val tint: Tint =
       pickColour(dice)
 
-    Rocket(flightTime, signalFunction.easeOut(flightTime, 25), generateFlares(dice, endPoint, tint), tint)
+    Rocket(flightTime, signalFunction(endPoint).easeOut(flightTime, 25), generateFlares(dice, endPoint, tint), tint)
   }
 
   def pickColour(dice: Dice): Tint =
@@ -37,18 +37,14 @@ object Rocket {
       val baseValue: Double =
         (0.5d * Math.max(0, Math.min(1.0d, dice.rollDouble))) + 0.5d
 
-      val x: Double =
-        ({ (positiveX: Double) =>
-          if (target.x < 0)
-            -(positiveX * target.x)
-          else
-            positiveX * target.x
-        })(baseValue)
-
-      val y: Double =
-        target.y
-
-      NonEmptyList(launchPadStartPosition, Vertex(x, y), target)
+      NonEmptyList(
+        launchPadStartPosition,
+        Vertex(
+          x = if (target.x < 0) -(baseValue * target.x) else baseValue * target.x,
+          y = target.y
+        ),
+        target
+      )
     }
 
   def pickEndPoint(dice: Dice, launchPadStartPosition: Vertex): Vertex =

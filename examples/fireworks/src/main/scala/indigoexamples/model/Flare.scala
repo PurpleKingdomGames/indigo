@@ -13,14 +13,14 @@ final case class Flare(flightTime: Millis, movementSignal: Signal[Vertex], tint:
 object Flare {
 
   def generateFlare(dice: Dice, startPosition: Vertex, initialAngle: Radians, tint: Tint): Flare = {
-    val flightTime = Projectiles.pickFlightTime(dice, Millis(500L), Millis(750L))
+    val flightTime = Projectiles.pickFlightTime(dice, Millis(300L), Millis(500L))
 
     val signalFunction: Dice => Signal[Vertex] =
       pickEndPoint(initialAngle) andThen
         createArcControlVertices(startPosition) andThen
         Projectiles.createArcSignal(flightTime)
 
-    Flare(flightTime, signalFunction(dice).easeOut(flightTime, 5), tint)
+    Flare(flightTime, signalFunction(dice), tint)
   }
 
   def createArcControlVertices(startPosition: Vertex): Vertex => NonEmptyList[Vertex] =
@@ -34,8 +34,7 @@ object Flare {
       Vertex(
         Math.sin(wobble(dice, initialAngle.value - 0.2d, initialAngle.value + 0.2d)),
         Math.cos(wobble(dice, initialAngle.value - 0.2d, initialAngle.value + 0.2d))
-      ) * Vertex(radius * 2.0d, radius)
-
+      ) * Vertex(radius * 3.0d, radius)
     }
 
   def wobble(dice: Dice, low: Double, high: Double): Double =

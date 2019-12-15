@@ -1,7 +1,6 @@
 package indigoexamples.model
 
 import indigo.shared.temporal.Signal
-import indigo.shared.temporal.SignalFunction
 import indigo.shared.time.Millis
 import indigoexts.subsystems.automata.AutomatonPayload
 import indigo.shared.datatypes.Tint
@@ -26,16 +25,9 @@ object TrailParticle {
   def create(tint: Tint): TrailParticle =
     TrailParticle(1.0d, tint)
 
-  def fade(lifeSpan: Millis): SignalFunction[Millis, Double] =
-    SignalFunction { t =>
+  def fade(lifeSpan: Millis): Signal[Double] =
+    Signal.create { t =>
       initialAlpha * (1 - (t.toDouble / lifeSpan.toDouble))
     }
-
-  def combine(tint: Tint): SignalFunction[Double, TrailParticle] =
-    SignalFunction { case a => TrailParticle(a, tint) } // WRONG
-
-  def particle(lifeSpan: Millis, tint: Tint): Signal[TrailParticle] =
-    Signal.clampTime(Signal.Time, Millis.zero, lifeSpan) |>
-      (fade(lifeSpan) >>> combine(tint))
 
 }

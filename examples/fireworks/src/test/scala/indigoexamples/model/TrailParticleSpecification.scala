@@ -13,10 +13,10 @@ class TrailParticleSpecification extends Properties("TrailParticle") {
   property("particle should fade over time") = Prop.forAll(nowNextMillis(0, 1000)) {
     case (t1, t2) =>
       val fade1: Double =
-        (Signal.Time |> TrailParticle.fade(Millis(1000))).at(t1)
+        TrailParticle.fade(Millis(1000)).at(t1)
 
       val fade2: Double =
-        (Signal.Time |> TrailParticle.fade(Millis(1000))).at(t2)
+        TrailParticle.fade(Millis(1000)).at(t2)
 
       Prop.all(
         fade1 > fade2
@@ -25,7 +25,7 @@ class TrailParticleSpecification extends Properties("TrailParticle") {
 
   property("particle should fade to zero by the end of it's life") = Prop.forAll(clampedMillisGen(0, 5000)) { t =>
     val fadeAmount: Double =
-      (Signal.Time |> TrailParticle.fade(Millis(5000))).at(t)
+      TrailParticle.fade(Millis(5000)).at(t)
 
     Prop.all(
       "1 >= fadeAmount >= 0" |: fadeAmount >= 0.0d && fadeAmount <= 1.0d,

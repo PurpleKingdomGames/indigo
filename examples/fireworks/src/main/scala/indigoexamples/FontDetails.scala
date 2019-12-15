@@ -2,7 +2,7 @@ package indigoexamples
 
 import indigo._
 
-object FontStuff {
+object FontDetails {
 
   val fontName: String = "smallFontName"
 

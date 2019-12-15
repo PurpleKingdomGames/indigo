@@ -15,44 +15,29 @@ trait Projectile extends AutomatonPayload {
 object Projectiles {
 
   def toScreenSpace(screenDimensions: Rectangle): Vertex => Point = { vertex =>
-    val maxWidth: Int  = screenDimensions.width / 2
-    val maxHeight: Int = (screenDimensions.height / 6) * 5
+    val maxWidth: Int         = screenDimensions.width / 2
+    val maxHeight: Int        = (screenDimensions.height / 6) * 5
+    val horizontalCenter: Int = ((screenDimensions.width - maxWidth) / 2) + (maxWidth / 2)
+    val verticalBottom: Int   = ((screenDimensions.height - maxHeight) / 2) + maxHeight
 
-    val bounds: Rectangle =
-      Rectangle(
-        x = (screenDimensions.width - maxWidth) / 2,
-        y = (screenDimensions.height - maxHeight) / 2,
-        width = maxWidth,
-        height = maxHeight
-      )
-
-    val offset: Point =
-      Point(bounds.horizontalCenter, bounds.bottom)
-
-    val position =
-      Point(
-        x = ((maxWidth.toDouble / 2) * vertex.x).toInt,
-        y = -(maxHeight.toDouble * vertex.y).toInt
-      )
-
-    position + offset
+    Point(
+      x = (((maxWidth.toDouble / 2) * vertex.x).toInt) + horizontalCenter,
+      y = (-(maxHeight.toDouble * vertex.y).toInt) + verticalBottom
+    )
   }
 
   def createArcSignal(lifeSpan: Millis): NonEmptyList[Vertex] => Signal[Vertex] =
     Bezier
       .fromVerticesNel(_)
       .toSignal(lifeSpan)
-      .clampTime(Millis(0), lifeSpan)
 
   def pickFlightTime(dice: Dice, min: Millis, max: Millis): Millis =
     if (max === min) {
       min
     } else if (max > min) {
-      val diff = max.value - min.value
-      Millis(min.value + (dice.rollDouble * diff).toLong)
+      Millis(min.value + (dice.rollDouble * (max.value - min.value)).toLong)
     } else {
-      val diff = min.value - max.value
-      Millis(max.value + (dice.rollDouble * diff).toLong)
+      Millis(max.value + (dice.rollDouble * (min.value - max.value)).toLong)
     }
 
   def emitTrailEvents(position: Point, tint: Tint, interval: Long): Signal[List[AutomataEvent.Spawn]] =

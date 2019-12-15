@@ -1,4 +1,4 @@
-package indigoexamples.model
+package indigoexamples
 
 import org.scalacheck._
 
@@ -9,10 +9,11 @@ import indigo.shared.time.Millis
 import indigoexamples.automata.LaunchPadAutomata
 import indigo.shared.datatypes.Rectangle
 import indigoexts.geometry.Vertex
+import indigoexamples.model.Projectiles
 
-class FireworksModelSpecification extends Properties("FireworksModel") {
+class FireworksSpecification extends Properties("FireworksModel") {
 
-  import Generators._
+  import indigoexamples.model.Generators._
 
   val screenDimensions: Rectangle =
     Rectangle(0, 0, 1920, 1080)
@@ -21,13 +22,13 @@ class FireworksModelSpecification extends Properties("FireworksModel") {
     Projectiles.toScreenSpace(screenDimensions)
 
   property("generate between 1 and 5 fireworks") = Prop.forAll { dice: Dice =>
-    val events = FireworksModel.launchFireworks(dice, toScreenSpace)()
+    val events = Fireworks.launchFireworks(dice, toScreenSpace)
 
     events.length >= 5 && events.length <= 10
   }
 
   property(s"generated fireworks will live from between ${LaunchPadAutomata.MinCountDown}ms and ${LaunchPadAutomata.MaxCountDown}ms") = Prop.forAll { dice: Dice =>
-    val events = FireworksModel.launchFireworks(dice, toScreenSpace)()
+    val events = Fireworks.launchFireworks(dice, toScreenSpace)
 
     events.map(_.lifeSpan).mkString("[", ",", "]") |: Prop.all(
       events.forall(_.lifeSpan.isDefined),
