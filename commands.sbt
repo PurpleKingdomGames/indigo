@@ -12,6 +12,7 @@ lazy val devProjects: List[String] =
 
 lazy val exampleProjects: List[String] =
   List(
+    "indigojsinterface", // <-- only here because JS only!!
     "basicSetup",
     "subSystems",
     "scenesSetup",
@@ -172,7 +173,6 @@ addCommandAlias(
     "buildIndigo",
     "localPublishIndigo"
   ).mkString(";", ";", "")
-    
 )
 
 addCommandAlias(
