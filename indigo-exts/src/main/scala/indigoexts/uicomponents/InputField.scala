@@ -62,26 +62,29 @@ object InputField {
           case MouseEvent.MouseUp(_, _) =>
             acc :+ InputFieldEvent.LoseFocus(inputField.bindingKey)
 
-          case KeyboardEvent.KeyDown(Keys.LEFT_ARROW) if inputField.state.hasFocus =>
+          case KeyboardEvent.KeyUp(Keys.LEFT_ARROW) if inputField.state.hasFocus =>
             acc :+ InputFieldEvent.CursorLeft(inputField.bindingKey)
 
-          case KeyboardEvent.KeyDown(Keys.RIGHT_ARROW) if inputField.state.hasFocus =>
+          case KeyboardEvent.KeyUp(Keys.RIGHT_ARROW) if inputField.state.hasFocus =>
             acc :+ InputFieldEvent.CursorRight(inputField.bindingKey)
 
-          case KeyboardEvent.KeyPress(Keys.BACKSPACE) if inputField.state.hasFocus =>
+          case KeyboardEvent.KeyUp(Keys.BACKSPACE) if inputField.state.hasFocus =>
             acc :+ InputFieldEvent.Backspace(inputField.bindingKey)
 
-          case KeyboardEvent.KeyPress(Keys.DELETE) if inputField.state.hasFocus =>
+          case KeyboardEvent.KeyUp(Keys.DELETE) if inputField.state.hasFocus =>
             acc :+ InputFieldEvent.Delete(inputField.bindingKey)
 
-          case KeyboardEvent.KeyPress(Keys.HOME) if inputField.state.hasFocus =>
+          case KeyboardEvent.KeyUp(Keys.HOME) if inputField.state.hasFocus =>
             acc :+ InputFieldEvent.CursorHome(inputField.bindingKey)
 
-          case KeyboardEvent.KeyPress(Keys.END) if inputField.state.hasFocus =>
+          case KeyboardEvent.KeyUp(Keys.END) if inputField.state.hasFocus =>
             acc :+ InputFieldEvent.CursorEnd(inputField.bindingKey)
 
-          case KeyboardEvent.KeyUp(keyCode) if inputField.state.hasFocus && keyCode.isPrintable =>
-            acc :+ InputFieldEvent.AddCharacter(inputField.bindingKey, keyCode.printableCharacter)
+          case KeyboardEvent.KeyUp(Keys.ENTER) if inputField.state.hasFocus =>
+            acc :+ InputFieldEvent.AddCharacter(inputField.bindingKey, Keys.ENTER.key)
+
+          case KeyboardEvent.KeyUp(key) if inputField.state.hasFocus && key.isPrintable =>
+            acc :+ InputFieldEvent.AddCharacter(inputField.bindingKey, key.key)
 
           case _ =>
             acc
