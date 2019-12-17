@@ -27,7 +27,8 @@ lazy val exampleProjects: List[String] =
     "audio",
     "group",
     "automata",
-    "fireworks"
+    "fireworks",
+    "inputmapping"
   )
 
 def applyCommand(projects: List[String], command: String, platforms: List[PlatformSuffix]): String =
