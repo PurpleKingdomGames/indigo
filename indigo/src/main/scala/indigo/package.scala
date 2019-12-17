@@ -67,8 +67,8 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
 
   val Keys: shared.constants.Keys.type = shared.constants.Keys
 
-  type KeyCode = shared.constants.KeyCode
-  val KeyCode: shared.constants.KeyCode.type = shared.constants.KeyCode
+  type Key = shared.constants.Key
+  val Key: shared.constants.Key.type = shared.constants.Key
 
   type PowerOfTwo = shared.PowerOfTwo
   val PowerOfTwo: shared.PowerOfTwo.type = shared.PowerOfTwo

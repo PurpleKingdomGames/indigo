@@ -1,7 +1,6 @@
 package indigo.shared.platform
 
 import indigo.shared.events.Signals
-import indigo.shared.EqualTo._
 import indigo.shared.events.{GlobalEvent, MouseEvent, KeyboardEvent}
 
 trait GlobalSignals {

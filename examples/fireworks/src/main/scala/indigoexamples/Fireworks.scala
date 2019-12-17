@@ -58,7 +58,7 @@ object Fireworks extends IndigoGameBasic[Unit, Unit, Unit] {
     ()
 
   def update(gameTime: GameTime, model: Unit, dice: Dice): GlobalEvent => Outcome[Unit] = {
-    case KeyboardEvent.KeyPress(Keys.SPACE) =>
+    case KeyboardEvent.KeyUp(Keys.SPACE) =>
       Outcome(model, launchFireworks(dice, toScreenSpace))
 
     case _ =>

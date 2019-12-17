@@ -1,6 +1,6 @@
 package indigo.shared.events
 
-import indigo.shared.constants.KeyCode
+import indigo.shared.constants.Key
 import indigo.shared.audio.Volume
 import indigo.shared.datatypes.Point
 
@@ -24,12 +24,11 @@ object MouseEvent {
 }
 
 sealed trait KeyboardEvent extends InputEvent {
-  val keyCode: KeyCode
+  val keyCode: Key
 }
 object KeyboardEvent {
-  final case class KeyUp(keyCode: KeyCode)    extends KeyboardEvent
-  final case class KeyDown(keyCode: KeyCode)  extends KeyboardEvent
-  final case class KeyPress(keyCode: KeyCode) extends KeyboardEvent
+  final case class KeyUp(keyCode: Key)   extends KeyboardEvent
+  final case class KeyDown(keyCode: Key) extends KeyboardEvent
 }
 
 final case class PlaySound(assetRef: String, volume: Volume) extends GlobalEvent

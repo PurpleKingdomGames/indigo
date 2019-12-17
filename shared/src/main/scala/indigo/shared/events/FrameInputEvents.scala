@@ -1,6 +1,6 @@
 package indigo.shared.events
 
-import indigo.shared.constants.KeyCode
+import indigo.shared.constants.Key
 import indigo.shared.datatypes.{Point, Rectangle}
 
 /**
@@ -77,12 +77,10 @@ trait FrameKeyboardEvents {
 
   def keyboardEvents: List[KeyboardEvent] = globalEvents.collect { case e: KeyboardEvent => e }
 
-  def keysUp: List[KeyCode]      = keyboardEvents.collect { case k: KeyboardEvent.KeyUp    => k.keyCode }
-  def keysDown: List[KeyCode]    = keyboardEvents.collect { case k: KeyboardEvent.KeyDown  => k.keyCode }
-  def keysPressed: List[KeyCode] = keyboardEvents.collect { case k: KeyboardEvent.KeyPress => k.keyCode }
+  def keysUp: List[Key]   = keyboardEvents.collect { case k: KeyboardEvent.KeyUp   => k.keyCode }
+  def keysDown: List[Key] = keyboardEvents.collect { case k: KeyboardEvent.KeyDown => k.keyCode }
 
-  def keysAreDown(keys: KeyCode*): Boolean     = keys.forall(keyCode => keysDown.contains(keyCode))
-  def keysAreUp(keys: KeyCode*): Boolean       = keys.forall(keyCode => keysUp.contains(keyCode))
-  def keysWerePressed(keys: KeyCode*): Boolean = keys.forall(keyCode => keysPressed.contains(keyCode))
+  def keysAreDown(keys: Key*): Boolean = keys.forall(keyCode => keysDown.contains(keyCode))
+  def keysAreUp(keys: Key*): Boolean   = keys.forall(keyCode => keysUp.contains(keyCode))
 
 }

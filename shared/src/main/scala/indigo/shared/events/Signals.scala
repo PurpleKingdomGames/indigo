@@ -1,9 +1,9 @@
 package indigo.shared.events
 
 import indigo.shared.datatypes.Point
-import indigo.shared.constants.KeyCode
+import indigo.shared.constants.Key
 
-final case class Signals(mousePosition: Point, keysDown: Set[KeyCode], lastKeyHeldDown: Option[KeyCode], leftMouseHeldDown: Boolean)
+final case class Signals(mousePosition: Point, keysDown: Set[Key], lastKeyHeldDown: Option[Key], leftMouseHeldDown: Boolean)
 object Signals {
   val default: Signals = Signals(
     mousePosition = Point.zero,

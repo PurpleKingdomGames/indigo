@@ -12,12 +12,12 @@ final class SignalsDelegate(signals: Signals) {
     PointDelegate.fromPoint(signals.mousePosition)
 
   @JSExport
-  val keysDown: Set[KeyCodeDelegate] =
-    signals.keysDown.map(KeyCodeDelegate.fromKeyCode)
+  val keysDown: Set[KeyDelegate] =
+    signals.keysDown.map(KeyDelegate.fromKey)
 
   @JSExport
-  val lastKeyHeldDown: Option[KeyCodeDelegate] =
-    signals.lastKeyHeldDown.map(KeyCodeDelegate.fromKeyCode)
+  val lastKeyHeldDown: Option[KeyDelegate] =
+    signals.lastKeyHeldDown.map(KeyDelegate.fromKey)
 
   @JSExport
   val leftMouseHeldDown: Boolean =

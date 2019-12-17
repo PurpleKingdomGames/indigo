@@ -1,6 +1,5 @@
 package indigo.platform.events
 
-import indigo.shared.constants.Keys
 import indigo.shared.events.{MouseEvent, KeyboardEvent}
 import indigo.shared.platform.GlobalEventStream
 
@@ -8,6 +7,7 @@ import org.scalajs.dom
 import org.scalajs.dom.document
 import org.scalajs.dom.html
 import org.scalajs.dom.window
+import indigo.shared.constants.Key
 
 object WorldEvents {
 
@@ -69,21 +69,11 @@ object WorldEvents {
     }
 
     document.onkeydown = { e: dom.KeyboardEvent =>
-      Keys.codeToKeyCode(e.keyCode).foreach { kc =>
-        globalEventStream.pushGlobalEvent(KeyboardEvent.KeyDown(kc))
-      }
+      globalEventStream.pushGlobalEvent(KeyboardEvent.KeyDown(Key(e.keyCode, e.key)))
     }
 
     document.onkeyup = { e: dom.KeyboardEvent =>
-      Keys.codeToKeyCode(e.keyCode).foreach { kc =>
-        globalEventStream.pushGlobalEvent(KeyboardEvent.KeyUp(kc))
-      }
-    }
-
-    document.onkeypress = { e: dom.KeyboardEvent =>
-      Keys.codeToKeyCode(e.keyCode).foreach { kc =>
-        globalEventStream.pushGlobalEvent(KeyboardEvent.KeyPress(kc))
-      }
+      globalEventStream.pushGlobalEvent(KeyboardEvent.KeyUp(Key(e.keyCode, e.key)))
     }
 
   }
