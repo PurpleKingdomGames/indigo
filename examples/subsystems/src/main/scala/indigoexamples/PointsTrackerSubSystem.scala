@@ -21,7 +21,7 @@ final case class PointsTrackerSubSystem(points: Int, fontKey: FontKey) extends S
       .addGameLayerNodes(Text(report, 10, 10, 1, fontKey))
 
   def report: String =
-    s"""Points: $points"""
+    s"""Points: ${points.toString()}"""
 }
 
 sealed trait PointsTrackerEvent extends GlobalEvent with Product with Serializable

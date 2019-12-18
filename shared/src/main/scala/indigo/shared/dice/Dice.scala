@@ -17,7 +17,7 @@ trait Dice {
   def rollDouble: Double
 
   override def toString: String =
-    s"Dice(seed = $seed)"
+    s"Dice(seed = ${seed.toString()})"
 }
 
 object Dice {

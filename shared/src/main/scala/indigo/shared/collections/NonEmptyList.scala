@@ -168,6 +168,7 @@ trait NonEmptyList[A] {
   def exists(p: A => Boolean): Boolean =
     NonEmptyList.exists(this)(p)
 
+  @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
   override def toString: String =
     s"NonEmptyList[$head][${tail.mkString(", ")}]"
 

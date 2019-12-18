@@ -31,7 +31,7 @@ object TextureAtlas {
     )
 
   def create(imageRefs: List[ImageRef], lookupByName: String => Option[LoadedImageAsset], createAtlasFunc: (TextureMap, String => Option[LoadedImageAsset]) => Atlas): TextureAtlas = {
-    IndigoLogger.info(s"Creating atlases. Max size: ${MaxTextureSize.value}x${MaxTextureSize.value}")
+    IndigoLogger.info(s"Creating atlases. Max size: ${MaxTextureSize.value.toString()}x${MaxTextureSize.value.toString()}")
     val textureAtlas = (inflateAndSortByPowerOfTwo andThen groupTexturesIntoAtlasBuckets(MaxTextureSize) andThen convertToAtlas(
       createAtlasFunc
     )(lookupByName))(imageRefs)
@@ -64,11 +64,11 @@ final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, 
       at => {
         val relevant = leg.filter(k => implicitly[EqualTo[AtlasId]].equal(k._2.id, at._1))
 
-        s"Atlas [${at._1.id}] [${at._2.size.value}] contains images: ${relevant.toList.map(_._1).mkString(", ")}"
+        s"Atlas [${at._1.id}] [${at._2.size.value.toString()}] contains images: ${relevant.toList.map(_._1).mkString(", ")}"
       }
 
     s"""Atlas details:
-    |Number of atlases: ${atlases.keys.toList.length}
+    |Number of atlases: ${atlases.keys.toList.length.toString()}
     |Atlases: [
     |  ${atlases.map(atlasRecordToString(legend)).mkString("\n  ")}
     |]

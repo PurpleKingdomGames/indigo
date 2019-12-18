@@ -481,7 +481,7 @@ final class Text(
           .map(line => new TextLine(line, Text.calculateBoundsOfLine(line, fontInfo)))
       }
       .getOrElse {
-        IndigoLogger.errorOnce(s"Cannot build Text lines, missing Font with key: $fontKey")
+        IndigoLogger.errorOnce(s"Cannot build Text lines, missing Font with key: ${fontKey.toString()}")
         Nil
       }
 

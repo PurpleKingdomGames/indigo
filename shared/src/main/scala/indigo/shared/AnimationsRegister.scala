@@ -41,6 +41,7 @@ object AnimationsRegister {
     animationStates = updatedAnimationStates
 
   // Frame animation actions queue
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def addAction(bindingKey: BindingKey, animationsKey: AnimationKey, action: AnimationAction): Unit =
     actionsQueue.enqueue(AnimationActionCommand(bindingKey, animationsKey, action))
 

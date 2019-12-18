@@ -39,6 +39,6 @@ object AnimationAction {
   }
 
   final case class JumpToFrame(number: Int) extends AnimationAction {
-    val hash: String = s"JumpToFrame($number)"
+    val hash: String = s"JumpToFrame(${number.toString()})"
   }
 }

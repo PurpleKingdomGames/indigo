@@ -3,7 +3,10 @@ package indigo.shared.animation
 import indigo.shared.{AsString, EqualTo}
 import indigo.shared.EqualTo._
 
-final class AnimationKey(val value: String) extends AnyVal
+final class AnimationKey(val value: String) extends AnyVal {
+  override def toString(): String =
+    s"AnimationKey($value)"
+}
 
 object AnimationKey {
 

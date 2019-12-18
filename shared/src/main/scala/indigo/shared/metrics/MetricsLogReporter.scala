@@ -344,43 +344,43 @@ object MetricsLogReporter {
          |**********************
          |Statistics:
          |-----------
-         |Frames since last report:  $frameCount
-         |Mean FPS:                  $meanFps
-         |Model updates skipped:     $modelUpdatesSkipped\t($modelSkipsPercent%)
-         |View updates skipped:      $viewUpdatesSkipped\t($viewSkipsPercent%)
+         |Frames since last report:  ${frameCount.toString()}
+         |Mean FPS:                  ${meanFps.toString()}
+         |Model updates skipped:     ${modelUpdatesSkipped.toString()}\t(${modelSkipsPercent.toString()}%)
+         |View updates skipped:      ${viewUpdatesSkipped.toString()}\t(${viewSkipsPercent.toString()}%)
          |
          |Engine timings:
          |---------------
-         |Mean frame length:         $meanFrameDuration
-         |Mean update:               $meanUpdate
-         |Mean call view update:     $meanCallViewUpdate
-         |Mean process view:         $meanProcess
-         |Mean convert view:         $meanToDisplayable
-         |Mean render view:          $meanRender
-         |Mean play audio:           $meanAudio
+         |Mean frame length:         ${meanFrameDuration.toString()}
+         |Mean update:               ${meanUpdate.toString()}
+         |Mean call view update:     ${meanCallViewUpdate.toString()}
+         |Mean process view:         ${meanProcess.toString()}
+         |Mean convert view:         ${meanToDisplayable.toString()}
+         |Mean render view:          ${meanRender.toString()}
+         |Mean play audio:           ${meanAudio.toString()}
          |
          |View processing:
          |----------------
-         |Mean persist global view:  $meanPersistGlobalView
-         |Mean persist node view:    $meanPersistNodeView
-         |Mean apply animations:     $meanApplyAnimationMementos
-         |Mean animation actions:    $meanRunAnimationActions
-         |Mean persist animations:   $meanPersistAnimationStates
+         |Mean persist global view:  ${meanPersistGlobalView.toString()}
+         |Mean persist node view:    ${meanPersistNodeView.toString()}
+         |Mean apply animations:     ${meanApplyAnimationMementos.toString()}
+         |Mean animation actions:    ${meanRunAnimationActions.toString()}
+         |Mean persist animations:   ${meanPersistAnimationStates.toString()}
          |
          |Renderer:
          |---------
-         |Mean draw game layer:      $meanDrawGameLayer
-         |Mean draw lighting layer:  $meanDrawLightingLayer
-         |Mean draw ui layer:        $meanDrawUiLayer
-         |Mean render to window:     $meanRenderToWindowLayer
+         |Mean draw game layer:      ${meanDrawGameLayer.toString()}
+         |Mean draw lighting layer:  ${meanDrawLightingLayer.toString()}
+         |Mean draw ui layer:        ${meanDrawUiLayer.toString()}
+         |Mean render to window:     ${meanRenderToWindowLayer.toString()}
          |
-         |Mean lighting draw calls:  $meanLightingDrawCalls
-         |Mean normal draw calls:    $meanNormalDrawCalls
-         |Mean to window draw calls: $meanToWindowDrawCalls
+         |Mean lighting draw calls:  ${meanLightingDrawCalls.toString()}
+         |Mean normal draw calls:    ${meanNormalDrawCalls.toString()}
+         |Mean to window draw calls: ${meanToWindowDrawCalls.toString()}
          |
-         |Mean lighting draw time:   $meanLightingDrawCallTime
-         |Mean normal draw time:     $meanNormalDrawCallTime
-         |Mean to window draw time:  $meanToWindowDrawCallTime
+         |Mean lighting draw time:   ${meanLightingDrawCallTime.toString()}
+         |Mean normal draw time:     ${meanNormalDrawCallTime.toString()}
+         |Mean to window draw time:  ${meanToWindowDrawCallTime.toString()}
          |**********************
         """.stripMargin
     )

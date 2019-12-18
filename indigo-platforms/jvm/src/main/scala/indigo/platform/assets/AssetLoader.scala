@@ -20,7 +20,7 @@ import scala.util.{Try, Success, Failure}
 object AssetLoader {
 
   def loadAssets(assets: Set[AssetType]): Future[AssetCollection] = {
-    IndigoLogger.info(s"Loading ${assets.toList.length} assets")
+    IndigoLogger.info(s"Loading ${assets.toList.length.toString()} assets")
 
     for {
       t <- loadTextAssets(filterOutTextAssets(assets.toList))

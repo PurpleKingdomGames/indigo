@@ -2,7 +2,7 @@ lazy val indigoVersion = "0.0.11-SNAPSHOT"
 
 lazy val commonSettings = Seq(
   version := indigoVersion,
-  scalaVersion := "2.12.10",
+  scalaVersion := "2.12.10", // This is a plugin! Only 2.12 is supported!
   organization := "indigo",
   scalacOptions ++= ScalacOptions.scala212Compile
 )

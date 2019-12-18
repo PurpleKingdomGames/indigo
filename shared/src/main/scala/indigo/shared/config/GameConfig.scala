@@ -14,11 +14,11 @@ final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: 
 
   val asString: String =
     s"""
-       |Viewpoint:      [${viewport.width}, ${viewport.height}]
-       |FPS:            $frameRate
-       |frameRateDelta: $frameRateDeltaMillis (view updates stop at: $haltViewUpdatesAt, model at: $haltModelUpdatesAt
-       |Clear color:    {red: ${clearColor.r}, green: ${clearColor.g}, blue: ${clearColor.b}, alpha: ${clearColor.a}}
-       |Magnification:  $magnification
+       |Viewpoint:      [${viewport.width.toString()}, ${viewport.height.toString()}]
+       |FPS:            ${frameRate.toString()}
+       |frameRateDelta: ${frameRateDeltaMillis.toString()} (view updates stop at: ${haltViewUpdatesAt.toString()}, model at: ${haltModelUpdatesAt.toString()}
+       |Clear color:    {red: ${clearColor.r.toString()}, green: ${clearColor.g.toString()}, blue: ${clearColor.b.toString()}, alpha: ${clearColor.a.toString()}}
+       |Magnification:  ${magnification.toString()}
        |""".stripMargin
 
   def withViewport(width: Int, height: Int): GameConfig   = this.copy(viewport = GameViewport(width, height))

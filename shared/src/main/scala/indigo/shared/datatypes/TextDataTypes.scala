@@ -56,7 +56,10 @@ object FontInfo {
     )
 }
 
-final class FontKey(val key: String) extends AnyVal
+final class FontKey(val key: String) extends AnyVal {
+  override def toString(): String =
+    s"FontKey($key)"
+}
 object FontKey {
 
   implicit def eq(implicit eqS: EqualTo[String]): EqualTo[FontKey] =

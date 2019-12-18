@@ -135,7 +135,7 @@ object DisplayObjectConversions {
         case (x: Sprite) :: xs =>
           AnimationsRegister.fetchFromCache(gameTime, x.bindingKey, x.animationsKey, metrics) match {
             case None =>
-              IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${x.animationsKey}")
+              IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${x.animationsKey.toString()}")
               rec(xs)
 
             case Some(anim) =>
@@ -282,7 +282,7 @@ object DisplayObjectConversions {
             }
           }
           .getOrElse {
-            IndigoLogger.errorOnce(s"Cannot render Text, missing Font with key: ${leaf.fontKey}")
+            IndigoLogger.errorOnce(s"Cannot render Text, missing Font with key: ${leaf.fontKey.toString()}")
             Nil
           }
       }

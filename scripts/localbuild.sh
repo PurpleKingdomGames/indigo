@@ -9,6 +9,6 @@ sbt localPublish
 # publish the plugin - uses a meta build so is a bit funky
 cd project
 
-sbt publishLocal
+sbt sbtIndigo/publishLocal
 
 cd ..

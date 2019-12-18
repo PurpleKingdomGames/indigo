@@ -43,7 +43,7 @@ object FlareAutomata {
           case (Some(Flare(_, moveSignal, tint)), r: Renderable) =>
             for {
               position <- moveSignal |> SignalFunction(toScreenSpace)
-              events   <- Projectiles.emitTrailEvents(position, tint, 1l)
+              events   <- Projectiles.emitTrailEvents(position, tint, 1L)
             } yield AutomatonUpdate(List(r.moveTo(position)), events)
 
           case _ =>

@@ -5,21 +5,23 @@ import scala.language.postfixOps
 
 val indigoVersion = "0.0.11-SNAPSHOT"
 
-val silencerVersion = "1.4.2"
+val silencerVersion = "1.4.4"
 
 lazy val commonSettings = Seq(
   version := indigoVersion,
-  scalaVersion := "2.12.10",
+  scalaVersion := "2.13.1",
   organization := "indigo",
   libraryDependencies ++= Seq(
-    "com.lihaoyi" %%% "utest" % "0.6.9" % "test",
-    compilerPlugin("com.github.ghik" %% "silencer-plugin" % silencerVersion),
-    "com.github.ghik" %% "silencer-lib" % silencerVersion % Provided
+    "com.lihaoyi" %%% "utest" % "0.6.9" % "test"
+  ),
+  libraryDependencies ++= Seq(
+    compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
+    "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
   scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits"),
-  scalacOptions in (Compile, compile) ++= ScalacOptions.scala212Compile,
-  scalacOptions in (Test, test) ++= ScalacOptions.scala212Test,
+  scalacOptions in (Compile, compile) ++= ScalacOptions.scala213Compile,
+  scalacOptions in (Test, test) ++= ScalacOptions.scala213Test,
   wartremoverWarnings in (Compile, compile) ++= Warts.allBut(
     Wart.Overloading,
     Wart.ImplicitParameter
@@ -366,7 +368,7 @@ lazy val facades =
     .settings(
       name := "facades",
       version := indigoVersion,
-      scalaVersion := "2.12.10",
+      scalaVersion := "2.13.1",
       organization := "indigo",
       scalacOptions += "-Yrangepos",
       scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits")
