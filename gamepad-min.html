@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Game Pad POC</title>
+    </head>
+    <body>
+        <script>
+            let lastUpdatedAt = 0;
+            let gamepads = [];
+
+            function updateGamepad(gamepad) {
+                if(gamepad != null && gamepad.connected) {
+                  let axis = [];
+                  var count = gamepad.axes.length;
+                  var i = 0;
+
+                  while(i < count) {
+                      axis.push(gamepad.axes[i].toFixed(3));
+                      i++;
+                  }
+
+                  let buttons = [];
+                  count = gamepad.buttons.length;
+                  i = 0;
+
+                  while(i < count) {
+                      let message = "(" + (gamepad.buttons[i].pressed ? "T" : "F") + ":" + gamepad.buttons[i].value.toFixed(1) + ")";
+                      buttons.push(message);
+                      i++;
+                  }
+
+                  console.log(axis, buttons);
+                }
+            }
+
+            function handleFrame(timestamp) {
+                if(timestamp - lastUpdatedAt > 500) { // 2 FPS so the logs are readable.
+                  lastUpdatedAt = timestamp;
+
+                  var count = gamepads.length;
+                  var i = 0;
+
+                  while(i < count) {
+                    updateGamepad(gamepads[i]);
+                    i++;
+                  }
+
+                  requestAnimationFrame(handleFrame);
+                } else {
+                  requestAnimationFrame(handleFrame);
+                }
+            }
+
+            // Event listener seems unreliable. Connect event doesn't always fire.
+            // Probably don't want to do this, probably better to just track the gamepads
+            // array and diff the state of 'defined' vs. 'null'.
+            window.addEventListener("gamepadconnected", function(e) {
+              console.log("Gamepad connected");
+              gamepads = navigator.getGamepads();
+            }, false);
+
+            window.addEventListener("gamepaddisconnected", function(e) {
+              console.log("Gamepad disconnected");
+              gamepads = navigator.getGamepads();
+            }, false);
+
+            requestAnimationFrame(handleFrame);
+        </script>
+    </body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Game Pad POC</title>
+        <style>
+            #gamePadList {
+                position:relative;
+                padding-top:1.25rem;
+            }
+
+            #gamePadList::before {
+                content:'Gamepads';
+                display:block;
+                font-weight: bold;
+                position:absolute;
+                left:0.5rem;
+                top:0;
+            }
+
+            #gamePadList > li > ul {
+                padding:0;
+                margin:0 0 0 1rem;
+                list-style: none;
+                position:relative;
+            }
+
+            #gamePadList > li > ul li {
+                position:relative;
+                padding-left: 1.75rem;
+            }
+
+            #gamePadList > li > ul[data-buttons]::before {
+                content:'Buttons';
+                display:block;
+                font-weight: bold;
+                position:absolute;
+                left:0;
+                top:0;
+            }
+
+            #gamePadList > li > ul {
+                position:relative;
+                padding-top:1.25rem;
+            }
+
+            #gamePadList > li > ul[data-axis]::before {
+                content:'Axes';
+                display:block;
+                font-weight: bold;
+                position:absolute;
+                left:0;
+                top:0;
+            }
+
+            #gamePadList > li > ul li::before {
+                content: attr(data-id) ": ";
+                display:block;
+                position:absolute;
+                left:0;
+            }
+
+        </style>
+    </head>
+    <body>
+        <p id="gamepadDisconnect">Connect a gamepad or press a button on a connected gamepade to continue</p>
+        <ul id="gamePadList" hidden>
+
+        </ul>
+        <script>
+            // https://developer.mozilla.org/en-US/docs/Web/API/Gamepad
+            var gamepads = {};
+            function gamepadHandler() {
+                let gamepads = navigator.getGamepads();
+
+                for (let i = 0; i < gamepads.length; i++) {
+                    initGamepad(gamepads[i])
+                }
+
+                let documentPads = document.querySelectorAll('#gamePadList li[data-id]');
+                for (let i = 0; i < documentPads.length; i++) {
+                    let found = false;
+                    for (let ii = 0; ii < gamepads.length; ii++) {
+                        if (documentPads[i].getAttribute('data-id') === gamepads[ii].index.toString()) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    // Gamepad represented in DOM no longer exists, remove it
+                    if (!found)
+                        documentPads[i].parentElement.removeChild(documentPads[i]);
+                }
+
+                // No gamepads? Hide the list and show the connect message
+                if (gamepads.length === 0) {
+                    document.getElementById('gamepadDisconnect').removeAttribute('hidden');
+                    document.getElementById('gamePadList').setAttribute('hidden', '');
+                } else {
+                    document.getElementById('gamePadList').removeAttribute('hidden');
+                    document.getElementById('gamepadDisconnect').setAttribute('hidden', '');
+                }
+            }
+
+            function initGamepad(gamepad) {
+                let li = document.querySelector('#gamePadList li[data-id="' + gamepad.index + '"]');
+
+                // Gamepad is not connected
+                if (gamepad === null || !gamepad.connected) {
+                    // Remove from the DOM
+                    if (li !== null)
+                        li.parentNode.removeChild(li);
+
+                    return;
+                }
+
+                // Otherwise if the index doesn't already exist in the list add it
+                if (li === null) {
+                    li = document.createElement('li')
+                    li.setAttribute('data-id', gamepad.index);
+                    // Show the gamepad and mapping - currently only 'standard' mapping exists
+                    // More here: https://developer.mozilla.org/en-US/docs/Web/API/Gamepad/mapping
+                    li.textContent =
+                        gamepad.id + ' ' +
+                        (gamepad.mapping != null && gamepad.mapping.length > 0 ? '(mapped to ' + gamepad.mapping + ')' : '(not mapped)')
+                    ;
+
+                    document.querySelector('#gamePadList').appendChild(li);
+                }
+            }
+
+            function updateGamepad(gamepad) {
+                let ul = document.querySelector('#gamePadList li[data-id="' + gamepad.index + '"]');
+
+                let buttonUl = ul.querySelector('ul[data-buttons]');
+                if (buttonUl == null)
+                {
+                    buttonUl = document.createElement('ul');
+                    buttonUl.setAttribute('data-buttons', '');
+                    ul.appendChild(buttonUl);
+                }
+
+                // Gamepads expose an array of buttons - each one has a pressed property (true or false)
+                // and a Value (between 0 and 1)
+                for(let i = 0; i < gamepad.buttons.length; i++) {
+                    let li = buttonUl.querySelector('li[data-id="' + i + '"]');
+                    if (li == null)
+                    {
+                       li = document.createElement('li');
+                       li.setAttribute('data-id', i);
+
+                       buttonUl.appendChild(li);
+                    }
+
+                    li.textContent =
+                        "Pressed: " +
+                        (gamepad.buttons[i].pressed ? "True" : "False") +
+                        ", Value: " +
+                        gamepad.buttons[i].value.toFixed(2)
+                }
+
+                let axisUl = ul.querySelector('ul[data-axis]');
+                if (axisUl == null)
+                {
+                    axisUl = document.createElement('ul');
+                    axisUl.setAttribute('data-axis', '');
+                    ul.appendChild(axisUl);
+                }
+
+                // Gamepads expose an array of axis - each one is a number between 0 and 1
+                // One standard analog stick will be represented by 2 axis (x and y)
+                for(let i = 0; i < gamepad.axes.length; i++) {
+                    let li = axisUl.querySelector('li[data-id="' + i + '"]');
+                    if (li == null)
+                    {
+                       li = document.createElement('li');
+                       li.setAttribute('data-id', i);
+
+                       axisUl.appendChild(li);
+                    }
+
+                    li.textContent =
+                        "Value: " +
+                        gamepad.axes[i].toFixed(3)
+                }
+            }
+
+            function handleFrame(timestamp) {
+                let gamepads = navigator.getGamepads();
+
+                for(let i = 0; i < gamepads.length; i++) {
+                    updateGamepad(gamepads[i]);
+                }
+
+                requestAnimationFrame(handleFrame); // Effectively a game loop
+            }
+
+            window.addEventListener("gamepadconnected", function(e) { gamepadHandler(); }, false); // Event listening for a new gamepad
+            window.addEventListener("gamepaddisconnected", function(e) { gamepadHandler(); }, false); // Event listening for a game pad disconnect
+
+            requestAnimationFrame(handleFrame); // Oddly the Gamepad API does not use event listeners, so we handle any updates on a per frame basis
+        </script>
+    </body>
+</html>
