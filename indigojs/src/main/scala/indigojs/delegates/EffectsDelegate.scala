@@ -22,3 +22,13 @@ final class EffectsDelegate(val alpha: Double, val tint: TintDelegate, val flip:
   def toInternal: Effects =
     Effects(alpha, tint.toInternal, flip.toInternal)
 }
+
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
+@JSExportTopLevel("EffectsHelper")
+@JSExportAll
+object EffectsDelegate {
+
+  def None: EffectsDelegate =
+    new EffectsDelegate(1, TintDelegate.None, FlipDelegate.None)
+
+}

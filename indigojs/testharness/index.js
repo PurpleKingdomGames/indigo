@@ -159,6 +159,17 @@ const present = function(gameTime, model, viewModel, frameEvents) {
                   return [];
                 },
             ),
+            new Graphic(
+                new Rectangle(200, 200, 256, 256),
+                1,
+                0,
+                1,
+                1,
+                graphicName,
+                new Point(48, 48),
+                new Rectangle(128, 0, 96, 96),
+                EffectsHelper.None,
+            ),
           ],
       );
 };

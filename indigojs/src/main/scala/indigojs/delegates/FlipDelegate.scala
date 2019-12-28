@@ -27,3 +27,13 @@ final class FlipDelegate(val horizontal: Boolean, val vertical: Boolean) {
     Flip(horizontal, vertical)
 
 }
+
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
+@JSExportTopLevel("FlipHelper")
+@JSExportAll
+object FlipDelegate {
+
+  def None: FlipDelegate =
+    new FlipDelegate(false, false)
+
+}
