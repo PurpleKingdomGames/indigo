@@ -3,11 +3,12 @@
 
 const config =
     GameConfigHelper.default
-        .withViewport(new GameViewport(200, 100))
-        .withClearColor(new ClearColor(1, 0, 1, 1))
-        .withFrameRate(30)
-        .withMagnification(2);
+        .withViewport(new GameViewport(550, 400))
+        .withClearColor(new ClearColor(0.5, 0, 0.5, 1))
+        .withFrameRate(60)
+        .withMagnification(1);
 
+const fontKey = 'My Font';
 const fontName = 'boxyFont';
 const spriteName = 'trafficLights';
 const graphicName = 'graphics';
@@ -64,7 +65,7 @@ const fontChars = [
 
 const fonts = [
   new FontInfo(
-      'My Font',
+      fontKey,
       fontName,
       320,
       230,
@@ -92,6 +93,8 @@ const animations = [
 const initialise = function(assetCollection) {
   console.log('initialise');
 
+  console.log('Config', config);
+
   const startupData = {foo: 10};
 
   return StartUp.succeedWith(startupData);
@@ -107,7 +110,10 @@ const initialViewModel = function(startupData, gameModel) {
   console.log('initialViewModel');
   console.log(startupData);
   console.log(gameModel);
-  return {num: -1};
+  return {
+    num: -1,
+    tint: TintHelper.None,
+  };
 };
 
 const updateModel = function(gameTime, model, dice) {
@@ -135,7 +141,26 @@ const updateViewModel =
   };
 
 const present = function(gameTime, model, viewModel, frameEvents) {
-  return SceneUpdateFragmentHelper.empty;
+  return SceneUpdateFragmentHelper.empty
+      .addGameLayerNodes(
+          [
+            new Text(
+                'Hello, world!\nThis is some text!',
+                'right',
+                config.viewport.width - 10,
+                20,
+                1,
+                0,
+                1,
+                1,
+                fontKey,
+                new Effects(1, viewModel.tint, new Flip(false, false)),
+                function(bounds, event) {
+                  return [];
+                },
+            ),
+          ],
+      );
 };
 
 Indigo.init(

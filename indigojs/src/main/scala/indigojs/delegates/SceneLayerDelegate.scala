@@ -9,6 +9,10 @@ import indigo.shared.scenegraph.SceneLayer
 final class SceneLayerDelegate(val nodes: js.Array[SceneGraphNodeDelegate], val tint: TintDelegate, val saturation: Double, val magnification: Option[Int]) {
 
   @JSExport
+  def addLayerNodes(newNodes: js.Array[SceneGraphNodeDelegate]): SceneLayerDelegate =
+    new SceneLayerDelegate(nodes ++ newNodes, tint, saturation, magnification)
+
+  @JSExport
   def withTint(newTint: TintDelegate): SceneLayerDelegate =
     new SceneLayerDelegate(nodes, newTint, saturation, magnification)
 

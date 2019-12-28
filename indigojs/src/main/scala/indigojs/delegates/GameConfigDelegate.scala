@@ -6,7 +6,16 @@ import indigo.shared.config.GameConfig
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("GameConfig")
-final class GameConfigDelegate(viewport: GameViewportDelegate, frameRate: Int, clearColor: ClearColorDelegate, magnification: Int) {
+final class GameConfigDelegate(_viewport: GameViewportDelegate, _frameRate: Int, _clearColor: ClearColorDelegate, _magnification: Int) {
+
+  @JSExport
+  val viewport = _viewport
+  @JSExport
+  val frameRate = _frameRate
+  @JSExport
+  val clearColor = _clearColor
+  @JSExport
+  val magnification = _magnification
 
   @JSExport
   def withViewport(newViewport: GameViewportDelegate): GameConfigDelegate =
