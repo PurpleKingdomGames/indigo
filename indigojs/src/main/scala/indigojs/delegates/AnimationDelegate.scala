@@ -18,15 +18,27 @@ import indigo.shared.animation.Frame
 import indigo.shared.animation.Cycle
 import indigo.shared.datatypes.Point
 
-@SuppressWarnings(Array("org.wartremover.warts.Throw"))
+@SuppressWarnings(Array("org.wartremover.warts.Throw", "org.wartremover.warts.Any"))
 @JSExportTopLevel("Animation")
 final class AnimationDelegate(
-    val animationsKey: String,
-    val imageAssetRef: String,
-    val spriteSheetWidth: Int,
-    val spriteSheetHeight: Int,
-    val cycles: js.Array[CycleDelegate]
+    _animationsKey: String,
+    _imageAssetRef: String,
+    _spriteSheetWidth: Int,
+    _spriteSheetHeight: Int,
+    _cycles: js.Array[CycleDelegate]
 ) {
+
+  @JSExport
+  val animationsKey = _animationsKey
+  @JSExport
+  val imageAssetRef = _imageAssetRef
+  @JSExport
+  val spriteSheetWidth = _spriteSheetWidth
+  @JSExport
+  val spriteSheetHeight = _spriteSheetHeight
+  @JSExport
+  val cycles = _cycles
+
   def toInternal: Animation =
     NonEmptyList.fromList(cycles.map(_.toInternal).toList) match {
       case None =>
@@ -44,9 +56,15 @@ final class AnimationDelegate(
     }
 }
 
-@SuppressWarnings(Array("org.wartremover.warts.Throw"))
+@SuppressWarnings(Array("org.wartremover.warts.Throw", "org.wartremover.warts.Any"))
 @JSExportTopLevel("Cycle")
-final class CycleDelegate(val label: String, val frames: js.Array[FrameDelegate]) {
+final class CycleDelegate(_label: String, _frames: js.Array[FrameDelegate]) {
+
+  @JSExport
+  val label = _label
+  @JSExport
+  val frames = _frames
+
   def toInternal: Cycle =
     NonEmptyList.fromList(frames.map(_.toInternal).toList) match {
       case None =>
@@ -62,8 +80,15 @@ final class CycleDelegate(val label: String, val frames: js.Array[FrameDelegate]
     }
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Frame")
-final class FrameDelegate(val bounds: RectangleDelegate, val duration: Int) {
+final class FrameDelegate(_bounds: RectangleDelegate, _duration: Int) {
+
+  @JSExport
+  val bounds = _bounds
+  @JSExport
+  val duration = _duration
+
   def toInternal: Frame =
     new Frame(bounds.toInternal, duration)
 }
@@ -78,8 +103,13 @@ final class PlayDelegate extends AnimationActionDelegate {
     Play
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("ChangeCycle")
-final class ChangeCycleDelegate(val label: String) extends AnimationActionDelegate {
+final class ChangeCycleDelegate(_label: String) extends AnimationActionDelegate {
+
+  @JSExport
+  val label = _label
+
   def toInternal: AnimationAction =
     ChangeCycle(CycleLabel(label))
 }
@@ -96,8 +126,13 @@ final class JumpToLastFrameDelegate extends AnimationActionDelegate {
     JumpToLastFrame
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("JumpToFrame")
-final class JumpToFrameDelegate(val number: Int) extends AnimationActionDelegate {
+final class JumpToFrameDelegate(_number: Int) extends AnimationActionDelegate {
+
+  @JSExport
+  val number = _number
+
   def toInternal: AnimationAction =
     JumpToFrame(number)
 }

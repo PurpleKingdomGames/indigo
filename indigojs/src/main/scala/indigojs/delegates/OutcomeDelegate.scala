@@ -6,7 +6,12 @@ import indigo.shared.Outcome
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Outcome")
-final class OutcomeDelegate(val state: js.Object, val globalEvents: js.Array[GlobalEventDelegate]) {
+final class OutcomeDelegate(_state: js.Object, _globalEvents: js.Array[GlobalEventDelegate]) {
+
+  @JSExport
+  val state = _state
+  @JSExport
+  val globalEvents = _globalEvents
 
   @JSExport
   def addEvent(event: GlobalEventDelegate): OutcomeDelegate =

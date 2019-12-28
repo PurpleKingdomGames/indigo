@@ -5,7 +5,19 @@ import indigo.shared.datatypes.Tint
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Tint")
-final class TintDelegate(val r: Double, val g: Double, val b: Double, val a: Double) {
+final class TintDelegate(_r: Double, _g: Double, _b: Double, _a: Double) {
+
+  @JSExport
+  val r = _r
+
+  @JSExport
+  val g = _g
+
+  @JSExport
+  val b = _b
+
+  @JSExport
+  val a = _a
 
   @JSExport
   def withRed(newRed: Double): TintDelegate =

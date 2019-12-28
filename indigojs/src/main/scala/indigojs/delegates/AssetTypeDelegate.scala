@@ -3,7 +3,14 @@ package indigojs.delegates
 import scala.scalajs.js.annotation._
 import indigo.shared.AssetType
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 sealed trait AssetTypeDelegate {
+
+  @JSExport
+  val name: String
+  @JSExport
+  val path: String
+
   def toInternal: AssetType
 }
 

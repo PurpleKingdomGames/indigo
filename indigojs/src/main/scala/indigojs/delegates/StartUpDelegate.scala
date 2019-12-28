@@ -25,7 +25,14 @@ object StartUpDelegate {
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("StartUpSuccess")
-final class StartUpSuccessDelegate(val model: js.Object, val animations: js.Array[AnimationDelegate], val fonts: js.Array[FontInfoDelegate]) extends StartUpDelegate {
+final class StartUpSuccessDelegate(_model: js.Object, _animations: js.Array[AnimationDelegate], _fonts: js.Array[FontInfoDelegate]) extends StartUpDelegate {
+
+  @JSExport
+  val model = _model
+  @JSExport
+  val animations = _animations
+  @JSExport
+  val fonts = _fonts
 
   @JSExport
   def addAnimations(value: js.Array[AnimationDelegate]): StartUpSuccessDelegate =

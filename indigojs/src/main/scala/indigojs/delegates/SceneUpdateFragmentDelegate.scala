@@ -8,15 +8,32 @@ import scala.scalajs.js
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("SceneUpdateFragment")
 final class SceneUpdateFragmentDelegate(
-    val gameLayer: SceneLayerDelegate,
-    val lightingLayer: SceneLayerDelegate,
-    val uiLayer: SceneLayerDelegate,
-    val ambientLight: TintDelegate,
-    val globalEvents: js.Array[GlobalEventDelegate],
-    val audio: SceneAudioDelegate,
-    val screenEffects: ScreenEffectsDelegate,
-    val cloneBlanks: js.Array[CloneBlankDelegate]
+    _gameLayer: SceneLayerDelegate,
+    _lightingLayer: SceneLayerDelegate,
+    _uiLayer: SceneLayerDelegate,
+    _ambientLight: TintDelegate,
+    _globalEvents: js.Array[GlobalEventDelegate],
+    _audio: SceneAudioDelegate,
+    _screenEffects: ScreenEffectsDelegate,
+    _cloneBlanks: js.Array[CloneBlankDelegate]
 ) {
+
+  @JSExport
+  val gameLayer = _gameLayer
+  @JSExport
+  val lightingLayer = _lightingLayer
+  @JSExport
+  val uiLayer = _uiLayer
+  @JSExport
+  val ambientLight = _ambientLight
+  @JSExport
+  val globalEvents = _globalEvents
+  @JSExport
+  val audio = _audio
+  @JSExport
+  val screenEffects = _screenEffects
+  @JSExport
+  val cloneBlanks = _cloneBlanks
 
   @JSExport
   def addGameLayerNodes(nodes: js.Array[SceneGraphNodeDelegate]): SceneUpdateFragmentDelegate =

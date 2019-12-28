@@ -5,7 +5,12 @@ import scala.scalajs.js.annotation._
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Flip")
-final class FlipDelegate(val horizontal: Boolean, val vertical: Boolean) {
+final class FlipDelegate(_horizontal: Boolean, _vertical: Boolean) {
+
+  @JSExport
+  val horizontal = _horizontal
+  @JSExport
+  val vertical = _vertical
 
   @JSExport
   def flipH: FlipDelegate =

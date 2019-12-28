@@ -5,7 +5,14 @@ import scala.scalajs.js.annotation._
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Effects")
-final class EffectsDelegate(val alpha: Double, val tint: TintDelegate, val flip: FlipDelegate) {
+final class EffectsDelegate(_alpha: Double, _tint: TintDelegate, _flip: FlipDelegate) {
+
+  @JSExport
+  val alpha = _alpha
+  @JSExport
+  val tint = _tint
+  @JSExport
+  val flip = _flip
 
   @JSExport
   def withAlpha(newAlpha: Double): EffectsDelegate =
