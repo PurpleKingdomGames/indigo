@@ -562,7 +562,11 @@ lazy val apigen =
     .in(file("apigen"))
     .settings(commonSettings: _*)
     .settings(
-      libraryDependencies += "com.lihaoyi" %% "fastparse" % "2.1.3"
+      libraryDependencies ++= Seq(
+        // "com.lihaoyi" %% "fastparse" % "2.1.3",
+        "org.tpolecat" %% "atto-core"    % "0.7.0",
+        "com.lihaoyi" %% "os-lib"    % "0.6.2"
+      )
     )
 lazy val apigenJVM = apigen.jvm
 
