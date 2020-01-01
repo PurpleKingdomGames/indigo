@@ -1,35 +1,6 @@
-lazy val coreProjects: List[String] =
-  List(
-    "shared",
-    "circe12",
-    "indigoPlatforms",
-    "indigo",
-    "indigoExts"
-  )
 
-lazy val devProjects: List[String] =
+lazy val demoProjects: List[String] =
   List("sandbox", "perf")
-
-lazy val exampleProjects: List[String] =
-  List(
-    "indigojsinterface", // <-- only here because JS only!!
-    "basicSetup",
-    "subSystems",
-    "scenesSetup",
-    "fullSetup",
-    "button",
-    "http",
-    "text",
-    "graphic",
-    "sprite",
-    "websocket",
-    "inputfield",
-    "audio",
-    "group",
-    "automata",
-    "fireworks",
-    "inputmapping"
-  )
 
 def applyCommand(projects: List[String], command: String, platforms: List[PlatformSuffix]): String =
   platforms match {
@@ -48,23 +19,8 @@ def applyCommand(projects: List[String], command: String, platforms: List[Platfo
 
 def applyToAll(command: String): String =
   List(
-    applyCommand(coreProjects, command, PlatformSuffix.All),
-    applyCommand(devProjects, command, List(PlatformSuffix.Ignore, PlatformSuffix.JVM)),
-    applyCommand(exampleProjects, command, PlatformSuffix.Omit),
-    ";framework/clean",
-    ";server/clean"
+    applyCommand(demoProjects, command, List(PlatformSuffix.Ignore, PlatformSuffix.JVM))
   ).mkString
-
-// Rebuild ScalaDocs and open in Firefox
-addCommandAlias(
-  "readdocs",
-  applyCommand(coreProjects, "doc", PlatformSuffix.JVMOnly) +
-    List(
-      "openshareddocs",
-      "openindigodocs",
-      "openindigoextsdocs"
-    ).mkString(";", ";", "")
-)
 
 addCommandAlias(
   "cleanAll",
@@ -84,43 +40,17 @@ addCommandAlias(
 )
 
 addCommandAlias(
-  "testIndigoJS",
-  applyCommand(coreProjects, "test", PlatformSuffix.JSOnly)
+  "testDemoJS",
+  applyCommand(demoProjects, "test", PlatformSuffix.Omit)
 )
 addCommandAlias(
-  "testIndigoJVM",
-  applyCommand(coreProjects, "test", PlatformSuffix.JVMOnly)
-)
-addCommandAlias(
-  "testDevJS",
-  applyCommand(devProjects, "test", PlatformSuffix.Omit) +
-    List(
-      "framework/test",
-      "server/test"
-    ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testDevJVM",
-  applyCommand(devProjects, "test", PlatformSuffix.JVMOnly) +
-    List(
-      "framework/test",
-      "server/test"
-    ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testExamplesJS",
-  applyCommand(exampleProjects, "test", PlatformSuffix.Omit)
-)
-addCommandAlias(
-  "testExamplesJVM",
-  applyCommand(exampleProjects, "test", PlatformSuffix.Omit) // Currently not compiling examples to JVM
+  "testDemoJVM",
+  applyCommand(demoProjects, "test", PlatformSuffix.JVMOnly)
 )
 addCommandAlias(
   "testAllNoCleanJS",
   List(
-    "testIndigoJS",
-    "testDevJS",
-    "testExamplesJS"
+    "testDemoJS"
   ).mkString(";", ";", "")
 )
 addCommandAlias(
@@ -133,9 +63,7 @@ addCommandAlias(
 addCommandAlias(
   "testAllNoCleanJVM",
   List(
-    "testIndigoJVM",
-    "testDevJVM",
-    "testExamplesJVM"
+    "testDemoJVM"
   ).mkString(";", ";", "")
 )
 addCommandAlias(
@@ -155,24 +83,6 @@ addCommandAlias(
   List(
     "cleanAll",
     "testCompileAllNoClean"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "buildIndigo",
-  applyCommand(coreProjects, "compile", PlatformSuffix.All)
-)
-addCommandAlias(
-  "localPublishIndigo",
-  applyCommand(coreProjects, "publishLocal", PlatformSuffix.All)
-)
-
-addCommandAlias(
-  "localPublish",
-  List(
-    "cleanAll",
-    "buildIndigo",
-    "localPublishIndigo"
   ).mkString(";", ";", "")
 )
 
