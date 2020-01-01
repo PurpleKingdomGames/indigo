@@ -4,7 +4,8 @@ lazy val coreProjects: List[String] =
     "circe12",
     "indigoPlatforms",
     "indigo",
-    "indigoExts"
+    "indigoExts",
+    "facades"
   )
 
 def applyCommand(projects: List[String], command: String, platforms: List[PlatformSuffix]): String =

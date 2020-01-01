@@ -79,6 +79,7 @@ lazy val facades =
       )
     )
 lazy val facadesJS = facades.js
+lazy val facadesJVM = facades.jvm
 
 // Indigo Platforms
 lazy val indigoPlatforms =
@@ -177,7 +178,8 @@ lazy val indigoProject =
       indigoPlatformsJVM,
       circe12JVM,
       indigoJVM,
-      indigoExtsJVM
+      indigoExtsJVM,
+      facadesJVM
     )
 
 // Cross build version - better or worse?
