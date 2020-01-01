@@ -1,6 +1,9 @@
 # 95% stolen from the example...
+image: hirokimatsumoto/alpine-openjdk-11
 
 before_script:
+  - java -version
+  - javac -version
   - apt-get update -y
   - apt-get install apt-transport-https -y
   # Install SBT
