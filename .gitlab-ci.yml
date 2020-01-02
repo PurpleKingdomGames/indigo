@@ -1,5 +1,5 @@
 # 95% stolen from the example...
-image: java:11
+image: openjdk:11
 
 stages:
   - test
