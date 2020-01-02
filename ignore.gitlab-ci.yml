@@ -6,6 +6,8 @@ stages:
 
 before_script:
   - apt-get update -y
+  - apt-get install nodejs
+  - apt-get install npm
   - apt-get install apt-transport-https -y
   ## Install SBT
   - echo "deb http://dl.bintray.com/sbt/debian /" | tee -a /etc/apt/sources.list.d/sbt.list
