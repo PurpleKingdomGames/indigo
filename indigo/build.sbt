@@ -7,11 +7,11 @@ val indigoVersion = "0.0.12-SNAPSHOT"
 
 val silencerVersion = "1.4.4"
 
-val scala213 = "2.13.0"
+val scala2 = "2.12.10"
 
 lazy val commonSettings = Seq(
   version := indigoVersion,
-  scalaVersion := scala213,
+  scalaVersion := scala2,
   organization := "indigo",
   libraryDependencies ++= Seq(
     "com.lihaoyi" %%% "utest" % "0.6.9" % "test"
@@ -30,6 +30,46 @@ lazy val commonSettings = Seq(
   ),
   scalacOptions += "-Yrangepos"
 )
+
+// Testing
+
+lazy val sandbox =
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
+    .enablePlugins(SbtIndigo)
+    .settings(commonSettings: _*)
+    .settings(
+      name := "sandbox",
+      showCursor := true,
+      title := "Sandbox",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
+      scalaJSUseMainModuleInitializer := true
+    )
+    .dependsOn(indigoExts)
+    .dependsOn(circe12)
+lazy val sandboxJS  = sandbox.js
+lazy val sandboxJVM = sandbox.jvm
+
+lazy val perf =
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
+    .enablePlugins(SbtIndigo)
+    .settings(commonSettings: _*)
+    .settings(
+      name := "indigo-perf",
+      showCursor := true,
+      title := "Perf",
+      gameAssetsDirectory := "assets"
+    )
+    .jsSettings(
+      scalaJSUseMainModuleInitializer := true
+    )
+    .dependsOn(indigoExts)
+    .dependsOn(circe12)
+lazy val perfJS  = perf.js
+lazy val perfJVM = perf.jvm
 
 // Indigo
 lazy val indigo =
@@ -70,7 +110,7 @@ lazy val facades =
     .settings(
       name := "facades",
       version := indigoVersion,
-      scalaVersion := scala213,
+      scalaVersion := scala2,
       organization := "indigo",
       scalacOptions += "-Yrangepos",
       scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits")
@@ -171,9 +211,9 @@ lazy val indigoProject =
     .settings(commonSettings: _*)
     .settings(
       code := { "code ." ! },
-      openshareddocs := { "open -a Firefox shared/.jvm/target/scala-2.13/api/indigo/index.html" ! },
-      openindigodocs := { "open -a Firefox indigo/.jvm/target/scala-2.13/api/indigo/index.html" ! },
-      openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-2.13/api/indigoexts/index.html" ! }
+      openshareddocs := { "open -a Firefox shared/.jvm/target/scala-2.12/api/indigo/index.html" ! },
+      openindigodocs := { "open -a Firefox indigo/.jvm/target/scala-2.12/api/indigo/index.html" ! },
+      openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-2.12/api/indigoexts/index.html" ! }
     )
     .aggregate(
       sharedJVM,
@@ -181,7 +221,9 @@ lazy val indigoProject =
       circe12JVM,
       indigoJVM,
       indigoExtsJVM,
-      facadesJVM
+      facadesJVM,
+      sandboxJVM,
+      perfJVM
     )
 
 // Cross build version - better or worse?
