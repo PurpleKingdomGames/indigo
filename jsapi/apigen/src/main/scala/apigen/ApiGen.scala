@@ -32,16 +32,11 @@ object ApiGen {
         Nil
       ).filterNot(_.isEmpty)
 
-    // if (chunks.nonEmpty) {
-    //   println(name)
-    // }
-
-    // chunks.foreach { c =>
-    //   println("---")
-    //   println(c.mkString("\n"))
-    // }
-
-    LineParser.processChunks(outputDir, name, chunks)
+    if (chunks.nonEmpty) {
+      println("Found indigodocs to process in: " + name)
+      LineParser.processChunks(outputDir, name, chunks)
+      println("...done")
+    }
 
   }
 
@@ -51,12 +46,12 @@ object ApiGen {
         .toList
         .filter(_.last.endsWith(".scala"))
 
-    // println("Source files found to process:")
-    // println(
-    //   paths
-    //     .map(_.relativeTo(os.pwd).segments.mkString("/"))
-    //     .mkString("\n")
-    // )
+    println("Source files found to process:")
+    println(
+      paths
+        .map(_.relativeTo(os.pwd).segments.mkString("/"))
+        .mkString("\n")
+    )
 
     paths.foreach(p => processFile(outputDir, p))
   }

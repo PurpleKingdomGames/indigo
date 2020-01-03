@@ -1,10 +1,13 @@
+import scala.sys.process._
+import scala.language.postfixOps
+
 val indigoVersion = "0.0.12-SNAPSHOT"
 
 val silencerVersion = "1.4.4"
 
 lazy val commonSettings = Seq(
   version := "0.0.1",
-  scalaVersion := "2.13.1",
+  scalaVersion := "2.13.0",
   organization := "indigo-js",
   libraryDependencies ++= Seq(
     "com.lihaoyi" %%% "utest" % "0.6.9" % "test"
@@ -25,21 +28,38 @@ lazy val commonSettings = Seq(
 
 lazy val indigojs =
   project
-    .in(file("indigojs"))
     .settings(commonSettings: _*)
     .enablePlugins(ScalaJSPlugin)
     .settings(
-      libraryDependencies += "indigo" %%% "indigo" % "0.0.12-SNAPSHOT"
+      libraryDependencies += "indigo" %%% "indigo-exts" % "0.0.12-SNAPSHOT"
     )
 
 lazy val apigen =
   project
-    .in(file("apigen"))
     .settings(commonSettings: _*)
     .settings(
       libraryDependencies ++= Seq(
         // "com.lihaoyi" %% "fastparse" % "2.1.3",
         "org.tpolecat" %% "atto-core" % "0.7.0",
         "com.lihaoyi"  %% "os-lib"    % "0.6.2"
-      )
+      ),
+      libraryDependencies ++= Seq(
+        "io.circe" %% "circe-core",
+        "io.circe" %% "circe-generic",
+        "io.circe" %% "circe-parser"
+      ).map(_ % "0.12.3")
     )
+
+lazy val jsapi =
+  (project in file("."))
+    .settings(commonSettings: _*)
+    .settings(
+      code := { "code ." ! }
+    )
+    .aggregate(
+      apigen,
+      indigojs
+    )
+
+lazy val code =
+  taskKey[Unit]("Launch VSCode in the current directory")

@@ -7,7 +7,8 @@ import os.Path
 object LineParser {
 
   def processChunks(outputDir: Path, fileName: String, chunks: List[List[String]]): Unit = {
-    val entities = chunks.map(processLines)
+    val entities: List[Option[EntityDefinition]] =
+      chunks.map(processLines)
 
     if (!os.exists(outputDir))
       os.makeDir(outputDir)
