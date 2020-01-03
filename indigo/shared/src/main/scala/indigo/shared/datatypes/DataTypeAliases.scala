@@ -51,7 +51,4 @@ trait DataTypeAliases {
 
   type Flip = shared.datatypes.Flip
   val Flip: shared.datatypes.Flip.type = shared.datatypes.Flip
-
-  type ImageAssetRef = shared.datatypes.ImageAssetRef
-  val ImageAssetRef: shared.datatypes.ImageAssetRef.type = shared.datatypes.ImageAssetRef
 }

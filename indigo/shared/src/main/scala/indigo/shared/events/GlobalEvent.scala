@@ -3,6 +3,7 @@ package indigo.shared.events
 import indigo.shared.constants.Key
 import indigo.shared.audio.Volume
 import indigo.shared.datatypes.Point
+import indigo.shared.assets.AssetName
 
 // Events that are passed to the GlobalEventStream
 trait GlobalEvent
@@ -31,7 +32,7 @@ object KeyboardEvent {
   final case class KeyDown(keyCode: Key) extends KeyboardEvent
 }
 
-final case class PlaySound(assetRef: String, volume: Volume) extends GlobalEvent
+final case class PlaySound(assetName: AssetName, volume: Volume) extends GlobalEvent
 
 trait NetworkSendEvent    extends GlobalEvent
 trait NetworkReceiveEvent extends GlobalEvent

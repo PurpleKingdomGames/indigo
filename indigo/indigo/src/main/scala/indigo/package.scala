@@ -53,8 +53,11 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
 
   type AssetCollection = platform.assets.AssetCollection
 
-  type AssetName = platform.assets.AssetName
-  val AssetName: platform.assets.AssetName.type = platform.assets.AssetName
+  type AssetName = shared.assets.AssetName
+  val AssetName: shared.assets.AssetName.type = shared.assets.AssetName
+
+  type AssetPath = shared.assets.AssetPath
+  val AssetPath: shared.assets.AssetPath.type = shared.assets.AssetPath
 
   type ToReportable[T] = shared.ToReportable[T]
   val ToReportable: shared.ToReportable.type = shared.ToReportable

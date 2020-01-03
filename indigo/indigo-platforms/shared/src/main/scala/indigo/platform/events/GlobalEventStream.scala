@@ -52,8 +52,8 @@ object GlobalEventStreamImpl {
   object AudioEventProcessor {
 
     def filter: AudioPlayer => GlobalEvent => Option[GlobalEvent] = audioPlayer => {
-      case PlaySound(assetRef, volume) =>
-        audioPlayer.playSound(assetRef, volume)
+      case PlaySound(assetName, volume) =>
+        audioPlayer.playSound(assetName, volume)
         None
 
       case e =>

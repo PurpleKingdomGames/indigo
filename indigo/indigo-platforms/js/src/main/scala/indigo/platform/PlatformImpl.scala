@@ -52,8 +52,8 @@ object PlatformImpl {
   def createTextureAtlas(assetCollection: AssetCollection): Try[TextureAtlas] =
     Success(
       TextureAtlas.create(
-        assetCollection.images.map(i => ImageRef(i.name.name, i.data.width, i.data.height)),
-        (name: String) => assetCollection.images.find(_.name.name === name),
+        assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height)),
+        (name: String) => assetCollection.images.find(_.name.value === name),
         TextureAtlasFunctions.createAtlasData
       )
     )

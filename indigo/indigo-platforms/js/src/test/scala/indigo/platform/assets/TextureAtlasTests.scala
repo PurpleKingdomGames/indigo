@@ -7,6 +7,7 @@ import indigo.shared.datatypes.Point
 import indigo.TestFail._
 import indigo.shared.EqualTo._
 import indigo.platform.assets._
+import indigo.shared.assets.AssetName
 
 object TextureAtlasTests extends TestSuite {
 
@@ -17,11 +18,11 @@ object TextureAtlasTests extends TestSuite {
         "should be able to generate a TextureAtlas with the default maximum" - {
 
           val imageRefs = List(
-            ImageRef("a", 10, 10),
-            ImageRef("b", 1024, 1024),
-            ImageRef("c", 512, 512),
-            ImageRef("d", 700, 600),
-            ImageRef("e", 5000, 300)
+            ImageRef(AssetName("a"), 10, 10),
+            ImageRef(AssetName("b"), 1024, 1024),
+            ImageRef(AssetName("c"), 512, 512),
+            ImageRef(AssetName("d"), 700, 600),
+            ImageRef(AssetName("e"), 5000, 300)
           )
 
           val lookupByName: String => Option[LoadedImageAsset]                           = _ => None
@@ -54,11 +55,11 @@ object TextureAtlasTests extends TestSuite {
         "should be able to generate a tighter TextureAtlas" - {
 
           val imageRefs = List(
-            ImageRef("a", 64, 64),
-            ImageRef("b", 100, 100),
-            ImageRef("c", 128, 128),
-            ImageRef("d", 32, 32),
-            ImageRef("e", 64, 64)
+            ImageRef(AssetName("a"), 64, 64),
+            ImageRef(AssetName("b"), 100, 100),
+            ImageRef(AssetName("c"), 128, 128),
+            ImageRef(AssetName("d"), 32, 32),
+            ImageRef(AssetName("e"), 64, 64)
           )
 
           val lookupByName: String => Option[LoadedImageAsset]                           = _ => None
@@ -105,17 +106,17 @@ object TextureAtlasTests extends TestSuite {
         "should be able to sort the images into descending size order" - {
 
           val original = List(
-            ImageRef("a", 10, 10),
-            ImageRef("b", 1024, 1024),
-            ImageRef("c", 512, 512),
-            ImageRef("d", 700, 600)
+            ImageRef(AssetName("a"), 10, 10),
+            ImageRef(AssetName("b"), 1024, 1024),
+            ImageRef(AssetName("c"), 512, 512),
+            ImageRef(AssetName("d"), 700, 600)
           )
 
           val expected = List(
-            TextureDetails(ImageRef("d", 700, 600), PowerOfTwo._1024),
-            TextureDetails(ImageRef("b", 1024, 1024), PowerOfTwo._1024),
-            TextureDetails(ImageRef("c", 512, 512), PowerOfTwo._512),
-            TextureDetails(ImageRef("a", 10, 10), PowerOfTwo._16)
+            TextureDetails(ImageRef(AssetName("d"), 700, 600), PowerOfTwo._1024),
+            TextureDetails(ImageRef(AssetName("b"), 1024, 1024), PowerOfTwo._1024),
+            TextureDetails(ImageRef(AssetName("c"), 512, 512), PowerOfTwo._512),
+            TextureDetails(ImageRef(AssetName("a"), 10, 10), PowerOfTwo._16)
           )
 
           TextureAtlasFunctions.inflateAndSortByPowerOfTwo(original) ==> expected
@@ -124,7 +125,7 @@ object TextureAtlasTests extends TestSuite {
 
         "should be able to create a tree from one image" - {
 
-          val imageRef   = ImageRef("b", 1024, 1024)
+          val imageRef   = ImageRef(AssetName("b"), 1024, 1024)
           val powerOfTwo = PowerOfTwo._1024
 
           val original = TextureDetails(imageRef, powerOfTwo)
@@ -142,20 +143,20 @@ object TextureAtlasTests extends TestSuite {
 
         "should be able to take a list of texture details and group them into 'atlasable' groups" - {
 
-          val tex = (name: String, pow: PowerOfTwo) => TextureDetails(ImageRef(name, 1, 1), pow)
+          val tex = (name: AssetName, pow: PowerOfTwo) => TextureDetails(ImageRef(name, 1, 1), pow)
 
           val list: List[TextureDetails] = List(
-            tex("a", PowerOfTwo._256),
-            tex("b", PowerOfTwo._256),
-            tex("c", PowerOfTwo._128),
-            tex("d", PowerOfTwo._64),
-            tex("e", PowerOfTwo._256),
-            tex("f", PowerOfTwo._8),
-            tex("g", PowerOfTwo._4),
-            tex("h", PowerOfTwo._64),
-            tex("i", PowerOfTwo._128),
-            tex("j", PowerOfTwo._2),
-            tex("k", PowerOfTwo._256)
+            tex(AssetName("a"), PowerOfTwo._256),
+            tex(AssetName("b"), PowerOfTwo._256),
+            tex(AssetName("c"), PowerOfTwo._128),
+            tex(AssetName("d"), PowerOfTwo._64),
+            tex(AssetName("e"), PowerOfTwo._256),
+            tex(AssetName("f"), PowerOfTwo._8),
+            tex(AssetName("g"), PowerOfTwo._4),
+            tex(AssetName("h"), PowerOfTwo._64),
+            tex(AssetName("i"), PowerOfTwo._128),
+            tex(AssetName("j"), PowerOfTwo._2),
+            tex(AssetName("k"), PowerOfTwo._256)
           )
 
           TextureAtlasFunctions
@@ -172,7 +173,7 @@ object TextureAtlasTests extends TestSuite {
           AtlasQuadNode(
             PowerOfTwo._1024,
             AtlasTexture(
-              ImageRef("a", 1024, 768)
+              ImageRef(AssetName("a"), 1024, 768)
             )
           )
 
@@ -180,7 +181,7 @@ object TextureAtlasTests extends TestSuite {
           AtlasQuadNode(
             PowerOfTwo._512,
             AtlasTexture(
-              ImageRef("b", 500, 400)
+              ImageRef(AssetName("b"), 500, 400)
             )
           )
 
@@ -188,7 +189,7 @@ object TextureAtlasTests extends TestSuite {
           AtlasQuadNode(
             PowerOfTwo._64,
             AtlasTexture(
-              ImageRef("c", 62, 48)
+              ImageRef(AssetName("c"), 62, 48)
             )
           )
 
@@ -196,7 +197,7 @@ object TextureAtlasTests extends TestSuite {
           AtlasQuadNode(
             PowerOfTwo._128,
             AtlasTexture(
-              ImageRef("d", 62, 127)
+              ImageRef(AssetName("d"), 62, 127)
             )
           )
 
@@ -233,11 +234,11 @@ object TextureAtlasTests extends TestSuite {
             AtlasQuadNode(
               PowerOfTwo._2048,
               AtlasQuadDivision(
-                AtlasQuadNode(PowerOfTwo._1024, AtlasTexture(ImageRef("a", 1024, 768))),
+                AtlasQuadNode(PowerOfTwo._1024, AtlasTexture(ImageRef(AssetName("a"), 1024, 768))),
                 AtlasQuadNode(
                   PowerOfTwo._1024,
                   AtlasQuadDivision(
-                    AtlasQuadNode(PowerOfTwo._512, AtlasTexture(ImageRef("b", 500, 400))),
+                    AtlasQuadNode(PowerOfTwo._512, AtlasTexture(ImageRef(AssetName("b"), 500, 400))),
                     AtlasQuadEmpty(PowerOfTwo._512),
                     AtlasQuadEmpty(PowerOfTwo._512),
                     AtlasQuadEmpty(PowerOfTwo._512)
@@ -255,7 +256,7 @@ object TextureAtlasTests extends TestSuite {
                             AtlasQuadNode(
                               PowerOfTwo._128,
                               AtlasQuadDivision(
-                                AtlasQuadNode(PowerOfTwo._64, AtlasTexture(ImageRef("c", 62, 48))),
+                                AtlasQuadNode(PowerOfTwo._64, AtlasTexture(ImageRef(AssetName("c"), 62, 48))),
                                 AtlasQuadEmpty(PowerOfTwo._64),
                                 AtlasQuadEmpty(PowerOfTwo._64),
                                 AtlasQuadEmpty(PowerOfTwo._64)
@@ -285,7 +286,7 @@ object TextureAtlasTests extends TestSuite {
                         AtlasQuadNode(
                           PowerOfTwo._256,
                           AtlasQuadDivision(
-                            AtlasQuadNode(PowerOfTwo._128, AtlasTexture(ImageRef("d", 62, 127))),
+                            AtlasQuadNode(PowerOfTwo._128, AtlasTexture(ImageRef(AssetName("d"), 62, 127))),
                             AtlasQuadEmpty(PowerOfTwo._128),
                             AtlasQuadEmpty(PowerOfTwo._128),
                             AtlasQuadEmpty(PowerOfTwo._128)
@@ -327,7 +328,7 @@ object TextureAtlasTests extends TestSuite {
         "should not merge tree B into empty tree A which cannot accommodate" - {
 
           val a = AtlasQuadNode(PowerOfTwo._4, AtlasQuadDivision.empty(PowerOfTwo._2))
-          val b = AtlasQuadNode(PowerOfTwo._128, AtlasTexture(ImageRef("b", 128, 128)))
+          val b = AtlasQuadNode(PowerOfTwo._128, AtlasTexture(ImageRef(AssetName("b"), 128, 128)))
 
           TextureAtlasFunctions.mergeTreeBIntoA(a, b) ==> None
 
@@ -336,7 +337,7 @@ object TextureAtlasTests extends TestSuite {
         "should be able to merge tree B into empty tree A which can accommodate" - {
 
           val a = AtlasQuadNode(PowerOfTwo._256, AtlasQuadDivision.empty(PowerOfTwo._128))
-          val b = AtlasQuadNode(PowerOfTwo._128, AtlasTexture(ImageRef("b", 128, 128)))
+          val b = AtlasQuadNode(PowerOfTwo._128, AtlasTexture(ImageRef(AssetName("b"), 128, 128)))
 
           val expected = Some(
             AtlasQuadNode(
@@ -373,13 +374,13 @@ object TextureAtlasTests extends TestSuite {
           val initial: AtlasQuadTree =
             TextureAtlasFunctions.createEmptyTree(PowerOfTwo._16)
 
-          val quad = (id: String, size: PowerOfTwo) => AtlasQuadNode(size, AtlasTexture(ImageRef(id, 1, 1)))
+          val quad = (id: AssetName, size: PowerOfTwo) => AtlasQuadNode(size, AtlasTexture(ImageRef(id, 1, 1)))
 
           val quads: List[AtlasQuadTree] = List(
-            quad("8_1", PowerOfTwo._8),
-            quad("8_2", PowerOfTwo._8),
-            quad("8_3", PowerOfTwo._8),
-            quad("8_4", PowerOfTwo._8)
+            quad(AssetName("8_1"), PowerOfTwo._8),
+            quad(AssetName("8_2"), PowerOfTwo._8),
+            quad(AssetName("8_3"), PowerOfTwo._8),
+            quad(AssetName("8_4"), PowerOfTwo._8)
           )
 
           val res = quads.foldLeft(initial)((a, b) => TextureAtlasFunctions.mergeTreeBIntoA(a, b).get)
@@ -388,10 +389,10 @@ object TextureAtlasTests extends TestSuite {
             AtlasQuadNode(
               PowerOfTwo._16,
               AtlasQuadDivision(
-                quad("8_1", PowerOfTwo._8),
-                quad("8_2", PowerOfTwo._8),
-                quad("8_3", PowerOfTwo._8),
-                quad("8_4", PowerOfTwo._8)
+                quad(AssetName("8_1"), PowerOfTwo._8),
+                quad(AssetName("8_2"), PowerOfTwo._8),
+                quad(AssetName("8_3"), PowerOfTwo._8),
+                quad(AssetName("8_4"), PowerOfTwo._8)
               )
             )
 
@@ -400,7 +401,7 @@ object TextureAtlasTests extends TestSuite {
 
         "should be able to fill a small tree (B)" - {
 
-          val quad = (id: String, size: PowerOfTwo) => AtlasQuadNode(size, AtlasTexture(ImageRef(id, 1, 1)))
+          val quad = (id: String, size: PowerOfTwo) => AtlasQuadNode(size, AtlasTexture(ImageRef(AssetName(id), 1, 1)))
 
           val quads: List[AtlasQuadTree] = List(
             quad("8_1", PowerOfTwo._8),
@@ -438,7 +439,7 @@ object TextureAtlasTests extends TestSuite {
 
         "should be able to create a texture map of a small tree" - {
 
-          val quad = (id: String, size: PowerOfTwo) => AtlasQuadNode(size, AtlasTexture(ImageRef(id, 1, 1)))
+          val quad = (id: String, size: PowerOfTwo) => AtlasQuadNode(size, AtlasTexture(ImageRef(AssetName(id), 1, 1)))
 
           val quads: List[AtlasQuadTree] = List(
             quad("8_1", PowerOfTwo._8),
@@ -468,10 +469,10 @@ object TextureAtlasTests extends TestSuite {
 
               textureMap.size === PowerOfTwo._16 ==> true
 
-              textureMap.textureCoords.find(_.imageRef.name == "8_1").map(_.coords) === Some(Point(0, 0)) ==> true
-              textureMap.textureCoords.find(_.imageRef.name == "8_2").map(_.coords) === Some(Point(8, 0)) ==> true
-              textureMap.textureCoords.find(_.imageRef.name == "8_3").map(_.coords) === Some(Point(0, 8)) ==> true
-              textureMap.textureCoords.find(_.imageRef.name == "8_4").map(_.coords) === Some(Point(8, 8)) ==> true
+              textureMap.textureCoords.find(_.imageRef.name.value == "8_1").map(_.coords) === Some(Point(0, 0)) ==> true
+              textureMap.textureCoords.find(_.imageRef.name.value == "8_2").map(_.coords) === Some(Point(8, 0)) ==> true
+              textureMap.textureCoords.find(_.imageRef.name.value == "8_3").map(_.coords) === Some(Point(0, 8)) ==> true
+              textureMap.textureCoords.find(_.imageRef.name.value == "8_4").map(_.coords) === Some(Point(8, 8)) ==> true
 
             case _ =>
               fail("error")

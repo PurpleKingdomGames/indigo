@@ -4,7 +4,7 @@ import indigo.shared.animation._
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.metrics._
 import indigo.shared.config.GameConfig
-import indigo.shared.AssetType
+import indigo.shared.assets.AssetType
 import indigo.shared.IndigoLogger
 import indigo.shared.Startup
 import indigo.shared.AnimationsRegister

@@ -4,16 +4,16 @@ import indigo._
 
 object PerfAssets {
 
-  val smallFontName: String = "smallFontName"
-  val dudeName: String      = "base_charactor"
-  val light: String         = "light"
+  val smallFontName: AssetName = AssetName("smallFontName")
+  val dudeName: AssetName      = AssetName("base_charactor")
+  val light: AssetName         = AssetName("light")
 
   def assets: Set[AssetType] =
     Set(
-      AssetType.Image(smallFontName, "assets/boxy_font.png"),
-      AssetType.Image(light, "assets/light_texture.png"),
-      AssetType.Text(dudeName + "-json", "assets/" + dudeName + ".json"),
-      AssetType.Image(dudeName, "assets/" + dudeName + ".png")
+      AssetType.Image(smallFontName, AssetPath("assets/boxy_font.png")),
+      AssetType.Image(light, AssetPath("assets/light_texture.png")),
+      AssetType.Text(AssetName(dudeName.value + "-json"), AssetPath("assets/" + dudeName.value + ".json")),
+      AssetType.Image(dudeName, AssetPath("assets/" + dudeName.value + ".png"))
     )
 
 }

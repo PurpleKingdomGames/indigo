@@ -2,6 +2,7 @@ package indigo.shared
 
 import indigo.shared.config.GameConfig
 import indigo.shared.formats.{Aseprite, TiledMap}
+import indigo.shared.assets.AssetList
 
 trait JsonSupportFunctions {
 

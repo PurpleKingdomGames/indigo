@@ -6,6 +6,7 @@ import indigo.shared.animation.AnimationKey
 import indigo.shared.animation.CycleLabel
 import indigo.shared.datatypes._
 import indigo.shared.IndigoLogger
+import indigo.shared.assets.AssetName
 
 import indigo.shared.{AnimationsRegister, FontRegister}
 import indigo.shared.QuickCache
@@ -209,7 +210,7 @@ final class Graphic(
     val depth: Depth,
     val rotation: Radians,
     val scale: Vector2,
-    val imageAssetRef: String,
+    val assetName: AssetName,
     val ref: Point,
     val crop: Rectangle,
     val effects: Effects
@@ -220,59 +221,59 @@ final class Graphic(
   lazy val y: Int = bounds.position.y
 
   def moveTo(pt: Point): Graphic =
-    Graphic(bounds.moveTo(pt), depth, rotation, scale, imageAssetRef, ref, crop, effects)
+    Graphic(bounds.moveTo(pt), depth, rotation, scale, assetName, ref, crop, effects)
   def moveTo(x: Int, y: Int): Graphic =
     moveTo(Point(x, y))
 
   def moveBy(pt: Point): Graphic =
-    Graphic(bounds.moveTo(bounds.position + pt), depth, rotation, scale, imageAssetRef, ref, crop, effects)
+    Graphic(bounds.moveTo(bounds.position + pt), depth, rotation, scale, assetName, ref, crop, effects)
   def moveBy(x: Int, y: Int): Graphic =
     moveBy(Point(x, y))
 
   def rotate(angle: Radians): Graphic =
-    Graphic(bounds, depth, angle, scale, imageAssetRef, ref, crop, effects)
+    Graphic(bounds, depth, angle, scale, assetName, ref, crop, effects)
   def rotateBy(angle: Radians): Graphic =
     rotate(rotation + angle)
 
   def scaleBy(amount: Vector2): Graphic =
-    Graphic(bounds, depth, rotation, scale * amount, imageAssetRef, ref, crop, effects)
+    Graphic(bounds, depth, rotation, scale * amount, assetName, ref, crop, effects)
   def scaleBy(x: Double, y: Double): Graphic =
     scaleBy(Vector2(x, y))
 
   def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): SceneGraphNodePrimitive =
-    Graphic(bounds.moveTo(newPosition), depth, newRotation, newScale, imageAssetRef, ref, crop, effects)
+    Graphic(bounds.moveTo(newPosition), depth, newRotation, newScale, assetName, ref, crop, effects)
 
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): SceneGraphNodePrimitive =
-    Graphic(bounds.moveTo(this.bounds.position + positionDiff), depth, rotation + rotationDiff, scale * scaleDiff, imageAssetRef, ref, crop, effects)
+    Graphic(bounds.moveTo(this.bounds.position + positionDiff), depth, rotation + rotationDiff, scale * scaleDiff, assetName, ref, crop, effects)
 
   def withDepth(depthValue: Depth): Graphic =
-    Graphic(bounds, depthValue, rotation, scale, imageAssetRef, ref, crop, effects)
+    Graphic(bounds, depthValue, rotation, scale, assetName, ref, crop, effects)
 
   def withAlpha(a: Double): Graphic =
-    Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects.withAlpha(a))
+    Graphic(bounds, depth, rotation, scale, assetName, ref, crop, effects.withAlpha(a))
 
   def withTint(tint: Tint): Graphic =
-    Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects.withTint(tint))
+    Graphic(bounds, depth, rotation, scale, assetName, ref, crop, effects.withTint(tint))
 
   def withTint(red: Double, green: Double, blue: Double): Graphic =
-    Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects.withTint(Tint(red, green, blue, 1)))
+    Graphic(bounds, depth, rotation, scale, assetName, ref, crop, effects.withTint(Tint(red, green, blue, 1)))
 
   def withTint(red: Double, green: Double, blue: Double, amount: Double): Graphic =
-    Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects.withTint(Tint(red, green, blue, amount)))
+    Graphic(bounds, depth, rotation, scale, assetName, ref, crop, effects.withTint(Tint(red, green, blue, amount)))
 
   def flipHorizontal(hValue: Boolean): Graphic =
-    Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects.withFlip(Flip(hValue, effects.flip.vertical)))
+    Graphic(bounds, depth, rotation, scale, assetName, ref, crop, effects.withFlip(Flip(hValue, effects.flip.vertical)))
 
   def flipVertical(vValue: Boolean): Graphic =
-    Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects.withFlip(Flip(effects.flip.horizontal, vValue)))
+    Graphic(bounds, depth, rotation, scale, assetName, ref, crop, effects.withFlip(Flip(effects.flip.horizontal, vValue)))
 
   def withRef(refValue: Point): Graphic =
-    Graphic(bounds, depth, rotation, scale, imageAssetRef, refValue, crop, effects)
+    Graphic(bounds, depth, rotation, scale, assetName, refValue, crop, effects)
   def withRef(xValue: Int, yValue: Int): Graphic =
     withRef(Point(xValue, yValue))
 
   def withCrop(crop: Rectangle): Graphic =
-    Graphic(bounds, depth, rotation, scale, imageAssetRef, ref, crop, effects)
+    Graphic(bounds, depth, rotation, scale, assetName, ref, crop, effects)
   def withCrop(xValue: Int, yValue: Int, widthValue: Int, heightValue: Int): Graphic =
     withCrop(Rectangle(xValue, yValue, widthValue, heightValue))
 
@@ -285,7 +286,7 @@ object Graphic {
       depth: Depth,
       rotation: Radians,
       scale: Vector2,
-      imageAssetRef: String,
+      assetName: AssetName,
       ref: Point,
       crop: Rectangle,
       effects: Effects
@@ -295,31 +296,31 @@ object Graphic {
       depth,
       rotation,
       scale,
-      imageAssetRef,
+      assetName,
       ref,
       crop,
       effects
     )
 
-  def apply(x: Int, y: Int, width: Int, height: Int, depth: Int, imageAssetRef: String): Graphic =
+  def apply(x: Int, y: Int, width: Int, height: Int, depth: Int, assetName: AssetName): Graphic =
     Graphic(
       bounds = Rectangle(x, y, width, height),
       depth = Depth(depth),
       rotation = Radians.zero,
       scale = Vector2.one,
-      imageAssetRef = imageAssetRef,
+      assetName = assetName,
       ref = Point.zero,
       crop = Rectangle(0, 0, width, height),
       effects = Effects.default
     )
 
-  def apply(bounds: Rectangle, depth: Int, imageAssetRef: String): Graphic =
+  def apply(bounds: Rectangle, depth: Int, assetName: AssetName): Graphic =
     Graphic(
       bounds = bounds,
       depth = Depth(depth),
       rotation = Radians.zero,
       scale = Vector2.one,
-      imageAssetRef = imageAssetRef,
+      assetName = assetName,
       ref = Point.zero,
       crop = bounds,
       effects = Effects.default

@@ -1,5 +1,7 @@
 package indigo.platform.assets
 
+import indigo.shared.assets.AssetName
+
 import indigo.shared.EqualTo._
 
 final class AssetCollection(

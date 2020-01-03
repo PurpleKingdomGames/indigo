@@ -1,19 +1,9 @@
 package indigo.platform.assets
 
 import indigo.shared.IndigoLogger
-import indigo.shared.AssetType
-// import org.scalajs.dom
-// import org.scalajs.dom.ext.Ajax
-// import org.scalajs.dom.raw.HTMLImageElement
-// import org.scalajs.dom.{html, _}
-
+import indigo.shared.assets.AssetType
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-// import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
-// import scala.scalajs.js.typedarray.ArrayBuffer
-
-// import indigo.shared.EqualTo._
-
 import scala.io.Source
 import scala.util.{Try, Success, Failure}
 
@@ -77,7 +67,7 @@ object AssetLoader {
     //   IndigoLogger.info(s"[Image] Success ${imageAsset.path}")
     //   new LoadedImageAsset(AssetName(imageAsset.name), i)
     // }
-    Future(new LoadedImageAsset(AssetName(imageAsset.name), ""))
+    Future(new LoadedImageAsset(imageAsset.name, ""))
   }
 
   val loadTextAssets: List[AssetType.Text] => Future[List[LoadedTextAsset]] =
@@ -87,14 +77,14 @@ object AssetLoader {
     IndigoLogger.info(s"[Text] Loading ${textAsset.path}")
 
     Try {
-      val buffer = Source.fromFile(textAsset.path)
+      val buffer = Source.fromFile(textAsset.path.value)
       val text   = buffer.getLines().mkString("\n")
       buffer.close()
       text
     } match {
       case Success(value) =>
         IndigoLogger.info(s"[Text] Success ${textAsset.path}")
-        Future(new LoadedTextAsset(AssetName(textAsset.name), value))
+        Future(new LoadedTextAsset(textAsset.name, value))
 
       case Failure(exception) =>
         IndigoLogger.info(s"[Text] Failure ${exception.getMessage()}")
@@ -121,7 +111,7 @@ object AssetLoader {
     //   p.toFuture.map(audioBuffer => new LoadedAudioAsset(AssetName(audioAsset.name), audioBuffer))
 
     // }
-    Future(new LoadedAudioAsset(AssetName(audioAsset.name), ""))
+    Future(new LoadedAudioAsset(audioAsset.name, ""))
   }
 
 }

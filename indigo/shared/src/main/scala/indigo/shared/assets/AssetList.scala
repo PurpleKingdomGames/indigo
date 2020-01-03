@@ -1,12 +1,12 @@
-package indigo.shared
+package indigo.shared.assets
 
 final class AssetList(val images: List[SimpleAssetType], val texts: List[SimpleAssetType]) {
   def toSet: Set[AssetType] = texts.map(_.toTextAsset).toSet ++ images.map(_.toImageAsset).toSet
 
-  def withImage(name: String, path: String): AssetList =
+  def withImage(name: AssetName, path: AssetPath): AssetList =
     AssetList(SimpleAssetType(name, path) :: images, texts)
 
-  def withText(name: String, path: String): AssetList =
+  def withText(name: AssetName, path: AssetPath): AssetList =
     AssetList(images, SimpleAssetType(name, path) :: texts)
 }
 
@@ -20,7 +20,7 @@ object AssetList {
 
 }
 
-final case class SimpleAssetType(name: String, path: String) {
+final case class SimpleAssetType(name: AssetName, path: AssetPath) {
   def toTextAsset: AssetType.Text   = AssetType.Text(name, path)
   def toImageAsset: AssetType.Image = AssetType.Image(name, path)
 }

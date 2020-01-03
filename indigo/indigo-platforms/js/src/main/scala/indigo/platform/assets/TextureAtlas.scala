@@ -9,6 +9,7 @@ import org.scalajs.dom
 import org.scalajs.dom.{html, raw}
 
 import scala.annotation.tailrec
+import indigo.shared.assets.AssetName
 
 object TextureAtlas {
 
@@ -199,7 +200,7 @@ object TextureAtlasFunctions {
     val ctx                 = canvas.getContext("2d")
 
     textureMap.textureCoords.foreach { tex =>
-      lookupByName(tex.imageRef.name).foreach { img =>
+      lookupByName(tex.imageRef.name.value).foreach { img =>
         ctx.drawImage(img.data, tex.coords.x, tex.coords.y, tex.imageRef.width, tex.imageRef.height)
       }
 
@@ -225,7 +226,7 @@ object TextureAtlasFunctions {
 
             val legend: Map[String, AtlasIndex] =
               textureMap.textureCoords.foldLeft(Map.empty[String, AtlasIndex])(
-                (m, t) => m ++ Map(t.imageRef.name -> new AtlasIndex(atlasId, t.coords))
+                (m, t) => m ++ Map(t.imageRef.name.value -> new AtlasIndex(atlasId, t.coords))
               )
 
             val atlas = createAtlasFunc(textureMap, lookupByName)
@@ -297,7 +298,7 @@ object TextureAtlasFunctions {
 }
 
 // Input
-final case class ImageRef(name: String, width: Int, height: Int)
+final case class ImageRef(name: AssetName, width: Int, height: Int)
 
 final case class TextureDetails(imageRef: ImageRef, size: PowerOfTwo)
 

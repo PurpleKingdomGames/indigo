@@ -1,7 +1,7 @@
 package indigo.platform.assets
 
 import indigo.shared.IndigoLogger
-import indigo.shared.AssetType
+import indigo.shared.assets.AssetType
 import org.scalajs.dom
 import org.scalajs.dom.ext.Ajax
 import org.scalajs.dom.raw.HTMLImageElement
@@ -65,11 +65,11 @@ object AssetLoader {
     IndigoLogger.info(s"[Image] Loading ${imageAsset.path}")
 
     val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
-    image.src = imageAsset.path
+    image.src = imageAsset.path.value
 
     onLoadFuture(image).map { i =>
       IndigoLogger.info(s"[Image] Success ${imageAsset.path}")
-      new LoadedImageAsset(AssetName(imageAsset.name), i)
+      new LoadedImageAsset(imageAsset.name, i)
     }
   }
 
@@ -79,9 +79,9 @@ object AssetLoader {
   def loadTextAsset(textAsset: AssetType.Text): Future[LoadedTextAsset] = {
     IndigoLogger.info(s"[Text] Loading ${textAsset.path}")
 
-    Ajax.get(textAsset.path, responseType = "text").map { xhr =>
+    Ajax.get(textAsset.path.value, responseType = "text").map { xhr =>
       IndigoLogger.info(s"[Text] Success ${textAsset.path}")
-      new LoadedTextAsset(AssetName(textAsset.name), xhr.responseText)
+      new LoadedTextAsset(textAsset.name, xhr.responseText)
     }
   }
 
@@ -92,16 +92,16 @@ object AssetLoader {
   def loadAudioAsset(audioAsset: AssetType.Audio): Future[LoadedAudioAsset] = {
     IndigoLogger.info(s"[Audio] Loading ${audioAsset.path}")
 
-    Ajax.get(audioAsset.path, responseType = "arraybuffer").flatMap { xhr =>
+    Ajax.get(audioAsset.path.value, responseType = "arraybuffer").flatMap { xhr =>
       IndigoLogger.info(s"[Audio] Success ${audioAsset.path}")
       val context = new AudioContext()
       val p = context.decodeAudioData(
         xhr.response.asInstanceOf[ArrayBuffer],
         (audioBuffer: AudioBuffer) => audioBuffer,
-        () => IndigoLogger.info("Error decoding audio from: " + audioAsset.path)
+        () => IndigoLogger.info("Error decoding audio from: " + audioAsset.path.value)
       )
 
-      p.toFuture.map(audioBuffer => new LoadedAudioAsset(AssetName(audioAsset.name), audioBuffer))
+      p.toFuture.map(audioBuffer => new LoadedAudioAsset(audioAsset.name, audioBuffer))
     }
   }
 

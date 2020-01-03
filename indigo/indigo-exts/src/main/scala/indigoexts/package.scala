@@ -10,7 +10,7 @@ package object indigoexts {
 
     implicit val emptyConfigAsync: Future[Option[indigo.shared.config.GameConfig]] = entry.emptyConfigAsync
 
-    implicit val emptyAssetsAsync: Future[Set[indigo.shared.AssetType]] = entry.emptyAssetsAsync
+    implicit val emptyAssetsAsync: Future[Set[indigo.shared.assets.AssetType]] = entry.emptyAssetsAsync
 
     /**
       * defaultGameConfig Provides a useful default config set up:

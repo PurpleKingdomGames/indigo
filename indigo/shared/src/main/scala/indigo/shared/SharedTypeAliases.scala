@@ -10,8 +10,8 @@ trait SharedTypeAliases {
   type EqualTo[A] = shared.EqualTo[A]
   val EqualTo: shared.EqualTo.type = shared.EqualTo
 
-  type AssetType = shared.AssetType
-  val AssetType: shared.AssetType.type = shared.AssetType
+  type AssetType = shared.assets.AssetType
+  val AssetType: shared.assets.AssetType.type = shared.assets.AssetType
 
   type ClearColor = shared.ClearColor
   val ClearColor: shared.ClearColor.type = shared.ClearColor

@@ -4,12 +4,13 @@ import indigo.shared.datatypes.BindingKey
 import indigo.shared.scenegraph.{PlaybackPattern, SceneAudio, SceneAudioSource}
 import indigo.shared.platform.AudioPlayer
 import indigo.shared.audio.Volume
-import indigo.platform.assets.{AssetCollection, AssetName, AssetDataFormats}
+import indigo.platform.assets.{AssetCollection, AssetDataFormats}
 
 import org.scalajs.dom.{AudioBufferSourceNode, GainNode}
 import org.scalajs.dom.raw.AudioContext
 
 import indigo.shared.EqualTo._
+import indigo.shared.assets.AssetName
 
 object AudioPlayerImpl {
 
@@ -33,8 +34,8 @@ final class AudioPlayerImpl(assetCollection: AssetCollection, context: AudioCont
     new AudioNodes(source, gainNode)
   }
 
-  def playSound(assetRef: String, volume: Volume): Unit =
-    assetCollection.findAudioDataByName(AssetName(assetRef)).foreach { sound =>
+  def playSound(assetName: AssetName, volume: Volume): Unit =
+    assetCollection.findAudioDataByName(assetName).foreach { sound =>
       setupNodes(sound, volume, loop = false).audioBufferSourceNode.start(0)
     }
 

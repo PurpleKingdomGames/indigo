@@ -5,6 +5,7 @@ import indigo.shared.scenegraph.{Graphic, Group}
 import indigo.shared.formats.{TiledMap}
 
 import indigo.shared.EqualTo._
+import indigo.shared.assets.AssetName
 
 /*
 Full spec is here:
@@ -22,7 +23,7 @@ object TiledConverter {
     )
 
   // Lots of the available metadata has simply not been used here...
-  def toSceneGraphNodeBranch(tiledMap: TiledMap, depth: Depth, imageAssetRef: String, tileSheetColumnCount: Int): Group = {
+  def toSceneGraphNodeBranch(tiledMap: TiledMap, depth: Depth, assetName: AssetName, tileSheetColumnCount: Int): Group = {
     val tileSize: Point = Point(tiledMap.tilewidth, tiledMap.tileheight)
 
     val layers = tiledMap.layers.map { layer =>
@@ -30,7 +31,7 @@ object TiledConverter {
         layer.data.toSet.foldLeft(Map.empty[Int, Graphic]) { (tiles, i) =>
           tiles ++ Map(
             i ->
-              Graphic(Rectangle(Point.zero, tileSize), depth.zIndex, imageAssetRef)
+              Graphic(Rectangle(Point.zero, tileSize), depth.zIndex, assetName)
                 .withCrop(
                   Rectangle(fromIndex(i - 1, tileSheetColumnCount) * tileSize, tileSize)
                 )

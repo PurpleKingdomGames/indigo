@@ -7,6 +7,7 @@ import indigo.shared.platform.AudioPlayer
 import indigo.shared.audio.Volume
 // import indigo.platform.assets.{AssetCollection, AssetName}
 import indigo.platform.assets.AssetCollection
+import indigo.shared.assets.AssetName
 
 // import org.scalajs.dom.{AudioBufferSourceNode, GainNode}
 // import org.scalajs.dom.raw.AudioContext
@@ -35,9 +36,9 @@ final class AudioPlayerImpl(assetCollection: AssetCollection/*, context: AudioCo
   //   new AudioNodes(source, gainNode)
   // }
 
-  def playSound(assetRef: String, volume: Volume): Unit = {
+  def playSound(assetName: AssetName, volume: Volume): Unit = {
     println(assetCollection.images.length.toString())
-    println(assetRef)
+    println(assetName.value)
     println(volume.amount.toString)
   ()
   }

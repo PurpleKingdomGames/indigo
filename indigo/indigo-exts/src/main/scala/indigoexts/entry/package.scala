@@ -1,7 +1,7 @@
 package indigoexts
 
 import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.AssetType
+import indigo.shared.assets.AssetType
 import indigo.shared.config.GameConfig
 
 import scala.concurrent.ExecutionContext.Implicits.global

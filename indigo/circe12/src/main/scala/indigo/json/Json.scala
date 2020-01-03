@@ -1,7 +1,8 @@
 package indigo.json
 
 import indigo.shared.config.GameConfig
-import indigo.shared.{GameDefinition, AssetList, JsonSupportFunctions}
+import indigo.shared.{GameDefinition, JsonSupportFunctions}
+import indigo.shared.assets.AssetList
 import indigo.shared.formats.{Aseprite, TiledMap}
 import indigo.shared.IndigoLogger
 

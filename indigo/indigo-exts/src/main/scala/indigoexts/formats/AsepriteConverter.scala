@@ -8,12 +8,13 @@ import indigo.shared.IndigoLogger
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.AsString
 import indigo.shared.formats.{Aseprite, AsepriteFrameTag, AsepriteFrame}
+import indigo.shared.assets.AssetName
 
 final case class SpriteAndAnimations(sprite: Sprite, animations: Animation)
 object AsepriteConverter {
 
   @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
-  def toSpriteAndAnimations(aseprite: Aseprite, depth: Depth, imageAssetRef: String): Option[SpriteAndAnimations] =
+  def toSpriteAndAnimations(aseprite: Aseprite, depth: Depth, assetName: AssetName): Option[SpriteAndAnimations] =
     extractCycles(aseprite) match {
       case Nil =>
         IndigoLogger.info("No animation frames found in Aseprite")
@@ -22,7 +23,7 @@ object AsepriteConverter {
         val animations: Animation =
           Animation(
             animationsKey = AnimationKey(BindingKey.generate.value),
-            imageAssetRef = ImageAssetRef(imageAssetRef),
+            assetName = assetName,
             spriteSheetSize = Point(aseprite.meta.size.w, aseprite.meta.size.h),
             currentCycleLabel = x.label,
             cycles = NonEmptyList.pure(x, xs),

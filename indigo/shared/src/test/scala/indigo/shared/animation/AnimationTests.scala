@@ -6,6 +6,7 @@ import indigo.shared.datatypes._
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.EqualTo._
 import indigo.shared.AsString._
+import indigo.shared.assets.AssetName
 
 object AnimationTests extends TestSuite {
 
@@ -39,7 +40,7 @@ object AnimationTests extends TestSuite {
   val animation: Animation =
     Animation(
       AnimationKey("test anim"),
-      ImageAssetRef("imageAssetRef"),
+      AssetName("imageAssetRef"),
       Point.zero,
       cycles.head.label,
       cycles,

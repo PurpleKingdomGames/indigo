@@ -4,6 +4,7 @@ import indigo.shared.EqualTo
 
 import indigo.shared.EqualTo._
 import indigo.shared.QuickCache
+import indigo.shared.assets.AssetName
 
 final class FontInfo(val fontKey: FontKey, val fontSpriteSheet: FontSpriteSheet, val unknownChar: FontChar, val fontChars: List[FontChar], val caseSensitive: Boolean) {
   import FontInfo._
@@ -46,10 +47,10 @@ object FontInfo {
   def apply(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean): FontInfo =
     new FontInfo(fontKey, fontSpriteSheet, unknownChar, fontChars, caseSensitive)
 
-  def apply(fontKey: FontKey, imageAssetRef: String, sheetWidth: Int, sheetHeight: Int, unknownChar: FontChar, chars: FontChar*): FontInfo =
+  def apply(fontKey: FontKey, assetName: AssetName, sheetWidth: Int, sheetHeight: Int, unknownChar: FontChar, chars: FontChar*): FontInfo =
     FontInfo(
       fontKey = fontKey,
-      fontSpriteSheet = FontSpriteSheet(imageAssetRef, Point(sheetWidth, sheetHeight)),
+      fontSpriteSheet = FontSpriteSheet(assetName, Point(sheetWidth, sheetHeight)),
       unknownChar = unknownChar,
       fontChars = chars.toList,
       caseSensitive = false
@@ -72,10 +73,10 @@ object FontKey {
 
 }
 
-final class FontSpriteSheet(val imageAssetRef: String, val size: Point)
+final class FontSpriteSheet(val assetName: AssetName, val size: Point)
 object FontSpriteSheet {
-  def apply(imageAssetRef: String, size: Point): FontSpriteSheet =
-    new FontSpriteSheet(imageAssetRef, size)
+  def apply(assetName: AssetName, size: Point): FontSpriteSheet =
+    new FontSpriteSheet(assetName, size)
 }
 
 final class FontChar(val character: String, val bounds: Rectangle)

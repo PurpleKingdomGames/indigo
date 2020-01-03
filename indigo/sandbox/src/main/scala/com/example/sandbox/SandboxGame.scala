@@ -50,7 +50,7 @@ object SandboxGame extends IndigoGameBasic[SandboxStartupData, SandboxGameModel,
         .addAnimations(spriteAndAnimations.animations)
 
     val res: Option[Startup.Success[SandboxStartupData]] = for {
-      json                <- assetCollection.findTextDataByName(AssetName(SandboxAssets.dudeName + "-json"))
+      json                <- assetCollection.findTextDataByName(AssetName(SandboxAssets.dudeName.value + "-json"))
       aseprite            <- Json.asepriteFromJson(json)
       spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, Depth(3), SandboxAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)

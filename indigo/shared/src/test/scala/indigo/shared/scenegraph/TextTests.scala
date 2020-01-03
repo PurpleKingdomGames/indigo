@@ -5,6 +5,7 @@ import indigo.shared.datatypes.{FontChar, FontInfo, FontKey, Rectangle}
 import indigo.shared.EqualTo._
 
 import utest._
+import indigo.shared.assets.AssetName
 
 object TextTests extends TestSuite {
 
@@ -22,7 +23,7 @@ object TextTests extends TestSuite {
 
           val fontKey = FontKey("test1")
 
-          val fontInfo = FontInfo(fontKey, "font-sheet", 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+          val fontInfo = FontInfo(fontKey, AssetName("font-sheet"), 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
 
           FontRegister.register(fontInfo)
 
@@ -43,7 +44,7 @@ object TextTests extends TestSuite {
 
           val fontKey = FontKey("test2")
 
-          val fontInfo = FontInfo(fontKey, "font-sheet", 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+          val fontInfo = FontInfo(fontKey, AssetName("font-sheet"), 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
 
           FontRegister.register(fontInfo)
 

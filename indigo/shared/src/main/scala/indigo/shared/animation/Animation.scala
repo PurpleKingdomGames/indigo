@@ -2,16 +2,17 @@ package indigo.shared.animation
 
 import indigo.shared.time.GameTime
 import indigo.shared.animation.AnimationAction._
-import indigo.shared.datatypes.{BindingKey, Point, ImageAssetRef}
+import indigo.shared.datatypes.{BindingKey, Point}
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.EqualTo
 import indigo.shared.AsString
 
 import indigo.shared.EqualTo._
+import indigo.shared.assets.AssetName
 
 final case class Animation(
     animationsKey: AnimationKey,
-    imageAssetRef: ImageAssetRef,
+    assetName: AssetName,
     spriteSheetSize: Point,
     currentCycleLabel: CycleLabel,
     cycles: NonEmptyList[Cycle],
@@ -19,7 +20,7 @@ final case class Animation(
 ) {
 
   val frameHash: String =
-    currentFrame.bounds.hash + "_" + imageAssetRef.ref
+    currentFrame.bounds.hash + "_" + assetName.value
 
   def currentCycle: Cycle =
     Animation.currentCycle(this)
@@ -54,7 +55,7 @@ object Animation {
 
   implicit def animationEqualTo(
       implicit eAK: EqualTo[AnimationKey],
-      eS: EqualTo[ImageAssetRef],
+      eS: EqualTo[AssetName],
       eP: EqualTo[Point],
       eCL: EqualTo[CycleLabel],
       eNelC: EqualTo[NonEmptyList[Cycle]],
@@ -62,7 +63,7 @@ object Animation {
   ): EqualTo[Animation] =
     EqualTo.create { (a, b) =>
       eAK.equal(a.animationsKey, b.animationsKey) &&
-      eS.equal(a.imageAssetRef, b.imageAssetRef) &&
+      eS.equal(a.assetName, b.assetName) &&
       eP.equal(a.spriteSheetSize, b.spriteSheetSize) &&
       eCL.equal(a.currentCycleLabel, b.currentCycleLabel) &&
       eNelC.equal(a.cycles, b.cycles) &&
@@ -71,18 +72,18 @@ object Animation {
 
   implicit def animationAsString(
       implicit sAK: AsString[AnimationKey],
-      sIAR: AsString[ImageAssetRef],
+      sIAR: AsString[AssetName],
       sP: AsString[Point],
       sCL: AsString[CycleLabel],
       sNelC: AsString[NonEmptyList[Cycle]],
       sLA: AsString[List[AnimationAction]]
   ): AsString[Animation] =
     AsString.create { a =>
-      s"Animation(${sAK.show(a.animationsKey)}, ${sIAR.show(a.imageAssetRef)}, ${sP.show(a.spriteSheetSize)}, ${sCL.show(a.currentCycleLabel)}, ${sNelC.show(a.cycles)}, ${sLA.show(a.actions)})"
+      s"Animation(${sAK.show(a.animationsKey)}, ${sIAR.show(a.assetName)}, ${sP.show(a.spriteSheetSize)}, ${sCL.show(a.currentCycleLabel)}, ${sNelC.show(a.cycles)}, ${sLA.show(a.actions)})"
     }
 
-  def create(animationsKey: AnimationKey, imageAssetRef: ImageAssetRef, spriteSheetSize: Point, cycle: Cycle): Animation =
-    apply(animationsKey, imageAssetRef, spriteSheetSize, cycle.label, NonEmptyList(cycle), Nil)
+  def create(animationsKey: AnimationKey, assetName: AssetName, spriteSheetSize: Point, cycle: Cycle): Animation =
+    apply(animationsKey, assetName, spriteSheetSize, cycle.label, NonEmptyList(cycle), Nil)
 
   def currentCycle(animations: Animation): Cycle =
     animations.cycles.find(_.label === animations.currentCycleLabel).getOrElse(animations.cycles.head)
