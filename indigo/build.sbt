@@ -7,9 +7,11 @@ val indigoVersion = "0.0.12-SNAPSHOT"
 
 val silencerVersion = "1.4.4"
 
+val scala213 = "2.13.0"
+
 lazy val commonSettings = Seq(
   version := indigoVersion,
-  scalaVersion := "2.13.1",
+  scalaVersion := scala213,
   organization := "indigo",
   libraryDependencies ++= Seq(
     "com.lihaoyi" %%% "utest" % "0.6.9" % "test"
@@ -68,7 +70,7 @@ lazy val facades =
     .settings(
       name := "facades",
       version := indigoVersion,
-      scalaVersion := "2.13.1",
+      scalaVersion := scala213,
       organization := "indigo",
       scalacOptions += "-Yrangepos",
       scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits")
@@ -78,7 +80,7 @@ lazy val facades =
         "org.scala-js" %%% "scalajs-dom" % "0.9.7"
       )
     )
-lazy val facadesJS = facades.js
+lazy val facadesJS  = facades.js
 lazy val facadesJVM = facades.jvm
 
 // Indigo Platforms
