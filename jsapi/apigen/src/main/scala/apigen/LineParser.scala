@@ -3,6 +3,9 @@ package apigen
 import scala.annotation.tailrec
 import os.Path
 
+import io.circe._
+import io.circe.syntax._
+
 @SuppressWarnings(Array("org.wartremover.warts.Equals", "org.wartremover.warts.ToString", "org.wartremover.warts.Throw"))
 object LineParser {
 
@@ -14,7 +17,7 @@ object LineParser {
       os.makeDir(outputDir)
 
     entities.collect { case Some(s) => s }.foreach { e =>
-      os.write.append(outputDir / (fileName + ".xml"), e.toXml)
+      os.write.append(outputDir / (fileName + ".json"), e.asJson.printWith(Printer.spaces2.copy(dropNullValues = true)))
     }
   }
 
