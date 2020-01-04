@@ -165,12 +165,12 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
         case Nil =>
           drawBuffer(batchCount)
 
-        case (d: DisplayObject) :: _ if d.imageRef !== textureName =>
+        case (d: DisplayObject) :: _ if d.diffuseRef !== textureName =>
           drawBuffer(batchCount)
-          textureLocations.find(t => t.name === d.imageRef).foreach { textureLookup =>
+          textureLocations.find(t => t.name === d.diffuseRef).foreach { textureLookup =>
             gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
           }
-          rec(remaining, 0, d.imageRef)
+          rec(remaining, 0, d.diffuseRef)
 
         case _ if batchCount === maxBatchSize =>
           drawBuffer(batchCount)

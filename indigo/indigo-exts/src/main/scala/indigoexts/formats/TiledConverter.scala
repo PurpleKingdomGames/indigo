@@ -31,7 +31,7 @@ object TiledConverter {
         layer.data.toSet.foldLeft(Map.empty[Int, Graphic]) { (tiles, i) =>
           tiles ++ Map(
             i ->
-              Graphic(Rectangle(Point.zero, tileSize), depth.zIndex, assetName)
+              Graphic(Rectangle(Point.zero, tileSize), depth.zIndex, Material.Textured(assetName))
                 .withCrop(
                   Rectangle(fromIndex(i - 1, tileSheetColumnCount) * tileSize, tileSize)
                 )

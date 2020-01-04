@@ -1,12 +1,17 @@
 package com.example.sandbox
 
 import indigo._
+import indigo.shared.datatypes.Material
 
 object SandboxAssets {
 
   val smallFontName: AssetName = AssetName("smallFontName")
   val dudeName: AssetName      = AssetName("base_charactor")
   val light: AssetName         = AssetName("light")
+
+  val smallFontNameMaterial: Material.Textured = Material.Textured(smallFontName)
+  val dudeNameMaterial: Material.Textured      = Material.Textured(dudeName)
+  val lightMaterial: Material.Textured         = Material.Textured(light)
 
   def assets: Set[AssetType] =
     Set(

@@ -19,4 +19,7 @@ object AssetName {
 
   def apply(value: String): AssetName =
     new AssetName(value)
+
+  def unapply(a: AssetName): Option[String] =
+    Some(a.value)
 }

@@ -25,6 +25,8 @@ import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.display.DisplayClone
 import indigo.shared.scenegraph.CloneTransformData
 import indigo.shared.display.DisplayCloneBatchData
+import indigo.shared.datatypes.Material
+import indigo.shared.assets.AssetName
 
 object DisplayObjectConversions {
 
@@ -171,7 +173,28 @@ object DisplayObjectConversions {
     rec(sceneNodes)
   }
 
-  def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject =
+  def materialToValues(assetMapping: AssetMapping, material: Material): (String, String, String, String) =
+    material match {
+      case Material.Textured(AssetName(diffuse)) =>
+        (lookupAtlasName(assetMapping, diffuse), "", "", "")
+
+      case Material.Lit(AssetName(albedo), _, _, _) =>
+        (lookupAtlasName(assetMapping, albedo), "", "", "")
+    }
+
+  def materialToName(material: Material): String =
+    material match {
+      case Material.Textured(AssetName(diffuse)) =>
+        diffuse
+
+      case Material.Lit(AssetName(albedo), _, _, _) =>
+        albedo
+    }
+
+  def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
+    val materialValues = materialToValues(assetMapping, leaf.material)
+    val materialName = materialToName(leaf.material)
+
     DisplayObject(
       x = leaf.x,
       y = leaf.y,
@@ -181,7 +204,10 @@ object DisplayObjectConversions {
       rotation = leaf.rotation.value,
       scaleX = leaf.scale.x,
       scaleY = leaf.scale.y,
-      imageRef = lookupAtlasName(assetMapping, leaf.assetName.value),
+      diffuseRef = materialValues._1,
+      emissionRef = materialValues._2,
+      normalRef = materialValues._3,
+      specularRef = materialValues._4,
       alpha = leaf.effects.alpha,
       tintR = leaf.effects.tint.r,
       tintG = leaf.effects.tint.g,
@@ -189,17 +215,18 @@ object DisplayObjectConversions {
       tintA = leaf.effects.tint.a,
       flipHorizontal = leaf.effects.flip.horizontal,
       flipVertical = leaf.effects.flip.vertical,
-      frame = QuickCache(s"${leaf.crop.hash}_${leaf.assetName.value}") {
+      frame = QuickCache(s"${leaf.crop.hash}_${materialName}") {
         SpriteSheetFrame.calculateFrameOffset(
-          imageSize = lookupAtlasSize(assetMapping, leaf.assetName.value),
+          imageSize = lookupAtlasSize(assetMapping, materialName),
           frameSize = Vector2(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble),
           framePosition = Vector2(leaf.crop.position.x.toDouble, leaf.crop.position.y.toDouble),
-          textureOffset = lookupTextureOffset(assetMapping, leaf.assetName.value)
+          textureOffset = lookupTextureOffset(assetMapping, materialName)
         )
       },
       refX = leaf.ref.x,
       refY = leaf.ref.y
     )
+  }
 
   def spriteToDisplayObject(leaf: Sprite, assetMapping: AssetMapping, anim: Animation): DisplayObject =
     DisplayObject(
@@ -211,7 +238,10 @@ object DisplayObjectConversions {
       rotation = leaf.rotation.value,
       scaleX = leaf.scale.x,
       scaleY = leaf.scale.y,
-      imageRef = lookupAtlasName(assetMapping, anim.assetName.value),
+      diffuseRef = lookupAtlasName(assetMapping, anim.assetName.value),
+      emissionRef = "",
+      normalRef = "",
+      specularRef = "",
       alpha = leaf.effects.alpha,
       tintR = leaf.effects.tint.r,
       tintG = leaf.effects.tint.g,
@@ -260,7 +290,10 @@ object DisplayObjectConversions {
                   rotation = leaf.rotation.value,
                   scaleX = leaf.scale.x,
                   scaleY = leaf.scale.y,
-                  imageRef = lookupAtlasName(assetMapping, fontInfo.fontSpriteSheet.assetName.value),
+                  diffuseRef = lookupAtlasName(assetMapping, fontInfo.fontSpriteSheet.assetName.value),
+                  emissionRef = "",
+                  normalRef = "",
+                  specularRef = "",
                   alpha = leaf.effects.alpha,
                   tintR = leaf.effects.tint.r,
                   tintG = leaf.effects.tint.g,

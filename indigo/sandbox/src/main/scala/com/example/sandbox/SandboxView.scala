@@ -60,10 +60,10 @@ object SandboxView {
 
   def lightingLayer(inputState: InputState): List[SceneGraphNode] =
     List(
-      Graphic(114, 64 - 20, 320, 240, 1, SandboxAssets.light).withRef(Point(160, 120)).withTint(Tint.Red),
-      Graphic(114 - 20, 64 + 20, 320, 240, 1, SandboxAssets.light).withRef(Point(160, 120)).withTint(Tint.Green),
-      Graphic(114 + 20, 64 + 20, 320, 240, 1, SandboxAssets.light).withRef(Point(160, 120)).withTint(Tint.Blue),
-      Graphic(0, 0, 320, 240, 1, SandboxAssets.light)
+      Graphic(114, 64 - 20, 320, 240, 1, SandboxAssets.lightMaterial).withRef(Point(160, 120)).withTint(Tint.Red),
+      Graphic(114 - 20, 64 + 20, 320, 240, 1, SandboxAssets.lightMaterial).withRef(Point(160, 120)).withTint(Tint.Green),
+      Graphic(114 + 20, 64 + 20, 320, 240, 1, SandboxAssets.lightMaterial).withRef(Point(160, 120)).withTint(Tint.Blue),
+      Graphic(0, 0, 320, 240, 1, SandboxAssets.lightMaterial)
         .withTint(1, 1, 0.0, 1)
         .withAlpha(1)
         .withRef(Point(160, 120))
