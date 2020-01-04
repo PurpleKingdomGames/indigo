@@ -23,7 +23,10 @@ object RendererMergeTests extends TestSuite {
             2,     // rotation (radians)
             0.5,   // scale X
             0.5,   // scale Y
-            "",    // imageref
+            "",    // diffuse
+            "",    // emission
+            "",    // normal
+            "",    // specular
             1,     // alpha
             2,     // r
             3,     // g

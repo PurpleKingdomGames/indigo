@@ -9,6 +9,7 @@ import indigo.shared.dice.Dice
 import indigo.shared.datatypes.Point
 import indigo.shared.Outcome
 import indigo.shared.assets.AssetName
+import indigo.shared.datatypes.Material
 
 object AutomataTests extends TestSuite {
 
@@ -22,7 +23,7 @@ object AutomataTests extends TestSuite {
 
   val automaton: Automaton =
     Automaton(
-      Graphic(0, 0, 10, 10, 1, AssetName("fish")),
+      Graphic(0, 0, 10, 10, 1, Material.Textured(AssetName("fish"))),
       Millis(100)
     ).withOnCullEvent { _ =>
       List(eventInstance)
