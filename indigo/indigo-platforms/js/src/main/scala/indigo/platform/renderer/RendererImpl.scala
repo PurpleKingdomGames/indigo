@@ -129,8 +129,14 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
     List(standardShaderProgram, lightingShaderProgram).foreach { shaderProgram =>
       gl.useProgram(shaderProgram)
-      val textureLocation = gl2.getUniformLocation(shaderProgram, "u_texture")
-      gl2.uniform1i(textureLocation, 0)
+      val textureLocation1 = gl2.getUniformLocation(shaderProgram, "u_textureDiffuse")
+      gl2.uniform1i(textureLocation1, 0)
+      val textureLocation2 = gl2.getUniformLocation(shaderProgram, "u_textureEmission")
+      gl2.uniform1i(textureLocation2, 1)
+      val textureLocation3 = gl2.getUniformLocation(shaderProgram, "u_textureNormal")
+      gl2.uniform1i(textureLocation3, 2)
+      val textureLocation4 = gl2.getUniformLocation(shaderProgram, "u_textureSpecular")
+      gl2.uniform1i(textureLocation4, 3)
     }
   }
 

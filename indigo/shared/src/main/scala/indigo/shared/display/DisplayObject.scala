@@ -38,7 +38,9 @@ final class DisplayObject(
     val frameScaleY: Double,
     val refX: Double,
     val refY: Double
-) extends DisplayEntity
+) extends DisplayEntity {
+  val textureHash: String = diffuseRef+emissionRef+normalRef+specularRef
+}
 object DisplayObject {
 
   def apply(

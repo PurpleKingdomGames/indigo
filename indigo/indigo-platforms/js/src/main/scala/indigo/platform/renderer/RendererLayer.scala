@@ -88,6 +88,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     rotationData(i) = cloneData.rotation
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Null"))
   def drawLayer(
       projection: scalajs.js.Array[Double],
       cloneBlankDisplayObjects: Map[String, DisplayObject],
@@ -104,8 +105,14 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
     gl2.useProgram(shaderProgram)
 
-    val textureLocation = gl2.getUniformLocation(shaderProgram, "u_texture")
-    gl2.uniform1i(textureLocation, 0)
+    val textureLocation1 = gl2.getUniformLocation(shaderProgram, "u_textureDiffuse")
+    gl2.uniform1i(textureLocation1, 0)
+    val textureLocation2 = gl2.getUniformLocation(shaderProgram, "u_textureEmission")
+    gl2.uniform1i(textureLocation2, 1)
+    val textureLocation3 = gl2.getUniformLocation(shaderProgram, "u_textureNormal")
+    gl2.uniform1i(textureLocation3, 2)
+    val textureLocation4 = gl2.getUniformLocation(shaderProgram, "u_textureSpecular")
+    gl2.uniform1i(textureLocation4, 3)
 
     // Projection
     val projectionLocation = gl2.getUniformLocation(shaderProgram, "u_projection")
@@ -160,47 +167,89 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     metrics.record(layer.metricStart)
 
     @tailrec
-    def rec(remaining: List[DisplayEntity], batchCount: Int, textureName: String): Unit =
+    def rec(remaining: List[DisplayEntity], batchCount: Int, textureHash: String): Unit =
       remaining match {
         case Nil =>
           drawBuffer(batchCount)
 
-        case (d: DisplayObject) :: _ if d.diffuseRef !== textureName =>
+        case (d: DisplayObject) :: _ if d.textureHash !== textureHash =>
           drawBuffer(batchCount)
-          textureLocations.find(t => t.name === d.diffuseRef).foreach { textureLookup =>
-            gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
+
+          // Diffuse
+          textureLocations.find(t => t.name === d.diffuseRef) match {
+            case None =>
+              gl2.activeTexture(TEXTURE0);
+              gl2.bindTexture(TEXTURE_2D, null)
+
+            case Some(textureLookup) =>
+              gl2.activeTexture(TEXTURE0);
+              gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
           }
+
+          // Emission
+          textureLocations.find(t => t.name === d.emissionRef) match {
+            case None =>
+              gl2.activeTexture(TEXTURE1);
+              gl2.bindTexture(TEXTURE_2D, null)
+
+            case Some(textureLookup) =>
+              gl2.activeTexture(TEXTURE1);
+              gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
+          }
+
+          // Normal
+          textureLocations.find(t => t.name === d.normalRef) match {
+            case None =>
+              gl2.activeTexture(TEXTURE2);
+              gl2.bindTexture(TEXTURE_2D, null)
+
+            case Some(textureLookup) =>
+              gl2.activeTexture(TEXTURE2);
+              gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
+          }
+
+          // Specular
+          textureLocations.find(t => t.name === d.specularRef) match {
+            case None =>
+              gl2.activeTexture(TEXTURE3);
+              gl2.bindTexture(TEXTURE_2D, null)
+
+            case Some(textureLookup) =>
+              gl2.activeTexture(TEXTURE3);
+              gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
+          }
+
           rec(remaining, 0, d.diffuseRef)
 
         case _ if batchCount === maxBatchSize =>
           drawBuffer(batchCount)
-          rec(remaining, 0, textureName)
+          rec(remaining, 0, textureHash)
 
         case (d: DisplayObject) :: ds =>
           updateData(d, batchCount)
-          rec(ds, batchCount + 1, textureName)
+          rec(ds, batchCount + 1, textureHash)
 
         case (c: DisplayClone) :: ds =>
           cloneBlankDisplayObjects.get(c.id) match {
             case None =>
-              rec(ds, batchCount, textureName)
+              rec(ds, batchCount, textureHash)
 
             case Some(refDisplayObject) =>
               updateData(refDisplayObject, batchCount)
               overwriteFromDisplayBatchClone(c.asBatchData, batchCount)
-              rec(ds, batchCount + 1, textureName)
+              rec(ds, batchCount + 1, textureHash)
           }
 
         case (c: DisplayCloneBatch) :: ds =>
           cloneBlankDisplayObjects.get(c.id) match {
             case None =>
-              rec(ds, batchCount, textureName)
+              rec(ds, batchCount, textureHash)
 
             case Some(refDisplayObject) =>
               val numberProcessed: Int =
                 processCloneBatch(c, refDisplayObject, batchCount)
 
-              rec(ds, batchCount + numberProcessed, textureName)
+              rec(ds, batchCount + numberProcessed, textureHash)
           }
 
       }
