@@ -58,7 +58,7 @@ file1 : ImageDetails
 file1 =
     { width = 359
     , height = 356
-    , path = "/assets/bump-example.jpg"
+    , path = "/static/assets/bump-example.jpg"
     }
 
 
@@ -66,7 +66,7 @@ file2 : ImageDetails
 file2 =
     { width = 300
     , height = 300
-    , path = "/assets/shapes.png"
+    , path = "/static/assets/shapes.png"
     }
 
 
@@ -291,14 +291,14 @@ vertexShader =
     [glsl|
         attribute vec3 position;
         attribute vec2 coord;
-        
+
         uniform mat4 projection;
         uniform mat4 transform;
         uniform vec2 size;
 
         varying vec2 vcoord;
         varying vec2 vsize;
-        
+
         void main () {
             gl_Position = projection * transform * vec4(position, 1.0);
             vcoord = coord;
@@ -313,7 +313,7 @@ fragmentShader =
         precision mediump float;
 
         uniform sampler2D texture;
-        
+
         varying vec2 vcoord;
         varying vec2 vsize;
 
