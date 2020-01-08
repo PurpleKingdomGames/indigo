@@ -26,4 +26,20 @@ trait EventTypeAliases {
   type NetworkSendEvent    = events.NetworkSendEvent
   type NetworkReceiveEvent = events.NetworkReceiveEvent
 
+  type StorageEvent = events.StorageEvent
+
+  type Save = events.StorageEvent.Save
+  val Save: events.StorageEvent.Save.type = events.StorageEvent.Save
+
+  type Load = events.StorageEvent.Load
+  val Load: events.StorageEvent.Load.type = events.StorageEvent.Load
+
+  type Delete = events.StorageEvent.Delete
+  val Delete: events.StorageEvent.Delete.type = events.StorageEvent.Delete
+
+  val DeleteAll: events.StorageEvent.DeleteAll.type = events.StorageEvent.DeleteAll
+
+  type Loaded = events.StorageEvent.Loaded
+  val Loaded: events.StorageEvent.Loaded.type = events.StorageEvent.Loaded
+
 }
