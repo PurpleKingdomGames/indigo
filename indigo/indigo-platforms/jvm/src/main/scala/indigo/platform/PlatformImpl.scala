@@ -63,6 +63,14 @@ class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEv
   def tick(loop: Long => Unit): Unit =
     IndigoJVMStartup.requestAnimationFrame(t => loop(t.toLong))
 
+  def save(key: String, data: String): Unit = ()
+
+  def load(key: String): Option[String] = None
+
+  def delete(key: String): Unit = ()
+
+  def deleteAll(): Unit = ()
+
 }
 
 // object PlatformImpl {

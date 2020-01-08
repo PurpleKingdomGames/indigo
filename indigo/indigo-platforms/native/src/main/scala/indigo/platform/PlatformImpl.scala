@@ -38,7 +38,7 @@ class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEv
 
       val renderer: Renderer =
         new Renderer {
-          def init(): Unit = ()
+          def init(): Unit                                                = ()
           def drawScene(displayable: Displayable, metrics: Metrics): Unit = ()
         }
 
@@ -47,21 +47,27 @@ class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEv
 
       (renderer, assetMapping)
     })
-    // for {
-    //   textureAtlas        <- createTextureAtlas(assetCollection)
-    //   loadedTextureAssets <- extractLoadedTextures(textureAtlas)
-    //   assetMapping        <- setupAssetMapping(textureAtlas)
-    //   canvas              <- createCanvas(gameConfig)
-    //   _                   <- listenToWorldEvents(canvas, gameConfig.magnification, globalEventStream)
-    //   renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas)
-    // } yield (renderer, assetMapping)
+  // for {
+  //   textureAtlas        <- createTextureAtlas(assetCollection)
+  //   loadedTextureAssets <- extractLoadedTextures(textureAtlas)
+  //   assetMapping        <- setupAssetMapping(textureAtlas)
+  //   canvas              <- createCanvas(gameConfig)
+  //   _                   <- listenToWorldEvents(canvas, gameConfig.magnification, globalEventStream)
+  //   renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas)
+  // } yield (renderer, assetMapping)
 
   // @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-  def tick(loop: Long => Unit): Unit = {
+  def tick(loop: Long => Unit): Unit =
     // dom.window.requestAnimationFrame(t => loop(t.toLong))
     loop(0)
-  }
 
+  def save(key: String, data: String): Unit = ()
+
+  def load(key: String): Option[String] = None
+
+  def delete(key: String): Unit = ()
+
+  def deleteAll(): Unit = ()
 }
 
 // object PlatformImpl {

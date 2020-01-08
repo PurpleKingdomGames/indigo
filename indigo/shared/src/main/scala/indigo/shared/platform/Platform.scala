@@ -9,4 +9,12 @@ trait Platform {
 
   def tick(loop: Long => Unit): Unit
 
+  def save(key: String, data: String): Unit
+
+  def load(key: String): Option[String]
+
+  def delete(key: String): Unit
+
+  def deleteAll(): Unit
+
 }
