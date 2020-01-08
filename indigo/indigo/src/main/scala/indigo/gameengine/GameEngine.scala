@@ -26,6 +26,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import indigo.shared.EqualTo._
+import indigo.shared.platform.Storage
+import indigo.platform.storage.PlatformStorage
 
 final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     config: GameConfig,
@@ -93,11 +95,14 @@ object GameEngine {
         val audioPlayer: AudioPlayer =
           AudioPlayerImpl(assetCollection)
 
+        val storage: Storage =
+          PlatformStorage.default
+
         val metrics: Metrics =
           Metrics.getInstance(gameConfig.advanced.recordMetrics, gameConfig.advanced.logMetricsReportIntervalMs)
 
         val globalEventStream: GlobalEventStream =
-          GlobalEventStreamImpl.default(audioPlayer)
+          GlobalEventStreamImpl.default(audioPlayer, storage)
 
         val globalSignals: GlobalSignals =
           GlobalSignals.default

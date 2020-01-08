@@ -35,3 +35,13 @@ final case class PlaySound(assetRef: String, volume: Volume) extends GlobalEvent
 
 trait NetworkSendEvent    extends GlobalEvent
 trait NetworkReceiveEvent extends GlobalEvent
+
+sealed trait StorageEvent extends GlobalEvent
+
+object StorageEvent {
+  final case class Save(key: String, data: String) extends StorageEvent
+  final case class Load(key: String)               extends StorageEvent
+  final case class Delete(key: String)             extends StorageEvent
+  final case object DeleteAll                      extends StorageEvent
+  final case class Loaded(data: String)            extends StorageEvent
+}

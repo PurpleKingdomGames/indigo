@@ -60,14 +60,7 @@ class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEv
   def tick(loop: Long => Unit): Unit =
     // dom.window.requestAnimationFrame(t => loop(t.toLong))
     loop(0)
-
-  def save(key: String, data: String): Unit = ()
-
-  def load(key: String): Option[String] = None
-
-  def delete(key: String): Unit = ()
-
-  def deleteAll(): Unit = ()
+    
 }
 
 // object PlatformImpl {
