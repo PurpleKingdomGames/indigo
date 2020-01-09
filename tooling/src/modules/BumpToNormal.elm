@@ -104,7 +104,18 @@ update : BumpToNormalMsg -> BumpToNormal -> ( BumpToNormal, Cmd BumpToNormalMsg 
 update msg model =
     case msg of
         TextureLoaded (Ok textureResult) ->
-            ( { model | texture = Just textureResult }, Cmd.none )
+            let
+                width =
+                    case Texture.size textureResult of
+                        ( w, _ ) ->
+                            w
+
+                height =
+                    case Texture.size textureResult of
+                        ( _, h ) ->
+                            h
+            in
+            ( { model | texture = Just textureResult, size = { width = width, height = height } }, Cmd.none )
 
         TextureLoaded (Err LoadError) ->
             ( model, Cmd.none )
@@ -131,12 +142,12 @@ update msg model =
 
         ImageUploadSelected file ->
             ( model
-            , Task.perform ImageUploadLoaded (File.toString file)
+            , Task.perform ImageUploadLoaded (File.toUrl file)
             )
 
         ImageUploadLoaded content ->
-            ( model
-            , Cmd.none
+            ( { model | imagePath = Just content }
+            , loadSpecificImage { width = 0, height = 0, path = content }
             )
 
 
@@ -192,10 +203,14 @@ bumpSource : BumpToNormal -> Element BumpToNormalMsg
 bumpSource model =
     case model.imagePath of
         Just path ->
-            image []
-                { src = path
-                , description = ""
-                }
+            Element.html <|
+                H.img
+                    [ HA.src path
+                    , HA.style "max-width" "512px"
+                    , HA.style "max-height" "512px"
+                    , HA.style "object-fit" "contain"
+                    ]
+                    []
 
         Nothing ->
             text "No source image"
@@ -216,6 +231,9 @@ outputCanvas model =
                         , HA.height model.size.height
                         , HA.style "display" "block"
                         , HA.id "image-output"
+                        , HA.style "max-width" "512px"
+                        , HA.style "max-height" "512px"
+                        , HA.style "object-fit" "contain"
                         ]
                         [ WebGL.entity vertexShader fragmentShader mesh { projection = projection model.size, transform = transform model.size, texture = tx, size = imageSizeToVec2 model.size }
                         ]
