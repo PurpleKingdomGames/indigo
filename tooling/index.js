@@ -1,6 +1,4 @@
-
-import { Elm } from "./elm.compiled.js"
-
+'use strict';
 var app = Elm.Main.init({
     node: document.querySelector('main'),
     flags: "Indigo Tooling"
