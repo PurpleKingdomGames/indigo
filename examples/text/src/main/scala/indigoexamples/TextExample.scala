@@ -3,7 +3,7 @@ package indigoexamples
 import indigo._
 import indigoexts.entrypoint._
 
-object TextExample extends IndigoGameBasic[Unit, Unit, ViewModel] {
+object TextExample extends IndigoGameBasic[Unit, Model, Unit] {
 
   import FontStuff._
 
@@ -26,29 +26,31 @@ object TextExample extends IndigoGameBasic[Unit, Unit, ViewModel] {
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
-  def initialModel(startupData: Unit): Unit =
-    ()
+  def initialModel(startupData: Unit): Model =
+    Model(Tint.None)
 
-  def update(gameTime: GameTime, model: Unit, dice: Dice): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(model)
+  def update(gameTime: GameTime, model: Model, dice: Dice): GlobalEvent => Outcome[Model] = {
+    case ChangeColour =>
+      Outcome(model.changeTint(dice))
 
-  def initialViewModel(startupData: Unit): Unit => ViewModel =
-    _ => ViewModel(Tint.None)
+    case _ =>
+      Outcome(model)
+  }
 
-  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: ViewModel, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[ViewModel] =
-    if (frameInputEvents.globalEvents.contains(ChangeColour))
-      Outcome(viewModel.changeTint(dice))
-    else
-      Outcome(viewModel)
+  def initialViewModel(startupData: Unit): Model => Unit =
+    _ => ()
 
-  def present(gameTime: GameTime, model: Unit, viewModel: ViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
+  def updateViewModel(gameTime: GameTime, model: Model, viewModel: Unit, inputSignals: InputSignals, dice: Dice): Outcome[Unit] =
+    Outcome(viewModel)
+
+  def present(gameTime: GameTime, model: Model, viewModel: Unit, inputSignals: InputSignals): SceneUpdateFragment =
     SceneUpdateFragment()
       .addGameLayerNodes(
         Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontKey)
-          .withTint(viewModel.tint)
+          .withTint(model.tint)
           .alignRight
           .onEvent {
-            case (bounds, MouseEvent.Click(_, _)) if frameInputEvents.wasMouseClickedWithin(bounds) =>
+            case (bounds, MouseEvent.Click(_, _)) if inputSignals.wasMouseClickedWithin(bounds) =>
               List(ChangeColour)
 
             case _ =>
@@ -60,8 +62,8 @@ object TextExample extends IndigoGameBasic[Unit, Unit, ViewModel] {
 
 case object ChangeColour extends GlobalEvent
 
-final case class ViewModel(tint: Tint) {
-  def changeTint(dice: Dice): ViewModel =
+final case class Model(tint: Tint) {
+  def changeTint(dice: Dice): Model =
     dice.roll(3) match {
       case 1 =>
         this.copy(tint = Tint.Red)

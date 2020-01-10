@@ -9,15 +9,15 @@ object PerfView {
 
   val cloneId: CloneId = CloneId("Dude")
 
-  def updateView(model: MyGameModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
-    frameInputEvents.mouseClickAt match {
+  def updateView(model: MyGameModel, inputSignals: InputSignals): SceneUpdateFragment = {
+    inputSignals.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + implicitly[AsString[Point]].show(position))
       case None           => ()
     }
 
     SceneUpdateFragment(
       gameLayer(model),
-      lightingLayer(frameInputEvents.signals),
+      lightingLayer(inputSignals),
       uiLayer(),
       Tint.White.withAmount(0.5),
       Nil,

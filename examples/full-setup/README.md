@@ -78,7 +78,7 @@ object BasicSetup {
   val setup: AssetCollection => Startup[MyStartUpError, MyStartupData] = ???
   val initialModel: MyStartupData => MyGameModel = ???
   val updateModel: (GameTime, MyGameModel) => GameEvent => MyGameModel = ???
-  val renderer: (GameTime, MyGameModel, FrameInputEvents) => SceneGraphUpdate = ???
+  val renderer: (GameTime, MyGameModel, InputSignals) => SceneGraphUpdate = ???
   
   @JSExportTopLevel("Example.main")
   def main(args: Array[String]): Unit =

@@ -3,7 +3,7 @@ package indigoexts.uicomponents
 import indigo.shared.time.GameTime
 import indigo.shared.FontRegister
 import indigo.shared.constants.Keys
-import indigo.shared.events.{FrameInputEvents, KeyboardEvent, MouseEvent, GlobalEvent}
+import indigo.shared.events.{InputSignals, KeyboardEvent, GlobalEvent}
 import indigo.shared.datatypes._
 import indigo.shared.scenegraph.{Graphic, SceneGraphNode, SceneUpdateFragment, Text}
 
@@ -16,25 +16,42 @@ object InputField {
 
   object Model {
 
-    def update(inputField: InputField, inputFieldEvent: InputFieldEvent): InputField =
-      inputFieldEvent match {
-        case InputFieldEvent.Delete(bindingKey) if inputField.bindingKey === bindingKey =>
-          inputField.delete
-
-        case InputFieldEvent.Backspace(bindingKey) if inputField.bindingKey === bindingKey =>
+    def update(inputField: InputField, event: GlobalEvent): InputField =
+      event match {
+        case KeyboardEvent.KeyUp(Keys.BACKSPACE) if inputField.state.hasFocus =>
           inputField.backspace
 
-        case InputFieldEvent.CursorLeft(bindingKey) if inputField.bindingKey === bindingKey =>
-          inputField.cursorLeft
+        case KeyboardEvent.KeyUp(Keys.DELETE) if inputField.state.hasFocus =>
+          inputField.delete
 
-        case InputFieldEvent.CursorRight(bindingKey) if inputField.bindingKey === bindingKey =>
+        // case InputFieldEvent.Delete(bindingKey) if inputField.bindingKey === bindingKey =>
+        //   inputField.delete
+
+        // case InputFieldEvent.Backspace(bindingKey) if inputField.bindingKey === bindingKey =>
+        //   inputField.backspace
+
+        case KeyboardEvent.KeyUp(Keys.LEFT_ARROW) if inputField.state.hasFocus =>
+          inputField.cursorLeft //instead of the below
+        // case InputFieldEvent.CursorLeft(bindingKey) if inputField.bindingKey === bindingKey =>
+        //   inputField.cursorLeft
+
+        case KeyboardEvent.KeyUp(Keys.RIGHT_ARROW) if inputField.state.hasFocus =>
           inputField.cursorRight
 
-        case InputFieldEvent.CursorHome(bindingKey) if inputField.bindingKey === bindingKey =>
+        // case InputFieldEvent.CursorRight(bindingKey) if inputField.bindingKey === bindingKey =>
+        //   inputField.cursorRight
+
+        case KeyboardEvent.KeyUp(Keys.HOME) if inputField.state.hasFocus =>
           inputField.cursorHome
 
-        case InputFieldEvent.CursorEnd(bindingKey) if inputField.bindingKey === bindingKey =>
+        case KeyboardEvent.KeyUp(Keys.END) if inputField.state.hasFocus =>
           inputField.cursorEnd
+
+        // case InputFieldEvent.CursorHome(bindingKey) if inputField.bindingKey === bindingKey =>
+        //   inputField.cursorHome
+
+        // case InputFieldEvent.CursorEnd(bindingKey) if inputField.bindingKey === bindingKey =>
+        //   inputField.cursorEnd
 
         case InputFieldEvent.GiveFocus(bindingKey) if inputField.bindingKey === bindingKey =>
           inputField.giveFocus
@@ -42,8 +59,14 @@ object InputField {
         case InputFieldEvent.LoseFocus(bindingKey) if inputField.bindingKey === bindingKey =>
           inputField.loseFocus
 
-        case InputFieldEvent.AddCharacter(bindingKey, char) if inputField.bindingKey === bindingKey =>
-          inputField.addCharacter(char)
+        case KeyboardEvent.KeyUp(Keys.ENTER) if inputField.state.hasFocus =>
+          inputField.addCharacter(Keys.ENTER.key)
+
+        case KeyboardEvent.KeyUp(key) if inputField.state.hasFocus && key.isPrintable =>
+          inputField.addCharacter(key.key)
+
+        // case InputFieldEvent.AddCharacter(bindingKey, char) if inputField.bindingKey === bindingKey =>
+        //   inputField.addCharacter(char)
 
         case _ =>
           inputField
@@ -53,43 +76,52 @@ object InputField {
 
   object View {
 
-    def applyEvent(bounds: Rectangle, inputField: InputField, frameInputEvents: FrameInputEvents): List[InputFieldEvent] =
-      frameInputEvents.globalEvents.foldLeft[List[InputFieldEvent]](Nil) { (acc, e) =>
-        e match {
-          case MouseEvent.MouseUp(x, y) if bounds.isPointWithin(x, y) =>
-            acc :+ InputFieldEvent.GiveFocus(inputField.bindingKey)
-
-          case MouseEvent.MouseUp(_, _) =>
-            acc :+ InputFieldEvent.LoseFocus(inputField.bindingKey)
-
-          case KeyboardEvent.KeyUp(Keys.LEFT_ARROW) if inputField.state.hasFocus =>
-            acc :+ InputFieldEvent.CursorLeft(inputField.bindingKey)
-
-          case KeyboardEvent.KeyUp(Keys.RIGHT_ARROW) if inputField.state.hasFocus =>
-            acc :+ InputFieldEvent.CursorRight(inputField.bindingKey)
-
-          case KeyboardEvent.KeyUp(Keys.BACKSPACE) if inputField.state.hasFocus =>
-            acc :+ InputFieldEvent.Backspace(inputField.bindingKey)
-
-          case KeyboardEvent.KeyUp(Keys.DELETE) if inputField.state.hasFocus =>
-            acc :+ InputFieldEvent.Delete(inputField.bindingKey)
-
-          case KeyboardEvent.KeyUp(Keys.HOME) if inputField.state.hasFocus =>
-            acc :+ InputFieldEvent.CursorHome(inputField.bindingKey)
-
-          case KeyboardEvent.KeyUp(Keys.END) if inputField.state.hasFocus =>
-            acc :+ InputFieldEvent.CursorEnd(inputField.bindingKey)
-
-          case KeyboardEvent.KeyUp(Keys.ENTER) if inputField.state.hasFocus =>
-            acc :+ InputFieldEvent.AddCharacter(inputField.bindingKey, Keys.ENTER.key)
-
-          case KeyboardEvent.KeyUp(key) if inputField.state.hasFocus && key.isPrintable =>
-            acc :+ InputFieldEvent.AddCharacter(inputField.bindingKey, key.key)
-
-          case _ =>
-            acc
+    def applyEvent(bounds: Rectangle, inputField: InputField, inputSignals: InputSignals): List[InputFieldEvent] =
+      if (inputSignals.mouseReleased) {
+        if (inputSignals.wasMouseUpWithin(bounds)) {
+          List(InputFieldEvent.GiveFocus(inputField.bindingKey))
+        } else {
+          List(InputFieldEvent.LoseFocus(inputField.bindingKey))
         }
+      } else {
+        Nil
       }
+    // inputSignals.inputEvents.foldLeft[List[InputFieldEvent]](Nil) { (acc, e) =>
+    //   e match {
+    //     case MouseEvent.MouseUp(x, y) if bounds.isPointWithin(x, y) =>
+    //       acc :+ InputFieldEvent.GiveFocus(inputField.bindingKey)
+
+    //     case MouseEvent.MouseUp(_, _) =>
+    //       acc :+ InputFieldEvent.LoseFocus(inputField.bindingKey)
+
+    // case KeyboardEvent.KeyUp(Keys.LEFT_ARROW) if inputField.state.hasFocus =>
+    //   acc :+ InputFieldEvent.CursorLeft(inputField.bindingKey)
+
+    // case KeyboardEvent.KeyUp(Keys.RIGHT_ARROW) if inputField.state.hasFocus =>
+    //   acc :+ InputFieldEvent.CursorRight(inputField.bindingKey)
+
+    // case KeyboardEvent.KeyUp(Keys.BACKSPACE) if inputField.state.hasFocus =>
+    //   acc :+ InputFieldEvent.Backspace(inputField.bindingKey)
+
+    // case KeyboardEvent.KeyUp(Keys.DELETE) if inputField.state.hasFocus =>
+    //   acc :+ InputFieldEvent.Delete(inputField.bindingKey)
+
+    // case KeyboardEvent.KeyUp(Keys.HOME) if inputField.state.hasFocus =>
+    //   acc :+ InputFieldEvent.CursorHome(inputField.bindingKey)
+
+    // case KeyboardEvent.KeyUp(Keys.END) if inputField.state.hasFocus =>
+    //   acc :+ InputFieldEvent.CursorEnd(inputField.bindingKey)
+
+    // case KeyboardEvent.KeyUp(Keys.ENTER) if inputField.state.hasFocus =>
+    //   acc :+ InputFieldEvent.AddCharacter(inputField.bindingKey, Keys.ENTER.key)
+
+    // case KeyboardEvent.KeyUp(key) if inputField.state.hasFocus && key.isPrintable =>
+    //   acc :+ InputFieldEvent.AddCharacter(inputField.bindingKey, key.key)
+
+    //   case _ =>
+    //     acc
+    // }
+    // }
 
     private def calculateCursorPosition(textLine: String, offset: Point, fontInfo: FontInfo, cursorPosition: Int): Point = {
       val lines      = textLine.substring(0, cursorPosition).split('\n')
@@ -122,7 +154,7 @@ object InputField {
           )
       }
 
-    def update(gameTime: GameTime, position: Point, depth: Depth, inputField: InputField, frameEvents: FrameInputEvents, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate = {
+    def update(gameTime: GameTime, position: Point, depth: Depth, inputField: InputField, frameEvents: InputSignals, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate = {
       val rendered: RenderedInputFieldElements = render(gameTime, position, depth, inputField, inputFieldAssets)
 
       InputFieldViewUpdate(
@@ -171,8 +203,8 @@ final case class InputField(state: InputFieldState, text: String, cursorPosition
   def update(inputFieldEvent: InputFieldEvent): InputField =
     InputField.Model.update(this, inputFieldEvent)
 
-  def draw(gameTime: GameTime, position: Point, depth: Depth, frameInputEvents: FrameInputEvents, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate =
-    InputField.View.update(gameTime, position, depth, this, frameInputEvents, inputFieldAssets)
+  def draw(gameTime: GameTime, position: Point, depth: Depth, inputSignals: InputSignals, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate =
+    InputField.View.update(gameTime, position, depth, this, inputSignals, inputFieldAssets)
 
   def giveFocus: InputField =
     this.copy(
@@ -256,15 +288,15 @@ sealed trait InputFieldEvent extends GlobalEvent {
   val bindingKey: BindingKey
 }
 object InputFieldEvent {
-  final case class Delete(bindingKey: BindingKey)                     extends InputFieldEvent
-  final case class Backspace(bindingKey: BindingKey)                  extends InputFieldEvent
-  final case class CursorLeft(bindingKey: BindingKey)                 extends InputFieldEvent
-  final case class CursorRight(bindingKey: BindingKey)                extends InputFieldEvent
-  final case class CursorHome(bindingKey: BindingKey)                 extends InputFieldEvent
-  final case class CursorEnd(bindingKey: BindingKey)                  extends InputFieldEvent
-  final case class GiveFocus(bindingKey: BindingKey)                  extends InputFieldEvent
-  final case class LoseFocus(bindingKey: BindingKey)                  extends InputFieldEvent
-  final case class AddCharacter(bindingKey: BindingKey, char: String) extends InputFieldEvent
+  // final case class Delete(bindingKey: BindingKey)    extends InputFieldEvent
+  // final case class Backspace(bindingKey: BindingKey) extends InputFieldEvent
+  // final case class CursorLeft(bindingKey: BindingKey)                 extends InputFieldEvent
+  // final case class CursorRight(bindingKey: BindingKey)                extends InputFieldEvent
+  // final case class CursorHome(bindingKey: BindingKey)                 extends InputFieldEvent
+  // final case class CursorEnd(bindingKey: BindingKey)                  extends InputFieldEvent
+  final case class GiveFocus(bindingKey: BindingKey) extends InputFieldEvent
+  final case class LoseFocus(bindingKey: BindingKey) extends InputFieldEvent
+  // final case class AddCharacter(bindingKey: BindingKey, char: String) extends InputFieldEvent
 }
 
 sealed trait InputFieldState {

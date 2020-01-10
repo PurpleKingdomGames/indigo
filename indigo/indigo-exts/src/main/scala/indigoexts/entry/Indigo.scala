@@ -25,8 +25,8 @@ object IndigoGameBase {
       initialModel: StartupData => GameModel,
       updateModel: (GameTime, GameModel, Dice) => GlobalEvent => Outcome[GameModel],
       initialViewModel: StartupData => GameModel => ViewModel,
-      updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents, Dice) => Outcome[ViewModel],
-      updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
+      updateViewModel: (GameTime, GameModel, ViewModel, InputSignals, Dice) => Outcome[ViewModel],
+      updateView: (GameTime, GameModel, ViewModel, InputSignals) => SceneUpdateFragment
   ) {
 
     private val frameProcessor: StandardFrameProcessor[GameModel, ViewModel] =
@@ -61,10 +61,10 @@ object IndigoGameBase {
       initialModel: StartupData => GameModel,
       updateModel: (GameTime, GameModel, Dice) => GlobalEvent => Outcome[GameModel],
       initialViewModel: StartupData => GameModel => ViewModel,
-      updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents, Dice) => Outcome[ViewModel]
+      updateViewModel: (GameTime, GameModel, ViewModel, InputSignals, Dice) => Outcome[ViewModel]
   ) {
     def presentUsing(
-        updateView: (GameTime, GameModel, ViewModel, FrameInputEvents) => SceneUpdateFragment
+        updateView: (GameTime, GameModel, ViewModel, InputSignals) => SceneUpdateFragment
     ): IndigoGame[StartupData, StartupError, GameModel, ViewModel] =
       new IndigoGame(config, configAsync, assets, assetsAsync, fonts, animations, initialise, initialModel, updateModel, initialViewModel, updateViewModel, updateView)
   }
@@ -82,7 +82,7 @@ object IndigoGameBase {
       initialViewModel: StartupData => GameModel => ViewModel
   ) {
     def updateViewModelUsing(
-        updateViewModel: (GameTime, GameModel, ViewModel, FrameInputEvents, Dice) => Outcome[ViewModel]
+        updateViewModel: (GameTime, GameModel, ViewModel, InputSignals, Dice) => Outcome[ViewModel]
     ): IndigoGameWithViewModelUpdater[StartupData, StartupError, GameModel, ViewModel] =
       new IndigoGameWithViewModelUpdater(config, configAsync, assets, assetsAsync, fonts, animations, initialise, initialModel, updateModel, initialViewModel, updateViewModel)
   }

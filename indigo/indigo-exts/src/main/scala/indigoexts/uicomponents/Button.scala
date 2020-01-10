@@ -3,7 +3,7 @@ package indigoexts.uicomponents
 import indigo.shared.scenegraph.{Graphic, SceneUpdateFragment}
 import indigo.shared.datatypes.{BindingKey, Depth, Rectangle}
 import indigo.shared.EqualTo._
-import indigo.shared.events.{FrameInputEvents, MouseEvent, GlobalEvent}
+import indigo.shared.events.{InputSignals, GlobalEvent}
 
 object Button {
 
@@ -34,37 +34,61 @@ object Button {
 
   object View {
 
-    def applyEvents(bounds: Rectangle, button: Button, frameInputEvents: FrameInputEvents): List[GlobalEvent] =
-      frameInputEvents.globalEvents.foldLeft[List[GlobalEvent]](Nil) { (acc, e) =>
-        e match {
-          case MouseEvent.MouseUp(x, y) if bounds.isPointWithin(x, y) =>
-            acc ++ button.actions.onUp() :+ ButtonEvent(button.bindingKey, ButtonState.Over)
+    def applyEvents(bounds: Rectangle, button: Button, inputSignals: InputSignals): List[GlobalEvent] =
+      if (bounds.isPointWithin(inputSignals.mousePosition)) {
+        val hoverEvents =
+          if (button.state.isDown) {
+            List(ButtonEvent(button.bindingKey, ButtonState.Down))
+          } else if (button.state.isOver) {
+            List(ButtonEvent(button.bindingKey, ButtonState.Over))
+          } else if (button.state.isOver) {
+            button.actions.onHoverOver() :+ ButtonEvent(button.bindingKey, ButtonState.Over)
+          } else {
+            Nil
+          }
 
-          case MouseEvent.MouseUp(_, _) =>
-            acc :+ ButtonEvent(button.bindingKey, ButtonState.Up)
+        val buttonEvents =
+          if (inputSignals.mouseClicked) {
+            button.actions.onUp() :+ ButtonEvent(button.bindingKey, ButtonState.Over)
+          } else if (inputSignals.mouseReleased) {
+            button.actions.onUp() :+ ButtonEvent(button.bindingKey, ButtonState.Over)
+          } else if (inputSignals.mousePressed) {
+            button.actions.onDown() :+ ButtonEvent(button.bindingKey, ButtonState.Down)
+          } else {
+            Nil
+          }
 
-          case MouseEvent.MouseDown(x, y) if bounds.isPointWithin(x, y) =>
-            acc ++ button.actions.onDown() :+ ButtonEvent(button.bindingKey, ButtonState.Down)
-
-          case MouseEvent.Move(x, y) if bounds.isPointWithin(x, y) && button.state.isDown =>
-            acc :+ ButtonEvent(button.bindingKey, ButtonState.Down)
-
-          case MouseEvent.Move(x, y) if bounds.isPointWithin(x, y) && button.state.isOver =>
-            acc :+ ButtonEvent(button.bindingKey, ButtonState.Over)
-
-          case MouseEvent.Move(x, y) if bounds.isPointWithin(x, y) =>
-            acc ++ button.actions.onHoverOver() :+ ButtonEvent(button.bindingKey, ButtonState.Over)
-
-          case MouseEvent.Move(_, _) if button.state.isDown =>
-            acc :+ ButtonEvent(button.bindingKey, ButtonState.Down)
-
-          case MouseEvent.Move(_, _) =>
-            acc :+ ButtonEvent(button.bindingKey, ButtonState.Up)
-
-          case _ =>
-            acc
-        }
+        hoverEvents ++ buttonEvents
+      } else if (button.state.isDown) {
+        List(ButtonEvent(button.bindingKey, ButtonState.Down))
+      } else {
+        List(ButtonEvent(button.bindingKey, ButtonState.Up))
       }
+
+    // inputSignals.inputEvents.foldLeft[List[GlobalEvent]](Nil) { (acc, e) =>
+    //   e match {
+    //     case MouseEvent.MouseUp(x, y) if bounds.isPointWithin(x, y) =>
+    //       acc ++ button.actions.onUp() :+ ButtonEvent(button.bindingKey, ButtonState.Over)
+
+    //     case MouseEvent.MouseDown(x, y) if bounds.isPointWithin(x, y) =>
+    //       acc ++ button.actions.onDown() :+ ButtonEvent(button.bindingKey, ButtonState.Down)
+
+    //     case MouseEvent.Move(x, y) if bounds.isPointWithin(x, y) && button.state.isDown =>
+    //       acc :+ ButtonEvent(button.bindingKey, ButtonState.Down)
+
+    //     case MouseEvent.Move(x, y) if bounds.isPointWithin(x, y) && button.state.isOver =>
+    //       acc :+ ButtonEvent(button.bindingKey, ButtonState.Over)
+
+    //     case MouseEvent.Move(x, y) if bounds.isPointWithin(x, y) =>
+    //       acc ++ button.actions.onHoverOver() :+ ButtonEvent(button.bindingKey, ButtonState.Over)
+
+    //     case MouseEvent.Move(_, _) if button.state.isDown =>
+    //       acc :+ ButtonEvent(button.bindingKey, ButtonState.Down)
+
+    //     case _ =>
+    //       acc
+    //   }
+    // }
 
     def renderButton(bounds: Rectangle, depth: Depth, button: Button, assets: ButtonAssets): Graphic =
       button.state match {
@@ -78,7 +102,7 @@ object Button {
           assets.down.moveTo(bounds.position).withDepth(depth)
       }
 
-    def update(bounds: Rectangle, depth: Depth, button: Button, frameEvents: FrameInputEvents, assets: ButtonAssets): ButtonViewUpdate =
+    def update(bounds: Rectangle, depth: Depth, button: Button, frameEvents: InputSignals, assets: ButtonAssets): ButtonViewUpdate =
       ButtonViewUpdate(
         renderButton(bounds, depth, button, assets),
         applyEvents(bounds, button, frameEvents)
@@ -93,8 +117,8 @@ final case class Button(state: ButtonState, actions: ButtonActions, bindingKey: 
   def update(buttonEvent: ButtonEvent): Button =
     Button.Model.update(this, buttonEvent)
 
-  def draw(bounds: Rectangle, depth: Depth, frameInputEvents: FrameInputEvents, buttonAssets: ButtonAssets): ButtonViewUpdate =
-    Button.View.update(bounds, depth, this, frameInputEvents, buttonAssets)
+  def draw(bounds: Rectangle, depth: Depth, inputSignals: InputSignals, buttonAssets: ButtonAssets): ButtonViewUpdate =
+    Button.View.update(bounds, depth, this, inputSignals, buttonAssets)
 
   def withUpAction(action: () => List[GlobalEvent]): Button =
     this.copy(actions = actions.copy(onUp = action))

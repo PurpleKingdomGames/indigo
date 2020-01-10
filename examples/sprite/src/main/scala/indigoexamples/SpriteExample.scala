@@ -42,7 +42,7 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   def initialViewModel(startupData: Unit): Unit => Unit = _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[Unit] =
+  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, inputSignals: InputSignals, dice: Dice): Outcome[Unit] =
     Outcome(())
 
   /*
@@ -56,7 +56,7 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
    advance of the render loops (cache effectively), then the key wouldn't be
    regenerated.
    */
-  def present(gameTime: GameTime, model: Unit, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputSignals: InputSignals): SceneUpdateFragment =
     SceneUpdateFragment().addGameLayerNodes(
       Sprite(
         BindingKey("lights animation"),

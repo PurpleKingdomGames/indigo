@@ -64,10 +64,10 @@ object InputMappingExample extends IndigoGameBasic[Unit, GameModel, Unit] {
   def initialViewModel(startupData: Unit): GameModel => Unit =
     _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: GameModel, viewModel: Unit, frameInputEvents: FrameInputEvents, dice: Dice): Outcome[Unit] =
+  def updateViewModel(gameTime: GameTime, model: GameModel, viewModel: Unit, inputSignals: InputSignals, dice: Dice): Outcome[Unit] =
     Outcome(())
 
-  def present(gameTime: GameTime, model: GameModel, viewModel: Unit, frameInputEvents: FrameInputEvents): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: GameModel, viewModel: Unit, inputSignals: InputSignals): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         Text("Press up arrow, or\npress a to add or\nd to remove a mapping\nfor down, then you can\npress the down arrow.", 10, 20, 1, fontKey),

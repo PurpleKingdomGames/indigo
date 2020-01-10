@@ -4,9 +4,8 @@ import indigo.shared.events
 
 trait EventTypeAliases {
 
-  type FrameInputEvents = events.FrameInputEvents
-  type GlobalEvent      = events.GlobalEvent
-  type InputEvent       = events.InputEvent
+  type GlobalEvent = events.GlobalEvent
+  type InputEvent  = events.InputEvent
 
   type InputSignals = events.InputSignals
   val InputSignals: events.InputSignals.type = events.InputSignals

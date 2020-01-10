@@ -7,16 +7,16 @@ object SandboxView {
 
   val dudeCloneId: CloneId = CloneId("Dude")
 
-  def updateView(model: SandboxGameModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment = {
-    frameInputEvents.mouseClickAt match {
+  def updateView(model: SandboxGameModel, inputSignals: InputSignals): SceneUpdateFragment = {
+    inputSignals.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + position.show)
       case None           => ()
     }
 
     SceneUpdateFragment.empty
       .addGameLayerNodes(gameLayer(model))
-      .addLightingLayerNodes(lightingLayer(frameInputEvents.signals))
-      .addUiLayerNodes(uiLayer(frameInputEvents))
+      .addLightingLayerNodes(lightingLayer(inputSignals))
+      .addUiLayerNodes(uiLayer(inputSignals))
       .withAmbientLight(Tint.White.withAmount(0.25))
       .addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
     // .withSaturationLevel(0.5)
@@ -116,13 +116,13 @@ object SandboxView {
       .addChar(FontChar(",", 248, 0, 15, 23))
       .addChar(FontChar(" ", 145, 52, 23, 23))
 
-  def uiLayer(frameInputEvents: FrameInputEvents): List[SceneGraphNode] =
+  def uiLayer(inputSignals: InputSignals): List[SceneGraphNode] =
     List(
       Text("AB!\n!C", 2, 2, 5, fontKey).alignLeft,
       Text("AB!\n!C", 100, 2, 5, fontKey).alignCenter,
       Text("AB!\n!C", 200, 2, 5, fontKey).alignRight.onEvent {
         case (bounds, MouseEvent.Click(_, _)) =>
-          if (frameInputEvents.wasMouseClickedWithin(bounds))
+          if (inputSignals.wasMouseClickedWithin(bounds))
             println("Hit me!")
           Nil
 
