@@ -14,6 +14,7 @@ import File.Select as Select
 import Html as H exposing (Html)
 import Html.Attributes as HA
 import Html.Events as HE exposing (onClick)
+import Html.Events.Extra.Drag as HEE exposing (DropEffect(..), DropTargetConfig, Event, onDropTarget)
 import Math.Matrix4 as Mat4 exposing (Mat4)
 import Math.Vector2 as Vec2 exposing (Vec2, vec2)
 import Math.Vector3 as Vec3 exposing (Vec3, vec3)
@@ -42,6 +43,7 @@ type BumpToNormalMsg
     | ImageUploadRequested
     | ImageUploadSelected File
     | ImageUploadLoaded String
+    | PreventDefault
 
 
 type alias ImageDetails =
@@ -150,6 +152,9 @@ update msg model =
             , loadSpecificImage { width = 0, height = 0, path = content }
             )
 
+        PreventDefault ->
+            ( model, Cmd.none )
+
 
 view : BumpToNormal -> Element BumpToNormalMsg
 view model =
@@ -173,12 +178,14 @@ boxHolder : Element BumpToNormalMsg -> Element BumpToNormalMsg -> Element BumpTo
 boxHolder link content =
     column [ spacing 10 ]
         [ Element.el
-            [ Border.solid
-            , Border.width 2
-            , Border.color Styles.purple
-            , width (px 512)
-            , height (px 512)
-            ]
+            ([ Border.solid
+             , Border.width 2
+             , Border.color Styles.purple
+             , width (px 512)
+             , height (px 512)
+             ]
+                ++ initDropzone
+            )
             (row [ centerX, centerY ] [ content ])
         , Element.el [] link
         ]
@@ -206,14 +213,14 @@ bumpSource model =
             Element.html <|
                 H.img
                     [ HA.src path
-                    , HA.style "max-width" "512px"
-                    , HA.style "max-height" "512px"
+                    , HA.style "max-width" "508px"
+                    , HA.style "max-height" "508px"
                     , HA.style "object-fit" "contain"
                     ]
                     []
 
         Nothing ->
-            text "No source image"
+            text "No source image.\n\nUpload a file or drop an image here."
 
 
 outputCanvas : BumpToNormal -> Element BumpToNormalMsg
@@ -231,8 +238,8 @@ outputCanvas model =
                         , HA.height model.size.height
                         , HA.style "display" "block"
                         , HA.id "image-output"
-                        , HA.style "max-width" "512px"
-                        , HA.style "max-height" "512px"
+                        , HA.style "max-width" "508px"
+                        , HA.style "max-height" "508px"
                         , HA.style "object-fit" "contain"
                         ]
                         [ WebGL.entity vertexShader fragmentShader mesh { projection = projection model.size, transform = transform model.size, texture = tx, size = imageSizeToVec2 model.size }
@@ -274,6 +281,35 @@ transform size =
         |> Mat4.scale (vec3 (toFloat size.width) (toFloat size.height) 1)
         |> Mat4.translate (vec3 0.5 0.5 1)
         |> Mat4.scale (vec3 1 -1 1)
+
+
+initDropzone : List (Attribute BumpToNormalMsg)
+initDropzone =
+    HEE.onDropTarget (DropTargetConfig CopyOnDrop (\_ _ -> PreventDefault) processImageDrop Nothing Nothing)
+        |> List.map (\a -> htmlAttribute a)
+
+
+processImageDrop : Event -> BumpToNormalMsg
+processImageDrop event =
+    processFileList event.dataTransfer.files
+
+
+processFileList : List File -> BumpToNormalMsg
+processFileList files =
+    case files of
+        file :: others ->
+            case File.mime file of
+                "image/png" ->
+                    ImageUploadSelected file
+
+                "image/jpeg" ->
+                    ImageUploadSelected file
+
+                _ ->
+                    processFileList others
+
+        _ ->
+            PreventDefault
 
 
 type alias Vertex =
