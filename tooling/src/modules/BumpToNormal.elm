@@ -107,15 +107,8 @@ update msg model =
     case msg of
         TextureLoaded (Ok textureResult) ->
             let
-                width =
-                    case Texture.size textureResult of
-                        ( w, _ ) ->
-                            w
-
-                height =
-                    case Texture.size textureResult of
-                        ( _, h ) ->
-                            h
+                ( width, height ) =
+                    Texture.size textureResult
             in
             ( { model | texture = Just textureResult, size = { width = width, height = height } }, Cmd.none )
 
