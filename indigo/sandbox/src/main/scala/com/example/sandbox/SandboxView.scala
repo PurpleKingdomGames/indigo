@@ -58,7 +58,7 @@ object SandboxView {
       Clone(dudeCloneId, Depth(1), CloneTransformData.startAt(Point(16, 64)))
     )
 
-  def lightingLayer(signals: Signals): List[SceneGraphNode] =
+  def lightingLayer(signals: InputSignals): List[SceneGraphNode] =
     List(
       Graphic(114, 64 - 20, 320, 240, 1, SandboxAssets.light).withRef(Point(160, 120)).withTint(Tint.Red),
       Graphic(114 - 20, 64 + 20, 320, 240, 1, SandboxAssets.light).withRef(Point(160, 120)).withTint(Tint.Green),

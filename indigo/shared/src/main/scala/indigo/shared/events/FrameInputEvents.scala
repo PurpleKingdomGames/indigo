@@ -3,18 +3,13 @@ package indigo.shared.events
 import indigo.shared.constants.Key
 import indigo.shared.datatypes.{Point, Rectangle}
 
-/**
-  * Holds all the events that will be passed on to the view. These are world events only! View events go to the model.
-  *
-  * @param inFrameEvents A list of GlobalEvents
-  */
-final class FrameInputEvents(val globalEvents: List[GlobalEvent], val signals: Signals) extends FrameMouseEvents with FrameKeyboardEvents
+final class FrameInputEvents(val globalEvents: List[GlobalEvent], val signals: InputSignals) extends FrameMouseEvents with FrameKeyboardEvents
 
 object FrameInputEvents {
   val empty: FrameInputEvents =
-    FrameInputEvents(Nil, Signals.default)
+    FrameInputEvents(Nil, InputSignals.default)
 
-  def apply(globalEvents: List[GlobalEvent], signals: Signals): FrameInputEvents =
+  def apply(globalEvents: List[GlobalEvent], signals: InputSignals): FrameInputEvents =
     new FrameInputEvents(globalEvents, signals)
 }
 

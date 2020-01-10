@@ -1,15 +1,15 @@
 package indigo.shared.platform
 
-import indigo.shared.events.Signals
+import indigo.shared.events.InputSignals
 import indigo.shared.events.{GlobalEvent, MouseEvent, KeyboardEvent}
 
-trait GlobalSignals {
-  def calculate(previous: Signals, events: List[GlobalEvent]): Signals
+trait InputSignalsProcessor {
+  def calculate(previous: InputSignals, events: List[GlobalEvent]): InputSignals
 }
-object GlobalSignals {
-  val default: GlobalSignals =
-    new GlobalSignals {
-      def calculate(previous: Signals, events: List[GlobalEvent]): Signals =
+object InputSignalsProcessor {
+  val default: InputSignalsProcessor =
+    new InputSignalsProcessor {
+      def calculate(previous: InputSignals, events: List[GlobalEvent]): InputSignals =
         events.foldLeft(previous) { (signals, e) =>
           e match {
             case mp: MouseEvent.Move =>

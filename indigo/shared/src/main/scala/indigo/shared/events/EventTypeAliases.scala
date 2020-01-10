@@ -8,8 +8,8 @@ trait EventTypeAliases {
   type GlobalEvent      = events.GlobalEvent
   type InputEvent       = events.InputEvent
 
-  type Signals = events.Signals
-  val Signals: events.Signals.type = events.Signals
+  type InputSignals = events.InputSignals
+  val InputSignals: events.InputSignals.type = events.InputSignals
 
   type MouseEvent = events.MouseEvent
   val MouseEvent: events.MouseEvent.type = events.MouseEvent

@@ -14,7 +14,7 @@ import indigo.shared.platform.AudioPlayer
 import indigo.shared.platform.AssetMapping
 import indigo.shared.platform.Renderer
 import indigo.shared.platform.GlobalEventStream
-import indigo.shared.platform.GlobalSignals
+import indigo.shared.platform.InputSignalsProcessor
 
 import indigo.shared.scenegraph.SceneGraphViewEvents
 
@@ -28,7 +28,7 @@ class GameLoop[GameModel, ViewModel](
     frameProcessor: FrameProcessor[GameModel, ViewModel],
     metrics: Metrics,
     globalEventStream: GlobalEventStream,
-    globalSignals: GlobalSignals,
+    inputSignalsProcessor: InputSignalsProcessor,
     callTick: (Long => Unit) => Unit
 ) {
 
@@ -39,7 +39,7 @@ class GameLoop[GameModel, ViewModel](
   private var viewModelState: ViewModel = initialViewModel
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var signalsState: Signals = Signals.default
+  private var signalsState: InputSignals = InputSignals.default
 
   @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def loop(lastUpdateTime: Long): Long => Unit = { time =>
@@ -111,7 +111,7 @@ class GameLoop[GameModel, ViewModel](
 
   private def persistSignalsState(collectedEvents: List[GlobalEvent]): GameContext[Unit] =
     GameContext {
-      signalsState = globalSignals.calculate(signalsState, collectedEvents)
+      signalsState = inputSignalsProcessor.calculate(signalsState, collectedEvents)
     }
 
 }
@@ -125,7 +125,7 @@ object GameLoop {
       viewModelState: ViewModel,
       gameTime: GameTime,
       collectedEvents: List[GlobalEvent],
-      signalsState: Signals,
+      signalsState: InputSignals,
       dice: Dice,
       metrics: Metrics
   ): GameContext[Outcome[(GameModel, ViewModel, Option[SceneUpdateFragment])]] =

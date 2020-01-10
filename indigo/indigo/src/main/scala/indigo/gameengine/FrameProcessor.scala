@@ -3,12 +3,12 @@ package indigo.gameengine
 import indigo.shared.dice.Dice
 import indigo.shared.Outcome
 import indigo.shared.time.GameTime
-import indigo.shared.events.{FrameInputEvents, GlobalEvent, Signals}
+import indigo.shared.events.{FrameInputEvents, GlobalEvent, InputSignals}
 import indigo.shared.scenegraph.SceneUpdateFragment
 
 trait FrameProcessor[Model, ViewModel] {
-  def run: (Model, ViewModel, GameTime, List[GlobalEvent], Signals, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])]
-  def runSkipView: (Model, ViewModel, GameTime, List[GlobalEvent], Signals, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])]
+  def run: (Model, ViewModel, GameTime, List[GlobalEvent], InputSignals, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])]
+  def runSkipView: (Model, ViewModel, GameTime, List[GlobalEvent], InputSignals, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])]
 }
 
 trait StandardFrameProcessor[Model, ViewModel] extends FrameProcessor[Model, ViewModel] {
@@ -19,10 +19,10 @@ trait StandardFrameProcessor[Model, ViewModel] extends FrameProcessor[Model, Vie
 
   def updateView(gameTime: GameTime, model: Model, viewModel: ViewModel, frameInputEvents: FrameInputEvents): SceneUpdateFragment
 
-  def run: (Model, ViewModel, GameTime, List[GlobalEvent], Signals, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] =
+  def run: (Model, ViewModel, GameTime, List[GlobalEvent], InputSignals, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] =
     StandardFrameProcessor.run(this)
 
-  def runSkipView: (Model, ViewModel, GameTime, List[GlobalEvent], Signals, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] =
+  def runSkipView: (Model, ViewModel, GameTime, List[GlobalEvent], InputSignals, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] =
     StandardFrameProcessor.runSkipView(this)
 }
 
@@ -48,7 +48,7 @@ object StandardFrameProcessor {
 
   def run[Model, ViewModel](
       standardFrameProcessor: StandardFrameProcessor[Model, ViewModel]
-  ): (Model, ViewModel, GameTime, List[GlobalEvent], Signals, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] =
+  ): (Model, ViewModel, GameTime, List[GlobalEvent], InputSignals, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] =
     (model, viewModel, gameTime, globalEvents, signals, dice) => {
       val events: FrameInputEvents =
         FrameInputEvents(globalEvents, signals)
@@ -72,7 +72,7 @@ object StandardFrameProcessor {
 
   def runSkipView[Model, ViewModel](
       standardFrameProcessor: StandardFrameProcessor[Model, ViewModel]
-  ): (Model, ViewModel, GameTime, List[GlobalEvent], Signals, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] =
+  ): (Model, ViewModel, GameTime, List[GlobalEvent], InputSignals, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] =
     (model, viewModel, gameTime, globalEvents, signals, dice) => {
       val events: FrameInputEvents =
         FrameInputEvents(globalEvents, signals)

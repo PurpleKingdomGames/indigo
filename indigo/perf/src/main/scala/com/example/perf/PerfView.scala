@@ -92,7 +92,7 @@ object PerfView {
       }
     ) ++ theHerd
 
-  def lightingLayer(signals: Signals): List[SceneGraphNode] =
+  def lightingLayer(signals: InputSignals): List[SceneGraphNode] =
     List(
       Graphic(0, 0, 320, 240, 1, PerfAssets.light).withTint(1, 0, 0),
       Graphic(-115, -100, 320, 240, 1, PerfAssets.light),

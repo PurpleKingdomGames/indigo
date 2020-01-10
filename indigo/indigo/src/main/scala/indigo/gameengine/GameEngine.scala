@@ -14,7 +14,7 @@ import indigo.platform.assets._
 import indigo.platform.audio.AudioPlayerImpl
 import indigo.shared.platform.AudioPlayer
 import indigo.shared.platform.GlobalEventStream
-import indigo.shared.platform.GlobalSignals
+import indigo.shared.platform.InputSignalsProcessor
 import indigo.platform.events.GlobalEventStreamImpl
 import indigo.shared.platform.Platform
 import indigo.shared.platform.Renderer
@@ -104,8 +104,8 @@ object GameEngine {
         val globalEventStream: GlobalEventStream =
           GlobalEventStreamImpl.default(audioPlayer, storage)
 
-        val globalSignals: GlobalSignals =
-          GlobalSignals.default
+        val inputSignalsProcessor: InputSignalsProcessor =
+          InputSignalsProcessor.default
 
         val startupData: Startup[StartupError, StartupData] = initialise(assetCollection)
 
@@ -128,7 +128,7 @@ object GameEngine {
               frameProccessor,
               metrics,
               globalEventStream,
-              globalSignals,
+              inputSignalsProcessor,
               platform.tick
             )
           } yield gameLoopInstance.loop(0)
@@ -178,7 +178,7 @@ object GameEngine {
       frameProccessor: FrameProcessor[GameModel, ViewModel],
       metrics: Metrics,
       globalEventStream: GlobalEventStream,
-      globalSignals: GlobalSignals,
+      inputSignalsProcessor: InputSignalsProcessor,
       callTick: (Long => Unit) => Unit
   ): GameContext[GameLoop[GameModel, ViewModel]] =
     GameContext(
@@ -192,7 +192,7 @@ object GameEngine {
         frameProccessor,
         metrics,
         globalEventStream,
-        globalSignals,
+        inputSignalsProcessor,
         callTick
       )
     )
