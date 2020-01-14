@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Font Map POC</title>
+    </head>
+    <body>
+        <canvas id="fontCanvas" width="1024px" height="1024px"></canvas>
+        <script src="static/opentype.min.js"></script>
+        <script>
+            opentype.load('Roboto-Black.ttf', function(e, font) {
+                let canvasEl = document.getElementById('fontCanvas');
+                let maxWidth = parseInt(canvasEl.getAttribute('width').replace('px', ''));
+                let canvas = canvasEl.getContext('2d');
+                let fontSize = 32;
+
+                let x = 0;
+                let y = (font.ascender / fontSize) + fontSize;
+
+                for (key in font.glyphs.glyphs) {
+                    if (!font.glyphs.glyphs.hasOwnProperty(key)) {
+                        continue;
+                    }
+                    let glyph = font.glyphs.glyphs[key];
+                    let char = String.fromCharCode(glyph.unicode);
+                    if (glyph == null || glyph.unicode === undefined)
+                        continue;
+
+                    let boundingBox = glyph.getBoundingBox();
+                    if (boundingBox.x1 === 0 && boundingBox.x2 === 0 && boundingBox.y1 === 0 && boundingBox.y2 === 0)
+                        continue;
+
+                    let width = font.getAdvanceWidth(char, fontSize);
+                    if (x + width > 1024) {
+                        y += (font.ascender / fontSize) + (font.descender / fontSize) + fontSize;
+                        x = 0;
+                    }
+
+                    glyph.draw(canvas, x, y, fontSize);
+                    x += width;
+                }
+
+                canvas.save();
+            });
+        </script>
+    </body>
+</html>
