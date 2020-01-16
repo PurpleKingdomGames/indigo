@@ -3,25 +3,60 @@ package indigo.shared.events
 import indigo.shared.datatypes.Point
 import indigo.shared.constants.Key
 import indigo.shared.datatypes.Rectangle
+import scala.annotation.tailrec
 
-final class InputSignals(protected val inputEvents: List[InputEvent], val mousePosition: Point, val leftMouseIsDown: Boolean) extends MouseSignals with KeyboardSignals
+final class InputSignals(val mouse: MouseSignals, val keyboard: KeyboardSignals) {
+  def calculateNext(events: List[InputEvent]): InputSignals =
+    InputSignals.calculateNext(this, events)
+}
 
 object InputSignals {
   val default: InputSignals =
+    new InputSignals(MouseSignals.default, KeyboardSignals.default)
+
+  def calculateNext(previous: InputSignals, events: List[InputEvent]): InputSignals =
     new InputSignals(
-      inputEvents = Nil,
-      mousePosition = Point.zero,
-      leftMouseIsDown = false
+      MouseSignals.calculateNext(previous.mouse, events.collect { case e: MouseEvent => e }),
+      KeyboardSignals.calculateNext(previous.keyboard, events.collect { case e: KeyboardEvent => e })
     )
+
+// events.foldLeft(previous) { (signals, e) =>
+//   e match {
+//     case mp: MouseEvent.Move =>
+//       signals.copy(mousePosition = mp.position)
+
+//     case _: MouseEvent.MouseDown =>
+//       signals.copy(leftMouseHeldDown = true)
+
+//     case _: MouseEvent.MouseUp =>
+//       signals.copy(leftMouseHeldDown = false)
+
+//     case e: KeyboardEvent.KeyDown =>
+//       signals.copy(
+//         keysDown = signals.keysDown + e.keyCode,
+//         lastKeyHeldDown = Some(e.keyCode)
+//       )
+
+//     case e: KeyboardEvent.KeyUp =>
+//       val keysDown = signals.keysDown.filterNot(_ === e.keyCode)
+
+//       val lastKey = signals.lastKeyHeldDown.flatMap { key =>
+//         if (key === e.keyCode || !keysDown.contains(key)) None
+//         else Some(key)
+//       }
+
+//       signals.copy(
+//         keysDown = keysDown,
+//         lastKeyHeldDown = lastKey
+//       )
+
+//     case _ =>
+//       signals
+//   }
+// }
 }
 
-sealed trait MouseSignals {
-
-  protected val inputEvents: List[InputEvent]
-
-  private lazy val mouseEvents: List[MouseEvent] = inputEvents.collect { case e: MouseEvent => e }
-
-  val mousePosition: Point
+final class MouseSignals(mouseEvents: List[MouseEvent], val position: Point, val leftMouseIsDown: Boolean) {
 
   lazy val mousePressed: Boolean =
     mouseEvents.exists {
@@ -58,8 +93,8 @@ sealed trait MouseSignals {
   def wasMouseDownAt(position: Point): Boolean = wasMouseAt(position, mouseDownAt)
   def wasMouseDownAt(x: Int, y: Int): Boolean  = wasMouseDownAt(Point(x, y))
 
-  def wasMousePositionAt(position: Point): Boolean = position === mousePosition
-  def wasMousePositionAt(x: Int, y: Int): Boolean  = wasMousePositionAt(Point(x, y))
+  def wasMousePositionAt(target: Point): Boolean  = target === position
+  def wasMousePositionAt(x: Int, y: Int): Boolean = wasMousePositionAt(Point(x, y))
 
   //Within
   private def wasMouseWithin(bounds: Rectangle, maybePosition: Option[Point]): Boolean =
@@ -78,17 +113,46 @@ sealed trait MouseSignals {
   def wasMouseDownWithin(bounds: Rectangle): Boolean                       = wasMouseWithin(bounds, mouseDownAt)
   def wasMouseDownWithin(x: Int, y: Int, width: Int, height: Int): Boolean = wasMouseDownWithin(Rectangle(x, y, width, height))
 
-  def wasMousePositionWithin(bounds: Rectangle): Boolean = bounds.isPointWithin(mousePosition)
+  def wasMousePositionWithin(bounds: Rectangle): Boolean = bounds.isPointWithin(position)
   def wasMousePositionWithin(x: Int, y: Int, width: Int, height: Int): Boolean =
     wasMousePositionWithin(Rectangle(x, y, width, height))
 
 }
+object MouseSignals {
+  val default: MouseSignals =
+    new MouseSignals(Nil, Point.zero, false)
 
-sealed trait KeyboardSignals {
+  def calculateNext(previous: MouseSignals, events: List[MouseEvent]): MouseSignals =
+    new MouseSignals(
+      events,
+      lastMousePosition(previous.position, events),
+      isLeftMouseDown(previous.leftMouseIsDown, events)
+      )
 
-  protected val inputEvents: List[InputEvent]
+  private def lastMousePosition(previous: Point, events: List[MouseEvent]): Point =
+    events.collect { case mp: MouseEvent.Move => mp.position }.reverse.headOption match {
+      case None           => previous
+      case Some(position) => position
+    }
 
-  private lazy val keyboardEvents: List[KeyboardEvent] = inputEvents.collect { case e: KeyboardEvent => e }
+  @tailrec
+  private def isLeftMouseDown(isDown: Boolean, events: List[MouseEvent]): Boolean =
+    events match {
+      case Nil =>
+        isDown
+
+      case MouseEvent.MouseDown(_, _) :: xs =>
+        isLeftMouseDown(true, xs)
+
+      case MouseEvent.MouseUp(_, _) :: xs =>
+        isLeftMouseDown(false, xs)
+
+      case _ :: xs =>
+        isLeftMouseDown(isDown, xs)
+    }
+}
+
+final class KeyboardSignals(keyboardEvents: List[KeyboardEvent]) {
 
   lazy val keysUp: List[Key]   = keyboardEvents.collect { case k: KeyboardEvent.KeyUp   => k.keyCode }
   lazy val keysDown: List[Key] = keyboardEvents.collect { case k: KeyboardEvent.KeyDown => k.keyCode }
@@ -96,4 +160,11 @@ sealed trait KeyboardSignals {
   def keysAreDown(keys: Key*): Boolean = keys.forall(keyCode => keysDown.contains(keyCode))
   def keysAreUp(keys: Key*): Boolean   = keys.forall(keyCode => keysUp.contains(keyCode))
 
+}
+object KeyboardSignals {
+  val default: KeyboardSignals =
+    new KeyboardSignals(Nil)
+
+  def calculateNext(previous: KeyboardSignals, events: List[KeyboardEvent]): KeyboardSignals =
+    ???
 }

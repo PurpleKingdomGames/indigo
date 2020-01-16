@@ -5,7 +5,6 @@ import indigo.shared.Outcome
 import indigo.shared.time.GameTime
 import indigo.shared.events.{GlobalEvent, InputSignals}
 import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.platform.InputSignalsProcessor
 import indigo.shared.events.InputEvent
 
 trait FrameProcessor[Model, ViewModel] {
@@ -53,7 +52,7 @@ object StandardFrameProcessor {
   ): (Model, ViewModel, GameTime, List[GlobalEvent], InputSignals, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] =
     (model, viewModel, gameTime, globalEvents, signals, dice) => {
       val events: InputSignals =
-        InputSignalsProcessor.calculateNext(signals, globalEvents.collect { case e: InputEvent => e })
+        signals.calculateNext(globalEvents.collect { case e: InputEvent => e })
 
       val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
         acc.flatMapState { next =>
@@ -77,7 +76,7 @@ object StandardFrameProcessor {
   ): (Model, ViewModel, GameTime, List[GlobalEvent], InputSignals, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] =
     (model, viewModel, gameTime, globalEvents, signals, dice) => {
       val events: InputSignals =
-        InputSignalsProcessor.calculateNext(signals, globalEvents.collect { case e: InputEvent => e })
+        signals.calculateNext(globalEvents.collect { case e: InputEvent => e })
 
       val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
         acc.flatMapState { next =>

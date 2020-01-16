@@ -10,7 +10,7 @@ object PerfView {
   val cloneId: CloneId = CloneId("Dude")
 
   def updateView(model: MyGameModel, inputSignals: InputSignals): SceneUpdateFragment = {
-    inputSignals.mouseClickAt match {
+    inputSignals.mouse.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + implicitly[AsString[Point]].show(position))
       case None           => ()
     }
@@ -96,7 +96,7 @@ object PerfView {
     List(
       Graphic(0, 0, 320, 240, 1, PerfAssets.light).withTint(1, 0, 0),
       Graphic(-115, -100, 320, 240, 1, PerfAssets.light),
-      Graphic(signals.mousePosition.x - 160, signals.mousePosition.y - 120, 320, 240, 1, PerfAssets.light)
+      Graphic(signals.mouse.position.x - 160, signals.mouse.position.y - 120, 320, 240, 1, PerfAssets.light)
     )
 
   def fontKey: FontKey = FontKey("My Font")

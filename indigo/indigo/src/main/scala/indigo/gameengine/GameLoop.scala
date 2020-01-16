@@ -14,7 +14,6 @@ import indigo.shared.platform.AudioPlayer
 import indigo.shared.platform.AssetMapping
 import indigo.shared.platform.Renderer
 import indigo.shared.platform.GlobalEventStream
-import indigo.shared.platform.InputSignalsProcessor
 
 import indigo.shared.scenegraph.SceneGraphViewEvents
 
@@ -28,7 +27,6 @@ class GameLoop[GameModel, ViewModel](
     frameProcessor: FrameProcessor[GameModel, ViewModel],
     metrics: Metrics,
     globalEventStream: GlobalEventStream,
-    inputSignalsProcessor: InputSignalsProcessor,
     callTick: (Long => Unit) => Unit
 ) {
 
@@ -111,7 +109,7 @@ class GameLoop[GameModel, ViewModel](
 
   private def persistSignalsState(collectedEvents: List[GlobalEvent]): GameContext[Unit] =
     GameContext {
-      signalsState = inputSignalsProcessor.calculate(signalsState, collectedEvents.collect { case e: InputEvent => e })
+      signalsState = signalsState.calculateNext(collectedEvents.collect { case e: InputEvent => e })
     }
 
 }

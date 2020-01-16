@@ -35,7 +35,7 @@ object Button {
   object View {
 
     def applyEvents(bounds: Rectangle, button: Button, inputSignals: InputSignals): List[GlobalEvent] =
-      if (bounds.isPointWithin(inputSignals.mousePosition)) {
+      if (bounds.isPointWithin(inputSignals.mouse.position)) {
         val hoverEvents =
           if (button.state.isDown) {
             List(ButtonEvent(button.bindingKey, ButtonState.Down))
@@ -48,11 +48,11 @@ object Button {
           }
 
         val buttonEvents =
-          if (inputSignals.mouseClicked) {
+          if (inputSignals.mouse.mouseClicked) {
             button.actions.onUp() :+ ButtonEvent(button.bindingKey, ButtonState.Over)
-          } else if (inputSignals.mouseReleased) {
+          } else if (inputSignals.mouse.mouseReleased) {
             button.actions.onUp() :+ ButtonEvent(button.bindingKey, ButtonState.Over)
-          } else if (inputSignals.mousePressed) {
+          } else if (inputSignals.mouse.mousePressed) {
             button.actions.onDown() :+ ButtonEvent(button.bindingKey, ButtonState.Down)
           } else {
             Nil

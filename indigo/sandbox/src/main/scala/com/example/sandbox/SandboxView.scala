@@ -8,7 +8,7 @@ object SandboxView {
   val dudeCloneId: CloneId = CloneId("Dude")
 
   def updateView(model: SandboxGameModel, inputSignals: InputSignals): SceneUpdateFragment = {
-    inputSignals.mouseClickAt match {
+    inputSignals.mouse.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + position.show)
       case None           => ()
     }
@@ -67,7 +67,7 @@ object SandboxView {
         .withTint(1, 1, 0.0, 1)
         .withAlpha(1)
         .withRef(Point(160, 120))
-        .moveTo(signals.mousePosition.x, signals.mousePosition.y)
+        .moveTo(signals.mouse.position.x, signals.mouse.position.y)
     )
 
   val fontKey: FontKey = FontKey("Sandbox font")
@@ -122,7 +122,7 @@ object SandboxView {
       Text("AB!\n!C", 100, 2, 5, fontKey).alignCenter,
       Text("AB!\n!C", 200, 2, 5, fontKey).alignRight.onEvent {
         case (bounds, MouseEvent.Click(_, _)) =>
-          if (inputSignals.wasMouseClickedWithin(bounds))
+          if (inputSignals.mouse.wasMouseClickedWithin(bounds))
             println("Hit me!")
           Nil
 

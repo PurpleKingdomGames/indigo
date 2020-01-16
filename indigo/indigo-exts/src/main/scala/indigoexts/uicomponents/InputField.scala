@@ -77,8 +77,8 @@ object InputField {
   object View {
 
     def applyEvent(bounds: Rectangle, inputField: InputField, inputSignals: InputSignals): List[InputFieldEvent] =
-      if (inputSignals.mouseReleased) {
-        if (inputSignals.wasMouseUpWithin(bounds)) {
+      if (inputSignals.mouse.mouseReleased) {
+        if (inputSignals.mouse.wasMouseUpWithin(bounds)) {
           List(InputFieldEvent.GiveFocus(inputField.bindingKey))
         } else {
           List(InputFieldEvent.LoseFocus(inputField.bindingKey))
