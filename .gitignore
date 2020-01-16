@@ -35,3 +35,4 @@ node_modules
 elm-stuff
 .metals/
 .bloop
+metals.sbt
