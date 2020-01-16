@@ -1,7 +1,7 @@
 package indigoexts.scenemanager
 
 import indigo.shared.time.GameTime
-import indigo.shared.events.{InputSignals, GlobalEvent}
+import indigo.shared.events.{InputState, GlobalEvent}
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.Outcome
 import indigoexts.lenses.Lens
@@ -43,10 +43,10 @@ final case class TestSceneA() extends Scene[TestGameModel, TestViewModel] {
   def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelA, dice: Dice): GlobalEvent => Outcome[TestSceneModelA] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 1))
 
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, inputSignals: InputSignals, dice: Dice): Outcome[TestSceneViewModelA] =
+  def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, inputState: InputState, dice: Dice): Outcome[TestSceneViewModelA] =
     Outcome(TestSceneViewModelA())
 
-  def updateSceneView(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, inputSignals: InputSignals): SceneUpdateFragment =
+  def updateSceneView(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, inputState: InputState): SceneUpdateFragment =
     SceneUpdateFragment.empty
 }
 
@@ -76,10 +76,10 @@ final case class TestSceneB() extends Scene[TestGameModel, TestViewModel] {
   def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelB, dice: Dice): GlobalEvent => Outcome[TestSceneModelB] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 10))
 
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, inputSignals: InputSignals, dice: Dice): Outcome[TestSceneViewModelB] =
+  def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, inputState: InputState, dice: Dice): Outcome[TestSceneViewModelB] =
     Outcome(TestSceneViewModelB())
 
-  def updateSceneView(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, inputSignals: InputSignals): SceneUpdateFragment =
+  def updateSceneView(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, inputState: InputState): SceneUpdateFragment =
     SceneUpdateFragment.empty
 }
 

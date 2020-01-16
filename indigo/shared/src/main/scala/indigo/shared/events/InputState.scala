@@ -5,53 +5,53 @@ import indigo.shared.constants.Key
 import indigo.shared.datatypes.Rectangle
 import scala.annotation.tailrec
 
-final class InputSignals(val mouse: MouseSignals, val keyboard: KeyboardSignals) {
-  def calculateNext(events: List[InputEvent]): InputSignals =
-    InputSignals.calculateNext(this, events)
+final class InputState(val mouse: MouseSignals, val keyboard: KeyboardSignals) {
+  def calculateNext(events: List[InputEvent]): InputState =
+    InputState.calculateNext(this, events)
 }
 
-object InputSignals {
-  val default: InputSignals =
-    new InputSignals(MouseSignals.default, KeyboardSignals.default)
+object InputState {
+  val default: InputState =
+    new InputState(MouseSignals.default, KeyboardSignals.default)
 
-  def calculateNext(previous: InputSignals, events: List[InputEvent]): InputSignals =
-    new InputSignals(
+  def calculateNext(previous: InputState, events: List[InputEvent]): InputState =
+    new InputState(
       MouseSignals.calculateNext(previous.mouse, events.collect { case e: MouseEvent          => e }),
       KeyboardSignals.calculateNext(previous.keyboard, events.collect { case e: KeyboardEvent => e })
     )
 
-// events.foldLeft(previous) { (signals, e) =>
+// events.foldLeft(previous) { (inputState, e) =>
 //   e match {
 //     case mp: MouseEvent.Move =>
-//       signals.copy(mousePosition = mp.position)
+//       inputState.copy(mousePosition = mp.position)
 
 //     case _: MouseEvent.MouseDown =>
-//       signals.copy(leftMouseHeldDown = true)
+//       inputState.copy(leftMouseHeldDown = true)
 
 //     case _: MouseEvent.MouseUp =>
-//       signals.copy(leftMouseHeldDown = false)
+//       inputState.copy(leftMouseHeldDown = false)
 
 //     case e: KeyboardEvent.KeyDown =>
-//       signals.copy(
-//         keysDown = signals.keysDown + e.keyCode,
+//       inputState.copy(
+//         keysDown = inputState.keysDown + e.keyCode,
 //         lastKeyHeldDown = Some(e.keyCode)
 //       )
 
 //     case e: KeyboardEvent.KeyUp =>
-//       val keysDown = signals.keysDown.filterNot(_ === e.keyCode)
+//       val keysDown = inputState.keysDown.filterNot(_ === e.keyCode)
 
-//       val lastKey = signals.lastKeyHeldDown.flatMap { key =>
+//       val lastKey = inputState.lastKeyHeldDown.flatMap { key =>
 //         if (key === e.keyCode || !keysDown.contains(key)) None
 //         else Some(key)
 //       }
 
-//       signals.copy(
+//       inputState.copy(
 //         keysDown = keysDown,
 //         lastKeyHeldDown = lastKey
 //       )
 
 //     case _ =>
-//       signals
+//       inputState
 //   }
 // }
 }
@@ -169,20 +169,20 @@ object KeyboardSignals {
   /*
 
 case e: KeyboardEvent.KeyDown =>
-              signals.copy(
-                keysDown = signals.keysDown + e.keyCode,
+              inputState.copy(
+                keysDown = inputState.keysDown + e.keyCode,
                 lastKeyHeldDown = Some(e.keyCode)
               )
 
             case e: KeyboardEvent.KeyUp =>
-              val keysDown = signals.keysDown.filterNot(_ === e.keyCode)
+              val keysDown = inputState.keysDown.filterNot(_ === e.keyCode)
 
-              val lastKey = signals.lastKeyHeldDown.flatMap { key =>
+              val lastKey = inputState.lastKeyHeldDown.flatMap { key =>
                 if (key === e.keyCode || !keysDown.contains(key)) None
                 else Some(key)
               }
 
-              signals.copy(
+              inputState.copy(
                 keysDown = keysDown,
                 lastKeyHeldDown = lastKey
               )

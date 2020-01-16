@@ -3,7 +3,7 @@ package indigoexts.uicomponents
 import indigo.shared.time.GameTime
 import indigo.shared.FontRegister
 import indigo.shared.constants.Keys
-import indigo.shared.events.{InputSignals, KeyboardEvent, GlobalEvent}
+import indigo.shared.events.{InputState, KeyboardEvent, GlobalEvent}
 import indigo.shared.datatypes._
 import indigo.shared.scenegraph.{Graphic, SceneGraphNode, SceneUpdateFragment, Text}
 
@@ -76,9 +76,9 @@ object InputField {
 
   object View {
 
-    def applyEvent(bounds: Rectangle, inputField: InputField, inputSignals: InputSignals): List[InputFieldEvent] =
-      if (inputSignals.mouse.mouseReleased) {
-        if (inputSignals.mouse.wasMouseUpWithin(bounds)) {
+    def applyEvent(bounds: Rectangle, inputField: InputField, inputState: InputState): List[InputFieldEvent] =
+      if (inputState.mouse.mouseReleased) {
+        if (inputState.mouse.wasMouseUpWithin(bounds)) {
           List(InputFieldEvent.GiveFocus(inputField.bindingKey))
         } else {
           List(InputFieldEvent.LoseFocus(inputField.bindingKey))
@@ -86,7 +86,7 @@ object InputField {
       } else {
         Nil
       }
-    // inputSignals.inputEvents.foldLeft[List[InputFieldEvent]](Nil) { (acc, e) =>
+    // inputState.inputEvents.foldLeft[List[InputFieldEvent]](Nil) { (acc, e) =>
     //   e match {
     //     case MouseEvent.MouseUp(x, y) if bounds.isPointWithin(x, y) =>
     //       acc :+ InputFieldEvent.GiveFocus(inputField.bindingKey)
@@ -154,7 +154,7 @@ object InputField {
           )
       }
 
-    def update(gameTime: GameTime, position: Point, depth: Depth, inputField: InputField, frameEvents: InputSignals, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate = {
+    def update(gameTime: GameTime, position: Point, depth: Depth, inputField: InputField, frameEvents: InputState, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate = {
       val rendered: RenderedInputFieldElements = render(gameTime, position, depth, inputField, inputFieldAssets)
 
       InputFieldViewUpdate(
@@ -203,8 +203,8 @@ final case class InputField(state: InputFieldState, text: String, cursorPosition
   def update(inputFieldEvent: InputFieldEvent): InputField =
     InputField.Model.update(this, inputFieldEvent)
 
-  def draw(gameTime: GameTime, position: Point, depth: Depth, inputSignals: InputSignals, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate =
-    InputField.View.update(gameTime, position, depth, this, inputSignals, inputFieldAssets)
+  def draw(gameTime: GameTime, position: Point, depth: Depth, inputState: InputState, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate =
+    InputField.View.update(gameTime, position, depth, this, inputState, inputFieldAssets)
 
   def giveFocus: InputField =
     this.copy(

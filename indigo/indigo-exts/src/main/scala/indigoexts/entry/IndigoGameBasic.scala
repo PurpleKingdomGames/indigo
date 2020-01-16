@@ -37,9 +37,9 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] {
 
   def initialViewModel(startupData: StartupData): Model => ViewModel
 
-  def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, inputSignals: InputSignals, dice: Dice): Outcome[ViewModel]
+  def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, dice: Dice): Outcome[ViewModel]
 
-  def present(gameTime: GameTime, model: Model, viewModel: ViewModel, inputSignals: InputSignals): SceneUpdateFragment
+  def present(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState): SceneUpdateFragment
 
   private def indigoGame: GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel] = {
 
@@ -47,7 +47,7 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] {
       StandardFrameProcessor(
         GameWithSubSystems.update(update),
         GameWithSubSystems.updateViewModel(updateViewModel),
-        (gameTime: GameTime, model: GameWithSubSystems[Model], viewModel: ViewModel, inputSignals: InputSignals) => GameWithSubSystems.present(present)(gameTime, model, viewModel, inputSignals)
+        (gameTime: GameTime, model: GameWithSubSystems[Model], viewModel: ViewModel, inputState: InputState) => GameWithSubSystems.present(present)(gameTime, model, viewModel, inputState)
       )
 
     new GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel](

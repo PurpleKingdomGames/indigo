@@ -4,7 +4,7 @@ import utest._
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
 
-object InputSignalsTests extends TestSuite {
+object InputStateTests extends TestSuite {
 
   val tests: Tests =
     Tests {
@@ -12,17 +12,17 @@ object InputSignalsTests extends TestSuite {
       val bounds: Rectangle =
         Rectangle(10, 10, 100, 100)
 
-      val signals: InputSignals =
-        InputSignals.default
+      val inputState: InputState =
+        InputState.default
 
-      "The default signals object does the expected thing" - {
-        signals.mouse.leftMouseIsDown ==> false
-        signals.mouse.position ==> Point.zero
+      "The default state object does the expected thing" - {
+        inputState.mouse.leftMouseIsDown ==> false
+        inputState.mouse.position ==> Point.zero
 
-        signals.mouse.wasMouseClickedWithin(bounds) ==> false
+        inputState.mouse.wasMouseClickedWithin(bounds) ==> false
       }
 
-      "Mouse signals" - {
+      "Mouse state" - {
 
         "position" - { 1 ==> 2 }
         "leftMouseIsDown" - { 1 ==> 2 }
@@ -43,7 +43,7 @@ object InputSignalsTests extends TestSuite {
 
       }
 
-      "Keyboard Signals" - {
+      "Keyboard state" - {
 
         "keys up" - { 1 ==> 2 }
         "keys down" - { 1 ==> 2 }

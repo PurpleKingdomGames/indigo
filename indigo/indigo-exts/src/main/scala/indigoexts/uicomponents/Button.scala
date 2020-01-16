@@ -3,7 +3,7 @@ package indigoexts.uicomponents
 import indigo.shared.scenegraph.{Graphic, SceneUpdateFragment}
 import indigo.shared.datatypes.{BindingKey, Depth, Rectangle}
 import indigo.shared.EqualTo._
-import indigo.shared.events.{InputSignals, GlobalEvent}
+import indigo.shared.events.{InputState, GlobalEvent}
 
 object Button {
 
@@ -34,8 +34,8 @@ object Button {
 
   object View {
 
-    def applyEvents(bounds: Rectangle, button: Button, inputSignals: InputSignals): List[GlobalEvent] =
-      if (bounds.isPointWithin(inputSignals.mouse.position)) {
+    def applyEvents(bounds: Rectangle, button: Button, inputState: InputState): List[GlobalEvent] =
+      if (bounds.isPointWithin(inputState.mouse.position)) {
         val hoverEvents =
           if (button.state.isDown) {
             List(ButtonEvent(button.bindingKey, ButtonState.Down))
@@ -48,11 +48,11 @@ object Button {
           }
 
         val buttonEvents =
-          if (inputSignals.mouse.mouseClicked) {
+          if (inputState.mouse.mouseClicked) {
             button.actions.onUp() :+ ButtonEvent(button.bindingKey, ButtonState.Over)
-          } else if (inputSignals.mouse.mouseReleased) {
+          } else if (inputState.mouse.mouseReleased) {
             button.actions.onUp() :+ ButtonEvent(button.bindingKey, ButtonState.Over)
-          } else if (inputSignals.mouse.mousePressed) {
+          } else if (inputState.mouse.mousePressed) {
             button.actions.onDown() :+ ButtonEvent(button.bindingKey, ButtonState.Down)
           } else {
             Nil
@@ -65,7 +65,7 @@ object Button {
         List(ButtonEvent(button.bindingKey, ButtonState.Up))
       }
 
-    // inputSignals.inputEvents.foldLeft[List[GlobalEvent]](Nil) { (acc, e) =>
+    // inputState.inputEvents.foldLeft[List[GlobalEvent]](Nil) { (acc, e) =>
     //   e match {
     //     case MouseEvent.MouseUp(x, y) if bounds.isPointWithin(x, y) =>
     //       acc ++ button.actions.onUp() :+ ButtonEvent(button.bindingKey, ButtonState.Over)
@@ -102,7 +102,7 @@ object Button {
           assets.down.moveTo(bounds.position).withDepth(depth)
       }
 
-    def update(bounds: Rectangle, depth: Depth, button: Button, frameEvents: InputSignals, assets: ButtonAssets): ButtonViewUpdate =
+    def update(bounds: Rectangle, depth: Depth, button: Button, frameEvents: InputState, assets: ButtonAssets): ButtonViewUpdate =
       ButtonViewUpdate(
         renderButton(bounds, depth, button, assets),
         applyEvents(bounds, button, frameEvents)
@@ -117,8 +117,8 @@ final case class Button(state: ButtonState, actions: ButtonActions, bindingKey: 
   def update(buttonEvent: ButtonEvent): Button =
     Button.Model.update(this, buttonEvent)
 
-  def draw(bounds: Rectangle, depth: Depth, inputSignals: InputSignals, buttonAssets: ButtonAssets): ButtonViewUpdate =
-    Button.View.update(bounds, depth, this, inputSignals, buttonAssets)
+  def draw(bounds: Rectangle, depth: Depth, inputState: InputState, buttonAssets: ButtonAssets): ButtonViewUpdate =
+    Button.View.update(bounds, depth, this, inputState, buttonAssets)
 
   def withUpAction(action: () => List[GlobalEvent]): Button =
     this.copy(actions = actions.copy(onUp = action))

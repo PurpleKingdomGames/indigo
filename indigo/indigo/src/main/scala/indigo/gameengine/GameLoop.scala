@@ -37,7 +37,7 @@ class GameLoop[GameModel, ViewModel](
   private var viewModelState: ViewModel = initialViewModel
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var signalsState: InputSignals = InputSignals.default
+  private var inputState: InputState = InputState.default
 
   @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def loop(lastUpdateTime: Long): Long => Unit = { time =>
@@ -72,7 +72,7 @@ class GameLoop[GameModel, ViewModel](
             viewModelState,
             gameTime,
             collectedEvents,
-            signalsState,
+            inputState,
             Dice.default(gameTime.running.value),
             metrics
           )
@@ -109,7 +109,7 @@ class GameLoop[GameModel, ViewModel](
 
   private def persistSignalsState(collectedEvents: List[GlobalEvent]): GameContext[Unit] =
     GameContext {
-      signalsState = signalsState.calculateNext(collectedEvents.collect { case e: InputEvent => e })
+      inputState = inputState.calculateNext(collectedEvents.collect { case e: InputEvent => e })
     }
 
 }
@@ -123,7 +123,7 @@ object GameLoop {
       viewModelState: ViewModel,
       gameTime: GameTime,
       collectedEvents: List[GlobalEvent],
-      signalsState: InputSignals,
+      inputState: InputState,
       dice: Dice,
       metrics: Metrics
   ): GameContext[Outcome[(GameModel, ViewModel, Option[SceneUpdateFragment])]] =
@@ -132,10 +132,10 @@ object GameLoop {
 
       val res: Outcome[(GameModel, ViewModel, Option[SceneUpdateFragment])] =
         if (renderView) {
-          frameProcessor.run(gameModelState, viewModelState, gameTime, collectedEvents, signalsState, dice)
+          frameProcessor.run(gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice)
         } else {
           metrics.record(UpdateEndMetric)
-          frameProcessor.runSkipView(gameModelState, viewModelState, gameTime, collectedEvents, signalsState, dice)
+          frameProcessor.runSkipView(gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice)
         }
 
       metrics.record(CallFrameProcessorEndMetric)

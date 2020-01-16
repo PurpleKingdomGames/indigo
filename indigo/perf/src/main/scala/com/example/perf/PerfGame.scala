@@ -75,11 +75,11 @@ object PerfGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
   def update(gameTime: GameTime, model: MyGameModel, dice: Dice): GlobalEvent => Outcome[MyGameModel] =
     PerfModel.updateModel(model)
 
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputSignals: InputSignals, dice: Dice): Outcome[Unit] =
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
     Outcome(())
 
-  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputSignals: InputSignals): SceneUpdateFragment =
-    PerfView.updateView(model, inputSignals)
+  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState): SceneUpdateFragment =
+    PerfView.updateView(model, inputState)
 
 }
 

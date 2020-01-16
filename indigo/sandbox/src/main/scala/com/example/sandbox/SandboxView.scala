@@ -7,16 +7,16 @@ object SandboxView {
 
   val dudeCloneId: CloneId = CloneId("Dude")
 
-  def updateView(model: SandboxGameModel, inputSignals: InputSignals): SceneUpdateFragment = {
-    inputSignals.mouse.mouseClickAt match {
+  def updateView(model: SandboxGameModel, inputState: InputState): SceneUpdateFragment = {
+    inputState.mouse.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + position.show)
       case None           => ()
     }
 
     SceneUpdateFragment.empty
       .addGameLayerNodes(gameLayer(model))
-      .addLightingLayerNodes(lightingLayer(inputSignals))
-      .addUiLayerNodes(uiLayer(inputSignals))
+      .addLightingLayerNodes(lightingLayer(inputState))
+      .addUiLayerNodes(uiLayer(inputState))
       .withAmbientLight(Tint.White.withAmount(0.25))
       .addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
     // .withSaturationLevel(0.5)
@@ -58,7 +58,7 @@ object SandboxView {
       Clone(dudeCloneId, Depth(1), CloneTransformData.startAt(Point(16, 64)))
     )
 
-  def lightingLayer(signals: InputSignals): List[SceneGraphNode] =
+  def lightingLayer(inputState: InputState): List[SceneGraphNode] =
     List(
       Graphic(114, 64 - 20, 320, 240, 1, SandboxAssets.light).withRef(Point(160, 120)).withTint(Tint.Red),
       Graphic(114 - 20, 64 + 20, 320, 240, 1, SandboxAssets.light).withRef(Point(160, 120)).withTint(Tint.Green),
@@ -67,7 +67,7 @@ object SandboxView {
         .withTint(1, 1, 0.0, 1)
         .withAlpha(1)
         .withRef(Point(160, 120))
-        .moveTo(signals.mouse.position.x, signals.mouse.position.y)
+        .moveTo(inputState.mouse.position.x, inputState.mouse.position.y)
     )
 
   val fontKey: FontKey = FontKey("Sandbox font")
@@ -116,13 +116,13 @@ object SandboxView {
       .addChar(FontChar(",", 248, 0, 15, 23))
       .addChar(FontChar(" ", 145, 52, 23, 23))
 
-  def uiLayer(inputSignals: InputSignals): List[SceneGraphNode] =
+  def uiLayer(inputState: InputState): List[SceneGraphNode] =
     List(
       Text("AB!\n!C", 2, 2, 5, fontKey).alignLeft,
       Text("AB!\n!C", 100, 2, 5, fontKey).alignCenter,
       Text("AB!\n!C", 200, 2, 5, fontKey).alignRight.onEvent {
         case (bounds, MouseEvent.Click(_, _)) =>
-          if (inputSignals.mouse.wasMouseClickedWithin(bounds))
+          if (inputState.mouse.wasMouseClickedWithin(bounds))
             println("Hit me!")
           Nil
 

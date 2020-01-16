@@ -2,7 +2,7 @@ package indigoexts.scenemanager
 
 import indigo.shared.time.GameTime
 import indigo.shared.Outcome
-import indigo.shared.events.{InputSignals, GlobalEvent}
+import indigo.shared.events.{InputState, GlobalEvent}
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.IndigoLogger
 import indigo.shared.collections.NonEmptyList
@@ -63,17 +63,17 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
       }
   }
 
-  def updateViewModel(gameTime: GameTime, model: GameModel, viewModel: ViewModel, inputSignals: InputSignals, dice: Dice): Outcome[ViewModel] =
+  def updateViewModel(gameTime: GameTime, model: GameModel, viewModel: ViewModel, inputState: InputState, dice: Dice): Outcome[ViewModel] =
     scenes.find(_.name === finderInstance.current.name) match {
       case None =>
         IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
         Outcome(viewModel)
 
       case Some(scene) =>
-        Scene.updateViewModel(scene, gameTime, model, viewModel, inputSignals, dice)
+        Scene.updateViewModel(scene, gameTime, model, viewModel, inputState, dice)
     }
 
-  def updateView(gameTime: GameTime, model: GameModel, viewModel: ViewModel, inputSignals: InputSignals): SceneUpdateFragment =
+  def updateView(gameTime: GameTime, model: GameModel, viewModel: ViewModel, inputState: InputState): SceneUpdateFragment =
     scenes.find(_.name === finderInstance.current.name) match {
       case None =>
         IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
@@ -87,7 +87,7 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
           }
           .getOrElse(SceneUpdateFragment.empty)
 
-        Scene.updateView(scene, gameTime, model, viewModel, inputSignals) |+| subsystemView
+        Scene.updateView(scene, gameTime, model, viewModel, inputState) |+| subsystemView
     }
 
 }

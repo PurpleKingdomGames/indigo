@@ -4,7 +4,7 @@ import indigo.GameTime
 import indigo.Dice
 import indigo.GlobalEvent
 import indigo.Outcome
-import indigo.InputSignals
+import indigo.InputState
 import indigo.SceneUpdateFragment
 import indigoexts.subsystems.SubSystemsRegister
 import indigo.shared.abstractions.syntax._
@@ -23,12 +23,12 @@ object GameWithSubSystems {
         .map2((m, s) => GameWithSubSystems(m, s))
 
   def updateViewModel[Model, ViewModel](
-      viewModelUpdate: (GameTime, Model, ViewModel, InputSignals, Dice) => Outcome[ViewModel]
-  )(gameTime: GameTime, model: GameWithSubSystems[Model], viewModel: ViewModel, inputSignals: InputSignals, dice: Dice): Outcome[ViewModel] =
-    viewModelUpdate(gameTime, model.model, viewModel, inputSignals, dice)
+      viewModelUpdate: (GameTime, Model, ViewModel, InputState, Dice) => Outcome[ViewModel]
+  )(gameTime: GameTime, model: GameWithSubSystems[Model], viewModel: ViewModel, inputState: InputState, dice: Dice): Outcome[ViewModel] =
+    viewModelUpdate(gameTime, model.model, viewModel, inputState, dice)
 
   def present[Model, ViewModel](
-      viewPresent: (GameTime, Model, ViewModel, InputSignals) => SceneUpdateFragment
-  )(gameTime: GameTime, model: GameWithSubSystems[Model], viewModel: ViewModel, inputSignals: InputSignals): SceneUpdateFragment =
-    viewPresent(gameTime, model.model, viewModel, inputSignals) |+| model.subSystemsRegister.render(gameTime)
+      viewPresent: (GameTime, Model, ViewModel, InputState) => SceneUpdateFragment
+  )(gameTime: GameTime, model: GameWithSubSystems[Model], viewModel: ViewModel, inputState: InputState): SceneUpdateFragment =
+    viewPresent(gameTime, model.model, viewModel, inputState) |+| model.subSystemsRegister.render(gameTime)
 }
