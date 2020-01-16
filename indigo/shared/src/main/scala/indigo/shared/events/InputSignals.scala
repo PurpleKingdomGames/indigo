@@ -16,7 +16,7 @@ object InputSignals {
 
   def calculateNext(previous: InputSignals, events: List[InputEvent]): InputSignals =
     new InputSignals(
-      MouseSignals.calculateNext(previous.mouse, events.collect { case e: MouseEvent => e }),
+      MouseSignals.calculateNext(previous.mouse, events.collect { case e: MouseEvent          => e }),
       KeyboardSignals.calculateNext(previous.keyboard, events.collect { case e: KeyboardEvent => e })
     )
 
@@ -127,7 +127,7 @@ object MouseSignals {
       events,
       lastMousePosition(previous.position, events),
       isLeftMouseDown(previous.leftMouseIsDown, events)
-      )
+    )
 
   private def lastMousePosition(previous: Point, events: List[MouseEvent]): Point =
     events.collect { case mp: MouseEvent.Move => mp.position }.reverse.headOption match {
@@ -152,7 +152,7 @@ object MouseSignals {
     }
 }
 
-final class KeyboardSignals(keyboardEvents: List[KeyboardEvent]) {
+final class KeyboardSignals(keyboardEvents: List[KeyboardEvent], val lastKeyHeldDown: Option[Key]) {
 
   lazy val keysUp: List[Key]   = keyboardEvents.collect { case k: KeyboardEvent.KeyUp   => k.keyCode }
   lazy val keysDown: List[Key] = keyboardEvents.collect { case k: KeyboardEvent.KeyDown => k.keyCode }
@@ -162,9 +162,35 @@ final class KeyboardSignals(keyboardEvents: List[KeyboardEvent]) {
 
 }
 object KeyboardSignals {
+
   val default: KeyboardSignals =
-    new KeyboardSignals(Nil)
+    new KeyboardSignals(Nil, None)
+
+  /*
+
+case e: KeyboardEvent.KeyDown =>
+              signals.copy(
+                keysDown = signals.keysDown + e.keyCode,
+                lastKeyHeldDown = Some(e.keyCode)
+              )
+
+            case e: KeyboardEvent.KeyUp =>
+              val keysDown = signals.keysDown.filterNot(_ === e.keyCode)
+
+              val lastKey = signals.lastKeyHeldDown.flatMap { key =>
+                if (key === e.keyCode || !keysDown.contains(key)) None
+                else Some(key)
+              }
+
+              signals.copy(
+                keysDown = keysDown,
+                lastKeyHeldDown = lastKey
+              )
+   */
 
   def calculateNext(previous: KeyboardSignals, events: List[KeyboardEvent]): KeyboardSignals =
-    ???
+    new KeyboardSignals(
+      events,
+      previous.lastKeyHeldDown
+    )
 }
