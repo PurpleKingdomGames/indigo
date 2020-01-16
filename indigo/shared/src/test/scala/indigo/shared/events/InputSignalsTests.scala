@@ -3,6 +3,8 @@ package indigo.shared.events
 import utest._
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
+import indigo.shared.constants.Keys
+import indigo.shared.constants.Key
 
 object InputStateTests extends TestSuite {
 
@@ -45,11 +47,101 @@ object InputStateTests extends TestSuite {
 
       "Keyboard state" - {
 
-        "keys up" - { 1 ==> 2 }
-        "keys down" - { 1 ==> 2 }
-        "keys are down" - { 1 ==> 2 }
-        "keys are up" - { 1 ==> 2 }
-        "last key held down" - { 1 ==> 2 }
+        val events: List[KeyboardEvent] =
+          List(
+            KeyboardEvent.KeyDown(Keys.KEY_A),
+            KeyboardEvent.KeyDown(Keys.KEY_B),
+            KeyboardEvent.KeyDown(Keys.KEY_C),
+            KeyboardEvent.KeyDown(Keys.KEY_D),
+            KeyboardEvent.KeyDown(Keys.KEY_E),
+            KeyboardEvent.KeyDown(Keys.KEY_F),
+            KeyboardEvent.KeyUp(Keys.KEY_A),
+            KeyboardEvent.KeyUp(Keys.KEY_B),
+            KeyboardEvent.KeyUp(Keys.KEY_C)
+          )
+
+        "keys up" - {
+          val state = inputState.calculateNext(events)
+
+          val expected =
+            List(
+              Keys.KEY_A,
+              Keys.KEY_B,
+              Keys.KEY_C,
+              Keys.KEY_Z
+            )
+
+          val actual =
+            state.keyboard.keysUp
+
+          actual ==> expected
+        }
+
+        "keys down" - {
+          val state = inputState.calculateNext(events)
+
+          val expected =
+            List(
+              Keys.KEY_D,
+              Keys.KEY_E,
+              Keys.KEY_F
+            )
+
+          val actual =
+            state.keyboard.keysDown
+
+          actual ==> expected
+        }
+
+        "keys are down" - {
+          val state = inputState.calculateNext(events)
+
+          state.keyboard.keysAreDown(Keys.KEY_D, Keys.KEY_E, Keys.KEY_F) ==> true
+          state.keyboard.keysAreDown(Keys.KEY_F, Keys.KEY_D) ==> true
+          state.keyboard.keysAreDown(Keys.KEY_A) ==> false
+          state.keyboard.keysAreDown(Keys.KEY_D) ==> true
+          state.keyboard.keysAreDown(Keys.KEY_A, Keys.KEY_D) ==> false
+        }
+
+        "keys are up" - {
+          val state = inputState.calculateNext(events)
+
+          state.keyboard.keysAreUp(Keys.KEY_A, Keys.KEY_B, Keys.KEY_C) ==> true
+          state.keyboard.keysAreUp(Keys.KEY_C, Keys.KEY_B) ==> true
+          state.keyboard.keysAreUp(Keys.KEY_D) ==> false
+          state.keyboard.keysAreUp(Keys.KEY_A) ==> true
+          state.keyboard.keysAreUp(Keys.KEY_A, Keys.KEY_D) ==> false
+        }
+
+        "last key held down" - {
+
+          inputState.keyboard.lastKeyHeldDown ==> None
+
+          val state1 =
+            inputState
+              .calculateNext(events)
+              .calculateNext(List(KeyboardEvent.KeyDown(Keys.KEY_E), KeyboardEvent.KeyDown(Keys.KEY_F)))
+
+          state1.keyboard.lastKeyHeldDown ==> Some(Keys.KEY_F)
+
+          val state2 =
+            state1
+              .calculateNext(List(KeyboardEvent.KeyDown(Keys.KEY_E)))
+
+          state2.keyboard.lastKeyHeldDown ==> Some(Keys.KEY_E)
+
+          val state3 =
+            state2
+              .calculateNext(
+                List(
+                  KeyboardEvent.KeyUp(Keys.KEY_D),
+                  KeyboardEvent.KeyUp(Keys.KEY_E),
+                  KeyboardEvent.KeyUp(Keys.KEY_F)
+                )
+              )
+
+          state3.keyboard.lastKeyHeldDown ==> None
+        }
 
       }
 
