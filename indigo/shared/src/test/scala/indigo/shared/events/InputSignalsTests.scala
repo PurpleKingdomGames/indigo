@@ -113,6 +113,23 @@ object InputStateTests extends TestSuite {
           state.keyboard.keysAreUp(Keys.KEY_A, Keys.KEY_D) ==> false
         }
 
+        "keys released" - {
+          val state = inputState.calculateNext(events)
+
+          val expected =
+            List(
+              Keys.KEY_A,
+              Keys.KEY_B,
+              Keys.KEY_C
+            )
+
+          val actual =
+            state.keyboard.keysReleased
+
+          actual ==> expected
+
+        }
+
         "last key held down" - {
 
           inputState.keyboard.lastKeyHeldDown ==> None

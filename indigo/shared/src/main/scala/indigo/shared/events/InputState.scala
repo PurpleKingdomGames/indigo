@@ -156,6 +156,7 @@ final class KeyboardSignals(keyboardEvents: List[KeyboardEvent], val lastKeyHeld
 
   lazy val keysUp: List[Key]   = keyboardEvents.collect { case k: KeyboardEvent.KeyUp   => k.keyCode }
   lazy val keysDown: List[Key] = keyboardEvents.collect { case k: KeyboardEvent.KeyDown => k.keyCode }
+  lazy val keysReleased: List[Key] = Nil
 
   def keysAreDown(keys: Key*): Boolean = keys.forall(keyCode => keysDown.contains(keyCode))
   def keysAreUp(keys: Key*): Boolean   = keys.forall(keyCode => keysUp.contains(keyCode))
