@@ -20,40 +20,40 @@ object InputState {
       KeyboardSignals.calculateNext(previous.keyboard, events.collect { case e: KeyboardEvent => e })
     )
 
-// events.foldLeft(previous) { (inputState, e) =>
-//   e match {
-//     case mp: MouseEvent.Move =>
-//       inputState.copy(mousePosition = mp.position)
+  // events.foldLeft(previous) { (inputState, e) =>
+  //   e match {
+  //     case mp: MouseEvent.Move =>
+  //       inputState.copy(mousePosition = mp.position)
 
-//     case _: MouseEvent.MouseDown =>
-//       inputState.copy(leftMouseHeldDown = true)
+  //     case _: MouseEvent.MouseDown =>
+  //       inputState.copy(leftMouseHeldDown = true)
 
-//     case _: MouseEvent.MouseUp =>
-//       inputState.copy(leftMouseHeldDown = false)
+  //     case _: MouseEvent.MouseUp =>
+  //       inputState.copy(leftMouseHeldDown = false)
 
-//     case e: KeyboardEvent.KeyDown =>
-//       inputState.copy(
-//         keysDown = inputState.keysDown + e.keyCode,
-//         lastKeyHeldDown = Some(e.keyCode)
-//       )
+  //     case e: KeyboardEvent.KeyDown =>
+  //       inputState.copy(
+  //         keysDown = inputState.keysDown + e.keyCode,
+  //         lastKeyHeldDown = Some(e.keyCode)
+  //       )
 
-//     case e: KeyboardEvent.KeyUp =>
-//       val keysDown = inputState.keysDown.filterNot(_ === e.keyCode)
+  //     case e: KeyboardEvent.KeyUp =>
+  //       val keysDown = inputState.keysDown.filterNot(_ === e.keyCode)
 
-//       val lastKey = inputState.lastKeyHeldDown.flatMap { key =>
-//         if (key === e.keyCode || !keysDown.contains(key)) None
-//         else Some(key)
-//       }
+  //       val lastKey = inputState.lastKeyHeldDown.flatMap { key =>
+  //         if (key === e.keyCode || !keysDown.contains(key)) None
+  //         else Some(key)
+  //       }
 
-//       inputState.copy(
-//         keysDown = keysDown,
-//         lastKeyHeldDown = lastKey
-//       )
+  //       inputState.copy(
+  //         keysDown = keysDown,
+  //         lastKeyHeldDown = lastKey
+  //       )
 
-//     case _ =>
-//       inputState
-//   }
-// }
+  //     case _ =>
+  //       inputState
+  //   }
+  // }
 }
 
 final class MouseSignals(mouseEvents: List[MouseEvent], val position: Point, val leftMouseIsDown: Boolean) {
@@ -63,11 +63,13 @@ final class MouseSignals(mouseEvents: List[MouseEvent], val position: Point, val
       case _: MouseEvent.MouseDown => true
       case _                       => false
     }
+
   lazy val mouseReleased: Boolean =
     mouseEvents.exists {
       case _: MouseEvent.MouseUp => true
       case _                     => false
     }
+
   lazy val mouseClicked: Boolean =
     mouseEvents.exists {
       case _: MouseEvent.Click => true
@@ -154,8 +156,8 @@ object MouseSignals {
 
 final class KeyboardSignals(keyboardEvents: List[KeyboardEvent], val lastKeyHeldDown: Option[Key]) {
 
-  lazy val keysUp: List[Key]   = keyboardEvents.collect { case k: KeyboardEvent.KeyUp   => k.keyCode }
-  lazy val keysDown: List[Key] = keyboardEvents.collect { case k: KeyboardEvent.KeyDown => k.keyCode }
+  lazy val keysUp: List[Key]       = keyboardEvents.collect { case k: KeyboardEvent.KeyUp => k.keyCode }
+  lazy val keysDown: List[Key]     = keyboardEvents.collect { case k: KeyboardEvent.KeyDown => k.keyCode }
   lazy val keysReleased: List[Key] = Nil
 
   def keysAreDown(keys: Key*): Boolean = keys.forall(keyCode => keysDown.contains(keyCode))
@@ -169,24 +171,24 @@ object KeyboardSignals {
 
   /*
 
-case e: KeyboardEvent.KeyDown =>
-              inputState.copy(
-                keysDown = inputState.keysDown + e.keyCode,
-                lastKeyHeldDown = Some(e.keyCode)
-              )
+  case e: KeyboardEvent.KeyDown =>
+    inputState.copy(
+      keysDown = inputState.keysDown + e.keyCode,
+      lastKeyHeldDown = Some(e.keyCode)
+    )
 
-            case e: KeyboardEvent.KeyUp =>
-              val keysDown = inputState.keysDown.filterNot(_ === e.keyCode)
+  case e: KeyboardEvent.KeyUp =>
+    val keysDown = inputState.keysDown.filterNot(_ === e.keyCode)
 
-              val lastKey = inputState.lastKeyHeldDown.flatMap { key =>
-                if (key === e.keyCode || !keysDown.contains(key)) None
-                else Some(key)
-              }
+    val lastKey = inputState.lastKeyHeldDown.flatMap { key =>
+      if (key === e.keyCode || !keysDown.contains(key)) None
+      else Some(key)
+    }
 
-              inputState.copy(
-                keysDown = keysDown,
-                lastKeyHeldDown = lastKey
-              )
+    inputState.copy(
+      keysDown = keysDown,
+      lastKeyHeldDown = lastKey
+    )
    */
 
   def calculateNext(previous: KeyboardSignals, events: List[KeyboardEvent]): KeyboardSignals =
