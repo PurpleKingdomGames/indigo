@@ -154,46 +154,47 @@ object MouseSignals {
     }
 }
 
-final class KeyboardSignals(keyboardEvents: List[KeyboardEvent], val lastKeyHeldDown: Option[Key]) {
+final class KeyboardSignals(keyboardEvents: List[KeyboardEvent], val keysDown: List[Key], val lastKeyHeldDown: Option[Key]) {
 
-  lazy val keysUp: List[Key]       = keyboardEvents.collect { case k: KeyboardEvent.KeyUp => k.keyCode }
-  lazy val keysDown: List[Key]     = keyboardEvents.collect { case k: KeyboardEvent.KeyDown => k.keyCode }
-  lazy val keysReleased: List[Key] = Nil
+  lazy val keysReleased: List[Key] = keyboardEvents.collect { case k: KeyboardEvent.KeyUp => k.keyCode }
 
   def keysAreDown(keys: Key*): Boolean = keys.forall(keyCode => keysDown.contains(keyCode))
-  def keysAreUp(keys: Key*): Boolean   = keys.forall(keyCode => keysUp.contains(keyCode))
+  def keysAreUp(keys: Key*): Boolean   = keys.forall(keyCode => keysReleased.contains(keyCode))
 
 }
 object KeyboardSignals {
 
   val default: KeyboardSignals =
-    new KeyboardSignals(Nil, None)
+    new KeyboardSignals(Nil, Nil, None)
 
-  /*
+  def calculateNext(previous: KeyboardSignals, events: List[KeyboardEvent]): KeyboardSignals = {
+    val keysDown = calculateKeysDown(events, previous.keysDown)
 
-  case e: KeyboardEvent.KeyDown =>
-    inputState.copy(
-      keysDown = inputState.keysDown + e.keyCode,
-      lastKeyHeldDown = Some(e.keyCode)
-    )
-
-  case e: KeyboardEvent.KeyUp =>
-    val keysDown = inputState.keysDown.filterNot(_ === e.keyCode)
-
-    val lastKey = inputState.lastKeyHeldDown.flatMap { key =>
-      if (key === e.keyCode || !keysDown.contains(key)) None
-      else Some(key)
-    }
-
-    inputState.copy(
-      keysDown = keysDown,
-      lastKeyHeldDown = lastKey
-    )
-   */
-
-  def calculateNext(previous: KeyboardSignals, events: List[KeyboardEvent]): KeyboardSignals =
     new KeyboardSignals(
       events,
-      previous.lastKeyHeldDown
+      keysDown,
+      keysDown.reverse.headOption
     )
+  }
+
+  def calculateKeysDown(keyboardEvents: List[KeyboardEvent], previousKeysDown: List[Key]): List[Key] = {
+    @tailrec
+    def rec(remaining: List[KeyboardEvent], keysDownAcc: List[Key]): List[Key] =
+      remaining match {
+        case Nil =>
+          keysDownAcc.reverse
+
+        case KeyboardEvent.KeyDown(k) :: tl =>
+          rec(tl, k :: keysDownAcc)
+
+        case KeyboardEvent.KeyUp(k) :: tl =>
+          rec(tl, keysDownAcc.filterNot(p => p === k))
+
+        case _ :: tl =>
+          rec(tl, keysDownAcc)
+      }
+
+    rec(keyboardEvents, previousKeysDown.reverse)
+  }
+
 }

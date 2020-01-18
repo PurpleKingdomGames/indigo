@@ -60,24 +60,7 @@ object InputStateTests extends TestSuite {
             KeyboardEvent.KeyUp(Keys.KEY_C)
           )
 
-        "keys up" - {
-          val state = inputState.calculateNext(events)
-
-          val expected =
-            List(
-              Keys.KEY_A,
-              Keys.KEY_B,
-              Keys.KEY_C,
-              Keys.KEY_Z
-            )
-
-          val actual =
-            state.keyboard.keysUp
-
-          actual ==> expected
-        }
-
-        "keys down" - {
+        "keysDown" - {
           val state = inputState.calculateNext(events)
 
           val expected =
@@ -93,7 +76,7 @@ object InputStateTests extends TestSuite {
           actual ==> expected
         }
 
-        "keys are down" - {
+        "keysAreDown" - {
           val state = inputState.calculateNext(events)
 
           state.keyboard.keysAreDown(Keys.KEY_D, Keys.KEY_E, Keys.KEY_F) ==> true
@@ -103,7 +86,7 @@ object InputStateTests extends TestSuite {
           state.keyboard.keysAreDown(Keys.KEY_A, Keys.KEY_D) ==> false
         }
 
-        "keys are up" - {
+        "keysAreUp" - {
           val state = inputState.calculateNext(events)
 
           state.keyboard.keysAreUp(Keys.KEY_A, Keys.KEY_B, Keys.KEY_C) ==> true
@@ -113,7 +96,7 @@ object InputStateTests extends TestSuite {
           state.keyboard.keysAreUp(Keys.KEY_A, Keys.KEY_D) ==> false
         }
 
-        "keys released" - {
+        "keysReleased" - {
           val state = inputState.calculateNext(events)
 
           val expected =
@@ -130,7 +113,22 @@ object InputStateTests extends TestSuite {
 
         }
 
-        "last key held down" - {
+        "keysDown persist across frames" - {
+          val state1 = inputState.calculateNext(events)
+
+          state1.keyboard.keysDown ==> List(Keys.KEY_D, Keys.KEY_E, Keys.KEY_F)
+
+          val state2 = state1.calculateNext(
+            List(
+              KeyboardEvent.KeyDown(Keys.KEY_Z),
+              KeyboardEvent.KeyUp(Keys.KEY_D)
+            )
+          )
+
+          state2.keyboard.keysDown ==> List(Keys.KEY_E, Keys.KEY_F, Keys.KEY_Z)
+        }
+
+        "lastKeyHeldDown" - {
 
           inputState.keyboard.lastKeyHeldDown ==> None
 
