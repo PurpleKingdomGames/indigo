@@ -21,6 +21,8 @@ app.ports.processFont.subscribe(function(fontData) {
         }
 
         let canvasEl = document.createElement('canvas');
+        canvasEl.width = 1024;
+        canvasEl.height = 1024;
         let canvas = canvasEl.getContext('2d');
         let fontSize = 32;
 

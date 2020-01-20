@@ -228,7 +228,27 @@ previewFont model =
             , width (px 512)
             , height (px 512)
             ]
-            (row [ centerX, centerY ] [])
+            (row [ centerX, centerY ]
+                (case model.fontData of
+                    Just (Ok info) ->
+                        [ Element.html <|
+                            H.img
+                                [ HA.src info.texture
+                                , HA.style "max-width" "508px"
+                                , HA.style "max-height" "508px"
+                                , HA.style "object-fit" "contain"
+                                , HA.style "filter" "invert(100%)"
+                                ]
+                                []
+                        ]
+
+                    Just (Err err) ->
+                        [ text err ]
+
+                    Nothing ->
+                        []
+                )
+            )
         ]
 
 
