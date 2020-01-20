@@ -23,19 +23,24 @@ app.ports.processFont.subscribe(function(fontData) {
         let canvasEl = document.createElement('canvas');
         canvasEl.width = 1024;
         canvasEl.height = 1024;
+
         let canvas = canvasEl.getContext('2d');
-        let fontSize = 32;
+        let fontSize = fontData.size;
 
         let x = 0;
         let y = (font.ascender / fontSize) + fontSize;
 
         for (let key in font.glyphs.glyphs) {
-            if (!font.glyphs.glyphs.hasOwnProperty(key)) {
+            if (!font.glyphs.glyphs.hasOwnProperty(key))
                 continue;
-            }
+
             let glyph = font.glyphs.glyphs[key];
             let char = String.fromCharCode(glyph.unicode);
             if (glyph == null || glyph.unicode === undefined)
+                continue;
+
+            // Limit to ASCII if defined
+            if (fontData.asciiOnly === true && glyph.unicode > 255)
                 continue;
 
             let boundingBox = glyph.getBoundingBox();
