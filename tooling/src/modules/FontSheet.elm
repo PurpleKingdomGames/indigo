@@ -1,4 +1,4 @@
-port module Modules.FontSheet exposing (FontSheet, FontSheetMsg, initialModel, update, view)
+port module Modules.FontSheet exposing (FontSheet, FontSheetMsg, initialModel, subscriptions, update, view)
 
 import App.Styles as Styles
 import Browser
@@ -25,6 +25,12 @@ import WebGL.Texture as Texture exposing (..)
 
 
 type alias FontSheet =
+    { base : BaseFontSheet
+    , fontData : Maybe FontLoadInfo
+    }
+
+
+type alias BaseFontSheet =
     { size : Int
     , fontPath : Maybe String
     , fontName : Maybe String
@@ -32,23 +38,46 @@ type alias FontSheet =
     }
 
 
+type alias FontMapData =
+    { texture : String
+    , mapJson : String
+    }
+
+
+type FontLoadInfo
+    = Ok FontMapData
+    | Err String
+
+
 type FontSheetMsg
     = FontSizeUpdated Float
+    | AsciiOnlyUpdated Bool
     | FontUploadRequested
     | FontUploadSelected File
     | FontUploadLoaded String
+    | FontProcessed FontMapData
+    | FontProcessErr String
     | PreventDefault
 
 
-port onDownload : String -> Cmd msg
+port processFont : BaseFontSheet -> Cmd msg
+
+
+port fontProcessed : (FontMapData -> msg) -> Sub msg
+
+
+port fontProcessErr : (String -> msg) -> Sub msg
 
 
 initialModel : FontSheet
 initialModel =
-    { size = 16
-    , fontPath = Nothing
-    , fontName = Nothing
-    , asciiOnly = True
+    { base =
+        { size = 16
+        , fontPath = Nothing
+        , fontName = Nothing
+        , asciiOnly = True
+        }
+    , fontData = Nothing
     }
 
 
@@ -56,7 +85,18 @@ update : FontSheetMsg -> FontSheet -> ( FontSheet, Cmd FontSheetMsg )
 update msg model =
     case msg of
         FontSizeUpdated value ->
-            ( { model | size = round value }, Cmd.none )
+            let
+                newBase =
+                    (\base -> { base | size = round value }) model.base
+            in
+            ( { model | base = newBase }, processFont newBase )
+
+        AsciiOnlyUpdated value ->
+            let
+                newBase =
+                    (\base -> { base | asciiOnly = value }) model.base
+            in
+            ( { model | base = newBase }, processFont newBase )
 
         FontUploadRequested ->
             ( model
@@ -64,12 +104,41 @@ update msg model =
             )
 
         FontUploadSelected file ->
-            ( { model | fontName = Just (File.name file) }
-            , Task.perform FontUploadLoaded (File.toUrl file)
-            )
+            let
+                newBase =
+                    (\base -> { base | fontName = Just (File.name file) }) model.base
+            in
+            case String.toLower (String.right 4 (File.name file)) of
+                ".otf" ->
+                    ( { model | base = newBase }
+                    , Task.perform FontUploadLoaded (File.toUrl file)
+                    )
+
+                ".ttf" ->
+                    ( { model | base = newBase }
+                    , Task.perform FontUploadLoaded (File.toUrl file)
+                    )
+
+                "woff" ->
+                    ( { model | base = newBase }
+                    , Task.perform FontUploadLoaded (File.toUrl file)
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
 
         FontUploadLoaded content ->
-            ( { model | fontPath = Just content }, Cmd.none )
+            let
+                newBase =
+                    (\base -> { base | fontPath = Just content }) model.base
+            in
+            ( { model | base = newBase }, processFont newBase )
+
+        FontProcessed info ->
+            ( { model | fontData = Just (Ok info) }, Cmd.none )
+
+        FontProcessErr err ->
+            ( { model | fontData = Just (Err err) }, Cmd.none )
 
         PreventDefault ->
             ( model, Cmd.none )
@@ -80,11 +149,15 @@ view model =
     column
         [ padding 10, spacing 10 ]
         [ row []
-            [ chooseOptions model ]
+            [ chooseOptions model.base
+            ]
+        , row []
+            [ previewFont model
+            ]
         ]
 
 
-chooseOptions : FontSheet -> Element FontSheetMsg
+chooseOptions : BaseFontSheet -> Element FontSheetMsg
 chooseOptions model =
     column
         []
@@ -131,4 +204,37 @@ chooseOptions model =
                 ]
                 { label = Input.labelLeft [] (text ""), min = 5, max = 99, step = Just 1, thumb = Input.defaultThumb, onChange = FontSizeUpdated, value = toFloat model.size }
             ]
+        , row [ spacing 20 ]
+            [ text "ASCII Only?"
+            , Input.checkbox []
+                { onChange = AsciiOnlyUpdated
+                , icon = Input.defaultCheckbox
+                , checked = model.asciiOnly
+                , label =
+                    Input.labelRight []
+                        (text "")
+                }
+            ]
+        ]
+
+
+previewFont : FontSheet -> Element FontSheetMsg
+previewFont model =
+    column [ spacing 10 ]
+        [ Element.el
+            [ Border.solid
+            , Border.width 2
+            , Border.color Styles.purple
+            , width (px 512)
+            , height (px 512)
+            ]
+            (row [ centerX, centerY ] [])
+        ]
+
+
+subscriptions : Sub FontSheetMsg
+subscriptions =
+    Sub.batch
+        [ fontProcessed FontProcessed
+        , fontProcessErr FontProcessErr
         ]

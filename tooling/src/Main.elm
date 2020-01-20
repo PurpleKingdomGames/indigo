@@ -14,7 +14,7 @@ import Element.Font as Font
 import Html exposing (..)
 import Html.Attributes exposing (href)
 import Modules.BumpToNormal as BumpToNormal
-import Modules.FontSheet as FontSheet
+import Modules.FontSheet as FontSheet exposing (subscriptions)
 import Url exposing (Url)
 
 
@@ -85,4 +85,7 @@ basicLayout model =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Sub.map (\m -> ScalaCallback m) ScalaJSMailbox.receive
+    Sub.batch
+        [ Sub.map (\m -> ScalaCallback m) ScalaJSMailbox.receive
+        , Sub.map (\m -> FontSheetMsgWrapper m) FontSheet.subscriptions
+        ]
