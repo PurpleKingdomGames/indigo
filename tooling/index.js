@@ -21,12 +21,6 @@ app.ports.processFont.subscribe(function(fontData) {
             app.ports.fontProcessErr.send(e.message);
             return;
         }
-
-        let canvasEl = document.createElement('canvas');
-        canvasEl.width = 4096;
-        canvasEl.height = 4096;
-
-        let canvas = canvasEl.getContext('2d');
         let fontSize = fontData.size;
 
         let x = 0;
@@ -56,7 +50,7 @@ app.ports.processFont.subscribe(function(fontData) {
         let canvasWidth = 16;
         let canvasHeight = 16;
 
-        spritePacker.fit(
+        const sprites = spritePacker.fit(
             glyphs
                 .sort(function (glyphA, glyphB) {
                     let maxSideA = Math.max((glyphA.xMax - glyphA.xMin), (glyphA.yMax - glyphA.yMin));
@@ -74,30 +68,23 @@ app.ports.processFont.subscribe(function(fontData) {
                         glyph: glyph
                     };
                 })
-        ).forEach(data => {
+        );
+
+        let canvasEl = document.createElement('canvas');
+        let canvas = canvasEl.getContext('2d');
+        canvasEl.width = Math.min(spritePacker.root.w, 4096);
+        canvasEl.height = Math.min(spritePacker.root.h, 4096);
+
+        sprites.forEach(data => {
             const glyph = data.glyph;
-
-            canvasWidth = Math.max(data.fit.x + data.fit.w, canvasWidth);
-            canvasHeight = Math.max(data.fit.y + data.fit.h, canvasHeight);
-
             glyph.draw(canvas, data.fit.x, data.fit.y + fontData.size, fontData.size);
         });
 
         canvas.save();
 
-        // Resize the canvas
-        const img = new Image();
-        img.src = canvasEl.toDataURL();
-        img.onload = function (){
-            canvasEl.width = Math.min(canvasWidth, 4096);
-            canvasEl.height = Math.min(canvasHeight, 4096);
-
-            canvas.drawImage(img, 0, 0);
-
-            app.ports.fontProcessed.send({
-                texture: canvasEl.toDataURL(),
-                mapJson: ''
-            });
-        }
+        app.ports.fontProcessed.send({
+            texture: canvasEl.toDataURL(),
+            mapJson: ''
+        });
     });
 })
