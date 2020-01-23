@@ -258,34 +258,56 @@ chooseOptions model =
 previewFont : FontSheet -> Element FontSheetMsg
 previewFont model =
     column [ spacing 10 ]
-        [ Element.el
-            [ Border.solid
-            , Border.width 2
-            , Border.color Styles.purple
-            , width (px 512)
-            , height (px 512)
-            ]
-            (row [ centerX, centerY ]
-                (case model.fontData of
-                    Just (Ok info) ->
-                        [ Element.html <|
-                            H.img
-                                [ HA.src info.texture
-                                , HA.style "max-width" "508px"
-                                , HA.style "max-height" "508px"
-                                , HA.style "object-fit" "contain"
-                                , HA.style "filter" "invert(100%)"
-                                ]
-                                []
-                        ]
+        [ row [ width fill, spacing 10 ]
+            [ Element.el
+                [ Border.solid
+                , Border.width 2
+                , Border.color Styles.purple
+                , width (px 512)
+                , height (px 512)
+                ]
+                (row [ centerX, centerY ]
+                    (case model.fontData of
+                        Just (Ok info) ->
+                            [ Element.html <|
+                                H.img
+                                    [ HA.src info.texture
+                                    , HA.style "max-width" "508px"
+                                    , HA.style "max-height" "508px"
+                                    , HA.style "object-fit" "contain"
+                                    , HA.style "filter" "invert(100%)"
+                                    ]
+                                    []
+                            ]
 
-                    Just (Err err) ->
-                        [ text err ]
+                        Just (Err err) ->
+                            [ paragraph [] [ text err ] ]
 
-                    Nothing ->
-                        []
+                        Nothing ->
+                            []
+                    )
                 )
-            )
+            , Element.el
+                [ Border.solid
+                , Border.width 2
+                , Border.color Styles.purple
+                , width (px 512)
+                , height (px 512)
+                , scrollbarY
+                ]
+                (row [ centerX, centerY ]
+                    (case model.fontData of
+                        Just (Ok info) ->
+                            [ text info.mapJson ]
+
+                        Just (Err err) ->
+                            []
+
+                        Nothing ->
+                            []
+                    )
+                )
+            ]
         ]
 
 

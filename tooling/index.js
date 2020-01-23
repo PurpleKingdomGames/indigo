@@ -23,6 +23,13 @@ app.ports.processFont.subscribe(function(fontData) {
         }
 
         let glyphs = [];
+        const fontMap = {
+            name: font.tables.name.fullName.en,
+            size: fontData.size,
+            padding: fontData.padding,
+            asciiOnly: fontData.asciiOnly,
+            glyphs: []
+        }
 
         for (let key in font.glyphs.glyphs) {
             if (!font.glyphs.glyphs.hasOwnProperty(key))
@@ -43,11 +50,12 @@ app.ports.processFont.subscribe(function(fontData) {
             glyphs.push(glyph);
         }
 
-        const fontHeight =
+        const doublePadding = fontData.padding * 2;
+        const fontHeight = Math.round(
             ((font.ascender / font.unitsPerEm) * fontData.size) + // Ascender in px
             ((font.descender / font.unitsPerEm) * fontData.size) + // Descender in px
             fontData.size
-        ;
+        );
         const spritePacker = new SpritePacker();
         const sprites = spritePacker.fit(
             glyphs
@@ -60,11 +68,12 @@ app.ports.processFont.subscribe(function(fontData) {
                 .reverse()
                 .map(glyph => {
                     const chars = glyph.unicodes.map(c => String.fromCharCode(c)).join('');
-                    const width = font.getAdvanceWidth(chars, fontData.size);
+                    const width = Math.round(font.getAdvanceWidth(chars, fontData.size));
 
                     return {
-                        w: width + (fontData.padding * 2),
-                        h: fontHeight + (fontData.padding * 2),
+                        w: width + doublePadding,
+                        h: fontHeight + doublePadding,
+                        char: chars,
                         glyph: glyph
                     };
                 })
@@ -76,14 +85,25 @@ app.ports.processFont.subscribe(function(fontData) {
         canvasEl.height = Math.min(spritePacker.root.h, 4096);
 
         sprites.forEach(data => {
-            data.glyph.draw(canvas, data.fit.x + fontData.padding, data.fit.y + fontData.size + fontData.padding, fontData.size);
+            const x = data.fit.x + fontData.padding;
+            const y = data.fit.y + fontData.padding;
+            fontMap.glyphs.push({
+                unicode: data.glyph.unicode,
+                char: data.char,
+                x: x,
+                y: y,
+                w: data.w - doublePadding,
+                h: data.h - doublePadding
+            });
+
+            data.glyph.draw(canvas, x, y + fontData.size, fontData.size);
         });
 
         canvas.save();
 
         app.ports.fontProcessed.send({
             texture: canvasEl.toDataURL(),
-            mapJson: ''
+            mapJson: JSON.stringify(fontMap, null, 4)
         });
     });
 })
