@@ -21,10 +21,7 @@ app.ports.processFont.subscribe(function(fontData) {
             app.ports.fontProcessErr.send(e.message);
             return;
         }
-        let fontSize = fontData.size;
 
-        let x = 0;
-        let y = (font.ascender / fontSize) + fontSize;
         let glyphs = [];
 
         for (let key in font.glyphs.glyphs) {
@@ -46,25 +43,28 @@ app.ports.processFont.subscribe(function(fontData) {
             glyphs.push(glyph);
         }
 
-        let spritePacker = new SpritePacker();
-        let canvasWidth = 16;
-        let canvasHeight = 16;
-
+        const fontHeight =
+            ((font.ascender / font.unitsPerEm) * fontData.size) + // Ascender in px
+            ((font.descender / font.unitsPerEm) * fontData.size) + // Descender in px
+            fontData.size
+        ;
+        const spritePacker = new SpritePacker();
         const sprites = spritePacker.fit(
             glyphs
                 .sort(function (glyphA, glyphB) {
-                    let maxSideA = Math.max((glyphA.xMax - glyphA.xMin), (glyphA.yMax - glyphA.yMin));
-                    let maxSideB = Math.max((glyphB.xMax - glyphB.xMin), (glyphB.yMax - glyphB.yMin));
+                    const maxSideA = Math.max((glyphA.xMax - glyphA.xMin), (glyphA.yMax - glyphA.yMin));
+                    const maxSideB = Math.max((glyphB.xMax - glyphB.xMin), (glyphB.yMax - glyphB.yMin));
 
                     return maxSideA - maxSideB;
                 })
                 .reverse()
                 .map(glyph => {
-                    let chars = glyph.unicodes.map(c => String.fromCharCode(c)).join('');
-                    let width = font.getAdvanceWidth(chars, fontSize);
+                    const chars = glyph.unicodes.map(c => String.fromCharCode(c)).join('');
+                    const width = font.getAdvanceWidth(chars, fontData.size);
+
                     return {
-                        w: width,
-                        h: ((font.ascender / font.unitsPerEm) * fontData.size) + ((font.descender / font.unitsPerEm) * fontData.size) + fontData.size,
+                        w: width + (fontData.padding * 2),
+                        h: fontHeight + (fontData.padding * 2),
                         glyph: glyph
                     };
                 })
@@ -76,8 +76,7 @@ app.ports.processFont.subscribe(function(fontData) {
         canvasEl.height = Math.min(spritePacker.root.h, 4096);
 
         sprites.forEach(data => {
-            const glyph = data.glyph;
-            glyph.draw(canvas, data.fit.x, data.fit.y + fontData.size, fontData.size);
+            data.glyph.draw(canvas, data.fit.x + fontData.padding, data.fit.y + fontData.size + fontData.padding, fontData.size);
         });
 
         canvas.save();

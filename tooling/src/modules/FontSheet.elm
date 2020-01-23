@@ -35,6 +35,7 @@ type alias BaseFontSheet =
     , fontPath : Maybe String
     , fontName : Maybe String
     , asciiOnly : Bool
+    , padding : Int
     }
 
 
@@ -52,6 +53,7 @@ type FontLoadInfo
 type FontSheetMsg
     = FontSizeUpdated Float
     | AsciiOnlyUpdated Bool
+    | PaddingUpdated Float
     | FontUploadRequested
     | FontUploadSelected File
     | FontUploadLoaded String
@@ -76,6 +78,7 @@ initialModel =
         , fontPath = Nothing
         , fontName = Nothing
         , asciiOnly = True
+        , padding = 1
         }
     , fontData = Nothing
     }
@@ -95,6 +98,13 @@ update msg model =
             let
                 newBase =
                     (\base -> { base | asciiOnly = value }) model.base
+            in
+            ( { model | base = newBase }, processFont newBase )
+
+        PaddingUpdated value ->
+            let
+                newBase =
+                    (\base -> { base | padding = round value }) model.base
             in
             ( { model | base = newBase }, processFont newBase )
 
@@ -203,6 +213,33 @@ chooseOptions model =
                     )
                 ]
                 { label = Input.labelLeft [] (text ""), min = 5, max = 99, step = Just 1, thumb = Input.defaultThumb, onChange = FontSizeUpdated, value = toFloat model.size }
+            ]
+        , row [ spacing 20, width (Element.px 300) ]
+            [ text
+                ("Padding ("
+                    ++ (if model.padding < 10 then
+                            "0"
+
+                        else
+                            ""
+                       )
+                    ++ String.fromInt model.padding
+                    ++ "px)"
+                )
+            , Input.slider
+                [ Element.height (Element.px 30)
+                , Element.behindContent
+                    (Element.el
+                        [ Element.width Element.fill
+                        , Element.height (Element.px 2)
+                        , Element.centerY
+                        , Background.color (Element.rgb255 238 238 238)
+                        , Border.rounded 2
+                        ]
+                        Element.none
+                    )
+                ]
+                { label = Input.labelLeft [] (text ""), min = 0, max = 10, step = Just 1, thumb = Input.defaultThumb, onChange = PaddingUpdated, value = toFloat model.padding }
             ]
         , row [ spacing 20 ]
             [ text "ASCII Only?"
