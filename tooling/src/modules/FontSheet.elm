@@ -3,6 +3,7 @@ port module Modules.FontSheet exposing (FontSheet, FontSheetMsg, initialModel, s
 import App.Styles as Styles
 import Browser
 import Browser.Events exposing (onAnimationFrameDelta)
+import Bytes exposing (Bytes)
 import Canvas
 import Element exposing (..)
 import Element.Background as Background
@@ -11,6 +12,7 @@ import Element.Events as Events
 import Element.Font as Font
 import Element.Input as Input
 import File exposing (File)
+import File.Download as Download
 import File.Select as Select
 import Html as H exposing (Html)
 import Html.Attributes as HA
@@ -42,6 +44,7 @@ type alias BaseFontSheet =
 type alias FontMapData =
     { texture : String
     , mapJson : String
+    , fontName : String
     }
 
 
@@ -59,6 +62,7 @@ type FontSheetMsg
     | FontUploadLoaded String
     | FontProcessed FontMapData
     | FontProcessErr String
+    | DownloadText String String
     | PreventDefault
 
 
@@ -149,6 +153,9 @@ update msg model =
 
         FontProcessErr err ->
             ( { model | fontData = Just (Err err) }, Cmd.none )
+
+        DownloadText name str ->
+            ( model, Download.string name "text/plain" str )
 
         PreventDefault ->
             ( model, Cmd.none )
@@ -308,6 +315,25 @@ previewFont model =
                     )
                 )
             ]
+        , row [ width fill, spacing 10 ]
+            (case model.fontData of
+                Just (Ok info) ->
+                    [ Element.el [ width (px 512) ]
+                        (Element.html
+                            (H.a [ HA.href info.texture, HA.download (info.fontName ++ ".png"), HA.target "_blank" ] [ H.text "Download" ])
+                        )
+                    , Element.el [ width (px 512) ]
+                        (Element.html
+                            (H.a [ HA.href "", HE.onClick <| DownloadText (info.fontName ++ ".json") info.mapJson ] [ H.text "Download" ])
+                        )
+                    ]
+
+                Just (Err err) ->
+                    []
+
+                Nothing ->
+                    []
+            )
         ]
 
 

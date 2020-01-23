@@ -103,7 +103,8 @@ app.ports.processFont.subscribe(function(fontData) {
 
         app.ports.fontProcessed.send({
             texture: canvasEl.toDataURL(),
-            mapJson: JSON.stringify(fontMap, null, 4)
+            mapJson: JSON.stringify(fontMap, null, 4),
+            fontName: fontMap.name
         });
     });
 })
