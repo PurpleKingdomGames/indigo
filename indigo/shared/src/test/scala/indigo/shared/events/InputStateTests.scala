@@ -85,17 +85,52 @@ object InputStateTests extends TestSuite {
           state.mouse.wasMouseDownAt(20, 10) ==> false
         }
 
-        "wasMousePositionAt" - { 1 ==> 2 }
+        "wasMousePositionAt" - {
+          state.mouse.wasMousePositionAt(Point.zero) ==> false
+          state.mouse.wasMousePositionAt(Point(10, 10)) ==> true
+        }
 
-        "wasMouseClickedWithin" - { 1 ==> 2 }
+        "wasMouseClickedWithin" - {
+          state.mouse.wasMouseClickedWithin(Rectangle(0, 0, 5, 5)) ==> false
+          state.mouse.wasMouseClickedWithin(Rectangle(50, 50, 5, 5)) ==> false
+          state.mouse.wasMouseClickedWithin(Rectangle(5, 5, 10, 10)) ==> true
+        }
 
-        "wasMouseUpWithin" - { 1 ==> 2 }
+        "wasMouseUpWithin" - {
+          state.mouse.wasMouseUpWithin(Rectangle(0, 0, 5, 5)) ==> false
+          state.mouse.wasMouseUpWithin(Rectangle(50, 50, 5, 5)) ==> false
+          state.mouse.wasMouseUpWithin(Rectangle(5, 5, 10, 10)) ==> true
+        }
 
-        "wasMouseDownWithin" - { 1 ==> 2 }
+        "wasMouseDownWithin" - {
+          state.mouse.wasMouseDownWithin(Rectangle(0, 0, 5, 5)) ==> false
+          state.mouse.wasMouseDownWithin(Rectangle(50, 50, 5, 5)) ==> false
+          state.mouse.wasMouseDownWithin(Rectangle(5, 5, 10, 10)) ==> true
+        }
 
-        "wasMousePositionWithin" - { 1 ==> 2 }
+        "wasMousePositionWithin" - {
+          state.mouse.wasMousePositionWithin(Rectangle(0, 0, 5, 5)) ==> false
+          state.mouse.wasMousePositionWithin(Rectangle(50, 50, 5, 5)) ==> false
+          state.mouse.wasMousePositionWithin(Rectangle(5, 5, 10, 10)) ==> true
+        }
 
-        "leftMouseIsDown" - { 1 ==> 2 }
+        "leftMouseIsDown" - {
+          
+          val state2 = state.calculateNext(List(MouseEvent.MouseDown(0, 0))) // true
+          val state3 = state2.calculateNext(Nil) // still true
+          val state4 = state3.calculateNext(List(MouseEvent.MouseDown(20, 20))) // still true
+          val state5 = state4.calculateNext(List(MouseEvent.MouseUp(20, 20), MouseEvent.MouseDown(20, 20))) // Still true
+          val state6 = state5.calculateNext(List(MouseEvent.MouseUp(20, 20))) // false
+          val state7 = state6.calculateNext(List(MouseEvent.MouseDown(20, 20), MouseEvent.MouseUp(20, 20))) // Still false
+
+          state.mouse.leftMouseIsDown ==> false
+          state2.mouse.leftMouseIsDown ==> true
+          state3.mouse.leftMouseIsDown ==> true
+          state4.mouse.leftMouseIsDown ==> true
+          state5.mouse.leftMouseIsDown ==> true
+          state6.mouse.leftMouseIsDown ==> false
+          state7.mouse.leftMouseIsDown ==> false
+        }
       }
 
       "Keyboard state" - {
