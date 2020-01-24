@@ -2,8 +2,8 @@
 
 cd project
 
-sbt sbtIndigo/publishLocal
+sbt clean sbtIndigo/publishLocal
 
 cd ..
 
-sbt testAllJS
+sbt cleanAll testAllNoCleanJS publishLocal

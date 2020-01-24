@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-sbt testAllJS
+sbt cleanAll testAllNoCleanJS
