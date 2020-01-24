@@ -44,6 +44,10 @@ lazy val sandbox =
       title := "Sandbox",
       gameAssetsDirectory := "assets"
     )
+    .settings(
+      publish := {},
+      publishLocal := {}
+    )
     .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
@@ -62,6 +66,10 @@ lazy val perf =
       showCursor := true,
       title := "Perf",
       gameAssetsDirectory := "assets"
+    )
+    .settings(
+      publish := {},
+      publishLocal := {}
     )
     .jsSettings(
       scalaJSUseMainModuleInitializer := true
