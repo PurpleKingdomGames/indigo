@@ -40,17 +40,17 @@ object TextExample extends IndigoGameBasic[Unit, Model, Unit] {
   def initialViewModel(startupData: Unit): Model => Unit =
     _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: Model, viewModel: Unit, inputSignals: InputSignals, dice: Dice): Outcome[Unit] =
+  def updateViewModel(gameTime: GameTime, model: Model, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
     Outcome(viewModel)
 
-  def present(gameTime: GameTime, model: Model, viewModel: Unit, inputSignals: InputSignals): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: Model, viewModel: Unit, inputState: InputState): SceneUpdateFragment =
     SceneUpdateFragment()
       .addGameLayerNodes(
         Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontKey)
           .withTint(model.tint)
           .alignRight
           .onEvent {
-            case (bounds, MouseEvent.Click(_, _)) if inputSignals.wasMouseClickedWithin(bounds) =>
+            case (bounds, MouseEvent.Click(_, _)) if inputState.mouse.wasMouseClickedWithin(bounds) =>
               List(ChangeColour)
 
             case _ =>

@@ -27,9 +27,9 @@ object FullSetup {
 
   val initialViewModel: (MyStartupData, MyGameModel) => MyViewModel = (_, _) => MyViewModel()
 
-  val updateViewModel: (GameTime, MyGameModel, MyViewModel, InputSignals, Dice) => Outcome[MyViewModel] = (_, _, _, _, _) => Outcome(MyViewModel())
+  val updateViewModel: (GameTime, MyGameModel, MyViewModel, InputState, Dice) => Outcome[MyViewModel] = (_, _, _, _, _) => Outcome(MyViewModel())
 
-  val renderer: (GameTime, MyGameModel, MyViewModel, InputSignals) => SceneUpdateFragment =
+  val renderer: (GameTime, MyGameModel, MyViewModel, InputState) => SceneUpdateFragment =
     (_, _, _, _) => SceneUpdateFragment.empty
 
   def main(args: Array[String]): Unit =

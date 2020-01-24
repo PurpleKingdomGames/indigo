@@ -45,15 +45,15 @@ object AudioExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   def initialViewModel(startupData: Unit): MyGameModel => Unit = _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputSignals: InputSignals, dice: Dice): Outcome[Unit] =
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
     Outcome(())
 
-  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputSignals: InputSignals): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState): SceneUpdateFragment =
     model.button
       .draw(
         bounds = Rectangle(10, 10, 16, 16),
         depth = Depth(2),
-        inputSignals = inputSignals,
+        inputState = inputState,
         buttonAssets = ButtonAssets(
           up = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 0, 16, 16),
           over = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 16, 16, 16),

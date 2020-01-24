@@ -68,10 +68,10 @@ object Fireworks extends IndigoGameBasic[Unit, Unit, Unit] {
   def initialViewModel(startupData: Unit): Unit => Unit =
     _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, inputSignals: InputSignals, dice: Dice): Outcome[Unit] =
+  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
     Outcome(())
 
-  def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputSignals: InputSignals): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState): SceneUpdateFragment =
     SceneUpdateFragment.empty
 
 }

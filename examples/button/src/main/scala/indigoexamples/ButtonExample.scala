@@ -49,14 +49,14 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   def initialViewModel(startupData: Unit): MyGameModel => Unit = _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputSignals: InputSignals, dice: Dice): Outcome[Unit] =
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
     Outcome(())
 
-  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputSignals: InputSignals): SceneUpdateFragment = {
+  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState): SceneUpdateFragment = {
     val button: ButtonViewUpdate = model.button.draw(
       bounds = Rectangle(10, 10, 16, 16), // Where should the button be on the screen?
       depth = Depth(2),                   // At what depth?
-      inputSignals = inputSignals,        // delegate events
+      inputState = inputState,            // delegate events
       buttonAssets = ButtonAssets(        // We could cache the graphics much earlier
         up = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 0, 16, 16),
         over = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 16, 16, 16),
