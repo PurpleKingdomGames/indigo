@@ -99,34 +99,22 @@ initialModel =
 
 update : FontSheetMsg -> FontSheet -> ( FontSheet, Cmd FontSheetMsg )
 update msg model =
+    let
+        base =
+            model.base
+    in
     case msg of
         FontSizeUpdated value ->
-            let
-                newBase =
-                    (\base -> { base | size = round value }) model.base
-            in
-            ( { model | base = newBase }, processFont newBase )
+            processNewFontBase model { base | size = round value }
 
         RenderTypeUpdated value ->
-            let
-                newBase =
-                    (\base -> { base | renderType = renderTypeToInt value }) model.base
-            in
-            ( { model | base = newBase }, processFont newBase )
+            processNewFontBase model { base | renderType = renderTypeToInt value }
 
         SpecificGlyphsUpdated value ->
-            let
-                newBase =
-                    (\base -> { base | specificGlyphs = Just value }) model.base
-            in
-            ( { model | base = newBase }, processFont newBase )
+            processNewFontBase model { base | specificGlyphs = Just value }
 
         PaddingUpdated value ->
-            let
-                newBase =
-                    (\base -> { base | padding = round value }) model.base
-            in
-            ( { model | base = newBase }, processFont newBase )
+            processNewFontBase model { base | padding = round value }
 
         FontUploadRequested ->
             ( model
@@ -135,34 +123,20 @@ update msg model =
 
         FontUploadSelected file ->
             let
-                newBase =
-                    (\base -> { base | fontName = Just (File.name file) }) model.base
+                ( newModel, cmd ) =
+                    processNewFontBase model { base | fontName = Just (File.name file) }
+
+                extension =
+                    String.toLower (String.right 4 (File.name file))
             in
-            case String.toLower (String.right 4 (File.name file)) of
-                ".otf" ->
-                    ( { model | base = newBase }
-                    , Task.perform FontUploadLoaded (File.toUrl file)
-                    )
+            if List.any (\a -> a == extension) [ ".otf", ".ttf", "woff" ] then
+                ( newModel, Cmd.batch [ cmd, Task.perform FontUploadLoaded (File.toUrl file) ] )
 
-                ".ttf" ->
-                    ( { model | base = newBase }
-                    , Task.perform FontUploadLoaded (File.toUrl file)
-                    )
-
-                "woff" ->
-                    ( { model | base = newBase }
-                    , Task.perform FontUploadLoaded (File.toUrl file)
-                    )
-
-                _ ->
-                    ( model, Cmd.none )
+            else
+                ( model, Cmd.none )
 
         FontUploadLoaded content ->
-            let
-                newBase =
-                    (\base -> { base | fontPath = Just content }) model.base
-            in
-            ( { model | base = newBase }, processFont newBase )
+            processNewFontBase model { base | fontPath = Just content }
 
         FontProcessed info ->
             ( { model | fontData = Just (Ok info) }, Cmd.none )
@@ -406,6 +380,11 @@ intToRenderType i =
 
         _ ->
             AllGlyphs
+
+
+processNewFontBase : FontSheet -> BaseFontSheet -> ( FontSheet, Cmd FontSheetMsg )
+processNewFontBase model base =
+    ( { model | base = base }, processFont base )
 
 
 subscriptions : Sub FontSheetMsg
