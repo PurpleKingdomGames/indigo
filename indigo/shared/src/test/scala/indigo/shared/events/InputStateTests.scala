@@ -26,23 +26,76 @@ object InputStateTests extends TestSuite {
 
       "Mouse state" - {
 
-        "position" - { 1 ==> 2 }
-        "leftMouseIsDown" - { 1 ==> 2 }
-        "mousePressed" - { 1 ==> 2 }
-        "mouseReleased" - { 1 ==> 2 }
-        "mouseClicked" - { 1 ==> 2 }
-        "mouseClickAt" - { 1 ==> 2 }
-        "mouseUpAt" - { 1 ==> 2 }
-        "mouseDownAt" - { 1 ==> 2 }
-        "wasMouseClickedAt" - { 1 ==> 2 }
-        "wasMouseUpAt" - { 1 ==> 2 }
-        "wasMouseDownAt" - { 1 ==> 2 }
+        val events: List[MouseEvent] =
+          List(
+            MouseEvent.Move(10, 10),
+            MouseEvent.MouseDown(10, 10),
+            MouseEvent.MouseUp(10, 10),
+            MouseEvent.Click(10, 10)
+          )
+
+        val state = inputState.calculateNext(events)
+
+        "position" - {
+          state.mouse.position === Point(10, 10) ==> true
+        }
+
+        "mousePressed" - {
+          state.mouse.mousePressed ==> true
+        }
+
+        "mouseReleased" - {
+          state.mouse.mouseReleased ==> true
+        }
+
+        "mouseClicked" - {
+          state.mouse.mouseClicked ==> true
+
+          inputState.calculateNext(List(MouseEvent.MouseDown(0, 0))).mouse.mouseClicked ==> false
+        }
+
+        "mouseClickAt" - {
+          state.mouse.mouseClickAt ==> Some(Point(10, 10))
+
+          inputState.calculateNext(List(MouseEvent.MouseDown(0, 0))).mouse.mouseClickAt ==> None
+        }
+
+        "mouseUpAt" - {
+          state.mouse.mouseUpAt ==> Some(Point(10, 10))
+          inputState.calculateNext(List(MouseEvent.MouseDown(0, 0))).mouse.mouseUpAt ==> None
+        }
+
+        "mouseDownAt" - {
+          state.mouse.mouseDownAt ==> Some(Point(10, 10))
+          inputState.calculateNext(List(MouseEvent.MouseUp(0, 0))).mouse.mouseDownAt ==> None
+        }
+
+        "wasMouseClickedAt" - {
+          state.mouse.wasMouseClickedAt(10, 10) ==> true
+          state.mouse.wasMouseClickedAt(20, 10) ==> false
+        }
+
+        "wasMouseUpAt" - {
+          state.mouse.wasMouseUpAt(10, 10) ==> true
+          state.mouse.wasMouseUpAt(20, 10) ==> false
+        }
+
+        "wasMouseDownAt" - {
+          state.mouse.wasMouseDownAt(10, 10) ==> true
+          state.mouse.wasMouseDownAt(20, 10) ==> false
+        }
+
         "wasMousePositionAt" - { 1 ==> 2 }
+
         "wasMouseClickedWithin" - { 1 ==> 2 }
+
         "wasMouseUpWithin" - { 1 ==> 2 }
+
         "wasMouseDownWithin" - { 1 ==> 2 }
+
         "wasMousePositionWithin" - { 1 ==> 2 }
 
+        "leftMouseIsDown" - { 1 ==> 2 }
       }
 
       "Keyboard state" - {
