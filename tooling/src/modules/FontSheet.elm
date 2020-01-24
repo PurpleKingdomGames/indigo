@@ -36,8 +36,9 @@ type alias BaseFontSheet =
     { size : Int
     , fontPath : Maybe String
     , fontName : Maybe String
-    , asciiOnly : Bool
+    , renderType : Int
     , padding : Int
+    , specificGlyphs : Maybe String
     }
 
 
@@ -48,6 +49,12 @@ type alias FontMapData =
     }
 
 
+type FontRenderType
+    = AsciiOnly
+    | AllGlyphs
+    | SpecificGlyphs
+
+
 type FontLoadInfo
     = Ok FontMapData
     | Err String
@@ -55,7 +62,8 @@ type FontLoadInfo
 
 type FontSheetMsg
     = FontSizeUpdated Float
-    | AsciiOnlyUpdated Bool
+    | RenderTypeUpdated FontRenderType
+    | SpecificGlyphsUpdated String
     | PaddingUpdated Float
     | FontUploadRequested
     | FontUploadSelected File
@@ -81,8 +89,9 @@ initialModel =
         { size = 16
         , fontPath = Nothing
         , fontName = Nothing
-        , asciiOnly = True
+        , renderType = 0
         , padding = 1
+        , specificGlyphs = Nothing
         }
     , fontData = Nothing
     }
@@ -98,10 +107,17 @@ update msg model =
             in
             ( { model | base = newBase }, processFont newBase )
 
-        AsciiOnlyUpdated value ->
+        RenderTypeUpdated value ->
             let
                 newBase =
-                    (\base -> { base | asciiOnly = value }) model.base
+                    (\base -> { base | renderType = renderTypeToInt value }) model.base
+            in
+            ( { model | base = newBase }, processFont newBase )
+
+        SpecificGlyphsUpdated value ->
+            let
+                newBase =
+                    (\base -> { base | specificGlyphs = Just value }) model.base
             in
             ( { model | base = newBase }, processFont newBase )
 
@@ -248,17 +264,46 @@ chooseOptions model =
                 ]
                 { label = Input.labelLeft [] (text ""), min = 0, max = 10, step = Just 1, thumb = Input.defaultThumb, onChange = PaddingUpdated, value = toFloat model.padding }
             ]
-        , row [ spacing 20 ]
-            [ text "ASCII Only?"
-            , Input.checkbox []
-                { onChange = AsciiOnlyUpdated
-                , icon = Input.defaultCheckbox
-                , checked = model.asciiOnly
-                , label =
-                    Input.labelRight []
-                        (text "")
+        , row [ spacing 20, width fill ]
+            [ Input.radio
+                [ padding 10
+                , spacing 20
+                ]
+                { onChange = RenderTypeUpdated
+                , selected = Just (intToRenderType model.renderType)
+                , label = Input.labelAbove [] (text "")
+                , options =
+                    [ Input.option AsciiOnly (text "ASCII")
+                    , Input.option SpecificGlyphs (text "Specified Glyphs")
+                    , Input.option AllGlyphs (text "All Glyphs")
+                    ]
                 }
             ]
+        , row [ spacing 20, width fill ]
+            (case intToRenderType model.renderType of
+                SpecificGlyphs ->
+                    [ text "Glyphs"
+                    , Input.text
+                        [ padding 10
+                        , spacing 20
+                        , Font.color (Element.rgb 0 0 0)
+                        ]
+                        { onChange = SpecificGlyphsUpdated
+                        , text =
+                            case model.specificGlyphs of
+                                Just str ->
+                                    str
+
+                                Nothing ->
+                                    ""
+                        , placeholder = Nothing
+                        , label = Input.labelLeft [] (text "")
+                        }
+                    ]
+
+                _ ->
+                    []
+            )
         ]
 
 
@@ -335,6 +380,32 @@ previewFont model =
                     []
             )
         ]
+
+
+renderTypeToInt : FontRenderType -> Int
+renderTypeToInt renderType =
+    case renderType of
+        AsciiOnly ->
+            0
+
+        SpecificGlyphs ->
+            1
+
+        AllGlyphs ->
+            2
+
+
+intToRenderType : Int -> FontRenderType
+intToRenderType i =
+    case i of
+        0 ->
+            AsciiOnly
+
+        1 ->
+            SpecificGlyphs
+
+        _ ->
+            AllGlyphs
 
 
 subscriptions : Sub FontSheetMsg

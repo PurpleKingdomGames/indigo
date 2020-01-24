@@ -16,6 +16,18 @@ app.ports.processFont.subscribe(function(fontData) {
     if (fontData.fontPath === null)
         return;
 
+    let specificGlyphs = null;
+    if (fontData.renderType === 1)
+        if (fontData.specificGlyphs === null)
+            specificGlyphs = []
+        else
+            specificGlyphs = [...new Set(
+                fontData
+                    .specificGlyphs
+                    .split('')
+                    .map(c => c.codePointAt(0))
+            )];
+
     opentype.load(fontData.fontPath, function(e, font) {
         if (e !== null) {
             app.ports.fontProcessErr.send(e.message);
@@ -35,12 +47,14 @@ app.ports.processFont.subscribe(function(fontData) {
             if (!font.glyphs.glyphs.hasOwnProperty(key))
                 continue;
 
-            let glyph = font.glyphs.glyphs[key];
+            const glyph = font.glyphs.glyphs[key];
             if (glyph == null || glyph.unicodes.length === 0)
                 continue;
 
             // Limit to ASCII if defined
-            if (fontData.asciiOnly === true && glyph.unicodes.some(e => e > 255))
+            if (fontData.renderType === 0 && glyph.unicodes.some(e => e > 255))
+                continue;
+            else if (specificGlyphs != null && !glyph.unicodes.some(e => specificGlyphs.some(c => c === e)))
                 continue;
 
             const boundingBox = glyph.getBoundingBox();
@@ -67,7 +81,7 @@ app.ports.processFont.subscribe(function(fontData) {
                 })
                 .reverse()
                 .map(glyph => {
-                    const chars = glyph.unicodes.map(c => String.fromCharCode(c)).join('');
+                    const chars = glyph.unicodes.map(c => String.fromCodePoint(c)).join('');
                     const width = Math.round(font.getAdvanceWidth(chars, fontData.size));
 
                     return {
@@ -81,8 +95,8 @@ app.ports.processFont.subscribe(function(fontData) {
 
         let canvasEl = document.createElement('canvas');
         let canvas = canvasEl.getContext('2d');
-        canvasEl.width = Math.min(spritePacker.root.w, 4096);
-        canvasEl.height = Math.min(spritePacker.root.h, 4096);
+        canvasEl.width = Math.max(16, Math.min(spritePacker.root.w, 4096));
+        canvasEl.height = Math.max(16, Math.min(spritePacker.root.h, 4096));
 
         sprites.forEach(data => {
             const x = data.fit.x + fontData.padding;
