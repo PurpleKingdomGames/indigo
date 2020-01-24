@@ -8,6 +8,7 @@ trait EventTypeAliases {
   type InputEvent  = events.InputEvent
 
   type InputState = events.InputState
+  val InputState: events.InputState.type = events.InputState
 
   type MouseEvent = events.MouseEvent
   val MouseEvent: events.MouseEvent.type = events.MouseEvent
