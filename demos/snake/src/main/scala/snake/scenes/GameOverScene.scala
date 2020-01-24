@@ -5,6 +5,7 @@ import indigoexts.lenses.Lens
 import indigoexts.scenes._
 import snake.model.{SnakeGameModel, SnakeViewModel}
 import snake.init.{GameAssets, Settings}
+import indigoexts.subsystems.SubSystem
 
 object GameOverScene extends Scene[SnakeGameModel, SnakeViewModel] {
   type SceneModel     = Int
@@ -17,6 +18,9 @@ object GameOverScene extends Scene[SnakeGameModel, SnakeViewModel] {
 
   val sceneViewModelLens: Lens[SnakeViewModel, Unit] =
     Lens.fixed(())
+
+  val sceneSubSystems: Set[SubSystem] =
+    Set()
 
   def updateSceneModel(gameTime: GameTime, pointsScored: Int, dice: Dice): GlobalEvent => Outcome[Int] = {
     case KeyboardEvent.KeyUp(Keys.SPACE) =>
@@ -31,7 +35,7 @@ object GameOverScene extends Scene[SnakeGameModel, SnakeViewModel] {
       gameTime: GameTime,
       pointsScored: Int,
       sceneViewModel: Unit,
-      frameInputEvents: FrameInputEvents, 
+      inputState: InputState,
       dice: Dice
   ): Outcome[Unit] =
     Outcome(())
@@ -40,7 +44,7 @@ object GameOverScene extends Scene[SnakeGameModel, SnakeViewModel] {
       gameTime: GameTime,
       pointsScored: Int,
       sceneViewModel: Unit,
-      frameInputEvents: FrameInputEvents
+      inputState: InputState
   ): SceneUpdateFragment = {
     val horizontalCenter: Int = (Settings.viewportWidth / Settings.magnificationLevel) / 2
     val verticalMiddle: Int   = (Settings.viewportHeight / Settings.magnificationLevel) / 2

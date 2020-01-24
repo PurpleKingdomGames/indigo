@@ -3,13 +3,11 @@ package snake
 import indigo._
 import indigoexts.entrypoint._
 import indigoexts.scenes._
-import indigo.AsString._
 import indigoexts.subsystems.fpscounter.FPSCounter
 
 import snake.model.{ControlScheme, SnakeGameModel, SnakeViewModel}
 import snake.init.{GameAssets, Settings, SnakeStartupData}
 import snake.scenes.{ControlsScene, GameOverScene, GameScene, StartScene}
-import snake.gamelogic.{Score, ModelLogic}
 
 object SnakeGame extends IndigoGameWithScenes[SnakeStartupData, SnakeGameModel, SnakeViewModel] {
 
@@ -34,10 +32,7 @@ object SnakeGame extends IndigoGameWithScenes[SnakeStartupData, SnakeGameModel, 
     Option(StartScene.name)
 
   val subSystems: Set[SubSystem] =
-    Set(
-      Score.automataSubSystem(ModelLogic.ScoreIncrement.show, GameAssets.fontKey),
-      FPSCounter.subSystem(GameAssets.fontKey, Point(5, 5))
-    )
+    Set(FPSCounter.subSystem(GameAssets.fontKey, Point(5, 5), 30))
 
   val scenes: NonEmptyList[Scene[SnakeGameModel, SnakeViewModel]] =
     NonEmptyList(StartScene, ControlsScene, GameScene, GameOverScene)

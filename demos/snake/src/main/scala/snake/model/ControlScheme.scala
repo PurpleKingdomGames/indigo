@@ -1,7 +1,6 @@
 package snake.model
 
 import indigo._
-import indigo.EqualTo._
 
 import snake.model.snakemodel.{Snake, SnakeDirection}
 
@@ -44,6 +43,6 @@ object ControlScheme {
   val turningKeys: Turning   = Turning(Keys.LEFT_ARROW, Keys.RIGHT_ARROW)
   val directedKeys: Directed = Directed(Keys.UP_ARROW, Keys.DOWN_ARROW, Keys.LEFT_ARROW, Keys.RIGHT_ARROW)
 
-  case class Turning(left: KeyCode, right: KeyCode)                              extends ControlScheme
-  case class Directed(up: KeyCode, down: KeyCode, left: KeyCode, right: KeyCode) extends ControlScheme
+  case class Turning(left: Key, right: Key)                              extends ControlScheme
+  case class Directed(up: Key, down: Key, left: Key, right: Key) extends ControlScheme
 }

@@ -8,7 +8,7 @@ lazy val snake =
     .settings(                               // Standard SBT settings
       name := "snake",
       version := "0.0.1",
-      scalaVersion := "2.12.8",
+      scalaVersion := "2.12.10",
       organization := "snake",
       libraryDependencies ++= Seq(
         "com.lihaoyi"    %%% "utest"      % "0.6.6"  % "test",
@@ -22,8 +22,8 @@ lazy val snake =
       gameAssetsDirectory := "assets",
       scalaJSUseMainModuleInitializer := true,
       libraryDependencies ++= Seq(
-        "indigo" %%% "circe9"      % "0.0.10-SNAPSHOT", // Needed for Aseprite & Tiled support
-        "indigo" %%% "indigo-exts" % "0.0.10-SNAPSHOT"  // Important! :-)
+        "indigo" %%% "circe12"      % "0.0.12-SNAPSHOT", // Needed for Aseprite & Tiled support
+        "indigo" %%% "indigo-exts" % "0.0.12-SNAPSHOT"  // Important! :-)
       )
     )
 

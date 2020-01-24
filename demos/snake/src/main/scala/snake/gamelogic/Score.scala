@@ -2,7 +2,6 @@ package snake.gamelogic
 
 import indigo._
 import indigoexts.subsystems.automata._
-import indigo.syntax._
 
 object Score {
 
@@ -10,17 +9,17 @@ object Score {
     AutomataPoolKey("points")
 
   def automataSubSystem(scoreAmount: String, fontKey: FontKey): Automata =
-    Automata.empty
-      .add(
-        Automaton(
-          poolKey,
-          Text(scoreAmount, 0, 0, 1, fontKey).alignCenter,
-          Millis(1500)
-        ).withModifier(ModiferFunctions.signal)
-      )
+    Automata(
+      poolKey,
+      Automaton(
+        Text(scoreAmount, 0, 0, 1, fontKey).alignCenter,
+        Millis(1500)
+      ).withModifier(ModiferFunctions.signal),
+      Automata.Layer.UI
+    )
 
   val spawnEvent: Point => AutomataEvent =
-    position => AutomataEvent.Spawn(poolKey, position)
+    position => AutomataEvent.Spawn(poolKey, position, None, None)
 
   object ModiferFunctions {
 
@@ -40,17 +39,18 @@ object Score {
             spawnedAt + Point(0, -(30 * multiplier).toInt)
         }
 
-    val signal: (AutomatonSeedValues, Renderable) => Signal[Outcome[Renderable]] =
-      (seed, renderable) =>
+    val signal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
+      (seed, sceneGraphNode) =>
         (input(seed) |> mapSeedToPosition).map { position =>
-          Outcome(
-            renderable match {
+          AutomatonUpdate(
+            sceneGraphNode match {
               case t: Text =>
-                t.moveTo(position)
+                List(t.moveTo(position))
 
-              case r =>
-                r
-            }
+              case _ =>
+                Nil
+            },
+            Nil
           )
         }
 

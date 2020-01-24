@@ -1,7 +1,6 @@
 package snake.scenes
 
 import indigo._
-import indigo.syntax._
 
 import snake.init.GameAssets
 
