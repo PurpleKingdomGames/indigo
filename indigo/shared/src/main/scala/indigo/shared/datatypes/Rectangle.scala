@@ -71,6 +71,12 @@ final class Rectangle(val position: Point, val size: Point) {
 
   def ===(other: Rectangle): Boolean =
     implicitly[EqualTo[Rectangle]].equal(this, other)
+
+  @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
+  override def equals(obj: Any): Boolean =
+    if(obj.isInstanceOf[Rectangle]) {
+       this === obj.asInstanceOf[Rectangle]
+    } else false
 }
 
 object Rectangle {
