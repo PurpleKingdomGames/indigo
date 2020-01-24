@@ -5,7 +5,7 @@ import indigo.shared.constants.Key
 import indigo.shared.datatypes.Rectangle
 import scala.annotation.tailrec
 
-final class InputState(val mouse: MouseSignals, val keyboard: KeyboardSignals)
+final class InputState(val mouse: MouseState, val keyboard: KeyboardState)
 
 object InputState {
   val default: InputState =
@@ -18,7 +18,7 @@ object InputState {
     )
 }
 
-final class MouseSignals(mouseEvents: List[MouseEvent], val position: Point, val leftMouseIsDown: Boolean) {
+final class MouseState(mouseEvents: List[MouseEvent], val position: Point, val leftMouseIsDown: Boolean) {
 
   lazy val mousePressed: Boolean =
     mouseEvents.exists {
@@ -83,11 +83,11 @@ final class MouseSignals(mouseEvents: List[MouseEvent], val position: Point, val
 
 }
 object MouseSignals {
-  val default: MouseSignals =
-    new MouseSignals(Nil, Point.zero, false)
+  val default: MouseState =
+    new MouseState(Nil, Point.zero, false)
 
-  def calculateNext(previous: MouseSignals, events: List[MouseEvent]): MouseSignals =
-    new MouseSignals(
+  def calculateNext(previous: MouseState, events: List[MouseEvent]): MouseState =
+    new MouseState(
       events,
       lastMousePosition(previous.position, events),
       isLeftMouseDown(previous.leftMouseIsDown, events)
@@ -116,7 +116,7 @@ object MouseSignals {
     }
 }
 
-final class KeyboardSignals(keyboardEvents: List[KeyboardEvent], val keysDown: List[Key], val lastKeyHeldDown: Option[Key]) {
+final class KeyboardState(keyboardEvents: List[KeyboardEvent], val keysDown: List[Key], val lastKeyHeldDown: Option[Key]) {
 
   lazy val keysReleased: List[Key] = keyboardEvents.collect { case k: KeyboardEvent.KeyUp => k.keyCode }
 
@@ -126,13 +126,13 @@ final class KeyboardSignals(keyboardEvents: List[KeyboardEvent], val keysDown: L
 }
 object KeyboardSignals {
 
-  val default: KeyboardSignals =
-    new KeyboardSignals(Nil, Nil, None)
+  val default: KeyboardState =
+    new KeyboardState(Nil, Nil, None)
 
-  def calculateNext(previous: KeyboardSignals, events: List[KeyboardEvent]): KeyboardSignals = {
+  def calculateNext(previous: KeyboardState, events: List[KeyboardEvent]): KeyboardState = {
     val keysDown = calculateKeysDown(events, previous.keysDown)
 
-    new KeyboardSignals(
+    new KeyboardState(
       events,
       keysDown,
       keysDown.reverse.headOption
