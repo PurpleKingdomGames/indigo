@@ -1,14 +1,27 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-# Run from project root i.e.
-# bash scripts/localbuild.sh
-
-# publish the main libs to your ivy local directory
-sbt localPublish
-
-# publish the plugin - uses a meta build so is a bit funky
-cd project
-
-sbt sbtIndigo/publishLocal
-
+# Indigo
+echo ">>> Indigo"
+cd indigo
+bash localpublish.sh
 cd ..
+
+# Examples
+echo ">>> Examples"
+cd examples
+bash localbuild.sh
+cd ..
+
+# Demos
+echo ">>> Snake"
+cd demos/snake
+sbt buildGameFull
+cd ../..
+
+# Supporting tooling...
+# JS API
+# Tooling
+
+# Documentation...
+# Docs site
+
