@@ -5,7 +5,6 @@ import indigo.shared.Outcome
 import indigo.shared.time.GameTime
 import indigo.shared.events.{GlobalEvent, InputState}
 import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.events.InputEvent
 
 trait FrameProcessor[Model, ViewModel] {
   def run: (Model, ViewModel, GameTime, List[GlobalEvent], InputState, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])]
@@ -51,8 +50,6 @@ object StandardFrameProcessor {
       standardFrameProcessor: StandardFrameProcessor[Model, ViewModel]
   ): (Model, ViewModel, GameTime, List[GlobalEvent], InputState, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] =
     (model, viewModel, gameTime, globalEvents, inputState, dice) => {
-      val events: InputState =
-        inputState.calculateNext(globalEvents.collect { case e: InputEvent => e })
 
       val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
         acc.flatMapState { next =>
@@ -62,11 +59,11 @@ object StandardFrameProcessor {
 
       val updatedViewModel: Outcome[ViewModel] =
         updatedModel.flatMapState { m =>
-          standardFrameProcessor.updateViewModel(gameTime, m, viewModel, events, dice)
+          standardFrameProcessor.updateViewModel(gameTime, m, viewModel, inputState, dice)
         }
 
       val view: SceneUpdateFragment =
-        standardFrameProcessor.updateView(gameTime, updatedModel.state, updatedViewModel.state, events)
+        standardFrameProcessor.updateView(gameTime, updatedModel.state, updatedViewModel.state, inputState)
 
       Outcome.combine3(updatedModel, updatedViewModel, Outcome(Some(view)))
     }
@@ -75,8 +72,6 @@ object StandardFrameProcessor {
       standardFrameProcessor: StandardFrameProcessor[Model, ViewModel]
   ): (Model, ViewModel, GameTime, List[GlobalEvent], InputState, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] =
     (model, viewModel, gameTime, globalEvents, inputState, dice) => {
-      val events: InputState =
-        inputState.calculateNext(globalEvents.collect { case e: InputEvent => e })
 
       val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
         acc.flatMapState { next =>
@@ -86,7 +81,7 @@ object StandardFrameProcessor {
 
       val updatedViewModel: Outcome[ViewModel] =
         updatedModel.flatMapState { m =>
-          standardFrameProcessor.updateViewModel(gameTime, m, viewModel, events, dice)
+          standardFrameProcessor.updateViewModel(gameTime, m, viewModel, inputState, dice)
         }
 
       Outcome.combine3(updatedModel, updatedViewModel, Outcome(None))
