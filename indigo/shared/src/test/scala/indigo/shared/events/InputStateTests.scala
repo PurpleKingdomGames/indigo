@@ -34,7 +34,7 @@ object InputStateTests extends TestSuite {
             MouseEvent.Click(10, 10)
           )
 
-        val state = inputState.calculateNext(events)
+        val state = InputState.calculateNext(inputState, events)
 
         "position" - {
           state.mouse.position === Point(10, 10) ==> true
@@ -51,23 +51,25 @@ object InputStateTests extends TestSuite {
         "mouseClicked" - {
           state.mouse.mouseClicked ==> true
 
-          inputState.calculateNext(List(MouseEvent.MouseDown(0, 0))).mouse.mouseClicked ==> false
+          InputState.calculateNext(inputState, List(MouseEvent.MouseDown(0, 0))).mouse.mouseClicked ==> false
         }
 
         "mouseClickAt" - {
           state.mouse.mouseClickAt ==> Some(Point(10, 10))
 
-          inputState.calculateNext(List(MouseEvent.MouseDown(0, 0))).mouse.mouseClickAt ==> None
+          InputState.calculateNext(inputState, List(MouseEvent.MouseDown(0, 0))).mouse.mouseClickAt ==> None
         }
 
         "mouseUpAt" - {
           state.mouse.mouseUpAt ==> Some(Point(10, 10))
-          inputState.calculateNext(List(MouseEvent.MouseDown(0, 0))).mouse.mouseUpAt ==> None
+
+          InputState.calculateNext(inputState, List(MouseEvent.MouseDown(0, 0))).mouse.mouseUpAt ==> None
         }
 
         "mouseDownAt" - {
           state.mouse.mouseDownAt ==> Some(Point(10, 10))
-          inputState.calculateNext(List(MouseEvent.MouseUp(0, 0))).mouse.mouseDownAt ==> None
+
+          InputState.calculateNext(inputState, List(MouseEvent.MouseUp(0, 0))).mouse.mouseDownAt ==> None
         }
 
         "wasMouseClickedAt" - {
@@ -115,13 +117,13 @@ object InputStateTests extends TestSuite {
         }
 
         "leftMouseIsDown" - {
-          
-          val state2 = state.calculateNext(List(MouseEvent.MouseDown(0, 0))) // true
-          val state3 = state2.calculateNext(Nil) // still true
-          val state4 = state3.calculateNext(List(MouseEvent.MouseDown(20, 20))) // still true
-          val state5 = state4.calculateNext(List(MouseEvent.MouseUp(20, 20), MouseEvent.MouseDown(20, 20))) // Still true
-          val state6 = state5.calculateNext(List(MouseEvent.MouseUp(20, 20))) // false
-          val state7 = state6.calculateNext(List(MouseEvent.MouseDown(20, 20), MouseEvent.MouseUp(20, 20))) // Still false
+
+          val state2 = InputState.calculateNext(state, List(MouseEvent.MouseDown(0, 0)))                                // true
+          val state3 = InputState.calculateNext(state2, Nil)                                                            // still true
+          val state4 = InputState.calculateNext(state3, List(MouseEvent.MouseDown(20, 20)))                             // still true
+          val state5 = InputState.calculateNext(state4, List(MouseEvent.MouseUp(20, 20), MouseEvent.MouseDown(20, 20))) // Still true
+          val state6 = InputState.calculateNext(state5, List(MouseEvent.MouseUp(20, 20)))                               // false
+          val state7 = InputState.calculateNext(state6, List(MouseEvent.MouseDown(20, 20), MouseEvent.MouseUp(20, 20))) // Still false
 
           state.mouse.leftMouseIsDown ==> false
           state2.mouse.leftMouseIsDown ==> true
@@ -149,7 +151,7 @@ object InputStateTests extends TestSuite {
           )
 
         "keysDown" - {
-          val state = inputState.calculateNext(events)
+          val state = InputState.calculateNext(inputState, events)
 
           val expected =
             List(
@@ -165,7 +167,7 @@ object InputStateTests extends TestSuite {
         }
 
         "keysAreDown" - {
-          val state = inputState.calculateNext(events)
+          val state = InputState.calculateNext(inputState, events)
 
           state.keyboard.keysAreDown(Keys.KEY_D, Keys.KEY_E, Keys.KEY_F) ==> true
           state.keyboard.keysAreDown(Keys.KEY_F, Keys.KEY_D) ==> true
@@ -175,7 +177,7 @@ object InputStateTests extends TestSuite {
         }
 
         "keysAreUp" - {
-          val state = inputState.calculateNext(events)
+          val state = InputState.calculateNext(inputState, events)
 
           state.keyboard.keysAreUp(Keys.KEY_A, Keys.KEY_B, Keys.KEY_C) ==> true
           state.keyboard.keysAreUp(Keys.KEY_C, Keys.KEY_B) ==> true
@@ -185,7 +187,7 @@ object InputStateTests extends TestSuite {
         }
 
         "keysReleased" - {
-          val state = inputState.calculateNext(events)
+          val state = InputState.calculateNext(inputState, events)
 
           val expected =
             List(
@@ -202,11 +204,12 @@ object InputStateTests extends TestSuite {
         }
 
         "keysDown persist across frames" - {
-          val state1 = inputState.calculateNext(events)
+          val state1 = InputState.calculateNext(inputState, events)
 
           state1.keyboard.keysDown ==> List(Keys.KEY_D, Keys.KEY_E, Keys.KEY_F)
 
-          val state2 = state1.calculateNext(
+          val state2 = InputState.calculateNext(
+            state1,
             List(
               KeyboardEvent.KeyDown(Keys.KEY_Z),
               KeyboardEvent.KeyUp(Keys.KEY_D)
@@ -221,27 +224,30 @@ object InputStateTests extends TestSuite {
           inputState.keyboard.lastKeyHeldDown ==> None
 
           val state1 =
-            inputState
-              .calculateNext(events)
-              .calculateNext(List(KeyboardEvent.KeyDown(Keys.KEY_E), KeyboardEvent.KeyDown(Keys.KEY_F)))
+            InputState.calculateNext(
+              InputState.calculateNext(inputState, events),
+              List(KeyboardEvent.KeyDown(Keys.KEY_E), KeyboardEvent.KeyDown(Keys.KEY_F))
+            )
 
           state1.keyboard.lastKeyHeldDown ==> Some(Keys.KEY_F)
 
           val state2 =
-            state1
-              .calculateNext(List(KeyboardEvent.KeyDown(Keys.KEY_E)))
+            InputState.calculateNext(
+              state1,
+              List(KeyboardEvent.KeyDown(Keys.KEY_E))
+            )
 
           state2.keyboard.lastKeyHeldDown ==> Some(Keys.KEY_E)
 
           val state3 =
-            state2
-              .calculateNext(
-                List(
-                  KeyboardEvent.KeyUp(Keys.KEY_D),
-                  KeyboardEvent.KeyUp(Keys.KEY_E),
-                  KeyboardEvent.KeyUp(Keys.KEY_F)
-                )
+            InputState.calculateNext(
+              state2,
+              List(
+                KeyboardEvent.KeyUp(Keys.KEY_D),
+                KeyboardEvent.KeyUp(Keys.KEY_E),
+                KeyboardEvent.KeyUp(Keys.KEY_F)
               )
+            )
 
           state3.keyboard.lastKeyHeldDown ==> None
         }

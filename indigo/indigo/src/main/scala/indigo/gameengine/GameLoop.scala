@@ -109,7 +109,7 @@ class GameLoop[GameModel, ViewModel](
 
   private def persistSignalsState(collectedEvents: List[GlobalEvent]): GameContext[Unit] =
     GameContext {
-      inputState = inputState.calculateNext(collectedEvents.collect { case e: InputEvent => e })
+      inputState = InputState.calculateNext(inputState, collectedEvents.collect { case e: InputEvent => e })
     }
 
 }

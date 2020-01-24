@@ -5,10 +5,7 @@ import indigo.shared.constants.Key
 import indigo.shared.datatypes.Rectangle
 import scala.annotation.tailrec
 
-final class InputState(val mouse: MouseSignals, val keyboard: KeyboardSignals) {
-  def calculateNext(events: List[InputEvent]): InputState =
-    InputState.calculateNext(this, events)
-}
+final class InputState(val mouse: MouseSignals, val keyboard: KeyboardSignals)
 
 object InputState {
   val default: InputState =
@@ -19,41 +16,6 @@ object InputState {
       MouseSignals.calculateNext(previous.mouse, events.collect { case e: MouseEvent          => e }),
       KeyboardSignals.calculateNext(previous.keyboard, events.collect { case e: KeyboardEvent => e })
     )
-
-  // events.foldLeft(previous) { (inputState, e) =>
-  //   e match {
-  //     case mp: MouseEvent.Move =>
-  //       inputState.copy(mousePosition = mp.position)
-
-  //     case _: MouseEvent.MouseDown =>
-  //       inputState.copy(leftMouseHeldDown = true)
-
-  //     case _: MouseEvent.MouseUp =>
-  //       inputState.copy(leftMouseHeldDown = false)
-
-  //     case e: KeyboardEvent.KeyDown =>
-  //       inputState.copy(
-  //         keysDown = inputState.keysDown + e.keyCode,
-  //         lastKeyHeldDown = Some(e.keyCode)
-  //       )
-
-  //     case e: KeyboardEvent.KeyUp =>
-  //       val keysDown = inputState.keysDown.filterNot(_ === e.keyCode)
-
-  //       val lastKey = inputState.lastKeyHeldDown.flatMap { key =>
-  //         if (key === e.keyCode || !keysDown.contains(key)) None
-  //         else Some(key)
-  //       }
-
-  //       inputState.copy(
-  //         keysDown = keysDown,
-  //         lastKeyHeldDown = lastKey
-  //       )
-
-  //     case _ =>
-  //       inputState
-  //   }
-  // }
 }
 
 final class MouseSignals(mouseEvents: List[MouseEvent], val position: Point, val leftMouseIsDown: Boolean) {
