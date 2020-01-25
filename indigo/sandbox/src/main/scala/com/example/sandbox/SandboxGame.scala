@@ -61,7 +61,7 @@ object SandboxGame extends IndigoGameBasic[SandboxStartupData, SandboxGameModel,
   def initialModel(startupData: SandboxStartupData): SandboxGameModel =
     SandboxModel.initialModel(startupData)
 
-  def update(gameTime: GameTime, model: SandboxGameModel, dice: Dice): GlobalEvent => Outcome[SandboxGameModel] =
+  def update(gameTime: GameTime, model: SandboxGameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[SandboxGameModel] =
     SandboxModel.updateModel(model)
 
   def initialViewModel(startupData: SandboxStartupData): SandboxGameModel => SandboxViewModel = _ => SandboxViewModel(0, 0)

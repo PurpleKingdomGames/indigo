@@ -33,7 +33,7 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] {
 
   def initialModel(startupData: StartupData): Model
 
-  def update(gameTime: GameTime, model: Model, dice: Dice): GlobalEvent => Outcome[Model]
+  def update(gameTime: GameTime, model: Model, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Model]
 
   def initialViewModel(startupData: StartupData): Model => ViewModel
 

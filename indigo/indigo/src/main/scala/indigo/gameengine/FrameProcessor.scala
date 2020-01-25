@@ -13,7 +13,7 @@ trait FrameProcessor[Model, ViewModel] {
 
 trait StandardFrameProcessor[Model, ViewModel] extends FrameProcessor[Model, ViewModel] {
 
-  def updateModel(gameTime: GameTime, model: Model, dice: Dice): GlobalEvent => Outcome[Model]
+  def updateModel(gameTime: GameTime, model: Model, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Model]
 
   def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, dice: Dice): Outcome[ViewModel]
 
@@ -29,14 +29,14 @@ trait StandardFrameProcessor[Model, ViewModel] extends FrameProcessor[Model, Vie
 object StandardFrameProcessor {
 
   def apply[Model, ViewModel](
-      modelUpdate: (GameTime, Model, Dice) => GlobalEvent => Outcome[Model],
+      modelUpdate: (GameTime, Model, InputState, Dice) => GlobalEvent => Outcome[Model],
       viewModelUpdate: (GameTime, Model, ViewModel, InputState, Dice) => Outcome[ViewModel],
       viewUpdate: (GameTime, Model, ViewModel, InputState) => SceneUpdateFragment
   ): StandardFrameProcessor[Model, ViewModel] =
     new StandardFrameProcessor[Model, ViewModel] {
 
-      def updateModel(gameTime: GameTime, model: Model, dice: Dice): GlobalEvent => Outcome[Model] =
-        modelUpdate(gameTime, model, dice)
+      def updateModel(gameTime: GameTime, model: Model, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Model] =
+        modelUpdate(gameTime, model, inputState, dice)
 
       def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, dice: Dice): Outcome[ViewModel] =
         viewModelUpdate(gameTime, model, viewModel, inputState, dice)
@@ -53,7 +53,7 @@ object StandardFrameProcessor {
 
       val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
         acc.flatMapState { next =>
-          standardFrameProcessor.updateModel(gameTime, next, dice)(e)
+          standardFrameProcessor.updateModel(gameTime, next, inputState, dice)(e)
         }
       }
 
@@ -75,7 +75,7 @@ object StandardFrameProcessor {
 
       val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
         acc.flatMapState { next =>
-          standardFrameProcessor.updateModel(gameTime, next, dice)(e)
+          standardFrameProcessor.updateModel(gameTime, next, inputState, dice)(e)
         }
       }
 

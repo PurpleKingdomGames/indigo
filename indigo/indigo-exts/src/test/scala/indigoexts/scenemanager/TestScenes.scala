@@ -40,7 +40,7 @@ final case class TestSceneA() extends Scene[TestGameModel, TestViewModel] {
 
   val sceneSubSystems: Set[SubSystem] = Set()
 
-  def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelA, dice: Dice): GlobalEvent => Outcome[TestSceneModelA] =
+  def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelA, inputState: InputState, dice: Dice): GlobalEvent => Outcome[TestSceneModelA] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 1))
 
   def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, inputState: InputState, dice: Dice): Outcome[TestSceneViewModelA] =
@@ -73,7 +73,7 @@ final case class TestSceneB() extends Scene[TestGameModel, TestViewModel] {
 
   val sceneSubSystems: Set[SubSystem] = Set()
 
-  def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelB, dice: Dice): GlobalEvent => Outcome[TestSceneModelB] =
+  def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelB, inputState: InputState, dice: Dice): GlobalEvent => Outcome[TestSceneModelB] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 10))
 
   def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, inputState: InputState, dice: Dice): Outcome[TestSceneViewModelB] =

@@ -28,7 +28,7 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
 
   // Scene delegation
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-  def updateModel(gameTime: GameTime, model: GameModel, dice: Dice): GlobalEvent => Outcome[GameModel] = {
+  def updateModel(gameTime: GameTime, model: GameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[GameModel] = {
     case SceneEvent.Next =>
       finderInstance = finderInstance.forward
       Outcome(model)
@@ -58,7 +58,7 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
             .getOrElse(Nil)
 
           Scene
-            .updateModel(scene, gameTime, model, dice)(event)
+            .updateModel(scene, gameTime, model, inputState, dice)(event)
             .addGlobalEvents(subsystemOutcomeEvents)
       }
   }

@@ -19,17 +19,17 @@ trait Scene[GameModel, ViewModel] {
 
   val sceneSubSystems: Set[SubSystem]
 
-  def updateSceneModel(gameTime: GameTime, sceneModel: SceneModel, dice: Dice): GlobalEvent => Outcome[SceneModel]
+  def updateSceneModel(gameTime: GameTime, sceneModel: SceneModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[SceneModel]
   def updateSceneViewModel(gameTime: GameTime, sceneModel: SceneModel, sceneViewModel: SceneViewModel, inputState: InputState, dice: Dice): Outcome[SceneViewModel]
   def updateSceneView(gameTime: GameTime, sceneModel: SceneModel, sceneViewModel: SceneViewModel, inputState: InputState): SceneUpdateFragment
 
 }
 object Scene {
 
-  def updateModel[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, gameModel: GM, dice: Dice): GlobalEvent => Outcome[GM] =
+  def updateModel[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, gameModel: GM, inputState: InputState, dice: Dice): GlobalEvent => Outcome[GM] =
     e =>
       scene
-        .updateSceneModel(gameTime, scene.sceneModelLens.get(gameModel), dice)(e)
+        .updateSceneModel(gameTime, scene.sceneModelLens.get(gameModel), inputState, dice)(e)
         .mapState(scene.sceneModelLens.set(gameModel, _))
 
   def updateViewModel[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, model: GM, viewModel: VM, inputState: InputState, dice: Dice): Outcome[VM] =

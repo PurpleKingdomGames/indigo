@@ -72,7 +72,7 @@ object PerfGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
     res.getOrElse(Startup.Failure(StartupErrors("Failed to load the dude")))
   }
 
-  def update(gameTime: GameTime, model: MyGameModel, dice: Dice): GlobalEvent => Outcome[MyGameModel] =
+  def update(gameTime: GameTime, model: MyGameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[MyGameModel] =
     PerfModel.updateModel(model)
 
   def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
