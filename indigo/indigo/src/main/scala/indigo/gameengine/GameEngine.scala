@@ -12,6 +12,7 @@ import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 import indigo.platform.assets._
 import indigo.platform.audio.AudioPlayerImpl
+import indigo.platform.input.GamepadInputCaptureImpl
 import indigo.shared.platform.AudioPlayer
 import indigo.shared.platform.GlobalEventStream
 import indigo.platform.events.GlobalEventStreamImpl
@@ -27,6 +28,7 @@ import scala.concurrent.Future
 import indigo.shared.EqualTo._
 import indigo.shared.platform.Storage
 import indigo.platform.storage.PlatformStorage
+import indigo.shared.input.GamepadInputCapture
 
 final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     config: GameConfig,
@@ -103,6 +105,9 @@ object GameEngine {
         val globalEventStream: GlobalEventStream =
           GlobalEventStreamImpl.default(audioPlayer, storage)
 
+        val gamepadInputCapture: GamepadInputCapture =
+          GamepadInputCaptureImpl()
+
         val startupData: Startup[StartupError, StartupData] = initialise(assetCollection)
 
         val platform: Platform =
@@ -124,6 +129,7 @@ object GameEngine {
               frameProccessor,
               metrics,
               globalEventStream,
+              gamepadInputCapture,
               platform.tick
             )
           } yield gameLoopInstance.loop(0)
@@ -173,6 +179,7 @@ object GameEngine {
       frameProccessor: FrameProcessor[GameModel, ViewModel],
       metrics: Metrics,
       globalEventStream: GlobalEventStream,
+      gamepadInputCapture: GamepadInputCapture,
       callTick: (Long => Unit) => Unit
   ): GameContext[GameLoop[GameModel, ViewModel]] =
     GameContext(
@@ -186,6 +193,7 @@ object GameEngine {
         frameProccessor,
         metrics,
         globalEventStream,
+        gamepadInputCapture,
         callTick
       )
     )

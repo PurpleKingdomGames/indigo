@@ -6,7 +6,7 @@ import indigoexts.entrypoint._
 import indigoexts.formats._
 import indigoexts.subsystems.fpscounter.FPSCounter
 
-object SandboxGame extends IndigoGameBasic[SandboxStartupData, SandboxGameModel, Unit] {
+object SandboxGame extends IndigoGameBasic[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
   val targetFPS: Int = 60
 
@@ -64,14 +64,30 @@ object SandboxGame extends IndigoGameBasic[SandboxStartupData, SandboxGameModel,
   def update(gameTime: GameTime, model: SandboxGameModel, dice: Dice): GlobalEvent => Outcome[SandboxGameModel] =
     SandboxModel.updateModel(model)
 
-  def initialViewModel(startupData: SandboxStartupData): SandboxGameModel => Unit = _ => ()
+  def initialViewModel(startupData: SandboxStartupData): SandboxGameModel => SandboxViewModel = _ => SandboxViewModel(0, 0)
 
-  def updateViewModel(gameTime: GameTime, model: SandboxGameModel, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
-    Outcome(viewModel)
+  def updateViewModel(gameTime: GameTime, model: SandboxGameModel, viewModel: SandboxViewModel, inputState: InputState, dice: Dice): Outcome[SandboxViewModel] =
+    inputState.gamepad.dpad match {
+      case GamepadDPad(true, _, _, _) =>
+        Outcome(viewModel.copy(offsetY = viewModel.offsetY - 1))
 
-  def present(gameTime: GameTime, model: SandboxGameModel, viewModel: Unit, inputState: InputState): SceneUpdateFragment =
-    SandboxView.updateView(model, inputState)
+      case GamepadDPad(_, true, _, _) =>
+        Outcome(viewModel.copy(offsetY = viewModel.offsetY + 1))
+
+      case GamepadDPad(_, _, true, _) =>
+        Outcome(viewModel.copy(offsetX = viewModel.offsetX - 1))
+
+      case GamepadDPad(_, _, _, true) =>
+        Outcome(viewModel.copy(offsetX = viewModel.offsetX + 1))
+
+      case _ =>
+        Outcome(viewModel)
+    }
+
+  def present(gameTime: GameTime, model: SandboxGameModel, viewModel: SandboxViewModel, inputState: InputState): SceneUpdateFragment =
+    SandboxView.updateView(model, viewModel, inputState)
 }
 
 final case class Dude(aseprite: Aseprite, sprite: Sprite)
 final case class SandboxStartupData(dude: Dude)
+final case class SandboxViewModel(offsetX: Int, offsetY: Int)

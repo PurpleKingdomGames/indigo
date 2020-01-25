@@ -16,6 +16,7 @@ import indigo.shared.platform.Renderer
 import indigo.shared.platform.GlobalEventStream
 
 import indigo.shared.scenegraph.SceneGraphViewEvents
+import indigo.shared.input.GamepadInputCapture
 
 class GameLoop[GameModel, ViewModel](
     gameConfig: GameConfig,
@@ -27,6 +28,7 @@ class GameLoop[GameModel, ViewModel](
     frameProcessor: FrameProcessor[GameModel, ViewModel],
     metrics: Metrics,
     globalEventStream: GlobalEventStream,
+    gamepadInputCapture: GamepadInputCapture,
     callTick: (Long => Unit) => Unit
 ) {
 
@@ -109,7 +111,11 @@ class GameLoop[GameModel, ViewModel](
 
   private def persistSignalsState(collectedEvents: List[GlobalEvent]): GameContext[Unit] =
     GameContext {
-      inputState = InputState.calculateNext(inputState, collectedEvents.collect { case e: InputEvent => e })
+      inputState = InputState.calculateNext(
+        inputState,
+        collectedEvents.collect { case e: InputEvent => e },
+        gamepadInputCapture.giveGamepadState
+      )
     }
 
 }

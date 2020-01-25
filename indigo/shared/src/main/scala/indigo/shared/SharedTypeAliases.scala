@@ -33,4 +33,19 @@ trait SharedTypeAliases {
   type TiledMap = shared.formats.TiledMap
   val TiledMap: shared.formats.TiledMap.type = shared.formats.TiledMap
 
+  type Gamepad = shared.input.Gamepad
+  val Gamepad: shared.input.Gamepad.type = shared.input.Gamepad
+
+  type GamepadDPad = shared.input.GamepadDPad
+  val GamepadDPad: shared.input.GamepadDPad.type = shared.input.GamepadDPad
+
+  type GamepadAnalogControls = shared.input.GamepadAnalogControls
+  val GamepadAnalogControls: shared.input.GamepadAnalogControls.type = shared.input.GamepadAnalogControls
+
+  type AnalogAxis = shared.input.AnalogAxis
+  val AnalogAxis: shared.input.AnalogAxis.type = shared.input.AnalogAxis
+
+  type GamepadButtons = shared.input.GamepadButtons
+  val GamepadButtons: shared.input.GamepadButtons.type = shared.input.GamepadButtons
+
 }

@@ -7,14 +7,14 @@ object SandboxView {
 
   val dudeCloneId: CloneId = CloneId("Dude")
 
-  def updateView(model: SandboxGameModel, inputState: InputState): SceneUpdateFragment = {
+  def updateView(model: SandboxGameModel, viewModel: SandboxViewModel, inputState: InputState): SceneUpdateFragment = {
     inputState.mouse.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + position.show)
       case None           => ()
     }
 
     SceneUpdateFragment.empty
-      .addGameLayerNodes(gameLayer(model))
+      .addGameLayerNodes(gameLayer(model, viewModel))
       .addLightingLayerNodes(lightingLayer(inputState))
       .addUiLayerNodes(uiLayer(inputState))
       .withAmbientLight(Tint.White.withAmount(0.25))
@@ -25,7 +25,7 @@ object SandboxView {
     // .withGameColorOverlay(Tint.Red.withAmount(0.5))
   }
 
-  def gameLayer(currentState: SandboxGameModel): List[SceneGraphNode] =
+  def gameLayer(currentState: SandboxGameModel, viewModel: SandboxViewModel): List[SceneGraphNode] =
     List(
       currentState.dude.walkDirection match {
         case d @ DudeLeft =>
@@ -53,7 +53,7 @@ object SandboxView {
             .changeCycle(d.cycleName)
             .play()
       },
-      currentState.dude.dude.sprite.moveBy(8, 10).withAlpha(1).withTint(Tint.Green.withAmount(0.25)),
+      currentState.dude.dude.sprite.moveBy(8, 10).moveBy(viewModel.offsetX, viewModel.offsetY).withAlpha(1).withTint(Tint.Green.withAmount(0.25)),
       currentState.dude.dude.sprite.moveBy(8, -10).withAlpha(0.5).withTint(Tint.Red.withAmount(0.75)),
       Clone(dudeCloneId, Depth(1), CloneTransformData.startAt(Point(16, 64)))
     )

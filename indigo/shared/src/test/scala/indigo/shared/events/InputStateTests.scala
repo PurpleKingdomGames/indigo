@@ -5,6 +5,7 @@ import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
 import indigo.shared.constants.Keys
 import indigo.shared.constants.Key
+import indigo.shared.input.GamepadState
 
 object InputStateTests extends TestSuite {
 
@@ -16,6 +17,9 @@ object InputStateTests extends TestSuite {
 
       val inputState: InputState =
         InputState.default
+
+      val gamepadState: GamepadState =
+        GamepadState.default
 
       "The default state object does the expected thing" - {
         inputState.mouse.leftMouseIsDown ==> false
@@ -34,7 +38,7 @@ object InputStateTests extends TestSuite {
             MouseEvent.Click(10, 10)
           )
 
-        val state = InputState.calculateNext(inputState, events)
+        val state = InputState.calculateNext(inputState, events, gamepadState)
 
         "position" - {
           state.mouse.position === Point(10, 10) ==> true
@@ -51,25 +55,25 @@ object InputStateTests extends TestSuite {
         "mouseClicked" - {
           state.mouse.mouseClicked ==> true
 
-          InputState.calculateNext(inputState, List(MouseEvent.MouseDown(0, 0))).mouse.mouseClicked ==> false
+          InputState.calculateNext(inputState, List(MouseEvent.MouseDown(0, 0)), gamepadState).mouse.mouseClicked ==> false
         }
 
         "mouseClickAt" - {
           state.mouse.mouseClickAt ==> Some(Point(10, 10))
 
-          InputState.calculateNext(inputState, List(MouseEvent.MouseDown(0, 0))).mouse.mouseClickAt ==> None
+          InputState.calculateNext(inputState, List(MouseEvent.MouseDown(0, 0)), gamepadState).mouse.mouseClickAt ==> None
         }
 
         "mouseUpAt" - {
           state.mouse.mouseUpAt ==> Some(Point(10, 10))
 
-          InputState.calculateNext(inputState, List(MouseEvent.MouseDown(0, 0))).mouse.mouseUpAt ==> None
+          InputState.calculateNext(inputState, List(MouseEvent.MouseDown(0, 0)), gamepadState).mouse.mouseUpAt ==> None
         }
 
         "mouseDownAt" - {
           state.mouse.mouseDownAt ==> Some(Point(10, 10))
 
-          InputState.calculateNext(inputState, List(MouseEvent.MouseUp(0, 0))).mouse.mouseDownAt ==> None
+          InputState.calculateNext(inputState, List(MouseEvent.MouseUp(0, 0)), gamepadState).mouse.mouseDownAt ==> None
         }
 
         "wasMouseClickedAt" - {
@@ -118,12 +122,12 @@ object InputStateTests extends TestSuite {
 
         "leftMouseIsDown" - {
 
-          val state2 = InputState.calculateNext(state, List(MouseEvent.MouseDown(0, 0)))                                // true
-          val state3 = InputState.calculateNext(state2, Nil)                                                            // still true
-          val state4 = InputState.calculateNext(state3, List(MouseEvent.MouseDown(20, 20)))                             // still true
-          val state5 = InputState.calculateNext(state4, List(MouseEvent.MouseUp(20, 20), MouseEvent.MouseDown(20, 20))) // Still true
-          val state6 = InputState.calculateNext(state5, List(MouseEvent.MouseUp(20, 20)))                               // false
-          val state7 = InputState.calculateNext(state6, List(MouseEvent.MouseDown(20, 20), MouseEvent.MouseUp(20, 20))) // Still false
+          val state2 = InputState.calculateNext(state, List(MouseEvent.MouseDown(0, 0)), gamepadState)                                // true
+          val state3 = InputState.calculateNext(state2, Nil, gamepadState)                                                            // still true
+          val state4 = InputState.calculateNext(state3, List(MouseEvent.MouseDown(20, 20)), gamepadState)                             // still true
+          val state5 = InputState.calculateNext(state4, List(MouseEvent.MouseUp(20, 20), MouseEvent.MouseDown(20, 20)), gamepadState) // Still true
+          val state6 = InputState.calculateNext(state5, List(MouseEvent.MouseUp(20, 20)), gamepadState)                               // false
+          val state7 = InputState.calculateNext(state6, List(MouseEvent.MouseDown(20, 20), MouseEvent.MouseUp(20, 20)), gamepadState) // Still false
 
           state.mouse.leftMouseIsDown ==> false
           state2.mouse.leftMouseIsDown ==> true
@@ -151,7 +155,7 @@ object InputStateTests extends TestSuite {
           )
 
         "keysDown" - {
-          val state = InputState.calculateNext(inputState, events)
+          val state = InputState.calculateNext(inputState, events, gamepadState)
 
           val expected =
             List(
@@ -167,7 +171,7 @@ object InputStateTests extends TestSuite {
         }
 
         "keysAreDown" - {
-          val state = InputState.calculateNext(inputState, events)
+          val state = InputState.calculateNext(inputState, events, gamepadState)
 
           state.keyboard.keysAreDown(Keys.KEY_D, Keys.KEY_E, Keys.KEY_F) ==> true
           state.keyboard.keysAreDown(Keys.KEY_F, Keys.KEY_D) ==> true
@@ -177,7 +181,7 @@ object InputStateTests extends TestSuite {
         }
 
         "keysAreUp" - {
-          val state = InputState.calculateNext(inputState, events)
+          val state = InputState.calculateNext(inputState, events, gamepadState)
 
           state.keyboard.keysAreUp(Keys.KEY_A, Keys.KEY_B, Keys.KEY_C) ==> true
           state.keyboard.keysAreUp(Keys.KEY_C, Keys.KEY_B) ==> true
@@ -187,7 +191,7 @@ object InputStateTests extends TestSuite {
         }
 
         "keysReleased" - {
-          val state = InputState.calculateNext(inputState, events)
+          val state = InputState.calculateNext(inputState, events, gamepadState)
 
           val expected =
             List(
@@ -204,7 +208,7 @@ object InputStateTests extends TestSuite {
         }
 
         "keysDown persist across frames" - {
-          val state1 = InputState.calculateNext(inputState, events)
+          val state1 = InputState.calculateNext(inputState, events, gamepadState)
 
           state1.keyboard.keysDown ==> List(Keys.KEY_D, Keys.KEY_E, Keys.KEY_F)
 
@@ -213,7 +217,8 @@ object InputStateTests extends TestSuite {
             List(
               KeyboardEvent.KeyDown(Keys.KEY_Z),
               KeyboardEvent.KeyUp(Keys.KEY_D)
-            )
+            ),
+            gamepadState
           )
 
           state2.keyboard.keysDown ==> List(Keys.KEY_E, Keys.KEY_F, Keys.KEY_Z)
@@ -225,8 +230,9 @@ object InputStateTests extends TestSuite {
 
           val state1 =
             InputState.calculateNext(
-              InputState.calculateNext(inputState, events),
-              List(KeyboardEvent.KeyDown(Keys.KEY_E), KeyboardEvent.KeyDown(Keys.KEY_F))
+              InputState.calculateNext(inputState, events, gamepadState),
+              List(KeyboardEvent.KeyDown(Keys.KEY_E), KeyboardEvent.KeyDown(Keys.KEY_F)),
+              gamepadState
             )
 
           state1.keyboard.lastKeyHeldDown ==> Some(Keys.KEY_F)
@@ -234,7 +240,8 @@ object InputStateTests extends TestSuite {
           val state2 =
             InputState.calculateNext(
               state1,
-              List(KeyboardEvent.KeyDown(Keys.KEY_E))
+              List(KeyboardEvent.KeyDown(Keys.KEY_E)),
+              gamepadState
             )
 
           state2.keyboard.lastKeyHeldDown ==> Some(Keys.KEY_E)
@@ -246,7 +253,8 @@ object InputStateTests extends TestSuite {
                 KeyboardEvent.KeyUp(Keys.KEY_D),
                 KeyboardEvent.KeyUp(Keys.KEY_E),
                 KeyboardEvent.KeyUp(Keys.KEY_F)
-              )
+              ),
+              gamepadState
             )
 
           state3.keyboard.lastKeyHeldDown ==> None

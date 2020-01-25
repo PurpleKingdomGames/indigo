@@ -13,6 +13,7 @@ import indigo.shared.platform.RendererConfig
 import indigo.shared.platform.AssetMapping
 import indigo.shared.platform.TextureRefAndOffset
 import indigo.platform.events.WorldEvents
+import indigo.platform.input.GamepadInputCaptureImpl
 import indigo.platform.assets.AssetCollection
 import indigo.platform.assets.TextureAtlas
 import indigo.platform.assets.TextureAtlasFunctions
@@ -87,7 +88,10 @@ object PlatformImpl {
 
   def listenToWorldEvents(canvas: Canvas, magnification: Int, globalEventStream: GlobalEventStream): GameContext[Unit] = {
     IndigoLogger.info("Starting world events")
-    GameContext(WorldEvents.init(canvas, magnification, globalEventStream))
+    GameContext({
+      WorldEvents.init(canvas, magnification, globalEventStream)
+      GamepadInputCaptureImpl.init()
+    })
   }
 
   def startRenderer(gameConfig: GameConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: Canvas): GameContext[Renderer] =

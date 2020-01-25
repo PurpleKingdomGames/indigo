@@ -4,17 +4,19 @@ import indigo.shared.datatypes.Point
 import indigo.shared.constants.Key
 import indigo.shared.datatypes.Rectangle
 import scala.annotation.tailrec
+import indigo.shared.input.Gamepad
 
-final class InputState(val mouse: MouseState, val keyboard: KeyboardState)
+final class InputState(val mouse: MouseState, val keyboard: KeyboardState, val gamepad: Gamepad)
 
 object InputState {
   val default: InputState =
-    new InputState(MouseSignals.default, KeyboardSignals.default)
+    new InputState(MouseSignals.default, KeyboardSignals.default, Gamepad.default)
 
-  def calculateNext(previous: InputState, events: List[InputEvent]): InputState =
+  def calculateNext(previous: InputState, events: List[InputEvent], gamepadState: Gamepad): InputState =
     new InputState(
       MouseSignals.calculateNext(previous.mouse, events.collect { case e: MouseEvent          => e }),
-      KeyboardSignals.calculateNext(previous.keyboard, events.collect { case e: KeyboardEvent => e })
+      KeyboardSignals.calculateNext(previous.keyboard, events.collect { case e: KeyboardEvent => e }),
+      gamepadState
     )
 }
 
