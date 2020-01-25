@@ -24,7 +24,7 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
     Set(CloudsSubSystem.init(config.screenDimensions.width))
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, StartupData] =
-    Startup.Success(StartupData())
+    InitialLoad.setup(assetCollection)
 
   def initialModel(startupData: StartupData): Model =
     Model()
@@ -33,7 +33,13 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
     _ => Outcome(model)
 
   def initialViewModel(startupData: StartupData): Model => ViewModel =
-    _ => ViewModel()
+    _ =>
+      ViewModel(
+        startupData.waterReflections
+          .changeCycle(CycleLabel("big"))
+          .withRef(85, 0)
+          .moveTo(config.screenDimensions.horizontalCenter, config.screenDimensions.verticalCenter + 5)
+      )
 
   def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, dice: Dice): Outcome[ViewModel] =
     Outcome(viewModel)
@@ -41,9 +47,9 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
   def present(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(Assets.backgroundGraphic)
+      .addGameLayerNodes(viewModel.waterRelfections.play())
 
 }
 
-final case class StartupData()
 final case class Model()
-final case class ViewModel()
+final case class ViewModel(waterRelfections: Sprite)
