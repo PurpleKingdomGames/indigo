@@ -5,7 +5,7 @@ import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
 import indigo.shared.constants.Keys
 import indigo.shared.constants.Key
-import indigo.shared.input.GamepadState
+import indigo.shared.input.Gamepad
 
 object InputStateTests extends TestSuite {
 
@@ -18,8 +18,8 @@ object InputStateTests extends TestSuite {
       val inputState: InputState =
         InputState.default
 
-      val gamepadState: GamepadState =
-        GamepadState.default
+      val gamepadState: Gamepad =
+        Gamepad.default
 
       "The default state object does the expected thing" - {
         inputState.mouse.leftMouseIsDown ==> false
