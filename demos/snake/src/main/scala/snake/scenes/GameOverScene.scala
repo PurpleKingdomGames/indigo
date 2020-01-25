@@ -22,7 +22,7 @@ object GameOverScene extends Scene[SnakeGameModel, SnakeViewModel] {
   val sceneSubSystems: Set[SubSystem] =
     Set()
 
-  def updateSceneModel(gameTime: GameTime, pointsScored: Int, dice: Dice): GlobalEvent => Outcome[Int] = {
+  def updateSceneModel(gameTime: GameTime, pointsScored: Int, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Int] = {
     case KeyboardEvent.KeyUp(Keys.SPACE) =>
       Outcome(pointsScored)
         .addGlobalEvents(SceneEvent.JumpTo(StartScene.name))

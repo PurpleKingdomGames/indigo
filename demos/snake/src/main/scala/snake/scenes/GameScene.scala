@@ -27,7 +27,7 @@ object GameScene extends Scene[SnakeGameModel, SnakeViewModel] {
   val sceneSubSystems: Set[SubSystem] =
     Set(Score.automataSubSystem(ModelLogic.ScoreIncrement.show, GameAssets.fontKey))
 
-  def updateSceneModel(gameTime: GameTime, gameModel: GameModel, dice: Dice): GlobalEvent => Outcome[GameModel] =
+  def updateSceneModel(gameTime: GameTime, gameModel: GameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[GameModel] =
     ModelLogic.update(gameTime, gameModel)
 
   def updateSceneViewModel(
