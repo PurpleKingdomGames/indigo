@@ -27,7 +27,7 @@ object SubSystemsExample extends IndigoGameBasic[Unit, Unit, Unit] {
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(gameTime: GameTime, model: Unit, dice: Dice): GlobalEvent => Outcome[Unit] = {
+  def update(gameTime: GameTime, model: Unit, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Unit] = {
     case e @ MouseEvent.Click(_, _) =>
       Outcome(())
         .addGlobalEvents(

@@ -31,7 +31,7 @@ object AudioExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       count = 0
     )
 
-  def update(gameTime: GameTime, model: MyGameModel, dice: Dice): GlobalEvent => Outcome[MyGameModel] = {
+  def update(gameTime: GameTime, model: MyGameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[MyGameModel] = {
     case e: ButtonEvent =>
       Outcome(
         model.copy(

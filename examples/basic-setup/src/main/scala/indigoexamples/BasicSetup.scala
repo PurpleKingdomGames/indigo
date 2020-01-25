@@ -27,7 +27,7 @@ object BasicSetup extends IndigoGameBasic[MyStartUpData, MyGameModel, MyViewMode
   def initialModel(startupData: MyStartUpData): MyGameModel =
     MyGameModel()
 
-  def update(gameTime: GameTime, model: MyGameModel, dice: Dice): GlobalEvent => Outcome[MyGameModel] = _ => Outcome(model)
+  def update(gameTime: GameTime, model: MyGameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[MyGameModel] = _ => Outcome(model)
 
   def initialViewModel(startupData: MyStartUpData): MyGameModel => MyViewModel = _ => MyViewModel()
 

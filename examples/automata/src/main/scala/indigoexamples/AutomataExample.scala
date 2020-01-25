@@ -28,7 +28,7 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       button = Button(ButtonState.Up)
     )
 
-  def update(gameTime: GameTime, model: MyGameModel, dice: Dice): GlobalEvent => Outcome[MyGameModel] = {
+  def update(gameTime: GameTime, model: MyGameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[MyGameModel] = {
     case e: ButtonEvent =>
       Outcome(
         model.copy(

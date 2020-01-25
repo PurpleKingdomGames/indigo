@@ -29,7 +29,7 @@ object TextExample extends IndigoGameBasic[Unit, Model, Unit] {
   def initialModel(startupData: Unit): Model =
     Model(Tint.None)
 
-  def update(gameTime: GameTime, model: Model, dice: Dice): GlobalEvent => Outcome[Model] = {
+  def update(gameTime: GameTime, model: Model, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Model] = {
     case ChangeColour =>
       Outcome(model.changeTint(dice))
 

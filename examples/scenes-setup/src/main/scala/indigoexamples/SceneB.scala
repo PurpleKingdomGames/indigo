@@ -28,7 +28,7 @@ object SceneB extends Scene[GameModel, Unit] {
     )
 
   // Nothing to do
-  def updateSceneModel(gameTime: GameTime, sceneModel: MessageB, dice: Dice): GlobalEvent => Outcome[MessageB] =
+  def updateSceneModel(gameTime: GameTime, sceneModel: MessageB, inputState: InputState, dice: Dice): GlobalEvent => Outcome[MessageB] =
     _ => Outcome(sceneModel)
 
   // Nothing to do

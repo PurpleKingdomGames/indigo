@@ -4,7 +4,6 @@ lazy val exampleProjects: List[String] =
     "basicSetup",
     "subSystems",
     "scenesSetup",
-    "fullSetup",
     "button",
     "http",
     "text",

@@ -24,7 +24,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       InputField("Fish").makeMultiLine
     )
 
-  def update(gameTime: GameTime, model: MyGameModel, dice: Dice): GlobalEvent => Outcome[MyGameModel] = {
+  def update(gameTime: GameTime, model: MyGameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[MyGameModel] = {
     case e: InputFieldEvent =>
       Outcome(model.copy(inputField = model.inputField.update(e)))
 
