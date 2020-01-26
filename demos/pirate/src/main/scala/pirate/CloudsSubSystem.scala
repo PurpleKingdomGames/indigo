@@ -42,7 +42,7 @@ final case class CloudsSubSystem(screenWidth: Int, bigCloudPosition: Double, ver
   def report: String = "Clouds SubSystem"
 
   def nextBigCloudPosition: Double =
-    if (bigCloudPosition == 0) Assets.Clouds.bigCloudsWidth.toDouble else bigCloudPosition - 0.1d
+    if (bigCloudPosition <= 0) Assets.Clouds.bigCloudsWidth.toDouble else bigCloudPosition - 0.1d
 
   def drawBigClouds: List[Graphic] =
     List(
