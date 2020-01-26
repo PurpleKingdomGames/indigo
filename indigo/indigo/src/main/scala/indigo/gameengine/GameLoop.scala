@@ -17,6 +17,7 @@ import indigo.shared.platform.GlobalEventStream
 
 import indigo.shared.scenegraph.SceneGraphViewEvents
 import indigo.shared.input.GamepadInputCapture
+import indigo.shared.time.Seconds
 
 class GameLoop[GameModel, ViewModel](
     gameConfig: GameConfig,
@@ -62,7 +63,7 @@ class GameLoop[GameModel, ViewModel](
         metrics.record(UpdateStartMetric)
 
         val frameSideEffects = for {
-          gameTime        <- GameContext { new GameTime(Millis(time), Millis(timeDelta), GameTime.FPS(gameConfig.frameRate)) }
+          gameTime        <- GameContext { new GameTime(Millis(time), Seconds(timeDelta.toDouble / 1000d), GameTime.FPS(gameConfig.frameRate)) }
           collectedEvents <- GameContext { globalEventStream.collect :+ FrameTick }
           _               <- persistSignalsState(collectedEvents)
           renderTheView   <- GameContext { gameConfig.advanced.disableSkipViewUpdates || timeDelta < gameConfig.haltViewUpdatesAt }

@@ -2,6 +2,7 @@ package indigoexts.subsystems.automata
 
 import indigo.shared.datatypes.Point
 import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 
 sealed trait AutomatonSeedValues {
 
@@ -18,12 +19,12 @@ sealed trait AutomatonSeedValues {
   def progression: Double =
     timeAliveDelta.value.toDouble / lifeSpan.value.toDouble
 
-  def updateDelta(frameDelta: Millis): AutomatonSeedValues =
+  def updateDelta(frameDelta: Seconds): AutomatonSeedValues =
     AutomatonSeedValues(
       spawnedAt,
       createdAt,
       lifeSpan,
-      timeAliveDelta + frameDelta,
+      timeAliveDelta + frameDelta.toMillis,
       randomSeed,
       payload
     )

@@ -2,7 +2,7 @@ package indigo.shared.time
 
 import indigo.shared.{EqualTo, AsString}
 
-final class GameTime(val running: Millis, val delta: Millis, val targetFPS: GameTime.FPS) {
+final class GameTime(val running: Millis, val delta: Seconds, val targetFPS: GameTime.FPS) {
 
   lazy val frameDuration: Millis = Millis((1000d / targetFPS.asDouble).toLong)
   lazy val multiplier: Double    = delta.toDouble / frameDuration.toDouble
@@ -20,25 +20,25 @@ object GameTime {
   implicit val equalTo: EqualTo[GameTime] =
     EqualTo.create { (a, b) =>
       implicitly[EqualTo[Millis]].equal(a.running, b.running) &&
-      implicitly[EqualTo[Millis]].equal(a.delta, b.delta) &&
+      implicitly[EqualTo[Seconds]].equal(a.delta, b.delta) &&
       implicitly[EqualTo[FPS]].equal(a.targetFPS, b.targetFPS)
     }
 
   implicit val gameTimeAsString: AsString[GameTime] =
     AsString.create { gt =>
-      s"GameTime(running = ${implicitly[AsString[Millis]].show(gt.running)}, delta = ${implicitly[AsString[Millis]].show(gt.delta)}, fps = ${implicitly[AsString[FPS]].show(gt.targetFPS)})"
+      s"GameTime(running = ${implicitly[AsString[Millis]].show(gt.running)}, delta = ${implicitly[AsString[Seconds]].show(gt.delta)}, fps = ${implicitly[AsString[FPS]].show(gt.targetFPS)})"
     }
 
   def zero: GameTime =
-    GameTime(Millis(0), Millis(0), FPS.Default)
+    GameTime(Millis(0), Seconds(0), FPS.Default)
 
   def is(running: Millis): GameTime =
-      new GameTime(running, Millis(0), FPS.Default)
+      new GameTime(running, Seconds(0), FPS.Default)
 
-  def withDelta(running: Millis, delta: Millis): GameTime =
+  def withDelta(running: Millis, delta: Seconds): GameTime =
       new GameTime(running, delta, FPS.Default)
 
-  def apply(running: Millis, delta: Millis, targetFPS: FPS): GameTime =
+  def apply(running: Millis, delta: Seconds, targetFPS: FPS): GameTime =
     new GameTime(running, delta, targetFPS)
 
   final class FPS(val value: Int) extends AnyVal {

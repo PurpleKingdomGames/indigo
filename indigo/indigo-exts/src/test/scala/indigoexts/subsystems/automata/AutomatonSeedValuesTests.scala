@@ -3,6 +3,7 @@ package indigoexts.subsystems.automata
 import utest._
 import indigo.shared.datatypes.Point
 import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 
 object AutomataSeedValuesTests extends TestSuite {
 
@@ -24,10 +25,10 @@ object AutomataSeedValuesTests extends TestSuite {
             )
 
           seed.progression ==> 0d
-          seed.updateDelta(Millis(500)).progression ==> 0.25d
-          seed.updateDelta(Millis(1000)).progression ==> 0.5d
-          seed.updateDelta(Millis(1500)).progression ==> 0.75d
-          seed.updateDelta(Millis(2000)).progression ==> 1d
+          seed.updateDelta(Seconds(0.5)).progression ==> 0.25d
+          seed.updateDelta(Seconds(1)).progression ==> 0.5d
+          seed.updateDelta(Seconds(1.5)).progression ==> 0.75d
+          seed.updateDelta(Seconds(2)).progression ==> 1d
 
         }
 

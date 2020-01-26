@@ -3,6 +3,7 @@ package indigoexts.jobs
 import utest._
 import indigo.shared.time.GameTime
 import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 import indigo.shared.events.FrameTick
 import indigo.shared.datatypes.BindingKey
 import indigo.GlobalEvent
@@ -15,6 +16,12 @@ object WorkScheduleTests extends TestSuite {
 
   implicit def doubleToMillis(d: Double): Millis =
     Millis(d.toLong)
+
+  implicit def intToSeconds(i: Int): Seconds =
+    Seconds(i.toDouble)
+
+  implicit def doubleToSeconds(d: Double): Seconds =
+    Seconds(d)
 
   import SampleJobs._
 
