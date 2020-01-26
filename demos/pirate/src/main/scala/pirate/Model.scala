@@ -24,29 +24,67 @@ object Model {
   def update(gameTime: GameTime, model: Model, inputState: InputState, screenDimensions: Rectangle): GlobalEvent => Outcome[Model] = {
     case FrameTick =>
       if (!model.isFalling && model.pirateIsSafe) {
-        inputState.keyboard.lastKeyHeldDown match {
-          case None =>
-            Outcome(Model(PirateState.Idle, model.position, model.isFalling, model.lastPlayed, model.lastRespawn))
 
-          case Some(Keys.LEFT_ARROW) =>
-            val x = if (gameTime.running > model.lastPlayed + model.beat) {
-              (List(PlaySound(Assets.walkSound, Volume(0.5d))), gameTime.running)
-            } else (Nil, model.lastPlayed)
+        val gamepadInput: Option[Outcome[Model]] =
+          if (inputState.gamepad.connected) {
+            if (inputState.gamepad.analog.left.x < -0.5 || inputState.gamepad.dpad.left) {
+              val x = if (gameTime.running > model.lastPlayed + model.beat) {
+                (List(PlaySound(Assets.walkSound, Volume(0.5d))), gameTime.running)
+              } else (Nil, model.lastPlayed)
 
-            Outcome(Model(PirateState.MoveLeft, model.position - Point(walkSpeed, 0), model.isFalling, x._2, model.lastRespawn))
-              .addGlobalEvents(x._1)
+              Some(
+                Outcome(Model(PirateState.MoveLeft, model.position - Point(walkSpeed, 0), model.isFalling, x._2, model.lastRespawn))
+                  .addGlobalEvents(x._1)
+              )
+            } else if (inputState.gamepad.analog.left.x > 0.5 || inputState.gamepad.dpad.right) {
+              val x = if (gameTime.running > model.lastPlayed + model.beat) {
+                (List(PlaySound(Assets.walkSound, Volume(0.5d))), gameTime.running)
+              } else (Nil, model.lastPlayed)
 
-          case Some(Keys.RIGHT_ARROW) =>
-            val x = if (gameTime.running > model.lastPlayed + model.beat) {
-              (List(PlaySound(Assets.walkSound, Volume(0.5d))), gameTime.running)
-            } else (Nil, model.lastPlayed)
+              Some(
+                Outcome(Model(PirateState.MoveRight, model.position + Point(walkSpeed, 0), model.isFalling, x._2, model.lastRespawn))
+                  .addGlobalEvents(x._1)
+              )
+            } else {
+              None
+            }
+          } else {
+            None
+          }
 
-            Outcome(Model(PirateState.MoveRight, model.position + Point(walkSpeed, 0), model.isFalling, x._2, model.lastRespawn))
-              .addGlobalEvents(x._1)
+        val keyboardInput: Option[Outcome[Model]] =
+          inputState.keyboard.lastKeyHeldDown match {
+            case None =>
+              None
 
-          case Some(_) =>
-            Outcome(Model(PirateState.Idle, model.position, model.isFalling, model.lastPlayed, model.lastRespawn))
-        }
+            case Some(Keys.LEFT_ARROW) =>
+              val x = if (gameTime.running > model.lastPlayed + model.beat) {
+                (List(PlaySound(Assets.walkSound, Volume(0.5d))), gameTime.running)
+              } else (Nil, model.lastPlayed)
+
+              Some(
+                Outcome(Model(PirateState.MoveLeft, model.position - Point(walkSpeed, 0), model.isFalling, x._2, model.lastRespawn))
+                  .addGlobalEvents(x._1)
+              )
+
+            case Some(Keys.RIGHT_ARROW) =>
+              val x = if (gameTime.running > model.lastPlayed + model.beat) {
+                (List(PlaySound(Assets.walkSound, Volume(0.5d))), gameTime.running)
+              } else (Nil, model.lastPlayed)
+
+              Some(
+                Outcome(Model(PirateState.MoveRight, model.position + Point(walkSpeed, 0), model.isFalling, x._2, model.lastRespawn))
+                  .addGlobalEvents(x._1)
+              )
+
+            case Some(_) =>
+              None
+          }
+
+        gamepadInput
+          .orElse(keyboardInput)
+          .getOrElse(Outcome(Model(PirateState.Idle, model.position, model.isFalling, model.lastPlayed, model.lastRespawn)))
+
       } else if (model.isFalling) {
         if (model.pirateIsSafe && model.position.y + fallSpeed >= model.navRegion.bottom) {
           Outcome(Model(PirateState.Idle, Point(model.position.x, model.navRegion.bottom - 1), false, model.lastPlayed, model.lastRespawn))
