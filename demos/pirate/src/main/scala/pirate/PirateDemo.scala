@@ -36,9 +36,11 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
     _ =>
       ViewModel(
         startupData.waterReflections
-          .changeCycle(CycleLabel("big"))
           .withRef(85, 0)
-          .moveTo(config.screenDimensions.horizontalCenter, config.screenDimensions.verticalCenter + 5)
+          .moveTo(config.screenDimensions.horizontalCenter, config.screenDimensions.verticalCenter + 5),
+        startupData.flag
+          .withRef(22, 105)
+          .moveTo(200, 270)
       )
 
   def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, dice: Dice): Outcome[ViewModel] =
@@ -47,9 +49,24 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
   def present(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(Assets.backgroundGraphic)
-      .addGameLayerNodes(viewModel.waterRelfections.play())
+      .addGameLayerNodes(
+        viewModel.waterReflections.play(),
+        viewModel.waterReflections.moveBy(150, 30).play(),
+        viewModel.waterReflections.moveBy(-100, 60).play()
+      )
+      .addGameLayerNodes(viewModel.flag.play(), Assets.levelGraphic)
+      .withAudio(
+        SceneAudio(
+          SceneAudioSource(
+            BindingKey(Assets.shanty),
+            PlaybackPattern.SingleTrackLoop(
+              Track(Assets.shanty)
+            )
+          )
+        )
+      )
 
 }
 
 final case class Model()
-final case class ViewModel(waterRelfections: Sprite)
+final case class ViewModel(waterReflections: Sprite, flag: Sprite)
