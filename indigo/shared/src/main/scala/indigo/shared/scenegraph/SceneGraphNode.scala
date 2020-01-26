@@ -336,7 +336,8 @@ final class Sprite(
     val ref: Point,
     val effects: Effects,
     val eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
-) extends Renderable with EventHandling
+) extends Renderable
+    with EventHandling
     with Cloneable {
 
   lazy val x: Int = bounds.position.x
@@ -396,6 +397,9 @@ final class Sprite(
     Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, newRef, effects, eventHandler)
   def withRef(x: Int, y: Int): Sprite =
     withRef(Point(x, y))
+
+  def withAnimationKey(newAnimationKey: AnimationKey): Sprite =
+    Sprite(bindingKey, bounds, depth, rotation, scale, newAnimationKey, ref, effects, eventHandler)
 
   def play(): Sprite = {
     AnimationsRegister.addAction(bindingKey, animationsKey, Play)
@@ -466,7 +470,8 @@ final class Text(
     val fontKey: FontKey,
     val effects: Effects,
     val eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
-) extends Renderable with EventHandling {
+) extends Renderable
+    with EventHandling {
 
   val ref: Point = Point.zero
 

@@ -60,12 +60,25 @@ object InitialLoad {
     }
   }
 
-  def makeStartupData(waterReflections: SpriteAndAnimations, flag: SpriteAndAnimations, captain: SpriteAndAnimations, helm: SpriteAndAnimations, palm: SpriteAndAnimations): Startup.Success[StartupData] =
+  def makeStartupData(
+      waterReflections: SpriteAndAnimations,
+      flag: SpriteAndAnimations,
+      captain: SpriteAndAnimations,
+      helm: SpriteAndAnimations,
+      palm: SpriteAndAnimations
+  ): Startup.Success[StartupData] =
     Startup
       .Success(
         StartupData(waterReflections.sprite, flag.sprite, captain.sprite, helm.sprite, palm.sprite)
       )
-      .addAnimations(waterReflections.animations, flag.animations, captain.animations, helm.animations, palm.animations)
+      .addAnimations(
+        waterReflections.animations,
+        flag.animations,
+        captain.animations,
+        helm.animations,
+        palm.animations,
+        palm.animations.withAnimationKey(AnimationKey("P Back Tall"))
+      )
 
 }
 

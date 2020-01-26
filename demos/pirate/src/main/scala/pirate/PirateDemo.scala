@@ -15,7 +15,7 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
     Assets.assets
 
   val fonts: Set[FontInfo] =
-    Set()
+    Set(Assets.fontInfo)
 
   val animations: Set[Animation] =
     Set()
@@ -39,6 +39,6 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
     Outcome(viewModel)
 
   def present(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState): SceneUpdateFragment =
-    View.present(model, viewModel)
+    View.present(gameTime, model, viewModel, config.screenDimensions)
 
 }

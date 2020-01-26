@@ -2,7 +2,17 @@ package pirate
 
 import indigo._
 
-final case class ViewModel(waterReflections: Sprite, flag: Sprite, captain: Sprite, helm: Sprite, palm: Sprite)
+final case class ViewModel(waterReflections: Sprite, flag: Sprite, captain: Sprite, helm: Sprite, palm: Sprite) {
+  val frontPalm: Sprite =
+    palm
+
+  val backTallPalm: Sprite = {
+    palm
+      .withBindingKey(BindingKey("Back Tall Palm"))
+      .withAnimationKey(AnimationKey("P Back Tall"))
+      .withDepth(Depth(10))
+  }
+}
 
 object ViewModel {
 
