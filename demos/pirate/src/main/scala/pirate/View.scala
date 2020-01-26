@@ -6,9 +6,9 @@ object View {
 
   def present(gameTime: GameTime, model: Model, viewModel: ViewModel, screenDimensions: Rectangle): SceneUpdateFragment =
     SceneUpdateFragment.empty
-      .addGameLayerNodes(Assets.backgroundGraphic)
+      .addGameLayerNodes(Assets.Static.backgroundGraphic)
       .addGameLayerNodes(
-        Text("The Cursed Pirate\n@davidjamessmith", 0, 0, 5, Assets.fontKey).alignRight
+        Text("The Cursed Pirate\n@davidjamessmith", 0, 0, 5, Assets.Fonts.fontKey).alignRight
           .withAlpha(0.5d)
           .moveTo(screenDimensions.right - 5, screenDimensions.bottom - 30),
         viewModel.waterReflections.play(),
@@ -23,16 +23,16 @@ object View {
         viewModel.frontPalm.moveTo(397, 188).play(),
         viewModel.frontPalm.moveTo(77, 235).play(),
         viewModel.frontPalm.moveTo(37, 104).play(),
-        Assets.chestGraphic.moveTo(380, 271),
-        Assets.levelGraphic,
+        Assets.Static.chestGraphic.moveTo(380, 271),
+        Assets.Static.levelGraphic,
         drawPirate(gameTime, model, viewModel.captain)
       )
       .withAudio(
         SceneAudio(
           SceneAudioSource(
-            BindingKey(Assets.shanty),
+            BindingKey(Assets.Sounds.shanty),
             PlaybackPattern.SingleTrackLoop(
-              Track(Assets.shanty)
+              Track(Assets.Sounds.shanty)
             )
           )
         )

@@ -15,7 +15,7 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
     Assets.assets
 
   val fonts: Set[FontInfo] =
-    Set(Assets.fontInfo)
+    Set(Assets.Fonts.fontInfo)
 
   val animations: Set[Animation] =
     Set()

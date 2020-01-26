@@ -29,7 +29,7 @@ object Model {
           if (inputState.gamepad.connected) {
             if (inputState.gamepad.analog.left.x < -0.5 || inputState.gamepad.dpad.left) {
               val x = if (gameTime.running > model.lastPlayed + model.beat) {
-                (List(PlaySound(Assets.walkSound, Volume(0.5d))), gameTime.running)
+                (List(PlaySound(Assets.Sounds.walkSound, Volume(0.5d))), gameTime.running)
               } else (Nil, model.lastPlayed)
 
               Some(
@@ -38,7 +38,7 @@ object Model {
               )
             } else if (inputState.gamepad.analog.left.x > 0.5 || inputState.gamepad.dpad.right) {
               val x = if (gameTime.running > model.lastPlayed + model.beat) {
-                (List(PlaySound(Assets.walkSound, Volume(0.5d))), gameTime.running)
+                (List(PlaySound(Assets.Sounds.walkSound, Volume(0.5d))), gameTime.running)
               } else (Nil, model.lastPlayed)
 
               Some(
@@ -59,7 +59,7 @@ object Model {
 
             case Some(Keys.LEFT_ARROW) =>
               val x = if (gameTime.running > model.lastPlayed + model.beat) {
-                (List(PlaySound(Assets.walkSound, Volume(0.5d))), gameTime.running)
+                (List(PlaySound(Assets.Sounds.walkSound, Volume(0.5d))), gameTime.running)
               } else (Nil, model.lastPlayed)
 
               Some(
@@ -69,7 +69,7 @@ object Model {
 
             case Some(Keys.RIGHT_ARROW) =>
               val x = if (gameTime.running > model.lastPlayed + model.beat) {
-                (List(PlaySound(Assets.walkSound, Volume(0.5d))), gameTime.running)
+                (List(PlaySound(Assets.Sounds.walkSound, Volume(0.5d))), gameTime.running)
               } else (Nil, model.lastPlayed)
 
               Some(
@@ -90,14 +90,14 @@ object Model {
           Outcome(Model(PirateState.Idle, Point(model.position.x, model.navRegion.bottom - 1), false, model.lastPlayed, model.lastRespawn))
         } else if (model.position.y > screenDimensions.height + 50) {
           Outcome(Model(PirateState.Falling, Point(screenDimensions.horizontalCenter, 20), true, model.lastPlayed, gameTime.running))
-            .addGlobalEvents(PlaySound(Assets.respawnSound, Volume.Max))
+            .addGlobalEvents(PlaySound(Assets.Sounds.respawnSound, Volume.Max))
         } else {
           Outcome(Model(PirateState.Falling, model.position + Point(0, fallSpeed), true, model.lastPlayed, model.lastRespawn))
         }
       } else {
         if (model.position.y > screenDimensions.height + 50) {
           Outcome(Model(PirateState.Falling, Point(screenDimensions.horizontalCenter, 20), true, model.lastPlayed, gameTime.running))
-            .addGlobalEvents(PlaySound(Assets.respawnSound, Volume.Max))
+            .addGlobalEvents(PlaySound(Assets.Sounds.respawnSound, Volume.Max))
         } else {
           Outcome(Model(PirateState.Falling, model.position + Point(0, fallSpeed), true, model.lastPlayed, model.lastRespawn))
         }
