@@ -11,7 +11,7 @@ object Assets {
   val backgroundGraphic: Graphic = Graphic(Rectangle(0, 0, 640, 360), 50, backgroundRef)
 
   val levelRef: String      = "level"
-  val levelGraphic: Graphic = Graphic(Rectangle(0, 0, 646, 374), 1, levelRef)
+  val levelGraphic: Graphic = Graphic(Rectangle(0, 0, 646, 374), 2, levelRef)
 
   val chestRef: String      = "Chest Close 01"
   val chestGraphic: Graphic = Graphic(Rectangle(0, 0, 64, 35), 4, chestRef).withRef(33, 34)
@@ -47,7 +47,24 @@ object Assets {
     val jsonRef: String = "Captain Clown Nose JSON"
   }
 
-  object Trees {}
+  object Trees {
+    val ref: String     = "Palm Tree"
+    val jsonRef: String = "Palm Tree JSON"
+
+    val trunksRef: String = "Front Palm Trees"
+
+    val tallTrunkGraphic: Graphic =
+      Graphic(Rectangle(0, 0, 96, 96), 1, trunksRef)
+        .withCrop(Rectangle(8, 0, 16, 60))
+
+    val leftLeaningTrunkGraphic: Graphic =
+      Graphic(Rectangle(0, 0, 96, 96), 1, trunksRef)
+        .withCrop(Rectangle(43, 0, 50, 22))
+
+    val rightLeaningTrunkGraphic: Graphic =
+      Graphic(Rectangle(0, 0, 96, 96), 1, trunksRef)
+        .withCrop(Rectangle(36, 32, 48, 23))
+  }
 
   object Helm {
     val ref: String     = "Ship Helm"
@@ -60,6 +77,7 @@ object Assets {
       AssetType.Audio(walkSound, "assets/walk.mp3"),
       AssetType.Image(backgroundRef, "assets/bg.png"),
       AssetType.Image(chestRef, "assets/" + chestRef + ".png"),
+      AssetType.Image(Trees.trunksRef, "assets/" + Trees.trunksRef + ".png"),
       AssetType.Image(levelRef, "assets/level.png"),
       AssetType.Image(Clouds.bigCloudsRef, "assets/" + Clouds.bigCloudsRef + ".png"),
       AssetType.Image(Clouds.smallCloud1Ref, "assets/" + Clouds.smallCloud1Ref + ".png"),
@@ -71,6 +89,8 @@ object Assets {
       AssetType.Text(Flag.jsonRef, "assets/" + Flag.ref + ".json"),
       AssetType.Image(Helm.ref, "assets/" + Helm.ref + ".png"),
       AssetType.Text(Helm.jsonRef, "assets/" + Helm.ref + ".json"),
+      AssetType.Image(Trees.ref, "assets/" + Trees.ref + ".png"),
+      AssetType.Text(Trees.jsonRef, "assets/" + Trees.ref + ".json"),
       AssetType.Image(Captain.ref, "assets/" + Captain.ref + ".png"),
       AssetType.Text(Captain.jsonRef, "assets/" + Captain.ref + ".json")
     )

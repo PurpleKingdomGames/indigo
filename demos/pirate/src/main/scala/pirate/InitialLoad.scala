@@ -32,32 +32,41 @@ object InitialLoad {
       spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, Depth(2), Assets.Captain.ref)
     } yield spriteAndAnimations
 
-    (loadedReflections, loadedFlag, loadedCaptain, loadedHelm) match {
-      case (Some(reflections), Some(flag), Some(captain), Some(helm)) =>
-        makeStartupData(reflections, flag, captain, helm)
+    val loadedPalmTree: Option[SpriteAndAnimations] = for {
+      json                <- assetCollection.findTextDataByName(AssetName(Assets.Trees.jsonRef))
+      aseprite            <- Json.asepriteFromJson(json)
+      spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, Depth(1), Assets.Trees.ref)
+    } yield spriteAndAnimations
 
-      case (None, _, _, _) =>
+    (loadedReflections, loadedFlag, loadedCaptain, loadedHelm, loadedPalmTree) match {
+      case (Some(reflections), Some(flag), Some(captain), Some(helm), Some(palm)) =>
+        makeStartupData(reflections, flag, captain, helm, palm)
+
+      case (None, _, _, _, _) =>
         Startup.Failure(StartupErrors("Failed to load the water reflections"))
 
-      case (_, None, _, _) =>
+      case (_, None, _, _, _) =>
         Startup.Failure(StartupErrors("Failed to load the flag"))
 
-      case (_, _, None, _) =>
+      case (_, _, None, _, _) =>
         Startup.Failure(StartupErrors("Failed to load the captain"))
 
-      case (_, _, _, None) =>
+      case (_, _, _, None, _) =>
         Startup.Failure(StartupErrors("Failed to load the helm"))
+
+      case (_, _, _, _, None) =>
+        Startup.Failure(StartupErrors("Failed to load the palm trees"))
 
     }
   }
 
-  def makeStartupData(waterReflections: SpriteAndAnimations, flag: SpriteAndAnimations, captain: SpriteAndAnimations, helm: SpriteAndAnimations): Startup.Success[StartupData] =
+  def makeStartupData(waterReflections: SpriteAndAnimations, flag: SpriteAndAnimations, captain: SpriteAndAnimations, helm: SpriteAndAnimations, palm: SpriteAndAnimations): Startup.Success[StartupData] =
     Startup
       .Success(
-        StartupData(waterReflections.sprite, flag.sprite, captain.sprite, helm.sprite)
+        StartupData(waterReflections.sprite, flag.sprite, captain.sprite, helm.sprite, palm.sprite)
       )
-      .addAnimations(waterReflections.animations, flag.animations, captain.animations, helm.animations)
+      .addAnimations(waterReflections.animations, flag.animations, captain.animations, helm.animations, palm.animations)
 
 }
 
-final case class StartupData(waterReflections: Sprite, flag: Sprite, captain: Sprite, helm: Sprite)
+final case class StartupData(waterReflections: Sprite, flag: Sprite, captain: Sprite, helm: Sprite, palm: Sprite)

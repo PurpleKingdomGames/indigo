@@ -2,7 +2,7 @@ package pirate
 
 import indigo._
 
-final case class ViewModel(waterReflections: Sprite, flag: Sprite, captain: Sprite, helm: Sprite)
+final case class ViewModel(waterReflections: Sprite, flag: Sprite, captain: Sprite, helm: Sprite, palm: Sprite)
 
 object ViewModel {
 
@@ -19,7 +19,8 @@ object ViewModel {
         .moveTo(300, 271),
       startupData.helm
         .moveTo(605, 137)
-        .withRef(31, 49)
+        .withRef(31, 49),
+      startupData.palm
     )
 
 }

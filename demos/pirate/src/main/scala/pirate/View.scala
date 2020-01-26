@@ -13,6 +13,12 @@ object View {
         viewModel.waterReflections.moveBy(-100, 60).play(),
         viewModel.flag.play(),
         viewModel.helm.play(),
+        Assets.Trees.tallTrunkGraphic.moveTo(420, 220),
+        Assets.Trees.leftLeaningTrunkGraphic.moveTo(100, 270),
+        Assets.Trees.rightLeaningTrunkGraphic.moveTo(25, 150),
+        viewModel.palm.moveTo(397, 188).play(),
+        viewModel.palm.moveTo(77, 235).play(),
+        viewModel.palm.moveTo(37, 104).play(),
         Assets.chestGraphic.moveTo(380, 271),
         Assets.levelGraphic,
         drawPirate(model, viewModel.captain)
