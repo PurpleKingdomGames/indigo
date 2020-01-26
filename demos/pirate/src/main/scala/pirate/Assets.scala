@@ -4,7 +4,7 @@ import indigo._
 
 object Assets {
 
-  val shanty: String = "shanty"
+  val shanty: String    = "shanty"
   val walkSound: String = "walk"
 
   val backgroundRef: String      = "background"
@@ -12,6 +12,9 @@ object Assets {
 
   val levelRef: String      = "level"
   val levelGraphic: Graphic = Graphic(Rectangle(0, 0, 646, 374), 1, levelRef)
+
+  val chestRef: String      = "Chest Close 01"
+  val chestGraphic: Graphic = Graphic(Rectangle(0, 0, 64, 35), 4, chestRef).withRef(33, 34)
 
   object Clouds {
 
@@ -44,11 +47,19 @@ object Assets {
     val jsonRef: String = "Captain Clown Nose JSON"
   }
 
+  object Trees {}
+
+  object Helm {
+    val ref: String     = "Ship Helm"
+    val jsonRef: String = "Ship Helm JSON"
+  }
+
   val assets: Set[AssetType] =
     Set(
       AssetType.Audio(shanty, "assets/bgmusic.mp3"),
       AssetType.Audio(walkSound, "assets/walk.mp3"),
       AssetType.Image(backgroundRef, "assets/bg.png"),
+      AssetType.Image(chestRef, "assets/" + chestRef + ".png"),
       AssetType.Image(levelRef, "assets/level.png"),
       AssetType.Image(Clouds.bigCloudsRef, "assets/" + Clouds.bigCloudsRef + ".png"),
       AssetType.Image(Clouds.smallCloud1Ref, "assets/" + Clouds.smallCloud1Ref + ".png"),
@@ -58,6 +69,8 @@ object Assets {
       AssetType.Text(Water.jsonRef, "assets/" + Water.ref + ".json"),
       AssetType.Image(Flag.ref, "assets/" + Flag.ref + ".png"),
       AssetType.Text(Flag.jsonRef, "assets/" + Flag.ref + ".json"),
+      AssetType.Image(Helm.ref, "assets/" + Helm.ref + ".png"),
+      AssetType.Text(Helm.jsonRef, "assets/" + Helm.ref + ".json"),
       AssetType.Image(Captain.ref, "assets/" + Captain.ref + ".png"),
       AssetType.Text(Captain.jsonRef, "assets/" + Captain.ref + ".json")
     )

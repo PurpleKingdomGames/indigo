@@ -12,6 +12,8 @@ object View {
         viewModel.waterReflections.moveBy(150, 30).play(),
         viewModel.waterReflections.moveBy(-100, 60).play(),
         viewModel.flag.play(),
+        viewModel.helm.play(),
+        Assets.chestGraphic.moveTo(380, 271),
         Assets.levelGraphic,
         drawPirate(model, viewModel.captain)
       )
