@@ -40,7 +40,10 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
           .moveTo(config.screenDimensions.horizontalCenter, config.screenDimensions.verticalCenter + 5),
         startupData.flag
           .withRef(22, 105)
-          .moveTo(200, 270)
+          .moveTo(200, 270),
+        startupData.captain
+          .withRef(37, 63)
+          .moveTo(300, 271)
       )
 
   def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, dice: Dice): Outcome[ViewModel] =
@@ -52,9 +55,11 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
       .addGameLayerNodes(
         viewModel.waterReflections.play(),
         viewModel.waterReflections.moveBy(150, 30).play(),
-        viewModel.waterReflections.moveBy(-100, 60).play()
+        viewModel.waterReflections.moveBy(-100, 60).play(),
+        viewModel.flag.play(),
+        Assets.levelGraphic,
+        viewModel.captain.play()
       )
-      .addGameLayerNodes(viewModel.flag.play(), Assets.levelGraphic)
       .withAudio(
         SceneAudio(
           SceneAudioSource(
@@ -69,4 +74,4 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
 }
 
 final case class Model()
-final case class ViewModel(waterReflections: Sprite, flag: Sprite)
+final case class ViewModel(waterReflections: Sprite, flag: Sprite, captain: Sprite)

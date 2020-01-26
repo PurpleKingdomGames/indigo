@@ -29,13 +29,18 @@ object Assets {
   }
 
   object Water {
-    val reflectionRef: String     = "Water Reflect"
-    val reflectionJsonRef: String = "Water Reflect JSON"
+    val ref: String     = "Water Reflect"
+    val jsonRef: String = "Water Reflect JSON"
   }
 
   object Flag {
     val ref: String     = "Flag"
     val jsonRef: String = "Flag JSON"
+  }
+
+  object Captain {
+    val ref: String     = "Captain Clown Nose"
+    val jsonRef: String = "Captain Clown Nose JSON"
   }
 
   val assets: Set[AssetType] =
@@ -47,9 +52,11 @@ object Assets {
       AssetType.Image(Clouds.smallCloud1Ref, "assets/" + Clouds.smallCloud1Ref + ".png"),
       AssetType.Image(Clouds.smallCloud2Ref, "assets/" + Clouds.smallCloud2Ref + ".png"),
       AssetType.Image(Clouds.smallCloud3Ref, "assets/" + Clouds.smallCloud3Ref + ".png"),
-      AssetType.Image(Water.reflectionRef, "assets/" + Water.reflectionRef + ".png"),
-      AssetType.Text(Water.reflectionJsonRef, "assets/" + Water.reflectionRef + ".json"),
+      AssetType.Image(Water.ref, "assets/" + Water.ref + ".png"),
+      AssetType.Text(Water.jsonRef, "assets/" + Water.ref + ".json"),
       AssetType.Image(Flag.ref, "assets/" + Flag.ref + ".png"),
-      AssetType.Text(Flag.jsonRef, "assets/" + Flag.ref + ".json")
+      AssetType.Text(Flag.jsonRef, "assets/" + Flag.ref + ".json"),
+      AssetType.Image(Captain.ref, "assets/" + Captain.ref + ".png"),
+      AssetType.Text(Captain.jsonRef, "assets/" + Captain.ref + ".json")
     )
 }
