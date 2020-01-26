@@ -5,6 +5,7 @@ import indigo._
 object Assets {
 
   val shanty: String = "shanty"
+  val walkSound: String = "walk"
 
   val backgroundRef: String      = "background"
   val backgroundGraphic: Graphic = Graphic(Rectangle(0, 0, 640, 360), 50, backgroundRef)
@@ -46,6 +47,7 @@ object Assets {
   val assets: Set[AssetType] =
     Set(
       AssetType.Audio(shanty, "assets/bgmusic.mp3"),
+      AssetType.Audio(walkSound, "assets/walk.mp3"),
       AssetType.Image(backgroundRef, "assets/bg.png"),
       AssetType.Image(levelRef, "assets/level.png"),
       AssetType.Image(Clouds.bigCloudsRef, "assets/" + Clouds.bigCloudsRef + ".png"),

@@ -30,7 +30,7 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
     Model.initialModel
 
   def update(gameTime: GameTime, model: Model, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Model] =
-    Model.update(model, inputState, config.screenDimensions)
+    Model.update(gameTime, model, inputState, config.screenDimensions)
 
   def initialViewModel(startupData: StartupData): Model => ViewModel =
     _ => ViewModel.initialViewModel(startupData, config.screenDimensions)
