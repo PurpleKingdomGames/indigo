@@ -30,7 +30,7 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
     Model.initialModel
 
   def update(gameTime: GameTime, model: Model, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Model] =
-    Model.update(model, inputState)
+    Model.update(model, inputState, config.screenDimensions)
 
   def initialViewModel(startupData: StartupData): Model => ViewModel =
     _ => ViewModel.initialViewModel(startupData, config.screenDimensions)
@@ -39,6 +39,6 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
     Outcome(viewModel)
 
   def present(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState): SceneUpdateFragment =
-    View.present(viewModel, model.pirateState)
+    View.present(model, viewModel)
 
 }

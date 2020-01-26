@@ -4,7 +4,7 @@ import indigo._
 
 object View {
 
-  def present(viewModel: ViewModel, pirateState: PirateState): SceneUpdateFragment =
+  def present(model: Model, viewModel: ViewModel): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(Assets.backgroundGraphic)
       .addGameLayerNodes(
@@ -13,7 +13,7 @@ object View {
         viewModel.waterReflections.moveBy(-100, 60).play(),
         viewModel.flag.play(),
         Assets.levelGraphic,
-        drawPirate(viewModel.captain, pirateState)
+        drawPirate(model, viewModel.captain)
       )
       .withAudio(
         SceneAudio(
@@ -26,20 +26,23 @@ object View {
         )
       )
 
-  def drawPirate(captain: Sprite, pirateState: PirateState): Sprite =
-    pirateState match {
+  def drawPirate(model: Model, captain: Sprite): Sprite =
+    model.pirateState match {
       case PirateState.Idle =>
         captain
+          .moveTo(model.position)
           .changeCycle(CycleLabel("Idle"))
           .play()
 
       case PirateState.Jump =>
         captain
+          .moveTo(model.position)
           .changeCycle(CycleLabel("Jump"))
           .play()
 
       case PirateState.MoveLeft =>
         captain
+          .moveTo(model.position)
           .flipHorizontal(true)
           .moveBy(-20, 0)
           .changeCycle(CycleLabel("Run"))
@@ -47,11 +50,13 @@ object View {
 
       case PirateState.MoveRight =>
         captain
+          .moveTo(model.position)
           .changeCycle(CycleLabel("Run"))
           .play()
 
       case PirateState.Falling =>
         captain
+          .moveTo(model.position)
           .changeCycle(CycleLabel("Fall"))
           .play()
     }
