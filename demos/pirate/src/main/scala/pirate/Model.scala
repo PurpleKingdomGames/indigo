@@ -18,11 +18,14 @@ object Model {
   val initialModel: Model =
     Model(PirateState.Idle, Point(300, 271), false, Millis.zero, Millis.zero)
 
-  val walkSpeed: Int = 5
-  val fallSpeed: Int = 10
+  val walkDistancePerSecond: Int = 128
+  val fallDistancePerSecond: Int = 300
 
   def update(gameTime: GameTime, model: Model, inputState: InputState, screenDimensions: Rectangle): GlobalEvent => Outcome[Model] = {
     case FrameTick =>
+      val walkSpeed: Int = (walkDistancePerSecond.toDouble * gameTime.delta.value).toInt
+      val fallSpeed: Int = (fallDistancePerSecond.toDouble * gameTime.delta.value).toInt
+
       if (!model.isFalling && model.pirateIsSafe) {
 
         val gamepadInput: Option[Outcome[Model]] =

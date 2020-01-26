@@ -9,7 +9,6 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
     GameConfig.default
       .withViewport(GameViewport.at720p)
       .withMagnification(2)
-      .withFrameRate(30)
 
   val assets: Set[AssetType] =
     Assets.assets
