@@ -19,8 +19,8 @@ final case class CloudsSubSystem(screenWidth: Int, bigCloudPosition: Double, ver
 
       Outcome(
         this.copy(
-          bigCloudPosition = nextBigCloudPosition,
-          clouds = CloudsSubSystem.updateClouds(newCloud :: clouds),
+          bigCloudPosition = nextBigCloudPosition(gameTime),
+          clouds = CloudsSubSystem.updateClouds(gameTime, newCloud :: clouds),
           lastSpawn = gameTime.running
         )
       )
@@ -28,8 +28,8 @@ final case class CloudsSubSystem(screenWidth: Int, bigCloudPosition: Double, ver
     case FrameTick =>
       Outcome(
         this.copy(
-          bigCloudPosition = nextBigCloudPosition,
-          clouds = CloudsSubSystem.updateClouds(clouds)
+          bigCloudPosition = nextBigCloudPosition(gameTime),
+          clouds = CloudsSubSystem.updateClouds(gameTime, clouds)
         )
       )
   }
@@ -41,8 +41,8 @@ final case class CloudsSubSystem(screenWidth: Int, bigCloudPosition: Double, ver
 
   def report: String = "Clouds SubSystem"
 
-  def nextBigCloudPosition: Double =
-    if (bigCloudPosition <= 0) Assets.Clouds.bigCloudsWidth.toDouble else bigCloudPosition - 0.1d
+  def nextBigCloudPosition(gameTime: GameTime): Double =
+    if (bigCloudPosition <= 0) Assets.Clouds.bigCloudsWidth.toDouble else bigCloudPosition - (3d * gameTime.delta.value)
 
   def drawBigClouds: List[Graphic] =
     List(
@@ -58,11 +58,15 @@ object CloudsSubSystem {
   def init(screenWidth: Int): CloudsSubSystem =
     CloudsSubSystem(screenWidth, 0, 181, Nil, Millis.zero)
 
-  def updateClouds(current: List[Cloud]): List[Cloud] =
-    current.filterNot(_.offScreen).map(_.update)
+  def updateClouds(gameTime: GameTime, current: List[Cloud]): List[Cloud] =
+    current.filterNot(_.offScreen).map(_.update(gameTime))
 
   def spawnCloud(dice: Dice, initialX: Int): Cloud =
-    Cloud(Point(initialX, dice.roll(70) + 10), dice.roll(3), chooseCloud(dice.roll(3)))
+    Cloud(
+      Point(initialX, dice.roll(70) + 10),
+      dice.roll(4) * 32,
+      chooseCloud(dice.roll(3))
+    )
 
   def chooseCloud(index: Int): Graphic =
     index match {
@@ -74,8 +78,8 @@ object CloudsSubSystem {
 }
 
 final case class Cloud(position: Point, moveBy: Int, graphic: Graphic) {
-  def update: Cloud = {
-    val next = this.position - Point(moveBy, 0)
+  def update(gameTime: GameTime): Cloud = {
+    val next = this.position - Point((moveBy.toDouble * gameTime.delta.value).toInt, 0)
 
     this.copy(position = next)
   }
