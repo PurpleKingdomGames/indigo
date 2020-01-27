@@ -85,7 +85,4 @@ basicLayout model =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Sub.batch
-        [ Sub.map (\m -> ScalaCallback m) ScalaJSMailbox.receive
-        , Sub.map (\m -> FontSheetMsgWrapper m) FontSheet.subscriptions
-        ]
+    Sub.map (\m -> FontSheetMsgWrapper m) FontSheet.subscriptions
