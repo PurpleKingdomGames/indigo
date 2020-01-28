@@ -9,6 +9,7 @@ import Element.Border as Border
 import Element.Input as Input
 import Html exposing (Html)
 import Modules.BumpToNormal as BumpToNormal
+import Modules.FontSheet as FontSheet
 import Url exposing (Url)
 import Url.Parser as UrlParser exposing (Parser, s, top)
 
@@ -54,7 +55,7 @@ pageContent model =
                 ]
 
         FontSheet ->
-            row [ padding 10 ] [ text "Font sheet generator" ]
+            Element.map (\m -> FontSheetMsgWrapper m) (FontSheet.view model.fontSheet)
 
         NotFound ->
             row [ padding 10 ] [ text "Not Found" ]

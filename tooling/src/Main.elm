@@ -14,6 +14,7 @@ import Element.Font as Font
 import Html exposing (..)
 import Html.Attributes exposing (href)
 import Modules.BumpToNormal as BumpToNormal
+import Modules.FontSheet as FontSheet exposing (subscriptions)
 import Url exposing (Url)
 
 
@@ -35,7 +36,7 @@ main =
 
 init : Flags -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ _ navKey =
-    ( Model Home navKey BumpToNormal.initialModel, Cmd.none )
+    ( Model Home navKey BumpToNormal.initialModel FontSheet.initialModel, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -54,6 +55,11 @@ update msg model =
             case BumpToNormal.update b2nMsg model.bumpToNormal of
                 ( m, cmd ) ->
                     ( { model | bumpToNormal = m }, Cmd.map (\e -> BumpToNormalMsgWrapper e) cmd )
+
+        FontSheetMsgWrapper fsMsg ->
+            case FontSheet.update fsMsg model.fontSheet of
+                ( m, cmd ) ->
+                    ( { model | fontSheet = m }, Cmd.map (\e -> FontSheetMsgWrapper e) cmd )
 
         LogMessage m ->
             ( model, ScalaJSMailbox.send <| LogIt m )
@@ -79,4 +85,4 @@ basicLayout model =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Sub.map (\m -> ScalaCallback m) ScalaJSMailbox.receive
+    Sub.map (\m -> FontSheetMsgWrapper m) FontSheet.subscriptions

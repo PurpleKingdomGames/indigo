@@ -2,6 +2,7 @@ module App.Model exposing (..)
 
 import Browser.Navigation as Nav
 import Modules.BumpToNormal exposing (BumpToNormal)
+import Modules.FontSheet exposing (FontSheet)
 import WebGL.Texture as Texture exposing (..)
 
 
@@ -17,7 +18,9 @@ type alias Model =
     { page : Page
     , navKey : Nav.Key
     , bumpToNormal : BumpToNormal
+    , fontSheet : FontSheet
     }
+
 
 pageToString : Page -> String
 pageToString page =
