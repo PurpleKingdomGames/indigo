@@ -5,8 +5,7 @@ import indigo._
 object Assets {
 
   object Static {
-    val backgroundRef: String      = "background"
-    val backgroundGraphic: Graphic = Graphic(Rectangle(0, 0, 640, 360), 50, backgroundRef)
+    val backgroundRef: String = "background"
 
     val levelRef: String      = "level"
     val levelGraphic: Graphic = Graphic(Rectangle(0, 0, 646, 374), 2, levelRef)
@@ -38,23 +37,56 @@ object Assets {
   object Clouds {
 
     val bigCloudsRef: String   = "Big Clouds"
-    val smallCloud1Ref: String = "Small Cloud 1"
-    val smallCloud2Ref: String = "Small Cloud 2"
-    val smallCloud3Ref: String = "Small Cloud 3"
+    val smallCloudsRef: String = "small_clouds"
 
     val bigCloudsGraphic: Graphic = Graphic(Rectangle(0, 0, 448, 101), 40, bigCloudsRef).withRef(0, 101)
     val bigCloudsWidth: Int       = bigCloudsGraphic.bounds.width
 
-    val cloudGraphic1: Graphic = Graphic(Rectangle(0, 0, 74, 24), 30, smallCloud1Ref)
-    val cloudGraphic2: Graphic = Graphic(Rectangle(0, 0, 133, 35), 30, smallCloud2Ref)
-    val cloudGraphic3: Graphic = Graphic(Rectangle(0, 0, 140, 39), 30, smallCloud3Ref)
+    val animationKey1: AnimationKey = AnimationKey("cloud 1")
+    val animationKey2: AnimationKey = AnimationKey("cloud 2")
+    val animationKey3: AnimationKey = AnimationKey("cloud 3")
+
+    val cloudCycles: NonEmptyList[Cycle] =
+      NonEmptyList(
+        Cycle.create("cloud 1", NonEmptyList(Frame.fromBounds(0, 0, 140, 39))),
+        Cycle.create("cloud 2", NonEmptyList(Frame.fromBounds(0, 39, 140, 39))),
+        Cycle.create("cloud 3", NonEmptyList(Frame.fromBounds(0, 78, 140, 39)))
+      )
+
+    val cloudsAnimation1: Animation =
+      Animation(
+        animationKey1,
+        ImageAssetRef(smallCloudsRef),
+        Point(140, 117),
+        CycleLabel("cloud 1"),
+        cloudCycles,
+        Nil
+      )
+
+    val cloudsAnimation2: Animation =
+      Animation(
+        animationKey2,
+        ImageAssetRef(smallCloudsRef),
+        Point(140, 117),
+        CycleLabel("cloud 2"),
+        cloudCycles,
+        Nil
+      )
+
+    val cloudsAnimation3: Animation =
+      Animation(
+        animationKey3,
+        ImageAssetRef(smallCloudsRef),
+        Point(140, 117),
+        CycleLabel("cloud 3"),
+        cloudCycles,
+        Nil
+      )
 
     val assets: Set[AssetType] =
       Set(
         AssetType.Image(Clouds.bigCloudsRef, "assets/" + Clouds.bigCloudsRef + ".png"),
-        AssetType.Image(Clouds.smallCloud1Ref, "assets/" + Clouds.smallCloud1Ref + ".png"),
-        AssetType.Image(Clouds.smallCloud2Ref, "assets/" + Clouds.smallCloud2Ref + ".png"),
-        AssetType.Image(Clouds.smallCloud3Ref, "assets/" + Clouds.smallCloud3Ref + ".png")
+        AssetType.Image(Clouds.smallCloudsRef, "assets/" + Clouds.smallCloudsRef + ".png")
       )
 
   }
