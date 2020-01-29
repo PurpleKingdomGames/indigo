@@ -8,55 +8,39 @@ object InitialLoad {
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, StartupData] = {
 
-    val loadedReflections: Option[SpriteAndAnimations] = for {
-      json                <- assetCollection.findTextDataByName(AssetName(Assets.Water.jsonRef))
+    val loader: (String, String, Depth) => Either[String, SpriteAndAnimations] =
+      loadAnimation(assetCollection)
+
+    val res = for {
+      reflections <- loader(Assets.Water.jsonRef, Assets.Water.ref, Depth(20))
+      flag        <- loader(Assets.Flag.jsonRef, Assets.Flag.ref, Depth(10))
+      captain     <- loader(Assets.Captain.jsonRef, Assets.Captain.ref, Depth(2))
+      helm        <- loader(Assets.Helm.jsonRef, Assets.Helm.ref, Depth(9))
+      palm        <- loader(Assets.Trees.jsonRef, Assets.Trees.ref, Depth(1))
+    } yield makeStartupData(reflections, flag, captain, helm, palm)
+
+    res match {
+      case Left(message) =>
+        Startup.Failure(StartupErrors(message))
+
+      case Right(success) =>
+        success
+    }
+  }
+
+  def loadAnimation(assetCollection: AssetCollection)(jsonRef: String, name: String, depth: Depth): Either[String, SpriteAndAnimations] = {
+    val res = for {
+      json                <- assetCollection.findTextDataByName(AssetName(jsonRef))
       aseprite            <- Json.asepriteFromJson(json)
-      spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, Depth(20), Assets.Water.ref)
+      spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, depth, name)
     } yield spriteAndAnimations
 
-    val loadedFlag: Option[SpriteAndAnimations] = for {
-      json                <- assetCollection.findTextDataByName(AssetName(Assets.Flag.jsonRef))
-      aseprite            <- Json.asepriteFromJson(json)
-      spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, Depth(10), Assets.Flag.ref)
-    } yield spriteAndAnimations
+    res match {
+      case Some(spriteAndAnimations) =>
+        Right(spriteAndAnimations)
 
-    val loadedHelm: Option[SpriteAndAnimations] = for {
-      json                <- assetCollection.findTextDataByName(AssetName(Assets.Helm.jsonRef))
-      aseprite            <- Json.asepriteFromJson(json)
-      spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, Depth(9), Assets.Helm.ref)
-    } yield spriteAndAnimations
-
-    val loadedCaptain: Option[SpriteAndAnimations] = for {
-      json                <- assetCollection.findTextDataByName(AssetName(Assets.Captain.jsonRef))
-      aseprite            <- Json.asepriteFromJson(json)
-      spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, Depth(2), Assets.Captain.ref)
-    } yield spriteAndAnimations
-
-    val loadedPalmTree: Option[SpriteAndAnimations] = for {
-      json                <- assetCollection.findTextDataByName(AssetName(Assets.Trees.jsonRef))
-      aseprite            <- Json.asepriteFromJson(json)
-      spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, Depth(1), Assets.Trees.ref)
-    } yield spriteAndAnimations
-
-    (loadedReflections, loadedFlag, loadedCaptain, loadedHelm, loadedPalmTree) match {
-      case (Some(reflections), Some(flag), Some(captain), Some(helm), Some(palm)) =>
-        makeStartupData(reflections, flag, captain, helm, palm)
-
-      case (None, _, _, _, _) =>
-        Startup.Failure(StartupErrors("Failed to load the water reflections"))
-
-      case (_, None, _, _, _) =>
-        Startup.Failure(StartupErrors("Failed to load the flag"))
-
-      case (_, _, None, _, _) =>
-        Startup.Failure(StartupErrors("Failed to load the captain"))
-
-      case (_, _, _, None, _) =>
-        Startup.Failure(StartupErrors("Failed to load the helm"))
-
-      case (_, _, _, _, None) =>
-        Startup.Failure(StartupErrors("Failed to load the palm trees"))
-
+      case None =>
+        Left("Failed to load " + name)
     }
   }
 
