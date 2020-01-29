@@ -25,8 +25,8 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
 
   val subSystems: Set[SubSystem] =
     Set(
-      CloudsSubSystem.init(config.screenDimensions.width), // STEP 5
-      CloudsAutomata.automata                              // STEP 6
+      CloudsAutomata.automata,                            // STEP 6
+      CloudsSubSystem.init(config.screenDimensions.width) // STEP 5
     )
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, StartupData] =
@@ -49,12 +49,17 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
       View.sceneAudio |+|
       View.drawWater(viewModel) |+|
       View.drawForeground(viewModel, config.screenDimensions) |+|
-      View.drawPirate(gameTime, model, viewModel.captain) // STEP 8
-  // View.drawBackground |+| View.sceneAudio |+| View.drawWater(viewModel) |+|
-  //   View.drawForeground(viewModel, config.screenDimensions) // STEP 7
-  // View.drawBackground |+| View.sceneAudio |+| View.drawWater(viewModel) // STEP 4
-  // View.drawBackground |+| View.sceneAudio // STEP 3
-  // View.drawBackground // STEP 2
-  // noRender // STEP 1
+      View.drawPirateWithRespawn(gameTime, model, viewModel.captain) // STEP 9
+    // View.drawBackground |+|
+    //   View.sceneAudio |+|
+    //   View.drawWater(viewModel) |+|
+    //   View.drawForeground(viewModel, config.screenDimensions) |+|
+    //   View.drawPirate(model, viewModel.captain) // STEP 8
+    // View.drawBackground |+| View.sceneAudio |+| View.drawWater(viewModel) |+|
+    //   View.drawForeground(viewModel, config.screenDimensions) // STEP 7
+    // View.drawBackground |+| View.sceneAudio |+| View.drawWater(viewModel) // STEP 4
+    // View.drawBackground |+| View.sceneAudio // STEP 3
+    // View.drawBackground // STEP 2
+    // noRender // STEP 1
 
 }

@@ -53,7 +53,7 @@ object View {
       )
 
   // STEP 8
-  def drawPirate(gameTime: GameTime, model: Model, captain: Sprite): SceneUpdateFragment = {
+  def drawPirate(model: Model, captain: Sprite): SceneUpdateFragment = {
     val updatedCaptain = model.pirateState match {
       case PirateState.Idle =>
         captain
@@ -83,8 +83,41 @@ object View {
     }
 
     SceneUpdateFragment.empty
-    // .addGameLayerNodes(updatedCaptain) // STEP 9
-      .addGameLayerNodes(respawnEffect(gameTime, model, updatedCaptain)) // STEP 9
+      .addGameLayerNodes(updatedCaptain)
+  }
+
+  // STEP 9
+  def drawPirateWithRespawn(gameTime: GameTime, model: Model, captain: Sprite): SceneUpdateFragment = {
+    val updatedCaptain = model.pirateState match {
+      case PirateState.Idle =>
+        captain
+          .moveTo(model.position)
+          .changeCycle(CycleLabel("Idle"))
+          .play()
+
+      case PirateState.MoveLeft =>
+        captain
+          .moveTo(model.position)
+          .flipHorizontal(true)
+          .moveBy(-20, 0)
+          .changeCycle(CycleLabel("Run"))
+          .play()
+
+      case PirateState.MoveRight =>
+        captain
+          .moveTo(model.position)
+          .changeCycle(CycleLabel("Run"))
+          .play()
+
+      case PirateState.Falling =>
+        captain
+          .moveTo(model.position)
+          .changeCycle(CycleLabel("Fall"))
+          .play()
+    }
+
+    SceneUpdateFragment.empty
+      .addGameLayerNodes(respawnEffect(gameTime, model, updatedCaptain))
   }
 
   // STEP 9
@@ -92,14 +125,20 @@ object View {
     val flashActive: Signal[Boolean] =
       Signal(_ < model.lastRespawn + Millis(2000))
 
-    val flashing: Signal[Boolean] =
+    val flashOnOff: Signal[Boolean] =
       Signal.Pulse(Millis(100))
 
-    val signal = flashActive |*| flashing |> SignalFunction {
-      case (false, _)    => captain
-      case (true, true)  => captain.withAlpha(1)
-      case (true, false) => captain.withAlpha(0)
-    }
+    val combinedSignals: Signal[(Boolean, Boolean)] =
+      flashActive |*| flashOnOff
+
+    val captainWithAlpha: SignalFunction[(Boolean, Boolean), Sprite] =
+      SignalFunction {
+        case (false, _)    => captain
+        case (true, true)  => captain.withAlpha(1)
+        case (true, false) => captain.withAlpha(0)
+      }
+
+    val signal = combinedSignals |> captainWithAlpha
 
     signal.at(gameTime.running)
   }
