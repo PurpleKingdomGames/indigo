@@ -47,9 +47,9 @@ object View {
         Assets.Trees.leftLeaningTrunkGraphic.moveTo(100, 270),
         Assets.Trees.rightLeaningTrunkGraphic.moveTo(25, 150),
         viewModel.backTallPalm.moveTo(420, 210).changeCycle(CycleLabel("P Back")).play(),
-        viewModel.frontPalm.moveTo(397, 188).play(),
-        viewModel.frontPalm.moveTo(77, 235).play(),
-        viewModel.frontPalm.moveTo(37, 104).play(),
+        viewModel.palm.moveTo(397, 188).play(),
+        viewModel.palm.moveTo(77, 235).play(),
+        viewModel.palm.moveTo(37, 104).play(),
         Assets.Static.chestGraphic.moveTo(380, 271),
         Assets.Static.levelGraphic
       )
