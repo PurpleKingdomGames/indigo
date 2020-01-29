@@ -1,4 +1,4 @@
-package pirate
+package pirate.init
 
 import indigo._
 import indigo.json.Json

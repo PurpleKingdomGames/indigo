@@ -1,6 +1,8 @@
-package pirate
+package pirate.game
 
 import indigo._
+
+import pirate.init.Assets
 
 final case class Model(pirateState: PirateState, position: Point, isFalling: Boolean, lastPlayed: Millis, lastRespawn: Millis) {
   val navRegion: Rectangle =

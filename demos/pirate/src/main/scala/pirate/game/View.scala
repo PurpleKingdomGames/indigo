@@ -1,6 +1,8 @@
-package pirate
+package pirate.game
 
 import indigo._
+
+import pirate.init.Assets
 
 object View {
 

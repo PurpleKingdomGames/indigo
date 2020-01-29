@@ -1,6 +1,8 @@
-package pirate
+package pirate.game
 
 import indigo._
+
+import pirate.init.StartupData
 
 final case class ViewModel(waterReflections: Sprite, flag: Sprite, captain: Sprite, helm: Sprite, palm: Sprite) {
   val frontPalm: Sprite =

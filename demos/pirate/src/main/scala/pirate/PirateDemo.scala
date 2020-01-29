@@ -3,6 +3,10 @@ package pirate
 import indigo._
 import indigoexts.entrypoint._
 
+import pirate.subsystems.{CloudsAutomata, CloudsSubSystem}
+import pirate.init.{Assets, InitialLoad, StartupData}
+import pirate.game.{Model, ViewModel, View}
+
 object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
 
   val config: GameConfig =
@@ -50,16 +54,16 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
       View.drawWater(viewModel) |+|
       View.drawForeground(viewModel, config.screenDimensions) |+|
       View.drawPirateWithRespawn(gameTime, model, viewModel.captain) // STEP 9
-    // View.drawBackground |+|
-    //   View.sceneAudio |+|
-    //   View.drawWater(viewModel) |+|
-    //   View.drawForeground(viewModel, config.screenDimensions) |+|
-    //   View.drawPirate(model, viewModel.captain) // STEP 8
-    // View.drawBackground |+| View.sceneAudio |+| View.drawWater(viewModel) |+|
-    //   View.drawForeground(viewModel, config.screenDimensions) // STEP 7
-    // View.drawBackground |+| View.sceneAudio |+| View.drawWater(viewModel) // STEP 4
-    // View.drawBackground |+| View.sceneAudio // STEP 3
-    // View.drawBackground // STEP 2
-    // noRender // STEP 1
+  // View.drawBackground |+|
+  //   View.sceneAudio |+|
+  //   View.drawWater(viewModel) |+|
+  //   View.drawForeground(viewModel, config.screenDimensions) |+|
+  //   View.drawPirate(model, viewModel.captain) // STEP 8
+  // View.drawBackground |+| View.sceneAudio |+| View.drawWater(viewModel) |+|
+  //   View.drawForeground(viewModel, config.screenDimensions) // STEP 7
+  // View.drawBackground |+| View.sceneAudio |+| View.drawWater(viewModel) // STEP 4
+  // View.drawBackground |+| View.sceneAudio // STEP 3
+  // View.drawBackground // STEP 2
+  // noRender // STEP 1
 
 }
