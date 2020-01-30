@@ -55,74 +55,15 @@ object View {
       )
 
   // STEP 8
-  def drawPirate(model: Model, captain: Sprite): SceneUpdateFragment = {
-    val updatedCaptain = model.pirateState match {
-      case PirateState.Idle =>
-        captain
-          .moveTo(model.position)
-          .changeCycle(CycleLabel("Idle"))
-          .play()
-
-      case PirateState.MoveLeft =>
-        captain
-          .moveTo(model.position)
-          .flipHorizontal(true)
-          .moveBy(-20, 0)
-          .changeCycle(CycleLabel("Run"))
-          .play()
-
-      case PirateState.MoveRight =>
-        captain
-          .moveTo(model.position)
-          .changeCycle(CycleLabel("Run"))
-          .play()
-
-      case PirateState.Falling =>
-        captain
-          .moveTo(model.position)
-          .changeCycle(CycleLabel("Fall"))
-          .play()
-    }
-
+  def drawPirate(model: Model, captain: Sprite): SceneUpdateFragment =
     SceneUpdateFragment.empty
-      .addGameLayerNodes(updatedCaptain)
-  }
+      .addGameLayerNodes(updatedCaptain(model, captain))
 
   // STEP 9
-  def drawPirateWithRespawn(gameTime: GameTime, model: Model, captain: Sprite): SceneUpdateFragment = {
-    val updatedCaptain = model.pirateState match {
-      case PirateState.Idle =>
-        captain
-          .moveTo(model.position)
-          .changeCycle(CycleLabel("Idle"))
-          .play()
-
-      case PirateState.MoveLeft =>
-        captain
-          .moveTo(model.position)
-          .flipHorizontal(true)
-          .moveBy(-20, 0)
-          .changeCycle(CycleLabel("Run"))
-          .play()
-
-      case PirateState.MoveRight =>
-        captain
-          .moveTo(model.position)
-          .changeCycle(CycleLabel("Run"))
-          .play()
-
-      case PirateState.Falling =>
-        captain
-          .moveTo(model.position)
-          .changeCycle(CycleLabel("Fall"))
-          .play()
-    }
-
+  def drawPirateWithRespawn(gameTime: GameTime, model: Model, captain: Sprite): SceneUpdateFragment =
     SceneUpdateFragment.empty
-      .addGameLayerNodes(respawnEffect(gameTime, model, updatedCaptain))
-  }
+      .addGameLayerNodes(respawnEffect(gameTime, model, updatedCaptain(model, captain)))
 
-  // STEP 9
   def respawnEffect(gameTime: GameTime, model: Model, captain: Sprite): Sprite = {
     val flashActive: Signal[Boolean] =
       Signal(_ < model.lastRespawn + Millis(2000))
@@ -145,4 +86,48 @@ object View {
     signal.at(gameTime.running)
   }
 
+  def updatedCaptain(model: Model, captain: Sprite): Sprite =
+    model.pirateState match {
+      case PirateState.Idle if model.facingRight =>
+        captain
+          .moveTo(model.position)
+          .changeCycle(CycleLabel("Idle"))
+          .play()
+
+      case PirateState.Idle =>
+        captain
+          .moveTo(model.position)
+          .flipHorizontal(true)
+          .moveBy(-20, 0)
+          .changeCycle(CycleLabel("Idle"))
+          .play()
+
+      case PirateState.MoveLeft =>
+        captain
+          .moveTo(model.position)
+          .flipHorizontal(true)
+          .moveBy(-20, 0)
+          .changeCycle(CycleLabel("Run"))
+          .play()
+
+      case PirateState.MoveRight =>
+        captain
+          .moveTo(model.position)
+          .changeCycle(CycleLabel("Run"))
+          .play()
+
+      case PirateState.Falling if model.facingRight =>
+        captain
+          .moveTo(model.position)
+          .changeCycle(CycleLabel("Fall"))
+          .play()
+
+      case PirateState.Falling =>
+        captain
+          .moveTo(model.position)
+          .flipHorizontal(true)
+          .moveBy(-20, 0)
+          .changeCycle(CycleLabel("Fall"))
+          .play()
+    }
 }
