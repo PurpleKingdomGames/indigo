@@ -5,7 +5,7 @@ import indigo.shared.temporal.Signal
 import indigo.shared.time.Millis
 import indigo.shared.collections.NonEmptyList
 
-final class Bezier(private val vertices: List[Vertex]) {
+final class Bezier(val vertices: List[Vertex]) extends AnyVal {
 
   def at(unitInterval: Double): Vertex =
     Bezier.at(this, unitInterval)
