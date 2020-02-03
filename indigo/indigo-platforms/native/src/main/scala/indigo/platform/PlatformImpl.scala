@@ -3,7 +3,6 @@ package indigo.platform
 import indigo.shared.platform.Platform
 import indigo.shared.platform.Renderer
 import indigo.shared.platform.GlobalEventStream
-import indigo.shared.GameContext
 import indigo.shared.GameConfig
 // import indigo.shared.IndigoLogger
 // import indigo.shared.display.Vector2
@@ -17,6 +16,8 @@ import indigo.shared.platform.AssetMapping
 import indigo.shared.platform.TextureRefAndOffset
 // import indigo.platform.events.WorldEvents
 import indigo.platform.assets.AssetCollection
+import scala.util.Try
+import scala.util.Success
 // import indigo.platform.assets.TextureAtlas
 // import indigo.platform.assets.TextureAtlasFunctions
 // import indigo.platform.assets.ImageRef
@@ -30,8 +31,8 @@ class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEv
 
   // import PlatformImpl._
 
-  def initialiseRenderer(gameConfig: GameConfig): GameContext[(Renderer, AssetMapping)] =
-    GameContext.delay({
+  def initialiseRenderer(gameConfig: GameConfig): Try[(Renderer, AssetMapping)] =
+    Success({
       println(gameConfig.magnification.toString)
       println(assetCollection.images.length.toString)
       println(globalEventStream.collect.length.toString())
@@ -60,7 +61,7 @@ class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEv
   def tick(loop: Long => Unit): Unit =
     // dom.window.requestAnimationFrame(t => loop(t.toLong))
     loop(0)
-    
+
 }
 
 // object PlatformImpl {

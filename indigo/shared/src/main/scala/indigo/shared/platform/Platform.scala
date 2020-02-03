@@ -1,11 +1,11 @@
 package indigo.shared.platform
 
 import indigo.shared.config.GameConfig
-import indigo.shared.GameContext
+import scala.util.Try
 
 trait Platform {
 
-  def initialiseRenderer(gameConfig: GameConfig): GameContext[(Renderer, AssetMapping)]
+  def initialiseRenderer(gameConfig: GameConfig): Try[(Renderer, AssetMapping)]
 
   def tick(loop: Long => Unit): Unit
 

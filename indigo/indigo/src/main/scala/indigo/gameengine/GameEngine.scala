@@ -7,7 +7,6 @@ import indigo.shared.config.GameConfig
 import indigo.shared.AssetType
 import indigo.shared.IndigoLogger
 import indigo.shared.Startup
-import indigo.shared.GameContext
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 import indigo.platform.assets._
@@ -29,6 +28,9 @@ import indigo.shared.EqualTo._
 import indigo.shared.platform.Storage
 import indigo.platform.storage.PlatformStorage
 import indigo.shared.input.GamepadInputCapture
+import scala.util.Try
+import scala.util.Success
+import scala.util.Failure
 
 final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     config: GameConfig,
@@ -113,7 +115,7 @@ object GameEngine {
         val platform: Platform =
           new PlatformImpl(assetCollection, globalEventStream)
 
-        val gameLoop: GameContext[Long => Unit] =
+        val gameLoop: Try[Long => Unit] =
           for {
             _                       <- GameEngine.registerAnimations(animations ++ startupData.additionalAnimations)
             _                       <- GameEngine.registerFonts(fonts ++ startupData.additionalFonts)
@@ -134,13 +136,13 @@ object GameEngine {
             )
           } yield gameLoopInstance.loop(0)
 
-        gameLoop.attemptRun match {
-          case Right(f) =>
+        gameLoop match {
+          case Success(f) =>
             IndigoLogger.info("Starting main loop, there will be no more info log messages.")
             IndigoLogger.info("You may get first occurrence error logs.")
             platform.tick(f)
 
-          case Left(e) =>
+          case Failure(e) =>
             IndigoLogger.error("Error during startup")
             IndigoLogger.error(e.getMessage)
 
@@ -151,22 +153,22 @@ object GameEngine {
     }
   }
 
-  def registerAnimations(animations: Set[Animation]): GameContext[Unit] =
-    GameContext(animations.foreach(AnimationsRegister.register))
+  def registerAnimations(animations: Set[Animation]): Try[Unit] =
+    Success(animations.foreach(AnimationsRegister.register))
 
-  def registerFonts(fonts: Set[FontInfo]): GameContext[Unit] =
-    GameContext(fonts.foreach(FontRegister.register))
+  def registerFonts(fonts: Set[FontInfo]): Try[Unit] =
+    Success(fonts.foreach(FontRegister.register))
 
-  def initialisedGame[StartupError, StartupData](startupData: Startup[StartupError, StartupData]): GameContext[StartupData] =
+  def initialisedGame[StartupError, StartupData](startupData: Startup[StartupError, StartupData]): Try[StartupData] =
     startupData match {
       case e: Startup.Failure[_] =>
         IndigoLogger.info("Game initialisation failed")
         IndigoLogger.info(e.report)
-        GameContext.raiseError[StartupData](new Exception("Game aborted due to start up failure"))
+        Failure[StartupData](new Exception("Game aborted due to start up failure"))
 
       case x: Startup.Success[StartupData] =>
         IndigoLogger.info("Game initialisation succeeded")
-        GameContext(x.success)
+        Success(x.success)
     }
 
   def initialiseGameLoop[GameModel, ViewModel](
@@ -181,8 +183,8 @@ object GameEngine {
       globalEventStream: GlobalEventStream,
       gamepadInputCapture: GamepadInputCapture,
       callTick: (Long => Unit) => Unit
-  ): GameContext[GameLoop[GameModel, ViewModel]] =
-    GameContext(
+  ): Try[GameLoop[GameModel, ViewModel]] =
+    Success(
       new GameLoop[GameModel, ViewModel](
         gameConfig,
         assetMapping,
