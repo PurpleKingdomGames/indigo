@@ -15,7 +15,7 @@ object SignalTests extends TestSuite {
         }
 
         "should be able to get a value over time from a signal" - {
-          val sig = Signal.create(t => t.toInt * 10)
+          val sig = Signal(t => t.toInt * 10)
 
           (0 to 10).foreach { t =>
             sig.at(Millis(t)) ==> t * 10
@@ -173,7 +173,7 @@ Where a thing moves in a circle for 2 seconds and then stops.
             )
 
           val daysOfTheWeek =
-            Signal.create { t =>
+            Signal { t =>
               // Clearly this will blow up for < 0 or > 6
               days(t.value.toInt)
             }
@@ -209,7 +209,7 @@ Where a thing moves in a circle for 2 seconds and then stops.
             )
 
           val daysOfTheWeek =
-            Signal.create { t =>
+            Signal { t =>
               // Clearly this will blow up for < 0 or > 6
               days(t.value.toInt)
             }
@@ -233,14 +233,14 @@ Where a thing moves in a circle for 2 seconds and then stops.
         "affect time" - {
 
           val double = Signal.Time.affectTime(2.0d)
-          val half = Signal.Time.affectTime(0.5d)
+          val half   = Signal.Time.affectTime(0.5d)
 
           val times: List[Millis] =
             (1 to 10).map(_ * 10).map(_.toLong).toList.map(Millis.apply)
 
           times.foreach { t =>
-            double.at(t) ==> t * Millis(2l)
-            half.at(t) ==> t / Millis(2l)
+            double.at(t) ==> t * Millis(2L)
+            half.at(t) ==> t / Millis(2L)
           }
 
         }

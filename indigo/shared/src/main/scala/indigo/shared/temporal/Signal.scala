@@ -7,19 +7,24 @@ import indigo.shared.abstractions.Functor
 import indigo.shared.abstractions.Apply
 
 /**
-  * A Signal, or Time Varying Value is function t: Millis -> A
+  * A Signal is function t: Millis -> A
   */
-sealed trait Signal[A] {
+final class Signal[A](val f: Millis => A) extends AnyVal {
 
-  def at(t: Millis): A
+  def at(t: Millis): A =
+    f(t)
 
-  def merge[B, C](other: Signal[B])(f: (A, B) => C): Signal[C]
+  def merge[B, C](other: Signal[B])(f: (A, B) => C): Signal[C] =
+    implicitly[Monad[Signal]].apply2(this, other)(f)
 
-  def |>[B](sf: SignalFunction[A, B]): Signal[B] = pipe(sf)
+  def |>[B](sf: SignalFunction[A, B]): Signal[B] =
+    pipe(sf)
 
-  def pipe[B](sf: SignalFunction[A, B]): Signal[B]
+  def pipe[B](sf: SignalFunction[A, B]): Signal[B] =
+    sf.run(this)
 
-  def |*|[B](other: Signal[B]): Signal[(A, B)]
+  def |*|[B](other: Signal[B]): Signal[(A, B)] =
+    Signal.product(this, other)
 
   def clampTime(from: Millis, to: Millis): Signal[A] =
     Signal.clampTime(this, from, to)
@@ -53,17 +58,17 @@ object Signal {
         Signal.fixed(a)
 
       def map[A, B](fa: Signal[A])(f: A => B): Signal[B] =
-        Signal.create(t => f(fa.at(t)))
+        Signal(t => f(fa.at(t)))
 
       def ap[A, B](fa: Signal[A])(f: Signal[A => B]): Signal[B] =
-        Signal.create { (t: Millis) =>
+        Signal { (t: Millis) =>
           map(f) { ff =>
             ff(fa.at(t))
           }.at(t)
         }
 
       def flatMap[A, B](fa: Signal[A])(f: A => Signal[B]): Signal[B] =
-        Signal.create(t => f(fa.at(t)).at(t))
+        Signal(t => f(fa.at(t)).at(t))
     }
 
   implicit class SignalTuple2ToSignal[A, B](t: (Signal[A], Signal[B])) {
@@ -92,45 +97,43 @@ object Signal {
   }
 
   val Time: Signal[Millis] =
-    Signal.create(identity)
+    Signal(identity)
 
   val TimeInSeconds: Signal[Seconds] =
-    Signal.create(_.toSeconds)
+    Signal(_.toSeconds)
 
   def Pulse(interval: Millis): Signal[Boolean] =
-    Signal.create(t => (t / interval).value % 2 === 0)
+    Signal(t => (t / interval).value % 2 === 0)
 
   def clampTime[A](signal: Signal[A], from: Millis, to: Millis): Signal[A] =
-    Signal
-      .create { t =>
-        if (from < to) {
-          if (t < from) from
-          else if (t > to) to
-          else t
-        } else {
-          if (t < to) to
-          else if (t > from) from
-          else t
-        }
+    Signal { t =>
+      if (from < to) {
+        if (t < from) from
+        else if (t > to) to
+        else t
+      } else {
+        if (t < to) to
+        else if (t > from) from
+        else t
       }
-      .map { t =>
+    }.map { t =>
         signal.at(t)
       }
 
   def wrapTime[A](signal: Signal[A], at: Millis): Signal[A] =
-    Signal.create { t =>
+    Signal { t =>
       signal.at(t % at)
     }
 
   def affectTime[A](sa: Signal[A], multiplyBy: Double): Signal[A] =
-    Signal.create { t =>
+    Signal { t =>
       sa.at(Millis((t.toDouble * multiplyBy).toLong))
     }
 
   def easeOut[A](sa: Signal[A], target: Millis, divisor: Int): Signal[A] =
     if (divisor === 0) sa
     else {
-      Signal.create {
+      Signal {
         case t @ Millis.zero =>
           sa.at(t)
 
@@ -148,7 +151,7 @@ object Signal {
   def easeIn[A](sa: Signal[A], target: Millis, divisor: Int): Signal[A] =
     if (divisor === 0) sa
     else {
-      Signal.create {
+      Signal {
         case t @ Millis.zero =>
           sa.at(t)
 
@@ -164,25 +167,10 @@ object Signal {
     }
 
   def fixed[A](a: A): Signal[A] =
-    create(_ => a)
+    apply(_ => a)
 
   def apply[A](f: Millis => A): Signal[A] =
-    create(f)
-
-  def create[A](f: Millis => A): Signal[A] =
-    new Signal[A] {
-      def at(t: Millis): A =
-        f(t)
-
-      def merge[B, C](other: Signal[B])(f: (A, B) => C): Signal[C] =
-        monadSignal.apply2(this, other)(f)
-
-      def pipe[B](sf: SignalFunction[A, B]): Signal[B] =
-        sf.run(this)
-
-      def |*|[B](other: Signal[B]): Signal[(A, B)] =
-        Signal.product(this, other)
-    }
+    new Signal[A](f)
 
   def merge[A, B, C](sa: Signal[A], sb: Signal[B])(f: (A, B) => C): Signal[C] =
     monadSignal.apply2(sa, sb)(f)
