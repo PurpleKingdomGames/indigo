@@ -5,7 +5,7 @@ import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import indigo.shared.AsString
 
-class TimeVaryingValue[@specialized(Int, Long, Float, Double) T](val value: T, val startValue: T, val createdAt: Millis)(implicit vot: ValueOverTime[T], millisAsString: AsString[Millis]) {
+final class TimeVaryingValue[@specialized(Int, Long, Float, Double) T](val value: T, val startValue: T, val createdAt: Millis)(implicit vot: ValueOverTime[T], millisAsString: AsString[Millis]) {
 
   def increase(unitsPerSecond: T, runningTime: Millis): TimeVaryingValue[T] =
     TimeVaryingValue.increase(this, unitsPerSecond, runningTime)
