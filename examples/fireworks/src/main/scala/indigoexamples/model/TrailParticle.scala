@@ -26,7 +26,7 @@ object TrailParticle {
     TrailParticle(1.0d, tint)
 
   def fade(lifeSpan: Millis): Signal[Double] =
-    Signal.create { t =>
+    Signal { t =>
       initialAlpha * (1 - (t.toDouble / lifeSpan.toDouble))
     }
 
