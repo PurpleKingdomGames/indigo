@@ -11,6 +11,7 @@ import indigo.shared.dice.Dice
 import indigoexts.subsystems.automata.Automata.Layer
 import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Tint
+import scala.collection.mutable
 
 final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val layer: Layer, maxPoolSize: Option[Int], val pool: List[SpawnedAutomaton]) extends SubSystem {
   type EventType = AutomataEvent
@@ -143,12 +144,30 @@ object Automata {
     new Automata(poolKey, automaton, layer, None, Nil)
 
   def render(farm: Automata, gameTime: GameTime): SceneUpdateFragment =
-    farm.layer.emptyScene(
-      renderNoLayer(farm, gameTime).foldLeft(AutomatonUpdate.empty)(_ |+| _)
-    )
+    farm.layer.emptyScene(renderNoLayer(farm, gameTime))
 
-  def renderNoLayer(farm: Automata, gameTime: GameTime): List[AutomatonUpdate] =
-    farm.pool.map { sa =>
-      sa.automaton.modifier(sa.seedValues, sa.automaton.sceneGraphNode).at(gameTime.running - sa.seedValues.createdAt)
+  private val nodes: mutable.ListBuffer[SceneGraphNode] = new mutable.ListBuffer
+  private val events: mutable.ListBuffer[GlobalEvent]   = new mutable.ListBuffer
+
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.While", "org.wartremover.warts.NonUnitStatements"))
+  def renderNoLayer(farm: Automata, gameTime: GameTime): AutomatonUpdate = {
+    nodes.clear()
+    events.clear()
+
+    var i: Int     = 0
+    val count: Int = farm.pool.length
+
+    while (i < count) {
+      val sa  = farm.pool(i)
+      val res = sa.automaton.modifier(sa.seedValues, sa.automaton.sceneGraphNode).at(gameTime.running - sa.seedValues.createdAt)
+
+      nodes ++= res.nodes
+      events ++= res.events
+
+      i = i + 1
     }
+
+    AutomatonUpdate(nodes.toList, events.toList)
+  }
+
 }
