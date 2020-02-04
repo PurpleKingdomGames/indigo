@@ -10,6 +10,7 @@ import indigoexts.subsystems.automata.AutomataEvent._
 import indigo.shared.dice.Dice
 import indigoexts.subsystems.automata.Automata.Layer
 import indigo.shared.EqualTo._
+import indigo.shared.datatypes.Tint
 
 final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val layer: Layer, maxPoolSize: Option[Int], val pool: List[SpawnedAutomaton]) extends SubSystem {
   type EventType = AutomataEvent
@@ -95,19 +96,40 @@ object Automata {
     def emptyScene(automatonUpdate: AutomatonUpdate): SceneUpdateFragment =
       this match {
         case Layer.Game =>
-          SceneUpdateFragment.empty
-            .addGameLayerNodes(automatonUpdate.nodes)
-            .addGlobalEvents(automatonUpdate.events)
+          SceneUpdateFragment(
+            automatonUpdate.nodes,
+            Nil,
+            Nil,
+            Tint.None,
+            automatonUpdate.events,
+            SceneAudio.None,
+            ScreenEffects.None,
+            Nil
+          )
 
         case Layer.Lighting =>
-          SceneUpdateFragment.empty
-            .addLightingLayerNodes(automatonUpdate.nodes)
-            .addGlobalEvents(automatonUpdate.events)
+          SceneUpdateFragment(
+            Nil,
+            automatonUpdate.nodes,
+            Nil,
+            Tint.None,
+            automatonUpdate.events,
+            SceneAudio.None,
+            ScreenEffects.None,
+            Nil
+          )
 
         case Layer.UI =>
-          SceneUpdateFragment.empty
-            .addUiLayerNodes(automatonUpdate.nodes)
-            .addGlobalEvents(automatonUpdate.events)
+          SceneUpdateFragment(
+            Nil,
+            Nil,
+            automatonUpdate.nodes,
+            Tint.None,
+            automatonUpdate.events,
+            SceneAudio.None,
+            ScreenEffects.None,
+            Nil
+          )
       }
 
   }
