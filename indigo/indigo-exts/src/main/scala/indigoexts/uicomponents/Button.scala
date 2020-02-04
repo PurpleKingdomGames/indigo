@@ -172,7 +172,7 @@ final case class ButtonEvent(bindingKey: BindingKey, newState: ButtonState) exte
 final case class ButtonViewUpdate(buttonGraphic: Graphic, buttonEvents: List[GlobalEvent]) {
 
   def toSceneUpdateFragment: SceneUpdateFragment =
-    SceneUpdateFragment()
+    SceneUpdateFragment.empty
       .addUiLayerNodes(buttonGraphic)
       .addGlobalEvents(buttonEvents)
 

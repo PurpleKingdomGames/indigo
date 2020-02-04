@@ -183,9 +183,6 @@ object SceneUpdateFragment {
   ): SceneUpdateFragment =
     new SceneUpdateFragment(SceneLayer(gameLayer), SceneLayer(lightingLayer), SceneLayer(uiLayer), ambientLight, globalEvents, audio, screenEffects, cloneBlanks)
 
-  def apply(): SceneUpdateFragment =
-    empty
-
   def empty: SceneUpdateFragment =
     SceneUpdateFragment(Nil, Nil, Nil, Tint.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
 

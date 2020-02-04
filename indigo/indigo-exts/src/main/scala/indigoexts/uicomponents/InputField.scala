@@ -276,7 +276,7 @@ final case class InputFieldAssets(text: Text, cursor: Graphic)
 
 final case class InputFieldViewUpdate(sceneGraphNodes: List[SceneGraphNode], inputFieldEvents: List[InputFieldEvent]) {
   def toSceneUpdateFragment: SceneUpdateFragment =
-    SceneUpdateFragment()
+    SceneUpdateFragment.empty
       .addUiLayerNodes(sceneGraphNodes)
       .addGlobalEvents(inputFieldEvents)
 
