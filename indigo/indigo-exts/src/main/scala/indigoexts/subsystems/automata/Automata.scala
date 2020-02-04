@@ -73,10 +73,10 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
 
     case Cull =>
       val (l, r) =
-        pool.toList.partition(_.isAlive(gameTime.running))
+        pool.partition(_.isAlive(gameTime.running))
 
       Outcome(new Automata(poolKey, automaton, layer, maxPoolSize, l.map(_.updateDelta(gameTime.delta))))
-        .addGlobalEvents(r.toList.flatMap(sa => sa.automaton.onCull(sa.seedValues)))
+        .addGlobalEvents(r.flatMap(sa => sa.automaton.onCull(sa.seedValues)))
 
     case _ =>
       Outcome(this)
@@ -126,7 +126,7 @@ object Automata {
     )
 
   def renderNoLayer(farm: Automata, gameTime: GameTime): List[AutomatonUpdate] =
-    farm.pool.toList.map { sa =>
+    farm.pool.map { sa =>
       sa.automaton.modifier(sa.seedValues, sa.automaton.sceneGraphNode).at(gameTime.running - sa.seedValues.createdAt)
     }
 }
