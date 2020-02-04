@@ -57,7 +57,7 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
    regenerated.
    */
   def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState): SceneUpdateFragment =
-    SceneUpdateFragment().addGameLayerNodes(
+    SceneUpdateFragment.empty.addGameLayerNodes(
       Sprite(
         BindingKey("lights animation"),
         0,

@@ -30,7 +30,7 @@ object GroupExample extends IndigoGameBasic[Unit, Unit, Unit] {
     Outcome(())
 
   def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState): SceneUpdateFragment =
-    SceneUpdateFragment().addGameLayerNodes(
+    SceneUpdateFragment.empty.addGameLayerNodes(
       Group(
         Graphic(0, 0, 256, 256, 1, "graphics").moveTo(64, 10).moveBy(-50, -50),
         Graphic(0, 0, 32, 32, 1, "graphics").withCrop(32, 0, 32, 32).moveBy(-50, -50),
