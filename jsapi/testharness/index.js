@@ -116,7 +116,7 @@ const initialViewModel = function(startupData, gameModel) {
   };
 };
 
-const updateModel = function(gameTime, model, dice) {
+const updateModel = function(gameTime, model, inputState, dice) {
   return function(event) {
     if (!model.hasRun) {
       console.log(gameTime.running);
@@ -130,7 +130,7 @@ const updateModel = function(gameTime, model, dice) {
 };
 
 const updateViewModel =
-  function(gameTime, model, viewModel, frameEvents, dice) {
+  function(gameTime, model, viewModel, inputState, dice) {
     if (viewModel.num == -1) {
       console.log('Before: ' + viewModel.num);
       viewModel.num = dice.roll(6);
@@ -140,7 +140,7 @@ const updateViewModel =
     return OutcomeHelper.of(viewModel);
   };
 
-const present = function(gameTime, model, viewModel, frameEvents) {
+const present = function(gameTime, model, viewModel, inputState) {
   return SceneUpdateFragmentHelper.empty
       .addGameLayerNodes(
           [
