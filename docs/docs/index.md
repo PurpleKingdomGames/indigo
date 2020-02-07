@@ -1,1 +1,0 @@
-# Indigo User Manual
