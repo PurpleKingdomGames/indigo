@@ -5,6 +5,10 @@ This project does two things:
 1. Provides a means to export a controlled JavaScript friendly version of Indigo;
 1. Allows generation of docs for IndigoJS APIs.
 
+## VSCode user?
+
+For your convenience, you can start `sbt` in the project root and when you get to the SBT shell you can just type `code` to launch VSCode int he right place.
+
 ## Clean setup
 
 Note that I'm doing this on a mac! Any other platform, all bets are off! It should still basically work, you may just need to massage a few things here and there.
