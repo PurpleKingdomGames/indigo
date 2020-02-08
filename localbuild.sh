@@ -13,10 +13,10 @@ bash localbuild.sh
 cd ..
 
 # Demos
-echo ">>> Snake"
-cd demos/snake
-sbt buildGameFull
-cd ../..
+echo ">>> Demos"
+cd demos
+bash builddemos.sh
+cd ..
 
 # Supporting tooling...
 # JS API

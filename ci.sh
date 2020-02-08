@@ -13,15 +13,14 @@ bash ci.sh
 cd ..
 
 # Demos
-echo ">>> Snake"
-cd demos/snake
-sbt buildGameFull
-cd ../..
+echo ">>> Demos"
+cd demos
+bash builddemos.sh
+cd ..
 
-# Supporting tooling...
-# JS API
-# Tooling
-
-# Documentation...
-# Docs site
+# IndigoJS
+echo ">>> IndigoJS"
+cd jsapi
+bash build.sh
+cd ..
 

@@ -45,11 +45,11 @@ The interface we're exporting is a sort of lean, cut down version of the full AP
 
 This generates the unminified lib containing the entire Indigo engine and exposing the JS API.
 
-The output is in `indigojs/target/scala-2.12/indigojs-fastopt.js`.
+The output is in `indigojs/target/scala-2.13/indigojs-fastopt.js`.
 
 If you swap `fastOptJS` with `fullOptJS` ...and wait a while ... you get the minified version (uses Google closure compiler).
 
-The output is in `indigojs/target/scala-2.12/indigojs-opt.js`.
+The output is in `indigojs/target/scala-2.13/indigojs-opt.js`.
 
 ## The Test Harness
 
