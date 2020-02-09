@@ -8,7 +8,7 @@ lazy val snake =
     .settings(                               // Standard SBT settings
       name := "snake",
       version := "0.0.1",
-      scalaVersion := "2.13.1",
+      scalaVersion := "2.12.10",
       organization := "snake",
       libraryDependencies ++= Seq(
         "com.lihaoyi"    %%% "utest"      % "0.6.9"  % "test",
@@ -60,7 +60,7 @@ addCommandAlias(
 
 lazy val additionalSettings = Seq(
   code := { "code ." ! },
-  openCoverageReportFirefox := { "open -a Firefox target/scala-2.13/scoverage-report/index.html" ! },
+  openCoverageReportFirefox := { "open -a Firefox target/scala-2.12/scoverage-report/index.html" ! },
   scalacOptions ++= Seq("-Yrangepos"),
   scalacOptions in (Compile, compile) ++= Scalac213Options.scala213Compile,
   scalacOptions in (Test, test) ++= Scalac213Options.scala213Test

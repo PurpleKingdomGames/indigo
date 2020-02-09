@@ -7,7 +7,7 @@ val silencerVersion = "1.4.4"
 
 lazy val commonSettings = Seq(
   version := "0.0.1",
-  scalaVersion := "2.13.1",
+  scalaVersion := "2.12.10",
   organization := "indigo-js",
   libraryDependencies ++= Seq(
     "com.lihaoyi" %%% "utest" % "0.6.9" % "test"
