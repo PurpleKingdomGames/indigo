@@ -33,6 +33,7 @@ import indigojs.delegates.SceneUpdateFragmentDelegate
 import indigojs.delegates.GameTimeDelegate
 import indigojs.delegates.DiceDelegate
 import indigojs.delegates.InputStateDelegate
+import indigojs.delegates.AssetCollectionDelegate
 
 @JSExportTopLevel("Indigo")
 object IndigoJS {
@@ -41,7 +42,7 @@ object IndigoJS {
   type StartupError     = js.Array[String]
   type GameModel        = js.Object
   type ViewModel        = js.Object
-  type Initialise       = js.Function1[AssetCollection, StartUpDelegate]
+  type Initialise       = js.Function1[AssetCollectionDelegate, StartUpDelegate]
   type InitialModel     = js.Function1[StartupData, GameModel]
   type InitialViewModel = js.Function2[StartupData, GameModel, ViewModel]
   type ModelUpdate      = js.Function4[GameTimeDelegate, GameModel, InputStateDelegate, DiceDelegate, js.Function1[GlobalEvent, OutcomeDelegate]]
@@ -79,7 +80,7 @@ object IndigoJS {
   }
 
   private def convertInitialise(f: Initialise): AssetCollection => Startup[StartupError, StartupData] =
-    (ac: AssetCollection) => f(ac).toInternal
+    (ac: AssetCollection) => f(new AssetCollectionDelegate(ac)).toInternal
 
   private def convertUpdateModel(f: ModelUpdate): (GameTime, GameModel, InputState, Dice) => GlobalEvent => Outcome[GameModel] =
     (gt, gm, is, d) =>
