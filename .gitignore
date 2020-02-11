@@ -36,3 +36,4 @@ elm-stuff
 .metals/
 .bloop
 metals.sbt
+project/
