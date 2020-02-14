@@ -14,7 +14,7 @@ class PirateDemo extends IndigoGameBasic {
         Set(Assets.Fonts.fontInfo)
     ;
 
-    animations =
+    /*animations =
         Set(
             Assets.Clouds.cloudsAnimation1,
             Assets.Clouds.cloudsAnimation2,
@@ -31,7 +31,7 @@ class PirateDemo extends IndigoGameBasic {
 
     setup = function(assetCollection) {
         return InitialLoad.setup(assetCollection)
-    }
+    }*/
 
     initialModel = function(startupData) {
         return Model.initialModel(config.screenDimensions)
