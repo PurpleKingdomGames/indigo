@@ -10,7 +10,7 @@ import scala.scalajs.js.annotation._
 import scala.scalajs.js
 
 import indigojs.delegates.AssetTypeDelegate
-import indigojs.delegates.GameConfigDelegate
+import indigojs.delegates.config.GameConfigDelegate
 import indigojs.delegates.FontInfoDelegate
 import indigojs.delegates.AnimationDelegate
 import indigojs.delegates.StartUpDelegate

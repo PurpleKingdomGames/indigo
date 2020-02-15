@@ -1,12 +1,12 @@
-package indigojs.delegates
+package indigojs.delegates.config
 
 import scala.scalajs.js.annotation._
-
+import indigojs.delegates.ClearColorDelegate
 import indigo.shared.config.GameConfig
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("GameConfig")
-final class GameConfigDelegate(_viewport: GameViewportDelegate, _frameRate: Int, _clearColor: ClearColorDelegate, _magnification: Int) {
+final class GameConfigDelegate(_viewport: GameViewportDelegate, _frameRate: Int, _clearColor: ClearColorDelegate, _magnification: Int, _advanced: AdvancedGameConfigDelegate) {
 
   @JSExport
   val viewport = _viewport
@@ -16,25 +16,31 @@ final class GameConfigDelegate(_viewport: GameViewportDelegate, _frameRate: Int,
   val clearColor = _clearColor
   @JSExport
   val magnification = _magnification
+  @JSExport
+  val advanced = _advanced
 
   @JSExport
   def withViewport(newViewport: GameViewportDelegate): GameConfigDelegate =
-    new GameConfigDelegate(newViewport, frameRate, clearColor, magnification)
+    new GameConfigDelegate(newViewport, frameRate, clearColor, magnification, advanced)
 
   @JSExport
   def withFrameRate(newFrameRate: Int): GameConfigDelegate =
-    new GameConfigDelegate(viewport, newFrameRate, clearColor, magnification)
+    new GameConfigDelegate(viewport, newFrameRate, clearColor, magnification, advanced)
 
   @JSExport
   def withClearColor(newClearColor: ClearColorDelegate): GameConfigDelegate =
-    new GameConfigDelegate(viewport, frameRate, newClearColor, magnification)
+    new GameConfigDelegate(viewport, frameRate, newClearColor, magnification, advanced)
 
   @JSExport
   def withMagnification(newMagnification: Int): GameConfigDelegate =
-    new GameConfigDelegate(viewport, frameRate, clearColor, newMagnification)
+    new GameConfigDelegate(viewport, frameRate, clearColor, newMagnification, advanced)
+
+  @JSExport
+  def withAdvancedConfig(newAdvancedConfig: AdvancedGameConfigDelegate): GameConfigDelegate =
+    new GameConfigDelegate(viewport, frameRate, clearColor, magnification, newAdvancedConfig)
 
   def toInternal: GameConfig =
-    GameConfig(viewport.toInternal, frameRate, clearColor.toInternal, magnification)
+    new GameConfig(viewport.toInternal, frameRate, clearColor.toInternal, magnification, advanced.toInternal)
 
 }
 
@@ -48,6 +54,7 @@ object GameConfigDelegate {
       new GameViewportDelegate(550, 400),
       60,
       new ClearColorDelegate(0, 0, 0, 1),
-      1
+      1,
+      AdvancedGameConfigDelegate.default
     )
 }

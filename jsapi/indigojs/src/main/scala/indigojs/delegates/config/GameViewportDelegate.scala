@@ -1,4 +1,4 @@
-package indigojs.delegates
+package indigojs.delegates.config
 
 import scala.scalajs.js.annotation._
 import indigo.shared.config.GameViewport
