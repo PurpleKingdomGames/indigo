@@ -5,7 +5,7 @@ import scala.scalajs.js.annotation._
 import indigo.shared.config.AdvancedGameConfig
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
-@JSExportTopLevel("GameConfig")
+@JSExportTopLevel("AdvancedGameConfig")
 final class AdvancedGameConfigDelegate(
     val antiAliasing: Boolean,
     val batchSize: Int,
