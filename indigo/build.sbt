@@ -7,7 +7,7 @@ val indigoVersion = "0.0.12-SNAPSHOT"
 
 val silencerVersion = "1.4.4"
 
-val scala2 = "2.12.10"
+val scala2 = "2.13.1"
 
 lazy val commonSettings = Seq(
   version := indigoVersion,
@@ -219,9 +219,9 @@ lazy val indigoProject =
     .settings(commonSettings: _*)
     .settings(
       code := { "code ." ! },
-      openshareddocs := { "open -a Firefox shared/.jvm/target/scala-2.12/api/indigo/index.html" ! },
-      openindigodocs := { "open -a Firefox indigo/.jvm/target/scala-2.12/api/indigo/index.html" ! },
-      openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-2.12/api/indigoexts/index.html" ! }
+      openshareddocs := { "open -a Firefox shared/.jvm/target/scala-2.13/api/indigo/index.html" ! },
+      openindigodocs := { "open -a Firefox indigo/.jvm/target/scala-2.13/api/indigo/index.html" ! },
+      openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-2.13/api/indigoexts/index.html" ! }
     )
     .aggregate(
       sharedJVM,
