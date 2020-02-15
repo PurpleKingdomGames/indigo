@@ -327,7 +327,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer.toInternal,
       uiLayer.toInternal,
       ambientLight.toInternal,
-      globalEvents.toList,
+      globalEvents.toList.map(_.toInternal),
       audio.toInternal,
       screenEffects.toInternal,
       cloneBlanks.map(_.toInternal).toList

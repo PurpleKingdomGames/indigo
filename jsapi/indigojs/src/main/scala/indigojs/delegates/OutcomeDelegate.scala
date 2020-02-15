@@ -22,7 +22,7 @@ final class OutcomeDelegate(_state: js.Object, _globalEvents: js.Array[GlobalEve
     new OutcomeDelegate(state, globalEvents.concat(events))
 
   def toInternal: Outcome[js.Object] =
-    new Outcome(state, globalEvents.toList)
+    new Outcome(state, globalEvents.toList.map(_.toInternal))
 
 }
 

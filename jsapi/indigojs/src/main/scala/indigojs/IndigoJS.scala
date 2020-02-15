@@ -34,6 +34,7 @@ import indigojs.delegates.GameTimeDelegate
 import indigojs.delegates.DiceDelegate
 import indigojs.delegates.InputStateDelegate
 import indigojs.delegates.AssetCollectionDelegate
+import indigojs.delegates.GlobalEventDelegate
 
 @JSExportTopLevel("Indigo")
 object IndigoJS {
@@ -45,7 +46,7 @@ object IndigoJS {
   type Initialise       = js.Function1[AssetCollectionDelegate, StartUpDelegate]
   type InitialModel     = js.Function1[StartupData, GameModel]
   type InitialViewModel = js.Function2[StartupData, GameModel, ViewModel]
-  type ModelUpdate      = js.Function4[GameTimeDelegate, GameModel, InputStateDelegate, DiceDelegate, js.Function1[GlobalEvent, OutcomeDelegate]]
+  type ModelUpdate      = js.Function4[GameTimeDelegate, GameModel, InputStateDelegate, DiceDelegate, js.Function1[GlobalEventDelegate, OutcomeDelegate]]
   type ViewModelUpdate  = js.Function5[GameTimeDelegate, GameModel, ViewModel, InputStateDelegate, DiceDelegate, OutcomeDelegate]
   type ViewUpdate       = js.Function4[GameTimeDelegate, GameModel, ViewModel, InputStateDelegate, SceneUpdateFragmentDelegate]
 
@@ -90,7 +91,7 @@ object IndigoJS {
           gm,
           new InputStateDelegate(is),
           new DiceDelegate(d)
-        )(e).toInternal
+        )(GlobalEventDelegate.fromGlobalEvent(e)).toInternal
 
   private def convertUpdateViewModel(f: ViewModelUpdate): (GameTime, GameModel, ViewModel, InputState, Dice) => Outcome[ViewModel] =
     (gt, gm, vm, is, d) =>

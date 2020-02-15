@@ -97,7 +97,7 @@ final class SpriteDelegate(
       AnimationKey(animationKey),
       ref.toInternal,
       effects.toInternal,
-      (p: (Rectangle, GlobalEvent)) => eventHandler(RectangleDelegate.fromRectangle(p._1), GlobalEventDelegate.fromGlobalEvent(p._2)).toList
+      (p: (Rectangle, GlobalEvent)) => eventHandler(RectangleDelegate.fromRectangle(p._1), GlobalEventDelegate.fromGlobalEvent(p._2)).toList.map(_.toInternal)
     )
 
 }
@@ -126,7 +126,7 @@ final class TextDelegate(
       Vector2(scaleX, scaleY),
       FontKey(fontKey),
       effects.toInternal,
-      (p: (Rectangle, GlobalEvent)) => eventHandler(RectangleDelegate.fromRectangle(p._1), GlobalEventDelegate.fromGlobalEvent(p._2)).toList
+      (p: (Rectangle, GlobalEvent)) => eventHandler(RectangleDelegate.fromRectangle(p._1), GlobalEventDelegate.fromGlobalEvent(p._2)).toList.map(_.toInternal)
     )
 }
 object TextDelegate {
