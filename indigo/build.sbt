@@ -5,8 +5,6 @@ import scala.language.postfixOps
 
 val indigoVersion = "0.0.12-SNAPSHOT"
 
-val silencerVersion = "1.4.4"
-
 val scala2 = "2.13.1"
 
 lazy val commonSettings = Seq(
@@ -15,10 +13,6 @@ lazy val commonSettings = Seq(
   organization := "indigo",
   libraryDependencies ++= Seq(
     "com.lihaoyi" %%% "utest" % "0.6.9" % "test"
-  ),
-  libraryDependencies ++= Seq(
-    compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
-    "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
   scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits"),
