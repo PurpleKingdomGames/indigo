@@ -5,42 +5,41 @@ import io.circe.{Decoder, Encoder}, io.circe.generic.auto._
 import io.circe.syntax._
 
 sealed trait EntityDefinition {
-  // def toXml: String
+  val name: String
+  val entityType: String
+
+  def addMembers(members: List[EntityDefinition]): EntityDefinition =
+    this match {
+      case e: ClassEntity =>
+        e.copy(members = members)
+
+      case e: StaticEntity =>
+        e.copy(members = members)
+
+      case e =>
+        e
+    }
 }
 
-final case class ClassEntity(name: String) extends EntityDefinition {
-  // def toXml: String =
-  //   s"""<entity type="class" name="$name"></entity>\n"""
-}
-
-final case class StaticEntity(name: String) extends EntityDefinition {
-  // def toXml: String =
-  //   s"""<entity type="static" name="$name"></entity>\n"""
-}
-
-final case class ValueEntity(name: String, returnType: String) extends EntityDefinition {
-  // def toXml: String =
-  //   s"""<entity type="value" name="$name" returnType="$returnType"></entity>\n"""
-}
-
-final case class MethodEntity(name: String) extends EntityDefinition {
-  // def toXml: String =
-  //   s"""<entity type="method" name="$name"></entity>\n"""
-}
-
-final case class FunctionEntity(name: String) extends EntityDefinition {
-  // def toXml: String =
-  //   s"""<entity type="function" name="$name"></entity>\n"""
-}
+@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
+final case class ClassEntity(name: String, members: List[EntityDefinition], entityType: String = "class") extends EntityDefinition
+@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
+final case class StaticEntity(name: String, members: List[EntityDefinition], entityType: String = "static") extends EntityDefinition
+@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
+final case class ValueEntity(name: String, returnType: String, entityType: String = "value") extends EntityDefinition
+@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
+final case class MethodEntity(name: String, entityType: String = "method") extends EntityDefinition
+@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
+final case class FunctionEntity(name: String, entityType: String = "function") extends EntityDefinition
 
 @SuppressWarnings(Array("org.wartremover.warts.TraversableOps"))
 object EntityDefinition {
   implicit val encodeEvent: Encoder[EntityDefinition] = Encoder.instance {
-    case x @ ClassEntity(_)    => x.asJson
-    case x @ StaticEntity(_)   => x.asJson
-    case x @ ValueEntity(_, _) => x.asJson
-    case x @ MethodEntity(_)   => x.asJson
-    case x @ FunctionEntity(_) => x.asJson
+    case x: ClassEntity    => x.asJson
+    case x: StaticEntity   => x.asJson
+    case x: ValueEntity    => x.asJson
+    case x: MethodEntity   => x.asJson
+    case x: FunctionEntity => x.asJson
   }
 
   implicit val decodeEvent: Decoder[EntityDefinition] =
