@@ -16,9 +16,9 @@ final class Matrix4Delegate(val mat: js.Array[Double]) {
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Matrix4Helper")
-@JSExportAll
 object Matrix4Delegate {
 
+  @JSExport
   def identity: Matrix4Delegate =
     fromMatrix4(Matrix4.identity)
 

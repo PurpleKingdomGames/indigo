@@ -29,16 +29,33 @@ sealed trait SceneGraphNodePrimitiveDelegate extends SceneGraphNodeDelegate {
   def toInternal: SceneGraphNodePrimitive
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Group")
 final class GroupDelegate(
-    val x: Int,
-    val y: Int,
-    val depth: Int,
-    val rotation: Double,
-    val scaleX: Double,
-    val scaleY: Double,
-    val children: js.Array[SceneGraphNodePrimitiveDelegate]
+    _x: Int,
+    _y: Int,
+    _depth: Int,
+    _rotation: Double,
+    _scaleX: Double,
+    _scaleY: Double,
+    _children: js.Array[SceneGraphNodePrimitiveDelegate]
 ) extends SceneGraphNodePrimitiveDelegate {
+
+  @JSExport
+  val x = _x
+  @JSExport
+  val y = _y
+  @JSExport
+  val depth = _depth
+  @JSExport
+  val rotation = _rotation
+  @JSExport
+  val scaleX = _scaleX
+  @JSExport
+  val scaleY = _scaleY
+  @JSExport
+  val children = _children
+
   def toInternal: Group =
     new Group(
       Point(x, y),
@@ -49,19 +66,40 @@ final class GroupDelegate(
     )
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Graphic")
 final class GraphicDelegate(
-    val bounds: RectangleDelegate,
-    val depth: Int,
-    val rotation: Double,
-    val scaleX: Double,
-    val scaleY: Double,
-    val imageAssetRef: String,
-    val ref: PointDelegate,
-    val crop: RectangleDelegate,
-    val effects: EffectsDelegate
+    _bounds: RectangleDelegate,
+    _depth: Int,
+    _rotation: Double,
+    _scaleX: Double,
+    _scaleY: Double,
+    _imageAssetRef: String,
+    _ref: PointDelegate,
+    _crop: RectangleDelegate,
+    _effects: EffectsDelegate
 ) extends SceneGraphNodePrimitiveDelegate
     with CloneableDelegate {
+
+  @JSExport
+  val bounds = _bounds
+  @JSExport
+  val depth = _depth
+  @JSExport
+  val rotation = _rotation
+  @JSExport
+  val scaleX = _scaleX
+  @JSExport
+  val scaleY = _scaleY
+  @JSExport
+  val imageAssetRef = _imageAssetRef
+  @JSExport
+  val ref = _ref
+  @JSExport
+  val crop = _crop
+  @JSExport
+  val effects = _effects
+
   def toInternal: Graphic =
     new Graphic(
       bounds.toInternal,
@@ -75,20 +113,43 @@ final class GraphicDelegate(
     )
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Sprite")
 final class SpriteDelegate(
-    val bindingKey: String,
-    val bounds: RectangleDelegate,
-    val depth: Int,
-    val rotation: Double,
-    val scaleX: Double,
-    val scaleY: Double,
-    val animationKey: String,
-    val ref: PointDelegate,
-    val effects: EffectsDelegate,
-    val eventHandler: js.Function2[RectangleDelegate, GlobalEventDelegate, js.Array[GlobalEventDelegate]]
+    _bindingKey: String,
+    _bounds: RectangleDelegate,
+    _depth: Int,
+    _rotation: Double,
+    _scaleX: Double,
+    _scaleY: Double,
+    _animationKey: String,
+    _ref: PointDelegate,
+    _effects: EffectsDelegate,
+    _eventHandler: js.Function2[RectangleDelegate, GlobalEventDelegate, js.Array[GlobalEventDelegate]]
 ) extends SceneGraphNodePrimitiveDelegate
     with CloneableDelegate {
+
+  @JSExport
+  val bindingKey = _bindingKey
+  @JSExport
+  val bounds = _bounds
+  @JSExport
+  val depth = _depth
+  @JSExport
+  val rotation = _rotation
+  @JSExport
+  val scaleX = _scaleX
+  @JSExport
+  val scaleY = _scaleY
+  @JSExport
+  val animationKey = _animationKey
+  @JSExport
+  val ref = _ref
+  @JSExport
+  val effects = _effects
+  @JSExport
+  val eventHandler = _eventHandler
+
   def toInternal: Sprite =
     new Sprite(
       new BindingKey(bindingKey),
@@ -104,20 +165,45 @@ final class SpriteDelegate(
 
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Text")
 final class TextDelegate(
-    val text: String,
-    val alignment: String,
-    val x: Int,
-    val y: Int,
-    val depth: Int,
-    val rotation: Double,
-    val scaleX: Double,
-    val scaleY: Double,
-    val fontKey: String,
-    val effects: EffectsDelegate,
-    val eventHandler: js.Function2[RectangleDelegate, GlobalEventDelegate, js.Array[GlobalEventDelegate]]
+    _text: String,
+    _alignment: String,
+    _x: Int,
+    _y: Int,
+    _depth: Int,
+    _rotation: Double,
+    _scaleX: Double,
+    _scaleY: Double,
+    _fontKey: String,
+    _effects: EffectsDelegate,
+    _eventHandler: js.Function2[RectangleDelegate, GlobalEventDelegate, js.Array[GlobalEventDelegate]]
 ) extends SceneGraphNodePrimitiveDelegate {
+
+  @JSExport
+  val text = _text
+  @JSExport
+  val alignment = _alignment
+  @JSExport
+  val x = _x
+  @JSExport
+  val y = _y
+  @JSExport
+  val depth = _depth
+  @JSExport
+  val rotation = _rotation
+  @JSExport
+  val scaleX = _scaleX
+  @JSExport
+  val scaleY = _scaleY
+  @JSExport
+  val fontKey = _fontKey
+  @JSExport
+  val effects = _effects
+  @JSExport
+  val eventHandler = _eventHandler
+
   def toInternal: Text =
     new Text(
       text,

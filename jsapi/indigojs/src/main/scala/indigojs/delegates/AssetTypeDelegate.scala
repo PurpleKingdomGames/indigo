@@ -14,20 +14,41 @@ sealed trait AssetTypeDelegate {
   def toInternal: AssetType
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("TextAsset")
-final class TextAsset(val name: String, val path: String) extends AssetTypeDelegate {
+final class TextAsset(_name: String, _path: String) extends AssetTypeDelegate {
+
+  @JSExport
+  val name: String = _name
+  @JSExport
+  val path: String = _path
+
   def toInternal: AssetType =
     AssetType.Text(name, path)
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("ImageAsset")
-final class ImageAsset(val name: String, val path: String) extends AssetTypeDelegate {
+final class ImageAsset(_name: String, _path: String) extends AssetTypeDelegate {
+
+  @JSExport
+  val name: String = _name
+  @JSExport
+  val path: String = _path
+
   def toInternal: AssetType =
     AssetType.Image(name, path)
 }
 
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("AudioAsset")
-final class AudioAsset(val name: String, val path: String) extends AssetTypeDelegate {
+final class AudioAsset(_name: String, _path: String) extends AssetTypeDelegate {
+
+  @JSExport
+  val name: String = _name
+  @JSExport
+  val path: String = _path
+
   def toInternal: AssetType =
     AssetType.Audio(name, path)
 }

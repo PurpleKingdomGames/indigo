@@ -30,13 +30,25 @@ final class AssetCollectionDelegate(assetCollection: AssetCollection) {
 }
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
-@JSExportAll
-final class LoadedImageAssetDelegate(val name: String, val data: js.Object)
+final class LoadedImageAssetDelegate(_name: String, _data: js.Object) {
+  @JSExport
+  val name = _name
+  @JSExport
+  val data = _data
+}
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
-@JSExportAll
-final class LoadedTextAssetDelegate(val name: String, val data: String)
+final class LoadedTextAssetDelegate(_name: String, _data: String) {
+  @JSExport
+  val name = _name
+  @JSExport
+  val data = _data
+}
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
-@JSExportAll
-final class LoadedAudioAssetDelegate(val name: String, val data: js.Object)
+final class LoadedAudioAssetDelegate(_name: String, _data: js.Object) {
+  @JSExport
+  val name = _name
+  @JSExport
+  val data = _data
+}

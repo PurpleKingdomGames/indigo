@@ -14,12 +14,15 @@ final class Vector2Delegate(_x: Double, _y: Double) {
   @JSExport
   val y = _y
 
+  @JSExport
   def dot(other: Vector2Delegate): Double =
     Vector2.dotProduct(this.toInternal, other.toInternal)
 
+  @JSExport
   def toPoint: PointDelegate =
     new PointDelegate(x.toInt, y.toInt)
 
+  @JSExport
   def applyMatrix4(matrix4: Matrix4Delegate): Vector2Delegate =
     Vector2Delegate.fromVector2(Vector2.applyMatrix4(this.toInternal, matrix4.toInternal))
 

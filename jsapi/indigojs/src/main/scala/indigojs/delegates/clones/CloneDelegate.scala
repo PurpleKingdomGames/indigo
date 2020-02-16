@@ -8,7 +8,14 @@ import scala.scalajs.js.annotation._
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Clone")
-final class CloneDelegate(val id: String, val depth: Int, val transform: CloneTransformDataDelegate) extends SceneGraphNodeDelegate {
+final class CloneDelegate(_id: String, _depth: Int, _transform: CloneTransformDataDelegate) extends SceneGraphNodeDelegate {
+
+  @JSExport
+  val id = _id
+  @JSExport
+  val depth = _depth
+  @JSExport
+  val transform = _transform
 
   @JSExport
   def withTransforms(x: Int, y: Int, rotation: Double, scaleX: Double, scaleY: Double): CloneDelegate =

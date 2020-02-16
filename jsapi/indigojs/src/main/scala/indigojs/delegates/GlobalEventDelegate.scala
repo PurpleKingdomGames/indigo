@@ -86,7 +86,11 @@ object GlobalEventDelegate {
 // Web Sockets
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("ConnectOnly")
-final class ConnectOnlyDelegate(val id: String, val address: String) extends GlobalEventDelegate {
+final class ConnectOnlyDelegate(_id: String, _address: String) extends GlobalEventDelegate {
+  @JSExport
+  val id = _id
+  @JSExport
+  val address = _address
   @JSExport
   val eventType: String = "socketConnectOnly"
   @JSExport
@@ -96,7 +100,13 @@ final class ConnectOnlyDelegate(val id: String, val address: String) extends Glo
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Open")
-final class OpenDelegate(val id: String, val address: String, val message: String) extends GlobalEventDelegate {
+final class OpenDelegate(_id: String, _address: String, _message: String) extends GlobalEventDelegate {
+  @JSExport
+  val id = _id
+  @JSExport
+  val address = _address
+  @JSExport
+  val message = _message
   @JSExport
   val eventType: String = "socketOpen"
   @JSExport
@@ -106,7 +116,13 @@ final class OpenDelegate(val id: String, val address: String, val message: Strin
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Send")
-final class SendDelegate(val id: String, val address: String, val message: String) extends GlobalEventDelegate {
+final class SendDelegate(_id: String, _address: String, _message: String) extends GlobalEventDelegate {
+  @JSExport
+  val id = _id
+  @JSExport
+  val address = _address
+  @JSExport
+  val message = _message
   @JSExport
   val eventType: String = "socketSend"
   @JSExport
@@ -117,7 +133,13 @@ final class SendDelegate(val id: String, val address: String, val message: Strin
 // HTTP
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("GET")
-final class HTTPGETDelegate(url: String, params: js.Dictionary[String], headers: js.Dictionary[String]) extends GlobalEventDelegate {
+final class HTTPGETDelegate(_url: String, _params: js.Dictionary[String], _headers: js.Dictionary[String]) extends GlobalEventDelegate {
+  @JSExport
+  val url = _url
+  @JSExport
+  val params = _params
+  @JSExport
+  val headers = _headers
   @JSExport
   val eventType: String = "httpGet"
   @JSExport
@@ -127,7 +149,15 @@ final class HTTPGETDelegate(url: String, params: js.Dictionary[String], headers:
 
 @SuppressWarnings(Array("org.wartremover.warts.Any", "org.wartremover.warts.Null"))
 @JSExportTopLevel("POST")
-final class HTTPPOSTDelegate(url: String, params: js.Dictionary[String], headers: js.Dictionary[String], body: Option[String]) extends GlobalEventDelegate {
+final class HTTPPOSTDelegate(_url: String, _params: js.Dictionary[String], _headers: js.Dictionary[String], _body: Option[String]) extends GlobalEventDelegate {
+  @JSExport
+  val url = _url
+  @JSExport
+  val params = _params
+  @JSExport
+  val headers = _headers
+  @JSExport
+  val body = _body
   @JSExport
   val eventType: String = "httpPost"
   @JSExport
@@ -137,7 +167,15 @@ final class HTTPPOSTDelegate(url: String, params: js.Dictionary[String], headers
 
 @SuppressWarnings(Array("org.wartremover.warts.Any", "org.wartremover.warts.Null"))
 @JSExportTopLevel("PUT")
-final class HTTPPUTDelegate(url: String, params: js.Dictionary[String], headers: js.Dictionary[String], body: Option[String]) extends GlobalEventDelegate {
+final class HTTPPUTDelegate(_url: String, _params: js.Dictionary[String], _headers: js.Dictionary[String], _body: Option[String]) extends GlobalEventDelegate {
+  @JSExport
+  val url = _url
+  @JSExport
+  val params = _params
+  @JSExport
+  val headers = _headers
+  @JSExport
+  val body = _body
   @JSExport
   val eventType: String = "httpPut"
   @JSExport
@@ -147,7 +185,15 @@ final class HTTPPUTDelegate(url: String, params: js.Dictionary[String], headers:
 
 @SuppressWarnings(Array("org.wartremover.warts.Any", "org.wartremover.warts.Null"))
 @JSExportTopLevel("DELETE")
-final class HTTPDELETEDelegate(url: String, params: js.Dictionary[String], headers: js.Dictionary[String], body: Option[String]) extends GlobalEventDelegate {
+final class HTTPDELETEDelegate(_url: String, _params: js.Dictionary[String], _headers: js.Dictionary[String], _body: Option[String]) extends GlobalEventDelegate {
+  @JSExport
+  val url = _url
+  @JSExport
+  val params = _params
+  @JSExport
+  val headers = _headers
+  @JSExport
+  val body = _body
   @JSExport
   val eventType: String = "httpDelete"
   @JSExport
@@ -158,7 +204,11 @@ final class HTTPDELETEDelegate(url: String, params: js.Dictionary[String], heade
 // Sounds
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("PlaySound")
-final class PlaySoundDelegate(val assetRef: String, val volume: VolumeDelegate) extends GlobalEventDelegate {
+final class PlaySoundDelegate(_assetRef: String, _volume: VolumeDelegate) extends GlobalEventDelegate {
+  @JSExport
+  val assetRef = _assetRef
+  @JSExport
+  val volume = _volume
   @JSExport
   val eventType: String = "playSound"
   @JSExport
@@ -169,7 +219,11 @@ final class PlaySoundDelegate(val assetRef: String, val volume: VolumeDelegate) 
 // Storage
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Save")
-final class SaveDelegate(val key: String, val data: String) extends GlobalEventDelegate {
+final class SaveDelegate(_key: String, _data: String) extends GlobalEventDelegate {
+  @JSExport
+  val key: String = _key
+  @JSExport
+  val data = _data
   @JSExport
   val eventType: String = "save"
   @JSExport
@@ -179,7 +233,9 @@ final class SaveDelegate(val key: String, val data: String) extends GlobalEventD
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Load")
-final class LoadDelegate(val key: String) extends GlobalEventDelegate {
+final class LoadDelegate(_key: String) extends GlobalEventDelegate {
+  @JSExport
+  val key: String = _key
   @JSExport
   val eventType: String = "load"
   @JSExport
@@ -189,7 +245,9 @@ final class LoadDelegate(val key: String) extends GlobalEventDelegate {
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Delete")
-final class DeleteDelegate(val key: String) extends GlobalEventDelegate {
+final class DeleteDelegate(_key: String) extends GlobalEventDelegate {
+  @JSExport
+  val key: String = _key
   @JSExport
   val eventType: String = "delete"
   @JSExport
@@ -199,7 +257,7 @@ final class DeleteDelegate(val key: String) extends GlobalEventDelegate {
 
 @SuppressWarnings(Array("org.wartremover.warts.Any", "org.wartremover.warts.Null"))
 @JSExportTopLevel("DeleteAll")
-final class DeleteAllDelegate() extends GlobalEventDelegate {
+final class DeleteAllDelegate extends GlobalEventDelegate {
   @JSExport
   val eventType: String = "deleteAll"
   @JSExport

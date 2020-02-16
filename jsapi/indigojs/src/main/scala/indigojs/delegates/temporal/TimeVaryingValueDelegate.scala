@@ -6,7 +6,14 @@ import indigo.shared.time.Millis
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("TimeVaryingValue")
-final class TimeVaryingValueDelegate(val value: Double, val startValue: Double, val createdAt: Double) {
+final class TimeVaryingValueDelegate(_value: Double, _startValue: Double, _createdAt: Double) {
+
+  @JSExport
+  val value = _value
+  @JSExport
+  val startValue = _startValue
+  @JSExport
+  val createdAt = _createdAt
 
   private def convert(tvv: TimeVaryingValue[Double]): TimeVaryingValueDelegate =
     new TimeVaryingValueDelegate(tvv.value, tvv.startValue, tvv.createdAt.value.toDouble)
