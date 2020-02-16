@@ -19,7 +19,9 @@ import indigo.shared.scenegraph.Sprite
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.animation.AnimationKey
 
-sealed trait SceneGraphNodeDelegate {
+import indigojs.delegates.clones.CloneableDelegate
+
+trait SceneGraphNodeDelegate {
   def toInternal: SceneGraphNode
 }
 

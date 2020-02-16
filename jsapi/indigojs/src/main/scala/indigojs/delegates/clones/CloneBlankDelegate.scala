@@ -1,4 +1,4 @@
-package indigojs.delegates
+package indigojs.delegates.clones
 
 import indigo.shared.scenegraph.CloneBlank
 import indigo.shared.scenegraph.CloneId

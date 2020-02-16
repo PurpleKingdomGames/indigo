@@ -2,6 +2,8 @@ package indigojs.delegates
 
 import indigo.shared.scenegraph.SceneUpdateFragment
 
+import indigojs.delegates.clones.CloneBlankDelegate
+
 import scala.scalajs.js.annotation._
 import scala.scalajs.js
 
