@@ -96,7 +96,7 @@ object PerfView {
     List(
       Graphic(0, 0, 320, 240, 1, PerfAssets.lightMaterial).withTint(1, 0, 0),
       Graphic(-115, -100, 320, 240, 1, PerfAssets.lightMaterial),
-      Graphic(signals.mousePosition.x - 160, signals.mousePosition.y - 120, 320, 240, 1, PerfAssets.lightMaterial)
+      Graphic(inputState.mouse.position.x - 160, inputState.mouse.position.y - 120, 320, 240, 1, PerfAssets.lightMaterial)
     )
 
   def fontKey: FontKey = FontKey("My Font")

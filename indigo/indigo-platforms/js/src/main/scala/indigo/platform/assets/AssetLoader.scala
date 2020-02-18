@@ -62,13 +62,13 @@ object AssetLoader {
 
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   def loadImageAsset(imageAsset: AssetType.Image): Future[LoadedImageAsset] = {
-    IndigoLogger.info(s"[Image] Loading ${imageAsset.path}")
+    IndigoLogger.info(s"[Image] Loading ${imageAsset.path.value}")
 
     val image: html.Image = dom.document.createElement("img").asInstanceOf[html.Image]
     image.src = imageAsset.path.value
 
     onLoadFuture(image).map { i =>
-      IndigoLogger.info(s"[Image] Success ${imageAsset.path}")
+      IndigoLogger.info(s"[Image] Success ${imageAsset.path.value}")
       new LoadedImageAsset(imageAsset.name, i)
     }
   }
@@ -77,10 +77,10 @@ object AssetLoader {
     textAssets => Future.sequence(textAssets.map(loadTextAsset))
 
   def loadTextAsset(textAsset: AssetType.Text): Future[LoadedTextAsset] = {
-    IndigoLogger.info(s"[Text] Loading ${textAsset.path}")
+    IndigoLogger.info(s"[Text] Loading ${textAsset.path.value}")
 
     Ajax.get(textAsset.path.value, responseType = "text").map { xhr =>
-      IndigoLogger.info(s"[Text] Success ${textAsset.path}")
+      IndigoLogger.info(s"[Text] Success ${textAsset.path.value}")
       new LoadedTextAsset(textAsset.name, xhr.responseText)
     }
   }
@@ -90,10 +90,10 @@ object AssetLoader {
 
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   def loadAudioAsset(audioAsset: AssetType.Audio): Future[LoadedAudioAsset] = {
-    IndigoLogger.info(s"[Audio] Loading ${audioAsset.path}")
+    IndigoLogger.info(s"[Audio] Loading ${audioAsset.path.value}")
 
     Ajax.get(audioAsset.path.value, responseType = "arraybuffer").flatMap { xhr =>
-      IndigoLogger.info(s"[Audio] Success ${audioAsset.path}")
+      IndigoLogger.info(s"[Audio] Success ${audioAsset.path.value}")
       val context = new AudioContext()
       val p = context.decodeAudioData(
         xhr.response.asInstanceOf[ArrayBuffer],
