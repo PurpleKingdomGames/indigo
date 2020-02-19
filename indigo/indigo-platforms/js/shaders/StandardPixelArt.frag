@@ -125,6 +125,12 @@ void main(void) {
   //   basicColor = vec4(0.0, 1.0, 1.0, 1.0);
   // }
 
+  // Color Overlay
+  // vec4 overlay = vec4(0.0, 1.0, 1.0, 1.0);
+  // vec4 base = applyBasicEffects(texture(u_textureDiffuse, v_texcoord));
+
+  // vec4 basicColor = vec4(mix(base.rgb, overlay.rgb, overlay.a), base.a);
+
   // Normal
   vec4 basicColor = applyBasicEffects(texture(u_textureDiffuse, v_texcoord));
 
