@@ -21,6 +21,7 @@ out vec4 v_tint;
 out float v_alpha;
 out vec2 v_size;
 out vec2 v_textureOffsets3x3[9];
+out vec2 v_relativeScreenCoords;
 
 mat4 rotate2d(float angle){
     return mat4(cos(angle), -sin(angle), 0, 0,
@@ -72,6 +73,7 @@ void main(void) {
   v_tint = a_tint;
   v_alpha = a_alpha;
   v_size = a_size;
+  v_relativeScreenCoords = a_texcoord * a_size;
 
   vec2 offsets3x3[9] = vec2[9](
     vec2(-1, -1),

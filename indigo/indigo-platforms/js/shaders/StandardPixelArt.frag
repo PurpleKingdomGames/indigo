@@ -12,6 +12,7 @@ in vec4 v_tint;
 in float v_alpha;
 in vec2 v_size;
 in vec2 v_textureOffsets3x3[9];
+in vec2 v_relativeScreenCoords;
 
 layout(location = 0) out vec4 fragColor0;
 layout(location = 1) out vec4 fragColor1;
@@ -129,6 +130,22 @@ void main(void) {
   // vec4 overlay = vec4(0.0, 1.0, 1.0, 1.0);
   // vec4 base = applyBasicEffects(texture(u_textureDiffuse, v_texcoord));
 
+  // vec4 basicColor = vec4(mix(base.rgb, overlay.rgb, overlay.a), base.a);
+
+  // Gradiant Overlay
+  // vec4 colorA = vec4(1.0, 0.0, 1.0, 1.0);
+  // vec4 colorB = vec4(0.0, 1.0, 1.0, 0.25);
+
+  // vec2 pointA = vec2(0.0, 0.0);
+  // vec2 pointB = v_size;
+  // vec2 pointP = v_relativeScreenCoords;
+
+  // // `h` is the distance along the gradiant 0 at A, 1 at B
+  // float h = min(1.0, max(0.0, dot(pointP - pointA, pointB - pointA) / dot(pointB - pointA, pointB - pointA)));
+
+  // vec4 overlay = mix(colorA, colorB, h);
+
+  // vec4 base = applyBasicEffects(texture(u_textureDiffuse, v_texcoord));
   // vec4 basicColor = vec4(mix(base.rgb, overlay.rgb, overlay.a), base.a);
 
   // Normal
