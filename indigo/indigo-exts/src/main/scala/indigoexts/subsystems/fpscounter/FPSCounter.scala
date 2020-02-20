@@ -29,10 +29,10 @@ final class FPSCounter(fontKey: FontKey, position: Point, targetFPS: Int) extend
       Outcome(this)
   }
 
-  def pickTint: Tint =
-    if (fps > targetFPS - (targetFPS * 0.05)) Tint.Green
-    else if (fps > targetFPS / 2) Tint.Yellow
-    else Tint.Red
+  def pickTint: RGBA =
+    if (fps > targetFPS - (targetFPS * 0.05)) RGBA.Green
+    else if (fps > targetFPS / 2) RGBA.Yellow
+    else RGBA.Red
 
   def render(gameTime: GameTime): SceneUpdateFragment =
     SceneUpdateFragment.empty

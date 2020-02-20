@@ -49,9 +49,9 @@ object Score {
           sceneGraphNode.effects.alpha * multiplier
       }
 
-    val tintSF: SignalFunction[Double, Tint] =
+    val tintSF: SignalFunction[Double, RGBA] =
       SignalFunction { multiplier =>
-        Tint(1, 0, 0, multiplier)
+        RGBA(1, 0, 0, multiplier)
       }
 
     val newPosition: AutomatonSeedValues => Signal[Point] =
@@ -60,7 +60,7 @@ object Score {
     val newAlpha: (AutomatonSeedValues, Text) => Signal[Double] =
       (seed, sceneGraphNode) => Signal.product(multiplierS(seed), renderableS(sceneGraphNode)) |> alphaSF
 
-    val newTint: AutomatonSeedValues => Signal[Tint] =
+    val newTint: AutomatonSeedValues => Signal[RGBA] =
       seed => multiplierS(seed) |> tintSF
 
     val signal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =

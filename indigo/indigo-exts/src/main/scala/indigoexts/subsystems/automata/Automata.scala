@@ -10,7 +10,7 @@ import indigoexts.subsystems.automata.AutomataEvent._
 import indigo.shared.dice.Dice
 import indigoexts.subsystems.automata.Automata.Layer
 import indigo.shared.EqualTo._
-import indigo.shared.datatypes.Tint
+import indigo.shared.datatypes.RGBA
 import scala.collection.mutable
 
 final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val layer: Layer, maxPoolSize: Option[Int], val pool: List[SpawnedAutomaton]) extends SubSystem {
@@ -101,7 +101,7 @@ object Automata {
             automatonUpdate.nodes,
             Nil,
             Nil,
-            Tint.None,
+            RGBA.None,
             automatonUpdate.events,
             SceneAudio.None,
             ScreenEffects.None,
@@ -113,7 +113,7 @@ object Automata {
             Nil,
             automatonUpdate.nodes,
             Nil,
-            Tint.None,
+            RGBA.None,
             automatonUpdate.events,
             SceneAudio.None,
             ScreenEffects.None,
@@ -125,7 +125,7 @@ object Automata {
             Nil,
             Nil,
             automatonUpdate.nodes,
-            Tint.None,
+            RGBA.None,
             automatonUpdate.events,
             SceneAudio.None,
             ScreenEffects.None,

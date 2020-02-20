@@ -27,7 +27,7 @@ object TextExample extends IndigoGameBasic[Unit, Model, Unit] {
     Startup.Success(())
 
   def initialModel(startupData: Unit): Model =
-    Model(Tint.None)
+    Model(RGBA.None)
 
   def update(gameTime: GameTime, model: Model, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Model] = {
     case ChangeColour =>
@@ -62,17 +62,17 @@ object TextExample extends IndigoGameBasic[Unit, Model, Unit] {
 
 case object ChangeColour extends GlobalEvent
 
-final case class Model(tint: Tint) {
+final case class Model(tint: RGBA) {
   def changeTint(dice: Dice): Model =
     dice.roll(3) match {
       case 1 =>
-        this.copy(tint = Tint.Red)
+        this.copy(tint = RGBA.Red)
 
       case 2 =>
-        this.copy(tint = Tint.Green)
+        this.copy(tint = RGBA.Green)
 
       case 3 =>
-        this.copy(tint = Tint.Blue)
+        this.copy(tint = RGBA.Blue)
     }
 
 }

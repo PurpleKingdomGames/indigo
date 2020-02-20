@@ -17,12 +17,12 @@ object SandboxView {
       .addGameLayerNodes(gameLayer(model, viewModel))
       .addLightingLayerNodes(lightingLayer(inputState))
       .addUiLayerNodes(uiLayer(inputState))
-      .withAmbientLight(Tint.White.withAmount(0.25))
+      .withAmbientLight(RGBA.White.withAmount(0.25))
       .addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
     // .withSaturationLevel(0.5)
-    // .withTint(Tint.Cyan.withAmount(0.25))
-    // .withUiColorOverlay(Tint.Black.withAmount(0.5))
-    // .withGameColorOverlay(Tint.Red.withAmount(0.5))
+    // .withTint(RGBA.Cyan.withAmount(0.25))
+    // .withUiColorOverlay(RGBA.Black.withAmount(0.5))
+    // .withGameColorOverlay(RGBA.Red.withAmount(0.5))
   }
 
   def gameLayer(currentState: SandboxGameModel, viewModel: SandboxViewModel): List[SceneGraphNode] =
@@ -53,16 +53,16 @@ object SandboxView {
             .changeCycle(d.cycleName)
             .play()
       },
-      currentState.dude.dude.sprite.moveBy(8, 10).moveBy(viewModel.offsetX, viewModel.offsetY).withAlpha(1).withTint(Tint.Green.withAmount(0.25)),
-      currentState.dude.dude.sprite.moveBy(8, -10).withAlpha(0.5).withTint(Tint.Red.withAmount(0.75)),
+      currentState.dude.dude.sprite.moveBy(8, 10).moveBy(viewModel.offsetX, viewModel.offsetY).withAlpha(1).withTint(RGBA.Green.withAmount(0.25)),
+      currentState.dude.dude.sprite.moveBy(8, -10).withAlpha(0.5).withTint(RGBA.Red.withAmount(0.75)),
       Clone(dudeCloneId, Depth(1), CloneTransformData.startAt(Point(16, 64)))
     )
 
   def lightingLayer(inputState: InputState): List[SceneGraphNode] =
     List(
-      Graphic(114, 64 - 20, 320, 240, 1, SandboxAssets.lightMaterial).withRef(Point(160, 120)).withTint(Tint.Red),
-      Graphic(114 - 20, 64 + 20, 320, 240, 1, SandboxAssets.lightMaterial).withRef(Point(160, 120)).withTint(Tint.Green),
-      Graphic(114 + 20, 64 + 20, 320, 240, 1, SandboxAssets.lightMaterial).withRef(Point(160, 120)).withTint(Tint.Blue),
+      Graphic(114, 64 - 20, 320, 240, 1, SandboxAssets.lightMaterial).withRef(Point(160, 120)).withTint(RGBA.Red),
+      Graphic(114 - 20, 64 + 20, 320, 240, 1, SandboxAssets.lightMaterial).withRef(Point(160, 120)).withTint(RGBA.Green),
+      Graphic(114 + 20, 64 + 20, 320, 240, 1, SandboxAssets.lightMaterial).withRef(Point(160, 120)).withTint(RGBA.Blue),
       Graphic(0, 0, 320, 240, 1, SandboxAssets.lightMaterial)
         .withTint(1, 1, 0.0, 1)
         .withAlpha(1)

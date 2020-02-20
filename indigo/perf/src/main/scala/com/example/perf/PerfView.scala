@@ -19,7 +19,7 @@ object PerfView {
       gameLayer(model),
       lightingLayer(inputState),
       uiLayer(),
-      Tint.White.withAmount(0.5),
+      RGBA.White.withAmount(0.5),
       Nil,
       SceneAudio.None,
       ScreenEffects.None,

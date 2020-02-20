@@ -1,11 +1,11 @@
 package indigo.shared.datatypes
 
 
-final class Effects(val alpha: Double, val tint: Tint, val flip: Flip) {
+final class Effects(val alpha: Double, val tint: RGBA, val flip: Flip) {
   def withAlpha(newAlpha: Double): Effects =
     Effects(newAlpha, tint, flip)
 
-  def withTint(newTint: Tint): Effects =
+  def withTint(newTint: RGBA): Effects =
     Effects(alpha, newTint, flip)
 
   def withFlip(newFlip: Flip): Effects =
@@ -17,13 +17,13 @@ final class Effects(val alpha: Double, val tint: Tint, val flip: Flip) {
 object Effects {
   val default: Effects = Effects(
     alpha = 1.0,
-    tint = Tint.None,
+    tint = RGBA.None,
     flip = Flip(
       horizontal = false,
       vertical = false
     )
   )
 
-  def apply(alpha: Double, tint: Tint, flip: Flip): Effects =
+  def apply(alpha: Double, tint: RGBA, flip: Flip): Effects =
     new Effects(alpha, tint, flip)
 }

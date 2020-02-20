@@ -5,7 +5,7 @@ import indigo.shared.display.DisplayObject
 import indigo.shared.datatypes.Vector2
 import indigo.shared.display.SpriteSheetFrame
 import scalajs.js.JSConverters._
-import indigo.shared.datatypes.Tint
+import indigo.shared.datatypes.RGBA
 
 object RendererMergeTests extends TestSuite {
 
@@ -93,11 +93,11 @@ object RendererMergeTests extends TestSuite {
 
         RendererMerge.updateUBOData(
           displayObject,
-          Tint(4, 5, 6, 7),
-          Tint(8, 9, 10, 11),
-          Tint(12, 13, 14, 15),
-          Tint(16, 17, 18, 19),
-          Tint(20, 21, 22, 23),
+          RGBA(4, 5, 6, 7),
+          RGBA(8, 9, 10, 11),
+          RGBA(12, 13, 14, 15),
+          RGBA(16, 17, 18, 19),
+          RGBA(20, 21, 22, 23),
           1,
           2,
           3

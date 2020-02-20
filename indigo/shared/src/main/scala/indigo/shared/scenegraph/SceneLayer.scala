@@ -1,8 +1,8 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.datatypes.Tint
+import indigo.shared.datatypes.RGBA
 
-final class SceneLayer(val nodes: List[SceneGraphNode], val tint: Tint, val saturation: Double, val magnification: Option[Int]) {
+final class SceneLayer(val nodes: List[SceneGraphNode], val tint: RGBA, val saturation: Double, val magnification: Option[Int]) {
 
   def |+|(other: SceneLayer): SceneLayer = {
     val newSaturation: Double =
@@ -18,7 +18,7 @@ final class SceneLayer(val nodes: List[SceneGraphNode], val tint: Tint, val satu
   def ++(moreNodes: List[SceneGraphNode]): SceneLayer =
     SceneLayer(nodes ++ moreNodes, tint, saturation, magnification)
 
-  def withTint(newTint: Tint): SceneLayer =
+  def withTint(newTint: RGBA): SceneLayer =
     SceneLayer(nodes, newTint, saturation, magnification)
 
   def withSaturationLevel(amount: Double): SceneLayer =
@@ -31,13 +31,13 @@ final class SceneLayer(val nodes: List[SceneGraphNode], val tint: Tint, val satu
 object SceneLayer {
 
   def apply(nodes: List[SceneGraphNode]): SceneLayer =
-    new SceneLayer(nodes, Tint.None, 1.0d, Option.empty[Int])
+    new SceneLayer(nodes, RGBA.None, 1.0d, Option.empty[Int])
 
-  def apply(nodes: List[SceneGraphNode], tint: Tint, saturation: Double, magnification: Option[Int]): SceneLayer =
+  def apply(nodes: List[SceneGraphNode], tint: RGBA, saturation: Double, magnification: Option[Int]): SceneLayer =
     new SceneLayer(nodes, tint, saturation, magnification.flatMap(sanitiseMagnification))
 
   def None: SceneLayer =
-    SceneLayer(Nil, Tint.None, 1.0d, Option.empty[Int])
+    SceneLayer(Nil, RGBA.None, 1.0d, Option.empty[Int])
 
   def sanitiseMagnification(level: Int): Option[Int] =
     Option(Math.max(1, Math.min(256, level)))

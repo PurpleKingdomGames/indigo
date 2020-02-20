@@ -5,7 +5,7 @@ import scala.scalajs.js.annotation._
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Effects")
-final class EffectsDelegate(_alpha: Double, _tint: TintDelegate, _flip: FlipDelegate) {
+final class EffectsDelegate(_alpha: Double, _tint: RGBADelegate, _flip: FlipDelegate) {
 
   @JSExport
   val alpha = _alpha
@@ -19,7 +19,7 @@ final class EffectsDelegate(_alpha: Double, _tint: TintDelegate, _flip: FlipDele
     new EffectsDelegate(newAlpha, tint, flip)
 
   @JSExport
-  def withTint(newTint: TintDelegate): EffectsDelegate =
+  def withTint(newTint: RGBADelegate): EffectsDelegate =
     new EffectsDelegate(alpha, newTint, flip)
 
   @JSExport
@@ -36,7 +36,7 @@ final class EffectsDelegate(_alpha: Double, _tint: TintDelegate, _flip: FlipDele
 object EffectsDelegate {
 
   def None: EffectsDelegate =
-    new EffectsDelegate(1, TintDelegate.None, FlipDelegate.None)
+    new EffectsDelegate(1, RGBADelegate.None, FlipDelegate.None)
 
 }
 

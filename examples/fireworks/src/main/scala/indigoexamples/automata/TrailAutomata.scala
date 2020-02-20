@@ -20,7 +20,7 @@ object TrailAutomata {
     Automata(poolKey, automaton, Automata.Layer.Game)
       .withMaxPoolSize(500)
 
-  def spawnEvent(at: Point, tint: Tint): AutomataEvent.Spawn =
+  def spawnEvent(at: Point, tint: RGBA): AutomataEvent.Spawn =
     AutomataEvent.Spawn(
       poolKey,
       at,
@@ -30,7 +30,7 @@ object TrailAutomata {
 
   object Modifer {
 
-    def present(r: Graphic, position: Point, tint: Tint): SignalFunction[Double, AutomatonUpdate] =
+    def present(r: Graphic, position: Point, tint: RGBA): SignalFunction[Double, AutomatonUpdate] =
       SignalFunction { alpha =>
         AutomatonUpdate.withNodes(
           r.moveTo(position)

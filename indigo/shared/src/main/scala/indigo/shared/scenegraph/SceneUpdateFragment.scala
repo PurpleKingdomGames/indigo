@@ -1,13 +1,13 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.events.GlobalEvent
-import indigo.shared.datatypes.Tint
+import indigo.shared.datatypes.RGBA
 
 final class SceneUpdateFragment(
     val gameLayer: SceneLayer,
     val lightingLayer: SceneLayer,
     val uiLayer: SceneLayer,
-    val ambientLight: Tint,
+    val ambientLight: RGBA,
     val globalEvents: List[GlobalEvent],
     val audio: SceneAudio,
     val screenEffects: ScreenEffects,
@@ -34,14 +34,14 @@ final class SceneUpdateFragment(
   def addUiLayerNodes(nodes: List[SceneGraphNode]): SceneUpdateFragment =
     SceneUpdateFragment(gameLayer, lightingLayer, uiLayer ++ nodes, ambientLight, globalEvents, audio, screenEffects, cloneBlanks)
 
-  def withAmbientLight(light: Tint): SceneUpdateFragment =
+  def withAmbientLight(light: RGBA): SceneUpdateFragment =
     SceneUpdateFragment(gameLayer, lightingLayer, uiLayer, light, globalEvents, audio, screenEffects, cloneBlanks)
 
   def withAmbientLightAmount(amount: Double): SceneUpdateFragment =
     SceneUpdateFragment(gameLayer, lightingLayer, uiLayer, ambientLight.withAmount(amount), globalEvents, audio, screenEffects, cloneBlanks)
 
   def withAmbientLightTint(r: Double, g: Double, b: Double): SceneUpdateFragment =
-    SceneUpdateFragment(gameLayer, lightingLayer, uiLayer, Tint(r, g, b, 1), globalEvents, audio, screenEffects, cloneBlanks)
+    SceneUpdateFragment(gameLayer, lightingLayer, uiLayer, RGBA(r, g, b, 1), globalEvents, audio, screenEffects, cloneBlanks)
 
   def addGlobalEvents(events: GlobalEvent*): SceneUpdateFragment =
     addGlobalEvents(events.toList)
@@ -79,7 +79,7 @@ final class SceneUpdateFragment(
   def withUiLayerSaturationLevel(amount: Double): SceneUpdateFragment =
     SceneUpdateFragment(gameLayer, lightingLayer, uiLayer.withSaturationLevel(amount), ambientLight, globalEvents, audio, screenEffects, cloneBlanks)
 
-  def withColorOverlay(overlay: Tint): SceneUpdateFragment =
+  def withColorOverlay(overlay: RGBA): SceneUpdateFragment =
     SceneUpdateFragment(
       gameLayer,
       lightingLayer,
@@ -91,22 +91,22 @@ final class SceneUpdateFragment(
       cloneBlanks
     )
 
-  def withGameColorOverlay(overlay: Tint): SceneUpdateFragment =
+  def withGameColorOverlay(overlay: RGBA): SceneUpdateFragment =
     SceneUpdateFragment(gameLayer, lightingLayer, uiLayer, ambientLight, globalEvents, audio, screenEffects.withGameColorOverlay(overlay), cloneBlanks)
 
-  def withUiColorOverlay(overlay: Tint): SceneUpdateFragment =
+  def withUiColorOverlay(overlay: RGBA): SceneUpdateFragment =
     SceneUpdateFragment(gameLayer, lightingLayer, uiLayer, ambientLight, globalEvents, audio, screenEffects.withUiColorOverlay(overlay), cloneBlanks)
 
-  def withTint(tint: Tint): SceneUpdateFragment =
+  def withTint(tint: RGBA): SceneUpdateFragment =
     SceneUpdateFragment(gameLayer.withTint(tint), lightingLayer.withTint(tint), uiLayer.withTint(tint), ambientLight, globalEvents, audio, screenEffects, cloneBlanks)
 
-  def withGameLayerTint(tint: Tint): SceneUpdateFragment =
+  def withGameLayerTint(tint: RGBA): SceneUpdateFragment =
     SceneUpdateFragment(gameLayer.withTint(tint), lightingLayer, uiLayer, ambientLight, globalEvents, audio, screenEffects, cloneBlanks)
 
-  def withLightingLayerTint(tint: Tint): SceneUpdateFragment =
+  def withLightingLayerTint(tint: RGBA): SceneUpdateFragment =
     SceneUpdateFragment(gameLayer, lightingLayer.withTint(tint), uiLayer, ambientLight, globalEvents, audio, screenEffects, cloneBlanks)
 
-  def withUiLayerTint(tint: Tint): SceneUpdateFragment =
+  def withUiLayerTint(tint: RGBA): SceneUpdateFragment =
     SceneUpdateFragment(gameLayer, lightingLayer, uiLayer.withTint(tint), ambientLight, globalEvents, audio, screenEffects, cloneBlanks)
 
   def withMagnification(level: Int): SceneUpdateFragment =
@@ -163,7 +163,7 @@ object SceneUpdateFragment {
       gameLayer: SceneLayer,
       lightingLayer: SceneLayer,
       uiLayer: SceneLayer,
-      ambientLight: Tint,
+      ambientLight: RGBA,
       globalEvents: List[GlobalEvent],
       audio: SceneAudio,
       screenEffects: ScreenEffects,
@@ -175,7 +175,7 @@ object SceneUpdateFragment {
       gameLayer: List[SceneGraphNode],
       lightingLayer: List[SceneGraphNode],
       uiLayer: List[SceneGraphNode],
-      ambientLight: Tint,
+      ambientLight: RGBA,
       globalEvents: List[GlobalEvent],
       audio: SceneAudio,
       screenEffects: ScreenEffects,
@@ -184,7 +184,7 @@ object SceneUpdateFragment {
     new SceneUpdateFragment(SceneLayer(gameLayer), SceneLayer(lightingLayer), SceneLayer(uiLayer), ambientLight, globalEvents, audio, screenEffects, cloneBlanks)
 
   def empty: SceneUpdateFragment =
-    SceneUpdateFragment(Nil, Nil, Nil, Tint.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
+    SceneUpdateFragment(Nil, Nil, Nil, RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
 
   def append(a: SceneUpdateFragment, b: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment(

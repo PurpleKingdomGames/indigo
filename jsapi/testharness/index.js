@@ -112,7 +112,7 @@ const initialViewModel = function(startupData, gameModel) {
   console.log(gameModel);
   return {
     num: -1,
-    tint: TintHelper.None,
+    tint: RGBAHelper.None,
   };
 };
 

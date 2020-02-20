@@ -46,8 +46,8 @@ trait DataTypeAliases {
   type Effects = shared.datatypes.Effects
   val Effects: shared.datatypes.Effects.type = shared.datatypes.Effects
 
-  type Tint = shared.datatypes.Tint
-  val Tint: shared.datatypes.Tint.type = shared.datatypes.Tint
+  type RGBA = shared.datatypes.RGBA
+  val RGBA: shared.datatypes.RGBA.type = shared.datatypes.RGBA
 
   type Flip = shared.datatypes.Flip
   val Flip: shared.datatypes.Flip.type = shared.datatypes.Flip

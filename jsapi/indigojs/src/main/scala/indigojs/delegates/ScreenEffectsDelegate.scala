@@ -5,7 +5,7 @@ import indigo.shared.scenegraph.ScreenEffects
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("ScreenEffects")
-final class ScreenEffectsDelegate(_gameColorOverlay: TintDelegate, _uiColorOverlay: TintDelegate) {
+final class ScreenEffectsDelegate(_gameColorOverlay: RGBADelegate, _uiColorOverlay: RGBADelegate) {
 
   @JSExport
   val gameColorOverlay = _gameColorOverlay
@@ -13,11 +13,11 @@ final class ScreenEffectsDelegate(_gameColorOverlay: TintDelegate, _uiColorOverl
   val uiColorOverlay = _uiColorOverlay
 
   @JSExport
-  def withGameColorOverlay(overlay: TintDelegate): ScreenEffectsDelegate =
+  def withGameColorOverlay(overlay: RGBADelegate): ScreenEffectsDelegate =
     new ScreenEffectsDelegate(overlay, uiColorOverlay)
 
   @JSExport
-  def withUiColorOverlay(overlay: TintDelegate): ScreenEffectsDelegate =
+  def withUiColorOverlay(overlay: RGBADelegate): ScreenEffectsDelegate =
     new ScreenEffectsDelegate(gameColorOverlay, overlay)
 
   @JSExport
@@ -36,6 +36,6 @@ final class ScreenEffectsDelegate(_gameColorOverlay: TintDelegate, _uiColorOverl
 object ScreenEffectsDelegate {
 
   def None: ScreenEffectsDelegate =
-    new ScreenEffectsDelegate(TintDelegate.Zero, TintDelegate.Zero)
+    new ScreenEffectsDelegate(RGBADelegate.Zero, RGBADelegate.Zero)
 
 }

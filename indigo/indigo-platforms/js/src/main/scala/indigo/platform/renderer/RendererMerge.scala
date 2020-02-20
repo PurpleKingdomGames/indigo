@@ -13,7 +13,7 @@ import org.scalajs.dom.raw.WebGLTexture
 import indigo.shared.ClearColor
 import indigo.shared.display.SpriteSheetFrame
 import scala.scalajs.js.JSConverters._
-import indigo.shared.datatypes.Tint
+import indigo.shared.datatypes.RGBA
 
 class RendererMerge(gl2: WebGL2RenderingContext) {
 
@@ -58,11 +58,11 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
       width: Int,
       height: Int,
       clearColor: ClearColor,
-      gameOverlay: Tint,
-      uiOverlay: Tint,
-      gameLayerTint: Tint,
-      lightingLayerTint: Tint,
-      uiLayerTint: Tint,
+      gameOverlay: RGBA,
+      uiOverlay: RGBA,
+      gameLayerTint: RGBA,
+      lightingLayerTint: RGBA,
+      uiLayerTint: RGBA,
       gameLayerSaturation: Double,
       lightingLayerSaturation: Double,
       uiLayerSaturation: Double,
@@ -150,11 +150,11 @@ object RendererMerge {
 
   def updateUBOData(
       displayObject: DisplayObject,
-      gameOverlay: Tint,
-      uiOverlay: Tint,
-      gameLayerTint: Tint,
-      lightingLayerTint: Tint,
-      uiLayerTint: Tint,
+      gameOverlay: RGBA,
+      uiOverlay: RGBA,
+      gameLayerTint: RGBA,
+      lightingLayerTint: RGBA,
+      uiLayerTint: RGBA,
       gameLayerSaturation: Double,
       lightingLayerSaturation: Double,
       uiLayerSaturation: Double

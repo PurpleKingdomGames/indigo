@@ -63,7 +63,7 @@ object JobMarketTests extends TestSuite {
           market.render(gameTime).lightingLayer.nodes.isEmpty ==> true
           market.render(gameTime).uiLayer.nodes.isEmpty ==> true
           market.render(gameTime).globalEvents.isEmpty ==> true
-          market.render(gameTime).ambientLight === Tint.Normal ==> true
+          market.render(gameTime).ambientLight === RGBA.Normal ==> true
           market.render(gameTime).audio ==> SceneAudio.None
         }
 

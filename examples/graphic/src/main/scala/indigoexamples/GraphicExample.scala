@@ -69,7 +69,7 @@ object GraphicExample extends IndigoGameBasic[Unit, Unit, Unit] {
         graphic
           .withCrop(128, 0, 96, 96)
           .moveTo(137 * 2, 300)
-          .withTint(Tint.Red),
+          .withTint(RGBA.Red),
         graphic
           .withCrop(128, 0, 96, 96)
           .moveTo(137 * 3, 300)

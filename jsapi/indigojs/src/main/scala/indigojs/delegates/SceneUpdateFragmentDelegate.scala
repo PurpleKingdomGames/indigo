@@ -13,7 +13,7 @@ final class SceneUpdateFragmentDelegate(
     _gameLayer: SceneLayerDelegate,
     _lightingLayer: SceneLayerDelegate,
     _uiLayer: SceneLayerDelegate,
-    _ambientLight: TintDelegate,
+    _ambientLight: RGBADelegate,
     _globalEvents: js.Array[GlobalEventDelegate],
     _audio: SceneAudioDelegate,
     _screenEffects: ScreenEffectsDelegate,
@@ -77,7 +77,7 @@ final class SceneUpdateFragmentDelegate(
     )
 
   @JSExport
-  def withAmbientLight(light: TintDelegate): SceneUpdateFragmentDelegate =
+  def withAmbientLight(light: RGBADelegate): SceneUpdateFragmentDelegate =
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
@@ -181,7 +181,7 @@ final class SceneUpdateFragmentDelegate(
     )
 
   @JSExport
-  def withColorOverlay(overlay: TintDelegate): SceneUpdateFragmentDelegate =
+  def withColorOverlay(overlay: RGBADelegate): SceneUpdateFragmentDelegate =
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
@@ -194,7 +194,7 @@ final class SceneUpdateFragmentDelegate(
     )
 
   @JSExport
-  def withGameColorOverlay(overlay: TintDelegate): SceneUpdateFragmentDelegate =
+  def withGameColorOverlay(overlay: RGBADelegate): SceneUpdateFragmentDelegate =
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
@@ -207,7 +207,7 @@ final class SceneUpdateFragmentDelegate(
     )
 
   @JSExport
-  def withUiColorOverlay(overlay: TintDelegate): SceneUpdateFragmentDelegate =
+  def withUiColorOverlay(overlay: RGBADelegate): SceneUpdateFragmentDelegate =
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
@@ -220,7 +220,7 @@ final class SceneUpdateFragmentDelegate(
     )
 
   @JSExport
-  def withTint(tint: TintDelegate): SceneUpdateFragmentDelegate =
+  def withTint(tint: RGBADelegate): SceneUpdateFragmentDelegate =
     new SceneUpdateFragmentDelegate(
       gameLayer.withTint(tint),
       lightingLayer.withTint(tint),
@@ -233,7 +233,7 @@ final class SceneUpdateFragmentDelegate(
     )
 
   @JSExport
-  def withGameLayerTint(tint: TintDelegate): SceneUpdateFragmentDelegate =
+  def withGameLayerTint(tint: RGBADelegate): SceneUpdateFragmentDelegate =
     new SceneUpdateFragmentDelegate(
       gameLayer.withTint(tint),
       lightingLayer,
@@ -246,7 +246,7 @@ final class SceneUpdateFragmentDelegate(
     )
 
   @JSExport
-  def withLightingLayerTint(tint: TintDelegate): SceneUpdateFragmentDelegate =
+  def withLightingLayerTint(tint: RGBADelegate): SceneUpdateFragmentDelegate =
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer.withTint(tint),
@@ -259,7 +259,7 @@ final class SceneUpdateFragmentDelegate(
     )
 
   @JSExport
-  def withUiLayerTint(tint: TintDelegate): SceneUpdateFragmentDelegate =
+  def withUiLayerTint(tint: RGBADelegate): SceneUpdateFragmentDelegate =
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
@@ -360,7 +360,7 @@ object SceneUpdateFragmentDelegate {
       SceneLayerDelegate.None,
       SceneLayerDelegate.None,
       SceneLayerDelegate.None,
-      TintDelegate.None,
+      RGBADelegate.None,
       new js.Array(),
       SceneAudioDelegate.None,
       ScreenEffectsDelegate.None,

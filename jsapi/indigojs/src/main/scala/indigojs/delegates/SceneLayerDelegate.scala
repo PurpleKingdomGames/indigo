@@ -6,7 +6,7 @@ import indigo.shared.scenegraph.SceneLayer
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("SceneLayer")
-final class SceneLayerDelegate(_nodes: js.Array[SceneGraphNodeDelegate], _tint: TintDelegate, _saturation: Double, _magnification: Option[Int]) {
+final class SceneLayerDelegate(_nodes: js.Array[SceneGraphNodeDelegate], _tint: RGBADelegate, _saturation: Double, _magnification: Option[Int]) {
 
   @JSExport
   val nodes = _nodes
@@ -22,7 +22,7 @@ final class SceneLayerDelegate(_nodes: js.Array[SceneGraphNodeDelegate], _tint: 
     new SceneLayerDelegate(nodes ++ newNodes, tint, saturation, magnification)
 
   @JSExport
-  def withTint(newTint: TintDelegate): SceneLayerDelegate =
+  def withTint(newTint: RGBADelegate): SceneLayerDelegate =
     new SceneLayerDelegate(nodes, newTint, saturation, magnification)
 
   @JSExport
@@ -56,6 +56,6 @@ final class SceneLayerDelegate(_nodes: js.Array[SceneGraphNodeDelegate], _tint: 
 object SceneLayerDelegate {
 
   def None: SceneLayerDelegate =
-    new SceneLayerDelegate(new js.Array(), TintDelegate.None, 1.0d, Option.empty[Int])
+    new SceneLayerDelegate(new js.Array(), RGBADelegate.None, 1.0d, Option.empty[Int])
 
 }
