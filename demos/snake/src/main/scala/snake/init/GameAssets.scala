@@ -1,22 +1,24 @@
 package snake.init
 
-import indigo.{AssetType, FontChar, FontInfo, FontKey}
+import indigo._
 
 object GameAssets {
 
-  val smallFontName: String = "smallFontName"
-  val snakeTexture: String  = "snakeTexture"
-  val soundIntro: String    = "introSound"
-  val soundPoint: String    = "pointSound"
-  val soundLose: String     = "loseSound"
+  val smallFontName: AssetName = AssetName("smallFontName")
+  val snakeTexture: AssetName  = AssetName("snakeTexture")
+  val soundIntro: AssetName    = AssetName("introSound")
+  val soundPoint: AssetName    = AssetName("pointSound")
+  val soundLose: AssetName     = AssetName("loseSound")
+
+  val snakeMaterial: Material.Textured = Material.Textured(snakeTexture)
 
   def assets: Set[AssetType] =
     Set(
-      AssetType.Image(smallFontName, "assets/boxy_font_small.png"),
-      AssetType.Image(snakeTexture, "assets/snake.png"),
-      AssetType.Audio(soundIntro, "assets/intro.mp3"),
-      AssetType.Audio(soundPoint, "assets/point.mp3"),
-      AssetType.Audio(soundLose, "assets/lose.mp3"),
+      AssetType.Image(smallFontName, AssetPath("assets/boxy_font_small.png")),
+      AssetType.Image(snakeTexture, AssetPath("assets/snake.png")),
+      AssetType.Audio(soundIntro, AssetPath("assets/intro.mp3")),
+      AssetType.Audio(soundPoint, AssetPath("assets/point.mp3")),
+      AssetType.Audio(soundLose, AssetPath("assets/lose.mp3"))
     )
 
   val fontKey: FontKey = FontKey("boxy font")

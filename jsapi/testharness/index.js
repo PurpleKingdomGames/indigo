@@ -165,10 +165,10 @@ const present = function(gameTime, model, viewModel, inputState) {
                 0,
                 1,
                 1,
-                graphicName,
                 new Point(48, 48),
                 new Rectangle(128, 0, 96, 96),
                 EffectsHelper.None,
+                new Textured(graphicName),
             ),
           ],
       );

@@ -72,7 +72,7 @@ final class AudioPlayerImpl(assetCollection: AssetCollection, context: AudioCont
 
             val nodes =
               assetCollection
-                .findAudioDataByName(AssetName(track.assetRef))
+                .findAudioDataByName(track.assetName)
                 .map(asset => setupNodes(asset, track.volume * sceneAudioSource.masterVolume, loop = true))
 
             nodes.foreach(_.audioBufferSourceNode.start(0))

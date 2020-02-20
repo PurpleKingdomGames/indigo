@@ -13,17 +13,17 @@ import indigo.shared.animation.AnimationAction.JumpToLastFrame
 import indigo.shared.animation.CycleLabel
 import indigo.shared.animation.Animation
 import indigo.shared.animation.AnimationKey
-import indigo.shared.datatypes.ImageAssetRef
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.animation.Frame
 import indigo.shared.animation.Cycle
 import indigo.shared.datatypes.Point
+import indigo.shared.assets.AssetName
 
 @SuppressWarnings(Array("org.wartremover.warts.Throw", "org.wartremover.warts.Any"))
 @JSExportTopLevel("Animation")
 final class AnimationDelegate(
     _animationsKey: String,
-    _imageAssetRef: String,
+    _assetName: String,
     _spriteSheetWidth: Int,
     _spriteSheetHeight: Int,
     _cycles: js.Array[CycleDelegate]
@@ -32,7 +32,7 @@ final class AnimationDelegate(
   @JSExport
   val animationsKey = _animationsKey
   @JSExport
-  val imageAssetRef = _imageAssetRef
+  val assetName = _assetName
   @JSExport
   val spriteSheetWidth = _spriteSheetWidth
   @JSExport
@@ -48,7 +48,7 @@ final class AnimationDelegate(
       case Some(animationsNel) =>
         new Animation(
           AnimationKey(animationsKey),
-          ImageAssetRef(imageAssetRef),
+          AssetName(assetName),
           Point(spriteSheetWidth, spriteSheetHeight),
           animationsNel.head.label,
           animationsNel,

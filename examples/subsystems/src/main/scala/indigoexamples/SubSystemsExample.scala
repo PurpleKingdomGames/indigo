@@ -9,7 +9,7 @@ object SubSystemsExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val config: GameConfig = defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399"))
 
-  val assets: Set[AssetType] = Set(AssetType.Image(fontName, "assets/boxy_font.png"))
+  val assets: Set[AssetType] = Set(AssetType.Image(AssetName(fontName), AssetPath("assets/boxy_font.png")))
 
   val fonts: Set[FontInfo] = Set(fontInfo)
 
@@ -55,7 +55,7 @@ object FontDetails {
   def fontKey: FontKey = FontKey("My Font")
 
   def fontInfo: FontInfo =
-    FontInfo(fontKey, fontName, 320, 230, FontChar("?", 93, 52, 23, 23))
+    FontInfo(fontKey, AssetName(fontName), 320, 230, FontChar("?", 93, 52, 23, 23))
       .addChar(FontChar("A", 3, 78, 23, 23))
       .addChar(FontChar("B", 26, 78, 23, 23))
       .addChar(FontChar("C", 50, 78, 23, 23))

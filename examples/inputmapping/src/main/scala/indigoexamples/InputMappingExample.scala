@@ -15,7 +15,7 @@ object InputMappingExample extends IndigoGameBasic[Unit, GameModel, Unit] {
       .withMagnification(1)
 
   val assets: Set[AssetType] =
-    Set(AssetType.Image(fontName, "assets/boxy_font.png"))
+    Set(AssetType.Image(fontName, AssetPath("assets/boxy_font.png")))
 
   val fonts: Set[FontInfo] =
     Set(fontInfo)
@@ -90,7 +90,7 @@ final case object Down extends Action
 
 object FontStuff {
 
-  val fontName: String = "My boxy font"
+  val fontName: AssetName = AssetName("My boxy font")
 
   def fontKey: FontKey = FontKey("My Font")
 

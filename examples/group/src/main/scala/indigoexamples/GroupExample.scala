@@ -7,7 +7,9 @@ object GroupExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val config: GameConfig = defaultGameConfig
 
-  val assets: Set[AssetType] = Set(AssetType.Image("graphics", "assets/graphics.png"))
+  val assetName: AssetName = AssetName("graphics")
+
+  val assets: Set[AssetType] = Set(AssetType.Image(assetName, AssetPath("assets/graphics.png")))
 
   val fonts: Set[FontInfo] = Set()
 
@@ -32,9 +34,9 @@ object GroupExample extends IndigoGameBasic[Unit, Unit, Unit] {
   def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState): SceneUpdateFragment =
     SceneUpdateFragment.empty.addGameLayerNodes(
       Group(
-        Graphic(0, 0, 256, 256, 1, "graphics").moveTo(64, 10).moveBy(-50, -50),
-        Graphic(0, 0, 32, 32, 1, "graphics").withCrop(32, 0, 32, 32).moveBy(-50, -50),
-        Graphic(0, 0, 128, 128, 1, "graphics")
+        Graphic(0, 0, 256, 256, 1, Material.Textured(assetName)).moveTo(64, 10).moveBy(-50, -50),
+        Graphic(0, 0, 32, 32, 1, Material.Textured(assetName)).withCrop(32, 0, 32, 32).moveBy(-50, -50),
+        Graphic(0, 0, 128, 128, 1, Material.Textured(assetName))
           .moveTo(0, 128)
           .withCrop(128, 0, 128, 128)
           .withTint(0, 1, 1)

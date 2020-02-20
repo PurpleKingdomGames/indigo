@@ -5,41 +5,41 @@ import indigo._
 object Assets {
 
   object Static {
-    val backgroundRef: String = "background"
+    val backgroundRef: AssetName = AssetName("background")
 
-    val levelRef: String      = "level"
-    val levelGraphic: Graphic = Graphic(Rectangle(0, 0, 646, 374), 2, levelRef)
+    val levelRef: AssetName      = AssetName("level")
+    val levelGraphic: Graphic = Graphic(Rectangle(0, 0, 646, 374), 2, Material.Textured(levelRef))
 
-    val chestRef: String      = "Chest Close 01"
-    val chestGraphic: Graphic = Graphic(Rectangle(0, 0, 64, 35), 4, chestRef).withRef(33, 34)
+    val chestRef: AssetName      = AssetName("Chest Close 01")
+    val chestGraphic: Graphic = Graphic(Rectangle(0, 0, 64, 35), 4, Material.Textured(chestRef)).withRef(33, 34)
 
     val assets: Set[AssetType] =
       Set(
-        AssetType.Image(Static.backgroundRef, "assets/bg.png"),
-        AssetType.Image(Static.chestRef, "assets/" + Static.chestRef + ".png"),
-        AssetType.Image(Static.levelRef, "assets/level.png")
+        AssetType.Image(Static.backgroundRef, AssetPath("assets/bg.png")),
+        AssetType.Image(Static.chestRef, AssetPath("assets/" + Static.chestRef.value + ".png")),
+        AssetType.Image(Static.levelRef, AssetPath("assets/level.png"))
       )
   }
 
   object Sounds {
-    val shanty: String       = "shanty"
-    val walkSound: String    = "walk"
-    val respawnSound: String = "respawn"
+    val shanty: AssetName       = AssetName("shanty")
+    val walkSound: AssetName    = AssetName("walk")
+    val respawnSound: AssetName = AssetName("respawn")
 
     val assets: Set[AssetType] =
       Set(
-        AssetType.Audio(Sounds.shanty, "assets/bgmusic.mp3"),
-        AssetType.Audio(Sounds.walkSound, "assets/walk.mp3"),
-        AssetType.Audio(Sounds.respawnSound, "assets/respawn.mp3")
+        AssetType.Audio(Sounds.shanty, AssetPath("assets/bgmusic.mp3")),
+        AssetType.Audio(Sounds.walkSound, AssetPath("assets/walk.mp3")),
+        AssetType.Audio(Sounds.respawnSound, AssetPath("assets/respawn.mp3"))
       )
   }
 
   object Clouds {
 
-    val bigCloudsRef: String   = "Big Clouds"
-    val smallCloudsRef: String = "small_clouds"
+    val bigCloudsRef: AssetName   = AssetName("Big Clouds")
+    val smallCloudsRef: AssetName = AssetName("small_clouds")
 
-    val bigCloudsGraphic: Graphic = Graphic(Rectangle(0, 0, 448, 101), 40, bigCloudsRef).withRef(0, 101)
+    val bigCloudsGraphic: Graphic = Graphic(Rectangle(0, 0, 448, 101), 40, Material.Textured(bigCloudsRef)).withRef(0, 101)
     val bigCloudsWidth: Int       = bigCloudsGraphic.bounds.width
 
     val animationKey1: AnimationKey = AnimationKey("cloud 1")
@@ -56,7 +56,7 @@ object Assets {
     val cloudsAnimation1: Animation =
       Animation(
         animationKey1,
-        ImageAssetRef(smallCloudsRef),
+        smallCloudsRef,
         Point(140, 117),
         CycleLabel("cloud 1"),
         cloudCycles,
@@ -66,7 +66,7 @@ object Assets {
     val cloudsAnimation2: Animation =
       Animation(
         animationKey2,
-        ImageAssetRef(smallCloudsRef),
+        smallCloudsRef,
         Point(140, 117),
         CycleLabel("cloud 2"),
         cloudCycles,
@@ -76,7 +76,7 @@ object Assets {
     val cloudsAnimation3: Animation =
       Animation(
         animationKey3,
-        ImageAssetRef(smallCloudsRef),
+        smallCloudsRef,
         Point(140, 117),
         CycleLabel("cloud 3"),
         cloudCycles,
@@ -85,84 +85,84 @@ object Assets {
 
     val assets: Set[AssetType] =
       Set(
-        AssetType.Image(Clouds.bigCloudsRef, "assets/" + Clouds.bigCloudsRef + ".png"),
-        AssetType.Image(Clouds.smallCloudsRef, "assets/" + Clouds.smallCloudsRef + ".png")
+        AssetType.Image(Clouds.bigCloudsRef, AssetPath("assets/" + Clouds.bigCloudsRef.value + ".png")),
+        AssetType.Image(Clouds.smallCloudsRef, AssetPath("assets/" + Clouds.smallCloudsRef.value + ".png"))
       )
 
   }
 
   object Water {
-    val ref: String     = "Water Reflect"
-    val jsonRef: String = "Water Reflect JSON"
+    val ref: AssetName     = AssetName("Water Reflect")
+    val jsonRef: AssetName = AssetName("Water Reflect JSON")
 
     val assets: Set[AssetType] =
       Set(
-        AssetType.Image(Water.ref, "assets/" + Water.ref + ".png"),
-        AssetType.Text(Water.jsonRef, "assets/" + Water.ref + ".json")
+        AssetType.Image(Water.ref, AssetPath("assets/" + Water.ref.value + ".png")),
+        AssetType.Text(Water.jsonRef, AssetPath("assets/" + Water.ref.value + ".json"))
       )
   }
 
   object Flag {
-    val ref: String     = "Flag"
-    val jsonRef: String = "Flag JSON"
+    val ref: AssetName     = AssetName("Flag")
+    val jsonRef: AssetName = AssetName("Flag JSON")
 
     val assets: Set[AssetType] =
       Set(
-        AssetType.Image(Flag.ref, "assets/" + Flag.ref + ".png"),
-        AssetType.Text(Flag.jsonRef, "assets/" + Flag.ref + ".json")
+        AssetType.Image(Flag.ref, AssetPath("assets/" + Flag.ref.value + ".png")),
+        AssetType.Text(Flag.jsonRef, AssetPath("assets/" + Flag.ref.value + ".json"))
       )
   }
 
   object Captain {
-    val ref: String     = "Captain Clown Nose"
-    val jsonRef: String = "Captain Clown Nose JSON"
+    val ref: AssetName     = AssetName("Captain Clown Nose")
+    val jsonRef: AssetName = AssetName("Captain Clown Nose JSON")
 
     val assets: Set[AssetType] =
       Set(
-        AssetType.Image(Captain.ref, "assets/" + Captain.ref + ".png"),
-        AssetType.Text(Captain.jsonRef, "assets/" + Captain.ref + ".json")
+        AssetType.Image(Captain.ref, AssetPath("assets/" + Captain.ref.value + ".png")),
+        AssetType.Text(Captain.jsonRef, AssetPath("assets/" + Captain.ref.value + ".json"))
       )
   }
 
   object Trees {
-    val ref: String     = "Palm Tree"
-    val jsonRef: String = "Palm Tree JSON"
+    val ref: AssetName     = AssetName("Palm Tree")
+    val jsonRef: AssetName = AssetName("Palm Tree JSON")
 
-    val trunksRef: String = "Front Palm Trees"
+    val trunksRef: AssetName = AssetName("Front Palm Trees")
 
     val tallTrunkGraphic: Graphic =
-      Graphic(Rectangle(0, 0, 96, 96), 1, trunksRef)
+      Graphic(Rectangle(0, 0, 96, 96), 1, Material.Textured(trunksRef))
         .withCrop(Rectangle(8, 0, 16, 60))
 
     val leftLeaningTrunkGraphic: Graphic =
-      Graphic(Rectangle(0, 0, 96, 96), 1, trunksRef)
+      Graphic(Rectangle(0, 0, 96, 96), 1, Material.Textured(trunksRef))
         .withCrop(Rectangle(43, 0, 50, 22))
 
     val rightLeaningTrunkGraphic: Graphic =
-      Graphic(Rectangle(0, 0, 96, 96), 1, trunksRef)
+      Graphic(Rectangle(0, 0, 96, 96), 1, Material.Textured(trunksRef))
         .withCrop(Rectangle(36, 32, 48, 23))
 
     val assets: Set[AssetType] =
       Set(
-        AssetType.Image(Trees.trunksRef, "assets/" + Trees.trunksRef + ".png"),
-        AssetType.Image(Trees.ref, "assets/" + Trees.ref + ".png"),
-        AssetType.Text(Trees.jsonRef, "assets/" + Trees.ref + ".json")
+        AssetType.Image(Trees.trunksRef, AssetPath("assets/" + Trees.trunksRef.value + ".png")),
+        AssetType.Image(Trees.ref, AssetPath("assets/" + Trees.ref.value + ".png")),
+        AssetType.Text(Trees.jsonRef, AssetPath("assets/" + Trees.ref.value + ".json"))
       )
   }
 
   object Helm {
-    val ref: String     = "Ship Helm"
-    val jsonRef: String = "Ship Helm JSON"
+    val ref: AssetName     = AssetName("Ship Helm")
+    val jsonRef: AssetName = AssetName("Ship Helm JSON")
 
     val assets: Set[AssetType] =
       Set(
-        AssetType.Image(Helm.ref, "assets/" + Helm.ref + ".png"),
-        AssetType.Text(Helm.jsonRef, "assets/" + Helm.ref + ".json")
+        AssetType.Image(Helm.ref, AssetPath("assets/" + Helm.ref.value + ".png")),
+        AssetType.Text(Helm.jsonRef, AssetPath("assets/" + Helm.ref.value + ".json"))
       )
   }
 
   object Fonts {
-    val smallFontName: String = "smallFontName"
+    val smallFontName: AssetName = AssetName("smallFontName")
     val fontKey: FontKey      = FontKey("boxy font")
 
     val fontInfo: FontInfo =
@@ -221,7 +221,7 @@ object Assets {
 
     val assets: Set[AssetType] =
       Set(
-        AssetType.Image(Fonts.smallFontName, "assets/boxy_font_small.png")
+        AssetType.Image(Fonts.smallFontName, AssetPath("assets/boxy_font_small.png"))
       )
   }
 

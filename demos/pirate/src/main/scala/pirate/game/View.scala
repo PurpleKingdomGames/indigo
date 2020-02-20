@@ -9,7 +9,7 @@ object View {
   // STEP 2
   def drawBackground: SceneUpdateFragment =
     SceneUpdateFragment.empty
-      .addGameLayerNodes(Graphic(Rectangle(0, 0, 640, 360), 50, Assets.Static.backgroundRef))
+      .addGameLayerNodes(Graphic(Rectangle(0, 0, 640, 360), 50, Material.Textured(Assets.Static.backgroundRef)))
 
   // STEP 3
   def sceneAudio: SceneUpdateFragment =
@@ -17,7 +17,7 @@ object View {
       .withAudio(
         SceneAudio(
           SceneAudioSource(
-            BindingKey(Assets.Sounds.shanty),
+            BindingKey(Assets.Sounds.shanty.value),
             PlaybackPattern.SingleTrackLoop(
               Track(Assets.Sounds.shanty)
             )

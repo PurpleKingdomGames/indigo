@@ -19,7 +19,7 @@ object ScenesSetup extends IndigoGameWithScenes[StartUpData, GameModel, Unit] {
       .withClearColor(ClearColor.fromHexString("0xAA3399"))
       .withFrameRate(targetFPS)
 
-  val assets: Set[AssetType] = Set(AssetType.Image(FontStuff.fontName, "assets/boxy_font.png"))
+  val assets: Set[AssetType] = Set(AssetType.Image(FontStuff.fontName, AssetPath("assets/boxy_font.png")))
 
   val fonts: Set[FontInfo] = Set(FontStuff.fontInfo)
 

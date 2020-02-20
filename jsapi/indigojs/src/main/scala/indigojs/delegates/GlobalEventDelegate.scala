@@ -14,6 +14,7 @@ import indigo.shared.events.PlaySound
 import indigo.shared.networking.HttpRequest
 import indigo.shared.networking.WebSocketConfig
 import indigo.shared.networking.WebSocketId
+import indigo.shared.assets.AssetName
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 trait GlobalEventDelegate {
@@ -204,16 +205,16 @@ final class HTTPDELETEDelegate(_url: String, _params: js.Dictionary[String], _he
 // Sounds
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("PlaySound")
-final class PlaySoundDelegate(_assetRef: String, _volume: VolumeDelegate) extends GlobalEventDelegate {
+final class PlaySoundDelegate(_assetName: String, _volume: VolumeDelegate) extends GlobalEventDelegate {
   @JSExport
-  val assetRef = _assetRef
+  val assetName = _assetName
   @JSExport
   val volume = _volume
   @JSExport
   val eventType: String = "playSound"
   @JSExport
-  val details: js.Object      = js.Dynamic.literal(assetRef = assetRef, volume = volume.asInstanceOf[js.Object])
-  def toInternal: GlobalEvent = PlaySound(assetRef, volume.toInternal)
+  val details: js.Object      = js.Dynamic.literal(assetRef = assetName, volume = volume.asInstanceOf[js.Object])
+  def toInternal: GlobalEvent = PlaySound(AssetName(assetName), volume.toInternal)
 }
 
 // Storage

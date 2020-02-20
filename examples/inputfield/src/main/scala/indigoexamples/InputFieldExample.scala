@@ -8,7 +8,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   val config: GameConfig = defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399"))
 
-  val assets: Set[AssetType] = Set(AssetType.Image(FontStuff.fontName, "assets/boxy_font.png"))
+  val assets: Set[AssetType] = Set(AssetType.Image(FontStuff.fontName, AssetPath("assets/boxy_font.png")))
 
   val fonts: Set[FontInfo] = Set(FontStuff.fontInfo)
 
@@ -47,7 +47,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
         inputState,
         InputFieldAssets(
           Text("input", 10, 20, 1, FontStuff.fontKey).alignLeft,
-          Graphic(0, 0, 16, 16, 2, FontStuff.fontName).withCrop(188, 78, 14, 23).withTint(0, 0, 1)
+          Graphic(0, 0, 16, 16, 2, Material.Textured(FontStuff.fontName)).withCrop(188, 78, 14, 23).withTint(0, 0, 1)
         )
       )
 
@@ -62,7 +62,7 @@ object FontStuff {
 
   val fontKey: FontKey = FontKey("MyFontKey")
 
-  val fontName: String = "My boxy font"
+  val fontName: AssetName = AssetName("My boxy font")
 
   val fontInfo: FontInfo =
     FontInfo(fontKey, fontName, 320, 230, FontChar("?", 93, 52, 23, 23))

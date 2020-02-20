@@ -78,10 +78,10 @@ final class GraphicDelegate(
     _rotation: Double,
     _scaleX: Double,
     _scaleY: Double,
-    _imageAssetRef: String,
     _ref: PointDelegate,
     _crop: RectangleDelegate,
-    _effects: EffectsDelegate
+    _effects: EffectsDelegate,
+    _material: MaterialDelegate
 ) extends SceneGraphNodePrimitiveDelegate
     with CloneableDelegate {
 
@@ -96,13 +96,13 @@ final class GraphicDelegate(
   @JSExport
   val scaleY = _scaleY
   @JSExport
-  val imageAssetRef = _imageAssetRef
-  @JSExport
   val ref = _ref
   @JSExport
   val crop = _crop
   @JSExport
   val effects = _effects
+  @JSExport
+  val material = _material
 
   @JSExport
   def moveTo(pt: Point): GraphicDelegate =
@@ -230,10 +230,10 @@ final class GraphicDelegate(
       Depth(depth),
       Radians(rotation),
       Vector2(scaleX, scaleY),
-      imageAssetRef,
       ref.toInternal,
       crop.toInternal,
-      effects.toInternal
+      effects.toInternal,
+      material.toInternal
     )
 }
 

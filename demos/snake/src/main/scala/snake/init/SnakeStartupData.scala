@@ -16,10 +16,10 @@ object SnakeStartupData {
       viewport = viewport,
       gridSize = gridSize,
       staticAssets = StaticAssets(
-        apple = Graphic(0, 0, blockSize, blockSize, 2, GameAssets.snakeTexture)
+        apple = Graphic(0, 0, blockSize, blockSize, 2, GameAssets.snakeMaterial)
           .withCrop(blockSize, 0, blockSize, blockSize),
-        snake = Graphic(0, 0, blockSize, blockSize, 2, GameAssets.snakeTexture),
-        wall = Graphic(0, 0, blockSize, blockSize, 2, GameAssets.snakeTexture)
+        snake = Graphic(0, 0, blockSize, blockSize, 2, GameAssets.snakeMaterial),
+        wall = Graphic(0, 0, blockSize, blockSize, 2, GameAssets.snakeMaterial)
           .withCrop(blockSize * 2, 0, blockSize, blockSize)
       )
     )

@@ -1,7 +1,9 @@
 package indigo.shared.audio
 
-final case class Track(assetRef: String, volume: Volume)
+import indigo.shared.assets.AssetName
+
+final case class Track(assetName: AssetName, volume: Volume)
 object Track {
-  def apply(assetRef: String): Track =
-    Track(assetRef, Volume.Max)
+  def apply(assetName: AssetName): Track =
+    Track(assetName, Volume.Max)
 }

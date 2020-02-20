@@ -25,7 +25,7 @@ import indigo.shared.time.GameTime
 import indigo.shared.events.InputState
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.config.GameConfig
-import indigo.shared.AssetType
+import indigo.shared.assets.AssetType
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.animation.Animation
 import indigojs.delegates.OutcomeDelegate

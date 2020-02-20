@@ -9,7 +9,7 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
   val config: GameConfig = defaultGameConfig
 
   // We'll need some graphics.
-  val assets: Set[AssetType] = Set(AssetType.Image("graphics", "assets/graphics.png"))
+  val assets: Set[AssetType] = Set(AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")))
 
   val fonts: Set[FontInfo] = Set()
 
@@ -58,9 +58,9 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       depth = Depth(2),                   // At what depth?
       inputState = inputState,            // delegate events
       buttonAssets = ButtonAssets(        // We could cache the graphics much earlier
-        up = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 0, 16, 16),
-        over = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 16, 16, 16),
-        down = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 32, 16, 16)
+        up = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 0, 16, 16),
+        over = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 16, 16, 16),
+        down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 32, 16, 16)
       )
     )
 

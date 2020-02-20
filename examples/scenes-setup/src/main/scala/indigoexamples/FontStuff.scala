@@ -4,7 +4,7 @@ import indigo._
 
 object FontStuff {
 
-  val fontName: String = "My boxy font"
+  val fontName: AssetName = AssetName("My boxy font")
 
   def fontKey: FontKey = FontKey("My Font")
 

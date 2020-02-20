@@ -8,7 +8,7 @@ object InitialLoad {
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, StartupData] = {
 
-    val loader: (String, String, Depth) => Either[String, SpriteAndAnimations] =
+    val loader: (AssetName, AssetName, Depth) => Either[String, SpriteAndAnimations] =
       loadAnimation(assetCollection)
 
     val res = for {
@@ -28,9 +28,9 @@ object InitialLoad {
     }
   }
 
-  def loadAnimation(assetCollection: AssetCollection)(jsonRef: String, name: String, depth: Depth): Either[String, SpriteAndAnimations] = {
+  def loadAnimation(assetCollection: AssetCollection)(jsonRef: AssetName, name: AssetName, depth: Depth): Either[String, SpriteAndAnimations] = {
     val res = for {
-      json                <- assetCollection.findTextDataByName(AssetName(jsonRef))
+      json                <- assetCollection.findTextDataByName(jsonRef)
       aseprite            <- Json.asepriteFromJson(json)
       spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, depth, name)
     } yield spriteAndAnimations

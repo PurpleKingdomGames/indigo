@@ -5,19 +5,19 @@ import scala.scalajs.js.JSConverters._
 import scala.scalajs.js
 
 import indigo.platform.assets.AssetCollection
-import indigo.platform.assets.AssetName
+import indigo.shared.assets.AssetName
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportAll
 final class AssetCollectionDelegate(assetCollection: AssetCollection) {
   val images: js.Array[LoadedImageAssetDelegate] =
-    assetCollection.images.map(p => new LoadedImageAssetDelegate(p.name.name, p.data)).toJSArray
+    assetCollection.images.map(p => new LoadedImageAssetDelegate(p.name.value, p.data)).toJSArray
 
   val texts: js.Array[LoadedTextAssetDelegate] =
-    assetCollection.texts.map(p => new LoadedTextAssetDelegate(p.name.name, p.data)).toJSArray
+    assetCollection.texts.map(p => new LoadedTextAssetDelegate(p.name.value, p.data)).toJSArray
 
   val sounds: js.Array[LoadedAudioAssetDelegate] =
-    assetCollection.sounds.map(p => new LoadedAudioAssetDelegate(p.name.name, p.data)).toJSArray
+    assetCollection.sounds.map(p => new LoadedAudioAssetDelegate(p.name.value, p.data)).toJSArray
 
   def findImageDataByName(name: String): js.UndefOr[js.Object] =
     assetCollection.findImageDataByName(AssetName(name)).orUndefined

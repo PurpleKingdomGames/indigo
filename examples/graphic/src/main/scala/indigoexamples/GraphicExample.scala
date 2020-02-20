@@ -7,7 +7,7 @@ object GraphicExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val config: GameConfig = defaultGameConfig //.withMagnification(1)
 
-  val assets: Set[AssetType] = Set(AssetType.Image("graphics", "assets/graphics.png"))
+  val assets: Set[AssetType] = Set(AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")))
 
   val fonts: Set[FontInfo] = Set()
 
@@ -30,7 +30,7 @@ object GraphicExample extends IndigoGameBasic[Unit, Unit, Unit] {
     Outcome(())
 
   val graphic: Graphic =
-    Graphic(0, 0, 256, 256, 1, "graphics")
+    Graphic(0, 0, 256, 256, 1, Material.Textured(AssetName("graphics")))
       .withRef(48, 48)
 
   val basic =

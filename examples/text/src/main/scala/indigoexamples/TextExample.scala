@@ -12,7 +12,7 @@ object TextExample extends IndigoGameBasic[Unit, Model, Unit] {
       .withClearColor(ClearColor.fromHexString("0xAA3399"))
 
   val assets: Set[AssetType] =
-    Set(AssetType.Image(fontName, "assets/boxy_font.png"))
+    Set(AssetType.Image(fontName, AssetPath("assets/boxy_font.png")))
 
   val fonts: Set[FontInfo] =
     Set(fontInfo)
@@ -79,7 +79,7 @@ final case class Model(tint: Tint) {
 
 object FontStuff {
 
-  val fontName: String = "My boxy font"
+  val fontName: AssetName = AssetName("My boxy font")
 
   def fontKey: FontKey = FontKey("My Font")
 

@@ -7,7 +7,7 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val config: GameConfig = defaultGameConfig
 
-  val assets: Set[AssetType] = Set(AssetType.Image("trafficlights", "assets/trafficlights.png"))
+  val assets: Set[AssetType] = Set(AssetType.Image(AssetName("trafficlights"), AssetPath("assets/trafficlights.png")))
 
   val fonts: Set[FontInfo] = Set()
 
@@ -18,7 +18,7 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
   val animations: Set[Animation] = Set(
     Animation.create(
       animationsKey,
-      ImageAssetRef("trafficlights"),
+      AssetName("trafficlights"),
       Point(128, 128),
       cycle = Cycle.create(
         "lights",

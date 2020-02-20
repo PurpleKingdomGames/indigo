@@ -8,7 +8,7 @@ object HttpExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   val config: GameConfig = defaultGameConfig
 
-  val assets: Set[AssetType] = Set(AssetType.Image("graphics", "assets/graphics.png"))
+  val assets: Set[AssetType] = Set(AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")))
 
   val fonts: Set[FontInfo] = Set()
 
@@ -60,9 +60,9 @@ object HttpExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       depth = Depth(2),
       inputState = inputState,
       buttonAssets = ButtonAssets(
-        up = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 0, 16, 16),
-        over = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 16, 16, 16),
-        down = Graphic(0, 0, 16, 16, 2, "graphics").withCrop(32, 32, 16, 16)
+        up = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 0, 16, 16),
+        over = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 16, 16, 16),
+        down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 32, 16, 16)
       )
     )
 

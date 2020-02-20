@@ -5,7 +5,7 @@ import indigo._
 object FontStuff {
 
   val fontKey: FontKey = FontKey("MyFontKey")
-  val fontName: String = "My boxy font"
+  val fontName: AssetName = AssetName("My boxy font")
 
   val fontInfo: FontInfo =
     FontInfo(fontKey, fontName, 320, 230, FontChar("?", 93, 52, 23, 23))

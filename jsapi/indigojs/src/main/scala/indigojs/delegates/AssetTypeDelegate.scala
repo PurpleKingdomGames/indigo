@@ -1,7 +1,7 @@
 package indigojs.delegates
 
 import scala.scalajs.js.annotation._
-import indigo.shared.AssetType
+import indigo.shared.assets.{AssetType, AssetName, AssetPath}
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 sealed trait AssetTypeDelegate {
@@ -41,7 +41,7 @@ final class TextAsset(_name: String, _path: String) extends AssetTypeDelegate {
   val path: String = _path
 
   def toInternal: AssetType =
-    AssetType.Text(name, path)
+    AssetType.Text(AssetName(name), AssetPath(path))
 }
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
@@ -54,7 +54,7 @@ final class ImageAsset(_name: String, _path: String) extends AssetTypeDelegate {
   val path: String = _path
 
   def toInternal: AssetType =
-    AssetType.Image(name, path)
+    AssetType.Image(AssetName(name), AssetPath(path))
 }
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
@@ -67,5 +67,5 @@ final class AudioAsset(_name: String, _path: String) extends AssetTypeDelegate {
   val path: String = _path
 
   def toInternal: AssetType =
-    AssetType.Audio(name, path)
+    AssetType.Audio(AssetName(name), AssetPath(path))
 }

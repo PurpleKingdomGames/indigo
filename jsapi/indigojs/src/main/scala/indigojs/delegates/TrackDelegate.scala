@@ -4,13 +4,14 @@ import indigo.shared.audio.Track
 
 import scala.scalajs.js.annotation._
 import scala.scalajs.js
+import indigo.shared.assets.AssetName
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Track")
-final class TrackDelegate(_assetRef: String, _volume: js.UndefOr[VolumeDelegate]) {
+final class TrackDelegate(_assetName: String, _volume: js.UndefOr[VolumeDelegate]) {
 
   @JSExport
-  val assetRef = _assetRef
+  val assetName = _assetName
   @JSExport
   val volume = _volume.toOption match {
       case Some(v) => v
@@ -18,5 +19,5 @@ final class TrackDelegate(_assetRef: String, _volume: js.UndefOr[VolumeDelegate]
   }
 
   def toInternal: Track =
-    Track(assetRef, volume.toInternal)
+    Track(AssetName(assetName), volume.toInternal)
 }
