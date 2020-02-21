@@ -6,6 +6,7 @@ import indigo.shared.datatypes.Vector2
 import indigo.shared.display.SpriteSheetFrame
 import scalajs.js.JSConverters._
 import indigo.shared.datatypes.RGBA
+import indigo.shared.display.DisplayEffects
 
 object RendererMergeTests extends TestSuite {
 
@@ -27,16 +28,10 @@ object RendererMergeTests extends TestSuite {
             "",    // emission
             "",    // normal
             "",    // specular
-            1,     // alpha
-            2,     // r
-            3,     // g
-            4,     // b
-            5,     // tint amount
-            false, // flip h
-            true,  // flip v
             SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets(Vector2(0.5, 0.5), Vector2(0.1, 0.1)),
             40, // refX
-            30  // refY
+            30, // refY
+            DisplayEffects.default
           )
 
         /*
