@@ -60,22 +60,31 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private def updateData(d: DisplayObject, i: Int): Unit = {
     translationData((i * 2) + 0) = d.x
     translationData((i * 2) + 1) = d.y
+
     scaleData((i * 2) + 0) = d.scaleX
     scaleData((i * 2) + 1) = d.scaleY
-    tintData((i * 4) + 0) = d.tintR
-    tintData((i * 4) + 1) = d.tintG
-    tintData((i * 4) + 2) = d.tintB
-    tintData((i * 4) + 3) = d.tintA
+
+    tintData((i * 4) + 0) = d.effects.tint(0)
+    tintData((i * 4) + 1) = d.effects.tint(1)
+    tintData((i * 4) + 2) = d.effects.tint(2)
+    tintData((i * 4) + 3) = d.effects.tint(3)
+
     frameTranslationData((i * 2) + 0) = d.frameX
     frameTranslationData((i * 2) + 1) = d.frameY
+
     frameScaleData((i * 2) + 0) = d.frameScaleX
     frameScaleData((i * 2) + 1) = d.frameScaleY
+
     rotationData(i) = d.rotation
-    hFlipData(i) = d.flipHorizontal
-    vFlipData(i) = d.flipVertical
-    alphaData(i) = d.alpha
+
+    hFlipData(i) = d.effects.flipHorizontal
+    vFlipData(i) = d.effects.flipVertical
+
+    alphaData(i) = d.effects.alpha
+
     refData((i * 2) + 0) = d.refX
     refData((i * 2) + 1) = d.refY
+
     sizeData((i * 2) + 0) = d.width
     sizeData((i * 2) + 1) = d.height
   }

@@ -14,6 +14,7 @@ import indigo.shared.ClearColor
 import indigo.shared.display.SpriteSheetFrame
 import scala.scalajs.js.JSConverters._
 import indigo.shared.datatypes.RGBA
+import indigo.shared.display.DisplayEffects
 
 class RendererMerge(gl2: WebGL2RenderingContext) {
 
@@ -31,16 +32,10 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
       emissionRef = "",
       normalRef = "",
       specularRef = "",
-      alpha = 1,
-      tintR = 1,
-      tintG = 1,
-      tintB = 1,
-      tintA = 1,
-      flipHorizontal = false,
-      flipVertical = false,
       frame = SpriteSheetFrame.defaultOffset,
       refX = 0,
-      refY = 0
+      refY = 0,
+      effects = DisplayEffects.default
     )
 
   private val mergeShaderProgram: WebGLProgram =

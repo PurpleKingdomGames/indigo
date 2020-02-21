@@ -25,19 +25,13 @@ final class DisplayObject(
     val emissionRef: String,
     val normalRef: String,
     val specularRef: String,
-    val alpha: Double,
-    val tintR: Double,
-    val tintG: Double,
-    val tintB: Double,
-    val tintA: Double,
-    val flipHorizontal: Double,
-    val flipVertical: Double,
     val frameX: Double,
     val frameY: Double,
     val frameScaleX: Double,
     val frameScaleY: Double,
     val refX: Double,
-    val refY: Double
+    val refY: Double,
+    val effects: DisplayEffects
 ) extends DisplayEntity {
   val textureHash: String = diffuseRef+emissionRef+normalRef+specularRef
 }
@@ -56,16 +50,10 @@ object DisplayObject {
       emissionRef: String,
       normalRef: String,
       specularRef: String,
-      alpha: Double,
-      tintR: Double,
-      tintG: Double,
-      tintB: Double,
-      tintA: Double,
-      flipHorizontal: Boolean,
-      flipVertical: Boolean,
       frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets,
       refX: Int,
-      refY: Int
+      refY: Int,
+      effects: DisplayEffects
   ): DisplayObject =
     new DisplayObject(
       x.toDouble,
@@ -80,18 +68,12 @@ object DisplayObject {
       emissionRef,
       normalRef,
       specularRef,
-      alpha,
-      tintR,
-      tintG,
-      tintB,
-      tintA,
-      if (flipHorizontal) -1 else 1,
-      if (flipVertical) 1 else -1,
       frame.translate.x,
       frame.translate.y,
       frame.scale.x,
       frame.scale.y,
       refX.toDouble,
-      refY.toDouble
+      refY.toDouble,
+      effects
     )
 }

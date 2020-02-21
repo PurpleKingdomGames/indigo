@@ -104,7 +104,7 @@ final class LinearGradiantOverlay(
     val toColor: RGBA
 ) {
 
-  def hash: String =
+  lazy val hash: String =
     fromPoint.x.toString +
       fromPoint.y.toString +
       fromColor.hash +

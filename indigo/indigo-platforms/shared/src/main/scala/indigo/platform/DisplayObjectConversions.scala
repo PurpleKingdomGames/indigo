@@ -27,6 +27,7 @@ import indigo.shared.scenegraph.CloneTransformData
 import indigo.shared.display.DisplayCloneBatchData
 import indigo.shared.datatypes.Material
 import indigo.shared.assets.AssetName
+import indigo.shared.display.DisplayEffects
 
 object DisplayObjectConversions {
 
@@ -35,6 +36,7 @@ object DisplayObjectConversions {
   implicit private val frameCache: QuickCache[SpriteSheetFrameCoordinateOffsets] = QuickCache.empty
   implicit private val listDoCache: QuickCache[List[DisplayObject]]              = QuickCache.empty
   implicit private val cloneBatchCache: QuickCache[DisplayCloneBatch]            = QuickCache.empty
+  implicit private val effectsCache: QuickCache[DisplayEffects]                  = QuickCache.empty
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   def lookupTextureOffset(assetMapping: AssetMapping, name: String): Vector2 =
@@ -193,7 +195,7 @@ object DisplayObjectConversions {
 
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
     val materialValues = materialToValues(assetMapping, leaf.material)
-    val materialName = materialToName(leaf.material)
+    val materialName   = materialToName(leaf.material)
 
     DisplayObject(
       x = leaf.x,
@@ -208,13 +210,6 @@ object DisplayObjectConversions {
       emissionRef = materialValues._2,
       normalRef = materialValues._3,
       specularRef = materialValues._4,
-      alpha = leaf.effects.alpha,
-      tintR = leaf.effects.tint.r,
-      tintG = leaf.effects.tint.g,
-      tintB = leaf.effects.tint.b,
-      tintA = leaf.effects.tint.a,
-      flipHorizontal = leaf.effects.flip.horizontal,
-      flipVertical = leaf.effects.flip.vertical,
       frame = QuickCache(s"${leaf.crop.hash}_${materialName}") {
         SpriteSheetFrame.calculateFrameOffset(
           imageSize = lookupAtlasSize(assetMapping, materialName),
@@ -224,7 +219,10 @@ object DisplayObjectConversions {
         )
       },
       refX = leaf.ref.x,
-      refY = leaf.ref.y
+      refY = leaf.ref.y,
+      effects = QuickCache(leaf.effects.hash) {
+        DisplayEffects.fromEffects(leaf.effects)
+      }
     )
   }
 
@@ -242,13 +240,6 @@ object DisplayObjectConversions {
       emissionRef = "",
       normalRef = "",
       specularRef = "",
-      alpha = leaf.effects.alpha,
-      tintR = leaf.effects.tint.r,
-      tintG = leaf.effects.tint.g,
-      tintB = leaf.effects.tint.b,
-      tintA = leaf.effects.tint.a,
-      flipHorizontal = leaf.effects.flip.horizontal,
-      flipVertical = leaf.effects.flip.vertical,
       frame = QuickCache(anim.frameHash) {
         SpriteSheetFrame.calculateFrameOffset(
           imageSize = lookupAtlasSize(assetMapping, anim.assetName.value),
@@ -258,7 +249,10 @@ object DisplayObjectConversions {
         )
       },
       refX = leaf.ref.x,
-      refY = leaf.ref.y
+      refY = leaf.ref.y,
+      effects = QuickCache(leaf.effects.hash) {
+        DisplayEffects.fromEffects(leaf.effects)
+      }
     )
 
   def textLineToDisplayObjects(leaf: Text, assetMapping: AssetMapping): (TextLine, Int, Int) => List[DisplayObject] =
@@ -294,13 +288,6 @@ object DisplayObjectConversions {
                   emissionRef = "",
                   normalRef = "",
                   specularRef = "",
-                  alpha = leaf.effects.alpha,
-                  tintR = leaf.effects.tint.r,
-                  tintG = leaf.effects.tint.g,
-                  tintB = leaf.effects.tint.b,
-                  tintA = leaf.effects.tint.a,
-                  flipHorizontal = leaf.effects.flip.horizontal,
-                  flipVertical = leaf.effects.flip.vertical,
                   frame = QuickCache(fontChar.bounds.hash + "_" + fontInfo.fontSpriteSheet.assetName.value) {
                     SpriteSheetFrame.calculateFrameOffset(
                       imageSize = lookupAtlasSize(assetMapping, fontInfo.fontSpriteSheet.assetName.value),
@@ -310,7 +297,10 @@ object DisplayObjectConversions {
                     )
                   },
                   refX = leaf.ref.x,
-                  refY = leaf.ref.y
+                  refY = leaf.ref.y,
+                  effects = QuickCache(leaf.effects.hash) {
+                    DisplayEffects.fromEffects(leaf.effects)
+                  }
                 )
             }
           }
