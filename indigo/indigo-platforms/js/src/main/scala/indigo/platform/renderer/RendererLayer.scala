@@ -22,15 +22,30 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   // Instance Array Buffers
   private val translationInstanceArray: WebGLBuffer      = gl2.createBuffer()
   private val scaleInstanceArray: WebGLBuffer            = gl2.createBuffer()
-  private val tintInstanceArray: WebGLBuffer             = gl2.createBuffer()
   private val frameTranslationInstanceArray: WebGLBuffer = gl2.createBuffer()
   private val frameScaleInstanceArray: WebGLBuffer       = gl2.createBuffer()
   private val rotationInstanceArray: WebGLBuffer         = gl2.createBuffer()
-  private val hFlipInstanceArray: WebGLBuffer            = gl2.createBuffer()
-  private val vFlipInstanceArray: WebGLBuffer            = gl2.createBuffer()
-  private val alphaInstanceArray: WebGLBuffer            = gl2.createBuffer()
   private val refInstanceArray: WebGLBuffer              = gl2.createBuffer()
   private val sizeInstanceArray: WebGLBuffer             = gl2.createBuffer()
+  // (effects)
+  private val tintInstanceArray: WebGLBuffer                     = gl2.createBuffer()
+  private val overlayInstanceArray: WebGLBuffer                  = gl2.createBuffer()
+  private val gradiantOverlayFromInstanceArray: WebGLBuffer      = gl2.createBuffer()
+  private val gradiantOverlayToInstanceArray: WebGLBuffer        = gl2.createBuffer()
+  private val gradiantOverlayFromColorInstanceArray: WebGLBuffer = gl2.createBuffer()
+  private val gradiantOverlayToColorInstanceArray: WebGLBuffer   = gl2.createBuffer()
+  private val outerBorderColorInstanceArray: WebGLBuffer         = gl2.createBuffer()
+  private val outerBorderAmountInstanceArray: WebGLBuffer        = gl2.createBuffer()
+  private val innerBorderColorInstanceArray: WebGLBuffer         = gl2.createBuffer()
+  private val innerBorderAmountInstanceArray: WebGLBuffer        = gl2.createBuffer()
+  private val outerGlowColorInstanceArray: WebGLBuffer           = gl2.createBuffer()
+  private val outerGlowAmountInstanceArray: WebGLBuffer          = gl2.createBuffer()
+  private val innerGlowColorInstanceArray: WebGLBuffer           = gl2.createBuffer()
+  private val innerGlowAmountInstanceArray: WebGLBuffer          = gl2.createBuffer()
+  private val blurInstanceArray: WebGLBuffer                     = gl2.createBuffer()
+  private val alphaInstanceArray: WebGLBuffer                    = gl2.createBuffer()
+  private val hFlipInstanceArray: WebGLBuffer                    = gl2.createBuffer()
+  private val vFlipInstanceArray: WebGLBuffer                    = gl2.createBuffer()
 
   def setupInstanceArray(buffer: WebGLBuffer, location: Int, size: Int): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -196,23 +211,52 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     // vec2 a_scale
     setupInstanceArray(scaleInstanceArray, 3, 2)
     // vec2 a_frameTranslation
-    setupInstanceArray(frameTranslationInstanceArray, 5, 2)
+    setupInstanceArray(frameTranslationInstanceArray, 4, 2)
     // vec2 a_frameScale
-    setupInstanceArray(frameScaleInstanceArray, 6, 2)
+    setupInstanceArray(frameScaleInstanceArray, 5, 2)
     // float a_rotation
-    setupInstanceArray(rotationInstanceArray, 7, 1)
+    setupInstanceArray(rotationInstanceArray, 6, 1)
     // float a_ref
-    setupInstanceArray(refInstanceArray, 11, 2)
+    setupInstanceArray(refInstanceArray, 7, 2)
     // float a_size
-    setupInstanceArray(sizeInstanceArray, 12, 2)
+    setupInstanceArray(sizeInstanceArray, 8, 2)
+    // (effects)
     // vec4 a_tint
-    setupInstanceArray(tintInstanceArray, 4, 4)
+    setupInstanceArray(tintInstanceArray, 9, 4)
+    // vec4 a_colorOverlay --
+    setupInstanceArray(overlayInstanceArray, 10, 4)
+    // vec4 a_gradiantOverlayFrom --
+    setupInstanceArray(gradiantOverlayFromInstanceArray, 11, 2)
+    // vec4 a_gradiantOverlayTo --
+    setupInstanceArray(gradiantOverlayToInstanceArray, 12, 2)
+    // vec4 a_gradiantOverlayFromColor --
+    setupInstanceArray(gradiantOverlayFromColorInstanceArray, 13, 4)
+    // vec4 a_gradiantOverlayToColor --
+    setupInstanceArray(gradiantOverlayToColorInstanceArray, 14, 4)
+    // vec4 a_outerBorderColor --
+    setupInstanceArray(outerBorderColorInstanceArray, 15, 4)
+    // vec4 a_outerBorderAmount --
+    setupInstanceArray(outerBorderAmountInstanceArray, 16, 1)
+    // vec4 a_innerBorderColor --
+    setupInstanceArray(innerBorderColorInstanceArray, 17, 4)
+    // vec4 a_innerBorderAmount --
+    setupInstanceArray(innerBorderAmountInstanceArray, 18, 1)
+    // vec4 a_outerGlowColor --
+    setupInstanceArray(outerGlowColorInstanceArray, 19, 4)
+    // vec4 a_outerGlowAmount --
+    setupInstanceArray(outerGlowAmountInstanceArray, 20, 1)
+    // vec4 a_innerGlowColor --
+    setupInstanceArray(innerGlowColorInstanceArray, 21, 4)
+    // vec4 a_innerGlowAmount --
+    setupInstanceArray(innerGlowAmountInstanceArray, 22, 1)
+    // vec4 a_blur --
+    setupInstanceArray(blurInstanceArray, 23, 1)
     // float a_alpha
-    setupInstanceArray(alphaInstanceArray, 10, 1)
+    setupInstanceArray(alphaInstanceArray, 24, 1)
     // float a_fliph
-    setupInstanceArray(hFlipInstanceArray, 8, 1)
+    setupInstanceArray(hFlipInstanceArray, 25, 1)
     // float a_flipv
-    setupInstanceArray(vFlipInstanceArray, 9, 1)
+    setupInstanceArray(vFlipInstanceArray, 26, 1)
     //
 
     val sorted: ListBuffer[DisplayEntity] =
@@ -228,6 +272,20 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
         bindData(refInstanceArray, refData)
         bindData(sizeInstanceArray, sizeData)
         bindData(tintInstanceArray, tintData)
+        bindData(overlayInstanceArray, colorOverlayData)
+        bindData(gradiantOverlayFromInstanceArray, gradiantOverlayFromData)
+        bindData(gradiantOverlayToInstanceArray, gradiantOverlayToData)
+        bindData(gradiantOverlayFromColorInstanceArray, gradiantOverlayFromColorData)
+        bindData(gradiantOverlayToColorInstanceArray, gradiantOverlayToColorData)
+        bindData(outerBorderColorInstanceArray, outerBorderColorData)
+        bindData(outerBorderAmountInstanceArray, outerBorderAmountData)
+        bindData(innerBorderColorInstanceArray, innerBorderColorData)
+        bindData(innerBorderAmountInstanceArray, innerBorderAmountData)
+        bindData(outerGlowColorInstanceArray, outerGlowColorData)
+        bindData(outerGlowAmountInstanceArray, outerGlowAmountData)
+        bindData(innerGlowColorInstanceArray, innerGlowColorData)
+        bindData(innerGlowAmountInstanceArray, innerGlowAmountData)
+        bindData(blurInstanceArray, blurData)
         bindData(alphaInstanceArray, alphaData)
         bindData(hFlipInstanceArray, hFlipData)
         bindData(vFlipInstanceArray, vFlipData)

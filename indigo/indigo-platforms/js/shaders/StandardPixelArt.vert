@@ -2,17 +2,31 @@
 
 layout (location = 0) in vec4 a_vertices;
 layout (location = 1) in vec2 a_texcoord;
-layout (location = 2) in vec2 a_translation;
-layout (location = 3) in vec2 a_scale;
-layout (location = 4) in vec4 a_tint;
-layout (location = 5) in vec2 a_frameTranslation;
-layout (location = 6) in vec2 a_frameScale;
-layout (location = 7) in float a_rotation;
-layout (location = 8) in float a_fliph;
-layout (location = 9) in float a_flipv;
-layout (location = 10) in float a_alpha;
-layout (location = 11) in vec2 a_ref;
-layout (location = 12) in vec2 a_size;
+layout (location = 2) in vec2 a_translation;1
+layout (location = 3) in vec2 a_scale;1
+layout (location = 4) in vec2 a_frameTranslation;2
+layout (location = 5) in vec2 a_frameScale;2
+layout (location = 6) in float a_rotation;
+layout (location = 7) in vec2 a_ref;3
+layout (location = 8) in vec2 a_size;3
+layout (location = 9) in vec4 a_tint;
+layout (location = 10) in vec4 a_colorOverlay;
+layout (location = 11) in vec2 a_gradiantOverlayFrom;5
+layout (location = 12) in vec2 a_gradiantOverlayTo;5
+layout (location = 13) in vec4 a_gradiantOverlayFromColor;
+layout (location = 14) in vec4 a_gradiantOverlayToColor;
+layout (location = 15) in vec4 a_outerBorderColor;
+layout (location = 16) in float a_outerBorderAmount;6
+layout (location = 17) in vec4 a_innerBorderColor;
+layout (location = 18) in float a_innerBorderAmount;6
+layout (location = 19) in vec4 a_outerGlowColor;
+layout (location = 20) in float a_outerGlowAmount;6
+layout (location = 21) in vec4 a_innerGlowColor;
+layout (location = 22) in float a_innerGlowAmount;6
+layout (location = 23) in float a_blur;4
+layout (location = 24) in float a_alpha;4
+layout (location = 25) in float a_fliph;4
+layout (location = 26) in float a_flipv;4
 
 uniform mat4 u_projection;
 
