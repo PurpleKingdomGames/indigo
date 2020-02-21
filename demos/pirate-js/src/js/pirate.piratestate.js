@@ -1,6 +1,6 @@
 const PirateState = {
-    Idle = 1,
-    MoveLeft = 2,
-    MoveRight = 4,
-    Falling = 8
-}
+    Idle: 1,
+    MoveLeft: 2,
+    MoveRight: 4,
+    Falling: 8
+};

@@ -1,38 +1,37 @@
-
-const backgroundRef = "background";
-const levelRef      = "level";
-const levelGraphic  = Graphic(Rectangle(0, 0, 646, 374), 2, levelRef);
-const chestRef      = "Chest Close 01";
-const chestGraphic  = Graphic(Rectangle(0, 0, 64, 35), 4, chestRef).withRef(33, 34);
-const shanty        = "shanty";
-const walkSound     = "walk";
-const respawnSound  = "respawn";
-const smallFontName = "smallFontName";
-const fontKey       = FontKey("boxy font");
-
-class Assets {
-
-    Static = {
-        static assets =
-            [
-                AssetType.Image(backgroundRef, "assets/bg.png"),
-                AssetType.Image(chestRef, "assets/" + chestRef + ".png"),
-                AssetType.Image(levelRef, "assets/level.png")
-            ]
+class StaticAssets {
+    constructor() {
+        this.backgroundRef = "background"
+        this.levelRef      = "level";
+        this.levelGraphic  = Graphic(Rectangle(0, 0, 646, 374), 2, 0, 1, 1, this.levelRef, new Point(0, 0), Rectangle(0, 0, 646, 374), EffectsHelper.None);
+        this.chestRef      = "Chest Close 01";
+        this.chestGraphic  = Graphic(Rectangle(0, 0, 64, 35), 4, 0, 1, 1, this.chestRef, new Point(0, 0), Rectangle(0, 0, 646, 374), EffectsHelper.None).withRef(33, 34);
+        this.assets =  [
+            AssetType.Image(this.backgroundRef, "assets/bg.png"),
+            AssetType.Image(this.chestRef, "assets/" + this.chestRef + ".png"),
+            AssetType.Image(this.levelRef, "assets/level.png")
+        ];
     }
+}
 
-    Sounds = {
-        static assets =
-            [
-                AssetType.Audio(shanty, "assets/bgmusic.mp3"),
-                AssetType.Audio(walkSound, "assets/walk.mp3"),
-                AssetType.Audio(respawnSound, "assets/respawn.mp3")
-            ]
+class SoundAssets {
+    constructor() {
+        this.shanty        = "shanty";
+        this.walkSound     = "walk";
+        this.respawnSound  = "respawn";
+
+        this.assets = [
+            AssetType.Audio(this.shanty, "assets/bgmusic.mp3"),
+            AssetType.Audio(this.walkSound, "assets/walk.mp3"),
+            AssetType.Audio(this.respawnSound, "assets/respawn.mp3")
+        ];
     }
+}
 
-    Fonts = {
-        FontInfo =
-          FontInfo(fontKey, smallFontName, 320, 230, FontChar("?", 47, 26, 11, 12))
+class FontAssets {
+    constructor() {
+        this.smallFontName = "smallFontName";
+        this.fontKey       = FontKey("boxy font");
+        this.FontInfo = (new FontInfo(this.fontKey, this.smallFontName, 320, 230, FontChar("?", 47, 26, 11, 12)))
             .addChar(FontChar("A", 2, 39, 10, 12))
             .addChar(FontChar("B", 14, 39, 9, 12))
             .addChar(FontChar("C", 25, 39, 10, 12))
@@ -84,17 +83,22 @@ class Assets {
             .addChar(FontChar(":", 2, 26, 5, 12))
             .addChar(FontChar("@", 60, 26, 11, 12))
             .addChar(FontChar("_", 42, 65, 9, 12))
-        ,
+        ;
 
-        assets =
-            [
-                AssetType.Image(FsmallFontName, "assets/boxy_font_small.png")
-            ]
+        this.assets = [
+            AssetType.Image(this.smallFontName, "assets/boxy_font_small.png")
+        ];
     }
-
-    assets =
-        this.Static.assets +
-        this.Sounds.assets +
-        this.Fonts.assets
-    ;
 }
+
+class Assets {
+}
+
+Assets.Static = new StaticAssets();
+Assets.Sounds = new SoundAssets();
+Assets.Fonts = new FontAssets();
+Assets.assets = (
+    Static.assets +
+    Sounds.assets +
+    Fonts.assets
+);

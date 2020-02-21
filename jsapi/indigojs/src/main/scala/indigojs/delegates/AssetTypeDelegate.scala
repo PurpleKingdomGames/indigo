@@ -15,6 +15,23 @@ sealed trait AssetTypeDelegate {
 }
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
+@JSExportTopLevel("AssetType")
+object AssetTypeDelegateFactory {
+
+  @JSExport("Text")
+  def getText(name: String, path: String) : TextAsset =
+    new TextAsset(name, path)
+
+  @JSExport("Image")
+  def getImage(name: String, path: String) : ImageAsset =
+    new ImageAsset(name, path)
+
+  @JSExport("Audio")
+  def getAudio(name: String, path: String) : AudioAsset =
+    new AudioAsset(name, path)
+}
+
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("TextAsset")
 final class TextAsset(_name: String, _path: String) extends AssetTypeDelegate {
 
