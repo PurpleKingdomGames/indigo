@@ -93,7 +93,7 @@ object Overlay {
       Some(c.color)
 
     val default: Color =
-      new Color(RGBA.None)
+      new Color(RGBA.Zero)
   }
 
   final class LinearGradiant(
