@@ -2,54 +2,42 @@ package indigo.shared.datatypes
 
 final class Effects(
     val tint: RGBA,
-    val colorOverlay: RGBA,
-    val gradiantOverlay: LinearGradiantOverlay,
-    val outerBorder: ColorAmount,
-    val innerBorder: ColorAmount,
-    val outerGlow: ColorAmount,
-    val innerGlow: ColorAmount,
+    val overlay: Overlay,
+    val border: EdgeEffect,
+    val glow: EdgeEffect,
     val blur: Double,
     val alpha: Double,
     val flip: Flip
 ) {
   def withTint(newValue: RGBA): Effects =
-    Effects(newValue, colorOverlay, gradiantOverlay, outerBorder, innerBorder, outerGlow, innerGlow, blur, alpha, flip)
+    Effects(newValue, overlay, border, glow, blur, alpha, flip)
 
-  def withColorOverlay(newValue: RGBA): Effects =
-    Effects(tint, newValue, gradiantOverlay, outerBorder, innerBorder, outerGlow, innerGlow, blur, alpha, flip)
+  def withColorOverlay(newValue: Overlay.Color): Effects =
+    Effects(tint, newValue, border, glow, blur, alpha, flip)
 
-  def withGradiantOverlay(newValue: LinearGradiantOverlay): Effects =
-    Effects(tint, colorOverlay, newValue, outerBorder, innerBorder, outerGlow, innerGlow, blur, alpha, flip)
+  def withGradiantOverlay(newValue: Overlay.LinearGradiant): Effects =
+    Effects(tint, newValue, border, glow, blur, alpha, flip)
 
-  def withOuterBorder(newValue: ColorAmount): Effects =
-    Effects(tint, colorOverlay, gradiantOverlay, newValue, innerBorder, outerGlow, innerGlow, blur, alpha, flip)
+  def withBorder(newValue: EdgeEffect): Effects =
+    Effects(tint, overlay, newValue, glow, blur, alpha, flip)
 
-  def withInnerBorder(newValue: ColorAmount): Effects =
-    Effects(tint, colorOverlay, gradiantOverlay, outerBorder, newValue, outerGlow, innerGlow, blur, alpha, flip)
-
-  def withOuterGlow(newValue: ColorAmount): Effects =
-    Effects(tint, colorOverlay, gradiantOverlay, outerBorder, innerBorder, newValue, innerGlow, blur, alpha, flip)
-
-  def withInnerGlow(newValue: ColorAmount): Effects =
-    Effects(tint, colorOverlay, gradiantOverlay, outerBorder, innerBorder, outerGlow, newValue, blur, alpha, flip)
+  def withGlow(newValue: EdgeEffect): Effects =
+    Effects(tint, overlay, border, newValue, blur, alpha, flip)
 
   def withBlur(newValue: Double): Effects =
-    Effects(tint, colorOverlay, gradiantOverlay, outerBorder, innerBorder, outerGlow, innerGlow, newValue, alpha, flip)
+    Effects(tint, overlay, border, glow, newValue, alpha, flip)
 
   def withAlpha(newValue: Double): Effects =
-    Effects(tint, colorOverlay, gradiantOverlay, outerBorder, innerBorder, outerGlow, innerGlow, blur, newValue, flip)
+    Effects(tint, overlay, border, glow, blur, newValue, flip)
 
   def withFlip(newValue: Flip): Effects =
-    Effects(tint, colorOverlay, gradiantOverlay, outerBorder, innerBorder, outerGlow, innerGlow, blur, alpha, newValue)
+    Effects(tint, overlay, border, glow, blur, alpha, newValue)
 
   def hash: String =
     tint.hash +
-      colorOverlay.hash +
-      gradiantOverlay.hash +
-      outerBorder.hash +
-      innerBorder.hash +
-      outerGlow.hash +
-      innerGlow.hash +
+      overlay.hash +
+      border.hash +
+      glow.hash +
       blur.toString() +
       alpha.toString() +
       flip.hash
@@ -57,12 +45,9 @@ final class Effects(
 object Effects {
   val default: Effects = Effects(
     tint = RGBA.None,
-    colorOverlay = RGBA.Zero,
-    gradiantOverlay = LinearGradiantOverlay.default,
-    outerBorder = ColorAmount.default,
-    innerBorder = ColorAmount.default,
-    outerGlow = ColorAmount.default,
-    innerGlow = ColorAmount.default,
+    overlay = Overlay.Color.default,
+    border = EdgeEffect.default,
+    glow = EdgeEffect.default,
     blur = 0.0,
     alpha = 1.0,
     flip = Flip(
@@ -73,61 +58,78 @@ object Effects {
 
   def apply(
       tint: RGBA,
-      colorOverlay: RGBA,
-      gradiantOverlay: LinearGradiantOverlay,
-      outerBorder: ColorAmount,
-      innerBorder: ColorAmount,
-      outerGlow: ColorAmount,
-      innerGlow: ColorAmount,
+      overlay: Overlay,
+      border: EdgeEffect,
+      glow: EdgeEffect,
       blur: Double,
       alpha: Double,
       flip: Flip
   ): Effects =
     new Effects(
       tint,
-      colorOverlay,
-      gradiantOverlay,
-      outerBorder,
-      innerBorder,
-      outerGlow,
-      innerGlow,
+      overlay,
+      border,
+      glow,
       blur,
       alpha,
       flip
     )
 }
 
-final class LinearGradiantOverlay(
-    val fromPoint: Point,
-    val fromColor: RGBA,
-    val toPoint: Point,
-    val toColor: RGBA
-) {
-
-  lazy val hash: String =
-    fromPoint.x.toString +
-      fromPoint.y.toString +
-      fromColor.hash +
-      toPoint.x.toString +
-      toPoint.y.toString +
-      toColor.hash
+sealed trait Overlay {
+  def hash: String
 }
-object LinearGradiantOverlay {
-  def apply(fromPoint: Point, fromColor: RGBA, toPoint: Point, toColor: RGBA): LinearGradiantOverlay =
-    new LinearGradiantOverlay(fromPoint, fromColor, toPoint, toColor)
+object Overlay {
 
-  val default: LinearGradiantOverlay =
-    LinearGradiantOverlay(Point.zero, RGBA.Zero, Point.zero, RGBA.Zero)
+  final class Color(val color: RGBA) extends Overlay {
+    def hash: String =
+      color.hash
+  }
+  object Color {
+    def apply(color: RGBA): Color =
+      new Color(color)
+
+    def unapply(c: Color): Option[RGBA] =
+      Some(c.color)
+
+    val default: Color =
+      new Color(RGBA.None)
+  }
+
+  final class LinearGradiant(
+      val fromPoint: Point,
+      val fromColor: RGBA,
+      val toPoint: Point,
+      val toColor: RGBA
+  ) extends Overlay {
+    lazy val hash: String =
+      fromPoint.x.toString +
+        fromPoint.y.toString +
+        fromColor.hash +
+        toPoint.x.toString +
+        toPoint.y.toString +
+        toColor.hash
+  }
+  object LinearGradiant {
+    def apply(fromPoint: Point, fromColor: RGBA, toPoint: Point, toColor: RGBA): LinearGradiant =
+      new LinearGradiant(fromPoint, fromColor, toPoint, toColor)
+
+    def unapply(lg: LinearGradiant): Option[(Point, RGBA, Point, RGBA)] =
+      Some((lg.fromPoint, lg.fromColor, lg.toPoint, lg.toColor))
+
+    val default: LinearGradiant =
+      LinearGradiant(Point.zero, RGBA.Zero, Point.zero, RGBA.Zero)
+  }
 }
 
-final class ColorAmount(val color: RGBA, val amount: Double) {
+final class EdgeEffect(val color: RGBA, val innerAmount: Int, val outerAmount: Int) {
   def hash: String =
-    color.hash + amount.toString()
+    color.hash + innerAmount.toString() + outerAmount.toString()
 }
-object ColorAmount {
-  def apply(color: RGBA, amount: Double): ColorAmount =
-    new ColorAmount(color, amount)
+object EdgeEffect {
+  def apply(color: RGBA, innerAmount: Int, outerAmount: Int): EdgeEffect =
+    new EdgeEffect(color, innerAmount, outerAmount)
 
-  val default: ColorAmount =
-    ColorAmount(RGBA.Zero, 0.0)
+  val default: EdgeEffect =
+    EdgeEffect(RGBA.Zero, 0, 0)
 }

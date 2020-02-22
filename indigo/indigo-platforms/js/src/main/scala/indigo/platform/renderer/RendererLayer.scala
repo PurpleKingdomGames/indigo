@@ -20,32 +20,19 @@ import indigo.shared.display.DisplayCloneBatchData
 class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int) {
 
   // Instance Array Buffers
-  private val translationInstanceArray: WebGLBuffer      = gl2.createBuffer()
-  private val scaleInstanceArray: WebGLBuffer            = gl2.createBuffer()
-  private val frameTranslationInstanceArray: WebGLBuffer = gl2.createBuffer()
-  private val frameScaleInstanceArray: WebGLBuffer       = gl2.createBuffer()
-  private val rotationInstanceArray: WebGLBuffer         = gl2.createBuffer()
-  private val refInstanceArray: WebGLBuffer              = gl2.createBuffer()
-  private val sizeInstanceArray: WebGLBuffer             = gl2.createBuffer()
+  private val transformInstanceArray: WebGLBuffer      = gl2.createBuffer()
+  private val frameTransformInstanceArray: WebGLBuffer = gl2.createBuffer()
+  private val rotationInstanceArray: WebGLBuffer       = gl2.createBuffer()
+  private val dimensionsInstanceArray: WebGLBuffer     = gl2.createBuffer()
   // (effects)
   private val tintInstanceArray: WebGLBuffer                     = gl2.createBuffer()
-  private val overlayInstanceArray: WebGLBuffer                  = gl2.createBuffer()
-  private val gradiantOverlayFromInstanceArray: WebGLBuffer      = gl2.createBuffer()
-  private val gradiantOverlayToInstanceArray: WebGLBuffer        = gl2.createBuffer()
+  private val gradiantOverlayPositionsInstanceArray: WebGLBuffer = gl2.createBuffer()
   private val gradiantOverlayFromColorInstanceArray: WebGLBuffer = gl2.createBuffer()
   private val gradiantOverlayToColorInstanceArray: WebGLBuffer   = gl2.createBuffer()
-  private val outerBorderColorInstanceArray: WebGLBuffer         = gl2.createBuffer()
-  private val outerBorderAmountInstanceArray: WebGLBuffer        = gl2.createBuffer()
-  private val innerBorderColorInstanceArray: WebGLBuffer         = gl2.createBuffer()
-  private val innerBorderAmountInstanceArray: WebGLBuffer        = gl2.createBuffer()
-  private val outerGlowColorInstanceArray: WebGLBuffer           = gl2.createBuffer()
-  private val outerGlowAmountInstanceArray: WebGLBuffer          = gl2.createBuffer()
-  private val innerGlowColorInstanceArray: WebGLBuffer           = gl2.createBuffer()
-  private val innerGlowAmountInstanceArray: WebGLBuffer          = gl2.createBuffer()
-  private val blurInstanceArray: WebGLBuffer                     = gl2.createBuffer()
-  private val alphaInstanceArray: WebGLBuffer                    = gl2.createBuffer()
-  private val hFlipInstanceArray: WebGLBuffer                    = gl2.createBuffer()
-  private val vFlipInstanceArray: WebGLBuffer                    = gl2.createBuffer()
+  private val borderColorInstanceArray: WebGLBuffer              = gl2.createBuffer()
+  private val glowColorInstanceArray: WebGLBuffer                = gl2.createBuffer()
+  private val amountsInstanceArray: WebGLBuffer                  = gl2.createBuffer()
+  private val blurAlphaFlipHFlipVInstanceArray: WebGLBuffer      = gl2.createBuffer()
 
   def setupInstanceArray(buffer: WebGLBuffer, location: Int, size: Int): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -55,32 +42,19 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   }
 
   // Instance Data Arrays
-  private val translationData: scalajs.js.Array[Double]      = scalajs.js.Array[Double](2d * maxBatchSize)
-  private val scaleData: scalajs.js.Array[Double]            = scalajs.js.Array[Double](2d * maxBatchSize)
-  private val frameTranslationData: scalajs.js.Array[Double] = scalajs.js.Array[Double](2d * maxBatchSize)
-  private val frameScaleData: scalajs.js.Array[Double]       = scalajs.js.Array[Double](2d * maxBatchSize)
-  private val rotationData: scalajs.js.Array[Double]         = scalajs.js.Array[Double](1d * maxBatchSize)
-  private val refData: scalajs.js.Array[Double]              = scalajs.js.Array[Double](2d * maxBatchSize)
-  private val sizeData: scalajs.js.Array[Double]             = scalajs.js.Array[Double](2d * maxBatchSize)
+  private val transformData: scalajs.js.Array[Double]      = scalajs.js.Array[Double](4d * maxBatchSize)
+  private val frameTransformData: scalajs.js.Array[Double] = scalajs.js.Array[Double](4d * maxBatchSize)
+  private val rotationData: scalajs.js.Array[Double]       = scalajs.js.Array[Double](1d * maxBatchSize)
+  private val dimensionsData: scalajs.js.Array[Double]     = scalajs.js.Array[Double](4d * maxBatchSize)
 
   private val tintData: scalajs.js.Array[Double]                     = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val colorOverlayData: scalajs.js.Array[Double]             = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val gradiantOverlayFromData: scalajs.js.Array[Double]      = scalajs.js.Array[Double](2d * maxBatchSize)
-  private val gradiantOverlayToData: scalajs.js.Array[Double]        = scalajs.js.Array[Double](2d * maxBatchSize)
+  private val gradiantOverlayPositionsData: scalajs.js.Array[Double] = scalajs.js.Array[Double](4d * maxBatchSize)
   private val gradiantOverlayFromColorData: scalajs.js.Array[Double] = scalajs.js.Array[Double](4d * maxBatchSize)
   private val gradiantOverlayToColorData: scalajs.js.Array[Double]   = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val outerBorderColorData: scalajs.js.Array[Double]         = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val outerBorderAmountData: scalajs.js.Array[Double]        = scalajs.js.Array[Double](1d * maxBatchSize)
-  private val innerBorderColorData: scalajs.js.Array[Double]         = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val innerBorderAmountData: scalajs.js.Array[Double]        = scalajs.js.Array[Double](1d * maxBatchSize)
-  private val outerGlowColorData: scalajs.js.Array[Double]           = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val outerGlowAmountData: scalajs.js.Array[Double]          = scalajs.js.Array[Double](1d * maxBatchSize)
-  private val innerGlowColorData: scalajs.js.Array[Double]           = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val innerGlowAmountData: scalajs.js.Array[Double]          = scalajs.js.Array[Double](1d * maxBatchSize)
-  private val blurData: scalajs.js.Array[Double]                     = scalajs.js.Array[Double](1d * maxBatchSize)
-  private val alphaData: scalajs.js.Array[Double]                    = scalajs.js.Array[Double](1d * maxBatchSize)
-  private val hFlipData: scalajs.js.Array[Double]                    = scalajs.js.Array[Double](1d * maxBatchSize)
-  private val vFlipData: scalajs.js.Array[Double]                    = scalajs.js.Array[Double](1d * maxBatchSize)
+  private val borderColorData: scalajs.js.Array[Double]              = scalajs.js.Array[Double](4d * maxBatchSize)
+  private val glowColorData: scalajs.js.Array[Double]                = scalajs.js.Array[Double](4d * maxBatchSize)
+  private val amountsData: scalajs.js.Array[Double]                  = scalajs.js.Array[Double](4d * maxBatchSize)
+  private val blurAlphaFlipHFlipVData: scalajs.js.Array[Double]      = scalajs.js.Array[Double](4d * maxBatchSize)
 
   @inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Double]) = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -88,25 +62,22 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   }
 
   private def updateData(d: DisplayObject, i: Int): Unit = {
-    translationData((i * 2) + 0) = d.x
-    translationData((i * 2) + 1) = d.y
+    transformData((i * 4) + 0) = d.x
+    transformData((i * 4) + 1) = d.y
+    transformData((i * 4) + 2) = d.scaleX
+    transformData((i * 4) + 3) = d.scaleY
 
-    scaleData((i * 2) + 0) = d.scaleX
-    scaleData((i * 2) + 1) = d.scaleY
-
-    frameTranslationData((i * 2) + 0) = d.frameX
-    frameTranslationData((i * 2) + 1) = d.frameY
-
-    frameScaleData((i * 2) + 0) = d.frameScaleX
-    frameScaleData((i * 2) + 1) = d.frameScaleY
+    frameTransformData((i * 4) + 0) = d.frameX
+    frameTransformData((i * 4) + 1) = d.frameY
+    frameTransformData((i * 4) + 2) = d.frameScaleX
+    frameTransformData((i * 4) + 3) = d.frameScaleY
 
     rotationData(i) = d.rotation
 
-    refData((i * 2) + 0) = d.refX
-    refData((i * 2) + 1) = d.refY
-
-    sizeData((i * 2) + 0) = d.width
-    sizeData((i * 2) + 1) = d.height
+    dimensionsData((i * 4) + 0) = d.refX
+    dimensionsData((i * 4) + 1) = d.refY
+    dimensionsData((i * 4) + 2) = d.width
+    dimensionsData((i * 4) + 3) = d.height
 
     //Effects
     tintData((i * 4) + 0) = d.effects.tint(0)
@@ -114,16 +85,10 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     tintData((i * 4) + 2) = d.effects.tint(2)
     tintData((i * 4) + 3) = d.effects.tint(3)
 
-    colorOverlayData((i * 4) + 0) = d.effects.colorOverlay(0)
-    colorOverlayData((i * 4) + 1) = d.effects.colorOverlay(1)
-    colorOverlayData((i * 4) + 2) = d.effects.colorOverlay(2)
-    colorOverlayData((i * 4) + 3) = d.effects.colorOverlay(3)
-
-    gradiantOverlayFromData((i * 2) + 0) = d.effects.gradiantOverlayFrom(0)
-    gradiantOverlayFromData((i * 2) + 1) = d.effects.gradiantOverlayFrom(1)
-
-    gradiantOverlayToData((i * 2) + 0) = d.effects.gradiantOverlayTo(0)
-    gradiantOverlayToData((i * 2) + 1) = d.effects.gradiantOverlayTo(1)
+    gradiantOverlayPositionsData((i * 4) + 0) = d.effects.gradiantOverlayPositions(0)
+    gradiantOverlayPositionsData((i * 4) + 1) = d.effects.gradiantOverlayPositions(1)
+    gradiantOverlayPositionsData((i * 4) + 2) = d.effects.gradiantOverlayPositions(2)
+    gradiantOverlayPositionsData((i * 4) + 3) = d.effects.gradiantOverlayPositions(3)
 
     gradiantOverlayFromColorData((i * 4) + 0) = d.effects.gradiantOverlayFromColor(0)
     gradiantOverlayFromColorData((i * 4) + 1) = d.effects.gradiantOverlayFromColor(1)
@@ -135,43 +100,32 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     gradiantOverlayToColorData((i * 4) + 2) = d.effects.gradiantOverlayToColor(2)
     gradiantOverlayToColorData((i * 4) + 3) = d.effects.gradiantOverlayToColor(3)
 
-    outerBorderColorData((i * 4) + 0) = d.effects.outerBorderColor(0)
-    outerBorderColorData((i * 4) + 1) = d.effects.outerBorderColor(1)
-    outerBorderColorData((i * 4) + 2) = d.effects.outerBorderColor(2)
-    outerBorderColorData((i * 4) + 3) = d.effects.outerBorderColor(3)
-    outerBorderAmountData(i) = d.effects.outerBorderAmount
+    borderColorData((i * 4) + 0) = d.effects.borderColor(0)
+    borderColorData((i * 4) + 1) = d.effects.borderColor(1)
+    borderColorData((i * 4) + 2) = d.effects.borderColor(2)
+    borderColorData((i * 4) + 3) = d.effects.borderColor(3)
 
-    innerBorderColorData((i * 4) + 0) = d.effects.innerBorderColor(0)
-    innerBorderColorData((i * 4) + 1) = d.effects.innerBorderColor(1)
-    innerBorderColorData((i * 4) + 2) = d.effects.innerBorderColor(2)
-    innerBorderColorData((i * 4) + 3) = d.effects.innerBorderColor(3)
-    innerBorderAmountData(i) = d.effects.innerBorderAmount
+    glowColorData((i * 4) + 0) = d.effects.glowColor(0)
+    glowColorData((i * 4) + 1) = d.effects.glowColor(1)
+    glowColorData((i * 4) + 2) = d.effects.glowColor(2)
+    glowColorData((i * 4) + 3) = d.effects.glowColor(3)
 
-    outerGlowColorData((i * 4) + 0) = d.effects.outerGlowColor(0)
-    outerGlowColorData((i * 4) + 1) = d.effects.outerGlowColor(1)
-    outerGlowColorData((i * 4) + 2) = d.effects.outerGlowColor(2)
-    outerGlowColorData((i * 4) + 3) = d.effects.outerGlowColor(3)
-    outerGlowAmountData(i) = d.effects.outerGlowAmount
+    amountsData((i * 4) + 0) = d.effects.outerBorderAmount
+    amountsData((i * 4) + 1) = d.effects.innerBorderAmount
+    amountsData((i * 4) + 2) = d.effects.outerGlowAmount
+    amountsData((i * 4) + 3) = d.effects.innerGlowAmount
 
-    innerGlowColorData((i * 4) + 0) = d.effects.innerGlowColor(0)
-    innerGlowColorData((i * 4) + 1) = d.effects.innerGlowColor(1)
-    innerGlowColorData((i * 4) + 2) = d.effects.innerGlowColor(2)
-    innerGlowColorData((i * 4) + 3) = d.effects.innerGlowColor(3)
-    innerGlowAmountData(i) = d.effects.innerGlowAmount
-
-    blurData(i) = d.effects.blur
-
-    alphaData(i) = d.effects.alpha
-
-    hFlipData(i) = d.effects.flipHorizontal
-    vFlipData(i) = d.effects.flipVertical
+    blurAlphaFlipHFlipVData((i * 4) + 0) = d.effects.blur
+    blurAlphaFlipHFlipVData((i * 4) + 1) = d.effects.alpha
+    blurAlphaFlipHFlipVData((i * 4) + 2) = d.effects.flipHorizontal
+    blurAlphaFlipHFlipVData((i * 4) + 3) = d.effects.flipVertical
   }
 
   private def overwriteFromDisplayBatchClone(cloneData: DisplayCloneBatchData, i: Int): Unit = {
-    translationData((i * 2) + 0) = cloneData.x
-    translationData((i * 2) + 1) = cloneData.y
-    scaleData((i * 2) + 0) = cloneData.scaleX
-    scaleData((i * 2) + 1) = cloneData.scaleY
+    transformData((i * 4) + 0) = cloneData.x
+    transformData((i * 4) + 1) = cloneData.y
+    transformData((i * 4) + 2) = cloneData.scaleX
+    transformData((i * 4) + 3) = cloneData.scaleY
     rotationData(i) = cloneData.rotation
   }
 
@@ -206,57 +160,31 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     gl2.uniformMatrix4fv(projectionLocation, false, projection)
 
     // Instance attributes
-    // vec2 a_translation
-    setupInstanceArray(translationInstanceArray, 2, 2)
-    // vec2 a_scale
-    setupInstanceArray(scaleInstanceArray, 3, 2)
-    // vec2 a_frameTranslation
-    setupInstanceArray(frameTranslationInstanceArray, 4, 2)
-    // vec2 a_frameScale
-    setupInstanceArray(frameScaleInstanceArray, 5, 2)
+    // vec4 a_transform
+    setupInstanceArray(transformInstanceArray, 1, 4)
+    // vec2 a_frameTransform
+    setupInstanceArray(frameTransformInstanceArray, 2, 4)
     // float a_rotation
-    setupInstanceArray(rotationInstanceArray, 6, 1)
-    // float a_ref
-    setupInstanceArray(refInstanceArray, 7, 2)
-    // float a_size
-    setupInstanceArray(sizeInstanceArray, 8, 2)
+    setupInstanceArray(rotationInstanceArray, 3, 1)
+    // float a_dimensions
+    setupInstanceArray(dimensionsInstanceArray, 4, 4)
     // (effects)
     // vec4 a_tint
-    setupInstanceArray(tintInstanceArray, 9, 4)
-    // vec4 a_colorOverlay --
-    setupInstanceArray(overlayInstanceArray, 10, 4)
-    // vec4 a_gradiantOverlayFrom --
-    setupInstanceArray(gradiantOverlayFromInstanceArray, 11, 2)
-    // vec4 a_gradiantOverlayTo --
-    setupInstanceArray(gradiantOverlayToInstanceArray, 12, 2)
-    // vec4 a_gradiantOverlayFromColor --
-    setupInstanceArray(gradiantOverlayFromColorInstanceArray, 13, 4)
-    // vec4 a_gradiantOverlayToColor --
-    setupInstanceArray(gradiantOverlayToColorInstanceArray, 14, 4)
-    // vec4 a_outerBorderColor --
-    setupInstanceArray(outerBorderColorInstanceArray, 15, 4)
-    // vec4 a_outerBorderAmount --
-    setupInstanceArray(outerBorderAmountInstanceArray, 16, 1)
-    // vec4 a_innerBorderColor --
-    setupInstanceArray(innerBorderColorInstanceArray, 17, 4)
-    // vec4 a_innerBorderAmount --
-    setupInstanceArray(innerBorderAmountInstanceArray, 18, 1)
-    // vec4 a_outerGlowColor --
-    setupInstanceArray(outerGlowColorInstanceArray, 19, 4)
-    // vec4 a_outerGlowAmount --
-    setupInstanceArray(outerGlowAmountInstanceArray, 20, 1)
-    // vec4 a_innerGlowColor --
-    setupInstanceArray(innerGlowColorInstanceArray, 21, 4)
-    // vec4 a_innerGlowAmount --
-    setupInstanceArray(innerGlowAmountInstanceArray, 22, 1)
-    // vec4 a_blur --
-    setupInstanceArray(blurInstanceArray, 23, 1)
-    // float a_alpha
-    setupInstanceArray(alphaInstanceArray, 24, 1)
-    // float a_fliph
-    setupInstanceArray(hFlipInstanceArray, 25, 1)
-    // float a_flipv
-    setupInstanceArray(vFlipInstanceArray, 26, 1)
+    setupInstanceArray(tintInstanceArray, 5, 4)
+    // vec4 a_gradiantPositions
+    setupInstanceArray(gradiantOverlayPositionsInstanceArray, 6, 4)
+    // vec4 a_gradiantOverlayFromColor
+    setupInstanceArray(gradiantOverlayFromColorInstanceArray, 7, 4)
+    // vec4 a_gradiantOverlayToColor
+    setupInstanceArray(gradiantOverlayToColorInstanceArray, 8, 4)
+    // vec4 a_borderColor
+    setupInstanceArray(borderColorInstanceArray, 9, 4)
+    // vec4 a_glowColor
+    setupInstanceArray(glowColorInstanceArray, 10, 4)
+    // vec4 a_amounts
+    setupInstanceArray(amountsInstanceArray, 11, 4)
+    // vec4 a_blurAlphaFlipHFlipV --
+    setupInstanceArray(blurAlphaFlipHFlipVInstanceArray, 12, 4)
     //
 
     val sorted: ListBuffer[DisplayEntity] =
@@ -264,31 +192,18 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
     @inline def drawBuffer(instanceCount: Int): Unit =
       if (instanceCount > 0) {
-        bindData(translationInstanceArray, translationData)
-        bindData(scaleInstanceArray, scaleData)
-        bindData(frameTranslationInstanceArray, frameTranslationData)
-        bindData(frameScaleInstanceArray, frameScaleData)
+        bindData(transformInstanceArray, transformData)
+        bindData(frameTransformInstanceArray, frameTransformData)
         bindData(rotationInstanceArray, rotationData)
-        bindData(refInstanceArray, refData)
-        bindData(sizeInstanceArray, sizeData)
+        bindData(dimensionsInstanceArray, dimensionsData)
         bindData(tintInstanceArray, tintData)
-        bindData(overlayInstanceArray, colorOverlayData)
-        bindData(gradiantOverlayFromInstanceArray, gradiantOverlayFromData)
-        bindData(gradiantOverlayToInstanceArray, gradiantOverlayToData)
+        bindData(gradiantOverlayPositionsInstanceArray, gradiantOverlayPositionsData)
         bindData(gradiantOverlayFromColorInstanceArray, gradiantOverlayFromColorData)
         bindData(gradiantOverlayToColorInstanceArray, gradiantOverlayToColorData)
-        bindData(outerBorderColorInstanceArray, outerBorderColorData)
-        bindData(outerBorderAmountInstanceArray, outerBorderAmountData)
-        bindData(innerBorderColorInstanceArray, innerBorderColorData)
-        bindData(innerBorderAmountInstanceArray, innerBorderAmountData)
-        bindData(outerGlowColorInstanceArray, outerGlowColorData)
-        bindData(outerGlowAmountInstanceArray, outerGlowAmountData)
-        bindData(innerGlowColorInstanceArray, innerGlowColorData)
-        bindData(innerGlowAmountInstanceArray, innerGlowAmountData)
-        bindData(blurInstanceArray, blurData)
-        bindData(alphaInstanceArray, alphaData)
-        bindData(hFlipInstanceArray, hFlipData)
-        bindData(vFlipInstanceArray, vFlipData)
+        bindData(borderColorInstanceArray, borderColorData)
+        bindData(glowColorInstanceArray, glowColorData)
+        bindData(amountsInstanceArray, amountsData)
+        bindData(blurAlphaFlipHFlipVInstanceArray, blurAlphaFlipHFlipVData)
 
         gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
         metrics.record(layer.metricDraw)

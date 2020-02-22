@@ -42,8 +42,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
   private val layerRenderer: RendererLayer =
     new RendererLayer(gl2, textureLocations, config.maxBatchSize)
 
-  private val vertexBuffer: WebGLBuffer  = gl.createBuffer()
-  private val textureBuffer: WebGLBuffer = gl.createBuffer()
+  private val vertexAndTextureCoordsBuffer: WebGLBuffer = gl.createBuffer()
 
   private val vao = gl2.createVertexArray()
 
@@ -75,22 +74,13 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   def init(): Unit = {
 
-    val vertices: scalajs.js.Array[Double] = {
-      val vert0 = scalajs.js.Array[Double](-0.5, -0.5, 1.0d)
-      val vert1 = scalajs.js.Array[Double](-0.5, 0.5, 1.0d)
-      val vert2 = scalajs.js.Array[Double](0.5, -0.5, 1.0d)
-      val vert3 = scalajs.js.Array[Double](0.5, 0.5, 1.0d)
+    val verticesAndTextureCoords: scalajs.js.Array[Double] = {
+      val vert0 = scalajs.js.Array[Double](-0.5, -0.5, 0.0, 1.0)
+      val vert1 = scalajs.js.Array[Double](-0.5, 0.5, 0.0, 0.0)
+      val vert2 = scalajs.js.Array[Double](0.5, -0.5, 1.0, 1.0)
+      val vert3 = scalajs.js.Array[Double](0.5, 0.5, 1.0, 0.0)
 
       vert0 ++ vert1 ++ vert2 ++ vert3
-    }
-
-    val textureCoordinates: scalajs.js.Array[Double] = {
-      val tx0 = scalajs.js.Array[Double](0.0, 1.0)
-      val tx1 = scalajs.js.Array[Double](0.0, 0.0)
-      val tx2 = scalajs.js.Array[Double](1.0, 1.0)
-      val tx3 = scalajs.js.Array[Double](1.0, 0.0)
-
-      tx0 ++ tx1 ++ tx2 ++ tx3
     }
 
     gl.disable(DEPTH_TEST)
@@ -100,25 +90,12 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     gl2.bindVertexArray(vao)
 
     // Vertex
-    gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
-    gl.bufferData(ARRAY_BUFFER, new Float32Array(vertices), STATIC_DRAW)
+    gl.bindBuffer(ARRAY_BUFFER, vertexAndTextureCoordsBuffer)
+    gl.bufferData(ARRAY_BUFFER, new Float32Array(verticesAndTextureCoords), STATIC_DRAW)
     gl.enableVertexAttribArray(0)
     gl.vertexAttribPointer(
       indx = 0,
-      size = 3,
-      `type` = FLOAT,
-      normalized = false,
-      stride = 0,
-      offset = 0
-    )
-
-    // Bind texture coords
-    gl.bindBuffer(ARRAY_BUFFER, textureBuffer)
-    gl.bufferData(ARRAY_BUFFER, new Float32Array(textureCoordinates), STATIC_DRAW)
-    gl.enableVertexAttribArray(1)
-    gl.vertexAttribPointer(
-      indx = 1,
-      size = 2,
+      size = 4,
       `type` = FLOAT,
       normalized = false,
       stride = 0,

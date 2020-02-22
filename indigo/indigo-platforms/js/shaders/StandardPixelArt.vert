@@ -1,32 +1,18 @@
 #version 300 es
 
-layout (location = 0) in vec4 a_vertices;
-layout (location = 1) in vec2 a_texcoord;
-layout (location = 2) in vec2 a_translation;1
-layout (location = 3) in vec2 a_scale;1
-layout (location = 4) in vec2 a_frameTranslation;2
-layout (location = 5) in vec2 a_frameScale;2
-layout (location = 6) in float a_rotation;
-layout (location = 7) in vec2 a_ref;3
-layout (location = 8) in vec2 a_size;3
-layout (location = 9) in vec4 a_tint;
-layout (location = 10) in vec4 a_colorOverlay;
-layout (location = 11) in vec2 a_gradiantOverlayFrom;5
-layout (location = 12) in vec2 a_gradiantOverlayTo;5
-layout (location = 13) in vec4 a_gradiantOverlayFromColor;
-layout (location = 14) in vec4 a_gradiantOverlayToColor;
-layout (location = 15) in vec4 a_outerBorderColor;
-layout (location = 16) in float a_outerBorderAmount;6
-layout (location = 17) in vec4 a_innerBorderColor;
-layout (location = 18) in float a_innerBorderAmount;6
-layout (location = 19) in vec4 a_outerGlowColor;
-layout (location = 20) in float a_outerGlowAmount;6
-layout (location = 21) in vec4 a_innerGlowColor;
-layout (location = 22) in float a_innerGlowAmount;6
-layout (location = 23) in float a_blur;4
-layout (location = 24) in float a_alpha;4
-layout (location = 25) in float a_fliph;4
-layout (location = 26) in float a_flipv;4
+layout (location = 0) in vec4 a_verticesAndCoords; // a_vertices, a_texcoord
+layout (location = 1) in vec4 a_transform; // a_translation, a_scale
+layout (location = 2) in vec4 a_frameTransform; // a_frameTranslation, a_frameScale
+layout (location = 3) in float a_rotation;
+layout (location = 4) in vec4 a_dimensions; // a_ref, a_size
+layout (location = 5) in vec4 a_tint;
+layout (location = 6) in vec4 a_gradiantPositions; // a_gradiantOverlayFrom, a_gradiantOverlayTo
+layout (location = 7) in vec4 a_gradiantOverlayFromColor;
+layout (location = 8) in vec4 a_gradiantOverlayToColor;
+layout (location = 9) in vec4 a_borderColor;
+layout (location = 10) in vec4 a_glowColor;
+layout (location = 11) in vec4 a_amounts; // a_outerBorderAmount, a_innerBorderAmount, a_outerGlowAmount, a_innerGlowAmount
+layout (location = 12) in vec4 a_blurAlphaFlipHFlipV; // a_blur, a_alpha, a_fliph, a_flipv
 
 uniform mat4 u_projection;
 
@@ -63,32 +49,41 @@ mat4 scale2d(vec2 s){
 }
 
 vec2 scaleTextCoords(vec2 texcoord){
-  mat4 transform = translate2d(a_frameTranslation) * scale2d(a_frameScale);
+  mat4 transform = translate2d(a_frameTransform.xy) * scale2d(a_frameTransform.zw);
   return (transform * vec4(texcoord, 1.0, 1.0)).xy;
 }
 
 vec2 sizeOfAPixel() {
-  return (scale2d(a_frameScale) * vec4(1.0)).xy;
+  return (scale2d(a_frameTransform.zw) * vec4(1.0)).xy;
 }
 
 void main(void) {
 
-  vec2 moveToReferencePoint = -(a_ref / a_size) + 0.5;
+  vec4 vertices = vec4(a_verticesAndCoords.xy, 1.0, 1.0);
+  vec2 texcoords = a_verticesAndCoords.zw;
+  vec2 ref = a_dimensions.xy;
+  vec2 size = a_dimensions.zw;
+  vec2 translation = a_transform.xy;
+  vec2 scale = a_transform.zw;
+  vec2 flip = a_blurAlphaFlipHFlipV.zw;
+  float alpha = a_blurAlphaFlipHFlipV.y;
+
+  vec2 moveToReferencePoint = -(ref / size) + 0.5;
 
   mat4 transform = 
-    translate2d(a_translation) * 
+    translate2d(translation) * 
     rotate2d(a_rotation) * 
-    scale2d(a_size * a_scale) * 
+    scale2d(size * scale) * 
     translate2d(moveToReferencePoint) * 
-    scale2d(vec2(a_fliph, a_flipv));
+    scale2d(flip);
 
-  gl_Position = u_projection * transform * a_vertices;
+  gl_Position = u_projection * transform * vertices;
 
-  v_texcoord = scaleTextCoords(a_texcoord);
+  v_texcoord = scaleTextCoords(texcoords);
   v_tint = a_tint;
-  v_alpha = a_alpha;
-  v_size = a_size;
-  v_relativeScreenCoords = a_texcoord * a_size;
+  v_alpha = alpha;
+  v_size = size;
+  v_relativeScreenCoords = texcoords * size;
 
   vec2 offsets3x3[9] = vec2[9](
     vec2(-1, -1),
@@ -133,43 +128,43 @@ void main(void) {
   vec2 onePixel = sizeOfAPixel();
 
   v_textureOffsets3x3 = vec2[9](
-    scaleTextCoords(a_texcoord + (onePixel * offsets3x3[0])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets3x3[1])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets3x3[2])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets3x3[3])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets3x3[4])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets3x3[5])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets3x3[6])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets3x3[7])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets3x3[8]))
+    scaleTextCoords(texcoords + (onePixel * offsets3x3[0])),
+    scaleTextCoords(texcoords + (onePixel * offsets3x3[1])),
+    scaleTextCoords(texcoords + (onePixel * offsets3x3[2])),
+    scaleTextCoords(texcoords + (onePixel * offsets3x3[3])),
+    scaleTextCoords(texcoords + (onePixel * offsets3x3[4])),
+    scaleTextCoords(texcoords + (onePixel * offsets3x3[5])),
+    scaleTextCoords(texcoords + (onePixel * offsets3x3[6])),
+    scaleTextCoords(texcoords + (onePixel * offsets3x3[7])),
+    scaleTextCoords(texcoords + (onePixel * offsets3x3[8]))
   );
 
   v_textureOffsets5x5 = vec2[25](
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[0])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[1])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[2])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[3])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[4])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[5])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[6])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[7])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[8])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[9])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[10])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[11])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[12])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[13])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[14])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[15])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[16])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[17])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[18])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[19])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[20])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[21])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[22])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[23])),
-    scaleTextCoords(a_texcoord + (onePixel * offsets5x5[24]))
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[0])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[1])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[2])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[3])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[4])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[5])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[6])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[7])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[8])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[9])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[10])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[11])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[12])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[13])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[14])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[15])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[16])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[17])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[18])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[19])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[20])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[21])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[22])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[23])),
+    scaleTextCoords(texcoords + (onePixel * offsets5x5[24]))
   );
 
 }

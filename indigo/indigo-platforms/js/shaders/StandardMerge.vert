@@ -1,7 +1,6 @@
 #version 300 es
 
-layout (location = 0) in vec4 a_vertices;
-layout (location = 1) in vec2 a_texcoord;
+layout (location = 0) in vec4 a_verticesAndCoords; // a_vertices, a_texcoord
 
 layout (std140) uniform DisplayObjectUBO {
   mat4 u_projection;
@@ -49,16 +48,18 @@ mat4 scale2d(vec2 s){
 
 vec2 scaleTextCoords(){
   mat4 transform = translate2d(u_frameTranslation) * scale2d(u_frameScale);
-  return (transform * vec4(a_texcoord.x, a_texcoord.y, 1, 1)).xy;
+  return (transform * vec4(a_verticesAndCoords.z, a_verticesAndCoords.w, 1, 1)).xy;
 }
 
 void main(void) {
+
+  vec4 vertices = vec4(a_verticesAndCoords.x, a_verticesAndCoords.y, 1.0, 1.0);
 
   vec2 moveToTopLeft = u_scale / 2.0;
 
   mat4 transform = translate2d(moveToTopLeft + u_translation) * scale2d(u_scale);
 
-  gl_Position = u_projection * transform * a_vertices;
+  gl_Position = u_projection * transform * vertices;
 
   v_texcoord = scaleTextCoords();
 
