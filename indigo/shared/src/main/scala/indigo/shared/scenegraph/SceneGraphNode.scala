@@ -279,6 +279,8 @@ final class Graphic(
   def withCrop(xValue: Int, yValue: Int, widthValue: Int, heightValue: Int): Graphic =
     withCrop(Rectangle(xValue, yValue, widthValue, heightValue))
 
+  def withEffects(newEffects: Effects): Graphic =
+    Graphic(bounds, depth, rotation, scale, ref, crop, newEffects, material)
 }
 
 object Graphic {
