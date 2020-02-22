@@ -46,6 +46,9 @@ trait DataTypeAliases {
   type Effects = shared.datatypes.Effects
   val Effects: shared.datatypes.Effects.type = shared.datatypes.Effects
 
+  type Overlay = shared.datatypes.Overlay
+  val Overlay: shared.datatypes.Overlay.type = shared.datatypes.Overlay
+
   type RGBA = shared.datatypes.RGBA
   val RGBA: shared.datatypes.RGBA.type = shared.datatypes.RGBA
 
