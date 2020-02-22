@@ -8,9 +8,22 @@ uniform sampler2D u_textureNormal;
 uniform sampler2D u_textureSpecular;
 
 in vec2 v_texcoord;
-in vec4 v_tint;
-in float v_alpha;
 in vec2 v_size;
+
+in vec4 v_tint;
+in vec2 v_gradiantFrom;
+in vec2 v_gradiantTo;
+in vec4 v_gradiantOverlayFromColor;
+in vec4 v_gradiantOverlayToColor;
+in vec4 v_borderColor;
+in vec4 v_glowColor;
+in float v_outerBorderAmount;
+in float v_innerBorderAmount;
+in float v_outerGlowAmount;
+in float v_innerGlowAmount;
+in float v_blur;
+in float v_alpha;
+
 in vec2 v_textureOffsets3x3[9];
 in vec2 v_textureOffsets5x5[25];
 in vec2 v_relativeScreenCoords;
@@ -58,17 +71,12 @@ vec4 applyBasicEffects(vec4 textureColor) {
   return mix(withAlpha, tintedVersion, max(0.0, v_tint.a));
 }
 
-float calculateWeight9(float kernel[9]) {
-  float weight = 
-    kernel[0] +
-    kernel[1] +
-    kernel[2] +
-    kernel[3] +
-    kernel[4] +
-    kernel[5] +
-    kernel[6] +
-    kernel[7] +
-    kernel[8];
+float calculateWeight3x3(float kernel[9]) {
+  float weight = 0.0;
+
+  for(int i = 0; i < 9; i++) {
+    weight += kernel[i];
+  }
 
   if (weight < 0.0) {
     weight = 1.0;
@@ -77,42 +85,36 @@ float calculateWeight9(float kernel[9]) {
   return weight;
 }
 
-float calculateWeight25(float kernel[25]) {
-  float weight = 
-    kernel[0] +
-    kernel[1] +
-    kernel[2] +
-    kernel[3] +
-    kernel[4] +
-    kernel[5] +
-    kernel[6] +
-    kernel[7] +
-    kernel[8] +
-    kernel[9] +
-    kernel[10] +
-    kernel[11] +
-    kernel[12] +
-    kernel[13] +
-    kernel[14] +
-    kernel[15] +
-    kernel[16] +
-    kernel[17] +
-    kernel[18] +
-    kernel[19] +
-    kernel[20] +
-    kernel[21] +
-    kernel[22] +
-    kernel[23] +
-    kernel[24];
+float calculateWeight5x5(float kernel[25]) {
+  float weight = 0.0;
+
+  for(int i = 0; i < 25; i++) {
+    weight += kernel[i];
+  }
 
   if (weight < 0.0) {
     weight = 1.0;
   }
 
   return weight;
+}
+
+vec4 gradiantOverlay(vec4 baseColor) {
+  vec2 pointA = v_gradiantFrom;
+  vec2 pointB = v_gradiantTo;
+  vec2 pointP = v_relativeScreenCoords;
+
+  // `h` is the distance along the gradiant 0 at A, 1 at B
+  float h = min(1.0, max(0.0, dot(pointP - pointA, pointB - pointA) / dot(pointB - pointA, pointB - pointA)));
+
+  vec4 overlay = mix(v_gradiantOverlayFromColor, v_gradiantOverlayToColor, h);
+
+  return vec4(mix(baseColor.rgb, overlay.rgb, overlay.a), baseColor.a);
 }
 
 void main(void) {
+
+  vec4 baseColor = applyBasicEffects(texture(u_textureDiffuse, v_texcoord));
 
   // Guassian Blur
   // float blurType[9] = gaussianBlur;
@@ -170,27 +172,8 @@ void main(void) {
   //   basicColor = vec4(0.0, 1.0, 1.0, 1.0);
   // }
 
-  // Color Overlay
-  // vec4 overlay = vec4(0.0, 1.0, 1.0, 1.0);
-  // vec4 base = applyBasicEffects(texture(u_textureDiffuse, v_texcoord));
-
-  // vec4 basicColor = vec4(mix(base.rgb, overlay.rgb, overlay.a), base.a);
-
-  // Gradiant Overlay
-  // vec4 colorA = vec4(1.0, 0.0, 1.0, 1.0);
-  // vec4 colorB = vec4(0.0, 1.0, 1.0, 0.25);
-
-  // vec2 pointA = vec2(0.0, 0.0);
-  // vec2 pointB = v_size;
-  // vec2 pointP = v_relativeScreenCoords;
-
-  // // `h` is the distance along the gradiant 0 at A, 1 at B
-  // float h = min(1.0, max(0.0, dot(pointP - pointA, pointB - pointA) / dot(pointB - pointA, pointB - pointA)));
-
-  // vec4 overlay = mix(colorA, colorB, h);
-
-  // vec4 base = applyBasicEffects(texture(u_textureDiffuse, v_texcoord));
-  // vec4 basicColor = vec4(mix(base.rgb, overlay.rgb, overlay.a), base.a);
+  // Gradiant Overlay / Color Overlay
+  vec4 overlay = gradiantOverlay(baseColor);
 
   // Outer Glow - 2 pixel
   // float borderKernel[25] = glow2px;
@@ -269,7 +252,9 @@ void main(void) {
   // }
 
   // Normal
-  vec4 basicColor = applyBasicEffects(texture(u_textureDiffuse, v_texcoord));
+  // vec4 basicColor = applyBasicEffects(texture(u_textureDiffuse, v_texcoord));
+
+  vec4 basicColor = overlay;
 
   fragColor0 = basicColor;
   fragColor1 = vec4(0.0, 1.0, 0.0, basicColor.a);

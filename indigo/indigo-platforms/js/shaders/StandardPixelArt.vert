@@ -17,9 +17,22 @@ layout (location = 12) in vec4 a_blurAlphaFlipHFlipV; // a_blur, a_alpha, a_flip
 uniform mat4 u_projection;
 
 out vec2 v_texcoord;
-out vec4 v_tint;
-out float v_alpha;
 out vec2 v_size;
+
+out vec4 v_tint;
+out vec2 v_gradiantFrom;
+out vec2 v_gradiantTo;
+out vec4 v_gradiantOverlayFromColor;
+out vec4 v_gradiantOverlayToColor;
+out vec4 v_borderColor;
+out vec4 v_glowColor;
+out float v_outerBorderAmount;
+out float v_innerBorderAmount;
+out float v_outerGlowAmount;
+out float v_innerGlowAmount;
+out float v_blur;
+out float v_alpha;
+
 out vec2 v_textureOffsets3x3[9];
 out vec2 v_textureOffsets5x5[25];
 out vec2 v_relativeScreenCoords;
@@ -80,9 +93,22 @@ void main(void) {
   gl_Position = u_projection * transform * vertices;
 
   v_texcoord = scaleTextCoords(texcoords);
-  v_tint = a_tint;
-  v_alpha = alpha;
   v_size = size;
+
+  v_tint = a_tint;
+  v_gradiantFrom = a_gradiantPositions.xy;
+  v_gradiantTo = a_gradiantPositions.zw;
+  v_gradiantOverlayFromColor = a_gradiantOverlayFromColor;
+  v_gradiantOverlayToColor = a_gradiantOverlayToColor;
+  v_borderColor = a_borderColor;
+  v_glowColor = a_glowColor;
+  v_outerBorderAmount = a_amounts.x;
+  v_innerBorderAmount = a_amounts.y;
+  v_outerGlowAmount = a_amounts.z;
+  v_innerGlowAmount = a_amounts.w;
+  v_blur = a_blurAlphaFlipHFlipV.x;
+  v_alpha = alpha;
+
   v_relativeScreenCoords = texcoords * size;
 
   vec2 offsets3x3[9] = vec2[9](
