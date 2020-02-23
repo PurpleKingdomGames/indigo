@@ -2,6 +2,7 @@ package indigo.shared.display
 
 import indigo.shared.datatypes.Effects
 import indigo.shared.datatypes.Overlay
+import indigo.shared.datatypes.Thickness
 
 final class DisplayEffects(
     val tint: Array[Double],
@@ -14,7 +15,6 @@ final class DisplayEffects(
     val glowColor: Array[Double],
     val innerGlowAmount: Double,
     val outerGlowAmount: Double,
-    val blur: Double,
     val alpha: Double,
     val flipHorizontal: Double,
     val flipVertical: Double
@@ -51,6 +51,13 @@ object DisplayEffects {
       toColor.toArray
   }
 
+  private val thicknessToDouble: Thickness => Double = {
+    case Thickness.None  => 0.0
+    case Thickness.Thin  => 1.0
+    case Thickness.Thick => 2.0
+    case _               => 0.0
+  }
+
   def fromEffects(effects: Effects): DisplayEffects =
     new DisplayEffects(
       effects.tint.toArray,
@@ -58,12 +65,11 @@ object DisplayEffects {
       overlayToFromColorArray(effects.overlay),
       overlayToToColorArray(effects.overlay),
       effects.border.color.toArray,
-      effects.border.innerAmount.toDouble,
-      effects.border.outerAmount.toDouble,
+      thicknessToDouble(effects.border.innerThickness),
+      thicknessToDouble(effects.border.outerThickness),
       effects.glow.color.toArray,
-      effects.glow.innerAmount.toDouble,
-      effects.glow.outerAmount.toDouble,
-      effects.blur,
+      thicknessToDouble(effects.glow.innerThickness),
+      thicknessToDouble(effects.glow.outerThickness),
       effects.alpha,
       if (effects.flip.horizontal) -1 else 1,
       if (effects.flip.vertical) 1 else -1

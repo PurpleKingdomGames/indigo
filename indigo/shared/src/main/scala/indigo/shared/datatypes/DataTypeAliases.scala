@@ -49,6 +49,9 @@ trait DataTypeAliases {
   type Overlay = shared.datatypes.Overlay
   val Overlay: shared.datatypes.Overlay.type = shared.datatypes.Overlay
 
+  type Thickness = shared.datatypes.Thickness
+  val Thickness: shared.datatypes.Thickness.type = shared.datatypes.Thickness
+
   type RGBA = shared.datatypes.RGBA
   val RGBA: shared.datatypes.RGBA.type = shared.datatypes.RGBA
 

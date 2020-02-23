@@ -5,40 +5,35 @@ final class Effects(
     val overlay: Overlay,
     val border: EdgeEffect,
     val glow: EdgeEffect,
-    val blur: Double,
     val alpha: Double,
     val flip: Flip
 ) {
   def withTint(newValue: RGBA): Effects =
-    Effects(newValue, overlay, border, glow, blur, alpha, flip)
+    Effects(newValue, overlay, border, glow, alpha, flip)
 
   def withColorOverlay(newValue: Overlay.Color): Effects =
-    Effects(tint, newValue, border, glow, blur, alpha, flip)
+    Effects(tint, newValue, border, glow, alpha, flip)
 
   def withGradiantOverlay(newValue: Overlay.LinearGradiant): Effects =
-    Effects(tint, newValue, border, glow, blur, alpha, flip)
+    Effects(tint, newValue, border, glow, alpha, flip)
 
   def withBorder(newValue: EdgeEffect): Effects =
-    Effects(tint, overlay, newValue, glow, blur, alpha, flip)
+    Effects(tint, overlay, newValue, glow, alpha, flip)
 
   def withGlow(newValue: EdgeEffect): Effects =
-    Effects(tint, overlay, border, newValue, blur, alpha, flip)
-
-  def withBlur(newValue: Double): Effects =
-    Effects(tint, overlay, border, glow, newValue, alpha, flip)
+    Effects(tint, overlay, border, newValue, alpha, flip)
 
   def withAlpha(newValue: Double): Effects =
-    Effects(tint, overlay, border, glow, blur, newValue, flip)
+    Effects(tint, overlay, border, glow, newValue, flip)
 
   def withFlip(newValue: Flip): Effects =
-    Effects(tint, overlay, border, glow, blur, alpha, newValue)
+    Effects(tint, overlay, border, glow, alpha, newValue)
 
   def hash: String =
     tint.hash +
       overlay.hash +
       border.hash +
       glow.hash +
-      blur.toString() +
       alpha.toString() +
       flip.hash
 }
@@ -48,7 +43,6 @@ object Effects {
     overlay = Overlay.Color.default,
     border = EdgeEffect.default,
     glow = EdgeEffect.default,
-    blur = 0.0,
     alpha = 1.0,
     flip = Flip(
       horizontal = false,
@@ -61,7 +55,6 @@ object Effects {
       overlay: Overlay,
       border: EdgeEffect,
       glow: EdgeEffect,
-      blur: Double,
       alpha: Double,
       flip: Flip
   ): Effects =
@@ -70,7 +63,6 @@ object Effects {
       overlay,
       border,
       glow,
-      blur,
       alpha,
       flip
     )
@@ -122,14 +114,28 @@ object Overlay {
   }
 }
 
-final class EdgeEffect(val color: RGBA, val innerAmount: Int, val outerAmount: Int) {
+final class EdgeEffect(val color: RGBA, val innerThickness: Thickness, val outerThickness: Thickness) {
   def hash: String =
-    color.hash + innerAmount.toString() + outerAmount.toString()
+    color.hash + innerThickness.hash + outerThickness.hash
 }
 object EdgeEffect {
-  def apply(color: RGBA, innerAmount: Int, outerAmount: Int): EdgeEffect =
-    new EdgeEffect(color, innerAmount, outerAmount)
+  def apply(color: RGBA, innerThickness: Thickness, outerThickness: Thickness): EdgeEffect =
+    new EdgeEffect(color, innerThickness, outerThickness)
 
   val default: EdgeEffect =
-    EdgeEffect(RGBA.Zero, 0, 0)
+    EdgeEffect(RGBA.Zero, Thickness.None, Thickness.None)
+}
+
+sealed trait Thickness {
+  def hash: String =
+    (this match {
+      case Thickness.None  => 0
+      case Thickness.Thin  => 1
+      case Thickness.Thick => 2
+    }).toString()
+}
+object Thickness {
+  case object None  extends Thickness
+  case object Thin  extends Thickness
+  case object Thick extends Thickness
 }

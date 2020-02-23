@@ -3,16 +3,15 @@
 layout (location = 0) in vec4 a_verticesAndCoords; // a_vertices, a_texcoord
 layout (location = 1) in vec4 a_transform; // a_translation, a_scale
 layout (location = 2) in vec4 a_frameTransform; // a_frameTranslation, a_frameScale
-layout (location = 3) in float a_rotation;
-layout (location = 4) in vec4 a_dimensions; // a_ref, a_size
-layout (location = 5) in vec4 a_tint;
-layout (location = 6) in vec4 a_gradiantPositions; // a_gradiantOverlayFrom, a_gradiantOverlayTo
-layout (location = 7) in vec4 a_gradiantOverlayFromColor;
-layout (location = 8) in vec4 a_gradiantOverlayToColor;
-layout (location = 9) in vec4 a_borderColor;
-layout (location = 10) in vec4 a_glowColor;
-layout (location = 11) in vec4 a_amounts; // a_outerBorderAmount, a_innerBorderAmount, a_outerGlowAmount, a_innerGlowAmount
-layout (location = 12) in vec4 a_blurAlphaFlipHFlipV; // a_blur, a_alpha, a_fliph, a_flipv
+layout (location = 3) in vec4 a_dimensions; // a_ref, a_size
+layout (location = 4) in vec4 a_tint;
+layout (location = 5) in vec4 a_gradiantPositions; // a_gradiantOverlayFrom, a_gradiantOverlayTo
+layout (location = 6) in vec4 a_gradiantOverlayFromColor;
+layout (location = 7) in vec4 a_gradiantOverlayToColor;
+layout (location = 8) in vec4 a_borderColor;
+layout (location = 9) in vec4 a_glowColor;
+layout (location = 10) in vec4 a_amounts; // a_outerBorderAmount, a_innerBorderAmount, a_outerGlowAmount, a_innerGlowAmount
+layout (location = 11) in vec4 a_rotationAlphaFlipHFlipV; // a_rotation, a_alpha, a_fliph, a_flipv
 
 uniform mat4 u_projection;
 
@@ -30,7 +29,6 @@ out float v_outerBorderAmount;
 out float v_innerBorderAmount;
 out float v_outerGlowAmount;
 out float v_innerGlowAmount;
-out float v_blur;
 out float v_alpha;
 
 out vec2 v_textureOffsets3x3[9];
@@ -136,14 +134,15 @@ void main(void) {
   vec2 size = a_dimensions.zw;
   vec2 translation = a_transform.xy;
   vec2 scale = a_transform.zw;
-  vec2 flip = a_blurAlphaFlipHFlipV.zw;
-  float alpha = a_blurAlphaFlipHFlipV.y;
+  float rotation = a_rotationAlphaFlipHFlipV.x;
+  float alpha = a_rotationAlphaFlipHFlipV.y;
+  vec2 flip = a_rotationAlphaFlipHFlipV.zw;
 
   vec2 moveToReferencePoint = -(ref / size) + 0.5;
 
   mat4 transform = 
     translate2d(translation) * 
-    rotate2d(a_rotation) * 
+    rotate2d(rotation) * 
     scale2d(size * scale) * 
     translate2d(moveToReferencePoint) * 
     scale2d(flip);
@@ -164,7 +163,6 @@ void main(void) {
   v_innerBorderAmount = a_amounts.y;
   v_outerGlowAmount = a_amounts.z;
   v_innerGlowAmount = a_amounts.w;
-  v_blur = a_blurAlphaFlipHFlipV.x;
   v_alpha = alpha;
 
   v_relativeScreenCoords = texcoords * size;
