@@ -124,6 +124,14 @@ addCommandAlias(
 )
 
 addCommandAlias(
+  "sandboxBuild",
+  List(
+    "sandboxJS/fastOptJS",
+    "sandboxJS/indigoBuildJS"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
   "sandboxBuildJS",
   List(
     "buildAllNoClean",
