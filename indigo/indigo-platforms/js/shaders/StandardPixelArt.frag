@@ -25,27 +25,15 @@ in float v_blur;
 in float v_alpha;
 
 in vec2 v_textureOffsets3x3[9];
-in vec2 v_textureOffsets5x5[25];
+// in vec2 v_textureOffsets5x5[25];
 in vec2 v_relativeScreenCoords;
 
 layout(location = 0) out vec4 fragColor0;
 layout(location = 1) out vec4 fragColor1;
 
-float gaussianBlur[9] = float[9](
-  0.045, 0.122, 0.045,
-  0.122, 0.332, 0.122,
-  0.045, 0.122, 0.045
-);
-
-float gaussianBlur2[9] = float[9](
-  1.0, 2.0, 1.0,
-  2.0, 4.0, 2.0,
-  1.0, 2.0, 1.0
-);
-
-float gaussianBlur3[9] = float[9](
+float border1px[9] = float[9](
   0.0, 1.0, 0.0,
-  1.0, 1.0, 1.0,
+  1.0, 0.0, 1.0,
   0.0, 1.0, 0.0
 );
 
@@ -55,13 +43,32 @@ float border2px[9] = float[9](
   1.0, 1.0, 1.0
 );
 
-float glow2px[25] = float[25](
-  1.0, 1.0, 1.0, 1.0, 1.0,
-  1.0, 1.0, 1.0, 1.0, 1.0,
-  1.0, 1.0, 0.0, 1.0, 1.0,
-  1.0, 1.0, 1.0, 1.0, 1.0,
-  1.0, 1.0, 1.0, 1.0, 1.0
-);
+
+// float glow2px[25] = float[25](
+//   1.0, 1.0, 1.0, 1.0, 1.0,
+//   1.0, 1.0, 1.0, 1.0, 1.0,
+//   1.0, 1.0, 0.0, 1.0, 1.0,
+//   1.0, 1.0, 1.0, 1.0, 1.0,
+//   1.0, 1.0, 1.0, 1.0, 1.0
+// );
+
+// float gaussianBlur[9] = float[9](
+//   0.045, 0.122, 0.045,
+//   0.122, 0.332, 0.122,
+//   0.045, 0.122, 0.045
+// );
+
+// float gaussianBlur2[9] = float[9](
+//   1.0, 2.0, 1.0,
+//   2.0, 4.0, 2.0,
+//   1.0, 2.0, 1.0
+// );
+
+// float gaussianBlur3[9] = float[9](
+//   0.0, 1.0, 0.0,
+//   1.0, 1.0, 1.0,
+//   0.0, 1.0, 0.0
+// );
 
 vec4 applyBasicEffects(vec4 textureColor) {
   vec4 withAlpha = vec4(textureColor.rgb, textureColor.a * v_alpha);
@@ -85,19 +92,19 @@ float calculateWeight3x3(float kernel[9]) {
   return weight;
 }
 
-float calculateWeight5x5(float kernel[25]) {
-  float weight = 0.0;
+// float calculateWeight5x5(float kernel[25]) {
+//   float weight = 0.0;
 
-  for(int i = 0; i < 25; i++) {
-    weight += kernel[i];
-  }
+//   for(int i = 0; i < 25; i++) {
+//     weight += kernel[i];
+//   }
 
-  if (weight < 0.0) {
-    weight = 1.0;
-  }
+//   if (weight < 0.0) {
+//     weight = 1.0;
+//   }
 
-  return weight;
-}
+//   return weight;
+// }
 
 vec4 gradiantOverlay(vec4 baseColor) {
   vec2 pointA = v_gradiantFrom;
@@ -112,68 +119,98 @@ vec4 gradiantOverlay(vec4 baseColor) {
   return vec4(mix(baseColor.rgb, overlay.rgb, overlay.a), baseColor.a);
 }
 
+// vec4 outerBorder(vec4 baseColor) {
+//   int outBorderThickness = int(clamp(v_outerBorderAmount, 0.0, 2.0));
+
+//   if(outBorderThickness > 0) {
+//     float[9] kernel = border1px;
+
+//     if(outBorderThickness > 1) {
+//       kernel = border2px;
+//     }
+
+//     float alphaSum = 0.0;
+
+//     for(int i = 0; i < 9; i++) {
+//       alphaSum += applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[i])).a * kernel[i];
+//     }
+
+//     if(alphaSum > 0.0 && baseColor.a < 0.0001) {
+//       baseColor = v_borderColor;
+//     }
+//   }
+
+//   return baseColor;
+// }
+
+vec4 outerInnerBorder(vec4 baseColor) {
+  vec4 outColor = baseColor;
+  int outerBorderThickness = int(clamp(v_outerBorderAmount, 0.0, 2.0));
+  int innerBorderThickness = int(clamp(v_innerBorderAmount, 0.0, 2.0));
+
+  if(outerBorderThickness == 0 && innerBorderThickness == 0) {
+    return outColor;
+  }
+
+  float[9] sampledAlphas;
+  for(int i = 0; i < 9; i++) {
+    sampledAlphas[i] = applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[i])).a;
+  }
+
+  // Inner
+  if(innerBorderThickness > 0) {
+    float[9] kernel = border1px;
+
+    if(innerBorderThickness > 1) {
+      kernel = border2px;
+    }
+
+    float alphaSum = 0.0;
+
+    for(int i = 0; i < 9; i++) {
+      alphaSum += (1.0 - sampledAlphas[i]) * kernel[i];
+    }
+
+    if(alphaSum > 0.0 && (1.0 - baseColor.a) < 0.0001) {
+      outColor = v_borderColor;
+    }
+  }
+
+  // Outer
+  if(outerBorderThickness > 0) {
+    float[9] kernel = border1px;
+
+    if(outerBorderThickness > 1) {
+      kernel = border2px;
+    }
+
+    float alphaSum = 0.0;
+
+    for(int i = 0; i < 9; i++) {
+      alphaSum += sampledAlphas[i] * kernel[i];
+    }
+
+    if(alphaSum > 0.0 && baseColor.a < 0.0001) {
+      outColor = v_borderColor;
+    }
+  }
+
+  return outColor;
+}
+
 void main(void) {
 
   vec4 baseColor = applyBasicEffects(texture(u_textureDiffuse, v_texcoord));
 
-  // Guassian Blur
-  // float blurType[9] = gaussianBlur;
-
-  // vec4 colorSum =
-  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[0])) * blurType[0] +
-  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[1])) * blurType[1] +
-  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[2])) * blurType[2] +
-  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[3])) * blurType[3] +
-  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[4])) * blurType[4] +
-  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[5])) * blurType[5] +
-  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[6])) * blurType[6] +
-  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[7])) * blurType[7] +
-  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[8])) * blurType[8];
-
-  // vec4 basicColor = colorSum / calculateWeight9(blurType);
-
-  // Outer Border - 2 pixel
-  // float borderKernel[9] = border2px;
-
-  // float alphaSum =
-  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[0])).a * borderKernel[0] +
-  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[1])).a * borderKernel[1] +
-  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[2])).a * borderKernel[2] +
-  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[3])).a * borderKernel[3] +
-  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[4])).a * borderKernel[4] +
-  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[5])).a * borderKernel[5] +
-  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[6])).a * borderKernel[6] +
-  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[7])).a * borderKernel[7] +
-  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[8])).a * borderKernel[8];
-
-  // vec4 basicColor = applyBasicEffects(texture(u_textureDiffuse, v_texcoord));
-
-  // if(alphaSum > 0.0 && basicColor.a < 0.0001) {
-  //   basicColor = vec4(0.0, 1.0, 1.0, 1.0);
-  // }
-
-  // Inner Border - 2 pixel
-  // float borderKernel[9] = border2px;
-
-  // float alphaSum =
-  //   (1.0 - applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[0])).a) * borderKernel[0] +
-  //   (1.0 - applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[1])).a) * borderKernel[1] +
-  //   (1.0 - applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[2])).a) * borderKernel[2] +
-  //   (1.0 - applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[3])).a) * borderKernel[3] +
-  //   (1.0 - applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[4])).a) * borderKernel[4] +
-  //   (1.0 - applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[5])).a) * borderKernel[5] +
-  //   (1.0 - applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[6])).a) * borderKernel[6] +
-  //   (1.0 - applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[7])).a) * borderKernel[7] +
-  //   (1.0 - applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[8])).a) * borderKernel[8];
-
-  // vec4 basicColor = applyBasicEffects(texture(u_textureDiffuse, v_texcoord));
-
-  // if(alphaSum > 0.0 && (1.0 - basicColor.a) < 0.0001) {
-  //   basicColor = vec4(0.0, 1.0, 1.0, 1.0);
-  // }
-
   // Gradiant Overlay / Color Overlay
   vec4 overlay = gradiantOverlay(baseColor);
+
+  // Inner Glow
+  // Inner Border
+  // vec4 border = outerBorder(overlay);
+  // Outer Border - 2 pixel
+  vec4 border = outerInnerBorder(overlay);
+  // Outer Glow
 
   // Outer Glow - 2 pixel
   // float borderKernel[25] = glow2px;
@@ -251,11 +288,27 @@ void main(void) {
   //   basicColor = mix(basicColor, vec4(0.0, 1.0, 1.0, 1.0), glowAmount);
   // }
 
+  // Guassian Blur
+  // float blurType[9] = gaussianBlur;
+
+  // vec4 colorSum =
+  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[0])) * blurType[0] +
+  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[1])) * blurType[1] +
+  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[2])) * blurType[2] +
+  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[3])) * blurType[3] +
+  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[4])) * blurType[4] +
+  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[5])) * blurType[5] +
+  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[6])) * blurType[6] +
+  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[7])) * blurType[7] +
+  //   applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[8])) * blurType[8];
+
+  // vec4 basicColor = colorSum / calculateWeight9(blurType);
+
   // Normal
   // vec4 basicColor = applyBasicEffects(texture(u_textureDiffuse, v_texcoord));
 
-  vec4 basicColor = overlay;
+  vec4 outColor = border;
 
-  fragColor0 = basicColor;
-  fragColor1 = vec4(0.0, 1.0, 0.0, basicColor.a);
+  fragColor0 = outColor;
+  fragColor1 = vec4(0.0, 1.0, 0.0, outColor.a);
 }
