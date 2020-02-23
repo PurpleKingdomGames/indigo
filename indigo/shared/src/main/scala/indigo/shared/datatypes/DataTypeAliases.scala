@@ -52,6 +52,12 @@ trait DataTypeAliases {
   type Thickness = shared.datatypes.Thickness
   val Thickness: shared.datatypes.Thickness.type = shared.datatypes.Thickness
 
+  type Border = shared.datatypes.Border
+  val Border: shared.datatypes.Border.type = shared.datatypes.Border
+
+  type Glow = shared.datatypes.Glow
+  val Glow: shared.datatypes.Glow.type = shared.datatypes.Glow
+
   type RGBA = shared.datatypes.RGBA
   val RGBA: shared.datatypes.RGBA.type = shared.datatypes.RGBA
 

@@ -71,60 +71,35 @@ vec2 sizeOfAPixel() {
 }
 
 vec2[9] generate3x3() {
-  vec2[9] res;
   float size = 3.0;
-  int limit = 9;
-  int count = 0;
   float offset = floor(size / 2.0);
 
-  for(int i = 0; i < limit; i++) {
-    float x = mod(float(i), size) - offset;
-    float y = floor(float(i) / size) - offset;
-
-    res[i] = vec2(x, y);
-  }
-
-  return res;
+  return vec2[9](
+    vec2(mod(float(0), size) - offset, floor(float(0) / size) - offset),
+    vec2(mod(float(1), size) - offset, floor(float(1) / size) - offset),
+    vec2(mod(float(2), size) - offset, floor(float(2) / size) - offset),
+    vec2(mod(float(3), size) - offset, floor(float(3) / size) - offset),
+    vec2(mod(float(4), size) - offset, floor(float(4) / size) - offset),
+    vec2(mod(float(5), size) - offset, floor(float(5) / size) - offset),
+    vec2(mod(float(6), size) - offset, floor(float(6) / size) - offset),
+    vec2(mod(float(7), size) - offset, floor(float(7) / size) - offset),
+    vec2(mod(float(8), size) - offset, floor(float(8) / size) - offset)
+  );
 }
 
 vec2[9] generateTexCoords3x3(vec2 texcoords, vec2 onePixel, vec2[9] offsets) {
-  vec2[9] res;
-  int limit = 9;
-
-  for(int i = 0; i < limit; i++) {
-    res[i] = scaleTextCoords(texcoords + (onePixel * offsets[i]));
-  }
-
-  return res;
+  return vec2[9](
+    scaleTextCoords(texcoords + (onePixel * offsets[0])),
+    scaleTextCoords(texcoords + (onePixel * offsets[1])),
+    scaleTextCoords(texcoords + (onePixel * offsets[2])),
+    scaleTextCoords(texcoords + (onePixel * offsets[3])),
+    scaleTextCoords(texcoords + (onePixel * offsets[4])),
+    scaleTextCoords(texcoords + (onePixel * offsets[5])),
+    scaleTextCoords(texcoords + (onePixel * offsets[6])),
+    scaleTextCoords(texcoords + (onePixel * offsets[7])),
+    scaleTextCoords(texcoords + (onePixel * offsets[8]))
+  );
 }
-
-// vec2[25] generate5x5() {
-//   vec2[25] res;
-//   float size = 5.0;
-//   int limit = 25;
-//   int count = 0;
-//   float offset = floor(size / 2.0);
-
-//   for(int i = 0; i < limit; i++) {
-//     float x = mod(float(i), size) - offset;
-//     float y = floor(float(i) / size) - offset;
-
-//     res[i] = vec2(x, y);
-//   }
-
-//   return res;
-// }
-
-// vec2[25] generateTexCoords5x5(vec2 texcoords, vec2 onePixel, vec2[25] offsets) {
-//   vec2[25] res;
-//   int limit = 25;
-
-//   for(int i = 0; i < limit; i++) {
-//     res[i] = scaleTextCoords(texcoords + (onePixel * offsets[i]));
-//   }
-
-//   return res;
-// }
 
 void main(void) {
 
@@ -164,12 +139,7 @@ void main(void) {
   v_outerGlowAmount = a_amounts.z;
   v_innerGlowAmount = a_amounts.w;
   v_alpha = alpha;
-
   v_relativeScreenCoords = texcoords * size;
-
-  vec2 onePixel = sizeOfAPixel();
-
-  v_textureOffsets3x3 = generateTexCoords3x3(texcoords, onePixel, generate3x3());
-  // v_textureOffsets5x5 = generateTexCoords5x5(texcoords, onePixel, generate5x5());
+  v_textureOffsets3x3 = generateTexCoords3x3(texcoords, sizeOfAPixel(), generate3x3());
 
 }

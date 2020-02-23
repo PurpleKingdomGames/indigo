@@ -68,8 +68,8 @@ object DisplayEffects {
       thicknessToDouble(effects.border.innerThickness),
       thicknessToDouble(effects.border.outerThickness),
       effects.glow.color.toArray,
-      thicknessToDouble(effects.glow.innerThickness),
-      thicknessToDouble(effects.glow.outerThickness),
+      effects.glow.innerGlowAmount,
+      effects.glow.outerGlowAmount,
       effects.alpha,
       if (effects.flip.horizontal) -1 else 1,
       if (effects.flip.vertical) 1 else -1

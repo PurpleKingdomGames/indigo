@@ -3,8 +3,8 @@ package indigo.shared.datatypes
 final class Effects(
     val tint: RGBA,
     val overlay: Overlay,
-    val border: EdgeEffect,
-    val glow: EdgeEffect,
+    val border: Border,
+    val glow: Glow,
     val alpha: Double,
     val flip: Flip
 ) {
@@ -17,10 +17,10 @@ final class Effects(
   def withGradiantOverlay(newValue: Overlay.LinearGradiant): Effects =
     Effects(tint, newValue, border, glow, alpha, flip)
 
-  def withBorder(newValue: EdgeEffect): Effects =
+  def withBorder(newValue: Border): Effects =
     Effects(tint, overlay, newValue, glow, alpha, flip)
 
-  def withGlow(newValue: EdgeEffect): Effects =
+  def withGlow(newValue: Glow): Effects =
     Effects(tint, overlay, border, newValue, alpha, flip)
 
   def withAlpha(newValue: Double): Effects =
@@ -41,8 +41,8 @@ object Effects {
   val default: Effects = Effects(
     tint = RGBA.None,
     overlay = Overlay.Color.default,
-    border = EdgeEffect.default,
-    glow = EdgeEffect.default,
+    border = Border.default,
+    glow = Glow.default,
     alpha = 1.0,
     flip = Flip(
       horizontal = false,
@@ -53,8 +53,8 @@ object Effects {
   def apply(
       tint: RGBA,
       overlay: Overlay,
-      border: EdgeEffect,
-      glow: EdgeEffect,
+      border: Border,
+      glow: Glow,
       alpha: Double,
       flip: Flip
   ): Effects =
@@ -114,16 +114,23 @@ object Overlay {
   }
 }
 
-final class EdgeEffect(val color: RGBA, val innerThickness: Thickness, val outerThickness: Thickness) {
+final class Border(val color: RGBA, val innerThickness: Thickness, val outerThickness: Thickness) {
+
+  def withInnerThickness(thinkness: Thickness): Border =
+    new Border(color, thinkness, outerThickness)
+
+  def withOuterThickness(thinkness: Thickness): Border =
+    new Border(color, innerThickness, thinkness)
+
   def hash: String =
     color.hash + innerThickness.hash + outerThickness.hash
 }
-object EdgeEffect {
-  def apply(color: RGBA, innerThickness: Thickness, outerThickness: Thickness): EdgeEffect =
-    new EdgeEffect(color, innerThickness, outerThickness)
+object Border {
+  def apply(color: RGBA, innerThickness: Thickness, outerThickness: Thickness): Border =
+    new Border(color, innerThickness, outerThickness)
 
-  val default: EdgeEffect =
-    EdgeEffect(RGBA.Zero, Thickness.None, Thickness.None)
+  val default: Border =
+    Border(RGBA.Zero, Thickness.None, Thickness.None)
 }
 
 sealed trait Thickness {
@@ -138,4 +145,31 @@ object Thickness {
   case object None  extends Thickness
   case object Thin  extends Thickness
   case object Thick extends Thickness
+}
+
+final class Glow(val color: RGBA, val innerGlowAmount: Double, val outerGlowAmount: Double) {
+  def withColor(newColor: RGBA): Glow =
+    new Glow(newColor, innerGlowAmount, outerGlowAmount)
+
+  def withInnerGlowAmount(amount: Double): Glow =
+    new Glow(color, Math.max(0, amount), outerGlowAmount)
+
+  def withOuterGlowAmount(amount: Double): Glow =
+    new Glow(color, innerGlowAmount, Math.max(0, amount))
+
+  def hash: String =
+    color.hash + innerGlowAmount.toString + outerGlowAmount.toString()
+}
+object Glow {
+  def apply(color: RGBA, innerGlowAmount: Double, outerGlowAmount: Double): Glow =
+    new Glow(color, innerGlowAmount, outerGlowAmount)
+
+  def inside(color: RGBA): Glow =
+    new Glow(color, 1d, 0d)
+
+  def outside(color: RGBA): Glow =
+    new Glow(color, 0d, 1d)
+
+  val default: Glow =
+    Glow(RGBA.Zero, 0d, 0d)
 }
