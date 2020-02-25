@@ -434,6 +434,9 @@ final class Sprite(
   def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Sprite =
     Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects, e)
 
+  def withEffects(newEffects: Effects): Sprite =
+    Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, newEffects, eventHandler)
+
 }
 
 object Sprite {
@@ -578,6 +581,9 @@ final class Text(
 
   def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Text =
     Text(text, alignment, position, depth, rotation, scale, fontKey, effects, e)
+
+  def withEffects(newEffects: Effects): Text =
+    Text(text, alignment, position, depth, rotation, scale, fontKey, newEffects, eventHandler)
 
 }
 

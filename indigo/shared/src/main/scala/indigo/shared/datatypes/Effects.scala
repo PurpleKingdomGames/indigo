@@ -116,11 +116,11 @@ object Overlay {
 
 final class Border(val color: RGBA, val innerThickness: Thickness, val outerThickness: Thickness) {
 
-  def withInnerThickness(thinkness: Thickness): Border =
-    new Border(color, thinkness, outerThickness)
+  def withInnerThickness(thickness: Thickness): Border =
+    new Border(color, thickness, outerThickness)
 
-  def withOuterThickness(thinkness: Thickness): Border =
-    new Border(color, innerThickness, thinkness)
+  def withOuterThickness(thickness: Thickness): Border =
+    new Border(color, innerThickness, thickness)
 
   def hash: String =
     color.hash + innerThickness.hash + outerThickness.hash
@@ -128,6 +128,12 @@ final class Border(val color: RGBA, val innerThickness: Thickness, val outerThic
 object Border {
   def apply(color: RGBA, innerThickness: Thickness, outerThickness: Thickness): Border =
     new Border(color, innerThickness, outerThickness)
+
+  def inside(color: RGBA): Border =
+    new Border(color, Thickness.Thin, Thickness.None)
+
+  def outside(color: RGBA): Border =
+    new Border(color, Thickness.None, Thickness.Thin)
 
   val default: Border =
     Border(RGBA.Zero, Thickness.None, Thickness.None)
