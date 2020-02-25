@@ -15,7 +15,7 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
     GameConfig(
       viewport = GameViewport(viewportWidth, viewportHeight),
       frameRate = targetFPS,
-      clearColor = ClearColor.Black,
+      clearColor = ClearColor(0.0, 0.0, 0.2, 1.0),
       magnification = magnificationLevel
     )
 
@@ -46,5 +46,10 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
     Outcome(viewModel)
 
   def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState): SceneUpdateFragment =
-    LightingView.updateView()
+    SceneUpdateFragment.empty
+      .addGameLayerNodes(
+        Graphic(Rectangle(0, 0, 64, 64), 1, LightingAssets.junctionBoxMaterial)
+          .withRef(20, 20)
+          .moveTo(config.viewport.giveDimensions(config.magnification).center)
+      )
 }
