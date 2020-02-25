@@ -98,9 +98,9 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
     )
 
     setupMergeFragmentShaderState(
-      gameFrameBuffer.texture,
-      lightingFrameBuffer.texture,
-      uiFrameBuffer.texture
+      gameFrameBuffer.albedo,
+      lightingFrameBuffer.albedo,
+      uiFrameBuffer.albedo
     )
 
     gl2.drawArrays(TRIANGLE_STRIP, 0, 4)

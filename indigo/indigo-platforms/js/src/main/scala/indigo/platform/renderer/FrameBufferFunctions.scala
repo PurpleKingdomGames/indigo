@@ -4,9 +4,6 @@ import indigo.shared.ClearColor
 import org.scalajs.dom.raw.WebGLRenderingContext
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.{WebGLFramebuffer, WebGLTexture}
-import indigo.shared.EqualTo._
-import scala.annotation.tailrec
-import scalajs.js.JSConverters._
 import indigo.facades.ColorAttachments
 
 object FrameBufferFunctions {
@@ -20,30 +17,32 @@ object FrameBufferFunctions {
     texture
   }
 
-  def createFrameBuffer(gl: WebGLRenderingContext, textureCount: Int, width: Int, height: Int): FrameBufferComponents = {
-    val minTextureCount: Int = if (textureCount < 0) 0 else textureCount
-
-    val frameBuffer = gl.createFramebuffer()
+  def createFrameBuffer(gl: WebGLRenderingContext, width: Int, height: Int): FrameBufferComponents = {
+    import ColorAttachments._
+    // val minTextureCount: Int          = Math.max(0, textureCount)
+    val frameBuffer: WebGLFramebuffer = gl.createFramebuffer()
 
     gl.bindFramebuffer(FRAMEBUFFER, frameBuffer)
 
-    @tailrec
-    def rec(remaining: Int, acc: List[WebGLTexture]): FrameBufferComponents =
-      remaining match {
-        case i if i === 0 =>
-          val texture: WebGLTexture = createAndSetupTexture(gl, width, height)
-          gl.framebufferTexture2D(FRAMEBUFFER, ColorAttachments.intToColorAttachment(i), TEXTURE_2D, texture, 0)
+    val albedo = createAndSetupTexture(gl, width, height)
+    gl.framebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_2D, albedo, 0)
 
-          FrameBufferComponents(frameBuffer, texture, acc)
+    val emissive = createAndSetupTexture(gl, width, height)
+    gl.framebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT1, TEXTURE_2D, emissive, 0)
 
-        case i =>
-          val texture: WebGLTexture = createAndSetupTexture(gl, width, height)
-          gl.framebufferTexture2D(FRAMEBUFFER, ColorAttachments.intToColorAttachment(i), TEXTURE_2D, texture, 0)
+    val normal = createAndSetupTexture(gl, width, height)
+    gl.framebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT2, TEXTURE_2D, normal, 0)
 
-          rec(remaining - 1, texture :: acc)
-      }
+    val specular = createAndSetupTexture(gl, width, height)
+    gl.framebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT3, TEXTURE_2D, specular, 0)
 
-    rec(minTextureCount, Nil)
+    FrameBufferComponents(
+      frameBuffer,
+      albedo,
+      emissive,
+      normal,
+      specular
+    )
   }
 
   def switchToFramebuffer(gl: WebGLRenderingContext, frameBuffer: WebGLFramebuffer, clearColor: ClearColor): Unit = {
@@ -60,19 +59,29 @@ object FrameBufferFunctions {
   }
 }
 
-final class FrameBufferComponents(val frameBuffer: WebGLFramebuffer, val texture: WebGLTexture, val textures: List[WebGLTexture]) {
+final class FrameBufferComponents(
+    val frameBuffer: WebGLFramebuffer,
+    val albedo: WebGLTexture,
+    val emissive: WebGLTexture,
+    val normal: WebGLTexture,
+    val specular: WebGLTexture
+)
 
-  lazy val colorAttachments: scalajs.js.Array[Int] =
-    textures match {
-      case Nil =>
-        scalajs.js.Array(COLOR_ATTACHMENT0)
-
-      case l =>
-        (0 to l.length).map(ColorAttachments.intToColorAttachment).toJSArray
-    }
-
-}
 object FrameBufferComponents {
-  def apply(frameBuffer: WebGLFramebuffer, texture: WebGLTexture, textures: List[WebGLTexture]): FrameBufferComponents =
-    new FrameBufferComponents(frameBuffer, texture, textures)
+  def apply(
+      frameBuffer: WebGLFramebuffer,
+      albedo: WebGLTexture,
+      emissive: WebGLTexture,
+      normal: WebGLTexture,
+      specular: WebGLTexture
+  ): FrameBufferComponents =
+    new FrameBufferComponents(frameBuffer, albedo, emissive, normal, specular)
+
+  val colorAttachments: scalajs.js.Array[Int] =
+    scalajs.js.Array[Int](
+      ColorAttachments.COLOR_ATTACHMENT0,
+      ColorAttachments.COLOR_ATTACHMENT1,
+      ColorAttachments.COLOR_ATTACHMENT2,
+      ColorAttachments.COLOR_ATTACHMENT3
+    )
 }

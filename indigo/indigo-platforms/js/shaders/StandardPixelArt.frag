@@ -26,8 +26,10 @@ in float v_alpha;
 in vec2 v_textureOffsets3x3[9];
 in vec2 v_relativeScreenCoords;
 
-layout(location = 0) out vec4 fragColor0;
-layout(location = 1) out vec4 fragColor1;
+layout(location = 0) out vec4 albedo;
+layout(location = 1) out vec4 emissive;
+layout(location = 2) out vec4 normal;
+layout(location = 3) out vec4 specular;
 
 vec4 applyBasicEffects(vec4 textureColor) {
   vec4 withAlpha = vec4(textureColor.rgb, textureColor.a * v_alpha);
@@ -171,6 +173,8 @@ void main(void) {
 
   vec4 outColor = withOuterBorder;
 
-  fragColor0 = outColor;
-  fragColor1 = vec4(0.0, 1.0, 0.0, outColor.a);
+  albedo = outColor;
+  emissive = texture(u_textureEmission, v_texcoord);
+  normal = texture(u_textureNormal, v_texcoord);
+  specular = texture(u_textureSpecular, v_texcoord);
 }

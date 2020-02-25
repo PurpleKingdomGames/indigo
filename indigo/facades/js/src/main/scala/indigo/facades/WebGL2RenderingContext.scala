@@ -85,6 +85,7 @@ trait WebGL2RenderingContext extends WebGLRenderingContext {
 class WebGLVertexArrayObject private[this] () extends js.Object
 
 object ColorAttachments {
+  final val COLOR_ATTACHMENT0  = 0x8CE0
   final val COLOR_ATTACHMENT1  = 0x8CE1
   final val COLOR_ATTACHMENT2  = 0x8CE2
   final val COLOR_ATTACHMENT3  = 0x8CE3

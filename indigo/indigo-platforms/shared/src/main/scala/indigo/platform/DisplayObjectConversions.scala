@@ -180,8 +180,11 @@ object DisplayObjectConversions {
       case Material.Textured(AssetName(diffuse)) =>
         (lookupAtlasName(assetMapping, diffuse), "", "", "")
 
-      case Material.Lit(AssetName(albedo), _, _, _) =>
-        (lookupAtlasName(assetMapping, albedo), "", "", "")
+      case Material.Lit(AssetName(albedo), _, _, _) => {
+        val a = lookupAtlasName(assetMapping, albedo)
+        val e = "" //emission.map(n => lookupAtlasName(assetMapping, n.value)).getOrElse("") 
+        (a, e, "", "")
+      }
     }
 
   def materialToName(material: Material): String =
@@ -209,7 +212,7 @@ object DisplayObjectConversions {
       diffuseRef = materialValues._1,
       emissionRef = materialValues._2,
       normalRef = materialValues._3,
-      specularRef = materialValues._4,
+      specularRef = materialValues._4, //TODO: The below finds the frame only for aldebo...
       frame = QuickCache(s"${leaf.crop.hash}_${materialName}") {
         SpriteSheetFrame.calculateFrameOffset(
           imageSize = lookupAtlasSize(assetMapping, materialName),

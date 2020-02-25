@@ -53,13 +53,13 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var gameFrameBuffer: FrameBufferComponents =
-    FrameBufferFunctions.createFrameBuffer(gl, 1, cNc.canvas.width, cNc.canvas.height)
+    FrameBufferFunctions.createFrameBuffer(gl, cNc.canvas.width, cNc.canvas.height)
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var lightingFrameBuffer: FrameBufferComponents =
-    FrameBufferFunctions.createFrameBuffer(gl, 1, cNc.canvas.width, cNc.canvas.height)
+    FrameBufferFunctions.createFrameBuffer(gl, cNc.canvas.width, cNc.canvas.height)
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var uiFrameBuffer: FrameBufferComponents =
-    FrameBufferFunctions.createFrameBuffer(gl, 1, cNc.canvas.width, cNc.canvas.height)
+    FrameBufferFunctions.createFrameBuffer(gl, cNc.canvas.width, cNc.canvas.height)
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var resizeRun: Boolean = false
@@ -246,9 +246,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       orthographicProjectionMatrix = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification))
       orthographicProjectionMatrixNoMag = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble))
 
-      gameFrameBuffer = FrameBufferFunctions.createFrameBuffer(gl, 1, actualWidth, actualHeight)
-      lightingFrameBuffer = FrameBufferFunctions.createFrameBuffer(gl, 0, actualWidth, actualHeight)
-      uiFrameBuffer = FrameBufferFunctions.createFrameBuffer(gl, 1, actualWidth, actualHeight)
+      gameFrameBuffer = FrameBufferFunctions.createFrameBuffer(gl, actualWidth, actualHeight)
+      lightingFrameBuffer = FrameBufferFunctions.createFrameBuffer(gl, actualWidth, actualHeight)
+      uiFrameBuffer = FrameBufferFunctions.createFrameBuffer(gl, actualWidth, actualHeight)
 
       gl.viewport(0, 0, actualWidth.toDouble, actualHeight.toDouble)
 
