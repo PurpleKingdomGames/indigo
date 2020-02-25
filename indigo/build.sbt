@@ -27,6 +27,28 @@ lazy val commonSettings = Seq(
 
 // Testing
 
+lazy val lighting =
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
+    .enablePlugins(SbtIndigo)
+    .settings(commonSettings: _*)
+    .settings(
+      name := "lighting",
+      showCursor := true,
+      title := "Lighting",
+      gameAssetsDirectory := "assets"
+    )
+    .settings(
+      publish := {},
+      publishLocal := {}
+    )
+    .jsSettings(
+      scalaJSUseMainModuleInitializer := true
+    )
+    .dependsOn(indigoExts)
+lazy val lightingJS  = lighting.js
+lazy val lightingJVM = lighting.jvm
+
 lazy val sandbox =
   crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
@@ -225,6 +247,7 @@ lazy val indigoProject =
       indigoExtsJVM,
       facadesJVM,
       sandboxJVM,
+      lightingJVM,
       perfJVM
     )
 

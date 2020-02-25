@@ -7,6 +7,7 @@ lazy val coreProjects: List[String] =
     "indigoExts",
     "facades",
     "sandbox",
+    "lighting",
     "perf"
   )
 
@@ -120,6 +121,14 @@ addCommandAlias(
     "cleanAll",
     "buildIndigo",
     "localPublishIndigo"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "lightingBuild",
+  List(
+    "lightingJS/fastOptJS",
+    "lightingJS/indigoBuildJS"
   ).mkString(";", ";", "")
 )
 
