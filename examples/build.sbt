@@ -3,8 +3,6 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 import scala.sys.process._
 import scala.language.postfixOps
 
-val silencerVersion = "1.4.4"
-
 lazy val commonSettings = Seq(
   version := "0.0.1",
   scalaVersion := "2.13.1",
@@ -12,10 +10,6 @@ lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(
     "com.lihaoyi" %%% "utest"       % "0.6.9" % "test",
     "indigo"      %%% "indigo-exts" % "0.0.12-SNAPSHOT"
-  ),
-  libraryDependencies ++= Seq(
-    compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
-    "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
   scalacOptions in (Compile, compile) ++= ScalacOptions.scala213Compile,
