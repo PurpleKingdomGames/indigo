@@ -17,13 +17,14 @@ final class Rectangle(val position: Point, val size: Point) {
   val top: Int    = y
   val bottom: Int = y + height
 
-  val horizontalCenter: Int  = x + (width / 2)
-  val verticalCenter: Int  = y + (height / 2)
+  val horizontalCenter: Int = x + (width / 2)
+  val verticalCenter: Int   = y + (height / 2)
 
   def topLeft: Point     = Point(left, top)
   def topRight: Point    = Point(right, top)
   def bottomRight: Point = Point(right, bottom)
   def bottomLeft: Point  = Point(left, bottom)
+  def center: Point      = Point(horizontalCenter, verticalCenter)
 
   def corners: List[Point] =
     List(topLeft, topRight, bottomRight, bottomLeft)
@@ -74,8 +75,8 @@ final class Rectangle(val position: Point, val size: Point) {
 
   @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
   override def equals(obj: Any): Boolean =
-    if(obj.isInstanceOf[Rectangle]) {
-       this === obj.asInstanceOf[Rectangle]
+    if (obj.isInstanceOf[Rectangle]) {
+      this === obj.asInstanceOf[Rectangle]
     } else false
 }
 
