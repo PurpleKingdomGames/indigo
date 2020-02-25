@@ -1,6 +1,6 @@
 #version 300 es
 
-precision mediump float;
+precision lowp float;
 
 uniform sampler2D u_textureDiffuse;
 uniform sampler2D u_textureEmission;
@@ -48,13 +48,13 @@ vec4 calculateGradiantOverlay() {
   return mix(v_gradiantOverlayFromColor, v_gradiantOverlayToColor, h);
 }
 
-float border1px[9] = float[9](
+const float border1px[9] = float[9](
   0.0, 1.0, 0.0,
   1.0, 0.0, 1.0,
   0.0, 1.0, 0.0
 );
 
-float border2px[9] = float[9](
+const float border2px[9] = float[9](
   1.0, 1.0, 1.0,
   1.0, 0.0, 1.0,
   1.0, 1.0, 1.0
@@ -94,13 +94,13 @@ vec4 calculateBorder(float baseAlpha, float[9] alphas, float amount) {
   return outColor;
 }
 
-float glowKernel[9] = float[9](
+const float glowKernel[9] = float[9](
   1.0, 0.5, 1.0,
   0.5, 0.0, 0.5,
   1.0, 0.5, 1.0
 );
 // glowKernel values summed up.
-float glowKernelWeight = 6.0;
+const float glowKernelWeight = 6.0;
 
 vec4 calculateGlow(float baseAlpha, float[9] alphas, float amount) {
   vec4 outColor = vec4(0.0);

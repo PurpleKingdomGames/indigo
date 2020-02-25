@@ -1,5 +1,7 @@
 #version 300 es
 
+precision lowp float;
+
 layout (location = 0) in vec4 a_verticesAndCoords; // a_vertices, a_texcoord
 layout (location = 1) in vec4 a_transform; // a_translation, a_scale
 layout (location = 2) in vec4 a_frameTransform; // a_frameTranslation, a_frameScale
