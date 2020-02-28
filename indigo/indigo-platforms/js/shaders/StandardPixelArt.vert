@@ -18,6 +18,9 @@ layout (location = 11) in vec4 a_rotationAlphaFlipHFlipV; // a_rotation, a_alpha
 uniform mat4 u_projection;
 
 out vec2 v_texcoord;
+out vec2 v_texcoordEmissive;
+out vec2 v_texcoordNormal;
+out vec2 v_texcoordSpecular;
 out vec2 v_size;
 
 out vec4 v_tint;
@@ -127,6 +130,9 @@ void main(void) {
   gl_Position = u_projection * transform * vertices;
 
   v_texcoord = scaleTextCoords(texcoords);
+  v_texcoordEmissive = scaleTextCoords(texcoords + vec2(1.0, 0.0));
+  v_texcoordNormal = scaleTextCoords(texcoords + vec2(0.0, 1.0));
+  v_texcoordSpecular = scaleTextCoords(texcoords + vec2(1.0, 1.0));
   v_size = size;
 
   v_tint = a_tint;

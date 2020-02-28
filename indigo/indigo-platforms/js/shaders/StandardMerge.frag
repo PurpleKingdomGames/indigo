@@ -15,7 +15,10 @@ in float v_gameLayerSaturation;
 in float v_lightingLayerSaturation;
 in float v_uiLayerSaturation;
 
-uniform sampler2D u_texture_game;
+uniform sampler2D u_texture_game_albedo;
+uniform sampler2D u_texture_game_emissive;
+uniform sampler2D u_texture_game_normal;
+uniform sampler2D u_texture_game_specular;
 uniform sampler2D u_texture_lighting;
 uniform sampler2D u_texture_ui;
 
@@ -49,11 +52,17 @@ vec4 applyOverlay(vec4 diffuse, vec4 overlay) {
 
 void main(void) {
 
-  vec4 textureColorGame = applyEffects(texture(u_texture_game, v_texcoord), v_gameLayerSaturation, v_gameLayerTint);
-  vec4 textureColorLighting = applyEffects(texture(u_texture_lighting, v_texcoord), v_lightingLayerSaturation, v_lightingLayerTint);
+  vec4 textureColorGame = applyEffects(texture(u_texture_game_albedo, v_texcoord), v_gameLayerSaturation, v_gameLayerTint);
+
+  vec4 lighting = texture(u_texture_lighting, v_texcoord);
+  vec4 textureColorLighting = applyEffects(lighting, v_lightingLayerSaturation, v_lightingLayerTint);
+
+  vec4 emissive = texture(u_texture_game_emissive, v_texcoord);
+  vec4 textureColorEmissive = applyEffects(emissive, v_lightingLayerSaturation, v_lightingLayerTint);
+
   vec4 textureColorUi = applyOverlay(applyEffects(texture(u_texture_ui, v_texcoord), v_uiLayerSaturation, v_uiLayerTint), v_uiOverlay);
 
-  vec4 gameAndLighting = applyOverlay(textureColorGame * textureColorLighting, v_gameOverlay);
+  vec4 gameAndLighting = applyOverlay(mix(textureColorGame * textureColorLighting, textureColorEmissive, textureColorEmissive.a), v_gameOverlay);
 
   fragColor = mix(gameAndLighting, textureColorUi, textureColorUi.a);
 }

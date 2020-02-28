@@ -45,11 +45,17 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
   def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
     Outcome(viewModel)
 
+  val graphic: Graphic =
+    Graphic(Rectangle(0, 0, 64, 64), 1, LightingAssets.junctionBoxMaterial)
+      .withRef(20, 20)
+      .moveTo(config.viewport.giveDimensions(config.magnification).center)
+
   def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
-        Graphic(Rectangle(0, 0, 64, 64), 1, LightingAssets.junctionBoxMaterial)
-          .withRef(20, 20)
-          .moveTo(config.viewport.giveDimensions(config.magnification).center)
+        graphic,
+        graphic.moveBy(-30, 0),
+        graphic.moveBy(30, 0)
       )
+      .withAmbientLight(RGBA.White.withAmount(0.5))
 }

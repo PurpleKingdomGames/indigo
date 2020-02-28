@@ -2,12 +2,12 @@
 
 precision lowp float;
 
-uniform sampler2D u_textureDiffuse;
-uniform sampler2D u_textureEmission;
-uniform sampler2D u_textureNormal;
-uniform sampler2D u_textureSpecular;
+uniform sampler2D u_texture;
 
 in vec2 v_texcoord;
+in vec2 v_texcoordEmissive;
+in vec2 v_texcoordNormal;
+in vec2 v_texcoordSpecular;
 in vec2 v_size;
 
 in vec4 v_tint;
@@ -134,15 +134,15 @@ vec4 calculateGlow(float baseAlpha, float[9] alphas, float amount) {
 void main(void) {
 
   float[9] sampledRegionAlphas = float[9](
-    applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[0])).a,
-    applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[1])).a,
-    applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[2])).a,
-    applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[3])).a,
-    applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[4])).a,
-    applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[5])).a,
-    applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[6])).a,
-    applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[7])).a,
-    applyBasicEffects(texture(u_textureDiffuse, v_textureOffsets3x3[8])).a
+    applyBasicEffects(texture(u_texture, v_textureOffsets3x3[0])).a,
+    applyBasicEffects(texture(u_texture, v_textureOffsets3x3[1])).a,
+    applyBasicEffects(texture(u_texture, v_textureOffsets3x3[2])).a,
+    applyBasicEffects(texture(u_texture, v_textureOffsets3x3[3])).a,
+    applyBasicEffects(texture(u_texture, v_textureOffsets3x3[4])).a,
+    applyBasicEffects(texture(u_texture, v_textureOffsets3x3[5])).a,
+    applyBasicEffects(texture(u_texture, v_textureOffsets3x3[6])).a,
+    applyBasicEffects(texture(u_texture, v_textureOffsets3x3[7])).a,
+    applyBasicEffects(texture(u_texture, v_textureOffsets3x3[8])).a
   );
 
   float[9] sampledRegionAlphasInverse = float[9](
@@ -157,7 +157,7 @@ void main(void) {
     (1.0 - sampledRegionAlphas[8])
   );
 
-  vec4 baseColor = applyBasicEffects(texture(u_textureDiffuse, v_texcoord));
+  vec4 baseColor = applyBasicEffects(texture(u_texture, v_texcoord));
 
   vec4 overlay = calculateGradiantOverlay();
   vec4 innerGlow = calculateGlow((1.0 - baseColor.a), sampledRegionAlphasInverse, v_innerGlowAmount);
@@ -174,7 +174,7 @@ void main(void) {
   vec4 outColor = withOuterBorder;
 
   albedo = outColor;
-  emissive = texture(u_textureEmission, v_texcoord);
-  normal = texture(u_textureNormal, v_texcoord);
-  specular = texture(u_textureSpecular, v_texcoord);
+  emissive = texture(u_texture, v_texcoordEmissive);
+  normal = vec4(texture(u_texture, v_texcoordNormal).rgb, outColor.a);
+  specular = vec4(texture(u_texture, v_texcoordSpecular).rgb, outColor.a);
 }

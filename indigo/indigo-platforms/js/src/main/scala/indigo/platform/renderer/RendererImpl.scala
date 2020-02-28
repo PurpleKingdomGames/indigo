@@ -171,7 +171,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       cloneBlankDisplayObjects,
       DisplayObjectConversions.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, metrics),
       gameFrameBuffer,
-      config.clearColor,
+      ClearColor.Black.forceTransparent,
       standardShaderProgram,
       CurrentDrawLayer.Game,
       metrics

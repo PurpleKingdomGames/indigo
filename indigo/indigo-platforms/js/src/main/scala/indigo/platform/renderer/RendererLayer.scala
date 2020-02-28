@@ -140,14 +140,8 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
     gl2.useProgram(shaderProgram)
 
-    val textureLocation1 = gl2.getUniformLocation(shaderProgram, "u_textureDiffuse")
-    gl2.uniform1i(textureLocation1, 0)
-    val textureLocation2 = gl2.getUniformLocation(shaderProgram, "u_textureEmission")
-    gl2.uniform1i(textureLocation2, 1)
-    val textureLocation3 = gl2.getUniformLocation(shaderProgram, "u_textureNormal")
-    gl2.uniform1i(textureLocation3, 2)
-    val textureLocation4 = gl2.getUniformLocation(shaderProgram, "u_textureSpecular")
-    gl2.uniform1i(textureLocation4, 3)
+    val textureLocation = gl2.getUniformLocation(shaderProgram, "u_textureDiffuse")
+    gl2.uniform1i(textureLocation, 0)
 
     // Projection
     val projectionLocation = gl2.getUniformLocation(shaderProgram, "u_projection")
@@ -218,39 +212,6 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
             case Some(textureLookup) =>
               gl2.activeTexture(TEXTURE0);
-              gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
-          }
-
-          // Emission
-          textureLocations.find(t => t.name === d.emissionRef) match {
-            case None =>
-              gl2.activeTexture(TEXTURE1);
-              gl2.bindTexture(TEXTURE_2D, null)
-
-            case Some(textureLookup) =>
-              gl2.activeTexture(TEXTURE1);
-              gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
-          }
-
-          // Normal
-          textureLocations.find(t => t.name === d.normalRef) match {
-            case None =>
-              gl2.activeTexture(TEXTURE2);
-              gl2.bindTexture(TEXTURE_2D, null)
-
-            case Some(textureLookup) =>
-              gl2.activeTexture(TEXTURE2);
-              gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
-          }
-
-          // Specular
-          textureLocations.find(t => t.name === d.specularRef) match {
-            case None =>
-              gl2.activeTexture(TEXTURE3);
-              gl2.bindTexture(TEXTURE_2D, null)
-
-            case Some(textureLookup) =>
-              gl2.activeTexture(TEXTURE3);
               gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
           }
 
