@@ -57,5 +57,5 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
         graphic.moveBy(-30, 0),
         graphic.moveBy(30, 0)
       )
-      .withAmbientLight(RGBA.White.withAmount(0.5))
+      .withAmbientLight(RGBA.White.withAmount(0.1))
 }

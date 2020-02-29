@@ -15,8 +15,9 @@ in float v_gameLayerSaturation;
 in float v_lightingLayerSaturation;
 in float v_uiLayerSaturation;
 
-in vec2 v_position;
 in vec2[1] v_lights;
+in vec2 v_relativeScreenCoords;
+in vec2 v_screenCenterCoords;
 
 uniform sampler2D u_texture_game_albedo;
 uniform sampler2D u_texture_game_emissive;
@@ -53,6 +54,25 @@ vec4 applyOverlay(vec4 diffuse, vec4 overlay) {
   return withOverlay;
 }
 
+vec4 calculateLight(vec2 light, float attenuation, vec3 lightColor, vec4 specularTexture, vec4 normalTexture) {
+  vec2 position = v_relativeScreenCoords;
+  float lightAmount = clamp(1.0 - (distance(position, light) / attenuation), 0.0, 1.0);
+  float specularAmountFromTexture = (specularTexture.r + specularTexture.g + specularTexture.b) / 3.0;
+
+  vec3 normalFlipedY = vec3(normalTexture.r, 1.0 - normalTexture.g, normalTexture.b);
+  vec3 normalTangent = (2.0f * normalFlipedY) - 1.0f;
+  vec3 halfVec = vec3(0.0, 0.0, 1.0);
+
+  vec3 lightDirNorm = normalize(vec3(light, 1.0) - vec3(position, 1.0));
+  float specularAmount = max(dot(normalTangent, lightDirNorm), 0.0) * specularAmountFromTexture * (1.5 * lightAmount);
+  vec4 specularColor = vec4(lightColor, 1.0);
+
+  vec3 reflection = normalize(vec3(2.0 * specularAmount) * (normalTangent - lightDirNorm));
+  float specular = min(pow(clamp(dot(reflection, halfVec), 0.0, 1.0), 10.0), specularAmount);
+
+  return mix(vec4(lightColor, lightAmount), specularColor, specularAmount);
+}
+
 void main(void) {
 
   vec4 textureColorGame = applyEffects(texture(u_texture_game_albedo, v_texcoord), v_gameLayerSaturation, v_gameLayerTint);
@@ -66,20 +86,15 @@ void main(void) {
   vec4 textureColorEmissive = applyEffects(emissive, v_lightingLayerSaturation, v_lightingLayerTint);
 
   // Lights
+  vec4 specularTexture = texture(u_texture_game_specular, v_texcoord);
+  vec4 normalTexture = texture(u_texture_game_normal, v_texcoord);
 
-  vec2 light = v_lights[0];
-
-  float amount = distance(v_position, light);//max(0.0, (50.0 - ));
-
-  vec4 lightColor = vec4(amount);
-
-  vec4 plusLight = textureColorGame * lightColor;
-
+  vec4 lightColor = calculateLight(v_lights[0], 100.0, vec3(1.0, 0.0, 1.0), specularTexture, normalTexture);
   //
-  // vec4 normal = texture(u_texture_game_normal, v_texcoord);
-  // vec4 specular = texture(u_texture_game_specular, v_texcoord);
 
-  vec4 gameAndLightingPlusEmissive = mix(plusLight * textureColorLighting, textureColorEmissive, textureColorEmissive.a);
+  vec4 combinedLights = mix(textureColorLighting, lightColor, lightColor.a);
+
+  vec4 gameAndLightingPlusEmissive = mix(textureColorGame * combinedLights, textureColorEmissive, textureColorEmissive.a);
 
   vec4 gameAndLightingPlusEmissiveAndOverlay = applyOverlay(gameAndLightingPlusEmissive, v_gameOverlay);
 
