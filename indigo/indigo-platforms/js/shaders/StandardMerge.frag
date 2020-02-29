@@ -54,7 +54,7 @@ vec4 applyOverlay(vec4 diffuse, vec4 overlay) {
   return withOverlay;
 }
 
-vec4 calculateLight(vec2 light, float attenuation, vec3 lightColor, vec4 specularTexture, vec4 normalTexture) {
+vec4 calculateLight(vec2 light, float attenuation, vec3 lightColor, vec4 specularTexture, vec4 specularColor, vec4 normalTexture) {
   vec2 position = v_relativeScreenCoords;
   float lightAmount = clamp(1.0 - (distance(position, light) / attenuation), 0.0, 1.0);
   float specularAmountFromTexture = (specularTexture.r + specularTexture.g + specularTexture.b) / 3.0;
@@ -65,7 +65,6 @@ vec4 calculateLight(vec2 light, float attenuation, vec3 lightColor, vec4 specula
 
   vec3 lightDirNorm = normalize(vec3(light, 1.0) - vec3(position, 1.0));
   float specularAmount = max(dot(normalTangent, lightDirNorm), 0.0) * specularAmountFromTexture * (1.5 * lightAmount);
-  vec4 specularColor = vec4(lightColor, 1.0);
 
   vec3 reflection = normalize(vec3(2.0 * specularAmount) * (normalTangent - lightDirNorm));
   float specular = min(pow(clamp(dot(reflection, halfVec), 0.0, 1.0), 10.0), specularAmount);
@@ -89,7 +88,7 @@ void main(void) {
   vec4 specularTexture = texture(u_texture_game_specular, v_texcoord);
   vec4 normalTexture = texture(u_texture_game_normal, v_texcoord);
 
-  vec4 lightColor = calculateLight(v_lights[0], 100.0, vec3(1.0, 0.0, 1.0), specularTexture, normalTexture);
+  vec4 lightColor = calculateLight(v_lights[0], 100.0, vec3(1.0, 0.0, 1.0), specularTexture, vec4(1.0), normalTexture);
   //
 
   vec4 combinedLights = mix(textureColorLighting, lightColor, lightColor.a);
