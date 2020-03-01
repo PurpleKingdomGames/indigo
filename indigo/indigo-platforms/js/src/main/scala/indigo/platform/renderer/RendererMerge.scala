@@ -7,8 +7,7 @@ import indigo.shared.metrics.Metrics
 import indigo.facades.WebGL2RenderingContext
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
-import indigo.platform.shaders.StandardMergeVert
-import indigo.platform.shaders.StandardMergeFrag
+import indigo.platform.shaders.StandardMerge
 import org.scalajs.dom.raw.WebGLTexture
 import indigo.shared.ClearColor
 import indigo.shared.display.SpriteSheetFrame
@@ -39,7 +38,7 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
     )
 
   private val mergeShaderProgram: WebGLProgram =
-    RendererFunctions.shaderProgramSetup(gl2, "Merge", StandardMergeVert.shader, StandardMergeFrag.shader)
+    RendererFunctions.shaderProgramSetup(gl2, "Merge", StandardMerge.vertex, StandardMerge.fragment)
 
   private val displayObjectUBOBuffer: WebGLBuffer =
     gl2.createBuffer()

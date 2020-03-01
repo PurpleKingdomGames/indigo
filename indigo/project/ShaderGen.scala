@@ -3,32 +3,37 @@ import sbt._
 object ShaderGen {
 
   val extensions: List[String] =
-    List(".glsl", ".shader", ".vert", ".frag")
+    List(".vert", ".frag")
 
   val fileFilter: String => Boolean =
     name => extensions.exists(e => name.endsWith(e))
 
   val tripleQuotes: String = "\"\"\""
 
-  def template(name: String, contents: String): String =
+  def template(name: String, vextexContents: String, fragmentContents: String): String =
     s"""package indigo.platform.shaders
-    |object $name {
-    |  val shader: String =
-    |    ${tripleQuotes}${contents}${tripleQuotes}
+    |
+    |import indigo.shared.display.Shader
+    |
+    |object $name extends Shader {
+    |  val vertex: String =
+    |    ${tripleQuotes}${vextexContents}${tripleQuotes}
+    |
+    |  val fragment: String =
+    |    ${tripleQuotes}${fragmentContents}${tripleQuotes}
     |}
     """.stripMargin
 
-  def stripSuffix(remaining: List[String], name: String): String =
+  def splitAndPair(remaining: Seq[String], name: String, file: File): Option[ShaderDetails] =
     remaining match {
       case Nil =>
-        name
+        None
 
-      case s :: ss if name.endsWith(s) =>
-        stripSuffix(ss, name.split('.').map(_.capitalize).mkString)
+      case ext :: exts if name.endsWith(ext) =>
+        Some(ShaderDetails(name.substring(0, name.indexOf(ext)).capitalize, name, ext, IO.read(file)))
 
-      case _ :: ss =>
-        stripSuffix(ss, name)
-
+      case _ :: exts =>
+        splitAndPair(exts, name, file)
     }
 
   def makeShader(files: Set[File], sourceManagedDir: File): Seq[File] = {
@@ -37,25 +42,58 @@ object ShaderGen {
     val shaderFiles: Seq[File] =
       files.filter(f => fileFilter(f.name)).toSeq
 
-    val details: Seq[(String, String)] =
-      shaderFiles.map(f => (f.name, IO.read(f)))
+    val dict: Map[String, Seq[ShaderDetails]] =
+      shaderFiles
+        .map(f => splitAndPair(extensions, f.name, f))
+        .collect { case Some(s) => s }
+        .groupBy(_.newName)
 
-    details.map {
-      case (name, contents) =>
-        val newName = stripSuffix(extensions, name)
+    dict.toSeq.map {
+      case (newName, subShaders: Seq[ShaderDetails]) if subShaders.length != 2 =>
+        throw new Exception("Shader called '" + newName + "' did not appear to be a pair of shaders .vert and .frag")
 
-        println("> " + name + " --> " + newName + ".scala")
+      case (newName, subShaders: Seq[ShaderDetails]) if !subShaders.exists(_.ext == ".vert") =>
+        throw new Exception("Shader called '" + newName + "' is missing a .vert shader")
 
-        val file: File =
-          sourceManagedDir / "indigo" / "platform" / "shaders" / (newName + ".scala")
+      case (newName, subShaders: Seq[ShaderDetails]) if !subShaders.exists(_.ext == ".frag") =>
+        throw new Exception("Shader called '" + newName + "' is missing a .frag shader")
 
-        val newContents: String =
-          template(newName, contents)
+      case (newName, subShaders: Seq[ShaderDetails]) =>
+        val vert = subShaders.find(_.ext == ".vert").map(_.shaderCode)
+        val frag = subShaders.find(_.ext == ".frag").map(_.shaderCode)
 
-        IO.write(file, newContents)
+        val originalName: String =
+          subShaders.headOption.map(_.originalName).getOrElse("<missing name... bad news.>")
 
-        file
+        (vert, frag) match {
+          case (Some(v), Some(f)) =>
+            println("> " + originalName + " --> " + newName + ".scala")
+
+            val file: File =
+              sourceManagedDir / "indigo" / "platform" / "shaders" / (newName + ".scala")
+
+            val newContents: String =
+              template(newName, v, f)
+
+            IO.write(file, newContents)
+
+            println("Written: " + file.getCanonicalPath)
+
+            file
+
+          case (None, _) =>
+            throw new Exception("Couldn't find vertex shader details")
+
+          case (_, None) =>
+            throw new Exception("Couldn't find fragment shader details")
+
+          case _ =>
+            throw new Exception("Couldn't find shader details for reasons that are unclear...")
+        }
+
     }
   }
 
 }
+
+case class ShaderDetails(newName: String, originalName: String, ext: String, shaderCode: String)

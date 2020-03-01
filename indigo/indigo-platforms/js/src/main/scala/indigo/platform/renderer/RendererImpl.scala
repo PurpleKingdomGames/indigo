@@ -47,9 +47,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
   private val vao = gl2.createVertexArray()
 
   private val standardShaderProgram =
-    RendererFunctions.shaderProgramSetup(gl, "Pixel", StandardPixelArtVert.shader, StandardPixelArtFrag.shader)
+    RendererFunctions.shaderProgramSetup(gl, "Pixel", StandardPixelArt.vertex, StandardPixelArt.fragment)
   private val lightingShaderProgram =
-    RendererFunctions.shaderProgramSetup(gl, "Lighting", StandardLightingPixelArtVert.shader, StandardLightingPixelArtFrag.shader)
+    RendererFunctions.shaderProgramSetup(gl, "Lighting", StandardLightingPixelArt.vertex, StandardLightingPixelArt.fragment)
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var gameFrameBuffer: FrameBufferComponents.MultiOutput =
