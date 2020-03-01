@@ -67,7 +67,7 @@ object AssetLoader {
     //   IndigoLogger.info(s"[Image] Success ${imageAsset.path}")
     //   new LoadedImageAsset(AssetName(imageAsset.name), i)
     // }
-    Future(new LoadedImageAsset(imageAsset.name, ""))
+    Future(new LoadedImageAsset(imageAsset.name, "", None))
   }
 
   val loadTextAssets: List[AssetType.Text] => Future[List[LoadedTextAsset]] =

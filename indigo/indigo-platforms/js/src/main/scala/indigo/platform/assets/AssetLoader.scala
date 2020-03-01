@@ -69,7 +69,7 @@ object AssetLoader {
 
     onLoadFuture(image).map { i =>
       IndigoLogger.info(s"[Image] Success ${imageAsset.path.value}")
-      new LoadedImageAsset(imageAsset.name, i)
+      new LoadedImageAsset(imageAsset.name, i, imageAsset.tag)
     }
   }
 

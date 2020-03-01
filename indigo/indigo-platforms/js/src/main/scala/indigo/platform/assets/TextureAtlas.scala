@@ -153,7 +153,7 @@ object TextureAtlasFunctions {
 
   val inflateAndSortByPowerOfTwo: List[ImageRef] => List[TextureDetails] = images =>
     images
-      .map(i => TextureDetails(i, TextureAtlasFunctions.pickPowerOfTwoSizeFor(TextureAtlas.supportedSizes, i.width, i.height)))
+      .map(i => TextureDetails(i, TextureAtlasFunctions.pickPowerOfTwoSizeFor(TextureAtlas.supportedSizes, i.width, i.height), i.tag))
       .sortBy(_.size.value)
       .reverse
 
@@ -298,9 +298,9 @@ object TextureAtlasFunctions {
 }
 
 // Input
-final case class ImageRef(name: AssetName, width: Int, height: Int)
+final case class ImageRef(name: AssetName, width: Int, height: Int, tag: Option[String])
 
-final case class TextureDetails(imageRef: ImageRef, size: PowerOfTwo)
+final case class TextureDetails(imageRef: ImageRef, size: PowerOfTwo, tag: Option[String])
 
 final case class TextureMap(size: PowerOfTwo, textureCoords: List[TextureAndCoords])
 final case class TextureAndCoords(imageRef: ImageRef, coords: Point)
