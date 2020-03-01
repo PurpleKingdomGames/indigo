@@ -136,7 +136,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   ): Unit = {
 
     FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, clearColor)
-    gl2.drawBuffers(FrameBufferComponents.colorAttachments)
+    gl2.drawBuffers(frameBufferComponents.colorAttachments)
 
     gl2.useProgram(shaderProgram)
 

@@ -52,14 +52,14 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     RendererFunctions.shaderProgramSetup(gl, "Lighting", StandardLightingPixelArtVert.shader, StandardLightingPixelArtFrag.shader)
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var gameFrameBuffer: FrameBufferComponents =
-    FrameBufferFunctions.createFrameBuffer(gl, cNc.canvas.width, cNc.canvas.height)
+  private var gameFrameBuffer: FrameBufferComponents.MultiOutput =
+    FrameBufferFunctions.createFrameBufferMulti(gl, cNc.canvas.width, cNc.canvas.height)
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var lightingFrameBuffer: FrameBufferComponents =
-    FrameBufferFunctions.createFrameBuffer(gl, cNc.canvas.width, cNc.canvas.height)
+  private var lightingFrameBuffer: FrameBufferComponents.SingleOutput =
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var uiFrameBuffer: FrameBufferComponents =
-    FrameBufferFunctions.createFrameBuffer(gl, cNc.canvas.width, cNc.canvas.height)
+  private var uiFrameBuffer: FrameBufferComponents.SingleOutput =
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var resizeRun: Boolean = false
@@ -246,9 +246,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       orthographicProjectionMatrix = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification))
       orthographicProjectionMatrixNoMag = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble))
 
-      gameFrameBuffer = FrameBufferFunctions.createFrameBuffer(gl, actualWidth, actualHeight)
-      lightingFrameBuffer = FrameBufferFunctions.createFrameBuffer(gl, actualWidth, actualHeight)
-      uiFrameBuffer = FrameBufferFunctions.createFrameBuffer(gl, actualWidth, actualHeight)
+      gameFrameBuffer = FrameBufferFunctions.createFrameBufferMulti(gl, actualWidth, actualHeight)
+      lightingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
+      uiFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
 
       gl.viewport(0, 0, actualWidth.toDouble, actualHeight.toDouble)
 

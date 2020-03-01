@@ -47,9 +47,9 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   def drawLayer(
       projection: scalajs.js.Array[Double],
-      gameFrameBuffer: FrameBufferComponents,
-      lightingFrameBuffer: FrameBufferComponents,
-      uiFrameBuffer: FrameBufferComponents,
+      gameFrameBuffer: FrameBufferComponents.MultiOutput,
+      lightingFrameBuffer: FrameBufferComponents.SingleOutput,
+      uiFrameBuffer: FrameBufferComponents.SingleOutput,
       width: Int,
       height: Int,
       clearColor: ClearColor,
@@ -99,8 +99,8 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
 
     setupMergeFragmentShaderState(
       gameFrameBuffer,
-      lightingFrameBuffer.albedo,
-      uiFrameBuffer.albedo
+      lightingFrameBuffer,
+      uiFrameBuffer
     )
 
     gl2.drawArrays(TRIANGLE_STRIP, 0, 4)
@@ -155,7 +155,7 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var"))
-  def setupMergeFragmentShaderState(game: FrameBufferComponents, textureLighting: WebGLTexture, textureUi: WebGLTexture): Unit = {
+  def setupMergeFragmentShaderState(game: FrameBufferComponents.MultiOutput, textureLighting: FrameBufferComponents.SingleOutput, textureUi: FrameBufferComponents.SingleOutput): Unit = {
 
     val uniformTextures: List[(String, WebGLTexture)] =
       List(
@@ -163,8 +163,8 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
         "u_texture_game_emissive" -> game.emissive,
         "u_texture_game_normal" -> game.normal,
         "u_texture_game_specular" -> game.specular,
-        "u_texture_lighting" -> textureLighting,
-        "u_texture_ui" -> textureUi,
+        "u_texture_lighting" -> textureLighting.diffuse,
+        "u_texture_ui" -> textureUi.diffuse,
       )
 
     var i: Int = 0
