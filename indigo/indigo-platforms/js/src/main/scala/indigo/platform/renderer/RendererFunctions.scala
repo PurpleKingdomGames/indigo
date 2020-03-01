@@ -9,14 +9,15 @@ import indigo.shared.datatypes.Matrix4
 import scala.collection.mutable.ListBuffer
 import indigo.shared.display.DisplayEntity
 import scalajs.js.JSConverters._
+import indigo.shared.display.Shader
 
 object RendererFunctions {
 
   @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny", "org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.Throw"))
-  def shaderProgramSetup(gl: raw.WebGLRenderingContext, layerLabel: String, vertexShaderCode: String, fragmentShaderCode: String): WebGLProgram = {
+  def shaderProgramSetup(gl: raw.WebGLRenderingContext, layerLabel: String, shader: Shader): WebGLProgram = {
     //Create a vertex shader program object and compile it
     val vertShader = gl.createShader(VERTEX_SHADER)
-    gl.shaderSource(vertShader, vertexShaderCode)
+    gl.shaderSource(vertShader, shader.vertex)
     gl.compileShader(vertShader)
 
     if (gl.getShaderParameter(vertShader, COMPILE_STATUS).asInstanceOf[Boolean]) {
@@ -30,7 +31,7 @@ object RendererFunctions {
 
     //Create a fragment shader program object and compile it
     val fragShader = gl.createShader(FRAGMENT_SHADER)
-    gl.shaderSource(fragShader, fragmentShaderCode)
+    gl.shaderSource(fragShader, shader.fragment)
     gl.compileShader(fragShader)
 
     if (gl.getShaderParameter(fragShader, COMPILE_STATUS).asInstanceOf[Boolean]) {

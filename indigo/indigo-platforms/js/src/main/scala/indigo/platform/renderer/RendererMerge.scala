@@ -38,7 +38,7 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
     )
 
   private val mergeShaderProgram: WebGLProgram =
-    RendererFunctions.shaderProgramSetup(gl2, "Merge", StandardMerge.vertex, StandardMerge.fragment)
+    RendererFunctions.shaderProgramSetup(gl2, "Merge", StandardMerge)
 
   private val displayObjectUBOBuffer: WebGLBuffer =
     gl2.createBuffer()
