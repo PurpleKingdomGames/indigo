@@ -97,8 +97,8 @@ class Assets {
 Assets.Static = new StaticAssets();
 Assets.Sounds = new SoundAssets();
 Assets.Fonts = new FontAssets();
-Assets.assets = (
-    Assets.Static.assets +
-    Assets.Sounds.assets +
-    Assets.Fonts.assets
-);
+Assets.assets = []
+    .concat(Assets.Static.assets)
+    .concat(Assets.Sounds.assets)
+    .concat(Assets.Fonts.assets)
+;

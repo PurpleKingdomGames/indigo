@@ -1,8 +1,8 @@
 
-class PirateDemo extends IndigoGameBasic {
+class PirateDemo {
     config =
-        GameConfig.default
-            .withViewport(GameViewport.at720p)
+        GameConfigHelper.default
+            .withViewport(GameViewportHelper.at720p)
             .withMagnification(2)
     ;
 
@@ -11,11 +11,11 @@ class PirateDemo extends IndigoGameBasic {
     ;
 
     fonts =
-        Set(Assets.Fonts.fontInfo)
+        [Assets.Fonts.FontInfo]
     ;
 
-    /*animations =
-        Set(
+    animations = []
+     /*   Set(
             Assets.Clouds.cloudsAnimation1,
             Assets.Clouds.cloudsAnimation2,
             Assets.Clouds.cloudsAnimation3
@@ -28,23 +28,28 @@ class PirateDemo extends IndigoGameBasic {
             CloudsSubSystem.init(config.screenDimensions.width) // STEP 5
         )
     ;
-
+*/
     setup = function(assetCollection) {
         return InitialLoad.setup(assetCollection)
-    }*/
-
-    initialModel = function(startupData) {
-        return Model.initialModel(config.screenDimensions)
     }
 
-    update = function(gameTime, model, inputState, dice) {
+    initialModel = function(startupData) {
+        return Model.initialModel(this.config.screenDimensions)
+    }
+
+    initialise = function(){
+        return StartUp.succeedWith({});
+    }
+
+    updateModel = function(gameTime, model, inputState, dice) {
+        const config = this.config;
         return function(event) {
-            Model.update(gameTime, model, inputState, config.screenDimensions)
+            return Model.update(gameTime, model, inputState, config.screenDimensions)
         }
     }
 
     initialViewModel = function (startupData, gameModel) {
-        return ViewModel.initialViewModel(startupData, config.screenDimensions)
+        return ViewModel.initialViewModel(startupData, this.config.screenDimensions)
     }
 
     updateViewModel = function(gameTime, model, viewModel, inputState, dice) {

@@ -1,9 +1,19 @@
 class View {
 
     // STEP 2
-    drawBackground = function() {
-        return SceneUpdateFragment.empty
-            .addGameLayerNodes(Graphic(Rectangle(0, 0, 640, 360), 50, Assets.Static.backgroundRef))
+    static drawBackground() {
+        return SceneUpdateFragmentHelper.empty
+            .addGameLayerNodes([Graphic(
+                Rectangle(0, 0, 640, 360),
+                50,
+                0,
+                1,
+                1,
+                Assets.Static.backgroundRef,
+                new Point(0, 0),
+                Rectangle(0, 0, 640, 360),
+                new Effects(0, TintHelper.Zero, new Flip(false, false))
+            )])
     }
 
     // STEP 3

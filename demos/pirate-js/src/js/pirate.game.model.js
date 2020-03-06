@@ -1,21 +1,19 @@
 class Model {
     navRegion             = new Rectangle(137, 0, 338, 272)
     beat                  = new Millis(250)
-    walkDistancePerSecond = 128
-    fallDistancePerSecond = 300
 
-    initialModel = function(screenDimensions) {
-        return new Model(PirateState.Falling, true, Point(screenDimensions.horizontalCenter, 0), Millis.zero, Millis.zero);
+    static initialModel(screenDimensions) {
+        return new Model(PirateState.Falling, true, Point(screenDimensions.horizontalCenter, 0), 0, 0);
     }
 
-    update = function (gameTime, model, inputState, screenDimensions) {
+    static update(gameTime, model, inputState, screenDimensions) {
         return function(event) {
-            switch (typeof(event)) {
-                case FrameTick:
+            switch (event.eventType) {
+                case "frameTick":
                     if (model.pirateIsSafe && model.position.y == Model.navRegion.bottom - 1)
-                        return convertStateToModel(gameTime, InputMapper(inputState), model, screenDimensions);
+                        return Model.convertStateToModel(gameTime, new InputMapper(inputState), model, screenDimensions);
                     else
-                        return convertStateToModel(gameTime, model.pirateState, model, screenDimensions)
+                        return Model.convertStateToModel(gameTime, model.pirateState, model, screenDimensions)
 
                 default:
                     return Outcome(model)
@@ -23,7 +21,9 @@ class Model {
         }
     }
 
-    convertStateToModel = function (gameTime, nextState, model, screenDimensions) {
+    static convertStateToModel(gameTime, nextState, model, screenDimensions) {
+        const walkDistancePerSecond = 128
+        const fallDistancePerSecond = 300
         const walkSpeed = parseInt(walkDistancePerSecond.toDouble * gameTime.delta.value);
         const fallSpeed = parseInt(fallDistancePerSecond.toDouble * gameTime.delta.value);
 
