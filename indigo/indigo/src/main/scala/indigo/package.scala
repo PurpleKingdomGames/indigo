@@ -59,6 +59,9 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   type AssetPath = shared.assets.AssetPath
   val AssetPath: shared.assets.AssetPath.type = shared.assets.AssetPath
 
+  type AssetTag = shared.assets.AssetTag
+  val AssetTag: shared.assets.AssetTag.type = shared.assets.AssetTag
+
   type Material = shared.datatypes.Material
   val Material: shared.datatypes.Material.type = shared.datatypes.Material
 
