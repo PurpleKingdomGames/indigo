@@ -37,9 +37,6 @@ out float v_innerGlowAmount;
 out float v_alpha;
 
 out vec2 v_textureOffsets3x3[9];
-out vec2 v_textureOffsets5x5[25];
-out vec2 v_textureOffsets7x7[49];
-out vec2 v_textureOffsets9x9[81];
 out vec2 v_relativeScreenCoords;
 
 mat4 rotate2d(float angle){
