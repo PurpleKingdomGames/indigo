@@ -161,26 +161,42 @@ object TextureAtlasFunctions {
     val runningTotal: List[TextureDetails] => Int = _.map(_.size.value).sum
 
     @tailrec
-    def rec(remaining: List[TextureDetails], current: List[TextureDetails], rejected: List[TextureDetails], acc: List[List[TextureDetails]], maximum: PowerOfTwo): List[List[TextureDetails]] =
+    def createBuckets(remaining: List[TextureDetails], current: List[TextureDetails], rejected: List[TextureDetails], acc: List[List[TextureDetails]], maximum: PowerOfTwo): List[List[TextureDetails]] =
       (remaining, rejected) match {
         case (Nil, Nil) =>
           current :: acc
 
         case (Nil, x :: xs) =>
-          rec(x :: xs, Nil, Nil, current :: acc, maximum)
+          createBuckets(x :: xs, Nil, Nil, current :: acc, maximum)
 
         case (x :: xs, _) if x.size >= maximum =>
-          rec(xs, current, rejected, List(x) :: acc, maximum)
+          createBuckets(xs, current, rejected, List(x) :: acc, maximum)
 
         case (x :: xs, _) if runningTotal(current) + x.size.value > maximum.value * 2 =>
-          rec(xs, current, x :: rejected, acc, maximum)
+          createBuckets(xs, current, x :: rejected, acc, maximum)
 
         case (x :: xs, _) =>
-          rec(xs, x :: current, rejected, acc, maximum)
+          createBuckets(xs, x :: current, rejected, acc, maximum)
 
       }
 
-    rec(list, Nil, Nil, Nil, max)
+    // @tailrec
+    // def splitByTags(remaining: List[TextureDetails]): List[List[TextureDetails]] = 
+    //   remaining.sortBy(_.tag.getOrElse("")) match {
+        
+    //   }
+
+    def sortAndGroupByTag: List[TextureDetails] => List[(String, List[TextureDetails])] =
+      _.groupBy(_.tag.getOrElse("")).toList.sortBy(_._1)
+
+    // val x: List[List[TextureDetails]] = 
+    sortAndGroupByTag(list).flatMap { case (_, tds) =>
+      createBuckets(tds, Nil, Nil, Nil, max)
+    }
+
+    // x
+
+    // createBuckets(list, Nil, Nil, Nil, max)
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))

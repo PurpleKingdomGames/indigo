@@ -159,10 +159,64 @@ object TextureAtlasTests extends TestSuite {
             tex(AssetName("k"), PowerOfTwo._256)
           )
 
-          TextureAtlasFunctions
+          val result = TextureAtlasFunctions
             .groupTexturesIntoAtlasBuckets(PowerOfTwo._256)(list)
-            .forall(l => l.map(_.size.value).sum <= 256 * 2) ==> true
 
+          result.forall(l => l.map(_.size.value).sum <= 256 * 2) ==> true
+
+        }
+
+        "grouping with tags" - {
+
+          val tex = (name: AssetName, pow: PowerOfTwo, tag: String) => TextureDetails(ImageRef(name, 1, 1, None), pow, if (tag.isEmpty()) None else Some(tag))
+
+          val list: List[TextureDetails] = List(
+            tex(AssetName("a"), PowerOfTwo._256, "tag 1"),
+            tex(AssetName("b"), PowerOfTwo._256, "tag 1"),
+            tex(AssetName("c"), PowerOfTwo._128, ""),
+            tex(AssetName("d"), PowerOfTwo._64, "tag 2"),
+            tex(AssetName("e"), PowerOfTwo._256, "tag 3"),
+            tex(AssetName("f"), PowerOfTwo._8, "tag 3"),
+            tex(AssetName("g"), PowerOfTwo._4, "tag 1"),
+            tex(AssetName("h"), PowerOfTwo._64, "tag 2"),
+            tex(AssetName("i"), PowerOfTwo._128, "tag 2"),
+            tex(AssetName("j"), PowerOfTwo._2, "tag 3"),
+            tex(AssetName("k"), PowerOfTwo._256, "")
+          )
+
+          /*
+          no tag = Atlas 0
+          tag 1  = Atlas 1
+          tag 2  = Atlas 2
+          tag 3  = Atlas 3
+           */
+
+          val result =
+            TextureAtlasFunctions
+              .groupTexturesIntoAtlasBuckets(PowerOfTwo._512)(list)
+
+          // val pretty: String =
+          //   result.map { l =>
+          //     l.map(_.toString()).mkString("  ", ",\n  ", "")
+          //   }.mkString("\n\n")
+
+          // println(pretty)
+
+          result.length ==> 4
+
+          result(0).length ==> 2
+          result(1).length ==> 3
+          result(2).length ==> 3
+          result(3).length ==> 3
+
+          result(0).forall(_.tag.isEmpty) ==> true
+          result(1).forall(_.tag.get == "tag 1") ==> true
+          result(2).forall(_.tag.get == "tag 2") ==> true
+          result(3).forall(_.tag.get == "tag 3") ==> true
+
+          result(2).map(_.imageRef.name.value).contains("d") ==> true
+          result(2).map(_.imageRef.name.value).contains("h") ==> true
+          result(2).map(_.imageRef.name.value).contains("i") ==> true
         }
 
       }
