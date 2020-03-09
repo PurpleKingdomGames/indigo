@@ -14,12 +14,15 @@ import scala.scalajs.js.typedarray.ArrayBuffer
 object AssetLoader {
 
   def loadAssets(assets: Set[AssetType]): Future[AssetCollection] = {
-    IndigoLogger.info(s"Loading ${assets.toList.length.toString()} assets")
+    val assetList: List[AssetType] =
+      assets.toList.flatMap(_.toList)
+
+    IndigoLogger.info(s"Loading ${assetList.length.toString()} assets")
 
     for {
-      t <- loadTextAssets(filterOutTextAssets(assets.toList))
-      i <- loadImageAssets(filterOutImageAssets(assets.toList))
-      a <- loadAudioAssets(filterOutAudioAssets(assets.toList))
+      t <- loadTextAssets(filterOutTextAssets(assetList))
+      i <- loadImageAssets(filterOutImageAssets(assetList))
+      a <- loadAudioAssets(filterOutAudioAssets(assetList))
     } yield new AssetCollection(i, t, a)
   }
 
