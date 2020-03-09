@@ -22,7 +22,7 @@ object Material {
   }
   object Textured {
     def apply(diffuse: AssetName): Textured =
-      new Textured(diffuse, true)
+      new Textured(diffuse, false)
 
     def unapply(t: Textured): Option[AssetName] =
       Some(t.diffuse)
