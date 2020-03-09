@@ -1,5 +1,6 @@
 package indigojs.delegates
 
+import scala.scalajs.js.JSConverters._
 import scala.scalajs.js.annotation._
 import scala.scalajs.js
 
@@ -35,6 +36,63 @@ final class FontInfoDelegate(
   val fontChars = _fontChars
   @JSExport
   val caseSensitive = _caseSensitive
+
+  @JSExport
+  def addChar(fontChar: FontCharDelegate): FontInfoDelegate =
+    fromInternal(toInternal.addChar(fontChar.toInternal))
+
+  @JSExport
+  def addChars(chars: List[FontCharDelegate]): FontInfoDelegate =
+    fromInternal(toInternal.addChars(chars.map{ c => c.toInternal }))
+
+  @JSExport
+  def addChars(chars: FontCharDelegate*): FontInfoDelegate =
+    addChars(chars.toList)
+
+  @JSExport
+  def findByCharacter(character: String): FontCharDelegate = {
+    val charObj = toInternal.findByCharacter(character);
+
+    new FontCharDelegate(
+        charObj.character,
+        new RectangleDelegate(charObj.bounds.x, charObj.bounds.y, charObj.bounds.width, charObj.bounds.height)
+    )
+  }
+
+  @JSExport
+  def findByCharacter(character: Char): FontCharDelegate =
+    findByCharacter(character.toString)
+
+  @JSExport
+  def makeCaseSensitive(sensitive: Boolean): FontInfoDelegate =
+    fromInternal(toInternal.makeCaseSensitive(sensitive))
+
+  @JSExport
+  def isCaseSensitive: FontInfoDelegate =
+    fromInternal(toInternal.isCaseSensitive)
+
+  @JSExport
+  def isCaseInSensitive: FontInfoDelegate =
+    fromInternal(toInternal.isCaseInSensitive)
+
+  def fromInternal(orig: FontInfo): FontInfoDelegate =
+    new FontInfoDelegate(
+        orig.fontKey.toString,
+        orig.fontSpriteSheet.imageAssetRef,
+        orig.fontSpriteSheet.size.x,
+        orig.fontSpriteSheet.size.y,
+        new FontCharDelegate(
+          orig.unknownChar.character,
+          new RectangleDelegate(orig.unknownChar.bounds.x, orig.unknownChar.bounds.y, orig.unknownChar.bounds.width, orig.unknownChar.bounds.height)
+        ),
+        orig.fontChars.map{ f =>
+          new FontCharDelegate(
+            f.character,
+            new RectangleDelegate(f.bounds.x, f.bounds.y, f.bounds.width, f.bounds.height)
+          )
+        }.toJSArray,
+        orig.caseSensitive
+    )
 
   def toInternal: FontInfo =
     FontInfo(

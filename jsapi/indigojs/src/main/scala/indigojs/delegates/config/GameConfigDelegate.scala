@@ -20,6 +20,9 @@ final class GameConfigDelegate(_viewport: GameViewportDelegate, _frameRate: Int,
   val advanced = _advanced
 
   @JSExport
+  val screenDimensions = RectangleDelegate.fromRectangle(toInternal.screenDimensions)
+
+  @JSExport
   def withViewport(newViewport: GameViewportDelegate): GameConfigDelegate =
     new GameConfigDelegate(newViewport, frameRate, clearColor, magnification, advanced)
 
