@@ -2,7 +2,9 @@ package indigo.shared.assets
 
 import indigo.shared.{EqualTo, AsString}
 
-final class AssetName(val value: String) extends AnyVal
+final class AssetName(val value: String) extends AnyVal {
+  override def toString(): String = s"AssetName($value)"
+}
 object AssetName {
 
   implicit val equalTo: EqualTo[AssetName] = {
