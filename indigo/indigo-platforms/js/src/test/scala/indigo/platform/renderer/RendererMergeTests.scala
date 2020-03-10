@@ -25,10 +25,11 @@ object RendererMergeTests extends TestSuite {
             0.5,   // scale X
             0.5,   // scale Y
             "",    // diffuse
-            "",    // emission
-            "",    // normal
-            "",    // specular
-            SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets(Vector2(0.5, 0.5), Vector2(0.1, 0.1)),
+            new SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets(Vector2(0.5, 0.5), Vector2(0.1, 0.1), identity),
+            Vector2.minusOne,
+            Vector2.minusOne,
+            Vector2.minusOne,
+            0.0,
             40, // refX
             30, // refY
             DisplayEffects.default

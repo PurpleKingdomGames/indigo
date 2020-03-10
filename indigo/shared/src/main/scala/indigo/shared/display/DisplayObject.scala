@@ -1,5 +1,7 @@
 package indigo.shared.display
 
+import indigo.shared.datatypes.Vector2
+
 sealed trait DisplayEntity {
   val z: Double
 }
@@ -22,19 +24,21 @@ final class DisplayObject(
     val scaleX: Double,
     val scaleY: Double,
     val diffuseRef: String,
-    val emissionRef: String,
-    val normalRef: String,
-    val specularRef: String,
+    // val emissionRef: String,
+    // val normalRef: String,
+    // val specularRef: String,
     val frameX: Double,
     val frameY: Double,
     val frameScaleX: Double,
     val frameScaleY: Double,
+    val emission: Vector2,
+    val normal: Vector2,
+    val specular: Vector2,
+    val isLit: Double,
     val refX: Double,
     val refY: Double,
     val effects: DisplayEffects
-) extends DisplayEntity {
-  val textureHash: String = diffuseRef+emissionRef+normalRef+specularRef
-}
+) extends DisplayEntity
 object DisplayObject {
 
   def apply(
@@ -47,10 +51,14 @@ object DisplayObject {
       scaleX: Double,
       scaleY: Double,
       diffuseRef: String,
-      emissionRef: String,
-      normalRef: String,
-      specularRef: String,
+      // emissionRef: String,
+      // normalRef: String,
+      // specularRef: String,
       frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets,
+      emissionOffset: Vector2,
+      normalOffset: Vector2,
+      specularOffset: Vector2,
+      isLit: Double,
       refX: Int,
       refY: Int,
       effects: DisplayEffects
@@ -65,13 +73,17 @@ object DisplayObject {
       scaleX,
       scaleY,
       diffuseRef,
-      emissionRef,
-      normalRef,
-      specularRef,
+      // emissionRef,
+      // normalRef,
+      // specularRef,
       frame.translate.x,
       frame.translate.y,
       frame.scale.x,
       frame.scale.y,
+      emissionOffset,
+      normalOffset,
+      specularOffset,
+      isLit,
       refX.toDouble,
       refY.toDouble,
       effects

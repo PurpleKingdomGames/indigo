@@ -20,9 +20,9 @@ import indigo.shared.display.DisplayCloneBatchData
 class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int) {
 
   // Instance Array Buffers
-  private val transformInstanceArray: WebGLBuffer      = gl2.createBuffer()
-  private val frameTransformInstanceArray: WebGLBuffer = gl2.createBuffer()
-  private val dimensionsInstanceArray: WebGLBuffer     = gl2.createBuffer()
+  private val transformInstanceArray: WebGLBuffer                = gl2.createBuffer()
+  private val frameTransformInstanceArray: WebGLBuffer           = gl2.createBuffer()
+  private val dimensionsInstanceArray: WebGLBuffer               = gl2.createBuffer()
   private val tintInstanceArray: WebGLBuffer                     = gl2.createBuffer()
   private val gradiantOverlayPositionsInstanceArray: WebGLBuffer = gl2.createBuffer()
   private val gradiantOverlayFromColorInstanceArray: WebGLBuffer = gl2.createBuffer()
@@ -30,7 +30,9 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val borderColorInstanceArray: WebGLBuffer              = gl2.createBuffer()
   private val glowColorInstanceArray: WebGLBuffer                = gl2.createBuffer()
   private val amountsInstanceArray: WebGLBuffer                  = gl2.createBuffer()
-  private val rotationAlphaFlipHFlipVInstanceArray: WebGLBuffer      = gl2.createBuffer()
+  private val rotationAlphaFlipHFlipVInstanceArray: WebGLBuffer  = gl2.createBuffer()
+  private val emissiveNormalOffsetsArray: WebGLBuffer            = gl2.createBuffer()
+  private val specularOffsetIsLitArray: WebGLBuffer              = gl2.createBuffer()
 
   def setupInstanceArray(buffer: WebGLBuffer, location: Int, size: Int): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -40,9 +42,9 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   }
 
   // Instance Data Arrays
-  private val transformData: scalajs.js.Array[Double]      = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val frameTransformData: scalajs.js.Array[Double] = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val dimensionsData: scalajs.js.Array[Double]     = scalajs.js.Array[Double](4d * maxBatchSize)
+  private val transformData: scalajs.js.Array[Double]                = scalajs.js.Array[Double](4d * maxBatchSize)
+  private val frameTransformData: scalajs.js.Array[Double]           = scalajs.js.Array[Double](4d * maxBatchSize)
+  private val dimensionsData: scalajs.js.Array[Double]               = scalajs.js.Array[Double](4d * maxBatchSize)
   private val tintData: scalajs.js.Array[Double]                     = scalajs.js.Array[Double](4d * maxBatchSize)
   private val gradiantOverlayPositionsData: scalajs.js.Array[Double] = scalajs.js.Array[Double](4d * maxBatchSize)
   private val gradiantOverlayFromColorData: scalajs.js.Array[Double] = scalajs.js.Array[Double](4d * maxBatchSize)
@@ -50,7 +52,9 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val borderColorData: scalajs.js.Array[Double]              = scalajs.js.Array[Double](4d * maxBatchSize)
   private val glowColorData: scalajs.js.Array[Double]                = scalajs.js.Array[Double](4d * maxBatchSize)
   private val amountsData: scalajs.js.Array[Double]                  = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val rotationAlphaFlipHFlipVData: scalajs.js.Array[Double]      = scalajs.js.Array[Double](4d * maxBatchSize)
+  private val rotationAlphaFlipHFlipVData: scalajs.js.Array[Double]  = scalajs.js.Array[Double](4d * maxBatchSize)
+  private val emissiveNormalOffsetsData: scalajs.js.Array[Double]    = scalajs.js.Array[Double](4d * maxBatchSize)
+  private val specularOffsetIsLitData: scalajs.js.Array[Double]      = scalajs.js.Array[Double](4d * maxBatchSize)
 
   @inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Double]) = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -113,6 +117,16 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     rotationAlphaFlipHFlipVData((i * 4) + 1) = d.effects.alpha
     rotationAlphaFlipHFlipVData((i * 4) + 2) = d.effects.flipHorizontal
     rotationAlphaFlipHFlipVData((i * 4) + 3) = d.effects.flipVertical
+
+    emissiveNormalOffsetsData((i * 4) + 0) = d.emission.x
+    emissiveNormalOffsetsData((i * 4) + 1) = d.emission.y
+    emissiveNormalOffsetsData((i * 4) + 2) = d.normal.x
+    emissiveNormalOffsetsData((i * 4) + 3) = d.normal.y
+
+    specularOffsetIsLitData((i * 4) + 0) = d.specular.x
+    specularOffsetIsLitData((i * 4) + 1) = d.specular.y
+    specularOffsetIsLitData((i * 4) + 2) = d.isLit
+    specularOffsetIsLitData((i * 4) + 3) = 1
   }
 
   private def overwriteFromDisplayBatchClone(cloneData: DisplayCloneBatchData, i: Int): Unit = {
@@ -170,6 +184,10 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     setupInstanceArray(amountsInstanceArray, 10, 4)
     // vec4 a_rotationAlphaFlipHFlipV --
     setupInstanceArray(rotationAlphaFlipHFlipVInstanceArray, 11, 4)
+    // vec4 a_emissiveNormalOffsets --
+    setupInstanceArray(emissiveNormalOffsetsArray, 12, 4)
+    // vec4 a_specularOffsetIsLit --
+    setupInstanceArray(specularOffsetIsLitArray, 13, 4)
     //
 
     val sorted: ListBuffer[DisplayEntity] =
@@ -188,6 +206,8 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
         bindData(glowColorInstanceArray, glowColorData)
         bindData(amountsInstanceArray, amountsData)
         bindData(rotationAlphaFlipHFlipVInstanceArray, rotationAlphaFlipHFlipVData)
+        bindData(emissiveNormalOffsetsArray, emissiveNormalOffsetsData)
+        bindData(specularOffsetIsLitArray, specularOffsetIsLitData)
 
         gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
         metrics.record(layer.metricDraw)
@@ -201,7 +221,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
         case Nil =>
           drawBuffer(batchCount)
 
-        case (d: DisplayObject) :: _ if d.textureHash !== textureHash =>
+        case (d: DisplayObject) :: _ if d.diffuseRef !== textureHash =>
           drawBuffer(batchCount)
 
           // Diffuse

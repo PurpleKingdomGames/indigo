@@ -175,30 +175,53 @@ object DisplayObjectConversions {
     rec(sceneNodes)
   }
 
-  def materialToValues(assetMapping: AssetMapping, material: Material): (String, String, String, String) =
+  def materialToEmissiveCoords(assetMapping: AssetMapping, material: Material): Vector2 =
     material match {
-      case Material.Textured(AssetName(diffuse)) =>
-        (lookupAtlasName(assetMapping, diffuse), "", "", "")
+      case Material.Textured(AssetName(_)) =>
+        Vector2.minusOne
 
-      case Material.Lit(AssetName(albedo), _, _, _) => {
-        val a = lookupAtlasName(assetMapping, albedo)
-        val e = "" //emission.map(n => lookupAtlasName(assetMapping, n.value)).getOrElse("") 
-        (a, e, "", "")
-      }
+      case Material.Lit(_, assetName, _, _) =>
+        optionalAssetToCoords(assetMapping, assetName)
     }
 
-  def materialToName(material: Material): String =
+  def materialToNormalCoords(assetMapping: AssetMapping, material: Material): Vector2 =
     material match {
-      case Material.Textured(AssetName(diffuse)) =>
-        diffuse
+      case Material.Textured(AssetName(_)) =>
+        Vector2.minusOne
 
-      case Material.Lit(AssetName(albedo), _, _, _) =>
-        albedo
+      case Material.Lit(_, _, assetName, _) =>
+        optionalAssetToCoords(assetMapping, assetName)
     }
+
+  def materialToSpecularCoords(assetMapping: AssetMapping, material: Material): Vector2 =
+    material match {
+      case Material.Textured(AssetName(_)) =>
+        Vector2.minusOne
+
+      case Material.Lit(_, _, _, assetName) =>
+        optionalAssetToCoords(assetMapping, assetName)
+    }
+
+  def optionalAssetToCoords(assetMapping: AssetMapping, maybeAssetName: Option[AssetName]): Vector2 =
+    maybeAssetName.map(t => lookupTextureOffset(assetMapping, t.value)).getOrElse(Vector2.minusOne)
 
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
-    val materialValues = materialToValues(assetMapping, leaf.material)
-    val materialName   = materialToName(leaf.material)
+    val materialName = leaf.material.default.value
+
+    val frameInfo =
+      QuickCache(s"${leaf.crop.hash}_${materialName}") {
+        SpriteSheetFrame.calculateFrameOffset(
+          imageSize = lookupAtlasSize(assetMapping, materialName),
+          frameSize = Vector2(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble),
+          framePosition = Vector2(leaf.crop.position.x.toDouble, leaf.crop.position.y.toDouble),
+          textureOffset = lookupTextureOffset(assetMapping, materialName)
+        )
+      }
+
+    val effectsValues =
+      QuickCache(leaf.effects.hash) {
+        DisplayEffects.fromEffects(leaf.effects)
+      }
 
     DisplayObject(
       x = leaf.x,
@@ -209,23 +232,15 @@ object DisplayObjectConversions {
       rotation = leaf.rotation.value,
       scaleX = leaf.scale.x,
       scaleY = leaf.scale.y,
-      diffuseRef = materialValues._1,
-      emissionRef = materialValues._2,
-      normalRef = materialValues._3,
-      specularRef = materialValues._4, //TODO: The below finds the frame only for aldebo...
-      frame = QuickCache(s"${leaf.crop.hash}_${materialName}") {
-        SpriteSheetFrame.calculateFrameOffset(
-          imageSize = lookupAtlasSize(assetMapping, materialName),
-          frameSize = Vector2(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble),
-          framePosition = Vector2(leaf.crop.position.x.toDouble, leaf.crop.position.y.toDouble),
-          textureOffset = lookupTextureOffset(assetMapping, materialName)
-        )
-      },
+      diffuseRef = lookupAtlasName(assetMapping, materialName),
+      frame = frameInfo,
+      emissionOffset = frameInfo.offsetToCoords(materialToEmissiveCoords(assetMapping, leaf.material)),
+      normalOffset = frameInfo.offsetToCoords(materialToNormalCoords(assetMapping, leaf.material)),
+      specularOffset = frameInfo.offsetToCoords(materialToSpecularCoords(assetMapping, leaf.material)),
+      isLit = if (leaf.material.isLit) 1.0 else 0.0,
       refX = leaf.ref.x,
       refY = leaf.ref.y,
-      effects = QuickCache(leaf.effects.hash) {
-        DisplayEffects.fromEffects(leaf.effects)
-      }
+      effects = effectsValues
     )
   }
 
@@ -240,9 +255,6 @@ object DisplayObjectConversions {
       scaleX = leaf.scale.x,
       scaleY = leaf.scale.y,
       diffuseRef = lookupAtlasName(assetMapping, anim.assetName.value),
-      emissionRef = "",
-      normalRef = "",
-      specularRef = "",
       frame = QuickCache(anim.frameHash) {
         SpriteSheetFrame.calculateFrameOffset(
           imageSize = lookupAtlasSize(assetMapping, anim.assetName.value),
@@ -251,6 +263,10 @@ object DisplayObjectConversions {
           textureOffset = lookupTextureOffset(assetMapping, anim.assetName.value)
         )
       },
+      emissionOffset = Vector2.minusOne,
+      normalOffset = Vector2.minusOne,
+      specularOffset = Vector2.minusOne,
+      isLit = 0.0,
       refX = leaf.ref.x,
       refY = leaf.ref.y,
       effects = QuickCache(leaf.effects.hash) {
@@ -288,9 +304,6 @@ object DisplayObjectConversions {
                   scaleX = leaf.scale.x,
                   scaleY = leaf.scale.y,
                   diffuseRef = lookupAtlasName(assetMapping, fontInfo.fontSpriteSheet.assetName.value),
-                  emissionRef = "",
-                  normalRef = "",
-                  specularRef = "",
                   frame = QuickCache(fontChar.bounds.hash + "_" + fontInfo.fontSpriteSheet.assetName.value) {
                     SpriteSheetFrame.calculateFrameOffset(
                       imageSize = lookupAtlasSize(assetMapping, fontInfo.fontSpriteSheet.assetName.value),
@@ -299,6 +312,10 @@ object DisplayObjectConversions {
                       textureOffset = lookupTextureOffset(assetMapping, fontInfo.fontSpriteSheet.assetName.value)
                     )
                   },
+                  emissionOffset = Vector2.minusOne,
+                  normalOffset = Vector2.minusOne,
+                  specularOffset = Vector2.minusOne,
+                  isLit = 0.0,
                   refX = leaf.ref.x,
                   refY = leaf.ref.y,
                   effects = QuickCache(leaf.effects.hash) {

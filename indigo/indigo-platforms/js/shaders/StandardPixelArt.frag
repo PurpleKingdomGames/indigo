@@ -8,6 +8,7 @@ in vec2 v_texcoord;
 in vec2 v_texcoordEmissive;
 in vec2 v_texcoordNormal;
 in vec2 v_texcoordSpecular;
+in float v_isLit;
 in vec2 v_size;
 
 in vec4 v_tint;

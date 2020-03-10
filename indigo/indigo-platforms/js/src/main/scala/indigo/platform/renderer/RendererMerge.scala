@@ -14,6 +14,7 @@ import indigo.shared.display.SpriteSheetFrame
 import scala.scalajs.js.JSConverters._
 import indigo.shared.datatypes.RGBA
 import indigo.shared.display.DisplayEffects
+import indigo.shared.datatypes.Vector2
 
 class RendererMerge(gl2: WebGL2RenderingContext) {
 
@@ -28,10 +29,11 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
       scaleX = 1,
       scaleY = 1,
       diffuseRef = "",
-      emissionRef = "",
-      normalRef = "",
-      specularRef = "",
       frame = SpriteSheetFrame.defaultOffset,
+      emissionOffset = Vector2.minusOne,
+      normalOffset = Vector2.minusOne,
+      specularOffset = Vector2.minusOne,
+      isLit = 0.0,
       refX = 0,
       refY = 0,
       effects = DisplayEffects.default
@@ -158,17 +160,17 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
 
     val uniformTextures: List[(String, WebGLTexture)] =
       List(
-        "u_texture_game_albedo" -> game.albedo,
+        "u_texture_game_albedo"   -> game.albedo,
         "u_texture_game_emissive" -> game.emissive,
-        "u_texture_game_normal" -> game.normal,
+        "u_texture_game_normal"   -> game.normal,
         "u_texture_game_specular" -> game.specular,
-        "u_texture_lighting" -> textureLighting.diffuse,
-        "u_texture_ui" -> textureUi.diffuse,
+        "u_texture_lighting"      -> textureLighting.diffuse,
+        "u_texture_ui"            -> textureUi.diffuse
       )
 
     var i: Int = 0
 
-    while(i < uniformTextures.length) {
+    while (i < uniformTextures.length) {
       val tex = uniformTextures(i)
       attach(i + 1, tex._1, tex._2)
       i = i + 1

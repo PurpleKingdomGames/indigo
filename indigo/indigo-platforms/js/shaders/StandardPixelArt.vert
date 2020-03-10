@@ -14,6 +14,8 @@ layout (location = 8) in vec4 a_borderColor;
 layout (location = 9) in vec4 a_glowColor;
 layout (location = 10) in vec4 a_amounts; // a_outerBorderAmount, a_innerBorderAmount, a_outerGlowAmount, a_innerGlowAmount
 layout (location = 11) in vec4 a_rotationAlphaFlipHFlipV; // a_rotation, a_alpha, a_fliph, a_flipv
+layout (location = 12) in vec4 a_emissiveNormalOffsets; // a_emissive (vec2), a_normal (vec2)
+layout (location = 13) in vec4 a_specularOffsetIsLit; // a_specular (vec2), a_isLit (float)
 
 uniform mat4 u_projection;
 
@@ -21,6 +23,7 @@ out vec2 v_texcoord;
 out vec2 v_texcoordEmissive;
 out vec2 v_texcoordNormal;
 out vec2 v_texcoordSpecular;
+out float v_isLit;
 out vec2 v_size;
 
 out vec4 v_tint;
@@ -63,9 +66,13 @@ mat4 scale2d(vec2 s){
                 );
 }
 
-vec2 scaleTextCoords(vec2 texcoord){
-  mat4 transform = translate2d(a_frameTransform.xy) * scale2d(a_frameTransform.zw);
+vec2 scaleTexCoordsWithOffset(vec2 texcoord, vec2 offset){
+  mat4 transform = translate2d(offset) * scale2d(a_frameTransform.zw);
   return (transform * vec4(texcoord, 1.0, 1.0)).xy;
+}
+
+vec2 scaleTexCoords(vec2 texcoord){
+  return scaleTexCoordsWithOffset(texcoord, a_frameTransform.xy);
 }
 
 vec2 sizeOfAPixel() {
@@ -91,15 +98,15 @@ vec2[9] generate3x3() {
 
 vec2[9] generateTexCoords3x3(vec2 texcoords, vec2 onePixel, vec2[9] offsets) {
   return vec2[9](
-    scaleTextCoords(texcoords + (onePixel * offsets[0])),
-    scaleTextCoords(texcoords + (onePixel * offsets[1])),
-    scaleTextCoords(texcoords + (onePixel * offsets[2])),
-    scaleTextCoords(texcoords + (onePixel * offsets[3])),
-    scaleTextCoords(texcoords + (onePixel * offsets[4])),
-    scaleTextCoords(texcoords + (onePixel * offsets[5])),
-    scaleTextCoords(texcoords + (onePixel * offsets[6])),
-    scaleTextCoords(texcoords + (onePixel * offsets[7])),
-    scaleTextCoords(texcoords + (onePixel * offsets[8]))
+    scaleTexCoords(texcoords + (onePixel * offsets[0])),
+    scaleTexCoords(texcoords + (onePixel * offsets[1])),
+    scaleTexCoords(texcoords + (onePixel * offsets[2])),
+    scaleTexCoords(texcoords + (onePixel * offsets[3])),
+    scaleTexCoords(texcoords + (onePixel * offsets[4])),
+    scaleTexCoords(texcoords + (onePixel * offsets[5])),
+    scaleTexCoords(texcoords + (onePixel * offsets[6])),
+    scaleTexCoords(texcoords + (onePixel * offsets[7])),
+    scaleTexCoords(texcoords + (onePixel * offsets[8]))
   );
 }
 
@@ -114,6 +121,10 @@ void main(void) {
   float rotation = a_rotationAlphaFlipHFlipV.x;
   float alpha = a_rotationAlphaFlipHFlipV.y;
   vec2 flip = a_rotationAlphaFlipHFlipV.zw;
+  vec2 texcoordsEmissive = a_emissiveNormalOffsets.xy;
+  vec2 texcoordsNormal = a_emissiveNormalOffsets.zw;
+  vec2 texcoordsSpecular = a_specularOffsetIsLit.xy;
+  float isLit = a_specularOffsetIsLit.z;
 
   vec2 moveToReferencePoint = -(ref / size) + 0.5;
 
@@ -126,10 +137,11 @@ void main(void) {
 
   gl_Position = u_projection * transform * vertices;
 
-  v_texcoord = scaleTextCoords(texcoords);
-  v_texcoordEmissive = scaleTextCoords(texcoords + vec2(1.0, 0.0));
-  v_texcoordNormal = scaleTextCoords(texcoords + vec2(0.0, 1.0));
-  v_texcoordSpecular = scaleTextCoords(texcoords + vec2(1.0, 1.0));
+  v_texcoord = scaleTexCoords(texcoords);
+  v_texcoordEmissive = scaleTexCoordsWithOffset(texcoords, texcoordsEmissive);
+  v_texcoordNormal = scaleTexCoordsWithOffset(texcoords, texcoordsNormal);
+  v_texcoordSpecular = scaleTexCoordsWithOffset(texcoords, texcoordsSpecular);
+  v_isLit = isLit;
   v_size = size;
 
   v_tint = a_tint;
