@@ -3,6 +3,7 @@ package indigo.shared.datatypes
 import indigo.shared.assets.AssetName
 
 sealed trait Material {
+  val default: AssetName
   val isLit: Boolean
   def lit: Material
   def unlit: Material
@@ -11,6 +12,8 @@ sealed trait Material {
 object Material {
 
   final class Textured(val diffuse: AssetName, val isLit: Boolean) extends Material {
+    val default: AssetName = diffuse
+
     def withAlbedo(newDiffuse: AssetName): Textured =
       new Textured(newDiffuse, isLit)
 
@@ -35,6 +38,7 @@ object Material {
       val specular: Option[AssetName],
       val isLit: Boolean
   ) extends Material {
+    val default: AssetName = albedo
 
     def withAlbedo(newAlbedo: AssetName): Lit =
       new Lit(newAlbedo, emission, normal, specular, isLit)
