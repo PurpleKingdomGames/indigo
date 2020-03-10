@@ -13,7 +13,7 @@ class View {
                 Assets.Static.backgroundRef,
                 new Point(0, 0),
                 Rectangle(0, 0, 640, 360),
-                new Effects(0, TintHelper.Zero, new Flip(false, false))
+                EffectsHelper.None
             )
         ]
     }
