@@ -63,6 +63,29 @@ object SpriteSheetFrameTests extends TestSuite {
 
         }
 
+        "should be able to calculate other offsets based on this one" - {
+
+          val imageSize     = Vector2(128, 128)
+          val frameSize     = Vector2(64, 64)
+          val framePosition = Vector2(0, 0)
+          val textureOffset = Vector2(0, 0)
+
+          val offset0 = SpriteSheetFrame.calculateFrameOffset(imageSize, frameSize, framePosition, textureOffset)
+
+          offset0.scale ==> Vector2(0.5, 0.5)
+          offset0.translate ==> Vector2(0.0, 0.0)
+
+          val offset1 = offset0.offsetToCoords(Vector2(64, 0))
+          offset1 ==> Vector2(0.5, 0.0)
+
+          val offset2 = offset0.offsetToCoords(Vector2(64, 64))
+          offset2 ==> Vector2(0.5, 0.5)
+
+          val offset3 = offset0.offsetToCoords(Vector2(0, 64))
+          offset3 ==> Vector2(0.0, 0.5)
+
+        }
+
       }
     }
 

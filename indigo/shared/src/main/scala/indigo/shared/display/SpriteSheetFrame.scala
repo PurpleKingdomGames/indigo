@@ -11,20 +11,24 @@ object SpriteSheetFrame {
     val frameOffsetFactor = (framePosition + textureOffset) / frameSize
     val translationFactor = scaleFactor * frameOffsetFactor
 
-    new SpriteSheetFrameCoordinateOffsets(scaleFactor, translationFactor)
+    val f: Vector2 => Vector2 =
+      v => scaleFactor * ((v + textureOffset) / frameSize)
+
+    new SpriteSheetFrameCoordinateOffsets(scaleFactor, translationFactor, f)
   }
 
   def defaultOffset: SpriteSheetFrameCoordinateOffsets =
     new SpriteSheetFrameCoordinateOffsets(
       scale = Vector2.one,
-      translate = Vector2.zero
+      translate = Vector2.zero,
+      translateCoords = identity
     )
 
-  final class SpriteSheetFrameCoordinateOffsets(val scale: Vector2, val translate: Vector2)
+  final class SpriteSheetFrameCoordinateOffsets(val scale: Vector2, val translate: Vector2, translateCoords: Vector2 => Vector2) {
+    def offsetToCoords(offset: Vector2): Vector2 =
+      translateCoords(offset)
+  }
   object SpriteSheetFrameCoordinateOffsets {
-
-    def apply(scale: Vector2, translate: Vector2): SpriteSheetFrameCoordinateOffsets =
-      new SpriteSheetFrameCoordinateOffsets(scale, translate)
 
     implicit val show: AsString[SpriteSheetFrameCoordinateOffsets] = {
       val sv = implicitly[AsString[Vector2]]
