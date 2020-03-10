@@ -1,3 +1,4 @@
+'use strict';
 const PirateState = {
     Idle: 1,
     MoveLeft: 2,

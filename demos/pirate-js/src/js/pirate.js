@@ -1,11 +1,5 @@
-
+'use strict';
 class PirateDemo {
-    config =
-        GameConfigHelper.default
-            .withViewport(GameViewportHelper.at720p)
-            .withMagnification(2)
-    ;
-
     assets =
         Assets.assets
     ;
@@ -34,7 +28,7 @@ class PirateDemo {
     }
 
     initialModel = function(startupData) {
-        return Model.initialModel(this.config.screenDimensions)
+        return Model.initialModel(PirateDemo.config.screenDimensions)
     }
 
     initialise = function(){
@@ -42,28 +36,30 @@ class PirateDemo {
     }
 
     updateModel = function(gameTime, model, inputState, dice) {
-        const config = this.config;
+        const config = PirateDemo.config;
         return function(event) {
-            return Model.update(gameTime, model, inputState, config.screenDimensions)
+            return Model.update(gameTime, model, inputState, config.screenDimensions)(event)
         }
     }
 
     initialViewModel = function (startupData, gameModel) {
-        return ViewModel.initialViewModel(startupData, this.config.screenDimensions)
+        return ViewModel.initialViewModel(startupData, PirateDemo.config.screenDimensions)
     }
 
     updateViewModel = function(gameTime, model, viewModel, inputState, dice) {
-        return Outcome(viewModel)
+        return new Outcome(viewModel)
     }
 
     present = function(gameTime, model, viewModel, inputState) {
-            return [
-                View.drawBackground,
-                //View.sceneAudio,
-                //View.drawWater(viewModel),
-                //View.drawForeground(viewModel, config.screenDimensions),
-                //View.drawPirateWithRespawn(gameTime, model, viewModel.captain) // STEP 9
-            ]
+            return SceneUpdateFragmentHelper
+                .empty
+                .addGameLayerNodes(
+                    View.drawBackground()
+                    //View.sceneAudio,
+                    //View.drawWater(viewModel),
+                    //View.drawForeground(viewModel, config.screenDimensions),
+                    //View.drawPirateWithRespawn(gameTime, model, viewModel.captain) // STEP 9
+                )
         // View.drawBackground |+|
         //   View.sceneAudio |+|
         //   View.drawWater(viewModel) |+|
@@ -77,3 +73,9 @@ class PirateDemo {
         // noRender // STEP 1
     }
 }
+
+PirateDemo.config =
+    GameConfigHelper.default
+        .withViewport(GameViewportHelper.at720p)
+        .withMagnification(2)
+;

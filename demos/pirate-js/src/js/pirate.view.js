@@ -1,9 +1,10 @@
+'use strict';
 class View {
 
     // STEP 2
     static drawBackground() {
-        return SceneUpdateFragmentHelper.empty
-            .addGameLayerNodes([Graphic(
+        return [
+            Graphic(
                 Rectangle(0, 0, 640, 360),
                 50,
                 0,
@@ -13,7 +14,8 @@ class View {
                 new Point(0, 0),
                 Rectangle(0, 0, 640, 360),
                 new Effects(0, TintHelper.Zero, new Flip(false, false))
-            )])
+            )
+        ]
     }
 
     // STEP 3
@@ -82,11 +84,11 @@ class View {
 
     respawnEffect = function(gameTime, model, captain) {
         const flashActive =
-            Signal(_ < model.lastRespawn + Millis(2000))
+            Signal(_ < model.lastRespawn + 2000)
         ;
 
         const flashOnOff =
-            Signal.Pulse(Millis(100))
+            Signal.Pulse(100)
         ;
 
         const combinedSignals =

@@ -2,6 +2,7 @@ package indigojs.delegates.config
 
 import scala.scalajs.js.annotation._
 import indigojs.delegates.ClearColorDelegate
+import indigojs.delegates.RectangleDelegate
 import indigo.shared.config.GameConfig
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))

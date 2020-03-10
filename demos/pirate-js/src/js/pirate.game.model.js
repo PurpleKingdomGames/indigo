@@ -1,6 +1,7 @@
+'use strict';
 class Model {
     navRegion             = new Rectangle(137, 0, 338, 272)
-    beat                  = new Millis(250)
+    beat                  = 250
 
     static initialModel(screenDimensions) {
         return new Model(PirateState.Falling, true, Point(screenDimensions.horizontalCenter, 0), 0, 0);
@@ -16,7 +17,7 @@ class Model {
                         return Model.convertStateToModel(gameTime, model.pirateState, model, screenDimensions)
 
                 default:
-                    return Outcome(model)
+                    return new Outcome(model)
             }
         }
     }
@@ -37,7 +38,7 @@ class Model {
                             .addGlobalEvents(PlaySound(Assets.Sounds.respawnSound, Volume.Max));
                 else
                     // Otherwise, fall normally
-                    return Outcome(model.copy(position = model.position + Point(0, fallSpeed)));
+                    return new Outcome(model.copy(position = model.position + Point(0, fallSpeed)));
 
             // Move left while on the ground
             case PirateState.MoveLeft:
@@ -56,7 +57,7 @@ class Model {
                 }
                 else
                     // Moving left but not safe = Falling
-                    return Outcome(
+                    return new Outcome(
                         model.copy(
                             pirateState = PirateState.Falling,
                             facingRight = false
@@ -69,7 +70,7 @@ class Model {
                 {
                     const soundUpdate = updateWalkSound(gameTime, model);
 
-                    return Outcome(
+                    return new Outcome(
                         model.copy(
                             pirateState = nextState,
                             facingRight = true,
@@ -80,7 +81,7 @@ class Model {
                 }
                 else
                     // Moving right but not safe = Falling
-                    return Outcome(
+                    return new Outcome(
                         model.copy(
                         pirateState = PirateState.Falling,
                         facingRight = true
@@ -89,7 +90,7 @@ class Model {
 
             // Reset state
             case PirateState.Idle:
-                return Outcome(model.copy(pirateState = nextState))
+                return new Outcome(model.copy(pirateState = nextState))
         }
     }
 

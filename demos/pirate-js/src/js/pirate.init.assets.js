@@ -1,3 +1,4 @@
+'use strict';
 class StaticAssets {
     constructor() {
         this.backgroundRef = "background"

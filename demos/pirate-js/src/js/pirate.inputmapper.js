@@ -1,3 +1,4 @@
+'use strict';
 class InputMapper {
     apply = function(inputState) {
       return checkGamepadInput(inputState).merge(checkKeyboardInput(inputState));
