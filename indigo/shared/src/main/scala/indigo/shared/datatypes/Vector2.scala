@@ -38,6 +38,12 @@ final class Vector2(val x: Double, val y: Double) {
   override def toString: String =
     asString
 
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.IsInstanceOf"))
+  override def equals(obj: Any): Boolean =
+    if (obj.isInstanceOf[Vector2]) {
+      this === obj.asInstanceOf[Vector2]
+    } else false
+
   def asString: String =
     implicitly[AsString[Vector2]].show(this)
 
@@ -72,8 +78,9 @@ object Vector2 {
   def apply(i: Int): Vector2 =
     Vector2(i.toDouble, i.toDouble)
 
-  val zero: Vector2 = Vector2(0d, 0d)
-  val one: Vector2  = Vector2(1d, 1d)
+  val zero: Vector2     = Vector2(0d, 0d)
+  val one: Vector2      = Vector2(1d, 1d)
+  val minusOne: Vector2 = Vector2(-1d, -1d)
 
   def fromPoints(start: Point, end: Point): Vector2 =
     Vector2((end.x - start.x).toDouble, (end.y - start.y).toDouble)
