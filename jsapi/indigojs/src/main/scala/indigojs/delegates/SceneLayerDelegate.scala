@@ -33,6 +33,19 @@ final class SceneLayerDelegate(_nodes: js.Array[SceneGraphNodeDelegate], _tint: 
   def withMagnification(level: Int): SceneLayerDelegate =
     new SceneLayerDelegate(nodes, tint, saturation, SceneLayer.sanitiseMagnification(level))
 
+  @JSExport
+  def concat(other: SceneLayerDelegate): SceneLayerDelegate = {
+    val newSaturation: Double =
+      (saturation, other.saturation) match {
+        case (1d, b) => b
+        case (a, 1d) => a
+        case (a, b)  => Math.min(a, b)
+      }
+
+    new SceneLayerDelegate(nodes ++ other.nodes, tint.concat(other.tint), newSaturation, magnification.orElse(other.magnification))
+  }
+
+
   def toInternal: SceneLayer =
     SceneLayer(nodes.map(_.toInternal).toList, tint.toInternal, saturation, magnification)
 }

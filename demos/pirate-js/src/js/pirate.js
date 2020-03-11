@@ -51,15 +51,11 @@ class PirateDemo {
     }
 
     present = function(gameTime, model, viewModel, inputState) {
-            return SceneUpdateFragmentHelper
-                .empty
-                .addGameLayerNodes(
-                    View.drawBackground()
-                    //View.sceneAudio,
+            return View.drawBackground()
+                .concat(View.sceneAudio())
                     //View.drawWater(viewModel),
                     //View.drawForeground(viewModel, config.screenDimensions),
                     //View.drawPirateWithRespawn(gameTime, model, viewModel.captain) // STEP 9
-                )
         // View.drawBackground |+|
         //   View.sceneAudio |+|
         //   View.drawWater(viewModel) |+|

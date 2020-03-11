@@ -12,11 +12,18 @@ final class ScreenEffectsDelegate(_gameColorOverlay: TintDelegate, _uiColorOverl
   @JSExport
   val uiColorOverlay = _uiColorOverlay
 
+  @JSExport
   def withGameColorOverlay(overlay: TintDelegate): ScreenEffectsDelegate =
     new ScreenEffectsDelegate(overlay, uiColorOverlay)
 
+  @JSExport
   def withUiColorOverlay(overlay: TintDelegate): ScreenEffectsDelegate =
     new ScreenEffectsDelegate(gameColorOverlay, overlay)
+
+  @JSExport
+  def concat(other: ScreenEffectsDelegate): ScreenEffectsDelegate =
+    new ScreenEffectsDelegate(gameColorOverlay.concat(other.gameColorOverlay), uiColorOverlay.concat(other.uiColorOverlay))
+
 
   def toInternal: ScreenEffects =
     ScreenEffects(gameColorOverlay.toInternal, uiColorOverlay.toInternal)

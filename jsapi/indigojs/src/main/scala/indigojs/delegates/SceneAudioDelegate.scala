@@ -1,18 +1,35 @@
 package indigojs.delegates
 
 import scala.scalajs.js.annotation._
+import scala.scalajs.js
 import indigo.shared.scenegraph.SceneAudio
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("SceneAudio")
-final class SceneAudioDelegate(_sourceA: SceneAudioSourceDelegate, _sourceB: SceneAudioSourceDelegate, _sourceC: SceneAudioSourceDelegate) {
+final class SceneAudioDelegate(_sourceA: js.UndefOr[SceneAudioSourceDelegate], _sourceB: js.UndefOr[SceneAudioSourceDelegate], _sourceC: js.UndefOr[SceneAudioSourceDelegate]) {
 
   @JSExport
-  val sourceA = _sourceA
+  val sourceA = _sourceA.toOption match {
+      case Some(a) => a
+      case None => SceneAudioSourceDelegate.None
+  }
+
   @JSExport
-  val sourceB = _sourceB
+  val sourceB = _sourceB.toOption match {
+      case Some(b) => b
+      case None => SceneAudioSourceDelegate.None
+  }
+
   @JSExport
-  val sourceC = _sourceC
+  val sourceC = _sourceC.toOption match {
+      case Some(c) => c
+      case None => SceneAudioSourceDelegate.None
+  }
+
+  @JSExport
+  def concat(other: SceneAudioDelegate): SceneAudioDelegate =
+    new SceneAudioDelegate(sourceA.concat(other.sourceA), sourceB.concat(other.sourceB), sourceC.concat(other.sourceC))
+
 
   def toInternal: SceneAudio =
     new SceneAudio(

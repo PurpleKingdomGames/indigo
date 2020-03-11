@@ -3,8 +3,8 @@ class View {
 
     // STEP 2
     static drawBackground() {
-        return [
-            Graphic(
+        return SceneUpdateFragmentHelper.empty
+            .addGameLayerNodes([Graphic(
                 Rectangle(0, 0, 640, 360),
                 50,
                 0,
@@ -14,18 +14,17 @@ class View {
                 new Point(0, 0),
                 Rectangle(0, 0, 640, 360),
                 EffectsHelper.None
-            )
-        ]
+            )])
     }
 
     // STEP 3
-    sceneAudio = function() {
-        return SceneUpdateFragment.empty
+    static sceneAudio() {
+        return SceneUpdateFragmentHelper.empty
             .withAudio(
                 SceneAudio(
-                SceneAudioSource(
-                    BindingKey(Assets.Sounds.shanty),
-                        PlaybackPattern.SingleTrackLoop(
+                    SceneAudioSource(
+                        Assets.Sounds.shanty,
+                        SingleTrackLoop(
                             Track(Assets.Sounds.shanty)
                         )
                     )
@@ -35,8 +34,8 @@ class View {
     }
 
     // STEP 4
-    drawWater = function(viewModel) {
-        SceneUpdateFragment.empty
+    static drawWater(viewModel) {
+        SceneUpdateFragmentHelper.empty
             .addGameLayerNodes(
                 viewModel.waterReflections.play(),
                 viewModel.waterReflections.moveBy(150, 30).play(),
@@ -46,8 +45,8 @@ class View {
     }
 
     // STEP 7
-    drawForeground = function(viewModel, screenDimensions) {
-        return SceneUpdateFragment.empty
+    static drawForeground(viewModel, screenDimensions) {
+        return SceneUpdateFragmentHelper.empty
             .addGameLayerNodes(
                 Text("The Cursed Pirate\n@davidjamessmith", 0, 0, 5, Assets.Fonts.fontKey)
                     .alignRight
@@ -69,20 +68,20 @@ class View {
     }
 
     // STEP 8
-    drawPirate = function(model, captain) {
-        return SceneUpdateFragment.empty
+    static drawPirate(model, captain) {
+        return SceneUpdateFragmentHelper.empty
             .addGameLayerNodes(updatedCaptain(model, captain))
         ;
     }
 
     // STEP 9
-    drawPirateWithRespawn = function(gameTime, model, captain) {
-        return SceneUpdateFragment.empty
+    static drawPirateWithRespawn(gameTime, model, captain) {
+        return SceneUpdateFragmentHelper.empty
             .addGameLayerNodes(respawnEffect(gameTime, model, updatedCaptain(model, captain)))
         ;
     }
 
-    respawnEffect = function(gameTime, model, captain) {
+    static respawnEffect(gameTime, model, captain) {
         const flashActive =
             Signal(_ < model.lastRespawn + 2000)
         ;
@@ -110,7 +109,7 @@ class View {
         signal.at(gameTime.running)
     }
 
-    updatedCaptain = function(model, captain) {
+    static updatedCaptain(model, captain) {
         switch (model.pirateState) {
             case PirateState.Idle:
                 if (model.facingRight)

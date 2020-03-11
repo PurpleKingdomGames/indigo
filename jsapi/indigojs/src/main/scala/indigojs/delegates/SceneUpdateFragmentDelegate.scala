@@ -323,6 +323,19 @@ final class SceneUpdateFragmentDelegate(
       cloneBlanks
     )
 
+  @JSExport
+  def concat(other: SceneUpdateFragmentDelegate): SceneUpdateFragmentDelegate =
+    new SceneUpdateFragmentDelegate(
+        gameLayer.concat(other.gameLayer),
+        lightingLayer.concat(other.lightingLayer),
+        uiLayer.concat(other.uiLayer),
+        ambientLight.concat(other.ambientLight),
+        globalEvents ++ other.globalEvents,
+        audio.concat(other.audio),
+        screenEffects.concat(other.screenEffects),
+        cloneBlanks ++ other.cloneBlanks
+    )
+
   def toInternal: SceneUpdateFragment =
     new SceneUpdateFragment(
       gameLayer.toInternal,

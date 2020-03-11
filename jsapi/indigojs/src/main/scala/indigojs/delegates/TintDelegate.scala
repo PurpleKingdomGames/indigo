@@ -64,6 +64,17 @@ final class TintDelegate(_r: Double, _g: Double, _b: Double, _a: Double) {
   def toClearColor: ClearColorDelegate =
     new ClearColorDelegate(r, g, b, a)
 
+  @JSExport
+  def concat(other: TintDelegate): TintDelegate =
+    (this, other) match {
+      case (TintDelegate.None, x) =>
+        x
+      case (x, TintDelegate.None) =>
+        x
+      case (x, y) =>
+        new TintDelegate(x.r + y.r, x.g + y.g, x.b + y.b, x.a + y.a)
+    }
+
   def toInternal: Tint =
     Tint(r, g, b, a)
 
@@ -113,5 +124,4 @@ object TintDelegate {
 
   // indigodoc entity:value name:Zero type:Tint
   val Zero: TintDelegate    = new TintDelegate(0, 0, 0, 0)
-
 }
