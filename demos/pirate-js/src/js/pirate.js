@@ -23,16 +23,12 @@ class PirateDemo {
         )
     ;
 */
-    setup = function(assetCollection) {
-        return InitialLoad.setup(assetCollection)
-    }
-
     initialModel = function(startupData) {
         return Model.initialModel(PirateDemo.config.screenDimensions)
     }
 
-    initialise = function(){
-        return StartUp.succeedWith({});
+    initialise = function(assetCollection){
+        return InitialLoad.setup(assetCollection);
     }
 
     updateModel = function(gameTime, model, inputState, dice) {
@@ -53,7 +49,7 @@ class PirateDemo {
     present = function(gameTime, model, viewModel, inputState) {
             return View.drawBackground()
                 .concat(View.sceneAudio())
-                    //View.drawWater(viewModel),
+                .concat(View.drawWater(viewModel))
                     //View.drawForeground(viewModel, config.screenDimensions),
                     //View.drawPirateWithRespawn(gameTime, model, viewModel.captain) // STEP 9
         // View.drawBackground |+|

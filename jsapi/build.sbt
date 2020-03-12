@@ -25,7 +25,10 @@ lazy val indigojs =
     .settings(commonSettings: _*)
     .enablePlugins(ScalaJSPlugin)
     .settings(
-      libraryDependencies += "indigo" %%% "indigo-exts" % "0.0.12-SNAPSHOT"
+      libraryDependencies ++= Seq(
+          "indigo" %%% "circe12"      % "0.0.12-SNAPSHOT", // Needed for Aseprite & Tiled support
+          "indigo" %%% "indigo-exts" % "0.0.12-SNAPSHOT"
+      )
     )
 
 lazy val apigen =

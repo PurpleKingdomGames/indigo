@@ -28,6 +28,82 @@ class SoundAssets {
     }
 }
 
+class WaterAssets {
+    constructor() {
+        this.ref     = "Water Reflect";
+        this.jsonRef = "Water Reflect JSON";
+
+        this.assets = [
+            AssetType.Image(this.ref, "assets/" + this.ref + ".png"),
+            AssetType.Text(this.jsonRef, "assets/" + this.ref + ".json")
+        ];
+    }
+  }
+
+class FlagAssets {
+    constructor() {
+        this.ref     = "Flag";
+        this.jsonRef = "Flag JSON";
+
+        this.assets =[
+            AssetType.Image(this.ref, "assets/" + this.ref + ".png"),
+            AssetType.Text(this.jsonRef, "assets/" + this.ref + ".json")
+        ];
+    }
+}
+
+class CaptainAssets {
+    constructor() {
+        this.ref     = "Captain Clown Nose";
+        this.jsonRef = "Captain Clown Nose JSON";
+
+        this.assets = [
+            AssetType.Image(this.ref, "assets/" + this.ref + ".png"),
+            AssetType.Text(this.jsonRef, "assets/" + this.ref + ".json")
+        ]
+    }
+}
+
+class TreesAssets {
+    constructor() {
+        this.ref     = "Palm Tree";
+        this.jsonRef = "Palm Tree JSON";
+
+        this.trunksRef = "Front Palm Trees";
+
+        this.tallTrunkGraphic =
+            new Graphic(new Rectangle(0, 0, 96, 96), 1, 0, 1, 1, this.trunksRef, new Point(0, 0), Rectangle(0, 0, 96, 96), EffectsHelper.None)
+                .withCrop(new Rectangle(8, 0, 16, 60));
+
+        this.leftLeaningTrunkGraphic =
+            new Graphic(new Rectangle(0, 0, 96, 96), 1, 0, 1, 1, this.trunksRef, new Point(0, 0), Rectangle(0, 0, 96, 96), EffectsHelper.None)
+                .withCrop(new Rectangle(43, 0, 50, 22));
+
+        this.rightLeaningTrunkGraphic =
+            new Graphic(new Rectangle(0, 0, 96, 96), 1, 0, 1, 1, this.trunksRef, new Point(0, 0), Rectangle(0, 0, 96, 96), EffectsHelper.None)
+                .withCrop(new Rectangle(36, 32, 48, 23));
+
+        this.assets = [
+            AssetType.Image(this.trunksRef, "assets/" + this.trunksRef + ".png"),
+            AssetType.Image(this.ref, "assets/" + this.ref + ".png"),
+            AssetType.Text(this.jsonRef, "assets/" + this.ref + ".json")
+        ];
+    }
+}
+
+class HelmAssets {
+    constructor() {
+        this.ref     = "Ship Helm";
+        this.jsonRef = "Ship Helm JS";
+
+        this.assets = [
+            AssetType.Image(this.ref, "assets/" + this.ref + ".png"),
+            AssetType.Text(this.jsonRef, "assets/" + this.ref + ".json")
+        ];
+    }
+}
+
+
 class FontAssets {
     constructor() {
         this.smallFontName = "smallFontName";
@@ -98,6 +174,11 @@ class Assets {
 Assets.Static = new StaticAssets();
 Assets.Sounds = new SoundAssets();
 Assets.Fonts = new FontAssets();
+Assets.Water = new WaterAssets();
+Assets.Flag = new FlagAssets();
+Assets.Captain = new CaptainAssets();
+Assets.Trees = new TreesAssets();
+Assets.Helm = new HelmAssets();
 Assets.assets = []
     .concat(Assets.Static.assets)
     .concat(Assets.Sounds.assets)
