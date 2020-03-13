@@ -7,16 +7,15 @@ import indigo.shared.metrics.Metrics
 import indigo.facades.WebGL2RenderingContext
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
-import indigo.platform.shaders.StandardMerge
+import indigo.platform.shaders.StandardLights
 import org.scalajs.dom.raw.WebGLTexture
 import indigo.shared.ClearColor
 import scala.scalajs.js.JSConverters._
-import indigo.shared.datatypes.RGBA
 
-class RendererMerge(gl2: WebGL2RenderingContext) {
+class RendererLights(gl2: WebGL2RenderingContext) {
 
-  private val mergeShaderProgram: WebGLProgram =
-    RendererFunctions.shaderProgramSetup(gl2, "Merge", StandardMerge)
+  private val lightsShaderProgram: WebGLProgram =
+    RendererFunctions.shaderProgramSetup(gl2, "Lights", StandardLights)
 
   private val displayObjectUBOBuffer: WebGLBuffer =
     gl2.createBuffer()
@@ -24,39 +23,22 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   def drawLayer(
       projection: scalajs.js.Array[Double],
+      frameBufferComponents: FrameBufferComponents,
       gameFrameBuffer: FrameBufferComponents.MultiOutput,
-      lightingFrameBuffer: FrameBufferComponents.SingleOutput,
-      uiFrameBuffer: FrameBufferComponents.SingleOutput,
       width: Int,
       height: Int,
-      clearColor: ClearColor,
-      gameOverlay: RGBA,
-      uiOverlay: RGBA,
-      gameLayerTint: RGBA,
-      lightingLayerTint: RGBA,
-      uiLayerTint: RGBA,
-      gameLayerSaturation: Double,
-      lightingLayerSaturation: Double,
-      uiLayerSaturation: Double,
       metrics: Metrics
   ): Unit = {
 
-    metrics.record(CurrentDrawLayer.Merge.metricStart)
+    metrics.record(CurrentDrawLayer.Lights.metricStart)
 
-    FrameBufferFunctions.switchToCanvas(gl2, clearColor)
+    FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, ClearColor.Black.forceTransparent)
+    gl2.drawBuffers(frameBufferComponents.colorAttachments)
 
-    gl2.useProgram(mergeShaderProgram)
+    gl2.useProgram(lightsShaderProgram)
 
-    RendererMerge.updateUBOData(
-      RendererHelper.screenDisplayObject(width, height),
-      gameOverlay,
-      uiOverlay,
-      gameLayerTint,
-      lightingLayerTint,
-      uiLayerTint,
-      gameLayerSaturation,
-      lightingLayerSaturation,
-      uiLayerSaturation
+    RendererLights.updateUBOData(
+      RendererHelper.screenDisplayObject(width, height)
     )
 
     // UBO data
@@ -66,25 +48,21 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
       0,
       displayObjectUBOBuffer,
       0,
-      RendererMerge.uboDataSize * Float32Array.BYTES_PER_ELEMENT
+      RendererLights.uboDataSize * Float32Array.BYTES_PER_ELEMENT
     )
     gl2.bufferData(
       ARRAY_BUFFER,
-      new Float32Array(projection ++ RendererMerge.uboData),
+      new Float32Array(projection ++ RendererLights.uboData),
       STATIC_DRAW
     )
 
-    setupMergeFragmentShaderState(
-      gameFrameBuffer,
-      lightingFrameBuffer,
-      uiFrameBuffer
-    )
+    setupLightsFragmentShaderState(gameFrameBuffer)
 
     gl2.drawArrays(TRIANGLE_STRIP, 0, 4)
 
-    metrics.record(CurrentDrawLayer.Merge.metricDraw)
+    metrics.record(CurrentDrawLayer.Lights.metricDraw)
 
-    metrics.record(CurrentDrawLayer.Merge.metricEnd)
+    metrics.record(CurrentDrawLayer.Lights.metricEnd)
 
   }
 
@@ -126,22 +104,20 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
   }
 
   def attach(location: Int, uniformName: String, texture: WebGLTexture): Unit = {
-    gl2.uniform1i(gl2.getUniformLocation(mergeShaderProgram, uniformName), location)
+    gl2.uniform1i(gl2.getUniformLocation(lightsShaderProgram, uniformName), location)
     gl2.activeTexture(intToTextureLocation(location))
     gl2.bindTexture(TEXTURE_2D, texture)
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var"))
-  def setupMergeFragmentShaderState(game: FrameBufferComponents.MultiOutput, textureLighting: FrameBufferComponents.SingleOutput, textureUi: FrameBufferComponents.SingleOutput): Unit = {
+  def setupLightsFragmentShaderState(game: FrameBufferComponents.MultiOutput): Unit = {
 
     val uniformTextures: List[(String, WebGLTexture)] =
       List(
         "u_texture_game_albedo"   -> game.albedo,
         "u_texture_game_emissive" -> game.emissive,
         "u_texture_game_normal"   -> game.normal,
-        "u_texture_game_specular" -> game.specular,
-        "u_texture_lighting"      -> textureLighting.diffuse,
-        "u_texture_ui"            -> textureUi.diffuse
+        "u_texture_game_specular" -> game.specular
       )
 
     var i: Int = 0
@@ -158,26 +134,18 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
 
 }
 
-object RendererMerge {
+object RendererLights {
 
   // They're all blocks of 16, it's the only block length allowed in WebGL.
   val projectionMatrixUBODataSize: Int = 16
-  val displayObjectUBODataSize: Int    = 16 * 2
+  val displayObjectUBODataSize: Int    = 16
   val uboDataSize: Int                 = projectionMatrixUBODataSize + displayObjectUBODataSize
 
   val uboData: scalajs.js.Array[Double] =
     List.fill(displayObjectUBODataSize)(0.0d).toJSArray
 
   def updateUBOData(
-      displayObject: DisplayObject,
-      gameOverlay: RGBA,
-      uiOverlay: RGBA,
-      gameLayerTint: RGBA,
-      lightingLayerTint: RGBA,
-      uiLayerTint: RGBA,
-      gameLayerSaturation: Double,
-      lightingLayerSaturation: Double,
-      uiLayerSaturation: Double
+      displayObject: DisplayObject
   ): Unit = {
     uboData(0) = displayObject.x.toDouble
     uboData(1) = displayObject.y.toDouble
@@ -188,35 +156,5 @@ object RendererMerge {
     uboData(5) = displayObject.frameY
     uboData(6) = displayObject.frameScaleX
     uboData(7) = displayObject.frameScaleY
-
-    uboData(8) = gameOverlay.r
-    uboData(9) = gameOverlay.g
-    uboData(10) = gameOverlay.b
-    uboData(11) = gameOverlay.a
-
-    uboData(12) = uiOverlay.r
-    uboData(13) = uiOverlay.g
-    uboData(14) = uiOverlay.b
-    uboData(15) = uiOverlay.a
-
-    uboData(16) = gameLayerTint.r
-    uboData(17) = gameLayerTint.g
-    uboData(18) = gameLayerTint.b
-    uboData(19) = gameLayerTint.a
-
-    uboData(20) = lightingLayerTint.r
-    uboData(21) = lightingLayerTint.g
-    uboData(22) = lightingLayerTint.b
-    uboData(23) = lightingLayerTint.a
-
-    uboData(24) = uiLayerTint.r
-    uboData(25) = uiLayerTint.g
-    uboData(26) = uiLayerTint.b
-    uboData(27) = uiLayerTint.a
-
-    uboData(28) = gameLayerSaturation
-    uboData(29) = lightingLayerSaturation
-    uboData(30) = uiLayerSaturation
-    // uboData(31) = 0d
   }
 }

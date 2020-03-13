@@ -1,4 +1,5 @@
 import sbt._
+import scala.sys.process._
 
 object ShaderGen {
 
@@ -41,6 +42,26 @@ object ShaderGen {
 
     val shaderFiles: Seq[File] =
       files.filter(f => fileFilter(f.name)).toSeq
+
+    val glslValidatorExitCode = "glslangValidator -v" !
+
+    println("***************")
+    println("GLSL Validation")
+    println("***************")
+
+    if (glslValidatorExitCode == 0) {
+      shaderFiles.foreach { f =>
+        val exit = ("glslangValidator " + f.getCanonicalPath) !
+
+        if (exit != 0) {
+          throw new Exception("GLSL Validation Error in: " + f.getName)
+        } else {
+          println(f.getName + " [valid]")
+        }
+      }
+    } else {
+      println("**WARNING**: GLSL Validator not installed, shader code not checked.")
+    }
 
     val dict: Map[String, Seq[ShaderDetails]] =
       shaderFiles

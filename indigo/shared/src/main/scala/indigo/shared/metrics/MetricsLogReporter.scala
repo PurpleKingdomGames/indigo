@@ -42,13 +42,13 @@ object MetricsLogReporter {
       val audioDuration          = extractDuration(metrics, AudioStartMetric.name, AudioEndMetric.name)
 
       // Percentages
-      val updatePercentage           = asPercentOfFrameDuration(fd, updateDuration)
-      val frameProcessorPercentage      = asPercentOfFrameDuration(fd, callFrameProcessorDuration)
-      val callUpdateViewPercentage   = asPercentOfFrameDuration(fd, callUpdateViewDuration)
-      val processViewPercentage      = asPercentOfFrameDuration(fd, processViewDuration)
-      val toDisplayablePercentage    = asPercentOfFrameDuration(fd, toDisplayableDuration)
-      val renderPercentage           = asPercentOfFrameDuration(fd, renderDuration)
-      val audioPercentage            = asPercentOfFrameDuration(fd, audioDuration)
+      val updatePercentage         = asPercentOfFrameDuration(fd, updateDuration)
+      val frameProcessorPercentage = asPercentOfFrameDuration(fd, callFrameProcessorDuration)
+      val callUpdateViewPercentage = asPercentOfFrameDuration(fd, callUpdateViewDuration)
+      val processViewPercentage    = asPercentOfFrameDuration(fd, processViewDuration)
+      val toDisplayablePercentage  = asPercentOfFrameDuration(fd, toDisplayableDuration)
+      val renderPercentage         = asPercentOfFrameDuration(fd, renderDuration)
+      val audioPercentage          = asPercentOfFrameDuration(fd, audioDuration)
 
       // Process view
       // Durations
@@ -73,19 +73,25 @@ object MetricsLogReporter {
       // Renderer
       // Durations
       val drawGameLayerDuration     = extractDuration(metrics, DrawGameLayerStartMetric.name, DrawGameLayerEndMetric.name)
+      val drawLightsLayerDuration   = extractDuration(metrics, DrawLightsLayerStartMetric.name, DrawLightsLayerEndMetric.name)
       val drawLightingLayerDuration = extractDuration(metrics, DrawLightingLayerStartMetric.name, DrawLightingLayerEndMetric.name)
       val drawUiLayerDuration       = extractDuration(metrics, DrawUiLayerStartMetric.name, DrawUiLayerEndMetric.name)
       val renderToWindowDuration    = extractDuration(metrics, RenderToWindowStartMetric.name, RenderToWindowEndMetric.name)
 
       val normalDrawCallDuration =
         extractDuration(metrics, NormalDrawCallLengthStartMetric.name, NormalDrawCallLengthEndMetric.name)
+      val lightsDrawCallDuration =
+        extractDuration(metrics, LightsDrawCallLengthStartMetric.name, LightsDrawCallLengthEndMetric.name)
       val lightingDrawCallDuration =
         extractDuration(metrics, LightingDrawCallLengthStartMetric.name, LightingDrawCallLengthEndMetric.name)
+      val uiDrawCallDuration =
+        extractDuration(metrics, UiDrawCallLengthStartMetric.name, UiDrawCallLengthEndMetric.name)
       val toWindowDrawCallDuration =
         extractDuration(metrics, ToWindowDrawCallLengthStartMetric.name, ToWindowDrawCallLengthEndMetric.name)
 
       // Percentages
       val drawGameLayerPercentage     = asPercentOfFrameDuration(fd, drawGameLayerDuration)
+      val drawLightsLayerPercentage   = asPercentOfFrameDuration(fd, drawLightsLayerDuration)
       val drawLightingLayerPercentage = asPercentOfFrameDuration(fd, drawLightingLayerDuration)
       val drawUiLayerPercentage       = asPercentOfFrameDuration(fd, drawUiLayerDuration)
       val renderToWindowPercentage    = asPercentOfFrameDuration(fd, renderToWindowDuration)
@@ -93,6 +99,8 @@ object MetricsLogReporter {
       // Draw Call Counts
       val lightingDrawCalls: Int = metrics.count(_.metric.name === LightingDrawCallMetric.name)
       val normalDrawCalls: Int   = metrics.count(_.metric.name === NormalLayerDrawCallMetric.name)
+      val lightsDrawCalls: Int   = metrics.count(_.metric.name === LightsLayerDrawCallMetric.name)
+      val uiDrawCalls: Int       = metrics.count(_.metric.name === UiLayerDrawCallMetric.name)
       val toWindowDrawCalls: Int = metrics.count(_.metric.name === ToWindowDrawCallMetric.name)
 
       // Build results
@@ -129,17 +137,23 @@ object MetricsLogReporter {
 
       val renderer = FrameStatsRenderer(
         drawGameLayerDuration,
+        drawLightsLayerDuration,
         drawLightingLayerDuration,
         drawUiLayerDuration,
         renderToWindowDuration,
         drawGameLayerPercentage,
+        drawLightsLayerPercentage,
         drawLightingLayerPercentage,
         drawUiLayerPercentage,
         renderToWindowPercentage,
         lightingDrawCalls,
         normalDrawCalls,
+        uiDrawCalls,
+        lightsDrawCalls,
         toWindowDrawCalls,
         normalDrawCallDuration,
+        uiDrawCallDuration,
+        lightsDrawCallDuration,
         lightingDrawCallDuration,
         toWindowDrawCallDuration
       )
@@ -282,6 +296,12 @@ object MetricsLogReporter {
 
       s"""$a\t($b%)"""
     }
+    val meanDrawLightsLayer: String = {
+      val a = calcMeanDuration(frames.map(_.renderer.drawLightsLayerDuration)).toString
+      val b = calcMeanPercentage(frames.map(_.renderer.drawLightsLayerPercentage)).toString
+
+      s"""$a\t($b%)"""
+    }
 
     val meanDrawLightingLayer: String = {
       val a = calcMeanDuration(frames.map(_.renderer.drawLightingLayerDuration)).toString
@@ -314,6 +334,16 @@ object MetricsLogReporter {
 
       s"""$a"""
     }
+    val meanUiDrawCalls: String = {
+      val a = calcMeanCount(frames.map(_.renderer.uiDrawCalls)).toString
+
+      s"""$a"""
+    }
+    val meanLightsDrawCalls: String = {
+      val a = calcMeanCount(frames.map(_.renderer.lightsDrawCalls)).toString
+
+      s"""$a"""
+    }
     val meanToWindowDrawCalls: String = {
       val a = calcMeanCount(frames.map(_.renderer.toWindowDrawCalls)).toString
 
@@ -321,6 +351,18 @@ object MetricsLogReporter {
     }
 
     val meanNormalDrawCallTime: String = {
+      val a = calcMeanDuration(frames.map(_.renderer.normalDrawCallDuration)).toString
+
+      s"""$a"""
+    }
+
+    val meanUiDrawCallTime: String = {
+      val a = calcMeanDuration(frames.map(_.renderer.normalDrawCallDuration)).toString
+
+      s"""$a"""
+    }
+
+    val meanLightsDrawCallTime: String = {
       val a = calcMeanDuration(frames.map(_.renderer.normalDrawCallDuration)).toString
 
       s"""$a"""
@@ -370,16 +412,21 @@ object MetricsLogReporter {
          |Renderer:
          |---------
          |Mean draw game layer:      ${meanDrawGameLayer.toString()}
+         |Mean draw lights layer:    ${meanDrawLightsLayer.toString()}
          |Mean draw lighting layer:  ${meanDrawLightingLayer.toString()}
          |Mean draw ui layer:        ${meanDrawUiLayer.toString()}
          |Mean render to window:     ${meanRenderToWindowLayer.toString()}
          |
          |Mean lighting draw calls:  ${meanLightingDrawCalls.toString()}
-         |Mean normal draw calls:    ${meanNormalDrawCalls.toString()}
+         |Mean game draw calls:      ${meanNormalDrawCalls.toString()}
+         |Mean ui draw calls:        ${meanUiDrawCalls.toString()}
+         |Mean lights draw calls:    ${meanLightsDrawCalls.toString()}
          |Mean to window draw calls: ${meanToWindowDrawCalls.toString()}
          |
          |Mean lighting draw time:   ${meanLightingDrawCallTime.toString()}
-         |Mean normal draw time:     ${meanNormalDrawCallTime.toString()}
+         |Mean game draw time:       ${meanNormalDrawCallTime.toString()}
+         |Mean ui draw time:         ${meanUiDrawCallTime.toString()}
+         |Mean lights draw time:     ${meanLightsDrawCallTime.toString()}
          |Mean to window draw time:  ${meanToWindowDrawCallTime.toString()}
          |**********************
         """.stripMargin
@@ -390,44 +437,56 @@ object MetricsLogReporter {
 
 final case class FrameStats(general: FrameStatsGeneral, processView: FrameStatsProcessView, renderer: FrameStatsRenderer)
 
-final case class FrameStatsGeneral(frameDuration: Long,
-                                   updateDuration: Option[Long],
-                                   frameProcessorDuration: Option[Long],
-                                   callUpdateViewDuration: Option[Long],
-                                   processViewDuration: Option[Long],
-                                   toDisplayableDuration: Option[Long],
-                                   renderDuration: Option[Long],
-                                   audioDuration: Option[Long],
-                                   updatePercentage: Option[Double],
-                                   frameProcessorPercentage: Option[Double],
-                                   callUpdateViewPercentage: Option[Double],
-                                   processViewPercentage: Option[Double],
-                                   toDisplayablePercentage: Option[Double],
-                                   renderPercentage: Option[Double],
-                                   audioPercentage: Option[Double])
+final case class FrameStatsGeneral(
+    frameDuration: Long,
+    updateDuration: Option[Long],
+    frameProcessorDuration: Option[Long],
+    callUpdateViewDuration: Option[Long],
+    processViewDuration: Option[Long],
+    toDisplayableDuration: Option[Long],
+    renderDuration: Option[Long],
+    audioDuration: Option[Long],
+    updatePercentage: Option[Double],
+    frameProcessorPercentage: Option[Double],
+    callUpdateViewPercentage: Option[Double],
+    processViewPercentage: Option[Double],
+    toDisplayablePercentage: Option[Double],
+    renderPercentage: Option[Double],
+    audioPercentage: Option[Double]
+)
 
-final case class FrameStatsProcessView(persistGlobalViewEventsDuration: Option[Long],
-                                       persistNodeViewEventsDuration: Option[Long],
-                                       applyAnimationMementosDuration: Option[Long],
-                                       runAnimationActionsDuration: Option[Long],
-                                       persistAnimationStatesDuration: Option[Long],
-                                       persistGlobalViewEventsPercentage: Option[Double],
-                                       persistNodeViewEventsPercentage: Option[Double],
-                                       applyAnimationMementosPercentage: Option[Double],
-                                       runAnimationActionsPercentage: Option[Double],
-                                       persistAnimationStatesPercentage: Option[Double])
+final case class FrameStatsProcessView(
+    persistGlobalViewEventsDuration: Option[Long],
+    persistNodeViewEventsDuration: Option[Long],
+    applyAnimationMementosDuration: Option[Long],
+    runAnimationActionsDuration: Option[Long],
+    persistAnimationStatesDuration: Option[Long],
+    persistGlobalViewEventsPercentage: Option[Double],
+    persistNodeViewEventsPercentage: Option[Double],
+    applyAnimationMementosPercentage: Option[Double],
+    runAnimationActionsPercentage: Option[Double],
+    persistAnimationStatesPercentage: Option[Double]
+)
 
-final case class FrameStatsRenderer(drawGameLayerDuration: Option[Long],
-                                    drawLightingLayerDuration: Option[Long],
-                                    drawUiLayerDuration: Option[Long],
-                                    renderToWindowDuration: Option[Long],
-                                    drawGameLayerPercentage: Option[Double],
-                                    drawLightingLayerPercentage: Option[Double],
-                                    drawUiLayerPercentage: Option[Double],
-                                    renderToWindowPercentage: Option[Double],
-                                    lightingDrawCalls: Int,
-                                    normalDrawCalls: Int,
-                                    toWindowDrawCalls: Int,
-                                    normalDrawCallDuration: Option[Long],
-                                    lightingDrawCallDuration: Option[Long],
-                                    toWindowDrawCallDuration: Option[Long])
+final case class FrameStatsRenderer(
+    drawGameLayerDuration: Option[Long],
+    drawLightsLayerDuration: Option[Long],
+    drawLightingLayerDuration: Option[Long],
+    drawUiLayerDuration: Option[Long],
+    renderToWindowDuration: Option[Long],
+    drawGameLayerPercentage: Option[Double],
+    drawLightsLayerPercentage: Option[Double],
+    drawLightingLayerPercentage: Option[Double],
+    drawUiLayerPercentage: Option[Double],
+    renderToWindowPercentage: Option[Double],
+    lightingDrawCalls: Int,
+    normalDrawCalls: Int,
+    uiDrawCalls: Int,
+    lightsDrawCalls: Int,
+    toWindowDrawCalls: Int,
+    normalDrawCallDuration: Option[Long],
+    uiDrawCallDuration: Option[Long],
+    lightsDrawCallDuration: Option[Long],
+    lightingDrawCallDuration: Option[Long],
+    toWindowDrawCallDuration: Option[Long]
+)

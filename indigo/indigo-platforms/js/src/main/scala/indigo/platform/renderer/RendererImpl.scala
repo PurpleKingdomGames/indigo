@@ -39,6 +39,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
   private val mergeRenderer: RendererMerge =
     new RendererMerge(gl2)
 
+  private val lightsRenderer: RendererLights =
+    new RendererLights(gl2)
+
   private val layerRenderer: RendererLayer =
     new RendererLayer(gl2, textureLocations, config.maxBatchSize)
 
@@ -54,6 +57,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var gameFrameBuffer: FrameBufferComponents.MultiOutput =
     FrameBufferFunctions.createFrameBufferMulti(gl, cNc.canvas.width, cNc.canvas.height)
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  private var lightsFrameBuffer: FrameBufferComponents.SingleOutput =
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var lightingFrameBuffer: FrameBufferComponents.SingleOutput =
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
@@ -178,6 +184,18 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     )
     metrics.record(DrawGameLayerEndMetric)
 
+    metrics.record(DrawLightsLayerStartMetric)
+    RendererFunctions.setNormalBlend(gl)
+    lightsRenderer.drawLayer(
+      gameProjection,
+      lightsFrameBuffer,
+      gameFrameBuffer,
+      cNc.canvas.width,
+      cNc.canvas.height,
+      metrics
+    )
+    metrics.record(DrawLightsLayerEndMetric)
+
     metrics.record(DrawLightingLayerStartMetric)
     RendererFunctions.setLightingBlend(gl)
     layerRenderer.drawLayer(
@@ -247,6 +265,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       orthographicProjectionMatrixNoMag = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble))
 
       gameFrameBuffer = FrameBufferFunctions.createFrameBufferMulti(gl, actualWidth, actualHeight)
+      lightsFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       lightingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       uiFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
 
