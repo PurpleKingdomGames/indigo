@@ -143,9 +143,18 @@ object RendererLights {
   val uboData: scalajs.js.Array[Double] =
     List.fill(displayObjectUBODataSize)(0.0d).toJSArray
 
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  var angle: Double = 0
+  val tau = Math.PI * 2
+
   def updateUBOData(
       displayObject: DisplayObject
   ): Unit = {
+
+    angle = (angle + 0.05) % tau
+    val centerX: Double = (228.0 * 3.0) / 2.0;
+    val centerY: Double = (128.0 * 3.0) / 2.0;
+
     uboData(0) = displayObject.x.toDouble
     uboData(1) = displayObject.y.toDouble
     uboData(2) = displayObject.width.toDouble * displayObject.scaleX
@@ -155,5 +164,10 @@ object RendererLights {
     uboData(5) = displayObject.frameY
     uboData(6) = displayObject.frameScaleX
     uboData(7) = displayObject.frameScaleY
+
+    uboData(8) = (Math.sin(angle) * 50) + centerX
+    uboData(9) = (Math.cos(angle) * 50) + centerY
+    uboData(10) = 0.0
+    uboData(11) = 0.0
   }
 }

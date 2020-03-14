@@ -10,6 +10,7 @@ layout (std140) uniform DisplayObjectUBO {
   vec2 u_scale;
   vec2 u_frameTranslation;
   vec2 u_frameScale;
+  vec2 u_lightPosition;
 };
 
 out vec2 v_texcoord;
@@ -50,10 +51,8 @@ void main(void) {
 
   v_texcoord = scaleTextCoords();
 
-  float centerX = (228.0 * 3.0) / 2.0; // TODO: Remove when real values passed in.
-  float centerY = (128.0 * 3.0) / 2.0; // TODO: Remove when real values passed in.
+  v_lights = vec2[1](u_lightPosition);
 
-  v_lights = vec2[1](vec2(centerX - 50.0, centerY - 30.0));
   vec2 position = v_texcoord * u_scale;
   v_relativeScreenCoords = vec2(position.x, u_scale.y - position.y);
 }

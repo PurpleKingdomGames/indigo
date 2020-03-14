@@ -41,8 +41,9 @@ void main(void) {
 
   vec4 lightColor = calculateLight(v_lights[0], 100.0, vec3(1.0, 1.0, 0.0), specularTexture, vec4(1.0), normalTexture, albedoTexture.a);
 
-  vec4 unlit = vec4(0.0, 0.0, 0.0, albedoTexture.a);
+  if(normalTexture.rgb == vec3(0.0)) {
+    lightColor = vec4(0.0);
+  }
 
   fragColor = lightColor;
-  // fragColor = mix(unlit, lightColor, lightColor.a);
 }
