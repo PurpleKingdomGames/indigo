@@ -79,7 +79,7 @@ vec4 calculateBorder(float baseAlpha, float[9] alphas, float amount) {
     kernel = border2px;
   }
 
-  float alphaSum = 
+  float alphaSum =
     alphas[0] * kernel[0] +
     alphas[1] * kernel[1] +
     alphas[2] * kernel[2] +
@@ -112,7 +112,7 @@ vec4 calculateGlow(float baseAlpha, float[9] alphas, float amount) {
     return outColor;
   }
 
-  float alphaSum = 
+  float alphaSum =
     alphas[0] * glowKernel[0] +
     alphas[1] * glowKernel[1] +
     alphas[2] * glowKernel[2] +
@@ -130,6 +130,26 @@ vec4 calculateGlow(float baseAlpha, float[9] alphas, float amount) {
   }
 
   return outColor;
+}
+
+vec4 calculateNormal(vec4 normalColor, float alpha) {
+  if (v_isLit > 0.0) {
+    if(normalColor.a < 0.001) {
+      return vec4(0.5, 0.5, 1.0, alpha);
+    } else {
+      return vec4(normalColor.rgb, alpha);
+    }
+  } else {
+    return vec4(0.0, 0.0, 0.0, alpha);
+  }
+}
+
+vec4 calculateSpecular(vec4 specularColor, float alpha) {
+  if(specularColor.a < 0.001) {
+    return vec4(0.0, 0.0, 0.0, alpha);
+  } else {
+    return vec4(specularColor.rgb, alpha);
+  }
 }
 
 void main(void) {
@@ -176,6 +196,6 @@ void main(void) {
 
   albedo = outColor;
   emissive = texture(u_texture, v_texcoordEmissive);
-  normal = vec4(texture(u_texture, v_texcoordNormal).rgb, outColor.a);
-  specular = vec4(texture(u_texture, v_texcoordSpecular).rgb, outColor.a);
+  normal = calculateNormal(texture(u_texture, v_texcoordNormal), outColor.a);
+  specular = calculateSpecular(texture(u_texture, v_texcoordSpecular), outColor.a);
 }

@@ -13,7 +13,7 @@ uniform sampler2D u_texture_game_specular;
 
 out vec4 fragColor;
 
-vec4 calculateLight(vec2 light, float attenuation, vec3 lightColor, vec4 specularTexture, vec4 specularColor, vec4 normalTexture) {
+vec4 calculateLight(vec2 light, float attenuation, vec3 lightColor, vec4 specularTexture, vec4 specularColor, vec4 normalTexture, float masterAlpha) {
   vec2 position = v_relativeScreenCoords;
   float lightAmount = clamp(1.0 - (distance(position, light) / attenuation), 0.0, 1.0);
   float specularAmountFromTexture = (specularTexture.r + specularTexture.g + specularTexture.b) / 3.0;
@@ -28,17 +28,21 @@ vec4 calculateLight(vec2 light, float attenuation, vec3 lightColor, vec4 specula
   vec3 reflection = normalize(vec3(2.0 * specularAmount) * (normalTangent - lightDirNorm));
   float specular = min(pow(clamp(dot(reflection, halfVec), 0.0, 1.0), 10.0), specularAmount);
 
-  return mix(vec4(lightColor, lightAmount), specularColor, specularAmount);
+  vec4 finalColor = mix(vec4(lightColor, lightAmount), specularColor, specularAmount);
+
+  return vec4(finalColor.rgb, finalColor.a * masterAlpha);
 }
 
 void main(void) {
 
-  // Lights
+  vec4 albedoTexture = texture(u_texture_game_albedo, v_texcoord);
   vec4 specularTexture = texture(u_texture_game_specular, v_texcoord);
   vec4 normalTexture = texture(u_texture_game_normal, v_texcoord);
 
-  vec4 lightColor = calculateLight(v_lights[0], 100.0, vec3(1.0, 0.0, 1.0), specularTexture, vec4(1.0), normalTexture);
-  //
+  vec4 lightColor = calculateLight(v_lights[0], 100.0, vec3(1.0, 0.0, 1.0), specularTexture, vec4(1.0), normalTexture, albedoTexture.a);
+
+  vec4 unlit = vec4(0.0, 0.0, 0.0, albedoTexture.a);
 
   fragColor = lightColor;
+  // fragColor = mix(unlit, lightColor, lightColor.a);
 }
