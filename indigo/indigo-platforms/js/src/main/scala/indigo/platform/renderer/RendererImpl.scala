@@ -217,6 +217,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     mergeRenderer.drawLayer(
       orthographicProjectionMatrixNoMag,
       gameFrameBuffer,
+      lightsFrameBuffer,
       lightingFrameBuffer,
       uiFrameBuffer,
       cNc.canvas.width,
