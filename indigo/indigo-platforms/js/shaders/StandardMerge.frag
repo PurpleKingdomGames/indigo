@@ -15,10 +15,6 @@ in float v_gameLayerSaturation;
 in float v_lightingLayerSaturation;
 in float v_uiLayerSaturation;
 
-in vec2[1] v_lights;
-in vec2 v_relativeScreenCoords;
-in vec2 v_screenCenterCoords;
-
 uniform sampler2D u_texture_game_albedo;
 uniform sampler2D u_texture_game_emissive;
 uniform sampler2D u_texture_lights;

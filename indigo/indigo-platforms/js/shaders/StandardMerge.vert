@@ -32,10 +32,6 @@ out float v_gameLayerSaturation;
 out float v_lightingLayerSaturation;
 out float v_uiLayerSaturation;
 
-out vec2[1] v_lights;
-out vec2 v_relativeScreenCoords;
-out vec2 v_screenCenterCoords;
-
 mat4 translate2d(vec2 t){
     return mat4(1, 0, 0, 0,
                 0, 1, 0, 0,
@@ -79,12 +75,4 @@ void main(void) {
   v_gameLayerSaturation = u_gameLayerSaturation;
   v_lightingLayerSaturation = u_lightingLayerSaturation;
   v_uiLayerSaturation = u_uiLayerSaturation;
-
-  float centerX = (228.0 * 3.0) / 2.0;
-  float centerY = (128.0 * 3.0) / 2.0;
-
-  v_lights = vec2[1](vec2(centerX - 50.0, centerY - 30.0));
-  vec2 position = v_texcoord * u_scale;
-  v_relativeScreenCoords = vec2(position.x, u_scale.y - position.y);
-  v_screenCenterCoords = vec2(centerX, centerY);
 }
