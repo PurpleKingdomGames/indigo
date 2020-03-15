@@ -175,6 +175,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(DrawLightsLayerStartMetric)
     RendererFunctions.setNormalBlend(gl)
     lightsRenderer.drawLayer(
+      scene.lights,
       orthographicProjectionMatrixNoMag,
       lightsFrameBuffer,
       gameFrameBuffer,

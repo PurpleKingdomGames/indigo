@@ -11,6 +11,8 @@ import indigo.platform.shaders.StandardLights
 import org.scalajs.dom.raw.WebGLTexture
 import indigo.shared.ClearColor
 import scala.scalajs.js.JSConverters._
+import indigo.shared.scenegraph.Light
+import indigo.shared.scenegraph.PointLight
 
 class RendererLights(gl2: WebGL2RenderingContext) {
 
@@ -20,8 +22,9 @@ class RendererLights(gl2: WebGL2RenderingContext) {
   private val displayObjectUBOBuffer: WebGLBuffer =
     gl2.createBuffer()
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.While"))
   def drawLayer(
+      lights: List[Light],
       projection: scalajs.js.Array[Double],
       frameBufferComponents: FrameBufferComponents,
       gameFrameBuffer: FrameBufferComponents.MultiOutput,
@@ -37,9 +40,9 @@ class RendererLights(gl2: WebGL2RenderingContext) {
 
     gl2.useProgram(lightsShaderProgram)
 
-    RendererLights.updateUBOData(
-      RendererHelper.screenDisplayObject(width, height)
-    )
+    setupLightsFragmentShaderState(gameFrameBuffer)
+
+    RendererLights.updateStaticUBOData(RendererHelper.screenDisplayObject(width, height))
 
     // UBO data
     gl2.bindBuffer(ARRAY_BUFFER, displayObjectUBOBuffer)
@@ -50,15 +53,30 @@ class RendererLights(gl2: WebGL2RenderingContext) {
       0,
       RendererLights.uboDataSize * Float32Array.BYTES_PER_ELEMENT
     )
-    gl2.bufferData(
-      ARRAY_BUFFER,
-      new Float32Array(projection ++ RendererLights.uboData),
-      STATIC_DRAW
-    )
 
-    setupLightsFragmentShaderState(gameFrameBuffer)
+    var i: Int = 0
 
-    gl2.drawArrays(TRIANGLE_STRIP, 0, 4)
+    while (i < lights.length) {
+      val light = lights(i)
+
+      light match {
+        case _: PointLight =>
+          RendererLights.updateLightUBOData()
+
+          gl2.bufferData(
+            ARRAY_BUFFER,
+            new Float32Array(projection ++ RendererLights.uboData),
+            STATIC_DRAW
+          )
+
+          gl2.drawArrays(TRIANGLE_STRIP, 0, 4)
+
+        case _ =>
+          ()
+      }
+
+      i = i + 1
+    }
 
     metrics.record(CurrentDrawLayer.Lights.metricDraw)
 
@@ -145,16 +163,11 @@ object RendererLights {
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var angle: Double = 0
-  val tau = Math.PI * 2
+  val tau           = Math.PI * 2
 
-  def updateUBOData(
+  def updateStaticUBOData(
       displayObject: DisplayObject
   ): Unit = {
-
-    angle = (angle + 0.05) % tau
-    val centerX: Double = (228.0 * 3.0) / 2.0;
-    val centerY: Double = (128.0 * 3.0) / 2.0;
-
     uboData(0) = displayObject.x.toDouble
     uboData(1) = displayObject.y.toDouble
     uboData(2) = displayObject.width.toDouble * displayObject.scaleX
@@ -164,10 +177,21 @@ object RendererLights {
     uboData(5) = displayObject.frameY
     uboData(6) = displayObject.frameScaleX
     uboData(7) = displayObject.frameScaleY
+  }
+
+  def updateLightUBOData(
+      // light: Light
+  ): Unit = {
+
+    angle = (angle + 0.05) % tau
+    val centerX: Double = (228.0 * 3.0) / 2.0;
+    val centerY: Double = (128.0 * 3.0) / 2.0;
 
     uboData(8) = (Math.sin(angle) * 50) + centerX
     uboData(9) = (Math.cos(angle) * 50) + centerY
     uboData(10) = 0.0
     uboData(11) = 0.0
   }
+
+
 }

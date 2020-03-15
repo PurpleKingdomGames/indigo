@@ -82,4 +82,14 @@ trait SceneGraphTypeAliases {
   type CloneTransformData = scenegraph.CloneTransformData
   val CloneTransformData: scenegraph.CloneTransformData.type = scenegraph.CloneTransformData
 
+  // Lights
+  type PointLight = scenegraph.PointLight
+  val PointLight: scenegraph.PointLight.type = scenegraph.PointLight
+
+  type SpotLight = scenegraph.SpotLight
+  val SpotLight: scenegraph.SpotLight.type = scenegraph.SpotLight
+
+  type DirectionLight = scenegraph.DirectionLight
+  val DirectionLight: scenegraph.DirectionLight.type = scenegraph.DirectionLight
+
 }

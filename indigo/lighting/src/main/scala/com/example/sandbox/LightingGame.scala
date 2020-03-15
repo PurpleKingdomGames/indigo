@@ -58,4 +58,7 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
         graphic.moveBy(30, 0)//.withMaterial(graphic.material.unlit)
       )
       .withAmbientLight(RGBA.White.withAmount(0.1))
+      .withLights(
+        PointLight.default
+      )
 }
