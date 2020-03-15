@@ -105,6 +105,12 @@ object Signal {
   def Pulse(interval: Millis): Signal[Boolean] =
     Signal(t => (t / interval).value % 2 === 0)
 
+  def SinWave: Signal[Double] =
+    Signal(t => Math.sin(t.toSeconds.value.toDouble))
+
+  def CosWave: Signal[Double] =
+    Signal(t => Math.cos(t.toSeconds.value.toDouble))
+
   def clampTime[A](signal: Signal[A], from: Millis, to: Millis): Signal[A] =
     Signal { t =>
       if (from < to) {

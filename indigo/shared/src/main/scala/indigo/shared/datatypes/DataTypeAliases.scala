@@ -58,6 +58,9 @@ trait DataTypeAliases {
   type Glow = shared.datatypes.Glow
   val Glow: shared.datatypes.Glow.type = shared.datatypes.Glow
 
+  type RGB = shared.datatypes.RGB
+  val RGB: shared.datatypes.RGB.type = shared.datatypes.RGB
+
   type RGBA = shared.datatypes.RGBA
   val RGBA: shared.datatypes.RGBA.type = shared.datatypes.RGBA
 

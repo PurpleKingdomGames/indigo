@@ -21,157 +21,12 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
   private val displayObjectUBOBuffer: WebGLBuffer =
     gl2.createBuffer()
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  def drawLayer(
-      projection: scalajs.js.Array[Double],
-      gameFrameBuffer: FrameBufferComponents.MultiOutput,
-      lightsFrameBuffer: FrameBufferComponents.SingleOutput,
-      lightingFrameBuffer: FrameBufferComponents.SingleOutput,
-      uiFrameBuffer: FrameBufferComponents.SingleOutput,
-      width: Int,
-      height: Int,
-      clearColor: ClearColor,
-      gameOverlay: RGBA,
-      uiOverlay: RGBA,
-      gameLayerTint: RGBA,
-      lightingLayerTint: RGBA,
-      uiLayerTint: RGBA,
-      gameLayerSaturation: Double,
-      lightingLayerSaturation: Double,
-      uiLayerSaturation: Double,
-      metrics: Metrics
-  ): Unit = {
-
-    metrics.record(CurrentDrawLayer.Merge.metricStart)
-
-    FrameBufferFunctions.switchToCanvas(gl2, clearColor)
-
-    gl2.useProgram(mergeShaderProgram)
-
-    RendererMerge.updateUBOData(
-      RendererHelper.screenDisplayObject(width, height),
-      gameOverlay,
-      uiOverlay,
-      gameLayerTint,
-      lightingLayerTint,
-      uiLayerTint,
-      gameLayerSaturation,
-      lightingLayerSaturation,
-      uiLayerSaturation
-    )
-
-    // UBO data
-    gl2.bindBuffer(ARRAY_BUFFER, displayObjectUBOBuffer)
-    gl2.bindBufferRange(
-      gl2.UNIFORM_BUFFER,
-      0,
-      displayObjectUBOBuffer,
-      0,
-      RendererMerge.uboDataSize * Float32Array.BYTES_PER_ELEMENT
-    )
-    gl2.bufferData(
-      ARRAY_BUFFER,
-      new Float32Array(projection ++ RendererMerge.uboData),
-      STATIC_DRAW
-    )
-
-    setupMergeFragmentShaderState(
-      gameFrameBuffer,
-      lightsFrameBuffer,
-      lightingFrameBuffer,
-      uiFrameBuffer
-    )
-
-    gl2.drawArrays(TRIANGLE_STRIP, 0, 4)
-
-    metrics.record(CurrentDrawLayer.Merge.metricDraw)
-
-    metrics.record(CurrentDrawLayer.Merge.metricEnd)
-
-  }
-
-  @SuppressWarnings(Array("org.wartremover.warts.Throw"))
-  def intToTextureLocation: Int => Int = {
-    case 0  => TEXTURE0
-    case 1  => TEXTURE1
-    case 2  => TEXTURE2
-    case 3  => TEXTURE3
-    case 4  => TEXTURE4
-    case 5  => TEXTURE5
-    case 6  => TEXTURE6
-    case 7  => TEXTURE7
-    case 8  => TEXTURE8
-    case 9  => TEXTURE9
-    case 10 => TEXTURE10
-    case 11 => TEXTURE11
-    case 12 => TEXTURE12
-    case 13 => TEXTURE13
-    case 14 => TEXTURE14
-    case 15 => TEXTURE15
-    case 16 => TEXTURE16
-    case 17 => TEXTURE17
-    case 18 => TEXTURE18
-    case 19 => TEXTURE19
-    case 20 => TEXTURE20
-    case 21 => TEXTURE21
-    case 22 => TEXTURE22
-    case 23 => TEXTURE23
-    case 24 => TEXTURE24
-    case 25 => TEXTURE25
-    case 26 => TEXTURE26
-    case 27 => TEXTURE27
-    case 28 => TEXTURE28
-    case 29 => TEXTURE29
-    case 30 => TEXTURE30
-    case 31 => TEXTURE31
-    case _  => throw new Exception("Cannot assign > 32 texture locations.")
-  }
-
-  def attach(location: Int, uniformName: String, texture: WebGLTexture): Unit = {
-    gl2.uniform1i(gl2.getUniformLocation(mergeShaderProgram, uniformName), location)
-    gl2.activeTexture(intToTextureLocation(location))
-    gl2.bindTexture(TEXTURE_2D, texture)
-  }
-
-  @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var"))
-  def setupMergeFragmentShaderState(
-      game: FrameBufferComponents.MultiOutput,
-      textureLights: FrameBufferComponents.SingleOutput,
-      textureLighting: FrameBufferComponents.SingleOutput,
-      textureUi: FrameBufferComponents.SingleOutput
-  ): Unit = {
-
-    val uniformTextures: List[(String, WebGLTexture)] =
-      List(
-        "u_texture_game_albedo"   -> game.albedo,
-        "u_texture_game_emissive" -> game.emissive,
-        "u_texture_lights"        -> textureLights.diffuse,
-        "u_texture_lighting"      -> textureLighting.diffuse,
-        "u_texture_ui"            -> textureUi.diffuse
-      )
-
-    var i: Int = 0
-
-    while (i < uniformTextures.length) {
-      val tex = uniformTextures(i)
-      attach(i + 1, tex._1, tex._2)
-      i = i + 1
-    }
-
-    // Reset to TEXTURE0 before the next round of rendering happens.
-    gl2.activeTexture(TEXTURE0)
-  }
-
-}
-
-object RendererMerge {
-
   // They're all blocks of 16, it's the only block length allowed in WebGL.
-  val projectionMatrixUBODataSize: Int = 16
-  val displayObjectUBODataSize: Int    = 16 * 2
-  val uboDataSize: Int                 = projectionMatrixUBODataSize + displayObjectUBODataSize
+  private val projectionMatrixUBODataSize: Int = 16
+  private val displayObjectUBODataSize: Int    = 16 * 2
+  private val uboDataSize: Int                 = projectionMatrixUBODataSize + displayObjectUBODataSize
 
-  val uboData: scalajs.js.Array[Double] =
+  private val uboData: scalajs.js.Array[Double] =
     List.fill(displayObjectUBODataSize)(0.0d).toJSArray
 
   def updateUBOData(
@@ -225,4 +80,105 @@ object RendererMerge {
     uboData(30) = uiLayerSaturation
     // uboData(31) = 0d
   }
+
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  def drawLayer(
+      projection: scalajs.js.Array[Double],
+      gameFrameBuffer: FrameBufferComponents.MultiOutput,
+      lightsFrameBuffer: FrameBufferComponents.SingleOutput,
+      lightingFrameBuffer: FrameBufferComponents.SingleOutput,
+      uiFrameBuffer: FrameBufferComponents.SingleOutput,
+      width: Int,
+      height: Int,
+      clearColor: ClearColor,
+      gameOverlay: RGBA,
+      uiOverlay: RGBA,
+      gameLayerTint: RGBA,
+      lightingLayerTint: RGBA,
+      uiLayerTint: RGBA,
+      gameLayerSaturation: Double,
+      lightingLayerSaturation: Double,
+      uiLayerSaturation: Double,
+      metrics: Metrics
+  ): Unit = {
+
+    metrics.record(CurrentDrawLayer.Merge.metricStart)
+
+    FrameBufferFunctions.switchToCanvas(gl2, clearColor)
+
+    gl2.useProgram(mergeShaderProgram)
+
+    updateUBOData(
+      RendererHelper.screenDisplayObject(width, height),
+      gameOverlay,
+      uiOverlay,
+      gameLayerTint,
+      lightingLayerTint,
+      uiLayerTint,
+      gameLayerSaturation,
+      lightingLayerSaturation,
+      uiLayerSaturation
+    )
+
+    // UBO data
+    gl2.bindBuffer(ARRAY_BUFFER, displayObjectUBOBuffer)
+    gl2.bindBufferRange(
+      gl2.UNIFORM_BUFFER,
+      0,
+      displayObjectUBOBuffer,
+      0,
+      uboDataSize * Float32Array.BYTES_PER_ELEMENT
+    )
+    gl2.bufferData(
+      ARRAY_BUFFER,
+      new Float32Array(projection ++ uboData),
+      STATIC_DRAW
+    )
+
+    setupMergeFragmentShaderState(
+      gameFrameBuffer,
+      lightsFrameBuffer,
+      lightingFrameBuffer,
+      uiFrameBuffer
+    )
+
+    gl2.drawArrays(TRIANGLE_STRIP, 0, 4)
+
+    gl2.bindBuffer(gl2.UNIFORM_BUFFER, null);
+
+    metrics.record(CurrentDrawLayer.Merge.metricDraw)
+
+    metrics.record(CurrentDrawLayer.Merge.metricEnd)
+
+  }
+
+  @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var"))
+  def setupMergeFragmentShaderState(
+      game: FrameBufferComponents.MultiOutput,
+      textureLights: FrameBufferComponents.SingleOutput,
+      textureLighting: FrameBufferComponents.SingleOutput,
+      textureUi: FrameBufferComponents.SingleOutput
+  ): Unit = {
+
+    val uniformTextures: List[(String, WebGLTexture)] =
+      List(
+        "u_texture_game_albedo"   -> game.albedo,
+        "u_texture_game_emissive" -> game.emissive,
+        "u_texture_lights"        -> textureLights.diffuse,
+        "u_texture_lighting"      -> textureLighting.diffuse,
+        "u_texture_ui"            -> textureUi.diffuse
+      )
+
+    var i: Int = 0
+
+    while (i < uniformTextures.length) {
+      val tex = uniformTextures(i)
+      RendererHelper.attach(gl2, mergeShaderProgram, i + 1, tex._1, tex._2)
+      i = i + 1
+    }
+
+    // Reset to TEXTURE0 before the next round of rendering happens.
+    gl2.activeTexture(TEXTURE0)
+  }
+
 }

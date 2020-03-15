@@ -50,15 +50,36 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
       .withRef(20, 20)
       .moveTo(config.viewport.giveDimensions(config.magnification).center)
 
+  def orbitingLight: Signal[PointLight] =
+    (Signal.SinWave |*| Signal.CosWave).map {
+      case (s, c) =>
+        val x = ((s * 150) + config.viewport.center.x).toInt
+        val y = ((c * 150) + config.viewport.center.y).toInt
+
+        PointLight.default
+          .moveTo(Point(x, y))
+          .withAttenuation(100)
+          .withColor(RGB.Magenta)
+    }
+
+  def pulsingLight: Signal[PointLight] =
+    Signal.SinWave.map { s =>
+      PointLight.default
+        .moveTo(config.viewport.center + Point(50, -50))
+        .withAttenuation((Math.abs(s) * 60).toInt)
+        .withColor(RGB.Cyan)
+    }
+
   def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         graphic,
         graphic.moveBy(-30, 0),
-        graphic.moveBy(30, 0)//.withMaterial(graphic.material.unlit)
+        graphic.moveBy(30, 0)
       )
       .withAmbientLight(RGBA.White.withAmount(0.1))
       .withLights(
-        PointLight.default
+        orbitingLight.affectTime(4).at(gameTime.running),
+        pulsingLight.affectTime(3).at(gameTime.running)
       )
 }
