@@ -1,8 +1,8 @@
 package indigojs.delegates
 
 import scala.scalajs.js.annotation._
+import scala.scalajs.js.JSConverters._
 import scala.scalajs.js
-import js.JSConverters._
 
 import indigo.platform.assets.AssetCollection
 import indigo.platform.assets.AssetName
@@ -19,14 +19,14 @@ final class AssetCollectionDelegate(assetCollection: AssetCollection) {
   val sounds: js.Array[LoadedAudioAssetDelegate] =
     assetCollection.sounds.map(p => new LoadedAudioAssetDelegate(p.name.name, p.data)).toJSArray
 
-  def findImageDataByName(name: String): Option[js.Object] =
-    assetCollection.findImageDataByName(AssetName(name))
+  def findImageDataByName(name: String): js.UndefOr[js.Object] =
+    assetCollection.findImageDataByName(AssetName(name)).orUndefined
 
-  def findTextDataByName(name: String): Option[String] =
-    assetCollection.findTextDataByName(AssetName(name))
+  def findTextDataByName(name: String): js.UndefOr[String] =
+    assetCollection.findTextDataByName(AssetName(name)).orUndefined
 
-  def findAudioDataByName(name: String): Option[js.Object] =
-    assetCollection.findAudioDataByName(AssetName(name))
+  def findAudioDataByName(name: String): js.UndefOr[js.Object] =
+    assetCollection.findAudioDataByName(AssetName(name)).orUndefined
 }
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))

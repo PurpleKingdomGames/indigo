@@ -183,4 +183,9 @@ Assets.assets = []
     .concat(Assets.Static.assets)
     .concat(Assets.Sounds.assets)
     .concat(Assets.Fonts.assets)
+    .concat(Assets.Water.assets)
+    .concat(Assets.Flag.assets)
+    .concat(Assets.Captain.assets)
+    .concat(Assets.Trees.assets)
+    .concat(Assets.Helm.assets)
 ;
