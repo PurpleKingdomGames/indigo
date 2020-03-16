@@ -27,12 +27,12 @@ vec4 calculateLight(vec2 light, float attenuation, vec3 lightColor, vec4 specula
   vec3 halfVec = vec3(0.0, 0.0, 1.0);
 
   vec3 lightDirNorm = normalize(vec3(light, 1.0) - vec3(position, 1.0));
-  float specularAmount = max(dot(normalTangent, lightDirNorm), 0.0) * specularAmountFromTexture * (1.5 * lightAmount);
+  float specularAmount = max(dot(normalTangent, lightDirNorm), 0.0) * lightAmount;
 
   vec3 reflection = normalize(vec3(2.0 * specularAmount) * (normalTangent - lightDirNorm));
-  float specular = min(pow(clamp(dot(reflection, halfVec), 0.0, 1.0), 10.0), specularAmount);
+  float specular = min(pow(clamp(dot(reflection, halfVec), 0.0, 1.0), 1.0), specularAmount) * specularAmountFromTexture;
 
-  vec4 finalColor = mix(vec4(lightColor, lightAmount), vec4(specularColor, 1.0), specularAmount);
+  vec4 finalColor = mix(vec4(lightColor, lightAmount), vec4(specularColor, 1.0), specular);
 
   return vec4(finalColor.rgb, finalColor.a * masterAlpha);
 }
