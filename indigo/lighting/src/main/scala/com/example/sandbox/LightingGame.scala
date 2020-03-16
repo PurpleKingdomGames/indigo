@@ -46,9 +46,10 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
     Outcome(viewModel)
 
   val graphic: Graphic =
-    Graphic(Rectangle(0, 0, 64, 64), 1, LightingAssets.junctionBoxMaterial)
+    Graphic(Rectangle(0, 0, 64, 64), 1, LightingAssets.junctionBoxMaterialOn)
       .withRef(20, 20)
       .moveTo(config.viewport.giveDimensions(config.magnification).center)
+      .moveBy(-45, 0)
 
   def orbitingLight: Signal[PointLight] =
     (Signal.SinWave |*| Signal.CosWave).map {
@@ -58,15 +59,15 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
 
         PointLight.default
           .moveTo(Point(x, y))
-          .withAttenuation(100)
+          .withAttenuation(150)
           .withColor(RGB.Magenta)
     }
 
   def pulsingLight: Signal[PointLight] =
     Signal.SinWave.map { s =>
       PointLight.default
-        .moveTo(config.viewport.center + Point(50, -50))
-        .withAttenuation((Math.abs(s) * 60).toInt)
+        .moveTo(config.viewport.center + Point(60, -60))
+        .withAttenuation((Math.abs(s) * 70).toInt)
         .withColor(RGB.Cyan)
     }
 
@@ -74,13 +75,14 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         graphic,
-        graphic.moveBy(-30, 0),
-        graphic.moveBy(30, 0)
+        graphic.moveBy(30, 0).withMaterial(LightingAssets.junctionBoxMaterialOff),
+        graphic.moveBy(60, 0),
+        graphic.moveBy(90, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat)
       )
       .withAmbientLight(RGBA.White.withAmount(0.1))
       .withLights(
-        orbitingLight.affectTime(4).at(gameTime.running),
-        pulsingLight.affectTime(3).at(gameTime.running)
+        orbitingLight.affectTime(2.5).at(gameTime.running),
+        pulsingLight.affectTime(1.5).at(gameTime.running)
       )
 }
 
@@ -91,13 +93,24 @@ object LightingAssets {
   val junctionBoxNormal: AssetName   = AssetName("junctionbox_normal")
   val junctionBoxSpecular: AssetName = AssetName("junctionbox_specular")
 
-  val junctionBoxMaterial: Material.Lit =
+  val junctionBoxMaterialOn: Material.Lit =
     Material.Lit(
       junctionBoxAlbedo,
       Some(junctionBoxEmission),
       Some(junctionBoxNormal),
       Some(junctionBoxSpecular)
     )
+
+  val junctionBoxMaterialOff: Material.Lit =
+    Material.Lit(
+      junctionBoxAlbedo,
+      None,
+      Some(junctionBoxNormal),
+      Some(junctionBoxSpecular)
+    )
+
+  val junctionBoxMaterialFlat: Material.Textured =
+    Material.Textured(junctionBoxAlbedo).lit
 
   def assets: Set[AssetType] =
     Set(

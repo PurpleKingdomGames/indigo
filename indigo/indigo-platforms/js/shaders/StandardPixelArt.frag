@@ -146,7 +146,7 @@ vec4 calculateNormal(vec4 normalColor, float alpha) {
 
 vec4 calculateSpecular(vec4 specularColor, float alpha) {
   if(specularColor.a < 0.001) {
-    return vec4(0.0, 0.0, 0.0, alpha);
+    return vec4(1.0, 1.0, 1.0, alpha);
   } else {
     return vec4(specularColor.rgb, alpha);
   }
@@ -195,7 +195,22 @@ void main(void) {
   vec4 outColor = withOuterBorder;
 
   albedo = outColor;
-  emissive = texture(u_texture, v_texcoordEmissive);
-  normal = calculateNormal(texture(u_texture, v_texcoordNormal), outColor.a);
-  specular = calculateSpecular(texture(u_texture, v_texcoordSpecular), outColor.a);
+
+  if(v_texcoordEmissive == v_texcoord) {
+    emissive = vec4(0.0);
+  } else {
+    emissive = texture(u_texture, v_texcoordEmissive);
+  }
+
+  if(v_texcoordNormal == v_texcoord) {
+    normal = vec4(0.5, 0.5, 1.0, outColor.a);
+  } else {
+    normal = calculateNormal(texture(u_texture, v_texcoordNormal), outColor.a);
+  }
+
+  if(v_texcoordSpecular == v_texcoord) {
+    specular = vec4(1.0, 1.0, 1.0, outColor.a);
+  } else {
+    specular = calculateSpecular(texture(u_texture, v_texcoordSpecular), outColor.a);
+  }
 }

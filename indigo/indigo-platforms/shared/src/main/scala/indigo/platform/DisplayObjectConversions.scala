@@ -178,7 +178,7 @@ object DisplayObjectConversions {
   def materialToEmissiveCoords(assetMapping: AssetMapping, material: Material): Vector2 =
     material match {
       case Material.Textured(AssetName(_)) =>
-        Vector2.minusOne
+        Vector2.zero
 
       case Material.Lit(_, assetName, _, _) =>
         optionalAssetToCoords(assetMapping, assetName)
@@ -187,7 +187,7 @@ object DisplayObjectConversions {
   def materialToNormalCoords(assetMapping: AssetMapping, material: Material): Vector2 =
     material match {
       case Material.Textured(AssetName(_)) =>
-        Vector2.minusOne
+        Vector2.zero
 
       case Material.Lit(_, _, assetName, _) =>
         optionalAssetToCoords(assetMapping, assetName)
@@ -196,14 +196,14 @@ object DisplayObjectConversions {
   def materialToSpecularCoords(assetMapping: AssetMapping, material: Material): Vector2 =
     material match {
       case Material.Textured(AssetName(_)) =>
-        Vector2.minusOne
+        Vector2.zero
 
       case Material.Lit(_, _, _, assetName) =>
         optionalAssetToCoords(assetMapping, assetName)
     }
 
   def optionalAssetToCoords(assetMapping: AssetMapping, maybeAssetName: Option[AssetName]): Vector2 =
-    maybeAssetName.map(t => lookupTextureOffset(assetMapping, t.value)).getOrElse(Vector2.minusOne)
+    maybeAssetName.map(t => lookupTextureOffset(assetMapping, t.value)).getOrElse(Vector2.zero)
 
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
     val materialName = leaf.material.default.value
@@ -263,9 +263,9 @@ object DisplayObjectConversions {
           textureOffset = lookupTextureOffset(assetMapping, anim.assetName.value)
         )
       },
-      emissionOffset = Vector2.minusOne,
-      normalOffset = Vector2.minusOne,
-      specularOffset = Vector2.minusOne,
+      emissionOffset = Vector2.zero,
+      normalOffset = Vector2.zero,
+      specularOffset = Vector2.zero,
       isLit = 0.0,
       refX = leaf.ref.x,
       refY = leaf.ref.y,
@@ -312,9 +312,9 @@ object DisplayObjectConversions {
                       textureOffset = lookupTextureOffset(assetMapping, fontInfo.fontSpriteSheet.assetName.value)
                     )
                   },
-                  emissionOffset = Vector2.minusOne,
-                  normalOffset = Vector2.minusOne,
-                  specularOffset = Vector2.minusOne,
+                  emissionOffset = Vector2.zero,
+                  normalOffset = Vector2.zero,
+                  specularOffset = Vector2.zero,
                   isLit = 0.0,
                   refX = leaf.ref.x,
                   refY = leaf.ref.y,
