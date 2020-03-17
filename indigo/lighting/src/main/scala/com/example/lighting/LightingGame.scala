@@ -1,4 +1,4 @@
-package com.example.sandbox
+package com.example.lighting
 
 import indigo._
 import indigoexts.entrypoint._
@@ -25,8 +25,25 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
   val fonts: Set[FontInfo] =
     Set()
 
+  val animationsKey: AnimationKey =
+    AnimationKey("anims")
+
   val animations: Set[Animation] =
-    Set()
+    Set(
+      Animation.create(
+        animationsKey,
+        LightingAssets.trafficLightsName,
+        Point(128, 128),
+        cycle = Cycle.create(
+          "lights",
+          NonEmptyList(
+            Frame(Rectangle(0, 0, 64, 64), 250),
+            Frame(Rectangle(64, 0, 64, 64), 250),
+            Frame(Rectangle(0, 64, 64, 64), 250)
+          )
+        )
+      )
+    )
 
   val subSystems: Set[SubSystem] =
     Set()
@@ -84,6 +101,9 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
         orbitingLight.affectTime(2.5).at(gameTime.running),
         pulsingLight.affectTime(1.5).at(gameTime.running)
       )
+      .addGameLayerNodes(
+        Sprite(BindingKey("lights animation"), 0, 0, 64, 64, 1, animationsKey).play()
+      )
 }
 
 object LightingAssets {
@@ -92,6 +112,7 @@ object LightingAssets {
   val junctionBoxEmission: AssetName = AssetName("junctionbox_emission")
   val junctionBoxNormal: AssetName   = AssetName("junctionbox_normal")
   val junctionBoxSpecular: AssetName = AssetName("junctionbox_specular")
+  val trafficLightsName: AssetName   = AssetName("trafficlights")
 
   val junctionBoxMaterialOn: Material.Lit =
     Material.Lit(
@@ -112,13 +133,22 @@ object LightingAssets {
   val junctionBoxMaterialFlat: Material.Textured =
     Material.Textured(junctionBoxAlbedo).lit
 
+  val trafficLightsMaterial: Material.Lit =
+    Material.Lit(
+      trafficLightsName,
+      Some(trafficLightsName),
+      None,
+      None
+    )
+
   def assets: Set[AssetType] =
     Set(
       AssetType.Tagged("atlas1")(
         AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo.value + ".png")),
         AssetType.Image(junctionBoxEmission, AssetPath("assets/" + junctionBoxEmission.value + ".png")),
         AssetType.Image(junctionBoxNormal, AssetPath("assets/" + junctionBoxNormal.value + ".png")),
-        AssetType.Image(junctionBoxSpecular, AssetPath("assets/" + junctionBoxSpecular.value + ".png"))
+        AssetType.Image(junctionBoxSpecular, AssetPath("assets/" + junctionBoxSpecular.value + ".png")),
+        AssetType.Image(trafficLightsName, AssetPath("assets/trafficlights.png"))
       )
     )
 
