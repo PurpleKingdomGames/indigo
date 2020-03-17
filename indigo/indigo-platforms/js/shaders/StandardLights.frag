@@ -8,7 +8,6 @@ in vec2 v_relativeScreenCoords;
 
 in vec2 v_lightPosition;
 in vec3 v_lightColor;
-// in float v_lightType;
 in float v_lightAttenuation;
 
 uniform sampler2D u_texture_game_albedo;
