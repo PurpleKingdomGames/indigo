@@ -15,32 +15,25 @@ layout (location = 9) in vec4 a_glowColor;
 layout (location = 10) in vec4 a_amounts; // a_outerBorderAmount, a_innerBorderAmount, a_outerGlowAmount, a_innerGlowAmount
 layout (location = 11) in vec4 a_rotationAlphaFlipHFlipV; // a_rotation, a_alpha, a_fliph, a_flipv
 layout (location = 12) in vec4 a_emissiveNormalOffsets; // a_emissive (vec2), a_normal (vec2)
-layout (location = 13) in vec4 a_specularOffsetIsLit; // a_specular (vec2), a_isLit (float)
+layout (location = 13) in vec4 a_specularOffsetIsLit; // a_specular (vec2), a_isLit (float), ???
+layout (location = 14) in vec4 a_flags; // ??? albedoAmount (float), emissiveAmount (float), normalAmount (float), specularAmount (float)
 
 uniform mat4 u_projection;
 
-out vec2 v_texcoord;
 out vec2 v_texcoordEmissive;
 out vec2 v_texcoordNormal;
 out vec2 v_texcoordSpecular;
-out float v_isLit;
-out vec2 v_size;
-
+out vec2 v_isLitAlpha;
+out vec2 v_relativeScreenCoords;
 out vec4 v_tint;
-out vec2 v_gradiantFrom;
-out vec2 v_gradiantTo;
+out vec4 v_gradiantFromTo;
 out vec4 v_gradiantOverlayFromColor;
 out vec4 v_gradiantOverlayToColor;
 out vec4 v_borderColor;
 out vec4 v_glowColor;
-out float v_outerBorderAmount;
-out float v_innerBorderAmount;
-out float v_outerGlowAmount;
-out float v_innerGlowAmount;
-out float v_alpha;
-
-out vec2 v_textureOffsets3x3[9];
-out vec2 v_relativeScreenCoords;
+out vec4 v_effectAmounts;
+out vec4 v_flags;
+out vec2 v_textureOffsets3x3[9]; //5 vec4
 
 mat4 rotate2d(float angle){
     return mat4(cos(angle), -sin(angle), 0, 0,
@@ -129,34 +122,29 @@ void main(void) {
   vec2 moveToReferencePoint = -(ref / size) + 0.5;
 
   mat4 transform = 
-    translate2d(translation) * 
-    rotate2d(rotation) * 
-    scale2d(size * scale) * 
-    translate2d(moveToReferencePoint) * 
+    translate2d(translation) *
+    rotate2d(rotation) *
+    scale2d(size * scale) *
+    translate2d(moveToReferencePoint) *
     scale2d(flip);
 
   gl_Position = u_projection * transform * vertices;
 
-  v_texcoord = scaleTexCoords(texcoords);
   v_texcoordEmissive = scaleTexCoordsWithOffset(texcoords, texcoordsEmissive);
   v_texcoordNormal = scaleTexCoordsWithOffset(texcoords, texcoordsNormal);
   v_texcoordSpecular = scaleTexCoordsWithOffset(texcoords, texcoordsSpecular);
-  v_isLit = isLit;
-  v_size = size;
+  v_isLitAlpha = vec2(isLit, alpha);
 
   v_tint = a_tint;
-  v_gradiantFrom = a_gradiantPositions.xy;
-  v_gradiantTo = a_gradiantPositions.zw;
+  v_gradiantFromTo = a_gradiantPositions;
   v_gradiantOverlayFromColor = a_gradiantOverlayFromColor;
   v_gradiantOverlayToColor = a_gradiantOverlayToColor;
   v_borderColor = a_borderColor;
   v_glowColor = a_glowColor;
-  v_outerBorderAmount = a_amounts.x;
-  v_innerBorderAmount = a_amounts.y;
-  v_outerGlowAmount = a_amounts.z;
-  v_innerGlowAmount = a_amounts.w;
-  v_alpha = alpha;
+  v_effectAmounts = a_amounts;
   v_relativeScreenCoords = texcoords * size;
   v_textureOffsets3x3 = generateTexCoords3x3(texcoords, sizeOfAPixel(), generate3x3());
+
+  v_flags = a_flags;
 
 }

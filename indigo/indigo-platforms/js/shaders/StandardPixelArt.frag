@@ -4,28 +4,20 @@ precision lowp float;
 
 uniform sampler2D u_texture;
 
-in vec2 v_texcoord;
 in vec2 v_texcoordEmissive;
 in vec2 v_texcoordNormal;
 in vec2 v_texcoordSpecular;
-in float v_isLit;
-in vec2 v_size;
-
+in vec2 v_isLitAlpha;
+in vec2 v_relativeScreenCoords;
 in vec4 v_tint;
-in vec2 v_gradiantFrom;
-in vec2 v_gradiantTo;
+in vec4 v_gradiantFromTo;
 in vec4 v_gradiantOverlayFromColor;
 in vec4 v_gradiantOverlayToColor;
 in vec4 v_borderColor;
 in vec4 v_glowColor;
-in float v_outerBorderAmount;
-in float v_innerBorderAmount;
-in float v_outerGlowAmount;
-in float v_innerGlowAmount;
-in float v_alpha;
-
+in vec4 v_effectAmounts;
+in vec4 v_flags;
 in vec2 v_textureOffsets3x3[9];
-in vec2 v_relativeScreenCoords;
 
 layout(location = 0) out vec4 albedo;
 layout(location = 1) out vec4 emissive;
@@ -33,7 +25,7 @@ layout(location = 2) out vec4 normal;
 layout(location = 3) out vec4 specular;
 
 vec4 applyBasicEffects(vec4 textureColor) {
-  vec4 withAlpha = vec4(textureColor.rgb, textureColor.a * v_alpha);
+  vec4 withAlpha = vec4(textureColor.rgb, textureColor.a * v_isLitAlpha.y);
 
   vec4 tintedVersion = vec4(withAlpha.rgb * v_tint.rgb, withAlpha.a);
 
@@ -41,8 +33,8 @@ vec4 applyBasicEffects(vec4 textureColor) {
 }
 
 vec4 calculateGradiantOverlay() {
-  vec2 pointA = v_gradiantFrom;
-  vec2 pointB = v_gradiantTo;
+  vec2 pointA = v_gradiantFromTo.xy;
+  vec2 pointB = v_gradiantFromTo.zw;
   vec2 pointP = v_relativeScreenCoords;
 
   // `h` is the distance along the gradiant 0 at A, 1 at B
@@ -133,7 +125,7 @@ vec4 calculateGlow(float baseAlpha, float[9] alphas, float amount) {
 }
 
 vec4 calculateNormal(vec4 normalColor, float alpha) {
-  if (v_isLit > 0.0) {
+  if (v_isLitAlpha.x > 0.0) {
     if(normalColor.a < 0.001) {
       return vec4(0.5, 0.5, 1.0, alpha);
     } else {
@@ -153,6 +145,8 @@ vec4 calculateSpecular(vec4 specularColor, float alpha) {
 }
 
 void main(void) {
+
+  vec2 texcoord = v_textureOffsets3x3[4];
 
   float[9] sampledRegionAlphas = float[9](
     applyBasicEffects(texture(u_texture, v_textureOffsets3x3[0])).a,
@@ -178,13 +172,18 @@ void main(void) {
     (1.0 - sampledRegionAlphas[8])
   );
 
-  vec4 baseColor = applyBasicEffects(texture(u_texture, v_texcoord));
+  vec4 baseColor = applyBasicEffects(texture(u_texture, texcoord));
+
+  float outerBorderAmount = v_effectAmounts.x;
+  float innerBorderAmount = v_effectAmounts.y;
+  float outerGlowAmount = v_effectAmounts.z;
+  float innerGlowAmount = v_effectAmounts.w;
 
   vec4 overlay = calculateGradiantOverlay();
-  vec4 innerGlow = calculateGlow((1.0 - baseColor.a), sampledRegionAlphasInverse, v_innerGlowAmount);
-  vec4 outerGlow = calculateGlow(baseColor.a, sampledRegionAlphas, v_outerGlowAmount);
-  vec4 innerBorder = calculateBorder((1.0 - baseColor.a), sampledRegionAlphasInverse, v_innerBorderAmount);
-  vec4 outerBorder = calculateBorder(baseColor.a, sampledRegionAlphas, v_outerBorderAmount);
+  vec4 innerGlow = calculateGlow((1.0 - baseColor.a), sampledRegionAlphasInverse, innerGlowAmount);
+  vec4 outerGlow = calculateGlow(baseColor.a, sampledRegionAlphas, outerGlowAmount);
+  vec4 innerBorder = calculateBorder((1.0 - baseColor.a), sampledRegionAlphasInverse, innerBorderAmount);
+  vec4 outerBorder = calculateBorder(baseColor.a, sampledRegionAlphas, outerBorderAmount);
 
   vec4 withOverlay = vec4(mix(baseColor.rgb, overlay.rgb, overlay.a), baseColor.a);
   vec4 withInnerGlow = vec4(mix(withOverlay.rgb, innerGlow.rgb, innerGlow.a), withOverlay.a);
@@ -196,19 +195,19 @@ void main(void) {
 
   albedo = outColor;
 
-  if(v_texcoordEmissive == v_texcoord) {
+  if(v_texcoordEmissive == texcoord) {
     emissive = vec4(0.0);
   } else {
-    emissive = texture(u_texture, v_texcoordEmissive);
+    emissive = texture(u_texture, v_texcoordEmissive) * v_flags.x;
   }
 
-  if(v_texcoordNormal == v_texcoord) {
+  if(v_texcoordNormal == texcoord) {
     normal = vec4(0.5, 0.5, 1.0, outColor.a);
   } else {
     normal = calculateNormal(texture(u_texture, v_texcoordNormal), outColor.a);
   }
 
-  if(v_texcoordSpecular == v_texcoord) {
+  if(v_texcoordSpecular == texcoord) {
     specular = vec4(1.0, 1.0, 1.0, outColor.a);
   } else {
     specular = calculateSpecular(texture(u_texture, v_texcoordSpecular), outColor.a);

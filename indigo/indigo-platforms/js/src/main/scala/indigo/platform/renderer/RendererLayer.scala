@@ -33,6 +33,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val rotationAlphaFlipHFlipVInstanceArray: WebGLBuffer  = gl2.createBuffer()
   private val emissiveNormalOffsetsArray: WebGLBuffer            = gl2.createBuffer()
   private val specularOffsetIsLitArray: WebGLBuffer              = gl2.createBuffer()
+  private val flagsArray: WebGLBuffer                            = gl2.createBuffer()
 
   def setupInstanceArray(buffer: WebGLBuffer, location: Int, size: Int): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -55,6 +56,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val rotationAlphaFlipHFlipVData: scalajs.js.Array[Double]  = scalajs.js.Array[Double](4d * maxBatchSize)
   private val emissiveNormalOffsetsData: scalajs.js.Array[Double]    = scalajs.js.Array[Double](4d * maxBatchSize)
   private val specularOffsetIsLitData: scalajs.js.Array[Double]      = scalajs.js.Array[Double](4d * maxBatchSize)
+  private val flagsData: scalajs.js.Array[Double]                    = scalajs.js.Array[Double](4d * maxBatchSize)
 
   @inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Double]) = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -127,6 +129,11 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     specularOffsetIsLitData((i * 4) + 1) = d.specular.y
     specularOffsetIsLitData((i * 4) + 2) = d.isLit
     specularOffsetIsLitData((i * 4) + 3) = 1
+
+    flagsData((i * 4) + 0) = 1
+    flagsData((i * 4) + 1) = 1
+    flagsData((i * 4) + 2) = 1
+    flagsData((i * 4) + 3) = 1
   }
 
   private def overwriteFromDisplayBatchClone(cloneData: DisplayCloneBatchData, i: Int): Unit = {
@@ -188,6 +195,8 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     setupInstanceArray(emissiveNormalOffsetsArray, 12, 4)
     // vec4 a_specularOffsetIsLit --
     setupInstanceArray(specularOffsetIsLitArray, 13, 4)
+    // vec4 a_flags --
+    setupInstanceArray(flagsArray, 14, 4)
     //
 
     val sorted: ListBuffer[DisplayEntity] =
@@ -208,6 +217,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
         bindData(rotationAlphaFlipHFlipVInstanceArray, rotationAlphaFlipHFlipVData)
         bindData(emissiveNormalOffsetsArray, emissiveNormalOffsetsData)
         bindData(specularOffsetIsLitArray, specularOffsetIsLitData)
+        bindData(flagsArray, flagsData)
 
         gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
         metrics.record(layer.metricDraw)
