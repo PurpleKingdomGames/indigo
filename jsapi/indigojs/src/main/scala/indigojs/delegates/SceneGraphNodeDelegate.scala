@@ -356,8 +356,8 @@ object SceneGraphNodeUtilities {
         def toJsDelegate = new SpriteDelegate(
             obj.bindingKey.value,
             new RectangleDelegate(obj.bounds.x, obj.bounds.y, obj.bounds.width, obj.bounds.height),
-            obj.depth.asInstanceOf[Int],
-            obj.rotation.asInstanceOf[Double],
+            obj.depth.zIndex,
+            obj.rotation.value,
             obj.scale.x,
             obj.scale.y,
             obj.animationsKey.toString,
