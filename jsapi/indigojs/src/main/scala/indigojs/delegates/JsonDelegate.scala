@@ -4,8 +4,8 @@ import scala.scalajs.js.annotation._
 import scala.scalajs.js.JSConverters._
 import scala.scalajs.js
 import indigo.json._;
-import indigojs.formats._;
-import indigojs.formats.AsepriteUtilities._;
+import indigojs.delegates.formats._;
+import indigojs.delegates.formats.AsepriteUtilities._;
 
 @SuppressWarnings(Array("org.wartremover.warts.Any", "org.wartremover.warts.Nothing"))
 @JSExportTopLevel("Json")

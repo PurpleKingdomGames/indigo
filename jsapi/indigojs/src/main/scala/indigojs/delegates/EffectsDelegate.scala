@@ -39,3 +39,13 @@ object EffectsDelegate {
     new EffectsDelegate(1, TintDelegate.None, FlipDelegate.None)
 
 }
+
+object EffectsUtilities {
+    implicit class EffectsConvert(val obj: Effects) {
+        def toJsDelegate = new EffectsDelegate(
+            obj.alpha,
+            new TintDelegate(obj.tint.r, obj.tint.g, obj.tint.b, obj.tint.a),
+            new FlipDelegate(obj.flip.horizontal, obj.flip.vertical)
+        )
+    }
+}

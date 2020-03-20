@@ -1,4 +1,4 @@
-package indigojs.formats
+package indigojs.delegates.formats
 
 import indigo.shared.formats._
 import scala.scalajs.js.annotation._
@@ -104,7 +104,7 @@ final case class AsepriteFrameTagDelegate(_name: String, _from: Int, _to: Int, _
 }
 
 
-object AsepriteUtilities {
+final object AsepriteUtilities {
     implicit class AsepriteConvert(val obj: Aseprite) {
         def toJsDelegate =
             AsepriteDelegate(obj.frames.map(_.toJsDelegate), obj.meta.toJsDelegate)

@@ -1,6 +1,7 @@
 package indigojs.delegates
 
 import scala.scalajs.js.annotation._
+import scala.scalajs.js.JSConverters._
 import scala.scalajs.js
 import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.scenegraph.Text
@@ -22,6 +23,7 @@ import indigo.shared.animation.AnimationKey
 import indigojs.delegates.clones.CloneableDelegate
 import indigojs.delegates.geometry.Vector2Delegate
 import indigojs.delegates.PointDelegate
+import indigojs.delegates.EffectsUtilities._
 
 trait SceneGraphNodeDelegate {
   def toInternal: SceneGraphNode
@@ -347,4 +349,21 @@ object TextDelegate {
     case "right"  => TextAlignment.Right
   }
 
+}
+
+object SceneGraphNodeUtilities {
+    implicit class SpriteConvert(val obj: Sprite) {
+        def toJsDelegate = new SpriteDelegate(
+            obj.bindingKey.value,
+            new RectangleDelegate(obj.bounds.x, obj.bounds.y, obj.bounds.width, obj.bounds.height),
+            obj.depth.asInstanceOf[Int],
+            obj.rotation.asInstanceOf[Double],
+            obj.scale.x,
+            obj.scale.y,
+            obj.animationsKey.toString,
+            new PointDelegate(obj.ref.x, obj.ref.y),
+            obj.effects.toJsDelegate,
+            (rect: RectangleDelegate, event: GlobalEventDelegate) => obj.eventHandler((rect.toInternal, event.toInternal)).map(GlobalEventDelegate.fromGlobalEvent(_)).toJSArray
+        )
+    }
 }

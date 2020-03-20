@@ -2,6 +2,7 @@ package indigojs.delegates
 
 import indigojs.IndigoJSException
 import scala.scalajs.js.annotation._
+import scala.scalajs.js.JSConverters._
 import scala.scalajs.js
 import indigo.shared.animation.AnimationAction.JumpToFrame
 import indigo.shared.animation.AnimationAction
@@ -135,4 +136,30 @@ final class JumpToFrameDelegate(_number: Int) extends AnimationActionDelegate {
 
   def toInternal: AnimationAction =
     JumpToFrame(number)
+}
+
+object AnimationUtilities {
+    implicit class AnimationConvert(val obj: Animation) {
+        def toJsDelegate =
+            new AnimationDelegate(
+                obj.animationsKey.toString,
+                obj.imageAssetRef.ref,
+                obj.spriteSheetSize.x,
+                obj.spriteSheetSize.y,
+                obj.cycles.map(_.toJsDelegate).toList.toJSArray
+            )
+    }
+
+    implicit class CycleConvert(val obj: Cycle) {
+        def toJsDelegate =
+            new CycleDelegate(
+                obj.label.value,
+                obj.frames.map(f =>
+                    new FrameDelegate(
+                        new RectangleDelegate(f.bounds.x, f.bounds.y, f.bounds.width, f.bounds.height),
+                        f.duration
+                    )
+                ).toList.toJSArray
+            )
+    }
 }
