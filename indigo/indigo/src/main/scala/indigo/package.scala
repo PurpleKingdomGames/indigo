@@ -65,6 +65,9 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   type Material = shared.datatypes.Material
   val Material: shared.datatypes.Material.type = shared.datatypes.Material
 
+  type Texture = shared.datatypes.Texture
+  val Texture: shared.datatypes.Texture.type = shared.datatypes.Texture
+
   type ToReportable[T] = shared.ToReportable[T]
   val ToReportable: shared.ToReportable.type = shared.ToReportable
 

@@ -33,9 +33,9 @@ object Material {
 
   final class Lit(
       val albedo: AssetName,
-      val emission: Option[AssetName],
-      val normal: Option[AssetName],
-      val specular: Option[AssetName],
+      val emission: Option[Texture],
+      val normal: Option[Texture],
+      val specular: Option[Texture],
       val isLit: Boolean
   ) extends Material {
     val default: AssetName = albedo
@@ -43,14 +43,14 @@ object Material {
     def withAlbedo(newAlbedo: AssetName): Lit =
       new Lit(newAlbedo, emission, normal, specular, isLit)
 
-    def withEmission(newEmission: AssetName): Lit =
-      new Lit(albedo, Some(newEmission), normal, specular, isLit)
+    def withEmission(emissionAssetName: AssetName, amount: Double): Lit =
+      new Lit(albedo, Some(Texture(emissionAssetName, amount)), normal, specular, isLit)
 
-    def withNormal(newNormal: AssetName): Lit =
-      new Lit(albedo, emission, Some(newNormal), specular, isLit)
+    def withNormal(normalAssetName: AssetName, amount: Double): Lit =
+      new Lit(albedo, emission, Some(Texture(normalAssetName, amount)), specular, isLit)
 
-    def withSpecular(newSpecular: AssetName): Lit =
-      new Lit(albedo, emission, normal, Some(newSpecular), isLit)
+    def withSpecular(specularAssetName: AssetName, amount: Double): Lit =
+      new Lit(albedo, emission, normal, Some(Texture(specularAssetName, amount)), isLit)
 
     def lit: Lit =
       new Lit(albedo, emission, normal, specular, true)
@@ -61,14 +61,26 @@ object Material {
   object Lit {
     def apply(
         albedo: AssetName,
-        emission: Option[AssetName],
-        normal: Option[AssetName],
-        specular: Option[AssetName]
+        emission: Option[Texture],
+        normal: Option[Texture],
+        specular: Option[Texture]
     ): Lit =
       new Lit(albedo, emission, normal, specular, true)
 
-    def unapply(l: Lit): Option[(AssetName, Option[AssetName], Option[AssetName], Option[AssetName])] =
+    def unapply(l: Lit): Option[(AssetName, Option[Texture], Option[Texture], Option[Texture])] =
       Some((l.albedo, l.emission, l.normal, l.specular))
+
+    def fromAlbedo(albedo: AssetName): Lit =
+      new Lit(albedo, None, None, None, true)
   }
 
+}
+
+final class Texture(val assetName: AssetName, val amount: Double)
+object Texture {
+  def apply(assetName: AssetName, amount: Double): Texture =
+    new Texture(assetName, amount)
+
+  def unapply(t: Texture): Option[(AssetName, Double)] =
+    Some((t.assetName, t.amount))
 }

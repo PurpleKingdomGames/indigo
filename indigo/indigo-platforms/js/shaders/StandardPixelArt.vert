@@ -16,7 +16,7 @@ layout (location = 10) in vec4 a_amounts; // a_outerBorderAmount, a_innerBorderA
 layout (location = 11) in vec4 a_rotationAlphaFlipHFlipV; // a_rotation, a_alpha, a_fliph, a_flipv
 layout (location = 12) in vec4 a_emissiveNormalOffsets; // a_emissive (vec2), a_normal (vec2)
 layout (location = 13) in vec4 a_specularOffsetIsLit; // a_specular (vec2), a_isLit (float), ???
-layout (location = 14) in vec4 a_flags; // ??? albedoAmount (float), emissiveAmount (float), normalAmount (float), specularAmount (float)
+layout (location = 14) in vec4 a_textureAmounts; // ??? albedoAmount (float), emissiveAmount (float), normalAmount (float), specularAmount (float)
 
 uniform mat4 u_projection;
 
@@ -32,7 +32,7 @@ out vec4 v_gradiantOverlayToColor;
 out vec4 v_borderColor;
 out vec4 v_glowColor;
 out vec4 v_effectAmounts;
-out vec4 v_flags;
+out vec4 v_textureAmounts;
 out vec2 v_textureOffsets3x3[9]; //5 vec4
 
 mat4 rotate2d(float angle){
@@ -145,6 +145,6 @@ void main(void) {
   v_relativeScreenCoords = texcoords * size;
   v_textureOffsets3x3 = generateTexCoords3x3(texcoords, sizeOfAPixel(), generate3x3());
 
-  v_flags = a_flags;
+  v_textureAmounts = a_textureAmounts;
 
 }

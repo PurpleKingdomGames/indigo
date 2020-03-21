@@ -16,7 +16,7 @@ in vec4 v_gradiantOverlayToColor;
 in vec4 v_borderColor;
 in vec4 v_glowColor;
 in vec4 v_effectAmounts;
-in vec4 v_flags;
+in vec4 v_textureAmounts;
 in vec2 v_textureOffsets3x3[9];
 
 layout(location = 0) out vec4 albedo;
@@ -193,23 +193,26 @@ void main(void) {
 
   vec4 outColor = withOuterBorder;
 
+  //float albedoAmount = v_textureAmounts.x;
+  float emissiveAmount = v_textureAmounts.y;
+  float normalAmount = v_textureAmounts.z;
+  float specularAmount = v_textureAmounts.w;
+
   albedo = outColor;
 
-  if(v_texcoordEmissive == texcoord) {
-    emissive = vec4(0.0);
-  } else {
-    emissive = texture(u_texture, v_texcoordEmissive) * v_flags.x;
-  }
+  emissive = texture(u_texture, v_texcoordEmissive) * emissiveAmount;
 
-  if(v_texcoordNormal == texcoord) {
-    normal = vec4(0.5, 0.5, 1.0, outColor.a);
-  } else {
-    normal = calculateNormal(texture(u_texture, v_texcoordNormal), outColor.a);
-  }
+  normal = 
+    mix(
+      vec4(0.5, 0.5, 1.0, outColor.a),
+      calculateNormal(texture(u_texture, v_texcoordNormal), outColor.a),
+      normalAmount
+    );
 
-  if(v_texcoordSpecular == texcoord) {
-    specular = vec4(1.0, 1.0, 1.0, outColor.a);
-  } else {
-    specular = calculateSpecular(texture(u_texture, v_texcoordSpecular), outColor.a);
-  }
+  specular = 
+    mix(
+      vec4(1.0, 1.0, 1.0, outColor.a),
+      calculateSpecular(texture(u_texture, v_texcoordSpecular), outColor.a),
+      specularAmount
+    );
 }

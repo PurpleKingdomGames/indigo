@@ -28,6 +28,7 @@ import indigo.shared.display.DisplayCloneBatchData
 import indigo.shared.datatypes.Material
 import indigo.shared.assets.AssetName
 import indigo.shared.display.DisplayEffects
+import indigo.shared.datatypes.Texture
 
 object DisplayObjectConversions {
 
@@ -175,38 +176,46 @@ object DisplayObjectConversions {
     rec(sceneNodes)
   }
 
-  def materialToEmissiveCoords(assetMapping: AssetMapping, material: Material): Vector2 =
+  def materialToEmissiveValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
     material match {
       case Material.Textured(AssetName(_)) =>
-        Vector2.zero
+        (Vector2.zero, 0.0d)
 
-      case Material.Lit(_, assetName, _, _) =>
-        optionalAssetToCoords(assetMapping, assetName)
+      case Material.Lit(_, texture, _, _) =>
+        optionalAssetToValues(assetMapping, texture)
     }
 
-  def materialToNormalCoords(assetMapping: AssetMapping, material: Material): Vector2 =
+  def materialToNormalValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
     material match {
       case Material.Textured(AssetName(_)) =>
-        Vector2.zero
+        (Vector2.zero, 0.0d)
 
-      case Material.Lit(_, _, assetName, _) =>
-        optionalAssetToCoords(assetMapping, assetName)
+      case Material.Lit(_, _, texture, _) =>
+        optionalAssetToValues(assetMapping, texture)
     }
 
-  def materialToSpecularCoords(assetMapping: AssetMapping, material: Material): Vector2 =
+  def materialToSpecularValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
     material match {
       case Material.Textured(AssetName(_)) =>
-        Vector2.zero
+        (Vector2.zero, 0.0d)
 
-      case Material.Lit(_, _, _, assetName) =>
-        optionalAssetToCoords(assetMapping, assetName)
+      case Material.Lit(_, _, _, texture) =>
+        optionalAssetToValues(assetMapping, texture)
     }
 
-  def optionalAssetToCoords(assetMapping: AssetMapping, maybeAssetName: Option[AssetName]): Vector2 =
-    maybeAssetName.map(t => lookupTextureOffset(assetMapping, t.value)).getOrElse(Vector2.zero)
+  def optionalAssetToValues(assetMapping: AssetMapping, maybeAssetName: Option[Texture]): (Vector2, Double) =
+    maybeAssetName
+      .map { t =>
+        (lookupTextureOffset(assetMapping, t.assetName.value), Math.min(1.0d, Math.max(0.0d, t.amount)))
+      }
+      .getOrElse((Vector2.zero, 0.0d))
 
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
     val materialName = leaf.material.default.value
+
+    val (emissiveOffset, emissiveAmount) = materialToEmissiveValues(assetMapping, leaf.material)
+    val (normalOffset, normalAmount)     = materialToNormalValues(assetMapping, leaf.material)
+    val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, leaf.material)
 
     val frameInfo =
       QuickCache(s"${leaf.crop.hash}_${materialName}") {
@@ -234,9 +243,12 @@ object DisplayObjectConversions {
       scaleY = leaf.scale.y,
       diffuseRef = lookupAtlasName(assetMapping, materialName),
       frame = frameInfo,
-      emissionOffset = frameInfo.offsetToCoords(materialToEmissiveCoords(assetMapping, leaf.material)),
-      normalOffset = frameInfo.offsetToCoords(materialToNormalCoords(assetMapping, leaf.material)),
-      specularOffset = frameInfo.offsetToCoords(materialToSpecularCoords(assetMapping, leaf.material)),
+      emissiveOffset = frameInfo.offsetToCoords(emissiveOffset),
+      emissiveAmount = emissiveAmount,
+      normalOffset = frameInfo.offsetToCoords(normalOffset),
+      normalAmount = normalAmount,
+      specularOffset = frameInfo.offsetToCoords(specularOffset),
+      specularAmount = specularAmount,
       isLit = if (leaf.material.isLit) 1.0 else 0.0,
       refX = leaf.ref.x,
       refY = leaf.ref.y,
@@ -245,6 +257,12 @@ object DisplayObjectConversions {
   }
 
   def spriteToDisplayObject(leaf: Sprite, assetMapping: AssetMapping, anim: Animation): DisplayObject =
+    //TODO
+    // val materialName = leaf.material.default.value
+
+    // val (emissiveOffset, emissiveAmount) = materialToEmissiveValues(assetMapping, leaf.material)
+    // val (normalOffset, normalAmount)     = materialToNormalValues(assetMapping, leaf.material)
+    // val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, leaf.material)
     DisplayObject(
       x = leaf.x,
       y = leaf.y,
@@ -263,9 +281,18 @@ object DisplayObjectConversions {
           textureOffset = lookupTextureOffset(assetMapping, anim.assetName.value)
         )
       },
-      emissionOffset = Vector2.zero,
+      // emissiveOffset = frameInfo.offsetToCoords(emissiveOffset),
+      // emissiveAmount = emissiveAmount,
+      // normalOffset = frameInfo.offsetToCoords(normalOffset),
+      // normalAmount = normalAmount,
+      // specularOffset = frameInfo.offsetToCoords(specularOffset),
+      // specularAmount = specularAmount,
+      emissiveOffset = Vector2.zero,
+      emissiveAmount = 0.0d,
       normalOffset = Vector2.zero,
+      normalAmount = 0.0d,
       specularOffset = Vector2.zero,
+      specularAmount = 0.0d,
       isLit = 0.0,
       refX = leaf.ref.x,
       refY = leaf.ref.y,
@@ -312,9 +339,12 @@ object DisplayObjectConversions {
                       textureOffset = lookupTextureOffset(assetMapping, fontInfo.fontSpriteSheet.assetName.value)
                     )
                   },
-                  emissionOffset = Vector2.zero,
+                  emissiveOffset = Vector2.zero,
+                  emissiveAmount = 0.0d,
                   normalOffset = Vector2.zero,
+                  normalAmount = 0.0d,
                   specularOffset = Vector2.zero,
+                  specularAmount = 0.0d,
                   isLit = 0.0,
                   refX = leaf.ref.x,
                   refY = leaf.ref.y,
