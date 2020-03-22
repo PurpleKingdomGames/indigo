@@ -7,6 +7,7 @@ sealed trait Material {
   val isLit: Boolean
   def lit: Material
   def unlit: Material
+  def hash: String
 }
 
 object Material {
@@ -22,6 +23,9 @@ object Material {
 
     def unlit: Textured =
       new Textured(diffuse, false)
+
+    lazy val hash: String =
+      diffuse.value + (if (isLit) "1" else "0")
   }
   object Textured {
     def apply(diffuse: AssetName): Textured =
@@ -57,6 +61,13 @@ object Material {
 
     def unlit: Lit =
       new Lit(albedo, emission, normal, specular, false)
+
+    lazy val hash: String =
+      albedo.value +
+        emission.map(_.hash).getOrElse("_") +
+        normal.map(_.hash).getOrElse("_") +
+        specular.map(_.hash).getOrElse("_") +
+        (if (isLit) "1" else "0")
   }
   object Lit {
     def apply(
@@ -76,7 +87,10 @@ object Material {
 
 }
 
-final class Texture(val assetName: AssetName, val amount: Double)
+final class Texture(val assetName: AssetName, val amount: Double) {
+  def hash: String =
+    assetName.value + amount.toString()
+}
 object Texture {
   def apply(assetName: AssetName, amount: Double): Texture =
     new Texture(assetName, amount)

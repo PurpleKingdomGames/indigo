@@ -40,7 +40,7 @@ object AnimationTests extends TestSuite {
   val animation: Animation =
     Animation(
       AnimationKey("test anim"),
-      AssetName("imageAssetRef"),
+      Material.Textured(AssetName("imageAssetRef")),
       Point.zero,
       cycles.head.label,
       cycles,

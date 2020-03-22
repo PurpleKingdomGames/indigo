@@ -226,16 +226,16 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     metrics.record(layer.metricStart)
 
     @tailrec
-    def rec(remaining: List[DisplayEntity], batchCount: Int, textureHash: String): Unit =
+    def rec(remaining: List[DisplayEntity], batchCount: Int, atlasName: String): Unit =
       remaining match {
         case Nil =>
           drawBuffer(batchCount)
 
-        case (d: DisplayObject) :: _ if d.diffuseRef !== textureHash =>
+        case (d: DisplayObject) :: _ if d.atlasName !== atlasName =>
           drawBuffer(batchCount)
 
           // Diffuse
-          textureLocations.find(t => t.name === d.diffuseRef) match {
+          textureLocations.find(t => t.name === d.atlasName) match {
             case None =>
               gl2.activeTexture(TEXTURE0);
               gl2.bindTexture(TEXTURE_2D, null)
@@ -245,37 +245,37 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
               gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
           }
 
-          rec(remaining, 0, d.diffuseRef)
+          rec(remaining, 0, d.atlasName)
 
         case _ if batchCount === maxBatchSize =>
           drawBuffer(batchCount)
-          rec(remaining, 0, textureHash)
+          rec(remaining, 0, atlasName)
 
         case (d: DisplayObject) :: ds =>
           updateData(d, batchCount)
-          rec(ds, batchCount + 1, textureHash)
+          rec(ds, batchCount + 1, atlasName)
 
         case (c: DisplayClone) :: ds =>
           cloneBlankDisplayObjects.get(c.id) match {
             case None =>
-              rec(ds, batchCount, textureHash)
+              rec(ds, batchCount, atlasName)
 
             case Some(refDisplayObject) =>
               updateData(refDisplayObject, batchCount)
               overwriteFromDisplayBatchClone(c.asBatchData, batchCount)
-              rec(ds, batchCount + 1, textureHash)
+              rec(ds, batchCount + 1, atlasName)
           }
 
         case (c: DisplayCloneBatch) :: ds =>
           cloneBlankDisplayObjects.get(c.id) match {
             case None =>
-              rec(ds, batchCount, textureHash)
+              rec(ds, batchCount, atlasName)
 
             case Some(refDisplayObject) =>
               val numberProcessed: Int =
                 processCloneBatch(c, refDisplayObject, batchCount)
 
-              rec(ds, batchCount + numberProcessed, textureHash)
+              rec(ds, batchCount + numberProcessed, atlasName)
           }
 
       }

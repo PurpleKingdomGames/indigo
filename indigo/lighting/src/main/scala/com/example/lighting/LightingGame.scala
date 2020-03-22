@@ -32,7 +32,7 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
     Set(
       Animation.create(
         animationsKey,
-        LightingAssets.trafficLightsName,
+        LightingAssets.trafficLightsMaterial,
         Point(128, 128),
         cycle = Cycle.create(
           "lights",
@@ -108,11 +108,11 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
 
 object LightingAssets {
 
-  val junctionBoxAlbedo: AssetName   = AssetName("junctionbox_albedo")
+  val junctionBoxAlbedo: AssetName = AssetName("junctionbox_albedo")
   val junctionBoxEmission: Texture = Texture(AssetName("junctionbox_emission"), 1.0d)
   val junctionBoxNormal: Texture   = Texture(AssetName("junctionbox_normal"), 1.0d)
   val junctionBoxSpecular: Texture = Texture(AssetName("junctionbox_specular"), 1.0d)
-  val trafficLightsName: AssetName   = AssetName("trafficlights")
+  val trafficLightsName: AssetName = AssetName("trafficlights")
 
   val junctionBoxMaterialOn: Material.Lit =
     Material.Lit(
@@ -148,7 +148,7 @@ object LightingAssets {
         AssetType.Image(junctionBoxEmission.assetName, AssetPath("assets/" + junctionBoxEmission.assetName.value + ".png")),
         AssetType.Image(junctionBoxNormal.assetName, AssetPath("assets/" + junctionBoxNormal.assetName.value + ".png")),
         AssetType.Image(junctionBoxSpecular.assetName, AssetPath("assets/" + junctionBoxSpecular.assetName.value + ".png")),
-        AssetType.Image(trafficLightsName, AssetPath("assets/trafficlights.png"))
+        AssetType.Image(trafficLightsName, AssetPath("assets/" + trafficLightsName.value + ".png"))
       )
     )
 

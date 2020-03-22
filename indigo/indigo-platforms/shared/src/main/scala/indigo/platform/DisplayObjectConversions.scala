@@ -218,7 +218,7 @@ object DisplayObjectConversions {
     val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, leaf.material)
 
     val frameInfo =
-      QuickCache(s"${leaf.crop.hash}_${materialName}") {
+      QuickCache(s"${leaf.crop.hash}_${leaf.material.hash}") {
         SpriteSheetFrame.calculateFrameOffset(
           imageSize = lookupAtlasSize(assetMapping, materialName),
           frameSize = Vector2(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble),
@@ -241,7 +241,7 @@ object DisplayObjectConversions {
       rotation = leaf.rotation.value,
       scaleX = leaf.scale.x,
       scaleY = leaf.scale.y,
-      diffuseRef = lookupAtlasName(assetMapping, materialName),
+      atlasName = lookupAtlasName(assetMapping, leaf.material.default.value),
       frame = frameInfo,
       emissiveOffset = frameInfo.offsetToCoords(emissiveOffset),
       emissiveAmount = emissiveAmount,
@@ -256,13 +256,28 @@ object DisplayObjectConversions {
     )
   }
 
-  def spriteToDisplayObject(leaf: Sprite, assetMapping: AssetMapping, anim: Animation): DisplayObject =
-    //TODO
-    // val materialName = leaf.material.default.value
+  def spriteToDisplayObject(leaf: Sprite, assetMapping: AssetMapping, anim: Animation): DisplayObject = {
+    val materialName = anim.material.default.value
 
-    // val (emissiveOffset, emissiveAmount) = materialToEmissiveValues(assetMapping, leaf.material)
-    // val (normalOffset, normalAmount)     = materialToNormalValues(assetMapping, leaf.material)
-    // val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, leaf.material)
+    val (emissiveOffset, emissiveAmount) = materialToEmissiveValues(assetMapping, anim.material)
+    val (normalOffset, normalAmount)     = materialToNormalValues(assetMapping, anim.material)
+    val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, anim.material)
+
+    val frameInfo =
+      QuickCache(anim.frameHash) {
+        SpriteSheetFrame.calculateFrameOffset(
+          imageSize = lookupAtlasSize(assetMapping, materialName),
+          frameSize = Vector2(anim.currentFrame.bounds.size.x.toDouble, anim.currentFrame.bounds.size.y.toDouble),
+          framePosition = Vector2(anim.currentFrame.bounds.position.x.toDouble, anim.currentFrame.bounds.position.y.toDouble),
+          textureOffset = lookupTextureOffset(assetMapping, materialName)
+        )
+      }
+
+    val effectsValues =
+      QuickCache(leaf.effects.hash) {
+        DisplayEffects.fromEffects(leaf.effects)
+      }
+
     DisplayObject(
       x = leaf.x,
       y = leaf.y,
@@ -272,34 +287,20 @@ object DisplayObjectConversions {
       rotation = leaf.rotation.value,
       scaleX = leaf.scale.x,
       scaleY = leaf.scale.y,
-      diffuseRef = lookupAtlasName(assetMapping, anim.assetName.value),
-      frame = QuickCache(anim.frameHash) {
-        SpriteSheetFrame.calculateFrameOffset(
-          imageSize = lookupAtlasSize(assetMapping, anim.assetName.value),
-          frameSize = Vector2(anim.currentFrame.bounds.size.x.toDouble, anim.currentFrame.bounds.size.y.toDouble),
-          framePosition = Vector2(anim.currentFrame.bounds.position.x.toDouble, anim.currentFrame.bounds.position.y.toDouble),
-          textureOffset = lookupTextureOffset(assetMapping, anim.assetName.value)
-        )
-      },
-      // emissiveOffset = frameInfo.offsetToCoords(emissiveOffset),
-      // emissiveAmount = emissiveAmount,
-      // normalOffset = frameInfo.offsetToCoords(normalOffset),
-      // normalAmount = normalAmount,
-      // specularOffset = frameInfo.offsetToCoords(specularOffset),
-      // specularAmount = specularAmount,
-      emissiveOffset = Vector2.zero,
-      emissiveAmount = 0.0d,
-      normalOffset = Vector2.zero,
-      normalAmount = 0.0d,
-      specularOffset = Vector2.zero,
-      specularAmount = 0.0d,
-      isLit = 0.0,
+      atlasName = lookupAtlasName(assetMapping, anim.material.default.value),
+      frame = frameInfo,
+      emissiveOffset = frameInfo.offsetToCoords(emissiveOffset),
+      emissiveAmount = emissiveAmount,
+      normalOffset = frameInfo.offsetToCoords(normalOffset),
+      normalAmount = normalAmount,
+      specularOffset = frameInfo.offsetToCoords(specularOffset),
+      specularAmount = specularAmount,
+      isLit = if (anim.material.isLit) 1.0 else 0.0,
       refX = leaf.ref.x,
       refY = leaf.ref.y,
-      effects = QuickCache(leaf.effects.hash) {
-        DisplayEffects.fromEffects(leaf.effects)
-      }
+      effects = effectsValues
     )
+  }
 
   def textLineToDisplayObjects(leaf: Text, assetMapping: AssetMapping): (TextLine, Int, Int) => List[DisplayObject] =
     (line, alignmentOffsetX, yOffset) => {
@@ -330,7 +331,7 @@ object DisplayObjectConversions {
                   rotation = leaf.rotation.value,
                   scaleX = leaf.scale.x,
                   scaleY = leaf.scale.y,
-                  diffuseRef = lookupAtlasName(assetMapping, fontInfo.fontSpriteSheet.assetName.value),
+                  atlasName = lookupAtlasName(assetMapping, fontInfo.fontSpriteSheet.assetName.value),
                   frame = QuickCache(fontChar.bounds.hash + "_" + fontInfo.fontSpriteSheet.assetName.value) {
                     SpriteSheetFrame.calculateFrameOffset(
                       imageSize = lookupAtlasSize(assetMapping, fontInfo.fontSpriteSheet.assetName.value),

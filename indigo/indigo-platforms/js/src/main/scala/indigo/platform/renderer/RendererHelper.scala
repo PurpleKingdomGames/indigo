@@ -21,7 +21,7 @@ object RendererHelper {
       rotation = 0,
       scaleX = 1,
       scaleY = 1,
-      diffuseRef = "",
+      atlasName = "",
       frame = SpriteSheetFrame.defaultOffset,
       emissiveOffset = Vector2.zero,
       emissiveAmount = 0.0d,
