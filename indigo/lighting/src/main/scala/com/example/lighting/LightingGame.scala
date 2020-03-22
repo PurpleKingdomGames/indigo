@@ -88,7 +88,7 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
         .withColor(RGB.Cyan)
     }
 
-  def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState): SceneUpdateFragment = {
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         graphic,
@@ -104,6 +104,12 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
       .addGameLayerNodes(
         Sprite(BindingKey("lights animation"), 0, 0, 64, 64, 1, animationsKey).play()
       )
+      .addGameLayerNodes(
+        graphic
+          .moveTo(config.viewport.giveDimensions(config.magnification).center.x, 30)
+          .withCrop(10, 10, 20, 20)
+      )
+  }
 }
 
 object LightingAssets {
