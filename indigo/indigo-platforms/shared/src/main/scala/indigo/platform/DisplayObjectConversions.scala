@@ -220,9 +220,8 @@ object DisplayObjectConversions {
     val frameInfo =
       QuickCache(s"${leaf.crop.hash}_${leaf.material.hash}") {
         SpriteSheetFrame.calculateFrameOffset(
-          imageSize = lookupAtlasSize(assetMapping, materialName),
-          frameSize = Vector2(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble),
-          framePosition = Vector2(leaf.crop.position.x.toDouble, leaf.crop.position.y.toDouble),
+          atlasSize = lookupAtlasSize(assetMapping, materialName),
+          frameCrop = leaf.crop,
           textureOffset = lookupTextureOffset(assetMapping, materialName)
         )
       }
@@ -266,9 +265,8 @@ object DisplayObjectConversions {
     val frameInfo =
       QuickCache(anim.frameHash) {
         SpriteSheetFrame.calculateFrameOffset(
-          imageSize = lookupAtlasSize(assetMapping, materialName),
-          frameSize = Vector2(anim.currentFrame.bounds.size.x.toDouble, anim.currentFrame.bounds.size.y.toDouble),
-          framePosition = Vector2(anim.currentFrame.bounds.position.x.toDouble, anim.currentFrame.bounds.position.y.toDouble),
+          atlasSize = lookupAtlasSize(assetMapping, materialName),
+          frameCrop = anim.currentFrame.bounds,
           textureOffset = lookupTextureOffset(assetMapping, materialName)
         )
       }
@@ -317,6 +315,26 @@ object DisplayObjectConversions {
           ":" + fontInfo.map(_.fontSpriteSheet.assetName.value).getOrElse("") +
           ":" + leaf.effects.hash
 
+      // val materialName = anim.material.default.value
+
+      // val (emissiveOffset, emissiveAmount) = materialToEmissiveValues(assetMapping, anim.material)
+      // val (normalOffset, normalAmount)     = materialToNormalValues(assetMapping, anim.material)
+      // val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, anim.material)
+
+      // val frameInfo =
+      //   QuickCache(anim.frameHash) {
+      //     SpriteSheetFrame.calculateFrameOffset(
+      //       atlasSize = lookupAtlasSize(assetMapping, materialName),
+      //       frameCrop = anim.currentFrame.bounds,
+      //       textureOffset = lookupTextureOffset(assetMapping, materialName)
+      //     )
+      //   }
+
+      val effectsValues =
+        QuickCache(leaf.effects.hash) {
+          DisplayEffects.fromEffects(leaf.effects)
+        }
+
       QuickCache(lineHash) {
         fontInfo
           .map { fontInfo =>
@@ -334,9 +352,8 @@ object DisplayObjectConversions {
                   atlasName = lookupAtlasName(assetMapping, fontInfo.fontSpriteSheet.assetName.value),
                   frame = QuickCache(fontChar.bounds.hash + "_" + fontInfo.fontSpriteSheet.assetName.value) {
                     SpriteSheetFrame.calculateFrameOffset(
-                      imageSize = lookupAtlasSize(assetMapping, fontInfo.fontSpriteSheet.assetName.value),
-                      frameSize = Vector2(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble),
-                      framePosition = Vector2(fontChar.bounds.x.toDouble, fontChar.bounds.y.toDouble),
+                      atlasSize = lookupAtlasSize(assetMapping, fontInfo.fontSpriteSheet.assetName.value),
+                      frameCrop = fontChar.bounds,
                       textureOffset = lookupTextureOffset(assetMapping, fontInfo.fontSpriteSheet.assetName.value)
                     )
                   },
@@ -349,9 +366,7 @@ object DisplayObjectConversions {
                   isLit = 0.0,
                   refX = leaf.ref.x,
                   refY = leaf.ref.y,
-                  effects = QuickCache(leaf.effects.hash) {
-                    DisplayEffects.fromEffects(leaf.effects)
-                  }
+                  effects = effectsValues
                 )
             }
           }

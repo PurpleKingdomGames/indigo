@@ -3,30 +3,26 @@ package indigo.shared.display
 import indigo.shared.datatypes.Vector2
 
 import indigo.shared.{AsString, EqualTo}
+import indigo.shared.datatypes.Rectangle
 
 object SpriteSheetFrame {
 
-  def calculateFrameOffset(imageSize: Vector2, frameSize: Vector2, framePosition: Vector2, textureOffset: Vector2): SpriteSheetFrameCoordinateOffsets = {
-    val scaleFactor       = frameSize / imageSize
-    val frameOffsetFactor = (framePosition + textureOffset) / frameSize
-    val translationFactor = scaleFactor * frameOffsetFactor
+  def calculateFrameOffset(atlasSize: Vector2, frameCrop: Rectangle, textureOffset: Vector2): SpriteSheetFrameCoordinateOffsets = {
+    val frameSize   = frameCrop.size.toVector
+    val scaleFactor = frameSize / atlasSize
 
-    val f: Vector2 => Vector2 =
-      v => scaleFactor * ((v + textureOffset) / frameSize)
+    val translator: Vector2 => Vector2 =
+      texturePosition => scaleFactor * ((frameCrop.position.toVector + texturePosition) / frameSize)
 
-    new SpriteSheetFrameCoordinateOffsets(scaleFactor, translationFactor, f)
+    new SpriteSheetFrameCoordinateOffsets(scaleFactor, translator(textureOffset), translator)
   }
 
-  def defaultOffset: SpriteSheetFrameCoordinateOffsets =
-    new SpriteSheetFrameCoordinateOffsets(
-      scale = Vector2.one,
-      translate = Vector2.zero,
-      translateCoords = identity
-    )
+  val defaultOffset: SpriteSheetFrameCoordinateOffsets =
+    calculateFrameOffset(Vector2(1.0, 1.0), Rectangle(0, 0, 1, 1), Vector2.zero)
 
   final class SpriteSheetFrameCoordinateOffsets(val scale: Vector2, val translate: Vector2, translateCoords: Vector2 => Vector2) {
-    def offsetToCoords(offset: Vector2): Vector2 =
-      translateCoords(offset)
+    def offsetToCoords(textureOffset: Vector2): Vector2 =
+      translateCoords(textureOffset)
   }
   object SpriteSheetFrameCoordinateOffsets {
 
