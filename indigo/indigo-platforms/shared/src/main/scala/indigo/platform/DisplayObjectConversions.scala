@@ -158,8 +158,17 @@ object DisplayObjectConversions {
               case TextAlignment.Right => -lineBounds.size.x
             }
 
-          val converterFunc: (TextLine, Int, Int) => List[DisplayObject] =
-            DisplayObjectConversions.textLineToDisplayObjects(x, assetMapping)
+          val converterFunc: (TextLine, Int, Int) => List[DisplayObject] = {
+            FontRegister
+              .findByFontKey(x.fontKey)
+              .map { fontInfo =>
+                DisplayObjectConversions.textLineToDisplayObjects(x, assetMapping, fontInfo)
+              }
+              .getOrElse { (_, _, _) =>
+                IndigoLogger.errorOnce(s"Cannot render Text, missing Font with key: ${x.fontKey.toString()}")
+                Nil
+              }
+          }
 
           val letters =
             x.lines
@@ -240,7 +249,7 @@ object DisplayObjectConversions {
       rotation = leaf.rotation.value,
       scaleX = leaf.scale.x,
       scaleY = leaf.scale.y,
-      atlasName = lookupAtlasName(assetMapping, leaf.material.default.value),
+      atlasName = lookupAtlasName(assetMapping, materialName),
       frame = frameInfo,
       emissiveOffset = frameInfo.offsetToCoords(emissiveOffset),
       emissiveAmount = emissiveAmount,
@@ -285,7 +294,7 @@ object DisplayObjectConversions {
       rotation = leaf.rotation.value,
       scaleX = leaf.scale.x,
       scaleY = leaf.scale.y,
-      atlasName = lookupAtlasName(assetMapping, anim.material.default.value),
+      atlasName = lookupAtlasName(assetMapping, materialName),
       frame = frameInfo,
       emissiveOffset = frameInfo.offsetToCoords(emissiveOffset),
       emissiveAmount = emissiveAmount,
@@ -300,9 +309,8 @@ object DisplayObjectConversions {
     )
   }
 
-  def textLineToDisplayObjects(leaf: Text, assetMapping: AssetMapping): (TextLine, Int, Int) => List[DisplayObject] =
+  def textLineToDisplayObjects(leaf: Text, assetMapping: AssetMapping, fontInfo: FontInfo): (TextLine, Int, Int) => List[DisplayObject] =
     (line, alignmentOffsetX, yOffset) => {
-      val fontInfo = FontRegister.findByFontKey(leaf.fontKey)
 
       val lineHash: String =
         leaf.fontKey.key +
@@ -312,23 +320,14 @@ object DisplayObjectConversions {
           ":" + leaf.bounds.hash +
           ":" + leaf.rotation.hash +
           ":" + leaf.scale.hash +
-          ":" + fontInfo.map(_.fontSpriteSheet.assetName.value).getOrElse("") +
+          ":" + fontInfo.fontSpriteSheet.material.hash +
           ":" + leaf.effects.hash
 
-      // val materialName = anim.material.default.value
+      val materialName = fontInfo.fontSpriteSheet.material.default.value
 
-      // val (emissiveOffset, emissiveAmount) = materialToEmissiveValues(assetMapping, anim.material)
-      // val (normalOffset, normalAmount)     = materialToNormalValues(assetMapping, anim.material)
-      // val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, anim.material)
-
-      // val frameInfo =
-      //   QuickCache(anim.frameHash) {
-      //     SpriteSheetFrame.calculateFrameOffset(
-      //       atlasSize = lookupAtlasSize(assetMapping, materialName),
-      //       frameCrop = anim.currentFrame.bounds,
-      //       textureOffset = lookupTextureOffset(assetMapping, materialName)
-      //     )
-      //   }
+      val (emissiveOffset, emissiveAmount) = materialToEmissiveValues(assetMapping, fontInfo.fontSpriteSheet.material)
+      val (normalOffset, normalAmount)     = materialToNormalValues(assetMapping, fontInfo.fontSpriteSheet.material)
+      val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, fontInfo.fontSpriteSheet.material)
 
       val effectsValues =
         QuickCache(leaf.effects.hash) {
@@ -336,44 +335,40 @@ object DisplayObjectConversions {
         }
 
       QuickCache(lineHash) {
-        fontInfo
-          .map { fontInfo =>
-            zipWithCharDetails(line.text.toList, fontInfo).toList.map {
-              case (fontChar, xPosition) =>
-                DisplayObject(
-                  x = leaf.position.x + xPosition + alignmentOffsetX,
-                  y = leaf.position.y + yOffset,
-                  z = leaf.depth.zIndex,
-                  width = fontChar.bounds.width,
-                  height = fontChar.bounds.height,
-                  rotation = leaf.rotation.value,
-                  scaleX = leaf.scale.x,
-                  scaleY = leaf.scale.y,
-                  atlasName = lookupAtlasName(assetMapping, fontInfo.fontSpriteSheet.assetName.value),
-                  frame = QuickCache(fontChar.bounds.hash + "_" + fontInfo.fontSpriteSheet.assetName.value) {
-                    SpriteSheetFrame.calculateFrameOffset(
-                      atlasSize = lookupAtlasSize(assetMapping, fontInfo.fontSpriteSheet.assetName.value),
-                      frameCrop = fontChar.bounds,
-                      textureOffset = lookupTextureOffset(assetMapping, fontInfo.fontSpriteSheet.assetName.value)
-                    )
-                  },
-                  emissiveOffset = Vector2.zero,
-                  emissiveAmount = 0.0d,
-                  normalOffset = Vector2.zero,
-                  normalAmount = 0.0d,
-                  specularOffset = Vector2.zero,
-                  specularAmount = 0.0d,
-                  isLit = 0.0,
-                  refX = leaf.ref.x,
-                  refY = leaf.ref.y,
-                  effects = effectsValues
+        zipWithCharDetails(line.text.toList, fontInfo).toList.map {
+          case (fontChar, xPosition) =>
+            val frameInfo =
+              QuickCache(fontChar.bounds.hash + "_" + fontInfo.fontSpriteSheet.material.hash) {
+                SpriteSheetFrame.calculateFrameOffset(
+                  atlasSize = lookupAtlasSize(assetMapping, materialName),
+                  frameCrop = fontChar.bounds,
+                  textureOffset = lookupTextureOffset(assetMapping, materialName)
                 )
-            }
-          }
-          .getOrElse {
-            IndigoLogger.errorOnce(s"Cannot render Text, missing Font with key: ${leaf.fontKey.toString()}")
-            Nil
-          }
+              }
+
+            DisplayObject(
+              x = leaf.position.x + xPosition + alignmentOffsetX,
+              y = leaf.position.y + yOffset,
+              z = leaf.depth.zIndex,
+              width = fontChar.bounds.width,
+              height = fontChar.bounds.height,
+              rotation = leaf.rotation.value,
+              scaleX = leaf.scale.x,
+              scaleY = leaf.scale.y,
+              atlasName = lookupAtlasName(assetMapping, materialName),
+              frame = frameInfo,
+              emissiveOffset = frameInfo.offsetToCoords(emissiveOffset),
+              emissiveAmount = emissiveAmount,
+              normalOffset = frameInfo.offsetToCoords(normalOffset),
+              normalAmount = normalAmount,
+              specularOffset = frameInfo.offsetToCoords(specularOffset),
+              specularAmount = specularAmount,
+              isLit = 0.0,
+              refX = leaf.ref.x,
+              refY = leaf.ref.y,
+              effects = effectsValues
+            )
+        }
       }
     }
   @SuppressWarnings(Array("org.wartremover.warts.Var"))

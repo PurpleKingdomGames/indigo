@@ -73,7 +73,7 @@ object SandboxView {
   val fontKey: FontKey = FontKey("Sandbox font")
 
   val fontInfo: FontInfo =
-    FontInfo(fontKey, SandboxAssets.smallFontName, 320, 230, FontChar("a", 3, 78, 23, 23)).isCaseInSensitive
+    FontInfo(fontKey, SandboxAssets.smallFontNameMaterial, 320, 230, FontChar("a", 3, 78, 23, 23)).isCaseInSensitive
       .addChar(FontChar("A", 3, 78, 23, 23))
       .addChar(FontChar("B", 26, 78, 23, 23))
       .addChar(FontChar("C", 50, 78, 23, 23))

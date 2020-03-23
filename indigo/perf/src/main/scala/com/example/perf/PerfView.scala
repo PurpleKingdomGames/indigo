@@ -103,7 +103,7 @@ object PerfView {
   def fontKey: FontKey = FontKey("My Font")
 
   def fontInfo: FontInfo =
-    FontInfo(fontKey, PerfAssets.smallFontName, 320, 230, FontChar("?", 93, 52, 23, 23))
+    FontInfo(fontKey, PerfAssets.smallFontNameMaterial, 320, 230, FontChar("?", 93, 52, 23, 23))
       .addChar(FontChar("A", 3, 78, 23, 23))
       .addChar(FontChar("B", 26, 78, 23, 23))
       .addChar(FontChar("C", 50, 78, 23, 23))

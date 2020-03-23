@@ -6,8 +6,11 @@ import indigo.shared.EqualTo._
 
 import utest._
 import indigo.shared.assets.AssetName
+import indigo.shared.datatypes.Material
 
 object TextTests extends TestSuite {
+
+  val material = Material.Textured(AssetName("font-sheet"))
 
   val tests: Tests =
     Tests {
@@ -23,7 +26,7 @@ object TextTests extends TestSuite {
 
           val fontKey = FontKey("test1")
 
-          val fontInfo = FontInfo(fontKey, AssetName("font-sheet"), 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+          val fontInfo = FontInfo(fontKey, material, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
 
           FontRegister.register(fontInfo)
 
@@ -44,7 +47,7 @@ object TextTests extends TestSuite {
 
           val fontKey = FontKey("test2")
 
-          val fontInfo = FontInfo(fontKey, AssetName("font-sheet"), 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+          val fontInfo = FontInfo(fontKey, material, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
 
           FontRegister.register(fontInfo)
 
