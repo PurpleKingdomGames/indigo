@@ -13,6 +13,8 @@ import indigo.shared.ClearColor
 import scala.scalajs.js.JSConverters._
 import indigo.shared.scenegraph.Light
 import indigo.shared.scenegraph.PointLight
+import indigo.shared.scenegraph.DirectionLight
+import indigo.shared.datatypes.Radians
 
 class RendererLights(gl2: WebGL2RenderingContext) {
 
@@ -43,19 +45,25 @@ class RendererLights(gl2: WebGL2RenderingContext) {
   }
 
   def updatePointLightUBOData(light: PointLight, magnification: Int): Unit = {
-    uboData(8) = light.position.x.toDouble
-    uboData(9) = light.position.y.toDouble
-    uboData(10) = light.attenuation.toDouble * magnification.toDouble
-    uboData(11) = 0.0d
+    uboData(8) = 1.0d                                                // type: PointLight = 1.0d
+    uboData(9) = light.attenuation.toDouble * magnification.toDouble // attenuation
+    uboData(10) = light.position.x.toDouble                          // position x
+    uboData(11) = light.position.y.toDouble                          // position y
+    uboData(12) = light.color.r                                      // color r
+    uboData(13) = light.color.g                                      // color g
+    uboData(14) = light.color.b                                      // color b
+    uboData(15) = 0.0d                                               // rotation
+  }
 
-    uboData(12) = light.color.r
-    uboData(13) = light.color.g
-    uboData(14) = light.color.b
-    uboData(15) = 0.0d
-    // uboData(8) = 1.0d // Type - point light = 1
-    // uboData(11) = 100d;//light.attenuation.toDouble
-
-    // uboData(15) = 0.0d
+  def updateDirectionLightUBOData(light: DirectionLight): Unit = {
+    uboData(8) = 2.0d                                      // type: DirectionLight = 2.0d
+    uboData(9) = light.strength                            // attenuation / strength
+    uboData(10) = 0.0d                                     // position x
+    uboData(11) = 0.0d                                     // position y
+    uboData(12) = light.color.r                            // color r
+    uboData(13) = light.color.g                            // color g
+    uboData(14) = light.color.b                            // color b
+    uboData(15) = Radians.TAU.value - light.rotation.value // rotation
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.While", "org.wartremover.warts.Null"))
@@ -99,6 +107,17 @@ class RendererLights(gl2: WebGL2RenderingContext) {
       light match {
         case light: PointLight =>
           updatePointLightUBOData(light, magnification)
+
+          gl2.bufferData(
+            ARRAY_BUFFER,
+            new Float32Array(projection ++ uboData),
+            STATIC_DRAW
+          )
+
+          gl2.drawArrays(TRIANGLE_STRIP, 0, 4)
+
+        case light: DirectionLight =>
+          updateDirectionLightUBOData(light)
 
           gl2.bufferData(
             ARRAY_BUFFER,

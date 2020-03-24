@@ -68,18 +68,22 @@ object SpotLight {
 
 final class DirectionLight(
     val color: RGB,
-    val rotation: Radians
+    val rotation: Radians,
+    val strength: Double
 ) extends Light {
   def withColor(newColor: RGB): DirectionLight =
-    new DirectionLight(newColor, rotation)
+    new DirectionLight(newColor, rotation, strength)
 
   def rotateTo(newRotation: Radians): DirectionLight =
-    new DirectionLight(color, newRotation)
+    new DirectionLight(color, newRotation, strength)
 
   def rotateBy(amount: Radians): DirectionLight =
-    new DirectionLight(color, rotation + amount)
+    new DirectionLight(color, rotation + amount, strength)
+
+  def withStrength(newStrength: Double): DirectionLight =
+    new DirectionLight(color, rotation, newStrength)
 }
 object DirectionLight {
-  def apply(color: RGB, rotation: Radians): DirectionLight =
-    new DirectionLight(color, rotation)
+  def apply(color: RGB, rotation: Radians, strength: Double): DirectionLight =
+    new DirectionLight(color, rotation, strength)
 }
