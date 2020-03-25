@@ -66,7 +66,6 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
     Graphic(Rectangle(0, 0, 64, 64), 1, LightingAssets.junctionBoxMaterialOn)
       .withRef(20, 20)
       .moveTo(config.viewport.giveDimensions(config.magnification).center)
-      .moveBy(-45, 0)
 
   def orbitingLight(distance: Int): Signal[PointLight] =
     (Signal.SinWave |*| Signal.CosWave).map {
@@ -92,9 +91,10 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         graphic,
-        graphic.moveBy(30, 0).withMaterial(LightingAssets.junctionBoxMaterialOff),
-        graphic.moveBy(60, 0),
-        graphic.moveBy(90, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat)
+        graphic.moveBy(-60, 0).withMaterial(LightingAssets.junctionBoxMaterialOff),
+        graphic.moveBy(-30, 0),
+        graphic.moveBy(30, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat),
+        graphic.moveBy(60, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat.unlit)
       )
       .withAmbientLight(RGBA.White.withAmount(0.1))
       .withLights(
@@ -107,14 +107,14 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
         DirectionLight(RGB(1, 0.5, 0), Radians.fromDegrees(30), 0.25),
         // SpotLight.default.withColor(RGB.Yellow).moveTo(config.viewport.center)
       )
-      .addGameLayerNodes(
-        Sprite(BindingKey("lights animation"), 0, 0, 64, 64, 1, animationsKey).play()
-      )
-      .addGameLayerNodes(
-        graphic
-          .moveTo(config.viewport.giveDimensions(config.magnification).center.x, 30)
-          .withCrop(10, 10, 20, 20)
-      )
+      // .addGameLayerNodes(
+      //   Sprite(BindingKey("lights animation"), 0, 0, 64, 64, 1, animationsKey).play()
+      // )
+      // .addGameLayerNodes(
+      //   graphic
+      //     .moveTo(config.viewport.giveDimensions(config.magnification).center.x, 30)
+      //     .withCrop(10, 10, 20, 20)
+      // )
 }
 
 object LightingAssets {
