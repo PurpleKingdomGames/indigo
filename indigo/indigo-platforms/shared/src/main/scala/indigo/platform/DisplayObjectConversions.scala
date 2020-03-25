@@ -363,7 +363,7 @@ object DisplayObjectConversions {
               normalAmount = normalAmount,
               specularOffset = frameInfo.offsetToCoords(specularOffset),
               specularAmount = specularAmount,
-              isLit = 0.0,
+              isLit = if (fontInfo.fontSpriteSheet.material.isLit) 1.0 else 0.0,
               refX = leaf.ref.x,
               refY = leaf.ref.y,
               effects = effectsValues
