@@ -202,12 +202,14 @@ void main(void) {
 
   emissive = texture(u_texture, v_texcoordEmissive) * emissiveAmount;
 
-  normal = 
-    mix(
+  normal = vec4(0.0, 0.0, 0.0, outColor.a);
+  if (v_isLitAlpha.x > 0.0) {
+    normal = mix(
       vec4(0.5, 0.5, 1.0, outColor.a),
       calculateNormal(texture(u_texture, v_texcoordNormal), outColor.a),
       normalAmount
     );
+  }
 
   specular = 
     mix(
