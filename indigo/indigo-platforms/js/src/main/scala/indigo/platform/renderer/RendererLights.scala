@@ -15,6 +15,7 @@ import indigo.shared.scenegraph.Light
 import indigo.shared.scenegraph.PointLight
 import indigo.shared.scenegraph.DirectionLight
 import indigo.shared.datatypes.Radians
+import indigo.shared.scenegraph.SpotLight
 
 class RendererLights(gl2: WebGL2RenderingContext) {
 
@@ -26,7 +27,7 @@ class RendererLights(gl2: WebGL2RenderingContext) {
 
   // They're all blocks of 16, it's the only block length allowed in WebGL.
   private val projectionMatrixUBODataSize: Int = 16
-  private val displayObjectUBODataSize: Int    = 16
+  private val displayObjectUBODataSize: Int    = 16 * 2
   private val uboDataSize: Int                 = projectionMatrixUBODataSize + displayObjectUBODataSize
 
   val uboData: scalajs.js.Array[Double] =
@@ -64,6 +65,18 @@ class RendererLights(gl2: WebGL2RenderingContext) {
     uboData(13) = light.color.g                            // color g
     uboData(14) = light.color.b                            // color b
     uboData(15) = Radians.TAU.value - light.rotation.value // rotation
+  }
+
+  def updateSpotLightUBOData(light: SpotLight, magnification: Int): Unit = {
+    uboData(8) = 3.0d                                                // type: SpotLight = 3.0d
+    uboData(9) = light.attenuation.toDouble * magnification.toDouble // attenuation
+    uboData(10) = light.position.x.toDouble                          // position x
+    uboData(11) = light.position.y.toDouble                          // position y
+    uboData(12) = light.color.r                                      // color r
+    uboData(13) = light.color.g                                      // color g
+    uboData(14) = light.color.b                                      // color b
+    uboData(15) = light.rotation.value                               // rotation
+    uboData(16) = light.angle.value                                  // angle
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.While", "org.wartremover.warts.Null"))
@@ -104,32 +117,15 @@ class RendererLights(gl2: WebGL2RenderingContext) {
     while (i < lights.length) {
       val light = lights(i)
 
-      light match {
-        case light: PointLight =>
-          updatePointLightUBOData(light, magnification)
+      updateLightUboData(light, magnification)
 
-          gl2.bufferData(
-            ARRAY_BUFFER,
-            new Float32Array(projection ++ uboData),
-            STATIC_DRAW
-          )
+      gl2.bufferData(
+        ARRAY_BUFFER,
+        new Float32Array(projection ++ uboData),
+        STATIC_DRAW
+      )
 
-          gl2.drawArrays(TRIANGLE_STRIP, 0, 4)
-
-        case light: DirectionLight =>
-          updateDirectionLightUBOData(light)
-
-          gl2.bufferData(
-            ARRAY_BUFFER,
-            new Float32Array(projection ++ uboData),
-            STATIC_DRAW
-          )
-
-          gl2.drawArrays(TRIANGLE_STRIP, 0, 4)
-
-        case _ =>
-          ()
-      }
+      gl2.drawArrays(TRIANGLE_STRIP, 0, 4)
 
       i = i + 1
     }
@@ -141,6 +137,18 @@ class RendererLights(gl2: WebGL2RenderingContext) {
     metrics.record(CurrentDrawLayer.Lights.metricEnd)
 
   }
+
+  def updateLightUboData(light: Light, magnification: Int): Unit =
+    light match {
+      case light: PointLight =>
+        updatePointLightUBOData(light, magnification)
+
+      case light: SpotLight =>
+        updateSpotLightUBOData(light, magnification)
+
+      case light: DirectionLight =>
+        updateDirectionLightUBOData(light)
+    }
 
   @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var"))
   def setupLightsFragmentShaderState(game: FrameBufferComponents.MultiOutput): Unit = {

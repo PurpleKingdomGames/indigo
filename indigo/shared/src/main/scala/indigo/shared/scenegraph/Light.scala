@@ -64,6 +64,9 @@ final class SpotLight(
 object SpotLight {
   def apply(position: Point, color: RGB, attenuation: Int, angle: Radians, rotation: Radians): SpotLight =
     new SpotLight(position, color, attenuation, angle, rotation)
+
+  val default: SpotLight =
+    apply(Point.zero, RGB.White, 100, Radians.fromDegrees(30), Radians.zero)
 }
 
 final class DirectionLight(
