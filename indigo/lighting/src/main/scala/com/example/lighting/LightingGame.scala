@@ -68,11 +68,11 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
       .moveTo(config.viewport.giveDimensions(config.magnification).center)
       .moveBy(-45, 0)
 
-  def orbitingLight: Signal[PointLight] =
+  def orbitingLight(distance: Int): Signal[PointLight] =
     (Signal.SinWave |*| Signal.CosWave).map {
       case (s, c) =>
-        val x = ((s * 150) + config.viewport.center.x).toInt
-        val y = ((c * 150) + config.viewport.center.y).toInt
+        val x = ((s * distance) + config.viewport.center.x).toInt
+        val y = ((c * distance) + config.viewport.center.y).toInt
 
         PointLight.default
           .moveTo(Point(x, y))
@@ -98,10 +98,14 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
       )
       .withAmbientLight(RGBA.White.withAmount(0.1))
       .withLights(
-        // orbitingLight.affectTime(2.5).at(gameTime.running),
-        // pulsingLight.affectTime(1.5).at(gameTime.running),
-        // DirectionLight(RGB.Green, Radians.fromDegrees(30), 0.25),
-        SpotLight.default.withColor(RGB.Yellow).moveTo(config.viewport.center)
+        // PointLight.default
+        //   .moveTo(config.viewport.center + Point(-30, 0)),
+          // .withColor(RGB.Green)
+        // orbitingLight(120).affectTime(0.5).at(gameTime.running),
+        orbitingLight(150).affectTime(2.5).at(gameTime.running),
+        pulsingLight.affectTime(1.5).at(gameTime.running),
+        DirectionLight(RGB(1, 0.5, 0), Radians.fromDegrees(30), 0.25),
+        // SpotLight.default.withColor(RGB.Yellow).moveTo(config.viewport.center)
       )
       .addGameLayerNodes(
         Sprite(BindingKey("lights animation"), 0, 0, 64, 64, 1, animationsKey).play()
