@@ -45,7 +45,7 @@ vec4 calculatePointLight(vec4 specularTexture, vec4 normalTexture, float alpha) 
   float lightAmount = clamp(1.0 - (distance(v_relativeScreenCoords, v_lightPosition) / v_lightAttenuation), 0.0, 1.0);
   float specularAmount = lightAmount * 1.5;
   lightAmount = lightAmount * lightAmount;
-  float lightHeight = 1.0; //TODO: Supply..
+  float lightHeight = 1.0; //TODO: Supply.. is light position a vec3 now?!?
   float shinyAmount = 5.0; //TODO: Supply..
   vec3 lightDir = normalize(vec3(v_lightPosition, lightHeight) - vec3(v_relativeScreenCoords, 0.0));
 
@@ -63,36 +63,42 @@ vec4 calculateDirectionLight(vec4 specularTexture, vec4 normalTexture, float alp
 }
 
 vec4 calculateSpotLight(vec4 specularTexture, vec4 normalTexture, float alpha) {
-  vec2 position = v_relativeScreenCoords;
+  float lightAmount = clamp(1.0 - (distance(v_relativeScreenCoords, v_lightPosition) / v_lightAttenuation), 0.0, 1.0);
+  float specularAmount = lightAmount * 1.5;
+  lightAmount = lightAmount * lightAmount;
+  float lightHeight = 1.0; //TODO: Supply.. is light position a vec3 now?!?
+  float shinyAmount = 5.0; //TODO: Supply..
+  vec3 lightDir = normalize(vec3(v_lightPosition, lightHeight) - vec3(v_relativeScreenCoords, 0.0));
 
-  vec3 vectorToLight = normalize(vec3(v_lightPosition, 1.0) - vec3(position, 1.0));
-  vec3 vectorFromLight = normalize(vec3(v_lightPosition, 1.0) - vec3(sin(v_lightRotation), cos(v_lightRotation), 1.0));
+  // This nearly works, failed with look at of -20,0
+  // Think this is because atan returns a range of
+  // -Pi/2 to Pi/2 and it's getting confused at the
+  // back edge.
+  float near = 10.0;
+  float far = 400.0;
+  float viewingAngle = (3.142 / 4.0) / 2.0;
 
-  float relativeAngle = dot(vectorToLight, vectorFromLight);
-  
-  float withinFrustrum = 0.0;
+  float distanceToLight = distance(v_relativeScreenCoords, v_lightPosition);
 
-  if(relativeAngle < -0.99) {
-    withinFrustrum = 1.0;
+  vec4 finalColor = vec4(0.0);
+
+  if(distanceToLight > near && distanceToLight < far) {
+
+    vec2 lookAtRelativeToLight = vec2(20.0, 0.0); // -20, 0 doesn't work.
+    float angleToLookAt = atan(lookAtRelativeToLight.y, lookAtRelativeToLight.x);
+
+    vec2 pixelRelativeToLight = v_relativeScreenCoords - v_lightPosition;
+    float angleToPixel = atan(pixelRelativeToLight.y, pixelRelativeToLight.x);
+
+    float relativeAngle = abs(angleToPixel - angleToLookAt);
+
+    if(relativeAngle > -0.01 && relativeAngle < viewingAngle) {
+      finalColor = calculateLight(lightAmount, lightDir, specularAmount, shinyAmount, lightHeight, specularTexture, normalTexture, alpha);
+    }
+
   }
 
-  float lightAmount = clamp(1.0 - (distance(position, v_lightPosition) / v_lightAttenuation), 0.0, 1.0);
-  float specularAmountFromTexture = (specularTexture.r + specularTexture.g + specularTexture.b) / 3.0;
-
-  vec3 normalFlipedY = vec3(normalTexture.r, 1.0 - normalTexture.g, normalTexture.b);
-  vec3 normalTangent = (2.0f * normalFlipedY) - 1.0f;
-  vec3 halfVec = vec3(0.0, 0.0, 1.0);
-
-  vec3 lightDirNorm = normalize(vec3(v_lightPosition, 1.0) - vec3(position, 1.0));
-  float specularAmount = max(dot(normalTangent, lightDirNorm), 0.0) * lightAmount;
-
-  vec3 reflection = normalize(vec3(2.0 * specularAmount) * (normalTangent - lightDirNorm));
-  float specular = min(pow(clamp(dot(reflection, halfVec), 0.0, 1.0), 1.0), specularAmount) * specularAmountFromTexture;
-
-  vec4 finalColor = mix(vec4(v_lightColor, lightAmount), vec4(v_lightColor, 1.0), specular);
-
-  // return vec4(finalColor.rgb, finalColor.a * masterAlpha);
-  return vec4(withinFrustrum, withinFrustrum, withinFrustrum, 1.0);
+  return finalColor;
 }
 
 void main(void) {
