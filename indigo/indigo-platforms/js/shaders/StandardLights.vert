@@ -16,6 +16,9 @@ layout (std140) uniform DisplayObjectUBO {
   vec3 u_lightColor;
   float u_lightRotation;
   float u_lightAngle;
+  float u_lightHeight;
+  float u_lightNear;
+  float u_lightFar;
 };
 
 out vec2 v_texcoord;
@@ -28,6 +31,9 @@ out vec2 v_lightPosition;
 out vec3 v_lightColor;
 out float v_lightRotation;
 out float v_lightAngle;
+out float v_lightHeight;
+out float v_lightNear;
+out float v_lightFar;
 
 mat4 translate2d(vec2 t){
     return mat4(1, 0, 0, 0,
@@ -68,6 +74,9 @@ void main(void) {
   v_lightColor = u_lightColor;
   v_lightRotation = u_lightRotation;
   v_lightAngle = u_lightAngle;
+  v_lightHeight = u_lightHeight;
+  v_lightNear = u_lightNear;
+  v_lightFar = u_lightFar;
 
   vec2 position = v_texcoord * u_scale;
   v_relativeScreenCoords = vec2(position.x, u_scale.y - position.y);

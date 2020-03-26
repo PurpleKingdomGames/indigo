@@ -12,6 +12,9 @@ in vec2 v_lightPosition;
 in vec3 v_lightColor;
 in float v_lightRotation;
 in float v_lightAngle;
+in float v_lightHeight;
+in float v_lightNear;
+in float v_lightFar;
 
 uniform sampler2D u_texture_game_albedo;
 uniform sampler2D u_texture_game_normal;
@@ -49,7 +52,7 @@ vec4 calculatePointLight(vec4 specularTexture, vec4 normalTexture, float alpha) 
   float lightAmount = clamp(1.0 - (distance(v_relativeScreenCoords, v_lightPosition) / v_lightAttenuation), 0.0, 1.0);
   float specularAmount = lightAmount * 1.5;
   lightAmount = lightAmount * lightAmount;
-  float lightHeight = 1.0; //TODO: Supply.. is light position a vec3 now?!?
+  float lightHeight = v_lightHeight;
   float shinyAmount = 5.0; //TODO: Supply..
   vec3 lightDir = normalize(vec3(v_lightPosition, lightHeight) - vec3(v_relativeScreenCoords, 0.0));
 
@@ -59,7 +62,7 @@ vec4 calculatePointLight(vec4 specularTexture, vec4 normalTexture, float alpha) 
 vec4 calculateDirectionLight(vec4 specularTexture, vec4 normalTexture, float alpha) {
   float lightAmount = 0.2; //TODO: Supply..
   float specularAmount = 1.0; //TODO: Supply..
-  float lightHeight = 0.0; //TODO: Supply..
+  float lightHeight = v_lightHeight;
   float shinyAmount = 1.0; //TODO: Supply..
   vec3 lightDir = normalize(vec3(sin(v_lightRotation), cos(v_lightRotation), 0.1));
 
@@ -70,13 +73,13 @@ vec4 calculateSpotLight(vec4 specularTexture, vec4 normalTexture, float alpha) {
   float lightAmount = clamp(1.0 - (distance(v_relativeScreenCoords, v_lightPosition) / v_lightAttenuation), 0.0, 1.0);
   float specularAmount = lightAmount * 1.5;
   lightAmount = lightAmount * lightAmount;
-  float lightHeight = 1.0; //TODO: Supply.. is light position a vec3 now?!?
+  float lightHeight = v_lightHeight;
   float shinyAmount = 5.0; //TODO: Supply..
   vec3 lightDir = normalize(vec3(v_lightPosition, lightHeight) - vec3(v_relativeScreenCoords, 0.0));
 
-  float near = 10.0; //TODO: Supply..
-  float far = 400.0; //TODO: Supply..
-  float viewingAngle = v_lightAngle; //TODO: Supply..
+  float near = v_lightNear;
+  float far = v_lightFar;
+  float viewingAngle = v_lightAngle;
   float viewingAngleBy2 = viewingAngle / 2.0;
 
   float distanceToLight = distance(v_relativeScreenCoords, v_lightPosition);

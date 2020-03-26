@@ -50,21 +50,43 @@ class RendererLights(gl2: WebGL2RenderingContext) {
     uboData(9) = light.attenuation.toDouble * magnification.toDouble // attenuation
     uboData(10) = light.position.x.toDouble                          // position x
     uboData(11) = light.position.y.toDouble                          // position y
-    uboData(12) = light.color.r                                      // color r
-    uboData(13) = light.color.g                                      // color g
-    uboData(14) = light.color.b                                      // color b
-    uboData(15) = 0.0d                                               // rotation
+
+    uboData(12) = light.color.r // color r
+    uboData(13) = light.color.g // color g
+    uboData(14) = light.color.b // color b
+    uboData(15) = 0.0d          // rotation
+
+    uboData(16) = 0.0d                  // angle
+    uboData(17) = light.height.toDouble // height
+    uboData(18) = 0.0d                  // near
+    uboData(19) = 0.0d                  // far
+
+    uboData(20) = 0.0d
+    uboData(21) = 0.0d
+    uboData(22) = 0.0d
+    uboData(23) = 0.0d
   }
 
   def updateDirectionLightUBOData(light: DirectionLight): Unit = {
-    uboData(8) = 2.0d                                      // type: DirectionLight = 2.0d
-    uboData(9) = light.strength                            // attenuation / strength
-    uboData(10) = 0.0d                                     // position x
-    uboData(11) = 0.0d                                     // position y
+    uboData(8) = 2.0d           // type: DirectionLight = 2.0d
+    uboData(9) = light.strength // attenuation / strength
+    uboData(10) = 0.0d          // position x
+    uboData(11) = 0.0d          // position y
+
     uboData(12) = light.color.r                            // color r
     uboData(13) = light.color.g                            // color g
     uboData(14) = light.color.b                            // color b
     uboData(15) = Radians.TAU.value - light.rotation.value // rotation
+
+    uboData(16) = 0.0d // angle
+    uboData(17) = 0.0d // height
+    uboData(18) = 0.0d // near
+    uboData(19) = 0.0d // far
+
+    uboData(20) = 0.0d
+    uboData(21) = 0.0d
+    uboData(22) = 0.0d
+    uboData(23) = 0.0d
   }
 
   def updateSpotLightUBOData(light: SpotLight, magnification: Int): Unit = {
@@ -72,11 +94,21 @@ class RendererLights(gl2: WebGL2RenderingContext) {
     uboData(9) = light.attenuation.toDouble * magnification.toDouble // attenuation
     uboData(10) = light.position.x.toDouble                          // position x
     uboData(11) = light.position.y.toDouble                          // position y
-    uboData(12) = light.color.r                                      // color r
-    uboData(13) = light.color.g                                      // color g
-    uboData(14) = light.color.b                                      // color b
-    uboData(15) = light.rotation.value                               // rotation
-    uboData(16) = light.angle.value                                  // angle
+
+    uboData(12) = light.color.r        // color r
+    uboData(13) = light.color.g        // color g
+    uboData(14) = light.color.b        // color b
+    uboData(15) = light.rotation.value // rotation
+
+    uboData(16) = light.angle.value     // angle
+    uboData(17) = light.height.toDouble // height
+    uboData(18) = light.near.toDouble   // near
+    uboData(19) = light.far.toDouble    // far
+
+    uboData(20) = 0.0d
+    uboData(21) = 0.0d
+    uboData(22) = 0.0d
+    uboData(23) = 0.0d
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.While", "org.wartremover.warts.Null"))
