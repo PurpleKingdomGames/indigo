@@ -76,7 +76,7 @@ vec4 calculateSpotLight(vec4 specularTexture, vec4 normalTexture, float alpha) {
 
   float near = 10.0; //TODO: Supply..
   float far = 400.0; //TODO: Supply..
-  float viewingAngle = 3.142 / 2.0; //TODO: Supply..
+  float viewingAngle = v_lightAngle; //TODO: Supply..
   float viewingAngleBy2 = viewingAngle / 2.0;
 
   float distanceToLight = distance(v_relativeScreenCoords, v_lightPosition);
@@ -85,7 +85,7 @@ vec4 calculateSpotLight(vec4 specularTexture, vec4 normalTexture, float alpha) {
 
   if(distanceToLight > near && distanceToLight < far) {
 
-    vec2 lookAtRelativeToLight = vec2(20.0, 0.0);
+    vec2 lookAtRelativeToLight = vec2(sin(v_lightRotation), cos(v_lightRotation));
     float angleToLookAt = atan(lookAtRelativeToLight.y, lookAtRelativeToLight.x) + PI;
     float anglePlus = mod(angleToLookAt + viewingAngleBy2, 2.0 * PI);
     float angleMinus = mod(angleToLookAt - viewingAngleBy2, 2.0 * PI);
