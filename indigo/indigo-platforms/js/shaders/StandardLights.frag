@@ -21,6 +21,10 @@ out vec4 fragColor;
 
 const float screenGamma = 2.2;
 
+const float PI = 3.1415926535897932384626433832795;
+const float PI_2 = 1.57079632679489661923;
+const float PI_4 = 0.785398163397448309616;
+
 vec4 calculateLight(float lightAmount, vec3 lightDir, float specularAmount, float shinyAmount, float lightHeight, vec4 specularTexture, vec4 normalTexture, float alpha) {
   float shininess = shinyAmount * ((specularTexture.r + specularTexture.g + specularTexture.b) / 3.0);
 
@@ -70,13 +74,10 @@ vec4 calculateSpotLight(vec4 specularTexture, vec4 normalTexture, float alpha) {
   float shinyAmount = 5.0; //TODO: Supply..
   vec3 lightDir = normalize(vec3(v_lightPosition, lightHeight) - vec3(v_relativeScreenCoords, 0.0));
 
-  // This nearly works, failed with look at of -20,0
-  // Think this is because atan returns a range of
-  // -Pi/2 to Pi/2 and it's getting confused at the
-  // back edge.
-  float near = 10.0;
-  float far = 400.0;
-  float viewingAngle = (3.142 / 4.0) / 2.0;
+  float near = 10.0; //TODO: Supply..
+  float far = 400.0; //TODO: Supply..
+  float viewingAngle = 3.142 / 2.0; //TODO: Supply..
+  float viewingAngleBy2 = viewingAngle / 2.0;
 
   float distanceToLight = distance(v_relativeScreenCoords, v_lightPosition);
 
@@ -84,15 +85,19 @@ vec4 calculateSpotLight(vec4 specularTexture, vec4 normalTexture, float alpha) {
 
   if(distanceToLight > near && distanceToLight < far) {
 
-    vec2 lookAtRelativeToLight = vec2(20.0, 0.0); // -20, 0 doesn't work.
-    float angleToLookAt = atan(lookAtRelativeToLight.y, lookAtRelativeToLight.x);
+    vec2 lookAtRelativeToLight = vec2(20.0, 0.0);
+    float angleToLookAt = atan(lookAtRelativeToLight.y, lookAtRelativeToLight.x) + PI;
+    float anglePlus = mod(angleToLookAt + viewingAngleBy2, 2.0 * PI);
+    float angleMinus = mod(angleToLookAt - viewingAngleBy2, 2.0 * PI);
 
     vec2 pixelRelativeToLight = v_relativeScreenCoords - v_lightPosition;
-    float angleToPixel = atan(pixelRelativeToLight.y, pixelRelativeToLight.x);
+    float angleToPixel = atan(pixelRelativeToLight.y, pixelRelativeToLight.x) + PI;
 
-    float relativeAngle = abs(angleToPixel - angleToLookAt);
+    if(anglePlus < angleMinus && (angleToPixel < anglePlus || angleToPixel > angleMinus)) {
+      finalColor = calculateLight(lightAmount, lightDir, specularAmount, shinyAmount, lightHeight, specularTexture, normalTexture, alpha);
+    }
 
-    if(relativeAngle > -0.01 && relativeAngle < viewingAngle) {
+    if(anglePlus > angleMinus && (angleToPixel < anglePlus && angleToPixel > angleMinus)) {
       finalColor = calculateLight(lightAmount, lightDir, specularAmount, shinyAmount, lightHeight, specularTexture, normalTexture, alpha);
     }
 
