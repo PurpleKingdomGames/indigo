@@ -60,9 +60,9 @@ vec4 calculatePointLight(vec4 specularTexture, vec4 normalTexture, float alpha) 
 }
 
 vec4 calculateDirectionLight(vec4 specularTexture, vec4 normalTexture, float alpha) {
-  float lightAmount = 0.2; //TODO: Supply..
+  float lightAmount = clamp(v_lightHeight, 0.0, 1.0); //TODO: Supply..
   float specularAmount = 1.0; //TODO: Supply..
-  float lightHeight = v_lightHeight;
+  float lightHeight = 0.0;
   float shinyAmount = 1.0; //TODO: Supply..
   vec3 lightDir = normalize(vec3(sin(v_lightRotation), cos(v_lightRotation), 0.1));
 

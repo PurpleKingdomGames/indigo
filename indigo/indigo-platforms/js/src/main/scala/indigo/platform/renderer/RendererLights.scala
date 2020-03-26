@@ -78,10 +78,10 @@ class RendererLights(gl2: WebGL2RenderingContext) {
     uboData(14) = light.color.b                            // color b
     uboData(15) = Radians.TAU.value - light.rotation.value // rotation
 
-    uboData(16) = 0.0d // angle
-    uboData(17) = 0.0d // height
-    uboData(18) = 0.0d // near
-    uboData(19) = 0.0d // far
+    uboData(16) = 0.0d                  // angle
+    uboData(17) = light.height.toDouble / 100.0d // height
+    uboData(18) = 0.0d                  // near
+    uboData(19) = 0.0d                  // far
 
     uboData(20) = 0.0d
     uboData(21) = 0.0d
