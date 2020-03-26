@@ -82,7 +82,7 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
   def pulsingLight: Signal[PointLight] =
     Signal.SinWave.map { s =>
       PointLight.default
-        .moveTo(config.viewport.center + Point(60, -60))
+        .moveTo(config.viewport.center + Point(30, -60))
         .withAttenuation((Math.abs(s) * 70).toInt)
         .withColor(RGB.Cyan)
     }
@@ -98,26 +98,23 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
       )
       .withAmbientLight(RGBA.White.withAmount(0.1))
       .withLights(
-        // PointLight.default
-        //   .moveTo(config.viewport.center + Point(-30, 0)),
-          // .withColor(RGB.Green)
-        // orbitingLight(120).affectTime(0.5).at(gameTime.running),
-        // orbitingLight(150).affectTime(2.5).at(gameTime.running),
-        // pulsingLight.affectTime(1.5).at(gameTime.running),
-        DirectionLight(50, RGB.Green, Radians.fromDegrees(30), 0.25),
+        orbitingLight(120).affectTime(2).at(gameTime.running),
+        pulsingLight.affectTime(1.5).at(gameTime.running),
+        DirectionLight(30, RGB.Cyan, 1.2, Radians.fromDegrees(30)),
         SpotLight.default
           .withColor(RGB.Yellow)
-          .moveTo(config.viewport.center - Point(80, 0))
-          .rotateBy(Radians.fromDegrees(90))
+          .moveTo(config.viewport.center + Point(-150, -60))
+          .rotateBy(Radians.fromDegrees(45))
+          .withHeight(50)
       )
-      // .addGameLayerNodes(
-      //   Sprite(BindingKey("lights animation"), 0, 0, 64, 64, 1, animationsKey).play()
-      // )
-      // .addGameLayerNodes(
-      //   graphic
-      //     .moveTo(config.viewport.giveDimensions(config.magnification).center.x, 30)
-      //     .withCrop(10, 10, 20, 20)
-      // )
+  // .addGameLayerNodes(
+  //   Sprite(BindingKey("lights animation"), 0, 0, 64, 64, 1, animationsKey).play()
+  // )
+  // .addGameLayerNodes(
+  //   graphic
+  //     .moveTo(config.viewport.giveDimensions(config.magnification).center.x, 30)
+  //     .withCrop(10, 10, 20, 20)
+  // )
 }
 
 object LightingAssets {
