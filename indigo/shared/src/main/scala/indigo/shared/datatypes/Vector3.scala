@@ -2,6 +2,7 @@ package indigo.shared.datatypes
 
 import indigo.shared.AsString
 import indigo.shared.EqualTo
+import indigo.shared.EqualTo._
 
 final class Vector3(val x: Double, val y: Double, val z: Double) {
 
@@ -29,6 +30,13 @@ final class Vector3(val x: Double, val y: Double, val z: Double) {
 
   def dot(other: Vector3): Double =
     Vector3.dotProduct(this, other)
+
+  def normalise: Vector3 =
+    Vector3(
+      if (x === 0) 0 else (x / Math.abs(x)),
+      if (y === 0) 0 else (y / Math.abs(y)),
+      if (z === 0) 0 else (z / Math.abs(z))
+    )
 
   def applyMatrix4(matrix4: Matrix4): Vector3 = Vector3.applyMatrix4(this, matrix4)
 
