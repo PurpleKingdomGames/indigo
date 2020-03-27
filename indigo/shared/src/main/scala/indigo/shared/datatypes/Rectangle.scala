@@ -43,6 +43,9 @@ final class Rectangle(val position: Point, val size: Point) {
   def /(rect: Rectangle): Rectangle = Rectangle(x / rect.x, y / rect.y, width / rect.width, height / rect.height)
   def /(i: Int): Rectangle          = Rectangle(x / i, y / i, width / i, height / i)
 
+  def expand(amount: Int): Rectangle =
+    Rectangle.expand(this, amount)
+
   def expandToInclude(other: Rectangle): Rectangle =
     Rectangle.expandToInclude(this, other)
 
@@ -129,6 +132,14 @@ object Rectangle {
     EqualTo.create { (a, b) =>
       eq.equal(a.position, b.position) && eq.equal(a.size, b.size)
     }
+
+  def expand(rectangle: Rectangle, amount: Int): Rectangle =
+    Rectangle(
+      x = rectangle.x - amount,
+      y = rectangle.y - amount,
+      width = rectangle.width + amount,
+      height = rectangle.height + amount
+    )
 
   def expandToInclude(a: Rectangle, b: Rectangle): Rectangle = {
     val newX: Int = if (a.left < b.left) a.left else b.left
