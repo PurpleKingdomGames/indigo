@@ -3,6 +3,10 @@ package indigo.shared.scenegraph
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.RGB
+import indigo.shared.datatypes.Vector2
+import indigo.shared.EqualTo._
+import indigo.shared.AsString
+import indigo.shared.EqualTo
 
 sealed trait Light {
   val height: Int
@@ -34,6 +38,15 @@ final class PointLight(
 
   def withAttenuation(distance: Int): PointLight =
     new PointLight(position, height, color, power, distance)
+
+  override def toString: String =
+    implicitly[AsString[PointLight]].show(this)
+
+  @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
+  override def equals(obj: Any): Boolean =
+    if (obj.isInstanceOf[PointLight]) {
+      this === obj.asInstanceOf[PointLight]
+    } else false
 }
 object PointLight {
   def apply(position: Point, height: Int, color: RGB, power: Double, attenuation: Int): PointLight =
@@ -41,6 +54,18 @@ object PointLight {
 
   val default: PointLight =
     apply(Point.zero, 100, RGB.White, 1.5d, 100)
+
+  implicit val show: AsString[PointLight] =
+    AsString.create(p => s"PointLight(${p.position.asString}, ${p.height.toString()}, ${p.color.toString()}, ${p.power.toString()}, ${p.attenuation.toString()})")
+
+  implicit val equalTo: EqualTo[PointLight] =
+    EqualTo.create { (a, b) =>
+      a.position === b.position &&
+      a.height === b.height &&
+      a.color === b.color &&
+      a.power === b.power &&
+      a.attenuation === b.attenuation
+    }
 }
 
 final class SpotLight(
@@ -86,6 +111,23 @@ final class SpotLight(
 
   def rotateBy(amount: Radians): SpotLight =
     new SpotLight(position, height, color, power, attenuation, angle, rotation + amount, near, far)
+
+  def lookAt(point: Point): SpotLight =
+    lookDirection((point - position).toVector.normalise)
+
+  def lookDirection(direction: Vector2): SpotLight = {
+    val r: Double = Math.atan2(direction.y, direction.x)
+    rotateTo(Radians(if (r < 0) Math.abs(r) + Math.PI else r))
+  }
+
+  override def toString: String =
+    implicitly[AsString[SpotLight]].show(this)
+
+  @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
+  override def equals(obj: Any): Boolean =
+    if (obj.isInstanceOf[SpotLight]) {
+      this === obj.asInstanceOf[SpotLight]
+    } else false
 }
 object SpotLight {
   def apply(position: Point, height: Int, color: RGB, power: Double, attenuation: Int, angle: Radians, rotation: Radians, near: Int, far: Int): SpotLight =
@@ -93,6 +135,25 @@ object SpotLight {
 
   val default: SpotLight =
     apply(Point.zero, 100, RGB.White, 1.5, 100, Radians.fromDegrees(45), Radians.zero, 10, 300)
+
+  implicit val show: AsString[SpotLight] =
+    AsString.create(p =>
+      s"SpotLight(${p.position.asString}, ${p.height.toString()}, ${p.color.toString()}, ${p.power.toString()}, ${p.attenuation.toString()}, ${p.angle.value.toString()}, ${p.rotation.value.toString()}, ${p.near
+        .toString()}, ${p.far.toString()})"
+    )
+
+  implicit val equalTo: EqualTo[SpotLight] =
+    EqualTo.create { (a, b) =>
+      a.position === b.position &&
+      a.height === b.height &&
+      a.color === b.color &&
+      a.power === b.power &&
+      a.attenuation === b.attenuation &&
+      a.angle === b.angle &&
+      a.rotation === b.rotation &&
+      a.near === b.near &&
+      a.far === b.far
+    }
 }
 
 final class DirectionLight(
@@ -115,6 +176,15 @@ final class DirectionLight(
 
   def rotateBy(amount: Radians): DirectionLight =
     new DirectionLight(height, color, power, rotation + amount)
+
+  override def toString: String =
+    implicitly[AsString[DirectionLight]].show(this)
+
+  @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
+  override def equals(obj: Any): Boolean =
+    if (obj.isInstanceOf[DirectionLight]) {
+      this === obj.asInstanceOf[DirectionLight]
+    } else false
 }
 object DirectionLight {
   def apply(height: Int, color: RGB, power: Double, rotation: Radians): DirectionLight =
@@ -122,4 +192,15 @@ object DirectionLight {
 
   val default: DirectionLight =
     apply(100, RGB.White, 1.0, Radians.zero)
+
+  implicit val show: AsString[DirectionLight] =
+    AsString.create(p => s"DirectionLight(${p.height.toString()}, ${p.color.toString()}, ${p.power.toString()}, ${p.rotation.asString})")
+
+  implicit val equalTo: EqualTo[DirectionLight] =
+    EqualTo.create { (a, b) =>
+      a.height === b.height &&
+      a.color === b.color &&
+      a.power === b.power &&
+      a.rotation === b.rotation
+    }
 }
