@@ -137,8 +137,8 @@ object Rectangle {
     Rectangle(
       x = rectangle.x - amount,
       y = rectangle.y - amount,
-      width = rectangle.width + amount,
-      height = rectangle.height + amount
+      width = rectangle.width + (amount * 2),
+      height = rectangle.height + (amount * 2)
     )
 
   def expandToInclude(a: Rectangle, b: Rectangle): Rectangle = {

@@ -134,8 +134,8 @@ object RectangleTests extends TestSuite {
           val a = Rectangle(10, 10, 20, 20)
           val b = Rectangle(0, 10, 100, 5)
 
-          Rectangle.expand(a, 10) === Rectangle(0, 0, 30, 30) ==> true
-          Rectangle.expand(b, 50) === Rectangle(-50, -40, 150, 55) ==> true
+          Rectangle.expand(a, 10) === Rectangle(0, 0, 40, 40) ==> true
+          Rectangle.expand(b, 50) === Rectangle(-50, -40, 200, 105) ==> true
         }
       }
 
