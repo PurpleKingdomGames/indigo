@@ -68,22 +68,18 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
       .moveTo(config.viewport.giveDimensions(config.magnification).center)
 
   def orbitingLight(distance: Int): Signal[PointLight] =
-    (Signal.SinWave |*| Signal.CosWave).map {
-      case (s, c) =>
-        val x = ((s * distance) + config.viewport.center.x).toInt
-        val y = ((c * distance) + config.viewport.center.y).toInt
-
-        PointLight.default
-          .moveTo(Point(x, y))
-          .withAttenuation(150)
-          .withColor(RGB.Magenta)
+    Signal.Orbit(config.viewport.center, distance.toDouble).map { vec =>
+      PointLight.default
+        .moveTo(vec.toPoint)
+        .withAttenuation(150)
+        .withColor(RGB.Magenta)
     }
 
   def pulsingLight: Signal[PointLight] =
-    Signal.SinWave.map { s =>
+    Signal.SmoothPulse.map { amount =>
       PointLight.default
         .moveTo(config.viewport.center + Point(30, -60))
-        .withAttenuation((Math.abs(s) * 70).toInt)
+        .withAttenuation((amount * 70).toInt)
         .withColor(RGB.Cyan)
     }
 
@@ -98,14 +94,14 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
       )
       .withAmbientLight(RGBA.White.withAmount(0.1))
       .withLights(
-        orbitingLight(120).affectTime(2).at(gameTime.running),
-        pulsingLight.affectTime(1.5).at(gameTime.running),
-        DirectionLight(30, RGB.Cyan, 1.2, Radians.fromDegrees(30)),
-        SpotLight.default
-          .withColor(RGB.Yellow)
-          .moveTo(config.viewport.center + Point(-150, -60))
-          .rotateBy(Radians.fromDegrees(45))
-          .withHeight(50)
+        orbitingLight(120).affectTime(0.5).at(gameTime.running),
+        pulsingLight.at(gameTime.running)
+        // DirectionLight(30, RGB.Cyan, 1.2, Radians.fromDegrees(30)),
+        // SpotLight.default
+        //   .withColor(RGB.Yellow)
+        //   .moveTo(config.viewport.center + Point(-150, -60))
+        //   .rotateBy(Radians.fromDegrees(45))
+        //   .withHeight(50)
       )
   // .addGameLayerNodes(
   //   Sprite(BindingKey("lights animation"), 0, 0, 64, 64, 1, animationsKey).play()
