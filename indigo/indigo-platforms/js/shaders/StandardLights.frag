@@ -54,7 +54,7 @@ vec4 calculatePointLight(vec4 specularTexture, vec4 normalTexture, float alpha) 
   vec3 lightPosition = vec3(v_lightPosition, 1.0);
   float lightAmount = clamp(1.0 - (distance(pixelPosition, lightPosition) / v_lightAttenuation), 0.0, 1.0);
   float specularPower = lightAmount * v_lightPower;
-  lightAmount = lightAmount * lightAmount * v_lightHeight;
+  lightAmount = lightAmount * lightAmount * v_lightHeight * clamp(v_lightPower, 0.0, 1.0);
   float shinyAmount = 5.0;
   vec3 lightDir = normalize(lightPosition - pixelPosition);
 
@@ -62,7 +62,7 @@ vec4 calculatePointLight(vec4 specularTexture, vec4 normalTexture, float alpha) 
 }
 
 vec4 calculateDirectionLight(vec4 specularTexture, vec4 normalTexture, float alpha) {
-  float lightAmount = clamp(v_lightHeight, 0.0, 1.0);
+  float lightAmount = clamp(v_lightHeight, 0.0, 1.0) * clamp(v_lightPower, 0.0, 1.0);
   float specularPower = v_lightPower;
   float shinyAmount = 1.0;
   vec3 lightDir = normalize(vec3(sin(v_lightRotation), cos(v_lightRotation), 0.1));
@@ -75,7 +75,7 @@ vec4 calculateSpotLight(vec4 specularTexture, vec4 normalTexture, float alpha) {
   vec3 lightPosition = vec3(v_lightPosition, 1.0);
   float lightAmount = clamp(1.0 - (distance(pixelPosition, lightPosition) / v_lightAttenuation), 0.0, 1.0);
   float specularPower = lightAmount * v_lightPower;
-  lightAmount = lightAmount * lightAmount * v_lightHeight;
+  lightAmount = lightAmount * lightAmount * v_lightHeight * clamp(v_lightPower, 0.0, 1.0);
   float shinyAmount = 5.0;
   vec3 lightDir = normalize(lightPosition - pixelPosition);
 
