@@ -7,8 +7,9 @@ lazy val coreProjects: List[String] =
     "indigoExts",
     "facades",
     "sandbox",
+    "perf",
     "lighting",
-    "perf"
+    "effects"
   )
 
 def applyCommand(projects: List[String], command: String, platforms: List[PlatformSuffix]): String =
@@ -129,6 +130,14 @@ addCommandAlias(
   List(
     "lightingJS/fastOptJS",
     "lightingJS/indigoBuildJS"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "effectsBuild",
+  List(
+    "effectsJS/fastOptJS",
+    "effectsJS/indigoBuildJS"
   ).mkString(";", ";", "")
 )
 

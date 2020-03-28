@@ -49,6 +49,28 @@ lazy val lighting =
 lazy val lightingJS  = lighting.js
 lazy val lightingJVM = lighting.jvm
 
+lazy val effects =
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
+    .enablePlugins(SbtIndigo)
+    .settings(commonSettings: _*)
+    .settings(
+      name := "effects",
+      showCursor := true,
+      title := "Effects Example",
+      gameAssetsDirectory := "assets"
+    )
+    .settings(
+      publish := {},
+      publishLocal := {}
+    )
+    .jsSettings(
+      scalaJSUseMainModuleInitializer := true
+    )
+    .dependsOn(indigoExts)
+lazy val effectsJS  = lighting.js
+lazy val effectsJVM = lighting.jvm
+
 lazy val sandbox =
   crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
@@ -247,8 +269,9 @@ lazy val indigoProject =
       indigoExtsJVM,
       facadesJVM,
       sandboxJVM,
+      perfJVM,
       lightingJVM,
-      perfJVM
+      effectsJVM
     )
 
 // Cross build version - better or worse?
