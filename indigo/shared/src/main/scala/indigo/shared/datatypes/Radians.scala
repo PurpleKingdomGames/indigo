@@ -2,6 +2,7 @@ package indigo.shared.datatypes
 
 import indigo.shared.{AsString, EqualTo}
 import indigo.shared.EqualTo._
+import indigo.shared.time.Seconds
 
 final class Radians(val value: Double) extends AnyVal {
 
@@ -63,5 +64,8 @@ object Radians {
 
   def fromDegrees(degrees: Double): Radians =
     Radians((TAU.value / 360d) * (degrees % 360d))
+
+  def fromSeconds(seconds: Seconds): Radians =
+    Radians(TAU.value * (seconds.value % 1.0d))
 
 }

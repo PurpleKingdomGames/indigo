@@ -1,6 +1,7 @@
 package indigo.shared.datatypes
 
 import utest._
+import indigo.shared.time.Seconds
 
 object RadiansTests extends TestSuite {
 
@@ -14,6 +15,13 @@ object RadiansTests extends TestSuite {
         round(Radians.fromDegrees(359)) ==> round(Radians.TAU - Radians(0.02d))
         round(Radians.fromDegrees(360)) ==> round(Radians.zero)
 
+      }
+
+      "Can convert seconds to Radians" - {
+        round(Radians.fromSeconds(Seconds(0))) ==> round(Radians.zero)
+        round(Radians.fromSeconds(Seconds(0.5))) ==> round(Radians.PI)
+        round(Radians.fromSeconds(Seconds(1))) ==> round(Radians.zero)
+        round(Radians.fromSeconds(Seconds(1.5))) ==> round(Radians.PI)
       }
 
     }
