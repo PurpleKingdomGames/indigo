@@ -106,10 +106,10 @@ object Signal {
     Signal(t => (t / interval).value % 2 === 0)
 
   def SinWave: Signal[Double] =
-    Signal(t => Math.sin(t.toSeconds.value.toDouble))
+    Signal(t => Math.sin(Radians.fromSeconds(t.toSeconds).value))
 
   def CosWave: Signal[Double] =
-    Signal(t => Math.cos(t.toSeconds.value.toDouble))
+    Signal(t => Math.cos(Radians.fromSeconds(t.toSeconds).value))
 
   def clampTime[A](signal: Signal[A], from: Millis, to: Millis): Signal[A] =
     Signal { t =>
