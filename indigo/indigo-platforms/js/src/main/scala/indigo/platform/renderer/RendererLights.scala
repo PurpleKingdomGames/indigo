@@ -16,6 +16,7 @@ import indigo.shared.scenegraph.PointLight
 import indigo.shared.scenegraph.DirectionLight
 import indigo.shared.datatypes.Radians
 import indigo.shared.scenegraph.SpotLight
+import indigo.shared.datatypes.Rectangle
 
 class RendererLights(gl2: WebGL2RenderingContext) {
 
@@ -128,41 +129,46 @@ class RendererLights(gl2: WebGL2RenderingContext) {
     FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, ClearColor.Black.forceTransparent)
     gl2.drawBuffers(frameBufferComponents.colorAttachments)
 
-    gl2.useProgram(lightsShaderProgram)
+    val lightsInRange   = RendererLights.lightsInRange(lights, Rectangle(0, 0, width, height))
+    val lightCount: Int = lightsInRange.length;
 
-    setupLightsFragmentShaderState(gameFrameBuffer)
+    if (lightCount > 0) {
+      gl2.useProgram(lightsShaderProgram)
 
-    // UBO data
-    gl2.bindBuffer(ARRAY_BUFFER, displayObjectUBOBuffer)
-    gl2.bindBufferRange(
-      gl2.UNIFORM_BUFFER,
-      0,
-      displayObjectUBOBuffer,
-      0,
-      uboDataSize * Float32Array.BYTES_PER_ELEMENT
-    )
+      setupLightsFragmentShaderState(gameFrameBuffer)
 
-    updateStaticUBOData(RendererHelper.screenDisplayObject(width, height))
-
-    var i: Int = 0
-
-    while (i < lights.length) {
-      val light = lights(i)
-
-      updateLightUboData(light, magnification)
-
-      gl2.bufferData(
-        ARRAY_BUFFER,
-        new Float32Array(projection ++ uboData),
-        STATIC_DRAW
+      // UBO data
+      gl2.bindBuffer(ARRAY_BUFFER, displayObjectUBOBuffer)
+      gl2.bindBufferRange(
+        gl2.UNIFORM_BUFFER,
+        0,
+        displayObjectUBOBuffer,
+        0,
+        uboDataSize * Float32Array.BYTES_PER_ELEMENT
       )
 
-      gl2.drawArrays(TRIANGLE_STRIP, 0, 4)
+      updateStaticUBOData(RendererHelper.screenDisplayObject(width, height))
 
-      i = i + 1
+      var i: Int = 0
+
+      while (i < lightCount) {
+        val light = lightsInRange(i)
+
+        updateLightUboData(light, magnification)
+
+        gl2.bufferData(
+          ARRAY_BUFFER,
+          new Float32Array(projection ++ uboData),
+          STATIC_DRAW
+        )
+
+        gl2.drawArrays(TRIANGLE_STRIP, 0, 4)
+
+        i = i + 1
+      }
+
+      gl2.bindBuffer(gl2.UNIFORM_BUFFER, null);
     }
-
-    gl2.bindBuffer(gl2.UNIFORM_BUFFER, null);
 
     metrics.record(CurrentDrawLayer.Lights.metricDraw)
 
@@ -203,5 +209,24 @@ class RendererLights(gl2: WebGL2RenderingContext) {
     // Reset to TEXTURE0 before the next round of rendering happens.
     gl2.activeTexture(TEXTURE0)
   }
+
+}
+
+object RendererLights {
+
+  def lightsInRange(ls: List[Light], viewBounds: Rectangle): List[Light] =
+    ls.filter(l => lightIsInRange(l, viewBounds))
+
+  def lightIsInRange(light: Light, viewBounds: Rectangle): Boolean =
+    light match {
+      case l: PointLight =>
+        viewBounds.expand(l.attenuation + 1).isPointWithin(l.position)
+
+      case l: SpotLight =>
+        viewBounds.expand(l.attenuation + 1).isPointWithin(l.position)
+
+      case _: DirectionLight =>
+        true
+    }
 
 }
