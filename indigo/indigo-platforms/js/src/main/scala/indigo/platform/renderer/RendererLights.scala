@@ -129,7 +129,10 @@ class RendererLights(gl2: WebGL2RenderingContext) {
     FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, ClearColor.Black.forceTransparent)
     gl2.drawBuffers(frameBufferComponents.colorAttachments)
 
-    val lightsInRange   = RendererLights.lightsInRange(lights, Rectangle(0, 0, width, height))
+    val lightsInRange =
+      RendererLights
+        .lightsInRange(lights, Rectangle(0, 0, width, height))
+        .filter(_.power > 0.05)
     val lightCount: Int = lightsInRange.length;
 
     if (lightCount > 0) {
