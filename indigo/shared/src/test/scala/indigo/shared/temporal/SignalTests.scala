@@ -3,6 +3,8 @@ package indigo.shared.temporal
 import utest._
 import indigo.shared.time.GameTime
 import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
+import indigo.shared.datatypes.Point
 
 object SignalTests extends TestSuite {
 
@@ -146,6 +148,34 @@ Where a thing moves in a circle for 2 seconds and then stops.
       }
 
       "Utils" - {
+
+        def round(d: Double): Double =
+          Math.floor(d * 100d) / 100d
+
+        "Lerp (linear interpolation)" - {
+          // X
+          Signal.Lerp(Point(60, 10), Point(10, 10), Seconds(1)).at(Seconds(0.0).toMillis) ==> Point(60, 10)
+          Signal.Lerp(Point(60, 10), Point(10, 10), Seconds(1)).at(Seconds(0.5).toMillis) ==> Point(35, 10)
+          Signal.Lerp(Point(60, 10), Point(10, 10), Seconds(1)).at(Seconds(1.0).toMillis) ==> Point(10, 10)
+          // Y
+          Signal.Lerp(Point(10, 10), Point(10, 60), Seconds(1)).at(Seconds(0.0).toMillis) ==> Point(10, 10)
+          Signal.Lerp(Point(10, 10), Point(10, 60), Seconds(1)).at(Seconds(0.5).toMillis) ==> Point(10, 35)
+          Signal.Lerp(Point(10, 10), Point(10, 60), Seconds(1)).at(Seconds(1.0).toMillis) ==> Point(10, 60)
+          // X,Y
+          Signal.Lerp(Point(10, 10), Point(60, 60), Seconds(1)).at(Seconds(0.0).toMillis) ==> Point(10, 10)
+          Signal.Lerp(Point(10, 10), Point(60, 60), Seconds(1)).at(Seconds(0.5).toMillis) ==> Point(35, 35)
+          Signal.Lerp(Point(10, 10), Point(60, 60), Seconds(1)).at(Seconds(1.0).toMillis) ==> Point(60, 60)
+        }
+
+        "SmoothPulse smoothly interpolates from 0 to 1" - {
+          round(Signal.SmoothPulse.at(Seconds(0).toMillis)) ==> 0
+          round(Signal.SmoothPulse.at(Seconds(0.25).toMillis)) ==> 0.5
+          round(Signal.SmoothPulse.at(Seconds(0.5).toMillis)) ==> 1
+          round(Signal.SmoothPulse.at(Seconds(0.75).toMillis)) ==> 0.5
+          round(Signal.SmoothPulse.at(Seconds(1).toMillis)) ==> 0
+          round(Signal.SmoothPulse.at(Seconds(1.5).toMillis)) ==> 1
+          round(Signal.SmoothPulse.at(Seconds(2).toMillis)) ==> 0
+        }
 
         "Pulse produces a signal of true and false values" - {
 

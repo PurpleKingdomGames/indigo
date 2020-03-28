@@ -5,6 +5,9 @@ import indigo.shared.EqualTo._
 import indigo.shared.abstractions.Monad
 import indigo.shared.abstractions.Functor
 import indigo.shared.abstractions.Apply
+import indigo.shared.datatypes.Vector2
+import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Radians
 
 /**
   * A Signal is function t: Millis -> A
@@ -111,6 +114,36 @@ object Signal {
   def CosWave: Signal[Double] =
     Signal(t => Math.cos(Radians.fromSeconds(t.toSeconds).value))
 
+  def Orbit(center: Point, distance: Double): Signal[Vector2] =
+    Signal { t =>
+      Vector2((Math.sin(Radians.fromSeconds(t.toSeconds).value) * distance) + center.x, (Math.cos(Radians.fromSeconds(t.toSeconds).value) * distance) + center.y)
+    }
+
+  def SmoothPulse: Signal[Double] =
+    Signal.CosWave.map { a =>
+      1.0 - (a + 1.0) / 2.0
+    }
+
+  def Lerp(from: Point, to: Point, over: Seconds): Signal[Point] =
+    if (from === to) Signal.fixed(from)
+    else {
+      def linear(t: Double, p0: Vector2, p1: Vector2): Vector2 =
+        Vector2(
+          (1 - t) * p0.x + t * p1.x,
+          (1 - t) * p0.y + t * p1.y
+        )
+
+      Signal { t =>
+        val time   = Math.max(0, Math.min(1, t.toSeconds.toDouble)) / over.toDouble
+        val interp = linear(time, from.toVector, to.toVector).toPoint
+
+        Point(
+          x = if (from.x === to.x) from.x else interp.x,
+          y = if (from.y === to.y) from.y else interp.y
+        )
+      }
+    }
+
   def clampTime[A](signal: Signal[A], from: Millis, to: Millis): Signal[A] =
     Signal { t =>
       if (from < to) {
@@ -123,8 +156,8 @@ object Signal {
         else t
       }
     }.map { t =>
-        signal.at(t)
-      }
+      signal.at(t)
+    }
 
   def wrapTime[A](signal: Signal[A], at: Millis): Signal[A] =
     Signal { t =>
