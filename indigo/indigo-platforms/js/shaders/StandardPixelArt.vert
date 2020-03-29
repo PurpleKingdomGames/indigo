@@ -33,7 +33,7 @@ out vec4 v_borderColor;
 out vec4 v_glowColor;
 out vec4 v_effectAmounts;
 out vec4 v_textureAmounts;
-out vec2 v_textureOffsets3x3[9]; //5 vec4
+out vec2 v_textureOffsets3x3[9];
 
 mat4 rotate2d(float angle){
     return mat4(cos(angle), -sin(angle), 0, 0,
@@ -69,37 +69,34 @@ vec2 scaleTexCoords(vec2 texcoord){
 }
 
 vec2 sizeOfAPixel() {
-  return (scale2d(a_frameTransform.zw) * vec4(1.0)).xy;
+  return (scale2d(1.0 / a_dimensions.zw) * vec4(1.0)).xy;
 }
 
-vec2[9] generate3x3() {
-  float size = 3.0;
-  float offset = floor(size / 2.0);
+const vec2[9] gridOffsets = vec2[9](
+  vec2(-1.0, -1.0),
+  vec2(0.0, -1.0),
+  vec2(1.0, -1.0),
 
-  return vec2[9](
-    vec2(mod(float(0), size) - offset, floor(float(0) / size) - offset),
-    vec2(mod(float(1), size) - offset, floor(float(1) / size) - offset),
-    vec2(mod(float(2), size) - offset, floor(float(2) / size) - offset),
-    vec2(mod(float(3), size) - offset, floor(float(3) / size) - offset),
-    vec2(mod(float(4), size) - offset, floor(float(4) / size) - offset),
-    vec2(mod(float(5), size) - offset, floor(float(5) / size) - offset),
-    vec2(mod(float(6), size) - offset, floor(float(6) / size) - offset),
-    vec2(mod(float(7), size) - offset, floor(float(7) / size) - offset),
-    vec2(mod(float(8), size) - offset, floor(float(8) / size) - offset)
-  );
-}
+  vec2(-1.0, 0.0),
+  vec2(0.0, 0.0),
+  vec2(1.0, 0.0),
 
-vec2[9] generateTexCoords3x3(vec2 texcoords, vec2 onePixel, vec2[9] offsets) {
+  vec2(-1.0, 1.0),
+  vec2(0.0, 1.0),
+  vec2(1.0, 1.0)
+);
+
+vec2[9] generateTexCoords3x3(vec2 texcoords, vec2 onePixel) {
   return vec2[9](
-    scaleTexCoords(texcoords + (onePixel * offsets[0])),
-    scaleTexCoords(texcoords + (onePixel * offsets[1])),
-    scaleTexCoords(texcoords + (onePixel * offsets[2])),
-    scaleTexCoords(texcoords + (onePixel * offsets[3])),
-    scaleTexCoords(texcoords + (onePixel * offsets[4])),
-    scaleTexCoords(texcoords + (onePixel * offsets[5])),
-    scaleTexCoords(texcoords + (onePixel * offsets[6])),
-    scaleTexCoords(texcoords + (onePixel * offsets[7])),
-    scaleTexCoords(texcoords + (onePixel * offsets[8]))
+    scaleTexCoords(texcoords + (onePixel * gridOffsets[0])),
+    scaleTexCoords(texcoords + (onePixel * gridOffsets[1])),
+    scaleTexCoords(texcoords + (onePixel * gridOffsets[2])),
+    scaleTexCoords(texcoords + (onePixel * gridOffsets[3])),
+    scaleTexCoords(texcoords + (onePixel * gridOffsets[4])),
+    scaleTexCoords(texcoords + (onePixel * gridOffsets[5])),
+    scaleTexCoords(texcoords + (onePixel * gridOffsets[6])),
+    scaleTexCoords(texcoords + (onePixel * gridOffsets[7])),
+    scaleTexCoords(texcoords + (onePixel * gridOffsets[8]))
   );
 }
 
@@ -143,7 +140,7 @@ void main(void) {
   v_glowColor = a_glowColor;
   v_effectAmounts = a_amounts;
   v_relativeScreenCoords = texcoords * size;
-  v_textureOffsets3x3 = generateTexCoords3x3(texcoords, sizeOfAPixel(), generate3x3());
+  v_textureOffsets3x3 = generateTexCoords3x3(texcoords, sizeOfAPixel());
 
   v_textureAmounts = a_textureAmounts;
 
