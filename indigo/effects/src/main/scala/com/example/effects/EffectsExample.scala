@@ -86,28 +86,29 @@ object EffectsExample extends IndigoGameBasic[Unit, Unit, Unit] {
           .moveBy(-60, 50)
           .withEffects(
             Effects.default
-              .withBorder(Border(RGBA(1.0, 0.5, 0.0, 0.0), Thickness.Thick, Thickness.Thick))
+              .withBorder(Border(RGBA(1.0, 0.5, 0.0, 1.0), Thickness.Thick, Thickness.Thick))
           ),
         graphic
           .moveBy(0, 50)
           .withEffects(
             Effects.default
-              .withGlow(Glow(RGBA.Green, 1.0, 0.0))
+              .withGlow(Glow(RGBA.Green, 2.0, 0.0))
           ),
         graphic
           .moveBy(-30, 50)
           .withEffects(
             Effects.default
-              .withGlow(Glow(RGBA.Blue, 0.0, 1.0))
+              .withGlow(Glow(RGBA.Blue, 0.0, 2.0))
           ),
         graphic
           .moveBy(30, 50)
           .withEffects(
             Effects.default
-              .withGlow(Glow(RGBA.Cyan, 1.0, 1.0))
+              .withGlow(Glow(RGBA.Cyan, 2.0, 2.0))
           ),
         graphic
-          .moveBy(60, 50)
+          .withRef(32, 32)
+          .moveBy(48, 39)
           .withEffects(
             Effects.default
               .withAlpha(0.5)
