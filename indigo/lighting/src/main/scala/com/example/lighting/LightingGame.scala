@@ -94,14 +94,23 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
       )
       .withAmbientLight(RGBA.White.withAmount(0.1))
       .withLights(
-        orbitingLight(120).affectTime(0.5).at(gameTime.running),
-        pulsingLight.at(gameTime.running)
-        // DirectionLight(30, RGB.Cyan, 1.2, Radians.fromDegrees(30)),
+        // PointLight.default
+        //   .moveTo(config.viewport.center + Point(50, 0))
+        //   .withAttenuation(50)
+        //   .withColor(RGB.Green),
+        // PointLight.default
+        //   .moveTo(config.viewport.center + Point(-50, 0))
+        //   .withAttenuation(50)
+        //   .withColor(RGB.Red),
+        orbitingLight(120).affectTime(0.25).at(gameTime.running),
+        pulsingLight.affectTime(0.5).at(gameTime.running),
+        // DirectionLight(30, RGB.Green, 1.2, Radians.fromDegrees(30)),
         // SpotLight.default
         //   .withColor(RGB.Yellow)
         //   .moveTo(config.viewport.center + Point(-150, -60))
         //   .rotateBy(Radians.fromDegrees(45))
-        //   .withHeight(50)
+        //   .withHeight(25)
+        //   .withPower(1.5)
       )
   // .addGameLayerNodes(
   //   Sprite(BindingKey("lights animation"), 0, 0, 64, 64, 1, animationsKey).play()

@@ -173,7 +173,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(DrawGameLayerEndMetric)
 
     metrics.record(DrawLightsLayerStartMetric)
-    RendererFunctions.setLightingBlend(gl)
+    RendererFunctions.setLightsBlend(gl)
     lightsRenderer.drawLayer(
       scene.lights,
       orthographicProjectionMatrixNoMag,
