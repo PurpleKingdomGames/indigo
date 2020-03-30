@@ -196,7 +196,6 @@ class RendererLights(gl2: WebGL2RenderingContext) {
 
     val uniformTextures: List[(String, WebGLTexture)] =
       List(
-        "u_texture_game_albedo"   -> game.albedo,
         "u_texture_game_normal"   -> game.normal,
         "u_texture_game_specular" -> game.specular
       )

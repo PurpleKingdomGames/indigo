@@ -254,12 +254,12 @@ void main(void) {
 
   vec4 outColor = withOuterBorder;
 
-  //float albedoAmount = v_textureAmounts.x;
+  float albedoAmount = v_textureAmounts.x;
   float emissiveAmount = v_textureAmounts.y;
   float normalAmount = v_textureAmounts.z;
   float specularAmount = v_textureAmounts.w;
 
-  albedo = outColor;
+  albedo = vec4(outColor.rgb, outColor.a * albedoAmount);
 
   emissive = texture(u_texture, v_texcoordEmissive) * emissiveAmount;
 

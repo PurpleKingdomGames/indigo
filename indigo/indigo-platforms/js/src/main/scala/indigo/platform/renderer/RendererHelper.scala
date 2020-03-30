@@ -23,6 +23,7 @@ object RendererHelper {
       scaleY = 1,
       atlasName = "",
       frame = SpriteSheetFrame.defaultOffset,
+      albedoAmount = 1.0d,
       emissiveOffset = Vector2.zero,
       emissiveAmount = 0.0d,
       normalOffset = Vector2.zero,

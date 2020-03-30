@@ -130,7 +130,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     specularOffsetIsLitData((i * 4) + 2) = d.isLit
     specularOffsetIsLitData((i * 4) + 3) = 1.0d
 
-    textureAmountsData((i * 4) + 0) = 1.0d // albedo
+    textureAmountsData((i * 4) + 0) = d.albedoAmount
     textureAmountsData((i * 4) + 1) = d.emissiveAmount
     textureAmountsData((i * 4) + 2) = d.normalAmount
     textureAmountsData((i * 4) + 3) = d.specularAmount

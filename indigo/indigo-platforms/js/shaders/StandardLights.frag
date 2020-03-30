@@ -17,7 +17,6 @@ in float v_lightNear;
 in float v_lightFar;
 in float v_lightPower;
 
-uniform sampler2D u_texture_game_albedo;
 uniform sampler2D u_texture_game_normal;
 uniform sampler2D u_texture_game_specular;
 
@@ -29,7 +28,7 @@ const float PI = 3.1415926535897932384626433832795;
 const float PI_2 = 1.57079632679489661923;
 const float PI_4 = 0.785398163397448309616;
 
-vec4 calculateLight(float lightAmount, vec3 lightDir, float specularPower, float shinyAmount, vec4 specularTexture, vec4 normalTexture, float alpha) {
+vec4 calculateLight(float lightAmount, vec3 lightDir, float specularPower, float shinyAmount, vec4 specularTexture, vec4 normalTexture) {
   float shininess = shinyAmount * ((specularTexture.r + specularTexture.g + specularTexture.b) / 3.0);
 
   // Normal
@@ -46,10 +45,10 @@ vec4 calculateLight(float lightAmount, vec3 lightDir, float specularPower, float
   vec4 color = mix(vec4(v_lightColor, lightAmount), vec4(v_lightColor, 1.0), specular);
   vec4 colorGammaCorrected = pow(color, vec4(1.0 / screenGamma));
 
-  return vec4(colorGammaCorrected.rgb, colorGammaCorrected.a * alpha);
+  return vec4(colorGammaCorrected.rgb, colorGammaCorrected.a);
 }
 
-vec4 calculatePointLight(vec4 specularTexture, vec4 normalTexture, float alpha) {
+vec4 calculatePointLight(vec4 specularTexture, vec4 normalTexture) {
   vec3 pixelPosition = vec3(v_relativeScreenCoords, 1.0);
   vec3 lightPosition = vec3(v_lightPosition, 1.0);
   float lightAmount = clamp(1.0 - (distance(pixelPosition, lightPosition) / v_lightAttenuation), 0.0, 1.0);
@@ -58,19 +57,19 @@ vec4 calculatePointLight(vec4 specularTexture, vec4 normalTexture, float alpha) 
   float shinyAmount = 5.0;
   vec3 lightDir = normalize(lightPosition - pixelPosition);
 
-  return calculateLight(lightAmount, lightDir, specularPower, shinyAmount, specularTexture, normalTexture, alpha);
+  return calculateLight(lightAmount, lightDir, specularPower, shinyAmount, specularTexture, normalTexture);
 }
 
-vec4 calculateDirectionLight(vec4 specularTexture, vec4 normalTexture, float alpha) {
+vec4 calculateDirectionLight(vec4 specularTexture, vec4 normalTexture) {
   float lightAmount = clamp(v_lightHeight, 0.0, 1.0) * clamp(v_lightPower, 0.0, 1.0);
   float specularPower = v_lightPower;
   float shinyAmount = 1.0;
   vec3 lightDir = normalize(vec3(sin(v_lightRotation), cos(v_lightRotation), 0.1));
 
-  return calculateLight(lightAmount, lightDir, specularPower, shinyAmount, specularTexture, normalTexture, alpha);
+  return calculateLight(lightAmount, lightDir, specularPower, shinyAmount, specularTexture, normalTexture);
 }
 
-vec4 calculateSpotLight(vec4 specularTexture, vec4 normalTexture, float alpha) {
+vec4 calculateSpotLight(vec4 specularTexture, vec4 normalTexture) {
   vec3 pixelPosition = vec3(v_relativeScreenCoords, 1.0);
   vec3 lightPosition = vec3(v_lightPosition, 1.0);
   float lightAmount = clamp(1.0 - (distance(pixelPosition, lightPosition) / v_lightAttenuation), 0.0, 1.0);
@@ -99,11 +98,11 @@ vec4 calculateSpotLight(vec4 specularTexture, vec4 normalTexture, float alpha) {
     float angleToPixel = atan(pixelRelativeToLight.y, pixelRelativeToLight.x) + PI;
 
     if(anglePlus < angleMinus && (angleToPixel < anglePlus || angleToPixel > angleMinus)) {
-      finalColor = calculateLight(lightAmount, lightDir, specularPower, shinyAmount, specularTexture, normalTexture, alpha);
+      finalColor = calculateLight(lightAmount, lightDir, specularPower, shinyAmount, specularTexture, normalTexture);
     }
 
     if(anglePlus > angleMinus && (angleToPixel < anglePlus && angleToPixel > angleMinus)) {
-      finalColor = calculateLight(lightAmount, lightDir, specularPower, shinyAmount, specularTexture, normalTexture, alpha);
+      finalColor = calculateLight(lightAmount, lightDir, specularPower, shinyAmount, specularTexture, normalTexture);
     }
 
   }
@@ -113,22 +112,21 @@ vec4 calculateSpotLight(vec4 specularTexture, vec4 normalTexture, float alpha) {
 
 void main(void) {
 
-  float alpha = texture(u_texture_game_albedo, v_texcoord).a;
   vec4 specularTexture = texture(u_texture_game_specular, v_texcoord);
   vec4 normalTexture = texture(u_texture_game_normal, v_texcoord);
 
   vec4 lightColor = vec4(0.0);
 
   if(v_lightType == 1.0) {
-    lightColor = calculatePointLight(specularTexture, normalTexture, alpha);
+    lightColor = calculatePointLight(specularTexture, normalTexture);
   }
 
   if(v_lightType == 2.0) {
-    lightColor = calculateDirectionLight(specularTexture, normalTexture, alpha);
+    lightColor = calculateDirectionLight(specularTexture, normalTexture);
   }
 
   if(v_lightType == 3.0) {
-    lightColor = calculateSpotLight(specularTexture, normalTexture, alpha);
+    lightColor = calculateSpotLight(specularTexture, normalTexture);
   }
 
   if(normalTexture.rgb == vec3(0.0)) {

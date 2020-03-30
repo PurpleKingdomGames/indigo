@@ -88,7 +88,7 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
       .addGameLayerNodes(
         graphic,
         graphic.moveBy(-60, 0).withMaterial(LightingAssets.junctionBoxMaterialOff),
-        graphic.moveBy(-30, 0),
+        graphic.moveBy(-30, 0).withMaterial(LightingAssets.junctionBoxMaterialGlass),
         graphic.moveBy(30, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat),
         graphic.moveBy(60, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat.unlit)
       )
@@ -133,6 +133,16 @@ object LightingAssets {
   val junctionBoxMaterialOn: Material.Lit =
     Material.Lit(
       junctionBoxAlbedo,
+      1.0d,
+      Some(junctionBoxEmission),
+      Some(junctionBoxNormal),
+      Some(junctionBoxSpecular)
+    )
+
+  val junctionBoxMaterialGlass: Material.Lit =
+    Material.Lit(
+      junctionBoxAlbedo,
+      0.75d,
       Some(junctionBoxEmission),
       Some(junctionBoxNormal),
       Some(junctionBoxSpecular)
@@ -141,6 +151,7 @@ object LightingAssets {
   val junctionBoxMaterialOff: Material.Lit =
     Material.Lit(
       junctionBoxAlbedo,
+      1.0d,
       None,
       Some(junctionBoxNormal),
       Some(junctionBoxSpecular)
@@ -152,6 +163,7 @@ object LightingAssets {
   val trafficLightsMaterial: Material.Lit =
     Material.Lit(
       trafficLightsName,
+      1.0d,
       Some(Texture(trafficLightsName, 1.0d)),
       None,
       None
