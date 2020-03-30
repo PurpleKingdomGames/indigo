@@ -62,9 +62,10 @@ void main(void) {
   vec4 textureColorEmissive = applyEffects(emissive, v_lightingLayerSaturation, v_lightingLayerTint);
 
   // Lights
-  vec4 lightColor = texture(u_texture_lights, v_texcoord);
+  vec4 lights = texture(u_texture_lights, v_texcoord);
+  vec4 textureColorLights = applyEffects(lights, v_lightingLayerSaturation, v_lightingLayerTint);
 
-  vec4 combinedLights = mix(textureColorLighting, lightColor, lightColor.a);
+  vec4 combinedLights = mix(textureColorLighting, textureColorLights, textureColorLights.a);
 
   vec4 gameAndLightingPlusEmissive = mix(textureColorGame * combinedLights, textureColorEmissive, textureColorEmissive.a);
 
