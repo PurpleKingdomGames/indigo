@@ -55,7 +55,7 @@ object FontDetails {
   def fontKey: FontKey = FontKey("My Font")
 
   def fontInfo: FontInfo =
-    FontInfo(fontKey, AssetName(fontName), 320, 230, FontChar("?", 93, 52, 23, 23))
+    FontInfo(fontKey, Material.Textured(AssetName(fontName)), 320, 230, FontChar("?", 93, 52, 23, 23))
       .addChar(FontChar("A", 3, 78, 23, 23))
       .addChar(FontChar("B", 26, 78, 23, 23))
       .addChar(FontChar("C", 50, 78, 23, 23))

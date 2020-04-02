@@ -5,11 +5,12 @@ import indigo._
 object FontStuff {
 
   val fontName: AssetName = AssetName("My boxy font")
+  val fontMaterial: Material = Material.Textured(fontName)
 
   def fontKey: FontKey = FontKey("My Font")
 
   def fontInfo: FontInfo =
-    FontInfo(fontKey, fontName, 320, 230, FontChar("?", 93, 52, 23, 23))
+    FontInfo(fontKey, fontMaterial, 320, 230, FontChar("?", 93, 52, 23, 23))
       .addChar(FontChar("A", 3, 78, 23, 23))
       .addChar(FontChar("B", 26, 78, 23, 23))
       .addChar(FontChar("C", 50, 78, 23, 23))
