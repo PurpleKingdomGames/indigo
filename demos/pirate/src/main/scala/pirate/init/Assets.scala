@@ -7,10 +7,10 @@ object Assets {
   object Static {
     val backgroundRef: AssetName = AssetName("background")
 
-    val levelRef: AssetName      = AssetName("level")
+    val levelRef: AssetName   = AssetName("level")
     val levelGraphic: Graphic = Graphic(Rectangle(0, 0, 646, 374), 2, Material.Textured(levelRef))
 
-    val chestRef: AssetName      = AssetName("Chest Close 01")
+    val chestRef: AssetName   = AssetName("Chest Close 01")
     val chestGraphic: Graphic = Graphic(Rectangle(0, 0, 64, 35), 4, Material.Textured(chestRef)).withRef(33, 34)
 
     val assets: Set[AssetType] =
@@ -56,7 +56,7 @@ object Assets {
     val cloudsAnimation1: Animation =
       Animation(
         animationKey1,
-        smallCloudsRef,
+        Material.Textured(smallCloudsRef),
         Point(140, 117),
         CycleLabel("cloud 1"),
         cloudCycles,
@@ -66,7 +66,7 @@ object Assets {
     val cloudsAnimation2: Animation =
       Animation(
         animationKey2,
-        smallCloudsRef,
+        Material.Textured(smallCloudsRef),
         Point(140, 117),
         CycleLabel("cloud 2"),
         cloudCycles,
@@ -76,7 +76,7 @@ object Assets {
     val cloudsAnimation3: Animation =
       Animation(
         animationKey3,
-        smallCloudsRef,
+        Material.Textured(smallCloudsRef),
         Point(140, 117),
         CycleLabel("cloud 3"),
         cloudCycles,
@@ -163,10 +163,10 @@ object Assets {
 
   object Fonts {
     val smallFontName: AssetName = AssetName("smallFontName")
-    val fontKey: FontKey      = FontKey("boxy font")
+    val fontKey: FontKey         = FontKey("boxy font")
 
     val fontInfo: FontInfo =
-      FontInfo(fontKey, smallFontName, 320, 230, FontChar("?", 47, 26, 11, 12))
+      FontInfo(fontKey, Material.Textured(smallFontName), 320, 230, FontChar("?", 47, 26, 11, 12))
         .addChar(FontChar("A", 2, 39, 10, 12))
         .addChar(FontChar("B", 14, 39, 9, 12))
         .addChar(FontChar("C", 25, 39, 10, 12))

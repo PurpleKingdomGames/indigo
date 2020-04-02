@@ -24,7 +24,7 @@ object GameAssets {
   val fontKey: FontKey = FontKey("boxy font")
 
   val fontInfo: FontInfo =
-    FontInfo(fontKey, smallFontName, 320, 230, FontChar("?", 47, 26, 11, 12))
+    FontInfo(fontKey, Material.Textured(smallFontName), 320, 230, FontChar("?", 47, 26, 11, 12))
       .addChar(FontChar("A", 2, 39, 10, 12))
       .addChar(FontChar("B", 14, 39, 9, 12))
       .addChar(FontChar("C", 25, 39, 10, 12))
