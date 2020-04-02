@@ -6,4 +6,4 @@ sbt clean sbtIndigo/publishLocal
 
 cd ..
 
-sbt cleanAll testAllNoCleanJS publishLocal
+sbt cleanAll testAllNoCleanJS localPublish
