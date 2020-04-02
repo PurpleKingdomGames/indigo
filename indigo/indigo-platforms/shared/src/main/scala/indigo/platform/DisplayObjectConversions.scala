@@ -185,21 +185,12 @@ object DisplayObjectConversions {
     rec(sceneNodes)
   }
 
-  def materialToAlbedoAmount(material: Material): Double =
-    material match {
-      case Material.Textured(AssetName(_)) =>
-        1.0d
-
-      case Material.Lit(_, amount, _, _, _) =>
-        Math.min(1.0, Math.max(0.0d, amount))
-    }
-
   def materialToEmissiveValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
     material match {
       case Material.Textured(AssetName(_)) =>
         (Vector2.zero, 0.0d)
 
-      case Material.Lit(_, _, texture, _, _) =>
+      case Material.Lit(_, texture, _, _) =>
         optionalAssetToValues(assetMapping, texture)
     }
 
@@ -208,7 +199,7 @@ object DisplayObjectConversions {
       case Material.Textured(AssetName(_)) =>
         (Vector2.zero, 0.0d)
 
-      case Material.Lit(_, _, _, texture, _) =>
+      case Material.Lit(_, _, texture, _) =>
         optionalAssetToValues(assetMapping, texture)
     }
 
@@ -217,7 +208,7 @@ object DisplayObjectConversions {
       case Material.Textured(AssetName(_)) =>
         (Vector2.zero, 0.0d)
 
-      case Material.Lit(_, _, _, _, texture) =>
+      case Material.Lit(_, _, _, texture) =>
         optionalAssetToValues(assetMapping, texture)
     }
 
@@ -231,7 +222,7 @@ object DisplayObjectConversions {
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
     val materialName = leaf.material.default.value
 
-    val albedoAmount                     = materialToAlbedoAmount(leaf.material)
+    val albedoAmount                     = 1.0d
     val (emissiveOffset, emissiveAmount) = materialToEmissiveValues(assetMapping, leaf.material)
     val (normalOffset, normalAmount)     = materialToNormalValues(assetMapping, leaf.material)
     val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, leaf.material)
@@ -278,7 +269,7 @@ object DisplayObjectConversions {
   def spriteToDisplayObject(leaf: Sprite, assetMapping: AssetMapping, anim: Animation): DisplayObject = {
     val materialName = anim.material.default.value
 
-    val albedoAmount                     = materialToAlbedoAmount(anim.material)
+    val albedoAmount                     = 1.0d
     val (emissiveOffset, emissiveAmount) = materialToEmissiveValues(assetMapping, anim.material)
     val (normalOffset, normalAmount)     = materialToNormalValues(assetMapping, anim.material)
     val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, anim.material)
@@ -338,7 +329,7 @@ object DisplayObjectConversions {
 
       val materialName = fontInfo.fontSpriteSheet.material.default.value
 
-      val albedoAmount                     = materialToAlbedoAmount(fontInfo.fontSpriteSheet.material)
+      val albedoAmount                     = 1.0d
       val (emissiveOffset, emissiveAmount) = materialToEmissiveValues(assetMapping, fontInfo.fontSpriteSheet.material)
       val (normalOffset, normalAmount)     = materialToNormalValues(assetMapping, fontInfo.fontSpriteSheet.material)
       val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, fontInfo.fontSpriteSheet.material)

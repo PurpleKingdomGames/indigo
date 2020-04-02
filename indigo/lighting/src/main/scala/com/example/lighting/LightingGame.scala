@@ -103,7 +103,7 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
         //   .withAttenuation(50)
         //   .withColor(RGB.Red),
         orbitingLight(120).affectTime(0.25).at(gameTime.running),
-        pulsingLight.affectTime(0.5).at(gameTime.running),
+        pulsingLight.affectTime(0.5).at(gameTime.running)
         // DirectionLight(30, RGB.Green, 1.2, Radians.fromDegrees(30)),
         // SpotLight.default
         //   .withColor(RGB.Yellow)
@@ -133,7 +133,6 @@ object LightingAssets {
   val junctionBoxMaterialOn: Material.Lit =
     Material.Lit(
       junctionBoxAlbedo,
-      1.0d,
       Some(junctionBoxEmission),
       Some(junctionBoxNormal),
       Some(junctionBoxSpecular)
@@ -142,7 +141,6 @@ object LightingAssets {
   val junctionBoxMaterialGlass: Material.Lit =
     Material.Lit(
       junctionBoxAlbedo,
-      0.75d,
       Some(junctionBoxEmission),
       Some(junctionBoxNormal),
       Some(junctionBoxSpecular)
@@ -151,7 +149,6 @@ object LightingAssets {
   val junctionBoxMaterialOff: Material.Lit =
     Material.Lit(
       junctionBoxAlbedo,
-      1.0d,
       None,
       Some(junctionBoxNormal),
       Some(junctionBoxSpecular)
@@ -163,7 +160,6 @@ object LightingAssets {
   val trafficLightsMaterial: Material.Lit =
     Material.Lit(
       trafficLightsName,
-      1.0d,
       Some(Texture(trafficLightsName, 1.0d)),
       None,
       None
