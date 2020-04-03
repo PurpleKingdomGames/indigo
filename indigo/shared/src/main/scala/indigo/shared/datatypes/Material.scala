@@ -15,7 +15,7 @@ object Material {
   final class Textured(val diffuse: AssetName, val isLit: Boolean) extends Material {
     val default: AssetName = diffuse
 
-    def withAlbedo(newDiffuse: AssetName): Textured =
+    def withDiffuse(newDiffuse: AssetName): Textured =
       new Textured(newDiffuse, isLit)
 
     def lit: Textured =
