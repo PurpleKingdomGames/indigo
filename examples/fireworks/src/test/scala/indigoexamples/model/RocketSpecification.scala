@@ -88,7 +88,7 @@ class RocketSpecification extends Properties("Rocket") {
   }
 
   property("pickColor always generates a valid RGBA") = Prop.forAll { dice: Dice =>
-    Rocket.pickColour(dice).toString().toLowerCase().contains("tint") ==> true
+    Rocket.pickColour(dice).toString().toLowerCase().contains("rgba") ==> true
   }
 
 }
