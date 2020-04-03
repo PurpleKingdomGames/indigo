@@ -19,6 +19,10 @@ final class Vector2Delegate(_x: Double, _y: Double) {
     Vector2.dotProduct(this.toInternal, other.toInternal)
 
   @JSExport
+  def normalise: Vector2Delegate =
+    Vector2Delegate.fromVector2(this.toInternal.normalise)
+
+  @JSExport
   def toPoint: PointDelegate =
     new PointDelegate(x.toInt, y.toInt)
 

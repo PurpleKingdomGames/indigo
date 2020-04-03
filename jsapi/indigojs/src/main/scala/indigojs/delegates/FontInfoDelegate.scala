@@ -9,13 +9,12 @@ import indigo.shared.datatypes.FontKey
 import indigo.shared.datatypes.FontSpriteSheet
 import indigo.shared.datatypes.FontChar
 import indigo.shared.datatypes.Point
-import indigo.shared.assets.AssetName
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("FontInfo")
 final class FontInfoDelegate(
     _fontKey: String,
-    _assetName: String,
+    _material: MaterialDelegate,
     _charSheetWidth: Int,
     _charSheetHeight: Int,
     _unknownChar: FontCharDelegate,
@@ -26,7 +25,7 @@ final class FontInfoDelegate(
   @JSExport
   val fontKey = _fontKey
   @JSExport
-  val assetName = _assetName
+  val material = _material
   @JSExport
   val charSheetWidth = _charSheetWidth
   @JSExport
@@ -98,7 +97,7 @@ final class FontInfoDelegate(
   def toInternal: FontInfo =
     FontInfo(
       FontKey(fontKey),
-      FontSpriteSheet(AssetName(assetName), Point(charSheetWidth, charSheetHeight)),
+      FontSpriteSheet(material.toInternal, Point(charSheetWidth, charSheetHeight)),
       unknownChar.toInternal,
       fontChars.map(_.toInternal).toList,
       caseSensitive

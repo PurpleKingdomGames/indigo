@@ -17,13 +17,12 @@ import indigo.shared.collections.NonEmptyList
 import indigo.shared.animation.Frame
 import indigo.shared.animation.Cycle
 import indigo.shared.datatypes.Point
-import indigo.shared.assets.AssetName
 
 @SuppressWarnings(Array("org.wartremover.warts.Throw", "org.wartremover.warts.Any"))
 @JSExportTopLevel("Animation")
 final class AnimationDelegate(
     _animationsKey: String,
-    _assetName: String,
+    _material: MaterialDelegate,
     _spriteSheetWidth: Int,
     _spriteSheetHeight: Int,
     _cycles: js.Array[CycleDelegate]
@@ -32,7 +31,7 @@ final class AnimationDelegate(
   @JSExport
   val animationsKey = _animationsKey
   @JSExport
-  val assetName = _assetName
+  val material = _material
   @JSExport
   val spriteSheetWidth = _spriteSheetWidth
   @JSExport
@@ -48,7 +47,7 @@ final class AnimationDelegate(
       case Some(animationsNel) =>
         new Animation(
           AnimationKey(animationsKey),
-          AssetName(assetName),
+          material.toInternal,
           Point(spriteSheetWidth, spriteSheetHeight),
           animationsNel.head.label,
           animationsNel,

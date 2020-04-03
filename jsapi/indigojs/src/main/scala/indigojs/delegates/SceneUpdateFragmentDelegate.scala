@@ -14,6 +14,7 @@ final class SceneUpdateFragmentDelegate(
     _lightingLayer: SceneLayerDelegate,
     _uiLayer: SceneLayerDelegate,
     _ambientLight: RGBADelegate,
+    _lights: js.Array[LightDelegate],
     _globalEvents: js.Array[GlobalEventDelegate],
     _audio: SceneAudioDelegate,
     _screenEffects: ScreenEffectsDelegate,
@@ -28,6 +29,8 @@ final class SceneUpdateFragmentDelegate(
   val uiLayer = _uiLayer
   @JSExport
   val ambientLight = _ambientLight
+  @JSExport
+  val lights = _lights
   @JSExport
   val globalEvents = _globalEvents
   @JSExport
@@ -44,6 +47,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer,
       uiLayer,
       ambientLight,
+      lights,
       globalEvents,
       audio,
       screenEffects,
@@ -57,6 +61,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer.addLayerNodes(nodes),
       uiLayer,
       ambientLight,
+      lights,
       globalEvents,
       audio,
       screenEffects,
@@ -70,6 +75,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer,
       uiLayer.addLayerNodes(nodes),
       ambientLight,
+      lights,
       globalEvents,
       audio,
       screenEffects,
@@ -83,6 +89,48 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer,
       uiLayer,
       light,
+      lights,
+      globalEvents,
+      audio,
+      screenEffects,
+      cloneBlanks
+    )
+
+  @JSExport
+  def withLights(newLights: js.Array[LightDelegate]): SceneUpdateFragmentDelegate =
+    new SceneUpdateFragmentDelegate(
+      gameLayer,
+      lightingLayer,
+      uiLayer,
+      ambientLight,
+      newLights,
+      globalEvents,
+      audio,
+      screenEffects,
+      cloneBlanks
+    )
+
+  @JSExport
+  def addLights(newLights: js.Array[LightDelegate]): SceneUpdateFragmentDelegate =
+    new SceneUpdateFragmentDelegate(
+      gameLayer,
+      lightingLayer,
+      uiLayer,
+      ambientLight,
+      newLights,
+      globalEvents,
+      audio,
+      screenEffects,
+      cloneBlanks
+    )
+
+  def noLights: SceneUpdateFragmentDelegate =
+    new SceneUpdateFragmentDelegate(
+      gameLayer,
+      lightingLayer,
+      uiLayer,
+      ambientLight,
+      new js.Array(),
       globalEvents,
       audio,
       screenEffects,
@@ -96,6 +144,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer,
       uiLayer,
       ambientLight,
+      lights,
       globalEvents ++ events,
       audio,
       screenEffects,
@@ -109,6 +158,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer,
       uiLayer,
       ambientLight,
+      lights,
       globalEvents,
       sceneAudio,
       screenEffects,
@@ -122,6 +172,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer,
       uiLayer,
       ambientLight,
+      lights,
       globalEvents,
       audio,
       screenEffects,
@@ -135,6 +186,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer.withSaturationLevel(amount),
       uiLayer.withSaturationLevel(amount),
       ambientLight,
+      lights,
       globalEvents,
       audio,
       screenEffects,
@@ -148,6 +200,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer,
       uiLayer,
       ambientLight,
+      lights,
       globalEvents,
       audio,
       screenEffects,
@@ -161,6 +214,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer.withSaturationLevel(amount),
       uiLayer,
       ambientLight,
+      lights,
       globalEvents,
       audio,
       screenEffects,
@@ -174,6 +228,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer,
       uiLayer.withSaturationLevel(amount),
       ambientLight,
+      lights,
       globalEvents,
       audio,
       screenEffects,
@@ -187,6 +242,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer,
       uiLayer,
       ambientLight,
+      lights,
       globalEvents,
       audio,
       new ScreenEffectsDelegate(overlay, overlay),
@@ -200,6 +256,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer,
       uiLayer,
       ambientLight,
+      lights,
       globalEvents,
       audio,
       screenEffects.withGameColorOverlay(overlay),
@@ -213,6 +270,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer,
       uiLayer,
       ambientLight,
+      lights,
       globalEvents,
       audio,
       screenEffects.withUiColorOverlay(overlay),
@@ -226,6 +284,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer.withTint(tint),
       uiLayer.withTint(tint),
       ambientLight,
+      lights,
       globalEvents,
       audio,
       screenEffects,
@@ -239,6 +298,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer,
       uiLayer,
       ambientLight,
+      lights,
       globalEvents,
       audio,
       screenEffects,
@@ -252,6 +312,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer.withTint(tint),
       uiLayer,
       ambientLight,
+      lights,
       globalEvents,
       audio,
       screenEffects,
@@ -265,6 +326,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer,
       uiLayer.withTint(tint),
       ambientLight,
+      lights,
       globalEvents,
       audio,
       screenEffects,
@@ -278,6 +340,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer.withMagnification(level),
       uiLayer.withMagnification(level),
       ambientLight,
+      lights,
       globalEvents,
       audio,
       screenEffects,
@@ -291,6 +354,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer,
       uiLayer,
       ambientLight,
+      lights,
       globalEvents,
       audio,
       screenEffects,
@@ -304,6 +368,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer.withMagnification(level),
       uiLayer,
       ambientLight,
+      lights,
       globalEvents,
       audio,
       screenEffects,
@@ -317,6 +382,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer,
       uiLayer.withMagnification(level),
       ambientLight,
+      lights,
       globalEvents,
       audio,
       screenEffects,
@@ -342,6 +408,7 @@ final class SceneUpdateFragmentDelegate(
       lightingLayer.toInternal,
       uiLayer.toInternal,
       ambientLight.toInternal,
+      lights.toList.map(_.toInternal),
       globalEvents.toList.map(_.toInternal),
       audio.toInternal,
       screenEffects.toInternal,
@@ -361,6 +428,7 @@ object SceneUpdateFragmentDelegate {
       SceneLayerDelegate.None,
       SceneLayerDelegate.None,
       RGBADelegate.None,
+      new js.Array(),
       new js.Array(),
       SceneAudioDelegate.None,
       ScreenEffectsDelegate.None,
