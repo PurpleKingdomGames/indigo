@@ -4,6 +4,8 @@ import scala.scalajs.js.annotation._
 import indigo.shared.datatypes.Material
 import indigo.shared.assets.AssetName
 import indigo.shared.datatypes.Texture
+import indigo.shared.datatypes.Material.Lit
+import indigo.shared.datatypes.Material.Textured
 
 sealed trait MaterialDelegate {
   def toInternal: Material =
@@ -14,9 +16,24 @@ sealed trait MaterialDelegate {
       case l: LitDelegate =>
         Material.Lit(
           AssetName(l.albedo),
-          l.emission.map(_.toInternal),
+          l.emissive.map(_.toInternal),
           l.normal.map(_.toInternal),
           l.specular.map(_.toInternal)
+        )
+    }
+}
+object MaterialDelegate {
+  def fromInternal(m: Material): MaterialDelegate =
+    m match {
+      case t: Textured =>
+        new TexturedDelegate(t.diffuse.value, t.isLit)
+
+      case l: Lit =>
+        new LitDelegate(
+          l.albedo.value,
+          l.emissive.map(t => new TextureDelegate(t.assetName.value, t.amount)),
+          l.normal.map(t => new TextureDelegate(t.assetName.value, t.amount)),
+          l.specular.map(t => new TextureDelegate(t.assetName.value, t.amount))
         )
     }
 }
@@ -40,7 +57,7 @@ final class TexturedDelegate(_diffuse: String, _isLit: Boolean) extends Material
 @JSExportTopLevel("Lit")
 final class LitDelegate(
     _albedo: String,
-    _emission: Option[TextureDelegate],
+    _emissive: Option[TextureDelegate],
     _normal: Option[TextureDelegate],
     _specular: Option[TextureDelegate]
 ) extends MaterialDelegate {
@@ -48,7 +65,7 @@ final class LitDelegate(
   val albedo: String = _albedo
 
   @JSExport
-  val emission: Option[TextureDelegate] = _emission
+  val emissive: Option[TextureDelegate] = _emissive
 
   @JSExport
   val normal: Option[TextureDelegate] = _normal

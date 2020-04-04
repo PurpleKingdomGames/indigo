@@ -153,7 +153,7 @@ final class GraphicDelegate(
     fromInternal(toInternal.withAlpha(a))
 
   @JSExport
-  def withTint(tint: TintDelegate): GraphicDelegate =
+  def withTint(tint: RGBADelegate): GraphicDelegate =
     fromInternal(toInternal.withTint(tint.toInternal))
 
   @JSExport
@@ -189,40 +189,17 @@ final class GraphicDelegate(
     withCrop(new RectangleDelegate(xValue, yValue, widthValue, heightValue))
 
   def fromInternal(orig: Graphic): GraphicDelegate =
-        new GraphicDelegate(
-            new RectangleDelegate(
-                orig.bounds.x,
-                orig.bounds.y,
-                orig.bounds.width,
-                orig.bounds.height
-            ),
-            orig.depth.zIndex,
-            orig.rotation.value,
-            orig.scale.x,
-            orig.scale.y,
-            orig.imageAssetRef,
-            new PointDelegate(orig.ref.x, orig.ref.y),
-            new RectangleDelegate(
-                orig.crop.x,
-                orig.crop.y,
-                orig.crop.width,
-                orig.crop.height
-            ),
-            new EffectsDelegate(
-                orig.effects.alpha,
-                new TintDelegate(
-                    orig.effects.tint.r,
-                    orig.effects.tint.g,
-                    orig.effects.tint.b,
-                    orig.effects.tint.a
-                )
-                ,
-                new FlipDelegate(
-                    orig.effects.flip.horizontal,
-                    orig.effects.flip.vertical
-                )
-            )
-        )
+    new GraphicDelegate(
+      RectangleDelegate.fromRectangle(orig.bounds),
+      orig.depth.zIndex,
+      orig.rotation.value,
+      orig.scale.x,
+      orig.scale.y,
+      PointDelegate.fromPoint(orig.ref),
+      RectangleDelegate.fromRectangle(orig.crop),
+      EffectsDelegate.fromInternal(orig.effects),
+      MaterialDelegate.fromInternal(orig.material)
+    )
 
   def toInternal: Graphic =
     new Graphic(
@@ -352,18 +329,18 @@ object TextDelegate {
 }
 
 object SceneGraphNodeUtilities {
-    implicit class SpriteConvert(val obj: Sprite) {
-        def toJsDelegate = new SpriteDelegate(
-            obj.bindingKey.value,
-            new RectangleDelegate(obj.bounds.x, obj.bounds.y, obj.bounds.width, obj.bounds.height),
-            obj.depth.zIndex,
-            obj.rotation.value,
-            obj.scale.x,
-            obj.scale.y,
-            obj.animationsKey.toString,
-            new PointDelegate(obj.ref.x, obj.ref.y),
-            obj.effects.toJsDelegate,
-            (rect: RectangleDelegate, event: GlobalEventDelegate) => obj.eventHandler((rect.toInternal, event.toInternal)).map(GlobalEventDelegate.fromGlobalEvent(_)).toJSArray
-        )
-    }
+  implicit class SpriteConvert(val obj: Sprite) {
+    def toJsDelegate = new SpriteDelegate(
+      obj.bindingKey.value,
+      new RectangleDelegate(obj.bounds.x, obj.bounds.y, obj.bounds.width, obj.bounds.height),
+      obj.depth.zIndex,
+      obj.rotation.value,
+      obj.scale.x,
+      obj.scale.y,
+      obj.animationsKey.toString,
+      new PointDelegate(obj.ref.x, obj.ref.y),
+      obj.effects.toJsDelegate,
+      (rect: RectangleDelegate, event: GlobalEventDelegate) => obj.eventHandler((rect.toInternal, event.toInternal)).map(GlobalEventDelegate.fromGlobalEvent(_)).toJSArray
+    )
+  }
 }

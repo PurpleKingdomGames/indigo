@@ -10,6 +10,7 @@ import scala.scalajs.js
 import indigojs.delegates.formats.AsepriteConverterUtilities._
 import indigojs.delegates.SceneGraphNodeUtilities._
 import indigojs.delegates.AnimationUtilities._
+import indigo.shared.assets.AssetName
 
 @JSExportTopLevel("SpriteAndAnimations")
 final case class SpriteAndAnimationsDelegate(sprite: SpriteDelegate, animations: AnimationDelegate) {
@@ -22,8 +23,8 @@ object AsepriteConverterDelegate {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any", "org.wartremover.warts.Nothing"))
   @JSExport
-  def toSpriteAndAnimations(aseprite: AsepriteDelegate, depth: Int, imageAssetRef: String): js.UndefOr[SpriteAndAnimationsDelegate] =
-    AsepriteConverter.toSpriteAndAnimations(aseprite.toInternal, Depth(depth), imageAssetRef) match {
+  def toSpriteAndAnimations(aseprite: AsepriteDelegate, depth: Int, assetName: String): js.UndefOr[SpriteAndAnimationsDelegate] =
+    AsepriteConverter.toSpriteAndAnimations(aseprite.toInternal, Depth(depth), AssetName(assetName)) match {
       case None =>
         None.orUndefined
       case Some(x) => Some(x.toJsDelegate).orUndefined

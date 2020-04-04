@@ -78,7 +78,7 @@ final class FontInfoDelegate(
   def fromInternal(orig: FontInfo): FontInfoDelegate =
     new FontInfoDelegate(
         orig.fontKey.toString,
-        orig.fontSpriteSheet.imageAssetRef,
+        MaterialDelegate.fromInternal(orig.fontSpriteSheet.material),
         orig.fontSpriteSheet.size.x,
         orig.fontSpriteSheet.size.y,
         new FontCharDelegate(

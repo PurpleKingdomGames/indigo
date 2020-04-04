@@ -37,7 +37,7 @@ object Material {
 
   final class Lit(
       val albedo: AssetName,
-      val emission: Option[Texture],
+      val emissive: Option[Texture],
       val normal: Option[Texture],
       val specular: Option[Texture],
       val isLit: Boolean
@@ -45,26 +45,26 @@ object Material {
     val default: AssetName = albedo
 
     def withAlbedo(newAlbedo: AssetName): Lit =
-      new Lit(newAlbedo, emission, normal, specular, isLit)
+      new Lit(newAlbedo, emissive, normal, specular, isLit)
 
-    def withEmission(emissionAssetName: AssetName, amount: Double): Lit =
-      new Lit(albedo, Some(Texture(emissionAssetName, amount)), normal, specular, isLit)
+    def withEmission(emissiveAssetName: AssetName, amount: Double): Lit =
+      new Lit(albedo, Some(Texture(emissiveAssetName, amount)), normal, specular, isLit)
 
     def withNormal(normalAssetName: AssetName, amount: Double): Lit =
-      new Lit(albedo, emission, Some(Texture(normalAssetName, amount)), specular, isLit)
+      new Lit(albedo, emissive, Some(Texture(normalAssetName, amount)), specular, isLit)
 
     def withSpecular(specularAssetName: AssetName, amount: Double): Lit =
-      new Lit(albedo, emission, normal, Some(Texture(specularAssetName, amount)), isLit)
+      new Lit(albedo, emissive, normal, Some(Texture(specularAssetName, amount)), isLit)
 
     def lit: Lit =
-      new Lit(albedo, emission, normal, specular, true)
+      new Lit(albedo, emissive, normal, specular, true)
 
     def unlit: Lit =
-      new Lit(albedo, emission, normal, specular, false)
+      new Lit(albedo, emissive, normal, specular, false)
 
     lazy val hash: String =
       albedo.value +
-        emission.map(_.hash).getOrElse("_") +
+        emissive.map(_.hash).getOrElse("_") +
         normal.map(_.hash).getOrElse("_") +
         specular.map(_.hash).getOrElse("_") +
         (if (isLit) "1" else "0")
@@ -72,14 +72,14 @@ object Material {
   object Lit {
     def apply(
         albedo: AssetName,
-        emission: Option[Texture],
+        emissive: Option[Texture],
         normal: Option[Texture],
         specular: Option[Texture]
     ): Lit =
-      new Lit(albedo, emission, normal, specular, true)
+      new Lit(albedo, emissive, normal, specular, true)
 
     def unapply(l: Lit): Option[(AssetName, Option[Texture], Option[Texture], Option[Texture])] =
-      Some((l.albedo, l.emission, l.normal, l.specular))
+      Some((l.albedo, l.emissive, l.normal, l.specular))
 
     def fromAlbedo(albedo: AssetName): Lit =
       new Lit(albedo, None, None, None, true)

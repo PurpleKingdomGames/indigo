@@ -138,27 +138,30 @@ final class JumpToFrameDelegate(_number: Int) extends AnimationActionDelegate {
 }
 
 object AnimationUtilities {
-    implicit class AnimationConvert(val obj: Animation) {
-        def toJsDelegate =
-            new AnimationDelegate(
-                obj.animationsKey.toString,
-                obj.imageAssetRef.ref,
-                obj.spriteSheetSize.x,
-                obj.spriteSheetSize.y,
-                obj.cycles.map(_.toJsDelegate).toList.toJSArray
-            )
-    }
+  implicit class AnimationConvert(val obj: Animation) {
+    def toJsDelegate =
+      new AnimationDelegate(
+        obj.animationsKey.toString,
+        MaterialDelegate.fromInternal(obj.material),
+        obj.spriteSheetSize.x,
+        obj.spriteSheetSize.y,
+        obj.cycles.map(_.toJsDelegate).toList.toJSArray
+      )
+  }
 
-    implicit class CycleConvert(val obj: Cycle) {
-        def toJsDelegate =
-            new CycleDelegate(
-                obj.label.value,
-                obj.frames.map(f =>
-                    new FrameDelegate(
-                        new RectangleDelegate(f.bounds.x, f.bounds.y, f.bounds.width, f.bounds.height),
-                        f.duration
-                    )
-                ).toList.toJSArray
+  implicit class CycleConvert(val obj: Cycle) {
+    def toJsDelegate =
+      new CycleDelegate(
+        obj.label.value,
+        obj.frames
+          .map(f =>
+            new FrameDelegate(
+              new RectangleDelegate(f.bounds.x, f.bounds.y, f.bounds.width, f.bounds.height),
+              f.duration
             )
-    }
+          )
+          .toList
+          .toJSArray
+      )
+  }
 }

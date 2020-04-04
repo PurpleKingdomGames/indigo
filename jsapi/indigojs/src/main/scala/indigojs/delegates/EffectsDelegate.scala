@@ -6,6 +6,8 @@ import indigo.shared.datatypes.Border
 import indigo.shared.datatypes.Glow
 import indigo.shared.datatypes.Thickness
 import indigo.shared.datatypes.Overlay
+import indigo.shared.datatypes.Overlay.Color
+import indigo.shared.datatypes.Overlay.LinearGradiant
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Effects")
@@ -54,11 +56,21 @@ final class EffectsDelegate(_tint: RGBADelegate, _overlay: OverlayDelegate, _bor
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("EffectsHelper")
-@JSExportAll
 object EffectsDelegate {
 
+  @JSExport
   def None: EffectsDelegate =
     new EffectsDelegate(RGBADelegate.None, ColorDelegate.default, BorderDelegate.None, GlowDelegate.None, 1.0d, FlipDelegate.None)
+
+  def fromInternal(effects: Effects): EffectsDelegate =
+    new EffectsDelegate(
+      new RGBADelegate(effects.tint.r, effects.tint.g, effects.tint.b, effects.tint.a),
+      OverlayDelegate.fromInternal(effects.overlay),
+      BorderDelegate.fromInternal(effects.border),
+      GlowDelegate.fromInternal(effects.glow),
+      effects.alpha,
+      new FlipDelegate(effects.flip.horizontal, effects.flip.vertical)
+    )
 
 }
 
@@ -91,21 +103,35 @@ object BorderDelegate {
   @JSExport
   val None: BorderDelegate =
     new BorderDelegate(RGBADelegate.None, 0, 0)
+
+  private def thicknessToInt(t: Thickness): Int =
+    t match {
+      case Thickness.None  => 0
+      case Thickness.Thin  => 1
+      case Thickness.Thick => 2
+    }
+
+  def fromInternal(b: Border): BorderDelegate =
+    new BorderDelegate(
+      RGBADelegate.fromInternal(b.color),
+      thicknessToInt(b.innerThickness),
+      thicknessToInt(b.outerThickness)
+    )
 }
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Glow")
-final class GlowDelegate(_color: RGBADelegate, _innerThickness: Double, _outerThickness: Double) {
+final class GlowDelegate(_color: RGBADelegate, _innerGlowAmount: Double, _outerGlowAmount: Double) {
 
   @JSExport
   val color = _color
   @JSExport
-  val innerThickness = _innerThickness
+  val innerGlowAmount = _innerGlowAmount
   @JSExport
-  val outerThickness = _outerThickness
+  val outerGlowAmount = _outerGlowAmount
 
   def toInternal: Glow =
-    new Glow(color.toInternal, innerThickness, outerThickness)
+    new Glow(color.toInternal, innerGlowAmount, outerGlowAmount)
 }
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
@@ -114,6 +140,13 @@ object GlowDelegate {
   @JSExport
   val None: GlowDelegate =
     new GlowDelegate(RGBADelegate.None, 0.0d, 0.0d)
+
+  def fromInternal(g: Glow): GlowDelegate =
+    new GlowDelegate(
+      RGBADelegate.fromInternal(g.color),
+      g.innerGlowAmount,
+      g.outerGlowAmount
+    )
 }
 
 sealed trait OverlayDelegate {
@@ -128,6 +161,21 @@ sealed trait OverlayDelegate {
           l.fromColor.toInternal,
           l.toPoint.toInternal,
           l.toColor.toInternal
+        )
+    }
+}
+object OverlayDelegate {
+  def fromInternal(o: Overlay): OverlayDelegate =
+    o match {
+      case c: Color =>
+        new ColorDelegate(RGBADelegate.fromInternal(c.color))
+
+      case l: LinearGradiant =>
+        new LinearGradiantDelegate(
+          PointDelegate.fromPoint(l.fromPoint),
+          RGBADelegate.fromInternal(l.fromColor),
+          PointDelegate.fromPoint(l.toPoint),
+          RGBADelegate.fromInternal(l.toColor)
         )
     }
 }
@@ -179,11 +227,15 @@ object LinearGradiantDelegate {
 }
 
 object EffectsUtilities {
-    implicit class EffectsConvert(val obj: Effects) {
-        def toJsDelegate = new EffectsDelegate(
-            obj.alpha,
-            new TintDelegate(obj.tint.r, obj.tint.g, obj.tint.b, obj.tint.a),
-            new FlipDelegate(obj.flip.horizontal, obj.flip.vertical)
-        )
-    }
+  implicit class EffectsConvert(val obj: Effects) {
+    def toJsDelegate =
+      new EffectsDelegate(
+        new RGBADelegate(obj.tint.r, obj.tint.g, obj.tint.b, obj.tint.a),
+        OverlayDelegate.fromInternal(obj.overlay),
+        BorderDelegate.fromInternal(obj.border),
+        GlowDelegate.fromInternal(obj.glow),
+        obj.alpha,
+        new FlipDelegate(obj.flip.horizontal, obj.flip.vertical)
+      )
+  }
 }

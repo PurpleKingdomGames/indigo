@@ -396,6 +396,7 @@ final class SceneUpdateFragmentDelegate(
         lightingLayer.concat(other.lightingLayer),
         uiLayer.concat(other.uiLayer),
         ambientLight.concat(other.ambientLight),
+        lights ++ other.lights,
         globalEvents ++ other.globalEvents,
         audio.concat(other.audio),
         screenEffects.concat(other.screenEffects),
