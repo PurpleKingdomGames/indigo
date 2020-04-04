@@ -54,6 +54,17 @@ final class RGBDelegate(_r: Double, _g: Double, _b: Double) {
   def toClearColor: ClearColorDelegate =
     new ClearColorDelegate(r, g, b, 1.0)
 
+  @JSExport
+  def concat(other: RGBDelegate): RGBDelegate =
+    (this, other) match {
+      case (RGBDelegate.None, x) =>
+        x
+      case (x, RGBDelegate.None) =>
+        x
+      case (x, y) =>
+        new RGBDelegate(x.r + y.r, x.g + y.g, x.b + y.b)
+    }
+
   def toInternal: RGB =
     RGB(r, g, b)
 
@@ -72,36 +83,36 @@ final class RGBDelegate(_r: Double, _g: Double, _b: Double) {
 object RGBDelegate {
 
   // indigodoc entity:value name:Red type:RGB
-  val Red: RGBDelegate     = new RGBDelegate(1, 0, 0)
+  val Red: RGBDelegate = new RGBDelegate(1, 0, 0)
 
   // indigodoc entity:value name:Green type:RGB
-  val Green: RGBDelegate   = new RGBDelegate(0, 1, 0)
+  val Green: RGBDelegate = new RGBDelegate(0, 1, 0)
 
   // indigodoc entity:value name:Blue type:RGB
-  val Blue: RGBDelegate    = new RGBDelegate(0, 0, 1)
+  val Blue: RGBDelegate = new RGBDelegate(0, 0, 1)
 
   // indigodoc entity:value name:Yellow type:RGB
-  val Yellow: RGBDelegate  = new RGBDelegate(1, 1, 0)
+  val Yellow: RGBDelegate = new RGBDelegate(1, 1, 0)
 
   // indigodoc entity:value name:Magenta type:RGB
   val Magenta: RGBDelegate = new RGBDelegate(1, 0, 1)
 
   // indigodoc entity:value name:Cyan type:RGB
-  val Cyan: RGBDelegate    = new RGBDelegate(0, 1, 1)
+  val Cyan: RGBDelegate = new RGBDelegate(0, 1, 1)
 
   // indigodoc entity:value name:White type:RGB
-  val White: RGBDelegate   = new RGBDelegate(1, 1, 1)
+  val White: RGBDelegate = new RGBDelegate(1, 1, 1)
 
   // indigodoc entity:value name:Black type:RGB
-  val Black: RGBDelegate   = new RGBDelegate(0, 0, 0)
+  val Black: RGBDelegate = new RGBDelegate(0, 0, 0)
 
   // indigodoc entity:value name:Normal type:RGB
-  val Normal: RGBDelegate  = White
+  val Normal: RGBDelegate = White
 
   // indigodoc entity:value name:None type:RGB
-  val None: RGBDelegate    = White
+  val None: RGBDelegate = White
 
   // indigodoc entity:value name:Zero type:RGB
-  val Zero: RGBDelegate    = new RGBDelegate(0, 0, 0)
+  val Zero: RGBDelegate = new RGBDelegate(0, 0, 0)
 
 }
