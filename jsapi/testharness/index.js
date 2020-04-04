@@ -66,7 +66,7 @@ const fontChars = [
 const fonts = [
   new FontInfo(
       fontKey,
-      fontName,
+      new Textured(fontName, false),
       320,
       230,
       new FontChar('?', new Rectangle(93, 52, 23, 23)),
@@ -87,7 +87,13 @@ const cycles = [
 ];
 
 const animations = [
-  new Animation('traffic-lights', spriteName, 128, 128, cycles),
+  new Animation(
+      'traffic-lights',
+      new Textured(spriteName, false),
+      128,
+      128,
+      cycles,
+  ),
 ];
 
 const initialise = function(assetCollection) {
@@ -154,7 +160,7 @@ const present = function(gameTime, model, viewModel, inputState) {
                 1,
                 1,
                 fontKey,
-                new Effects(1, viewModel.tint, new Flip(false, false)),
+                EffectsHelper.None.withTint(viewModel.tint),
                 function(bounds, event) {
                   return [];
                 },
@@ -168,7 +174,7 @@ const present = function(gameTime, model, viewModel, inputState) {
                 new Point(48, 48),
                 new Rectangle(128, 0, 96, 96),
                 EffectsHelper.None,
-                new Textured(graphicName),
+                new Textured(graphicName, false),
             ),
           ],
       );
