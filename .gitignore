@@ -3,6 +3,9 @@
 *.log
 .DS_Store
 
+# mill specific
+out
+
 # sbt specific
 sbt
 .sbt-local
