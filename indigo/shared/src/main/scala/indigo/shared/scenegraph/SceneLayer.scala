@@ -1,6 +1,7 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.datatypes.RGBA
+import scala.annotation.tailrec
 
 final class SceneLayer(val nodes: List[SceneGraphNode], val tint: RGBA, val saturation: Double, val magnification: Option[Int]) {
 
@@ -26,6 +27,24 @@ final class SceneLayer(val nodes: List[SceneGraphNode], val tint: RGBA, val satu
 
   def withMagnification(level: Int): SceneLayer =
     SceneLayer(nodes, tint, saturation, SceneLayer.sanitiseMagnification(level))
+
+  def visibleNodeCount: Int = {
+    @tailrec
+    def rec(remaining: List[SceneGraphNode], count: Int): Int =
+      remaining match {
+        case Nil =>
+          count
+
+        case (g: Group) :: xs =>
+          rec(g.children ++ xs, count)
+
+        case _ :: xs =>
+          rec(xs, count + 1)
+      }
+
+    rec(nodes, 0)
+  }
+
 }
 
 object SceneLayer {
