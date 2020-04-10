@@ -86,10 +86,6 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
 
   def render(gameTime: GameTime): SceneUpdateFragment =
     Automata.render(this, gameTime)
-
-  def report: String =
-    "Automata farm"
-
 }
 object Automata {
 

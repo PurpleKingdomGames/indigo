@@ -43,9 +43,6 @@ final class InputMapper(mappings: Map[InputEvent, List[GlobalEvent]]) extends Su
   def render(gameTime: GameTime): SceneUpdateFragment =
     SceneUpdateFragment.empty
 
-  def report: String =
-    "Input Mapper"
-
   def toMappingsList: List[(InputEvent, List[GlobalEvent])] =
     mappings.toList
 

@@ -11,7 +11,7 @@ import scala.collection.mutable.ListBuffer
 @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
 final class SubSystemsRegister {
 
-  private val registeredSubSystems: ListBuffer[SubSystem] = new ListBuffer()
+  val registeredSubSystems: ListBuffer[SubSystem] = new ListBuffer()
 
   def add(subSystems: SubSystem*): SubSystemsRegister =
     add(subSystems.toList)
@@ -41,9 +41,6 @@ final class SubSystemsRegister {
 
   def render(gameTime: GameTime): SceneUpdateFragment =
     registeredSubSystems.map(_.render(gameTime)).foldLeft(SceneUpdateFragment.empty)(_ |+| _)
-
-  def reports: List[String] =
-    registeredSubSystems.map(_.report).toList
 
   def size: Int =
     registeredSubSystems.size

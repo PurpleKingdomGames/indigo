@@ -13,6 +13,4 @@ final case class HelloSubSystem(message: String, fontKey: FontKey) extends SubSy
   def render(gameTime: GameTime): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addUiLayerNodes(Text(message, 20, 50, 1, fontKey))
-
-  def report: String = ""
 }

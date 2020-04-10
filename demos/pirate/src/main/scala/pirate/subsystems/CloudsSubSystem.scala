@@ -53,9 +53,6 @@ final case class CloudsSubSystem(screenWidth: Int, bigCloudPosition: Double, ver
       None
     )
   }
-
-  def report: String = "Clouds SubSystem"
-
 }
 
 object CloudsSubSystem {

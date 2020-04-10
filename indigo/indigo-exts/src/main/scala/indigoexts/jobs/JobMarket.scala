@@ -40,8 +40,6 @@ final case class JobMarket(jobs: List[Job]) extends SubSystem {
 
   def render(gameTime: GameTime): SceneUpdateFragment =
     SceneUpdateFragment.empty
-
-  def report: String = "Jobs on the market: " + jobs.map(_.jobName.value).mkString(",")
 }
 
 object JobMarket {

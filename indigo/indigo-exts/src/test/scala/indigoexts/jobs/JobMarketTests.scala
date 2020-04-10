@@ -51,7 +51,9 @@ object JobMarketTests extends TestSuite {
           val job: Job          = SampleJobs.CantHave()
           val market: JobMarket = JobMarket(List(job))
 
-          market.report.contains(job.jobName.value) ==> true
+          val report = market.jobs.map(_.jobName.value).mkString(",")
+
+          report.contains(job.jobName.value) ==> true
         }
 
         "should not render anything" - {

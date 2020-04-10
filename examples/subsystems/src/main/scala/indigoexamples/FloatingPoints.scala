@@ -38,10 +38,6 @@ final case class FloatingPoints(fontKey: FontKey, entities: List[FloatingPointEn
           .sequence
           .state
       )
-
-  def report: String =
-    "Floating Points"
-
 }
 
 object FloatingPoints {

@@ -40,9 +40,6 @@ final class FPSCounter(fontKey: FontKey, position: Point, targetFPS: Int) extend
 
   def fpsCount(implicit showI: AsString[Int]): String =
     s"""FPS: ${showI.show(fps)}"""
-
-  def report: String =
-    "FPS Counter"
 }
 
 object FPSCounter {

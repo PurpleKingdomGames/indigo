@@ -14,6 +14,4 @@ trait SubSystem {
   def update(gameTime: GameTime, dice: Dice): EventType => Outcome[SubSystem]
 
   def render(gameTime: GameTime): SceneUpdateFragment
-
-  def report: String
 }

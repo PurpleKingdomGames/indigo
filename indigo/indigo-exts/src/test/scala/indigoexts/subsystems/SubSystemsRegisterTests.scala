@@ -24,10 +24,15 @@ object SubSystemsRegisterTests extends TestSuite {
         "should allow you to update sub systems" - {
           val r = SubSystemsRegister.empty.add(PointsTrackerExample(10), PointsTrackerExample(50))
 
-          val reports = r.update(GameTime.zero, dice)(PointsTrackerEvent.Add(10)).state.reports
+          val subSystemPoints = r
+            .update(GameTime.zero, dice)(PointsTrackerEvent.Add(10))
+            .state
+            .registeredSubSystems
+            .toList
+            .collect { case PointsTrackerExample(points) => points }
 
-          assert(reports.contains("Points: 20"))
-          assert(reports.contains("Points: 60"))
+          assert(subSystemPoints.contains(20))
+          assert(subSystemPoints.contains(60))
         }
 
         "should allow you to update sub systems and emit events" - {
@@ -35,7 +40,11 @@ object SubSystemsRegisterTests extends TestSuite {
 
           val updated = r.update(GameTime.zero, dice)(PointsTrackerEvent.LoseAll)
 
-          assert(updated.state.reports == List("Points: 0", "Points: 0"))
+          val subSystemPoints: List[Int] =
+            updated.state.registeredSubSystems.toList
+              .collect { case PointsTrackerExample(points) => points }
+
+          assert(subSystemPoints == List(0, 0))
           assert(updated.globalEvents == List(GameOver, GameOver))
         }
 
