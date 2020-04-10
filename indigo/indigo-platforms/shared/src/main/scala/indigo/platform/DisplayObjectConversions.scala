@@ -105,7 +105,7 @@ object DisplayObjectConversions {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var accDisplayObjects: ListBuffer[DisplayEntity] = new ListBuffer()
+  private val accDisplayObjects: ListBuffer[DisplayEntity] = new ListBuffer()
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def sceneNodesToDisplayObjects(sceneNodes: List[SceneGraphNode], gameTime: GameTime, assetMapping: AssetMapping, metrics: Metrics): ListBuffer[DisplayEntity] = {
@@ -181,7 +181,8 @@ object DisplayObjectConversions {
           rec(xs)
       }
 
-    accDisplayObjects = new ListBuffer()
+    accDisplayObjects.clear()
+
     rec(sceneNodes)
   }
 
