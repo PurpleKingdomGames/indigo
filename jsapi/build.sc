@@ -19,14 +19,12 @@ object apigen extends SbtModule {
   )
 
   def compileIvyDeps      = Agg(ivy"org.wartremover::wartremover:2.4.5")
-  def scalacPluginIvyDeps = Agg(ivy"org.wartremover::wartremover:2.4.5")
+  def scalacPluginIvyDeps = Agg(ivy"org.wartremover:::wartremover:2.4.5")
 
   def scalacOptions =
-    ScalacOptions.scala213Compile
-  //++ // TODO: Not working. The wartremover flag isn't recognised.
-  // Seq(
-  //   "-P:wartremover:traverser:org.wartremover.warts.Unsafe"
-  // )
+    ScalacOptions.scala213Compile ++ Seq(
+      "-P:wartremover:traverser:org.wartremover.warts.Unsafe"
+    )
 
   object test extends Tests {
     def ivyDeps = Agg(ivy"com.lihaoyi::utest:0.7.1")
@@ -47,6 +45,13 @@ object indigojs extends ScalaJSModule with SbtModule {
     ivy"indigo::indigo-exts::0.0.12-SNAPSHOT"
   )
 
+  def repositories = super.repositories ++ Seq(
+    MavenRepository("https://oss.sonatype.org/content/repositories/releases")
+  )
+
+  def compileIvyDeps      = Agg(ivy"org.wartremover::wartremover:2.4.5")
+  def scalacPluginIvyDeps = Agg(ivy"org.wartremover:::wartremover:2.4.5")
+
   def scalacOptions = ScalacOptions.scala213Compile
 
   // def mainClass = Some("app.SJSMain")
@@ -57,7 +62,9 @@ object indigojs extends ScalaJSModule with SbtModule {
 
     def testFrameworks = Seq("utest.runner.Framework")
 
-    def scalacOptions = ScalacOptions.scala213Test
+    def scalacOptions = ScalacOptions.scala213Test ++ Seq(
+      "-P:wartremover:traverser:org.wartremover.warts.Unsafe"
+    )
   }
 
 }
