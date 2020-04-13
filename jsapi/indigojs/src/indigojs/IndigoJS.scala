@@ -1,4 +1,4 @@
-package indigoexamples
+package indigojs
 
 import indigo.gameengine.GameEngine
 import indigo.gameengine.StandardFrameProcessor

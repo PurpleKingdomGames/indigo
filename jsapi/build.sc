@@ -4,7 +4,7 @@ import mill.scalalib._
 import mill.scalajslib._
 import coursier.maven.MavenRepository
 
-object apigen extends SbtModule {
+object apigen extends ScalaModule {
   def scalaVersion = "2.13.1"
 
   def ivyDeps = Agg(
@@ -36,7 +36,7 @@ object apigen extends SbtModule {
 
 }
 
-object indigojs extends ScalaJSModule with SbtModule {
+object indigojs extends ScalaJSModule {
   def scalaVersion   = "2.13.1"
   def scalaJSVersion = "0.6.31"
 
