@@ -33,10 +33,6 @@ import scala.util.Success
 import scala.util.Failure
 
 final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
-    config: GameConfig,
-    configAsync: Future[Option[GameConfig]],
-    assets: Set[AssetType],
-    assetsAsync: Future[Set[AssetType]],
     fonts: Set[FontInfo],
     animations: Set[Animation],
     initialise: AssetCollection => Startup[StartupError, StartupData],
@@ -45,40 +41,28 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     frameProccessor: FrameProcessor[GameModel, ViewModel]
 ) {
 
-  def start(): Unit =
-    GameEngine.start(
-      config,
-      configAsync,
-      assets,
-      assetsAsync,
-      fonts,
-      animations,
-      initialise,
-      initialModel,
-      initialViewModel,
-      frameProccessor
-    )
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  var metrics: Metrics = null
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  var storage: Storage = null
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  var gamepadInputCapture: GamepadInputCapture = null
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  var gameLoop: Try[() => Unit] = null
 
-}
-
-object GameEngine {
-
-  def start[StartupData, StartupError, GameModel, ViewModel](
+  def start(
       config: GameConfig,
       configAsync: Future[Option[GameConfig]],
       assets: Set[AssetType],
-      assetsAsync: Future[Set[AssetType]],
-      fonts: Set[FontInfo],
-      animations: Set[Animation],
-      initialise: AssetCollection => Startup[StartupError, StartupData],
-      initialModel: StartupData => GameModel,
-      initialViewModel: StartupData => GameModel => ViewModel,
-      frameProccessor: FrameProcessor[GameModel, ViewModel]
+      assetsAsync: Future[Set[AssetType]]
   ): Unit = {
 
     IndigoLogger.info("Starting Indigo")
 
     PlatformWindow.windowSetup(config)
+
+    storage = PlatformStorage.default
+    gamepadInputCapture = GamepadInputCaptureImpl()
 
     // Arrange config
     configAsync.map(_.getOrElse(config)).foreach { gameConfig =>
@@ -89,58 +73,21 @@ object GameEngine {
           "WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!"
         )
 
-      // Arrange assets
+      metrics = Metrics.getInstance(gameConfig.advanced.recordMetrics, gameConfig.advanced.logMetricsReportIntervalMs)
+
+      // Arrange initial asset load
       IndigoLogger.info("Attempting to load assets")
 
       assetsAsync.flatMap(aa => AssetLoader.loadAssets(aa ++ assets)).foreach { assetCollection =>
         IndigoLogger.info("Asset load complete")
 
-        val audioPlayer: AudioPlayer =
-          AudioPlayerImpl(assetCollection)
-
-        val storage: Storage =
-          PlatformStorage.default
-
-        val metrics: Metrics =
-          Metrics.getInstance(gameConfig.advanced.recordMetrics, gameConfig.advanced.logMetricsReportIntervalMs)
-
-        val globalEventStream: GlobalEventStream =
-          GlobalEventStreamImpl.default(audioPlayer, storage)
-
-        val gamepadInputCapture: GamepadInputCapture =
-          GamepadInputCaptureImpl()
-
-        val startupData: Startup[StartupError, StartupData] = initialise(assetCollection)
-
-        val platform: Platform =
-          new PlatformImpl(assetCollection, globalEventStream)
-
-        val gameLoop: Try[Long => Unit] =
-          for {
-            _                       <- GameEngine.registerAnimations(animations ++ startupData.additionalAnimations)
-            _                       <- GameEngine.registerFonts(fonts ++ startupData.additionalFonts)
-            startUpSuccessData      <- GameEngine.initialisedGame(startupData)
-            rendererAndAssetMapping <- platform.initialiseRenderer(gameConfig)
-            gameLoopInstance <- GameEngine.initialiseGameLoop(
-              gameConfig,
-              rendererAndAssetMapping._2,
-              rendererAndAssetMapping._1,
-              audioPlayer,
-              initialModel(startUpSuccessData),
-              initialViewModel(startUpSuccessData),
-              frameProccessor,
-              metrics,
-              globalEventStream,
-              gamepadInputCapture,
-              platform.tick
-            )
-          } yield gameLoopInstance.loop(0)
+        rebuildGameLoop(metrics, gameConfig, storage, gamepadInputCapture, assetCollection)
 
         gameLoop match {
-          case Success(f) =>
+          case Success(firstTick) =>
             IndigoLogger.info("Starting main loop, there will be no more info log messages.")
             IndigoLogger.info("You may get first occurrence error logs.")
-            platform.tick(f)
+            firstTick()
 
           case Failure(e) =>
             IndigoLogger.error("Error during startup")
@@ -152,6 +99,49 @@ object GameEngine {
 
     }
   }
+
+  def rebuildGameLoop(metrics: Metrics, gameConfig: GameConfig, storage: Storage, gamepadInputCapture: GamepadInputCapture, assetCollection: AssetCollection): Unit = {
+
+    val audioPlayer: AudioPlayer =
+      AudioPlayerImpl(assetCollection)
+
+    val globalEventStream: GlobalEventStream =
+      GlobalEventStreamImpl.default(audioPlayer, storage)
+
+    val startupData: Startup[StartupError, StartupData] = initialise(assetCollection)
+
+    val platform: Platform =
+      new PlatformImpl(assetCollection, globalEventStream)
+
+    val loop: Try[Long => Unit] =
+      for {
+        _                       <- GameEngine.registerAnimations(animations ++ startupData.additionalAnimations)
+        _                       <- GameEngine.registerFonts(fonts ++ startupData.additionalFonts)
+        startUpSuccessData      <- GameEngine.initialisedGame(startupData)
+        rendererAndAssetMapping <- platform.initialiseRenderer(gameConfig)
+        gameLoopInstance <- GameEngine.initialiseGameLoop(
+          gameConfig,
+          rendererAndAssetMapping._2,
+          rendererAndAssetMapping._1,
+          audioPlayer,
+          initialModel(startUpSuccessData),
+          initialViewModel(startUpSuccessData),
+          frameProccessor,
+          metrics,
+          globalEventStream,
+          gamepadInputCapture,
+          platform.tick
+        )
+      } yield gameLoopInstance.loop(0)
+
+    gameLoop = loop.map(f => (() => platform.tick(f)))
+
+    ()
+  }
+
+}
+
+object GameEngine {
 
   def registerAnimations(animations: Set[Animation]): Try[Unit] =
     Success(animations.foreach(AnimationsRegister.register))

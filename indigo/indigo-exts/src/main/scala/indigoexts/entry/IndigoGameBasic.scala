@@ -51,10 +51,6 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] {
       )
 
     new GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel](
-      config,
-      Future(None),
-      assets,
-      Future(Set()),
       fonts,
       animations,
       (ac: AssetCollection) => setup(ac),
@@ -65,6 +61,6 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] {
   }
 
   def main(args: Array[String]): Unit =
-    indigoGame.start()
+    indigoGame.start(config, Future(None), assets, Future(Set()))
 
 }
