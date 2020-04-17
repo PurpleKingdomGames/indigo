@@ -5,10 +5,6 @@ This project does two things:
 1. Provides a means to export a controlled JavaScript friendly version of Indigo;
 1. Allows generation of docs for IndigoJS APIs.
 
-## VSCode user?
-
-For your convenience, you can start `sbt` in the project root and when you get to the SBT shell you can just type `code` to launch VSCode int he right place.
-
 ## Clean setup
 
 Note that I'm doing this on a mac! Any other platform, all bets are off! It should still basically work, you may just need to massage a few things here and there.
@@ -19,14 +15,11 @@ This is for when there is a new local version of indigo you need to build agains
 1. In your terminal, go to `(..)/<indigo git root>/indigo`
 1. `bash localpublish.sh` - this will take a while...*
 1. Navigate to `(..)/<indigo git root>/jsapi`
-1. Type `sbt` to enter the shell, then:
-   1. `clean`
-   1. `update`
-   1. `compile`
+1. Type `mill clean`
+1. Type `mill apigen.run`
+1. Type `mill indigojs.fastOpt`
 
 You should be ready.
-
-* A note on the indigo build. It's a bit chicken and egg because the main Indigo build needs the indigo sbt plugin, but all the code for the sbt-indigo plugin lives with the indigo build. So! Since SBT is recursive, the plugin is actually built using a "meta" build inside the `project` folder. The bash file that does the build knows this, but if you're having trouble you can try and do what it does, manually. Don't be scared, it's only one command called in the right directory.
 
 ## General information
 
@@ -39,23 +32,29 @@ The interface we're exporting is a sort of lean, cut down version of the full AP
 
 ## Generating the JS Interface
 
-1. Type `sbt` to enter the shell, then:
-   1. `indigojs/clean`
-   1. `indigojs/fastOptJS`
+From the commandline in the `jsapi` folder:
+
+```bash
+mill indigojs.fastOpt
+
+# Or to show the output file location after the js file is generated:
+mill show indigojs.fastOpt
+# Gives: "ref:4cc85478:/(...stuff...)/indigo/jsapi/out/indigojs/fastOpt/dest/out.js"
+```
 
 This generates the unminified lib containing the entire Indigo engine and exposing the JS API.
 
-The output is in `indigojs/target/scala-2.13/indigojs-fastopt.js`.
+The output is in `out/indigojs/fastOpt/dest/out.js`.
 
-If you swap `fastOptJS` with `fullOptJS` ...and wait a while ... you get the minified version (uses Google closure compiler).
+If you swap `fastOpt` for `fullOpt` ...and wait a while ... you get the minified version (uses Google closure compiler).
 
-The output is in `indigojs/target/scala-2.13/indigojs-opt.js`.
+The output is in `out/indigojs/fullOpt/dest/out.js`.
 
 ## The Test Harness
 
 Exploring this project is left as an exercise for the reader, but an Indigo project is described in `index.js`.
 
-Having performed the `fastOptJS` export above, from the project root:
+Having performed the `fastOpt` export above, from the project root:
 
 1. `cd testharness`
 1. `npm install`
@@ -76,9 +75,9 @@ The idea is that we can then take the JSON and use it to generate other interfac
 
 To generate the docs:
 
-1. Type `sbt` to enter the shell, then:
-   1. `apigen/clean`
-   1. `apigen/run`
+```bash
+mill apigen.run
+```
 
 That's it. The output will say something like:
 
@@ -97,4 +96,4 @@ Found indigodocs to process in: TintDelegate
 ...done
 ```
 
-The output is located in `(..)/<indigo git root>/target/jsdocs/`.
+The output is located in `out/jsdocs/`.
