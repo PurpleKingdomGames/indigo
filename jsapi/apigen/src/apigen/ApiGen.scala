@@ -6,7 +6,7 @@ import scala.annotation.tailrec
 @SuppressWarnings(Array("org.wartremover.warts.Equals"))
 object ApiGen {
 
-  val srcDirectory = os.pwd / "indigojs" / "src" / "main"
+  val srcDirectory = os.pwd / "indigojs" / "src"
 
   @tailrec
   def chunk(remaining: List[String], active: List[String], acc: List[List[String]]): List[List[String]] =
@@ -57,7 +57,7 @@ object ApiGen {
   }
 
   def main(args: Array[String]): Unit = {
-    val outputDir = os.pwd / "target" / "jsdocs"
+    val outputDir = os.pwd / "out" / "jsdocs"
 
     os.remove.all(outputDir)
 
