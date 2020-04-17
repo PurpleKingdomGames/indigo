@@ -49,14 +49,11 @@ object indigojs extends ScalaJSModule {
     MavenRepository("https://oss.sonatype.org/content/repositories/releases")
   )
 
-  def compileIvyDeps      = Agg(ivy"org.wartremover::wartremover:2.4.5")
-  def scalacPluginIvyDeps = Agg(ivy"org.wartremover:::wartremover:2.4.5")
+  def compileIvyDeps      = T { super.compileIvyDeps() ++ Agg(ivy"org.wartremover::wartremover:2.4.5") }
+  def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.5") }
 
   def scalacOptions = ScalacOptions.scala213Compile
 
-  // def mainClass = Some("app.SJSMain")
-
-  // object test extends super[SbtModule].Tests with super[ScalaJSModule].Tests {
   object test extends Tests {
     def ivyDeps = Agg(ivy"com.lihaoyi::utest:0.7.1")
 
