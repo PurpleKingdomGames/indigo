@@ -41,4 +41,15 @@ trait EventTypeAliases {
   type Loaded = events.StorageEvent.Loaded
   val Loaded: events.StorageEvent.Loaded.type = events.StorageEvent.Loaded
 
+  type AssetEvent = events.AssetEvent
+
+  type LoadAssetBatch = events.AssetEvent.LoadAssetBatch
+  val LoadAssetBatch: events.AssetEvent.LoadAssetBatch.type = events.AssetEvent.LoadAssetBatch
+
+  type AssetBatchLoaded = events.AssetEvent.AssetBatchLoaded
+  val AssetBatchLoaded: events.AssetEvent.AssetBatchLoaded.type = events.AssetEvent.AssetBatchLoaded
+
+  type AssetBatchLoadError = events.AssetEvent.AssetBatchLoadError
+  val AssetBatchLoadError: events.AssetEvent.AssetBatchLoadError.type = events.AssetEvent.AssetBatchLoadError
+
 }

@@ -6,8 +6,21 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.io.Source
 import scala.util.{Try, Success, Failure}
+import indigo.shared.platform.GlobalEventStream
+import indigo.shared.datatypes.BindingKey
 
 object AssetLoader {
+
+  def backgroundLoadAssets(globalEventStream: GlobalEventStream, assets: Set[AssetType], key: Option[BindingKey]): Unit = {
+    val assetList: List[AssetType] =
+      assets.toList.flatMap(_.toList)
+
+    IndigoLogger.info(s"Background loading ${assetList.length.toString()} assets")
+    println(globalEventStream) // Nonsense to let the code compile...
+    println(key) // Nonsense to let the code compile...
+
+    ()
+  }
 
   def loadAssets(assets: Set[AssetType]): Future[AssetCollection] = {
     val assetList: List[AssetType] =

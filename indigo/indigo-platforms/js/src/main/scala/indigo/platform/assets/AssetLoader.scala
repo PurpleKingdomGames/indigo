@@ -10,8 +10,33 @@ import org.scalajs.dom.{html, _}
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js.typedarray.ArrayBuffer
+import indigo.shared.platform.GlobalEventStream
+import indigo.shared.events.AssetEvent
+import indigo.shared.datatypes.BindingKey
+import scala.util.Success
+import scala.util.Failure
 
 object AssetLoader {
+
+  def backgroundLoadAssets(globalEventStream: GlobalEventStream, assets: Set[AssetType], key: Option[BindingKey]): Unit = {
+    val assetList: List[AssetType] =
+      assets.toList.flatMap(_.toList)
+
+    IndigoLogger.info(s"Background loading ${assetList.length.toString()} assets" + key.map(k => s" with key: ${k.value}").getOrElse(""))
+
+    loadAssets(assets)
+      .onComplete {
+        case Success(ac) =>
+          println(s"Got asset collection containing ${ac.count.toString()} assets")
+          globalEventStream.pushGlobalEvent(AssetEvent.AssetBatchLoaded(key))
+
+        case Failure(_) =>
+          println(s"Failed to load asset collection" + key.map(k => s" with key: ${k.value}").getOrElse(""))
+          globalEventStream.pushGlobalEvent(AssetEvent.AssetBatchLoadError(key))
+      }
+
+    ()
+  }
 
   def loadAssets(assets: Set[AssetType]): Future[AssetCollection] = {
     val assetList: List[AssetType] =
@@ -60,6 +85,9 @@ object AssetLoader {
       image.onload = { _: Event =>
         p.success(image)
       }
+      image.addEventListener("error", { _: Event =>
+        p.failure(new Exception("Image load error"))
+      }, false)
       p.future
     }
 

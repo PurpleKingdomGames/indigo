@@ -10,6 +10,9 @@ final class AssetCollection(
     val sounds: List[LoadedAudioAsset]
 ) {
 
+  val count: Int =
+    images.length + texts.length + sounds.length
+
   def exists(name: AssetName): Boolean =
     images.exists(_.name === name) ||
       texts.exists(_.name === name) ||

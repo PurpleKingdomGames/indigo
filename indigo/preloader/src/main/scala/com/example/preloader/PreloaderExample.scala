@@ -3,13 +3,15 @@ package indigoexamples
 import indigo._
 import indigoexts.entrypoint._
 import indigoexts.ui._
+import indigo.shared.events.AssetEvent.AssetBatchLoaded
 
 object PreloaderExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   val config: GameConfig = defaultGameConfig
 
   // We'll need some graphics.
-  val assets: Set[AssetType] = Set(AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")))
+  val assets: Set[AssetType] =
+    Assets.assets
 
   val fonts: Set[FontInfo] = Set()
 
@@ -24,9 +26,11 @@ object PreloaderExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(
       button = Button(ButtonState.Up).withUpAction { () =>
-        List(MyButtonEvent) // On mouse release will emit this event.
-      },
-      count = 0
+        println("Start loading assets...")
+        List(
+          LoadAssetBatch(Set(Assets.junctionboxImageAsset), Some(BindingKey("Junction box assets")))
+        ) // On mouse release will emit this event.
+      }
     )
 
   // Match on event type, forward ButtonEvents to all buttons! (they'll work out if it's for the right button)
@@ -38,10 +42,13 @@ object PreloaderExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
         )
       )
 
-    case MyButtonEvent => // Our event is caught, updates the model and writes to the console.
-      val next = model.copy(count = model.count + 1)
-      println("Count: " + next.count.toString)
-      Outcome(next)
+    case AssetBatchLoaded(key) =>
+      println("Got it! " + key.map(_.value).getOrElse(""))
+      Outcome(model)
+
+    case AssetBatchLoadError(key) =>
+      println("Lost it... " + key.map(_.value).getOrElse(""))
+      Outcome(model)
 
     case _ =>
       Outcome(model)
@@ -69,5 +76,21 @@ object PreloaderExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 }
 
 // We need a button in our model
-final case class MyGameModel(button: Button, count: Int)
-case object MyButtonEvent extends GlobalEvent
+final case class MyGameModel(button: Button)
+
+object Assets {
+
+  val junctionBoxAlbedo: AssetName = AssetName("junctionbox_albedo")
+
+  def junctionboxImageAsset: AssetType.Image =
+    AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo.value + "broken.png"))
+
+  val junctionBoxMaterial: Material.Textured =
+    Material.Textured(junctionBoxAlbedo)
+
+  def assets: Set[AssetType] =
+    Set(
+      AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png"))
+    )
+
+}

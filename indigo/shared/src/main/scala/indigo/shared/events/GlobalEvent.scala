@@ -4,6 +4,8 @@ import indigo.shared.constants.Key
 import indigo.shared.audio.Volume
 import indigo.shared.datatypes.Point
 import indigo.shared.assets.AssetName
+import indigo.shared.assets.AssetType
+import indigo.shared.datatypes.BindingKey
 
 // Events that are passed to the GlobalEventStream
 trait GlobalEvent
@@ -45,4 +47,12 @@ object StorageEvent {
   final case class Delete(key: String)             extends StorageEvent
   final case object DeleteAll                      extends StorageEvent
   final case class Loaded(data: String)            extends StorageEvent
+}
+
+sealed trait AssetEvent extends GlobalEvent
+
+object AssetEvent {
+  final case class LoadAssetBatch(assets: Set[AssetType], key: Option[BindingKey]) extends AssetEvent
+  final case class AssetBatchLoaded(key: Option[BindingKey]) extends AssetEvent
+  final case class AssetBatchLoadError(key: Option[BindingKey]) extends AssetEvent
 }

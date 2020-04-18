@@ -10,6 +10,8 @@ import indigo.platform.networking.{Http, WebSockets}
 import scala.collection.mutable
 import indigo.shared.events.StorageEvent
 import indigo.shared.platform.Storage
+import indigo.shared.events.AssetEvent
+import indigo.platform.assets.AssetLoader
 
 object GlobalEventStreamImpl {
 
@@ -17,6 +19,7 @@ object GlobalEventStreamImpl {
     new GlobalEventStream {
       val audioFilter   = AudioEventProcessor.filter(audioPlayer)
       val storageFilter = StorageEventProcessor.filter(storage)
+      val assetFilter   = AssetEventProcessor.filter(this)
 
       private val eventQueue: mutable.Queue[GlobalEvent] =
         new mutable.Queue[GlobalEvent]()
@@ -26,6 +29,7 @@ object GlobalEventStreamImpl {
           .filter(this)(e)
           .flatMap { audioFilter }
           .flatMap { storageFilter }
+          .flatMap { assetFilter }
           .foreach(e => eventQueue += e)
 
       def collect: List[GlobalEvent] =
@@ -82,6 +86,21 @@ object GlobalEventStreamImpl {
 
       case e @ StorageEvent.Loaded(_) =>
         Some(e)
+
+      case e =>
+        Some(e)
+    }
+
+  }
+
+  object AssetEventProcessor {
+
+    def filter: GlobalEventStream => GlobalEvent => Option[GlobalEvent] = ges => {
+      case AssetEvent.LoadAssetBatch(batch, maybeKey) =>
+        println("Asset processor received batch load event (#1)")
+        AssetLoader.backgroundLoadAssets(ges, batch, maybeKey)
+        println("Should appear immediately after #1!!")
+        None
 
       case e =>
         Some(e)
