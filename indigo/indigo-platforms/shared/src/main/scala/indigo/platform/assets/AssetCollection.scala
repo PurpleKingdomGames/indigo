@@ -10,6 +10,11 @@ final class AssetCollection(
     val sounds: List[LoadedAudioAsset]
 ) {
 
+  def exists(name: AssetName): Boolean =
+    images.exists(_.name === name) ||
+      texts.exists(_.name === name) ||
+      sounds.exists(_.name === name)
+
   def findImageDataByName(name: AssetName): Option[AssetDataFormats.ImageDataFormat] =
     images.find(_.name === name).map(_.data)
 
