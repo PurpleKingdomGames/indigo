@@ -71,6 +71,28 @@ lazy val distortion =
 lazy val distortionJS  = distortion.js
 lazy val distortionJVM = distortion.jvm
 
+lazy val preloader =
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
+    .enablePlugins(SbtIndigo)
+    .settings(commonSettings: _*)
+    .settings(
+      name := "preloader",
+      showCursor := true,
+      title := "Preloader Example",
+      gameAssetsDirectory := "assets"
+    )
+    .settings(
+      publish := {},
+      publishLocal := {}
+    )
+    .jsSettings(
+      scalaJSUseMainModuleInitializer := true
+    )
+    .dependsOn(indigoExts)
+lazy val preloaderJS  = preloader.js
+lazy val preloaderJVM = preloader.jvm
+
 lazy val effects =
   crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
@@ -294,7 +316,8 @@ lazy val indigoProject =
       perfJVM,
       lightingJVM,
       distortionJVM,
-      effectsJVM
+      effectsJVM,
+      preloaderJVM
     )
 
 // Cross build version - better or worse?
