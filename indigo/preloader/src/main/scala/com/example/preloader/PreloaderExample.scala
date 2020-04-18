@@ -1,72 +1,73 @@
-package com.example.lighting
+package indigoexamples
 
 import indigo._
 import indigoexts.entrypoint._
+import indigoexts.ui._
 
-object PreloaderExample extends IndigoGameBasic[Unit, Unit, Unit] {
+object PreloaderExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
-  val targetFPS: Int = 60
+  val config: GameConfig = defaultGameConfig
 
-  private val magnificationLevel: Int = 3
-  private val viewportWidth: Int      = 228 * magnificationLevel
-  private val viewportHeight: Int     = 128 * magnificationLevel
+  // We'll need some graphics.
+  val assets: Set[AssetType] = Set(AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")))
 
-  val config: GameConfig =
-    GameConfig(
-      viewport = GameViewport(viewportWidth, viewportHeight),
-      frameRate = targetFPS,
-      clearColor = ClearColor(0.0, 0.0, 0.2, 1.0),
-      magnification = magnificationLevel
-    )
+  val fonts: Set[FontInfo] = Set()
 
-  val assets: Set[AssetType] =
-    EffectsAssets.assets
+  val animations: Set[Animation] = Set()
 
-  val fonts: Set[FontInfo] =
-    Set()
-
-  val animations: Set[Animation] =
-    Set()
-
-  val subSystems: Set[SubSystem] =
-    Set()
+  val subSystems: Set[SubSystem] = Set()
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
-  def initialModel(startupData: Unit): Unit =
-    ()
-
-  def update(gameTime: GameTime, model: Unit, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(())
-
-  def initialViewModel(startupData: Unit): Unit => Unit = _ => ()
-
-  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
-    Outcome(viewModel)
-
-  val graphic: Graphic =
-    Graphic(Rectangle(0, 0, 64, 64), 1, EffectsAssets.junctionBoxMaterial)
-      .withRef(20, 20)
-      .moveTo(config.viewport.giveDimensions(config.magnification).center + Point(0, -25))
-
-  def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState): SceneUpdateFragment =
-    SceneUpdateFragment.empty
-      .addGameLayerNodes(
-        graphic
-      )
-}
-
-object EffectsAssets {
-
-  val junctionBoxAlbedo: AssetName = AssetName("junctionbox_albedo")
-
-  val junctionBoxMaterial: Material.Textured =
-    Material.Textured(junctionBoxAlbedo)
-
-  def assets: Set[AssetType] =
-    Set(
-      AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo.value + ".png"))
+  // Let's setup our button's initial state
+  def initialModel(startupData: Unit): MyGameModel =
+    MyGameModel(
+      button = Button(ButtonState.Up).withUpAction { () =>
+        List(MyButtonEvent) // On mouse release will emit this event.
+      },
+      count = 0
     )
 
+  // Match on event type, forward ButtonEvents to all buttons! (they'll work out if it's for the right button)
+  def update(gameTime: GameTime, model: MyGameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[MyGameModel] = {
+    case e: ButtonEvent =>
+      Outcome(
+        model.copy(
+          button = model.button.update(e)
+        )
+      )
+
+    case MyButtonEvent => // Our event is caught, updates the model and writes to the console.
+      val next = model.copy(count = model.count + 1)
+      println("Count: " + next.count.toString)
+      Outcome(next)
+
+    case _ =>
+      Outcome(model)
+  }
+
+  def initialViewModel(startupData: Unit): MyGameModel => Unit = _ => ()
+
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
+    Outcome(())
+
+  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState): SceneUpdateFragment = {
+    val button: ButtonViewUpdate = model.button.draw(
+      bounds = Rectangle(10, 10, 16, 16), // Where should the button be on the screen?
+      depth = Depth(2),                   // At what depth?
+      inputState = inputState,            // delegate events
+      buttonAssets = ButtonAssets(        // We could cache the graphics much earlier
+        up = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 0, 16, 16),
+        over = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 16, 16, 16),
+        down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 32, 16, 16)
+      )
+    )
+
+    button.toSceneUpdateFragment
+  }
 }
+
+// We need a button in our model
+final case class MyGameModel(button: Button, count: Int)
+case object MyButtonEvent extends GlobalEvent
