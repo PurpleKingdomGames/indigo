@@ -6,8 +6,9 @@ import indigo.shared.scenegraph.SceneAudio
 import indigo.shared.platform.AudioPlayer
 import indigo.shared.audio.Volume
 // import indigo.platform.assets.{AssetCollection, AssetName}
-import indigo.platform.assets.AssetCollection
+// import indigo.platform.assets.AssetCollection
 import indigo.shared.assets.AssetName
+import indigo.platform.assets.LoadedAudioAsset
 
 // import org.scalajs.dom.{AudioBufferSourceNode, GainNode}
 // import org.scalajs.dom.raw.AudioContext
@@ -16,12 +17,17 @@ import indigo.shared.assets.AssetName
 
 object AudioPlayerImpl {
 
-  def apply(assetCollection: AssetCollection): AudioPlayer =
-    new AudioPlayerImpl(assetCollection/*, new AudioContext()*/)
+  def init: AudioPlayerImpl =
+    new AudioPlayerImpl( /*, new AudioContext()*/ )
 
 }
 
-final class AudioPlayerImpl(assetCollection: AssetCollection/*, context: AudioContext*/) extends AudioPlayer {
+final class AudioPlayerImpl( /*, context: AudioContext*/ ) extends AudioPlayer {
+
+  def addAudioAssets(audioAssets: List[LoadedAudioAsset]): Unit = {
+    println(audioAssets.length)
+    ()
+  }
 
   // private def setupNodes(audioBuffer: AssetCollection.AudioDataFormat, volume: Volume, loop: Boolean): AudioNodes = {
   //   val source = context.createBufferSource()
@@ -37,14 +43,14 @@ final class AudioPlayerImpl(assetCollection: AssetCollection/*, context: AudioCo
   // }
 
   def playSound(assetName: AssetName, volume: Volume): Unit = {
-    println(assetCollection.images.length.toString())
+    // println(assetCollection.images.length.toString())
     println(assetName.value)
     println(volume.amount.toString)
-  ()
+    ()
   }
-    // assetCollection.findAudioDataByName(AssetName(assetRef)).foreach { sound =>
-    //   setupNodes(sound, volume, loop = false).audioBufferSourceNode.start(0)
-    // }
+  // assetCollection.findAudioDataByName(AssetName(assetRef)).foreach { sound =>
+  //   setupNodes(sound, volume, loop = false).audioBufferSourceNode.start(0)
+  // }
 
   // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   // private var sourceA: AudioSourceState = new AudioSourceState(BindingKey("none"), None)

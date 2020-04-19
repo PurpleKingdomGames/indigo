@@ -41,14 +41,23 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     frameProccessor: FrameProcessor[GameModel, ViewModel]
 ) {
 
+  val audioPlayer: AudioPlayerImpl =
+    AudioPlayerImpl.init
+
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var metrics: Metrics = null
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  var gameConfig: GameConfig = null
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var storage: Storage = null
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  var globalEventStream: GlobalEventStream = null
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var gamepadInputCapture: GamepadInputCapture = null
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var gameLoop: Try[() => Unit] = null
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  var accumulatedAssetCollection: AssetCollection = AssetCollection.empty
 
   def start(
       config: GameConfig,
@@ -62,10 +71,13 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     PlatformWindow.windowSetup(config)
 
     storage = PlatformStorage.default
+    globalEventStream = GlobalEventStreamImpl.default(rebuildGameLoop, audioPlayer, storage)
     gamepadInputCapture = GamepadInputCaptureImpl()
 
     // Arrange config
-    configAsync.map(_.getOrElse(config)).foreach { gameConfig =>
+    configAsync.map(_.getOrElse(config)).foreach { gc =>
+      gameConfig = gc
+
       IndigoLogger.info("Configuration: " + gameConfig.asString)
 
       if ((gameConfig.viewport.width % 2 !== 0) || (gameConfig.viewport.height % 2 !== 0))
@@ -81,7 +93,7 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
       assetsAsync.flatMap(aa => AssetLoader.loadAssets(aa ++ assets)).foreach { assetCollection =>
         IndigoLogger.info("Asset load complete")
 
-        rebuildGameLoop(metrics, gameConfig, storage, gamepadInputCapture, assetCollection)
+        rebuildGameLoop(assetCollection)
 
         gameLoop match {
           case Success(firstTick) =>
@@ -100,18 +112,16 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     }
   }
 
-  def rebuildGameLoop(metrics: Metrics, gameConfig: GameConfig, storage: Storage, gamepadInputCapture: GamepadInputCapture, assetCollection: AssetCollection): Unit = {
+  def rebuildGameLoop: AssetCollection => Unit = ac => {
+    
+    accumulatedAssetCollection = accumulatedAssetCollection |+| ac
 
-    val audioPlayer: AudioPlayer =
-      AudioPlayerImpl(assetCollection)
+    audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
 
-    val globalEventStream: GlobalEventStream =
-      GlobalEventStreamImpl.default(audioPlayer, storage)
-
-    val startupData: Startup[StartupError, StartupData] = initialise(assetCollection)
+    val startupData: Startup[StartupError, StartupData] = initialise(accumulatedAssetCollection)
 
     val platform: Platform =
-      new PlatformImpl(assetCollection, globalEventStream)
+      new PlatformImpl(accumulatedAssetCollection, globalEventStream)
 
     val loop: Try[Long => Unit] =
       for {

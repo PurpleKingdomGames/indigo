@@ -13,6 +13,13 @@ final class AssetCollection(
   val count: Int =
     images.length + texts.length + sounds.length
 
+  def |+|(other: AssetCollection): AssetCollection =
+    new AssetCollection(
+      images ++ other.images,
+      texts ++ other.texts,
+      sounds ++ other.sounds
+    )
+
   def exists(name: AssetName): Boolean =
     images.exists(_.name === name) ||
       texts.exists(_.name === name) ||
@@ -27,4 +34,9 @@ final class AssetCollection(
   def findAudioDataByName(name: AssetName): Option[AssetDataFormats.AudioDataFormat] =
     sounds.find(_.name === name).map(_.data)
 
+}
+
+object AssetCollection {
+  def empty: AssetCollection =
+    new AssetCollection(Nil, Nil, Nil)
 }

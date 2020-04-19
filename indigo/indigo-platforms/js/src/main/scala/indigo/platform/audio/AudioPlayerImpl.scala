@@ -4,22 +4,29 @@ import indigo.shared.datatypes.BindingKey
 import indigo.shared.scenegraph.{PlaybackPattern, SceneAudio, SceneAudioSource}
 import indigo.shared.platform.AudioPlayer
 import indigo.shared.audio.Volume
-import indigo.platform.assets.{AssetCollection, AssetDataFormats}
+import indigo.platform.assets.{AssetDataFormats}
 
 import org.scalajs.dom.{AudioBufferSourceNode, GainNode}
 import org.scalajs.dom.raw.AudioContext
 
 import indigo.shared.EqualTo._
 import indigo.shared.assets.AssetName
+import indigo.platform.assets.LoadedAudioAsset
 
 object AudioPlayerImpl {
 
-  def apply(assetCollection: AssetCollection): AudioPlayer =
-    new AudioPlayerImpl(assetCollection, new AudioContext())
+  def init: AudioPlayerImpl =
+    new AudioPlayerImpl(new AudioContext())
 
 }
 
-final class AudioPlayerImpl(assetCollection: AssetCollection, context: AudioContext) extends AudioPlayer {
+final class AudioPlayerImpl(context: AudioContext) extends AudioPlayer {
+
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  private var soundAssets: List[LoadedAudioAsset] = Nil
+
+  def addAudioAssets(audioAssets: List[LoadedAudioAsset]): Unit =
+    soundAssets = soundAssets ++ audioAssets
 
   private def setupNodes(audioBuffer: AssetDataFormats.AudioDataFormat, volume: Volume, loop: Boolean): AudioNodes = {
     val source = context.createBufferSource()
@@ -34,8 +41,11 @@ final class AudioPlayerImpl(assetCollection: AssetCollection, context: AudioCont
     new AudioNodes(source, gainNode)
   }
 
+  private def findAudioDataByName(assetName: AssetName): Option[AssetDataFormats.AudioDataFormat] =
+    soundAssets.find(a => a.name === assetName).map(_.data)
+
   def playSound(assetName: AssetName, volume: Volume): Unit =
-    assetCollection.findAudioDataByName(assetName).foreach { sound =>
+    findAudioDataByName(assetName).foreach { sound =>
       setupNodes(sound, volume, loop = false).audioBufferSourceNode.start(0)
     }
 
@@ -71,8 +81,7 @@ final class AudioPlayerImpl(assetCollection: AssetCollection, context: AudioCont
             currentSource.audioNodes.foreach(_.audioBufferSourceNode.stop(0))
 
             val nodes =
-              assetCollection
-                .findAudioDataByName(track.assetName)
+              findAudioDataByName(track.assetName)
                 .map(asset => setupNodes(asset, track.volume * sceneAudioSource.masterVolume, loop = true))
 
             nodes.foreach(_.audioBufferSourceNode.start(0))

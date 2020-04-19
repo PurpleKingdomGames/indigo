@@ -83,7 +83,7 @@ object Assets {
   val junctionBoxAlbedo: AssetName = AssetName("junctionbox_albedo")
 
   def junctionboxImageAsset: AssetType.Image =
-    AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo.value + "broken.png"))
+    AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo.value + ".png"))
 
   val junctionBoxMaterial: Material.Textured =
     Material.Textured(junctionBoxAlbedo)

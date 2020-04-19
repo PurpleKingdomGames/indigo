@@ -11,13 +11,17 @@ import indigo.shared.datatypes.BindingKey
 
 object AssetLoader {
 
-  def backgroundLoadAssets(globalEventStream: GlobalEventStream, assets: Set[AssetType], key: Option[BindingKey]): Unit = {
+  def backgroundLoadAssets(rebuildGameLoop: AssetCollection => Unit, globalEventStream: GlobalEventStream, assets: Set[AssetType], key: Option[BindingKey]): Unit = {
     val assetList: List[AssetType] =
       assets.toList.flatMap(_.toList)
 
     IndigoLogger.info(s"Background loading ${assetList.length.toString()} assets")
     println(globalEventStream) // Nonsense to let the code compile...
-    println(key) // Nonsense to let the code compile...
+    println(key)               // Nonsense to let the code compile...
+
+    if (1 == 2) {
+      rebuildGameLoop(AssetCollection.empty)
+    }
 
     ()
   }

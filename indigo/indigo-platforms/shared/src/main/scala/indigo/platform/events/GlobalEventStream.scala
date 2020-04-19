@@ -12,14 +12,15 @@ import indigo.shared.events.StorageEvent
 import indigo.shared.platform.Storage
 import indigo.shared.events.AssetEvent
 import indigo.platform.assets.AssetLoader
+import indigo.platform.assets.AssetCollection
 
 object GlobalEventStreamImpl {
 
-  def default(audioPlayer: AudioPlayer, storage: Storage): GlobalEventStream =
+  def default(rebuildGameLoop: AssetCollection => Unit, audioPlayer: AudioPlayer, storage: Storage): GlobalEventStream =
     new GlobalEventStream {
       val audioFilter   = AudioEventProcessor.filter(audioPlayer)
       val storageFilter = StorageEventProcessor.filter(storage)
-      val assetFilter   = AssetEventProcessor.filter(this)
+      val assetFilter   = AssetEventProcessor.filter(rebuildGameLoop, this)
 
       private val eventQueue: mutable.Queue[GlobalEvent] =
         new mutable.Queue[GlobalEvent]()
@@ -95,10 +96,10 @@ object GlobalEventStreamImpl {
 
   object AssetEventProcessor {
 
-    def filter: GlobalEventStream => GlobalEvent => Option[GlobalEvent] = ges => {
+    def filter(rebuildGameLoop: AssetCollection => Unit, ges: GlobalEventStream): GlobalEvent => Option[GlobalEvent] = {
       case AssetEvent.LoadAssetBatch(batch, maybeKey) =>
         println("Asset processor received batch load event (#1)")
-        AssetLoader.backgroundLoadAssets(ges, batch, maybeKey)
+        AssetLoader.backgroundLoadAssets(rebuildGameLoop, ges, batch, maybeKey)
         println("Should appear immediately after #1!!")
         None
 

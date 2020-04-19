@@ -18,7 +18,7 @@ import scala.util.Failure
 
 object AssetLoader {
 
-  def backgroundLoadAssets(globalEventStream: GlobalEventStream, assets: Set[AssetType], key: Option[BindingKey]): Unit = {
+  def backgroundLoadAssets(rebuildGameLoop: AssetCollection => Unit, globalEventStream: GlobalEventStream, assets: Set[AssetType], key: Option[BindingKey]): Unit = {
     val assetList: List[AssetType] =
       assets.toList.flatMap(_.toList)
 
@@ -28,10 +28,13 @@ object AssetLoader {
       .onComplete {
         case Success(ac) =>
           println(s"Got asset collection containing ${ac.count.toString()} assets")
+          println("Rebuilding game loop..")
+          rebuildGameLoop(ac)
           globalEventStream.pushGlobalEvent(AssetEvent.AssetBatchLoaded(key))
 
         case Failure(_) =>
           println(s"Failed to load asset collection" + key.map(k => s" with key: ${k.value}").getOrElse(""))
+
           globalEventStream.pushGlobalEvent(AssetEvent.AssetBatchLoadError(key))
       }
 
