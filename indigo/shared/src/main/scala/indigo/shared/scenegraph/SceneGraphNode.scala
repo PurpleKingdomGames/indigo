@@ -595,6 +595,9 @@ object Text {
 
   implicit val lineBoundsCache: QuickCache[Rectangle] = QuickCache.empty
 
+  def purgeCaches(): Unit =
+    lineBoundsCache.purgeAllNow()
+
   def calculateBoundsOfLine(lineText: String, fontInfo: FontInfo): Rectangle =
     QuickCache("line-bounds-" + fontInfo.fontKey.key + "-" + lineText) {
       lineText.toList

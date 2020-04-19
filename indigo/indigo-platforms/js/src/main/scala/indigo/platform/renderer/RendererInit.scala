@@ -10,29 +10,32 @@ import scala.scalajs.js.Dynamic
 
 object RendererInit {
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var renderer: Option[Renderer] = None
+  def setup(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: html.Canvas): Renderer = {
+    val cNc = setupContextAndCanvas(canvas, config.magnification, config.antiAliasing)
+    val r   = new RendererImpl(config, loadedTextureAssets, cNc)
+    r.init()
+    r
+  }
 
-  def apply(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: html.Canvas): Renderer =
-    renderer match {
-      case Some(r) => r
-      case None =>
-        val cNc = setupContextAndCanvas(canvas, config.magnification, config.antiAliasing)
-
-        val r = new RendererImpl(config, loadedTextureAssets, cNc)
-        r.init()
-
-        renderer = Some(r)
-        r
-    }
-
-  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements", "org.wartremover.warts.AsInstanceOf"))
+  @SuppressWarnings(
+    Array(
+      "org.wartremover.warts.NonUnitStatements",
+      "org.wartremover.warts.AsInstanceOf",
+      "org.wartremover.warts.Null",
+      "org.wartremover.warts.Equals",
+      "org.wartremover.warts.Var"
+    )
+  )
   def createCanvas(width: Int, height: Int, parent: Element): html.Canvas = {
-    val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
-    parent.appendChild(canvas)
-    canvas.id = "indigo"
-    canvas.width = width
-    canvas.height = height
+    var canvas: html.Canvas = dom.document.getElementById("indigo").asInstanceOf[html.Canvas]
+
+    if (canvas == null) {
+      canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
+      parent.appendChild(canvas)
+      canvas.id = "indigo"
+      canvas.width = width
+      canvas.height = height
+    }
 
     canvas
   }

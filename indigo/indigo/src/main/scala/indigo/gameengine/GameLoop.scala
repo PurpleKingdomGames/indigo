@@ -15,20 +15,14 @@ import indigo.shared.platform.Renderer
 import indigo.shared.platform.GlobalEventStream
 
 import indigo.shared.scenegraph.SceneGraphViewEvents
-import indigo.shared.input.GamepadInputCapture
 import indigo.shared.time.Seconds
 
 class GameLoop[GameModel, ViewModel](
+    gameEngine: GameEngine[_, _, GameModel, ViewModel],
     gameConfig: GameConfig,
-    assetMapping: AssetMapping,
-    renderer: Renderer,
-    audioPlayer: AudioPlayer,
     initialModel: GameModel,
     initialViewModel: ViewModel,
     frameProcessor: FrameProcessor[GameModel, ViewModel],
-    metrics: Metrics,
-    globalEventStream: GlobalEventStream,
-    gamepadInputCapture: GamepadInputCapture,
     callTick: (Long => Unit) => Unit
 ) {
 
@@ -54,21 +48,21 @@ class GameLoop[GameModel, ViewModel](
     // By insisting time be measured in sensible units, I've made a rod for my own back...
     if (timeDelta >= gameConfig.frameRateDeltaMillis.toLong - 1) {
 
-      metrics.record(FrameStartMetric)
+      gameEngine.metrics.record(FrameStartMetric)
 
       // Model updates cut off
       if (gameConfig.advanced.disableSkipModelUpdates || timeDelta < gameConfig.haltModelUpdatesAt) {
 
-        metrics.record(UpdateStartMetric)
+        gameEngine.metrics.record(UpdateStartMetric)
 
         val gameTime        = new GameTime(Millis(time).toSeconds, Seconds(timeDelta.toDouble / 1000d), GameTime.FPS(gameConfig.frameRate))
-        val collectedEvents = globalEventStream.collect :+ FrameTick
+        val collectedEvents = gameEngine.globalEventStream.collect :+ FrameTick
 
         // Persist input state
         inputState = InputState.calculateNext(
           inputState,
           collectedEvents.collect { case e: InputEvent => e },
-          gamepadInputCapture.giveGamepadState
+          gameEngine.gamepadInputCapture.giveGamepadState
         )
 
         val processedFrame: Outcome[(GameModel, ViewModel, Option[SceneUpdateFragment])] =
@@ -81,24 +75,24 @@ class GameLoop[GameModel, ViewModel](
             collectedEvents,
             inputState,
             Dice.default(gameTime.running.toMillis.value),
-            metrics
+            gameEngine.metrics
           )
 
         // Persist frame state
         gameModelState = processedFrame.state._1
         viewModelState = processedFrame.state._2
-        processedFrame.globalEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
+        processedFrame.globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
 
-        GameLoop.processUpdatedView(processedFrame.state._3, collectedEvents, metrics, globalEventStream)
-        GameLoop.drawScene(renderer, gameTime, processedFrame.state._3, assetMapping, metrics)
-        GameLoop.playAudio(audioPlayer, processedFrame.state._3.map(_.audio), metrics)
+        GameLoop.processUpdatedView(processedFrame.state._3, collectedEvents, gameEngine.metrics, gameEngine.globalEventStream)
+        GameLoop.drawScene(gameEngine.renderer, gameTime, processedFrame.state._3, gameEngine.assetMapping, gameEngine.metrics)
+        GameLoop.playAudio(gameEngine.audioPlayer, processedFrame.state._3.map(_.audio), gameEngine.metrics)
 
-        metrics.record(UpdateEndMetric)
+        gameEngine.metrics.record(UpdateEndMetric)
       } else {
-        metrics.record(SkippedModelUpdateMetric)
+        gameEngine.metrics.record(SkippedModelUpdateMetric)
       }
 
-      metrics.record(FrameEndMetric)
+      gameEngine.metrics.record(FrameEndMetric)
 
       callTick(loop(time))
     } else {

@@ -39,6 +39,15 @@ object DisplayObjectConversions {
   implicit private val cloneBatchCache: QuickCache[DisplayCloneBatch]            = QuickCache.empty
   implicit private val effectsCache: QuickCache[DisplayEffects]                  = QuickCache.empty
 
+  def purgeCaches(): Unit = {
+    stringCache.purgeAllNow()
+    vector2Cache.purgeAllNow()
+    frameCache.purgeAllNow()
+    listDoCache.purgeAllNow()
+    cloneBatchCache.purgeAllNow()
+    effectsCache.purgeAllNow()
+  }
+
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   def lookupTextureOffset(assetMapping: AssetMapping, name: String): Vector2 =
     QuickCache("tex-offset-" + name) {

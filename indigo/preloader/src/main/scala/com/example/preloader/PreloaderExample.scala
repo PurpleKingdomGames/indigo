@@ -7,7 +7,8 @@ import indigo.shared.events.AssetEvent.AssetBatchLoaded
 
 object PreloaderExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
-  val config: GameConfig = defaultGameConfig
+  val config: GameConfig =
+    defaultGameConfig.withMagnification(2)
 
   // We'll need some graphics.
   val assets: Set[AssetType] =
@@ -30,7 +31,8 @@ object PreloaderExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
         List(
           LoadAssetBatch(Set(Assets.junctionboxImageAsset), Some(BindingKey("Junction box assets")))
         ) // On mouse release will emit this event.
-      }
+      },
+      loaded = false
     )
 
   // Match on event type, forward ButtonEvents to all buttons! (they'll work out if it's for the right button)
@@ -44,7 +46,7 @@ object PreloaderExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
     case AssetBatchLoaded(key) =>
       println("Got it! " + key.map(_.value).getOrElse(""))
-      Outcome(model)
+      Outcome(model.copy(loaded = true))
 
     case AssetBatchLoadError(key) =>
       println("Lost it... " + key.map(_.value).getOrElse(""))
@@ -71,12 +73,19 @@ object PreloaderExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       )
     )
 
-    button.toSceneUpdateFragment
+    val box = if (model.loaded) {
+      List(
+        Graphic(Rectangle(0, 0, 64, 64), 1, Assets.junctionBoxMaterial)
+          .moveTo(30, 30)
+      )
+    } else Nil
+
+    button.toSceneUpdateFragment.addGameLayerNodes(box)
   }
 }
 
 // We need a button in our model
-final case class MyGameModel(button: Button)
+final case class MyGameModel(button: Button, loaded: Boolean)
 
 object Assets {
 

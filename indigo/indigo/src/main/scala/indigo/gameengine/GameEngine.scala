@@ -12,7 +12,6 @@ import indigo.shared.FontRegister
 import indigo.platform.assets._
 import indigo.platform.audio.AudioPlayerImpl
 import indigo.platform.input.GamepadInputCaptureImpl
-import indigo.shared.platform.AudioPlayer
 import indigo.shared.platform.GlobalEventStream
 import indigo.platform.events.GlobalEventStreamImpl
 import indigo.shared.platform.Platform
@@ -31,6 +30,8 @@ import indigo.shared.input.GamepadInputCapture
 import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
+import indigo.platform.DisplayObjectConversions
+import indigo.shared.scenegraph.Text
 
 final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     fonts: Set[FontInfo],
@@ -58,6 +59,10 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
   var gameLoop: Try[() => Unit] = null
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var accumulatedAssetCollection: AssetCollection = AssetCollection.empty
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  var assetMapping: AssetMapping = null
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  var renderer: Renderer = null
 
   def start(
       config: GameConfig,
@@ -113,7 +118,11 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
   }
 
   def rebuildGameLoop: AssetCollection => Unit = ac => {
-    
+
+    FontRegister.clearRegister()
+    DisplayObjectConversions.purgeCaches()
+    Text.purgeCaches()
+
     accumulatedAssetCollection = accumulatedAssetCollection |+| ac
 
     audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
@@ -123,26 +132,27 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     val platform: Platform =
       new PlatformImpl(accumulatedAssetCollection, globalEventStream)
 
+    GameEngine.registerAnimations(animations ++ startupData.additionalAnimations)
+
+    GameEngine.registerFonts(fonts ++ startupData.additionalFonts)
+
     val loop: Try[Long => Unit] =
       for {
-        _                       <- GameEngine.registerAnimations(animations ++ startupData.additionalAnimations)
-        _                       <- GameEngine.registerFonts(fonts ++ startupData.additionalFonts)
-        startUpSuccessData      <- GameEngine.initialisedGame(startupData)
         rendererAndAssetMapping <- platform.initialiseRenderer(gameConfig)
+        startUpSuccessData      <- GameEngine.initialisedGame(startupData)
         gameLoopInstance <- GameEngine.initialiseGameLoop(
+          this,
           gameConfig,
-          rendererAndAssetMapping._2,
-          rendererAndAssetMapping._1,
-          audioPlayer,
           initialModel(startUpSuccessData),
           initialViewModel(startUpSuccessData),
           frameProccessor,
-          metrics,
-          globalEventStream,
-          gamepadInputCapture,
           platform.tick
         )
-      } yield gameLoopInstance.loop(0)
+      } yield {
+        renderer = rendererAndAssetMapping._1
+        assetMapping = rendererAndAssetMapping._2
+        gameLoopInstance.loop(0)
+      }
 
     gameLoop = loop.map(f => (() => platform.tick(f)))
 
@@ -153,11 +163,11 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
 
 object GameEngine {
 
-  def registerAnimations(animations: Set[Animation]): Try[Unit] =
-    Success(animations.foreach(AnimationsRegister.register))
+  def registerAnimations(animations: Set[Animation]): Unit =
+    animations.foreach(AnimationsRegister.register)
 
-  def registerFonts(fonts: Set[FontInfo]): Try[Unit] =
-    Success(fonts.foreach(FontRegister.register))
+  def registerFonts(fonts: Set[FontInfo]): Unit =
+    fonts.foreach(FontRegister.register)
 
   def initialisedGame[StartupError, StartupData](startupData: Startup[StartupError, StartupData]): Try[StartupData] =
     startupData match {
@@ -171,31 +181,21 @@ object GameEngine {
         Success(x.success)
     }
 
-  def initialiseGameLoop[GameModel, ViewModel](
+  def initialiseGameLoop[StartupData, StartupError, GameModel, ViewModel](
+      gameEngine: GameEngine[StartupData, StartupError, GameModel, ViewModel],
       gameConfig: GameConfig,
-      assetMapping: AssetMapping,
-      renderer: Renderer,
-      audioPlayer: AudioPlayer,
       initialModel: GameModel,
       initialViewModel: GameModel => ViewModel,
       frameProccessor: FrameProcessor[GameModel, ViewModel],
-      metrics: Metrics,
-      globalEventStream: GlobalEventStream,
-      gamepadInputCapture: GamepadInputCapture,
       callTick: (Long => Unit) => Unit
   ): Try[GameLoop[GameModel, ViewModel]] =
     Success(
       new GameLoop[GameModel, ViewModel](
+        gameEngine,
         gameConfig,
-        assetMapping,
-        renderer,
-        audioPlayer,
         initialModel,
         initialViewModel(initialModel),
         frameProccessor,
-        metrics,
-        globalEventStream,
-        gamepadInputCapture,
         callTick
       )
     )

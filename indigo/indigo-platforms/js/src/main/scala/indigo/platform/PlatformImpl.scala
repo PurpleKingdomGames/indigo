@@ -98,7 +98,7 @@ object PlatformImpl {
   def startRenderer(gameConfig: GameConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: Canvas): Try[Renderer] =
     Success {
       IndigoLogger.info("Starting renderer")
-      RendererInit(
+      RendererInit.setup(
         new RendererConfig(
           clearColor = gameConfig.clearColor,
           magnification = gameConfig.magnification,
