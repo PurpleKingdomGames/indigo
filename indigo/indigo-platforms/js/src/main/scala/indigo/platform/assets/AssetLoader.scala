@@ -27,14 +27,10 @@ object AssetLoader {
     loadAssets(assets)
       .onComplete {
         case Success(ac) =>
-          println(s"Got asset collection containing ${ac.count.toString()} assets")
-          println("Rebuilding game loop..")
           rebuildGameLoop(ac)
           globalEventStream.pushGlobalEvent(AssetEvent.AssetBatchLoaded(key))
 
         case Failure(_) =>
-          println(s"Failed to load asset collection" + key.map(k => s" with key: ${k.value}").getOrElse(""))
-
           globalEventStream.pushGlobalEvent(AssetEvent.AssetBatchLoadError(key))
       }
 

@@ -98,9 +98,9 @@ object GlobalEventStreamImpl {
 
     def filter(rebuildGameLoop: AssetCollection => Unit, ges: GlobalEventStream): GlobalEvent => Option[GlobalEvent] = {
       case AssetEvent.LoadAssetBatch(batch, maybeKey) =>
-        println("Asset processor received batch load event (#1)")
         AssetLoader.backgroundLoadAssets(rebuildGameLoop, ges, batch, maybeKey)
-        println("Should appear immediately after #1!!")
+        None
+
         None
 
       case e =>
