@@ -43,6 +43,9 @@ trait EventTypeAliases {
 
   type AssetEvent = events.AssetEvent
 
+  type LoadAsset = events.AssetEvent.LoadAsset
+  val LoadAsset: events.AssetEvent.LoadAsset.type = events.AssetEvent.LoadAsset
+
   type LoadAssetBatch = events.AssetEvent.LoadAssetBatch
   val LoadAssetBatch: events.AssetEvent.LoadAssetBatch.type = events.AssetEvent.LoadAssetBatch
 

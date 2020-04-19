@@ -101,6 +101,8 @@ object GlobalEventStreamImpl {
         AssetLoader.backgroundLoadAssets(rebuildGameLoop, ges, batch, maybeKey)
         None
 
+      case AssetEvent.LoadAsset(asset, maybeKey) =>
+        AssetLoader.backgroundLoadAssets(rebuildGameLoop, ges, Set(asset), maybeKey)
         None
 
       case e =>
