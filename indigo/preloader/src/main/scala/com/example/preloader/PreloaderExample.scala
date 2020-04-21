@@ -4,6 +4,7 @@ import indigo._
 import indigoexts.entrypoint._
 import indigoexts.ui._
 import indigo.shared.events.AssetEvent.AssetBatchLoaded
+import indigo.shared.events.AssetEvent
 
 object PreloaderExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
@@ -29,7 +30,7 @@ object PreloaderExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       button = Button(ButtonState.Up).withUpAction { () =>
         println("Start loading assets...")
         List(
-          LoadAssetBatch(Set(Assets.junctionboxImageAsset), Some(BindingKey("Junction box assets")))
+          LoadAssetBatch(Set(Assets.junctionboxImageAsset), Some(BindingKey("Junction box assets")), true)
         ) // On mouse release will emit this event.
       },
       loaded = false
@@ -44,9 +45,13 @@ object PreloaderExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
         )
       )
 
-    case AssetBatchLoaded(key) =>
+    case AssetBatchLoaded(key, true) =>
       println("Got it! " + key.map(_.value).getOrElse(""))
       Outcome(model.copy(loaded = true))
+
+    case AssetBatchLoaded(key, false) =>
+      println("Got it! ...but can't use it. " + key.map(_.value).getOrElse(""))
+      Outcome(model)
 
     case AssetBatchLoadError(key) =>
       println("Lost it... " + key.map(_.value).getOrElse(""))
@@ -103,3 +108,93 @@ object Assets {
     )
 
 }
+
+/*
+Latest:
+This isn't quite right. I think it isn't a preloader so much as a batch loader.
+All it does it track the progress of loading batches and emits events.
+- Loading of batch X started
+- Loading of batch X, N percent completed
+- Loading of batch X completed success | failure
+
+If you want to visualise the loader - make another sub system that's
+listening for the events this one emits.
+
+---
+Convert Preload batch to individual load requests, each with a key.
+Track loaded status of each asset.
+As each asset loads, emit a percent loaded event.
+Once all completed, emit a complete or errors event.
+
+Should handle visuals (start, loading, end, error) optionally to encapsulate?
+
+It's going to reinitialise the engine on every load. To avoid that,
+could we ask the AssetLoader to load without reinitialising, and then once
+they're all cached, load them again as a batch?
+
+
+
+ */
+final case class Preloader(count: Int, register: Map[BindingKey, Boolean], currentBatch: Set[AssetType]) extends SubSystem {
+  val id: BindingKey = BindingKey.generate
+
+  type EventType = PreloaderEvents
+
+  val eventFilter: GlobalEvent => Option[PreloaderEvents] = {
+    case e: PreloadAssets                   => Some(e)
+    case AssetBatchLoaded(Some(key), _) => Some(PreloaderInternalAssetLoaded(key))
+    case _                                  => None
+  }
+
+  def update(gameTime: GameTime, dice: Dice): PreloaderEvents => Outcome[SubSystem] = {
+    case PreloadAssets(batch) =>
+      val toLoad: List[(AssetEvent.LoadAsset, BindingKey)] = batch.toList.zipWithIndex.map {
+        case (asset, index) =>
+          val key =
+            BindingKey(s"preloader_${id.value}_${(index + count).toString()}")
+
+          val event =
+            AssetEvent.LoadAsset(
+              asset,
+              Some(key),
+              false
+            )
+
+          (event, key)
+      }
+
+      Outcome(
+        this.copy(
+          count = this.count + batch.size,
+          register = register ++ toLoad.map(p => (p._2, false)).toMap,
+          currentBatch = batch // Should be able to track multiple batches?
+        )
+      ).addGlobalEvents(toLoad.map(_._1))
+
+    case PreloaderInternalAssetLoaded(key) =>
+      if (register.contains(key)) {
+        val nextRegister = register + (key -> true)
+
+        val allKey =
+          BindingKey(s"preloader_${id.value}_all")
+
+        val outcomeEvent =
+          if (nextRegister.forall(_._2))
+            List(AssetEvent.LoadAssetBatch(currentBatch, Some(allKey), true))
+          else Nil
+
+        Outcome(
+          this.copy(
+            register = nextRegister
+          )
+        ).addGlobalEvents(outcomeEvent)
+      } else Outcome(this)
+  }
+
+  def render(gameTime: GameTime): SceneUpdateFragment =
+    SceneUpdateFragment.empty
+}
+
+sealed trait PreloaderEvents                                   extends GlobalEvent
+final case class PreloadAssets(assets: Set[AssetType])         extends PreloaderEvents
+final case class PreloaderInternalAssetLoaded(key: BindingKey) extends PreloaderEvents

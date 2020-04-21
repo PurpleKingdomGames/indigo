@@ -52,8 +52,8 @@ object StorageEvent {
 sealed trait AssetEvent extends GlobalEvent
 
 object AssetEvent {
-  final case class LoadAsset(asset: AssetType, key: Option[BindingKey]) extends AssetEvent
-  final case class LoadAssetBatch(assets: Set[AssetType], key: Option[BindingKey]) extends AssetEvent
-  final case class AssetBatchLoaded(key: Option[BindingKey]) extends AssetEvent
+  final case class LoadAsset(asset: AssetType, key: Option[BindingKey], makeAvailable: Boolean) extends AssetEvent
+  final case class LoadAssetBatch(assets: Set[AssetType], key: Option[BindingKey], makeAvailable: Boolean) extends AssetEvent
+  final case class AssetBatchLoaded(key: Option[BindingKey], available: Boolean) extends AssetEvent
   final case class AssetBatchLoadError(key: Option[BindingKey]) extends AssetEvent
 }

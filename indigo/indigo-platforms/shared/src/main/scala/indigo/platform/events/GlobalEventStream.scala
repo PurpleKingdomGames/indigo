@@ -97,12 +97,12 @@ object GlobalEventStreamImpl {
   object AssetEventProcessor {
 
     def filter(rebuildGameLoop: AssetCollection => Unit, ges: GlobalEventStream): GlobalEvent => Option[GlobalEvent] = {
-      case AssetEvent.LoadAssetBatch(batch, maybeKey) =>
-        AssetLoader.backgroundLoadAssets(rebuildGameLoop, ges, batch, maybeKey)
+      case AssetEvent.LoadAssetBatch(batch, maybeKey, makeAvailable) =>
+        AssetLoader.backgroundLoadAssets(rebuildGameLoop, ges, batch, maybeKey, makeAvailable)
         None
 
-      case AssetEvent.LoadAsset(asset, maybeKey) =>
-        AssetLoader.backgroundLoadAssets(rebuildGameLoop, ges, Set(asset), maybeKey)
+      case AssetEvent.LoadAsset(asset, maybeKey, makeAvailable) =>
+        AssetLoader.backgroundLoadAssets(rebuildGameLoop, ges, Set(asset), maybeKey, makeAvailable)
         None
 
       case e =>
