@@ -11,6 +11,7 @@ import indigo.shared.datatypes.BindingKey
 import indigo.shared.EqualTo._
 import indigo.shared.assets.AssetPath
 import indigo.shared.assets.AssetTypePrimitive
+import indigo.shared.events.AssetEvent
 
 /*
 All it does it track the progress of loading batches and emits events.
@@ -23,33 +24,80 @@ listening for the events this one emits.
  */
 final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSystem {
 
-  type EventType = AssetBundleLoaderEvent
+  type EventType = GlobalEvent
 
-  val eventFilter: GlobalEvent => Option[AssetBundleLoaderEvent] =
-    _ => None
+  val eventFilter: GlobalEvent => Option[GlobalEvent] = {
+    case e: AssetBundleLoaderEvent => Some(e)
+    case e: AssetEvent             => Some(e)
+    case _                         => None
+  }
 
-  def update(gameTime: GameTime, dice: Dice): AssetBundleLoaderEvent => Outcome[SubSystem] =
-    _ => Outcome(this)
+  def update(gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[SubSystem] = {
+    // Asset Bundle Loader Commands
+    case AssetBundleLoaderEvent.Load(key, assets) =>
+      createBeginLoadingOutcome(key, assets)
+
+    case AssetBundleLoaderEvent.Retry(key) =>
+      tracker.findBundleByKey(key).map(_.giveAssetSet) match {
+        case None         => Outcome(this)
+        case Some(assets) => createBeginLoadingOutcome(key, assets)
+      }
+
+    // Asset Response Events
+    case AssetEvent.AssetBatchLoaded(_, _) =>
+      Outcome(this)
+
+    case AssetEvent.AssetBatchLoadError(_) =>
+      Outcome(this)
+
+    // Everything else.
+    case _ =>
+      Outcome(this)
+  }
 
   def render(gameTime: GameTime): SceneUpdateFragment =
     SceneUpdateFragment.empty
 
+  def createBeginLoadingOutcome(key: BindingKey, assets: Set[AssetType]): Outcome[AssetBundleLoader] = {
+    val assetPrimitives = AssetType.flattenAssetList(assets.toList)
+
+    val events: List[GlobalEvent] =
+      assetPrimitives.toList
+        .map(asset => AssetEvent.LoadAsset(asset, Some(BindingKey(asset.path.value)), false))
+
+    Outcome(
+      this.copy(
+        tracker.addBundle(key, assetPrimitives)
+      )
+    ).addGlobalEvents(AssetBundleLoaderEvent.Started(key) :: events)
+  }
+}
+
+sealed trait AssetBundleLoaderEvent extends GlobalEvent
+object AssetBundleLoaderEvent {
+  // commands
+  final case class Load(key: BindingKey, assets: Set[AssetType]) extends AssetBundleLoaderEvent
+  final case class Retry(key: BindingKey)                        extends AssetBundleLoaderEvent
+
+  // result events
+  final case class Started(key: BindingKey)                       extends AssetBundleLoaderEvent
+  final case class PercentLoaded(key: BindingKey, percent: Int) extends AssetBundleLoaderEvent
+  final case class Success(key: BindingKey)                     extends AssetBundleLoaderEvent
+  final case class Failure(key: BindingKey)                     extends AssetBundleLoaderEvent
 }
 
 final case class AssetBundleTracker(val register: List[AssetBundle]) {
   val bundleCount: Int =
     register.length
 
-  def addBundle(key: BindingKey, assets: Set[AssetType]): AssetBundleTracker =
+  def addBundle(key: BindingKey, assets: List[AssetTypePrimitive]): AssetBundleTracker =
     if (assets.isEmpty || findBundleByKey(key).isDefined) this
     else {
-      val flatAssets = AssetType.flattenAssetList(assets.toList)
-
       val newBundle =
         new AssetBundle(
           key,
-          flatAssets.size,
-          flatAssets.map { assetType =>
+          assets.size,
+          assets.map { assetType =>
             (assetType.path -> new AssetToLoad(assetType, false, false))
           }.toMap
         )
@@ -103,6 +151,9 @@ final class AssetBundle(val key: BindingKey, val assetCount: Int, val assets: Ma
       AssetBundleStatus.LoadComplete
     }
   }
+
+  def giveAssetSet: Set[AssetType] =
+    assets.toList.map(_._2.asset).toSet
 }
 final class AssetToLoad(val asset: AssetTypePrimitive, val complete: Boolean, val loaded: Boolean)
 
@@ -115,17 +166,4 @@ object AssetBundleStatus {
   }
   final case class LoadFailed(percent: Int, failures: List[AssetPath]) extends AssetBundleStatus
   final case class LoadInProgress(percent: Int)                        extends AssetBundleStatus
-}
-
-sealed trait AssetBundleLoaderEvent
-object AssetBundleLoaderEvent {
-  // commands:
-  final case class Load(key: BindingKey, assets: Set[AssetType]) extends AssetBundleLoaderEvent
-  final case class Retry(key: BindingKey)                        extends AssetBundleLoaderEvent
-
-  // events:
-  final case class Start(key: BindingKey)                       extends AssetBundleLoaderEvent
-  final case class PercentLoaded(key: BindingKey, percent: Int) extends AssetBundleLoaderEvent
-  final case class Success(key: BindingKey)                     extends AssetBundleLoaderEvent
-  final case class Failure(key: BindingKey)                     extends AssetBundleLoaderEvent
 }

@@ -8,11 +8,12 @@ import indigo.shared.assets.AssetName
 import com.example.preloader.AssetBundleStatus.LoadComplete
 import com.example.preloader.AssetBundleStatus.LoadFailed
 import com.example.preloader.AssetBundleStatus.LoadInProgress
+import indigo.shared.assets.AssetTypePrimitive
 
 object AssetBundleLoaderTests extends TestSuite {
 
-  val defaultAssets: Set[AssetType] =
-    Set(
+  val defaultAssets: List[AssetTypePrimitive] =
+    List(
       AssetType.Image(AssetName("image 1"), AssetPath("/image_1.png")),
       AssetType.Image(AssetName("image 2"), AssetPath("/image_2.png")),
       AssetType.Image(AssetName("image 3"), AssetPath("/image_3.png"))
@@ -30,12 +31,12 @@ object AssetBundleLoaderTests extends TestSuite {
 
         "Doesn't add empty bundles" - {
           AssetBundleTracker.empty.bundleCount ==> 0
-          AssetBundleTracker.empty.addBundle(BindingKey("a"), Set()).bundleCount ==> 0
+          AssetBundleTracker.empty.addBundle(BindingKey("a"), Nil).bundleCount ==> 0
         }
 
         "Doesn't re-add or replace bundles with existing identical keys" - {
-          val assets: Set[AssetType] =
-            Set(
+          val assets: List[AssetTypePrimitive] =
+            List(
               AssetType.Image(AssetName("image 1"), AssetPath("/image_1.png")),
               AssetType.Image(AssetName("image 2"), AssetPath("/image_2.png")),
               AssetType.Image(AssetName("image 3"), AssetPath("/image_3.png")),
