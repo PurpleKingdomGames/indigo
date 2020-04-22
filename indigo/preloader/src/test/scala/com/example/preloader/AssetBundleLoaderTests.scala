@@ -22,6 +22,38 @@ object AssetBundleLoaderTests extends TestSuite {
   var tests: Tests =
     Tests {
 
+      "AssetBundleLoader - Journey (happy path)" - {
+        1 ==> 2
+
+        //TODO
+        // Someone requests that a bundle of assets be loaded.
+
+        // That results in events being triggered to load, but not process, each asset
+
+        // As each asset comes in, the status is checked and events are emitted.
+
+        // Eventually all assets are loaded individually, and an event is emmitted to
+        // load the whole bundle and also to process it.
+
+        // Once the whole bundle has finished, a completion event is emitted.
+      }
+
+      "AssetBundleLoader - Journey (unhappy path)" - {
+        1 ==> 2
+
+        //TODO
+        // Someone requests that a bundle of assets be loaded.
+
+        // That results in events being triggered to load, but not process, each asset
+
+        // As each asset comes in, the status is checked and events are emitted.
+
+        // All assets are loaded individually, but some of them fail.
+
+        // Eventually the whole bundle is complete, but in a failed state, and 
+        // a completion event is emitted listing the errors.
+      }
+
       "AssetBundleTracker" - {
 
         "Can add a bundle to the tracker" - {
