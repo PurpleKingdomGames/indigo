@@ -181,6 +181,24 @@ object AssetBundleLoaderTests extends TestSuite {
           lookup2.forall(_.loaded == false) ==> true
         }
 
+        "Does the tracker contain a bundle?" - {
+          val tracker = AssetBundleTracker.empty
+            .addBundle(BindingKey("a"), defaultAssets)
+            .addBundle(BindingKey("b"), defaultAssets)
+
+          tracker.containsBundle(BindingKey("a")) ==> true
+          tracker.containsBundle(BindingKey("b")) ==> true
+          tracker.containsBundle(BindingKey("c")) ==> false
+        }
+
+        "Does the tracker contain an asset in any bundle?" - {
+          val tracker = AssetBundleTracker.empty
+            .addBundle(BindingKey("a"), defaultAssets)
+
+            tracker.containsAsset(AssetPath("/image_1.png")) ==> true
+            tracker.containsAsset(AssetPath("NOPE")) ==> false
+        }
+
       }
 
     }

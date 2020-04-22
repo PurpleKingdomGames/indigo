@@ -12,16 +12,11 @@ import indigo.shared.EqualTo._
 import indigo.shared.assets.AssetPath
 import indigo.shared.assets.AssetTypePrimitive
 import indigo.shared.events.AssetEvent
+import com.example.preloader.AssetBundleStatus.LoadComplete
+import com.example.preloader.AssetBundleStatus.LoadFailed
+import com.example.preloader.AssetBundleStatus.LoadInProgress
 
-/*
-All it does it track the progress of loading batches and emits events.
-- Loading of batch X started
-- Loading of batch X, N percent completed
-- Loading of batch X completed success | failure
-
-If you want to visualise the loader - make another sub system that's
-listening for the events this one emits.
- */
+// Provides "at least once" message delivery for updates on a bundle's loading status.
 final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSystem {
 
   type EventType = GlobalEvent
@@ -44,11 +39,25 @@ final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSyste
       }
 
     // Asset Response Events
-    case AssetEvent.AssetBatchLoaded(_, _) =>
+    case AssetEvent.AssetBatchLoaded(Some(key), true) if tracker.containsBundle(key) =>
       Outcome(this)
+        .addGlobalEvents(AssetBundleLoaderEvent.Success(key))
 
-    case AssetEvent.AssetBatchLoadError(_) =>
+    case AssetEvent.AssetBatchLoaded(Some(key), false) if tracker.containsAssetFromKey(key) =>
+      // In this case the "batch" will consist of one item and
+      // the BindingKey is actually the AssetPath value and we
+      // know the asset is in one of our bundles.
+      processAssetUpdateEvent(AssetPath(key.value), true)
+
+    case AssetEvent.AssetBatchLoadError(Some(key)) if tracker.containsBundle(key) =>
       Outcome(this)
+        .addGlobalEvents(AssetBundleLoaderEvent.Failure(key))
+
+    case AssetEvent.AssetBatchLoadError(Some(key)) if tracker.containsAssetFromKey(key) =>
+      // In this case the "batch" will consist of one item and
+      // the BindingKey is actually the AssetPath value and we
+      // know the asset is in one of our bundles.
+      processAssetUpdateEvent(AssetPath(key.value), false)
 
     // Everything else.
     case _ =>
@@ -71,6 +80,41 @@ final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSyste
       )
     ).addGlobalEvents(AssetBundleLoaderEvent.Started(key) :: events)
   }
+
+  def processAssetUpdateEvent(path: AssetPath, completedSuccessfully: Boolean): Outcome[AssetBundleLoader] = {
+    val updatedTracker =
+      tracker.assetLoadComplete(path, completedSuccessfully)
+
+    val statusBasedEvents: List[GlobalEvent] =
+      updatedTracker.register
+        .filter(_.containsAsset(path))
+        .flatMap { bundle =>
+          bundle.status match {
+            case LoadComplete =>
+              List[GlobalEvent](
+                AssetBundleLoaderEvent.PercentLoaded(bundle.key, 100),
+                AssetEvent.LoadAssetBatch(bundle.giveAssetSet, Some(bundle.key), true)
+              )
+
+            case LoadFailed(percent, _) =>
+              List[GlobalEvent](
+                AssetBundleLoaderEvent.PercentLoaded(bundle.key, percent),
+                AssetEvent.AssetBatchLoadError(Some(bundle.key))
+              )
+
+            case LoadInProgress(percent) =>
+              List[GlobalEvent](
+                AssetBundleLoaderEvent.PercentLoaded(bundle.key, percent)
+              )
+          }
+        }
+
+    Outcome(
+      this.copy(
+        tracker = updatedTracker
+      )
+    ).addGlobalEvents(statusBasedEvents)
+  }
 }
 
 sealed trait AssetBundleLoaderEvent extends GlobalEvent
@@ -80,7 +124,7 @@ object AssetBundleLoaderEvent {
   final case class Retry(key: BindingKey)                        extends AssetBundleLoaderEvent
 
   // result events
-  final case class Started(key: BindingKey)                       extends AssetBundleLoaderEvent
+  final case class Started(key: BindingKey)                     extends AssetBundleLoaderEvent
   final case class PercentLoaded(key: BindingKey, percent: Int) extends AssetBundleLoaderEvent
   final case class Success(key: BindingKey)                     extends AssetBundleLoaderEvent
   final case class Failure(key: BindingKey)                     extends AssetBundleLoaderEvent
@@ -110,6 +154,15 @@ final case class AssetBundleTracker(val register: List[AssetBundle]) {
 
   def findAssetByPath(path: AssetPath): List[AssetToLoad] =
     register.flatMap(_.assets.get(path).toList)
+
+  def containsBundle(key: BindingKey): Boolean =
+    register.exists(_.key === key)
+
+  def containsAssetFromKey(key: BindingKey): Boolean =
+    containsAsset(AssetPath(key.value))
+
+  def containsAsset(path: AssetPath): Boolean =
+    register.exists(_.containsAsset(path))
 
   def assetLoadComplete(key: AssetPath, loaded: Boolean): AssetBundleTracker =
     AssetBundleTracker(register.map(_.assetLoadComplete(key, loaded)))
@@ -154,6 +207,9 @@ final class AssetBundle(val key: BindingKey, val assetCount: Int, val assets: Ma
 
   def giveAssetSet: Set[AssetType] =
     assets.toList.map(_._2.asset).toSet
+
+  def containsAsset(path: AssetPath): Boolean =
+    assets.contains(path)
 }
 final class AssetToLoad(val asset: AssetTypePrimitive, val complete: Boolean, val loaded: Boolean)
 
