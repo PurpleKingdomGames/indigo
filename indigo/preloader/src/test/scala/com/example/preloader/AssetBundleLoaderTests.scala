@@ -103,10 +103,12 @@ object AssetBundleLoaderTests extends TestSuite {
               .assetLoadComplete(AssetPath("/image_2.png"), true)
               .assetLoadComplete(AssetPath("/image_3.png"), true)
 
-          tracker.checkBundleStatus(BindingKey("a")).get match {
-            case LoadComplete =>
-            // case LoadFailed(percent, failures) =>
-            // case LoadInProgress(percent) =>
+          tracker.checkBundleStatus(BindingKey("a")) match {
+            case Some(LoadComplete) =>
+              "passed" ==> "passed"
+
+            case _ =>
+              "failed" ==> "fail"
           }
         }
 
@@ -118,12 +120,13 @@ object AssetBundleLoaderTests extends TestSuite {
               .assetLoadComplete(AssetPath("/image_2.png"), false)
               .assetLoadComplete(AssetPath("/image_3.png"), false)
 
-          tracker.checkBundleStatus(BindingKey("a")).get match {
-            // case LoadComplete =>
-            case LoadFailed(percent, failures) =>
+          tracker.checkBundleStatus(BindingKey("a")) match {
+            case Some(LoadFailed(percent, failures)) =>
               percent ==> 100
               failures ==> List(AssetPath("/image_2.png"), AssetPath("/image_3.png"))
-            // case LoadInProgress(percent) =>
+
+            case _ =>
+              "failed" ==> "fail"
           }
         }
 
@@ -134,11 +137,12 @@ object AssetBundleLoaderTests extends TestSuite {
               .assetLoadComplete(AssetPath("/image_1.png"), true)
               .assetLoadComplete(AssetPath("/image_2.png"), false)
 
-          tracker.checkBundleStatus(BindingKey("a")).get match {
-            // case LoadComplete =>
-            // case LoadFailed(percent, failures) =>
-            case LoadInProgress(percent) =>
+          tracker.checkBundleStatus(BindingKey("a")) match {
+            case Some(LoadInProgress(percent)) =>
               percent ==> 67
+
+            case _ =>
+              "failed" ==> "fail"
           }
         }
 
