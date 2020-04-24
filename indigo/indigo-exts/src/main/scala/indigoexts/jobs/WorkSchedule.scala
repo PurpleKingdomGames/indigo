@@ -3,7 +3,6 @@ package indigoexts.jobs
 import indigo.shared.time.GameTime
 import indigo.shared.events.{FrameTick, GlobalEvent}
 import indigo.shared.datatypes.BindingKey
-import indigo.shared.EqualTo._
 
 final class WorkSchedule[Actor, Context](val id: BindingKey, val jobStack: List[Job]) {
 

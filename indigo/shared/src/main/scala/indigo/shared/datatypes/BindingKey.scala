@@ -5,7 +5,17 @@ import scala.util.Random
 import indigo.shared.EqualTo
 import indigo.shared.AsString
 
-final class BindingKey(val value: String) extends AnyVal
+final class BindingKey(val value: String) extends AnyVal {
+  def asString: String =
+    implicitly[AsString[BindingKey]].show(this)
+
+  override def toString: String =
+    asString
+
+  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
+  def ===(other: BindingKey): Boolean =
+    implicitly[EqualTo[BindingKey]].equal(this, other)
+}
 
 object BindingKey {
 

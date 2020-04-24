@@ -46,6 +46,9 @@ object AssetType {
 
   final class Text(val name: AssetName, val path: AssetPath) extends AssetTypePrimitive {
     def toList: List[AssetType] = List(this)
+
+    override def toString: String =
+      s"AssetType.Text(${name.toString()}, ${path.toString})"
   }
   object Text {
     def apply(name: AssetName, path: AssetPath): Text = new Text(name, path)
@@ -59,6 +62,9 @@ object AssetType {
       new Image(name, path, None)
 
     def toList: List[AssetType] = List(this)
+
+    override def toString: String =
+      s"AssetType.Image(${name.toString()}, ${path.toString})"
   }
   object Image {
     def apply(name: AssetName, path: AssetPath): Image = new Image(name, path, None)
@@ -66,6 +72,9 @@ object AssetType {
 
   final class Audio(val name: AssetName, val path: AssetPath) extends AssetTypePrimitive {
     def toList: List[AssetType] = List(this)
+
+    override def toString: String =
+      s"AssetType.Audio(${name.toString()}, ${path.toString})"
   }
   object Audio {
     def apply(name: AssetName, path: AssetPath): Audio = new Audio(name, path)

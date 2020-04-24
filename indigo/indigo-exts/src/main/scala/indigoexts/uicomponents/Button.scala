@@ -2,7 +2,6 @@ package indigoexts.uicomponents
 
 import indigo.shared.scenegraph.{Graphic, SceneUpdateFragment}
 import indigo.shared.datatypes.{BindingKey, Depth, Rectangle}
-import indigo.shared.EqualTo._
 import indigo.shared.events.{InputState, GlobalEvent}
 
 object Button {

@@ -8,7 +8,6 @@ import indigo.shared.Outcome
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.assets.AssetType
 import indigo.shared.datatypes.BindingKey
-import indigo.shared.EqualTo._
 import indigo.shared.assets.AssetPath
 import indigo.shared.assets.AssetTypePrimitive
 import indigo.shared.events.AssetEvent
@@ -27,7 +26,7 @@ final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSyste
     case _                         => None
   }
 
-  def update(gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[SubSystem] = {
+  def update(gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[AssetBundleLoader] = {
     // Asset Bundle Loader Commands
     case AssetBundleLoaderEvent.Load(key, assets) =>
       createBeginLoadingOutcome(key, assets)
@@ -67,7 +66,7 @@ final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSyste
   def render(gameTime: GameTime): SceneUpdateFragment =
     SceneUpdateFragment.empty
 
-  def createBeginLoadingOutcome(key: BindingKey, assets: Set[AssetType]): Outcome[AssetBundleLoader] = {
+  private def createBeginLoadingOutcome(key: BindingKey, assets: Set[AssetType]): Outcome[AssetBundleLoader] = {
     val assetPrimitives = AssetType.flattenAssetList(assets.toList)
 
     val events: List[GlobalEvent] =
@@ -81,7 +80,7 @@ final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSyste
     ).addGlobalEvents(AssetBundleLoaderEvent.Started(key) :: events)
   }
 
-  def processAssetUpdateEvent(path: AssetPath, completedSuccessfully: Boolean): Outcome[AssetBundleLoader] = {
+  private def processAssetUpdateEvent(path: AssetPath, completedSuccessfully: Boolean): Outcome[AssetBundleLoader] = {
     val updatedTracker =
       tracker.assetLoadComplete(path, completedSuccessfully)
 
@@ -115,6 +114,10 @@ final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSyste
       )
     ).addGlobalEvents(statusBasedEvents)
   }
+}
+object AssetBundleLoader {
+  val subSystem: AssetBundleLoader =
+    AssetBundleLoader(AssetBundleTracker.empty)
 }
 
 sealed trait AssetBundleLoaderEvent extends GlobalEvent
@@ -204,6 +207,9 @@ final class AssetBundle(val key: BindingKey, val assetCount: Int, val assets: Ma
       AssetBundleStatus.LoadComplete
     }
   }
+
+  def giveAssetLoadState(path: AssetPath): Option[AssetToLoad] =
+    assets.get(path)
 
   def giveAssetSet: Set[AssetType] =
     assets.toList.map(_._2.asset).toSet
