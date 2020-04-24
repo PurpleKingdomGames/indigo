@@ -78,6 +78,50 @@ object Material {
     ): Lit =
       new Lit(albedo, emissive, normal, specular, true)
 
+    def apply(
+        albedo: AssetName
+    ): Lit =
+      new Lit(albedo, None, None, None, true)
+
+    def apply(
+        albedo: AssetName,
+        emissive: AssetName
+    ): Lit =
+      new Lit(
+        albedo,
+        Some(Texture(emissive, 1.0d)),
+        None,
+        None,
+        true
+      )
+
+    def apply(
+        albedo: AssetName,
+        emissive: AssetName,
+        normal: AssetName
+    ): Lit =
+      new Lit(
+        albedo,
+        Some(Texture(emissive, 1.0d)),
+        Some(Texture(normal, 1.0d)),
+        None,
+        true
+      )
+
+    def apply(
+        albedo: AssetName,
+        emissive: AssetName,
+        normal: AssetName,
+        specular: AssetName
+    ): Lit =
+      new Lit(
+        albedo,
+        Some(Texture(emissive, 1.0d)),
+        Some(Texture(normal, 1.0d)),
+        Some(Texture(specular, 1.0d)),
+        true
+      )
+
     def unapply(l: Lit): Option[(AssetName, Option[Texture], Option[Texture], Option[Texture])] =
       Some((l.albedo, l.emissive, l.normal, l.specular))
 
