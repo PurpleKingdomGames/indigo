@@ -46,17 +46,17 @@ object AssetBundleLoaderTests extends TestSuite {
         // As each asset comes in, the status is checked and events are emitted.
         val nextLoader1 = loadOutcome.state.update(gt, d)(AssetEvent.AssetBatchLoaded(Some(BindingKey("/image_1.png")), false))
         nextLoader1.globalEvents.length ==> 1
-        nextLoader1.globalEvents.contains(AssetBundleLoaderEvent.PercentLoaded(key, 33)) ==> true
+        nextLoader1.globalEvents.contains(AssetBundleLoaderEvent.LoadProgress(key, 33, 1, 3)) ==> true
 
         val nextLoader2 = nextLoader1.state.update(gt, d)(AssetEvent.AssetBatchLoaded(Some(BindingKey("/image_2.png")), false))
         nextLoader2.globalEvents.length ==> 1
-        nextLoader2.globalEvents.contains(AssetBundleLoaderEvent.PercentLoaded(key, 67)) ==> true
+        nextLoader2.globalEvents.contains(AssetBundleLoaderEvent.LoadProgress(key, 67, 2, 3)) ==> true
 
         // Eventually all assets are loaded individually, and an event is emmitted to
         // load the whole bundle and also to process it.
         val nextLoader3 = nextLoader2.state.update(gt, d)(AssetEvent.AssetBatchLoaded(Some(BindingKey("/image_3.png")), false))
         nextLoader3.globalEvents.length ==> 2
-        nextLoader3.globalEvents.contains(AssetBundleLoaderEvent.PercentLoaded(key, 100)) ==> true
+        nextLoader3.globalEvents.contains(AssetBundleLoaderEvent.LoadProgress(key, 100, 3, 3)) ==> true
         nextLoader3.globalEvents.contains(AssetEvent.LoadAssetBatch(defaultAssets.toSet, Some(key), true)) ==> true
 
         // Once the whole bundle has finished, a completion event is emitted.
@@ -91,16 +91,16 @@ object AssetBundleLoaderTests extends TestSuite {
         // As each asset comes in, the status is checked and events are emitted.
         val nextLoader1 = loadOutcome.state.update(gt, d)(AssetEvent.AssetBatchLoaded(Some(BindingKey("/image_1.png")), false))
         nextLoader1.globalEvents.length ==> 1
-        nextLoader1.globalEvents.contains(AssetBundleLoaderEvent.PercentLoaded(key, 33)) ==> true
+        nextLoader1.globalEvents.contains(AssetBundleLoaderEvent.LoadProgress(key, 33, 1, 3)) ==> true
 
         val nextLoader2 = nextLoader1.state.update(gt, d)(AssetEvent.AssetBatchLoaded(Some(BindingKey("/image_2.png")), false))
         nextLoader2.globalEvents.length ==> 1
-        nextLoader2.globalEvents.contains(AssetBundleLoaderEvent.PercentLoaded(key, 67)) ==> true
+        nextLoader2.globalEvents.contains(AssetBundleLoaderEvent.LoadProgress(key, 67, 2, 3)) ==> true
 
         // All assets are loaded individually, but one of them fails.
         val nextLoader3 = nextLoader2.state.update(gt, d)(AssetEvent.AssetBatchLoadError(Some(BindingKey("/image_3.png"))))
         nextLoader3.globalEvents.length ==> 2
-        nextLoader3.globalEvents.contains(AssetBundleLoaderEvent.PercentLoaded(key, 100)) ==> true
+        nextLoader3.globalEvents.contains(AssetBundleLoaderEvent.LoadProgress(key, 100, 3, 3)) ==> true
         nextLoader3.globalEvents.contains(AssetEvent.AssetBatchLoadError(Some(key))) ==> true
 
         // Eventually the whole bundle is complete, but in a failed state, and
@@ -208,8 +208,9 @@ object AssetBundleLoaderTests extends TestSuite {
               .assetLoadComplete(AssetPath("/image_3.png"), true)
 
           tracker.checkBundleStatus(BindingKey("a")) match {
-            case Some(LoadComplete) =>
-              "passed" ==> "passed"
+            case Some(LoadComplete(completed, count)) =>
+              completed ==> 3
+              count ==> 3
 
             case _ =>
               "failed" ==> "fail"
@@ -225,8 +226,10 @@ object AssetBundleLoaderTests extends TestSuite {
               .assetLoadComplete(AssetPath("/image_3.png"), false)
 
           tracker.checkBundleStatus(BindingKey("a")) match {
-            case Some(LoadFailed(percent, failures)) =>
+            case Some(LoadFailed(percent, completed, count, failures)) =>
               percent ==> 100
+              completed ==> 3
+              count ==> 3
               failures ==> List(AssetPath("/image_2.png"), AssetPath("/image_3.png"))
 
             case _ =>
@@ -242,8 +245,10 @@ object AssetBundleLoaderTests extends TestSuite {
               .assetLoadComplete(AssetPath("/image_2.png"), false)
 
           tracker.checkBundleStatus(BindingKey("a")) match {
-            case Some(LoadInProgress(percent)) =>
+            case Some(LoadInProgress(percent, completed, count)) =>
               percent ==> 67
+              completed ==> 2
+              count ==> 3
 
             case _ =>
               "failed" ==> "fail"

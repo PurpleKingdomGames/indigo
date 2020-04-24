@@ -89,21 +89,21 @@ final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSyste
         .filter(_.containsAsset(path))
         .flatMap { bundle =>
           bundle.status match {
-            case LoadComplete =>
+            case LoadComplete(completed, count) =>
               List[GlobalEvent](
-                AssetBundleLoaderEvent.PercentLoaded(bundle.key, 100),
+                AssetBundleLoaderEvent.LoadProgress(bundle.key, 100, completed, count),
                 AssetEvent.LoadAssetBatch(bundle.giveAssetSet, Some(bundle.key), true)
               )
 
-            case LoadFailed(percent, _) =>
+            case LoadFailed(percent, completed, count, _) =>
               List[GlobalEvent](
-                AssetBundleLoaderEvent.PercentLoaded(bundle.key, percent),
+                AssetBundleLoaderEvent.LoadProgress(bundle.key, percent, completed, count),
                 AssetEvent.AssetBatchLoadError(Some(bundle.key))
               )
 
-            case LoadInProgress(percent) =>
+            case LoadInProgress(percent, completed, count) =>
               List[GlobalEvent](
-                AssetBundleLoaderEvent.PercentLoaded(bundle.key, percent)
+                AssetBundleLoaderEvent.LoadProgress(bundle.key, percent, completed, count)
               )
           }
         }
@@ -127,10 +127,10 @@ object AssetBundleLoaderEvent {
   final case class Retry(key: BindingKey)                        extends AssetBundleLoaderEvent
 
   // result events
-  final case class Started(key: BindingKey)                     extends AssetBundleLoaderEvent
-  final case class PercentLoaded(key: BindingKey, percent: Int) extends AssetBundleLoaderEvent
-  final case class Success(key: BindingKey)                     extends AssetBundleLoaderEvent
-  final case class Failure(key: BindingKey)                     extends AssetBundleLoaderEvent
+  final case class Started(key: BindingKey)                                                extends AssetBundleLoaderEvent
+  final case class LoadProgress(key: BindingKey, percent: Int, completed: Int, total: Int) extends AssetBundleLoaderEvent
+  final case class Success(key: BindingKey)                                                extends AssetBundleLoaderEvent
+  final case class Failure(key: BindingKey)                                                extends AssetBundleLoaderEvent
 }
 
 final case class AssetBundleTracker(val register: List[AssetBundle]) {
@@ -200,11 +200,11 @@ final class AssetBundle(val key: BindingKey, val assetCount: Int, val assets: Ma
     val clampedPercentage = Math.min(100, Math.max(0, percentage))
 
     if (errorCount + successCount < count) {
-      AssetBundleStatus.LoadInProgress(clampedPercentage)
+      AssetBundleStatus.LoadInProgress(clampedPercentage, combined, count)
     } else if (errorCount > 0) {
-      AssetBundleStatus.LoadFailed(clampedPercentage, errors)
+      AssetBundleStatus.LoadFailed(clampedPercentage, combined, count, errors)
     } else {
-      AssetBundleStatus.LoadComplete
+      AssetBundleStatus.LoadComplete(combined, count)
     }
   }
 
@@ -221,11 +221,13 @@ final class AssetToLoad(val asset: AssetTypePrimitive, val complete: Boolean, va
 
 sealed trait AssetBundleStatus {
   val percent: Int
+  val completed: Int
+  val count: Int
 }
 object AssetBundleStatus {
-  case object LoadComplete extends AssetBundleStatus {
+  final case class LoadComplete(completed: Int, count: Int) extends AssetBundleStatus {
     val percent: Int = 100
   }
-  final case class LoadFailed(percent: Int, failures: List[AssetPath]) extends AssetBundleStatus
-  final case class LoadInProgress(percent: Int)                        extends AssetBundleStatus
+  final case class LoadFailed(percent: Int, completed: Int, count: Int, failures: List[AssetPath]) extends AssetBundleStatus
+  final case class LoadInProgress(percent: Int, completed: Int, count: Int)                        extends AssetBundleStatus
 }
