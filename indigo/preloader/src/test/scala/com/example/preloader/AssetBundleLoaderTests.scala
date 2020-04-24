@@ -71,19 +71,58 @@ object AssetBundleLoaderTests extends TestSuite {
       }
 
       "AssetBundleLoader - Journey (unhappy path)" - {
-        1 ==> 2
+        val gt = GameTime.zero
+        val d  = Dice.loaded(0)
 
-        //TODO
+        val loader = AssetBundleLoader.subSystem
+
+        val key = BindingKey("test")
+
         // Someone requests that a bundle of assets be loaded.
+        val loadOutcome = loader.update(gt, d)(AssetBundleLoaderEvent.Load(key, defaultAssets.toSet))
 
         // That results in events being triggered to load, but not process, each asset
+        defaultAssets.length + 1 ==> loadOutcome.globalEvents.length
+        defaultAssets.forall { asset =>
+          loadOutcome.globalEvents.contains(AssetEvent.LoadAsset(asset, Some(BindingKey(asset.path.value)), false))
+        } ==> true
+        loadOutcome.globalEvents.contains(AssetBundleLoaderEvent.Started(key)) ==> true
 
         // As each asset comes in, the status is checked and events are emitted.
+        val nextLoader1 = loadOutcome.state.update(gt, d)(AssetEvent.AssetBatchLoaded(Some(BindingKey("/image_1.png")), false))
+        nextLoader1.globalEvents.length ==> 1
+        nextLoader1.globalEvents.contains(AssetBundleLoaderEvent.PercentLoaded(key, 33)) ==> true
 
-        // All assets are loaded individually, but some of them fail.
+        val nextLoader2 = nextLoader1.state.update(gt, d)(AssetEvent.AssetBatchLoaded(Some(BindingKey("/image_2.png")), false))
+        nextLoader2.globalEvents.length ==> 1
+        nextLoader2.globalEvents.contains(AssetBundleLoaderEvent.PercentLoaded(key, 67)) ==> true
+
+        // All assets are loaded individually, but one of them fails.
+        val nextLoader3 = nextLoader2.state.update(gt, d)(AssetEvent.AssetBatchLoadError(Some(BindingKey("/image_3.png"))))
+        nextLoader3.globalEvents.length ==> 2
+        nextLoader3.globalEvents.contains(AssetBundleLoaderEvent.PercentLoaded(key, 100)) ==> true
+        nextLoader3.globalEvents.contains(AssetEvent.AssetBatchLoadError(Some(key))) ==> true
 
         // Eventually the whole bundle is complete, but in a failed state, and
         // a completion event is emitted listing the errors.
+        val finalLoader = nextLoader3.state.update(gt, d)(AssetEvent.AssetBatchLoadError(Some(key)))
+        finalLoader.globalEvents.length ==> 1
+        finalLoader.globalEvents.contains(AssetBundleLoaderEvent.Failure(key)) ==> true
+        val asset1 = finalLoader.state.tracker.findBundleByKey(key).get.giveAssetLoadState(AssetPath("/image_1.png")).get
+        asset1.asset.name ==> AssetName("image 1")
+        asset1.asset.path ==> AssetPath("/image_1.png")
+        asset1.complete ==> true
+        asset1.loaded ==> true
+        val asset2 = finalLoader.state.tracker.findBundleByKey(key).get.giveAssetLoadState(AssetPath("/image_2.png")).get
+        asset2.asset.name ==> AssetName("image 2")
+        asset2.asset.path ==> AssetPath("/image_2.png")
+        asset2.complete ==> true
+        asset2.loaded ==> true
+        val asset3 = finalLoader.state.tracker.findBundleByKey(key).get.giveAssetLoadState(AssetPath("/image_3.png")).get
+        asset3.asset.name ==> AssetName("image 3")
+        asset3.asset.path ==> AssetPath("/image_3.png")
+        asset3.complete ==> true
+        asset3.loaded ==> false
       }
 
       "AssetBundleTracker" - {
