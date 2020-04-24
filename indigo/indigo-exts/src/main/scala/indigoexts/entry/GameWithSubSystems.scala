@@ -12,15 +12,12 @@ import indigo.shared.abstractions.syntax._
 final class GameWithSubSystems[Model](val model: Model, val subSystemsRegister: SubSystemsRegister)
 object GameWithSubSystems {
 
-  def apply[Model](model: Model, subSystemsRegister: SubSystemsRegister): GameWithSubSystems[Model] =
-    new GameWithSubSystems[Model](model, subSystemsRegister)
-
   def update[Model](
       modelUpdate: (GameTime, Model, InputState, Dice) => GlobalEvent => Outcome[Model]
   )(gameTime: GameTime, model: GameWithSubSystems[Model], inputState: InputState, dice: Dice): GlobalEvent => Outcome[GameWithSubSystems[Model]] =
     e =>
       (modelUpdate(gameTime, model.model, inputState, dice)(e), model.subSystemsRegister.update(gameTime, dice)(e))
-        .map2((m, s) => GameWithSubSystems(m, s))
+        .map2((m, s) => new GameWithSubSystems(m, s))
 
   def updateViewModel[Model, ViewModel](
       viewModelUpdate: (GameTime, Model, ViewModel, InputState, Dice) => Outcome[ViewModel]
@@ -31,4 +28,5 @@ object GameWithSubSystems {
       viewPresent: (GameTime, Model, ViewModel, InputState) => SceneUpdateFragment
   )(gameTime: GameTime, model: GameWithSubSystems[Model], viewModel: ViewModel, inputState: InputState): SceneUpdateFragment =
     viewPresent(gameTime, model.model, viewModel, inputState) |+| model.subSystemsRegister.render(gameTime)
+
 }
