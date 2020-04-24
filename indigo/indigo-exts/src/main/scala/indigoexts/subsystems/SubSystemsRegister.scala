@@ -9,17 +9,12 @@ import indigo.shared.dice.Dice
 import scala.collection.mutable.ListBuffer
 
 @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-final class SubSystemsRegister {
+final class SubSystemsRegister(subSystems: List[SubSystem]) {
 
-  val registeredSubSystems: ListBuffer[SubSystem] = new ListBuffer()
+  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
+  val registeredSubSystems: ListBuffer[SubSystem] = ListBuffer.from(subSystems)
 
-  def add(subSystems: SubSystem*): SubSystemsRegister =
-    add(subSystems.toList)
-  def add(subSystems: List[SubSystem]): SubSystemsRegister = {
-    registeredSubSystems ++= subSystems
-    this
-  }
-
+  @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
   def update(gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[SubSystemsRegister] = {
     case e: GlobalEvent =>
       registeredSubSystems.toList
@@ -44,15 +39,5 @@ final class SubSystemsRegister {
 
   def size: Int =
     registeredSubSystems.size
-
-}
-
-object SubSystemsRegister {
-
-  def apply(): SubSystemsRegister =
-    new SubSystemsRegister()
-
-  def empty: SubSystemsRegister =
-    new SubSystemsRegister()
 
 }

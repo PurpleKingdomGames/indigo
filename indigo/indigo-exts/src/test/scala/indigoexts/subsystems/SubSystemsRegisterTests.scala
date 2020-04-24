@@ -16,13 +16,13 @@ object SubSystemsRegisterTests extends TestSuite {
       "The sub system register" - {
 
         "should allow you to add sub systems" - {
-          val r = SubSystemsRegister.empty.add(PointsTrackerExample(10), PointsTrackerExample(20))
+          val r = new SubSystemsRegister(List(PointsTrackerExample(10), PointsTrackerExample(20)))
 
           r.size ==> 2
         }
 
         "should allow you to update sub systems" - {
-          val r = SubSystemsRegister.empty.add(PointsTrackerExample(10), PointsTrackerExample(50))
+          val r = new SubSystemsRegister(List(PointsTrackerExample(10), PointsTrackerExample(50)))
 
           val subSystemPoints = r
             .update(GameTime.zero, dice)(PointsTrackerEvent.Add(10))
@@ -36,7 +36,7 @@ object SubSystemsRegisterTests extends TestSuite {
         }
 
         "should allow you to update sub systems and emit events" - {
-          val r = SubSystemsRegister.empty.add(PointsTrackerExample(10), PointsTrackerExample(50))
+          val r = new SubSystemsRegister(List(PointsTrackerExample(10), PointsTrackerExample(50)))
 
           val updated = r.update(GameTime.zero, dice)(PointsTrackerEvent.LoseAll)
 
@@ -49,7 +49,7 @@ object SubSystemsRegisterTests extends TestSuite {
         }
 
         "should allow you to render sub systems" - {
-          val r = SubSystemsRegister.empty.add(PointsTrackerExample(10), PointsTrackerExample(50))
+          val r = new SubSystemsRegister(List(PointsTrackerExample(10), PointsTrackerExample(50)))
 
           val rendered =
             r.update(GameTime.zero, dice)(PointsTrackerEvent.Add(10))
