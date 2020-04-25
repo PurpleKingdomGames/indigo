@@ -1,4 +1,4 @@
-package com.example.preloader
+package indigoexts.subsystems.assetbundleloader
 
 import indigoexts.subsystems.SubSystem
 import indigo.shared.events.GlobalEvent
@@ -11,9 +11,6 @@ import indigo.shared.datatypes.BindingKey
 import indigo.shared.assets.AssetPath
 import indigo.shared.assets.AssetTypePrimitive
 import indigo.shared.events.AssetEvent
-import com.example.preloader.AssetBundleStatus.LoadComplete
-import com.example.preloader.AssetBundleStatus.LoadFailed
-import com.example.preloader.AssetBundleStatus.LoadInProgress
 
 // Provides "at least once" message delivery for updates on a bundle's loading status.
 final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSystem {
@@ -89,19 +86,19 @@ final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSyste
         .filter(_.containsAsset(path))
         .flatMap { bundle =>
           bundle.status match {
-            case LoadComplete(completed, count) =>
+            case AssetBundleStatus.LoadComplete(completed, count) =>
               List[GlobalEvent](
                 AssetBundleLoaderEvent.LoadProgress(bundle.key, 100, completed, count),
                 AssetEvent.LoadAssetBatch(bundle.giveAssetSet, Some(bundle.key), true)
               )
 
-            case LoadFailed(percent, completed, count, _) =>
+            case AssetBundleStatus.LoadFailed(percent, completed, count, _) =>
               List[GlobalEvent](
                 AssetBundleLoaderEvent.LoadProgress(bundle.key, percent, completed, count),
                 AssetEvent.AssetBatchLoadError(Some(bundle.key))
               )
 
-            case LoadInProgress(percent, completed, count) =>
+            case AssetBundleStatus.LoadInProgress(percent, completed, count) =>
               List[GlobalEvent](
                 AssetBundleLoaderEvent.LoadProgress(bundle.key, percent, completed, count)
               )

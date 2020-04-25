@@ -1,12 +1,11 @@
-package indigoexamples
+package com.example.assetloading
 
 import indigo._
 import indigoexts.entrypoint._
 import indigoexts.ui._
-import com.example.preloader.AssetBundleLoader
-import com.example.preloader.AssetBundleLoaderEvent
+import indigoexts.subsystems.assetbundleloader._
 
-object PreloaderExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
+object AssetLoadingExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   val config: GameConfig =
     defaultGameConfig.withMagnification(2)

@@ -1,13 +1,10 @@
-package com.example.preloader
+package indigoexts.subsystems.assetbundleloader
 
 import utest._
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.assets.AssetType
 import indigo.shared.assets.AssetPath
 import indigo.shared.assets.AssetName
-import com.example.preloader.AssetBundleStatus.LoadComplete
-import com.example.preloader.AssetBundleStatus.LoadFailed
-import com.example.preloader.AssetBundleStatus.LoadInProgress
 import indigo.shared.assets.AssetTypePrimitive
 import indigo.shared.time.GameTime
 import indigo.shared.dice.Dice
@@ -208,7 +205,7 @@ object AssetBundleLoaderTests extends TestSuite {
               .assetLoadComplete(AssetPath("/image_3.png"), true)
 
           tracker.checkBundleStatus(BindingKey("a")) match {
-            case Some(LoadComplete(completed, count)) =>
+            case Some(AssetBundleStatus.LoadComplete(completed, count)) =>
               completed ==> 3
               count ==> 3
 
@@ -226,7 +223,7 @@ object AssetBundleLoaderTests extends TestSuite {
               .assetLoadComplete(AssetPath("/image_3.png"), false)
 
           tracker.checkBundleStatus(BindingKey("a")) match {
-            case Some(LoadFailed(percent, completed, count, failures)) =>
+            case Some(AssetBundleStatus.LoadFailed(percent, completed, count, failures)) =>
               percent ==> 100
               completed ==> 3
               count ==> 3
@@ -245,7 +242,7 @@ object AssetBundleLoaderTests extends TestSuite {
               .assetLoadComplete(AssetPath("/image_2.png"), false)
 
           tracker.checkBundleStatus(BindingKey("a")) match {
-            case Some(LoadInProgress(percent, completed, count)) =>
+            case Some(AssetBundleStatus.LoadInProgress(percent, completed, count)) =>
               percent ==> 67
               completed ==> 2
               count ==> 3
