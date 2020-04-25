@@ -3,7 +3,7 @@ package indigo.shared
 import utest._
 
 object OutcomeTests extends TestSuite {
-  
+
   import indigo.shared.events.GlobalEvent
   import indigo.shared.EqualTo._
   import indigo.shared.AsString._
@@ -127,6 +127,31 @@ object OutcomeTests extends TestSuite {
               .addGlobalEvents(TestEvent("b"))
 
           actual === expected ==> true
+        }
+
+      }
+
+      "flat map & join" - {
+
+        "join preserves event order" - {
+          val oa =
+            Outcome(
+              Outcome(
+                Outcome(10).addGlobalEvents(TestEvent("z"))
+              ).addGlobalEvents(TestEvent("x"), TestEvent("y"))
+            ).addGlobalEvents(TestEvent("w"))
+
+          val expected =
+            Outcome(10)
+              .addGlobalEvents(TestEvent("w"), TestEvent("x"), TestEvent("y"), TestEvent("z"))
+
+          val actual = Outcome.join(Outcome.join(oa))
+
+          actual === expected ==> true
+        }
+
+        "flatMapState" - {
+          Outcome(10).flatMapState(i => Outcome(i * 10)) === Outcome(100) ==> true
         }
 
       }

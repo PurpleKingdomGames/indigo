@@ -137,7 +137,7 @@ object Outcome {
     Outcome((oa.state, ob.state, oc.state)).addGlobalEvents(oa.globalEvents ++ ob.globalEvents ++ oc.globalEvents)
 
   def join[A](faa: Outcome[Outcome[A]]): Outcome[A] =
-    faa.state.addGlobalEvents(faa.globalEvents)
+    Outcome(faa.state.state).addGlobalEvents(faa.globalEvents ++ faa.state.globalEvents)
 
   def flatMapState[A, B](fa: Outcome[A])(f: A => Outcome[B]): Outcome[B] =
     join(mapState(fa)(f))
