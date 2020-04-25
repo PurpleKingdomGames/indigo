@@ -7,84 +7,85 @@ import indigo.shared.events.{GlobalEvent, InputState}
 import indigo.shared.scenegraph.SceneUpdateFragment
 
 trait FrameProcessor[Model, ViewModel] {
-  def run: (Model, ViewModel, GameTime, List[GlobalEvent], InputState, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])]
-  def runSkipView: (Model, ViewModel, GameTime, List[GlobalEvent], InputState, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])]
+  def run(
+      model: Model,
+      viewModel: ViewModel,
+      gameTime: GameTime,
+      globalEvents: List[GlobalEvent],
+      inputState: InputState,
+      dice: Dice
+  ): Outcome[(Model, ViewModel, Option[SceneUpdateFragment])]
+
+  def runSkipView(
+      model: Model,
+      viewModel: ViewModel,
+      gameTime: GameTime,
+      globalEvents: List[GlobalEvent],
+      inputState: InputState,
+      dice: Dice
+  ): Outcome[(Model, ViewModel, Option[SceneUpdateFragment])]
 }
 
-trait StandardFrameProcessor[Model, ViewModel] extends FrameProcessor[Model, ViewModel] {
+final class StandardFrameProcessor[Model, ViewModel](
+    modelUpdate: (GameTime, Model, InputState, Dice) => GlobalEvent => Outcome[Model],
+    viewModelUpdate: (GameTime, Model, ViewModel, InputState, Dice) => Outcome[ViewModel],
+    viewUpdate: (GameTime, Model, ViewModel, InputState) => SceneUpdateFragment
+) extends FrameProcessor[Model, ViewModel] {
 
-  def updateModel(gameTime: GameTime, model: Model, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Model]
+  def updateModel(gameTime: GameTime, model: Model, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Model] =
+    modelUpdate(gameTime, model, inputState, dice)
 
-  def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, dice: Dice): Outcome[ViewModel]
+  def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, dice: Dice): Outcome[ViewModel] =
+    viewModelUpdate(gameTime, model, viewModel, inputState, dice)
 
-  def updateView(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState): SceneUpdateFragment
+  def updateView(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState): SceneUpdateFragment =
+    viewUpdate(gameTime, model, viewModel, inputState)
 
-  def run: (Model, ViewModel, GameTime, List[GlobalEvent], InputState, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] =
-    StandardFrameProcessor.run(this)
+  def run(
+      model: Model,
+      viewModel: ViewModel,
+      gameTime: GameTime,
+      globalEvents: List[GlobalEvent],
+      inputState: InputState,
+      dice: Dice
+  ): Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] = {
 
-  def runSkipView: (Model, ViewModel, GameTime, List[GlobalEvent], InputState, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] =
-    StandardFrameProcessor.runSkipView(this)
-}
-
-object StandardFrameProcessor {
-
-  def apply[Model, ViewModel](
-      modelUpdate: (GameTime, Model, InputState, Dice) => GlobalEvent => Outcome[Model],
-      viewModelUpdate: (GameTime, Model, ViewModel, InputState, Dice) => Outcome[ViewModel],
-      viewUpdate: (GameTime, Model, ViewModel, InputState) => SceneUpdateFragment
-  ): StandardFrameProcessor[Model, ViewModel] =
-    new StandardFrameProcessor[Model, ViewModel] {
-
-      def updateModel(gameTime: GameTime, model: Model, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Model] =
-        modelUpdate(gameTime, model, inputState, dice)
-
-      def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, dice: Dice): Outcome[ViewModel] =
-        viewModelUpdate(gameTime, model, viewModel, inputState, dice)
-
-      def updateView(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState): SceneUpdateFragment =
-        viewUpdate(gameTime, model, viewModel, inputState)
-
+    val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
+      acc.flatMapState { next =>
+        updateModel(gameTime, next, inputState, dice)(e)
+      }
     }
 
-  def run[Model, ViewModel](
-      standardFrameProcessor: StandardFrameProcessor[Model, ViewModel]
-  ): (Model, ViewModel, GameTime, List[GlobalEvent], InputState, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] =
-    (model, viewModel, gameTime, globalEvents, inputState, dice) => {
-
-      val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
-        acc.flatMapState { next =>
-          standardFrameProcessor.updateModel(gameTime, next, inputState, dice)(e)
-        }
+    val updatedViewModel: Outcome[ViewModel] =
+      updatedModel.flatMapState { m =>
+        updateViewModel(gameTime, m, viewModel, inputState, dice)
       }
 
-      val updatedViewModel: Outcome[ViewModel] =
-        updatedModel.flatMapState { m =>
-          standardFrameProcessor.updateViewModel(gameTime, m, viewModel, inputState, dice)
-        }
+    val view: SceneUpdateFragment =
+      updateView(gameTime, updatedModel.state, updatedViewModel.state, inputState)
 
-      val view: SceneUpdateFragment =
-        standardFrameProcessor.updateView(gameTime, updatedModel.state, updatedViewModel.state, inputState)
-
-      Outcome.combine3(updatedModel, updatedViewModel, Outcome(Some(view)))
+    Outcome.combine3(updatedModel, updatedViewModel, Outcome(Some(view)))
+  }
+  
+  def runSkipView(
+      model: Model,
+      viewModel: ViewModel,
+      gameTime: GameTime,
+      globalEvents: List[GlobalEvent],
+      inputState: InputState,
+      dice: Dice
+  ): Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] = {
+    val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
+      acc.flatMapState { next =>
+        updateModel(gameTime, next, inputState, dice)(e)
+      }
     }
 
-  def runSkipView[Model, ViewModel](
-      standardFrameProcessor: StandardFrameProcessor[Model, ViewModel]
-  ): (Model, ViewModel, GameTime, List[GlobalEvent], InputState, Dice) => Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] =
-    (model, viewModel, gameTime, globalEvents, inputState, dice) => {
-
-      val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
-        acc.flatMapState { next =>
-          standardFrameProcessor.updateModel(gameTime, next, inputState, dice)(e)
-        }
+    val updatedViewModel: Outcome[ViewModel] =
+      updatedModel.flatMapState { m =>
+        updateViewModel(gameTime, m, viewModel, inputState, dice)
       }
 
-      val updatedViewModel: Outcome[ViewModel] =
-        updatedModel.flatMapState { m =>
-          standardFrameProcessor.updateViewModel(gameTime, m, viewModel, inputState, dice)
-        }
-
-      Outcome.combine3(updatedModel, updatedViewModel, Outcome(None))
-    }
-
+    Outcome.combine3(updatedModel, updatedViewModel, Outcome(None))
+  }
 }

@@ -44,7 +44,7 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] {
   private def indigoGame: GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel] = {
 
     val frameProcessor: StandardFrameProcessor[GameWithSubSystems[Model], ViewModel] =
-      StandardFrameProcessor(
+      new StandardFrameProcessor(
         GameWithSubSystems.update(update),
         GameWithSubSystems.updateViewModel(updateViewModel),
         (gameTime: GameTime, model: GameWithSubSystems[Model], viewModel: ViewModel, inputState: InputState) => GameWithSubSystems.present(present)(gameTime, model, viewModel, inputState)

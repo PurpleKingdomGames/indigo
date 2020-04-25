@@ -100,7 +100,7 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
       }
 
     val frameProcessor: StandardFrameProcessor[GameWithSubSystems[Model], ViewModel] = {
-      StandardFrameProcessor(
+      new StandardFrameProcessor(
         GameWithSubSystems.update(sceneManager.updateModel),
         GameWithSubSystems.updateViewModel(sceneManager.updateViewModel),
         GameWithSubSystems.present(sceneManager.updateView)
