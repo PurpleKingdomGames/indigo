@@ -30,7 +30,7 @@ object AssetLoadingExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       button = Button(ButtonState.Up).withUpAction { () =>
         println("Start loading assets...")
         List(
-          AssetBundleLoaderEvent.Load(BindingKey("Junction box assets"), Assets.junctionboxImageAssets)
+          AssetBundleLoaderEvent.Load(BindingKey("Junction box assets"), Assets.junctionboxImageAssets ++ Assets.otherAssetsToLoad)
         ) // On mouse release will emit this event.
       },
       loaded = false
@@ -55,7 +55,7 @@ object AssetLoadingExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
     case AssetBundleLoaderEvent.Success(key) =>
       println("Got it! " + key.toString())
-      Outcome(model.copy(loaded = true))
+      Outcome(model.copy(loaded = true)).addGlobalEvents(PlaySound(AssetName("sfx"), Volume.Max))
 
     case AssetBundleLoaderEvent.Failure(key) =>
       println("Lost it... " + key.toString())
@@ -109,6 +109,12 @@ object Assets {
       AssetType.Image(junctionBoxEmission, AssetPath("assets/" + junctionBoxEmission.value + ".png")),
       AssetType.Image(junctionBoxNormal, AssetPath("assets/" + junctionBoxNormal.value + ".png")),
       AssetType.Image(junctionBoxSpecular, AssetPath("assets/" + junctionBoxSpecular.value + ".png"))
+    )
+
+  def otherAssetsToLoad: Set[AssetType] =
+    Set(
+      AssetType.Text(AssetName("text"), AssetPath("assets/test.txt")),
+      AssetType.Audio(AssetName("sfx"), AssetPath("assets/RetroGameJump.mp3"))
     )
 
   val junctionBoxMaterial: Material.Lit =
