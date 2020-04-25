@@ -58,6 +58,8 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var gameLoop: Try[() => Unit] = null
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  var gameLoopInstance: GameLoop[GameModel, ViewModel] = null
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var accumulatedAssetCollection: AssetCollection = AssetCollection.empty
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var assetMapping: AssetMapping = null
@@ -76,7 +78,7 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     PlatformWindow.windowSetup(config)
 
     storage = PlatformStorage.default
-    globalEventStream = GlobalEventStreamImpl.default(rebuildGameLoop, audioPlayer, storage)
+    globalEventStream = GlobalEventStreamImpl.default(rebuildGameLoop(false), audioPlayer, storage)
     gamepadInputCapture = GamepadInputCaptureImpl()
 
     // Arrange config
@@ -98,7 +100,7 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
       assetsAsync.flatMap(aa => AssetLoader.loadAssets(aa ++ assets)).foreach { assetCollection =>
         IndigoLogger.info("Asset load complete")
 
-        rebuildGameLoop(assetCollection)
+        rebuildGameLoop(true)(assetCollection)
 
         gameLoop match {
           case Success(firstTick) =>
@@ -117,7 +119,7 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     }
   }
 
-  def rebuildGameLoop: AssetCollection => Unit = ac => {
+  def rebuildGameLoop(firstRun: Boolean): AssetCollection => Unit = ac => {
 
     FontRegister.clearRegister()
     DisplayObjectConversions.purgeCaches()
@@ -127,10 +129,10 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
 
     audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
 
-    val startupData: Startup[StartupError, StartupData] = initialise(accumulatedAssetCollection)
-
     val platform: Platform =
       new PlatformImpl(accumulatedAssetCollection, globalEventStream)
+
+    val startupData: Startup[StartupError, StartupData] = initialise(accumulatedAssetCollection)
 
     GameEngine.registerAnimations(animations ++ startupData.additionalAnimations)
 
@@ -140,20 +142,21 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
       for {
         rendererAndAssetMapping <- platform.initialiseRenderer(gameConfig)
         startUpSuccessData      <- GameEngine.initialisedGame(startupData)
-        gameLoopInstance <- GameEngine.initialiseGameLoop(
+        initialisedGameLoop <- GameEngine.initialiseGameLoop(
           this,
           gameConfig,
-          initialModel(startUpSuccessData),
-          initialViewModel(startUpSuccessData),
+          if (firstRun) initialModel(startUpSuccessData) else gameLoopInstance.gameModelState,
+          if (firstRun) initialViewModel(startUpSuccessData) else (_: GameModel) => gameLoopInstance.viewModelState,
           frameProccessor,
           platform.tick
         )
       } yield {
         renderer = rendererAndAssetMapping._1
         assetMapping = rendererAndAssetMapping._2
-        gameLoopInstance.loop(0)
+        val time = if (firstRun) 0 else gameLoopInstance.runningTimeReference
+        gameLoopInstance = initialisedGameLoop
+        initialisedGameLoop.loop(time)
       }
-
     gameLoop = loop.map(f => (() => platform.tick(f)))
 
     ()

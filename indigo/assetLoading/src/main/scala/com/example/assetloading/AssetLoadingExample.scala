@@ -22,7 +22,13 @@ object AssetLoadingExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
     Set(AssetBundleLoader.subSystem)
 
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
-    Startup.Success(())
+    assetCollection.findTextDataByName(AssetName("text")) match {
+      case Some(value) =>
+        println("Loaded text! " + value)
+        Startup.Success(())
+      case None =>
+        Startup.Success(())
+    }
 
   // Let's setup our button's initial state
   def initialModel(startupData: Unit): MyGameModel =

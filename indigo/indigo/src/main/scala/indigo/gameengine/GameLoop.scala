@@ -27,16 +27,20 @@ class GameLoop[GameModel, ViewModel](
 ) {
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var gameModelState: GameModel = initialModel
+  var gameModelState: GameModel = initialModel
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var viewModelState: ViewModel = initialViewModel
+  var viewModelState: ViewModel = initialViewModel
+
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  var runningTimeReference: Long = 0
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var inputState: InputState = InputState.default
 
   @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def loop(lastUpdateTime: Long): Long => Unit = { time =>
+    runningTimeReference = time
     val timeDelta: Long = time - lastUpdateTime
 
     // PUT NOTHING ABOVE THIS LINE!! Major performance penalties!!
