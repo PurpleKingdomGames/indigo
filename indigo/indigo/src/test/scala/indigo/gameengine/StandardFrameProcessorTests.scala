@@ -24,19 +24,18 @@ object StandardFrameProcessorTests extends TestSuite {
         Dice.loaded(0)
       )
 
-      val outModel = outcome.state._1
+      val outModel     = outcome.state._1
       val outViewModel = outcome.state._2
-      val outView = outcome.state._3.get
+      val outView      = outcome.state._3.get
 
-      outModel.count ==> 1
-      outViewModel ==> 10
-      outView.globalEvents.length ==> SceneUpdateFragment.empty.globalEvents.length
-
-      println(outcome.globalEvents)
-
-      outcome.globalEvents.length ==> 2
-      outcome.globalEvents.contains(EventsOnlyEvent.Increment)
-      outcome.globalEvents.contains(EventsOnlyEvent.Total(1))
+      assert(
+        outModel.count == 1,
+        outViewModel == 10,
+        outView.globalEvents.length == SceneUpdateFragment.empty.globalEvents.length,
+        outcome.globalEvents.length == 2,
+        outcome.globalEvents.contains(EventsOnlyEvent.Increment) == true,
+        outcome.globalEvents.contains(EventsOnlyEvent.Total(1)) == true
+      )
 
     }
 
@@ -57,15 +56,16 @@ object TestFixtures {
         Outcome(m.copy(count = newCount)).addGlobalEvents(EventsOnlyEvent.Total(newCount))
 
       case EventsOnlyEvent.Decrement =>
-        val newCount = m.count - 1
-        Outcome(m.copy(count = newCount)).addGlobalEvents(EventsOnlyEvent.Total(newCount))
+        Outcome(m)
 
       case _ =>
         Outcome(m)
     }
 
-  val viewModelUpdate: (GameTime, GameModel, Int, InputState, Dice) => Outcome[Int] =
-    (_, _, vm, _, _) => Outcome(vm + 10).addGlobalEvents(EventsOnlyEvent.Increment)
+  val viewModelUpdate: (GameTime, GameModel, Int, InputState, Dice) => Outcome[Int] = 
+    (_, _, vm, _, _) => {
+      Outcome(vm + 10).addGlobalEvents(EventsOnlyEvent.Increment)
+    }
 
   val viewUpdate: (GameTime, GameModel, Int, InputState) => SceneUpdateFragment =
     (_, _, _, _) => SceneUpdateFragment.empty

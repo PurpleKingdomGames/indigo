@@ -57,16 +57,14 @@ final class StandardFrameProcessor[Model, ViewModel](
     }
 
     val updatedViewModel: Outcome[ViewModel] =
-      updatedModel.flatMapState { m =>
-        updateViewModel(gameTime, m, viewModel, inputState, dice)
-      }
+      updateViewModel(gameTime, updatedModel.state, viewModel, inputState, dice)
 
     val view: SceneUpdateFragment =
       updateView(gameTime, updatedModel.state, updatedViewModel.state, inputState)
 
     Outcome.combine3(updatedModel, updatedViewModel, Outcome(Some(view)))
   }
-  
+
   def runSkipView(
       model: Model,
       viewModel: ViewModel,
@@ -75,6 +73,7 @@ final class StandardFrameProcessor[Model, ViewModel](
       inputState: InputState,
       dice: Dice
   ): Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] = {
+    
     val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
       acc.flatMapState { next =>
         updateModel(gameTime, next, inputState, dice)(e)
