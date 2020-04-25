@@ -31,7 +31,7 @@ object GlobalEventStreamImpl {
           .flatMap { audioFilter }
           .flatMap { storageFilter }
           .flatMap { assetFilter }
-          .foreach(e => eventQueue += e)
+          .foreach(e => eventQueue.enqueue(e))
 
       def collect: List[GlobalEvent] =
         eventQueue.dequeueAll(_ => true).toList

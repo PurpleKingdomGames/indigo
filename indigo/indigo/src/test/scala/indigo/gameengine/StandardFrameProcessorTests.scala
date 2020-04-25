@@ -34,7 +34,8 @@ object StandardFrameProcessorTests extends TestSuite {
         outView.globalEvents.length == SceneUpdateFragment.empty.globalEvents.length,
         outcome.globalEvents.length == 2,
         outcome.globalEvents.contains(EventsOnlyEvent.Increment) == true,
-        outcome.globalEvents.contains(EventsOnlyEvent.Total(1)) == true
+        outcome.globalEvents.contains(EventsOnlyEvent.Total(1)) == true,
+        outcome.globalEvents == List(EventsOnlyEvent.Total(1), EventsOnlyEvent.Increment)
       )
 
     }
