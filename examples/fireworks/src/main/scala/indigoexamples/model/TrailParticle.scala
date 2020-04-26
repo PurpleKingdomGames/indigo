@@ -1,7 +1,7 @@
 package indigoexamples.model
 
 import indigo.shared.temporal.Signal
-import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 import indigoexts.subsystems.automata.AutomatonPayload
 import indigo.shared.datatypes.RGBA
 
@@ -25,7 +25,7 @@ object TrailParticle {
   def create(tint: RGBA): TrailParticle =
     TrailParticle(1.0d, tint)
 
-  def fade(lifeSpan: Millis): Signal[Double] =
+  def fade(lifeSpan: Seconds): Signal[Double] =
     Signal { t =>
       initialAlpha * (1 - (t.toDouble / lifeSpan.toDouble))
     }

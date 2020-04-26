@@ -24,9 +24,9 @@ object ModelLogic {
       gameState = GameState.Running.start,
       gameMap = Arena.genLevel(gridSize),
       score = 0,
-      tickDelay = Millis(100),
+      tickDelay = Seconds(0.1),
       controlScheme = controlScheme,
-      lastUpdated = Millis.zero
+      lastUpdated = Seconds.zero
     )
 
   def update(gameTime: GameTime, state: GameModel): GlobalEvent => Outcome[GameModel] = {
@@ -154,7 +154,7 @@ object ModelLogic {
       state: GameModel,
       crashDetails: GameState.Crashed
   ): GlobalEvent => Outcome[GameModel] = {
-    case FrameTick if gameTime.running <= crashDetails.crashedAt + Millis(750) =>
+    case FrameTick if gameTime.running <= crashDetails.crashedAt + Seconds(0.75) =>
       //Pause briefly on collision
       Outcome(state)
 

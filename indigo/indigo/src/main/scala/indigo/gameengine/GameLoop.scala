@@ -61,7 +61,7 @@ class GameLoop[GameModel, ViewModel](
 
         metrics.record(UpdateStartMetric)
 
-        val gameTime        = new GameTime(Millis(time), Seconds(timeDelta.toDouble / 1000d), GameTime.FPS(gameConfig.frameRate))
+        val gameTime        = new GameTime(Millis(time).toSeconds, Seconds(timeDelta.toDouble / 1000d), GameTime.FPS(gameConfig.frameRate))
         val collectedEvents = globalEventStream.collect :+ FrameTick
 
         // Persist input state
@@ -80,7 +80,7 @@ class GameLoop[GameModel, ViewModel](
             gameTime,
             collectedEvents,
             inputState,
-            Dice.default(gameTime.running.value),
+            Dice.default(gameTime.running.toMillis.value),
             metrics
           )
 

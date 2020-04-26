@@ -35,7 +35,7 @@ class FireworksSpecification extends Properties("FireworksModel") {
       events
         .map(_.lifeSpan)
         .collect { case Some(life) => life }
-        .forall(ms => ms >= Millis(LaunchPadAutomata.MinCountDown) && ms <= Millis(LaunchPadAutomata.MaxCountDown))
+        .forall(secs => secs >= LaunchPadAutomata.MinCountDown && secs <= LaunchPadAutomata.MaxCountDown)
     )
   }
 

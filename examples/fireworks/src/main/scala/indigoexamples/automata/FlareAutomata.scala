@@ -24,7 +24,7 @@ object FlareAutomata {
   def automaton(toScreenSpace: Vertex => Point): Automaton =
     Automaton(
       Assets.cross,
-      Millis(0)
+      Seconds.zero
     ).withModifier(ModifierFunctions.signal(toScreenSpace))
 
   def spawnEvent(flare: Flare): AutomataEvent.Spawn =

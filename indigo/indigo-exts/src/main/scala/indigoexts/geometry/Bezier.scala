@@ -2,8 +2,8 @@ package indigoexts.geometry
 
 import scala.annotation.tailrec
 import indigo.shared.temporal.Signal
-import indigo.shared.time.Millis
 import indigo.shared.collections.NonEmptyList
+import indigo.shared.time.Seconds
 
 final class Bezier(val vertices: List[Vertex]) extends AnyVal {
 
@@ -19,7 +19,7 @@ final class Bezier(val vertices: List[Vertex]) extends AnyVal {
   def toLineSegments(subdivisions: Int): List[LineSegment] =
     Bezier.toLineSegments(this, subdivisions)
 
-  def toSignal(duration: Millis): Signal[Vertex] =
+  def toSignal(duration: Seconds): Signal[Vertex] =
     Bezier.toSignal(this, duration)
 
   def bounds: BoundingBox =
@@ -117,7 +117,7 @@ object Bezier {
   def toLineSegments(bezier: Bezier, subdivisions: Int): List[LineSegment] =
     Polygon.Open(toVertices(bezier, subdivisions)).lineSegments
 
-  def toSignal(bezier: Bezier, duration: Millis): Signal[Vertex] =
+  def toSignal(bezier: Bezier, duration: Seconds): Signal[Vertex] =
     Signal { t =>
       bezier.at(t.toDouble / duration.toDouble)
     }

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Indigo
 echo ">>> Indigo"
 cd indigo

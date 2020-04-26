@@ -8,7 +8,7 @@ import indigoexamples.automata.TrailAutomata
 import indigoexts.subsystems.automata.AutomataEvent
 
 trait Projectile extends AutomatonPayload {
-  val flightTime: Millis
+  val flightTime: Seconds
   val movementSignal: Signal[Vertex]
 }
 
@@ -26,22 +26,22 @@ object Projectiles {
     )
   }
 
-  def createArcSignal(lifeSpan: Millis): NonEmptyList[Vertex] => Signal[Vertex] =
+  def createArcSignal(lifeSpan: Seconds): NonEmptyList[Vertex] => Signal[Vertex] =
     Bezier
       .fromVerticesNel(_)
       .toSignal(lifeSpan)
 
-  def pickFlightTime(dice: Dice, min: Millis, max: Millis): Millis =
+  def pickFlightTime(dice: Dice, min: Seconds, max: Seconds): Seconds =
     if (max === min) {
       min
     } else if (max > min) {
-      Millis(min.value + (dice.rollDouble * (max.value - min.value)).toLong)
+      Seconds(min.value + (dice.rollDouble * (max.value - min.value)).toLong)
     } else {
-      Millis(max.value + (dice.rollDouble * (min.value - max.value)).toLong)
+      Seconds(max.value + (dice.rollDouble * (min.value - max.value)).toLong)
     }
 
-  def emitTrailEvents(position: Point, tint: RGBA, interval: Long): Signal[List[AutomataEvent.Spawn]] =
-    Signal.Pulse(Millis(interval)).map { predicate =>
+  def emitTrailEvents(position: Point, tint: RGBA, interval: Double): Signal[List[AutomataEvent.Spawn]] =
+    Signal.Pulse(Seconds(interval)).map { predicate =>
       if (predicate) List(TrailAutomata.spawnEvent(position, tint)) else Nil
     }
 

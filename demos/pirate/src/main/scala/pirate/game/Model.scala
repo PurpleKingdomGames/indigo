@@ -4,19 +4,19 @@ import indigo._
 
 import pirate.init.Assets
 
-final case class Model(pirateState: PirateState, facingRight: Boolean, position: Point, soundLastPlayed: Millis, lastRespawn: Millis) {
+final case class Model(pirateState: PirateState, facingRight: Boolean, position: Point, soundLastPlayed: Seconds, lastRespawn: Seconds) {
   val pirateIsSafe: Boolean = Model.navRegion.isPointWithin(position)
 }
 
 object Model {
 
   val navRegion: Rectangle       = Rectangle(137, 0, 338, 272)
-  val beat: Millis               = Millis(250)
+  val beat: Seconds               = Seconds(0.25)
   val walkDistancePerSecond: Int = 128
   val fallDistancePerSecond: Int = 300
 
   def initialModel(screenDimensions: Rectangle): Model =
-    Model(PirateState.Falling, true, Point(screenDimensions.horizontalCenter, 0), Millis.zero, Millis.zero)
+    Model(PirateState.Falling, true, Point(screenDimensions.horizontalCenter, 0), Seconds.zero, Seconds.zero)
 
   def update(gameTime: GameTime, model: Model, inputState: InputState, screenDimensions: Rectangle): GlobalEvent => Outcome[Model] = {
     case FrameTick if model.pirateIsSafe && model.position.y == Model.navRegion.bottom - 1 =>
@@ -97,7 +97,7 @@ object Model {
     }
   }
 
-  def updateWalkSound(gameTime: GameTime, model: Model): (List[GlobalEvent], Millis) =
+  def updateWalkSound(gameTime: GameTime, model: Model): (List[GlobalEvent], Seconds) =
     if (gameTime.running > model.soundLastPlayed + Model.beat) {
       (List(PlaySound(Assets.Sounds.walkSound, Volume(0.5d))), gameTime.running)
     } else (Nil, model.soundLastPlayed)

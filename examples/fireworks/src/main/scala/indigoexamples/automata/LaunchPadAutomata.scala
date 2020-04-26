@@ -8,8 +8,8 @@ import indigoexts.geometry.Vertex
 
 object LaunchPadAutomata {
 
-  val MinCountDown: Int = 100
-  val MaxCountDown: Int = 1000
+  val MinCountDown: Seconds = Seconds(0.1)
+  val MaxCountDown: Seconds = Seconds(1.0)
 
   val poolKey: AutomataPoolKey =
     AutomataPoolKey("launchPad")
@@ -17,7 +17,7 @@ object LaunchPadAutomata {
   val automaton: Automaton =
     Automaton(
       Assets.cross,
-      Millis(0)
+      Seconds.zero
     ).withOnCullEvent { seed =>
       seed.payload match {
         case Some(LaunchPad(_, _, rocket)) =>

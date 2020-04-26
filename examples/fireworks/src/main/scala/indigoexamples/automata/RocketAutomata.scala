@@ -18,7 +18,7 @@ object RocketAutomata {
   def automaton(toScreenSpace: Vertex => Point): Automaton =
     Automaton(
       Assets.cross,
-      Millis(0)
+      Seconds.zero
     ).withModifier(ModifierFunctions.signal(toScreenSpace))
       .withOnCullEvent(launchFlares)
 

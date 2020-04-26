@@ -55,7 +55,7 @@ object ControlsScene extends Scene[SnakeGameModel, SnakeViewModel] {
     SceneUpdateFragment.empty
       .addUiLayerNodes(drawControlsText(24, verticalMiddle, sceneModel))
       .addUiLayerNodes(drawSelectText(horizontalCenter))
-      .addUiLayerNodes(SharedElements.drawHitSpaceToStart(horizontalCenter, 1000, gameTime))
+      .addUiLayerNodes(SharedElements.drawHitSpaceToStart(horizontalCenter, Seconds(1), gameTime))
   }
 
   def drawControlsText(center: Int, middle: Int, controlScheme: ControlScheme): List[SceneGraphNode] =

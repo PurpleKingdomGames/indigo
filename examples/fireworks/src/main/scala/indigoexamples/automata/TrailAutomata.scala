@@ -13,7 +13,7 @@ object TrailAutomata {
   val automaton: Automaton =
     Automaton(
       Assets.cross,
-      Millis(250)
+      Seconds(0.25)
     ).withModifier(Modifer.signal)
 
   val automata: Automata =

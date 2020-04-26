@@ -2,7 +2,6 @@ package indigo.shared.temporal
 
 import utest._
 import indigo.shared.time.GameTime
-import indigo.shared.time.Millis
 import indigo.shared.time.Seconds
 import indigo.shared.datatypes.Point
 
@@ -13,14 +12,14 @@ object SignalTests extends TestSuite {
 
       "Signals" - {
         "should be able to get a fixed value from a signal" - {
-          Signal.fixed("a").at(Millis(100)) ==> "a"
+          Signal.fixed("a").at(Seconds(100)) ==> "a"
         }
 
         "should be able to get a value over time from a signal" - {
           val sig = Signal(t => t.toInt * 10)
 
           (0 to 10).foreach { t =>
-            sig.at(Millis(t)) ==> t * 10
+            sig.at(Seconds(t)) ==> t * 10
           }
         }
 
@@ -29,14 +28,14 @@ object SignalTests extends TestSuite {
           val b = Signal.fixed(2)
 
           //Alternative to applicative syntax
-          a.merge(b)(_ + _).at(Millis.zero) ==> 3
+          a.merge(b)(_ + _).at(Seconds.zero) ==> 3
         }
 
         "should be able to flatMap Signals" - {
 
           val a = Signal.fixed(10)
 
-          a.flatMap(i => Signal.fixed(i * 2)).at(Millis.zero) ==> 20
+          a.flatMap(i => Signal.fixed(i * 2)).at(Seconds.zero) ==> 20
         }
 
         "should be able to flatMap Signals in a for comp" - {
@@ -48,22 +47,22 @@ object SignalTests extends TestSuite {
               c <- Signal.fixed(30)
             } yield a + b + c
 
-          res.at(Millis.zero) ==> 60
+          res.at(Seconds.zero) ==> 60
 
         }
 
         "Pulse signal" - {
 
-          val pulse = Signal.Pulse(Millis(10))
+          val pulse = Signal.Pulse(Seconds(10))
 
-          pulse.at(Millis(0)) ==> true
-          pulse.at(Millis(1)) ==> true
-          pulse.at(Millis(10)) ==> false
-          pulse.at(Millis(11)) ==> false
-          pulse.at(Millis(20)) ==> true
-          pulse.at(Millis(23)) ==> true
-          pulse.at(Millis(1234)) ==> false
-          pulse.at(Millis(1243)) ==> true
+          pulse.at(Seconds(0)) ==> true
+          pulse.at(Seconds(1)) ==> true
+          pulse.at(Seconds(10)) ==> false
+          pulse.at(Seconds(11)) ==> false
+          pulse.at(Seconds(20)) ==> true
+          pulse.at(Seconds(23)) ==> true
+          pulse.at(Seconds(1234)) ==> false
+          pulse.at(Seconds(1243)) ==> true
 
         }
       }
@@ -103,36 +102,36 @@ Where a thing moves in a circle for 2 seconds and then stops.
         val positionSignal: Signal[(Int, Int)] =
           input |> positionSF
 
-        positionSignal.at(Millis.zero) ==> (0, 10)
-        positionSignal.at(Millis(250)) ==> (10, 0)
-        positionSignal.at(Millis(500)) ==> (0, -10)
-        positionSignal.at(Millis(750)) ==> (-10, 0)
-        positionSignal.at(Millis(1000)) ==> (0, 10)
+        positionSignal.at(Seconds.zero) ==> (0, 10)
+        positionSignal.at(Seconds(250)) ==> (10, 0)
+        positionSignal.at(Seconds(500)) ==> (0, -10)
+        positionSignal.at(Seconds(750)) ==> (-10, 0)
+        positionSignal.at(Seconds(1000)) ==> (0, 10)
 
       }
 
       "Moving and then stopping after a certain time" - {
 
-        final case class Conditions(xPos: Int, velocity: Int, creationTime: Millis, stopAfter: Millis)
+        final case class Conditions(xPos: Int, velocity: Int, creationTime: Seconds, stopAfter: Seconds)
 
-        val conditions = Conditions(100, 10, Millis.zero, Millis(20000))
+        val conditions = Conditions(100, 10, Seconds.zero, Seconds(20000))
 
-        val timeAndConditions: Signal[(Millis, Conditions)] =
+        val timeAndConditions: Signal[(Seconds, Conditions)] =
           Signal.Time |*| Signal.fixed(conditions)
 
-        val timeShift: SignalFunction[(Millis, Conditions), (Millis, Conditions)] =
+        val timeShift: SignalFunction[(Seconds, Conditions), (Seconds, Conditions)] =
           SignalFunction(t => (t._1 - t._2.creationTime, t._2))
 
-        val timeStop: SignalFunction[(Millis, Conditions), (Millis, Conditions)] =
+        val timeStop: SignalFunction[(Seconds, Conditions), (Seconds, Conditions)] =
           SignalFunction(t => if (t._1 >= t._2.stopAfter) (t._2.stopAfter, t._2) else t)
 
-        val timeToSeconds: SignalFunction[(Millis, Conditions), (Double, Conditions)] =
+        val timeToSeconds: SignalFunction[(Seconds, Conditions), (Double, Conditions)] =
           SignalFunction(t => (t._1.toDouble * 0.001d, t._2))
 
         val positionX: SignalFunction[(Double, Conditions), Int] =
           SignalFunction(t => t._2.xPos + (t._1 * t._2.velocity).toInt)
 
-        val signalPipeline: SignalFunction[(Millis, Conditions), Int] =
+        val signalPipeline: SignalFunction[(Seconds, Conditions), Int] =
           timeShift >>> timeStop >>> timeToSeconds >>> positionX
 
         val signal: Signal[Int] =
@@ -140,10 +139,10 @@ Where a thing moves in a circle for 2 seconds and then stops.
 
         // Sanity check, basic signal should adance position over time
         (0 to 10).toList.foreach { i =>
-          signal.at(Millis(i * 1000)) ==> conditions.xPos + (conditions.velocity * i).toInt
+          signal.at(Seconds(i * 1000)) ==> conditions.xPos + (conditions.velocity * i).toInt
         }
 
-        signal.at(Millis(30000)) ==> signal.at(Millis(20000))
+        signal.at(Seconds(30000)) ==> signal.at(Seconds(20000))
 
       }
 
@@ -154,38 +153,38 @@ Where a thing moves in a circle for 2 seconds and then stops.
 
         "Lerp (linear interpolation)" - {
           // X
-          Signal.Lerp(Point(60, 10), Point(10, 10), Seconds(1)).at(Seconds(0.0).toMillis) ==> Point(60, 10)
-          Signal.Lerp(Point(60, 10), Point(10, 10), Seconds(1)).at(Seconds(0.5).toMillis) ==> Point(35, 10)
-          Signal.Lerp(Point(60, 10), Point(10, 10), Seconds(1)).at(Seconds(1.0).toMillis) ==> Point(10, 10)
+          Signal.Lerp(Point(60, 10), Point(10, 10), Seconds(1)).at(Seconds(0.0)) ==> Point(60, 10)
+          Signal.Lerp(Point(60, 10), Point(10, 10), Seconds(1)).at(Seconds(0.5)) ==> Point(35, 10)
+          Signal.Lerp(Point(60, 10), Point(10, 10), Seconds(1)).at(Seconds(1.0)) ==> Point(10, 10)
           // Y
-          Signal.Lerp(Point(10, 10), Point(10, 60), Seconds(1)).at(Seconds(0.0).toMillis) ==> Point(10, 10)
-          Signal.Lerp(Point(10, 10), Point(10, 60), Seconds(1)).at(Seconds(0.5).toMillis) ==> Point(10, 35)
-          Signal.Lerp(Point(10, 10), Point(10, 60), Seconds(1)).at(Seconds(1.0).toMillis) ==> Point(10, 60)
+          Signal.Lerp(Point(10, 10), Point(10, 60), Seconds(1)).at(Seconds(0.0)) ==> Point(10, 10)
+          Signal.Lerp(Point(10, 10), Point(10, 60), Seconds(1)).at(Seconds(0.5)) ==> Point(10, 35)
+          Signal.Lerp(Point(10, 10), Point(10, 60), Seconds(1)).at(Seconds(1.0)) ==> Point(10, 60)
           // X,Y
-          Signal.Lerp(Point(10, 10), Point(60, 60), Seconds(1)).at(Seconds(0.0).toMillis) ==> Point(10, 10)
-          Signal.Lerp(Point(10, 10), Point(60, 60), Seconds(1)).at(Seconds(0.5).toMillis) ==> Point(35, 35)
-          Signal.Lerp(Point(10, 10), Point(60, 60), Seconds(1)).at(Seconds(1.0).toMillis) ==> Point(60, 60)
+          Signal.Lerp(Point(10, 10), Point(60, 60), Seconds(1)).at(Seconds(0.0)) ==> Point(10, 10)
+          Signal.Lerp(Point(10, 10), Point(60, 60), Seconds(1)).at(Seconds(0.5)) ==> Point(35, 35)
+          Signal.Lerp(Point(10, 10), Point(60, 60), Seconds(1)).at(Seconds(1.0)) ==> Point(60, 60)
         }
 
         "SmoothPulse smoothly interpolates from 0 to 1" - {
-          round(Signal.SmoothPulse.at(Seconds(0).toMillis)) ==> 0
-          round(Signal.SmoothPulse.at(Seconds(0.25).toMillis)) ==> 0.5
-          round(Signal.SmoothPulse.at(Seconds(0.5).toMillis)) ==> 1
-          round(Signal.SmoothPulse.at(Seconds(0.75).toMillis)) ==> 0.5
-          round(Signal.SmoothPulse.at(Seconds(1).toMillis)) ==> 0
-          round(Signal.SmoothPulse.at(Seconds(1.5).toMillis)) ==> 1
-          round(Signal.SmoothPulse.at(Seconds(2).toMillis)) ==> 0
+          round(Signal.SmoothPulse.at(Seconds(0))) ==> 0
+          round(Signal.SmoothPulse.at(Seconds(0.25))) ==> 0.5
+          round(Signal.SmoothPulse.at(Seconds(0.5))) ==> 1
+          round(Signal.SmoothPulse.at(Seconds(0.75))) ==> 0.5
+          round(Signal.SmoothPulse.at(Seconds(1))) ==> 0
+          round(Signal.SmoothPulse.at(Seconds(1.5))) ==> 1
+          round(Signal.SmoothPulse.at(Seconds(2))) ==> 0
         }
 
         "Pulse produces a signal of true and false values" - {
 
-          val pulse = Signal.Pulse(Millis(10))
+          val pulse = Signal.Pulse(Seconds(10))
 
-          pulse.at(Millis(0)) ==> true
-          pulse.at(Millis(5)) ==> true
-          pulse.at(Millis(10)) ==> false
-          pulse.at(Millis(15)) ==> false
-          pulse.at(Millis(20)) ==> true
+          pulse.at(Seconds(0)) ==> true
+          pulse.at(Seconds(5)) ==> true
+          pulse.at(Seconds(10)) ==> false
+          pulse.at(Seconds(15)) ==> false
+          pulse.at(Seconds(20)) ==> true
 
         }
 
@@ -209,20 +208,20 @@ Where a thing moves in a circle for 2 seconds and then stops.
             }
 
           val clamped =
-            daysOfTheWeek.clampTime(Millis(0), Millis(6))
+            daysOfTheWeek.clampTime(Seconds(0), Seconds(6))
 
-          clamped.at(Millis(-100)) ==> days(0)
-          clamped.at(Millis(-1)) ==> days(0)
-          clamped.at(Millis(0)) ==> days(0)
-          clamped.at(Millis(1)) ==> days(1)
-          clamped.at(Millis(2)) ==> days(2)
-          clamped.at(Millis(3)) ==> days(3)
-          clamped.at(Millis(4)) ==> days(4)
-          clamped.at(Millis(5)) ==> days(5)
-          clamped.at(Millis(6)) ==> days(6)
-          clamped.at(Millis(7)) ==> days(6)
-          clamped.at(Millis(50)) ==> days(6)
-          clamped.at(Millis(1000)) ==> days(6)
+          clamped.at(Seconds(-100)) ==> days(0)
+          clamped.at(Seconds(-1)) ==> days(0)
+          clamped.at(Seconds(0)) ==> days(0)
+          clamped.at(Seconds(1)) ==> days(1)
+          clamped.at(Seconds(2)) ==> days(2)
+          clamped.at(Seconds(3)) ==> days(3)
+          clamped.at(Seconds(4)) ==> days(4)
+          clamped.at(Seconds(5)) ==> days(5)
+          clamped.at(Seconds(6)) ==> days(6)
+          clamped.at(Seconds(7)) ==> days(6)
+          clamped.at(Seconds(50)) ==> days(6)
+          clamped.at(Seconds(1000)) ==> days(6)
         }
 
         "wrapping time keeps time looping round a fixed point" - {
@@ -246,17 +245,17 @@ Where a thing moves in a circle for 2 seconds and then stops.
 
           val wrapped =
             daysOfTheWeek
-              .clampTime(Millis(0), Millis(1000)) // So now we can't be less than 0, the 1000 would still break
-              .wrapTime(Millis(7))                // ...but we wrap at day 7
+              .clampTime(Seconds(0), Seconds(1000)) // So now we can't be less than 0, the 1000 would still break
+              .wrapTime(Seconds(7))                 // ...but we wrap at day 7
 
-          wrapped.at(Millis(0)) ==> days(0)
-          wrapped.at(Millis(1)) ==> days(1)
-          wrapped.at(Millis(2)) ==> days(2)
-          wrapped.at(Millis(3)) ==> days(3)
-          wrapped.at(Millis(4)) ==> days(4)
-          wrapped.at(Millis(5)) ==> days(5)
-          wrapped.at(Millis(6)) ==> days(6)
-          wrapped.at(Millis(7)) ==> days(0)
+          wrapped.at(Seconds(0)) ==> days(0)
+          wrapped.at(Seconds(1)) ==> days(1)
+          wrapped.at(Seconds(2)) ==> days(2)
+          wrapped.at(Seconds(3)) ==> days(3)
+          wrapped.at(Seconds(4)) ==> days(4)
+          wrapped.at(Seconds(5)) ==> days(5)
+          wrapped.at(Seconds(6)) ==> days(6)
+          wrapped.at(Seconds(7)) ==> days(0)
 
         }
 
@@ -265,44 +264,13 @@ Where a thing moves in a circle for 2 seconds and then stops.
           val double = Signal.Time.affectTime(2.0d)
           val half   = Signal.Time.affectTime(0.5d)
 
-          val times: List[Millis] =
-            (1 to 10).map(_ * 10).map(_.toLong).toList.map(Millis.apply)
+          val times: List[Seconds] =
+            (1 to 10).map(_ * 10).map(_.toDouble).toList.map(Seconds.apply)
 
           times.foreach { t =>
-            double.at(t) ==> t * Millis(2L)
-            half.at(t) ==> t / Millis(2L)
+            double.at(t) ==> t * Seconds(2L)
+            half.at(t) ==> t / Seconds(2L)
           }
-
-        }
-
-        "ease out" - {
-
-          val target = Millis(100)
-
-          val time = Signal.Time.easeOut(target, 2)
-
-          time.at(Millis(0)) ==> Millis(0)
-          time.at(Millis(25)) ==> Millis(62)
-          time.at(Millis(50)) ==> Millis(75)
-          time.at(Millis(75)) ==> Millis(87)
-          time.at(Millis(100)) ==> Millis(100)
-          time.at(Millis(1000)) ==> Millis(1000)
-
-        }
-
-        "ease in" - {
-
-          val target = Millis(100)
-
-          val time = Signal.Time.easeIn(target, 2)
-
-          time.at(Millis(0)) ==> Millis(0)
-          time.at(Millis(50)) ==> Millis(2)
-          time.at(Millis(75)) ==> Millis(6)
-          time.at(Millis(90)) ==> Millis(18)
-          time.at(Millis(95)) ==> Millis(47)
-          time.at(Millis(100)) ==> Millis(100)
-          time.at(Millis(1000)) ==> Millis(1000)
 
         }
 

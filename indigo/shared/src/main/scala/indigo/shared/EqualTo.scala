@@ -21,10 +21,10 @@ object EqualTo {
   implicit val eqLong: EqualTo[Long] = create(_ == _)
 
   @SuppressWarnings(Array("org.wartremover.warts.Equals"))
-  implicit val eqFloat: EqualTo[Float] = create(_ == _)
+  implicit val eqFloat: EqualTo[Float] = create((a, b) => a > b - 0.001 && a < b + 0.001)
 
   @SuppressWarnings(Array("org.wartremover.warts.Equals"))
-  implicit val eqDouble: EqualTo[Double] = create(_ == _)
+  implicit val eqDouble: EqualTo[Double] = create((a, b) => a > b - 0.001 && a < b + 0.001)
 
   @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   implicit val eqBoolean: EqualTo[Boolean] = create(_ == _)

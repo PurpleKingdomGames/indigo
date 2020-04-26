@@ -66,10 +66,10 @@ object View {
 
   def respawnEffect(gameTime: GameTime, model: Model, captain: Sprite): Sprite = {
     val flashActive: Signal[Boolean] =
-      Signal(_ < model.lastRespawn + Millis(2000))
+      Signal(_ < model.lastRespawn + Seconds(2.0))
 
     val flashOnOff: Signal[Boolean] =
-      Signal.Pulse(Millis(100))
+      Signal.Pulse(Seconds(0.1))
 
     val combinedSignals: Signal[(Boolean, Boolean)] =
       flashActive |*| flashOnOff

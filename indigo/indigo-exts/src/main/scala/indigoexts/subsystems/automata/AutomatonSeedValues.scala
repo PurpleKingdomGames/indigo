@@ -1,15 +1,14 @@
 package indigoexts.subsystems.automata
 
 import indigo.shared.datatypes.Point
-import indigo.shared.time.Millis
 import indigo.shared.time.Seconds
 
 sealed trait AutomatonSeedValues {
 
   val spawnedAt: Point
-  val createdAt: Millis
-  val lifeSpan: Millis
-  val timeAliveDelta: Millis
+  val createdAt: Seconds
+  val lifeSpan: Seconds
+  val timeAliveDelta: Seconds
   val randomSeed: Int
   val payload: Option[AutomatonPayload]
 
@@ -24,7 +23,7 @@ sealed trait AutomatonSeedValues {
       spawnedAt,
       createdAt,
       lifeSpan,
-      timeAliveDelta + frameDelta.toMillis,
+      timeAliveDelta + frameDelta,
       randomSeed,
       payload
     )
@@ -33,12 +32,12 @@ sealed trait AutomatonSeedValues {
 
 object AutomatonSeedValues {
 
-  def apply(spawnPosition: Point, creationTime: Millis, lifeExpectancy: Millis, age: Millis, randomSeedValue: Int, initialPayload: Option[AutomatonPayload]): AutomatonSeedValues =
+  def apply(spawnPosition: Point, creationTime: Seconds, lifeExpectancy: Seconds, age: Seconds, randomSeedValue: Int, initialPayload: Option[AutomatonPayload]): AutomatonSeedValues =
     new AutomatonSeedValues {
       val spawnedAt: Point             = spawnPosition
-      val createdAt: Millis            = creationTime
-      val lifeSpan: Millis             = lifeExpectancy
-      val timeAliveDelta: Millis       = age
+      val createdAt: Seconds            = creationTime
+      val lifeSpan: Seconds             = lifeExpectancy
+      val timeAliveDelta: Seconds       = age
       val randomSeed: Int              = randomSeedValue
       val payload: Option[AutomatonPayload] = initialPayload
     }

@@ -1,6 +1,6 @@
 package snake.model
 
-import indigo.{GameTime, Millis}
+import indigo.{GameTime, Seconds}
 import indigoexts.grids.{GridPoint, GridSize}
 import snake.model.arena.GameMap
 import snake.model.snakemodel.{CollisionCheckOutcome, Snake}
@@ -11,12 +11,12 @@ case class GameModel(
     gameState: GameState,
     gameMap: GameMap,
     score: Int,
-    tickDelay: Millis,
+    tickDelay: Seconds,
     controlScheme: ControlScheme,
-    lastUpdated: Millis
+    lastUpdated: Seconds
 ) {
 
-  def resetLastUpdated(time: Millis): GameModel =
+  def resetLastUpdated(time: Seconds): GameModel =
     this.copy(lastUpdated = time)
 
   def update(

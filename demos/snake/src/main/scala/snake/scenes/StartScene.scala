@@ -52,7 +52,7 @@ object StartScene extends Scene[SnakeGameModel, SnakeViewModel] {
 
     SceneUpdateFragment.empty
       .addUiLayerNodes(drawTitleText(horizontalCenter, verticalMiddle))
-      .addUiLayerNodes(SharedElements.drawHitSpaceToStart(horizontalCenter, 1000, gameTime))
+      .addUiLayerNodes(SharedElements.drawHitSpaceToStart(horizontalCenter, Seconds(1), gameTime))
       .withAudio(
         SceneAudio(
           SceneAudioSource(

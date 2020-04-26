@@ -2,7 +2,6 @@ package indigoexts.subsystems.automata
 
 import utest._
 import indigo.shared.datatypes.Point
-import indigo.shared.time.Millis
 import indigo.shared.time.Seconds
 
 object AutomataSeedValuesTests extends TestSuite {
@@ -17,9 +16,9 @@ object AutomataSeedValuesTests extends TestSuite {
           val seed =
             AutomatonSeedValues(
               spawnPosition = Point.zero,
-              creationTime = Millis(500),
-              lifeExpectancy = Millis(2000),
-              age = Millis.zero,
+              creationTime = Seconds(0.5),
+              lifeExpectancy = Seconds(2),
+              age = Seconds.zero,
               randomSeedValue = 0,
               initialPayload = None
             )

@@ -1,32 +1,31 @@
 package snake.model
 
-import indigo.Millis
-
 import snake.model.snakemodel.SnakeDirection
+import indigo.Seconds
 
 sealed trait GameState {
   val hasCrashed: Boolean
   val lastSnakeDirection: SnakeDirection
-  def updateNow(time: Millis, currentDirection: SnakeDirection): GameState
+  def updateNow(time: Seconds, currentDirection: SnakeDirection): GameState
 }
 object GameState {
-  case class Crashed(crashedAt: Millis, snakeLengthOnCrash: Int, lastUpdated: Millis, lastSnakeDirection: SnakeDirection)
+  case class Crashed(crashedAt: Seconds, snakeLengthOnCrash: Int, lastUpdated: Seconds, lastSnakeDirection: SnakeDirection)
       extends GameState {
     val hasCrashed: Boolean = true
 
-    def updateNow(time: Millis, currentDirection: SnakeDirection): GameState.Crashed =
+    def updateNow(time: Seconds, currentDirection: SnakeDirection): GameState.Crashed =
       this.copy(lastUpdated = time, lastSnakeDirection = currentDirection)
   }
-  case class Running(lastUpdated: Millis, lastSnakeDirection: SnakeDirection) extends GameState {
+  case class Running(lastUpdated: Seconds, lastSnakeDirection: SnakeDirection) extends GameState {
     val hasCrashed: Boolean = false
 
-    def updateNow(time: Millis, currentDirection: SnakeDirection): GameState.Running =
+    def updateNow(time: Seconds, currentDirection: SnakeDirection): GameState.Running =
       this.copy(lastUpdated = time, lastSnakeDirection = currentDirection)
 
-    def crash(crashedAt: Millis, snakeLengthOnCrash: Int): GameState.Crashed =
+    def crash(crashedAt: Seconds, snakeLengthOnCrash: Int): GameState.Crashed =
       GameState.Crashed(crashedAt, snakeLengthOnCrash: Int, lastUpdated, lastSnakeDirection)
   }
   object Running {
-    val start: Running = GameState.Running(Millis.zero, SnakeDirection.Up)
+    val start: Running = GameState.Running(Seconds.zero, SnakeDirection.Up)
   }
 }

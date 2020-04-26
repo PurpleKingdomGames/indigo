@@ -1,7 +1,6 @@
 package indigoexts.subsystems.automata
 
 import indigo.shared.time.GameTime
-import indigo.shared.time.Millis
 import indigo.shared.Outcome
 import indigo.shared.events.{FrameTick, GlobalEvent}
 import indigo.shared.scenegraph._
@@ -12,6 +11,7 @@ import indigoexts.subsystems.automata.Automata.Layer
 import indigo.shared.EqualTo._
 import indigo.shared.datatypes.RGBA
 import scala.collection.mutable
+import indigo.shared.time.Seconds
 
 final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val layer: Layer, maxPoolSize: Option[Int], val pool: List[SpawnedAutomaton]) extends SubSystem {
   type EventType = AutomataEvent
@@ -43,7 +43,7 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
             position,
             gameTime.running,
             lifeSpan.getOrElse(automaton.lifespan),
-            Millis.zero,
+            Seconds.zero,
             dice.roll,
             payload
           )

@@ -12,7 +12,7 @@ object Score {
       AutomataPoolKey("points"),
       Automaton(
         Text("0", 0, 0, 1, fontKey).alignCenter,
-        Millis(1500)
+        Seconds(1.5d)
       ).withModifier(ModiferFunctions.signal),
       Automata.Layer.Game
     )

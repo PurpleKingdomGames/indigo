@@ -1,6 +1,6 @@
 package indigo.shared.temporal
 
-import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 import indigo.shared.EqualTo
 
 /**
@@ -10,7 +10,7 @@ import indigo.shared.EqualTo
 sealed trait ValueOverTime[@specialized(Int, Long, Float, Double) T] {
   def zero: T
   def one: T
-  def changeAmount(runningTime: Millis, unitsPerSecond: T, creationTime: Millis): T
+  def changeAmount(runningTime: Seconds, unitsPerSecond: T, creationTime: Seconds): T
   def equal(a: T, b: T): Boolean
   def plus(a: T, b: T): T
   def minus(a: T, b: T): T
@@ -27,8 +27,8 @@ object ValueOverTime {
 
       val one: Int = 1
 
-      def changeAmount(runningTime: Millis, unitsPerSecond: Int, creationTime: Millis): Int =
-        ((unitsPerSecond.toDouble * 0.001d) * (runningTime.value - creationTime.value)).toInt
+      def changeAmount(runningTime: Seconds, unitsPerSecond: Int, creationTime: Seconds): Int =
+        (unitsPerSecond.toDouble * (runningTime.value - creationTime.value)).toInt
 
       def equal(a: Int, b: Int): Boolean =
         implicitly[EqualTo[Int]].equal(a, b)
@@ -58,8 +58,8 @@ object ValueOverTime {
 
       val one: Long = 1
 
-      def changeAmount(runningTime: Millis, unitsPerSecond: Long, creationTime: Millis): Long =
-        ((unitsPerSecond.toDouble * 0.001d) * (runningTime.value - creationTime.value)).toLong
+      def changeAmount(runningTime: Seconds, unitsPerSecond: Long, creationTime: Seconds): Long =
+        (unitsPerSecond.toDouble * (runningTime.value - creationTime.value)).toLong
 
       def equal(a: Long, b: Long): Boolean =
         implicitly[EqualTo[Long]].equal(a, b)
@@ -89,8 +89,8 @@ object ValueOverTime {
 
       val one: Float = 1
 
-      def changeAmount(runningTime: Millis, unitsPerSecond: Float, creationTime: Millis): Float =
-        ((unitsPerSecond.toDouble * 0.001d) * (runningTime.value - creationTime.value)).toFloat
+      def changeAmount(runningTime: Seconds, unitsPerSecond: Float, creationTime: Seconds): Float =
+        (unitsPerSecond.toDouble * (runningTime.value - creationTime.value)).toFloat
 
       def equal(a: Float, b: Float): Boolean =
         implicitly[EqualTo[Float]].equal(a, b)
@@ -120,8 +120,8 @@ object ValueOverTime {
 
       val one: Double = 1
 
-      def changeAmount(runningTime: Millis, unitsPerSecond: Double, creationTime: Millis): Double =
-        ((unitsPerSecond.toDouble * 0.001d) * (runningTime.value - creationTime.value)).toDouble
+      def changeAmount(runningTime: Seconds, unitsPerSecond: Double, creationTime: Seconds): Double =
+        (unitsPerSecond * (runningTime.value - creationTime.value)).toDouble
 
       def equal(a: Double, b: Double): Boolean =
         implicitly[EqualTo[Double]].equal(a, b)

@@ -1,7 +1,7 @@
 package indigo.shared.temporal
 
 import utest._
-import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 
 object SignalFunctionTests extends TestSuite {
 
@@ -18,19 +18,19 @@ object SignalFunctionTests extends TestSuite {
     Tests {
 
       "lift / apply / arr (construction)" - {
-        (Signal.fixed(10) |> SignalFunction(f)).at(Millis.zero) ==> "count: 10"
-        (Signal.fixed(20) |> SignalFunction.arr(f)).at(Millis.zero) ==> "count: 20"
-        (Signal.fixed(30) |> SignalFunction.lift(f)).at(Millis.zero) ==> "count: 30"
+        (Signal.fixed(10) |> SignalFunction(f)).at(Seconds.zero) ==> "count: 10"
+        (Signal.fixed(20) |> SignalFunction.arr(f)).at(Seconds.zero) ==> "count: 20"
+        (Signal.fixed(30) |> SignalFunction.lift(f)).at(Seconds.zero) ==> "count: 30"
       }
 
       "andThen / >>>" - {
-        (Signal.fixed(10) |> (SignalFunction(f) andThen SignalFunction(g))).at(Millis.zero) ==> false
-        (Signal.fixed(10000) |> (SignalFunction(f) >>> SignalFunction(g))).at(Millis.zero) ==> true
+        (Signal.fixed(10) |> (SignalFunction(f) andThen SignalFunction(g))).at(Seconds.zero) ==> false
+        (Signal.fixed(10000) |> (SignalFunction(f) >>> SignalFunction(g))).at(Seconds.zero) ==> true
       }
 
       "parallel / &&& / and" - {
-        (Signal.fixed(100) |> (SignalFunction(f) and SignalFunction(x))).at(Millis.zero) ==> ("count: 100", true)
-        (Signal.fixed(1) |> (SignalFunction(f) &&& SignalFunction(x))).at(Millis.zero) ==> ("count: 1", false)
+        (Signal.fixed(100) |> (SignalFunction(f) and SignalFunction(x))).at(Seconds.zero) ==> ("count: 100", true)
+        (Signal.fixed(1) |> (SignalFunction(f) &&& SignalFunction(x))).at(Seconds.zero) ==> ("count: 1", false)
       }
 
       "SignalFunctions" - {
@@ -40,8 +40,8 @@ object SignalFunctionTests extends TestSuite {
 
           val h: SignalFunction[Int, Boolean] = f andThen g
 
-          h.run(Signal.fixed(1)).at(Millis.zero) ==> true
-          h.run(Signal.fixed(1000)).at(Millis.zero) ==> false
+          h.run(Signal.fixed(1)).at(Seconds.zero) ==> true
+          h.run(Signal.fixed(1000)).at(Seconds.zero) ==> false
         }
 
         "should be able to run signal functions and parallel" - {
@@ -50,8 +50,8 @@ object SignalFunctionTests extends TestSuite {
 
           val h: SignalFunction[Int, (String, Boolean)] = f and g
 
-          h.run(Signal.fixed(1)).at(Millis.zero) ==> ("1", true)
-          h.run(Signal.fixed(1000)).at(Millis.zero) ==> ("1000", false)
+          h.run(Signal.fixed(1)).at(Seconds.zero) ==> ("1", true)
+          h.run(Signal.fixed(1000)).at(Seconds.zero) ==> ("1000", false)
         }
       }
 

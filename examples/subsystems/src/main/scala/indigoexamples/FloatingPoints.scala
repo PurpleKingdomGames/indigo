@@ -28,12 +28,15 @@ final case class FloatingPoints(fontKey: FontKey, entities: List[FloatingPointEn
       )
   }
 
+  val text: Text =
+    Text("10", 0, 0, 1, fontKey).alignCenter
+
   def render(gameTime: GameTime): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addUiLayerNodes(
         entities
           .map { e =>
-            FloatingPoints.modifier(e, Text("10", 0, 0, 1, fontKey).alignCenter).at(gameTime.running)
+            FloatingPoints.modifier(e, text).at(gameTime.running)
           }
           .sequence
           .state
@@ -42,33 +45,20 @@ final case class FloatingPoints(fontKey: FontKey, entities: List[FloatingPointEn
 
 object FloatingPoints {
 
-  val timeAndFloatingPointEntity: FloatingPointEntity => Signal[(Millis, FloatingPointEntity)] =
-    seed => Signal.Time |*| Signal.fixed(seed)
-
-  val timeShift: SignalFunction[(Millis, FloatingPointEntity), (Millis, FloatingPointEntity)] =
-    SignalFunction(t => (t._1 - t._2.createdAt, t._2))
-
-  val timeToSeconds: SignalFunction[(Millis, FloatingPointEntity), (Double, FloatingPointEntity)] =
-    SignalFunction(t => (t._1.toDouble * 0.001d, t._2))
-
-  val positionY: SignalFunction[(Double, FloatingPointEntity), Int] =
-    SignalFunction(t => t._2.spawnedAt.y - (t._1 * 30).toInt)
-
-  val signalPipeline: SignalFunction[(Millis, FloatingPointEntity), Int] =
-    timeShift >>> timeToSeconds >>> positionY
-
-  val signal: FloatingPointEntity => Signal[Int] =
-    seed => timeAndFloatingPointEntity(seed) |> signalPipeline
-
   val modifier: (FloatingPointEntity, Text) => Signal[Outcome[Text]] =
-    (seed, renderable) =>
-      Signal.merge(signal(seed), Signal.fixed(renderable)) { (yPos, text) =>
-        Outcome(text.moveTo(seed.spawnedAt.x, yPos))
+    (seed, text) =>
+      Signal { t =>
+        Outcome(
+          text.moveTo(
+            seed.spawnedAt.x,
+            seed.spawnedAt.y - ((t - seed.createdAt).value * 30).toInt
+          )
+        )
       }
 
 }
 
-final case class FloatingPointEntity(spawnedAt: Point, createdAt: Millis, ttl: TimeVaryingValue[Int]) {
+final case class FloatingPointEntity(spawnedAt: Point, createdAt: Seconds, ttl: TimeVaryingValue[Int]) {
   def update(gameTime: GameTime): FloatingPointEntity =
     this.copy(ttl = ttl.decrease(2, gameTime.running))
 }

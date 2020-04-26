@@ -13,7 +13,7 @@ object Score {
       poolKey,
       Automaton(
         Text(scoreAmount, 0, 0, 1, fontKey).alignCenter,
-        Millis(1500)
+        Seconds(1.5)
       ).withModifier(ModiferFunctions.signal),
       Automata.Layer.UI
     )

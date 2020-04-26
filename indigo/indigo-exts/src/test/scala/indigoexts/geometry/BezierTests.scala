@@ -2,7 +2,7 @@ package indigoexts.geometry
 
 import utest._
 import indigo.EqualTo._
-import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 import indigo.shared.datatypes.Rectangle
 
 object BezierTests extends TestSuite {
@@ -213,11 +213,11 @@ object BezierTests extends TestSuite {
           Bezier(Vertex(2, 2), Vertex(4, 7), Vertex(20, 10), Vertex(3, 100))
 
         val signal =
-          bezier.toSignal(Millis(1500))
+          bezier.toSignal(Seconds(1.5))
 
-        signal.at(Millis(0)) === Vertex(2, 2) ==> true
-        signal.at(Millis(750)) === Vertex(9.625, 19.125) ==> true
-        signal.at(Millis(1500)) === Vertex(3, 100) ==> true
+        signal.at(Seconds(0)) === Vertex(2, 2) ==> true
+        signal.at(Seconds(0.75)) === Vertex(9.625, 19.125) ==> true
+        signal.at(Seconds(1.5)) === Vertex(3, 100) ==> true
       }
 
       "give bounding rectangle" - {

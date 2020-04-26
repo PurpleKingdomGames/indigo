@@ -3,14 +3,14 @@ package indigoexamples.model
 import indigo._
 import indigoexts.geometry.Vertex
 
-final case class Rocket(flightTime: Millis, movementSignal: Signal[Vertex], flares: List[Flare], tint: RGBA) extends Projectile
+final case class Rocket(flightTime: Seconds, movementSignal: Signal[Vertex], flares: List[Flare], tint: RGBA) extends Projectile
 
 object Rocket {
 
   val PI2: Double = Math.PI * 2
 
   def generateRocket(dice: Dice, launchPadStartPosition: Vertex): Rocket = {
-    val flightTime = Projectiles.pickFlightTime(dice, Millis(1000L), Millis(2000L))
+    val flightTime = Projectiles.pickFlightTime(dice, Seconds(1), Seconds(2))
     val endPoint   = pickEndPoint(dice, launchPadStartPosition)
 
     val signalFunction: Vertex => Signal[Vertex] =
@@ -20,7 +20,7 @@ object Rocket {
     val tint: RGBA =
       pickColour(dice)
 
-    Rocket(flightTime, signalFunction(endPoint).easeOut(flightTime, 25), generateFlares(dice, endPoint, tint), tint)
+    Rocket(flightTime, signalFunction(endPoint), generateFlares(dice, endPoint, tint), tint)
   }
 
   def pickColour(dice: Dice): RGBA =

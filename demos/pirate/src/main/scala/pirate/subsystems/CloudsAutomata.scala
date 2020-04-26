@@ -29,7 +29,7 @@ object CloudsAutomata {
   val automaton: Automaton =
     Automaton.create(
       Sprite(BindingKey("small clouds"), 0, 0, 140, 39, 45, Assets.Clouds.animationKey1),
-      Millis.zero,
+      Seconds.zero,
       signal,
       _ => Nil
     )

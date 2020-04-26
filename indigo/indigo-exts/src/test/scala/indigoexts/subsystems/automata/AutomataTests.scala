@@ -1,7 +1,6 @@
 package indigoexts.subsystems.automata
 
 import utest._
-import indigo.shared.time.Millis
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.events.GlobalEvent
 import indigo.shared.time.GameTime
@@ -10,6 +9,7 @@ import indigo.shared.datatypes.Point
 import indigo.shared.Outcome
 import indigo.shared.assets.AssetName
 import indigo.shared.datatypes.Material
+import indigo.shared.time.Seconds
 
 object AutomataTests extends TestSuite {
 
@@ -24,7 +24,7 @@ object AutomataTests extends TestSuite {
   val automaton: Automaton =
     Automaton(
       Graphic(0, 0, 10, 10, 1, Material.Textured(AssetName("fish"))),
-      Millis(100)
+      Seconds(0.1)
     ).withOnCullEvent { _ =>
       List(eventInstance)
     }
@@ -45,7 +45,7 @@ object AutomataTests extends TestSuite {
         // 1 ms over the lifespan, so should be culled
         val outcome: Outcome[Automata] =
           farmWithAutomaton
-            .update(GameTime.is(Millis(150)), Dice.loaded(1))(AutomataEvent.Cull)
+            .update(GameTime.is(Seconds(0.15)), Dice.loaded(1))(AutomataEvent.Cull)
 
         outcome.state.liveAutomataCount ==> 0
         outcome.globalEvents.head ==> eventInstance

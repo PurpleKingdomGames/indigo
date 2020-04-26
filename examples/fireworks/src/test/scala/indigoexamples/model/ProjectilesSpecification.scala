@@ -3,7 +3,7 @@ package indigoexamples.model
 import org.scalacheck._
 import org.scalacheck.Prop._
 import indigo.shared.dice.Dice
-import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 import indigo.shared.collections.NonEmptyList
 import indigoexts.geometry.Vertex
 import indigoexts.geometry.BoundingBox
@@ -64,7 +64,7 @@ class ProjectilesSpecification extends Properties("Projectiles") {
   def vertexToScreenPoint(vertex: Vertex): Point =
     Projectiles.toScreenSpace(screenDimensions)(vertex)
 
-  property("arc signal should always produce a value inside the beziers bounds") = Prop.forAll { (dice: Dice, target: Vertex, time: Millis) =>
+  property("arc signal should always produce a value inside the beziers bounds") = Prop.forAll { (dice: Dice, target: Vertex, time: Seconds) =>
     Prop.forAll(vertexGen, vertexGen) {
       case (va, vb) =>
         val vertices: NonEmptyList[Vertex] =
@@ -74,7 +74,7 @@ class ProjectilesSpecification extends Properties("Projectiles") {
           Bezier.fromVerticesNel(vertices).bounds
 
         val signal: Signal[Vertex] =
-          Projectiles.createArcSignal(Millis(1000))(vertices)
+          Projectiles.createArcSignal(Seconds(1000))(vertices)
 
         val point: Vertex =
           signal.at(time)
@@ -93,13 +93,13 @@ class ProjectilesSpecification extends Properties("Projectiles") {
 
   // Previous test guarantees we're always inside the bounds, so we can limit the test cases a bit here.
   property("Over time, the signal should always generate values moving closer to the target") = Prop.forAll { (dice: Dice, target: Vertex) =>
-    Prop.forAll(nowNextMillis(0, 1000), vertexGen) {
+    Prop.forAll(nowNextSeconds(0, 1), vertexGen) {
       case ((now, next), target) =>
         val vertices: NonEmptyList[Vertex] =
           NonEmptyList(Vertex.zero, target / 2, target)
 
         val signal: Signal[Vertex] =
-          Projectiles.createArcSignal(Millis(1000))(vertices)
+          Projectiles.createArcSignal(Seconds(1))(vertices)
 
         val v1: Vertex =
           signal.at(now)
@@ -119,9 +119,9 @@ class ProjectilesSpecification extends Properties("Projectiles") {
   }
 
   property("able to generate a flight time") = Prop.forAll { dice: Dice =>
-    Prop.forAll(nowNextMillis(-10000, 10000)) {
+    Prop.forAll(nowNextSeconds(-10, 10)) {
       case (min, max) =>
-        val flightTime: Millis =
+        val flightTime: Seconds =
           Projectiles.pickFlightTime(dice, min, max)
 
         Prop.all(

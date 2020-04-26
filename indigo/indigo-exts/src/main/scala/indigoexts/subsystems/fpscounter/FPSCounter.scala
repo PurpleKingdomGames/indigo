@@ -7,7 +7,7 @@ import indigoexts.subsystems.SubSystem
 final class FPSCounter(fontKey: FontKey, position: Point, targetFPS: Int) extends SubSystem {
 
   var fps: Int                     = 0
-  var lastInterval: Millis         = Millis(0)
+  var lastInterval: Seconds         = Seconds.zero
   var frameCountSinceInterval: Int = 0
 
   type EventType = GlobalEvent
@@ -19,7 +19,7 @@ final class FPSCounter(fontKey: FontKey, position: Point, targetFPS: Int) extend
 
   def update(gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[FPSCounter] = {
     case FrameTick =>
-      if (gameTime.running >= (this.lastInterval + Millis(1000))) {
+      if (gameTime.running >= (this.lastInterval + Seconds(1))) {
         fps = Math.min(targetFPS, frameCountSinceInterval + 1)
         lastInterval = gameTime.running
         frameCountSinceInterval = 0

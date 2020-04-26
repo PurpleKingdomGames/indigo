@@ -1,6 +1,6 @@
 package indigo.shared.temporal
 
-import indigo.shared.time.{Millis, Seconds}
+import indigo.shared.time.Seconds
 import indigo.shared.EqualTo._
 import indigo.shared.abstractions.Monad
 import indigo.shared.abstractions.Functor
@@ -10,11 +10,11 @@ import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
 
 /**
-  * A Signal is function t: Millis -> A
+  * A Signal is function t: Seconds -> A
   */
-final class Signal[A](val f: Millis => A) extends AnyVal {
+final class Signal[A](val f: Seconds => A) extends AnyVal {
 
-  def at(t: Millis): A =
+  def at(t: Seconds): A =
     f(t)
 
   def merge[B, C](other: Signal[B])(f: (A, B) => C): Signal[C] =
@@ -29,21 +29,15 @@ final class Signal[A](val f: Millis => A) extends AnyVal {
   def |*|[B](other: Signal[B]): Signal[(A, B)] =
     Signal.product(this, other)
 
-  def clampTime(from: Millis, to: Millis): Signal[A] =
+  def clampTime(from: Seconds, to: Seconds): Signal[A] =
     Signal.clampTime(this, from, to)
 
-  def wrapTime(at: Millis): Signal[A] =
+  def wrapTime(at: Seconds): Signal[A] =
     Signal.wrapTime(this, at)
 
   def affectTime(multiplyBy: Double): Signal[A] =
     Signal.affectTime(this, multiplyBy)
-
-  def easeIn(target: Millis, divisor: Int): Signal[A] =
-    Signal.easeIn(this, target, divisor)
-
-  def easeOut(target: Millis, divisor: Int): Signal[A] =
-    Signal.easeOut(this, target, divisor)
-
+    
   def map[B](f: A => B): Signal[B] =
     implicitly[Functor[Signal]].map(this)(f)
 
@@ -64,7 +58,7 @@ object Signal {
         Signal(t => f(fa.at(t)))
 
       def ap[A, B](fa: Signal[A])(f: Signal[A => B]): Signal[B] =
-        Signal { (t: Millis) =>
+        Signal { (t: Seconds) =>
           map(f) { ff =>
             ff(fa.at(t))
           }.at(t)
@@ -99,24 +93,21 @@ object Signal {
       Signal.fixed(a)
   }
 
-  val Time: Signal[Millis] =
+  val Time: Signal[Seconds] =
     Signal(identity)
 
-  val TimeInSeconds: Signal[Seconds] =
-    Signal(_.toSeconds)
-
-  def Pulse(interval: Millis): Signal[Boolean] =
-    Signal(t => (t / interval).value % 2 === 0)
+  def Pulse(interval: Seconds): Signal[Boolean] =
+    Signal(t => (t.toMillis / interval.toMillis).value % 2 === 0)
 
   def SinWave: Signal[Double] =
-    Signal(t => Math.sin(Radians.fromSeconds(t.toSeconds).value))
+    Signal(t => Math.sin(Radians.fromSeconds(t).value))
 
   def CosWave: Signal[Double] =
-    Signal(t => Math.cos(Radians.fromSeconds(t.toSeconds).value))
+    Signal(t => Math.cos(Radians.fromSeconds(t).value))
 
   def Orbit(center: Point, distance: Double): Signal[Vector2] =
     Signal { t =>
-      Vector2((Math.sin(Radians.fromSeconds(t.toSeconds).value) * distance) + center.x, (Math.cos(Radians.fromSeconds(t.toSeconds).value) * distance) + center.y)
+      Vector2((Math.sin(Radians.fromSeconds(t).value) * distance) + center.x, (Math.cos(Radians.fromSeconds(t).value) * distance) + center.y)
     }
 
   def SmoothPulse: Signal[Double] =
@@ -134,7 +125,7 @@ object Signal {
         )
 
       Signal { t =>
-        val time   = Math.max(0, Math.min(1, t.toSeconds.toDouble)) / over.toDouble
+        val time   = Math.max(0, Math.min(1, t.toDouble)) / over.toDouble
         val interp = linear(time, from.toVector, to.toVector).toPoint
 
         Point(
@@ -144,7 +135,7 @@ object Signal {
       }
     }
 
-  def clampTime[A](signal: Signal[A], from: Millis, to: Millis): Signal[A] =
+  def clampTime[A](signal: Signal[A], from: Seconds, to: Seconds): Signal[A] =
     Signal { t =>
       if (from < to) {
         if (t < from) from
@@ -159,56 +150,20 @@ object Signal {
       signal.at(t)
     }
 
-  def wrapTime[A](signal: Signal[A], at: Millis): Signal[A] =
+  def wrapTime[A](signal: Signal[A], at: Seconds): Signal[A] =
     Signal { t =>
       signal.at(t % at)
     }
 
   def affectTime[A](sa: Signal[A], multiplyBy: Double): Signal[A] =
     Signal { t =>
-      sa.at(Millis((t.toDouble * multiplyBy).toLong))
-    }
-
-  def easeOut[A](sa: Signal[A], target: Millis, divisor: Int): Signal[A] =
-    if (divisor === 0) sa
-    else {
-      Signal {
-        case t @ Millis.zero =>
-          sa.at(t)
-
-        case t =>
-          val targetChecked: Millis =
-            Millis(Math.min(t.value, target.value))
-
-          val next: Millis =
-            t + ((target - targetChecked) / Millis(divisor.toLong))
-
-          sa.at(next)
-      }
-    }
-
-  def easeIn[A](sa: Signal[A], target: Millis, divisor: Int): Signal[A] =
-    if (divisor === 0) sa
-    else {
-      Signal {
-        case t @ Millis.zero =>
-          sa.at(t)
-
-        case t =>
-          val targetChecked: Long =
-            Math.min(t.value, target.value)
-
-          val next: Long =
-            t.value / Math.max(1, (target.value - targetChecked) / divisor.toLong)
-
-          sa.at(Millis(next))
-      }
+      sa.at(Seconds((t.toDouble * multiplyBy)))
     }
 
   def fixed[A](a: A): Signal[A] =
     apply(_ => a)
 
-  def apply[A](f: Millis => A): Signal[A] =
+  def apply[A](f: Seconds => A): Signal[A] =
     new Signal[A](f)
 
   def merge[A, B, C](sa: Signal[A], sb: Signal[B])(f: (A, B) => C): Signal[C] =

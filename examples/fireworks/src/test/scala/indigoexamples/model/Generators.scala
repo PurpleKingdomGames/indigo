@@ -42,20 +42,20 @@ object Generators {
       y <- Gen.choose(minY, maxY)
     } yield Vertex(x, y)
 
-  // Millis
-  val millisGen: Gen[Millis] =
-    clampedMillisGen(Long.MinValue, Long.MaxValue)
+  // Seconds
+  val millisGen: Gen[Seconds] =
+    clampedSecondsGen(Long.MinValue, Long.MaxValue)
 
-  implicit val arbMillis: Arbitrary[Millis] =
+  implicit val arbSeconds: Arbitrary[Seconds] =
     Arbitrary(millisGen)
 
-  def clampedMillisGen(start: Long, end: Long): Gen[Millis] =
-    Gen.choose(start, end).map(Millis.apply)
+  def clampedSecondsGen(start: Double, end: Double): Gen[Seconds] =
+    Gen.choose(start, end).map(Seconds.apply)
 
-  def nowNextMillis(min: Long, max: Long): Gen[(Millis, Millis)] =
+  def nowNextSeconds(min: Double, max: Double): Gen[(Seconds, Seconds)] =
     for {
-      t1 <- clampedMillisGen(min, max - 1)
-      t2 <- clampedMillisGen(t1.value + 1, max)
+      t1 <- clampedSecondsGen(min, max - 1)
+      t2 <- clampedSecondsGen(t1.value + 1, max)
     } yield (t1, t2)
 
   // Doubles

@@ -41,7 +41,7 @@ object CycleTests extends TestSuite {
                 frameCount = 10,
                 lastFrameAdvance = 60
               )
-              .at(GameTime.is(Millis(90)).running)
+              .at(Millis(90).toSeconds)
 
           val expected: CycleMemento =
             CycleMemento(3, 90)
@@ -70,8 +70,8 @@ object CycleTests extends TestSuite {
         "Play" - {
           val actual =
             cycle
-              .runActions(GameTime.is(Millis(0)), List(Play))
-              .runActions(GameTime.is(Millis(10)), List(Play))
+              .runActions(GameTime.is(Seconds(0)), List(Play))
+              .runActions(GameTime.is(Seconds(10)), List(Play))
               .currentFrame
 
           val expected =

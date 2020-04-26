@@ -3,14 +3,14 @@ package indigojs.delegates.temporal
 import scala.scalajs.js.annotation._
 import scala.scalajs.js
 import indigo.shared.temporal.Signal
-import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 
 @SuppressWarnings(Array("org.wartremover.warts.Any", "org.wartremover.warts.AsInstanceOf"))
 @JSExportTopLevel("Signal")
 final class SignalDelegate(val f: js.Function1[Double, _]) extends AnyVal {
 
   private def convert(s: Signal[Any]): SignalDelegate =
-    new SignalDelegate(d => s.at(Millis(d.toLong)))
+    new SignalDelegate(d => s.at(Seconds(d)))
 
   @JSExport
   def at(t: Double): Any =
@@ -26,27 +26,19 @@ final class SignalDelegate(val f: js.Function1[Double, _]) extends AnyVal {
 
   @JSExport
   def combineWith(other: SignalDelegate): SignalDelegate =
-    new SignalDelegate((d: Double) => Signal.product(this.toInternal, other.toInternal).at(Millis(d.toLong)))
+    new SignalDelegate((d: Double) => Signal.product(this.toInternal, other.toInternal).at(Seconds(d)))
 
   @JSExport
   def clampTime(from: Double, to: Double): SignalDelegate =
-    convert(Signal.clampTime(this.toInternal, Millis(from.toLong), Millis(to.toLong)))
+    convert(Signal.clampTime(this.toInternal, Seconds(from), Seconds(to)))
 
   @JSExport
   def wrapTime(at: Double): SignalDelegate =
-    convert(Signal.wrapTime(this.toInternal, Millis(at.toLong)))
+    convert(Signal.wrapTime(this.toInternal, Seconds(at)))
 
   @JSExport
   def affectTime(multiplyBy: Double): SignalDelegate =
     convert(Signal.affectTime(this.toInternal, multiplyBy))
-
-  @JSExport
-  def easeIn(target: Double, divisor: Int): SignalDelegate =
-    convert(Signal.easeIn(this.toInternal, Millis(target.toLong), divisor))
-
-  @JSExport
-  def easeOut(target: Double, divisor: Int): SignalDelegate =
-    convert(Signal.easeOut(this.toInternal, Millis(target.toLong), divisor))
 
   @JSExport
   def map(f: js.Any => js.Any): SignalDelegate =
@@ -65,19 +57,15 @@ final class SignalDelegate(val f: js.Function1[Double, _]) extends AnyVal {
 object SignalDelegate {
 
   private def convert(s: Signal[Any]): SignalDelegate =
-    new SignalDelegate(d => s.at(Millis(d.toLong)))
+    new SignalDelegate(d => s.at(Seconds(d)))
 
   @JSExport
   val Time: SignalDelegate =
-    convert(Signal(t => t.value.toDouble))
-
-  @JSExport
-  val TimeInSeconds: SignalDelegate =
-    convert(Signal(_.toSeconds))
+    convert(Signal(t => t.toDouble))
 
   @JSExport
   def Pulse(interval: Double): SignalDelegate =
-    new SignalDelegate(d => Signal.Pulse(Millis(interval.toLong)).at(Millis(d.toLong)))
+    new SignalDelegate(d => Signal.Pulse(Seconds(interval)).at(Seconds(d)))
 
   @JSExport
   def fixed[A](a: A): SignalDelegate =

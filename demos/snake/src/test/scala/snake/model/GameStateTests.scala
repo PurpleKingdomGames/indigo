@@ -2,7 +2,7 @@ package snake.model
 
 import utest._
 
-import indigo.Millis
+import indigo.Seconds
 
 import snake.model.snakemodel.SnakeDirection
 
@@ -14,8 +14,8 @@ object GameStateTests extends TestSuite {
 
         "should do a simple update" - {
 
-          val actual   = GameState.Running.start.updateNow(Millis(100), SnakeDirection.Up)
-          val expected = GameState.Running(Millis(100), SnakeDirection.Up)
+          val actual   = GameState.Running.start.updateNow(Seconds(0.1), SnakeDirection.Up)
+          val expected = GameState.Running(Seconds(0.1), SnakeDirection.Up)
 
           actual ==> expected
 

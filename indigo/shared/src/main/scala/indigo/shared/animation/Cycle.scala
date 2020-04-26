@@ -70,8 +70,8 @@ object Cycle {
 
   def calculateNextPlayheadPosition(currentPosition: Int, frameDuration: Int, frameCount: Int, lastFrameAdvance: Long): Signal[CycleMemento] =
     Signal { t =>
-      if (t.value >= lastFrameAdvance + frameDuration)
-        CycleMemento((currentPosition + 1) % frameCount, t.value)
+      if (t.toMillis.value >= lastFrameAdvance + frameDuration)
+        CycleMemento((currentPosition + 1) % frameCount, t.toMillis.value)
       else
         CycleMemento(currentPosition, lastFrameAdvance)
     }

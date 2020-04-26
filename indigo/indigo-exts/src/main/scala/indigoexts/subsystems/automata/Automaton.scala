@@ -1,16 +1,16 @@
 package indigoexts.subsystems.automata
 
 import indigo.shared.scenegraph.{SceneGraphNode, Renderable}
-import indigo.Millis
 import indigo.shared.temporal.Signal
 
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.Clone
+import indigo.shared.time.Seconds
 
 sealed trait Automaton {
 
   val sceneGraphNode: SceneGraphNode
-  val lifespan: Millis
+  val lifespan: Seconds
   val modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate]
   val onCull: AutomatonSeedValues => List[GlobalEvent]
 
@@ -42,18 +42,18 @@ object Automaton {
   val NoCullEvent: AutomatonSeedValues => List[GlobalEvent] =
     _ => Nil
 
-  def apply(SceneGraphNode: SceneGraphNode, lifespan: Millis): Automaton =
+  def apply(SceneGraphNode: SceneGraphNode, lifespan: Seconds): Automaton =
     create(SceneGraphNode, lifespan, NoModifySignal, NoCullEvent)
 
   def create(
       sceneGraphNodeEntity: SceneGraphNode,
-      lifeExpectancy: Millis,
+      lifeExpectancy: Seconds,
       modifierSignal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate],
       onCullEvent: AutomatonSeedValues => List[GlobalEvent]
   ): Automaton =
     new Automaton {
       val sceneGraphNode: SceneGraphNode                                             = sceneGraphNodeEntity
-      val lifespan: Millis                                                           = lifeExpectancy
+      val lifespan: Seconds                                                          = lifeExpectancy
       val modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] = modifierSignal
       val onCull: AutomatonSeedValues => List[GlobalEvent]                           = onCullEvent
     }

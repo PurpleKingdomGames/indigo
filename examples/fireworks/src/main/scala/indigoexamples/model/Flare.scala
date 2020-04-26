@@ -3,17 +3,17 @@ package indigoexamples.model
 import indigo.shared.temporal.Signal
 import indigoexts.geometry.Vertex
 import indigo.shared.dice.Dice
-import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.RGBA
 
-final case class Flare(flightTime: Millis, movementSignal: Signal[Vertex], tint: RGBA) extends Projectile
+final case class Flare(flightTime: Seconds, movementSignal: Signal[Vertex], tint: RGBA) extends Projectile
 
 object Flare {
 
   def generateFlare(dice: Dice, startPosition: Vertex, initialAngle: Radians, tint: RGBA): Flare = {
-    val flightTime = Projectiles.pickFlightTime(dice, Millis(300L), Millis(500L))
+    val flightTime = Projectiles.pickFlightTime(dice, Seconds(0.3), Seconds(0.5))
 
     val signalFunction: Dice => Signal[Vertex] =
       pickEndPoint(initialAngle) andThen

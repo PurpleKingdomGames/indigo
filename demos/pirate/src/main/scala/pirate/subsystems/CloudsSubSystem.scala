@@ -5,7 +5,7 @@ import indigoexts.subsystems._
 import indigoexts.subsystems.automata.AutomataEvent
 import pirate.init.Assets
 
-final case class CloudsSubSystem(screenWidth: Int, bigCloudPosition: Double, verticalCenter: Int, lastSpawn: Millis) extends SubSystem {
+final case class CloudsSubSystem(screenWidth: Int, bigCloudPosition: Double, verticalCenter: Int, lastSpawn: Seconds) extends SubSystem {
 
   type EventType = FrameTick
 
@@ -15,7 +15,7 @@ final case class CloudsSubSystem(screenWidth: Int, bigCloudPosition: Double, ver
   }
 
   def update(gameTime: GameTime, dice: Dice): FrameTick => Outcome[CloudsSubSystem] = {
-    case FrameTick if gameTime.running - lastSpawn > Millis(3000) =>
+    case FrameTick if gameTime.running - lastSpawn > Seconds(3.0) =>
       Outcome(
         this.copy(
           bigCloudPosition = nextBigCloudPosition(gameTime),
@@ -49,7 +49,7 @@ final case class CloudsSubSystem(screenWidth: Int, bigCloudPosition: Double, ver
     AutomataEvent.Spawn(
       CloudsAutomata.poolKey,
       initialPosition,
-      Option(Millis(((dice.roll(10) + 10) * 1000).toLong)),
+      Option(Millis(((dice.roll(10) + 10) * 1000).toLong).toSeconds),
       None
     )
   }
@@ -58,6 +58,6 @@ final case class CloudsSubSystem(screenWidth: Int, bigCloudPosition: Double, ver
 object CloudsSubSystem {
 
   def init(screenWidth: Int): CloudsSubSystem =
-    CloudsSubSystem(screenWidth, 0, 181, Millis.zero)
+    CloudsSubSystem(screenWidth, 0, 181, Seconds.zero)
 
 }

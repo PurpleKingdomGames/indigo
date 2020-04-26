@@ -1,6 +1,6 @@
 package snake.gamelogic
 
-import indigo.{GameTime, Millis}
+import indigo.{GameTime, Seconds}
 import indigo.shared.events.FrameTick
 import indigoexts.grid.{GridPoint, GridSize}
 
@@ -12,9 +12,7 @@ import utest._
 
 object ModelLogicTests extends TestSuite {
 
-  val defaultDelay: Millis = Millis(100)
-  val maxTime: Int         = 1000
-  val lowerBound: Int      = 10
+  val defaultDelay: Seconds = Seconds(0.1)
 
   val model: GameModel =
     ModelLogic.initialModel(
@@ -27,10 +25,10 @@ object ModelLogicTests extends TestSuite {
       "basic model updates" - {
 
         "should advance the game on frame tick" - {
-          val actual = ModelLogic.update(GameTime.is(Millis(150)), model)(FrameTick).state
+          val actual = ModelLogic.update(GameTime.is(Seconds(0.15)), model)(FrameTick).state
           val expected = model.copy(
             snake = model.snake.copy(start = GridPoint(2, 2)),
-            gameState = model.gameState.updateNow(Millis(150), model.gameState.lastSnakeDirection)
+            gameState = model.gameState.updateNow(Seconds(0.15), model.gameState.lastSnakeDirection)
           )
 
           actual.snake ==> expected.snake
