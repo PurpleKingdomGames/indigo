@@ -33,7 +33,7 @@ lazy val lighting =
     .enablePlugins(SbtIndigo)
     .settings(commonSettings: _*)
     .settings(
-      name := "lighting",
+      name := "lighting Example",
       showCursor := true,
       title := "Lighting",
       gameAssetsDirectory := "assets"
@@ -48,6 +48,28 @@ lazy val lighting =
     .dependsOn(indigoExts)
 lazy val lightingJS  = lighting.js
 lazy val lightingJVM = lighting.jvm
+
+lazy val distortion =
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
+    .enablePlugins(SbtIndigo)
+    .settings(commonSettings: _*)
+    .settings(
+      name := "distortion",
+      showCursor := true,
+      title := "Distortion Example",
+      gameAssetsDirectory := "assets"
+    )
+    .settings(
+      publish := {},
+      publishLocal := {}
+    )
+    .jsSettings(
+      scalaJSUseMainModuleInitializer := true
+    )
+    .dependsOn(indigoExts)
+lazy val distortionJS  = distortion.js
+lazy val distortionJVM = distortion.jvm
 
 lazy val effects =
   crossProject(JSPlatform, JVMPlatform)
@@ -68,8 +90,8 @@ lazy val effects =
       scalaJSUseMainModuleInitializer := true
     )
     .dependsOn(indigoExts)
-lazy val effectsJS  = lighting.js
-lazy val effectsJVM = lighting.jvm
+lazy val effectsJS  = effects.js
+lazy val effectsJVM = effects.jvm
 
 lazy val sandbox =
   crossProject(JSPlatform, JVMPlatform)
@@ -271,6 +293,7 @@ lazy val indigoProject =
       sandboxJVM,
       perfJVM,
       lightingJVM,
+      distortionJVM,
       effectsJVM
     )
 

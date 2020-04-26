@@ -76,6 +76,9 @@ object RendererFunctions {
   def setLightingBlend(gl: raw.WebGLRenderingContext): Unit =
     gl.blendFunc(SRC_ALPHA, DST_ALPHA)
 
+  def setDistortionBlend(gl: raw.WebGLRenderingContext): Unit =
+    gl.blendFunc(SRC_ALPHA, DST_ALPHA)
+
   def setLightsBlend(gl: raw.WebGLRenderingContext): Unit =
     gl.blendFunc(SRC_ALPHA, ONE)
 

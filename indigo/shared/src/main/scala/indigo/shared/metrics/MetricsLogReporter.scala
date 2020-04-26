@@ -72,11 +72,12 @@ object MetricsLogReporter {
 
       // Renderer
       // Durations
-      val drawGameLayerDuration     = extractDuration(metrics, DrawGameLayerStartMetric.name, DrawGameLayerEndMetric.name)
-      val drawLightsLayerDuration   = extractDuration(metrics, DrawLightsLayerStartMetric.name, DrawLightsLayerEndMetric.name)
-      val drawLightingLayerDuration = extractDuration(metrics, DrawLightingLayerStartMetric.name, DrawLightingLayerEndMetric.name)
-      val drawUiLayerDuration       = extractDuration(metrics, DrawUiLayerStartMetric.name, DrawUiLayerEndMetric.name)
-      val renderToWindowDuration    = extractDuration(metrics, RenderToWindowStartMetric.name, RenderToWindowEndMetric.name)
+      val drawGameLayerDuration       = extractDuration(metrics, DrawGameLayerStartMetric.name, DrawGameLayerEndMetric.name)
+      val drawLightsLayerDuration     = extractDuration(metrics, DrawLightsLayerStartMetric.name, DrawLightsLayerEndMetric.name)
+      val drawLightingLayerDuration   = extractDuration(metrics, DrawLightingLayerStartMetric.name, DrawLightingLayerEndMetric.name)
+      val drawDistortionLayerDuration = extractDuration(metrics, DrawDistortionLayerStartMetric.name, DrawDistortionLayerEndMetric.name)
+      val drawUiLayerDuration         = extractDuration(metrics, DrawUiLayerStartMetric.name, DrawUiLayerEndMetric.name)
+      val renderToWindowDuration      = extractDuration(metrics, RenderToWindowStartMetric.name, RenderToWindowEndMetric.name)
 
       val normalDrawCallDuration =
         extractDuration(metrics, NormalDrawCallLengthStartMetric.name, NormalDrawCallLengthEndMetric.name)
@@ -84,24 +85,28 @@ object MetricsLogReporter {
         extractDuration(metrics, LightsDrawCallLengthStartMetric.name, LightsDrawCallLengthEndMetric.name)
       val lightingDrawCallDuration =
         extractDuration(metrics, LightingDrawCallLengthStartMetric.name, LightingDrawCallLengthEndMetric.name)
+      val distortionDrawCallDuration =
+        extractDuration(metrics, DistortionDrawCallLengthStartMetric.name, DistortionDrawCallLengthEndMetric.name)
       val uiDrawCallDuration =
         extractDuration(metrics, UiDrawCallLengthStartMetric.name, UiDrawCallLengthEndMetric.name)
       val toWindowDrawCallDuration =
         extractDuration(metrics, ToWindowDrawCallLengthStartMetric.name, ToWindowDrawCallLengthEndMetric.name)
 
       // Percentages
-      val drawGameLayerPercentage     = asPercentOfFrameDuration(fd, drawGameLayerDuration)
-      val drawLightsLayerPercentage   = asPercentOfFrameDuration(fd, drawLightsLayerDuration)
-      val drawLightingLayerPercentage = asPercentOfFrameDuration(fd, drawLightingLayerDuration)
-      val drawUiLayerPercentage       = asPercentOfFrameDuration(fd, drawUiLayerDuration)
-      val renderToWindowPercentage    = asPercentOfFrameDuration(fd, renderToWindowDuration)
+      val drawGameLayerPercentage       = asPercentOfFrameDuration(fd, drawGameLayerDuration)
+      val drawLightsLayerPercentage     = asPercentOfFrameDuration(fd, drawLightsLayerDuration)
+      val drawLightingLayerPercentage   = asPercentOfFrameDuration(fd, drawLightingLayerDuration)
+      val drawDistortionLayerPercentage = asPercentOfFrameDuration(fd, drawDistortionLayerDuration)
+      val drawUiLayerPercentage         = asPercentOfFrameDuration(fd, drawUiLayerDuration)
+      val renderToWindowPercentage      = asPercentOfFrameDuration(fd, renderToWindowDuration)
 
       // Draw Call Counts
-      val lightingDrawCalls: Int = metrics.count(_.metric.name === LightingDrawCallMetric.name)
-      val normalDrawCalls: Int   = metrics.count(_.metric.name === NormalLayerDrawCallMetric.name)
-      val lightsDrawCalls: Int   = metrics.count(_.metric.name === LightsLayerDrawCallMetric.name)
-      val uiDrawCalls: Int       = metrics.count(_.metric.name === UiLayerDrawCallMetric.name)
-      val toWindowDrawCalls: Int = metrics.count(_.metric.name === ToWindowDrawCallMetric.name)
+      val lightingDrawCalls: Int   = metrics.count(_.metric.name === LightingDrawCallMetric.name)
+      val distortionDrawCalls: Int = metrics.count(_.metric.name === DistortionDrawCallMetric.name)
+      val normalDrawCalls: Int     = metrics.count(_.metric.name === NormalLayerDrawCallMetric.name)
+      val lightsDrawCalls: Int     = metrics.count(_.metric.name === LightsLayerDrawCallMetric.name)
+      val uiDrawCalls: Int         = metrics.count(_.metric.name === UiLayerDrawCallMetric.name)
+      val toWindowDrawCalls: Int   = metrics.count(_.metric.name === ToWindowDrawCallMetric.name)
 
       // Build results
       val general = FrameStatsGeneral(
@@ -139,14 +144,17 @@ object MetricsLogReporter {
         drawGameLayerDuration,
         drawLightsLayerDuration,
         drawLightingLayerDuration,
+        drawDistortionLayerDuration,
         drawUiLayerDuration,
         renderToWindowDuration,
         drawGameLayerPercentage,
         drawLightsLayerPercentage,
         drawLightingLayerPercentage,
+        drawDistortionLayerPercentage,
         drawUiLayerPercentage,
         renderToWindowPercentage,
         lightingDrawCalls,
+        distortionDrawCalls,
         normalDrawCalls,
         uiDrawCalls,
         lightsDrawCalls,
@@ -155,6 +163,7 @@ object MetricsLogReporter {
         uiDrawCallDuration,
         lightsDrawCallDuration,
         lightingDrawCallDuration,
+        distortionDrawCallDuration,
         toWindowDrawCallDuration
       )
 
@@ -310,6 +319,13 @@ object MetricsLogReporter {
       s"""$a\t($b%)"""
     }
 
+    val meanDrawDistortionLayer: String = {
+      val a = calcMeanDuration(frames.map(_.renderer.drawDistortionLayerDuration)).toString
+      val b = calcMeanPercentage(frames.map(_.renderer.drawDistortionLayerPercentage)).toString
+
+      s"""$a\t($b%)"""
+    }
+
     val meanDrawUiLayer: String = {
       val a = calcMeanDuration(frames.map(_.renderer.drawUiLayerDuration)).toString
       val b = calcMeanPercentage(frames.map(_.renderer.drawUiLayerPercentage)).toString
@@ -326,6 +342,12 @@ object MetricsLogReporter {
 
     val meanLightingDrawCalls: String = {
       val a = calcMeanCount(frames.map(_.renderer.lightingDrawCalls)).toString
+
+      s"""$a"""
+    }
+
+    val meanDistortionDrawCalls: String = {
+      val a = calcMeanCount(frames.map(_.renderer.distortionDrawCalls)).toString
 
       s"""$a"""
     }
@@ -369,7 +391,13 @@ object MetricsLogReporter {
     }
 
     val meanLightingDrawCallTime: String = {
-      val a = calcMeanDuration(frames.map(_.renderer.normalDrawCallDuration)).toString
+      val a = calcMeanDuration(frames.map(_.renderer.lightingDrawCallDuration)).toString
+
+      s"""$a"""
+    }
+
+    val meanDistortionDrawCallTime: String = {
+      val a = calcMeanDuration(frames.map(_.renderer.distortionDrawCallDuration)).toString
 
       s"""$a"""
     }
@@ -411,23 +439,26 @@ object MetricsLogReporter {
          |
          |Renderer:
          |---------
-         |Mean draw game layer:      ${meanDrawGameLayer.toString()}
-         |Mean draw lights layer:    ${meanDrawLightsLayer.toString()}
-         |Mean draw lighting layer:  ${meanDrawLightingLayer.toString()}
-         |Mean draw ui layer:        ${meanDrawUiLayer.toString()}
-         |Mean render to window:     ${meanRenderToWindowLayer.toString()}
+         |Mean draw game layer:       ${meanDrawGameLayer.toString()}
+         |Mean draw lights layer:     ${meanDrawLightsLayer.toString()}
+         |Mean draw lighting layer:   ${meanDrawLightingLayer.toString()}
+         |Mean draw distortion layer: ${meanDrawDistortionLayer.toString()}
+         |Mean draw ui layer:         ${meanDrawUiLayer.toString()}
+         |Mean render to window:      ${meanRenderToWindowLayer.toString()}
          |
-         |Mean lighting draw calls:  ${meanLightingDrawCalls.toString()}
-         |Mean game draw calls:      ${meanNormalDrawCalls.toString()}
-         |Mean ui draw calls:        ${meanUiDrawCalls.toString()}
-         |Mean lights draw calls:    ${meanLightsDrawCalls.toString()}
-         |Mean to window draw calls: ${meanToWindowDrawCalls.toString()}
+         |Mean lighting draw calls:   ${meanLightingDrawCalls.toString()}
+         |Mean distortion draw calls: ${meanDistortionDrawCalls.toString()}
+         |Mean game draw calls:       ${meanNormalDrawCalls.toString()}
+         |Mean ui draw calls:         ${meanUiDrawCalls.toString()}
+         |Mean lights draw calls:     ${meanLightsDrawCalls.toString()}
+         |Mean to window draw calls:  ${meanToWindowDrawCalls.toString()}
          |
-         |Mean lighting draw time:   ${meanLightingDrawCallTime.toString()}
-         |Mean game draw time:       ${meanNormalDrawCallTime.toString()}
-         |Mean ui draw time:         ${meanUiDrawCallTime.toString()}
-         |Mean lights draw time:     ${meanLightsDrawCallTime.toString()}
-         |Mean to window draw time:  ${meanToWindowDrawCallTime.toString()}
+         |Mean lighting draw time:    ${meanLightingDrawCallTime.toString()}
+         |Mean distortion draw time:  ${meanDistortionDrawCallTime.toString()}
+         |Mean game draw time:        ${meanNormalDrawCallTime.toString()}
+         |Mean ui draw time:          ${meanUiDrawCallTime.toString()}
+         |Mean lights draw time:      ${meanLightsDrawCallTime.toString()}
+         |Mean to window draw time:   ${meanToWindowDrawCallTime.toString()}
          |**********************
         """.stripMargin
     )
@@ -472,14 +503,17 @@ final case class FrameStatsRenderer(
     drawGameLayerDuration: Option[Long],
     drawLightsLayerDuration: Option[Long],
     drawLightingLayerDuration: Option[Long],
+    drawDistortionLayerDuration: Option[Long],
     drawUiLayerDuration: Option[Long],
     renderToWindowDuration: Option[Long],
     drawGameLayerPercentage: Option[Double],
     drawLightsLayerPercentage: Option[Double],
     drawLightingLayerPercentage: Option[Double],
+    drawDistortionLayerPercentage: Option[Double],
     drawUiLayerPercentage: Option[Double],
     renderToWindowPercentage: Option[Double],
     lightingDrawCalls: Int,
+    distortionDrawCalls: Int,
     normalDrawCalls: Int,
     uiDrawCalls: Int,
     lightsDrawCalls: Int,
@@ -488,5 +522,6 @@ final case class FrameStatsRenderer(
     uiDrawCallDuration: Option[Long],
     lightsDrawCallDuration: Option[Long],
     lightingDrawCallDuration: Option[Long],
+    distortionDrawCallDuration: Option[Long],
     toWindowDrawCallDuration: Option[Long]
 )

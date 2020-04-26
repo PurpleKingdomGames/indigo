@@ -13,8 +13,6 @@ out vec4 fragColor;
 void main(void) {
   vec4 textureColor = texture(u_texture, v_texcoord);
 
-  float average = (textureColor.r + textureColor.g + textureColor.b) / float(3);
-
   vec4 withAlpha = vec4(textureColor.rgb, textureColor.a * v_alpha);
 
   vec4 tintedVersion = vec4(withAlpha.rgb * v_tint.rgb, withAlpha.a);

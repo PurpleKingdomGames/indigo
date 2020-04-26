@@ -21,6 +21,7 @@ layout (std140) uniform DisplayObjectUBO {
 };
 
 out vec2 v_texcoord;
+out vec2 v_size;
 out vec4 v_gameOverlay;
 out vec4 v_uiOverlay;
 
@@ -64,6 +65,7 @@ void main(void) {
   gl_Position = u_projection * transform * vertices;
 
   v_texcoord = scaleTextCoords();
+  v_size = u_scale; // Only true in the merge shaders!
 
   v_gameOverlay = u_gameOverlay;
   v_uiOverlay = u_uiOverlay;

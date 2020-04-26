@@ -31,6 +31,13 @@ object CurrentDrawLayer {
     def isMerge: Boolean    = false
     val name: String        = "lighting layer"
   }
+  case object Distortion extends CurrentDrawLayer {
+    val metricStart: Metric = DistortionDrawCallLengthStartMetric
+    val metricEnd: Metric   = DistortionDrawCallLengthEndMetric
+    val metricDraw: Metric  = DistortionDrawCallMetric
+    def isMerge: Boolean    = false
+    val name: String        = "distortion layer"
+  }
   case object UI extends CurrentDrawLayer {
     val metricStart: Metric = UiDrawCallLengthStartMetric
     val metricEnd: Metric   = UiDrawCallLengthEndMetric

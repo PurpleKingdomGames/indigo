@@ -9,6 +9,7 @@ lazy val coreProjects: List[String] =
     "sandbox",
     "perf",
     "lighting",
+    "distortion",
     "effects"
   )
 
@@ -130,6 +131,14 @@ addCommandAlias(
   List(
     "lightingJS/fastOptJS",
     "lightingJS/indigoBuildJS"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "distortionBuild",
+  List(
+    "distortionJS/fastOptJS",
+    "distortionJS/indigoBuildJS"
   ).mkString(";", ";", "")
 )
 

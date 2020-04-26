@@ -18,6 +18,7 @@ object PerfView {
     SceneUpdateFragment(
       gameLayer(model),
       lightingLayer(inputState),
+      Nil,
       uiLayer(),
       RGBA.White.withAmount(0.5),
       Nil,

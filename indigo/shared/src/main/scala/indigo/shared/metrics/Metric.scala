@@ -66,6 +66,9 @@ case object DrawLightsLayerEndMetric   extends Metric { val name: String = "draw
 case object DrawLightingLayerStartMetric extends Metric { val name: String = "draw lighting layer start" }
 case object DrawLightingLayerEndMetric   extends Metric { val name: String = "draw lighting layer end"   }
 
+case object DrawDistortionLayerStartMetric extends Metric { val name: String = "draw lighting layer start" }
+case object DrawDistortionLayerEndMetric   extends Metric { val name: String = "draw lighting layer end"   }
+
 case object DrawUiLayerStartMetric extends Metric { val name: String = "draw ui layer start" }
 case object DrawUiLayerEndMetric   extends Metric { val name: String = "draw ui layer end"   }
 
@@ -73,6 +76,7 @@ case object RenderToWindowStartMetric extends Metric { val name: String = "rende
 case object RenderToWindowEndMetric   extends Metric { val name: String = "render to window end"   }
 
 case object LightingDrawCallMetric    extends Metric { val name: String = "draw call: lighting"  }
+case object DistortionDrawCallMetric    extends Metric { val name: String = "draw call: distortion"  }
 case object NormalLayerDrawCallMetric extends Metric { val name: String = "draw call: normal"    }
 case object LightsLayerDrawCallMetric extends Metric { val name: String = "draw call: lights"    }
 case object UiLayerDrawCallMetric extends Metric { val name: String = "draw call: ui"    }
@@ -84,6 +88,8 @@ case object LightsDrawCallLengthStartMetric   extends Metric { val name: String 
 case object LightsDrawCallLengthEndMetric     extends Metric { val name: String = "draw call length end: lights"     }
 case object LightingDrawCallLengthStartMetric extends Metric { val name: String = "draw call length start: lighting" }
 case object LightingDrawCallLengthEndMetric   extends Metric { val name: String = "draw call length end: lighting"   }
+case object DistortionDrawCallLengthStartMetric extends Metric { val name: String = "draw call length start: distortion" }
+case object DistortionDrawCallLengthEndMetric   extends Metric { val name: String = "draw call length end: distortion"   }
 case object UiDrawCallLengthStartMetric   extends Metric { val name: String = "draw call length start: ui"   }
 case object UiDrawCallLengthEndMetric     extends Metric { val name: String = "draw call length end: ui"     }
 case object ToWindowDrawCallLengthStartMetric extends Metric { val name: String = "draw call length start: window"   }

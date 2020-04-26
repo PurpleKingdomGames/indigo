@@ -12,6 +12,7 @@ import scala.scalajs.js
 final class SceneUpdateFragmentDelegate(
     _gameLayer: SceneLayerDelegate,
     _lightingLayer: SceneLayerDelegate,
+    _distortionLayer: SceneLayerDelegate,
     _uiLayer: SceneLayerDelegate,
     _ambientLight: RGBADelegate,
     _lights: js.Array[LightDelegate],
@@ -25,6 +26,8 @@ final class SceneUpdateFragmentDelegate(
   val gameLayer = _gameLayer
   @JSExport
   val lightingLayer = _lightingLayer
+  @JSExport
+  val distortionLayer = _distortionLayer
   @JSExport
   val uiLayer = _uiLayer
   @JSExport
@@ -45,6 +48,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer.addLayerNodes(nodes),
       lightingLayer,
+      distortionLayer,
       uiLayer,
       ambientLight,
       lights,
@@ -59,6 +63,22 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer.addLayerNodes(nodes),
+      distortionLayer,
+      uiLayer,
+      ambientLight,
+      lights,
+      globalEvents,
+      audio,
+      screenEffects,
+      cloneBlanks
+    )
+
+  @JSExport
+  def addDistortionLayerNodes(nodes: js.Array[SceneGraphNodeDelegate]): SceneUpdateFragmentDelegate =
+    new SceneUpdateFragmentDelegate(
+      gameLayer,
+      lightingLayer,
+      distortionLayer.addLayerNodes(nodes),
       uiLayer,
       ambientLight,
       lights,
@@ -73,6 +93,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
+      distortionLayer,
       uiLayer.addLayerNodes(nodes),
       ambientLight,
       lights,
@@ -87,6 +108,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
+      distortionLayer,
       uiLayer,
       light,
       lights,
@@ -101,6 +123,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
+      distortionLayer,
       uiLayer,
       ambientLight,
       newLights,
@@ -115,6 +138,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
+      distortionLayer,
       uiLayer,
       ambientLight,
       newLights,
@@ -128,6 +152,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
+      distortionLayer,
       uiLayer,
       ambientLight,
       new js.Array(),
@@ -142,6 +167,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
+      distortionLayer,
       uiLayer,
       ambientLight,
       lights,
@@ -156,6 +182,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
+      distortionLayer,
       uiLayer,
       ambientLight,
       lights,
@@ -170,6 +197,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
+      distortionLayer,
       uiLayer,
       ambientLight,
       lights,
@@ -184,6 +212,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer.withSaturationLevel(amount),
       lightingLayer.withSaturationLevel(amount),
+      distortionLayer,
       uiLayer.withSaturationLevel(amount),
       ambientLight,
       lights,
@@ -198,6 +227,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer.withSaturationLevel(amount),
       lightingLayer,
+      distortionLayer,
       uiLayer,
       ambientLight,
       lights,
@@ -212,6 +242,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer.withSaturationLevel(amount),
+      distortionLayer,
       uiLayer,
       ambientLight,
       lights,
@@ -226,6 +257,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
+      distortionLayer,
       uiLayer.withSaturationLevel(amount),
       ambientLight,
       lights,
@@ -240,6 +272,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
+      distortionLayer,
       uiLayer,
       ambientLight,
       lights,
@@ -254,6 +287,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
+      distortionLayer,
       uiLayer,
       ambientLight,
       lights,
@@ -268,6 +302,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
+      distortionLayer,
       uiLayer,
       ambientLight,
       lights,
@@ -282,6 +317,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer.withTint(tint),
       lightingLayer.withTint(tint),
+      distortionLayer,
       uiLayer.withTint(tint),
       ambientLight,
       lights,
@@ -296,6 +332,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer.withTint(tint),
       lightingLayer,
+      distortionLayer,
       uiLayer,
       ambientLight,
       lights,
@@ -310,6 +347,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer.withTint(tint),
+      distortionLayer,
       uiLayer,
       ambientLight,
       lights,
@@ -324,6 +362,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
+      distortionLayer,
       uiLayer.withTint(tint),
       ambientLight,
       lights,
@@ -338,6 +377,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer.withMagnification(level),
       lightingLayer.withMagnification(level),
+      distortionLayer,
       uiLayer.withMagnification(level),
       ambientLight,
       lights,
@@ -352,6 +392,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer.withMagnification(level),
       lightingLayer,
+      distortionLayer,
       uiLayer,
       ambientLight,
       lights,
@@ -366,6 +407,22 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer.withMagnification(level),
+      distortionLayer,
+      uiLayer,
+      ambientLight,
+      lights,
+      globalEvents,
+      audio,
+      screenEffects,
+      cloneBlanks
+    )
+
+  @JSExport
+  def withDistortionLayerMagnification(level: Int): SceneUpdateFragmentDelegate =
+    new SceneUpdateFragmentDelegate(
+      gameLayer,
+      lightingLayer,
+      distortionLayer.withMagnification(level),
       uiLayer,
       ambientLight,
       lights,
@@ -380,6 +437,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
       gameLayer,
       lightingLayer,
+      distortionLayer,
       uiLayer.withMagnification(level),
       ambientLight,
       lights,
@@ -394,6 +452,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragmentDelegate(
         gameLayer.concat(other.gameLayer),
         lightingLayer.concat(other.lightingLayer),
+        distortionLayer.concat(other.distortionLayer),
         uiLayer.concat(other.uiLayer),
         ambientLight.concat(other.ambientLight),
         lights ++ other.lights,
@@ -407,6 +466,7 @@ final class SceneUpdateFragmentDelegate(
     new SceneUpdateFragment(
       gameLayer.toInternal,
       lightingLayer.toInternal,
+      distortionLayer.toInternal,
       uiLayer.toInternal,
       ambientLight.toInternal,
       lights.toList.map(_.toInternal),
@@ -425,6 +485,7 @@ object SceneUpdateFragmentDelegate {
   @JSExport
   val empty: SceneUpdateFragmentDelegate =
     new SceneUpdateFragmentDelegate(
+      SceneLayerDelegate.None,
       SceneLayerDelegate.None,
       SceneLayerDelegate.None,
       SceneLayerDelegate.None,

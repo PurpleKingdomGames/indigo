@@ -53,6 +53,8 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     RendererFunctions.shaderProgramSetup(gl, "Pixel", StandardPixelArt)
   private val lightingShaderProgram =
     RendererFunctions.shaderProgramSetup(gl, "Lighting", StandardLightingPixelArt)
+  private val distortionShaderProgram =
+    RendererFunctions.shaderProgramSetup(gl, "Lighting", StandardDistortionPixelArt)
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var gameFrameBuffer: FrameBufferComponents.MultiOutput =
@@ -62,6 +64,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var lightingFrameBuffer: FrameBufferComponents.SingleOutput =
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  private var distortionFrameBuffer: FrameBufferComponents.SingleOutput =
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var uiFrameBuffer: FrameBufferComponents.SingleOutput =
@@ -158,6 +163,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
         }
         .getOrElse(orthographicProjectionMatrix)
 
+    // Game layer
     metrics.record(DrawGameLayerStartMetric)
     RendererFunctions.setNormalBlend(gl)
     layerRenderer.drawLayer(
@@ -172,6 +178,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     )
     metrics.record(DrawGameLayerEndMetric)
 
+    // Dynamic lighting
     metrics.record(DrawLightsLayerStartMetric)
     RendererFunctions.setLightsBlend(gl)
     lightsRenderer.drawLayer(
@@ -186,6 +193,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     )
     metrics.record(DrawLightsLayerEndMetric)
 
+    // Image based lighting
     metrics.record(DrawLightingLayerStartMetric)
     RendererFunctions.setLightingBlend(gl)
     layerRenderer.drawLayer(
@@ -200,6 +208,22 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     )
     metrics.record(DrawLightingLayerEndMetric)
 
+    // Distortion
+    metrics.record(DrawDistortionLayerStartMetric)
+    RendererFunctions.setDistortionBlend(gl)
+    layerRenderer.drawLayer(
+      lightingProjection,
+      cloneBlankDisplayObjects,
+      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.distortionLayer.nodes, gameTime, assetMapping, metrics),
+      distortionFrameBuffer,
+      ClearColor(0.5, 0.5, 1.0, 1.0),
+      distortionShaderProgram,
+      CurrentDrawLayer.Distortion,
+      metrics
+    )
+    metrics.record(DrawDistortionLayerEndMetric)
+
+    // UI
     metrics.record(DrawUiLayerStartMetric)
     RendererFunctions.setNormalBlend(gl)
     layerRenderer.drawLayer(
@@ -214,6 +238,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     )
     metrics.record(DrawUiLayerEndMetric)
 
+    // Merge
     metrics.record(RenderToWindowStartMetric)
     RendererFunctions.setNormalBlend(gl2)
     mergeRenderer.drawLayer(
@@ -221,6 +246,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       gameFrameBuffer,
       lightsFrameBuffer,
       lightingFrameBuffer,
+      distortionFrameBuffer,
       uiFrameBuffer,
       cNc.canvas.width,
       cNc.canvas.height,
@@ -258,6 +284,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       gameFrameBuffer = FrameBufferFunctions.createFrameBufferMulti(gl, actualWidth, actualHeight)
       lightsFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       lightingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
+      distortionFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       uiFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
 
       gl.viewport(0, 0, actualWidth.toDouble, actualHeight.toDouble)

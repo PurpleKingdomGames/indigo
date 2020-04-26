@@ -87,6 +87,7 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
       gameFrameBuffer: FrameBufferComponents.MultiOutput,
       lightsFrameBuffer: FrameBufferComponents.SingleOutput,
       lightingFrameBuffer: FrameBufferComponents.SingleOutput,
+      distortionFrameBuffer: FrameBufferComponents.SingleOutput,
       uiFrameBuffer: FrameBufferComponents.SingleOutput,
       width: Int,
       height: Int,
@@ -139,6 +140,7 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
       gameFrameBuffer,
       lightsFrameBuffer,
       lightingFrameBuffer,
+      distortionFrameBuffer,
       uiFrameBuffer
     )
 
@@ -157,6 +159,7 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
       game: FrameBufferComponents.MultiOutput,
       textureLights: FrameBufferComponents.SingleOutput,
       textureLighting: FrameBufferComponents.SingleOutput,
+      textureDistortion: FrameBufferComponents.SingleOutput,
       textureUi: FrameBufferComponents.SingleOutput
   ): Unit = {
 
@@ -166,6 +169,7 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
         "u_texture_game_emissive" -> game.emissive,
         "u_texture_lights"        -> textureLights.diffuse,
         "u_texture_lighting"      -> textureLighting.diffuse,
+        "u_texture_distortion"    -> textureDistortion.diffuse,
         "u_texture_ui"            -> textureUi.diffuse
       )
 

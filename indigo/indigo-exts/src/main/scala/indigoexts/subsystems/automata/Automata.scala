@@ -97,6 +97,7 @@ object Automata {
             automatonUpdate.nodes,
             Nil,
             Nil,
+            Nil,
             RGBA.None,
             Nil,
             automatonUpdate.events,
@@ -110,6 +111,7 @@ object Automata {
             Nil,
             automatonUpdate.nodes,
             Nil,
+            Nil,
             RGBA.None,
             Nil,
             automatonUpdate.events,
@@ -120,6 +122,7 @@ object Automata {
 
         case Layer.UI =>
           SceneUpdateFragment(
+            Nil,
             Nil,
             Nil,
             automatonUpdate.nodes,
