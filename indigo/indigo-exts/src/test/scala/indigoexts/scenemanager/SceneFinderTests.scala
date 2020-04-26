@@ -32,7 +32,7 @@ object SceneFinderTests extends TestSuite {
         }
 
         "should be able to produce a list of ScenePositions" - {
-          SceneFinder.fromScenes(scenes).toList === List(ScenePosition(0, sceneA.name), ScenePosition(1, sceneB.name))
+          SceneFinder.fromScenes(scenes).toList === List(ScenePosition(0, sceneA.name), ScenePosition(1, sceneB.name)) ==> true
         }
 
         "should be able to produce a non-empty list of ScenePositions" - {
