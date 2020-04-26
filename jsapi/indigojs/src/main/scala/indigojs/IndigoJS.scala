@@ -24,8 +24,6 @@ import indigo.shared.dice.Dice
 import indigo.shared.time.GameTime
 import indigo.shared.events.InputState
 import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.config.GameConfig
-import indigo.shared.assets.AssetType
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.animation.Animation
 import indigojs.delegates.OutcomeDelegate
@@ -51,8 +49,6 @@ object IndigoJS {
   type ViewUpdate       = js.Function4[GameTimeDelegate, GameModel, ViewModel, InputStateDelegate, SceneUpdateFragmentDelegate]
 
   private def indigoGame(
-      config: GameConfig,
-      assets: Set[AssetType],
       fonts: Set[FontInfo],
       animations: Set[Animation],
       initialise: AssetCollection => Startup[StartupError, StartupData],
@@ -64,13 +60,9 @@ object IndigoJS {
   ): GameEngine[StartupData, StartupError, GameModel, ViewModel] = {
 
     val frameProcessor: StandardFrameProcessor[GameModel, ViewModel] =
-      StandardFrameProcessor(modelUpdate, viewModelUpdate, viewUpdate)
+      new StandardFrameProcessor(modelUpdate, viewModelUpdate, viewUpdate)
 
     new GameEngine[StartupData, StartupError, GameModel, ViewModel](
-      config,
-      Future(None),
-      assets,
-      Future(Set()),
       fonts,
       animations,
       initialise,
@@ -127,8 +119,6 @@ object IndigoJS {
       present: ViewUpdate
   ): Unit =
     indigoGame(
-      config = config.toInternal,
-      assets = assets.map(_.toInternal).toSet,
       fonts = fonts.map(_.toInternal).toSet,
       animations = animations.map(_.toInternal).toSet,
       initialise = convertInitialise(initialise),
@@ -137,6 +127,11 @@ object IndigoJS {
       modelUpdate = convertUpdateModel(updateModel),
       viewModelUpdate = convertUpdateViewModel(updateViewModel),
       viewUpdate = convertUpdateView(present)
-    ).start()
+    ).start(
+      config.toInternal,
+      Future(None),
+      assets.map(_.toInternal).toSet,
+      Future(Set())
+    )
 
 }
