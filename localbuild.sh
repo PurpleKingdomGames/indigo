@@ -20,7 +20,9 @@ cd ..
 
 # Supporting tooling...
 # JS API
-# Tooling
+cd jsapi
+sbt clean update compile fastOptJS
+cd ..
 
 # Documentation...
 # Docs site
