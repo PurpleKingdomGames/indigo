@@ -94,8 +94,6 @@ package object indigoexts {
     val ButtonState: indigoexts.uicomponents.ButtonState.type = indigoexts.uicomponents.ButtonState
     type ButtonEvent = indigoexts.uicomponents.ButtonEvent
     val ButtonEvent: indigoexts.uicomponents.ButtonEvent.type = indigoexts.uicomponents.ButtonEvent
-    type ButtonViewUpdate = indigoexts.uicomponents.ButtonViewUpdate
-    val ButtonViewUpdate: indigoexts.uicomponents.ButtonViewUpdate.type = indigoexts.uicomponents.ButtonViewUpdate
     type ButtonAssets = indigoexts.uicomponents.ButtonAssets
     val ButtonAssets: indigoexts.uicomponents.ButtonAssets.type = indigoexts.uicomponents.ButtonAssets
 
