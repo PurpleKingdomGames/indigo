@@ -1,11 +1,14 @@
 #!/bin/bash
 
 # API Gen
-sbt apigen/clean apigen/run
+mill clean apigen
+mill apigen.compile
+mill apigen.test
+mill apigen.run
 
 # JS Interface
-sbt indigojs/clean indigojs/fastOptJS
+mill clean indigojs
+mill indigojs.compile
+mill indigojs.fastOpt # For the quick JS file.
+#mill indigojs.fullOpt
 
-# To test
-# cd testharness
-# npm start
