@@ -18,8 +18,8 @@ object apigen extends ScalaModule {
     MavenRepository("https://oss.sonatype.org/content/repositories/releases")
   )
 
-  def compileIvyDeps      = Agg(ivy"org.wartremover::wartremover:2.4.5")
-  def scalacPluginIvyDeps = Agg(ivy"org.wartremover:::wartremover:2.4.5")
+  def compileIvyDeps      = T { super.compileIvyDeps() ++ Agg(ivy"org.wartremover::wartremover:2.4.5") }
+  def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.5") }
 
   def scalacOptions =
     ScalacOptions.scala213Compile ++ Seq(
@@ -38,7 +38,7 @@ object apigen extends ScalaModule {
 
 object indigojs extends ScalaJSModule {
   def scalaVersion   = "2.13.1"
-  def scalaJSVersion = "0.6.31"
+  def scalaJSVersion = "0.6.32"
 
   def ivyDeps = Agg(
     ivy"indigo::circe12::0.0.12-SNAPSHOT",
