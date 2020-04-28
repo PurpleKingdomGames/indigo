@@ -45,7 +45,7 @@ final case class Button(
     }
   }
 
-  def draw /*(inputState: InputState)*/: SceneUpdateFragment =
+  def draw: SceneUpdateFragment =
     SceneUpdateFragment(
       state match {
         case ButtonState.Up =>
@@ -57,7 +57,7 @@ final case class Button(
         case ButtonState.Down =>
           buttonAssets.down.moveTo(bounds.position).withDepth(depth)
       }
-    ) //.addGlobalEvents(Button.mouseInteractions(this, inputState.mouse))
+    )
 
   def withUpAction(action: => List[GlobalEvent]): Button =
     this.copy(onUp = () => action)
@@ -96,35 +96,6 @@ object Button {
       onHoverOut = () => Nil
     )
 
-  // WAIT!
-  // This is what is going on based on the input state.
-  // Worth considering moving some of it into the update logic? Why
-  // does a mouse position change trigger a state change event and
-  // not just update the state of the button directly?
-  // def mouseInteractions(button: Button, mouse: MouseState): List[GlobalEvent] = {
-  //   val mouseInBounds = button.bounds.isPointWithin(mouse.position)
-
-  //   button.state match {
-  //     case ButtonState.Up if mouseInBounds =>
-  //       ButtonEvent(button.bindingKey, ButtonState.Over) :: button.onHoverOver()
-
-  //     case ButtonState.Over if mouseInBounds && mouse.mousePressed =>
-  //       ButtonEvent(button.bindingKey, ButtonState.Down) :: button.onDown()
-
-  //     case ButtonState.Down if mouseInBounds && mouse.mouseReleased =>
-  //       ButtonEvent(button.bindingKey, ButtonState.Over) :: button.onUp()
-
-  //     case ButtonState.Down if !mouseInBounds && !mouse.mousePressed =>
-  //       ButtonEvent(button.bindingKey, ButtonState.Up) :: button.onUp() ++ button.onHoverOut()
-
-  //     case ButtonState.Over if !mouseInBounds =>
-  //       ButtonEvent(button.bindingKey, ButtonState.Up) :: button.onHoverOut()
-
-  //     case _ =>
-  //       Nil
-  //   }
-  // }
-
 }
 
 sealed trait ButtonState {
@@ -153,5 +124,3 @@ object ButtonState {
 }
 
 final case class ButtonAssets(up: Graphic, over: Graphic, down: Graphic)
-
-final case class ButtonEvent(bindingKey: BindingKey, newState: ButtonState) extends GlobalEvent

@@ -79,7 +79,7 @@ object AssetLoadingExample extends IndigoGameBasic[Unit, MyGameModel, MyViewMode
       )
     } else Nil
 
-    viewModel.button.draw //(inputState)
+    viewModel.button.draw
       .addGameLayerNodes(box)
   }
 }
