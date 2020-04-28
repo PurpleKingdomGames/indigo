@@ -4,7 +4,7 @@ import indigo._
 import indigoexts.entrypoint._
 import indigoexts.ui._
 
-object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
+object AutomataExample extends IndigoGameBasic[Unit, Unit, Button] {
 
   val config: GameConfig = defaultGameConfig
 
@@ -23,47 +23,35 @@ object AutomataExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
   def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
-  def initialModel(startupData: Unit): MyGameModel =
-    MyGameModel(
-      button = Button(ButtonState.Up)
-    )
+  def initialModel(startupData: Unit): Unit =
+    ()
 
-  def update(gameTime: GameTime, model: MyGameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[MyGameModel] = {
-    case e: ButtonEvent =>
-      Outcome(
-        model.copy(
-          button = model.button
-            .withUpAction { () =>
-              List(Score.spawnEvent(Score.generateLocation(config, dice), dice))
-            }
-            .update(e)
-        )
-      )
-
+  def update(gameTime: GameTime, model: Unit, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Unit] = {
     case _ =>
       Outcome(model)
   }
 
-  def initialViewModel(startupData: Unit): MyGameModel => Unit = _ => ()
-
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
-    Outcome(())
-
-  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState): SceneUpdateFragment =
-    model.button
-      .draw(
-        bounds = Rectangle(10, 10, 16, 16),
-        depth = Depth(2),
-        inputState = inputState,
+  def initialViewModel(startupData: Unit): Unit => Button =
+    _ =>
+      Button(
         buttonAssets = ButtonAssets(
           up = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 0, 16, 16),
           over = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 16, 16, 16),
           down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 32, 16, 16)
-        )
+        ),
+        bounds = Rectangle(10, 10, 16, 16),
+        depth = Depth(2)
       )
-      .toSceneUpdateFragment
+
+  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Button, inputState: InputState, dice: Dice): Outcome[Button] =
+    viewModel.update(inputState.mouse).map { btn =>
+      btn.withUpAction {
+        List(Score.spawnEvent(Score.generateLocation(config, dice), dice))
+      }
+    }
+
+  def present(gameTime: GameTime, model: Unit, viewModel: Button, inputState: InputState): SceneUpdateFragment =
+    viewModel.draw
       .addGameLayerNodes(Text("click to win!", 30, 10, 1, FontStuff.fontKey))
 
 }
-
-final case class MyGameModel(button: Button)

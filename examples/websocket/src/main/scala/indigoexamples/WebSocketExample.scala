@@ -14,7 +14,14 @@ So we want a button that send a message to 2) and outputs to the console
 We also want to establish a connection on startup that repeated writes 1)'s
 Ping! to the console.
  */
-object WebSocketExample extends IndigoGameBasic[MySetupData, MyGameModel, Unit] {
+object WebSocketExample extends IndigoGameBasic[MySetupData, Unit, MyViewModel] {
+
+  val buttonAssets =
+    ButtonAssets(
+      up = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 0, 16, 16),
+      over = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 16, 16, 16),
+      down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 32, 16, 16)
+    )
 
   val config: GameConfig = defaultGameConfig
 
@@ -40,26 +47,10 @@ object WebSocketExample extends IndigoGameBasic[MySetupData, MyGameModel, Unit] 
       )
     )
 
-  def initialModel(startupData: MySetupData): MyGameModel =
-    MyGameModel(
-      ping = Button(ButtonState.Up).withUpAction { () =>
-        List(WebSocketEvent.ConnectOnly(startupData.pingSocket))
-      },
-      echo = Button(ButtonState.Up).withUpAction { () =>
-        List(WebSocketEvent.Send("Hello!", startupData.echoSocket))
-      },
-      count = 0
-    )
+  def initialModel(startupData: MySetupData): Unit =
+    ()
 
-  def update(gameTime: GameTime, model: MyGameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[MyGameModel] = {
-    case e: ButtonEvent =>
-      Outcome(
-        model.copy(
-          ping = model.ping.update(e),
-          echo = model.echo.update(e)
-        )
-      )
-
+  def update(gameTime: GameTime, model: Unit, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Unit] = {
     case WebSocketEvent.Receive(WebSocketId("ping"), message) =>
       println("Message from Server: " + message)
       Outcome(model)
@@ -80,39 +71,35 @@ object WebSocketExample extends IndigoGameBasic[MySetupData, MyGameModel, Unit] 
       Outcome(model)
   }
 
-  def initialViewModel(startupData: MySetupData): MyGameModel => Unit = _ => ()
-
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
-    Outcome(())
-
-  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState): SceneUpdateFragment = {
-    val pingButton: ButtonViewUpdate = model.ping.draw(
-      bounds = Rectangle(10, 10, 16, 16),
-      depth = Depth(2),
-      inputState = inputState,
-      buttonAssets = ButtonAssets(
-        up = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 0, 16, 16),
-        over = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 16, 16, 16),
-        down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 32, 16, 16)
+  def initialViewModel(startupData: MySetupData): Unit => MyViewModel =
+    _ =>
+      MyViewModel(
+        ping = Button(
+          buttonAssets = buttonAssets,
+          bounds = Rectangle(10, 32, 16, 16),
+          depth = Depth(2)
+        ).withUpAction {
+          List(WebSocketEvent.ConnectOnly(startupData.pingSocket))
+        },
+        echo = Button(
+          buttonAssets = buttonAssets,
+          bounds = Rectangle(10, 32, 16, 16),
+          depth = Depth(2)
+        ).withUpAction {
+          List(WebSocketEvent.Send("Hello!", startupData.echoSocket))
+        }
       )
-    )
 
-    val echoButton: ButtonViewUpdate = model.echo.draw(
-      bounds = Rectangle(10, 32, 16, 16),
-      depth = Depth(2),
-      inputState = inputState,
-      buttonAssets = ButtonAssets(
-        up = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 0, 16, 16),
-        over = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 16, 16, 16),
-        down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 32, 16, 16)
-      )
-    )
+  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: MyViewModel, inputState: InputState, dice: Dice): Outcome[MyViewModel] =
+    (viewModel.ping.update(inputState.mouse) |+| viewModel.echo.update(inputState.mouse)).map {
+      case (ping, echo) =>
+        MyViewModel(ping, echo)
+    }
 
-    pingButton.toSceneUpdateFragment |+| echoButton.toSceneUpdateFragment
-  }
+  def present(gameTime: GameTime, model: Unit, viewModel: MyViewModel, inputState: InputState): SceneUpdateFragment =
+    viewModel.ping.draw |+| viewModel.echo.draw
 }
 
 final case class MySetupData(pingSocket: WebSocketConfig, echoSocket: WebSocketConfig)
 
-// We need a button in our model
-final case class MyGameModel(ping: Button, echo: Button, count: Int)
+final case class MyViewModel(ping: Button, echo: Button)
