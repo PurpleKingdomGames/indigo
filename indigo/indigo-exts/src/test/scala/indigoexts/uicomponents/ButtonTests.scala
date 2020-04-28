@@ -64,6 +64,15 @@ object ButtonTests extends TestSuite {
           actual.state.state.isDown ==> true
         }
 
+        "Transition from Up -> Down on mouse press" - {
+          val mouse =
+            new MouseState(List(MouseEvent.MouseDown(20, 20)), Point(20, 20), false)
+
+          val actual = button.toUpState.update(mouse)
+
+          actual.state.state.isDown ==> true
+        }
+
         "Transition from Down -> Over on mouse release" - {
           val mouse =
             new MouseState(List(MouseEvent.MouseUp(20, 20)), Point(20, 20), false)
@@ -71,6 +80,20 @@ object ButtonTests extends TestSuite {
           val actual = button.toDownState.update(mouse)
 
           actual.state.state.isOver ==> true
+        }
+
+        "If the button is down, and the mouse moves out, the button stays down until release." - {
+          val actual = for {
+            buttonPressed <- button.update(new MouseState(List(MouseEvent.MouseDown(20, 20)), Point(20, 20), false))
+            mouseOut      <- buttonPressed.update(new MouseState(Nil, Point(200, 200), false))
+            mouseReleased <- mouseOut.update(new MouseState(List(MouseEvent.MouseUp(200, 200)), Point(200, 200), false))
+          } yield (buttonPressed.state, mouseOut.state, mouseReleased.state)
+
+          assert(
+            actual.state._1.isDown,
+            actual.state._2.isDown,
+            actual.state._3.isUp
+          )
         }
 
       }

@@ -22,8 +22,11 @@ final case class Button(
     val mouseInBounds = bounds.isPointWithin(mouse.position)
 
     state match {
-      case ButtonState.Up if mouseInBounds =>
+      case ButtonState.Up if mouseInBounds && !mouse.mousePressed =>
         Outcome(toOverState)
+
+      case ButtonState.Up if mouseInBounds && mouse.mousePressed =>
+        Outcome(toDownState)
 
       case ButtonState.Over if !mouseInBounds =>
         Outcome(toUpState)
@@ -33,6 +36,9 @@ final case class Button(
 
       case ButtonState.Down if mouseInBounds && mouse.mouseReleased =>
         Outcome(toOverState)
+
+      case ButtonState.Down if !mouseInBounds && mouse.mouseReleased =>
+        Outcome(toUpState)
 
       case _ =>
         Outcome(this)
