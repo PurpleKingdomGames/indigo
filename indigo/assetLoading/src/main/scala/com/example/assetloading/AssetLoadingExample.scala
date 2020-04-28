@@ -5,12 +5,11 @@ import indigoexts.entrypoint._
 import indigoexts.ui._
 import indigoexts.subsystems.assetbundleloader._
 
-object AssetLoadingExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
+object AssetLoadingExample extends IndigoGameBasic[Unit, MyGameModel, MyViewModel] {
 
   val config: GameConfig =
     defaultGameConfig.withMagnification(2)
 
-  // We'll need some graphics.
   val assets: Set[AssetType] =
     Assets.assets
 
@@ -30,27 +29,10 @@ object AssetLoadingExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
         Startup.Success(())
     }
 
-  // Let's setup our button's initial state
   def initialModel(startupData: Unit): MyGameModel =
-    MyGameModel(
-      button = Button(ButtonState.Up).withUpAction { () =>
-        println("Start loading assets...")
-        List(
-          AssetBundleLoaderEvent.Load(BindingKey("Junction box assets"), Assets.junctionboxImageAssets ++ Assets.otherAssetsToLoad)
-        ) // On mouse release will emit this event.
-      },
-      loaded = false
-    )
+    MyGameModel(loaded = false)
 
-  // Match on event type, forward ButtonEvents to all buttons! (they'll work out if it's for the right button)
   def update(gameTime: GameTime, model: MyGameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[MyGameModel] = {
-    case e: ButtonEvent =>
-      Outcome(
-        model.copy(
-          button = model.button.update(e)
-        )
-      )
-
     case AssetBundleLoaderEvent.Started(key) =>
       println("Load started! " + key.toString())
       Outcome(model)
@@ -71,23 +53,25 @@ object AssetLoadingExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       Outcome(model)
   }
 
-  def initialViewModel(startupData: Unit): MyGameModel => Unit = _ => ()
-
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
-    Outcome(())
-
-  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState): SceneUpdateFragment = {
-    val button: ButtonViewUpdate = model.button.draw(
-      bounds = Rectangle(10, 10, 16, 16), // Where should the button be on the screen?
-      depth = Depth(2),                   // At what depth?
-      inputState = inputState,            // delegate events
-      buttonAssets = ButtonAssets(        // We could cache the graphics much earlier
-        up = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 0, 16, 16),
-        over = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 16, 16, 16),
-        down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 32, 16, 16)
+  def initialViewModel(startupData: Unit): MyGameModel => MyViewModel =
+    _ =>
+      MyViewModel(
+        button = Button(
+          buttonAssets = Assets.buttonAssets,
+          bounds = Rectangle(10, 10, 16, 16),
+          depth = Depth(2)
+        ).withUpAction { () =>
+          println("Start loading assets...")
+          List(AssetBundleLoaderEvent.Load(BindingKey("Junction box assets"), Assets.junctionboxImageAssets ++ Assets.otherAssetsToLoad))
+        }
       )
-    )
 
+  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, inputState: InputState, dice: Dice): Outcome[MyViewModel] =
+    viewModel.button.update(inputState.mouse).map { btn =>
+      viewModel.copy(button = btn)
+    }
+
+  def present(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, inputState: InputState): SceneUpdateFragment = {
     val box = if (model.loaded) {
       List(
         Graphic(Rectangle(0, 0, 64, 64), 1, Assets.junctionBoxMaterial)
@@ -95,12 +79,13 @@ object AssetLoadingExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       )
     } else Nil
 
-    button.toSceneUpdateFragment.addGameLayerNodes(box)
+    viewModel.button.draw //(inputState)
+      .addGameLayerNodes(box)
   }
 }
 
-// We need a button in our model
-final case class MyGameModel(button: Button, loaded: Boolean)
+final case class MyGameModel(loaded: Boolean)
+final case class MyViewModel(button: Button)
 
 object Assets {
 
@@ -134,6 +119,13 @@ object Assets {
   def assets: Set[AssetType] =
     Set(
       AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png"))
+    )
+
+  val buttonAssets =
+    ButtonAssets(
+      up = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 0, 16, 16),
+      over = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 16, 16, 16),
+      down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 32, 16, 16)
     )
 
 }
