@@ -19,6 +19,9 @@ final class Outcome[+A](val state: A, val globalEvents: List[GlobalEvent]) {
   def mapState[B](f: A => B): Outcome[B] =
     Outcome.mapState(this)(f)
 
+  def map[B](f: A => B): Outcome[B] =
+    mapState(f)
+
   def mapGlobalEvents[B](f: List[GlobalEvent] => List[GlobalEvent]): Outcome[A] =
     Outcome.mapGlobalEvents(this)(f)
 
@@ -28,11 +31,17 @@ final class Outcome[+A](val state: A, val globalEvents: List[GlobalEvent]) {
   def apState[B](of: Outcome[A => B]): Outcome[B] =
     Outcome.apState(this)(of)
 
+  def ap[B](of: Outcome[A => B]): Outcome[B] =
+    apState(of)
+
   def |+|[B](other: Outcome[B]): Outcome[(A, B)] =
     Outcome.combine(this, other)
 
   def flatMapState[B](f: A => Outcome[B]): Outcome[B] =
     Outcome.flatMapState(this)(f)
+
+  def flatMap[B](f: A => Outcome[B]): Outcome[B] =
+    flatMapState(f)
 
 }
 
@@ -138,6 +147,9 @@ object Outcome {
 
   def join[A](faa: Outcome[Outcome[A]]): Outcome[A] =
     Outcome(faa.state.state).addGlobalEvents(faa.globalEvents ++ faa.state.globalEvents)
+
+  def flatten[A](faa: Outcome[Outcome[A]]): Outcome[A] =
+    join(faa)
 
   def flatMapState[A, B](fa: Outcome[A])(f: A => Outcome[B]): Outcome[B] =
     join(mapState(fa)(f))
