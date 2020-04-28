@@ -9,8 +9,11 @@ import indigo.shared.scenegraph.Graphic
 import indigo.shared.events.MouseState
 import indigo.shared.datatypes.Point
 import indigo.shared.events.MouseEvent
+import indigo.shared.events.GlobalEvent
 
 object ButtonTests extends TestSuite {
+
+  final case class FakeEvent(message: String) extends GlobalEvent
 
   val bounds =
     Rectangle(10, 10, 100, 100)
@@ -24,7 +27,10 @@ object ButtonTests extends TestSuite {
       ),
       bounds,
       Depth(1)
-    )
+    ).withHoverOverAction(List(FakeEvent("mouse over")))
+      .withHoverOutAction(List(FakeEvent("mouse out")))
+      .withDownAction(List(FakeEvent("mouse down")))
+      .withUpAction(List(FakeEvent("mouse up")))
 
   val tests: Tests =
     Tests {
@@ -44,6 +50,13 @@ object ButtonTests extends TestSuite {
           val actual = button.update(mouse)
 
           actual.state.state.isOver ==> true
+
+          "Within the button: On mouse over, the over action is performed" - {
+            assert(
+              actual.globalEvents.length == 1,
+              actual.globalEvents.contains(FakeEvent("mouse over"))
+            )
+          }
         }
 
         "Transition from Over -> Up when mouse out" - {
@@ -53,6 +66,13 @@ object ButtonTests extends TestSuite {
           val actual = button.toOverState.update(mouse)
 
           actual.state.state.isUp ==> true
+
+          "Starting within the button: On mouse out, the out action is performed" - {
+            assert(
+              actual.globalEvents.length == 1,
+              actual.globalEvents.contains(FakeEvent("mouse out"))
+            )
+          }
         }
 
         "Transition from Over -> Down on mouse press" - {
@@ -62,6 +82,13 @@ object ButtonTests extends TestSuite {
           val actual = button.toOverState.update(mouse)
 
           actual.state.state.isDown ==> true
+
+          "Within the button: On mouse down, the down action is performed" - {
+            assert(
+              actual.globalEvents.length == 1,
+              actual.globalEvents.contains(FakeEvent("mouse down"))
+            )
+          }
         }
 
         "Transition from Up -> Down on mouse press" - {
@@ -71,6 +98,15 @@ object ButtonTests extends TestSuite {
           val actual = button.toUpState.update(mouse)
 
           actual.state.state.isDown ==> true
+
+          "Within the button: On mouse down, the down action is performed" - {
+            assert(
+              actual.globalEvents.length == 2,
+              actual.globalEvents.contains(FakeEvent("mouse over")),
+              actual.globalEvents.contains(FakeEvent("mouse down")),
+              actual.globalEvents == List(FakeEvent("mouse over"), FakeEvent("mouse down"))
+            )
+          }
         }
 
         "Transition from Down -> Over on mouse release" - {
@@ -80,6 +116,13 @@ object ButtonTests extends TestSuite {
           val actual = button.toDownState.update(mouse)
 
           actual.state.state.isOver ==> true
+
+          "Within the button: On mouse release, the up action is performed" - {
+            assert(
+              actual.globalEvents.length == 1,
+              actual.globalEvents.contains(FakeEvent("mouse up"))
+            )
+          }
         }
 
         "If the button is down, and the mouse moves out, the button stays down until release." - {
@@ -94,6 +137,16 @@ object ButtonTests extends TestSuite {
             actual.state._2.isDown,
             actual.state._3.isUp
           )
+
+          "If the mouse is moved onto and pressed down on the button, dragged out and released, only the down action is performed." - {
+            println(actual.globalEvents)
+            assert(
+              actual.globalEvents.length == 2,
+              actual.globalEvents.contains(FakeEvent("mouse over")),
+              actual.globalEvents.contains(FakeEvent("mouse down")),
+              actual.globalEvents == List(FakeEvent("mouse over"), FakeEvent("mouse down"))
+            )
+          }
         }
 
       }

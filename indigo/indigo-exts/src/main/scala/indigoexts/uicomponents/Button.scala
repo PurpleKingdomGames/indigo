@@ -23,19 +23,19 @@ final case class Button(
 
     state match {
       case ButtonState.Up if mouseInBounds && !mouse.mousePressed =>
-        Outcome(toOverState)
+        Outcome(toOverState).addGlobalEvents(onHoverOver())
 
       case ButtonState.Up if mouseInBounds && mouse.mousePressed =>
-        Outcome(toDownState)
+        Outcome(toDownState).addGlobalEvents(onHoverOver() ++ onDown())
 
       case ButtonState.Over if !mouseInBounds =>
-        Outcome(toUpState)
+        Outcome(toUpState).addGlobalEvents(onHoverOut())
 
       case ButtonState.Over if mouseInBounds && mouse.mousePressed =>
-        Outcome(toDownState)
+        Outcome(toDownState).addGlobalEvents(onDown())
 
       case ButtonState.Down if mouseInBounds && mouse.mouseReleased =>
-        Outcome(toOverState)
+        Outcome(toOverState).addGlobalEvents(onUp())
 
       case ButtonState.Down if !mouseInBounds && mouse.mouseReleased =>
         Outcome(toUpState)
@@ -59,17 +59,17 @@ final case class Button(
       }
     ) //.addGlobalEvents(Button.mouseInteractions(this, inputState.mouse))
 
-  def withUpAction(action: () => List[GlobalEvent]): Button =
-    this.copy(onUp = action)
+  def withUpAction(action: => List[GlobalEvent]): Button =
+    this.copy(onUp = () => action)
 
-  def withDownAction(action: () => List[GlobalEvent]): Button =
-    this.copy(onDown = action)
+  def withDownAction(action: => List[GlobalEvent]): Button =
+    this.copy(onDown = () => action)
 
-  def withHoverOverAction(action: () => List[GlobalEvent]): Button =
-    this.copy(onHoverOver = action)
+  def withHoverOverAction(action: => List[GlobalEvent]): Button =
+    this.copy(onHoverOver = () => action)
 
-  def withHoverOutAction(action: () => List[GlobalEvent]): Button =
-    this.copy(onHoverOut = action)
+  def withHoverOutAction(action: => List[GlobalEvent]): Button =
+    this.copy(onHoverOut = () => action)
 
   def toUpState: Button =
     this.copy(state = ButtonState.Up)
