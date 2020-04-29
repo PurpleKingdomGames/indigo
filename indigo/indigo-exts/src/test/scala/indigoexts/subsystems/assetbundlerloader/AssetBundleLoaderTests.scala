@@ -9,6 +9,7 @@ import indigo.shared.assets.AssetTypePrimitive
 import indigo.shared.time.GameTime
 import indigo.shared.dice.Dice
 import indigo.shared.events.AssetEvent
+import indigo.shared.events.InputState
 
 object AssetBundleLoaderTests extends TestSuite {
 
@@ -25,13 +26,14 @@ object AssetBundleLoaderTests extends TestSuite {
       "AssetBundleLoader - Journey (happy path)" - {
         val gt = GameTime.zero
         val d  = Dice.loaded(0)
+        val is = InputState.default
 
         val loader = AssetBundleLoader.subSystem
 
         val key = BindingKey("test")
 
         // Someone requests that a bundle of assets be loaded.
-        val loadOutcome = loader.update(gt, d)(AssetBundleLoaderEvent.Load(key, defaultAssets.toSet))
+        val loadOutcome = loader.update(gt, is, d)(AssetBundleLoaderEvent.Load(key, defaultAssets.toSet))
 
         // That results in events being triggered to load, but not process, each asset
         defaultAssets.length + 1 ==> loadOutcome.globalEvents.length
@@ -41,23 +43,23 @@ object AssetBundleLoaderTests extends TestSuite {
         loadOutcome.globalEvents.contains(AssetBundleLoaderEvent.Started(key)) ==> true
 
         // As each asset comes in, the status is checked and events are emitted.
-        val nextLoader1 = loadOutcome.state.update(gt, d)(AssetEvent.AssetBatchLoaded(Some(BindingKey("/image_1.png")), false))
+        val nextLoader1 = loadOutcome.state.update(gt, is, d)(AssetEvent.AssetBatchLoaded(Some(BindingKey("/image_1.png")), false))
         nextLoader1.globalEvents.length ==> 1
         nextLoader1.globalEvents.contains(AssetBundleLoaderEvent.LoadProgress(key, 33, 1, 3)) ==> true
 
-        val nextLoader2 = nextLoader1.state.update(gt, d)(AssetEvent.AssetBatchLoaded(Some(BindingKey("/image_2.png")), false))
+        val nextLoader2 = nextLoader1.state.update(gt, is, d)(AssetEvent.AssetBatchLoaded(Some(BindingKey("/image_2.png")), false))
         nextLoader2.globalEvents.length ==> 1
         nextLoader2.globalEvents.contains(AssetBundleLoaderEvent.LoadProgress(key, 67, 2, 3)) ==> true
 
         // Eventually all assets are loaded individually, and an event is emmitted to
         // load the whole bundle and also to process it.
-        val nextLoader3 = nextLoader2.state.update(gt, d)(AssetEvent.AssetBatchLoaded(Some(BindingKey("/image_3.png")), false))
+        val nextLoader3 = nextLoader2.state.update(gt, is, d)(AssetEvent.AssetBatchLoaded(Some(BindingKey("/image_3.png")), false))
         nextLoader3.globalEvents.length ==> 2
         nextLoader3.globalEvents.contains(AssetBundleLoaderEvent.LoadProgress(key, 100, 3, 3)) ==> true
         nextLoader3.globalEvents.contains(AssetEvent.LoadAssetBatch(defaultAssets.toSet, Some(key), true)) ==> true
 
         // Once the whole bundle has finished, a completion event is emitted.
-        val finalLoader = nextLoader3.state.update(gt, d)(AssetEvent.AssetBatchLoaded(Some(key), true))
+        val finalLoader = nextLoader3.state.update(gt, is, d)(AssetEvent.AssetBatchLoaded(Some(key), true))
         finalLoader.globalEvents.length ==> 1
         finalLoader.globalEvents.contains(AssetBundleLoaderEvent.Success(key)) ==> true
         val asset2 = finalLoader.state.tracker.findBundleByKey(key).get.giveAssetLoadState(AssetPath("/image_2.png")).get
@@ -70,13 +72,14 @@ object AssetBundleLoaderTests extends TestSuite {
       "AssetBundleLoader - Journey (unhappy path)" - {
         val gt = GameTime.zero
         val d  = Dice.loaded(0)
+        val is = InputState.default
 
         val loader = AssetBundleLoader.subSystem
 
         val key = BindingKey("test")
 
         // Someone requests that a bundle of assets be loaded.
-        val loadOutcome = loader.update(gt, d)(AssetBundleLoaderEvent.Load(key, defaultAssets.toSet))
+        val loadOutcome = loader.update(gt, is, d)(AssetBundleLoaderEvent.Load(key, defaultAssets.toSet))
 
         // That results in events being triggered to load, but not process, each asset
         defaultAssets.length + 1 ==> loadOutcome.globalEvents.length
@@ -86,23 +89,23 @@ object AssetBundleLoaderTests extends TestSuite {
         loadOutcome.globalEvents.contains(AssetBundleLoaderEvent.Started(key)) ==> true
 
         // As each asset comes in, the status is checked and events are emitted.
-        val nextLoader1 = loadOutcome.state.update(gt, d)(AssetEvent.AssetBatchLoaded(Some(BindingKey("/image_1.png")), false))
+        val nextLoader1 = loadOutcome.state.update(gt, is, d)(AssetEvent.AssetBatchLoaded(Some(BindingKey("/image_1.png")), false))
         nextLoader1.globalEvents.length ==> 1
         nextLoader1.globalEvents.contains(AssetBundleLoaderEvent.LoadProgress(key, 33, 1, 3)) ==> true
 
-        val nextLoader2 = nextLoader1.state.update(gt, d)(AssetEvent.AssetBatchLoaded(Some(BindingKey("/image_2.png")), false))
+        val nextLoader2 = nextLoader1.state.update(gt, is, d)(AssetEvent.AssetBatchLoaded(Some(BindingKey("/image_2.png")), false))
         nextLoader2.globalEvents.length ==> 1
         nextLoader2.globalEvents.contains(AssetBundleLoaderEvent.LoadProgress(key, 67, 2, 3)) ==> true
 
         // All assets are loaded individually, but one of them fails.
-        val nextLoader3 = nextLoader2.state.update(gt, d)(AssetEvent.AssetBatchLoadError(Some(BindingKey("/image_3.png"))))
+        val nextLoader3 = nextLoader2.state.update(gt, is, d)(AssetEvent.AssetBatchLoadError(Some(BindingKey("/image_3.png"))))
         nextLoader3.globalEvents.length ==> 2
         nextLoader3.globalEvents.contains(AssetBundleLoaderEvent.LoadProgress(key, 100, 3, 3)) ==> true
         nextLoader3.globalEvents.contains(AssetEvent.AssetBatchLoadError(Some(key))) ==> true
 
         // Eventually the whole bundle is complete, but in a failed state, and
         // a completion event is emitted listing the errors.
-        val finalLoader = nextLoader3.state.update(gt, d)(AssetEvent.AssetBatchLoadError(Some(key)))
+        val finalLoader = nextLoader3.state.update(gt, is, d)(AssetEvent.AssetBatchLoadError(Some(key)))
         finalLoader.globalEvents.length ==> 1
         finalLoader.globalEvents.contains(AssetBundleLoaderEvent.Failure(key)) ==> true
         val asset1 = finalLoader.state.tracker.findBundleByKey(key).get.giveAssetLoadState(AssetPath("/image_1.png")).get

@@ -7,6 +7,7 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.dice.Dice
 import scala.collection.mutable.ListBuffer
+import indigo.shared.events.InputState
 
 @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
 final class SubSystemsRegister(subSystems: List[SubSystem]) {
@@ -15,12 +16,12 @@ final class SubSystemsRegister(subSystems: List[SubSystem]) {
   val registeredSubSystems: ListBuffer[SubSystem] = ListBuffer.from(subSystems)
 
   @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
-  def update(gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[SubSystemsRegister] = {
+  def update(gameTime: GameTime, inputState: InputState, dice: Dice): GlobalEvent => Outcome[SubSystemsRegister] = {
     case e: GlobalEvent =>
       registeredSubSystems.toList
         .map { ss =>
           ss.eventFilter(e)
-            .map(ee => ss.update(gameTime, dice)(ee))
+            .map(ee => ss.update(gameTime, inputState, dice)(ee))
             .getOrElse(Outcome(ss, Nil))
         }
         .sequence

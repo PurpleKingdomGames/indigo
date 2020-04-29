@@ -5,6 +5,7 @@ import indigo.shared.scenegraph.Text
 import indigo.shared.dice.Dice
 
 import utest._
+import indigo.shared.events.InputState
 
 object SubSystemTests extends TestSuite {
 
@@ -24,7 +25,7 @@ object SubSystemTests extends TestSuite {
         "should respond to an Add event" - {
           val expected =
             PointsTrackerExample(0)
-              .update(GameTime.zero, dice)(PointsTrackerEvent.Add(10))
+              .update(GameTime.zero, InputState.default, dice)(PointsTrackerEvent.Add(10))
               .state
               .render(GameTime.zero)
               .gameLayer
@@ -39,7 +40,7 @@ object SubSystemTests extends TestSuite {
         "should respond to a LoseALl event and emit an event" - {
           val expected =
             PointsTrackerExample(1000)
-              .update(GameTime.zero, dice)(PointsTrackerEvent.LoseAll)
+              .update(GameTime.zero, InputState.default, dice)(PointsTrackerEvent.LoseAll)
               .state
               .render(GameTime.zero)
               .gameLayer

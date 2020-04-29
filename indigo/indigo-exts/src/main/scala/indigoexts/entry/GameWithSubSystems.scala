@@ -16,7 +16,7 @@ object GameWithSubSystems {
       modelUpdate: (GameTime, Model, InputState, Dice) => GlobalEvent => Outcome[Model]
   )(gameTime: GameTime, model: GameWithSubSystems[Model], inputState: InputState, dice: Dice): GlobalEvent => Outcome[GameWithSubSystems[Model]] =
     e =>
-      (modelUpdate(gameTime, model.model, inputState, dice)(e), model.subSystemsRegister.update(gameTime, dice)(e))
+      (modelUpdate(gameTime, model.model, inputState, dice)(e), model.subSystemsRegister.update(gameTime, inputState, dice)(e))
         .map2((m, s) => new GameWithSubSystems(m, s))
 
   def updateViewModel[Model, ViewModel](

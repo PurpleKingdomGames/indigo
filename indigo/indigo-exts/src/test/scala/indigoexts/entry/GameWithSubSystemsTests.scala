@@ -74,7 +74,7 @@ final case class EventsOnlySubSystem(count: Int) extends SubSystem {
     case _                  => None
   }
 
-  def update(gameTime: GameTime, dice: Dice): EventsOnlyEvent => Outcome[SubSystem] = {
+  def update(gameTime: GameTime, inputState: InputState, dice: Dice): EventsOnlyEvent => Outcome[SubSystem] = {
     case EventsOnlyEvent.Increment =>
       val newCount = count + 1
 

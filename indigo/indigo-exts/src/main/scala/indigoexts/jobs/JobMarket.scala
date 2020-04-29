@@ -7,6 +7,7 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.Outcome
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.datatypes.BindingKey
+import indigo.shared.events.InputState
 
 final case class JobMarket(jobs: List[Job]) extends SubSystem {
 
@@ -17,7 +18,7 @@ final case class JobMarket(jobs: List[Job]) extends SubSystem {
     case _                 => None
   }
 
-  def update(gameTime: GameTime, dice: Dice): JobMarketEvent => Outcome[SubSystem] = {
+  def update(gameTime: GameTime, inputState: InputState, dice: Dice): JobMarketEvent => Outcome[SubSystem] = {
     case JobMarketEvent.Post(job) =>
       Outcome(
         this.copy(jobs = jobs :+ job)

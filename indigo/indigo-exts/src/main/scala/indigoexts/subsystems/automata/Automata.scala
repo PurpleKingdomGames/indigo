@@ -12,6 +12,7 @@ import indigo.shared.EqualTo._
 import indigo.shared.datatypes.RGBA
 import scala.collection.mutable
 import indigo.shared.time.Seconds
+import indigo.shared.events.InputState
 
 final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val layer: Layer, maxPoolSize: Option[Int], val pool: List[SpawnedAutomaton]) extends SubSystem {
   type EventType = AutomataEvent
@@ -34,7 +35,7 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
-  def update(gameTime: GameTime, dice: Dice): AutomataEvent => Outcome[Automata] = {
+  def update(gameTime: GameTime, inputState: InputState, dice: Dice): AutomataEvent => Outcome[Automata] = {
     case Spawn(key, position, lifeSpan, payload) if key === poolKey =>
       val spawned =
         SpawnedAutomaton(

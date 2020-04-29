@@ -17,7 +17,7 @@ final class FPSCounter(fontKey: FontKey, position: Point, targetFPS: Int) extend
     case _            => None
   }
 
-  def update(gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[FPSCounter] = {
+  def update(gameTime: GameTime, inputState: InputState, dice: Dice): GlobalEvent => Outcome[FPSCounter] = {
     case FrameTick =>
       if (gameTime.running >= (this.lastInterval + Seconds(1))) {
         fps = Math.min(targetFPS, frameCountSinceInterval + 1)

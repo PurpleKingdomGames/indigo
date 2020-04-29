@@ -6,6 +6,7 @@ import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.{SceneUpdateFragment, Text}
 import indigo.shared.datatypes.FontKey
+import indigo.shared.events.InputState
 
 final case class PointsTrackerExample(points: Int) extends SubSystem {
   type EventType = PointsTrackerEvent
@@ -15,7 +16,7 @@ final case class PointsTrackerExample(points: Int) extends SubSystem {
     case _                     => None
   }
 
-  def update(gameTime: GameTime, dice: Dice): PointsTrackerEvent => Outcome[SubSystem] = {
+  def update(gameTime: GameTime, inputState: InputState, dice: Dice): PointsTrackerEvent => Outcome[SubSystem] = {
     case PointsTrackerEvent.Add(pts) =>
       Outcome(this.copy(points = points + pts))
 

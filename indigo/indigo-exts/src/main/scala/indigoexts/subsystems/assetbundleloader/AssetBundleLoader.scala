@@ -11,6 +11,7 @@ import indigo.shared.datatypes.BindingKey
 import indigo.shared.assets.AssetPath
 import indigo.shared.assets.AssetTypePrimitive
 import indigo.shared.events.AssetEvent
+import indigo.shared.events.InputState
 
 // Provides "at least once" message delivery for updates on a bundle's loading status.
 final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSystem {
@@ -23,7 +24,7 @@ final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSyste
     case _                         => None
   }
 
-  def update(gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[AssetBundleLoader] = {
+  def update(gameTime: GameTime, inputState: InputState, dice: Dice): GlobalEvent => Outcome[AssetBundleLoader] = {
     // Asset Bundle Loader Commands
     case AssetBundleLoaderEvent.Load(key, assets) =>
       createBeginLoadingOutcome(key, assets)

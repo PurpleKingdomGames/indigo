@@ -51,7 +51,7 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
           val subsystemOutcomeEvents = subSystemStates
             .get(scene.name)
             .map { ssr =>
-              val out = ssr.update(gameTime, dice)(event)
+              val out = ssr.update(gameTime, inputState, dice)(event)
               subSystemStates.put(scene.name, out.state)
               out.globalEvents
             }

@@ -36,11 +36,11 @@ object JobMarketTests extends TestSuite {
           val allocateEvent: JobMarketEvent     = JobMarketEvent.Allocate(bindingKey, job)
           val nothingFoundEvent: JobMarketEvent = JobMarketEvent.NothingFound(bindingKey)
 
-          val updatedA = market.update(GameTime.zero, dice)(allocateEvent)
+          val updatedA = market.update(GameTime.zero, InputState.default, dice)(allocateEvent)
           updatedA.state.asInstanceOf[JobMarket].jobs ==> List(job)
           updatedA.globalEvents ==> Nil
 
-          val updatedB = market.update(GameTime.zero, dice)(nothingFoundEvent)
+          val updatedB = market.update(GameTime.zero, InputState.default, dice)(nothingFoundEvent)
           updatedB.state.asInstanceOf[JobMarket].jobs ==> List(job)
           updatedB.globalEvents ==> Nil
 
@@ -82,7 +82,7 @@ object JobMarketTests extends TestSuite {
             val market: JobMarket         = JobMarket(List(job))
             val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(SampleActor.default))
 
-            val updated = market.update(GameTime.zero, dice)(findEvent)
+            val updated = market.update(GameTime.zero, InputState.default, dice)(findEvent)
 
             updated.state.asInstanceOf[JobMarket].jobs ==> Nil
             updated.globalEvents.head ==> JobMarketEvent.Allocate(bindingKey, job)
@@ -93,7 +93,7 @@ object JobMarketTests extends TestSuite {
             val market: JobMarket         = JobMarket(Nil)
             val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(SampleActor.default))
 
-            val updated = market.update(GameTime.zero, dice)(findEvent)
+            val updated = market.update(GameTime.zero, InputState.default, dice)(findEvent)
 
             updated.state.asInstanceOf[JobMarket].jobs ==> Nil
             updated.globalEvents.head ==> JobMarketEvent.NothingFound(bindingKey)
@@ -105,7 +105,7 @@ object JobMarketTests extends TestSuite {
             val market: JobMarket         = JobMarket(List(job))
             val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(SampleActor.default))
 
-            val updated = market.update(GameTime.zero, dice)(findEvent)
+            val updated = market.update(GameTime.zero, InputState.default, dice)(findEvent)
 
             updated.state.asInstanceOf[JobMarket].jobs ==> List(job)
             updated.globalEvents.head ==> JobMarketEvent.NothingFound(bindingKey)
@@ -119,7 +119,7 @@ object JobMarketTests extends TestSuite {
             val market: JobMarket         = JobMarket(Nil)
             val postEvent: JobMarketEvent = JobMarketEvent.Post(job)
 
-            val updated = market.update(GameTime.zero, dice)(postEvent)
+            val updated = market.update(GameTime.zero, InputState.default, dice)(postEvent)
 
             updated.state.asInstanceOf[JobMarket].jobs ==> List(job)
           }
@@ -129,7 +129,7 @@ object JobMarketTests extends TestSuite {
             val market: JobMarket         = JobMarket(List(SampleJobs.Fishing(0)))
             val postEvent: JobMarketEvent = JobMarketEvent.Post(job)
 
-            val updated = market.update(GameTime.zero, dice)(postEvent)
+            val updated = market.update(GameTime.zero, InputState.default, dice)(postEvent)
 
             updated.state.asInstanceOf[JobMarket].jobs ==> List(SampleJobs.Fishing(0), job)
           }
@@ -139,7 +139,7 @@ object JobMarketTests extends TestSuite {
             val market: JobMarket         = JobMarket(Nil)
             val postEvent: JobMarketEvent = JobMarketEvent.Post(job)
 
-            val updated = market.update(GameTime.zero, dice)(postEvent)
+            val updated = market.update(GameTime.zero, InputState.default, dice)(postEvent)
 
             updated.state.asInstanceOf[JobMarket].jobs ==> List(SampleJobs.Fishing(50))
           }
