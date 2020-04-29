@@ -79,8 +79,9 @@ object AssetLoadingExample extends IndigoGameBasic[Unit, MyGameModel, MyViewMode
       )
     } else Nil
 
-    viewModel.button.draw
-      .addGameLayerNodes(box)
+    SceneUpdateFragment(
+      viewModel.button.draw :: box
+    )
   }
 }
 

@@ -1,10 +1,10 @@
 package indigoexts.uicomponents
 
-import indigo.shared.scenegraph.{Graphic, SceneUpdateFragment}
 import indigo.shared.datatypes.{BindingKey, Depth, Rectangle}
 import indigo.shared.events.GlobalEvent
 import indigo.shared.events.MouseState
 import indigo.shared.Outcome
+import indigo.shared.scenegraph.SceneGraphNodePrimitive
 
 final case class Button(
     buttonAssets: ButtonAssets,
@@ -45,19 +45,17 @@ final case class Button(
     }
   }
 
-  def draw: SceneUpdateFragment =
-    SceneUpdateFragment(
-      state match {
-        case ButtonState.Up =>
-          buttonAssets.up.moveTo(bounds.position).withDepth(depth)
+  def draw: SceneGraphNodePrimitive =
+    state match {
+      case ButtonState.Up =>
+        buttonAssets.up.moveTo(bounds.position).withDepth(depth)
 
-        case ButtonState.Over =>
-          buttonAssets.over.moveTo(bounds.position).withDepth(depth)
+      case ButtonState.Over =>
+        buttonAssets.over.moveTo(bounds.position).withDepth(depth)
 
-        case ButtonState.Down =>
-          buttonAssets.down.moveTo(bounds.position).withDepth(depth)
-      }
-    )
+      case ButtonState.Down =>
+        buttonAssets.down.moveTo(bounds.position).withDepth(depth)
+    }
 
   def withUpAction(action: => List[GlobalEvent]): Button =
     this.copy(onUp = () => action)
@@ -123,4 +121,4 @@ object ButtonState {
 
 }
 
-final case class ButtonAssets(up: Graphic, over: Graphic, down: Graphic)
+final case class ButtonAssets(up: SceneGraphNodePrimitive, over: SceneGraphNodePrimitive, down: SceneGraphNodePrimitive)
