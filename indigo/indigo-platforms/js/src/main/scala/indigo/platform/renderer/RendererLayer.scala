@@ -33,7 +33,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val rotationAlphaFlipHFlipVInstanceArray: WebGLBuffer  = gl2.createBuffer()
   private val emissiveNormalOffsetsArray: WebGLBuffer            = gl2.createBuffer()
   private val specularOffsetIsLitArray: WebGLBuffer              = gl2.createBuffer()
-  private val textureAmountsArray: WebGLBuffer                            = gl2.createBuffer()
+  private val textureAmountsArray: WebGLBuffer                   = gl2.createBuffer()
 
   def setupInstanceArray(buffer: WebGLBuffer, location: Int, size: Int): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -43,22 +43,22 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   }
 
   // Instance Data Arrays
-  private val transformData: scalajs.js.Array[Double]                = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val frameTransformData: scalajs.js.Array[Double]           = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val dimensionsData: scalajs.js.Array[Double]               = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val tintData: scalajs.js.Array[Double]                     = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val gradiantOverlayPositionsData: scalajs.js.Array[Double] = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val gradiantOverlayFromColorData: scalajs.js.Array[Double] = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val gradiantOverlayToColorData: scalajs.js.Array[Double]   = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val borderColorData: scalajs.js.Array[Double]              = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val glowColorData: scalajs.js.Array[Double]                = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val amountsData: scalajs.js.Array[Double]                  = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val rotationAlphaFlipHFlipVData: scalajs.js.Array[Double]  = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val emissiveNormalOffsetsData: scalajs.js.Array[Double]    = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val specularOffsetIsLitData: scalajs.js.Array[Double]      = scalajs.js.Array[Double](4d * maxBatchSize)
-  private val textureAmountsData: scalajs.js.Array[Double]                    = scalajs.js.Array[Double](4d * maxBatchSize)
+  private val transformData: scalajs.js.Array[Float]                = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val frameTransformData: scalajs.js.Array[Float]           = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val dimensionsData: scalajs.js.Array[Float]               = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val tintData: scalajs.js.Array[Float]                     = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val gradiantOverlayPositionsData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val gradiantOverlayFromColorData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val gradiantOverlayToColorData: scalajs.js.Array[Float]   = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val borderColorData: scalajs.js.Array[Float]              = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val glowColorData: scalajs.js.Array[Float]                = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val amountsData: scalajs.js.Array[Float]                  = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val rotationAlphaFlipHFlipVData: scalajs.js.Array[Float]  = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val emissiveNormalOffsetsData: scalajs.js.Array[Float]    = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val specularOffsetIsLitData: scalajs.js.Array[Float]      = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val textureAmountsData: scalajs.js.Array[Float]           = scalajs.js.Array[Float](4f * maxBatchSize)
 
-  @inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Double]) = {
+  @inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Float]) = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
     gl2.bufferData(ARRAY_BUFFER, new Float32Array(data), STATIC_DRAW)
   }
@@ -120,15 +120,15 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     rotationAlphaFlipHFlipVData((i * 4) + 2) = d.effects.flipHorizontal
     rotationAlphaFlipHFlipVData((i * 4) + 3) = d.effects.flipVertical
 
-    emissiveNormalOffsetsData((i * 4) + 0) = d.emissiveOffset.x
-    emissiveNormalOffsetsData((i * 4) + 1) = d.emissiveOffset.y
-    emissiveNormalOffsetsData((i * 4) + 2) = d.normalOffset.x
-    emissiveNormalOffsetsData((i * 4) + 3) = d.normalOffset.y
+    emissiveNormalOffsetsData((i * 4) + 0) = d.emissiveOffset.x.toFloat
+    emissiveNormalOffsetsData((i * 4) + 1) = d.emissiveOffset.y.toFloat
+    emissiveNormalOffsetsData((i * 4) + 2) = d.normalOffset.x.toFloat
+    emissiveNormalOffsetsData((i * 4) + 3) = d.normalOffset.y.toFloat
 
-    specularOffsetIsLitData((i * 4) + 0) = d.specularOffset.x
-    specularOffsetIsLitData((i * 4) + 1) = d.specularOffset.y
+    specularOffsetIsLitData((i * 4) + 0) = d.specularOffset.x.toFloat
+    specularOffsetIsLitData((i * 4) + 1) = d.specularOffset.y.toFloat
     specularOffsetIsLitData((i * 4) + 2) = d.isLit
-    specularOffsetIsLitData((i * 4) + 3) = 1.0d
+    specularOffsetIsLitData((i * 4) + 3) = 1.0f
 
     textureAmountsData((i * 4) + 0) = d.albedoAmount
     textureAmountsData((i * 4) + 1) = d.emissiveAmount

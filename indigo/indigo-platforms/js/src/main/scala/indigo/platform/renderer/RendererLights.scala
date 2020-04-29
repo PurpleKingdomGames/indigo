@@ -31,14 +31,14 @@ class RendererLights(gl2: WebGL2RenderingContext) {
   private val displayObjectUBODataSize: Int    = 16 * 2
   private val uboDataSize: Int                 = projectionMatrixUBODataSize + displayObjectUBODataSize
 
-  val uboData: scalajs.js.Array[Double] =
-    List.fill(displayObjectUBODataSize)(0.0d).toJSArray
+  val uboData: scalajs.js.Array[Float] =
+    List.fill(displayObjectUBODataSize)(0.0f).toJSArray
 
   def updateStaticUBOData(displayObject: DisplayObject): Unit = {
-    uboData(0) = displayObject.x.toDouble
-    uboData(1) = displayObject.y.toDouble
-    uboData(2) = displayObject.width.toDouble * displayObject.scaleX
-    uboData(3) = displayObject.height.toDouble * displayObject.scaleY
+    uboData(0) = displayObject.x.toFloat
+    uboData(1) = displayObject.y.toFloat
+    uboData(2) = displayObject.width.toFloat * displayObject.scaleX
+    uboData(3) = displayObject.height.toFloat * displayObject.scaleY
 
     uboData(4) = displayObject.frameX
     uboData(5) = displayObject.frameY
@@ -47,75 +47,75 @@ class RendererLights(gl2: WebGL2RenderingContext) {
   }
 
   def updatePointLightUBOData(light: PointLight, magnification: Int): Unit = {
-    uboData(8) = 1.0d                                                // type: PointLight = 1.0d
-    uboData(9) = light.attenuation.toDouble * magnification.toDouble // attenuation
-    uboData(10) = light.position.x.toDouble                          // position x
-    uboData(11) = light.position.y.toDouble                          // position y
+    uboData(8) = 1.0f                                              // type: PointLight = 1.0d
+    uboData(9) = light.attenuation.toFloat * magnification.toFloat // attenuation
+    uboData(10) = light.position.x.toFloat                         // position x
+    uboData(11) = light.position.y.toFloat                         // position y
 
-    uboData(12) = light.color.r // color r
-    uboData(13) = light.color.g // color g
-    uboData(14) = light.color.b // color b
-    uboData(15) = 0.0d          // rotation
+    uboData(12) = light.color.r.toFloat // color r
+    uboData(13) = light.color.g.toFloat // color g
+    uboData(14) = light.color.b.toFloat // color b
+    uboData(15) = 0.0f                  // rotation
 
-    uboData(16) = 0.0d                           // angle
-    uboData(17) = light.height.toDouble / 100.0d // height
-    uboData(18) = 0.0d                           // near
-    uboData(19) = 0.0d                           // far
+    uboData(16) = 0.0f                          // angle
+    uboData(17) = light.height.toFloat / 100.0f // height
+    uboData(18) = 0.0f                          // near
+    uboData(19) = 0.0f                          // far
 
-    uboData(20) = light.power // power
-    uboData(21) = 0.0d
-    uboData(22) = 0.0d
-    uboData(23) = 0.0d
+    uboData(20) = light.power.toFloat // power
+    uboData(21) = 0.0f
+    uboData(22) = 0.0f
+    uboData(23) = 0.0f
   }
 
   def updateDirectionLightUBOData(light: DirectionLight): Unit = {
-    uboData(8) = 2.0d  // type: DirectionLight = 2.0d
-    uboData(9) = 0.0d  // attenuation
-    uboData(10) = 0.0d // position x
-    uboData(11) = 0.0d // position y
+    uboData(8) = 2.0f  // type: DirectionLight = 2.0d
+    uboData(9) = 0.0f  // attenuation
+    uboData(10) = 0.0f // position x
+    uboData(11) = 0.0f // position y
 
-    uboData(12) = light.color.r                            // color r
-    uboData(13) = light.color.g                            // color g
-    uboData(14) = light.color.b                            // color b
-    uboData(15) = Radians.TAU.value - light.rotation.value // rotation
+    uboData(12) = light.color.r.toFloat                            // color r
+    uboData(13) = light.color.g.toFloat                            // color g
+    uboData(14) = light.color.b.toFloat                            // color b
+    uboData(15) = Radians.TAU.value.toFloat - light.rotation.value.toFloat // rotation
 
-    uboData(16) = 0.0d                           // angle
-    uboData(17) = light.height.toDouble / 100.0d // height
-    uboData(18) = 0.0d                           // near
-    uboData(19) = 0.0d                           // far
+    uboData(16) = 0.0f                           // angle
+    uboData(17) = light.height.toFloat / 100.0f // height
+    uboData(18) = 0.0f                           // near
+    uboData(19) = 0.0f                           // far
 
-    uboData(20) = light.power // power
-    uboData(21) = 0.0d
-    uboData(22) = 0.0d
-    uboData(23) = 0.0d
+    uboData(20) = light.power.toFloat // power
+    uboData(21) = 0.0f
+    uboData(22) = 0.0f
+    uboData(23) = 0.0f
   }
 
   def updateSpotLightUBOData(light: SpotLight, magnification: Int): Unit = {
-    uboData(8) = 3.0d                                                // type: SpotLight = 3.0d
-    uboData(9) = light.attenuation.toDouble * magnification.toDouble // attenuation
-    uboData(10) = light.position.x.toDouble                          // position x
-    uboData(11) = light.position.y.toDouble                          // position y
+    uboData(8) = 3.0f                                              // type: SpotLight = 3.0d
+    uboData(9) = light.attenuation.toFloat * magnification.toFloat // attenuation
+    uboData(10) = light.position.x.toFloat                         // position x
+    uboData(11) = light.position.y.toFloat                         // position y
 
-    uboData(12) = light.color.r        // color r
-    uboData(13) = light.color.g        // color g
-    uboData(14) = light.color.b        // color b
-    uboData(15) = light.rotation.value // rotation
+    uboData(12) = light.color.r.toFloat        // color r
+    uboData(13) = light.color.g.toFloat        // color g
+    uboData(14) = light.color.b.toFloat        // color b
+    uboData(15) = light.rotation.value.toFloat // rotation
 
-    uboData(16) = light.angle.value              // angle
-    uboData(17) = light.height.toDouble / 100.0d // height
-    uboData(18) = light.near.toDouble            // near
-    uboData(19) = light.far.toDouble             // far
+    uboData(16) = light.angle.value.toFloat     // angle
+    uboData(17) = light.height.toFloat / 100.0f // height
+    uboData(18) = light.near.toFloat            // near
+    uboData(19) = light.far.toFloat             // far
 
-    uboData(20) = light.power // power
-    uboData(21) = 0.0d
-    uboData(22) = 0.0d
-    uboData(23) = 0.0d
+    uboData(20) = light.power.toFloat // power
+    uboData(21) = 0.0f
+    uboData(22) = 0.0f
+    uboData(23) = 0.0f
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.While", "org.wartremover.warts.Null"))
   def drawLayer(
       lights: List[Light],
-      projection: scalajs.js.Array[Double],
+      projection: scalajs.js.Array[Float],
       frameBufferComponents: FrameBufferComponents,
       gameFrameBuffer: FrameBufferComponents.MultiOutput,
       width: Int,

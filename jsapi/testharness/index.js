@@ -1,10 +1,12 @@
 
 'use strict';
 
+const indigo = require('../out/indigojs/fastOpt/dest/out.js');
+
 const config =
-    GameConfigHelper.default
-        .withViewport(new GameViewport(550, 400))
-        .withClearColor(new ClearColor(0.5, 0, 0.5, 1))
+    indigo.GameConfigHelper.default
+        .withViewport(new indigo.GameViewport(550, 400))
+        .withClearColor(new indigo.ClearColor(0.5, 0, 0.5, 1))
         .withFrameRate(60)
         .withMagnification(1);
 
@@ -14,82 +16,82 @@ const spriteName = 'trafficLights';
 const graphicName = 'graphics';
 
 const assets = [
-  new ImageAsset(fontName, 'assets/boxy_font.png'),
-  new ImageAsset(spriteName, 'assets/trafficlights.png'),
-  new ImageAsset(graphicName, 'assets/graphics.png'),
+  new indigo.ImageAsset(fontName, 'assets/boxy_font.png'),
+  new indigo.ImageAsset(spriteName, 'assets/trafficlights.png'),
+  new indigo.ImageAsset(graphicName, 'assets/graphics.png'),
 ];
 
 const fontChars = [
-  new FontChar('A', new Rectangle(3, 78, 23, 23)),
-  new FontChar('B', new Rectangle(26, 78, 23, 23)),
-  new FontChar('C', new Rectangle(50, 78, 23, 23)),
-  new FontChar('D', new Rectangle(73, 78, 23, 23)),
-  new FontChar('E', new Rectangle(96, 78, 23, 23)),
-  new FontChar('F', new Rectangle(119, 78, 23, 23)),
-  new FontChar('G', new Rectangle(142, 78, 23, 23)),
-  new FontChar('H', new Rectangle(165, 78, 23, 23)),
-  new FontChar('I', new Rectangle(188, 78, 15, 23)),
-  new FontChar('J', new Rectangle(202, 78, 23, 23)),
-  new FontChar('K', new Rectangle(225, 78, 23, 23)),
-  new FontChar('L', new Rectangle(248, 78, 23, 23)),
-  new FontChar('M', new Rectangle(271, 78, 23, 23)),
-  new FontChar('N', new Rectangle(3, 104, 23, 23)),
-  new FontChar('O', new Rectangle(29, 104, 23, 23)),
-  new FontChar('P', new Rectangle(54, 104, 23, 23)),
-  new FontChar('Q', new Rectangle(75, 104, 23, 23)),
-  new FontChar('R', new Rectangle(101, 104, 23, 23)),
-  new FontChar('S', new Rectangle(124, 104, 23, 23)),
-  new FontChar('T', new Rectangle(148, 104, 23, 23)),
-  new FontChar('U', new Rectangle(173, 104, 23, 23)),
-  new FontChar('V', new Rectangle(197, 104, 23, 23)),
-  new FontChar('W', new Rectangle(220, 104, 23, 23)),
-  new FontChar('X', new Rectangle(248, 104, 23, 23)),
-  new FontChar('Y', new Rectangle(271, 104, 23, 23)),
-  new FontChar('Z', new Rectangle(297, 104, 23, 23)),
-  new FontChar('0', new Rectangle(3, 26, 23, 23)),
-  new FontChar('1', new Rectangle(26, 26, 15, 23)),
-  new FontChar('2', new Rectangle(41, 26, 23, 23)),
-  new FontChar('3', new Rectangle(64, 26, 23, 23)),
-  new FontChar('4', new Rectangle(87, 26, 23, 23)),
-  new FontChar('5', new Rectangle(110, 26, 23, 23)),
-  new FontChar('6', new Rectangle(133, 26, 23, 23)),
-  new FontChar('7', new Rectangle(156, 26, 23, 23)),
-  new FontChar('8', new Rectangle(179, 26, 23, 23)),
-  new FontChar('9', new Rectangle(202, 26, 23, 23)),
-  new FontChar('?', new Rectangle(93, 52, 23, 23)),
-  new FontChar('!', new Rectangle(3, 0, 15, 23)),
-  new FontChar('.', new Rectangle(286, 0, 15, 23)),
-  new FontChar(',', new Rectangle(248, 0, 15, 23)),
-  new FontChar(' ', new Rectangle(145, 52, 23, 23)),
+  new indigo.FontChar('A', new indigo.Rectangle(3, 78, 23, 23)),
+  new indigo.FontChar('B', new indigo.Rectangle(26, 78, 23, 23)),
+  new indigo.FontChar('C', new indigo.Rectangle(50, 78, 23, 23)),
+  new indigo.FontChar('D', new indigo.Rectangle(73, 78, 23, 23)),
+  new indigo.FontChar('E', new indigo.Rectangle(96, 78, 23, 23)),
+  new indigo.FontChar('F', new indigo.Rectangle(119, 78, 23, 23)),
+  new indigo.FontChar('G', new indigo.Rectangle(142, 78, 23, 23)),
+  new indigo.FontChar('H', new indigo.Rectangle(165, 78, 23, 23)),
+  new indigo.FontChar('I', new indigo.Rectangle(188, 78, 15, 23)),
+  new indigo.FontChar('J', new indigo.Rectangle(202, 78, 23, 23)),
+  new indigo.FontChar('K', new indigo.Rectangle(225, 78, 23, 23)),
+  new indigo.FontChar('L', new indigo.Rectangle(248, 78, 23, 23)),
+  new indigo.FontChar('M', new indigo.Rectangle(271, 78, 23, 23)),
+  new indigo.FontChar('N', new indigo.Rectangle(3, 104, 23, 23)),
+  new indigo.FontChar('O', new indigo.Rectangle(29, 104, 23, 23)),
+  new indigo.FontChar('P', new indigo.Rectangle(54, 104, 23, 23)),
+  new indigo.FontChar('Q', new indigo.Rectangle(75, 104, 23, 23)),
+  new indigo.FontChar('R', new indigo.Rectangle(101, 104, 23, 23)),
+  new indigo.FontChar('S', new indigo.Rectangle(124, 104, 23, 23)),
+  new indigo.FontChar('T', new indigo.Rectangle(148, 104, 23, 23)),
+  new indigo.FontChar('U', new indigo.Rectangle(173, 104, 23, 23)),
+  new indigo.FontChar('V', new indigo.Rectangle(197, 104, 23, 23)),
+  new indigo.FontChar('W', new indigo.Rectangle(220, 104, 23, 23)),
+  new indigo.FontChar('X', new indigo.Rectangle(248, 104, 23, 23)),
+  new indigo.FontChar('Y', new indigo.Rectangle(271, 104, 23, 23)),
+  new indigo.FontChar('Z', new indigo.Rectangle(297, 104, 23, 23)),
+  new indigo.FontChar('0', new indigo.Rectangle(3, 26, 23, 23)),
+  new indigo.FontChar('1', new indigo.Rectangle(26, 26, 15, 23)),
+  new indigo.FontChar('2', new indigo.Rectangle(41, 26, 23, 23)),
+  new indigo.FontChar('3', new indigo.Rectangle(64, 26, 23, 23)),
+  new indigo.FontChar('4', new indigo.Rectangle(87, 26, 23, 23)),
+  new indigo.FontChar('5', new indigo.Rectangle(110, 26, 23, 23)),
+  new indigo.FontChar('6', new indigo.Rectangle(133, 26, 23, 23)),
+  new indigo.FontChar('7', new indigo.Rectangle(156, 26, 23, 23)),
+  new indigo.FontChar('8', new indigo.Rectangle(179, 26, 23, 23)),
+  new indigo.FontChar('9', new indigo.Rectangle(202, 26, 23, 23)),
+  new indigo.FontChar('?', new indigo.Rectangle(93, 52, 23, 23)),
+  new indigo.FontChar('!', new indigo.Rectangle(3, 0, 15, 23)),
+  new indigo.FontChar('.', new indigo.Rectangle(286, 0, 15, 23)),
+  new indigo.FontChar(',', new indigo.Rectangle(248, 0, 15, 23)),
+  new indigo.FontChar(' ', new indigo.Rectangle(145, 52, 23, 23)),
 ];
 
 const fonts = [
-  new FontInfo(
+  new indigo.FontInfo(
       fontKey,
-      new Textured(fontName, false),
+      new indigo.Textured(fontName, false),
       320,
       230,
-      new FontChar('?', new Rectangle(93, 52, 23, 23)),
+      new indigo.FontChar('?', new indigo.Rectangle(93, 52, 23, 23)),
       fontChars,
       false,
   ),
 ];
 
 const cycles = [
-  new Cycle(
+  new indigo.Cycle(
       'lights',
       [
-        new Frame(new Rectangle(0, 0, 64, 64), 250),
-        new Frame(new Rectangle(64, 0, 64, 64), 250),
-        new Frame(new Rectangle(0, 64, 64, 64), 250),
+        new indigo.Frame(new indigo.Rectangle(0, 0, 64, 64), 250),
+        new indigo.Frame(new indigo.Rectangle(64, 0, 64, 64), 250),
+        new indigo.Frame(new indigo.Rectangle(0, 64, 64, 64), 250),
       ],
   ),
 ];
 
 const animations = [
-  new Animation(
+  new indigo.Animation(
       'traffic-lights',
-      new Textured(spriteName, false),
+      new indigo.Textured(spriteName, false),
       128,
       128,
       cycles,
@@ -103,7 +105,7 @@ const initialise = function(assetCollection) {
 
   const startupData = {foo: 10};
 
-  return StartUp.succeedWith(startupData);
+  return indigo.StartUp.succeedWith(startupData);
 };
 
 const initialModel = function(startupData) {
@@ -118,7 +120,7 @@ const initialViewModel = function(startupData, gameModel) {
   console.log(gameModel);
   return {
     num: -1,
-    tint: RGBAHelper.None,
+    tint: indigo.RGBAHelper.None,
   };
 };
 
@@ -131,7 +133,7 @@ const updateModel = function(gameTime, model, inputState, dice) {
       console.log('Has now? ' + model.hasRun);
     }
 
-    return OutcomeHelper.of(model);
+    return indigo.OutcomeHelper.of(model);
   };
 };
 
@@ -143,14 +145,14 @@ const updateViewModel =
       console.log('After : ' + viewModel.num);
     }
 
-    return OutcomeHelper.of(viewModel);
+    return indigo.OutcomeHelper.of(viewModel);
   };
 
 const present = function(gameTime, model, viewModel, inputState) {
-  return SceneUpdateFragmentHelper.empty
+  return indigo.SceneUpdateFragmentHelper.empty
       .addGameLayerNodes(
           [
-            new Text(
+            new indigo.Text(
                 'Hello, world!\nThis is some text!',
                 'right',
                 config.viewport.width - 10,
@@ -160,27 +162,27 @@ const present = function(gameTime, model, viewModel, inputState) {
                 1,
                 1,
                 fontKey,
-                EffectsHelper.None.withTint(viewModel.tint),
+                indigo.EffectsHelper.None.withTint(viewModel.tint),
                 function(bounds, event) {
                   return [];
                 },
             ),
-            new Graphic(
-                new Rectangle(200, 200, 256, 256),
+            new indigo.Graphic(
+                new indigo.Rectangle(200, 200, 256, 256),
                 1,
                 0,
                 1,
                 1,
-                new Point(48, 48),
-                new Rectangle(128, 0, 96, 96),
-                EffectsHelper.None,
-                new Textured(graphicName, false),
+                new indigo.Point(48, 48),
+                new indigo.Rectangle(128, 0, 96, 96),
+                indigo.EffectsHelper.None,
+                new indigo.Textured(graphicName, false),
             ),
           ],
       );
 };
 
-Indigo.init(
+indigo.Indigo.init(
     config,
     assets,
     fonts,

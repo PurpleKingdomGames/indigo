@@ -23,8 +23,8 @@ final class RGBA(val r: Double, val g: Double, val b: Double, val a: Double) {
   def toClearColor: ClearColor =
     ClearColor(r * a, g * a, b * a, 1)
 
-  def toArray: Array[Double] =
-    Array(r, g, b, a)
+  def toArray: Array[Float] =
+    Array(r.toFloat, g.toFloat, b.toFloat, a.toFloat)
 
   def hash: String =
     r.toString() + g.toString() + b.toString() + a.toString()

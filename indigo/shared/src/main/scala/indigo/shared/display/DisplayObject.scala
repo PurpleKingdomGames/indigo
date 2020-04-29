@@ -3,41 +3,41 @@ package indigo.shared.display
 import indigo.shared.datatypes.Vector2
 
 sealed trait DisplayEntity {
-  val z: Double
+  val z: Float
 }
 
-final class DisplayClone(val id: String, val x: Double, val y: Double, val z: Double, val rotation: Double, val scaleX: Double, val scaleY: Double) extends DisplayEntity {
+final class DisplayClone(val id: String, val x: Float, val y: Float, val z: Float, val rotation: Float, val scaleX: Float, val scaleY: Float) extends DisplayEntity {
   def asBatchData: DisplayCloneBatchData =
     new DisplayCloneBatchData(x, y, rotation, scaleX, scaleY)
 }
 
-final class DisplayCloneBatchData(val x: Double, val y: Double, val rotation: Double, val scaleX: Double, val scaleY: Double)
-final class DisplayCloneBatch(val id: String, val z: Double, val clones: List[DisplayCloneBatchData]) extends DisplayEntity
+final class DisplayCloneBatchData(val x: Float, val y: Float, val rotation: Float, val scaleX: Float, val scaleY: Float)
+final class DisplayCloneBatch(val id: String, val z: Float, val clones: List[DisplayCloneBatchData]) extends DisplayEntity
 
 final class DisplayObject(
-    val x: Double,
-    val y: Double,
-    val z: Double,
-    val width: Double,
-    val height: Double,
-    val rotation: Double,
-    val scaleX: Double,
-    val scaleY: Double,
+    val x: Float,
+    val y: Float,
+    val z: Float,
+    val width: Float,
+    val height: Float,
+    val rotation: Float,
+    val scaleX: Float,
+    val scaleY: Float,
     val atlasName: String,
-    val frameX: Double,
-    val frameY: Double,
-    val frameScaleX: Double,
-    val frameScaleY: Double,
-    val albedoAmount: Double,
+    val frameX: Float,
+    val frameY: Float,
+    val frameScaleX: Float,
+    val frameScaleY: Float,
+    val albedoAmount: Float,
     val emissiveOffset: Vector2,
-    val emissiveAmount: Double,
+    val emissiveAmount: Float,
     val normalOffset: Vector2,
-    val normalAmount: Double,
+    val normalAmount: Float,
     val specularOffset: Vector2,
-    val specularAmount: Double,
-    val isLit: Double,
-    val refX: Double,
-    val refY: Double,
+    val specularAmount: Float,
+    val isLit: Float,
+    val refX: Float,
+    val refY: Float,
     val effects: DisplayEffects
 ) extends DisplayEntity
 object DisplayObject {
@@ -48,37 +48,37 @@ object DisplayObject {
       z: Int,
       width: Int,
       height: Int,
-      rotation: Double,
-      scaleX: Double,
-      scaleY: Double,
+      rotation: Float,
+      scaleX: Float,
+      scaleY: Float,
       atlasName: String,
       frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets,
-      albedoAmount: Double,
+      albedoAmount: Float,
       emissiveOffset: Vector2,
-      emissiveAmount: Double,
+      emissiveAmount: Float,
       normalOffset: Vector2,
-      normalAmount: Double,
+      normalAmount: Float,
       specularOffset: Vector2,
-      specularAmount: Double,
-      isLit: Double,
+      specularAmount: Float,
+      isLit: Float,
       refX: Int,
       refY: Int,
       effects: DisplayEffects
   ): DisplayObject =
     new DisplayObject(
-      x.toDouble,
-      y.toDouble,
-      z.toDouble,
-      width.toDouble,
-      height.toDouble,
+      x.toFloat,
+      y.toFloat,
+      z.toFloat,
+      width.toFloat,
+      height.toFloat,
       rotation,
       scaleX,
       scaleY,
       atlasName,
-      frame.translate.x,
-      frame.translate.y,
-      frame.scale.x,
-      frame.scale.y,
+      frame.translate.x.toFloat,
+      frame.translate.y.toFloat,
+      frame.scale.x.toFloat,
+      frame.scale.y.toFloat,
       albedoAmount,
       emissiveOffset,
       emissiveAmount,
@@ -87,8 +87,8 @@ object DisplayObject {
       specularOffset,
       specularAmount,
       isLit,
-      refX.toDouble,
-      refY.toDouble,
+      refX.toFloat,
+      refY.toFloat,
       effects
     )
 }

@@ -11,8 +11,8 @@ lazy val pirate =
       scalaVersion := "2.13.1",
       organization := "pirate",
       libraryDependencies ++= Seq(
-        "com.lihaoyi"    %%% "utest"      % "0.6.9"  % "test",
-        "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
+        "com.lihaoyi"    %%% "utest"      % "0.7.4"  % "test",
+        "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
       ),
       testFrameworks += new TestFramework("utest.runner.Framework")
     )

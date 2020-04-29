@@ -12,7 +12,7 @@ lazy val commonSettings = Seq(
   scalaVersion := scala2,
   organization := "indigo",
   libraryDependencies ++= Seq(
-    "com.lihaoyi" %%% "utest" % "0.6.9" % "test"
+    "com.lihaoyi" %%% "utest" % "0.7.4" % "test"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
   scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits"),
@@ -169,7 +169,7 @@ lazy val indigo =
     .settings(
       name := "indigo",
       libraryDependencies ++= Seq(
-        "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
+        "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
       )
     )
     .dependsOn(shared)
@@ -187,7 +187,7 @@ lazy val indigoExts =
     .dependsOn(circe12 % "provided")
     .settings(
       name := "indigo-exts",
-      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
+      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
     )
 lazy val indigoExtsJS  = indigoExts.js
 lazy val indigoExtsJVM = indigoExts.jvm
@@ -207,7 +207,7 @@ lazy val facades =
     )
     .jsSettings(
       libraryDependencies ++= Seq(
-        "org.scala-js" %%% "scalajs-dom" % "0.9.7"
+        "org.scala-js" %%% "scalajs-dom" % "1.0.0"
       )
     )
 lazy val facadesJS  = facades.js
@@ -222,7 +222,7 @@ lazy val indigoPlatforms =
     .settings(
       name := "indigo-platforms",
       libraryDependencies ++= Seq(
-        "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
+        "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
       )
     )
     .settings(
@@ -238,7 +238,7 @@ lazy val indigoPlatforms =
     )
     .jsSettings(
       libraryDependencies ++= Seq(
-        "org.scala-js" %%% "scalajs-dom" % "0.9.7"
+        "org.scala-js" %%% "scalajs-dom" % "1.0.0"
       )
     )
     .jvmSettings(
@@ -269,10 +269,10 @@ lazy val shared =
     .settings(commonSettings: _*)
     .settings(
       name := "shared",
-      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
+      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
     )
     .jvmSettings(
-      libraryDependencies += "org.scala-js" %% "scalajs-stubs" % scalaJSVersion % "provided"
+      libraryDependencies += "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided"
     )
 
 lazy val sharedJS  = shared.js
@@ -289,7 +289,7 @@ lazy val circe12 =
         "io.circe" %%% "circe-core",
         "io.circe" %%% "circe-generic",
         "io.circe" %%% "circe-parser"
-      ).map(_ % "0.12.3")
+      ).map(_ % "0.13.0")
     )
     .dependsOn(shared)
 lazy val circe12JS  = circe12.js

@@ -76,29 +76,29 @@ object DisplayObjectConversions {
       }
     }
 
-  private def cloneDataToDisplayEntity(id: String, cloneDepth: Double, data: CloneTransformData): DisplayClone =
+  private def cloneDataToDisplayEntity(id: String, cloneDepth: Float, data: CloneTransformData): DisplayClone =
     new DisplayClone(
       id = id.value,
-      x = data.position.x.toDouble,
-      y = data.position.y.toDouble,
+      x = data.position.x.toFloat,
+      y = data.position.y.toFloat,
       z = cloneDepth,
-      rotation = data.rotation.value,
-      scaleX = data.scale.x,
-      scaleY = data.scale.y
+      rotation = data.rotation.value.toFloat,
+      scaleX = data.scale.x.toFloat,
+      scaleY = data.scale.y.toFloat
     )
 
   private def cloneBatchDataToDisplayEntities(batch: CloneBatch): DisplayCloneBatch = {
     def convert(): DisplayCloneBatch =
       new DisplayCloneBatch(
         id = batch.id.value,
-        z = batch.depth.zIndex.toDouble,
+        z = batch.depth.zIndex.toFloat,
         clones = batch.clones.map { td =>
           new DisplayCloneBatchData(
-            x = batch.transform.position.x + td.position.x.toDouble,
-            y = batch.transform.position.y + td.position.y.toDouble,
-            rotation = batch.transform.rotation.value + td.rotation.value,
-            scaleX = batch.transform.scale.x * td.scale.x,
-            scaleY = batch.transform.scale.x * td.scale.y
+            x = batch.transform.position.x + td.position.x.toFloat,
+            y = batch.transform.position.y + td.position.y.toFloat,
+            rotation = batch.transform.rotation.value.toFloat + td.rotation.value.toFloat,
+            scaleX = batch.transform.scale.x.toFloat * td.scale.x.toFloat,
+            scaleY = batch.transform.scale.x.toFloat * td.scale.y.toFloat
           )
         }
       )
@@ -125,7 +125,7 @@ object DisplayObjectConversions {
           accDisplayObjects
 
         case (c: Clone) :: xs =>
-          accDisplayObjects += cloneDataToDisplayEntity(c.id.value, c.depth.zIndex.toDouble, c.transform)
+          accDisplayObjects += cloneDataToDisplayEntity(c.id.value, c.depth.zIndex.toFloat, c.transform)
           rec(xs)
 
         case (c: CloneBatch) :: xs =>
@@ -232,7 +232,7 @@ object DisplayObjectConversions {
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
     val materialName = leaf.material.default.value
 
-    val albedoAmount                     = 1.0d
+    val albedoAmount                     = 1.0f
     val (emissiveOffset, emissiveAmount) = materialToEmissiveValues(assetMapping, leaf.material)
     val (normalOffset, normalAmount)     = materialToNormalValues(assetMapping, leaf.material)
     val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, leaf.material)
@@ -257,19 +257,19 @@ object DisplayObjectConversions {
       z = leaf.depth.zIndex,
       width = leaf.crop.size.x,
       height = leaf.crop.size.y,
-      rotation = leaf.rotation.value,
-      scaleX = leaf.scale.x,
-      scaleY = leaf.scale.y,
+      rotation = leaf.rotation.value.toFloat,
+      scaleX = leaf.scale.x.toFloat,
+      scaleY = leaf.scale.y.toFloat,
       atlasName = lookupAtlasName(assetMapping, materialName),
       frame = frameInfo,
       albedoAmount = albedoAmount,
       emissiveOffset = frameInfo.offsetToCoords(emissiveOffset),
-      emissiveAmount = emissiveAmount,
+      emissiveAmount = emissiveAmount.toFloat,
       normalOffset = frameInfo.offsetToCoords(normalOffset),
-      normalAmount = normalAmount,
+      normalAmount = normalAmount.toFloat,
       specularOffset = frameInfo.offsetToCoords(specularOffset),
-      specularAmount = specularAmount,
-      isLit = if (leaf.material.isLit) 1.0 else 0.0,
+      specularAmount = specularAmount.toFloat,
+      isLit = if (leaf.material.isLit) 1.0f else 0.0f,
       refX = leaf.ref.x,
       refY = leaf.ref.y,
       effects = effectsValues
@@ -279,7 +279,7 @@ object DisplayObjectConversions {
   def spriteToDisplayObject(leaf: Sprite, assetMapping: AssetMapping, anim: Animation): DisplayObject = {
     val materialName = anim.material.default.value
 
-    val albedoAmount                     = 1.0d
+    val albedoAmount                     = 1.0f
     val (emissiveOffset, emissiveAmount) = materialToEmissiveValues(assetMapping, anim.material)
     val (normalOffset, normalAmount)     = materialToNormalValues(assetMapping, anim.material)
     val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, anim.material)
@@ -304,19 +304,19 @@ object DisplayObjectConversions {
       z = leaf.depth.zIndex,
       width = leaf.bounds.size.x,
       height = leaf.bounds.size.y,
-      rotation = leaf.rotation.value,
-      scaleX = leaf.scale.x,
-      scaleY = leaf.scale.y,
+      rotation = leaf.rotation.value.toFloat,
+      scaleX = leaf.scale.x.toFloat,
+      scaleY = leaf.scale.y.toFloat,
       atlasName = lookupAtlasName(assetMapping, materialName),
       frame = frameInfo,
       albedoAmount = albedoAmount,
       emissiveOffset = frameInfo.offsetToCoords(emissiveOffset),
-      emissiveAmount = emissiveAmount,
+      emissiveAmount = emissiveAmount.toFloat,
       normalOffset = frameInfo.offsetToCoords(normalOffset),
-      normalAmount = normalAmount,
+      normalAmount = normalAmount.toFloat,
       specularOffset = frameInfo.offsetToCoords(specularOffset),
-      specularAmount = specularAmount,
-      isLit = if (anim.material.isLit) 1.0 else 0.0,
+      specularAmount = specularAmount.toFloat,
+      isLit = if (anim.material.isLit) 1.0f else 0.0f,
       refX = leaf.ref.x,
       refY = leaf.ref.y,
       effects = effectsValues
@@ -339,7 +339,7 @@ object DisplayObjectConversions {
 
       val materialName = fontInfo.fontSpriteSheet.material.default.value
 
-      val albedoAmount                     = 1.0d
+      val albedoAmount                     = 1.0f
       val (emissiveOffset, emissiveAmount) = materialToEmissiveValues(assetMapping, fontInfo.fontSpriteSheet.material)
       val (normalOffset, normalAmount)     = materialToNormalValues(assetMapping, fontInfo.fontSpriteSheet.material)
       val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, fontInfo.fontSpriteSheet.material)
@@ -367,19 +367,19 @@ object DisplayObjectConversions {
               z = leaf.depth.zIndex,
               width = fontChar.bounds.width,
               height = fontChar.bounds.height,
-              rotation = leaf.rotation.value,
-              scaleX = leaf.scale.x,
-              scaleY = leaf.scale.y,
+              rotation = leaf.rotation.value.toFloat,
+              scaleX = leaf.scale.x.toFloat,
+              scaleY = leaf.scale.y.toFloat,
               atlasName = lookupAtlasName(assetMapping, materialName),
               frame = frameInfo,
               albedoAmount = albedoAmount,
               emissiveOffset = frameInfo.offsetToCoords(emissiveOffset),
-              emissiveAmount = emissiveAmount,
+              emissiveAmount = emissiveAmount.toFloat,
               normalOffset = frameInfo.offsetToCoords(normalOffset),
-              normalAmount = normalAmount,
+              normalAmount = normalAmount.toFloat,
               specularOffset = frameInfo.offsetToCoords(specularOffset),
-              specularAmount = specularAmount,
-              isLit = if (fontInfo.fontSpriteSheet.material.isLit) 1.0 else 0.0,
+              specularAmount = specularAmount.toFloat,
+              isLit = if (fontInfo.fontSpriteSheet.material.isLit) 1.0f else 0.0f,
               refX = leaf.ref.x,
               refY = leaf.ref.y,
               effects = effectsValues

@@ -2,6 +2,7 @@ import $ivy.`com.lihaoyi::mill-contrib-bloop:$MILL_VERSION`
 import mill._
 import mill.scalalib._
 import mill.scalajslib._
+import mill.scalajslib.api._
 import coursier.maven.MavenRepository
 
 object apigen extends ScalaModule {
@@ -27,7 +28,7 @@ object apigen extends ScalaModule {
     )
 
   object test extends Tests {
-    def ivyDeps = Agg(ivy"com.lihaoyi::utest:0.7.1")
+    def ivyDeps = Agg(ivy"com.lihaoyi::utest:0.7.4")
 
     def testFrameworks = Seq("utest.runner.Framework")
 
@@ -38,7 +39,9 @@ object apigen extends ScalaModule {
 
 object indigojs extends ScalaJSModule {
   def scalaVersion   = "2.13.1"
-  def scalaJSVersion = "0.6.32"
+  def scalaJSVersion = "1.0.0"
+
+  override def moduleKind: T[ModuleKind] = T { ModuleKind.CommonJSModule }
 
   def ivyDeps = Agg(
     ivy"indigo::circe12::0.0.12-SNAPSHOT",
@@ -55,7 +58,7 @@ object indigojs extends ScalaJSModule {
   def scalacOptions = ScalacOptions.scala213Compile
 
   object test extends Tests {
-    def ivyDeps = Agg(ivy"com.lihaoyi::utest:0.7.1")
+    def ivyDeps = Agg(ivy"com.lihaoyi::utest:0.7.4")
 
     def testFrameworks = Seq("utest.runner.Framework")
 

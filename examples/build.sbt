@@ -8,7 +8,7 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.13.1",
   organization := "indigo-examples",
   libraryDependencies ++= Seq(
-    "com.lihaoyi" %%% "utest"       % "0.6.9" % "test",
+    "com.lihaoyi" %%% "utest"       % "0.7.4" % "test",
     "indigo"      %%% "indigo-exts" % "0.0.12-SNAPSHOT"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
@@ -281,7 +281,7 @@ lazy val fireworks =
       title := "Fireworks!",
       gameAssetsDirectory := "assets",
       libraryDependencies ++= Seq(
-        "org.scalacheck" %%% "scalacheck" % "1.14.0" % "test"
+        "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
       )
     )
     .jsSettings(
@@ -304,12 +304,3 @@ lazy val audio =
     .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
-
-// Cross build version - better or worse?
-// crossProject(JSPlatform, JVMPlatform)
-//   .crossType(CrossType.Pure)
-//   .in(file("."))
-// .jsSettings(
-//   concurrentRestrictions in Global += Tags.limit(ScalaJSTags.Link, 2)
-// )
-// .jvmSettings(...

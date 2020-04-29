@@ -19,7 +19,7 @@ lazy val sbtIndigo =
         "io.circe" %%% "circe-core",
         "io.circe" %%% "circe-generic",
         "io.circe" %%% "circe-parser"
-      ).map(_ % "0.12.3"),
+      ).map(_ % "0.13.0"),
       unmanagedSourceDirectories in Compile :=
         mirrorScalaSource((baseDirectory in ThisBuild).value.getParentFile / "sbt-indigo")
     )

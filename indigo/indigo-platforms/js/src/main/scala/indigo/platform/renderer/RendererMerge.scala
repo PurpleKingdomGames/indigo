@@ -26,8 +26,8 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
   private val displayObjectUBODataSize: Int    = 16 * 2
   private val uboDataSize: Int                 = projectionMatrixUBODataSize + displayObjectUBODataSize
 
-  private val uboData: scalajs.js.Array[Double] =
-    List.fill(displayObjectUBODataSize)(0.0d).toJSArray
+  private val uboData: scalajs.js.Array[Float] =
+    List.fill(displayObjectUBODataSize)(0.0f).toJSArray
 
   def updateUBOData(
       displayObject: DisplayObject,
@@ -40,50 +40,50 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
       lightingLayerSaturation: Double,
       uiLayerSaturation: Double
   ): Unit = {
-    uboData(0) = displayObject.x.toDouble
-    uboData(1) = displayObject.y.toDouble
-    uboData(2) = displayObject.width.toDouble * displayObject.scaleX
-    uboData(3) = displayObject.height.toDouble * displayObject.scaleY
+    uboData(0) = displayObject.x.toFloat
+    uboData(1) = displayObject.y.toFloat
+    uboData(2) = displayObject.width.toFloat * displayObject.scaleX
+    uboData(3) = displayObject.height.toFloat * displayObject.scaleY
 
-    uboData(4) = displayObject.frameX
-    uboData(5) = displayObject.frameY
-    uboData(6) = displayObject.frameScaleX
-    uboData(7) = displayObject.frameScaleY
+    uboData(4) = displayObject.frameX.toFloat
+    uboData(5) = displayObject.frameY.toFloat
+    uboData(6) = displayObject.frameScaleX.toFloat
+    uboData(7) = displayObject.frameScaleY.toFloat
 
-    uboData(8) = gameOverlay.r
-    uboData(9) = gameOverlay.g
-    uboData(10) = gameOverlay.b
-    uboData(11) = gameOverlay.a
+    uboData(8) = gameOverlay.r.toFloat
+    uboData(9) = gameOverlay.g.toFloat
+    uboData(10) = gameOverlay.b.toFloat
+    uboData(11) = gameOverlay.a.toFloat
 
-    uboData(12) = uiOverlay.r
-    uboData(13) = uiOverlay.g
-    uboData(14) = uiOverlay.b
-    uboData(15) = uiOverlay.a
+    uboData(12) = uiOverlay.r.toFloat
+    uboData(13) = uiOverlay.g.toFloat
+    uboData(14) = uiOverlay.b.toFloat
+    uboData(15) = uiOverlay.a.toFloat
 
-    uboData(16) = gameLayerTint.r
-    uboData(17) = gameLayerTint.g
-    uboData(18) = gameLayerTint.b
-    uboData(19) = gameLayerTint.a
+    uboData(16) = gameLayerTint.r.toFloat
+    uboData(17) = gameLayerTint.g.toFloat
+    uboData(18) = gameLayerTint.b.toFloat
+    uboData(19) = gameLayerTint.a.toFloat
 
-    uboData(20) = lightingLayerTint.r
-    uboData(21) = lightingLayerTint.g
-    uboData(22) = lightingLayerTint.b
-    uboData(23) = lightingLayerTint.a
+    uboData(20) = lightingLayerTint.r.toFloat
+    uboData(21) = lightingLayerTint.g.toFloat
+    uboData(22) = lightingLayerTint.b.toFloat
+    uboData(23) = lightingLayerTint.a.toFloat
 
-    uboData(24) = uiLayerTint.r
-    uboData(25) = uiLayerTint.g
-    uboData(26) = uiLayerTint.b
-    uboData(27) = uiLayerTint.a
+    uboData(24) = uiLayerTint.r.toFloat
+    uboData(25) = uiLayerTint.g.toFloat
+    uboData(26) = uiLayerTint.b.toFloat
+    uboData(27) = uiLayerTint.a.toFloat
 
-    uboData(28) = gameLayerSaturation
-    uboData(29) = lightingLayerSaturation
-    uboData(30) = uiLayerSaturation
+    uboData(28) = gameLayerSaturation.toFloat
+    uboData(29) = lightingLayerSaturation.toFloat
+    uboData(30) = uiLayerSaturation.toFloat
     // uboData(31) = 0d
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   def drawLayer(
-      projection: scalajs.js.Array[Double],
+      projection: scalajs.js.Array[Float],
       gameFrameBuffer: FrameBufferComponents.MultiOutput,
       lightsFrameBuffer: FrameBufferComponents.SingleOutput,
       lightingFrameBuffer: FrameBufferComponents.SingleOutput,

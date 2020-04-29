@@ -81,15 +81,15 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var orthographicProjectionMatrix: scalajs.js.Array[Double] = RendererFunctions.mat4ToJsArray(Matrix4.identity)
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  var orthographicProjectionMatrixNoMag: scalajs.js.Array[Double] = RendererFunctions.mat4ToJsArray(Matrix4.identity)
+  var orthographicProjectionMatrixNoMag: scalajs.js.Array[Float] = RendererFunctions.mat4ToJsArray(Matrix4.identity).map(_.toFloat)
 
   def init(): Unit = {
 
-    val verticesAndTextureCoords: scalajs.js.Array[Double] = {
-      val vert0 = scalajs.js.Array[Double](-0.5, -0.5, 0.0, 1.0)
-      val vert1 = scalajs.js.Array[Double](-0.5, 0.5, 0.0, 0.0)
-      val vert2 = scalajs.js.Array[Double](0.5, -0.5, 1.0, 1.0)
-      val vert3 = scalajs.js.Array[Double](0.5, 0.5, 1.0, 0.0)
+    val verticesAndTextureCoords: scalajs.js.Array[Float] = {
+      val vert0 = scalajs.js.Array[Float](-0.5f, -0.5f, 0.0f, 1.0f)
+      val vert1 = scalajs.js.Array[Float](-0.5f, 0.5f, 0.0f, 0.0f)
+      val vert2 = scalajs.js.Array[Float](0.5f, -0.5f, 1.0f, 1.0f)
+      val vert3 = scalajs.js.Array[Float](0.5f, 0.5f, 1.0f, 0.0f)
 
       vert0 ++ vert1 ++ vert2 ++ vert3
     }
@@ -117,7 +117,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
   }
 
   def calculateProjectionMatrix(width: Double, height: Double, magnification: Int): scalajs.js.Array[Double] =
-    RendererFunctions.mat4ToJsArray(Matrix4.orthographic(width.toDouble / magnification, height.toDouble / magnification))
+    RendererFunctions.mat4ToJsArray(Matrix4.orthographic(width.toDouble / magnification.toDouble, height.toDouble / magnification.toDouble))
 
   def drawScene(gameTime: GameTime, scene: SceneUpdateFragment, assetMapping: AssetMapping, metrics: Metrics): Unit = {
 
@@ -279,7 +279,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       lastHeight = actualHeight
 
       orthographicProjectionMatrix = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification))
-      orthographicProjectionMatrixNoMag = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble))
+      orthographicProjectionMatrixNoMag = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)).map(_.toFloat)
 
       gameFrameBuffer = FrameBufferFunctions.createFrameBufferMulti(gl, actualWidth, actualHeight)
       lightsFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
