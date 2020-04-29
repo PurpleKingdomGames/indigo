@@ -8,7 +8,7 @@ final case class HelloSubSystem(message: String, fontKey: FontKey) extends SubSy
 
   val eventFilter: GlobalEvent => Option[EventType] = _ => None
 
-  def update(gameTime: GameTime, dice: Dice): EventType => Outcome[SubSystem] = _ => Outcome(this)
+  def update(gameTime: GameTime, inputState: InputState, dice: Dice): EventType => Outcome[SubSystem] = _ => Outcome(this)
 
   def render(gameTime: GameTime): SceneUpdateFragment =
     SceneUpdateFragment.empty

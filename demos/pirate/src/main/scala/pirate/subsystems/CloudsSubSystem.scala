@@ -14,7 +14,7 @@ final case class CloudsSubSystem(screenWidth: Int, bigCloudPosition: Double, ver
     case _         => None
   }
 
-  def update(gameTime: GameTime, dice: Dice): FrameTick => Outcome[CloudsSubSystem] = {
+  def update(gameTime: GameTime, inputState: InputState, dice: Dice): FrameTick => Outcome[CloudsSubSystem] = {
     case FrameTick if gameTime.running - lastSpawn > Seconds(3.0) =>
       Outcome(
         this.copy(

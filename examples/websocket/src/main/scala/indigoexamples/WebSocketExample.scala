@@ -97,7 +97,10 @@ object WebSocketExample extends IndigoGameBasic[MySetupData, Unit, MyViewModel] 
     }
 
   def present(gameTime: GameTime, model: Unit, viewModel: MyViewModel, inputState: InputState): SceneUpdateFragment =
-    viewModel.ping.draw |+| viewModel.echo.draw
+    SceneUpdateFragment(
+      viewModel.ping.draw,
+      viewModel.echo.draw
+    )
 }
 
 final case class MySetupData(pingSocket: WebSocketConfig, echoSocket: WebSocketConfig)

@@ -55,5 +55,5 @@ object HttpExample extends IndigoGameBasic[Unit, Unit, Button] {
     viewModel.update(inputState.mouse)
 
   def present(gameTime: GameTime, model: Unit, viewModel: Button, inputState: InputState): SceneUpdateFragment =
-    viewModel.draw
+    SceneUpdateFragment(viewModel.draw)
 }

@@ -57,7 +57,7 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel, MyViewModel] {
     }
 
   def present(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, inputState: InputState): SceneUpdateFragment =
-    viewModel.button.draw
+    SceneUpdateFragment(viewModel.button.draw)
 }
 
 final case class MyGameModel(count: Int)

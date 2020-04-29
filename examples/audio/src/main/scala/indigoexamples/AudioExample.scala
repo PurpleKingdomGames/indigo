@@ -49,7 +49,7 @@ object AudioExample extends IndigoGameBasic[Unit, Unit, Button] {
     viewModel.update(inputState.mouse)
 
   def present(gameTime: GameTime, model: Unit, viewModel: Button, inputState: InputState): SceneUpdateFragment =
-    viewModel.draw
+    SceneUpdateFragment(viewModel.draw)
       .withAudio(
         SceneAudio(
           SceneAudioSource(BindingKey("My bg music"), PlaybackPattern.SingleTrackLoop(Track(AssetName("music"))))

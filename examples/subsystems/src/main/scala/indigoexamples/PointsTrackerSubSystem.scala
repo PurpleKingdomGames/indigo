@@ -11,7 +11,7 @@ final case class PointsTrackerSubSystem(points: Int, fontKey: FontKey) extends S
     case _                         => None
   }
 
-  def update(gameTime: GameTime, dice: Dice): Int => Outcome[SubSystem] = { additionalPoints =>
+  def update(gameTime: GameTime, inputState: InputState, dice: Dice): Int => Outcome[SubSystem] = { additionalPoints =>
     Outcome(this.copy(points = points + additionalPoints))
   }
 

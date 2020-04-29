@@ -12,7 +12,7 @@ final case class FloatingPoints(fontKey: FontKey, entities: List[FloatingPointEn
     case _                           => None
   }
 
-  def update(gameTime: GameTime, dice: Dice): FloatingPointEvent => Outcome[SubSystem] = {
+  def update(gameTime: GameTime, inputState: InputState, dice: Dice): FloatingPointEvent => Outcome[SubSystem] = {
     case FloatingPointEvent.Spawn(position) =>
       Outcome(
         this.copy(entities = FloatingPointEntity(position, gameTime.running, TimeVaryingValue(2, gameTime.running)) :: entities)

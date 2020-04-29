@@ -51,7 +51,9 @@ object AutomataExample extends IndigoGameBasic[Unit, Unit, Button] {
     }
 
   def present(gameTime: GameTime, model: Unit, viewModel: Button, inputState: InputState): SceneUpdateFragment =
-    viewModel.draw
-      .addGameLayerNodes(Text("click to win!", 30, 10, 1, FontStuff.fontKey))
+    SceneUpdateFragment(
+      viewModel.draw,
+      Text("click to win!", 30, 10, 1, FontStuff.fontKey)
+    )
 
 }
