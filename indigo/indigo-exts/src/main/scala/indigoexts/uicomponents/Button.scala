@@ -1,6 +1,6 @@
 package indigoexts.uicomponents
 
-import indigo.shared.datatypes.{BindingKey, Depth, Rectangle}
+import indigo.shared.datatypes.{Depth, Rectangle}
 import indigo.shared.events.GlobalEvent
 import indigo.shared.events.MouseState
 import indigo.shared.Outcome
@@ -11,7 +11,6 @@ final case class Button(
     bounds: Rectangle,
     depth: Depth,
     state: ButtonState,
-    bindingKey: BindingKey,
     onUp: () => List[GlobalEvent],
     onDown: () => List[GlobalEvent],
     onHoverOver: () => List[GlobalEvent],
@@ -87,7 +86,6 @@ object Button {
       bounds,
       depth,
       ButtonState.Up,
-      BindingKey.generate,
       onUp = () => Nil,
       onDown = () => Nil,
       onHoverOver = () => Nil,
