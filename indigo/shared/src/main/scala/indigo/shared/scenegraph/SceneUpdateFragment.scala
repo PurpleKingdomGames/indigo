@@ -239,6 +239,9 @@ object SceneUpdateFragment {
   def apply(gameLayer: SceneGraphNode*): SceneUpdateFragment =
     SceneUpdateFragment(gameLayer.toList, Nil, Nil, Nil, RGBA.None, Nil, Nil, SceneAudio.None, ScreenEffects.None, Nil)
 
+  def apply(gameLayer: List[SceneGraphNode]): SceneUpdateFragment =
+    SceneUpdateFragment(gameLayer.toList, Nil, Nil, Nil, RGBA.None, Nil, Nil, SceneAudio.None, ScreenEffects.None, Nil)
+
   def empty: SceneUpdateFragment =
     SceneUpdateFragment(Nil, Nil, Nil, Nil, RGBA.None, Nil, Nil, SceneAudio.None, ScreenEffects.None, Nil)
 
