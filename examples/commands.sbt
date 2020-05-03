@@ -1,4 +1,3 @@
-
 lazy val exampleProjects: List[String] =
   List(
     "basicSetup",
@@ -105,4 +104,12 @@ addCommandAlias(
 addCommandAlias(
   "buildExamples",
   applyCommand(exampleProjects, "compile", PlatformSuffix.All)
+)
+
+addCommandAlias(
+  "fireworksBuild",
+  List(
+    "fireworks/fastOptJS",
+    "fireworks/indigoBuildJS"
+  ).mkString(";", ";", "")
 )
