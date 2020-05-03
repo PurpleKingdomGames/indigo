@@ -14,7 +14,7 @@ import indigoexts.subsystems.automata.AutomataEvent
 
 object Fireworks extends IndigoGameBasic[Unit, Unit, Unit] {
 
-  val targetFPS: Int = 30
+  val targetFPS: Int = 60
 
   val config: GameConfig =
     defaultGameConfig

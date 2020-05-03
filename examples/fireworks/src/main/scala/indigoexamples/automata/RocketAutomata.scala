@@ -43,7 +43,7 @@ object RocketAutomata {
           case (Some(Rocket(_, moveSignal, _, tint)), r: Renderable) =>
             for {
               position <- moveSignal |> SignalFunction(toScreenSpace)
-              events   <- Projectiles.emitTrailEvents(position, tint, 1L)
+              events   <- Projectiles.emitTrailEvents(position, tint, Millis(25).toSeconds)
             } yield AutomatonUpdate(List(r.moveTo(position)), events)
 
           case _ =>
