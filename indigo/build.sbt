@@ -134,7 +134,7 @@ lazy val sandbox =
       scalaJSUseMainModuleInitializer := true
     )
     .dependsOn(indigoExts)
-    .dependsOn(indigoJsonCirce)
+    .dependsOn(indigoJsonUPickle)
 lazy val sandboxJS  = sandbox.js
 lazy val sandboxJVM = sandbox.jvm
 
@@ -295,6 +295,22 @@ lazy val indigoJsonCirce =
     .dependsOn(shared)
 lazy val indigoJsonCirceJS  = indigoJsonCirce.js
 lazy val indigoJsonCirceJVM = indigoJsonCirce.jvm
+
+// uPickle
+lazy val indigoJsonUPickle =
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("indigo-json-upickle"))
+    .settings(commonSettings: _*)
+    .settings(
+      name := "indigo-json-upickle",
+      libraryDependencies ++= Seq(
+        "com.lihaoyi" %%% "upickle" % "1.1.0"
+      )
+    )
+    .dependsOn(shared)
+lazy val indigoJsonUPickleJS  = indigoJsonUPickle.js
+lazy val indigoJsonUPickleJVM = indigoJsonUPickle.jvm
 
 // Root
 lazy val indigoProject =

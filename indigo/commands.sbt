@@ -2,6 +2,7 @@ lazy val coreProjects: List[String] =
   List(
     "shared",
     "indigoJsonCirce",
+    "indigoJsonUPickle",
     "indigoPlatforms",
     "indigo",
     "indigoExts",
