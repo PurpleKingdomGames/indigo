@@ -31,7 +31,7 @@ object Automaton {
             AutomatonUpdate.withNodes(r.moveTo(sa.spawnedAt))
 
           case c: Clone =>
-            AutomatonUpdate.withNodes(c.withTransforms(sa.spawnedAt, c.rotation, c.scale))
+            AutomatonUpdate.withNodes(c.withTransforms(sa.spawnedAt, c.rotation, c.scale, c.alpha, c.flipHorizontal, c.flipVertical))
 
           case _ =>
             AutomatonUpdate.withNodes(n)

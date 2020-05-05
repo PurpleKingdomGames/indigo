@@ -6,12 +6,12 @@ sealed trait DisplayEntity {
   val z: Float
 }
 
-final class DisplayClone(val id: String, val x: Float, val y: Float, val z: Float, val rotation: Float, val scaleX: Float, val scaleY: Float) extends DisplayEntity {
+final class DisplayClone(val id: String, val x: Float, val y: Float, val z: Float, val rotation: Float, val scaleX: Float, val scaleY: Float, val alpha: Float, val flipHorizontal: Float, val flipVertical: Float) extends DisplayEntity {
   def asBatchData: DisplayCloneBatchData =
-    new DisplayCloneBatchData(x, y, rotation, scaleX, scaleY)
+    new DisplayCloneBatchData(x, y, rotation, scaleX, scaleY, alpha, flipHorizontal, flipVertical)
 }
 
-final class DisplayCloneBatchData(val x: Float, val y: Float, val rotation: Float, val scaleX: Float, val scaleY: Float)
+final class DisplayCloneBatchData(val x: Float, val y: Float, val rotation: Float, val scaleX: Float, val scaleY: Float, val alpha: Float, val flipHorizontal: Float, val flipVertical: Float)
 final class DisplayCloneBatch(val id: String, val z: Float, val clones: List[DisplayCloneBatchData]) extends DisplayEntity
 
 final class DisplayObject(

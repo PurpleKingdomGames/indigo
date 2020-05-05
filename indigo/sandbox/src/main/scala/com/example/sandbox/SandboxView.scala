@@ -56,6 +56,8 @@ object SandboxView {
       currentState.dude.dude.sprite.moveBy(8, 10).moveBy(viewModel.offsetX, viewModel.offsetY).withAlpha(1).withTint(RGBA.Green.withAmount(0.25)),
       currentState.dude.dude.sprite.moveBy(8, -10).withAlpha(0.5).withTint(RGBA.Red.withAmount(0.75)),
       Clone(dudeCloneId, Depth(1), CloneTransformData.startAt(Point(16, 64)))
+        .withHorizontalFlip(true)
+        .withAlpha(0.5f)
     )
 
   def lightingLayer(inputState: InputState): List[SceneGraphNode] =

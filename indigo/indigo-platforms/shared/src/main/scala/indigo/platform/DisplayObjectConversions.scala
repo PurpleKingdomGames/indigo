@@ -84,7 +84,10 @@ object DisplayObjectConversions {
       z = cloneDepth,
       rotation = data.rotation.value.toFloat,
       scaleX = data.scale.x.toFloat,
-      scaleY = data.scale.y.toFloat
+      scaleY = data.scale.y.toFloat,
+      alpha = data.alpha.toFloat,
+      flipHorizontal = if (data.flipHorizontal) -1f else 1f,
+      flipVertical = if (data.flipVertical) 1f else -1f
     )
 
   private def cloneBatchDataToDisplayEntities(batch: CloneBatch): DisplayCloneBatch = {
@@ -98,7 +101,10 @@ object DisplayObjectConversions {
             y = batch.transform.position.y + td.position.y.toFloat,
             rotation = batch.transform.rotation.value.toFloat + td.rotation.value.toFloat,
             scaleX = batch.transform.scale.x.toFloat * td.scale.x.toFloat,
-            scaleY = batch.transform.scale.x.toFloat * td.scale.y.toFloat
+            scaleY = batch.transform.scale.x.toFloat * td.scale.y.toFloat,
+            alpha = batch.transform.alpha.toFloat,
+            flipHorizontal = if (batch.transform.flipHorizontal) -1f else 1f,
+            flipVertical = if (batch.transform.flipVertical) 1f else -1f
           )
         }
       )

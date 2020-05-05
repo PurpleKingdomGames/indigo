@@ -130,35 +130,47 @@ object CloneBlank {
     Some((c.id, c.cloneable))
 }
 
-final class CloneTransformData(val position: Point, val rotation: Radians, val scale: Vector2)
+final class CloneTransformData(val position: Point, val rotation: Radians, val scale: Vector2, val alpha: Double, val flipHorizontal: Boolean, val flipVertical: Boolean)
 object CloneTransformData {
-  def apply(position: Point, rotation: Radians, scale: Vector2): CloneTransformData =
-    new CloneTransformData(position, rotation, scale)
+  def apply(position: Point, rotation: Radians, scale: Vector2, alpha: Double, flipHorizontal: Boolean, flipVertical: Boolean): CloneTransformData =
+    new CloneTransformData(position, rotation, scale, alpha, flipHorizontal, flipVertical)
 
   def startAt(position: Point): CloneTransformData =
-    new CloneTransformData(position, Radians.zero, Vector2.one)
+    new CloneTransformData(position, Radians.zero, Vector2.one, 1f, false, false)
 
   val identity: CloneTransformData =
-    CloneTransformData(Point.zero, Radians.zero, Vector2.one)
+    CloneTransformData(Point.zero, Radians.zero, Vector2.one, 1f, false, false)
 }
 
 final class Clone(val id: CloneId, val depth: Depth, val transform: CloneTransformData) extends SceneGraphNode {
-  lazy val x: Int            = transform.position.x
-  lazy val y: Int            = transform.position.y
-  lazy val rotation: Radians = transform.rotation
-  lazy val scale: Vector2    = transform.scale
+  lazy val x: Int                  = transform.position.x
+  lazy val y: Int                  = transform.position.y
+  lazy val rotation: Radians       = transform.rotation
+  lazy val scale: Vector2          = transform.scale
+  lazy val alpha: Double            = transform.alpha
+  lazy val flipHorizontal: Boolean = transform.flipHorizontal
+  lazy val flipVertical: Boolean   = transform.flipVertical
 
-  def withTransforms(newPosition: Point, newRotation: Radians, newScale: Vector2): Clone =
-    new Clone(id, depth, CloneTransformData(newPosition, newRotation, newScale))
+  def withTransforms(newPosition: Point, newRotation: Radians, newScale: Vector2, alpha: Double, flipHorizontal: Boolean, flipVertical: Boolean): Clone =
+    new Clone(id, depth, CloneTransformData(newPosition, newRotation, newScale, alpha, flipHorizontal, flipVertical))
 
   def withPosition(newPosition: Point): Clone =
-    new Clone(id, depth, CloneTransformData(newPosition, transform.rotation, transform.scale))
+    new Clone(id, depth, CloneTransformData(newPosition, transform.rotation, transform.scale, transform.alpha, transform.flipHorizontal, transform.flipVertical))
 
   def withRotation(newRotation: Radians): Clone =
-    new Clone(id, depth, CloneTransformData(transform.position, newRotation, transform.scale))
+    new Clone(id, depth, CloneTransformData(transform.position, newRotation, transform.scale, transform.alpha, transform.flipHorizontal, transform.flipVertical))
 
   def withScale(newScale: Vector2): Clone =
-    new Clone(id, depth, CloneTransformData(transform.position, transform.rotation, newScale))
+    new Clone(id, depth, CloneTransformData(transform.position, transform.rotation, newScale, transform.alpha, transform.flipHorizontal, transform.flipVertical))
+
+  def withAlpha(newAlpha: Double): Clone =
+    new Clone(id, depth, CloneTransformData(transform.position, transform.rotation, transform.scale, newAlpha, transform.flipHorizontal, transform.flipVertical))
+
+  def withHorizontalFlip(flipped: Boolean): Clone =
+    new Clone(id, depth, CloneTransformData(transform.position, transform.rotation, transform.scale, transform.alpha, flipped, transform.flipVertical))
+
+  def withVerticalFlip(flipped: Boolean): Clone =
+    new Clone(id, depth, CloneTransformData(transform.position, transform.rotation, transform.scale, transform.alpha, transform.flipHorizontal, flipped))
 }
 object Clone {
   def apply(id: CloneId, depth: Depth, transform: CloneTransformData): Clone =
