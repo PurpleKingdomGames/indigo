@@ -3,7 +3,7 @@ package indigo.platform.input
 import org.scalajs.dom.window
 import org.scalajs.dom.experimental.gamepad.GamepadNavigator
 import org.scalajs.dom.experimental.gamepad.{Gamepad => GamepadJS}
-import indigo.shared.input.{Gamepad, GamepadButtons, GamepadDPad, GamepadAnalogControls, AnalogAxis, GamepadInputCapture}
+import indigo.shared.input.{Gamepad, GamepadButtons, GamepadDPad, AnalogAxis, GamepadInputCapture}
 import indigo.shared.input.GamepadAnalogControls
 
 object GamepadInputCaptureImpl {

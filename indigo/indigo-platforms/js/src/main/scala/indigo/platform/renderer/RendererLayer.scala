@@ -1,7 +1,6 @@
 package indigo.platform.renderer
 
 import indigo.facades.WebGL2RenderingContext
-import scala.scalajs.js.typedarray.Float32Array
 import indigo.shared.display.DisplayObject
 import indigo.shared.ClearColor
 import org.scalajs.dom.raw.WebGLProgram
@@ -58,7 +57,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val specularOffsetIsLitData: scalajs.js.Array[Float]      = scalajs.js.Array[Float](4f * maxBatchSize)
   private val textureAmountsData: scalajs.js.Array[Float]           = scalajs.js.Array[Float](4f * maxBatchSize)
 
-  @inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Float]) = {
+  @inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Float]): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
     gl2.bufferData(ARRAY_BUFFER, new Float32Array(data), STATIC_DRAW)
   }

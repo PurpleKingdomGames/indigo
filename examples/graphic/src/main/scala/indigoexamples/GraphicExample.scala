@@ -33,7 +33,7 @@ object GraphicExample extends IndigoGameBasic[Unit, Unit, Unit] {
     Graphic(0, 0, 256, 256, 1, Material.Textured(AssetName("graphics")))
       .withRef(48, 48)
 
-  val basic =
+  val basic: Graphic =
     graphic
       .withCrop(128, 0, 96, 96)
       .moveTo(200, 200)

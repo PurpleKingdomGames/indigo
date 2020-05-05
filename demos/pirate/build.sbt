@@ -8,7 +8,7 @@ lazy val pirate =
     .settings(                               // Standard SBT settings
       name := "pirate",
       version := "0.0.1",
-      scalaVersion := "2.13.1",
+      scalaVersion := "2.13.2",
       organization := "pirate",
       libraryDependencies ++= Seq(
         "com.lihaoyi"    %%% "utest"      % "0.7.4"  % "test",

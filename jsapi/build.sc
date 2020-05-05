@@ -6,7 +6,7 @@ import mill.scalajslib.api._
 import coursier.maven.MavenRepository
 
 object apigen extends ScalaModule {
-  def scalaVersion = "2.13.1"
+  def scalaVersion = "2.13.2"
 
   def ivyDeps = Agg(
     ivy"com.lihaoyi::os-lib:0.6.2",
@@ -19,8 +19,8 @@ object apigen extends ScalaModule {
     MavenRepository("https://oss.sonatype.org/content/repositories/releases")
   )
 
-  def compileIvyDeps      = T { super.compileIvyDeps() ++ Agg(ivy"org.wartremover::wartremover:2.4.5") }
-  def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.5") }
+  def compileIvyDeps      = T { super.compileIvyDeps() ++ Agg(ivy"org.wartremover::wartremover:2.4.7") }
+  def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.7") }
 
   def scalacOptions =
     ScalacOptions.scala213Compile ++ Seq(
@@ -38,7 +38,7 @@ object apigen extends ScalaModule {
 }
 
 object indigojs extends ScalaJSModule {
-  def scalaVersion   = "2.13.1"
+  def scalaVersion   = "2.13.2"
   def scalaJSVersion = "1.0.0"
 
   override def moduleKind: T[ModuleKind] = T { ModuleKind.CommonJSModule }
@@ -52,8 +52,8 @@ object indigojs extends ScalaJSModule {
     MavenRepository("https://oss.sonatype.org/content/repositories/releases")
   )
 
-  def compileIvyDeps      = T { super.compileIvyDeps() ++ Agg(ivy"org.wartremover::wartremover:2.4.5") }
-  def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.5") }
+  def compileIvyDeps      = T { super.compileIvyDeps() ++ Agg(ivy"org.wartremover::wartremover:2.4.7") }
+  def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.7") }
 
   def scalacOptions = ScalacOptions.scala213Compile
 
@@ -126,7 +126,6 @@ object ScalacOptions {
       "-language:higherKinds",         // Allow higher-kinded types
       "-language:implicitConversions", // Allow definition of implicit functions called views
       "-unchecked",                    // Enable additional warnings where generated code depends on assumptions.
-      "-Xfuture",                      // Turn on future language features.
       "-Xlint:missing-interpolator",   // A string literal appears to be missing an interpolator id.
       "-Xlint:option-implicit",        // Option.apply used implicit view.
       "-Xlint:package-object-classes", // Class or object defined in package object.

@@ -628,7 +628,7 @@ object Text {
       fontKey: FontKey,
       effects: Effects,
       eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
-  ) =
+  ): Text =
     new Text(text, alignment, position, depth, rotation, scale, fontKey, effects, eventHandler)
 
 }

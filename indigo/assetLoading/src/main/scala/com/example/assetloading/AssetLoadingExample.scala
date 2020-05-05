@@ -122,7 +122,7 @@ object Assets {
       AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png"))
     )
 
-  val buttonAssets =
+  val buttonAssets: ButtonAssets =
     ButtonAssets(
       up = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 0, 16, 16),
       over = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 16, 16, 16),

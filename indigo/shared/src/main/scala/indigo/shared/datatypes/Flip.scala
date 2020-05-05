@@ -8,10 +8,10 @@ final class Flip(val horizontal: Boolean, val vertical: Boolean) {
   def flipV: Flip =
     new Flip(horizontal, !vertical)
 
-  def withFlipH(value: Boolean) =
+  def withFlipH(value: Boolean): Flip =
     new Flip(value, vertical)
 
-  def withFlipV(value: Boolean) =
+  def withFlipV(value: Boolean): Flip =
     new Flip(horizontal, value)
 
   def hash: String =

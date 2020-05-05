@@ -135,7 +135,7 @@ object InputField {
       val splitString = inputField.text.splitAt(inputField.cursorPosition)
 
       inputField.copy(
-        text = (splitString._1 + char + splitString._2).replaceAllLiterally("\n\n", "\n"),
+        text = (splitString._1 + char + splitString._2).replace("\n\n", "\n"),
         cursorPosition = inputField.cursorPosition + 1
       )
     } else inputField

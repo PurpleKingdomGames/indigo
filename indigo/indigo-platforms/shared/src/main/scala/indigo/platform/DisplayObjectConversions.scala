@@ -1,6 +1,6 @@
 package indigo.platform
 
-import indigo.shared.display.{DisplayObject, SpriteSheetFrame, DisplayClone, DisplayCloneBatch}
+import indigo.shared.display.{DisplayObject, SpriteSheetFrame, DisplayCloneBatch}
 import indigo.shared.datatypes.{FontInfo, Rectangle, TextAlignment, FontChar}
 import indigo.shared.animation.Animation
 import indigo.shared.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets

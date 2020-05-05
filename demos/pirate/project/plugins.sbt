@@ -11,6 +11,6 @@ addSbtPlugin("indigo" % "sbt-indigo" % "0.0.12-SNAPSHOT")
 // Everything below here is optional!
 // Static analysis and test coverage
 //-----------------------------------
-addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.4.3")
+addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.4.7")
 
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.5.1")
