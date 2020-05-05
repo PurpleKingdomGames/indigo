@@ -22,7 +22,7 @@ lazy val pirate =
       gameAssetsDirectory := "assets",
       scalaJSUseMainModuleInitializer := true,
       libraryDependencies ++= Seq(
-        "indigo" %%% "circe12"      % "0.0.12-SNAPSHOT", // Needed for Aseprite & Tiled support
+        "indigo" %%% "indigo-json-circe"      % "0.0.12-SNAPSHOT", // Needed for Aseprite & Tiled support
         "indigo" %%% "indigo-exts" % "0.0.12-SNAPSHOT"  // Important! :-)
       )
     )

@@ -44,7 +44,7 @@ object indigojs extends ScalaJSModule {
   override def moduleKind: T[ModuleKind] = T { ModuleKind.CommonJSModule }
 
   def ivyDeps = Agg(
-    ivy"indigo::circe12::0.0.12-SNAPSHOT",
+    ivy"indigo::indigo-json-circe::0.0.12-SNAPSHOT",
     ivy"indigo::indigo-exts::0.0.12-SNAPSHOT"
   )
 

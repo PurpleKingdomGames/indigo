@@ -134,7 +134,7 @@ lazy val sandbox =
       scalaJSUseMainModuleInitializer := true
     )
     .dependsOn(indigoExts)
-    .dependsOn(circe12)
+    .dependsOn(indigoJsonCirce)
 lazy val sandboxJS  = sandbox.js
 lazy val sandboxJVM = sandbox.jvm
 
@@ -157,7 +157,7 @@ lazy val perf =
       scalaJSUseMainModuleInitializer := true
     )
     .dependsOn(indigoExts)
-    .dependsOn(circe12)
+    .dependsOn(indigoJsonCirce)
 lazy val perfJS  = perf.js
 lazy val perfJVM = perf.jvm
 
@@ -184,7 +184,7 @@ lazy val indigoExts =
     .in(file("indigo-exts"))
     .settings(commonSettings: _*)
     .dependsOn(indigo)
-    .dependsOn(circe12 % "provided")
+    .dependsOn(indigoJsonCirce % "provided")
     .settings(
       name := "indigo-exts",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
@@ -279,12 +279,13 @@ lazy val sharedJS  = shared.js
 lazy val sharedJVM = shared.jvm
 
 // Circe
-lazy val circe12 =
+lazy val indigoJsonCirce =
   crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
+    .in(file("indigo-json-circe"))
     .settings(commonSettings: _*)
     .settings(
-      name := "circe12",
+      name := "indigo-json-circe",
       libraryDependencies ++= Seq(
         "io.circe" %%% "circe-core",
         "io.circe" %%% "circe-generic",
@@ -292,8 +293,8 @@ lazy val circe12 =
       ).map(_ % "0.13.0")
     )
     .dependsOn(shared)
-lazy val circe12JS  = circe12.js
-lazy val circe12JVM = circe12.jvm
+lazy val indigoJsonCirceJS  = indigoJsonCirce.js
+lazy val indigoJsonCirceJVM = indigoJsonCirce.jvm
 
 // Root
 lazy val indigoProject =
@@ -308,7 +309,7 @@ lazy val indigoProject =
     .aggregate(
       sharedJVM,
       indigoPlatformsJVM,
-      circe12JVM,
+      indigoJsonCirceJVM,
       indigoJVM,
       indigoExtsJVM,
       facadesJVM,

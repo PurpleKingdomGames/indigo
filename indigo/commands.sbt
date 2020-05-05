@@ -1,7 +1,7 @@
 lazy val coreProjects: List[String] =
   List(
     "shared",
-    "circe12",
+    "indigoJsonCirce",
     "indigoPlatforms",
     "indigo",
     "indigoExts",
