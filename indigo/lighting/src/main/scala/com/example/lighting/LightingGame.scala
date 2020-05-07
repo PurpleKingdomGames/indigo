@@ -1,7 +1,7 @@
 package com.example.lighting
 
 import indigo._
-import indigoexts.entrypoint._
+import indigogame._
 
 object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
 

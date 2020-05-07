@@ -1,37 +1,5 @@
-import scala.concurrent.Future
 
 package object indigoexts {
-
-  object entrypoint {
-
-    type IndigoGameBasic[StartupData, Model, ViewModel] = entry.IndigoGameBasic[StartupData, Model, ViewModel]
-
-    type IndigoGameWithScenes[StartupData, Model, ViewModel] = entry.IndigoGameWithScenes[StartupData, Model, ViewModel]
-
-    implicit val emptyConfigAsync: Future[Option[indigo.shared.config.GameConfig]] = entry.emptyConfigAsync
-
-    implicit val emptyAssetsAsync: Future[Set[indigo.shared.assets.AssetType]] = entry.emptyAssetsAsync
-
-    /**
-      * defaultGameConfig Provides a useful default config set up:
-      * - Game Viewport = 550 x 400
-      * - FPS = 30
-      * - Clear color = Black
-      * - Magnification = 1
-      * - No advanced settings enabled
-      * @return A GameConfig instance
-      */
-    val defaultGameConfig: indigo.shared.config.GameConfig = entry.defaultGameConfig
-
-    /**
-      * noRender Convenience value, alias for SceneUpdateFragment.empty
-      * @return An Empty SceneUpdateFragment
-      */
-    val noRender: indigo.shared.scenegraph.SceneUpdateFragment = entry.noRender
-
-    type SubSystem = subsystems.SubSystem
-
-  }
 
   object lens {
     type Lens[A, B] = lenses.Lens[A, B]

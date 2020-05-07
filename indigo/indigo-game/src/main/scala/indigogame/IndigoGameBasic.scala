@@ -1,15 +1,15 @@
-package indigoexts.entry
+package indigogame
 
 import indigo._
 import indigo.gameengine.GameEngine
-import indigo.gameengine.StandardFrameProcessor
 import indigoexts.subsystems.SubSystem
 import indigoexts.subsystems.SubSystemsRegister
-
-import scala.concurrent.Future
+import indigogame.entry.GameWithSubSystems
+import indigogame.entry.StandardFrameProcessor
 
 // Using Scala.js, so this is just to make the compiler happy.
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
   * A trait representing a minimal set of functions to get your game running

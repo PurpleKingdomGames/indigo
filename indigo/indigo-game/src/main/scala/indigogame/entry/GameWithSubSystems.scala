@@ -1,4 +1,4 @@
-package indigoexts.entry
+package indigogame.entry
 
 import indigo.GameTime
 import indigo.Dice

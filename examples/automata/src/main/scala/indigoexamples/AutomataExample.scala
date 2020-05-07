@@ -1,7 +1,7 @@
 package indigoexamples
 
 import indigo._
-import indigoexts.entrypoint._
+import indigogame._
 import indigoexts.ui._
 
 object AutomataExample extends IndigoGameBasic[Unit, Unit, Button] {

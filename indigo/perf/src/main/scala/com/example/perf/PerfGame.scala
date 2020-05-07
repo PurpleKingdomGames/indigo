@@ -1,10 +1,10 @@
 package com.example.perf
 
 import indigo._
-import indigoexts.entrypoint._
 import indigoexts.formats._
 import indigo.json.Json
 import indigoexts.subsystems.fpscounter.FPSCounter
+import indigogame._
 
 object PerfGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
 

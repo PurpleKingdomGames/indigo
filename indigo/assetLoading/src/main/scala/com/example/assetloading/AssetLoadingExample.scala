@@ -1,7 +1,7 @@
 package com.example.assetloading
 
 import indigo._
-import indigoexts.entrypoint._
+import indigogame._
 import indigoexts.ui._
 import indigoexts.subsystems.assetbundleloader._
 

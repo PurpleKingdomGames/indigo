@@ -1,4 +1,4 @@
-package indigoexts.entry
+package indigogame.entry
 
 import utest._
 import indigo.shared.assets.AssetType.Text
@@ -13,7 +13,7 @@ import indigo.shared.events.InputState
 
 object GameWithSubSystemsTests extends TestSuite {
 
-  import TestFixtures._
+  import GameTestFixtures._
 
   val tests: Tests =
     Tests {
@@ -42,7 +42,7 @@ object GameWithSubSystemsTests extends TestSuite {
 
 }
 
-object TestFixtures {
+object GameTestFixtures {
 
   val subSystem =
     EventsOnlySubSystem(0)
@@ -61,43 +61,43 @@ object TestFixtures {
 
   val viewModelUpdate: (GameTime, GameModel, Int, InputState, Dice) => Outcome[Int] =
     (_, _, viewModel, _, _) => Outcome(viewModel + 10).addGlobalEvents(EventsOnlyEvent.Increment)
-}
 
-final case class GameModel(text: String)
+  final case class GameModel(text: String)
 
-final case class EventsOnlySubSystem(count: Int) extends SubSystem {
+  final case class EventsOnlySubSystem(count: Int) extends SubSystem {
 
-  type EventType = EventsOnlyEvent
+    type EventType = EventsOnlyEvent
 
-  val eventFilter: GlobalEvent => Option[EventsOnlyEvent] = {
-    case e: EventsOnlyEvent => Some(e)
-    case _                  => None
+    val eventFilter: GlobalEvent => Option[EventsOnlyEvent] = {
+      case e: EventsOnlyEvent => Some(e)
+      case _                  => None
+    }
+
+    def update(gameTime: GameTime, inputState: InputState, dice: Dice): EventsOnlyEvent => Outcome[SubSystem] = {
+      case EventsOnlyEvent.Increment =>
+        val newCount = count + 1
+
+        Outcome(this.copy(newCount))
+          .addGlobalEvents(EventsOnlyEvent.Total(newCount))
+          .addGlobalEvents(List.fill(newCount)(EventsOnlyEvent.OnPerCount))
+
+      case EventsOnlyEvent.Decrement =>
+        Outcome(this.copy(count + 1))
+
+      case _ =>
+        Outcome(this)
+    }
+
+    def render(gameTime: GameTime): SceneUpdateFragment =
+      SceneUpdateFragment.empty
+
   }
 
-  def update(gameTime: GameTime, inputState: InputState, dice: Dice): EventsOnlyEvent => Outcome[SubSystem] = {
-    case EventsOnlyEvent.Increment =>
-      val newCount = count + 1
-
-      Outcome(this.copy(newCount))
-        .addGlobalEvents(EventsOnlyEvent.Total(newCount))
-        .addGlobalEvents(List.fill(newCount)(EventsOnlyEvent.OnPerCount))
-
-    case EventsOnlyEvent.Decrement =>
-      Outcome(this.copy(count + 1))
-
-    case _ =>
-      Outcome(this)
+  sealed trait EventsOnlyEvent extends GlobalEvent
+  object EventsOnlyEvent {
+    case object Increment              extends EventsOnlyEvent
+    case object Decrement              extends EventsOnlyEvent
+    final case class Total(count: Int) extends EventsOnlyEvent
+    case object OnPerCount             extends EventsOnlyEvent
   }
-
-  def render(gameTime: GameTime): SceneUpdateFragment =
-    SceneUpdateFragment.empty
-
-}
-
-sealed trait EventsOnlyEvent extends GlobalEvent
-object EventsOnlyEvent {
-  case object Increment              extends EventsOnlyEvent
-  case object Decrement              extends EventsOnlyEvent
-  final case class Total(count: Int) extends EventsOnlyEvent
-  case object OnPerCount             extends EventsOnlyEvent
 }

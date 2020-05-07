@@ -1,7 +1,7 @@
 package indigoexamples
 
 import indigo._
-import indigoexts.entrypoint._
+import indigogame._
 import indigoexts.subsystems.inputmapper.InputMapper
 import indigoexts.subsystems.inputmapper.InputMapperEvent
 

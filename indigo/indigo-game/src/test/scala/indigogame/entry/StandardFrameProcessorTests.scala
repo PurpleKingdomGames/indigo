@@ -1,4 +1,4 @@
-package indigo.gameengine
+package indigogame.entry
 
 import utest._
 import indigo.shared.time.GameTime
@@ -63,7 +63,7 @@ object TestFixtures {
         Outcome(m)
     }
 
-  val viewModelUpdate: (GameTime, GameModel, Int, InputState, Dice) => Outcome[Int] = 
+  val viewModelUpdate: (GameTime, GameModel, Int, InputState, Dice) => Outcome[Int] =
     (_, _, vm, _, _) => {
       Outcome(vm + 10).addGlobalEvents(EventsOnlyEvent.Increment)
     }
@@ -73,13 +73,13 @@ object TestFixtures {
 
   val standardFrameProcessor: StandardFrameProcessor[GameModel, Int] =
     new StandardFrameProcessor(modelUpdate, viewModelUpdate, viewUpdate)
-}
 
-final case class GameModel(count: Int)
+  final case class GameModel(count: Int)
 
-sealed trait EventsOnlyEvent extends GlobalEvent
-object EventsOnlyEvent {
-  case object Increment              extends EventsOnlyEvent
-  case object Decrement              extends EventsOnlyEvent
-  final case class Total(count: Int) extends EventsOnlyEvent
+  sealed trait EventsOnlyEvent extends GlobalEvent
+  object EventsOnlyEvent {
+    case object Increment              extends EventsOnlyEvent
+    case object Decrement              extends EventsOnlyEvent
+    final case class Total(count: Int) extends EventsOnlyEvent
+  }
 }

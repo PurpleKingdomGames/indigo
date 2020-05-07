@@ -45,7 +45,7 @@ lazy val lighting =
     .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
-    .dependsOn(indigoExts)
+    .dependsOn(indigoGame)
 lazy val lightingJS  = lighting.js
 lazy val lightingJVM = lighting.jvm
 
@@ -67,7 +67,7 @@ lazy val distortion =
     .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
-    .dependsOn(indigoExts)
+    .dependsOn(indigoGame)
 lazy val distortionJS  = distortion.js
 lazy val distortionJVM = distortion.jvm
 
@@ -89,7 +89,7 @@ lazy val assetLoading =
     .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
-    .dependsOn(indigoExts)
+    .dependsOn(indigoGame)
 lazy val assetLoadingJS  = assetLoading.js
 lazy val assetLoadingJVM = assetLoading.jvm
 
@@ -111,7 +111,7 @@ lazy val effects =
     .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
-    .dependsOn(indigoExts)
+    .dependsOn(indigoGame)
 lazy val effectsJS  = effects.js
 lazy val effectsJVM = effects.jvm
 
@@ -133,7 +133,7 @@ lazy val sandbox =
     .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
-    .dependsOn(indigoExts)
+    .dependsOn(indigoGame)
     .dependsOn(indigoJsonUPickle)
 lazy val sandboxJS  = sandbox.js
 lazy val sandboxJVM = sandbox.jvm
@@ -156,7 +156,7 @@ lazy val perf =
     .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
-    .dependsOn(indigoExts)
+    .dependsOn(indigoGame)
     .dependsOn(indigoJsonCirce)
 lazy val perfJS  = perf.js
 lazy val perfJVM = perf.jvm
@@ -192,6 +192,21 @@ lazy val indigoExts =
     )
 lazy val indigoExtsJS  = indigoExts.js
 lazy val indigoExtsJVM = indigoExts.jvm
+
+// Indigo Game
+lazy val indigoGame =
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("indigo-game"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoExts)
+    .dependsOn(indigoJsonCirce % "provided")
+    .settings(
+      name := "indigo-game",
+      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
+    )
+lazy val indigoGameJS  = indigoGame.js
+lazy val indigoGameJVM = indigoGame.jvm
 
 // Indigo Facades
 lazy val facades =
@@ -329,6 +344,7 @@ lazy val indigoProject =
       indigoJsonCirceJVM,
       indigoCoreJVM,
       indigoExtsJVM,
+      indigoGameJVM,
       facadesJVM,
       sandboxJVM,
       perfJVM,

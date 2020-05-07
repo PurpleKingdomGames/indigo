@@ -1,7 +1,7 @@
 package snake
 
 import indigo._
-import indigoexts.entrypoint._
+import indigogame._
 import indigoexts.scenes._
 // import indigoexts.subsystems.fpscounter.FPSCounter
 

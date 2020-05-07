@@ -2,9 +2,9 @@ package com.example.sandbox
 
 import indigo._
 import indigo.json.Json
-import indigoexts.entrypoint._
 import indigoexts.formats._
 import indigoexts.subsystems.fpscounter.FPSCounter
+import indigogame._
 
 object SandboxGame extends IndigoGameBasic[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
