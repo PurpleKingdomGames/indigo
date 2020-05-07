@@ -115,6 +115,54 @@ lazy val effects =
 lazy val effectsJS  = effects.js
 lazy val effectsJVM = effects.jvm
 
+lazy val catsExample =
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("cats-example"))
+    .enablePlugins(SbtIndigo)
+    .settings(commonSettings: _*)
+    .settings(
+      name := "cats-example",
+      showCursor := true,
+      title := "Cats Example",
+      gameAssetsDirectory := "assets"
+    )
+    .settings(
+      publish := {},
+      publishLocal := {}
+    )
+    .jsSettings(
+      scalaJSUseMainModuleInitializer := true
+    )
+    .dependsOn(indigoGameCats)
+    .dependsOn(indigoJsonUPickle)
+lazy val catsExampleJS  = catsExample.js
+lazy val catsExampleJVM = catsExample.jvm
+
+lazy val zioExample =
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("zio-example"))
+    .enablePlugins(SbtIndigo)
+    .settings(commonSettings: _*)
+    .settings(
+      name := "zio-example",
+      showCursor := true,
+      title := "ZIO Example",
+      gameAssetsDirectory := "assets"
+    )
+    .settings(
+      publish := {},
+      publishLocal := {}
+    )
+    .jsSettings(
+      scalaJSUseMainModuleInitializer := true
+    )
+    .dependsOn(indigoGameZIO)
+    .dependsOn(indigoJsonUPickle)
+lazy val zioExampleJS  = zioExample.js
+lazy val zioExampleJVM = zioExample.jvm
+
 lazy val sandbox =
   crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
@@ -207,6 +255,34 @@ lazy val indigoGame =
     )
 lazy val indigoGameJS  = indigoGame.js
 lazy val indigoGameJVM = indigoGame.jvm
+
+lazy val indigoGameCats =
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("indigo-game-cats"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoExts)
+    .dependsOn(indigoJsonCirce % "provided")
+    .settings(
+      name := "indigo-game-cats",
+      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
+    )
+lazy val indigoGameCatsJS  = indigoGameCats.js
+lazy val indigoGameCatsJVM = indigoGameCats.jvm
+
+lazy val indigoGameZIO =
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("indigo-game-zio"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoExts)
+    .dependsOn(indigoJsonCirce % "provided")
+    .settings(
+      name := "indigo-game-zio",
+      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
+    )
+lazy val indigoGameZIOJS  = indigoGameZIO.js
+lazy val indigoGameZIOJVM = indigoGameZIO.jvm
 
 // Indigo Facades
 lazy val facades =
@@ -345,9 +421,13 @@ lazy val indigoProject =
       indigoCoreJVM,
       indigoExtsJVM,
       indigoGameJVM,
+      indigoGameCatsJVM,
+      indigoGameZIOJVM,
       facadesJVM,
       sandboxJVM,
       perfJVM,
+      catsExampleJVM,
+      zioExampleJVM,
       lightingJVM,
       distortionJVM,
       effectsJVM,
