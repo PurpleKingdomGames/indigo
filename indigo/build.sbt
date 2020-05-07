@@ -162,20 +162,21 @@ lazy val perfJS  = perf.js
 lazy val perfJVM = perf.jvm
 
 // Indigo
-lazy val indigo =
+lazy val indigoCore =
   crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
+    .in(file("indigo-core"))
     .settings(commonSettings: _*)
     .settings(
-      name := "indigo",
+      name := "indigo-core",
       libraryDependencies ++= Seq(
         "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
       )
     )
     .dependsOn(shared)
     .dependsOn(indigoPlatforms)
-lazy val indigoJS  = indigo.js
-lazy val indigoJVM = indigo.jvm
+lazy val indigoCoreJS  = indigoCore.js
+lazy val indigoCoreJVM = indigoCore.jvm
 
 // Indigo Extensions
 lazy val indigoExts =
@@ -183,7 +184,7 @@ lazy val indigoExts =
     .crossType(CrossType.Pure)
     .in(file("indigo-exts"))
     .settings(commonSettings: _*)
-    .dependsOn(indigo)
+    .dependsOn(indigoCore)
     .dependsOn(indigoJsonCirce % "provided")
     .settings(
       name := "indigo-exts",
@@ -326,7 +327,7 @@ lazy val indigoProject =
       sharedJVM,
       indigoPlatformsJVM,
       indigoJsonCirceJVM,
-      indigoJVM,
+      indigoCoreJVM,
       indigoExtsJVM,
       facadesJVM,
       sandboxJVM,

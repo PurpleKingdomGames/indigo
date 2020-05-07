@@ -4,7 +4,7 @@ lazy val coreProjects: List[String] =
     "indigoJsonCirce",
     "indigoJsonUPickle",
     "indigoPlatforms",
-    "indigo",
+    "indigoCore",
     "indigoExts",
     "facades",
     "sandbox",
