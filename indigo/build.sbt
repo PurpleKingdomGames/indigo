@@ -45,7 +45,7 @@ lazy val sandbox =
     .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
-    .dependsOn(indigoGame)
+    .dependsOn(indigo)
     .dependsOn(indigoJsonUPickle)
 lazy val sandboxJS  = sandbox.js
 lazy val sandboxJVM = sandbox.jvm
@@ -68,7 +68,7 @@ lazy val perf =
     .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
-    .dependsOn(indigoGame)
+    .dependsOn(indigo)
     .dependsOn(indigoJsonCirce)
 lazy val perfJS  = perf.js
 lazy val perfJVM = perf.jvm
@@ -106,19 +106,19 @@ lazy val indigoExtsJS  = indigoExts.js
 lazy val indigoExtsJVM = indigoExts.jvm
 
 // Indigo Game
-lazy val indigoGame =
+lazy val indigo =
   crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
-    .in(file("indigo-game"))
+    .in(file("indigo"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
     .dependsOn(indigoJsonCirce % "provided")
     .settings(
-      name := "indigo-game",
+      name := "indigo",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
     )
-lazy val indigoGameJS  = indigoGame.js
-lazy val indigoGameJVM = indigoGame.jvm
+lazy val indigoJS  = indigo.js
+lazy val indigoJVM = indigo.jvm
 
 // Indigo Facades
 lazy val facades =
@@ -256,7 +256,7 @@ lazy val indigoProject =
       indigoJsonCirceJVM,
       indigoCoreJVM,
       indigoExtsJVM,
-      indigoGameJVM,
+      indigoJVM,
       facadesJVM,
       sandboxJVM,
       perfJVM
