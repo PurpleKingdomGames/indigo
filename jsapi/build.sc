@@ -39,7 +39,7 @@ object apigen extends ScalaModule {
 
 object indigojs extends ScalaJSModule {
   def scalaVersion   = "2.13.2"
-  def scalaJSVersion = "1.0.0"
+  def scalaJSVersion = "1.0.1"
 
   override def moduleKind: T[ModuleKind] = T { ModuleKind.CommonJSModule }
 
