@@ -14,7 +14,11 @@ lazy val exampleProjects: List[String] =
     "group",
     "automata",
     "fireworks",
-    "inputmapping"
+    "inputmapping",
+    "lighting",
+    "distortion",
+    "effects",
+    "assetLoading"
   )
 
 def applyCommand(projects: List[String], command: String, platforms: List[PlatformSuffix]): String =
@@ -111,5 +115,37 @@ addCommandAlias(
   List(
     "fireworks/fastOptJS",
     "fireworks/indigoBuildJS"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "lightingBuild",
+  List(
+    "lighting/fastOptJS",
+    "lighting/indigoBuildJS"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "distortionBuild",
+  List(
+    "distortion/fastOptJS",
+    "distortion/indigoBuildJS"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "effectsBuild",
+  List(
+    "effects/fastOptJS",
+    "effects/indigoBuildJS"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "assetLoadingBuild",
+  List(
+    "assetLoading/fastOptJS",
+    "assetLoading/indigoBuildJS"
   ).mkString(";", ";", "")
 )

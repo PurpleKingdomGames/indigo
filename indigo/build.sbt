@@ -27,94 +27,6 @@ lazy val commonSettings = Seq(
 
 // Testing
 
-lazy val lighting =
-  crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Pure)
-    .enablePlugins(SbtIndigo)
-    .settings(commonSettings: _*)
-    .settings(
-      name := "lighting Example",
-      showCursor := true,
-      title := "Lighting",
-      gameAssetsDirectory := "assets"
-    )
-    .settings(
-      publish := {},
-      publishLocal := {}
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
-    )
-    .dependsOn(indigoGame)
-lazy val lightingJS  = lighting.js
-lazy val lightingJVM = lighting.jvm
-
-lazy val distortion =
-  crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Pure)
-    .enablePlugins(SbtIndigo)
-    .settings(commonSettings: _*)
-    .settings(
-      name := "distortion",
-      showCursor := true,
-      title := "Distortion Example",
-      gameAssetsDirectory := "assets"
-    )
-    .settings(
-      publish := {},
-      publishLocal := {}
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
-    )
-    .dependsOn(indigoGame)
-lazy val distortionJS  = distortion.js
-lazy val distortionJVM = distortion.jvm
-
-lazy val assetLoading =
-  crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Pure)
-    .enablePlugins(SbtIndigo)
-    .settings(commonSettings: _*)
-    .settings(
-      name := "assetLoading",
-      showCursor := true,
-      title := "Asset Loading Example",
-      gameAssetsDirectory := "assets"
-    )
-    .settings(
-      publish := {},
-      publishLocal := {}
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
-    )
-    .dependsOn(indigoGame)
-lazy val assetLoadingJS  = assetLoading.js
-lazy val assetLoadingJVM = assetLoading.jvm
-
-lazy val effects =
-  crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Pure)
-    .enablePlugins(SbtIndigo)
-    .settings(commonSettings: _*)
-    .settings(
-      name := "effects",
-      showCursor := true,
-      title := "Effects Example",
-      gameAssetsDirectory := "assets"
-    )
-    .settings(
-      publish := {},
-      publishLocal := {}
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
-    )
-    .dependsOn(indigoGame)
-lazy val effectsJS  = effects.js
-lazy val effectsJVM = effects.jvm
-
 lazy val sandbox =
   crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
@@ -347,11 +259,7 @@ lazy val indigoProject =
       indigoGameJVM,
       facadesJVM,
       sandboxJVM,
-      perfJVM,
-      lightingJVM,
-      distortionJVM,
-      effectsJVM,
-      assetLoadingJVM
+      perfJVM
     )
 
 // Cross build version - better or worse?

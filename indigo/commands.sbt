@@ -9,11 +9,7 @@ lazy val coreProjects: List[String] =
     "indigoGame",
     "facades",
     "sandbox",
-    "perf",
-    "lighting",
-    "distortion",
-    "effects",
-    "assetLoading"
+    "perf"
   )
 
 def applyCommand(projects: List[String], command: String, platforms: List[PlatformSuffix]): String =
@@ -126,38 +122,6 @@ addCommandAlias(
     "cleanAll",
     "buildIndigo",
     "localPublishIndigo"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "lightingBuild",
-  List(
-    "lightingJS/fastOptJS",
-    "lightingJS/indigoBuildJS"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "distortionBuild",
-  List(
-    "distortionJS/fastOptJS",
-    "distortionJS/indigoBuildJS"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "effectsBuild",
-  List(
-    "effectsJS/fastOptJS",
-    "effectsJS/indigoBuildJS"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "assetLoadingBuild",
-  List(
-    "assetLoadingJS/fastOptJS",
-    "assetLoadingJS/indigoBuildJS"
   ).mkString(";", ";", "")
 )
 

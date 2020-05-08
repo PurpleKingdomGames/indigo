@@ -304,3 +304,84 @@ lazy val audio =
     .jsSettings(
       scalaJSUseMainModuleInitializer := true
     )
+
+
+lazy val lighting =
+  crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
+    .crossType(CrossType.Pure)
+    .enablePlugins(SbtIndigo)
+    .settings(commonSettings: _*)
+    .settings(
+      name := "lighting Example",
+      showCursor := true,
+      title := "Lighting",
+      gameAssetsDirectory := "assets"
+    )
+    .settings(
+      publish := {},
+      publishLocal := {}
+    )
+    .jsSettings(
+      scalaJSUseMainModuleInitializer := true
+    )
+
+lazy val distortion =
+  crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
+    .crossType(CrossType.Pure)
+    .enablePlugins(SbtIndigo)
+    .settings(commonSettings: _*)
+    .settings(
+      name := "distortion",
+      showCursor := true,
+      title := "Distortion Example",
+      gameAssetsDirectory := "assets"
+    )
+    .settings(
+      publish := {},
+      publishLocal := {}
+    )
+    .jsSettings(
+      scalaJSUseMainModuleInitializer := true
+    )
+
+lazy val assetLoading =
+  crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
+    .crossType(CrossType.Pure)
+    .enablePlugins(SbtIndigo)
+    .settings(commonSettings: _*)
+    .settings(
+      name := "assetLoading",
+      showCursor := true,
+      title := "Asset Loading Example",
+      gameAssetsDirectory := "assets"
+    )
+    .settings(
+      publish := {},
+      publishLocal := {}
+    )
+    .jsSettings(
+      scalaJSUseMainModuleInitializer := true
+    )
+
+lazy val effects =
+  crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
+    .crossType(CrossType.Pure)
+    .enablePlugins(SbtIndigo)
+    .settings(commonSettings: _*)
+    .settings(
+      name := "effects",
+      showCursor := true,
+      title := "Effects Example",
+      gameAssetsDirectory := "assets"
+    )
+    .settings(
+      publish := {},
+      publishLocal := {}
+    )
+    .jsSettings(
+      scalaJSUseMainModuleInitializer := true
+    )
