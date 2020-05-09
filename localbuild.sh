@@ -6,6 +6,12 @@ cd indigo
 bash localpublish.sh
 cd ..
 
+# Mill Indigo
+echo ">>> Mill-Indigo"
+cd mill-indigo
+bash build.sh
+cd ..
+
 # Examples
 echo ">>> Examples"
 cd examples
@@ -21,7 +27,7 @@ cd ..
 # Supporting tooling...
 # JS API
 cd jsapi
-sbt clean update compile fastOptJS
+bash build.sh
 cd ..
 
 # Documentation...

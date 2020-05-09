@@ -1,3 +1,4 @@
+// import $file.millindigo
 import $ivy.`com.lihaoyi::mill-contrib-bloop:$MILL_VERSION`
 import mill._
 import mill.scalalib._
@@ -5,9 +6,15 @@ import mill.scalajslib._
 import mill.scalajslib.api._
 import coursier.maven.MavenRepository
 
-object snake extends ScalaJSModule {
+import $ivy.`indigo::mill-indigo:0.0.1-SNAPSHOT`, millindigo._
+
+object snake extends ScalaJSModule with MillIndigo {
   def scalaVersion   = "2.13.2"
   def scalaJSVersion = "1.0.1"
+
+  val gameAssetsDirectory: os.Path = os.pwd / "assets"
+  val showCursor: Boolean = true
+  val title: String = "Snake - Made with Indigo"
 
   def ivyDeps = Agg(
     ivy"indigo::indigo-json-circe::0.0.12-SNAPSHOT",

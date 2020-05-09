@@ -8,6 +8,12 @@ cd indigo
 bash ci.sh
 cd ..
 
+# Mill Indigo
+echo ">>> Mill-Indigo"
+cd mill-indigo
+bash build.sh
+cd ..
+
 # Examples
 echo ">>> Examples"
 cd examples

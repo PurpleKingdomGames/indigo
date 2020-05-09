@@ -8,6 +8,7 @@ cd ..
 
 cd snake
 
-sbt clean buildGame
+mill snake.fastOpt
+mill snake.indigoBuildJS
 
 cd ..
