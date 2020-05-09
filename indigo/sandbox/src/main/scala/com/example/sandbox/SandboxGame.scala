@@ -6,6 +6,9 @@ import indigoexts.formats._
 import indigoexts.subsystems.fpscounter.FPSCounter
 import indigogame._
 
+import scala.scalajs.js.annotation._
+
+@JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGameBasic[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
   val targetFPS: Int = 60
@@ -34,7 +37,7 @@ object SandboxGame extends IndigoGameBasic[SandboxStartupData, SandboxGameModel,
   val subSystems: Set[SubSystem] =
     Set(FPSCounter.subSystem(SandboxView.fontKey, Point(3, 100), targetFPS))
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, SandboxStartupData] = {
+  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, SandboxStartupData] = {
     def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[SandboxStartupData] =
       Startup
         .Success(

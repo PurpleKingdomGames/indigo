@@ -36,7 +36,7 @@ import indigo.shared.scenegraph.Text
 final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     fonts: Set[FontInfo],
     animations: Set[Animation],
-    initialise: AssetCollection => Startup[StartupError, StartupData],
+    initialise: AssetCollection => Map[String, String] => Startup[StartupError, StartupData],
     initialModel: StartupData => GameModel,
     initialViewModel: StartupData => GameModel => ViewModel,
     frameProccessor: FrameProcessor[GameModel, ViewModel]
@@ -71,14 +71,14 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
       configAsync: Future[Option[GameConfig]],
       assets: Set[AssetType],
       assetsAsync: Future[Set[AssetType]]
-  ): Unit = {
+  )(flags: Map[String, String]): Unit = {
 
     IndigoLogger.info("Starting Indigo")
 
     PlatformWindow.windowSetup(config)
 
     storage = PlatformStorage.default
-    globalEventStream = GlobalEventStreamImpl.default(rebuildGameLoop(false), audioPlayer, storage)
+    globalEventStream = GlobalEventStreamImpl.default(rebuildGameLoop(false, flags), audioPlayer, storage)
     gamepadInputCapture = GamepadInputCaptureImpl()
 
     // Arrange config
@@ -100,7 +100,7 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
       assetsAsync.flatMap(aa => AssetLoader.loadAssets(aa ++ assets)).foreach { assetCollection =>
         IndigoLogger.info("Asset load complete")
 
-        rebuildGameLoop(true)(assetCollection)
+        rebuildGameLoop(true, flags)(assetCollection)
 
         gameLoop match {
           case Success(firstTick) =>
@@ -119,7 +119,7 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     }
   }
 
-  def rebuildGameLoop(firstRun: Boolean): AssetCollection => Unit = ac => {
+  def rebuildGameLoop(firstRun: Boolean, flags: Map[String, String]): AssetCollection => Unit = ac => {
 
     FontRegister.clearRegister()
     DisplayObjectConversions.purgeCaches()
@@ -132,7 +132,7 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     val platform: Platform =
       new PlatformImpl(accumulatedAssetCollection, globalEventStream)
 
-    val startupData: Startup[StartupError, StartupData] = initialise(accumulatedAssetCollection)
+    val startupData: Startup[StartupError, StartupData] = initialise(accumulatedAssetCollection)(flags)
 
     GameEngine.registerAnimations(animations ++ startupData.additionalAnimations)
 

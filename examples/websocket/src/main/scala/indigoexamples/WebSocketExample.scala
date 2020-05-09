@@ -4,6 +4,8 @@ import indigo._
 import indigogame._
 import indigoexts.ui._
 
+import scala.scalajs.js.annotation._
+
 /*
 Two examples in server project:
 a) ws://localhost:8080/ws      // Server sends a Ping! every second
@@ -14,6 +16,7 @@ So we want a button that send a message to 2) and outputs to the console
 We also want to establish a connection on startup that repeated writes 1)'s
 Ping! to the console.
  */
+@JSExportTopLevel("IndigoGame")
 object WebSocketExample extends IndigoGameBasic[MySetupData, Unit, MyViewModel] {
 
   val buttonAssets: ButtonAssets =
@@ -33,7 +36,7 @@ object WebSocketExample extends IndigoGameBasic[MySetupData, Unit, MyViewModel] 
 
   val subSystems: Set[SubSystem] = Set()
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, MySetupData] =
+  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, MySetupData] =
     Startup.Success(
       MySetupData(
         pingSocket = WebSocketConfig(

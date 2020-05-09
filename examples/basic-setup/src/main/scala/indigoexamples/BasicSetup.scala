@@ -3,6 +3,9 @@ package indigoexamples
 import indigo._
 import indigogame._
 
+import scala.scalajs.js.annotation._
+
+@JSExportTopLevel("IndigoGame")
 object BasicSetup extends IndigoGameBasic[MyStartUpData, MyGameModel, MyViewModel] {
 
   val config: GameConfig =
@@ -21,7 +24,7 @@ object BasicSetup extends IndigoGameBasic[MyStartUpData, MyGameModel, MyViewMode
   val subSystems: Set[SubSystem] =
     Set()
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, MyStartUpData] =
+  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, MyStartUpData] =
     Startup.Success(MyStartUpData())
 
   def initialModel(startupData: MyStartUpData): MyGameModel =

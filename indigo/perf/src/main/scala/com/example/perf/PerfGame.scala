@@ -6,6 +6,9 @@ import indigo.json.Json
 import indigoexts.subsystems.fpscounter.FPSCounter
 import indigogame._
 
+import scala.scalajs.js.annotation._
+
+@JSExportTopLevel("IndigoGame")
 object PerfGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
 
   val targetFPS: Int = 60
@@ -48,7 +51,7 @@ object PerfGame extends IndigoGameBasic[MyStartupData, MyGameModel, Unit] {
   def initialViewModel(startupData: MyStartupData): MyGameModel => Unit =
     _ => ()
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, MyStartupData] = {
+  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, MyStartupData] = {
     def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[MyStartupData] =
       Startup
         .Success(

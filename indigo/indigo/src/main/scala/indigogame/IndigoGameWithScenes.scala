@@ -8,8 +8,7 @@ import indigoexts.subsystems.SubSystemsRegister
 import indigogame.entry.GameWithSubSystems
 import indigogame.entry.StandardFrameProcessor
 
-// Using Scala.js, so this is just to make the compiler happy.
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.concurrent.Future
 
 /**
@@ -19,7 +18,7 @@ import scala.concurrent.Future
   * @tparam Model The class type representing your game's model
   * @tparam ViewModel The class type representing your game's view model
   */
-trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
+trait IndigoGameWithScenes[StartupData, Model, ViewModel] extends GameLauncher {
 
   /**
     * A non-empty ordered list of scenes
@@ -73,7 +72,7 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
     * @return Either an `Startup.Success[...your startup data...]` or a
     *         `Startup.Failure[StartupErrors]`.
     */
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, StartupData]
+  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, StartupData]
 
   /**
     * Set up of your initial model
@@ -110,14 +109,14 @@ trait IndigoGameWithScenes[StartupData, Model, ViewModel] {
     new GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel](
       fonts,
       animations,
-      (ac: AssetCollection) => setup(ac),
+      (ac: AssetCollection) => (flags: Map[String, String]) => setup(ac, flags),
       (sd: StartupData) => new GameWithSubSystems(initialModel(sd), new SubSystemsRegister(subSystems.toList)),
       (sd: StartupData) => (m: GameWithSubSystems[Model]) => initialViewModel(sd)(m.model),
       frameProcessor
     )
   }
 
-  def main(args: Array[String]): Unit =
-    indigoGame.start(config, Future(None), assets, Future(Set()))
+  final protected def ready(flags: Map[String, String]): Unit =
+    indigoGame.start(config, Future(None), assets, Future(Set()))(flags)
 
 }

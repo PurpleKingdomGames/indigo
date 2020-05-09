@@ -5,6 +5,9 @@ import indigogame._
 import indigoexts.scenes._
 import indigoexts.subsystems.fpscounter.FPSCounter
 
+import scala.scalajs.js.annotation._
+
+@JSExportTopLevel("IndigoGame")
 object ScenesSetup extends IndigoGameWithScenes[StartUpData, GameModel, Unit] {
 
   val targetFPS: Int = 30
@@ -27,7 +30,7 @@ object ScenesSetup extends IndigoGameWithScenes[StartUpData, GameModel, Unit] {
 
   val subSystems: Set[SubSystem] = Set(FPSCounter.subSystem(FontStuff.fontKey, Point(10, 360), targetFPS))
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, StartUpData] =
+  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, StartUpData] =
     Startup.Success(StartUpData("Scene A!", "Scene B?"))
 
   def initialModel(startupData: StartUpData): GameModel =

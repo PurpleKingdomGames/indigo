@@ -12,6 +12,9 @@ import indigoexamples.model.{Projectiles, LaunchPad}
 import indigoexts.geometry.Vertex
 import indigoexts.subsystems.automata.AutomataEvent
 
+import scala.scalajs.js.annotation._
+
+@JSExportTopLevel("IndigoGame")
 object Fireworks extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val targetFPS: Int = 60
@@ -51,7 +54,7 @@ object Fireworks extends IndigoGameBasic[Unit, Unit, Unit] {
       FlareAutomata.automata(toScreenSpace)
     )
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =

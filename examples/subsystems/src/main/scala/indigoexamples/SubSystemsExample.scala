@@ -3,6 +3,9 @@ package indigoexamples
 import indigo._
 import indigogame._
 
+import scala.scalajs.js.annotation._
+
+@JSExportTopLevel("IndigoGame")
 object SubSystemsExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   import FontDetails._
@@ -21,7 +24,7 @@ object SubSystemsExample extends IndigoGameBasic[Unit, Unit, Unit] {
       FloatingPoints(fontKey, Nil)
     )
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =

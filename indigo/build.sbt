@@ -30,6 +30,7 @@ lazy val commonSettings = Seq(
 lazy val sandbox =
   crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
+    .enablePlugins(ScalaJSPlugin)
     .enablePlugins(SbtIndigo)
     .settings(commonSettings: _*)
     .settings(
@@ -42,9 +43,6 @@ lazy val sandbox =
       publish := {},
       publishLocal := {}
     )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
-    )
     .dependsOn(indigo)
     .dependsOn(indigoJsonUPickle)
 lazy val sandboxJS  = sandbox.js
@@ -53,6 +51,7 @@ lazy val sandboxJVM = sandbox.jvm
 lazy val perf =
   crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
+    .enablePlugins(ScalaJSPlugin)
     .enablePlugins(SbtIndigo)
     .settings(commonSettings: _*)
     .settings(
@@ -64,9 +63,6 @@ lazy val perf =
     .settings(
       publish := {},
       publishLocal := {}
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
     )
     .dependsOn(indigo)
     .dependsOn(indigoJsonCirce)
@@ -108,7 +104,7 @@ lazy val indigoExtsJVM = indigoExts.jvm
 // Indigo Game
 lazy val indigo =
   crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Pure)
+    .crossType(CrossType.Full)
     .in(file("indigo"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)

@@ -5,6 +5,9 @@ import indigogame._
 import indigoexts.subsystems.inputmapper.InputMapper
 import indigoexts.subsystems.inputmapper.InputMapperEvent
 
+import scala.scalajs.js.annotation._
+
+@JSExportTopLevel("IndigoGame")
 object InputMappingExample extends IndigoGameBasic[Unit, GameModel, Unit] {
 
   import FontStuff._
@@ -30,7 +33,7 @@ object InputMappingExample extends IndigoGameBasic[Unit, GameModel, Unit] {
       )
     )
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): GameModel =

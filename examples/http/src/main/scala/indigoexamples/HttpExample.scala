@@ -4,6 +4,9 @@ import indigo._
 import indigogame._
 import indigoexts.ui._
 
+import scala.scalajs.js.annotation._
+
+@JSExportTopLevel("IndigoGame")
 object HttpExample extends IndigoGameBasic[Unit, Unit, Button] {
 
   val config: GameConfig = defaultGameConfig
@@ -16,7 +19,7 @@ object HttpExample extends IndigoGameBasic[Unit, Unit, Button] {
 
   val subSystems: Set[SubSystem] = Set()
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =

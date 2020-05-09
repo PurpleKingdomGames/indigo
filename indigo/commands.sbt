@@ -126,6 +126,14 @@ addCommandAlias(
 )
 
 addCommandAlias(
+  "localPublishNoClean",
+  List(
+    "buildIndigo",
+    "localPublishIndigo"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
   "sandboxBuild",
   List(
     "sandboxJS/fastOptJS",

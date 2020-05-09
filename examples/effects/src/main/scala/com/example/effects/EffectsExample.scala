@@ -3,6 +3,9 @@ package com.example.lighting
 import indigo._
 import indigogame._
 
+import scala.scalajs.js.annotation._
+
+@JSExportTopLevel("IndigoGame")
 object EffectsExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val targetFPS: Int = 60
@@ -31,7 +34,7 @@ object EffectsExample extends IndigoGameBasic[Unit, Unit, Unit] {
   val subSystems: Set[SubSystem] =
     Set()
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =

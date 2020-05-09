@@ -8,7 +8,7 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.13.2",
   organization := "indigo-examples",
   libraryDependencies ++= Seq(
-    "com.lihaoyi" %%% "utest"       % "0.7.4" % "test",
+    "com.lihaoyi" %%% "utest"  % "0.7.4" % "test",
     "indigo"      %%% "indigo" % "0.0.12-SNAPSHOT"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
@@ -29,14 +29,12 @@ lazy val basicSetup =
     .in(file("basic-setup"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "basic-setup",
       showCursor := true,
       title := "Basic Setup",
       gameAssetsDirectory := "assets"
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
     )
     .jvmSettings(
       run / fork := true,
@@ -54,14 +52,12 @@ lazy val subSystems =
     .in(file("subsystems"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "subsystems",
       showCursor := true,
       title := "SubSystems Example",
       gameAssetsDirectory := "assets"
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
     )
 
 lazy val scenesSetup =
@@ -71,14 +67,12 @@ lazy val scenesSetup =
     .in(file("scenes-setup"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "scenes-setup",
       showCursor := true,
       title := "Scene Manager Setup",
       gameAssetsDirectory := "assets"
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
     )
 
 lazy val text =
@@ -88,14 +82,12 @@ lazy val text =
     .in(file("text"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "text-example",
       showCursor := true,
       title := "Text example",
       gameAssetsDirectory := "assets"
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
     )
 
 lazy val inputmapping =
@@ -105,14 +97,12 @@ lazy val inputmapping =
     .in(file("inputmapping"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "inputmapping-example",
       showCursor := true,
       title := "Input mapping example",
       gameAssetsDirectory := "assets"
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
     )
 
 lazy val inputfield =
@@ -122,14 +112,12 @@ lazy val inputfield =
     .in(file("inputfield"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "input-field-example",
       showCursor := true,
       title := "Input field example",
       gameAssetsDirectory := "assets"
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
     )
 
 lazy val fullSetup =
@@ -139,14 +127,12 @@ lazy val fullSetup =
     .in(file("full-setup"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "full-setup",
       showCursor := true,
       title := "Full Setup",
       gameAssetsDirectory := "assets"
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
     )
 
 lazy val button =
@@ -156,14 +142,12 @@ lazy val button =
     .in(file("button"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "button-example",
       showCursor := true,
       title := "Button example",
       gameAssetsDirectory := "assets"
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
     )
 
 lazy val graphic =
@@ -173,14 +157,12 @@ lazy val graphic =
     .in(file("graphic"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "graphic-example",
       showCursor := true,
       title := "Graphic example",
       gameAssetsDirectory := "assets"
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
     )
 
 lazy val group =
@@ -190,14 +172,12 @@ lazy val group =
     .in(file("group"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "group-example",
       showCursor := true,
       title := "Group example",
       gameAssetsDirectory := "assets"
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
     )
 
 lazy val sprite =
@@ -207,14 +187,12 @@ lazy val sprite =
     .in(file("sprite"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "sprite-example",
       showCursor := true,
       title := "Sprite example",
       gameAssetsDirectory := "assets"
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
     )
 
 lazy val http =
@@ -224,14 +202,12 @@ lazy val http =
     .in(file("http"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "http-example",
       showCursor := true,
       title := "Http example",
       gameAssetsDirectory := "assets"
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
     )
 
 lazy val websocket =
@@ -241,14 +217,12 @@ lazy val websocket =
     .in(file("websocket"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "websocket-example",
       showCursor := true,
       title := "WebSocket example",
       gameAssetsDirectory := "assets"
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
     )
 
 lazy val automata =
@@ -258,14 +232,12 @@ lazy val automata =
     .in(file("automata"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "automata-example",
       showCursor := true,
       title := "Automata example",
       gameAssetsDirectory := "assets"
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
     )
 
 lazy val fireworks =
@@ -275,6 +247,7 @@ lazy val fireworks =
     .in(file("fireworks"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "fireworks-example",
       showCursor := true,
@@ -284,9 +257,6 @@ lazy val fireworks =
         "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
       )
     )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
-    )
 
 lazy val audio =
   crossProject(JSPlatform)
@@ -295,22 +265,20 @@ lazy val audio =
     .in(file("audio"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(
       name := "audio-example",
       showCursor := true,
       title := "Audio example",
       gameAssetsDirectory := "assets"
     )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
-    )
-
 
 lazy val lighting =
   crossProject(JSPlatform)
     .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(
       name := "lighting Example",
@@ -322,15 +290,13 @@ lazy val lighting =
       publish := {},
       publishLocal := {}
     )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
-    )
 
 lazy val distortion =
   crossProject(JSPlatform)
     .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(
       name := "distortion",
@@ -342,15 +308,13 @@ lazy val distortion =
       publish := {},
       publishLocal := {}
     )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
-    )
 
 lazy val assetLoading =
   crossProject(JSPlatform)
     .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(
       name := "assetLoading",
@@ -362,15 +326,13 @@ lazy val assetLoading =
       publish := {},
       publishLocal := {}
     )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
-    )
 
 lazy val effects =
   crossProject(JSPlatform)
     .withoutSuffixFor(JSPlatform)
     .crossType(CrossType.Pure)
     .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(
       name := "effects",
@@ -381,7 +343,4 @@ lazy val effects =
     .settings(
       publish := {},
       publishLocal := {}
-    )
-    .jsSettings(
-      scalaJSUseMainModuleInitializer := true
     )

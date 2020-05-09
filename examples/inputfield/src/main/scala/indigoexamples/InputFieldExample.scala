@@ -4,6 +4,9 @@ import indigo._
 import indigogame._
 import indigoexts.ui._
 
+import scala.scalajs.js.annotation._
+
+@JSExportTopLevel("IndigoGame")
 object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   val config: GameConfig = defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399"))
@@ -16,7 +19,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   val subSystems: Set[SubSystem] = Set()
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): MyGameModel =

@@ -3,6 +3,9 @@ package indigoexamples
 import indigo._
 import indigogame._
 
+import scala.scalajs.js.annotation._
+
+@JSExportTopLevel("IndigoGame")
 object TextExample extends IndigoGameBasic[Unit, Model, Unit] {
 
   import FontStuff._
@@ -23,7 +26,7 @@ object TextExample extends IndigoGameBasic[Unit, Model, Unit] {
   val subSystems: Set[SubSystem] =
     Set()
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Model =
