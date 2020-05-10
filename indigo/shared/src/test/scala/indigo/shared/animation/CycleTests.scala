@@ -39,12 +39,12 @@ object CycleTests extends TestSuite {
                 currentPosition = 2,
                 frameDuration = 30,
                 frameCount = 10,
-                lastFrameAdvance = 60
+                lastFrameAdvance = Millis(60)
               )
               .at(Millis(90).toSeconds)
 
           val expected: CycleMemento =
-            CycleMemento(3, 90)
+            CycleMemento(3, Millis(90))
 
           actual === expected ==> true
         }
@@ -54,12 +54,12 @@ object CycleTests extends TestSuite {
         }
 
         "save a memento" - {
-          cycle.saveMemento === CycleMemento(0, 0) ==> true
-          cycle.updatePlayheadAndLastAdvance(3, 10).saveMemento === CycleMemento(3, 10) ==> true
+          cycle.saveMemento === CycleMemento(0, Millis(0)) ==> true
+          cycle.updatePlayheadAndLastAdvance(3, Millis(10)).saveMemento === CycleMemento(3, Millis(10)) ==> true
         }
 
         "apply a memento" - {
-          cycle.applyMemento(CycleMemento(2, 0)).currentFrame === frame3 ==> true
+          cycle.applyMemento(CycleMemento(2, Millis(0))).currentFrame === frame3 ==> true
         }
 
       }
@@ -86,7 +86,7 @@ object CycleTests extends TestSuite {
         }
 
         "JumpToFirstFrame" - {
-          cycle.applyMemento(CycleMemento(2, 0)).runActions(GameTime.zero, List(JumpToFirstFrame)).currentFrame === frame1 ==> true
+          cycle.applyMemento(CycleMemento(2, Millis(0))).runActions(GameTime.zero, List(JumpToFirstFrame)).currentFrame === frame1 ==> true
         }
 
         "JumpToLastFrame" - {
