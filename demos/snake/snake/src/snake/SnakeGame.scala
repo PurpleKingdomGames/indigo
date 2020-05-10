@@ -8,7 +8,9 @@ import indigoexts.scenes._
 import snake.model.{ControlScheme, SnakeGameModel, SnakeViewModel}
 import snake.init.{GameAssets, Settings, SnakeStartupData}
 import snake.scenes.{ControlsScene, GameOverScene, GameScene, StartScene}
+import scala.scalajs.js.annotation.JSExportTopLevel
 
+@JSExportTopLevel("IndigoGame")
 object SnakeGame extends IndigoGameWithScenes[SnakeStartupData, SnakeGameModel, SnakeViewModel] {
 
   val config: GameConfig =
@@ -44,7 +46,7 @@ object SnakeGame extends IndigoGameWithScenes[SnakeStartupData, SnakeGameModel, 
   def initialViewModel(startupData: SnakeStartupData): SnakeGameModel => SnakeViewModel =
     m => SnakeViewModel.initialViewModel(startupData, m)
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, SnakeStartupData] =
+  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, SnakeStartupData] =
     SnakeStartupData.initialise(config.viewport, Settings.gridSize)
 
 }

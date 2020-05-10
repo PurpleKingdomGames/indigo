@@ -41,7 +41,7 @@ object IndigoJS {
   type StartupError     = js.Array[String]
   type GameModel        = js.Object
   type ViewModel        = js.Object
-  type Initialise       = js.Function1[AssetCollectionDelegate, StartUpDelegate]
+  type Initialise       = js.Function2[AssetCollectionDelegate, Map[String, String], StartUpDelegate]
   type InitialModel     = js.Function1[StartupData, GameModel]
   type InitialViewModel = js.Function2[StartupData, GameModel, ViewModel]
   type ModelUpdate      = js.Function4[GameTimeDelegate, GameModel, InputStateDelegate, DiceDelegate, js.Function1[GlobalEventDelegate, OutcomeDelegate]]
@@ -51,7 +51,7 @@ object IndigoJS {
   private def indigoGame(
       fonts: Set[FontInfo],
       animations: Set[Animation],
-      initialise: AssetCollection => Startup[StartupError, StartupData],
+      initialise: AssetCollection => Map[String, String] => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
       initialViewModel: StartupData => GameModel => ViewModel,
       modelUpdate: (GameTime, GameModel, InputState, Dice) => GlobalEvent => Outcome[GameModel],
@@ -72,8 +72,8 @@ object IndigoJS {
     )
   }
 
-  private def convertInitialise(f: Initialise): AssetCollection => Startup[StartupError, StartupData] =
-    (ac: AssetCollection) => f(new AssetCollectionDelegate(ac)).toInternal
+  private def convertInitialise(f: Initialise): AssetCollection => Map[String, String] => Startup[StartupError, StartupData] =
+    (ac: AssetCollection) => (flags: Map[String, String]) => f(new AssetCollectionDelegate(ac), flags).toInternal
 
   private def convertUpdateModel(f: ModelUpdate): (GameTime, GameModel, InputState, Dice) => GlobalEvent => Outcome[GameModel] =
     (gt, gm, is, d) =>
@@ -132,6 +132,6 @@ object IndigoJS {
       Future(None),
       assets.map(_.toInternal).toSet,
       Future(Set())
-    )
+    )(Map[String, String]())
 
 }

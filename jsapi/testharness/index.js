@@ -98,7 +98,7 @@ const animations = [
   ),
 ];
 
-const initialise = function(assetCollection) {
+const initialise = function(assetCollection, flags) {
   console.log('initialise');
 
   console.log('Config', config);
@@ -182,6 +182,12 @@ const present = function(gameTime, model, viewModel, inputState) {
       );
 };
 
+const flags = {
+  a: 1,
+  b: 'hello',
+  c: true,
+};
+
 indigo.Indigo.init(
     config,
     assets,
@@ -193,4 +199,5 @@ indigo.Indigo.init(
     updateModel,
     updateViewModel,
     present,
+    flags,
 );

@@ -102,6 +102,7 @@ object IndigoBuildJS {
       |    </script>
       |    <div id="indigo-container"></div>
       |    <script type="text/javascript" src="scripts/out.js"></script>
+      |    <script type="text/javascript">IndigoGame.launch()</script>
       |  </body>
       |</html>
     """.stripMargin

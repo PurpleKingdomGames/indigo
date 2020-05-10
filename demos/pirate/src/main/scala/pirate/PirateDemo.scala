@@ -6,7 +6,9 @@ import indigogame._
 import pirate.subsystems.{CloudsAutomata, CloudsSubSystem}
 import pirate.init.{Assets, InitialLoad, StartupData}
 import pirate.game.{Model, ViewModel, View}
+import scala.scalajs.js.annotation.JSExportTopLevel
 
+@JSExportTopLevel("IndigoGame")
 object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
 
   val config: GameConfig =
@@ -33,7 +35,7 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
       CloudsSubSystem.init(config.screenDimensions.width) // STEP 5
     )
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, StartupData] =
+  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, StartupData] =
     InitialLoad.setup(assetCollection)
 
   def initialModel(startupData: StartupData): Model =

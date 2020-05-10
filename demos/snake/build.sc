@@ -1,3 +1,5 @@
+import scala.util.Success
+import scala.util.Try
 // import $file.millindigo
 import $ivy.`com.lihaoyi::mill-contrib-bloop:$MILL_VERSION`
 import mill._
@@ -13,8 +15,16 @@ object snake extends ScalaJSModule with MillIndigo {
   def scalaJSVersion = "1.0.1"
 
   val gameAssetsDirectory: os.Path = os.pwd / "assets"
-  val showCursor: Boolean = true
-  val title: String = "Snake - Made with Indigo"
+  val showCursor: Boolean          = true
+  val title: String                = "Snake - Made with Indigo"
+
+  def buildGame() = T.command {
+    T {
+      compile()
+      fastOpt()
+      indigoBuildJS()()
+    }
+  }
 
   def ivyDeps = Agg(
     ivy"indigo::indigo-json-circe::0.0.12-SNAPSHOT",
