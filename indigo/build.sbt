@@ -104,7 +104,7 @@ lazy val indigoExtsJVM = indigoExts.jvm
 // Indigo Game
 lazy val indigo =
   crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Full)
+    .crossType(CrossType.Pure)
     .in(file("indigo"))
     .settings(commonSettings: _*)
     .dependsOn(indigoExts)
@@ -112,6 +112,9 @@ lazy val indigo =
     .settings(
       name := "indigo",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
+    )
+    .jvmSettings(
+      libraryDependencies += "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided"
     )
 lazy val indigoJS  = indigo.js
 lazy val indigoJVM = indigo.jvm
@@ -247,15 +250,15 @@ lazy val indigoProject =
       openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-2.13/api/indigoexts/index.html" ! }
     )
     .aggregate(
-      sharedJVM,
-      indigoPlatformsJVM,
-      indigoJsonCirceJVM,
-      indigoCoreJVM,
-      indigoExtsJVM,
-      indigoJVM,
-      facadesJVM,
-      sandboxJVM,
-      perfJVM
+      sharedJS,
+      indigoPlatformsJS,
+      indigoJsonCirceJS,
+      indigoCoreJS,
+      indigoExtsJS,
+      indigoJS,
+      facadesJS,
+      sandboxJS,
+      perfJS
     )
 
 // Cross build version - better or worse?

@@ -8,7 +8,8 @@ import indigoexts.subsystems.SubSystemsRegister
 import indigogame.entry.GameWithSubSystems
 import indigogame.entry.StandardFrameProcessor
 
-import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+// Indigo is Scala.js only at the moment, revisit if/when we go to the JVM
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /**

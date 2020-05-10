@@ -38,6 +38,11 @@ object SandboxGame extends IndigoGameBasic[SandboxStartupData, SandboxGameModel,
     Set(FPSCounter.subSystem(SandboxView.fontKey, Point(3, 100), targetFPS))
 
   def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, SandboxStartupData] = {
+    println("flags")
+    println(flags.mkString(", "))
+    println(flags.get("data"))
+    println(flags.get("fish"))
+
     def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[SandboxStartupData] =
       Startup
         .Success(

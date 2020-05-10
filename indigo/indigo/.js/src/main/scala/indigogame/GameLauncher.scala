@@ -1,7 +1,6 @@
 package indigogame
 
 import scala.scalajs.js.annotation._
-import scala.scalajs.js.Dictionary
 
 trait GameLauncher {
 
@@ -14,7 +13,7 @@ trait GameLauncher {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
   @JSExport
-  def launch(flags: Dictionary[String]): Unit =
+  def launch(flags: scala.scalajs.js.Dictionary[String]): Unit =
     ready(flags.toMap)
 
 }
