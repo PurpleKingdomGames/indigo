@@ -147,7 +147,7 @@ final class Clone(val id: CloneId, val depth: Depth, val transform: CloneTransfo
   lazy val y: Int                  = transform.position.y
   lazy val rotation: Radians       = transform.rotation
   lazy val scale: Vector2          = transform.scale
-  lazy val alpha: Double            = transform.alpha
+  lazy val alpha: Double           = transform.alpha
   lazy val flipHorizontal: Boolean = transform.flipHorizontal
   lazy val flipVertical: Boolean   = transform.flipVertical
 
@@ -349,7 +349,7 @@ final class Sprite(
     val depth: Depth,
     val rotation: Radians,
     val scale: Vector2,
-    val animationsKey: AnimationKey,
+    val animationKey: AnimationKey,
     val ref: Point,
     val effects: Effects,
     val eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
@@ -361,42 +361,42 @@ final class Sprite(
   lazy val y: Int = bounds.position.y
 
   def withDepth(newDepth: Depth): Sprite =
-    Sprite(bindingKey, bounds, newDepth, rotation, scale, animationsKey, ref, effects, eventHandler)
+    Sprite(bindingKey, bounds, newDepth, rotation, scale, animationKey, ref, effects, eventHandler)
 
   def moveTo(pt: Point): Sprite =
-    Sprite(bindingKey, bounds.moveTo(pt), depth, rotation, scale, animationsKey, ref, effects, eventHandler)
+    Sprite(bindingKey, bounds.moveTo(pt), depth, rotation, scale, animationKey, ref, effects, eventHandler)
   def moveTo(x: Int, y: Int): Sprite =
     moveTo(Point(x, y))
 
   def moveBy(pt: Point): Sprite =
-    Sprite(bindingKey, bounds.moveTo(this.bounds.position + pt), depth, rotation, scale, animationsKey, ref, effects, eventHandler)
+    Sprite(bindingKey, bounds.moveTo(this.bounds.position + pt), depth, rotation, scale, animationKey, ref, effects, eventHandler)
   def moveBy(x: Int, y: Int): Sprite =
     moveBy(Point(x, y))
 
   def rotate(angle: Radians): Sprite =
-    Sprite(bindingKey, bounds, depth, angle, scale, animationsKey, ref, effects, eventHandler)
+    Sprite(bindingKey, bounds, depth, angle, scale, animationKey, ref, effects, eventHandler)
   def rotateBy(angle: Radians): Sprite =
     rotate(rotation + angle)
 
   def scaleBy(amount: Vector2): Sprite =
-    Sprite(bindingKey, bounds, depth, rotation, scale * amount, animationsKey, ref, effects, eventHandler)
+    Sprite(bindingKey, bounds, depth, rotation, scale * amount, animationKey, ref, effects, eventHandler)
   def scaleBy(x: Double, y: Double): Sprite =
     scaleBy(Vector2(x, y))
 
   def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): SceneGraphNodePrimitive =
-    Sprite(bindingKey, bounds.moveTo(newPosition), depth, newRotation, newScale, animationsKey, ref, effects, eventHandler)
+    Sprite(bindingKey, bounds.moveTo(newPosition), depth, newRotation, newScale, animationKey, ref, effects, eventHandler)
 
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): SceneGraphNodePrimitive =
-    Sprite(bindingKey, bounds.moveTo(this.bounds.position + positionDiff), depth, rotation + rotationDiff, scale * scaleDiff, animationsKey, ref, effects, eventHandler)
+    Sprite(bindingKey, bounds.moveTo(this.bounds.position + positionDiff), depth, rotation + rotationDiff, scale * scaleDiff, animationKey, ref, effects, eventHandler)
 
   def withBindingKey(newBindingKey: BindingKey): Sprite =
-    Sprite(newBindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects, eventHandler)
+    Sprite(newBindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler)
 
   def withAlpha(a: Double): Sprite =
-    Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects.withAlpha(a), eventHandler)
+    Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects.withAlpha(a), eventHandler)
 
   def withTint(tint: RGBA): Sprite =
-    Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects.withTint(tint), eventHandler)
+    Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects.withTint(tint), eventHandler)
 
   def withTint(red: Double, green: Double, blue: Double): Sprite =
     withTint(RGBA(red, green, blue, 1))
@@ -405,13 +405,13 @@ final class Sprite(
     withTint(RGBA(red, green, blue, amount))
 
   def flipHorizontal(h: Boolean): Sprite =
-    Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects.withFlip(Flip(horizontal = h, vertical = effects.flip.vertical)), eventHandler)
+    Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects.withFlip(Flip(horizontal = h, vertical = effects.flip.vertical)), eventHandler)
 
   def flipVertical(v: Boolean): Sprite =
-    Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects.withFlip(Flip(horizontal = effects.flip.horizontal, vertical = v)), eventHandler)
+    Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects.withFlip(Flip(horizontal = effects.flip.horizontal, vertical = v)), eventHandler)
 
   def withRef(newRef: Point): Sprite =
-    Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, newRef, effects, eventHandler)
+    Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, newRef, effects, eventHandler)
   def withRef(x: Int, y: Int): Sprite =
     withRef(Point(x, y))
 
@@ -419,47 +419,47 @@ final class Sprite(
     Sprite(bindingKey, bounds, depth, rotation, scale, newAnimationKey, ref, effects, eventHandler)
 
   def play(): Sprite = {
-    AnimationsRegister.addAction(bindingKey, animationsKey, Play)
+    AnimationsRegister.addAction(bindingKey, animationKey, Play)
     this
   }
 
   def changeCycle(label: CycleLabel): Sprite = {
-    AnimationsRegister.addAction(bindingKey, animationsKey, ChangeCycle(label))
+    AnimationsRegister.addAction(bindingKey, animationKey, ChangeCycle(label))
     this
   }
 
   def jumpToFirstFrame(): Sprite = {
-    AnimationsRegister.addAction(bindingKey, animationsKey, JumpToFirstFrame)
+    AnimationsRegister.addAction(bindingKey, animationKey, JumpToFirstFrame)
     this
   }
 
   def jumpToLastFrame(): Sprite = {
-    AnimationsRegister.addAction(bindingKey, animationsKey, JumpToLastFrame)
+    AnimationsRegister.addAction(bindingKey, animationKey, JumpToLastFrame)
     this
   }
 
   def jumpToFrame(number: Int): Sprite = {
-    AnimationsRegister.addAction(bindingKey, animationsKey, JumpToFrame(number))
+    AnimationsRegister.addAction(bindingKey, animationKey, JumpToFrame(number))
     this
   }
 
   def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Sprite =
-    Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects, e)
+    Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, e)
 
   def withEffects(newEffects: Effects): Sprite =
-    Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, newEffects, eventHandler)
+    Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, newEffects, eventHandler)
 
 }
 
 object Sprite {
-  def apply(bindingKey: BindingKey, x: Int, y: Int, width: Int, height: Int, depth: Int, animationsKey: AnimationKey): Sprite =
+  def apply(bindingKey: BindingKey, x: Int, y: Int, width: Int, height: Int, depth: Int, animationKey: AnimationKey): Sprite =
     Sprite(
       bindingKey = bindingKey,
       bounds = Rectangle(x, y, width, height),
       depth = Depth(depth),
       rotation = Radians.zero,
       scale = Vector2.one,
-      animationsKey = animationsKey,
+      animationKey = animationKey,
       ref = Point.zero,
       effects = Effects.default,
       eventHandler = (_: (Rectangle, GlobalEvent)) => Nil
@@ -471,12 +471,12 @@ object Sprite {
       depth: Depth,
       rotation: Radians,
       scale: Vector2,
-      animationsKey: AnimationKey,
+      animationKey: AnimationKey,
       ref: Point,
       effects: Effects,
       eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
   ): Sprite =
-    new Sprite(bindingKey, bounds, depth, rotation, scale, animationsKey, ref, effects, eventHandler)
+    new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler)
 
 }
 

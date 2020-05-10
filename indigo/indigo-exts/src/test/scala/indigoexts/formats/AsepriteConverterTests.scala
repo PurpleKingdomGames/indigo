@@ -130,7 +130,7 @@ object AsepriteSampleData {
     )
   }
 
-  val animationsKey: AnimationKey = AnimationKey("test")
+  val animationKey: AnimationKey = AnimationKey("test")
 
   /*
   Animations(
@@ -165,7 +165,7 @@ object AsepriteSampleData {
       depth = depth,
       rotation = Radians.zero,
       scale = Vector2.one,
-      animationsKey = animationsKey,
+      animationKey = animationKey,
       ref = Point.zero,
       effects = Effects.default,
       (_: (Rectangle, GlobalEvent)) => Nil

@@ -22,7 +22,7 @@ object AsepriteConverter {
       case x :: xs =>
         val animations: Animation =
           Animation(
-            animationsKey = AnimationKey(BindingKey.generate.value),
+            animationKey = AnimationKey(BindingKey.generate.value),
             material = Material.Textured(assetName),
             spriteSheetSize = Point(aseprite.meta.size.w, aseprite.meta.size.h),
             currentCycleLabel = x.label,
@@ -40,7 +40,7 @@ object AsepriteConverter {
               depth = depth,
               rotation = Radians.zero,
               scale = Vector2.one,
-              animationsKey = animations.animationsKey,
+              animationKey = animations.animationKey,
               ref = Point(0, 0),
               effects = Effects.default,
               eventHandler = (_: (Rectangle, GlobalEvent)) => Nil

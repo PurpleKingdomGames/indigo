@@ -13,10 +13,10 @@
 //   val fontInfo: FontInfo = FontInfo(fontKey, "font-sheet", 256, 256, FontChar("a", 0, 0, 16, 16))
 //   FontRegister.register(fontInfo)
 
-//   val animationsKey: AnimationKey = AnimationKey("test-anim")
+//   val animationKey: AnimationKey = AnimationKey("test-anim")
 //   val animations: Animation =
 //     Animation(
-//       animationsKey,
+//       animationKey,
 //       ImageAssetRef("ref"),
 //       Point(64, 32),
 //       CycleLabel("label"),
@@ -53,7 +53,7 @@
 //               32,
 //               32,
 //               1,
-//               animationsKey
+//               animationKey
 //             ),
 //             Group(
 //               Graphic(10, 10, 32, 32, 1, "ref1"),

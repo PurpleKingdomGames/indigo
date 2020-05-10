@@ -23,12 +23,12 @@ object AnimationsRegister {
   //
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def register(animations: Animation): Unit = {
-    QuickCache(animations.animationsKey.value)(animations)
+    QuickCache(animations.animationKey.value)(animations)
     ()
   }
 
-  def findByAnimationKey(animationsKey: AnimationKey): Option[Animation] =
-    animationsRegistry.fetch(CacheKey(animationsKey.value))
+  def findByAnimationKey(animationKey: AnimationKey): Option[Animation] =
+    animationsRegistry.fetch(CacheKey(animationKey.value))
 
   // Animation states
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
@@ -42,10 +42,10 @@ object AnimationsRegister {
 
   // Frame animation actions queue
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-  def addAction(bindingKey: BindingKey, animationsKey: AnimationKey, action: AnimationAction): Unit =
-    actionsQueue.enqueue(AnimationActionCommand(bindingKey, animationsKey, action))
+  def addAction(bindingKey: BindingKey, animationKey: AnimationKey, action: AnimationAction): Unit =
+    actionsQueue.enqueue(AnimationActionCommand(bindingKey, animationKey, action))
 
-  private def dequeueAndDeduplicateActions(bindingKey: BindingKey, animationsKey: AnimationKey): List[AnimationActionCommand] = {
+  private def dequeueAndDeduplicateActions(bindingKey: BindingKey, animationKey: AnimationKey): List[AnimationActionCommand] = {
     @tailrec
     def rec(remaining: List[AnimationActionCommand], hashesDone: List[String], acc: List[AnimationActionCommand]): List[AnimationActionCommand] =
       remaining match {
@@ -59,7 +59,7 @@ object AnimationsRegister {
           rec(xs, x.hash :: hashesDone, x :: acc)
       }
 
-    rec(actionsQueue.dequeueAll(p => p.animationsKey === animationsKey && p.bindingKey === bindingKey).toList, Nil, Nil)
+    rec(actionsQueue.dequeueAll(p => p.animationKey === animationKey && p.bindingKey === bindingKey).toList, Nil, Nil)
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
@@ -75,16 +75,16 @@ object AnimationsRegister {
   - Inserting or fetching the entry for binding key x and animation key y
   - Applying an animation memento if one doesn't exist and running the commands queued against it.
    */
-  def fetchFromCache(gameTime: GameTime, bindingKey: BindingKey, animationsKey: AnimationKey, metrics: Metrics): Option[Animation] =
-    QuickCacheMaybe(s"${bindingKey.value}_${animationsKey.value}") {
-      findByAnimationKey(animationsKey)
+  def fetchFromCache(gameTime: GameTime, bindingKey: BindingKey, animationKey: AnimationKey, metrics: Metrics): Option[Animation] =
+    QuickCacheMaybe(s"${bindingKey.value}_${animationKey.value}") {
+      findByAnimationKey(animationKey)
         .map { anim =>
           metrics.record(ApplyAnimationMementoStartMetric)
           val updated = animationStates.findStateWithBindingKey(bindingKey).map(m => anim.applyMemento(m)).getOrElse(anim)
           metrics.record(ApplyAnimationMementoEndMetric)
 
           metrics.record(RunAnimationActionsStartMetric)
-          val commands = dequeueAndDeduplicateActions(bindingKey, animationsKey).reverse
+          val commands = dequeueAndDeduplicateActions(bindingKey, animationKey).reverse
           val newAnim  = commands.foldLeft(updated)((a, action) => a.addAction(action.action)).runActions(gameTime)
           metrics.record(RunAnimationActionsEndMetric)
 
@@ -110,8 +110,8 @@ object AnimationsRegister {
   }
 }
 
-final case class AnimationActionCommand(bindingKey: BindingKey, animationsKey: AnimationKey, action: AnimationAction) {
-  val hash: String = s"${bindingKey.value}_${animationsKey.value}_${action.hash}"
+final case class AnimationActionCommand(bindingKey: BindingKey, animationKey: AnimationKey, action: AnimationAction) {
+  val hash: String = s"${bindingKey.value}_${animationKey.value}_${action.hash}"
 }
 
 final case class AnimationCacheEntry(bindingKey: BindingKey, animations: Animation)

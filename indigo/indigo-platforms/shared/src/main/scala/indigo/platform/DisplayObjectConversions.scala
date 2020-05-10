@@ -153,9 +153,9 @@ object DisplayObjectConversions {
           rec(xs)
 
         case (x: Sprite) :: xs =>
-          AnimationsRegister.fetchFromCache(gameTime, x.bindingKey, x.animationsKey, metrics) match {
+          AnimationsRegister.fetchFromCache(gameTime, x.bindingKey, x.animationKey, metrics) match {
             case None =>
-              IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${x.animationsKey.toString()}")
+              IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${x.animationKey.toString()}")
               rec(xs)
 
             case Some(anim) =>

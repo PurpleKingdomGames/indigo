@@ -130,7 +130,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
             acc + (blank.id.value -> DisplayObjectConversions.graphicToDisplayObject(g, assetMapping))
 
           case s: Sprite =>
-            AnimationsRegister.fetchFromCache(gameTime, s.bindingKey, s.animationsKey, metrics) match {
+            AnimationsRegister.fetchFromCache(gameTime, s.bindingKey, s.animationKey, metrics) match {
               case None =>
                 acc
 

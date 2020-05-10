@@ -11,7 +11,7 @@ import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Material
 
 final case class Animation(
-    animationsKey: AnimationKey,
+    animationKey: AnimationKey,
     material: Material,
     spriteSheetSize: Point,
     currentCycleLabel: CycleLabel,
@@ -31,8 +31,8 @@ final case class Animation(
   def addAction(action: AnimationAction): Animation =
     Animation.addAction(this, action)
 
-  def withAnimationKey(animationsKey: AnimationKey): Animation =
-    Animation.withAnimationKey(this, animationsKey)
+  def withAnimationKey(animationKey: AnimationKey): Animation =
+    Animation.withAnimationKey(this, animationKey)
 
   def currentCycleName: String =
     currentCycle.label.value
@@ -62,7 +62,7 @@ object Animation {
       eLA: EqualTo[List[AnimationAction]]
   ): EqualTo[Animation] =
     EqualTo.create { (a, b) =>
-      eAK.equal(a.animationsKey, b.animationsKey) &&
+      eAK.equal(a.animationKey, b.animationKey) &&
       eM.equal(a.material, b.material) &&
       eP.equal(a.spriteSheetSize, b.spriteSheetSize) &&
       eCL.equal(a.currentCycleLabel, b.currentCycleLabel) &&
@@ -79,11 +79,11 @@ object Animation {
       sLA: AsString[List[AnimationAction]]
   ): AsString[Animation] =
     AsString.create { a =>
-      s"Animation(${sAK.show(a.animationsKey)}, ${sM.show(a.material)}, ${sP.show(a.spriteSheetSize)}, ${sCL.show(a.currentCycleLabel)}, ${sNelC.show(a.cycles)}, ${sLA.show(a.actions)})"
+      s"Animation(${sAK.show(a.animationKey)}, ${sM.show(a.material)}, ${sP.show(a.spriteSheetSize)}, ${sCL.show(a.currentCycleLabel)}, ${sNelC.show(a.cycles)}, ${sLA.show(a.actions)})"
     }
 
-  def create(animationsKey: AnimationKey, material: Material, spriteSheetSize: Point, cycle: Cycle): Animation =
-    apply(animationsKey, material, spriteSheetSize, cycle.label, NonEmptyList(cycle), Nil)
+  def create(animationKey: AnimationKey, material: Material, spriteSheetSize: Point, cycle: Cycle): Animation =
+    apply(animationKey, material, spriteSheetSize, cycle.label, NonEmptyList(cycle), Nil)
 
   def currentCycle(animations: Animation): Cycle =
     animations.cycles.find(_.label === animations.currentCycleLabel).getOrElse(animations.cycles.head)
@@ -94,8 +94,8 @@ object Animation {
   def addAction(animations: Animation, action: AnimationAction): Animation =
     animations.copy(actions = animations.actions :+ action)
 
-  def withAnimationKey(animations: Animation, animationsKey: AnimationKey): Animation =
-    animations.copy(animationsKey = animationsKey)
+  def withAnimationKey(animations: Animation, animationKey: AnimationKey): Animation =
+    animations.copy(animationKey = animationKey)
 
   def saveMemento(animations: Animation, bindingKey: BindingKey): AnimationMemento =
     AnimationMemento(bindingKey, animations.currentCycleLabel, animations.currentCycle.saveMemento)
