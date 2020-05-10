@@ -8,8 +8,9 @@ import indigo.shared.EqualTo._
 import indigo.shared.AsString
 import indigo.shared.AsString._
 import indigo.shared.temporal.Signal
+import indigo.shared.time.Millis
 
-final class Cycle(val label: CycleLabel, val frames: NonEmptyList[Frame], val playheadPosition: Int, val lastFrameAdvance: Long) {
+final class Cycle(val label: CycleLabel, val frames: NonEmptyList[Frame], val playheadPosition: Int, val lastFrameAdvance: Millis) {
 
   def addFrame(newFrame: Frame): Cycle =
     Cycle(label, frames :+ newFrame, playheadPosition, lastFrameAdvance)
@@ -29,7 +30,7 @@ final class Cycle(val label: CycleLabel, val frames: NonEmptyList[Frame], val pl
   def runActions(gameTime: GameTime, actions: List[AnimationAction]): Cycle =
     Cycle.runActions(this, gameTime, actions)
 
-  def updatePlayheadAndLastAdvance(playheadPosition: Int, lastFrameAdvance: Long): Cycle =
+  def updatePlayheadAndLastAdvance(playheadPosition: Int, lastFrameAdvance: Millis): Cycle =
     Cycle.updatePlayheadAndLastAdvance(this, playheadPosition, lastFrameAdvance)
 
 }
@@ -50,11 +51,11 @@ object Cycle {
     }
   }
 
-  def apply(label: CycleLabel, frames: NonEmptyList[Frame], playheadPosition: Int, lastFrameAdvance: Long): Cycle =
+  def apply(label: CycleLabel, frames: NonEmptyList[Frame], playheadPosition: Int, lastFrameAdvance: Millis): Cycle =
     new Cycle(label, frames, playheadPosition, lastFrameAdvance)
 
   def create(label: String, frames: NonEmptyList[Frame]): Cycle =
-    Cycle(CycleLabel(label), frames, 0, 0)
+    Cycle(CycleLabel(label), frames, 0, Millis.zero)
 
   def currentFrame(cycle: Cycle): Frame =
     cycle.frames.toList(cycle.playheadPosition % cycle.frameCount)
@@ -62,16 +63,16 @@ object Cycle {
   def saveMemento(cycle: Cycle): CycleMemento =
     new CycleMemento(cycle.playheadPosition, cycle.lastFrameAdvance)
 
-  def updatePlayheadAndLastAdvance(cycle: Cycle, playheadPosition: Int, lastFrameAdvance: Long): Cycle =
+  def updatePlayheadAndLastAdvance(cycle: Cycle, playheadPosition: Int, lastFrameAdvance: Millis): Cycle =
     Cycle(cycle.label, cycle.frames, playheadPosition, lastFrameAdvance)
 
   def applyMemento(cycle: Cycle, memento: CycleMemento): Cycle =
     updatePlayheadAndLastAdvance(cycle, memento.playheadPosition, memento.lastFrameAdvance)
 
-  def calculateNextPlayheadPosition(currentPosition: Int, frameDuration: Int, frameCount: Int, lastFrameAdvance: Long): Signal[CycleMemento] =
+  def calculateNextPlayheadPosition(currentPosition: Int, frameDuration: Int, frameCount: Int, lastFrameAdvance: Millis): Signal[CycleMemento] =
     Signal { t =>
-      if (t.toMillis.value >= lastFrameAdvance + frameDuration)
-        CycleMemento((currentPosition + 1) % frameCount, t.toMillis.value)
+      if (t.toMillis >= lastFrameAdvance + Millis(frameDuration.toLong))
+        CycleMemento((currentPosition + 1) % frameCount, t.toMillis)
       else
         CycleMemento(currentPosition, lastFrameAdvance)
     }
@@ -120,7 +121,7 @@ object CycleLabel {
     new CycleLabel(value)
 }
 
-final class CycleMemento(val playheadPosition: Int, val lastFrameAdvance: Long)
+final class CycleMemento(val playheadPosition: Int, val lastFrameAdvance: Millis)
 object CycleMemento {
 
   implicit val cycleMementoEqualTo: EqualTo[CycleMemento] =
@@ -131,6 +132,6 @@ object CycleMemento {
   implicit val cycleMementoAsString: AsString[CycleMemento] =
     AsString.create(m => s"CycleMemento(${m.playheadPosition.show}, ${m.lastFrameAdvance.show})")
 
-  def apply(playheadPosition: Int, lastFrameAdvance: Long): CycleMemento =
+  def apply(playheadPosition: Int, lastFrameAdvance: Millis): CycleMemento =
     new CycleMemento(playheadPosition, lastFrameAdvance)
 }
