@@ -17,6 +17,7 @@ import indigo.shared.collections.NonEmptyList
 import indigo.shared.animation.Frame
 import indigo.shared.animation.Cycle
 import indigo.shared.datatypes.Point
+import indigo.shared.time.Millis
 
 @SuppressWarnings(Array("org.wartremover.warts.Throw", "org.wartremover.warts.Any"))
 @JSExportTopLevel("Animation")
@@ -75,7 +76,7 @@ final class CycleDelegate(_label: String, _frames: js.Array[FrameDelegate]) {
           CycleLabel(label),
           framesNel,
           0,
-          0
+          Millis.zero
         )
     }
 }
@@ -141,7 +142,7 @@ object AnimationUtilities {
   implicit class AnimationConvert(val obj: Animation) {
     def toJsDelegate =
       new AnimationDelegate(
-        obj.animationsKey.toString,
+        obj.animationKey.toString,
         MaterialDelegate.fromInternal(obj.material),
         obj.spriteSheetSize.x,
         obj.spriteSheetSize.y,

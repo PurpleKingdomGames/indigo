@@ -337,7 +337,7 @@ object SceneGraphNodeUtilities {
       obj.rotation.value,
       obj.scale.x,
       obj.scale.y,
-      obj.animationsKey.toString,
+      obj.animationKey.toString,
       new PointDelegate(obj.ref.x, obj.ref.y),
       obj.effects.toJsDelegate,
       (rect: RectangleDelegate, event: GlobalEventDelegate) => obj.eventHandler((rect.toInternal, event.toInternal)).map(GlobalEventDelegate.fromGlobalEvent(_)).toJSArray
