@@ -15,8 +15,8 @@ final case class Animation(
     material: Material,
     spriteSheetSize: Point,
     currentCycleLabel: CycleLabel,
-    cycles: NonEmptyList[Cycle],
-    actions: List[AnimationAction]
+    cycles: NonEmptyList[Cycle]//,
+    // actions: List[AnimationAction]
 ) {
 
   val frameHash: String =
@@ -28,8 +28,8 @@ final case class Animation(
   def addCycle(cycle: Cycle): Animation =
     Animation.addCycle(this, cycle)
 
-  def addAction(action: AnimationAction): Animation =
-    Animation.addAction(this, action)
+  // def addAction(action: AnimationAction): Animation =
+  //   Animation.addAction(this, action)
 
   def withAnimationKey(animationKey: AnimationKey): Animation =
     Animation.withAnimationKey(this, animationKey)
@@ -46,8 +46,8 @@ final case class Animation(
   def applyMemento(memento: AnimationMemento): Animation =
     Animation.applyMemento(this, memento)
 
-  def runActions(gameTime: GameTime): Animation =
-    Animation.runActions(this, gameTime)
+  def runActions(actions: List[AnimationAction], gameTime: GameTime): Animation =
+    Animation.runActions(this, actions, gameTime)
 
 }
 
@@ -58,16 +58,16 @@ object Animation {
       eM: EqualTo[Material],
       eP: EqualTo[Point],
       eCL: EqualTo[CycleLabel],
-      eNelC: EqualTo[NonEmptyList[Cycle]],
-      eLA: EqualTo[List[AnimationAction]]
+      eNelC: EqualTo[NonEmptyList[Cycle]]//,
+      // eLA: EqualTo[List[AnimationAction]]
   ): EqualTo[Animation] =
     EqualTo.create { (a, b) =>
       eAK.equal(a.animationKey, b.animationKey) &&
       eM.equal(a.material, b.material) &&
       eP.equal(a.spriteSheetSize, b.spriteSheetSize) &&
       eCL.equal(a.currentCycleLabel, b.currentCycleLabel) &&
-      eNelC.equal(a.cycles, b.cycles) &&
-      eLA.equal(a.actions, b.actions)
+      eNelC.equal(a.cycles, b.cycles)// &&
+      // eLA.equal(a.actions, b.actions)
     }
 
   implicit def animationAsString(
@@ -75,15 +75,15 @@ object Animation {
       sM: AsString[Material],
       sP: AsString[Point],
       sCL: AsString[CycleLabel],
-      sNelC: AsString[NonEmptyList[Cycle]],
-      sLA: AsString[List[AnimationAction]]
+      sNelC: AsString[NonEmptyList[Cycle]]//,
+      // sLA: AsString[List[AnimationAction]]
   ): AsString[Animation] =
     AsString.create { a =>
-      s"Animation(${sAK.show(a.animationKey)}, ${sM.show(a.material)}, ${sP.show(a.spriteSheetSize)}, ${sCL.show(a.currentCycleLabel)}, ${sNelC.show(a.cycles)}, ${sLA.show(a.actions)})"
+      s"Animation(${sAK.show(a.animationKey)}, ${sM.show(a.material)}, ${sP.show(a.spriteSheetSize)}, ${sCL.show(a.currentCycleLabel)}, ${sNelC.show(a.cycles)})"
     }
 
   def create(animationKey: AnimationKey, material: Material, spriteSheetSize: Point, cycle: Cycle): Animation =
-    apply(animationKey, material, spriteSheetSize, cycle.label, NonEmptyList(cycle), Nil)
+    apply(animationKey, material, spriteSheetSize, cycle.label, NonEmptyList(cycle))
 
   def currentCycle(animations: Animation): Cycle =
     animations.cycles.find(_.label === animations.currentCycleLabel).getOrElse(animations.cycles.head)
@@ -91,8 +91,8 @@ object Animation {
   def addCycle(animations: Animation, cycle: Cycle): Animation =
     animations.copy(cycles = cycle :: animations.cycles)
 
-  def addAction(animations: Animation, action: AnimationAction): Animation =
-    animations.copy(actions = animations.actions :+ action)
+  // def addAction(animations: Animation, action: AnimationAction): Animation =
+  //   animations.copy(actions = animations.actions :+ action)
 
   def withAnimationKey(animations: Animation, animationKey: AnimationKey): Animation =
     animations.copy(animationKey = animationKey)
@@ -109,10 +109,10 @@ object Animation {
       }
     )
 
-  def runActions(animations: Animation, gameTime: GameTime): Animation =
-    animations.actions.foldLeft(animations) { (anim, action) =>
+  def runActions(animation: Animation, actions: List[AnimationAction], gameTime: GameTime): Animation =
+    actions.foldLeft(animation) { (anim, action) =>
       action match {
-        case ChangeCycle(newLabel) if animations.cycles.exists(_.label === newLabel) =>
+        case ChangeCycle(newLabel) if animation.cycles.exists(_.label === newLabel) =>
           anim.copy(currentCycleLabel = newLabel)
 
         case ChangeCycle(_) =>
@@ -122,7 +122,7 @@ object Animation {
           anim.copy(
             cycles = anim.cycles.map { c =>
               if (c.label === anim.currentCycleLabel) {
-                c.runActions(gameTime, animations.actions)
+                c.runActions(gameTime, actions)
               } else c
             }
           )

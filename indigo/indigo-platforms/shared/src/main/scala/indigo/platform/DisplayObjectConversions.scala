@@ -123,7 +123,7 @@ object DisplayObjectConversions {
   private val accDisplayObjects: ListBuffer[DisplayEntity] = new ListBuffer()
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-  def sceneNodesToDisplayObjects(sceneNodes: List[SceneGraphNode], gameTime: GameTime, assetMapping: AssetMapping, metrics: Metrics): ListBuffer[DisplayEntity] = {
+  def sceneNodesToDisplayObjects(sceneNodes: List[SceneGraphNode], gameTime: GameTime, assetMapping: AssetMapping, animationsRegister: AnimationsRegister, metrics: Metrics): ListBuffer[DisplayEntity] = {
     @tailrec
     def rec(remaining: List[SceneGraphNode]): ListBuffer[DisplayEntity] =
       remaining match {
@@ -153,7 +153,7 @@ object DisplayObjectConversions {
           rec(xs)
 
         case (x: Sprite) :: xs =>
-          AnimationsRegister.fetchFromCache(gameTime, x.bindingKey, x.animationKey, metrics) match {
+          animationsRegister.fetchAnimationForSprite(gameTime, x.bindingKey, x.animationKey, x.animationActions, metrics) match {
             case None =>
               IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${x.animationKey.toString()}")
               rec(xs)

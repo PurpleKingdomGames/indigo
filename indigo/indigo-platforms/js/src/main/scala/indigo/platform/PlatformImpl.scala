@@ -25,8 +25,9 @@ import org.scalajs.dom.html.Canvas
 import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
+import indigo.shared.AnimationsRegister
 
-class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEventStream) extends Platform {
+class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEventStream, animationsRegister: AnimationsRegister) extends Platform {
 
   import PlatformImpl._
 
@@ -37,7 +38,7 @@ class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEv
       assetMapping        <- setupAssetMapping(textureAtlas)
       canvas              <- createCanvas(gameConfig)
       _                   <- listenToWorldEvents(canvas, gameConfig.magnification, globalEventStream)
-      renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas)
+      renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas, animationsRegister)
     } yield (renderer, assetMapping)
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
@@ -95,7 +96,7 @@ object PlatformImpl {
       GamepadInputCaptureImpl.init()
     })
 
-  def startRenderer(gameConfig: GameConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: Canvas): Try[Renderer] =
+  def startRenderer(gameConfig: GameConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: Canvas, animationsRegister: AnimationsRegister): Try[Renderer] =
     Success {
       IndigoLogger.info("Starting renderer")
       RendererInit.setup(
@@ -106,7 +107,8 @@ object PlatformImpl {
           antiAliasing = gameConfig.advanced.antiAliasing
         ),
         loadedTextureAssets,
-        canvas
+        canvas,
+        animationsRegister
       )
     }
 

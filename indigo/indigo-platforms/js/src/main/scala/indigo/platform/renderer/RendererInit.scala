@@ -7,12 +7,13 @@ import org.scalajs.dom
 import org.scalajs.dom.raw.WebGLRenderingContext
 import org.scalajs.dom.{Element, html, raw}
 import scala.scalajs.js.Dynamic
+import indigo.shared.AnimationsRegister
 
 object RendererInit {
 
-  def setup(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: html.Canvas): Renderer = {
+  def setup(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: html.Canvas, animationsRegister: AnimationsRegister): Renderer = {
     val cNc = setupContextAndCanvas(canvas, config.magnification, config.antiAliasing)
-    val r   = new RendererImpl(config, loadedTextureAssets, cNc)
+    val r   = new RendererImpl(config, loadedTextureAssets, cNc, animationsRegister)
     r.init()
     r
   }

@@ -42,6 +42,9 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     frameProccessor: FrameProcessor[GameModel, ViewModel]
 ) {
 
+  val animationsRegister: AnimationsRegister =
+    new AnimationsRegister()
+
   val audioPlayer: AudioPlayerImpl =
     AudioPlayerImpl.init
 
@@ -130,11 +133,11 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
 
     val platform: Platform =
-      new PlatformImpl(accumulatedAssetCollection, globalEventStream)
+      new PlatformImpl(accumulatedAssetCollection, globalEventStream, animationsRegister)
 
     val startupData: Startup[StartupError, StartupData] = initialise(accumulatedAssetCollection)(flags)
 
-    GameEngine.registerAnimations(animations ++ startupData.additionalAnimations)
+    GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
 
     GameEngine.registerFonts(fonts ++ startupData.additionalFonts)
 
@@ -166,8 +169,8 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
 
 object GameEngine {
 
-  def registerAnimations(animations: Set[Animation]): Unit =
-    animations.foreach(AnimationsRegister.register)
+  def registerAnimations(animationsRegister: AnimationsRegister, animations: Set[Animation]): Unit =
+    animations.foreach(animationsRegister.register)
 
   def registerFonts(fonts: Set[FontInfo]): Unit =
     fonts.foreach(FontRegister.register)

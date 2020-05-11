@@ -20,6 +20,7 @@ import indigo.shared.time.GameTime
 import indigo.shared.scenegraph.SceneUpdateFragment
 import scala.util.Try
 import scala.util.Success
+import indigo.shared.AnimationsRegister
 // import indigo.platform.assets.TextureAtlas
 // import indigo.platform.assets.TextureAtlasFunctions
 // import indigo.platform.assets.ImageRef
@@ -29,7 +30,7 @@ import scala.util.Success
 // import org.scalajs.dom
 // import org.scalajs.dom.html.Canvas
 
-class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEventStream) extends Platform {
+class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEventStream, animationsRegister: AnimationsRegister) extends Platform {
 
   // import PlatformImpl._
 
@@ -38,6 +39,7 @@ class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEv
       println(gameConfig.magnification.toString)
       println(assetCollection.images.length.toString)
       println(globalEventStream.collect.length.toString())
+      println(animationsRegister.hashCode())
 
       val renderer: Renderer =
         new Renderer {

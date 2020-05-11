@@ -23,7 +23,7 @@ import org.scalajs.dom.html
 import indigo.shared.EqualTo._
 
 @SuppressWarnings(Array("org.wartremover.warts.Null"))
-final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends Renderer {
+final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas, animationsRegister: AnimationsRegister) extends Renderer {
 
   private val gl: WebGLRenderingContext =
     cNc.context
@@ -130,7 +130,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
             acc + (blank.id.value -> DisplayObjectConversions.graphicToDisplayObject(g, assetMapping))
 
           case s: Sprite =>
-            AnimationsRegister.fetchFromCache(gameTime, s.bindingKey, s.animationKey, metrics) match {
+            animationsRegister.fetchAnimationForSprite(gameTime, s.bindingKey, s.animationKey, s.animationActions, metrics) match {
               case None =>
                 acc
 
@@ -169,7 +169,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     layerRenderer.drawLayer(
       gameProjection,
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, animationsRegister, metrics),
       gameFrameBuffer,
       ClearColor.Black.forceTransparent,
       standardShaderProgram,
@@ -199,7 +199,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     layerRenderer.drawLayer(
       lightingProjection,
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping, animationsRegister, metrics),
       lightingFrameBuffer,
       scene.ambientLight.toClearColor,
       lightingShaderProgram,
@@ -214,7 +214,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     layerRenderer.drawLayer(
       lightingProjection,
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.distortionLayer.nodes, gameTime, assetMapping, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.distortionLayer.nodes, gameTime, assetMapping, animationsRegister, metrics),
       distortionFrameBuffer,
       ClearColor(0.5, 0.5, 1.0, 1.0),
       distortionShaderProgram,
@@ -229,7 +229,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     layerRenderer.drawLayer(
       uiProjection,
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping, animationsRegister, metrics),
       uiFrameBuffer,
       ClearColor.Black.forceTransparent,
       standardShaderProgram,
@@ -264,9 +264,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     metrics.record(RenderToWindowEndMetric)
 
     // Finally, persist animation states...
-    metrics.record(PersistAnimationStatesStartMetric)
-    AnimationsRegister.persistAnimationStates()
-    metrics.record(PersistAnimationStatesEndMetric)
+    // metrics.record(PersistAnimationStatesStartMetric)
+    // AnimationsRegister.persistAnimationStates()
+    // metrics.record(PersistAnimationStatesEndMetric)
   }
 
   def resize(canvas: html.Canvas, magnification: Int): Unit = {

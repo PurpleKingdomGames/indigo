@@ -7,10 +7,11 @@ import indigo.shared.animation.CycleLabel
 import indigo.shared.datatypes._
 import indigo.shared.IndigoLogger
 
-import indigo.shared.{AnimationsRegister, FontRegister}
+import indigo.shared.FontRegister
 import indigo.shared.QuickCache
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
+import indigo.shared.animation.AnimationAction
 
 object SceneGraphNode {
   def empty: Group = Group.empty
@@ -352,7 +353,8 @@ final class Sprite(
     val animationKey: AnimationKey,
     val ref: Point,
     val effects: Effects,
-    val eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
+    val eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
+    val animationActions: List[AnimationAction]
 ) extends Renderable
     with EventHandling
     with Cloneable {
@@ -419,28 +421,28 @@ final class Sprite(
     Sprite(bindingKey, bounds, depth, rotation, scale, newAnimationKey, ref, effects, eventHandler)
 
   def play(): Sprite = {
-    AnimationsRegister.addAction(bindingKey, animationKey, Play)
-    this
+    // AnimationsRegister.addAction(bindingKey, animationKey, Play)
+    new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ Play)
   }
 
   def changeCycle(label: CycleLabel): Sprite = {
-    AnimationsRegister.addAction(bindingKey, animationKey, ChangeCycle(label))
-    this
+    // AnimationsRegister.addAction(bindingKey, animationKey, ChangeCycle(label))
+    new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ ChangeCycle(label))
   }
 
   def jumpToFirstFrame(): Sprite = {
-    AnimationsRegister.addAction(bindingKey, animationKey, JumpToFirstFrame)
-    this
+    // AnimationsRegister.addAction(bindingKey, animationKey, JumpToFirstFrame)
+    new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ JumpToFirstFrame)
   }
 
   def jumpToLastFrame(): Sprite = {
-    AnimationsRegister.addAction(bindingKey, animationKey, JumpToLastFrame)
-    this
+    // AnimationsRegister.addAction(bindingKey, animationKey, JumpToLastFrame)
+    new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ JumpToLastFrame)
   }
 
   def jumpToFrame(number: Int): Sprite = {
-    AnimationsRegister.addAction(bindingKey, animationKey, JumpToFrame(number))
-    this
+    // AnimationsRegister.addAction(bindingKey, animationKey, JumpToFrame(number))
+    new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ JumpToFrame(number))
   }
 
   def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Sprite =
@@ -476,7 +478,7 @@ object Sprite {
       effects: Effects,
       eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
   ): Sprite =
-    new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler)
+    new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler, Nil)
 
 }
 
