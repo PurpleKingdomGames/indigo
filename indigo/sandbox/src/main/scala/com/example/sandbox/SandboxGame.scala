@@ -93,7 +93,7 @@ object SandboxGame extends IndigoGameBasic[SandboxStartupData, SandboxGameModel,
     }
 
   def present(gameTime: GameTime, model: SandboxGameModel, viewModel: SandboxViewModel, inputState: InputState): SceneUpdateFragment =
-    SandboxView.updateView(model/*, viewModel*/, inputState)
+    SandboxView.updateView(model, viewModel, inputState)
 }
 
 final case class Dude(aseprite: Aseprite, sprite: Sprite)

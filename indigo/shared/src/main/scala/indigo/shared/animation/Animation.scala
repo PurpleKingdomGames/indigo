@@ -15,8 +15,7 @@ final case class Animation(
     material: Material,
     spriteSheetSize: Point,
     currentCycleLabel: CycleLabel,
-    cycles: NonEmptyList[Cycle]//,
-    // actions: List[AnimationAction]
+    cycles: NonEmptyList[Cycle]
 ) {
 
   val frameHash: String =
@@ -27,9 +26,6 @@ final case class Animation(
 
   def addCycle(cycle: Cycle): Animation =
     Animation.addCycle(this, cycle)
-
-  // def addAction(action: AnimationAction): Animation =
-  //   Animation.addAction(this, action)
 
   def withAnimationKey(animationKey: AnimationKey): Animation =
     Animation.withAnimationKey(this, animationKey)
@@ -58,16 +54,14 @@ object Animation {
       eM: EqualTo[Material],
       eP: EqualTo[Point],
       eCL: EqualTo[CycleLabel],
-      eNelC: EqualTo[NonEmptyList[Cycle]]//,
-      // eLA: EqualTo[List[AnimationAction]]
+      eNelC: EqualTo[NonEmptyList[Cycle]]
   ): EqualTo[Animation] =
     EqualTo.create { (a, b) =>
       eAK.equal(a.animationKey, b.animationKey) &&
       eM.equal(a.material, b.material) &&
       eP.equal(a.spriteSheetSize, b.spriteSheetSize) &&
       eCL.equal(a.currentCycleLabel, b.currentCycleLabel) &&
-      eNelC.equal(a.cycles, b.cycles)// &&
-      // eLA.equal(a.actions, b.actions)
+      eNelC.equal(a.cycles, b.cycles)
     }
 
   implicit def animationAsString(
@@ -75,8 +69,7 @@ object Animation {
       sM: AsString[Material],
       sP: AsString[Point],
       sCL: AsString[CycleLabel],
-      sNelC: AsString[NonEmptyList[Cycle]]//,
-      // sLA: AsString[List[AnimationAction]]
+      sNelC: AsString[NonEmptyList[Cycle]]
   ): AsString[Animation] =
     AsString.create { a =>
       s"Animation(${sAK.show(a.animationKey)}, ${sM.show(a.material)}, ${sP.show(a.spriteSheetSize)}, ${sCL.show(a.currentCycleLabel)}, ${sNelC.show(a.cycles)})"
@@ -91,9 +84,6 @@ object Animation {
   def addCycle(animations: Animation, cycle: Cycle): Animation =
     animations.copy(cycles = cycle :: animations.cycles)
 
-  // def addAction(animations: Animation, action: AnimationAction): Animation =
-  //   animations.copy(actions = animations.actions :+ action)
-
   def withAnimationKey(animations: Animation, animationKey: AnimationKey): Animation =
     animations.copy(animationKey = animationKey)
 
@@ -102,6 +92,9 @@ object Animation {
 
   def applyMemento(animations: Animation, memento: AnimationMemento): Animation =
     animations.copy(
+      currentCycleLabel =
+        if (animations.cycles.exists(_.label === memento.currentCycleLabel)) memento.currentCycleLabel
+        else animations.currentCycleLabel,
       cycles = animations.cycles.map { c =>
         if (c.label === memento.currentCycleLabel) {
           c.applyMemento(memento.currentCycleMemento)
@@ -133,10 +126,29 @@ object Animation {
 final class AnimationMemento(val bindingKey: BindingKey, val currentCycleLabel: CycleLabel, val currentCycleMemento: CycleMemento)
 object AnimationMemento {
 
-  implicit def animationMementoAsString(implicit bk: AsString[BindingKey], cl: AsString[CycleLabel], cm: AsString[CycleMemento]): AsString[AnimationMemento] =
+  implicit val animationMementoAsString: AsString[AnimationMemento] = {
+    val bk = implicitly[AsString[BindingKey]]
+    val cl = implicitly[AsString[CycleLabel]]
+    val cm = implicitly[AsString[CycleMemento]]
+
     AsString.create { m =>
-      s"""AnimationMemento(bindingKey = ${bk.show(m.bindingKey)}, cycleLabel = ${cl.show(m.currentCycleLabel)}, cycleMemento = ${cm.show(m.currentCycleMemento)}, )"""
+      s"""AnimationMemento(bindingKey = ${bk.show(m.bindingKey)}, cycleLabel = ${cl.show(m.currentCycleLabel)}, cycleMemento = ${cm.show(m.currentCycleMemento)})"""
     }
+  }
+
+  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
+  implicit val animationMementoEqualTo: EqualTo[AnimationMemento] = {
+    val bk = implicitly[EqualTo[BindingKey]]
+    val cl = implicitly[EqualTo[CycleLabel]]
+    val cm = implicitly[EqualTo[CycleMemento]]
+
+    EqualTo.create {
+      case (a, b) =>
+        bk.equal(a.bindingKey, b.bindingKey) &&
+          cl.equal(a.currentCycleLabel, b.currentCycleLabel) &&
+          cm.equal(a.currentCycleMemento, b.currentCycleMemento)
+    }
+  }
 
   def apply(bindingKey: BindingKey, currentCycleLabel: CycleLabel, currentCycleMemento: CycleMemento): AnimationMemento =
     new AnimationMemento(bindingKey, currentCycleLabel, currentCycleMemento)

@@ -9,6 +9,7 @@ import indigo.shared.collections.NonEmptyList
 import indigo.shared.AsString
 import indigo.shared.formats.{Aseprite, AsepriteFrameTag, AsepriteFrame}
 import indigo.shared.assets.AssetName
+import indigo.shared.time.Millis
 
 final case class SpriteAndAnimations(sprite: Sprite, animations: Animation)
 object AsepriteConverter {
@@ -72,7 +73,7 @@ object AsepriteConverter {
           position = Point(aseFrame.frame.x, aseFrame.frame.y),
           size = Point(aseFrame.frame.w, aseFrame.frame.h)
         ),
-        duration = aseFrame.duration
+        duration = Millis(aseFrame.duration.toLong)
       )
     }
 

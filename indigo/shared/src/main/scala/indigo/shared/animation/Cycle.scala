@@ -69,12 +69,14 @@ object Cycle {
   def applyMemento(cycle: Cycle, memento: CycleMemento): Cycle =
     updatePlayheadAndLastAdvance(cycle, memento.playheadPosition, memento.lastFrameAdvance)
 
-  def calculateNextPlayheadPosition(currentPosition: Int, frameDuration: Int, frameCount: Int, lastFrameAdvance: Millis): Signal[CycleMemento] =
+  def calculateNextPlayheadPosition(currentPosition: Int, frameDuration: Millis, frameCount: Int, lastFrameAdvance: Millis): Signal[CycleMemento] =
     Signal { t =>
-      if (t.toMillis >= lastFrameAdvance + Millis(frameDuration.toLong))
-        CycleMemento((currentPosition + 1) % frameCount, t.toMillis)
-      else
+      if (t.toMillis >= lastFrameAdvance + frameDuration) {
+        val framestoAdvance = ((t.toMillis.value - lastFrameAdvance.value) / frameDuration.value).toInt
+        CycleMemento((currentPosition + framestoAdvance) % frameCount, t.toMillis)
+      } else {
         CycleMemento(currentPosition, lastFrameAdvance)
+      }
     }
 
   def runActions(cycle: Cycle, gameTime: GameTime, actions: List[AnimationAction]): Cycle =
@@ -106,7 +108,10 @@ object Cycle {
     }
 }
 
-final class CycleLabel(val value: String) extends AnyVal
+final class CycleLabel(val value: String) extends AnyVal {
+  override def toString(): String =
+    s"CycleLabel($value)"
+}
 object CycleLabel {
 
   implicit val cycleLabelEqualTo: EqualTo[CycleLabel] =
@@ -121,7 +126,24 @@ object CycleLabel {
     new CycleLabel(value)
 }
 
-final class CycleMemento(val playheadPosition: Int, val lastFrameAdvance: Millis)
+final class CycleMemento(val playheadPosition: Int, val lastFrameAdvance: Millis) {
+
+  def asString: String =
+    implicitly[AsString[CycleMemento]].show(this)
+
+  override def toString: String =
+    asString
+
+  def ===(other: CycleMemento): Boolean =
+    implicitly[EqualTo[CycleMemento]].equal(this, other)
+
+  @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
+  override def equals(obj: Any): Boolean =
+    if (obj.isInstanceOf[CycleMemento]) {
+      this === obj.asInstanceOf[CycleMemento]
+    } else false
+
+}
 object CycleMemento {
 
   implicit val cycleMementoEqualTo: EqualTo[CycleMemento] =

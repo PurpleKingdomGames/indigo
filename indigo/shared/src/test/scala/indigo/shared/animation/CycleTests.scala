@@ -12,13 +12,13 @@ import indigo.shared.AsString._
 object CycleTests extends TestSuite {
 
   val frame1: Frame =
-    Frame(Rectangle(Point(0, 0), Point(10, 10)), 10)
+    Frame(Rectangle(Point(0, 0), Point(10, 10)), Millis(10))
 
   val frame2: Frame =
-    Frame(Rectangle(0, 0, 20, 10), 10)
+    Frame(Rectangle(0, 0, 20, 10), Millis(10))
 
   val frame3: Frame =
-    Frame(Rectangle(0, 0, 30, 10), 10)
+    Frame(Rectangle(0, 0, 30, 10), Millis(10))
 
   val cycle: Cycle =
     Cycle.create("test", NonEmptyList(frame1, frame2, frame3))
@@ -37,7 +37,7 @@ object CycleTests extends TestSuite {
             Cycle
               .calculateNextPlayheadPosition(
                 currentPosition = 2,
-                frameDuration = 30,
+                frameDuration = Millis(30),
                 frameCount = 10,
                 lastFrameAdvance = Millis(60)
               )
@@ -47,6 +47,23 @@ object CycleTests extends TestSuite {
             CycleMemento(3, Millis(90))
 
           actual === expected ==> true
+        }
+
+        "calculate next play head position, skip several" - {
+          val actual: CycleMemento =
+            Cycle
+              .calculateNextPlayheadPosition(
+                currentPosition = 0,
+                frameDuration = Millis(100),
+                frameCount = 10,
+                lastFrameAdvance = Millis(0)
+              )
+              .at(Millis(300).toSeconds)
+
+          val expected: CycleMemento =
+            CycleMemento(3, Millis(300))
+
+          actual ==> expected
         }
 
         "get the current frame" - {

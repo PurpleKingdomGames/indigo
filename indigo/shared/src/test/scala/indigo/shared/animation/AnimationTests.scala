@@ -7,32 +7,39 @@ import indigo.shared.collections.NonEmptyList
 import indigo.shared.EqualTo._
 import indigo.shared.AsString._
 import indigo.shared.assets.AssetName
+import indigo.shared.time.Millis
 
 object AnimationTests extends TestSuite {
 
   val frame1: Frame =
-    Frame(Rectangle(Point(0, 0), Point(10, 10)), 10)
+    Frame(Rectangle(Point(0, 0), Point(10, 10)), Millis(10))
 
   val frame2: Frame =
-    Frame(Rectangle(0, 0, 20, 10), 10)
+    Frame(Rectangle(0, 0, 20, 10), Millis(10))
 
   val frame3: Frame =
-    Frame(Rectangle(0, 0, 30, 10), 10)
+    Frame(Rectangle(0, 0, 30, 10), Millis(10))
 
   val frame4: Frame =
-    Frame(Rectangle(0, 0, 40, 10), 10)
+    Frame(Rectangle(0, 0, 40, 10), Millis(10))
 
   val frame5: Frame =
-    Frame(Rectangle(0, 0, 50, 10), 10)
+    Frame(Rectangle(0, 0, 50, 10), Millis(10))
 
   val frame6: Frame =
-    Frame(Rectangle(0, 0, 60, 10), 10)
+    Frame(Rectangle(0, 0, 60, 10), Millis(10))
+
+  val cycleLabel1 =
+    CycleLabel("cycle 1")
+
+  val cycleLabel2 =
+    CycleLabel("cycle 2")
 
   val cycle1: Cycle =
-    Cycle.create("cycle 1", NonEmptyList(frame1, frame2, frame3))
+    Cycle.create(cycleLabel1.value, NonEmptyList(frame1, frame2, frame3))
 
   val cycle2: Cycle =
-    Cycle.create("cycle 2", NonEmptyList(frame4, frame5, frame6))
+    Cycle.create(cycleLabel2.value, NonEmptyList(frame4, frame5, frame6))
 
   val cycles: NonEmptyList[Cycle] =
     NonEmptyList(cycle1, cycle2)
@@ -46,37 +53,49 @@ object AnimationTests extends TestSuite {
       cycles
     )
 
+  val bindingKey: BindingKey =
+    BindingKey("test")
+
   val tests: Tests =
     Tests {
 
-      import AnimationAction._
+      "Animation mementos" - {
 
-      "Running actions" - {
+        "Can record a memento" - {
 
-        // "Can play the current frame of the current cycle" - {
-        //   val actual: Animation =
-        //     animation
-        //       .addAction(Play)
-        //       .runActions(GameTime.is(Millis(0)))
+          val expected =
+            AnimationMemento(
+              bindingKey,
+              cycleLabel1,
+              CycleMemento(0, Millis(0))
+            )
 
-        //   val expected: Animation =
-        //     animation
+          val actual = animation.saveMemento(bindingKey)
 
-        //   println(actual.show)
-        //   println(expected.show)
+          expected === actual ==> true
 
-        //   actual === expected ==> true
-        // }
+        }
 
-        // "repeatedly changing to the same animation and playing it advances the animations" - {
+        "Can apply a memeto" - {
 
-        //   // val actual: Animation =
-        //   //   animation
-        //   //   .addAction(ChangeCycle())
+          val expected =
+            AnimationMemento(
+              bindingKey,
+              cycleLabel2,
+              CycleMemento(3, Millis(300))
+            )
 
-        //   fail("error")
+          val updated = animation.applyMemento(expected)
 
-        // }
+          val actual = updated.saveMemento(bindingKey)
+
+          updated.currentCycleLabel ==> cycleLabel2
+          updated.currentCycle.playheadPosition ==> 3
+          updated.currentCycle.lastFrameAdvance ==> Millis(300)
+
+          expected === actual ==> true
+
+        }
 
       }
 
