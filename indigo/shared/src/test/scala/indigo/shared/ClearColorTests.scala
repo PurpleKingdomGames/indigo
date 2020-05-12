@@ -28,9 +28,6 @@ object ClearColorTests extends TestSuite {
         }
 
         "should convert from Hexadecimal" - {
-          println(ClearColor.fromHexString("0xFF0000"))
-          println(ClearColor.Red)
-
           ClearColor.fromHexString("0xFF0000") ==> ClearColor.Red
           ClearColor.fromHexString("FF0000") ==> ClearColor.Red
           ClearColor.fromHexString("00FF00") ==> ClearColor.Green

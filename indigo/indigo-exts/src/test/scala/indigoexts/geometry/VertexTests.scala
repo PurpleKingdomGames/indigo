@@ -33,8 +33,6 @@ object VertexTests extends TestSuite {
           val b = Math.pow(100.0d, 2)
           val c = Math.sqrt(a + b)
 
-          println(c)
-
           nearEnoughEqual(Vertex(0.0, 0.0).distanceTo(Vertex(100.0, 100.0)), c, 0.025d) ==> true
         }
 

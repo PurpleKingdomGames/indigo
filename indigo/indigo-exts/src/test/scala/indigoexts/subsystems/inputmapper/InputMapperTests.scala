@@ -122,8 +122,6 @@ object InputMapperTests extends TestSuite {
 
     if (res) res
     else {
-      println("a> " + a)
-      println("b> " + b)
       res
     }
   }

@@ -27,8 +27,7 @@ object AsepriteConverter {
             material = Material.Textured(assetName),
             spriteSheetSize = Point(aseprite.meta.size.w, aseprite.meta.size.h),
             currentCycleLabel = x.label,
-            cycles = NonEmptyList.pure(x, xs)//,
-            // actions = Nil
+            cycles = NonEmptyList.pure(x, xs)
           )
         Option(
           SpriteAndAnimations(

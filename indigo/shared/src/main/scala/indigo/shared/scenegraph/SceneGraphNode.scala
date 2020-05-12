@@ -421,27 +421,22 @@ final class Sprite(
     Sprite(bindingKey, bounds, depth, rotation, scale, newAnimationKey, ref, effects, eventHandler)
 
   def play(): Sprite = {
-    // AnimationsRegister.addAction(bindingKey, animationKey, Play)
     new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ Play)
   }
 
   def changeCycle(label: CycleLabel): Sprite = {
-    // AnimationsRegister.addAction(bindingKey, animationKey, ChangeCycle(label))
     new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ ChangeCycle(label))
   }
 
   def jumpToFirstFrame(): Sprite = {
-    // AnimationsRegister.addAction(bindingKey, animationKey, JumpToFirstFrame)
     new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ JumpToFirstFrame)
   }
 
   def jumpToLastFrame(): Sprite = {
-    // AnimationsRegister.addAction(bindingKey, animationKey, JumpToLastFrame)
     new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ JumpToLastFrame)
   }
 
   def jumpToFrame(number: Int): Sprite = {
-    // AnimationsRegister.addAction(bindingKey, animationKey, JumpToFrame(number))
     new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ JumpToFrame(number))
   }
 
