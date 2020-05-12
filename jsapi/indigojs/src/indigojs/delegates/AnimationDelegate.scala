@@ -51,8 +51,7 @@ final class AnimationDelegate(
           material.toInternal,
           Point(spriteSheetWidth, spriteSheetHeight),
           animationsNel.head.label,
-          animationsNel,
-          Nil
+          animationsNel
         )
     }
 }
@@ -91,11 +90,21 @@ final class FrameDelegate(_bounds: RectangleDelegate, _duration: Int) {
   val duration = _duration
 
   def toInternal: Frame =
-    new Frame(bounds.toInternal, duration)
+    new Frame(bounds.toInternal, Millis(duration.toLong))
 }
 
 sealed trait AnimationActionDelegate {
   def toInternal: AnimationAction
+}
+object AnimationActionDelegate {
+  def fromInternal(action: AnimationAction): AnimationActionDelegate =
+    action match {
+      case ChangeCycle(label)  => new ChangeCycleDelegate(label.value)
+      case JumpToFirstFrame    => new JumpToFirstFrameDelegate
+      case JumpToFrame(number) => new JumpToFrameDelegate(number)
+      case Play                => new PlayDelegate
+      case JumpToLastFrame     => new JumpToLastFrameDelegate
+    }
 }
 
 @JSExportTopLevel("Play")
@@ -158,7 +167,7 @@ object AnimationUtilities {
           .map(f =>
             new FrameDelegate(
               new RectangleDelegate(f.bounds.x, f.bounds.y, f.bounds.width, f.bounds.height),
-              f.duration
+              f.duration.value.toInt
             )
           )
           .toList

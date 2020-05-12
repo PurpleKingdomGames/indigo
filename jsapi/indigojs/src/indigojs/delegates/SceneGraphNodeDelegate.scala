@@ -226,7 +226,8 @@ final class SpriteDelegate(
     _animationKey: String,
     _ref: PointDelegate,
     _effects: EffectsDelegate,
-    _eventHandler: js.Function2[RectangleDelegate, GlobalEventDelegate, js.Array[GlobalEventDelegate]]
+    _eventHandler: js.Function2[RectangleDelegate, GlobalEventDelegate, js.Array[GlobalEventDelegate]],
+    _animationActions: js.Array[AnimationActionDelegate]
 ) extends SceneGraphNodePrimitiveDelegate
     with CloneableDelegate {
 
@@ -250,6 +251,8 @@ final class SpriteDelegate(
   val effects = _effects
   @JSExport
   val eventHandler = _eventHandler
+  @JSExport
+  val animationActions = _animationActions
 
   def toInternal: Sprite =
     new Sprite(
@@ -261,7 +264,8 @@ final class SpriteDelegate(
       AnimationKey(animationKey),
       ref.toInternal,
       effects.toInternal,
-      (p: (Rectangle, GlobalEvent)) => eventHandler(RectangleDelegate.fromRectangle(p._1), GlobalEventDelegate.fromGlobalEvent(p._2)).toList.map(_.toInternal)
+      (p: (Rectangle, GlobalEvent)) => eventHandler(RectangleDelegate.fromRectangle(p._1), GlobalEventDelegate.fromGlobalEvent(p._2)).toList.map(_.toInternal),
+      _animationActions.map(_.toInternal).toList
     )
 
 }
@@ -340,7 +344,8 @@ object SceneGraphNodeUtilities {
       obj.animationKey.toString,
       new PointDelegate(obj.ref.x, obj.ref.y),
       obj.effects.toJsDelegate,
-      (rect: RectangleDelegate, event: GlobalEventDelegate) => obj.eventHandler((rect.toInternal, event.toInternal)).map(GlobalEventDelegate.fromGlobalEvent(_)).toJSArray
+      (rect: RectangleDelegate, event: GlobalEventDelegate) => obj.eventHandler((rect.toInternal, event.toInternal)).map(GlobalEventDelegate.fromGlobalEvent(_)).toJSArray,
+      obj.animationActions.map(a => AnimationActionDelegate.fromInternal(a)).toJSArray
     )
   }
 }

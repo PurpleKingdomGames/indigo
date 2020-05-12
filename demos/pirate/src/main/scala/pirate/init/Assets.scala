@@ -59,8 +59,7 @@ object Assets {
         Material.Textured(smallCloudsRef),
         Point(140, 117),
         CycleLabel("cloud 1"),
-        cloudCycles,
-        Nil
+        cloudCycles
       )
 
     val cloudsAnimation2: Animation =
@@ -69,8 +68,7 @@ object Assets {
         Material.Textured(smallCloudsRef),
         Point(140, 117),
         CycleLabel("cloud 2"),
-        cloudCycles,
-        Nil
+        cloudCycles
       )
 
     val cloudsAnimation3: Animation =
@@ -79,8 +77,7 @@ object Assets {
         Material.Textured(smallCloudsRef),
         Point(140, 117),
         CycleLabel("cloud 3"),
-        cloudCycles,
-        Nil
+        cloudCycles
       )
 
     val assets: Set[AssetType] =

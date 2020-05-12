@@ -40,9 +40,9 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
         cycle = Cycle.create(
           "lights",
           NonEmptyList(
-            Frame(Rectangle(0, 0, 64, 64), 500),
-            Frame(Rectangle(64, 0, 64, 64), 500),
-            Frame(Rectangle(0, 64, 64, 64), 500)
+            Frame(Rectangle(0, 0, 64, 64), Millis(500)),
+            Frame(Rectangle(64, 0, 64, 64), Millis(500)),
+            Frame(Rectangle(0, 64, 64, 64), Millis(500))
           )
         )
       )
