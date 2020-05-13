@@ -5,13 +5,10 @@ import indigo.shared.animation.AnimationAction._
 import indigo.shared.animation.AnimationKey
 import indigo.shared.animation.CycleLabel
 import indigo.shared.datatypes._
-import indigo.shared.IndigoLogger
-
-import indigo.shared.FontRegister
-import indigo.shared.QuickCache
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import indigo.shared.animation.AnimationAction
+import indigo.shared.BoundaryLocator
 
 object SceneGraphNode {
   def empty: Group = Group.empty
@@ -26,7 +23,7 @@ sealed trait SceneGraphNode {
 }
 
 sealed trait SceneGraphNodePrimitive extends SceneGraphNode {
-  def bounds: Rectangle
+  def bounds(locator: BoundaryLocator): Rectangle
   def withDepth(depth: Depth): SceneGraphNodePrimitive
   def moveTo(pt: Point): SceneGraphNodePrimitive
   def moveTo(x: Int, y: Int): SceneGraphNodePrimitive
@@ -74,14 +71,14 @@ final class Group(val positionOffset: Point, val rotation: Radians, val scale: V
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): SceneGraphNodePrimitive =
     Group(positionOffset + positionDiff, rotation + rotationDiff, scale + scaleDiff, depth, children)
 
-  def bounds: Rectangle =
+  def bounds(locator: BoundaryLocator): Rectangle =
     children match {
       case Nil =>
         Rectangle.zero
 
       case x :: xs =>
-        xs.foldLeft(x.bounds) { (acc, node) =>
-          Rectangle.expandToInclude(acc, node.bounds)
+        xs.foldLeft(x.bounds(locator)) { (acc, node) =>
+          Rectangle.expandToInclude(acc, node.bounds(locator))
         }
     }
 
@@ -218,7 +215,7 @@ sealed trait EventHandling {
 }
 
 final class Graphic(
-    val bounds: Rectangle,
+    val position: Point,
     val depth: Depth,
     val rotation: Radians,
     val scale: Vector2,
@@ -229,77 +226,83 @@ final class Graphic(
 ) extends Renderable
     with Cloneable {
 
-  lazy val x: Int = bounds.position.x
-  lazy val y: Int = bounds.position.y
+  def bounds(locator: BoundaryLocator): Rectangle =
+    Rectangle(position, crop.size)
+
+  lazy val lazyBounds: Rectangle =
+    Rectangle(position, crop.size)
+
+  lazy val x: Int = position.x
+  lazy val y: Int = position.y
 
   def withMaterial(newMaterial: Material): Graphic =
-    Graphic(bounds, depth, rotation, scale, ref, crop, effects, newMaterial)
+    Graphic(position, depth, rotation, scale, ref, crop, effects, newMaterial)
 
   def moveTo(pt: Point): Graphic =
-    Graphic(bounds.moveTo(pt), depth, rotation, scale, ref, crop, effects, material)
+    Graphic(pt, depth, rotation, scale, ref, crop, effects, material)
   def moveTo(x: Int, y: Int): Graphic =
     moveTo(Point(x, y))
 
   def moveBy(pt: Point): Graphic =
-    Graphic(bounds.moveTo(bounds.position + pt), depth, rotation, scale, ref, crop, effects, material)
+    Graphic(position + pt, depth, rotation, scale, ref, crop, effects, material)
   def moveBy(x: Int, y: Int): Graphic =
     moveBy(Point(x, y))
 
   def rotate(angle: Radians): Graphic =
-    Graphic(bounds, depth, angle, scale, ref, crop, effects, material)
+    Graphic(position, depth, angle, scale, ref, crop, effects, material)
   def rotateBy(angle: Radians): Graphic =
     rotate(rotation + angle)
 
   def scaleBy(amount: Vector2): Graphic =
-    Graphic(bounds, depth, rotation, scale * amount, ref, crop, effects, material)
+    Graphic(position, depth, rotation, scale * amount, ref, crop, effects, material)
   def scaleBy(x: Double, y: Double): Graphic =
     scaleBy(Vector2(x, y))
 
   def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): SceneGraphNodePrimitive =
-    Graphic(bounds.moveTo(newPosition), depth, newRotation, newScale, ref, crop, effects, material)
+    Graphic(newPosition, depth, newRotation, newScale, ref, crop, effects, material)
 
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): SceneGraphNodePrimitive =
-    Graphic(bounds.moveTo(this.bounds.position + positionDiff), depth, rotation + rotationDiff, scale * scaleDiff, ref, crop, effects, material)
+    Graphic(position + positionDiff, depth, rotation + rotationDiff, scale * scaleDiff, ref, crop, effects, material)
 
   def withDepth(depthValue: Depth): Graphic =
-    Graphic(bounds, depthValue, rotation, scale, ref, crop, effects, material)
+    Graphic(position, depthValue, rotation, scale, ref, crop, effects, material)
 
   def withAlpha(a: Double): Graphic =
-    Graphic(bounds, depth, rotation, scale, ref, crop, effects.withAlpha(a), material)
+    Graphic(position, depth, rotation, scale, ref, crop, effects.withAlpha(a), material)
 
   def withTint(tint: RGBA): Graphic =
-    Graphic(bounds, depth, rotation, scale, ref, crop, effects.withTint(tint), material)
+    Graphic(position, depth, rotation, scale, ref, crop, effects.withTint(tint), material)
 
   def withTint(red: Double, green: Double, blue: Double): Graphic =
-    Graphic(bounds, depth, rotation, scale, ref, crop, effects.withTint(RGBA(red, green, blue, 1)), material)
+    Graphic(position, depth, rotation, scale, ref, crop, effects.withTint(RGBA(red, green, blue, 1)), material)
 
   def withTint(red: Double, green: Double, blue: Double, amount: Double): Graphic =
-    Graphic(bounds, depth, rotation, scale, ref, crop, effects.withTint(RGBA(red, green, blue, amount)), material)
+    Graphic(position, depth, rotation, scale, ref, crop, effects.withTint(RGBA(red, green, blue, amount)), material)
 
   def flipHorizontal(hValue: Boolean): Graphic =
-    Graphic(bounds, depth, rotation, scale, ref, crop, effects.withFlip(Flip(hValue, effects.flip.vertical)), material)
+    Graphic(position, depth, rotation, scale, ref, crop, effects.withFlip(Flip(hValue, effects.flip.vertical)), material)
 
   def flipVertical(vValue: Boolean): Graphic =
-    Graphic(bounds, depth, rotation, scale, ref, crop, effects.withFlip(Flip(effects.flip.horizontal, vValue)), material)
+    Graphic(position, depth, rotation, scale, ref, crop, effects.withFlip(Flip(effects.flip.horizontal, vValue)), material)
 
   def withRef(refValue: Point): Graphic =
-    Graphic(bounds, depth, rotation, scale, refValue, crop, effects, material)
+    Graphic(position, depth, rotation, scale, refValue, crop, effects, material)
   def withRef(xValue: Int, yValue: Int): Graphic =
     withRef(Point(xValue, yValue))
 
   def withCrop(crop: Rectangle): Graphic =
-    Graphic(bounds, depth, rotation, scale, ref, crop, effects, material)
+    Graphic(position, depth, rotation, scale, ref, crop, effects, material)
   def withCrop(xValue: Int, yValue: Int, widthValue: Int, heightValue: Int): Graphic =
     withCrop(Rectangle(xValue, yValue, widthValue, heightValue))
 
   def withEffects(newEffects: Effects): Graphic =
-    Graphic(bounds, depth, rotation, scale, ref, crop, newEffects, material)
+    Graphic(position, depth, rotation, scale, ref, crop, newEffects, material)
 }
 
 object Graphic {
 
   def apply(
-      bounds: Rectangle,
+      position: Point,
       depth: Depth,
       rotation: Radians,
       scale: Vector2,
@@ -309,7 +312,7 @@ object Graphic {
       material: Material
   ): Graphic =
     new Graphic(
-      bounds,
+      position,
       depth,
       rotation,
       scale,
@@ -321,7 +324,7 @@ object Graphic {
 
   def apply(x: Int, y: Int, width: Int, height: Int, depth: Int, material: Material): Graphic =
     Graphic(
-      bounds = Rectangle(x, y, width, height),
+      position = Point(x, y),
       depth = Depth(depth),
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -333,7 +336,7 @@ object Graphic {
 
   def apply(bounds: Rectangle, depth: Int, material: Material): Graphic =
     Graphic(
-      bounds = bounds,
+      position = bounds.position,
       depth = Depth(depth),
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -346,7 +349,7 @@ object Graphic {
 
 final class Sprite(
     val bindingKey: BindingKey,
-    val bounds: Rectangle,
+    val position: Point,
     val depth: Depth,
     val rotation: Radians,
     val scale: Vector2,
@@ -359,46 +362,49 @@ final class Sprite(
     with EventHandling
     with Cloneable {
 
-  lazy val x: Int = bounds.position.x
-  lazy val y: Int = bounds.position.y
+  lazy val x: Int = position.x
+  lazy val y: Int = position.y
+
+  def bounds(locator: BoundaryLocator): Rectangle =
+    locator.findBounds(this)
 
   def withDepth(newDepth: Depth): Sprite =
-    Sprite(bindingKey, bounds, newDepth, rotation, scale, animationKey, ref, effects, eventHandler)
+    Sprite(bindingKey, position, newDepth, rotation, scale, animationKey, ref, effects, eventHandler)
 
   def moveTo(pt: Point): Sprite =
-    Sprite(bindingKey, bounds.moveTo(pt), depth, rotation, scale, animationKey, ref, effects, eventHandler)
+    Sprite(bindingKey, pt, depth, rotation, scale, animationKey, ref, effects, eventHandler)
   def moveTo(x: Int, y: Int): Sprite =
     moveTo(Point(x, y))
 
   def moveBy(pt: Point): Sprite =
-    Sprite(bindingKey, bounds.moveTo(this.bounds.position + pt), depth, rotation, scale, animationKey, ref, effects, eventHandler)
+    Sprite(bindingKey, position + pt, depth, rotation, scale, animationKey, ref, effects, eventHandler)
   def moveBy(x: Int, y: Int): Sprite =
     moveBy(Point(x, y))
 
   def rotate(angle: Radians): Sprite =
-    Sprite(bindingKey, bounds, depth, angle, scale, animationKey, ref, effects, eventHandler)
+    Sprite(bindingKey, position, depth, angle, scale, animationKey, ref, effects, eventHandler)
   def rotateBy(angle: Radians): Sprite =
     rotate(rotation + angle)
 
   def scaleBy(amount: Vector2): Sprite =
-    Sprite(bindingKey, bounds, depth, rotation, scale * amount, animationKey, ref, effects, eventHandler)
+    Sprite(bindingKey, position, depth, rotation, scale * amount, animationKey, ref, effects, eventHandler)
   def scaleBy(x: Double, y: Double): Sprite =
     scaleBy(Vector2(x, y))
 
   def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): SceneGraphNodePrimitive =
-    Sprite(bindingKey, bounds.moveTo(newPosition), depth, newRotation, newScale, animationKey, ref, effects, eventHandler)
+    Sprite(bindingKey, newPosition, depth, newRotation, newScale, animationKey, ref, effects, eventHandler)
 
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): SceneGraphNodePrimitive =
-    Sprite(bindingKey, bounds.moveTo(this.bounds.position + positionDiff), depth, rotation + rotationDiff, scale * scaleDiff, animationKey, ref, effects, eventHandler)
+    Sprite(bindingKey, position + positionDiff, depth, rotation + rotationDiff, scale * scaleDiff, animationKey, ref, effects, eventHandler)
 
   def withBindingKey(newBindingKey: BindingKey): Sprite =
-    Sprite(newBindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler)
+    Sprite(newBindingKey, position, depth, rotation, scale, animationKey, ref, effects, eventHandler)
 
   def withAlpha(a: Double): Sprite =
-    Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects.withAlpha(a), eventHandler)
+    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withAlpha(a), eventHandler)
 
   def withTint(tint: RGBA): Sprite =
-    Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects.withTint(tint), eventHandler)
+    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withTint(tint), eventHandler)
 
   def withTint(red: Double, green: Double, blue: Double): Sprite =
     withTint(RGBA(red, green, blue, 1))
@@ -407,52 +413,47 @@ final class Sprite(
     withTint(RGBA(red, green, blue, amount))
 
   def flipHorizontal(h: Boolean): Sprite =
-    Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects.withFlip(Flip(horizontal = h, vertical = effects.flip.vertical)), eventHandler)
+    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withFlip(Flip(horizontal = h, vertical = effects.flip.vertical)), eventHandler)
 
   def flipVertical(v: Boolean): Sprite =
-    Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects.withFlip(Flip(horizontal = effects.flip.horizontal, vertical = v)), eventHandler)
+    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withFlip(Flip(horizontal = effects.flip.horizontal, vertical = v)), eventHandler)
 
   def withRef(newRef: Point): Sprite =
-    Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, newRef, effects, eventHandler)
+    Sprite(bindingKey, position, depth, rotation, scale, animationKey, newRef, effects, eventHandler)
   def withRef(x: Int, y: Int): Sprite =
     withRef(Point(x, y))
 
   def withAnimationKey(newAnimationKey: AnimationKey): Sprite =
-    Sprite(bindingKey, bounds, depth, rotation, scale, newAnimationKey, ref, effects, eventHandler)
+    Sprite(bindingKey, position, depth, rotation, scale, newAnimationKey, ref, effects, eventHandler)
 
-  def play(): Sprite = {
-    new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ Play)
-  }
+  def play(): Sprite =
+    new Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ Play)
 
-  def changeCycle(label: CycleLabel): Sprite = {
-    new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ ChangeCycle(label))
-  }
+  def changeCycle(label: CycleLabel): Sprite =
+    new Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ ChangeCycle(label))
 
-  def jumpToFirstFrame(): Sprite = {
-    new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ JumpToFirstFrame)
-  }
+  def jumpToFirstFrame(): Sprite =
+    new Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ JumpToFirstFrame)
 
-  def jumpToLastFrame(): Sprite = {
-    new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ JumpToLastFrame)
-  }
+  def jumpToLastFrame(): Sprite =
+    new Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ JumpToLastFrame)
 
-  def jumpToFrame(number: Int): Sprite = {
-    new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ JumpToFrame(number))
-  }
+  def jumpToFrame(number: Int): Sprite =
+    new Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ JumpToFrame(number))
 
   def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Sprite =
-    Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, e)
+    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects, e)
 
   def withEffects(newEffects: Effects): Sprite =
-    Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, newEffects, eventHandler)
+    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, newEffects, eventHandler)
 
 }
 
 object Sprite {
-  def apply(bindingKey: BindingKey, x: Int, y: Int, width: Int, height: Int, depth: Int, animationKey: AnimationKey): Sprite =
+  def apply(bindingKey: BindingKey, x: Int, y: Int, depth: Int, animationKey: AnimationKey): Sprite =
     Sprite(
       bindingKey = bindingKey,
-      bounds = Rectangle(x, y, width, height),
+      position = Point(x, y),
       depth = Depth(depth),
       rotation = Radians.zero,
       scale = Vector2.one,
@@ -464,7 +465,7 @@ object Sprite {
 
   def apply(
       bindingKey: BindingKey,
-      bounds: Rectangle,
+      position: Point,
       depth: Depth,
       rotation: Radians,
       scale: Vector2,
@@ -473,7 +474,7 @@ object Sprite {
       effects: Effects,
       eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
   ): Sprite =
-    new Sprite(bindingKey, bounds, depth, rotation, scale, animationKey, ref, effects, eventHandler, Nil)
+    new Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects, eventHandler, Nil)
 
 }
 
@@ -492,38 +493,11 @@ final class Text(
 
   val ref: Point = Point.zero
 
-  lazy val lines: List[TextLine] =
-    FontRegister
-      .findByFontKey(fontKey)
-      .map { fontInfo =>
-        text
-          .split('\n')
-          .toList
-          .map(_.replace("\n", ""))
-          .map(line => new TextLine(line, Text.calculateBoundsOfLine(line, fontInfo)))
-      }
-      .getOrElse {
-        IndigoLogger.errorOnce(s"Cannot build Text lines, missing Font with key: ${fontKey.toString()}")
-        Nil
-      }
+  def bounds(locator: BoundaryLocator): Rectangle =
+    locator.findBounds(this)
 
-  lazy val unalignedBounds: Rectangle =
-    lines
-      .map(_.lineBounds)
-      .fold(Rectangle.zero) { (acc, next) =>
-        acc.resize(Point(Math.max(acc.width, next.width), acc.height + next.height))
-      }
-      .moveTo(position)
-
-  lazy val bounds: Rectangle =
-    (alignment, unalignedBounds) match {
-      case (TextAlignment.Left, b)   => b
-      case (TextAlignment.Center, b) => b.moveTo(Point(b.x - (b.width / 2), b.y))
-      case (TextAlignment.Right, b)  => b.moveTo(Point(b.x - b.width, b.y))
-    }
-
-  lazy val x: Int = bounds.position.x
-  lazy val y: Int = bounds.position.y
+  lazy val x: Int = position.x
+  lazy val y: Int = position.y
 
   def moveTo(pt: Point): Text =
     Text(text, alignment, pt, depth, rotation, scale, fontKey, effects, eventHandler)
@@ -602,17 +576,17 @@ final class TextLine(val text: String, val lineBounds: Rectangle) {
 
 object Text {
 
-  implicit val lineBoundsCache: QuickCache[Rectangle] = QuickCache.empty
+  // implicit val lineBoundsCache: QuickCache[Rectangle] = QuickCache.empty
 
-  def purgeCaches(): Unit =
-    lineBoundsCache.purgeAllNow()
+  // def purgeCaches(): Unit =
+  //   lineBoundsCache.purgeAllNow()
 
-  def calculateBoundsOfLine(lineText: String, fontInfo: FontInfo): Rectangle =
-    QuickCache("line-bounds-" + fontInfo.fontKey.key + "-" + lineText) {
-      lineText.toList
-        .map(c => fontInfo.findByCharacter(c).bounds)
-        .fold(Rectangle.zero)((acc, curr) => Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height)))
-    }
+  // def calculateBoundsOfLine(lineText: String, fontInfo: FontInfo): Rectangle =
+  //   QuickCache("line-bounds-" + fontInfo.fontKey.key + "-" + lineText) {
+  //     lineText.toList
+  //       .map(c => fontInfo.findByCharacter(c).bounds)
+  //       .fold(Rectangle.zero)((acc, curr) => Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height)))
+  //   }
 
   def apply(text: String, x: Int, y: Int, depth: Int, fontKey: FontKey): Text =
     Text(

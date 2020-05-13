@@ -8,6 +8,7 @@ import indigo.shared.EqualTo
 import indigoexts.lenses.Lens
 import indigo.shared.dice.Dice
 import indigoexts.subsystems.SubSystem
+import indigo.shared.BoundaryLocator
 
 trait Scene[GameModel, ViewModel] {
   type SceneModel
@@ -21,7 +22,7 @@ trait Scene[GameModel, ViewModel] {
 
   def updateSceneModel(gameTime: GameTime, sceneModel: SceneModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[SceneModel]
   def updateSceneViewModel(gameTime: GameTime, sceneModel: SceneModel, sceneViewModel: SceneViewModel, inputState: InputState, dice: Dice): Outcome[SceneViewModel]
-  def updateSceneView(gameTime: GameTime, sceneModel: SceneModel, sceneViewModel: SceneViewModel, inputState: InputState): SceneUpdateFragment
+  def updateSceneView(gameTime: GameTime, sceneModel: SceneModel, sceneViewModel: SceneViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment
 
 }
 object Scene {
@@ -37,8 +38,8 @@ object Scene {
       .updateSceneViewModel(gameTime, scene.sceneModelLens.get(model), scene.sceneViewModelLens.get(viewModel), inputState, dice)
       .mapState(scene.sceneViewModelLens.set(viewModel, _))
 
-  def updateView[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, model: GM, viewModel: VM, inputState: InputState): SceneUpdateFragment =
-    scene.updateSceneView(gameTime, scene.sceneModelLens.get(model), scene.sceneViewModelLens.get(viewModel), inputState)
+  def updateView[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, model: GM, viewModel: VM, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+    scene.updateSceneView(gameTime, scene.sceneModelLens.get(model), scene.sceneViewModelLens.get(viewModel), inputState, boundaryLocator)
 
 }
 

@@ -2,6 +2,7 @@ package indigo.shared.scenegraph
 
 import indigo.shared.events.GlobalEvent
 import indigo.shared.datatypes.Rectangle
+import indigo.shared.BoundaryLocator
 
 object SceneGraphViewEvents {
 
@@ -28,23 +29,23 @@ object SceneGraphViewEvents {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var", "org.wartremover.warts.Recursion"))
-  def collectViewEvents(nodes: List[SceneGraphNode], inputEvents: List[GlobalEvent], sendEvent: GlobalEvent => Unit): Unit = {
+  def collectViewEvents(boundaryLocator: BoundaryLocator, nodes: List[SceneGraphNode], inputEvents: List[GlobalEvent], sendEvent: GlobalEvent => Unit): Unit = {
     val count = nodes.length
     var index = 0
 
     while (index < count) {
       nodes(index) match {
         case s: Sprite =>
-          applyInputEvents(s, s.bounds, inputEvents, sendEvent)
+          applyInputEvents(s, s.bounds(boundaryLocator), inputEvents, sendEvent)
 
         case t: Text =>
-          applyInputEvents(t, t.bounds, inputEvents, sendEvent)
+          applyInputEvents(t, t.bounds(boundaryLocator), inputEvents, sendEvent)
 
         case _: Graphic =>
           ()
 
         case g: Group =>
-          collectViewEvents(g.children, inputEvents, sendEvent)
+          collectViewEvents(boundaryLocator, g.children, inputEvents, sendEvent)
 
         case _: Clone =>
           ()

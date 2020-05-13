@@ -48,4 +48,6 @@ trait SharedTypeAliases {
   type GamepadButtons = shared.input.GamepadButtons
   val GamepadButtons: shared.input.GamepadButtons.type = shared.input.GamepadButtons
 
+  type BoundaryLocator = shared.BoundaryLocator
+
 }

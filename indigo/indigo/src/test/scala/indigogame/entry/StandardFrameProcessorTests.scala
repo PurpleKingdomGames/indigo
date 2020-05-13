@@ -7,10 +7,16 @@ import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
 import indigo.shared.Outcome
 import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.shared.BoundaryLocator
+import indigo.shared.AnimationsRegister
+import indigo.shared.FontRegister
 
 object StandardFrameProcessorTests extends TestSuite {
 
   import TestFixtures._
+
+  val boundaryLocator: BoundaryLocator =
+    new BoundaryLocator(new AnimationsRegister, new FontRegister)
 
   val tests: Tests =
     Tests {
@@ -21,7 +27,8 @@ object StandardFrameProcessorTests extends TestSuite {
         GameTime.zero,
         List(EventsOnlyEvent.Increment),
         InputState.default,
-        Dice.loaded(0)
+        Dice.loaded(0),
+        boundaryLocator
       )
 
       val outModel     = outcome.state._1
@@ -68,8 +75,8 @@ object TestFixtures {
       Outcome(vm + 10).addGlobalEvents(EventsOnlyEvent.Increment)
     }
 
-  val viewUpdate: (GameTime, GameModel, Int, InputState) => SceneUpdateFragment =
-    (_, _, _, _) => SceneUpdateFragment.empty
+  val viewUpdate: (GameTime, GameModel, Int, InputState, BoundaryLocator) => SceneUpdateFragment =
+    (_, _, _, _, _) => SceneUpdateFragment.empty
 
   val standardFrameProcessor: StandardFrameProcessor[GameModel, Int] =
     new StandardFrameProcessor(modelUpdate, viewModelUpdate, viewUpdate)

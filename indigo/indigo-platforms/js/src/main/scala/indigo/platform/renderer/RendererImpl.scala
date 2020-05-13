@@ -21,9 +21,11 @@ import indigo.shared.scenegraph.Sprite
 import indigo.shared.datatypes.Matrix4
 import org.scalajs.dom.html
 import indigo.shared.EqualTo._
+import indigo.shared.BoundaryLocator
+import indigo.shared.FontRegister
 
 @SuppressWarnings(Array("org.wartremover.warts.Null"))
-final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas, animationsRegister: AnimationsRegister) extends Renderer {
+final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas, boundaryLocator: BoundaryLocator, animationsRegister: AnimationsRegister, fontRegister: FontRegister) extends Renderer {
 
   private val gl: WebGLRenderingContext =
     cNc.context
@@ -135,7 +137,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
                 acc
 
               case Some(anim) =>
-                acc + (blank.id.value -> DisplayObjectConversions.spriteToDisplayObject(s, assetMapping, anim))
+                acc + (blank.id.value -> DisplayObjectConversions.spriteToDisplayObject(boundaryLocator, s, assetMapping, anim))
             }
         }
       }
@@ -169,7 +171,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     layerRenderer.drawLayer(
       gameProjection,
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, animationsRegister, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, boundaryLocator, animationsRegister, fontRegister, metrics),
       gameFrameBuffer,
       ClearColor.Black.forceTransparent,
       standardShaderProgram,
@@ -199,7 +201,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     layerRenderer.drawLayer(
       lightingProjection,
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping, animationsRegister, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping, boundaryLocator, animationsRegister, fontRegister, metrics),
       lightingFrameBuffer,
       scene.ambientLight.toClearColor,
       lightingShaderProgram,
@@ -214,7 +216,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     layerRenderer.drawLayer(
       lightingProjection,
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.distortionLayer.nodes, gameTime, assetMapping, animationsRegister, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.distortionLayer.nodes, gameTime, assetMapping, boundaryLocator, animationsRegister, fontRegister, metrics),
       distortionFrameBuffer,
       ClearColor(0.5, 0.5, 1.0, 1.0),
       distortionShaderProgram,
@@ -229,7 +231,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
     layerRenderer.drawLayer(
       uiProjection,
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping, animationsRegister, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping, boundaryLocator, animationsRegister, fontRegister, metrics),
       uiFrameBuffer,
       ClearColor.Black.forceTransparent,
       standardShaderProgram,

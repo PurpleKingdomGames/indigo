@@ -7,14 +7,14 @@ object SandboxView {
 
   val dudeCloneId: CloneId = CloneId("Dude")
 
-  def updateView(model: SandboxGameModel, viewModel: SandboxViewModel, inputState: InputState): SceneUpdateFragment = {
+  def updateView(model: SandboxGameModel, viewModel: SandboxViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment = {
     inputState.mouse.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + position.show)
       case None           => ()
     }
 
     SceneUpdateFragment.empty
-      .addGameLayerNodes(gameLayer(model, viewModel))
+      .addGameLayerNodes(gameLayer(model, viewModel, boundaryLocator))
       .addLightingLayerNodes(lightingLayer(inputState))
       .addUiLayerNodes(uiLayer(inputState))
       .withAmbientLight(RGBA.White.withAmount(0.25))
@@ -25,7 +25,9 @@ object SandboxView {
     // .withGameColorOverlay(RGBA.Red.withAmount(0.5))
   }
 
-  def gameLayer(currentState: SandboxGameModel, viewModel: SandboxViewModel): List[SceneGraphNode] =
+  def gameLayer(currentState: SandboxGameModel, viewModel: SandboxViewModel, boundaryLocator: BoundaryLocator): List[SceneGraphNode] = {
+    println(currentState.dude.dude.sprite.bounds(boundaryLocator))
+
     List(
       currentState.dude.walkDirection match {
         case d @ DudeLeft =>
@@ -59,6 +61,7 @@ object SandboxView {
         .withHorizontalFlip(true)
         .withAlpha(0.5f)
     )
+  }
 
   def lightingLayer(inputState: InputState): List[SceneGraphNode] =
     List(

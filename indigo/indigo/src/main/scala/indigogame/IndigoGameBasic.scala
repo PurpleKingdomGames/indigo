@@ -10,6 +10,7 @@ import indigogame.entry.StandardFrameProcessor
 // Indigo is Scala.js only at the moment, revisit if/when we go to the JVM
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import indigo.shared.BoundaryLocator
 
 /**
   * A trait representing a minimal set of functions to get your game running
@@ -39,7 +40,7 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] extends GameLauncher {
 
   def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, dice: Dice): Outcome[ViewModel]
 
-  def present(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState): SceneUpdateFragment
+  def present(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment
 
   private def indigoGame: GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel] = {
 
@@ -47,7 +48,7 @@ trait IndigoGameBasic[StartupData, Model, ViewModel] extends GameLauncher {
       new StandardFrameProcessor(
         GameWithSubSystems.update(update),
         GameWithSubSystems.updateViewModel(updateViewModel),
-        (gameTime: GameTime, model: GameWithSubSystems[Model], viewModel: ViewModel, inputState: InputState) => GameWithSubSystems.present(present)(gameTime, model, viewModel, inputState)
+        (gameTime: GameTime, model: GameWithSubSystems[Model], viewModel: ViewModel, inputState: InputState, boundaryLocator: BoundaryLocator) => GameWithSubSystems.present(present)(gameTime, model, viewModel, inputState, boundaryLocator)
       )
 
     new GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel](

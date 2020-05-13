@@ -10,6 +10,7 @@ import indigo.shared.EqualTo._
 import indigo.shared.dice.Dice
 import scala.collection.mutable
 import indigoexts.subsystems.SubSystemsRegister
+import indigo.shared.BoundaryLocator
 
 class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, ViewModel]], scenesFinder: SceneFinder) {
 
@@ -73,7 +74,7 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
         Scene.updateViewModel(scene, gameTime, model, viewModel, inputState, dice)
     }
 
-  def updateView(gameTime: GameTime, model: GameModel, viewModel: ViewModel, inputState: InputState): SceneUpdateFragment =
+  def updateView(gameTime: GameTime, model: GameModel, viewModel: ViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
     scenes.find(_.name === finderInstance.current.name) match {
       case None =>
         IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
@@ -87,7 +88,7 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
           }
           .getOrElse(SceneUpdateFragment.empty)
 
-        Scene.updateView(scene, gameTime, model, viewModel, inputState) |+| subsystemView
+        Scene.updateView(scene, gameTime, model, viewModel, inputState, boundaryLocator) |+| subsystemView
     }
 
 }

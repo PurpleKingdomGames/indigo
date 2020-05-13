@@ -1,18 +1,20 @@
 package indigoexts.uicomponents
 
 import indigo.shared.time.GameTime
-import indigo.shared.FontRegister
 import indigo.shared.constants.Keys
 import indigo.shared.events.{InputState, KeyboardEvent, GlobalEvent}
 import indigo.shared.datatypes._
 import indigo.shared.scenegraph.{Graphic, SceneGraphNode, SceneUpdateFragment, Text}
 
 import indigo.shared.EqualTo._
+import indigo.shared.temporal.Signal
+import indigo.shared.time.Millis
+import indigo.shared.BoundaryLocator
 
 object InputField {
 
-  def apply(text: String): InputField =
-    InputField(InputFieldState.Normal, text, 0, InputFieldOptions.default, BindingKey.generate)
+  def apply(text: String, boundaryLocator: BoundaryLocator): InputField =
+    InputField(InputFieldState.Normal, text, 0, InputFieldOptions.default, BindingKey.generate, boundaryLocator)
 
   object Model {
 
@@ -67,26 +69,38 @@ object InputField {
         Nil
       }
 
-    private def calculateCursorPosition(textLine: String, offset: Point, fontInfo: FontInfo, cursorPosition: Int): Point = {
-      val lines      = textLine.substring(0, cursorPosition).split('\n')
-      val lineCount  = Math.max(0, lines.length - 1) + (if (textLine.takeRight(1) === "\n") 1 else 0)
-      val lineHeight = Text.calculateBoundsOfLine("a", fontInfo).height
-      val lastLine   = if (textLine.takeRight(1) === "\n") "" else lines.reverse.headOption.getOrElse("")
-      val bounds     = Text.calculateBoundsOfLine(lastLine, fontInfo)
+    private def calculateCursorPosition(boundaryLocator: BoundaryLocator, text: String, fontKey: FontKey, offset: Point, cursorPosition: Int): Option[Point] = {
+      val linesWithBounds = boundaryLocator.textAsLinesWithBounds(text.substring(0, cursorPosition), fontKey)
+      val lineCount       = linesWithBounds.length
 
-      Point(bounds.size.x, 0) + offset + Point(0, lineHeight * lineCount)
+      for {
+        lineHeight <- linesWithBounds.headOption.map(_.lineBounds.height)
+        lastLine   <- linesWithBounds.reverse.headOption
+      } yield Point(lastLine.lineBounds.size.x, 0) + offset + Point(0, lineHeight * lineCount)
     }
 
-    private def drawCursor(gameTime: GameTime, inputField: InputField, position: Point, depth: Depth, inputFieldAssets: InputFieldAssets): Option[Graphic] =
-      if (((gameTime.running.toDouble * 0.00001) * 150).toInt % 2 === 0)
-        FontRegister.findByFontKey(inputFieldAssets.text.fontKey).map { fontInfo =>
-          inputFieldAssets.cursor
-            .moveTo(calculateCursorPosition(inputField.text, position, fontInfo, inputField.cursorPosition))
-            .withDepth(Depth(-(depth.zIndex + 100)))
-        } else
-        None
+    private def drawCursor(boundaryLocator: BoundaryLocator, gameTime: GameTime, inputField: InputField, position: Point, depth: Depth, inputFieldAssets: InputFieldAssets): Option[Graphic] =
+      Signal
+        .Pulse(Millis(150).toSeconds)
+        .map {
+          case false =>
+            None
 
-    private def render(gameTime: GameTime, position: Point, depth: Depth, inputField: InputField, inputFieldAssets: InputFieldAssets): RenderedInputFieldElements =
+          case true =>
+            val cursorPosition: Option[Point] =
+              calculateCursorPosition(boundaryLocator, inputField.text, inputFieldAssets.text.fontKey, position, inputField.cursorPosition)
+
+            val cursor =
+              cursorPosition.map { pt =>
+                inputFieldAssets.cursor
+                  .moveTo(pt)
+                  .withDepth(Depth(-(depth.zIndex + 100)))
+              }
+            cursor
+        }
+        .at(gameTime.running)
+
+    private def render(boundaryLocator: BoundaryLocator, gameTime: GameTime, position: Point, depth: Depth, inputField: InputField, inputFieldAssets: InputFieldAssets): RenderedInputFieldElements =
       inputField.state match {
         case InputFieldState.Normal =>
           RenderedInputFieldElements(inputFieldAssets.text.withText(inputField.text).moveTo(position).withDepth(depth), None)
@@ -94,16 +108,24 @@ object InputField {
         case InputFieldState.HasFocus =>
           RenderedInputFieldElements(
             inputFieldAssets.text.withText(inputField.text).moveTo(position).withDepth(depth),
-            drawCursor(gameTime, inputField, position, depth, inputFieldAssets)
+            drawCursor(boundaryLocator, gameTime, inputField, position, depth, inputFieldAssets)
           )
       }
 
-    def update(gameTime: GameTime, position: Point, depth: Depth, inputField: InputField, frameEvents: InputState, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate = {
-      val rendered: RenderedInputFieldElements = render(gameTime, position, depth, inputField, inputFieldAssets)
+    def update(
+        boundaryLocator: BoundaryLocator,
+        gameTime: GameTime,
+        position: Point,
+        depth: Depth,
+        inputField: InputField,
+        frameEvents: InputState,
+        inputFieldAssets: InputFieldAssets
+    ): InputFieldViewUpdate = {
+      val rendered: RenderedInputFieldElements = render(boundaryLocator, gameTime, position, depth, inputField, inputFieldAssets)
 
       InputFieldViewUpdate(
         rendered.toNodes,
-        applyEvent(rendered.field.bounds, inputField, frameEvents)
+        applyEvent(rendered.field.bounds(boundaryLocator), inputField, frameEvents)
       )
     }
 
@@ -142,13 +164,13 @@ object InputField {
 
 }
 
-final case class InputField(state: InputFieldState, text: String, cursorPosition: Int, options: InputFieldOptions, bindingKey: BindingKey) {
+final case class InputField(state: InputFieldState, text: String, cursorPosition: Int, options: InputFieldOptions, bindingKey: BindingKey, boundaryLocator: BoundaryLocator) {
 
   def update(inputFieldEvent: InputFieldEvent): InputField =
     InputField.Model.update(this, inputFieldEvent)
 
   def draw(gameTime: GameTime, position: Point, depth: Depth, inputState: InputState, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate =
-    InputField.View.update(gameTime, position, depth, this, inputState, inputFieldAssets)
+    InputField.View.update(boundaryLocator, gameTime, position, depth, this, inputState, inputFieldAssets)
 
   def giveFocus: InputField =
     this.copy(

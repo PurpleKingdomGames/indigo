@@ -16,8 +16,10 @@ import indigo.shared.platform.GlobalEventStream
 
 import indigo.shared.scenegraph.SceneGraphViewEvents
 import indigo.shared.time.Seconds
+import indigo.shared.BoundaryLocator
 
 class GameLoop[GameModel, ViewModel](
+    boundaryLocator: BoundaryLocator,
     gameEngine: GameEngine[_, _, GameModel, ViewModel],
     gameConfig: GameConfig,
     initialModel: GameModel,
@@ -79,6 +81,7 @@ class GameLoop[GameModel, ViewModel](
             collectedEvents,
             inputState,
             Dice.default(gameTime.running.toMillis.value),
+            boundaryLocator,
             gameEngine.metrics
           )
 
@@ -87,7 +90,7 @@ class GameLoop[GameModel, ViewModel](
         viewModelState = processedFrame.state._2
         processedFrame.globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
 
-        GameLoop.processUpdatedView(processedFrame.state._3, collectedEvents, gameEngine.metrics, gameEngine.globalEventStream)
+        GameLoop.processUpdatedView(boundaryLocator, processedFrame.state._3, collectedEvents, gameEngine.metrics, gameEngine.globalEventStream)
         GameLoop.drawScene(gameEngine.renderer, gameTime, processedFrame.state._3, gameEngine.assetMapping, gameEngine.metrics)
         GameLoop.playAudio(gameEngine.audioPlayer, processedFrame.state._3.map(_.audio), gameEngine.metrics)
 
@@ -117,16 +120,17 @@ object GameLoop {
       collectedEvents: List[GlobalEvent],
       inputState: InputState,
       dice: Dice,
+      boundaryLocator: BoundaryLocator,
       metrics: Metrics
   ): Outcome[(GameModel, ViewModel, Option[SceneUpdateFragment])] = {
     metrics.record(CallFrameProcessorStartMetric)
 
     val res: Outcome[(GameModel, ViewModel, Option[SceneUpdateFragment])] =
       if (renderView) {
-        frameProcessor.run(gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice)
+        frameProcessor.run(gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)
       } else {
         metrics.record(UpdateEndMetric)
-        frameProcessor.runSkipView(gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice)
+        frameProcessor.runSkipView(gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)
       }
 
     metrics.record(CallFrameProcessorEndMetric)
@@ -134,7 +138,7 @@ object GameLoop {
     res
   }
 
-  def processUpdatedView(scene: Option[SceneUpdateFragment], collectedEvents: List[GlobalEvent], metrics: Metrics, globalEventStream: GlobalEventStream): Unit =
+  def processUpdatedView(boundaryLocator: BoundaryLocator, scene: Option[SceneUpdateFragment], collectedEvents: List[GlobalEvent], metrics: Metrics, globalEventStream: GlobalEventStream): Unit =
     scene match {
       case None =>
         ()
@@ -142,7 +146,7 @@ object GameLoop {
       case Some(s) =>
         metrics.record(ProcessViewStartMetric)
         GameLoop.persistGlobalViewEvents(metrics, globalEventStream, s)
-        GameLoop.persistNodeViewEvents(collectedEvents, metrics, globalEventStream, s)
+        GameLoop.persistNodeViewEvents(boundaryLocator, collectedEvents, metrics, globalEventStream, s)
         metrics.record(ProcessViewEndMetric)
     }
 
@@ -152,11 +156,11 @@ object GameLoop {
     metrics.record(PersistGlobalViewEventsEndMetric)
   }
 
-  def persistNodeViewEvents(gameEvents: List[GlobalEvent], metrics: Metrics, globalEventStream: GlobalEventStream, scene: SceneUpdateFragment): Unit = {
+  def persistNodeViewEvents(boundaryLocator: BoundaryLocator, gameEvents: List[GlobalEvent], metrics: Metrics, globalEventStream: GlobalEventStream, scene: SceneUpdateFragment): Unit = {
     metrics.record(PersistNodeViewEventsStartMetric)
-    SceneGraphViewEvents.collectViewEvents(scene.gameLayer.nodes, gameEvents, globalEventStream.pushGlobalEvent)
-    SceneGraphViewEvents.collectViewEvents(scene.lightingLayer.nodes, gameEvents, globalEventStream.pushGlobalEvent)
-    SceneGraphViewEvents.collectViewEvents(scene.uiLayer.nodes, gameEvents, globalEventStream.pushGlobalEvent)
+    SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.gameLayer.nodes, gameEvents, globalEventStream.pushGlobalEvent)
+    SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.lightingLayer.nodes, gameEvents, globalEventStream.pushGlobalEvent)
+    SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.uiLayer.nodes, gameEvents, globalEventStream.pushGlobalEvent)
     metrics.record(PersistNodeViewEventsEndMetric)
   }
 

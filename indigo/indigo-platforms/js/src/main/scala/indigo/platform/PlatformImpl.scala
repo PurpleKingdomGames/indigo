@@ -26,8 +26,16 @@ import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
 import indigo.shared.AnimationsRegister
+import indigo.shared.FontRegister
+import indigo.shared.BoundaryLocator
 
-class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEventStream, animationsRegister: AnimationsRegister) extends Platform {
+class PlatformImpl(
+    assetCollection: AssetCollection,
+    globalEventStream: GlobalEventStream,
+    boundaryLocator: BoundaryLocator,
+    animationsRegister: AnimationsRegister,
+    fontRegister: FontRegister
+) extends Platform {
 
   import PlatformImpl._
 
@@ -38,7 +46,7 @@ class PlatformImpl(assetCollection: AssetCollection, globalEventStream: GlobalEv
       assetMapping        <- setupAssetMapping(textureAtlas)
       canvas              <- createCanvas(gameConfig)
       _                   <- listenToWorldEvents(canvas, gameConfig.magnification, globalEventStream)
-      renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas, animationsRegister)
+      renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas, boundaryLocator, animationsRegister, fontRegister)
     } yield (renderer, assetMapping)
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
@@ -96,7 +104,14 @@ object PlatformImpl {
       GamepadInputCaptureImpl.init()
     })
 
-  def startRenderer(gameConfig: GameConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: Canvas, animationsRegister: AnimationsRegister): Try[Renderer] =
+  def startRenderer(
+      gameConfig: GameConfig,
+      loadedTextureAssets: List[LoadedTextureAsset],
+      canvas: Canvas,
+      boundaryLocator: BoundaryLocator,
+      animationsRegister: AnimationsRegister,
+      fontRegister: FontRegister
+  ): Try[Renderer] =
     Success {
       IndigoLogger.info("Starting renderer")
       RendererInit.setup(
@@ -108,7 +123,9 @@ object PlatformImpl {
         ),
         loadedTextureAssets,
         canvas,
-        animationsRegister
+        boundaryLocator,
+        animationsRegister,
+        fontRegister
       )
     }
 

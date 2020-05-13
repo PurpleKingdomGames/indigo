@@ -7,10 +7,18 @@ import indigo.shared.EqualTo._
 import utest._
 import indigo.shared.assets.AssetName
 import indigo.shared.datatypes.Material
+import indigo.shared.BoundaryLocator
+import indigo.shared.AnimationsRegister
 
 object TextTests extends TestSuite {
 
   val material = Material.Textured(AssetName("font-sheet"))
+
+  val fontRegister: FontRegister =
+    new FontRegister
+
+  val boundaryLocator: BoundaryLocator =
+    new BoundaryLocator(new AnimationsRegister, fontRegister)
 
   val tests: Tests =
     Tests {
@@ -28,13 +36,13 @@ object TextTests extends TestSuite {
 
           val fontInfo = FontInfo(fontKey, material, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
 
-          FontRegister.register(fontInfo)
+          fontRegister.register(fontInfo)
 
           val t = Text("abc", 10, 20, 1, fontKey)
 
-          t.bounds === Rectangle(10, 20, 16 * 3, 16) ==> true
+          t.bounds(boundaryLocator) === Rectangle(10, 20, 16 * 3, 16) ==> true
 
-          FontRegister.clearRegister()
+          fontRegister.clearRegister()
         }
 
         "should be able to correctly calculate the bounds with different sized chars" - {
@@ -49,16 +57,16 @@ object TextTests extends TestSuite {
 
           val fontInfo = FontInfo(fontKey, material, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
 
-          FontRegister.register(fontInfo)
+          fontRegister.register(fontInfo)
 
           val t = Text("abc", 10, 20, 1, fontKey)
 
-          val actual   = t.bounds                          // 48 x 16
+          val actual   = t.bounds(boundaryLocator)           // 48 x 16
           val expected = Rectangle(10, 20, 10 + 20 + 30, 30) // 60 x 30
 
           actual === expected ==> true
 
-          FontRegister.clearRegister()
+          fontRegister.clearRegister()
         }
 
       }

@@ -5,6 +5,7 @@ import indigo.shared.Outcome
 import indigo.shared.time.GameTime
 import indigo.shared.events.{GlobalEvent, InputState}
 import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.shared.BoundaryLocator
 
 trait FrameProcessor[Model, ViewModel] {
   def run(
@@ -13,7 +14,8 @@ trait FrameProcessor[Model, ViewModel] {
       gameTime: GameTime,
       globalEvents: List[GlobalEvent],
       inputState: InputState,
-      dice: Dice
+      dice: Dice,
+      boundaryLocator: BoundaryLocator
   ): Outcome[(Model, ViewModel, Option[SceneUpdateFragment])]
 
   def runSkipView(
@@ -22,6 +24,7 @@ trait FrameProcessor[Model, ViewModel] {
       gameTime: GameTime,
       globalEvents: List[GlobalEvent],
       inputState: InputState,
-      dice: Dice
+      dice: Dice,
+      boundaryLocator: BoundaryLocator
   ): Outcome[(Model, ViewModel, Option[SceneUpdateFragment])]
 }

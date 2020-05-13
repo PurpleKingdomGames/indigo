@@ -32,10 +32,7 @@ object AsepriteConverter {
           SpriteAndAnimations(
             Sprite(
               bindingKey = BindingKey.generate,
-              bounds = Rectangle(
-                position = Point(0, 0),
-                size = Point(x.frames.head.bounds.size.x, x.frames.head.bounds.size.y)
-              ),
+              position = Point(0, 0),
               depth = depth,
               rotation = Radians.zero,
               scale = Vector2.one,
@@ -67,7 +64,7 @@ object AsepriteConverter {
   private def extractFrames(frameTag: AsepriteFrameTag, asepriteFrames: List[AsepriteFrame]): List[Frame] =
     asepriteFrames.slice(frameTag.from, frameTag.to + 1).map { aseFrame =>
       Frame(
-        bounds = Rectangle(
+        crop = Rectangle(
           position = Point(aseFrame.frame.x, aseFrame.frame.y),
           size = Point(aseFrame.frame.w, aseFrame.frame.h)
         ),

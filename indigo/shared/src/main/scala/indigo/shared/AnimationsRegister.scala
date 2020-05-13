@@ -9,7 +9,7 @@ import indigo.shared.animation.AnimationMemento
 
 final class AnimationsRegister {
 
-  private implicit val animationsRegistry: QuickCache[Animation] = QuickCache.empty
+  private implicit val animationsRegistry: QuickCache[Animation]      = QuickCache.empty
   private implicit val animationsStates: QuickCache[AnimationMemento] = QuickCache.empty
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
@@ -42,5 +42,14 @@ final class AnimationsRegister {
         animationsStates.add(CacheKey(bindingKey.value), newAnim.saveMemento(bindingKey))
 
         newAnim
+      }
+
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
+  def fetchAnimationInLastState(bindingKey: BindingKey, animationKey: AnimationKey): Option[Animation] =
+    findByAnimationKey(animationKey)
+      .map { anim =>
+        findMementoByBindingKey(bindingKey)
+          .map(m => anim.applyMemento(m))
+          .getOrElse(anim)
       }
 }

@@ -7,6 +7,7 @@ import indigo.Outcome
 import indigoexts.lenses.Lens
 import indigo.shared.dice.Dice
 import indigoexts.subsystems.SubSystem
+import indigo.shared.BoundaryLocator
 
 object TestScenes {
 
@@ -46,7 +47,7 @@ final case class TestSceneA() extends Scene[TestGameModel, TestViewModel] {
   def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, inputState: InputState, dice: Dice): Outcome[TestSceneViewModelA] =
     Outcome(TestSceneViewModelA())
 
-  def updateSceneView(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, inputState: InputState): SceneUpdateFragment =
+  def updateSceneView(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
     SceneUpdateFragment.empty
 }
 
@@ -79,7 +80,7 @@ final case class TestSceneB() extends Scene[TestGameModel, TestViewModel] {
   def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, inputState: InputState, dice: Dice): Outcome[TestSceneViewModelB] =
     Outcome(TestSceneViewModelB())
 
-  def updateSceneView(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, inputState: InputState): SceneUpdateFragment =
+  def updateSceneView(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
     SceneUpdateFragment.empty
 }
 

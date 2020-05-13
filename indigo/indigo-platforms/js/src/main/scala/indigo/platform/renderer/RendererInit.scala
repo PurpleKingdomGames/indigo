@@ -8,12 +8,14 @@ import org.scalajs.dom.raw.WebGLRenderingContext
 import org.scalajs.dom.{Element, html, raw}
 import scala.scalajs.js.Dynamic
 import indigo.shared.AnimationsRegister
+import indigo.shared.BoundaryLocator
+import indigo.shared.FontRegister
 
 object RendererInit {
 
-  def setup(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: html.Canvas, animationsRegister: AnimationsRegister): Renderer = {
+  def setup(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: html.Canvas, boundaryLocator: BoundaryLocator, animationsRegister: AnimationsRegister, fontRegister: FontRegister): Renderer = {
     val cNc = setupContextAndCanvas(canvas, config.magnification, config.antiAliasing)
-    val r   = new RendererImpl(config, loadedTextureAssets, cNc, animationsRegister)
+    val r   = new RendererImpl(config, loadedTextureAssets, cNc, boundaryLocator, animationsRegister, fontRegister)
     r.init()
     r
   }

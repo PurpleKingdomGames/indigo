@@ -161,7 +161,7 @@ object AsepriteSampleData {
   val sprite: Option[Sprite] = Option {
     Sprite(
       bindingKey = BindingKey("test"),
-      bounds = Rectangle(Point(0, 0), Point(64, 64)),
+      position = Point.zero,
       depth = depth,
       rotation = Radians.zero,
       scale = Vector2.one,

@@ -8,6 +8,7 @@ import indigo.InputState
 import indigo.SceneUpdateFragment
 import indigoexts.subsystems.SubSystemsRegister
 import indigo.shared.abstractions.syntax._
+import indigo.shared.BoundaryLocator
 
 final class GameWithSubSystems[Model](val model: Model, val subSystemsRegister: SubSystemsRegister)
 object GameWithSubSystems {
@@ -25,8 +26,8 @@ object GameWithSubSystems {
     viewModelUpdate(gameTime, model.model, viewModel, inputState, dice)
 
   def present[Model, ViewModel](
-      viewPresent: (GameTime, Model, ViewModel, InputState) => SceneUpdateFragment
-  )(gameTime: GameTime, model: GameWithSubSystems[Model], viewModel: ViewModel, inputState: InputState): SceneUpdateFragment =
-    viewPresent(gameTime, model.model, viewModel, inputState) |+| model.subSystemsRegister.render(gameTime)
+      viewPresent: (GameTime, Model, ViewModel, InputState, BoundaryLocator) => SceneUpdateFragment
+  )(gameTime: GameTime, model: GameWithSubSystems[Model], viewModel: ViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+    viewPresent(gameTime, model.model, viewModel, inputState, boundaryLocator) |+| model.subSystemsRegister.render(gameTime)
 
 }

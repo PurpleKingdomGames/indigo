@@ -19,7 +19,7 @@ final case class Animation(
 ) {
 
   val frameHash: String =
-    currentFrame.bounds.hash + "_" + material.hash
+    currentFrame.crop.hash + "_" + currentFrame.frameMaterial.map(_.hash).getOrElse(material.hash)
 
   def currentCycle: Cycle =
     Animation.currentCycle(this)

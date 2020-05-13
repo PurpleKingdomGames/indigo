@@ -31,7 +31,7 @@ import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
 import indigo.platform.DisplayObjectConversions
-import indigo.shared.scenegraph.Text
+import indigo.shared.BoundaryLocator
 
 final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     fonts: Set[FontInfo],
@@ -44,6 +44,10 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
 
   val animationsRegister: AnimationsRegister =
     new AnimationsRegister()
+  val fontRegister: FontRegister =
+    new FontRegister()
+  val boundaryLocator: BoundaryLocator =
+    new BoundaryLocator(animationsRegister, fontRegister)
 
   val audioPlayer: AudioPlayerImpl =
     AudioPlayerImpl.init
@@ -124,22 +128,22 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
 
   def rebuildGameLoop(firstRun: Boolean, flags: Map[String, String]): AssetCollection => Unit = ac => {
 
-    FontRegister.clearRegister()
+    fontRegister.clearRegister()
     DisplayObjectConversions.purgeCaches()
-    Text.purgeCaches()
+    boundaryLocator.purgeCache()
 
     accumulatedAssetCollection = accumulatedAssetCollection |+| ac
 
     audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
 
     val platform: Platform =
-      new PlatformImpl(accumulatedAssetCollection, globalEventStream, animationsRegister)
+      new PlatformImpl(accumulatedAssetCollection, globalEventStream, boundaryLocator, animationsRegister, fontRegister)
 
     val startupData: Startup[StartupError, StartupData] = initialise(accumulatedAssetCollection)(flags)
 
     GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
 
-    GameEngine.registerFonts(fonts ++ startupData.additionalFonts)
+    GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
 
     val loop: Try[Long => Unit] =
       for {
@@ -147,6 +151,7 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
         startUpSuccessData      <- GameEngine.initialisedGame(startupData)
         initialisedGameLoop <- GameEngine.initialiseGameLoop(
           this,
+          boundaryLocator,
           gameConfig,
           if (firstRun) initialModel(startUpSuccessData) else gameLoopInstance.gameModelState,
           if (firstRun) initialViewModel(startUpSuccessData) else (_: GameModel) => gameLoopInstance.viewModelState,
@@ -172,8 +177,8 @@ object GameEngine {
   def registerAnimations(animationsRegister: AnimationsRegister, animations: Set[Animation]): Unit =
     animations.foreach(animationsRegister.register)
 
-  def registerFonts(fonts: Set[FontInfo]): Unit =
-    fonts.foreach(FontRegister.register)
+  def registerFonts(fontRegister: FontRegister, fonts: Set[FontInfo]): Unit =
+    fonts.foreach(fontRegister.register)
 
   def initialisedGame[StartupError, StartupData](startupData: Startup[StartupError, StartupData]): Try[StartupData] =
     startupData match {
@@ -189,6 +194,7 @@ object GameEngine {
 
   def initialiseGameLoop[StartupData, StartupError, GameModel, ViewModel](
       gameEngine: GameEngine[StartupData, StartupError, GameModel, ViewModel],
+      boundaryLocator: BoundaryLocator,
       gameConfig: GameConfig,
       initialModel: GameModel,
       initialViewModel: GameModel => ViewModel,
@@ -197,6 +203,7 @@ object GameEngine {
   ): Try[GameLoop[GameModel, ViewModel]] =
     Success(
       new GameLoop[GameModel, ViewModel](
+        boundaryLocator,
         gameEngine,
         gameConfig,
         initialModel,

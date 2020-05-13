@@ -2,7 +2,7 @@ package indigo.shared
 
 import indigo.shared.datatypes.{FontInfo, FontKey}
 
-object FontRegister {
+final class FontRegister {
 
   implicit private val cache: QuickCache[FontInfo] = QuickCache.empty
 

@@ -7,11 +7,12 @@ import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
 import indigo.shared.time.GameTime
 import indigo.gameengine.FrameProcessor
+import indigo.shared.BoundaryLocator
 
 final class StandardFrameProcessor[Model, ViewModel](
     modelUpdate: (GameTime, Model, InputState, Dice) => GlobalEvent => Outcome[Model],
     viewModelUpdate: (GameTime, Model, ViewModel, InputState, Dice) => Outcome[ViewModel],
-    viewUpdate: (GameTime, Model, ViewModel, InputState) => SceneUpdateFragment
+    viewUpdate: (GameTime, Model, ViewModel, InputState, BoundaryLocator) => SceneUpdateFragment
 ) extends FrameProcessor[Model, ViewModel] {
 
   def updateModel(gameTime: GameTime, model: Model, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Model] =
@@ -20,8 +21,8 @@ final class StandardFrameProcessor[Model, ViewModel](
   def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, dice: Dice): Outcome[ViewModel] =
     viewModelUpdate(gameTime, model, viewModel, inputState, dice)
 
-  def updateView(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState): SceneUpdateFragment =
-    viewUpdate(gameTime, model, viewModel, inputState)
+  def updateView(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+    viewUpdate(gameTime, model, viewModel, inputState, boundaryLocator)
 
   def run(
       model: Model,
@@ -29,7 +30,8 @@ final class StandardFrameProcessor[Model, ViewModel](
       gameTime: GameTime,
       globalEvents: List[GlobalEvent],
       inputState: InputState,
-      dice: Dice
+      dice: Dice,
+      boundaryLocator: BoundaryLocator
   ): Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] = {
 
     val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
@@ -42,7 +44,7 @@ final class StandardFrameProcessor[Model, ViewModel](
       updateViewModel(gameTime, updatedModel.state, viewModel, inputState, dice)
 
     val view: SceneUpdateFragment =
-      updateView(gameTime, updatedModel.state, updatedViewModel.state, inputState)
+      updateView(gameTime, updatedModel.state, updatedViewModel.state, inputState, boundaryLocator)
 
     Outcome.combine3(updatedModel, updatedViewModel, Outcome(Some(view)))
   }
@@ -53,7 +55,8 @@ final class StandardFrameProcessor[Model, ViewModel](
       gameTime: GameTime,
       globalEvents: List[GlobalEvent],
       inputState: InputState,
-      dice: Dice
+      dice: Dice,
+      boundaryLocator: BoundaryLocator
   ): Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] = {
 
     val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
@@ -62,11 +65,6 @@ final class StandardFrameProcessor[Model, ViewModel](
       }
     }
 
-    val updatedViewModel: Outcome[ViewModel] =
-      updatedModel.flatMapState { m =>
-        updateViewModel(gameTime, m, viewModel, inputState, dice)
-      }
-
-    Outcome.combine3(updatedModel, updatedViewModel, Outcome(None))
+    Outcome.combine3(updatedModel, Outcome(viewModel), Outcome(None))
   }
 }

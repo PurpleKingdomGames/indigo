@@ -29,6 +29,7 @@ import indigo.shared.datatypes.Material
 import indigo.shared.assets.AssetName
 import indigo.shared.display.DisplayEffects
 import indigo.shared.datatypes.Texture
+import indigo.shared.BoundaryLocator
 
 object DisplayObjectConversions {
 
@@ -123,7 +124,15 @@ object DisplayObjectConversions {
   private val accDisplayObjects: ListBuffer[DisplayEntity] = new ListBuffer()
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-  def sceneNodesToDisplayObjects(sceneNodes: List[SceneGraphNode], gameTime: GameTime, assetMapping: AssetMapping, animationsRegister: AnimationsRegister, metrics: Metrics): ListBuffer[DisplayEntity] = {
+  def sceneNodesToDisplayObjects(
+      sceneNodes: List[SceneGraphNode],
+      gameTime: GameTime,
+      assetMapping: AssetMapping,
+      boundaryLocator: BoundaryLocator,
+      animationsRegister: AnimationsRegister,
+      fontRegister: FontRegister,
+      metrics: Metrics
+  ): ListBuffer[DisplayEntity] = {
     @tailrec
     def rec(remaining: List[SceneGraphNode]): ListBuffer[DisplayEntity] =
       remaining match {
@@ -159,7 +168,7 @@ object DisplayObjectConversions {
               rec(xs)
 
             case Some(anim) =>
-              accDisplayObjects += spriteToDisplayObject(x, assetMapping, anim)
+              accDisplayObjects += spriteToDisplayObject(boundaryLocator, x, assetMapping, anim)
               rec(xs)
           }
 
@@ -174,10 +183,10 @@ object DisplayObjectConversions {
             }
 
           val converterFunc: (TextLine, Int, Int) => List[DisplayObject] = {
-            FontRegister
+            fontRegister
               .findByFontKey(x.fontKey)
               .map { fontInfo =>
-                DisplayObjectConversions.textLineToDisplayObjects(x, assetMapping, fontInfo)
+                DisplayObjectConversions.textLineToDisplayObjects(boundaryLocator, x, assetMapping, fontInfo)
               }
               .getOrElse { (_, _, _) =>
                 IndigoLogger.errorOnce(s"Cannot render Text, missing Font with key: ${x.fontKey.toString()}")
@@ -186,7 +195,8 @@ object DisplayObjectConversions {
           }
 
           val letters =
-            x.lines
+            boundaryLocator
+              .textAsLinesWithBounds(x.text, x.fontKey)
               .foldLeft(0 -> List[DisplayObject]()) { (acc, textLine) =>
                 (acc._1 + textLine.lineBounds.height, acc._2 ++ converterFunc(textLine, alignmentOffsetX(textLine.lineBounds), acc._1))
               }
@@ -282,19 +292,21 @@ object DisplayObjectConversions {
     )
   }
 
-  def spriteToDisplayObject(leaf: Sprite, assetMapping: AssetMapping, anim: Animation): DisplayObject = {
-    val materialName = anim.material.default.value
+  def spriteToDisplayObject(boundaryLocator: BoundaryLocator, leaf: Sprite, assetMapping: AssetMapping, anim: Animation): DisplayObject = {
+    val material = anim.currentFrame.frameMaterial.getOrElse(anim.material)
+
+    val materialName = material.default.value
 
     val albedoAmount                     = 1.0f
-    val (emissiveOffset, emissiveAmount) = materialToEmissiveValues(assetMapping, anim.material)
-    val (normalOffset, normalAmount)     = materialToNormalValues(assetMapping, anim.material)
-    val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, anim.material)
+    val (emissiveOffset, emissiveAmount) = materialToEmissiveValues(assetMapping, material)
+    val (normalOffset, normalAmount)     = materialToNormalValues(assetMapping, material)
+    val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, material)
 
     val frameInfo =
       QuickCache(anim.frameHash) {
         SpriteSheetFrame.calculateFrameOffset(
           atlasSize = lookupAtlasSize(assetMapping, materialName),
-          frameCrop = anim.currentFrame.bounds,
+          frameCrop = anim.currentFrame.crop,
           textureOffset = lookupTextureOffset(assetMapping, materialName)
         )
       }
@@ -308,8 +320,8 @@ object DisplayObjectConversions {
       x = leaf.x,
       y = leaf.y,
       z = leaf.depth.zIndex,
-      width = leaf.bounds.size.x,
-      height = leaf.bounds.size.y,
+      width = leaf.bounds(boundaryLocator).size.x,
+      height = leaf.bounds(boundaryLocator).size.y,
       rotation = leaf.rotation.value.toFloat,
       scaleX = leaf.scale.x.toFloat,
       scaleY = leaf.scale.y.toFloat,
@@ -322,14 +334,14 @@ object DisplayObjectConversions {
       normalAmount = normalAmount.toFloat,
       specularOffset = frameInfo.offsetToCoords(specularOffset),
       specularAmount = specularAmount.toFloat,
-      isLit = if (anim.material.isLit) 1.0f else 0.0f,
+      isLit = if (material.isLit) 1.0f else 0.0f,
       refX = leaf.ref.x,
       refY = leaf.ref.y,
       effects = effectsValues
     )
   }
 
-  def textLineToDisplayObjects(leaf: Text, assetMapping: AssetMapping, fontInfo: FontInfo): (TextLine, Int, Int) => List[DisplayObject] =
+  def textLineToDisplayObjects(boundaryLocator: BoundaryLocator, leaf: Text, assetMapping: AssetMapping, fontInfo: FontInfo): (TextLine, Int, Int) => List[DisplayObject] =
     (line, alignmentOffsetX, yOffset) => {
 
       val lineHash: String =
@@ -337,7 +349,7 @@ object DisplayObjectConversions {
           ":" + line.hash +
           ":" + alignmentOffsetX.toString() +
           ":" + yOffset.toString() +
-          ":" + leaf.bounds.hash +
+          ":" + leaf.bounds(boundaryLocator).hash +
           ":" + leaf.rotation.hash +
           ":" + leaf.scale.hash +
           ":" + fontInfo.fontSpriteSheet.material.hash +
