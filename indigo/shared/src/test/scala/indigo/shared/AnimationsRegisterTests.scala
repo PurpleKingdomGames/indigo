@@ -227,7 +227,6 @@ object AnimationSample {
     Animation(
       key,
       Material.Textured(AssetName("imageAssetRef")),
-      Point.zero,
       cycles.head.label,
       cycles
     )

@@ -25,7 +25,6 @@ object AsepriteConverter {
           Animation(
             animationKey = AnimationKey(BindingKey.generate.value),
             material = Material.Textured(assetName),
-            spriteSheetSize = Point(aseprite.meta.size.w, aseprite.meta.size.h),
             currentCycleLabel = x.label,
             cycles = NonEmptyList.pure(x, xs)
           )

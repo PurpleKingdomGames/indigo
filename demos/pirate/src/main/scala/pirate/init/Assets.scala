@@ -42,42 +42,15 @@ object Assets {
     val bigCloudsGraphic: Graphic = Graphic(Rectangle(0, 0, 448, 101), 40, Material.Textured(bigCloudsRef)).withRef(0, 101)
     val bigCloudsWidth: Int       = bigCloudsGraphic.bounds.width
 
-    val animationKey1: AnimationKey = AnimationKey("cloud 1")
-    val animationKey2: AnimationKey = AnimationKey("cloud 2")
-    val animationKey3: AnimationKey = AnimationKey("cloud 3")
+    val animationKey: AnimationKey = AnimationKey("cloud")
 
-    val cloudCycles: NonEmptyList[Cycle] =
-      NonEmptyList(
-        Cycle.create("cloud 1", NonEmptyList(Frame.fromBounds(0, 0, 140, 39))),
-        Cycle.create("cloud 2", NonEmptyList(Frame.fromBounds(0, 39, 140, 39))),
-        Cycle.create("cloud 3", NonEmptyList(Frame.fromBounds(0, 78, 140, 39)))
-      )
-
-    val cloudsAnimation1: Animation =
+    val cloudsAnimation: Animation =
       Animation(
-        animationKey1,
+        animationKey,
         Material.Textured(smallCloudsRef),
-        Point(140, 117),
-        CycleLabel("cloud 1"),
-        cloudCycles
-      )
-
-    val cloudsAnimation2: Animation =
-      Animation(
-        animationKey2,
-        Material.Textured(smallCloudsRef),
-        Point(140, 117),
-        CycleLabel("cloud 2"),
-        cloudCycles
-      )
-
-    val cloudsAnimation3: Animation =
-      Animation(
-        animationKey3,
-        Material.Textured(smallCloudsRef),
-        Point(140, 117),
-        CycleLabel("cloud 3"),
-        cloudCycles
+        Frame.fromBounds(0, 0, 140, 39),
+        Frame.fromBounds(0, 39, 140, 39),
+        Frame.fromBounds(0, 78, 140, 39)
       )
 
     val assets: Set[AssetType] =

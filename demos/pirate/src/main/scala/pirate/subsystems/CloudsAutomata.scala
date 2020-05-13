@@ -17,8 +17,7 @@ object CloudsAutomata {
             .map { vertex =>
               sprite
                 .moveTo(vertex.x.toInt, seed.spawnedAt.y)
-                .withAnimationKey(AnimationKey("cloud " + ((seed.randomSeed % 3) + 1)))
-                .play()
+                .jumpToFrame((seed.randomSeed % 3))
             }
             .map(s => AutomatonUpdate(List(s), Nil))
 
@@ -28,7 +27,7 @@ object CloudsAutomata {
 
   val automaton: Automaton =
     Automaton.create(
-      Sprite(BindingKey("small clouds"), 0, 0, 140, 39, 45, Assets.Clouds.animationKey1),
+      Sprite(BindingKey("small clouds"), 0, 0, 140, 39, 45, Assets.Clouds.animationKey),
       Seconds.zero,
       signal,
       _ => Nil

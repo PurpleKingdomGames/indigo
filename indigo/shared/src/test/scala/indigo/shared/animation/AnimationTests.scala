@@ -48,7 +48,6 @@ object AnimationTests extends TestSuite {
     Animation(
       AnimationKey("test anim"),
       Material.Textured(AssetName("imageAssetRef")),
-      Point.zero,
       cycles.head.label,
       cycles
     )

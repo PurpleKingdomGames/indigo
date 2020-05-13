@@ -19,18 +19,12 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
   val animationsKey: AnimationKey = AnimationKey("anims")
 
   val animations: Set[Animation] = Set(
-    Animation.create(
+    Animation(
       animationsKey,
       Material.Textured(AssetName("trafficlights")),
-      Point(128, 128),
-      cycle = Cycle.create(
-        "lights",
-        NonEmptyList(
-          Frame(Rectangle(0, 0, 64, 64), Millis(250)),
-          Frame(Rectangle(64, 0, 64, 64), Millis(250)),
-          Frame(Rectangle(0, 64, 64, 64), Millis(250))
-        )
-      )
+      Frame(Rectangle(0, 0, 64, 64), Millis(250)),
+      Frame(Rectangle(64, 0, 64, 64), Millis(250)),
+      Frame(Rectangle(0, 64, 64, 64), Millis(250))
     )
   )
 

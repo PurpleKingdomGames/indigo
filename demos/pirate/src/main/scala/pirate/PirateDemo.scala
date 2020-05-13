@@ -23,11 +23,7 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
     Set(Assets.Fonts.fontInfo)
 
   val animations: Set[Animation] =
-    Set(
-      Assets.Clouds.cloudsAnimation1,
-      Assets.Clouds.cloudsAnimation2,
-      Assets.Clouds.cloudsAnimation3
-    )
+    Set(Assets.Clouds.cloudsAnimation)
 
   val subSystems: Set[SubSystem] =
     Set(

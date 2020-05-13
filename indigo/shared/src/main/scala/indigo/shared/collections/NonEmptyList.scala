@@ -204,6 +204,9 @@ object NonEmptyList {
   def apply[A](head: A, tail: A*): NonEmptyList[A] =
     pure(head, tail.toList)
 
+  def apply[A](head: A, tail: List[A]): NonEmptyList[A] =
+    pure(head, tail)
+
   def pure[A](headItem: A, tailItems: List[A]): NonEmptyList[A] =
     new NonEmptyList[A] {
       val head: A       = headItem

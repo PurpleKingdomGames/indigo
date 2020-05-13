@@ -33,18 +33,12 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val animations: Set[Animation] =
     Set(
-      Animation.create(
+      Animation(
         animationsKey,
         LightingAssets.trafficLightsMaterial,
-        Point(128, 128),
-        cycle = Cycle.create(
-          "lights",
-          NonEmptyList(
-            Frame(Rectangle(0, 0, 64, 64), Millis(500)),
-            Frame(Rectangle(64, 0, 64, 64), Millis(500)),
-            Frame(Rectangle(0, 64, 64, 64), Millis(500))
-          )
-        )
+        Frame(Rectangle(0, 0, 64, 64), Millis(500)),
+        Frame(Rectangle(64, 0, 64, 64), Millis(500)),
+        Frame(Rectangle(0, 64, 64, 64), Millis(500))
       )
     )
 
@@ -115,9 +109,9 @@ object LightingGame extends IndigoGameBasic[Unit, Unit, Unit] {
         //   .withHeight(25)
         //   .withPower(1.5)
       )
-  // .addGameLayerNodes(
-  //   Sprite(BindingKey("lights animation"), 0, 0, 64, 64, 1, animationsKey).play()
-  // )
+  .addGameLayerNodes(
+    Sprite(BindingKey("lights animation"), 0, 0, 64, 64, 1, animationsKey).play()
+  )
   // .addGameLayerNodes(
   //   graphic
   //     .moveTo(config.viewport.giveDimensions(config.magnification).center.x, 30)
