@@ -59,7 +59,7 @@ object ButtonExample extends IndigoGameBasic[Unit, MyGameModel, MyViewModel] {
       viewModel.copy(button = btn)
     }
 
-  def present(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, inputState: InputState): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
     SceneUpdateFragment(viewModel.button.draw)
 }
 

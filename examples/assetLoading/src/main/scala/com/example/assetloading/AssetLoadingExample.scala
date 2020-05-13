@@ -74,7 +74,7 @@ object AssetLoadingExample extends IndigoGameBasic[Unit, MyGameModel, MyViewMode
       viewModel.copy(button = btn)
     }
 
-  def present(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, inputState: InputState): SceneUpdateFragment = {
+  def present(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment = {
     val box = if (model.loaded) {
       List(
         Graphic(Rectangle(0, 0, 64, 64), 1, Assets.junctionBoxMaterial)

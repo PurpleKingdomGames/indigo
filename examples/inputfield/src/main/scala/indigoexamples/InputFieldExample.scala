@@ -40,7 +40,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
   def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
     Outcome(())
 
-  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState): SceneUpdateFragment = {
+  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment = {
 
     val inputFieldUpdate: InputFieldViewUpdate =
       model.inputField.draw(
@@ -51,7 +51,8 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
         InputFieldAssets(
           Text("input", 10, 20, 1, FontStuff.fontKey).alignLeft,
           Graphic(0, 0, 16, 16, 2, Material.Textured(FontStuff.fontName)).withCrop(188, 78, 14, 23).withTint(0, 0, 1)
-        )
+        ),
+        boundaryLocator
       )
 
     inputFieldUpdate.toSceneUpdateFragment

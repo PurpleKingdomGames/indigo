@@ -99,7 +99,7 @@ object WebSocketExample extends IndigoGameBasic[MySetupData, Unit, MyViewModel] 
         MyViewModel(ping, echo)
     }
 
-  def present(gameTime: GameTime, model: Unit, viewModel: MyViewModel, inputState: InputState): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: Unit, viewModel: MyViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
     SceneUpdateFragment(
       viewModel.ping.draw,
       viewModel.echo.draw

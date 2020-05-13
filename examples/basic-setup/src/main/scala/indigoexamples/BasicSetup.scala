@@ -37,7 +37,7 @@ object BasicSetup extends IndigoGameBasic[MyStartUpData, MyGameModel, MyViewMode
   def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, inputState: InputState, dice: Dice): Outcome[MyViewModel] =
     Outcome(viewModel)
 
-  def present(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, inputState: InputState): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
     noRender
 }
 

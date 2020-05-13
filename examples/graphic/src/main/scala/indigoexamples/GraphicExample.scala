@@ -43,7 +43,7 @@ object GraphicExample extends IndigoGameBasic[Unit, Unit, Unit] {
       .scaleBy(1.5, 1.5)
       .withRef(96, 96)
 
-  def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         basic.withAlpha(0.5),

@@ -46,7 +46,7 @@ object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
   def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, dice: Dice): Outcome[ViewModel] =
     Outcome(viewModel)
 
-  def present(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
     View.drawBackground |+|
       View.sceneAudio |+|
       View.drawWater(viewModel) |+|

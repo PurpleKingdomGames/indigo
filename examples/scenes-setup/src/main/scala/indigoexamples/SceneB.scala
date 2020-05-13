@@ -36,7 +36,7 @@ object SceneB extends Scene[GameModel, Unit] {
 
   // Show some text
   // When the user clicks anywhere in the screen, trigger an event to jump to the other scene.
-  def updateSceneView(gameTime: GameTime, sceneModel: MessageB, sceneViewModel: Unit, inputState: InputState): SceneUpdateFragment = {
+  def updateSceneView(gameTime: GameTime, sceneModel: MessageB, sceneViewModel: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment = {
     val events: List[GlobalEvent] =
       if (inputState.mouse.wasMouseClickedWithin(Rectangle(0, 0, 550, 400))) List(SceneEvent.JumpTo(SceneA.name))
       else Nil

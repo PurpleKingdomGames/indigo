@@ -45,7 +45,8 @@ object StartScene extends Scene[SnakeGameModel, SnakeViewModel] {
       gameTime: GameTime,
       snakeGameModel: SnakeGameModel,
       snakeViewModel: SnakeViewModel,
-      inputState: InputState
+      inputState: InputState,
+      boundaryLocator: BoundaryLocator
   ): SceneUpdateFragment = {
     val horizontalCenter: Int = (Settings.viewportWidth / Settings.magnificationLevel) / 2
     val verticalMiddle: Int   = (Settings.viewportHeight / Settings.magnificationLevel) / 2

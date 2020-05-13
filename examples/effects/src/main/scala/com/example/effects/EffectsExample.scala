@@ -53,7 +53,7 @@ object EffectsExample extends IndigoGameBasic[Unit, Unit, Unit] {
       .withRef(20, 20)
       .moveTo(config.viewport.giveDimensions(config.magnification).center + Point(0, -25))
 
-  def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         graphic

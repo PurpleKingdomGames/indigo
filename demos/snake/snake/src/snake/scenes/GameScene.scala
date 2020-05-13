@@ -43,7 +43,8 @@ object GameScene extends Scene[SnakeGameModel, SnakeViewModel] {
       gameTime: GameTime,
       gameModel: GameModel,
       snakeViewModel: SnakeViewModel,
-      inputState: InputState
+      inputState: InputState,
+      boundaryLocator: BoundaryLocator
   ): SceneUpdateFragment =
     ViewLogic.update(gameModel, snakeViewModel)
 }

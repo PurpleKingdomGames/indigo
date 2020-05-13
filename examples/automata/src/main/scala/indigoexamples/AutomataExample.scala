@@ -53,7 +53,7 @@ object AutomataExample extends IndigoGameBasic[Unit, Unit, Button] {
       }
     }
 
-  def present(gameTime: GameTime, model: Unit, viewModel: Button, inputState: InputState): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: Unit, viewModel: Button, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
     SceneUpdateFragment(
       viewModel.draw,
       Text("click to win!", 30, 10, 1, FontStuff.fontKey)

@@ -46,7 +46,7 @@ object TextExample extends IndigoGameBasic[Unit, Model, Unit] {
   def updateViewModel(gameTime: GameTime, model: Model, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
     Outcome(viewModel)
 
-  def present(gameTime: GameTime, model: Model, viewModel: Unit, inputState: InputState): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: Model, viewModel: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontKey)

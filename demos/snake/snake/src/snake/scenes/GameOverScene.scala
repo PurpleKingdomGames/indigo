@@ -44,7 +44,8 @@ object GameOverScene extends Scene[SnakeGameModel, SnakeViewModel] {
       gameTime: GameTime,
       pointsScored: Int,
       sceneViewModel: Unit,
-      inputState: InputState
+      inputState: InputState,
+      boundaryLocator: BoundaryLocator
   ): SceneUpdateFragment = {
     val horizontalCenter: Int = (Settings.viewportWidth / Settings.magnificationLevel) / 2
     val verticalMiddle: Int   = (Settings.viewportHeight / Settings.magnificationLevel) / 2

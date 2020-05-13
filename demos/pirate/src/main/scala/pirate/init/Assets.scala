@@ -40,7 +40,7 @@ object Assets {
     val smallCloudsRef: AssetName = AssetName("small_clouds")
 
     val bigCloudsGraphic: Graphic = Graphic(Rectangle(0, 0, 448, 101), 40, Material.Textured(bigCloudsRef)).withRef(0, 101)
-    val bigCloudsWidth: Int       = bigCloudsGraphic.bounds.width
+    val bigCloudsWidth: Int       = bigCloudsGraphic.crop.width
 
     val animationKey: AnimationKey = AnimationKey("cloud")
 

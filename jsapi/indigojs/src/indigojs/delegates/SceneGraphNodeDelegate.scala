@@ -73,7 +73,7 @@ final class GroupDelegate(
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("Graphic")
 final class GraphicDelegate(
-    _bounds: RectangleDelegate,
+    _position: PointDelegate,
     _depth: Int,
     _rotation: Double,
     _scaleX: Double,
@@ -86,7 +86,7 @@ final class GraphicDelegate(
     with CloneableDelegate {
 
   @JSExport
-  val bounds = _bounds
+  val position = _position
   @JSExport
   val depth = _depth
   @JSExport
@@ -190,7 +190,7 @@ final class GraphicDelegate(
 
   def fromInternal(orig: Graphic): GraphicDelegate =
     new GraphicDelegate(
-      RectangleDelegate.fromRectangle(orig.bounds),
+      PointDelegate.fromPoint(orig.position),
       orig.depth.zIndex,
       orig.rotation.value,
       orig.scale.x,
@@ -203,7 +203,7 @@ final class GraphicDelegate(
 
   def toInternal: Graphic =
     new Graphic(
-      bounds.toInternal,
+      position.toInternal,
       Depth(depth),
       Radians(rotation),
       Vector2(scaleX, scaleY),
@@ -218,7 +218,7 @@ final class GraphicDelegate(
 @JSExportTopLevel("Sprite")
 final class SpriteDelegate(
     _bindingKey: String,
-    _bounds: RectangleDelegate,
+    _position: PointDelegate,
     _depth: Int,
     _rotation: Double,
     _scaleX: Double,
@@ -234,7 +234,7 @@ final class SpriteDelegate(
   @JSExport
   val bindingKey = _bindingKey
   @JSExport
-  val bounds = _bounds
+  val position = _position
   @JSExport
   val depth = _depth
   @JSExport
@@ -257,7 +257,7 @@ final class SpriteDelegate(
   def toInternal: Sprite =
     new Sprite(
       new BindingKey(bindingKey),
-      bounds.toInternal,
+      position.toInternal,
       Depth(depth),
       Radians(rotation),
       Vector2(scaleX, scaleY),
@@ -336,7 +336,7 @@ object SceneGraphNodeUtilities {
   implicit class SpriteConvert(val obj: Sprite) {
     def toJsDelegate = new SpriteDelegate(
       obj.bindingKey.value,
-      new RectangleDelegate(obj.bounds.x, obj.bounds.y, obj.bounds.width, obj.bounds.height),
+      new PointDelegate(obj.position.x, obj.position.y),
       obj.depth.zIndex,
       obj.rotation.value,
       obj.scale.x,

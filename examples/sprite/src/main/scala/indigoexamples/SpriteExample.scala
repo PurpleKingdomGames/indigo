@@ -53,16 +53,8 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
    advance of the render loops (cache effectively), then the key wouldn't be
    regenerated.
    */
-  def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
     SceneUpdateFragment.empty.addGameLayerNodes(
-      Sprite(
-        BindingKey("lights animation"),
-        0,
-        0,
-        64,
-        64,
-        1,
-        animationsKey
-      ).play()
+      Sprite(BindingKey("lights animation"), 0, 0, 1, animationsKey).play()
     )
 }

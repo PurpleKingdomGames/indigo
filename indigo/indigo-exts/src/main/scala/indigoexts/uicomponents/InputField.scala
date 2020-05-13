@@ -13,8 +13,8 @@ import indigo.shared.BoundaryLocator
 
 object InputField {
 
-  def apply(text: String, boundaryLocator: BoundaryLocator): InputField =
-    InputField(InputFieldState.Normal, text, 0, InputFieldOptions.default, BindingKey.generate, boundaryLocator)
+  def apply(text: String): InputField =
+    InputField(InputFieldState.Normal, text, 0, InputFieldOptions.default, BindingKey.generate)
 
   object Model {
 
@@ -164,12 +164,12 @@ object InputField {
 
 }
 
-final case class InputField(state: InputFieldState, text: String, cursorPosition: Int, options: InputFieldOptions, bindingKey: BindingKey, boundaryLocator: BoundaryLocator) {
+final case class InputField(state: InputFieldState, text: String, cursorPosition: Int, options: InputFieldOptions, bindingKey: BindingKey) {
 
   def update(inputFieldEvent: InputFieldEvent): InputField =
     InputField.Model.update(this, inputFieldEvent)
 
-  def draw(gameTime: GameTime, position: Point, depth: Depth, inputState: InputState, inputFieldAssets: InputFieldAssets): InputFieldViewUpdate =
+  def draw(gameTime: GameTime, position: Point, depth: Depth, inputState: InputState, inputFieldAssets: InputFieldAssets, boundaryLocator: BoundaryLocator): InputFieldViewUpdate =
     InputField.View.update(boundaryLocator, gameTime, position, depth, this, inputState, inputFieldAssets)
 
   def giveFocus: InputField =

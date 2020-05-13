@@ -33,6 +33,8 @@ import indigojs.delegates.DiceDelegate
 import indigojs.delegates.InputStateDelegate
 import indigojs.delegates.AssetCollectionDelegate
 import indigojs.delegates.GlobalEventDelegate
+import indigojs.delegates.BoundaryLocatorDelegate
+import indigo.shared.BoundaryLocator
 
 @JSExportTopLevel("Indigo")
 object IndigoJS {
@@ -46,7 +48,7 @@ object IndigoJS {
   type InitialViewModel = js.Function2[StartupData, GameModel, ViewModel]
   type ModelUpdate      = js.Function4[GameTimeDelegate, GameModel, InputStateDelegate, DiceDelegate, js.Function1[GlobalEventDelegate, OutcomeDelegate]]
   type ViewModelUpdate  = js.Function5[GameTimeDelegate, GameModel, ViewModel, InputStateDelegate, DiceDelegate, OutcomeDelegate]
-  type ViewUpdate       = js.Function4[GameTimeDelegate, GameModel, ViewModel, InputStateDelegate, SceneUpdateFragmentDelegate]
+  type ViewUpdate       = js.Function5[GameTimeDelegate, GameModel, ViewModel, InputStateDelegate, BoundaryLocatorDelegate, SceneUpdateFragmentDelegate]
 
   private def indigoGame(
       fonts: Set[FontInfo],
@@ -56,7 +58,7 @@ object IndigoJS {
       initialViewModel: StartupData => GameModel => ViewModel,
       modelUpdate: (GameTime, GameModel, InputState, Dice) => GlobalEvent => Outcome[GameModel],
       viewModelUpdate: (GameTime, GameModel, ViewModel, InputState, Dice) => Outcome[ViewModel],
-      viewUpdate: (GameTime, GameModel, ViewModel, InputState) => SceneUpdateFragment
+      viewUpdate: (GameTime, GameModel, ViewModel, InputState, BoundaryLocator) => SceneUpdateFragment
   ): GameEngine[StartupData, StartupError, GameModel, ViewModel] = {
 
     val frameProcessor: StandardFrameProcessor[GameModel, ViewModel] =
@@ -95,13 +97,14 @@ object IndigoJS {
         new DiceDelegate(d)
       ).toInternal
 
-  private def convertUpdateView(f: ViewUpdate): (GameTime, GameModel, ViewModel, InputState) => SceneUpdateFragment =
-    (gt, gm, vm, is) =>
+  private def convertUpdateView(f: ViewUpdate): (GameTime, GameModel, ViewModel, InputState, BoundaryLocator) => SceneUpdateFragment =
+    (gt, gm, vm, is, bl) =>
       f(
         new GameTimeDelegate(gt),
         gm,
         vm,
-        new InputStateDelegate(is)
+        new InputStateDelegate(is),
+        new BoundaryLocatorDelegate(bl)
       ).toInternal
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))

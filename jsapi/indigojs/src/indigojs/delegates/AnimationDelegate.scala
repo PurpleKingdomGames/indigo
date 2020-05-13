@@ -82,7 +82,7 @@ final class FrameDelegate(_bounds: RectangleDelegate, _duration: Int) {
   val duration = _duration
 
   def toInternal: Frame =
-    new Frame(bounds.toInternal, Millis(duration.toLong))
+    new Frame(bounds.toInternal, Millis(duration.toLong), None)
 }
 
 sealed trait AnimationActionDelegate {
@@ -156,7 +156,7 @@ object AnimationUtilities {
         obj.frames
           .map(f =>
             new FrameDelegate(
-              new RectangleDelegate(f.bounds.x, f.bounds.y, f.bounds.width, f.bounds.height),
+              new RectangleDelegate(f.crop.x, f.crop.y, f.crop.width, f.crop.height),
               f.duration.value.toInt
             )
           )
