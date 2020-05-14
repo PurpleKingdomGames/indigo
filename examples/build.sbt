@@ -120,21 +120,6 @@ lazy val inputfield =
       gameAssetsDirectory := "assets"
     )
 
-lazy val fullSetup =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
-    .in(file("full-setup"))
-    .settings(commonSettings: _*)
-    .enablePlugins(SbtIndigo)
-    .enablePlugins(ScalaJSPlugin)
-    .settings(
-      name := "full-setup",
-      showCursor := true,
-      title := "Full Setup",
-      gameAssetsDirectory := "assets"
-    )
-
 lazy val button =
   crossProject(JSPlatform)
     .withoutSuffixFor(JSPlatform)
