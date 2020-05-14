@@ -65,24 +65,8 @@ package object indigoexts {
 
     type InputField = indigoexts.uicomponents.InputField
     val InputField: indigoexts.uicomponents.InputField.type = indigoexts.uicomponents.InputField
-
-    type InputFieldOptions = indigoexts.uicomponents.InputFieldOptions
-    val InputFieldOptions: indigoexts.uicomponents.InputFieldOptions.type = indigoexts.uicomponents.InputFieldOptions
-
-    type RenderedInputFieldElements = indigoexts.uicomponents.RenderedInputFieldElements
-    val RenderedInputFieldElements: indigoexts.uicomponents.RenderedInputFieldElements.type = indigoexts.uicomponents.RenderedInputFieldElements
-
-    type InputFieldAssets = indigoexts.uicomponents.InputFieldAssets
-    val InputFieldAssets: indigoexts.uicomponents.InputFieldAssets.type = indigoexts.uicomponents.InputFieldAssets
-
-    type InputFieldViewUpdate = indigoexts.uicomponents.InputFieldViewUpdate
-    val InputFieldViewUpdate: indigoexts.uicomponents.InputFieldViewUpdate.type = indigoexts.uicomponents.InputFieldViewUpdate
-
     type InputFieldEvent = indigoexts.uicomponents.InputFieldEvent
     val InputFieldEvent: indigoexts.uicomponents.InputFieldEvent.type = indigoexts.uicomponents.InputFieldEvent
-
-    type InputFieldState = indigoexts.uicomponents.InputFieldState
-    val InputFieldState: indigoexts.uicomponents.InputFieldState.type = indigoexts.uicomponents.InputFieldState
   }
 
 }

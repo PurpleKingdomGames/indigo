@@ -576,18 +576,6 @@ final class TextLine(val text: String, val lineBounds: Rectangle) {
 
 object Text {
 
-  // implicit val lineBoundsCache: QuickCache[Rectangle] = QuickCache.empty
-
-  // def purgeCaches(): Unit =
-  //   lineBoundsCache.purgeAllNow()
-
-  // def calculateBoundsOfLine(lineText: String, fontInfo: FontInfo): Rectangle =
-  //   QuickCache("line-bounds-" + fontInfo.fontKey.key + "-" + lineText) {
-  //     lineText.toList
-  //       .map(c => fontInfo.findByCharacter(c).bounds)
-  //       .fold(Rectangle.zero)((acc, curr) => Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height)))
-  //   }
-
   def apply(text: String, x: Int, y: Int, depth: Int, fontKey: FontKey): Text =
     Text(
       text = text,
