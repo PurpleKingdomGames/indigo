@@ -116,10 +116,13 @@ object BoundingBox {
   implicit val rectangleShow: AsString[BoundingBox] =
     AsString.create(p => s"""BoundingBox(Position(${p.x.show}, ${p.y.show}), Size(${p.width.show}, ${p.height.show}))""")
 
-  implicit def rectangleEqualTo(implicit eq: EqualTo[Vertex]): EqualTo[BoundingBox] =
+  implicit val rectangleEqualTo: EqualTo[BoundingBox] = {
+    val eq = implicitly[EqualTo[Vertex]]
+
     EqualTo.create { (a, b) =>
       eq.equal(a.position, b.position) && eq.equal(a.size, b.size)
     }
+  }
 
   def expandToInclude(a: BoundingBox, b: BoundingBox): BoundingBox = {
     val newX: Double = if (a.left < b.left) a.left else b.left

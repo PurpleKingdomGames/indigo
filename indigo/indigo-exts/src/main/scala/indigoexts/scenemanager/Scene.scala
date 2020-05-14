@@ -49,9 +49,11 @@ object SceneName {
   def apply(name: String): SceneName =
     new SceneName(name)
 
-  implicit def EqSceneName(implicit eq: EqualTo[String]): EqualTo[SceneName] =
+  implicit val EqSceneName: EqualTo[SceneName] = {
+    val eq = implicitly[EqualTo[String]]
     EqualTo.create { (a, b) =>
       eq.equal(a.name, b.name)
     }
+  }
 
 }

@@ -10,21 +10,31 @@ object WebSocketId {
   def generate: WebSocketId =
     WebSocketId(BindingKey.generate.value)
 
-  implicit def eq(implicit eqS: EqualTo[String]): EqualTo[WebSocketId] =
+  implicit val eq: EqualTo[WebSocketId] = {
+    val eqS = implicitly[EqualTo[String]]
     EqualTo.create((a, b) => eqS.equal(a.id, b.id))
+  }
 
-  implicit def show(implicit showS: AsString[String]): AsString[WebSocketId] =
+  implicit val show: AsString[WebSocketId] = {
+    val showS = implicitly[AsString[String]]
     AsString.create(v => s"""WebSocketId(${showS.show(v.id)})""")
+  }
 }
 
 final case class WebSocketConfig(id: WebSocketId, address: String)
 object WebSocketConfig {
 
-  implicit def eq(implicit eqId: EqualTo[WebSocketId], eqS: EqualTo[String]): EqualTo[WebSocketConfig] =
+  implicit val eq: EqualTo[WebSocketConfig] = {
+    val eqId = implicitly[EqualTo[WebSocketId]]
+    val eqS  = implicitly[EqualTo[String]]
     EqualTo.create((a, b) => eqId.equal(a.id, b.id) && eqS.equal(a.address, b.address))
+  }
 
-  implicit def show(implicit sId: AsString[WebSocketId], showS: AsString[String]): AsString[WebSocketConfig] =
+  implicit val show: AsString[WebSocketConfig] = {
+    val sId   = implicitly[AsString[WebSocketId]]
+    val showS = implicitly[AsString[String]]
     AsString.create(v => s"""WebSocketConfig(${sId.show(v.id)}, ${showS.show(v.address)})""")
+  }
 
 }
 

@@ -128,10 +128,12 @@ object Rectangle {
   implicit val rectangleShow: AsString[Rectangle] =
     AsString.create(p => s"""Rectangle(Position(${p.x.show}, ${p.y.show}), Size(${p.width.show}, ${p.height.show}))""")
 
-  implicit def rectangleEqualTo(implicit eq: EqualTo[Point]): EqualTo[Rectangle] =
+  implicit val rectangleEqualTo: EqualTo[Rectangle] = {
+    val eq = implicitly[EqualTo[Point]]
     EqualTo.create { (a, b) =>
       eq.equal(a.position, b.position) && eq.equal(a.size, b.size)
     }
+  }
 
   def expand(rectangle: Rectangle, amount: Int): Rectangle =
     Rectangle(

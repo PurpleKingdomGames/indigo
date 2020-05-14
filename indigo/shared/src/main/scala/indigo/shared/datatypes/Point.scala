@@ -53,13 +53,17 @@ object Point {
 
   def tuple2ToPoint(t: (Int, Int)): Point = Point(t._1, t._2)
 
-  implicit def show(implicit showI: AsString[Int]): AsString[Point] =
+  implicit val show: AsString[Point] = {
+    val showI = implicitly[AsString[Int]]
     AsString.create(p => s"""Point(${showI.show(p.x)}, ${showI.show(p.y)})""")
+  }
 
-  implicit def equalTo(implicit eqI: EqualTo[Int]): EqualTo[Point] =
+  implicit val equalTo: EqualTo[Point] = {
+    val eqI = implicitly[EqualTo[Int]]
     EqualTo.create { (a, b) =>
       eqI.equal(a.x, b.x) && eqI.equal(a.y, b.y)
     }
+  }
 
   def linearInterpolation(a: Point, b: Point, divisor: Double, multiplier: Double): Point =
     Point(a.x + (((b.x - a.x) / divisor) * multiplier).toInt, a.y + (((b.y - a.y) / divisor) * multiplier).toInt)

@@ -213,28 +213,28 @@ object DisplayObjectConversions {
 
   def materialToEmissiveValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
     material match {
-      case Material.Textured(AssetName(_)) =>
+      case Material.Textured(AssetName(_), _) =>
         (Vector2.zero, 0.0d)
 
-      case Material.Lit(_, texture, _, _) =>
+      case Material.Lit(_, texture, _, _, _) =>
         optionalAssetToValues(assetMapping, texture)
     }
 
   def materialToNormalValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
     material match {
-      case Material.Textured(AssetName(_)) =>
+      case Material.Textured(AssetName(_), _) =>
         (Vector2.zero, 0.0d)
 
-      case Material.Lit(_, _, texture, _) =>
+      case Material.Lit(_, _, texture, _, _) =>
         optionalAssetToValues(assetMapping, texture)
     }
 
   def materialToSpecularValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
     material match {
-      case Material.Textured(AssetName(_)) =>
+      case Material.Textured(AssetName(_), _) =>
         (Vector2.zero, 0.0d)
 
-      case Material.Lit(_, _, _, texture) =>
+      case Material.Lit(_, _, _, texture, _) =>
         optionalAssetToValues(assetMapping, texture)
     }
 

@@ -26,13 +26,17 @@ final case class GridPoint(x: Int, y: Int) {
 }
 object GridPoint {
 
-  implicit def show(implicit showI: AsString[Int]): AsString[GridPoint] =
+  implicit val show: AsString[GridPoint] = {
+    val showI = implicitly[AsString[Int]]
     AsString.create(p => s"""GridPoint(${showI.show(p.x)}, ${showI.show(p.y)})""")
+  }
 
-  implicit def eq(implicit eqI: EqualTo[Int]): EqualTo[GridPoint] =
+  implicit val eq: EqualTo[GridPoint] = {
+    val eqI = implicitly[EqualTo[Int]]
     EqualTo.create { (a, b) =>
       eqI.equal(a.x, b.x) && eqI.equal(a.y, b.y)
     }
+  }
 
   def tupleToGridPoint(t: (Int, Int)): GridPoint =
     GridPoint(t._1, t._2)

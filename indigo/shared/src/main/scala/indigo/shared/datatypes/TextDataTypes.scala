@@ -63,10 +63,12 @@ final class FontKey(val key: String) extends AnyVal {
 }
 object FontKey {
 
-  implicit def eq(implicit eqS: EqualTo[String]): EqualTo[FontKey] =
+  implicit val eq: EqualTo[FontKey] = {
+    val eqS = implicitly[EqualTo[String]]
     EqualTo.create { (a, b) =>
       eqS.equal(a.key, b.key)
     }
+  }
 
   def apply(key: String): FontKey =
     new FontKey(key)

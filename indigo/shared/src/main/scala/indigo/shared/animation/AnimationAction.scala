@@ -7,7 +7,9 @@ sealed trait AnimationAction {
 }
 object AnimationAction {
 
-  implicit def animationActionEqualTo(implicit clEq: EqualTo[CycleLabel], iEq: EqualTo[Int]): EqualTo[AnimationAction] =
+  implicit val animationActionEqualTo: EqualTo[AnimationAction] = {
+    val clEq = implicitly[EqualTo[CycleLabel]]
+    val iEq  = implicitly[EqualTo[Int]]
     EqualTo.create {
       case (Play, Play)                                         => true
       case (ChangeCycle(a), ChangeCycle(b)) if clEq.equal(a, b) => true
@@ -16,6 +18,7 @@ object AnimationAction {
       case (JumpToFrame(a), JumpToFrame(b)) if iEq.equal(a, b)  => true
       case _                                                    => false
     }
+  }
 
   implicit val animationActionAsString: AsString[AnimationAction] =
     AsString.create { action =>

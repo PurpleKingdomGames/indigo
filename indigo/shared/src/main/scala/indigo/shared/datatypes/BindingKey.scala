@@ -25,10 +25,12 @@ object BindingKey {
   def generate: BindingKey =
     BindingKey(Random.alphanumeric.take(16).mkString)
 
-  implicit def eq(implicit eqS: EqualTo[String]): EqualTo[BindingKey] =
+  implicit val eq: EqualTo[BindingKey] = {
+    val eqS = implicitly[EqualTo[String]]
     EqualTo.create { (a, b) =>
       eqS.equal(a.value, b.value)
     }
+  }
 
   implicit val bindingKeyAsString: AsString[BindingKey] =
     AsString.create { k =>

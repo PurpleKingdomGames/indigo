@@ -1,6 +1,10 @@
 package indigo.shared.datatypes
 
 import indigo.shared.assets.AssetName
+import indigo.shared.EqualTo
+import indigo.shared.EqualTo._
+import indigo.shared.AsString
+import indigo.shared.AsString._
 
 sealed trait Material {
   val default: AssetName
@@ -11,6 +15,33 @@ sealed trait Material {
 }
 
 object Material {
+
+  implicit val show: AsString[Material] = {
+    AsString.create {
+      case t: Textured =>
+        s"""Textured(${t.diffuse.show}, ${t.isLit.show})"""
+
+      case l: Lit =>
+        s"""Lit(${l.albedo.show}, ${l.emissive.show}, ${l.normal.show}, ${l.specular.show}, ${l.isLit.show})"""
+    }
+  }
+
+  implicit val eq: EqualTo[Material] = {
+    EqualTo.create {
+      case (Textured(diffuseA, isLitA), Textured(diffuseB, isLitB)) =>
+        diffuseA === diffuseB &&
+          isLitA === isLitB
+
+      case (Lit(albedoA, emissiveA, normalA, specularA, isLitA), Lit(albedoB, emissiveB, normalB, specularB, isLitB)) =>
+        albedoA === albedoB &&
+          emissiveA === emissiveB &&
+          normalA === normalB &&
+          specularA === specularB &&
+          isLitA === isLitB
+      case _ =>
+        false
+    }
+  }
 
   final class Textured(val diffuse: AssetName, val isLit: Boolean) extends Material {
     val default: AssetName = diffuse
@@ -31,8 +62,8 @@ object Material {
     def apply(diffuse: AssetName): Textured =
       new Textured(diffuse, false)
 
-    def unapply(t: Textured): Option[AssetName] =
-      Some(t.diffuse)
+    def unapply(t: Textured): Option[(AssetName, Boolean)] =
+      Some((t.diffuse, t.isLit))
   }
 
   final class Lit(
@@ -122,8 +153,8 @@ object Material {
         true
       )
 
-    def unapply(l: Lit): Option[(AssetName, Option[Texture], Option[Texture], Option[Texture])] =
-      Some((l.albedo, l.emissive, l.normal, l.specular))
+    def unapply(l: Lit): Option[(AssetName, Option[Texture], Option[Texture], Option[Texture], Boolean)] =
+      Some((l.albedo, l.emissive, l.normal, l.specular, l.isLit))
 
     def fromAlbedo(albedo: AssetName): Lit =
       new Lit(albedo, None, None, None, true)
@@ -136,6 +167,20 @@ final class Texture(val assetName: AssetName, val amount: Double) {
     assetName.value + amount.toString()
 }
 object Texture {
+
+  implicit val show: AsString[Texture] = {
+    AsString.create { texture =>
+      s"""Texture(${texture.assetName.show}, ${texture.amount.show})"""
+    }
+  }
+
+  implicit val eq: EqualTo[Texture] =
+    EqualTo.create {
+      case (a, b) =>
+        a.assetName === b.assetName &&
+          a.amount === b.amount
+    }
+
   def apply(assetName: AssetName, amount: Double): Texture =
     new Texture(assetName, amount)
 

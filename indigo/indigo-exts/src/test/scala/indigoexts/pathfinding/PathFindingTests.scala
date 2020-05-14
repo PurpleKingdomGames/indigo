@@ -9,8 +9,6 @@ object PathFindingTests extends TestSuite {
 
   val coords: Coords = Coords(0, 0)
 
-  implicit def tupleToCoords(t: (Int, Int)): Coords = Coords(t._1, t._2)
-
   val tests: Tests =
     Tests {
       "Finding an unobscured path" - {

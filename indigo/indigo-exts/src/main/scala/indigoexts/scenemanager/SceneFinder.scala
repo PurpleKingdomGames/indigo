@@ -80,12 +80,16 @@ final class SceneFinder(val previous: List[ScenePosition], val current: ScenePos
 
 object SceneFinder {
 
-  implicit def scenesFinderEqualTo(implicit eqL: EqualTo[List[ScenePosition]], eqP: EqualTo[ScenePosition]): EqualTo[SceneFinder] =
+  implicit val scenesFinderEqualTo: EqualTo[SceneFinder] = {
+    val eqL = implicitly[EqualTo[List[ScenePosition]]]
+    val eqP = implicitly[EqualTo[ScenePosition]]
+
     EqualTo.create { (a, b) =>
       eqL.equal(a.previous, b.previous) &&
       eqP.equal(a.current, b.current) &&
       eqL.equal(a.next, b.next)
     }
+  }
 
   def apply(previous: List[ScenePosition], current: ScenePosition, next: List[ScenePosition]): SceneFinder =
     new SceneFinder(previous, current, next)
@@ -101,9 +105,12 @@ object SceneFinder {
 final case class ScenePosition(index: Int, name: SceneName)
 object ScenePosition {
 
-  implicit def EqScenePosition(implicit eqInt: EqualTo[Int], eqName: EqualTo[SceneName]): EqualTo[ScenePosition] =
+  implicit val EqScenePosition: EqualTo[ScenePosition] = {
+    val eqInt  = implicitly[EqualTo[Int]]
+    val eqName = implicitly[EqualTo[SceneName]]
     EqualTo.create[ScenePosition] { (a, b) =>
       eqInt.equal(a.index, b.index) && eqName.equal(a.name, b.name)
     }
+  }
 
 }

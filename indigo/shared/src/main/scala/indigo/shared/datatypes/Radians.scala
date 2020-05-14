@@ -33,15 +33,19 @@ final class Radians(val value: Double) extends AnyVal {
 }
 object Radians {
 
-  implicit def show(implicit showD: AsString[Double]): AsString[Radians] =
+  implicit val show: AsString[Radians] = {
+    val showD = implicitly[AsString[Double]]
     AsString.create(p => s"""Radians(${showD.show(p.value)})""")
+  }
 
-  implicit def equalTo(implicit eqD: EqualTo[Double]): EqualTo[Radians] =
+  implicit val equalTo: EqualTo[Radians] = {
+    val eqD = implicitly[EqualTo[Double]]
     EqualTo.create { (a, b) =>
       eqD.equal(a.value, b.value)
     }
+  }
 
-  val PI: Radians = Radians(Math.PI)
+  val PI: Radians  = Radians(Math.PI)
   val TAU: Radians = Radians(Math.PI * 2)
 
   def zero: Radians =

@@ -56,28 +56,30 @@ final case class Animation(
 
 object Animation {
 
-  implicit def animationEqualTo(
-      implicit eAK: EqualTo[AnimationKey],
-      eM: EqualTo[Material],
-      eCL: EqualTo[CycleLabel],
-      eNelC: EqualTo[NonEmptyList[Cycle]]
-  ): EqualTo[Animation] =
+  implicit val animationEqualTo: EqualTo[Animation] = {
+      val eAK = implicitly[EqualTo[AnimationKey]]
+      val eM = implicitly[EqualTo[Material]]
+      val eCL = implicitly[EqualTo[CycleLabel]]
+      val eNelC = implicitly[EqualTo[NonEmptyList[Cycle]]]
+
     EqualTo.create { (a, b) =>
       eAK.equal(a.animationKey, b.animationKey) &&
       eM.equal(a.material, b.material) &&
       eCL.equal(a.currentCycleLabel, b.currentCycleLabel) &&
       eNelC.equal(a.cycles, b.cycles)
     }
+  }
 
-  implicit def animationAsString(
-      implicit sAK: AsString[AnimationKey],
-      sM: AsString[Material],
-      sCL: AsString[CycleLabel],
-      sNelC: AsString[NonEmptyList[Cycle]]
-  ): AsString[Animation] =
+  implicit val animationAsString: AsString[Animation] = {
+      val sAK = implicitly[AsString[AnimationKey]]
+      val sM = implicitly[AsString[Material]]
+      val sCL = implicitly[AsString[CycleLabel]]
+      val sNelC = implicitly[AsString[NonEmptyList[Cycle]]]
+
     AsString.create { a =>
       s"Animation(${sAK.show(a.animationKey)}, ${sM.show(a.material)}, ${sCL.show(a.currentCycleLabel)}, ${sNelC.show(a.cycles)})"
     }
+  }
 
   def apply(
       animationKey: AnimationKey,

@@ -73,15 +73,19 @@ trait QuadBounds {
 
 object QuadBounds {
 
-  implicit def show(implicit s: AsString[Int]): AsString[QuadBounds] =
+  implicit val show: AsString[QuadBounds] = {
+    val s = implicitly[AsString[Int]]
     AsString.create { qb =>
       s"""QuadBounds(${s.show(qb.x)}, ${s.show(qb.y)}, ${s.show(qb.width)}, ${s.show(qb.height)})"""
     }
+  }
 
-  implicit def equalTo(implicit eqI: EqualTo[Int]): EqualTo[QuadBounds] =
+  implicit val equalTo: EqualTo[QuadBounds] = {
+    val eqI = implicitly[EqualTo[Int]]
     EqualTo.create { (a, b) =>
       eqI.equal(a.x, b.x) && eqI.equal(a.y, b.y) && eqI.equal(a.width, b.width) && eqI.equal(a.height, b.height)
     }
+  }
 
   def apply(size: Int): QuadBounds =
     unsafeCreate(
