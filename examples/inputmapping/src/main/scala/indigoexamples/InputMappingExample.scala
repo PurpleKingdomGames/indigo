@@ -8,7 +8,7 @@ import indigoexts.subsystems.inputmapper.InputMapperEvent
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object InputMappingExample extends IndigoGameBasic[Unit, GameModel, Unit] {
+object InputMappingExample extends IndigoDemo[Unit, GameModel, Unit] {
 
   import FontStuff._
 

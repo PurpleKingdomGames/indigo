@@ -6,7 +6,7 @@ import indigogame._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object TextExample extends IndigoGameBasic[Unit, Model, Unit] {
+object TextExample extends IndigoSandbox[Unit, Model] {
 
   import FontStuff._
 
@@ -23,10 +23,7 @@ object TextExample extends IndigoGameBasic[Unit, Model, Unit] {
   val animations: Set[Animation] =
     Set()
 
-  val subSystems: Set[SubSystem] =
-    Set()
-
-  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Model =
@@ -40,13 +37,7 @@ object TextExample extends IndigoGameBasic[Unit, Model, Unit] {
       Outcome(model)
   }
 
-  def initialViewModel(startupData: Unit): Model => Unit =
-    _ => ()
-
-  def updateViewModel(gameTime: GameTime, model: Model, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
-    Outcome(viewModel)
-
-  def present(gameTime: GameTime, model: Model, viewModel: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: Model, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontKey)

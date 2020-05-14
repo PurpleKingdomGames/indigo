@@ -11,7 +11,7 @@ import snake.scenes.{ControlsScene, GameOverScene, GameScene, StartScene}
 import scala.scalajs.js.annotation.JSExportTopLevel
 
 @JSExportTopLevel("IndigoGame")
-object SnakeGame extends IndigoGameWithScenes[SnakeStartupData, SnakeGameModel, SnakeViewModel] {
+object SnakeGame extends IndigoGame[SnakeStartupData, SnakeGameModel, SnakeViewModel] {
 
   val config: GameConfig =
     GameConfig(

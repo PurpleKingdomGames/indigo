@@ -17,7 +17,7 @@ We also want to establish a connection on startup that repeated writes 1)'s
 Ping! to the console.
  */
 @JSExportTopLevel("IndigoGame")
-object WebSocketExample extends IndigoGameBasic[MySetupData, Unit, MyViewModel] {
+object WebSocketExample extends IndigoDemo[MySetupData, Unit, MyViewModel] {
 
   val buttonAssets: ButtonAssets =
     ButtonAssets(

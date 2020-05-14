@@ -15,7 +15,7 @@ import indigoexts.subsystems.automata.AutomataEvent
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object Fireworks extends IndigoGameBasic[Unit, Unit, Unit] {
+object Fireworks extends IndigoDemo[Unit, Unit, Unit] {
 
   val targetFPS: Int = 60
 

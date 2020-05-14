@@ -6,7 +6,7 @@ import indigogame._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object SubSystemsExample extends IndigoGameBasic[Unit, Unit, Unit] {
+object SubSystemsExample extends IndigoDemo[Unit, Unit, Unit] {
 
   import FontDetails._
 

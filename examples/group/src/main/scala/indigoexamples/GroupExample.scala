@@ -6,7 +6,7 @@ import indigogame._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object GroupExample extends IndigoGameBasic[Unit, Unit, Unit] {
+object GroupExample extends IndigoSandbox[Unit, Unit] {
 
   val config: GameConfig = defaultGameConfig
 
@@ -18,9 +18,7 @@ object GroupExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   val animations: Set[Animation] = Set()
 
-  val subSystems: Set[SubSystem] = Set()
-
-  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =
@@ -29,12 +27,7 @@ object GroupExample extends IndigoGameBasic[Unit, Unit, Unit] {
   def update(gameTime: GameTime, model: Unit, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
 
-  def initialViewModel(startupData: Unit): Unit => Unit = _ => ()
-
-  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
-    Outcome(())
-
-  def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
     SceneUpdateFragment.empty.addGameLayerNodes(
       Group(
         Graphic(0, 0, 256, 256, 1, Material.Textured(assetName)).moveTo(64, 10).moveBy(-50, -50),

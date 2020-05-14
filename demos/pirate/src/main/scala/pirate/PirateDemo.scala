@@ -9,7 +9,7 @@ import pirate.game.{Model, ViewModel, View}
 import scala.scalajs.js.annotation.JSExportTopLevel
 
 @JSExportTopLevel("IndigoGame")
-object PirateDemo extends IndigoGameBasic[StartupData, Model, ViewModel] {
+object PirateDemo extends IndigoDemo[StartupData, Model, ViewModel] {
 
   val config: GameConfig =
     GameConfig.default

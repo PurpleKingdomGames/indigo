@@ -19,7 +19,7 @@ import scala.concurrent.Future
   * @tparam Model The class type representing your game's model
   * @tparam ViewModel The class type representing your game's view model
   */
-trait IndigoGameWithScenes[StartupData, Model, ViewModel] extends GameLauncher {
+trait IndigoGame[StartupData, Model, ViewModel] extends GameLauncher {
 
   /**
     * A non-empty ordered list of scenes

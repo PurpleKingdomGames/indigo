@@ -8,7 +8,7 @@ import indigoexts.subsystems.fpscounter.FPSCounter
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object ScenesSetup extends IndigoGameWithScenes[StartUpData, GameModel, Unit] {
+object ScenesSetup extends IndigoGame[StartUpData, GameModel, Unit] {
 
   val targetFPS: Int = 30
 

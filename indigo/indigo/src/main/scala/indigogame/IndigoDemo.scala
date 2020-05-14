@@ -18,7 +18,7 @@ import indigo.shared.BoundaryLocator
   * @tparam Model The class type representing your game's model
   * @tparam ViewModel The class type representing your game's view model
   */
-trait IndigoGameBasic[StartupData, Model, ViewModel] extends GameLauncher {
+trait IndigoDemo[StartupData, Model, ViewModel] extends GameLauncher {
 
   val config: GameConfig
 

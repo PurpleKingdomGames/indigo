@@ -7,7 +7,7 @@ import indigoexts.ui._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object HttpExample extends IndigoGameBasic[Unit, Unit, Button] {
+object HttpExample extends IndigoDemo[Unit, Unit, Button] {
 
   val config: GameConfig = defaultGameConfig
 

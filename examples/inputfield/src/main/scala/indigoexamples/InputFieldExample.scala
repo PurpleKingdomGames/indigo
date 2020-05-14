@@ -7,7 +7,7 @@ import indigoexts.ui._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
+object InputFieldExample extends IndigoSandbox[Unit, MyGameModel] {
 
   val config: GameConfig = defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399"))
 
@@ -17,9 +17,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
 
   val animations: Set[Animation] = Set()
 
-  val subSystems: Set[SubSystem] = Set()
-
-  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): MyGameModel =
@@ -35,12 +33,7 @@ object InputFieldExample extends IndigoGameBasic[Unit, MyGameModel, Unit] {
       Outcome(model)
   }
 
-  def initialViewModel(startupData: Unit): MyGameModel => Unit = _ => ()
-
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
-    Outcome(())
-
-  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment = {
+  def present(gameTime: GameTime, model: MyGameModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment = {
 
     val inputFieldUpdate: InputFieldViewUpdate =
       model.inputField.draw(

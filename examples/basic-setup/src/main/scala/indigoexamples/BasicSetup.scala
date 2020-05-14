@@ -6,7 +6,7 @@ import indigogame._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object BasicSetup extends IndigoGameBasic[MyStartUpData, MyGameModel, MyViewModel] {
+object BasicSetup extends IndigoDemo[MyStartUpData, MyGameModel, MyViewModel] {
 
   val config: GameConfig =
     defaultGameConfig

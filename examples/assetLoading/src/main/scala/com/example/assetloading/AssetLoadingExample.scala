@@ -8,7 +8,7 @@ import indigoexts.subsystems.assetbundleloader._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object AssetLoadingExample extends IndigoGameBasic[Unit, MyGameModel, MyViewModel] {
+object AssetLoadingExample extends IndigoDemo[Unit, MyGameModel, MyViewModel] {
 
   val config: GameConfig =
     defaultGameConfig.withMagnification(2)

@@ -7,7 +7,7 @@ import indigoexts.ui._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object ButtonExample extends IndigoGameBasic[Unit, MyGameModel, MyViewModel] {
+object ButtonExample extends IndigoDemo[Unit, MyGameModel, MyViewModel] {
 
   val buttonAssets: ButtonAssets =
     ButtonAssets(

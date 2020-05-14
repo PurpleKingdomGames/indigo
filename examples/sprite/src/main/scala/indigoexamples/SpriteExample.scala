@@ -6,15 +6,13 @@ import indigogame._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
+object SpriteExample extends IndigoSandbox[Unit, Unit] {
 
   val config: GameConfig = defaultGameConfig
 
   val assets: Set[AssetType] = Set(AssetType.Image(AssetName("trafficlights"), AssetPath("assets/trafficlights.png")))
 
   val fonts: Set[FontInfo] = Set()
-
-  val subSystems: Set[SubSystem] = Set()
 
   val animationsKey: AnimationKey = AnimationKey("anims")
 
@@ -28,7 +26,7 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
     )
   )
 
-  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =
@@ -36,11 +34,6 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
 
   def update(gameTime: GameTime, model: Unit, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
-
-  def initialViewModel(startupData: Unit): Unit => Unit = _ => ()
-
-  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
-    Outcome(())
 
   /*
    Minimal sprite example, with one animation that we just play.
@@ -53,7 +46,7 @@ object SpriteExample extends IndigoGameBasic[Unit, Unit, Unit] {
    advance of the render loops (cache effectively), then the key wouldn't be
    regenerated.
    */
-  def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
     SceneUpdateFragment.empty.addGameLayerNodes(
       Sprite(BindingKey("lights animation"), 0, 0, 1, animationsKey).play()
     )

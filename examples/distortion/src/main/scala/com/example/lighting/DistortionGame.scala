@@ -6,7 +6,7 @@ import indigogame._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object DistortionGame extends IndigoGameBasic[Unit, Unit, Unit] {
+object DistortionGame extends IndigoSandbox[Unit, Unit] {
 
   val targetFPS: Int = 60
 
@@ -34,10 +34,7 @@ object DistortionGame extends IndigoGameBasic[Unit, Unit, Unit] {
   val animations: Set[Animation] =
     Set()
 
-  val subSystems: Set[SubSystem] =
-    Set()
-
-  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =
@@ -45,11 +42,6 @@ object DistortionGame extends IndigoGameBasic[Unit, Unit, Unit] {
 
   def update(gameTime: GameTime, model: Unit, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Unit] =
     _ => Outcome(())
-
-  def initialViewModel(startupData: Unit): Unit => Unit = _ => ()
-
-  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
-    Outcome(viewModel)
 
   val graphic: Graphic =
     Graphic(Rectangle(0, 0, 64, 64), 1, DistortionAssets.junctionBoxMaterialOn)
@@ -73,7 +65,7 @@ object DistortionGame extends IndigoGameBasic[Unit, Unit, Unit] {
       distortion.moveTo(vec.toPoint)
     }
 
-  def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+  def present(gameTime: GameTime, model: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         background,
