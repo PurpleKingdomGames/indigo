@@ -12,6 +12,9 @@ object EqualTo {
     }
 
   @SuppressWarnings(Array("org.wartremover.warts.Equals"))
+  implicit val eqChar: EqualTo[Char] = create(_ == _)
+
+  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   implicit val eqString: EqualTo[String] = create(_ == _)
 
   @SuppressWarnings(Array("org.wartremover.warts.Equals"))
