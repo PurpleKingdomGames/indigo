@@ -10,14 +10,16 @@ import indigo.shared.EqualTo._
 import indigo.shared.temporal.Signal
 import indigo.shared.time.Millis
 import indigo.shared.BoundaryLocator
+import scala.collection.immutable.Nil
+import scala.annotation.tailrec
 
 final case class InputField(
     bindingKey: BindingKey,
     text: String,
     characterLimit: Int,
     multiLine: Boolean,
-    private val hasFocus: Boolean,
-    private val cursorPosition: Int
+    hasFocus: Boolean,
+    cursorPosition: Int
 ) {
 
   def giveFocus: InputField =
@@ -42,60 +44,58 @@ final case class InputField(
     this.copy(multiLine = false)
 
   def cursorLeft: InputField =
-    if (hasFocus) {
-      this.copy(cursorPosition = if (cursorPosition - 1 >= 0) cursorPosition - 1 else cursorPosition)
-    } else this
+    this.copy(cursorPosition = if (cursorPosition - 1 >= 0) cursorPosition - 1 else cursorPosition)
 
   def cursorRight: InputField =
-    if (hasFocus) {
-      this.copy(cursorPosition = if (cursorPosition + 1 <= text.length) cursorPosition + 1 else text.length)
-    } else this
+    this.copy(cursorPosition = if (cursorPosition + 1 <= text.length) cursorPosition + 1 else text.length)
 
   def cursorHome: InputField =
-    if (hasFocus) {
-      this.copy(cursorPosition = 0)
-    } else this
+    this.copy(cursorPosition = 0)
 
   def cursorEnd: InputField =
-    if (hasFocus) {
-      this.copy(cursorPosition = text.length)
-    } else this
+    this.copy(cursorPosition = text.length)
 
-  def delete: InputField =
-    if (hasFocus) {
-      val splitString = text.splitAt(cursorPosition)
+  def delete: InputField = {
+    val splitString = text.splitAt(cursorPosition)
+    copy(text = splitString._1 + splitString._2.substring(1))
+  }
 
-      if (splitString._2.isEmpty) this
-      else
-        copy(
-          text = splitString._1 + splitString._2.substring(1)
-        )
-    } else this
+  def backspace: InputField = {
+    val splitString = text.splitAt(cursorPosition)
 
-  def backspace: InputField =
-    if (hasFocus) {
-      val splitString = text.splitAt(cursorPosition)
+    this.copy(
+      text = splitString._1.take(splitString._1.length - 1) + splitString._2,
+      cursorPosition = if (cursorPosition > 0) cursorPosition - 1 else cursorPosition
+    )
+  }
 
-      if (splitString._1.isEmpty) this
-      else {
-        this.copy(
-          text = splitString._1.take(splitString._1.length - 1) + splitString._2,
-          cursorPosition = if (cursorPosition > 0) cursorPosition - 1 else cursorPosition
-        )
+  def addCharacter(char: Char): InputField =
+    addCharacterText(char.toString())
+
+  def addCharacterText(textToInsert: String): InputField = {
+    @tailrec
+    def rec(remaining: List[Char], textHead: String, textTail: String, position: Int): InputField =
+      remaining match {
+        case Nil =>
+          this.copy(
+            text = textHead + textTail,
+            cursorPosition = position
+          )
+
+        case _ if (textHead + textTail).length >= characterLimit =>
+          rec(Nil, textHead, textTail, position)
+
+        case c :: cs if (c !== '\n') || multiLine =>
+          rec(cs, textHead + c.toString(), textTail, position + 1)
+
+        case _ :: cs =>
+          rec(cs, textHead, textTail, position)
       }
-    } else this
 
-  def addCharacter(char: String): InputField =
-    if (hasFocus) {
-      if (text.length < characterLimit && ((char !== "\n") || multiLine)) {
-        val splitString = text.splitAt(cursorPosition)
+    val splitString = text.splitAt(cursorPosition)
 
-        this.copy(
-          text = (splitString._1 + char + splitString._2).replace("\n\n", "\n"),
-          cursorPosition = cursorPosition + 1
-        )
-      } else this
-    } else this
+    rec(textToInsert.toCharArray().toList, splitString._1, splitString._2, cursorPosition)
+  }
 
   def update(event: GlobalEvent): InputField =
     event match {
@@ -124,10 +124,10 @@ final case class InputField(
         loseFocus
 
       case KeyboardEvent.KeyUp(Keys.ENTER) if hasFocus =>
-        addCharacter(Keys.ENTER.key)
+        addCharacterText(Keys.ENTER.key)
 
       case KeyboardEvent.KeyUp(key) if hasFocus && key.isPrintable =>
-        addCharacter(key.key)
+        addCharacterText(key.key)
 
       case _ =>
         this
@@ -151,18 +151,16 @@ final case class InputField(
     val sceneUpdateFragment =
       SceneUpdateFragment(field)
         .addGlobalEvents(
-          if (inputState.mouse.mouseReleased) {
-            if (inputState.mouse.wasMouseUpWithin(field.bounds(boundaryLocator))) {
+          if (inputState.mouse.mouseReleased)
+            if (inputState.mouse.wasMouseUpWithin(field.bounds(boundaryLocator)))
               List(InputFieldEvent.GiveFocus(bindingKey))
-            } else {
+            else
               List(InputFieldEvent.LoseFocus(bindingKey))
-            }
-          } else {
+          else
             Nil
-          }
         )
 
-    if (hasFocus) {
+    if (hasFocus)
       Signal
         .Pulse(Millis(250).toSeconds)
         .map {
@@ -178,7 +176,7 @@ final case class InputField(
               )
         }
         .at(gameTime.running)
-    } else sceneUpdateFragment
+    else sceneUpdateFragment
   }
 
   private def calculateCursorPosition(boundaryLocator: BoundaryLocator, text: String, fontKey: FontKey, offset: Point, cursorPosition: Int): Point = {
@@ -198,13 +196,13 @@ final case class InputField(
 object InputField {
 
   def apply(text: String): InputField =
-    InputField(BindingKey.generate, text, 255, false, false, 0)
+    InputField(BindingKey.generate, text, 255, false, false, text.length())
 
   def apply(bindingKey: BindingKey, text: String): InputField =
-    InputField(bindingKey, text, 255, false, false, 0)
+    InputField(bindingKey, text, 255, false, false, text.length())
 
   def apply(bindingKey: BindingKey, text: String, characterLimit: Int, multiLine: Boolean): InputField =
-    InputField(bindingKey, text, characterLimit, multiLine, false, 0)
+    InputField(bindingKey, text, characterLimit, multiLine, false, text.length())
 
 }
 
