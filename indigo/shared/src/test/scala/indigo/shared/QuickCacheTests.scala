@@ -51,6 +51,26 @@ object QuickCacheTests extends TestSuite {
 
       }
 
+      "Export values to Map" - {
+        implicit val cache = QuickCache.empty[Int]
+
+        QuickCache("a")(1)
+        QuickCache("b")(2)
+        QuickCache("c")(3)
+
+        val expected =
+          Map(
+            "a" -> 1,
+            "b" -> 2,
+            "c" -> 3
+          )
+
+        val actual: Map[String, Int] =
+          cache.toMap(_.value)
+
+        actual ==> expected
+      }
+
     }
 
 }

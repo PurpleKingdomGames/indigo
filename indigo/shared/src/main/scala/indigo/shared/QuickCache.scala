@@ -17,9 +17,8 @@ final class QuickCache[A](private val cache: mutable.HashMap[CacheKey, A]) {
   def fetchOrAdd(key: CacheKey, value: => A): A =
     fetch(key).getOrElse(add(key, value))
 
-  def purgeAllNow(): Unit = {
+  def purgeAllNow(): Unit =
     cache.clear()
-  }
 
   def purgeAll(): QuickCache[A] = {
     cache.clear()
@@ -45,6 +44,11 @@ final class QuickCache[A](private val cache: mutable.HashMap[CacheKey, A]) {
 
   def size: Int =
     cache.size
+
+  def toMap[K](keyConvertor: CacheKey => K): Map[K, A] =
+    cache.toMap.map { pair: (CacheKey, A) =>
+      (keyConvertor(pair._1), pair._2)
+    }
 
 }
 
