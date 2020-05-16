@@ -53,13 +53,15 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
     graphic.lazyBounds
 
   def spriteBounds(sprite: Sprite): Rectangle =
-    animationsRegister.fetchAnimationInLastState(sprite.bindingKey, sprite.animationKey) match {
-      case Some(animation) =>
-        Rectangle(sprite.position, animation.currentFrame.crop.size)
+    QuickCache(s"""sprite-${sprite.bindingKey.value}-${sprite.animationKey.value}""") {
+      animationsRegister.fetchAnimationInLastState(sprite.bindingKey, sprite.animationKey) match {
+        case Some(animation) =>
+          Rectangle(sprite.position, animation.currentFrame.crop.size)
 
-      case None =>
-        IndigoLogger.errorOnce(s"Cannot build bounds for Sprite with bindingKey: ${sprite.bindingKey.toString()}")
-        Rectangle(sprite.position, Point.zero)
+        case None =>
+          IndigoLogger.errorOnce(s"Cannot build bounds for Sprite with bindingKey: ${sprite.bindingKey.toString()}")
+          Rectangle(sprite.position, Point.zero)
+      }
     }
 
   // Text / Fonts
