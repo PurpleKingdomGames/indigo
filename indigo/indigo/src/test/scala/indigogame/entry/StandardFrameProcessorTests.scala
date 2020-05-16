@@ -70,8 +70,8 @@ object TestFixtures {
         Outcome(m)
     }
 
-  val viewModelUpdate: (GameTime, GameModel, Int, InputState, Dice) => Outcome[Int] =
-    (_, _, vm, _, _) => {
+  val viewModelUpdate: (GameTime, GameModel, Int, InputState, Dice, BoundaryLocator) => Outcome[Int] =
+    (_, _, vm, _, _, _) => {
       Outcome(vm + 10).addGlobalEvents(EventsOnlyEvent.Increment)
     }
 

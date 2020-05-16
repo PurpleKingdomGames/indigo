@@ -10,6 +10,9 @@ import indigo.shared.time.GameTime
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigoexts.subsystems.SubSystemsRegister
 import indigo.shared.events.InputState
+import indigo.shared.BoundaryLocator
+import indigo.shared.AnimationsRegister
+import indigo.shared.FontRegister
 
 object GameWithSubSystemsTests extends TestSuite {
 
@@ -32,7 +35,8 @@ object GameWithSubSystemsTests extends TestSuite {
       }
 
       "should be able to update the view model" - {
-        val outcome = GameWithSubSystems.updateViewModel(viewModelUpdate)(GameTime.zero, gameWithSubSystems, 0, InputState.default, Dice.loaded(0))
+        val boundaryLocator = new BoundaryLocator(new AnimationsRegister, new FontRegister)
+        val outcome = GameWithSubSystems.updateViewModel(viewModelUpdate)(GameTime.zero, gameWithSubSystems, 0, InputState.default, Dice.loaded(0), boundaryLocator)
         outcome.state ==> 10
         outcome.globalEvents.length ==> 1
         outcome.globalEvents.contains(EventsOnlyEvent.Increment) ==> true
@@ -59,8 +63,8 @@ object GameTestFixtures {
   val modelUpdate: (GameTime, GameModel, InputState, Dice) => GlobalEvent => Outcome[GameModel] =
     (_, m, _, _) => _ => Outcome(m).addGlobalEvents(EventsOnlyEvent.Decrement)
 
-  val viewModelUpdate: (GameTime, GameModel, Int, InputState, Dice) => Outcome[Int] =
-    (_, _, viewModel, _, _) => Outcome(viewModel + 10).addGlobalEvents(EventsOnlyEvent.Increment)
+  val viewModelUpdate: (GameTime, GameModel, Int, InputState, Dice, BoundaryLocator) => Outcome[Int] =
+    (_, _, viewModel, _, _, _) => Outcome(viewModel + 10).addGlobalEvents(EventsOnlyEvent.Increment)
 
   final case class GameModel(text: String)
 

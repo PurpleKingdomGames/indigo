@@ -34,12 +34,12 @@ trait IndigoSandbox[StartupData, Model] extends GameLauncher {
 
   private def indigoGame: GameEngine[StartupData, StartupErrors, Model, Unit] = {
 
-    val updateViewModel: (GameTime, Model, Unit, InputState, Dice) => Outcome[Unit] =
-      (_, _, vm, _, _) => Outcome(vm)
+    val updateViewModel: (GameTime, Model, Unit, InputState, Dice, BoundaryLocator) => Outcome[Unit] =
+      (_, _, vm, _, _, _) => Outcome(vm)
 
     val frameProcessor: StandardFrameProcessor[Model, Unit] =
       new StandardFrameProcessor(
-        update,
+        (gt, m, is, d) => (e: GlobalEvent) => update(gt, m, is, d)(e),
         updateViewModel,
         (gt, m, _, is, bl) => present(gt, m, is, bl)
       )

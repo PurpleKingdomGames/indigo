@@ -21,9 +21,9 @@ object GameWithSubSystems {
         .map2((m, s) => new GameWithSubSystems(m, s))
 
   def updateViewModel[Model, ViewModel](
-      viewModelUpdate: (GameTime, Model, ViewModel, InputState, Dice) => Outcome[ViewModel]
-  )(gameTime: GameTime, model: GameWithSubSystems[Model], viewModel: ViewModel, inputState: InputState, dice: Dice): Outcome[ViewModel] =
-    viewModelUpdate(gameTime, model.model, viewModel, inputState, dice)
+      viewModelUpdate: (GameTime, Model, ViewModel, InputState, Dice, BoundaryLocator) => Outcome[ViewModel]
+  )(gameTime: GameTime, model: GameWithSubSystems[Model], viewModel: ViewModel, inputState: InputState, dice: Dice, boundaryLocator: BoundaryLocator): Outcome[ViewModel] =
+    viewModelUpdate(gameTime, model.model, viewModel, inputState, dice, boundaryLocator)
 
   def present[Model, ViewModel](
       viewPresent: (GameTime, Model, ViewModel, InputState, BoundaryLocator) => SceneUpdateFragment

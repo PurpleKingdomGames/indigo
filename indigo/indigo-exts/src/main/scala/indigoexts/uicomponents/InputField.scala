@@ -2,22 +2,27 @@ package indigoexts.uicomponents
 
 import indigo.shared.time.GameTime
 import indigo.shared.constants.Keys
-import indigo.shared.events.{InputState, KeyboardEvent, GlobalEvent}
+import indigo.shared.events.InputState
 import indigo.shared.datatypes._
 import indigo.shared.scenegraph.{Graphic, SceneUpdateFragment, Text}
 
 import indigo.shared.EqualTo._
 import indigo.shared.temporal.Signal
-import indigo.shared.time.Millis
 import indigo.shared.BoundaryLocator
 import scala.collection.immutable.Nil
 import scala.annotation.tailrec
+import indigo.shared.time.Seconds
+import indigo.shared.constants.Key
+import indigo.shared.time.Millis
 
 final case class InputField(
-    bindingKey: BindingKey,
     text: String,
     characterLimit: Int,
     multiLine: Boolean,
+    assets: InputFieldAssets,
+    cursorPulseRate: Option[Seconds],
+    position: Point,
+    depth: Depth,
     hasFocus: Boolean,
     cursorPosition: Int
 ) {
@@ -54,10 +59,12 @@ final case class InputField(
   def cursorEnd: InputField =
     this.copy(cursorPosition = text.length)
 
-  def delete: InputField = {
-    val splitString = text.splitAt(cursorPosition)
-    copy(text = splitString._1 + splitString._2.substring(1))
-  }
+  def delete: InputField =
+    if (cursorPosition === text.length()) this
+    else {
+      val splitString = text.splitAt(cursorPosition)
+      copy(text = splitString._1 + splitString._2.substring(1))
+    }
 
   def backspace: InputField = {
     val splitString = text.splitAt(cursorPosition)
@@ -96,53 +103,56 @@ final case class InputField(
     rec(textToInsert.toCharArray().toList, splitString._1, splitString._2, cursorPosition)
   }
 
-  def update(event: GlobalEvent): InputField =
-    event match {
-      case KeyboardEvent.KeyUp(Keys.BACKSPACE) if hasFocus =>
-        backspace
+  def update(inputState: InputState, boundaryLocator: BoundaryLocator): InputField = {
+    @tailrec
+    def rec(keysReleased: List[Key], acc: InputField): InputField =
+      keysReleased match {
+        case Nil =>
+          acc
 
-      case KeyboardEvent.KeyUp(Keys.DELETE) if hasFocus =>
-        delete
+        case Keys.BACKSPACE :: ks =>
+          rec(ks, acc.backspace)
 
-      case KeyboardEvent.KeyUp(Keys.LEFT_ARROW) if hasFocus =>
-        cursorLeft
+        case Keys.DELETE :: ks =>
+          rec(ks, acc.delete)
 
-      case KeyboardEvent.KeyUp(Keys.RIGHT_ARROW) if hasFocus =>
-        cursorRight
+        case Keys.LEFT_ARROW :: ks =>
+          rec(ks, acc.cursorLeft)
 
-      case KeyboardEvent.KeyUp(Keys.HOME) if hasFocus =>
-        cursorHome
+        case Keys.RIGHT_ARROW :: ks =>
+          rec(ks, acc.cursorRight)
 
-      case KeyboardEvent.KeyUp(Keys.END) if hasFocus =>
-        cursorEnd
+        case Keys.HOME :: ks =>
+          rec(ks, acc.cursorHome)
 
-      case InputFieldEvent.GiveFocus(bk) if bindingKey === bk =>
-        giveFocus
+        case Keys.END :: ks =>
+          rec(ks, acc.cursorEnd)
 
-      case InputFieldEvent.LoseFocus(bk) if bindingKey === bk =>
-        loseFocus
+        case Keys.ENTER :: ks =>
+          rec(ks, acc.addCharacterText(Keys.ENTER.key))
 
-      case KeyboardEvent.KeyUp(Keys.ENTER) if hasFocus =>
-        addCharacterText(Keys.ENTER.key)
+        case key :: ks if hasFocus && key.isPrintable =>
+          rec(ks, acc.addCharacterText(key.key))
 
-      case KeyboardEvent.KeyUp(key) if hasFocus && key.isPrintable =>
-        addCharacterText(key.key)
+        case _ :: ks =>
+          rec(ks, acc)
+      }
 
-      case _ =>
-        this
-    }
+    val updated = rec(inputState.keyboard.keysReleased, this)
+
+    if (inputState.mouse.mouseReleased)
+      if (inputState.mouse.wasMouseUpWithin(assets.text.bounds(boundaryLocator)))
+        updated.giveFocus
+      else updated.loseFocus
+    else updated
+  }
 
   def draw(
       gameTime: GameTime,
-      position: Point,
-      depth: Depth,
-      inputState: InputState,
-      text: Text,
-      cursor: Graphic,
       boundaryLocator: BoundaryLocator
   ): SceneUpdateFragment = {
     val field =
-      text
+      assets.text
         .withText(this.text)
         .moveTo(position)
         .withDepth(depth)
@@ -150,13 +160,6 @@ final case class InputField(
     val sceneUpdateFragment =
       SceneUpdateFragment.empty
         .addUiLayerNodes(field)
-        .addGlobalEvents(
-          if (inputState.mouse.mouseReleased)
-            if (inputState.mouse.wasMouseUpWithin(field.bounds(boundaryLocator))) {
-              List(InputFieldEvent.GiveFocus(bindingKey))
-            } else List(InputFieldEvent.LoseFocus(bindingKey))
-          else Nil
-        )
 
     if (hasFocus) {
       val cursorPositionPoint =
@@ -167,21 +170,33 @@ final case class InputField(
           .map(_.lineBounds.topRight + position)
           .getOrElse(position)
 
-      Signal
-        .Pulse(Millis(250).toSeconds)
-        .map {
-          case false =>
-            sceneUpdateFragment
+      cursorPulseRate match {
+        case None =>
+          sceneUpdateFragment
+            .addUiLayerNodes(
+              assets.cursor
+                .moveTo(cursorPositionPoint)
+                .withDepth(Depth(-(depth.zIndex + 100000)))
+            )
 
-          case true =>
-            sceneUpdateFragment
-              .addUiLayerNodes(
-                cursor
-                  .moveTo(cursorPositionPoint)
-                  .withDepth(Depth(-(depth.zIndex + 100000)))
-              )
-        }
-        .at(gameTime.running)
+        case Some(seconds) =>
+          Signal
+            .Pulse(seconds)
+            .map {
+              case false =>
+                sceneUpdateFragment
+
+              case true =>
+                sceneUpdateFragment
+                  .addUiLayerNodes(
+                    assets.cursor
+                      .moveTo(cursorPositionPoint)
+                      .withDepth(Depth(-(depth.zIndex + 100000)))
+                  )
+            }
+            .at(gameTime.running)
+      }
+
     } else sceneUpdateFragment
   }
 
@@ -189,21 +204,12 @@ final case class InputField(
 
 object InputField {
 
-  def apply(text: String): InputField =
-    InputField(BindingKey.generate, text, 255, false, false, text.length())
+  def apply(text: String, assets: InputFieldAssets): InputField =
+    InputField(text, 255, false, assets, Some(Millis(400).toSeconds), Point.zero, Depth(1), false, text.length())
 
-  def apply(bindingKey: BindingKey, text: String): InputField =
-    InputField(bindingKey, text, 255, false, false, text.length())
-
-  def apply(bindingKey: BindingKey, text: String, characterLimit: Int, multiLine: Boolean): InputField =
-    InputField(bindingKey, text, characterLimit, multiLine, false, text.length())
+  def apply(text: String, characterLimit: Int, multiLine: Boolean, assets: InputFieldAssets): InputField =
+    InputField(text, characterLimit, multiLine, assets, Some(Millis(400).toSeconds), Point.zero, Depth(1), false, text.length())
 
 }
 
-sealed trait InputFieldEvent extends GlobalEvent {
-  val bindingKey: BindingKey
-}
-object InputFieldEvent {
-  final case class GiveFocus(bindingKey: BindingKey) extends InputFieldEvent
-  final case class LoseFocus(bindingKey: BindingKey) extends InputFieldEvent
-}
+final case class InputFieldAssets(text: Text, cursor: Graphic)

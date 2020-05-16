@@ -21,7 +21,7 @@ trait Scene[GameModel, ViewModel] {
   val sceneSubSystems: Set[SubSystem]
 
   def updateSceneModel(gameTime: GameTime, sceneModel: SceneModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[SceneModel]
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: SceneModel, sceneViewModel: SceneViewModel, inputState: InputState, dice: Dice): Outcome[SceneViewModel]
+  def updateSceneViewModel(gameTime: GameTime, sceneModel: SceneModel, sceneViewModel: SceneViewModel, inputState: InputState, dice: Dice, boundaryLocator: BoundaryLocator): Outcome[SceneViewModel]
   def updateSceneView(gameTime: GameTime, sceneModel: SceneModel, sceneViewModel: SceneViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment
 
 }
@@ -33,9 +33,9 @@ object Scene {
         .updateSceneModel(gameTime, scene.sceneModelLens.get(gameModel), inputState, dice)(e)
         .mapState(scene.sceneModelLens.set(gameModel, _))
 
-  def updateViewModel[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, model: GM, viewModel: VM, inputState: InputState, dice: Dice): Outcome[VM] =
+  def updateViewModel[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, model: GM, viewModel: VM, inputState: InputState, dice: Dice, boundaryLocator: BoundaryLocator): Outcome[VM] =
     scene
-      .updateSceneViewModel(gameTime, scene.sceneModelLens.get(model), scene.sceneViewModelLens.get(viewModel), inputState, dice)
+      .updateSceneViewModel(gameTime, scene.sceneModelLens.get(model), scene.sceneViewModelLens.get(viewModel), inputState, dice, boundaryLocator)
       .mapState(scene.sceneViewModelLens.set(viewModel, _))
 
   def updateView[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, model: GM, viewModel: VM, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =

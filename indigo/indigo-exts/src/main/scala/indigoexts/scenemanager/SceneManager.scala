@@ -64,14 +64,14 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
       }
   }
 
-  def updateViewModel(gameTime: GameTime, model: GameModel, viewModel: ViewModel, inputState: InputState, dice: Dice): Outcome[ViewModel] =
+  def updateViewModel(gameTime: GameTime, model: GameModel, viewModel: ViewModel, inputState: InputState, dice: Dice, boundaryLocator: BoundaryLocator): Outcome[ViewModel] =
     scenes.find(_.name === finderInstance.current.name) match {
       case None =>
         IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
         Outcome(viewModel)
 
       case Some(scene) =>
-        Scene.updateViewModel(scene, gameTime, model, viewModel, inputState, dice)
+        Scene.updateViewModel(scene, gameTime, model, viewModel, inputState, dice, boundaryLocator)
     }
 
   def updateView(gameTime: GameTime, model: GameModel, viewModel: ViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =

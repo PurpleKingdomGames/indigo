@@ -7,6 +7,8 @@ import indigoexts.subsystems.fpscounter.FPSCounter
 import indigogame._
 
 import scala.scalajs.js.annotation._
+import indigoexts.uicomponents.InputField
+import indigoexts.uicomponents.InputFieldAssets
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoDemo[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
@@ -72,30 +74,56 @@ object SandboxGame extends IndigoDemo[SandboxStartupData, SandboxGameModel, Sand
   def update(gameTime: GameTime, model: SandboxGameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[SandboxGameModel] =
     SandboxModel.updateModel(model)
 
-  def initialViewModel(startupData: SandboxStartupData): SandboxGameModel => SandboxViewModel = _ => SandboxViewModel(0, 0)
+  def initialViewModel(startupData: SandboxStartupData): SandboxGameModel => SandboxViewModel =
+    _ => {
+      val assets =
+        new InputFieldAssets(
+          Text("placeholder", 0, 0, 0, SandboxView.fontKey).alignLeft,
+          Graphic(0, 0, 16, 16, 2, Material.Textured(SandboxAssets.smallFontName)).withCrop(188, 78, 14, 23).withTint(0, 0, 1)
+        )
 
-  def updateViewModel(gameTime: GameTime, model: SandboxGameModel, viewModel: SandboxViewModel, inputState: InputState, dice: Dice): Outcome[SandboxViewModel] =
-    inputState.gamepad.dpad match {
-      case GamepadDPad(true, _, _, _) =>
-        Outcome(viewModel.copy(offsetY = viewModel.offsetY - 1))
-
-      case GamepadDPad(_, true, _, _) =>
-        Outcome(viewModel.copy(offsetY = viewModel.offsetY + 1))
-
-      case GamepadDPad(_, _, true, _) =>
-        Outcome(viewModel.copy(offsetX = viewModel.offsetX - 1))
-
-      case GamepadDPad(_, _, _, true) =>
-        Outcome(viewModel.copy(offsetX = viewModel.offsetX + 1))
-
-      case _ =>
-        Outcome(viewModel)
+      SandboxViewModel(
+        Point.zero,
+        InputField("single", assets).makeSingleLine,
+        InputField("multi\nline", assets).makeMultiLine
+      )
     }
 
+  def updateViewModel(gameTime: GameTime, model: SandboxGameModel, viewModel: SandboxViewModel, inputState: InputState, dice: Dice, boundaryLocator: BoundaryLocator): Outcome[SandboxViewModel] = {
+    val updateOffset: Point =
+      inputState.gamepad.dpad match {
+        case GamepadDPad(true, _, _, _) =>
+          viewModel.offset + Point(0, -1)
+
+        case GamepadDPad(_, true, _, _) =>
+          viewModel.offset + Point(0, 1)
+
+        case GamepadDPad(_, _, true, _) =>
+          viewModel.offset + Point(-1, 0)
+
+        case GamepadDPad(_, _, _, true) =>
+          viewModel.offset + Point(1, 0)
+
+        case _ =>
+          viewModel.offset
+      }
+
+    //more stuff
+    Outcome(
+      viewModel.copy(
+        offset = updateOffset,
+        single = viewModel.single.update(inputState, boundaryLocator),
+        multi = viewModel.multi.update(inputState, boundaryLocator)
+      )
+    )
+  }
+
   def present(gameTime: GameTime, model: SandboxGameModel, viewModel: SandboxViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
-    SandboxView.updateView(model, viewModel, inputState, boundaryLocator)
+    SandboxView.updateView(model, viewModel, inputState) |+|
+      // viewModel.single.draw(gameTime, boundaryLocator) //|+|
+      viewModel.multi.draw(gameTime, boundaryLocator)
 }
 
 final case class Dude(aseprite: Aseprite, sprite: Sprite)
 final case class SandboxStartupData(dude: Dude)
-final case class SandboxViewModel(offsetX: Int, offsetY: Int)
+final case class SandboxViewModel(offset: Point, single: InputField, multi: InputField)

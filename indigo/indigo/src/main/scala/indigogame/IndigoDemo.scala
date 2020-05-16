@@ -38,7 +38,7 @@ trait IndigoDemo[StartupData, Model, ViewModel] extends GameLauncher {
 
   def initialViewModel(startupData: StartupData): Model => ViewModel
 
-  def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, dice: Dice): Outcome[ViewModel]
+  def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, dice: Dice, boundaryLocator: BoundaryLocator): Outcome[ViewModel]
 
   def present(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment
 

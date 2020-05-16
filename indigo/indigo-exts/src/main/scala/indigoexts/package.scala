@@ -1,4 +1,3 @@
-
 package object indigoexts {
 
   object lens {
@@ -65,8 +64,8 @@ package object indigoexts {
 
     type InputField = indigoexts.uicomponents.InputField
     val InputField: indigoexts.uicomponents.InputField.type = indigoexts.uicomponents.InputField
-    type InputFieldEvent = indigoexts.uicomponents.InputFieldEvent
-    val InputFieldEvent: indigoexts.uicomponents.InputFieldEvent.type = indigoexts.uicomponents.InputFieldEvent
+    type InputFieldAssets = indigoexts.uicomponents.InputFieldAssets
+    val InputFieldAssets: indigoexts.uicomponents.InputFieldAssets.type = indigoexts.uicomponents.InputFieldAssets
   }
 
 }

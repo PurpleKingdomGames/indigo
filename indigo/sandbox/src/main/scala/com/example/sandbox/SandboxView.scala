@@ -7,16 +7,16 @@ object SandboxView {
 
   val dudeCloneId: CloneId = CloneId("Dude")
 
-  def updateView(model: SandboxGameModel, viewModel: SandboxViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment = {
+  def updateView(model: SandboxGameModel, viewModel: SandboxViewModel, inputState: InputState): SceneUpdateFragment = {
     inputState.mouse.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + position.show)
       case None           => ()
     }
 
     SceneUpdateFragment.empty
-      .addGameLayerNodes(gameLayer(model, viewModel, boundaryLocator))
+      .addGameLayerNodes(gameLayer(model, viewModel))
       .addLightingLayerNodes(lightingLayer(inputState))
-      .addUiLayerNodes(uiLayer(inputState))
+      // .addUiLayerNodes(uiLayer(inputState))
       .withAmbientLight(RGBA.White.withAmount(0.25))
       .addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
     // .withSaturationLevel(0.5)
@@ -25,9 +25,7 @@ object SandboxView {
     // .withGameColorOverlay(RGBA.Red.withAmount(0.5))
   }
 
-  def gameLayer(currentState: SandboxGameModel, viewModel: SandboxViewModel, boundaryLocator: BoundaryLocator): List[SceneGraphNode] = {
-    println(currentState.dude.dude.sprite.bounds(boundaryLocator))
-
+  def gameLayer(currentState: SandboxGameModel, viewModel: SandboxViewModel): List[SceneGraphNode] = {
     List(
       currentState.dude.walkDirection match {
         case d @ DudeLeft =>
@@ -55,7 +53,7 @@ object SandboxView {
             .changeCycle(d.cycleName)
             .play()
       },
-      currentState.dude.dude.sprite.moveBy(8, 10).moveBy(viewModel.offsetX, viewModel.offsetY).withAlpha(1).withTint(RGBA.Green.withAmount(0.25)),
+      currentState.dude.dude.sprite.moveBy(8, 10).moveBy(viewModel.offset).withAlpha(1).withTint(RGBA.Green.withAmount(0.25)),
       currentState.dude.dude.sprite.moveBy(8, -10).withAlpha(0.5).withTint(RGBA.Red.withAmount(0.75)),
       Clone(dudeCloneId, Depth(1), CloneTransformData.startAt(Point(16, 64)))
         .withHorizontalFlip(true)

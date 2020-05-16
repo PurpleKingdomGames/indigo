@@ -46,19 +46,39 @@ object SandboxModel {
       }
 
     case KeyboardEvent.KeyDown(Keys.LEFT_ARROW) =>
-      Outcome(state.copy(dude = state.dude.walkLeft))
+      Outcome(
+        state.copy(
+          dude = state.dude.walkLeft
+        )
+      )
 
     case KeyboardEvent.KeyDown(Keys.RIGHT_ARROW) =>
-      Outcome(state.copy(dude = state.dude.walkRight))
+      Outcome(
+        state.copy(
+          dude = state.dude.walkRight
+        )
+      )
 
     case KeyboardEvent.KeyDown(Keys.UP_ARROW) =>
-      Outcome(state.copy(dude = state.dude.walkUp))
+      Outcome(
+        state.copy(
+          dude = state.dude.walkUp
+        )
+      )
 
     case KeyboardEvent.KeyDown(Keys.DOWN_ARROW) =>
-      Outcome(state.copy(dude = state.dude.walkDown))
+      Outcome(
+        state.copy(
+          dude = state.dude.walkDown
+        )
+      )
 
     case KeyboardEvent.KeyUp(_) =>
-      Outcome(state.copy(dude = state.dude.idle))
+      Outcome(
+        state.copy(
+          dude = state.dude.idle
+        )
+      )
 
     case e =>
       storageEvents(state, e)
