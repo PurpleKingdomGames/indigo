@@ -66,9 +66,12 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
 
   def textLineBounds(lineText: String, fontInfo: FontInfo): Rectangle =
     QuickCache(s"""line-bounds-${fontInfo.fontKey.key}-$lineText""") {
-      lineText.toList
+      lineText
+        .toCharArray()
         .map(c => fontInfo.findByCharacter(c).bounds)
-        .fold(Rectangle.zero)((acc, curr) => Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height)))
+        .foldLeft(Rectangle.zero) { (acc, curr) =>
+          Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height))
+        }
     }
 
   def textAsLinesWithBounds(text: String, fontKey: FontKey): List[TextLine] =
@@ -78,6 +81,11 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
         .map { fontInfo =>
           text.linesIterator.toList
             .map(lineText => new TextLine(lineText, textLineBounds(lineText, fontInfo)))
+            .foldLeft((0, List[TextLine]())) {
+              case ((yPos, lines), textLine) =>
+                (yPos + textLine.lineBounds.height, lines :+ textLine.moveTo(0, yPos))
+            }
+            ._2
         }
         .getOrElse {
           IndigoLogger.errorOnce(s"Cannot build Text lines, missing Font with key: ${fontKey.toString()}")
@@ -85,19 +93,17 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
         }
     }
 
-  def textBoundsUnaligned(text: String, fontKey: FontKey, position: Point): Rectangle =
-    QuickCache(s"""text-bounds-unaligned-${fontKey.key}-${text}""") {
-      textAsLinesWithBounds(text, fontKey)
-        .map(_.lineBounds)
-        .fold(Rectangle.zero) { (acc, next) =>
-          acc.resize(Point(Math.max(acc.width, next.width), acc.height + next.height))
-        }
-        .moveTo(position)
-    }
-
   def textBounds(text: Text): Rectangle =
     QuickCache(s"""text-bounds-${text.fontKey.key}-${text.text}""") {
-      (text.alignment, textBoundsUnaligned(text.text, text.fontKey, text.position)) match {
+      val unaligned =
+        textAsLinesWithBounds(text.text, text.fontKey)
+          .map(_.lineBounds)
+          .fold(Rectangle.zero) { (acc, next) =>
+            acc.resize(Point(Math.max(acc.width, next.width), acc.height + next.height))
+          }
+          .moveTo(text.position)
+
+      (text.alignment, unaligned) match {
         case (TextAlignment.Left, b)   => b
         case (TextAlignment.Center, b) => b.moveTo(Point(b.x - (b.width / 2), b.y))
         case (TextAlignment.Right, b)  => b.moveTo(Point(b.x - b.width, b.y))

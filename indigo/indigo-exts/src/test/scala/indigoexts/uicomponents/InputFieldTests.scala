@@ -71,10 +71,6 @@ object InputFieldTests extends TestSuite {
 
       }
 
-      "Cursor drawing calculations" - {
-        1 ==> 2
-      }
-
     }
 
 }

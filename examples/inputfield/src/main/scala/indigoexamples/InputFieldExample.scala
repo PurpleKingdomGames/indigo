@@ -22,38 +22,56 @@ object InputFieldExample extends IndigoSandbox[Unit, MyGameModel] {
 
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(
-      InputField("Fish").makeMultiLine
+      InputField(BindingKey("single"), "Single line").makeSingleLine,
+      InputField(BindingKey("multi"), "Multi\nline").makeMultiLine
     )
 
   def update(gameTime: GameTime, model: MyGameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[MyGameModel] = {
-    case e: InputFieldEvent =>
-      Outcome(model.copy(inputField = model.inputField.update(e)))
-
-    case _ =>
-      Outcome(model)
+    case e =>
+      Outcome(
+        model.copy(
+          singleLine = model.singleLine.update(e),
+          multiLine = model.multiLine.update(e)
+        )
+      )
   }
 
+@SuppressWarnings(Array("org.wartremover.warts.Throw"))
   def present(gameTime: GameTime, model: MyGameModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment = {
 
-    val inputFieldUpdate: InputFieldViewUpdate =
-      model.inputField.draw(
-        gameTime,
-        Point(10, 10),
-        Depth(1),
-        inputState,
-        InputFieldAssets(
-          Text("input", 10, 20, 1, FontStuff.fontKey).alignLeft,
-          Graphic(0, 0, 16, 16, 2, Material.Textured(FontStuff.fontName)).withCrop(188, 78, 14, 23).withTint(0, 0, 1)
-        ),
-        boundaryLocator
-      )
+    val cursor =
+      Graphic(0, 0, 16, 16, 2, Material.Textured(FontStuff.fontName)).withCrop(188, 78, 14, 23).withTint(0, 0, 1)
 
-    inputFieldUpdate.toSceneUpdateFragment
+    val text =
+      Text("placeholder", 0, 0, 0, FontStuff.fontKey).alignLeft
+
+    val single = model.singleLine.draw(
+      gameTime,
+      Point(10, 10),
+      Depth(1),
+      inputState,
+      text,
+      cursor,
+      boundaryLocator
+    )
+
+    val multi = model.multiLine.draw(
+      gameTime,
+      Point(10, 50),
+      Depth(1),
+      inputState,
+      text,
+      cursor,
+      boundaryLocator
+    )
+
+    single |+| multi
+    
   }
 
 }
 
-final case class MyGameModel(inputField: InputField)
+final case class MyGameModel(singleLine: InputField, multiLine: InputField)
 
 object FontStuff {
 

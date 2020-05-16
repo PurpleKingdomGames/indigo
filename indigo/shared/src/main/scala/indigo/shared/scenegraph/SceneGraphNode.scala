@@ -571,6 +571,8 @@ final class Text(
 }
 
 final class TextLine(val text: String, val lineBounds: Rectangle) {
+  def moveTo(x: Int, y: Int): TextLine =
+    new TextLine(text, lineBounds.moveTo(Point(x, y)))
   def hash: String = text + lineBounds.hash
 }
 

@@ -30,8 +30,7 @@ final case class InputField(
 
   def loseFocus: InputField =
     this.copy(
-      hasFocus = false,
-      cursorPosition = 0
+      hasFocus = false
     )
 
   def withCharacterLimit(limit: Int): InputField =
@@ -117,10 +116,10 @@ final case class InputField(
       case KeyboardEvent.KeyUp(Keys.END) if hasFocus =>
         cursorEnd
 
-      case InputFieldEvent.GiveFocus(bindingKey) if bindingKey === bindingKey =>
+      case InputFieldEvent.GiveFocus(bk) if bindingKey === bk =>
         giveFocus
 
-      case InputFieldEvent.LoseFocus(bindingKey) if bindingKey === bindingKey =>
+      case InputFieldEvent.LoseFocus(bk) if bindingKey === bk =>
         loseFocus
 
       case KeyboardEvent.KeyUp(Keys.ENTER) if hasFocus =>
@@ -149,18 +148,25 @@ final case class InputField(
         .withDepth(depth)
 
     val sceneUpdateFragment =
-      SceneUpdateFragment(field)
+      SceneUpdateFragment.empty
+        .addUiLayerNodes(field)
         .addGlobalEvents(
           if (inputState.mouse.mouseReleased)
-            if (inputState.mouse.wasMouseUpWithin(field.bounds(boundaryLocator)))
+            if (inputState.mouse.wasMouseUpWithin(field.bounds(boundaryLocator))) {
               List(InputFieldEvent.GiveFocus(bindingKey))
-            else
-              List(InputFieldEvent.LoseFocus(bindingKey))
-          else
-            Nil
+            } else List(InputFieldEvent.LoseFocus(bindingKey))
+          else Nil
         )
 
-    if (hasFocus)
+    if (hasFocus) {
+      val cursorPositionPoint =
+        boundaryLocator
+          .textAsLinesWithBounds(field.text.substring(0, cursorPosition), field.fontKey)
+          .reverse
+          .headOption
+          .map(_.lineBounds.topRight + position)
+          .getOrElse(position)
+
       Signal
         .Pulse(Millis(250).toSeconds)
         .map {
@@ -171,24 +177,12 @@ final case class InputField(
             sceneUpdateFragment
               .addUiLayerNodes(
                 cursor
-                  .moveTo(calculateCursorPosition(boundaryLocator, this.text, text.fontKey, position, cursorPosition))
-                  .withDepth(Depth(-(depth.zIndex + 100)))
+                  .moveTo(cursorPositionPoint)
+                  .withDepth(Depth(-(depth.zIndex + 100000)))
               )
         }
         .at(gameTime.running)
-    else sceneUpdateFragment
-  }
-
-  private def calculateCursorPosition(boundaryLocator: BoundaryLocator, text: String, fontKey: FontKey, offset: Point, cursorPosition: Int): Point = {
-    val linesWithBounds = boundaryLocator.textAsLinesWithBounds(text.substring(0, cursorPosition), fontKey)
-    val lineCount       = linesWithBounds.length
-
-    val res = for {
-      lineHeight <- linesWithBounds.headOption.map(_.lineBounds.height)
-      lastLine   <- linesWithBounds.reverse.headOption
-    } yield Point(lastLine.lineBounds.size.x, 0) + offset + Point(0, lineHeight * lineCount)
-
-    res.getOrElse(Point.zero)
+    } else sceneUpdateFragment
   }
 
 }

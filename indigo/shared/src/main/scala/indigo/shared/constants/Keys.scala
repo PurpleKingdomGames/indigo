@@ -6,7 +6,7 @@ import indigo.shared.AsString
 
 final case class Key(code: Int, key: String) {
   def isPrintable: Boolean =
-    (key !== "") && Keys.printable.contains(this)
+    (key !== "") && Keys.printable.map(_.code).contains(this.code)
 
   def ===(other: Key): Boolean =
     implicitly[EqualTo[Key]].equal(this, other)
