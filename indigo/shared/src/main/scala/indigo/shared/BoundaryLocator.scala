@@ -16,8 +16,8 @@ import indigo.shared.datatypes.FontKey
 
 final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister: FontRegister) {
 
-  implicit val boundsCache: QuickCache[Rectangle]         = QuickCache.empty
-  implicit val textLinesCache: QuickCache[List[TextLine]] = QuickCache.empty
+  implicit private val boundsCache: QuickCache[Rectangle]         = QuickCache.empty
+  implicit private val textLinesCache: QuickCache[List[TextLine]] = QuickCache.empty
 
   def purgeCache(): Unit = {
     boundsCache.purgeAllNow()
@@ -64,7 +64,7 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
 
   // Text / Fonts
 
-  def textLineBounds(lineText: String, fontInfo: FontInfo): Rectangle =
+  private def textLineBounds(lineText: String, fontInfo: FontInfo): Rectangle =
     QuickCache(s"""line-bounds-${fontInfo.fontKey.key}-$lineText""") {
       lineText
         .toCharArray()
