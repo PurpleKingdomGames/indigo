@@ -20,12 +20,36 @@ final case class InputField(
     characterLimit: Int,
     multiLine: Boolean,
     assets: InputFieldAssets,
-    cursorPulseRate: Option[Seconds],
+    cursorBlinkRate: Option[Seconds],
     position: Point,
     depth: Depth,
     hasFocus: Boolean,
     cursorPosition: Int
 ) {
+
+  def withText(newText: String): InputField =
+    this.copy(text = newText)
+
+  def withAssets(newAssets: InputFieldAssets): InputField =
+    this.copy(assets = newAssets)
+
+  def noCursorBlink: InputField =
+    this.copy(cursorBlinkRate = None)
+  def withCursorBlinkRate(interval: Seconds): InputField =
+    this.copy(cursorBlinkRate = Some(interval))
+
+  def moveTo(x: Int, y: Int): InputField =
+    moveTo(Point(x, y))
+  def moveTo(newPosition: Point): InputField =
+    this.copy(position = newPosition)
+
+  def moveBy(x: Int, y: Int): InputField =
+    moveBy(Point(x, y))
+  def moveBy(positionDiff: Point): InputField =
+    this.copy(position = position + positionDiff)
+
+  def withDepth(newDepth: Depth): InputField =
+    this.copy(depth = newDepth)
 
   def giveFocus: InputField =
     this.copy(
@@ -170,7 +194,7 @@ final case class InputField(
           .map(_.lineBounds.topRight + position)
           .getOrElse(position)
 
-      cursorPulseRate match {
+      cursorBlinkRate match {
         case None =>
           sceneUpdateFragment
             .addUiLayerNodes(
