@@ -112,8 +112,8 @@ object SandboxGame extends IndigoDemo[SandboxStartupData, SandboxGameModel, Sand
     Outcome(
       viewModel.copy(
         offset = updateOffset,
-        single = viewModel.single.update(inputState, boundaryLocator),
-        multi = viewModel.multi.update(inputState, boundaryLocator)
+        single = viewModel.single.update(gameTime, inputState, boundaryLocator),
+        multi = viewModel.multi.update(gameTime, inputState, boundaryLocator)
       )
     )
   }

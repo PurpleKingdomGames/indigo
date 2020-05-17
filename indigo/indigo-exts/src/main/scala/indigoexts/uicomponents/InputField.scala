@@ -24,11 +24,18 @@ final case class InputField(
     position: Point,
     depth: Depth,
     hasFocus: Boolean,
-    cursorPosition: Int
+    cursorPosition: Int,
+    lastCursorMove: Seconds
 ) {
 
+  def bounds(boundaryLocator: BoundaryLocator): Rectangle =
+    assets.text.withText(text).moveTo(position).bounds(boundaryLocator)
+
   def withText(newText: String): InputField =
-    this.copy(text = newText)
+    this.copy(
+      text = newText,
+      assets = assets.withText(assets.text.withText(newText))
+    )
 
   def withAssets(newAssets: InputFieldAssets): InputField =
     this.copy(assets = newAssets)
@@ -49,7 +56,10 @@ final case class InputField(
     this.copy(position = position + positionDiff)
 
   def withDepth(newDepth: Depth): InputField =
-    this.copy(depth = newDepth)
+    this.copy(
+      depth = newDepth,
+      assets = assets.withText(assets.text.withDepth(newDepth))
+    )
 
   def giveFocus: InputField =
     this.copy(
@@ -79,6 +89,12 @@ final case class InputField(
 
   def cursorHome: InputField =
     this.copy(cursorPosition = 0)
+
+  def moveCursorTo(newCursorPosition: Int): InputField =
+    if (newCursorPosition >= 0 && newCursorPosition < text.length())
+      this.copy(cursorPosition = newCursorPosition)
+    else if (newCursorPosition < 0) this.copy(cursorPosition = 0)
+    else this.copy(cursorPosition = text.length() - 1)
 
   def cursorEnd: InputField =
     this.copy(cursorPosition = text.length)
@@ -127,45 +143,46 @@ final case class InputField(
     rec(textToInsert.toCharArray().toList, splitString._1, splitString._2, cursorPosition)
   }
 
-  def update(inputState: InputState, boundaryLocator: BoundaryLocator): InputField = {
+  def update(gameTime: GameTime, inputState: InputState, boundaryLocator: BoundaryLocator): InputField = {
     @tailrec
-    def rec(keysReleased: List[Key], acc: InputField): InputField =
+    def rec(keysReleased: List[Key], acc: InputField, touched: Boolean): InputField =
       keysReleased match {
         case Nil =>
-          acc
+          if(touched) acc.copy(lastCursorMove = gameTime.running)
+          else acc
 
         case Keys.BACKSPACE :: ks =>
-          rec(ks, acc.backspace)
+          rec(ks, acc.backspace, true)
 
         case Keys.DELETE :: ks =>
-          rec(ks, acc.delete)
+          rec(ks, acc.delete, true)
 
         case Keys.LEFT_ARROW :: ks =>
-          rec(ks, acc.cursorLeft)
+          rec(ks, acc.cursorLeft, true)
 
         case Keys.RIGHT_ARROW :: ks =>
-          rec(ks, acc.cursorRight)
+          rec(ks, acc.cursorRight, true)
 
         case Keys.HOME :: ks =>
-          rec(ks, acc.cursorHome)
+          rec(ks, acc.cursorHome, true)
 
         case Keys.END :: ks =>
-          rec(ks, acc.cursorEnd)
+          rec(ks, acc.cursorEnd, true)
 
         case Keys.ENTER :: ks =>
-          rec(ks, acc.addCharacterText(Keys.ENTER.key))
+          rec(ks, acc.addCharacterText(Keys.ENTER.key), true)
 
         case key :: ks if hasFocus && key.isPrintable =>
-          rec(ks, acc.addCharacterText(key.key))
+          rec(ks, acc.addCharacterText(key.key), true)
 
         case _ :: ks =>
-          rec(ks, acc)
+          rec(ks, acc, touched)
       }
 
-    val updated = rec(inputState.keyboard.keysReleased, this)
+    val updated = rec(inputState.keyboard.keysReleased, this, false)
 
     if (inputState.mouse.mouseReleased)
-      if (inputState.mouse.wasMouseUpWithin(assets.text.bounds(boundaryLocator)))
+      if (inputState.mouse.wasMouseUpWithin(bounds(boundaryLocator)))
         updated.giveFocus
       else updated.loseFocus
     else updated
@@ -186,9 +203,19 @@ final case class InputField(
         .addUiLayerNodes(field)
 
     if (hasFocus) {
+
+      val textToCursor = {
+        // This odd bit of code forces line splitting code to acknowledge
+        // the newline, and move the cursor to the start of the next line
+        // rather than the end of the previous one.
+        val t = field.text.substring(0, cursorPosition)
+        if(t.endsWith("\n")) t + "\n"
+        else t
+      }
+
       val cursorPositionPoint =
         boundaryLocator
-          .textAsLinesWithBounds(field.text.substring(0, cursorPosition), field.fontKey)
+          .textAsLinesWithBounds(textToCursor, field.fontKey)
           .reverse
           .headOption
           .map(_.lineBounds.topRight + position)
@@ -206,6 +233,7 @@ final case class InputField(
         case Some(seconds) =>
           Signal
             .Pulse(seconds)
+            .map(p => if(gameTime.running - lastCursorMove < Seconds(0.5)) true else p)
             .map {
               case false =>
                 sceneUpdateFragment
@@ -229,11 +257,16 @@ final case class InputField(
 object InputField {
 
   def apply(text: String, assets: InputFieldAssets): InputField =
-    InputField(text, 255, false, assets, Some(Millis(400).toSeconds), Point.zero, Depth(1), false, text.length())
+    InputField(text, 255, false, assets, Some(Millis(400).toSeconds), Point.zero, Depth(1), false, text.length(), Seconds.zero)
 
   def apply(text: String, characterLimit: Int, multiLine: Boolean, assets: InputFieldAssets): InputField =
-    InputField(text, characterLimit, multiLine, assets, Some(Millis(400).toSeconds), Point.zero, Depth(1), false, text.length())
+    InputField(text, characterLimit, multiLine, assets, Some(Millis(400).toSeconds), Point.zero, Depth(1), false, text.length(), Seconds.zero)
 
 }
 
-final case class InputFieldAssets(text: Text, cursor: Graphic)
+final case class InputFieldAssets(text: Text, cursor: Graphic) {
+  def withText(newText: Text): InputFieldAssets =
+    this.copy(text = newText)
+  def withCursor(newCursor: Graphic): InputFieldAssets =
+    this.copy(cursor = newCursor)
+}
