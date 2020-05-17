@@ -2,7 +2,6 @@ package indigo.gameengine
 
 import indigo.shared.events._
 import indigo.shared.scenegraph.{SceneAudio, SceneUpdateFragment}
-import indigo.shared.metrics._
 import indigo.shared.config.GameConfig
 import indigo.shared.Outcome
 import indigo.shared.dice.Dice
@@ -54,12 +53,8 @@ class GameLoop[GameModel, ViewModel](
     // By insisting time be measured in sensible units, I've made a rod for my own back...
     if (timeDelta >= gameConfig.frameRateDeltaMillis.toLong - 1) {
 
-      gameEngine.metrics.record(FrameStartMetric)
-
       // Model updates cut off
       if (gameConfig.advanced.disableSkipModelUpdates || timeDelta < gameConfig.haltModelUpdatesAt) {
-
-        gameEngine.metrics.record(UpdateStartMetric)
 
         val gameTime        = new GameTime(Millis(time).toSeconds, Seconds(timeDelta.toDouble / 1000d), GameTime.FPS(gameConfig.frameRate))
         val collectedEvents = gameEngine.globalEventStream.collect :+ FrameTick
@@ -81,8 +76,7 @@ class GameLoop[GameModel, ViewModel](
             collectedEvents,
             inputState,
             Dice.fromSeconds(gameTime.running),
-            boundaryLocator,
-            gameEngine.metrics
+            boundaryLocator
           )
 
         // Persist frame state
@@ -90,21 +84,15 @@ class GameLoop[GameModel, ViewModel](
         viewModelState = processedFrame.state._2
         processedFrame.globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
 
-        GameLoop.processUpdatedView(boundaryLocator, processedFrame.state._3, collectedEvents, gameEngine.metrics, gameEngine.globalEventStream)
-        GameLoop.drawScene(gameEngine.renderer, gameTime, processedFrame.state._3, gameEngine.assetMapping, gameEngine.metrics)
-        GameLoop.playAudio(gameEngine.audioPlayer, processedFrame.state._3.map(_.audio), gameEngine.metrics)
+        GameLoop.processUpdatedView(boundaryLocator, processedFrame.state._3, collectedEvents, gameEngine.globalEventStream)
+        GameLoop.drawScene(gameEngine.renderer, gameTime, processedFrame.state._3, gameEngine.assetMapping)
+        GameLoop.playAudio(gameEngine.audioPlayer, processedFrame.state._3.map(_.audio))
 
-        gameEngine.metrics.record(UpdateEndMetric)
-      } else {
-        gameEngine.metrics.record(SkippedModelUpdateMetric)
       }
 
-      gameEngine.metrics.record(FrameEndMetric)
-
       callTick(loop(time))
-    } else {
+    } else
       callTick(loop(lastUpdateTime))
-    }
   }
 
 }
@@ -120,70 +108,50 @@ object GameLoop {
       collectedEvents: List[GlobalEvent],
       inputState: InputState,
       dice: Dice,
-      boundaryLocator: BoundaryLocator,
-      metrics: Metrics
-  ): Outcome[(GameModel, ViewModel, Option[SceneUpdateFragment])] = {
-    metrics.record(CallFrameProcessorStartMetric)
-
-    val res: Outcome[(GameModel, ViewModel, Option[SceneUpdateFragment])] =
-      if (renderView) {
+      boundaryLocator: BoundaryLocator
+  ): Outcome[(GameModel, ViewModel, Option[SceneUpdateFragment])] = 
+      if (renderView)
         frameProcessor.run(gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)
-      } else {
-        metrics.record(UpdateEndMetric)
+      else {
         frameProcessor.runSkipView(gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)
       }
 
-    metrics.record(CallFrameProcessorEndMetric)
-
-    res
-  }
-
-  def processUpdatedView(boundaryLocator: BoundaryLocator, scene: Option[SceneUpdateFragment], collectedEvents: List[GlobalEvent], metrics: Metrics, globalEventStream: GlobalEventStream): Unit =
+  def processUpdatedView(boundaryLocator: BoundaryLocator, scene: Option[SceneUpdateFragment], collectedEvents: List[GlobalEvent], globalEventStream: GlobalEventStream): Unit =
     scene match {
       case None =>
         ()
 
       case Some(s) =>
-        metrics.record(ProcessViewStartMetric)
-        GameLoop.persistGlobalViewEvents(metrics, globalEventStream, s)
-        GameLoop.persistNodeViewEvents(boundaryLocator, collectedEvents, metrics, globalEventStream, s)
-        metrics.record(ProcessViewEndMetric)
+        GameLoop.persistGlobalViewEvents(globalEventStream, s)
+        GameLoop.persistNodeViewEvents(boundaryLocator, collectedEvents, globalEventStream, s)
     }
 
-  def persistGlobalViewEvents(metrics: Metrics, globalEventStream: GlobalEventStream, scene: SceneUpdateFragment): Unit = {
-    metrics.record(PersistGlobalViewEventsStartMetric)
+  def persistGlobalViewEvents(globalEventStream: GlobalEventStream, scene: SceneUpdateFragment): Unit = {
     scene.globalEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
-    metrics.record(PersistGlobalViewEventsEndMetric)
   }
 
-  def persistNodeViewEvents(boundaryLocator: BoundaryLocator, gameEvents: List[GlobalEvent], metrics: Metrics, globalEventStream: GlobalEventStream, scene: SceneUpdateFragment): Unit = {
-    metrics.record(PersistNodeViewEventsStartMetric)
+  def persistNodeViewEvents(boundaryLocator: BoundaryLocator, gameEvents: List[GlobalEvent], globalEventStream: GlobalEventStream, scene: SceneUpdateFragment): Unit = {
     SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.gameLayer.nodes, gameEvents, globalEventStream.pushGlobalEvent)
     SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.lightingLayer.nodes, gameEvents, globalEventStream.pushGlobalEvent)
     SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.uiLayer.nodes, gameEvents, globalEventStream.pushGlobalEvent)
-    metrics.record(PersistNodeViewEventsEndMetric)
   }
 
-  def drawScene(renderer: Renderer, gameTime: GameTime, scene: Option[SceneUpdateFragment], assetMapping: AssetMapping, metrics: Metrics): Unit =
+  def drawScene(renderer: Renderer, gameTime: GameTime, scene: Option[SceneUpdateFragment], assetMapping: AssetMapping): Unit =
     scene match {
       case None =>
         ()
 
       case Some(s) =>
-        metrics.record(RenderStartMetric)
-        renderer.drawScene(gameTime, s, assetMapping, metrics)
-        metrics.record(RenderEndMetric)
+        renderer.drawScene(gameTime, s, assetMapping)
     }
 
-  def playAudio(audioPlayer: AudioPlayer, sceneAudio: Option[SceneAudio], metrics: Metrics): Unit =
+  def playAudio(audioPlayer: AudioPlayer, sceneAudio: Option[SceneAudio]): Unit =
     sceneAudio match {
       case None =>
         ()
 
       case Some(s) =>
-        metrics.record(AudioStartMetric)
         audioPlayer.playAudio(s)
-        metrics.record(AudioEndMetric)
     }
 
 }

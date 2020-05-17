@@ -12,7 +12,6 @@ import indigo.shared.datatypes.Material
 import indigo.shared.assets.AssetName
 import indigo.shared.time.Seconds
 import indigo.shared.datatypes.BindingKey
-import indigo.shared.metrics.Metrics
 import indigo.shared.time.GameTime
 import indigo.shared.animation.CycleLabel
 import indigo.shared.animation.AnimationAction.ChangeCycle
@@ -22,9 +21,6 @@ import indigo.shared.EqualTo._
 import indigo.shared.AsString._
 
 object AnimationsRegisterTests extends TestSuite {
-
-  val metrics: Metrics =
-    Metrics.getNullInstance
 
   val tests: Tests =
     Tests {
@@ -54,8 +50,7 @@ object AnimationsRegisterTests extends TestSuite {
           GameTime.is(Seconds(0)),
           bindingKey,
           AnimationSample.key,
-          Nil,
-          metrics
+          Nil
         )
 
         val actual = register.findMementoByBindingKey(bindingKey)
@@ -81,8 +76,7 @@ object AnimationsRegisterTests extends TestSuite {
           GameTime.is(Seconds(0)),
           bindingKey,
           AnimationSample.key,
-          Nil,
-          metrics
+          Nil
         )
 
         updatedAnim1.isDefined ==> true
@@ -106,8 +100,7 @@ object AnimationsRegisterTests extends TestSuite {
           GameTime.is(Millis(100).toSeconds),
           bindingKey,
           AnimationSample.key,
-          List(ChangeCycle(AnimationSample.cycleLabel2), Play),
-          metrics
+          List(ChangeCycle(AnimationSample.cycleLabel2), Play)
         )
 
         updatedAnim2.isDefined ==> true
@@ -131,8 +124,7 @@ object AnimationsRegisterTests extends TestSuite {
           GameTime.is(Millis(200).toSeconds),
           bindingKey,
           AnimationSample.key,
-          List(Play),
-          metrics
+          List(Play)
         )
 
         updatedAnim3.isDefined ==> true
@@ -156,8 +148,7 @@ object AnimationsRegisterTests extends TestSuite {
           GameTime.is(Millis(400).toSeconds),
           bindingKey,
           AnimationSample.key,
-          List(Play),
-          metrics
+          List(Play)
         )
 
         updatedAnim4.isDefined ==> true

@@ -2,7 +2,6 @@ package indigo.gameengine
 
 import indigo.shared.animation._
 import indigo.shared.datatypes.FontInfo
-import indigo.shared.metrics._
 import indigo.shared.config.GameConfig
 import indigo.shared.assets.AssetType
 import indigo.shared.IndigoLogger
@@ -54,8 +53,6 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     AudioPlayerImpl.init
 
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
-  var metrics: Metrics = null
-  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var gameConfig: GameConfig = null
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var storage: Storage = null
@@ -99,8 +96,6 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
         IndigoLogger.info(
           "WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!"
         )
-
-      metrics = Metrics.getInstance(gameConfig.advanced.recordMetrics, gameConfig.advanced.logMetricsReportIntervalMs)
 
       // Arrange initial asset load
       IndigoLogger.info("Attempting to load assets")

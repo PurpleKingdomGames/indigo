@@ -5,7 +5,6 @@ import indigo.shared.datatypes.{FontInfo, Rectangle, TextAlignment, FontChar}
 import indigo.shared.animation.Animation
 import indigo.shared.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import indigo.shared.IndigoLogger
-import indigo.shared.metrics.Metrics
 import indigo.shared.time.GameTime
 import indigo.shared.datatypes.Vector2
 import indigo.shared.AnimationsRegister
@@ -130,8 +129,7 @@ object DisplayObjectConversions {
       assetMapping: AssetMapping,
       boundaryLocator: BoundaryLocator,
       animationsRegister: AnimationsRegister,
-      fontRegister: FontRegister,
-      metrics: Metrics
+      fontRegister: FontRegister
   ): ListBuffer[DisplayEntity] = {
     @tailrec
     def rec(remaining: List[SceneGraphNode]): ListBuffer[DisplayEntity] =
@@ -162,7 +160,7 @@ object DisplayObjectConversions {
           rec(xs)
 
         case (x: Sprite) :: xs =>
-          animationsRegister.fetchAnimationForSprite(gameTime, x.bindingKey, x.animationKey, x.animationActions, metrics) match {
+          animationsRegister.fetchAnimationForSprite(gameTime, x.bindingKey, x.animationKey, x.animationActions) match {
             case None =>
               IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${x.animationKey.toString()}")
               rec(xs)
@@ -182,7 +180,7 @@ object DisplayObjectConversions {
               case TextAlignment.Right => -lineBounds.size.x
             }
 
-          val converterFunc: (TextLine, Int, Int) => List[DisplayObject] = {
+          val converterFunc: (TextLine, Int, Int) => List[DisplayObject] =
             fontRegister
               .findByFontKey(x.fontKey)
               .map { fontInfo =>
@@ -192,7 +190,6 @@ object DisplayObjectConversions {
                 IndigoLogger.errorOnce(s"Cannot render Text, missing Font with key: ${x.fontKey.toString()}")
                 Nil
               }
-          }
 
           val letters =
             boundaryLocator

@@ -4,7 +4,6 @@ import indigo.facades.WebGL2RenderingContext
 import indigo.shared.display.DisplayObject
 import indigo.shared.ClearColor
 import org.scalajs.dom.raw.WebGLProgram
-import indigo.shared.metrics.Metrics
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
 import indigo.shared.EqualTo._
@@ -154,9 +153,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       displayEntities: ListBuffer[DisplayEntity],
       frameBufferComponents: FrameBufferComponents,
       clearColor: ClearColor,
-      shaderProgram: WebGLProgram,
-      layer: CurrentDrawLayer,
-      metrics: Metrics
+      shaderProgram: WebGLProgram
   ): Unit = {
 
     FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, clearColor)
@@ -223,10 +220,8 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
         bindData(textureAmountsArray, textureAmountsData)
 
         gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
-        metrics.record(layer.metricDraw)
       }
 
-    metrics.record(layer.metricStart)
 
     @tailrec
     def rec(remaining: List[DisplayEntity], batchCount: Int, atlasName: String): Unit =
@@ -284,8 +279,6 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       }
 
     rec(sorted.toList, 0, "")
-
-    metrics.record(layer.metricEnd)
 
   }
 

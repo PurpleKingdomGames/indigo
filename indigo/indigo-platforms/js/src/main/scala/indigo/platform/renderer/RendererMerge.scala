@@ -3,7 +3,6 @@ package indigo.platform.renderer
 import indigo.shared.display.DisplayObject
 import scala.scalajs.js.typedarray.Float32Array
 import org.scalajs.dom.raw.WebGLProgram
-import indigo.shared.metrics.Metrics
 import indigo.facades.WebGL2RenderingContext
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
@@ -99,11 +98,9 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
       uiLayerTint: RGBA,
       gameLayerSaturation: Double,
       lightingLayerSaturation: Double,
-      uiLayerSaturation: Double,
-      metrics: Metrics
+      uiLayerSaturation: Double
   ): Unit = {
 
-    metrics.record(CurrentDrawLayer.Merge.metricStart)
 
     FrameBufferFunctions.switchToCanvas(gl2, clearColor)
 
@@ -147,10 +144,6 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
     gl2.drawArrays(TRIANGLE_STRIP, 0, 4)
 
     gl2.bindBuffer(gl2.UNIFORM_BUFFER, null);
-
-    metrics.record(CurrentDrawLayer.Merge.metricDraw)
-
-    metrics.record(CurrentDrawLayer.Merge.metricEnd)
 
   }
 

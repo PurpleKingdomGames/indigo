@@ -7,7 +7,6 @@ import indigo.shared.config.GameConfig
 // import indigo.shared.IndigoLogger
 // import indigo.shared.display.Vector2
 // import indigo.shared.display.Displayable
-import indigo.shared.metrics.Metrics
 // import indigo.platform.renderer.RendererInit
 // import indigo.platform.renderer.LoadedTextureAsset
 // import indigo.shared.platform.RendererConfig
@@ -43,7 +42,7 @@ class PlatformImpl(
   // import PlatformImpl._
 
   def initialiseRenderer(gameConfig: GameConfig): Try[(Renderer, AssetMapping)] =
-    Success({
+    Success {
       println(gameConfig.magnification.toString)
       println(assetCollection.images.length.toString)
       println(globalEventStream.collect.length.toString())
@@ -53,8 +52,8 @@ class PlatformImpl(
 
       val renderer: Renderer =
         new Renderer {
-          def init(): Unit                                                                                                  = ()
-          def drawScene(gameTime: GameTime, scene: SceneUpdateFragment, assetMapping: AssetMapping, metrics: Metrics): Unit = ()
+          def init(): Unit                                                                                = ()
+          def drawScene(gameTime: GameTime, scene: SceneUpdateFragment, assetMapping: AssetMapping): Unit = ()
         }
 
       val assetMapping: AssetMapping =
@@ -70,7 +69,7 @@ class PlatformImpl(
       // } yield (renderer, assetMapping)
 
       (renderer, assetMapping)
-    })
+    }
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def tick(loop: Long => Unit): Unit =

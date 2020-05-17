@@ -3,7 +3,6 @@ package indigo.platform.renderer
 import indigo.shared.display.DisplayObject
 import scala.scalajs.js.typedarray.Float32Array
 import org.scalajs.dom.raw.WebGLProgram
-import indigo.shared.metrics.Metrics
 import indigo.facades.WebGL2RenderingContext
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
@@ -120,11 +119,8 @@ class RendererLights(gl2: WebGL2RenderingContext) {
       gameFrameBuffer: FrameBufferComponents.MultiOutput,
       width: Int,
       height: Int,
-      magnification: Int,
-      metrics: Metrics
+      magnification: Int
   ): Unit = {
-
-    metrics.record(CurrentDrawLayer.Lights.metricStart)
 
     FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, ClearColor.Black.forceTransparent)
     gl2.drawBuffers(frameBufferComponents.colorAttachments)
@@ -172,10 +168,6 @@ class RendererLights(gl2: WebGL2RenderingContext) {
 
       gl2.bindBuffer(gl2.UNIFORM_BUFFER, null);
     }
-
-    metrics.record(CurrentDrawLayer.Lights.metricDraw)
-
-    metrics.record(CurrentDrawLayer.Lights.metricEnd)
 
   }
 

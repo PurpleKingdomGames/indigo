@@ -28,10 +28,6 @@ final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: 
   def withMagnification(magnification: Int): GameConfig   = this.copy(magnification = magnification)
 
   def withAdvancedSettings(advanced: AdvancedGameConfig): GameConfig = this.copy(advanced = advanced)
-  def metricsEnabled: GameConfig                                     = this.copy(advanced = advanced.copy(recordMetrics = true))
-  def metricsDisabled: GameConfig                                    = this.copy(advanced = advanced.copy(recordMetrics = false))
-  def withLogInterval(milliseconds: Int): GameConfig =
-    this.copy(advanced = advanced.copy(logMetricsReportIntervalMs = milliseconds))
   def disableSkipModelUpdates: GameConfig = this.copy(advanced = advanced.copy(disableSkipModelUpdates = true))
   def enableSkipModelUpdates: GameConfig  = this.copy(advanced = advanced.copy(disableSkipModelUpdates = false))
   def disableSkipViewUpdates: GameConfig  = this.copy(advanced = advanced.copy(disableSkipViewUpdates = true))

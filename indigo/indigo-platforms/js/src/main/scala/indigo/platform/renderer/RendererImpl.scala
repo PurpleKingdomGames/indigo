@@ -1,6 +1,5 @@
 package indigo.platform.renderer
 
-import indigo.shared.metrics._
 import indigo.shared.ClearColor
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
@@ -25,7 +24,14 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.FontRegister
 
 @SuppressWarnings(Array("org.wartremover.warts.Null"))
-final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas, boundaryLocator: BoundaryLocator, animationsRegister: AnimationsRegister, fontRegister: FontRegister) extends Renderer {
+final class RendererImpl(
+    config: RendererConfig,
+    loadedTextureAssets: List[LoadedTextureAsset],
+    cNc: ContextAndCanvas,
+    boundaryLocator: BoundaryLocator,
+    animationsRegister: AnimationsRegister,
+    fontRegister: FontRegister
+) extends Renderer {
 
   private val gl: WebGLRenderingContext =
     cNc.context
@@ -121,7 +127,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
   def calculateProjectionMatrix(width: Double, height: Double, magnification: Int): scalajs.js.Array[Double] =
     RendererFunctions.mat4ToJsArray(Matrix4.orthographic(width.toDouble / magnification.toDouble, height.toDouble / magnification.toDouble))
 
-  def drawScene(gameTime: GameTime, scene: SceneUpdateFragment, assetMapping: AssetMapping, metrics: Metrics): Unit = {
+  def drawScene(gameTime: GameTime, scene: SceneUpdateFragment, assetMapping: AssetMapping): Unit = {
 
     gl2.bindVertexArray(vao)
 
@@ -132,7 +138,7 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
             acc + (blank.id.value -> DisplayObjectConversions.graphicToDisplayObject(g, assetMapping))
 
           case s: Sprite =>
-            animationsRegister.fetchAnimationForSprite(gameTime, s.bindingKey, s.animationKey, s.animationActions, metrics) match {
+            animationsRegister.fetchAnimationForSprite(gameTime, s.bindingKey, s.animationKey, s.animationActions) match {
               case None =>
                 acc
 
@@ -166,22 +172,17 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
         .getOrElse(orthographicProjectionMatrix)
 
     // Game layer
-    metrics.record(DrawGameLayerStartMetric)
     RendererFunctions.setNormalBlend(gl)
     layerRenderer.drawLayer(
       gameProjection,
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, boundaryLocator, animationsRegister, fontRegister, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, boundaryLocator, animationsRegister, fontRegister),
       gameFrameBuffer,
       ClearColor.Black.forceTransparent,
-      standardShaderProgram,
-      CurrentDrawLayer.Game,
-      metrics
+      standardShaderProgram
     )
-    metrics.record(DrawGameLayerEndMetric)
 
     // Dynamic lighting
-    metrics.record(DrawLightsLayerStartMetric)
     RendererFunctions.setLightsBlend(gl)
     lightsRenderer.drawLayer(
       scene.lights,
@@ -190,58 +191,43 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       gameFrameBuffer,
       cNc.canvas.width,
       cNc.canvas.height,
-      cNc.magnification,
-      metrics
+      cNc.magnification
     )
-    metrics.record(DrawLightsLayerEndMetric)
 
     // Image based lighting
-    metrics.record(DrawLightingLayerStartMetric)
     RendererFunctions.setLightingBlend(gl)
     layerRenderer.drawLayer(
       lightingProjection,
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping, boundaryLocator, animationsRegister, fontRegister, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping, boundaryLocator, animationsRegister, fontRegister),
       lightingFrameBuffer,
       scene.ambientLight.toClearColor,
-      lightingShaderProgram,
-      CurrentDrawLayer.Lighting,
-      metrics
+      lightingShaderProgram
     )
-    metrics.record(DrawLightingLayerEndMetric)
 
     // Distortion
-    metrics.record(DrawDistortionLayerStartMetric)
     RendererFunctions.setDistortionBlend(gl)
     layerRenderer.drawLayer(
       lightingProjection,
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.distortionLayer.nodes, gameTime, assetMapping, boundaryLocator, animationsRegister, fontRegister, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.distortionLayer.nodes, gameTime, assetMapping, boundaryLocator, animationsRegister, fontRegister),
       distortionFrameBuffer,
       ClearColor(0.5, 0.5, 1.0, 1.0),
-      distortionShaderProgram,
-      CurrentDrawLayer.Distortion,
-      metrics
+      distortionShaderProgram
     )
-    metrics.record(DrawDistortionLayerEndMetric)
 
     // UI
-    metrics.record(DrawUiLayerStartMetric)
     RendererFunctions.setNormalBlend(gl)
     layerRenderer.drawLayer(
       uiProjection,
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping, boundaryLocator, animationsRegister, fontRegister, metrics),
+      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping, boundaryLocator, animationsRegister, fontRegister),
       uiFrameBuffer,
       ClearColor.Black.forceTransparent,
-      standardShaderProgram,
-      CurrentDrawLayer.UI,
-      metrics
+      standardShaderProgram
     )
-    metrics.record(DrawUiLayerEndMetric)
 
     // Merge
-    metrics.record(RenderToWindowStartMetric)
     RendererFunctions.setNormalBlend(gl2)
     mergeRenderer.drawLayer(
       orthographicProjectionMatrixNoMag,
@@ -260,15 +246,9 @@ final class RendererImpl(config: RendererConfig, loadedTextureAssets: List[Loade
       scene.uiLayer.tint,
       scene.gameLayer.saturation,
       scene.lightingLayer.saturation,
-      scene.uiLayer.saturation,
-      metrics
+      scene.uiLayer.saturation
     )
-    metrics.record(RenderToWindowEndMetric)
 
-    // Finally, persist animation states...
-    // metrics.record(PersistAnimationStatesStartMetric)
-    // AnimationsRegister.persistAnimationStates()
-    // metrics.record(PersistAnimationStatesEndMetric)
   }
 
   def resize(canvas: html.Canvas, magnification: Int): Unit = {
