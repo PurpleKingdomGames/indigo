@@ -24,7 +24,7 @@ trait IndigoSandbox[StartupData, Model] extends GameLauncher {
 
   val animations: Set[Animation]
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, StartupData]
+  def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartupData]
 
   def initialModel(startupData: StartupData): Model
 
@@ -47,7 +47,7 @@ trait IndigoSandbox[StartupData, Model] extends GameLauncher {
     new GameEngine[StartupData, StartupErrors, Model, Unit](
       fonts,
       animations,
-      (ac: AssetCollection) => (_: Map[String, String]) => setup(ac),
+      (ac: AssetCollection) => (d: Dice) => (_: Map[String, String]) => setup(ac, d),
       (sd: StartupData) => initialModel(sd),
       (_: StartupData) => (_: Model) => (),
       frameProcessor

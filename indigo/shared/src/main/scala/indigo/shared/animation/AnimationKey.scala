@@ -2,6 +2,7 @@ package indigo.shared.animation
 
 import indigo.shared.{AsString, EqualTo}
 import indigo.shared.EqualTo._
+import indigo.shared.dice.Dice
 
 final class AnimationKey(val value: String) extends AnyVal {
   override def toString(): String =
@@ -22,4 +23,7 @@ object AnimationKey {
 
   def apply(key: String): AnimationKey =
     new AnimationKey(key)
+
+  def fromDice(dice: Dice): AnimationKey =
+    AnimationKey(dice.rollAlphaNumeric)
 }

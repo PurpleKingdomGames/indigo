@@ -32,7 +32,7 @@ object WorkScheduleTests extends TestSuite {
       "The WorkSchedule" - {
 
         "should allow you to create an empty work schedule" - {
-          WorkSchedule.empty[SampleActor, Unit].jobStack ==> Nil
+          WorkSchedule[SampleActor, Unit](bindingKey).jobStack ==> Nil
         }
 
         "should generate new local jobs when the stack is empty" - {

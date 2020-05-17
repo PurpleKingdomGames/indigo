@@ -4,15 +4,15 @@ import indigoexts.pathfinding.GridSquare.{EmptySquare, EndSquare, ImpassableSqua
 
 import indigo.shared.EqualTo._
 import scala.annotation.tailrec
-import scala.util.Random
+import indigo.shared.dice.Dice
 
 final case class SearchGrid(validationWidth: Int, validationHeight: Int, start: Coords, end: Coords, grid: List[GridSquare]) {
 
   def isValid: Boolean =
     SearchGrid.isValid(this)
 
-  def locatePath: List[Coords] =
-    SearchGrid.locatePath(SearchGrid.score(this))
+  def locatePath(dice: Dice): List[Coords] =
+    SearchGrid.locatePath(dice, SearchGrid.score(this))
 
 }
 
@@ -98,7 +98,7 @@ object SearchGrid {
   def score(searchGrid: SearchGrid): SearchGrid =
     searchGrid.copy(grid = scoreGridSquares(searchGrid))
 
-  def locatePath(searchGrid: SearchGrid): List[Coords] = {
+  def locatePath(dice: Dice, searchGrid: SearchGrid): List[Coords] = {
     @tailrec
     def rec(currentPosition: Coords, currentScore: Int, target: Coords, grid: SearchGrid, width: Int, acc: List[Coords]): List[Coords] =
       if (currentPosition === target) acc
@@ -111,7 +111,7 @@ object SearchGrid {
             rec(next.coords, next.score.getOrElse(GridSquare.max), target, grid, width, acc :+ next.coords)
 
           case xs =>
-            val next = xs(Random.nextInt(xs.length))
+            val next = xs(dice.rollFromZero(xs.length))
             rec(next.coords, next.score.getOrElse(GridSquare.max), target, grid, width, acc :+ next.coords)
         }
 

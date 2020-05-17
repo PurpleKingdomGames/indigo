@@ -51,7 +51,7 @@ object PerfGame extends IndigoDemo[MyStartupData, MyGameModel, Unit] {
   def initialViewModel(startupData: MyStartupData): MyGameModel => Unit =
     _ => ()
 
-  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, MyStartupData] = {
+  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, MyStartupData] = {
     def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[MyStartupData] =
       Startup
         .Success(
@@ -69,7 +69,7 @@ object PerfGame extends IndigoDemo[MyStartupData, MyGameModel, Unit] {
     val res: Option[Startup.Success[MyStartupData]] = for {
       json                <- assetCollection.findTextDataByName(AssetName(PerfAssets.dudeName.value + "-json"))
       aseprite            <- Json.asepriteFromJson(json)
-      spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, Depth(3), PerfAssets.dudeName)
+      spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(dice, aseprite, Depth(3), PerfAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)
 
     res.getOrElse(Startup.Failure(StartupErrors("Failed to load the dude")))

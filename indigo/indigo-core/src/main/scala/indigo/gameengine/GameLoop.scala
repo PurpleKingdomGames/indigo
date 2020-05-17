@@ -80,7 +80,7 @@ class GameLoop[GameModel, ViewModel](
             gameTime,
             collectedEvents,
             inputState,
-            Dice.default(gameTime.running.toMillis.value),
+            Dice.fromSeconds(gameTime.running),
             boundaryLocator,
             gameEngine.metrics
           )

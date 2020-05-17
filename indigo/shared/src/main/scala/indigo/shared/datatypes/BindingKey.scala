@@ -1,9 +1,8 @@
 package indigo.shared.datatypes
 
-import scala.util.Random
-
 import indigo.shared.EqualTo
 import indigo.shared.AsString
+import indigo.shared.dice.Dice
 
 final class BindingKey(val value: String) extends AnyVal {
   def asString: String =
@@ -22,8 +21,8 @@ object BindingKey {
   def apply(value: String): BindingKey =
     new BindingKey(value)
 
-  def generate: BindingKey =
-    BindingKey(Random.alphanumeric.take(16).mkString)
+  def fromDice(dice: Dice): BindingKey =
+    BindingKey(dice.rollAlphaNumeric)
 
   implicit val eq: EqualTo[BindingKey] = {
     val eqS = implicitly[EqualTo[String]]

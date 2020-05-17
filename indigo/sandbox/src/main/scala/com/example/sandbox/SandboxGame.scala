@@ -39,7 +39,7 @@ object SandboxGame extends IndigoDemo[SandboxStartupData, SandboxGameModel, Sand
   val subSystems: Set[SubSystem] =
     Set(FPSCounter.subSystem(SandboxView.fontKey, Point(3, 100), targetFPS))
 
-  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, SandboxStartupData] = {
+  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, SandboxStartupData] = {
     println("flags")
     println(flags.mkString(", "))
     println(flags.get("data"))
@@ -62,7 +62,7 @@ object SandboxGame extends IndigoDemo[SandboxStartupData, SandboxGameModel, Sand
     val res: Option[Startup.Success[SandboxStartupData]] = for {
       json                <- assetCollection.findTextDataByName(AssetName(SandboxAssets.dudeName.value + "-json"))
       aseprite            <- Json.asepriteFromJson(json)
-      spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, Depth(3), SandboxAssets.dudeName)
+      spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(dice, aseprite, Depth(3), SandboxAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)
 
     res.getOrElse(Startup.Failure(StartupErrors("Failed to load the dude")))

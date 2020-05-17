@@ -32,11 +32,12 @@ import scala.util.Success
 import scala.util.Failure
 import indigo.platform.DisplayObjectConversions
 import indigo.shared.BoundaryLocator
+import indigo.shared.dice.Dice
 
 final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     fonts: Set[FontInfo],
     animations: Set[Animation],
-    initialise: AssetCollection => Map[String, String] => Startup[StartupError, StartupData],
+    initialise: AssetCollection => Dice => Map[String, String] => Startup[StartupError, StartupData],
     initialModel: StartupData => GameModel,
     initialViewModel: StartupData => GameModel => ViewModel,
     frameProccessor: FrameProcessor[GameModel, ViewModel]
@@ -139,7 +140,7 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     val platform: Platform =
       new PlatformImpl(accumulatedAssetCollection, globalEventStream, boundaryLocator, animationsRegister, fontRegister)
 
-    val startupData: Startup[StartupError, StartupData] = initialise(accumulatedAssetCollection)(flags)
+    val startupData: Startup[StartupError, StartupData] = initialise(accumulatedAssetCollection)(Dice.fromSeed(0))(flags)
 
     GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
 

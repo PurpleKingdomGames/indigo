@@ -1,7 +1,7 @@
 package indigoexts.subsystems.automata
 
 import indigo.shared.EqualTo
-import indigo.shared.datatypes.BindingKey
+import indigo.shared.dice.Dice
 
 final class AutomataPoolKey(val key: String) extends AnyVal {
   override def toString: String =
@@ -17,7 +17,7 @@ object AutomataPoolKey {
   def apply(key: String): AutomataPoolKey =
     new AutomataPoolKey(key)
 
-  def generate: AutomataPoolKey =
-    AutomataPoolKey(BindingKey.generate.value)
+  def fromDice(dice: Dice): AutomataPoolKey =
+    AutomataPoolKey(dice.rollAlphaNumeric)
 
 }

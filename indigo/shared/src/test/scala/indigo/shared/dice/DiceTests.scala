@@ -41,6 +41,28 @@ object DiceTests extends TestSuite {
           checkDice(dice.roll(3), 3) ==> true
         }
 
+        "should give a different number for each roll of the same dice instance" - {
+          val dice         = Dice.arbitrary(0, 512, 0)
+          val values       = List.fill(50)(dice.roll)
+          val numberOfKeys = values.groupBy(identity).keySet.size
+
+          // 48?! I tried it, got the uniqueness number, and it was 48.
+          // Psuedorandom! It's the whole point!
+          numberOfKeys ==> 48
+        }
+
+        "should be able to produce an alphanumeric string" - {
+          val dice   = Dice.fromSeed(0)
+          val actual = dice.rollAlphaNumeric
+
+          // Psuedorandom! Seed of 0 produces "CCzLNHBFHuRvbI1i"
+          val expected =
+            "CCzLNHBFHuRvbI1i"
+
+          actual.length() ==> 16
+          actual ==> expected
+        }
+
       }
 
     }

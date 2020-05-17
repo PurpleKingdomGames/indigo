@@ -4,6 +4,7 @@ import indigoexts.pathfinding.GridSquare.{EmptySquare, EndSquare, ImpassableSqua
 import utest._
 
 import scala.language.implicitConversions
+import indigo.shared.dice.Dice
 
 object PathFindingTests extends TestSuite {
 
@@ -21,7 +22,7 @@ object PathFindingTests extends TestSuite {
 
           val searchGrid = SearchGrid.generate(start, end, List(impassable), 3, 3)
 
-          val path: List[Coords] = searchGrid.locatePath
+          val path: List[Coords] = searchGrid.locatePath(Dice.fromSeed(0))
 
           val possiblePaths: List[List[Coords]] = List(
             List(start, Coords(2, 2), Coords(1, 2), end),

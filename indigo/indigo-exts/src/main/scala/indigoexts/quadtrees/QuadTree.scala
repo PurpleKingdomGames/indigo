@@ -10,6 +10,7 @@ import indigoexts.geometry.LineSegment
 
 import scala.annotation.tailrec
 import indigoexts.geometry.Vertex
+import indigo.shared.dice.Dice
 
 sealed trait QuadTree[T] {
 
@@ -26,8 +27,8 @@ sealed trait QuadTree[T] {
   def removeElement(gridPoint: GridPoint): QuadTree[T] =
     QuadTree.removeElement(this, gridPoint)
 
-  def findEmptySpace(gridSize: GridSize, not: List[GridPoint]): GridPoint =
-    QuadTree.findEmptySpace(this, gridSize, not)
+  def findEmptySpace(dice: Dice, gridSize: GridSize, not: List[GridPoint]): GridPoint =
+    QuadTree.findEmptySpace(this, dice, gridSize, not)
 
   def asElementList: List[T] =
     QuadTree.asElementList(this)
@@ -211,8 +212,8 @@ object QuadTree {
         tree
     }
 
-  def findEmptySpace[T](quadTree: QuadTree[T], gridSize: GridSize, not: List[GridPoint]): GridPoint = {
-    def makeRandom: () => GridPoint = () => GridPoint.random(gridSize.width - 2, gridSize.height - 2) + GridPoint(1, 1)
+  def findEmptySpace[T](quadTree: QuadTree[T], dice: Dice, gridSize: GridSize, not: List[GridPoint]): GridPoint = {
+    def makeRandom: () => GridPoint = () => GridPoint.random(dice, gridSize.width - 2, gridSize.height - 2) + GridPoint(1, 1)
 
     @tailrec
     def rec(pt: GridPoint): GridPoint =

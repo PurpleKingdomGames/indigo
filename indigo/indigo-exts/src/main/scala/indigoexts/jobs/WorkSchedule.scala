@@ -23,8 +23,8 @@ object WorkSchedule {
   def apply[Actor, Context](id: BindingKey, jobStack: List[Job]): WorkSchedule[Actor, Context] =
     new WorkSchedule[Actor, Context](id, jobStack)
 
-  def empty[Actor, Context]: WorkSchedule[Actor, Context] =
-    WorkSchedule(BindingKey.generate, Nil)
+  def apply[Actor, Context](id: BindingKey): WorkSchedule[Actor, Context] =
+    new WorkSchedule[Actor, Context](id, Nil)
 
   def current[Actor, Context](workSchedule: WorkSchedule[Actor, Context]): Option[Job] =
     workSchedule.jobStack.headOption

@@ -73,7 +73,7 @@ trait IndigoGame[StartupData, Model, ViewModel] extends GameLauncher {
     * @return Either an `Startup.Success[...your startup data...]` or a
     *         `Startup.Failure[StartupErrors]`.
     */
-  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, StartupData]
+  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, StartupData]
 
   /**
     * Set up of your initial model
@@ -110,7 +110,7 @@ trait IndigoGame[StartupData, Model, ViewModel] extends GameLauncher {
     new GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel](
       fonts,
       animations,
-      (ac: AssetCollection) => (flags: Map[String, String]) => setup(ac, flags),
+      (ac: AssetCollection) => (d: Dice) => (flags: Map[String, String]) => setup(ac, d, flags),
       (sd: StartupData) => new GameWithSubSystems(initialModel(sd), new SubSystemsRegister(subSystems.toList)),
       (sd: StartupData) => (m: GameWithSubSystems[Model]) => initialViewModel(sd)(m.model),
       frameProcessor

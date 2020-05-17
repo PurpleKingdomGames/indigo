@@ -5,6 +5,8 @@ import indigo.shared.EqualTo._
 
 import scala.annotation.tailrec
 import scala.util.Random
+import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 
 /**
   * All dice rolls are from value 1 to N inclusive.
@@ -14,7 +16,10 @@ trait Dice {
   val seed: Long
   def roll: Int
   def roll(sides: Int): Int
+  def rollFromZero(sides: Int): Int
   def rollDouble: Double
+  def rollAlphaNumeric(length: Int): String
+  def rollAlphaNumeric: String
 
   override def toString: String =
     s"Dice(seed = ${seed.toString()})"
@@ -22,10 +27,16 @@ trait Dice {
 
 object Dice {
 
-  val default: Long => Dice =
-    Sides.MaxInt
+  def fromSeconds(time: Seconds): Dice =
+    Sides.MaxInt(time.toMillis.value)
 
-  val isPositive: Int => Boolean =
+  def fromMillis(time: Millis): Dice =
+    Sides.MaxInt(time.value)
+
+  def fromSeed(seed: Long): Dice =
+    Sides.MaxInt(seed)
+
+  private val isPositive: Int => Boolean =
     _ > 0
 
   val sanitise: Int => Int =
@@ -58,8 +69,17 @@ object Dice {
       def roll(sides: Int): Int =
         fixedTo
 
+      def rollFromZero(sides: Int): Int =
+        fixedTo
+
       def rollDouble: Double =
         if (fixedTo === 0) 0 else 1
+
+      def rollAlphaNumeric(length: Int): String =
+        List.fill(length)(fixedTo.toString()).mkString.take(length)
+
+      def rollAlphaNumeric: String =
+        rollAlphaNumeric(16)
     }
 
   def arbitrary(from: Int, to: Int, seedValue: Long): Dice =
@@ -74,8 +94,17 @@ object Dice {
       def roll(sides: Int): Int =
         r.nextInt(sanitise(sides)) + 1
 
+      def rollFromZero(sides: Int): Int =
+        roll(sides + 1) - 1
+
       def rollDouble: Double =
         r.nextDouble()
+
+      def rollAlphaNumeric(length: Int): String =
+        r.alphanumeric.take(length).mkString
+
+      def rollAlphaNumeric: String =
+        rollAlphaNumeric(16)
     }
 
   def diceSidesN(sides: Int, seedValue: Long): Dice =
@@ -90,8 +119,17 @@ object Dice {
       def roll(sides: Int): Int =
         r.nextInt(sanitise(sides)) + 1
 
+      def rollFromZero(sides: Int): Int =
+        roll(sides + 1) - 1
+
       def rollDouble: Double =
         r.nextDouble()
+
+      def rollAlphaNumeric(length: Int): String =
+        r.alphanumeric.take(length).mkString
+
+      def rollAlphaNumeric: String =
+        rollAlphaNumeric(16)
     }
 
   val ZeroIndexed: Long => Dice =

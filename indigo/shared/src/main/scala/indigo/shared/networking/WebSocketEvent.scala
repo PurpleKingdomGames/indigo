@@ -3,13 +3,9 @@ package indigo.shared.networking
 import indigo.shared.events.{NetworkSendEvent, NetworkReceiveEvent}
 import indigo.shared.EqualTo
 import indigo.shared.AsString
-import indigo.shared.datatypes.BindingKey
 
 final case class WebSocketId(id: String)
 object WebSocketId {
-  def generate: WebSocketId =
-    WebSocketId(BindingKey.generate.value)
-
   implicit val eq: EqualTo[WebSocketId] = {
     val eqS = implicitly[EqualTo[String]]
     EqualTo.create((a, b) => eqS.equal(a.id, b.id))

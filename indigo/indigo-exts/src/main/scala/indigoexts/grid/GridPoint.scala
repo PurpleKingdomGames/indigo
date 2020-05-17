@@ -5,9 +5,9 @@ import indigo.shared.AsString
 import indigo.shared.EqualTo
 
 import scala.annotation.tailrec
-import scala.util.Random
 
 import indigo.shared.EqualTo._
+import indigo.shared.dice.Dice
 
 final case class GridPoint(x: Int, y: Int) {
 
@@ -79,10 +79,10 @@ object GridPoint {
     else rec(end, start, (gp: GridPoint) => gp === start, List(end))
   }
 
-  def random(maxX: Int, maxY: Int): GridPoint =
+  def random(dice: Dice, maxX: Int, maxY: Int): GridPoint =
     GridPoint(
-      x = Random.nextInt(maxX),
-      y = Random.nextInt(maxY)
+      x = dice.rollFromZero(maxX),
+      y = dice.rollFromZero(maxY)
     )
 
   def wrap(gridPoint: GridPoint, gridSize: GridSize): GridPoint =
