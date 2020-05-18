@@ -22,7 +22,7 @@ object ControlsScene extends Scene[SnakeGameModel, SnakeViewModel] {
   val sceneSubSystems: Set[SubSystem] =
     Set()
 
-  def updateSceneModel(gameTime: GameTime, controlScheme: ControlScheme, inputState: InputState, dice: Dice): GlobalEvent => Outcome[ControlScheme] = {
+  def updateSceneModel(context: FrameContext, controlScheme: ControlScheme): GlobalEvent => Outcome[ControlScheme] = {
     case KeyboardEvent.KeyUp(Keys.SPACE) =>
       Outcome(controlScheme)
         .addGlobalEvents(SceneEvent.JumpTo(GameScene.name))
@@ -35,20 +35,16 @@ object ControlsScene extends Scene[SnakeGameModel, SnakeViewModel] {
   }
 
   def updateSceneViewModel(
-      gameTime: GameTime,
+      context: FrameContext,
       controlScheme: ControlScheme,
-      sceneViewModel: Unit,
-      inputState: InputState,
-      dice: Dice
+      sceneViewModel: Unit
   ): Outcome[Unit] =
     Outcome(())
 
   def updateSceneView(
-      gameTime: GameTime,
+      context: FrameContext,
       sceneModel: ControlScheme,
-      sceneViewModel: Unit,
-      inputState: InputState,
-      boundaryLocator: BoundaryLocator
+      sceneViewModel: Unit
   ): SceneUpdateFragment = {
     val horizontalCenter: Int = (Settings.viewportWidth / Settings.magnificationLevel) / 2
     val verticalMiddle: Int   = (Settings.viewportHeight / Settings.magnificationLevel) / 2
@@ -56,7 +52,7 @@ object ControlsScene extends Scene[SnakeGameModel, SnakeViewModel] {
     SceneUpdateFragment.empty
       .addUiLayerNodes(drawControlsText(24, verticalMiddle, sceneModel))
       .addUiLayerNodes(drawSelectText(horizontalCenter))
-      .addUiLayerNodes(SharedElements.drawHitSpaceToStart(horizontalCenter, Seconds(1), gameTime))
+      .addUiLayerNodes(SharedElements.drawHitSpaceToStart(horizontalCenter, Seconds(1), context.gameTime))
   }
 
   def drawControlsText(center: Int, middle: Int, controlScheme: ControlScheme): List[SceneGraphNode] =

@@ -7,7 +7,6 @@ import indigogame.entry.StandardFrameProcessor
 // Indigo is Scala.js only at the moment, revisit if/when we go to the JVM
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import indigo.shared.BoundaryLocator
 
 /**
   * A trait representing a minimal set of functions to get your game running
@@ -28,20 +27,20 @@ trait IndigoSandbox[StartupData, Model] extends GameLauncher {
 
   def initialModel(startupData: StartupData): Model
 
-  def update(gameTime: GameTime, model: Model, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Model]
+  def update(context: FrameContext, model: Model): GlobalEvent => Outcome[Model]
 
-  def present(gameTime: GameTime, model: Model, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment
+  def present(context: FrameContext, model: Model): SceneUpdateFragment
 
   private def indigoGame: GameEngine[StartupData, StartupErrors, Model, Unit] = {
 
-    val updateViewModel: (GameTime, Model, Unit, InputState, Dice, BoundaryLocator) => Outcome[Unit] =
-      (_, _, vm, _, _, _) => Outcome(vm)
+    val updateViewModel: (FrameContext, Model, Unit) => Outcome[Unit] =
+      (_, _, vm) => Outcome(vm)
 
     val frameProcessor: StandardFrameProcessor[Model, Unit] =
       new StandardFrameProcessor(
-        (gt, m, is, d) => (e: GlobalEvent) => update(gt, m, is, d)(e),
+        (ctx, m) => (e: GlobalEvent) => update(ctx, m)(e),
         updateViewModel,
-        (gt, m, _, is, bl) => present(gt, m, is, bl)
+        (ctx, m, _) => present(ctx, m)
       )
 
     new GameEngine[StartupData, StartupErrors, Model, Unit](

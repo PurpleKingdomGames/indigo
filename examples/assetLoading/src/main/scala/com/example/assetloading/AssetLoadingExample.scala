@@ -23,7 +23,7 @@ object AssetLoadingExample extends IndigoDemo[Unit, MyGameModel, MyViewModel] {
   val subSystems: Set[SubSystem] =
     Set(AssetBundleLoader.subSystem)
 
-  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, Unit] =
     assetCollection.findTextDataByName(AssetName("text")) match {
       case Some(value) =>
         println("Loaded text! " + value)
@@ -35,7 +35,7 @@ object AssetLoadingExample extends IndigoDemo[Unit, MyGameModel, MyViewModel] {
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(loaded = false)
 
-  def update(gameTime: GameTime, model: MyGameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[MyGameModel] = {
+  def update(context: FrameContext, model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
     case AssetBundleLoaderEvent.Started(key) =>
       println("Load started! " + key.toString())
       Outcome(model)
@@ -69,12 +69,12 @@ object AssetLoadingExample extends IndigoDemo[Unit, MyGameModel, MyViewModel] {
         }
       )
 
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, inputState: InputState, dice: Dice): Outcome[MyViewModel] =
-    viewModel.button.update(inputState.mouse).map { btn =>
+  def updateViewModel(context: FrameContext, model: MyGameModel, viewModel: MyViewModel): Outcome[MyViewModel] =
+    viewModel.button.update(context.inputState.mouse).map { btn =>
       viewModel.copy(button = btn)
     }
 
-  def present(gameTime: GameTime, model: MyGameModel, viewModel: MyViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment = {
+  def present(context: FrameContext, model: MyGameModel, viewModel: MyViewModel): SceneUpdateFragment = {
     val box = if (model.loaded) {
       List(
         Graphic(Rectangle(0, 0, 64, 64), 1, Assets.junctionBoxMaterial)

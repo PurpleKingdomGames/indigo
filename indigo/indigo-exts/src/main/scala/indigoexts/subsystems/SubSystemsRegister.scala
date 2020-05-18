@@ -1,13 +1,11 @@
 package indigoexts.subsystems
 
-import indigo.shared.time.GameTime
 import indigo.shared.Outcome
 import indigo.shared.Outcome._
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.dice.Dice
 import scala.collection.mutable.ListBuffer
-import indigo.shared.events.InputState
+import indigo.shared.FrameContext
 
 @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
 final class SubSystemsRegister(subSystems: List[SubSystem]) {
@@ -16,12 +14,12 @@ final class SubSystemsRegister(subSystems: List[SubSystem]) {
   val registeredSubSystems: ListBuffer[SubSystem] = ListBuffer.from(subSystems)
 
   @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
-  def update(gameTime: GameTime, inputState: InputState, dice: Dice): GlobalEvent => Outcome[SubSystemsRegister] = {
+  def update(frameContext: FrameContext): GlobalEvent => Outcome[SubSystemsRegister] = {
     case e: GlobalEvent =>
       registeredSubSystems.toList
         .map { ss =>
           ss.eventFilter(e)
-            .map(ee => ss.update(gameTime, inputState, dice)(ee))
+            .map(ee => ss.update(frameContext)(ee))
             .getOrElse(Outcome(ss, Nil))
         }
         .sequence
@@ -35,8 +33,8 @@ final class SubSystemsRegister(subSystems: List[SubSystem]) {
       Outcome(this)
   }
 
-  def render(gameTime: GameTime): SceneUpdateFragment =
-    registeredSubSystems.map(_.render(gameTime)).foldLeft(SceneUpdateFragment.empty)(_ |+| _)
+  def render(frameContext: FrameContext): SceneUpdateFragment =
+    registeredSubSystems.map(_.render(frameContext)).foldLeft(SceneUpdateFragment.empty)(_ |+| _)
 
   def size: Int =
     registeredSubSystems.size

@@ -17,11 +17,11 @@ final class FPSCounter(fontKey: FontKey, position: Point, targetFPS: Int) extend
     case _            => None
   }
 
-  def update(gameTime: GameTime, inputState: InputState, dice: Dice): GlobalEvent => Outcome[FPSCounter] = {
+  def update(frameContext: FrameContext): GlobalEvent => Outcome[FPSCounter] = {
     case FrameTick =>
-      if (gameTime.running >= (this.lastInterval + Seconds(1))) {
+      if (frameContext.gameTime.running >= (this.lastInterval + Seconds(1))) {
         fps = Math.min(targetFPS, frameCountSinceInterval + 1)
-        lastInterval = gameTime.running
+        lastInterval = frameContext.gameTime.running
         frameCountSinceInterval = 0
       } else {
         frameCountSinceInterval += 1
@@ -34,7 +34,7 @@ final class FPSCounter(fontKey: FontKey, position: Point, targetFPS: Int) extend
     else if (fps > targetFPS / 2) RGBA.Yellow
     else RGBA.Red
 
-  def render(gameTime: GameTime): SceneUpdateFragment =
+  def render(frameContext: FrameContext): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addUiLayerNodes(Text(fpsCount, position.x, position.y, 1, fontKey).withTint(pickTint))
 

@@ -71,9 +71,6 @@ object SandboxGame extends IndigoDemo[SandboxStartupData, SandboxGameModel, Sand
   def initialModel(startupData: SandboxStartupData): SandboxGameModel =
     SandboxModel.initialModel(startupData)
 
-  def update(gameTime: GameTime, model: SandboxGameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[SandboxGameModel] =
-    SandboxModel.updateModel(model)
-
   def initialViewModel(startupData: SandboxStartupData): SandboxGameModel => SandboxViewModel =
     _ => {
       val assets =
@@ -89,9 +86,12 @@ object SandboxGame extends IndigoDemo[SandboxStartupData, SandboxGameModel, Sand
       )
     }
 
-  def updateViewModel(gameTime: GameTime, model: SandboxGameModel, viewModel: SandboxViewModel, inputState: InputState, dice: Dice, boundaryLocator: BoundaryLocator): Outcome[SandboxViewModel] = {
+  def update(context: FrameContext, model: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] =
+    SandboxModel.updateModel(model)
+
+  def updateViewModel(context: FrameContext, model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SandboxViewModel] = {
     val updateOffset: Point =
-      inputState.gamepad.dpad match {
+      context.inputState.gamepad.dpad match {
         case GamepadDPad(true, _, _, _) =>
           viewModel.offset + Point(0, -1)
 
@@ -112,16 +112,16 @@ object SandboxGame extends IndigoDemo[SandboxStartupData, SandboxGameModel, Sand
     Outcome(
       viewModel.copy(
         offset = updateOffset,
-        single = viewModel.single.update(gameTime, inputState, boundaryLocator),
-        multi = viewModel.multi.update(gameTime, inputState, boundaryLocator)
+        single = viewModel.single.update(context),
+        multi = viewModel.multi.update(context)
       )
     )
   }
 
-  def present(gameTime: GameTime, model: SandboxGameModel, viewModel: SandboxViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
-    SandboxView.updateView(model, viewModel, inputState) |+|
+  def present(context: FrameContext, model: SandboxGameModel, viewModel: SandboxViewModel): SceneUpdateFragment =
+    SandboxView.updateView(model, viewModel, context.inputState) |+|
       // viewModel.single.draw(gameTime, boundaryLocator) //|+|
-      viewModel.multi.draw(gameTime, boundaryLocator)
+      viewModel.multi.draw(context.gameTime, context.boundaryLocator)
 }
 
 final case class Dude(aseprite: Aseprite, sprite: Sprite)

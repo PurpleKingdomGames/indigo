@@ -32,22 +32,10 @@ final class BoundaryLocatorDelegate(boundaryLocator: BoundaryLocator) {
     )
 
   @JSExport
-  def textLineBounds(lineText: String, fontInfo: FontInfoDelegate): RectangleDelegate =
-    RectangleDelegate.fromRectangle(
-      boundaryLocator.textLineBounds(lineText, fontInfo.toInternal)
-    )
-
-  @JSExport
   def textAsLinesWithBounds(text: String, fontKey: String): List[TextLineDelegate] =
     boundaryLocator
       .textAsLinesWithBounds(text, FontKey(fontKey))
       .map(TextLineDelegate.fromInternal)
-
-  @JSExport
-  def textBoundsUnaligned(text: String, fontKey: String, position: PointDelegate): RectangleDelegate =
-    RectangleDelegate.fromRectangle(
-      boundaryLocator.textBoundsUnaligned(text, FontKey(fontKey), position.toInternal)
-    )
 
   @JSExport
   def textBounds(text: TextDelegate): RectangleDelegate =

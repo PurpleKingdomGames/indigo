@@ -22,7 +22,7 @@ object GameOverScene extends Scene[SnakeGameModel, SnakeViewModel] {
   val sceneSubSystems: Set[SubSystem] =
     Set()
 
-  def updateSceneModel(gameTime: GameTime, pointsScored: Int, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Int] = {
+  def updateSceneModel(context: FrameContext, pointsScored: Int): GlobalEvent => Outcome[Int] = {
     case KeyboardEvent.KeyUp(Keys.SPACE) =>
       Outcome(pointsScored)
         .addGlobalEvents(SceneEvent.JumpTo(StartScene.name))
@@ -32,20 +32,16 @@ object GameOverScene extends Scene[SnakeGameModel, SnakeViewModel] {
   }
 
   def updateSceneViewModel(
-      gameTime: GameTime,
+      context: FrameContext,
       pointsScored: Int,
-      sceneViewModel: Unit,
-      inputState: InputState,
-      dice: Dice
+      sceneViewModel: Unit
   ): Outcome[Unit] =
     Outcome(())
 
   def updateSceneView(
-      gameTime: GameTime,
+      context: FrameContext,
       pointsScored: Int,
-      sceneViewModel: Unit,
-      inputState: InputState,
-      boundaryLocator: BoundaryLocator
+      sceneViewModel: Unit
   ): SceneUpdateFragment = {
     val horizontalCenter: Int = (Settings.viewportWidth / Settings.magnificationLevel) / 2
     val verticalMiddle: Int   = (Settings.viewportHeight / Settings.magnificationLevel) / 2

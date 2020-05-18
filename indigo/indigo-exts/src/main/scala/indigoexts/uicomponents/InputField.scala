@@ -2,7 +2,6 @@ package indigoexts.uicomponents
 
 import indigo.shared.time.GameTime
 import indigo.shared.constants.Keys
-import indigo.shared.events.InputState
 import indigo.shared.datatypes._
 import indigo.shared.scenegraph.{Graphic, SceneUpdateFragment, Text}
 
@@ -14,6 +13,7 @@ import scala.annotation.tailrec
 import indigo.shared.time.Seconds
 import indigo.shared.constants.Key
 import indigo.shared.time.Millis
+import indigo.shared.FrameContext
 
 final case class InputField(
     text: String,
@@ -143,12 +143,12 @@ final case class InputField(
     rec(textToInsert.toCharArray().toList, splitString._1, splitString._2, cursorPosition)
   }
 
-  def update(gameTime: GameTime, inputState: InputState, boundaryLocator: BoundaryLocator): InputField = {
+  def update(frameContext: FrameContext): InputField = {
     @tailrec
     def rec(keysReleased: List[Key], acc: InputField, touched: Boolean): InputField =
       keysReleased match {
         case Nil =>
-          if(touched) acc.copy(lastCursorMove = gameTime.running)
+          if(touched) acc.copy(lastCursorMove = frameContext.gameTime.running)
           else acc
 
         case Keys.BACKSPACE :: ks =>
@@ -179,10 +179,10 @@ final case class InputField(
           rec(ks, acc, touched)
       }
 
-    val updated = rec(inputState.keyboard.keysReleased, this, false)
+    val updated = rec(frameContext.inputState.keyboard.keysReleased, this, false)
 
-    if (inputState.mouse.mouseReleased)
-      if (inputState.mouse.wasMouseUpWithin(bounds(boundaryLocator)))
+    if (frameContext.inputState.mouse.mouseReleased)
+      if (frameContext.inputState.mouse.wasMouseUpWithin(bounds(frameContext.boundaryLocator)))
         updated.giveFocus
       else updated.loseFocus
     else updated

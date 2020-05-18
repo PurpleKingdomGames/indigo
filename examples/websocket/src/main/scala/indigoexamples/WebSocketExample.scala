@@ -36,7 +36,7 @@ object WebSocketExample extends IndigoDemo[MySetupData, Unit, MyViewModel] {
 
   val subSystems: Set[SubSystem] = Set()
 
-  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, MySetupData] =
+  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, MySetupData] =
     Startup.Success(
       MySetupData(
         pingSocket = WebSocketConfig(
@@ -53,7 +53,7 @@ object WebSocketExample extends IndigoDemo[MySetupData, Unit, MyViewModel] {
   def initialModel(startupData: MySetupData): Unit =
     ()
 
-  def update(gameTime: GameTime, model: Unit, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Unit] = {
+  def update(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] = {
     case WebSocketEvent.Receive(WebSocketId("ping"), message) =>
       println("Message from Server: " + message)
       Outcome(model)
@@ -93,13 +93,13 @@ object WebSocketExample extends IndigoDemo[MySetupData, Unit, MyViewModel] {
         }
       )
 
-  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: MyViewModel, inputState: InputState, dice: Dice): Outcome[MyViewModel] =
-    (viewModel.ping.update(inputState.mouse) |+| viewModel.echo.update(inputState.mouse)).map {
+  def updateViewModel(context: FrameContext, model: Unit, viewModel: MyViewModel): Outcome[MyViewModel] =
+    (viewModel.ping.update(context.inputState.mouse) |+| viewModel.echo.update(context.inputState.mouse)).map {
       case (ping, echo) =>
         MyViewModel(ping, echo)
     }
 
-  def present(gameTime: GameTime, model: Unit, viewModel: MyViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+  def present(context: FrameContext, model: Unit, viewModel: MyViewModel): SceneUpdateFragment =
     SceneUpdateFragment(
       viewModel.ping.draw,
       viewModel.echo.draw

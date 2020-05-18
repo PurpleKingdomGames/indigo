@@ -31,13 +31,13 @@ object EffectsExample extends IndigoSandbox[Unit, Unit] {
   val animations: Set[Animation] =
     Set()
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(gameTime: GameTime, model: Unit, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Unit] =
+  def update(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(())
 
   val graphic: Graphic =
@@ -45,7 +45,7 @@ object EffectsExample extends IndigoSandbox[Unit, Unit] {
       .withRef(20, 20)
       .moveTo(config.viewport.giveDimensions(config.magnification).center + Point(0, -25))
 
-  def present(gameTime: GameTime, model: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+  def present(context: FrameContext, model: Unit): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         graphic

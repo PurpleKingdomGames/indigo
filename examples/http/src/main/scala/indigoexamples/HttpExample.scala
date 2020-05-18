@@ -19,13 +19,13 @@ object HttpExample extends IndigoDemo[Unit, Unit, Button] {
 
   val subSystems: Set[SubSystem] = Set()
 
-  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(gameTime: GameTime, model: Unit, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Unit] = {
+  def update(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] = {
     case HttpResponse(status, headers, body) =>
       println("Status code: " + status.toString)
       println("Headers: " + headers.map(p => p._1 + ": " + p._2).mkString(", "))
@@ -54,9 +54,9 @@ object HttpExample extends IndigoDemo[Unit, Unit, Button] {
         List(HttpRequest.GET("http://localhost:8080/ping"))
       }
 
-  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Button, inputState: InputState, dice: Dice): Outcome[Button] =
-    viewModel.update(inputState.mouse)
+  def updateViewModel(context: FrameContext, model: Unit, viewModel: Button): Outcome[Button] =
+    viewModel.update(context.inputState.mouse)
 
-  def present(gameTime: GameTime, model: Unit, viewModel: Button, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+  def present(context: FrameContext, model: Unit, viewModel: Button): SceneUpdateFragment =
     SceneUpdateFragment(viewModel.draw)
 }

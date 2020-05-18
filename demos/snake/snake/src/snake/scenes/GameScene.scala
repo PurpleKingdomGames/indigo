@@ -27,24 +27,20 @@ object GameScene extends Scene[SnakeGameModel, SnakeViewModel] {
   val sceneSubSystems: Set[SubSystem] =
     Set(Score.automataSubSystem(ModelLogic.ScoreIncrement.show, GameAssets.fontKey))
 
-  def updateSceneModel(gameTime: GameTime, gameModel: GameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[GameModel] =
-    ModelLogic.update(gameTime, gameModel)
+  def updateSceneModel(context: FrameContext, gameModel: GameModel): GlobalEvent => Outcome[GameModel] =
+    ModelLogic.update(context.gameTime, context.dice, gameModel)
 
   def updateSceneViewModel(
-      gameTime: GameTime,
+      context: FrameContext,
       gameModel: GameModel,
-      snakeViewModel: SnakeViewModel,
-      inputState: InputState,
-      dice: Dice
+      snakeViewModel: SnakeViewModel
   ): Outcome[SnakeViewModel] =
     Outcome(snakeViewModel)
 
   def updateSceneView(
-      gameTime: GameTime,
+      context: FrameContext,
       gameModel: GameModel,
-      snakeViewModel: SnakeViewModel,
-      inputState: InputState,
-      boundaryLocator: BoundaryLocator
+      snakeViewModel: SnakeViewModel
   ): SceneUpdateFragment =
     ViewLogic.update(gameModel, snakeViewModel)
 }

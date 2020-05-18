@@ -50,4 +50,6 @@ trait SharedTypeAliases {
 
   type BoundaryLocator = shared.BoundaryLocator
 
+  type FrameContext = shared.FrameContext
+
 }

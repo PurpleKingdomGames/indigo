@@ -6,11 +6,14 @@ import indigo.shared.dice.Dice
 
 import utest._
 import indigo.shared.events.InputState
+import indigo.shared.FrameContext
+import indigo.shared.BoundaryLocator
+import indigo.shared.FontRegister
+import indigo.shared.AnimationsRegister
 
 object SubSystemsRegisterTests extends TestSuite {
 
-  val dice: Dice =
-    Dice.loaded(6)
+  import FakeFrameContext._
 
   val tests: Tests =
     Tests {
@@ -26,7 +29,7 @@ object SubSystemsRegisterTests extends TestSuite {
           val r = new SubSystemsRegister(List(PointsTrackerExample(10), PointsTrackerExample(50)))
 
           val subSystemPoints = r
-            .update(GameTime.zero, InputState.default, dice)(PointsTrackerEvent.Add(10))
+            .update(context(6))(PointsTrackerEvent.Add(10))
             .state
             .registeredSubSystems
             .toList
@@ -39,7 +42,7 @@ object SubSystemsRegisterTests extends TestSuite {
         "should allow you to update sub systems and emit events" - {
           val r = new SubSystemsRegister(List(PointsTrackerExample(10), PointsTrackerExample(50)))
 
-          val updated = r.update(GameTime.zero, InputState.default, dice)(PointsTrackerEvent.LoseAll)
+          val updated = r.update(context(6))(PointsTrackerEvent.LoseAll)
 
           val subSystemPoints: List[Int] =
             updated.state.registeredSubSystems.toList
@@ -53,9 +56,9 @@ object SubSystemsRegisterTests extends TestSuite {
           val r = new SubSystemsRegister(List(PointsTrackerExample(10), PointsTrackerExample(50)))
 
           val rendered =
-            r.update(GameTime.zero, InputState.default, dice)(PointsTrackerEvent.Add(10))
+            r.update(context(6))(PointsTrackerEvent.Add(10))
               .state
-              .render(GameTime.zero)
+              .render(context(6))
               .gameLayer
               .nodes
               .map(_.asInstanceOf[Text].text)

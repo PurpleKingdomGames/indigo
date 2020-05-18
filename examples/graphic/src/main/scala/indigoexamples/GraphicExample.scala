@@ -16,13 +16,13 @@ object GraphicExample extends IndigoSandbox[Unit, Unit] {
 
   val animations: Set[Animation] = Set()
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(gameTime: GameTime, model: Unit, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Unit] =
+  def update(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
 
   val graphic: Graphic =
@@ -36,7 +36,7 @@ object GraphicExample extends IndigoSandbox[Unit, Unit] {
       .scaleBy(1.5, 1.5)
       .withRef(96, 96)
 
-  def present(gameTime: GameTime, model: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+  def present(context: FrameContext, model: Unit): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         basic.withAlpha(0.5),

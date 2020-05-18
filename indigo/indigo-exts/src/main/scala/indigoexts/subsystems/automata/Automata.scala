@@ -6,13 +6,12 @@ import indigo.shared.events.{FrameTick, GlobalEvent}
 import indigo.shared.scenegraph._
 import indigoexts.subsystems.SubSystem
 import indigoexts.subsystems.automata.AutomataEvent._
-import indigo.shared.dice.Dice
 import indigoexts.subsystems.automata.Automata.Layer
 import indigo.shared.EqualTo._
 import indigo.shared.datatypes.RGBA
 import scala.collection.mutable
 import indigo.shared.time.Seconds
-import indigo.shared.events.InputState
+import indigo.shared.FrameContext
 
 final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val layer: Layer, maxPoolSize: Option[Int], val pool: List[SpawnedAutomaton]) extends SubSystem {
   type EventType = AutomataEvent
@@ -35,17 +34,17 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
-  def update(gameTime: GameTime, inputState: InputState, dice: Dice): AutomataEvent => Outcome[Automata] = {
+  def update(frameContext: FrameContext): AutomataEvent => Outcome[Automata] = {
     case Spawn(key, position, lifeSpan, payload) if key === poolKey =>
       val spawned =
         SpawnedAutomaton(
           automaton,
           AutomatonSeedValues(
             position,
-            gameTime.running,
+            frameContext.gameTime.running,
             lifeSpan.getOrElse(automaton.lifespan),
             Seconds.zero,
-            dice.roll,
+            frameContext.dice.roll,
             payload
           )
         )
@@ -76,17 +75,17 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
 
     case Cull =>
       val (l, r) =
-        pool.partition(_.isAlive(gameTime.running))
+        pool.partition(_.isAlive(frameContext.gameTime.running))
 
-      Outcome(new Automata(poolKey, automaton, layer, maxPoolSize, l.map(_.updateDelta(gameTime.delta))))
+      Outcome(new Automata(poolKey, automaton, layer, maxPoolSize, l.map(_.updateDelta(frameContext.gameTime.delta))))
         .addGlobalEvents(r.flatMap(sa => sa.automaton.onCull(sa.seedValues)))
 
     case _ =>
       Outcome(this)
   }
 
-  def render(gameTime: GameTime): SceneUpdateFragment =
-    Automata.render(this, gameTime)
+  def render(frameContext: FrameContext): SceneUpdateFragment =
+    Automata.render(this, frameContext.gameTime)
 }
 object Automata {
 

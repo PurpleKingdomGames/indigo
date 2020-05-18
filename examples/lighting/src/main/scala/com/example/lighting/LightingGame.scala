@@ -42,13 +42,13 @@ object LightingGame extends IndigoSandbox[Unit, Unit] {
       )
     )
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(gameTime: GameTime, model: Unit, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Unit] =
+  def update(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(())
 
   val graphic: Graphic =
@@ -72,7 +72,7 @@ object LightingGame extends IndigoSandbox[Unit, Unit] {
         .withColor(RGB.Cyan)
     }
 
-  def present(gameTime: GameTime, model: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+  def present(context: FrameContext, model: Unit): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         graphic,
@@ -91,8 +91,8 @@ object LightingGame extends IndigoSandbox[Unit, Unit] {
         //   .moveTo(config.viewport.center + Point(-50, 0))
         //   .withAttenuation(50)
         //   .withColor(RGB.Red),
-        orbitingLight(120).affectTime(0.25).at(gameTime.running),
-        pulsingLight.affectTime(0.5).at(gameTime.running)
+        orbitingLight(120).affectTime(0.25).at(context.gameTime.running),
+        pulsingLight.affectTime(0.5).at(context.gameTime.running)
         // DirectionLight(30, RGB.Green, 1.2, Radians.fromDegrees(30)),
         // SpotLight.default
         //   .withColor(RGB.Yellow)

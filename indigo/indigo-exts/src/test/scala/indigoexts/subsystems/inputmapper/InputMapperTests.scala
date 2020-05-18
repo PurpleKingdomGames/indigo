@@ -12,6 +12,8 @@ import indigo.shared.events.InputState
 
 object InputMapperTests extends TestSuite {
 
+  import indigoexts.subsystems.FakeFrameContext._
+
   case object Jump extends GlobalEvent
   case object Duck extends GlobalEvent
 
@@ -57,7 +59,7 @@ object InputMapperTests extends TestSuite {
           )
 
         val actual =
-          (mapper.update(GameTime.zero, InputState.default, Dice.loaded(1))(event)).state.toMappingsList
+          (mapper.update(context(1))(event)).state.toMappingsList
 
         val expected =
           List(
@@ -84,7 +86,7 @@ object InputMapperTests extends TestSuite {
           InputMapperEvent.RemoveMappings(List(KeyboardEvent.KeyUp(Keys.UP_ARROW), KeyboardEvent.KeyDown(Keys.DOWN_ARROW)))
 
         val actual =
-          (mapper.update(GameTime.zero, InputState.default, Dice.loaded(1))(event)).state.toMappingsList
+          (mapper.update(context(1))(event)).state.toMappingsList
 
         val expected =
           List(
@@ -108,10 +110,10 @@ object InputMapperTests extends TestSuite {
             eKw -> List(Jump)
           )
 
-        (mapper.update(GameTime.zero, InputState.default, Dice.loaded(1))(InputMapperEvent.Input(eUp))).globalEvents.length ==> 1
-        (mapper.update(GameTime.zero, InputState.default, Dice.loaded(1))(InputMapperEvent.Input(eUp))).globalEvents.head ==> Jump
-        (mapper.update(GameTime.zero, InputState.default, Dice.loaded(1))(InputMapperEvent.Input(eDn))).globalEvents.head ==> Duck
-        (mapper.update(GameTime.zero, InputState.default, Dice.loaded(1))(InputMapperEvent.Input(eKw))).globalEvents.head ==> Jump
+        (mapper.update(context(1))(InputMapperEvent.Input(eUp))).globalEvents.length ==> 1
+        (mapper.update(context(1))(InputMapperEvent.Input(eUp))).globalEvents.head ==> Jump
+        (mapper.update(context(1))(InputMapperEvent.Input(eDn))).globalEvents.head ==> Duck
+        (mapper.update(context(1))(InputMapperEvent.Input(eKw))).globalEvents.head ==> Jump
 
       }
 

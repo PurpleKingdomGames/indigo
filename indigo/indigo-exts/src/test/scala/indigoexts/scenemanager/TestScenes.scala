@@ -8,6 +8,7 @@ import indigoexts.lenses.Lens
 import indigo.shared.dice.Dice
 import indigoexts.subsystems.SubSystem
 import indigo.shared.BoundaryLocator
+import indigo.shared.FrameContext
 
 object TestScenes {
 
@@ -41,13 +42,13 @@ final case class TestSceneA() extends Scene[TestGameModel, TestViewModel] {
 
   val sceneSubSystems: Set[SubSystem] = Set()
 
-  def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelA, inputState: InputState, dice: Dice): GlobalEvent => Outcome[TestSceneModelA] =
+  def updateSceneModel(context: FrameContext, sceneModel: TestSceneModelA): GlobalEvent => Outcome[TestSceneModelA] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 1))
 
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, inputState: InputState, dice: Dice, boundaryLocator: BoundaryLocator): Outcome[TestSceneViewModelA] =
+  def updateSceneViewModel(context: FrameContext, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA): Outcome[TestSceneViewModelA] =
     Outcome(TestSceneViewModelA())
 
-  def updateSceneView(gameTime: GameTime, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+  def updateSceneView(context: FrameContext, sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA): SceneUpdateFragment =
     SceneUpdateFragment.empty
 }
 
@@ -74,13 +75,13 @@ final case class TestSceneB() extends Scene[TestGameModel, TestViewModel] {
 
   val sceneSubSystems: Set[SubSystem] = Set()
 
-  def updateSceneModel(gameTime: GameTime, sceneModel: TestSceneModelB, inputState: InputState, dice: Dice): GlobalEvent => Outcome[TestSceneModelB] =
+  def updateSceneModel(context: FrameContext, sceneModel: TestSceneModelB): GlobalEvent => Outcome[TestSceneModelB] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 10))
 
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, inputState: InputState, dice: Dice, boundaryLocator: BoundaryLocator): Outcome[TestSceneViewModelB] =
+  def updateSceneViewModel(context: FrameContext, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB): Outcome[TestSceneViewModelB] =
     Outcome(TestSceneViewModelB())
 
-  def updateSceneView(gameTime: GameTime, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+  def updateSceneView(context: FrameContext, sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB): SceneUpdateFragment =
     SceneUpdateFragment.empty
 }
 

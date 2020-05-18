@@ -7,7 +7,7 @@ import indigoexts.ui._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object InputFieldExample extends IndigoSandbox[Unit, MyGameModel] {
+object InputFieldExample extends IndigoDemo[Unit, Unit, MyViewModel] {
 
   val config: GameConfig = defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399"))
 
@@ -17,61 +17,60 @@ object InputFieldExample extends IndigoSandbox[Unit, MyGameModel] {
 
   val animations: Set[Animation] = Set()
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+  val subSystems: Set[SubSystem] = Set()
+
+  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
-  def initialModel(startupData: Unit): MyGameModel =
-    MyGameModel(
-      InputField(BindingKey("single"), "Single line").makeSingleLine,
-      InputField(BindingKey("multi"), "Multi\nline").makeMultiLine
-    )
+  def initialModel(startupData: Unit): Unit =
+    ()
 
-  def update(gameTime: GameTime, model: MyGameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[MyGameModel] = {
-    case e =>
-      Outcome(
-        model.copy(
-          singleLine = model.singleLine.update(e),
-          multiLine = model.multiLine.update(e)
+  def initialViewModel(startupData: Unit): Unit => MyViewModel =
+    _ => {
+
+      val assets =
+        InputFieldAssets(
+          Text("placeholder", 0, 0, 0, FontStuff.fontKey).alignLeft,
+          Graphic(0, 0, 16, 16, 2, Material.Textured(FontStuff.fontName)).withCrop(188, 78, 14, 23).withTint(0, 0, 1)
         )
+
+      MyViewModel(
+        InputField("Single line", assets).makeSingleLine.moveTo(Point(10, 10)),
+        InputField("Multi\nline", assets).makeMultiLine.moveTo(Point(10, 50))
       )
-  }
+    }
 
-@SuppressWarnings(Array("org.wartremover.warts.Throw"))
-  def present(gameTime: GameTime, model: MyGameModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment = {
+  def update(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] =
+    _ => Outcome(model)
 
-    val cursor =
-      Graphic(0, 0, 16, 16, 2, Material.Textured(FontStuff.fontName)).withCrop(188, 78, 14, 23).withTint(0, 0, 1)
-
-    val text =
-      Text("placeholder", 0, 0, 0, FontStuff.fontKey).alignLeft
-
-    val single = model.singleLine.draw(
-      gameTime,
-      Point(10, 10),
-      Depth(1),
-      inputState,
-      text,
-      cursor,
-      boundaryLocator
+  def updateViewModel(context: FrameContext, model: Unit, viewModel: MyViewModel): Outcome[MyViewModel] =
+    Outcome(
+      viewModel.copy(
+        singleLine = viewModel.singleLine.update(context),
+        multiLine = viewModel.multiLine.update(context)
+      )
     )
 
-    val multi = model.multiLine.draw(
-      gameTime,
-      Point(10, 50),
-      Depth(1),
-      inputState,
-      text,
-      cursor,
-      boundaryLocator
+  @SuppressWarnings(Array("org.wartremover.warts.Throw"))
+  def present(context: FrameContext, model: Unit, viewModel: MyViewModel): SceneUpdateFragment = {
+
+    val single = viewModel.singleLine.draw(
+      context.gameTime,
+      context.boundaryLocator
+    )
+
+    val multi = viewModel.multiLine.draw(
+      context.gameTime,
+      context.boundaryLocator
     )
 
     single |+| multi
-    
+
   }
 
 }
 
-final case class MyGameModel(singleLine: InputField, multiLine: InputField)
+final case class MyViewModel(singleLine: InputField, multiLine: InputField)
 
 object FontStuff {
 

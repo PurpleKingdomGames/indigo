@@ -1,16 +1,14 @@
 package indigoexts.scenemanager
 
-import indigo.shared.time.GameTime
 import indigo.shared.Outcome
-import indigo.shared.events.{InputState, GlobalEvent}
+import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.IndigoLogger
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.EqualTo._
-import indigo.shared.dice.Dice
 import scala.collection.mutable
 import indigoexts.subsystems.SubSystemsRegister
-import indigo.shared.BoundaryLocator
+import indigo.shared.FrameContext
 
 class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, ViewModel]], scenesFinder: SceneFinder) {
 
@@ -29,7 +27,7 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
 
   // Scene delegation
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-  def updateModel(gameTime: GameTime, model: GameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[GameModel] = {
+  def updateModel(frameContext: FrameContext, model: GameModel): GlobalEvent => Outcome[GameModel] = {
     case SceneEvent.Next =>
       finderInstance = finderInstance.forward
       Outcome(model)
@@ -52,29 +50,29 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
           val subsystemOutcomeEvents = subSystemStates
             .get(scene.name)
             .map { ssr =>
-              val out = ssr.update(gameTime, inputState, dice)(event)
+              val out = ssr.update(frameContext)(event)
               subSystemStates.put(scene.name, out.state)
               out.globalEvents
             }
             .getOrElse(Nil)
 
           Scene
-            .updateModel(scene, gameTime, model, inputState, dice)(event)
+            .updateModel(scene, frameContext, model)(event)
             .addGlobalEvents(subsystemOutcomeEvents)
       }
   }
 
-  def updateViewModel(gameTime: GameTime, model: GameModel, viewModel: ViewModel, inputState: InputState, dice: Dice, boundaryLocator: BoundaryLocator): Outcome[ViewModel] =
+  def updateViewModel(frameContext: FrameContext, model: GameModel, viewModel: ViewModel): Outcome[ViewModel] =
     scenes.find(_.name === finderInstance.current.name) match {
       case None =>
         IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
         Outcome(viewModel)
 
       case Some(scene) =>
-        Scene.updateViewModel(scene, gameTime, model, viewModel, inputState, dice, boundaryLocator)
+        Scene.updateViewModel(scene, frameContext, model, viewModel)
     }
 
-  def updateView(gameTime: GameTime, model: GameModel, viewModel: ViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+  def updateView(frameContext: FrameContext, model: GameModel, viewModel: ViewModel): SceneUpdateFragment =
     scenes.find(_.name === finderInstance.current.name) match {
       case None =>
         IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
@@ -84,11 +82,11 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
         val subsystemView = subSystemStates
           .get(scene.name)
           .map { ssr =>
-            ssr.render(gameTime)
+            ssr.render(frameContext)
           }
           .getOrElse(SceneUpdateFragment.empty)
 
-        Scene.updateView(scene, gameTime, model, viewModel, inputState, boundaryLocator) |+| subsystemView
+        Scene.updateView(scene, frameContext, model, viewModel) |+| subsystemView
     }
 
 }

@@ -31,27 +31,27 @@ object PirateDemo extends IndigoDemo[StartupData, Model, ViewModel] {
       CloudsSubSystem.init(config.screenDimensions.width) // STEP 5
     )
 
-  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, StartupData] =
-    InitialLoad.setup(assetCollection)
+  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, StartupData] =
+    InitialLoad.setup(assetCollection, dice)
 
   def initialModel(startupData: StartupData): Model =
     Model.initialModel(config.screenDimensions)
 
-  def update(gameTime: GameTime, model: Model, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Model] =
-    Model.update(gameTime, model, inputState, config.screenDimensions)
+  def update(context: FrameContext, model: Model): GlobalEvent => Outcome[Model] =
+    Model.update(context.gameTime, model, context.inputState, config.screenDimensions)
 
   def initialViewModel(startupData: StartupData): Model => ViewModel =
     _ => ViewModel.initialViewModel(startupData, config.screenDimensions)
 
-  def updateViewModel(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, dice: Dice): Outcome[ViewModel] =
+  def updateViewModel(context: FrameContext, model: Model, viewModel: ViewModel): Outcome[ViewModel] =
     Outcome(viewModel)
 
-  def present(gameTime: GameTime, model: Model, viewModel: ViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+  def present(context: FrameContext, model: Model, viewModel: ViewModel): SceneUpdateFragment =
     View.drawBackground |+|
       View.sceneAudio |+|
       View.drawWater(viewModel) |+|
       View.drawForeground(viewModel, config.screenDimensions) |+|
-      View.drawPirateWithRespawn(gameTime, model, viewModel.captain) // STEP 9
+      View.drawPirateWithRespawn(context.gameTime, model, viewModel.captain) // STEP 9
   // View.drawBackground |+|
   //   View.sceneAudio |+|
   //   View.drawWater(viewModel) |+|

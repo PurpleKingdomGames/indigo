@@ -10,6 +10,7 @@ import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.BoundaryLocator
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
+import indigo.shared.FrameContext
 
 object StandardFrameProcessorTests extends TestSuite {
 
@@ -57,8 +58,8 @@ object TestFixtures {
   val viewModel: Int =
     0
 
-  val modelUpdate: (GameTime, GameModel, InputState, Dice) => GlobalEvent => Outcome[GameModel] =
-    (_, m, _, _) => {
+  val modelUpdate: (FrameContext, GameModel) => GlobalEvent => Outcome[GameModel] =
+    (_, m) => {
       case EventsOnlyEvent.Increment =>
         val newCount = m.count + 1
         Outcome(m.copy(count = newCount)).addGlobalEvents(EventsOnlyEvent.Total(newCount))
@@ -70,13 +71,13 @@ object TestFixtures {
         Outcome(m)
     }
 
-  val viewModelUpdate: (GameTime, GameModel, Int, InputState, Dice, BoundaryLocator) => Outcome[Int] =
-    (_, _, vm, _, _, _) => {
+  val viewModelUpdate: (FrameContext, GameModel, Int) => Outcome[Int] =
+    (_, _, vm) => {
       Outcome(vm + 10).addGlobalEvents(EventsOnlyEvent.Increment)
     }
 
-  val viewUpdate: (GameTime, GameModel, Int, InputState, BoundaryLocator) => SceneUpdateFragment =
-    (_, _, _, _, _) => SceneUpdateFragment.empty
+  val viewUpdate: (FrameContext, GameModel, Int) => SceneUpdateFragment =
+    (_, _, _) => SceneUpdateFragment.empty
 
   val standardFrameProcessor: StandardFrameProcessor[GameModel, Int] =
     new StandardFrameProcessor(modelUpdate, viewModelUpdate, viewUpdate)

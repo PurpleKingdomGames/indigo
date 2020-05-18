@@ -15,6 +15,9 @@ final class DiceDelegate(dice: Dice) {
   @JSExport
   def rollDouble: Double = dice.rollDouble
 
+  def toInternal: Dice =
+    dice
+
 }
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))

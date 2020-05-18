@@ -12,17 +12,17 @@ final case class FloatingPoints(fontKey: FontKey, entities: List[FloatingPointEn
     case _                           => None
   }
 
-  def update(gameTime: GameTime, inputState: InputState, dice: Dice): FloatingPointEvent => Outcome[SubSystem] = {
+  def update(context: FrameContext): FloatingPointEvent => Outcome[SubSystem] = {
     case FloatingPointEvent.Spawn(position) =>
       Outcome(
-        this.copy(entities = FloatingPointEntity(position, gameTime.running, TimeVaryingValue(2, gameTime.running)) :: entities)
+        this.copy(entities = FloatingPointEntity(position, context.gameTime.running, TimeVaryingValue(2, context.gameTime.running)) :: entities)
       )
 
     case FloatingPointEvent.Update =>
       Outcome(
         this.copy(
           entities = entities
-            .map(_.update(gameTime))
+            .map(_.update(context))
             .filter(_.ttl.value > 0)
         )
       )
@@ -31,12 +31,12 @@ final case class FloatingPoints(fontKey: FontKey, entities: List[FloatingPointEn
   val text: Text =
     Text("10", 0, 0, 1, fontKey).alignCenter
 
-  def render(gameTime: GameTime): SceneUpdateFragment =
+  def render(context: FrameContext): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addUiLayerNodes(
         entities
           .map { e =>
-            FloatingPoints.modifier(e, text).at(gameTime.running)
+            FloatingPoints.modifier(e, text).at(context.gameTime.running)
           }
           .sequence
           .state
@@ -59,8 +59,8 @@ object FloatingPoints {
 }
 
 final case class FloatingPointEntity(spawnedAt: Point, createdAt: Seconds, ttl: TimeVaryingValue[Int]) {
-  def update(gameTime: GameTime): FloatingPointEntity =
-    this.copy(ttl = ttl.decrease(2, gameTime.running))
+  def update(context: FrameContext): FloatingPointEntity =
+    this.copy(ttl = ttl.decrease(2, context.gameTime.running))
 }
 
 sealed trait FloatingPointEvent extends GlobalEvent

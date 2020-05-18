@@ -73,14 +73,14 @@ object PerfGame extends IndigoDemo[MyStartupData, MyGameModel, Unit] {
     res.getOrElse(Startup.Failure(StartupErrors("Failed to load the dude")))
   }
 
-  def update(gameTime: GameTime, model: MyGameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[MyGameModel] =
+  def update(context: FrameContext, model: MyGameModel): GlobalEvent => Outcome[MyGameModel] =
     PerfModel.updateModel(model)
 
-  def updateViewModel(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState, dice: Dice, boundaryLocator: BoundaryLocator): Outcome[Unit] =
+  def updateViewModel(context: FrameContext, model: MyGameModel, viewModel: Unit): Outcome[Unit] =
     Outcome(())
 
-  def present(gameTime: GameTime, model: MyGameModel, viewModel: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
-    PerfView.updateView(model, inputState)
+  def present(context: FrameContext, model: MyGameModel, viewModel: Unit): SceneUpdateFragment =
+    PerfView.updateView(model, context.inputState)
 
 }
 

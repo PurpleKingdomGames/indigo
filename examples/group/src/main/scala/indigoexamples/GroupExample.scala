@@ -18,16 +18,16 @@ object GroupExample extends IndigoSandbox[Unit, Unit] {
 
   val animations: Set[Animation] = Set()
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(gameTime: GameTime, model: Unit, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Unit] =
+  def update(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
 
-  def present(gameTime: GameTime, model: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+  def present(context: FrameContext, model: Unit): SceneUpdateFragment =
     SceneUpdateFragment.empty.addGameLayerNodes(
       Group(
         Graphic(0, 0, 256, 256, 1, Material.Textured(assetName)).moveTo(64, 10).moveBy(-50, -50),

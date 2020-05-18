@@ -2,12 +2,10 @@ package indigoexts.subsystems.inputmapper
 
 import indigoexts.subsystems.SubSystem
 import indigo.shared.events.GlobalEvent
-import indigo.shared.time.GameTime
-import indigo.shared.dice.Dice
 import indigo.shared.Outcome
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.events.InputEvent
-import indigo.shared.events.InputState
+import indigo.shared.FrameContext
 
 final class InputMapper(mappings: Map[InputEvent, List[GlobalEvent]]) extends SubSystem {
 
@@ -30,7 +28,7 @@ final class InputMapper(mappings: Map[InputEvent, List[GlobalEvent]]) extends Su
       None
   }
 
-  def update(gameTime: GameTime, inputState: InputState, dice: Dice): InputMapperEvent => Outcome[InputMapper] = {
+  def update(frameContext: FrameContext): InputMapperEvent => Outcome[InputMapper] = {
     case InputMapperEvent.Input(e) =>
       Outcome(this).addGlobalEvents(mappings.get(e).toList.flatten)
 
@@ -41,7 +39,7 @@ final class InputMapper(mappings: Map[InputEvent, List[GlobalEvent]]) extends Su
       Outcome(new InputMapper(mappings -- inputEvents))
   }
 
-  def render(gameTime: GameTime): SceneUpdateFragment =
+  def render(frameContext: FrameContext): SceneUpdateFragment =
     SceneUpdateFragment.empty
 
   def toMappingsList: List[(InputEvent, List[GlobalEvent])] =

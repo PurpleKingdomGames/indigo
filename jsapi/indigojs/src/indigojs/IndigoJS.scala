@@ -21,20 +21,16 @@ import indigo.shared.Startup
 import indigo.shared.events.GlobalEvent
 import indigo.shared.Outcome
 import indigo.shared.dice.Dice
-import indigo.shared.time.GameTime
-import indigo.shared.events.InputState
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.animation.Animation
 import indigojs.delegates.OutcomeDelegate
 import indigojs.delegates.SceneUpdateFragmentDelegate
-import indigojs.delegates.GameTimeDelegate
+import indigojs.delegates.FrameContextDelegate
 import indigojs.delegates.DiceDelegate
-import indigojs.delegates.InputStateDelegate
 import indigojs.delegates.AssetCollectionDelegate
 import indigojs.delegates.GlobalEventDelegate
-import indigojs.delegates.BoundaryLocatorDelegate
-import indigo.shared.BoundaryLocator
+import indigo.shared.FrameContext
 
 @JSExportTopLevel("Indigo")
 object IndigoJS {
@@ -43,22 +39,22 @@ object IndigoJS {
   type StartupError     = js.Array[String]
   type GameModel        = js.Object
   type ViewModel        = js.Object
-  type Initialise       = js.Function1[AssetCollectionDelegate, StartUpDelegate]
+  type Initialise       = js.Function2[AssetCollectionDelegate, DiceDelegate, StartUpDelegate]
   type InitialModel     = js.Function1[StartupData, GameModel]
   type InitialViewModel = js.Function2[StartupData, GameModel, ViewModel]
-  type ModelUpdate      = js.Function4[GameTimeDelegate, GameModel, InputStateDelegate, DiceDelegate, js.Function1[GlobalEventDelegate, OutcomeDelegate]]
-  type ViewModelUpdate  = js.Function5[GameTimeDelegate, GameModel, ViewModel, InputStateDelegate, DiceDelegate, OutcomeDelegate]
-  type ViewUpdate       = js.Function5[GameTimeDelegate, GameModel, ViewModel, InputStateDelegate, BoundaryLocatorDelegate, SceneUpdateFragmentDelegate]
+  type ModelUpdate      = js.Function2[FrameContextDelegate, GameModel, js.Function1[GlobalEventDelegate, OutcomeDelegate]]
+  type ViewModelUpdate  = js.Function3[FrameContextDelegate, GameModel, ViewModel, OutcomeDelegate]
+  type ViewUpdate       = js.Function3[FrameContextDelegate, GameModel, ViewModel, SceneUpdateFragmentDelegate]
 
   private def indigoGame(
       fonts: Set[FontInfo],
       animations: Set[Animation],
-      initialise: AssetCollection => Map[String, String] => Startup[StartupError, StartupData],
+      initialise: AssetCollection => Dice => Map[String, String] => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
       initialViewModel: StartupData => GameModel => ViewModel,
-      modelUpdate: (GameTime, GameModel, InputState, Dice) => GlobalEvent => Outcome[GameModel],
-      viewModelUpdate: (GameTime, GameModel, ViewModel, InputState, Dice) => Outcome[ViewModel],
-      viewUpdate: (GameTime, GameModel, ViewModel, InputState, BoundaryLocator) => SceneUpdateFragment
+      modelUpdate: (FrameContext, GameModel) => GlobalEvent => Outcome[GameModel],
+      viewModelUpdate: (FrameContext, GameModel, ViewModel) => Outcome[ViewModel],
+      viewUpdate: (FrameContext, GameModel, ViewModel) => SceneUpdateFragment
   ): GameEngine[StartupData, StartupError, GameModel, ViewModel] = {
 
     val frameProcessor: StandardFrameProcessor[GameModel, ViewModel] =
@@ -74,37 +70,31 @@ object IndigoJS {
     )
   }
 
-  private def convertInitialise(f: Initialise): AssetCollection => Map[String, String] => Startup[StartupError, StartupData] =
-    (ac: AssetCollection) => (_: Map[String, String]) => f(new AssetCollectionDelegate(ac)).toInternal
+  private def convertInitialise(f: Initialise): AssetCollection => Dice => Map[String, String] => Startup[StartupError, StartupData] =
+    (ac: AssetCollection) => (d: Dice) => (_: Map[String, String]) => f(new AssetCollectionDelegate(ac), new DiceDelegate(d)).toInternal
 
-  private def convertUpdateModel(f: ModelUpdate): (GameTime, GameModel, InputState, Dice) => GlobalEvent => Outcome[GameModel] =
-    (gt, gm, is, d) =>
+  private def convertUpdateModel(f: ModelUpdate): (FrameContext, GameModel) => GlobalEvent => Outcome[GameModel] =
+    (fc, gm) =>
       e =>
         f(
-          new GameTimeDelegate(gt),
-          gm,
-          new InputStateDelegate(is),
-          new DiceDelegate(d)
+          new FrameContextDelegate(fc),
+          gm
         )(GlobalEventDelegate.fromGlobalEvent(e)).toInternal
 
-  private def convertUpdateViewModel(f: ViewModelUpdate): (GameTime, GameModel, ViewModel, InputState, Dice) => Outcome[ViewModel] =
-    (gt, gm, vm, is, d) =>
+  private def convertUpdateViewModel(f: ViewModelUpdate): (FrameContext, GameModel, ViewModel) => Outcome[ViewModel] =
+    (fc, gm, vm) =>
       f(
-        new GameTimeDelegate(gt),
+        new FrameContextDelegate(fc),
         gm,
-        vm,
-        new InputStateDelegate(is),
-        new DiceDelegate(d)
+        vm
       ).toInternal
 
-  private def convertUpdateView(f: ViewUpdate): (GameTime, GameModel, ViewModel, InputState, BoundaryLocator) => SceneUpdateFragment =
-    (gt, gm, vm, is, bl) =>
+  private def convertUpdateView(f: ViewUpdate): (FrameContext, GameModel, ViewModel) => SceneUpdateFragment =
+    (fc, gm, vm) =>
       f(
-        new GameTimeDelegate(gt),
+        new FrameContextDelegate(fc),
         gm,
-        vm,
-        new InputStateDelegate(is),
-        new BoundaryLocatorDelegate(bl)
+        vm
       ).toInternal
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))

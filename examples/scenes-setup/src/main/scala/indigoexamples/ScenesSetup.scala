@@ -30,7 +30,7 @@ object ScenesSetup extends IndigoGame[StartUpData, GameModel, Unit] {
 
   val subSystems: Set[SubSystem] = Set(FPSCounter.subSystem(FontStuff.fontKey, Point(10, 360), targetFPS))
 
-  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, StartUpData] =
+  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, StartUpData] =
     Startup.Success(StartUpData("Scene A!", "Scene B?"))
 
   def initialModel(startupData: StartUpData): GameModel =

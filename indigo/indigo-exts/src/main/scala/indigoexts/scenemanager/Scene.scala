@@ -1,14 +1,12 @@
 package indigoexts.scenemanager
 
 import indigo.shared.Outcome
-import indigo.shared.time.GameTime
-import indigo.shared.events.{InputState, GlobalEvent}
+import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.EqualTo
 import indigoexts.lenses.Lens
-import indigo.shared.dice.Dice
 import indigoexts.subsystems.SubSystem
-import indigo.shared.BoundaryLocator
+import indigo.shared.FrameContext
 
 trait Scene[GameModel, ViewModel] {
   type SceneModel
@@ -20,26 +18,26 @@ trait Scene[GameModel, ViewModel] {
 
   val sceneSubSystems: Set[SubSystem]
 
-  def updateSceneModel(gameTime: GameTime, sceneModel: SceneModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[SceneModel]
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: SceneModel, sceneViewModel: SceneViewModel, inputState: InputState, dice: Dice, boundaryLocator: BoundaryLocator): Outcome[SceneViewModel]
-  def updateSceneView(gameTime: GameTime, sceneModel: SceneModel, sceneViewModel: SceneViewModel, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment
+  def updateSceneModel(context: FrameContext, sceneModel: SceneModel): GlobalEvent => Outcome[SceneModel]
+  def updateSceneViewModel(context: FrameContext, sceneModel: SceneModel, sceneViewModel: SceneViewModel): Outcome[SceneViewModel]
+  def updateSceneView(context: FrameContext, sceneModel: SceneModel, sceneViewModel: SceneViewModel): SceneUpdateFragment
 
 }
 object Scene {
 
-  def updateModel[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, gameModel: GM, inputState: InputState, dice: Dice): GlobalEvent => Outcome[GM] =
+  def updateModel[GM, VM](scene: Scene[GM, VM], context: FrameContext, gameModel: GM): GlobalEvent => Outcome[GM] =
     e =>
       scene
-        .updateSceneModel(gameTime, scene.sceneModelLens.get(gameModel), inputState, dice)(e)
+        .updateSceneModel(context, scene.sceneModelLens.get(gameModel))(e)
         .mapState(scene.sceneModelLens.set(gameModel, _))
 
-  def updateViewModel[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, model: GM, viewModel: VM, inputState: InputState, dice: Dice, boundaryLocator: BoundaryLocator): Outcome[VM] =
+  def updateViewModel[GM, VM](scene: Scene[GM, VM], context: FrameContext, model: GM, viewModel: VM): Outcome[VM] =
     scene
-      .updateSceneViewModel(gameTime, scene.sceneModelLens.get(model), scene.sceneViewModelLens.get(viewModel), inputState, dice, boundaryLocator)
+      .updateSceneViewModel(context, scene.sceneModelLens.get(model), scene.sceneViewModelLens.get(viewModel))
       .mapState(scene.sceneViewModelLens.set(viewModel, _))
 
-  def updateView[GM, VM](scene: Scene[GM, VM], gameTime: GameTime, model: GM, viewModel: VM, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
-    scene.updateSceneView(gameTime, scene.sceneModelLens.get(model), scene.sceneViewModelLens.get(viewModel), inputState, boundaryLocator)
+  def updateView[GM, VM](scene: Scene[GM, VM], context: FrameContext, model: GM, viewModel: VM): SceneUpdateFragment =
+    scene.updateSceneView(context, scene.sceneModelLens.get(model), scene.sceneViewModelLens.get(viewModel))
 
 }
 

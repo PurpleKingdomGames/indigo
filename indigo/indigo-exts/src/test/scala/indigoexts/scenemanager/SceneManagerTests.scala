@@ -7,8 +7,14 @@ import indigo.shared.dice.Dice
 
 import utest._
 import indigo.shared.events.InputState
+import indigo.shared.FrameContext
+import indigo.shared.BoundaryLocator
+import indigo.shared.AnimationsRegister
+import indigo.shared.FontRegister
 
 object SceneManagerTests extends TestSuite {
+
+  import indigoexts.subsystems.FakeFrameContext._
 
   import TestScenes._
 
@@ -82,6 +88,6 @@ object SceneManagerTests extends TestSuite {
     }
 
   private def runModel(events: List[GlobalEvent], model: TestGameModel, sceneManager: SceneManager[TestGameModel, TestViewModel]): TestGameModel =
-    events.foldLeft(model)((m, e) => sceneManager.updateModel(GameTime.zero, m, InputState.default, Dice.loaded(0))(e).state)
+    events.foldLeft(model)((m, e) => sceneManager.updateModel(context(6), m)(e).state)
 
 }

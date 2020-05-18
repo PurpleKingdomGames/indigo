@@ -34,13 +34,13 @@ object DistortionGame extends IndigoSandbox[Unit, Unit] {
   val animations: Set[Animation] =
     Set()
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(gameTime: GameTime, model: Unit, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Unit] =
+  def update(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(())
 
   val graphic: Graphic =
@@ -65,7 +65,7 @@ object DistortionGame extends IndigoSandbox[Unit, Unit] {
       distortion.moveTo(vec.toPoint)
     }
 
-  def present(gameTime: GameTime, model: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+  def present(context: FrameContext, model: Unit): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         background,
@@ -89,7 +89,7 @@ object DistortionGame extends IndigoSandbox[Unit, Unit] {
       )
       .addDistortionLayerNodes(
         distortion.withAlpha(1.0),
-        orbiting(40).affectTime(0.25).at(gameTime.running)
+        orbiting(40).affectTime(0.25).at(context.gameTime.running)
       )
 }
 

@@ -6,10 +6,10 @@ import indigoexts.formats._
 
 object InitialLoad {
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, StartupData] = {
+  def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartupData] = {
 
     val loader: (AssetName, AssetName, Depth) => Either[String, SpriteAndAnimations] =
-      loadAnimation(assetCollection)
+      loadAnimation(assetCollection, dice)
 
     val res = for {
       reflections <- loader(Assets.Water.jsonRef, Assets.Water.ref, Depth(20))
@@ -28,13 +28,13 @@ object InitialLoad {
     }
   }
 
-  def loadAnimation(assetCollection: AssetCollection)(jsonRef: AssetName, name: AssetName, depth: Depth): Either[String, SpriteAndAnimations] = {
+  def loadAnimation(assetCollection: AssetCollection, dice: Dice)(jsonRef: AssetName, name: AssetName, depth: Depth): Either[String, SpriteAndAnimations] = {
     val res = for {
       json                <- assetCollection.findTextDataByName(jsonRef)
       aseprite            <- Json.asepriteFromJson(json)
-      spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(aseprite, depth, name)
+      spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(dice, aseprite, depth, name)
     } yield spriteAndAnimations
-
+   
     res match {
       case Some(spriteAndAnimations) =>
         Right(spriteAndAnimations)

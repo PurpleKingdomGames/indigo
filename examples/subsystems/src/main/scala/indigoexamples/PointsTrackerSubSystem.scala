@@ -11,11 +11,11 @@ final case class PointsTrackerSubSystem(points: Int, fontKey: FontKey) extends S
     case _                         => None
   }
 
-  def update(gameTime: GameTime, inputState: InputState, dice: Dice): Int => Outcome[SubSystem] = { additionalPoints =>
+  def update(context: FrameContext): Int => Outcome[SubSystem] = { additionalPoints =>
     Outcome(this.copy(points = points + additionalPoints))
   }
 
-  def render(gameTime: GameTime): SceneUpdateFragment =
+  def render(context: FrameContext): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(Text(s"""Points: ${points.toString()}""", 10, 10, 1, fontKey))
 }

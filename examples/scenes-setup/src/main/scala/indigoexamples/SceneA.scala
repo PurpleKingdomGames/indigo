@@ -28,17 +28,17 @@ object SceneA extends Scene[GameModel, Unit] {
     )
 
   // Nothing to do
-  def updateSceneModel(gameTime: GameTime, sceneModel: MessageA, inputState: InputState, dice: Dice): GlobalEvent => Outcome[MessageA] =
+  def updateSceneModel(context: FrameContext, sceneModel: MessageA): GlobalEvent => Outcome[MessageA] =
     _ => Outcome(sceneModel)
 
   // Nothing to do
-  def updateSceneViewModel(gameTime: GameTime, sceneModel: MessageA, sceneViewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] = Outcome(())
+  def updateSceneViewModel(context: FrameContext, sceneModel: MessageA, sceneViewModel: Unit): Outcome[Unit] = Outcome(())
 
   // Show some text
   // When the user clicks anywhere in the screen, trigger an event to jump to the other scene.
-  def updateSceneView(gameTime: GameTime, sceneModel: MessageA, sceneViewModel: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment = {
+  def updateSceneView(context: FrameContext, sceneModel: MessageA, sceneViewModel: Unit): SceneUpdateFragment = {
     val events: List[GlobalEvent] =
-      if (inputState.mouse.wasMouseClickedWithin(Rectangle(0, 0, 550, 400))) List(SceneEvent.JumpTo(SceneB.name))
+      if (context.inputState.mouse.wasMouseClickedWithin(Rectangle(0, 0, 550, 400))) List(SceneEvent.JumpTo(SceneB.name))
       else Nil
 
     val text: Text = Text(sceneModel.value, 20, 20, 1, FontStuff.fontKey)

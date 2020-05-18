@@ -29,7 +29,7 @@ object ModelLogic {
       lastUpdated = Seconds.zero
     )
 
-  def update(gameTime: GameTime, state: GameModel): GlobalEvent => Outcome[GameModel] = {
+  def update(gameTime: GameTime, dice: Dice, state: GameModel): GlobalEvent => Outcome[GameModel] = {
     case FrameTick if gameTime.running < state.lastUpdated + state.tickDelay =>
       Outcome(state)
 
@@ -38,6 +38,7 @@ object ModelLogic {
         case s @ GameState.Running(_, _) =>
           updateRunning(
             gameTime,
+            dice,
             state.resetLastUpdated(gameTime.running),
             s
           )(FrameTick)
@@ -53,7 +54,7 @@ object ModelLogic {
     case gameEvent =>
       state.gameState match {
         case s @ GameState.Running(_, _) =>
-          updateRunning(gameTime, state, s)(gameEvent)
+          updateRunning(gameTime, dice, state, s)(gameEvent)
 
         case s @ GameState.Crashed(_, _, _, _) =>
           updateCrashed(gameTime, state, s)(gameEvent)
@@ -62,11 +63,12 @@ object ModelLogic {
 
   def updateRunning(
       gameTime: GameTime,
+      dice: Dice,
       state: GameModel,
       runningDetails: GameState.Running
   ): GlobalEvent => Outcome[GameModel] = {
     case FrameTick =>
-      updateBasedOnCollision(gameTime)(
+      updateBasedOnCollision(gameTime, dice)(
         normalUpdate(gameTime, state)
       )
 
@@ -112,7 +114,7 @@ object ModelLogic {
       }
   }
 
-  def updateBasedOnCollision(gameTime: GameTime): ((GameModel, CollisionCheckOutcome)) => Outcome[GameModel] = {
+  def updateBasedOnCollision(gameTime: GameTime, dice: Dice): ((GameModel, CollisionCheckOutcome)) => Outcome[GameModel] = {
     case (gameModel, CollisionCheckOutcome.Crashed(_)) =>
       Outcome(
         gameModel.copy(
@@ -135,7 +137,7 @@ object ModelLogic {
             .insertElement(
               Apple(
                 gameModel.gameMap
-                  .findEmptySpace(pt :: gameModel.snake.givePath)
+                  .findEmptySpace(dice, pt :: gameModel.snake.givePath)
               )
             ),
           score = gameModel.score + ScoreIncrement

@@ -54,15 +54,15 @@ object Fireworks extends IndigoDemo[Unit, Unit, Unit] {
       FlareAutomata.automata(toScreenSpace)
     )
 
-  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(gameTime: GameTime, model: Unit, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Unit] = {
+  def update(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] = {
     case KeyboardEvent.KeyUp(Keys.SPACE) =>
-      Outcome(model, launchFireworks(dice, toScreenSpace))
+      Outcome(model, launchFireworks(context.dice, toScreenSpace))
 
     case _ =>
       Outcome(model)
@@ -71,10 +71,10 @@ object Fireworks extends IndigoDemo[Unit, Unit, Unit] {
   def initialViewModel(startupData: Unit): Unit => Unit =
     _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
+  def updateViewModel(context: FrameContext, model: Unit, viewModel: Unit): Outcome[Unit] =
     Outcome(())
 
-  def present(gameTime: GameTime, model: Unit, viewModel: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+  def present(context: FrameContext, model: Unit, viewModel: Unit): SceneUpdateFragment =
     SceneUpdateFragment.empty
 
 }

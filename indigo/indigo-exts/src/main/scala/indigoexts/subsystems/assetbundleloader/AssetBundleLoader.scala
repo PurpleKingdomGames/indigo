@@ -2,8 +2,6 @@ package indigoexts.subsystems.assetbundleloader
 
 import indigoexts.subsystems.SubSystem
 import indigo.shared.events.GlobalEvent
-import indigo.shared.time.GameTime
-import indigo.shared.dice.Dice
 import indigo.shared.Outcome
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.assets.AssetType
@@ -11,7 +9,7 @@ import indigo.shared.datatypes.BindingKey
 import indigo.shared.assets.AssetPath
 import indigo.shared.assets.AssetTypePrimitive
 import indigo.shared.events.AssetEvent
-import indigo.shared.events.InputState
+import indigo.shared.FrameContext
 
 // Provides "at least once" message delivery for updates on a bundle's loading status.
 final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSystem {
@@ -24,7 +22,7 @@ final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSyste
     case _                         => None
   }
 
-  def update(gameTime: GameTime, inputState: InputState, dice: Dice): GlobalEvent => Outcome[AssetBundleLoader] = {
+  def update(frameContext: FrameContext): GlobalEvent => Outcome[AssetBundleLoader] = {
     // Asset Bundle Loader Commands
     case AssetBundleLoaderEvent.Load(key, assets) =>
       createBeginLoadingOutcome(key, assets)
@@ -61,7 +59,7 @@ final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSyste
       Outcome(this)
   }
 
-  def render(gameTime: GameTime): SceneUpdateFragment =
+  def render(frameContext: FrameContext): SceneUpdateFragment =
     SceneUpdateFragment.empty
 
   private def createBeginLoadingOutcome(key: BindingKey, assets: Set[AssetType]): Outcome[AssetBundleLoader] = {

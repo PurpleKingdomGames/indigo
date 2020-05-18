@@ -14,6 +14,8 @@ import indigo.shared.events.InputState
 
 object AutomataTests extends TestSuite {
 
+  import indigoexts.subsystems.FakeFrameContext._
+
   final case class MyCullEvent(message: String) extends GlobalEvent
 
   val eventInstance =
@@ -40,13 +42,13 @@ object AutomataTests extends TestSuite {
 
         val farmWithAutomaton: Automata =
           automata
-            .update(GameTime.zero, InputState.default, Dice.loaded(1))(AutomataEvent.Spawn(poolKey, Point.zero, None, None))
+            .update(context(1))(AutomataEvent.Spawn(poolKey, Point.zero, None, None))
             .state
 
         // 1 ms over the lifespan, so should be culled
         val outcome: Outcome[Automata] =
           farmWithAutomaton
-            .update(GameTime.is(Seconds(0.15)), InputState.default, Dice.loaded(1))(AutomataEvent.Cull)
+            .update(context(1, Seconds(0.15)))(AutomataEvent.Cull)
 
         outcome.state.liveAutomataCount ==> 0
         outcome.globalEvents.head ==> eventInstance

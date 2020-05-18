@@ -23,8 +23,8 @@ object AsepriteConverterDelegate {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any", "org.wartremover.warts.Nothing"))
   @JSExport
-  def toSpriteAndAnimations(aseprite: AsepriteDelegate, depth: Int, assetName: String): js.UndefOr[SpriteAndAnimationsDelegate] =
-    AsepriteConverter.toSpriteAndAnimations(aseprite.toInternal, Depth(depth), AssetName(assetName)) match {
+  def toSpriteAndAnimations(dice: DiceDelegate, aseprite: AsepriteDelegate, depth: Int, assetName: String): js.UndefOr[SpriteAndAnimationsDelegate] =
+    AsepriteConverter.toSpriteAndAnimations(dice.toInternal, aseprite.toInternal, Depth(depth), AssetName(assetName)) match {
       case None =>
         None.orUndefined
       case Some(x) => Some(x.toJsDelegate).orUndefined

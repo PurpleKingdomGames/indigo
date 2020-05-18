@@ -23,28 +23,28 @@ object TextExample extends IndigoSandbox[Unit, Model] {
   val animations: Set[Animation] =
     Set()
 
-  def setup(assetCollection: AssetCollection): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Model =
     Model(RGBA.None)
 
-  def update(gameTime: GameTime, model: Model, inputState: InputState, dice: Dice): GlobalEvent => Outcome[Model] = {
+  def update(context: FrameContext, model: Model): GlobalEvent => Outcome[Model] = {
     case ChangeColour =>
-      Outcome(model.changeTint(dice))
+      Outcome(model.changeTint(context.dice))
 
     case _ =>
       Outcome(model)
   }
 
-  def present(gameTime: GameTime, model: Model, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+  def present(context: FrameContext, model: Model): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontKey)
           .withTint(model.tint)
           .alignRight
           .onEvent {
-            case (bounds, MouseEvent.Click(_, _)) if inputState.mouse.wasMouseClickedWithin(bounds) =>
+            case (bounds, MouseEvent.Click(_, _)) if context.inputState.mouse.wasMouseClickedWithin(bounds) =>
               List(ChangeColour)
 
             case _ =>

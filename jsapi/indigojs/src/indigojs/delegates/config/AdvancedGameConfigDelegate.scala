@@ -9,8 +9,6 @@ import indigo.shared.config.AdvancedGameConfig
 final class AdvancedGameConfigDelegate(
     _antiAliasing: Boolean,
     _batchSize: Int,
-    _recordMetrics: Boolean,
-    _logMetricsReportIntervalMs: Int,
     _disableSkipModelUpdates: Boolean,
     _disableSkipViewUpdates: Boolean
 ) {
@@ -20,10 +18,6 @@ final class AdvancedGameConfigDelegate(
   @JSExport
   val batchSize = _batchSize
   @JSExport
-  val recordMetrics = _recordMetrics
-  @JSExport
-  val logMetricsReportIntervalMs = _logMetricsReportIntervalMs
-  @JSExport
   val disableSkipModelUpdates = _disableSkipModelUpdates
   @JSExport
   val disableSkipViewUpdates = _disableSkipViewUpdates
@@ -32,8 +26,6 @@ final class AdvancedGameConfigDelegate(
     AdvancedGameConfig(
       antiAliasing,
       batchSize,
-      recordMetrics,
-      logMetricsReportIntervalMs,
       disableSkipModelUpdates,
       disableSkipViewUpdates
     )
@@ -44,8 +36,6 @@ object AdvancedGameConfigDelegate {
     new AdvancedGameConfigDelegate(
       _antiAliasing = false,
       _batchSize = 256,
-      _recordMetrics = false,
-      _logMetricsReportIntervalMs = 10000,
       _disableSkipModelUpdates = false,
       _disableSkipViewUpdates = false
     )

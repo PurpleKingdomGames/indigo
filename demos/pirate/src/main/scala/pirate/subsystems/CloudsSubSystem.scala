@@ -14,20 +14,20 @@ final case class CloudsSubSystem(screenWidth: Int, bigCloudPosition: Double, ver
     case _         => None
   }
 
-  def update(gameTime: GameTime, inputState: InputState, dice: Dice): FrameTick => Outcome[CloudsSubSystem] = {
-    case FrameTick if gameTime.running - lastSpawn > Seconds(3.0) =>
+  def update(context: FrameContext): FrameTick => Outcome[CloudsSubSystem] = {
+    case FrameTick if context.gameTime.running - lastSpawn > Seconds(3.0) =>
       Outcome(
         this.copy(
-          bigCloudPosition = nextBigCloudPosition(gameTime),
-          lastSpawn = gameTime.running
+          bigCloudPosition = nextBigCloudPosition(context.gameTime),
+          lastSpawn = context.gameTime.running
         )
-      ).addGlobalEvents(spawnSmallCloud(dice, screenWidth)) // STEP 6
+      ).addGlobalEvents(spawnSmallCloud(context.dice, screenWidth)) // STEP 6
 
     case FrameTick =>
-      Outcome(this.copy(bigCloudPosition = nextBigCloudPosition(gameTime)))
+      Outcome(this.copy(bigCloudPosition = nextBigCloudPosition(context.gameTime)))
   }
 
-  def render(gameTime: GameTime): SceneUpdateFragment =
+  def render(context: FrameContext): SceneUpdateFragment =
     SceneUpdateFragment.empty.addGameLayerNodes(drawBigClouds)
 
   private def nextBigCloudPosition(gameTime: GameTime): Double =

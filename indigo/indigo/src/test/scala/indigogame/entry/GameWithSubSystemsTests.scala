@@ -13,6 +13,7 @@ import indigo.shared.events.InputState
 import indigo.shared.BoundaryLocator
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
+import indigo.shared.FrameContext
 
 object GameWithSubSystemsTests extends TestSuite {
 
@@ -22,7 +23,7 @@ object GameWithSubSystemsTests extends TestSuite {
     Tests {
 
       "should be able to run model update across a game and it's subsytems and produce the right outcome" - {
-        val updated = GameWithSubSystems.update(modelUpdate)(GameTime.zero, gameWithSubSystems, InputState.default, Dice.loaded(0))
+        val updated = GameWithSubSystems.update(modelUpdate)(context, gameWithSubSystems)
 
         val outcome = updated(EventsOnlyEvent.Increment)
 
@@ -36,7 +37,7 @@ object GameWithSubSystemsTests extends TestSuite {
 
       "should be able to update the view model" - {
         val boundaryLocator = new BoundaryLocator(new AnimationsRegister, new FontRegister)
-        val outcome = GameWithSubSystems.updateViewModel(viewModelUpdate)(GameTime.zero, gameWithSubSystems, 0, InputState.default, Dice.loaded(0), boundaryLocator)
+        val outcome         = GameWithSubSystems.updateViewModel(viewModelUpdate)(context, gameWithSubSystems, 0)
         outcome.state ==> 10
         outcome.globalEvents.length ==> 1
         outcome.globalEvents.contains(EventsOnlyEvent.Increment) ==> true
@@ -47,6 +48,14 @@ object GameWithSubSystemsTests extends TestSuite {
 }
 
 object GameTestFixtures {
+
+  def context: FrameContext =
+    new FrameContext(
+      GameTime.zero,
+      Dice.loaded(0),
+      InputState.default,
+      new BoundaryLocator(new AnimationsRegister, new FontRegister)
+    )
 
   val subSystem =
     EventsOnlySubSystem(0)
@@ -60,11 +69,11 @@ object GameTestFixtures {
   val gameWithSubSystems =
     new GameWithSubSystems[GameModel](model, register)
 
-  val modelUpdate: (GameTime, GameModel, InputState, Dice) => GlobalEvent => Outcome[GameModel] =
-    (_, m, _, _) => _ => Outcome(m).addGlobalEvents(EventsOnlyEvent.Decrement)
+  val modelUpdate: (FrameContext, GameModel) => GlobalEvent => Outcome[GameModel] =
+    (_, m) => _ => Outcome(m).addGlobalEvents(EventsOnlyEvent.Decrement)
 
-  val viewModelUpdate: (GameTime, GameModel, Int, InputState, Dice, BoundaryLocator) => Outcome[Int] =
-    (_, _, viewModel, _, _, _) => Outcome(viewModel + 10).addGlobalEvents(EventsOnlyEvent.Increment)
+  val viewModelUpdate: (FrameContext, GameModel, Int) => Outcome[Int] =
+    (_, _, viewModel) => Outcome(viewModel + 10).addGlobalEvents(EventsOnlyEvent.Increment)
 
   final case class GameModel(text: String)
 
@@ -77,7 +86,7 @@ object GameTestFixtures {
       case _                  => None
     }
 
-    def update(gameTime: GameTime, inputState: InputState, dice: Dice): EventsOnlyEvent => Outcome[SubSystem] = {
+    def update(context: FrameContext): EventsOnlyEvent => Outcome[SubSystem] = {
       case EventsOnlyEvent.Increment =>
         val newCount = count + 1
 
@@ -92,7 +101,7 @@ object GameTestFixtures {
         Outcome(this)
     }
 
-    def render(gameTime: GameTime): SceneUpdateFragment =
+    def render(context: FrameContext): SceneUpdateFragment =
       SceneUpdateFragment.empty
 
   }

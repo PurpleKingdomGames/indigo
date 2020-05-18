@@ -33,13 +33,13 @@ object InputMappingExample extends IndigoDemo[Unit, GameModel, Unit] {
       )
     )
 
-  def setup(assetCollection: AssetCollection, flags: Map[String, String]): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): GameModel =
     GameModel(None)
 
-  def update(gameTime: GameTime, model: GameModel, inputState: InputState, dice: Dice): GlobalEvent => Outcome[GameModel] = {
+  def update(context: FrameContext, model: GameModel): GlobalEvent => Outcome[GameModel] = {
     case KeyboardEvent.KeyDown(Keys.KEY_A) =>
       println("Added Down Arrow input mapping")
       Outcome(model).addGlobalEvents(
@@ -67,10 +67,10 @@ object InputMappingExample extends IndigoDemo[Unit, GameModel, Unit] {
   def initialViewModel(startupData: Unit): GameModel => Unit =
     _ => ()
 
-  def updateViewModel(gameTime: GameTime, model: GameModel, viewModel: Unit, inputState: InputState, dice: Dice): Outcome[Unit] =
+  def updateViewModel(context: FrameContext, model: GameModel, viewModel: Unit): Outcome[Unit] =
     Outcome(())
 
-  def present(gameTime: GameTime, model: GameModel, viewModel: Unit, inputState: InputState, boundaryLocator: BoundaryLocator): SceneUpdateFragment =
+  def present(context: FrameContext, model: GameModel, viewModel: Unit): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         Text("Press up arrow, or\npress a to add or\nd to remove a mapping\nfor down, then you can\npress the down arrow.", 10, 20, 1, fontKey),

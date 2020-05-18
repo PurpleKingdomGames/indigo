@@ -1,5 +1,6 @@
 package snake.model.arena
 
+import indigo.Dice
 import indigoexts.grid._
 import indigoexts.quadtree._
 import snake.model.arena.MapElement.{Apple, Wall}
@@ -23,8 +24,8 @@ case class GameMap(quadTree: QuadTree[MapElement], gridSize: GridSize) {
   def removeElement(gridPoint: GridPoint): GameMap =
     this.copy(quadTree = quadTree.removeElement(gridPoint))
 
-  def findEmptySpace(not: List[GridPoint]): GridPoint =
-    quadTree.findEmptySpace(gridSize, not)
+  def findEmptySpace(dice: Dice, not: List[GridPoint]): GridPoint =
+    quadTree.findEmptySpace(dice, gridSize, not)
 
   def asElementList: List[MapElement] =
     quadTree.asElementList

@@ -8,9 +8,9 @@ final case class HelloSubSystem(message: String, fontKey: FontKey) extends SubSy
 
   val eventFilter: GlobalEvent => Option[EventType] = _ => None
 
-  def update(gameTime: GameTime, inputState: InputState, dice: Dice): EventType => Outcome[SubSystem] = _ => Outcome(this)
+  def update(context: FrameContext): EventType => Outcome[SubSystem] = _ => Outcome(this)
 
-  def render(gameTime: GameTime): SceneUpdateFragment =
+  def render(context: FrameContext): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addUiLayerNodes(Text(message, 20, 50, 1, fontKey))
 }
