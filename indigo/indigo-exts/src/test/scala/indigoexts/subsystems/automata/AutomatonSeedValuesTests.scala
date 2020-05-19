@@ -14,13 +14,13 @@ object AutomataSeedValuesTests extends TestSuite {
         "a progression multiplier should range from 0 to 1 as the life of an automaton expires" - {
 
           val seed =
-            AutomatonSeedValues(
-              spawnPosition = Point.zero,
-              creationTime = Seconds(0.5),
-              lifeExpectancy = Seconds(2),
-              age = Seconds.zero,
-              randomSeedValue = 0,
-              initialPayload = None
+            new AutomatonSeedValues(
+              spawnedAt = Point.zero,
+              createdAt = Seconds(0.5),
+              lifeSpan = Seconds(2),
+              timeAliveDelta = Seconds.zero,
+              randomSeed = 0,
+              payload = None
             )
 
           seed.progression ==> 0d

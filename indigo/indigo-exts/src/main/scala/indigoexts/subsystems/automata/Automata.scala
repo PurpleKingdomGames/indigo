@@ -39,7 +39,7 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
       val spawned =
         SpawnedAutomaton(
           automaton,
-          AutomatonSeedValues(
+          new AutomatonSeedValues(
             position,
             frameContext.gameTime.running,
             lifeSpan.getOrElse(automaton.lifespan),
@@ -73,12 +73,19 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
     case KillAll =>
       Outcome(Automata(poolKey, automaton, layer))
 
-    case Cull =>
+    case Cull => // AKA: Update.
       val (l, r) =
         pool.partition(_.isAlive(frameContext.gameTime.running))
 
-      Outcome(new Automata(poolKey, automaton, layer, maxPoolSize, l.map(_.updateDelta(frameContext.gameTime.delta))))
-        .addGlobalEvents(r.flatMap(sa => sa.automaton.onCull(sa.seedValues)))
+      Outcome(
+        new Automata(
+          poolKey,
+          automaton,
+          layer,
+          maxPoolSize,
+          l.map(_.updateDelta(frameContext.gameTime.delta))
+        )
+      ).addGlobalEvents(r.flatMap(sa => sa.automaton.onCull(sa.seedValues)))
 
     case _ =>
       Outcome(this)

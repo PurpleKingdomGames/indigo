@@ -27,4 +27,12 @@ object FakeFrameContext {
       new BoundaryLocator(new AnimationsRegister, new FontRegister)
     )
 
+  def context(sides: Int, time: Seconds, delta: Seconds): FrameContext = 
+    new FrameContext(
+      GameTime.withDelta(time, delta),
+      Dice.loaded(sides),
+      InputState.default,
+      new BoundaryLocator(new AnimationsRegister, new FontRegister)
+    )
+
 }
