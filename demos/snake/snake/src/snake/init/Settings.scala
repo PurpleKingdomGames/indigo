@@ -1,6 +1,6 @@
 package snake.init
 
-import indigoexts.grids.GridSize
+import snake.model.grid.GridSize
 
 object Settings {
 

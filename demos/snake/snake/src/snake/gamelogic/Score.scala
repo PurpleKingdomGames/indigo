@@ -26,18 +26,14 @@ object Score {
     val input: AutomatonSeedValues => Signal[AutomatonSeedValues] =
       seedValues => Signal.fixed(seedValues)
 
-    val multiplierSF: SignalFunction[AutomatonSeedValues, Double] =
-      SignalFunction((s: AutomatonSeedValues) => s.timeAliveDelta.toDouble / s.lifeSpan.toDouble)
-
-    val positionSF: SignalFunction[AutomatonSeedValues, Point] =
-      SignalFunction((_: AutomatonSeedValues).spawnedAt)
-
     val mapSeedToPosition: SignalFunction[AutomatonSeedValues, Point] =
-      (multiplierSF &&& positionSF) >>>
-        SignalFunction {
-          case (multiplier: Double, spawnedAt: Point) =>
-            spawnedAt + Point(0, -(30 * multiplier).toInt)
-        }
+      SignalFunction { seed =>
+        seed.spawnedAt +
+          Point(
+            0,
+            -(30d * (seed.timeAliveDelta.toDouble / seed.lifeSpan.toDouble)).toInt
+          )
+      }
 
     val signal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
       (seed, sceneGraphNode) =>

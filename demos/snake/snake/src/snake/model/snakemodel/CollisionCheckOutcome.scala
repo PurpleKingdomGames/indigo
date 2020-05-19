@@ -1,6 +1,6 @@
 package snake.model.snakemodel
 
-import indigoexts.grids._
+import snake.model.grid._
 
 sealed trait CollisionCheckOutcome {
   val gridPoint: GridPoint

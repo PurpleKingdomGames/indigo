@@ -1,8 +1,8 @@
 package snake.model.arena
 
 import indigo.Dice
-import indigoexts.grid._
-import indigoexts.quadtree._
+import snake.model.grid._
+import snake.model.quadtrees._
 import snake.model.arena.MapElement.{Apple, Wall}
 
 case class GameMap(quadTree: QuadTree[MapElement], gridSize: GridSize) {

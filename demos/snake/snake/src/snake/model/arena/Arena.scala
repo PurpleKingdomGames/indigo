@@ -1,6 +1,6 @@
 package snake.model.arena
 
-import indigoexts.grids._
+import snake.model.grid._
 import snake.model.arena.MapElement.{Apple, Wall}
 
 object Arena {

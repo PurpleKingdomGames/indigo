@@ -1,6 +1,6 @@
 package snake.model.arena
 
-import indigoexts.grid.GridPoint
+import snake.model.grid.GridPoint
 
 sealed trait MapElement {
   val gridPoint: GridPoint

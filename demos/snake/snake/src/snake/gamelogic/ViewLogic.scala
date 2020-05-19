@@ -1,7 +1,7 @@
 package snake.gamelogic
 
 import indigo._
-import indigoexts.grids.{GridPoint, GridSize}
+import snake.model.grid._
 import snake.init.{GameAssets, Settings, StaticAssets}
 import snake.model.arena.GameMap
 import snake.model.{GameModel, SnakeViewModel}
@@ -29,7 +29,7 @@ object ViewLogic {
     walls ::
       drawApple(currentState.gameMap, staticAssets) ++
         drawSnake(currentState, staticAssets.snake) ++
-        drawScore(currentState.score)
+      drawScore(currentState.score)
 
   def drawApple(gameMap: GameMap, staticAssets: StaticAssets): List[Graphic] =
     gameMap.findApples.map(

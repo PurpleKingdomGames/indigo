@@ -1,6 +1,6 @@
 package snake.model.snakemodel
 
-import indigoexts.grids._
+import snake.model.grid._
 
 case class Snake(start: GridPoint, body: List[GridPoint], direction: SnakeDirection, status: SnakeStatus) {
 

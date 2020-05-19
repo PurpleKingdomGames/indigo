@@ -1,7 +1,7 @@
 package snake.model
 
 import indigo.{GameTime, Seconds}
-import indigoexts.grids.{GridPoint, GridSize}
+import snake.model.grid._
 import snake.model.arena.GameMap
 import snake.model.snakemodel.{CollisionCheckOutcome, Snake}
 

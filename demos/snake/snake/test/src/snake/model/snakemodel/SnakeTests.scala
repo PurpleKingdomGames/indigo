@@ -1,6 +1,6 @@
 package snake.model.snakemodel
 
-import indigoexts.grid.{GridPoint, GridSize}
+import snake.model.grid.{GridPoint, GridSize}
 
 import utest._
 

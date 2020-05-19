@@ -1,7 +1,7 @@
 package snake.init
 
 import indigo._
-import indigoexts.grid._
+import snake.model.grid._
 
 object SnakeStartupData {
 

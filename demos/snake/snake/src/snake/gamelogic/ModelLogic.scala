@@ -1,7 +1,7 @@
 package snake.gamelogic
 
 import indigo._
-import indigoexts.grids._
+import snake.model.grid._
 import indigoexts.scenemanager._
 import snake.init.GameAssets
 import snake.model._

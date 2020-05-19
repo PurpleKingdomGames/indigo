@@ -6,6 +6,7 @@ lazy val coreProjects: List[String] =
     "indigoPlatforms",
     "indigoCore",
     "indigoExts",
+    "indigoExtsExp",
     "indigo",
     "facades",
     "sandbox",
@@ -113,7 +114,11 @@ addCommandAlias(
 )
 addCommandAlias(
   "localPublishIndigo",
-  applyCommand(coreProjects, "publishLocal", PlatformSuffix.All)
+  applyCommand(
+    coreProjects.filterNot(name => name == "indigoExtsExp" || name == "sandbox" || name == "perf"),
+    "publishLocal",
+    PlatformSuffix.All
+  )
 )
 
 addCommandAlias(

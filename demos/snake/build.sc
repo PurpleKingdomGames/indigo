@@ -43,7 +43,10 @@ object snake extends ScalaJSModule with MillIndigo {
   )
 
   object test extends Tests {
-    def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.4")
+    def ivyDeps = Agg(
+      ivy"com.lihaoyi::utest::0.7.4",
+      ivy"org.scalacheck::scalacheck::1.14.3"
+      )
 
     def testFrameworks = Seq("utest.runner.Framework")
 

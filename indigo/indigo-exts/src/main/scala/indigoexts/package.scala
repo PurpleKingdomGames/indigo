@@ -5,25 +5,6 @@ package object indigoexts {
     val Lens: lenses.Lens.type = lenses.Lens
   }
 
-  object grids {
-    type GridPoint = grid.GridPoint
-    val GridPoint: grid.GridPoint.type = grid.GridPoint
-
-    type GridSize = grid.GridSize
-    val GridSize: grid.GridSize.type = grid.GridSize
-
-    object pathfinding {
-      type Coords = indigoexts.pathfinding.Coords
-      val Coords: indigoexts.pathfinding.Coords.type = indigoexts.pathfinding.Coords
-
-      type GridSquare = indigoexts.pathfinding.GridSquare
-      val GridSquare: indigoexts.pathfinding.GridSquare.type = indigoexts.pathfinding.GridSquare
-
-      type SearchGrid = indigoexts.pathfinding.SearchGrid
-      val SearchGrid: indigoexts.pathfinding.SearchGrid.type = indigoexts.pathfinding.SearchGrid
-    }
-  }
-
   object shapes {
     type LineSegment = geometry.LineSegment
     val LineSegment: geometry.LineSegment.type = geometry.LineSegment
@@ -33,14 +14,6 @@ package object indigoexts {
 
     type IntersectionResult = geometry.IntersectionResult
     val IntersectionResult: geometry.IntersectionResult.type = geometry.IntersectionResult
-  }
-
-  object quadtree {
-    type QuadBounds = quadtrees.QuadBounds
-    val QuadBounds: quadtrees.QuadBounds.type = quadtrees.QuadBounds
-
-    type QuadTree[T] = quadtrees.QuadTree[T]
-    val QuadTree: quadtrees.QuadTree.type = quadtrees.QuadTree
   }
 
   object scenes {

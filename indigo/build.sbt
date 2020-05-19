@@ -101,6 +101,21 @@ lazy val indigoExts =
 lazy val indigoExtsJS  = indigoExts.js
 lazy val indigoExtsJVM = indigoExts.jvm
 
+// Indigo Extensions Experimental (Read: WIP, Dubious, Old, Odd, Overly Specialised, etc.)
+lazy val indigoExtsExp =
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("indigo-exts-experimental"))
+    .settings(commonSettings: _*)
+    .dependsOn(indigoExts)
+    .dependsOn(indigoJsonCirce % "provided")
+    .settings(
+      name := "indigo-exts-experimental",
+      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
+    )
+lazy val indigoExtsExpJS  = indigoExtsExp.js
+lazy val indigoExtsExpJVM = indigoExtsExp.jvm
+
 // Indigo Game
 lazy val indigo =
   crossProject(JSPlatform, JVMPlatform)
@@ -255,6 +270,7 @@ lazy val indigoProject =
       indigoJsonCirceJS,
       indigoCoreJS,
       indigoExtsJS,
+      indigoExtsExpJS,
       indigoJS,
       facadesJS,
       sandboxJS,
