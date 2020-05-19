@@ -30,7 +30,9 @@ object SubSystemsExample extends IndigoDemo[Unit, Unit, Unit] {
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] = {
+  def initialViewModel(startupData: Unit, model: Unit): Unit = ()
+
+  def updateModel(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] = {
     case e @ MouseEvent.Click(_, _) =>
       Outcome(())
         .addGlobalEvents(
@@ -41,8 +43,6 @@ object SubSystemsExample extends IndigoDemo[Unit, Unit, Unit] {
     case _ =>
       Outcome(())
   }
-
-  def initialViewModel(startupData: Unit): Unit => Unit = _ => ()
 
   def updateViewModel(context: FrameContext, model: Unit, viewModel: Unit): Outcome[Unit] =
     Outcome(viewModel)

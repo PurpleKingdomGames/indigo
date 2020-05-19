@@ -71,22 +71,21 @@ object SandboxGame extends IndigoDemo[SandboxStartupData, SandboxGameModel, Sand
   def initialModel(startupData: SandboxStartupData): SandboxGameModel =
     SandboxModel.initialModel(startupData)
 
-  def initialViewModel(startupData: SandboxStartupData): SandboxGameModel => SandboxViewModel =
-    _ => {
-      val assets =
-        new InputFieldAssets(
-          Text("placeholder", 0, 0, 0, SandboxView.fontKey).alignLeft,
-          Graphic(0, 0, 16, 16, 2, Material.Textured(SandboxAssets.smallFontName)).withCrop(188, 78, 14, 23).withTint(0, 0, 1)
-        )
-
-      SandboxViewModel(
-        Point.zero,
-        InputField("single", assets).makeSingleLine,
-        InputField("multi\nline", assets).makeMultiLine
+  def initialViewModel(startupData: SandboxStartupData, model: SandboxGameModel): SandboxViewModel = {
+    val assets =
+      new InputFieldAssets(
+        Text("placeholder", 0, 0, 0, SandboxView.fontKey).alignLeft,
+        Graphic(0, 0, 16, 16, 2, Material.Textured(SandboxAssets.smallFontName)).withCrop(188, 78, 14, 23).withTint(0, 0, 1)
       )
-    }
 
-  def update(context: FrameContext, model: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] =
+    SandboxViewModel(
+      Point.zero,
+      InputField("single", assets).makeSingleLine,
+      InputField("multi\nline", assets).makeMultiLine
+    )
+  }
+
+  def updateModel(context: FrameContext, model: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] =
     SandboxModel.updateModel(model)
 
   def updateViewModel(context: FrameContext, model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SandboxViewModel] = {

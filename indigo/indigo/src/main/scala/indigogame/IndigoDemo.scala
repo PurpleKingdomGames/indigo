@@ -33,9 +33,9 @@ trait IndigoDemo[StartupData, Model, ViewModel] extends GameLauncher {
 
   def initialModel(startupData: StartupData): Model
 
-  def initialViewModel(startupData: StartupData): Model => ViewModel
+  def initialViewModel(startupData: StartupData, model: Model): ViewModel
 
-  def update(context: FrameContext, model: Model): GlobalEvent => Outcome[Model]
+  def updateModel(context: FrameContext, model: Model): GlobalEvent => Outcome[Model]
 
   def updateViewModel(context: FrameContext, model: Model, viewModel: ViewModel): Outcome[ViewModel]
 
@@ -45,7 +45,7 @@ trait IndigoDemo[StartupData, Model, ViewModel] extends GameLauncher {
 
     val frameProcessor: StandardFrameProcessor[GameWithSubSystems[Model], ViewModel] =
       new StandardFrameProcessor(
-        GameWithSubSystems.update(update),
+        GameWithSubSystems.update(updateModel),
         GameWithSubSystems.updateViewModel(updateViewModel),
         GameWithSubSystems.present(present)
       )
@@ -55,7 +55,7 @@ trait IndigoDemo[StartupData, Model, ViewModel] extends GameLauncher {
       animations,
       (ac: AssetCollection) => (d: Dice) => (flags: Map[String, String]) => setup(ac, d, flags),
       (sd: StartupData) => new GameWithSubSystems(initialModel(sd), new SubSystemsRegister(subSystems.toList)),
-      (sd: StartupData) => (m: GameWithSubSystems[Model]) => initialViewModel(sd)(m.model),
+      (sd: StartupData) => (m: GameWithSubSystems[Model]) => initialViewModel(sd, m.model),
       frameProcessor
     )
   }

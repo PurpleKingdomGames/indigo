@@ -32,7 +32,18 @@ object ButtonExample extends IndigoDemo[Unit, MyGameModel, MyViewModel] {
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(count = 0)
 
-  def update(context: FrameContext, model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
+  def initialViewModel(startupData: Unit, model: MyGameModel): MyViewModel =
+    MyViewModel(
+      button = Button(
+        buttonAssets = buttonAssets,
+        bounds = Rectangle(10, 10, 16, 16),
+        depth = Depth(2)
+      ).withUpAction {
+        List(MyButtonEvent)
+      }
+    )
+
+  def updateModel(context: FrameContext, model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
     case MyButtonEvent =>
       val next = model.copy(count = model.count + 1)
       println("Count: " + next.count.toString)
@@ -41,18 +52,6 @@ object ButtonExample extends IndigoDemo[Unit, MyGameModel, MyViewModel] {
     case _ =>
       Outcome(model)
   }
-
-  def initialViewModel(startupData: Unit): MyGameModel => MyViewModel =
-    _ =>
-      MyViewModel(
-        button = Button(
-          buttonAssets = buttonAssets,
-          bounds = Rectangle(10, 10, 16, 16),
-          depth = Depth(2)
-        ).withUpAction {
-          List(MyButtonEvent)
-        }
-      )
 
   def updateViewModel(context: FrameContext, model: MyGameModel, viewModel: MyViewModel): Outcome[MyViewModel] =
     viewModel.button.update(context.inputState.mouse).map { btn =>

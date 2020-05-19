@@ -87,7 +87,7 @@ trait IndigoGame[StartupData, Model, ViewModel] extends GameLauncher {
     * @param startupData Access to Startup data in case you need it for the view model
     * @return An instance of your game's view model
     */
-  def initialViewModel(startupData: StartupData): Model => ViewModel
+  def initialViewModel(startupData: StartupData, model: Model): ViewModel
 
   private def indigoGame: GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel] = {
     val sceneManager: SceneManager[Model, ViewModel] =
@@ -112,7 +112,7 @@ trait IndigoGame[StartupData, Model, ViewModel] extends GameLauncher {
       animations,
       (ac: AssetCollection) => (d: Dice) => (flags: Map[String, String]) => setup(ac, d, flags),
       (sd: StartupData) => new GameWithSubSystems(initialModel(sd), new SubSystemsRegister(subSystems.toList)),
-      (sd: StartupData) => (m: GameWithSubSystems[Model]) => initialViewModel(sd)(m.model),
+      (sd: StartupData) => (m: GameWithSubSystems[Model]) => initialViewModel(sd, m.model),
       frameProcessor
     )
   }

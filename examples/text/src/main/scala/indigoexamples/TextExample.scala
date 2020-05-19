@@ -29,7 +29,7 @@ object TextExample extends IndigoSandbox[Unit, Model] {
   def initialModel(startupData: Unit): Model =
     Model(RGBA.None)
 
-  def update(context: FrameContext, model: Model): GlobalEvent => Outcome[Model] = {
+  def updateModel(context: FrameContext, model: Model): GlobalEvent => Outcome[Model] = {
     case ChangeColour =>
       Outcome(model.changeTint(context.dice))
 

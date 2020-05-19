@@ -29,24 +29,23 @@ object AudioExample extends IndigoDemo[Unit, Unit, Button] {
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] = {
+  def initialViewModel(startupData: Unit, model: Unit): Button =
+    Button(
+      buttonAssets = ButtonAssets(
+        up = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 0, 16, 16),
+        over = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 16, 16, 16),
+        down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 32, 16, 16)
+      ),
+      bounds = Rectangle(10, 10, 16, 16),
+      depth = Depth(2)
+    ).withUpAction {
+      List(PlaySound(AssetName("bounce"), Volume.Max))
+    }
+
+  def updateModel(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] = {
     case _ =>
       Outcome(model)
   }
-
-  def initialViewModel(startupData: Unit): Unit => Button =
-    _ =>
-      Button(
-        buttonAssets = ButtonAssets(
-          up = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 0, 16, 16),
-          over = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 16, 16, 16),
-          down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 32, 16, 16)
-        ),
-        bounds = Rectangle(10, 10, 16, 16),
-        depth = Depth(2)
-      ).withUpAction {
-        List(PlaySound(AssetName("bounce"), Volume.Max))
-      }
 
   def updateViewModel(context: FrameContext, model: Unit, viewModel: Button): Outcome[Button] =
     viewModel.update(context.inputState.mouse)

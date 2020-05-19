@@ -27,7 +27,7 @@ trait IndigoSandbox[StartupData, Model] extends GameLauncher {
 
   def initialModel(startupData: StartupData): Model
 
-  def update(context: FrameContext, model: Model): GlobalEvent => Outcome[Model]
+  def updateModel(context: FrameContext, model: Model): GlobalEvent => Outcome[Model]
 
   def present(context: FrameContext, model: Model): SceneUpdateFragment
 
@@ -38,7 +38,7 @@ trait IndigoSandbox[StartupData, Model] extends GameLauncher {
 
     val frameProcessor: StandardFrameProcessor[Model, Unit] =
       new StandardFrameProcessor(
-        (ctx, m) => (e: GlobalEvent) => update(ctx, m)(e),
+        (ctx, m) => (e: GlobalEvent) => updateModel(ctx, m)(e),
         updateViewModel,
         (ctx, m, _) => present(ctx, m)
       )

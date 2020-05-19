@@ -53,7 +53,25 @@ object WebSocketExample extends IndigoDemo[MySetupData, Unit, MyViewModel] {
   def initialModel(startupData: MySetupData): Unit =
     ()
 
-  def update(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] = {
+  def initialViewModel(startupData: MySetupData, model: Unit): MyViewModel =
+    MyViewModel(
+      ping = Button(
+        buttonAssets = buttonAssets,
+        bounds = Rectangle(10, 32, 16, 16),
+        depth = Depth(2)
+      ).withUpAction {
+        List(WebSocketEvent.ConnectOnly(startupData.pingSocket))
+      },
+      echo = Button(
+        buttonAssets = buttonAssets,
+        bounds = Rectangle(10, 32, 16, 16),
+        depth = Depth(2)
+      ).withUpAction {
+        List(WebSocketEvent.Send("Hello!", startupData.echoSocket))
+      }
+    )
+
+  def updateModel(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] = {
     case WebSocketEvent.Receive(WebSocketId("ping"), message) =>
       println("Message from Server: " + message)
       Outcome(model)
@@ -73,25 +91,6 @@ object WebSocketExample extends IndigoDemo[MySetupData, Unit, MyViewModel] {
     case _ =>
       Outcome(model)
   }
-
-  def initialViewModel(startupData: MySetupData): Unit => MyViewModel =
-    _ =>
-      MyViewModel(
-        ping = Button(
-          buttonAssets = buttonAssets,
-          bounds = Rectangle(10, 32, 16, 16),
-          depth = Depth(2)
-        ).withUpAction {
-          List(WebSocketEvent.ConnectOnly(startupData.pingSocket))
-        },
-        echo = Button(
-          buttonAssets = buttonAssets,
-          bounds = Rectangle(10, 32, 16, 16),
-          depth = Depth(2)
-        ).withUpAction {
-          List(WebSocketEvent.Send("Hello!", startupData.echoSocket))
-        }
-      )
 
   def updateViewModel(context: FrameContext, model: Unit, viewModel: MyViewModel): Outcome[MyViewModel] =
     (viewModel.ping.update(context.inputState.mouse) |+| viewModel.echo.update(context.inputState.mouse)).map {

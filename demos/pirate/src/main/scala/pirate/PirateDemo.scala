@@ -37,11 +37,11 @@ object PirateDemo extends IndigoDemo[StartupData, Model, ViewModel] {
   def initialModel(startupData: StartupData): Model =
     Model.initialModel(config.screenDimensions)
 
-  def update(context: FrameContext, model: Model): GlobalEvent => Outcome[Model] =
-    Model.update(context.gameTime, model, context.inputState, config.screenDimensions)
+  def initialViewModel(startupData: StartupData, model: Model): ViewModel =
+    ViewModel.initialViewModel(startupData, config.screenDimensions)
 
-  def initialViewModel(startupData: StartupData): Model => ViewModel =
-    _ => ViewModel.initialViewModel(startupData, config.screenDimensions)
+  def updateModel(context: FrameContext, model: Model): GlobalEvent => Outcome[Model] =
+    Model.update(context.gameTime, model, context.inputState, config.screenDimensions)
 
   def updateViewModel(context: FrameContext, model: Model, viewModel: ViewModel): Outcome[ViewModel] =
     Outcome(viewModel)

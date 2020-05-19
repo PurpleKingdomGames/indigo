@@ -35,7 +35,19 @@ object AssetLoadingExample extends IndigoDemo[Unit, MyGameModel, MyViewModel] {
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(loaded = false)
 
-  def update(context: FrameContext, model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
+  def initialViewModel(startupData: Unit, model: MyGameModel): MyViewModel =
+    MyViewModel(
+      button = Button(
+        buttonAssets = Assets.buttonAssets,
+        bounds = Rectangle(10, 10, 16, 16),
+        depth = Depth(2)
+      ).withUpAction {
+        println("Start loading assets...")
+        List(AssetBundleLoaderEvent.Load(BindingKey("Junction box assets"), Assets.junctionboxImageAssets ++ Assets.otherAssetsToLoad))
+      }
+    )
+
+  def updateModel(context: FrameContext, model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
     case AssetBundleLoaderEvent.Started(key) =>
       println("Load started! " + key.toString())
       Outcome(model)
@@ -55,19 +67,6 @@ object AssetLoadingExample extends IndigoDemo[Unit, MyGameModel, MyViewModel] {
     case _ =>
       Outcome(model)
   }
-
-  def initialViewModel(startupData: Unit): MyGameModel => MyViewModel =
-    _ =>
-      MyViewModel(
-        button = Button(
-          buttonAssets = Assets.buttonAssets,
-          bounds = Rectangle(10, 10, 16, 16),
-          depth = Depth(2)
-        ).withUpAction {
-          println("Start loading assets...")
-          List(AssetBundleLoaderEvent.Load(BindingKey("Junction box assets"), Assets.junctionboxImageAssets ++ Assets.otherAssetsToLoad))
-        }
-      )
 
   def updateViewModel(context: FrameContext, model: MyGameModel, viewModel: MyViewModel): Outcome[MyViewModel] =
     viewModel.button.update(context.inputState.mouse).map { btn =>

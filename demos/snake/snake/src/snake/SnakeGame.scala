@@ -43,8 +43,8 @@ object SnakeGame extends IndigoGame[SnakeStartupData, SnakeGameModel, SnakeViewM
   def initialModel(startupData: SnakeStartupData): SnakeGameModel =
     SnakeGameModel.initialModel(startupData, ControlScheme.directedKeys)
 
-  def initialViewModel(startupData: SnakeStartupData): SnakeGameModel => SnakeViewModel =
-    m => SnakeViewModel.initialViewModel(startupData, m)
+  def initialViewModel(startupData: SnakeStartupData, model: SnakeGameModel): SnakeViewModel =
+    SnakeViewModel.initialViewModel(startupData, model)
 
   def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, SnakeStartupData] =
     SnakeStartupData.initialise(config.viewport, Settings.gridSize)

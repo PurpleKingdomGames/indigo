@@ -37,7 +37,7 @@ object EffectsExample extends IndigoSandbox[Unit, Unit] {
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def update(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] =
+  def updateModel(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(())
 
   val graphic: Graphic =

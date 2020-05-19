@@ -39,8 +39,8 @@ object ScenesSetup extends IndigoGame[StartUpData, GameModel, Unit] {
       sceneB = MessageB(startupData.messageB)
     )
 
-  def initialViewModel(startupData: StartUpData): GameModel => Unit =
-    _ => ()
+  def initialViewModel(startupData: StartUpData, model: GameModel): Unit =
+    ()
 }
 
 final case class StartUpData(messageA: String, messageB: String)

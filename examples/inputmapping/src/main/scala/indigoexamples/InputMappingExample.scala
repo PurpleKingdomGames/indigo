@@ -39,7 +39,10 @@ object InputMappingExample extends IndigoDemo[Unit, GameModel, Unit] {
   def initialModel(startupData: Unit): GameModel =
     GameModel(None)
 
-  def update(context: FrameContext, model: GameModel): GlobalEvent => Outcome[GameModel] = {
+  def initialViewModel(startupData: Unit, model: GameModel): Unit =
+    ()
+
+  def updateModel(context: FrameContext, model: GameModel): GlobalEvent => Outcome[GameModel] = {
     case KeyboardEvent.KeyDown(Keys.KEY_A) =>
       println("Added Down Arrow input mapping")
       Outcome(model).addGlobalEvents(
@@ -63,9 +66,6 @@ object InputMappingExample extends IndigoDemo[Unit, GameModel, Unit] {
     case _ =>
       Outcome(model)
   }
-
-  def initialViewModel(startupData: Unit): GameModel => Unit =
-    _ => ()
 
   def updateViewModel(context: FrameContext, model: GameModel, viewModel: Unit): Outcome[Unit] =
     Outcome(())

@@ -25,22 +25,20 @@ object InputFieldExample extends IndigoDemo[Unit, Unit, MyViewModel] {
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def initialViewModel(startupData: Unit): Unit => MyViewModel =
-    _ => {
-
-      val assets =
-        InputFieldAssets(
-          Text("placeholder", 0, 0, 0, FontStuff.fontKey).alignLeft,
-          Graphic(0, 0, 16, 16, 2, Material.Textured(FontStuff.fontName)).withCrop(188, 78, 14, 23).withTint(0, 0, 1)
-        )
-
-      MyViewModel(
-        InputField("Single line", assets).makeSingleLine.moveTo(Point(10, 10)),
-        InputField("Multi\nline", assets).makeMultiLine.moveTo(Point(10, 50))
+  def initialViewModel(startupData: Unit, model: Unit): MyViewModel = {
+    val assets =
+      InputFieldAssets(
+        Text("placeholder", 0, 0, 0, FontStuff.fontKey).alignLeft,
+        Graphic(0, 0, 16, 16, 2, Material.Textured(FontStuff.fontName)).withCrop(188, 78, 14, 23).withTint(0, 0, 1)
       )
-    }
 
-  def update(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] =
+    MyViewModel(
+      InputField("Single line", assets).makeSingleLine.moveTo(Point(10, 10)),
+      InputField("Multi\nline", assets).makeMultiLine.moveTo(Point(10, 50))
+    )
+  }
+
+  def updateModel(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
 
   def updateViewModel(context: FrameContext, model: Unit, viewModel: MyViewModel): Outcome[MyViewModel] =
