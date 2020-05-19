@@ -14,8 +14,8 @@ final class SubSystemsRegister(subSystems: List[SubSystem]) {
   val registeredSubSystems: ListBuffer[SubSystem] = ListBuffer.from(subSystems)
 
   @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
-  def update(frameContext: FrameContext): GlobalEvent => Outcome[SubSystemsRegister] = {
-    case e: GlobalEvent =>
+  def update(frameContext: FrameContext): GlobalEvent => Outcome[SubSystemsRegister] =
+    (e: GlobalEvent) => {
       registeredSubSystems.toList
         .map { ss =>
           ss.eventFilter(e)
@@ -28,10 +28,7 @@ final class SubSystemsRegister(subSystems: List[SubSystem]) {
           registeredSubSystems ++= l
           this
         }
-
-    case _ =>
-      Outcome(this)
-  }
+    }
 
   def render(frameContext: FrameContext): SceneUpdateFragment =
     registeredSubSystems.map(_.render(frameContext)).foldLeft(SceneUpdateFragment.empty)(_ |+| _)

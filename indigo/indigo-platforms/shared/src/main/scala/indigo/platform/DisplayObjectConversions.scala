@@ -184,7 +184,7 @@ object DisplayObjectConversions {
             fontRegister
               .findByFontKey(x.fontKey)
               .map { fontInfo =>
-                DisplayObjectConversions.textLineToDisplayObjects(boundaryLocator, x, assetMapping, fontInfo)
+                DisplayObjectConversions.textLineToDisplayObjects(x, assetMapping, fontInfo)
               }
               .getOrElse { (_, _, _) =>
                 IndigoLogger.errorOnce(s"Cannot render Text, missing Font with key: ${x.fontKey.toString()}")
@@ -338,7 +338,7 @@ object DisplayObjectConversions {
     )
   }
 
-  def textLineToDisplayObjects(boundaryLocator: BoundaryLocator, leaf: Text, assetMapping: AssetMapping, fontInfo: FontInfo): (TextLine, Int, Int) => List[DisplayObject] =
+  def textLineToDisplayObjects(leaf: Text, assetMapping: AssetMapping, fontInfo: FontInfo): (TextLine, Int, Int) => List[DisplayObject] =
     (line, alignmentOffsetX, yOffset) => {
 
       val lineHash: String =
@@ -346,7 +346,7 @@ object DisplayObjectConversions {
           ":" + line.hash +
           ":" + alignmentOffsetX.toString() +
           ":" + yOffset.toString() +
-          ":" + leaf.bounds(boundaryLocator).hash +
+          ":" + leaf.position.hash +
           ":" + leaf.rotation.hash +
           ":" + leaf.scale.hash +
           ":" + fontInfo.fontSpriteSheet.material.hash +

@@ -7,7 +7,11 @@ import indigo.shared.time.Seconds
 sealed trait AutomataEvent extends GlobalEvent
 object AutomataEvent {
   final case class Spawn(key: AutomataPoolKey, at: Point, lifeSpan: Option[Seconds], payload: Option[AutomatonPayload]) extends AutomataEvent
-  final case class KillAllInPool(key: AutomataPoolKey)                                                                 extends AutomataEvent
-  case object KillAll                                                                                                  extends AutomataEvent
-  case object Cull                                                                                                     extends AutomataEvent
+  object Spawn {
+    def apply(key: AutomataPoolKey, at: Point): Spawn =
+      Spawn(key, at, None, None)
+  }
+  final case class KillAllInPool(key: AutomataPoolKey) extends AutomataEvent
+  case object KillAll                                  extends AutomataEvent
+  case object Cull                                     extends AutomataEvent
 }

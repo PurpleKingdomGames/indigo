@@ -2,6 +2,7 @@ package indigo.shared.datatypes
 
 import indigo.shared.{AsString, EqualTo}
 import indigo.shared.EqualTo._
+import indigo.shared.AsString._
 
 final class Point(val x: Int, val y: Int) {
   def +(pt: Point): Point = Point(x + pt.x, y + pt.y)
@@ -36,9 +37,11 @@ final class Point(val x: Int, val y: Int) {
 
   @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
   override def equals(obj: Any): Boolean =
-    if(obj.isInstanceOf[Point]) {
-       this === obj.asInstanceOf[Point]
-    } else false
+    if (obj.isInstanceOf[Point])
+      this === obj.asInstanceOf[Point]
+    else false
+
+  val hash: String = s"${x.show}${y.show}"
 }
 
 object Point {
