@@ -110,7 +110,7 @@ object BoundaryLocatorTests extends TestSuite {
       FontChar("c", 32, 16, 16, 16)
     )
 
-    val fontKey = FontKey("test1")
+    val fontKey = FontKey("boundary locator tests")
 
     val fontInfo = FontInfo(fontKey, material, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
 
