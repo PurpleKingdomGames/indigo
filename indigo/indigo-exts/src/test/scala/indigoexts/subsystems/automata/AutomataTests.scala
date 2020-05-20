@@ -53,13 +53,11 @@ object AutomataTests extends TestSuite {
         import ModiferFunctions._
 
         // Test the signal
-        val seed1 = new AutomatonSeedValues(Point.zero, Seconds.zero, Seconds(1), Seconds(0.0), 0, None)
-        val seed2 = new AutomatonSeedValues(Point.zero, Seconds.zero, Seconds(1), Seconds(0.5), 0, None)
-        val seed3 = new AutomatonSeedValues(Point.zero, Seconds.zero, Seconds(1), Seconds(1.0), 0, None)
+        val seed = new AutomatonSeedValues(Point.zero, Seconds.zero, Seconds(1), 0, None)
 
-        (input(seed1) |> mapSeedToPosition).at(Seconds(0)) ==> Point(0, 0)
-        (input(seed2) |> mapSeedToPosition).at(Seconds(0.5)) ==> Point(0, -15)
-        (input(seed3) |> mapSeedToPosition).at(Seconds(1)) ==> Point(0, -30)
+        makePosition(seed).at(Seconds(0)) ==> Point(0, 0)
+        makePosition(seed).at(Seconds(0.5)) ==> Point(0, -15)
+        makePosition(seed).at(Seconds(1)) ==> Point(0, -30)
 
         // Test the automaton
         def drawAt(time: Seconds): Graphic = {
@@ -96,21 +94,19 @@ object AutomataTests extends TestSuite {
 
   object ModiferFunctions {
 
-    val input: AutomatonSeedValues => Signal[AutomatonSeedValues] =
-      seedValues => Signal.fixed(seedValues)
-
-    val mapSeedToPosition: SignalFunction[AutomatonSeedValues, Point] =
-      SignalFunction { seed =>
-        seed.spawnedAt +
-          Point(
-            0,
-            -(30d * seed.progression).toInt
-          )
-      }
+    val makePosition: AutomatonSeedValues => Signal[Point] =
+      seed =>
+        Signal { time =>
+          seed.spawnedAt +
+            Point(
+              0,
+              -(30d * seed.progression(time)).toInt
+            )
+        }
 
     val signal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
       (seed, sceneGraphNode) =>
-        (input(seed) |> mapSeedToPosition).map { position =>
+        makePosition(seed).map { position =>
           AutomatonUpdate(
             sceneGraphNode match {
               case g: Graphic =>

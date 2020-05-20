@@ -23,31 +23,26 @@ object Score {
 
   object ModiferFunctions {
 
-    val input: AutomatonSeedValues => Signal[AutomatonSeedValues] =
-      seedValues => Signal.fixed(seedValues)
-
-    val mapSeedToPosition: SignalFunction[AutomatonSeedValues, Point] =
-      SignalFunction { seed =>
-        seed.spawnedAt +
-          Point(
-            0,
-            -(30d * (seed.timeAliveDelta.toDouble / seed.lifeSpan.toDouble)).toInt
-          )
-      }
+    val workOutPosition: AutomatonSeedValues => Signal[Point] =
+      seed =>
+        Signal { time =>
+          seed.spawnedAt +
+            Point(
+              0,
+              -(30d * (seed.progression(time))).toInt
+            )
+        }
 
     val signal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
       (seed, sceneGraphNode) =>
-        (input(seed) |> mapSeedToPosition).map { position =>
-          AutomatonUpdate(
-            sceneGraphNode match {
-              case t: Text =>
-                List(t.moveTo(position))
+        sceneGraphNode match {
+          case t: Text =>
+            workOutPosition(seed).map { position =>
+              AutomatonUpdate(List(t.moveTo(position)), Nil)
+            }
 
-              case _ =>
-                Nil
-            },
-            Nil
-          )
+          case _ =>
+            Signal.fixed(AutomatonUpdate.empty)
         }
 
   }

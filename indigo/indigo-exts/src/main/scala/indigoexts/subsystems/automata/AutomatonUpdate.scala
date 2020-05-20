@@ -8,6 +8,12 @@ final class AutomatonUpdate(val nodes: List[SceneGraphNode], val events: List[Gl
   def |+|(other: AutomatonUpdate): AutomatonUpdate =
     AutomatonUpdate(nodes ++ other.nodes, events ++ other.events)
 
+  def addGlobalEvents(newEvents: GlobalEvent*): AutomatonUpdate =
+    addGlobalEvents(newEvents.toList)
+
+  def addGlobalEvents(newEvents: List[GlobalEvent]): AutomatonUpdate =
+    new AutomatonUpdate(nodes, events ++ newEvents)
+
 }
 
 object AutomatonUpdate {
@@ -18,7 +24,10 @@ object AutomatonUpdate {
   def apply(nodes: List[SceneGraphNode], events: List[GlobalEvent]): AutomatonUpdate =
     new AutomatonUpdate(nodes, events)
 
-  def withNodes(nodes: SceneGraphNode*): AutomatonUpdate =
+  def apply(nodes: SceneGraphNode*): AutomatonUpdate =
     new AutomatonUpdate(nodes.toList, Nil)
+
+  def apply(nodes: List[SceneGraphNode]): AutomatonUpdate =
+    new AutomatonUpdate(nodes, Nil)
 
 }

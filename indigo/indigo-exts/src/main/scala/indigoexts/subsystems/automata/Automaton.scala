@@ -28,13 +28,13 @@ object Automaton {
       Signal.fixed(
         n match {
           case r: Renderable =>
-            AutomatonUpdate.withNodes(r.moveTo(sa.spawnedAt))
+            AutomatonUpdate(r.moveTo(sa.spawnedAt))
 
           case c: Clone =>
-            AutomatonUpdate.withNodes(c.withTransforms(sa.spawnedAt, c.rotation, c.scale, c.alpha, c.flipHorizontal, c.flipVertical))
+            AutomatonUpdate(c.withTransforms(sa.spawnedAt, c.rotation, c.scale, c.alpha, c.flipHorizontal, c.flipVertical))
 
           case _ =>
-            AutomatonUpdate.withNodes(n)
+            AutomatonUpdate(n)
         }
       )
     }

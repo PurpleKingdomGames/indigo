@@ -29,7 +29,7 @@ object Score {
   object ModiferFunctions {
 
     val multiplierS: AutomatonSeedValues => Signal[Double] =
-      seed => Signal.fixed(seed.timeAliveDelta.toDouble / seed.lifeSpan.toDouble)
+      seed => Signal(seed.progression)
 
     val spawnPositionS: AutomatonSeedValues => Signal[Point] =
       seed => Signal.fixed(seed.spawnedAt)
@@ -71,7 +71,7 @@ object Score {
               case Some(ScoreAmount(score)) =>
                 Signal.triple(newPosition(seed), newAlpha(seed, t), newTint(seed)).map {
                   case (position, alpha, tint) =>
-                    AutomatonUpdate.withNodes(
+                    AutomatonUpdate(
                       t.moveTo(position)
                         .withAlpha(alpha)
                         .withTint(tint)
@@ -79,7 +79,7 @@ object Score {
                     )
                 }
               case _ =>
-                Signal.fixed(AutomatonUpdate.withNodes(sceneGraphNode))
+                Signal.fixed(AutomatonUpdate(sceneGraphNode))
             }
 
           case _ =>

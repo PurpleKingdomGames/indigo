@@ -67,14 +67,12 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
   // Text / Fonts
 
   private def textLineBounds(lineText: String, fontInfo: FontInfo): Rectangle =
-    QuickCache(s"""line-bounds-${fontInfo.fontKey.key}-$lineText""") {
-      lineText
-        .toCharArray()
-        .map(c => fontInfo.findByCharacter(c).bounds)
-        .foldLeft(Rectangle.zero) { (acc, curr) =>
-          Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height))
-        }
-    }
+    lineText
+      .toCharArray()
+      .map(c => fontInfo.findByCharacter(c).bounds)
+      .foldLeft(Rectangle.zero) { (acc, curr) =>
+        Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height))
+      }
 
   def textAsLinesWithBounds(text: String, fontKey: FontKey): List[TextLine] =
     QuickCache(s"""text-lines-${fontKey.key}-${text}""") {

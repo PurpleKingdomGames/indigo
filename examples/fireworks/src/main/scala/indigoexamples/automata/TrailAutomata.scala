@@ -32,7 +32,7 @@ object TrailAutomata {
 
     def present(r: Graphic, position: Point, tint: RGBA): SignalFunction[Double, AutomatonUpdate] =
       SignalFunction { alpha =>
-        AutomatonUpdate.withNodes(
+        AutomatonUpdate(
           r.moveTo(position)
             .withAlpha(alpha)
             .withTint(tint)

@@ -10,17 +10,19 @@ import indigoexts.subsystems.automata.Automata.Layer
 import indigo.shared.EqualTo._
 import indigo.shared.datatypes.RGBA
 import scala.collection.mutable
-import indigo.shared.time.Seconds
 import indigo.shared.FrameContext
 
-final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val layer: Layer, maxPoolSize: Option[Int], val pool: List[SpawnedAutomaton]) extends SubSystem {
+final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val layer: Layer, maxPoolSize: Option[Int]) extends SubSystem {
   type EventType = AutomataEvent
+
+  val pool: mutable.ListBuffer[SpawnedAutomaton] =
+    new mutable.ListBuffer()
 
   def liveAutomataCount: Int =
     pool.size
 
   def withMaxPoolSize(limit: Int): Automata =
-    new Automata(poolKey, automaton, layer, Option(limit), pool)
+    new Automata(poolKey, automaton, layer, Option(limit))
 
   val eventFilter: GlobalEvent => Option[AutomataEvent] = {
     case e: AutomataEvent =>
@@ -33,7 +35,7 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
       None
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def update(frameContext: FrameContext): AutomataEvent => Outcome[Automata] = {
     case Spawn(key, position, lifeSpan, payload) if key === poolKey =>
       val spawned =
@@ -43,56 +45,47 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
             position,
             frameContext.gameTime.running,
             lifeSpan.getOrElse(automaton.lifespan),
-            Seconds.zero,
             frameContext.dice.roll,
             payload
           )
         )
 
-      val newPool: List[SpawnedAutomaton] =
-        maxPoolSize match {
-          case None =>
-            pool :+ spawned
+      maxPoolSize match {
+        case None =>
+          pool.append(spawned)
 
-          case Some(limit) if pool.length < limit =>
-            pool :+ spawned
+        case Some(limit) if pool.length < limit =>
+          pool.append(spawned)
 
-          case Some(limit) if pool.length === limit =>
-            pool.drop(1) :+ spawned
+        case Some(limit) if pool.length === limit =>
+          pool.drop(1).append(spawned)
 
-          case Some(limit) =>
-            pool.drop(limit - pool.length + 1) :+ spawned
+        case Some(limit) =>
+          pool.drop(limit - pool.length + 1).append(spawned)
+      }
 
-        }
-
-      Outcome(new Automata(poolKey, automaton, layer, maxPoolSize, newPool))
-
-    case KillAllInPool(key) if key === poolKey =>
-      Outcome(Automata(poolKey, automaton, layer))
+      Outcome(this)
 
     case KillAll =>
-      Outcome(Automata(poolKey, automaton, layer))
+      pool.clear()
+      Outcome(this)
 
     case Cull => // AKA: Update.
-      val (l, r) =
-        pool.partition(_.isAlive(frameContext.gameTime.running))
+      val cullEvents = pool
+        .filterNot(_.isAlive(frameContext.gameTime.running))
+        .toList
+        .flatMap(sa => sa.automaton.onCull(sa.seedValues))
 
-      Outcome(
-        new Automata(
-          poolKey,
-          automaton,
-          layer,
-          maxPoolSize,
-          l.map(_.updateDelta(frameContext.gameTime.delta))
-        )
-      ).addGlobalEvents(r.flatMap(sa => sa.automaton.onCull(sa.seedValues)))
+      pool.filterInPlace(_.isAlive(frameContext.gameTime.running))
+
+      Outcome(this).addGlobalEvents(cullEvents)
 
     case _ =>
       Outcome(this)
   }
 
   def render(frameContext: FrameContext): SceneUpdateFragment =
-    Automata.render(this, frameContext.gameTime)
+    layer.emptyScene(Automata.renderNoLayer(this, frameContext.gameTime))
 }
 object Automata {
 
@@ -150,10 +143,7 @@ object Automata {
   }
 
   def apply(poolKey: AutomataPoolKey, automaton: Automaton, layer: Layer): Automata =
-    new Automata(poolKey, automaton, layer, None, Nil)
-
-  def render(farm: Automata, gameTime: GameTime): SceneUpdateFragment =
-    farm.layer.emptyScene(renderNoLayer(farm, gameTime))
+    new Automata(poolKey, automaton, layer, None)
 
   private val nodes: mutable.ListBuffer[SceneGraphNode] = new mutable.ListBuffer
   private val events: mutable.ListBuffer[GlobalEvent]   = new mutable.ListBuffer
