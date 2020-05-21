@@ -92,8 +92,6 @@ const animations = [
   new indigo.Animation(
       'traffic-lights',
       new indigo.Textured(spriteName, false),
-      128,
-      128,
       cycles,
   ),
 ];
@@ -124,10 +122,10 @@ const initialViewModel = function(startupData, gameModel) {
   };
 };
 
-const updateModel = function(gameTime, model, inputState, dice) {
+const updateModel = function(frameContext, model) {
   return function(event) {
     if (!model.hasRun) {
-      console.log(gameTime.running);
+      console.log(frameContext.gameTime.running);
       console.log('Has run? ' + model.hasRun);
       model.hasRun = true;
       console.log('Has now? ' + model.hasRun);
@@ -138,17 +136,17 @@ const updateModel = function(gameTime, model, inputState, dice) {
 };
 
 const updateViewModel =
-  function(gameTime, model, viewModel, inputState, dice) {
+  function(frameContext, model, viewModel) {
     if (viewModel.num == -1) {
       console.log('Before: ' + viewModel.num);
-      viewModel.num = dice.roll(6);
+      viewModel.num = frameContext.dice.roll(6);
       console.log('After : ' + viewModel.num);
     }
 
     return indigo.OutcomeHelper.of(viewModel);
   };
 
-const present = function(gameTime, model, viewModel, inputState) {
+const present = function(frameContext, model, viewModel) {
   return indigo.SceneUpdateFragmentHelper.empty
       .addGameLayerNodes(
           [
@@ -168,7 +166,7 @@ const present = function(gameTime, model, viewModel, inputState) {
                 },
             ),
             new indigo.Graphic(
-                new indigo.Rectangle(200, 200, 256, 256),
+                new indigo.Point(200, 200),
                 1,
                 0,
                 1,
