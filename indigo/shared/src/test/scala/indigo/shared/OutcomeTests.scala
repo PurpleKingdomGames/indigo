@@ -198,14 +198,12 @@ object OutcomeTests extends TestSuite {
           actual === expected ==> true
         }
 
-        "map2" - {
-          import indigo.shared.abstractions.syntax._
-
+        "map2 / merge" - {
           val oa = Outcome("count").addGlobalEvents(TestEvent("x"))
           val ob = Outcome(1).addGlobalEvents(TestEvent("y"), TestEvent("z"))
 
           val actual: Outcome[String] =
-            (oa, ob).map2((a, b) => a + ": " + b)
+            Outcome.merge(oa, ob)((a: String, b: Int) => a + ": " + b)
 
           val expected: Outcome[String] =
             Outcome("count: 1").addGlobalEvents(TestEvent("x"), TestEvent("y"), TestEvent("z"))

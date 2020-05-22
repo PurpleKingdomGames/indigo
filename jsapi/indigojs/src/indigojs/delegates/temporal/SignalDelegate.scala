@@ -42,11 +42,11 @@ final class SignalDelegate(val f: js.Function1[Double, _]) extends AnyVal {
 
   @JSExport
   def map(f: js.Any => js.Any): SignalDelegate =
-    convert(Signal.monadSignal.map(this.toInternal)(a => f(a.asInstanceOf[js.Any])))
+    convert(this.toInternal.map(a => f(a.asInstanceOf[js.Any])))
 
   @JSExport
   def flatMap(f: js.Any => SignalDelegate): SignalDelegate =
-    convert(Signal.monadSignal.flatMap(this.toInternal)(a => f(a.asInstanceOf[js.Any]).toInternal))
+    convert(this.toInternal.flatMap(a => f(a.asInstanceOf[js.Any]).toInternal))
 
   def toInternal: Signal[Any] =
     Signal(t => f(t.value.toDouble))

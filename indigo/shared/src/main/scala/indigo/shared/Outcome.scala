@@ -1,6 +1,5 @@
 package indigo.shared
 
-import indigo.shared.abstractions.Monad
 import indigo.shared.events.GlobalEvent
 
 import scala.annotation.tailrec
@@ -34,6 +33,9 @@ final class Outcome[+A](val state: A, val globalEvents: List[GlobalEvent]) {
   def ap[B](of: Outcome[A => B]): Outcome[B] =
     apState(of)
 
+  def merge[B, C](other: Outcome[B])(f: (A, B) => C): Outcome[C] =
+    Outcome.merge(this, other)(f)
+
   def |+|[B](other: Outcome[B]): Outcome[(A, B)] =
     Outcome.combine(this, other)
 
@@ -59,27 +61,6 @@ object Outcome {
   @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   implicit val eqGlobalEvent: EqualTo[GlobalEvent] =
     EqualTo.create(_ == _)
-
-  implicit val monad: Monad[Outcome] =
-    new Monad[Outcome] {
-
-      def pure[A](a: A): Outcome[A] =
-        Outcome.pure(a)
-
-      def map[A, B](fa: Outcome[A])(f: A => B): Outcome[B] =
-        Outcome.mapState(fa)(f)
-
-      def ap[A, B](fa: Outcome[A])(f: Outcome[A => B]): Outcome[B] =
-        Outcome.apState(fa)(f)
-
-      // ap2 is defined in Apply, but Outcome has a particular implementation of it to preserve events.
-      override def ap2[A, B, C](fa: Outcome[A], fb: Outcome[B])(f: Outcome[(A, B) => C]): Outcome[C] =
-        Outcome.ap2State(fa, fb)(f)
-
-      def flatMap[A, B](fa: Outcome[A])(f: A => Outcome[B]): Outcome[B] =
-        Outcome.flatMapState(fa)(f)
-
-    }
 
   implicit def eq[A](implicit eqA: EqualTo[A], eqE: EqualTo[List[GlobalEvent]]): EqualTo[Outcome[A]] =
     EqualTo.create { (a, b) =>
@@ -138,6 +119,9 @@ object Outcome {
 
   def ap2State[A, B, C](oa: Outcome[A], ob: Outcome[B])(of: Outcome[(A, B) => C]): Outcome[C] =
     apState(combine(oa, ob))(of.mapState(f => (t: (A, B)) => f.curried(t._1)(t._2)))
+
+  def merge[A, B, C](oa: Outcome[A], ob: Outcome[B])(f: (A, B) => C): Outcome[C] =
+    oa.flatMap(a => ob.map(b => (a, b))).map(p => f(p._1, p._2))
 
   def combine[A, B](oa: Outcome[A], ob: Outcome[B]): Outcome[(A, B)] =
     Outcome((oa.state, ob.state)).addGlobalEvents(oa.globalEvents ++ ob.globalEvents)

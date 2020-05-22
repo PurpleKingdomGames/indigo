@@ -4,7 +4,6 @@ import indigo.GlobalEvent
 import indigo.Outcome
 import indigo.SceneUpdateFragment
 import indigoexts.subsystems.SubSystemsRegister
-import indigo.shared.abstractions.syntax._
 import indigo.shared.FrameContext
 
 final class GameWithSubSystems[Model](val model: Model, val subSystemsRegister: SubSystemsRegister)
@@ -13,10 +12,7 @@ object GameWithSubSystems {
   def update[Model](
       modelUpdate: (FrameContext, Model) => GlobalEvent => Outcome[Model]
   ): (FrameContext, GameWithSubSystems[Model]) => GlobalEvent => Outcome[GameWithSubSystems[Model]] =
-    (frameContext, model) =>
-      e =>
-        (modelUpdate(frameContext, model.model)(e), model.subSystemsRegister.update(frameContext)(e))
-          .map2((m, s) => new GameWithSubSystems(m, s))
+    (frameContext, model) => e => Outcome.merge(modelUpdate(frameContext, model.model)(e), model.subSystemsRegister.update(frameContext)(e)) { case (m, s) => new GameWithSubSystems(m, s) }
 
   def updateViewModel[Model, ViewModel](
       viewModelUpdate: (FrameContext, Model, ViewModel) => Outcome[ViewModel]

@@ -2,9 +2,6 @@ package indigo.shared.temporal
 
 import indigo.shared.time.Seconds
 import indigo.shared.EqualTo._
-import indigo.shared.abstractions.Monad
-import indigo.shared.abstractions.Functor
-import indigo.shared.abstractions.Apply
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
@@ -18,7 +15,7 @@ final class Signal[A](val f: Seconds => A) extends AnyVal {
     f(t)
 
   def merge[B, C](other: Signal[B])(f: (A, B) => C): Signal[C] =
-    implicitly[Monad[Signal]].apply2(this, other)(f)
+    Signal.merge(this, other)(f)
 
   def |>[B](sf: SignalFunction[A, B]): Signal[B] =
     pipe(sf)
@@ -37,36 +34,22 @@ final class Signal[A](val f: Seconds => A) extends AnyVal {
 
   def affectTime(multiplyBy: Double): Signal[A] =
     Signal.affectTime(this, multiplyBy)
-    
+
   def map[B](f: A => B): Signal[B] =
-    implicitly[Functor[Signal]].map(this)(f)
+    Signal(t => f(at(t)))
 
   def ap[B](f: Signal[A => B]): Signal[B] =
-    implicitly[Apply[Signal]].ap(this)(f)
+    Signal { (t: Seconds) =>
+      f.map { ff =>
+          ff(at(t))
+        }
+        .at(t)
+    }
 
   def flatMap[B](f: A => Signal[B]): Signal[B] =
-    implicitly[Monad[Signal]].flatMap(this)(f)
+    Signal(t => f(at(t)).at(t))
 }
 object Signal {
-
-  implicit val monadSignal: Monad[Signal] =
-    new Monad[Signal] {
-      def pure[A](a: A): Signal[A] =
-        Signal.fixed(a)
-
-      def map[A, B](fa: Signal[A])(f: A => B): Signal[B] =
-        Signal(t => f(fa.at(t)))
-
-      def ap[A, B](fa: Signal[A])(f: Signal[A => B]): Signal[B] =
-        Signal { (t: Seconds) =>
-          map(f) { ff =>
-            ff(fa.at(t))
-          }.at(t)
-        }
-
-      def flatMap[A, B](fa: Signal[A])(f: A => Signal[B]): Signal[B] =
-        Signal(t => f(fa.at(t)).at(t))
-    }
 
   implicit class SignalTuple2ToSignal[A, B](t: (Signal[A], Signal[B])) {
     def toSignal: Signal[(A, B)] =
@@ -137,15 +120,13 @@ object Signal {
 
   def clampTime[A](signal: Signal[A], from: Seconds, to: Seconds): Signal[A] =
     Signal { t =>
-      if (from < to) {
+      if (from < to)
         if (t < from) from
         else if (t > to) to
         else t
-      } else {
-        if (t < to) to
-        else if (t > from) from
-        else t
-      }
+      else if (t < to) to
+      else if (t > from) from
+      else t
     }.map { t =>
       signal.at(t)
     }
@@ -167,7 +148,7 @@ object Signal {
     new Signal[A](f)
 
   def merge[A, B, C](sa: Signal[A], sb: Signal[B])(f: (A, B) => C): Signal[C] =
-    monadSignal.apply2(sa, sb)(f)
+    sa.flatMap(a => sb.map(b => (a, b))).map(p => f(p._1, p._2))
 
   def product[A, B](sa: Signal[A], sb: Signal[B]): Signal[(A, B)] =
     merge(sa, sb)((_, _))

@@ -19,8 +19,6 @@ final class SignalFunction[A, B](val run: Signal[A] => Signal[B]) extends AnyVal
 }
 object SignalFunction {
 
-  import indigo.shared.abstractions.syntax._
-
   def apply[A, B](f: A => B): SignalFunction[A, B] =
     lift(f)
 
@@ -40,6 +38,6 @@ object SignalFunction {
     new SignalFunction(sa.run andThen sb.run)
 
   def parallel[A, B, C](sa: SignalFunction[A, B], sb: SignalFunction[A, C]): SignalFunction[A, (B, C)] =
-    new SignalFunction[A, (B, C)]((s: Signal[A]) => (sa.run(s), sb.run(s)).map2((b, c) => (b, c)))
+    new SignalFunction[A, (B, C)]((s: Signal[A]) => sa.run(s) |*| sb.run(s))
 
 }
