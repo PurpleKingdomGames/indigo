@@ -2,8 +2,8 @@ package indigogame
 
 import indigo._
 import indigo.gameengine.GameEngine
-import indigoexts.subsystems.SubSystem
-import indigoexts.subsystems.SubSystemsRegister
+import indigo.shared.subsystems.SubSystem
+import indigo.shared.subsystems.SubSystemsRegister
 import indigogame.entry.GameWithSubSystems
 import indigogame.entry.StandardFrameProcessor
 

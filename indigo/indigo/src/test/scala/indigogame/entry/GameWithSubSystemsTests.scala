@@ -2,13 +2,13 @@ package indigogame.entry
 
 import utest._
 import indigo.shared.assets.AssetType.Text
-import indigoexts.subsystems.SubSystem
+import indigo.shared.subsystems.SubSystem
 import indigo.shared.events.GlobalEvent
 import indigo.shared.Outcome
 import indigo.shared.dice.Dice
 import indigo.shared.time.GameTime
 import indigo.shared.scenegraph.SceneUpdateFragment
-import indigoexts.subsystems.SubSystemsRegister
+import indigo.shared.subsystems.SubSystemsRegister
 import indigo.shared.events.InputState
 import indigo.shared.BoundaryLocator
 import indigo.shared.AnimationsRegister

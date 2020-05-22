@@ -2,7 +2,7 @@ package pirate.init
 
 import indigo._
 import indigo.json.Json
-import indigoexts.formats._
+import indigoextras.formats._
 
 object InitialLoad {
 

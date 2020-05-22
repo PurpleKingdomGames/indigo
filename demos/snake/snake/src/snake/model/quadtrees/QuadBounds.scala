@@ -2,12 +2,12 @@ package snake.model.quadtrees
 
 import indigo.shared.datatypes.{Point, Rectangle}
 import indigo.shared.AsString
-import indigoexts.geometry.{IntersectionResult, LineSegment}
+import indigoextras.geometry.{IntersectionResult, LineSegment}
 
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
-import indigoexts.geometry.Polygon
-import indigoexts.geometry.Vertex
+import indigoextras.geometry.Polygon
+import indigoextras.geometry.Vertex
 
 import snake.model.grid.GridPoint
 
@@ -124,9 +124,24 @@ object QuadBounds {
   def subdivide(quadBounds: QuadBounds): (QuadBounds, QuadBounds, QuadBounds, QuadBounds) =
     (
       unsafeCreate(quadBounds.x, quadBounds.y, quadBounds.width / 2, quadBounds.height / 2),
-      unsafeCreate(quadBounds.x + (quadBounds.width / 2), quadBounds.y, quadBounds.width - (quadBounds.width / 2), quadBounds.height / 2),
-      unsafeCreate(quadBounds.x, quadBounds.y + (quadBounds.height / 2), quadBounds.width / 2, quadBounds.height - (quadBounds.height / 2)),
-      unsafeCreate(quadBounds.x + (quadBounds.width / 2), quadBounds.y + (quadBounds.height / 2), quadBounds.width - (quadBounds.width / 2), quadBounds.height - (quadBounds.height / 2))
+      unsafeCreate(
+        quadBounds.x + (quadBounds.width / 2),
+        quadBounds.y,
+        quadBounds.width - (quadBounds.width / 2),
+        quadBounds.height / 2
+      ),
+      unsafeCreate(
+        quadBounds.x,
+        quadBounds.y + (quadBounds.height / 2),
+        quadBounds.width / 2,
+        quadBounds.height - (quadBounds.height / 2)
+      ),
+      unsafeCreate(
+        quadBounds.x + (quadBounds.width / 2),
+        quadBounds.y + (quadBounds.height / 2),
+        quadBounds.width - (quadBounds.width / 2),
+        quadBounds.height - (quadBounds.height / 2)
+      )
     )
 
   def combine(head: QuadBounds, tail: List[QuadBounds]): QuadBounds =

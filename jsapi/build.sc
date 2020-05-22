@@ -45,7 +45,8 @@ object indigojs extends ScalaJSModule {
 
   def ivyDeps = Agg(
     ivy"indigo::indigo-json-circe::0.0.12-SNAPSHOT",
-    ivy"indigo::indigo::0.0.12-SNAPSHOT"
+    ivy"indigo::indigo::0.0.12-SNAPSHOT",
+    ivy"indigo::indigo-extras::0.0.12-SNAPSHOT"
   )
 
   def repositories = super.repositories ++ Seq(

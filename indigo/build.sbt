@@ -44,6 +44,7 @@ lazy val sandbox =
       publishLocal := {}
     )
     .dependsOn(indigo)
+    .dependsOn(indigoExtras)
     .dependsOn(indigoJsonUPickle)
 lazy val sandboxJS  = sandbox.js
 lazy val sandboxJVM = sandbox.jvm
@@ -65,6 +66,7 @@ lazy val perf =
       publishLocal := {}
     )
     .dependsOn(indigo)
+    .dependsOn(indigoExtras)
     .dependsOn(indigoJsonCirce)
 lazy val perfJS  = perf.js
 lazy val perfJVM = perf.jvm
@@ -87,34 +89,18 @@ lazy val indigoCoreJS  = indigoCore.js
 lazy val indigoCoreJVM = indigoCore.jvm
 
 // Indigo Extensions
-lazy val indigoExts =
+lazy val indigoExtras =
   crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
-    .in(file("indigo-exts"))
+    .in(file("indigo-extras"))
     .settings(commonSettings: _*)
-    .dependsOn(indigoCore)
-    .dependsOn(indigoJsonCirce % "provided")
+    .dependsOn(shared)
     .settings(
-      name := "indigo-exts",
+      name := "indigo-extras",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
     )
-lazy val indigoExtsJS  = indigoExts.js
-lazy val indigoExtsJVM = indigoExts.jvm
-
-// Indigo Extensions Experimental (Read: WIP, Dubious, Old, Odd, Overly Specialised, etc.)
-lazy val indigoExtsExp =
-  crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Pure)
-    .in(file("indigo-exts-experimental"))
-    .settings(commonSettings: _*)
-    .dependsOn(indigoExts)
-    .dependsOn(indigoJsonCirce % "provided")
-    .settings(
-      name := "indigo-exts-experimental",
-      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
-    )
-lazy val indigoExtsExpJS  = indigoExtsExp.js
-lazy val indigoExtsExpJVM = indigoExtsExp.jvm
+lazy val indigoExtrasJS  = indigoExtras.js
+lazy val indigoExtrasJVM = indigoExtras.jvm
 
 // Indigo Game
 lazy val indigo =
@@ -122,8 +108,7 @@ lazy val indigo =
     .crossType(CrossType.Pure)
     .in(file("indigo"))
     .settings(commonSettings: _*)
-    .dependsOn(indigoExts)
-    .dependsOn(indigoJsonCirce % "provided")
+    .dependsOn(indigoCore)
     .settings(
       name := "indigo",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
@@ -234,7 +219,7 @@ lazy val indigoJsonCirce =
         "io.circe" %%% "circe-parser"
       ).map(_ % "0.13.0")
     )
-    .dependsOn(shared)
+    .dependsOn(indigoExtras)
 lazy val indigoJsonCirceJS  = indigoJsonCirce.js
 lazy val indigoJsonCirceJVM = indigoJsonCirce.jvm
 
@@ -250,7 +235,7 @@ lazy val indigoJsonUPickle =
         "com.lihaoyi" %%% "upickle" % "1.1.0"
       )
     )
-    .dependsOn(shared)
+    .dependsOn(indigoExtras)
 lazy val indigoJsonUPickleJS  = indigoJsonUPickle.js
 lazy val indigoJsonUPickleJVM = indigoJsonUPickle.jvm
 
@@ -269,22 +254,12 @@ lazy val indigoProject =
       indigoPlatformsJS,
       indigoJsonCirceJS,
       indigoCoreJS,
-      indigoExtsJS,
-      indigoExtsExpJS,
+      indigoExtrasJS,
       indigoJS,
       facadesJS,
       sandboxJS,
       perfJS
     )
-
-// Cross build version - better or worse?
-// crossProject(JSPlatform, JVMPlatform)
-//   .crossType(CrossType.Pure)
-//   .in(file("."))
-// .jsSettings(
-//   concurrentRestrictions in Global += Tags.limit(ScalaJSTags.Link, 2)
-// )
-// .jvmSettings(...
 
 lazy val code =
   taskKey[Unit]("Launch VSCode in the current directory")

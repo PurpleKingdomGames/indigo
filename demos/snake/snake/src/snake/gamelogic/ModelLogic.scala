@@ -2,7 +2,7 @@ package snake.gamelogic
 
 import indigo._
 import snake.model.grid._
-import indigoexts.scenemanager._
+import indigogame.scenemanager._
 import snake.init.GameAssets
 import snake.model._
 import snake.model.arena.MapElement.Apple

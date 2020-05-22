@@ -22,7 +22,8 @@ lazy val pirate =
       gameAssetsDirectory := "assets",
       libraryDependencies ++= Seq(
         "indigo" %%% "indigo-json-circe"      % "0.0.12-SNAPSHOT", // Needed for Aseprite & Tiled support
-        "indigo" %%% "indigo" % "0.0.12-SNAPSHOT"  // Important! :-)
+        "indigo" %%% "indigo" % "0.0.12-SNAPSHOT",  // Important! :-)
+        "indigo" %%% "indigo-extras" % "0.0.12-SNAPSHOT"  // Important! :-)
       )
     )
 

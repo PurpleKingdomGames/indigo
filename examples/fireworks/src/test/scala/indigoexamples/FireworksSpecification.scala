@@ -8,7 +8,7 @@ import indigo.EqualTo._
 import indigo.shared.time.Millis
 import indigoexamples.automata.LaunchPadAutomata
 import indigo.shared.datatypes.Rectangle
-import indigoexts.geometry.Vertex
+import indigoextras.geometry.Vertex
 import indigoexamples.model.Projectiles
 
 class FireworksSpecification extends Properties("FireworksModel") {

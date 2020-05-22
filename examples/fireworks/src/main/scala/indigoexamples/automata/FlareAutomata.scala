@@ -1,13 +1,13 @@
 package indigoexamples.automata
 
 import indigo._
-import indigoexts.subsystems.automata.AutomataPoolKey
-import indigoexts.subsystems.automata.Automata
-import indigoexts.subsystems.automata.Automaton
-import indigoexts.subsystems.automata.AutomatonUpdate
-import indigoexts.subsystems.automata.AutomataEvent
-import indigoexts.subsystems.automata.AutomatonSeedValues
-import indigoexts.geometry.Vertex
+import indigoextras.subsystems.automata.AutomataPoolKey
+import indigoextras.subsystems.automata.Automata
+import indigoextras.subsystems.automata.Automaton
+import indigoextras.subsystems.automata.AutomatonUpdate
+import indigoextras.subsystems.automata.AutomataEvent
+import indigoextras.subsystems.automata.AutomatonSeedValues
+import indigoextras.geometry.Vertex
 
 import indigoexamples.Assets
 import indigoexamples.model.Flare

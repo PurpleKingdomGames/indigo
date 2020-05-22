@@ -1,9 +1,9 @@
 package indigoexamples.model
 
 import indigo._
-import indigoexts.subsystems.automata.AutomatonPayload
+import indigoextras.subsystems.automata.AutomatonPayload
 import indigoexamples.automata.LaunchPadAutomata
-import indigoexts.geometry.Vertex
+import indigoextras.geometry.Vertex
 
 final case class LaunchPad(position: Vertex, countDown: Seconds, rocket: Rocket) extends AutomatonPayload
 

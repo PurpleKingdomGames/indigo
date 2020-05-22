@@ -3,7 +3,7 @@ package indigogame.entry
 import indigo.GlobalEvent
 import indigo.Outcome
 import indigo.SceneUpdateFragment
-import indigoexts.subsystems.SubSystemsRegister
+import indigo.shared.subsystems.SubSystemsRegister
 import indigo.shared.FrameContext
 
 final class GameWithSubSystems[Model](val model: Model, val subSystemsRegister: SubSystemsRegister)

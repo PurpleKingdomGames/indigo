@@ -2,13 +2,14 @@ package com.example.sandbox
 
 import indigo._
 import indigo.json.Json
-import indigoexts.formats._
-import indigoexts.subsystems.fpscounter.FPSCounter
-import indigogame._
+
+import indigoextras.formats._
+import indigoextras.subsystems.fpscounter.FPSCounter
+import indigoextras.uicomponents.InputField
+import indigoextras.uicomponents.InputFieldAssets
 
 import scala.scalajs.js.annotation._
-import indigoexts.uicomponents.InputField
-import indigoexts.uicomponents.InputFieldAssets
+import indigogame.IndigoDemo
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoDemo[SandboxStartupData, SandboxGameModel, SandboxViewModel] {

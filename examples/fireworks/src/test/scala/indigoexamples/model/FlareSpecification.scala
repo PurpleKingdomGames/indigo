@@ -4,7 +4,7 @@ import org.scalacheck._
 import org.scalacheck.Prop._
 import indigo.shared.dice.Dice
 import indigo.shared.time.Millis
-import indigoexts.geometry.Vertex
+import indigoextras.geometry.Vertex
 import indigo.shared.datatypes.Radians
 import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Point

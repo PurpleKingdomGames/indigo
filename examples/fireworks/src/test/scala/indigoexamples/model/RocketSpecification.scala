@@ -9,10 +9,10 @@ import indigo.shared.datatypes.Rectangle
 import indigo.shared.temporal.Signal
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.time.Millis
-import indigoexts.geometry.Vertex
-import indigoexts.geometry.BoundingBox
+import indigoextras.geometry.Vertex
+import indigoextras.geometry.BoundingBox
 import indigo.shared.dice.Dice
-import indigoexts.geometry.Bezier
+import indigoextras.geometry.Bezier
 import indigo.shared.datatypes.RGBA
 
 class RocketSpecification extends Properties("Rocket") {

@@ -6,10 +6,10 @@ import indigo.shared.AsString
 import indigo.shared.AsString._
 import indigo.shared.EqualTo
 import snake.model.grid.{GridPoint, GridSize}
-import indigoexts.geometry.LineSegment
+import indigoextras.geometry.LineSegment
 
 import scala.annotation.tailrec
-import indigoexts.geometry.Vertex
+import indigoextras.geometry.Vertex
 import indigo.shared.dice.Dice
 
 sealed trait QuadTree[T] {
@@ -96,7 +96,8 @@ object QuadTree {
   def empty[T](gridSize: GridSize): QuadTree[T] =
     QuadEmpty(QuadBounds.apply(gridSize.asPowerOf2.value))
 
-  final case class QuadBranch[T](bounds: QuadBounds, a: QuadTree[T], b: QuadTree[T], c: QuadTree[T], d: QuadTree[T]) extends QuadTree[T] {
+  final case class QuadBranch[T](bounds: QuadBounds, a: QuadTree[T], b: QuadTree[T], c: QuadTree[T], d: QuadTree[T])
+      extends QuadTree[T] {
     def isEmpty: Boolean =
       a.isEmpty && b.isEmpty && c.isEmpty && d.isEmpty
   }
@@ -315,7 +316,8 @@ object QuadTree {
         case QuadLeaf(bounds, value) if LineSegment.lineContainsVertex(lineSegment, bounds.centerAsVertex, 0.15d) =>
           List(value)
 
-        case QuadLeaf(bounds, value) if LineSegment.lineContainsVertex(lineSegment, Vertex.fromPoint(bounds.position.toPoint), 0.25f) =>
+        case QuadLeaf(bounds, value)
+            if LineSegment.lineContainsVertex(lineSegment, Vertex.fromPoint(bounds.position.toPoint), 0.25f) =>
           List(value)
 
         case _ =>

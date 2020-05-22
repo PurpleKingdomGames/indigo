@@ -1,8 +1,7 @@
 package pirate.subsystems
 
 import indigo._
-import indigoexts.subsystems._
-import indigoexts.subsystems.automata.AutomataEvent
+import indigoextras.subsystems.automata.AutomataEvent
 import pirate.init.Assets
 
 final case class CloudsSubSystem(screenWidth: Int, bigCloudPosition: Double, verticalCenter: Int, lastSpawn: Seconds) extends SubSystem {

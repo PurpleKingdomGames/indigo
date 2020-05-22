@@ -3,7 +3,7 @@ package indigoexamples.model
 import org.scalacheck._
 
 import indigo._
-import indigoexts.geometry.Vertex
+import indigoextras.geometry.Vertex
 
 object Generators {
 

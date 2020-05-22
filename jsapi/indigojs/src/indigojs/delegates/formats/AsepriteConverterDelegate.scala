@@ -2,7 +2,7 @@ package indigojs.delegates.formats
 
 import indigo.shared.datatypes.Depth
 import indigojs.delegates._
-import indigoexts.formats._
+import indigoextras.formats._
 import scala.scalajs.js.annotation._
 import scala.scalajs.js.JSConverters._
 import scala.scalajs.js

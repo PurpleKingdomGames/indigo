@@ -1,11 +1,11 @@
 package indigoexamples.model
 
 import indigo._
-import indigoexts.geometry.Vertex
-import indigoexts.geometry.Bezier
-import indigoexts.subsystems.automata.AutomatonPayload
+import indigoextras.geometry.Vertex
+import indigoextras.geometry.Bezier
+import indigoextras.subsystems.automata.AutomatonPayload
 import indigoexamples.automata.TrailAutomata
-import indigoexts.subsystems.automata.AutomataEvent
+import indigoextras.subsystems.automata.AutomataEvent
 
 trait Projectile extends AutomatonPayload {
   val flightTime: Seconds

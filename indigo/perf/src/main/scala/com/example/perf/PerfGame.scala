@@ -1,12 +1,12 @@
 package com.example.perf
 
 import indigo._
-import indigoexts.formats._
+import indigoextras.formats._
 import indigo.json.Json
-import indigoexts.subsystems.fpscounter.FPSCounter
-import indigogame._
+import indigoextras.subsystems.fpscounter.FPSCounter
 
 import scala.scalajs.js.annotation._
+import indigogame.IndigoDemo
 
 @JSExportTopLevel("IndigoGame")
 object PerfGame extends IndigoDemo[MyStartupData, MyGameModel, Unit] {
@@ -40,7 +40,7 @@ object PerfGame extends IndigoDemo[MyStartupData, MyGameModel, Unit] {
   val fonts: Set[FontInfo] =
     Set(PerfView.fontInfo)
 
-  val subSystems: Set[indigoexts.subsystems.SubSystem] =
+  val subSystems: Set[SubSystem] =
     Set(FPSCounter.subSystem(PerfView.fontKey, Point(10, 565), targetFPS))
 
   def initialModel(startupData: MyStartupData): MyGameModel =

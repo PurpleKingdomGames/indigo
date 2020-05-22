@@ -2,7 +2,7 @@ package indigoexamples.model
 
 import indigo.shared.temporal.Signal
 import indigo.shared.time.Seconds
-import indigoexts.subsystems.automata.AutomatonPayload
+import indigoextras.subsystems.automata.AutomatonPayload
 import indigo.shared.datatypes.RGBA
 
 final class TrailParticle(val alpha: Double, val tint: RGBA) extends AutomatonPayload {

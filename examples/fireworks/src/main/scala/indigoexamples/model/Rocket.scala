@@ -1,7 +1,7 @@
 package indigoexamples.model
 
 import indigo._
-import indigoexts.geometry.Vertex
+import indigoextras.geometry.Vertex
 
 final case class Rocket(flightTime: Seconds, movementSignal: Signal[Vertex], flares: List[Flare], tint: RGBA) extends Projectile
 

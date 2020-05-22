@@ -1,7 +1,7 @@
 package snake.gamelogic
 
 import indigo._
-import indigoexts.subsystems.automata._
+import indigoextras.subsystems.automata._
 
 object Score {
 

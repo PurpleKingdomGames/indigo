@@ -2,7 +2,7 @@ package indigoexamples
 
 import indigo._
 import indigogame._
-import indigoexts.ui._
+import indigoextras.uicomponents._
 
 import scala.scalajs.js.annotation._
 

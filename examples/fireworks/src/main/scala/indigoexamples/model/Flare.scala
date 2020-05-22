@@ -1,7 +1,7 @@
 package indigoexamples.model
 
 import indigo.shared.temporal.Signal
-import indigoexts.geometry.Vertex
+import indigoextras.geometry.Vertex
 import indigo.shared.dice.Dice
 import indigo.shared.time.Seconds
 import indigo.shared.collections.NonEmptyList

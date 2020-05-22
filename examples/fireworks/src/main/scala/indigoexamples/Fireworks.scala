@@ -2,15 +2,15 @@ package indigoexamples
 
 import indigo._
 import indigogame._
-import indigoexts.subsystems.fpscounter.FPSCounter
+import indigoextras.subsystems.fpscounter.FPSCounter
 
 import indigoexamples.automata.LaunchPadAutomata
 import indigoexamples.automata.RocketAutomata
 import indigoexamples.automata.TrailAutomata
 import indigoexamples.automata.FlareAutomata
 import indigoexamples.model.{Projectiles, LaunchPad}
-import indigoexts.geometry.Vertex
-import indigoexts.subsystems.automata.AutomataEvent
+import indigoextras.geometry.Vertex
+import indigoextras.subsystems.automata.AutomataEvent
 
 import scala.scalajs.js.annotation._
 

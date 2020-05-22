@@ -1,10 +1,10 @@
 package indigoexamples.automata
 
 import indigo._
-import indigoexts.subsystems.automata._
+import indigoextras.subsystems.automata._
 import indigoexamples.Assets
 import indigoexamples.model.LaunchPad
-import indigoexts.geometry.Vertex
+import indigoextras.geometry.Vertex
 
 object LaunchPadAutomata {
 

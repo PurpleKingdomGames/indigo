@@ -1,9 +1,8 @@
 package indigoexamples
 
 import indigo._
-import indigoexts.lenses._
-import indigoexts.scenes._
-import indigoexts.subsystems.SubSystem
+import indigogame.lenses._
+import indigogame.scenemanager._
 
 // There is no relevant entry in the ViewModel for either scene, so we've just left it as Unit.
 object SceneA extends Scene[GameModel, Unit] {

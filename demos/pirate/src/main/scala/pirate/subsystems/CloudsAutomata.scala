@@ -1,9 +1,9 @@
 package pirate.subsystems
 
 import indigo._
-import indigoexts.subsystems.automata._
-import indigoexts.geometry.Bezier
-import indigoexts.geometry.Vertex
+import indigoextras.subsystems.automata._
+import indigoextras.geometry.Bezier
+import indigoextras.geometry.Vertex
 import pirate.init.Assets
 
 object CloudsAutomata {

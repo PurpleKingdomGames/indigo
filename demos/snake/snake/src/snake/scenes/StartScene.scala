@@ -1,12 +1,11 @@
 package snake.scenes
 
 import indigo._
-import indigoexts.lenses.Lens
-import indigoexts.scenes._
+import indigogame.lenses.Lens
+import indigogame.scenemanager._
 
 import snake.init.{GameAssets, Settings}
 import snake.model.{SnakeGameModel, SnakeViewModel}
-import indigoexts.subsystems.SubSystem
 
 object StartScene extends Scene[SnakeGameModel, SnakeViewModel] {
   type SceneModel     = SnakeGameModel

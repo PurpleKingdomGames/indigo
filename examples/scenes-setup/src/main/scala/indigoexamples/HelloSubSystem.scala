@@ -1,7 +1,6 @@
 package indigoexamples
 
 import indigo._
-import indigoexts.subsystems.SubSystem
 
 final case class HelloSubSystem(message: String, fontKey: FontKey) extends SubSystem {
   type EventType = GlobalEvent

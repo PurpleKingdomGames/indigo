@@ -1,11 +1,9 @@
 package snake.scenes
 
 import indigo._
-import indigoexts.lenses._
-import indigoexts.scenemanager._
+import indigogame.lenses._
+import indigogame.scenemanager._
 import indigo.AsString._
-
-import indigoexts.subsystems.SubSystem
 
 import snake.gamelogic.{ModelLogic, ViewLogic}
 import snake.model.{GameModel, SnakeGameModel, SnakeViewModel}

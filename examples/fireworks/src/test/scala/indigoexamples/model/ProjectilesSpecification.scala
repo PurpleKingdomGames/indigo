@@ -5,9 +5,9 @@ import org.scalacheck.Prop._
 import indigo.shared.dice.Dice
 import indigo.shared.time.Seconds
 import indigo.shared.collections.NonEmptyList
-import indigoexts.geometry.Vertex
-import indigoexts.geometry.BoundingBox
-import indigoexts.geometry.Bezier
+import indigoextras.geometry.Vertex
+import indigoextras.geometry.BoundingBox
+import indigoextras.geometry.Bezier
 import indigo.shared.temporal.Signal
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
