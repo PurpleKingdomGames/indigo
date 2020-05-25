@@ -39,7 +39,7 @@ class PlatformImpl(
 
   import PlatformImpl._
 
-  def initialiseRenderer(gameConfig: GameConfig): Try[(Renderer, AssetMapping)] =
+  def initialise(gameConfig: GameConfig): Try[(Renderer, AssetMapping)] =
     for {
       textureAtlas        <- createTextureAtlas(assetCollection)
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)

@@ -143,7 +143,7 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
 
     val loop: Try[Long => Unit] =
       for {
-        rendererAndAssetMapping <- platform.initialiseRenderer(gameConfig)
+        rendererAndAssetMapping <- platform.initialise(gameConfig)
         startUpSuccessData      <- GameEngine.initialisedGame(startupData)
         initialisedGameLoop <- GameEngine.initialiseGameLoop(
           this,

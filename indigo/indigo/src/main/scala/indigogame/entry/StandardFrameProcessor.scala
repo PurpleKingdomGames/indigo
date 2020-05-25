@@ -33,7 +33,7 @@ final class StandardFrameProcessor[Model, ViewModel](
       inputState: InputState,
       dice: Dice,
       boundaryLocator: BoundaryLocator
-  ): Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] = {
+  ): Outcome[(Model, ViewModel, SceneUpdateFragment)] = {
 
     val frameContext = new FrameContext(gameTime, dice, inputState, boundaryLocator)
 
@@ -49,7 +49,7 @@ final class StandardFrameProcessor[Model, ViewModel](
     val view: SceneUpdateFragment =
       updateView(frameContext, updatedModel.state, updatedViewModel.state)
 
-    Outcome.combine3(updatedModel, updatedViewModel, Outcome(Some(view)))
+    Outcome.combine3(updatedModel, updatedViewModel, Outcome(view))
   }
 
   def runSkipView(
@@ -60,7 +60,7 @@ final class StandardFrameProcessor[Model, ViewModel](
       inputState: InputState,
       dice: Dice,
       boundaryLocator: BoundaryLocator
-  ): Outcome[(Model, ViewModel, Option[SceneUpdateFragment])] = {
+  ): Outcome[(Model, ViewModel)] = {
 
     val frameContext = new FrameContext(gameTime, dice, inputState, boundaryLocator)
 
@@ -70,6 +70,6 @@ final class StandardFrameProcessor[Model, ViewModel](
       }
     }
 
-    Outcome.combine3(updatedModel, Outcome(viewModel), Outcome(None))
+    Outcome.combine(updatedModel, Outcome(viewModel))
   }
 }

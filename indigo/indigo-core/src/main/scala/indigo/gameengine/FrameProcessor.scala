@@ -16,7 +16,7 @@ trait FrameProcessor[Model, ViewModel] {
       inputState: InputState,
       dice: Dice,
       boundaryLocator: BoundaryLocator
-  ): Outcome[(Model, ViewModel, Option[SceneUpdateFragment])]
+  ): Outcome[(Model, ViewModel, SceneUpdateFragment)]
 
   def runSkipView(
       model: Model,
@@ -26,5 +26,5 @@ trait FrameProcessor[Model, ViewModel] {
       inputState: InputState,
       dice: Dice,
       boundaryLocator: BoundaryLocator
-  ): Outcome[(Model, ViewModel, Option[SceneUpdateFragment])]
+  ): Outcome[(Model, ViewModel)]
 }

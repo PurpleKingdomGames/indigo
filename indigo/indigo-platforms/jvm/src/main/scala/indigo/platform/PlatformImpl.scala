@@ -41,7 +41,7 @@ class PlatformImpl(
 
   // import PlatformImpl._
 
-  def initialiseRenderer(gameConfig: GameConfig): Try[(Renderer, AssetMapping)] =
+  def initialise(gameConfig: GameConfig): Try[(Renderer, AssetMapping)] =
     Success {
       println(gameConfig.magnification.toString)
       println(assetCollection.images.length.toString)

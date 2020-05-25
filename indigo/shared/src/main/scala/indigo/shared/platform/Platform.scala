@@ -5,7 +5,7 @@ import scala.util.Try
 
 trait Platform {
 
-  def initialiseRenderer(gameConfig: GameConfig): Try[(Renderer, AssetMapping)]
+  def initialise(gameConfig: GameConfig): Try[(Renderer, AssetMapping)]
 
   def tick(loop: Long => Unit): Unit
 

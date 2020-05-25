@@ -34,7 +34,7 @@ object StandardFrameProcessorTests extends TestSuite {
 
       val outModel     = outcome.state._1
       val outViewModel = outcome.state._2
-      val outView      = outcome.state._3.get
+      val outView      = outcome.state._3
 
       assert(
         outModel.count == 1,

@@ -1,17 +1,12 @@
 package indigo.gameengine
 
 import indigo.shared.events._
-import indigo.shared.scenegraph.{SceneAudio, SceneUpdateFragment}
+import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.config.GameConfig
 import indigo.shared.Outcome
 import indigo.shared.dice.Dice
 import indigo.shared.time.GameTime
 import indigo.shared.time.Millis
-import indigo.shared.platform.AudioPlayer
-
-import indigo.shared.platform.AssetMapping
-import indigo.shared.platform.Renderer
-import indigo.shared.platform.GlobalEventStream
 
 import indigo.shared.scenegraph.SceneGraphViewEvents
 import indigo.shared.time.Seconds
@@ -39,18 +34,12 @@ class GameLoop[GameModel, ViewModel](
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var inputState: InputState = InputState.default
 
-  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+  @SuppressWarnings(Array("org.wartremover.warts.Recursion", "org.wartremover.warts.OptionPartial"))
   def loop(lastUpdateTime: Long): Long => Unit = { time =>
     runningTimeReference = time
     val timeDelta: Long = time - lastUpdateTime
 
     // PUT NOTHING ABOVE THIS LINE!! Major performance penalties!!
-    // This is... confusing... aiming for 30 FPS:
-    // (timeDelta: Long) >= (frameRateDeltaMillis: Long) (which has been round from 33.333 to 33) - 1
-    // This seems to give us a solid 30 to 31 frames per second.
-    // Without the -1, we get 27 to 28
-    // ...probably because the timeDelta is also rounded down from Double to Long
-    // By insisting time be measured in sensible units, I've made a rod for my own back...
     if (timeDelta >= gameConfig.frameRateDeltaMillis.toLong - 1) {
 
       // Model updates cut off
@@ -58,6 +47,7 @@ class GameLoop[GameModel, ViewModel](
 
         val gameTime        = new GameTime(Millis(time).toSeconds, Seconds(timeDelta.toDouble / 1000d), GameTime.FPS(gameConfig.frameRate))
         val collectedEvents = gameEngine.globalEventStream.collect :+ FrameTick
+        val dice            = Dice.fromSeconds(gameTime.running)
 
         // Persist input state
         inputState = InputState.calculateNext(
@@ -66,27 +56,38 @@ class GameLoop[GameModel, ViewModel](
           gameEngine.gamepadInputCapture.giveGamepadState
         )
 
-        val processedFrame: Outcome[(GameModel, ViewModel, Option[SceneUpdateFragment])] =
-          GameLoop.runFrameProcessor(
-            renderView = gameConfig.advanced.disableSkipViewUpdates || timeDelta < gameConfig.haltViewUpdatesAt,
-            frameProcessor,
-            gameModelState,
-            viewModelState,
-            gameTime,
-            collectedEvents,
-            inputState,
-            Dice.fromSeconds(gameTime.running),
-            boundaryLocator
-          )
+        if (gameConfig.advanced.disableSkipViewUpdates || timeDelta < gameConfig.haltViewUpdatesAt) {
+          val processedFrame: Outcome[(GameModel, ViewModel, SceneUpdateFragment)] =
+            frameProcessor.run(gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)
 
-        // Persist frame state
-        gameModelState = processedFrame.state._1
-        viewModelState = processedFrame.state._2
-        processedFrame.globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
+          // Persist frame state
+          gameModelState = processedFrame.state._1
+          viewModelState = processedFrame.state._2
+          processedFrame.globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
 
-        GameLoop.processUpdatedView(boundaryLocator, processedFrame.state._3, collectedEvents, gameEngine.globalEventStream)
-        GameLoop.drawScene(gameEngine.renderer, gameTime, processedFrame.state._3, gameEngine.assetMapping)
-        GameLoop.playAudio(gameEngine.audioPlayer, processedFrame.state._3.map(_.audio))
+          // Completely safe.
+          val scene = processedFrame.state._3
+
+          // Process events
+          scene.globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
+          SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.gameLayer.nodes, collectedEvents, gameEngine.globalEventStream.pushGlobalEvent)
+          SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.lightingLayer.nodes, collectedEvents, gameEngine.globalEventStream.pushGlobalEvent)
+          SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.uiLayer.nodes, collectedEvents, gameEngine.globalEventStream.pushGlobalEvent)
+
+          // Play audio
+          gameEngine.audioPlayer.playAudio(scene.audio)
+
+          // Render scene
+          gameEngine.renderer.drawScene(gameTime, scene, gameEngine.assetMapping)
+        } else {
+          val processedFrame: Outcome[(GameModel, ViewModel)] =
+            frameProcessor.runSkipView(gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)
+
+          // Persist frame state
+          gameModelState = processedFrame.state._1
+          viewModelState = processedFrame.state._2
+          processedFrame.globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
+        }
 
       }
 
@@ -94,64 +95,5 @@ class GameLoop[GameModel, ViewModel](
     } else
       callTick(loop(lastUpdateTime))
   }
-
-}
-
-object GameLoop {
-
-  def runFrameProcessor[GameModel, ViewModel](
-      renderView: Boolean,
-      frameProcessor: FrameProcessor[GameModel, ViewModel],
-      gameModelState: GameModel,
-      viewModelState: ViewModel,
-      gameTime: GameTime,
-      collectedEvents: List[GlobalEvent],
-      inputState: InputState,
-      dice: Dice,
-      boundaryLocator: BoundaryLocator
-  ): Outcome[(GameModel, ViewModel, Option[SceneUpdateFragment])] = 
-      if (renderView)
-        frameProcessor.run(gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)
-      else {
-        frameProcessor.runSkipView(gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)
-      }
-
-  def processUpdatedView(boundaryLocator: BoundaryLocator, scene: Option[SceneUpdateFragment], collectedEvents: List[GlobalEvent], globalEventStream: GlobalEventStream): Unit =
-    scene match {
-      case None =>
-        ()
-
-      case Some(s) =>
-        GameLoop.persistGlobalViewEvents(globalEventStream, s)
-        GameLoop.persistNodeViewEvents(boundaryLocator, collectedEvents, globalEventStream, s)
-    }
-
-  def persistGlobalViewEvents(globalEventStream: GlobalEventStream, scene: SceneUpdateFragment): Unit = {
-    scene.globalEvents.foreach(e => globalEventStream.pushGlobalEvent(e))
-  }
-
-  def persistNodeViewEvents(boundaryLocator: BoundaryLocator, gameEvents: List[GlobalEvent], globalEventStream: GlobalEventStream, scene: SceneUpdateFragment): Unit = {
-    SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.gameLayer.nodes, gameEvents, globalEventStream.pushGlobalEvent)
-    SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.lightingLayer.nodes, gameEvents, globalEventStream.pushGlobalEvent)
-    SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.uiLayer.nodes, gameEvents, globalEventStream.pushGlobalEvent)
-  }
-
-  def drawScene(renderer: Renderer, gameTime: GameTime, scene: Option[SceneUpdateFragment], assetMapping: AssetMapping): Unit =
-    scene match {
-      case None =>
-        ()
-
-      case Some(s) =>
-        renderer.drawScene(gameTime, s, assetMapping)
-    }
-
-  def playAudio(audioPlayer: AudioPlayer, sceneAudio: Option[SceneAudio]): Unit =
-    sceneAudio match {
-      case None =>
-        ()
-
-      case Some(s) =>
-        audioPlayer.playAudio(s)
-    }
 
 }
