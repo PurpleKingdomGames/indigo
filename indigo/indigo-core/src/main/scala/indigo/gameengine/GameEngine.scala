@@ -29,7 +29,6 @@ import indigo.shared.input.GamepadInputCapture
 import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
-import indigo.platform.DisplayObjectConversions
 import indigo.shared.BoundaryLocator
 import indigo.shared.dice.Dice
 
@@ -125,7 +124,6 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
   def rebuildGameLoop(firstRun: Boolean, flags: Map[String, String]): AssetCollection => Unit = ac => {
 
     fontRegister.clearRegister()
-    DisplayObjectConversions.purgeCaches()
     boundaryLocator.purgeCache()
 
     accumulatedAssetCollection = accumulatedAssetCollection |+| ac

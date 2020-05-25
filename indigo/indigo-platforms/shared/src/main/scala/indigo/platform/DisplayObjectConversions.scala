@@ -30,7 +30,11 @@ import indigo.shared.display.DisplayEffects
 import indigo.shared.datatypes.Texture
 import indigo.shared.BoundaryLocator
 
-object DisplayObjectConversions {
+final class DisplayObjectConversions(
+    boundaryLocator: BoundaryLocator,
+    animationsRegister: AnimationsRegister,
+    fontRegister: FontRegister
+) {
 
   implicit private val stringCache: QuickCache[String]                           = QuickCache.empty
   implicit private val vector2Cache: QuickCache[Vector2]                         = QuickCache.empty
@@ -126,10 +130,7 @@ object DisplayObjectConversions {
   def sceneNodesToDisplayObjects(
       sceneNodes: List[SceneGraphNode],
       gameTime: GameTime,
-      assetMapping: AssetMapping,
-      boundaryLocator: BoundaryLocator,
-      animationsRegister: AnimationsRegister,
-      fontRegister: FontRegister
+      assetMapping: AssetMapping
   ): ListBuffer[DisplayEntity] = {
     @tailrec
     def rec(remaining: List[SceneGraphNode]): ListBuffer[DisplayEntity] =
@@ -184,7 +185,7 @@ object DisplayObjectConversions {
             fontRegister
               .findByFontKey(x.fontKey)
               .map { fontInfo =>
-                DisplayObjectConversions.textLineToDisplayObjects(x, assetMapping, fontInfo)
+                textLineToDisplayObjects(x, assetMapping, fontInfo)
               }
               .getOrElse { (_, _, _) =>
                 IndigoLogger.errorOnce(s"Cannot render Text, missing Font with key: ${x.fontKey.toString()}")

@@ -33,6 +33,17 @@ final class RendererImpl(
     fontRegister: FontRegister
 ) extends Renderer {
 
+  private val displayObjectConverterGame: DisplayObjectConversions =
+    new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
+  private val displayObjectConverterLighting: DisplayObjectConversions =
+    new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
+  private val displayObjectConverterDistortion: DisplayObjectConversions =
+    new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
+  private val displayObjectConverterUi: DisplayObjectConversions =
+    new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
+  private val displayObjectConverterClone: DisplayObjectConversions =
+    new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
+
   private val gl: WebGLRenderingContext =
     cNc.context
 
@@ -129,13 +140,12 @@ final class RendererImpl(
 
   def drawScene(gameTime: GameTime, scene: SceneUpdateFragment, assetMapping: AssetMapping): Unit = {
 
-    gl2.bindVertexArray(vao)
-
+    // Preparing
     val cloneBlankDisplayObjects: Map[String, DisplayObject] =
       scene.cloneBlanks.foldLeft(Map.empty[String, DisplayObject]) { (acc, blank) =>
         blank.cloneable match {
           case g: Graphic =>
-            acc + (blank.id.value -> DisplayObjectConversions.graphicToDisplayObject(g, assetMapping))
+            acc + (blank.id.value -> displayObjectConverterClone.graphicToDisplayObject(g, assetMapping))
 
           case s: Sprite =>
             animationsRegister.fetchAnimationForSprite(gameTime, s.bindingKey, s.animationKey, s.animationActions) match {
@@ -143,12 +153,10 @@ final class RendererImpl(
                 acc
 
               case Some(anim) =>
-                acc + (blank.id.value -> DisplayObjectConversions.spriteToDisplayObject(boundaryLocator, s, assetMapping, anim))
+                acc + (blank.id.value -> displayObjectConverterClone.spriteToDisplayObject(boundaryLocator, s, assetMapping, anim))
             }
         }
       }
-
-    resize(cNc.canvas, cNc.magnification)
 
     val gameProjection =
       scene.gameLayer.magnification
@@ -171,12 +179,29 @@ final class RendererImpl(
         }
         .getOrElse(orthographicProjectionMatrix)
 
+    val gameLayerDisplayObects =
+      displayObjectConverterGame.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping)
+
+    val lightingLayerDisplayObects =
+      displayObjectConverterLighting.sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping)
+
+    val distortionLayerDisplayObects =
+      displayObjectConverterDistortion.sceneNodesToDisplayObjects(scene.distortionLayer.nodes, gameTime, assetMapping)
+
+    val uiLayerDisplayObects =
+      displayObjectConverterUi.sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping)
+
+    // Drawing
+    gl2.bindVertexArray(vao)
+
+    resize(cNc.canvas, cNc.magnification)
+
     // Game layer
     RendererFunctions.setNormalBlend(gl)
     layerRenderer.drawLayer(
       gameProjection,
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, boundaryLocator, animationsRegister, fontRegister),
+      gameLayerDisplayObects,
       gameFrameBuffer,
       ClearColor.Black.forceTransparent,
       standardShaderProgram
@@ -199,7 +224,7 @@ final class RendererImpl(
     layerRenderer.drawLayer(
       lightingProjection,
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping, boundaryLocator, animationsRegister, fontRegister),
+      lightingLayerDisplayObects,
       lightingFrameBuffer,
       scene.ambientLight.toClearColor,
       lightingShaderProgram
@@ -210,7 +235,7 @@ final class RendererImpl(
     layerRenderer.drawLayer(
       lightingProjection,
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.distortionLayer.nodes, gameTime, assetMapping, boundaryLocator, animationsRegister, fontRegister),
+      distortionLayerDisplayObects,
       distortionFrameBuffer,
       ClearColor(0.5, 0.5, 1.0, 1.0),
       distortionShaderProgram
@@ -221,7 +246,7 @@ final class RendererImpl(
     layerRenderer.drawLayer(
       uiProjection,
       cloneBlankDisplayObjects,
-      DisplayObjectConversions.sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping, boundaryLocator, animationsRegister, fontRegister),
+      uiLayerDisplayObects,
       uiFrameBuffer,
       ClearColor.Black.forceTransparent,
       standardShaderProgram
