@@ -11,9 +11,11 @@ import indigo.shared.time.Millis
 import indigo.shared.scenegraph.SceneGraphViewEvents
 import indigo.shared.time.Seconds
 import indigo.shared.BoundaryLocator
+import indigo.shared.platform.SceneProcessor
 
 class GameLoop[GameModel, ViewModel](
     boundaryLocator: BoundaryLocator,
+    sceneProcessor: SceneProcessor,
     gameEngine: GameEngine[_, _, GameModel, ViewModel],
     gameConfig: GameConfig,
     initialModel: GameModel,
@@ -65,7 +67,6 @@ class GameLoop[GameModel, ViewModel](
           viewModelState = processedFrame.state._2
           processedFrame.globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
 
-          // Completely safe.
           val scene = processedFrame.state._3
 
           // Process events
@@ -77,8 +78,18 @@ class GameLoop[GameModel, ViewModel](
           // Play audio
           gameEngine.audioPlayer.playAudio(scene.audio)
 
+          // Prepare scene
+          val sceneData = sceneProcessor.processScene(
+            gameTime,
+            scene,
+            gameEngine.assetMapping,
+            gameEngine.renderer.screenWidth.toDouble,
+            gameEngine.renderer.screenHeight.toDouble,
+            gameEngine.renderer.orthographicProjectionMatrix
+          )
+
           // Render scene
-          gameEngine.renderer.drawScene(gameTime, scene, gameEngine.assetMapping)
+          gameEngine.renderer.drawScene(sceneData)
         } else {
           val processedFrame: Outcome[(GameModel, ViewModel)] =
             frameProcessor.runSkipView(gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)

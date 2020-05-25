@@ -1,4 +1,4 @@
-package indigo.platform
+package indigo.shared.platform
 
 import indigo.shared.display.{DisplayObject, SpriteSheetFrame, DisplayCloneBatch}
 import indigo.shared.datatypes.{FontInfo, Rectangle, TextAlignment, FontChar}

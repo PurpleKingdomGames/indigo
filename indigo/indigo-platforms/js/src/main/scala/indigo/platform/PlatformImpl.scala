@@ -25,16 +25,10 @@ import org.scalajs.dom.html.Canvas
 import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
-import indigo.shared.AnimationsRegister
-import indigo.shared.FontRegister
-import indigo.shared.BoundaryLocator
 
 class PlatformImpl(
     assetCollection: AssetCollection,
-    globalEventStream: GlobalEventStream,
-    boundaryLocator: BoundaryLocator,
-    animationsRegister: AnimationsRegister,
-    fontRegister: FontRegister
+    globalEventStream: GlobalEventStream
 ) extends Platform {
 
   import PlatformImpl._
@@ -46,7 +40,7 @@ class PlatformImpl(
       assetMapping        <- setupAssetMapping(textureAtlas)
       canvas              <- createCanvas(gameConfig)
       _                   <- listenToWorldEvents(canvas, gameConfig.magnification, globalEventStream)
-      renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas, boundaryLocator, animationsRegister, fontRegister)
+      renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas)
     } yield (renderer, assetMapping)
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
@@ -107,10 +101,7 @@ object PlatformImpl {
   def startRenderer(
       gameConfig: GameConfig,
       loadedTextureAssets: List[LoadedTextureAsset],
-      canvas: Canvas,
-      boundaryLocator: BoundaryLocator,
-      animationsRegister: AnimationsRegister,
-      fontRegister: FontRegister
+      canvas: Canvas
   ): Try[Renderer] =
     Success {
       IndigoLogger.info("Starting renderer")
@@ -122,10 +113,7 @@ object PlatformImpl {
           antiAliasing = gameConfig.advanced.antiAliasing
         ),
         loadedTextureAssets,
-        canvas,
-        boundaryLocator,
-        animationsRegister,
-        fontRegister
+        canvas
       )
     }
 

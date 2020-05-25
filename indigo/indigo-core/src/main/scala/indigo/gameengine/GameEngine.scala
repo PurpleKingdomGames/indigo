@@ -30,6 +30,7 @@ import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
 import indigo.shared.BoundaryLocator
+import indigo.shared.platform.SceneProcessor
 import indigo.shared.dice.Dice
 
 final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
@@ -47,6 +48,8 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     new FontRegister()
   val boundaryLocator: BoundaryLocator =
     new BoundaryLocator(animationsRegister, fontRegister)
+  val sceneProcessor: SceneProcessor =
+    new SceneProcessor(boundaryLocator, animationsRegister, fontRegister)
 
   val audioPlayer: AudioPlayerImpl =
     AudioPlayerImpl.init
@@ -121,48 +124,50 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
     }
   }
 
-  def rebuildGameLoop(firstRun: Boolean, flags: Map[String, String]): AssetCollection => Unit = ac => {
+  def rebuildGameLoop(firstRun: Boolean, flags: Map[String, String]): AssetCollection => Unit =
+    ac => {
 
-    fontRegister.clearRegister()
-    boundaryLocator.purgeCache()
+      fontRegister.clearRegister()
+      boundaryLocator.purgeCache()
 
-    accumulatedAssetCollection = accumulatedAssetCollection |+| ac
+      accumulatedAssetCollection = accumulatedAssetCollection |+| ac
 
-    audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
+      audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
 
-    val platform: Platform =
-      new PlatformImpl(accumulatedAssetCollection, globalEventStream, boundaryLocator, animationsRegister, fontRegister)
+      val platform: Platform =
+        new PlatformImpl(accumulatedAssetCollection, globalEventStream)
 
-    val startupData: Startup[StartupError, StartupData] = initialise(accumulatedAssetCollection)(Dice.fromSeed(0))(flags)
+      val startupData: Startup[StartupError, StartupData] = initialise(accumulatedAssetCollection)(Dice.fromSeed(0))(flags)
 
-    GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
+      GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
 
-    GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
+      GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
 
-    val loop: Try[Long => Unit] =
-      for {
-        rendererAndAssetMapping <- platform.initialise(gameConfig)
-        startUpSuccessData      <- GameEngine.initialisedGame(startupData)
-        initialisedGameLoop <- GameEngine.initialiseGameLoop(
-          this,
-          boundaryLocator,
-          gameConfig,
-          if (firstRun) initialModel(startUpSuccessData) else gameLoopInstance.gameModelState,
-          if (firstRun) initialViewModel(startUpSuccessData) else (_: GameModel) => gameLoopInstance.viewModelState,
-          frameProccessor,
-          platform.tick
-        )
-      } yield {
-        renderer = rendererAndAssetMapping._1
-        assetMapping = rendererAndAssetMapping._2
-        val time = if (firstRun) 0 else gameLoopInstance.runningTimeReference
-        gameLoopInstance = initialisedGameLoop
-        initialisedGameLoop.loop(time)
-      }
-    gameLoop = loop.map(f => (() => platform.tick(f)))
+      val loop: Try[Long => Unit] =
+        for {
+          rendererAndAssetMapping <- platform.initialise(gameConfig)
+          startUpSuccessData      <- GameEngine.initialisedGame(startupData)
+          initialisedGameLoop <- GameEngine.initialiseGameLoop(
+            this,
+            boundaryLocator,
+            sceneProcessor,
+            gameConfig,
+            if (firstRun) initialModel(startUpSuccessData) else gameLoopInstance.gameModelState,
+            if (firstRun) initialViewModel(startUpSuccessData) else (_: GameModel) => gameLoopInstance.viewModelState,
+            frameProccessor,
+            platform.tick
+          )
+        } yield {
+          renderer = rendererAndAssetMapping._1
+          assetMapping = rendererAndAssetMapping._2
+          val time = if (firstRun) 0 else gameLoopInstance.runningTimeReference
+          gameLoopInstance = initialisedGameLoop
+          initialisedGameLoop.loop(time)
+        }
+      gameLoop = loop.map(f => (() => platform.tick(f)))
 
-    ()
-  }
+      ()
+    }
 
 }
 
@@ -189,6 +194,7 @@ object GameEngine {
   def initialiseGameLoop[StartupData, StartupError, GameModel, ViewModel](
       gameEngine: GameEngine[StartupData, StartupError, GameModel, ViewModel],
       boundaryLocator: BoundaryLocator,
+      sceneProcessor: SceneProcessor,
       gameConfig: GameConfig,
       initialModel: GameModel,
       initialViewModel: GameModel => ViewModel,
@@ -198,6 +204,7 @@ object GameEngine {
     Success(
       new GameLoop[GameModel, ViewModel](
         boundaryLocator,
+        sceneProcessor,
         gameEngine,
         gameConfig,
         initialModel,

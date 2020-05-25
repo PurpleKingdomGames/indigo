@@ -1,9 +1,13 @@
 package indigo.shared.platform
 
-import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.time.GameTime
+import indigo.shared.datatypes.Matrix4
 
 trait Renderer {
+
+  def screenWidth: Int
+  def screenHeight: Int
+  def orthographicProjectionMatrix: Matrix4
+
   def init(): Unit
-  def drawScene(gameTime: GameTime, scene: SceneUpdateFragment, assetMapping: AssetMapping): Unit
+  def drawScene(sceneData: ProcessedSceneData): Unit
 }

@@ -9,40 +9,17 @@ import org.scalajs.dom.raw.WebGLRenderingContext
 import scala.scalajs.js.typedarray.Float32Array
 import indigo.facades.WebGL2RenderingContext
 import indigo.platform.shaders._
-import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.time.GameTime
-import indigo.shared.platform.AssetMapping
-import indigo.platform.DisplayObjectConversions
-import indigo.shared.AnimationsRegister
-import indigo.shared.display.DisplayObject
-import indigo.shared.scenegraph.Graphic
-import indigo.shared.scenegraph.Sprite
 import indigo.shared.datatypes.Matrix4
 import org.scalajs.dom.html
 import indigo.shared.EqualTo._
-import indigo.shared.BoundaryLocator
-import indigo.shared.FontRegister
+import indigo.shared.platform.ProcessedSceneData
 
 @SuppressWarnings(Array("org.wartremover.warts.Null"))
 final class RendererImpl(
     config: RendererConfig,
     loadedTextureAssets: List[LoadedTextureAsset],
-    cNc: ContextAndCanvas,
-    boundaryLocator: BoundaryLocator,
-    animationsRegister: AnimationsRegister,
-    fontRegister: FontRegister
+    cNc: ContextAndCanvas
 ) extends Renderer {
-
-  private val displayObjectConverterGame: DisplayObjectConversions =
-    new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
-  private val displayObjectConverterLighting: DisplayObjectConversions =
-    new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
-  private val displayObjectConverterDistortion: DisplayObjectConversions =
-    new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
-  private val displayObjectConverterUi: DisplayObjectConversions =
-    new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
-  private val displayObjectConverterClone: DisplayObjectConversions =
-    new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
 
   private val gl: WebGLRenderingContext =
     cNc.context
@@ -94,13 +71,18 @@ final class RendererImpl(
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var resizeRun: Boolean = false
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var lastWidth: Int = 0
+  var lastWidth: Int = 0
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var lastHeight: Int = 0
+  var lastHeight: Int = 0
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  var orthographicProjectionMatrix: scalajs.js.Array[Double] = RendererFunctions.mat4ToJsArray(Matrix4.identity)
+  var orthographicProjectionMatrixJS: scalajs.js.Array[Double] = RendererFunctions.mat4ToJsArray(Matrix4.identity)
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  var orthographicProjectionMatrixNoMag: scalajs.js.Array[Float] = RendererFunctions.mat4ToJsArray(Matrix4.identity).map(_.toFloat)
+  var orthographicProjectionMatrixNoMagJS: scalajs.js.Array[Float] = RendererFunctions.mat4ToJsArray(Matrix4.identity).map(_.toFloat)
+
+  def screenWidth: Int  = lastWidth
+  def screenHeight: Int = lastWidth
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  var orthographicProjectionMatrix: Matrix4 = Matrix4.identity
 
   def init(): Unit = {
 
@@ -135,63 +117,8 @@ final class RendererImpl(
     gl2.bindVertexArray(null)
   }
 
-  def calculateProjectionMatrix(width: Double, height: Double, magnification: Int): scalajs.js.Array[Double] =
-    RendererFunctions.mat4ToJsArray(Matrix4.orthographic(width.toDouble / magnification.toDouble, height.toDouble / magnification.toDouble))
+  def drawScene(sceneData: ProcessedSceneData): Unit = {
 
-  def drawScene(gameTime: GameTime, scene: SceneUpdateFragment, assetMapping: AssetMapping): Unit = {
-
-    // Preparing
-    val cloneBlankDisplayObjects: Map[String, DisplayObject] =
-      scene.cloneBlanks.foldLeft(Map.empty[String, DisplayObject]) { (acc, blank) =>
-        blank.cloneable match {
-          case g: Graphic =>
-            acc + (blank.id.value -> displayObjectConverterClone.graphicToDisplayObject(g, assetMapping))
-
-          case s: Sprite =>
-            animationsRegister.fetchAnimationForSprite(gameTime, s.bindingKey, s.animationKey, s.animationActions) match {
-              case None =>
-                acc
-
-              case Some(anim) =>
-                acc + (blank.id.value -> displayObjectConverterClone.spriteToDisplayObject(boundaryLocator, s, assetMapping, anim))
-            }
-        }
-      }
-
-    val gameProjection =
-      scene.gameLayer.magnification
-        .map { m =>
-          calculateProjectionMatrix(cNc.canvas.width.toDouble, cNc.canvas.height.toDouble, m)
-        }
-        .getOrElse(orthographicProjectionMatrix)
-
-    val lightingProjection =
-      scene.lightingLayer.magnification
-        .map { m =>
-          calculateProjectionMatrix(cNc.canvas.width.toDouble, cNc.canvas.height.toDouble, m)
-        }
-        .getOrElse(orthographicProjectionMatrix)
-
-    val uiProjection =
-      scene.uiLayer.magnification
-        .map { m =>
-          calculateProjectionMatrix(cNc.canvas.width.toDouble, cNc.canvas.height.toDouble, m)
-        }
-        .getOrElse(orthographicProjectionMatrix)
-
-    val gameLayerDisplayObects =
-      displayObjectConverterGame.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping)
-
-    val lightingLayerDisplayObects =
-      displayObjectConverterLighting.sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping)
-
-    val distortionLayerDisplayObects =
-      displayObjectConverterDistortion.sceneNodesToDisplayObjects(scene.distortionLayer.nodes, gameTime, assetMapping)
-
-    val uiLayerDisplayObects =
-      displayObjectConverterUi.sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping)
-
-    // Drawing
     gl2.bindVertexArray(vao)
 
     resize(cNc.canvas, cNc.magnification)
@@ -199,9 +126,9 @@ final class RendererImpl(
     // Game layer
     RendererFunctions.setNormalBlend(gl)
     layerRenderer.drawLayer(
-      gameProjection,
-      cloneBlankDisplayObjects,
-      gameLayerDisplayObects,
+      RendererFunctions.mat4ToJsArray(sceneData.gameProjection),
+      sceneData.cloneBlankDisplayObjects,
+      sceneData.gameLayerDisplayObjects,
       gameFrameBuffer,
       ClearColor.Black.forceTransparent,
       standardShaderProgram
@@ -210,8 +137,8 @@ final class RendererImpl(
     // Dynamic lighting
     RendererFunctions.setLightsBlend(gl)
     lightsRenderer.drawLayer(
-      scene.lights,
-      orthographicProjectionMatrixNoMag,
+      sceneData.lights,
+      orthographicProjectionMatrixNoMagJS,
       lightsFrameBuffer,
       gameFrameBuffer,
       cNc.canvas.width,
@@ -222,20 +149,20 @@ final class RendererImpl(
     // Image based lighting
     RendererFunctions.setLightingBlend(gl)
     layerRenderer.drawLayer(
-      lightingProjection,
-      cloneBlankDisplayObjects,
-      lightingLayerDisplayObects,
+      RendererFunctions.mat4ToJsArray(sceneData.lightingProjection),
+      sceneData.cloneBlankDisplayObjects,
+      sceneData.lightingLayerDisplayObjects,
       lightingFrameBuffer,
-      scene.ambientLight.toClearColor,
+      sceneData.clearColor,
       lightingShaderProgram
     )
 
     // Distortion
     RendererFunctions.setDistortionBlend(gl)
     layerRenderer.drawLayer(
-      lightingProjection,
-      cloneBlankDisplayObjects,
-      distortionLayerDisplayObects,
+      RendererFunctions.mat4ToJsArray(sceneData.lightingProjection),
+      sceneData.cloneBlankDisplayObjects,
+      sceneData.distortionLayerDisplayObjects,
       distortionFrameBuffer,
       ClearColor(0.5, 0.5, 1.0, 1.0),
       distortionShaderProgram
@@ -244,9 +171,9 @@ final class RendererImpl(
     // UI
     RendererFunctions.setNormalBlend(gl)
     layerRenderer.drawLayer(
-      uiProjection,
-      cloneBlankDisplayObjects,
-      uiLayerDisplayObects,
+      RendererFunctions.mat4ToJsArray(sceneData.uiProjection),
+      sceneData.cloneBlankDisplayObjects,
+      sceneData.uiLayerDisplayObjects,
       uiFrameBuffer,
       ClearColor.Black.forceTransparent,
       standardShaderProgram
@@ -255,7 +182,7 @@ final class RendererImpl(
     // Merge
     RendererFunctions.setNormalBlend(gl2)
     mergeRenderer.drawLayer(
-      orthographicProjectionMatrixNoMag,
+      orthographicProjectionMatrixNoMagJS,
       gameFrameBuffer,
       lightsFrameBuffer,
       lightingFrameBuffer,
@@ -264,14 +191,14 @@ final class RendererImpl(
       cNc.canvas.width,
       cNc.canvas.height,
       config.clearColor,
-      scene.screenEffects.gameColorOverlay,
-      scene.screenEffects.uiColorOverlay,
-      scene.gameLayer.tint,
-      scene.lightingLayer.tint,
-      scene.uiLayer.tint,
-      scene.gameLayer.saturation,
-      scene.lightingLayer.saturation,
-      scene.uiLayer.saturation
+      sceneData.gameLayerColorOverlay,
+      sceneData.uiLayerColorOverlay,
+      sceneData.gameLayerTint,
+      sceneData.lightingLayerTint,
+      sceneData.uiLayerTint,
+      sceneData.gameLayerSaturation,
+      sceneData.lightingLayerSaturation,
+      sceneData.uiLayerSaturation
     )
 
   }
@@ -285,8 +212,9 @@ final class RendererImpl(
       lastWidth = actualWidth
       lastHeight = actualHeight
 
-      orthographicProjectionMatrix = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification))
-      orthographicProjectionMatrixNoMag = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)).map(_.toFloat)
+      orthographicProjectionMatrix = Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
+      orthographicProjectionMatrixJS = RendererFunctions.mat4ToJsArray(orthographicProjectionMatrix)
+      orthographicProjectionMatrixNoMagJS = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)).map(_.toFloat)
 
       gameFrameBuffer = FrameBufferFunctions.createFrameBufferMulti(gl, actualWidth, actualHeight)
       lightsFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)

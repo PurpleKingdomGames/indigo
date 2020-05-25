@@ -15,13 +15,10 @@ import indigo.shared.platform.AssetMapping
 import indigo.shared.platform.TextureRefAndOffset
 // import indigo.platform.events.WorldEvents
 import indigo.platform.assets.AssetCollection
-import indigo.shared.time.GameTime
-import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.shared.platform.ProcessedSceneData
 import scala.util.Try
 import scala.util.Success
-import indigo.shared.AnimationsRegister
-import indigo.shared.FontRegister
-import indigo.shared.BoundaryLocator
+import indigo.shared.datatypes.Matrix4
 // import indigo.platform.assets.TextureAtlas
 // import indigo.platform.assets.TextureAtlasFunctions
 // import indigo.platform.assets.ImageRef
@@ -33,10 +30,7 @@ import indigo.shared.BoundaryLocator
 
 class PlatformImpl(
     assetCollection: AssetCollection,
-    globalEventStream: GlobalEventStream,
-    boundaryLocator: BoundaryLocator,
-    animationsRegister: AnimationsRegister,
-    fontRegister: FontRegister
+    globalEventStream: GlobalEventStream
 ) extends Platform {
 
   // import PlatformImpl._
@@ -46,14 +40,15 @@ class PlatformImpl(
       println(gameConfig.magnification.toString)
       println(assetCollection.images.length.toString)
       println(globalEventStream.collect.length.toString())
-      println(boundaryLocator.hashCode())
-      println(animationsRegister.hashCode())
-      println(fontRegister.hashCode())
 
       val renderer: Renderer =
         new Renderer {
-          def init(): Unit                                                                                = ()
-          def drawScene(gameTime: GameTime, scene: SceneUpdateFragment, assetMapping: AssetMapping): Unit = ()
+          def screenWidth: Int                      = 0
+          def screenHeight: Int                     = 0
+          def orthographicProjectionMatrix: Matrix4 = Matrix4.identity
+
+          def init(): Unit                                   = ()
+          def drawScene(sceneData: ProcessedSceneData): Unit = ()
         }
 
       val assetMapping: AssetMapping =
