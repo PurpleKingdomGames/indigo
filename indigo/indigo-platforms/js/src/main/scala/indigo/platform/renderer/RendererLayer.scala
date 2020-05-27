@@ -222,7 +222,6 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
         gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
       }
 
-
     @tailrec
     def rec(remaining: List[DisplayEntity], batchCount: Int, atlasName: String): Unit =
       remaining match {
@@ -260,7 +259,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
             case Some(refDisplayObject) =>
               updateData(refDisplayObject, batchCount)
-              overwriteFromDisplayBatchClone(c.asBatchData, batchCount)
+              overwriteFromDisplayBatchClone(DisplayClone.asBatchData(c), batchCount)
               rec(ds, batchCount + 1, atlasName)
           }
 
