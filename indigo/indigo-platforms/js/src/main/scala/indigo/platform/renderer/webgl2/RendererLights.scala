@@ -1,4 +1,4 @@
-package indigo.platform.renderer
+package indigo.platform.renderer.webgl2
 
 import indigo.shared.display.DisplayObject
 import scala.scalajs.js.typedarray.Float32Array
@@ -6,7 +6,7 @@ import org.scalajs.dom.raw.WebGLProgram
 import indigo.facades.WebGL2RenderingContext
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
-import indigo.platform.shaders.StandardLights
+import indigo.platform.shaders.WebGL2StandardLights
 import org.scalajs.dom.raw.WebGLTexture
 import indigo.shared.ClearColor
 import scala.scalajs.js.JSConverters._
@@ -20,7 +20,7 @@ import indigo.shared.datatypes.Rectangle
 class RendererLights(gl2: WebGL2RenderingContext) {
 
   private val lightsShaderProgram: WebGLProgram =
-    RendererFunctions.shaderProgramSetup(gl2, "Lights", StandardLights)
+    RendererFunctions.shaderProgramSetup(gl2, "Lights", WebGL2StandardLights)
 
   private val displayObjectUBOBuffer: WebGLBuffer =
     gl2.createBuffer()

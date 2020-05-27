@@ -1,4 +1,4 @@
-package indigo.platform.renderer
+package indigo.platform.renderer.webgl2
 
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.SpriteSheetFrame

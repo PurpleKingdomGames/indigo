@@ -2,6 +2,7 @@ package indigo.platform.renderer
 
 import indigo.shared.platform.Renderer
 import indigo.shared.platform.RendererConfig
+import indigo.platform.renderer.webgl2.RendererWebGL2
 
 import org.scalajs.dom
 import org.scalajs.dom.raw.WebGLRenderingContext
@@ -12,7 +13,7 @@ object RendererInit {
 
   def setup(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: html.Canvas): Renderer = {
     val cNc = setupContextAndCanvas(canvas, config.magnification, config.antiAliasing)
-    val r   = new RendererImpl(config, loadedTextureAssets, cNc)
+    val r   = new RendererWebGL2(config, loadedTextureAssets, cNc)
     r.init()
     r
   }
@@ -40,6 +41,13 @@ object RendererInit {
     canvas
   }
 
+  private def setupContextAndCanvas(canvas: html.Canvas, magnification: Int, antiAliasing: Boolean): ContextAndCanvas =
+    new ContextAndCanvas(
+      context = getContext(canvas, antiAliasing),
+      canvas = canvas,
+      magnification = magnification
+    )
+
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   private def getContext(canvas: html.Canvas, antiAliasing: Boolean): WebGLRenderingContext = {
     val args =
@@ -47,12 +55,5 @@ object RendererInit {
 
     (canvas.getContext("webgl2", args)).asInstanceOf[raw.WebGLRenderingContext]
   }
-
-  private def setupContextAndCanvas(canvas: html.Canvas, magnification: Int, antiAliasing: Boolean): ContextAndCanvas =
-    new ContextAndCanvas(
-      context = getContext(canvas, antiAliasing),
-      canvas = canvas,
-      magnification = magnification
-    )
 
 }

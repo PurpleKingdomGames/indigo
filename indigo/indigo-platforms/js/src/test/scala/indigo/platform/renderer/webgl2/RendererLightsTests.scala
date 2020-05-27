@@ -1,4 +1,4 @@
-package indigo.platform.renderer
+package indigo.platform.renderer.webgl2
 
 import utest._
 import indigo.shared.scenegraph.PointLight

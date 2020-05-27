@@ -92,11 +92,11 @@ object PlatformImpl {
     }
 
   def listenToWorldEvents(canvas: Canvas, magnification: Int, globalEventStream: GlobalEventStream): Try[Unit] =
-    Success({
+    Success {
       IndigoLogger.info("Starting world events")
       WorldEvents.init(canvas, magnification, globalEventStream)
       GamepadInputCaptureImpl.init()
-    })
+    }
 
   def startRenderer(
       gameConfig: GameConfig,

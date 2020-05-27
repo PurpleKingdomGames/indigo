@@ -1,4 +1,4 @@
-package indigo.platform.renderer
+package indigo.platform.renderer.webgl2
 
 import indigo.shared.ClearColor
 import org.scalajs.dom.raw.WebGLBuffer
@@ -13,9 +13,11 @@ import indigo.shared.datatypes.Matrix4
 import org.scalajs.dom.html
 import indigo.shared.EqualTo._
 import indigo.shared.platform.ProcessedSceneData
+import indigo.platform.renderer.LoadedTextureAsset
+import indigo.platform.renderer.ContextAndCanvas
 
 @SuppressWarnings(Array("org.wartremover.warts.Null"))
-final class RendererImpl(
+final class RendererWebGL2(
     config: RendererConfig,
     loadedTextureAssets: List[LoadedTextureAsset],
     cNc: ContextAndCanvas
@@ -46,11 +48,11 @@ final class RendererImpl(
   private val vao = gl2.createVertexArray()
 
   private val standardShaderProgram =
-    RendererFunctions.shaderProgramSetup(gl, "Pixel", StandardPixelArt)
+    RendererFunctions.shaderProgramSetup(gl, "Pixel", WebGL2StandardPixelArt)
   private val lightingShaderProgram =
-    RendererFunctions.shaderProgramSetup(gl, "Lighting", StandardLightingPixelArt)
+    RendererFunctions.shaderProgramSetup(gl, "Lighting", WebGL2StandardLightingPixelArt)
   private val distortionShaderProgram =
-    RendererFunctions.shaderProgramSetup(gl, "Lighting", StandardDistortionPixelArt)
+    RendererFunctions.shaderProgramSetup(gl, "Lighting", WebGL2StandardDistortionPixelArt)
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var gameFrameBuffer: FrameBufferComponents.MultiOutput =
