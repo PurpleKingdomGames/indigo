@@ -13,8 +13,8 @@ import indigo.shared.datatypes.Matrix4
 import org.scalajs.dom.html
 import indigo.shared.EqualTo._
 import indigo.shared.platform.ProcessedSceneData
-import indigo.platform.renderer.LoadedTextureAsset
-import indigo.platform.renderer.ContextAndCanvas
+import indigo.platform.renderer.shared.LoadedTextureAsset
+import indigo.platform.renderer.shared.TextureLookupResult
 
 @SuppressWarnings(Array("org.wartremover.warts.Null"))
 final class RendererWebGL2(

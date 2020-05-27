@@ -14,6 +14,7 @@ import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayClone
 import indigo.shared.display.DisplayCloneBatch
 import indigo.shared.display.DisplayCloneBatchData
+import indigo.platform.renderer.shared.TextureLookupResult
 
 class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int) {
 

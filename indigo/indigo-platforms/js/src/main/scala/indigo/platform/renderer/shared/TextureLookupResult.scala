@@ -1,4 +1,4 @@
-package indigo.platform.renderer.webgl2
+package indigo.platform.renderer.shared
 
 import org.scalajs.dom.raw.WebGLTexture
 

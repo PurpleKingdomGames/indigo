@@ -1,19 +1,19 @@
-package indigo.platform.renderer
+package indigo.platform.renderer.webgl1
 
 import indigo.shared.platform.Renderer
 import indigo.shared.platform.RendererConfig
-import indigo.platform.renderer.webgl2.RendererWebGL2
 
 import org.scalajs.dom
 import org.scalajs.dom.raw.WebGLRenderingContext
 import org.scalajs.dom.{Element, html, raw}
 import scala.scalajs.js.Dynamic
+import indigo.platform.renderer.shared.LoadedTextureAsset
 
 object RendererInit {
 
   def setup(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: html.Canvas): Renderer = {
     val cNc = setupContextAndCanvas(canvas, config.magnification, config.antiAliasing)
-    val r   = new RendererWebGL2(config, loadedTextureAssets, cNc)
+    val r   = new RendererWebGL1(config, loadedTextureAssets, cNc)
     r.init()
     r
   }
@@ -45,6 +45,9 @@ object RendererInit {
     new ContextAndCanvas(
       context = getContext(canvas, antiAliasing),
       canvas = canvas,
+      width = canvas.clientWidth,
+      height = canvas.clientHeight,
+      aspect = canvas.clientWidth.toFloat / canvas.clientHeight.toFloat,
       magnification = magnification
     )
 
@@ -53,7 +56,7 @@ object RendererInit {
     val args =
       Dynamic.literal("premultipliedAlpha" -> false, "alpha" -> false, "antialias" -> antiAliasing)
 
-    (canvas.getContext("webgl2", args)).asInstanceOf[raw.WebGLRenderingContext]
+    (canvas.getContext("webgl", args) || canvas.getContext("experimental-webgl", args)).asInstanceOf[raw.WebGLRenderingContext]
   }
 
 }

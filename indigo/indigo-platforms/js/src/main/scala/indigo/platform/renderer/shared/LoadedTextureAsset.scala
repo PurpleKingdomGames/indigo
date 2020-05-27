@@ -1,4 +1,4 @@
-package indigo.platform.renderer
+package indigo.platform.renderer.shared
 
 import org.scalajs.dom.raw
 

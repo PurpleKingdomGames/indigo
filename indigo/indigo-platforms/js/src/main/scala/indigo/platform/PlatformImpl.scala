@@ -6,8 +6,8 @@ import indigo.shared.platform.GlobalEventStream
 import indigo.shared.config.GameConfig
 import indigo.shared.IndigoLogger
 import indigo.shared.datatypes.Vector2
-import indigo.platform.renderer.RendererInit
-import indigo.platform.renderer.LoadedTextureAsset
+import indigo.platform.renderer.RendererInitialiser
+import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.shared.platform.RendererConfig
 import indigo.shared.platform.AssetMapping
 import indigo.shared.platform.TextureRefAndOffset
@@ -88,7 +88,13 @@ object PlatformImpl {
         Failure[Canvas](new Exception("""Parent element "indigo-container" could not be found on page."""))
 
       case Some(parent) =>
-        Success(RendererInit.createCanvas(gameConfig.viewport.width, gameConfig.viewport.height, parent))
+        Success(
+          RendererInitialiser.createCanvas(
+            gameConfig.viewport.width,
+            gameConfig.viewport.height,
+            parent
+          )
+        )
     }
 
   def listenToWorldEvents(canvas: Canvas, magnification: Int, globalEventStream: GlobalEventStream): Try[Unit] =
@@ -105,7 +111,7 @@ object PlatformImpl {
   ): Try[Renderer] =
     Success {
       IndigoLogger.info("Starting renderer")
-      RendererInit.setup(
+      RendererInitialiser.setup(
         new RendererConfig(
           clearColor = gameConfig.clearColor,
           magnification = gameConfig.magnification,
