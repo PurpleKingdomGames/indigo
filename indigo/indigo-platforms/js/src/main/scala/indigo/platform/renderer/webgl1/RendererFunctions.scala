@@ -57,11 +57,19 @@ object RendererFunctions {
       displayObject: DisplayObject,
       translationLocation: WebGLUniformLocation,
       rotationLocation: WebGLUniformLocation,
-      scaleLocation: WebGLUniformLocation
+      scaleLocation: WebGLUniformLocation,
+      frameTransform: WebGLUniformLocation
   ): Unit = {
     gl.uniform2f(translationLocation, displayObject.x.toDouble, displayObject.y.toDouble)
     gl.uniform1f(rotationLocation, displayObject.rotation.toDouble)
     gl.uniform2f(scaleLocation, displayObject.width.toDouble, displayObject.height.toDouble)
+    gl.uniform4f(
+      frameTransform,
+      displayObject.frameX.toDouble,
+      displayObject.frameY.toDouble,
+      displayObject.frameScaleX.toDouble,
+      displayObject.frameScaleY.toDouble
+    )
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
@@ -82,12 +90,16 @@ object RendererFunctions {
     )
   }
 
-  def textureCoordinates(d: DisplayObject): scalajs.js.Array[Float] = {
-    val tx1 = if (d.effects.flipHorizontal > 0) 1 - d.frameX else d.frameX
-    val tx2 = if (d.effects.flipHorizontal > 0) 1 - (d.frameScaleX + d.frameX) else d.frameScaleX + d.frameX
-    val ty1 = if (d.effects.flipVertical > 0) 1 - d.frameY else d.frameY
-    val ty2 = if (d.effects.flipVertical > 0) 1 - (d.frameScaleY + d.frameY) else d.frameScaleY + d.frameY
+  val textureCoordinates/*( d: DisplayObject )*/: scalajs.js.Array[Float] = {
+    // val tx1 = if (d.effects.flipHorizontal > 0) 1 - d.frameX else d.frameX
+    // val tx2 = if (d.effects.flipHorizontal > 0) 1 - (d.frameScaleX + d.frameX) else d.frameScaleX + d.frameX
+    // val ty1 = if (d.effects.flipVertical > 0) 1 - d.frameY else d.frameY
+    // val ty2 = if (d.effects.flipVertical > 0) 1 - (d.frameScaleY + d.frameY) else d.frameScaleY + d.frameY
 
+    val tx1 = 0.0f
+    val tx2 = 1.0f
+    val ty1 = 0.0f
+    val ty2 = 1.0f
     // scalajs.js.Array[Float](
     //   tx1,
     //   ty1,

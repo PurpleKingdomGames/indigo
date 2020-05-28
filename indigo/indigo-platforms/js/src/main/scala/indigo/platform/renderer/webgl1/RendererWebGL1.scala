@@ -220,6 +220,7 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
     val translationLocation = gl.getUniformLocation(shaderProgram, "u_translation")
     val rotationLocation    = gl.getUniformLocation(shaderProgram, "u_rotation")
     val scaleLocation       = gl.getUniformLocation(shaderProgram, "u_scale")
+    val frameTransform       = gl.getUniformLocation(shaderProgram, "u_frameTransform")
 
     // Uniform locations (fragment)
     val tintLocation    = gl.getUniformLocation(shaderProgram, "u_tint")
@@ -236,10 +237,10 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
 
         // TODO: Texture coords are calculated CPU side per display object, rather than on the GPU side, change.
         gl.bindBuffer(ARRAY_BUFFER, textureBuffer)
-        gl.bufferData(ARRAY_BUFFER, new Float32Array(RendererFunctions.textureCoordinates(displayObject)), STATIC_DRAW)
+        gl.bufferData(ARRAY_BUFFER, new Float32Array(RendererFunctions.textureCoordinates/*(displayObject)*/), STATIC_DRAW)
         RendererFunctions.bindAttibuteBuffer(gl, texcoordLocation, 2)
 
-        RendererFunctions.setupVertexShaderState(gl, displayObject, translationLocation, rotationLocation, scaleLocation)
+        RendererFunctions.setupVertexShaderState(gl, displayObject, translationLocation, rotationLocation, scaleLocation, frameTransform)
 
         if (isMerge)
           RendererFunctions.setupMergeFragmentShaderState(gl, mergeShaderProgram, gameFrameBuffer.diffuse, lightingFrameBuffer.diffuse, uiFrameBuffer.diffuse)
@@ -266,6 +267,7 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
       lastHeight = actualHeight
 
       orthographicProjectionMatrix = Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
+      orthographicProjectionMatrixNoMag = Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)
       // orthographicProjectionMatrixJS = RendererFunctions.mat4ToJsArray(orthographicProjectionMatrix)
       // orthographicProjectionMatrixNoMagJS = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)).map(_.toFloat)
 
