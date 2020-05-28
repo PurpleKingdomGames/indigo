@@ -60,7 +60,7 @@ object RendererFunctions {
       scaleLocation: WebGLUniformLocation
   ): Unit = {
     gl.uniform2f(translationLocation, displayObject.x.toDouble, displayObject.y.toDouble)
-    gl.uniform1f(rotationLocation, 0.0d)
+    gl.uniform1f(rotationLocation, displayObject.rotation.toDouble)
     gl.uniform2f(scaleLocation, displayObject.width.toDouble, displayObject.height.toDouble)
   }
 
@@ -88,20 +88,34 @@ object RendererFunctions {
     val ty1 = if (d.effects.flipVertical > 0) 1 - d.frameY else d.frameY
     val ty2 = if (d.effects.flipVertical > 0) 1 - (d.frameScaleY + d.frameY) else d.frameScaleY + d.frameY
 
-    scalajs.js.Array[Float](
-      tx1,
-      ty1,
-      tx1,
-      ty2,
-      tx2,
-      ty1,
-      tx1,
-      ty2,
-      tx2,
-      ty1,
-      tx2,
-      ty2
-    )
+    // scalajs.js.Array[Float](
+    //   tx1,
+    //   ty1,
+
+    //   tx1,
+    //   ty2,
+
+    //   tx2,
+    //   ty1,
+
+    //   tx1,
+    //   ty2,
+
+    //   tx2,
+    //   ty1,
+
+    //   tx2,
+    //   ty2
+    // )
+
+    val vert0 = scalajs.js.Array[Float](tx1, ty1)
+    val vert1 = scalajs.js.Array[Float](tx1, ty2) // == vert 3
+    val vert2 = scalajs.js.Array[Float](tx2, ty1) // == vert 4
+    val vert3 = scalajs.js.Array[Float](tx1, ty2)
+    val vert4 = scalajs.js.Array[Float](tx2, ty1)
+    val vert5 = scalajs.js.Array[Float](tx2, ty2)
+
+    vert0 ++ vert1 ++ vert2 ++ vert3 ++ vert4 ++ vert5
   }
 
 }
