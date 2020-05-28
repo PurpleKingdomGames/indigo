@@ -1,4 +1,4 @@
-package indigo.platform.renderer.webgl2
+package indigo.platform.renderer.shared
 
 import indigo.shared.ClearColor
 import org.scalajs.dom.raw.WebGLRenderingContext

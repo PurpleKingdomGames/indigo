@@ -18,6 +18,8 @@ import indigo.shared.scenegraph.SpotLight
 import indigo.shared.datatypes.Rectangle
 import indigo.platform.renderer.shared.RendererHelper
 import indigo.platform.renderer.shared.WebGLHelper
+import indigo.platform.renderer.shared.FrameBufferFunctions
+import indigo.platform.renderer.shared.FrameBufferComponents
 
 class RendererLights(gl2: WebGL2RenderingContext) {
 

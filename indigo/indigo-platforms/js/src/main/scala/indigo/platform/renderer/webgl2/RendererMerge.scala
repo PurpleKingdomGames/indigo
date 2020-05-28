@@ -13,6 +13,8 @@ import scala.scalajs.js.JSConverters._
 import indigo.shared.datatypes.RGBA
 import indigo.platform.renderer.shared.RendererHelper
 import indigo.platform.renderer.shared.WebGLHelper
+import indigo.platform.renderer.shared.FrameBufferFunctions
+import indigo.platform.renderer.shared.FrameBufferComponents
 
 class RendererMerge(gl2: WebGL2RenderingContext) {
 

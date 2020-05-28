@@ -18,6 +18,8 @@ import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.ContextAndCanvas
 import indigo.platform.renderer.shared.RendererHelper
 import indigo.platform.renderer.shared.WebGLHelper
+import indigo.platform.renderer.shared.FrameBufferFunctions
+import indigo.platform.renderer.shared.FrameBufferComponents
 
 @SuppressWarnings(Array("org.wartremover.warts.Null"))
 final class RendererWebGL2(

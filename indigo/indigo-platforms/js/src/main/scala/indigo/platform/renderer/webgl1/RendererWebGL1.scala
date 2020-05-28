@@ -11,6 +11,8 @@ import indigo.shared.display.DisplayEntity
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.ContextAndCanvas
+import indigo.platform.renderer.shared.FrameBufferFunctions
+import indigo.platform.renderer.shared.FrameBufferComponents
 
 import scala.collection.mutable
 
@@ -89,14 +91,14 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
   private val mergeShaderProgram    = WebGLHelper.shaderProgramSetup(gl, "Merge", WebGL1StandardMerge)
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var gameFrameBuffer: FrameBufferComponents =
-    FrameBufferFunctions.createFrameBuffer(gl, FrameBufferFunctions.createAndSetupTexture(gl, cNc.canvas.width, cNc.canvas.height))
+  private var gameFrameBuffer: FrameBufferComponents.SingleOutput =
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var lightingFrameBuffer: FrameBufferComponents =
-    FrameBufferFunctions.createFrameBuffer(gl, FrameBufferFunctions.createAndSetupTexture(gl, cNc.canvas.width, cNc.canvas.height))
+  private var lightingFrameBuffer: FrameBufferComponents.SingleOutput =
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var uiFrameBuffer: FrameBufferComponents =
-    FrameBufferFunctions.createFrameBuffer(gl, FrameBufferFunctions.createAndSetupTexture(gl, cNc.canvas.width, cNc.canvas.height))
+  private var uiFrameBuffer: FrameBufferComponents.SingleOutput =
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
 
   def init(): Unit = {
     gl.disable(DEPTH_TEST)
@@ -203,7 +205,7 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
         RendererFunctions.setupVertexShaderState(gl, displayObject, translationLocation, rotationLocation, scaleLocation)
 
         if (isMerge)
-          RendererFunctions.setupMergeFragmentShaderState(gl, mergeShaderProgram, gameFrameBuffer.texture, lightingFrameBuffer.texture, uiFrameBuffer.texture)
+          RendererFunctions.setupMergeFragmentShaderState(gl, mergeShaderProgram, gameFrameBuffer.diffuse, lightingFrameBuffer.diffuse, uiFrameBuffer.diffuse)
         else
           textureLocations.find(t => t.name === displayObject.atlasName).foreach { textureLookup =>
             RendererFunctions.setupFragmentShaderState(gl, textureLookup.texture, displayObject, tintLocation)
@@ -230,11 +232,11 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
       // orthographicProjectionMatrixJS = RendererFunctions.mat4ToJsArray(orthographicProjectionMatrix)
       // orthographicProjectionMatrixNoMagJS = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)).map(_.toFloat)
 
-      gameFrameBuffer = FrameBufferFunctions.createFrameBuffer(gl, FrameBufferFunctions.createAndSetupTexture(gl, actualWidth, actualHeight))
+      gameFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       // lightsFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
-      lightingFrameBuffer = FrameBufferFunctions.createFrameBuffer(gl, FrameBufferFunctions.createAndSetupTexture(gl, actualWidth, actualHeight))
+      lightingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       // distortionFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
-      uiFrameBuffer = FrameBufferFunctions.createFrameBuffer(gl, FrameBufferFunctions.createAndSetupTexture(gl, actualWidth, actualHeight))
+      uiFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
 
       gl.viewport(0, 0, actualWidth.toDouble, actualHeight.toDouble)
 
