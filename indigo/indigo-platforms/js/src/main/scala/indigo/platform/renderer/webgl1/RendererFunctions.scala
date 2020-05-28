@@ -55,14 +55,36 @@ object RendererFunctions {
   def setupVertexShaderState(
       gl: raw.WebGLRenderingContext,
       displayObject: DisplayObject,
-      translationLocation: WebGLUniformLocation,
-      rotationLocation: WebGLUniformLocation,
-      scaleLocation: WebGLUniformLocation,
+      transformLocation: WebGLUniformLocation,
+      dimensions: WebGLUniformLocation,
+      rotationAlphaFlipLocation: WebGLUniformLocation,
       frameTransform: WebGLUniformLocation
   ): Unit = {
-    gl.uniform2f(translationLocation, displayObject.x.toDouble, displayObject.y.toDouble)
-    gl.uniform1f(rotationLocation, displayObject.rotation.toDouble)
-    gl.uniform2f(scaleLocation, displayObject.width.toDouble, displayObject.height.toDouble)
+
+    gl.uniform4f(
+      transformLocation,
+      displayObject.x.toDouble,
+      displayObject.y.toDouble,
+      displayObject.scaleX.toDouble,
+      displayObject.scaleY.toDouble
+    )
+
+    gl.uniform4f(
+      dimensions,
+      displayObject.refX.toDouble,
+      displayObject.refY.toDouble,
+      displayObject.width.toDouble,
+      displayObject.height.toDouble
+    )
+
+    gl.uniform4f(
+      rotationAlphaFlipLocation,
+      displayObject.rotation.toDouble,
+      displayObject.effects.alpha.toDouble,
+      displayObject.effects.flipHorizontal.toDouble,
+      displayObject.effects.flipVertical.toDouble
+    )
+
     gl.uniform4f(
       frameTransform,
       displayObject.frameX.toDouble,

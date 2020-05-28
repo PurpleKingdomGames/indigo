@@ -52,7 +52,7 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
       new TextureLookupResult(li.name, WebGLHelper.organiseImage(gl, li.data))
     }
 
-  private val vertexBuffer: WebGLBuffer  = gl.createBuffer()
+  private val vertexBuffer: WebGLBuffer = gl.createBuffer()
 
   private val standardShaderProgram = WebGLHelper.shaderProgramSetup(gl, "Pixel", WebGL1StandardPixelArt)
   private val lightingShaderProgram = WebGLHelper.shaderProgramSetup(gl, "Lighting", WebGL1StandardLightingPixelArt)
@@ -176,10 +176,10 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
     // Attribute locations
 
     // Uniform locations (vertex)
-    val translationLocation = gl.getUniformLocation(shaderProgram, "u_translation")
-    val rotationLocation    = gl.getUniformLocation(shaderProgram, "u_rotation")
-    val scaleLocation       = gl.getUniformLocation(shaderProgram, "u_scale")
-    val frameTransform       = gl.getUniformLocation(shaderProgram, "u_frameTransform")
+    val transformLocation         = gl.getUniformLocation(shaderProgram, "u_transform")
+    val dimensions                = gl.getUniformLocation(shaderProgram, "u_dimensions")
+    val rotationAlphaFlipLocation = gl.getUniformLocation(shaderProgram, "u_rotationAlphaFlipHFlipV")
+    val frameTransform            = gl.getUniformLocation(shaderProgram, "u_frameTransform")
 
     // Uniform locations (fragment)
     val tintLocation    = gl.getUniformLocation(shaderProgram, "u_tint")
@@ -190,10 +190,23 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
 
     RendererHelper.sortByDepth(displayEntities).foreach {
       case displayObject: DisplayObject =>
-        RendererFunctions.setupVertexShaderState(gl, displayObject, translationLocation, rotationLocation, scaleLocation, frameTransform)
+        RendererFunctions.setupVertexShaderState(
+          gl,
+          displayObject,
+          transformLocation,
+          dimensions,
+          rotationAlphaFlipLocation,
+          frameTransform
+        )
 
         if (isMerge)
-          RendererFunctions.setupMergeFragmentShaderState(gl, mergeShaderProgram, gameFrameBuffer.diffuse, lightingFrameBuffer.diffuse, uiFrameBuffer.diffuse)
+          RendererFunctions.setupMergeFragmentShaderState(
+            gl,
+            mergeShaderProgram,
+            gameFrameBuffer.diffuse,
+            lightingFrameBuffer.diffuse,
+            uiFrameBuffer.diffuse
+          )
         else
           textureLocations.find(t => t.name === displayObject.atlasName).foreach { textureLookup =>
             RendererFunctions.setupFragmentShaderState(gl, textureLookup.texture, displayObject, tintLocation)
