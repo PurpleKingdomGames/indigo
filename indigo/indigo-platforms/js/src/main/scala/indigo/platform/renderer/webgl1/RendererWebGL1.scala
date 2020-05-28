@@ -52,21 +52,7 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
       new TextureLookupResult(li.name, WebGLHelper.organiseImage(gl, li.data))
     }
 
-  val vertices: scalajs.js.Array[Float] = {
-    val vert0 = scalajs.js.Array[Float](-0.5f, -0.5f)
-    val vert1 = scalajs.js.Array[Float](-0.5f, 1.0f + -0.5f) // == vert 3
-    val vert2 = scalajs.js.Array[Float](1.0f + -0.5f, -0.5f) // == vert 4
-    val vert3 = scalajs.js.Array[Float](-0.5f, 1.0f + -0.5f)
-    val vert4 = scalajs.js.Array[Float](1.0f + -0.5f, -0.5f)
-    val vert5 = scalajs.js.Array[Float](1.0f + -0.5f, 1.0f + -0.5f)
-
-    vert0 ++ vert1 ++ vert2 ++ vert3 ++ vert4 ++ vert5
-  }
-
-  private val vertexCount: Int = 6//vertices.length / 3 // 6...
-
   private val vertexBuffer: WebGLBuffer  = gl.createBuffer()
-  private val textureBuffer: WebGLBuffer = gl.createBuffer()
 
   private val standardShaderProgram = WebGLHelper.shaderProgramSetup(gl, "Pixel", WebGL1StandardPixelArt)
   private val lightingShaderProgram = WebGLHelper.shaderProgramSetup(gl, "Lighting", WebGL1StandardLightingPixelArt)
@@ -90,21 +76,29 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
     gl.enable(BLEND)
 
     // Bind the triangles to the vertex buffer.
+    val verticesAndTextureCoords: scalajs.js.Array[Float] = {
+      val vert0 = scalajs.js.Array[Float](-0.5f, -0.5f, 0.0f, 1.0f)
+      val vert1 = scalajs.js.Array[Float](-0.5f, 0.5f, 0.0f, 0.0f)
+      val vert2 = scalajs.js.Array[Float](0.5f, -0.5f, 1.0f, 1.0f)
+      val vert3 = scalajs.js.Array[Float](0.5f, 0.5f, 1.0f, 0.0f)
+
+      vert0 ++ vert1 ++ vert2 ++ vert3
+    }
+
     gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
-    gl.bufferData(ARRAY_BUFFER, new Float32Array(vertices), STATIC_DRAW)
+    gl.bufferData(ARRAY_BUFFER, new Float32Array(verticesAndTextureCoords), STATIC_DRAW)
 
     gl.useProgram(standardShaderProgram)
-    val verticesLocation1 = gl.getAttribLocation(standardShaderProgram, "a_vertices")
-    RendererFunctions.bindAttibuteBuffer(gl, verticesLocation1, 2)
-
-
-    gl.useProgram(standardShaderProgram)
-    val verticesLocation2 = gl.getAttribLocation(lightingShaderProgram, "a_vertices")
-    RendererFunctions.bindAttibuteBuffer(gl, verticesLocation2, 2)
+    val verticesLocation1 = gl.getAttribLocation(standardShaderProgram, "a_verticesAndCoords")
+    RendererFunctions.bindAttibuteBuffer(gl, verticesLocation1, 4)
 
     gl.useProgram(standardShaderProgram)
-    val verticesLocation3 = gl.getAttribLocation(mergeShaderProgram, "a_vertices")
-    RendererFunctions.bindAttibuteBuffer(gl, verticesLocation3, 2)
+    val verticesLocation2 = gl.getAttribLocation(lightingShaderProgram, "a_verticesAndCoords")
+    RendererFunctions.bindAttibuteBuffer(gl, verticesLocation2, 4)
+
+    gl.useProgram(standardShaderProgram)
+    val verticesLocation3 = gl.getAttribLocation(mergeShaderProgram, "a_verticesAndCoords")
+    RendererFunctions.bindAttibuteBuffer(gl, verticesLocation3, 4)
 
     gl.bindBuffer(ARRAY_BUFFER, null)
   }
@@ -180,8 +174,6 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
     )
 
     // Attribute locations
-    // val verticesLocation = gl.getAttribLocation(shaderProgram, "a_vertices")
-    val texcoordLocation = gl.getAttribLocation(shaderProgram, "a_texcoord")
 
     // Uniform locations (vertex)
     val translationLocation = gl.getUniformLocation(shaderProgram, "u_translation")
@@ -193,20 +185,11 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
     val tintLocation    = gl.getUniformLocation(shaderProgram, "u_tint")
     val textureLocation = gl.getUniformLocation(shaderProgram, "u_texture")
 
-    // gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
-    // RendererFunctions.bindAttibuteBuffer(gl, verticesLocation, 3)
-
     // Set once
     gl.uniform1i(textureLocation, 0)
 
     RendererHelper.sortByDepth(displayEntities).foreach {
       case displayObject: DisplayObject =>
-
-        // TODO: Texture coords are calculated CPU side per display object, rather than on the GPU side, change.
-        gl.bindBuffer(ARRAY_BUFFER, textureBuffer)
-        gl.bufferData(ARRAY_BUFFER, new Float32Array(RendererFunctions.textureCoordinates/*(displayObject)*/), STATIC_DRAW)
-        RendererFunctions.bindAttibuteBuffer(gl, texcoordLocation, 2)
-
         RendererFunctions.setupVertexShaderState(gl, displayObject, translationLocation, rotationLocation, scaleLocation, frameTransform)
 
         if (isMerge)
@@ -216,7 +199,7 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
             RendererFunctions.setupFragmentShaderState(gl, textureLookup.texture, displayObject, tintLocation)
           }
 
-        gl.drawArrays(TRIANGLES, 0, vertexCount)
+        gl.drawArrays(TRIANGLE_STRIP, 0, 4)
 
       case _ =>
         ()
