@@ -90,42 +90,13 @@ object RendererFunctions {
     )
   }
 
-  val textureCoordinates/*( d: DisplayObject )*/: scalajs.js.Array[Float] = {
-    // val tx1 = if (d.effects.flipHorizontal > 0) 1 - d.frameX else d.frameX
-    // val tx2 = if (d.effects.flipHorizontal > 0) 1 - (d.frameScaleX + d.frameX) else d.frameScaleX + d.frameX
-    // val ty1 = if (d.effects.flipVertical > 0) 1 - d.frameY else d.frameY
-    // val ty2 = if (d.effects.flipVertical > 0) 1 - (d.frameScaleY + d.frameY) else d.frameScaleY + d.frameY
-
-    val tx1 = 0.0f
-    val tx2 = 1.0f
-    val ty1 = 0.0f
-    val ty2 = 1.0f
-    // scalajs.js.Array[Float](
-    //   tx1,
-    //   ty1,
-
-    //   tx1,
-    //   ty2,
-
-    //   tx2,
-    //   ty1,
-
-    //   tx1,
-    //   ty2,
-
-    //   tx2,
-    //   ty1,
-
-    //   tx2,
-    //   ty2
-    // )
-
-    val vert0 = scalajs.js.Array[Float](tx1, ty1)
-    val vert1 = scalajs.js.Array[Float](tx1, ty2) // == vert 3
-    val vert2 = scalajs.js.Array[Float](tx2, ty1) // == vert 4
-    val vert3 = scalajs.js.Array[Float](tx1, ty2)
-    val vert4 = scalajs.js.Array[Float](tx2, ty1)
-    val vert5 = scalajs.js.Array[Float](tx2, ty2)
+  val textureCoordinates: scalajs.js.Array[Float] = {
+    val vert0 = scalajs.js.Array[Float](0.0f, 0.0f)
+    val vert1 = scalajs.js.Array[Float](0.0f, 1.0f) // == vert 3
+    val vert2 = scalajs.js.Array[Float](1.0f, 0.0f) // == vert 4
+    val vert3 = scalajs.js.Array[Float](0.0f, 1.0f)
+    val vert4 = scalajs.js.Array[Float](1.0f, 0.0f)
+    val vert5 = scalajs.js.Array[Float](1.0f, 1.0f)
 
     vert0 ++ vert1 ++ vert2 ++ vert3 ++ vert4 ++ vert5
   }

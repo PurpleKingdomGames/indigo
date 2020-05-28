@@ -1,5 +1,5 @@
 // Attributes
-attribute vec4 a_vertices;
+attribute vec2 a_vertices;
 attribute vec2 a_texcoord;
 
 // Uniforms
@@ -44,7 +44,7 @@ void main(void) {
     translate2d(moveToTopLeft + u_translation) * 
     scale2d(u_scale);
 
-  gl_Position = u_projection * transform * a_vertices;
+  gl_Position = u_projection * transform * vec4(a_vertices, 1.0, 1.0);
 
   v_texcoord = scaleTexCoords(a_texcoord);
 }

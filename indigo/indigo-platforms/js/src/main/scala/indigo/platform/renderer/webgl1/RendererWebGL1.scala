@@ -53,50 +53,17 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
     }
 
   val vertices: scalajs.js.Array[Float] = {
-    val xd: Float = -0.5f
-    val yd: Float = -0.5f
-    val zd: Float = 1.0f
-    val wd: Float = 1.0f
-    val hd: Float = 1.0f
-
-    val vert0 = scalajs.js.Array[Float](xd, yd, zd)
-    val vert1 = scalajs.js.Array[Float](xd, hd + yd, zd) // == vert 3
-    val vert2 = scalajs.js.Array[Float](wd + xd, yd, zd) // == vert 4
-    val vert3 = scalajs.js.Array[Float](xd, hd + yd, zd)
-    val vert4 = scalajs.js.Array[Float](wd + xd, yd, zd)
-    val vert5 = scalajs.js.Array[Float](wd + xd, hd + yd, zd)
+    val vert0 = scalajs.js.Array[Float](-0.5f, -0.5f)
+    val vert1 = scalajs.js.Array[Float](-0.5f, 1.0f + -0.5f) // == vert 3
+    val vert2 = scalajs.js.Array[Float](1.0f + -0.5f, -0.5f) // == vert 4
+    val vert3 = scalajs.js.Array[Float](-0.5f, 1.0f + -0.5f)
+    val vert4 = scalajs.js.Array[Float](1.0f + -0.5f, -0.5f)
+    val vert5 = scalajs.js.Array[Float](1.0f + -0.5f, 1.0f + -0.5f)
 
     vert0 ++ vert1 ++ vert2 ++ vert3 ++ vert4 ++ vert5
-
-    // This is two triangles. Should be a triangle strip.
-    // scalajs.js.Array[Float](
-    //   xd,
-    //   yd,
-    //   zd,
-
-    //   xd,
-    //   hd + yd,
-    //   zd,
-
-    //   wd + xd,
-    //   yd,
-    //   zd,
-
-    //   xd,
-    //   hd + yd,
-    //   zd,
-
-    //   wd + xd,
-    //   yd,
-    //   zd,
-
-    //   wd + xd,
-    //   hd + yd,
-    //   zd
-    // )
   }
 
-  private val vertexCount: Int = vertices.length / 3 // 6...
+  private val vertexCount: Int = 6//vertices.length / 3 // 6...
 
   private val vertexBuffer: WebGLBuffer  = gl.createBuffer()
   private val textureBuffer: WebGLBuffer = gl.createBuffer()
@@ -128,16 +95,16 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
 
     gl.useProgram(standardShaderProgram)
     val verticesLocation1 = gl.getAttribLocation(standardShaderProgram, "a_vertices")
-    RendererFunctions.bindAttibuteBuffer(gl, verticesLocation1, 3)
+    RendererFunctions.bindAttibuteBuffer(gl, verticesLocation1, 2)
 
 
     gl.useProgram(standardShaderProgram)
     val verticesLocation2 = gl.getAttribLocation(lightingShaderProgram, "a_vertices")
-    RendererFunctions.bindAttibuteBuffer(gl, verticesLocation2, 3)
+    RendererFunctions.bindAttibuteBuffer(gl, verticesLocation2, 2)
 
     gl.useProgram(standardShaderProgram)
     val verticesLocation3 = gl.getAttribLocation(mergeShaderProgram, "a_vertices")
-    RendererFunctions.bindAttibuteBuffer(gl, verticesLocation3, 3)
+    RendererFunctions.bindAttibuteBuffer(gl, verticesLocation3, 2)
 
     gl.bindBuffer(ARRAY_BUFFER, null)
   }
