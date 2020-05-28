@@ -7,6 +7,7 @@ import indigoextras.subsystems.fpscounter.FPSCounter
 
 import scala.scalajs.js.annotation._
 import indigogame.IndigoDemo
+import indigo.shared.config.RenderingTechnology
 
 @JSExportTopLevel("IndigoGame")
 object PerfGame extends IndigoDemo[MyStartupData, MyGameModel, Unit] {
@@ -30,6 +31,7 @@ object PerfGame extends IndigoDemo[MyStartupData, MyGameModel, Unit] {
       clearColor = ClearColor(0.4, 0.2, 0.5, 1),
       magnification = magnificationLevel,
       advanced = AdvancedGameConfig(
+        renderingTechnology = RenderingTechnology.WebGL2,
         antiAliasing = false,
         batchSize = 512,
         disableSkipModelUpdates = true,

@@ -14,11 +14,13 @@ final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: 
 
   val asString: String =
     s"""
-       |Viewpoint:      [${viewport.width.toString()}, ${viewport.height.toString()}]
-       |FPS:            ${frameRate.toString()}
-       |frameRateDelta: ${frameRateDeltaMillis.toString()} (view updates stop at: ${haltViewUpdatesAt.toString()}, model at: ${haltModelUpdatesAt.toString()}
-       |Clear color:    {red: ${clearColor.r.toString()}, green: ${clearColor.g.toString()}, blue: ${clearColor.b.toString()}, alpha: ${clearColor.a.toString()}}
-       |Magnification:  ${magnification.toString()}
+       |Standard settings
+       |- Viewpoint:      [${viewport.width.toString()}, ${viewport.height.toString()}]
+       |- FPS:            ${frameRate.toString()}
+       |- frameRateDelta: ${frameRateDeltaMillis.toString()} (view updates stop at: ${haltViewUpdatesAt.toString()}, model at: ${haltModelUpdatesAt.toString()}
+       |- Clear color:    {red: ${clearColor.r.toString()}, green: ${clearColor.g.toString()}, blue: ${clearColor.b.toString()}, alpha: ${clearColor.a.toString()}}
+       |- Magnification:  ${magnification.toString()}
+       |${advanced.asString}
        |""".stripMargin
 
   def withViewport(width: Int, height: Int): GameConfig   = this.copy(viewport = GameViewport(width, height))
@@ -32,6 +34,10 @@ final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: 
   def enableSkipModelUpdates: GameConfig  = this.copy(advanced = advanced.copy(disableSkipModelUpdates = false))
   def disableSkipViewUpdates: GameConfig  = this.copy(advanced = advanced.copy(disableSkipViewUpdates = true))
   def enableSkipViewUpdates: GameConfig   = this.copy(advanced = advanced.copy(disableSkipViewUpdates = false))
+
+  def useWebGL1: GameConfig = this.copy(advanced = advanced.copy(renderingTechnology = RenderingTechnology.WebGL1))
+  def useWebGL2: GameConfig = this.copy(advanced = advanced.copy(renderingTechnology = RenderingTechnology.WebGL2))
+  def useWebGL2WithFallback: GameConfig = this.copy(advanced = advanced.copy(renderingTechnology = RenderingTechnology.WebGL2WithFallback))
 }
 
 object GameConfig {

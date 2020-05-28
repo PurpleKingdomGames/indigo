@@ -135,7 +135,7 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
       audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
 
       val platform: Platform =
-        new PlatformImpl(accumulatedAssetCollection, globalEventStream)
+        new PlatformImpl(gameConfig, accumulatedAssetCollection, globalEventStream)
 
       val startupData: Startup[StartupError, StartupData] = initialise(accumulatedAssetCollection)(Dice.fromSeed(0))(flags)
 
@@ -145,7 +145,7 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
 
       val loop: Try[Long => Unit] =
         for {
-          rendererAndAssetMapping <- platform.initialise(gameConfig)
+          rendererAndAssetMapping <- platform.initialise()
           startUpSuccessData      <- GameEngine.initialisedGame(startupData)
           initialisedGameLoop <- GameEngine.initialiseGameLoop(
             this,

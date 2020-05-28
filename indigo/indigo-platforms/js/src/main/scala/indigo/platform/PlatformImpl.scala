@@ -27,13 +27,15 @@ import scala.util.Success
 import scala.util.Failure
 
 class PlatformImpl(
+    gameConfig: GameConfig,
     assetCollection: AssetCollection,
     globalEventStream: GlobalEventStream
 ) extends Platform {
 
-  import PlatformImpl._
+  val rendererInit: RendererInitialiser =
+    new RendererInitialiser(gameConfig.advanced.renderingTechnology)
 
-  def initialise(gameConfig: GameConfig): Try[(Renderer, AssetMapping)] =
+  def initialise(): Try[(Renderer, AssetMapping)] =
     for {
       textureAtlas        <- createTextureAtlas(assetCollection)
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
@@ -49,9 +51,6 @@ class PlatformImpl(
     ()
   }
 
-}
-
-object PlatformImpl {
   def createTextureAtlas(assetCollection: AssetCollection): Try[TextureAtlas] =
     Success(
       TextureAtlas.create(
@@ -89,7 +88,7 @@ object PlatformImpl {
 
       case Some(parent) =>
         Success(
-          RendererInitialiser.createCanvas(
+          rendererInit.createCanvas(
             gameConfig.viewport.width,
             gameConfig.viewport.height,
             parent
@@ -111,8 +110,9 @@ object PlatformImpl {
   ): Try[Renderer] =
     Success {
       IndigoLogger.info("Starting renderer")
-      RendererInitialiser.setup(
+      rendererInit.setup(
         new RendererConfig(
+          renderingTechnology = gameConfig.advanced.renderingTechnology,
           clearColor = gameConfig.clearColor,
           magnification = gameConfig.magnification,
           maxBatchSize = gameConfig.advanced.batchSize,

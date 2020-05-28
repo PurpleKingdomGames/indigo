@@ -29,13 +29,14 @@ import indigo.shared.datatypes.Matrix4
 // import org.scalajs.dom.html.Canvas
 
 class PlatformImpl(
+    gameConfig: GameConfig,
     assetCollection: AssetCollection,
     globalEventStream: GlobalEventStream
 ) extends Platform {
 
   // import PlatformImpl._
 
-  def initialise(gameConfig: GameConfig): Try[(Renderer, AssetMapping)] =
+  def initialise(): Try[(Renderer, AssetMapping)] =
     Success {
       println(gameConfig.magnification.toString)
       println(assetCollection.images.length.toString)
