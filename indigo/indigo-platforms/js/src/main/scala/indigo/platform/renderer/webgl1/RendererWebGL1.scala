@@ -1,24 +1,19 @@
 package indigo.platform.renderer.webgl1
 
 import indigo.shared.ClearColor
-import indigo.shared.display.DisplayObject
 import indigo.shared.EqualTo._
 import indigo.shared.platform.Renderer
 import indigo.shared.platform.RendererConfig
 import indigo.shared.datatypes.Matrix4
 import indigo.shared.platform.ProcessedSceneData
-import indigo.shared.display.DisplayEntity
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.ContextAndCanvas
 import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.FrameBufferComponents
 
-import scala.collection.mutable
-
 import org.scalajs.dom.html
 import org.scalajs.dom.raw.WebGLRenderingContext
-import org.scalajs.dom.raw.WebGLProgram
 import scala.scalajs.js.typedarray.Float32Array
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
@@ -38,6 +33,10 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
   var orthographicProjectionMatrix: Matrix4 = Matrix4.identity
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var orthographicProjectionMatrixNoMag: Matrix4 = Matrix4.identity
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  var orthographicProjectionMatrixJS: scalajs.js.Array[Double] = RendererHelper.mat4ToJsArray(Matrix4.identity)
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  var orthographicProjectionMatrixNoMagJS: scalajs.js.Array[Double] = RendererHelper.mat4ToJsArray(Matrix4.identity)
 
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastWidth
@@ -52,39 +51,12 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
       new TextureLookupResult(li.name, WebGLHelper.organiseImage(gl, li.data))
     }
 
-  val vertices: scalajs.js.Array[Float] = {
-    val xd: Float = -0.5f
-    val yd: Float = -0.5f
-    val zd: Float = 1.0f
-    val wd: Float = 1.0f
-    val hd: Float = 1.0f
-
-    scalajs.js.Array[Float](
-      xd,
-      yd,
-      zd,
-      xd,
-      hd + yd,
-      zd,
-      wd + xd,
-      yd,
-      zd,
-      xd,
-      hd + yd,
-      zd,
-      wd + xd,
-      yd,
-      zd,
-      wd + xd,
-      hd + yd,
-      zd
-    )
-  }
-
-  private val vertexCount: Int = vertices.length / 3
+  private val layerRenderer: RendererLayerWebGL1 =
+    new RendererLayerWebGL1(gl, textureLocations)
+  private val mergeRenderer: RendererMergeWebGL1 =
+    new RendererMergeWebGL1(gl)
 
   private val vertexBuffer: WebGLBuffer  = gl.createBuffer()
-  private val textureBuffer: WebGLBuffer = gl.createBuffer()
 
   private val standardShaderProgram = WebGLHelper.shaderProgramSetup(gl, "Pixel", WebGL1StandardPixelArt)
   private val lightingShaderProgram = WebGLHelper.shaderProgramSetup(gl, "Lighting", WebGL1StandardLightingPixelArt)
@@ -101,122 +73,62 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
 
   def init(): Unit = {
+
     gl.disable(DEPTH_TEST)
-    // gl.viewport(0, 0, cNc.width.toDouble, cNc.height.toDouble)
     gl.viewport(0, 0, gl.drawingBufferWidth.toDouble, gl.drawingBufferHeight.toDouble)
     gl.enable(BLEND)
-    gl.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
 
+    // Vertex
     gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
-    gl.bufferData(ARRAY_BUFFER, new Float32Array(vertices), STATIC_DRAW)
+    gl.bufferData(ARRAY_BUFFER, new Float32Array(RendererHelper.verticesAndTextureCoords), STATIC_DRAW)
   }
 
   def drawScene(sceneData: ProcessedSceneData): Unit = {
 
     resize(cNc.canvas, cNc.magnification)
 
-    drawLayer(
+    // Game layer
+    WebGLHelper.setNormalBlend(gl)
+    layerRenderer.drawLayer(
       sceneData.gameLayerDisplayObjects,
-      Some(gameFrameBuffer),
-      config.clearColor,
-      standardShaderProgram,
-      sceneData.gameProjection,
-      false
-    )
-
-    drawLayer(
-      sceneData.lightingLayerDisplayObjects,
-      Some(lightingFrameBuffer),
-      sceneData.clearColor,
-      lightingShaderProgram,
-      sceneData.lightingProjection,
-      false
-    )
-
-    drawLayer(
-      sceneData.uiLayerDisplayObjects,
-      Some(uiFrameBuffer),
+      gameFrameBuffer,
       ClearColor.Black.forceTransparent,
       standardShaderProgram,
-      sceneData.uiProjection,
-      false
+      RendererHelper.mat4ToJsArray(sceneData.gameProjection)
     )
 
-    drawLayer(
-      mutable.ListBuffer(RendererHelper.screenDisplayObject(lastWidth, lastHeight)),
-      None,
+    // Image based lighting
+    WebGLHelper.setLightingBlend(gl)
+    layerRenderer.drawLayer(
+      sceneData.lightingLayerDisplayObjects,
+      lightingFrameBuffer,
+      sceneData.clearColor,
+      lightingShaderProgram,
+      RendererHelper.mat4ToJsArray((sceneData.lightingProjection))
+    )
+
+    // UI
+    WebGLHelper.setNormalBlend(gl)
+    layerRenderer.drawLayer(
+      sceneData.uiLayerDisplayObjects,
+      uiFrameBuffer,
+      ClearColor.Black.forceTransparent,
+      standardShaderProgram,
+      RendererHelper.mat4ToJsArray((sceneData.uiProjection))
+    )
+
+    // Merge
+    WebGLHelper.setNormalBlend(gl)
+    mergeRenderer.drawLayer(
       config.clearColor,
+      lastWidth,
+      lastHeight,
       mergeShaderProgram,
-      orthographicProjectionMatrixNoMag,
-      true
+      orthographicProjectionMatrixNoMagJS,
+      gameFrameBuffer,
+      lightingFrameBuffer,
+      uiFrameBuffer
     )
-  }
-
-  def drawLayer(
-      displayEntities: mutable.ListBuffer[DisplayEntity],
-      frameBufferComponents: Option[FrameBufferComponents],
-      clearColor: ClearColor,
-      shaderProgram: WebGLProgram,
-      projectionMatrix: Matrix4,
-      isMerge: Boolean
-  ): Unit = {
-
-    frameBufferComponents match {
-      case Some(fb) =>
-        FrameBufferFunctions.switchToFramebuffer(gl, fb.frameBuffer, clearColor)
-
-      case None =>
-        FrameBufferFunctions.switchToCanvas(gl, config.clearColor)
-    }
-
-    gl.useProgram(shaderProgram)
-
-    gl.uniformMatrix4fv(
-      location = gl.getUniformLocation(shaderProgram, "u_projection"),
-      transpose = false,
-      value = RendererHelper.mat4ToJsArray(projectionMatrix)
-    )
-
-    // Attribute locations
-    val verticesLocation = gl.getAttribLocation(shaderProgram, "a_vertices")
-    val texcoordLocation = gl.getAttribLocation(shaderProgram, "a_texcoord")
-
-    // Uniform locations (vertex)
-    val translationLocation = gl.getUniformLocation(shaderProgram, "u_translation")
-    val rotationLocation    = gl.getUniformLocation(shaderProgram, "u_rotation")
-    val scaleLocation       = gl.getUniformLocation(shaderProgram, "u_scale")
-
-    // Uniform locations (fragment)
-    val tintLocation    = gl.getUniformLocation(shaderProgram, "u_tint")
-    val textureLocation = gl.getUniformLocation(shaderProgram, "u_texture")
-
-    gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
-    RendererFunctions.bindAttibuteBuffer(gl, verticesLocation, 3)
-
-    // Set once
-    gl.uniform1i(textureLocation, 0)
-
-    RendererHelper.sortByDepth(displayEntities).foreach {
-      case displayObject: DisplayObject =>
-        gl.bindBuffer(ARRAY_BUFFER, textureBuffer)
-        gl.bufferData(ARRAY_BUFFER, new Float32Array(RendererFunctions.textureCoordinates(displayObject)), STATIC_DRAW)
-        RendererFunctions.bindAttibuteBuffer(gl, texcoordLocation, 2)
-
-        RendererFunctions.setupVertexShaderState(gl, displayObject, translationLocation, rotationLocation, scaleLocation)
-
-        if (isMerge)
-          RendererFunctions.setupMergeFragmentShaderState(gl, mergeShaderProgram, gameFrameBuffer.diffuse, lightingFrameBuffer.diffuse, uiFrameBuffer.diffuse)
-        else
-          textureLocations.find(t => t.name === displayObject.atlasName).foreach { textureLookup =>
-            RendererFunctions.setupFragmentShaderState(gl, textureLookup.texture, displayObject, tintLocation)
-          }
-
-        gl.drawArrays(TRIANGLES, 0, vertexCount)
-
-      case _ =>
-        ()
-    }
-
   }
 
   def resize(canvas: html.Canvas, magnification: Int): Unit = {
@@ -229,13 +141,11 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
       lastHeight = actualHeight
 
       orthographicProjectionMatrix = Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
-      // orthographicProjectionMatrixJS = RendererFunctions.mat4ToJsArray(orthographicProjectionMatrix)
-      // orthographicProjectionMatrixNoMagJS = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)).map(_.toFloat)
+      orthographicProjectionMatrixJS = RendererHelper.mat4ToJsArray(orthographicProjectionMatrix)
+      orthographicProjectionMatrixNoMagJS = RendererHelper.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble))
 
       gameFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
-      // lightsFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       lightingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
-      // distortionFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       uiFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
 
       gl.viewport(0, 0, actualWidth.toDouble, actualHeight.toDouble)

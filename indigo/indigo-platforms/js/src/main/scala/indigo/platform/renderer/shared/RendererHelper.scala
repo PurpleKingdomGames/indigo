@@ -37,6 +37,17 @@ object RendererHelper {
       effects = DisplayEffects.default
     )
 
+  val verticesAndTextureCoords: scalajs.js.Array[Float] = {
+    val vert0 = scalajs.js.Array[Float](-0.5f, -0.5f, 0.0f, 1.0f)
+    val vert1 = scalajs.js.Array[Float](-0.5f, 0.5f, 0.0f, 0.0f)
+    val vert2 = scalajs.js.Array[Float](0.5f, -0.5f, 1.0f, 1.0f)
+    val vert3 = scalajs.js.Array[Float](0.5f, 0.5f, 1.0f, 0.0f)
+
+    vert0 ++ vert1 ++ vert2 ++ vert3
+  }
+
+  val vertexCount: Int = verticesAndTextureCoords.length / 3
+
   def mat4ToJsArray(mat4d: Matrix4): scalajs.js.Array[Double] =
     mat4d.mat.toJSArray
 
