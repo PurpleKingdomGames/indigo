@@ -11,11 +11,13 @@ import org.scalajs.dom.raw.WebGLTexture
 import indigo.shared.ClearColor
 import scala.scalajs.js.JSConverters._
 import indigo.shared.datatypes.RGBA
+import indigo.platform.renderer.shared.RendererHelper
+import indigo.platform.renderer.shared.WebGLHelper
 
 class RendererMerge(gl2: WebGL2RenderingContext) {
 
   private val mergeShaderProgram: WebGLProgram =
-    RendererFunctions.shaderProgramSetup(gl2, "Merge", WebGL2StandardMerge)
+    WebGLHelper.shaderProgramSetup(gl2, "Merge", WebGL2StandardMerge)
 
   private val displayObjectUBOBuffer: WebGLBuffer =
     gl2.createBuffer()
@@ -170,7 +172,7 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
 
     while (i < uniformTextures.length) {
       val tex = uniformTextures(i)
-      RendererHelper.attach(gl2, mergeShaderProgram, i + 1, tex._1, tex._2)
+      WebGLHelper.attach(gl2, mergeShaderProgram, i + 1, tex._1, tex._2)
       i = i + 1
     }
 

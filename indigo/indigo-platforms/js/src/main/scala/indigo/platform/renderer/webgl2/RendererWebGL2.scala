@@ -15,6 +15,9 @@ import indigo.shared.EqualTo._
 import indigo.shared.platform.ProcessedSceneData
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
+import indigo.platform.renderer.shared.ContextAndCanvas
+import indigo.platform.renderer.shared.RendererHelper
+import indigo.platform.renderer.shared.WebGLHelper
 
 @SuppressWarnings(Array("org.wartremover.warts.Null"))
 final class RendererWebGL2(
@@ -31,7 +34,7 @@ final class RendererWebGL2(
 
   private val textureLocations: List[TextureLookupResult] =
     loadedTextureAssets.map { li =>
-      new TextureLookupResult(li.name, RendererFunctions.organiseImage(gl, li.data))
+      new TextureLookupResult(li.name, WebGLHelper.organiseImage(gl, li.data))
     }
 
   private val mergeRenderer: RendererMerge =
@@ -48,11 +51,11 @@ final class RendererWebGL2(
   private val vao = gl2.createVertexArray()
 
   private val standardShaderProgram =
-    RendererFunctions.shaderProgramSetup(gl, "Pixel", WebGL2StandardPixelArt)
+    WebGLHelper.shaderProgramSetup(gl, "Pixel", WebGL2StandardPixelArt)
   private val lightingShaderProgram =
-    RendererFunctions.shaderProgramSetup(gl, "Lighting", WebGL2StandardLightingPixelArt)
+    WebGLHelper.shaderProgramSetup(gl, "Lighting", WebGL2StandardLightingPixelArt)
   private val distortionShaderProgram =
-    RendererFunctions.shaderProgramSetup(gl, "Lighting", WebGL2StandardDistortionPixelArt)
+    WebGLHelper.shaderProgramSetup(gl, "Lighting", WebGL2StandardDistortionPixelArt)
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var gameFrameBuffer: FrameBufferComponents.MultiOutput =
@@ -77,12 +80,12 @@ final class RendererWebGL2(
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var lastHeight: Int = 0
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  var orthographicProjectionMatrixJS: scalajs.js.Array[Double] = RendererFunctions.mat4ToJsArray(Matrix4.identity)
+  var orthographicProjectionMatrixJS: scalajs.js.Array[Double] = RendererHelper.mat4ToJsArray(Matrix4.identity)
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  var orthographicProjectionMatrixNoMagJS: scalajs.js.Array[Float] = RendererFunctions.mat4ToJsArray(Matrix4.identity).map(_.toFloat)
+  var orthographicProjectionMatrixNoMagJS: scalajs.js.Array[Float] = RendererHelper.mat4ToJsArray(Matrix4.identity).map(_.toFloat)
 
   def screenWidth: Int  = lastWidth
-  def screenHeight: Int = lastWidth
+  def screenHeight: Int = lastHeight
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var orthographicProjectionMatrix: Matrix4 = Matrix4.identity
 
@@ -126,9 +129,9 @@ final class RendererWebGL2(
     resize(cNc.canvas, cNc.magnification)
 
     // Game layer
-    RendererFunctions.setNormalBlend(gl)
+    WebGLHelper.setNormalBlend(gl)
     layerRenderer.drawLayer(
-      RendererFunctions.mat4ToJsArray(sceneData.gameProjection),
+      RendererHelper.mat4ToJsArray(sceneData.gameProjection),
       sceneData.cloneBlankDisplayObjects,
       sceneData.gameLayerDisplayObjects,
       gameFrameBuffer,
@@ -137,7 +140,7 @@ final class RendererWebGL2(
     )
 
     // Dynamic lighting
-    RendererFunctions.setLightsBlend(gl)
+    WebGLHelper.setLightsBlend(gl)
     lightsRenderer.drawLayer(
       sceneData.lights,
       orthographicProjectionMatrixNoMagJS,
@@ -149,9 +152,9 @@ final class RendererWebGL2(
     )
 
     // Image based lighting
-    RendererFunctions.setLightingBlend(gl)
+    WebGLHelper.setLightingBlend(gl)
     layerRenderer.drawLayer(
-      RendererFunctions.mat4ToJsArray(sceneData.lightingProjection),
+      RendererHelper.mat4ToJsArray(sceneData.lightingProjection),
       sceneData.cloneBlankDisplayObjects,
       sceneData.lightingLayerDisplayObjects,
       lightingFrameBuffer,
@@ -160,9 +163,9 @@ final class RendererWebGL2(
     )
 
     // Distortion
-    RendererFunctions.setDistortionBlend(gl)
+    WebGLHelper.setDistortionBlend(gl)
     layerRenderer.drawLayer(
-      RendererFunctions.mat4ToJsArray(sceneData.lightingProjection),
+      RendererHelper.mat4ToJsArray(sceneData.lightingProjection),
       sceneData.cloneBlankDisplayObjects,
       sceneData.distortionLayerDisplayObjects,
       distortionFrameBuffer,
@@ -171,9 +174,9 @@ final class RendererWebGL2(
     )
 
     // UI
-    RendererFunctions.setNormalBlend(gl)
+    WebGLHelper.setNormalBlend(gl)
     layerRenderer.drawLayer(
-      RendererFunctions.mat4ToJsArray(sceneData.uiProjection),
+      RendererHelper.mat4ToJsArray(sceneData.uiProjection),
       sceneData.cloneBlankDisplayObjects,
       sceneData.uiLayerDisplayObjects,
       uiFrameBuffer,
@@ -182,7 +185,7 @@ final class RendererWebGL2(
     )
 
     // Merge
-    RendererFunctions.setNormalBlend(gl2)
+    WebGLHelper.setNormalBlend(gl2)
     mergeRenderer.drawLayer(
       orthographicProjectionMatrixNoMagJS,
       gameFrameBuffer,
@@ -190,8 +193,8 @@ final class RendererWebGL2(
       lightingFrameBuffer,
       distortionFrameBuffer,
       uiFrameBuffer,
-      cNc.canvas.width,
-      cNc.canvas.height,
+      lastWidth,
+      lastHeight,
       config.clearColor,
       sceneData.gameLayerColorOverlay,
       sceneData.uiLayerColorOverlay,
@@ -215,8 +218,8 @@ final class RendererWebGL2(
       lastHeight = actualHeight
 
       orthographicProjectionMatrix = Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
-      orthographicProjectionMatrixJS = RendererFunctions.mat4ToJsArray(orthographicProjectionMatrix)
-      orthographicProjectionMatrixNoMagJS = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)).map(_.toFloat)
+      orthographicProjectionMatrixJS = RendererHelper.mat4ToJsArray(orthographicProjectionMatrix)
+      orthographicProjectionMatrixNoMagJS = RendererHelper.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)).map(_.toFloat)
 
       gameFrameBuffer = FrameBufferFunctions.createFrameBufferMulti(gl, actualWidth, actualHeight)
       lightsFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)

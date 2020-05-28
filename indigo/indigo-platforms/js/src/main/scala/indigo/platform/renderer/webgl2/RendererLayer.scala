@@ -15,6 +15,7 @@ import indigo.shared.display.DisplayClone
 import indigo.shared.display.DisplayCloneBatch
 import indigo.shared.display.DisplayCloneBatchData
 import indigo.platform.renderer.shared.TextureLookupResult
+import indigo.platform.renderer.shared.RendererHelper
 
 class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int) {
 
@@ -201,7 +202,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     //
 
     val sorted: ListBuffer[DisplayEntity] =
-      RendererFunctions.sortByDepth(displayEntities)
+      RendererHelper.sortByDepth(displayEntities)
 
     @inline def drawBuffer(instanceCount: Int): Unit =
       if (instanceCount > 0) {

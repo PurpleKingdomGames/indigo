@@ -5,12 +5,13 @@ import org.scalajs.dom.raw.WebGLRenderingContext
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.{WebGLFramebuffer, WebGLTexture}
 import indigo.facades.ColorAttachments
+import indigo.platform.renderer.shared.WebGLHelper
 
 object FrameBufferFunctions {
 
   @SuppressWarnings(Array("org.wartremover.warts.Null"))
   private def createAndSetupTexture(gl: WebGLRenderingContext, width: Int, height: Int): WebGLTexture = {
-    val texture = RendererFunctions.createAndBindTexture(gl)
+    val texture = WebGLHelper.createAndBindTexture(gl)
 
     gl.texImage2D(TEXTURE_2D, 0, RGBA, width, height, 0, RGBA, UNSIGNED_BYTE, null)
 

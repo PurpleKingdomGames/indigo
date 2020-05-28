@@ -16,11 +16,13 @@ import indigo.shared.scenegraph.DirectionLight
 import indigo.shared.datatypes.Radians
 import indigo.shared.scenegraph.SpotLight
 import indigo.shared.datatypes.Rectangle
+import indigo.platform.renderer.shared.RendererHelper
+import indigo.platform.renderer.shared.WebGLHelper
 
 class RendererLights(gl2: WebGL2RenderingContext) {
 
   private val lightsShaderProgram: WebGLProgram =
-    RendererFunctions.shaderProgramSetup(gl2, "Lights", WebGL2StandardLights)
+    WebGLHelper.shaderProgramSetup(gl2, "Lights", WebGL2StandardLights)
 
   private val displayObjectUBOBuffer: WebGLBuffer =
     gl2.createBuffer()
@@ -196,7 +198,7 @@ class RendererLights(gl2: WebGL2RenderingContext) {
 
     while (i < uniformTextures.length) {
       val tex = uniformTextures(i)
-      RendererHelper.attach(gl2, lightsShaderProgram, i + 1, tex._1, tex._2)
+      WebGLHelper.attach(gl2, lightsShaderProgram, i + 1, tex._1, tex._2)
       i = i + 1
     }
 
