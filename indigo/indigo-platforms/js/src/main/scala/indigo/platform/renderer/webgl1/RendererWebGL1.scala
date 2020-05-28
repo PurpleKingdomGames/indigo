@@ -102,11 +102,9 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
 
   def init(): Unit = {
     gl.disable(DEPTH_TEST)
-    // gl.viewport(0, 0, cNc.width.toDouble, cNc.height.toDouble)
     gl.viewport(0, 0, gl.drawingBufferWidth.toDouble, gl.drawingBufferHeight.toDouble)
     gl.enable(BLEND)
-    gl.blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA)
-
+    
     gl.bindBuffer(ARRAY_BUFFER, vertexBuffer)
     gl.bufferData(ARRAY_BUFFER, new Float32Array(vertices), STATIC_DRAW)
   }
@@ -115,6 +113,7 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
 
     resize(cNc.canvas, cNc.magnification)
 
+    WebGLHelper.setNormalBlend(gl)
     drawLayer(
       sceneData.gameLayerDisplayObjects,
       Some(gameFrameBuffer),
@@ -124,6 +123,7 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
       false
     )
 
+    WebGLHelper.setLightingBlend(gl)
     drawLayer(
       sceneData.lightingLayerDisplayObjects,
       Some(lightingFrameBuffer),
@@ -133,6 +133,7 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
       false
     )
 
+    WebGLHelper.setNormalBlend(gl)
     drawLayer(
       sceneData.uiLayerDisplayObjects,
       Some(uiFrameBuffer),
@@ -142,6 +143,7 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
       false
     )
 
+    WebGLHelper.setNormalBlend(gl)
     drawLayer(
       mutable.ListBuffer(RendererHelper.screenDisplayObject(lastWidth, lastHeight)),
       None,
