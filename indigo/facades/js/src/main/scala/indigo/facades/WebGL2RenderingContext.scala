@@ -14,48 +14,53 @@ trait WebGL2RenderingContext extends WebGLRenderingContext {
 
   // A whole bunch of uniform constants..
   // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Constants#Uniforms
-  final val UNIFORM_BUFFER                              = 0x8A11
-  final val UNIFORM_BUFFER_BINDING                      = 0x8A28
-  final val UNIFORM_BUFFER_START                        = 0x8A29
-  final val UNIFORM_BUFFER_SIZE                         = 0x8A2A
-  final val MAX_VERTEX_UNIFORM_BLOCKS                   = 0x8A2B
-  final val MAX_FRAGMENT_UNIFORM_BLOCKS                 = 0x8A2D
-  final val MAX_COMBINED_UNIFORM_BLOCKS                 = 0x8A2E
-  final val MAX_UNIFORM_BUFFER_BINDINGS                 = 0x8A2F
-  final val MAX_UNIFORM_BLOCK_SIZE                      = 0x8A30
-  final val MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS      = 0x8A31
-  final val MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS    = 0x8A33
-  final val UNIFORM_BUFFER_OFFSET_ALIGNMENT             = 0x8A34
-  final val ACTIVE_UNIFORM_BLOCKS                       = 0x8A36
-  final val UNIFORM_TYPE                                = 0x8A37
-  final val UNIFORM_SIZE                                = 0x8A38
-  final val UNIFORM_BLOCK_INDEX                         = 0x8A3A
-  final val UNIFORM_OFFSET                              = 0x8A3B
-  final val UNIFORM_ARRAY_STRIDE                        = 0x8A3C
-  final val UNIFORM_MATRIX_STRIDE                       = 0x8A3D
-  final val UNIFORM_IS_ROW_MAJOR                        = 0x8A3E
-  final val UNIFORM_BLOCK_BINDING                       = 0x8A3F
-  final val UNIFORM_BLOCK_DATA_SIZE                     = 0x8A40
-  final val UNIFORM_BLOCK_ACTIVE_UNIFORMS               = 0x8A42
-  final val UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES        = 0x8A43
-  final val UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER   = 0x8A44
-  final val UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER = 0x8A46
+  final val UNIFORM_BUFFER                              = 0x8a11
+  final val UNIFORM_BUFFER_BINDING                      = 0x8a28
+  final val UNIFORM_BUFFER_START                        = 0x8a29
+  final val UNIFORM_BUFFER_SIZE                         = 0x8a2a
+  final val MAX_VERTEX_UNIFORM_BLOCKS                   = 0x8a2b
+  final val MAX_FRAGMENT_UNIFORM_BLOCKS                 = 0x8a2d
+  final val MAX_COMBINED_UNIFORM_BLOCKS                 = 0x8a2e
+  final val MAX_UNIFORM_BUFFER_BINDINGS                 = 0x8a2f
+  final val MAX_UNIFORM_BLOCK_SIZE                      = 0x8a30
+  final val MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS      = 0x8a31
+  final val MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS    = 0x8a33
+  final val UNIFORM_BUFFER_OFFSET_ALIGNMENT             = 0x8a34
+  final val ACTIVE_UNIFORM_BLOCKS                       = 0x8a36
+  final val UNIFORM_TYPE                                = 0x8a37
+  final val UNIFORM_SIZE                                = 0x8a38
+  final val UNIFORM_BLOCK_INDEX                         = 0x8a3a
+  final val UNIFORM_OFFSET                              = 0x8a3b
+  final val UNIFORM_ARRAY_STRIDE                        = 0x8a3c
+  final val UNIFORM_MATRIX_STRIDE                       = 0x8a3d
+  final val UNIFORM_IS_ROW_MAJOR                        = 0x8a3e
+  final val UNIFORM_BLOCK_BINDING                       = 0x8a3f
+  final val UNIFORM_BLOCK_DATA_SIZE                     = 0x8a40
+  final val UNIFORM_BLOCK_ACTIVE_UNIFORMS               = 0x8a42
+  final val UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES        = 0x8a43
+  final val UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER   = 0x8a44
+  final val UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER = 0x8a46
+  final val MAX_3D_TEXTURE_SIZE                         = 0x8073
+  final val MAX_DRAW_BUFFERS                            = 0x8824
+  final val MAX_COLOR_ATTACHMENTS                       = 0x8cdf
+  final val MAX_VERTEX_TEXTURE_IMAGE_UNITS              = 0x8b4c
+  final val MAX_FRAGMENT_INPUT_COMPONENTS               = 0x9125
 
-  final val COLOR_ATTACHMENT1  = 0x8CE1
-  final val COLOR_ATTACHMENT2  = 0x8CE2
-  final val COLOR_ATTACHMENT3  = 0x8CE3
-  final val COLOR_ATTACHMENT4  = 0x8CE4
-  final val COLOR_ATTACHMENT5  = 0x8CE5
-  final val COLOR_ATTACHMENT6  = 0x8CE6
-  final val COLOR_ATTACHMENT7  = 0x8CE7
-  final val COLOR_ATTACHMENT8  = 0x8CE8
-  final val COLOR_ATTACHMENT9  = 0x8CE9
-  final val COLOR_ATTACHMENT10 = 0x8CEA
-  final val COLOR_ATTACHMENT11 = 0x8CEB
-  final val COLOR_ATTACHMENT12 = 0x8CEC
-  final val COLOR_ATTACHMENT13 = 0x8CED
-  final val COLOR_ATTACHMENT14 = 0x8CEE
-  final val COLOR_ATTACHMENT15 = 0x8CEF
+  final val COLOR_ATTACHMENT1  = 0x8ce1
+  final val COLOR_ATTACHMENT2  = 0x8ce2
+  final val COLOR_ATTACHMENT3  = 0x8ce3
+  final val COLOR_ATTACHMENT4  = 0x8ce4
+  final val COLOR_ATTACHMENT5  = 0x8ce5
+  final val COLOR_ATTACHMENT6  = 0x8ce6
+  final val COLOR_ATTACHMENT7  = 0x8ce7
+  final val COLOR_ATTACHMENT8  = 0x8ce8
+  final val COLOR_ATTACHMENT9  = 0x8ce9
+  final val COLOR_ATTACHMENT10 = 0x8cea
+  final val COLOR_ATTACHMENT11 = 0x8ceb
+  final val COLOR_ATTACHMENT12 = 0x8cec
+  final val COLOR_ATTACHMENT13 = 0x8ced
+  final val COLOR_ATTACHMENT14 = 0x8cee
+  final val COLOR_ATTACHMENT15 = 0x8cef
 
   def getUniformBlockIndex(program: WebGLProgram, uniformBlockName: String): Int =
     js.native
@@ -80,27 +85,63 @@ trait WebGL2RenderingContext extends WebGLRenderingContext {
 
 }
 
+object WebGL2RenderingContext {
+  // A whole bunch of uniform constants..
+  // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Constants#Uniforms
+  final val UNIFORM_BUFFER                              = 0x8a11
+  final val UNIFORM_BUFFER_BINDING                      = 0x8a28
+  final val UNIFORM_BUFFER_START                        = 0x8a29
+  final val UNIFORM_BUFFER_SIZE                         = 0x8a2a
+  final val MAX_VERTEX_UNIFORM_BLOCKS                   = 0x8a2b
+  final val MAX_FRAGMENT_UNIFORM_BLOCKS                 = 0x8a2d
+  final val MAX_COMBINED_UNIFORM_BLOCKS                 = 0x8a2e
+  final val MAX_UNIFORM_BUFFER_BINDINGS                 = 0x8a2f
+  final val MAX_UNIFORM_BLOCK_SIZE                      = 0x8a30
+  final val MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS      = 0x8a31
+  final val MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS    = 0x8a33
+  final val UNIFORM_BUFFER_OFFSET_ALIGNMENT             = 0x8a34
+  final val ACTIVE_UNIFORM_BLOCKS                       = 0x8a36
+  final val UNIFORM_TYPE                                = 0x8a37
+  final val UNIFORM_SIZE                                = 0x8a38
+  final val UNIFORM_BLOCK_INDEX                         = 0x8a3a
+  final val UNIFORM_OFFSET                              = 0x8a3b
+  final val UNIFORM_ARRAY_STRIDE                        = 0x8a3c
+  final val UNIFORM_MATRIX_STRIDE                       = 0x8a3d
+  final val UNIFORM_IS_ROW_MAJOR                        = 0x8a3e
+  final val UNIFORM_BLOCK_BINDING                       = 0x8a3f
+  final val UNIFORM_BLOCK_DATA_SIZE                     = 0x8a40
+  final val UNIFORM_BLOCK_ACTIVE_UNIFORMS               = 0x8a42
+  final val UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES        = 0x8a43
+  final val UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER   = 0x8a44
+  final val UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER = 0x8a46
+  final val MAX_3D_TEXTURE_SIZE                         = 0x8073
+  final val MAX_DRAW_BUFFERS                            = 0x8824
+  final val MAX_COLOR_ATTACHMENTS                       = 0x8cdf
+  final val MAX_VERTEX_TEXTURE_IMAGE_UNITS              = 0x8b4c
+  final val MAX_FRAGMENT_INPUT_COMPONENTS               = 0x9125
+}
+
 @js.native
 @JSGlobal
 class WebGLVertexArrayObject private[this] () extends js.Object
 
 object ColorAttachments {
-  final val COLOR_ATTACHMENT0  = 0x8CE0
-  final val COLOR_ATTACHMENT1  = 0x8CE1
-  final val COLOR_ATTACHMENT2  = 0x8CE2
-  final val COLOR_ATTACHMENT3  = 0x8CE3
-  final val COLOR_ATTACHMENT4  = 0x8CE4
-  final val COLOR_ATTACHMENT5  = 0x8CE5
-  final val COLOR_ATTACHMENT6  = 0x8CE6
-  final val COLOR_ATTACHMENT7  = 0x8CE7
-  final val COLOR_ATTACHMENT8  = 0x8CE8
-  final val COLOR_ATTACHMENT9  = 0x8CE9
-  final val COLOR_ATTACHMENT10 = 0x8CEA
-  final val COLOR_ATTACHMENT11 = 0x8CEB
-  final val COLOR_ATTACHMENT12 = 0x8CEC
-  final val COLOR_ATTACHMENT13 = 0x8CED
-  final val COLOR_ATTACHMENT14 = 0x8CEE
-  final val COLOR_ATTACHMENT15 = 0x8CEF
+  final val COLOR_ATTACHMENT0  = 0x8ce0
+  final val COLOR_ATTACHMENT1  = 0x8ce1
+  final val COLOR_ATTACHMENT2  = 0x8ce2
+  final val COLOR_ATTACHMENT3  = 0x8ce3
+  final val COLOR_ATTACHMENT4  = 0x8ce4
+  final val COLOR_ATTACHMENT5  = 0x8ce5
+  final val COLOR_ATTACHMENT6  = 0x8ce6
+  final val COLOR_ATTACHMENT7  = 0x8ce7
+  final val COLOR_ATTACHMENT8  = 0x8ce8
+  final val COLOR_ATTACHMENT9  = 0x8ce9
+  final val COLOR_ATTACHMENT10 = 0x8cea
+  final val COLOR_ATTACHMENT11 = 0x8ceb
+  final val COLOR_ATTACHMENT12 = 0x8cec
+  final val COLOR_ATTACHMENT13 = 0x8ced
+  final val COLOR_ATTACHMENT14 = 0x8cee
+  final val COLOR_ATTACHMENT15 = 0x8cef
 
   def intToColorAttachment(i: Int): Int =
     i match {

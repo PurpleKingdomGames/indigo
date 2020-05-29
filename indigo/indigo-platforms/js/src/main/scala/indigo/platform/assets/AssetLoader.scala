@@ -15,6 +15,7 @@ import indigo.shared.events.AssetEvent
 import indigo.shared.datatypes.BindingKey
 import scala.util.Success
 import scala.util.Failure
+import indigo.platform.audio.AudioPlayerImpl
 
 object AssetLoader {
 
@@ -127,7 +128,7 @@ object AssetLoader {
 
     Ajax.get(audioAsset.path.value, responseType = "arraybuffer").flatMap { xhr =>
       IndigoLogger.info(s"[Audio] Success ${audioAsset.path.value}")
-      val context = new AudioContext()
+      val context = AudioPlayerImpl.audioContext
       val p = context.decodeAudioData(
         xhr.response.asInstanceOf[ArrayBuffer],
         (audioBuffer: AudioBuffer) => audioBuffer,

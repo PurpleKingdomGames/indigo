@@ -8,6 +8,7 @@ import indigo.platform.assets.{AssetDataFormats}
 
 import org.scalajs.dom.{AudioBufferSourceNode, GainNode}
 import org.scalajs.dom.raw.AudioContext
+import scala.scalajs.js
 
 import indigo.shared.EqualTo._
 import indigo.shared.assets.AssetName
@@ -15,9 +16,15 @@ import indigo.platform.assets.LoadedAudioAsset
 
 object AudioPlayerImpl {
 
-  def init: AudioPlayerImpl =
-    new AudioPlayerImpl(new AudioContext())
 
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+  val audioContext: AudioContext = {
+    val ctx = (js.Dynamic.global.window.AudioContext || js.Dynamic.global.window.webkitAudioContext).asInstanceOf[AudioContext]
+    ctx
+  }
+
+  def init: AudioPlayerImpl =
+    new AudioPlayerImpl(audioContext)
 }
 
 final class AudioPlayerImpl(context: AudioContext) extends AudioPlayer {
