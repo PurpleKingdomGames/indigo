@@ -1,4 +1,4 @@
-package indigoextras.uicomponents
+package indigoextras.ui
 
 import utest._
 import indigo.shared.scenegraph.Text

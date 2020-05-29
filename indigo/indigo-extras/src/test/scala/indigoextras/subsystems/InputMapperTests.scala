@@ -1,4 +1,4 @@
-package indigoextras.subsystems.inputmapper
+package indigoextras.subsystems
 
 import utest._
 import indigo.shared.events.KeyboardEvent

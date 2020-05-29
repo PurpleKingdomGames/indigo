@@ -1,4 +1,4 @@
-package indigoextras.uicomponents
+package indigoextras.ui
 
 import indigo.shared.datatypes.{Depth, Rectangle}
 import indigo.shared.events.GlobalEvent

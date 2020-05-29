@@ -3,7 +3,7 @@ package com.example.perf
 import indigo._
 import indigoextras.formats._
 import indigo.json.Json
-import indigoextras.subsystems.fpscounter.FPSCounter
+import indigoextras.subsystems.FPSCounter
 
 import scala.scalajs.js.annotation._
 

@@ -4,9 +4,9 @@ import indigo._
 import indigo.json.Json
 
 import indigoextras.formats._
-import indigoextras.subsystems.fpscounter.FPSCounter
-import indigoextras.uicomponents.InputField
-import indigoextras.uicomponents.InputFieldAssets
+import indigoextras.subsystems.FPSCounter
+import indigoextras.ui.InputField
+import indigoextras.ui.InputFieldAssets
 
 import scala.scalajs.js.annotation._
 // import indigo.IndigoDemo

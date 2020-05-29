@@ -1,4 +1,4 @@
-package indigoextras.uicomponents
+package indigoextras.ui
 
 import indigo.shared.time.GameTime
 import indigo.shared.constants.Keys

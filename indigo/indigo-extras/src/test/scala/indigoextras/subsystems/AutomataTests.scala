@@ -1,4 +1,4 @@
-package indigoextras.subsystems.automata
+package indigoextras.subsystems
 
 import utest._
 import indigo.shared.scenegraph.Graphic

@@ -1,4 +1,4 @@
-package indigoextras.temporal
+package indigoextras.datatypes
 
 import utest._
 

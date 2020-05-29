@@ -1,4 +1,4 @@
-package indigoextras.subsystems.assetbundleloader
+package indigoextras.subsystems
 
 import utest._
 import indigo.shared.datatypes.BindingKey

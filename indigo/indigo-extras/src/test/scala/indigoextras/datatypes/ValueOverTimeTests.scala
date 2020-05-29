@@ -1,4 +1,4 @@
-package indigoextras.temporal
+package indigoextras.datatypes
 
 import indigo.shared.time.Seconds
 
