@@ -1,12 +1,7 @@
 package indigoexamples.automata
 
 import indigo._
-import indigoextras.subsystems.automata.AutomataPoolKey
-import indigoextras.subsystems.automata.Automata
-import indigoextras.subsystems.automata.Automaton
-import indigoextras.subsystems.automata.AutomatonUpdate
-import indigoextras.subsystems.automata.AutomataEvent
-import indigoextras.subsystems.automata.AutomatonSeedValues
+import indigoextras.subsystems._
 import indigoextras.geometry.Vertex
 
 import indigoexamples.Assets

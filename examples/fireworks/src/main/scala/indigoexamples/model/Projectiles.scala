@@ -3,9 +3,9 @@ package indigoexamples.model
 import indigo._
 import indigoextras.geometry.Vertex
 import indigoextras.geometry.Bezier
-import indigoextras.subsystems.automata.AutomatonPayload
+import indigoextras.subsystems.AutomatonPayload
 import indigoexamples.automata.TrailAutomata
-import indigoextras.subsystems.automata.AutomataEvent
+import indigoextras.subsystems.AutomataEvent
 
 trait Projectile extends AutomatonPayload {
   val flightTime: Seconds

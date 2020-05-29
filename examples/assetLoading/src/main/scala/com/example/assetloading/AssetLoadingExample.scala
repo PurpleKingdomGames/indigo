@@ -1,9 +1,8 @@
 package com.example.assetloading
 
 import indigo._
-import indigogame._
-import indigoextras.uicomponents._
-import indigoextras.subsystems.assetbundleloader._
+import indigoextras.ui._
+import indigoextras.subsystems._
 
 import scala.scalajs.js.annotation._
 

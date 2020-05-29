@@ -1,6 +1,6 @@
 package indigoexamples.automata
 
-import indigoextras.subsystems.automata._
+import indigoextras.subsystems._
 import indigoexamples.model.TrailParticle
 import indigo._
 import indigoexamples.Assets

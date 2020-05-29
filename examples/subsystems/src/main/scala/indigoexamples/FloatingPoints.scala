@@ -1,7 +1,7 @@
 package indigoexamples
 
 import indigo._
-import indigoextras.temporal.TimeVaryingValue
+import indigoextras.datatypes.TimeVaryingValue
 
 final case class FloatingPoints(fontKey: FontKey, entities: List[FloatingPointEntity]) extends SubSystem {
   type EventType = FloatingPointEvent

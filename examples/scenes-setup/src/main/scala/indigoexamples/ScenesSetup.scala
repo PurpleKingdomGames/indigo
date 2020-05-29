@@ -1,9 +1,8 @@
 package indigoexamples
 
 import indigo._
-import indigogame._
-import indigogame.scenemanager._
-import indigoextras.subsystems.fpscounter.FPSCounter
+import indigo.scenes._
+import indigoextras.subsystems.FPSCounter
 
 import scala.scalajs.js.annotation._
 

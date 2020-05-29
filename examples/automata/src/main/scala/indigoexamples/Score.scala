@@ -1,7 +1,7 @@
 package indigoexamples
 
 import indigo._
-import indigoextras.subsystems.automata._
+import indigoextras.subsystems._
 
 object Score {
 

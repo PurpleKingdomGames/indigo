@@ -1,9 +1,7 @@
 package indigoexamples
 
 import indigo._
-import indigogame._
-import indigoextras.subsystems.inputmapper.InputMapper
-import indigoextras.subsystems.inputmapper.InputMapperEvent
+import indigoextras.subsystems._
 
 import scala.scalajs.js.annotation._
 

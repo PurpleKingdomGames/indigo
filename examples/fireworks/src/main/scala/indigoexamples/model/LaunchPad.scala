@@ -1,7 +1,7 @@
 package indigoexamples.model
 
 import indigo._
-import indigoextras.subsystems.automata.AutomatonPayload
+import indigoextras.subsystems.AutomatonPayload
 import indigoexamples.automata.LaunchPadAutomata
 import indigoextras.geometry.Vertex
 

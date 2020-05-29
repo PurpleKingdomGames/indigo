@@ -1,7 +1,6 @@
 package com.example.lighting
 
 import indigo._
-import indigogame._
 
 import scala.scalajs.js.annotation._
 
