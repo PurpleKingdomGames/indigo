@@ -1,7 +1,7 @@
 package indigojs
 
 import indigo.gameengine.GameEngine
-import indigogame.entry.StandardFrameProcessor
+import indigo.entry.StandardFrameProcessor
 
 import scala.concurrent.Future
 

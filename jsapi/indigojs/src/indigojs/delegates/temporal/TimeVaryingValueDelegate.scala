@@ -1,7 +1,7 @@
 package indigojs.delegates.temporal
 
 import scala.scalajs.js.annotation._
-import indigoextras.temporal.TimeVaryingValue
+import indigoextras.datatypes.TimeVaryingValue
 import indigo.shared.time.Seconds
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))

@@ -3,8 +3,8 @@ package indigojs.delegates
 import scala.scalajs.js.annotation._
 
 import indigo.shared.events.InputState
-import indigo.shared.events.MouseState
-import indigo.shared.events.KeyboardState
+import indigo.shared.events.Mouse
+import indigo.shared.events.Keyboard
 import indigo.shared.input.Gamepad
 import indigo.shared.constants.Key
 import indigo.shared.input.GamepadDPad
@@ -16,12 +16,12 @@ import indigo.shared.input.AnalogAxis
 final class InputStateDelegate(inputState: InputState) {
 
   @JSExport
-  val mouse: MouseStateDelegate =
-    new MouseStateDelegate(inputState.mouse)
+  val mouse: MouseDelegate =
+    new MouseDelegate(inputState.mouse)
 
   @JSExport
-  val keyboard: KeyboardStateDelegate =
-    new KeyboardStateDelegate(inputState.keyboard)
+  val keyboard: KeyboardDelegate =
+    new KeyboardDelegate(inputState.keyboard)
 
   @JSExport
   val gamepad: GamepadDelegate =
@@ -30,38 +30,38 @@ final class InputStateDelegate(inputState: InputState) {
 }
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
-@JSExportTopLevel("MouseState")
+@JSExportTopLevel("Mouse")
 @JSExportAll
-final class MouseStateDelegate(mouseState: MouseState) {
+final class MouseDelegate(mouse: Mouse) {
 
-  val position: PointDelegate                  = new PointDelegate(mouseState.position.x, mouseState.position.y)
-  val leftMouseIsDown: Boolean                 = mouseState.leftMouseIsDown
-  lazy val mousePressed: Boolean               = mouseState.mousePressed
-  lazy val mouseReleased: Boolean              = mouseState.mouseReleased
-  lazy val mouseClicked: Boolean               = mouseState.mouseClicked
-  lazy val mouseClickAt: Option[PointDelegate] = mouseState.mouseClickAt.map(p => new PointDelegate(p.x, p.y))
-  lazy val mouseUpAt: Option[PointDelegate]    = mouseState.mouseUpAt.map(p => new PointDelegate(p.x, p.y))
-  lazy val mouseDownAt: Option[PointDelegate]  = mouseState.mouseDownAt.map(p => new PointDelegate(p.x, p.y))
+  val position: PointDelegate                  = new PointDelegate(mouse.position.x, mouse.position.y)
+  val leftMouseIsDown: Boolean                 = mouse.leftMouseIsDown
+  lazy val mousePressed: Boolean               = mouse.mousePressed
+  lazy val mouseReleased: Boolean              = mouse.mouseReleased
+  lazy val mouseClicked: Boolean               = mouse.mouseClicked
+  lazy val mouseClickAt: Option[PointDelegate] = mouse.mouseClickAt.map(p => new PointDelegate(p.x, p.y))
+  lazy val mouseUpAt: Option[PointDelegate]    = mouse.mouseUpAt.map(p => new PointDelegate(p.x, p.y))
+  lazy val mouseDownAt: Option[PointDelegate]  = mouse.mouseDownAt.map(p => new PointDelegate(p.x, p.y))
 
-  def wasMouseClickedAt(x: Int, y: Int): Boolean                               = mouseState.wasMouseClickedAt(x, y)
-  def wasMouseUpAt(x: Int, y: Int): Boolean                                    = mouseState.wasMouseUpAt(x, y)
-  def wasMouseDownAt(x: Int, y: Int): Boolean                                  = mouseState.wasMouseDownAt(x, y)
-  def wasMousePositionAt(x: Int, y: Int): Boolean                              = mouseState.wasMousePositionAt(x, y)
-  def wasMouseClickedWithin(x: Int, y: Int, width: Int, height: Int): Boolean  = mouseState.wasMouseClickedWithin(x, y, width, height)
-  def wasMouseUpWithin(x: Int, y: Int, width: Int, height: Int): Boolean       = mouseState.wasMouseUpWithin(x, y, width, height)
-  def wasMouseDownWithin(x: Int, y: Int, width: Int, height: Int): Boolean     = mouseState.wasMouseDownWithin(x, y, width, height)
-  def wasMousePositionWithin(x: Int, y: Int, width: Int, height: Int): Boolean = mouseState.wasMousePositionWithin(x, y, width, height)
+  def wasMouseClickedAt(x: Int, y: Int): Boolean                               = mouse.wasMouseClickedAt(x, y)
+  def wasMouseUpAt(x: Int, y: Int): Boolean                                    = mouse.wasMouseUpAt(x, y)
+  def wasMouseDownAt(x: Int, y: Int): Boolean                                  = mouse.wasMouseDownAt(x, y)
+  def wasMousePositionAt(x: Int, y: Int): Boolean                              = mouse.wasMousePositionAt(x, y)
+  def wasMouseClickedWithin(x: Int, y: Int, width: Int, height: Int): Boolean  = mouse.wasMouseClickedWithin(x, y, width, height)
+  def wasMouseUpWithin(x: Int, y: Int, width: Int, height: Int): Boolean       = mouse.wasMouseUpWithin(x, y, width, height)
+  def wasMouseDownWithin(x: Int, y: Int, width: Int, height: Int): Boolean     = mouse.wasMouseDownWithin(x, y, width, height)
+  def wasMousePositionWithin(x: Int, y: Int, width: Int, height: Int): Boolean = mouse.wasMousePositionWithin(x, y, width, height)
 }
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
-@JSExportTopLevel("KeyboardState")
+@JSExportTopLevel("Keyboard")
 @JSExportAll
-final class KeyboardStateDelegate(keyboardState: KeyboardState) {
-  val keysDown: List[Key]                   = keyboardState.keysDown
-  val lastKeyHeldDown: Option[Key]          = keyboardState.lastKeyHeldDown
-  lazy val keysReleased: List[Key]          = keyboardState.keysReleased
-  def keysAreDown(keys: List[Key]): Boolean = keyboardState.keysAreDown(keys: _*)
-  def keysAreUp(keys: List[Key]): Boolean   = keyboardState.keysAreUp(keys: _*)
+final class KeyboardDelegate(keyboard: Keyboard) {
+  val keysDown: List[Key]                   = keyboard.keysDown
+  val lastKeyHeldDown: Option[Key]          = keyboard.lastKeyHeldDown
+  lazy val keysReleased: List[Key]          = keyboard.keysReleased
+  def keysAreDown(keys: List[Key]): Boolean = keyboard.keysAreDown(keys: _*)
+  def keysAreUp(keys: List[Key]): Boolean   = keyboard.keysAreUp(keys: _*)
 }
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
