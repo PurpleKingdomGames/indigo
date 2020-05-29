@@ -6,21 +6,21 @@ import indigo.shared.datatypes.Rectangle
 import scala.annotation.tailrec
 import indigo.shared.input.Gamepad
 
-final class InputState(val mouse: MouseState, val keyboard: KeyboardState, val gamepad: Gamepad)
+final class InputState(val mouse: Mouse, val keyboard: Keyboard, val gamepad: Gamepad)
 
 object InputState {
   val default: InputState =
-    new InputState(MouseSignals.default, KeyboardSignals.default, Gamepad.default)
+    new InputState(Mouse.default, Keyboard.default, Gamepad.default)
 
   def calculateNext(previous: InputState, events: List[InputEvent], gamepadState: Gamepad): InputState =
     new InputState(
-      MouseSignals.calculateNext(previous.mouse, events.collect { case e: MouseEvent          => e }),
-      KeyboardSignals.calculateNext(previous.keyboard, events.collect { case e: KeyboardEvent => e }),
+      Mouse.calculateNext(previous.mouse, events.collect { case e: MouseEvent          => e }),
+      Keyboard.calculateNext(previous.keyboard, events.collect { case e: KeyboardEvent => e }),
       gamepadState
     )
 }
 
-final class MouseState(mouseEvents: List[MouseEvent], val position: Point, val leftMouseIsDown: Boolean) {
+final class Mouse(mouseEvents: List[MouseEvent], val position: Point, val leftMouseIsDown: Boolean) {
 
   lazy val mousePressed: Boolean =
     mouseEvents.exists {
@@ -84,12 +84,12 @@ final class MouseState(mouseEvents: List[MouseEvent], val position: Point, val l
     wasMousePositionWithin(Rectangle(x, y, width, height))
 
 }
-object MouseSignals {
-  val default: MouseState =
-    new MouseState(Nil, Point.zero, false)
+object Mouse {
+  val default: Mouse =
+    new Mouse(Nil, Point.zero, false)
 
-  def calculateNext(previous: MouseState, events: List[MouseEvent]): MouseState =
-    new MouseState(
+  def calculateNext(previous: Mouse, events: List[MouseEvent]): Mouse =
+    new Mouse(
       events,
       lastMousePosition(previous.position, events),
       isLeftMouseDown(previous.leftMouseIsDown, events)
@@ -118,7 +118,7 @@ object MouseSignals {
     }
 }
 
-final class KeyboardState(keyboardEvents: List[KeyboardEvent], val keysDown: List[Key], val lastKeyHeldDown: Option[Key]) {
+final class Keyboard(keyboardEvents: List[KeyboardEvent], val keysDown: List[Key], val lastKeyHeldDown: Option[Key]) {
 
   lazy val keysReleased: List[Key] = keyboardEvents.collect { case k: KeyboardEvent.KeyUp => k.keyCode }
 
@@ -126,15 +126,15 @@ final class KeyboardState(keyboardEvents: List[KeyboardEvent], val keysDown: Lis
   def keysAreUp(keys: Key*): Boolean   = keys.forall(keyCode => keysReleased.contains(keyCode))
 
 }
-object KeyboardSignals {
+object Keyboard {
 
-  val default: KeyboardState =
-    new KeyboardState(Nil, Nil, None)
+  val default: Keyboard =
+    new Keyboard(Nil, Nil, None)
 
-  def calculateNext(previous: KeyboardState, events: List[KeyboardEvent]): KeyboardState = {
+  def calculateNext(previous: Keyboard, events: List[KeyboardEvent]): Keyboard = {
     val keysDown = calculateKeysDown(events, previous.keysDown)
 
-    new KeyboardState(
+    new Keyboard(
       events,
       keysDown,
       keysDown.reverse.headOption

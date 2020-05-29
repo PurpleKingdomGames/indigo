@@ -6,7 +6,7 @@ import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Material
 import indigo.shared.assets.AssetName
 import indigo.shared.scenegraph.Graphic
-import indigo.shared.events.MouseState
+import indigo.shared.events.Mouse
 import indigo.shared.datatypes.Point
 import indigo.shared.events.MouseEvent
 import indigo.shared.events.GlobalEvent
@@ -45,7 +45,7 @@ object ButtonTests extends TestSuite {
           button.state.isUp ==> true
 
           val mouse =
-            new MouseState(Nil, Point(20, 20), false)
+            new Mouse(Nil, Point(20, 20), false)
 
           val actual = button.update(mouse)
 
@@ -61,7 +61,7 @@ object ButtonTests extends TestSuite {
 
         "Transition from Over -> Up when mouse out" - {
           val mouse =
-            new MouseState(Nil, Point(0, 0), false)
+            new Mouse(Nil, Point(0, 0), false)
 
           val actual = button.toOverState.update(mouse)
 
@@ -77,7 +77,7 @@ object ButtonTests extends TestSuite {
 
         "Transition from Over -> Down on mouse press" - {
           val mouse =
-            new MouseState(List(MouseEvent.MouseDown(20, 20)), Point(20, 20), false)
+            new Mouse(List(MouseEvent.MouseDown(20, 20)), Point(20, 20), false)
 
           val actual = button.toOverState.update(mouse)
 
@@ -93,7 +93,7 @@ object ButtonTests extends TestSuite {
 
         "Transition from Up -> Down on mouse press" - {
           val mouse =
-            new MouseState(List(MouseEvent.MouseDown(20, 20)), Point(20, 20), false)
+            new Mouse(List(MouseEvent.MouseDown(20, 20)), Point(20, 20), false)
 
           val actual = button.toUpState.update(mouse)
 
@@ -111,7 +111,7 @@ object ButtonTests extends TestSuite {
 
         "Transition from Down -> Over on mouse release" - {
           val mouse =
-            new MouseState(List(MouseEvent.MouseUp(20, 20)), Point(20, 20), false)
+            new Mouse(List(MouseEvent.MouseUp(20, 20)), Point(20, 20), false)
 
           val actual = button.toDownState.update(mouse)
 
@@ -127,9 +127,9 @@ object ButtonTests extends TestSuite {
 
         "If the button is down, and the mouse moves out, the button stays down until release." - {
           val actual = for {
-            buttonPressed <- button.update(new MouseState(List(MouseEvent.MouseDown(20, 20)), Point(20, 20), false))
-            mouseOut      <- buttonPressed.update(new MouseState(Nil, Point(200, 200), false))
-            mouseReleased <- mouseOut.update(new MouseState(List(MouseEvent.MouseUp(200, 200)), Point(200, 200), false))
+            buttonPressed <- button.update(new Mouse(List(MouseEvent.MouseDown(20, 20)), Point(20, 20), false))
+            mouseOut      <- buttonPressed.update(new Mouse(Nil, Point(200, 200), false))
+            mouseReleased <- mouseOut.update(new Mouse(List(MouseEvent.MouseUp(200, 200)), Point(200, 200), false))
           } yield (buttonPressed.state, mouseOut.state, mouseReleased.state)
 
           assert(

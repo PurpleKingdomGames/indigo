@@ -2,7 +2,7 @@ package indigoextras.uicomponents
 
 import indigo.shared.datatypes.{Depth, Rectangle}
 import indigo.shared.events.GlobalEvent
-import indigo.shared.events.MouseState
+import indigo.shared.events.Mouse
 import indigo.shared.Outcome
 import indigo.shared.scenegraph.SceneGraphNodePrimitive
 
@@ -17,7 +17,7 @@ final case class Button(
     onHoverOut: () => List[GlobalEvent]
 ) {
 
-  def update(mouse: MouseState): Outcome[Button] = {
+  def update(mouse: Mouse): Outcome[Button] = {
     val mouseInBounds = bounds.isPointWithin(mouse.position)
 
     state match {
