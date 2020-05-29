@@ -1,8 +1,7 @@
 package snake.scenes
 
 import indigo._
-import indigogame.lenses.Lens
-import indigogame.scenemanager._
+import indigo.scenes._
 
 import snake.init.{GameAssets, Settings}
 import snake.model.{SnakeGameModel, SnakeViewModel}

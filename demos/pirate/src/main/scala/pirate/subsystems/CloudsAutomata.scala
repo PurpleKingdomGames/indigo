@@ -1,7 +1,7 @@
 package pirate.subsystems
 
 import indigo._
-import indigoextras.subsystems.automata._
+import indigoextras.subsystems._
 import indigoextras.geometry.Bezier
 import indigoextras.geometry.Vertex
 import pirate.init.Assets

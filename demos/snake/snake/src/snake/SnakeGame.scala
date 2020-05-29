@@ -1,9 +1,8 @@
 package snake
 
 import indigo._
-import indigogame._
-import indigogame.scenemanager._
-// import indigoextras.subsystems.fpscounter.FPSCounter
+import indigo.scenes._
+// import indigoextras.subsystems.FPSCounter
 
 import snake.model.{ControlScheme, SnakeGameModel, SnakeViewModel}
 import snake.init.{GameAssets, Settings, SnakeStartupData}

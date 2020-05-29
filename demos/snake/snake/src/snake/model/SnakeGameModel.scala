@@ -1,6 +1,6 @@
 package snake.model
 
-import indigogame.lenses._
+import indigo.scenes._
 import snake.gamelogic.ModelLogic
 import snake.init.SnakeStartupData
 

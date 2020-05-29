@@ -1,7 +1,6 @@
 package pirate
 
 import indigo._
-import indigogame._
 
 import pirate.subsystems.{CloudsAutomata, CloudsSubSystem}
 import pirate.init.{Assets, InitialLoad, StartupData}

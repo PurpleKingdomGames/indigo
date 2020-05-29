@@ -1,8 +1,7 @@
 package snake.scenes
 
 import indigo._
-import indigogame.lenses._
-import indigogame.scenemanager._
+import indigo.scenes._
 import indigo.AsString._
 
 import snake.gamelogic.{ModelLogic, ViewLogic}
