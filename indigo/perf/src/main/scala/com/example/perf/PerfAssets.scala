@@ -1,7 +1,6 @@
 package com.example.perf
 
 import indigo._
-import indigo.shared.datatypes.Material
 
 object PerfAssets {
 

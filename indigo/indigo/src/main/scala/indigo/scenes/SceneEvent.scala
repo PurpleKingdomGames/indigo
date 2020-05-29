@@ -1,4 +1,4 @@
-package indigogame.scenemanager
+package indigo.scenes
 
 import indigo.shared.events.GlobalEvent
 

@@ -1,7 +1,6 @@
 package com.example.sandbox
 
 import indigo._
-import indigo.shared.datatypes.Material
 
 object SandboxAssets {
 

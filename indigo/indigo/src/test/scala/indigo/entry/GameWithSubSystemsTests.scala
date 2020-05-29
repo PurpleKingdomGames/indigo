@@ -1,4 +1,4 @@
-package indigogame.entry
+package indigo.entry
 
 import utest._
 import indigo.shared.assets.AssetType.Text

@@ -25,6 +25,9 @@ trait SharedTypeAliases {
   type AdvancedGameConfig = shared.config.AdvancedGameConfig
   val AdvancedGameConfig: shared.config.AdvancedGameConfig.type = shared.config.AdvancedGameConfig
 
+  type RenderingTechnology = shared.config.RenderingTechnology
+  val RenderingTechnology: shared.config.RenderingTechnology.type = shared.config.RenderingTechnology
+
   val IndigoLogger: shared.IndigoLogger.type = shared.IndigoLogger
 
   type Aseprite = shared.formats.Aseprite

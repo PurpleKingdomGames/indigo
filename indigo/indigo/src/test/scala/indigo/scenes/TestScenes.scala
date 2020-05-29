@@ -1,4 +1,4 @@
-package indigogame.scenemanager
+package indigo.scenes
 
 import indigo.shared.time.GameTime
 import indigo.shared.events.{InputState, GlobalEvent}

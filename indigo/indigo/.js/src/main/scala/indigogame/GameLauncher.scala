@@ -1,4 +1,4 @@
-package indigogame
+package indigo
 
 import scala.scalajs.js.annotation._
 

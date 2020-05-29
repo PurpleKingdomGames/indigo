@@ -1,11 +1,11 @@
-package indigogame
+package indigo
 
 import indigo._
 import indigo.gameengine.GameEngine
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemsRegister
-import indigogame.entry.GameWithSubSystems
-import indigogame.entry.StandardFrameProcessor
+import indigo.entry.GameWithSubSystems
+import indigo.entry.StandardFrameProcessor
 
 // Indigo is Scala.js only at the moment, revisit if/when we go to the JVM
 import scala.concurrent.ExecutionContext.Implicits.global

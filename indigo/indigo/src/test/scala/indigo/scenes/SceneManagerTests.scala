@@ -1,4 +1,4 @@
-package indigogame.scenemanager
+package indigo.scenes
 
 import indigo.shared.time.GameTime
 import indigo.shared.events.{FrameTick, GlobalEvent}
@@ -14,7 +14,7 @@ import indigo.shared.FontRegister
 
 object SceneManagerTests extends TestSuite {
 
-  import indigogame.scenemanager.FakeFrameContext._
+  import indigo.scenes.FakeFrameContext._
 
   import TestScenes._
 

@@ -1,4 +1,4 @@
-package indigogame.scenemanager
+package indigo.scenes
 
 trait Lens[A, B] {
   def get(from: A): B

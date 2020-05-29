@@ -6,8 +6,6 @@ import indigo.json.Json
 import indigoextras.subsystems.fpscounter.FPSCounter
 
 import scala.scalajs.js.annotation._
-import indigogame.IndigoDemo
-import indigo.shared.config.RenderingTechnology
 
 @JSExportTopLevel("IndigoGame")
 object PerfGame extends IndigoDemo[MyStartupData, MyGameModel, Unit] {

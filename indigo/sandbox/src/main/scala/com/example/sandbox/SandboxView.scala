@@ -25,7 +25,7 @@ object SandboxView {
     // .withGameColorOverlay(RGBA.Red.withAmount(0.5))
   }
 
-  def gameLayer(currentState: SandboxGameModel, viewModel: SandboxViewModel): List[SceneGraphNode] = {
+  def gameLayer(currentState: SandboxGameModel, viewModel: SandboxViewModel): List[SceneGraphNode] =
     List(
       currentState.dude.walkDirection match {
         case d @ DudeLeft =>
@@ -59,7 +59,6 @@ object SandboxView {
         .withHorizontalFlip(true)
         .withAlpha(0.5f)
     )
-  }
 
   def lightingLayer(inputState: InputState): List[SceneGraphNode] =
     List(

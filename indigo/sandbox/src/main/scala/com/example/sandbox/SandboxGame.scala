@@ -9,7 +9,7 @@ import indigoextras.uicomponents.InputField
 import indigoextras.uicomponents.InputFieldAssets
 
 import scala.scalajs.js.annotation._
-import indigogame.IndigoDemo
+// import indigo.IndigoDemo
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoDemo[SandboxStartupData, SandboxGameModel, SandboxViewModel] {

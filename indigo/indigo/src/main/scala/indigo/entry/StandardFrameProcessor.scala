@@ -1,4 +1,4 @@
-package indigogame.entry
+package indigo.entry
 
 import indigo.shared.Outcome
 import indigo.shared.scenegraph.SceneUpdateFragment

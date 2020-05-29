@@ -1,4 +1,4 @@
-package indigogame.scenemanager
+package indigo.scenes
 
 import utest._
 
