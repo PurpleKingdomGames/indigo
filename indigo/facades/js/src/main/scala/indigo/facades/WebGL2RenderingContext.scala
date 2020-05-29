@@ -119,6 +119,7 @@ object WebGL2RenderingContext {
   final val MAX_COLOR_ATTACHMENTS                       = 0x8cdf
   final val MAX_VERTEX_TEXTURE_IMAGE_UNITS              = 0x8b4c
   final val MAX_FRAGMENT_INPUT_COMPONENTS               = 0x9125
+  final val MAX_VARYING_VECTORS                         = 0x8dfc
 }
 
 @js.native
