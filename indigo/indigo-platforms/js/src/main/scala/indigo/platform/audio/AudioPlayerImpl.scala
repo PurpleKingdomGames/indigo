@@ -13,21 +13,88 @@ import scala.scalajs.js
 import indigo.shared.EqualTo._
 import indigo.shared.assets.AssetName
 import indigo.platform.assets.LoadedAudioAsset
+import org.scalajs.dom.raw.AudioBuffer
+import scala.concurrent.Future
+import org.scalajs.dom.raw.AudioDestinationNode
 
 object AudioPlayerImpl {
 
-
-  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
-  val audioContext: AudioContext = {
-    val ctx = (js.Dynamic.global.window.AudioContext || js.Dynamic.global.window.webkitAudioContext).asInstanceOf[AudioContext]
-    ctx
-  }
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.Null", "org.wartremover.warts.Equals"))
+  def giveAudioContext(): AudioContextProxy =
+    if (js.Dynamic.global.window.webkitAudioContext != null && !js.isUndefined(js.Dynamic.global.window.webkitAudioContext))
+      AudioContextProxy.WebKitAudioContext(js.Dynamic.newInstance(js.Dynamic.global.window.webkitAudioContext)())
+    else AudioContextProxy.StandardAudioContext(new AudioContext)
 
   def init: AudioPlayerImpl =
-    new AudioPlayerImpl(audioContext)
+    new AudioPlayerImpl(giveAudioContext())
 }
 
-final class AudioPlayerImpl(context: AudioContext) extends AudioPlayer {
+sealed trait AudioContextProxy {
+
+  def createBufferSource(): AudioBufferSourceNode
+
+  def createGain(): GainNode
+
+  def decodeAudioData(
+      audioData: js.typedarray.ArrayBuffer,
+      successCallback: AudioBuffer => AudioBuffer,
+      errorCallback: () => Unit
+  ): js.Promise[AudioBuffer]
+
+  val destination: AudioDestinationNode
+}
+object AudioContextProxy {
+
+  final case class StandardAudioContext(context: AudioContext) extends AudioContextProxy {
+    def createBufferSource(): AudioBufferSourceNode =
+      context.createBufferSource()
+
+    def createGain(): GainNode =
+      context.createGain()
+
+    def decodeAudioData(
+        audioData: js.typedarray.ArrayBuffer,
+        successCallback: AudioBuffer => AudioBuffer,
+        errorCallback: () => Unit
+    ): js.Promise[AudioBuffer] =
+      context.decodeAudioData(audioData, successCallback, errorCallback)
+
+    val destination: AudioDestinationNode =
+      context.destination
+  }
+
+  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.Throw", "org.wartremover.warts.Equals"))
+  final case class WebKitAudioContext(context: js.Dynamic) extends AudioContextProxy {
+    import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
+    import scalajs.js.JSConverters._
+
+    def createBufferSource(): AudioBufferSourceNode =
+      context.createBufferSource().asInstanceOf[AudioBufferSourceNode]
+
+    def createGain(): GainNode =
+      context.createGain().asInstanceOf[GainNode]
+
+    def decodeAudioData(
+        audioData: js.typedarray.ArrayBuffer,
+        successCallback: AudioBuffer => AudioBuffer,
+        errorCallback: () => Unit
+    ): js.Promise[AudioBuffer] =
+      Future[AudioBuffer] {
+        val decodedBuffer = context.createBuffer(audioData, false).asInstanceOf[AudioBuffer]
+
+        if (decodedBuffer != null && !js.isUndefined(decodedBuffer))
+          successCallback(decodedBuffer)
+        else
+          throw new Exception("Decoding the audio buffer failed");
+      }.toJSPromise
+
+    val destination: AudioDestinationNode =
+      context.destination.asInstanceOf[AudioDestinationNode]
+  }
+
+}
+
+final class AudioPlayerImpl(context: AudioContextProxy) extends AudioPlayer {
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var soundAssets: List[LoadedAudioAsset] = Nil

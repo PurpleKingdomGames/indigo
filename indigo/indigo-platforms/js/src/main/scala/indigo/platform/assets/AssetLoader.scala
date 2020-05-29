@@ -88,9 +88,13 @@ object AssetLoader {
       image.onload = { _: Event =>
         p.success(image)
       }
-      image.addEventListener("error", { _: Event =>
-        p.failure(new Exception("Image load error"))
-      }, false)
+      image.addEventListener(
+        "error",
+        { _: Event =>
+          p.failure(new Exception("Image load error"))
+        },
+        false
+      )
       p.future
     }
 
@@ -128,7 +132,8 @@ object AssetLoader {
 
     Ajax.get(audioAsset.path.value, responseType = "arraybuffer").flatMap { xhr =>
       IndigoLogger.info(s"[Audio] Success ${audioAsset.path.value}")
-      val context = AudioPlayerImpl.audioContext
+      val context = AudioPlayerImpl.giveAudioContext()
+
       val p = context.decodeAudioData(
         xhr.response.asInstanceOf[ArrayBuffer],
         (audioBuffer: AudioBuffer) => audioBuffer,
