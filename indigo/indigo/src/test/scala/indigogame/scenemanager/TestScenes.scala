@@ -4,7 +4,6 @@ import indigo.shared.time.GameTime
 import indigo.shared.events.{InputState, GlobalEvent}
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.Outcome
-import indigogame.lenses.Lens
 import indigo.shared.dice.Dice
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.BoundaryLocator

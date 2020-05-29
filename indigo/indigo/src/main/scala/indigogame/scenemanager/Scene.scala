@@ -4,7 +4,6 @@ import indigo.shared.Outcome
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.EqualTo
-import indigogame.lenses.Lens
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.FrameContext
 
