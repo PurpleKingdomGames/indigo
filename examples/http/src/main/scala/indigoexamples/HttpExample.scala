@@ -6,11 +6,13 @@ import indigoextras.ui._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object HttpExample extends IndigoDemo[Unit, Unit, Button] {
+object HttpExample extends IndigoDemo[Unit, Unit, Unit, Button] {
 
-  val config: GameConfig = defaultGameConfig
+  def parseFlags(flags: Map[String,String]): Unit = ()
 
-  val assets: Set[AssetType] = Set(AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")))
+  def config(flagData: Unit): GameConfig = defaultGameConfig
+
+  def assets(flagData: Unit): Set[AssetType] = Set(AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")))
 
   val fonts: Set[FontInfo] = Set()
 
@@ -18,7 +20,7 @@ object HttpExample extends IndigoDemo[Unit, Unit, Button] {
 
   val subSystems: Set[SubSystem] = Set()
 
-  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, Unit] =
+  def setup(flagData: Unit, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =

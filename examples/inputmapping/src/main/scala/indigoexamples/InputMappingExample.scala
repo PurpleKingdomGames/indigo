@@ -6,16 +6,18 @@ import indigoextras.subsystems._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object InputMappingExample extends IndigoDemo[Unit, GameModel, Unit] {
+object InputMappingExample extends IndigoDemo[Unit, Unit, GameModel, Unit] {
 
   import FontStuff._
 
-  val config: GameConfig =
+  def parseFlags(flags: Map[String,String]): Unit = ()
+
+  def config(flagData: Unit): GameConfig =
     defaultGameConfig
       .withClearColor(ClearColor.fromHexString("0xAA3399"))
       .withMagnification(1)
 
-  val assets: Set[AssetType] =
+  def assets(flagData: Unit): Set[AssetType] =
     Set(AssetType.Image(fontName, AssetPath("assets/boxy_font.png")))
 
   val fonts: Set[FontInfo] =
@@ -31,7 +33,7 @@ object InputMappingExample extends IndigoDemo[Unit, GameModel, Unit] {
       )
     )
 
-  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, Unit] =
+  def setup(flagData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): GameModel =

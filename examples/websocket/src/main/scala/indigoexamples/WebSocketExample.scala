@@ -16,7 +16,9 @@ We also want to establish a connection on startup that repeated writes 1)'s
 Ping! to the console.
  */
 @JSExportTopLevel("IndigoGame")
-object WebSocketExample extends IndigoDemo[MySetupData, Unit, MyViewModel] {
+object WebSocketExample extends IndigoDemo[Unit, MySetupData, Unit, MyViewModel] {
+
+  def parseFlags(flags: Map[String,String]): Unit = ()
 
   val buttonAssets: ButtonAssets =
     ButtonAssets(
@@ -25,9 +27,9 @@ object WebSocketExample extends IndigoDemo[MySetupData, Unit, MyViewModel] {
       down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 32, 16, 16)
     )
 
-  val config: GameConfig = defaultGameConfig
+  def config(flagData: Unit): GameConfig = defaultGameConfig
 
-  val assets: Set[AssetType] = Set(AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")))
+  def assets(flagData: Unit): Set[AssetType] = Set(AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")))
 
   val fonts: Set[FontInfo] = Set()
 
@@ -35,7 +37,7 @@ object WebSocketExample extends IndigoDemo[MySetupData, Unit, MyViewModel] {
 
   val subSystems: Set[SubSystem] = Set()
 
-  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, MySetupData] =
+  def setup(flagData: Unit, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, MySetupData] =
     Startup.Success(
       MySetupData(
         pingSocket = WebSocketConfig(

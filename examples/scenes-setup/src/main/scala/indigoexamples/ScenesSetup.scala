@@ -7,21 +7,23 @@ import indigoextras.subsystems.FPSCounter
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object ScenesSetup extends IndigoGame[StartUpData, GameModel, Unit] {
+object ScenesSetup extends IndigoGame[Unit, StartUpData, GameModel, Unit] {
+
+  def parseFlags(flags: Map[String, String]): Unit = ()
 
   val targetFPS: Int = 30
 
-  val scenes: NonEmptyList[Scene[GameModel, Unit]] =
+  def scenes(flagData: Unit): NonEmptyList[Scene[GameModel, Unit]] =
     NonEmptyList(SceneA, SceneB)
 
-  val initialScene: Option[SceneName] = Option(SceneA.name)
+  def initialScene(flagData: Unit): Option[SceneName] = Option(SceneA.name)
 
-  val config: GameConfig =
+  def config(flagData: Unit): GameConfig =
     defaultGameConfig
       .withClearColor(ClearColor.fromHexString("0xAA3399"))
       .withFrameRate(targetFPS)
 
-  val assets: Set[AssetType] = Set(AssetType.Image(FontStuff.fontName, AssetPath("assets/boxy_font.png")))
+  def assets(flagData: Unit): Set[AssetType] = Set(AssetType.Image(FontStuff.fontName, AssetPath("assets/boxy_font.png")))
 
   val fonts: Set[FontInfo] = Set(FontStuff.fontInfo)
 
@@ -29,7 +31,7 @@ object ScenesSetup extends IndigoGame[StartUpData, GameModel, Unit] {
 
   val subSystems: Set[SubSystem] = Set(FPSCounter.subSystem(FontStuff.fontKey, Point(10, 360), targetFPS))
 
-  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, StartUpData] =
+  def setup(flagData: Unit, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartUpData] =
     Startup.Success(StartUpData("Scene A!", "Scene B?"))
 
   def initialModel(startupData: StartUpData): GameModel =

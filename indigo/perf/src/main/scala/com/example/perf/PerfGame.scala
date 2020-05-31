@@ -8,7 +8,10 @@ import indigoextras.subsystems.FPSCounter
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object PerfGame extends IndigoDemo[MyStartupData, MyGameModel, Unit] {
+object PerfGame extends IndigoDemo[Unit, MyStartupData, MyGameModel, Unit] {
+
+  def parseFlags(flags: Map[String, String]): Unit =
+    ()
 
   val targetFPS: Int = 60
 
@@ -19,10 +22,10 @@ object PerfGame extends IndigoDemo[MyStartupData, MyGameModel, Unit] {
   val animations: Set[Animation] =
     Set()
 
-  val assets: Set[AssetType] =
+  def assets(flagData: Unit): Set[AssetType] =
     PerfAssets.assets
 
-  val config: GameConfig =
+  def config(flagData: Unit): GameConfig =
     GameConfig(
       viewport = GameViewport(viewportWidth, viewportHeight),
       frameRate = targetFPS,
@@ -49,7 +52,7 @@ object PerfGame extends IndigoDemo[MyStartupData, MyGameModel, Unit] {
   def initialViewModel(startupData: MyStartupData, model: MyGameModel): Unit =
     ()
 
-  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, MyStartupData] = {
+  def setup(flagData: Unit, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, MyStartupData] = {
     def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[MyStartupData] =
       Startup
         .Success(

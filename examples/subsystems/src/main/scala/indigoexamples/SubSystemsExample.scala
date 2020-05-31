@@ -5,13 +5,15 @@ import indigo._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object SubSystemsExample extends IndigoDemo[Unit, Unit, Unit] {
+object SubSystemsExample extends IndigoDemo[Unit, Unit, Unit, Unit] {
 
   import FontDetails._
 
-  val config: GameConfig = defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399"))
+  def parseFlags(flags: Map[String, String]): Unit = ()
 
-  val assets: Set[AssetType] = Set(AssetType.Image(AssetName(fontName), AssetPath("assets/boxy_font.png")))
+  def config(flagData: Unit): GameConfig = defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399"))
+
+  def assets(flagData: Unit): Set[AssetType] = Set(AssetType.Image(AssetName(fontName), AssetPath("assets/boxy_font.png")))
 
   val fonts: Set[FontInfo] = Set(fontInfo)
 
@@ -23,7 +25,7 @@ object SubSystemsExample extends IndigoDemo[Unit, Unit, Unit] {
       FloatingPoints(fontKey, Nil)
     )
 
-  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, Unit] =
+  def setup(flagData: Unit, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =

@@ -6,11 +6,13 @@ import indigoextras.ui._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object AudioExample extends IndigoDemo[Unit, Unit, Button] {
+object AudioExample extends IndigoDemo[Unit, Unit, Unit, Button] {
 
-  val config: GameConfig = defaultGameConfig
+  def parseFlags(flags: Map[String,String]): Unit = ()
 
-  val assets: Set[AssetType] = Set(
+  def config(flagData: Unit): GameConfig = defaultGameConfig
+
+  def assets(flagData: Unit): Set[AssetType] = Set(
     AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")),
     AssetType.Audio(AssetName("bounce"), AssetPath("assets/RetroGameJump.mp3")),
     AssetType.Audio(AssetName("music"), AssetPath("assets/march_of_steampunk.mp3"))
@@ -22,7 +24,7 @@ object AudioExample extends IndigoDemo[Unit, Unit, Button] {
 
   val subSystems: Set[SubSystem] = Set()
 
-  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, Unit] =
+  def setup(flagData: Unit, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =

@@ -10,8 +10,6 @@ import scala.concurrent.Future
 
 /**
   * A trait representing a minimal set of functions to get your game running
-  * @tparam StartupData The class type representing your successful startup data
-  * @tparam Model The class type representing your game's model
   */
 trait IndigoSandbox[StartupData, Model] extends GameLauncher {
 
@@ -46,7 +44,7 @@ trait IndigoSandbox[StartupData, Model] extends GameLauncher {
     new GameEngine[StartupData, StartupErrors, Model, Unit](
       fonts,
       animations,
-      (ac: AssetCollection) => (d: Dice) => (_: Map[String, String]) => setup(ac, d),
+      (ac: AssetCollection) => (d: Dice) => setup(ac, d),
       (sd: StartupData) => initialModel(sd),
       (_: StartupData) => (_: Model) => (),
       frameProcessor
@@ -54,6 +52,6 @@ trait IndigoSandbox[StartupData, Model] extends GameLauncher {
   }
 
   final protected def ready(flags: Map[String, String]): Unit =
-    indigoGame.start(config, Future(None), assets, Future(Set()))(flags)
+    indigoGame.start(config, Future(None), assets, Future(Set()))
 
 }

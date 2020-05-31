@@ -9,10 +9,9 @@ import indigoextras.ui.InputField
 import indigoextras.ui.InputFieldAssets
 
 import scala.scalajs.js.annotation._
-// import indigo.IndigoDemo
 
 @JSExportTopLevel("IndigoGame")
-object SandboxGame extends IndigoDemo[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
+object SandboxGame extends IndigoDemo[SandboxFlagData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
   val targetFPS: Int = 60
 
@@ -20,7 +19,10 @@ object SandboxGame extends IndigoDemo[SandboxStartupData, SandboxGameModel, Sand
   private val viewportWidth: Int      = 228 * magnificationLevel
   private val viewportHeight: Int     = 128 * magnificationLevel
 
-  val config: GameConfig =
+  def parseFlags(flags: Map[String, String]): SandboxFlagData =
+    SandboxFlagData(flags.getOrElse("key", "No entry for 'key'."))
+
+  def config(flagData: SandboxFlagData): GameConfig =
     GameConfig(
       viewport = GameViewport(viewportWidth, viewportHeight),
       frameRate = targetFPS,
@@ -28,7 +30,7 @@ object SandboxGame extends IndigoDemo[SandboxStartupData, SandboxGameModel, Sand
       magnification = magnificationLevel
     )
 
-  val assets: Set[AssetType] =
+  def assets(flagData: SandboxFlagData): Set[AssetType] =
     SandboxAssets.assets
 
   val fonts: Set[FontInfo] =
@@ -40,11 +42,8 @@ object SandboxGame extends IndigoDemo[SandboxStartupData, SandboxGameModel, Sand
   val subSystems: Set[SubSystem] =
     Set(FPSCounter.subSystem(SandboxView.fontKey, Point(3, 100), targetFPS))
 
-  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, SandboxStartupData] = {
-    println("flags")
-    println(flags.mkString(", "))
-    println(flags.get("data"))
-    println(flags.get("fish"))
+  def setup(flagData: SandboxFlagData, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, SandboxStartupData] = {
+    println(flagData.message)
 
     def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[SandboxStartupData] =
       Startup
@@ -125,5 +124,6 @@ object SandboxGame extends IndigoDemo[SandboxStartupData, SandboxGameModel, Sand
 }
 
 final case class Dude(aseprite: Aseprite, sprite: Sprite)
+final case class SandboxFlagData(message: String)
 final case class SandboxStartupData(dude: Dude)
 final case class SandboxViewModel(offset: Point, single: InputField, multi: InputField)

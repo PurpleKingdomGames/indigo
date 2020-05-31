@@ -14,52 +14,51 @@ import scala.concurrent.Future
 
 /**
   * A trait representing a game with scene management baked in
-  * @example `object MyGame extends IndigoGameWithScenes[MyStartupData, MyGameModel, MyViewModel]`
-  * @tparam StartupData The class type representing your successful startup data
-  * @tparam Model The class type representing your game's model
-  * @tparam ViewModel The class type representing your game's view model
+  * @example `object MyGame extends IndigoGame`
   */
-trait IndigoGame[StartupData, Model, ViewModel] extends GameLauncher {
+trait IndigoGame[FlagData, StartupData, Model, ViewModel] extends GameLauncher {
+
+  def parseFlags(flags: Map[String, String]): FlagData
 
   /**
     * A non-empty ordered list of scenes
     */
-  val scenes: NonEmptyList[Scene[Model, ViewModel]]
+  def scenes(flagData: FlagData): NonEmptyList[Scene[Model, ViewModel]]
 
   /**
     * Optional name of the first scene. If None is provided
     * then the first scene is the head of the scenes list.
     */
-  val initialScene: Option[SceneName]
+  def initialScene(flagData: FlagData): Option[SceneName]
 
   /**
     * Fixed initial config.
     */
-  val config: GameConfig
+  def config(flagData: FlagData): GameConfig
 
   /**
     * A Set of assets to be loaded.
     */
-  val assets: Set[AssetType]
+  def assets(flagData: FlagData): Set[AssetType]
 
   /**
     * A Set of FontInfo's describing the fonts for your game.
     * Please note that more fonts can be added to the `Startup` object
     * resulting from the `setup` method below.
     */
-  val fonts: Set[FontInfo]
+  def fonts: Set[FontInfo]
 
   /**
     * A Set of initial, predefined animations for your game.
     * Please note that more animations can be added to the `Startup` object
     * resulting from the `setup` method below.
     */
-  val animations: Set[Animation]
+  def animations: Set[Animation]
 
   /**
     * A Set of SubSystems for your game.
     */
-  val subSystems: Set[SubSystem]
+  def subSystems: Set[SubSystem]
 
   /**
     * The `setup` function is your only opportunity to do an initial work
@@ -73,7 +72,7 @@ trait IndigoGame[StartupData, Model, ViewModel] extends GameLauncher {
     * @return Either an `Startup.Success[...your startup data...]` or a
     *         `Startup.Failure[StartupErrors]`.
     */
-  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, StartupData]
+  def setup(flagData: FlagData, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartupData]
 
   /**
     * Set up of your initial model
@@ -89,15 +88,18 @@ trait IndigoGame[StartupData, Model, ViewModel] extends GameLauncher {
     */
   def initialViewModel(startupData: StartupData, model: Model): ViewModel
 
-  private def indigoGame: GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel] = {
-    val sceneManager: SceneManager[Model, ViewModel] =
-      initialScene match {
+  private def indigoGame(flagData: FlagData, gameConfig: GameConfig): GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel] = {
+    val sceneManager: SceneManager[Model, ViewModel] = {
+      val s = scenes(flagData)
+
+      initialScene(flagData) match {
         case Some(name) =>
-          SceneManager(scenes, name)
+          SceneManager(s, name)
 
         case None =>
-          SceneManager(scenes, scenes.head.name)
+          SceneManager(s, s.head.name)
       }
+    }
 
     val frameProcessor: StandardFrameProcessor[GameWithSubSystems[Model], ViewModel] = {
       new StandardFrameProcessor(
@@ -110,14 +112,17 @@ trait IndigoGame[StartupData, Model, ViewModel] extends GameLauncher {
     new GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel](
       fonts,
       animations,
-      (ac: AssetCollection) => (d: Dice) => (flags: Map[String, String]) => setup(ac, d, flags),
+      (ac: AssetCollection) => (d: Dice) => setup(flagData, gameConfig, ac, d),
       (sd: StartupData) => new GameWithSubSystems(initialModel(sd), new SubSystemsRegister(subSystems.toList)),
       (sd: StartupData) => (m: GameWithSubSystems[Model]) => initialViewModel(sd, m.model),
       frameProcessor
     )
   }
 
-  final protected def ready(flags: Map[String, String]): Unit =
-    indigoGame.start(config, Future(None), assets, Future(Set()))(flags)
+  final protected def ready(flags: Map[String, String]): Unit = {
+    val flagData: FlagData = parseFlags(flags)
+    val gameConfig: GameConfig = config(flagData)
+    indigoGame(flagData, gameConfig).start(gameConfig, Future(None), assets(flagData), Future(Set()))
+  }
 
 }

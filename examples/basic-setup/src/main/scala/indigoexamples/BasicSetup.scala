@@ -5,13 +5,15 @@ import indigo._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object BasicSetup extends IndigoDemo[MyStartUpData, MyGameModel, MyViewModel] {
+object BasicSetup extends IndigoDemo[Unit, MyStartUpData, MyGameModel, MyViewModel] {
 
-  val config: GameConfig =
+  def parseFlags(flags: Map[String, String]): Unit = ()
+
+  def config(flagData: Unit): GameConfig =
     defaultGameConfig
       .withClearColor(ClearColor.fromHexString("0xAA191E"))
 
-  val assets: Set[AssetType] =
+  def assets(flagData: Unit): Set[AssetType] =
     Set()
 
   val fonts: Set[FontInfo] =
@@ -23,7 +25,7 @@ object BasicSetup extends IndigoDemo[MyStartUpData, MyGameModel, MyViewModel] {
   val subSystems: Set[SubSystem] =
     Set()
 
-  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, MyStartUpData] =
+  def setup(flagData: Unit, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, MyStartUpData] =
     Startup.Success(MyStartUpData())
 
   def initialModel(startupData: MyStartUpData): MyGameModel =

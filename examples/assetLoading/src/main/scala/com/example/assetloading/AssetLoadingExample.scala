@@ -7,12 +7,14 @@ import indigoextras.subsystems._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object AssetLoadingExample extends IndigoDemo[Unit, MyGameModel, MyViewModel] {
+object AssetLoadingExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewModel] {
 
-  val config: GameConfig =
+  def parseFlags(flags: Map[String,String]): Unit = ()
+
+  def config(flagData: Unit): GameConfig =
     defaultGameConfig.withMagnification(2)
 
-  val assets: Set[AssetType] =
+  def assets(flagData: Unit): Set[AssetType] =
     Assets.assets
 
   val fonts: Set[FontInfo] = Set()
@@ -22,7 +24,7 @@ object AssetLoadingExample extends IndigoDemo[Unit, MyGameModel, MyViewModel] {
   val subSystems: Set[SubSystem] =
     Set(AssetBundleLoader.subSystem)
 
-  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, Unit] =
+  def setup(flagData: Unit, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
     assetCollection.findTextDataByName(AssetName("text")) match {
       case Some(value) =>
         println("Loaded text! " + value)
