@@ -8,39 +8,37 @@ import pirate.game.{Model, ViewModel, View}
 import scala.scalajs.js.annotation.JSExportTopLevel
 
 @JSExportTopLevel("IndigoGame")
-object PirateDemo extends IndigoDemo[StartupData, Model, ViewModel] {
+object PirateDemo extends IndigoDemo[Rectangle, StartupData, Model, ViewModel] {
 
-  val config: GameConfig =
-    GameConfig.default
-      .withViewport(GameViewport.at720p)
-      .withMagnification(2)
+  def boot(flags: Map[String, String]): BootResult[Rectangle] = {
+    val config =
+      GameConfig.default
+        .withViewport(GameViewport.at720p)
+        .withMagnification(2)
 
-  val assets: Set[AssetType] =
-    Assets.assets
+    BootResult(
+      config,
+      config.screenDimensions
+    ).withAssets(Assets.assets)
+      .withFonts(Assets.Fonts.fontInfo)
+      .withAnimations(Assets.Clouds.cloudsAnimation)
+      .withSubSystems(
+        CloudsAutomata.automata,                            // STEP 6
+        CloudsSubSystem.init(config.screenDimensions.width) // STEP 5
+      )
+  }
 
-  val fonts: Set[FontInfo] =
-    Set(Assets.Fonts.fontInfo)
-
-  val animations: Set[Animation] =
-    Set(Assets.Clouds.cloudsAnimation)
-
-  val subSystems: Set[SubSystem] =
-    Set(
-      CloudsAutomata.automata,                            // STEP 6
-      CloudsSubSystem.init(config.screenDimensions.width) // STEP 5
-    )
-
-  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, StartupData] =
-    InitialLoad.setup(assetCollection, dice)
+  def setup(bootData: Rectangle, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartupData] =
+    InitialLoad.setup(bootData, assetCollection, dice)
 
   def initialModel(startupData: StartupData): Model =
-    Model.initialModel(config.screenDimensions)
+    Model.initialModel(startupData.screenDimensions)
 
   def initialViewModel(startupData: StartupData, model: Model): ViewModel =
-    ViewModel.initialViewModel(startupData, config.screenDimensions)
+    ViewModel.initialViewModel(startupData, startupData.screenDimensions)
 
   def updateModel(context: FrameContext, model: Model): GlobalEvent => Outcome[Model] =
-    Model.update(context.gameTime, model, context.inputState, config.screenDimensions)
+    Model.update(context.gameTime, model, context.inputState)
 
   def updateViewModel(context: FrameContext, model: Model, viewModel: ViewModel): Outcome[ViewModel] =
     Outcome(viewModel)
@@ -49,15 +47,15 @@ object PirateDemo extends IndigoDemo[StartupData, Model, ViewModel] {
     View.drawBackground |+|
       View.sceneAudio |+|
       View.drawWater(viewModel) |+|
-      View.drawForeground(viewModel, config.screenDimensions) |+|
+      View.drawForeground(viewModel, model.screenDimensions) |+|
       View.drawPirateWithRespawn(context.gameTime, model, viewModel.captain) // STEP 9
   // View.drawBackground |+|
   //   View.sceneAudio |+|
   //   View.drawWater(viewModel) |+|
-  //   View.drawForeground(viewModel, config.screenDimensions) |+|
+  //   View.drawForeground(viewModel, model.screenDimensions) |+|
   //   View.drawPirate(model, viewModel.captain) // STEP 8
   // View.drawBackground |+| View.sceneAudio |+| View.drawWater(viewModel) |+|
-  //   View.drawForeground(viewModel, config.screenDimensions) // STEP 7
+  //   View.drawForeground(viewModel, model.screenDimensions) // STEP 7
   // View.drawBackground |+| View.sceneAudio |+| View.drawWater(viewModel) // STEP 4
   // View.drawBackground |+| View.sceneAudio // STEP 3
   // View.drawBackground // STEP 2

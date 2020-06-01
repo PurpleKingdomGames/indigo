@@ -7,25 +7,13 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object BasicSetup extends IndigoDemo[Unit, MyStartUpData, MyGameModel, MyViewModel] {
 
-  def parseFlags(flags: Map[String, String]): Unit = ()
+  def boot(flags: Map[String, String]): BootResult[Unit] =
+    BootResult.noData(
+      defaultGameConfig
+        .withClearColor(ClearColor.fromHexString("0xAA191E"))
+    )
 
-  def config(flagData: Unit): GameConfig =
-    defaultGameConfig
-      .withClearColor(ClearColor.fromHexString("0xAA191E"))
-
-  def assets(flagData: Unit): Set[AssetType] =
-    Set()
-
-  val fonts: Set[FontInfo] =
-    Set()
-
-  val animations: Set[Animation] =
-    Set()
-
-  val subSystems: Set[SubSystem] =
-    Set()
-
-  def setup(flagData: Unit, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, MyStartUpData] =
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, MyStartUpData] =
     Startup.Success(MyStartUpData())
 
   def initialModel(startupData: MyStartUpData): MyGameModel =

@@ -10,33 +10,32 @@ import snake.scenes.{ControlsScene, GameOverScene, GameScene, StartScene}
 import scala.scalajs.js.annotation.JSExportTopLevel
 
 @JSExportTopLevel("IndigoGame")
-object SnakeGame extends IndigoGame[SnakeStartupData, SnakeGameModel, SnakeViewModel] {
+object SnakeGame extends IndigoGame[GameViewport, SnakeStartupData, SnakeGameModel, SnakeViewModel] {
 
-  val config: GameConfig =
-    GameConfig(
-      viewport = GameViewport(Settings.viewportWidth, Settings.viewportHeight),
-      frameRate = 30,
-      clearColor = ClearColor.Black,
-      magnification = Settings.magnificationLevel
-    )
+  def boot(flags: Map[String, String]): BootResult[GameViewport] = {
+    val assetPath: String =
+      flags.getOrElse("baseUrl", "")
 
-  val animations: Set[Animation] =
-    Set()
+    val config =
+      GameConfig(
+        viewport = GameViewport(Settings.viewportWidth, Settings.viewportHeight),
+        frameRate = 30,
+        clearColor = ClearColor.Black,
+        magnification = Settings.magnificationLevel
+      )
 
-  val assets: Set[AssetType] =
-    GameAssets.assets
+    BootResult(config, config.viewport)
+      .withAssets(GameAssets.assets(assetPath))
+      .withFonts(GameAssets.fontInfo)
+      .withSubSystems(
+        // Set(FPSCounter.subSystem(GameAssets.fontKey, Point(5, 5), 30))
+      )
+  }
 
-  val fonts: Set[FontInfo] =
-    Set(GameAssets.fontInfo)
-
-  val initialScene: Option[SceneName] =
+  def initialScene(bootData: GameViewport): Option[SceneName] =
     Option(StartScene.name)
 
-  val subSystems: Set[SubSystem] =
-    Set()
-  // Set(FPSCounter.subSystem(GameAssets.fontKey, Point(5, 5), 30))
-
-  val scenes: NonEmptyList[Scene[SnakeGameModel, SnakeViewModel]] =
+  def scenes(bootData: GameViewport): NonEmptyList[Scene[SnakeGameModel, SnakeViewModel]] =
     NonEmptyList(StartScene, ControlsScene, GameScene, GameOverScene)
 
   def initialModel(startupData: SnakeStartupData): SnakeGameModel =
@@ -45,7 +44,7 @@ object SnakeGame extends IndigoGame[SnakeStartupData, SnakeGameModel, SnakeViewM
   def initialViewModel(startupData: SnakeStartupData, model: SnakeGameModel): SnakeViewModel =
     SnakeViewModel.initialViewModel(startupData, model)
 
-  def setup(assetCollection: AssetCollection, dice: Dice, flags: Map[String, String]): Startup[StartupErrors, SnakeStartupData] =
-    SnakeStartupData.initialise(config.viewport, Settings.gridSize)
+  def setup(viewport: GameViewport, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, SnakeStartupData] =
+    SnakeStartupData.initialise(viewport, Settings.gridSize)
 
 }

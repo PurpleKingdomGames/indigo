@@ -4,7 +4,7 @@ import indigo._
 
 import pirate.init.Assets
 
-final case class Model(pirateState: PirateState, facingRight: Boolean, position: Point, soundLastPlayed: Seconds, lastRespawn: Seconds) {
+final case class Model(screenDimensions: Rectangle, pirateState: PirateState, facingRight: Boolean, position: Point, soundLastPlayed: Seconds, lastRespawn: Seconds) {
   val pirateIsSafe: Boolean = Model.navRegion.isPointWithin(position)
 }
 
@@ -16,20 +16,20 @@ object Model {
   val fallDistancePerSecond: Int = 300
 
   def initialModel(screenDimensions: Rectangle): Model =
-    Model(PirateState.Falling, true, Point(screenDimensions.horizontalCenter, 0), Seconds.zero, Seconds.zero)
+    Model(screenDimensions, PirateState.Falling, true, Point(screenDimensions.horizontalCenter, 0), Seconds.zero, Seconds.zero)
 
-  def update(gameTime: GameTime, model: Model, inputState: InputState, screenDimensions: Rectangle): GlobalEvent => Outcome[Model] = {
+  def update(gameTime: GameTime, model: Model, inputState: InputState): GlobalEvent => Outcome[Model] = {
     case FrameTick if model.pirateIsSafe && model.position.y == Model.navRegion.bottom - 1 =>
-      convertStateToModel(gameTime, InputMapper(inputState), model, screenDimensions)
+      convertStateToModel(gameTime, InputMapper(inputState), model)
 
     case FrameTick =>
-      convertStateToModel(gameTime, model.pirateState, model, screenDimensions)
+      convertStateToModel(gameTime, model.pirateState, model)
 
     case _ =>
       Outcome(model)
   }
 
-  def convertStateToModel(gameTime: GameTime, nextState: PirateState, model: Model, screenDimensions: Rectangle): Outcome[Model] = {
+  def convertStateToModel(gameTime: GameTime, nextState: PirateState, model: Model): Outcome[Model] = {
     val walkSpeed: Int = (walkDistancePerSecond.toDouble * gameTime.delta.value).toInt
     val fallSpeed: Int = (fallDistancePerSecond.toDouble * gameTime.delta.value).toInt
 
@@ -39,8 +39,8 @@ object Model {
         Outcome(model.copy(pirateState = PirateState.Idle, position = Point(model.position.x, Model.navRegion.bottom - 1)))
 
       // Fall off the bottom of the screen
-      case PirateState.Falling if model.position.y > screenDimensions.height + 50 =>
-        Outcome(model.copy(position = Point(screenDimensions.horizontalCenter, 20), lastRespawn = gameTime.running))
+      case PirateState.Falling if model.position.y > model.screenDimensions.height + 50 =>
+        Outcome(model.copy(position = Point(model.screenDimensions.horizontalCenter, 20), lastRespawn = gameTime.running))
           .addGlobalEvents(PlaySound(Assets.Sounds.respawnSound, Volume.Max))
 
       // Otherwise, fall normally

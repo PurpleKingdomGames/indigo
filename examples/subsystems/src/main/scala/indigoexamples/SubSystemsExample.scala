@@ -9,23 +9,17 @@ object SubSystemsExample extends IndigoDemo[Unit, Unit, Unit, Unit] {
 
   import FontDetails._
 
-  def parseFlags(flags: Map[String, String]): Unit = ()
+  def boot(flags: Map[String, String]): BootResult[Unit] =
+    BootResult
+      .noData(defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399")))
+      .withAssets(AssetType.Image(AssetName(fontName), AssetPath("assets/boxy_font.png")))
+      .withFonts(fontInfo)
+      .withSubSystems(
+        PointsTrackerSubSystem(0, fontKey),
+        FloatingPoints(fontKey, Nil)
+      )
 
-  def config(flagData: Unit): GameConfig = defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399"))
-
-  def assets(flagData: Unit): Set[AssetType] = Set(AssetType.Image(AssetName(fontName), AssetPath("assets/boxy_font.png")))
-
-  val fonts: Set[FontInfo] = Set(fontInfo)
-
-  val animations: Set[Animation] = Set()
-
-  val subSystems: Set[SubSystem] =
-    Set(
-      PointsTrackerSubSystem(0, fontKey),
-      FloatingPoints(fontKey, Nil)
-    )
-
-  def setup(flagData: Unit, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =

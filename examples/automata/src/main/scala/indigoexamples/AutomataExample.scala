@@ -6,31 +6,29 @@ import indigoextras.ui._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object AutomataExample extends IndigoDemo[Unit, ViewportSize, Unit, ViewModel] {
+object AutomataExample extends IndigoDemo[Point, Point, Unit, ViewModel] {
 
-  def parseFlags(flags: Map[String, String]): Unit = ()
+  def boot(flags: Map[String, String]): BootResult[Point] = {
+    val config = defaultGameConfig
 
-  def config(flagData: Unit): GameConfig = defaultGameConfig
+    BootResult(
+      config,
+      config.viewport.size
+    ).withAssets(
+        AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")),
+        AssetType.Image(FontStuff.fontName, AssetPath("assets/boxy_font.png"))
+      )
+      .withFonts(FontStuff.fontInfo)
+      .withSubSystems(Score.automataSubSystem(FontStuff.fontKey))
+  }
 
-  def assets(flagData: Unit): Set[AssetType] = Set(
-    AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")),
-    AssetType.Image(FontStuff.fontName, AssetPath("assets/boxy_font.png"))
-  )
+  def setup(bootData: Point, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Point] =
+    Startup.Success(bootData)
 
-  val fonts: Set[FontInfo] = Set(FontStuff.fontInfo)
-
-  val animations: Set[Animation] = Set()
-
-  val subSystems: Set[SubSystem] =
-    Set(Score.automataSubSystem(FontStuff.fontKey))
-
-  def setup(flagData: Unit, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, ViewportSize] =
-    Startup.Success(ViewportSize(gameConfig.viewport.width, gameConfig.viewport.height))
-
-  def initialModel(startupData: ViewportSize): Unit =
+  def initialModel(startupData: Point): Unit =
     ()
 
-  def initialViewModel(startupData: ViewportSize, model: Unit): ViewModel =
+  def initialViewModel(startupData: Point, model: Unit): ViewModel =
     ViewModel(
       Button(
         buttonAssets = ButtonAssets(
@@ -67,8 +65,7 @@ object AutomataExample extends IndigoDemo[Unit, ViewportSize, Unit, ViewModel] {
 
 }
 
-final case class ViewportSize(width: Int, height: Int)
-final case class ViewModel(button: Button, viewportSize: ViewportSize) {
+final case class ViewModel(button: Button, viewportSize: Point) {
   def withButton(btn: Button): ViewModel =
     this.copy(button = btn)
 }

@@ -6,7 +6,7 @@ import indigoextras.formats._
 
 object InitialLoad {
 
-  def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartupData] = {
+  def setup(screenDimensions: Rectangle, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartupData] = {
 
     val loader: (AssetName, AssetName, Depth) => Either[String, SpriteAndAnimations] =
       loadAnimation(assetCollection, dice)
@@ -17,7 +17,7 @@ object InitialLoad {
       captain     <- loader(Assets.Captain.jsonRef, Assets.Captain.ref, Depth(2))
       helm        <- loader(Assets.Helm.jsonRef, Assets.Helm.ref, Depth(9))
       palm        <- loader(Assets.Trees.jsonRef, Assets.Trees.ref, Depth(1))
-    } yield makeStartupData(reflections, flag, captain, helm, palm)
+    } yield makeStartupData(screenDimensions, reflections, flag, captain, helm, palm)
 
     res match {
       case Left(message) =>
@@ -34,7 +34,7 @@ object InitialLoad {
       aseprite            <- Json.asepriteFromJson(json)
       spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(dice, aseprite, depth, name)
     } yield spriteAndAnimations
-   
+
     res match {
       case Some(spriteAndAnimations) =>
         Right(spriteAndAnimations)
@@ -45,6 +45,7 @@ object InitialLoad {
   }
 
   def makeStartupData(
+      screenDimensions: Rectangle,
       waterReflections: SpriteAndAnimations,
       flag: SpriteAndAnimations,
       captain: SpriteAndAnimations,
@@ -53,7 +54,7 @@ object InitialLoad {
   ): Startup.Success[StartupData] =
     Startup
       .Success(
-        StartupData(waterReflections.sprite, flag.sprite, captain.sprite, helm.sprite, palm.sprite)
+        StartupData(screenDimensions, waterReflections.sprite, flag.sprite, captain.sprite, helm.sprite, palm.sprite)
       )
       .addAnimations(
         waterReflections.animations,
@@ -66,4 +67,4 @@ object InitialLoad {
 
 }
 
-final case class StartupData(waterReflections: Sprite, flag: Sprite, captain: Sprite, helm: Sprite, palm: Sprite)
+final case class StartupData(screenDimensions: Rectangle, waterReflections: Sprite, flag: Sprite, captain: Sprite, helm: Sprite, palm: Sprite)

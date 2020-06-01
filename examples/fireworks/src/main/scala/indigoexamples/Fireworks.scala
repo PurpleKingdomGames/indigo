@@ -14,31 +14,34 @@ import indigoextras.subsystems.AutomataEvent
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object Fireworks extends IndigoDemo[Unit, FireworksStartupData, FireworksModel, Unit] {
+object Fireworks extends IndigoDemo[Vertex => Point, FireworksStartupData, FireworksModel, Unit] {
 
-  def parseFlags(flags: Map[String, String]): Unit = ()
-
-  val targetFPS: Int = 60
-
+  val targetFPS: Int     = 60
   val magnification: Int = 3
 
-  def config(flagData: Unit): GameConfig =
-    defaultGameConfig
-      .withFrameRate(targetFPS)
-      .withMagnification(magnification)
-      .withViewport(GameViewport.at720p)
+  def boot(flags: Map[String, String]): BootResult[Vertex => Point] = {
+    val config =
+      defaultGameConfig
+        .withFrameRate(targetFPS)
+        .withMagnification(magnification)
+        .withViewport(GameViewport.at720p)
 
-  def assets(flagData: Unit): Set[AssetType] =
-    Assets.assets
+    val toScreenSpace: Vertex => Point =
+      Projectiles.toScreenSpace(config.viewport.giveDimensions(magnification))
 
-  val fonts: Set[FontInfo] =
-    Set(FontDetails.fontInfo)
-
-  val animations: Set[Animation] =
-    Set()
-
-  def toScreenSpace(viewportDimensions: Rectangle): Vertex => Point =
-    Projectiles.toScreenSpace(viewportDimensions)
+    BootResult(
+      config,
+      toScreenSpace
+    ).withAssets(Assets.assets)
+      .withFonts(FontDetails.fontInfo)
+      .withSubSystems(
+        FPSCounter.subSystem(FontDetails.fontKey, Point(5, 5), targetFPS),
+        LaunchPadAutomata.automata,
+        RocketAutomata.automata(toScreenSpace),
+        TrailAutomata.automata,
+        FlareAutomata.automata(toScreenSpace)
+      )
+  }
 
   def launchFireworks(dice: Dice, toScreenSpace: Vertex => Point): List[AutomataEvent.Spawn] =
     List.fill(dice.roll(5) + 5)(
@@ -48,20 +51,9 @@ object Fireworks extends IndigoDemo[Unit, FireworksStartupData, FireworksModel, 
       )
     )
 
-  val subSystems: Set[SubSystem] =
-    Set(
-      FPSCounter.subSystem(FontDetails.fontKey, Point(5, 5), targetFPS),
-      LaunchPadAutomata.automata,
-      RocketAutomata.automata,
-      TrailAutomata.automata,
-      FlareAutomata.automata
-    )
-
-  def setup(flagData: Unit, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, FireworksStartupData] =
+  def setup(toScreenSpace: Vertex => Point, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, FireworksStartupData] =
     Startup.Success(
-      FireworksStartupData(
-        toScreenSpace(gameConfig.viewport.giveDimensions(magnification))
-      )
+      FireworksStartupData(toScreenSpace)
     )
 
   def initialModel(startupData: FireworksStartupData): FireworksModel =

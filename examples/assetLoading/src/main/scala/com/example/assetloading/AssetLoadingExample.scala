@@ -9,22 +9,15 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object AssetLoadingExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewModel] {
 
-  def parseFlags(flags: Map[String,String]): Unit = ()
+  def boot(flags: Map[String, String]): BootResult[Unit] =
+    BootResult
+      .noData(
+        defaultGameConfig.withMagnification(2)
+      )
+      .withAssets(Assets.assets)
+      .withSubSystems(AssetBundleLoader.subSystem)
 
-  def config(flagData: Unit): GameConfig =
-    defaultGameConfig.withMagnification(2)
-
-  def assets(flagData: Unit): Set[AssetType] =
-    Assets.assets
-
-  val fonts: Set[FontInfo] = Set()
-
-  val animations: Set[Animation] = Set()
-
-  val subSystems: Set[SubSystem] =
-    Set(AssetBundleLoader.subSystem)
-
-  def setup(flagData: Unit, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
     assetCollection.findTextDataByName(AssetName("text")) match {
       case Some(value) =>
         println("Loaded text! " + value)

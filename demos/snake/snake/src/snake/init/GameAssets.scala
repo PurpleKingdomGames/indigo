@@ -12,13 +12,13 @@ object GameAssets {
 
   val snakeMaterial: Material.Textured = Material.Textured(snakeTexture)
 
-  def assets: Set[AssetType] =
+  def assets(baseUrl: String): Set[AssetType] =
     Set(
-      AssetType.Image(smallFontName, AssetPath("assets/boxy_font_small.png")),
-      AssetType.Image(snakeTexture, AssetPath("assets/snake.png")),
-      AssetType.Audio(soundIntro, AssetPath("assets/intro.mp3")),
-      AssetType.Audio(soundPoint, AssetPath("assets/point.mp3")),
-      AssetType.Audio(soundLose, AssetPath("assets/lose.mp3"))
+      AssetType.Image(smallFontName, AssetPath(baseUrl + "assets/boxy_font_small.png")),
+      AssetType.Image(snakeTexture, AssetPath(baseUrl + "assets/snake.png")),
+      AssetType.Audio(soundIntro, AssetPath(baseUrl + "assets/intro.mp3")),
+      AssetType.Audio(soundPoint, AssetPath(baseUrl + "assets/point.mp3")),
+      AssetType.Audio(soundLose, AssetPath(baseUrl + "assets/lose.mp3"))
     )
 
   val fontKey: FontKey = FontKey("boxy font")

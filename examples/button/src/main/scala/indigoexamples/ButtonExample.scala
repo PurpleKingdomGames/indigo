@@ -8,7 +8,10 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object ButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewModel] {
 
-  def parseFlags(flags: Map[String,String]): Unit = ()
+  def boot(flags: Map[String, String]): BootResult[Unit] =
+    BootResult
+      .noData(defaultGameConfig)
+      .withAssets(AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")))
 
   val buttonAssets: ButtonAssets =
     ButtonAssets(
@@ -17,17 +20,7 @@ object ButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewModel] {
       down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 32, 16, 16)
     )
 
-  def config(flagData: Unit): GameConfig = defaultGameConfig
-
-  def assets(flagData: Unit): Set[AssetType] = Set(AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")))
-
-  val fonts: Set[FontInfo] = Set()
-
-  val animations: Set[Animation] = Set()
-
-  val subSystems: Set[SubSystem] = Set()
-
-  def setup(flagData: Unit, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): MyGameModel =

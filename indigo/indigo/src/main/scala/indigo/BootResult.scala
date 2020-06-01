@@ -64,4 +64,9 @@ object BootResult {
 
   def noData(gameConfig: GameConfig): BootResult[Unit] =
     apply(gameConfig, ())
+  def configOnly(gameConfig: GameConfig): BootResult[Unit] =
+    noData(gameConfig)
+
+  def default: BootResult[Unit] =
+    noData(GameConfig.default)
 }

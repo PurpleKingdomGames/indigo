@@ -8,23 +8,15 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object AudioExample extends IndigoDemo[Unit, Unit, Unit, Button] {
 
-  def parseFlags(flags: Map[String,String]): Unit = ()
+  def boot(flags: Map[String, String]): BootResult[Unit] =
+    BootResult.noData(defaultGameConfig)
+      .withAssets(
+        AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")),
+        AssetType.Audio(AssetName("bounce"), AssetPath("assets/RetroGameJump.mp3")),
+        AssetType.Audio(AssetName("music"), AssetPath("assets/march_of_steampunk.mp3"))
+      )
 
-  def config(flagData: Unit): GameConfig = defaultGameConfig
-
-  def assets(flagData: Unit): Set[AssetType] = Set(
-    AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")),
-    AssetType.Audio(AssetName("bounce"), AssetPath("assets/RetroGameJump.mp3")),
-    AssetType.Audio(AssetName("music"), AssetPath("assets/march_of_steampunk.mp3"))
-  )
-
-  val fonts: Set[FontInfo] = Set()
-
-  val animations: Set[Animation] = Set()
-
-  val subSystems: Set[SubSystem] = Set()
-
-  def setup(flagData: Unit, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =

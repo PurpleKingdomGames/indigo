@@ -49,7 +49,7 @@ object IndigoJS {
   private def indigoGame(
       fonts: Set[FontInfo],
       animations: Set[Animation],
-      initialise: AssetCollection => Dice => Map[String, String] => Startup[StartupError, StartupData],
+      initialise: AssetCollection => Dice => Startup[StartupError, StartupData],
       initialModel: StartupData => GameModel,
       initialViewModel: StartupData => GameModel => ViewModel,
       modelUpdate: (FrameContext, GameModel) => GlobalEvent => Outcome[GameModel],
@@ -70,8 +70,8 @@ object IndigoJS {
     )
   }
 
-  private def convertInitialise(f: Initialise): AssetCollection => Dice => Map[String, String] => Startup[StartupError, StartupData] =
-    (ac: AssetCollection) => (d: Dice) => (_: Map[String, String]) => f(new AssetCollectionDelegate(ac), new DiceDelegate(d)).toInternal
+  private def convertInitialise(f: Initialise): AssetCollection => Dice => Startup[StartupError, StartupData] =
+    (ac: AssetCollection) => (d: Dice) => f(new AssetCollectionDelegate(ac), new DiceDelegate(d)).toInternal
 
   private def convertUpdateModel(f: ModelUpdate): (FrameContext, GameModel) => GlobalEvent => Outcome[GameModel] =
     (fc, gm) =>
@@ -125,6 +125,6 @@ object IndigoJS {
       Future(None),
       assets.map(_.toInternal).toSet,
       Future(Set())
-    )(Map[String, String]())
+    )
 
 }

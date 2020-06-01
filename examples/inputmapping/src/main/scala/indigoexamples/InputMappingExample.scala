@@ -6,41 +6,36 @@ import indigoextras.subsystems._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object InputMappingExample extends IndigoDemo[Unit, Unit, GameModel, Unit] {
+object InputMappingExample extends IndigoDemo[Int, Int, GameModel, Int] {
 
   import FontStuff._
 
-  def parseFlags(flags: Map[String,String]): Unit = ()
+  def boot(flags: Map[String, String]): BootResult[Int] = {
+    val config =
+      defaultGameConfig
+        .withClearColor(ClearColor.fromHexString("0xAA3399"))
+        .withMagnification(1)
 
-  def config(flagData: Unit): GameConfig =
-    defaultGameConfig
-      .withClearColor(ClearColor.fromHexString("0xAA3399"))
-      .withMagnification(1)
-
-  def assets(flagData: Unit): Set[AssetType] =
-    Set(AssetType.Image(fontName, AssetPath("assets/boxy_font.png")))
-
-  val fonts: Set[FontInfo] =
-    Set(fontInfo)
-
-  val animations: Set[Animation] =
-    Set()
-
-  val subSystems: Set[SubSystem] =
-    Set(
-      InputMapper.subsystem(
-        KeyboardEvent.KeyDown(Keys.UP_ARROW) -> List(Up)
+    BootResult(
+      config,
+      config.viewport.height
+    ).withAssets(AssetType.Image(fontName, AssetPath("assets/boxy_font.png")))
+      .withFonts(fontInfo)
+      .withSubSystems(
+        InputMapper.subsystem(
+          KeyboardEvent.KeyDown(Keys.UP_ARROW) -> List(Up)
+        )
       )
-    )
+  }
 
-  def setup(flagData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
-    Startup.Success(())
+  def setup(bootData: Int, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Int] =
+    Startup.Success(bootData)
 
-  def initialModel(startupData: Unit): GameModel =
+  def initialModel(startupData: Int): GameModel =
     GameModel(None)
 
-  def initialViewModel(startupData: Unit, model: GameModel): Unit =
-    ()
+  def initialViewModel(startupData: Int, model: GameModel): Int =
+    startupData
 
   def updateModel(context: FrameContext, model: GameModel): GlobalEvent => Outcome[GameModel] = {
     case KeyboardEvent.KeyDown(Keys.KEY_A) =>
@@ -67,14 +62,14 @@ object InputMappingExample extends IndigoDemo[Unit, Unit, GameModel, Unit] {
       Outcome(model)
   }
 
-  def updateViewModel(context: FrameContext, model: GameModel, viewModel: Unit): Outcome[Unit] =
-    Outcome(())
+  def updateViewModel(context: FrameContext, model: GameModel, viewModel: Int): Outcome[Int] =
+    Outcome(viewModel)
 
-  def present(context: FrameContext, model: GameModel, viewModel: Unit): SceneUpdateFragment =
+  def present(context: FrameContext, model: GameModel, viewModel: Int): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         Text("Press up arrow, or\npress a to add or\nd to remove a mapping\nfor down, then you can\npress the down arrow.", 10, 20, 1, fontKey),
-        Text("Action is " + model.action.map(_.asString).getOrElse("None"), 10, config.viewport.height - 30, 1, fontKey)
+        Text("Action is " + model.action.map(_.asString).getOrElse("None"), 10, viewModel - 30, 1, fontKey)
       )
 
 }
