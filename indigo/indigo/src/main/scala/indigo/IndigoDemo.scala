@@ -5,7 +5,6 @@ import indigo.gameengine.GameEngine
 import indigo.shared.subsystems.SubSystemsRegister
 import indigo.entry.GameWithSubSystems
 import indigo.entry.StandardFrameProcessor
-import indigo.entry.BootUp
 
 // Indigo is Scala.js only at the moment, revisit if/when we go to the JVM
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -19,7 +18,7 @@ import scala.concurrent.Future
   */
 trait IndigoDemo[BootData, StartupData, Model, ViewModel] extends GameLauncher {
 
-  def boot(flags: Map[String, String]): BootUp[BootData]
+  def boot(flags: Map[String, String]): BootResult[BootData]
 
   def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartupData]
 
@@ -33,7 +32,7 @@ trait IndigoDemo[BootData, StartupData, Model, ViewModel] extends GameLauncher {
 
   def present(context: FrameContext, model: Model, viewModel: ViewModel): SceneUpdateFragment
 
-  private def indigoGame(bootUp: BootUp[BootData]): GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel] = {
+  private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel] = {
     val frameProcessor: StandardFrameProcessor[GameWithSubSystems[Model], ViewModel] =
       new StandardFrameProcessor(
         GameWithSubSystems.update(updateModel),

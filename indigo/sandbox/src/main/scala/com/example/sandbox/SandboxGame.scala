@@ -11,39 +11,28 @@ import indigoextras.ui.InputFieldAssets
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object SandboxGame extends IndigoDemo[SandboxFlagData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {
+object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
-  val targetFPS: Int = 60
-
+  private val targetFPS: Int          = 60
   private val magnificationLevel: Int = 2
   private val viewportWidth: Int      = 228 * magnificationLevel
   private val viewportHeight: Int     = 128 * magnificationLevel
 
-  def parseFlags(flags: Map[String, String]): SandboxFlagData =
-    SandboxFlagData(flags.getOrElse("key", "No entry for 'key'."))
+  def boot(flags: Map[String, String]): BootResult[SandboxBootData] =
+    BootResult(
+      GameConfig(
+        viewport = GameViewport(viewportWidth, viewportHeight),
+        frameRate = targetFPS,
+        clearColor = ClearColor(0.4, 0.2, 0.5, 1),
+        magnification = magnificationLevel
+      ),
+      SandboxBootData(flags.getOrElse("key", "No entry for 'key'."))
+    ).withAssets(SandboxAssets.assets)
+      .withFonts(SandboxView.fontInfo)
+      .withSubSystems(FPSCounter.subSystem(SandboxView.fontKey, Point(3, 100), targetFPS))
 
-  def config(flagData: SandboxFlagData): GameConfig =
-    GameConfig(
-      viewport = GameViewport(viewportWidth, viewportHeight),
-      frameRate = targetFPS,
-      clearColor = ClearColor(0.4, 0.2, 0.5, 1),
-      magnification = magnificationLevel
-    )
-
-  def assets(flagData: SandboxFlagData): Set[AssetType] =
-    SandboxAssets.assets
-
-  val fonts: Set[FontInfo] =
-    Set(SandboxView.fontInfo)
-
-  val animations: Set[Animation] =
-    Set()
-
-  val subSystems: Set[SubSystem] =
-    Set(FPSCounter.subSystem(SandboxView.fontKey, Point(3, 100), targetFPS))
-
-  def setup(flagData: SandboxFlagData, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, SandboxStartupData] = {
-    println(flagData.message)
+  def setup(bootData: SandboxBootData, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, SandboxStartupData] = {
+    println(bootData.message)
 
     def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[SandboxStartupData] =
       Startup
@@ -124,6 +113,6 @@ object SandboxGame extends IndigoDemo[SandboxFlagData, SandboxStartupData, Sandb
 }
 
 final case class Dude(aseprite: Aseprite, sprite: Sprite)
-final case class SandboxFlagData(message: String)
+final case class SandboxBootData(message: String)
 final case class SandboxStartupData(dude: Dude)
 final case class SandboxViewModel(offset: Point, single: InputField, multi: InputField)

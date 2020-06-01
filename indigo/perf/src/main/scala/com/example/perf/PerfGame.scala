@@ -10,41 +10,31 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object PerfGame extends IndigoDemo[Unit, MyStartupData, MyGameModel, Unit] {
 
-  def parseFlags(flags: Map[String, String]): Unit =
-    ()
-
-  val targetFPS: Int = 60
-
+  val targetFPS: Int          = 60
   val viewportWidth: Int      = 800
   val viewportHeight: Int     = 600
   val magnificationLevel: Int = 1
 
-  val animations: Set[Animation] =
-    Set()
-
-  def assets(flagData: Unit): Set[AssetType] =
-    PerfAssets.assets
-
-  def config(flagData: Unit): GameConfig =
-    GameConfig(
-      viewport = GameViewport(viewportWidth, viewportHeight),
-      frameRate = targetFPS,
-      clearColor = ClearColor(0.4, 0.2, 0.5, 1),
-      magnification = magnificationLevel,
-      advanced = AdvancedGameConfig(
-        renderingTechnology = RenderingTechnology.WebGL2,
-        antiAliasing = false,
-        batchSize = 512,
-        disableSkipModelUpdates = true,
-        disableSkipViewUpdates = true
+  def boot(flags: Map[String, String]): BootResult[Unit] =
+    BootResult
+      .noData(
+        GameConfig(
+          viewport = GameViewport(viewportWidth, viewportHeight),
+          frameRate = targetFPS,
+          clearColor = ClearColor(0.4, 0.2, 0.5, 1),
+          magnification = magnificationLevel,
+          advanced = AdvancedGameConfig(
+            renderingTechnology = RenderingTechnology.WebGL2,
+            antiAliasing = false,
+            batchSize = 512,
+            disableSkipModelUpdates = true,
+            disableSkipViewUpdates = true
+          )
+        )
       )
-    )
-
-  val fonts: Set[FontInfo] =
-    Set(PerfView.fontInfo)
-
-  val subSystems: Set[SubSystem] =
-    Set(FPSCounter.subSystem(PerfView.fontKey, Point(10, 565), targetFPS))
+      .withAssets(PerfAssets.assets)
+      .withFonts(PerfView.fontInfo)
+      .withSubSystems(FPSCounter.subSystem(PerfView.fontKey, Point(10, 565), targetFPS))
 
   def initialModel(startupData: MyStartupData): MyGameModel =
     PerfModel.initialModel(startupData)
@@ -52,7 +42,7 @@ object PerfGame extends IndigoDemo[Unit, MyStartupData, MyGameModel, Unit] {
   def initialViewModel(startupData: MyStartupData, model: MyGameModel): Unit =
     ()
 
-  def setup(flagData: Unit, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, MyStartupData] = {
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, MyStartupData] = {
     def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[MyStartupData] =
       Startup
         .Success(

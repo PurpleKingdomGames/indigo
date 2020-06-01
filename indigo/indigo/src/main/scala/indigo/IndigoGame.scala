@@ -10,7 +10,6 @@ import indigo.entry.StandardFrameProcessor
 // Indigo is Scala.js only at the moment, revisit if/when we go to the JVM
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import indigo.entry.BootUp
 
 /**
   * A trait representing a game with scene management baked in
@@ -24,7 +23,7 @@ trait IndigoGame[BootData, StartupData, Model, ViewModel] extends GameLauncher {
     * @return Bootup data consisting of a custom data type, animations, subsytems,
     *         assets, fonts, and the games config.
     */
-  def boot(flags: Map[String, String]): BootUp[BootData]
+  def boot(flags: Map[String, String]): BootResult[BootData]
 
   /**
     * A non-empty ordered list of scenes
@@ -72,7 +71,7 @@ trait IndigoGame[BootData, StartupData, Model, ViewModel] extends GameLauncher {
     */
   def initialViewModel(startupData: StartupData, model: Model): ViewModel
 
-  private def indigoGame(bootUp: BootUp[BootData]): GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel] = {
+  private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel] = {
     val sceneManager: SceneManager[Model, ViewModel] = {
       val s = scenes(bootUp.bootData)
 
