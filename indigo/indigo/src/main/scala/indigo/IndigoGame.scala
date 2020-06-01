@@ -3,7 +3,6 @@ package indigo
 import indigo._
 import indigo.scenes.{SceneManager, SceneName, Scene}
 import indigo.gameengine.GameEngine
-import indigo.shared.subsystems.SubSystem
 import indigo.shared.subsystems.SubSystemsRegister
 import indigo.entry.GameWithSubSystems
 import indigo.entry.StandardFrameProcessor
@@ -11,54 +10,37 @@ import indigo.entry.StandardFrameProcessor
 // Indigo is Scala.js only at the moment, revisit if/when we go to the JVM
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import indigo.entry.BootUp
 
 /**
   * A trait representing a game with scene management baked in
   * @example `object MyGame extends IndigoGame`
   */
-trait IndigoGame[FlagData, StartupData, Model, ViewModel] extends GameLauncher {
-
-  def parseFlags(flags: Map[String, String]): FlagData
+trait IndigoGame[BootData, StartupData, Model, ViewModel] extends GameLauncher {
 
   /**
     * A non-empty ordered list of scenes
+    * @param flags A simply key-value object/map passed in during initial boot.
+    * @return Bootup data consisting of a custom data type, animations, subsytems,
+    *         assets, fonts, and the games config.
     */
-  def scenes(flagData: FlagData): NonEmptyList[Scene[Model, ViewModel]]
+  def boot(flags: Map[String, String]): BootUp[BootData]
+
+  /**
+    * A non-empty ordered list of scenes
+    * @param bootData Data created during initial game boot.
+    * @return A list of scenes that ensures at least one scene exists.
+    */
+  def scenes(bootData: BootData): NonEmptyList[Scene[Model, ViewModel]]
 
   /**
     * Optional name of the first scene. If None is provided
     * then the first scene is the head of the scenes list.
+    * @param bootData Data created during initial game boot.
+    * @return Optionally return the scene to start the game on,
+    *         otherwise the first scene is used.
     */
-  def initialScene(flagData: FlagData): Option[SceneName]
-
-  /**
-    * Fixed initial config.
-    */
-  def config(flagData: FlagData): GameConfig
-
-  /**
-    * A Set of assets to be loaded.
-    */
-  def assets(flagData: FlagData): Set[AssetType]
-
-  /**
-    * A Set of FontInfo's describing the fonts for your game.
-    * Please note that more fonts can be added to the `Startup` object
-    * resulting from the `setup` method below.
-    */
-  def fonts: Set[FontInfo]
-
-  /**
-    * A Set of initial, predefined animations for your game.
-    * Please note that more animations can be added to the `Startup` object
-    * resulting from the `setup` method below.
-    */
-  def animations: Set[Animation]
-
-  /**
-    * A Set of SubSystems for your game.
-    */
-  def subSystems: Set[SubSystem]
+  def initialScene(bootData: BootData): Option[SceneName]
 
   /**
     * The `setup` function is your only opportunity to do an initial work
@@ -67,12 +49,14 @@ trait IndigoGame[FlagData, StartupData, Model, ViewModel] extends GameLauncher {
     * that now, which is why you have access to the `AssetCollection` object.
     * `setup` is also the only place the game is expected to to potentially
     * fail with error and report any errors.
+    * @param bootData Data created during initial game boot.
     * @param assetCollection Access to the Asset collection in order to,
     *                        for example, parse text files.
+    * @param dice Psuedorandom number generator
     * @return Either an `Startup.Success[...your startup data...]` or a
     *         `Startup.Failure[StartupErrors]`.
     */
-  def setup(flagData: FlagData, gameConfig: GameConfig, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartupData]
+  def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartupData]
 
   /**
     * Set up of your initial model
@@ -88,11 +72,11 @@ trait IndigoGame[FlagData, StartupData, Model, ViewModel] extends GameLauncher {
     */
   def initialViewModel(startupData: StartupData, model: Model): ViewModel
 
-  private def indigoGame(flagData: FlagData, gameConfig: GameConfig): GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel] = {
+  private def indigoGame(bootUp: BootUp[BootData]): GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel] = {
     val sceneManager: SceneManager[Model, ViewModel] = {
-      val s = scenes(flagData)
+      val s = scenes(bootUp.bootData)
 
-      initialScene(flagData) match {
+      initialScene(bootUp.bootData) match {
         case Some(name) =>
           SceneManager(s, name)
 
@@ -110,19 +94,18 @@ trait IndigoGame[FlagData, StartupData, Model, ViewModel] extends GameLauncher {
     }
 
     new GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel](
-      fonts,
-      animations,
-      (ac: AssetCollection) => (d: Dice) => setup(flagData, gameConfig, ac, d),
-      (sd: StartupData) => new GameWithSubSystems(initialModel(sd), new SubSystemsRegister(subSystems.toList)),
+      bootUp.fonts,
+      bootUp.animations,
+      (ac: AssetCollection) => (d: Dice) => setup(bootUp.bootData, ac, d),
+      (sd: StartupData) => new GameWithSubSystems(initialModel(sd), new SubSystemsRegister(bootUp.subSystems.toList)),
       (sd: StartupData) => (m: GameWithSubSystems[Model]) => initialViewModel(sd, m.model),
       frameProcessor
     )
   }
 
   final protected def ready(flags: Map[String, String]): Unit = {
-    val flagData: FlagData = parseFlags(flags)
-    val gameConfig: GameConfig = config(flagData)
-    indigoGame(flagData, gameConfig).start(gameConfig, Future(None), assets(flagData), Future(Set()))
+    val b = boot(flags)
+    indigoGame(b).start(b.gameConfig, Future(None), b.assets, Future(Set()))
   }
 
 }
