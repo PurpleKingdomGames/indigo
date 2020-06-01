@@ -7,6 +7,10 @@ final case class GameViewport(width: Int, height: Int) {
   val horizontalMiddle: Int = width / 2
   val verticalMiddle: Int   = height / 2
   val center: Point         = Point(horizontalMiddle, verticalMiddle)
+  val size: Point = Point(width, height)
+
+  def asRectangle: Rectangle = Rectangle(Point.zero, size)
+  def bounds: Rectangle = asRectangle
 
   def giveDimensions(magnification: Int): Rectangle =
     Rectangle(0, 0, width / magnification, height / magnification)
