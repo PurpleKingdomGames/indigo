@@ -5,6 +5,8 @@
 
 # mill specific
 out
+publish.sh
+credentials.sh
 
 # sbt specific
 sbt
