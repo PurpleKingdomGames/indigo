@@ -7,7 +7,7 @@ import coursier.maven.MavenRepository
 
 object `mill-indigo` extends ScalaModule with PublishModule {
   def scalaVersion = "2.12.10"
-  def millVersion = "0.6.0"
+  def millVersion  = "0.6.2"
 
   def ivyDeps = Agg(
     ivy"com.lihaoyi::mill-main:${millVersion}",
@@ -23,7 +23,6 @@ object `mill-indigo` extends ScalaModule with PublishModule {
 
   def scalacOptions = Seq("-P:wartremover:only-warn-traverser:org.wartremover.warts.Unsafe")
 
-  // This line breaks the Scala.js fastOpt build.
   def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.7") }
 
   object test extends Tests {
@@ -32,16 +31,16 @@ object `mill-indigo` extends ScalaModule with PublishModule {
     def testFrameworks = Seq("utest.runner.Framework")
   }
 
-  def publishVersion = "0.0.1-SNAPSHOT"
+  def publishVersion = "0.0.1"
 
   def pomSettings = PomSettings(
     description = "mill-indigo",
-    organization = "indigo",
-    url = "",
+    organization = "io.indigoengine",
+    url = "https://github.com/PurpleKingdomGames/indigo",
     licenses = Seq(License.MIT),
-    versionControl = VersionControl.github("purple-kingdom-games", "indigo"),
+    versionControl = VersionControl.github("PurpleKingdomGames", "indigo"),
     developers = Seq(
-      Developer("memyself", "Me Myself", "https://github.com/davesmith00000")
+      Developer("davesmith00000", "David Smith", "https://github.com/davesmith00000")
     )
   )
 
