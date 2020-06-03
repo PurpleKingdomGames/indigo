@@ -1,3 +1,0 @@
-function ping() {
-    return "pong";
-}

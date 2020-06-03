@@ -1,6 +1,5 @@
 import scala.util.Success
 import scala.util.Try
-// import $file.millindigo
 import $ivy.`com.lihaoyi::mill-contrib-bloop:$MILL_VERSION`
 import mill._
 import mill.scalalib._
@@ -8,7 +7,7 @@ import mill.scalajslib._
 import mill.scalajslib.api._
 import coursier.maven.MavenRepository
 
-import $ivy.`indigo::mill-indigo:0.0.1-SNAPSHOT`, millindigo._
+import $ivy.`io.indigoengine::mill-indigo:0.0.1-SNAPSHOT`, millindigo._
 
 object snake extends ScalaJSModule with MillIndigo {
   def scalaVersion   = "2.13.2"
@@ -27,9 +26,9 @@ object snake extends ScalaJSModule with MillIndigo {
   }
 
   def ivyDeps = Agg(
-    ivy"indigo::indigo-json-circe::0.0.12-SNAPSHOT",
-    ivy"indigo::indigo::0.0.12-SNAPSHOT",
-    ivy"indigo::indigo-extras::0.0.12-SNAPSHOT"
+    ivy"io.indigoengine::indigo-json-circe::0.0.12-SNAPSHOT",
+    ivy"io.indigoengine::indigo::0.0.12-SNAPSHOT",
+    ivy"io.indigoengine::indigo-extras::0.0.12-SNAPSHOT"
   )
 
   def repositories = super.repositories ++ Seq(

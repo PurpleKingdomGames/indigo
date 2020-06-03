@@ -10,7 +10,7 @@ val scala2 = "2.13.2"
 lazy val commonSettings = Seq(
   version := indigoVersion,
   scalaVersion := scala2,
-  organization := "indigo",
+  organization := "io.indigoengine",
   libraryDependencies ++= Seq(
     "com.lihaoyi" %%% "utest" % "0.7.4" % "test"
   ),
@@ -128,7 +128,7 @@ lazy val facades =
       name := "facades",
       version := indigoVersion,
       scalaVersion := scala2,
-      organization := "indigo",
+      organization := "io.indigoengine",
       scalacOptions += "-Yrangepos",
       scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits")
     )

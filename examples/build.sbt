@@ -9,8 +9,8 @@ lazy val commonSettings = Seq(
   organization := "indigo-examples",
   libraryDependencies ++= Seq(
     "com.lihaoyi" %%% "utest"  % "0.7.4" % "test",
-    "indigo"      %%% "indigo" % "0.0.12-SNAPSHOT",
-    "indigo"      %%% "indigo-extras" % "0.0.12-SNAPSHOT"
+    "io.indigoengine" %%% "indigo" % "0.0.12-SNAPSHOT",
+    "io.indigoengine" %%% "indigo-extras" % "0.0.12-SNAPSHOT"
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
   scalacOptions in (Compile, compile) ++= ScalacOptions.scala213Compile,

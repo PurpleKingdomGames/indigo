@@ -6,15 +6,15 @@ import publish._
 import coursier.maven.MavenRepository
 
 object `mill-indigo` extends ScalaModule with PublishModule {
-  def scalaVersion = "2.12.10"
-  def millVersion  = "0.6.2"
+  def scalaVersion = "2.13.2"
+  def millLibVersion  = "0.7.3"
 
   def ivyDeps = Agg(
-    ivy"com.lihaoyi::mill-main:${millVersion}",
-    ivy"com.lihaoyi::mill-main-api:${millVersion}",
-    ivy"com.lihaoyi::mill-scalalib:${millVersion}",
-    ivy"com.lihaoyi::mill-scalalib-api:${millVersion}",
-    ivy"com.lihaoyi::os-lib:0.6.2"
+    ivy"com.lihaoyi::mill-main:${millLibVersion}",
+    ivy"com.lihaoyi::mill-main-api:${millLibVersion}",
+    ivy"com.lihaoyi::mill-scalalib:${millLibVersion}",
+    ivy"com.lihaoyi::mill-scalalib-api:${millLibVersion}",
+    ivy"com.lihaoyi::os-lib:0.7.0"
   )
 
   def repositories = super.repositories ++ Seq(
@@ -31,7 +31,7 @@ object `mill-indigo` extends ScalaModule with PublishModule {
     def testFrameworks = Seq("utest.runner.Framework")
   }
 
-  def publishVersion = "0.0.1"
+  def publishVersion = "0.0.1-SNAPSHOT"
 
   def pomSettings = PomSettings(
     description = "mill-indigo",

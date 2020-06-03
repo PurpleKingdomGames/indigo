@@ -1,9 +1,11 @@
 #!/bin/bash
 
+set -e
+
 # Indigo
 echo ">>> Indigo"
 cd indigo
-bash localpublish.sh
+bash build.sh
 cd ..
 
 # Mill Indigo
@@ -15,21 +17,18 @@ cd ..
 # Examples
 echo ">>> Examples"
 cd examples
-bash localbuild.sh
+bash build.sh
 cd ..
 
 # Demos
 echo ">>> Demos"
 cd demos
-bash builddemos.sh
-cd ..
-
-# Supporting tooling...
-# JS API
-cd jsapi
 bash build.sh
 cd ..
 
-# Documentation...
-# Docs site
+# IndigoJS
+echo ">>> IndigoJS"
+cd jsapi
+bash build.sh
+cd ..
 
