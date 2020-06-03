@@ -6,10 +6,10 @@ import indigo.shared.IndigoLogger
 
 import io.circe.generic.auto._
 import io.circe.parser._
+import indigo.shared.datatypes.FontChar
 
 object Json extends JsonSupportFunctions {
 
-  @SuppressWarnings(Array("org.wartremover.warts.PublicInference", "org.wartremover.warts.Nothing"))
   def asepriteFromJson(json: String): Option[Aseprite] =
     decode[Aseprite](json) match {
       case Right(s) => Some(s)
@@ -18,7 +18,6 @@ object Json extends JsonSupportFunctions {
         None
     }
 
-  @SuppressWarnings(Array("org.wartremover.warts.PublicInference", "org.wartremover.warts.Nothing"))
   def tiledMapFromJson(json: String): Option[TiledMap] =
     decode[TiledMap](json) match {
       case Right(s) => Some(s)
@@ -27,4 +26,17 @@ object Json extends JsonSupportFunctions {
         None
     }
 
+  def readFontToolJson(json: String): Option[List[FontChar]] =
+    decode[GlyphWrapper](json) match {
+      case Right(s) => Some(s.glyphs.map(_.toFontChar))
+      case Left(e) =>
+        IndigoLogger.info("Failed to deserialise json into a list of glyphs: " + e.getMessage)
+        None
+    }
+
+  private final case class GlyphWrapper(glyphs: List[Glyph])
+  private final case class Glyph(char: String, x: Int, y: Int, w: Int, h: Int) {
+    def toFontChar: FontChar =
+      FontChar(char, x, y, w, h)
+  }
 }

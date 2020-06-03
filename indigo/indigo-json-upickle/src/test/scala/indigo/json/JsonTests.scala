@@ -2,6 +2,7 @@ package indigo.json
 
 import indigo.shared.formats._
 import utest._
+import indigo.shared.datatypes.FontChar
 
 object JsonTests extends TestSuite {
 
@@ -18,7 +19,77 @@ object JsonTests extends TestSuite {
         }
 
       }
+
+      "Fonts" - {
+        "should be able to parse the json definition" - {
+          val actual = Json.readFontToolJson(FontToolSampleData.json).get
+
+          val expected = FontToolSampleData.sample
+
+          actual.length ==> expected.length
+          actual.forall(c => expected.contains(c)) ==> true
+        }
+
+        "should fail to parse a bad json definition" - {
+          Json.readFontToolJson("nonsense") ==> None
+        }
+      }
     }
+
+}
+
+object FontToolSampleData {
+
+  val json: String =
+    """
+{
+    "name": "fontname",
+    "size": 16,
+    "padding": 1,
+    "glyphs": [
+        {
+            "unicode": 100,
+            "char": "d",
+            "x": 1,
+            "y": 1,
+            "w": 10,
+            "h": 25
+        },
+        {
+            "unicode": 98,
+            "char": "b",
+            "x": 13,
+            "y": 1,
+            "w": 10,
+            "h": 25
+        },
+        {
+            "unicode": 99,
+            "char": "c",
+            "x": 25,
+            "y": 1,
+            "w": 9,
+            "h": 25
+        },
+        {
+            "unicode": 97,
+            "char": "a",
+            "x": 36,
+            "y": 1,
+            "w": 10,
+            "h": 25
+        }
+    ]
+}
+    """
+
+  val sample: List[FontChar] =
+    List(
+      FontChar("a", 36, 1, 10, 25),
+      FontChar("b", 13, 1, 10, 25),
+      FontChar("c", 25, 1, 9, 25),
+      FontChar("d", 1, 1, 10, 25)
+    )
 
 }
 

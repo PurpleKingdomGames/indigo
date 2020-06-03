@@ -16,6 +16,7 @@ import indigo.shared.formats.TiledLayer
 import indigo.shared.formats.TileSet
 import indigo.shared.formats.TiledTerrain
 import indigo.shared.formats.TiledTerrainCorner
+import indigo.shared.datatypes.FontChar
 
 @SuppressWarnings(
   Array(
@@ -58,4 +59,20 @@ object Json extends JsonSupportFunctions {
         None
     }
 
+  implicit val glyphRW: RW[Glyph]               = macroRW
+  implicit val glyphWrapperRW: RW[GlyphWrapper] = macroRW
+
+  def readFontToolJson(json: String): Option[List[FontChar]] =
+    Try(read[GlyphWrapper](json)).toEither match {
+      case Right(s) => Some(s.glyphs.map(_.toFontChar))
+      case Left(e) =>
+        IndigoLogger.info("Failed to deserialise json into a list of glyphs: " + e.getMessage)
+        None
+    }
+
+  final case class GlyphWrapper(glyphs: List[Glyph])
+  final case class Glyph(char: String, x: Int, y: Int, w: Int, h: Int) {
+    def toFontChar: FontChar =
+      FontChar(char, x, y, w, h)
+  }
 }

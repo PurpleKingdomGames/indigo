@@ -81,12 +81,8 @@ object FontSpriteSheet {
     new FontSpriteSheet(material, size)
 }
 
-final class FontChar(val character: String, val bounds: Rectangle)
+final case class FontChar(val character: String, val bounds: Rectangle)
 object FontChar {
-
-  def apply(character: String, bounds: Rectangle): FontChar =
-    new FontChar(character, bounds)
-
   def apply(character: String, x: Int, y: Int, width: Int, height: Int): FontChar =
     FontChar(character, Rectangle(x, y, width, height))
 }
