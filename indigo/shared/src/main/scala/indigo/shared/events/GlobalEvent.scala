@@ -6,11 +6,14 @@ import indigo.shared.datatypes.Point
 import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetType
 import indigo.shared.datatypes.BindingKey
+import indigo.shared.config.GameViewport
 
 // Events that are passed to the GlobalEventStream
 trait GlobalEvent
 
 case object FrameTick extends GlobalEvent
+
+final case class ViewportResize(gameViewPort: GameViewport) extends GlobalEvent
 
 sealed trait InputEvent extends GlobalEvent with Product with Serializable
 

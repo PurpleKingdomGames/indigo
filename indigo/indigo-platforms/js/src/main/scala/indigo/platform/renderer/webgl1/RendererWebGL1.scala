@@ -24,9 +24,17 @@ import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import indigo.platform.renderer.shared.RendererHelper
 import indigo.platform.renderer.shared.WebGLHelper
+import indigo.shared.platform.GlobalEventStream
+import indigo.shared.events.ViewportResize
+import indigo.shared.config.GameViewport
 
 @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
-final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], cNc: ContextAndCanvas) extends Renderer {
+final class RendererWebGL1(
+    config: RendererConfig,
+    loadedTextureAssets: List[LoadedTextureAsset],
+    cNc: ContextAndCanvas,
+    globalEventStream: GlobalEventStream
+) extends Renderer {
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var resizeRun: Boolean = false
@@ -241,6 +249,8 @@ final class RendererWebGL1(config: RendererConfig, loadedTextureAssets: List[Loa
       uiFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
 
       gl.viewport(0, 0, actualWidth.toDouble, actualHeight.toDouble)
+
+      globalEventStream.pushGlobalEvent(ViewportResize(GameViewport(actualWidth, actualHeight)))
 
       ()
     }

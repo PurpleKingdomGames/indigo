@@ -20,12 +20,16 @@ import indigo.platform.renderer.shared.RendererHelper
 import indigo.platform.renderer.shared.WebGLHelper
 import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.FrameBufferComponents
+import indigo.shared.platform.GlobalEventStream
+import indigo.shared.events.ViewportResize
+import indigo.shared.config.GameViewport
 
 @SuppressWarnings(Array("org.wartremover.warts.Null"))
 final class RendererWebGL2(
     config: RendererConfig,
     loadedTextureAssets: List[LoadedTextureAsset],
-    cNc: ContextAndCanvas
+    cNc: ContextAndCanvas,
+    globalEventStream: GlobalEventStream
 ) extends Renderer {
 
   private val gl: WebGLRenderingContext =
@@ -230,6 +234,8 @@ final class RendererWebGL2(
       uiFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
 
       gl.viewport(0, 0, actualWidth.toDouble, actualHeight.toDouble)
+
+      globalEventStream.pushGlobalEvent(ViewportResize(GameViewport(actualWidth, actualHeight)))
 
       ()
     }

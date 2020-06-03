@@ -14,21 +14,22 @@ import indigo.platform.renderer.webgl2.RendererWebGL2
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.IndigoLogger
 import indigo.facades.WebGL2RenderingContext
+import indigo.shared.platform.GlobalEventStream
 
-final class RendererInitialiser(renderingTechnology: RenderingTechnology) {
+final class RendererInitialiser(renderingTechnology: RenderingTechnology, globalEventStream: GlobalEventStream) {
 
   def setup(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: html.Canvas): Renderer = {
     val (cNc, tech) = setupContextAndCanvas(canvas, config.magnification, config.antiAliasing)
     val r =
       tech match {
         case RenderingTechnology.WebGL1 =>
-          new RendererWebGL1(config, loadedTextureAssets, cNc)
+          new RendererWebGL1(config, loadedTextureAssets, cNc, globalEventStream)
 
         case RenderingTechnology.WebGL2 =>
-          new RendererWebGL2(config, loadedTextureAssets, cNc)
+          new RendererWebGL2(config, loadedTextureAssets, cNc, globalEventStream)
 
         case RenderingTechnology.WebGL2WithFallback =>
-          new RendererWebGL2(config, loadedTextureAssets, cNc)
+          new RendererWebGL2(config, loadedTextureAssets, cNc, globalEventStream)
       }
 
     r.init()

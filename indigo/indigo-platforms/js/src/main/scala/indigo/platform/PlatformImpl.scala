@@ -33,7 +33,7 @@ class PlatformImpl(
 ) extends Platform {
 
   val rendererInit: RendererInitialiser =
-    new RendererInitialiser(gameConfig.advanced.renderingTechnology)
+    new RendererInitialiser(gameConfig.advanced.renderingTechnology, globalEventStream)
 
   def initialise(): Try[(Renderer, AssetMapping)] =
     for {
