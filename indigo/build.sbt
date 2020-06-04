@@ -25,6 +25,55 @@ lazy val commonSettings = Seq(
   scalacOptions += "-Yrangepos"
 )
 
+lazy val publishSettings = {
+  import xerial.sbt.Sonatype._
+  Seq(
+    publishTo := {
+      val nexus = "https://oss.sonatype.org/"
+      if (isSnapshot.value)
+        Some("snapshots" at nexus + "content/repositories/snapshots")
+      else
+        Some("releases" at nexus + "service/local/staging/deploy/maven2")
+    },
+    publishTo := sonatypePublishToBundle.value,
+    publishMavenStyle := true,
+    publishArtifact in Test := false,
+    pomIncludeRepository := { _ =>
+      false
+    },
+    pomExtra :=
+      <url>https://github.com/PurpleKingdomGames/indigo</url>
+      <licenses>
+        <license>
+          <name>MIT</name>
+          <url>https://opensource.org/licenses/MIT</url>
+          <distribution>repo</distribution>
+        </license>
+      </licenses>
+      <developers>
+        <developer>
+          <id>davesmith00000</id>
+          <name>David Smith</name>
+          <organization>Purple Kingdom Games</organization>
+          <organizationUrl>http://purplekingdomgames.com/</organizationUrl>
+        </developer>
+      </developers>,
+    sonatypeProfileName := "Purple Kingdom Game",
+    licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT")),
+    sonatypeProjectHosting := Some(GitHubHosting("PurpleKingdomGames", "indigo", "indigo@purplekingdomgames.com")),
+    homepage := Some(url("https://github.com/PurpleKingdomGames/indigo")),
+    scmInfo := Some(
+      ScmInfo(
+        url("https://github.com/PurpleKingdomGames/indigo"),
+        "scm:git@github.com:PurpleKingdomGames/indigo.git"
+      )
+    ),
+    developers := List(
+      Developer(id = "davesmith00000", name = "David Smith", email = "indigo@purplekingdomgames.com", url = url("https://github.com/davesmith00000"))
+    )
+  )
+}
+
 // Testing
 
 lazy val sandbox =
@@ -77,6 +126,7 @@ lazy val indigoCore =
     .crossType(CrossType.Pure)
     .in(file("indigo-core"))
     .settings(commonSettings: _*)
+    .settings(publishSettings: _*)
     .settings(
       name := "indigo-core",
       libraryDependencies ++= Seq(
@@ -94,6 +144,7 @@ lazy val indigoExtras =
     .crossType(CrossType.Pure)
     .in(file("indigo-extras"))
     .settings(commonSettings: _*)
+    .settings(publishSettings: _*)
     .dependsOn(shared)
     .settings(
       name := "indigo-extras",
@@ -108,6 +159,7 @@ lazy val indigo =
     .crossType(CrossType.Pure)
     .in(file("indigo"))
     .settings(commonSettings: _*)
+    .settings(publishSettings: _*)
     .dependsOn(indigoCore)
     .settings(
       name := "indigo",
@@ -124,6 +176,7 @@ lazy val facades =
   crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Full)
     .in(file("facades"))
+    .settings(publishSettings: _*)
     .settings(
       name := "facades",
       version := indigoVersion,
@@ -146,6 +199,7 @@ lazy val indigoPlatforms =
     .crossType(CrossType.Full)
     .in(file("indigo-platforms"))
     .settings(commonSettings: _*)
+    .settings(publishSettings: _*)
     .settings(
       name := "indigo-platforms",
       libraryDependencies ++= Seq(
@@ -194,6 +248,7 @@ lazy val shared =
   crossProject(JSPlatform, JVMPlatform)
     .crossType(CrossType.Pure)
     .settings(commonSettings: _*)
+    .settings(publishSettings: _*)
     .settings(
       name := "shared",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
@@ -211,6 +266,7 @@ lazy val indigoJsonCirce =
     .crossType(CrossType.Pure)
     .in(file("indigo-json-circe"))
     .settings(commonSettings: _*)
+    .settings(publishSettings: _*)
     .settings(
       name := "indigo-json-circe",
       libraryDependencies ++= Seq(
@@ -229,6 +285,7 @@ lazy val indigoJsonUPickle =
     .crossType(CrossType.Pure)
     .in(file("indigo-json-upickle"))
     .settings(commonSettings: _*)
+    .settings(publishSettings: _*)
     .settings(
       name := "indigo-json-upickle",
       libraryDependencies ++= Seq(
