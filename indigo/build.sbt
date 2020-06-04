@@ -28,46 +28,11 @@ lazy val commonSettings = Seq(
 lazy val publishSettings = {
   import xerial.sbt.Sonatype._
   Seq(
-    publishTo := {
-      val nexus = "https://oss.sonatype.org/"
-      if (isSnapshot.value)
-        Some("snapshots" at nexus + "content/repositories/snapshots")
-      else
-        Some("releases" at nexus + "service/local/staging/deploy/maven2")
-    },
     publishTo := sonatypePublishToBundle.value,
     publishMavenStyle := true,
-    publishArtifact in Test := false,
-    pomIncludeRepository := { _ =>
-      false
-    },
-    pomExtra :=
-      <url>https://github.com/PurpleKingdomGames/indigo</url>
-      <licenses>
-        <license>
-          <name>MIT</name>
-          <url>https://opensource.org/licenses/MIT</url>
-          <distribution>repo</distribution>
-        </license>
-      </licenses>
-      <developers>
-        <developer>
-          <id>davesmith00000</id>
-          <name>David Smith</name>
-          <organization>Purple Kingdom Games</organization>
-          <organizationUrl>http://purplekingdomgames.com/</organizationUrl>
-        </developer>
-      </developers>,
-    sonatypeProfileName := "Purple Kingdom Game",
+    sonatypeProfileName := "io.indigoengine",
     licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT")),
     sonatypeProjectHosting := Some(GitHubHosting("PurpleKingdomGames", "indigo", "indigo@purplekingdomgames.com")),
-    homepage := Some(url("https://github.com/PurpleKingdomGames/indigo")),
-    scmInfo := Some(
-      ScmInfo(
-        url("https://github.com/PurpleKingdomGames/indigo"),
-        "scm:git@github.com:PurpleKingdomGames/indigo.git"
-      )
-    ),
     developers := List(
       Developer(id = "davesmith00000", name = "David Smith", email = "indigo@purplekingdomgames.com", url = url("https://github.com/davesmith00000"))
     )

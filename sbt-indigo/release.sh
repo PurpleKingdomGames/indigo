@@ -8,8 +8,5 @@ export GPG_TTY=$(tty)
 
 source credentials.sh
 
-sbt indigoRelease 
-
-echo ""
-echo "Attempting release"
-sbt sonatypeBundleRelease
+echo "Attempting plugin release"
+sbt clean compile publishSigned sonatypeBundleRelease
