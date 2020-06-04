@@ -18,6 +18,7 @@ dist
 target
 lib_managed
 src_managed
+credentials.sbt
 
 # IDE specific
 .idea
