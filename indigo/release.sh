@@ -2,14 +2,22 @@
 
 # Run from root.
 
+set -e
+
+export GPG_TTY=$(tty)
+
+source credentials.sh
+
 cd project
 
-sbt clean sbtIndigo/publishSigned
-
-cd ..
-
-sbt indigoRelease 
+sbt sbtIndigo/clean sbtIndigo/compile sbtIndigo/publishSigned sonatypeBundleRelease
 
 echo ""
-echo "Attempting release"
-sbt sonatypeBundleRelease
+echo "Attempting plugin release"
+cd ..
+
+# sbt indigoRelease 
+
+# echo ""
+# echo "Attempting release"
+# sbt sonatypeBundleRelease
