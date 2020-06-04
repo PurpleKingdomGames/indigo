@@ -23,22 +23,8 @@ src_managed
 .idea
 *.iml
 
-# terraform
-*.tfstate
-*.tfstate.backup*
-
-#docker gatling loadtesting
-volumes
-
-bin
-.vagrant
-operations/pipeline/projectvars.sh
-env.properties
-
 node_modules
-
 elm-stuff
 .metals/
 .bloop
 metals.sbt
-project/

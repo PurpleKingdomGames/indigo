@@ -3,7 +3,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 import scala.sys.process._
 import scala.language.postfixOps
 
-val indigoVersion = "0.0.12-SNAPSHOT"
+lazy val indigoVersion = IndigoVersion.getVersion
 
 val scala2 = "2.13.2"
 

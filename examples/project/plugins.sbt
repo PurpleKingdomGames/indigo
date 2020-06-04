@@ -1,4 +1,4 @@
-lazy val sbtIndigoVersion = "0.0.12-SNAPSHOT"
+lazy val sbtIndigoVersion = SbtIndigoVersion.getVersion
 
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject"      % "1.0.0")
 addSbtPlugin("org.scala-js"       % "sbt-scalajs"                   % "1.0.1")
