@@ -1,3 +1,6 @@
+[![MIT License](https://img.shields.io/github/license/PurpleKingdomGames/indigo?color=indigo)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
+[![Latest Tagged Release](https://img.shields.io/badge/dynamic/json?color=purple&label=Latest%20release&query=%24%5B0%5D.name&url=https%3A%2F%2Fapi.github.com%2Frepos%2FPurpleKingdomGames%2Findigo%2Ftags)]()
+
 # Indigo
 
 Indigo is a non-traditional, proof of concept game engine written in Scala. It aims to allow programmers to build games using a purely functional set of APIs. 
