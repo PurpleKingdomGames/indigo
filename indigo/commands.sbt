@@ -36,6 +36,11 @@ def applyToAll(command: String): String =
     applyCommand(coreProjects, command, PlatformSuffix.All)
   ).mkString
 
+def applyToAllReleaseable(command: String): String =
+  List(
+    applyCommand(releaseProjects, command, PlatformSuffix.All)
+  ).mkString
+
 // Rebuild ScalaDocs and open in Firefox
 addCommandAlias(
   "readdocs",
@@ -70,7 +75,7 @@ addCommandAlias(
 )
 addCommandAlias(
   "testIndigoJVM",
-  applyCommand(coreProjects, "test", PlatformSuffix.JVMOnly)
+  applyCommand(releaseProjects, "test", PlatformSuffix.JVMOnly) // Release projects only!
 )
 addCommandAlias(
   "testAllNoCleanJS",
@@ -188,13 +193,18 @@ addCommandAlias(
 )
 
 addCommandAlias(
+  "indigoPublishAllSigned",
+  applyToAllReleaseable("publishSigned")
+)
+
+addCommandAlias(
   "indigoRelease",
   List(
     "cleanAll",
     "buildAllNoClean",
     "testAllNoCleanJVM",
     "testAllNoCleanJS",
-    applyCommand(releaseProjects, "publishSigned", PlatformSuffix.All),
+    "indigoPublishAllSigned",
     "sonatypeBundleRelease"
   ).mkString(";", ";", "")
 )
