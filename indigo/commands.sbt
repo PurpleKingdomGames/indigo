@@ -194,6 +194,7 @@ addCommandAlias(
     "buildAllNoClean",
     "testAllNoCleanJVM",
     "testAllNoCleanJS",
-    applyCommand(releaseProjects, "publishSigned", PlatformSuffix.All)
+    applyCommand(releaseProjects, "publishSigned", PlatformSuffix.All),
+    "sonatypeBundleRelease"
   ).mkString(";", ";", "")
 )
