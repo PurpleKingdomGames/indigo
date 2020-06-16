@@ -1,16 +1,22 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
-# Indigo
-echo ">>> Indigo"
-cd indigo
+# Mill Indigo
+echo ">>> SBT-Indigo"
+cd sbt-indigo
 bash build.sh
 cd ..
 
 # Mill Indigo
 echo ">>> Mill-Indigo"
 cd mill-indigo
+bash build.sh
+cd ..
+
+# Indigo
+echo ">>> Indigo"
+cd indigo
 bash build.sh
 cd ..
 
