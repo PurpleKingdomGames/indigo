@@ -36,7 +36,7 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
       Some(e)
 
     case FrameTick =>
-      Some(AutomataEvent.Cull)
+      Some(AutomataEvent.Cull(poolKey))
 
     case _ =>
       None
@@ -73,11 +73,11 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
 
       Outcome(this)
 
-    case KillAll =>
+    case KillAll(key) if key === poolKey =>
       pool.clear()
       Outcome(this)
 
-    case Cull => // AKA: Update.
+    case Cull(key) if key === poolKey => // AKA: Update.
       val cullEvents = pool
         .filterNot(_.isAlive(frameContext.gameTime.running))
         .toList
@@ -185,8 +185,8 @@ object AutomataEvent {
     def apply(key: AutomataPoolKey, at: Point): Spawn =
       Spawn(key, at, None, None)
   }
-  case object KillAll extends AutomataEvent
-  case object Cull    extends AutomataEvent
+  final case class KillAll(key: AutomataPoolKey) extends AutomataEvent
+  final case class Cull(key: AutomataPoolKey)    extends AutomataEvent
 }
 
 trait AutomatonPayload

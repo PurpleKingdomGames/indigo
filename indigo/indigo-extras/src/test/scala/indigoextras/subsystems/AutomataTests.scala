@@ -64,7 +64,7 @@ object AutomataTests extends TestSuite {
           val ctx = context(1, time, time)
 
           farmWithAutomaton
-            .update(ctx)(AutomataEvent.Cull)
+            .update(ctx)(AutomataEvent.Cull(poolKey))
             .state
             .render(ctx)
             .gameLayer
@@ -83,11 +83,22 @@ object AutomataTests extends TestSuite {
         // 1 ms over the lifespan, so should be culled
         val outcome: Outcome[Automata] =
           farmWithAutomaton
-            .update(context(1, Seconds(1)))(AutomataEvent.Cull)
+            .update(context(1, Seconds(1)))(AutomataEvent.Cull(poolKey))
 
         outcome.state.liveAutomataCount ==> 0
         outcome.globalEvents.head ==> eventInstance
 
+      }
+
+      "KillAll should... kill all the automatons." - {
+
+        // At any time, KillAll, should remove all automatons without trigger cull events.
+        val outcome: Outcome[Automata] =
+          farmWithAutomaton
+            .update(context(1, Seconds(0)))(AutomataEvent.KillAll(poolKey))
+
+        outcome.state.pool.isEmpty ==> true
+        outcome.globalEvents.isEmpty ==> true
       }
 
     }
