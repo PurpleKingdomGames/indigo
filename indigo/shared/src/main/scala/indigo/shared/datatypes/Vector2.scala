@@ -37,6 +37,9 @@ final class Vector2(val x: Double, val y: Double) {
       if (y === 0) 0 else (y / Math.abs(y))
     )
 
+  def distanceTo(other: Vector2): Double =
+    Vector2.distance(this, other)
+
   def toPoint: Point =
     Point(x.toInt, y.toInt)
 
@@ -47,9 +50,9 @@ final class Vector2(val x: Double, val y: Double) {
 
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.IsInstanceOf"))
   override def equals(obj: Any): Boolean =
-    if (obj.isInstanceOf[Vector2]) {
+    if (obj.isInstanceOf[Vector2])
       this === obj.asInstanceOf[Vector2]
-    } else false
+    else false
 
   def asString: String =
     implicitly[AsString[Vector2]].show(this)
@@ -106,6 +109,9 @@ object Vector2 {
 
   def dotProduct(vec1: Vector2, vec2: Vector2): Double =
     (vec1.x * vec2.x) + (vec1.y * vec2.y)
+
+  def distance(v1: Vector2, v2: Vector2): Double =
+    Math.sqrt(Math.abs(Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2)))
 
   def applyMatrix4(vector2: Vector2, matrix4: Matrix4): Vector2 = {
     val m  = matrix4.transpose

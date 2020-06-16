@@ -19,6 +19,11 @@ object Vector2Tests extends TestSuite {
           areDoubleVectorsEqual(Vector2(0.33, 1), frameSize / imageSize) ==> true
         }
 
+        "distance function" - {
+          to2dp(Vector2.distance(Vector2(1, 2), Vector2(7, 6))) ==> 7.21
+          to2dp(Vector2.distance(Vector2(-6, 8), Vector2(-3, 9))) ==> 3.16
+        }
+
         "should be able to find a frame" - {
 
           val scaleFactor = frameSize / imageSize
@@ -81,5 +86,8 @@ object Vector2Tests extends TestSuite {
 
   def areDoublesEqual(expected: Double, actual: Double): Boolean =
     actual >= expected - 0.01d && actual <= expected + 0.01d
+
+  def to2dp(d: Double): Double =
+    Math.round(d * 100).toDouble / 100
 
 }
