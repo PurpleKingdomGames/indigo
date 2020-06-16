@@ -5,7 +5,11 @@ import indigo.shared.events
 trait EventTypeAliases {
 
   type GlobalEvent = events.GlobalEvent
-  type InputEvent  = events.InputEvent
+
+  type RendererDetails = events.RendererDetails.type
+  val RendererDetails: events.RendererDetails.type = events.RendererDetails
+
+  type InputEvent = events.InputEvent
 
   type InputState = events.InputState
   val InputState: events.InputState.type = events.InputState

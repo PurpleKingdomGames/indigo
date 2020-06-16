@@ -7,9 +7,17 @@ import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetType
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.config.GameViewport
+import indigo.shared.config.RenderingTechnology
+import indigo.shared.ClearColor
 
 // Events that are passed to the GlobalEventStream
 trait GlobalEvent
+
+final case class RendererDetails(
+    renderingTechnology: RenderingTechnology,
+    clearColor: ClearColor,
+    magnification: Int
+) extends GlobalEvent
 
 case object FrameTick extends GlobalEvent
 
@@ -55,8 +63,8 @@ object StorageEvent {
 sealed trait AssetEvent extends GlobalEvent
 
 object AssetEvent {
-  final case class LoadAsset(asset: AssetType, key: Option[BindingKey], makeAvailable: Boolean) extends AssetEvent
+  final case class LoadAsset(asset: AssetType, key: Option[BindingKey], makeAvailable: Boolean)            extends AssetEvent
   final case class LoadAssetBatch(assets: Set[AssetType], key: Option[BindingKey], makeAvailable: Boolean) extends AssetEvent
-  final case class AssetBatchLoaded(key: Option[BindingKey], available: Boolean) extends AssetEvent
-  final case class AssetBatchLoadError(key: Option[BindingKey]) extends AssetEvent
+  final case class AssetBatchLoaded(key: Option[BindingKey], available: Boolean)                           extends AssetEvent
+  final case class AssetBatchLoadError(key: Option[BindingKey])                                            extends AssetEvent
 }

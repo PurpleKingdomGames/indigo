@@ -12,6 +12,10 @@ object SandboxModel {
     )
 
   def updateModel(state: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] = {
+    case rd @ RendererDetails(_, _, _) =>
+      println(rd)
+      Outcome(state)
+
     case FrameTick =>
       state.saveLoadPhase match {
         case SaveLoadPhases.NotStarted =>
