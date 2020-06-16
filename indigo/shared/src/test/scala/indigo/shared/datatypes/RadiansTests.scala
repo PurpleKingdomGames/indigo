@@ -8,6 +8,12 @@ object RadiansTests extends TestSuite {
   val tests: Tests =
     Tests {
 
+      "constants are equivalent" - {
+        Radians.TAU ==> Radians.`2PI`
+        Radians.TAUby2 ==> Radians.PI
+        Radians.TAUby4 ==> Radians.PIby2
+      }
+
       "Can make a Radians instance from degrees" - {
 
         round(Radians.fromDegrees(0)) ==> round(Radians.zero)

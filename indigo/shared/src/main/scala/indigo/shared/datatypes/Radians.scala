@@ -45,8 +45,12 @@ object Radians {
     }
   }
 
-  val PI: Radians  = Radians(Math.PI)
-  val TAU: Radians = Radians(Math.PI * 2)
+  val `2PI`: Radians  = Radians(Math.PI * 2)
+  val PI: Radians     = Radians(Math.PI)
+  val PIby2: Radians  = Radians(Math.PI / 2)
+  val TAU: Radians    = `2PI`
+  val TAUby2: Radians = PI
+  val TAUby4: Radians = PIby2
 
   def zero: Radians =
     Radians(0)
