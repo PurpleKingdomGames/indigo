@@ -42,7 +42,7 @@ object PolygonTests extends TestSuite {
     Rectangle(Point(0, 5), Point(1, 1))
 
   val intersectingRectangleWithClosed: Rectangle =
-    Rectangle(Point(0, -5), Point(5, 0))
+    Rectangle(Point(0, -5), Point(4, 4))
 
   var tests: Tests =
     Tests {
@@ -130,37 +130,37 @@ object PolygonTests extends TestSuite {
           }
         }
 
-        "intersets with line (open)" - {
+        "intersects with line (open)" - {
           open.lineIntersectCheck(intersectingLine) ==> true
           open.lineIntersectCheck(noneIntersectingLine) ==> false
           open.lineIntersectCheck(intersectingLineWithClosed) ==> false
         }
 
-        "intersets with line (closed)" - {
+        "intersects with line (closed)" - {
           closed.lineIntersectCheck(intersectingLine) ==> true
           closed.lineIntersectCheck(noneIntersectingLine) ==> false
           closed.lineIntersectCheck(intersectingLineWithClosed) ==> true
         }
 
-        "intersets with rectangle (open)" - {
+        "intersects with rectangle (open)" - {
           open.rectangleIntersectCheck(intersectingRectangle) ==> true
           open.rectangleIntersectCheck(noneIntersectingRectangle) ==> false
           open.rectangleIntersectCheck(intersectingRectangleWithClosed) ==> false
         }
 
-        "intersets with rectangle (closed)" - {
+        "intersects with rectangle (closed)" - {
           closed.rectangleIntersectCheck(intersectingRectangle) ==> true
           closed.rectangleIntersectCheck(noneIntersectingRectangle) ==> false
           closed.rectangleIntersectCheck(intersectingRectangleWithClosed) ==> true
         }
 
-        "intersets with polygon (open)" - {
+        "intersects with polygon (open)" - {
           open.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangle)) ==> true
           open.polygonIntersectCheck(Polygon.fromRectangle(noneIntersectingRectangle)) ==> false
           open.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangleWithClosed)) ==> false
         }
 
-        "intersets with polygon (closed)" - {
+        "intersects with polygon (closed)" - {
           closed.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangle)) ==> true
           closed.polygonIntersectCheck(Polygon.fromRectangle(noneIntersectingRectangle)) ==> false
           closed.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangleWithClosed)) ==> true

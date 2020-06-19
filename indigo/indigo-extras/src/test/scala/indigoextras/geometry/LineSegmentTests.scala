@@ -46,11 +46,6 @@ object LineSegmentTests extends TestSuite {
 
         }
 
-        "should correctly identify a line parallel to the x-axis" - {
-          //m = 0
-          LineSegment.calculateLineComponents(Vertex(-1, 2), Vertex(1, 2)) ==> ParallelToAxisX
-        }
-
         "should correctly identify a line parallel to the y-axis" - {
           //b = Infinity (or -Infinity)
           LineSegment.calculateLineComponents(Vertex(1, 2), Vertex(1, -3)) ==> ParallelToAxisY
@@ -153,6 +148,19 @@ object LineSegmentTests extends TestSuite {
           val expected: IntersectionVertex = IntersectionVertex(2.5f, 2.5f)
 
           actual ==> expected
+        }
+
+        "Intersection use case A" - {
+
+          val actual: IntersectionResult = LineSegment.intersection(
+            LineSegment((0.0, 0.0), (5.0, 5.0)),
+            LineSegment((0.0, 3.0), (5.0, 3.0))
+          )
+
+          val expected: IntersectionVertex = IntersectionVertex(3d, 3d)
+
+          actual ==> expected
+
         }
 
       }

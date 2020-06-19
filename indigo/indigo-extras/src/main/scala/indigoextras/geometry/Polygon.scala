@@ -20,7 +20,7 @@ sealed trait Polygon {
         vs.length
     }
 
-  def lineSegments: List[LineSegment] =
+  lazy val lineSegments: List[LineSegment] =
     Polygon.toLineSegments(this)
 
   //TODO: Propatage line segment-type functions to lines.

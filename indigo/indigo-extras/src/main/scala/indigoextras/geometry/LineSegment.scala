@@ -101,9 +101,6 @@ object LineSegment {
       case (Vertex(x1, _), Vertex(x2, _)) if x1 === x2 =>
         LineProperties.ParallelToAxisY
 
-      case (Vertex(_, y1), Vertex(_, y2)) if y1 === y2 =>
-        LineProperties.ParallelToAxisX
-
       case (Vertex(x1, y1), Vertex(x2, y2)) =>
         val m: Double = (y2 - y1) / (x2 - x1)
 
@@ -116,6 +113,10 @@ object LineSegment {
     x-intercept = -b/m   (i.e. x = -b/m where y is moved to 0)
      */
     (l1.lineProperties, l2.lineProperties) match {
+      case (LineProperties.LineComponents(m1, _), LineProperties.LineComponents(m2, _)) if m1 === m2 =>
+        // Same slope, so parallel
+        IntersectionResult.NoIntersection
+
       case (LineProperties.LineComponents(m1, b1), LineProperties.LineComponents(m2, b2)) =>
         //x = -b/m
         val x: Double = (b2 - b1) / (m1 - m2)
@@ -124,31 +125,7 @@ object LineSegment {
         val y: Double = (m1 * x) + b1
 
         IntersectionResult.IntersectionVertex(x, y)
-
-      case (LineProperties.ParallelToAxisX, LineProperties.ParallelToAxisX) =>
-        IntersectionResult.NoIntersection
-
-      case (LineProperties.ParallelToAxisY, LineProperties.ParallelToAxisY) =>
-        IntersectionResult.NoIntersection
-
-      case (LineProperties.ParallelToAxisX, LineProperties.ParallelToAxisY) =>
-        IntersectionResult.IntersectionVertex(l2.start.x, l1.start.y)
-
-      case (LineProperties.ParallelToAxisY, LineProperties.ParallelToAxisX) =>
-        IntersectionResult.IntersectionVertex(l1.start.x, l2.start.y)
-
-      case (LineProperties.ParallelToAxisX, LineProperties.LineComponents(m, b)) =>
-        IntersectionResult.IntersectionVertex(
-          x = (-b / m) - l1.start.y,
-          y = l1.start.y
-        )
-
-      case (LineProperties.LineComponents(m, b), LineProperties.ParallelToAxisX) =>
-        IntersectionResult.IntersectionVertex(
-          x = (-b / m) - l2.start.y,
-          y = l2.start.y
-        )
-
+        
       case (LineProperties.ParallelToAxisY, LineProperties.LineComponents(m, b)) =>
         IntersectionResult.IntersectionVertex(
           x = l1.start.x,
@@ -160,15 +137,6 @@ object LineSegment {
           x = l2.start.x,
           y = (m * l2.start.x) + b
         )
-
-      case (LineProperties.InvalidLine, LineProperties.InvalidLine) =>
-        IntersectionResult.NoIntersection
-
-      case (_, LineProperties.InvalidLine) =>
-        IntersectionResult.NoIntersection
-
-      case (LineProperties.InvalidLine, _) =>
-        IntersectionResult.NoIntersection
 
       case _ =>
         IntersectionResult.NoIntersection
@@ -195,10 +163,6 @@ object LineSegment {
       case LineProperties.InvalidLine =>
         false
 
-      case LineProperties.ParallelToAxisX =>
-        if (point.y === lineSegment.start.y && point.x >= lineSegment.left && point.x <= lineSegment.right) true
-        else false
-
       case LineProperties.ParallelToAxisY =>
         if (point.x === lineSegment.start.x && point.y >= lineSegment.top && point.y <= lineSegment.bottom) true
         else false
@@ -216,10 +180,6 @@ object LineSegment {
     lineSegment.lineProperties match {
       case LineProperties.InvalidLine =>
         false
-
-      case LineProperties.ParallelToAxisX =>
-        if (y === lineSegment.start.y && x >= lineSegment.left && x <= lineSegment.right) true
-        else false
 
       case LineProperties.ParallelToAxisY =>
         if (x === lineSegment.start.x && y >= lineSegment.top && y <= lineSegment.bottom) true
@@ -252,7 +212,6 @@ sealed trait LineProperties
 object LineProperties {
 // y = mx + b
   final case class LineComponents(m: Double, b: Double) extends LineProperties
-  case object ParallelToAxisX                           extends LineProperties
   case object ParallelToAxisY                           extends LineProperties
   case object InvalidLine                               extends LineProperties
 }
