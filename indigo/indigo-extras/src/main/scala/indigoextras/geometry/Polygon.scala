@@ -58,6 +58,14 @@ sealed trait Polygon {
   def ===(other: Polygon): Boolean =
     implicitly[EqualTo[Polygon]].equal(this, other)
 
+  override def toString: String =
+    asString
+
+  @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
+  override def equals(obj: Any): Boolean =
+    if (obj.isInstanceOf[Polygon])
+      this === obj.asInstanceOf[Polygon]
+    else false
 }
 
 object Polygon {

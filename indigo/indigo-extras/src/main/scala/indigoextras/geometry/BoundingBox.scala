@@ -69,6 +69,15 @@ final class BoundingBox(val position: Vertex, val size: Vertex) {
 
   def ===(other: BoundingBox): Boolean =
     implicitly[EqualTo[BoundingBox]].equal(this, other)
+
+  override def toString: String =
+    asString
+
+  @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
+  override def equals(obj: Any): Boolean =
+    if (obj.isInstanceOf[BoundingBox])
+      this === obj.asInstanceOf[BoundingBox]
+    else false
 }
 
 object BoundingBox {

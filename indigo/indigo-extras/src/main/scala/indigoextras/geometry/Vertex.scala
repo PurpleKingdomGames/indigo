@@ -39,9 +39,6 @@ final class Vertex(val x: Double, val y: Double) {
   def toVector2: Vector2 =
     Vector2(x, y)
 
-  override def toString: String =
-    asString
-
   def asString: String =
     implicitly[AsString[Vertex]].show(this)
 
@@ -50,6 +47,15 @@ final class Vertex(val x: Double, val y: Double) {
 
   def ~==(other: Vertex): Boolean =
     Vertex.nearEnoughEqual(this, other, 0.001)
+
+  override def toString: String =
+    asString
+
+  @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
+  override def equals(obj: Any): Boolean =
+    if (obj.isInstanceOf[Vertex])
+      this === obj.asInstanceOf[Vertex]
+    else false
 }
 
 object Vertex {

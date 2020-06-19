@@ -46,11 +46,17 @@ final class LineSegment(val start: Vertex, val end: Vertex) {
   def asString: String =
     implicitly[AsString[LineSegment]].show(this)
 
+  def ===(other: LineSegment): Boolean =
+    implicitly[EqualTo[LineSegment]].equal(this, other)
+
   override def toString: String =
     asString
 
-  def ===(other: LineSegment): Boolean =
-    implicitly[EqualTo[LineSegment]].equal(this, other)
+  @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
+  override def equals(obj: Any): Boolean =
+    if (obj.isInstanceOf[LineSegment])
+      this === obj.asInstanceOf[LineSegment]
+    else false
 }
 
 object LineSegment {
