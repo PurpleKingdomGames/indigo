@@ -149,7 +149,7 @@ object LineSegmentTests extends TestSuite {
 
           actual ==> expected
         }
-
+        
         "Intersection use case A" - {
 
           val actual: IntersectionResult = LineSegment.intersection(
@@ -161,6 +161,22 @@ object LineSegmentTests extends TestSuite {
 
           actual ==> expected
 
+        }
+
+        "Intersection use case B" - {
+          val lineA = LineSegment((0.0, 0.0), (0.0, 5.0))
+          val lineB = LineSegment((0.0, 0.5), (5.0, 3.0))
+
+          val actual: IntersectionResult = LineSegment.intersection(
+            lineA,
+            lineB
+          )
+
+          val expected: IntersectionVertex = IntersectionVertex(0.0, 0.5)
+
+          actual ==> expected
+
+          lineA.intersectWithLine(lineB) ==> true
         }
 
       }

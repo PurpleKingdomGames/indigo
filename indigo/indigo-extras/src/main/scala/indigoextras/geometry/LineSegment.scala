@@ -156,7 +156,7 @@ object LineSegment {
   }
 
   def lineContainsVertex(lineSegment: LineSegment, point: Vertex): Boolean =
-    lineContainsVertex(lineSegment, point, 0.01d)
+    lineContainsVertex(lineSegment, point, 0.001d)
 
   def lineContainsVertex(lineSegment: LineSegment, point: Vertex, tolerance: Double): Boolean =
     lineSegment.lineProperties match {
@@ -164,7 +164,7 @@ object LineSegment {
         false
 
       case LineProperties.ParallelToAxisY =>
-        if (point.x === lineSegment.start.x && point.y >= lineSegment.top && point.y <= lineSegment.bottom) true
+        if (point.x >= lineSegment.start.x - tolerance && point.x <= lineSegment.start.x + tolerance && point.y >= lineSegment.top && point.y <= lineSegment.bottom) true
         else false
 
       case LineProperties.LineComponents(m, b) =>
