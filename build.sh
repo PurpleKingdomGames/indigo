@@ -2,7 +2,7 @@
 
 set -e
 
-# Mill Indigo
+# SBT Indigo
 echo ">>> SBT-Indigo"
 cd sbt-indigo
 bash build.sh
