@@ -90,7 +90,7 @@ object SandboxModel {
 
   def storageEvents(state: SandboxGameModel, event: GlobalEvent): Outcome[SandboxGameModel] =
     event match {
-      case Loaded(loadedData) =>
+      case Loaded(_, loadedData) =>
         Outcome(state.copy(data = Some(loadedData)))
 
       case _ =>

@@ -34,21 +34,21 @@ final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSyste
       }
 
     // Asset Response Events
-    case AssetEvent.AssetBatchLoaded(Some(key), true) if tracker.containsBundle(key) =>
+    case AssetEvent.AssetBatchLoaded(key, true) if tracker.containsBundle(key) =>
       Outcome(this)
         .addGlobalEvents(AssetBundleLoaderEvent.Success(key))
 
-    case AssetEvent.AssetBatchLoaded(Some(key), false) if tracker.containsAssetFromKey(key) =>
+    case AssetEvent.AssetBatchLoaded(key, false) if tracker.containsAssetFromKey(key) =>
       // In this case the "batch" will consist of one item and
       // the BindingKey is actually the AssetPath value and we
       // know the asset is in one of our bundles.
       processAssetUpdateEvent(AssetPath(key.value), true)
 
-    case AssetEvent.AssetBatchLoadError(Some(key)) if tracker.containsBundle(key) =>
+    case AssetEvent.AssetBatchLoadError(key, message) if tracker.containsBundle(key) =>
       Outcome(this)
-        .addGlobalEvents(AssetBundleLoaderEvent.Failure(key))
+        .addGlobalEvents(AssetBundleLoaderEvent.Failure(key, message))
 
-    case AssetEvent.AssetBatchLoadError(Some(key)) if tracker.containsAssetFromKey(key) =>
+    case AssetEvent.AssetBatchLoadError(key, _) if tracker.containsAssetFromKey(key) =>
       // In this case the "batch" will consist of one item and
       // the BindingKey is actually the AssetPath value and we
       // know the asset is in one of our bundles.
@@ -67,7 +67,7 @@ final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSyste
 
     val events: List[GlobalEvent] =
       assetPrimitives.toList
-        .map(asset => AssetEvent.LoadAsset(asset, Some(BindingKey(asset.path.value)), false))
+        .map(asset => AssetEvent.LoadAsset(asset, BindingKey(asset.path.value), false))
 
     Outcome(
       this.copy(
@@ -88,13 +88,13 @@ final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSyste
             case AssetBundleStatus.LoadComplete(completed, count) =>
               List[GlobalEvent](
                 AssetBundleLoaderEvent.LoadProgress(bundle.key, 100, completed, count),
-                AssetEvent.LoadAssetBatch(bundle.giveAssetSet, Some(bundle.key), true)
+                AssetEvent.LoadAssetBatch(bundle.giveAssetSet, bundle.key, true)
               )
 
             case AssetBundleStatus.LoadFailed(percent, completed, count, _) =>
               List[GlobalEvent](
                 AssetBundleLoaderEvent.LoadProgress(bundle.key, percent, completed, count),
-                AssetEvent.AssetBatchLoadError(Some(bundle.key))
+                AssetEvent.AssetBatchLoadError(bundle.key, s"Asset batch with key '${bundle.key.value}' failed to load")
               )
 
             case AssetBundleStatus.LoadInProgress(percent, completed, count) =>
@@ -126,7 +126,7 @@ object AssetBundleLoaderEvent {
   final case class Started(key: BindingKey)                                                extends AssetBundleLoaderEvent
   final case class LoadProgress(key: BindingKey, percent: Int, completed: Int, total: Int) extends AssetBundleLoaderEvent
   final case class Success(key: BindingKey)                                                extends AssetBundleLoaderEvent
-  final case class Failure(key: BindingKey)                                                extends AssetBundleLoaderEvent
+  final case class Failure(key: BindingKey, message: String)                               extends AssetBundleLoaderEvent
 }
 
 final case class AssetBundleTracker(val register: List[AssetBundle]) {
@@ -195,13 +195,12 @@ final class AssetBundle(val key: BindingKey, val assetCount: Int, val assets: Ma
     val percentage        = Math.round(100.0d * combined.toDouble / count.toDouble).toInt
     val clampedPercentage = Math.min(100, Math.max(0, percentage))
 
-    if (errorCount + successCount < count) {
+    if (errorCount + successCount < count)
       AssetBundleStatus.LoadInProgress(clampedPercentage, combined, count)
-    } else if (errorCount > 0) {
+    else if (errorCount > 0)
       AssetBundleStatus.LoadFailed(clampedPercentage, combined, count, errors)
-    } else {
+    else
       AssetBundleStatus.LoadComplete(combined, count)
-    }
   }
 
   def giveAssetLoadState(path: AssetPath): Option[AssetToLoad] =

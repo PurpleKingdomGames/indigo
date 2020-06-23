@@ -75,7 +75,7 @@ object GlobalEventStreamImpl {
         None
 
       case StorageEvent.Load(key) =>
-        storage.load(key).map(data => StorageEvent.Loaded(data))
+        storage.load(key).map(data => StorageEvent.Loaded(key, data))
 
       case StorageEvent.Delete(key) =>
         storage.delete(key)
@@ -85,7 +85,7 @@ object GlobalEventStreamImpl {
         storage.deleteAll()
         None
 
-      case e @ StorageEvent.Loaded(_) =>
+      case e @ StorageEvent.Loaded(_, _) =>
         Some(e)
 
       case e =>
@@ -97,12 +97,12 @@ object GlobalEventStreamImpl {
   object AssetEventProcessor {
 
     def filter(rebuildGameLoop: AssetCollection => Unit, ges: GlobalEventStream): GlobalEvent => Option[GlobalEvent] = {
-      case AssetEvent.LoadAssetBatch(batch, maybeKey, makeAvailable) =>
-        AssetLoader.backgroundLoadAssets(rebuildGameLoop, ges, batch, maybeKey, makeAvailable)
+      case AssetEvent.LoadAssetBatch(batch, key, makeAvailable) =>
+        AssetLoader.backgroundLoadAssets(rebuildGameLoop, ges, batch, key, makeAvailable)
         None
 
-      case AssetEvent.LoadAsset(asset, maybeKey, makeAvailable) =>
-        AssetLoader.backgroundLoadAssets(rebuildGameLoop, ges, Set(asset), maybeKey, makeAvailable)
+      case AssetEvent.LoadAsset(asset, key, makeAvailable) =>
+        AssetLoader.backgroundLoadAssets(rebuildGameLoop, ges, Set(asset), key, makeAvailable)
         None
 
       case e =>

@@ -11,7 +11,7 @@ import indigo.shared.datatypes.BindingKey
 
 object AssetLoader {
 
-  def backgroundLoadAssets(rebuildGameLoop: AssetCollection => Unit, globalEventStream: GlobalEventStream, assets: Set[AssetType], key: Option[BindingKey], makeAvailable: Boolean): Unit = {
+  def backgroundLoadAssets(rebuildGameLoop: AssetCollection => Unit, globalEventStream: GlobalEventStream, assets: Set[AssetType], key: BindingKey, makeAvailable: Boolean): Unit = {
     val assetList: List[AssetType] =
       assets.toList.flatMap(_.toList)
 

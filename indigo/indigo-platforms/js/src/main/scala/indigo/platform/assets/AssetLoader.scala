@@ -19,11 +19,11 @@ import indigo.platform.audio.AudioPlayerImpl
 
 object AssetLoader {
 
-  def backgroundLoadAssets(rebuildGameLoop: AssetCollection => Unit, globalEventStream: GlobalEventStream, assets: Set[AssetType], key: Option[BindingKey], makeAvailable: Boolean): Unit = {
+  def backgroundLoadAssets(rebuildGameLoop: AssetCollection => Unit, globalEventStream: GlobalEventStream, assets: Set[AssetType], key: BindingKey, makeAvailable: Boolean): Unit = {
     val assetList: List[AssetType] =
       assets.toList.flatMap(_.toList)
 
-    IndigoLogger.info(s"Background loading ${assetList.length.toString()} assets" + key.map(k => s" with key: ${k.value}").getOrElse(""))
+    IndigoLogger.info(s"Background loading ${assetList.length.toString()} assets with key: ${key.value}")
 
     loadAssets(assets)
       .onComplete {
@@ -34,8 +34,8 @@ object AssetLoader {
         case Success(_) =>
           globalEventStream.pushGlobalEvent(AssetEvent.AssetBatchLoaded(key, false))
 
-        case Failure(_) =>
-          globalEventStream.pushGlobalEvent(AssetEvent.AssetBatchLoadError(key))
+        case Failure(e) =>
+          globalEventStream.pushGlobalEvent(AssetEvent.AssetBatchLoadError(key, e.getMessage()))
       }
 
     ()
