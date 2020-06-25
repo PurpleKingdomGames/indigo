@@ -67,7 +67,8 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   val SignalFunction: shared.temporal.SignalFunction.type = shared.temporal.SignalFunction
 
   type SubSystem = shared.subsystems.SubSystem
-  
+  val SubSystem: shared.subsystems.SubSystem.type = shared.subsystems.SubSystem
+
   /**
     * defaultGameConfig Provides a useful default config set up:
     * - Game Viewport = 550 x 400

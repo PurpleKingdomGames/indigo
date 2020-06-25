@@ -2,19 +2,22 @@ package indigoexamples
 
 import indigo._
 
-final case class PointsTrackerSubSystem(points: Int, fontKey: FontKey) extends SubSystem {
-  type EventType = Int
+final case class PointsTrackerSubSystem(fontKey: FontKey) extends SubSystem {
+  type EventType      = Int
+  type SubSystemModel = Int
 
   val eventFilter: GlobalEvent => Option[Int] = {
     case e: PointsTrackerEvent.Add => Option(e.points)
     case _                         => None
   }
 
-  def update(context: FrameContext): Int => Outcome[SubSystem] = { additionalPoints =>
-    Outcome(this.copy(points = points + additionalPoints))
+  def initialModel: Int = 0
+
+  def update(context: FrameContext, points: Int): Int => Outcome[Int] = { additionalPoints =>
+    Outcome(points + additionalPoints)
   }
 
-  def render(context: FrameContext): SceneUpdateFragment =
+  def render(context: FrameContext, points: Int): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(Text(s"""Points: ${points.toString()}""", 10, 10, 1, fontKey))
 }

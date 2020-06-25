@@ -15,8 +15,8 @@ object SubSystemsExample extends IndigoDemo[Unit, Unit, Unit, Unit] {
       .withAssets(AssetType.Image(AssetName(fontName), AssetPath("assets/boxy_font.png")))
       .withFonts(fontInfo)
       .withSubSystems(
-        PointsTrackerSubSystem(0, fontKey),
-        FloatingPoints(fontKey, Nil)
+        PointsTrackerSubSystem(fontKey),
+        FloatingPoints(fontKey)
       )
 
   def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =

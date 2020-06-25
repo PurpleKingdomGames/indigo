@@ -91,21 +91,6 @@ lazy val text =
       gameAssetsDirectory := "assets"
     )
 
-lazy val inputmapping =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
-    .in(file("inputmapping"))
-    .settings(commonSettings: _*)
-    .enablePlugins(SbtIndigo)
-    .enablePlugins(ScalaJSPlugin)
-    .settings(
-      name := "inputmapping-example",
-      showCursor := true,
-      title := "Input mapping example",
-      gameAssetsDirectory := "assets"
-    )
-
 lazy val inputfield =
   crossProject(JSPlatform)
     .withoutSuffixFor(JSPlatform)

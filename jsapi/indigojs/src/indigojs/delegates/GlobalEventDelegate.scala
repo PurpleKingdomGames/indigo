@@ -60,8 +60,8 @@ object GlobalEventDelegate {
     case e @ KeyboardEvent.KeyDown(_) =>
       GlobalEventDelegate("keyDown", js.Dynamic.literal(key = e.keyCode.key, code = e.keyCode.code), e)
 
-    case e @ StorageEvent.Loaded(data) =>
-      GlobalEventDelegate("dataLoaded", js.Dynamic.literal(data = data), e)
+    case e @ StorageEvent.Loaded(key, data) =>
+      GlobalEventDelegate("dataLoaded", js.Dynamic.literal(key = key, data = data), e)
 
     case e @ WebSocketEvent.Receive(socketId, message) =>
       GlobalEventDelegate("socketReceive", js.Dynamic.literal(socketId = socketId.id, message = message), e)

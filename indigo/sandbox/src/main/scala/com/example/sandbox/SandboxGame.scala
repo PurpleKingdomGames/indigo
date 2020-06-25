@@ -29,7 +29,7 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
       SandboxBootData(flags.getOrElse("key", "No entry for 'key'."))
     ).withAssets(SandboxAssets.assets)
       .withFonts(SandboxView.fontInfo)
-      .withSubSystems(FPSCounter.subSystem(SandboxView.fontKey, Point(3, 100), targetFPS))
+      .withSubSystems(FPSCounter(SandboxView.fontKey, Point(3, 100), targetFPS))
 
   def setup(bootData: SandboxBootData, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, SandboxStartupData] = {
     println(bootData.message)
