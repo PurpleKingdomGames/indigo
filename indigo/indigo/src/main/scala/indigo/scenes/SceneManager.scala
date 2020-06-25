@@ -6,7 +6,6 @@ import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.IndigoLogger
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.EqualTo._
-import scala.collection.mutable
 import indigo.shared.subsystems.SubSystemsRegister
 import indigo.shared.FrameContext
 
@@ -17,13 +16,12 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
   private var finderInstance: SceneFinder = scenesFinder
 
   @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
-  private val subSystemStates: mutable.HashMap[SceneName, SubSystemsRegister] = {
-    val m = mutable.HashMap[SceneName, SubSystemsRegister]()
-    scenes.toList.foreach { s =>
-      m.put(s.name, new SubSystemsRegister(s.sceneSubSystems.toList))
-    }
-    m
-  }
+  private val subSystemStates: Map[SceneName, SubSystemsRegister] =
+    scenes.toList.map { s =>
+      val r = new SubSystemsRegister(Nil)
+      r.register(s.sceneSubSystems.toList)
+      (s.name -> r)
+    }.toMap
 
   // Scene delegation
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
@@ -50,9 +48,7 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
           val subsystemOutcomeEvents = subSystemStates
             .get(scene.name)
             .map { ssr =>
-              val out = ssr.update(frameContext)(event)
-              subSystemStates.put(scene.name, out.state)
-              out.globalEvents
+              ssr.update(frameContext)(event).globalEvents
             }
             .getOrElse(Nil)
 

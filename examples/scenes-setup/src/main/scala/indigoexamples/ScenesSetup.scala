@@ -20,7 +20,7 @@ object ScenesSetup extends IndigoGame[Unit, StartUpData, GameModel, Unit] {
       )
       .withAssets(AssetType.Image(FontStuff.fontName, AssetPath("assets/boxy_font.png")))
       .withFonts(FontStuff.fontInfo)
-      .withSubSystems(FPSCounter.subSystem(FontStuff.fontKey, Point(10, 360), targetFPS))
+      .withSubSystems(FPSCounter(FontStuff.fontKey, Point(10, 360), targetFPS))
 
   def scenes(bootData: Unit): NonEmptyList[Scene[GameModel, Unit]] =
     NonEmptyList(SceneA, SceneB)

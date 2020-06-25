@@ -10,7 +10,6 @@ import indigoextras.subsystems.Automata.Layer
 import indigo.shared.EqualTo._
 import indigo.shared.EqualTo
 import indigo.shared.datatypes.RGBA
-import scala.collection.mutable
 import indigo.shared.FrameContext
 import indigo.shared.datatypes.Point
 import indigo.shared.time.Seconds
@@ -20,13 +19,8 @@ import indigo.shared.temporal.Signal
 import indigo.shared.scenegraph.Clone
 
 final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val layer: Layer, maxPoolSize: Option[Int]) extends SubSystem {
-  type EventType = AutomataEvent
-
-  val pool: mutable.ListBuffer[SpawnedAutomaton] =
-    new mutable.ListBuffer()
-
-  def liveAutomataCount: Int =
-    pool.size
+  type EventType      = AutomataEvent
+  type SubSystemModel = List[SpawnedAutomaton]
 
   def withMaxPoolSize(limit: Int): Automata =
     new Automata(poolKey, automaton, layer, Option(limit))
@@ -36,14 +30,17 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
       Some(e)
 
     case FrameTick =>
-      Some(AutomataEvent.Cull(poolKey))
+      Some(AutomataEvent.Update(poolKey))
 
     case _ =>
       None
   }
 
+  val initialModel: List[SpawnedAutomaton] =
+    Nil
+
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-  def update(frameContext: FrameContext): AutomataEvent => Outcome[Automata] = {
+  def update(frameContext: FrameContext, pool: List[SpawnedAutomaton]): AutomataEvent => Outcome[List[SpawnedAutomaton]] = {
     case Spawn(key, position, lifeSpan, payload) if key === poolKey =>
       val spawned =
         SpawnedAutomaton(
@@ -57,42 +54,39 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
           )
         )
 
-      maxPoolSize match {
-        case None =>
-          pool.append(spawned)
+      Outcome(
+        maxPoolSize match {
+          case None =>
+            spawned :: pool
 
-        case Some(limit) if pool.length < limit =>
-          pool.append(spawned)
+          case Some(limit) if pool.length < limit =>
+            spawned :: pool
 
-        case Some(limit) if pool.length === limit =>
-          pool.drop(1).append(spawned)
+          case Some(limit) if pool.length === limit =>
+            spawned :: pool.dropRight(1)
 
-        case Some(limit) =>
-          pool.drop(limit - pool.length + 1).append(spawned)
-      }
-
-      Outcome(this)
+          case Some(limit) =>
+            spawned :: pool.dropRight(limit - pool.length + 1)
+        }
+      )
 
     case KillAll(key) if key === poolKey =>
-      pool.clear()
-      Outcome(this)
+      Outcome(Nil)
 
-    case Cull(key) if key === poolKey => // AKA: Update.
+    case Update(key) if key === poolKey =>
       val cullEvents = pool
         .filterNot(_.isAlive(frameContext.gameTime.running))
         .toList
         .flatMap(sa => sa.automaton.onCull(sa.seedValues))
 
-      pool.filterInPlace(_.isAlive(frameContext.gameTime.running))
-
-      Outcome(this).addGlobalEvents(cullEvents)
+      Outcome(pool.filter(_.isAlive(frameContext.gameTime.running))).addGlobalEvents(cullEvents)
 
     case _ =>
-      Outcome(this)
+      Outcome(pool)
   }
 
-  def render(frameContext: FrameContext): SceneUpdateFragment =
-    layer.emptyScene(Automata.renderNoLayer(this, frameContext.gameTime))
+  def render(frameContext: FrameContext, pool: List[SpawnedAutomaton]): SceneUpdateFragment =
+    layer.emptyScene(Automata.renderNoLayer(pool, frameContext.gameTime))
 }
 object Automata {
 
@@ -152,29 +146,13 @@ object Automata {
   def apply(poolKey: AutomataPoolKey, automaton: Automaton, layer: Layer): Automata =
     new Automata(poolKey, automaton, layer, None)
 
-  private val nodes: mutable.ListBuffer[SceneGraphNode] = new mutable.ListBuffer
-  private val events: mutable.ListBuffer[GlobalEvent]   = new mutable.ListBuffer
-
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.While", "org.wartremover.warts.NonUnitStatements"))
-  def renderNoLayer(farm: Automata, gameTime: GameTime): AutomatonUpdate = {
-    nodes.clear()
-    events.clear()
-
-    var i: Int     = 0
-    val count: Int = farm.pool.length
-
-    while (i < count) {
-      val sa  = farm.pool(i)
-      val res = sa.automaton.modifier(sa.seedValues, sa.automaton.sceneGraphNode).at(gameTime.running - sa.seedValues.createdAt)
-
-      nodes ++= res.nodes
-      events ++= res.events
-
-      i = i + 1
-    }
-
-    AutomatonUpdate(nodes.toList, events.toList)
-  }
+  def renderNoLayer(pool: List[SpawnedAutomaton], gameTime: GameTime): AutomatonUpdate =
+    AutomatonUpdate.sequence(
+      pool.map { sa =>
+        sa.automaton.modifier(sa.seedValues, sa.automaton.sceneGraphNode).at(gameTime.running - sa.seedValues.createdAt)
+      }
+    )
 
 }
 
@@ -186,7 +164,7 @@ object AutomataEvent {
       Spawn(key, at, None, None)
   }
   final case class KillAll(key: AutomataPoolKey) extends AutomataEvent
-  final case class Cull(key: AutomataPoolKey)    extends AutomataEvent
+  final case class Update(key: AutomataPoolKey)  extends AutomataEvent
 }
 
 trait AutomatonPayload
@@ -210,18 +188,18 @@ object AutomataPoolKey {
 
 }
 
-sealed trait Automaton {
+final case class Automaton(
+    sceneGraphNode: SceneGraphNode,
+    lifespan: Seconds,
+    modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate],
+    onCull: AutomatonSeedValues => List[GlobalEvent]
+) {
 
-  val sceneGraphNode: SceneGraphNode
-  val lifespan: Seconds
-  val modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate]
-  val onCull: AutomatonSeedValues => List[GlobalEvent]
-
-  def withModifier(modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate]): Automaton =
-    Automaton.create(sceneGraphNode, lifespan, modifier, onCull)
+  def withModifier(newModifier: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate]): Automaton =
+    this.copy(modifier = newModifier)
 
   def withOnCullEvent(onCullEvent: AutomatonSeedValues => List[GlobalEvent]): Automaton =
-    Automaton.create(sceneGraphNode, lifespan, modifier, onCullEvent)
+    this.copy(onCull = onCullEvent)
 }
 
 object Automaton {
@@ -246,29 +224,16 @@ object Automaton {
     _ => Nil
 
   def apply(SceneGraphNode: SceneGraphNode, lifespan: Seconds): Automaton =
-    create(SceneGraphNode, lifespan, NoModifySignal, NoCullEvent)
-
-  def create(
-      sceneGraphNodeEntity: SceneGraphNode,
-      lifeExpectancy: Seconds,
-      modifierSignal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate],
-      onCullEvent: AutomatonSeedValues => List[GlobalEvent]
-  ): Automaton =
-    new Automaton {
-      val sceneGraphNode: SceneGraphNode                                             = sceneGraphNodeEntity
-      val lifespan: Seconds                                                          = lifeExpectancy
-      val modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] = modifierSignal
-      val onCull: AutomatonSeedValues => List[GlobalEvent]                           = onCullEvent
-    }
+    Automaton(SceneGraphNode, lifespan, NoModifySignal, NoCullEvent)
 
 }
 
-final class AutomatonSeedValues(
-    val spawnedAt: Point,
-    val createdAt: Seconds,
-    val lifeSpan: Seconds,
-    val randomSeed: Int,
-    val payload: Option[AutomatonPayload]
+final case class AutomatonSeedValues(
+    spawnedAt: Point,
+    createdAt: Seconds,
+    lifeSpan: Seconds,
+    randomSeed: Int,
+    payload: Option[AutomatonPayload]
 ) {
 
   /**
@@ -279,16 +244,9 @@ final class AutomatonSeedValues(
 
 }
 
-final class SpawnedAutomaton(val automaton: Automaton, val seedValues: AutomatonSeedValues) {
+final case class SpawnedAutomaton(automaton: Automaton, seedValues: AutomatonSeedValues) {
   def isAlive(currentTime: Seconds): Boolean =
     seedValues.createdAt + seedValues.lifeSpan > currentTime
-}
-
-object SpawnedAutomaton {
-
-  def apply(automaton: Automaton, seedValues: AutomatonSeedValues): SpawnedAutomaton =
-    new SpawnedAutomaton(automaton, seedValues)
-
 }
 
 final class AutomatonUpdate(val nodes: List[SceneGraphNode], val events: List[GlobalEvent]) {
@@ -317,5 +275,11 @@ object AutomatonUpdate {
 
   def apply(nodes: List[SceneGraphNode]): AutomatonUpdate =
     new AutomatonUpdate(nodes, Nil)
+
+  def sequence(l: List[AutomatonUpdate]): AutomatonUpdate =
+    new AutomatonUpdate(
+      nodes = l.flatMap(_.nodes),
+      events = l.flatMap(_.events)
+    )
 
 }

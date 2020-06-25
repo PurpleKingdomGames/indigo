@@ -2,14 +2,17 @@ package indigoexamples
 
 import indigo._
 
-final case class HelloSubSystem(message: String, fontKey: FontKey) extends SubSystem {
-  type EventType = GlobalEvent
+final case class HelloSubSystem(initialMessage: String, fontKey: FontKey) extends SubSystem {
+  type EventType      = GlobalEvent
+  type SubSystemModel = String
 
   val eventFilter: GlobalEvent => Option[EventType] = _ => None
 
-  def update(context: FrameContext): EventType => Outcome[SubSystem] = _ => Outcome(this)
+  def initialModel: String = initialMessage
 
-  def render(context: FrameContext): SceneUpdateFragment =
+  def update(context: FrameContext, message: String): EventType => Outcome[String] = _ => Outcome(message)
+
+  def render(context: FrameContext, message: String): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addUiLayerNodes(Text(message, 20, 50, 1, fontKey))
 }

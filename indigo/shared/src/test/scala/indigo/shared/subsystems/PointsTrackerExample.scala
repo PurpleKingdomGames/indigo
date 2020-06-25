@@ -8,25 +8,30 @@ import indigo.shared.scenegraph.{SceneUpdateFragment, Text}
 import indigo.shared.datatypes.FontKey
 import indigo.shared.events.InputState
 import indigo.shared.FrameContext
+import indigo.shared.datatypes.BindingKey
 
-final case class PointsTrackerExample(points: Int) extends SubSystem {
-  type EventType = PointsTrackerEvent
+final case class PointsTrackerExample(startingPoints: Int) extends SubSystem {
+  type EventType      = PointsTrackerEvent
+  type SubSystemModel = Int
 
   val eventFilter: GlobalEvent => Option[PointsTrackerEvent] = {
     case e: PointsTrackerEvent => Option(e)
     case _                     => None
   }
 
-  def update(context: FrameContext): PointsTrackerEvent => Outcome[SubSystem] = {
+  def initialModel: Int =
+    startingPoints
+
+  def update(context: FrameContext, points: Int): PointsTrackerEvent => Outcome[Int] = {
     case PointsTrackerEvent.Add(pts) =>
-      Outcome(this.copy(points = points + pts))
+      Outcome(points + pts)
 
     case PointsTrackerEvent.LoseAll =>
-      Outcome(this.copy(points = 0))
+      Outcome(0)
         .addGlobalEvents(GameOver)
   }
 
-  def render(context: FrameContext): SceneUpdateFragment =
+  def render(context: FrameContext, points: Int): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(Text(points.toString, 0, 0, 1, FontKey("")))
 }

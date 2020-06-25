@@ -15,42 +15,48 @@ object SubSystemTests extends TestSuite {
 
   import FakeFrameContext._
 
+  val subSystem = PointsTrackerExample(0)
+
   val tests: Tests =
     Tests {
       "A SubSystem (PointsTracker example)" - {
 
         "should render the initial state correctly" - {
-          val expected = PointsTrackerExample(1230).render(context(6)).gameLayer.nodes.head.asInstanceOf[Text].text
+          val expected = subSystem.render(context(6), 1230).gameLayer.nodes.head.asInstanceOf[Text].text
 
           assert(expected == "1230")
         }
 
         "should respond to an Add event" - {
-          val expected =
-            PointsTrackerExample(0)
-              .update(context(6))(PointsTrackerEvent.Add(10))
-              .state
-              .render(context(6))
+          val expected = {
+            val points = subSystem
+              .update(context(6), 0)(PointsTrackerEvent.Add(10))
+
+            subSystem
+              .render(context(6), points.state)
               .gameLayer
               .nodes
               .head
               .asInstanceOf[Text]
               .text
+          }
 
           assert(expected == "10")
         }
 
-        "should respond to a LoseALl event and emit an event" - {
-          val expected =
-            PointsTrackerExample(1000)
-              .update(context(6))(PointsTrackerEvent.LoseAll)
-              .state
-              .render(context(6))
+        "should respond to a LoseAll event and emit an event" - {
+          val expected = {
+            val points = subSystem
+              .update(context(6), 1000)(PointsTrackerEvent.LoseAll)
+
+            subSystem
+              .render(context(6), points.state)
               .gameLayer
               .nodes
               .head
               .asInstanceOf[Text]
               .text
+          }
 
           assert(expected == "0")
         }

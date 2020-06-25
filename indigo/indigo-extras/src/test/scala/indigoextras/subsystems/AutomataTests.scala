@@ -40,13 +40,31 @@ object AutomataTests extends TestSuite {
   val automata: Automata =
     Automata(poolKey, automaton, Automata.Layer.Game)
 
-  val farmWithAutomaton: Automata =
+  val startingState: List[SpawnedAutomaton] =
     automata
-      .update(context(1))(AutomataEvent.Spawn(poolKey, Point.zero, None, None))
+      .update(context(1), Nil)(AutomataEvent.Spawn(poolKey, Point.zero, None, None))
       .state
 
   val tests: Tests =
     Tests {
+
+      "Starting state should contain 1 automaton" - {
+
+        val expected =
+          SpawnedAutomaton(
+            automaton,
+            new AutomatonSeedValues(
+              Point.zero,
+              Seconds(0),
+              Seconds(1),
+              1, // comes from the fake frame context
+              None
+            )
+          )
+
+        startingState.length ==> 1
+        startingState.head ==> expected
+      }
 
       "should move a particle with a modifier signal" - {
 
@@ -63,10 +81,13 @@ object AutomataTests extends TestSuite {
         def drawAt(time: Seconds): Graphic = {
           val ctx = context(1, time, time)
 
-          farmWithAutomaton
-            .update(ctx)(AutomataEvent.Cull(poolKey))
-            .state
-            .render(ctx)
+          val nextState =
+            automata
+              .update(ctx, startingState)(AutomataEvent.Update(poolKey))
+              .state
+
+          automata
+            .render(ctx, nextState)
             .gameLayer
             .nodes
             .collect { case g: Graphic => g }
@@ -81,23 +102,22 @@ object AutomataTests extends TestSuite {
       "culling an automaton should result in an event" - {
 
         // 1 ms over the lifespan, so should be culled
-        val outcome: Outcome[Automata] =
-          farmWithAutomaton
-            .update(context(1, Seconds(1)))(AutomataEvent.Cull(poolKey))
+        val outcome =
+          automata
+            .update(context(1, Seconds(1)), startingState)(AutomataEvent.Update(poolKey))
 
-        outcome.state.liveAutomataCount ==> 0
+        outcome.state.length ==> 0
         outcome.globalEvents.head ==> eventInstance
-
       }
 
       "KillAll should... kill all the automatons." - {
 
         // At any time, KillAll, should remove all automatons without trigger cull events.
-        val outcome: Outcome[Automata] =
-          farmWithAutomaton
-            .update(context(1, Seconds(0)))(AutomataEvent.KillAll(poolKey))
+        val outcome =
+          automata
+            .update(context(1, Seconds(0)), startingState)(AutomataEvent.KillAll(poolKey))
 
-        outcome.state.pool.isEmpty ==> true
+        outcome.state.isEmpty ==> true
         outcome.globalEvents.isEmpty ==> true
       }
 

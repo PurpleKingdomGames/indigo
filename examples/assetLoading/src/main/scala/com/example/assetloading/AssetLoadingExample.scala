@@ -15,7 +15,7 @@ object AssetLoadingExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMod
         defaultGameConfig.withMagnification(2)
       )
       .withAssets(Assets.assets)
-      .withSubSystems(AssetBundleLoader.subSystem)
+      .withSubSystems(AssetBundleLoader)
 
   def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
     assetCollection.findTextDataByName(AssetName("text")) match {
@@ -54,8 +54,8 @@ object AssetLoadingExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMod
       println("Got it! " + key.toString())
       Outcome(model.copy(loaded = true)).addGlobalEvents(PlaySound(AssetName("sfx"), Volume.Max))
 
-    case AssetBundleLoaderEvent.Failure(key) =>
-      println("Lost it... " + key.toString())
+    case AssetBundleLoaderEvent.Failure(key, message) =>
+      println(s"Lost it... '$message' " + key.toString())
       Outcome(model)
 
     case _ =>

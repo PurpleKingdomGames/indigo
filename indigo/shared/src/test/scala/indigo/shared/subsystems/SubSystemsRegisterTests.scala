@@ -20,7 +20,7 @@ object SubSystemsRegisterTests extends TestSuite {
       "The sub system register" - {
 
         "should allow you to add sub systems" - {
-          val r = new SubSystemsRegister(List(PointsTrackerExample(10), PointsTrackerExample(20)))
+          val r = new SubSystemsRegister(List(PointsTrackerExample(0), PointsTrackerExample(0)))
 
           r.size ==> 2
         }
@@ -28,15 +28,16 @@ object SubSystemsRegisterTests extends TestSuite {
         "should allow you to update sub systems" - {
           val r = new SubSystemsRegister(List(PointsTrackerExample(10), PointsTrackerExample(50)))
 
-          val subSystemPoints = r
+          val data = r
             .update(context(6))(PointsTrackerEvent.Add(10))
             .state
-            .registeredSubSystems
-            .toList
-            .collect { case PointsTrackerExample(points) => points }
+            .stateMap
 
-          assert(subSystemPoints.contains(20))
-          assert(subSystemPoints.contains(60))
+          val actual = data.toList.map(_._2.asInstanceOf[Int])
+
+          actual.length ==> 2
+          actual.contains(20) ==> true
+          actual.contains(60) ==> true
         }
 
         "should allow you to update sub systems and emit events" - {
@@ -44,11 +45,11 @@ object SubSystemsRegisterTests extends TestSuite {
 
           val updated = r.update(context(6))(PointsTrackerEvent.LoseAll)
 
-          val subSystemPoints: List[Int] =
-            updated.state.registeredSubSystems.toList
-              .collect { case PointsTrackerExample(points) => points }
+          val actual = updated.state.stateMap.toList.map(_._2.asInstanceOf[Int])
 
-          assert(subSystemPoints == List(0, 0))
+          actual.length ==> 2
+          actual.forall(_ == 0) ==> true
+
           assert(updated.globalEvents == List(GameOver, GameOver))
         }
 

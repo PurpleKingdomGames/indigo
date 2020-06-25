@@ -7,37 +7,38 @@ import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.FrameContext
 
-final case class JobMarket(jobs: List[Job]) extends SubSystem {
-
-  type EventType = JobMarketEvent
+final case class JobMarket(initialJobs: List[Job]) extends SubSystem {
+  type EventType      = JobMarketEvent
+  type SubSystemModel = List[Job]
 
   val eventFilter: GlobalEvent => Option[JobMarketEvent] = {
     case e: JobMarketEvent => Option(e)
     case _                 => None
   }
 
-  def update(frameContext: FrameContext): JobMarketEvent => Outcome[SubSystem] = {
+  val initialModel: List[Job] =
+    initialJobs
+
+  def update(frameContext: FrameContext, jobs: List[Job]): JobMarketEvent => Outcome[List[Job]] = {
     case JobMarketEvent.Post(job) =>
-      Outcome(
-        this.copy(jobs = jobs :+ job)
-      )
+      Outcome(jobs :+ job)
 
     case JobMarketEvent.Find(id, canTakeJob) =>
       JobMarket.findJob(jobs, canTakeJob, Nil) match {
         case (None, _) =>
-          Outcome(this)
+          Outcome(jobs)
             .addGlobalEvents(JobMarketEvent.NothingFound(id))
 
         case (Some(job), updatedJobsList) =>
-          Outcome(this.copy(jobs = updatedJobsList))
+          Outcome(updatedJobsList)
             .addGlobalEvents(JobMarketEvent.Allocate(id, job))
       }
 
     case _ =>
-      Outcome(this)
+      Outcome(jobs)
   }
 
-  def render(frameContext: FrameContext): SceneUpdateFragment =
+  def render(frameContext: FrameContext, jobs: List[Job]): SceneUpdateFragment =
     SceneUpdateFragment.empty
 }
 

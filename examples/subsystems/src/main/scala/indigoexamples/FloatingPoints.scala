@@ -3,8 +3,9 @@ package indigoexamples
 import indigo._
 import indigoextras.datatypes.TimeVaryingValue
 
-final case class FloatingPoints(fontKey: FontKey, entities: List[FloatingPointEntity]) extends SubSystem {
-  type EventType = FloatingPointEvent
+final case class FloatingPoints(fontKey: FontKey) extends SubSystem {
+  type EventType      = FloatingPointEvent
+  type SubSystemModel = List[FloatingPointEntity]
 
   val eventFilter: GlobalEvent => Option[FloatingPointEvent] = {
     case s: FloatingPointEvent.Spawn => Option(s)
@@ -12,26 +13,27 @@ final case class FloatingPoints(fontKey: FontKey, entities: List[FloatingPointEn
     case _                           => None
   }
 
-  def update(context: FrameContext): FloatingPointEvent => Outcome[SubSystem] = {
+  def initialModel: List[FloatingPointEntity] =
+    Nil
+
+  def update(context: FrameContext, entities: List[FloatingPointEntity]): FloatingPointEvent => Outcome[List[FloatingPointEntity]] = {
     case FloatingPointEvent.Spawn(position) =>
       Outcome(
-        this.copy(entities = FloatingPointEntity(position, context.gameTime.running, TimeVaryingValue(2, context.gameTime.running)) :: entities)
+        FloatingPointEntity(position, context.gameTime.running, TimeVaryingValue(2, context.gameTime.running)) :: entities
       )
 
     case FloatingPointEvent.Update =>
       Outcome(
-        this.copy(
-          entities = entities
-            .map(_.update(context))
-            .filter(_.ttl.value > 0)
-        )
+        entities
+          .map(_.update(context))
+          .filter(_.ttl.value > 0)
       )
   }
 
   val text: Text =
     Text("10", 0, 0, 1, fontKey).alignCenter
 
-  def render(context: FrameContext): SceneUpdateFragment =
+  def render(context: FrameContext, entities: List[FloatingPointEntity]): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addUiLayerNodes(
         entities

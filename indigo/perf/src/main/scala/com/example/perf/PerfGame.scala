@@ -34,7 +34,7 @@ object PerfGame extends IndigoDemo[Unit, MyStartupData, MyGameModel, Unit] {
       )
       .withAssets(PerfAssets.assets)
       .withFonts(PerfView.fontInfo)
-      .withSubSystems(FPSCounter.subSystem(PerfView.fontKey, Point(10, 565), targetFPS))
+      .withSubSystems(FPSCounter(PerfView.fontKey, Point(10, 565), targetFPS))
 
   def initialModel(startupData: MyStartupData): MyGameModel =
     PerfModel.initialModel(startupData)

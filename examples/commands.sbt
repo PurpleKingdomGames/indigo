@@ -14,7 +14,6 @@ lazy val exampleProjects: List[String] =
     "group",
     "automata",
     "fireworks",
-    "inputmapping",
     "lighting",
     "distortion",
     "effects",

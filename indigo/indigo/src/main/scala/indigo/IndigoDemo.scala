@@ -32,20 +32,25 @@ trait IndigoDemo[BootData, StartupData, Model, ViewModel] extends GameLauncher {
 
   def present(context: FrameContext, model: Model, viewModel: ViewModel): SceneUpdateFragment
 
-  private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel] = {
-    val frameProcessor: StandardFrameProcessor[GameWithSubSystems[Model], ViewModel] =
+  private val subSystemsRegister: SubSystemsRegister =
+    new SubSystemsRegister(Nil)
+
+  private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartupData, StartupErrors, Model, ViewModel] = {
+    subSystemsRegister.register(bootUp.subSystems.toList)
+
+    val frameProcessor: StandardFrameProcessor[Model, ViewModel] =
       new StandardFrameProcessor(
-        GameWithSubSystems.update(updateModel),
+        GameWithSubSystems.update(subSystemsRegister, updateModel),
         GameWithSubSystems.updateViewModel(updateViewModel),
-        GameWithSubSystems.present(present)
+        GameWithSubSystems.present(subSystemsRegister, present)
       )
 
-    new GameEngine[StartupData, StartupErrors, GameWithSubSystems[Model], ViewModel](
+    new GameEngine[StartupData, StartupErrors, Model, ViewModel](
       bootUp.fonts,
       bootUp.animations,
       (ac: AssetCollection) => (d: Dice) => setup(bootUp.bootData, ac, d),
-      (sd: StartupData) => new GameWithSubSystems(initialModel(sd), new SubSystemsRegister(bootUp.subSystems.toList)),
-      (sd: StartupData) => (m: GameWithSubSystems[Model]) => initialViewModel(sd, m.model),
+      (sd: StartupData) => initialModel(sd),
+      (sd: StartupData) => (m: Model) => initialViewModel(sd, m),
       frameProcessor
     )
   }

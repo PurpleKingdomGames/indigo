@@ -12,9 +12,9 @@ import indigo.shared.events.AssetEvent
 import indigo.shared.FrameContext
 
 // Provides "at least once" message delivery for updates on a bundle's loading status.
-final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSystem {
-
-  type EventType = GlobalEvent
+object AssetBundleLoader extends SubSystem {
+  type EventType      = GlobalEvent
+  type SubSystemModel = AssetBundleTracker
 
   val eventFilter: GlobalEvent => Option[GlobalEvent] = {
     case e: AssetBundleLoaderEvent => Some(e)
@@ -22,47 +22,50 @@ final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSyste
     case _                         => None
   }
 
-  def update(frameContext: FrameContext): GlobalEvent => Outcome[AssetBundleLoader] = {
+  def initialModel: AssetBundleTracker =
+    AssetBundleTracker.empty
+
+  def update(frameContext: FrameContext, tracker: AssetBundleTracker): GlobalEvent => Outcome[AssetBundleTracker] = {
     // Asset Bundle Loader Commands
     case AssetBundleLoaderEvent.Load(key, assets) =>
-      createBeginLoadingOutcome(key, assets)
+      createBeginLoadingOutcome(key, assets, tracker)
 
     case AssetBundleLoaderEvent.Retry(key) =>
       tracker.findBundleByKey(key).map(_.giveAssetSet) match {
-        case None         => Outcome(this)
-        case Some(assets) => createBeginLoadingOutcome(key, assets)
+        case None         => Outcome(tracker)
+        case Some(assets) => createBeginLoadingOutcome(key, assets, tracker)
       }
 
     // Asset Response Events
     case AssetEvent.AssetBatchLoaded(key, true) if tracker.containsBundle(key) =>
-      Outcome(this)
+      Outcome(tracker)
         .addGlobalEvents(AssetBundleLoaderEvent.Success(key))
 
     case AssetEvent.AssetBatchLoaded(key, false) if tracker.containsAssetFromKey(key) =>
       // In this case the "batch" will consist of one item and
       // the BindingKey is actually the AssetPath value and we
       // know the asset is in one of our bundles.
-      processAssetUpdateEvent(AssetPath(key.value), true)
+      processAssetUpdateEvent(AssetPath(key.value), true, tracker)
 
     case AssetEvent.AssetBatchLoadError(key, message) if tracker.containsBundle(key) =>
-      Outcome(this)
+      Outcome(tracker)
         .addGlobalEvents(AssetBundleLoaderEvent.Failure(key, message))
 
     case AssetEvent.AssetBatchLoadError(key, _) if tracker.containsAssetFromKey(key) =>
       // In this case the "batch" will consist of one item and
       // the BindingKey is actually the AssetPath value and we
       // know the asset is in one of our bundles.
-      processAssetUpdateEvent(AssetPath(key.value), false)
+      processAssetUpdateEvent(AssetPath(key.value), false, tracker)
 
     // Everything else.
     case _ =>
-      Outcome(this)
+      Outcome(tracker)
   }
 
-  def render(frameContext: FrameContext): SceneUpdateFragment =
+  def render(frameContext: FrameContext, model: AssetBundleTracker): SceneUpdateFragment =
     SceneUpdateFragment.empty
 
-  private def createBeginLoadingOutcome(key: BindingKey, assets: Set[AssetType]): Outcome[AssetBundleLoader] = {
+  private def createBeginLoadingOutcome(key: BindingKey, assets: Set[AssetType], tracker: AssetBundleTracker): Outcome[AssetBundleTracker] = {
     val assetPrimitives = AssetType.flattenAssetList(assets.toList)
 
     val events: List[GlobalEvent] =
@@ -70,13 +73,11 @@ final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSyste
         .map(asset => AssetEvent.LoadAsset(asset, BindingKey(asset.path.value), false))
 
     Outcome(
-      this.copy(
-        tracker.addBundle(key, assetPrimitives)
-      )
+      tracker.addBundle(key, assetPrimitives)
     ).addGlobalEvents(AssetBundleLoaderEvent.Started(key) :: events)
   }
 
-  private def processAssetUpdateEvent(path: AssetPath, completedSuccessfully: Boolean): Outcome[AssetBundleLoader] = {
+  private def processAssetUpdateEvent(path: AssetPath, completedSuccessfully: Boolean, tracker: AssetBundleTracker): Outcome[AssetBundleTracker] = {
     val updatedTracker =
       tracker.assetLoadComplete(path, completedSuccessfully)
 
@@ -104,16 +105,8 @@ final case class AssetBundleLoader(tracker: AssetBundleTracker) extends SubSyste
           }
         }
 
-    Outcome(
-      this.copy(
-        tracker = updatedTracker
-      )
-    ).addGlobalEvents(statusBasedEvents)
+    Outcome(updatedTracker).addGlobalEvents(statusBasedEvents)
   }
-}
-object AssetBundleLoader {
-  val subSystem: AssetBundleLoader =
-    AssetBundleLoader(AssetBundleTracker.empty)
 }
 
 sealed trait AssetBundleLoaderEvent extends GlobalEvent

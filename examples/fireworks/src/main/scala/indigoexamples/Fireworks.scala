@@ -35,7 +35,7 @@ object Fireworks extends IndigoDemo[Vertex => Point, FireworksStartupData, Firew
     ).withAssets(Assets.assets)
       .withFonts(FontDetails.fontInfo)
       .withSubSystems(
-        FPSCounter.subSystem(FontDetails.fontKey, Point(5, 5), targetFPS),
+        FPSCounter(FontDetails.fontKey, Point(5, 5), targetFPS),
         LaunchPadAutomata.automata,
         RocketAutomata.automata(toScreenSpace),
         TrailAutomata.automata,

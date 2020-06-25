@@ -14,6 +14,7 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 import indigo.shared.FrameContext
+import indigo.shared.datatypes.BindingKey
 
 object GameWithSubSystemsTests extends TestSuite {
 
@@ -23,21 +24,20 @@ object GameWithSubSystemsTests extends TestSuite {
     Tests {
 
       "should be able to run model update across a game and it's subsytems and produce the right outcome" - {
-        val updated = GameWithSubSystems.update(modelUpdate)(context, gameWithSubSystems)
+        val updated = GameWithSubSystems.update(register, modelUpdate)(context, model)
 
         val outcome = updated(EventsOnlyEvent.Increment)
 
-        outcome.state.model.text ==> ""
-        outcome.state.subSystemsRegister.size ==> 1
+        outcome.state.text ==> ""
+        register.size ==> 1
         outcome.globalEvents.length ==> 3
-        outcome.globalEvents.contains(EventsOnlyEvent.OnPerCount) ==> true
+        outcome.globalEvents.contains(EventsOnlyEvent.OnePerCount) ==> true
         outcome.globalEvents.contains(EventsOnlyEvent.Total(1)) ==> true
         outcome.globalEvents.contains(EventsOnlyEvent.Decrement) ==> true
       }
 
       "should be able to update the view model" - {
-        val boundaryLocator = new BoundaryLocator(new AnimationsRegister, new FontRegister)
-        val outcome         = GameWithSubSystems.updateViewModel(viewModelUpdate)(context, gameWithSubSystems, 0)
+        val outcome = GameWithSubSystems.updateViewModel(viewModelUpdate)(context, model, 0)
         outcome.state ==> 10
         outcome.globalEvents.length ==> 1
         outcome.globalEvents.contains(EventsOnlyEvent.Increment) ==> true
@@ -58,16 +58,13 @@ object GameTestFixtures {
     )
 
   val subSystem =
-    EventsOnlySubSystem(0)
+    new EventsOnlySubSystem()
 
   val register =
     new SubSystemsRegister(List(subSystem))
 
   val model =
     GameModel("")
-
-  val gameWithSubSystems =
-    new GameWithSubSystems[GameModel](model, register)
 
   val modelUpdate: (FrameContext, GameModel) => GlobalEvent => Outcome[GameModel] =
     (_, m) => _ => Outcome(m).addGlobalEvents(EventsOnlyEvent.Decrement)
@@ -77,31 +74,34 @@ object GameTestFixtures {
 
   final case class GameModel(text: String)
 
-  final case class EventsOnlySubSystem(count: Int) extends SubSystem {
+  final class EventsOnlySubSystem extends SubSystem {
 
-    type EventType = EventsOnlyEvent
+    type EventType      = EventsOnlyEvent
+    type SubSystemModel = Int
+
+    def initialModel: Int = 0
 
     val eventFilter: GlobalEvent => Option[EventsOnlyEvent] = {
       case e: EventsOnlyEvent => Some(e)
       case _                  => None
     }
 
-    def update(context: FrameContext): EventsOnlyEvent => Outcome[SubSystem] = {
+    def update(context: FrameContext, count: Int): EventsOnlyEvent => Outcome[Int] = {
       case EventsOnlyEvent.Increment =>
         val newCount = count + 1
 
-        Outcome(this.copy(newCount))
+        Outcome(newCount)
           .addGlobalEvents(EventsOnlyEvent.Total(newCount))
-          .addGlobalEvents(List.fill(newCount)(EventsOnlyEvent.OnPerCount))
+          .addGlobalEvents(List.fill(newCount)(EventsOnlyEvent.OnePerCount))
 
       case EventsOnlyEvent.Decrement =>
-        Outcome(this.copy(count + 1))
+        Outcome(count - 1)
 
       case _ =>
-        Outcome(this)
+        Outcome(count)
     }
 
-    def render(context: FrameContext): SceneUpdateFragment =
+    def render(context: FrameContext, count: Int): SceneUpdateFragment =
       SceneUpdateFragment.empty
 
   }
@@ -111,6 +111,6 @@ object GameTestFixtures {
     case object Increment              extends EventsOnlyEvent
     case object Decrement              extends EventsOnlyEvent
     final case class Total(count: Int) extends EventsOnlyEvent
-    case object OnPerCount             extends EventsOnlyEvent
+    case object OnePerCount            extends EventsOnlyEvent
   }
 }
