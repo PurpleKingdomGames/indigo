@@ -137,7 +137,10 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
       val platform: Platform =
         new PlatformImpl(gameConfig, accumulatedAssetCollection, globalEventStream)
 
-      val startupData: Startup[StartupError, StartupData] = initialise(accumulatedAssetCollection)(Dice.fromSeed(0))
+      val startupData: Startup[StartupError, StartupData] =
+        initialise(accumulatedAssetCollection)(Dice.fromSeed(0)) // Always has the same dice. Problem?
+
+      startupData.startUpEvents.foreach(globalEventStream.pushGlobalEvent)
 
       GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
 
