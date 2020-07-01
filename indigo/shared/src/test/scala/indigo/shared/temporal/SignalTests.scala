@@ -164,6 +164,14 @@ Where a thing moves in a circle for 2 seconds and then stops.
           Signal.Lerp(Point(10, 10), Point(60, 60), Seconds(1)).at(Seconds(0.0)) ==> Point(10, 10)
           Signal.Lerp(Point(10, 10), Point(60, 60), Seconds(1)).at(Seconds(0.5)) ==> Point(35, 35)
           Signal.Lerp(Point(10, 10), Point(60, 60), Seconds(1)).at(Seconds(1.0)) ==> Point(60, 60)
+
+          // Over more than a second...
+          Signal.Lerp(Point(60, 10), Point(10, 10), Seconds(10)).at(Seconds(10.0)) ==> Point(10, 10)
+          Signal.Lerp(Point(10, 10), Point(10, 60), Seconds(10)).at(Seconds(10.0)) ==> Point(10, 60)
+
+          Signal.Lerp(Point(10, 10), Point(60, 60), Seconds(10)).at(Seconds(0.0)) ==> Point(10, 10)
+          Signal.Lerp(Point(10, 10), Point(60, 60), Seconds(10)).at(Seconds(5.0)) ==> Point(35, 35)
+          Signal.Lerp(Point(10, 10), Point(60, 60), Seconds(10)).at(Seconds(10.0)) ==> Point(60, 60)
         }
 
         "SmoothPulse smoothly interpolates from 0 to 1" - {

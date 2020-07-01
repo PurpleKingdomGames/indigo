@@ -108,7 +108,7 @@ object Signal {
         )
 
       Signal { t =>
-        val time   = Math.max(0, Math.min(1, t.toDouble)) / over.toDouble
+        val time   = t.toDouble / over.toDouble
         val interp = linear(time, from.toVector, to.toVector).toPoint
 
         Point(
