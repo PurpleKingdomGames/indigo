@@ -16,7 +16,7 @@ object LaunchPadAutomata {
 
   val automaton: Automaton =
     Automaton(
-      Assets.cross,
+      AutomatonNode.Fixed(Assets.cross),
       Seconds.zero
     ).withOnCullEvent { seed =>
       seed.payload match {

@@ -12,7 +12,7 @@ object Score {
     Automata(
       poolKey,
       Automaton(
-        Text(scoreAmount, 0, 0, 1, fontKey).alignCenter,
+        AutomatonNode.Fixed(Text(scoreAmount, 0, 0, 1, fontKey).alignCenter),
         Seconds(1.5)
       ).withModifier(ModiferFunctions.signal),
       Automata.Layer.UI

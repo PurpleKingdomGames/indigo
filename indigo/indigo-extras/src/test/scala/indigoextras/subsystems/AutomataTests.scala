@@ -15,6 +15,7 @@ import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.temporal.Signal
 import indigo.shared.temporal.SignalFunction
 import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.shared.collections.NonEmptyList
 
 object AutomataTests extends TestSuite {
 
@@ -28,21 +29,24 @@ object AutomataTests extends TestSuite {
   val poolKey: AutomataPoolKey =
     AutomataPoolKey("test")
 
+  val graphic = Graphic(0, 0, 10, 10, 1, Material.Textured(AssetName("fish")))
+
+  val onCull: AutomatonSeedValues => List[GlobalEvent] =
+    _ => List(eventInstance)
+
   val automaton: Automaton =
     Automaton(
-      Graphic(0, 0, 10, 10, 1, Material.Textured(AssetName("fish"))),
+      AutomatonNode.Fixed(graphic),
       Seconds(1)
-    ).withOnCullEvent { _ =>
-        List(eventInstance)
-      }
+    ).withOnCullEvent(onCull)
       .withModifier(ModiferFunctions.signal)
 
   val automata: Automata =
     Automata(poolKey, automaton, Automata.Layer.Game)
 
-  val startingState: List[SpawnedAutomaton] =
+  val startingState: AutomataState =
     automata
-      .update(context(1), Nil)(AutomataEvent.Spawn(poolKey, Point.zero, None, None))
+      .update(context(1), AutomataState(0, Nil))(AutomataEvent.Spawn(poolKey, Point.zero, None, None))
       .state
 
   val tests: Tests =
@@ -52,7 +56,9 @@ object AutomataTests extends TestSuite {
 
         val expected =
           SpawnedAutomaton(
-            automaton,
+            graphic,
+            ModiferFunctions.signal,
+            onCull,
             new AutomatonSeedValues(
               Point.zero,
               Seconds(0),
@@ -62,8 +68,9 @@ object AutomataTests extends TestSuite {
             )
           )
 
-        startingState.length ==> 1
-        startingState.head ==> expected
+        startingState.totalSpawned ==> 1
+        startingState.pool.length ==> 1
+        startingState.pool.head ==> expected
       }
 
       "should move a particle with a modifier signal" - {
@@ -106,7 +113,8 @@ object AutomataTests extends TestSuite {
           automata
             .update(context(1, Seconds(1)), startingState)(AutomataEvent.Update(poolKey))
 
-        outcome.state.length ==> 0
+        outcome.state.totalSpawned ==> 1
+        outcome.state.pool.length ==> 0
         outcome.globalEvents.head ==> eventInstance
       }
 
@@ -117,8 +125,64 @@ object AutomataTests extends TestSuite {
           automata
             .update(context(1, Seconds(0)), startingState)(AutomataEvent.KillAll(poolKey))
 
-        outcome.state.isEmpty ==> true
+        outcome.state.totalSpawned ==> 1
+        outcome.state.pool.isEmpty ==> true
         outcome.globalEvents.isEmpty ==> true
+      }
+
+      "AutomatonNode" - {
+
+        "fixed" - {
+          val node =
+            AutomatonNode.Fixed(graphic).giveNode(0, Dice.loaded(0))
+
+          node ==> graphic
+        }
+
+        "one of" - {
+          val nodeList: NonEmptyList[SceneGraphNode] =
+            NonEmptyList(
+              graphic.moveTo(0, 0),
+              graphic.moveTo(0, 10),
+              graphic.moveTo(0, 20)
+            )
+
+          val nodes =
+            AutomatonNode.OneOf(nodeList)
+
+          nodes.giveNode(0, Dice.loaded(0)).y ==> graphic.moveTo(0, 0).y
+          nodes.giveNode(0, Dice.loaded(1)).y ==> graphic.moveTo(0, 10).y
+          nodes.giveNode(0, Dice.loaded(2)).y ==> graphic.moveTo(0, 20).y
+
+          val dice = Dice.Sides.MaxInt(0)
+
+          (0 to 100).toList.forall { _ =>
+            val g = nodes.giveNode(0, dice).y
+            nodeList.toList.map(_.y).contains(g)
+          } ==> true
+
+        }
+
+        "cycle" - {
+          val nodeList: NonEmptyList[SceneGraphNode] =
+            NonEmptyList(
+              graphic.moveTo(0, 0),
+              graphic.moveTo(0, 10),
+              graphic.moveTo(0, 20)
+            )
+
+          val nodes =
+            AutomatonNode.Cycle(nodeList)
+
+          nodes.giveNode(0, Dice.loaded(0)).y ==> graphic.moveTo(0, 0).y
+          nodes.giveNode(1, Dice.loaded(0)).y ==> graphic.moveTo(0, 10).y
+          nodes.giveNode(2, Dice.loaded(0)).y ==> graphic.moveTo(0, 20).y
+          nodes.giveNode(3, Dice.loaded(0)).y ==> graphic.moveTo(0, 0).y
+          nodes.giveNode(4, Dice.loaded(0)).y ==> graphic.moveTo(0, 10).y
+          nodes.giveNode(5, Dice.loaded(0)).y ==> graphic.moveTo(0, 20).y
+          nodes.giveNode(6, Dice.loaded(0)).y ==> graphic.moveTo(0, 0).y
+        }
+
       }
 
     }
