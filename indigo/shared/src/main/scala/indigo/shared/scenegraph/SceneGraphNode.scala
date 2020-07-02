@@ -190,10 +190,13 @@ sealed trait Renderable extends SceneGraphNodePrimitive {
   def effects: Effects
   def ref: Point
 
-  def withAlpha(a: Double): Renderable
+  def withEffects(newEffects: Effects): Renderable
   def withTint(tint: RGBA): Renderable
   def withTint(red: Double, green: Double, blue: Double): Renderable
-
+  def withOverlay(newOverlay: Overlay): Renderable
+  def withBorder(newBorder: Border): Renderable
+  def withGlow(newGlow: Glow): Renderable
+  def withAlpha(a: Double): Renderable
   def flipHorizontal(h: Boolean): Renderable
   def flipVertical(v: Boolean): Renderable
 
@@ -278,6 +281,15 @@ final class Graphic(
 
   def withTint(red: Double, green: Double, blue: Double, amount: Double): Graphic =
     Graphic(position, depth, rotation, scale, ref, crop, effects.withTint(RGBA(red, green, blue, amount)), material)
+
+  def withOverlay(newOverlay: Overlay): Graphic =
+    Graphic(position, depth, rotation, scale, ref, crop, effects.withOverlay(newOverlay), material)
+
+  def withBorder(newBorder: Border): Graphic =
+    Graphic(position, depth, rotation, scale, ref, crop, effects.withBorder(newBorder), material)
+
+  def withGlow(newGlow: Glow): Graphic =
+    Graphic(position, depth, rotation, scale, ref, crop, effects.withGlow(newGlow), material)
 
   def flipHorizontal(hValue: Boolean): Graphic =
     Graphic(position, depth, rotation, scale, ref, crop, effects.withFlip(Flip(hValue, effects.flip.vertical)), material)
@@ -412,6 +424,15 @@ final class Sprite(
   def withTint(red: Double, green: Double, blue: Double, amount: Double): Sprite =
     withTint(RGBA(red, green, blue, amount))
 
+  def withOverlay(newOverlay: Overlay): Sprite =
+    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withOverlay(newOverlay), eventHandler)
+
+  def withBorder(newBorder: Border): Sprite =
+    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withBorder(newBorder), eventHandler)
+
+  def withGlow(newGlow: Glow): Sprite =
+    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withGlow(newGlow), eventHandler)
+
   def flipHorizontal(h: Boolean): Sprite =
     Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withFlip(Flip(horizontal = h, vertical = effects.flip.vertical)), eventHandler)
 
@@ -539,6 +560,15 @@ final class Text(
 
   def withTint(red: Double, green: Double, blue: Double, amount: Double): Text =
     Text(text, alignment, position, depth, rotation, scale, fontKey, effects.withTint(RGBA(red, green, blue, amount)), eventHandler)
+
+  def withOverlay(newOverlay: Overlay): Text =
+    Text(text, alignment, position, depth, rotation, scale, fontKey, effects.withOverlay(newOverlay), eventHandler)
+
+  def withBorder(newBorder: Border): Text =
+    Text(text, alignment, position, depth, rotation, scale, fontKey, effects.withBorder(newBorder), eventHandler)
+
+  def withGlow(newGlow: Glow): Text =
+    Text(text, alignment, position, depth, rotation, scale, fontKey, effects.withGlow(newGlow), eventHandler)
 
   def flipHorizontal(h: Boolean): Text =
     Text(text, alignment, position, depth, rotation, scale, fontKey, effects.withFlip(Flip(horizontal = h, vertical = effects.flip.vertical)), eventHandler)

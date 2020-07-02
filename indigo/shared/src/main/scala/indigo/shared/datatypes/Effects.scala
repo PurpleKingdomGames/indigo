@@ -11,11 +11,8 @@ final class Effects(
   def withTint(newValue: RGBA): Effects =
     Effects(newValue, overlay, border, glow, alpha, flip)
 
-  def withColorOverlay(newValue: Overlay.Color): Effects =
-    Effects(tint, newValue, border, glow, alpha, flip)
-
-  def withGradiantOverlay(newValue: Overlay.LinearGradiant): Effects =
-    Effects(tint, newValue, border, glow, alpha, flip)
+  def withOverlay(newOverlay: Overlay): Effects =
+    Effects(tint, newOverlay, border, glow, alpha, flip)
 
   def withBorder(newValue: Border): Effects =
     Effects(tint, overlay, newValue, glow, alpha, flip)
