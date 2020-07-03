@@ -13,7 +13,7 @@ import indigo.shared.events.InputState
 
 object AssetBundleLoaderTests extends TestSuite {
 
-  import indigoextras.subsystems.FakeFrameContext._
+  import indigoextras.subsystems.FakeSubSystemFrameContext._
 
   val defaultAssets: List[AssetTypePrimitive] =
     List(

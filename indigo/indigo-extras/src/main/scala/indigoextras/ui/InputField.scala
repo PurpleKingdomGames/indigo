@@ -143,7 +143,7 @@ final case class InputField(
     rec(textToInsert.toCharArray().toList, splitString._1, splitString._2, cursorPosition)
   }
 
-  def update(frameContext: FrameContext): InputField = {
+  def update(frameContext: FrameContext[_]): InputField = {
     @tailrec
     def rec(keysReleased: List[Key], acc: InputField, touched: Boolean): InputField =
       keysReleased match {

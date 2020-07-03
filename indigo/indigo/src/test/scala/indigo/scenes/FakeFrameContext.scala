@@ -11,28 +11,31 @@ import indigo.shared.time.Seconds
 
 object FakeFrameContext {
 
-  def context(sides: Int): FrameContext =
-    new FrameContext(
+  def context(sides: Int): FrameContext[Unit] =
+    new FrameContext[Unit](
       GameTime.zero,
       Dice.loaded(sides),
       InputState.default,
-      new BoundaryLocator(new AnimationsRegister, new FontRegister)
+      new BoundaryLocator(new AnimationsRegister, new FontRegister),
+      ()
     )
 
-  def context(sides: Int, time: Seconds): FrameContext =
-    new FrameContext(
+  def context(sides: Int, time: Seconds): FrameContext[Unit] =
+    new FrameContext[Unit](
       GameTime.is(time),
       Dice.loaded(sides),
       InputState.default,
-      new BoundaryLocator(new AnimationsRegister, new FontRegister)
+      new BoundaryLocator(new AnimationsRegister, new FontRegister),
+      ()
     )
 
-  def context(sides: Int, time: Seconds, delta: Seconds): FrameContext =
-    new FrameContext(
+  def context(sides: Int, time: Seconds, delta: Seconds): FrameContext[Unit] =
+    new FrameContext[Unit](
       GameTime.withDelta(time, delta),
       Dice.loaded(sides),
       InputState.default,
-      new BoundaryLocator(new AnimationsRegister, new FontRegister)
+      new BoundaryLocator(new AnimationsRegister, new FontRegister),
+      ()
     )
 
 }

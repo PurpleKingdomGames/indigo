@@ -4,25 +4,26 @@ import indigo.GlobalEvent
 import indigo.Outcome
 import indigo.SceneUpdateFragment
 import indigo.shared.subsystems.SubSystemsRegister
+import indigo.shared.subsystems.SubSystemFrameContext._
 import indigo.shared.FrameContext
 
 object GameWithSubSystems {
 
-  def update[Model](
+  def update[StartUpData, Model](
       subSystemsRegister: SubSystemsRegister,
-      modelUpdate: (FrameContext, Model) => GlobalEvent => Outcome[Model]
-  ): (FrameContext, Model) => GlobalEvent => Outcome[Model] =
-    (frameContext, model) => e => Outcome.merge(modelUpdate(frameContext, model)(e), subSystemsRegister.update(frameContext)(e)) { case (m, _) => m }
+      modelUpdate: (FrameContext[StartUpData], Model) => GlobalEvent => Outcome[Model]
+  ): (FrameContext[StartUpData], Model) => GlobalEvent => Outcome[Model] =
+    (frameContext, model) => e => Outcome.merge(modelUpdate(frameContext, model)(e), subSystemsRegister.update(frameContext.forSubSystems)(e)) { case (m, _) => m }
 
-  def updateViewModel[Model, ViewModel](
-      viewModelUpdate: (FrameContext, Model, ViewModel) => Outcome[ViewModel]
-  ): (FrameContext, Model, ViewModel) => Outcome[ViewModel] =
+  def updateViewModel[StartUpData, Model, ViewModel](
+      viewModelUpdate: (FrameContext[StartUpData], Model, ViewModel) => Outcome[ViewModel]
+  ): (FrameContext[StartUpData], Model, ViewModel) => Outcome[ViewModel] =
     (frameContext, model, viewModel) => viewModelUpdate(frameContext, model, viewModel)
 
-  def present[Model, ViewModel](
+  def present[StartUpData, Model, ViewModel](
       subSystemsRegister: SubSystemsRegister,
-      viewPresent: (FrameContext, Model, ViewModel) => SceneUpdateFragment
-  ): (FrameContext, Model, ViewModel) => SceneUpdateFragment =
-    (frameContext, model, viewModel) => viewPresent(frameContext, model, viewModel) |+| subSystemsRegister.render(frameContext)
+      viewPresent: (FrameContext[StartUpData], Model, ViewModel) => SceneUpdateFragment
+  ): (FrameContext[StartUpData], Model, ViewModel) => SceneUpdateFragment =
+    (frameContext, model, viewModel) => viewPresent(frameContext, model, viewModel) |+| subSystemsRegister.render(frameContext.forSubSystems)
 
 }

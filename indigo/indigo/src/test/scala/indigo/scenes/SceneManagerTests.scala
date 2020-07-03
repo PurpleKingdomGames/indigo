@@ -18,7 +18,7 @@ object SceneManagerTests extends TestSuite {
 
   import TestScenes._
 
-  val scenes: NonEmptyList[Scene[TestGameModel, TestViewModel]] =
+  val scenes: NonEmptyList[Scene[Unit, TestGameModel, TestViewModel]] =
     NonEmptyList(sceneA, sceneB)
 
   val sceneFinder: SceneFinder = SceneFinder.fromScenes(scenes)
@@ -31,7 +31,7 @@ object SceneManagerTests extends TestSuite {
 
         "Should be able to update a model on frametick" - {
 
-          val sceneManager = new SceneManager[TestGameModel, TestViewModel](scenes, sceneFinder)
+          val sceneManager = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
 
           val events = List(FrameTick)
 
@@ -45,7 +45,7 @@ object SceneManagerTests extends TestSuite {
 
         "Should be able to change scenes and update on frametick" - {
 
-          val sceneManager = new SceneManager[TestGameModel, TestViewModel](scenes, sceneFinder)
+          val sceneManager = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
 
           val events = List(SceneEvent.Next, FrameTick)
 
@@ -58,7 +58,7 @@ object SceneManagerTests extends TestSuite {
 
         "should be able to move between scenes and update the model accordingly" - {
 
-          val sceneManager = new SceneManager[TestGameModel, TestViewModel](scenes, sceneFinder)
+          val sceneManager = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
 
           // A = 2, B = 40
           val events = List(
@@ -87,7 +87,7 @@ object SceneManagerTests extends TestSuite {
       }
     }
 
-  private def runModel(events: List[GlobalEvent], model: TestGameModel, sceneManager: SceneManager[TestGameModel, TestViewModel]): TestGameModel =
+  private def runModel(events: List[GlobalEvent], model: TestGameModel, sceneManager: SceneManager[Unit, TestGameModel, TestViewModel]): TestGameModel =
     events.foldLeft(model)((m, e) => sceneManager.updateModel(context(6), m)(e).state)
 
 }

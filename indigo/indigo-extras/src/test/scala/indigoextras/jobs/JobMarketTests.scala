@@ -6,7 +6,7 @@ import utest._
 import indigo.shared.EqualTo._
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
-import indigo.shared.FrameContext
+import indigo.shared.subsystems.SubSystemFrameContext
 import indigo.shared.time.GameTime
 import indigo.shared.dice.Dice
 import indigo.shared.events.InputState
@@ -19,7 +19,7 @@ import indigo.shared.datatypes.RGBA
 object JobMarketTests extends TestSuite {
 
   val context =
-    new FrameContext(
+    new SubSystemFrameContext(
       GameTime.zero,
       Dice.loaded(6),
       InputState.default,

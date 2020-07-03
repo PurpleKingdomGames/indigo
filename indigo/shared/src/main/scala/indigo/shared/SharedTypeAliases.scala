@@ -53,6 +53,7 @@ trait SharedTypeAliases {
 
   type BoundaryLocator = shared.BoundaryLocator
 
-  type FrameContext = shared.FrameContext
+  type FrameContext[StartUpData] = shared.FrameContext[StartUpData]
+  type SubSystemFrameContext = shared.subsystems.SubSystemFrameContext
 
 }

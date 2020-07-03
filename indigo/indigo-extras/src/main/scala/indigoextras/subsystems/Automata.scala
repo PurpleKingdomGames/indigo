@@ -10,7 +10,7 @@ import indigoextras.subsystems.Automata.Layer
 import indigo.shared.EqualTo._
 import indigo.shared.EqualTo
 import indigo.shared.datatypes.RGBA
-import indigo.shared.FrameContext
+import indigo.shared.subsystems.SubSystemFrameContext
 import indigo.shared.datatypes.Point
 import indigo.shared.time.Seconds
 import indigo.shared.dice.Dice
@@ -41,7 +41,7 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
     AutomataState(0, Nil)
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-  def update(frameContext: FrameContext, state: AutomataState): AutomataEvent => Outcome[AutomataState] = {
+  def update(frameContext: SubSystemFrameContext, state: AutomataState): AutomataEvent => Outcome[AutomataState] = {
     case Spawn(key, position, lifeSpan, payload) if key === poolKey =>
       val spawned =
         SpawnedAutomaton(
@@ -104,7 +104,7 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
       Outcome(state)
   }
 
-  def render(frameContext: FrameContext, state: AutomataState): SceneUpdateFragment =
+  def render(frameContext: SubSystemFrameContext, state: AutomataState): SceneUpdateFragment =
     layer.emptyScene(Automata.renderNoLayer(state.pool, frameContext.gameTime))
 }
 object Automata {

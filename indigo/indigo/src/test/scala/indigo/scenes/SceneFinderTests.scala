@@ -9,7 +9,7 @@ object SceneFinderTests extends TestSuite {
 
   import TestScenes._
 
-  val scenes: NonEmptyList[Scene[TestGameModel, TestViewModel]] =
+  val scenes: NonEmptyList[Scene[Unit, TestGameModel, TestViewModel]] =
     NonEmptyList(sceneA, sceneB)
 
   val sceneFinder: SceneFinder =

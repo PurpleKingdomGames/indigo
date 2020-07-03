@@ -13,14 +13,15 @@ import indigo.shared.time.Seconds
 import indigo.shared.BoundaryLocator
 import indigo.shared.platform.SceneProcessor
 
-class GameLoop[GameModel, ViewModel](
+class GameLoop[StartUpData, GameModel, ViewModel](
+    startUpData: StartUpData,
     boundaryLocator: BoundaryLocator,
     sceneProcessor: SceneProcessor,
     gameEngine: GameEngine[_, _, GameModel, ViewModel],
     gameConfig: GameConfig,
     initialModel: GameModel,
     initialViewModel: ViewModel,
-    frameProcessor: FrameProcessor[GameModel, ViewModel],
+    frameProcessor: FrameProcessor[StartUpData, GameModel, ViewModel],
     callTick: (Long => Unit) => Unit
 ) {
 
@@ -60,7 +61,7 @@ class GameLoop[GameModel, ViewModel](
 
         if (gameConfig.advanced.disableSkipViewUpdates || timeDelta < gameConfig.haltViewUpdatesAt) {
           val processedFrame: Outcome[(GameModel, ViewModel, SceneUpdateFragment)] =
-            frameProcessor.run(gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)
+            frameProcessor.run(startUpData, gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)
 
           // Persist frame state
           gameModelState = processedFrame.state._1
@@ -92,7 +93,7 @@ class GameLoop[GameModel, ViewModel](
           gameEngine.renderer.drawScene(sceneData)
         } else {
           val processedFrame: Outcome[(GameModel, ViewModel)] =
-            frameProcessor.runSkipView(gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)
+            frameProcessor.runSkipView(startUpData, gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)
 
           // Persist frame state
           gameModelState = processedFrame.state._1

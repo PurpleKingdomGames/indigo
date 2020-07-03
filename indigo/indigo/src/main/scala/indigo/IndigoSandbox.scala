@@ -11,7 +11,7 @@ import scala.concurrent.Future
 /**
   * A trait representing a minimal set of functions to get your game running
   */
-trait IndigoSandbox[StartupData, Model] extends GameLauncher {
+trait IndigoSandbox[StartUpData, Model] extends GameLauncher {
 
   val config: GameConfig
 
@@ -21,32 +21,32 @@ trait IndigoSandbox[StartupData, Model] extends GameLauncher {
 
   val animations: Set[Animation]
 
-  def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartupData]
+  def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartUpData]
 
-  def initialModel(startupData: StartupData): Model
+  def initialModel(startupData: StartUpData): Model
 
-  def updateModel(context: FrameContext, model: Model): GlobalEvent => Outcome[Model]
+  def updateModel(context: FrameContext[StartUpData], model: Model): GlobalEvent => Outcome[Model]
 
-  def present(context: FrameContext, model: Model): SceneUpdateFragment
+  def present(context: FrameContext[StartUpData], model: Model): SceneUpdateFragment
 
-  private def indigoGame: GameEngine[StartupData, StartupErrors, Model, Unit] = {
+  private def indigoGame: GameEngine[StartUpData, StartupErrors, Model, Unit] = {
 
-    val updateViewModel: (FrameContext, Model, Unit) => Outcome[Unit] =
+    val updateViewModel: (FrameContext[StartUpData], Model, Unit) => Outcome[Unit] =
       (_, _, vm) => Outcome(vm)
 
-    val frameProcessor: StandardFrameProcessor[Model, Unit] =
+    val frameProcessor: StandardFrameProcessor[StartUpData, Model, Unit] =
       new StandardFrameProcessor(
         (ctx, m) => (e: GlobalEvent) => updateModel(ctx, m)(e),
         updateViewModel,
         (ctx, m, _) => present(ctx, m)
       )
 
-    new GameEngine[StartupData, StartupErrors, Model, Unit](
+    new GameEngine[StartUpData, StartupErrors, Model, Unit](
       fonts,
       animations,
       (ac: AssetCollection) => (d: Dice) => setup(ac, d),
-      (sd: StartupData) => initialModel(sd),
-      (_: StartupData) => (_: Model) => (),
+      (sd: StartUpData) => initialModel(sd),
+      (_: StartUpData) => (_: Model) => (),
       frameProcessor
     )
   }

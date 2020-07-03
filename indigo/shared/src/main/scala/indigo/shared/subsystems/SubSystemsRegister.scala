@@ -3,7 +3,7 @@ package indigo.shared.subsystems
 import indigo.shared.Outcome
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.FrameContext
+import indigo.shared.subsystems.SubSystemFrameContext
 import scala.collection.mutable
 
 import java.util.UUID
@@ -32,7 +32,7 @@ final class SubSystemsRegister(subSystems: List[SubSystem]) {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
-  def update(frameContext: FrameContext): GlobalEvent => Outcome[SubSystemsRegister] =
+  def update(frameContext: SubSystemFrameContext): GlobalEvent => Outcome[SubSystemsRegister] =
     (e: GlobalEvent) => {
       val statelessEvents: List[GlobalEvent] =
         registeredSubSystems.flatMap { rss =>
@@ -53,7 +53,7 @@ final class SubSystemsRegister(subSystems: List[SubSystem]) {
     }
 
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
-  def render(frameContext: FrameContext): SceneUpdateFragment =
+  def render(frameContext: SubSystemFrameContext): SceneUpdateFragment =
     registeredSubSystems
       .map { rss =>
         rss.subSystem.render(

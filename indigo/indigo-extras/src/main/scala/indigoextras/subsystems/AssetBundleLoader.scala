@@ -9,7 +9,7 @@ import indigo.shared.datatypes.BindingKey
 import indigo.shared.assets.AssetPath
 import indigo.shared.assets.AssetTypePrimitive
 import indigo.shared.events.AssetEvent
-import indigo.shared.FrameContext
+import indigo.shared.subsystems.SubSystemFrameContext
 
 // Provides "at least once" message delivery for updates on a bundle's loading status.
 object AssetBundleLoader extends SubSystem {
@@ -25,7 +25,7 @@ object AssetBundleLoader extends SubSystem {
   def initialModel: AssetBundleTracker =
     AssetBundleTracker.empty
 
-  def update(frameContext: FrameContext, tracker: AssetBundleTracker): GlobalEvent => Outcome[AssetBundleTracker] = {
+  def update(frameContext: SubSystemFrameContext, tracker: AssetBundleTracker): GlobalEvent => Outcome[AssetBundleTracker] = {
     // Asset Bundle Loader Commands
     case AssetBundleLoaderEvent.Load(key, assets) =>
       createBeginLoadingOutcome(key, assets, tracker)
@@ -62,7 +62,7 @@ object AssetBundleLoader extends SubSystem {
       Outcome(tracker)
   }
 
-  def render(frameContext: FrameContext, model: AssetBundleTracker): SceneUpdateFragment =
+  def render(frameContext: SubSystemFrameContext, model: AssetBundleTracker): SceneUpdateFragment =
     SceneUpdateFragment.empty
 
   private def createBeginLoadingOutcome(key: BindingKey, assets: Set[AssetType], tracker: AssetBundleTracker): Outcome[AssetBundleTracker] = {

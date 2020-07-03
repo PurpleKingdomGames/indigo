@@ -33,13 +33,13 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.platform.SceneProcessor
 import indigo.shared.dice.Dice
 
-final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
+final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
     fonts: Set[FontInfo],
     animations: Set[Animation],
-    initialise: AssetCollection => Dice => Startup[StartupError, StartupData],
-    initialModel: StartupData => GameModel,
-    initialViewModel: StartupData => GameModel => ViewModel,
-    frameProccessor: FrameProcessor[GameModel, ViewModel]
+    initialise: AssetCollection => Dice => Startup[StartupError, StartUpData],
+    initialModel: StartUpData => GameModel,
+    initialViewModel: StartUpData => GameModel => ViewModel,
+    frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel]
 ) {
 
   val animationsRegister: AnimationsRegister =
@@ -65,7 +65,7 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var gameLoop: Try[() => Unit] = null
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
-  var gameLoopInstance: GameLoop[GameModel, ViewModel] = null
+  var gameLoopInstance: GameLoop[StartUpData, GameModel, ViewModel] = null
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var accumulatedAssetCollection: AssetCollection = AssetCollection.empty
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
@@ -138,7 +138,7 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
       val platform: Platform =
         new PlatformImpl(gameConfig, accumulatedAssetCollection, globalEventStream)
 
-      val startupData: Startup[StartupError, StartupData] =
+      val startupData: Startup[StartupError, StartUpData] =
         initialise(accumulatedAssetCollection)(Dice.fromSeed(0)) // Always has the same dice. Problem?
 
       startupData.startUpEvents.foreach(globalEventStream.pushGlobalEvent)
@@ -153,6 +153,7 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
           startUpSuccessData      <- GameEngine.initialisedGame(startupData)
           initialisedGameLoop <- GameEngine.initialiseGameLoop(
             this,
+            startUpSuccessData,
             boundaryLocator,
             sceneProcessor,
             gameConfig,
@@ -183,30 +184,32 @@ object GameEngine {
   def registerFonts(fontRegister: FontRegister, fonts: Set[FontInfo]): Unit =
     fonts.foreach(fontRegister.register)
 
-  def initialisedGame[StartupError, StartupData](startupData: Startup[StartupError, StartupData]): Try[StartupData] =
+  def initialisedGame[StartupError, StartUpData](startupData: Startup[StartupError, StartUpData]): Try[StartUpData] =
     startupData match {
       case e: Startup.Failure[_] =>
         IndigoLogger.info("Game initialisation failed")
         IndigoLogger.info(e.report)
-        Failure[StartupData](new Exception("Game aborted due to start up failure"))
+        Failure[StartUpData](new Exception("Game aborted due to start up failure"))
 
-      case x: Startup.Success[StartupData] =>
+      case x: Startup.Success[StartUpData] =>
         IndigoLogger.info("Game initialisation succeeded")
         Success(x.success)
     }
 
-  def initialiseGameLoop[StartupData, StartupError, GameModel, ViewModel](
-      gameEngine: GameEngine[StartupData, StartupError, GameModel, ViewModel],
+  def initialiseGameLoop[StartUpData, StartupError, GameModel, ViewModel](
+      gameEngine: GameEngine[StartUpData, StartupError, GameModel, ViewModel],
+      startUpData: StartUpData,
       boundaryLocator: BoundaryLocator,
       sceneProcessor: SceneProcessor,
       gameConfig: GameConfig,
       initialModel: GameModel,
       initialViewModel: GameModel => ViewModel,
-      frameProccessor: FrameProcessor[GameModel, ViewModel],
+      frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel],
       callTick: (Long => Unit) => Unit
-  ): Try[GameLoop[GameModel, ViewModel]] =
+  ): Try[GameLoop[StartUpData, GameModel, ViewModel]] =
     Success(
-      new GameLoop[GameModel, ViewModel](
+      new GameLoop[StartUpData, GameModel, ViewModel](
+        startUpData: StartUpData,
         boundaryLocator,
         sceneProcessor,
         gameEngine,

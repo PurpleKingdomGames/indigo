@@ -19,7 +19,7 @@ import indigo.shared.collections.NonEmptyList
 
 object AutomataTests extends TestSuite {
 
-  import indigoextras.subsystems.FakeFrameContext._
+  import indigoextras.subsystems.FakeSubSystemFrameContext._
 
   final case class MyCullEvent(message: String) extends GlobalEvent
 

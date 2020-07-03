@@ -5,7 +5,7 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.Outcome
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.datatypes.BindingKey
-import indigo.shared.FrameContext
+import indigo.shared.subsystems.SubSystemFrameContext
 
 final case class JobMarket(initialJobs: List[Job]) extends SubSystem {
   type EventType      = JobMarketEvent
@@ -19,7 +19,7 @@ final case class JobMarket(initialJobs: List[Job]) extends SubSystem {
   val initialModel: List[Job] =
     initialJobs
 
-  def update(frameContext: FrameContext, jobs: List[Job]): JobMarketEvent => Outcome[List[Job]] = {
+  def update(frameContext: SubSystemFrameContext, jobs: List[Job]): JobMarketEvent => Outcome[List[Job]] = {
     case JobMarketEvent.Post(job) =>
       Outcome(jobs :+ job)
 
@@ -38,7 +38,7 @@ final case class JobMarket(initialJobs: List[Job]) extends SubSystem {
       Outcome(jobs)
   }
 
-  def render(frameContext: FrameContext, jobs: List[Job]): SceneUpdateFragment =
+  def render(frameContext: SubSystemFrameContext, jobs: List[Job]): SceneUpdateFragment =
     SceneUpdateFragment.empty
 }
 

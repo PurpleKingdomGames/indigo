@@ -7,7 +7,7 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.{SceneUpdateFragment, Text}
 import indigo.shared.datatypes.FontKey
 import indigo.shared.events.InputState
-import indigo.shared.FrameContext
+import indigo.shared.subsystems.SubSystemFrameContext
 import indigo.shared.datatypes.BindingKey
 
 final case class PointsTrackerExample(startingPoints: Int) extends SubSystem {
@@ -22,7 +22,7 @@ final case class PointsTrackerExample(startingPoints: Int) extends SubSystem {
   def initialModel: Int =
     startingPoints
 
-  def update(context: FrameContext, points: Int): PointsTrackerEvent => Outcome[Int] = {
+  def update(context: SubSystemFrameContext, points: Int): PointsTrackerEvent => Outcome[Int] = {
     case PointsTrackerEvent.Add(pts) =>
       Outcome(points + pts)
 
@@ -31,7 +31,7 @@ final case class PointsTrackerExample(startingPoints: Int) extends SubSystem {
         .addGlobalEvents(GameOver)
   }
 
-  def render(context: FrameContext, points: Int): SceneUpdateFragment =
+  def render(context: SubSystemFrameContext, points: Int): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(Text(points.toString, 0, 0, 1, FontKey("")))
 }

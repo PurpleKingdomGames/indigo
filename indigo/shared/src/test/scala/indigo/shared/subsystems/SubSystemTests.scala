@@ -13,7 +13,7 @@ import indigo.shared.FontRegister
 
 object SubSystemTests extends TestSuite {
 
-  import FakeFrameContext._
+  import FakeSubSystemFrameContext._
 
   val subSystem = PointsTrackerExample(0)
 

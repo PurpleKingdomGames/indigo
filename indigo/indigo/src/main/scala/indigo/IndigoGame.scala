@@ -15,7 +15,7 @@ import scala.concurrent.Future
   * A trait representing a game with scene management baked in
   * @example `object MyGame extends IndigoGame`
   */
-trait IndigoGame[BootData, StartupData, Model, ViewModel] extends GameLauncher {
+trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
 
   /**
     * A non-empty ordered list of scenes
@@ -30,7 +30,7 @@ trait IndigoGame[BootData, StartupData, Model, ViewModel] extends GameLauncher {
     * @param bootData Data created during initial game boot.
     * @return A list of scenes that ensures at least one scene exists.
     */
-  def scenes(bootData: BootData): NonEmptyList[Scene[Model, ViewModel]]
+  def scenes(bootData: BootData): NonEmptyList[Scene[StartUpData, Model, ViewModel]]
 
   /**
     * Optional name of the first scene. If None is provided
@@ -55,29 +55,29 @@ trait IndigoGame[BootData, StartupData, Model, ViewModel] extends GameLauncher {
     * @return Either an `Startup.Success[...your startup data...]` or a
     *         `Startup.Failure[StartupErrors]`.
     */
-  def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartupData]
+  def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartUpData]
 
   /**
     * Set up of your initial model
     * @param startupData Access to Startup data in case you need it for the model
     * @return An instance of your game model
     */
-  def initialModel(startupData: StartupData): Model
+  def initialModel(startupData: StartUpData): Model
 
   /**
     * Set up of your initial view model
     * @param startupData Access to Startup data in case you need it for the view model
     * @return An instance of your game's view model
     */
-  def initialViewModel(startupData: StartupData, model: Model): ViewModel
+  def initialViewModel(startupData: StartUpData, model: Model): ViewModel
 
   private val subSystemsRegister: SubSystemsRegister =
     new SubSystemsRegister(Nil)
 
-  private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartupData, StartupErrors, Model, ViewModel] = {
+  private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartUpData, StartupErrors, Model, ViewModel] = {
     subSystemsRegister.register(bootUp.subSystems.toList)
 
-    val sceneManager: SceneManager[Model, ViewModel] = {
+    val sceneManager: SceneManager[StartUpData, Model, ViewModel] = {
       val s = scenes(bootUp.bootData)
 
       initialScene(bootUp.bootData) match {
@@ -89,7 +89,7 @@ trait IndigoGame[BootData, StartupData, Model, ViewModel] extends GameLauncher {
       }
     }
 
-    val frameProcessor: StandardFrameProcessor[Model, ViewModel] = {
+    val frameProcessor: StandardFrameProcessor[StartUpData, Model, ViewModel] = {
       new StandardFrameProcessor(
         GameWithSubSystems.update(subSystemsRegister, sceneManager.updateModel),
         GameWithSubSystems.updateViewModel(sceneManager.updateViewModel),
@@ -97,12 +97,12 @@ trait IndigoGame[BootData, StartupData, Model, ViewModel] extends GameLauncher {
       )
     }
 
-    new GameEngine[StartupData, StartupErrors, Model, ViewModel](
+    new GameEngine[StartUpData, StartupErrors, Model, ViewModel](
       bootUp.fonts,
       bootUp.animations,
       (ac: AssetCollection) => (d: Dice) => setup(bootUp.bootData, ac, d),
-      (sd: StartupData) => initialModel(sd),
-      (sd: StartupData) => (m: Model) => initialViewModel(sd, m),
+      (sd: StartUpData) => initialModel(sd),
+      (sd: StartUpData) => (m: Model) => initialViewModel(sd, m),
       frameProcessor
     )
   }

@@ -5,7 +5,7 @@ import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.FontKey
 import indigo.shared.time.Seconds
 import indigo.shared.events.GlobalEvent
-import indigo.shared.FrameContext
+import indigo.shared.subsystems.SubSystemFrameContext
 import indigo.shared.Outcome
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.datatypes.RGBA
@@ -27,7 +27,7 @@ object FPSCounter {
     case _         => None
   }
 
-  def update(targetFPS: Int): (FrameContext, FPSCounterState) => GlobalEvent => Outcome[FPSCounterState] =
+  def update(targetFPS: Int): (SubSystemFrameContext, FPSCounterState) => GlobalEvent => Outcome[FPSCounterState] =
     (frameContext, model) => {
       case FrameTick =>
         if (frameContext.gameTime.running >= (model.lastInterval + Seconds(1)))
@@ -42,7 +42,7 @@ object FPSCounter {
           Outcome(model.copy(frameCountSinceInterval = model.frameCountSinceInterval + 1))
     }
 
-  def render(fontKey: FontKey, position: Point, targetFPS: Int): (FrameContext, FPSCounterState) => SceneUpdateFragment =
+  def render(fontKey: FontKey, position: Point, targetFPS: Int): (SubSystemFrameContext, FPSCounterState) => SceneUpdateFragment =
     (_, model) => {
       SceneUpdateFragment.empty
         .addUiLayerNodes(

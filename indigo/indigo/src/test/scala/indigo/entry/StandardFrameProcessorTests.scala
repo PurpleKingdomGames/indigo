@@ -23,6 +23,7 @@ object StandardFrameProcessorTests extends TestSuite {
     Tests {
 
       val outcome = standardFrameProcessor.run(
+        (),
         model,
         viewModel,
         GameTime.zero,
@@ -58,7 +59,7 @@ object TestFixtures {
   val viewModel: Int =
     0
 
-  val modelUpdate: (FrameContext, GameModel) => GlobalEvent => Outcome[GameModel] =
+  val modelUpdate: (FrameContext[Unit], GameModel) => GlobalEvent => Outcome[GameModel] =
     (_, m) => {
       case EventsOnlyEvent.Increment =>
         val newCount = m.count + 1
@@ -71,15 +72,15 @@ object TestFixtures {
         Outcome(m)
     }
 
-  val viewModelUpdate: (FrameContext, GameModel, Int) => Outcome[Int] =
+  val viewModelUpdate: (FrameContext[Unit], GameModel, Int) => Outcome[Int] =
     (_, _, vm) => {
       Outcome(vm + 10).addGlobalEvents(EventsOnlyEvent.Increment)
     }
 
-  val viewUpdate: (FrameContext, GameModel, Int) => SceneUpdateFragment =
+  val viewUpdate: (FrameContext[Unit], GameModel, Int) => SceneUpdateFragment =
     (_, _, _) => SceneUpdateFragment.empty
 
-  val standardFrameProcessor: StandardFrameProcessor[GameModel, Int] =
+  val standardFrameProcessor: StandardFrameProcessor[Unit, GameModel, Int] =
     new StandardFrameProcessor(modelUpdate, viewModelUpdate, viewUpdate)
 
   final case class GameModel(count: Int)

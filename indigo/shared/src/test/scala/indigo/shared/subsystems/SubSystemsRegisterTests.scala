@@ -13,7 +13,7 @@ import indigo.shared.AnimationsRegister
 
 object SubSystemsRegisterTests extends TestSuite {
 
-  import FakeFrameContext._
+  import FakeSubSystemFrameContext._
 
   val tests: Tests =
     Tests {

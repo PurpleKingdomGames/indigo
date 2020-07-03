@@ -15,6 +15,7 @@ import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 import indigo.shared.FrameContext
 import indigo.shared.datatypes.BindingKey
+import indigo.shared.subsystems.SubSystemFrameContext
 
 object GameWithSubSystemsTests extends TestSuite {
 
@@ -49,12 +50,13 @@ object GameWithSubSystemsTests extends TestSuite {
 
 object GameTestFixtures {
 
-  def context: FrameContext =
+  def context: FrameContext[Unit] =
     new FrameContext(
       GameTime.zero,
       Dice.loaded(0),
       InputState.default,
-      new BoundaryLocator(new AnimationsRegister, new FontRegister)
+      new BoundaryLocator(new AnimationsRegister, new FontRegister),
+      ()
     )
 
   val subSystem =
@@ -66,10 +68,10 @@ object GameTestFixtures {
   val model =
     GameModel("")
 
-  val modelUpdate: (FrameContext, GameModel) => GlobalEvent => Outcome[GameModel] =
+  val modelUpdate: (FrameContext[Unit], GameModel) => GlobalEvent => Outcome[GameModel] =
     (_, m) => _ => Outcome(m).addGlobalEvents(EventsOnlyEvent.Decrement)
 
-  val viewModelUpdate: (FrameContext, GameModel, Int) => Outcome[Int] =
+  val viewModelUpdate: (FrameContext[Unit], GameModel, Int) => Outcome[Int] =
     (_, _, viewModel) => Outcome(viewModel + 10).addGlobalEvents(EventsOnlyEvent.Increment)
 
   final case class GameModel(text: String)
@@ -86,7 +88,7 @@ object GameTestFixtures {
       case _                  => None
     }
 
-    def update(context: FrameContext, count: Int): EventsOnlyEvent => Outcome[Int] = {
+    def update(context: SubSystemFrameContext, count: Int): EventsOnlyEvent => Outcome[Int] = {
       case EventsOnlyEvent.Increment =>
         val newCount = count + 1
 
@@ -101,7 +103,7 @@ object GameTestFixtures {
         Outcome(count)
     }
 
-    def render(context: FrameContext, count: Int): SceneUpdateFragment =
+    def render(context: SubSystemFrameContext, count: Int): SceneUpdateFragment =
       SceneUpdateFragment.empty
 
   }

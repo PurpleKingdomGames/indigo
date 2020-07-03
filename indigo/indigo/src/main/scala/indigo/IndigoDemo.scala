@@ -12,45 +12,45 @@ import scala.concurrent.Future
 
 /**
   * A trait representing a minimal set of functions to get your game running
-  * @tparam StartupData The class type representing your successful startup data
+  * @tparam StartUpData The class type representing your successful startup data
   * @tparam Model The class type representing your game's model
   * @tparam ViewModel The class type representing your game's view model
   */
-trait IndigoDemo[BootData, StartupData, Model, ViewModel] extends GameLauncher {
+trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
 
   def boot(flags: Map[String, String]): BootResult[BootData]
 
-  def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartupData]
+  def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartUpData]
 
-  def initialModel(startupData: StartupData): Model
+  def initialModel(startupData: StartUpData): Model
 
-  def initialViewModel(startupData: StartupData, model: Model): ViewModel
+  def initialViewModel(startupData: StartUpData, model: Model): ViewModel
 
-  def updateModel(context: FrameContext, model: Model): GlobalEvent => Outcome[Model]
+  def updateModel(context: FrameContext[StartUpData], model: Model): GlobalEvent => Outcome[Model]
 
-  def updateViewModel(context: FrameContext, model: Model, viewModel: ViewModel): Outcome[ViewModel]
+  def updateViewModel(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): Outcome[ViewModel]
 
-  def present(context: FrameContext, model: Model, viewModel: ViewModel): SceneUpdateFragment
+  def present(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): SceneUpdateFragment
 
   private val subSystemsRegister: SubSystemsRegister =
     new SubSystemsRegister(Nil)
 
-  private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartupData, StartupErrors, Model, ViewModel] = {
+  private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartUpData, StartupErrors, Model, ViewModel] = {
     subSystemsRegister.register(bootUp.subSystems.toList)
 
-    val frameProcessor: StandardFrameProcessor[Model, ViewModel] =
+    val frameProcessor: StandardFrameProcessor[StartUpData, Model, ViewModel] =
       new StandardFrameProcessor(
         GameWithSubSystems.update(subSystemsRegister, updateModel),
         GameWithSubSystems.updateViewModel(updateViewModel),
         GameWithSubSystems.present(subSystemsRegister, present)
       )
 
-    new GameEngine[StartupData, StartupErrors, Model, ViewModel](
+    new GameEngine[StartUpData, StartupErrors, Model, ViewModel](
       bootUp.fonts,
       bootUp.animations,
       (ac: AssetCollection) => (d: Dice) => setup(bootUp.bootData, ac, d),
-      (sd: StartupData) => initialModel(sd),
-      (sd: StartupData) => (m: Model) => initialViewModel(sd, m),
+      (sd: StartUpData) => initialModel(sd),
+      (sd: StartUpData) => (m: Model) => initialViewModel(sd, m),
       frameProcessor
     )
   }

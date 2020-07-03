@@ -10,22 +10,23 @@ import indigo.gameengine.FrameProcessor
 import indigo.shared.BoundaryLocator
 import indigo.shared.FrameContext
 
-final class StandardFrameProcessor[Model, ViewModel](
-    modelUpdate: (FrameContext, Model) => GlobalEvent => Outcome[Model],
-    viewModelUpdate: (FrameContext, Model, ViewModel) => Outcome[ViewModel],
-    viewUpdate: (FrameContext, Model, ViewModel) => SceneUpdateFragment
-) extends FrameProcessor[Model, ViewModel] {
+final class StandardFrameProcessor[StartUpData, Model, ViewModel](
+    modelUpdate: (FrameContext[StartUpData], Model) => GlobalEvent => Outcome[Model],
+    viewModelUpdate: (FrameContext[StartUpData], Model, ViewModel) => Outcome[ViewModel],
+    viewUpdate: (FrameContext[StartUpData], Model, ViewModel) => SceneUpdateFragment
+) extends FrameProcessor[StartUpData, Model, ViewModel] {
 
-  def updateModel(frameContext: FrameContext, model: Model): GlobalEvent => Outcome[Model] =
+  def updateModel(frameContext: FrameContext[StartUpData], model: Model): GlobalEvent => Outcome[Model] =
     modelUpdate(frameContext, model)
 
-  def updateViewModel(frameContext: FrameContext, model: Model, viewModel: ViewModel): Outcome[ViewModel] =
+  def updateViewModel(frameContext: FrameContext[StartUpData], model: Model, viewModel: ViewModel): Outcome[ViewModel] =
     viewModelUpdate(frameContext, model, viewModel)
 
-  def updateView(frameContext: FrameContext, model: Model, viewModel: ViewModel): SceneUpdateFragment =
+  def updateView(frameContext: FrameContext[StartUpData], model: Model, viewModel: ViewModel): SceneUpdateFragment =
     viewUpdate(frameContext, model, viewModel)
 
   def run(
+      startUpData: StartUpData,
       model: Model,
       viewModel: ViewModel,
       gameTime: GameTime,
@@ -35,7 +36,7 @@ final class StandardFrameProcessor[Model, ViewModel](
       boundaryLocator: BoundaryLocator
   ): Outcome[(Model, ViewModel, SceneUpdateFragment)] = {
 
-    val frameContext = new FrameContext(gameTime, dice, inputState, boundaryLocator)
+    val frameContext = new FrameContext[StartUpData](gameTime, dice, inputState, boundaryLocator, startUpData)
 
     val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
       acc.flatMapState { next =>
@@ -53,6 +54,7 @@ final class StandardFrameProcessor[Model, ViewModel](
   }
 
   def runSkipView(
+      startUpData: StartUpData,
       model: Model,
       viewModel: ViewModel,
       gameTime: GameTime,
@@ -62,7 +64,7 @@ final class StandardFrameProcessor[Model, ViewModel](
       boundaryLocator: BoundaryLocator
   ): Outcome[(Model, ViewModel)] = {
 
-    val frameContext = new FrameContext(gameTime, dice, inputState, boundaryLocator)
+    val frameContext = new FrameContext[StartUpData](gameTime, dice, inputState, boundaryLocator, startUpData)
 
     val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
       acc.flatMapState { next =>

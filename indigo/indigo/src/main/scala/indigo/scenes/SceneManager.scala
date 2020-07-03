@@ -8,8 +8,9 @@ import indigo.shared.collections.NonEmptyList
 import indigo.shared.EqualTo._
 import indigo.shared.subsystems.SubSystemsRegister
 import indigo.shared.FrameContext
+import indigo.shared.subsystems.SubSystemFrameContext._
 
-class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, ViewModel]], scenesFinder: SceneFinder) {
+class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]], scenesFinder: SceneFinder) {
 
   // Scene management
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
@@ -25,7 +26,7 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
 
   // Scene delegation
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-  def updateModel(frameContext: FrameContext, model: GameModel): GlobalEvent => Outcome[GameModel] = {
+  def updateModel(frameContext: FrameContext[StartUpData], model: GameModel): GlobalEvent => Outcome[GameModel] = {
     case SceneEvent.Next =>
       finderInstance = finderInstance.forward
       Outcome(model)
@@ -48,7 +49,7 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
           val subsystemOutcomeEvents = subSystemStates
             .get(scene.name)
             .map { ssr =>
-              ssr.update(frameContext)(event).globalEvents
+              ssr.update(frameContext.forSubSystems)(event).globalEvents
             }
             .getOrElse(Nil)
 
@@ -58,7 +59,7 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
       }
   }
 
-  def updateViewModel(frameContext: FrameContext, model: GameModel, viewModel: ViewModel): Outcome[ViewModel] =
+  def updateViewModel(frameContext: FrameContext[StartUpData], model: GameModel, viewModel: ViewModel): Outcome[ViewModel] =
     scenes.find(_.name === finderInstance.current.name) match {
       case None =>
         IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
@@ -68,7 +69,7 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
         Scene.updateViewModel(scene, frameContext, model, viewModel)
     }
 
-  def updateView(frameContext: FrameContext, model: GameModel, viewModel: ViewModel): SceneUpdateFragment =
+  def updateView(frameContext: FrameContext[StartUpData], model: GameModel, viewModel: ViewModel): SceneUpdateFragment =
     scenes.find(_.name === finderInstance.current.name) match {
       case None =>
         IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
@@ -78,7 +79,7 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
         val subsystemView = subSystemStates
           .get(scene.name)
           .map { ssr =>
-            ssr.render(frameContext)
+            ssr.render(frameContext.forSubSystems)
           }
           .getOrElse(SceneUpdateFragment.empty)
 
@@ -89,7 +90,7 @@ class SceneManager[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, V
 
 object SceneManager {
 
-  def apply[GameModel, ViewModel](scenes: NonEmptyList[Scene[GameModel, ViewModel]], initialScene: SceneName): SceneManager[GameModel, ViewModel] =
-    new SceneManager[GameModel, ViewModel](scenes, SceneFinder.fromScenes[GameModel, ViewModel](scenes).jumpToSceneByName(initialScene))
+  def apply[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]], initialScene: SceneName): SceneManager[StartUpData, GameModel, ViewModel] =
+    new SceneManager[StartUpData, GameModel, ViewModel](scenes, SceneFinder.fromScenes[StartUpData, GameModel, ViewModel](scenes).jumpToSceneByName(initialScene))
 
 }

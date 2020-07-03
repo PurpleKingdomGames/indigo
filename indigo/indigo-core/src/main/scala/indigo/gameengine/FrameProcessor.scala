@@ -7,8 +7,9 @@ import indigo.shared.events.{GlobalEvent, InputState}
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.BoundaryLocator
 
-trait FrameProcessor[Model, ViewModel] {
+trait FrameProcessor[StartUpData, Model, ViewModel] {
   def run(
+      startUpData: StartUpData,
       model: Model,
       viewModel: ViewModel,
       gameTime: GameTime,
@@ -19,6 +20,7 @@ trait FrameProcessor[Model, ViewModel] {
   ): Outcome[(Model, ViewModel, SceneUpdateFragment)]
 
   def runSkipView(
+      startUpData: StartUpData,
       model: Model,
       viewModel: ViewModel,
       gameTime: GameTime,

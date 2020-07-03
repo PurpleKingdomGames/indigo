@@ -3,7 +3,6 @@ package indigo.shared.subsystems
 import indigo.shared.Outcome
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.FrameContext
 
 trait SubSystem {
   type EventType
@@ -13,9 +12,9 @@ trait SubSystem {
 
   def initialModel: SubSystemModel
 
-  def update(context: FrameContext, model: SubSystemModel): EventType => Outcome[SubSystemModel]
+  def update(context: SubSystemFrameContext, model: SubSystemModel): EventType => Outcome[SubSystemModel]
 
-  def render(context: FrameContext, model: SubSystemModel): SceneUpdateFragment
+  def render(context: SubSystemFrameContext, model: SubSystemModel): SceneUpdateFragment
 }
 
 object SubSystem {
@@ -23,8 +22,8 @@ object SubSystem {
   def apply[Event, Model](
       _eventFilter: GlobalEvent => Option[Event],
       _initialModel: Model,
-      _update: (FrameContext, Model) => Event => Outcome[Model],
-      _render: (FrameContext, Model) => SceneUpdateFragment
+      _update: (SubSystemFrameContext, Model) => Event => Outcome[Model],
+      _render: (SubSystemFrameContext, Model) => SceneUpdateFragment
   ): SubSystem =
     new SubSystem {
       type EventType      = Event
@@ -36,10 +35,10 @@ object SubSystem {
       def initialModel: SubSystemModel =
         _initialModel
 
-      def update(context: FrameContext, model: SubSystemModel): EventType => Outcome[SubSystemModel] =
+      def update(context: SubSystemFrameContext, model: SubSystemModel): EventType => Outcome[SubSystemModel] =
         _update(context, model)
 
-      def render(context: FrameContext, model: SubSystemModel): SceneUpdateFragment =
+      def render(context: SubSystemFrameContext, model: SubSystemModel): SceneUpdateFragment =
         _render(context, model)
     }
 

@@ -1,4 +1,4 @@
-package indigo.shared
+package indigo.shared.subsystems
 
 import indigo.shared.time.GameTime
 import indigo.shared.events.InputState
@@ -9,13 +9,14 @@ import indigo.shared.events.Mouse
 import indigo.shared.events.Keyboard
 import indigo.shared.input.Gamepad
 import indigo.shared.time.Seconds
+import indigo.shared.BoundaryLocator
+import indigo.shared.FrameContext
 
-final class FrameContext[StartUpData](
+final class SubSystemFrameContext(
     val gameTime: GameTime,
     val dice: Dice,
     val inputState: InputState,
-    val boundaryLocator: BoundaryLocator,
-    val startUpData: StartUpData
+    val boundaryLocator: BoundaryLocator
 ) {
 
   val running: Seconds = gameTime.running
@@ -27,5 +28,18 @@ final class FrameContext[StartUpData](
 
   def findBounds(sceneGraphNode: SceneGraphNode): Rectangle =
     boundaryLocator.findBounds(sceneGraphNode)
+
+}
+object SubSystemFrameContext {
+
+  implicit class FrameContextForSubSystems(frameContext: FrameContext[_]) {
+    def forSubSystems: SubSystemFrameContext =
+      new SubSystemFrameContext(
+        frameContext.gameTime,
+        frameContext.dice,
+        frameContext.inputState,
+        frameContext.boundaryLocator
+      )
+  }
 
 }

@@ -94,7 +94,7 @@ object SceneFinder {
   def apply(previous: List[ScenePosition], current: ScenePosition, next: List[ScenePosition]): SceneFinder =
     new SceneFinder(previous, current, next)
 
-  def fromScenes[GameModel, ViewModel](scenesList: NonEmptyList[Scene[GameModel, ViewModel]]): SceneFinder = {
+  def fromScenes[StartUpData, GameModel, ViewModel](scenesList: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]]): SceneFinder = {
     val a = scenesList.map(_.name).zipWithIndex.map(p => ScenePosition(p._2, p._1))
 
     SceneFinder(Nil, a.head, a.tail)
