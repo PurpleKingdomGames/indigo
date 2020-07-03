@@ -129,6 +129,7 @@ final class GameEngine[StartupData, StartupError, GameModel, ViewModel](
 
       fontRegister.clearRegister()
       boundaryLocator.purgeCache()
+      sceneProcessor.purgeCaches()
 
       accumulatedAssetCollection = accumulatedAssetCollection |+| ac
 

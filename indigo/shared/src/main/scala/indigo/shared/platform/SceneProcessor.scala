@@ -29,6 +29,14 @@ final class SceneProcessor(
   private val displayObjectConverterClone: DisplayObjectConversions =
     new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
 
+  def purgeCaches(): Unit = {
+    displayObjectConverterGame.purgeCaches()
+    displayObjectConverterLighting.purgeCaches()
+    displayObjectConverterDistortion.purgeCaches()
+    displayObjectConverterUi.purgeCaches()
+    displayObjectConverterClone.purgeCaches()
+  }
+
   def processScene(
       gameTime: GameTime,
       scene: SceneUpdateFragment,
