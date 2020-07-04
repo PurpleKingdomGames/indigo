@@ -14,10 +14,9 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.platform.SceneProcessor
 
 class GameLoop[StartUpData, GameModel, ViewModel](
-    startUpData: StartUpData,
     boundaryLocator: BoundaryLocator,
     sceneProcessor: SceneProcessor,
-    gameEngine: GameEngine[_, _, GameModel, ViewModel],
+    gameEngine: GameEngine[StartUpData, _, GameModel, ViewModel],
     gameConfig: GameConfig,
     initialModel: GameModel,
     initialViewModel: ViewModel,
@@ -44,6 +43,9 @@ class GameLoop[StartUpData, GameModel, ViewModel](
 
     // PUT NOTHING ABOVE THIS LINE!! Major performance penalties!!
     if (timeDelta >= gameConfig.frameRateDeltaMillis.toLong - 1) {
+
+      val startUpData: StartUpData =
+        gameEngine.startUpData.get
 
       // Model updates cut off
       if (gameConfig.advanced.disableSkipModelUpdates || timeDelta < gameConfig.haltModelUpdatesAt) {

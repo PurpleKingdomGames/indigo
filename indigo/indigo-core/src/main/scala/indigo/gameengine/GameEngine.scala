@@ -72,6 +72,8 @@ final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
   var assetMapping: AssetMapping = null
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var renderer: Renderer = null
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  var startUpData: Option[StartUpData] = None
 
   def start(
       config: GameConfig,
@@ -155,7 +157,6 @@ final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
           startUpSuccessData      <- GameEngine.initialisedGame(startupData)
           initialisedGameLoop <- GameEngine.initialiseGameLoop(
             this,
-            startUpSuccessData,
             boundaryLocator,
             sceneProcessor,
             gameConfig,
@@ -168,6 +169,7 @@ final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
           renderer = rendererAndAssetMapping._1
           assetMapping = rendererAndAssetMapping._2
           gameLoopInstance = initialisedGameLoop
+          startUpData = Some(startUpSuccessData)
           initialisedGameLoop.loop(time)
         }
       gameLoop = loop.map(f => (() => platform.tick(f)))
@@ -199,7 +201,6 @@ object GameEngine {
 
   def initialiseGameLoop[StartUpData, StartupError, GameModel, ViewModel](
       gameEngine: GameEngine[StartUpData, StartupError, GameModel, ViewModel],
-      startUpData: StartUpData,
       boundaryLocator: BoundaryLocator,
       sceneProcessor: SceneProcessor,
       gameConfig: GameConfig,
@@ -210,7 +211,6 @@ object GameEngine {
   ): Try[GameLoop[StartUpData, GameModel, ViewModel]] =
     Success(
       new GameLoop[StartUpData, GameModel, ViewModel](
-        startUpData: StartUpData,
         boundaryLocator,
         sceneProcessor,
         gameEngine,
