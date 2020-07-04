@@ -4,7 +4,7 @@ import scala.scalajs.js.annotation._
 import indigo.shared.FrameContext
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
-final class FrameContextDelegate(context: FrameContext) {
+final class FrameContextDelegate[StartupData](context: FrameContext[StartupData]) {
 
   @JSExport
   val gameTime: GameTimeDelegate =
@@ -22,6 +22,6 @@ final class FrameContextDelegate(context: FrameContext) {
   val boundaryLocator: BoundaryLocatorDelegate =
     new BoundaryLocatorDelegate(context.boundaryLocator)
 
-  def toInternal: FrameContext =
+  def toInternal: FrameContext[StartupData] =
     context
 }

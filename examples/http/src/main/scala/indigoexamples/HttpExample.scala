@@ -32,7 +32,7 @@ object HttpExample extends IndigoDemo[Unit, Unit, Unit, Button] {
       List(HttpRequest.GET("http://localhost:8080/ping"))
     }
 
-  def updateModel(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] = {
+  def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] = {
     case HttpResponse(status, headers, body) =>
       println("Status code: " + status.toString)
       println("Headers: " + headers.map(p => p._1 + ": " + p._2).mkString(", "))
@@ -47,9 +47,9 @@ object HttpExample extends IndigoDemo[Unit, Unit, Unit, Button] {
       Outcome(model)
   }
 
-  def updateViewModel(context: FrameContext, model: Unit, viewModel: Button): Outcome[Button] =
+  def updateViewModel(context: FrameContext[Unit], model: Unit, viewModel: Button): Outcome[Button] =
     viewModel.update(context.inputState.mouse)
 
-  def present(context: FrameContext, model: Unit, viewModel: Button): SceneUpdateFragment =
+  def present(context: FrameContext[Unit], model: Unit, viewModel: Button): SceneUpdateFragment =
     SceneUpdateFragment(viewModel.draw)
 }

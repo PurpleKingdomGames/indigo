@@ -39,7 +39,7 @@ object DistortionGame extends IndigoSandbox[Unit, Unit] {
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def updateModel(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] =
+  def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(())
 
   val graphic: Graphic =
@@ -64,7 +64,7 @@ object DistortionGame extends IndigoSandbox[Unit, Unit] {
       distortion.moveTo(vec.toPoint)
     }
 
-  def present(context: FrameContext, model: Unit): SceneUpdateFragment =
+  def present(context: FrameContext[Unit], model: Unit): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         background,

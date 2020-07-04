@@ -22,7 +22,7 @@ object ScenesSetup extends IndigoGame[Unit, StartUpData, GameModel, Unit] {
       .withFonts(FontStuff.fontInfo)
       .withSubSystems(FPSCounter(FontStuff.fontKey, Point(10, 360), targetFPS))
 
-  def scenes(bootData: Unit): NonEmptyList[Scene[GameModel, Unit]] =
+  def scenes(bootData: Unit): NonEmptyList[Scene[StartUpData, GameModel, Unit]] =
     NonEmptyList(SceneA, SceneB)
 
   def initialScene(bootData: Unit): Option[SceneName] = Option(SceneA.name)

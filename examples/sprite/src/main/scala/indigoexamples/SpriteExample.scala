@@ -31,7 +31,7 @@ object SpriteExample extends IndigoSandbox[Unit, Unit] {
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def updateModel(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] =
+  def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
 
   /*
@@ -45,7 +45,7 @@ object SpriteExample extends IndigoSandbox[Unit, Unit] {
    advance of the render loops (cache effectively), then the key wouldn't be
    regenerated.
    */
-  def present(context: FrameContext, model: Unit): SceneUpdateFragment =
+  def present(context: FrameContext[Unit], model: Unit): SceneUpdateFragment =
     SceneUpdateFragment.empty.addGameLayerNodes(
       Sprite(BindingKey("lights animation"), 0, 0, 1, animationsKey).play()
     )

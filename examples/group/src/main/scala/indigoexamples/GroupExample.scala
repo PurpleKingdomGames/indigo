@@ -23,10 +23,10 @@ object GroupExample extends IndigoSandbox[Unit, Unit] {
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def updateModel(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] =
+  def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
 
-  def present(context: FrameContext, model: Unit): SceneUpdateFragment =
+  def present(context: FrameContext[Unit], model: Unit): SceneUpdateFragment =
     SceneUpdateFragment.empty.addGameLayerNodes(
       Group(
         Graphic(0, 0, 256, 256, 1, Material.Textured(assetName)).moveTo(64, 10).moveBy(-50, -50),

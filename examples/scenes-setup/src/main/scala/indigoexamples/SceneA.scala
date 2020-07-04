@@ -4,7 +4,7 @@ import indigo._
 import indigo.scenes._
 
 // There is no relevant entry in the ViewModel for either scene, so we've just left it as Unit.
-object SceneA extends Scene[GameModel, Unit] {
+object SceneA extends Scene[StartUpData, GameModel, Unit] {
   type SceneModel     = MessageA
   type SceneViewModel = Unit
 
@@ -26,15 +26,15 @@ object SceneA extends Scene[GameModel, Unit] {
     )
 
   // Nothing to do
-  def updateSceneModel(context: FrameContext, sceneModel: MessageA): GlobalEvent => Outcome[MessageA] =
+  def updateSceneModel(context: FrameContext[StartUpData], sceneModel: MessageA): GlobalEvent => Outcome[MessageA] =
     _ => Outcome(sceneModel)
 
   // Nothing to do
-  def updateSceneViewModel(context: FrameContext, sceneModel: MessageA, sceneViewModel: Unit): Outcome[Unit] = Outcome(())
+  def updateSceneViewModel(context: FrameContext[StartUpData], sceneModel: MessageA, sceneViewModel: Unit): Outcome[Unit] = Outcome(())
 
   // Show some text
   // When the user clicks anywhere in the screen, trigger an event to jump to the other scene.
-  def updateSceneView(context: FrameContext, sceneModel: MessageA, sceneViewModel: Unit): SceneUpdateFragment = {
+  def updateSceneView(context: FrameContext[StartUpData], sceneModel: MessageA, sceneViewModel: Unit): SceneUpdateFragment = {
     val events: List[GlobalEvent] =
       if (context.inputState.mouse.wasMouseClickedWithin(Rectangle(0, 0, 550, 400))) List(SceneEvent.JumpTo(SceneB.name))
       else Nil

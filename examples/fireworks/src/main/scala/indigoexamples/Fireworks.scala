@@ -62,7 +62,7 @@ object Fireworks extends IndigoDemo[Vertex => Point, FireworksStartupData, Firew
   def initialViewModel(startupData: FireworksStartupData, model: FireworksModel): Unit =
     ()
 
-  def updateModel(context: FrameContext, model: FireworksModel): GlobalEvent => Outcome[FireworksModel] = {
+  def updateModel(context: FrameContext[FireworksStartupData], model: FireworksModel): GlobalEvent => Outcome[FireworksModel] = {
     case KeyboardEvent.KeyUp(Keys.SPACE) =>
       Outcome(model, launchFireworks(context.dice, model.toScreenSpace))
 
@@ -70,10 +70,10 @@ object Fireworks extends IndigoDemo[Vertex => Point, FireworksStartupData, Firew
       Outcome(model)
   }
 
-  def updateViewModel(context: FrameContext, model: FireworksModel, viewModel: Unit): Outcome[Unit] =
+  def updateViewModel(context: FrameContext[FireworksStartupData], model: FireworksModel, viewModel: Unit): Outcome[Unit] =
     Outcome(())
 
-  def present(context: FrameContext, model: FireworksModel, viewModel: Unit): SceneUpdateFragment =
+  def present(context: FrameContext[FireworksStartupData], model: FireworksModel, viewModel: Unit): SceneUpdateFragment =
     SceneUpdateFragment.empty
 
 }

@@ -21,7 +21,7 @@ object GraphicExample extends IndigoSandbox[Unit, Unit] {
   def initialModel(startupData: Unit): Unit =
     ()
 
-  def updateModel(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] =
+  def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
 
   val graphic: Graphic =
@@ -35,7 +35,7 @@ object GraphicExample extends IndigoSandbox[Unit, Unit] {
       .scaleBy(1.5, 1.5)
       .withRef(96, 96)
 
-  def present(context: FrameContext, model: Unit): SceneUpdateFragment =
+  def present(context: FrameContext[Unit], model: Unit): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         basic.withAlpha(0.5),

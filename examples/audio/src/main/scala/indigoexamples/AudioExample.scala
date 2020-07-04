@@ -9,7 +9,8 @@ import scala.scalajs.js.annotation._
 object AudioExample extends IndigoDemo[Unit, Unit, Unit, Button] {
 
   def boot(flags: Map[String, String]): BootResult[Unit] =
-    BootResult.noData(defaultGameConfig)
+    BootResult
+      .noData(defaultGameConfig)
       .withAssets(
         AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")),
         AssetType.Audio(AssetName("bounce"), AssetPath("assets/RetroGameJump.mp3")),
@@ -35,15 +36,15 @@ object AudioExample extends IndigoDemo[Unit, Unit, Unit, Button] {
       List(PlaySound(AssetName("bounce"), Volume.Max))
     }
 
-  def updateModel(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] = {
+  def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] = {
     case _ =>
       Outcome(model)
   }
 
-  def updateViewModel(context: FrameContext, model: Unit, viewModel: Button): Outcome[Button] =
+  def updateViewModel(context: FrameContext[Unit], model: Unit, viewModel: Button): Outcome[Button] =
     viewModel.update(context.inputState.mouse)
 
-  def present(context: FrameContext, model: Unit, viewModel: Button): SceneUpdateFragment =
+  def present(context: FrameContext[Unit], model: Unit, viewModel: Button): SceneUpdateFragment =
     SceneUpdateFragment(viewModel.draw)
       .withAudio(
         SceneAudio(

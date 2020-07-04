@@ -21,12 +21,12 @@ object BasicSetup extends IndigoDemo[Unit, MyStartUpData, MyGameModel, MyViewMod
 
   def initialViewModel(startupData: MyStartUpData, model: MyGameModel): MyViewModel = MyViewModel()
 
-  def updateModel(context: FrameContext, model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = _ => Outcome(model)
+  def updateModel(context: FrameContext[MyStartUpData], model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = _ => Outcome(model)
 
-  def updateViewModel(context: FrameContext, model: MyGameModel, viewModel: MyViewModel): Outcome[MyViewModel] =
+  def updateViewModel(context: FrameContext[MyStartUpData], model: MyGameModel, viewModel: MyViewModel): Outcome[MyViewModel] =
     Outcome(viewModel)
 
-  def present(context: FrameContext, model: MyGameModel, viewModel: MyViewModel): SceneUpdateFragment =
+  def present(context: FrameContext[MyStartUpData], model: MyGameModel, viewModel: MyViewModel): SceneUpdateFragment =
     noRender
 }
 

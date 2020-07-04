@@ -28,7 +28,7 @@ object TextExample extends IndigoSandbox[Unit, Model] {
   def initialModel(startupData: Unit): Model =
     Model(RGBA.None)
 
-  def updateModel(context: FrameContext, model: Model): GlobalEvent => Outcome[Model] = {
+  def updateModel(context: FrameContext[Unit], model: Model): GlobalEvent => Outcome[Model] = {
     case ChangeColour =>
       Outcome(model.changeTint(context.dice))
 
@@ -36,7 +36,7 @@ object TextExample extends IndigoSandbox[Unit, Model] {
       Outcome(model)
   }
 
-  def present(context: FrameContext, model: Model): SceneUpdateFragment =
+  def present(context: FrameContext[Unit], model: Model): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontKey)

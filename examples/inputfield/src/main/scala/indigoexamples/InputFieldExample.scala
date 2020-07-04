@@ -33,10 +33,10 @@ object InputFieldExample extends IndigoDemo[Unit, Unit, Unit, MyViewModel] {
     )
   }
 
-  def updateModel(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] =
+  def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
 
-  def updateViewModel(context: FrameContext, model: Unit, viewModel: MyViewModel): Outcome[MyViewModel] =
+  def updateViewModel(context: FrameContext[Unit], model: Unit, viewModel: MyViewModel): Outcome[MyViewModel] =
     Outcome(
       viewModel.copy(
         singleLine = viewModel.singleLine.update(context),
@@ -45,7 +45,7 @@ object InputFieldExample extends IndigoDemo[Unit, Unit, Unit, MyViewModel] {
     )
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
-  def present(context: FrameContext, model: Unit, viewModel: MyViewModel): SceneUpdateFragment = {
+  def present(context: FrameContext[Unit], model: Unit, viewModel: MyViewModel): SceneUpdateFragment = {
 
     val single = viewModel.singleLine.draw(
       context.gameTime,

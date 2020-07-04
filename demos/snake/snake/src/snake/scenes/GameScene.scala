@@ -7,9 +7,9 @@ import indigo.AsString._
 import snake.gamelogic.{ModelLogic, ViewLogic}
 import snake.model.{GameModel, SnakeGameModel, SnakeViewModel}
 import snake.gamelogic.Score
-import snake.init.GameAssets
+import snake.init.{GameAssets, SnakeStartupData}
 
-object GameScene extends Scene[SnakeGameModel, SnakeViewModel] {
+object GameScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel] {
   type SceneModel     = GameModel
   type SceneViewModel = SnakeViewModel
 
@@ -24,18 +24,18 @@ object GameScene extends Scene[SnakeGameModel, SnakeViewModel] {
   val sceneSubSystems: Set[SubSystem] =
     Set(Score.automataSubSystem(ModelLogic.ScoreIncrement.show, GameAssets.fontKey))
 
-  def updateSceneModel(context: FrameContext, gameModel: GameModel): GlobalEvent => Outcome[GameModel] =
+  def updateSceneModel(context: FrameContext[SnakeStartupData], gameModel: GameModel): GlobalEvent => Outcome[GameModel] =
     ModelLogic.update(context.gameTime, context.dice, gameModel)
 
   def updateSceneViewModel(
-      context: FrameContext,
+      context: FrameContext[SnakeStartupData],
       gameModel: GameModel,
       snakeViewModel: SnakeViewModel
   ): Outcome[SnakeViewModel] =
     Outcome(snakeViewModel)
 
   def updateSceneView(
-      context: FrameContext,
+      context: FrameContext[SnakeStartupData],
       gameModel: GameModel,
       snakeViewModel: SnakeViewModel
   ): SceneUpdateFragment =

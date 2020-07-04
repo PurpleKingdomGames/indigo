@@ -42,12 +42,12 @@ object AutomataExample extends IndigoDemo[Point, Point, Unit, ViewModel] {
       startupData
     )
 
-  def updateModel(context: FrameContext, model: Unit): GlobalEvent => Outcome[Unit] = {
+  def updateModel(context: FrameContext[Point], model: Unit): GlobalEvent => Outcome[Unit] = {
     case _ =>
       Outcome(model)
   }
 
-  def updateViewModel(context: FrameContext, model: Unit, viewModel: ViewModel): Outcome[ViewModel] =
+  def updateViewModel(context: FrameContext[Point], model: Unit, viewModel: ViewModel): Outcome[ViewModel] =
     viewModel.button
       .update(context.inputState.mouse)
       .map { btn =>
@@ -57,7 +57,7 @@ object AutomataExample extends IndigoDemo[Point, Point, Unit, ViewModel] {
       }
       .map(viewModel.withButton)
 
-  def present(context: FrameContext, model: Unit, viewModel: ViewModel): SceneUpdateFragment =
+  def present(context: FrameContext[Point], model: Unit, viewModel: ViewModel): SceneUpdateFragment =
     SceneUpdateFragment(
       viewModel.button.draw,
       Text("click to win!", 30, 10, 1, FontStuff.fontKey)

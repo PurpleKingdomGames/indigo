@@ -41,7 +41,7 @@ object AssetLoadingExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMod
       }
     )
 
-  def updateModel(context: FrameContext, model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
+  def updateModel(context: FrameContext[Unit], model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
     case AssetBundleLoaderEvent.Started(key) =>
       println("Load started! " + key.toString())
       Outcome(model)
@@ -62,12 +62,12 @@ object AssetLoadingExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMod
       Outcome(model)
   }
 
-  def updateViewModel(context: FrameContext, model: MyGameModel, viewModel: MyViewModel): Outcome[MyViewModel] =
+  def updateViewModel(context: FrameContext[Unit], model: MyGameModel, viewModel: MyViewModel): Outcome[MyViewModel] =
     viewModel.button.update(context.inputState.mouse).map { btn =>
       viewModel.copy(button = btn)
     }
 
-  def present(context: FrameContext, model: MyGameModel, viewModel: MyViewModel): SceneUpdateFragment = {
+  def present(context: FrameContext[Unit], model: MyGameModel, viewModel: MyViewModel): SceneUpdateFragment = {
     val box = if (model.loaded) {
       List(
         Graphic(Rectangle(0, 0, 64, 64), 1, Assets.junctionBoxMaterial)

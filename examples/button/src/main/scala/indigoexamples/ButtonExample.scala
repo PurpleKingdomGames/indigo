@@ -37,7 +37,7 @@ object ButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewModel] {
       }
     )
 
-  def updateModel(context: FrameContext, model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
+  def updateModel(context: FrameContext[Unit], model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
     case MyButtonEvent =>
       val next = model.copy(count = model.count + 1)
       println("Count: " + next.count.toString)
@@ -47,12 +47,12 @@ object ButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewModel] {
       Outcome(model)
   }
 
-  def updateViewModel(context: FrameContext, model: MyGameModel, viewModel: MyViewModel): Outcome[MyViewModel] =
+  def updateViewModel(context: FrameContext[Unit], model: MyGameModel, viewModel: MyViewModel): Outcome[MyViewModel] =
     viewModel.button.update(context.inputState.mouse).map { btn =>
       viewModel.copy(button = btn)
     }
 
-  def present(context: FrameContext, model: MyGameModel, viewModel: MyViewModel): SceneUpdateFragment =
+  def present(context: FrameContext[Unit], model: MyGameModel, viewModel: MyViewModel): SceneUpdateFragment =
     SceneUpdateFragment(viewModel.button.draw)
 }
 

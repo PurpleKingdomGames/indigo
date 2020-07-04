@@ -35,7 +35,7 @@ object SnakeGame extends IndigoGame[GameViewport, SnakeStartupData, SnakeGameMod
   def initialScene(bootData: GameViewport): Option[SceneName] =
     Option(StartScene.name)
 
-  def scenes(bootData: GameViewport): NonEmptyList[Scene[SnakeGameModel, SnakeViewModel]] =
+  def scenes(bootData: GameViewport): NonEmptyList[Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel]] =
     NonEmptyList(StartScene, ControlsScene, GameScene, GameOverScene)
 
   def initialModel(startupData: SnakeStartupData): SnakeGameModel =
