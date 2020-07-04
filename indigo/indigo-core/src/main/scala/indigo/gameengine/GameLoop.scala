@@ -45,7 +45,7 @@ class GameLoop[StartUpData, GameModel, ViewModel](
     if (timeDelta >= gameConfig.frameRateDeltaMillis.toLong - 1) {
 
       val startUpData: StartUpData =
-        gameEngine.startUpData.get
+        gameEngine.startUpData
 
       // Model updates cut off
       if (gameConfig.advanced.disableSkipModelUpdates || timeDelta < gameConfig.haltModelUpdatesAt) {

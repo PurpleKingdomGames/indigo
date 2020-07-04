@@ -73,7 +73,7 @@ final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var renderer: Renderer = null
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
-  var startUpData: Option[StartUpData] = None
+  var startUpData: StartUpData = _
 
   def start(
       config: GameConfig,
@@ -169,7 +169,7 @@ final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
           renderer = rendererAndAssetMapping._1
           assetMapping = rendererAndAssetMapping._2
           gameLoopInstance = initialisedGameLoop
-          startUpData = Some(startUpSuccessData)
+          startUpData = startUpSuccessData
           initialisedGameLoop.loop(time)
         }
       gameLoop = loop.map(f => (() => platform.tick(f)))
