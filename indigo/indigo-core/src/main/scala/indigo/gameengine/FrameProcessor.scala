@@ -9,9 +9,9 @@ import indigo.shared.BoundaryLocator
 
 trait FrameProcessor[StartUpData, Model, ViewModel] {
   def run(
-      startUpData: StartUpData,
-      model: Model,
-      viewModel: ViewModel,
+      startUpData: => StartUpData,
+      model: => Model,
+      viewModel: => ViewModel,
       gameTime: GameTime,
       globalEvents: List[GlobalEvent],
       inputState: InputState,
@@ -20,9 +20,9 @@ trait FrameProcessor[StartUpData, Model, ViewModel] {
   ): Outcome[(Model, ViewModel, SceneUpdateFragment)]
 
   def runSkipView(
-      startUpData: StartUpData,
-      model: Model,
-      viewModel: ViewModel,
+      startUpData: => StartUpData,
+      model: => Model,
+      viewModel: => ViewModel,
       gameTime: GameTime,
       globalEvents: List[GlobalEvent],
       inputState: InputState,

@@ -26,9 +26,9 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
     viewUpdate(frameContext, model, viewModel)
 
   def run(
-      startUpData: StartUpData,
-      model: Model,
-      viewModel: ViewModel,
+      startUpData: => StartUpData,
+      model: => Model,
+      viewModel: => ViewModel,
       gameTime: GameTime,
       globalEvents: List[GlobalEvent],
       inputState: InputState,
@@ -54,9 +54,9 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
   }
 
   def runSkipView(
-      startUpData: StartUpData,
-      model: Model,
-      viewModel: ViewModel,
+      startUpData: => StartUpData,
+      model: => Model,
+      viewModel: => ViewModel,
       gameTime: GameTime,
       globalEvents: List[GlobalEvent],
       inputState: InputState,

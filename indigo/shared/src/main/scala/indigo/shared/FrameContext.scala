@@ -15,9 +15,10 @@ final class FrameContext[StartUpData](
     val dice: Dice,
     val inputState: InputState,
     val boundaryLocator: BoundaryLocator,
-    val startUpData: StartUpData
+    _startUpData: => StartUpData
 ) {
 
+  lazy val startUpData = _startUpData
   val running: Seconds = gameTime.running
   val delta: Seconds   = gameTime.delta
 
