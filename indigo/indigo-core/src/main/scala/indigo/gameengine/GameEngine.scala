@@ -135,11 +135,13 @@ final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
 
       audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
 
+      val time = if (firstRun) 0 else gameLoopInstance.runningTimeReference
+
       val platform: Platform =
         new PlatformImpl(gameConfig, accumulatedAssetCollection, globalEventStream)
 
       val startupData: Startup[StartupError, StartUpData] =
-        initialise(accumulatedAssetCollection)(Dice.fromSeed(gameLoopInstance.runningTimeReference))
+        initialise(accumulatedAssetCollection)(Dice.fromSeed(time))
 
       startupData.startUpEvents.foreach(globalEventStream.pushGlobalEvent)
 
@@ -165,7 +167,6 @@ final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
         } yield {
           renderer = rendererAndAssetMapping._1
           assetMapping = rendererAndAssetMapping._2
-          val time = if (firstRun) 0 else gameLoopInstance.runningTimeReference
           gameLoopInstance = initialisedGameLoop
           initialisedGameLoop.loop(time)
         }
