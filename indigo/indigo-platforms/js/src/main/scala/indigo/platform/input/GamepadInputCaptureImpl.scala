@@ -84,14 +84,14 @@ object GamepadInputCaptureImpl {
   def init(): Unit = {
     window.addEventListener(
       "gamepadconnected", { _: Any =>
-        gamepads = window.navigator.asInstanceOf[GamepadNavigator].getGamepads
+        gamepads = window.navigator.asInstanceOf[GamepadNavigator].getGamepads()
       },
       false
     )
 
     window.addEventListener(
       "gamepaddisconnected", { _: Any =>
-        gamepads = window.navigator.asInstanceOf[GamepadNavigator].getGamepads
+        gamepads = window.navigator.asInstanceOf[GamepadNavigator].getGamepads()
       },
       false
     )

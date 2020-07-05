@@ -10,8 +10,8 @@ import coursier.maven.MavenRepository
 import $ivy.`io.indigoengine::mill-indigo:0.1.1-SNAPSHOT`, millindigo._
 
 object snake extends ScalaJSModule with MillIndigo {
-  def scalaVersion   = "2.13.2"
-  def scalaJSVersion = "1.1.1"
+  def scalaVersion   = "2.13.3"
+  def scalaJSVersion = "1.1.0"
 
   val gameAssetsDirectory: os.Path = os.pwd / "assets"
   val showCursor: Boolean          = true
@@ -37,8 +37,8 @@ object snake extends ScalaJSModule with MillIndigo {
     MavenRepository("https://oss.sonatype.org/content/repositories/releases")
   )
 
-  def compileIvyDeps      = T { super.compileIvyDeps() ++ Agg(ivy"org.wartremover::wartremover:2.4.7") }
-  def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.7") }
+  def compileIvyDeps      = T { super.compileIvyDeps() ++ Agg(ivy"org.wartremover::wartremover:2.4.9") }
+  def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.9") }
 
   def scalacOptions = ScalacOptions.scala213Compile ++ Seq(
     "-P:wartremover:traverser:org.wartremover.warts.Unsafe"
@@ -81,7 +81,6 @@ object ScalacOptions {
       "-Xlint:inaccessible",           // Warn about inaccessible types in method signatures.
       "-Xlint:infer-any",              // Warn when a type argument is inferred to be `Any`.
       "-Xlint:missing-interpolator",   // A string literal appears to be missing an interpolator id.
-      "-Xlint:nullary-override",       // Warn when non-nullary `def f()' overrides nullary `def f'.
       "-Xlint:nullary-unit",           // Warn when nullary methods return Unit.
       "-Xlint:option-implicit",        // Option.apply used implicit view.
       "-Xlint:package-object-classes", // Class or object defined in package object.

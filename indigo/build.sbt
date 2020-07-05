@@ -5,7 +5,7 @@ import scala.language.postfixOps
 
 lazy val indigoVersion = IndigoVersion.getVersion
 
-val scala2 = "2.13.2"
+val scala2 = "2.13.3"
 
 lazy val commonSettings = Seq(
   version := indigoVersion,

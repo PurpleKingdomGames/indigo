@@ -6,7 +6,7 @@ import publish._
 import coursier.maven.MavenRepository
 
 object `mill-indigo` extends ScalaModule with PublishModule {
-  def scalaVersion = "2.13.2"
+  def scalaVersion = "2.13.3"
   def millLibVersion  = "0.7.4"
 
   def ivyDeps = Agg(
@@ -23,7 +23,7 @@ object `mill-indigo` extends ScalaModule with PublishModule {
 
   def scalacOptions = Seq("-P:wartremover:only-warn-traverser:org.wartremover.warts.Unsafe")
 
-  def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.7") }
+  def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.9") }
 
   object test extends Tests {
     def ivyDeps = Agg(ivy"com.lihaoyi::utest:0.7.4")
