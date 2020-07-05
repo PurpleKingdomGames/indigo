@@ -7,7 +7,7 @@ import coursier.maven.MavenRepository
 
 object `mill-indigo` extends ScalaModule with PublishModule {
   def scalaVersion = "2.13.2"
-  def millLibVersion  = "0.7.3"
+  def millLibVersion  = "0.7.4"
 
   def ivyDeps = Agg(
     ivy"com.lihaoyi::mill-main:${millLibVersion}",
