@@ -5,26 +5,28 @@ import indigo.shared.datatypes.BindingKey
 import indigo.shared.animation.{Animation, AnimationKey}
 import indigo.shared.animation.AnimationAction
 import indigo.shared.animation.AnimationMemento
+import scala.collection.mutable
+import indigo.shared.animation.AnimationRef
 
 final class AnimationsRegister {
 
-  private implicit val animationsRegistry: QuickCache[Animation]      = QuickCache.empty
-  private implicit val animationsStates: QuickCache[AnimationMemento] = QuickCache.empty
+  private val animationRegistry: mutable.HashMap[AnimationKey, AnimationRef] = new mutable.HashMap()
+  private val animationStates: mutable.HashMap[BindingKey, AnimationMemento] = new mutable.HashMap()
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def register(animation: Animation): Unit = {
-    QuickCache(animation.animationKey.value)(animation)
+    animationRegistry.put(animation.animationKey, AnimationRef.fromAnimation(animation))
     ()
   }
 
-  def findByAnimationKey(animationKey: AnimationKey): Option[Animation] =
-    animationsRegistry.fetch(CacheKey(animationKey.value))
+  def findByAnimationKey(animationKey: AnimationKey): Option[AnimationRef] =
+    animationRegistry.get(animationKey)
 
   def findMementoByBindingKey(key: BindingKey): Option[AnimationMemento] =
-    animationsStates.fetch(CacheKey(key.value))
+    animationStates.get(key)
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-  def fetchAnimationForSprite(gameTime: GameTime, bindingKey: BindingKey, animationKey: AnimationKey, animationActions: List[AnimationAction]): Option[Animation] =
+  def fetchAnimationForSprite(gameTime: GameTime, bindingKey: BindingKey, animationKey: AnimationKey, animationActions: List[AnimationAction]): Option[AnimationRef] =
     findByAnimationKey(animationKey)
       .map { anim =>
         val updatedAnim =
@@ -34,13 +36,13 @@ final class AnimationsRegister {
 
         val newAnim = updatedAnim.runActions(animationActions, gameTime)
 
-        animationsStates.add(CacheKey(bindingKey.value), newAnim.saveMemento(bindingKey))
+        animationStates.put(bindingKey, newAnim.saveMemento(bindingKey))
 
         newAnim
       }
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-  def fetchAnimationInLastState(bindingKey: BindingKey, animationKey: AnimationKey): Option[Animation] =
+  def fetchAnimationInLastState(bindingKey: BindingKey, animationKey: AnimationKey): Option[AnimationRef] =
     findByAnimationKey(animationKey)
       .map { anim =>
         findMementoByBindingKey(bindingKey)

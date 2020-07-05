@@ -9,7 +9,7 @@ import indigo.shared.AsString._
 import indigo.shared.assets.AssetName
 import indigo.shared.time.Millis
 
-object AnimationTests extends TestSuite {
+object AnimationRefTests extends TestSuite {
 
   val frame1: Frame =
     Frame(Rectangle(Point(0, 0), Point(10, 10)), Millis(10))
@@ -35,20 +35,20 @@ object AnimationTests extends TestSuite {
   val cycleLabel2 =
     CycleLabel("cycle 2")
 
-  val cycle1: Cycle =
-    Cycle.create(cycleLabel1.value, NonEmptyList(frame1, frame2, frame3))
+  val cycle1: CycleRef =
+    CycleRef.create(cycleLabel1, List(frame1, frame2, frame3))
 
-  val cycle2: Cycle =
-    Cycle.create(cycleLabel2.value, NonEmptyList(frame4, frame5, frame6))
+  val cycle2: CycleRef =
+    CycleRef.create(cycleLabel2, List(frame4, frame5, frame6))
 
-  val cycles: NonEmptyList[Cycle] =
-    NonEmptyList(cycle1, cycle2)
+  val cycles: Map[CycleLabel, CycleRef] =
+    Map(cycle1.label -> cycle1, cycle2.label -> cycle2)
 
-  val animation: Animation =
-    Animation(
+  val animation: AnimationRef =
+    AnimationRef(
       AnimationKey("test anim"),
       Material.Textured(AssetName("imageAssetRef")),
-      cycles.head.label,
+      cycles.head._1,
       cycles
     )
 
@@ -58,7 +58,7 @@ object AnimationTests extends TestSuite {
   val tests: Tests =
     Tests {
 
-      "Animation mementos" - {
+      "AnimationRef mementos" - {
 
         "Can record a memento" - {
 

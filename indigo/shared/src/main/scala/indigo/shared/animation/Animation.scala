@@ -1,13 +1,9 @@
 package indigo.shared.animation
 
-import indigo.shared.time.GameTime
-import indigo.shared.animation.AnimationAction._
-import indigo.shared.datatypes.BindingKey
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.EqualTo
 import indigo.shared.AsString
 
-import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Material
 import indigo.shared.time.Millis
 
@@ -18,49 +14,21 @@ final case class Animation(
     cycles: NonEmptyList[Cycle]
 ) {
 
-  val frameHash: String =
-    currentFrame.crop.hash + "_" + currentFrame.frameMaterial.map(_.hash).getOrElse(material.hash)
-
-  def currentCycle: Cycle =
-    Animation.currentCycle(this)
-
   def addCycle(cycle: Cycle): Animation =
-    Animation.addCycle(this, cycle)
+    this.copy(cycles = cycle :: cycles)
 
   def withAnimationKey(animationKey: AnimationKey): Animation =
-    Animation.withAnimationKey(this, animationKey)
-
-  def currentCycleName: String =
-    currentCycle.label.value
-
-  def currentFrame: Frame =
-    currentCycle.currentFrame
-
-  def saveMemento(bindingKey: BindingKey): AnimationMemento =
-    AnimationMemento(bindingKey, currentCycleLabel, currentCycle.saveMemento)
-
-  def applyMemento(memento: AnimationMemento): Animation =
-    Animation.applyMemento(this, memento)
-
-  def runActions(actions: List[AnimationAction], gameTime: GameTime): Animation =
-    Animation.runActions(this, actions, gameTime)
-
-  def changeCycle(newLabel: CycleLabel): Animation =
-    this.copy(
-      currentCycleLabel =
-        if (cycles.exists(_.label === newLabel)) newLabel
-        else currentCycleLabel
-    )
+    this.copy(animationKey = animationKey)
 
 }
 
 object Animation {
 
   implicit val animationEqualTo: EqualTo[Animation] = {
-      val eAK = implicitly[EqualTo[AnimationKey]]
-      val eM = implicitly[EqualTo[Material]]
-      val eCL = implicitly[EqualTo[CycleLabel]]
-      val eNelC = implicitly[EqualTo[NonEmptyList[Cycle]]]
+    val eAK   = implicitly[EqualTo[AnimationKey]]
+    val eM    = implicitly[EqualTo[Material]]
+    val eCL   = implicitly[EqualTo[CycleLabel]]
+    val eNelC = implicitly[EqualTo[NonEmptyList[Cycle]]]
 
     EqualTo.create { (a, b) =>
       eAK.equal(a.animationKey, b.animationKey) &&
@@ -71,10 +39,10 @@ object Animation {
   }
 
   implicit val animationAsString: AsString[Animation] = {
-      val sAK = implicitly[AsString[AnimationKey]]
-      val sM = implicitly[AsString[Material]]
-      val sCL = implicitly[AsString[CycleLabel]]
-      val sNelC = implicitly[AsString[NonEmptyList[Cycle]]]
+    val sAK   = implicitly[AsString[AnimationKey]]
+    val sM    = implicitly[AsString[Material]]
+    val sCL   = implicitly[AsString[CycleLabel]]
+    val sNelC = implicitly[AsString[NonEmptyList[Cycle]]]
 
     AsString.create { a =>
       s"Animation(${sAK.show(a.animationKey)}, ${sM.show(a.material)}, ${sCL.show(a.currentCycleLabel)}, ${sNelC.show(a.cycles)})"
@@ -97,78 +65,4 @@ object Animation {
   def create(animationKey: AnimationKey, material: Material, cycle: Cycle): Animation =
     apply(animationKey, material, cycle.label, NonEmptyList(cycle))
 
-  def currentCycle(animations: Animation): Cycle =
-    animations.cycles.find(_.label === animations.currentCycleLabel).getOrElse(animations.cycles.head)
-
-  def addCycle(animations: Animation, cycle: Cycle): Animation =
-    animations.copy(cycles = cycle :: animations.cycles)
-
-  def withAnimationKey(animations: Animation, animationKey: AnimationKey): Animation =
-    animations.copy(animationKey = animationKey)
-
-  def saveMemento(animations: Animation, bindingKey: BindingKey): AnimationMemento =
-    AnimationMemento(bindingKey, animations.currentCycleLabel, animations.currentCycle.saveMemento)
-
-  def applyMemento(animations: Animation, memento: AnimationMemento): Animation =
-    animations.copy(
-      currentCycleLabel =
-        if (animations.cycles.exists(_.label === memento.currentCycleLabel)) memento.currentCycleLabel
-        else animations.currentCycleLabel,
-      cycles = animations.cycles.map { c =>
-        if (c.label === memento.currentCycleLabel) {
-          c.applyMemento(memento.currentCycleMemento)
-        } else c
-      }
-    )
-
-  def runActions(animation: Animation, actions: List[AnimationAction], gameTime: GameTime): Animation =
-    actions.foldLeft(animation) { (anim, action) =>
-      action match {
-        case ChangeCycle(newLabel) if animation.cycles.exists(_.label === newLabel) =>
-          anim.copy(currentCycleLabel = newLabel)
-
-        case ChangeCycle(_) =>
-          anim
-
-        case _ =>
-          anim.copy(
-            cycles = anim.cycles.map { c =>
-              if (c.label === anim.currentCycleLabel) {
-                c.runActions(gameTime, actions)
-              } else c
-            }
-          )
-      }
-    }
-}
-
-final class AnimationMemento(val bindingKey: BindingKey, val currentCycleLabel: CycleLabel, val currentCycleMemento: CycleMemento)
-object AnimationMemento {
-
-  implicit val animationMementoAsString: AsString[AnimationMemento] = {
-    val bk = implicitly[AsString[BindingKey]]
-    val cl = implicitly[AsString[CycleLabel]]
-    val cm = implicitly[AsString[CycleMemento]]
-
-    AsString.create { m =>
-      s"""AnimationMemento(bindingKey = ${bk.show(m.bindingKey)}, cycleLabel = ${cl.show(m.currentCycleLabel)}, cycleMemento = ${cm.show(m.currentCycleMemento)})"""
-    }
-  }
-
-  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
-  implicit val animationMementoEqualTo: EqualTo[AnimationMemento] = {
-    val bk = implicitly[EqualTo[BindingKey]]
-    val cl = implicitly[EqualTo[CycleLabel]]
-    val cm = implicitly[EqualTo[CycleMemento]]
-
-    EqualTo.create {
-      case (a, b) =>
-        bk.equal(a.bindingKey, b.bindingKey) &&
-          cl.equal(a.currentCycleLabel, b.currentCycleLabel) &&
-          cm.equal(a.currentCycleMemento, b.currentCycleMemento)
-    }
-  }
-
-  def apply(bindingKey: BindingKey, currentCycleLabel: CycleLabel, currentCycleMemento: CycleMemento): AnimationMemento =
-    new AnimationMemento(bindingKey, currentCycleLabel, currentCycleMemento)
 }

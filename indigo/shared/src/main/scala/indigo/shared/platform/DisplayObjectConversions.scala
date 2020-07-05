@@ -2,7 +2,6 @@ package indigo.shared.platform
 
 import indigo.shared.display.{DisplayObject, SpriteSheetFrame, DisplayCloneBatch}
 import indigo.shared.datatypes.{FontInfo, Rectangle, TextAlignment, FontChar}
-import indigo.shared.animation.Animation
 import indigo.shared.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import indigo.shared.IndigoLogger
 import indigo.shared.time.GameTime
@@ -29,6 +28,7 @@ import indigo.shared.assets.AssetName
 import indigo.shared.display.DisplayEffects
 import indigo.shared.datatypes.Texture
 import indigo.shared.BoundaryLocator
+import indigo.shared.animation.AnimationRef
 
 final class DisplayObjectConversions(
     boundaryLocator: BoundaryLocator,
@@ -290,7 +290,7 @@ final class DisplayObjectConversions(
     )
   }
 
-  def spriteToDisplayObject(boundaryLocator: BoundaryLocator, leaf: Sprite, assetMapping: AssetMapping, anim: Animation): DisplayObject = {
+  def spriteToDisplayObject(boundaryLocator: BoundaryLocator, leaf: Sprite, assetMapping: AssetMapping, anim: AnimationRef): DisplayObject = {
     val material = anim.currentFrame.frameMaterial.getOrElse(anim.material)
 
     val materialName = material.default.value
