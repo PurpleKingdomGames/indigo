@@ -63,7 +63,7 @@ final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var gamepadInputCapture: GamepadInputCapture = null
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
-  var gameLoop: Try[() => Unit] = null
+  var gameLoop: Long => Long => Unit = null
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var gameLoopInstance: GameLoop[StartUpData, GameModel, ViewModel] = null
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
@@ -74,7 +74,10 @@ final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
   var renderer: Renderer = null
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var startUpData: StartUpData = _
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  var platform: Platform = null
 
+  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   def start(
       config: GameConfig,
       configAsync: Future[Option[GameConfig]],
@@ -109,17 +112,8 @@ final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
 
         rebuildGameLoop(true)(assetCollection)
 
-        gameLoop match {
-          case Success(firstTick) =>
-            IndigoLogger.info("Starting main loop, there will be no more info log messages.")
-            IndigoLogger.info("You may get first occurrence error logs.")
-            firstTick()
-
-          case Failure(e) =>
-            IndigoLogger.error("Error during startup")
-            IndigoLogger.error(e.getMessage)
-
-            ()
+        if(gameLoop != null) {
+          platform.tick(gameLoop(0))
         }
       }
 
@@ -139,8 +133,7 @@ final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
 
       val time = if (firstRun) 0 else gameLoopInstance.runningTimeReference
 
-      val platform: Platform =
-        new PlatformImpl(gameConfig, accumulatedAssetCollection, globalEventStream)
+      platform = new PlatformImpl(gameConfig, accumulatedAssetCollection, globalEventStream)
 
       val startupData: Startup[StartupError, StartUpData] =
         initialise(accumulatedAssetCollection)(Dice.fromSeed(time))
@@ -151,7 +144,7 @@ final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
 
       GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
 
-      val loop: Try[Long => Unit] =
+      val loop: Try[Long => Long => Unit] =
         for {
           rendererAndAssetMapping <- platform.initialise()
           startUpSuccessData      <- GameEngine.initialisedGame(startupData)
@@ -162,19 +155,31 @@ final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
             gameConfig,
             if (firstRun) initialModel(startUpSuccessData) else gameLoopInstance.gameModelState,
             if (firstRun) initialViewModel(startUpSuccessData) else (_: GameModel) => gameLoopInstance.viewModelState,
-            frameProccessor,
-            platform.tick
+            frameProccessor
           )
         } yield {
           renderer = rendererAndAssetMapping._1
           assetMapping = rendererAndAssetMapping._2
           gameLoopInstance = initialisedGameLoop
           startUpData = startUpSuccessData
-          initialisedGameLoop.loop(time)
+          initialisedGameLoop.loop
         }
-      gameLoop = loop.map(f => (() => platform.tick(f)))
 
-      ()
+      loop match {
+        case Success(firstTick) =>
+          IndigoLogger.info("Starting main loop, there will be no more info log messages.")
+          IndigoLogger.info("You may get first occurrence error logs.")
+
+          gameLoop = firstTick
+
+          ()
+
+        case Failure(e) =>
+          IndigoLogger.error("Error during startup")
+          IndigoLogger.error(e.getMessage)
+
+          ()
+      }
     }
 
 }
@@ -206,8 +211,7 @@ object GameEngine {
       gameConfig: GameConfig,
       initialModel: GameModel,
       initialViewModel: GameModel => ViewModel,
-      frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel],
-      callTick: (Long => Unit) => Unit
+      frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel]
   ): Try[GameLoop[StartUpData, GameModel, ViewModel]] =
     Success(
       new GameLoop[StartUpData, GameModel, ViewModel](
@@ -217,8 +221,7 @@ object GameEngine {
         gameConfig,
         initialModel,
         initialViewModel(initialModel),
-        frameProccessor,
-        callTick
+        frameProccessor
       )
     )
 

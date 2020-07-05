@@ -20,8 +20,7 @@ class GameLoop[StartUpData, GameModel, ViewModel](
     gameConfig: GameConfig,
     initialModel: GameModel,
     initialViewModel: ViewModel,
-    frameProcessor: FrameProcessor[StartUpData, GameModel, ViewModel],
-    callTick: (Long => Unit) => Unit
+    frameProcessor: FrameProcessor[StartUpData, GameModel, ViewModel]
 ) {
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
@@ -105,9 +104,9 @@ class GameLoop[StartUpData, GameModel, ViewModel](
 
       }
 
-      callTick(loop(time))
+      gameEngine.platform.tick(gameEngine.gameLoop(time))
     } else
-      callTick(loop(lastUpdateTime))
+      gameEngine.platform.tick(loop(lastUpdateTime))
   }
 
 }
