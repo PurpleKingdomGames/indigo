@@ -72,8 +72,8 @@ object TestFixtures {
         Outcome(m)
     }
 
-  val viewModelUpdate: (FrameContext[Unit], GameModel, Int) => Outcome[Int] =
-    (_, _, vm) => {
+  val viewModelUpdate: (FrameContext[Unit], GameModel, Int) => GlobalEvent => Outcome[Int] =
+    (_, _, vm) => _ => {
       Outcome(vm + 10).addGlobalEvents(EventsOnlyEvent.Increment)
     }
 

@@ -44,8 +44,8 @@ final case class TestSceneA() extends Scene[Unit, TestGameModel, TestViewModel] 
   def updateSceneModel(context: FrameContext[Unit], sceneModel: TestSceneModelA): GlobalEvent => Outcome[TestSceneModelA] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 1))
 
-  def updateSceneViewModel(context: FrameContext[Unit], sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA): Outcome[TestSceneViewModelA] =
-    Outcome(TestSceneViewModelA())
+  def updateSceneViewModel(context: FrameContext[Unit], sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA): GlobalEvent => Outcome[TestSceneViewModelA] =
+    _ => Outcome(TestSceneViewModelA())
 
   def updateSceneView(context: FrameContext[Unit], sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA): SceneUpdateFragment =
     SceneUpdateFragment.empty
@@ -77,8 +77,8 @@ final case class TestSceneB() extends Scene[Unit, TestGameModel, TestViewModel] 
   def updateSceneModel(context: FrameContext[Unit], sceneModel: TestSceneModelB): GlobalEvent => Outcome[TestSceneModelB] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 10))
 
-  def updateSceneViewModel(context: FrameContext[Unit], sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB): Outcome[TestSceneViewModelB] =
-    Outcome(TestSceneViewModelB())
+  def updateSceneViewModel(context: FrameContext[Unit], sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB): GlobalEvent => Outcome[TestSceneViewModelB] =
+    _ => Outcome(TestSceneViewModelB())
 
   def updateSceneView(context: FrameContext[Unit], sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB): SceneUpdateFragment =
     SceneUpdateFragment.empty

@@ -12,14 +12,14 @@ import indigo.shared.FrameContext
 
 final class StandardFrameProcessor[StartUpData, Model, ViewModel](
     modelUpdate: (FrameContext[StartUpData], Model) => GlobalEvent => Outcome[Model],
-    viewModelUpdate: (FrameContext[StartUpData], Model, ViewModel) => Outcome[ViewModel],
+    viewModelUpdate: (FrameContext[StartUpData], Model, ViewModel) => GlobalEvent => Outcome[ViewModel],
     viewUpdate: (FrameContext[StartUpData], Model, ViewModel) => SceneUpdateFragment
 ) extends FrameProcessor[StartUpData, Model, ViewModel] {
 
   def updateModel(frameContext: FrameContext[StartUpData], model: Model): GlobalEvent => Outcome[Model] =
     modelUpdate(frameContext, model)
 
-  def updateViewModel(frameContext: FrameContext[StartUpData], model: Model, viewModel: ViewModel): Outcome[ViewModel] =
+  def updateViewModel(frameContext: FrameContext[StartUpData], model: Model, viewModel: ViewModel): GlobalEvent => Outcome[ViewModel] =
     viewModelUpdate(frameContext, model, viewModel)
 
   def updateView(frameContext: FrameContext[StartUpData], model: Model, viewModel: ViewModel): SceneUpdateFragment =
@@ -38,14 +38,19 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
 
     val frameContext = new FrameContext[StartUpData](gameTime, dice, inputState, boundaryLocator, startUpData)
 
-    val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
-      acc.flatMapState { next =>
-        updateModel(frameContext, next)(e)
+    val updatedModel: Outcome[Model] =
+      globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
+        acc.flatMapState { next =>
+          updateModel(frameContext, next)(e)
+        }
       }
-    }
 
     val updatedViewModel: Outcome[ViewModel] =
-      updateViewModel(frameContext, updatedModel.state, viewModel)
+      globalEvents.foldLeft(Outcome(viewModel)) { (acc, e) =>
+        acc.flatMapState { next =>
+          updateViewModel(frameContext, updatedModel.state, next)(e)
+        }
+      }
 
     val view: SceneUpdateFragment =
       updateView(frameContext, updatedModel.state, updatedViewModel.state)

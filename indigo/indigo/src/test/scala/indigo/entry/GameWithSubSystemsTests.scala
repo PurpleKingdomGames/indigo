@@ -16,6 +16,7 @@ import indigo.shared.FontRegister
 import indigo.shared.FrameContext
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.subsystems.SubSystemFrameContext
+import indigo.shared.events.FrameTick
 
 object GameWithSubSystemsTests extends TestSuite {
 
@@ -38,7 +39,7 @@ object GameWithSubSystemsTests extends TestSuite {
       }
 
       "should be able to update the view model" - {
-        val outcome = GameWithSubSystems.updateViewModel(viewModelUpdate)(context, model, 0)
+        val outcome = GameWithSubSystems.updateViewModel(viewModelUpdate)(context, model, 0)(FrameTick)
         outcome.state ==> 10
         outcome.globalEvents.length ==> 1
         outcome.globalEvents.contains(EventsOnlyEvent.Increment) ==> true
@@ -71,8 +72,8 @@ object GameTestFixtures {
   val modelUpdate: (FrameContext[Unit], GameModel) => GlobalEvent => Outcome[GameModel] =
     (_, m) => _ => Outcome(m).addGlobalEvents(EventsOnlyEvent.Decrement)
 
-  val viewModelUpdate: (FrameContext[Unit], GameModel, Int) => Outcome[Int] =
-    (_, _, viewModel) => Outcome(viewModel + 10).addGlobalEvents(EventsOnlyEvent.Increment)
+  val viewModelUpdate: (FrameContext[Unit], GameModel, Int) => GlobalEvent => Outcome[Int] =
+    (_, _, viewModel) => _ => Outcome(viewModel + 10).addGlobalEvents(EventsOnlyEvent.Increment)
 
   final case class GameModel(text: String)
 

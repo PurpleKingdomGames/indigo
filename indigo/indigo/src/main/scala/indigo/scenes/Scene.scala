@@ -18,7 +18,7 @@ trait Scene[StartUpData, GameModel, ViewModel] {
   val sceneSubSystems: Set[SubSystem]
 
   def updateSceneModel(context: FrameContext[StartUpData], sceneModel: SceneModel): GlobalEvent => Outcome[SceneModel]
-  def updateSceneViewModel(context: FrameContext[StartUpData], sceneModel: SceneModel, sceneViewModel: SceneViewModel): Outcome[SceneViewModel]
+  def updateSceneViewModel(context: FrameContext[StartUpData], sceneModel: SceneModel, sceneViewModel: SceneViewModel): GlobalEvent => Outcome[SceneViewModel]
   def updateSceneView(context: FrameContext[StartUpData], sceneModel: SceneModel, sceneViewModel: SceneViewModel): SceneUpdateFragment
 
 }
@@ -30,10 +30,11 @@ object Scene {
         .updateSceneModel(context, scene.sceneModelLens.get(gameModel))(e)
         .mapState(scene.sceneModelLens.set(gameModel, _))
 
-  def updateViewModel[SD, GM, VM](scene: Scene[SD, GM, VM], context: FrameContext[SD], model: GM, viewModel: VM): Outcome[VM] =
-    scene
-      .updateSceneViewModel(context, scene.sceneModelLens.get(model), scene.sceneViewModelLens.get(viewModel))
-      .mapState(scene.sceneViewModelLens.set(viewModel, _))
+  def updateViewModel[SD, GM, VM](scene: Scene[SD, GM, VM], context: FrameContext[SD], model: GM, viewModel: VM): GlobalEvent => Outcome[VM] =
+    e =>
+      scene
+        .updateSceneViewModel(context, scene.sceneModelLens.get(model), scene.sceneViewModelLens.get(viewModel))(e)
+        .mapState(scene.sceneViewModelLens.set(viewModel, _))
 
   def updateView[SD, GM, VM](scene: Scene[SD, GM, VM], context: FrameContext[SD], model: GM, viewModel: VM): SceneUpdateFragment =
     scene.updateSceneView(context, scene.sceneModelLens.get(model), scene.sceneViewModelLens.get(viewModel))

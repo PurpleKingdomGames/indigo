@@ -28,7 +28,7 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
 
   def updateModel(context: FrameContext[StartUpData], model: Model): GlobalEvent => Outcome[Model]
 
-  def updateViewModel(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): Outcome[ViewModel]
+  def updateViewModel(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): GlobalEvent => Outcome[ViewModel]
 
   def present(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): SceneUpdateFragment
 

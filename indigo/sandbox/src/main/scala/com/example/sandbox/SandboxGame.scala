@@ -77,33 +77,37 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
   def updateModel(context: FrameContext[SandboxStartupData], model: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] =
     SandboxModel.updateModel(model)
 
-  def updateViewModel(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SandboxViewModel] = {
-    val updateOffset: Point =
-      context.inputState.gamepad.dpad match {
-        case GamepadDPad(true, _, _, _) =>
-          viewModel.offset + Point(0, -1)
+  def updateViewModel(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): GlobalEvent => Outcome[SandboxViewModel] = {
+    case FrameTick =>
+      val updateOffset: Point =
+        context.inputState.gamepad.dpad match {
+          case GamepadDPad(true, _, _, _) =>
+            viewModel.offset + Point(0, -1)
 
-        case GamepadDPad(_, true, _, _) =>
-          viewModel.offset + Point(0, 1)
+          case GamepadDPad(_, true, _, _) =>
+            viewModel.offset + Point(0, 1)
 
-        case GamepadDPad(_, _, true, _) =>
-          viewModel.offset + Point(-1, 0)
+          case GamepadDPad(_, _, true, _) =>
+            viewModel.offset + Point(-1, 0)
 
-        case GamepadDPad(_, _, _, true) =>
-          viewModel.offset + Point(1, 0)
+          case GamepadDPad(_, _, _, true) =>
+            viewModel.offset + Point(1, 0)
 
-        case _ =>
-          viewModel.offset
-      }
+          case _ =>
+            viewModel.offset
+        }
 
-    //more stuff
-    Outcome(
-      viewModel.copy(
-        offset = updateOffset,
-        single = viewModel.single.update(context),
-        multi = viewModel.multi.update(context)
+      //more stuff
+      Outcome(
+        viewModel.copy(
+          offset = updateOffset,
+          single = viewModel.single.update(context),
+          multi = viewModel.multi.update(context)
+        )
       )
-    )
+
+    case _ =>
+      Outcome(viewModel)
   }
 
   def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): SceneUpdateFragment =

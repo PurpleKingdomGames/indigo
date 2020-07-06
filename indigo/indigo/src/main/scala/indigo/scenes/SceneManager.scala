@@ -59,11 +59,11 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
       }
   }
 
-  def updateViewModel(frameContext: FrameContext[StartUpData], model: GameModel, viewModel: ViewModel): Outcome[ViewModel] =
+  def updateViewModel(frameContext: FrameContext[StartUpData], model: GameModel, viewModel: ViewModel): GlobalEvent => Outcome[ViewModel] =
     scenes.find(_.name === finderInstance.current.name) match {
       case None =>
         IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
-        Outcome(viewModel)
+        _ => Outcome(viewModel)
 
       case Some(scene) =>
         Scene.updateViewModel(scene, frameContext, model, viewModel)
