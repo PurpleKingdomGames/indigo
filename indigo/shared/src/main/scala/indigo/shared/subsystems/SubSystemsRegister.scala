@@ -56,7 +56,7 @@ final class SubSystemsRegister(subSystems: List[SubSystem]) {
   def render(frameContext: SubSystemFrameContext): SceneUpdateFragment =
     registeredSubSystems
       .map { rss =>
-        rss.subSystem.render(
+        rss.subSystem.present(
           frameContext,
           stateMap(rss.id).asInstanceOf[rss.subSystem.SubSystemModel]
         )

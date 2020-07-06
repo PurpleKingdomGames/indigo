@@ -12,32 +12,30 @@ trait Scene[StartUpData, GameModel, ViewModel] {
   type SceneViewModel
 
   val name: SceneName
-  val sceneModelLens: Lens[GameModel, SceneModel]
-  val sceneViewModelLens: Lens[ViewModel, SceneViewModel]
+  val modelLens: Lens[GameModel, SceneModel]
+  val viewModelLens: Lens[ViewModel, SceneViewModel]
+  val subSystems: Set[SubSystem]
 
-  val sceneSubSystems: Set[SubSystem]
-
-  def updateSceneModel(context: FrameContext[StartUpData], sceneModel: SceneModel): GlobalEvent => Outcome[SceneModel]
-  def updateSceneViewModel(context: FrameContext[StartUpData], sceneModel: SceneModel, sceneViewModel: SceneViewModel): GlobalEvent => Outcome[SceneViewModel]
-  def updateSceneView(context: FrameContext[StartUpData], sceneModel: SceneModel, sceneViewModel: SceneViewModel): SceneUpdateFragment
-
+  def updateModel(context: FrameContext[StartUpData], model: SceneModel): GlobalEvent => Outcome[SceneModel]
+  def updateViewModel(context: FrameContext[StartUpData], model: SceneModel, viewModel: SceneViewModel): GlobalEvent => Outcome[SceneViewModel]
+  def present(context: FrameContext[StartUpData], model: SceneModel, viewModel: SceneViewModel): SceneUpdateFragment
 }
 object Scene {
 
   def updateModel[SD, GM, VM](scene: Scene[SD, GM, VM], context: FrameContext[SD], gameModel: GM): GlobalEvent => Outcome[GM] =
     e =>
       scene
-        .updateSceneModel(context, scene.sceneModelLens.get(gameModel))(e)
-        .mapState(scene.sceneModelLens.set(gameModel, _))
+        .updateModel(context, scene.modelLens.get(gameModel))(e)
+        .mapState(scene.modelLens.set(gameModel, _))
 
   def updateViewModel[SD, GM, VM](scene: Scene[SD, GM, VM], context: FrameContext[SD], model: GM, viewModel: VM): GlobalEvent => Outcome[VM] =
     e =>
       scene
-        .updateSceneViewModel(context, scene.sceneModelLens.get(model), scene.sceneViewModelLens.get(viewModel))(e)
-        .mapState(scene.sceneViewModelLens.set(viewModel, _))
+        .updateViewModel(context, scene.modelLens.get(model), scene.viewModelLens.get(viewModel))(e)
+        .mapState(scene.viewModelLens.set(viewModel, _))
 
   def updateView[SD, GM, VM](scene: Scene[SD, GM, VM], context: FrameContext[SD], model: GM, viewModel: VM): SceneUpdateFragment =
-    scene.updateSceneView(context, scene.sceneModelLens.get(model), scene.sceneViewModelLens.get(viewModel))
+    scene.present(context, scene.modelLens.get(model), scene.viewModelLens.get(viewModel))
 
 }
 

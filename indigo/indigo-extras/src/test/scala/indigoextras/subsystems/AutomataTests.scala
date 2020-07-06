@@ -94,7 +94,7 @@ object AutomataTests extends TestSuite {
               .state
 
           automata
-            .render(ctx, nextState)
+            .present(ctx, nextState)
             .gameLayer
             .nodes
             .collect { case g: Graphic => g }

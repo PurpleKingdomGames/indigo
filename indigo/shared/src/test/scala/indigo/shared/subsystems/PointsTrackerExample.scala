@@ -31,7 +31,7 @@ final case class PointsTrackerExample(startingPoints: Int) extends SubSystem {
         .addGlobalEvents(GameOver)
   }
 
-  def render(context: SubSystemFrameContext, points: Int): SceneUpdateFragment =
+  def present(context: SubSystemFrameContext, points: Int): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(Text(points.toString, 0, 0, 1, FontKey("")))
 }

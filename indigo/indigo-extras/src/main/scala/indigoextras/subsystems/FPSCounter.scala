@@ -19,7 +19,7 @@ object FPSCounter {
       _eventFilter = eventFilter,
       _initialModel = FPSCounterState.default,
       _update = update(targetFPS),
-      _render = render(fontKey, position, targetFPS)
+      _present = present(fontKey, position, targetFPS)
     )
 
   lazy val eventFilter: GlobalEvent => Option[GlobalEvent] = {
@@ -42,7 +42,7 @@ object FPSCounter {
           Outcome(model.copy(frameCountSinceInterval = model.frameCountSinceInterval + 1))
     }
 
-  def render(fontKey: FontKey, position: Point, targetFPS: Int): (SubSystemFrameContext, FPSCounterState) => SceneUpdateFragment =
+  def present(fontKey: FontKey, position: Point, targetFPS: Int): (SubSystemFrameContext, FPSCounterState) => SceneUpdateFragment =
     (_, model) => {
       SceneUpdateFragment.empty
         .addUiLayerNodes(

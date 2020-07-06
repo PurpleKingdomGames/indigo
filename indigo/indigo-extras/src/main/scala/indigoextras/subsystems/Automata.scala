@@ -104,7 +104,7 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
       Outcome(state)
   }
 
-  def render(frameContext: SubSystemFrameContext, state: AutomataState): SceneUpdateFragment =
+  def present(frameContext: SubSystemFrameContext, state: AutomataState): SceneUpdateFragment =
     layer.emptyScene(Automata.renderNoLayer(state.pool, frameContext.gameTime))
 }
 object Automata {

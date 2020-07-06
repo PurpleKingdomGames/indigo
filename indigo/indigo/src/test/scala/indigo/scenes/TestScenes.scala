@@ -28,26 +28,26 @@ final case class TestSceneA() extends Scene[Unit, TestGameModel, TestViewModel] 
 
   val name: SceneName = SceneName("test scene a")
 
-  val sceneModelLens: Lens[TestGameModel, TestSceneModelA] =
+  val modelLens: Lens[TestGameModel, TestSceneModelA] =
     Lens(
       m => m.sceneA,
       (m, mm) => m.copy(sceneA = mm)
     )
-  val sceneViewModelLens: Lens[TestViewModel, TestSceneViewModelA] =
+  val viewModelLens: Lens[TestViewModel, TestSceneViewModelA] =
     Lens(
       m => m.sceneA,
       (m, mm) => m.copy(sceneA = mm)
     )
 
-  val sceneSubSystems: Set[SubSystem] = Set()
+  val subSystems: Set[SubSystem] = Set()
 
-  def updateSceneModel(context: FrameContext[Unit], sceneModel: TestSceneModelA): GlobalEvent => Outcome[TestSceneModelA] =
+  def updateModel(context: FrameContext[Unit], sceneModel: TestSceneModelA): GlobalEvent => Outcome[TestSceneModelA] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 1))
 
-  def updateSceneViewModel(context: FrameContext[Unit], sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA): GlobalEvent => Outcome[TestSceneViewModelA] =
+  def updateViewModel(context: FrameContext[Unit], sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA): GlobalEvent => Outcome[TestSceneViewModelA] =
     _ => Outcome(TestSceneViewModelA())
 
-  def updateSceneView(context: FrameContext[Unit], sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA): SceneUpdateFragment =
+  def present(context: FrameContext[Unit], sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA): SceneUpdateFragment =
     SceneUpdateFragment.empty
 }
 
@@ -60,27 +60,27 @@ final case class TestSceneB() extends Scene[Unit, TestGameModel, TestViewModel] 
 
   val name: SceneName = SceneName("test scene b")
 
-  val sceneModelLens: Lens[TestGameModel, TestSceneModelB] =
+  val modelLens: Lens[TestGameModel, TestSceneModelB] =
     Lens(
       m => m.sceneB,
       (m, mm) => m.copy(sceneB = mm)
     )
 
-  val sceneViewModelLens: Lens[TestViewModel, TestSceneViewModelB] =
+  val viewModelLens: Lens[TestViewModel, TestSceneViewModelB] =
     Lens(
       m => m.sceneB,
       (m, mm) => m.copy(sceneB = mm)
     )
 
-  val sceneSubSystems: Set[SubSystem] = Set()
+  val subSystems: Set[SubSystem] = Set()
 
-  def updateSceneModel(context: FrameContext[Unit], sceneModel: TestSceneModelB): GlobalEvent => Outcome[TestSceneModelB] =
+  def updateModel(context: FrameContext[Unit], sceneModel: TestSceneModelB): GlobalEvent => Outcome[TestSceneModelB] =
     _ => Outcome(sceneModel.copy(count = sceneModel.count + 10))
 
-  def updateSceneViewModel(context: FrameContext[Unit], sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB): GlobalEvent => Outcome[TestSceneViewModelB] =
+  def updateViewModel(context: FrameContext[Unit], sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB): GlobalEvent => Outcome[TestSceneViewModelB] =
     _ => Outcome(TestSceneViewModelB())
 
-  def updateSceneView(context: FrameContext[Unit], sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB): SceneUpdateFragment =
+  def present(context: FrameContext[Unit], sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB): SceneUpdateFragment =
     SceneUpdateFragment.empty
 }
 

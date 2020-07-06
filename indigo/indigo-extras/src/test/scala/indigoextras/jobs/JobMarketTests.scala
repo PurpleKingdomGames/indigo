@@ -75,12 +75,12 @@ object JobMarketTests extends TestSuite {
           val job: Job          = SampleJobs.WanderTo(10)
           val market: JobMarket = JobMarket.subSystem
 
-          market.render(context, List(job)).gameLayer.nodes.isEmpty ==> true
-          market.render(context, List(job)).lightingLayer.nodes.isEmpty ==> true
-          market.render(context, List(job)).uiLayer.nodes.isEmpty ==> true
-          market.render(context, List(job)).globalEvents.isEmpty ==> true
-          market.render(context, List(job)).ambientLight === RGBA.Normal ==> true
-          market.render(context, List(job)).audio ==> SceneAudio.None
+          market.present(context, List(job)).gameLayer.nodes.isEmpty ==> true
+          market.present(context, List(job)).lightingLayer.nodes.isEmpty ==> true
+          market.present(context, List(job)).uiLayer.nodes.isEmpty ==> true
+          market.present(context, List(job)).globalEvents.isEmpty ==> true
+          market.present(context, List(job)).ambientLight === RGBA.Normal ==> true
+          market.present(context, List(job)).audio ==> SceneAudio.None
         }
 
         "should have an empty subsystem representation" - {

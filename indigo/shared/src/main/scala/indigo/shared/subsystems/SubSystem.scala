@@ -14,7 +14,7 @@ trait SubSystem {
 
   def update(context: SubSystemFrameContext, model: SubSystemModel): EventType => Outcome[SubSystemModel]
 
-  def render(context: SubSystemFrameContext, model: SubSystemModel): SceneUpdateFragment
+  def present(context: SubSystemFrameContext, model: SubSystemModel): SceneUpdateFragment
 }
 
 object SubSystem {
@@ -23,7 +23,7 @@ object SubSystem {
       _eventFilter: GlobalEvent => Option[Event],
       _initialModel: Model,
       _update: (SubSystemFrameContext, Model) => Event => Outcome[Model],
-      _render: (SubSystemFrameContext, Model) => SceneUpdateFragment
+      _present: (SubSystemFrameContext, Model) => SceneUpdateFragment
   ): SubSystem =
     new SubSystem {
       type EventType      = Event
@@ -38,8 +38,8 @@ object SubSystem {
       def update(context: SubSystemFrameContext, model: SubSystemModel): EventType => Outcome[SubSystemModel] =
         _update(context, model)
 
-      def render(context: SubSystemFrameContext, model: SubSystemModel): SceneUpdateFragment =
-        _render(context, model)
+      def present(context: SubSystemFrameContext, model: SubSystemModel): SceneUpdateFragment =
+        _present(context, model)
     }
 
 }

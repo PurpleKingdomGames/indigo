@@ -62,7 +62,7 @@ object AssetBundleLoader extends SubSystem {
       Outcome(tracker)
   }
 
-  def render(frameContext: SubSystemFrameContext, model: AssetBundleTracker): SceneUpdateFragment =
+  def present(frameContext: SubSystemFrameContext, model: AssetBundleTracker): SceneUpdateFragment =
     SceneUpdateFragment.empty
 
   private def createBeginLoadingOutcome(key: BindingKey, assets: Set[AssetType], tracker: AssetBundleTracker): Outcome[AssetBundleTracker] = {

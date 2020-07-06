@@ -20,7 +20,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
   private val subSystemStates: Map[SceneName, SubSystemsRegister] =
     scenes.toList.map { s =>
       val r = new SubSystemsRegister(Nil)
-      r.register(s.sceneSubSystems.toList)
+      r.register(s.subSystems.toList)
       (s.name -> r)
     }.toMap
 

@@ -104,7 +104,7 @@ object GameTestFixtures {
         Outcome(count)
     }
 
-    def render(context: SubSystemFrameContext, count: Int): SceneUpdateFragment =
+    def present(context: SubSystemFrameContext, count: Int): SceneUpdateFragment =
       SceneUpdateFragment.empty
 
   }
