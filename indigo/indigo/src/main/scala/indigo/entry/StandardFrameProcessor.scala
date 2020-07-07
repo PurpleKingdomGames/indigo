@@ -10,8 +10,11 @@ import indigo.gameengine.FrameProcessor
 import indigo.shared.BoundaryLocator
 import indigo.shared.FrameContext
 import indigo.shared.events.EventFilters
+import indigo.shared.subsystems.SubSystemsRegister
+import indigo.shared.subsystems.SubSystemFrameContext._
 
 final class StandardFrameProcessor[StartUpData, Model, ViewModel](
+    subSystemsRegister: SubSystemsRegister,
     eventFilters: EventFilters,
     modelUpdate: (FrameContext[StartUpData], Model) => GlobalEvent => Outcome[Model],
     viewModelUpdate: (FrameContext[StartUpData], Model, ViewModel) => GlobalEvent => Outcome[ViewModel],
@@ -41,6 +44,10 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
           }
         }
 
+    globalEvents.foreach { e =>
+      subSystemsRegister.update(frameContext.forSubSystems)(e)
+    }
+
     val updatedViewModel: Outcome[ViewModel] =
       globalEvents
         .map(eventFilters.viewModelFilter)
@@ -52,7 +59,8 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
         }
 
     val view: SceneUpdateFragment =
-      viewUpdate(frameContext, updatedModel.state, updatedViewModel.state)
+      viewUpdate(frameContext, updatedModel.state, updatedViewModel.state) |+|
+        subSystemsRegister.present(frameContext.forSubSystems)
 
     Outcome.combine3(updatedModel, updatedViewModel, Outcome(view))
   }

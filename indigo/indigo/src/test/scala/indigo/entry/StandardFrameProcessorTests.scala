@@ -12,6 +12,7 @@ import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 import indigo.shared.FrameContext
 import indigo.shared.events.EventFilters
+import indigo.shared.subsystems.SubSystemsRegister
 
 object StandardFrameProcessorTests extends TestSuite {
 
@@ -82,7 +83,7 @@ object TestFixtures {
     (_, _, _) => SceneUpdateFragment.empty
 
   val standardFrameProcessor: StandardFrameProcessor[Unit, GameModel, Int] = {
-    new StandardFrameProcessor(EventFilters.NoFilter, modelUpdate, viewModelUpdate, viewUpdate)
+    new StandardFrameProcessor(new SubSystemsRegister(Nil), EventFilters.NoFilter, modelUpdate, viewModelUpdate, viewUpdate)
   }
 
   final case class GameModel(count: Int)

@@ -7,6 +7,7 @@ import indigo.entry.StandardFrameProcessor
 // Indigo is Scala.js only at the moment, revisit if/when we go to the JVM
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import indigo.shared.subsystems.SubSystemsRegister
 
 /**
   * A trait representing a minimal set of functions to get your game running
@@ -36,6 +37,7 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher {
 
     val frameProcessor: StandardFrameProcessor[StartUpData, Model, Unit] =
       new StandardFrameProcessor(
+        new SubSystemsRegister(Nil),
         EventFilters.Default,
         (ctx, m) => (e: GlobalEvent) => updateModel(ctx, m)(e),
         updateViewModel,

@@ -2,7 +2,6 @@ package indigo
 
 import indigo.gameengine.GameEngine
 import indigo.shared.subsystems.SubSystemsRegister
-import indigo.entry.GameWithSubSystems
 import indigo.entry.StandardFrameProcessor
 
 // Indigo is Scala.js only at the moment, revisit if/when we go to the JVM
@@ -41,10 +40,11 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
 
     val frameProcessor: StandardFrameProcessor[StartUpData, Model, ViewModel] =
       new StandardFrameProcessor(
+        subSystemsRegister,
         eventFilters,
-        GameWithSubSystems.update(subSystemsRegister, updateModel),
+        updateModel,
         updateViewModel,
-        GameWithSubSystems.present(subSystemsRegister, present)
+        present
       )
 
     new GameEngine[StartUpData, StartupErrors, Model, ViewModel](
