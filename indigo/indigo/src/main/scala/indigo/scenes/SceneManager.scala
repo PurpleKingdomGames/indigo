@@ -9,6 +9,7 @@ import indigo.shared.EqualTo._
 import indigo.shared.subsystems.SubSystemsRegister
 import indigo.shared.FrameContext
 import indigo.shared.subsystems.SubSystemFrameContext._
+import indigo.shared.events.EventFilters
 
 class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]], scenesFinder: SceneFinder) {
 
@@ -89,22 +90,13 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
   val defaultFilter: GlobalEvent => Option[GlobalEvent] =
     (e: GlobalEvent) => Some(e)
 
-  def modelEventFilter: GlobalEvent => Option[GlobalEvent] =
+  def eventFilters: EventFilters =
     scenes.find(_.name === finderInstance.current.name) match {
       case None =>
-        defaultFilter
+        EventFilters.Default
 
       case Some(value) =>
-        value.modelEventFilter
-    }
-
-  def viewModelEventFilter: GlobalEvent => Option[GlobalEvent] =
-    scenes.find(_.name === finderInstance.current.name) match {
-      case None =>
-        defaultFilter
-
-      case Some(value) =>
-        value.viewModelEventFilter
+        value.eventFilters
     }
 
 }

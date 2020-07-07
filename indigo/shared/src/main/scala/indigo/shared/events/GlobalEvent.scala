@@ -15,6 +15,22 @@ import indigo.shared.ClearColor
   */
 trait GlobalEvent
 
+trait SubSystemEvent extends GlobalEvent
+
+sealed trait ViewEvent extends GlobalEvent with Product with Serializable
+
+/**
+  * Tags events for input devices like mice and keyboards.
+  * `InputEvent`s work in partnership with `InputState`. Events represent
+  * a one time thing that happened since the last frame, while the state
+  * represents the _ongoing_ state of an input.
+  *
+  * For example there is a mouse Move event i.e. "The mouse was moved" and
+  * there is also the mouse position on the `InputState` i.e. "Where is the
+  * mouse now?"
+  */
+sealed trait InputEvent extends GlobalEvent with Product with Serializable
+
 /**
   * Event to inform the game which rendering choices are active.
   * For example a view may wish to behave differently depending on the rendering technology available.
@@ -28,33 +44,21 @@ final case class RendererDetails(
     renderingTechnology: RenderingTechnology,
     clearColor: ClearColor,
     magnification: Int
-) extends GlobalEvent
+) extends ViewEvent
 
 /**
   * A special event that happens once per frame, at the end of the frame.
   * Useful for updating anything in your model that "just happens" on every
   * frame without any other prompting event. Like gravity.
   */
-case object FrameTick extends GlobalEvent
+case object FrameTick extends ViewEvent
 
 /**
   * Fired whenever the game window changes size, so that the view can respond.
   *
   * @param gameViewPort The actual size in pixels, you can ask it to apply magnification.
   */
-final case class ViewportResize(gameViewPort: GameViewport) extends GlobalEvent
-
-/**
-  * Tags events for input devices like mice and keyboards.
-  * `InputEvent`s work in partnership with `InputState`. Events represent
-  * a one time thing that happened since the last frame, while the state
-  * represents the _ongoing_ state of an input.
-  *
-  * For example there is a mouse Move event i.e. "The mouse was moved" and
-  * there is also the mouse position on the `InputState` i.e. "Where is the
-  * mouse now?"
-  */
-sealed trait InputEvent extends GlobalEvent with Product with Serializable
+final case class ViewportResize(gameViewPort: GameViewport) extends ViewEvent
 
 /**
   * Represents all mouse events

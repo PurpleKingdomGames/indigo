@@ -6,6 +6,7 @@ import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.EqualTo
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.FrameContext
+import indigo.shared.events.EventFilters
 
 trait Scene[StartUpData, GameModel, ViewModel] {
   type SceneModel
@@ -14,8 +15,7 @@ trait Scene[StartUpData, GameModel, ViewModel] {
   def name: SceneName
   def modelLens: Lens[GameModel, SceneModel]
   def viewModelLens: Lens[ViewModel, SceneViewModel]
-  def modelEventFilter: GlobalEvent => Option[GlobalEvent]
-  def viewModelEventFilter: GlobalEvent => Option[GlobalEvent]
+  def eventFilters: EventFilters
   def subSystems: Set[SubSystem]
 
   def updateModel(context: FrameContext[StartUpData], model: SceneModel): GlobalEvent => Outcome[SceneModel]

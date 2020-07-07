@@ -1,6 +1,5 @@
 package indigo
 
-import indigo._
 import indigo.scenes.{SceneManager, SceneName, Scene}
 import indigo.gameengine.GameEngine
 import indigo.shared.subsystems.SubSystemsRegister
@@ -91,8 +90,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
 
     val frameProcessor: StandardFrameProcessor[StartUpData, Model, ViewModel] = {
       new StandardFrameProcessor(
-        sceneManager.modelEventFilter,
-        sceneManager.viewModelEventFilter,
+        sceneManager.eventFilters,
         GameWithSubSystems.update(subSystemsRegister, sceneManager.updateModel),
         GameWithSubSystems.updateViewModel(sceneManager.updateViewModel),
         GameWithSubSystems.present(subSystemsRegister, sceneManager.updateView)

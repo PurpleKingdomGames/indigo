@@ -34,12 +34,12 @@ object SceneManagerTests extends TestSuite {
             List(TestSceneEvent1, TestSceneEvent2, TestSceneEvent3, TestSceneEvent4)
 
           val sceneManager1 = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
-          val actual1 = events.map(sceneManager1.modelEventFilter).collect { case Some(e) => e }
+          val actual1 = events.map(sceneManager1.eventFilters.modelFilter).collect { case Some(e) => e }
           actual1.length ==> 1
           actual1.head ==> TestSceneEvent1
 
           val sceneManager2 = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder.forward)
-          val actual2 = events.map(sceneManager2.modelEventFilter).collect { case Some(e) => e }
+          val actual2 = events.map(sceneManager2.eventFilters.modelFilter).collect { case Some(e) => e }
           actual2.length ==> 2
           actual2 ==> List(TestSceneEvent2, TestSceneEvent3)
         }
@@ -49,12 +49,12 @@ object SceneManagerTests extends TestSuite {
             List(TestSceneEvent1, TestSceneEvent2, TestSceneEvent3, TestSceneEvent4)
 
           val sceneManager1 = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
-          val actual1 = events.map(sceneManager1.viewModelEventFilter).collect { case Some(e) => e }
+          val actual1 = events.map(sceneManager1.eventFilters.viewModelFilter).collect { case Some(e) => e }
           actual1.length ==> 1
           actual1.head ==> TestSceneEvent2
 
           val sceneManager2 = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder.forward)
-          val actual2 = events.map(sceneManager2.viewModelEventFilter).collect { case Some(e) => e }
+          val actual2 = events.map(sceneManager2.eventFilters.viewModelFilter).collect { case Some(e) => e }
           actual2.length ==> 2
           actual2 ==> List(TestSceneEvent1, TestSceneEvent4)
         }

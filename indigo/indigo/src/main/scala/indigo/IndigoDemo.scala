@@ -1,6 +1,5 @@
 package indigo
 
-import indigo._
 import indigo.gameengine.GameEngine
 import indigo.shared.subsystems.SubSystemsRegister
 import indigo.entry.GameWithSubSystems
@@ -18,8 +17,7 @@ import scala.concurrent.Future
   */
 trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
 
-  def modelEventFilter: GlobalEvent => Option[GlobalEvent]
-  def viewModelEventFilter: GlobalEvent => Option[GlobalEvent]
+  def eventFilters: EventFilters
 
   def boot(flags: Map[String, String]): BootResult[BootData]
 
@@ -43,8 +41,7 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
 
     val frameProcessor: StandardFrameProcessor[StartUpData, Model, ViewModel] =
       new StandardFrameProcessor(
-        modelEventFilter,
-        viewModelEventFilter,
+        eventFilters,
         GameWithSubSystems.update(subSystemsRegister, updateModel),
         GameWithSubSystems.updateViewModel(updateViewModel),
         GameWithSubSystems.present(subSystemsRegister, present)

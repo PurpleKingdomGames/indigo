@@ -86,6 +86,4 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
     */
   val noRender: indigo.shared.scenegraph.SceneUpdateFragment = indigo.shared.scenegraph.SceneUpdateFragment.empty
 
-  val noFilter: GlobalEvent => Option[GlobalEvent] = (e: GlobalEvent) => Some(e)
-
 }

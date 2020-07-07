@@ -2,6 +2,7 @@ package indigoextras.subsystems
 
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.events.GlobalEvent
+import indigo.shared.events.SubSystemEvent
 import indigo.shared.Outcome
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.assets.AssetType
@@ -109,7 +110,7 @@ object AssetBundleLoader extends SubSystem {
   }
 }
 
-sealed trait AssetBundleLoaderEvent extends GlobalEvent
+sealed trait AssetBundleLoaderEvent extends SubSystemEvent
 object AssetBundleLoaderEvent {
   // commands
   final case class Load(key: BindingKey, assets: Set[AssetType]) extends AssetBundleLoaderEvent

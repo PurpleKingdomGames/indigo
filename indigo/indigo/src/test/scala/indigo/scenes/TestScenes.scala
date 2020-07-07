@@ -8,6 +8,7 @@ import indigo.shared.dice.Dice
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.BoundaryLocator
 import indigo.shared.FrameContext
+import indigo.shared.events.EventFilters
 
 object TestScenes {
 
@@ -39,20 +40,27 @@ final case class TestSceneA() extends Scene[Unit, TestGameModel, TestViewModel] 
       (m, mm) => m.copy(sceneA = mm)
     )
 
-  val modelEventFilter: GlobalEvent => Option[GlobalEvent] = {
+  private val modelEventFilter: GlobalEvent => Option[GlobalEvent] = {
     case TestSceneEvent1 => Some(TestSceneEvent1)
     case TestSceneEvent2 => None
     case TestSceneEvent3 => None
     case TestSceneEvent4 => None
-    case e => Some(e)
+    case e               => Some(e)
   }
-  val viewModelEventFilter: GlobalEvent => Option[GlobalEvent] = {
+
+  private val viewModelEventFilter: GlobalEvent => Option[GlobalEvent] = {
     case TestSceneEvent1 => None
     case TestSceneEvent2 => Some(TestSceneEvent2)
     case TestSceneEvent3 => None
     case TestSceneEvent4 => None
-    case e => Some(e)
+    case e               => Some(e)
   }
+
+  val eventFilters: EventFilters =
+    EventFilters(
+      modelEventFilter,
+      viewModelEventFilter
+    )
 
   val subSystems: Set[SubSystem] = Set()
 
@@ -87,20 +95,27 @@ final case class TestSceneB() extends Scene[Unit, TestGameModel, TestViewModel] 
       (m, mm) => m.copy(sceneB = mm)
     )
 
-  val modelEventFilter: GlobalEvent => Option[GlobalEvent] = {
+  private val modelEventFilter: GlobalEvent => Option[GlobalEvent] = {
     case TestSceneEvent1 => None
     case TestSceneEvent2 => Some(TestSceneEvent2)
     case TestSceneEvent3 => Some(TestSceneEvent3)
     case TestSceneEvent4 => None
-    case e => Some(e)
+    case e               => Some(e)
   }
-  val viewModelEventFilter: GlobalEvent => Option[GlobalEvent] = {
+
+  private val viewModelEventFilter: GlobalEvent => Option[GlobalEvent] = {
     case TestSceneEvent1 => Some(TestSceneEvent1)
     case TestSceneEvent2 => None
     case TestSceneEvent3 => None
     case TestSceneEvent4 => Some(TestSceneEvent4)
-    case e => Some(e)
+    case e               => Some(e)
   }
+
+  val eventFilters: EventFilters =
+    EventFilters(
+      modelEventFilter,
+      viewModelEventFilter
+    )
 
   val subSystems: Set[SubSystem] = Set()
 
@@ -116,7 +131,6 @@ final case class TestSceneB() extends Scene[Unit, TestGameModel, TestViewModel] 
 
 final case class TestSceneModelB(count: Int)
 final case class TestSceneViewModelB()
-
 
 final case object TestSceneEvent1 extends GlobalEvent
 final case object TestSceneEvent2 extends GlobalEvent

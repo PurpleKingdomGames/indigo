@@ -2,7 +2,7 @@ package indigoextras.subsystems
 
 import indigo.shared.time.GameTime
 import indigo.shared.Outcome
-import indigo.shared.events.{FrameTick, GlobalEvent}
+import indigo.shared.events.{FrameTick, GlobalEvent, SubSystemEvent}
 import indigo.shared.scenegraph._
 import indigo.shared.subsystems.SubSystem
 import indigoextras.subsystems.AutomataEvent._
@@ -177,7 +177,7 @@ object Automata {
 
 final case class AutomataState(totalSpawned: Long, pool: List[SpawnedAutomaton])
 
-sealed trait AutomataEvent extends GlobalEvent
+sealed trait AutomataEvent extends SubSystemEvent
 object AutomataEvent {
   final case class Spawn(key: AutomataPoolKey, at: Point, lifeSpan: Option[Seconds], payload: Option[AutomatonPayload]) extends AutomataEvent
   object Spawn {

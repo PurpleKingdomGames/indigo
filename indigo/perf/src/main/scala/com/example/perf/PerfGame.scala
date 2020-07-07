@@ -15,8 +15,7 @@ object PerfGame extends IndigoDemo[Unit, MyStartupData, MyGameModel, Unit] {
   val viewportHeight: Int     = 600
   val magnificationLevel: Int = 1
 
-  val modelEventFilter: GlobalEvent => Option[GlobalEvent]     = noFilter
-  val viewModelEventFilter: GlobalEvent => Option[GlobalEvent] = noFilter
+  val eventFilters: EventFilters = EventFilters.Default
 
   def boot(flags: Map[String, String]): BootResult[Unit] =
     BootResult

@@ -9,10 +9,10 @@ import indigo.shared.time.GameTime
 import indigo.gameengine.FrameProcessor
 import indigo.shared.BoundaryLocator
 import indigo.shared.FrameContext
+import indigo.shared.events.EventFilters
 
 final class StandardFrameProcessor[StartUpData, Model, ViewModel](
-    modelEventFilter: GlobalEvent => Option[GlobalEvent],
-    viewModelEventFilter: GlobalEvent => Option[GlobalEvent],
+    eventFilters: EventFilters,
     modelUpdate: (FrameContext[StartUpData], Model) => GlobalEvent => Outcome[Model],
     viewModelUpdate: (FrameContext[StartUpData], Model, ViewModel) => GlobalEvent => Outcome[ViewModel],
     viewUpdate: (FrameContext[StartUpData], Model, ViewModel) => SceneUpdateFragment
@@ -42,7 +42,7 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
 
     val updatedModel: Outcome[Model] =
       globalEvents
-      .map(modelEventFilter)
+      .map(eventFilters.modelFilter)
       .collect{ case Some(e) => e }
       .foldLeft(Outcome(model)) { (acc, e) =>
         acc.flatMapState { next =>
@@ -52,7 +52,7 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
 
     val updatedViewModel: Outcome[ViewModel] =
       globalEvents
-      .map(viewModelEventFilter)
+      .map(eventFilters.viewModelFilter)
       .collect{ case Some(e) => e }
       .foldLeft(Outcome(viewModel)) { (acc, e) =>
         acc.flatMapState { next =>

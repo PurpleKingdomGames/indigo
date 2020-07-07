@@ -4,12 +4,19 @@ import indigo.shared.events
 
 trait EventTypeAliases {
 
-  type GlobalEvent = events.GlobalEvent
+  type GlobalEvent    = events.GlobalEvent
+  type SubSystemEvent = events.SubSystemEvent
+  type ViewEvent      = events.ViewEvent
+  type InputEvent     = events.InputEvent
 
-  type RendererDetails = events.RendererDetails.type
+  type EventFilters = events.EventFilters
+  val EventFilters: events.EventFilters.type = events.EventFilters
+
+  type RendererDetails = events.RendererDetails
   val RendererDetails: events.RendererDetails.type = events.RendererDetails
 
-  type InputEvent = events.InputEvent
+  type ViewportResize = events.ViewportResize
+  val ViewportResize: events.ViewportResize.type = events.ViewportResize
 
   type InputState = events.InputState
   val InputState: events.InputState.type = events.InputState
