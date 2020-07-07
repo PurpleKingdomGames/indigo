@@ -43,7 +43,7 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
       new StandardFrameProcessor(
         eventFilters,
         GameWithSubSystems.update(subSystemsRegister, updateModel),
-        GameWithSubSystems.updateViewModel(updateViewModel),
+        updateViewModel,
         GameWithSubSystems.present(subSystemsRegister, present)
       )
 

@@ -15,11 +15,6 @@ object GameWithSubSystems {
   ): (FrameContext[StartUpData], Model) => GlobalEvent => Outcome[Model] =
     (frameContext, model) => e => Outcome.merge(modelUpdate(frameContext, model)(e), subSystemsRegister.update(frameContext.forSubSystems)(e)) { case (m, _) => m }
 
-  def updateViewModel[StartUpData, Model, ViewModel](
-      viewModelUpdate: (FrameContext[StartUpData], Model, ViewModel) => GlobalEvent => Outcome[ViewModel]
-  ): (FrameContext[StartUpData], Model, ViewModel) => GlobalEvent => Outcome[ViewModel] =
-    (frameContext, model, viewModel) => e => viewModelUpdate(frameContext, model, viewModel)(e)
-
   def present[StartUpData, Model, ViewModel](
       subSystemsRegister: SubSystemsRegister,
       viewPresent: (FrameContext[StartUpData], Model, ViewModel) => SceneUpdateFragment

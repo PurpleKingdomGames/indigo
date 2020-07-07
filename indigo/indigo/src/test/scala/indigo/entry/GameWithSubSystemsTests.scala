@@ -38,13 +38,6 @@ object GameWithSubSystemsTests extends TestSuite {
         outcome.globalEvents.contains(EventsOnlyEvent.Decrement) ==> true
       }
 
-      "should be able to update the view model" - {
-        val outcome = GameWithSubSystems.updateViewModel(viewModelUpdate)(context, model, 0)(FrameTick)
-        outcome.state ==> 10
-        outcome.globalEvents.length ==> 1
-        outcome.globalEvents.contains(EventsOnlyEvent.Increment) ==> true
-      }
-
     }
 
 }

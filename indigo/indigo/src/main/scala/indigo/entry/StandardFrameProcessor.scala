@@ -42,23 +42,23 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
 
     val updatedModel: Outcome[Model] =
       globalEvents
-      .map(eventFilters.modelFilter)
-      .collect{ case Some(e) => e }
-      .foldLeft(Outcome(model)) { (acc, e) =>
-        acc.flatMapState { next =>
-          updateModel(frameContext, next)(e)
+        .map(eventFilters.modelFilter)
+        .collect { case Some(e) => e }
+        .foldLeft(Outcome(model)) { (acc, e) =>
+          acc.flatMapState { next =>
+            updateModel(frameContext, next)(e)
+          }
         }
-      }
 
     val updatedViewModel: Outcome[ViewModel] =
       globalEvents
-      .map(eventFilters.viewModelFilter)
-      .collect{ case Some(e) => e }
-      .foldLeft(Outcome(viewModel)) { (acc, e) =>
-        acc.flatMapState { next =>
-          updateViewModel(frameContext, updatedModel.state, next)(e)
+        .map(eventFilters.viewModelFilter)
+        .collect { case Some(e) => e }
+        .foldLeft(Outcome(viewModel)) { (acc, e) =>
+          acc.flatMapState { next =>
+            updateViewModel(frameContext, updatedModel.state, next)(e)
+          }
         }
-      }
 
     val view: SceneUpdateFragment =
       updateView(frameContext, updatedModel.state, updatedViewModel.state)
