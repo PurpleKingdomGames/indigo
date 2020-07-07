@@ -53,7 +53,7 @@ final class SubSystemsRegister(subSystems: List[SubSystem]) {
     }
 
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
-  def render(frameContext: SubSystemFrameContext): SceneUpdateFragment =
+  def present(frameContext: SubSystemFrameContext): SceneUpdateFragment =
     registeredSubSystems
       .map { rss =>
         rss.subSystem.present(

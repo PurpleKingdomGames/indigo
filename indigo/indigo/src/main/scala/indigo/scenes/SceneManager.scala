@@ -80,7 +80,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
         val subsystemView = subSystemStates
           .get(scene.name)
           .map { ssr =>
-            ssr.render(frameContext.forSubSystems)
+            ssr.present(frameContext.forSubSystems)
           }
           .getOrElse(SceneUpdateFragment.empty)
 

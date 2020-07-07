@@ -19,6 +19,6 @@ object GameWithSubSystems {
       subSystemsRegister: SubSystemsRegister,
       viewPresent: (FrameContext[StartUpData], Model, ViewModel) => SceneUpdateFragment
   ): (FrameContext[StartUpData], Model, ViewModel) => SceneUpdateFragment =
-    (frameContext, model, viewModel) => viewPresent(frameContext, model, viewModel) |+| subSystemsRegister.render(frameContext.forSubSystems)
+    (frameContext, model, viewModel) => viewPresent(frameContext, model, viewModel) |+| subSystemsRegister.present(frameContext.forSubSystems)
 
 }

@@ -59,7 +59,7 @@ object SubSystemsRegisterTests extends TestSuite {
           val rendered =
             r.update(context(6))(PointsTrackerEvent.Add(10))
               .state
-              .render(context(6))
+              .present(context(6))
               .gameLayer
               .nodes
               .map(_.asInstanceOf[Text].text)
