@@ -18,15 +18,6 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
     viewUpdate: (FrameContext[StartUpData], Model, ViewModel) => SceneUpdateFragment
 ) extends FrameProcessor[StartUpData, Model, ViewModel] {
 
-  def updateModel(frameContext: FrameContext[StartUpData], model: Model): GlobalEvent => Outcome[Model] =
-    modelUpdate(frameContext, model)
-
-  def updateViewModel(frameContext: FrameContext[StartUpData], model: Model, viewModel: ViewModel): GlobalEvent => Outcome[ViewModel] =
-    viewModelUpdate(frameContext, model, viewModel)
-
-  def updateView(frameContext: FrameContext[StartUpData], model: Model, viewModel: ViewModel): SceneUpdateFragment =
-    viewUpdate(frameContext, model, viewModel)
-
   def run(
       startUpData: => StartUpData,
       model: => Model,
@@ -46,7 +37,7 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
         .collect { case Some(e) => e }
         .foldLeft(Outcome(model)) { (acc, e) =>
           acc.flatMapState { next =>
-            updateModel(frameContext, next)(e)
+            modelUpdate(frameContext, next)(e)
           }
         }
 
@@ -56,12 +47,12 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
         .collect { case Some(e) => e }
         .foldLeft(Outcome(viewModel)) { (acc, e) =>
           acc.flatMapState { next =>
-            updateViewModel(frameContext, updatedModel.state, next)(e)
+            viewModelUpdate(frameContext, updatedModel.state, next)(e)
           }
         }
 
     val view: SceneUpdateFragment =
-      updateView(frameContext, updatedModel.state, updatedViewModel.state)
+      viewUpdate(frameContext, updatedModel.state, updatedViewModel.state)
 
     Outcome.combine3(updatedModel, updatedViewModel, Outcome(view))
   }
@@ -81,7 +72,7 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
 
     val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
       acc.flatMapState { next =>
-        updateModel(frameContext, next)(e)
+        modelUpdate(frameContext, next)(e)
       }
     }
 
