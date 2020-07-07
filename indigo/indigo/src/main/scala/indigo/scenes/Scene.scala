@@ -11,10 +11,12 @@ trait Scene[StartUpData, GameModel, ViewModel] {
   type SceneModel
   type SceneViewModel
 
-  val name: SceneName
-  val modelLens: Lens[GameModel, SceneModel]
-  val viewModelLens: Lens[ViewModel, SceneViewModel]
-  val subSystems: Set[SubSystem]
+  def name: SceneName
+  def modelLens: Lens[GameModel, SceneModel]
+  def viewModelLens: Lens[ViewModel, SceneViewModel]
+  def modelEventFilter: GlobalEvent => Option[GlobalEvent]
+  def viewModelEventFilter: GlobalEvent => Option[GlobalEvent]
+  def subSystems: Set[SubSystem]
 
   def updateModel(context: FrameContext[StartUpData], model: SceneModel): GlobalEvent => Outcome[SceneModel]
   def updateViewModel(context: FrameContext[StartUpData], model: SceneModel, viewModel: SceneViewModel): GlobalEvent => Outcome[SceneViewModel]

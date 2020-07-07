@@ -80,8 +80,10 @@ object TestFixtures {
   val viewUpdate: (FrameContext[Unit], GameModel, Int) => SceneUpdateFragment =
     (_, _, _) => SceneUpdateFragment.empty
 
-  val standardFrameProcessor: StandardFrameProcessor[Unit, GameModel, Int] =
-    new StandardFrameProcessor(modelUpdate, viewModelUpdate, viewUpdate)
+  val standardFrameProcessor: StandardFrameProcessor[Unit, GameModel, Int] = {
+    import indigo.noFilter
+    new StandardFrameProcessor(noFilter, noFilter, modelUpdate, viewModelUpdate, viewUpdate)
+  }
 
   final case class GameModel(count: Int)
 

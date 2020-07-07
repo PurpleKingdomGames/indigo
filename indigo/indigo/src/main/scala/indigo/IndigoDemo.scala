@@ -18,6 +18,9 @@ import scala.concurrent.Future
   */
 trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
 
+  def modelEventFilter: GlobalEvent => Option[GlobalEvent]
+  def viewModelEventFilter: GlobalEvent => Option[GlobalEvent]
+
   def boot(flags: Map[String, String]): BootResult[BootData]
 
   def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartUpData]
@@ -40,6 +43,8 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
 
     val frameProcessor: StandardFrameProcessor[StartUpData, Model, ViewModel] =
       new StandardFrameProcessor(
+        modelEventFilter,
+        viewModelEventFilter,
         GameWithSubSystems.update(subSystemsRegister, updateModel),
         GameWithSubSystems.updateViewModel(updateViewModel),
         GameWithSubSystems.present(subSystemsRegister, present)

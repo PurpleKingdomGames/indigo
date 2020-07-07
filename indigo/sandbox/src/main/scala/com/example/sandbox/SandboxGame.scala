@@ -18,6 +18,9 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
   private val viewportWidth: Int      = 228 * magnificationLevel
   private val viewportHeight: Int     = 128 * magnificationLevel
 
+  val modelEventFilter: GlobalEvent => Option[GlobalEvent]     = noFilter
+  val viewModelEventFilter: GlobalEvent => Option[GlobalEvent] = noFilter
+
   def boot(flags: Map[String, String]): BootResult[SandboxBootData] =
     BootResult(
       GameConfig(

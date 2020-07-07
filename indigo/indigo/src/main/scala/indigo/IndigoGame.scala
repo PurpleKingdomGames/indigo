@@ -91,6 +91,8 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
 
     val frameProcessor: StandardFrameProcessor[StartUpData, Model, ViewModel] = {
       new StandardFrameProcessor(
+        sceneManager.modelEventFilter,
+        sceneManager.viewModelEventFilter,
         GameWithSubSystems.update(subSystemsRegister, sceneManager.updateModel),
         GameWithSubSystems.updateViewModel(sceneManager.updateViewModel),
         GameWithSubSystems.present(subSystemsRegister, sceneManager.updateView)

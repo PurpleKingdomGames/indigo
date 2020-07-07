@@ -86,6 +86,27 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
         Scene.updateView(scene, frameContext, model, viewModel) |+| subsystemView
     }
 
+  val defaultFilter: GlobalEvent => Option[GlobalEvent] =
+    (e: GlobalEvent) => Some(e)
+
+  def modelEventFilter: GlobalEvent => Option[GlobalEvent] =
+    scenes.find(_.name === finderInstance.current.name) match {
+      case None =>
+        defaultFilter
+
+      case Some(value) =>
+        value.modelEventFilter
+    }
+
+  def viewModelEventFilter: GlobalEvent => Option[GlobalEvent] =
+    scenes.find(_.name === finderInstance.current.name) match {
+      case None =>
+        defaultFilter
+
+      case Some(value) =>
+        value.viewModelEventFilter
+    }
+
 }
 
 object SceneManager {

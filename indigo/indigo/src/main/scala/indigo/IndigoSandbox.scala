@@ -36,6 +36,8 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher {
 
     val frameProcessor: StandardFrameProcessor[StartUpData, Model, Unit] =
       new StandardFrameProcessor(
+        (e: GlobalEvent) => Some(e),
+        (e: GlobalEvent) => Some(e),
         (ctx, m) => (e: GlobalEvent) => updateModel(ctx, m)(e),
         updateViewModel,
         (ctx, m, _) => present(ctx, m)

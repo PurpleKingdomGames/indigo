@@ -11,6 +11,8 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.FrameContext
 
 final class StandardFrameProcessor[StartUpData, Model, ViewModel](
+    modelEventFilter: GlobalEvent => Option[GlobalEvent],
+    viewModelEventFilter: GlobalEvent => Option[GlobalEvent],
     modelUpdate: (FrameContext[StartUpData], Model) => GlobalEvent => Outcome[Model],
     viewModelUpdate: (FrameContext[StartUpData], Model, ViewModel) => GlobalEvent => Outcome[ViewModel],
     viewUpdate: (FrameContext[StartUpData], Model, ViewModel) => SceneUpdateFragment
@@ -39,14 +41,20 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
     val frameContext = new FrameContext[StartUpData](gameTime, dice, inputState, boundaryLocator, startUpData)
 
     val updatedModel: Outcome[Model] =
-      globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
+      globalEvents
+      .map(modelEventFilter)
+      .collect{ case Some(e) => e }
+      .foldLeft(Outcome(model)) { (acc, e) =>
         acc.flatMapState { next =>
           updateModel(frameContext, next)(e)
         }
       }
 
     val updatedViewModel: Outcome[ViewModel] =
-      globalEvents.foldLeft(Outcome(viewModel)) { (acc, e) =>
+      globalEvents
+      .map(viewModelEventFilter)
+      .collect{ case Some(e) => e }
+      .foldLeft(Outcome(viewModel)) { (acc, e) =>
         acc.flatMapState { next =>
           updateViewModel(frameContext, updatedModel.state, next)(e)
         }
