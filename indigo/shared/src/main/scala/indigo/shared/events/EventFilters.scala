@@ -4,10 +4,10 @@ package indigo.shared.events
   * EventFilter's control which events will be processed by your model
   * or view model. They are a bit like subscribing or listening to events
   * in an GUI OO system.
-  * 
+  *
   * Events are filtered by mapping from a specific event to an optional
   * event.
-  * 
+  *
   * Although the name says "filter", the action is really filter and map,
   * since there is no requirement to maintain the original event as the
   * resultant event. For example, you could map `FrameTick` to
@@ -48,6 +48,9 @@ object EventFilters {
   val defaultViewModelFilter: GlobalEvent => Option[GlobalEvent] = {
     case e: ViewEvent =>
       Some(e)
+
+    case FrameTick =>
+      Some(FrameTick)
 
     case _ =>
       None

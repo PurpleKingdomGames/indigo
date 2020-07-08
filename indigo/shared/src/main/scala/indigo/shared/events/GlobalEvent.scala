@@ -51,7 +51,7 @@ final case class RendererDetails(
   * Useful for updating anything in your model that "just happens" on every
   * frame without any other prompting event. Like gravity.
   */
-case object FrameTick extends ViewEvent
+case object FrameTick extends GlobalEvent
 
 /**
   * Fired whenever the game window changes size, so that the view can respond.
