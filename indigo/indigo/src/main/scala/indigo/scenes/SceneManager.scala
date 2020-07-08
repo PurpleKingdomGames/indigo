@@ -10,6 +10,7 @@ import indigo.shared.subsystems.SubSystemsRegister
 import indigo.shared.FrameContext
 import indigo.shared.subsystems.SubSystemFrameContext._
 import indigo.shared.events.EventFilters
+import indigo.shared.subsystems.SubSystemFrameContext
 
 class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]], scenesFinder: SceneFinder) {
 
@@ -47,18 +48,22 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
           Outcome(model)
 
         case Some(scene) =>
-          val subsystemOutcomeEvents = subSystemStates
-            .get(scene.name)
-            .map { ssr =>
-              ssr.update(frameContext.forSubSystems)(event).globalEvents
-            }
-            .getOrElse(Nil)
-
           Scene
             .updateModel(scene, frameContext, model)(event)
-            .addGlobalEvents(subsystemOutcomeEvents)
       }
   }
+
+  def updateSubSystems(frameContext: SubSystemFrameContext, globalEvents: List[GlobalEvent]): List[GlobalEvent] =
+    scenes
+      .find(_.name === finderInstance.current.name)
+      .flatMap { scene =>
+        subSystemStates
+          .get(scene.name)
+          .map {
+            _.update(frameContext, globalEvents).globalEvents
+          }
+      }
+      .getOrElse(Nil)
 
   def updateViewModel(frameContext: FrameContext[StartUpData], model: GameModel, viewModel: ViewModel): GlobalEvent => Outcome[ViewModel] =
     scenes.find(_.name === finderInstance.current.name) match {

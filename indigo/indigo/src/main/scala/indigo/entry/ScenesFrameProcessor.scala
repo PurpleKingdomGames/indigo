@@ -9,17 +9,14 @@ import indigo.shared.time.GameTime
 import indigo.gameengine.FrameProcessor
 import indigo.shared.BoundaryLocator
 import indigo.shared.FrameContext
-import indigo.shared.events.EventFilters
 import indigo.shared.subsystems.SubSystemsRegister
 import indigo.shared.subsystems.SubSystemFrameContext._
+import indigo.scenes.SceneManager
 
 @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
-final class StandardFrameProcessor[StartUpData, Model, ViewModel](
+final class ScenesFrameProcessor[StartUpData, Model, ViewModel](
     subSystemsRegister: SubSystemsRegister,
-    eventFilters: EventFilters,
-    modelUpdate: (FrameContext[StartUpData], Model) => GlobalEvent => Outcome[Model],
-    viewModelUpdate: (FrameContext[StartUpData], Model, ViewModel) => GlobalEvent => Outcome[ViewModel],
-    viewUpdate: (FrameContext[StartUpData], Model, ViewModel) => SceneUpdateFragment
+    sceneManager: SceneManager[StartUpData, Model, ViewModel]
 ) extends FrameProcessor[StartUpData, Model, ViewModel] {
 
   def run(
@@ -37,29 +34,30 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
 
     val updatedModel: Outcome[Model] =
       globalEvents
-        .map(eventFilters.modelFilter)
+        .map(sceneManager.eventFilters.modelFilter)
         .collect { case Some(e) => e }
         .foldLeft(Outcome(model)) { (acc, e) =>
           acc.flatMapState { next =>
-            modelUpdate(frameContext, next)(e)
+            sceneManager.updateModel(frameContext, next)(e)
           }
         }
 
     val subSystemEvents: List[GlobalEvent] =
-      subSystemsRegister.update(frameContext.forSubSystems, globalEvents).globalEvents
+      subSystemsRegister.update(frameContext.forSubSystems, globalEvents).globalEvents ++
+        sceneManager.updateSubSystems(frameContext.forSubSystems, globalEvents)
 
     val updatedViewModel: Outcome[ViewModel] =
       globalEvents
-        .map(eventFilters.viewModelFilter)
+        .map(sceneManager.eventFilters.viewModelFilter)
         .collect { case Some(e) => e }
         .foldLeft(Outcome(viewModel)) { (acc, e) =>
           acc.flatMapState { next =>
-            viewModelUpdate(frameContext, updatedModel.state, next)(e)
+            sceneManager.updateViewModel(frameContext, updatedModel.state, next)(e)
           }
         }
 
     val view: SceneUpdateFragment =
-      viewUpdate(frameContext, updatedModel.state, updatedViewModel.state) |+|
+      sceneManager.updateView(frameContext, updatedModel.state, updatedViewModel.state) |+|
         subSystemsRegister.present(frameContext.forSubSystems)
 
     Outcome
@@ -82,12 +80,13 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
 
     val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
       acc.flatMapState { next =>
-        modelUpdate(frameContext, next)(e)
+        sceneManager.updateModel(frameContext, next)(e)
       }
     }
 
     val subSystemEvents: List[GlobalEvent] =
-      subSystemsRegister.update(frameContext.forSubSystems, globalEvents).globalEvents
+      subSystemsRegister.update(frameContext.forSubSystems, globalEvents).globalEvents ++
+        sceneManager.updateSubSystems(frameContext.forSubSystems, globalEvents)
 
     Outcome
       .combine(updatedModel, Outcome(viewModel))

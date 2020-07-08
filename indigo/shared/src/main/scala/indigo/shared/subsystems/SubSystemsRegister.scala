@@ -32,25 +32,31 @@ final class SubSystemsRegister(subSystems: List[SubSystem]) {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
-  def update(frameContext: SubSystemFrameContext): GlobalEvent => Outcome[SubSystemsRegister] =
-    (e: GlobalEvent) => {
-      val statelessEvents: List[GlobalEvent] =
-        registeredSubSystems.flatMap { rss =>
-          rss.subSystem.eventFilter(e) match {
-            case None =>
-              Nil
+  def update(frameContext: SubSystemFrameContext, globalEvents: List[GlobalEvent]): Outcome[SubSystemsRegister] = {
+    val outcomeEvents = registeredSubSystems.flatMap { rss =>
+      val key       = rss.id
+      val subSystem = rss.subSystem
 
-            case Some(ee) =>
-              val key                                        = rss.id
-              val model: rss.subSystem.SubSystemModel        = stateMap(key).asInstanceOf[rss.subSystem.SubSystemModel]
-              val out: Outcome[rss.subSystem.SubSystemModel] = rss.subSystem.update(frameContext, model.asInstanceOf[rss.subSystem.SubSystemModel])(ee)
-              stateMap.put(key, out.state.asInstanceOf[Object])
-              out.globalEvents
+      val filteredEvents: List[subSystem.EventType] =
+        globalEvents
+          .map(subSystem.eventFilter)
+          .collect { case Some(e) => e }
+
+      val model: subSystem.SubSystemModel = stateMap(key).asInstanceOf[subSystem.SubSystemModel]
+
+      val out =
+        filteredEvents.foldLeft(Outcome(model)) { (acc, e) =>
+          acc.flatMapState { m =>
+            subSystem.update(frameContext, m)(e)
           }
         }
 
-      Outcome(this).addGlobalEvents(statelessEvents)
+      stateMap.put(key, out.state.asInstanceOf[Object])
+      out.globalEvents
     }
+
+    Outcome(this, outcomeEvents)
+  }
 
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   def present(frameContext: SubSystemFrameContext): SceneUpdateFragment =

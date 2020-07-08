@@ -29,7 +29,7 @@ object SubSystemsRegisterTests extends TestSuite {
           val r = new SubSystemsRegister(List(PointsTrackerExample(10), PointsTrackerExample(50)))
 
           val data = r
-            .update(context(6))(PointsTrackerEvent.Add(10))
+            .update(context(6), List(PointsTrackerEvent.Add(10)))
             .state
             .stateMap
 
@@ -43,7 +43,7 @@ object SubSystemsRegisterTests extends TestSuite {
         "should allow you to update sub systems and emit events" - {
           val r = new SubSystemsRegister(List(PointsTrackerExample(10), PointsTrackerExample(50)))
 
-          val updated = r.update(context(6))(PointsTrackerEvent.LoseAll)
+          val updated = r.update(context(6), List(PointsTrackerEvent.LoseAll))
 
           val actual = updated.state.stateMap.toList.map(_._2.asInstanceOf[Int])
 
@@ -57,7 +57,7 @@ object SubSystemsRegisterTests extends TestSuite {
           val r = new SubSystemsRegister(List(PointsTrackerExample(10), PointsTrackerExample(50)))
 
           val rendered =
-            r.update(context(6))(PointsTrackerEvent.Add(10))
+            r.update(context(6), List(PointsTrackerEvent.Add(10)))
               .state
               .present(context(6))
               .gameLayer

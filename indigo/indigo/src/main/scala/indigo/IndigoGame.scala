@@ -3,7 +3,7 @@ package indigo
 import indigo.scenes.{SceneManager, SceneName, Scene}
 import indigo.gameengine.GameEngine
 import indigo.shared.subsystems.SubSystemsRegister
-import indigo.entry.StandardFrameProcessor
+import indigo.entry.ScenesFrameProcessor
 
 // Indigo is Scala.js only at the moment, revisit if/when we go to the JVM
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -87,13 +87,10 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
       }
     }
 
-    val frameProcessor: StandardFrameProcessor[StartUpData, Model, ViewModel] = {
-      new StandardFrameProcessor(
+    val frameProcessor: ScenesFrameProcessor[StartUpData, Model, ViewModel] = {
+      new ScenesFrameProcessor(
         subSystemsRegister,
-        sceneManager.eventFilters,
-        sceneManager.updateModel,
-        sceneManager.updateViewModel,
-        sceneManager.updateView
+        sceneManager
       )
     }
 
