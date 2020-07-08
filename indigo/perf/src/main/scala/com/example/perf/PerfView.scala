@@ -9,7 +9,7 @@ object PerfView {
 
   val cloneId: CloneId = CloneId("Dude")
 
-  def updateView(model: MyGameModel, inputState: InputState): SceneUpdateFragment = {
+  def updateView(model: DudeModel, inputState: InputState): SceneUpdateFragment = {
     inputState.mouse.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + implicitly[AsString[Point]].show(position))
       case None           => ()
@@ -19,7 +19,7 @@ object PerfView {
       gameLayer(model),
       lightingLayer(inputState),
       Nil,
-      uiLayer(),
+      uiLayer,
       RGBA.White.withAmount(0.5),
       Nil,
       Nil,
@@ -27,7 +27,7 @@ object PerfView {
       ScreenEffects.None,
       Nil
     ).addCloneBlanks(
-      CloneBlank(cloneId, model.dude.dude.sprite)
+      CloneBlank(cloneId, model.dude.sprite)
     )
   }
 
@@ -64,42 +64,44 @@ object PerfView {
     rec(positions, 256, 0, Nil)
   }
 
-  def gameLayer(currentState: MyGameModel): List[SceneGraphNode] =
+  def gameLayer(currentState: DudeModel): List[SceneGraphNode] =
     List(
-      currentState.dude.walkDirection match {
+      currentState.walkDirection match {
         case d @ DudeLeft =>
-          currentState.dude.dude.sprite
+          currentState.dude.sprite
             .changeCycle(d.cycleName)
             .play()
 
         case d @ DudeRight =>
-          currentState.dude.dude.sprite
+          currentState.dude.sprite
             .changeCycle(d.cycleName)
             .play()
 
         case d @ DudeUp =>
-          currentState.dude.dude.sprite
+          currentState.dude.sprite
             .changeCycle(d.cycleName)
             .play()
 
         case d @ DudeDown =>
-          currentState.dude.dude.sprite
+          currentState.dude.sprite
             .changeCycle(d.cycleName)
             .play()
 
         case d @ DudeIdle =>
-          currentState.dude.dude.sprite
+          currentState.dude.sprite
             .changeCycle(d.cycleName)
             .play()
       }
     ) ++ theHerd
 
-  def lightingLayer(inputState: InputState): List[SceneGraphNode] =
+  val staticLights: List[Graphic] =
     List(
       Graphic(0, 0, 320, 240, 1, PerfAssets.lightMaterial).withTint(1, 0, 0),
-      Graphic(-115, -100, 320, 240, 1, PerfAssets.lightMaterial),
-      Graphic(inputState.mouse.position.x - 160, inputState.mouse.position.y - 120, 320, 240, 1, PerfAssets.lightMaterial)
+      Graphic(-115, -100, 320, 240, 1, PerfAssets.lightMaterial)
     )
+
+  def lightingLayer(inputState: InputState): List[SceneGraphNode] =
+    Graphic(inputState.mouse.position.x - 160, inputState.mouse.position.y - 120, 320, 240, 1, PerfAssets.lightMaterial) :: staticLights
 
   def fontKey: FontKey = FontKey("My Font")
 
@@ -147,7 +149,7 @@ object PerfView {
       .addChar(FontChar(",", 248, 0, 15, 23))
       .addChar(FontChar(" ", 145, 52, 23, 23))
 
-  def uiLayer(): List[SceneGraphNode] =
+  val uiLayer: List[SceneGraphNode] =
     List(
       Text((herdCount + 1).toString + " Naked dudes!", PerfGame.viewportWidth / 2, 40, 5, fontKey).alignCenter,
       Text("Thundering Herd!", PerfGame.viewportWidth / 2, 10, 5, fontKey).alignCenter

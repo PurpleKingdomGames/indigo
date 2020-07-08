@@ -4,29 +4,27 @@ import indigo._
 
 object PerfModel {
 
-  def initialModel(startupData: MyStartupData): MyGameModel =
-    MyGameModel(
-      DudeModel(startupData.dude, DudeIdle)
-    )
+  def initialModel(dude: Dude): DudeModel =
+    DudeModel(dude, DudeIdle)
 
-  def updateModel(state: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
+  def updateModel(state: DudeModel): GlobalEvent => Outcome[DudeModel] = {
     case FrameTick =>
       Outcome(state)
 
     case KeyboardEvent.KeyDown(Keys.LEFT_ARROW) =>
-      Outcome(state.copy(dude = state.dude.walkLeft))
+      Outcome(state.walkLeft)
 
     case KeyboardEvent.KeyDown(Keys.RIGHT_ARROW) =>
-      Outcome(state.copy(dude = state.dude.walkRight))
+      Outcome(state.walkRight)
 
     case KeyboardEvent.KeyDown(Keys.UP_ARROW) =>
-      Outcome(state.copy(dude = state.dude.walkUp))
+      Outcome(state.walkUp)
 
     case KeyboardEvent.KeyDown(Keys.DOWN_ARROW) =>
-      Outcome(state.copy(dude = state.dude.walkDown))
+      Outcome(state.walkDown)
 
     case KeyboardEvent.KeyUp(_) =>
-      Outcome(state.copy(dude = state.dude.idle))
+      Outcome(state.idle)
 
     case _ =>
       //Logger.info(e)
@@ -34,8 +32,6 @@ object PerfModel {
   }
 
 }
-
-final case class MyGameModel(dude: DudeModel)
 
 final case class DudeModel(dude: Dude, walkDirection: DudeDirection) {
   def idle: DudeModel      = this.copy(walkDirection = DudeIdle)
