@@ -2,7 +2,7 @@ package snake
 
 import indigo._
 import indigo.scenes._
-// import indigoextras.subsystems.FPSCounter
+import indigoextras.subsystems.FPSCounter
 
 import snake.model.{ControlScheme, SnakeGameModel, SnakeViewModel}
 import snake.init.{GameAssets, Settings, SnakeStartupData}
@@ -19,7 +19,7 @@ object SnakeGame extends IndigoGame[GameViewport, SnakeStartupData, SnakeGameMod
     val config =
       GameConfig(
         viewport = GameViewport(Settings.viewportWidth, Settings.viewportHeight),
-        frameRate = 30,
+        frameRate = 60,
         clearColor = ClearColor.Black,
         magnification = Settings.magnificationLevel
       )
@@ -28,7 +28,7 @@ object SnakeGame extends IndigoGame[GameViewport, SnakeStartupData, SnakeGameMod
       .withAssets(GameAssets.assets(assetPath))
       .withFonts(GameAssets.fontInfo)
       .withSubSystems(
-        // Set(FPSCounter.subSystem(GameAssets.fontKey, Point(5, 5), 30))
+        Set(FPSCounter(GameAssets.fontKey, Point(5, 5), 60))
       )
   }
 

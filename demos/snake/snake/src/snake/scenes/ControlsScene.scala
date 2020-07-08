@@ -11,16 +11,23 @@ object ControlsScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewMo
 
   val name: SceneName = SceneName("controls")
 
-  val sceneModelLens: Lens[SnakeGameModel, ControlScheme] =
+  val modelLens: Lens[SnakeGameModel, ControlScheme] =
     SnakeGameModel.Lenses.controlSchemeAccessors
 
-  val sceneViewModelLens: Lens[SnakeViewModel, Unit] =
+  val viewModelLens: Lens[SnakeViewModel, Unit] =
     Lens.fixed(())
 
-  val sceneSubSystems: Set[SubSystem] =
+  val eventFilters: EventFilters =
+    EventFilters.Default
+      .withViewModelFilter(_ => None)
+
+  val subSystems: Set[SubSystem] =
     Set()
 
-  def updateSceneModel(context: FrameContext[SnakeStartupData], controlScheme: ControlScheme): GlobalEvent => Outcome[ControlScheme] = {
+  def updateModel(
+      context: FrameContext[SnakeStartupData],
+      controlScheme: ControlScheme
+  ): GlobalEvent => Outcome[ControlScheme] = {
     case KeyboardEvent.KeyUp(Keys.SPACE) =>
       Outcome(controlScheme)
         .addGlobalEvents(SceneEvent.JumpTo(GameScene.name))
@@ -32,14 +39,14 @@ object ControlsScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewMo
       Outcome(controlScheme)
   }
 
-  def updateSceneViewModel(
+  def updateViewModel(
       context: FrameContext[SnakeStartupData],
       controlScheme: ControlScheme,
       sceneViewModel: Unit
-  ): Outcome[Unit] =
-    Outcome(())
+  ): GlobalEvent => Outcome[Unit] =
+    _ => Outcome(sceneViewModel)
 
-  def updateSceneView(
+  def present(
       context: FrameContext[SnakeStartupData],
       sceneModel: ControlScheme,
       sceneViewModel: Unit
