@@ -31,6 +31,8 @@ import indigojs.delegates.DiceDelegate
 import indigojs.delegates.AssetCollectionDelegate
 import indigojs.delegates.GlobalEventDelegate
 import indigo.shared.FrameContext
+import indigo.shared.subsystems.SubSystemsRegister
+import indigo.shared.events.EventFilters
 
 @JSExportTopLevel("Indigo")
 object IndigoJS {
@@ -43,7 +45,7 @@ object IndigoJS {
   type InitialModel     = js.Function1[StartupData, GameModel]
   type InitialViewModel = js.Function2[StartupData, GameModel, ViewModel]
   type ModelUpdate      = js.Function2[FrameContextDelegate[StartupData], GameModel, js.Function1[GlobalEventDelegate, OutcomeDelegate]]
-  type ViewModelUpdate  = js.Function3[FrameContextDelegate[StartupData], GameModel, ViewModel, OutcomeDelegate]
+  type ViewModelUpdate  = js.Function3[FrameContextDelegate[StartupData], GameModel, ViewModel, js.Function1[GlobalEventDelegate, OutcomeDelegate]]
   type ViewUpdate       = js.Function3[FrameContextDelegate[StartupData], GameModel, ViewModel, SceneUpdateFragmentDelegate]
 
   private def indigoGame(
@@ -53,12 +55,12 @@ object IndigoJS {
       initialModel: StartupData => GameModel,
       initialViewModel: StartupData => GameModel => ViewModel,
       modelUpdate: (FrameContext[StartupData], GameModel) => GlobalEvent => Outcome[GameModel],
-      viewModelUpdate: (FrameContext[StartupData], GameModel, ViewModel) => Outcome[ViewModel],
+      viewModelUpdate: (FrameContext[StartupData], GameModel, ViewModel) => GlobalEvent => Outcome[ViewModel],
       viewUpdate: (FrameContext[StartupData], GameModel, ViewModel) => SceneUpdateFragment
   ): GameEngine[StartupData, StartupError, GameModel, ViewModel] = {
 
     val frameProcessor: StandardFrameProcessor[StartupData, GameModel, ViewModel] =
-      new StandardFrameProcessor(modelUpdate, viewModelUpdate, viewUpdate)
+      new StandardFrameProcessor(new SubSystemsRegister(Nil), EventFilters.Default, modelUpdate, viewModelUpdate, viewUpdate)
 
     new GameEngine[StartupData, StartupError, GameModel, ViewModel](
       fonts,
@@ -81,13 +83,14 @@ object IndigoJS {
           gm
         )(GlobalEventDelegate.fromGlobalEvent(e)).toInternal
 
-  private def convertUpdateViewModel(f: ViewModelUpdate): (FrameContext[StartupData], GameModel, ViewModel) => Outcome[ViewModel] =
+  private def convertUpdateViewModel(f: ViewModelUpdate): (FrameContext[StartupData], GameModel, ViewModel) => GlobalEvent => Outcome[ViewModel] =
     (fc, gm, vm) =>
-      f(
-        new FrameContextDelegate(fc),
-        gm,
-        vm
-      ).toInternal
+      e =>
+        f(
+          new FrameContextDelegate(fc),
+          gm,
+          vm
+        )(GlobalEventDelegate.fromGlobalEvent(e)).toInternal
 
   private def convertUpdateView(f: ViewUpdate): (FrameContext[StartupData], GameModel, ViewModel) => SceneUpdateFragment =
     (fc, gm, vm) =>
