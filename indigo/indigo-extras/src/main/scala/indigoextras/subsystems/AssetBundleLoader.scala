@@ -110,11 +110,11 @@ object AssetBundleLoader extends SubSystem {
   }
 }
 
-sealed trait AssetBundleLoaderEvent extends SubSystemEvent
+sealed trait AssetBundleLoaderEvent extends GlobalEvent
 object AssetBundleLoaderEvent {
   // commands
-  final case class Load(key: BindingKey, assets: Set[AssetType]) extends AssetBundleLoaderEvent
-  final case class Retry(key: BindingKey)                        extends AssetBundleLoaderEvent
+  final case class Load(key: BindingKey, assets: Set[AssetType]) extends AssetBundleLoaderEvent with SubSystemEvent
+  final case class Retry(key: BindingKey)                        extends AssetBundleLoaderEvent with SubSystemEvent
 
   // result events
   final case class Started(key: BindingKey)                                                extends AssetBundleLoaderEvent
