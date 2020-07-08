@@ -21,10 +21,9 @@ final case class TiledMap(
     tilesets: List[TileSet],
     `type`: String, // "map"
     hexsidelength: Option[Int],
-    staggeraxis: Option[String],     // For staggered and hexagonal maps, determines which axis ("x" or "y") is staggered
-    staggerindex: Option[String],    // For staggered and hexagonal maps, determines whether the "even" or "odd" indexes along the staggered axis are shifted.
-    backgroundcolor: Option[String], // #AARRGGBB
-    version: Int
+    staggeraxis: Option[String],    // For staggered and hexagonal maps, determines which axis ("x" or "y") is staggered
+    staggerindex: Option[String],   // For staggered and hexagonal maps, determines whether the "even" or "odd" indexes along the staggered axis are shifted.
+    backgroundcolor: Option[String] // #AARRGGBB
 )
 
 final case class TiledLayer(
