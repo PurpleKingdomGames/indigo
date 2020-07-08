@@ -14,10 +14,26 @@ import indigoextras.subsystems.AutomataEvent
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object Fireworks extends IndigoDemo[Vertex => Point, FireworksStartupData, FireworksModel, Unit] {
+object Fireworks extends IndigoDemo[Vertex => Point, FireworksStartupData, Unit, Unit] {
 
   val targetFPS: Int     = 60
   val magnification: Int = 3
+
+  /**
+    * Fairly severe. The model only gets one event and the
+    * view model is never run.
+    */
+  val eventFilters: EventFilters =
+    EventFilters(
+      {
+        case e: KeyboardEvent.KeyUp =>
+          Some(e)
+
+        case _ =>
+          None
+      },
+      _ => None
+    )
 
   def boot(flags: Map[String, String]): BootResult[Vertex => Point] = {
     val config =
@@ -56,27 +72,26 @@ object Fireworks extends IndigoDemo[Vertex => Point, FireworksStartupData, Firew
       FireworksStartupData(toScreenSpace)
     )
 
-  def initialModel(startupData: FireworksStartupData): FireworksModel =
-    FireworksModel(startupData.toScreenSpace)
-
-  def initialViewModel(startupData: FireworksStartupData, model: FireworksModel): Unit =
+  def initialModel(startupData: FireworksStartupData): Unit =
     ()
 
-  def updateModel(context: FrameContext[FireworksStartupData], model: FireworksModel): GlobalEvent => Outcome[FireworksModel] = {
+  def initialViewModel(startupData: FireworksStartupData, model: Unit): Unit =
+    ()
+
+  def updateModel(context: FrameContext[FireworksStartupData], model: Unit): GlobalEvent => Outcome[Unit] = {
     case KeyboardEvent.KeyUp(Keys.SPACE) =>
-      Outcome(model, launchFireworks(context.dice, model.toScreenSpace))
+      Outcome(model, launchFireworks(context.dice, context.startUpData.toScreenSpace))
 
     case _ =>
       Outcome(model)
   }
 
-  def updateViewModel(context: FrameContext[FireworksStartupData], model: FireworksModel, viewModel: Unit): Outcome[Unit] =
-    Outcome(())
+  def updateViewModel(context: FrameContext[FireworksStartupData], model: Unit, viewModel: Unit): GlobalEvent => Outcome[Unit] =
+    _ => Outcome(())
 
-  def present(context: FrameContext[FireworksStartupData], model: FireworksModel, viewModel: Unit): SceneUpdateFragment =
+  def present(context: FrameContext[FireworksStartupData], model: Unit, viewModel: Unit): SceneUpdateFragment =
     SceneUpdateFragment.empty
 
 }
 
 final case class FireworksStartupData(toScreenSpace: Vertex => Point)
-final case class FireworksModel(toScreenSpace: Vertex => Point)

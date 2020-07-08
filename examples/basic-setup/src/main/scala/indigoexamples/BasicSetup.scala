@@ -7,6 +7,8 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object BasicSetup extends IndigoDemo[Unit, MyStartUpData, MyGameModel, MyViewModel] {
 
+  val eventFilters: EventFilters = EventFilters.Default
+
   def boot(flags: Map[String, String]): BootResult[Unit] =
     BootResult.noData(
       defaultGameConfig
@@ -23,8 +25,8 @@ object BasicSetup extends IndigoDemo[Unit, MyStartUpData, MyGameModel, MyViewMod
 
   def updateModel(context: FrameContext[MyStartUpData], model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = _ => Outcome(model)
 
-  def updateViewModel(context: FrameContext[MyStartUpData], model: MyGameModel, viewModel: MyViewModel): Outcome[MyViewModel] =
-    Outcome(viewModel)
+  def updateViewModel(context: FrameContext[MyStartUpData], model: MyGameModel, viewModel: MyViewModel): GlobalEvent => Outcome[MyViewModel] =
+    _ => Outcome(viewModel)
 
   def present(context: FrameContext[MyStartUpData], model: MyGameModel, viewModel: MyViewModel): SceneUpdateFragment =
     noRender

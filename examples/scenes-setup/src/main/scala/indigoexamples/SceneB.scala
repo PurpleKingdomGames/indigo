@@ -10,31 +10,34 @@ object SceneB extends Scene[StartUpData, GameModel, Unit] {
 
   val name: SceneName = SceneName("B")
 
-  val sceneModelLens: Lens[GameModel, MessageB] =
+  val modelLens: Lens[GameModel, MessageB] =
     Lens(
       model => model.sceneB,
       (model, newMessage) => model.copy(sceneB = newMessage)
     )
 
   // Nothing to do
-  val sceneViewModelLens: Lens[Unit, Unit] =
+  val viewModelLens: Lens[Unit, Unit] =
     Lens.fixed(())
 
-  val sceneSubSystems: Set[SubSystem] =
+  val eventFilters: EventFilters = EventFilters.Default
+
+  val subSystems: Set[SubSystem] =
     Set(
       HelloSubSystem("Scene SubSystem B", FontStuff.fontKey)
     )
 
   // Nothing to do
-  def updateSceneModel(context: FrameContext[StartUpData], sceneModel: MessageB): GlobalEvent => Outcome[MessageB] =
+  def updateModel(context: FrameContext[StartUpData], sceneModel: MessageB): GlobalEvent => Outcome[MessageB] =
     _ => Outcome(sceneModel)
 
   // Nothing to do
-  def updateSceneViewModel(context: FrameContext[StartUpData], sceneModel: MessageB, sceneViewModel: Unit): Outcome[Unit] = Outcome(())
+  def updateViewModel(context: FrameContext[StartUpData], sceneModel: MessageB, sceneViewModel: Unit): GlobalEvent => Outcome[Unit] =
+    _ => Outcome(())
 
   // Show some text
   // When the user clicks anywhere in the screen, trigger an event to jump to the other scene.
-  def updateSceneView(context: FrameContext[StartUpData], sceneModel: MessageB, sceneViewModel: Unit): SceneUpdateFragment = {
+  def present(context: FrameContext[StartUpData], sceneModel: MessageB, sceneViewModel: Unit): SceneUpdateFragment = {
     val events: List[GlobalEvent] =
       if (context.inputState.mouse.wasMouseClickedWithin(Rectangle(0, 0, 550, 400))) List(SceneEvent.JumpTo(SceneA.name))
       else Nil

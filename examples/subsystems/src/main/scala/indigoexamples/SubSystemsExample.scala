@@ -9,6 +9,8 @@ object SubSystemsExample extends IndigoDemo[Unit, Unit, Unit, Unit] {
 
   import FontDetails._
 
+  val eventFilters: EventFilters = EventFilters.Default
+
   def boot(flags: Map[String, String]): BootResult[Unit] =
     BootResult
       .noData(defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399")))
@@ -39,8 +41,8 @@ object SubSystemsExample extends IndigoDemo[Unit, Unit, Unit, Unit] {
       Outcome(())
   }
 
-  def updateViewModel(context: FrameContext[Unit], model: Unit, viewModel: Unit): Outcome[Unit] =
-    Outcome(viewModel)
+  def updateViewModel(context: FrameContext[Unit], model: Unit, viewModel: Unit): GlobalEvent => Outcome[Unit] =
+    _ => Outcome(viewModel)
 
   def present(context: FrameContext[Unit], model: Unit, viewModel: Unit): SceneUpdateFragment =
     noRender

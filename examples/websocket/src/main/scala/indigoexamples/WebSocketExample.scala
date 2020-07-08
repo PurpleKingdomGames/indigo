@@ -18,6 +18,8 @@ Ping! to the console.
 @JSExportTopLevel("IndigoGame")
 object WebSocketExample extends IndigoDemo[Unit, MySetupData, Unit, MyViewModel] {
 
+  val eventFilters: EventFilters = EventFilters.Default
+
   def boot(flags: Map[String, String]): BootResult[Unit] =
     BootResult
       .noData(defaultGameConfig)
@@ -86,11 +88,16 @@ object WebSocketExample extends IndigoDemo[Unit, MySetupData, Unit, MyViewModel]
       Outcome(model)
   }
 
-  def updateViewModel(context: FrameContext[MySetupData], model: Unit, viewModel: MyViewModel): Outcome[MyViewModel] =
-    (viewModel.ping.update(context.inputState.mouse) |+| viewModel.echo.update(context.inputState.mouse)).map {
-      case (ping, echo) =>
-        MyViewModel(ping, echo)
-    }
+  def updateViewModel(context: FrameContext[MySetupData], model: Unit, viewModel: MyViewModel): GlobalEvent => Outcome[MyViewModel] = {
+    case FrameTick =>
+      (viewModel.ping.update(context.inputState.mouse) |+| viewModel.echo.update(context.inputState.mouse)).map {
+        case (ping, echo) =>
+          MyViewModel(ping, echo)
+      }
+
+    case _ =>
+      Outcome(viewModel)
+  }
 
   def present(context: FrameContext[MySetupData], model: Unit, viewModel: MyViewModel): SceneUpdateFragment =
     SceneUpdateFragment(

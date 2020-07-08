@@ -8,6 +8,8 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object HttpExample extends IndigoDemo[Unit, Unit, Unit, Button] {
 
+  val eventFilters: EventFilters = EventFilters.Default
+
   def boot(flags: Map[String, String]): BootResult[Unit] =
     BootResult
       .noData(defaultGameConfig)
@@ -47,8 +49,13 @@ object HttpExample extends IndigoDemo[Unit, Unit, Unit, Button] {
       Outcome(model)
   }
 
-  def updateViewModel(context: FrameContext[Unit], model: Unit, viewModel: Button): Outcome[Button] =
-    viewModel.update(context.inputState.mouse)
+  def updateViewModel(context: FrameContext[Unit], model: Unit, viewModel: Button): GlobalEvent => Outcome[Button] = {
+    case FrameTick =>
+      viewModel.update(context.inputState.mouse)
+
+    case _ =>
+      Outcome(viewModel)
+  }
 
   def present(context: FrameContext[Unit], model: Unit, viewModel: Button): SceneUpdateFragment =
     SceneUpdateFragment(viewModel.draw)

@@ -8,6 +8,8 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object AutomataExample extends IndigoDemo[Point, Point, Unit, ViewModel] {
 
+  val eventFilters: EventFilters = EventFilters.Default
+
   def boot(flags: Map[String, String]): BootResult[Point] = {
     val config = defaultGameConfig
 
@@ -47,15 +49,20 @@ object AutomataExample extends IndigoDemo[Point, Point, Unit, ViewModel] {
       Outcome(model)
   }
 
-  def updateViewModel(context: FrameContext[Point], model: Unit, viewModel: ViewModel): Outcome[ViewModel] =
-    viewModel.button
-      .update(context.inputState.mouse)
-      .map { btn =>
-        btn.withUpAction {
-          List(Score.spawnEvent(Score.generateLocation(viewModel.viewportSize, context.dice), context.dice))
+  def updateViewModel(context: FrameContext[Point], model: Unit, viewModel: ViewModel): GlobalEvent => Outcome[ViewModel] = {
+    case FrameTick =>
+      viewModel.button
+        .update(context.inputState.mouse)
+        .map { btn =>
+          btn.withUpAction {
+            List(Score.spawnEvent(Score.generateLocation(viewModel.viewportSize, context.dice), context.dice))
+          }
         }
-      }
-      .map(viewModel.withButton)
+        .map(viewModel.withButton)
+
+    case _ =>
+      Outcome(viewModel)
+  }
 
   def present(context: FrameContext[Point], model: Unit, viewModel: ViewModel): SceneUpdateFragment =
     SceneUpdateFragment(

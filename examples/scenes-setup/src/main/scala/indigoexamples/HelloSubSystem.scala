@@ -12,7 +12,7 @@ final case class HelloSubSystem(initialMessage: String, fontKey: FontKey) extend
 
   def update(context: SubSystemFrameContext, message: String): EventType => Outcome[String] = _ => Outcome(message)
 
-  def render(context: SubSystemFrameContext, message: String): SceneUpdateFragment =
+  def present(context: SubSystemFrameContext, message: String): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addUiLayerNodes(Text(message, 20, 50, 1, fontKey))
 }

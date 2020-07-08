@@ -9,6 +9,8 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object AssetLoadingExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewModel] {
 
+  val eventFilters: EventFilters = EventFilters.Default
+
   def boot(flags: Map[String, String]): BootResult[Unit] =
     BootResult
       .noData(
@@ -62,10 +64,15 @@ object AssetLoadingExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMod
       Outcome(model)
   }
 
-  def updateViewModel(context: FrameContext[Unit], model: MyGameModel, viewModel: MyViewModel): Outcome[MyViewModel] =
-    viewModel.button.update(context.inputState.mouse).map { btn =>
-      viewModel.copy(button = btn)
-    }
+  def updateViewModel(context: FrameContext[Unit], model: MyGameModel, viewModel: MyViewModel): GlobalEvent => Outcome[MyViewModel] = {
+    case FrameTick =>
+      viewModel.button.update(context.inputState.mouse).map { btn =>
+        viewModel.copy(button = btn)
+      }
+
+    case _ =>
+      Outcome(viewModel)
+  }
 
   def present(context: FrameContext[Unit], model: MyGameModel, viewModel: MyViewModel): SceneUpdateFragment = {
     val box = if (model.loaded) {

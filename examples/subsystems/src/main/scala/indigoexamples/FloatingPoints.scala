@@ -33,7 +33,7 @@ final case class FloatingPoints(fontKey: FontKey) extends SubSystem {
   val text: Text =
     Text("10", 0, 0, 1, fontKey).alignCenter
 
-  def render(context: SubSystemFrameContext, entities: List[FloatingPointEntity]): SceneUpdateFragment =
+  def present(context: SubSystemFrameContext, entities: List[FloatingPointEntity]): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addUiLayerNodes(
         entities

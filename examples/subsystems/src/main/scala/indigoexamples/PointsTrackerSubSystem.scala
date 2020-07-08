@@ -17,7 +17,7 @@ final case class PointsTrackerSubSystem(fontKey: FontKey) extends SubSystem {
     Outcome(points + additionalPoints)
   }
 
-  def render(context: SubSystemFrameContext, points: Int): SceneUpdateFragment =
+  def present(context: SubSystemFrameContext, points: Int): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addGameLayerNodes(Text(s"""Points: ${points.toString()}""", 10, 10, 1, fontKey))
 }

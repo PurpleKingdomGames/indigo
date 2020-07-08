@@ -8,6 +8,8 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object InputFieldExample extends IndigoDemo[Unit, Unit, Unit, MyViewModel] {
 
+  val eventFilters: EventFilters = EventFilters.Default
+
   def boot(flags: Map[String, String]): BootResult[Unit] =
     BootResult
       .noData(defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399")))
@@ -36,13 +38,18 @@ object InputFieldExample extends IndigoDemo[Unit, Unit, Unit, MyViewModel] {
   def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
 
-  def updateViewModel(context: FrameContext[Unit], model: Unit, viewModel: MyViewModel): Outcome[MyViewModel] =
-    Outcome(
-      viewModel.copy(
-        singleLine = viewModel.singleLine.update(context),
-        multiLine = viewModel.multiLine.update(context)
+  def updateViewModel(context: FrameContext[Unit], model: Unit, viewModel: MyViewModel): GlobalEvent => Outcome[MyViewModel] = {
+    case FrameTick =>
+      Outcome(
+        viewModel.copy(
+          singleLine = viewModel.singleLine.update(context),
+          multiLine = viewModel.multiLine.update(context)
+        )
       )
-    )
+
+    case _ =>
+      Outcome(viewModel)
+  }
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   def present(context: FrameContext[Unit], model: Unit, viewModel: MyViewModel): SceneUpdateFragment = {
