@@ -31,11 +31,9 @@ object ModelLogic {
 
   def update(gameTime: GameTime, dice: Dice, state: GameModel): GlobalEvent => Outcome[GameModel] = {
     case FrameTick if gameTime.running < state.lastUpdated + state.tickDelay =>
-      println(1)
       Outcome(state)
 
     case FrameTick =>
-      println(2)
       state.gameState match {
         case s @ GameState.Running(_, _) =>
           updateRunning(
@@ -54,7 +52,6 @@ object ModelLogic {
       }
 
     case gameEvent =>
-      println(3)
       state.gameState match {
         case s @ GameState.Running(_, _) =>
           updateRunning(gameTime, dice, state, s)(gameEvent)
