@@ -261,6 +261,25 @@ lazy val indigoJsonUPickle =
 lazy val indigoJsonUPickleJS  = indigoJsonUPickle.js
 lazy val indigoJsonUPickleJVM = indigoJsonUPickle.jvm
 
+lazy val tiled =
+  crossProject(JSPlatform, JVMPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("tiled"))
+    .settings(commonSettings: _*)
+    .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
+    .settings(
+      name := "tiled-example",
+      showCursor := true,
+      title := "Tiled example",
+      gameAssetsDirectory := "assets"
+    )
+    .dependsOn(indigo)
+    .dependsOn(indigoExtras)
+    .dependsOn(indigoJsonCirce)
+lazy val tiledJS  = tiled.js
+lazy val tiledJVM = tiled.jvm
+
 // Root
 lazy val indigoProject =
   (project in file("."))
@@ -280,7 +299,8 @@ lazy val indigoProject =
       indigoJS,
       facadesJS,
       sandboxJS,
-      perfJS
+      perfJS,
+      tiledJS
     )
 
 lazy val code =
