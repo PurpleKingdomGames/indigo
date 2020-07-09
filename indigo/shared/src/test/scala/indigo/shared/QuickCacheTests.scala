@@ -71,6 +71,17 @@ object QuickCacheTests extends TestSuite {
         actual ==> expected
       }
 
+      "quickcache can be disabled" - {
+        implicit val cache = QuickCache.empty[Int]
+
+        QuickCache("ten")(10) ==> 10
+        QuickCache("ten", true)(20) ==> 20 // disabled
+
+        cache.keys.map(_.value) ==> List("ten")
+
+        cache.all.map(p => (p._1.value, p._2)) ==> List(("ten" -> 10))
+      }
+
     }
 
 }
