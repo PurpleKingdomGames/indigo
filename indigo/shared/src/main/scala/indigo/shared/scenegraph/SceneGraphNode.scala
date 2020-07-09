@@ -29,12 +29,6 @@ sealed trait SceneGraphNodePrimitive extends SceneGraphNode {
   def moveTo(x: Int, y: Int): SceneGraphNodePrimitive
   def moveBy(pt: Point): SceneGraphNodePrimitive
   def moveBy(x: Int, y: Int): SceneGraphNodePrimitive
-  def rotate(angle: Radians): SceneGraphNodePrimitive
-  def rotateBy(angle: Radians): SceneGraphNodePrimitive
-  def scaleBy(amount: Vector2): SceneGraphNodePrimitive
-  def scaleBy(x: Double, y: Double): SceneGraphNodePrimitive
-  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): SceneGraphNodePrimitive
-  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): SceneGraphNodePrimitive
 }
 
 final class Group(val positionOffset: Point, val rotation: Radians, val scale: Vector2, val depth: Depth, val children: List[SceneGraphNodePrimitive]) extends SceneGraphNodePrimitive {
@@ -54,23 +48,7 @@ final class Group(val positionOffset: Point, val rotation: Radians, val scale: V
     moveTo(positionOffset + pt)
   def moveBy(x: Int, y: Int): Group =
     moveBy(Point(x, y))
-
-  def rotate(angle: Radians): Group =
-    Group(positionOffset, angle, scale, depth, children)
-  def rotateBy(angle: Radians): Group =
-    rotate(rotation + angle)
-
-  def scaleBy(amount: Vector2): Group =
-    Group(positionOffset, rotation, scale + amount, depth, children)
-  def scaleBy(x: Double, y: Double): Group =
-    scaleBy(Vector2(x, y))
-
-  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): SceneGraphNodePrimitive =
-    Group(newPosition, newRotation, newScale, depth, children)
-
-  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): SceneGraphNodePrimitive =
-    Group(positionOffset + positionDiff, rotation + rotationDiff, scale + scaleDiff, depth, children)
-
+    
   def bounds(locator: BoundaryLocator): Rectangle =
     children match {
       case Nil =>
@@ -99,10 +77,10 @@ object Group {
     Group(position, rotation, scale, depth, children.toList)
 
   def apply(children: SceneGraphNodePrimitive*): Group =
-    Group(Point.zero, Radians.zero, Vector2.one, Depth.Base, children.toList)
+    Group(Point.zero, Radians.zero, Vector2.one, Depth.Zero, children.toList)
 
   def apply(children: List[SceneGraphNodePrimitive]): Group =
-    Group(Point.zero, Radians.zero, Vector2.one, Depth.Base, children)
+    Group(Point.zero, Radians.zero, Vector2.one, Depth.Zero, children)
 
   def empty: Group =
     apply(Nil)
@@ -205,10 +183,12 @@ sealed trait Renderable extends SceneGraphNodePrimitive {
   override def moveTo(x: Int, y: Int): Renderable
   override def moveBy(pt: Point): Renderable
   override def moveBy(x: Int, y: Int): Renderable
-  override def rotate(angle: Radians): Renderable
-  override def rotateBy(angle: Radians): Renderable
-  override def scaleBy(amount: Vector2): Renderable
-  override def scaleBy(x: Double, y: Double): Renderable
+  def rotate(angle: Radians): Renderable
+  def rotateBy(angle: Radians): Renderable
+  def scaleBy(amount: Vector2): Renderable
+  def scaleBy(x: Double, y: Double): Renderable
+  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): SceneGraphNodePrimitive
+  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): SceneGraphNodePrimitive
 
 }
 

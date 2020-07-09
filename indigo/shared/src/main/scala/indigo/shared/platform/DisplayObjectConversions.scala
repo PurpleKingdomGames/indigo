@@ -151,7 +151,7 @@ final class DisplayObjectConversions(
             x.children
               .map { c =>
                 c.withDepth(c.depth + x.depth)
-                  .transformBy(x.positionOffset, x.rotation, x.scale)
+                  .moveBy(x.positionOffset)
               }
 
           rec(childNodes ++ xs)

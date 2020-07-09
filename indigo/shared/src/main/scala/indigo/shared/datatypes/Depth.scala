@@ -5,6 +5,7 @@ final class Depth(val zIndex: Int) extends AnyVal {
     Depth.append(this, other)
 }
 object Depth {
+  val Zero: Depth = Depth(0)
   val Base: Depth = Depth(1)
   val one: Depth = Base
 
