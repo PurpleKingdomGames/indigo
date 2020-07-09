@@ -14,8 +14,9 @@ final class QuickCache[A](private val cache: mutable.HashMap[CacheKey, A]) {
     value
   }
 
-  def fetchOrAdd(key: CacheKey, value: => A): A =
-    fetch(key).getOrElse(add(key, value))
+  def fetchOrAdd(key: CacheKey, disabled: Boolean, value: => A): A =
+    if (disabled) value
+    else fetch(key).getOrElse(add(key, value))
 
   def purgeAllNow(): Unit =
     cache.clear()
@@ -56,7 +57,10 @@ final class QuickCache[A](private val cache: mutable.HashMap[CacheKey, A]) {
 object QuickCache {
 
   def apply[A](key: String)(value: => A)(implicit cache: QuickCache[A]): A =
-    cache.fetchOrAdd(CacheKey(key), value)
+    cache.fetchOrAdd(CacheKey(key), false, value)
+
+  def apply[A](key: String, disabled: Boolean)(value: => A)(implicit cache: QuickCache[A]): A =
+    cache.fetchOrAdd(CacheKey(key), disabled, value)
 
   def empty[A]: QuickCache[A] =
     new QuickCache[A](mutable.HashMap.empty[CacheKey, A])
