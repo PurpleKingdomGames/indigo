@@ -7,8 +7,7 @@ lazy val releaseProjects: List[String] =
     "indigoCore",
     "indigoExtras",
     "indigo",
-    "facades",
-    "tiled"
+    "facades"
   )
 
 lazy val coreProjects: List[String] =
@@ -144,14 +143,6 @@ addCommandAlias(
   List(
     "buildIndigo",
     "localPublishIndigo"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "tiledBuild",
-  List(
-    "tiledJS/fastOptJS",
-    "tiledJS/indigoBuildJS"
   ).mkString(";", ";", "")
 )
 

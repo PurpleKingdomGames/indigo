@@ -10,7 +10,8 @@ lazy val commonSettings = Seq(
   libraryDependencies ++= Seq(
     "com.lihaoyi" %%% "utest"  % "0.7.4" % "test",
     "io.indigoengine" %%% "indigo" % IndigoVersion.getVersion,
-    "io.indigoengine" %%% "indigo-extras" % IndigoVersion.getVersion
+    "io.indigoengine" %%% "indigo-extras" % IndigoVersion.getVersion,
+    "io.indigoengine" %%% "indigo-json-circe" % IndigoVersion.getVersion
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
   scalacOptions in (Compile, compile) ++= ScalacOptions.scala213Compile,
@@ -148,6 +149,21 @@ lazy val group =
       name := "group-example",
       showCursor := true,
       title := "Group example",
+      gameAssetsDirectory := "assets"
+    )
+
+lazy val tiled =
+  crossProject(JSPlatform)
+    .withoutSuffixFor(JSPlatform)
+    .crossType(CrossType.Pure)
+    .in(file("tiled"))
+    .settings(commonSettings: _*)
+    .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
+    .settings(
+      name := "tiled-example",
+      showCursor := true,
+      title := "Tiled example",
       gameAssetsDirectory := "assets"
     )
 
