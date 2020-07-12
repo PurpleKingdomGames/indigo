@@ -33,6 +33,9 @@ trait SharedTypeAliases {
   type Aseprite = shared.formats.Aseprite
   val Aseprite: shared.formats.Aseprite.type = shared.formats.Aseprite
 
+  type SpriteAndAnimations = shared.formats.SpriteAndAnimations
+  val SpriteAndAnimations: shared.formats.SpriteAndAnimations.type = shared.formats.SpriteAndAnimations
+
   type TiledMap = shared.formats.TiledMap
   val TiledMap: shared.formats.TiledMap.type = shared.formats.TiledMap
 
@@ -54,6 +57,6 @@ trait SharedTypeAliases {
   type BoundaryLocator = shared.BoundaryLocator
 
   type FrameContext[StartUpData] = shared.FrameContext[StartUpData]
-  type SubSystemFrameContext = shared.subsystems.SubSystemFrameContext
+  type SubSystemFrameContext     = shared.subsystems.SubSystemFrameContext
 
 }
