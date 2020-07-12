@@ -4,116 +4,88 @@ import utest._
 import indigo.shared.formats.TiledMap
 import indigo.shared.formats.TileSet
 import indigo.shared.formats.TiledLayer
+import indigo.shared.assets.AssetName
+import indigo.shared.scenegraph.Group
+import indigo.shared.scenegraph.Renderable
+import indigo.shared.scenegraph.Graphic
+import indigo.shared.datatypes.Point
 
 object TiledMapTests extends TestSuite {
 
   val tests: Tests =
     Tests {
 
-      "should be able to convert to a 2D list" - {
+      "should be able to convert to a TiledGridMap" - {
 
         "identity (Int)" - {
           val actual =
-            TiledSamples.tiledMap.toList2D[Int](identity[Int])
+            TiledSamples.tiledMap
+              .toGrid[Int](identity[Int])
+              .toListPerLayer
+              .head
+              .map(_.tile)
 
-          //TODO: This isn't right, this is just one Layer's worth, there can be may layers.
-
-          val expected: List[List[Int]] =
-            List(
-              List(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-              List(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-              List(2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-              List(7, 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-              List(20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2),
-              List(20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 19, 19),
-              List(20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 36, 36),
-              List(20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-              List(20, 0, 0, 0, 69, 70, 70, 62, 2, 2, 2, 2, 61, 71, 0, 0, 0, 0, 69),
-              List(20, 0, 0, 0, 0, 0, 0, 35, 36, 36, 8, 7, 37, 0, 0, 0, 0, 0, 0),
-              List(20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 20, 0, 0, 0, 0, 0, 0, 0)
-            )
+          val expected: List[Int] =
+            TiledSamples.gridMapInt.layers.head.grid.map(_.tile)
 
           actual ==> expected
 
         }
 
         "with mapping" - {
-          val asInt: List[List[Int]] =
-            List(
-              List(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-              List(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-              List(2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-              List(7, 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-              List(20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2),
-              List(20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 19, 19),
-              List(20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 36, 36),
-              List(20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-              List(20, 0, 0, 0, 69, 70, 70, 62, 2, 2, 2, 2, 61, 71, 0, 0, 0, 0, 69),
-              List(20, 0, 0, 0, 0, 0, 0, 35, 36, 36, 8, 7, 37, 0, 0, 0, 0, 0, 0),
-              List(20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 20, 0, 0, 0, 0, 0, 0, 0)
-            )
+          val actual =
+            TiledSamples.tiledMap
+              .toGrid[TileTypes](TiledSamples.mapping)
+              .toListPerLayer
+              .head
+              .map(_.tile)
 
-          val actual: List[List[TileTypes]] =
-            TiledSamples.tiledMap.toList2D[TileTypes](TiledSamples.mapping)
-
-          asInt.zip(actual).forall { row =>
-            row._1.zip(row._2).forall {
+          TiledSamples.gridMapInt.layers.head.grid
+            .map(_.tile)
+            .zip(actual)
+            .forall {
               case (0, TileTypes.Empty)           => true
               case (i, TileTypes.Solid) if i != 0 => true
               case (i, TileTypes.Empty) if i != 0 => false
               case (i, TileTypes.Solid) if i == 0 => false
-            }
-          } ==> true
+            } ==> true
+
         }
-      }
 
-      "should be able to convert to a list" - {
+        "to 2D grid (int)" - {
+          val actual: List[List[Int]] =
+            TiledSamples.tiledMap
+              .toGrid[Int](identity[Int])
+              .toList2DPerLayer
+              .head
+              .map(_.map(_.tile))
 
-        "identity (Int)" - {
-          val actual =
-            TiledSamples.tiledMap.toList2D[Int](identity[Int])
-
-          val expected: List[Int] =
-            List(
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 37, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 19, 19, 20, 0, 0, 0, 0, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 35, 36, 36, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 69, 70, 70, 62, 2, 2, 2, 2, 61, 71, 0, 0, 0, 0, 69, 20, 0, 0, 0, 0, 0, 0, 35,
-              36, 36, 8, 7, 37, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 20, 0, 0, 0, 0, 0, 0, 0
-            )
+          val expected: List[List[Int]] =
+            TiledSamples.gridMapInt2D
 
           actual ==> expected
-
         }
 
-        "with mapping" - {
-          val asInt: List[Int] =
-            List(
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 37, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 19, 19, 20, 0, 0, 0, 0, 0, 0, 0,
-              0, 0, 0, 0, 0, 0, 0, 0, 35, 36, 36, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 69, 70, 70, 62, 2, 2, 2, 2, 61, 71, 0, 0, 0, 0, 69, 20, 0, 0, 0, 0, 0, 0, 35,
-              36, 36, 8, 7, 37, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 20, 0, 0, 0, 0, 0, 0, 0
-            )
-
-          val actual =
-            TiledSamples.tiledMap.toList[TileTypes](TiledSamples.mapping)
-
-          asInt.zip(actual).forall {
-            case (0, TileTypes.Empty)           => true
-            case (i, TileTypes.Solid) if i != 0 => true
-            case (i, TileTypes.Empty) if i != 0 => false
-            case (i, TileTypes.Solid) if i == 0 => false
-          } ==> true
-
-        }
       }
 
       "should be able to convert to a Group of graphics" - {
+        val actual: Group =
+          TiledSamples.tiledMap.toGroup(AssetName("test"))
 
-        1 ==> 2
-      }
+        actual.children.head match {
+          case g: Group =>
+            // Only 3 tiles have contents.
+            val graphics: List[Graphic] =
+              g.children.collect { case graphic: Graphic => graphic }
 
-      "should be able to convert to a Group of clones" - {
-        1 ==> 2
+            graphics.length ==> 3
+            graphics(0).position ==> Point(32, 64)
+            graphics(1).position ==> Point(64, 64)
+            graphics(2).position ==> Point(64, 96)
+
+          case _: Renderable =>
+            throw new Exception("failed")
+        }
       }
 
     }
@@ -133,22 +105,74 @@ object TiledSamples {
     case _ => TileTypes.Solid
   }
 
+  val gridMapInt: TiledGridMap[Int] =
+    TiledGridMap(
+      List(
+        TiledGridLayer(
+          List(
+            TiledGridCell(0, 0, 0),
+            TiledGridCell(1, 0, 0),
+            TiledGridCell(2, 0, 0),
+            TiledGridCell(3, 0, 0),
+            TiledGridCell(0, 1, 0),
+            TiledGridCell(1, 1, 0),
+            TiledGridCell(2, 1, 0),
+            TiledGridCell(3, 1, 0),
+            TiledGridCell(0, 2, 0),
+            TiledGridCell(1, 2, 2),
+            TiledGridCell(2, 2, 1),
+            TiledGridCell(3, 2, 0),
+            TiledGridCell(0, 3, 0),
+            TiledGridCell(1, 3, 0),
+            TiledGridCell(2, 3, 1),
+            TiledGridCell(3, 3, 0)
+          ),
+          4
+        )
+      )
+    )
+
+  val gridMapInt2D: List[List[Int]] =
+    List(
+      List(
+        TiledGridCell(0, 0, 0),
+        TiledGridCell(1, 0, 0),
+        TiledGridCell(2, 0, 0),
+        TiledGridCell(3, 0, 0)
+      ).map(_.tile),
+      List(
+        TiledGridCell(0, 1, 0),
+        TiledGridCell(1, 1, 0),
+        TiledGridCell(2, 1, 0),
+        TiledGridCell(3, 1, 0)
+      ).map(_.tile),
+      List(
+        TiledGridCell(0, 2, 0),
+        TiledGridCell(1, 2, 2),
+        TiledGridCell(2, 2, 1),
+        TiledGridCell(3, 2, 0)
+      ).map(_.tile),
+      List(
+        TiledGridCell(0, 3, 0),
+        TiledGridCell(1, 3, 0),
+        TiledGridCell(2, 3, 1),
+        TiledGridCell(3, 3, 0)
+      ).map(_.tile)
+    )
+
   val tiledMap: TiledMap =
     TiledMap(
-      19,
-      11,
+      4,
+      4,
       false,
       List(
         TiledLayer(
           "Tile Layer 1",
-          List(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 37, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 19, 19, 20, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 35, 36, 36, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 69, 70, 70, 62, 2, 2, 2, 2, 61, 71, 0, 0, 0, 0, 69, 20, 0, 0, 0, 0, 0, 0, 35, 36,
-            36, 8, 7, 37, 0, 0, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 20, 0, 0, 0, 0, 0, 0, 0),
+          gridMapInt.layers.head.grid.map(_.tile),
           0,
           0,
-          19,
-          11,
+          4,
+          4,
           1,
           "tilelayer",
           true
