@@ -42,6 +42,7 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
             Dude(
               aseprite,
               spriteAndAnimations.sprite
+                .withDepth(Depth(3))
                 .withRef(16, 16)                                                                         // Initial offset, so when talk about his position it's the center of the sprite
                 .moveTo(viewportWidth / 2 / magnificationLevel, viewportHeight / 2 / magnificationLevel) // Also place him in the middle of the screen initially
             )
@@ -52,7 +53,7 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
     val res: Option[Startup.Success[SandboxStartupData]] = for {
       json                <- assetCollection.findTextDataByName(AssetName(SandboxAssets.dudeName.value + "-json"))
       aseprite            <- Json.asepriteFromJson(json)
-      spriteAndAnimations <- aseprite.toSpriteAndAnimations(dice, Depth(3), SandboxAssets.dudeName)
+      spriteAndAnimations <- aseprite.toSpriteAndAnimations(dice, SandboxAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)
 
     res.getOrElse(Startup.Failure(StartupErrors("Failed to load the dude")))
