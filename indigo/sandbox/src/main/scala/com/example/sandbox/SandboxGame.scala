@@ -3,7 +3,6 @@ package com.example.sandbox
 import indigo._
 import indigo.json.Json
 
-import indigoextras.formats._
 import indigoextras.subsystems.FPSCounter
 import indigoextras.ui.InputField
 import indigoextras.ui.InputFieldAssets
@@ -53,7 +52,7 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
     val res: Option[Startup.Success[SandboxStartupData]] = for {
       json                <- assetCollection.findTextDataByName(AssetName(SandboxAssets.dudeName.value + "-json"))
       aseprite            <- Json.asepriteFromJson(json)
-      spriteAndAnimations <- AsepriteConverter.toSpriteAndAnimations(dice, aseprite, Depth(3), SandboxAssets.dudeName)
+      spriteAndAnimations <- aseprite.toSpriteAndAnimations(dice, Depth(3), SandboxAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)
 
     res.getOrElse(Startup.Failure(StartupErrors("Failed to load the dude")))

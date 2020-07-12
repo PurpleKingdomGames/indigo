@@ -8,21 +8,30 @@ import indigo.shared.datatypes._
 import indigo.shared.formats._
 
 import utest._
+import indigo.shared.dice.Dice
+import indigo.shared.assets.AssetName
+import indigo.shared.collections.NonEmptyList
+import indigo.shared.time.Millis
 
-object AsepriteConverterTests extends TestSuite {
+object AsepriteTests extends TestSuite {
 
   val tests: Tests =
     Tests {
       "Create an Aseprite asset" - {
 
-        // "should be able to convert the loaded definition into a renderable Sprite object" - {
-        //   pending
-        //   AsepriteSampleData.aseprite.flatMap { as =>
-        //     Aseprite
-        //       .toSpriteAndAnimations(as, AsepriteSampleData.depth, AsepriteSampleData.imageAssetRef)
-        //       .map(_.sprite.withBindingKey(BindingKey("test")))
-        //   } ==> AsepriteSampleData.sprite
-        // }
+        "should be able to convert the loaded definition into a renderable Sprite object" - {
+          val SpriteAndAnimations(sprite, animation) =
+            AsepriteSampleData.aseprite
+              .toSpriteAndAnimations(Dice.loaded(0), AsepriteSampleData.depth, AsepriteSampleData.imageAssetRef)
+              .get
+
+          sprite.bindingKey ==> AsepriteSampleData.sprite.bindingKey
+          sprite.animationKey ==> AsepriteSampleData.sprite.animationKey
+
+          animation.cycles.length ==> 1
+          animation.currentCycleLabel.value ==> "lights"
+          animation.cycles.find(c => c.label == animation.currentCycleLabel).get.frames.length ==> 3
+        }
 
       }
     }
@@ -33,7 +42,7 @@ object AsepriteSampleData {
 
   val depth: Depth = Depth(1)
 
-  val imageAssetRef: String = "trafficlights"
+  val imageAssetRef: AssetName = AssetName("trafficlights")
 
   val json: String =
     """
@@ -80,7 +89,7 @@ object AsepriteSampleData {
       |}
     """.stripMargin
 
-  val aseprite: Option[Aseprite] = Option {
+  val aseprite: Aseprite =
     Aseprite(
       frames = List(
         AsepriteFrame(
@@ -128,39 +137,38 @@ object AsepriteSampleData {
         )
       )
     )
-  }
 
-  val animationKey: AnimationKey = AnimationKey("test")
+  val animationKey: AnimationKey = AnimationKey("0000000000000000")
 
-  /*
-  Animations(
-        spriteSheetSize = Point(128, 128),
-        currentCycleLabel = CycleLabel("lights"),
-        cycle = Cycle(
+  val animation: Animation =
+    Animation(
+      animationKey,
+      Material.Textured(imageAssetRef),
+      currentCycleLabel = CycleLabel("lights"),
+      cycles = NonEmptyList(
+        Cycle.create(
           label = "lights",
-          frame = Frame(
-            bounds = Rectangle(Point(0, 0), Point(64, 64)),
-            duration = 100
-          ),
-          frames = List(
+          frames = NonEmptyList(
             Frame(
-              bounds = Rectangle(Point(64, 0), Point(64, 64)),
-              duration = 100
+              crop = Rectangle(Point(0, 0), Point(64, 64)),
+              duration = Millis(100)
             ),
             Frame(
-              bounds = Rectangle(Point(0, 64), Point(64, 64)),
-              duration = 100
+              crop = Rectangle(Point(64, 0), Point(64, 64)),
+              duration = Millis(100)
+            ),
+            Frame(
+              crop = Rectangle(Point(0, 64), Point(64, 64)),
+              duration = Millis(100)
             )
           )
-        ),
-        cycles = Map(),
-        actions = Nil
+        )
       )
-   */
+    )
 
-  val sprite: Option[Sprite] = Option {
+  val sprite: Sprite =
     Sprite(
-      bindingKey = BindingKey("test"),
+      bindingKey = BindingKey("0000000000000000"),
       position = Point.zero,
       depth = depth,
       rotation = Radians.zero,
@@ -170,7 +178,5 @@ object AsepriteSampleData {
       effects = Effects.default,
       (_: (Rectangle, GlobalEvent)) => Nil
     )
-
-  }
 
 }
