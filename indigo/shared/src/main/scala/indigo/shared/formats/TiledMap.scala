@@ -56,7 +56,7 @@ final case class TiledMap(
     )
   }
 
-  def toGroup(assetName: AssetName): Group =
+  def toGroup(assetName: AssetName): Option[Group] =
     TiledMap.toGroup(this, assetName)
 
 }
@@ -101,37 +101,37 @@ object TiledMap {
       y = index / gridWidth
     )
 
-  def toGroup(tiledMap: TiledMap, assetName: AssetName): Group = {
-    val tileSize: Point = Point(tiledMap.tilewidth, tiledMap.tileheight)
+  def toGroup(tiledMap: TiledMap, assetName: AssetName): Option[Group] =
+    tiledMap.tilesets.headOption.flatMap(_.columns).map { tileSheetColumnCount =>
+      val tileSize: Point = Point(tiledMap.tilewidth, tiledMap.tileheight)
 
-    val layers = tiledMap.layers.map { layer =>
-      val tileSheetColumnCount: Int = layer.width
-      val tilesInUse: Map[Int, Graphic] =
-        layer.data.toSet.foldLeft(Map.empty[Int, Graphic]) { (tiles, i) =>
-          tiles ++ Map(
-            i ->
-              Graphic(Rectangle(Point.zero, tileSize), 1, Material.Textured(assetName))
-                .withCrop(
-                  Rectangle(fromIndex(i - 1, tileSheetColumnCount) * tileSize, tileSize)
-                )
-          )
-        }
+      val layers = tiledMap.layers.map { layer =>
+        val tilesInUse: Map[Int, Graphic] =
+          layer.data.toSet.foldLeft(Map.empty[Int, Graphic]) { (tiles, i) =>
+            tiles ++ Map(
+              i ->
+                Graphic(Rectangle(Point.zero, tileSize), 1, Material.Textured(assetName))
+                  .withCrop(
+                    Rectangle(fromIndex(i - 1, tileSheetColumnCount) * tileSize, tileSize)
+                  )
+            )
+          }
 
-      Group(
-        layer.data.zipWithIndex.flatMap {
-          case (tileIndex, positionIndex) =>
-            if (tileIndex === 0) Nil
-            else
-              tilesInUse
-                .get(tileIndex)
-                .map(g => List(g.moveTo(fromIndex(positionIndex, tiledMap.width) * tileSize)))
-                .getOrElse(Nil)
-        }
-      )
+        Group(
+          layer.data.zipWithIndex.flatMap {
+            case (tileIndex, positionIndex) =>
+              if (tileIndex === 0) Nil
+              else
+                tilesInUse
+                  .get(tileIndex)
+                  .map(g => List(g.moveTo(fromIndex(positionIndex, tiledMap.width) * tileSize)))
+                  .getOrElse(Nil)
+          }
+        )
+      }
+
+      Group(layers)
     }
-
-    Group(layers)
-  }
 
 }
 

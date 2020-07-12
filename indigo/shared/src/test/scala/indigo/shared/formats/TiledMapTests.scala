@@ -70,7 +70,7 @@ object TiledMapTests extends TestSuite {
 
       "should be able to convert to a Group of graphics" - {
         val actual: Group =
-          TiledSamples.tiledMap.toGroup(AssetName("test"))
+          TiledSamples.tiledMap.toGroup(AssetName("test")).get
 
         actual.children.head match {
           case g: Group =>
