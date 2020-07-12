@@ -22,7 +22,7 @@ object AsepriteTests extends TestSuite {
         "should be able to convert the loaded definition into a renderable Sprite object" - {
           val SpriteAndAnimations(sprite, animation) =
             AsepriteSampleData.aseprite
-              .toSpriteAndAnimations(Dice.loaded(0), AsepriteSampleData.depth, AsepriteSampleData.imageAssetRef)
+              .toSpriteAndAnimations(Dice.loaded(0), AsepriteSampleData.imageAssetRef)
               .get
 
           sprite.bindingKey ==> AsepriteSampleData.sprite.bindingKey
