@@ -7,7 +7,7 @@ import indigo.shared.scenegraph.Graphic
 import indigo.shared.datatypes.Material
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.EqualTo._
-import indigo.shared.display.DisplayCloneBatch
+import scala.annotation.tailrec
 
 /*
 Full spec is here:
@@ -35,19 +35,29 @@ final case class TiledMap(
     backgroundcolor: Option[String] // #AARRGGBB
 ) {
 
-  def toList[A](mapper: Int => A): List[A] =
-    toList2D(mapper).flatten
+  def toGrid[A](mapper: Int => A): TiledGridMap[A] = {
+    @tailrec
+    def rec(remaining: List[(A, Int)], columnCount: Int, acc: List[TiledGridCell[A]]): List[TiledGridCell[A]] =
+      remaining match {
+        case Nil =>
+          acc
 
-  def toList2D[A](mapper: Int => A): List[List[A]] = {
-    println(mapper)
-    Nil
+        case (a, i) :: xs =>
+          rec(xs, columnCount, acc :+ TiledGridCell(i % columnCount, i / columnCount, a))
+      }
+
+    TiledGridMap[A](
+      layers.map { tiledLayer =>
+        TiledGridLayer(
+          rec(tiledLayer.data.map(mapper).zipWithIndex, tiledLayer.width, Nil),
+          tiledLayer.width
+        )
+      }
+    )
   }
 
-  def toGroup(assetName: AssetName): Option[Group] =
+  def toGroup(assetName: AssetName): Group =
     TiledMap.toGroup(this, assetName)
-
-  def toClones: Option[DisplayCloneBatch] =
-    None
 
 }
 
@@ -91,36 +101,67 @@ object TiledMap {
       y = index / gridWidth
     )
 
-  def toGroup(tiledMap: TiledMap, assetName: AssetName): Option[Group] =
-    tiledMap.tilesets.headOption.flatMap(_.columns).map { tileSheetColumnCount =>
-      val tileSize: Point = Point(tiledMap.tilewidth, tiledMap.tileheight)
+  def toGroup(tiledMap: TiledMap, assetName: AssetName): Group = {
+    val tileSize: Point = Point(tiledMap.tilewidth, tiledMap.tileheight)
 
-      val layers = tiledMap.layers.map { layer =>
-        val tilesInUse: Map[Int, Graphic] =
-          layer.data.toSet.foldLeft(Map.empty[Int, Graphic]) { (tiles, i) =>
-            tiles ++ Map(
-              i ->
-                Graphic(Rectangle(Point.zero, tileSize), 1, Material.Textured(assetName))
-                  .withCrop(
-                    Rectangle(fromIndex(i - 1, tileSheetColumnCount) * tileSize, tileSize)
-                  )
-            )
-          }
+    val layers = tiledMap.layers.map { layer =>
+      val tileSheetColumnCount: Int = layer.width
+      val tilesInUse: Map[Int, Graphic] =
+        layer.data.toSet.foldLeft(Map.empty[Int, Graphic]) { (tiles, i) =>
+          tiles ++ Map(
+            i ->
+              Graphic(Rectangle(Point.zero, tileSize), 1, Material.Textured(assetName))
+                .withCrop(
+                  Rectangle(fromIndex(i - 1, tileSheetColumnCount) * tileSize, tileSize)
+                )
+          )
+        }
 
-        Group(
-          layer.data.zipWithIndex.flatMap {
-            case (tileIndex, poitionIndex) =>
-              if (tileIndex === 0) Nil
-              else
-                tilesInUse
-                  .get(tileIndex)
-                  .map(g => List(g.moveTo(fromIndex(poitionIndex, tiledMap.width) * tileSize)))
-                  .getOrElse(Nil)
-          }
-        )
-      }
-
-      Group(layers)
+      Group(
+        layer.data.zipWithIndex.flatMap {
+          case (tileIndex, positionIndex) =>
+            if (tileIndex === 0) Nil
+            else
+              tilesInUse
+                .get(tileIndex)
+                .map(g => List(g.moveTo(fromIndex(positionIndex, tiledMap.width) * tileSize)))
+                .getOrElse(Nil)
+        }
+      )
     }
 
+    Group(layers)
+  }
+
+}
+
+final case class TiledGridMap[A](layers: List[TiledGridLayer[A]]) {
+
+  lazy val toListPerLayer: List[List[TiledGridCell[A]]] =
+    layers.map(_.grid)
+
+  lazy val toList2DPerLayer: List[List[List[TiledGridCell[A]]]] = {
+    @tailrec
+    def rec(remaining: List[TiledGridCell[A]], columnCount: Int, current: List[TiledGridCell[A]], acc: List[List[TiledGridCell[A]]]): List[List[TiledGridCell[A]]] =
+      remaining match {
+        case Nil =>
+          acc
+
+        case x :: xs if x.column === columnCount - 1 =>
+          rec(xs, columnCount, Nil, acc :+ (current :+ x))
+
+        case x :: xs =>
+          rec(xs, columnCount, current :+ x, acc)
+      }
+
+    layers.map { layer =>
+      rec(layer.grid, layer.columnCount, Nil, Nil)
+    }
+  }
+
+}
+final case class TiledGridLayer[A](grid: List[TiledGridCell[A]], columnCount: Int)
+final case class TiledGridCell[A](column: Int, row: Int, tile: A) {
+  lazy val x: Int = column
+  lazy val y: Int = row
 }
