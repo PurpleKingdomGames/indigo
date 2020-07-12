@@ -66,6 +66,7 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
           Dude(
             aseprite,
             spriteAndAnimations.sprite
+              .withDepth(Depth(3))
               .withRef(16, 16)                                                                         // Initial offset, so when talk about his position it's the center of the sprite
               .moveTo(viewportWidth / 2 / magnificationLevel, viewportHeight / 2 / magnificationLevel) // Also place him in the middle of the screen initially
           )
@@ -75,7 +76,7 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
     val res: Option[Startup.Success[Dude]] = for {
       json                <- assetCollection.findTextDataByName(AssetName(PerfAssets.dudeName.value + "-json"))
       aseprite            <- Json.asepriteFromJson(json)
-      spriteAndAnimations <- aseprite.toSpriteAndAnimations(dice, Depth(3), PerfAssets.dudeName)
+      spriteAndAnimations <- aseprite.toSpriteAndAnimations(dice, PerfAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)
 
     res.getOrElse(Startup.Failure(StartupErrors("Failed to load the dude")))

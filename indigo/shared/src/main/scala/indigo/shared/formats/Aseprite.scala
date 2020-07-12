@@ -23,8 +23,8 @@ import indigo.shared.animation.Frame
 
 final case class Aseprite(frames: List[AsepriteFrame], meta: AsepriteMeta) {
 
-  def toSpriteAndAnimations(dice: Dice, depth: Depth, assetName: AssetName): Option[SpriteAndAnimations] =
-    Aseprite.toSpriteAndAnimations(dice, this, depth, assetName)
+  def toSpriteAndAnimations(dice: Dice, assetName: AssetName): Option[SpriteAndAnimations] =
+    Aseprite.toSpriteAndAnimations(this, dice, assetName)
 
 }
 
@@ -48,7 +48,7 @@ final case class SpriteAndAnimations(sprite: Sprite, animations: Animation)
 object Aseprite {
 
   @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
-  def toSpriteAndAnimations(dice: Dice, aseprite: Aseprite, depth: Depth, assetName: AssetName): Option[SpriteAndAnimations] =
+  def toSpriteAndAnimations(aseprite: Aseprite, dice: Dice, assetName: AssetName): Option[SpriteAndAnimations] =
     extractCycles(aseprite) match {
       case Nil =>
         IndigoLogger.info("No animation frames found in Aseprite")
@@ -66,7 +66,7 @@ object Aseprite {
             Sprite(
               bindingKey = BindingKey.fromDice(dice),
               position = Point(0, 0),
-              depth = depth,
+              depth = Depth(1),
               rotation = Radians.zero,
               scale = Vector2.one,
               animationKey = animations.animationKey,
