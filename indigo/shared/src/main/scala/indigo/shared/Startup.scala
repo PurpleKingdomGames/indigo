@@ -39,6 +39,11 @@ object Startup {
   final case class Failure[ErrorType](error: ErrorType)(implicit toReportable: ToReportable[ErrorType]) extends Startup[ErrorType, Nothing] {
     def report: String = toReportable.report(error)
   }
+  object Failure {
+    def withErrors(errors: String*): Failure[StartupErrors] =
+      Failure(StartupErrors(errors.toList))
+  }
+
   final case class Success[SuccessType](
       success: SuccessType,
       animations: Set[Animation],
