@@ -39,6 +39,15 @@ trait SharedTypeAliases {
   type TiledMap = shared.formats.TiledMap
   val TiledMap: shared.formats.TiledMap.type = shared.formats.TiledMap
 
+  type TiledGridMap[A] = shared.formats.TiledGridMap[A]
+  val TiledGridMap: shared.formats.TiledGridMap.type = shared.formats.TiledGridMap
+
+  type TiledGridLayer[A] = shared.formats.TiledGridLayer[A]
+  val TiledGridLayer: shared.formats.TiledGridLayer.type = shared.formats.TiledGridLayer
+
+  type TiledGridCell[A] = shared.formats.TiledGridCell[A]
+  val TiledGridCell: shared.formats.TiledGridCell.type = shared.formats.TiledGridCell
+
   type Gamepad = shared.input.Gamepad
   val Gamepad: shared.input.Gamepad.type = shared.input.Gamepad
 
