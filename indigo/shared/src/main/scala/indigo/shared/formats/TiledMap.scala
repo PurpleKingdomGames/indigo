@@ -50,7 +50,8 @@ final case class TiledMap(
       layers.map { tiledLayer =>
         TiledGridLayer(
           rec(tiledLayer.data.map(mapper).zipWithIndex, tiledLayer.width, Nil),
-          tiledLayer.width
+          tiledLayer.width,
+          tiledLayer.height
         )
       }
     )
@@ -160,7 +161,7 @@ final case class TiledGridMap[A](layers: List[TiledGridLayer[A]]) {
   }
 
 }
-final case class TiledGridLayer[A](grid: List[TiledGridCell[A]], columnCount: Int)
+final case class TiledGridLayer[A](grid: List[TiledGridCell[A]], columnCount: Int, rowCount: Int)
 final case class TiledGridCell[A](column: Int, row: Int, tile: A) {
   lazy val x: Int = column
   lazy val y: Int = row

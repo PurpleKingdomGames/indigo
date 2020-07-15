@@ -127,6 +127,7 @@ object TiledSamples {
             TiledGridCell(2, 3, 1),
             TiledGridCell(3, 3, 0)
           ),
+          4,
           4
         )
       )
