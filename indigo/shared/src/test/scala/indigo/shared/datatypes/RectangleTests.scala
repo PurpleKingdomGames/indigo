@@ -73,23 +73,6 @@ object RectangleTests extends TestSuite {
 
       }
 
-      "intersecting rectangles" - {
-
-        "should return true when two rectangles intersect" - {
-          val a = Rectangle(10, 10, 25, 25)
-          val b = Rectangle(20, 20, 50, 50)
-
-          Rectangle.intersecting(a, b) ==> true
-        }
-
-        "should return false when they do not intersect" - {
-          val a = Rectangle(10, 10, 20, 20)
-          val b = Rectangle(100, 100, 100, 100)
-
-          Rectangle.intersecting(a, b) ==> false
-        }
-      }
-
       "encompasing rectangles" - {
         "should return true when A encompases B" - {
           val a = Rectangle(10, 10, 110, 110)

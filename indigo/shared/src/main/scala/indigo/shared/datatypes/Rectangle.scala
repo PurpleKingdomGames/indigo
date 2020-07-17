@@ -6,27 +6,28 @@ import indigo.shared.AsString._
 import scala.annotation.tailrec
 
 final class Rectangle(val position: Point, val size: Point) {
-  val x: Int       = position.x
-  val y: Int       = position.y
-  val width: Int   = size.x
-  val height: Int  = size.y
-  val hash: String = s"${x.show}${y.show}${width.show}${height.show}"
+  val x: Int            = position.x
+  val y: Int            = position.y
+  val width: Int        = size.x
+  val height: Int       = size.y
+  lazy val hash: String = s"${x.show}${y.show}${width.show}${height.show}"
 
-  val left: Int   = x
-  val right: Int  = x + width
-  val top: Int    = y
-  val bottom: Int = y + height
+  lazy val left: Int   = x
+  lazy val right: Int  = x + width
+  lazy val top: Int    = y
+  lazy val bottom: Int = y + height
 
-  val horizontalCenter: Int = x + (width / 2)
-  val verticalCenter: Int   = y + (height / 2)
+  lazy val horizontalCenter: Int = x + (width / 2)
+  lazy val verticalCenter: Int   = y + (height / 2)
 
-  def topLeft: Point     = Point(left, top)
-  def topRight: Point    = Point(right, top)
-  def bottomRight: Point = Point(right, bottom)
-  def bottomLeft: Point  = Point(left, bottom)
-  def center: Point      = Point(horizontalCenter, verticalCenter)
+  lazy val topLeft: Point     = Point(left, top)
+  lazy val topRight: Point    = Point(right, top)
+  lazy val bottomRight: Point = Point(right, bottom)
+  lazy val bottomLeft: Point  = Point(left, bottom)
+  lazy val center: Point      = Point(horizontalCenter, verticalCenter)
+  lazy val halfSize: Point    = size / 2
 
-  def corners: List[Point] =
+  lazy val corners: List[Point] =
     List(topLeft, topRight, bottomRight, bottomLeft)
 
   def isPointWithin(pt: Point): Boolean =
@@ -48,9 +49,6 @@ final class Rectangle(val position: Point, val size: Point) {
 
   def expandToInclude(other: Rectangle): Rectangle =
     Rectangle.expandToInclude(this, other)
-
-  def intersects(other: Rectangle): Boolean =
-    Rectangle.intersecting(this, other)
 
   def encompasses(other: Rectangle): Boolean =
     Rectangle.encompassing(this, other)
@@ -78,9 +76,9 @@ final class Rectangle(val position: Point, val size: Point) {
 
   @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
   override def equals(obj: Any): Boolean =
-    if (obj.isInstanceOf[Rectangle]) {
+    if (obj.isInstanceOf[Rectangle])
       this === obj.asInstanceOf[Rectangle]
-    } else false
+    else false
 }
 
 object Rectangle {
@@ -155,13 +153,10 @@ object Rectangle {
     )
   }
 
-  def intersecting(a: Rectangle, b: Rectangle): Boolean =
-    b.corners.exists(p => a.isPointWithin(p))
-
   def encompassing(a: Rectangle, b: Rectangle): Boolean =
-    b.corners.forall(p => a.isPointWithin(p))
+    b.x >= a.x && b.y >= a.y && (b.width + (b.x - a.x)) <= a.width && (b.height + (b.y - a.y)) <= a.height
 
   def overlapping(a: Rectangle, b: Rectangle): Boolean =
-    intersecting(a, b) || intersecting(b, a) || encompassing(a, b) || encompassing(b, a)
+    Math.abs(a.center.x - b.center.x) < a.halfSize.x + b.halfSize.x && Math.abs(a.center.y - b.center.y) < a.halfSize.y + b.halfSize.y
 
 }
