@@ -8,6 +8,7 @@ import indigo.shared.datatypes.Material
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.EqualTo._
 import scala.annotation.tailrec
+import indigo.shared.collections.NonEmptyList
 
 /*
 Full spec is here:
@@ -35,7 +36,15 @@ final case class TiledMap(
     backgroundcolor: Option[String] // #AARRGGBB
 ) {
 
-  def toGrid[A](mapper: Int => A): TiledGridMap[A] = {
+  def toGrid[A](mapper: Int => A): Option[TiledGridMap[A]] = {
+
+    def toGridLayer(tiledLayer: TiledLayer): TiledGridLayer[A] =
+      TiledGridLayer(
+        rec(tiledLayer.data.map(mapper).zipWithIndex, tiledLayer.width, Nil),
+        tiledLayer.width,
+        tiledLayer.height
+      )
+
     @tailrec
     def rec(remaining: List[(A, Int)], columnCount: Int, acc: List[TiledGridCell[A]]): List[TiledGridCell[A]] =
       remaining match {
@@ -46,15 +55,18 @@ final case class TiledMap(
           rec(xs, columnCount, acc :+ TiledGridCell(i % columnCount, i / columnCount, a))
       }
 
-    TiledGridMap[A](
-      layers.map { tiledLayer =>
-        TiledGridLayer(
-          rec(tiledLayer.data.map(mapper).zipWithIndex, tiledLayer.width, Nil),
-          tiledLayer.width,
-          tiledLayer.height
+    layers match {
+      case Nil =>
+        None
+
+      case l :: ls =>
+        Option(
+          TiledGridMap[A](
+            NonEmptyList(toGridLayer(l), ls.map(toGridLayer))
+          )
         )
-      }
-    )
+
+    }
   }
 
   def toGroup(assetName: AssetName): Option[Group] =
@@ -136,10 +148,10 @@ object TiledMap {
 
 }
 
-final case class TiledGridMap[A](layers: List[TiledGridLayer[A]]) {
+final case class TiledGridMap[A](layers: NonEmptyList[TiledGridLayer[A]]) {
 
   lazy val toListPerLayer: List[List[TiledGridCell[A]]] =
-    layers.map(_.grid)
+    layers.toList.map(_.grid)
 
   lazy val toList2DPerLayer: List[List[List[TiledGridCell[A]]]] = {
     @tailrec
@@ -155,7 +167,7 @@ final case class TiledGridMap[A](layers: List[TiledGridLayer[A]]) {
           rec(xs, columnCount, current :+ x, acc)
       }
 
-    layers.map { layer =>
+    layers.toList.map { layer =>
       rec(layer.grid, layer.columnCount, Nil, Nil)
     }
   }

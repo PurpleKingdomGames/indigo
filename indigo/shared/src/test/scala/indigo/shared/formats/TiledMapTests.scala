@@ -9,6 +9,7 @@ import indigo.shared.scenegraph.Group
 import indigo.shared.scenegraph.Renderable
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.datatypes.Point
+import indigo.shared.collections.NonEmptyList
 
 object TiledMapTests extends TestSuite {
 
@@ -21,6 +22,7 @@ object TiledMapTests extends TestSuite {
           val actual =
             TiledSamples.tiledMap
               .toGrid[Int](identity[Int])
+              .get
               .toListPerLayer
               .head
               .map(_.tile)
@@ -36,6 +38,7 @@ object TiledMapTests extends TestSuite {
           val actual =
             TiledSamples.tiledMap
               .toGrid[TileTypes](TiledSamples.mapping)
+              .get
               .toListPerLayer
               .head
               .map(_.tile)
@@ -56,6 +59,7 @@ object TiledMapTests extends TestSuite {
           val actual: List[List[Int]] =
             TiledSamples.tiledMap
               .toGrid[Int](identity[Int])
+              .get
               .toList2DPerLayer
               .head
               .map(_.map(_.tile))
@@ -107,7 +111,7 @@ object TiledSamples {
 
   val gridMapInt: TiledGridMap[Int] =
     TiledGridMap(
-      List(
+      NonEmptyList(
         TiledGridLayer(
           List(
             TiledGridCell(0, 0, 0),
