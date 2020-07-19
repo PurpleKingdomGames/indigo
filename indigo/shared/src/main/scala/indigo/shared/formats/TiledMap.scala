@@ -150,10 +150,10 @@ object TiledMap {
 
 final case class TiledGridMap[A](layers: NonEmptyList[TiledGridLayer[A]]) {
 
-  lazy val toListPerLayer: List[List[TiledGridCell[A]]] =
-    layers.toList.map(_.grid)
+  lazy val toListPerLayer: NonEmptyList[List[TiledGridCell[A]]] =
+    layers.map(_.grid)
 
-  lazy val toList2DPerLayer: List[List[List[TiledGridCell[A]]]] = {
+  lazy val toList2DPerLayer: NonEmptyList[List[List[TiledGridCell[A]]]] = {
     @tailrec
     def rec(remaining: List[TiledGridCell[A]], columnCount: Int, current: List[TiledGridCell[A]], acc: List[List[TiledGridCell[A]]]): List[List[TiledGridCell[A]]] =
       remaining match {
@@ -167,7 +167,7 @@ final case class TiledGridMap[A](layers: NonEmptyList[TiledGridLayer[A]]) {
           rec(xs, columnCount, current :+ x, acc)
       }
 
-    layers.toList.map { layer =>
+    layers.map { layer =>
       rec(layer.grid, layer.columnCount, Nil, Nil)
     }
   }
