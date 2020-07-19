@@ -6,6 +6,14 @@ import indigo.shared.EqualTo._
 
 final class Vector2(val x: Double, val y: Double) {
 
+  def withX(newX: Double): Vector2 =
+    Vector2(newX, y)
+  def withY(newY: Double): Vector2 =
+    Vector2(x, newY)
+
+  def invert: Vector2 =
+    Vector2(-x, -y)
+
   def translate(vec: Vector2): Vector2 =
     Vector2.add(this, vec)
 

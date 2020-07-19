@@ -8,6 +8,14 @@ import indigo.shared.datatypes.Vector2
 
 final class Vertex(val x: Double, val y: Double) {
 
+  def withX(newX: Double): Vertex =
+    Vertex(newX, y)
+  def withY(newY: Double): Vertex =
+    Vertex(x, newY)
+
+  def invert: Vertex =
+    Vertex(-x, -y)
+
   def translate(vec: Vertex): Vertex =
     Vertex.add(this, vec)
 
