@@ -46,7 +46,7 @@ final class Vertex(val x: Double, val y: Double) {
     implicitly[EqualTo[Vertex]].equal(this, other)
 
   def ~==(other: Vertex): Boolean =
-    Vertex.nearEnoughEqual(this, other, 0.001)
+    Vertex.equalEnough(this, other, 0.001)
 
   override def toString: String =
     asString
@@ -88,6 +88,9 @@ object Vertex {
   def fromPoint(point: Point): Vertex =
     Vertex(point.x.toDouble, point.y.toDouble)
 
+  def fromVector(vector: Vector2): Vertex =
+    Vertex(vector.x, vector.y)
+
   def tuple2ToVertex(t: (Double, Double)): Vertex =
     Vertex(t._1, t._2)
 
@@ -124,7 +127,7 @@ object Vertex {
         Math.sqrt(Math.abs((aa * aa) + (bb * bb)))
     }
 
-  def nearEnoughEqual(v1: Vertex, v2: Vertex, tolerance: Double): Boolean =
+  def equalEnough(v1: Vertex, v2: Vertex, tolerance: Double): Boolean =
     v1.x >= v2.x - tolerance &&
       v1.x <= v2.x + tolerance &&
       v1.y >= v2.y - tolerance &&
