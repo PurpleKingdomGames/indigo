@@ -78,6 +78,14 @@ object Polygon {
       Vertex.fromPoint(rectangle.topRight)
     )
 
+  def fromBoundingBox(boundingBox: BoundingBox): Closed =
+    Closed(
+      boundingBox.topLeft,
+      boundingBox.bottomLeft,
+      boundingBox.bottomRight,
+      boundingBox.topRight
+    )
+
   def toLineSegments(polygon: Polygon): List[LineSegment] = {
     @tailrec
     def rec(remaining: List[Vertex], current: Vertex, acc: List[LineSegment]): List[LineSegment] =
