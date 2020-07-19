@@ -52,6 +52,14 @@ object LensTests extends TestSuite {
           Lens.fixed[C, D](D("hi")).get(C(D("x"))) ==> D("hi")
           Lens.fixed[C, D](D("hi")).set(C(D("x")), D("y")) ==> C(D("x"))
         }
+
+        "should be able to define a read only lens" - {
+          val lens = Lens.readOnly[C, D](_.d)
+          val original = C(D("x"))
+
+          lens.get(original) ==> D("x")
+          lens.set(original, D("fish")) ==> original
+        }
       }
 
       "Getting" - {

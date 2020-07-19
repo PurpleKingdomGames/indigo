@@ -19,22 +19,51 @@ trait Lens[A, B] {
 
 object Lens {
 
+  /**
+    * Lens constructor
+    *
+    * @param getter function that notionally reads a value B from a given A
+    * @param setter function that notionally sets a value B into a given A
+    * @return Lens[A, B] - a lens that in some way works with a B nested in an A
+    */
   def apply[A, B](getter: A => B, setter: (A, B) => A): Lens[A, B] =
     new Lens[A, B] {
       def get(from: A): B           = getter(from)
       def set(into: A, value: B): A = setter(into, value)
     }
 
+  /**
+    * A NoOp where the outer type is equal to the inner type
+    * and never changes. Alias for `Lens.keepOriginal[A]`.
+    */
   def identity[A]: Lens[A, A] =
     keepOriginal
 
+  /**
+    * A NoOp where the outer type is equal to the inner type
+    * and never changes.
+    */
   def keepOriginal[A]: Lens[A, A] =
     Lens(Predef.identity, (a, _) => a)
 
+  /**
+    * Simple replacement. The outer type is equal to the inner type
+    * and we always keep the latest one.
+    */
   def keepLatest[A]: Lens[A, A] =
     Lens(Predef.identity, (_, a) => a)
 
+  /**
+    * Fixed will always get the default argument and never set it back.
+    */
   def fixed[A, B](default: B): Lens[A, B] =
     Lens(_ => default, (a, _) => a)
+
+  /**
+    * Get but don't set. Implies the value `B` nested in `A` never changes.
+    * `B` is read only / immutable in this scope.
+    */
+  def readOnly[A, B](get: A => B): Lens[A, B] =
+    Lens(get, (a, _) => a)
 
 }
