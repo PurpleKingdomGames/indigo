@@ -5,25 +5,31 @@ import indigo.shared.AsString._
 
 import scala.annotation.tailrec
 import indigo.shared.datatypes.Rectangle
+import indigoextras.geometry.IntersectionResult.IntersectionVertex
 
 final class BoundingBox(val position: Vertex, val size: Vertex) {
-  val x: Double      = position.x
-  val y: Double      = position.y
-  val width: Double  = size.x
-  val height: Double = size.y
-  val hash: String   = s"${x.show}${y.show}${width.show}${height.show}"
+  val x: Double         = position.x
+  val y: Double         = position.y
+  val width: Double     = size.x
+  val height: Double    = size.y
+  lazy val hash: String = s"${x.show}${y.show}${width.show}${height.show}"
 
-  val left: Double   = x
-  val right: Double  = x + width
-  val top: Double    = y
-  val bottom: Double = y + height
+  lazy val left: Double   = x
+  lazy val right: Double  = x + width
+  lazy val top: Double    = y
+  lazy val bottom: Double = y + height
 
-  def topLeft: Vertex     = Vertex(left, top)
-  def topRight: Vertex    = Vertex(right, top)
-  def bottomRight: Vertex = Vertex(right, bottom)
-  def bottomLeft: Vertex  = Vertex(left, bottom)
+  lazy val horizontalCenter: Double = x + (width / 2)
+  lazy val verticalCenter: Double   = y + (height / 2)
 
-  def corners: List[Vertex] =
+  lazy val topLeft: Vertex     = Vertex(left, top)
+  lazy val topRight: Vertex    = Vertex(right, top)
+  lazy val bottomRight: Vertex = Vertex(right, bottom)
+  lazy val bottomLeft: Vertex  = Vertex(left, bottom)
+  lazy val center: Vertex      = Vertex(horizontalCenter, verticalCenter)
+  lazy val halfSize: Vertex    = size / 2
+
+  lazy val corners: List[Vertex] =
     List(topLeft, topRight, bottomRight, bottomLeft)
 
   def isVertexWithin(pt: Vertex): Boolean =
@@ -43,9 +49,6 @@ final class BoundingBox(val position: Vertex, val size: Vertex) {
   def expandToInclude(other: BoundingBox): BoundingBox =
     BoundingBox.expandToInclude(this, other)
 
-  def intersects(other: BoundingBox): Boolean =
-    BoundingBox.intersecting(this, other)
-
   def encompasses(other: BoundingBox): Boolean =
     BoundingBox.encompassing(this, other)
 
@@ -63,6 +66,12 @@ final class BoundingBox(val position: Vertex, val size: Vertex) {
 
   def toRectangle: Rectangle =
     Rectangle(position.toPoint, size.toPoint)
+
+  def toLineSegments: List[LineSegment] =
+    BoundingBox.toLineSegments(this)
+
+  def lineIntersectsAt(line: LineSegment): Option[Vertex] =
+    BoundingBox.lineIntersectsAt(this, line)
 
   def asString: String =
     implicitly[AsString[BoundingBox]].show(this)
@@ -93,7 +102,7 @@ object BoundingBox {
   def unapply(rectangle: BoundingBox): Option[(Vertex, Vertex)] =
     Option((rectangle.position, rectangle.size))
 
-  def fromTwoVertexs(pt1: Vertex, pt2: Vertex): BoundingBox = {
+  def fromTwoVertices(pt1: Vertex, pt2: Vertex): BoundingBox = {
     val x = Math.min(pt1.x, pt2.x)
     val y = Math.min(pt1.y, pt2.y)
     val w = Math.max(pt1.x, pt2.x) - x
@@ -122,16 +131,35 @@ object BoundingBox {
     rec(vertices, Double.MaxValue, Double.MaxValue, Double.MinValue, Double.MinValue)
   }
 
-  implicit val rectangleShow: AsString[BoundingBox] =
+  def fromVertexCloud(vertices: List[Vertex]): BoundingBox =
+    fromVertices(vertices)
+
+  def toLineSegments(boundingBox: BoundingBox): List[LineSegment] =
+    List(
+      LineSegment(boundingBox.topLeft, boundingBox.bottomLeft),
+      LineSegment(boundingBox.bottomLeft, boundingBox.bottomRight),
+      LineSegment(boundingBox.bottomRight, boundingBox.topRight),
+      LineSegment(boundingBox.topRight, boundingBox.topLeft)
+    )
+
+  implicit val bbShow: AsString[BoundingBox] =
     AsString.create(p => s"""BoundingBox(Position(${p.x.show}, ${p.y.show}), Size(${p.width.show}, ${p.height.show}))""")
 
-  implicit val rectangleEqualTo: EqualTo[BoundingBox] = {
+  implicit val bbEqualTo: EqualTo[BoundingBox] = {
     val eq = implicitly[EqualTo[Vertex]]
 
     EqualTo.create { (a, b) =>
       eq.equal(a.position, b.position) && eq.equal(a.size, b.size)
     }
   }
+
+  def expand(boundingBox: BoundingBox, amount: Double): BoundingBox =
+    BoundingBox(
+      x = boundingBox.x - amount,
+      y = boundingBox.y - amount,
+      width = boundingBox.width + (amount * 2),
+      height = boundingBox.height + (amount * 2)
+    )
 
   def expandToInclude(a: BoundingBox, b: BoundingBox): BoundingBox = {
     val newX: Double = if (a.left < b.left) a.left else b.left
@@ -145,13 +173,36 @@ object BoundingBox {
     )
   }
 
-  def intersecting(a: BoundingBox, b: BoundingBox): Boolean =
-    b.corners.exists(p => a.isVertexWithin(p))
-
   def encompassing(a: BoundingBox, b: BoundingBox): Boolean =
-    b.corners.forall(p => a.isVertexWithin(p))
+    b.x >= a.x && b.y >= a.y && (b.width + (b.x - a.x)) <= a.width && (b.height + (b.y - a.y)) <= a.height
 
   def overlapping(a: BoundingBox, b: BoundingBox): Boolean =
-    intersecting(a, b) || intersecting(b, a) || encompassing(a, b) || encompassing(b, a)
+    Math.abs(a.center.x - b.center.x) < a.halfSize.x + b.halfSize.x && Math.abs(a.center.y - b.center.y) < a.halfSize.y + b.halfSize.y
+
+  def lineIntersectsAt(boundingBox: BoundingBox, line: LineSegment): Option[Vertex] = {
+    val verts =
+      boundingBox.toLineSegments
+        .flatMap { bbLine =>
+          bbLine.intersectWith(line) match {
+            case r @ IntersectionVertex(_, _) =>
+              val v = r.toVertex
+
+              if (line.containsVertex(v) && bbLine.containsVertex(v))
+                Some(v)
+              else
+                None
+            case _ =>
+              None
+          }
+        }
+
+    verts
+      .foldLeft((Option.empty[Vertex], Double.MaxValue)) { (acc, v) =>
+        val dist = v.distanceTo(line.start)
+        if (dist < acc._2) (Some(v), dist)
+        else acc
+      }
+      ._1
+  }
 
 }
