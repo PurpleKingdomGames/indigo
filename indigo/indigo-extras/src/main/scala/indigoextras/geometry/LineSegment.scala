@@ -125,7 +125,7 @@ object LineSegment {
         val y: Double = (m1 * x) + b1
 
         IntersectionResult.IntersectionVertex(x, y)
-        
+
       case (LineProperties.ParallelToAxisY, LineProperties.LineComponents(m, b)) =>
         IntersectionResult.IntersectionVertex(
           x = l1.start.x,
@@ -216,11 +216,23 @@ object LineProperties {
   case object InvalidLine                               extends LineProperties
 }
 
-sealed trait IntersectionResult
+sealed trait IntersectionResult {
+  def toOption: Option[Vertex]
+  def toList: List[Vertex]
+}
 object IntersectionResult {
   final case class IntersectionVertex(x: Double, y: Double) extends IntersectionResult {
     def toVertex: Vertex =
       Vertex(x, y)
+
+    def toOption: Option[Vertex] =
+      Some(toVertex)
+
+    def toList: List[Vertex] =
+      List(toVertex)
   }
-  case object NoIntersection extends IntersectionResult
+  case object NoIntersection extends IntersectionResult {
+    def toOption: Option[Vertex] = None
+    def toList: List[Vertex]     = Nil
+  }
 }
