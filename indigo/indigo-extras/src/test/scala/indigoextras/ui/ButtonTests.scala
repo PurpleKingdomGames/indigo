@@ -6,7 +6,7 @@ import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Material
 import indigo.shared.assets.AssetName
 import indigo.shared.scenegraph.Graphic
-import indigo.shared.events.Mouse
+import indigo.shared.input.Mouse
 import indigo.shared.datatypes.Point
 import indigo.shared.events.MouseEvent
 import indigo.shared.events.GlobalEvent

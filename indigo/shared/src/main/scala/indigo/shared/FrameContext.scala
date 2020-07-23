@@ -5,8 +5,8 @@ import indigo.shared.events.InputState
 import indigo.shared.dice.Dice
 import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.datatypes.Rectangle
-import indigo.shared.events.Mouse
-import indigo.shared.events.Keyboard
+import indigo.shared.input.Mouse
+import indigo.shared.input.Keyboard
 import indigo.shared.input.Gamepad
 import indigo.shared.time.Seconds
 

@@ -2,7 +2,7 @@ package indigoextras.ui
 
 import indigo.shared.datatypes.{Depth, Rectangle}
 import indigo.shared.events.GlobalEvent
-import indigo.shared.events.Mouse
+import indigo.shared.input.Mouse
 import indigo.shared.Outcome
 import indigo.shared.scenegraph.SceneGraphNodePrimitive
 
