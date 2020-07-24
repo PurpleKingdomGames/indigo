@@ -3,8 +3,8 @@ package indigojs.delegates
 import scala.scalajs.js.annotation._
 
 import indigo.shared.events.InputState
-import indigo.shared.events.Mouse
-import indigo.shared.events.Keyboard
+import indigo.shared.input.Mouse
+import indigo.shared.input.Keyboard
 import indigo.shared.input.Gamepad
 import indigo.shared.constants.Key
 import indigo.shared.input.GamepadDPad
