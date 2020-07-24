@@ -21,6 +21,18 @@ trait EventTypeAliases {
   type InputState = events.InputState
   val InputState: events.InputState.type = events.InputState
 
+  type InputMapping[A] = events.InputMapping[A]
+  val InputMapping: events.InputMapping.type = events.InputMapping
+
+  type Combo = events.Combo
+  val Combo: events.Combo.type = events.Combo
+
+  type GamepadInput = events.GamepadInput
+  val GamepadInput: events.GamepadInput.type = events.GamepadInput
+
+  type MouseInput = events.MouseInput
+  val MouseInput: events.MouseInput.type = events.MouseInput
+
   type MouseEvent = events.MouseEvent
   val MouseEvent: events.MouseEvent.type = events.MouseEvent
 

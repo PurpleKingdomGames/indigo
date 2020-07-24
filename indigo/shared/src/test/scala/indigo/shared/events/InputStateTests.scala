@@ -6,6 +6,10 @@ import indigo.shared.datatypes.Point
 import indigo.shared.constants.Keys
 import indigo.shared.constants.Key
 import indigo.shared.input.Gamepad
+import indigo.shared.input.GamepadAnalogControls
+import indigo.shared.input.AnalogAxis
+import indigo.shared.input.GamepadDPad
+import indigo.shared.input.GamepadButtons
 
 object InputStateTests extends TestSuite {
 
@@ -258,6 +262,178 @@ object InputStateTests extends TestSuite {
             )
 
           state3.keyboard.lastKeyHeldDown ==> None
+        }
+
+      }
+
+      "Mapping combinations of inputs" - {
+
+        val events: List[InputEvent] =
+          List(
+            KeyboardEvent.KeyDown(Keys.KEY_A),
+            KeyboardEvent.KeyDown(Keys.KEY_B),
+            KeyboardEvent.KeyDown(Keys.KEY_C),
+            KeyboardEvent.KeyDown(Keys.KEY_D),
+            MouseEvent.Move(10, 10),
+            MouseEvent.MouseDown(10, 10)
+          )
+
+        val gamepadState: Gamepad =
+          new Gamepad(
+            true,
+            new GamepadAnalogControls(
+              new AnalogAxis(-1.0, -1.0, false),
+              new AnalogAxis(0.5, 0.0, true)
+            ),
+            new GamepadDPad(true, false, true, false),
+            new GamepadButtons(
+              true, false, false, false, false, false, false, false, false, false, false, false
+            )
+          )
+
+        "keyboard combo found" - {
+
+          val mappings: InputMapping[Int] =
+            InputMapping[Int](Combo.KeyInputs(Keys.KEY_C, Keys.KEY_A, Keys.KEY_B) -> 10)
+
+          val state = InputState.calculateNext(inputState, events, gamepadState)
+
+          val expected =
+            10
+
+          val actual =
+            state.mapInputs(mappings, 0)
+
+          actual ==> expected
+        }
+
+        "keyboard combo not found" - {
+
+          val mappings: InputMapping[Int] =
+            InputMapping[Int]
+              .add(
+                Combo.KeyInputs(Keys.UP_ARROW) -> 10
+              )
+
+          val state = InputState.calculateNext(inputState, events, gamepadState)
+
+          val expected =
+            0
+
+          val actual =
+            state.mapInputs(mappings, 0)
+
+          actual ==> expected
+        }
+
+        "mouse combo found" - {
+
+          val mappings: InputMapping[Int] =
+            InputMapping[Int](Combo.MouseInputs(MouseInput.MouseDown, MouseInput.MouseAt(10, 10)) -> 10)
+
+          val state = InputState.calculateNext(inputState, events, gamepadState)
+
+          val expected =
+            10
+
+          val actual =
+            state.mapInputs(mappings, 0)
+
+          actual ==> expected
+        }
+
+        "mouse combo not found" - {
+
+          val mappings: InputMapping[Int] =
+            InputMapping[Int]
+              .add(
+                Combo.MouseInputs(MouseInput.MouseUp) -> 10
+              )
+
+          val state = InputState.calculateNext(inputState, events, gamepadState)
+
+          val expected =
+            0
+
+          val actual =
+            state.mapInputs(mappings, 0)
+
+          actual ==> expected
+        }
+
+        "gamepad combo found" - {
+
+          val mappings: InputMapping[Int] =
+            InputMapping[Int](
+              Combo.GamepadInputs(GamepadInput.Cross, GamepadInput.LEFT_ANALOG(_ < -0.5, _ => true, false)) -> 10
+            )
+
+          val state = InputState.calculateNext(inputState, events, gamepadState)
+
+          val expected =
+            10
+
+          val actual =
+            state.mapInputs(mappings, 0)
+
+          actual ==> expected
+        }
+
+        "gamepad combo not found" - {
+
+          val mappings: InputMapping[Int] =
+            InputMapping[Int]
+              .add(
+                Combo.GamepadInputs(GamepadInput.Triangle) -> 10
+              )
+
+          val state = InputState.calculateNext(inputState, events, gamepadState)
+
+          val expected =
+            0
+
+          val actual =
+            state.mapInputs(mappings, 0)
+
+          actual ==> expected
+        }
+
+        "Mixed combo" - {
+
+          val comboA =
+            Combo
+              .withGamepadInputs(
+                GamepadInput.Cross,
+                GamepadInput.RIGHT_ANALOG(_ > 0.4, _ == 0.0, true)
+              )
+              .withMouseInputs(MouseInput.MouseDown)
+              .withKeyInputs(Keys.KEY_A, Keys.KEY_B)
+
+          val comboB =
+            Combo
+              .withKeyInputs(Keys.UP_ARROW, Keys.RIGHT_ARROW)
+
+          val mappings: InputMapping[String] =
+            InputMapping[String](comboA -> "Combo A met", comboB -> "Combo B met")
+
+          val mappingResult1 =
+            InputState
+              .calculateNext(inputState, events, gamepadState)
+              .mapInputs(mappings, "Combo not met! (1)")
+
+          val mappingResult2 =
+            InputState
+              .calculateNext(inputState, List(KeyboardEvent.KeyDown(Keys.UP_ARROW), KeyboardEvent.KeyDown(Keys.RIGHT_ARROW)), gamepadState)
+              .mapInputs(mappings, "Combo not met! (2)")
+
+          val mappingResult3 =
+            InputState
+              .calculateNext(inputState, List(KeyboardEvent.KeyDown(Keys.LEFT_ARROW)), gamepadState)
+              .mapInputs(mappings, "Combo not met! (3)")
+
+          mappingResult1 ==> "Combo A met"
+          mappingResult2 ==> "Combo B met"
+          mappingResult3 ==> "Combo not met! (3)"
         }
 
       }

@@ -4,7 +4,15 @@ import indigo.shared.input.Gamepad
 import indigo.shared.input.Mouse
 import indigo.shared.input.Keyboard
 
-final class InputState(val mouse: Mouse, val keyboard: Keyboard, val gamepad: Gamepad)
+final class InputState(val mouse: Mouse, val keyboard: Keyboard, val gamepad: Gamepad) {
+
+  def mapInputs[A](mappings: InputMapping[A], default: A): A =
+    mappings.find(mouse, keyboard, gamepad).getOrElse(default)
+
+  def mapInputsOption[A](mappings: InputMapping[A]): Option[A] =
+    mappings.find(mouse, keyboard, gamepad)
+
+}
 
 object InputState {
   val default: InputState =
