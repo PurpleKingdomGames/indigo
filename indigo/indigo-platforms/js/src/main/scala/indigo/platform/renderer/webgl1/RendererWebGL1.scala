@@ -119,7 +119,7 @@ final class RendererWebGL1(
     drawLayer(
       sceneData.gameLayerDisplayObjects,
       Some(gameFrameBuffer),
-      ClearColor.Black.forceTransparent, //config.clearColor,
+      ClearColor.Black.forceTransparent,
       standardShaderProgram,
       sceneData.gameProjection,
       false
@@ -156,6 +156,7 @@ final class RendererWebGL1(
     )
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Null"))
   def drawLayer(
       displayEntities: mutable.ListBuffer[DisplayEntity],
       frameBufferComponents: Option[FrameBufferComponents],
@@ -215,10 +216,25 @@ final class RendererWebGL1(
             lightingFrameBuffer.diffuse,
             uiFrameBuffer.diffuse
           )
-        else
-          textureLocations.find(t => t.name === displayObject.atlasName).foreach { textureLookup =>
-            RendererFunctions.setupFragmentShaderState(gl, textureLookup.texture, displayObject, tintLocation)
+        else {
+          textureLocations.find(t => t.name === displayObject.atlasName) match {
+            case None =>
+              gl.activeTexture(TEXTURE0);
+              gl.bindTexture(TEXTURE_2D, null)
+
+            case Some(textureLookup) =>
+              gl.activeTexture(TEXTURE0);
+              gl.bindTexture(TEXTURE_2D, textureLookup.texture)
           }
+
+          gl.uniform4f(
+            tintLocation,
+            displayObject.effects.tint(0).toDouble,
+            displayObject.effects.tint(1).toDouble,
+            displayObject.effects.tint(2).toDouble,
+            displayObject.effects.tint(3).toDouble
+          )
+        }
 
         gl.drawArrays(TRIANGLE_STRIP, 0, 4)
 

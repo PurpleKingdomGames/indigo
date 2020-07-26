@@ -5,8 +5,6 @@ import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.{WebGLProgram, WebGLTexture}
 import indigo.shared.datatypes.Matrix4
 
-import indigo.shared.EqualTo._
-
 import indigo.shared.display.DisplayObject
 import org.scalajs.dom.raw.WebGLUniformLocation
 
@@ -91,24 +89,6 @@ object RendererFunctions {
       displayObject.frameY.toDouble,
       displayObject.frameScaleX.toDouble,
       displayObject.frameScaleY.toDouble
-    )
-  }
-
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private var lastTextureName: String = ""
-
-  def setupFragmentShaderState(gl: raw.WebGLRenderingContext, texture: WebGLTexture, displayObject: DisplayObject, tintLocation: WebGLUniformLocation): Unit = {
-    if (displayObject.atlasName !== lastTextureName) {
-      gl.bindTexture(TEXTURE_2D, texture)
-      lastTextureName = displayObject.atlasName
-    }
-
-    gl.uniform4f(
-      tintLocation,
-      displayObject.effects.tint(0).toDouble,
-      displayObject.effects.tint(1).toDouble,
-      displayObject.effects.tint(2).toDouble,
-      displayObject.effects.tint(3).toDouble
     )
   }
 
