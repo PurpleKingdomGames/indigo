@@ -50,6 +50,7 @@ final class DisplayObjectConversions(
     listDoCache.purgeAllNow()
     cloneBatchCache.purgeAllNow()
     effectsCache.purgeAllNow()
+    textureAmountsCache.purgeAllNow()
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
