@@ -172,14 +172,17 @@ final case class InputField(
         case Keys.ENTER :: ks =>
           rec(ks, acc.addCharacterText(Keys.ENTER.key), true)
 
-        case key :: ks if hasFocus && key.isPrintable =>
+        case key :: ks if key.isPrintable =>
           rec(ks, acc.addCharacterText(key.key), true)
 
         case _ :: ks =>
           rec(ks, acc, touched)
       }
 
-    val updated = rec(frameContext.inputState.keyboard.keysReleased, this, false)
+    val updated =
+      if (hasFocus)
+        rec(frameContext.inputState.keyboard.keysReleased, this, false)
+      else this
 
     if (frameContext.inputState.mouse.mouseReleased)
       if (frameContext.inputState.mouse.wasMouseUpWithin(bounds(frameContext.boundaryLocator)))
