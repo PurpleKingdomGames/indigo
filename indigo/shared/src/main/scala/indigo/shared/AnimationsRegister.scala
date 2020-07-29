@@ -27,19 +27,13 @@ final class AnimationsRegister {
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def fetchAnimationForSprite(gameTime: GameTime, bindingKey: BindingKey, animationKey: AnimationKey, animationActions: List[AnimationAction]): Option[AnimationRef] =
-    findByAnimationKey(animationKey)
-      .map { anim =>
-        val updatedAnim =
-          findMementoByBindingKey(bindingKey)
-            .map(m => anim.applyMemento(m))
-            .getOrElse(anim)
+    fetchAnimationInLastState(bindingKey, animationKey).map { anim =>
+      val newAnim = anim.runActions(animationActions, gameTime)
 
-        val newAnim = updatedAnim.runActions(animationActions, gameTime)
+      animationStates.put(bindingKey, newAnim.saveMemento(bindingKey))
 
-        animationStates.put(bindingKey, newAnim.saveMemento(bindingKey))
-
-        newAnim
-      }
+      newAnim
+    }
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def fetchAnimationInLastState(bindingKey: BindingKey, animationKey: AnimationKey): Option[AnimationRef] =
