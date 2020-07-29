@@ -8,10 +8,9 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.13.3",
   organization := "indigo-examples",
   libraryDependencies ++= Seq(
-    "com.lihaoyi" %%% "utest"  % "0.7.4" % "test",
-    "io.indigoengine" %%% "indigo" % IndigoVersion.getVersion,
-    "io.indigoengine" %%% "indigo-extras" % IndigoVersion.getVersion,
-    "io.indigoengine" %%% "indigo-json-circe" % IndigoVersion.getVersion
+    "com.lihaoyi"     %%% "utest"         % "0.7.4" % "test",
+    "io.indigoengine" %%% "indigo"        % IndigoVersion.getVersion,
+    "io.indigoengine" %%% "indigo-extras" % IndigoVersion.getVersion
   ),
   testFrameworks += new TestFramework("utest.runner.Framework"),
   scalacOptions in (Compile, compile) ++= ScalacOptions.scala213Compile,
@@ -164,7 +163,10 @@ lazy val tiled =
       name := "tiled-example",
       showCursor := true,
       title := "Tiled example",
-      gameAssetsDirectory := "assets"
+      gameAssetsDirectory := "assets",
+      libraryDependencies ++= Seq(
+        "io.indigoengine" %%% "indigo-json-circe" % IndigoVersion.getVersion
+      )
     )
 
 lazy val sprite =
