@@ -59,6 +59,23 @@ addCommandAlias(
 )
 
 addCommandAlias(
+  "fastOptJSAll",
+  applyToAll("fastOptJS")
+)
+addCommandAlias(
+  "indigoBuildAll",
+  applyToAll("indigoBuildJS")
+)
+addCommandAlias(
+  "buildExamples",
+  List(
+    "buildAllNoClean",
+    "fastOptJSAll",
+    "indigoBuildAll"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
   "testExamplesJS",
   applyCommand(exampleProjects, "test", PlatformSuffix.Omit)
 )
