@@ -24,7 +24,6 @@ import indigo.shared.display.DisplayClone
 import indigo.shared.scenegraph.CloneTransformData
 import indigo.shared.display.DisplayCloneBatchData
 import indigo.shared.datatypes.Material
-import indigo.shared.assets.AssetName
 import indigo.shared.display.DisplayEffects
 import indigo.shared.datatypes.Texture
 import indigo.shared.BoundaryLocator
@@ -42,6 +41,7 @@ final class DisplayObjectConversions(
   implicit private val listDoCache: QuickCache[List[DisplayObject]]              = QuickCache.empty
   implicit private val cloneBatchCache: QuickCache[DisplayCloneBatch]            = QuickCache.empty
   implicit private val effectsCache: QuickCache[DisplayEffects]                  = QuickCache.empty
+  implicit private val textureAmountsCache: QuickCache[(Vector2, Double)]        = QuickCache.empty
 
   def purgeCaches(): Unit = {
     stringCache.purgeAllNow()
@@ -210,30 +210,36 @@ final class DisplayObjectConversions(
   }
 
   def materialToEmissiveValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
-    material match {
-      case Material.Textured(AssetName(_), _) =>
-        (Vector2.zero, 0.0d)
+    QuickCache(material.hash + "_emissive") {
+      material match {
+        case _: Material.Textured =>
+          (Vector2.zero, 0.0d)
 
-      case Material.Lit(_, texture, _, _, _) =>
-        optionalAssetToValues(assetMapping, texture)
+        case t: Material.Lit =>
+          optionalAssetToValues(assetMapping, t.emissive)
+      }
     }
 
   def materialToNormalValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
-    material match {
-      case Material.Textured(AssetName(_), _) =>
-        (Vector2.zero, 0.0d)
+    QuickCache(material.hash + "_normal") {
+      material match {
+        case _: Material.Textured =>
+          (Vector2.zero, 0.0d)
 
-      case Material.Lit(_, _, texture, _, _) =>
-        optionalAssetToValues(assetMapping, texture)
+        case t: Material.Lit =>
+          optionalAssetToValues(assetMapping, t.normal)
+      }
     }
 
   def materialToSpecularValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
-    material match {
-      case Material.Textured(AssetName(_), _) =>
-        (Vector2.zero, 0.0d)
+    QuickCache(material.hash + "_specular") {
+      material match {
+        case _: Material.Textured =>
+          (Vector2.zero, 0.0d)
 
-      case Material.Lit(_, _, _, texture, _) =>
-        optionalAssetToValues(assetMapping, texture)
+        case t: Material.Lit =>
+          optionalAssetToValues(assetMapping, t.specular)
+      }
     }
 
   def optionalAssetToValues(assetMapping: AssetMapping, maybeAssetName: Option[Texture]): (Vector2, Double) =
