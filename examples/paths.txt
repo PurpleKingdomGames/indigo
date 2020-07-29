@@ -1,0 +1,23 @@
+From the exmaples directory:
+
+cd ./basic-setup/.js/target/indigo-js/
+cd ./subsystems/.js/target/indigo-js/
+cd ./scenes-setup/.js/target/indigo-js/
+cd ./button/.js/target/indigo-js/
+cd ./http/.js/target/indigo-js/
+cd ./text/.js/target/indigo-js/
+cd ./graphic/.js/target/indigo-js/
+cd ./sprite/.js/target/indigo-js/
+cd ./websocket/.js/target/indigo-js/
+cd ./inputfield/.js/target/indigo-js/
+cd ./audio/.js/target/indigo-js/
+cd ./group/.js/target/indigo-js/
+cd ./automata/.js/target/indigo-js/
+cd ./fireworks/.js/target/indigo-js/
+cd ./lighting/.js/target/indigo-js/
+cd ./distortion/.js/target/indigo-js/
+cd ./effects/.js/target/indigo-js/
+cd ./assetLoading/.js/target/indigo-js/
+cd ./tiled/.js/target/indigo-js/
+
+cd ../../../../
