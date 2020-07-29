@@ -3,7 +3,7 @@ package indigo.shared
 import scala.collection.mutable
 import EqualTo._
 
-@SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures", "org.wartremover.warts.NonUnitStatements"))
+@SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures", "org.wartremover.warts.NonUnitStatements", "org.wartremover.warts.Null"))
 final class QuickCache[A](private val cache: mutable.HashMap[CacheKey, A]) {
 
   def fetch(key: CacheKey): Option[A] =
@@ -16,7 +16,12 @@ final class QuickCache[A](private val cache: mutable.HashMap[CacheKey, A]) {
 
   def fetchOrAdd(key: CacheKey, disabled: Boolean, value: => A): A =
     if (disabled) value
-    else fetch(key).getOrElse(add(key, value))
+    else
+      try cache(key)
+      catch {
+        case _: Throwable =>
+          add(key, value)
+      }
 
   def purgeAllNow(): Unit =
     cache.clear()
@@ -65,23 +70,6 @@ object QuickCache {
   def empty[A]: QuickCache[A] =
     new QuickCache[A](mutable.HashMap.empty[CacheKey, A])
 
-}
-
-object QuickCacheMaybe {
-  def apply[A](key: String)(value: => Option[A])(implicit cache: QuickCache[A]): Option[A] =
-    cache.fetch(CacheKey(key)) match {
-      case Some(v) =>
-        Some(v)
-
-      case None =>
-        value match {
-          case None =>
-            None
-
-          case Some(v) =>
-            Some(cache.add(CacheKey(key), v))
-        }
-    }
 }
 
 final class CacheKey(val value: String) extends AnyVal
