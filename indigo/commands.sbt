@@ -16,35 +16,23 @@ lazy val coreProjects: List[String] =
     "perf"
   )
 
-def applyCommand(projects: List[String], command: String, platforms: List[PlatformSuffix]): String =
-  platforms match {
-    case Nil =>
-      projects.map(p => p + "/" + command).mkString(";", ";", "")
-
-    case ps =>
-      projects
-        .flatMap { p =>
-          ps.map { plt =>
-            p + plt.suffix + "/" + command
-          }
-        }
-        .mkString(";", ";", "")
-  }
+def applyCommand(projects: List[String], command: String): String =
+  projects.map(p => p + "/" + command).mkString(";", ";", "")
 
 def applyToAll(command: String): String =
   List(
-    applyCommand(coreProjects, command, PlatformSuffix.All)
+    applyCommand(coreProjects, command)
   ).mkString
 
 def applyToAllReleaseable(command: String): String =
   List(
-    applyCommand(releaseProjects, command, PlatformSuffix.All)
+    applyCommand(releaseProjects, command)
   ).mkString
 
 // Rebuild ScalaDocs and open in Firefox
 addCommandAlias(
   "readdocs",
-  applyCommand(coreProjects, "doc", PlatformSuffix.JVMOnly) +
+  applyCommand(coreProjects, "doc") +
     List(
       "openshareddocs",
       "openindigodocs",
@@ -70,37 +58,20 @@ addCommandAlias(
 )
 
 addCommandAlias(
-  "testIndigoJS",
-  applyCommand(coreProjects, "test", PlatformSuffix.JSOnly)
+  "testIndigo",
+  applyCommand(coreProjects, "test")
 )
 addCommandAlias(
-  "testIndigoJVM",
-  applyCommand(releaseProjects, "test", PlatformSuffix.JVMOnly) // Release projects only!
-)
-addCommandAlias(
-  "testAllNoCleanJS",
+  "testAllNoClean",
   List(
-    "testIndigoJS"
+    "testIndigo"
   ).mkString(";", ";", "")
 )
 addCommandAlias(
-  "testAllJS",
+  "testAll",
   List(
     "cleanAll",
-    "testAllNoCleanJS"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testAllNoCleanJVM",
-  List(
-    "testIndigoJVM"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testAllJVM",
-  List(
-    "cleanAll",
-    "testAllNoCleanJVM"
+    "testAllNoClean"
   ).mkString(";", ";", "")
 )
 
@@ -118,14 +89,13 @@ addCommandAlias(
 
 addCommandAlias(
   "buildIndigo",
-  applyCommand(coreProjects, "compile", PlatformSuffix.All)
+  applyCommand(coreProjects, "compile")
 )
 addCommandAlias(
   "localPublishIndigo",
   applyCommand(
     coreProjects.filterNot(name => name == "indigoExtsExp" || name == "sandbox" || name == "perf"),
-    "publishLocal",
-    PlatformSuffix.All
+    "publishLocal"
   )
 )
 
@@ -164,31 +134,11 @@ addCommandAlias(
 )
 
 addCommandAlias(
-  "sandboxBuildJVM",
-  List(
-    "buildAllNoClean",
-    "sandboxJVM/compile",
-    "sandboxJVM/assembly",
-    "sandboxJVM/indigoBuildJVM"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "perfBuildJS",
+  "perfBuild",
   List(
     "buildAllNoClean",
     "perfJS/fastOptJS",
     "perfJS/indigoBuildJS"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "perfBuildJVM",
-  List(
-    "buildAllNoClean",
-    "perfJVM/compile",
-    "perfJVM/assembly",
-    "perfJVM/indigoBuildJVM"
   ).mkString(";", ";", "")
 )
 
@@ -202,8 +152,7 @@ addCommandAlias(
   List(
     "cleanAll",
     "buildAllNoClean",
-    "testAllNoCleanJVM",
-    "testAllNoCleanJS",
+    "testAllNoClean",
     "indigoPublishAllSigned",
     "sonatypeBundleRelease"
   ).mkString(";", ";", "")

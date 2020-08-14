@@ -1,5 +1,4 @@
-// shadow sbt-scalajs' crossProject and CrossType from Scala.js 0.6.x
-import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
+
 import scala.sys.process._
 import scala.language.postfixOps
 
@@ -42,8 +41,7 @@ lazy val publishSettings = {
 // Testing
 
 lazy val sandbox =
-  crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Pure)
+  project
     .enablePlugins(ScalaJSPlugin)
     .enablePlugins(SbtIndigo)
     .settings(commonSettings: _*)
@@ -60,12 +58,11 @@ lazy val sandbox =
     .dependsOn(indigo)
     .dependsOn(indigoExtras)
     .dependsOn(indigoJsonUPickle)
-lazy val sandboxJS  = sandbox.js
-lazy val sandboxJVM = sandbox.jvm
+// lazy val sandboxJS  = sandbox.js
+// lazy val sandboxJVM = sandbox.jvm
 
 lazy val perf =
-  crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Pure)
+  project
     .enablePlugins(ScalaJSPlugin)
     .enablePlugins(SbtIndigo)
     .settings(commonSettings: _*)
@@ -82,14 +79,14 @@ lazy val perf =
     .dependsOn(indigo)
     .dependsOn(indigoExtras)
     .dependsOn(indigoJsonCirce)
-lazy val perfJS  = perf.js
-lazy val perfJVM = perf.jvm
+// lazy val perfJS  = perf.js
+// lazy val perfJVM = perf.jvm
 
 // Indigo
 lazy val indigoCore =
-  crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("indigo-core"))
+    .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(publishSettings: _*)
     .settings(
@@ -100,14 +97,14 @@ lazy val indigoCore =
     )
     .dependsOn(shared)
     .dependsOn(indigoPlatforms)
-lazy val indigoCoreJS  = indigoCore.js
-lazy val indigoCoreJVM = indigoCore.jvm
+// lazy val indigoCoreJS  = indigoCore.js
+// lazy val indigoCoreJVM = indigoCore.jvm
 
 // Indigo Extensions
 lazy val indigoExtras =
-  crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("indigo-extras"))
+    .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(publishSettings: _*)
     .dependsOn(shared)
@@ -115,14 +112,14 @@ lazy val indigoExtras =
       name := "indigo-extras",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
     )
-lazy val indigoExtrasJS  = indigoExtras.js
-lazy val indigoExtrasJVM = indigoExtras.jvm
+// lazy val indigoExtrasJS  = indigoExtras.js
+// lazy val indigoExtrasJVM = indigoExtras.jvm
 
 // Indigo Game
 lazy val indigo =
-  crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("indigo"))
+    .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(publishSettings: _*)
     .dependsOn(indigoCore)
@@ -130,17 +127,17 @@ lazy val indigo =
       name := "indigo",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
     )
-    .jvmSettings(
-      libraryDependencies += "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided"
-    )
-lazy val indigoJS  = indigo.js
-lazy val indigoJVM = indigo.jvm
+    // .jvmSettings(
+    //   libraryDependencies += "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided"
+    // )
+// lazy val indigoJS  = indigo.js
+// lazy val indigoJVM = indigo.jvm
 
 // Indigo Facades
 lazy val facades =
-  crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Full)
+  project
     .in(file("facades"))
+    .enablePlugins(ScalaJSPlugin)
     .settings(publishSettings: _*)
     .settings(
       name := "facades",
@@ -148,27 +145,31 @@ lazy val facades =
       scalaVersion := scala2,
       organization := "io.indigoengine",
       scalacOptions += "-Yrangepos",
-      scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits")
-    )
-    .jsSettings(
+      scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits"),
       libraryDependencies ++= Seq(
         "org.scala-js" %%% "scalajs-dom" % "1.0.0"
       )
     )
-lazy val facadesJS  = facades.js
-lazy val facadesJVM = facades.jvm
+    // .jsSettings(
+      // libraryDependencies ++= Seq(
+      //   "org.scala-js" %%% "scalajs-dom" % "1.0.0"
+      // )
+    // )
+// lazy val facadesJS  = facades.js
+// lazy val facadesJVM = facades.jvm
 
 // Indigo Platforms
 lazy val indigoPlatforms =
-  crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Full)
+  project
     .in(file("indigo-platforms"))
+    .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(publishSettings: _*)
     .settings(
       name := "indigo-platforms",
       libraryDependencies ++= Seq(
-        "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
+        "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test",
+        "org.scala-js" %%% "scalajs-dom" % "1.0.0"
       )
     )
     .settings(
@@ -182,54 +183,54 @@ lazy val indigoPlatforms =
         cachedFun(IO.listFiles((baseDirectory.value / "shaders")).toSet).toSeq
       }.taskValue
     )
-    .jsSettings(
-      libraryDependencies ++= Seq(
-        "org.scala-js" %%% "scalajs-dom" % "1.0.0"
-      )
-    )
-    .jvmSettings(
-      fork in run := true,
-      javaOptions ++= Seq(
-        "-XstartOnFirstThread",
-        "-Dorg.lwjgl.util.Debug=true",
-        "-Dorg.lwjgl.util.DebugLoader=true"
-      ),
-      libraryDependencies ++= Seq(
-        "org.lwjgl"      % "lwjgl-opengl"     % "3.2.1",
-        "org.lwjgl"      % "lwjgl-openal"     % "3.2.1",
-        "org.lwjgl.osgi" % "org.lwjgl.stb"    % "3.2.1.1",
-        "org.lwjgl.osgi" % "org.lwjgl.assimp" % "3.2.1.1",
-        "org.lwjgl.osgi" % "org.lwjgl.glfw"   % "3.2.1.1",
-        "org.lwjgl.osgi" % "org.lwjgl.opengl" % "3.2.1.1"
-      )
-    )
+    // .jsSettings(
+    //   libraryDependencies ++= Seq(
+    //     "org.scala-js" %%% "scalajs-dom" % "1.0.0"
+    //   )
+    // )
+    // .jvmSettings(
+    //   fork in run := true,
+    //   javaOptions ++= Seq(
+    //     "-XstartOnFirstThread",
+    //     "-Dorg.lwjgl.util.Debug=true",
+    //     "-Dorg.lwjgl.util.DebugLoader=true"
+    //   ),
+    //   libraryDependencies ++= Seq(
+    //     "org.lwjgl"      % "lwjgl-opengl"     % "3.2.1",
+    //     "org.lwjgl"      % "lwjgl-openal"     % "3.2.1",
+    //     "org.lwjgl.osgi" % "org.lwjgl.stb"    % "3.2.1.1",
+    //     "org.lwjgl.osgi" % "org.lwjgl.assimp" % "3.2.1.1",
+    //     "org.lwjgl.osgi" % "org.lwjgl.glfw"   % "3.2.1.1",
+    //     "org.lwjgl.osgi" % "org.lwjgl.opengl" % "3.2.1.1"
+    //   )
+    // )
     .dependsOn(shared)
     .dependsOn(facades)
-lazy val indigoPlatformsJS  = indigoPlatforms.js
-lazy val indigoPlatformsJVM = indigoPlatforms.jvm
+// lazy val indigoPlatformsJS  = indigoPlatforms.js
+// lazy val indigoPlatformsJVM = indigoPlatforms.jvm
 
 // Shared
 lazy val shared =
-  crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Pure)
+  project
+    .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(publishSettings: _*)
     .settings(
       name := "shared",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
     )
-    .jvmSettings(
-      libraryDependencies += "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided"
-    )
+    // .jvmSettings(
+    //   libraryDependencies += "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided"
+    // )
 
-lazy val sharedJS  = shared.js
-lazy val sharedJVM = shared.jvm
+// lazy val sharedJS  = shared.js
+// lazy val sharedJVM = shared.jvm
 
 // Circe
 lazy val indigoJsonCirce =
-  crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("indigo-json-circe"))
+    .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(publishSettings: _*)
     .settings(
@@ -241,14 +242,14 @@ lazy val indigoJsonCirce =
       ).map(_ % "0.13.0")
     )
     .dependsOn(indigoExtras)
-lazy val indigoJsonCirceJS  = indigoJsonCirce.js
-lazy val indigoJsonCirceJVM = indigoJsonCirce.jvm
+// lazy val indigoJsonCirceJS  = indigoJsonCirce.js
+// lazy val indigoJsonCirceJVM = indigoJsonCirce.jvm
 
 // uPickle
 lazy val indigoJsonUPickle =
-  crossProject(JSPlatform, JVMPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("indigo-json-upickle"))
+    .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(publishSettings: _*)
     .settings(
@@ -258,12 +259,13 @@ lazy val indigoJsonUPickle =
       )
     )
     .dependsOn(indigoExtras)
-lazy val indigoJsonUPickleJS  = indigoJsonUPickle.js
-lazy val indigoJsonUPickleJVM = indigoJsonUPickle.jvm
+// lazy val indigoJsonUPickleJS  = indigoJsonUPickle.js
+// lazy val indigoJsonUPickleJVM = indigoJsonUPickle.jvm
 
 // Root
 lazy val indigoProject =
   (project in file("."))
+    .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(
       code := { "code ." ! },
@@ -272,15 +274,15 @@ lazy val indigoProject =
       openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-2.13/api/indigoexts/index.html" ! }
     )
     .aggregate(
-      sharedJS,
-      indigoPlatformsJS,
-      indigoJsonCirceJS,
-      indigoCoreJS,
-      indigoExtrasJS,
-      indigoJS,
-      facadesJS,
-      sandboxJS,
-      perfJS
+      shared,
+      indigoPlatforms,
+      indigoJsonCirce,
+      indigoCore,
+      indigoExtras,
+      indigo,
+      facades,
+      sandbox,
+      perf
     )
 
 lazy val code =
