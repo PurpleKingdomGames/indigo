@@ -9,7 +9,7 @@ import indigo.shared.Startup
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 import indigo.platform.assets._
-import indigo.platform.audio.AudioPlayerImpl
+import indigo.platform.audio.AudioPlayer
 import indigo.platform.input.GamepadInputCaptureImpl
 import indigo.shared.platform.GlobalEventStream
 import indigo.platform.events.GlobalEventStreamImpl
@@ -51,8 +51,8 @@ final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
   val sceneProcessor: SceneProcessor =
     new SceneProcessor(boundaryLocator, animationsRegister, fontRegister)
 
-  val audioPlayer: AudioPlayerImpl =
-    AudioPlayerImpl.init
+  val audioPlayer: AudioPlayer =
+    AudioPlayer.init
 
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var gameConfig: GameConfig = null

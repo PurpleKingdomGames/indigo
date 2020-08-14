@@ -2,7 +2,6 @@ package indigo.platform.audio
 
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.scenegraph.{PlaybackPattern, SceneAudio, SceneAudioSource}
-import indigo.shared.platform.AudioPlayer
 import indigo.shared.audio.Volume
 
 import org.scalajs.dom.{AudioBufferSourceNode, GainNode}
@@ -17,7 +16,7 @@ import org.scalajs.dom.raw.AudioBuffer
 import scala.concurrent.Future
 import org.scalajs.dom.raw.AudioDestinationNode
 
-object AudioPlayerImpl {
+object AudioPlayer {
 
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.Null", "org.wartremover.warts.Equals"))
   def giveAudioContext(): AudioContextProxy =
@@ -25,8 +24,8 @@ object AudioPlayerImpl {
       AudioContextProxy.WebKitAudioContext(js.Dynamic.newInstance(js.Dynamic.global.window.webkitAudioContext)())
     else AudioContextProxy.StandardAudioContext(new AudioContext)
 
-  def init: AudioPlayerImpl =
-    new AudioPlayerImpl(giveAudioContext())
+  def init: AudioPlayer =
+    new AudioPlayer(giveAudioContext())
 }
 
 sealed trait AudioContextProxy {
@@ -94,7 +93,7 @@ object AudioContextProxy {
 
 }
 
-final class AudioPlayerImpl(context: AudioContextProxy) extends AudioPlayer {
+final class AudioPlayer(context: AudioContextProxy) {
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var soundAssets: List[LoadedAudioAsset] = Nil

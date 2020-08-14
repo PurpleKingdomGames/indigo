@@ -3,7 +3,6 @@ package indigo.platform.events
 import indigo.shared.platform.GlobalEventStream
 import indigo.shared.events.{GlobalEvent, NetworkSendEvent, PlaySound}
 import indigo.shared.networking.{HttpRequest, WebSocketEvent}
-import indigo.shared.platform.AudioPlayer
 
 import indigo.platform.networking.{Http, WebSockets}
 
@@ -13,6 +12,7 @@ import indigo.shared.platform.Storage
 import indigo.shared.events.AssetEvent
 import indigo.platform.assets.AssetLoader
 import indigo.platform.assets.AssetCollection
+import indigo.platform.audio.AudioPlayer
 
 object GlobalEventStreamImpl {
 
