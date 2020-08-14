@@ -119,17 +119,17 @@ addCommandAlias(
 addCommandAlias(
   "sandboxBuild",
   List(
-    "sandboxJS/fastOptJS",
-    "sandboxJS/indigoBuildJS"
+    "sandbox/fastOptJS",
+    "sandbox/indigoBuild"
   ).mkString(";", ";", "")
 )
 
 addCommandAlias(
-  "sandboxBuildJS",
+  "sandboxBuild",
   List(
     "buildAllNoClean",
-    "sandboxJS/fastOptJS",
-    "sandboxJS/indigoBuildJS"
+    "sandbox/fastOptJS",
+    "sandbox/indigoBuild"
   ).mkString(";", ";", "")
 )
 
@@ -137,8 +137,8 @@ addCommandAlias(
   "perfBuild",
   List(
     "buildAllNoClean",
-    "perfJS/fastOptJS",
-    "perfJS/indigoBuildJS"
+    "perf/fastOptJS",
+    "perf/indigoBuild"
   ).mkString(";", ";", "")
 )
 

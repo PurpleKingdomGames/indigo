@@ -11,7 +11,7 @@ trait MillIndigo extends mill.Module {
   val gameAssetsDirectory: Path
 
   // TODO: Convert from command to task to allow caching... how to depend on fastOpt's output?
-  def indigoBuildJS() =
+  def indigoBuild() =
     T.command {
       val scriptPathBase: Path = T.dest / os.up / os.up / "fastOpt" / "dest"
 
@@ -26,7 +26,7 @@ trait MillIndigo extends mill.Module {
       )
     }
 
-  def indigoBuildFullJS() =
+  def indigoBuildFull() =
     T.command {
       val scriptPathBase: Path = T.dest / os.up / os.up / "fullOpt" / "dest"
 
