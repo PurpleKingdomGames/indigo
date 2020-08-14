@@ -1,7 +1,6 @@
 package indigo.platform.events
 
 import indigo.shared.events.{MouseEvent, KeyboardEvent}
-import indigo.shared.platform.GlobalEventStream
 
 import org.scalajs.dom
 import org.scalajs.dom.document

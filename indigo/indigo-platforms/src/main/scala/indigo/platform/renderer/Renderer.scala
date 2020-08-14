@@ -1,6 +1,7 @@
-package indigo.shared.platform
+package indigo.platform.renderer
 
 import indigo.shared.datatypes.Matrix4
+import indigo.shared.platform.ProcessedSceneData
 
 trait Renderer {
 

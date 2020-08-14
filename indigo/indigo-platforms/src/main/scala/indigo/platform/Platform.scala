@@ -1,8 +1,7 @@
 package indigo.platform
 
-import indigo.shared.platform.Platform
-import indigo.shared.platform.Renderer
-import indigo.shared.platform.GlobalEventStream
+import indigo.platform.renderer.Renderer
+import indigo.platform.events.GlobalEventStream
 import indigo.shared.config.GameConfig
 import indigo.shared.IndigoLogger
 import indigo.shared.datatypes.Vector2
@@ -26,11 +25,11 @@ import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
 
-class PlatformImpl(
+class Platform(
     gameConfig: GameConfig,
     assetCollection: AssetCollection,
     globalEventStream: GlobalEventStream
-) extends Platform {
+) {
 
   val rendererInit: RendererInitialiser =
     new RendererInitialiser(gameConfig.advanced.renderingTechnology, globalEventStream)

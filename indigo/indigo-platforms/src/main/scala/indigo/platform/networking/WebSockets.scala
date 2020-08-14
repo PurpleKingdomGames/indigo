@@ -5,7 +5,7 @@ import indigo.shared.networking.WebSocketReadyState
 import indigo.shared.networking.WebSocketReadyState.{CLOSED, CLOSING}
 import indigo.shared.networking.{WebSocketId, WebSocketConfig, WebSocketEvent}
 import indigo.shared.IndigoLogger
-import indigo.shared.platform.GlobalEventStream
+import indigo.platform.events.GlobalEventStream
 
 import org.scalajs.dom
 

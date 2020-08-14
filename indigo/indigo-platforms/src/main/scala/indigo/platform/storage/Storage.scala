@@ -1,9 +1,8 @@
 package indigo.platform.storage
 
 import org.scalajs.dom
-import indigo.shared.platform.Storage
 
-final class PlatformStorage extends Storage {
+final class Storage {
 
   def save(key: String, data: String): Unit =
     dom.window.localStorage.setItem(key, data)
@@ -18,7 +17,7 @@ final class PlatformStorage extends Storage {
     dom.window.localStorage.clear()
 }
 
-object PlatformStorage {
+object Storage {
   def default: Storage =
-    new PlatformStorage
+    new Storage
 }

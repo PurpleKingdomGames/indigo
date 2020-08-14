@@ -1,6 +1,5 @@
 package indigo.platform.renderer
 
-import indigo.shared.platform.Renderer
 import indigo.shared.platform.RendererConfig
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.ContextAndCanvas
@@ -14,7 +13,7 @@ import indigo.platform.renderer.webgl2.RendererWebGL2
 import indigo.shared.config.RenderingTechnology
 import indigo.shared.IndigoLogger
 import indigo.facades.WebGL2RenderingContext
-import indigo.shared.platform.GlobalEventStream
+import indigo.platform.events.GlobalEventStream
 import indigo.shared.events.RendererDetails
 
 final class RendererInitialiser(renderingTechnology: RenderingTechnology, globalEventStream: GlobalEventStream) {

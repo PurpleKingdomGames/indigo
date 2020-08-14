@@ -3,7 +3,7 @@ package indigo.platform.renderer.webgl1
 import indigo.shared.ClearColor
 import indigo.shared.display.DisplayObject
 import indigo.shared.EqualTo._
-import indigo.shared.platform.Renderer
+import indigo.platform.renderer.Renderer
 import indigo.shared.platform.RendererConfig
 import indigo.shared.datatypes.Matrix4
 import indigo.shared.platform.ProcessedSceneData
@@ -24,7 +24,7 @@ import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import indigo.platform.renderer.shared.RendererHelper
 import indigo.platform.renderer.shared.WebGLHelper
-import indigo.shared.platform.GlobalEventStream
+import indigo.platform.events.GlobalEventStream
 import indigo.shared.events.ViewportResize
 import indigo.shared.config.GameViewport
 

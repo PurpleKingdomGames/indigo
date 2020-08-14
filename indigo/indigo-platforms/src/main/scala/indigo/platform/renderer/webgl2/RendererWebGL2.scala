@@ -3,7 +3,7 @@ package indigo.platform.renderer.webgl2
 import indigo.shared.ClearColor
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
-import indigo.shared.platform.Renderer
+import indigo.platform.renderer.Renderer
 import indigo.shared.platform.RendererConfig
 import org.scalajs.dom.raw.WebGLRenderingContext
 import scala.scalajs.js.typedarray.Float32Array
@@ -20,7 +20,7 @@ import indigo.platform.renderer.shared.RendererHelper
 import indigo.platform.renderer.shared.WebGLHelper
 import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.FrameBufferComponents
-import indigo.shared.platform.GlobalEventStream
+import indigo.platform.events.GlobalEventStream
 import indigo.shared.events.ViewportResize
 import indigo.shared.config.GameViewport
 

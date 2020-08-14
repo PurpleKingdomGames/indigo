@@ -1,6 +1,5 @@
 package indigo.platform.events
 
-import indigo.shared.platform.GlobalEventStream
 import indigo.shared.events.{GlobalEvent, NetworkSendEvent, PlaySound}
 import indigo.shared.networking.{HttpRequest, WebSocketEvent}
 
@@ -8,34 +7,38 @@ import indigo.platform.networking.{Http, WebSockets}
 
 import scala.collection.mutable
 import indigo.shared.events.StorageEvent
-import indigo.shared.platform.Storage
+import indigo.platform.storage.Storage
 import indigo.shared.events.AssetEvent
 import indigo.platform.assets.AssetLoader
 import indigo.platform.assets.AssetCollection
 import indigo.platform.audio.AudioPlayer
 
-object GlobalEventStreamImpl {
+final class GlobalEventStream(rebuildGameLoop: AssetCollection => Unit, audioPlayer: AudioPlayer, storage: Storage) {
+  private val audioFilter =
+    GlobalEventStream.AudioEventProcessor.filter(audioPlayer)
 
-  def default(rebuildGameLoop: AssetCollection => Unit, audioPlayer: AudioPlayer, storage: Storage): GlobalEventStream =
-    new GlobalEventStream {
-      val audioFilter   = AudioEventProcessor.filter(audioPlayer)
-      val storageFilter = StorageEventProcessor.filter(storage)
-      val assetFilter   = AssetEventProcessor.filter(rebuildGameLoop, this)
+  private val storageFilter =
+    GlobalEventStream.StorageEventProcessor.filter(storage)
 
-      private val eventQueue: mutable.Queue[GlobalEvent] =
-        new mutable.Queue[GlobalEvent]()
+  private val assetFilter =
+    GlobalEventStream.AssetEventProcessor.filter(rebuildGameLoop, this)
 
-      def pushGlobalEvent(e: GlobalEvent): Unit =
-        NetworkEventProcessor
-          .filter(this)(e)
-          .flatMap { audioFilter }
-          .flatMap { storageFilter }
-          .flatMap { assetFilter }
-          .foreach(e => eventQueue.enqueue(e))
+  private val eventQueue: mutable.Queue[GlobalEvent] =
+    new mutable.Queue[GlobalEvent]()
 
-      def collect: List[GlobalEvent] =
-        eventQueue.dequeueAll(_ => true).toList
-    }
+  def pushGlobalEvent(e: GlobalEvent): Unit =
+    GlobalEventStream.NetworkEventProcessor
+      .filter(this)(e)
+      .flatMap(audioFilter)
+      .flatMap(storageFilter)
+      .flatMap(assetFilter)
+      .foreach(e => eventQueue.enqueue(e))
+
+  def collect: List[GlobalEvent] =
+    eventQueue.dequeueAll(_ => true).toList
+}
+
+object GlobalEventStream {
 
   object NetworkEventProcessor {
 
@@ -56,41 +59,43 @@ object GlobalEventStreamImpl {
 
   object AudioEventProcessor {
 
-    def filter: AudioPlayer => GlobalEvent => Option[GlobalEvent] = audioPlayer => {
-      case PlaySound(assetName, volume) =>
-        audioPlayer.playSound(assetName, volume)
-        None
+    def filter: AudioPlayer => GlobalEvent => Option[GlobalEvent] =
+      audioPlayer => {
+        case PlaySound(assetName, volume) =>
+          audioPlayer.playSound(assetName, volume)
+          None
 
-      case e =>
-        Some(e)
-    }
+        case e =>
+          Some(e)
+      }
 
   }
 
   object StorageEventProcessor {
 
-    def filter: Storage => GlobalEvent => Option[GlobalEvent] = storage => {
-      case StorageEvent.Save(key, data) =>
-        storage.save(key, data)
-        None
+    def filter: Storage => GlobalEvent => Option[GlobalEvent] =
+      storage => {
+        case StorageEvent.Save(key, data) =>
+          storage.save(key, data)
+          None
 
-      case StorageEvent.Load(key) =>
-        storage.load(key).map(data => StorageEvent.Loaded(key, data))
+        case StorageEvent.Load(key) =>
+          storage.load(key).map(data => StorageEvent.Loaded(key, data))
 
-      case StorageEvent.Delete(key) =>
-        storage.delete(key)
-        None
+        case StorageEvent.Delete(key) =>
+          storage.delete(key)
+          None
 
-      case StorageEvent.DeleteAll =>
-        storage.deleteAll()
-        None
+        case StorageEvent.DeleteAll =>
+          storage.deleteAll()
+          None
 
-      case e @ StorageEvent.Loaded(_, _) =>
-        Some(e)
+        case e @ StorageEvent.Loaded(_, _) =>
+          Some(e)
 
-      case e =>
-        Some(e)
-    }
+        case e =>
+          Some(e)
+      }
 
   }
 

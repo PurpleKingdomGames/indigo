@@ -11,20 +11,16 @@ import indigo.shared.FontRegister
 import indigo.platform.assets._
 import indigo.platform.audio.AudioPlayer
 import indigo.platform.input.GamepadInputCaptureImpl
-import indigo.shared.platform.GlobalEventStream
-import indigo.platform.events.GlobalEventStreamImpl
-import indigo.shared.platform.Platform
-import indigo.shared.platform.Renderer
-import indigo.platform.PlatformImpl
-import indigo.platform.PlatformWindow
+import indigo.platform.events.GlobalEventStream
+import indigo.platform.renderer.Renderer
+import indigo.platform.Platform
 import indigo.shared.platform.AssetMapping
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import indigo.shared.EqualTo._
-import indigo.shared.platform.Storage
-import indigo.platform.storage.PlatformStorage
+import indigo.platform.storage.Storage
 import indigo.shared.input.GamepadInputCapture
 import scala.util.Try
 import scala.util.Success
@@ -87,10 +83,8 @@ final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
 
     IndigoLogger.info("Starting Indigo")
 
-    PlatformWindow.windowSetup(config)
-
-    storage = PlatformStorage.default
-    globalEventStream = GlobalEventStreamImpl.default(rebuildGameLoop(false), audioPlayer, storage)
+    storage = Storage.default
+    globalEventStream = new GlobalEventStream(rebuildGameLoop(false), audioPlayer, storage)
     gamepadInputCapture = GamepadInputCaptureImpl()
 
     // Arrange config
@@ -112,9 +106,8 @@ final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
 
         rebuildGameLoop(true)(assetCollection)
 
-        if(gameLoop != null) {
+        if (gameLoop != null)
           platform.tick(gameLoop(0))
-        }
       }
 
     }
@@ -133,7 +126,7 @@ final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
 
       val time = if (firstRun) 0 else gameLoopInstance.runningTimeReference
 
-      platform = new PlatformImpl(gameConfig, accumulatedAssetCollection, globalEventStream)
+      platform = new Platform(gameConfig, accumulatedAssetCollection, globalEventStream)
 
       val startupData: Startup[StartupError, StartUpData] =
         initialise(accumulatedAssetCollection)(Dice.fromSeed(time))

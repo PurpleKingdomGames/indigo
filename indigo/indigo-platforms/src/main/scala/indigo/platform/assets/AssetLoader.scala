@@ -10,7 +10,7 @@ import org.scalajs.dom.{html, _}
 import scala.concurrent.{Future, Promise}
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js.typedarray.ArrayBuffer
-import indigo.shared.platform.GlobalEventStream
+import indigo.platform.events.GlobalEventStream
 import indigo.shared.events.AssetEvent
 import indigo.shared.datatypes.BindingKey
 import scala.util.Success
