@@ -4,10 +4,10 @@ import indigo.shared.datatypes.BindingKey
 import indigo.shared.scenegraph.{PlaybackPattern, SceneAudio, SceneAudioSource}
 import indigo.shared.platform.AudioPlayer
 import indigo.shared.audio.Volume
-import indigo.platform.assets.{AssetDataFormats}
 
 import org.scalajs.dom.{AudioBufferSourceNode, GainNode}
 import org.scalajs.dom.raw.AudioContext
+import org.scalajs.dom
 import scala.scalajs.js
 
 import indigo.shared.EqualTo._
@@ -102,7 +102,7 @@ final class AudioPlayerImpl(context: AudioContextProxy) extends AudioPlayer {
   def addAudioAssets(audioAssets: List[LoadedAudioAsset]): Unit =
     soundAssets = soundAssets ++ audioAssets
 
-  private def setupNodes(audioBuffer: AssetDataFormats.AudioDataFormat, volume: Volume, loop: Boolean): AudioNodes = {
+  private def setupNodes(audioBuffer: dom.AudioBuffer, volume: Volume, loop: Boolean): AudioNodes = {
     val source = context.createBufferSource()
     source.buffer = audioBuffer
     source.loop = loop
@@ -115,7 +115,7 @@ final class AudioPlayerImpl(context: AudioContextProxy) extends AudioPlayer {
     new AudioNodes(source, gainNode)
   }
 
-  private def findAudioDataByName(assetName: AssetName): Option[AssetDataFormats.AudioDataFormat] =
+  private def findAudioDataByName(assetName: AssetName): Option[dom.AudioBuffer] =
     soundAssets.find(a => a.name === assetName).map(_.data)
 
   def playSound(assetName: AssetName, volume: Volume): Unit =
