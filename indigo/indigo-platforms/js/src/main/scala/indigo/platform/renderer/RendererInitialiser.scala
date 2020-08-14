@@ -186,29 +186,34 @@ final class RendererInitialiser(renderingTechnology: RenderingTechnology, global
     )
   )
   private def isWebGL2ReallySupported(gl2: raw.WebGLRenderingContext): Boolean = {
+    IndigoLogger.info("Checking WebGL 2.0 availability...")
 
-    def testWebGL2Compatibility(param: Int, min: Int): Boolean =
+    def testWebGL2Compatibility(param: Int, min: Int, name: String): Boolean =
       try if (gl2.getParameter(param).isInstanceOf[Int]) {
         val value = gl2.getParameter(param).asInstanceOf[Int]
-        !value.toFloat.isNaN() && value >= min
+        if (!value.toFloat.isNaN() && value >= min) true
+        else {
+          IndigoLogger.info(s" - WebGL 2.0 check '$name' failed. [min: ${min.toString}] [actual: ${value.toFloat.toString}]")
+          false
+        }
       } else false
       catch {
         case _: Throwable => false
       }
 
     val tests = List(
-      (WebGL2RenderingContext.MAX_3D_TEXTURE_SIZE, 256),
-      (WebGL2RenderingContext.MAX_DRAW_BUFFERS, 4),
-      (WebGL2RenderingContext.MAX_COLOR_ATTACHMENTS, 4),
-      (WebGL2RenderingContext.MAX_VERTEX_UNIFORM_BLOCKS, 12),
-      (WebGL2RenderingContext.MAX_VERTEX_TEXTURE_IMAGE_UNITS, 16),
-      (WebGL2RenderingContext.MAX_FRAGMENT_INPUT_COMPONENTS, 60),
-      (WebGL2RenderingContext.MAX_UNIFORM_BUFFER_BINDINGS, 24),
-      (WebGL2RenderingContext.MAX_COMBINED_UNIFORM_BLOCKS, 24),
-      (WebGL2RenderingContext.MAX_VARYING_VECTORS, 16)
+      (WebGL2RenderingContext.MAX_3D_TEXTURE_SIZE, 256, "MAX_3D_TEXTURE_SIZE"),
+      (WebGL2RenderingContext.MAX_DRAW_BUFFERS, 4, "MAX_DRAW_BUFFERS"),
+      (WebGL2RenderingContext.MAX_COLOR_ATTACHMENTS, 4, "MAX_COLOR_ATTACHMENTS"),
+      (WebGL2RenderingContext.MAX_VERTEX_UNIFORM_BLOCKS, 12, "MAX_VERTEX_UNIFORM_BLOCKS"),
+      (WebGL2RenderingContext.MAX_VERTEX_TEXTURE_IMAGE_UNITS, 16, "MAX_VERTEX_TEXTURE_IMAGE_UNITS"),
+      (WebGL2RenderingContext.MAX_FRAGMENT_INPUT_COMPONENTS, 60, "MAX_FRAGMENT_INPUT_COMPONENTS"),
+      (WebGL2RenderingContext.MAX_UNIFORM_BUFFER_BINDINGS, 24, "MAX_UNIFORM_BUFFER_BINDINGS"),
+      (WebGL2RenderingContext.MAX_COMBINED_UNIFORM_BLOCKS, 24, "MAX_COMBINED_UNIFORM_BLOCKS"),
+      (WebGL2RenderingContext.MAX_VARYING_VECTORS, 16, "MAX_VARYING_VECTORS")
     )
 
-    gl2 != null && tests.forall(t => testWebGL2Compatibility(t._1, t._2))
+    gl2 != null && tests.forall(t => testWebGL2Compatibility(t._1, t._2, t._3))
   }
 
 }
