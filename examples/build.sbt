@@ -1,5 +1,3 @@
-// shadow sbt-scalajs' crossProject and CrossType from Scala.js 0.6.x
-import sbtcrossproject.CrossPlugin.autoImport.{crossProject, CrossType}
 import scala.sys.process._
 import scala.language.postfixOps
 
@@ -24,9 +22,7 @@ lazy val commonSettings = Seq(
 
 // Examples
 lazy val basicSetup =
-  crossProject(JSPlatform, JVMPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("basic-setup"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
@@ -37,19 +33,9 @@ lazy val basicSetup =
       title := "Basic Setup",
       gameAssetsDirectory := "assets"
     )
-    .jvmSettings(
-      run / fork := true,
-      javaOptions ++= Seq(
-        "-XstartOnFirstThread",
-        "-Dorg.lwjgl.util.Debug=true",
-        "-Dorg.lwjgl.util.DebugLoader=true"
-      )
-    )
 
 lazy val subSystems =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("subsystems"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
@@ -62,9 +48,7 @@ lazy val subSystems =
     )
 
 lazy val scenesSetup =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("scenes-setup"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
@@ -77,9 +61,7 @@ lazy val scenesSetup =
     )
 
 lazy val text =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("text"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
@@ -92,9 +74,7 @@ lazy val text =
     )
 
 lazy val inputfield =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("inputfield"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
@@ -107,9 +87,7 @@ lazy val inputfield =
     )
 
 lazy val button =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("button"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
@@ -122,9 +100,7 @@ lazy val button =
     )
 
 lazy val graphic =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("graphic"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
@@ -137,9 +113,7 @@ lazy val graphic =
     )
 
 lazy val group =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("group"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
@@ -152,9 +126,7 @@ lazy val group =
     )
 
 lazy val tiled =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("tiled"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
@@ -170,9 +142,7 @@ lazy val tiled =
     )
 
 lazy val sprite =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("sprite"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
@@ -185,9 +155,7 @@ lazy val sprite =
     )
 
 lazy val http =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("http"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
@@ -200,9 +168,7 @@ lazy val http =
     )
 
 lazy val websocket =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("websocket"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
@@ -215,9 +181,7 @@ lazy val websocket =
     )
 
 lazy val automata =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("automata"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
@@ -230,9 +194,7 @@ lazy val automata =
     )
 
 lazy val fireworks =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("fireworks"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
@@ -248,9 +210,7 @@ lazy val fireworks =
     )
 
 lazy val audio =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .in(file("audio"))
     .settings(commonSettings: _*)
     .enablePlugins(SbtIndigo)
@@ -263,9 +223,7 @@ lazy val audio =
     )
 
 lazy val lighting =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .enablePlugins(SbtIndigo)
     .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
@@ -281,9 +239,7 @@ lazy val lighting =
     )
 
 lazy val distortion =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .enablePlugins(SbtIndigo)
     .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
@@ -299,9 +255,7 @@ lazy val distortion =
     )
 
 lazy val assetLoading =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .enablePlugins(SbtIndigo)
     .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
@@ -317,9 +271,7 @@ lazy val assetLoading =
     )
 
 lazy val effects =
-  crossProject(JSPlatform)
-    .withoutSuffixFor(JSPlatform)
-    .crossType(CrossType.Pure)
+  project
     .enablePlugins(SbtIndigo)
     .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)

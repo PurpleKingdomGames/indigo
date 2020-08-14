@@ -21,24 +21,12 @@ lazy val exampleProjects: List[String] =
     "tiled"
   )
 
-def applyCommand(projects: List[String], command: String, platforms: List[PlatformSuffix]): String =
-  platforms match {
-    case Nil =>
-      projects.map(p => p + "/" + command).mkString(";", ";", "")
-
-    case ps =>
-      projects
-        .flatMap { p =>
-          ps.map { plt =>
-            p + plt.suffix + "/" + command
-          }
-        }
-        .mkString(";", ";", "")
-  }
+def applyCommand(projects: List[String], command: String): String =
+  projects.map(p => p + "/" + command).mkString(";", ";", "")
 
 def applyToAll(command: String): String =
   List(
-    applyCommand(exampleProjects, command, PlatformSuffix.Omit)
+    applyCommand(exampleProjects, command)
   ).mkString
 
 addCommandAlias(
@@ -59,54 +47,37 @@ addCommandAlias(
 )
 
 addCommandAlias(
-  "fastOptJSAll",
+  "fastOptAll",
   applyToAll("fastOptJS")
 )
 addCommandAlias(
   "indigoBuildAll",
-  applyToAll("indigoBuildJS")
+  applyToAll("indigoBuild")
 )
 addCommandAlias(
   "buildExamples",
   List(
     "buildAllNoClean",
-    "fastOptJSAll",
+    "fastOptAll",
     "indigoBuildAll"
   ).mkString(";", ";", "")
 )
 
 addCommandAlias(
-  "testExamplesJS",
-  applyCommand(exampleProjects, "test", PlatformSuffix.Omit)
+  "testExamples",
+  applyCommand(exampleProjects, "test")
 )
 addCommandAlias(
-  "testExamplesJVM",
-  applyCommand(exampleProjects, "test", PlatformSuffix.Omit) // Currently not compiling examples to JVM
-)
-addCommandAlias(
-  "testAllNoCleanJS",
+  "testAllNoClean",
   List(
-    "testExamplesJS"
+    "testExamples"
   ).mkString(";", ";", "")
 )
 addCommandAlias(
-  "testAllJS",
+  "testAll",
   List(
     "cleanAll",
-    "testAllNoCleanJS"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testAllNoCleanJVM",
-  List(
-    "testExamplesJVM"
-  ).mkString(";", ";", "")
-)
-addCommandAlias(
-  "testAllJVM",
-  List(
-    "cleanAll",
-    "testAllNoCleanJVM"
+    "testAllNoClean"
   ).mkString(";", ";", "")
 )
 
@@ -124,14 +95,14 @@ addCommandAlias(
 
 addCommandAlias(
   "buildExamples",
-  applyCommand(exampleProjects, "compile", PlatformSuffix.All)
+  applyCommand(exampleProjects, "compile")
 )
 
 addCommandAlias(
   "fireworksBuild",
   List(
     "fireworks/fastOptJS",
-    "fireworks/indigoBuildJS"
+    "fireworks/indigoBuild"
   ).mkString(";", ";", "")
 )
 
@@ -139,7 +110,7 @@ addCommandAlias(
   "lightingBuild",
   List(
     "lighting/fastOptJS",
-    "lighting/indigoBuildJS"
+    "lighting/indigoBuild"
   ).mkString(";", ";", "")
 )
 
@@ -147,7 +118,7 @@ addCommandAlias(
   "distortionBuild",
   List(
     "distortion/fastOptJS",
-    "distortion/indigoBuildJS"
+    "distortion/indigoBuild"
   ).mkString(";", ";", "")
 )
 
@@ -155,7 +126,7 @@ addCommandAlias(
   "effectsBuild",
   List(
     "effects/fastOptJS",
-    "effects/indigoBuildJS"
+    "effects/indigoBuild"
   ).mkString(";", ";", "")
 )
 
@@ -163,7 +134,7 @@ addCommandAlias(
   "assetLoadingBuild",
   List(
     "assetLoading/fastOptJS",
-    "assetLoading/indigoBuildJS"
+    "assetLoading/indigoBuild"
   ).mkString(";", ";", "")
 )
 
@@ -171,6 +142,6 @@ addCommandAlias(
   "tiledBuild",
   List(
     "tiled/fastOptJS",
-    "tiled/indigoBuildJS"
+    "tiled/indigoBuild"
   ).mkString(";", ";", "")
 )

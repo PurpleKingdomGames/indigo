@@ -3,6 +3,6 @@
 cd snake
 
 mill snake.fastOpt
-mill snake.indigoBuildJS
+mill snake.indigoBuild
 
 cd ..

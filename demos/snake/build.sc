@@ -21,7 +21,7 @@ object snake extends ScalaJSModule with MillIndigo {
     T {
       compile()
       fastOpt()
-      indigoBuildJS()()
+      indigoBuild()()
     }
   }
 

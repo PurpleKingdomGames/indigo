@@ -2,4 +2,4 @@
 
 # Run from root.
 
-sbt cleanAll testAllNoCleanJS localPublishNoClean
+sbt cleanAll testAllNoClean localPublishNoClean
