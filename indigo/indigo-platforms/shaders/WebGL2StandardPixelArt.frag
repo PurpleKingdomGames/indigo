@@ -4,11 +4,8 @@ precision lowp float;
 
 uniform sampler2D u_texture;
 
-in vec2 v_texcoordEmissive;
-in vec2 v_texcoordNormal;
-in vec2 v_texcoordSpecular;
-in vec2 v_isLitAlpha;
-in vec2 v_relativeScreenCoords;
+in vec4 v_texcoordEmissiveNormal;
+in vec4 v_relativeScreenCoordsIsLitAlpha;
 in vec4 v_tint;
 in vec4 v_gradiantFromTo;
 in vec4 v_gradiantOverlayFromColor;
@@ -17,7 +14,16 @@ in vec4 v_borderColor;
 in vec4 v_glowColor;
 in vec4 v_effectAmounts;
 in vec4 v_textureAmounts;
-in vec2 v_textureOffsets3x3[9];
+in vec2 v_offsetTL;
+in vec2 v_offsetTC;
+in vec2 v_offsetTR;
+in vec2 v_offsetML;
+in vec2 v_offsetMC;
+in vec2 v_offsetMR;
+in vec2 v_offsetBL;
+in vec2 v_offsetBC;
+in vec2 v_offsetBR;
+in vec2 v_texcoordSpecular;
 
 layout(location = 0) out vec4 albedo;
 layout(location = 1) out vec4 emissive;
@@ -25,7 +31,7 @@ layout(location = 2) out vec4 normal;
 layout(location = 3) out vec4 specular;
 
 vec4 applyBasicEffects(vec4 textureColor) {
-  vec4 withAlpha = vec4(textureColor.rgb, textureColor.a * v_isLitAlpha.y);
+  vec4 withAlpha = vec4(textureColor.rgb, textureColor.a * v_relativeScreenCoordsIsLitAlpha.w);
 
   vec4 tintedVersion = vec4(withAlpha.rgb * v_tint.rgb, withAlpha.a);
 
@@ -35,7 +41,7 @@ vec4 applyBasicEffects(vec4 textureColor) {
 vec4 calculateGradiantOverlay() {
   vec2 pointA = v_gradiantFromTo.xy;
   vec2 pointB = v_gradiantFromTo.zw;
-  vec2 pointP = v_relativeScreenCoords;
+  vec2 pointP = v_relativeScreenCoordsIsLitAlpha.xy;
 
   // `h` is the distance along the gradiant 0 at A, 1 at B
   float h = min(1.0, max(0.0, dot(pointP - pointA, pointB - pointA) / dot(pointB - pointA, pointB - pointA)));
@@ -186,7 +192,7 @@ vec4 calculateInnerGlow(float baseAlpha, float[9] alphas, float amount) {
 }
 
 vec4 calculateNormal(vec4 normalColor, float alpha) {
-  if (v_isLitAlpha.x > 0.0) {
+  if (v_relativeScreenCoordsIsLitAlpha.z > 0.0) {
     if(normalColor.a < 0.001) {
       return vec4(0.5, 0.5, 1.0, alpha);
     } else {
@@ -207,18 +213,18 @@ vec4 calculateSpecular(vec4 specularColor, float alpha) {
 
 void main(void) {
 
-  vec2 texcoord = v_textureOffsets3x3[4];
+  vec2 texcoord = v_offsetMC;
 
   float[9] sampledRegionAlphas = float[9](
-    applyBasicEffects(texture(u_texture, v_textureOffsets3x3[0])).a,
-    applyBasicEffects(texture(u_texture, v_textureOffsets3x3[1])).a,
-    applyBasicEffects(texture(u_texture, v_textureOffsets3x3[2])).a,
-    applyBasicEffects(texture(u_texture, v_textureOffsets3x3[3])).a,
-    applyBasicEffects(texture(u_texture, v_textureOffsets3x3[4])).a,
-    applyBasicEffects(texture(u_texture, v_textureOffsets3x3[5])).a,
-    applyBasicEffects(texture(u_texture, v_textureOffsets3x3[6])).a,
-    applyBasicEffects(texture(u_texture, v_textureOffsets3x3[7])).a,
-    applyBasicEffects(texture(u_texture, v_textureOffsets3x3[8])).a
+    applyBasicEffects(texture(u_texture, v_offsetTL)).a,
+    applyBasicEffects(texture(u_texture, v_offsetTC)).a,
+    applyBasicEffects(texture(u_texture, v_offsetTR)).a,
+    applyBasicEffects(texture(u_texture, v_offsetML)).a,
+    applyBasicEffects(texture(u_texture, v_offsetMC)).a,
+    applyBasicEffects(texture(u_texture, v_offsetMR)).a,
+    applyBasicEffects(texture(u_texture, v_offsetBL)).a,
+    applyBasicEffects(texture(u_texture, v_offsetBC)).a,
+    applyBasicEffects(texture(u_texture, v_offsetBR)).a
   );
 
   float[9] sampledRegionAlphasInverse = float[9](
@@ -261,13 +267,13 @@ void main(void) {
 
   albedo = vec4(outColor.rgb, outColor.a * albedoAmount);
 
-  emissive = texture(u_texture, v_texcoordEmissive) * emissiveAmount;
+  emissive = texture(u_texture, v_texcoordEmissiveNormal.xy) * emissiveAmount;
 
   normal = vec4(0.0, 0.0, 0.0, outColor.a);
-  if (v_isLitAlpha.x > 0.0) {
+  if (v_relativeScreenCoordsIsLitAlpha.z > 0.0) {
     normal = mix(
       vec4(0.5, 0.5, 1.0, outColor.a),
-      calculateNormal(texture(u_texture, v_texcoordNormal), outColor.a),
+      calculateNormal(texture(u_texture, v_texcoordEmissiveNormal.zw), outColor.a),
       normalAmount
     );
   }

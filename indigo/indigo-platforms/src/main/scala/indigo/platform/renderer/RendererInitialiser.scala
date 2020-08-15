@@ -209,7 +209,7 @@ final class RendererInitialiser(renderingTechnology: RenderingTechnology, global
       (WebGL2RenderingContext.MAX_FRAGMENT_INPUT_COMPONENTS, 60, "MAX_FRAGMENT_INPUT_COMPONENTS"),
       (WebGL2RenderingContext.MAX_UNIFORM_BUFFER_BINDINGS, 24, "MAX_UNIFORM_BUFFER_BINDINGS"),
       (WebGL2RenderingContext.MAX_COMBINED_UNIFORM_BLOCKS, 24, "MAX_COMBINED_UNIFORM_BLOCKS"),
-      (WebGL2RenderingContext.MAX_VARYING_VECTORS, 16, "MAX_VARYING_VECTORS")
+      (WebGL2RenderingContext.MAX_VARYING_VECTORS, 15, "MAX_VARYING_VECTORS")
     )
 
     gl2 != null && tests.forall(t => testWebGL2Compatibility(t._1, t._2, t._3))
