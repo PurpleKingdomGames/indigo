@@ -16,12 +16,22 @@ object snake extends ScalaJSModule with MillIndigo {
   val gameAssetsDirectory: os.Path = os.pwd / "assets"
   val showCursor: Boolean          = true
   val title: String                = "Snake - Made with Indigo"
+  val windowStartWidth: Int        = 720
+  val windowStartHeight: Int       = 516
 
   def buildGame() = T.command {
     T {
       compile()
       fastOpt()
       indigoBuild()()
+    }
+  }
+
+  def runGame() = T.command {
+    T {
+      compile()
+      fastOpt()
+      indigoRun()()
     }
   }
 
@@ -48,7 +58,7 @@ object snake extends ScalaJSModule with MillIndigo {
     def ivyDeps = Agg(
       ivy"com.lihaoyi::utest::0.7.4",
       ivy"org.scalacheck::scalacheck::1.14.3"
-      )
+    )
 
     def testFrameworks = Seq("utest.runner.Framework")
 
