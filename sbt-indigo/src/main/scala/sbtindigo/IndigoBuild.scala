@@ -3,10 +3,9 @@ package sbtindigo
 import org.apache.commons.io.FileUtils
 import java.io.PrintWriter
 import sbt.File
-// import sbt.plugins.JvmPlugin
 import sbt._
 
-object IndigoBuildJS {
+object IndigoBuild {
 
   def build(baseDir: String, templateOptions: TemplateOptions): Unit = {
 
