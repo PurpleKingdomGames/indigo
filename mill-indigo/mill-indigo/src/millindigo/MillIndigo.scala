@@ -3,19 +3,23 @@ package millindigo
 import mill._
 import mill.scalalib._
 import os._
+import mill.define.Command
+import java.io.File
+import mill.define.Persistent
 
 trait MillIndigo extends mill.Module {
 
   val title: String
   val showCursor: Boolean
   val gameAssetsDirectory: Path
+  val windowStartWidth: Int
+  val windowStartHeight: Int
 
-  // TODO: Convert from command to task to allow caching... how to depend on fastOpt's output?
-  def indigoBuild() =
+  def indigoBuild(): Command[Path] =
     T.command {
       val scriptPathBase: Path = T.dest / os.up / os.up / "fastOpt" / "dest"
 
-      IndigoBuildJS.build(
+      IndigoBuild.build(
         T.dest,
         TemplateOptions(
           title,
@@ -24,14 +28,17 @@ trait MillIndigo extends mill.Module {
           gameAssetsDirectory
         )
       )
+
+      T.dest
     }
 
-  def indigoBuildFull() =
+  def indigoBuildFull(): Command[Path] =
     T.command {
+      val outputDir: Path      = T.dest
       val scriptPathBase: Path = T.dest / os.up / os.up / "fullOpt" / "dest"
 
-      IndigoBuildJS.build(
-        T.dest,
+      IndigoBuild.build(
+        outputDir,
         TemplateOptions(
           title,
           showCursor,
@@ -39,6 +46,41 @@ trait MillIndigo extends mill.Module {
           gameAssetsDirectory
         )
       )
+
+      outputDir
+    }
+
+  private def run(outputDir: Path, buildDir: Path): Unit = {
+    IndigoRun.filesToWrite(windowStartWidth, windowStartHeight).foreach { f =>
+      os.write.over(outputDir / f.name, f.contents)
+    }
+
+    os.list(buildDir).foreach { file =>
+      os.copy.into(file, outputDir, true, true, true, true)
+    }
+
+    println(s"Starting '$title'")
+
+    os.proc("npm", "start")
+      .call(cwd = outputDir, stdin = os.Inherit, stdout = os.Inherit, stderr = os.Inherit)
+
+    ()
+  }
+
+  def indigoRun(): Command[Unit] =
+    T.command {
+      val outputDir: Path = T.dest
+      val buildDir        = indigoBuild()()
+
+      run(outputDir, buildDir)
+    }
+
+  def indigoRunFull(): Command[Unit] =
+    T.command {
+      val outputDir: Path = T.dest
+      val buildDir        = indigoBuildFull()()
+
+      run(outputDir, buildDir)
     }
 
 }

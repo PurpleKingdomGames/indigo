@@ -2,7 +2,7 @@ package millindigo
 
 import os._
 
-object IndigoBuildJS {
+object IndigoBuild {
 
   def build(baseDir: Path, templateOptions: TemplateOptions): Unit = {
 
@@ -64,6 +64,12 @@ object IndigoBuildJS {
       |    <title>$title</title>
       |    <style>
       |      body {
+      |        padding:0px;
+      |        margin:0px;
+      |        overflow-x: hidden;
+      |        overflow-y: hidden;
+      |      }
+      |      #indigo-container {
       |        padding:0px;
       |        margin:0px;
       |      }
