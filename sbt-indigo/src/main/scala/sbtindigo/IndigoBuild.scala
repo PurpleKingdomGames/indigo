@@ -7,36 +7,20 @@ import sbt._
 
 object IndigoBuild {
 
-  def build(baseDir: String, templateOptions: TemplateOptions): Unit = {
+  def build(baseDir: String, templateOptions: TemplateOptions, outputFolderName: String, optimised: Boolean): Unit = {
 
     // create directory structure
-    val directoryStructure = createDirectoryStructure(baseDir, "indigo-js")
+    val directoryStructure = createDirectoryStructure(baseDir, outputFolderName)
 
     // copy built js file into scripts dir
-    val newScriptPath = copyScript(templateOptions, directoryStructure.artefacts, "fastopt")
+    val newScriptPath = copyScript(
+      templateOptions,
+      directoryStructure.artefacts,
+      optimised
+    )
 
     // copy built js source map file into scripts dir
-    copySourceMap(templateOptions, directoryStructure.artefacts)
-
-    // copy assets into folder
-    copyAssets(templateOptions.gameAssetsDirectoryPath, directoryStructure.assets)
-
-    // Fill out html template
-    val html = template(templateOptions.copy(scriptPathBase = newScriptPath))
-
-    // Write out file
-    val outputPath = writeHtml(directoryStructure, html)
-
-    println(outputPath)
-  }
-
-  def publish(baseDir: String, templateOptions: TemplateOptions): Unit = {
-
-    // create directory structure
-    val directoryStructure = createDirectoryStructure(baseDir, "indigo-published")
-
-    // copy built js file into scripts dir
-    val newScriptPath = copyScript(templateOptions, directoryStructure.artefacts, "opt")
+    copySourceMap(templateOptions, directoryStructure.artefacts, optimised)
 
     // copy assets into folder
     copyAssets(templateOptions.gameAssetsDirectoryPath, directoryStructure.assets)
@@ -75,8 +59,9 @@ object IndigoBuild {
     }
   }
 
-  def copyScript(templateOptions: TemplateOptions, desScriptsFolder: File, jsType: String): String = {
-    val path = s"${templateOptions.scriptPathBase}-$jsType.js"
+  def copyScript(templateOptions: TemplateOptions, desScriptsFolder: File, optimised: Boolean): String = {
+    val suffix = if (optimised) "opt.js" else "fastopt.js"
+    val path   = s"${templateOptions.scriptPathBase}-$suffix"
     val fileName = path
       .split('/')
       .toList
@@ -90,19 +75,12 @@ object IndigoBuild {
     "scripts/" + fileName
   }
 
-  def copySourceMap(templateOptions: TemplateOptions, desScriptsFolder: File): String = {
-    val path = s"${templateOptions.scriptPathBase}-fastopt.js.map"
-    val fileName = path
-      .split('/')
-      .toList
-      .reverse
-      .headOption
-      .getOrElse(throw new Exception("Could not figure out source map file name from: " + path))
+  def copySourceMap(templateOptions: TemplateOptions, desScriptsFolder: File, optimised: Boolean): Unit = {
+    val suffix           = if (optimised) "opt.js.map" else "fastopt.js.map"
+    val path             = s"${templateOptions.scriptPathBase}-$suffix"
     val scriptPath: File = new File(path)
 
     FileUtils.copyFileToDirectory(scriptPath, desScriptsFolder)
-
-    desScriptsFolder.getCanonicalPath + "/" + fileName
   }
 
   def writeHtml(directoryStructure: DirectoryStructure, html: String): String = {
