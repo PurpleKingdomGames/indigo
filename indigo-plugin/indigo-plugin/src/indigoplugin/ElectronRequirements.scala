@@ -1,4 +1,4 @@
-package millindigo
+package indigoplugin
 
 import indigoplugin.templates._
 
