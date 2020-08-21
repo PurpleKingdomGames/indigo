@@ -2,6 +2,12 @@
 
 set -e
 
+# Indigo Plugin
+echo ">>> Indigo Plugin"
+cd indigo-plugin
+bash build.sh
+cd ..
+
 # SBT Indigo
 echo ">>> SBT-Indigo"
 cd sbt-indigo
