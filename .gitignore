@@ -23,6 +23,7 @@ credentials.sbt
 # IDE specific
 .idea
 *.iml
+.vscode/
 
 node_modules
 elm-stuff
