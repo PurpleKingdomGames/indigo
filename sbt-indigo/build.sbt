@@ -26,12 +26,7 @@ lazy val sbtIndigo =
       name := "sbt-indigo",
       sbtPlugin := true,
       libraryDependencies ++= Seq(
-        "commons-io" % "commons-io" % "2.6"
-      ),
-      libraryDependencies ++= Seq(
-        "io.circe" %%% "circe-core",
-        "io.circe" %%% "circe-generic",
-        "io.circe" %%% "circe-parser"
-      ).map(_ % "0.13.0")
+        "commons-io" % "commons-io" % "2.6",
+        "io.indigoengine" %% "indigo-plugin" % IndigoVersion.getVersion
+      )
     )
-    .enablePlugins(ScalaJSPlugin)

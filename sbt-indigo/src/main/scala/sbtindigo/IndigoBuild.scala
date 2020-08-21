@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils
 import java.io.PrintWriter
 import sbt.File
 import sbt._
+import indigoplugin.templates.HtmlTemplate
 
 object IndigoBuild {
 
@@ -13,7 +14,7 @@ object IndigoBuild {
     val directoryStructure = createDirectoryStructure(baseDir, outputFolderName)
 
     // copy built js file into scripts dir
-    val newScriptPath = copyScript(
+    val newScriptName = copyScript(
       templateOptions,
       directoryStructure.artefacts,
       optimised
@@ -26,7 +27,7 @@ object IndigoBuild {
     copyAssets(templateOptions.gameAssetsDirectoryPath, directoryStructure.assets)
 
     // Fill out html template
-    val html = template(templateOptions.copy(scriptPathBase = newScriptPath))
+    val html = HtmlTemplate.template(templateOptions.title, templateOptions.showCursor, newScriptName)
 
     // Write out file
     val outputPath = writeHtml(directoryStructure, html)
@@ -72,7 +73,7 @@ object IndigoBuild {
 
     FileUtils.copyFileToDirectory(scriptPath, desScriptsFolder)
 
-    "scripts/" + fileName
+    fileName
   }
 
   def copySourceMap(templateOptions: TemplateOptions, desScriptsFolder: File, optimised: Boolean): Unit = {
@@ -100,54 +101,26 @@ object IndigoBuild {
     file.getCanonicalPath
   }
 
-  val template: TemplateOptions => String = options => s"""<!DOCTYPE html>
-      |<html>
-      |  <head>
-      |    <meta charset="UTF-8">
-      |    <title>${options.title}</title>
-      |    <style>
-      |      body {
-      |        padding:0px;
-      |        margin:0px;
-      |      }
-      |
-      |      ${if (!options.showCursor) "canvas { cursor: none }" else ""}
-      |    </style>
-      |  </head>
-      |  <body>
-      |    <script type="text/javascript">
-      |window.onload = function () {
-      |    if (typeof history.pushState === "function") {
-      |        history.pushState("jibberish", null, null);
-      |        window.onpopstate = function () {
-      |            history.pushState('newjibberish', null, null);
-      |            // Handle the back (or forward) buttons here
-      |            // Will NOT handle refresh, use onbeforeunload for this.
-      |        };
-      |    }
-      |    else {
-      |        var ignoreHashChange = true;
-      |        window.onhashchange = function () {
-      |            if (!ignoreHashChange) {
-      |                ignoreHashChange = true;
-      |                window.location.hash = Math.random();
-      |                // Detect and redirect change here
-      |                // Works in older FF and IE9
-      |                // * it does mess with your hash symbol (anchor?) pound sign
-      |                // delimiter on the end of the URL
-      |            }
-      |            else {
-      |                ignoreHashChange = false;
-      |            }
-      |        };
-      |    }
-      |}
-      |    </script>
-      |    <div id="indigo-container"></div>
-      |    <script type="text/javascript" src="${options.scriptPathBase}"></script>
-      |    <script type="text/javascript">IndigoGame.launch()</script>
-      |  </body>
-      |</html>
-    """.stripMargin
+}
+
+final case class TemplateOptions(
+    title: String,
+    showCursor: Boolean,
+    scriptPathBase: String,
+    gameAssetsDirectoryPath: String
+)
+
+object Utils {
+
+  def ensureDirectoryAt(path: String): File = {
+    val dirFile = new File(path)
+
+    if (!dirFile.exists())
+      dirFile.mkdir()
+
+    dirFile
+  }
 
 }
+
+final case class DirectoryStructure(base: File, assets: File, artefacts: File)
