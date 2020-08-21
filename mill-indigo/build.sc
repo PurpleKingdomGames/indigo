@@ -14,7 +14,8 @@ object `mill-indigo` extends ScalaModule with PublishModule {
     ivy"com.lihaoyi::mill-main-api:${millLibVersion}",
     ivy"com.lihaoyi::mill-scalalib:${millLibVersion}",
     ivy"com.lihaoyi::mill-scalalib-api:${millLibVersion}",
-    ivy"com.lihaoyi::os-lib:0.7.0"
+    ivy"com.lihaoyi::os-lib:0.7.1",
+    ivy"io.indigoengine::indigo-plugin:${IndigoVersion.getVersion}"
   )
 
   def repositories = super.repositories ++ Seq(

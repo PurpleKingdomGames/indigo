@@ -6,6 +6,7 @@ import os._
 import mill.define.Command
 import java.io.File
 import mill.define.Persistent
+import indigoplugin.ElectronRequirements
 
 trait MillIndigo extends mill.Module {
 
@@ -51,7 +52,7 @@ trait MillIndigo extends mill.Module {
     }
 
   private def run(outputDir: Path, buildDir: Path): Unit = {
-    IndigoRun.filesToWrite(windowStartWidth, windowStartHeight).foreach { f =>
+    ElectronRequirements.filesToWrite(windowStartWidth, windowStartHeight).foreach { f =>
       os.write.over(outputDir / f.name, f.contents)
     }
 
