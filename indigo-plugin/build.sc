@@ -8,8 +8,16 @@ import mill.scalajslib.api._
 import coursier.maven.MavenRepository
 import publish._
 
-object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12.10", "2.13.3")
+object `indigo-plugin` extends Cross[IndigoPluginModule]("2.12", "2.13")
 class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule with PublishModule {
+
+  def scalaVersion =
+    crossScalaVersion match {
+      case "2.12" => "2.12.10"
+      case "2.13" => "2.13.3"
+    }
+    
+  def artifactName = "indigo-plugin"
 
   def ivyDeps =
     Agg(
@@ -40,19 +48,19 @@ class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule
     def scalacOptions = ScalacOptions.scala213Test
   }
 
-
   def publishVersion = IndigoVersion.getVersion
 
-  def pomSettings = PomSettings(
-    description = "indigo-plugin",
-    organization = "io.indigoengine",
-    url = "https://github.com/PurpleKingdomGames/indigo",
-    licenses = Seq(License.MIT),
-    versionControl = VersionControl.github("PurpleKingdomGames", "indigo"),
-    developers = Seq(
-      Developer("davesmith00000", "David Smith", "https://github.com/davesmith00000")
+  def pomSettings =
+    PomSettings(
+      description = "indigo-plugin",
+      organization = "io.indigoengine",
+      url = "https://github.com/PurpleKingdomGames/indigo",
+      licenses = Seq(License.MIT),
+      versionControl = VersionControl.github("PurpleKingdomGames", "indigo"),
+      developers = Seq(
+        Developer("davesmith00000", "David Smith", "https://github.com/davesmith00000")
+      )
     )
-  )
 
 }
 
@@ -61,7 +69,7 @@ object IndigoVersion {
     def rec(path: String, levels: Int, version: Option[String]): String = {
       val msg = "ERROR: Couldn't find indigo version."
       version match {
-        case Some(v) => 
+        case Some(v) =>
           println(s"""Indigo version set to '$v'""")
           v
 
@@ -79,7 +87,7 @@ object IndigoVersion {
           throw new Exception(msg)
       }
     }
-    
+
     rec(".indigo-version", 0, None)
   }
 }
