@@ -11,7 +11,8 @@ lazy val sbtIndigo =
       scalacOptions ++= Scalac212Options.scala212Compile,
       libraryDependencies ++= Seq(
         "commons-io"       % "commons-io"    % "2.6",
-        "io.indigoengine" %% "indigo-plugin" % IndigoVersion.getVersion
+        "io.indigoengine" %% "indigo-plugin" % IndigoVersion.getVersion,
+        "com.lihaoyi"     %% "os-lib"        % "0.7.1"
       ),
       publishTo := sonatypePublishToBundle.value,
       publishMavenStyle := true,
