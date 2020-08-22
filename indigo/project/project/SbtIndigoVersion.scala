@@ -5,7 +5,7 @@ object SbtIndigoVersion {
       val msg = "ERROR: Couldn't find indigo version."
       version match {
         case Some(v) => 
-          println(s"""Indigo version set to '$v'""")
+          println(s"""SBT Indigo version set to '$v'""")
           v
 
         case None if levels < 3 =>
