@@ -1,4 +1,3 @@
-
 import scala.sys.process._
 import scala.language.postfixOps
 
@@ -58,8 +57,6 @@ lazy val sandbox =
     .dependsOn(indigo)
     .dependsOn(indigoExtras)
     .dependsOn(indigoJsonUPickle)
-// lazy val sandboxJS  = sandbox.js
-// lazy val sandboxJVM = sandbox.jvm
 
 lazy val perf =
   project
@@ -79,8 +76,6 @@ lazy val perf =
     .dependsOn(indigo)
     .dependsOn(indigoExtras)
     .dependsOn(indigoJsonCirce)
-// lazy val perfJS  = perf.js
-// lazy val perfJVM = perf.jvm
 
 // Indigo
 lazy val indigoCore =
@@ -97,8 +92,6 @@ lazy val indigoCore =
     )
     .dependsOn(shared)
     .dependsOn(indigoPlatforms)
-// lazy val indigoCoreJS  = indigoCore.js
-// lazy val indigoCoreJVM = indigoCore.jvm
 
 // Indigo Extensions
 lazy val indigoExtras =
@@ -112,8 +105,6 @@ lazy val indigoExtras =
       name := "indigo-extras",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
     )
-// lazy val indigoExtrasJS  = indigoExtras.js
-// lazy val indigoExtrasJVM = indigoExtras.jvm
 
 // Indigo Game
 lazy val indigo =
@@ -127,11 +118,6 @@ lazy val indigo =
       name := "indigo",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
     )
-    // .jvmSettings(
-    //   libraryDependencies += "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided"
-    // )
-// lazy val indigoJS  = indigo.js
-// lazy val indigoJVM = indigo.jvm
 
 // Indigo Facades
 lazy val facades =
@@ -150,13 +136,6 @@ lazy val facades =
         "org.scala-js" %%% "scalajs-dom" % "1.0.0"
       )
     )
-    // .jsSettings(
-      // libraryDependencies ++= Seq(
-      //   "org.scala-js" %%% "scalajs-dom" % "1.0.0"
-      // )
-    // )
-// lazy val facadesJS  = facades.js
-// lazy val facadesJVM = facades.jvm
 
 // Indigo Platforms
 lazy val indigoPlatforms =
@@ -168,8 +147,8 @@ lazy val indigoPlatforms =
     .settings(
       name := "indigo-platforms",
       libraryDependencies ++= Seq(
-        "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test",
-        "org.scala-js" %%% "scalajs-dom" % "1.0.0"
+        "org.scalacheck" %%% "scalacheck"  % "1.14.3" % "test",
+        "org.scala-js"   %%% "scalajs-dom" % "1.0.0"
       )
     )
     .settings(
@@ -183,31 +162,8 @@ lazy val indigoPlatforms =
         cachedFun(IO.listFiles((baseDirectory.value / "shaders")).toSet).toSeq
       }.taskValue
     )
-    // .jsSettings(
-    //   libraryDependencies ++= Seq(
-    //     "org.scala-js" %%% "scalajs-dom" % "1.0.0"
-    //   )
-    // )
-    // .jvmSettings(
-    //   fork in run := true,
-    //   javaOptions ++= Seq(
-    //     "-XstartOnFirstThread",
-    //     "-Dorg.lwjgl.util.Debug=true",
-    //     "-Dorg.lwjgl.util.DebugLoader=true"
-    //   ),
-    //   libraryDependencies ++= Seq(
-    //     "org.lwjgl"      % "lwjgl-opengl"     % "3.2.1",
-    //     "org.lwjgl"      % "lwjgl-openal"     % "3.2.1",
-    //     "org.lwjgl.osgi" % "org.lwjgl.stb"    % "3.2.1.1",
-    //     "org.lwjgl.osgi" % "org.lwjgl.assimp" % "3.2.1.1",
-    //     "org.lwjgl.osgi" % "org.lwjgl.glfw"   % "3.2.1.1",
-    //     "org.lwjgl.osgi" % "org.lwjgl.opengl" % "3.2.1.1"
-    //   )
-    // )
     .dependsOn(shared)
     .dependsOn(facades)
-// lazy val indigoPlatformsJS  = indigoPlatforms.js
-// lazy val indigoPlatformsJVM = indigoPlatforms.jvm
 
 // Shared
 lazy val shared =
@@ -219,12 +175,6 @@ lazy val shared =
       name := "shared",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
     )
-    // .jvmSettings(
-    //   libraryDependencies += "org.scala-js" %% "scalajs-stubs" % "1.0.0" % "provided"
-    // )
-
-// lazy val sharedJS  = shared.js
-// lazy val sharedJVM = shared.jvm
 
 // Circe
 lazy val indigoJsonCirce =
@@ -242,8 +192,6 @@ lazy val indigoJsonCirce =
       ).map(_ % "0.13.0")
     )
     .dependsOn(indigoExtras)
-// lazy val indigoJsonCirceJS  = indigoJsonCirce.js
-// lazy val indigoJsonCirceJVM = indigoJsonCirce.jvm
 
 // uPickle
 lazy val indigoJsonUPickle =
@@ -259,8 +207,6 @@ lazy val indigoJsonUPickle =
       )
     )
     .dependsOn(indigoExtras)
-// lazy val indigoJsonUPickleJS  = indigoJsonUPickle.js
-// lazy val indigoJsonUPickleJVM = indigoJsonUPickle.jvm
 
 // Root
 lazy val indigoProject =
