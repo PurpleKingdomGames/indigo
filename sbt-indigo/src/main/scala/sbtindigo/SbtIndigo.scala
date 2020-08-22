@@ -3,6 +3,8 @@ package sbtindigo
 import sbt.plugins.JvmPlugin
 import sbt._
 
+import indigoplugin.IndigoRun
+
 object SbtIndigo extends sbt.AutoPlugin {
 
   override def requires: JvmPlugin.type = plugins.JvmPlugin

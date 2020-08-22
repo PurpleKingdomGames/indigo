@@ -6,7 +6,7 @@ import os._
 import mill.define.Command
 import java.io.File
 import mill.define.Persistent
-import indigoplugin.ElectronRequirements
+import indigoplugin.IndigoRun
 
 trait MillIndigo extends mill.Module {
 
@@ -51,37 +51,20 @@ trait MillIndigo extends mill.Module {
       outputDir
     }
 
-  private def run(outputDir: Path, buildDir: Path): Unit = {
-    ElectronRequirements.filesToWrite(windowStartWidth, windowStartHeight).foreach { f =>
-      os.write.over(outputDir / f.name, f.contents)
-    }
-
-    os.list(buildDir).foreach { file =>
-      os.copy.into(file, outputDir, true, true, true, true)
-    }
-
-    println(s"Starting '$title'")
-
-    os.proc("npm", "start")
-      .call(cwd = outputDir, stdin = os.Inherit, stdout = os.Inherit, stderr = os.Inherit)
-
-    ()
-  }
-
   def indigoRun(): Command[Unit] =
     T.command {
       val outputDir: Path = T.dest
-      val buildDir        = indigoBuild()()
+      val buildDir: Path  = indigoBuild()()
 
-      run(outputDir, buildDir)
+      IndigoRun.run(outputDir, buildDir, title, windowStartWidth, windowStartHeight)
     }
 
   def indigoRunFull(): Command[Unit] =
     T.command {
       val outputDir: Path = T.dest
-      val buildDir        = indigoBuildFull()()
+      val buildDir: Path  = indigoBuildFull()()
 
-      run(outputDir, buildDir)
+      IndigoRun.run(outputDir, buildDir, title, windowStartWidth, windowStartHeight)
     }
 
 }

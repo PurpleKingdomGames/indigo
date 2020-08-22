@@ -231,7 +231,9 @@ lazy val lighting =
       name := "lighting Example",
       showCursor := true,
       title := "Lighting",
-      gameAssetsDirectory := "assets"
+      gameAssetsDirectory := "assets",
+      windowStartWidth := 684,
+      windowStartHeight := 384
     )
     .settings(
       publish := {},
