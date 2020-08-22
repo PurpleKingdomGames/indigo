@@ -24,6 +24,7 @@ credentials.sbt
 .idea
 *.iml
 .vscode/
+.vim
 
 node_modules
 elm-stuff
