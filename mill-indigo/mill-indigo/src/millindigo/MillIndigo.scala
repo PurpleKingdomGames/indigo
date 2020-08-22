@@ -6,7 +6,7 @@ import os._
 import mill.define.Command
 import java.io.File
 import mill.define.Persistent
-import indigoplugin.IndigoRun
+import indigoplugin.{IndigoRun, IndigoBuildMill, TemplateOptions}
 
 trait MillIndigo extends mill.Module {
 
@@ -20,7 +20,7 @@ trait MillIndigo extends mill.Module {
     T.command {
       val scriptPathBase: Path = T.dest / os.up / os.up / "fastOpt" / "dest"
 
-      IndigoBuild.build(
+      IndigoBuildMill.build(
         T.dest,
         TemplateOptions(
           title,
@@ -38,7 +38,7 @@ trait MillIndigo extends mill.Module {
       val outputDir: Path      = T.dest
       val scriptPathBase: Path = T.dest / os.up / os.up / "fullOpt" / "dest"
 
-      IndigoBuild.build(
+      IndigoBuildMill.build(
         outputDir,
         TemplateOptions(
           title,

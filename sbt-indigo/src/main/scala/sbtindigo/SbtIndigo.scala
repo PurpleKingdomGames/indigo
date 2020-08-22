@@ -3,7 +3,7 @@ package sbtindigo
 import sbt.plugins.JvmPlugin
 import sbt._
 
-import indigoplugin.IndigoRun
+import indigoplugin.{IndigoRun, IndigoBuildSBT, TemplateOptions}
 
 object SbtIndigo extends sbt.AutoPlugin {
 
@@ -37,8 +37,8 @@ object SbtIndigo extends sbt.AutoPlugin {
     windowStartHeight := 400
   )
 
-  def giveScriptBasePath(baseDir: String, scalaVersion: String, projectName: String): String =
-    s"$baseDir/target/scala-${scalaVersion.split('.').reverse.tail.reverse.mkString(".")}/$projectName"
+  def giveScriptBasePath(baseDir: String, scalaVersion: String): String =
+    s"$baseDir/target/scala-${scalaVersion.split('.').reverse.tail.reverse.mkString(".")}"
 
   lazy val indigoBuildTask: Def.Initialize[Task[String]] =
     Def.task {
@@ -48,25 +48,25 @@ object SbtIndigo extends sbt.AutoPlugin {
       val scriptPathBase =
         giveScriptBasePath(
           baseDir = baseDir,
-          scalaVersion = Keys.scalaVersion.value,
-          projectName = Keys.projectID.value.name
+          scalaVersion = Keys.scalaVersion.value
         )
 
       println(scriptPathBase)
 
-      IndigoBuild.build(
+      IndigoBuildSBT.build(
         baseDir,
         TemplateOptions(
           title = title.value,
           showCursor = showCursor.value,
-          scriptPathBase = scriptPathBase,
-          gameAssetsDirectoryPath =
+          scriptPathBase = os.Path(scriptPathBase),
+          gameAssetsDirectoryPath = os.Path(
             if (gameAssetsDirectory.value.startsWith("/"))
               gameAssetsDirectory.value
             else baseDir.replace("/.js", "") + "/" + gameAssetsDirectory.value
+          )
         ),
         outputDir,
-        false
+        Keys.projectID.value.name + "-fastopt.js"
       )
 
       baseDir + "/target/" + outputDir
@@ -80,25 +80,25 @@ object SbtIndigo extends sbt.AutoPlugin {
       val scriptPathBase =
         giveScriptBasePath(
           baseDir = baseDir,
-          scalaVersion = Keys.scalaVersion.value,
-          projectName = Keys.projectID.value.name
+          scalaVersion = Keys.scalaVersion.value
         )
 
       println(scriptPathBase)
 
-      IndigoBuild.build(
+      IndigoBuildSBT.build(
         baseDir,
         TemplateOptions(
           title = title.value,
           showCursor = showCursor.value,
-          scriptPathBase = scriptPathBase,
-          gameAssetsDirectoryPath =
+          scriptPathBase = os.Path(scriptPathBase),
+          gameAssetsDirectoryPath = os.Path(
             if (gameAssetsDirectory.value.startsWith("/"))
               gameAssetsDirectory.value
             else baseDir + "/" + gameAssetsDirectory.value
+          )
         ),
         outputDir,
-        true
+        Keys.projectID.value.name + "-opt.js"
       )
 
       baseDir + "/target/" + outputDir
