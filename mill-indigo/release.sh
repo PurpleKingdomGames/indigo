@@ -12,4 +12,4 @@ mill mill-indigo.test
 mill -i mill-indigo.publish \
   --sonatypeCreds $SONATYPE_USERNAME:$SONATYPE_PASSWORD \
   --release true 
-  --gpgArgs --passphrase=$GPG_PASSWORD,--batch,--yes,-a,-b
+#  --gpgArgs --passphrase=$GPG_PASSWORD,--batch,--yes,-a,-b
