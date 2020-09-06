@@ -51,18 +51,18 @@ object IndigoJS {
   private def indigoGame(
       fonts: Set[FontInfo],
       animations: Set[Animation],
-      initialise: AssetCollection => Dice => Startup[StartupError, StartupData],
+      initialise: AssetCollection => Dice => Startup[StartupData],
       initialModel: StartupData => GameModel,
       initialViewModel: StartupData => GameModel => ViewModel,
       modelUpdate: (FrameContext[StartupData], GameModel) => GlobalEvent => Outcome[GameModel],
       viewModelUpdate: (FrameContext[StartupData], GameModel, ViewModel) => GlobalEvent => Outcome[ViewModel],
       viewUpdate: (FrameContext[StartupData], GameModel, ViewModel) => SceneUpdateFragment
-  ): GameEngine[StartupData, StartupError, GameModel, ViewModel] = {
+  ): GameEngine[StartupData, GameModel, ViewModel] = {
 
     val frameProcessor: StandardFrameProcessor[StartupData, GameModel, ViewModel] =
       new StandardFrameProcessor(new SubSystemsRegister(Nil), EventFilters.Default, modelUpdate, viewModelUpdate, viewUpdate)
 
-    new GameEngine[StartupData, StartupError, GameModel, ViewModel](
+    new GameEngine[StartupData, GameModel, ViewModel](
       fonts,
       animations,
       initialise,
@@ -72,7 +72,7 @@ object IndigoJS {
     )
   }
 
-  private def convertInitialise(f: Initialise): AssetCollection => Dice => Startup[StartupError, StartupData] =
+  private def convertInitialise(f: Initialise): AssetCollection => Dice => Startup[StartupData] =
     (ac: AssetCollection) => (d: Dice) => f(new AssetCollectionDelegate(ac), new DiceDelegate(d)).toInternal
 
   private def convertUpdateModel(f: ModelUpdate): (FrameContext[StartupData], GameModel) => GlobalEvent => Outcome[GameModel] =

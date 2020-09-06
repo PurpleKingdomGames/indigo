@@ -3,10 +3,9 @@ package indigojs.delegates
 import scala.scalajs.js.annotation._
 import scala.scalajs.js
 import indigo.shared.Startup
-import indigo.shared.ToReportable
 
 sealed trait StartUpDelegate {
-  def toInternal: Startup[js.Array[String], js.Object]
+  def toInternal: Startup[js.Object]
 }
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
@@ -52,12 +51,6 @@ final class StartUpSuccessDelegate(_model: js.Object, _animations: js.Array[Anim
 
 @JSExportTopLevel("StartUpFailure")
 final class StartUpFailureDelegate(val errors: js.Array[String]) extends StartUpDelegate {
-  import StartUpFailureDelegate._
-
-  def toInternal: Startup.Failure[js.Array[String]] =
-    Startup.Failure(errors)
-}
-object StartUpFailureDelegate {
-  implicit val toReportable: ToReportable[js.Array[String]] =
-    ToReportable.createToReportable(_.toList.mkString("\n"))
+  def toInternal: Startup.Failure =
+    Startup.Failure(errors.toList)
 }
