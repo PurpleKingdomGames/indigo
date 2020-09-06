@@ -25,6 +25,7 @@ credentials.sbt
 *.iml
 .vscode/
 .vim
+.dotty-ide-disabled
 
 node_modules
 elm-stuff
