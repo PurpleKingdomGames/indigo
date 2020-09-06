@@ -3,7 +3,6 @@ package snake.model.quadtrees
 import indigo.shared.PowerOfTwo
 import indigo.shared.datatypes.{Point, Rectangle}
 import indigo.shared.EqualTo._
-import indigo.shared.AsString._
 import snake.model.grid.GridPoint
 import snake.model.quadtrees.QuadTree.{QuadBranch, QuadEmpty, QuadLeaf}
 import utest._

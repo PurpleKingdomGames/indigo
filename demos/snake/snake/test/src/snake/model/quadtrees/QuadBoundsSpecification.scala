@@ -3,7 +3,6 @@ package snake.model.quadtrees
 import org.scalacheck._
 import org.scalacheck.Prop.BooleanOperators
 
-import indigo.shared.AsString._
 import indigo.shared.EqualTo._
 
 object QuadBoundsSpecification extends Properties("QuadBounds") {
@@ -18,7 +17,7 @@ object QuadBoundsSpecification extends Properties("QuadBounds") {
     val recombined =
       QuadBounds.combine(divisions._1, List(divisions._2, divisions._3, divisions._4))
 
-    (recombined === original) :| s"Recombined: ${recombined.show} - Original: ${original.show} - Divisions: $divisions"
+    (recombined === original) :| s"Recombined: ${recombined.toString()} - Original: ${original.toString()} - Divisions: $divisions"
   }
 
 }

@@ -8,7 +8,7 @@ object SnakeStartupData {
   def initialise(
       viewport: GameViewport,
       gridSize: GridSize
-  ): Startup[StartupErrors, SnakeStartupData] =
+  ): Startup[SnakeStartupData] =
     Startup.Success(createStartupData(viewport, gridSize, gridSize.gridSquareSize))
 
   def createStartupData(viewport: GameViewport, gridSize: GridSize, blockSize: Int): SnakeStartupData =

@@ -2,8 +2,6 @@ package snake.model.quadtrees
 
 import indigo.shared.PowerOfTwo
 import indigo.shared.datatypes.{Point, Rectangle}
-import indigo.shared.AsString
-import indigo.shared.AsString._
 import indigo.shared.EqualTo
 import snake.model.grid.{GridPoint, GridSize}
 import indigoextras.geometry.LineSegment
@@ -45,29 +43,29 @@ sealed trait QuadTree[T] {
   def searchByRectangle(rectangle: Rectangle): List[T] =
     QuadTree.searchByRectangle(this, rectangle)
 
-}
-object QuadTree {
-
-  implicit def showQuadTree[T](implicit showT: AsString[T]): AsString[QuadTree[T]] = {
-    @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+  override def toString(): String = {
+    @SuppressWarnings(Array("org.wartremover.warts.Recursion", "org.wartremover.warts.ToString"))
     def rec(quadTree: QuadTree[T], indent: String): String =
       quadTree match {
-        case QuadEmpty(bounds) =>
-          indent + s"Empty [${bounds.show}]"
+        case QuadTree.QuadEmpty(bounds) =>
+          indent + s"Empty [${bounds.toString()}]"
 
-        case QuadLeaf(bounds, value) =>
-          indent + s"Leaf [${bounds.show}] - ${showT.show(value)}"
+        case QuadTree.QuadLeaf(bounds, value) =>
+          indent + s"Leaf [${bounds.toString()}] - ${value.toString()}"
 
-        case QuadBranch(bounds, a, b, c, d) =>
-          s"""${indent}Branch [${bounds.show}]
+        case QuadTree.QuadBranch(bounds, a, b, c, d) =>
+          s"""${indent}Branch [${bounds.toString()}]
              |${rec(a, indent + "  ")}
              |${rec(b, indent + "  ")}
              |${rec(c, indent + "  ")}
              |${rec(d, indent + "  ")}""".stripMargin
       }
 
-    AsString.create(t => rec(t, ""))
+    rec(this, "")
   }
+
+}
+object QuadTree {
 
   implicit def eq[T](implicit eqT: EqualTo[T]): EqualTo[QuadTree[T]] =
     EqualTo.create { (a, b) =>
@@ -109,26 +107,16 @@ object QuadTree {
   }
 
   object QuadLeaf {
-    implicit def show[T](implicit showQ: AsString[QuadTree[T]]): AsString[QuadLeaf[T]] =
-      AsString.create(t => showQ.show(t))
-
     implicit def eq[T](implicit eqQ: EqualTo[QuadTree[T]]): EqualTo[QuadLeaf[T]] =
       EqualTo.create((a, b) => eqQ.equal(a, b))
   }
 
   object QuadEmpty {
-    implicit def show[T](implicit showQ: AsString[QuadTree[T]]): AsString[QuadEmpty[T]] =
-      AsString.create(t => showQ.show(t))
-
     implicit def eq[T](implicit eqQ: EqualTo[QuadTree[T]]): EqualTo[QuadEmpty[T]] =
       EqualTo.create((a, b) => eqQ.equal(a, b))
   }
 
   object QuadBranch {
-
-    implicit def show[T](implicit showQ: AsString[QuadTree[T]]): AsString[QuadBranch[T]] =
-      AsString.create(t => showQ.show(t))
-
     implicit def eq[T](implicit eqQ: EqualTo[QuadTree[T]]): EqualTo[QuadBranch[T]] =
       EqualTo.create((a, b) => eqQ.equal(a, b))
 

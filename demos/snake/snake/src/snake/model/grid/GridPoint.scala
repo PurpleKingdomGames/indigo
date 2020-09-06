@@ -1,7 +1,6 @@
 package snake.model.grid
 
 import indigo.shared.datatypes.Point
-import indigo.shared.AsString
 import indigo.shared.EqualTo
 
 import scala.annotation.tailrec
@@ -25,11 +24,6 @@ final case class GridPoint(x: Int, y: Int) {
 
 }
 object GridPoint {
-
-  implicit val show: AsString[GridPoint] = {
-    val showI = implicitly[AsString[Int]]
-    AsString.create(p => s"""GridPoint(${showI.show(p.x)}, ${showI.show(p.y)})""")
-  }
 
   implicit val eq: EqualTo[GridPoint] = {
     val eqI = implicitly[EqualTo[Int]]

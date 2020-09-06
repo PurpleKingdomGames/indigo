@@ -1,7 +1,6 @@
 package snake.model.quadtrees
 
 import indigo.shared.datatypes.{Point, Rectangle}
-import indigo.shared.AsString
 import indigoextras.geometry.{IntersectionResult, LineSegment}
 
 import indigo.shared.EqualTo
@@ -61,11 +60,8 @@ trait QuadBounds {
   def collidesWithRayAt(lineSegment: LineSegment): Option[Point] =
     QuadBounds.rayCollisionPosition(this, lineSegment)
 
-  def asString: String =
-    implicitly[AsString[QuadBounds]].show(this)
-
   override def toString: String =
-    asString
+    s"""QuadBounds(${x.toString()}, ${y.toString}, ${width.toString()}, ${height.toString()})"""
 
   def ===(other: QuadBounds): Boolean =
     implicitly[EqualTo[QuadBounds]].equal(this, other)
@@ -73,13 +69,6 @@ trait QuadBounds {
 }
 
 object QuadBounds {
-
-  implicit val show: AsString[QuadBounds] = {
-    val s = implicitly[AsString[Int]]
-    AsString.create { qb =>
-      s"""QuadBounds(${s.show(qb.x)}, ${s.show(qb.y)}, ${s.show(qb.width)}, ${s.show(qb.height)})"""
-    }
-  }
 
   implicit val equalTo: EqualTo[QuadBounds] = {
     val eqI = implicitly[EqualTo[Int]]
