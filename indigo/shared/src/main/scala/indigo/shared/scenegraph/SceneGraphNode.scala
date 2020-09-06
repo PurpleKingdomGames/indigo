@@ -361,42 +361,42 @@ final class Sprite(
     locator.findBounds(this)
 
   def withDepth(newDepth: Depth): Sprite =
-    Sprite(bindingKey, position, newDepth, rotation, scale, animationKey, ref, effects, eventHandler)
+    new Sprite(bindingKey, position, newDepth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions)
 
   def moveTo(pt: Point): Sprite =
-    Sprite(bindingKey, pt, depth, rotation, scale, animationKey, ref, effects, eventHandler)
+    new Sprite(bindingKey, pt, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions)
   def moveTo(x: Int, y: Int): Sprite =
     moveTo(Point(x, y))
 
   def moveBy(pt: Point): Sprite =
-    Sprite(bindingKey, position + pt, depth, rotation, scale, animationKey, ref, effects, eventHandler)
+    new Sprite(bindingKey, position + pt, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions)
   def moveBy(x: Int, y: Int): Sprite =
     moveBy(Point(x, y))
 
   def rotate(angle: Radians): Sprite =
-    Sprite(bindingKey, position, depth, angle, scale, animationKey, ref, effects, eventHandler)
+    new Sprite(bindingKey, position, depth, angle, scale, animationKey, ref, effects, eventHandler, animationActions)
   def rotateBy(angle: Radians): Sprite =
     rotate(rotation + angle)
 
   def scaleBy(amount: Vector2): Sprite =
-    Sprite(bindingKey, position, depth, rotation, scale * amount, animationKey, ref, effects, eventHandler)
+    new Sprite(bindingKey, position, depth, rotation, scale * amount, animationKey, ref, effects, eventHandler, animationActions)
   def scaleBy(x: Double, y: Double): Sprite =
     scaleBy(Vector2(x, y))
 
   def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): SceneGraphNodePrimitive =
-    Sprite(bindingKey, newPosition, depth, newRotation, newScale, animationKey, ref, effects, eventHandler)
+    new Sprite(bindingKey, newPosition, depth, newRotation, newScale, animationKey, ref, effects, eventHandler, animationActions)
 
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): SceneGraphNodePrimitive =
-    Sprite(bindingKey, position + positionDiff, depth, rotation + rotationDiff, scale * scaleDiff, animationKey, ref, effects, eventHandler)
+    new Sprite(bindingKey, position + positionDiff, depth, rotation + rotationDiff, scale * scaleDiff, animationKey, ref, effects, eventHandler, animationActions)
 
   def withBindingKey(newBindingKey: BindingKey): Sprite =
-    Sprite(newBindingKey, position, depth, rotation, scale, animationKey, ref, effects, eventHandler)
+    new Sprite(newBindingKey, position, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions)
 
   def withAlpha(a: Double): Sprite =
-    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withAlpha(a), eventHandler)
+    new Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withAlpha(a), eventHandler, animationActions)
 
   def withTint(tint: RGBA): Sprite =
-    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withTint(tint), eventHandler)
+    new Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withTint(tint), eventHandler, animationActions)
 
   def withTint(red: Double, green: Double, blue: Double): Sprite =
     withTint(RGBA(red, green, blue, 1))
@@ -405,27 +405,27 @@ final class Sprite(
     withTint(RGBA(red, green, blue, amount))
 
   def withOverlay(newOverlay: Overlay): Sprite =
-    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withOverlay(newOverlay), eventHandler)
+    new Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withOverlay(newOverlay), eventHandler, animationActions)
 
   def withBorder(newBorder: Border): Sprite =
-    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withBorder(newBorder), eventHandler)
+    new Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withBorder(newBorder), eventHandler, animationActions)
 
   def withGlow(newGlow: Glow): Sprite =
-    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withGlow(newGlow), eventHandler)
+    new Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withGlow(newGlow), eventHandler, animationActions)
 
   def flipHorizontal(h: Boolean): Sprite =
-    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withFlip(Flip(horizontal = h, vertical = effects.flip.vertical)), eventHandler)
+    new Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withFlip(Flip(horizontal = h, vertical = effects.flip.vertical)), eventHandler, animationActions)
 
   def flipVertical(v: Boolean): Sprite =
-    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withFlip(Flip(horizontal = effects.flip.horizontal, vertical = v)), eventHandler)
+    new Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects.withFlip(Flip(horizontal = effects.flip.horizontal, vertical = v)), eventHandler, animationActions)
 
   def withRef(newRef: Point): Sprite =
-    Sprite(bindingKey, position, depth, rotation, scale, animationKey, newRef, effects, eventHandler)
+    new Sprite(bindingKey, position, depth, rotation, scale, animationKey, newRef, effects, eventHandler, animationActions)
   def withRef(x: Int, y: Int): Sprite =
     withRef(Point(x, y))
 
   def withAnimationKey(newAnimationKey: AnimationKey): Sprite =
-    Sprite(bindingKey, position, depth, rotation, scale, newAnimationKey, ref, effects, eventHandler)
+    new Sprite(bindingKey, position, depth, rotation, scale, newAnimationKey, ref, effects, eventHandler, animationActions)
 
   def play(): Sprite =
     new Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ Play)
@@ -443,10 +443,10 @@ final class Sprite(
     new Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects, eventHandler, animationActions :+ JumpToFrame(number))
 
   def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Sprite =
-    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects, e)
+    new Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects, e, animationActions)
 
   def withEffects(newEffects: Effects): Sprite =
-    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, newEffects, eventHandler)
+    new Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, newEffects, eventHandler, animationActions)
 
 }
 
