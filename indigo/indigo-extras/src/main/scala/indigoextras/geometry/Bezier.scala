@@ -1,7 +1,7 @@
 package indigoextras.geometry
 
 import scala.annotation.tailrec
-import indigo.shared.{AsString, EqualTo}
+import indigo.shared.EqualTo
 import indigo.shared.temporal.Signal
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.time.Seconds
@@ -27,14 +27,11 @@ final class Bezier(val vertices: List[Vertex]) extends AnyVal {
   def bounds: BoundingBox =
     BoundingBox.fromVertices(vertices)
 
-  def asString: String =
-    implicitly[AsString[Bezier]].show(this)
-
   def ===(other: Bezier): Boolean =
     implicitly[EqualTo[Bezier]].equal(this, other)
 
   override def toString: String =
-    asString
+    s"Bezier(vertices = ${vertices.map(_.toString()).mkString("[", ",", "]")})"
 
 }
 
@@ -48,11 +45,6 @@ object Bezier {
       a.vertices.zip(b.vertices).forall(p => eqPt.equal(p._1, p._2))
     }
   }
-
-  implicit val bAsString: AsString[Bezier] =
-    AsString.create { b =>
-      s"Bezier(vertices = ${b.vertices.map(_.toString()).mkString("[", ",", "]")})"
-    }
 
   def apply(start: Vertex, vertices: Vertex*): Bezier =
     new Bezier(start :: vertices.toList)

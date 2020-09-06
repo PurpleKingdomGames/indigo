@@ -1,6 +1,5 @@
 package indigo.shared.datatypes
 
-import indigo.shared.AsString
 import indigo.shared.EqualTo
 import indigo.shared.ClearColor
 
@@ -30,20 +29,12 @@ final class RGBA(val r: Double, val g: Double, val b: Double, val a: Double) {
     r.toString() + g.toString() + b.toString() + a.toString()
 
   override def toString: String =
-    implicitly[AsString[RGBA]].show(this)
+    s"RGBA(${r.toString()}, ${g.toString()}, ${b.toString()}, ${a.toString()})"
 }
 object RGBA {
 
   def apply(red: Double, green: Double, blue: Double, amount: Double): RGBA =
     new RGBA(red, green, blue, amount)
-
-  implicit val show: AsString[RGBA] = {
-    val ev = implicitly[AsString[Double]]
-
-    AsString.create { v =>
-      s"RGBA(${ev.show(v.r)}, ${ev.show(v.g)}, ${ev.show(v.b)}, ${ev.show(v.a)})"
-    }
-  }
 
   implicit val eq: EqualTo[RGBA] = {
     val ev = implicitly[EqualTo[Double]]

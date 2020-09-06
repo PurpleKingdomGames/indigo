@@ -1,7 +1,6 @@
 package indigoextras.geometry
 
 import indigo.shared.datatypes.Rectangle
-import indigo.shared.AsString
 import indigo.shared.EqualTo
 import scala.annotation.tailrec
 
@@ -52,14 +51,17 @@ sealed trait Polygon {
   def polygonIntersectCheck(polygon: Polygon): Boolean =
     polygon.lineSegments.exists(lineIntersectCheck)
 
-  def asString: String =
-    implicitly[AsString[Polygon]].show(this)
-
   def ===(other: Polygon): Boolean =
     implicitly[EqualTo[Polygon]].equal(this, other)
 
   override def toString: String =
-    asString
+    this match {
+      case Polygon.Open(vs) =>
+        s"Polygon.Open(${vs.toString()})"
+
+      case Polygon.Closed(vs) =>
+        s"Polygon.Closed(${vs.toString()})"
+    }
 
   @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
   override def equals(obj: Any): Boolean =
@@ -111,15 +113,6 @@ object Polygon {
         rec(t :+ h, h, Nil)
     }
   }
-
-  implicit val polygonAsString: AsString[Polygon] =
-    AsString.create {
-      case Open(vs) =>
-        s"Polygon.Open(${vs.toString()})"
-
-      case Closed(vs) =>
-        s"Polygon.Closed(${vs.toString()})"
-    }
 
   implicit val polygonEqualTo: EqualTo[Polygon] = {
     val e = implicitly[EqualTo[List[Vertex]]]

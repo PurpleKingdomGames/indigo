@@ -1,6 +1,5 @@
 package indigo.shared.datatypes
 
-import indigo.shared.AsString
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 
@@ -44,24 +43,13 @@ final class Vector3(val x: Double, val y: Double, val z: Double) {
     Vector2(x, y)
 
   override def toString: String =
-    asString
-
-  def asString: String =
-    implicitly[AsString[Vector3]].show(this)
+    s"Vector3(x = ${x.toString()}, y = ${y.toString()}, z = ${z.toString()})"
 
   def ===(other: Vector3): Boolean =
     implicitly[EqualTo[Vector3]].equal(this, other)
 }
 
 object Vector3 {
-
-  implicit val show: AsString[Vector3] = {
-    val sD = implicitly[AsString[Double]]
-
-    AsString.create { v =>
-      s"Vector3(x = ${sD.show(v.x)}, y = ${sD.show(v.y)}, z = ${sD.show(v.z)})"
-    }
-  }
 
   implicit val eq: EqualTo[Vector3] = {
     val ev = implicitly[EqualTo[Double]]

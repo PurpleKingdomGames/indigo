@@ -1,6 +1,6 @@
 package indigo.shared.time
 
-import indigo.shared.{EqualTo, AsString}
+import indigo.shared.EqualTo
 
 final class GameTime(val running: Seconds, val delta: Seconds, val targetFPS: GameTime.FPS) {
 
@@ -13,6 +13,9 @@ final class GameTime(val running: Seconds, val delta: Seconds, val targetFPS: Ga
 
   def setTargetFPS(fps: Int): GameTime =
     new GameTime(running, delta, GameTime.FPS(fps))
+
+  override def toString(): String =
+    s"GameTime(running = ${running.toString()}, delta = ${delta.toString()}, fps = ${targetFPS.toString()})"
 }
 
 object GameTime {
@@ -22,11 +25,6 @@ object GameTime {
       implicitly[EqualTo[Seconds]].equal(a.running, b.running) &&
       implicitly[EqualTo[Seconds]].equal(a.delta, b.delta) &&
       implicitly[EqualTo[FPS]].equal(a.targetFPS, b.targetFPS)
-    }
-
-  implicit val gameTimeAsString: AsString[GameTime] =
-    AsString.create { gt =>
-      s"GameTime(running = ${gt.running.toString()}, delta = ${gt.delta.toString()}, fps = ${implicitly[AsString[FPS]].show(gt.targetFPS)})"
     }
 
   def zero: GameTime =
@@ -44,6 +42,9 @@ object GameTime {
   final class FPS(val value: Int) extends AnyVal {
     def asLong: Long     = value.toLong
     def asDouble: Double = value.toDouble
+
+    override def toString(): String =
+      s"FPS(${value.toString()})"
   }
   object FPS {
 
@@ -51,9 +52,6 @@ object GameTime {
       EqualTo.create { (a, b) =>
         implicitly[EqualTo[Int]].equal(a.value, b.value)
       }
-
-    implicit val fpsAsString: AsString[FPS] =
-      AsString.create(fps => s"FPS(${implicitly[AsString[Int]].show(fps.value)})")
 
     val `30`: FPS    = FPS(30)
     val `60`: FPS    = FPS(60)

@@ -1,7 +1,6 @@
 package indigoextras.geometry
 
-import indigo.shared.{AsString, EqualTo}
-import indigo.shared.AsString._
+import indigo.shared.EqualTo
 
 import scala.annotation.tailrec
 import indigo.shared.datatypes.Rectangle
@@ -12,7 +11,7 @@ final class BoundingBox(val position: Vertex, val size: Vertex) {
   val y: Double         = position.y
   val width: Double     = size.x
   val height: Double    = size.y
-  lazy val hash: String = s"${x.show}${y.show}${width.show}${height.show}"
+  lazy val hash: String = s"${x.toString()}${y.toString()}${width.toString()}${height.toString()}"
 
   lazy val left: Double   = x
   lazy val right: Double  = x + width
@@ -73,14 +72,11 @@ final class BoundingBox(val position: Vertex, val size: Vertex) {
   def lineIntersectsAt(line: LineSegment): Option[Vertex] =
     BoundingBox.lineIntersectsAt(this, line)
 
-  def asString: String =
-    implicitly[AsString[BoundingBox]].show(this)
-
   def ===(other: BoundingBox): Boolean =
     implicitly[EqualTo[BoundingBox]].equal(this, other)
 
   override def toString: String =
-    asString
+    s"""BoundingBox(Position(${x.toString()}, ${y.toString()}), Size(${width.toString()}, ${height.toString()}))"""
 
   @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
   override def equals(obj: Any): Boolean =
@@ -141,9 +137,6 @@ object BoundingBox {
       LineSegment(boundingBox.bottomRight, boundingBox.topRight),
       LineSegment(boundingBox.topRight, boundingBox.topLeft)
     )
-
-  implicit val bbShow: AsString[BoundingBox] =
-    AsString.create(p => s"""BoundingBox(Position(${p.x.show}, ${p.y.show}), Size(${p.width.show}, ${p.height.show}))""")
 
   implicit val bbEqualTo: EqualTo[BoundingBox] = {
     val eq = implicitly[EqualTo[Vertex]]

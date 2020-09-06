@@ -1,6 +1,5 @@
 package indigo.shared.datatypes
 
-import indigo.shared.AsString
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 
@@ -54,16 +53,13 @@ final class Vector2(val x: Double, val y: Double) {
   def applyMatrix4(matrix4: Matrix4): Vector2 = Vector2.applyMatrix4(this, matrix4)
 
   override def toString: String =
-    asString
+    s"Vector2(x = ${x.toString()}, y = ${y.toString()})"
 
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.IsInstanceOf"))
   override def equals(obj: Any): Boolean =
     if (obj.isInstanceOf[Vector2])
       this === obj.asInstanceOf[Vector2]
     else false
-
-  def asString: String =
-    implicitly[AsString[Vector2]].show(this)
 
   def ===(other: Vector2): Boolean =
     implicitly[EqualTo[Vector2]].equal(this, other)
@@ -73,14 +69,6 @@ final class Vector2(val x: Double, val y: Double) {
 }
 
 object Vector2 {
-
-  implicit val show: AsString[Vector2] = {
-    val sD = implicitly[AsString[Double]]
-
-    AsString.create { v =>
-      s"Vector2(x = ${sD.show(v.x)}, y = ${sD.show(v.y)})"
-    }
-  }
 
   implicit val eq: EqualTo[Vector2] = {
     val ev = implicitly[EqualTo[Double]]

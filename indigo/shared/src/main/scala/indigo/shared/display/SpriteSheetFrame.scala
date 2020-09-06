@@ -2,7 +2,7 @@ package indigo.shared.display
 
 import indigo.shared.datatypes.Vector2
 
-import indigo.shared.{AsString, EqualTo}
+import indigo.shared.EqualTo
 import indigo.shared.datatypes.Rectangle
 
 object SpriteSheetFrame {
@@ -23,13 +23,11 @@ object SpriteSheetFrame {
   final class SpriteSheetFrameCoordinateOffsets(val scale: Vector2, val translate: Vector2, translateCoords: Vector2 => Vector2) {
     def offsetToCoords(textureOffset: Vector2): Vector2 =
       translateCoords(textureOffset)
+
+    override def toString(): String =
+      s"SpriteSheetFrameCoordinateOffsets(scale = ${scale.toString()}, translate = ${translate.toString()})"
   }
   object SpriteSheetFrameCoordinateOffsets {
-
-    implicit val show: AsString[SpriteSheetFrameCoordinateOffsets] = {
-      val sv = implicitly[AsString[Vector2]]
-      AsString.create(v => s"SpriteSheetFrameCoordinateOffsets(scale = ${sv.show(v.scale)}, translate = ${sv.show(v.translate)})")
-    }
 
     implicit val eq: EqualTo[SpriteSheetFrameCoordinateOffsets] = {
       val ev = implicitly[EqualTo[Vector2]]

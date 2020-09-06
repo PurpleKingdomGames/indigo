@@ -1,7 +1,6 @@
 package indigoextras.pathfinding
 
 import indigo.shared.EqualTo
-import indigo.shared.AsString
 
 final case class Coords(x: Int, y: Int) {
 
@@ -14,11 +13,6 @@ final case class Coords(x: Int, y: Int) {
 }
 
 object Coords {
-
-  implicit val show: AsString[Coords] = {
-    val showI = implicitly[AsString[Int]]
-    AsString.create(p => s"""Coords(${showI.show(p.x)}, ${showI.show(p.y)})""")
-  }
 
   implicit val eq: EqualTo[Coords] = {
     val eqI = implicitly[EqualTo[Int]]

@@ -2,7 +2,6 @@ package indigoextras.geometry
 
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
-import indigo.shared.AsString
 import indigo.shared.datatypes.Vector2
 
 final class LineSegment(val start: Vertex, val end: Vertex) {
@@ -43,14 +42,11 @@ final class LineSegment(val start: Vertex, val end: Vertex) {
   def isFacingVertex(vertex: Vertex): Boolean =
     LineSegment.isFacingVertex(this, vertex)
 
-  def asString: String =
-    implicitly[AsString[LineSegment]].show(this)
-
   def ===(other: LineSegment): Boolean =
     implicitly[EqualTo[LineSegment]].equal(this, other)
 
   override def toString: String =
-    asString
+    s"LineSegment(start = ${start.toString()}, end = ${end.toString()})"
 
   @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
   override def equals(obj: Any): Boolean =
@@ -68,11 +64,6 @@ object LineSegment {
       eqPt.equal(a.start, b.start) && eqPt.equal(a.end, b.end)
     }
   }
-
-  implicit val lsAsString: AsString[LineSegment] =
-    AsString.create { ls =>
-      s"LineSegment(start = ${ls.start.toString}, end = ${ls.end.toString()})"
-    }
 
   def apply(start: Vertex, end: Vertex): LineSegment =
     new LineSegment(start, end)

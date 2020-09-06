@@ -1,6 +1,5 @@
 package indigo.shared.datatypes
 
-import indigo.shared.AsString
 import indigo.shared.EqualTo
 
 final class RGB(val r: Double, val g: Double, val b: Double) {
@@ -20,20 +19,12 @@ final class RGB(val r: Double, val g: Double, val b: Double) {
     r.toString() + g.toString() + b.toString()
 
   override def toString: String =
-    implicitly[AsString[RGB]].show(this)
+    s"RGB(${r.toString()}, ${g.toString()}, ${b.toString()})"
 }
 object RGB {
 
   def apply(red: Double, green: Double, blue: Double): RGB =
     new RGB(red, green, blue)
-
-  implicit val show: AsString[RGB] = {
-    val ev = implicitly[AsString[Double]]
-
-    AsString.create { v =>
-      s"RGB(${ev.show(v.r)}, ${ev.show(v.g)}, ${ev.show(v.b)})"
-    }
-  }
 
   implicit val eq: EqualTo[RGB] = {
     val ev = implicitly[EqualTo[Double]]
