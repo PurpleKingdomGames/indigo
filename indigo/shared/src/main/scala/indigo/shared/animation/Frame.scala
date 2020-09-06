@@ -2,11 +2,16 @@ package indigo.shared.animation
 
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
-import indigo.shared.{EqualTo, AsString}
+import indigo.shared.EqualTo
 import indigo.shared.time.Millis
 import indigo.shared.datatypes.Material
 
-final class Frame(val crop: Rectangle, val duration: Millis, val frameMaterial: Option[Material])
+final class Frame(val crop: Rectangle, val duration: Millis, val frameMaterial: Option[Material]) {
+
+  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
+  override def toString(): String =
+    s"Frame(${crop.toString()}, ${duration.toString()}, ${frameMaterial.toString()})"
+}
 
 object Frame {
 
@@ -14,9 +19,6 @@ object Frame {
     EqualTo.create { (a, b) =>
       a.crop === b.crop && a.duration === b.duration
     }
-
-  implicit val frameAsString: AsString[Frame] =
-    AsString.create(f => s"Frame(${f.crop.toString()}, ${f.duration.toString()})")
 
   def apply(crop: Rectangle, duration: Millis): Frame =
     new Frame(crop, duration, None)

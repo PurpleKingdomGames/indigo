@@ -1,6 +1,5 @@
 package indigo.shared.datatypes
 
-import indigo.shared.AsString
 import indigo.shared.EqualTo
 
 final class Matrix4(val mat: List[Double]) {
@@ -36,17 +35,12 @@ final class Matrix4(val mat: List[Double]) {
   def flip(horizontal: Boolean, vertical: Boolean): Matrix4 =
     this * Matrix4.flip(horizontal, vertical)
 
+  override def toString(): String =
+    s"Matrix4(${row1.toString()}, ${row2.toString()}, ${row3.toString()}, ${row4.toString()})"
+
 }
 
 object Matrix4 {
-
-  implicit val show: AsString[Matrix4] = {
-    val ev = implicitly[AsString[List[Double]]]
-
-    AsString.create { v =>
-      s"Matrix4(${ev.show(v.row1)}, ${ev.show(v.row2)}, ${ev.show(v.row3)}, ${ev.show(v.row4)})"
-    }
-  }
 
   implicit val eq: EqualTo[Matrix4] = {
     val ev = implicitly[EqualTo[List[Double]]]
@@ -59,17 +53,19 @@ object Matrix4 {
   def apply(mat: List[Double]): Matrix4 =
     new Matrix4(mat)
 
-  def identity: Matrix4 = Matrix4(
-    mat = List(
-      1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
+  def identity: Matrix4 =
+    Matrix4(
+      mat = List(
+        1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
+      )
     )
-  )
 
-  def one: Matrix4 = Matrix4(
-    mat = List(
-      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+  def one: Matrix4 =
+    Matrix4(
+      mat = List(
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+      )
     )
-  )
 
   /**
     * Usage Matrix.projection(2 * aspectRatio, 2, 2) (assuming width > height) because the screen by default is 2 x 2 units: -1 to 1

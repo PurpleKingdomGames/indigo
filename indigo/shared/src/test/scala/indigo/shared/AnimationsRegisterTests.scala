@@ -18,7 +18,6 @@ import indigo.shared.animation.AnimationAction.ChangeCycle
 import indigo.shared.time.Millis
 import indigo.shared.animation.AnimationAction.Play
 import indigo.shared.EqualTo._
-import indigo.shared.AsString._
 
 object AnimationsRegisterTests extends TestSuite {
 

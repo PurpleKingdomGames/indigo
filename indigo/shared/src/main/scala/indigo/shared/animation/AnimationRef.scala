@@ -11,7 +11,6 @@ import indigo.shared.animation.AnimationAction.JumpToFirstFrame
 import indigo.shared.animation.AnimationAction.JumpToLastFrame
 import indigo.shared.animation.AnimationAction.JumpToFrame
 import indigo.shared.EqualTo
-import indigo.shared.AsString
 
 final case class AnimationRef(
     animationKey: AnimationKey,
@@ -156,11 +155,8 @@ object CycleRef {
 
 final class AnimationMemento(val bindingKey: BindingKey, val currentCycleLabel: CycleLabel, val currentCycleMemento: CycleMemento) {
 
-  def asString: String =
-    implicitly[AsString[AnimationMemento]].show(this)
-
   override def toString: String =
-    asString
+    s"""AnimationMemento(bindingKey = ${bindingKey.toString()}, cycleLabel = ${currentCycleLabel.toString()}, cycleMemento = ${currentCycleMemento.toString()})"""
 
   def ===(other: AnimationMemento): Boolean =
     implicitly[EqualTo[AnimationMemento]].equal(this, other)
@@ -173,11 +169,6 @@ final class AnimationMemento(val bindingKey: BindingKey, val currentCycleLabel: 
 
 }
 object AnimationMemento {
-
-  implicit val animationMementoAsString: AsString[AnimationMemento] =
-    AsString.create { m =>
-      s"""AnimationMemento(bindingKey = ${m.bindingKey.toString()}, cycleLabel = ${m.currentCycleLabel.toString()}, cycleMemento = ${m.currentCycleMemento.toString()})"""
-    }
 
   @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   implicit val animationMementoEqualTo: EqualTo[AnimationMemento] = {

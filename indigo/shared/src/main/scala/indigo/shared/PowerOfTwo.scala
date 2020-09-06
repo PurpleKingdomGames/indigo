@@ -22,6 +22,9 @@ sealed trait PowerOfTwo {
   def ===(i: Int): Boolean = value === i
 
   def toPoint: Point = Point(value, value)
+
+  override def toString(): String =
+    s"PowerOfTwo(${value.toString()})"
 }
 object PowerOfTwo {
 
@@ -30,13 +33,6 @@ object PowerOfTwo {
 
     EqualTo.create { (a, b) =>
       e.equal(a.value, b.value)
-    }
-  }
-
-  implicit val show: AsString[PowerOfTwo] = {
-    val s = implicitly[AsString[Int]]
-    AsString.create { v =>
-      s"PowerOfTwo(${s.show(v.value)})"
     }
   }
 

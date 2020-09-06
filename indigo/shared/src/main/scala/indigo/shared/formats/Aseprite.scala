@@ -1,6 +1,5 @@
 package indigo.shared.formats
 
-import indigo.shared.AsString
 import indigo.shared.scenegraph.Sprite
 import indigo.shared.animation.Animation
 import indigo.shared.datatypes.Depth
@@ -37,12 +36,6 @@ final case class AsepriteMeta(app: String, version: String, image: String, forma
 final case class AsepriteSize(w: Int, h: Int)
 
 final case class AsepriteFrameTag(name: String, from: Int, to: Int, direction: String)
-object AsepriteFrameTag {
-  implicit val show: AsString[AsepriteFrameTag] =
-    AsString.create { ft =>
-      s"""FrameTag(${ft.name}, ${ft.from.toString}, ${ft.to.toString}, ${ft.direction})"""
-    }
-}
 
 final case class SpriteAndAnimations(sprite: Sprite, animations: Animation)
 object Aseprite {
@@ -79,12 +72,13 @@ object Aseprite {
         )
     }
 
+  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   def extractCycles(aseprite: Aseprite): List[Cycle] =
     aseprite.meta.frameTags
       .map { frameTag =>
         extractFrames(frameTag, aseprite.frames) match {
           case Nil =>
-            IndigoLogger.info("Failed to extract cycle with frameTag: " + implicitly[AsString[AsepriteFrameTag]].show(frameTag))
+            IndigoLogger.info(s"Failed to extract cycle with frameTag: ${frameTag.toString()}")
             None
           case x :: xs =>
             Option(

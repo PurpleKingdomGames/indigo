@@ -2,18 +2,12 @@ package indigo.shared.networking
 
 import indigo.shared.events.{NetworkSendEvent, NetworkReceiveEvent}
 import indigo.shared.EqualTo
-import indigo.shared.AsString
 
 final case class WebSocketId(id: String)
 object WebSocketId {
   implicit val eq: EqualTo[WebSocketId] = {
     val eqS = implicitly[EqualTo[String]]
     EqualTo.create((a, b) => eqS.equal(a.id, b.id))
-  }
-
-  implicit val show: AsString[WebSocketId] = {
-    val showS = implicitly[AsString[String]]
-    AsString.create(v => s"""WebSocketId(${showS.show(v.id)})""")
   }
 }
 
@@ -24,12 +18,6 @@ object WebSocketConfig {
     val eqId = implicitly[EqualTo[WebSocketId]]
     val eqS  = implicitly[EqualTo[String]]
     EqualTo.create((a, b) => eqId.equal(a.id, b.id) && eqS.equal(a.address, b.address))
-  }
-
-  implicit val show: AsString[WebSocketConfig] = {
-    val sId   = implicitly[AsString[WebSocketId]]
-    val showS = implicitly[AsString[String]]
-    AsString.create(v => s"""WebSocketConfig(${sId.show(v.id)}, ${showS.show(v.address)})""")
   }
 
 }

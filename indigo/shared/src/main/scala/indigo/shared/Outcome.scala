@@ -45,6 +45,10 @@ final class Outcome[+A](val state: A, val globalEvents: List[GlobalEvent]) {
   def flatMap[B](f: A => Outcome[B]): Outcome[B] =
     flatMapState(f)
 
+  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
+  override def toString(): String =
+    s"Outcome(${state.toString()}, ${globalEvents.toString()})"
+
 }
 
 object Outcome {
@@ -54,10 +58,6 @@ object Outcome {
       Outcome.sequence(l)
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
-  implicit val showGlobalEvent: AsString[GlobalEvent] =
-    AsString.create(_.toString)
-
   @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   implicit val eqGlobalEvent: EqualTo[GlobalEvent] =
     EqualTo.create(_ == _)
@@ -65,11 +65,6 @@ object Outcome {
   implicit def eq[A](implicit eqA: EqualTo[A], eqE: EqualTo[List[GlobalEvent]]): EqualTo[Outcome[A]] =
     EqualTo.create { (a, b) =>
       eqA.equal(a.state, b.state) && eqE.equal(a.globalEvents, b.globalEvents)
-    }
-
-  implicit def show[A](implicit as: AsString[A], ae: AsString[List[GlobalEvent]]): AsString[Outcome[A]] =
-    AsString.create { outcomeA =>
-      s"Outcome(${as.show(outcomeA.state)}, ${ae.show(outcomeA.globalEvents)})"
     }
 
   def apply[A](state: A, globalEvents: List[GlobalEvent]): Outcome[A] =

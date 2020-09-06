@@ -1,9 +1,12 @@
 package indigo.shared.animation
 
-import indigo.shared.{AsString, EqualTo}
+import indigo.shared.EqualTo
 
 sealed trait AnimationAction {
   val hash: String
+
+  override def toString(): String =
+    hash
 }
 object AnimationAction {
 
@@ -19,11 +22,6 @@ object AnimationAction {
       case _                                                    => false
     }
   }
-
-  implicit val animationActionAsString: AsString[AnimationAction] =
-    AsString.create { action =>
-      action.hash
-    }
 
   case object Play extends AnimationAction {
     val hash: String = "Play"

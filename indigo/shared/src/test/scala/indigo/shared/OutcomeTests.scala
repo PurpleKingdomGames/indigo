@@ -6,7 +6,6 @@ object OutcomeTests extends TestSuite {
 
   import indigo.shared.events.GlobalEvent
   import indigo.shared.EqualTo._
-  import indigo.shared.AsString._
   import Outcome._
 
   final case class TestEvent(message: String) extends GlobalEvent
@@ -80,9 +79,9 @@ object OutcomeTests extends TestSuite {
 
       "Show" - {
 
-        val actual = Outcome(1).show
+        val actual = Outcome(1).toString()
 
-        val expected = "Outcome(1, [])"
+        val expected = "Outcome(1, List())"
 
         actual ==> expected
       }

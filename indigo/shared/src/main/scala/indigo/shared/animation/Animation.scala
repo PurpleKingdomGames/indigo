@@ -2,7 +2,6 @@ package indigo.shared.animation
 
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.EqualTo
-import indigo.shared.AsString
 
 import indigo.shared.datatypes.Material
 import indigo.shared.time.Millis
@@ -20,6 +19,8 @@ final case class Animation(
   def withAnimationKey(animationKey: AnimationKey): Animation =
     this.copy(animationKey = animationKey)
 
+  override def toString(): String =
+    s"Animation(${animationKey.toString()}, ${material.toString()}, ${currentCycleLabel.toString()}, ${cycles.toString()})"
 }
 
 object Animation {
@@ -35,14 +36,6 @@ object Animation {
       eM.equal(a.material, b.material) &&
       eCL.equal(a.currentCycleLabel, b.currentCycleLabel) &&
       eNelC.equal(a.cycles, b.cycles)
-    }
-  }
-
-  implicit val animationAsString: AsString[Animation] = {
-    val sM = implicitly[AsString[Material]]
-
-    AsString.create { a =>
-      s"Animation(${a.animationKey.toString()}, ${sM.show(a.material)}, ${a.currentCycleLabel.toString()}, ${a.cycles.toString()})"
     }
   }
 

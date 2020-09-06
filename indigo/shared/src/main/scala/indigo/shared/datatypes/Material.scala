@@ -3,8 +3,6 @@ package indigo.shared.datatypes
 import indigo.shared.assets.AssetName
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
-import indigo.shared.AsString
-import indigo.shared.AsString._
 
 sealed trait Material {
   val default: AssetName
@@ -12,18 +10,19 @@ sealed trait Material {
   def lit: Material
   def unlit: Material
   def hash: String
+
+  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
+  override def toString(): String =
+    this match {
+      case t: Material.Textured =>
+        s"""Textured(${t.diffuse.toString()}, ${t.isLit.toString()})"""
+
+      case l: Material.Lit =>
+        s"""Lit(${l.albedo.toString()}, ${l.emissive.toString()}, ${l.normal.toString()}, ${l.specular.toString()}, ${l.isLit.toString()})"""
+    }
 }
 
 object Material {
-
-  implicit val show: AsString[Material] =
-    AsString.create {
-      case t: Textured =>
-        s"""Textured(${t.diffuse.toString()}, ${t.isLit.toString()})"""
-
-      case l: Lit =>
-        s"""Lit(${l.albedo.toString()}, ${l.emissive.show}, ${l.normal.show}, ${l.specular.show}, ${l.isLit.show})"""
-    }
 
   implicit val eq: EqualTo[Material] =
     EqualTo.create {
@@ -163,13 +162,11 @@ object Material {
 final class Texture(val assetName: AssetName, val amount: Double) {
   def hash: String =
     assetName.value + amount.toString()
+
+  override def toString(): String =
+    s"""Texture(${assetName.toString()}, ${amount.toString()})"""
 }
 object Texture {
-
-  implicit val show: AsString[Texture] =
-    AsString.create { texture =>
-      s"""Texture(${texture.assetName.toString()}, ${texture.amount.toString()})"""
-    }
 
   implicit val eq: EqualTo[Texture] =
     EqualTo.create {

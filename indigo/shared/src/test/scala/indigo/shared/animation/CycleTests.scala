@@ -7,7 +7,6 @@ import indigo.shared.datatypes._
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.temporal.Signal
 import indigo.shared.EqualTo._
-import indigo.shared.AsString._
 
 object CycleTests extends TestSuite {
 

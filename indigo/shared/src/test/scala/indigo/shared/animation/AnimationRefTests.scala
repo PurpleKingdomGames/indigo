@@ -5,7 +5,6 @@ import utest._
 import indigo.shared.datatypes._
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.EqualTo._
-import indigo.shared.AsString._
 import indigo.shared.assets.AssetName
 import indigo.shared.time.Millis
 
