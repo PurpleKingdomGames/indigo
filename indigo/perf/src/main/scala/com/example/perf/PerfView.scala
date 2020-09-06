@@ -11,7 +11,7 @@ object PerfView {
 
   def updateView(model: DudeModel, inputState: InputState): SceneUpdateFragment = {
     inputState.mouse.mouseClickAt match {
-      case Some(position) => println("Mouse clicked at: " + implicitly[AsString[Point]].show(position))
+      case Some(position) => println("Mouse clicked at: " + position.toString())
       case None           => ()
     }
 

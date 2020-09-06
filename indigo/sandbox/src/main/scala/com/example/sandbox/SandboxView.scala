@@ -1,7 +1,6 @@
 package com.example.sandbox
 
 import indigo._
-import indigo.AsString._
 
 object SandboxView {
 
@@ -9,7 +8,7 @@ object SandboxView {
 
   def updateView(model: SandboxGameModel, viewModel: SandboxViewModel, inputState: InputState): SceneUpdateFragment = {
     inputState.mouse.mouseClickAt match {
-      case Some(position) => println("Mouse clicked at: " + position.show)
+      case Some(position) => println("Mouse clicked at: " + position.toString())
       case None           => ()
     }
 
