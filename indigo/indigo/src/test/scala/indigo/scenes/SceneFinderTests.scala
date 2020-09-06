@@ -3,7 +3,7 @@ package indigo.scenes
 import utest._
 
 import indigo.shared.collections.NonEmptyList
-import indigo.EqualTo._
+import indigo.shared.EqualTo._
 
 object SceneFinderTests extends TestSuite {
 
