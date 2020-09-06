@@ -4,7 +4,7 @@ import org.scalacheck._
 import org.scalacheck.Prop._
 
 import indigo.shared.datatypes.Point
-import indigo.EqualTo._
+import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.temporal.Signal
 import indigo.shared.collections.NonEmptyList

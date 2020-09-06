@@ -79,14 +79,14 @@ class ProjectilesSpecification extends Properties("Projectiles") {
         val point: Vertex =
           signal.at(time)
 
-        "-- Bounds: " + bounds.asString +
+        "-- Bounds: " + bounds.toString() +
           "\n-- Bounds (left): " + bounds.left.toString +
           "\n-- Bounds (right): " + bounds.right.toString +
           "\n-- Bounds (top): " + bounds.top.toString +
           "\n-- Bounds (bottom): " + bounds.bottom.toString +
-          "\n-- target: " + target.asString +
-          "\n-- Point: " + point.asString +
-          "\n-- Time: " + time.asString +
+          "\n-- target: " + target.toString() +
+          "\n-- Point: " + point.toString() +
+          "\n-- Time: " + time.toString() +
           "" |: true =? (bounds + BoundingBox(0, 0, 1, 1)).isVertexWithin(signal.at(time))
     }
   }

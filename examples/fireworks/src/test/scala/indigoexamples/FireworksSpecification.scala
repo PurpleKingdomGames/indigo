@@ -4,7 +4,6 @@ import org.scalacheck._
 
 import indigo.Dice
 import indigo.shared.datatypes.Point
-import indigo.EqualTo._
 import indigo.shared.time.Millis
 import indigoexamples.automata.LaunchPadAutomata
 import indigo.shared.datatypes.Rectangle
