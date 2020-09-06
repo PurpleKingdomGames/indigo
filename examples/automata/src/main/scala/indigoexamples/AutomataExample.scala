@@ -24,7 +24,7 @@ object AutomataExample extends IndigoDemo[Point, Point, Unit, ViewModel] {
       .withSubSystems(Score.automataSubSystem(FontStuff.fontKey))
   }
 
-  def setup(bootData: Point, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Point] =
+  def setup(bootData: Point, assetCollection: AssetCollection, dice: Dice): Startup[Point] =
     Startup.Success(bootData)
 
   def initialModel(startupData: Point): Unit =

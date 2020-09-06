@@ -19,7 +19,7 @@ object AudioExample extends IndigoDemo[Unit, Unit, Unit, Button] {
         AssetType.Audio(AssetName("music"), AssetPath("assets/march_of_steampunk.mp3"))
       )
 
-  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =

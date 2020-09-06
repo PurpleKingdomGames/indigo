@@ -22,7 +22,7 @@ object TextExample extends IndigoSandbox[Unit, Model] {
   val animations: Set[Animation] =
     Set()
 
-  def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, dice: Dice): Startup[Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Model =

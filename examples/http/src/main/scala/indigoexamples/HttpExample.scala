@@ -15,7 +15,7 @@ object HttpExample extends IndigoDemo[Unit, Unit, Unit, Button] {
       .noData(defaultGameConfig)
       .withAssets(AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")))
 
-  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =

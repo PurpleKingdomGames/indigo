@@ -25,7 +25,7 @@ object TiledExample extends IndigoSandbox[Group, Unit] {
 
   val animations: Set[Animation] = Set()
 
-  def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Group] = {
+  def setup(assetCollection: AssetCollection, dice: Dice): Startup[Group] = {
 
     val maybeTiledMap = for {
       j <- assetCollection.findTextDataByName(terrianData)
@@ -35,7 +35,7 @@ object TiledExample extends IndigoSandbox[Group, Unit] {
 
     maybeTiledMap match {
       case None =>
-        Startup.Failure.withErrors("Could not generate TiledMap from data.")
+        Startup.Failure("Could not generate TiledMap from data.")
 
       case Some(tiledMap) =>
         Startup.Success(tiledMap)

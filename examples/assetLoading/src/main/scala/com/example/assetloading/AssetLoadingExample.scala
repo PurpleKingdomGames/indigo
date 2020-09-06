@@ -19,7 +19,7 @@ object AssetLoadingExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMod
       .withAssets(Assets.assets)
       .withSubSystems(AssetBundleLoader)
 
-  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[Unit] =
     assetCollection.findTextDataByName(AssetName("text")) match {
       case Some(value) =>
         println("Loaded text! " + value)

@@ -21,7 +21,7 @@ object SubSystemsExample extends IndigoDemo[Unit, Unit, Unit, Unit] {
         FloatingPoints(fontKey)
       )
 
-  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =

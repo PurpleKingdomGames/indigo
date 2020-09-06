@@ -22,7 +22,7 @@ object ButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewModel] {
       down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 32, 16, 16)
     )
 
-  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): MyGameModel =

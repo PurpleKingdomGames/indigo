@@ -15,7 +15,7 @@ object BasicSetup extends IndigoDemo[Unit, MyStartUpData, MyGameModel, MyViewMod
         .withClearColor(ClearColor.fromHexString("0xAA191E"))
     )
 
-  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, MyStartUpData] =
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[MyStartUpData] =
     Startup.Success(MyStartUpData())
 
   def initialModel(startupData: MyStartUpData): MyGameModel =

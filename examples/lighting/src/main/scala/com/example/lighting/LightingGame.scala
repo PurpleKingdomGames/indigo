@@ -41,7 +41,7 @@ object LightingGame extends IndigoSandbox[Unit, Unit] {
       )
     )
 
-  def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, dice: Dice): Startup[Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =

@@ -67,7 +67,7 @@ object Fireworks extends IndigoDemo[Vertex => Point, FireworksStartupData, Unit,
       )
     )
 
-  def setup(toScreenSpace: Vertex => Point, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, FireworksStartupData] =
+  def setup(toScreenSpace: Vertex => Point, assetCollection: AssetCollection, dice: Dice): Startup[FireworksStartupData] =
     Startup.Success(
       FireworksStartupData(toScreenSpace)
     )

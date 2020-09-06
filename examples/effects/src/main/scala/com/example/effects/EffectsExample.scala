@@ -30,7 +30,7 @@ object EffectsExample extends IndigoSandbox[Unit, Unit] {
   val animations: Set[Animation] =
     Set()
 
-  def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Unit] =
+  def setup(assetCollection: AssetCollection, dice: Dice): Startup[Unit] =
     Startup.Success(())
 
   def initialModel(startupData: Unit): Unit =

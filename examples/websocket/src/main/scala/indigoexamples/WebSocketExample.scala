@@ -32,7 +32,7 @@ object WebSocketExample extends IndigoDemo[Unit, MySetupData, Unit, MyViewModel]
       down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 32, 16, 16)
     )
 
-  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, MySetupData] =
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[MySetupData] =
     Startup.Success(
       MySetupData(
         pingSocket = WebSocketConfig(

@@ -27,7 +27,7 @@ object ScenesSetup extends IndigoGame[Unit, StartUpData, GameModel, Unit] {
 
   def initialScene(bootData: Unit): Option[SceneName] = Option(SceneA.name)
 
-  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartUpData] =
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartUpData] =
     Startup.Success(StartUpData("Scene A!", "Scene B?"))
 
   def initialModel(startupData: StartUpData): GameModel =
