@@ -16,7 +16,7 @@ import indigo.shared.platform.SceneProcessor
 class GameLoop[StartUpData, GameModel, ViewModel](
     boundaryLocator: BoundaryLocator,
     sceneProcessor: SceneProcessor,
-    gameEngine: GameEngine[StartUpData, _, GameModel, ViewModel],
+    gameEngine: GameEngine[StartUpData, GameModel, ViewModel],
     gameConfig: GameConfig,
     initialModel: GameModel,
     initialViewModel: ViewModel,

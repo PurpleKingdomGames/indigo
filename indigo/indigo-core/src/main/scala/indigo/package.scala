@@ -8,7 +8,7 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
 
   val logger: indigo.shared.IndigoLogger.type = indigo.shared.IndigoLogger
 
-  type Startup[ErrorType, SuccessType] = shared.Startup[ErrorType, SuccessType]
+  type Startup[SuccessType] = shared.Startup[SuccessType]
   val Startup: shared.Startup.type = shared.Startup
 
   type GameTime = shared.time.GameTime
@@ -39,12 +39,6 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
 
   type Texture = shared.datatypes.Texture
   val Texture: shared.datatypes.Texture.type = shared.datatypes.Texture
-
-  type ToReportable[T] = shared.ToReportable[T]
-  val ToReportable: shared.ToReportable.type = shared.ToReportable
-
-  type StartupErrors = shared.StartupErrors
-  val StartupErrors: shared.StartupErrors.type = shared.StartupErrors
 
   type Outcome[T] = shared.Outcome[T]
   val Outcome: shared.Outcome.type = shared.Outcome

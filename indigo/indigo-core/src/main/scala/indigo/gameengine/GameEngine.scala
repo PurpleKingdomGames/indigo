@@ -29,10 +29,10 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.platform.SceneProcessor
 import indigo.shared.dice.Dice
 
-final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
+final class GameEngine[StartUpData, GameModel, ViewModel](
     fonts: Set[FontInfo],
     animations: Set[Animation],
-    initialise: AssetCollection => Dice => Startup[StartupError, StartUpData],
+    initialise: AssetCollection => Dice => Startup[StartUpData],
     initialModel: StartUpData => GameModel,
     initialViewModel: StartUpData => GameModel => ViewModel,
     frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel]
@@ -128,7 +128,7 @@ final class GameEngine[StartUpData, StartupError, GameModel, ViewModel](
 
       platform = new Platform(gameConfig, accumulatedAssetCollection, globalEventStream)
 
-      val startupData: Startup[StartupError, StartUpData] =
+      val startupData: Startup[StartUpData] =
         initialise(accumulatedAssetCollection)(Dice.fromSeed(time))
 
       startupData.startUpEvents.foreach(globalEventStream.pushGlobalEvent)
@@ -185,9 +185,9 @@ object GameEngine {
   def registerFonts(fontRegister: FontRegister, fonts: Set[FontInfo]): Unit =
     fonts.foreach(fontRegister.register)
 
-  def initialisedGame[StartupError, StartUpData](startupData: Startup[StartupError, StartUpData]): Try[StartUpData] =
+  def initialisedGame[StartUpData](startupData: Startup[StartUpData]): Try[StartUpData] =
     startupData match {
-      case e: Startup.Failure[_] =>
+      case e: Startup.Failure =>
         IndigoLogger.info("Game initialisation failed")
         IndigoLogger.info(e.report)
         Failure[StartUpData](new Exception("Game aborted due to start up failure"))
@@ -197,8 +197,8 @@ object GameEngine {
         Success(x.success)
     }
 
-  def initialiseGameLoop[StartUpData, StartupError, GameModel, ViewModel](
-      gameEngine: GameEngine[StartUpData, StartupError, GameModel, ViewModel],
+  def initialiseGameLoop[StartUpData, GameModel, ViewModel](
+      gameEngine: GameEngine[StartUpData, GameModel, ViewModel],
       boundaryLocator: BoundaryLocator,
       sceneProcessor: SceneProcessor,
       gameConfig: GameConfig,

@@ -4,7 +4,7 @@ import indigo.shared.animation.Animation
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.events.GlobalEvent
 
-sealed trait Startup[+ErrorType, +SuccessType] extends Product with Serializable {
+sealed trait Startup[+SuccessType] extends Product with Serializable {
   def additionalAnimations: Set[Animation] =
     this match {
       case Startup.Failure(_) =>
@@ -36,12 +36,12 @@ sealed trait Startup[+ErrorType, +SuccessType] extends Product with Serializable
 
 object Startup {
 
-  final case class Failure[ErrorType](error: ErrorType)(implicit toReportable: ToReportable[ErrorType]) extends Startup[ErrorType, Nothing] {
-    def report: String = toReportable.report(error)
+  final case class Failure(errors: List[String]) extends Startup[Nothing] {
+    def report: String = errors.mkString("\n")
   }
   object Failure {
-    def withErrors(errors: String*): Failure[StartupErrors] =
-      Failure(StartupErrors(errors.toList))
+    def apply(errors: String*): Failure =
+      Failure(errors.toList)
   }
 
   final case class Success[SuccessType](
@@ -49,7 +49,7 @@ object Startup {
       animations: Set[Animation],
       fonts: Set[FontInfo],
       globalEvents: List[GlobalEvent]
-  ) extends Startup[Nothing, SuccessType] {
+  ) extends Startup[SuccessType] {
     def addAnimations(value: Animation*): Success[SuccessType] =
       addAnimations(value.toList)
     def addAnimations(value: List[Animation]): Success[SuccessType] =

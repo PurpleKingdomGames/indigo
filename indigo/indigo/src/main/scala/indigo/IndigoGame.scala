@@ -53,7 +53,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
     * @return Either an `Startup.Success[...your startup data...]` or a
     *         `Startup.Failure[StartupErrors]`.
     */
-  def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartUpData]
+  def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Startup[StartUpData]
 
   /**
     * Set up of your initial model
@@ -72,7 +72,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
   private val subSystemsRegister: SubSystemsRegister =
     new SubSystemsRegister(Nil)
 
-  private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartUpData, StartupErrors, Model, ViewModel] = {
+  private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartUpData, Model, ViewModel] = {
     subSystemsRegister.register(bootUp.subSystems.toList)
 
     val sceneManager: SceneManager[StartUpData, Model, ViewModel] = {
@@ -94,7 +94,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
       )
     }
 
-    new GameEngine[StartUpData, StartupErrors, Model, ViewModel](
+    new GameEngine[StartUpData, Model, ViewModel](
       bootUp.fonts,
       bootUp.animations,
       (ac: AssetCollection) => (d: Dice) => setup(bootUp.bootData, ac, d),

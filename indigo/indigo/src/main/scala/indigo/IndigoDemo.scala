@@ -20,7 +20,7 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
 
   def boot(flags: Map[String, String]): BootResult[BootData]
 
-  def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartUpData]
+  def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Startup[StartUpData]
 
   def initialModel(startupData: StartUpData): Model
 
@@ -35,7 +35,7 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
   private val subSystemsRegister: SubSystemsRegister =
     new SubSystemsRegister(Nil)
 
-  private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartUpData, StartupErrors, Model, ViewModel] = {
+  private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartUpData, Model, ViewModel] = {
     subSystemsRegister.register(bootUp.subSystems.toList)
 
     val frameProcessor: StandardFrameProcessor[StartUpData, Model, ViewModel] =
@@ -47,7 +47,7 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
         present
       )
 
-    new GameEngine[StartUpData, StartupErrors, Model, ViewModel](
+    new GameEngine[StartUpData, Model, ViewModel](
       bootUp.fonts,
       bootUp.animations,
       (ac: AssetCollection) => (d: Dice) => setup(bootUp.bootData, ac, d),

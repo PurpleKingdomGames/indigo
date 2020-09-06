@@ -32,7 +32,7 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
       .withFonts(SandboxView.fontInfo)
       .withSubSystems(FPSCounter(SandboxView.fontKey, Point(3, 100), targetFPS))
 
-  def setup(bootData: SandboxBootData, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, SandboxStartupData] = {
+  def setup(bootData: SandboxBootData, assetCollection: AssetCollection, dice: Dice): Startup[SandboxStartupData] = {
     println(bootData.message)
 
     def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[SandboxStartupData] =
@@ -56,7 +56,7 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
       spriteAndAnimations <- aseprite.toSpriteAndAnimations(dice, SandboxAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)
 
-    res.getOrElse(Startup.Failure(StartupErrors("Failed to load the dude")))
+    res.getOrElse(Startup.Failure("Failed to load the dude"))
   }
 
   def initialModel(startupData: SandboxStartupData): SandboxGameModel =

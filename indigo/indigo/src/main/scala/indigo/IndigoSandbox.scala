@@ -22,7 +22,7 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher {
 
   val animations: Set[Animation]
 
-  def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, StartUpData]
+  def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartUpData]
 
   def initialModel(startupData: StartUpData): Model
 
@@ -30,7 +30,7 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher {
 
   def present(context: FrameContext[StartUpData], model: Model): SceneUpdateFragment
 
-  private def indigoGame: GameEngine[StartUpData, StartupErrors, Model, Unit] = {
+  private def indigoGame: GameEngine[StartUpData, Model, Unit] = {
 
     val updateViewModel: (FrameContext[StartUpData], Model, Unit) => GlobalEvent => Outcome[Unit] =
       (_, _, vm) => _ => Outcome(vm)
@@ -44,7 +44,7 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher {
         (ctx, m, _) => present(ctx, m)
       )
 
-    new GameEngine[StartUpData, StartupErrors, Model, Unit](
+    new GameEngine[StartUpData, Model, Unit](
       fonts,
       animations,
       (ac: AssetCollection) => (d: Dice) => setup(ac, d),

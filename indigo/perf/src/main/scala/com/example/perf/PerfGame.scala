@@ -59,7 +59,7 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
   def initialViewModel(startupData: Dude, model: DudeModel): Unit =
     ()
 
-  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupErrors, Dude] = {
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[Dude] = {
     def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[Dude] =
       Startup
         .Success(
@@ -79,7 +79,7 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
       spriteAndAnimations <- aseprite.toSpriteAndAnimations(dice, PerfAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)
 
-    res.getOrElse(Startup.Failure(StartupErrors("Failed to load the dude")))
+    res.getOrElse(Startup.Failure("Failed to load the dude"))
   }
 
   def updateModel(context: FrameContext[Dude], model: DudeModel): GlobalEvent => Outcome[DudeModel] =
