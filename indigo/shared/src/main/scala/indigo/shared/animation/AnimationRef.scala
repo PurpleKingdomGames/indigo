@@ -174,15 +174,10 @@ final class AnimationMemento(val bindingKey: BindingKey, val currentCycleLabel: 
 }
 object AnimationMemento {
 
-  implicit val animationMementoAsString: AsString[AnimationMemento] = {
-    val bk = implicitly[AsString[BindingKey]]
-    val cl = implicitly[AsString[CycleLabel]]
-    val cm = implicitly[AsString[CycleMemento]]
-
+  implicit val animationMementoAsString: AsString[AnimationMemento] =
     AsString.create { m =>
-      s"""AnimationMemento(bindingKey = ${bk.show(m.bindingKey)}, cycleLabel = ${cl.show(m.currentCycleLabel)}, cycleMemento = ${cm.show(m.currentCycleMemento)})"""
+      s"""AnimationMemento(bindingKey = ${m.bindingKey.toString()}, cycleLabel = ${m.currentCycleLabel.toString()}, cycleMemento = ${m.currentCycleMemento.toString()})"""
     }
-  }
 
   @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   implicit val animationMementoEqualTo: EqualTo[AnimationMemento] = {

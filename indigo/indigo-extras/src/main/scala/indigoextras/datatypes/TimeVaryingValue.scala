@@ -3,9 +3,8 @@ package indigoextras.datatypes
 import indigo.shared.time.Seconds
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
-import indigo.shared.AsString
 
-final class TimeVaryingValue[@specialized(Int, Long, Float, Double) T](val value: T, val startValue: T, val createdAt: Seconds)(implicit vot: ValueOverTime[T], millisAsString: AsString[Seconds]) {
+final class TimeVaryingValue[@specialized(Int, Long, Float, Double) T](val value: T, val startValue: T, val createdAt: Seconds)(implicit vot: ValueOverTime[T]) {
 
   def increase(unitsPerSecond: T, runningTime: Seconds): TimeVaryingValue[T] =
     TimeVaryingValue.increase(this, unitsPerSecond, runningTime)
@@ -26,7 +25,7 @@ final class TimeVaryingValue[@specialized(Int, Long, Float, Double) T](val value
     TimeVaryingValue.decreaseWrapAt(this, limit, unitsPerSecond, runningTime)
 
   override def toString(): String =
-    s"TimeVaryingValue(${vot.asString(value)}, ${vot.asString(startValue)}, ${millisAsString.show(createdAt)})"
+    s"TimeVaryingValue(${vot.asString(value)}, ${vot.asString(startValue)}, ${createdAt.toString()})"
 
 }
 object TimeVaryingValue {

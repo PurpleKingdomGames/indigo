@@ -1,6 +1,5 @@
 package indigoextras.geometry
 
-import indigo.shared.AsString
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Point
@@ -47,9 +46,6 @@ final class Vertex(val x: Double, val y: Double) {
   def toVector2: Vector2 =
     Vector2(x, y)
 
-  def asString: String =
-    implicitly[AsString[Vertex]].show(this)
-
   def ===(other: Vertex): Boolean =
     implicitly[EqualTo[Vertex]].equal(this, other)
 
@@ -57,7 +53,7 @@ final class Vertex(val x: Double, val y: Double) {
     Vertex.equalEnough(this, other, 0.001)
 
   override def toString: String =
-    asString
+    s"Vertex(x = ${x.toString}, y = ${y.toString})"
 
   @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
   override def equals(obj: Any): Boolean =
@@ -67,14 +63,6 @@ final class Vertex(val x: Double, val y: Double) {
 }
 
 object Vertex {
-
-  implicit val show: AsString[Vertex] = {
-    val sD = implicitly[AsString[Double]]
-
-    AsString.create { v =>
-      s"Vertex(x = ${sD.show(v.x)}, y = ${sD.show(v.y)})"
-    }
-  }
 
   implicit val eq: EqualTo[Vertex] = {
     val ev = implicitly[EqualTo[Double]]

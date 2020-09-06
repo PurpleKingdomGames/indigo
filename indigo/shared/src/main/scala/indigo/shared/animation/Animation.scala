@@ -39,13 +39,10 @@ object Animation {
   }
 
   implicit val animationAsString: AsString[Animation] = {
-    val sAK   = implicitly[AsString[AnimationKey]]
-    val sM    = implicitly[AsString[Material]]
-    val sCL   = implicitly[AsString[CycleLabel]]
-    val sNelC = implicitly[AsString[NonEmptyList[Cycle]]]
+    val sM = implicitly[AsString[Material]]
 
     AsString.create { a =>
-      s"Animation(${sAK.show(a.animationKey)}, ${sM.show(a.material)}, ${sCL.show(a.currentCycleLabel)}, ${sNelC.show(a.cycles)})"
+      s"Animation(${a.animationKey.toString()}, ${sM.show(a.material)}, ${a.currentCycleLabel.toString()}, ${a.cycles.toString()})"
     }
   }
 

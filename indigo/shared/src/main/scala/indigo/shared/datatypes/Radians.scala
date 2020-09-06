@@ -1,6 +1,6 @@
 package indigo.shared.datatypes
 
-import indigo.shared.{AsString, EqualTo}
+import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import indigo.shared.time.Seconds
 
@@ -21,22 +21,14 @@ final class Radians(val value: Double) extends AnyVal {
   def hash: String =
     value.toString()
 
-  def asString: String =
-    implicitly[AsString[Radians]].show(this)
-
   override def toString: String =
-    asString
+    s"""Radians(${value.toString()})"""
 
   def ===(other: Radians): Boolean =
     implicitly[EqualTo[Radians]].equal(this, other)
 
 }
 object Radians {
-
-  implicit val show: AsString[Radians] = {
-    val showD = implicitly[AsString[Double]]
-    AsString.create(p => s"""Radians(${showD.show(p.value)})""")
-  }
 
   implicit val equalTo: EqualTo[Radians] = {
     val eqD = implicitly[EqualTo[Double]]

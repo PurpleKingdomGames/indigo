@@ -2,7 +2,6 @@ package indigo.shared.collections
 
 import utest._
 import indigo.shared.EqualTo._
-import indigo.shared.AsString._
 
 object NonEmptyListTests extends TestSuite {
 
@@ -14,7 +13,7 @@ object NonEmptyListTests extends TestSuite {
 
           val nel = NonEmptyList(1, 2, 3)
 
-          nel.show ==> "NonEmptyList[1][2, 3]"
+          nel.toString() ==> "NonEmptyList[1][2, 3]"
 
         }
       }

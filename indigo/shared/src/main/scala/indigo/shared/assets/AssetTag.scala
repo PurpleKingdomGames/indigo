@@ -1,6 +1,6 @@
 package indigo.shared.assets
 
-import indigo.shared.{EqualTo, AsString}
+import indigo.shared.EqualTo
 
 final class AssetTag(val value: String) extends AnyVal {
   override def toString(): String = s"AssetTag($value)"
@@ -13,11 +13,6 @@ object AssetTag {
       eqS.equal(a.value, b.value)
     }
   }
-
-  implicit val asString: AsString[AssetTag] =
-    AsString.create { r =>
-      s"""AssetTag(${r.value})"""
-    }
 
   def apply(value: String): AssetTag =
     new AssetTag(value)

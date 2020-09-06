@@ -1,7 +1,6 @@
 package indigo.shared.datatypes
 
-import indigo.shared.{AsString, EqualTo}
-import indigo.shared.AsString._
+import indigo.shared.EqualTo
 
 import scala.annotation.tailrec
 
@@ -10,7 +9,7 @@ final class Rectangle(val position: Point, val size: Point) {
   val y: Int            = position.y
   val width: Int        = size.x
   val height: Int       = size.y
-  lazy val hash: String = s"${x.show}${y.show}${width.show}${height.show}"
+  lazy val hash: String = s"${x.toString()}${y.toString()}${width.toString()}${height.toString()}"
 
   lazy val left: Int   = x
   lazy val right: Int  = x + width
@@ -65,11 +64,8 @@ final class Rectangle(val position: Point, val size: Point) {
   def resize(point: Point): Rectangle =
     Rectangle(position, point)
 
-  def asString: String =
-    implicitly[AsString[Rectangle]].show(this)
-
   override def toString: String =
-    asString
+    s"""Rectangle(Position(${x.toString()}, ${y.toString()}), Size(${width.toString()}, ${height.toString()}))"""
 
   def ===(other: Rectangle): Boolean =
     implicitly[EqualTo[Rectangle]].equal(this, other)
@@ -122,9 +118,6 @@ object Rectangle {
 
     rec(points, Int.MaxValue, Int.MaxValue, Int.MinValue, Int.MinValue)
   }
-
-  implicit val rectangleShow: AsString[Rectangle] =
-    AsString.create(p => s"""Rectangle(Position(${p.x.show}, ${p.y.show}), Size(${p.width.show}, ${p.height.show}))""")
 
   implicit val rectangleEqualTo: EqualTo[Rectangle] = {
     val eq = implicitly[EqualTo[Point]]

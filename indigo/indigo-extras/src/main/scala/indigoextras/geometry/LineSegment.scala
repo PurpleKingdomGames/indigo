@@ -69,13 +69,10 @@ object LineSegment {
     }
   }
 
-  implicit val lsAsString: AsString[LineSegment] = {
-    val s = implicitly[AsString[Vertex]]
-
+  implicit val lsAsString: AsString[LineSegment] =
     AsString.create { ls =>
-      s"LineSegment(start = ${s.show(ls.start)}, end = ${s.show(ls.end)})"
+      s"LineSegment(start = ${ls.start.toString}, end = ${ls.end.toString()})"
     }
-  }
 
   def apply(start: Vertex, end: Vertex): LineSegment =
     new LineSegment(start, end)

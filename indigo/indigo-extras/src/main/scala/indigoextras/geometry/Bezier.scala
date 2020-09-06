@@ -49,13 +49,10 @@ object Bezier {
     }
   }
 
-  implicit val bAsString: AsString[Bezier] = {
-    val s = implicitly[AsString[Vertex]]
-
+  implicit val bAsString: AsString[Bezier] =
     AsString.create { b =>
-      s"Bezier(vertices = ${b.vertices.map(v => s.show(v)).mkString("[", ",", "]")})"
+      s"Bezier(vertices = ${b.vertices.map(_.toString()).mkString("[", ",", "]")})"
     }
-  }
 
   def apply(start: Vertex, vertices: Vertex*): Bezier =
     new Bezier(start :: vertices.toList)

@@ -1,6 +1,5 @@
 package indigo.shared.collections
 
-import indigo.shared.AsString
 import indigo.shared.EqualTo._
 import indigo.shared.EqualTo
 
@@ -191,12 +190,6 @@ trait NonEmptyList[A] {
 }
 
 object NonEmptyList {
-
-  implicit def showNonEmptyList[A](implicit showA: AsString[A]): AsString[NonEmptyList[A]] =
-    AsString.create { l =>
-      val s = l.map(a => showA.show(a))
-      s"NonEmptyList[${s.head}][${s.tail.mkString(", ")}]"
-    }
 
   implicit def equalToNonEmptyList[A](implicit eq: EqualTo[A]): EqualTo[NonEmptyList[A]] =
     EqualTo.create((a, b) => equality(a, b))

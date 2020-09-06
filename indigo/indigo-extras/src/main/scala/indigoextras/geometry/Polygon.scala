@@ -112,17 +112,14 @@ object Polygon {
     }
   }
 
-  implicit val polygonAsString: AsString[Polygon] = {
-    val s = implicitly[AsString[List[Vertex]]]
-
+  implicit val polygonAsString: AsString[Polygon] =
     AsString.create {
       case Open(vs) =>
-        s"Polygon.Open(${s.show(vs)})"
+        s"Polygon.Open(${vs.toString()})"
 
       case Closed(vs) =>
-        s"Polygon.Closed(${s.show(vs)})"
+        s"Polygon.Closed(${vs.toString()})"
     }
-  }
 
   implicit val polygonEqualTo: EqualTo[Polygon] = {
     val e = implicitly[EqualTo[List[Vertex]]]

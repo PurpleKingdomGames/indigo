@@ -16,17 +16,16 @@ sealed trait Material {
 
 object Material {
 
-  implicit val show: AsString[Material] = {
+  implicit val show: AsString[Material] =
     AsString.create {
       case t: Textured =>
-        s"""Textured(${t.diffuse.show}, ${t.isLit.show})"""
+        s"""Textured(${t.diffuse.toString()}, ${t.isLit.toString()})"""
 
       case l: Lit =>
-        s"""Lit(${l.albedo.show}, ${l.emissive.show}, ${l.normal.show}, ${l.specular.show}, ${l.isLit.show})"""
+        s"""Lit(${l.albedo.toString()}, ${l.emissive.show}, ${l.normal.show}, ${l.specular.show}, ${l.isLit.show})"""
     }
-  }
 
-  implicit val eq: EqualTo[Material] = {
+  implicit val eq: EqualTo[Material] =
     EqualTo.create {
       case (Textured(diffuseA, isLitA), Textured(diffuseB, isLitB)) =>
         diffuseA === diffuseB &&
@@ -41,7 +40,6 @@ object Material {
       case _ =>
         false
     }
-  }
 
   final class Textured(val diffuse: AssetName, val isLit: Boolean) extends Material {
     val default: AssetName = diffuse
@@ -168,11 +166,10 @@ final class Texture(val assetName: AssetName, val amount: Double) {
 }
 object Texture {
 
-  implicit val show: AsString[Texture] = {
+  implicit val show: AsString[Texture] =
     AsString.create { texture =>
-      s"""Texture(${texture.assetName.show}, ${texture.amount.show})"""
+      s"""Texture(${texture.assetName.toString()}, ${texture.amount.toString()})"""
     }
-  }
 
   implicit val eq: EqualTo[Texture] =
     EqualTo.create {

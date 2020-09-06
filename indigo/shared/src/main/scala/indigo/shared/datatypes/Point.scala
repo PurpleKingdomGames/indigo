@@ -1,8 +1,7 @@
 package indigo.shared.datatypes
 
-import indigo.shared.{AsString, EqualTo}
+import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
-import indigo.shared.AsString._
 
 final class Point(val x: Int, val y: Int) {
   def +(pt: Point): Point = Point(x + pt.x, y + pt.y)
@@ -26,11 +25,8 @@ final class Point(val x: Int, val y: Int) {
   def toVector: Vector2 =
     Vector2(x.toDouble, y.toDouble)
 
-  def asString: String =
-    implicitly[AsString[Point]].show(this)
-
   override def toString: String =
-    asString
+    s"""Point(${x.toString()}, ${y.toString()})"""
 
   def ===(other: Point): Boolean =
     implicitly[EqualTo[Point]].equal(this, other)
@@ -41,7 +37,7 @@ final class Point(val x: Int, val y: Int) {
       this === obj.asInstanceOf[Point]
     else false
 
-  val hash: String = s"${x.show}${y.show}"
+  val hash: String = s"${x.toString()}${y.toString()}"
 }
 
 object Point {
@@ -55,11 +51,6 @@ object Point {
   val zero: Point = Point(0, 0)
 
   def tuple2ToPoint(t: (Int, Int)): Point = Point(t._1, t._2)
-
-  implicit val show: AsString[Point] = {
-    val showI = implicitly[AsString[Int]]
-    AsString.create(p => s"""Point(${showI.show(p.x)}, ${showI.show(p.y)})""")
-  }
 
   implicit val equalTo: EqualTo[Point] = {
     val eqI = implicitly[EqualTo[Int]]

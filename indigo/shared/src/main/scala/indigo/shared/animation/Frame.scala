@@ -3,7 +3,6 @@ package indigo.shared.animation
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
 import indigo.shared.{EqualTo, AsString}
-import indigo.shared.AsString._
 import indigo.shared.time.Millis
 import indigo.shared.datatypes.Material
 
@@ -17,7 +16,7 @@ object Frame {
     }
 
   implicit val frameAsString: AsString[Frame] =
-    AsString.create(f => s"Frame(${f.crop.show}, ${f.duration.show})")
+    AsString.create(f => s"Frame(${f.crop.toString()}, ${f.duration.toString()})")
 
   def apply(crop: Rectangle, duration: Millis): Frame =
     new Frame(crop, duration, None)

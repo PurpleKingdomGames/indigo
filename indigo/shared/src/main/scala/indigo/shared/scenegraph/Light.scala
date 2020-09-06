@@ -56,7 +56,7 @@ object PointLight {
     apply(Point.zero, 100, RGB.White, 1.5d, 100)
 
   implicit val show: AsString[PointLight] =
-    AsString.create(p => s"PointLight(${p.position.asString}, ${p.height.toString()}, ${p.color.toString()}, ${p.power.toString()}, ${p.attenuation.toString()})")
+    AsString.create(p => s"PointLight(${p.position.toString()}, ${p.height.toString()}, ${p.color.toString()}, ${p.power.toString()}, ${p.attenuation.toString()})")
 
   implicit val equalTo: EqualTo[PointLight] =
     EqualTo.create { (a, b) =>
@@ -138,7 +138,7 @@ object SpotLight {
 
   implicit val show: AsString[SpotLight] =
     AsString.create(p =>
-      s"SpotLight(${p.position.asString}, ${p.height.toString()}, ${p.color.toString()}, ${p.power.toString()}, ${p.attenuation.toString()}, ${p.angle.value.toString()}, ${p.rotation.value.toString()}, ${p.near
+      s"SpotLight(${p.position.toString()}, ${p.height.toString()}, ${p.color.toString()}, ${p.power.toString()}, ${p.attenuation.toString()}, ${p.angle.value.toString()}, ${p.rotation.value.toString()}, ${p.near
         .toString()}, ${p.far.toString()})"
     )
 
@@ -194,7 +194,7 @@ object DirectionLight {
     apply(100, RGB.White, 1.0, Radians.zero)
 
   implicit val show: AsString[DirectionLight] =
-    AsString.create(p => s"DirectionLight(${p.height.toString()}, ${p.color.toString()}, ${p.power.toString()}, ${p.rotation.asString})")
+    AsString.create(p => s"DirectionLight(${p.height.toString()}, ${p.color.toString()}, ${p.power.toString()}, ${p.rotation.toString()})")
 
   implicit val equalTo: EqualTo[DirectionLight] =
     EqualTo.create { (a, b) =>

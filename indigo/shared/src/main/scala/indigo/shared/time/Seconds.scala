@@ -1,6 +1,6 @@
 package indigo.shared.time
 
-import indigo.shared.{EqualTo, AsString}
+import indigo.shared.EqualTo
 
 final class Seconds(val value: Double) extends AnyVal {
 
@@ -46,11 +46,8 @@ final class Seconds(val value: Double) extends AnyVal {
   def toMillis: Millis =
     Millis(Math.floor(value * 1000).toLong)
 
-  def asString: String =
-    implicitly[AsString[Seconds]].show(this)
-
   override def toString: String =
-    asString
+    s"Seconds(${value.toString()})"
 
   def ===(other: Seconds): Boolean =
     implicitly[EqualTo[Seconds]].equal(this, other)
@@ -65,9 +62,6 @@ object Seconds {
     EqualTo.create { (a, b) =>
       implicitly[EqualTo[Double]].equal(a.value, b.value)
     }
-
-  implicit val asStringSeconds: AsString[Seconds] =
-    AsString.create(d => s"Seconds(${implicitly[AsString[Double]].show(d.value)})")
 
   def apply(value: Double): Seconds =
     new Seconds(value)

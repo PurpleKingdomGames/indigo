@@ -2,7 +2,6 @@ package indigo.shared.constants
 
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
-import indigo.shared.AsString
 
 final case class Key(code: Int, key: String) {
   def isPrintable: Boolean =
@@ -23,11 +22,6 @@ object Key {
   implicit val equals: EqualTo[Key] = {
     val eqI = implicitly[EqualTo[Int]]
     EqualTo.create((a, b) => eqI.equal(a.code, b.code))
-  }
-
-  implicit val show: AsString[Key] = {
-    val showI = implicitly[AsString[Int]]
-    AsString.create(k => s"""Key(${showI.show(k.code)})""")
   }
 }
 
