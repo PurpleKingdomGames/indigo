@@ -14,6 +14,15 @@ import indigo.shared.datatypes.FontInfo
 import indigo.shared.AnimationsRegister
 import indigo.shared.time.GameTime
 import indigo.shared.datatypes.Point
+import indigo.shared.events.InputState
+import indigo.shared.dice.Dice
+import indigo.shared.FrameContext
+import indigo.shared.input.Mouse
+import indigo.shared.input.Keyboard
+import indigo.shared.input.Gamepad
+import indigo.shared.events.KeyboardEvent
+import indigo.shared.constants.Keys
+import indigo.shared.datatypes.BindingKey
 
 object InputFieldTests extends TestSuite {
 
@@ -192,7 +201,53 @@ object InputFieldTests extends TestSuite {
           actual ==> expected
         }
 
+        "Updated text emits an event" - {
+
+          "if the key is set" - {
+            val key =
+              BindingKey("test")
+
+            val field =
+              InputField("", assets).giveFocus.withKey(BindingKey("test"))
+
+            val actual =
+              field.update(context).flatMap(_.update(context))
+
+            actual.state.text ==> "ABCABC"
+            actual.globalEvents.head ==> InputFieldChange(key, "ABC")
+            actual.globalEvents(1) ==> InputFieldChange(key, "ABCABC")
+          }
+
+          "unless the key is unset" - {
+            val field =
+              InputField("", assets).giveFocus
+
+            val actual =
+              field.update(context).flatMap(_.update(context))
+
+            actual.state.text ==> "ABCABC"
+            actual.globalEvents ==> Nil
+          }
+
+        }
+
       }
+
+      val keysUp: List[KeyboardEvent.KeyUp] =
+        List(
+          KeyboardEvent.KeyUp(Keys.KEY_A),
+          KeyboardEvent.KeyUp(Keys.KEY_B),
+          KeyboardEvent.KeyUp(Keys.KEY_C)
+        )
+
+      def context: FrameContext[Unit] =
+        new FrameContext[Unit](
+          GameTime.zero,
+          Dice.loaded(1),
+          new InputState(Mouse.default, new Keyboard(keysUp, Nil, None), Gamepad.default),
+          new BoundaryLocator(new AnimationsRegister, new FontRegister),
+          ()
+        )
 
     }
 

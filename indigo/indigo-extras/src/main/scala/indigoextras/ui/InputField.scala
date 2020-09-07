@@ -14,6 +14,8 @@ import indigo.shared.time.Seconds
 import indigo.shared.constants.Key
 import indigo.shared.time.Millis
 import indigo.shared.FrameContext
+import indigo.shared.Outcome
+import indigo.shared.events.GlobalEvent
 
 final case class InputField(
     text: String,
@@ -25,7 +27,8 @@ final case class InputField(
     depth: Depth,
     hasFocus: Boolean,
     cursorPosition: Int,
-    lastCursorMove: Seconds
+    lastCursorMove: Seconds,
+    key: Option[BindingKey]
 ) {
 
   def bounds(boundaryLocator: BoundaryLocator): Rectangle =
@@ -60,6 +63,9 @@ final case class InputField(
       depth = newDepth,
       assets = assets.withText(assets.text.withDepth(newDepth))
     )
+
+  def withKey(newKey: BindingKey): InputField =
+    this.copy(key = Option(newKey))
 
   def giveFocus: InputField =
     this.copy(
@@ -143,51 +149,57 @@ final case class InputField(
     rec(textToInsert.toCharArray().toList, splitString._1, splitString._2, cursorPosition)
   }
 
-  def update(frameContext: FrameContext[_]): InputField = {
+  def update(frameContext: FrameContext[_]): Outcome[InputField] = {
     @tailrec
-    def rec(keysReleased: List[Key], acc: InputField, touched: Boolean): InputField =
+    def rec(keysReleased: List[Key], acc: InputField, touched: Boolean, changeEvent: Option[InputFieldChange]): Outcome[InputField] =
       keysReleased match {
         case Nil =>
-          if (touched) acc.copy(lastCursorMove = frameContext.gameTime.running)
-          else acc
+          if (touched)
+            Outcome(acc.copy(lastCursorMove = frameContext.gameTime.running), changeEvent.toList)
+          else
+            Outcome(acc, changeEvent.toList)
 
         case Keys.BACKSPACE :: ks =>
-          rec(ks, acc.backspace, true)
+          val next = acc.backspace
+          rec(ks, next, true, acc.key.map(key => InputFieldChange(key, next.text)))
 
         case Keys.DELETE :: ks =>
-          rec(ks, acc.delete, true)
+          val next = acc.delete
+          rec(ks, next, true, acc.key.map(key => InputFieldChange(key, next.text)))
 
         case Keys.LEFT_ARROW :: ks =>
-          rec(ks, acc.cursorLeft, true)
+          rec(ks, acc.cursorLeft, true, changeEvent)
 
         case Keys.RIGHT_ARROW :: ks =>
-          rec(ks, acc.cursorRight, true)
+          rec(ks, acc.cursorRight, true, changeEvent)
 
         case Keys.HOME :: ks =>
-          rec(ks, acc.cursorHome, true)
+          rec(ks, acc.cursorHome, true, changeEvent)
 
         case Keys.END :: ks =>
-          rec(ks, acc.cursorEnd, true)
+          rec(ks, acc.cursorEnd, true, changeEvent)
 
         case Keys.ENTER :: ks =>
-          rec(ks, acc.addCharacterText(Keys.ENTER.key), true)
+          val next = acc.addCharacterText(Keys.ENTER.key)
+          rec(ks, next, true, acc.key.map(key => InputFieldChange(key, next.text)))
 
         case key :: ks if key.isPrintable =>
-          rec(ks, acc.addCharacterText(key.key), true)
+          val next = acc.addCharacterText(key.key)
+          rec(ks, next, true, acc.key.map(key => InputFieldChange(key, next.text)))
 
         case _ :: ks =>
-          rec(ks, acc, touched)
+          rec(ks, acc, touched, changeEvent)
       }
 
-    val updated =
+    val updated: Outcome[InputField] =
       if (hasFocus)
-        rec(frameContext.inputState.keyboard.keysReleased, this, false)
-      else this
+        rec(frameContext.inputState.keyboard.keysReleased, this, false, None)
+      else Outcome(this)
 
     if (frameContext.inputState.mouse.mouseReleased)
       if (frameContext.inputState.mouse.wasMouseUpWithin(bounds(frameContext.boundaryLocator)))
-        updated.giveFocus
-      else updated.loseFocus
+        updated.map(_.giveFocus)
+      else updated.map(_.loseFocus)
     else updated
   }
 
@@ -260,10 +272,10 @@ final case class InputField(
 object InputField {
 
   def apply(text: String, assets: InputFieldAssets): InputField =
-    InputField(text, 255, false, assets, Some(Millis(400).toSeconds), Point.zero, Depth(1), false, text.length(), Seconds.zero)
+    InputField(text, 255, false, assets, Some(Millis(400).toSeconds), Point.zero, Depth(1), false, text.length(), Seconds.zero, None)
 
   def apply(text: String, characterLimit: Int, multiLine: Boolean, assets: InputFieldAssets): InputField =
-    InputField(text, characterLimit, multiLine, assets, Some(Millis(400).toSeconds), Point.zero, Depth(1), false, text.length(), Seconds.zero)
+    InputField(text, characterLimit, multiLine, assets, Some(Millis(400).toSeconds), Point.zero, Depth(1), false, text.length(), Seconds.zero, None)
 
 }
 
@@ -273,3 +285,5 @@ final case class InputFieldAssets(text: Text, cursor: Graphic) {
   def withCursor(newCursor: Graphic): InputFieldAssets =
     this.copy(cursor = newCursor)
 }
+
+final case class InputFieldChange(key: BindingKey, updatedText: String) extends GlobalEvent
