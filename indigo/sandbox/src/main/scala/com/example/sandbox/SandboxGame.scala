@@ -71,8 +71,8 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
 
     SandboxViewModel(
       Point.zero,
-      InputField("single", assets).makeSingleLine,
-      InputField("multi\nline", assets).makeMultiLine
+      InputField("single", assets).withKey(BindingKey("single")).makeSingleLine,
+      InputField("multi\nline", assets).withKey(BindingKey("multi")).makeMultiLine
     )
   }
 
@@ -100,13 +100,10 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
         }
 
       //more stuff
-      Outcome(
-        viewModel.copy(
-          offset = updateOffset,
-          single = viewModel.single.update(context),
-          multi = viewModel.multi.update(context)
-        )
-      )
+      for {
+        single <- viewModel.single.update(context)
+        multi  <- viewModel.multi.update(context)
+      } yield viewModel.copy(updateOffset, single, multi)
 
     case _ =>
       Outcome(viewModel)
