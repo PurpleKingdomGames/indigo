@@ -6,3 +6,9 @@ mill snake.fastOpt
 mill snake.indigoBuild
 
 cd ..
+
+cd pirate
+
+sbt buildGame
+
+cd ..
