@@ -20,12 +20,9 @@ object SpriteSheetFrame {
   val defaultOffset: SpriteSheetFrameCoordinateOffsets =
     calculateFrameOffset(Vector2(1.0, 1.0), Rectangle(0, 0, 1, 1), Vector2.zero)
 
-  final class SpriteSheetFrameCoordinateOffsets(val scale: Vector2, val translate: Vector2, translateCoords: Vector2 => Vector2) {
+  final case class SpriteSheetFrameCoordinateOffsets(scale: Vector2, translate: Vector2, translateCoords: Vector2 => Vector2) {
     def offsetToCoords(textureOffset: Vector2): Vector2 =
       translateCoords(textureOffset)
-
-    override def toString(): String =
-      s"SpriteSheetFrameCoordinateOffsets(scale = ${scale.toString()}, translate = ${translate.toString()})"
   }
   object SpriteSheetFrameCoordinateOffsets {
 

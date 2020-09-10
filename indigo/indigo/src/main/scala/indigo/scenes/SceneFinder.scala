@@ -7,7 +7,7 @@ import indigo.shared.EqualTo._
 
 import scala.annotation.tailrec
 
-final class SceneFinder(val previous: List[ScenePosition], val current: ScenePosition, val next: List[ScenePosition]) {
+final case class SceneFinder(previous: List[ScenePosition], current: ScenePosition, next: List[ScenePosition]) {
 
   val sceneCount: Int =
     toList.length
@@ -90,9 +90,6 @@ object SceneFinder {
       eqL.equal(a.next, b.next)
     }
   }
-
-  def apply(previous: List[ScenePosition], current: ScenePosition, next: List[ScenePosition]): SceneFinder =
-    new SceneFinder(previous, current, next)
 
   def fromScenes[StartUpData, GameModel, ViewModel](scenesList: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]]): SceneFinder = {
     val a = scenesList.map(_.name).zipWithIndex.map(p => ScenePosition(p._2, p._1))

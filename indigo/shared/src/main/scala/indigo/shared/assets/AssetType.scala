@@ -44,40 +44,26 @@ object AssetType {
       Some(tagged.toList)
   }
 
-  final class Text(val name: AssetName, val path: AssetPath) extends AssetTypePrimitive {
+  final case class Text(name: AssetName, path: AssetPath) extends AssetTypePrimitive {
     def toList: List[AssetType] = List(this)
-
-    override def toString: String =
-      s"AssetType.Text(${name.toString()}, ${path.toString})"
-  }
-  object Text {
-    def apply(name: AssetName, path: AssetPath): Text = new Text(name, path)
   }
 
-  final class Image(val name: AssetName, val path: AssetPath, val tag: Option[AssetTag]) extends AssetTypePrimitive {
+  final case class Image(name: AssetName, path: AssetPath, tag: Option[AssetTag]) extends AssetTypePrimitive {
     def withTag(tag: AssetTag): Image =
-      new Image(name, path, Option(tag))
+      this.copy(tag = Option(tag))
 
     def noTag: Image =
-      new Image(name, path, None)
+      this.copy(tag = None)
 
-    def toList: List[AssetType] = List(this)
-
-    override def toString: String =
-      s"AssetType.Image(${name.toString()}, ${path.toString})"
+    def toList: List[AssetType] =
+      List(this)
   }
   object Image {
-    def apply(name: AssetName, path: AssetPath): Image = new Image(name, path, None)
+    def apply(name: AssetName, path: AssetPath): Image = Image(name, path, None)
   }
 
-  final class Audio(val name: AssetName, val path: AssetPath) extends AssetTypePrimitive {
+  final case class Audio(name: AssetName, path: AssetPath) extends AssetTypePrimitive {
     def toList: List[AssetType] = List(this)
-
-    override def toString: String =
-      s"AssetType.Audio(${name.toString()}, ${path.toString})"
-  }
-  object Audio {
-    def apply(name: AssetName, path: AssetPath): Audio = new Audio(name, path)
   }
 
 }

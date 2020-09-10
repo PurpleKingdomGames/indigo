@@ -5,13 +5,10 @@ import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import indigo.shared.time.Millis
 
-final class Cycle(val label: CycleLabel, val frames: NonEmptyList[Frame], val playheadPosition: Int, val lastFrameAdvance: Millis) {
+final case class Cycle(label: CycleLabel, frames: NonEmptyList[Frame], playheadPosition: Int, lastFrameAdvance: Millis) {
 
   def addFrame(newFrame: Frame): Cycle =
-    Cycle(label, frames :+ newFrame, playheadPosition, lastFrameAdvance)
-
-  override def toString(): String =
-    s"Cycle(${label.toString()}, ${frames.toString()}, ${playheadPosition.toString()}, ${lastFrameAdvance.toString()})"
+    this.copy(frames = frames :+ newFrame)
 
 }
 
@@ -33,25 +30,17 @@ object Cycle {
 
 }
 
-final class CycleLabel(val value: String) extends AnyVal {
-  override def toString(): String =
-    s"CycleLabel($value)"
-}
+final case class CycleLabel(value: String) extends AnyVal
+
 object CycleLabel {
 
   implicit val cycleLabelEqualTo: EqualTo[CycleLabel] =
     EqualTo.create { (a, b) =>
       a.value === b.value
     }
-
-  def apply(value: String): CycleLabel =
-    new CycleLabel(value)
 }
 
-final class CycleMemento(val playheadPosition: Int, val lastFrameAdvance: Millis) {
-
-  override def toString: String =
-    s"CycleMemento(${playheadPosition.toString()}, ${lastFrameAdvance.toString()})"
+final case class CycleMemento(playheadPosition: Int, lastFrameAdvance: Millis) {
 
   def ===(other: CycleMemento): Boolean =
     implicitly[EqualTo[CycleMemento]].equal(this, other)
@@ -70,6 +59,4 @@ object CycleMemento {
       a.playheadPosition === b.playheadPosition && a.lastFrameAdvance === b.lastFrameAdvance
     }
 
-  def apply(playheadPosition: Int, lastFrameAdvance: Millis): CycleMemento =
-    new CycleMemento(playheadPosition, lastFrameAdvance)
 }

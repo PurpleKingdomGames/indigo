@@ -5,12 +5,13 @@ import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Vector2
 
-final class Vertex(val x: Double, val y: Double) {
+final case class Vertex(x: Double, y: Double) {
 
   def withX(newX: Double): Vertex =
-    Vertex(newX, y)
+    this.copy(x = newX)
+
   def withY(newY: Double): Vertex =
-    Vertex(x, newY)
+    this.copy(y = newY)
 
   def invert: Vertex =
     Vertex(-x, -y)
@@ -52,9 +53,6 @@ final class Vertex(val x: Double, val y: Double) {
   def ~==(other: Vertex): Boolean =
     Vertex.equalEnough(this, other, 0.001)
 
-  override def toString: String =
-    s"Vertex(x = ${x.toString}, y = ${y.toString})"
-
   @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
   override def equals(obj: Any): Boolean =
     if (obj.isInstanceOf[Vertex])
@@ -72,14 +70,8 @@ object Vertex {
     }
   }
 
-  def apply(x: Double, y: Double): Vertex =
-    new Vertex(x, y)
-
   def apply(d: Double): Vertex =
     Vertex(d, d)
-
-  def unapply(vertex: Vertex): Option[(Double, Double)] =
-    Some((vertex.x, vertex.y))
 
   def fromPoint(point: Point): Vertex =
     Vertex(point.x.toDouble, point.y.toDouble)
@@ -93,16 +85,16 @@ object Vertex {
   val zero: Vertex = Vertex(0d, 0d)
   val one: Vertex  = Vertex(1d, 1d)
 
-  def add(v1: Vertex, v2: Vertex): Vertex =
+  @inline def add(v1: Vertex, v2: Vertex): Vertex =
     Vertex(v1.x + v2.x, v1.y + v2.y)
 
-  def subtract(v1: Vertex, v2: Vertex): Vertex =
+  @inline def subtract(v1: Vertex, v2: Vertex): Vertex =
     Vertex(v1.x - v2.x, v1.y - v2.y)
 
-  def multiply(v1: Vertex, v2: Vertex): Vertex =
+  @inline def multiply(v1: Vertex, v2: Vertex): Vertex =
     Vertex(v1.x * v2.x, v1.y * v2.y)
 
-  def divide(v1: Vertex, v2: Vertex): Vertex =
+  @inline def divide(v1: Vertex, v2: Vertex): Vertex =
     Vertex(v1.x / v2.x, v1.y / v2.y)
 
   def twoVerticesToVector2(start: Vertex, end: Vertex): Vector2 =

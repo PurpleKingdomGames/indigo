@@ -3,12 +3,13 @@ package indigo.shared.datatypes
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 
-final class Vector2(val x: Double, val y: Double) {
+final case class Vector2(x: Double, y: Double) {
 
   def withX(newX: Double): Vector2 =
-    Vector2(newX, y)
+    this.copy(x = newX)
+
   def withY(newY: Double): Vector2 =
-    Vector2(x, newY)
+    this.copy(y = newY)
 
   def invert: Vector2 =
     Vector2(-x, -y)
@@ -52,9 +53,6 @@ final class Vector2(val x: Double, val y: Double) {
 
   def applyMatrix4(matrix4: Matrix4): Vector2 = Vector2.applyMatrix4(this, matrix4)
 
-  override def toString: String =
-    s"Vector2(x = ${x.toString()}, y = ${y.toString()})"
-
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.IsInstanceOf"))
   override def equals(obj: Any): Boolean =
     if (obj.isInstanceOf[Vector2])
@@ -78,9 +76,6 @@ object Vector2 {
     }
   }
 
-  def apply(x: Double, y: Double): Vector2 =
-    new Vector2(x, y)
-
   def apply(i: Int): Vector2 =
     Vector2(i.toDouble, i.toDouble)
 
@@ -91,16 +86,16 @@ object Vector2 {
   def fromPoints(start: Point, end: Point): Vector2 =
     Vector2((end.x - start.x).toDouble, (end.y - start.y).toDouble)
 
-  def add(vec1: Vector2, vec2: Vector2): Vector2 =
+  @inline def add(vec1: Vector2, vec2: Vector2): Vector2 =
     Vector2(vec1.x + vec2.x, vec1.y + vec2.y)
 
-  def subtract(vec1: Vector2, vec2: Vector2): Vector2 =
+  @inline def subtract(vec1: Vector2, vec2: Vector2): Vector2 =
     Vector2(vec1.x - vec2.x, vec1.y - vec2.y)
 
-  def multiply(vec1: Vector2, vec2: Vector2): Vector2 =
+  @inline def multiply(vec1: Vector2, vec2: Vector2): Vector2 =
     Vector2(vec1.x * vec2.x, vec1.y * vec2.y)
 
-  def divide(vec1: Vector2, vec2: Vector2): Vector2 =
+  @inline def divide(vec1: Vector2, vec2: Vector2): Vector2 =
     Vector2(vec1.x / vec2.x, vec1.y / vec2.y)
 
   def dotProduct(vec1: Vector2, vec2: Vector2): Double =

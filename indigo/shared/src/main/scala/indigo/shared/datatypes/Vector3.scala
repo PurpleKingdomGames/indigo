@@ -3,7 +3,16 @@ package indigo.shared.datatypes
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 
-final class Vector3(val x: Double, val y: Double, val z: Double) {
+final case class Vector3(x: Double, y: Double, z: Double) {
+
+  def withX(newX: Double): Vector3 =
+    this.copy(x = newX)
+
+  def withY(newY: Double): Vector3 =
+    this.copy(y = newY)
+
+  def withZ(newZ: Double): Vector3 =
+    this.copy(z = newZ)
 
   def translate(vec: Vector3): Vector3 =
     Vector3.add(this, vec)
@@ -42,9 +51,6 @@ final class Vector3(val x: Double, val y: Double, val z: Double) {
   def toVector2: Vector2 =
     Vector2(x, y)
 
-  override def toString: String =
-    s"Vector3(x = ${x.toString()}, y = ${y.toString()}, z = ${z.toString()})"
-
   def ===(other: Vector3): Boolean =
     implicitly[EqualTo[Vector3]].equal(this, other)
 }
@@ -59,25 +65,22 @@ object Vector3 {
     }
   }
 
-  def apply(x: Double, y: Double, z: Double): Vector3 =
-    new Vector3(x, y, z)
-
   def apply(i: Int): Vector3 =
     Vector3(i.toDouble, i.toDouble, i.toDouble)
 
   val zero: Vector3 = Vector3(0d, 0d, 0d)
   val one: Vector3  = Vector3(1d, 1d, 1d)
 
-  def add(vec1: Vector3, vec2: Vector3): Vector3 =
+  @inline def add(vec1: Vector3, vec2: Vector3): Vector3 =
     Vector3(vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z)
 
-  def subtract(vec1: Vector3, vec2: Vector3): Vector3 =
+  @inline def subtract(vec1: Vector3, vec2: Vector3): Vector3 =
     Vector3(vec1.x - vec2.x, vec1.y - vec2.y, vec1.z - vec2.z)
 
-  def multiply(vec1: Vector3, vec2: Vector3): Vector3 =
+  @inline def multiply(vec1: Vector3, vec2: Vector3): Vector3 =
     Vector3(vec1.x * vec2.x, vec1.y * vec2.y, vec1.z * vec2.z)
 
-  def divide(vec1: Vector3, vec2: Vector3): Vector3 =
+  @inline def divide(vec1: Vector3, vec2: Vector3): Vector3 =
     Vector3(vec1.x / vec2.x, vec1.y / vec2.y, vec1.z / vec2.z)
 
   def dotProduct(vec1: Vector3, vec2: Vector3): Double =

@@ -3,7 +3,7 @@ package indigo.shared.datatypes
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 
-final class Point(val x: Int, val y: Int) {
+final case class Point(x: Int, y: Int) {
   def +(pt: Point): Point = Point(x + pt.x, y + pt.y)
   def +(i: Int): Point    = Point(x + i, y + i)
   def -(pt: Point): Point = Point(x - pt.x, y - pt.y)
@@ -13,8 +13,8 @@ final class Point(val x: Int, val y: Int) {
   def /(pt: Point): Point = Point(x / pt.x, y / pt.y)
   def /(i: Int): Point    = Point(x / i, y / i)
 
-  def withX(newX: Int): Point = Point(newX, y)
-  def withY(newY: Int): Point = Point(x, newY)
+  def withX(newX: Int): Point = this.copy(x = newX)
+  def withY(newY: Int): Point = this.copy(y = newY)
 
   def invert: Point =
     Point(-x, -y)
@@ -24,9 +24,6 @@ final class Point(val x: Int, val y: Int) {
 
   def toVector: Vector2 =
     Vector2(x.toDouble, y.toDouble)
-
-  override def toString: String =
-    s"""Point(${x.toString()}, ${y.toString()})"""
 
   def ===(other: Point): Boolean =
     implicitly[EqualTo[Point]].equal(this, other)
@@ -41,12 +38,6 @@ final class Point(val x: Int, val y: Int) {
 }
 
 object Point {
-
-  def apply(x: Int, y: Int): Point =
-    new Point(x, y)
-
-  def unapply(pt: Point): Option[(Int, Int)] =
-    Option((pt.x, pt.y))
 
   val zero: Point = Point(0, 0)
 

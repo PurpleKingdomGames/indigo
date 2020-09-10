@@ -6,7 +6,7 @@ import scala.annotation.tailrec
 import indigo.shared.datatypes.Rectangle
 import indigoextras.geometry.IntersectionResult.IntersectionVertex
 
-final class BoundingBox(val position: Vertex, val size: Vertex) {
+final case class BoundingBox(position: Vertex, size: Vertex) {
   val x: Double         = position.x
   val y: Double         = position.y
   val width: Double     = size.x
@@ -54,14 +54,14 @@ final class BoundingBox(val position: Vertex, val size: Vertex) {
   def overlaps(other: BoundingBox): Boolean =
     BoundingBox.overlapping(this, other)
 
-  def moveBy(point: Vertex): BoundingBox =
-    BoundingBox(x + point.x, y + point.y, width, height)
+  def moveBy(amount: Vertex): BoundingBox =
+    this.copy(position = position + amount)
 
-  def moveTo(point: Vertex): BoundingBox =
-    BoundingBox(point, size)
+  def moveTo(newPosition: Vertex): BoundingBox =
+    this.copy(position = newPosition)
 
-  def resize(point: Vertex): BoundingBox =
-    BoundingBox(position, point)
+  def resize(newSize: Vertex): BoundingBox =
+    this.copy(size = newSize)
 
   def toRectangle: Rectangle =
     Rectangle(position.toPoint, size.toPoint)
@@ -75,9 +75,6 @@ final class BoundingBox(val position: Vertex, val size: Vertex) {
   def ===(other: BoundingBox): Boolean =
     implicitly[EqualTo[BoundingBox]].equal(this, other)
 
-  override def toString: String =
-    s"""BoundingBox(Position(${x.toString()}, ${y.toString()}), Size(${width.toString()}, ${height.toString()}))"""
-
   @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
   override def equals(obj: Any): Boolean =
     if (obj.isInstanceOf[BoundingBox])
@@ -89,14 +86,8 @@ object BoundingBox {
 
   val zero: BoundingBox = BoundingBox(0, 0, 0, 0)
 
-  def apply(position: Vertex, size: Vertex): BoundingBox =
-    new BoundingBox(position, size)
-
   def apply(x: Double, y: Double, width: Double, height: Double): BoundingBox =
     BoundingBox(Vertex(x, y), Vertex(width, height))
-
-  def unapply(rectangle: BoundingBox): Option[(Vertex, Vertex)] =
-    Option((rectangle.position, rectangle.size))
 
   def fromTwoVertices(pt1: Vertex, pt2: Vertex): BoundingBox = {
     val x = Math.min(pt1.x, pt2.x)

@@ -4,11 +4,11 @@ import indigo.shared.EqualTo
 
 import scala.annotation.tailrec
 
-final class Rectangle(val position: Point, val size: Point) {
-  val x: Int            = position.x
-  val y: Int            = position.y
-  val width: Int        = size.x
-  val height: Int       = size.y
+final case class Rectangle(position: Point, size: Point) {
+  lazy val x: Int       = position.x
+  lazy val y: Int       = position.y
+  lazy val width: Int   = size.x
+  lazy val height: Int  = size.y
   lazy val hash: String = s"${x.toString()}${y.toString()}${width.toString()}${height.toString()}"
 
   lazy val left: Int   = x
@@ -56,39 +56,25 @@ final class Rectangle(val position: Point, val size: Point) {
     Rectangle.overlapping(this, other)
 
   def moveBy(point: Point): Rectangle =
-    Rectangle(x + point.x, y + point.y, width, height)
+    this.copy(position = position + point)
 
   def moveTo(point: Point): Rectangle =
-    Rectangle(point, size)
+    this.copy(position = point)
 
-  def resize(point: Point): Rectangle =
-    Rectangle(position, point)
-
-  override def toString: String =
-    s"""Rectangle(Position(${x.toString()}, ${y.toString()}), Size(${width.toString()}, ${height.toString()}))"""
+  def resize(newSize: Point): Rectangle =
+    this.copy(size = newSize)
 
   def ===(other: Rectangle): Boolean =
     implicitly[EqualTo[Rectangle]].equal(this, other)
 
-  @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
-  override def equals(obj: Any): Boolean =
-    if (obj.isInstanceOf[Rectangle])
-      this === obj.asInstanceOf[Rectangle]
-    else false
 }
 
 object Rectangle {
 
   val zero: Rectangle = Rectangle(0, 0, 0, 0)
 
-  def apply(position: Point, size: Point): Rectangle =
-    new Rectangle(position, size)
-
   def apply(x: Int, y: Int, width: Int, height: Int): Rectangle =
     Rectangle(Point(x, y), Point(width, height))
-
-  def unapply(rectangle: Rectangle): Option[(Point, Point)] =
-    Option((rectangle.position, rectangle.size))
 
   def fromTwoPoints(pt1: Point, pt2: Point): Rectangle = {
     val x = Math.min(pt1.x, pt2.x)

@@ -9,6 +9,7 @@ object PerfView {
 
   val cloneId: CloneId = CloneId("Dude")
 
+  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   def updateView(model: DudeModel, inputState: InputState): SceneUpdateFragment = {
     inputState.mouse.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + position.toString())

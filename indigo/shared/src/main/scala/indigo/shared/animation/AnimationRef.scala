@@ -153,10 +153,7 @@ object CycleRef {
     }
 }
 
-final class AnimationMemento(val bindingKey: BindingKey, val currentCycleLabel: CycleLabel, val currentCycleMemento: CycleMemento) {
-
-  override def toString: String =
-    s"""AnimationMemento(bindingKey = ${bindingKey.toString()}, cycleLabel = ${currentCycleLabel.toString()}, cycleMemento = ${currentCycleMemento.toString()})"""
+final case class AnimationMemento(bindingKey: BindingKey, currentCycleLabel: CycleLabel, currentCycleMemento: CycleMemento) {
 
   def ===(other: AnimationMemento): Boolean =
     implicitly[EqualTo[AnimationMemento]].equal(this, other)

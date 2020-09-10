@@ -4,7 +4,7 @@ import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import indigo.shared.time.Seconds
 
-final class Radians(val value: Double) extends AnyVal {
+final case class Radians(value: Double) extends AnyVal {
 
   def +(other: Radians): Radians =
     Radians.add(this, other)
@@ -20,9 +20,6 @@ final class Radians(val value: Double) extends AnyVal {
 
   def hash: String =
     value.toString()
-
-  override def toString: String =
-    s"""Radians(${value.toString()})"""
 
   def ===(other: Radians): Boolean =
     implicitly[EqualTo[Radians]].equal(this, other)
@@ -47,19 +44,16 @@ object Radians {
   def zero: Radians =
     Radians(0)
 
-  def apply(value: Double): Radians =
-    new Radians(value)
-
-  def add(a: Radians, b: Radians): Radians =
+  @inline def add(a: Radians, b: Radians): Radians =
     Radians(a.value + b.value)
 
-  def subtract(a: Radians, b: Radians): Radians =
+  @inline def subtract(a: Radians, b: Radians): Radians =
     Radians(a.value - b.value)
 
-  def multiply(a: Radians, b: Radians): Radians =
+  @inline def multiply(a: Radians, b: Radians): Radians =
     Radians(a.value * b.value)
 
-  def divide(a: Radians, b: Radians): Radians =
+  @inline def divide(a: Radians, b: Radians): Radians =
     Radians(a.value / b.value)
 
   def fromDegrees(degrees: Double): Radians =

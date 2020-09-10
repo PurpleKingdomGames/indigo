@@ -1,18 +1,18 @@
 package indigo.shared.datatypes
 
-final class Flip(val horizontal: Boolean, val vertical: Boolean) {
+final case class Flip(horizontal: Boolean, vertical: Boolean) {
   
   def flipH: Flip =
-    new Flip(!horizontal, vertical)
+    this.copy(horizontal = !horizontal)
 
   def flipV: Flip =
-    new Flip(horizontal, !vertical)
+    this.copy(vertical = !vertical)
 
   def withFlipH(value: Boolean): Flip =
-    new Flip(value, vertical)
+    this.copy(horizontal = value)
 
   def withFlipV(value: Boolean): Flip =
-    new Flip(horizontal, value)
+    this.copy(vertical = value)
 
   def hash: String =
     (horizontal, vertical) match {
@@ -21,8 +21,4 @@ final class Flip(val horizontal: Boolean, val vertical: Boolean) {
       case (false, true)  => "01"
       case (true, true)   => "11"
     }
-}
-object Flip {
-  def apply(horizontal: Boolean, vertical: Boolean): Flip =
-    new Flip(horizontal, vertical)
 }

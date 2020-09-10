@@ -127,7 +127,7 @@ final class DisplayObjectConversions(
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private val accDisplayObjects: ListBuffer[DisplayEntity] = new ListBuffer()
 
-  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements", "org.wartremover.warts.ToString"))
   def sceneNodesToDisplayObjects(
       sceneNodes: List[SceneGraphNode],
       gameTime: GameTime,

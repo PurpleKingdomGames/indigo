@@ -41,11 +41,8 @@ object Scene {
 
 }
 
-final class SceneName(val name: String) extends AnyVal
+final case class SceneName(name: String) extends AnyVal
 object SceneName {
-
-  def apply(name: String): SceneName =
-    new SceneName(name)
 
   implicit val EqSceneName: EqualTo[SceneName] = {
     val eq = implicitly[EqualTo[String]]

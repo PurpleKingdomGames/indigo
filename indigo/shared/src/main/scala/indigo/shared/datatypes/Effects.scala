@@ -1,30 +1,30 @@
 package indigo.shared.datatypes
 
-final class Effects(
-    val tint: RGBA,
-    val overlay: Overlay,
-    val border: Border,
-    val glow: Glow,
-    val alpha: Double,
-    val flip: Flip
+final case class Effects(
+    tint: RGBA,
+    overlay: Overlay,
+    border: Border,
+    glow: Glow,
+    alpha: Double,
+    flip: Flip
 ) {
-  def withTint(newValue: RGBA): Effects =
-    Effects(newValue, overlay, border, glow, alpha, flip)
+  def withTint(newTint: RGBA): Effects =
+    this.copy(tint = newTint)
 
   def withOverlay(newOverlay: Overlay): Effects =
-    Effects(tint, newOverlay, border, glow, alpha, flip)
+    this.copy(overlay = newOverlay)
 
-  def withBorder(newValue: Border): Effects =
-    Effects(tint, overlay, newValue, glow, alpha, flip)
+  def withBorder(newBorder: Border): Effects =
+    this.copy(border = newBorder)
 
-  def withGlow(newValue: Glow): Effects =
-    Effects(tint, overlay, border, newValue, alpha, flip)
+  def withGlow(newGlow: Glow): Effects =
+    this.copy(glow = newGlow)
 
-  def withAlpha(newValue: Double): Effects =
-    Effects(tint, overlay, border, glow, newValue, flip)
+  def withAlpha(newAlpha: Double): Effects =
+    this.copy(alpha = newAlpha)
 
-  def withFlip(newValue: Flip): Effects =
-    Effects(tint, overlay, border, glow, alpha, newValue)
+  def withFlip(newFlip: Flip): Effects =
+    this.copy(flip = newFlip)
 
   def hash: String =
     tint.hash +
@@ -47,22 +47,6 @@ object Effects {
     )
   )
 
-  def apply(
-      tint: RGBA,
-      overlay: Overlay,
-      border: Border,
-      glow: Glow,
-      alpha: Double,
-      flip: Flip
-  ): Effects =
-    new Effects(
-      tint,
-      overlay,
-      border,
-      glow,
-      alpha,
-      flip
-    )
 }
 
 sealed trait Overlay {
@@ -70,26 +54,20 @@ sealed trait Overlay {
 }
 object Overlay {
 
-  final class Color(val color: RGBA) extends Overlay {
+  final case class Color(color: RGBA) extends Overlay {
     def hash: String =
       color.hash
   }
   object Color {
-    def apply(color: RGBA): Color =
-      new Color(color)
-
-    def unapply(c: Color): Option[RGBA] =
-      Some(c.color)
-
     val default: Color =
-      new Color(RGBA.Zero)
+      Color(RGBA.Zero)
   }
 
-  final class LinearGradiant(
-      val fromPoint: Point,
-      val fromColor: RGBA,
-      val toPoint: Point,
-      val toColor: RGBA
+  final case class LinearGradiant(
+      fromPoint: Point,
+      fromColor: RGBA,
+      toPoint: Point,
+      toColor: RGBA
   ) extends Overlay {
     lazy val hash: String =
       fromPoint.x.toString +
@@ -100,37 +78,31 @@ object Overlay {
         toColor.hash
   }
   object LinearGradiant {
-    def apply(fromPoint: Point, fromColor: RGBA, toPoint: Point, toColor: RGBA): LinearGradiant =
-      new LinearGradiant(fromPoint, fromColor, toPoint, toColor)
-
-    def unapply(lg: LinearGradiant): Option[(Point, RGBA, Point, RGBA)] =
-      Some((lg.fromPoint, lg.fromColor, lg.toPoint, lg.toColor))
-
     val default: LinearGradiant =
       LinearGradiant(Point.zero, RGBA.Zero, Point.zero, RGBA.Zero)
   }
 }
 
-final class Border(val color: RGBA, val innerThickness: Thickness, val outerThickness: Thickness) {
+final case class Border(color: RGBA, innerThickness: Thickness, outerThickness: Thickness) {
+
+  def withColor(newColor: RGBA): Border =
+    this.copy(color = newColor)
 
   def withInnerThickness(thickness: Thickness): Border =
-    new Border(color, thickness, outerThickness)
+    this.copy(innerThickness = thickness)
 
   def withOuterThickness(thickness: Thickness): Border =
-    new Border(color, innerThickness, thickness)
+    this.copy(outerThickness = thickness)
 
   def hash: String =
     color.hash + innerThickness.hash + outerThickness.hash
 }
 object Border {
-  def apply(color: RGBA, innerThickness: Thickness, outerThickness: Thickness): Border =
-    new Border(color, innerThickness, outerThickness)
-
   def inside(color: RGBA): Border =
-    new Border(color, Thickness.Thin, Thickness.None)
+    Border(color, Thickness.Thin, Thickness.None)
 
   def outside(color: RGBA): Border =
-    new Border(color, Thickness.None, Thickness.Thin)
+    Border(color, Thickness.None, Thickness.Thin)
 
   val default: Border =
     Border(RGBA.Zero, Thickness.None, Thickness.None)
@@ -150,28 +122,25 @@ object Thickness {
   case object Thick extends Thickness
 }
 
-final class Glow(val color: RGBA, val innerGlowAmount: Double, val outerGlowAmount: Double) {
+final case class Glow(color: RGBA, innerGlowAmount: Double, outerGlowAmount: Double) {
   def withColor(newColor: RGBA): Glow =
-    new Glow(newColor, innerGlowAmount, outerGlowAmount)
+    this.copy(color = newColor)
 
   def withInnerGlowAmount(amount: Double): Glow =
-    new Glow(color, Math.max(0, amount), outerGlowAmount)
+    this.copy(innerGlowAmount = Math.max(0, amount))
 
   def withOuterGlowAmount(amount: Double): Glow =
-    new Glow(color, innerGlowAmount, Math.max(0, amount))
+    this.copy(outerGlowAmount = Math.max(0, amount))
 
   def hash: String =
     color.hash + innerGlowAmount.toString + outerGlowAmount.toString()
 }
 object Glow {
-  def apply(color: RGBA, innerGlowAmount: Double, outerGlowAmount: Double): Glow =
-    new Glow(color, innerGlowAmount, outerGlowAmount)
-
   def inside(color: RGBA): Glow =
-    new Glow(color, 1d, 0d)
+    Glow(color, 1d, 0d)
 
   def outside(color: RGBA): Glow =
-    new Glow(color, 0d, 1d)
+    Glow(color, 0d, 1d)
 
   val default: Glow =
     Glow(RGBA.Zero, 0d, 0d)

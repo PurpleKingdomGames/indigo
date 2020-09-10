@@ -30,6 +30,7 @@ final class Bezier(val vertices: List[Vertex]) extends AnyVal {
   def ===(other: Bezier): Boolean =
     implicitly[EqualTo[Bezier]].equal(this, other)
 
+  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   override def toString: String =
     s"Bezier(vertices = ${vertices.map(_.toString()).mkString("[", ",", "]")})"
 

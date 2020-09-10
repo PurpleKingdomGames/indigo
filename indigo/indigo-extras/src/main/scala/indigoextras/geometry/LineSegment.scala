@@ -45,6 +45,7 @@ final class LineSegment(val start: Vertex, val end: Vertex) {
   def ===(other: LineSegment): Boolean =
     implicitly[EqualTo[LineSegment]].equal(this, other)
 
+  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   override def toString: String =
     s"LineSegment(start = ${start.toString()}, end = ${end.toString()})"
 

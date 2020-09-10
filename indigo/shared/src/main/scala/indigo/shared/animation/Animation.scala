@@ -18,9 +18,7 @@ final case class Animation(
 
   def withAnimationKey(animationKey: AnimationKey): Animation =
     this.copy(animationKey = animationKey)
-
-  override def toString(): String =
-    s"Animation(${animationKey.toString()}, ${material.toString()}, ${currentCycleLabel.toString()}, ${cycles.toString()})"
+  
 }
 
 object Animation {

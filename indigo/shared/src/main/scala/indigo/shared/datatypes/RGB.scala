@@ -2,29 +2,23 @@ package indigo.shared.datatypes
 
 import indigo.shared.EqualTo
 
-final class RGB(val r: Double, val g: Double, val b: Double) {
+final case class RGB(r: Double, g: Double, b: Double) {
   def +(other: RGB): RGB =
     RGB.combine(this, other)
 
   def withRed(newRed: Double): RGB =
-    RGB(newRed, g, b)
+    this.copy(r = newRed)
 
   def withGreen(newGreen: Double): RGB =
-    RGB(r, newGreen, b)
+    this.copy(g = newGreen)
 
   def withBlue(newBlue: Double): RGB =
-    RGB(r, g, newBlue)
+    this.copy(b = newBlue)
 
   def hash: String =
     r.toString() + g.toString() + b.toString()
-
-  override def toString: String =
-    s"RGB(${r.toString()}, ${g.toString()}, ${b.toString()})"
 }
 object RGB {
-
-  def apply(red: Double, green: Double, blue: Double): RGB =
-    new RGB(red, green, blue)
 
   implicit val eq: EqualTo[RGB] = {
     val ev = implicitly[EqualTo[Double]]
@@ -58,4 +52,3 @@ object RGB {
     }
 
 }
-

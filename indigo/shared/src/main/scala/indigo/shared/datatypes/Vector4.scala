@@ -3,7 +3,19 @@ package indigo.shared.datatypes
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 
-final class Vector4(val x: Double, val y: Double, val z: Double, val w: Double) {
+final case class Vector4(x: Double, y: Double, z: Double, w: Double) {
+
+  def withX(newX: Double): Vector4 =
+    this.copy(x = newX)
+
+  def withY(newY: Double): Vector4 =
+    this.copy(y = newY)
+
+  def withZ(newZ: Double): Vector4 =
+    this.copy(z = newZ)
+
+  def withW(newW: Double): Vector4 =
+    this.copy(w = newW)
 
   def translate(vec: Vector4): Vector4 =
     Vector4.add(this, vec)
@@ -63,25 +75,22 @@ object Vector4 {
     }
   }
 
-  def apply(x: Double, y: Double, z: Double, w: Double): Vector4 =
-    new Vector4(x, y, z, w)
-
   def apply(i: Int): Vector4 =
     Vector4(i.toDouble, i.toDouble, i.toDouble, i.toDouble)
 
   val zero: Vector4 = Vector4(0d, 0d, 0d, 0d)
   val one: Vector4  = Vector4(1d, 1d, 1d, 1d)
 
-  def add(vec1: Vector4, vec2: Vector4): Vector4 =
+  @inline def add(vec1: Vector4, vec2: Vector4): Vector4 =
     Vector4(vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z, vec1.w + vec2.w)
 
-  def subtract(vec1: Vector4, vec2: Vector4): Vector4 =
+  @inline def subtract(vec1: Vector4, vec2: Vector4): Vector4 =
     Vector4(vec1.x - vec2.x, vec1.y - vec2.y, vec1.z - vec2.z, vec1.w - vec2.w)
 
-  def multiply(vec1: Vector4, vec2: Vector4): Vector4 =
+  @inline def multiply(vec1: Vector4, vec2: Vector4): Vector4 =
     Vector4(vec1.x * vec2.x, vec1.y * vec2.y, vec1.z * vec2.z, vec1.w * vec2.w)
 
-  def divide(vec1: Vector4, vec2: Vector4): Vector4 =
+  @inline def divide(vec1: Vector4, vec2: Vector4): Vector4 =
     Vector4(vec1.x / vec2.x, vec1.y / vec2.y, vec1.z / vec2.z, vec1.w / vec2.w)
 
   def position(x: Double, y: Double, z: Double): Vector4 =

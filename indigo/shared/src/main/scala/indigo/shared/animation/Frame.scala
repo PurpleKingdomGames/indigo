@@ -6,12 +6,7 @@ import indigo.shared.EqualTo
 import indigo.shared.time.Millis
 import indigo.shared.datatypes.Material
 
-final class Frame(val crop: Rectangle, val duration: Millis, val frameMaterial: Option[Material]) {
-
-  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
-  override def toString(): String =
-    s"Frame(${crop.toString()}, ${duration.toString()}, ${frameMaterial.toString()})"
-}
+final case class Frame(crop: Rectangle, duration: Millis, frameMaterial: Option[Material])
 
 object Frame {
 
@@ -21,10 +16,7 @@ object Frame {
     }
 
   def apply(crop: Rectangle, duration: Millis): Frame =
-    new Frame(crop, duration, None)
-
-  def apply(crop: Rectangle, duration: Millis, frameMaterial: Material): Frame =
-    new Frame(crop, duration, Some(frameMaterial))
+    Frame(crop, duration, None)
 
   def fromBounds(x: Int, y: Int, width: Int, height: Int): Frame =
     Frame(Rectangle(Point(x, y), Point(width, height)), Millis(1))

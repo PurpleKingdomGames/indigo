@@ -2,9 +2,8 @@ package indigo.shared.assets
 
 import indigo.shared.EqualTo
 
-final class AssetPath(val value: String) extends AnyVal {
-  override def toString(): String = s"AssetPath($value)"
-}
+final case class AssetPath(value: String) extends AnyVal
+
 object AssetPath {
 
   implicit val equalTo: EqualTo[AssetPath] = {
@@ -14,6 +13,4 @@ object AssetPath {
     }
   }
 
-  def apply(value: String): AssetPath =
-    new AssetPath(value)
 }

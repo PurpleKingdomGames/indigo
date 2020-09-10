@@ -2,23 +2,20 @@ package indigo.shared.scenegraph
 
 import indigo.shared.datatypes.RGBA
 
-final class ScreenEffects(val gameColorOverlay: RGBA, val uiColorOverlay: RGBA) {
+final case class ScreenEffects(gameColorOverlay: RGBA, uiColorOverlay: RGBA) {
 
   def |+|(other: ScreenEffects): ScreenEffects =
     ScreenEffects(gameColorOverlay + other.gameColorOverlay, uiColorOverlay + other.uiColorOverlay)
 
   def withGameColorOverlay(overlay: RGBA): ScreenEffects =
-    ScreenEffects(overlay, uiColorOverlay)
+    this.copy(gameColorOverlay = overlay)
 
   def withUiColorOverlay(overlay: RGBA): ScreenEffects =
-    ScreenEffects(gameColorOverlay, overlay)
+    this.copy(uiColorOverlay = overlay)
 
 }
 
 object ScreenEffects {
-
-  def apply(gameColorOverlay: RGBA, uiColorOverlay: RGBA): ScreenEffects =
-    new ScreenEffects(gameColorOverlay, uiColorOverlay)
 
   def None: ScreenEffects =
     ScreenEffects(RGBA.Zero, RGBA.Zero)

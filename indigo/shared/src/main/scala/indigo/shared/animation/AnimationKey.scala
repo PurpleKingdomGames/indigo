@@ -4,10 +4,7 @@ import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import indigo.shared.dice.Dice
 
-final class AnimationKey(val value: String) extends AnyVal {
-  override def toString(): String =
-    s"AnimationKey($value)"
-}
+final case class AnimationKey(value: String) extends AnyVal
 
 object AnimationKey {
 
@@ -15,9 +12,6 @@ object AnimationKey {
     EqualTo.create { (a, b) =>
       a.value === b.value
     }
-
-  def apply(key: String): AnimationKey =
-    new AnimationKey(key)
 
   def fromDice(dice: Dice): AnimationKey =
     AnimationKey(dice.rollAlphaNumeric)

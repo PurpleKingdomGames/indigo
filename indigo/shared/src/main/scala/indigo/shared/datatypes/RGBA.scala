@@ -3,21 +3,21 @@ package indigo.shared.datatypes
 import indigo.shared.EqualTo
 import indigo.shared.ClearColor
 
-final class RGBA(val r: Double, val g: Double, val b: Double, val a: Double) {
+final case class RGBA(r: Double, g: Double, b: Double, a: Double) {
   def +(other: RGBA): RGBA =
     RGBA.combine(this, other)
 
   def withRed(newRed: Double): RGBA =
-    RGBA(newRed, g, b, a)
+    this.copy(r = newRed)
 
   def withGreen(newGreen: Double): RGBA =
-    RGBA(r, newGreen, b, a)
+    this.copy(g = newGreen)
 
   def withBlue(newBlue: Double): RGBA =
-    RGBA(r, g, newBlue, a)
+    this.copy(b = newBlue)
 
   def withAmount(amount: Double): RGBA =
-    RGBA(r, g, b, amount)
+    this.copy(a = amount)
 
   def toClearColor: ClearColor =
     ClearColor(r * a, g * a, b * a, 1)
@@ -27,14 +27,8 @@ final class RGBA(val r: Double, val g: Double, val b: Double, val a: Double) {
 
   def hash: String =
     r.toString() + g.toString() + b.toString() + a.toString()
-
-  override def toString: String =
-    s"RGBA(${r.toString()}, ${g.toString()}, ${b.toString()}, ${a.toString()})"
 }
 object RGBA {
-
-  def apply(red: Double, green: Double, blue: Double, amount: Double): RGBA =
-    new RGBA(red, green, blue, amount)
 
   implicit val eq: EqualTo[RGBA] = {
     val ev = implicitly[EqualTo[Double]]
@@ -68,4 +62,3 @@ object RGBA {
     }
 
 }
-
