@@ -2,7 +2,7 @@ package indigo.shared.time
 
 import indigo.shared.EqualTo
 
-final class GameTime(val running: Seconds, val delta: Seconds, val targetFPS: GameTime.FPS) {
+final case class GameTime(running: Seconds, delta: Seconds, targetFPS: GameTime.FPS) {
 
   lazy val frameDuration: Millis = Millis((1000d / targetFPS.asDouble).toLong)
   lazy val multiplier: Double    = delta.toDouble / frameDuration.toDouble
@@ -12,10 +12,8 @@ final class GameTime(val running: Seconds, val delta: Seconds, val targetFPS: Ga
   def doubleByTime(value: Double): Double = value * multiplier
 
   def setTargetFPS(fps: Int): GameTime =
-    new GameTime(running, delta, GameTime.FPS(fps))
+    this.copy(targetFPS = GameTime.FPS(fps))
 
-  override def toString(): String =
-    s"GameTime(running = ${running.toString()}, delta = ${delta.toString()}, fps = ${targetFPS.toString()})"
 }
 
 object GameTime {
@@ -31,20 +29,14 @@ object GameTime {
     GameTime(Seconds.zero, Seconds.zero, FPS.Default)
 
   def is(running: Seconds): GameTime =
-    new GameTime(running, Seconds.zero, FPS.Default)
+    GameTime(running, Seconds.zero, FPS.Default)
 
   def withDelta(running: Seconds, delta: Seconds): GameTime =
-    new GameTime(running, delta, FPS.Default)
+    GameTime(running, delta, FPS.Default)
 
-  def apply(running: Seconds, delta: Seconds, targetFPS: FPS): GameTime =
-    new GameTime(running, delta, targetFPS)
-
-  final class FPS(val value: Int) extends AnyVal {
+  final case class FPS(value: Int) extends AnyVal {
     def asLong: Long     = value.toLong
     def asDouble: Double = value.toDouble
-
-    override def toString(): String =
-      s"FPS(${value.toString()})"
   }
   object FPS {
 
@@ -56,9 +48,6 @@ object GameTime {
     val `30`: FPS    = FPS(30)
     val `60`: FPS    = FPS(60)
     val Default: FPS = `30`
-
-    def apply(value: Int): FPS =
-      new FPS(value)
 
   }
 

@@ -3,7 +3,7 @@ package indigo.shared.scenegraph
 import indigo.shared.datatypes.RGBA
 import scala.annotation.tailrec
 
-final class SceneLayer(val nodes: List[SceneGraphNode], val tint: RGBA, val saturation: Double, val magnification: Option[Int]) {
+final case class SceneLayer(nodes: List[SceneGraphNode], tint: RGBA, saturation: Double, magnification: Option[Int]) {
 
   def |+|(other: SceneLayer): SceneLayer = {
     val newSaturation: Double =
@@ -51,9 +51,6 @@ object SceneLayer {
 
   def apply(nodes: List[SceneGraphNode]): SceneLayer =
     new SceneLayer(nodes, RGBA.None, 1.0d, Option.empty[Int])
-
-  def apply(nodes: List[SceneGraphNode], tint: RGBA, saturation: Double, magnification: Option[Int]): SceneLayer =
-    new SceneLayer(nodes, tint, saturation, magnification.flatMap(sanitiseMagnification))
 
   def None: SceneLayer =
     SceneLayer(Nil, RGBA.None, 1.0d, Option.empty[Int])

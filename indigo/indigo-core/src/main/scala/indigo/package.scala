@@ -72,12 +72,14 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
     * - No advanced settings enabled
     * @return A GameConfig instance
     */
-  val defaultGameConfig: indigo.shared.config.GameConfig = indigo.shared.config.GameConfig.default
+  val defaultGameConfig: indigo.shared.config.GameConfig =
+    indigo.shared.config.GameConfig.default
 
   /**
     * noRender Convenience value, alias for SceneUpdateFragment.empty
     * @return An Empty SceneUpdateFragment
     */
-  val noRender: indigo.shared.scenegraph.SceneUpdateFragment = indigo.shared.scenegraph.SceneUpdateFragment.empty
+  val noRender: indigo.shared.scenegraph.SceneUpdateFragment =
+    indigo.shared.scenegraph.SceneUpdateFragment.empty
 
 }

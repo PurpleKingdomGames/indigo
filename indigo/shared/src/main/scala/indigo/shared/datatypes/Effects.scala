@@ -26,6 +26,12 @@ final case class Effects(
   def withFlip(newFlip: Flip): Effects =
     this.copy(flip = newFlip)
 
+  def withHorizontalFlip(isFlipped: Boolean): Effects =
+    this.copy(flip = flip.withHorizontalFlip(isFlipped))
+
+  def withVerticalFlip(isFlipped: Boolean): Effects =
+    this.copy(flip = flip.withVerticalFlip(isFlipped))
+
   def hash: String =
     tint.hash +
       overlay.hash +

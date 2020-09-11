@@ -2,7 +2,7 @@ package indigo.shared.datatypes
 
 import indigo.shared.EqualTo
 
-final class Matrix4(val mat: List[Double]) {
+final case class Matrix4(mat: List[Double]) {
 
   def row1: List[Double] = List(mat(0), mat(1), mat(2), mat(3))
   def row2: List[Double] = List(mat(4), mat(5), mat(6), mat(7))
@@ -35,9 +35,6 @@ final class Matrix4(val mat: List[Double]) {
   def flip(horizontal: Boolean, vertical: Boolean): Matrix4 =
     this * Matrix4.flip(horizontal, vertical)
 
-  override def toString(): String =
-    s"Matrix4(${row1.toString()}, ${row2.toString()}, ${row3.toString()}, ${row4.toString()})"
-
 }
 
 object Matrix4 {
@@ -49,9 +46,6 @@ object Matrix4 {
       ev.equal(a.mat, b.mat)
     }
   }
-
-  def apply(mat: List[Double]): Matrix4 =
-    new Matrix4(mat)
 
   def identity: Matrix4 =
     Matrix4(

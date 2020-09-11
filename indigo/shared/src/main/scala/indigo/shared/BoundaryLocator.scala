@@ -75,6 +75,7 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
         Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height))
       }
 
+  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   def textAsLinesWithBounds(text: String, fontKey: FontKey): List[TextLine] =
     QuickCache(s"""text-lines-${fontKey.key}-${text}""") {
       fontRegister

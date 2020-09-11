@@ -6,16 +6,16 @@ import indigo.shared.EqualTo._
 import indigo.shared.QuickCache
 import indigo.shared.datatypes.Material
 
-final class FontInfo(val fontKey: FontKey, val fontSpriteSheet: FontSpriteSheet, val unknownChar: FontChar, val fontChars: List[FontChar], val caseSensitive: Boolean) {
-  import FontInfo._
+final case class FontInfo(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean) {
+  import FontInfo.fontCharCache
 
   private val nonEmptyChars: List[FontChar] = unknownChar +: fontChars
 
   def addChar(fontChar: FontChar): FontInfo =
-    FontInfo(fontKey, fontSpriteSheet, fontChar, nonEmptyChars, caseSensitive)
+    this.copy(fontChars = nonEmptyChars :+ fontChar)
 
   def addChars(chars: List[FontChar]): FontInfo =
-    FontInfo(fontKey, fontSpriteSheet, unknownChar, fontChars ++ chars, caseSensitive)
+    this.copy(fontChars = fontChars ++ chars)
 
   def addChars(chars: FontChar*): FontInfo =
     addChars(chars.toList)
@@ -32,7 +32,7 @@ final class FontInfo(val fontKey: FontKey, val fontSpriteSheet: FontSpriteSheet,
     findByCharacter(character.toString)
 
   def makeCaseSensitive(sensitive: Boolean): FontInfo =
-    FontInfo(fontKey, fontSpriteSheet, unknownChar, fontChars, sensitive)
+    this.copy(caseSensitive = sensitive)
 
   def isCaseSensitive: FontInfo =
     makeCaseSensitive(true)
@@ -44,9 +44,6 @@ object FontInfo {
 
   implicit val fontCharCache: QuickCache[FontChar] = QuickCache.empty
 
-  def apply(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean): FontInfo =
-    new FontInfo(fontKey, fontSpriteSheet, unknownChar, fontChars, caseSensitive)
-
   def apply(fontKey: FontKey, material: Material, sheetWidth: Int, sheetHeight: Int, unknownChar: FontChar, chars: FontChar*): FontInfo =
     FontInfo(
       fontKey = fontKey,
@@ -57,10 +54,7 @@ object FontInfo {
     )
 }
 
-final class FontKey(val key: String) extends AnyVal {
-  override def toString(): String =
-    s"FontKey($key)"
-}
+final case class FontKey(key: String) extends AnyVal
 object FontKey {
 
   implicit val eq: EqualTo[FontKey] = {
@@ -70,18 +64,11 @@ object FontKey {
     }
   }
 
-  def apply(key: String): FontKey =
-    new FontKey(key)
-
 }
 
-final class FontSpriteSheet(val material: Material, val size: Point)
-object FontSpriteSheet {
-  def apply(material: Material, size: Point): FontSpriteSheet =
-    new FontSpriteSheet(material, size)
-}
+final case class FontSpriteSheet(material: Material, size: Point)
 
-final case class FontChar(val character: String, val bounds: Rectangle)
+final case class FontChar(character: String, bounds: Rectangle)
 object FontChar {
   def apply(character: String, x: Int, y: Int, width: Int, height: Int): FontChar =
     FontChar(character, Rectangle(x, y, width, height))

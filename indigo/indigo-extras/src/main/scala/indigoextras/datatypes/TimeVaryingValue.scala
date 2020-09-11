@@ -4,7 +4,7 @@ import indigo.shared.time.Seconds
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 
-final class TimeVaryingValue[@specialized(Int, Long, Float, Double) T](val value: T, val startValue: T, val createdAt: Seconds)(implicit vot: ValueOverTime[T]) {
+final case class TimeVaryingValue[@specialized(Int, Long, Float, Double) T](value: T, startValue: T, createdAt: Seconds)(implicit vot: ValueOverTime[T]) {
 
   def increase(unitsPerSecond: T, runningTime: Seconds): TimeVaryingValue[T] =
     TimeVaryingValue.increase(this, unitsPerSecond, runningTime)
@@ -24,9 +24,6 @@ final class TimeVaryingValue[@specialized(Int, Long, Float, Double) T](val value
   def decreaseWrapAt(limit: T, unitsPerSecond: T, runningTime: Seconds): TimeVaryingValue[T] =
     TimeVaryingValue.decreaseWrapAt(this, limit, unitsPerSecond, runningTime)
 
-  override def toString(): String =
-    s"TimeVaryingValue(${vot.asString(value)}, ${vot.asString(startValue)}, ${createdAt.toString()})"
-
 }
 object TimeVaryingValue {
 
@@ -38,13 +35,13 @@ object TimeVaryingValue {
   import ValueOverTime._
 
   def apply[@specialized(Int, Long, Float, Double) T](value: T, createdAt: Seconds)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
-    new TimeVaryingValue(value, value, createdAt)
+    TimeVaryingValue(value, value, createdAt)
 
   def withStartingValue[@specialized(Int, Long, Float, Double) T](value: T, startValue: T, createdAt: Seconds)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
-    new TimeVaryingValue(value, startValue, createdAt)
+    TimeVaryingValue(value, startValue, createdAt)
 
   def modifyValue[@specialized(Int, Long, Float, Double) T](timeVaryingValue: TimeVaryingValue[T], newValue: T)(implicit vot: ValueOverTime[T]): TimeVaryingValue[T] =
-    new TimeVaryingValue(newValue, timeVaryingValue.startValue, timeVaryingValue.createdAt)
+    TimeVaryingValue(newValue, timeVaryingValue.startValue, timeVaryingValue.createdAt)
 
   def increase[@specialized(Int, Long, Float, Double) T](timeVaryingValue: TimeVaryingValue[T], unitsPerSecond: T, runningTime: Seconds)(
       implicit vot: ValueOverTime[T]

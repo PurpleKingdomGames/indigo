@@ -2,7 +2,7 @@ package indigo.shared.time
 
 import indigo.shared.EqualTo
 
-final class Seconds(val value: Double) extends AnyVal {
+final case class Seconds(value: Double) extends AnyVal {
 
   def +(other: Seconds): Seconds =
     Seconds.plus(this, other)
@@ -46,9 +46,6 @@ final class Seconds(val value: Double) extends AnyVal {
   def toMillis: Millis =
     Millis(Math.floor(value * 1000).toLong)
 
-  override def toString: String =
-    s"Seconds(${value.toString()})"
-
   def ===(other: Seconds): Boolean =
     implicitly[EqualTo[Seconds]].equal(this, other)
 
@@ -63,28 +60,25 @@ object Seconds {
       implicitly[EqualTo[Double]].equal(a.value, b.value)
     }
 
-  def apply(value: Double): Seconds =
-    new Seconds(value)
-
-  def plus(a: Seconds, b: Seconds): Seconds =
+  @inline def plus(a: Seconds, b: Seconds): Seconds =
     Seconds(a.value + b.value)
 
-  def minus(a: Seconds, b: Seconds): Seconds =
+  @inline def minus(a: Seconds, b: Seconds): Seconds =
     Seconds(a.value - b.value)
 
-  def multiply(a: Seconds, b: Seconds): Seconds =
+  @inline def multiply(a: Seconds, b: Seconds): Seconds =
     Seconds(a.value * b.value)
 
-  def divide(a: Seconds, b: Seconds): Seconds =
+  @inline def divide(a: Seconds, b: Seconds): Seconds =
     Seconds(a.value / b.value)
 
-  def modulo(a: Seconds, b: Seconds): Seconds =
+  @inline def modulo(a: Seconds, b: Seconds): Seconds =
     Seconds(a.value % b.value)
 
-  def greaterThan(a: Seconds, b: Seconds): Boolean =
+  @inline def greaterThan(a: Seconds, b: Seconds): Boolean =
     a.value > b.value
 
-  def lessThan(a: Seconds, b: Seconds): Boolean =
+  @inline def lessThan(a: Seconds, b: Seconds): Boolean =
     a.value < b.value
 
 }

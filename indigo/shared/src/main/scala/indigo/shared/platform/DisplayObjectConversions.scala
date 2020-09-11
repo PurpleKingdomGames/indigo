@@ -113,7 +113,7 @@ final class DisplayObjectConversions(
           )
         }
       )
-    batch.staticBatchId match {
+    batch.staticBatchKey match {
       case None =>
         convert()
 
