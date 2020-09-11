@@ -175,7 +175,7 @@ object StorageEvent {
   /**
     * Clears all local data
     */
-  final case object DeleteAll extends StorageEvent
+  case object DeleteAll extends StorageEvent
 
   /**
     * Data load response,

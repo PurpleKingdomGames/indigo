@@ -132,7 +132,7 @@ final case class TestSceneB() extends Scene[Unit, TestGameModel, TestViewModel] 
 final case class TestSceneModelB(count: Int)
 final case class TestSceneViewModelB()
 
-final case object TestSceneEvent1 extends GlobalEvent
-final case object TestSceneEvent2 extends GlobalEvent
-final case object TestSceneEvent3 extends GlobalEvent
-final case object TestSceneEvent4 extends GlobalEvent
+case object TestSceneEvent1 extends GlobalEvent
+case object TestSceneEvent2 extends GlobalEvent
+case object TestSceneEvent3 extends GlobalEvent
+case object TestSceneEvent4 extends GlobalEvent

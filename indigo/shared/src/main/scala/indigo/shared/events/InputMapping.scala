@@ -123,22 +123,22 @@ object Combo {
 
 sealed trait GamepadInput
 object GamepadInput {
-  final object DPAD_UP    extends GamepadInput
-  final object DPAD_LEFT  extends GamepadInput
-  final object DPAD_RIGHT extends GamepadInput
-  final object DPAD_DOWN  extends GamepadInput
-  final object Cross      extends GamepadInput
-  final object Circle     extends GamepadInput
-  final object Square     extends GamepadInput
-  final object Triangle   extends GamepadInput
-  final object L1         extends GamepadInput
-  final object L2         extends GamepadInput
-  final object R1         extends GamepadInput
-  final object R2         extends GamepadInput
-  final object Options    extends GamepadInput
-  final object Share      extends GamepadInput
-  final object PS         extends GamepadInput
-  final object TouchPad   extends GamepadInput
+  object DPAD_UP    extends GamepadInput
+  object DPAD_LEFT  extends GamepadInput
+  object DPAD_RIGHT extends GamepadInput
+  object DPAD_DOWN  extends GamepadInput
+  object Cross      extends GamepadInput
+  object Circle     extends GamepadInput
+  object Square     extends GamepadInput
+  object Triangle   extends GamepadInput
+  object L1         extends GamepadInput
+  object L2         extends GamepadInput
+  object R1         extends GamepadInput
+  object R2         extends GamepadInput
+  object Options    extends GamepadInput
+  object Share      extends GamepadInput
+  object PS         extends GamepadInput
+  object TouchPad   extends GamepadInput
   final case class LEFT_ANALOG(
       x: Double => Boolean,
       y: Double => Boolean,

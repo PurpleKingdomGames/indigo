@@ -126,9 +126,9 @@ case object DudeDown  extends DudeDirection { val cycleName: CycleLabel = CycleL
 // States of a state machine - could use Phantom types to force order but...
 sealed trait SaveLoadPhase
 object SaveLoadPhases {
-  final case object NotStarted   extends SaveLoadPhase
-  final case object InitialClear extends SaveLoadPhase
-  final case object SaveIt       extends SaveLoadPhase
-  final case object LoadIt       extends SaveLoadPhase
-  final case object Complete     extends SaveLoadPhase
+  case object NotStarted   extends SaveLoadPhase
+  case object InitialClear extends SaveLoadPhase
+  case object SaveIt       extends SaveLoadPhase
+  case object LoadIt       extends SaveLoadPhase
+  case object Complete     extends SaveLoadPhase
 }
