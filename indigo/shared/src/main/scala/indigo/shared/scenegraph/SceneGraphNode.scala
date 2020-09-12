@@ -14,7 +14,7 @@ object SceneGraphNode {
   def empty: Group = Group.empty
 }
 
-sealed trait SceneGraphNode {
+sealed trait SceneGraphNode extends Product with Serializable {
   val depth: Depth
   def x: Int
   def y: Int
