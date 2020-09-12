@@ -43,6 +43,7 @@ object AssetLoadingExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMod
       }
     )
 
+  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   def updateModel(context: FrameContext[Unit], model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
     case AssetBundleLoaderEvent.Started(key) =>
       println("Load started! " + key.toString())
