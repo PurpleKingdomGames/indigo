@@ -46,7 +46,7 @@ object FPSCounter {
     (_, model) => {
       SceneUpdateFragment.empty
         .addUiLayerNodes(
-          Text(s"""FPS: ${model.fps.toString}""", position.x, position.y, 1, fontKey)
+          Text(s"""FPS ${model.fps.toString}""", position.x, position.y, 1, fontKey)
             .withTint(pickTint(targetFPS, model.fps))
         )
     }
