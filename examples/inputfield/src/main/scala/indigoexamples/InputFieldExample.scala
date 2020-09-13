@@ -40,12 +40,10 @@ object InputFieldExample extends IndigoDemo[Unit, Unit, Unit, MyViewModel] {
 
   def updateViewModel(context: FrameContext[Unit], model: Unit, viewModel: MyViewModel): GlobalEvent => Outcome[MyViewModel] = {
     case FrameTick =>
-      Outcome(
-        viewModel.copy(
-          singleLine = viewModel.singleLine.update(context),
-          multiLine = viewModel.multiLine.update(context)
-        )
-      )
+      for {
+        single <- viewModel.singleLine.update(context)
+        multi  <- viewModel.multiLine.update(context)
+      } yield viewModel.copy(singleLine = single, multiLine = multi)
 
     case _ =>
       Outcome(viewModel)

@@ -2,10 +2,10 @@ package indigo.shared.datatypes
 
 final case class Flip(horizontal: Boolean, vertical: Boolean) {
 
-  def flipH: Flip =
+  def flipHorizontally: Flip =
     this.copy(horizontal = !horizontal)
 
-  def flipV: Flip =
+  def flipVertically: Flip =
     this.copy(vertical = !vertical)
 
   def withHorizontalFlip(isFlipped: Boolean): Flip =
