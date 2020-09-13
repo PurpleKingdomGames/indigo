@@ -3,7 +3,6 @@ package indigo.shared.events
 import utest._
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
-import indigo.shared.constants.Keys
 import indigo.shared.constants.Key
 import indigo.shared.input.Gamepad
 import indigo.shared.input.GamepadAnalogControls
@@ -147,15 +146,15 @@ object InputStateTests extends TestSuite {
 
         val events: List[KeyboardEvent] =
           List(
-            KeyboardEvent.KeyDown(Keys.KEY_A),
-            KeyboardEvent.KeyDown(Keys.KEY_B),
-            KeyboardEvent.KeyDown(Keys.KEY_C),
-            KeyboardEvent.KeyDown(Keys.KEY_D),
-            KeyboardEvent.KeyDown(Keys.KEY_E),
-            KeyboardEvent.KeyDown(Keys.KEY_F),
-            KeyboardEvent.KeyUp(Keys.KEY_A),
-            KeyboardEvent.KeyUp(Keys.KEY_B),
-            KeyboardEvent.KeyUp(Keys.KEY_C)
+            KeyboardEvent.KeyDown(Key.KEY_A),
+            KeyboardEvent.KeyDown(Key.KEY_B),
+            KeyboardEvent.KeyDown(Key.KEY_C),
+            KeyboardEvent.KeyDown(Key.KEY_D),
+            KeyboardEvent.KeyDown(Key.KEY_E),
+            KeyboardEvent.KeyDown(Key.KEY_F),
+            KeyboardEvent.KeyUp(Key.KEY_A),
+            KeyboardEvent.KeyUp(Key.KEY_B),
+            KeyboardEvent.KeyUp(Key.KEY_C)
           )
 
         "keysDown" - {
@@ -163,9 +162,9 @@ object InputStateTests extends TestSuite {
 
           val expected =
             List(
-              Keys.KEY_D,
-              Keys.KEY_E,
-              Keys.KEY_F
+              Key.KEY_D,
+              Key.KEY_E,
+              Key.KEY_F
             )
 
           val actual =
@@ -177,21 +176,21 @@ object InputStateTests extends TestSuite {
         "keysAreDown" - {
           val state = InputState.calculateNext(inputState, events, gamepadState)
 
-          state.keyboard.keysAreDown(Keys.KEY_D, Keys.KEY_E, Keys.KEY_F) ==> true
-          state.keyboard.keysAreDown(Keys.KEY_F, Keys.KEY_D) ==> true
-          state.keyboard.keysAreDown(Keys.KEY_A) ==> false
-          state.keyboard.keysAreDown(Keys.KEY_D) ==> true
-          state.keyboard.keysAreDown(Keys.KEY_A, Keys.KEY_D) ==> false
+          state.keyboard.keysAreDown(Key.KEY_D, Key.KEY_E, Key.KEY_F) ==> true
+          state.keyboard.keysAreDown(Key.KEY_F, Key.KEY_D) ==> true
+          state.keyboard.keysAreDown(Key.KEY_A) ==> false
+          state.keyboard.keysAreDown(Key.KEY_D) ==> true
+          state.keyboard.keysAreDown(Key.KEY_A, Key.KEY_D) ==> false
         }
 
         "keysAreUp" - {
           val state = InputState.calculateNext(inputState, events, gamepadState)
 
-          state.keyboard.keysAreUp(Keys.KEY_A, Keys.KEY_B, Keys.KEY_C) ==> true
-          state.keyboard.keysAreUp(Keys.KEY_C, Keys.KEY_B) ==> true
-          state.keyboard.keysAreUp(Keys.KEY_D) ==> false
-          state.keyboard.keysAreUp(Keys.KEY_A) ==> true
-          state.keyboard.keysAreUp(Keys.KEY_A, Keys.KEY_D) ==> false
+          state.keyboard.keysAreUp(Key.KEY_A, Key.KEY_B, Key.KEY_C) ==> true
+          state.keyboard.keysAreUp(Key.KEY_C, Key.KEY_B) ==> true
+          state.keyboard.keysAreUp(Key.KEY_D) ==> false
+          state.keyboard.keysAreUp(Key.KEY_A) ==> true
+          state.keyboard.keysAreUp(Key.KEY_A, Key.KEY_D) ==> false
         }
 
         "keysReleased" - {
@@ -199,9 +198,9 @@ object InputStateTests extends TestSuite {
 
           val expected =
             List(
-              Keys.KEY_A,
-              Keys.KEY_B,
-              Keys.KEY_C
+              Key.KEY_A,
+              Key.KEY_B,
+              Key.KEY_C
             )
 
           val actual =
@@ -214,18 +213,18 @@ object InputStateTests extends TestSuite {
         "keysDown persist across frames" - {
           val state1 = InputState.calculateNext(inputState, events, gamepadState)
 
-          state1.keyboard.keysDown ==> List(Keys.KEY_D, Keys.KEY_E, Keys.KEY_F)
+          state1.keyboard.keysDown ==> List(Key.KEY_D, Key.KEY_E, Key.KEY_F)
 
           val state2 = InputState.calculateNext(
             state1,
             List(
-              KeyboardEvent.KeyDown(Keys.KEY_Z),
-              KeyboardEvent.KeyUp(Keys.KEY_D)
+              KeyboardEvent.KeyDown(Key.KEY_Z),
+              KeyboardEvent.KeyUp(Key.KEY_D)
             ),
             gamepadState
           )
 
-          state2.keyboard.keysDown ==> List(Keys.KEY_E, Keys.KEY_F, Keys.KEY_Z)
+          state2.keyboard.keysDown ==> List(Key.KEY_E, Key.KEY_F, Key.KEY_Z)
         }
 
         "lastKeyHeldDown" - {
@@ -235,28 +234,28 @@ object InputStateTests extends TestSuite {
           val state1 =
             InputState.calculateNext(
               InputState.calculateNext(inputState, events, gamepadState),
-              List(KeyboardEvent.KeyDown(Keys.KEY_E), KeyboardEvent.KeyDown(Keys.KEY_F)),
+              List(KeyboardEvent.KeyDown(Key.KEY_E), KeyboardEvent.KeyDown(Key.KEY_F)),
               gamepadState
             )
 
-          state1.keyboard.lastKeyHeldDown ==> Some(Keys.KEY_F)
+          state1.keyboard.lastKeyHeldDown ==> Some(Key.KEY_F)
 
           val state2 =
             InputState.calculateNext(
               state1,
-              List(KeyboardEvent.KeyDown(Keys.KEY_E)),
+              List(KeyboardEvent.KeyDown(Key.KEY_E)),
               gamepadState
             )
 
-          state2.keyboard.lastKeyHeldDown ==> Some(Keys.KEY_E)
+          state2.keyboard.lastKeyHeldDown ==> Some(Key.KEY_E)
 
           val state3 =
             InputState.calculateNext(
               state2,
               List(
-                KeyboardEvent.KeyUp(Keys.KEY_D),
-                KeyboardEvent.KeyUp(Keys.KEY_E),
-                KeyboardEvent.KeyUp(Keys.KEY_F)
+                KeyboardEvent.KeyUp(Key.KEY_D),
+                KeyboardEvent.KeyUp(Key.KEY_E),
+                KeyboardEvent.KeyUp(Key.KEY_F)
               ),
               gamepadState
             )
@@ -270,10 +269,10 @@ object InputStateTests extends TestSuite {
 
         val events: List[InputEvent] =
           List(
-            KeyboardEvent.KeyDown(Keys.KEY_A),
-            KeyboardEvent.KeyDown(Keys.KEY_B),
-            KeyboardEvent.KeyDown(Keys.KEY_C),
-            KeyboardEvent.KeyDown(Keys.KEY_D),
+            KeyboardEvent.KeyDown(Key.KEY_A),
+            KeyboardEvent.KeyDown(Key.KEY_B),
+            KeyboardEvent.KeyDown(Key.KEY_C),
+            KeyboardEvent.KeyDown(Key.KEY_D),
             MouseEvent.Move(10, 10),
             MouseEvent.MouseDown(10, 10)
           )
@@ -294,7 +293,7 @@ object InputStateTests extends TestSuite {
         "keyboard combo found" - {
 
           val mappings: InputMapping[Int] =
-            InputMapping[Int](Combo.KeyInputs(Keys.KEY_C, Keys.KEY_A, Keys.KEY_B) -> 10)
+            InputMapping[Int](Combo.KeyInputs(Key.KEY_C, Key.KEY_A, Key.KEY_B) -> 10)
 
           val state = InputState.calculateNext(inputState, events, gamepadState)
 
@@ -312,7 +311,7 @@ object InputStateTests extends TestSuite {
           val mappings: InputMapping[Int] =
             InputMapping[Int]
               .add(
-                Combo.KeyInputs(Keys.UP_ARROW) -> 10
+                Combo.KeyInputs(Key.UP_ARROW) -> 10
               )
 
           val state = InputState.calculateNext(inputState, events, gamepadState)
@@ -407,11 +406,11 @@ object InputStateTests extends TestSuite {
                 GamepadInput.RIGHT_ANALOG(_ > 0.4, _ == 0.0, true)
               )
               .withMouseInputs(MouseInput.MouseDown)
-              .withKeyInputs(Keys.KEY_A, Keys.KEY_B)
+              .withKeyInputs(Key.KEY_A, Key.KEY_B)
 
           val comboB =
             Combo
-              .withKeyInputs(Keys.UP_ARROW, Keys.RIGHT_ARROW)
+              .withKeyInputs(Key.UP_ARROW, Key.RIGHT_ARROW)
 
           val mappings: InputMapping[String] =
             InputMapping[String](comboA -> "Combo A met", comboB -> "Combo B met")
@@ -423,12 +422,12 @@ object InputStateTests extends TestSuite {
 
           val mappingResult2 =
             InputState
-              .calculateNext(inputState, List(KeyboardEvent.KeyDown(Keys.UP_ARROW), KeyboardEvent.KeyDown(Keys.RIGHT_ARROW)), gamepadState)
+              .calculateNext(inputState, List(KeyboardEvent.KeyDown(Key.UP_ARROW), KeyboardEvent.KeyDown(Key.RIGHT_ARROW)), gamepadState)
               .mapInputs(mappings, "Combo not met! (2)")
 
           val mappingResult3 =
             InputState
-              .calculateNext(inputState, List(KeyboardEvent.KeyDown(Keys.LEFT_ARROW)), gamepadState)
+              .calculateNext(inputState, List(KeyboardEvent.KeyDown(Key.LEFT_ARROW)), gamepadState)
               .mapInputs(mappings, "Combo not met! (3)")
 
           mappingResult1 ==> "Combo A met"

@@ -5,7 +5,7 @@ import indigo.shared.input.Mouse
 import indigo.shared.input.Keyboard
 import indigo.shared.input.Gamepad
 import indigo.shared.datatypes.Vector2
-import indigo.shared.constants.Keys
+import indigo.shared.constants.Key
 import indigo.shared.events.KeyboardEvent.KeyDown
 import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.Vertex
@@ -23,7 +23,7 @@ object PirateTests extends TestSuite {
             val keyboard =
               Keyboard.calculateNext(
                 Keyboard.default,
-                List(KeyDown(Keys.LEFT_ARROW), KeyDown(Keys.SPACE))
+                List(KeyDown(Key.LEFT_ARROW), KeyDown(Key.SPACE))
               )
 
             val actual: Option[Vector2] =
@@ -45,7 +45,7 @@ object PirateTests extends TestSuite {
             val keyboard =
               Keyboard.calculateNext(
                 Keyboard.default,
-                List(KeyDown(Keys.RIGHT_ARROW))
+                List(KeyDown(Key.RIGHT_ARROW))
               )
 
             val actual: Option[Vector2] =
@@ -67,7 +67,7 @@ object PirateTests extends TestSuite {
             val keyboard =
               Keyboard.calculateNext(
                 Keyboard.default,
-                List(KeyDown(Keys.SPACE))
+                List(KeyDown(Key.SPACE))
               )
 
             val actual: Option[Vector2] =

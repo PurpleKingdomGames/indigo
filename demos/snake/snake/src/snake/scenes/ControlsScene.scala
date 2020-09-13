@@ -28,11 +28,11 @@ object ControlsScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewMo
       context: FrameContext[SnakeStartupData],
       controlScheme: ControlScheme
   ): GlobalEvent => Outcome[ControlScheme] = {
-    case KeyboardEvent.KeyUp(Keys.SPACE) =>
+    case KeyboardEvent.KeyUp(Key.SPACE) =>
       Outcome(controlScheme)
         .addGlobalEvents(SceneEvent.JumpTo(GameScene.name))
 
-    case KeyboardEvent.KeyUp(Keys.UP_ARROW) | KeyboardEvent.KeyUp(Keys.DOWN_ARROW) =>
+    case KeyboardEvent.KeyUp(Key.UP_ARROW) | KeyboardEvent.KeyUp(Key.DOWN_ARROW) =>
       Outcome(controlScheme.swap)
 
     case _ =>

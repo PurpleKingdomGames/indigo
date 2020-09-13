@@ -79,7 +79,7 @@ object Fireworks extends IndigoDemo[Vertex => Point, FireworksStartupData, Unit,
     ()
 
   def updateModel(context: FrameContext[FireworksStartupData], model: Unit): GlobalEvent => Outcome[Unit] = {
-    case KeyboardEvent.KeyUp(Keys.SPACE) =>
+    case KeyboardEvent.KeyUp(Key.SPACE) =>
       Outcome(model, launchFireworks(context.dice, context.startUpData.toScreenSpace))
 
     case _ =>

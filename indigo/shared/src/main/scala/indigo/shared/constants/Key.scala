@@ -5,7 +5,7 @@ import indigo.shared.EqualTo._
 
 final case class Key(code: Int, key: String) {
   def isPrintable: Boolean =
-    (key !== "") && Keys.printable.map(_.code).contains(this.code)
+    (key !== "") && Key.printable.map(_.code).contains(this.code)
 
   def ===(other: Key): Boolean =
     implicitly[EqualTo[Key]].equal(this, other)
@@ -18,14 +18,12 @@ final case class Key(code: Int, key: String) {
       case _ => false
     }
 }
+
 object Key {
   implicit val equals: EqualTo[Key] = {
     val eqI = implicitly[EqualTo[Int]]
     EqualTo.create((a, b) => eqI.equal(a.code, b.code))
   }
-}
-
-object Keys {
 
   implicit private def intToKey(i: Int): Key =
     Key(i, "")

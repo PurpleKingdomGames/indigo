@@ -21,7 +21,7 @@ import indigo.shared.input.Mouse
 import indigo.shared.input.Keyboard
 import indigo.shared.input.Gamepad
 import indigo.shared.events.KeyboardEvent
-import indigo.shared.constants.Keys
+import indigo.shared.constants.Key
 import indigo.shared.datatypes.BindingKey
 
 object InputFieldTests extends TestSuite {
@@ -235,9 +235,9 @@ object InputFieldTests extends TestSuite {
 
       val keysUp: List[KeyboardEvent.KeyUp] =
         List(
-          KeyboardEvent.KeyUp(Keys.KEY_A),
-          KeyboardEvent.KeyUp(Keys.KEY_B),
-          KeyboardEvent.KeyUp(Keys.KEY_C)
+          KeyboardEvent.KeyUp(Key.KEY_A),
+          KeyboardEvent.KeyUp(Key.KEY_B),
+          KeyboardEvent.KeyUp(Key.KEY_C)
         )
 
       def context: FrameContext[Unit] =

@@ -43,8 +43,6 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   type Outcome[T] = shared.Outcome[T]
   val Outcome: shared.Outcome.type = shared.Outcome
 
-  val Keys: shared.constants.Keys.type = shared.constants.Keys
-
   type Key = shared.constants.Key
   val Key: shared.constants.Key.type = shared.constants.Key
 

@@ -30,7 +30,7 @@ object StartScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel
       context: FrameContext[SnakeStartupData],
       snakeGameModel: SnakeGameModel
   ): GlobalEvent => Outcome[SnakeGameModel] = {
-    case KeyboardEvent.KeyUp(Keys.SPACE) =>
+    case KeyboardEvent.KeyUp(Key.SPACE) =>
       Outcome(snakeGameModel.reset)
         .addGlobalEvents(SceneEvent.JumpTo(ControlsScene.name))
 

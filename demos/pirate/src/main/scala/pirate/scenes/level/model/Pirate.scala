@@ -87,14 +87,14 @@ object Pirate {
     val ySpeed: Double = if (isFalling) 0.0d else -8.0d
 
     InputMapping(
-      Combo.withKeyInputs(Keys.LEFT_ARROW, Keys.UP_ARROW)  -> Vector2(-xSpeed, ySpeed),
-      Combo.withKeyInputs(Keys.LEFT_ARROW, Keys.SPACE)     -> Vector2(-xSpeed, ySpeed),
-      Combo.withKeyInputs(Keys.LEFT_ARROW)                 -> Vector2(-xSpeed, 0.0d),
-      Combo.withKeyInputs(Keys.RIGHT_ARROW, Keys.UP_ARROW) -> Vector2(xSpeed, ySpeed),
-      Combo.withKeyInputs(Keys.RIGHT_ARROW, Keys.SPACE)    -> Vector2(xSpeed, ySpeed),
-      Combo.withKeyInputs(Keys.RIGHT_ARROW)                -> Vector2(xSpeed, 0.0d),
-      Combo.withKeyInputs(Keys.UP_ARROW)                   -> Vector2(0.0d, ySpeed),
-      Combo.withKeyInputs(Keys.SPACE)                      -> Vector2(0.0d, ySpeed),
+      Combo.withKeyInputs(Key.LEFT_ARROW, Key.UP_ARROW)  -> Vector2(-xSpeed, ySpeed),
+      Combo.withKeyInputs(Key.LEFT_ARROW, Key.SPACE)     -> Vector2(-xSpeed, ySpeed),
+      Combo.withKeyInputs(Key.LEFT_ARROW)                 -> Vector2(-xSpeed, 0.0d),
+      Combo.withKeyInputs(Key.RIGHT_ARROW, Key.UP_ARROW) -> Vector2(xSpeed, ySpeed),
+      Combo.withKeyInputs(Key.RIGHT_ARROW, Key.SPACE)    -> Vector2(xSpeed, ySpeed),
+      Combo.withKeyInputs(Key.RIGHT_ARROW)                -> Vector2(xSpeed, 0.0d),
+      Combo.withKeyInputs(Key.UP_ARROW)                   -> Vector2(0.0d, ySpeed),
+      Combo.withKeyInputs(Key.SPACE)                      -> Vector2(0.0d, ySpeed),
       Combo.withGamepadInputs(
         GamepadInput.LEFT_ANALOG(_ < -0.5, _ => true, false),
         GamepadInput.Cross

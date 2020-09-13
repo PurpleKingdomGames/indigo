@@ -1,7 +1,6 @@
 package indigoextras.ui
 
 import indigo.shared.time.GameTime
-import indigo.shared.constants.Keys
 import indigo.shared.datatypes._
 import indigo.shared.scenegraph.{Graphic, SceneUpdateFragment, Text}
 
@@ -159,28 +158,28 @@ final case class InputField(
           else
             Outcome(acc, changeEvent.toList)
 
-        case Keys.BACKSPACE :: ks =>
+        case Key.BACKSPACE :: ks =>
           val next = acc.backspace
           rec(ks, next, true, acc.key.map(key => InputFieldChange(key, next.text)))
 
-        case Keys.DELETE :: ks =>
+        case Key.DELETE :: ks =>
           val next = acc.delete
           rec(ks, next, true, acc.key.map(key => InputFieldChange(key, next.text)))
 
-        case Keys.LEFT_ARROW :: ks =>
+        case Key.LEFT_ARROW :: ks =>
           rec(ks, acc.cursorLeft, true, changeEvent)
 
-        case Keys.RIGHT_ARROW :: ks =>
+        case Key.RIGHT_ARROW :: ks =>
           rec(ks, acc.cursorRight, true, changeEvent)
 
-        case Keys.HOME :: ks =>
+        case Key.HOME :: ks =>
           rec(ks, acc.cursorHome, true, changeEvent)
 
-        case Keys.END :: ks =>
+        case Key.END :: ks =>
           rec(ks, acc.cursorEnd, true, changeEvent)
 
-        case Keys.ENTER :: ks =>
-          val next = acc.addCharacterText(Keys.ENTER.key)
+        case Key.ENTER :: ks =>
+          val next = acc.addCharacterText(Key.ENTER.key)
           rec(ks, next, true, acc.key.map(key => InputFieldChange(key, next.text)))
 
         case key :: ks if key.isPrintable =>

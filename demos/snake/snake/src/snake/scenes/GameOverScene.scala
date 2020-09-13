@@ -25,7 +25,7 @@ object GameOverScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewMo
     Set()
 
   def updateModel(context: FrameContext[SnakeStartupData], pointsScored: Int): GlobalEvent => Outcome[Int] = {
-    case KeyboardEvent.KeyUp(Keys.SPACE) =>
+    case KeyboardEvent.KeyUp(Key.SPACE) =>
       Outcome(pointsScored)
         .addGlobalEvents(SceneEvent.JumpTo(StartScene.name))
 

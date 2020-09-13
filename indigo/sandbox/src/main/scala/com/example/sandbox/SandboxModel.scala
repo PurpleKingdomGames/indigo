@@ -55,28 +55,28 @@ object SandboxModel {
           Outcome(state)
       }
 
-    case KeyboardEvent.KeyDown(Keys.LEFT_ARROW) =>
+    case KeyboardEvent.KeyDown(Key.LEFT_ARROW) =>
       Outcome(
         state.copy(
           dude = state.dude.walkLeft
         )
       )
 
-    case KeyboardEvent.KeyDown(Keys.RIGHT_ARROW) =>
+    case KeyboardEvent.KeyDown(Key.RIGHT_ARROW) =>
       Outcome(
         state.copy(
           dude = state.dude.walkRight
         )
       )
 
-    case KeyboardEvent.KeyDown(Keys.UP_ARROW) =>
+    case KeyboardEvent.KeyDown(Key.UP_ARROW) =>
       Outcome(
         state.copy(
           dude = state.dude.walkUp
         )
       )
 
-    case KeyboardEvent.KeyDown(Keys.DOWN_ARROW) =>
+    case KeyboardEvent.KeyDown(Key.DOWN_ARROW) =>
       Outcome(
         state.copy(
           dude = state.dude.walkDown

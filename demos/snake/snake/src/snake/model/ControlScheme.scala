@@ -40,8 +40,8 @@ sealed trait ControlScheme {
 
 }
 object ControlScheme {
-  val turningKeys: Turning   = Turning(Keys.LEFT_ARROW, Keys.RIGHT_ARROW)
-  val directedKeys: Directed = Directed(Keys.UP_ARROW, Keys.DOWN_ARROW, Keys.LEFT_ARROW, Keys.RIGHT_ARROW)
+  val turningKeys: Turning   = Turning(Key.LEFT_ARROW, Key.RIGHT_ARROW)
+  val directedKeys: Directed = Directed(Key.UP_ARROW, Key.DOWN_ARROW, Key.LEFT_ARROW, Key.RIGHT_ARROW)
 
   case class Turning(left: Key, right: Key)                              extends ControlScheme
   case class Directed(up: Key, down: Key, left: Key, right: Key) extends ControlScheme
