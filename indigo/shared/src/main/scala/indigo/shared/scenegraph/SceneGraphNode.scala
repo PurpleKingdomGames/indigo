@@ -10,10 +10,9 @@ import indigo.shared.EqualTo._
 import indigo.shared.animation.AnimationAction
 import indigo.shared.BoundaryLocator
 
-object SceneGraphNode {
-  def empty: Group = Group.empty
-}
-
+/**
+  * The parent type of anything that can affect the visual representation of the game.
+  */
 sealed trait SceneGraphNode extends Product with Serializable {
   val depth: Depth
   def x: Int
@@ -21,7 +20,13 @@ sealed trait SceneGraphNode extends Product with Serializable {
   def rotation: Radians
   def scale: Vector2
 }
+object SceneGraphNode {
+  def empty: Group = Group.empty
+}
 
+/**
+  * Represents nodes with a basic spacial presence.
+  */
 sealed trait SceneGraphNodePrimitive extends SceneGraphNode {
   def bounds(locator: BoundaryLocator): Rectangle
   def withDepth(depth: Depth): SceneGraphNodePrimitive
@@ -31,6 +36,15 @@ sealed trait SceneGraphNodePrimitive extends SceneGraphNode {
   def moveBy(x: Int, y: Int): SceneGraphNodePrimitive
 }
 
+/**
+  * Used to group elements to allow them to be manipulated as a collection.
+  *
+  * @param positionOffset
+  * @param rotation
+  * @param scale
+  * @param depth
+  * @param children
+  */
 final case class Group(positionOffset: Point, rotation: Radians, scale: Vector2, depth: Depth, children: List[SceneGraphNodePrimitive]) extends SceneGraphNodePrimitive {
 
   lazy val x: Int = positionOffset.x
@@ -83,14 +97,28 @@ object Group {
     apply(Nil)
 }
 
+/**
+  * A CloneId is used to connect a Clone instance to a CloneBlank.
+  *
+  * @param value
+  */
 final case class CloneId(value: String) extends AnyVal
 object CloneId {
   implicit val equalTo: EqualTo[CloneId] =
     EqualTo.create(_.value === _.value)
 }
 
+/**
+  * Used to distingush between cloneable and non-clonable scene graph nodes.
+  */
 sealed trait Cloneable
 
+/**
+  * Used as the blueprint for any clones that want to copy it.
+  *
+  * @param id
+  * @param cloneable
+  */
 final case class CloneBlank(id: CloneId, cloneable: Cloneable) {
   def withCloneId(newCloneId: CloneId): CloneBlank =
     this.copy(id = newCloneId)
@@ -99,6 +127,16 @@ final case class CloneBlank(id: CloneId, cloneable: Cloneable) {
     this.copy(cloneable = newCloneable)
 }
 
+/**
+  * Represents the standard allowable transformations of a clone.
+  *
+  * @param position
+  * @param rotation
+  * @param scale
+  * @param alpha
+  * @param flipHorizontal
+  * @param flipVertical
+  */
 final case class CloneTransformData(position: Point, rotation: Radians, scale: Vector2, alpha: Double, flipHorizontal: Boolean, flipVertical: Boolean) {
   def withPosition(newPosition: Point): CloneTransformData =
     this.copy(position = newPosition)
@@ -126,6 +164,13 @@ object CloneTransformData {
     CloneTransformData(Point.zero, Radians.zero, Vector2.one, 1f, false, false)
 }
 
+/**
+  * A single clone instance of a cloneblank
+  *
+  * @param id
+  * @param depth
+  * @param transform
+  */
 final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData) extends SceneGraphNode {
   lazy val x: Int                  = transform.position.x
   lazy val y: Int                  = transform.position.y
@@ -163,6 +208,15 @@ final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
     this.copy(transform = transform.withVerticalFlip(isFlipped))
 }
 
+/**
+  * Represents many clones of the same cloneblank, differentiated only by their transform data.
+  *
+  * @param id
+  * @param depth
+  * @param transform
+  * @param clones
+  * @param staticBatchKey
+  */
 final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransformData, clones: List[CloneTransformData], staticBatchKey: Option[BindingKey]) extends SceneGraphNode {
   lazy val x: Int                  = transform.position.x
   lazy val y: Int                  = transform.position.y
@@ -215,6 +269,9 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
     withMaybeStaticBatchKey(None)
 }
 
+/**
+  * Represents nodes with more advanced spacial and visual properties
+  */
 sealed trait Renderable extends SceneGraphNodePrimitive {
   def effects: Effects
   def ref: Point
@@ -243,11 +300,27 @@ sealed trait Renderable extends SceneGraphNodePrimitive {
 
 }
 
+/**
+  * Tags nodes that can handle events.
+  */
 sealed trait EventHandling {
   def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
   def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Renderable
 }
 
+/**
+  * Graphics are used to draw images on the screen, in a cheap efficient but expressive way.
+  * Graphics party trick is it's ability to crop images.
+  *
+  * @param position
+  * @param depth
+  * @param rotation
+  * @param scale
+  * @param ref
+  * @param crop
+  * @param effects
+  * @param material
+  */
 final case class Graphic(
     position: Point,
     depth: Depth,
@@ -369,6 +442,20 @@ object Graphic {
     )
 }
 
+/**
+  * Sprites are used to represented key-frame animated screen elements.
+  *
+  * @param bindingKey
+  * @param position
+  * @param depth
+  * @param rotation
+  * @param scale
+  * @param animationKey
+  * @param ref
+  * @param effects
+  * @param eventHandler
+  * @param animationActions
+  */
 final case class Sprite(
     bindingKey: BindingKey,
     position: Point,
@@ -509,6 +596,19 @@ object Sprite {
 
 }
 
+/**
+  * Used to draw text onto the screen.
+  *
+  * @param text
+  * @param alignment
+  * @param position
+  * @param depth
+  * @param rotation
+  * @param scale
+  * @param fontKey
+  * @param effects
+  * @param eventHandler
+  */
 final case class Text(
     text: String,
     alignment: TextAlignment,
@@ -610,15 +710,6 @@ final case class Text(
 
 }
 
-final case class TextLine(text: String, lineBounds: Rectangle) {
-  def moveTo(x: Int, y: Int): TextLine =
-    moveTo(Point(x, y))
-  def moveTo(newPosition: Point): TextLine =
-    this.copy(lineBounds = lineBounds.moveTo(newPosition))
-
-  def hash: String = text + lineBounds.hash
-}
-
 object Text {
 
   def apply(text: String, x: Int, y: Int, depth: Int, fontKey: FontKey): Text =
@@ -634,4 +725,19 @@ object Text {
       eventHandler = (_: (Rectangle, GlobalEvent)) => Nil
     )
 
+}
+
+/**
+  * Represents a single line of text.
+  *
+  * @param text
+  * @param lineBounds
+  */
+final case class TextLine(text: String, lineBounds: Rectangle) {
+  def moveTo(x: Int, y: Int): TextLine =
+    moveTo(Point(x, y))
+  def moveTo(newPosition: Point): TextLine =
+    this.copy(lineBounds = lineBounds.moveTo(newPosition))
+
+  def hash: String = text + lineBounds.hash
 }

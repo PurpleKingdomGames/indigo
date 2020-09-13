@@ -2,10 +2,16 @@ package indigo.shared.assets
 
 import scala.annotation.tailrec
 
+/**
+  * Parent type of the different kinds of assets Indigo understands.
+  */
 sealed trait AssetType {
   def toList: List[AssetType]
 }
 
+/**
+  * Represents concrete, loadable asset types.
+  */
 sealed trait AssetTypePrimitive extends AssetType {
   val name: AssetName
   val path: AssetPath
@@ -13,6 +19,12 @@ sealed trait AssetTypePrimitive extends AssetType {
 
 object AssetType {
 
+  /**
+    * Flattens assets arranged in a Tagged hierarchy into a flat list of loadable assets, appropriately tagged.
+    *
+    * @param assets The potentially tagged hierarchy list.
+    * @return List[AssetTypePrimitive]
+    */
   def flattenAssetList(assets: List[AssetType]): List[AssetTypePrimitive] = {
     @tailrec
     def rec(remaining: List[AssetType], acc: List[AssetTypePrimitive]): List[AssetTypePrimitive] =

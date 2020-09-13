@@ -3,8 +3,7 @@ package indigo.shared
 import scala.collection.mutable.ArrayBuffer
 
 /**
-  * This is the dumbest logger ever.
-  * We're just logging to the Browsers console, I just wanted a few standard headers with the message.
+  * A very, very simple logger that logs to the Browsers console with a few standard headers and the log message.
   */
 object IndigoLogger {
 

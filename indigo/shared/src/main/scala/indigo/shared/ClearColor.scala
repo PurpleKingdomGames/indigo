@@ -2,6 +2,14 @@ package indigo.shared
 
 import EqualTo._
 
+/**
+  * Represents the default colour the screen is cleared to. Note that no lighting effects are applied to the clear colour. It is in effect, coloured emptyness...
+  *
+  * @param r Red amount in the range 0.0d to 1.0d
+  * @param g Green amount in the range 0.0d to 1.0d
+  * @param b Blue amount in the range 0.0d to 1.0d
+  * @param a Alpha amount in the range 0.0d to 1.0d
+  */
 final case class ClearColor(r: Double, g: Double, b: Double, a: Double) {
   def forceOpaque: ClearColor                = this.copy(a = 1d)
   def forceTransparent: ClearColor           = this.copy(a = 0d)

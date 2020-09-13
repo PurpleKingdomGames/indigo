@@ -3,6 +3,15 @@ package indigo.shared.config
 import indigo.shared.ClearColor
 import indigo.shared.datatypes.Rectangle
 
+/**
+  * All the base settings needed to get a game up and running.
+  *
+  * @param viewport How big is the window initially? Defaults to 550 x 400 pixels.
+  * @param frameRate Desired frame rate (browsers cap at 60 FPS). Defaults to 60 FPS.
+  * @param clearColor Default background colour. Defaults to Black.
+  * @param magnification Pixel magnification level. Defaults to 1.
+  * @param advanced Additional settings to help tune your game.
+  */
 final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int, advanced: AdvancedGameConfig) {
   val frameRateDeltaMillis: Int = 1000 / frameRate
 

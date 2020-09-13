@@ -3,6 +3,24 @@ package indigo.shared.scenegraph
 import indigo.shared.events.GlobalEvent
 import indigo.shared.datatypes.RGBA
 
+/**
+  * A description of what the engine should next present to the player.
+  * 
+  * SceneUpdateFragments are predicatably composable, so you can make a scene in pieces and then combine them all at the end.
+  * 
+  * Note that a SceneUpdateFragment represents what is to happen next. It is not a diff. If you remove a sprite from the definition it will not be drawn.
+  *
+  * @param gameLayer The layer game elements are placed on.
+  * @param lightingLayer The layer image based lighting elements are placed on.
+  * @param distortionLayer The layer that distoration elements are placed on.
+  * @param uiLayer The layer that UI elements are placed on.
+  * @param ambientLight The scene's ambient light levels.
+  * @param lights Dynamic lights.
+  * @param globalEvents Any GlobalEvents emitted by the view.
+  * @param audio Background audio.
+  * @param screenEffects Effects to be applied at screen level.
+  * @param cloneBlanks A list of elements that will be referenced by clones in the main layers.
+  */
 final case class SceneUpdateFragment(
     gameLayer: SceneLayer,
     lightingLayer: SceneLayer,
