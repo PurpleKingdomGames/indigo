@@ -287,3 +287,16 @@ lazy val effects =
       publish := {},
       publishLocal := {}
     )
+
+lazy val radio =
+  project
+    .in(file("radio"))
+    .settings(commonSettings: _*)
+    .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
+    .settings(
+      name := "radio-example",
+      showCursor := true,
+      title := "Radio button example",
+      gameAssetsDirectory := "assets"
+    )
