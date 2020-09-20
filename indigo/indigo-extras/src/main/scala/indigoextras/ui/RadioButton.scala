@@ -1,5 +1,6 @@
 package indigoextras.ui
 
+import indigo.shared.EqualTo._
 import indigo.shared.Outcome
 import indigo.shared.datatypes.{Depth, Point, Rectangle}
 import indigo.shared.events.GlobalEvent
@@ -73,10 +74,10 @@ final case class RadioButton(
         onHoverOver(newOption)
       case (Some(oldOption), None) =>
         onHoverOut(oldOption)
-      case (Some(oldOption), Some(newOption)) if oldOption != newOption =>
+      case (Some(oldOption), Some(newOption)) if oldOption !== newOption =>
         onHoverOut(oldOption) ++ onHoverOver(newOption)
       case _ =>
-        List.empty
+        Nil
     }
 
   /**
@@ -92,10 +93,10 @@ final case class RadioButton(
         onSelected(newOption)
       case (Some(oldOption), None) =>
         onUnselected(oldOption)
-      case (Some(oldOption), Some(newOption)) if oldOption != newOption =>
+      case (Some(oldOption), Some(newOption)) if oldOption !== newOption =>
         onUnselected(oldOption) ++ onSelected(newOption)
       case _ =>
-        List.empty
+        Nil
     }
 
   /**
