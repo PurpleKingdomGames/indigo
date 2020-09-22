@@ -14,6 +14,7 @@ function createWindow () {
     width: ${windowWidth.toString()},
     height: ${windowHeight.toString()} + 22, // size of the game + the height of the toolbar
     webPreferences: {
+      worldSafeExecuteJavaScript: true,
       preload: path.join(__dirname, 'preload.js')
     }
   })
