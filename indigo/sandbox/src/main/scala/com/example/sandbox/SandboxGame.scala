@@ -19,10 +19,19 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
 
   val eventFilters: EventFilters = EventFilters.Default
 
-  def boot(flags: Map[String, String]): BootResult[SandboxBootData] =
+  def boot(flags: Map[String, String]): BootResult[SandboxBootData] = {
+    val gameViewport =
+      (flags.get("width"), flags.get("height")) match {
+        case (Some(w), Some(h)) =>
+          GameViewport(w.toInt, h.toInt)
+
+        case _ =>
+          GameViewport(viewportWidth, viewportHeight)
+      }
+
     BootResult(
       GameConfig(
-        viewport = GameViewport(viewportWidth, viewportHeight),
+        viewport = gameViewport,
         frameRate = targetFPS,
         clearColor = ClearColor(0.4, 0.2, 0.5, 1),
         magnification = magnificationLevel
@@ -31,6 +40,7 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
     ).withAssets(SandboxAssets.assets)
       .withFonts(SandboxView.fontInfo)
       .withSubSystems(FPSCounter(SandboxView.fontKey, Point(3, 100), targetFPS))
+  }
 
   def setup(bootData: SandboxBootData, assetCollection: AssetCollection, dice: Dice): Startup[SandboxStartupData] = {
     println(bootData.message)
