@@ -3,6 +3,7 @@ package indigoplugin
 import indigoplugin.templates.{MainTemplate, PreloadTemplate, PackageTemplate}
 
 import os._
+import indigoplugin.templates.SupportScriptTemplate
 
 object IndigoRun {
 
@@ -18,6 +19,12 @@ object IndigoRun {
     os.list(buildDir).foreach { file =>
       os.copy.into(file, outputDir, true, true, true, true)
     }
+
+    // Write support js script
+    val supportFile = outputDir / "scripts" / "indigo-support.js"
+    val support     = SupportScriptTemplate.template(true)
+    os.remove(supportFile)
+    os.write(supportFile, support)
 
     println(s"Starting '$title'")
 
