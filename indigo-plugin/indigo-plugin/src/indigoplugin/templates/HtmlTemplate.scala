@@ -6,6 +6,7 @@ object HtmlTemplate {
     s"""<!DOCTYPE html>
       |<html>
       |  <head>
+      |    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline'">
       |    <meta charset="UTF-8">
       |    <title>$title</title>
       |    <style>
@@ -54,7 +55,9 @@ object HtmlTemplate {
       |    </script>
       |    <div id="indigo-container"></div>
       |    <script type="text/javascript" src="scripts/$scriptName"></script>
-      |    <script type="text/javascript">IndigoGame.launch()</script>
+      |    <script type="text/javascript">
+      |      IndigoGame.launch({"width": window.innerWidth.toString(), "height": window.innerHeight.toString()})
+      |    </script>
       |  </body>
       |</html>
     """.stripMargin
