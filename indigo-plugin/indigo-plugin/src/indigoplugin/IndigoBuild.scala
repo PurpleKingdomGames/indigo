@@ -2,6 +2,7 @@ package indigoplugin
 
 import os._
 import indigoplugin.templates.HtmlTemplate
+import indigoplugin.templates.SupportScriptTemplate
 
 object IndigoBuild {
 
@@ -19,6 +20,10 @@ object IndigoBuild {
       directoryStructure.artefacts,
       newScriptName + ".map"
     )
+
+    // Write support js script
+    val support = SupportScriptTemplate.template(false)
+    os.write(directoryStructure.base / "scripts" / "indigo-support.js", support)
 
     // Fill out html template
     val html = HtmlTemplate.template(templateOptions.title, templateOptions.showCursor, newScriptName)
