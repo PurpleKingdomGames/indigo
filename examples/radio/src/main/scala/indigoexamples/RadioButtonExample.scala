@@ -39,28 +39,29 @@ object RadioButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMode
   def initialModel(startupData: Unit): MyGameModel =
     MyGameModel(0.0)
 
-  def initialViewModel(startupData: Unit, model: MyGameModel): MyViewModel =
+  def initialViewModel(startupData: Unit, model: MyGameModel): MyViewModel = {
+    // Create three radio option buttons, each firing an event to tint the background differently
+    val option1 = RadioButton(Point(5, 5)).withSelectedAction(() => List(MyButtonEvent(0.0)))
+    val option2 = RadioButton(Point(25, 5)).withSelectedAction(() => List(MyButtonEvent(0.5)))
+    val option3 = RadioButton(Point(45, 5)).withSelectedAction(() => List(MyButtonEvent(1.0)))
+
+    // Group the radio buttons and present them using loaded graphics
+    // Button option1 is selected initially
     MyViewModel(
-      button = RadioButton(
+      button = RadioButtonGroup(
         buttonAssets = buttonAssets,
-        positions = List(Point(5, 5), Point(25, 5), Point(45, 5)),
         width = 16,
         height = 16,
+        options = List(option1, option2, option3),
         depth = Depth(2),
-        selected = Some(0)
-      ).withSelectedAction { index =>
-        List(MyButtonEvent(index))
-      },
+        selected = Some(option1)
+      ),
       background
     )
+  }
 
   def updateModel(context: FrameContext[Unit], model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
-    case MyButtonEvent(selection) =>
-      val newTint = selection match {
-        case 1 => 0.5
-        case 2 => 1.0
-        case _ => 0.0
-      }
+    case MyButtonEvent(newTint) =>
       Outcome(MyGameModel(newTint))
 
     case _ =>
@@ -85,6 +86,9 @@ object RadioButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMode
     SceneUpdateFragment(viewModel.button.draw, viewModel.background.withTint(model.tint, 0.0, 0.0))
 }
 
+// The game model says how to tint the background
 final case class MyGameModel(tint: Double)
-final case class MyViewModel(button: RadioButton, background: Graphic)
-final case class MyButtonEvent(selection: Int) extends GlobalEvent
+// The view model contains the current state of the radio button group and the background graphic
+final case class MyViewModel(button: RadioButtonGroup, background: Graphic)
+// This event is fired when a new radio button option is selected
+final case class MyButtonEvent(tint: Double) extends GlobalEvent
