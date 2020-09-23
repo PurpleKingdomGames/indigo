@@ -13,19 +13,22 @@ object RadioButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMode
 
   val eventFilters: EventFilters = EventFilters.Default
 
+  val radioButtonGraphic: AssetName = AssetName("graphics")
+  val backgroundGraphic: AssetName  = AssetName("background")
+
   def boot(flags: Map[String, String]): BootResult[Unit] =
     BootResult
       .noData(defaultGameConfig)
       .withAssets(
-        AssetType.Image(AssetName("graphics"), AssetPath("assets/radio-example.png")),
-        AssetType.Image(AssetName("background"), AssetPath("assets/background.png"))
+        AssetType.Image(radioButtonGraphic, AssetPath("assets/radio-example.png")),
+        AssetType.Image(backgroundGraphic, AssetPath("assets/background.png"))
       )
 
   val buttonAssets: ButtonAssets =
     ButtonAssets(
-      up = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(0, 0, 16, 16),
-      over = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(16, 0, 16, 16),
-      down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 0, 16, 16)
+      up = Graphic(0, 0, 16, 16, 2, Material.Textured(radioButtonGraphic)).withCrop(0, 0, 16, 16),
+      over = Graphic(0, 0, 16, 16, 2, Material.Textured(radioButtonGraphic)).withCrop(16, 0, 16, 16),
+      down = Graphic(0, 0, 16, 16, 2, Material.Textured(radioButtonGraphic)).withCrop(32, 0, 16, 16)
     )
 
   val background: Graphic = Graphic(0, 0, 66, 26, 3, Material.Textured(AssetName("background")))
