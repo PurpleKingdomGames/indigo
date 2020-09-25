@@ -7,12 +7,12 @@ import indigoplugin.templates.SupportScriptTemplate
 
 object IndigoCordova {
 
-  def run(outputDir: Path, buildDir: Path, title: String, showMouse: Boolean, windowWidth: Int, windowHeight: Int): Unit = {
+  def run(outputDir: Path, buildDir: Path, title: String, windowWidth: Int, windowHeight: Int): Unit = {
 
     os.remove.all(outputDir)
     os.makeDir.all(outputDir)
 
-    filesToWrite(title, showMouse, windowWidth, windowHeight).foreach { f =>
+    filesToWrite(title, windowWidth, windowHeight).foreach { f =>
       os.makeDir.all(outputDir / f.folderPath)
       os.write.over(outputDir / f.folderPath / f.name, f.contents)
     }
@@ -26,13 +26,13 @@ object IndigoCordova {
     val support     = SupportScriptTemplate.template(true)
     os.remove(supportFile)
     os.write(supportFile, support)
-    
+
     ()
   }
 
-  def filesToWrite(title: String, showMouse: Boolean, windowWidth: Int, windowHeight: Int): List[FileToWrite] =
+  def filesToWrite(title: String, windowWidth: Int, windowHeight: Int): List[FileToWrite] =
     List(
-      FileToWrite("config.xml", CordovaTemplates.configFileTemplate(title, showMouse, windowWidth, windowHeight)),
+      FileToWrite("config.xml", CordovaTemplates.configFileTemplate(title)),
       FileToWrite("package.json", CordovaTemplates.packageFileTemplate),
       FileToWrite(
         "settings.json",

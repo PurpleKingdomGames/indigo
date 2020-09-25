@@ -149,7 +149,6 @@ object SbtIndigo extends sbt.AutoPlugin {
         outputDir = outputDir,
         buildDir = buildDir,
         title = title.value,
-        showMouse = showCursor.value,
         windowWidth = windowStartWidth.value,
         windowHeight = windowStartHeight.value
       )
@@ -165,7 +164,6 @@ object SbtIndigo extends sbt.AutoPlugin {
         outputDir = outputDir,
         buildDir = buildDir,
         title = title.value,
-        showMouse = showCursor.value,
         windowWidth = windowStartWidth.value,
         windowHeight = windowStartHeight.value
       )

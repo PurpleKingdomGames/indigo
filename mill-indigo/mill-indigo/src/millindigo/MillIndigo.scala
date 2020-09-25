@@ -73,7 +73,7 @@ trait MillIndigo extends mill.Module {
       val outputDir: Path = T.dest
       val buildDir: Path  = indigoBuild()()
 
-      IndigoCordova.run(outputDir, buildDir, title, showCursor, windowStartWidth, windowStartHeight)
+      IndigoCordova.run(outputDir, buildDir, title, windowStartWidth, windowStartHeight)
     }
 
   def indigoCordovaBuildFull(): Command[Unit] =
@@ -81,7 +81,7 @@ trait MillIndigo extends mill.Module {
       val outputDir: Path = T.dest
       val buildDir: Path  = indigoBuildFull()()
 
-      IndigoCordova.run(outputDir, buildDir, title, showCursor, windowStartWidth, windowStartHeight)
+      IndigoCordova.run(outputDir, buildDir, title, windowStartWidth, windowStartHeight)
     }
 
 }
