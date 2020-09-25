@@ -61,12 +61,13 @@ object CordovaTemplates {
 </widget>
     """
 
+  // the `+ 22` is for the window frame border...
   def electronSettingsFileTemplate(windowWidth: Int, windowHeight: Int): String =
     s"""
 {
     "browserWindow": {
         "width": ${windowWidth.toString()},
-        "height": ${windowHeight.toString()},
+        "height": ${(windowHeight + 22).toString()},
         "resizable": true,
         "fullscreen": false,
         "webPreferences": {
