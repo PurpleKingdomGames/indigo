@@ -31,6 +31,7 @@ object HtmlTemplate {
       |    <script type="text/javascript">
       |      IndigoGame.launch({"width": window.innerWidth.toString(), "height": window.innerHeight.toString()})
       |    </script>
+      |    <script src="cordova.js"></script> <!-- only needed for Cordova builds -->
       |  </body>
       |</html>
     """.stripMargin

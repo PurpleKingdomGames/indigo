@@ -21,6 +21,10 @@ object IndigoBuild {
       newScriptName + ".map"
     )
 
+    // Write an empty cordova.js file so the script reference is intact,
+    // even though it does nothing here.
+    os.write(directoryStructure.base / "cordova.js", "")
+
     // Write support js script
     val support = SupportScriptTemplate.template(false)
     os.write(directoryStructure.base / "scripts" / "indigo-support.js", support)
