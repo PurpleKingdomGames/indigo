@@ -4,6 +4,7 @@ import sbt.plugins.JvmPlugin
 import sbt._
 
 import indigoplugin.{IndigoRun, IndigoBuildSBT, TemplateOptions}
+import indigoplugin.IndigoCordova
 
 object SbtIndigo extends sbt.AutoPlugin {
 
@@ -11,10 +12,12 @@ object SbtIndigo extends sbt.AutoPlugin {
   override def trigger: PluginTrigger   = allRequirements
 
   object autoImport {
-    val indigoBuild: TaskKey[Unit]     = taskKey[Unit]("Build an Indigo game.")
-    val indigoBuildFull: TaskKey[Unit] = taskKey[Unit]("Build an Indigo game using full compression.")
-    val indigoRun: TaskKey[Unit]       = taskKey[Unit]("Run an Indigo game.")
-    val indigoRunFull: TaskKey[Unit]   = taskKey[Unit]("Run an Indigo game that has been compressed.")
+    val indigoBuild: TaskKey[Unit]            = taskKey[Unit]("Build an Indigo game.")
+    val indigoBuildFull: TaskKey[Unit]        = taskKey[Unit]("Build an Indigo game using full compression.")
+    val indigoRun: TaskKey[Unit]              = taskKey[Unit]("Run an Indigo game.")
+    val indigoRunFull: TaskKey[Unit]          = taskKey[Unit]("Run an Indigo game that has been compressed.")
+    val indigoCordovaBuild: TaskKey[Unit]     = taskKey[Unit]("Build an Indigo game Cordova template.")
+    val indigoCordovaBuildFull: TaskKey[Unit] = taskKey[Unit]("Build an Indigo game Cordova template that has been compressed.")
     val gameAssetsDirectory: SettingKey[String] =
       settingKey[String]("Project relative path to a directory that contains all of the assets the game needs to load.")
     val showCursor: SettingKey[Boolean]    = settingKey[Boolean]("Show the cursor? True by default.")
@@ -30,6 +33,8 @@ object SbtIndigo extends sbt.AutoPlugin {
     indigoBuildFull := { indigoBuildFullTask.value; () },
     indigoRun := indigoRunTask.value,
     indigoRunFull := indigoRunFullTask.value,
+    indigoCordovaBuild := indigoCordovaBuildTask.value,
+    indigoCordovaBuildFull := indigoCordovaBuildFullTask.value,
     showCursor := true,
     title := "Made with Indigo",
     gameAssetsDirectory := ".",
@@ -129,6 +134,38 @@ object SbtIndigo extends sbt.AutoPlugin {
         outputDir = outputDir,
         buildDir = buildDir,
         title = title.value,
+        windowWidth = windowStartWidth.value,
+        windowHeight = windowStartHeight.value
+      )
+    }
+
+  lazy val indigoCordovaBuildTask: Def.Initialize[Task[Unit]] =
+    Def.task {
+      val baseDir: String    = Keys.baseDirectory.value.getCanonicalPath
+      val outputDir: os.Path = os.Path(baseDir) / "target" / "indigoCordovaBuild"
+      val buildDir: os.Path  = os.Path(indigoBuildTask.value)
+
+      IndigoCordova.run(
+        outputDir = outputDir,
+        buildDir = buildDir,
+        title = title.value,
+        showMouse = showCursor.value,
+        windowWidth = windowStartWidth.value,
+        windowHeight = windowStartHeight.value
+      )
+    }
+
+  lazy val indigoCordovaBuildFullTask: Def.Initialize[Task[Unit]] =
+    Def.task {
+      val baseDir: String    = Keys.baseDirectory.value.getCanonicalPath
+      val outputDir: os.Path = os.Path(baseDir) / "target" / "indigoCordovaBuildFull"
+      val buildDir: os.Path  = os.Path(indigoBuildFullTask.value)
+
+      IndigoCordova.run(
+        outputDir = outputDir,
+        buildDir = buildDir,
+        title = title.value,
+        showMouse = showCursor.value,
         windowWidth = windowStartWidth.value,
         windowHeight = windowStartHeight.value
       )

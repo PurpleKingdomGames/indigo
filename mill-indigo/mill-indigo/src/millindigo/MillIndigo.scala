@@ -7,6 +7,7 @@ import mill.define.Command
 import java.io.File
 import mill.define.Persistent
 import indigoplugin.{IndigoRun, IndigoBuildMill, TemplateOptions}
+import indigoplugin.IndigoCordova
 
 trait MillIndigo extends mill.Module {
 
@@ -65,6 +66,22 @@ trait MillIndigo extends mill.Module {
       val buildDir: Path  = indigoBuildFull()()
 
       IndigoRun.run(outputDir, buildDir, title, windowStartWidth, windowStartHeight)
+    }
+
+  def indigoCordovaBuild(): Command[Unit] =
+    T.command {
+      val outputDir: Path = T.dest
+      val buildDir: Path  = indigoBuild()()
+
+      IndigoCordova.run(outputDir, buildDir, title, showCursor, windowStartWidth, windowStartHeight)
+    }
+
+  def indigoCordovaBuildFull(): Command[Unit] =
+    T.command {
+      val outputDir: Path = T.dest
+      val buildDir: Path  = indigoBuildFull()()
+
+      IndigoCordova.run(outputDir, buildDir, title, showCursor, windowStartWidth, windowStartHeight)
     }
 
 }
