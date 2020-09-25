@@ -27,6 +27,9 @@ object IndigoCordova {
     os.remove(supportFile)
     os.write(supportFile, support)
 
+    // This will be replaced by cordova itself.
+    os.remove(outputDir / "www" / "cordova.js")
+
     ()
   }
 
