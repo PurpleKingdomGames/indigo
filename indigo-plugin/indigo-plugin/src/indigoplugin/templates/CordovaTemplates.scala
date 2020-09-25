@@ -27,7 +27,7 @@ object CordovaTemplates {
 }
     """
 
-  def configFileTemplate(title: String, showMouse: Boolean, windowWidth: Int, windowHeight: Int): String =
+  def configFileTemplate(title: String): String =
     s"""
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="yourgame" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
@@ -52,17 +52,6 @@ object CordovaTemplates {
         <allow-intent href="itms-apps:*" />
         <preference name="scheme" value="app" />
         <preference name="hostname" value="localhost" />
-    </platform>
-
-    <platform name="osx">
-        <allow-intent href="app:*" />
-        <allow-intent href="itms:*" />
-        <allow-intent href="itms-apps:*" />
-        <preference name="scheme" value="app" />
-        <preference name="hostname" value="localhost" />
-        ${if(showMouse) "" else """<preference name="HideMousePointer" value="0"/>"""}
-        <preference name="EnableWebGL" value="true" />
-        <preference name="WindowSize" value="${windowWidth.toString()}x${windowHeight.toString()}"/>
     </platform>
 
     <platform name="browser"></platform>
