@@ -13,6 +13,7 @@ object IndigoCordova {
     os.makeDir.all(outputDir)
 
     filesToWrite(title, showMouse, windowWidth, windowHeight).foreach { f =>
+      os.makeDir.all(outputDir / f.folderPath)
       os.write.over(outputDir / f.folderPath / f.name, f.contents)
     }
 
@@ -25,12 +26,7 @@ object IndigoCordova {
     val support     = SupportScriptTemplate.template(true)
     os.remove(supportFile)
     os.write(supportFile, support)
-
-    println(s"Starting '$title'")
-
-    os.proc("npm", "start")
-      .call(cwd = outputDir, stdin = os.Inherit, stdout = os.Inherit, stderr = os.Inherit)
-
+    
     ()
   }
 

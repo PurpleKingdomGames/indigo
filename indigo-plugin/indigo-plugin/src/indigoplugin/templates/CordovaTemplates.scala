@@ -32,9 +32,7 @@ object CordovaTemplates {
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="yourgame" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>$title</name>
-    <description>
-        "$title" - Made with Indigo
-    </description>
+    <description>$title</description>
     <author email="yourgame@email.com">Your name</author>
     <content src="index.html" />
     <access origin="*" />
