@@ -21,3 +21,6 @@ object Utils {
 }
 
 final case class DirectoryStructure(base: Path, assets: Path, artefacts: Path)
+
+@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
+final case class FileToWrite(name: String, contents: String, folderPath: RelPath = RelPath.rel)
