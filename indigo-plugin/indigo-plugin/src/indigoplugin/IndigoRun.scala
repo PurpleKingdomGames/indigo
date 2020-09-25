@@ -1,6 +1,6 @@
 package indigoplugin
 
-import indigoplugin.templates.{MainTemplate, PreloadTemplate, PackageTemplate}
+import indigoplugin.templates.ElectronTemplates
 
 import os._
 import indigoplugin.templates.SupportScriptTemplate
@@ -36,11 +36,9 @@ object IndigoRun {
 
   def filesToWrite(windowWidth: Int, windowHeight: Int): List[FileToWrite] =
     List(
-      FileToWrite("main.js", MainTemplate.template(windowWidth, windowHeight)),
-      FileToWrite("preload.js", PreloadTemplate.template),
-      FileToWrite("package.json", PackageTemplate.template)
+      FileToWrite("main.js", ElectronTemplates.mainFileTemplate(windowWidth, windowHeight)),
+      FileToWrite("preload.js", ElectronTemplates.preloadFileTemplate),
+      FileToWrite("package.json", ElectronTemplates.packageFileTemplate)
     )
 
 }
-
-final case class FileToWrite(name: String, contents: String)

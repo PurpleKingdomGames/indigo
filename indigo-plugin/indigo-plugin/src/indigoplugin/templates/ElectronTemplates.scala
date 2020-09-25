@@ -1,8 +1,8 @@
 package indigoplugin.templates
 
-object MainTemplate {
+object ElectronTemplates {
 
-  def template(windowWidth: Int, windowHeight: Int): String =
+  def mainFileTemplate(windowWidth: Int, windowHeight: Int): String =
     s"""
 // Modules to control application life and create native browser window
 const {app, BrowserWindow} = require('electron')
@@ -48,6 +48,38 @@ app.on('window-all-closed', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+    """
+
+  lazy val packageFileTemplate: String =
+    """
+{
+  "name": "indigo-runner",
+  "version": "1.0.0",
+  "description": "Indigo Runner",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": "",
+  "author": "Purple Kingdom Games",
+  "license": "MIT"
+}
+    """
+
+  lazy val preloadFileTemplate: String =
+    """
+// All of the Node.js APIs are available in the preload process.
+// It has the same sandbox as a Chrome extension.
+window.addEventListener('DOMContentLoaded', () => {
+  const replaceText = (selector, text) => {
+    const element = document.getElementById(selector)
+    if (element) element.innerText = text
+  }
+
+  for (const type of ['chrome', 'node', 'electron']) {
+    replaceText(`${type}-version`, process.versions[type])
+  }
+})
     """
 
 }
