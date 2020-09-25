@@ -13,8 +13,7 @@ object CordovaTemplates {
     "platforms": [
       "ios",
       "electron",
-      "browser",
-      "osx"
+      "browser"
     ]
   },
   "devDependencies": {
