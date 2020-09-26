@@ -12,7 +12,8 @@ function createWindow () {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: ${windowWidth.toString()},
-    height: ${windowHeight.toString()} + 22, // size of the game + the height of the toolbar
+    height: ${windowHeight.toString()},
+    useContentSize: true,
     webPreferences: {
       worldSafeExecuteJavaScript: true,
       preload: path.join(__dirname, 'preload.js')
