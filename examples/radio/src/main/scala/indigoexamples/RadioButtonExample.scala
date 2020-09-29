@@ -46,18 +46,12 @@ object RadioButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMode
     // Button option1 is selected initially
     MyViewModel(
       RadioButtonGroup(buttonAssets, 16, 16)
-        .addRadioButton(
+        .withRadioButtons(
           RadioButton(Point(5, 5))
-            .withSelectedAction(List(MyRadioButtonEvent(RGBA.Red)))
-            .selected
-        )
-        .addRadioButton(
-          RadioButton(Point(25, 5))
-            .withSelectedAction(List(MyRadioButtonEvent(RGBA.Green)))
-        )
-        .addRadioButton(
-          RadioButton(Point(45, 5))
-            .withSelectedAction(List(MyRadioButtonEvent(RGBA.Blue)))
+            .withSelectedAction(MyRadioButtonEvent(RGBA.Red))
+            .selected,
+          RadioButton(Point(25, 5)).withSelectedAction(MyRadioButtonEvent(RGBA.Green)),
+          RadioButton(Point(45, 5)).withSelectedAction(MyRadioButtonEvent(RGBA.Blue))
         ),
       background
     )
