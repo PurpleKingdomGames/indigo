@@ -49,9 +49,7 @@ object RadioButtonGroupTests extends TestSuite {
 
         val radioButtons =
           RadioButtonGroup(assets, 10, 10)
-            .addRadioButton(option1)
-            .addRadioButton(option2)
-            .addRadioButton(option3)
+            .withRadioButtons(option1, option2, option3)
 
         "No mouse interaction" - {
 
@@ -107,7 +105,7 @@ object RadioButtonGroupTests extends TestSuite {
             radioButtons.copy(
               options = List(
                 option1,
-                option2.copy(state = RadioButtonState.Normal),
+                option2.deselected,
                 option3
               )
             )
@@ -125,7 +123,7 @@ object RadioButtonGroupTests extends TestSuite {
             radioButtons
               .copy(
                 options = List(
-                  option1.copy(state = RadioButtonState.Normal),
+                  option1.deselected,
                   option2.copy(state = RadioButtonState.Hover),
                   option3
                 )
@@ -135,8 +133,8 @@ object RadioButtonGroupTests extends TestSuite {
           val expected =
             radioButtons.copy(
               options = List(
-                option1.copy(state = RadioButtonState.Normal),
-                option2.copy(state = RadioButtonState.Selected),
+                option1.deselected,
+                option2.selected,
                 option3
               )
             )
@@ -153,7 +151,7 @@ object RadioButtonGroupTests extends TestSuite {
             radioButtons
               .copy(
                 options = List(
-                  option1.copy(state = RadioButtonState.Selected),
+                  option1.selected,
                   option2.copy(state = RadioButtonState.Hover),
                   option3
                 )
@@ -163,8 +161,8 @@ object RadioButtonGroupTests extends TestSuite {
           val expected =
             radioButtons.copy(
               options = List(
-                option1.copy(state = RadioButtonState.Normal),
-                option2.copy(state = RadioButtonState.Selected),
+                option1.deselected,
+                option2.selected,
                 option3
               )
             )
