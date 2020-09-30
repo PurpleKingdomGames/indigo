@@ -14,106 +14,53 @@ import indigo.platform.assets.AssetCollection
 import indigo.platform.audio.AudioPlayer
 
 final class GlobalEventStream(rebuildGameLoop: AssetCollection => Unit, audioPlayer: AudioPlayer, storage: Storage) {
-  private val audioFilter =
-    GlobalEventStream.AudioEventProcessor.filter(audioPlayer)
-
-  private val storageFilter =
-    GlobalEventStream.StorageEventProcessor.filter(storage)
-
-  private val assetFilter =
-    GlobalEventStream.AssetEventProcessor.filter(rebuildGameLoop, this)
 
   private val eventQueue: mutable.Queue[GlobalEvent] =
     new mutable.Queue[GlobalEvent]()
 
-  def pushGlobalEvent(e: GlobalEvent): Unit =
-    GlobalEventStream.NetworkEventProcessor
-      .filter(this)(e)
-      .flatMap(audioFilter)
-      .flatMap(storageFilter)
-      .flatMap(assetFilter)
-      .foreach(e => eventQueue.enqueue(e))
+  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
+  val pushGlobalEvent: GlobalEvent => Unit = {
+    // Networking
+    case httpRequest: HttpRequest =>
+      Http.processRequest(httpRequest, this)
+
+    case webSocketEvent: WebSocketEvent with NetworkSendEvent =>
+      WebSockets.processSendEvent(webSocketEvent, this)
+
+    //Audio
+    case PlaySound(assetName, volume) =>
+      audioPlayer.playSound(assetName, volume)
+
+    // Storage
+    case StorageEvent.Save(key, data) =>
+      storage.save(key, data)
+
+    case StorageEvent.Load(key) =>
+      storage.load(key).foreach { data =>
+        eventQueue.enqueue(StorageEvent.Loaded(key, data))
+      }
+
+    case StorageEvent.Delete(key) =>
+      storage.delete(key)
+
+    case StorageEvent.DeleteAll =>
+      storage.deleteAll()
+
+    case e @ StorageEvent.Loaded(_, _) =>
+      eventQueue.enqueue(e)
+
+    // Assets
+    case AssetEvent.LoadAssetBatch(batch, key, makeAvailable) =>
+      AssetLoader.backgroundLoadAssets(rebuildGameLoop, this, batch, key, makeAvailable)
+
+    case AssetEvent.LoadAsset(asset, key, makeAvailable) =>
+      AssetLoader.backgroundLoadAssets(rebuildGameLoop, this, Set(asset), key, makeAvailable)
+
+    // Default
+    case e =>
+      eventQueue.enqueue(e)
+  }
 
   def collect: List[GlobalEvent] =
     eventQueue.dequeueAll(_ => true).toList
-}
-
-object GlobalEventStream {
-
-  object NetworkEventProcessor {
-
-    def filter(globalEventStream: GlobalEventStream): GlobalEvent => Option[GlobalEvent] = {
-      case httpRequest: HttpRequest =>
-        Http.processRequest(httpRequest, globalEventStream)
-        None
-
-      case webSocketEvent: WebSocketEvent with NetworkSendEvent =>
-        WebSockets.processSendEvent(webSocketEvent, globalEventStream)
-        None
-
-      case e =>
-        Some(e)
-    }
-
-  }
-
-  object AudioEventProcessor {
-
-    def filter: AudioPlayer => GlobalEvent => Option[GlobalEvent] =
-      audioPlayer => {
-        case PlaySound(assetName, volume) =>
-          audioPlayer.playSound(assetName, volume)
-          None
-
-        case e =>
-          Some(e)
-      }
-
-  }
-
-  object StorageEventProcessor {
-
-    def filter: Storage => GlobalEvent => Option[GlobalEvent] =
-      storage => {
-        case StorageEvent.Save(key, data) =>
-          storage.save(key, data)
-          None
-
-        case StorageEvent.Load(key) =>
-          storage.load(key).map(data => StorageEvent.Loaded(key, data))
-
-        case StorageEvent.Delete(key) =>
-          storage.delete(key)
-          None
-
-        case StorageEvent.DeleteAll =>
-          storage.deleteAll()
-          None
-
-        case e @ StorageEvent.Loaded(_, _) =>
-          Some(e)
-
-        case e =>
-          Some(e)
-      }
-
-  }
-
-  object AssetEventProcessor {
-
-    def filter(rebuildGameLoop: AssetCollection => Unit, ges: GlobalEventStream): GlobalEvent => Option[GlobalEvent] = {
-      case AssetEvent.LoadAssetBatch(batch, key, makeAvailable) =>
-        AssetLoader.backgroundLoadAssets(rebuildGameLoop, ges, batch, key, makeAvailable)
-        None
-
-      case AssetEvent.LoadAsset(asset, key, makeAvailable) =>
-        AssetLoader.backgroundLoadAssets(rebuildGameLoop, ges, Set(asset), key, makeAvailable)
-        None
-
-      case e =>
-        Some(e)
-    }
-
-  }
-
 }
