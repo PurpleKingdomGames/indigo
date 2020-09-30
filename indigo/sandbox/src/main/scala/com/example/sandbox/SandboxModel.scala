@@ -2,6 +2,9 @@ package com.example.sandbox
 
 import indigo._
 import indigoextras.ui.InputFieldChange
+import indigo.shared.events.ToggleFullScreen
+import indigo.shared.events.EnterFullScreen
+import indigo.shared.events.ExitFullScreen
 
 object SandboxModel {
 
@@ -83,6 +86,18 @@ object SandboxModel {
         )
       )
 
+    case KeyboardEvent.KeyUp(Key.KEY_F) =>
+      println("Toggle full screen mode...")
+      Outcome(state, List(ToggleFullScreen))
+
+    case KeyboardEvent.KeyUp(Key.KEY_E) =>
+      println("Enter full screen mode...")
+      Outcome(state, List(EnterFullScreen))
+
+    case KeyboardEvent.KeyUp(Key.KEY_X) =>
+      println("Exit full screen mode...")
+      Outcome(state, List(ExitFullScreen))
+
     case KeyboardEvent.KeyUp(_) =>
       Outcome(
         state.copy(
@@ -90,18 +105,12 @@ object SandboxModel {
         )
       )
 
-    case e =>
-      storageEvents(state, e)
+    case Loaded(_, loadedData) =>
+      Outcome(state.copy(data = Some(loadedData)))
+
+    case _ =>
+      Outcome(state)
   }
-
-  def storageEvents(state: SandboxGameModel, event: GlobalEvent): Outcome[SandboxGameModel] =
-    event match {
-      case Loaded(_, loadedData) =>
-        Outcome(state.copy(data = Some(loadedData)))
-
-      case _ =>
-        Outcome(state)
-    }
 
 }
 

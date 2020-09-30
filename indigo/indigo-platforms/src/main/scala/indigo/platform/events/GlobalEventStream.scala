@@ -12,8 +12,17 @@ import indigo.shared.events.AssetEvent
 import indigo.platform.assets.AssetLoader
 import indigo.platform.assets.AssetCollection
 import indigo.platform.audio.AudioPlayer
+import indigo.shared.events.ToggleFullScreen
+import indigo.shared.events.EnterFullScreen
+import indigo.shared.events.ExitFullScreen
+import indigo.platform.PlatformFullScreen
 
-final class GlobalEventStream(rebuildGameLoop: AssetCollection => Unit, audioPlayer: AudioPlayer, storage: Storage) {
+final class GlobalEventStream(
+    rebuildGameLoop: AssetCollection => Unit,
+    audioPlayer: AudioPlayer,
+    storage: Storage,
+    platform: => PlatformFullScreen
+) {
 
   private val eventQueue: mutable.Queue[GlobalEvent] =
     new mutable.Queue[GlobalEvent]()
@@ -55,6 +64,16 @@ final class GlobalEventStream(rebuildGameLoop: AssetCollection => Unit, audioPla
 
     case AssetEvent.LoadAsset(asset, key, makeAvailable) =>
       AssetLoader.backgroundLoadAssets(rebuildGameLoop, this, Set(asset), key, makeAvailable)
+
+    // Fullscreen
+    case ToggleFullScreen =>
+      platform.toggleFullScreen()
+
+    case EnterFullScreen =>
+      platform.enterFullScreen()
+
+    case ExitFullScreen =>
+      platform.exitFullScreen()
 
     // Default
     case e =>

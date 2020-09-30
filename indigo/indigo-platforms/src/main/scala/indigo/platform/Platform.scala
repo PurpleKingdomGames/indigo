@@ -24,15 +24,23 @@ import org.scalajs.dom.html.Canvas
 import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
+import indigo.facades.FullScreenElement
+import indigo.shared.events.FullScreenEntered
+import indigo.shared.events.FullScreenEnterError
+import indigo.shared.events.FullScreenExited
+import indigo.shared.events.FullScreenExitError
 
 class Platform(
     gameConfig: GameConfig,
     assetCollection: AssetCollection,
     globalEventStream: GlobalEventStream
-) {
+) extends PlatformFullScreen {
 
   val rendererInit: RendererInitialiser =
     new RendererInitialiser(gameConfig.advanced.renderingTechnology, globalEventStream)
+
+  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  private var _canvas: Canvas = null
 
   def initialise(): Try[(Renderer, AssetMapping)] =
     for {
@@ -42,7 +50,11 @@ class Platform(
       canvas              <- createCanvas(gameConfig)
       _                   <- listenToWorldEvents(canvas, gameConfig.magnification, globalEventStream)
       renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas)
-    } yield (renderer, assetMapping)
+    } yield {
+      _canvas = canvas
+
+      (renderer, assetMapping)
+    }
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def tick(loop: Long => Unit): Unit = {
@@ -122,4 +134,35 @@ class Platform(
       )
     }
 
+  implicit private val ec: scala.concurrent.ExecutionContext = scalajs.concurrent.JSExecutionContext.queue
+
+  def toggleFullScreen(): Unit =
+    if (Option(dom.document.asInstanceOf[FullScreenElement].fullscreenElement).isEmpty)
+      enterFullScreen()
+    else
+      exitFullScreen()
+
+  def enterFullScreen(): Unit =
+    _canvas.asInstanceOf[FullScreenElement].requestFullscreen().toFuture.onComplete {
+      case Success(()) =>
+        globalEventStream.pushGlobalEvent(FullScreenEntered)
+
+      case Failure(_) =>
+        globalEventStream.pushGlobalEvent(FullScreenEnterError)
+    }
+
+  def exitFullScreen(): Unit =
+    dom.document.asInstanceOf[FullScreenElement].exitFullscreen().toFuture.onComplete {
+      case Success(()) =>
+        globalEventStream.pushGlobalEvent(FullScreenExited)
+
+      case Failure(_) =>
+        globalEventStream.pushGlobalEvent(FullScreenExitError)
+    }
+}
+
+trait PlatformFullScreen {
+  def toggleFullScreen(): Unit
+  def enterFullScreen(): Unit
+  def exitFullScreen(): Unit
 }

@@ -8,6 +8,8 @@ import indigoextras.ui.InputField
 import indigoextras.ui.InputFieldAssets
 
 import scala.scalajs.js.annotation._
+import indigo.shared.events.FullScreenEntered
+import indigo.shared.events.FullScreenExited
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {
@@ -114,6 +116,14 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
         single <- viewModel.single.update(context)
         multi  <- viewModel.multi.update(context)
       } yield viewModel.copy(updateOffset, single, multi)
+
+    case FullScreenEntered =>
+      println("Entered full screen mode")
+      Outcome(viewModel)
+
+    case FullScreenExited =>
+      println("Exited full screen mode")
+      Outcome(viewModel)
 
     case _ =>
       Outcome(viewModel)
