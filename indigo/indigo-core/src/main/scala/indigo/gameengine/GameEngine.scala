@@ -84,7 +84,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
     IndigoLogger.info("Starting Indigo")
 
     storage = Storage.default
-    globalEventStream = new GlobalEventStream(rebuildGameLoop(false), audioPlayer, storage)
+    globalEventStream = new GlobalEventStream(rebuildGameLoop(false), audioPlayer, storage, platform)
     gamepadInputCapture = GamepadInputCaptureImpl()
 
     // Arrange config
