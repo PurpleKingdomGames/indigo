@@ -26,24 +26,24 @@ final case class RadioButton(
     onHoverOut: () => List[GlobalEvent],
     state: RadioButtonState
 ) {
-  def withSelectedAction(actions: GlobalEvent*): RadioButton =
-    withSelectedAction(actions.toList)
-  def withSelectedAction(actions: => List[GlobalEvent]): RadioButton =
+  def withSelectedActions(actions: GlobalEvent*): RadioButton =
+    withSelectedActions(actions.toList)
+  def withSelectedActions(actions: => List[GlobalEvent]): RadioButton =
     this.copy(onSelected = () => actions)
 
-  def withUnselectedAction(actions: GlobalEvent*): RadioButton =
-    withUnselectedAction(actions.toList)
-  def withUnselectedAction(actions: => List[GlobalEvent]): RadioButton =
+  def withUnselectedActions(actions: GlobalEvent*): RadioButton =
+    withUnselectedActions(actions.toList)
+  def withUnselectedActions(actions: => List[GlobalEvent]): RadioButton =
     this.copy(onUnselected = () => actions)
 
-  def withHoverOverAction(actions: GlobalEvent*): RadioButton =
-    withHoverOverAction(actions.toList)
-  def withHoverOverAction(actions: => List[GlobalEvent]): RadioButton =
+  def withHoverOverActions(actions: GlobalEvent*): RadioButton =
+    withHoverOverActions(actions.toList)
+  def withHoverOverActions(actions: => List[GlobalEvent]): RadioButton =
     this.copy(onHoverOver = () => actions)
 
-  def withHoverOutAction(actions: GlobalEvent*): RadioButton =
-    withHoverOutAction(actions.toList)
-  def withHoverOutAction(actions: => List[GlobalEvent]): RadioButton =
+  def withHoverOutActions(actions: GlobalEvent*): RadioButton =
+    withHoverOutActions(actions.toList)
+  def withHoverOutActions(actions: => List[GlobalEvent]): RadioButton =
     this.copy(onHoverOut = () => actions)
 
   def selected: RadioButton =

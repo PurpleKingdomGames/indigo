@@ -28,24 +28,24 @@ object RadioButtonGroupTests extends TestSuite {
 
         val option1 =
           RadioButton(Point(0, 0)).selected
-            .withSelectedAction(RadioTestEvent("option 1 selected"))
-            .withUnselectedAction(RadioTestEvent("option 1 unselected"))
-            .withHoverOverAction(RadioTestEvent("option 1 hover over"))
-            .withHoverOutAction(RadioTestEvent("option 1 hover out"))
+            .withSelectedActions(RadioTestEvent("option 1 selected"))
+            .withUnselectedActions(RadioTestEvent("option 1 unselected"))
+            .withHoverOverActions(RadioTestEvent("option 1 hover over"))
+            .withHoverOutActions(RadioTestEvent("option 1 hover out"))
 
         val option2 =
           RadioButton(Point(0, 20))
-            .withSelectedAction(RadioTestEvent("option 2 selected"))
-            .withUnselectedAction(RadioTestEvent("option 2 unselected"))
-            .withHoverOverAction(RadioTestEvent("option 2 hover over"))
-            .withHoverOutAction(RadioTestEvent("option 2 hover out"))
+            .withSelectedActions(RadioTestEvent("option 2 selected"))
+            .withUnselectedActions(RadioTestEvent("option 2 unselected"))
+            .withHoverOverActions(RadioTestEvent("option 2 hover over"))
+            .withHoverOutActions(RadioTestEvent("option 2 hover out"))
 
         val option3 =
           RadioButton(Point(0, 40))
-            .withSelectedAction(RadioTestEvent("option 3 selected"))
-            .withUnselectedAction(RadioTestEvent("option 3 unselected"))
-            .withHoverOverAction(RadioTestEvent("option 3 hover over"))
-            .withHoverOutAction(RadioTestEvent("option 3 hover out"))
+            .withSelectedActions(RadioTestEvent("option 3 selected"))
+            .withUnselectedActions(RadioTestEvent("option 3 unselected"))
+            .withHoverOverActions(RadioTestEvent("option 3 hover over"))
+            .withHoverOutActions(RadioTestEvent("option 3 hover out"))
 
         val radioButtons =
           RadioButtonGroup(assets, 10, 10)
