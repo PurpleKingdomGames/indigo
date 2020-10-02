@@ -84,7 +84,7 @@ final case object ExitFullScreen extends GlobalEvent
 final case object FullScreenEntered extends ViewEvent
 
 /**
-  * A problem occurred trying to exit full screen
+  * A problem occurred trying to enter full screen
   */
 final case object FullScreenEnterError extends ViewEvent
 
