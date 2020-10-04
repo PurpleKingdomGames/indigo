@@ -27,10 +27,10 @@ object ButtonTests extends TestSuite {
       ),
       bounds,
       Depth(1)
-    ).withHoverOverAction(List(FakeEvent("mouse over")))
-      .withHoverOutAction(List(FakeEvent("mouse out")))
-      .withDownAction(List(FakeEvent("mouse down")))
-      .withUpAction(List(FakeEvent("mouse up")))
+    ).withHoverOverActions(FakeEvent("mouse over"))
+      .withHoverOutActions(FakeEvent("mouse out"))
+      .withDownActions(FakeEvent("mouse down"))
+      .withUpActions(FakeEvent("mouse up"))
 
   val tests: Tests =
     Tests {

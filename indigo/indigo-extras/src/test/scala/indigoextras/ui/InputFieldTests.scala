@@ -23,6 +23,7 @@ import indigo.shared.input.Gamepad
 import indigo.shared.events.KeyboardEvent
 import indigo.shared.constants.Key
 import indigo.shared.datatypes.BindingKey
+import indigo.shared.events.GlobalEvent
 
 object InputFieldTests extends TestSuite {
 
@@ -149,7 +150,7 @@ object InputFieldTests extends TestSuite {
           Point(50, 50)
 
         val inputField =
-          InputField("ab\nc", assets).noCursorBlink.giveFocus
+          InputField("ab\nc", assets).noCursorBlink.giveFocus.state
             .moveTo(initialPosition)
 
         def extractCursorPosition(field: InputField): Point =
@@ -208,7 +209,7 @@ object InputFieldTests extends TestSuite {
               BindingKey("test")
 
             val field =
-              InputField("", assets).giveFocus.withKey(BindingKey("test"))
+              InputField("", assets).giveFocus.state.withKey(BindingKey("test"))
 
             val actual =
               field.update(context).flatMap(_.update(context))
@@ -220,7 +221,7 @@ object InputFieldTests extends TestSuite {
 
           "unless the key is unset" - {
             val field =
-              InputField("", assets).giveFocus
+              InputField("", assets).giveFocus.state
 
             val actual =
               field.update(context).flatMap(_.update(context))
@@ -229,6 +230,34 @@ object InputFieldTests extends TestSuite {
             actual.globalEvents ==> Nil
           }
 
+        }
+
+        "Focusing an input field emits events" - {
+          val event =
+            TestInputFieldEvent("test 1")
+
+          val actual =
+            InputField("", assets)
+              .withFocusActions(event)
+              .giveFocus
+
+          actual.state.hasFocus ==> true
+          actual.globalEvents ==> List(event)
+        }
+
+        "Losing focus on an input field emits events" - {
+          val event =
+            TestInputFieldEvent("test 2")
+
+          val actual =
+            InputField("", assets)
+              .withLoseFocusActions(event)
+              .giveFocus
+              .state
+              .loseFocus
+
+          actual.state.hasFocus ==> false
+          actual.globalEvents ==> List(event)
         }
 
       }
@@ -264,5 +293,7 @@ object InputFieldTests extends TestSuite {
 
     val fontInfo = FontInfo(fontKey, material, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
   }
+
+  final case class TestInputFieldEvent(message: String) extends GlobalEvent
 
 }

@@ -29,21 +29,21 @@ object RadioButtonGroupTests extends TestSuite {
         val option1 =
           RadioButton(Point(0, 0)).selected
             .withSelectedActions(RadioTestEvent("option 1 selected"))
-            .withUnselectedActions(RadioTestEvent("option 1 unselected"))
+            .withDeselectedActions(RadioTestEvent("option 1 unselected"))
             .withHoverOverActions(RadioTestEvent("option 1 hover over"))
             .withHoverOutActions(RadioTestEvent("option 1 hover out"))
 
         val option2 =
           RadioButton(Point(0, 20))
             .withSelectedActions(RadioTestEvent("option 2 selected"))
-            .withUnselectedActions(RadioTestEvent("option 2 unselected"))
+            .withDeselectedActions(RadioTestEvent("option 2 unselected"))
             .withHoverOverActions(RadioTestEvent("option 2 hover over"))
             .withHoverOutActions(RadioTestEvent("option 2 hover out"))
 
         val option3 =
           RadioButton(Point(0, 40))
             .withSelectedActions(RadioTestEvent("option 3 selected"))
-            .withUnselectedActions(RadioTestEvent("option 3 unselected"))
+            .withDeselectedActions(RadioTestEvent("option 3 unselected"))
             .withHoverOverActions(RadioTestEvent("option 3 hover over"))
             .withHoverOutActions(RadioTestEvent("option 3 hover out"))
 
