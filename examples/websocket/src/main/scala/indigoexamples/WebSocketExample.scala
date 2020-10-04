@@ -55,16 +55,12 @@ object WebSocketExample extends IndigoDemo[Unit, MySetupData, Unit, MyViewModel]
         buttonAssets = buttonAssets,
         bounds = Rectangle(10, 32, 16, 16),
         depth = Depth(2)
-      ).withUpAction {
-        List(WebSocketEvent.ConnectOnly(startupData.pingSocket))
-      },
+      ).withUpActions(WebSocketEvent.ConnectOnly(startupData.pingSocket)),
       echo = Button(
         buttonAssets = buttonAssets,
         bounds = Rectangle(10, 32, 16, 16),
         depth = Depth(2)
-      ).withUpAction {
-        List(WebSocketEvent.Send("Hello!", startupData.echoSocket))
-      }
+      ).withUpActions(WebSocketEvent.Send("Hello!", startupData.echoSocket))
     )
 
   def updateModel(context: FrameContext[MySetupData], model: Unit): GlobalEvent => Outcome[Unit] = {

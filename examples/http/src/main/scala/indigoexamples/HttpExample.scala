@@ -30,9 +30,7 @@ object HttpExample extends IndigoDemo[Unit, Unit, Unit, Button] {
       ),
       bounds = Rectangle(10, 10, 16, 16),
       depth = Depth(2)
-    ).withUpAction {
-      List(HttpRequest.GET("http://localhost:8080/ping"))
-    }
+    ).withUpActions(HttpRequest.GET("http://localhost:8080/ping"))
 
   def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] = {
     case HttpResponse(status, headers, body) =>

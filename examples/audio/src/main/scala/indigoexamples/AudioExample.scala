@@ -34,9 +34,7 @@ object AudioExample extends IndigoDemo[Unit, Unit, Unit, Button] {
       ),
       bounds = Rectangle(10, 10, 16, 16),
       depth = Depth(2)
-    ).withUpAction {
-      List(PlaySound(AssetName("bounce"), Volume.Max))
-    }
+    ).withUpActions(PlaySound(AssetName("bounce"), Volume.Max))
 
   def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] = {
     case _ =>

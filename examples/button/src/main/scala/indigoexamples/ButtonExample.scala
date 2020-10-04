@@ -34,9 +34,7 @@ object ButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewModel] {
         buttonAssets = buttonAssets,
         bounds = Rectangle(10, 10, 16, 16),
         depth = Depth(2)
-      ).withUpAction {
-        List(MyButtonEvent)
-      }
+      ).withUpActions(MyButtonEvent)
     )
 
   def updateModel(context: FrameContext[Unit], model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {

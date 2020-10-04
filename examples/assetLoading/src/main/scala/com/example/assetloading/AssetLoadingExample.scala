@@ -37,7 +37,7 @@ object AssetLoadingExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMod
         buttonAssets = Assets.buttonAssets,
         bounds = Rectangle(10, 10, 16, 16),
         depth = Depth(2)
-      ).withUpAction {
+      ).withUpActions {
         println("Start loading assets...")
         List(AssetBundleLoaderEvent.Load(BindingKey("Junction box assets"), Assets.junctionboxImageAssets ++ Assets.otherAssetsToLoad))
       }

@@ -54,9 +54,7 @@ object AutomataExample extends IndigoDemo[Point, Point, Unit, ViewModel] {
       viewModel.button
         .update(context.inputState.mouse)
         .map { btn =>
-          btn.withUpAction {
-            List(Score.spawnEvent(Score.generateLocation(viewModel.viewportSize, context.dice), context.dice))
-          }
+          btn.withUpActions(Score.spawnEvent(Score.generateLocation(viewModel.viewportSize, context.dice), context.dice))
         }
         .map(viewModel.withButton)
 
