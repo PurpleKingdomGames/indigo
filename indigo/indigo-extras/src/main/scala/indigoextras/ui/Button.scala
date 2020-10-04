@@ -56,17 +56,25 @@ final case class Button(
         buttonAssets.down.moveTo(bounds.position).withDepth(depth)
     }
 
-  def withUpAction(action: => List[GlobalEvent]): Button =
-    this.copy(onUp = () => action)
+  def withUpActions(actions: GlobalEvent*): Button =
+    withUpActions(actions.toList)
+  def withUpActions(actions: => List[GlobalEvent]): Button =
+    this.copy(onUp = () => actions)
 
-  def withDownAction(action: => List[GlobalEvent]): Button =
-    this.copy(onDown = () => action)
+  def withDownActions(actions: GlobalEvent*): Button =
+    withDownActions(actions.toList)
+  def withDownActions(actions: => List[GlobalEvent]): Button =
+    this.copy(onDown = () => actions)
 
-  def withHoverOverAction(action: => List[GlobalEvent]): Button =
-    this.copy(onHoverOver = () => action)
+  def withHoverOverActions(actions: GlobalEvent*): Button =
+    withHoverOverActions(actions.toList)
+  def withHoverOverActions(actions: => List[GlobalEvent]): Button =
+    this.copy(onHoverOver = () => actions)
 
-  def withHoverOutAction(action: => List[GlobalEvent]): Button =
-    this.copy(onHoverOut = () => action)
+  def withHoverOutActions(actions: GlobalEvent*): Button =
+    withHoverOutActions(actions.toList)
+  def withHoverOutActions(actions: => List[GlobalEvent]): Button =
+    this.copy(onHoverOut = () => actions)
 
   def toUpState: Button =
     this.copy(state = ButtonState.Up)
