@@ -27,7 +27,9 @@ final case class InputField(
     hasFocus: Boolean,
     cursorPosition: Int,
     lastCursorMove: Seconds,
-    key: Option[BindingKey]
+    key: Option[BindingKey],
+    onFocus: () => List[GlobalEvent],
+    onLoseFocus: () => List[GlobalEvent]
 ) {
 
   def bounds(boundaryLocator: BoundaryLocator): Rectangle =
@@ -66,15 +68,16 @@ final case class InputField(
   def withKey(newKey: BindingKey): InputField =
     this.copy(key = Option(newKey))
 
-  def giveFocus: InputField =
-    this.copy(
-      hasFocus = true,
-      cursorPosition = this.text.length
+  def giveFocus: Outcome[InputField] =
+    Outcome(
+      this.copy(hasFocus = true, cursorPosition = this.text.length),
+      onFocus()
     )
 
-  def loseFocus: InputField =
-    this.copy(
-      hasFocus = false
+  def loseFocus: Outcome[InputField] =
+    Outcome(
+      this.copy(hasFocus = false),
+      onLoseFocus()
     )
 
   def withCharacterLimit(limit: Int): InputField =
@@ -148,6 +151,16 @@ final case class InputField(
     rec(textToInsert.toCharArray().toList, splitString._1, splitString._2, cursorPosition)
   }
 
+  def withFocusActions(actions: GlobalEvent*): InputField =
+    withFocusActions(actions.toList)
+  def withFocusActions(actions: => List[GlobalEvent]): InputField =
+    this.copy(onFocus = () => actions)
+
+  def withLoseFocusActions(actions: GlobalEvent*): InputField =
+    withLoseFocusActions(actions.toList)
+  def withLoseFocusActions(actions: => List[GlobalEvent]): InputField =
+    this.copy(onLoseFocus = () => actions)
+
   def update(frameContext: FrameContext[_]): Outcome[InputField] = {
     @tailrec
     def rec(keysReleased: List[Key], acc: InputField, touched: Boolean, changeEvent: Option[InputFieldChange]): Outcome[InputField] =
@@ -197,8 +210,8 @@ final case class InputField(
 
     if (frameContext.inputState.mouse.mouseReleased)
       if (frameContext.inputState.mouse.wasMouseUpWithin(bounds(frameContext.boundaryLocator)))
-        updated.map(_.giveFocus)
-      else updated.map(_.loseFocus)
+        updated.flatMap(_.giveFocus)
+      else updated.flatMap(_.loseFocus)
     else updated
   }
 
@@ -271,10 +284,10 @@ final case class InputField(
 object InputField {
 
   def apply(text: String, assets: InputFieldAssets): InputField =
-    InputField(text, 255, false, assets, Some(Millis(400).toSeconds), Point.zero, Depth(1), false, text.length(), Seconds.zero, None)
+    InputField(text, 255, false, assets, Some(Millis(400).toSeconds), Point.zero, Depth(1), false, text.length(), Seconds.zero, None, () => Nil, () => Nil)
 
   def apply(text: String, characterLimit: Int, multiLine: Boolean, assets: InputFieldAssets): InputField =
-    InputField(text, characterLimit, multiLine, assets, Some(Millis(400).toSeconds), Point.zero, Depth(1), false, text.length(), Seconds.zero, None)
+    InputField(text, characterLimit, multiLine, assets, Some(Millis(400).toSeconds), Point.zero, Depth(1), false, text.length(), Seconds.zero, None, () => Nil, () => Nil)
 
 }
 
