@@ -28,23 +28,76 @@ final case class RadioButton(
     buttonAssets: Option[ButtonAssets],
     state: RadioButtonState
 ) {
+
+  /**
+    * Events to fire when selected.
+    *
+    * @param actions A variables number of events to fire
+    * @return
+    */
   def withSelectedActions(actions: GlobalEvent*): RadioButton =
     withSelectedActions(actions.toList)
+
+  /**
+    * Events to fire when selected.
+    *
+    * @param actions A list of events to fire
+    * @return
+    */
   def withSelectedActions(actions: => List[GlobalEvent]): RadioButton =
     this.copy(onSelected = () => actions)
 
-  def withUnselectedActions(actions: GlobalEvent*): RadioButton =
-    withUnselectedActions(actions.toList)
-  def withUnselectedActions(actions: => List[GlobalEvent]): RadioButton =
+  /**
+    * Events to fire when deselected.
+    *
+    * @param actions A variables number of events to fire
+    * @return
+    */
+  def withDeselectedActions(actions: GlobalEvent*): RadioButton =
+    withDeselectedActions(actions.toList)
+
+  /**
+    * Events to fire when deselected.
+    *
+    * @param actions A list of events to fire
+    * @return
+    */
+  def withDeselectedActions(actions: => List[GlobalEvent]): RadioButton =
     this.copy(onUnselected = () => actions)
 
+  /**
+    * Events to fire on hover over.
+    *
+    * @param actions A variables number of events to fire
+    * @return
+    */
   def withHoverOverActions(actions: GlobalEvent*): RadioButton =
     withHoverOverActions(actions.toList)
+
+  /**
+    * Events to fire on hover over.
+    *
+    * @param actions A list of events to fire
+    * @return
+    */
   def withHoverOverActions(actions: => List[GlobalEvent]): RadioButton =
     this.copy(onHoverOver = () => actions)
 
+  /**
+    * Events to fire on hover out.
+    *
+    * @param actions A variables number of events to fire
+    * @return
+    */
   def withHoverOutActions(actions: GlobalEvent*): RadioButton =
     withHoverOutActions(actions.toList)
+
+  /**
+    * Events to fire on hover out.
+    *
+    * @param actions A list of events to fire
+    * @return
+    */
   def withHoverOutActions(actions: => List[GlobalEvent]): RadioButton =
     this.copy(onHoverOut = () => actions)
 
@@ -56,7 +109,7 @@ final case class RadioButton(
     */
   def withHitArea(newHitArea: Rectangle): RadioButton =
     withHitArea(Some(newHitArea))
-  
+
   /**
     * Optionally give this button it's own hit area. A value of `None`
     * means that the button should use the default group level hit area.
