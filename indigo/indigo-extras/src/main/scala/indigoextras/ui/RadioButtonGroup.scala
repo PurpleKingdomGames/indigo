@@ -24,6 +24,8 @@ final case class RadioButton(
     onUnselected: () => List[GlobalEvent],
     onHoverOver: () => List[GlobalEvent],
     onHoverOut: () => List[GlobalEvent],
+    hitArea: Option[Rectangle],
+    buttonAssets: Option[ButtonAssets],
     state: RadioButtonState
 ) {
   def withSelectedActions(actions: GlobalEvent*): RadioButton =
@@ -46,15 +48,73 @@ final case class RadioButton(
   def withHoverOutActions(actions: => List[GlobalEvent]): RadioButton =
     this.copy(onHoverOut = () => actions)
 
+  /**
+    * Give this button it's own hit area
+    *
+    * @param newHitArea the hit area to use for this radio button
+    * @return RadioButton
+    */
+  def withHitArea(newHitArea: Rectangle): RadioButton =
+    withHitArea(Some(newHitArea))
+  
+  /**
+    * Optionally give this button it's own hit area. A value of `None`
+    * means that the button should use the default group level hit area.
+    *
+    * @param newHitArea the hit area to use for this radio button
+    * @return RadioButton
+    */
+  def withHitArea(newHitArea: Option[Rectangle]): RadioButton =
+    this.copy(hitArea = newHitArea)
+
+  /**
+    * Give this radio button its own button assets
+    *
+    * @param newButtonAssets the assets to use when rendering this radio button
+    * @return RadioButton
+    */
+  def withButtonAssets(newButtonAssets: ButtonAssets): RadioButton =
+    withButtonAssets(Some(newButtonAssets))
+
+  /**
+    * Optionally give this radio button its own button assets. A value of `None`
+    * means that the button should be rendered with the default group level assets.
+    *
+    * @param newButtonAssets the assets to use when rendering this radio button
+    * @return RadioButton
+    */
+  def withButtonAssets(newButtonAssets: Option[ButtonAssets]): RadioButton =
+    this.copy(buttonAssets = newButtonAssets)
+
+  /**
+    * Set this radio button to the selected state (may be overriden during validation)
+    *
+    * @return RadioButton
+    */
   def selected: RadioButton =
     this.copy(state = RadioButtonState.Selected)
 
+  /**
+    * Deselect this radio button
+    *
+    * @return RadioButton
+    */
   def deselected: RadioButton =
     this.copy(state = RadioButtonState.Normal)
 
+  /**
+    * Ask if this radio button is selected
+    *
+    * @return RadioButton
+    */
   def inSelectedState: Boolean =
     state.inSelectedState
 
+  /**
+    * Ask if this radio button has been hovered over
+    *
+    * @return RadioButton
+    */
   def inHoverState: Boolean =
     state.inHoverState
 }
@@ -67,7 +127,7 @@ object RadioButton {
     * @param position on screen location of the radio button
     */
   def apply(position: Point): RadioButton =
-    RadioButton(position, () => Nil, () => Nil, () => Nil, () => Nil, RadioButtonState.Normal)
+    RadioButton(position, () => Nil, () => Nil, () => Nil, () => Nil, None, None, RadioButtonState.Normal)
 }
 
 /**
@@ -170,7 +230,7 @@ final case class RadioButtonGroup(
 
     val selected: Option[Int] =
       indexedOptions.flatMap {
-        case (o, i) if mouse.leftMouseIsDown && hitArea.moveBy(o.position).isPointWithin(mouse.position) =>
+        case (o, i) if mouse.leftMouseIsDown && o.hitArea.getOrElse(hitArea).moveBy(o.position).isPointWithin(mouse.position) =>
           List(i)
 
         case _ =>
@@ -196,7 +256,7 @@ final case class RadioButtonGroup(
           Outcome(o.copy(state = RadioButtonState.Normal), o.onUnselected())
 
         // Not selected, no mouse click, mouse within, should be in hover state.
-        case (o, _) if !o.inSelectedState && !mouse.leftMouseIsDown && hitArea.moveBy(o.position).isPointWithin(mouse.position) =>
+        case (o, _) if !o.inSelectedState && !mouse.leftMouseIsDown && o.hitArea.getOrElse(hitArea).moveBy(o.position).isPointWithin(mouse.position) =>
           Outcome(o.copy(state = RadioButtonState.Hover), o.onHoverOver())
 
         // Hovered, but mouse outside so revert to normal
@@ -220,13 +280,13 @@ final case class RadioButtonGroup(
     Group(options.map { option =>
       option.state.toButtonState match {
         case ButtonState.Up =>
-          buttonAssets.up.moveTo(option.position).withDepth(depth)
+          option.buttonAssets.getOrElse(buttonAssets).up.moveTo(option.position).withDepth(depth)
 
         case ButtonState.Over =>
-          buttonAssets.over.moveTo(option.position).withDepth(depth)
+          option.buttonAssets.getOrElse(buttonAssets).over.moveTo(option.position).withDepth(depth)
 
         case ButtonState.Down =>
-          buttonAssets.down.moveTo(option.position).withDepth(depth)
+          option.buttonAssets.getOrElse(buttonAssets).down.moveTo(option.position).withDepth(depth)
       }
     })
 }
