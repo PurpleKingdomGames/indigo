@@ -85,12 +85,12 @@ object AssetLoader {
     if (image.complete) Future.successful(image)
     else {
       val p = Promise[HTMLImageElement]()
-      image.onload = { _: Event =>
+      image.onload = { (_: Event) =>
         p.success(image)
       }
       image.addEventListener(
         "error",
-        { _: Event =>
+        { (_: Event) =>
           p.failure(new Exception("Image load error"))
         },
         false

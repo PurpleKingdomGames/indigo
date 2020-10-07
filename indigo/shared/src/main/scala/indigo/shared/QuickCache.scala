@@ -52,7 +52,7 @@ final class QuickCache[A](private val cache: mutable.HashMap[CacheKey, A]) {
     cache.size
 
   def toMap[K](keyConvertor: CacheKey => K): Map[K, A] =
-    cache.toMap.map { pair: (CacheKey, A) =>
+    cache.toMap.map { (pair: (CacheKey, A)) =>
       (keyConvertor(pair._1), pair._2)
     }
 

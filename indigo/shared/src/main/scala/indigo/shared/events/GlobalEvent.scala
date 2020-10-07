@@ -66,37 +66,37 @@ final case class ViewportResize(gameViewPort: GameViewport) extends ViewEvent
 /**
   * Attempt to enter or exit full screen mode
   */
-final case object ToggleFullScreen extends GlobalEvent
+case object ToggleFullScreen extends GlobalEvent
 
 /**
   * Attempt to enter full screen mode
   */
-final case object EnterFullScreen extends GlobalEvent
+case object EnterFullScreen extends GlobalEvent
 
 /**
   * Attempt to exit full screen mode
   */
-final case object ExitFullScreen extends GlobalEvent
+case object ExitFullScreen extends GlobalEvent
 
 /**
   * The game entered full screen mode
   */
-final case object FullScreenEntered extends ViewEvent
+case object FullScreenEntered extends ViewEvent
 
 /**
   * A problem occurred trying to enter full screen
   */
-final case object FullScreenEnterError extends ViewEvent
+case object FullScreenEnterError extends ViewEvent
 
 /**
   * The game exited full screen mode
   */
-final case object FullScreenExited extends ViewEvent
+case object FullScreenExited extends ViewEvent
 
 /**
   * A problem occurred trying to exit full screen
   */
-final case object FullScreenExitError extends ViewEvent
+case object FullScreenExitError extends ViewEvent
 
 /**
   * Represents all mouse events

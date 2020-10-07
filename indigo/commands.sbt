@@ -11,8 +11,8 @@ lazy val releaseProjects: List[String] =
 
 lazy val coreProjects: List[String] =
   releaseProjects ++ List(
-    "sandbox",
-    "perf"
+    // "sandbox",
+    // "perf"
   )
 
 def applyCommand(projects: List[String], command: String): String =

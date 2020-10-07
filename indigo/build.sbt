@@ -88,10 +88,10 @@ lazy val indigoCore =
     .settings(commonSettings: _*)
     .settings(publishSettings: _*)
     .settings(
-      name := "indigo-core"//,
-      // libraryDependencies ++= Seq(
-      //   "org.scalacheck" %% "scalac0heck" % "1.14.3" % "test"
-      // )
+      name := "indigo-core",
+      libraryDependencies ++= Seq(
+        ("org.scalacheck" %% "scalacheck" % "1.14.3" % "test").withDottyCompat(scalaVersion.value)
+      )
     )
     .dependsOn(shared)
     .dependsOn(indigoPlatforms)
@@ -105,8 +105,8 @@ lazy val indigoExtras =
     .settings(publishSettings: _*)
     .dependsOn(shared)
     .settings(
-      name := "indigo-extras"//,
-      // libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.14.3" % "test"
+      name := "indigo-extras",
+      libraryDependencies += ("org.scalacheck" %% "scalacheck" % "1.14.3" % "test").withDottyCompat(scalaVersion.value)
     )
 
 // Indigo Game
@@ -118,8 +118,8 @@ lazy val indigo =
     .settings(publishSettings: _*)
     .dependsOn(indigoCore)
     .settings(
-      name := "indigo"//,
-      // libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.14.3" % "test"
+      name := "indigo",
+      libraryDependencies += ("org.scalacheck" %% "scalacheck" % "1.14.3" % "test").withDottyCompat(scalaVersion.value)
     )
 
 // Indigo Facades
@@ -136,7 +136,7 @@ lazy val facades =
       // scalacOptions += "-Yrangepos",
       scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits"),
       libraryDependencies ++= Seq(
-        // "org.scala-js" %%% "scalajs-dom" % "1.1.0"
+        ("org.scala-js" %%% "scalajs-dom" % "1.1.0").withDottyCompat(scalaVersion.value)
       )
     )
 
@@ -150,8 +150,8 @@ lazy val indigoPlatforms =
     .settings(
       name := "indigo-platforms",
       libraryDependencies ++= Seq(
-        // "org.scalacheck" %% "scalacheck"  % "1.14.3" % "test",
-        // "org.scala-js"   %%% "scalajs-dom" % "1.1.0"
+        ("org.scalacheck" %% "scalacheck"  % "1.14.3" % "test").withDottyCompat(scalaVersion.value),
+        ("org.scala-js"   %%% "scalajs-dom" % "1.1.0").withDottyCompat(scalaVersion.value)
       )
     )
     .settings(
@@ -176,7 +176,7 @@ lazy val shared =
     .settings(publishSettings: _*)
     .settings(
       name := "shared",
-      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
+      libraryDependencies += ("org.scalacheck" %%% "scalacheck" % "1.14.3" % "test").withDottyCompat(scalaVersion.value)
     )
 
 // Circe
@@ -189,8 +189,8 @@ lazy val indigoJsonCirce =
     .settings(
       name := "indigo-json-circe",
       libraryDependencies ++= Seq(
-        "io.circe" %%% "circe-core",
-        "io.circe" %%% "circe-parser"
+        ("io.circe" %%% "circe-core").withDottyCompat(scalaVersion.value),
+        ("io.circe" %%% "circe-parser").withDottyCompat(scalaVersion.value)
       ).map(_ % "0.13.0")
     )
     .dependsOn(indigoExtras)
@@ -215,8 +215,8 @@ lazy val indigoProject =
       indigoExtras,
       indigo,
       facades,
-      sandbox,
-      perf
+      // sandbox,
+      // perf
     )
 
 lazy val code =

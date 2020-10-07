@@ -31,7 +31,7 @@ object WorldEvents {
   }
 
   def init(canvas: html.Canvas, magnification: Int, globalEventStream: GlobalEventStream): Unit = {
-    canvas.onclick = { e: dom.MouseEvent =>
+    canvas.onclick = { (e: dom.MouseEvent) =>
       globalEventStream.pushGlobalEvent(
         MouseEvent.Click(
           absoluteCoordsX(e.clientX) / magnification,
@@ -40,7 +40,7 @@ object WorldEvents {
       )
     }
 
-    canvas.onmousemove = { e: dom.MouseEvent =>
+    canvas.onmousemove = { (e: dom.MouseEvent) =>
       globalEventStream.pushGlobalEvent(
         MouseEvent.Move(
           absoluteCoordsX(e.clientX) / magnification,
@@ -49,7 +49,7 @@ object WorldEvents {
       )
     }
 
-    canvas.onmousedown = { e: dom.MouseEvent =>
+    canvas.onmousedown = { (e: dom.MouseEvent) =>
       globalEventStream.pushGlobalEvent(
         MouseEvent.MouseDown(
           absoluteCoordsX(e.clientX) / magnification,
@@ -58,7 +58,7 @@ object WorldEvents {
       )
     }
 
-    canvas.onmouseup = { e: dom.MouseEvent =>
+    canvas.onmouseup = { (e: dom.MouseEvent) =>
       globalEventStream.pushGlobalEvent(
         MouseEvent.MouseUp(
           absoluteCoordsX(e.clientX) / magnification,
@@ -67,11 +67,11 @@ object WorldEvents {
       )
     }
 
-    document.onkeydown = { e: dom.KeyboardEvent =>
+    document.onkeydown = { (e: dom.KeyboardEvent) =>
       globalEventStream.pushGlobalEvent(KeyboardEvent.KeyDown(Key(e.keyCode, e.key)))
     }
 
-    document.onkeyup = { e: dom.KeyboardEvent =>
+    document.onkeyup = { (e: dom.KeyboardEvent) =>
       globalEventStream.pushGlobalEvent(KeyboardEvent.KeyUp(Key(e.keyCode, e.key)))
     }
 
