@@ -10,14 +10,29 @@ Currently Indigo only exports web games, we hope to support more platforms in th
 
 Documentation can be found on [indigoengine.io](https://indigoengine.io).
 
-## Local build instructions
+## Full local build and test instructions
 
-Assuming a machine with SBT and Mill installed, on Mac / Linux from the repo root:
+### Build requirements
+
+You will need:
+
+- Mill
+- SBT
+- JDK 1.8
+- [glslang validator](https://github.com/KhronosGroup/glslang) - can be installed with your favorite package manager.
+
+### Running the build
+
+On Mac / Linux, from the repo root to do a full build and test:
 
 ```bash
 bash build.sh
 ```
 
-Stand well back.
+> Windows users: Most of the things in the script mentioned above should work, but Indigo is not routinely built on Windows machines so we currently offer no guarantees or support. We hope to in the future.
 
->Windows users: Most of the things in the script mentioned above should work, but Indigo is not routinely built on Windows machines so we currently offer no guarantees or support. We hope to in the future.
+There is also another script which is faster since it doesn't build the examples, demos, or IndigoJS.
+
+```bash
+bash localpublish.sh
+```
