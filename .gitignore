@@ -32,3 +32,4 @@ elm-stuff
 .metals/
 .bloop
 metals.sbt
+.bsp/
