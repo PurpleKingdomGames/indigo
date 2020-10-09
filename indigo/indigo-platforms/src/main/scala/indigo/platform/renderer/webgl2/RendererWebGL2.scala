@@ -56,6 +56,8 @@ final class RendererWebGL2(
 
   private val vao = gl2.createVertexArray()
 
+  private val standardShaderProgramGreen =
+    WebGLHelper.shaderProgramSetup(gl, "Pixel", WebGL2StandardPixelArtGreen)
   private val standardShaderProgram =
     WebGLHelper.shaderProgramSetup(gl, "Pixel", WebGL2StandardPixelArt)
   private val lightingShaderProgram =
@@ -142,7 +144,8 @@ final class RendererWebGL2(
       sceneData.gameLayerDisplayObjects,
       gameFrameBuffer,
       ClearColor.Black.forceTransparent,
-      standardShaderProgram
+      standardShaderProgram,
+      standardShaderProgramGreen
     )
 
     // Dynamic lighting
@@ -165,6 +168,7 @@ final class RendererWebGL2(
       sceneData.lightingLayerDisplayObjects,
       lightingFrameBuffer,
       sceneData.clearColor,
+      lightingShaderProgram,
       lightingShaderProgram
     )
 
@@ -176,6 +180,7 @@ final class RendererWebGL2(
       sceneData.distortionLayerDisplayObjects,
       distortionFrameBuffer,
       ClearColor(0.5, 0.5, 1.0, 1.0),
+      distortionShaderProgram,
       distortionShaderProgram
     )
 
@@ -187,7 +192,8 @@ final class RendererWebGL2(
       sceneData.uiLayerDisplayObjects,
       uiFrameBuffer,
       ClearColor.Black.forceTransparent,
-      standardShaderProgram
+      standardShaderProgram,
+      standardShaderProgramGreen
     )
 
     // Merge

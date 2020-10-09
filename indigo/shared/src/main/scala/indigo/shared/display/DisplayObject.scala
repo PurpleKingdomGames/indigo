@@ -50,7 +50,8 @@ final class DisplayObject(
     val isLit: Float,
     val refX: Float,
     val refY: Float,
-    val effects: DisplayEffects
+    val effects: DisplayEffects,
+    val isGreen: Boolean
 ) extends DisplayEntity
 object DisplayObject {
 
@@ -75,7 +76,8 @@ object DisplayObject {
       isLit: Float,
       refX: Int,
       refY: Int,
-      effects: DisplayEffects
+      effects: DisplayEffects,
+      isGreen: Boolean
   ): DisplayObject =
     new DisplayObject(
       x.toFloat,
@@ -101,6 +103,7 @@ object DisplayObject {
       isLit,
       refX.toFloat,
       refY.toFloat,
-      effects
+      effects,
+      isGreen
     )
 }

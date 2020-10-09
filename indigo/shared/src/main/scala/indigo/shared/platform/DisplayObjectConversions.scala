@@ -293,7 +293,8 @@ final class DisplayObjectConversions(
       isLit = if (leaf.material.isLit) 1.0f else 0.0f,
       refX = leaf.ref.x,
       refY = leaf.ref.y,
-      effects = effectsValues
+      effects = effectsValues,
+      isGreen = leaf.material.isGreen
     )
   }
 
@@ -342,7 +343,8 @@ final class DisplayObjectConversions(
       isLit = if (material.isLit) 1.0f else 0.0f,
       refX = leaf.ref.x,
       refY = leaf.ref.y,
-      effects = effectsValues
+      effects = effectsValues,
+      isGreen = material.isGreen
     )
   }
 
@@ -405,7 +407,8 @@ final class DisplayObjectConversions(
               isLit = if (fontInfo.fontSpriteSheet.material.isLit) 1.0f else 0.0f,
               refX = leaf.ref.x,
               refY = leaf.ref.y,
-              effects = effectsValues
+              effects = effectsValues,
+              isGreen = fontInfo.fontSpriteSheet.material.isGreen
             )
         }
       }

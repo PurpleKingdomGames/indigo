@@ -15,10 +15,10 @@ object SandboxView {
 
     SceneUpdateFragment.empty
       .addGameLayerNodes(gameLayer(model, viewModel))
-      .addLightingLayerNodes(lightingLayer(inputState))
-      // .addUiLayerNodes(uiLayer(inputState))
-      .withAmbientLight(RGBA.White.withAmount(0.25))
-      .addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
+    .addLightingLayerNodes(lightingLayer(inputState))
+    // .addUiLayerNodes(uiLayer(inputState))
+    .withAmbientLight(RGBA.White.withAmount(0.25))
+    .addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
     // .withSaturationLevel(0.5)
     // .withTint(RGBA.Cyan.withAmount(0.25))
     // .withUiColorOverlay(RGBA.Black.withAmount(0.5))
@@ -53,6 +53,9 @@ object SandboxView {
             .changeCycle(d.cycleName)
             .play()
       },
+      Graphic(0, 0, 16, 16, 2, Material.Textured(SandboxAssets.smallFontName).drawGreen)
+        .withCrop(188, 78, 14, 23)
+        .moveTo(150, 60),
       currentState.dude.dude.sprite.moveBy(8, 10).moveBy(viewModel.offset).withAlpha(1).withTint(RGBA.Green.withAmount(0.25)),
       currentState.dude.dude.sprite.moveBy(8, -10).withAlpha(0.5).withTint(RGBA.Red.withAmount(0.75)),
       Clone(dudeCloneId, Depth(1), CloneTransformData.startAt(Point(16, 64)))

@@ -10,27 +10,31 @@ sealed trait Material {
   def lit: Material
   def unlit: Material
   def hash: String
+  def isGreen: Boolean
+  def drawGreen: Material
 }
 
 object Material {
 
   implicit val eq: EqualTo[Material] =
     EqualTo.create {
-      case (Textured(diffuseA, isLitA), Textured(diffuseB, isLitB)) =>
+      case (Textured(diffuseA, isLitA, isGreenA), Textured(diffuseB, isLitB, isGreenB)) =>
         diffuseA === diffuseB &&
-          isLitA === isLitB
+          isLitA === isLitB &&
+          isGreenA === isGreenB
 
-      case (Lit(albedoA, emissiveA, normalA, specularA, isLitA), Lit(albedoB, emissiveB, normalB, specularB, isLitB)) =>
+      case (Lit(albedoA, emissiveA, normalA, specularA, isLitA, isGreenA), Lit(albedoB, emissiveB, normalB, specularB, isLitB, isGreenB)) =>
         albedoA === albedoB &&
           emissiveA === emissiveB &&
           normalA === normalB &&
           specularA === specularB &&
-          isLitA === isLitB
+          isLitA === isLitB &&
+          isGreenA === isGreenB
       case _ =>
         false
     }
 
-  final case class Textured(diffuse: AssetName, isLit: Boolean) extends Material {
+  final case class Textured(diffuse: AssetName, isLit: Boolean, isGreen: Boolean) extends Material {
     val default: AssetName = diffuse
 
     def withDiffuse(newDiffuse: AssetName): Textured =
@@ -42,12 +46,15 @@ object Material {
     def unlit: Textured =
       this.copy(isLit = false)
 
+    def drawGreen: Textured =
+      this.copy(isGreen = true)
+
     lazy val hash: String =
       diffuse.value + (if (isLit) "1" else "0")
   }
   object Textured {
     def apply(diffuse: AssetName): Textured =
-      new Textured(diffuse, false)
+      new Textured(diffuse, false, false)
 
     def unapply(t: Textured): Option[(AssetName, Boolean)] =
       Some((t.diffuse, t.isLit))
@@ -58,7 +65,8 @@ object Material {
       emissive: Option[Texture],
       normal: Option[Texture],
       specular: Option[Texture],
-      isLit: Boolean
+      isLit: Boolean,
+      isGreen: Boolean
   ) extends Material {
     val default: AssetName = albedo
 
@@ -80,6 +88,9 @@ object Material {
     def unlit: Lit =
       this.copy(isLit = false)
 
+    def drawGreen: Lit =
+      this.copy(isGreen = true)
+
     lazy val hash: String =
       albedo.value +
         emissive.map(_.hash).getOrElse("_") +
@@ -94,12 +105,12 @@ object Material {
         normal: Option[Texture],
         specular: Option[Texture]
     ): Lit =
-      new Lit(albedo, emissive, normal, specular, true)
+      new Lit(albedo, emissive, normal, specular, true, false)
 
     def apply(
         albedo: AssetName
     ): Lit =
-      new Lit(albedo, None, None, None, true)
+      new Lit(albedo, None, None, None, true, false)
 
     def apply(
         albedo: AssetName,
@@ -110,7 +121,8 @@ object Material {
         Some(Texture(emissive, 1.0d)),
         None,
         None,
-        true
+        true,
+        false
       )
 
     def apply(
@@ -123,7 +135,8 @@ object Material {
         Some(Texture(emissive, 1.0d)),
         Some(Texture(normal, 1.0d)),
         None,
-        true
+        true,
+        false
       )
 
     def apply(
@@ -137,11 +150,12 @@ object Material {
         Some(Texture(emissive, 1.0d)),
         Some(Texture(normal, 1.0d)),
         Some(Texture(specular, 1.0d)),
-        true
+        true,
+        false
       )
 
     def fromAlbedo(albedo: AssetName): Lit =
-      new Lit(albedo, None, None, None, true)
+      new Lit(albedo, None, None, None, true, false)
   }
 
 }

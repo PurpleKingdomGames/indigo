@@ -157,51 +157,56 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       displayEntities: ListBuffer[DisplayEntity],
       frameBufferComponents: FrameBufferComponents,
       clearColor: ClearColor,
-      shaderProgram: WebGLProgram
+      shaderProgram: WebGLProgram,
+      shaderProgramGreen: WebGLProgram
   ): Unit = {
 
     FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, clearColor)
     gl2.drawBuffers(frameBufferComponents.colorAttachments)
 
-    gl2.useProgram(shaderProgram)
+    def setupTheShader(program: WebGLProgram): Unit = {
+      gl2.useProgram(program)
 
-    val textureLocation = gl2.getUniformLocation(shaderProgram, "u_textureDiffuse")
-    gl2.uniform1i(textureLocation, 0)
+      val textureLocation = gl2.getUniformLocation(program, "u_textureDiffuse")
+      gl2.uniform1i(textureLocation, 0)
 
-    // Projection
-    val projectionLocation = gl2.getUniformLocation(shaderProgram, "u_projection")
-    gl2.uniformMatrix4fv(projectionLocation, false, projection)
+      // Projection
+      val projectionLocation = gl2.getUniformLocation(program, "u_projection")
+      gl2.uniformMatrix4fv(projectionLocation, false, projection)
 
-    // Instance attributes
-    // vec4 a_transform
-    setupInstanceArray(transformInstanceArray, 1, 4)
-    // vec2 a_frameTransform
-    setupInstanceArray(frameTransformInstanceArray, 2, 4)
-    // float a_dimensions
-    setupInstanceArray(dimensionsInstanceArray, 3, 4)
-    // vec4 a_tint
-    setupInstanceArray(tintInstanceArray, 4, 4)
-    // vec4 a_gradiantPositions
-    setupInstanceArray(gradiantOverlayPositionsInstanceArray, 5, 4)
-    // vec4 a_gradiantOverlayFromColor
-    setupInstanceArray(gradiantOverlayFromColorInstanceArray, 6, 4)
-    // vec4 a_gradiantOverlayToColor
-    setupInstanceArray(gradiantOverlayToColorInstanceArray, 7, 4)
-    // vec4 a_borderColor
-    setupInstanceArray(borderColorInstanceArray, 8, 4)
-    // vec4 a_glowColor
-    setupInstanceArray(glowColorInstanceArray, 9, 4)
-    // vec4 a_amounts
-    setupInstanceArray(amountsInstanceArray, 10, 4)
-    // vec4 a_rotationAlphaFlipHFlipV --
-    setupInstanceArray(rotationAlphaFlipHFlipVInstanceArray, 11, 4)
-    // vec4 a_emissiveNormalOffsets --
-    setupInstanceArray(emissiveNormalOffsetsArray, 12, 4)
-    // vec4 a_specularOffsetIsLit --
-    setupInstanceArray(specularOffsetIsLitArray, 13, 4)
-    // vec4 a_textureAmounts --
-    setupInstanceArray(textureAmountsArray, 14, 4)
-    //
+      // Instance attributes
+      // vec4 a_transform
+      setupInstanceArray(transformInstanceArray, 1, 4)
+      // vec2 a_frameTransform
+      setupInstanceArray(frameTransformInstanceArray, 2, 4)
+      // float a_dimensions
+      setupInstanceArray(dimensionsInstanceArray, 3, 4)
+      // vec4 a_tint
+      setupInstanceArray(tintInstanceArray, 4, 4)
+      // vec4 a_gradiantPositions
+      setupInstanceArray(gradiantOverlayPositionsInstanceArray, 5, 4)
+      // vec4 a_gradiantOverlayFromColor
+      setupInstanceArray(gradiantOverlayFromColorInstanceArray, 6, 4)
+      // vec4 a_gradiantOverlayToColor
+      setupInstanceArray(gradiantOverlayToColorInstanceArray, 7, 4)
+      // vec4 a_borderColor
+      setupInstanceArray(borderColorInstanceArray, 8, 4)
+      // vec4 a_glowColor
+      setupInstanceArray(glowColorInstanceArray, 9, 4)
+      // vec4 a_amounts
+      setupInstanceArray(amountsInstanceArray, 10, 4)
+      // vec4 a_rotationAlphaFlipHFlipV --
+      setupInstanceArray(rotationAlphaFlipHFlipVInstanceArray, 11, 4)
+      // vec4 a_emissiveNormalOffsets --
+      setupInstanceArray(emissiveNormalOffsetsArray, 12, 4)
+      // vec4 a_specularOffsetIsLit --
+      setupInstanceArray(specularOffsetIsLitArray, 13, 4)
+      // vec4 a_textureAmounts --
+      setupInstanceArray(textureAmountsArray, 14, 4)
+      //
+    }
+
+    setupTheShader(shaderProgram)
 
     val sorted: ListBuffer[DisplayEntity] =
       RendererHelper.sortByDepth(displayEntities)
@@ -227,10 +232,17 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       }
 
     @tailrec
-    def rec(remaining: List[DisplayEntity], batchCount: Int, atlasName: String): Unit =
+    def rec(remaining: List[DisplayEntity], batchCount: Int, atlasName: String, drawingGreen: Boolean): Unit =
       remaining match {
         case Nil =>
           drawBuffer(batchCount)
+
+        case (d: DisplayObject) :: _ if d.isGreen !== drawingGreen =>
+          drawBuffer(batchCount)
+
+          setupTheShader(if (d.isGreen) shaderProgramGreen else shaderProgram)
+
+          rec(remaining, 0, atlasName, d.isGreen)
 
         case (d: DisplayObject) :: _ if d.atlasName !== atlasName =>
           drawBuffer(batchCount)
@@ -246,42 +258,42 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
               gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
           }
 
-          rec(remaining, 0, d.atlasName)
+          rec(remaining, 0, d.atlasName, drawingGreen)
 
         case _ if batchCount === maxBatchSize =>
           drawBuffer(batchCount)
-          rec(remaining, 0, atlasName)
+          rec(remaining, 0, atlasName, drawingGreen)
 
         case (d: DisplayObject) :: ds =>
           updateData(d, batchCount)
-          rec(ds, batchCount + 1, atlasName)
+          rec(ds, batchCount + 1, atlasName, drawingGreen)
 
         case (c: DisplayClone) :: ds =>
           cloneBlankDisplayObjects.get(c.id) match {
             case None =>
-              rec(ds, batchCount, atlasName)
+              rec(ds, batchCount, atlasName, drawingGreen)
 
             case Some(refDisplayObject) =>
               updateData(refDisplayObject, batchCount)
               overwriteFromDisplayBatchClone(DisplayClone.asBatchData(c), batchCount)
-              rec(ds, batchCount + 1, atlasName)
+              rec(ds, batchCount + 1, atlasName, drawingGreen)
           }
 
         case (c: DisplayCloneBatch) :: ds =>
           cloneBlankDisplayObjects.get(c.id) match {
             case None =>
-              rec(ds, batchCount, atlasName)
+              rec(ds, batchCount, atlasName, drawingGreen)
 
             case Some(refDisplayObject) =>
               val numberProcessed: Int =
                 processCloneBatch(c, refDisplayObject, batchCount)
 
-              rec(ds, batchCount + numberProcessed, atlasName)
+              rec(ds, batchCount + numberProcessed, atlasName, drawingGreen)
           }
 
       }
 
-    rec(sorted.toList, 0, "")
+    rec(sorted.toList, 0, "", false)
 
   }
 
