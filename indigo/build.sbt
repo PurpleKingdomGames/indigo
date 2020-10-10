@@ -137,6 +137,24 @@ lazy val facades =
       )
     )
 
+// Indigo Shaders
+lazy val shaders =
+  project
+    .in(file("shaders"))
+    .enablePlugins(ScalaJSPlugin)
+    .settings(commonSettings: _*)
+    .settings(publishSettings: _*)
+    .settings(
+      name := "shaders",
+      version := indigoVersion,
+      scalaVersion := scala2,
+      organization := "io.indigoengine",
+      libraryDependencies ++= Seq(
+        "org.scala-js" %%% "scalajs-dom" % "1.0.0"
+      ),
+      wartremoverWarnings in (Compile, compile) := Seq()
+    )
+
 // Indigo Platforms
 lazy val indigoPlatforms =
   project
@@ -227,6 +245,7 @@ lazy val indigoProject =
       indigoExtras,
       indigo,
       facades,
+      shaders,
       sandbox,
       perf
     )
