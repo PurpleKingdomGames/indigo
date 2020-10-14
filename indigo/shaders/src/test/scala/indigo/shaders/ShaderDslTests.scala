@@ -1,7 +1,7 @@
 package indigo.shaders
 
 import utest._
-import ShaderDsl._
+// import ShaderDsl._
 
 object ShaderDslTests extends TestSuite {
 
