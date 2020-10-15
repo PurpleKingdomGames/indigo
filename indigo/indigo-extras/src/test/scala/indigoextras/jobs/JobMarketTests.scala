@@ -66,7 +66,7 @@ object JobMarketTests extends TestSuite {
           val job: Job          = SampleJobs.CantHave()
           val market: JobMarket = JobMarket(List(job))
 
-          val report = market.initialJobs.map(_.jobName.value).mkString(",")
+          val report = market.availableJobs.map(_.jobName.value).mkString(",")
 
           report.contains(job.jobName.value) ==> true
         }
@@ -86,7 +86,7 @@ object JobMarketTests extends TestSuite {
         "should have an empty subsystem representation" - {
           val market = JobMarket.subSystem
 
-          market.initialJobs ==> Nil
+          market.availableJobs ==> Nil
         }
 
         "should allow a you to find work" - {
