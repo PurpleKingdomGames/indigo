@@ -3,7 +3,14 @@ package indigoextras.jobs
 import indigo.shared.time.GameTime
 import indigo.shared.events.{FrameTick, GlobalEvent}
 import indigo.shared.datatypes.BindingKey
+import indigo.shared.Outcome
 
+/**
+  * Represents an Actors work schedule
+  *
+  * @param id
+  * @param jobStack
+  */
 final class WorkSchedule[Actor, Context](val id: BindingKey, val jobStack: List[Job]) {
 
   def current: Option[Job] =
@@ -11,10 +18,10 @@ final class WorkSchedule[Actor, Context](val id: BindingKey, val jobStack: List[
 
   def update(gameTime: GameTime, actor: Actor, context: Context)(implicit
       worker: Worker[Actor, Context]
-  ): GlobalEvent => UpdatedWorkSchedule[Actor, Context] =
+  ): GlobalEvent => Outcome[WorkScheduleUpdate[Actor, Context]] =
     WorkSchedule.update(id, this, gameTime, actor, context)
 
-  def destroy(): DestroyedSchedule[Actor, Context] =
+  def destroy(): Outcome[WorkSchedule[Actor, Context]] =
     WorkSchedule.destroy(this)
 
 }
@@ -35,11 +42,13 @@ object WorkSchedule {
       gameTime: GameTime,
       actor: Actor,
       context: Context
-  )(implicit worker: Worker[Actor, Context]): GlobalEvent => UpdatedWorkSchedule[Actor, Context] = {
+  )(implicit worker: Worker[Actor, Context]): GlobalEvent => Outcome[WorkScheduleUpdate[Actor, Context]] = {
     case JobMarketEvent.Allocate(allocationId, job) if allocationId === id =>
-      UpdatedWorkSchedule(
-        WorkSchedule(workSchedule.id, job :: workSchedule.jobStack),
-        actor
+      Outcome(
+        WorkScheduleUpdate(
+          WorkSchedule(workSchedule.id, job :: workSchedule.jobStack),
+          actor
+        )
       )
 
     case JobMarketEvent.NothingFound(allocationId) if allocationId === id =>
@@ -49,7 +58,9 @@ object WorkSchedule {
       updateWorkSchedule[Actor, Context](workSchedule, gameTime, actor, context)
 
     case _ =>
-      UpdatedWorkSchedule(workSchedule, actor)
+      Outcome(
+        WorkScheduleUpdate(workSchedule, actor)
+      )
   }
 
   def updateWorkSchedule[Actor, Context](
@@ -57,50 +68,40 @@ object WorkSchedule {
       gameTime: GameTime,
       actor: Actor,
       context: Context
-  )(implicit worker: Worker[Actor, Context]): UpdatedWorkSchedule[Actor, Context] =
+  )(implicit worker: Worker[Actor, Context]): Outcome[WorkScheduleUpdate[Actor, Context]] =
     workSchedule.jobStack match {
       case Nil =>
-        UpdatedWorkSchedule(
-          WorkSchedule(workSchedule.id, worker.generateJobs()),
-          actor
+        Outcome(
+          WorkScheduleUpdate(
+            WorkSchedule(workSchedule.id, worker.generateJobs()),
+            actor
+          )
         )
 
       case current :: _ if worker.isJobComplete(actor)(current) =>
-        val completed = worker.onJobComplete(actor, context)(current)
-
-        UpdatedWorkSchedule(
-          WorkSchedule(workSchedule.id, completed.jobs ++ workSchedule.jobStack.drop(1)),
-          actor,
-          completed.events
-        )
+        worker.onJobComplete(actor, context)(current).map { jobs =>
+          WorkScheduleUpdate(
+            WorkSchedule(workSchedule.id, jobs ++ workSchedule.jobStack.drop(1)),
+            actor
+          )
+        }
 
       case h :: t =>
         val res: (Job, Actor) = worker.workOnJob(gameTime, actor, context)(h)
-        UpdatedWorkSchedule(
-          WorkSchedule(workSchedule.id, res._1 :: t),
-          res._2
+        Outcome(
+          WorkScheduleUpdate(
+            WorkSchedule(workSchedule.id, res._1 :: t),
+            res._2
+          )
         )
     }
 
-  def destroy[Actor, Context](workSchedule: WorkSchedule[Actor, Context]): DestroyedSchedule[Actor, Context] =
-    DestroyedSchedule(
+  def destroy[Actor, Context](workSchedule: WorkSchedule[Actor, Context]): Outcome[WorkSchedule[Actor, Context]] =
+    Outcome(
       WorkSchedule(workSchedule.id, Nil),
       workSchedule.jobStack.filterNot(_.isLocal).map(j => JobMarketEvent.Post(j))
     )
 
 }
 
-final case class UpdatedWorkSchedule[Actor, Context](
-    workSchedule: WorkSchedule[Actor, Context],
-    actor: Actor,
-    events: List[GlobalEvent]
-) {
-  def addEvents(newEvents: List[GlobalEvent]): UpdatedWorkSchedule[Actor, Context] =
-    UpdatedWorkSchedule(workSchedule, actor, events ++ newEvents)
-}
-object UpdatedWorkSchedule {
-  def apply[Actor, Context](workSchedule: WorkSchedule[Actor, Context], actor: Actor): UpdatedWorkSchedule[Actor, Context] =
-    UpdatedWorkSchedule(workSchedule, actor, Nil)
-}
-
-final case class DestroyedSchedule[Actor, Context](workSchedule: WorkSchedule[Actor, Context], events: List[GlobalEvent])
+final case class WorkScheduleUpdate[Actor, Context](workSchedule: WorkSchedule[Actor, Context], actor: Actor)

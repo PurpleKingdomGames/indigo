@@ -7,7 +7,16 @@ import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.subsystems.SubSystemFrameContext
 
-final case class JobMarket(initialJobs: List[Job]) extends SubSystem {
+/**
+  * The JobMarket is a subsystem that manages a global pool of available jobs.
+  * 
+  * Not all jobs are available to all workers however.
+  * 
+  * All interaction with the job market is done by a series of events.
+  *
+  * @param availableJobs Jobs currently available for allocation to workers.
+  */
+final case class JobMarket(availableJobs: List[Job]) extends SubSystem {
   type EventType      = JobMarketEvent
   type SubSystemModel = List[Job]
 
@@ -17,7 +26,7 @@ final case class JobMarket(initialJobs: List[Job]) extends SubSystem {
   }
 
   val initialModel: List[Job] =
-    initialJobs
+    availableJobs
 
   def update(frameContext: SubSystemFrameContext, jobs: List[Job]): JobMarketEvent => Outcome[List[Job]] = {
     case JobMarketEvent.Post(job) =>
@@ -44,6 +53,11 @@ final case class JobMarket(initialJobs: List[Job]) extends SubSystem {
 
 object JobMarket {
 
+  /**
+    * Creates an empty JobMarket
+    *
+    * @return An empty JobMarket
+    */
   def subSystem: JobMarket =
     JobMarket(Nil)
 
@@ -62,10 +76,38 @@ object JobMarket {
 
 }
 
+/**
+ * Events that are used to manage the JobMarket
+ */
 sealed trait JobMarketEvent extends GlobalEvent with Product with Serializable
 object JobMarketEvent {
+  /**
+    * An event to Post a job onto the global market
+    *
+    * @param job the job to put onto the marker
+    */
   final case class Post(job: Job)                                   extends JobMarketEvent
-  final case class Find(id: BindingKey, canTakeJob: Job => Boolean) extends JobMarketEvent
-  final case class Allocate(id: BindingKey, job: Job)               extends JobMarketEvent
-  final case class NothingFound(id: BindingKey)                     extends JobMarketEvent
+
+  /**
+    * An event emitted by a worker, used to try and find a job to do.
+    *
+    * @param workerId the workers ID, so that we can report back to the requester.
+    * @param canTakeJob A predicate job discriminator supplied by the worker to decide if a job can be done by the requesting worker.
+    */
+  final case class Find(workerId: BindingKey, canTakeJob: Job => Boolean) extends JobMarketEvent
+
+  /**
+    * An event that represents a job that has been found, for delivery/allocation to the worker.
+    *
+    * @param workerId the id of the worker the job is being sent to.
+    * @param job the job to be given to the worker.
+    */
+  final case class Allocate(workerId: BindingKey, job: Job)               extends JobMarketEvent
+
+  /**
+    * An event representing that no job could be found for the worker.
+    *
+    * @param workerId the id of the worker who made the request.
+    */
+  final case class NothingFound(workerId: BindingKey)                     extends JobMarketEvent
 }

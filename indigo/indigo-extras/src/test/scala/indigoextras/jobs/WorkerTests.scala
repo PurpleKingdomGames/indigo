@@ -3,6 +3,7 @@ package indigoextras.jobs
 import indigo.shared.time.GameTime
 import utest._
 import indigoextras.jobs.SampleJobs.{CantHave, Fishing, WanderTo}
+import indigo.shared.Outcome
 
 object WorkerTests extends TestSuite {
 
@@ -22,8 +23,8 @@ object WorkerTests extends TestSuite {
         val isComplete: TestActor => Job => Boolean =
           _ => _ => true
 
-        val onComplete: (TestActor, TestContext) => Job => JobComplete =
-          (_, _) => _ => JobComplete.empty
+        val onComplete: (TestActor, TestContext) => Job => Outcome[List[Job]] =
+          (_, _) => _ => Outcome(Nil)
 
         val doWork: (GameTime, TestActor, TestContext) => Job => (Job, TestActor) =
           (_, a, _) => j => (j, a)
@@ -48,7 +49,11 @@ object WorkerTests extends TestSuite {
         val job     = TestJob()
 
         worker.isJobComplete(actor)(job) ==> true
-        worker.onJobComplete(actor, context)(job) ==> JobComplete.empty
+
+        val completed = worker.onJobComplete(actor, context)(job)
+        completed.state ==> Nil
+        completed.globalEvents ==> Nil
+
         worker.workOnJob(time, actor, context)(job) ==> (job, actor)
         worker.generateJobs() ==> Nil
         worker.canTakeJob(actor)(job) ==> false
@@ -61,7 +66,7 @@ object WorkerTests extends TestSuite {
         }
 
         "should be able to perform an action when a job completes" - {
-          worker.onJobComplete(actor, SampleContext(false))(Fishing(Fishing.totalWorkUnits)).jobs.head ==> WanderTo(0)
+          worker.onJobComplete(actor, SampleContext(false))(Fishing(Fishing.totalWorkUnits)).state.head ==> WanderTo(0)
         }
 
         "should be able to work on a job" - {

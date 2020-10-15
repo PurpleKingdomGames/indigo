@@ -2,6 +2,7 @@ package indigoextras.jobs
 
 import indigo.shared.time.GameTime
 import indigoextras.jobs.SampleJobs.Fishing
+import indigo.shared.Outcome
 
 sealed trait SampleJobs extends Job
 object SampleJobs {
@@ -52,15 +53,15 @@ object SampleActor {
           true
       }
 
-      def onJobComplete(actor: SampleActor, context: SampleContext): Job => JobComplete = {
+      def onJobComplete(actor: SampleActor, context: SampleContext): Job => Outcome[List[Job]] = {
         case SampleJobs.Fishing(_) =>
-          JobComplete(List(SampleJobs.WanderTo(0)), Nil)
+          Outcome(List(SampleJobs.WanderTo(0)), Nil)
 
         case SampleJobs.WanderTo(_) =>
-          JobComplete.empty
+          Outcome(Nil)
 
         case _ =>
-          JobComplete.empty
+          Outcome(Nil)
       }
 
       def workOnJob(gameTime: GameTime, actor: SampleActor, context: SampleContext): Job => (Job, SampleActor) = {
