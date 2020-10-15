@@ -77,6 +77,24 @@ lazy val perf =
     .dependsOn(indigoExtras)
     .dependsOn(indigoJsonCirce)
 
+lazy val jobs =
+  project
+    .enablePlugins(ScalaJSPlugin)
+    .enablePlugins(SbtIndigo)
+    .settings(commonSettings: _*)
+    .settings(
+      name := "jobs",
+      showCursor := true,
+      title := "Jobs Example",
+      gameAssetsDirectory := "assets"
+    )
+    .settings(
+      publish := {},
+      publishLocal := {}
+    )
+    .dependsOn(indigo)
+    .dependsOn(indigoExtras)
+
 // Indigo
 lazy val indigoCore =
   project
@@ -228,7 +246,8 @@ lazy val indigoProject =
       indigo,
       facades,
       sandbox,
-      perf
+      perf,
+      jobs
     )
 
 lazy val code =
