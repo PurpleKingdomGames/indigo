@@ -3,6 +3,7 @@ package indigoextras.jobs
 import indigo.shared.time.GameTime
 import indigoextras.jobs.SampleJobs.Fishing
 import indigo.shared.Outcome
+import indigo.shared.dice.Dice
 
 sealed trait SampleJobs extends Job
 object SampleJobs {
@@ -75,7 +76,8 @@ object SampleActor {
           (job, actor)
       }
 
-      def generateJobs: () => List[Job] = () => List(SampleJobs.WanderTo(100))
+      def generateJobs(gameTime: GameTime, dice: Dice): List[Job] =
+        List(SampleJobs.WanderTo(100))
 
       def canTakeJob(actor: SampleActor): Job => Boolean = {
         case SampleJobs.CantHave() =>

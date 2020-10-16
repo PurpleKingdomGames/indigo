@@ -4,6 +4,7 @@ import indigo.shared.time.GameTime
 import utest._
 import indigoextras.jobs.SampleJobs.{CantHave, Fishing, WanderTo}
 import indigo.shared.Outcome
+import indigo.shared.dice.Dice
 
 object WorkerTests extends TestSuite {
 
@@ -29,8 +30,8 @@ object WorkerTests extends TestSuite {
         val doWork: (GameTime, TestActor, TestContext) => Job => (Job, TestActor) =
           (_, a, _) => j => (j, a)
 
-        val jobGenerator: () => List[Job] =
-          () => Nil
+        val jobGenerator: (GameTime, Dice) => List[Job] =
+          (_, _) => Nil
 
         val jobAcceptable: (TestActor, Job) => Boolean =
           (_, _) => false
@@ -46,6 +47,7 @@ object WorkerTests extends TestSuite {
         val actor   = TestActor()
         val context = TestContext()
         val time    = GameTime.zero
+        val dice    = Dice.loaded(1)
         val job     = TestJob()
 
         worker.isJobComplete(actor)(job) ==> true
@@ -55,7 +57,7 @@ object WorkerTests extends TestSuite {
         completed.globalEvents ==> Nil
 
         worker.workOnJob(time, actor, context)(job) ==> (job, actor)
-        worker.generateJobs() ==> Nil
+        worker.generateJobs(time, dice) ==> Nil
         worker.canTakeJob(actor)(job) ==> false
       }
 
@@ -80,7 +82,10 @@ object WorkerTests extends TestSuite {
         }
 
         "should be able to generate jobs" - {
-          worker.generateJobs() ==> List(WanderTo(100))
+          val time = GameTime.zero
+          val dice = Dice.loaded(1)
+
+          worker.generateJobs(time, dice) ==> List(WanderTo(100))
         }
 
         "should be able to distinguish between jobs you can take and ones you can't" - {
