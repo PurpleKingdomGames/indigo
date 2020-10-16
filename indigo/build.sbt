@@ -86,7 +86,9 @@ lazy val jobs =
       name := "jobs",
       showCursor := true,
       title := "Jobs Example",
-      gameAssetsDirectory := "assets"
+      gameAssetsDirectory := "assets",
+      windowStartWidth := 400,
+      windowStartHeight := 400
     )
     .settings(
       publish := {},

@@ -2,6 +2,7 @@ package indigoextras.jobs
 
 import indigo.shared.time.GameTime
 import indigo.shared.Outcome
+import indigo.shared.dice.Dice
 
 /**
   * Represents a Worker for a given Actor
@@ -34,7 +35,7 @@ trait Worker[Actor, Context] {
     * @return
     */
   def workOnJob(gameTime: GameTime, actor: Actor, context: Context): Job => (Job, Actor)
-  def generateJobs: () => List[Job]
+  def generateJobs(gameTime: GameTime, dice: Dice): List[Job]
   def canTakeJob(actor: Actor): Job => Boolean
 }
 object Worker {
@@ -53,7 +54,7 @@ object Worker {
       isComplete: Actor => Job => Boolean,
       onComplete: (Actor, Context) => Job => Outcome[List[Job]],
       doWork: (GameTime, Actor, Context) => Job => (Job, Actor),
-      jobGenerator: () => List[Job],
+      jobGenerator: (GameTime, Dice) => List[Job],
       jobAcceptable: (Actor, Job) => Boolean
   ): Worker[Actor, Context] =
     new Worker[Actor, Context] {
@@ -66,8 +67,8 @@ object Worker {
       def workOnJob(gameTime: GameTime, actor: Actor, context: Context): Job => (Job, Actor) =
         doWork(gameTime, actor, context)
 
-      def generateJobs: () => List[Job] =
-        jobGenerator
+      def generateJobs(gameTime: GameTime, dice: Dice): List[Job] =
+        jobGenerator(gameTime, dice)
 
       def canTakeJob(actor: Actor): Job => Boolean =
         jobAcceptable(actor, _)

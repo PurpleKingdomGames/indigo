@@ -4,6 +4,7 @@ import indigo.shared.time.GameTime
 import indigo.shared.events.{FrameTick, GlobalEvent}
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.Outcome
+import indigo.shared.dice.Dice
 
 /**
   * Represents an Actors work schedule
@@ -16,10 +17,10 @@ final class WorkSchedule[Actor, Context](val id: BindingKey, val jobStack: List[
   def current: Option[Job] =
     WorkSchedule.current(this)
 
-  def update(gameTime: GameTime, actor: Actor, context: Context)(implicit
+  def update(gameTime: GameTime, dice: Dice, actor: Actor, context: Context)(implicit
       worker: Worker[Actor, Context]
   ): GlobalEvent => Outcome[WorkScheduleUpdate[Actor, Context]] =
-    WorkSchedule.update(id, this, gameTime, actor, context)
+    WorkSchedule.update(id, this, gameTime, dice, actor, context)
 
   def destroy(): Outcome[WorkSchedule[Actor, Context]] =
     WorkSchedule.destroy(this)
@@ -40,6 +41,7 @@ object WorkSchedule {
       id: BindingKey,
       workSchedule: WorkSchedule[Actor, Context],
       gameTime: GameTime,
+      dice: Dice,
       actor: Actor,
       context: Context
   )(implicit worker: Worker[Actor, Context]): GlobalEvent => Outcome[WorkScheduleUpdate[Actor, Context]] = {
@@ -52,10 +54,10 @@ object WorkSchedule {
       )
 
     case JobMarketEvent.NothingFound(allocationId) if allocationId === id =>
-      updateWorkSchedule[Actor, Context](workSchedule, gameTime, actor, context)
+      updateWorkSchedule[Actor, Context](workSchedule, gameTime, dice, actor, context)
 
     case FrameTick =>
-      updateWorkSchedule[Actor, Context](workSchedule, gameTime, actor, context)
+      updateWorkSchedule[Actor, Context](workSchedule, gameTime, dice, actor, context)
 
     case _ =>
       Outcome(
@@ -66,6 +68,7 @@ object WorkSchedule {
   def updateWorkSchedule[Actor, Context](
       workSchedule: WorkSchedule[Actor, Context],
       gameTime: GameTime,
+      dice: Dice,
       actor: Actor,
       context: Context
   )(implicit worker: Worker[Actor, Context]): Outcome[WorkScheduleUpdate[Actor, Context]] =
@@ -73,7 +76,7 @@ object WorkSchedule {
       case Nil =>
         Outcome(
           WorkScheduleUpdate(
-            WorkSchedule(workSchedule.id, worker.generateJobs()),
+            WorkSchedule(workSchedule.id, worker.generateJobs(gameTime, dice)),
             actor
           )
         )
