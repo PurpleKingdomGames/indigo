@@ -9,9 +9,9 @@ import indigo.shared.subsystems.SubSystemFrameContext
 
 /**
   * The JobMarket is a subsystem that manages a global pool of available jobs.
-  * 
+  *
   * Not all jobs are available to all workers however.
-  * 
+  *
   * All interaction with the job market is done by a series of events.
   *
   * @param availableJobs Jobs currently available for allocation to workers.
@@ -61,6 +61,9 @@ object JobMarket {
   def subSystem: JobMarket =
     JobMarket(Nil)
 
+  def apply(availableJobs: Job*): JobMarket =
+    JobMarket(availableJobs.toList)
+
   @annotation.tailrec
   def findJob(remaining: List[Job], canTakeJob: Job => Boolean, acc: List[Job]): (Option[Job], List[Job]) =
     remaining match {
@@ -77,16 +80,17 @@ object JobMarket {
 }
 
 /**
- * Events that are used to manage the JobMarket
- */
+  * Events that are used to manage the JobMarket
+  */
 sealed trait JobMarketEvent extends GlobalEvent with Product with Serializable
 object JobMarketEvent {
+
   /**
     * An event to Post a job onto the global market
     *
     * @param job the job to put onto the marker
     */
-  final case class Post(job: Job)                                   extends JobMarketEvent
+  final case class Post(job: Job) extends JobMarketEvent
 
   /**
     * An event emitted by a worker, used to try and find a job to do.
@@ -102,12 +106,12 @@ object JobMarketEvent {
     * @param workerId the id of the worker the job is being sent to.
     * @param job the job to be given to the worker.
     */
-  final case class Allocate(workerId: BindingKey, job: Job)               extends JobMarketEvent
+  final case class Allocate(workerId: BindingKey, job: Job) extends JobMarketEvent
 
   /**
     * An event representing that no job could be found for the worker.
     *
     * @param workerId the id of the worker who made the request.
     */
-  final case class NothingFound(workerId: BindingKey)                     extends JobMarketEvent
+  final case class NothingFound(workerId: BindingKey) extends JobMarketEvent
 }
