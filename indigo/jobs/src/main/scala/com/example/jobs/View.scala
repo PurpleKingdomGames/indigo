@@ -8,8 +8,10 @@ object View {
     SceneUpdateFragment.empty
       .addGameLayerNodes(
         drawHut.moveTo(150, 50),
+        drawWood(model.woodPiles),
         drawBob(model.bob),
-        drawTrees(model.grove)
+        drawTrees(model.grove),
+        Text(model.woodCollected.toString(), 10, 10, 1, Assets.fontKey)
       )
 
   def drawHut: Group =
@@ -38,6 +40,14 @@ object View {
             .moveTo(tree.position)
             .scaleBy(scale, scale)
         }
+    )
+
+  def drawWood(woodPiles: List[Wood]): Group =
+    Group(
+      woodPiles.map { wood =>
+        Assets.yellowDot
+          .moveTo(wood.position)
+      }
     )
 
 }

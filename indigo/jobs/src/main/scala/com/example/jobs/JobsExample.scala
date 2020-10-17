@@ -52,8 +52,14 @@ object JobsExample extends IndigoDemo[Unit, StartupData, Model, Unit] {
     case e: JobMarketEvent =>
       model.update(context.gameTime, context.dice)(e)
 
+    case e @ DropWood(_) =>
+      model.update(context.gameTime, context.dice)(e)
+
     case RemoveTree(index) =>
       model.removeTreeWithIndex(index)
+
+    case RemoveWood(id) =>
+      model.removeWoodWithId(id)
 
     case _ =>
       Outcome(model)
