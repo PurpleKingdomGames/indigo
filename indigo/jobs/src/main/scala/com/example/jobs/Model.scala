@@ -10,7 +10,7 @@ import indigo.shared.EqualTo._
 import indigoextras.datatypes.TimeVaryingValue
 import indigoextras.jobs.JobMarketEvent
 
-final case class Model(bob: Bob, grove: Grove, woodPiles: List[Point], woodCollected: Int) {
+final case class Model(bob: Bob, grove: Grove, woodPiles: List[Wood], woodCollected: Int) {
 
   def update(gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[Model] = {
     case e @ FrameTick =>
@@ -30,6 +30,21 @@ final case class Model(bob: Bob, grove: Grove, woodPiles: List[Point], woodColle
           )
       }
 
+    case DropWood(position) =>
+      val wood =
+        List(
+          Wood(BindingKey.fromDice(dice), position + Point(-8, -8)),
+          Wood(BindingKey.fromDice(dice), position + Point(8, 8))
+        )
+
+      Outcome(
+        this.copy(
+          woodPiles = woodPiles ++ wood
+        )
+      ).addGlobalEvents(
+        wood.map(w => JobMarketEvent.Post(CollectWood(w)))
+      )
+
     case _ =>
       Outcome(this)
   }
@@ -38,6 +53,14 @@ final case class Model(bob: Bob, grove: Grove, woodPiles: List[Point], woodColle
     Outcome(
       this.copy(
         grove = grove.removeTreeWithIndex(index)
+      )
+    )
+
+  def removeWoodWithId(id: BindingKey): Outcome[Model] =
+    Outcome(
+      this.copy(
+        woodPiles = woodPiles.filter(_.id !== id),
+        woodCollected = woodCollected + 1
       )
     )
 
@@ -116,6 +139,8 @@ final case class Bob(position: Point, workSchedule: WorkSchedule[Bob, Unit]) {
 
 }
 
+final case class Wood(id: BindingKey, position: Point)
+
 object Bob {
 
   val loiterPositionA: Point = Point(150 - 16, 90)
@@ -129,6 +154,12 @@ object Bob {
           true
 
         case ChopDown(_, _) =>
+          false
+
+        case CollectWood(wood) if bob.position === wood.position =>
+          true
+
+        case CollectWood(_) =>
           false
 
         case Pace(to) if bob.position === to =>
@@ -148,8 +179,11 @@ object Bob {
       }
 
       def onJobComplete(bob: Bob, context: Unit): Job => Outcome[List[Job]] = {
-        case ChopDown(index, _) =>
-          Outcome(Nil).addGlobalEvents(RemoveTree(index))
+        case ChopDown(index, position) =>
+          Outcome(Nil).addGlobalEvents(RemoveTree(index), DropWood(position))
+
+        case CollectWood(wood) =>
+          Outcome(Nil).addGlobalEvents(RemoveWood(wood.id))
 
         case Pace(_) =>
           Outcome(Nil)
@@ -177,25 +211,36 @@ object Bob {
         case job @ ChopDown(_, destination) =>
           (job, bob.copy(position = moveTowards(bob.position, destination)))
 
+        case job @ CollectWood(wood) =>
+          (job, bob.copy(position = moveTowards(bob.position, wood.position)))
+
         case job @ Pace(to) =>
           (job, bob.copy(position = moveTowards(bob.position, to)))
 
+        case job @ Idle(_) if bob.position !== loiterPositionA =>
+          (job, bob.copy(position = moveTowards(bob.position, loiterPositionA)))
+
         case Idle(percentDone) =>
-          (Idle(percentDone.increaseTo(100, 20, gameTime.running)), bob)
+          (Idle(percentDone.increaseTo(100, 35, gameTime.running)), bob)
 
         case job =>
           (job, bob)
       }
 
-      def generateJobs(gameTime: GameTime, dice: Dice): List[Job] =
-        List(
-          Pace(loiterPositionB),
-          Pace(loiterPositionA),
-          Idle(TimeVaryingValue(0, gameTime.running))
-        )
+      def generateJobs(gameTime: GameTime, dice: Dice): List[Job] = {
+        val noTimesToPace: List[Job] =
+          (1 to dice.roll(3)).toList.map { _ =>
+            List(Pace(loiterPositionB), Pace(loiterPositionA))
+          }.flatten
+
+        List(Idle(TimeVaryingValue(0, gameTime.running))) ++ noTimesToPace ++ List(Idle(TimeVaryingValue(0, gameTime.running)))
+      }
 
       def canTakeJob(bob: Bob): Job => Boolean = {
         case ChopDown(_, _) =>
+          true
+
+        case CollectWood(_) =>
           true
 
         case _ =>
