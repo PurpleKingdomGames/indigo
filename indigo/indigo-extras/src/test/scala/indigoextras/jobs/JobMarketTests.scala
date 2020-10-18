@@ -132,6 +132,18 @@ object JobMarketTests extends TestSuite {
             updated.state ==> List(job)
             updated.globalEvents.head ==> JobMarketEvent.NothingFound(bindingKey)
           }
+
+          "should give you the highest priority job first" - {
+            val bindingKey: BindingKey    = BindingKey("0001")
+            val jobs: List[Job]           = List(SampleJobs.WanderTo(10), SampleJobs.WanderTo(20), SampleJobs.Fishing(0))
+            val market: JobMarket         = JobMarket.subSystem
+            val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
+
+            val updated = market.update(context, jobs)(findEvent)
+
+            updated.state ==> List(SampleJobs.WanderTo(10), SampleJobs.WanderTo(20))
+            updated.globalEvents.head ==> JobMarketEvent.Allocate(bindingKey, SampleJobs.Fishing(0))
+          }
         }
 
         "should allow you to post a job" - {

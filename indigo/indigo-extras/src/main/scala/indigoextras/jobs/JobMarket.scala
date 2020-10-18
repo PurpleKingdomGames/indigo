@@ -33,7 +33,7 @@ final case class JobMarket(availableJobs: List[Job]) extends SubSystem {
       Outcome(jobs :+ job)
 
     case JobMarketEvent.Find(id, canTakeJob) =>
-      JobMarket.findJob(jobs, canTakeJob, Nil) match {
+      JobMarket.findJob(jobs, canTakeJob) match {
         case (None, _) =>
           Outcome(jobs)
             .addGlobalEvents(JobMarketEvent.NothingFound(id))
@@ -64,18 +64,22 @@ object JobMarket {
   def apply(availableJobs: Job*): JobMarket =
     JobMarket(availableJobs.toList)
 
-  @annotation.tailrec
-  def findJob(remaining: List[Job], canTakeJob: Job => Boolean, acc: List[Job]): (Option[Job], List[Job]) =
-    remaining match {
-      case Nil =>
-        (None, acc)
+  def findJob(availableJobs: List[Job], canTakeJob: Job => Boolean): (Option[Job], List[Job]) = {
+    @annotation.tailrec
+    def rec(remaining: List[Job], acc: List[Job]): (Option[Job], List[Job]) =
+      remaining match {
+        case Nil =>
+          (None, acc)
 
-      case j :: js if canTakeJob(j) =>
-        (Option(j), acc ++ js)
+        case j :: js if canTakeJob(j) =>
+          (Option(j), acc ++ js)
 
-      case j :: js =>
-        findJob(js, canTakeJob, j :: acc)
-    }
+        case j :: js =>
+          rec(js, j :: acc)
+      }
+
+    rec(availableJobs.sortBy(_.priority), Nil)
+  }
 
 }
 

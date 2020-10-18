@@ -11,6 +11,7 @@ object SampleJobs {
   case class Fishing(workUnitsCompleted: Int) extends SampleJobs {
     val jobName: JobName = JobName("fishing")
     val isLocal: Boolean = true
+    val priority: Int    = 10
 
     def doWork(numberOfUnit: Int): Fishing =
       this.copy(workUnitsCompleted = Math.max(0, workUnitsCompleted + numberOfUnit))
@@ -22,11 +23,13 @@ object SampleJobs {
   case class WanderTo(position: Int) extends SampleJobs {
     val jobName: JobName = JobName("wander to")
     val isLocal: Boolean = true
+    val priority: Int    = 50
   }
 
   case class CantHave() extends SampleJobs {
     val jobName: JobName = JobName("can't have this job")
     val isLocal: Boolean = false
+    val priority: Int    = 100
   }
 
 }
