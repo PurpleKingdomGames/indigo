@@ -16,11 +16,11 @@ object ValueOverTimeTests extends TestSuite {
           val vot: ValueOverTime[Int] =
             ValueOverTime.intValueOverTime
 
-          vot.changeAmount(Millis(100).toSeconds, 10, Seconds(0)) ==> 1
-          vot.changeAmount(Millis(200).toSeconds, 10, Seconds(0)) ==> 2
-          vot.changeAmount(Millis(300).toSeconds, 10, Seconds(0)) ==> 3
-          vot.changeAmount(Millis(400).toSeconds, 10, Seconds(0)) ==> 4
-          vot.changeAmount(Millis(500).toSeconds, 10, Seconds(0)) ==> 5
+          vot.changeAmount(Millis(100).toSeconds, 10) ==> 1
+          vot.changeAmount(Millis(200).toSeconds, 10) ==> 2
+          vot.changeAmount(Millis(300).toSeconds, 10) ==> 3
+          vot.changeAmount(Millis(400).toSeconds, 10) ==> 4
+          vot.changeAmount(Millis(500).toSeconds, 10) ==> 5
 
         }
 
@@ -29,10 +29,10 @@ object ValueOverTimeTests extends TestSuite {
           val vot: ValueOverTime[Int] =
             ValueOverTime.intValueOverTime
 
-          vot.changeAmount(Millis(33).toSeconds, 10, Seconds(0)) ==> 0
-          vot.changeAmount(Millis(33 * 4).toSeconds, 10, Seconds(0)) ==> 1
-          vot.changeAmount(Millis(17 * 30).toSeconds, 10, Seconds(0)) ==> 5
-          vot.changeAmount(Millis(33 * 31).toSeconds, 10, Seconds(0)) ==> 10
+          vot.changeAmount(Millis(33).toSeconds, 10) ==> 0
+          vot.changeAmount(Millis(33 * 4).toSeconds, 10) ==> 1
+          vot.changeAmount(Millis(17 * 30).toSeconds, 10) ==> 5
+          vot.changeAmount(Millis(33 * 31).toSeconds, 10) ==> 10
 
         }
 
@@ -45,7 +45,7 @@ object ValueOverTimeTests extends TestSuite {
           val actual: List[Int] = (1 to 30).toList
             .map(_.toDouble * 33.3)
             .map { runningTime =>
-              vot.changeAmount(Millis(runningTime.toLong).toSeconds, 10, Seconds(0))
+              vot.changeAmount(Millis(runningTime.toLong).toSeconds, 10)
             }
             .distinct
 
@@ -64,11 +64,11 @@ object ValueOverTimeTests extends TestSuite {
           val vot: ValueOverTime[Float] =
             ValueOverTime.floatValueOverTime
 
-          vot.changeAmount(Millis(100).toSeconds, 10f, Seconds(0)) ==> 1f
-          vot.changeAmount(Millis(200).toSeconds, 10f, Seconds(0)) ==> 2f
-          vot.changeAmount(Millis(300).toSeconds, 10f, Seconds(0)) ==> 3f
-          vot.changeAmount(Millis(400).toSeconds, 10f, Seconds(0)) ==> 4f
-          vot.changeAmount(Millis(500).toSeconds, 10f, Seconds(0)) ==> 5f
+          vot.changeAmount(Millis(100).toSeconds, 10f) ==> 1f
+          vot.changeAmount(Millis(200).toSeconds, 10f) ==> 2f
+          vot.changeAmount(Millis(300).toSeconds, 10f) ==> 3f
+          vot.changeAmount(Millis(400).toSeconds, 10f) ==> 4f
+          vot.changeAmount(Millis(500).toSeconds, 10f) ==> 5f
 
         }
 
@@ -81,11 +81,11 @@ object ValueOverTimeTests extends TestSuite {
           val vot: ValueOverTime[Double] =
             ValueOverTime.doubleValueOverTime
 
-          vot.changeAmount(Seconds(0.1), 10d, Seconds(0)) ==> 1d
-          vot.changeAmount(Seconds(0.2), 10d, Seconds(0)) ==> 2d
-          vot.changeAmount(Seconds(0.3), 10d, Seconds(0)) ==> 3d
-          vot.changeAmount(Seconds(0.4), 10d, Seconds(0)) ==> 4d
-          vot.changeAmount(Seconds(0.5), 10d, Seconds(0)) ==> 5d
+          vot.changeAmount(Seconds(0.1), 10d) ==> 1d
+          vot.changeAmount(Seconds(0.2), 10d) ==> 2d
+          vot.changeAmount(Seconds(0.3), 10d) ==> 3d
+          vot.changeAmount(Seconds(0.4), 10d) ==> 4d
+          vot.changeAmount(Seconds(0.5), 10d) ==> 5d
 
         }
 

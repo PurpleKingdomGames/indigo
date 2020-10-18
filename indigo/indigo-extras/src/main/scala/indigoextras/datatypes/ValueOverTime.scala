@@ -10,7 +10,7 @@ import indigo.shared.EqualTo
 sealed trait ValueOverTime[@specialized(Int, Long, Float, Double) T] {
   def zero: T
   def one: T
-  def changeAmount(runningTime: Seconds, unitsPerSecond: T, creationTime: Seconds): T
+  def changeAmount(timeDelta: Seconds, unitsPerSecond: T): T
   def equal(a: T, b: T): Boolean
   def plus(a: T, b: T): T
   def minus(a: T, b: T): T
@@ -27,8 +27,8 @@ object ValueOverTime {
 
       val one: Int = 1
 
-      def changeAmount(runningTime: Seconds, unitsPerSecond: Int, creationTime: Seconds): Int =
-        (unitsPerSecond.toDouble * (runningTime.value - creationTime.value)).toInt
+      def changeAmount(timeDelta: Seconds, unitsPerSecond: Int): Int =
+        (unitsPerSecond.toDouble * timeDelta.value).toInt
 
       def equal(a: Int, b: Int): Boolean =
         implicitly[EqualTo[Int]].equal(a, b)
@@ -58,8 +58,8 @@ object ValueOverTime {
 
       val one: Long = 1
 
-      def changeAmount(runningTime: Seconds, unitsPerSecond: Long, creationTime: Seconds): Long =
-        (unitsPerSecond.toDouble * (runningTime.value - creationTime.value)).toLong
+      def changeAmount(timeDelta: Seconds, unitsPerSecond: Long): Long =
+        (unitsPerSecond.toDouble * timeDelta.value).toLong
 
       def equal(a: Long, b: Long): Boolean =
         implicitly[EqualTo[Long]].equal(a, b)
@@ -89,8 +89,8 @@ object ValueOverTime {
 
       val one: Float = 1
 
-      def changeAmount(runningTime: Seconds, unitsPerSecond: Float, creationTime: Seconds): Float =
-        (unitsPerSecond.toDouble * (runningTime.value - creationTime.value)).toFloat
+      def changeAmount(timeDelta: Seconds, unitsPerSecond: Float): Float =
+        (unitsPerSecond.toDouble * timeDelta.value).toFloat
 
       def equal(a: Float, b: Float): Boolean =
         implicitly[EqualTo[Float]].equal(a, b)
@@ -120,8 +120,8 @@ object ValueOverTime {
 
       val one: Double = 1
 
-      def changeAmount(runningTime: Seconds, unitsPerSecond: Double, creationTime: Seconds): Double =
-        (unitsPerSecond * (runningTime.value - creationTime.value)).toDouble
+      def changeAmount(timeDelta: Seconds, unitsPerSecond: Double): Double =
+        (unitsPerSecond * timeDelta.value).toDouble
 
       def equal(a: Double, b: Double): Boolean =
         implicitly[EqualTo[Double]].equal(a, b)
