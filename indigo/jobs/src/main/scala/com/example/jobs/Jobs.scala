@@ -21,7 +21,7 @@ final case class RemoveTree(index: Int)        extends GlobalEvent
 final case class DropWood(treePosition: Point) extends GlobalEvent
 final case class RemoveWood(id: BindingKey)    extends GlobalEvent
 
-final case class Pace(to: Point) extends Job {
+final case class Wander(to: Point) extends Job {
   val isLocal: Boolean = true
   val jobName: JobName = JobName("bob is pacing")
   val priority: Int    = 50

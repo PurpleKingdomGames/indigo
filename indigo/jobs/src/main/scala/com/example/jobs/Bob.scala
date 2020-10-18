@@ -6,7 +6,7 @@ import indigo.shared.EqualTo._
 import indigoextras.datatypes.TimeVaryingValue
 
 // Bob is our NPC 'Actor'
-final case class Bob(position: Point, workSchedule: WorkSchedule[Bob, Unit]) {
+final case class Bob(position: Point, workSchedule: WorkSchedule[Bob, Unit], state: BobState) {
 
   def update(gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[Bob] =
     e => {
@@ -23,13 +23,13 @@ final case class Bob(position: Point, workSchedule: WorkSchedule[Bob, Unit]) {
 
 object Bob {
 
-  val loiterPositionA: Point = Point(150 - 16, 90)
-  val loiterPositionB: Point = Point(150 + 16, 90)
+  val hutPosition: Point = Point(150, 90)
 
   def initial: Bob =
     Bob(
       position = Point(150 - 16, 90),
-      workSchedule = WorkSchedule((BindingKey("bob")))
+      workSchedule = WorkSchedule((BindingKey("bob"))),
+      BobState.Wandering
     )
 
   implicit val bobWorker: Worker[Bob, Unit] =
@@ -39,29 +39,17 @@ object Bob {
         case ChopDown(_, position) if context.actor.position === position =>
           true
 
-        case ChopDown(_, _) =>
-          false
-
         case CollectWood(wood) if context.actor.position === wood.position =>
           true
 
-        case CollectWood(_) =>
-          false
-
-        case Pace(to) if context.actor.position === to =>
+        case Wander(to) if context.actor.position === to =>
           true
-
-        case Pace(_) =>
-          false
 
         case Idle(percentDone) if percentDone.value === 100 =>
           true
 
-        case Idle(_) =>
-          false
-
         case _ =>
-          true
+          false
       }
 
       def onJobComplete(context: WorkContext[Bob, Unit]): Job => Outcome[(List[Job], Bob)] = {
@@ -71,7 +59,7 @@ object Bob {
         case CollectWood(wood) =>
           Outcome((Nil, context.actor)).addGlobalEvents(RemoveWood(wood.id))
 
-        case Pace(_) =>
+        case Wander(_) =>
           Outcome((Nil, context.actor))
 
         case Idle(_) =>
@@ -95,34 +83,56 @@ object Bob {
 
       def workOnJob(context: WorkContext[Bob, Unit]): Job => (Job, Bob) = {
         case job @ ChopDown(_, destination) =>
-          (job, context.actor.copy(position = moveTowards(context.actor.position, destination)))
+          (
+            job,
+            context.actor.copy(
+              position = moveTowards(context.actor.position, destination),
+              state = BobState.Working
+            )
+          )
 
         case job @ CollectWood(wood) =>
-          (job, context.actor.copy(position = moveTowards(context.actor.position, wood.position)))
+          (
+            job,
+            context.actor.copy(
+              position = moveTowards(context.actor.position, wood.position),
+              state = BobState.Working
+            )
+          )
 
-        case job @ Pace(to) =>
-          (job, context.actor.copy(position = moveTowards(context.actor.position, to)))
-
-        case job @ Idle(_) if context.actor.position !== loiterPositionA =>
-          (job, context.actor.copy(position = moveTowards(context.actor.position, loiterPositionA)))
+        case job @ Wander(to) =>
+          (
+            job,
+            context.actor.copy(
+              position = moveTowards(context.actor.position, to),
+              state = BobState.Wandering
+            )
+          )
 
         case Idle(percentDone) =>
-          (Idle(percentDone.increaseTo(100, 35, context.gameTime.running)), context.actor)
+          (
+            Idle(percentDone.increaseTo(100, 75, context.gameTime.running)),
+            context.actor.copy(state = BobState.Idle)
+          )
 
         case job =>
-          (job, context.actor)
+          (
+            job,
+            context.actor
+          )
       }
 
-      def generateJobs(context: WorkContext[Bob, Unit]): List[Job] = {
-        val noTimesToPace: List[Job] =
-          (1 to context.dice.roll(3)).toList.map { _ =>
-            List(Pace(loiterPositionB), Pace(loiterPositionA))
-          }.flatten
+      def generateJobs(context: WorkContext[Bob, Unit]): List[Job] =
+        context.actor.state match {
+          case BobState.Idle =>
+            List(Wander(Point(context.dice.roll(100) + 50, context.dice.roll(30) + 90)))
 
-        List(Idle(TimeVaryingValue(0, context.gameTime.running))) ++
-          noTimesToPace ++
-          List(Idle(TimeVaryingValue(0, context.gameTime.running)))
-      }
+          case BobState.Wandering =>
+            List(Idle(TimeVaryingValue(0, context.gameTime.running)))
+
+          case BobState.Working =>
+            List(Idle(TimeVaryingValue(0, context.gameTime.running)))
+        }
 
       def canTakeJob(context: WorkContext[Bob, Unit]): Job => Boolean = {
         case ChopDown(_, _) =>
@@ -137,4 +147,11 @@ object Bob {
 
     }
 
+}
+
+sealed trait BobState
+object BobState {
+  case object Idle      extends BobState
+  case object Wandering extends BobState
+  case object Working   extends BobState
 }
