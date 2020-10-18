@@ -10,33 +10,44 @@ import indigo.shared.dice.Dice
 trait Worker[Actor, Context] {
 
   /**
-    * Test whether an actor thinks a job is complete
+    * Test whether an actor thinks a job is complete.
     *
-    * @param actor the Actor doing the work
+    * @param context Information about the context the worker is in
     * @return Job => Boolean
     */
-  def isJobComplete(actor: Actor): Job => Boolean
+  def isJobComplete(context: WorkContext[Actor, Context]): Job => Boolean
 
   /**
-    * When a job is completed,
+    * When a job is completed, produce an outcome of any new jobs and an updated Actor.
     *
-    * @param actor The actor instance
-    * @param context Some context in which to do the work
-    * @return Job => JobComplete
+    * @param context Information about the context the worker is in
+    * @return Job => Outcome[(List[Job], Actor)]
     */
-  def onJobComplete(actor: Actor, context: Context): Job => Outcome[List[Job]]
+  def onJobComplete(context: WorkContext[Actor, Context]): Job => Outcome[(List[Job], Actor)]
 
   /**
-    * A function describing how this actor does work on whichever jobs they are able to work on
+    * A function describing how this actor does work on whichever jobs they are able to work on.
     *
-    * @param gameTime The current game time
-    * @param actor The actor instance
-    * @param context Some context in which to do the work
-    * @return
+    * @param context Information about the context the worker is in
+    * @return Job => (Job, Actor)
     */
-  def workOnJob(gameTime: GameTime, actor: Actor, context: Context): Job => (Job, Actor)
-  def generateJobs(gameTime: GameTime, dice: Dice): List[Job]
-  def canTakeJob(actor: Actor): Job => Boolean
+  def workOnJob(context: WorkContext[Actor, Context]): Job => (Job, Actor)
+
+  /**
+    * The worker has nothing to do, create jobs from within the given context.
+    *
+    * @param context Information about the context the worker is in
+    * @return List[Job]
+    */
+  def generateJobs(context: WorkContext[Actor, Context]): List[Job]
+
+  /**
+    * Predicate discriminator used to determine if a worker can carry out a job.
+    *
+    * @param context Information about the context the worker is in
+    * @return Job => Boolean
+    */
+  def canTakeJob(context: WorkContext[Actor, Context]): Job => Boolean
 }
 object Worker {
 
@@ -51,27 +62,42 @@ object Worker {
     * @return a Worker instance
     */
   def create[Actor, Context](
-      isComplete: Actor => Job => Boolean,
-      onComplete: (Actor, Context) => Job => Outcome[List[Job]],
-      doWork: (GameTime, Actor, Context) => Job => (Job, Actor),
-      jobGenerator: (GameTime, Dice) => List[Job],
-      jobAcceptable: (Actor, Job) => Boolean
+      isComplete: WorkContext[Actor, Context] => Job => Boolean,
+      onComplete: WorkContext[Actor, Context] => Job => Outcome[(List[Job], Actor)],
+      doWork: WorkContext[Actor, Context] => Job => (Job, Actor),
+      jobGenerator: WorkContext[Actor, Context] => List[Job],
+      jobAcceptable: WorkContext[Actor, Context] => Job => Boolean
   ): Worker[Actor, Context] =
     new Worker[Actor, Context] {
-      def isJobComplete(actor: Actor): Job => Boolean =
-        isComplete(actor)
+      def isJobComplete(context: WorkContext[Actor, Context]): Job => Boolean =
+        isComplete(context)
 
-      def onJobComplete(actor: Actor, context: Context): Job => Outcome[List[Job]] =
-        onComplete(actor, context)
+      def onJobComplete(context: WorkContext[Actor, Context]): Job => Outcome[(List[Job], Actor)] =
+        onComplete(context)
 
-      def workOnJob(gameTime: GameTime, actor: Actor, context: Context): Job => (Job, Actor) =
-        doWork(gameTime, actor, context)
+      def workOnJob(context: WorkContext[Actor, Context]): Job => (Job, Actor) =
+        doWork(context)
 
-      def generateJobs(gameTime: GameTime, dice: Dice): List[Job] =
-        jobGenerator(gameTime, dice)
+      def generateJobs(context: WorkContext[Actor, Context]): List[Job] =
+        jobGenerator(context)
 
-      def canTakeJob(actor: Actor): Job => Boolean =
-        jobAcceptable(actor, _)
+      def canTakeJob(context: WorkContext[Actor, Context]): Job => Boolean =
+        jobAcceptable(context)
     }
 
 }
+
+/**
+  * The context the work is being done in, similar to frame context, work is not done in a vacuum.
+  *
+  * @param gameTime The supplied game time.
+  * @param dice A dice for random number generation.
+  * @param actor An instance of the actor, for asking question like "Can the actor do the work?"
+  * @param context A free form type, e.g.: A list of other characters the worker can see.
+  */
+final case class WorkContext[Actor, Context](
+    gameTime: GameTime,
+    dice: Dice,
+    actor: Actor,
+    context: Context
+)

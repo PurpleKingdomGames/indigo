@@ -160,7 +160,7 @@ object WorkScheduleTests extends TestSuite {
           val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, SampleActor.worker, jobList)
 
           "Check the current" - {
-            workSchedule.current match {
+            workSchedule.currentJob match {
               case Some(WanderTo(position)) =>
                 position ==> 10
 
@@ -174,7 +174,7 @@ object WorkScheduleTests extends TestSuite {
           val workSchedule2 = workSchedule.update(gameTime, dice, actor, context)(FrameTick).state.workSchedule
 
           "Arrived, move onto next job" - {
-            workSchedule2.current match {
+            workSchedule2.currentJob match {
               case Some(Fishing(done)) =>
                 done ==> 10
 
@@ -211,7 +211,7 @@ object WorkScheduleTests extends TestSuite {
               .workSchedule //90
 
           "Nearly done" - {
-            workSchedule3.current match {
+            workSchedule3.currentJob match {
               case Some(Fishing(done)) =>
                 done ==> 90
 
@@ -233,7 +233,7 @@ object WorkScheduleTests extends TestSuite {
               .workSchedule // WanderTo(0) complete, now back to the original job list.
 
           "Moving on.." - {
-            workSchedule4.current match {
+            workSchedule4.currentJob match {
               case Some(WanderTo(position)) =>
                 position ==> 30
 
@@ -249,7 +249,7 @@ object WorkScheduleTests extends TestSuite {
             Fishing(100)
           )
 
-          val actual = WorkSchedule[SampleActor, SampleContext](bindingKey, SampleActor.worker, jobList).current
+          val actual = WorkSchedule[SampleActor, SampleContext](bindingKey, SampleActor.worker, jobList).currentJob
 
           actual match {
             case Some(Fishing(done)) =>

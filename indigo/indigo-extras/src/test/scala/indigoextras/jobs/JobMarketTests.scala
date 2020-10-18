@@ -26,6 +26,14 @@ object JobMarketTests extends TestSuite {
       new BoundaryLocator(new AnimationsRegister, new FontRegister)
     )
 
+  val workContext =
+    WorkContext[SampleActor, SampleContext](
+      GameTime.zero,
+      Dice.loaded(6),
+      SampleActor.default,
+      SampleContext(true)
+    )
+
   def tests: Tests =
     Tests {
       "The job market" - {
@@ -94,7 +102,7 @@ object JobMarketTests extends TestSuite {
             val bindingKey: BindingKey    = BindingKey("0001")
             val job: Job                  = SampleJobs.WanderTo(10)
             val market: JobMarket         = JobMarket.subSystem
-            val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(SampleActor.default))
+            val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
 
             val updated = market.update(context, List(job))(findEvent)
 
@@ -105,7 +113,7 @@ object JobMarketTests extends TestSuite {
           "but not when there isn't any work" - {
             val bindingKey: BindingKey    = BindingKey("0001")
             val market: JobMarket         = JobMarket.subSystem
-            val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(SampleActor.default))
+            val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
 
             val updated = market.update(context, Nil)(findEvent)
 
@@ -117,7 +125,7 @@ object JobMarketTests extends TestSuite {
             val bindingKey: BindingKey    = BindingKey("0001")
             val job: Job                  = SampleJobs.CantHave()
             val market: JobMarket         = JobMarket.subSystem
-            val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(SampleActor.default))
+            val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
 
             val updated = market.update(context, List(job))(findEvent)
 

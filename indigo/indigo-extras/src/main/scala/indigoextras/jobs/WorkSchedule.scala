@@ -7,19 +7,40 @@ import indigo.shared.Outcome
 import indigo.shared.dice.Dice
 
 /**
-  * Represents an Actors work schedule
+  * Represents an Actor's work schedule
   *
   * @param id
   * @param jobStack
   */
 final case class WorkSchedule[Actor, Context](val id: BindingKey, val worker: Worker[Actor, Context], val jobStack: List[Job]) {
 
-  def current: Option[Job] =
+  /**
+    * Give the job currently being worked on
+    *
+    * @return Option[Job]
+    */
+  def currentJob: Option[Job] =
     WorkSchedule.current(this)
 
-  def update(gameTime: GameTime, dice: Dice, actor: Actor, context: Context): GlobalEvent => Outcome[WorkScheduleUpdate[Actor, Context]] =
+  /**
+    * When supplied with a global event, creates an outcome of the updated work schedule.
+    * 
+    * The update function coordinates all of the work for this worker, creating work, finding jobs, working on tasks etc.
+    *
+    * @param gameTime
+    * @param dice
+    * @param actor
+    * @param context
+    * @return
+    */
+  def update(gameTime: GameTime, dice: Dice, actor: Actor, context: Context): GlobalEvent => Outcome[WorkProgressReport[Actor, Context]] =
     WorkSchedule.update(id, this, gameTime, dice, actor, context, worker)
 
+  /**
+    * The significance of this function is that any local jobs are lost, but any global jobs are returned to the JobMarket.
+    *
+    * @return An Outcome of an empty work schedule of the same type.
+    */
   def destroy(): Outcome[WorkSchedule[Actor, Context]] =
     WorkSchedule.destroy(this)
 
@@ -40,10 +61,10 @@ object WorkSchedule {
       actor: Actor,
       context: Context,
       worker: Worker[Actor, Context]
-  ): GlobalEvent => Outcome[WorkScheduleUpdate[Actor, Context]] = {
+  ): GlobalEvent => Outcome[WorkProgressReport[Actor, Context]] = {
     case JobMarketEvent.Allocate(allocationId, job) if allocationId === id =>
       Outcome(
-        WorkScheduleUpdate(
+        WorkProgressReport(
           workSchedule.copy[Actor, Context](
             jobStack = job :: workSchedule.jobStack
           ),
@@ -52,50 +73,48 @@ object WorkSchedule {
       )
 
     case JobMarketEvent.NothingFound(allocationId) if allocationId === id =>
-      updateWorkSchedule[Actor, Context](workSchedule, gameTime, dice, actor, context, worker)
+      updateWorkSchedule[Actor, Context](workSchedule, WorkContext(gameTime, dice, actor, context), worker)
 
     case FrameTick =>
-      updateWorkSchedule[Actor, Context](workSchedule, gameTime, dice, actor, context, worker)
+      updateWorkSchedule[Actor, Context](workSchedule, WorkContext(gameTime, dice, actor, context), worker)
 
     case _ =>
       Outcome(
-        WorkScheduleUpdate(workSchedule, actor)
+        WorkProgressReport(workSchedule, actor)
       )
   }
 
   def updateWorkSchedule[Actor, Context](
       workSchedule: WorkSchedule[Actor, Context],
-      gameTime: GameTime,
-      dice: Dice,
-      actor: Actor,
-      context: Context,
+      workContext: WorkContext[Actor, Context],
       worker: Worker[Actor, Context]
-  ): Outcome[WorkScheduleUpdate[Actor, Context]] =
+  ): Outcome[WorkProgressReport[Actor, Context]] =
     workSchedule.jobStack match {
       case Nil =>
         Outcome(
-          WorkScheduleUpdate(
+          WorkProgressReport(
             workSchedule.copy[Actor, Context](
-              jobStack = worker.generateJobs(gameTime, dice)
+              jobStack = worker.generateJobs(workContext)
             ),
-            actor
+            workContext.actor
           )
-        ).addGlobalEvents(JobMarketEvent.Find(workSchedule.id, worker.canTakeJob(actor)))
+        ).addGlobalEvents(JobMarketEvent.Find(workSchedule.id, worker.canTakeJob(workContext)))
 
-      case current :: _ if worker.isJobComplete(actor)(current) =>
-        worker.onJobComplete(actor, context)(current).map { jobs =>
-          WorkScheduleUpdate(
-            workSchedule.copy[Actor, Context](
-              jobStack = jobs ++ workSchedule.jobStack.drop(1)
-            ),
-            actor
-          )
+      case current :: _ if worker.isJobComplete(workContext)(current) =>
+        worker.onJobComplete(workContext)(current).map {
+          case (jobs, actor) =>
+            WorkProgressReport(
+              workSchedule.copy[Actor, Context](
+                jobStack = jobs ++ workSchedule.jobStack.drop(1)
+              ),
+              actor
+            )
         }
 
       case h :: t =>
-        val res: (Job, Actor) = worker.workOnJob(gameTime, actor, context)(h)
+        val res: (Job, Actor) = worker.workOnJob(workContext)(h)
         Outcome(
-          WorkScheduleUpdate(
+          WorkProgressReport(
             workSchedule.copy[Actor, Context](
               jobStack = res._1 :: t
             ),
@@ -112,4 +131,11 @@ object WorkSchedule {
 
 }
 
-final case class WorkScheduleUpdate[Actor, Context](workSchedule: WorkSchedule[Actor, Context], actor: Actor)
+/**
+  * Encapsulates an updated schedule and an updated actor.
+  * Work is done by workers, but work can also affect workers, e.g. making them stronger, smarter, or tired.
+  *
+  * @param workSchedule The updated work schedule.
+  * @param actor The updated actor.
+  */
+final case class WorkProgressReport[Actor, Context](workSchedule: WorkSchedule[Actor, Context], actor: Actor)
