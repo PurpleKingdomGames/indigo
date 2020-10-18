@@ -31,8 +31,8 @@ object SampleJobs {
 
 }
 
-case class SampleActor(position: Int, likesFishing: Boolean) {
-  val fishingSpeed: Int = SampleActor.defaultFishingSpeed
+final case class SampleActor(position: Int, likesFishing: Boolean) {
+  def fishingSpeed: Int = SampleActor.defaultFishingSpeed
 }
 object SampleActor {
 
@@ -43,43 +43,46 @@ object SampleActor {
 
   implicit val worker: Worker[SampleActor, SampleContext] =
     new Worker[SampleActor, SampleContext] {
-      def isJobComplete(actor: SampleActor): Job => Boolean = {
+      def isJobComplete(context: WorkContext[SampleActor, SampleContext]): Job => Boolean = {
         case SampleJobs.Fishing(completed) =>
           completed == Fishing.totalWorkUnits
 
         case SampleJobs.WanderTo(target) =>
-          actor.position == target
+          context.actor.position == target
 
         case _ =>
           true
       }
 
-      def onJobComplete(actor: SampleActor, context: SampleContext): Job => Outcome[List[Job]] = {
+      def onJobComplete(context: WorkContext[SampleActor, SampleContext]): Job => Outcome[(List[Job], SampleActor)] = {
         case SampleJobs.Fishing(_) =>
-          Outcome(List(SampleJobs.WanderTo(0)), Nil)
+          Outcome((List(SampleJobs.WanderTo(0)), context.actor), Nil)
 
         case SampleJobs.WanderTo(_) =>
-          Outcome(Nil)
+          Outcome((Nil, context.actor))
 
         case _ =>
-          Outcome(Nil)
+          Outcome((Nil, context.actor))
       }
 
-      def workOnJob(gameTime: GameTime, actor: SampleActor, context: SampleContext): Job => (Job, SampleActor) = {
+      def workOnJob(context: WorkContext[SampleActor, SampleContext]): Job => (Job, SampleActor) = {
         case j @ SampleJobs.Fishing(_) =>
-          (j.doWork(actor.fishingSpeed), actor.copy(likesFishing = context.predicate))
+          (
+            j.doWork(context.actor.fishingSpeed),
+            context.actor.copy(likesFishing = context.context.predicate)
+          )
 
         case j @ SampleJobs.WanderTo(_) =>
-          (j, actor)
+          (j, context.actor)
 
         case job =>
-          (job, actor)
+          (job, context.actor)
       }
 
-      def generateJobs(gameTime: GameTime, dice: Dice): List[Job] =
+      def generateJobs(context: WorkContext[SampleActor, SampleContext]): List[Job] =
         List(SampleJobs.WanderTo(100))
 
-      def canTakeJob(actor: SampleActor): Job => Boolean = {
+      def canTakeJob(context: WorkContext[SampleActor, SampleContext]): Job => Boolean = {
         case SampleJobs.CantHave() =>
           false
 

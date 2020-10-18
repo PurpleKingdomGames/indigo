@@ -5,6 +5,7 @@ import utest._
 import indigoextras.jobs.SampleJobs.{CantHave, Fishing, WanderTo}
 import indigo.shared.Outcome
 import indigo.shared.dice.Dice
+import indigo.shared.time.Seconds
 
 object WorkerTests extends TestSuite {
 
@@ -21,20 +22,20 @@ object WorkerTests extends TestSuite {
           val isLocal: Boolean = true
         }
 
-        val isComplete: TestActor => Job => Boolean =
+        val isComplete: WorkContext[TestActor, TestContext] => Job => Boolean =
           _ => _ => true
 
-        val onComplete: (TestActor, TestContext) => Job => Outcome[List[Job]] =
-          (_, _) => _ => Outcome(Nil)
+        val onComplete: WorkContext[TestActor, TestContext] => Job => Outcome[(List[Job], TestActor)] =
+          w => _ => Outcome((Nil, w.actor))
 
-        val doWork: (GameTime, TestActor, TestContext) => Job => (Job, TestActor) =
-          (_, a, _) => j => (j, a)
+        val doWork: WorkContext[TestActor, TestContext] => Job => (Job, TestActor) =
+          w => j => (j, w.actor)
 
-        val jobGenerator: (GameTime, Dice) => List[Job] =
-          (_, _) => Nil
+        val jobGenerator: WorkContext[TestActor, TestContext] => List[Job] =
+          _ => Nil
 
-        val jobAcceptable: (TestActor, Job) => Boolean =
-          (_, _) => false
+        val jobAcceptable: WorkContext[TestActor, TestContext] => Job => Boolean =
+          _ => _ => false
 
         val worker = Worker.create[TestActor, TestContext](
           isComplete,
@@ -50,47 +51,60 @@ object WorkerTests extends TestSuite {
         val dice    = Dice.loaded(1)
         val job     = TestJob()
 
-        worker.isJobComplete(actor)(job) ==> true
+        val workContext =
+          WorkContext[TestActor, TestContext](
+            time,
+            dice,
+            actor,
+            context
+          )
 
-        val completed = worker.onJobComplete(actor, context)(job)
-        completed.state ==> Nil
+        worker.isJobComplete(workContext)(job) ==> true
+
+        val completed = worker.onJobComplete(workContext)(job)
+        completed.state ==> (Nil, TestActor())
         completed.globalEvents ==> Nil
 
-        worker.workOnJob(time, actor, context)(job) ==> (job, actor)
-        worker.generateJobs(time, dice) ==> Nil
-        worker.canTakeJob(actor)(job) ==> false
+        worker.workOnJob(workContext)(job) ==> (job, actor)
+        worker.generateJobs(workContext) ==> Nil
+        worker.canTakeJob(workContext)(job) ==> false
       }
+
+      def workContext(time: Double, p: Boolean): WorkContext[SampleActor, SampleContext] =
+        WorkContext[SampleActor, SampleContext](
+          GameTime.is(Seconds(time)),
+          Dice.loaded(1),
+          SampleActor.default,
+          SampleContext(p)
+        )
 
       "A Worker instance" - {
 
         "should be able to check a job is complete" - {
-          worker.isJobComplete(actor)(Fishing(Fishing.totalWorkUnits)) ==> true
+          worker.isJobComplete(workContext(0d, true))(Fishing(Fishing.totalWorkUnits)) ==> true
         }
 
         "should be able to perform an action when a job completes" - {
-          worker.onJobComplete(actor, SampleContext(false))(Fishing(Fishing.totalWorkUnits)).state.head ==> WanderTo(0)
+          worker.onJobComplete(workContext(0d, false))(Fishing(Fishing.totalWorkUnits)).state._1.head ==> WanderTo(0)
         }
 
         "should be able to work on a job" - {
-          val res = worker.workOnJob(GameTime.zero, actor, SampleContext(false))(Fishing(0))
+          val res = worker.workOnJob(workContext(0d, false))(Fishing(0))
           res ==> (Fishing(SampleActor.defaultFishingSpeed), actor)
         }
 
         "and working on a job can affect the actor" - {
-          val res = worker.workOnJob(GameTime.zero, actor, SampleContext(true))(Fishing(0))
+          val res = worker.workOnJob(workContext(0d, true))(Fishing(0))
           res ==> (Fishing(SampleActor.defaultFishingSpeed), actor.copy(likesFishing = true))
         }
 
         "should be able to generate jobs" - {
-          val time = GameTime.zero
-          val dice = Dice.loaded(1)
-
-          worker.generateJobs(time, dice) ==> List(WanderTo(100))
+          worker.generateJobs(workContext(0d, true)) ==> List(WanderTo(100))
         }
 
         "should be able to distinguish between jobs you can take and ones you can't" - {
-          worker.canTakeJob(actor)(WanderTo(30)) ==> true
-          worker.canTakeJob(actor)(CantHave()) ==> false
+          worker.canTakeJob(workContext(0d, true))(WanderTo(30)) ==> true
+          worker.canTakeJob(workContext(0d, true))(CantHave()) ==> false
         }
 
       }
