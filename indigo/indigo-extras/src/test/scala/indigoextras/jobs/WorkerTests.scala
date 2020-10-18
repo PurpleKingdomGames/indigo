@@ -20,6 +20,7 @@ object WorkerTests extends TestSuite {
         final case class TestJob() extends Job {
           val jobName: JobName = JobName("test job")
           val isLocal: Boolean = true
+          val priority: Int    = 1
         }
 
         val isComplete: WorkContext[TestActor, TestContext] => Job => Boolean =
