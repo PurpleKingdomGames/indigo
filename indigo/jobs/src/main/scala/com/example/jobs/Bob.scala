@@ -63,7 +63,14 @@ object Bob {
           Outcome((Nil, context.actor))
 
         case Idle(_) =>
-          Outcome((Nil, context.actor))
+          val nextBobState =
+            context.actor.state match {
+              case BobState.Idle(count) => BobState.Idle(count + 1)
+              case BobState.Wandering   => BobState.Idle(1)
+              case BobState.Working     => BobState.Idle(1)
+            }
+
+          Outcome((Nil, context.actor.copy(state = nextBobState)))
 
         case _ =>
           Outcome((Nil, context.actor))
@@ -112,7 +119,7 @@ object Bob {
         case Idle(percentDone) =>
           (
             Idle(percentDone.update(context.gameTime.delta)),
-            context.actor.copy(state = BobState.Idle)
+            context.actor
           )
 
         case job =>
@@ -127,8 +134,11 @@ object Bob {
 
       def generateJobs(context: WorkContext[Bob, Unit]): List[Job] =
         context.actor.state match {
-          case BobState.Idle =>
+          case BobState.Idle(count) if count >= 2 =>
             List(Wander(Point(context.dice.roll(100) + 50, context.dice.roll(30) + 90)))
+
+          case BobState.Idle(_) =>
+            idleJob
 
           case BobState.Wandering =>
             idleJob
@@ -154,7 +164,7 @@ object Bob {
 
 sealed trait BobState
 object BobState {
-  case object Idle      extends BobState
-  case object Wandering extends BobState
-  case object Working   extends BobState
+  final case class Idle(count: Int) extends BobState
+  case object Wandering             extends BobState
+  case object Working               extends BobState
 }
