@@ -12,20 +12,20 @@ object TimeVaryingValueTests extends TestSuite {
       "increasing" - {
 
         "should increase one value over time." - {
-          TimeVaryingValue(0).increase(10, Seconds(0.1)).value ==> 1
+          Increasing(0, 10).update(Seconds(0.1)).value ==> 1
         }
 
         "should do a number of iterations over time" - {
-          val runningTimes: List[Seconds] =
-            (1 to 10).toList.map(_ * 100).map(r => Millis(r).toSeconds)
+          val increments: List[Seconds] =
+            (1 to 10).toList.map(r => Millis(100).toSeconds)
 
-          val actual: TimeVaryingValue[Int] =
-            runningTimes.foldLeft(TimeVaryingValue(0))((tv, rt) => tv.increase(10, rt))
+          val actual: TimeVaryingValue =
+            increments.foldLeft(Increasing(0, 10))((tv, rt) => tv.update(rt))
 
-          val expected: TimeVaryingValue[Int] =
-            new TimeVaryingValue(10, 0)
+          val expected: TimeVaryingValue =
+            Increasing(10, 10)
 
-          actual === expected ==> true
+          actual ==> expected
         }
 
       }
@@ -33,21 +33,21 @@ object TimeVaryingValueTests extends TestSuite {
       "increasing capped" - {
 
         "should increase one value over time." - {
-          TimeVaryingValue(0).increaseTo(100, 10, Millis((33.3 * 4).toLong).toSeconds).value ==> 1
-          TimeVaryingValue(0).increaseTo(100, 10, Millis(50000).toSeconds).value ==> 100
+          IncreaseTo(0, 10, 100).update(Millis((33.3 * 4).toLong).toSeconds).toInt ==> 1
+          IncreaseTo(0, 10, 100).update(Millis(50000).toSeconds).value ==> 100
         }
 
         "should do a number of iterations over time up to a limit" - {
-          val runningTimes: List[Seconds] =
-            (1 to 10).toList.map(_ * 100).map(r => Millis(r).toSeconds)
+          val increments: List[Seconds] =
+            (1 to 11).toList.map(_ * 100).map(r => Millis(r).toSeconds)
 
-          val actual: TimeVaryingValue[Int] =
-            runningTimes.foldLeft(TimeVaryingValue(0))((tv, rt) => tv.increaseTo(5, 10, rt))
+          val actual: IncreaseTo =
+            increments.foldLeft(IncreaseTo(0, 10, 5))((tv, rt) => tv.update(rt))
 
-          val expected: TimeVaryingValue[Int] =
-            new TimeVaryingValue(5, 0)
+          val expected: TimeVaryingValue =
+            IncreaseTo(5, 10, 5)
 
-          actual === expected ==> true
+          actual ==> expected
         }
 
       }
@@ -56,42 +56,42 @@ object TimeVaryingValueTests extends TestSuite {
 
         "should increase one value over time." - {
           "Case A" - {
-            TimeVaryingValue(0)
-              .increaseWrapAt(3, 10, Millis(100).toSeconds)
+            IncreaseWrapAt(0, 10, 3)
+              .update(Millis(100).toSeconds)
               .value ==> 1
           }
 
           "Case B" - {
-            TimeVaryingValue(0)
-              .increaseWrapAt(3, 10, Millis(100).toSeconds)
-              .increaseWrapAt(3, 10, Millis(200).toSeconds)
+            IncreaseWrapAt(0, 10, 3)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
               .value ==> 2
           }
 
           "Case C" - {
-            TimeVaryingValue(0)
-              .increaseWrapAt(3, 10, Millis(100).toSeconds)
-              .increaseWrapAt(3, 10, Millis(200).toSeconds)
-              .increaseWrapAt(3, 10, Millis(300).toSeconds)
+            IncreaseWrapAt(0, 10, 3)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
               .value ==> 3
           }
 
           "Case D" - {
-            TimeVaryingValue(0)
-              .increaseWrapAt(3, 10, Millis(100).toSeconds)
-              .increaseWrapAt(3, 10, Millis(200).toSeconds)
-              .increaseWrapAt(3, 10, Millis(300).toSeconds)
-              .increaseWrapAt(3, 10, Millis(400).toSeconds)
+            IncreaseWrapAt(0, 10, 3)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
               .value ==> 0
           }
 
           "Case E" - {
-            TimeVaryingValue(0)
-              .increaseWrapAt(3, 10, Millis(100).toSeconds)
-              .increaseWrapAt(3, 10, Millis(200).toSeconds)
-              .increaseWrapAt(3, 10, Millis(300).toSeconds)
-              .increaseWrapAt(3, 10, Millis(400).toSeconds)
-              .increaseWrapAt(3, 10, Millis(500).toSeconds)
+            IncreaseWrapAt(0, 10, 3)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
               .value ==> 1
           }
         }
@@ -100,20 +100,20 @@ object TimeVaryingValueTests extends TestSuite {
       "decreasing" - {
 
         "should decrease one value over time." - {
-          TimeVaryingValue(0).decrease(10, Seconds(0.1)).value ==> -1
+          Decreasing(0, 10).update(Seconds(0.1)).value ==> -1
         }
 
         "should do a number of iterations over time" - {
-          val runningTimes: List[Seconds] =
-            (1 to 10).toList.map(_ * 100).map(r => Millis(r).toSeconds)
+          val increments: List[Seconds] =
+            (1 to 10).toList.map(_ => Millis(100).toSeconds)
 
-          val actual: TimeVaryingValue[Int] =
-            runningTimes.foldLeft(TimeVaryingValue(0))((tv, rt) => tv.decrease(10, rt))
+          val actual: TimeVaryingValue =
+            increments.foldLeft(Decreasing(0, 10))((tv, rt) => tv.update(rt))
 
-          val expected: TimeVaryingValue[Int] =
-            new TimeVaryingValue(-10, 0)
+          val expected: TimeVaryingValue =
+            Decreasing(-10, 10)
 
-          actual === expected ==> true
+          actual ==> expected
         }
 
       }
@@ -121,16 +121,16 @@ object TimeVaryingValueTests extends TestSuite {
       "decreasing capped" - {
 
         "should do a number of iterations over time down to a limit" - {
-          val runningTimes: List[Seconds] =
+          val increments: List[Seconds] =
             (1 to 10).toList.map(_ * 100).map(r => Millis(r).toSeconds)
 
-          val actual: TimeVaryingValue[Int] =
-            runningTimes.foldLeft(TimeVaryingValue(0))((tv, rt) => tv.decreaseTo(-5, 10, rt))
+          val actual: TimeVaryingValue =
+            increments.foldLeft(DecreaseTo(0, 10, -5))((tv, rt) => tv.update(rt))
 
-          val expected: TimeVaryingValue[Int] =
-            new TimeVaryingValue(-5, 0)
+          val expected: TimeVaryingValue =
+            new DecreaseTo(-5, 10, -5)
 
-          actual === expected ==> true
+          actual ==> expected
         }
 
       }
@@ -139,42 +139,42 @@ object TimeVaryingValueTests extends TestSuite {
 
         "should decrease one value over time." - {
           "Case A" - {
-            TimeVaryingValue(0)
-              .decreaseWrapAt(3, 10, Millis(100).toSeconds)
+            DecreaseWrapAt(0, 10, 3)
+              .update(Millis(100).toSeconds)
               .value ==> -1
           }
 
           "Case B" - {
-            TimeVaryingValue(0)
-              .decreaseWrapAt(3, 10, Millis(100).toSeconds)
-              .decreaseWrapAt(3, 10, Millis(200).toSeconds)
+            DecreaseWrapAt(0, 10, 3)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
               .value ==> -2
           }
 
           "Case C" - {
-            TimeVaryingValue(0)
-              .decreaseWrapAt(3, 10, Millis(100).toSeconds)
-              .decreaseWrapAt(3, 10, Millis(200).toSeconds)
-              .decreaseWrapAt(3, 10, Millis(300).toSeconds)
+            DecreaseWrapAt(0, 10, 3)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
               .value ==> -3
           }
 
           "Case D" - {
-            TimeVaryingValue(0)
-              .decreaseWrapAt(3, 10, Millis(100).toSeconds)
-              .decreaseWrapAt(3, 10, Millis(200).toSeconds)
-              .decreaseWrapAt(3, 10, Millis(300).toSeconds)
-              .decreaseWrapAt(3, 10, Millis(400).toSeconds)
+            DecreaseWrapAt(0, 10, 3)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
               .value ==> 0
           }
 
           "Case E" - {
-            TimeVaryingValue(0)
-              .decreaseWrapAt(3, 10, Millis(100).toSeconds)
-              .decreaseWrapAt(3, 10, Millis(200).toSeconds)
-              .decreaseWrapAt(3, 10, Millis(300).toSeconds)
-              .decreaseWrapAt(3, 10, Millis(400).toSeconds)
-              .decreaseWrapAt(3, 10, Millis(500).toSeconds)
+            DecreaseWrapAt(0, 10, 3)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
+              .update(Millis(100).toSeconds)
               .value ==> -1
           }
         }

@@ -2,14 +2,14 @@ package com.example.jobs
 
 import indigo._
 import indigo.shared.EqualTo._
-import indigoextras.datatypes.TimeVaryingValue
 import indigoextras.jobs.JobMarketEvent
+import indigoextras.datatypes.IncreaseTo
 
 final case class Model(bob: Bob, grove: Grove, woodPiles: List[Wood], woodCollected: Int) {
 
   def update(gameTime: GameTime, dice: Dice): GlobalEvent => Outcome[Model] = {
     case e @ FrameTick =>
-      Outcome.combine(bob.update(gameTime, dice)(e), grove.update(gameTime.running)).map {
+      Outcome.combine(bob.update(gameTime, dice)(e), grove.update(gameTime.delta)).map {
         case (b, g) =>
           this.copy(
             bob = b,
@@ -71,9 +71,8 @@ object Model {
             Tree(
               index = i,
               position = Point((v.x * 25d).toInt, (v.y * 25d).toInt) + Point(50, 150),
-              growth = TimeVaryingValue(0, Seconds.zero),
-              growthRate = 10 + (10 * gr).toInt,
-              ready = false
+              growth = IncreaseTo(0, 10 + (10 * gr), 100),
+              fullyGrown = false
             )
         }
       ),
@@ -85,9 +84,9 @@ object Model {
 
 final case class Grove(trees: List[Tree]) {
 
-  def update(runningTime: Seconds): Outcome[Grove] =
+  def update(timeDelta: Seconds): Outcome[Grove] =
     Outcome
-      .sequence(trees.map(_.update(runningTime)))
+      .sequence(trees.map(_.update(timeDelta)))
       .map(ts => this.copy(trees = ts))
 
   def removeTreeWithIndex(index: Int): Grove =
@@ -95,21 +94,21 @@ final case class Grove(trees: List[Tree]) {
 
 }
 
-final case class Tree(index: Int, position: Point, growth: TimeVaryingValue[Int], growthRate: Int, ready: Boolean) {
+final case class Tree(index: Int, position: Point, growth: IncreaseTo, fullyGrown: Boolean) {
 
-  def update(runningTime: Seconds): Outcome[Tree] =
-    if (ready) Outcome(this)
+  def update(timeDelta: Seconds): Outcome[Tree] =
+    if (fullyGrown) Outcome(this)
     else {
-      val nextGrowth = growth.increaseTo(100, growthRate, runningTime)
-      val isReady    = nextGrowth.value === 100
+      val nextGrowth   = growth.update(timeDelta)
+      val isFullyGrown = nextGrowth.toInt === 100
 
       Outcome(
         this.copy(
           growth = nextGrowth,
-          ready = isReady
+          fullyGrown = isFullyGrown
         )
       ).addGlobalEvents(
-        if (isReady) List(JobMarketEvent.Post(ChopDown(index, position))) else Nil
+        if (isFullyGrown) List(JobMarketEvent.Post(ChopDown(index, position))) else Nil
       )
     }
 
