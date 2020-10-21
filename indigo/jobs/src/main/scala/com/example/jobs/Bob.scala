@@ -3,7 +3,7 @@ package com.example.jobs
 import indigo._
 import indigoextras.jobs._
 import indigo.shared.EqualTo._
-import indigoextras.datatypes.TimeVaryingValue
+import indigoextras.datatypes.IncreaseTo
 
 // Bob is our NPC 'Actor'
 final case class Bob(position: Point, workSchedule: WorkSchedule[Bob, Unit], state: BobState) {
@@ -111,7 +111,7 @@ object Bob {
 
         case Idle(percentDone) =>
           (
-            Idle(percentDone.increaseTo(100, 75, context.gameTime.running)),
+            Idle(percentDone.update(context.gameTime.delta)),
             context.actor.copy(state = BobState.Idle)
           )
 
@@ -122,16 +122,19 @@ object Bob {
           )
       }
 
+      private val idleJob: List[Idle] =
+        List(Idle(IncreaseTo(0, 75, 100)))
+
       def generateJobs(context: WorkContext[Bob, Unit]): List[Job] =
         context.actor.state match {
           case BobState.Idle =>
             List(Wander(Point(context.dice.roll(100) + 50, context.dice.roll(30) + 90)))
 
           case BobState.Wandering =>
-            List(Idle(TimeVaryingValue(0, context.gameTime.running)))
+            idleJob
 
           case BobState.Working =>
-            List(Idle(TimeVaryingValue(0, context.gameTime.running)))
+            idleJob
         }
 
       def canTakeJob(context: WorkContext[Bob, Unit]): Job => Boolean = {

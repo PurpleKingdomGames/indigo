@@ -3,7 +3,7 @@ package com.example.jobs
 import indigo._
 import indigoextras.jobs.Job
 import indigoextras.jobs.JobName
-import indigoextras.datatypes.TimeVaryingValue
+import indigoextras.datatypes.IncreaseTo
 
 final case class ChopDown(index: Int, position: Point) extends Job {
   val isLocal: Boolean = false
@@ -27,7 +27,7 @@ final case class Wander(to: Point) extends Job {
   val priority: Int    = 50
 }
 
-final case class Idle(percentDone: TimeVaryingValue[Int]) extends Job {
+final case class Idle(percentDone: IncreaseTo) extends Job {
   val isLocal: Boolean = true
   val jobName: JobName = JobName("bob is pacing")
   val priority: Int    = 100
