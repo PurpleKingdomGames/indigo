@@ -56,42 +56,42 @@ object TimeVaryingValueTests extends TestSuite {
 
         "should increase one value over time." - {
           "Case A" - {
-            IncreaseWrapAt(0, 10, 3)
+            IncreaseWrapAt(10, 3)
               .update(Millis(100).toSeconds)
               .value ==> 1
           }
 
           "Case B" - {
-            IncreaseWrapAt(0, 10, 3)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
+            IncreaseWrapAt(10, 3)
+              .update(Millis(100).toSeconds) // 1
+              .update(Millis(100).toSeconds) // 2
               .value ==> 2
           }
 
           "Case C" - {
-            IncreaseWrapAt(0, 10, 3)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
+            IncreaseWrapAt(10, 3)
+              .update(Millis(100).toSeconds) // 1
+              .update(Millis(100).toSeconds) // 2
+              .update(Millis(100).toSeconds) // 3
               .value ==> 3
           }
 
           "Case D" - {
-            IncreaseWrapAt(0, 10, 3)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
+            IncreaseWrapAt(10, 3)
+              .update(Millis(100).toSeconds) // 1
+              .update(Millis(100).toSeconds) // 2
+              .update(Millis(100).toSeconds) // 3
+              .update(Millis(100).toSeconds) // 0
               .value ==> 0
           }
 
           "Case E" - {
-            IncreaseWrapAt(0, 10, 3)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
+            IncreaseWrapAt(10, 3)
+              .update(Millis(100).toSeconds) // 1
+              .update(Millis(100).toSeconds) // 2
+              .update(Millis(100).toSeconds) // 3
+              .update(Millis(100).toSeconds) // 0
+              .update(Millis(100).toSeconds) // 1
               .value ==> 1
           }
         }
@@ -139,20 +139,20 @@ object TimeVaryingValueTests extends TestSuite {
 
         "should decrease one value over time." - {
           "Case A" - {
-            DecreaseWrapAt(0, 10, 3)
+            DecreaseWrapAt(10, 3)
               .update(Millis(100).toSeconds)
               .value ==> -1
           }
 
           "Case B" - {
-            DecreaseWrapAt(0, 10, 3)
+            DecreaseWrapAt(10, 3)
               .update(Millis(100).toSeconds)
               .update(Millis(100).toSeconds)
               .value ==> -2
           }
 
           "Case C" - {
-            DecreaseWrapAt(0, 10, 3)
+            DecreaseWrapAt(10, 3)
               .update(Millis(100).toSeconds)
               .update(Millis(100).toSeconds)
               .update(Millis(100).toSeconds)
@@ -160,7 +160,7 @@ object TimeVaryingValueTests extends TestSuite {
           }
 
           "Case D" - {
-            DecreaseWrapAt(0, 10, 3)
+            DecreaseWrapAt(10, 3)
               .update(Millis(100).toSeconds)
               .update(Millis(100).toSeconds)
               .update(Millis(100).toSeconds)
@@ -169,7 +169,7 @@ object TimeVaryingValueTests extends TestSuite {
           }
 
           "Case E" - {
-            DecreaseWrapAt(0, 10, 3)
+            DecreaseWrapAt(10, 3)
               .update(Millis(100).toSeconds)
               .update(Millis(100).toSeconds)
               .update(Millis(100).toSeconds)
