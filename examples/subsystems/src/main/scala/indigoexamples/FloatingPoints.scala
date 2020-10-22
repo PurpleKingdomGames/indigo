@@ -1,7 +1,7 @@
 package indigoexamples
 
 import indigo._
-import indigoextras.datatypes.TimeVaryingValue
+import indigoextras.datatypes.Decreasing
 
 final case class FloatingPoints(fontKey: FontKey) extends SubSystem {
   type EventType      = FloatingPointEvent
@@ -19,13 +19,13 @@ final case class FloatingPoints(fontKey: FontKey) extends SubSystem {
   def update(context: SubSystemFrameContext, entities: List[FloatingPointEntity]): FloatingPointEvent => Outcome[List[FloatingPointEntity]] = {
     case FloatingPointEvent.Spawn(position) =>
       Outcome(
-        FloatingPointEntity(position, context.gameTime.running, TimeVaryingValue(2, context.gameTime.running)) :: entities
+        FloatingPointEntity(position, context.gameTime.running, Decreasing(2, 1)) :: entities
       )
 
     case FloatingPointEvent.Update =>
       Outcome(
         entities
-          .map(_.update(context.gameTime.running))
+          .map(_.update(context.gameTime.delta))
           .filter(_.ttl.value > 0)
       )
   }
@@ -60,9 +60,9 @@ object FloatingPoints {
 
 }
 
-final case class FloatingPointEntity(spawnedAt: Point, createdAt: Seconds, ttl: TimeVaryingValue[Int]) {
-  def update(runningTime: Seconds): FloatingPointEntity =
-    this.copy(ttl = ttl.decrease(2, runningTime))
+final case class FloatingPointEntity(spawnedAt: Point, createdAt: Seconds, ttl: Decreasing) {
+  def update(timeDelta: Seconds): FloatingPointEntity =
+    this.copy(ttl = ttl.update(timeDelta))
 }
 
 sealed trait FloatingPointEvent extends GlobalEvent
