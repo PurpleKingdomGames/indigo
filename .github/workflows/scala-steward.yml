@@ -1,9 +1,6 @@
-- name: Scala Steward Github Action
-  uses: scala-steward-org/scala-steward-action@v2.7.0
-
 on:
   schedule:
-    - cron: '0 0 * * 0'
+    - cron: "0 0 * * 0"
 
 jobs:
   scala-steward:
@@ -15,6 +12,6 @@ jobs:
         with:
           java-version: 1.8
       - name: Launch Scala Steward
-        uses: scala-steward-org/scala-steward-action@v2
+        uses: scala-steward-org/scala-steward-action@v2.7.0
         with:
           github-token: ${{ secrets.SCALA_STEWARD_INDIGO }}
