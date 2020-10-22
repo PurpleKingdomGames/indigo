@@ -19,7 +19,8 @@ lazy val exampleProjects: List[String] =
     "effects",
     "assetLoading",
     "tiled",
-    "radio"
+    "radio",
+    "jobs"
   )
 
 def applyCommand(projects: List[String], command: String): String =

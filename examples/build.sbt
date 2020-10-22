@@ -300,3 +300,18 @@ lazy val radio =
       title := "Radio button example",
       gameAssetsDirectory := "assets"
     )
+
+lazy val jobs =
+  project
+    .in(file("jobs"))
+    .settings(commonSettings: _*)
+    .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
+    .settings(
+      name := "jobs-example",
+      showCursor := true,
+      title := "Job System Example",
+      gameAssetsDirectory := "assets",
+      windowStartWidth := 400,
+      windowStartHeight := 400
+    )
