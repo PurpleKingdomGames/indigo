@@ -1,4 +1,4 @@
-addSbtPlugin("org.scala-js"    %% "sbt-scalajs"     % "1.2.0")
+addSbtPlugin("org.scala-js"    %% "sbt-scalajs"     % "1.3.0")
 addSbtPlugin("io.indigoengine" %% "sbt-indigo"      % SbtIndigoVersion.getVersion)
 addSbtPlugin("org.wartremover" %% "sbt-wartremover" % "2.4.9")
 addSbtPlugin("com.eed3si9n"    %% "sbt-assembly"    % "0.14.10")
