@@ -40,17 +40,44 @@ void main(void) {
                 Statement(Declare.Variable[ShaderType.Vec4]("textureColor")) +
                   Statement(Declare.Variable[ShaderType.Vec4]("withAlpha")) +
                   Statement(Declare.Variable[ShaderType.Vec4]("tintedVersion")) +
-                  Statement(Assign("textureColor", texture2D(ShaderRef("u_texture"), ShaderRef("v_texcoord")))) +
-                  Statement(Assign("withAlpha", texture2D(ShaderRef("u_texture"), ShaderRef("v_texcoord")))) +
-                  Statement(Assign("tintedVersion", mix(ShaderRef("withAlpha"), ShaderRef("tintedVersion"), max(Literal(0), ShaderRef("u_tint").w)))) +
-                  Statement(Assign("gl_FragColor", vec4(1, 0, 0, 1)))
+                  Statement(
+                    Assign[ShaderType.Vec4](
+                      "textureColor",
+                      texture2D(ShaderRef("u_texture"), ShaderRef("v_texcoord"))
+                    )
+                  ) +
+                  Statement(
+                    Assign[ShaderType.Vec4](
+                      "withAlpha", {
+                        val textureColor: ShaderRef[ShaderType.Vec4] = ShaderRef("textureColor")
+                        val vAlpha: ShaderRef[ShaderType.Float]      = ShaderRef("v_alpha")
+                        vec4(textureColor.r, textureColor.g, textureColor.b, textureColor.a * vAlpha)
+                      }
+                    )
+                  ) +
+                  Statement(
+                    Assign[ShaderType.Vec4](
+                      "tintedVersion", {
+                        val withAlpha: ShaderRef[ShaderType.Vec4] = ShaderRef("withAlpha")
+                        val uTint: ShaderRef[ShaderType.Vec4]     = ShaderRef("u_tint")
+                        vec4(withAlpha.r * uTint.r, withAlpha.g * uTint.g, withAlpha.b * uTint.b, withAlpha.a)
+                      }
+                    )
+                  ) +
+                  Statement(
+                    Assign[ShaderType.Vec4](
+                      "gl_FragColor",
+                      mix(ShaderRef("withAlpha"), ShaderRef("tintedVersion"), max(Literal(0), ShaderRef[ShaderType.Vec4]("u_tint").a))
+                    )
+                  )
               )
             )
 
-        // println(frag)
-        println(frag.asGLSL)
+        val out: String = frag.asGLSL
+        
+        println(out)
 
-        1 ==> 2
+        out.contains("precision mediump float;") ==> true
 
       }
 
