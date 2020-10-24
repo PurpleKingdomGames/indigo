@@ -1,24 +1,24 @@
-package indigo.shaders
+// package indigo.shaders
 
-import utest._
+// import utest._
 
-object ShaderDsl2Tests extends TestSuite {
+// object ShaderDsl2Tests extends TestSuite {
 
-  val tests: Tests =
-    Tests {
+//   val tests: Tests =
+//     Tests {
 
-      "test" - {
+//       "test" - {
 
-        /*
-         * Take the vertex position and modify it with cos(t)
-         */
-        // val t: Channel = new Channel(() => Float)
+//         /*
+//          * Take the vertex position and modify it with cos(t)
+//          */
+//         // val t: Channel = new Channel(() => Float)
         
 
-        1 ==> 2
+//         1 ==> 2
 
-      }
+//       }
 
-    }
+//     }
 
-}
+// }

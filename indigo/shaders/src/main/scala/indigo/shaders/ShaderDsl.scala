@@ -1,8 +1,8 @@
-package indigo.shaders
+// package indigo.shaders
 
-trait ShaderS {
+// trait ShaderS {
 
-}
+// }
 
 // trait ShaderSF {
 //   val f: ShaderFunction
