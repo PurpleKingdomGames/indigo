@@ -315,3 +315,16 @@ lazy val jobs =
       windowStartWidth := 400,
       windowStartHeight := 400
     )
+
+lazy val progressbar =
+  project
+    .in(file("progressbar"))
+    .settings(commonSettings: _*)
+    .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
+    .settings(
+      name := "progressbar-example",
+      showCursor := true,
+      title := "Progress bar example",
+      gameAssetsDirectory := "assets"
+    )

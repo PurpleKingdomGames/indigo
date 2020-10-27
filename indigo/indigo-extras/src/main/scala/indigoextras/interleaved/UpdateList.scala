@@ -1,4 +1,4 @@
-package indigoextras.datatypes
+package indigoextras.interleaved
 
 import indigo.shared.EqualTo._
 import scala.collection.mutable.ListBuffer
@@ -41,7 +41,9 @@ object UpdateList {
   def empty[A]: UpdateList[A] =
     apply(Nil)
 
-  @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var", "org.wartremover.warts.MutableDataStructures"))
+  @SuppressWarnings(
+    Array("org.wartremover.warts.While", "org.wartremover.warts.Var", "org.wartremover.warts.MutableDataStructures")
+  )
   def updateList[A](l: List[A], f: A => A, pattern: UpdatePattern): (List[A], UpdatePattern) = {
     var i: Int             = 0
     val res: ListBuffer[A] = new ListBuffer[A]

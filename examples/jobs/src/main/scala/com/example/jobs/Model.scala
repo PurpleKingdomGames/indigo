@@ -3,7 +3,7 @@ package com.example.jobs
 import indigo._
 import indigo.shared.EqualTo._
 import indigoextras.jobs.JobMarketEvent
-import indigoextras.datatypes.IncreaseTo
+import indigoextras.interleaved.IncreaseTo
 
 final case class Model(bob: Bob, grove: Grove, woodPiles: List[Wood], woodCollected: Int) {
 

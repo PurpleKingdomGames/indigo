@@ -2,7 +2,8 @@ package indigoexamples
 
 import indigo._
 import indigo.shared.EqualTo._
-import indigoextras.ui._
+import indigoextras.interleaved.{MonitoredStep, InterleavedComputation}
+import indigoextras.ui.ProgressBar
 
 import scala.annotation.tailrec
 import scala.scalajs.js.annotation._

@@ -20,5 +20,6 @@ cd ./effects/.js/target/indigo-js/
 cd ./assetLoading/.js/target/indigo-js/
 cd ./tiled/.js/target/indigo-js/
 cd ./radio/.js/target/indigo-js/
+cd ./progressbar/.js/target/indigo-js/
 
 cd ../../../../

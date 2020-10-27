@@ -1,4 +1,4 @@
-package indigoextras.datatypes
+package indigoextras.interleaved
 
 import utest._
 
