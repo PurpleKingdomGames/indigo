@@ -1,4 +1,4 @@
-package indigoextras.datatypes
+package indigoextras.interleaved
 
 import indigo.shared.time.Seconds
 import indigo.shared.EqualTo
@@ -58,7 +58,7 @@ sealed trait TimeVaryingValue {
     * @return TimeVaryingValue
     */
   def update(timeDelta: Seconds): TimeVaryingValue
-  
+
 }
 
 /**

@@ -1,8 +1,8 @@
-package indigoextras.datatypes
+package indigoextras.interleaved
 
 import utest._
-import indigoextras.datatypes.UpdateList
-import indigoextras.datatypes.UpdatePattern
+import indigoextras.interleaved.UpdateList
+import indigoextras.interleaved.UpdatePattern
 
 object UpdateListTests extends TestSuite {
 
