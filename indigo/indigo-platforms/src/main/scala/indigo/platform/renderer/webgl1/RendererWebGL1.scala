@@ -62,7 +62,7 @@ final class RendererWebGL1(
 
   private val vertexBuffer: WebGLBuffer = gl.createBuffer()
 
-  private val standardShaderProgram = WebGLHelper.shaderProgramSetup(gl, "Pixel", WebGL1StandardPixelArt)
+  // private val standardShaderProgram = WebGLHelper.shaderProgramSetup(gl, "Pixel", WebGL1StandardPixelArt)
   private val lightingShaderProgram = WebGLHelper.shaderProgramSetup(gl, "Lighting", WebGL1StandardLightingPixelArt)
   private val mergeShaderProgram    = WebGLHelper.shaderProgramSetup(gl, "Merge", WebGL1StandardMerge)
 
@@ -161,7 +161,7 @@ final class RendererWebGL1(
       displayEntities: mutable.ListBuffer[DisplayEntity],
       frameBufferComponents: Option[FrameBufferComponents],
       clearColor: ClearColor,
-      shaderProgram: WebGLProgram,
+      // shaderProgram: WebGLProgram,
       projectionMatrix: Matrix4,
       isMerge: Boolean
   ): Unit = {
