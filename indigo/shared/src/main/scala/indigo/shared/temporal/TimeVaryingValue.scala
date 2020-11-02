@@ -1,4 +1,4 @@
-package indigoextras.interleaved
+package indigo.shared.temporal
 
 import indigo.shared.time.Seconds
 import indigo.shared.EqualTo
@@ -58,6 +58,15 @@ sealed trait TimeVaryingValue {
     * @return TimeVaryingValue
     */
   def update(timeDelta: Seconds): TimeVaryingValue
+
+}
+
+object TimeVaryingValue {
+
+  implicit def eqTimeVaryingValue: EqualTo[TimeVaryingValue] =
+    EqualTo.create[TimeVaryingValue] { (a, b) =>
+      a.value === b.value
+    }
 
 }
 
@@ -181,14 +190,5 @@ object DecreaseWrapAt {
     */
   def apply(unitsPerSecond: Double, limit: Double): DecreaseWrapAt =
     DecreaseWrapAt(0, unitsPerSecond, limit)
-
-}
-
-object TimeVaryingValue {
-
-  implicit def eqTimeVaryingValue: EqualTo[TimeVaryingValue] =
-    EqualTo.create[TimeVaryingValue] { (a, b) =>
-      a.value === b.value
-    }
 
 }

@@ -1,4 +1,4 @@
-package indigoextras.interleaved
+package indigo.shared.temporal
 
 import utest._
 

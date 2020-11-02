@@ -62,4 +62,30 @@ trait SharedTypeAliases {
   type FrameContext[StartUpData] = shared.FrameContext[StartUpData]
   type SubSystemFrameContext     = shared.subsystems.SubSystemFrameContext
 
+  type Signal[A] = shared.temporal.Signal[A]
+  val Signal: shared.temporal.Signal.type = shared.temporal.Signal
+
+  type SignalFunction[A, B] = shared.temporal.SignalFunction[A, B]
+  val SignalFunction: shared.temporal.SignalFunction.type = shared.temporal.SignalFunction
+
+  type TimeVaryingValue = shared.temporal.TimeVaryingValue
+  val TimeVaryingValue: shared.temporal.TimeVaryingValue.type = shared.temporal.TimeVaryingValue
+
+  type Increasing = shared.temporal.Increasing
+  val Increasing: shared.temporal.Increasing.type = shared.temporal.Increasing
+
+  type IncreaseTo = shared.temporal.IncreaseTo
+  val IncreaseTo: shared.temporal.IncreaseTo.type = shared.temporal.IncreaseTo
+
+  type IncreaseWrapAt = shared.temporal.IncreaseWrapAt
+  val IncreaseWrapAt: shared.temporal.IncreaseWrapAt.type = shared.temporal.IncreaseWrapAt
+
+  type Decreasing = shared.temporal.Decreasing
+  val Decreasing: shared.temporal.Decreasing.type = shared.temporal.Decreasing
+
+  type DecreaseTo = shared.temporal.DecreaseTo
+  val DecreaseTo: shared.temporal.DecreaseTo.type = shared.temporal.DecreaseTo
+
+  type DecreaseWrapAt = shared.temporal.DecreaseWrapAt
+  val DecreaseWrapAt: shared.temporal.DecreaseWrapAt.type = shared.temporal.DecreaseWrapAt
 }

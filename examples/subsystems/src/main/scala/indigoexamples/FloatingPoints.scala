@@ -1,7 +1,6 @@
 package indigoexamples
 
 import indigo._
-import indigoextras.interleaved.Decreasing
 
 final case class FloatingPoints(fontKey: FontKey) extends SubSystem {
   type EventType      = FloatingPointEvent

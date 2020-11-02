@@ -52,12 +52,6 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   type NonEmptyList[A] = shared.collections.NonEmptyList[A]
   val NonEmptyList: shared.collections.NonEmptyList.type = shared.collections.NonEmptyList
 
-  type Signal[A] = shared.temporal.Signal[A]
-  val Signal: shared.temporal.Signal.type = shared.temporal.Signal
-
-  type SignalFunction[A, B] = shared.temporal.SignalFunction[A, B]
-  val SignalFunction: shared.temporal.SignalFunction.type = shared.temporal.SignalFunction
-
   type SubSystem = shared.subsystems.SubSystem
   val SubSystem: shared.subsystems.SubSystem.type = shared.subsystems.SubSystem
 

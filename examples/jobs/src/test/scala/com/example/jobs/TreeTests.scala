@@ -2,11 +2,10 @@ package com.example.jobs
 
 import utest._
 import indigo.shared.datatypes.Point
-import indigoextras.interleaved.TimeVaryingValue
 import indigo.shared.time.Seconds
 import indigoextras.jobs.JobMarketEvent
 import indigo.shared.time.Millis
-import indigoextras.interleaved.IncreaseTo
+import indigo.IncreaseTo
 
 object TreeTests extends TestSuite {
 
