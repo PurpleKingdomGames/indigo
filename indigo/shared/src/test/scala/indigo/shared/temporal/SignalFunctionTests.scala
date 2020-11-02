@@ -55,6 +55,35 @@ object SignalFunctionTests extends TestSuite {
         }
       }
 
+      "Fuller example" - {
+        val makeRange: SignalFunction[Boolean, List[Int]] =
+          SignalFunction { p =>
+            val num = if (p) 10 else 5
+            (1 to num).toList
+          }
+
+        val chooseCatsOrDogs: SignalFunction[Boolean, String] =
+          SignalFunction(p => if (p) "dog" else "cat")
+
+        val howManyPets: SignalFunction[(List[Int], String), List[String]] =
+          SignalFunction {
+            case (l, str) =>
+              l.map(_ + " " + str)
+          }
+
+        val signal = Signal.Pulse(Seconds(1))
+
+        val signalFunction = (makeRange &&& chooseCatsOrDogs) >>> howManyPets
+
+        val actual1   = (signal |> signalFunction).at(Seconds.zero)
+        val expected1 = List("1 dog", "2 dog", "3 dog", "4 dog", "5 dog", "6 dog", "7 dog", "8 dog", "9 dog", "10 dog")
+        actual1 ==> expected1
+
+        val actual2   = (signal |> signalFunction).at(Seconds(1))
+        val expected2 = List("1 cat", "2 cat", "3 cat", "4 cat", "5 cat")
+        actual2 ==> expected2
+      }
+
     }
 
 }
