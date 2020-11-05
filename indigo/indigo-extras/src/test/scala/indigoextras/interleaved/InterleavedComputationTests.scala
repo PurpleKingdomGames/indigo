@@ -15,13 +15,13 @@ object InterleavedComputationTests extends TestSuite {
         val computation =
           InterleavedComputation(0, List(MyStep(), MyStep(), MyStep()))
 
-        val actual =
-          computation.performStep.performStep.performStep
+        computation ==> InterleavedComputation(0, (), List(MyStep(), MyStep(), MyStep()), 0, 0)
 
-        val expected =
-          InterleavedComputation(3, (), Nil, 0, 3)
+        computation.performStep ==> InterleavedComputation(1, (), List(MyStep(), MyStep()), 0, 1)
 
-        actual ==> expected
+        computation.performStep.performStep ==> InterleavedComputation(2, (), List(MyStep()), 0, 2)
+
+        computation.performStep.performStep.performStep ==> InterleavedComputation(3, (), Nil, 0, 3)
       }
 
     }
