@@ -135,4 +135,18 @@ object InterleavedComputation {
       steps: List[MonitoredStep[ReferenceData, ResultModel]]
   ): InterleavedComputation[ReferenceData, ResultModel] =
     InterleavedComputation[ReferenceData, ResultModel](startResultData, referenceData, steps, 0.0, 0)
+
+  /**
+    * Create a new interleaved computation with no reference data.
+    *
+    * @param startResultData The opening result data object prior to computation
+    * @param steps The computation steps
+    * @tparam ResultModel Type of the interleaved computation's (partial/complete) result
+    * @return The new interleaved computation ready for execution
+    */
+  def apply[ResultModel](
+      startResultData: ResultModel,
+      steps: List[MonitoredStep[Unit, ResultModel]]
+  ): InterleavedComputation[Unit, ResultModel] =
+    InterleavedComputation[Unit, ResultModel](startResultData, (), steps, 0.0, 0)
 }
