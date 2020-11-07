@@ -164,3 +164,10 @@ addCommandAlias(
     "progressbar/indigoBuild"
   ).mkString(";", ";", "")
 )
+addCommandAlias(
+  "progressbarRun",
+  List(
+    "progressbar/fastOptJS",
+    "progressbar/indigoRun"
+  ).mkString(";", ";", "")
+)
