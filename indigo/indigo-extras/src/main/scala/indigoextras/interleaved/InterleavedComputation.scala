@@ -18,7 +18,7 @@ trait MonitoredStep[ReferenceData, ResultModel] {
     * if one step's size is 1 and another step's size is 3, it is assumed that the latter step
     * will take roughly 3 times longer than the former step.
     */
-  val size: Int
+  def size: Int
 
   /**
     * Perform this computation step.
