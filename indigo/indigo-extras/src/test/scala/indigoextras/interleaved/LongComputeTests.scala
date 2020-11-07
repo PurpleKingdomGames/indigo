@@ -3,6 +3,7 @@ package indigoextras.interleaved
 import utest._
 import indigo.shared.time.Seconds
 import indigo.shared.time.GameTime
+import indigo.shared.time.Millis
 
 object LongComputeTests extends TestSuite {
 
@@ -18,12 +19,17 @@ object LongComputeTests extends TestSuite {
             current + 1
         }
 
+        /*
+         * Frame duration of 100 millis
+         * No update to running time required, we only care about the delta.
+         * The default tolerance is 0.2, meaning 0.2 of 100 millis / second i.e. the delta at most can be 20
+         */
         val gameTime =
           GameTime.zero
-            .setTargetFPS(10)           // Frame duration of 100 millis
-            .copy(delta = Seconds(0.1)) // No update to running time required, we only care about the delta.
+            .setTargetFPS(10)
+            .copy(delta = Millis(20).toSeconds)
 
-        "initially, no steps will fit, so ramp up to 10, then do the first one" - {
+        "initially, no steps will fit, so do the first one" - {
           val steps: List[TestStep.type] =
             List(TestStep, TestStep, TestStep)
 
@@ -33,15 +39,10 @@ object LongComputeTests extends TestSuite {
           val actual =
             longCompute
               .update(gameTime)
-              .update(gameTime)
-              .update(gameTime)
-              .update(gameTime)
-              .update(gameTime)
-              .update(gameTime)
 
           actual.steps ==> List(TestStep, TestStep)
           actual.result ==> 1
-          actual.unitsToAttempt ==> 12
+          actual.unitsToAttempt ==> 2
           actual.sizeCompleted ==> 10
           actual.isComplete ==> false
           actual.sizeRemaining ==> 20
@@ -59,7 +60,7 @@ object LongComputeTests extends TestSuite {
               steps = steps,
               unitsToAttempt = 40,
               rateOfChange = 1,
-              tolerance = 0.1,
+              tolerance = 0.2,
               sizeCompleted = 0
             )
 
@@ -86,7 +87,7 @@ object LongComputeTests extends TestSuite {
               steps = steps,
               unitsToAttempt = 20,
               rateOfChange = 1,
-              tolerance = 0.1,
+              tolerance = 0.2,
               sizeCompleted = 0
             )
 
@@ -111,6 +112,24 @@ object LongComputeTests extends TestSuite {
           actual2.isComplete ==> true
           actual2.sizeRemaining ==> 0
           actual2.portionCompleted ==> 1.0
+
+        }
+
+        "isWithinTolerance" - {
+
+          val gameTime =
+            GameTime
+              .is(Seconds(1))
+              .setTargetFPS(10) // Frame duration of 100 millis
+
+          // 10 FPS = 100 Millis / frame
+          // So, tolerance 0.5d is 50 Millis
+          LongCompute.isWithinTolerance(gameTime.copy(delta = Millis(0).toSeconds), 0.5) ==> true
+          LongCompute.isWithinTolerance(gameTime.copy(delta = Millis(25).toSeconds), 0.5) ==> true
+          LongCompute.isWithinTolerance(gameTime.copy(delta = Millis(50).toSeconds), 0.5) ==> true
+          LongCompute.isWithinTolerance(gameTime.copy(delta = Millis(75).toSeconds), 0.5) ==> false
+          LongCompute.isWithinTolerance(gameTime.copy(delta = Millis(100).toSeconds), 0.5) ==> false
+          LongCompute.isWithinTolerance(gameTime.copy(delta = Millis(200).toSeconds), 0.5) ==> false
 
         }
 

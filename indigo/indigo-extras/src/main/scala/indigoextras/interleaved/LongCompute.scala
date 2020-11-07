@@ -39,7 +39,7 @@ final case class LongCompute[ReferenceData, ResultModel](
             sizeCompleted = sizeCompleted + unitsDone
           )
 
-        case head :: _ if head.size + unitsDone > unitsToAttempt =>
+        case head :: _ if unitsDone > 0 && head.size + unitsDone > unitsToAttempt =>
           this.copy[ReferenceData, ResultModel](
             steps = remaining,
             result = acc.getOrElse(result),
@@ -51,11 +51,12 @@ final case class LongCompute[ReferenceData, ResultModel](
 
       }
 
-    val isWithinTolerance: Boolean = (gameTime.frameDuration - gameTime.delta.toMillis).toDouble <= gameTime.frameDuration.toDouble * 0.1
-    val next                       = rec(steps, 0, None)
+    val next = rec(steps, 0, None)
 
     next.copy[ReferenceData, ResultModel](
-      unitsToAttempt = if (isWithinTolerance) next.unitsToAttempt + rateOfChange else next.unitsToAttempt - rateOfChange
+      unitsToAttempt =
+        if (LongCompute.isWithinTolerance(gameTime, tolerance)) next.unitsToAttempt + rateOfChange
+        else next.unitsToAttempt - rateOfChange
     )
   }
 
@@ -69,9 +70,28 @@ final case class LongCompute[ReferenceData, ResultModel](
 object LongCompute {
 
   def apply[ReferenceData, ResultModel](reference: ReferenceData, initialValue: ResultModel, steps: List[MonitoredStep[ReferenceData, ResultModel]]): LongCompute[ReferenceData, ResultModel] =
-    LongCompute(reference, initialValue, steps, 0, 1, 0.1, 0)
+    LongCompute(
+      reference,
+      initialValue,
+      steps,
+      0,
+      if (steps.nonEmpty) steps.map(_.size).sum / steps.length else 1,
+      0.2,
+      0
+    )
 
   def apply[ResultModel](initialValue: ResultModel, steps: List[MonitoredStep[Unit, ResultModel]]): LongCompute[Unit, ResultModel] =
-    LongCompute((), initialValue, steps, 0, 1, 0.1, 0)
+    LongCompute(
+      (),
+      initialValue,
+      steps,
+      0,
+      if (steps.nonEmpty) steps.map(_.size).sum / steps.length else 1,
+      0.2,
+      0
+    )
+
+  def isWithinTolerance(gameTime: GameTime, tolerance: Double): Boolean =
+    (gameTime.frameDuration - gameTime.delta.toMillis).toDouble >= gameTime.frameDuration.toDouble - (gameTime.frameDuration.toDouble * tolerance)
 
 }
