@@ -11,11 +11,16 @@ final case class LongCompute[ReferenceData, ResultModel](
     steps: List[MonitoredStep[ReferenceData, ResultModel]],
     unitsToAttempt: Int,
     rateOfChange: Int,
-    tolerance: Double
+    tolerance: Double,
+    sizeCompleted: Int
 ) {
 
   def isComplete: Boolean =
     steps.isEmpty
+
+  def sizeRemaining: Int = steps.map(_.size).sum
+
+  def portionCompleted: Double = sizeCompleted.toDouble / (sizeCompleted + sizeRemaining)
 
   def giveResult: Option[ResultModel] =
     if (isComplete) Some(result) else None
@@ -30,13 +35,15 @@ final case class LongCompute[ReferenceData, ResultModel](
         case Nil =>
           this.copy[ReferenceData, ResultModel](
             steps = remaining,
-            result = acc.getOrElse(result)
+            result = acc.getOrElse(result),
+            sizeCompleted = sizeCompleted + unitsDone
           )
 
         case head :: _ if head.size + unitsDone > unitsToAttempt =>
           this.copy[ReferenceData, ResultModel](
             steps = remaining,
-            result = acc.getOrElse(result)
+            result = acc.getOrElse(result),
+            sizeCompleted = sizeCompleted + unitsDone
           )
 
         case head :: next =>
@@ -62,9 +69,9 @@ final case class LongCompute[ReferenceData, ResultModel](
 object LongCompute {
 
   def apply[ReferenceData, ResultModel](reference: ReferenceData, initialValue: ResultModel, steps: List[MonitoredStep[ReferenceData, ResultModel]]): LongCompute[ReferenceData, ResultModel] =
-    LongCompute(reference, initialValue, steps, 0, 1, 0.1)
+    LongCompute(reference, initialValue, steps, 0, 1, 0.1, 0)
 
   def apply[ResultModel](initialValue: ResultModel, steps: List[MonitoredStep[Unit, ResultModel]]): LongCompute[Unit, ResultModel] =
-    LongCompute((), initialValue, steps, 0, 1, 0.1)
+    LongCompute((), initialValue, steps, 0, 1, 0.1, 0)
 
 }
