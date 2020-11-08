@@ -17,7 +17,9 @@ import indigoextras.subsystems.FPSCounter
 object ProgressBarExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewModel] {
   val eventFilters: EventFilters = EventFilters.Default
 
-  val numbersToFactorise: List[Long] = (7000001L to 7001000L).toList
+  // val numbersToFactorise: List[Long] = (7000001L to 7001000L).toList // Slow ~10fps
+  val numbersToFactorise: List[Long] = (700001L to 701000L).toList // Acceptable? ~40fps
+  // val numbersToFactorise: List[Long] = (70001L to 71000L).toList // Fast ~60fps
 
   def boot(flags: Map[String, String]): BootResult[Unit] =
     BootResult

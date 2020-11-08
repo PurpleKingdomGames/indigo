@@ -52,11 +52,16 @@ final case class LongCompute[ReferenceData, ResultModel](
       }
 
     val next = rec(steps, 0, None)
+    val nextUnitsToAttempt =
+      Math.max(
+        rateOfChange,
+        if (LongCompute.isJustWithinTolerance(gameTime, tolerance)) next.unitsToAttempt
+        else if (LongCompute.isWithinTolerance(gameTime, tolerance)) next.unitsToAttempt + rateOfChange
+        else next.unitsToAttempt - rateOfChange
+      )
 
     next.copy[ReferenceData, ResultModel](
-      unitsToAttempt =
-        if (LongCompute.isWithinTolerance(gameTime, tolerance)) next.unitsToAttempt + rateOfChange
-        else next.unitsToAttempt - rateOfChange
+      unitsToAttempt = nextUnitsToAttempt
     )
   }
 
@@ -76,7 +81,7 @@ object LongCompute {
       steps,
       0,
       if (steps.nonEmpty) steps.map(_.size).sum / steps.length else 1,
-      0.2,
+      0.05,
       0
     )
 
@@ -87,11 +92,18 @@ object LongCompute {
       steps,
       0,
       if (steps.nonEmpty) steps.map(_.size).sum / steps.length else 1,
-      0.2,
+      0.05,
       0
     )
 
+  //>= frame duration && <= frame duration + (frame duration * tolerance)
   def isWithinTolerance(gameTime: GameTime, tolerance: Double): Boolean =
-    (gameTime.frameDuration - gameTime.delta.toMillis).toDouble >= gameTime.frameDuration.toDouble - (gameTime.frameDuration.toDouble * tolerance)
+    gameTime.delta.toMillis >= gameTime.frameDuration &&
+      gameTime.delta.toMillis.toDouble <= gameTime.frameDuration.toDouble + (gameTime.frameDuration.toDouble * tolerance.toDouble)
+
+  //>= frame duration + (frame duration * (tolerance / 10 * 9)) && <= frame duration + (frame duration * tolerance)
+  def isJustWithinTolerance(gameTime: GameTime, tolerance: Double): Boolean =
+    gameTime.delta.toMillis.toDouble >= gameTime.frameDuration.toDouble + (gameTime.frameDuration.toDouble * (tolerance.toDouble / 10 * 9)) &&
+      gameTime.delta.toMillis.toDouble <= gameTime.frameDuration.toDouble + (gameTime.frameDuration.toDouble * tolerance.toDouble)
 
 }
