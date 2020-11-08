@@ -33,6 +33,12 @@ sealed trait SceneGraphNodePrimitive extends SceneGraphNode {
   def moveTo(x: Int, y: Int): SceneGraphNodePrimitive
   def moveBy(pt: Point): SceneGraphNodePrimitive
   def moveBy(x: Int, y: Int): SceneGraphNodePrimitive
+  def rotate(angle: Radians): SceneGraphNodePrimitive
+  def rotateBy(angle: Radians): SceneGraphNodePrimitive
+  def scaleBy(amount: Vector2): SceneGraphNodePrimitive
+  def scaleBy(x: Double, y: Double): SceneGraphNodePrimitive
+  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): SceneGraphNodePrimitive
+  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): SceneGraphNodePrimitive
 }
 
 /**
@@ -61,6 +67,22 @@ final case class Group(positionOffset: Point, rotation: Radians, scale: Vector2,
     moveTo(positionOffset + pt)
   def moveBy(x: Int, y: Int): Group =
     moveBy(Point(x, y))
+
+  def rotate(angle: Radians): Group =
+    this.copy(rotation = angle)
+  def rotateBy(angle: Radians): Group =
+    rotate(rotation + angle)
+
+  def scaleBy(x: Double, y: Double): Group =
+    scaleBy(Vector2(x, y))
+  def scaleBy(amount: Vector2): Group =
+    this.copy(scale = scale * amount)
+
+  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Group =
+    this.copy(positionOffset = newPosition, rotation = newRotation, scale = newScale)
+
+  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Group =
+    transformTo(positionOffset + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
   def bounds(locator: BoundaryLocator): Rectangle =
     children match {
