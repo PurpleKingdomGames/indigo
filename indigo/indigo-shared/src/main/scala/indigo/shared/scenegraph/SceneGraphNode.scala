@@ -28,7 +28,12 @@ object SceneGraphNode {
   */
 sealed trait SceneGraphNodePrimitive extends SceneGraphNode {
   def bounds(locator: BoundaryLocator): Rectangle
+  def ref: Point
+
   def withDepth(depth: Depth): SceneGraphNodePrimitive
+  def withRef(newRef: Point): SceneGraphNodePrimitive
+  def withRef(x: Int, y: Int): SceneGraphNodePrimitive
+
   def moveTo(pt: Point): SceneGraphNodePrimitive
   def moveTo(x: Int, y: Int): SceneGraphNodePrimitive
   def moveBy(pt: Point): SceneGraphNodePrimitive
@@ -50,13 +55,18 @@ sealed trait SceneGraphNodePrimitive extends SceneGraphNode {
   * @param depth
   * @param children
   */
-final case class Group(positionOffset: Point, rotation: Radians, scale: Vector2, depth: Depth, children: List[SceneGraphNodePrimitive]) extends SceneGraphNodePrimitive {
+final case class Group(positionOffset: Point, rotation: Radians, scale: Vector2, depth: Depth, ref: Point, children: List[SceneGraphNodePrimitive]) extends SceneGraphNodePrimitive {
 
   lazy val x: Int = positionOffset.x
   lazy val y: Int = positionOffset.y
 
   def withDepth(newDepth: Depth): Group =
     this.copy(depth = newDepth)
+
+  def withRef(newRef: Point): Group =
+    this.copy(ref = newRef)
+  def withRef(x: Int, y: Int): Group =
+    withRef(Point(x, y))
 
   def moveTo(pt: Point): Group =
     this.copy(positionOffset = pt)
@@ -105,14 +115,14 @@ final case class Group(positionOffset: Point, rotation: Radians, scale: Vector2,
 
 object Group {
 
-  def apply(positionOffset: Point, rotation: Radians, scale: Vector2, depth: Depth, children: SceneGraphNodePrimitive*): Group =
-    Group(positionOffset, rotation, scale, depth, children.toList)
+  def apply(positionOffset: Point, rotation: Radians, scale: Vector2, depth: Depth, ref: Point, children: SceneGraphNodePrimitive*): Group =
+    Group(positionOffset, rotation, scale, depth, ref, children.toList)
 
   def apply(children: SceneGraphNodePrimitive*): Group =
-    Group(Point.zero, Radians.zero, Vector2.one, Depth.Zero, children.toList)
+    Group(Point.zero, Radians.zero, Vector2.one, Depth.Zero, Point.zero, children.toList)
 
   def apply(children: List[SceneGraphNodePrimitive]): Group =
-    Group(Point.zero, Radians.zero, Vector2.one, Depth.Zero, children)
+    Group(Point.zero, Radians.zero, Vector2.one, Depth.Zero, Point.zero, children)
 
   def empty: Group =
     apply(Nil)
@@ -291,7 +301,6 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
   */
 sealed trait Renderable extends SceneGraphNodePrimitive {
   def effects: Effects
-  def ref: Point
 
   def withEffects(newEffects: Effects): Renderable
   def withTint(tint: RGBA): Renderable
@@ -633,13 +642,12 @@ final case class Text(
     depth: Depth,
     rotation: Radians,
     scale: Vector2,
+    ref: Point,
     fontKey: FontKey,
     effects: Effects,
     eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
 ) extends Renderable
     with EventHandling {
-
-  val ref: Point = Point.zero
 
   def bounds(locator: BoundaryLocator): Rectangle =
     locator.findBounds(this)
@@ -675,6 +683,11 @@ final case class Text(
 
   def withDepth(newDepth: Depth): Text =
     this.copy(depth = newDepth)
+
+  def withRef(newRef: Point): Text =
+    this.copy(ref = newRef)
+  def withRef(x: Int, y: Int): Text =
+    withRef(Point(x, y))
 
   def withAlpha(newAlpha: Double): Text =
     this.copy(effects = effects.withAlpha(newAlpha))
@@ -737,6 +750,7 @@ object Text {
       depth = Depth(depth),
       rotation = Radians.zero,
       scale = Vector2.one,
+      ref = Point.zero,
       fontKey = fontKey,
       effects = Effects.default,
       eventHandler = (_: (Rectangle, GlobalEvent)) => Nil
