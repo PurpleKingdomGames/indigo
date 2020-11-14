@@ -118,6 +118,24 @@ object Signal {
       }
     }
 
+  @inline private def easeInOut(t: Double): Double =
+    (1 + Math.sin((Radians.TAUby2.value * Math.min(1.0d, Math.max(0.0, t))) - Radians.TAUby4.value)) / 2
+
+  def EaseInOut(duration: Seconds): Signal[Double] =
+    Signal { t =>
+      easeInOut(t.toDouble / duration.toDouble)
+    }
+
+  def EaseIn(duration: Seconds): Signal[Double] =
+    Signal { t =>
+      easeInOut((t.toDouble / duration.toDouble) * 0.5) * 2
+    }
+
+  def EaseOut(duration: Seconds): Signal[Double] =
+    Signal { t =>
+      (easeInOut(0.5 + ((t.toDouble / duration.toDouble) * 0.5)) - 0.5) * 2
+    }
+
   def clampTime[A](signal: Signal[A], from: Seconds, to: Seconds): Signal[A] =
     Signal { t =>
       if (from < to)

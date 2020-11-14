@@ -4,6 +4,7 @@ import utest._
 import indigo.shared.time.GameTime
 import indigo.shared.time.Seconds
 import indigo.shared.datatypes.Point
+import indigo.shared.time.Millis
 
 object SignalTests extends TestSuite {
 
@@ -280,6 +281,54 @@ Where a thing moves in a circle for 2 seconds and then stops.
             half.at(t) ==> t / Seconds(2L)
           }
 
+        }
+
+        "Easing" - {
+
+          def simplify(d: Double): Int =
+            (d * 100).toInt
+
+          val times: List[Seconds] =
+            (0 to 10).toList.map(i => Seconds(i.toDouble))
+
+          "Easing in out" - {
+            val signal =
+              Signal.EaseInOut(Seconds(10))
+
+            val actual =
+              times.map(t => simplify(signal.at(t)))
+
+            val expected =
+              List(0, 2, 9, 20, 34, 50, 65, 79, 90, 97, 100)
+
+            actual ==> expected
+          }
+
+          "Easing in" - {
+            val signal =
+              Signal.EaseIn(Seconds(10))
+
+            val actual =
+              times.map(t => simplify(signal.at(t)))
+
+            val expected =
+              List(0, 1, 4, 10, 19, 29, 41, 54, 69, 84, 100)
+
+            actual ==> expected
+          }
+
+          "Easing out" - {
+            val signal =
+              Signal.EaseOut(Seconds(10))
+
+            val actual =
+              times.map(t => simplify(signal.at(t)))
+
+            val expected =
+              List(0, 15, 30, 45, 58, 70, 80, 89, 95, 98, 100)
+
+            actual ==> expected
+          }
         }
 
       }
