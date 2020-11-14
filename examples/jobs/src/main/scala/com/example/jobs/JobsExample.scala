@@ -17,7 +17,7 @@ object JobsExample extends IndigoDemo[Unit, StartupData, Model, Unit] {
       .noData(
         GameConfig.default
           .withViewport(400, 400)
-          .withClearColor(ClearColor.fromRGB(0.0, 0.2, 0.0))
+          .withClearColor(RGBA(0.0, 0.2, 0.0, 1.0))
           .withMagnification(2)
       )
       .withAssets(Assets.assets)

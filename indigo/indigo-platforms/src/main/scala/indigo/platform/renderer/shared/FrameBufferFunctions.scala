@@ -1,6 +1,6 @@
 package indigo.platform.renderer.shared
 
-import indigo.shared.ClearColor
+import indigo.shared.datatypes.RGBA
 import org.scalajs.dom.raw.WebGLRenderingContext
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.{WebGLFramebuffer, WebGLTexture}
@@ -13,7 +13,7 @@ object FrameBufferFunctions {
   private def createAndSetupTexture(gl: WebGLRenderingContext, width: Int, height: Int): WebGLTexture = {
     val texture = WebGLHelper.createAndBindTexture(gl)
 
-    gl.texImage2D(TEXTURE_2D, 0, RGBA, width, height, 0, RGBA, UNSIGNED_BYTE, null)
+    gl.texImage2D(TEXTURE_2D, 0, WebGLRenderingContext.RGBA, width, height, 0, WebGLRenderingContext.RGBA, UNSIGNED_BYTE, null)
 
     texture
   }
@@ -62,14 +62,14 @@ object FrameBufferFunctions {
     )
   }
 
-  def switchToFramebuffer(gl: WebGLRenderingContext, frameBuffer: WebGLFramebuffer, clearColor: ClearColor): Unit = {
+  def switchToFramebuffer(gl: WebGLRenderingContext, frameBuffer: WebGLFramebuffer, clearColor: RGBA): Unit = {
     gl.bindFramebuffer(FRAMEBUFFER, frameBuffer)
     gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a)
     gl.clear(COLOR_BUFFER_BIT)
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Null"))
-  def switchToCanvas(gl: WebGLRenderingContext, clearColor: ClearColor): Unit = {
+  def switchToCanvas(gl: WebGLRenderingContext, clearColor: RGBA): Unit = {
     gl.bindFramebuffer(FRAMEBUFFER, null)
     gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a)
     gl.clear(COLOR_BUFFER_BIT)

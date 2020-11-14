@@ -12,7 +12,7 @@ object InputFieldExample extends IndigoDemo[Unit, Unit, Unit, MyViewModel] {
 
   def boot(flags: Map[String, String]): BootResult[Unit] =
     BootResult
-      .noData(defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399")))
+      .noData(defaultGameConfig.withClearColor(RGBA.fromHexString("0xAA3399")))
       .withAssets(AssetType.Image(FontStuff.fontName, AssetPath("assets/boxy_font.png")))
       .withFonts(FontStuff.fontInfo)
 

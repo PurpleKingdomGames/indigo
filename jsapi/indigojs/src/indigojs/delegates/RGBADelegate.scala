@@ -58,12 +58,6 @@ final class RGBADelegate(_r: Double, _g: Double, _b: Double, _a: Double) {
   def withAmount(amount: Double): RGBADelegate =
     new RGBADelegate(r, g, b, amount)
 
-  // indigodoc entity:method name:toClearColor
-  // return ClearColor
-  @JSExport
-  def toClearColor: ClearColorDelegate =
-    new ClearColorDelegate(r, g, b, a)
-
   @JSExport
   def concat(other: RGBADelegate): RGBADelegate =
     (this, other) match {

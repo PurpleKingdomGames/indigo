@@ -1,6 +1,6 @@
 package indigo.platform.renderer.webgl2
 
-import indigo.shared.ClearColor
+import indigo.shared.datatypes.RGBA
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import indigo.platform.renderer.Renderer
@@ -141,7 +141,7 @@ final class RendererWebGL2(
       sceneData.cloneBlankDisplayObjects,
       sceneData.gameLayerDisplayObjects,
       gameFrameBuffer,
-      ClearColor.Black.forceTransparent,
+      RGBA.Black.makeTransparent,
       standardShaderProgram
     )
 
@@ -175,7 +175,7 @@ final class RendererWebGL2(
       sceneData.cloneBlankDisplayObjects,
       sceneData.distortionLayerDisplayObjects,
       distortionFrameBuffer,
-      ClearColor(0.5, 0.5, 1.0, 1.0),
+      RGBA(0.5, 0.5, 1.0, 1.0),
       distortionShaderProgram
     )
 
@@ -186,7 +186,7 @@ final class RendererWebGL2(
       sceneData.cloneBlankDisplayObjects,
       sceneData.uiLayerDisplayObjects,
       uiFrameBuffer,
-      ClearColor.Black.forceTransparent,
+      RGBA.Black.makeTransparent,
       standardShaderProgram
     )
 

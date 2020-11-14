@@ -7,9 +7,6 @@ trait SharedTypeAliases {
   type AssetType = shared.assets.AssetType
   val AssetType: shared.assets.AssetType.type = shared.assets.AssetType
 
-  type ClearColor = shared.ClearColor
-  val ClearColor: shared.ClearColor.type = shared.ClearColor
-
   type GameConfig = shared.config.GameConfig
   val GameConfig: shared.config.GameConfig.type = shared.config.GameConfig
 

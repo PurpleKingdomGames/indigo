@@ -1,13 +1,13 @@
 package indigojs.delegates.config
 
 import scala.scalajs.js.annotation._
-import indigojs.delegates.ClearColorDelegate
 import indigojs.delegates.RectangleDelegate
+import indigojs.delegates.RGBADelegate
 import indigo.shared.config.GameConfig
 
 @SuppressWarnings(Array("org.wartremover.warts.Any"))
 @JSExportTopLevel("GameConfig")
-final class GameConfigDelegate(_viewport: GameViewportDelegate, _frameRate: Int, _clearColor: ClearColorDelegate, _magnification: Int, _advanced: AdvancedGameConfigDelegate) {
+final class GameConfigDelegate(_viewport: GameViewportDelegate, _frameRate: Int, _clearColor: RGBADelegate, _magnification: Int, _advanced: AdvancedGameConfigDelegate) {
 
   @JSExport
   val viewport = _viewport
@@ -32,7 +32,7 @@ final class GameConfigDelegate(_viewport: GameViewportDelegate, _frameRate: Int,
     new GameConfigDelegate(viewport, newFrameRate, clearColor, magnification, advanced)
 
   @JSExport
-  def withClearColor(newClearColor: ClearColorDelegate): GameConfigDelegate =
+  def withClearColor(newClearColor: RGBADelegate): GameConfigDelegate =
     new GameConfigDelegate(viewport, frameRate, newClearColor, magnification, advanced)
 
   @JSExport
@@ -57,7 +57,7 @@ object GameConfigDelegate {
     new GameConfigDelegate(
       new GameViewportDelegate(550, 400),
       60,
-      new ClearColorDelegate(0, 0, 0, 1),
+      new RGBADelegate(0, 0, 0, 1),
       1,
       AdvancedGameConfigDelegate.default
     )

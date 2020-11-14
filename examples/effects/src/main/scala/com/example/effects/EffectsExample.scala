@@ -17,7 +17,7 @@ object EffectsExample extends IndigoSandbox[Unit, Unit] {
     GameConfig(
       viewport = GameViewport(viewportWidth, viewportHeight),
       frameRate = targetFPS,
-      clearColor = ClearColor(0.0, 0.0, 0.2, 1.0),
+      clearColor = RGBA(0.0, 0.0, 0.2, 1.0),
       magnification = magnificationLevel
     )
 

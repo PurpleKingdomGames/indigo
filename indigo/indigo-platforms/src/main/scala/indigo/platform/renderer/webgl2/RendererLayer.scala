@@ -2,7 +2,6 @@ package indigo.platform.renderer.webgl2
 
 import indigo.facades.WebGL2RenderingContext
 import indigo.shared.display.DisplayObject
-import indigo.shared.ClearColor
 import org.scalajs.dom.raw.WebGLProgram
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
@@ -18,6 +17,7 @@ import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.FrameBufferComponents
 import indigo.platform.renderer.shared.RendererHelper
+import indigo.shared.datatypes.RGBA
 
 class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int) {
 
@@ -156,7 +156,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       cloneBlankDisplayObjects: Map[String, DisplayObject],
       displayEntities: ListBuffer[DisplayEntity],
       frameBufferComponents: FrameBufferComponents,
-      clearColor: ClearColor,
+      clearColor: RGBA,
       shaderProgram: WebGLProgram
   ): Unit = {
 

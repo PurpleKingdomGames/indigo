@@ -8,7 +8,7 @@ import indigo.shared.assets.AssetType
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.config.GameViewport
 import indigo.shared.config.RenderingTechnology
-import indigo.shared.ClearColor
+import indigo.shared.datatypes.RGBA
 
 /**
   * A trait that tells Indigo to allow this instance into the event loop for the duration of one frame.
@@ -45,7 +45,7 @@ sealed trait InputEvent extends GlobalEvent with Product with Serializable
   */
 final case class RendererDetails(
     renderingTechnology: RenderingTechnology,
-    clearColor: ClearColor,
+    clearColor: RGBA,
     magnification: Int
 ) extends ViewEvent
 

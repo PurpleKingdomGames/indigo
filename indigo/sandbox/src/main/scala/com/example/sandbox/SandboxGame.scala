@@ -35,7 +35,7 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
       GameConfig(
         viewport = gameViewport,
         frameRate = targetFPS,
-        clearColor = ClearColor(0.4, 0.2, 0.5, 1),
+        clearColor = RGBA(0.4, 0.2, 0.5, 1),
         magnification = magnificationLevel
       ),
       SandboxBootData(flags.getOrElse("key", "No entry for 'key'."))

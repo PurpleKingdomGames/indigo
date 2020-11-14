@@ -38,7 +38,7 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
         GameConfig(
           viewport = GameViewport(viewportWidth, viewportHeight),
           frameRate = targetFPS,
-          clearColor = ClearColor(0.4, 0.2, 0.5, 1),
+          clearColor = RGBA(0.4, 0.2, 0.5, 1),
           magnification = magnificationLevel,
           advanced = AdvancedGameConfig(
             renderingTechnology = RenderingTechnology.WebGL2,

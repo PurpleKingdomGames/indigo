@@ -48,12 +48,6 @@ final class RGBDelegate(_r: Double, _g: Double, _b: Double) {
   def withBlue(newBlue: Double): RGBDelegate =
     new RGBDelegate(r, g, newBlue)
 
-  // indigodoc entity:method name:toClearColor
-  // return ClearColor
-  @JSExport
-  def toClearColor: ClearColorDelegate =
-    new ClearColorDelegate(r, g, b, 1.0)
-
   @JSExport
   def concat(other: RGBDelegate): RGBDelegate =
     (this, other) match {

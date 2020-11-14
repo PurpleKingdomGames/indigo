@@ -106,7 +106,7 @@ final class SceneProcessor(
       uiLayerDisplayObjects,
       cloneBlankDisplayObjects,
       scene.lights,
-      scene.ambientLight.toClearColor,
+      scene.ambientLight,
       scene.screenEffects.gameColorOverlay,
       scene.screenEffects.uiColorOverlay,
       scene.gameLayer.tint,

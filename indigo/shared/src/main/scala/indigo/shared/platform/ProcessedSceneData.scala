@@ -5,7 +5,6 @@ import scala.collection.mutable
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayObject
 import indigo.shared.scenegraph.Light
-import indigo.shared.ClearColor
 import indigo.shared.datatypes.RGBA
 
 final class ProcessedSceneData(
@@ -18,7 +17,7 @@ final class ProcessedSceneData(
     val uiLayerDisplayObjects: mutable.ListBuffer[DisplayEntity],
     val cloneBlankDisplayObjects: Map[String, DisplayObject],
     val lights: List[Light],
-    val clearColor: ClearColor,
+    val clearColor: RGBA,
     val gameLayerColorOverlay: RGBA,
     val uiLayerColorOverlay: RGBA,
     val gameLayerTint: RGBA,

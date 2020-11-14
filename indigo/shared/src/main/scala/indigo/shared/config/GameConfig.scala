@@ -1,7 +1,7 @@
 package indigo.shared.config
 
-import indigo.shared.ClearColor
 import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.RGBA
 
 /**
   * All the base settings needed to get a game up and running.
@@ -12,7 +12,7 @@ import indigo.shared.datatypes.Rectangle
   * @param magnification Pixel magnification level. Defaults to 1.
   * @param advanced Additional settings to help tune your game.
   */
-final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int, advanced: AdvancedGameConfig) {
+final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: RGBA, magnification: Int, advanced: AdvancedGameConfig) {
   val frameRateDeltaMillis: Int = 1000 / frameRate
 
   val haltViewUpdatesAt: Int  = frameRateDeltaMillis * 2
@@ -35,7 +35,7 @@ final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: 
   def withViewport(width: Int, height: Int): GameConfig   = this.copy(viewport = GameViewport(width, height))
   def withViewport(newViewport: GameViewport): GameConfig = this.copy(viewport = newViewport)
   def withFrameRate(frameRate: Int): GameConfig           = this.copy(frameRate = frameRate)
-  def withClearColor(clearColor: ClearColor): GameConfig  = this.copy(clearColor = clearColor)
+  def withClearColor(clearColor: RGBA): GameConfig  = this.copy(clearColor = clearColor)
   def withMagnification(magnification: Int): GameConfig   = this.copy(magnification = magnification)
 
   def withAdvancedSettings(advanced: AdvancedGameConfig): GameConfig = this.copy(advanced = advanced)
@@ -52,12 +52,12 @@ final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: 
 object GameConfig {
 
   val default: GameConfig =
-    GameConfig(GameViewport(550, 400), 60, ClearColor.Black, 1, AdvancedGameConfig.default)
+    GameConfig(GameViewport(550, 400), 60, RGBA.Black, 1, AdvancedGameConfig.default)
 
   def apply(width: Int, height: Int, frameRate: Int): GameConfig =
-    GameConfig(GameViewport(width, height), frameRate, ClearColor.Black, 1, AdvancedGameConfig.default)
+    GameConfig(GameViewport(width, height), frameRate, RGBA.Black, 1, AdvancedGameConfig.default)
 
-  def apply(viewport: GameViewport, frameRate: Int, clearColor: ClearColor, magnification: Int): GameConfig =
+  def apply(viewport: GameViewport, frameRate: Int, clearColor: RGBA, magnification: Int): GameConfig =
     GameConfig(viewport, frameRate, clearColor, magnification, AdvancedGameConfig.default)
 
 }

@@ -1,11 +1,11 @@
 package indigo.platform.renderer.webgl1
 
-import indigo.shared.ClearColor
 import indigo.shared.display.DisplayObject
 import indigo.shared.EqualTo._
 import indigo.platform.renderer.Renderer
 import indigo.shared.platform.RendererConfig
 import indigo.shared.datatypes.Matrix4
+import indigo.shared.datatypes.RGBA
 import indigo.shared.platform.ProcessedSceneData
 import indigo.shared.display.DisplayEntity
 import indigo.platform.renderer.shared.LoadedTextureAsset
@@ -119,7 +119,7 @@ final class RendererWebGL1(
     drawLayer(
       sceneData.gameLayerDisplayObjects,
       Some(gameFrameBuffer),
-      ClearColor.Black.forceTransparent,
+      RGBA.Black.makeTransparent,
       standardShaderProgram,
       sceneData.gameProjection,
       false
@@ -139,7 +139,7 @@ final class RendererWebGL1(
     drawLayer(
       sceneData.uiLayerDisplayObjects,
       Some(uiFrameBuffer),
-      ClearColor.Black.forceTransparent,
+      RGBA.Black.makeTransparent,
       standardShaderProgram,
       sceneData.uiProjection,
       false
@@ -160,7 +160,7 @@ final class RendererWebGL1(
   def drawLayer(
       displayEntities: mutable.ListBuffer[DisplayEntity],
       frameBufferComponents: Option[FrameBufferComponents],
-      clearColor: ClearColor,
+      clearColor: RGBA,
       shaderProgram: WebGLProgram,
       projectionMatrix: Matrix4,
       isMerge: Boolean

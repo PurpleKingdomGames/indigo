@@ -15,7 +15,7 @@ object ScenesSetup extends IndigoGame[Unit, StartUpData, GameModel, Unit] {
     BootResult
       .noData(
         defaultGameConfig
-          .withClearColor(ClearColor.fromHexString("0xAA3399"))
+          .withClearColor(RGBA.fromHexString("0xAA3399"))
           .withFrameRate(targetFPS)
       )
       .withAssets(AssetType.Image(FontStuff.fontName, AssetPath("assets/boxy_font.png")))

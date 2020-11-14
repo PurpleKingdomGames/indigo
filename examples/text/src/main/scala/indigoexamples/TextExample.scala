@@ -11,7 +11,7 @@ object TextExample extends IndigoSandbox[Unit, Model] {
 
   val config: GameConfig =
     defaultGameConfig
-      .withClearColor(ClearColor.fromHexString("0xAA3399"))
+      .withClearColor(RGBA.fromHexString("0xAA3399"))
 
   val assets: Set[AssetType] =
     Set(AssetType.Image(fontName, AssetPath("assets/boxy_font.png")))

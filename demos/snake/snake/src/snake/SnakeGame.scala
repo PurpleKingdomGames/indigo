@@ -20,7 +20,7 @@ object SnakeGame extends IndigoGame[GameViewport, SnakeStartupData, SnakeGameMod
       GameConfig(
         viewport = GameViewport(Settings.viewportWidth, Settings.viewportHeight),
         frameRate = 60,
-        clearColor = ClearColor.Black,
+        clearColor = RGBA.Black,
         magnification = Settings.magnificationLevel
       )
 

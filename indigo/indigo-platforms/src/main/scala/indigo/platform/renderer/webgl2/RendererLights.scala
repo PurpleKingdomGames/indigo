@@ -8,12 +8,12 @@ import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
 import indigo.platform.shaders.WebGL2StandardLights
 import org.scalajs.dom.raw.WebGLTexture
-import indigo.shared.ClearColor
 import scala.scalajs.js.JSConverters._
 import indigo.shared.scenegraph.Light
 import indigo.shared.scenegraph.PointLight
 import indigo.shared.scenegraph.DirectionLight
 import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.RGBA
 import indigo.shared.scenegraph.SpotLight
 import indigo.shared.datatypes.Rectangle
 import indigo.platform.renderer.shared.RendererHelper
@@ -126,7 +126,7 @@ class RendererLights(gl2: WebGL2RenderingContext) {
       magnification: Int
   ): Unit = {
 
-    FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, ClearColor.Black.forceTransparent)
+    FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, RGBA.Black.makeTransparent)
     gl2.drawBuffers(frameBufferComponents.colorAttachments)
 
     val lightsInRange =

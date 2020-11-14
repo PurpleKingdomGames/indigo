@@ -13,7 +13,7 @@ object SubSystemsExample extends IndigoDemo[Unit, Unit, Unit, Unit] {
 
   def boot(flags: Map[String, String]): BootResult[Unit] =
     BootResult
-      .noData(defaultGameConfig.withClearColor(ClearColor.fromHexString("0xAA3399")))
+      .noData(defaultGameConfig.withClearColor(RGBA.fromHexString("0xAA3399")))
       .withAssets(AssetType.Image(AssetName(fontName), AssetPath("assets/boxy_font.png")))
       .withFonts(fontInfo)
       .withSubSystems(

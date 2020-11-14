@@ -8,7 +8,6 @@ import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
 import indigo.platform.shaders.WebGL2StandardMerge
 import org.scalajs.dom.raw.WebGLTexture
-import indigo.shared.ClearColor
 import scala.scalajs.js.JSConverters._
 import indigo.shared.datatypes.RGBA
 import indigo.platform.renderer.shared.RendererHelper
@@ -94,7 +93,7 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
       uiFrameBuffer: FrameBufferComponents.SingleOutput,
       width: Int,
       height: Int,
-      clearColor: ClearColor,
+      clearColor: RGBA,
       gameOverlay: RGBA,
       uiOverlay: RGBA,
       gameLayerTint: RGBA,

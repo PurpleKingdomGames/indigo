@@ -12,7 +12,7 @@ object BasicSetup extends IndigoDemo[Unit, MyStartUpData, MyGameModel, MyViewMod
   def boot(flags: Map[String, String]): BootResult[Unit] =
     BootResult.noData(
       defaultGameConfig
-        .withClearColor(ClearColor.fromHexString("0xAA191E"))
+        .withClearColor(RGBA.fromHexString("0xAA191E"))
     )
 
   def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[MyStartUpData] =

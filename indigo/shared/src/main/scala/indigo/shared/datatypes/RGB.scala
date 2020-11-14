@@ -1,6 +1,7 @@
 package indigo.shared.datatypes
 
 import indigo.shared.EqualTo
+import indigo.shared.EqualTo._
 
 final case class RGB(r: Double, g: Double, b: Double) {
   def +(other: RGB): RGB =
@@ -14,6 +15,15 @@ final case class RGB(r: Double, g: Double, b: Double) {
 
   def withBlue(newBlue: Double): RGB =
     this.copy(b = newBlue)
+
+  def toRGBA: RGBA =
+    RGBA(r, g, b, 1.0)
+
+  def ===(other: RGB): Boolean =
+    implicitly[EqualTo[RGB]].equal(this, other)
+
+  def toArray: Array[Float] =
+    Array(r.toFloat, g.toFloat, b.toFloat)
 
   def hash: String =
     r.toString() + g.toString() + b.toString()
@@ -50,5 +60,11 @@ object RGB {
       case (x, y) =>
         RGB(x.r + y.r, x.g + y.g, x.b + y.b)
     }
+
+  def fromHexString(hex: String): RGB =
+    RGBA.fromHexString(hex).toRGB
+
+  def fromColorInts(r: Int, g: Int, b: Int): RGB =
+    RGBA.fromColorInts(r, g, b).toRGB
 
 }
