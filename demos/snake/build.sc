@@ -10,7 +10,7 @@ import coursier.maven.MavenRepository
 import $ivy.`io.indigoengine::mill-indigo:0.5.1-SNAPSHOT`, millindigo._
 
 object snake extends ScalaJSModule with MillIndigo {
-  def scalaVersion   = "2.13.3"
+  def scalaVersion   = "2.13.4"
   def scalaJSVersion = "1.3.0"
 
   val gameAssetsDirectory: os.Path = os.pwd / "assets"
@@ -47,8 +47,8 @@ object snake extends ScalaJSModule with MillIndigo {
     MavenRepository("https://oss.sonatype.org/content/repositories/releases")
   )
 
-  def compileIvyDeps      = T { super.compileIvyDeps() ++ Agg(ivy"org.wartremover::wartremover:2.4.9") }
-  def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.9") }
+  def compileIvyDeps      = T { super.compileIvyDeps() ++ Agg(ivy"org.wartremover::wartremover:2.4.13") }
+  def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.13") }
 
   def scalacOptions = ScalacOptions.scala213Compile ++ Seq(
     "-P:wartremover:traverser:org.wartremover.warts.Unsafe"

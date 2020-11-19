@@ -6,7 +6,7 @@ import mill.scalajslib.api._
 import coursier.maven.MavenRepository
 
 object apigen extends ScalaModule {
-  def scalaVersion = "2.13.3"
+  def scalaVersion = "2.13.4"
 
   def ivyDeps = Agg(
     ivy"com.lihaoyi::os-lib:0.6.2",
@@ -19,8 +19,8 @@ object apigen extends ScalaModule {
     MavenRepository("https://oss.sonatype.org/content/repositories/releases")
   )
 
-  def compileIvyDeps      = T { super.compileIvyDeps() ++ Agg(ivy"org.wartremover::wartremover:2.4.9") }
-  def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.9") }
+  def compileIvyDeps      = T { super.compileIvyDeps() ++ Agg(ivy"org.wartremover::wartremover:2.4.13") }
+  def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.13") }
 
   def scalacOptions =
     ScalacOptions.scala213Compile ++ Seq(
@@ -38,7 +38,7 @@ object apigen extends ScalaModule {
 }
 
 object indigojs extends ScalaJSModule {
-  def scalaVersion   = "2.13.3"
+  def scalaVersion   = "2.13.4"
   def scalaJSVersion = "1.3.0"
 
   override def moduleKind: T[ModuleKind] = T { ModuleKind.CommonJSModule }
@@ -53,8 +53,8 @@ object indigojs extends ScalaJSModule {
     MavenRepository("https://oss.sonatype.org/content/repositories/releases")
   )
 
-  def compileIvyDeps      = T { super.compileIvyDeps() ++ Agg(ivy"org.wartremover::wartremover:2.4.9") }
-  def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.9") }
+  def compileIvyDeps      = T { super.compileIvyDeps() ++ Agg(ivy"org.wartremover::wartremover:2.4.13") }
+  def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.13") }
 
   def scalacOptions = ScalacOptions.scala213Compile
 

@@ -77,7 +77,7 @@ object SearchGrid {
           val next: List[GridSquare] =
             edges
               .foldLeft[List[GridSquare]](Nil) { (l, x) =>
-                if (l.exists(p => p.coords === x.coords)) l else l :+ x
+                if (l.exists(p => p.coords === x.coords)) l else l ++ List(x)
               }
               .map(_.withScore(scoreValue))
 
@@ -108,11 +108,11 @@ object SearchGrid {
             acc
 
           case next :: Nil =>
-            rec(next.coords, next.score.getOrElse(GridSquare.max), target, grid, width, acc :+ next.coords)
+            rec(next.coords, next.score.getOrElse(GridSquare.max), target, grid, width, acc ++ List(next.coords))
 
           case xs =>
             val next = xs(dice.rollFromZero(xs.length))
-            rec(next.coords, next.score.getOrElse(GridSquare.max), target, grid, width, acc :+ next.coords)
+            rec(next.coords, next.score.getOrElse(GridSquare.max), target, grid, width, acc ++ List(next.coords))
         }
 
     rec(searchGrid.start, GridSquare.max, searchGrid.end, searchGrid, searchGrid.validationWidth, List(searchGrid.start))

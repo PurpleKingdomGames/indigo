@@ -52,7 +52,7 @@ final case class TiledMap(
           acc
 
         case (a, i) :: xs =>
-          rec(xs, columnCount, acc :+ TiledGridCell(i % columnCount, i / columnCount, a))
+          rec(xs, columnCount, acc ++ List(TiledGridCell(i % columnCount, i / columnCount, a)))
       }
 
     layers match {
@@ -158,13 +158,13 @@ final case class TiledGridMap[A](layers: NonEmptyList[TiledGridLayer[A]]) {
     def rec(remaining: List[TiledGridCell[A]], columnCount: Int, current: List[TiledGridCell[A]], acc: List[List[TiledGridCell[A]]]): List[List[TiledGridCell[A]]] =
       remaining match {
         case Nil =>
-          acc
+          acc.reverse
 
         case x :: xs if x.column === columnCount - 1 =>
-          rec(xs, columnCount, Nil, acc :+ (current :+ x))
+          rec(xs, columnCount, Nil, (current ++ List(x)) :: acc)
 
         case x :: xs =>
-          rec(xs, columnCount, current :+ x, acc)
+          rec(xs, columnCount, current ++ List(x), acc)
       }
 
     layers.map { layer =>

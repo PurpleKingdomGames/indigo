@@ -73,7 +73,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var platform: Platform = null
 
-  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
+  @SuppressWarnings(Array("org.wartremover.warts.Equals", "org.wartremover.warts.GlobalExecutionContext"))
   def start(
       config: GameConfig,
       configAsync: Future[Option[GameConfig]],

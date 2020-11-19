@@ -30,7 +30,7 @@ final case class JobMarket(availableJobs: List[Job]) extends SubSystem {
 
   def update(frameContext: SubSystemFrameContext, jobs: List[Job]): JobMarketEvent => Outcome[List[Job]] = {
     case JobMarketEvent.Post(job) =>
-      Outcome(jobs :+ job)
+      Outcome(jobs ++ List(job))
 
     case JobMarketEvent.Find(id, canTakeJob) =>
       JobMarket.findJob(jobs, canTakeJob) match {

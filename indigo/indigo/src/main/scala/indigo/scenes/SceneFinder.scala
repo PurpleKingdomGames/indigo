@@ -21,7 +21,7 @@ final case class SceneFinder(previous: List[ScenePosition], current: ScenePositi
         NonEmptyList.pure(current, next)
 
       case x :: xs =>
-        NonEmptyList.pure(x, (xs :+ current) ++ next)
+        NonEmptyList.pure(x, (xs ++ List(current)) ++ next)
     }
 
   def forward: SceneFinder =
@@ -30,7 +30,7 @@ final case class SceneFinder(previous: List[ScenePosition], current: ScenePositi
         this
 
       case x :: xs =>
-        SceneFinder(previous :+ current, x, xs)
+        SceneFinder(previous ++ List(current), x, xs)
     }
 
   def backward: SceneFinder =

@@ -139,7 +139,7 @@ final case class AssetBundleTracker(val register: List[AssetBundle]) {
           }.toMap
         )
 
-      AssetBundleTracker(register :+ newBundle)
+      AssetBundleTracker(register ++ List(newBundle))
     }
 
   def findBundleByKey(key: BindingKey): Option[AssetBundle] =

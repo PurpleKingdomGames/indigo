@@ -93,7 +93,7 @@ object Outcome {
           Outcome(accA).addGlobalEvents(accEvents)
 
         case x :: xs =>
-          rec(xs, accA :+ x.state, accEvents ++ x.globalEvents)
+          rec(xs, accA ++ List(x.state), accEvents ++ x.globalEvents)
       }
 
     rec(l, Nil, Nil)

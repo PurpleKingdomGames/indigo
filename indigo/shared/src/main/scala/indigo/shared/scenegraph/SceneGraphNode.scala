@@ -75,7 +75,7 @@ final case class Group(positionOffset: Point, rotation: Radians, scale: Vector2,
     }
 
   def addChild(child: SceneGraphNodePrimitive): Group =
-    this.copy(children = children :+ child)
+    this.copy(children = children ++ List(child))
 
   def addChildren(additionalChildren: List[SceneGraphNodePrimitive]): Group =
     this.copy(children = children ++ additionalChildren)
@@ -545,19 +545,19 @@ final case class Sprite(
     this.copy(animationKey = newAnimationKey)
 
   def play(): Sprite =
-    this.copy(animationActions = animationActions :+ Play)
+    this.copy(animationActions = animationActions ++ List(Play))
 
   def changeCycle(label: CycleLabel): Sprite =
-    this.copy(animationActions = animationActions :+ ChangeCycle(label))
+    this.copy(animationActions = animationActions ++ List(ChangeCycle(label)))
 
   def jumpToFirstFrame(): Sprite =
-    this.copy(animationActions = animationActions :+ JumpToFirstFrame)
+    this.copy(animationActions = animationActions ++ List(JumpToFirstFrame))
 
   def jumpToLastFrame(): Sprite =
-    this.copy(animationActions = animationActions :+ JumpToLastFrame)
+    this.copy(animationActions = animationActions ++ List(JumpToLastFrame))
 
   def jumpToFrame(number: Int): Sprite =
-    this.copy(animationActions = animationActions :+ JumpToFrame(number))
+    this.copy(animationActions = animationActions ++ List(JumpToFrame(number)))
 
   def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Sprite =
     this.copy(eventHandler = e)

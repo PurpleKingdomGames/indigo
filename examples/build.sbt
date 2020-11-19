@@ -3,7 +3,7 @@ import scala.language.postfixOps
 
 lazy val commonSettings = Seq(
   version := "0.0.1",
-  scalaVersion := "2.13.3",
+  scalaVersion := "2.13.4",
   organization := "indigo-examples",
   libraryDependencies ++= Seq(
     "com.lihaoyi"     %%% "utest"         % "0.7.4" % "test",

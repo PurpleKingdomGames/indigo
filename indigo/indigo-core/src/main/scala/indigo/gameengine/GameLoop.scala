@@ -50,7 +50,7 @@ class GameLoop[StartUpData, GameModel, ViewModel](
       if (gameConfig.advanced.disableSkipModelUpdates || timeDelta < gameConfig.haltModelUpdatesAt) {
 
         val gameTime        = new GameTime(Millis(time).toSeconds, Seconds(timeDelta.toDouble / 1000d), GameTime.FPS(gameConfig.frameRate))
-        val collectedEvents = gameEngine.globalEventStream.collect :+ FrameTick
+        val collectedEvents = gameEngine.globalEventStream.collect ++ List(FrameTick)
         val dice            = Dice.fromSeconds(gameTime.running)
 
         // Persist input state

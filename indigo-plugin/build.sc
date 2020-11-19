@@ -14,9 +14,9 @@ class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule
   def scalaVersion =
     crossScalaVersion match {
       case "2.12" => "2.12.10"
-      case "2.13" => "2.13.3"
+      case "2.13" => "2.13.4"
     }
-    
+
   def artifactName = "indigo-plugin"
 
   def ivyDeps =
@@ -29,8 +29,8 @@ class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule
       MavenRepository("https://oss.sonatype.org/content/repositories/releases")
     )
 
-  def compileIvyDeps      = T(super.compileIvyDeps() ++ Agg(ivy"org.wartremover::wartremover:2.4.9"))
-  def scalacPluginIvyDeps = T(super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.9"))
+  def compileIvyDeps      = T(super.compileIvyDeps() ++ Agg(ivy"org.wartremover::wartremover:2.4.13"))
+  def scalacPluginIvyDeps = T(super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.13"))
 
   def scalacOptions =
     ScalacOptions.scala213Compile ++ Seq(
