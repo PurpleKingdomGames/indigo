@@ -137,7 +137,7 @@ object LevelView {
             .changeCycle(CycleLabel("Run"))
             .play()
 
-        case PirateState.FallingRight if pirateViewState.facingRight =>
+        case PirateState.FallingRight =>
           captain
             .moveTo(toScreenSpace(pirate.position))
             .changeCycle(CycleLabel("Fall"))
@@ -151,7 +151,7 @@ object LevelView {
             .changeCycle(CycleLabel("Fall"))
             .play()
 
-        case PirateState.JumpingRight if pirateViewState.facingRight =>
+        case PirateState.JumpingRight =>
           captain
             .moveTo(toScreenSpace(pirate.position))
             .changeCycle(CycleLabel("Jump"))

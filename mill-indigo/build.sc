@@ -6,8 +6,8 @@ import publish._
 import coursier.maven.MavenRepository
 
 object `mill-indigo` extends ScalaModule with PublishModule {
-  def scalaVersion = "2.13.3"
-  def millLibVersion  = "0.7.4"
+  def scalaVersion   = "2.13.4"
+  def millLibVersion = "0.7.4"
 
   def ivyDeps = Agg(
     ivy"com.lihaoyi::mill-main:${millLibVersion}",
@@ -24,7 +24,7 @@ object `mill-indigo` extends ScalaModule with PublishModule {
 
   def scalacOptions = Seq("-P:wartremover:only-warn-traverser:org.wartremover.warts.Unsafe")
 
-  def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.9") }
+  def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.13") }
 
   object test extends Tests {
     def ivyDeps = Agg(ivy"com.lihaoyi::utest:0.7.4")
@@ -52,7 +52,7 @@ object IndigoVersion {
     def rec(path: String, levels: Int, version: Option[String]): String = {
       val msg = "ERROR: Couldn't find indigo version."
       version match {
-        case Some(v) => 
+        case Some(v) =>
           println(s"""Indigo version set to '$v'""")
           v
 
@@ -70,7 +70,7 @@ object IndigoVersion {
           throw new Exception(msg)
       }
     }
-    
+
     rec(".indigo-version", 0, None)
   }
 }

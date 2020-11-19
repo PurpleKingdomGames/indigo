@@ -85,7 +85,7 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
             .map(lineText => new TextLine(lineText, textLineBounds(lineText, fontInfo)))
             .foldLeft((0, List[TextLine]())) {
               case ((yPos, lines), textLine) =>
-                (yPos + textLine.lineBounds.height, lines :+ textLine.moveTo(0, yPos))
+                (yPos + textLine.lineBounds.height, lines ++ List(textLine.moveTo(0, yPos)))
             }
             ._2
         }

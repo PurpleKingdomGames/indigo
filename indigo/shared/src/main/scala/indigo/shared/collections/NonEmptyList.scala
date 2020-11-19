@@ -233,7 +233,7 @@ object NonEmptyList {
         fa
 
       case x :: xs =>
-        pure(x, xs :+ fa.head)
+        pure(x, xs ++ List(fa.head))
     }
 
   def map[A, B](fa: NonEmptyList[A])(f: A => B): NonEmptyList[B] =
@@ -261,7 +261,7 @@ object NonEmptyList {
     }
 
   def append[A](fa: NonEmptyList[A])(next: A): NonEmptyList[A] =
-    pure(fa.head, fa.tail :+ next)
+    pure(fa.head, fa.tail ++ List(next))
 
   def cons[A](fa: NonEmptyList[A])(first: A): NonEmptyList[A] =
     pure(first, fa.head :: fa.tail)

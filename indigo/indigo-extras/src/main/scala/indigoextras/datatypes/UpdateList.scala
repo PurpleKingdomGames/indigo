@@ -18,7 +18,7 @@ final class UpdateList[A](list: List[A], pattern: UpdatePattern) {
     new UpdateList[A](a :: list, pattern)
 
   def append(a: A): UpdateList[A] =
-    new UpdateList[A](list :+ a, pattern)
+    new UpdateList[A](list ++ List(a), pattern)
 
   def replaceList(newList: List[A]): UpdateList[A] =
     new UpdateList[A](newList, pattern)

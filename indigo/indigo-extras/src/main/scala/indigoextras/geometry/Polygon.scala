@@ -27,10 +27,10 @@ sealed trait Polygon {
   def addVertex(vertex: Vertex): Polygon =
     this match {
       case Polygon.Open(vs) =>
-        Polygon.Open(vs :+ vertex)
+        Polygon.Open(vs ++ List(vertex))
 
       case Polygon.Closed(vs) =>
-        Polygon.Closed(vs :+ vertex)
+        Polygon.Closed(vs ++ List(vertex))
     }
 
   def contains(vertex: Vertex): Boolean =
@@ -110,7 +110,7 @@ object Polygon {
         rec(t, h, Nil)
 
       case Closed(h :: t) =>
-        rec(t :+ h, h, Nil)
+        rec(t ++ List(h), h, Nil)
     }
   }
 
@@ -129,7 +129,7 @@ object Polygon {
     }
   }
 
-  final class Open(val vertices: List[Vertex]) extends Polygon
+  final case class Open(vertices: List[Vertex]) extends Polygon
   object Open {
 
     implicit val openEqualTo: EqualTo[Closed] =
@@ -140,17 +140,11 @@ object Polygon {
     val empty: Open =
       Open(Nil)
 
-    def apply(vertices: List[Vertex]): Open =
-      new Open(vertices)
-
     def apply(vertices: Vertex*): Open =
       new Open(vertices.toList)
-
-    def unapply(polygon: Open): Option[List[Vertex]] =
-      Option(polygon.vertices)
   }
 
-  final class Closed(val vertices: List[Vertex]) extends Polygon
+  final case class Closed(vertices: List[Vertex]) extends Polygon
   object Closed {
 
     implicit val closedEqualTo: EqualTo[Closed] =
@@ -161,14 +155,8 @@ object Polygon {
     val empty: Closed =
       Closed(Nil)
 
-    def apply(vertices: List[Vertex]): Closed =
-      new Closed(vertices)
-
     def apply(vertices: Vertex*): Closed =
       new Closed(vertices.toList)
-
-    def unapply(polygon: Closed): Option[List[Vertex]] =
-      Option(polygon.vertices)
   }
 
 }

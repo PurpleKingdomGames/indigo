@@ -54,6 +54,7 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher {
     )
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.GlobalExecutionContext"))
   final protected def ready(flags: Map[String, String]): Unit =
     indigoGame.start(config, Future(None), assets, Future(Set()))
 

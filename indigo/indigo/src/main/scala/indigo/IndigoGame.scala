@@ -104,6 +104,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
     )
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.GlobalExecutionContext"))
   final protected def ready(flags: Map[String, String]): Unit = {
     val b = boot(flags)
     indigoGame(b).start(b.gameConfig, Future(None), b.assets, Future(Set()))

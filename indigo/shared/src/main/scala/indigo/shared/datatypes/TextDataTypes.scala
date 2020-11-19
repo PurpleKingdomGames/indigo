@@ -12,7 +12,7 @@ final case class FontInfo(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, un
   private val nonEmptyChars: List[FontChar] = unknownChar +: fontChars
 
   def addChar(fontChar: FontChar): FontInfo =
-    this.copy(fontChars = nonEmptyChars :+ fontChar)
+    this.copy(fontChars = nonEmptyChars ++ List(fontChar))
 
   def addChars(chars: List[FontChar]): FontInfo =
     this.copy(fontChars = fontChars ++ chars)
@@ -20,6 +20,7 @@ final case class FontInfo(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, un
   def addChars(chars: FontChar*): FontInfo =
     addChars(chars.toList)
 
+  @SuppressWarnings(Array("org.wartremover.warts.PlatformDefault"))
   def findByCharacter(character: String): FontChar =
     QuickCache("char-" + character + "-" + fontKey.key) {
       nonEmptyChars
