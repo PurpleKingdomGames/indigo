@@ -121,6 +121,9 @@ object BoundingBox {
   def fromVertexCloud(vertices: List[Vertex]): BoundingBox =
     fromVertices(vertices)
 
+  def fromRectangle(rectangle: Rectangle): BoundingBox =
+    BoundingBox(Vertex.fromPoint(rectangle.position), Vertex.fromPoint(rectangle.size))
+
   def toLineSegments(boundingBox: BoundingBox): List[LineSegment] =
     List(
       LineSegment(boundingBox.topLeft, boundingBox.bottomLeft),

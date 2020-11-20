@@ -3,6 +3,8 @@ package indigoextras.geometry
 import indigo.shared.EqualTo._
 
 import utest._
+import indigo.shared.datatypes.Rectangle
+import indigo.shared.datatypes.Point
 
 object BoundingBoxTests extends TestSuite {
 
@@ -39,6 +41,19 @@ object BoundingBoxTests extends TestSuite {
             BoundingBox.fromVertexCloud(vertices)
 
           actual === expected ==> true
+        }
+
+        "should be able to construct a bounding box from a rectangle" - {
+
+          val rectangle = Rectangle(Point(10, 20), Point(30, 40))
+
+          val actual = BoundingBox.fromRectangle(rectangle)
+
+          val expected = BoundingBox(Vertex(10, 20), Vertex(30, 40))
+
+          actual ==> expected
+          actual.toRectangle ==> rectangle
+
         }
 
       }
