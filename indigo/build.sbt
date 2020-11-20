@@ -151,7 +151,7 @@ lazy val indigoPlatforms =
       name := "indigo-platforms",
       libraryDependencies ++= Seq(
         ("org.scalacheck" %% "scalacheck"  % "1.14.3" % "test").withDottyCompat(scalaVersion.value),
-        ("org.scala-js"   %%% "scalajs-dom" % "1.1.0").withDottyCompat(scalaVersion.value)
+        ("org.scala-js"  %%% "scalajs-dom" % "1.1.0").withDottyCompat(scalaVersion.value)
       )
     )
     .settings(
