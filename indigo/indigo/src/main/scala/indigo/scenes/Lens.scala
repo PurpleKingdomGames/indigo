@@ -66,4 +66,11 @@ object Lens {
   def readOnly[A, B](get: A => B): Lens[A, B] =
     Lens(get, (a, _) => a)
 
+  /**
+    * Unit is like Lens.fixed(()) without the arguments, where there is
+    * no inner type (or rather, the inner type is hard coded to Unit)
+    */
+  def unit[A]: Lens[A, Unit] =
+    Lens(_ => (), (a, _) => a)
+
 }

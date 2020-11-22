@@ -54,11 +54,17 @@ object LensTests extends TestSuite {
         }
 
         "should be able to define a read only lens" - {
-          val lens = Lens.readOnly[C, D](_.d)
+          val lens     = Lens.readOnly[C, D](_.d)
           val original = C(D("x"))
 
           lens.get(original) ==> D("x")
           lens.set(original, D("fish")) ==> original
+        }
+
+        "should allow you to define a lens that throws away the value" - {
+          val m = C(D("x"))
+          Lens.unit[C].get(m) ==> ()
+          Lens.unit[C].set(m, ()) ==> m
         }
       }
 
