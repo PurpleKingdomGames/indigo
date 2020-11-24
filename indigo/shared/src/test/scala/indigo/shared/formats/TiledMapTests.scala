@@ -10,6 +10,7 @@ import indigo.shared.scenegraph.Renderable
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.datatypes.Point
 import indigo.shared.collections.NonEmptyList
+import scala.annotation.nowarn
 
 object TiledMapTests extends TestSuite {
 
@@ -35,6 +36,15 @@ object TiledMapTests extends TestSuite {
         }
 
         "with mapping" - {
+          // Using nowarn as it's a partial match and I want it
+          // to blow up if it finds anything else.
+          @nowarn val matcher: ((Int, TileTypes)) => Boolean = {
+            case (0, TileTypes.Empty)           => true
+            case (i, TileTypes.Solid) if i != 0 => true
+            case (i, TileTypes.Empty) if i != 0 => false
+            case (i, TileTypes.Solid) if i == 0 => false
+          }
+
           val actual =
             TiledSamples.tiledMap
               .toGrid[TileTypes](TiledSamples.mapping)
@@ -46,12 +56,7 @@ object TiledMapTests extends TestSuite {
           TiledSamples.gridMapInt.layers.head.grid
             .map(_.tile)
             .zip(actual)
-            .forall {
-              case (0, TileTypes.Empty)           => true
-              case (i, TileTypes.Solid) if i != 0 => true
-              case (i, TileTypes.Empty) if i != 0 => false
-              case (i, TileTypes.Solid) if i == 0 => false
-            } ==> true
+            .forall(matcher) ==> true
 
         }
 

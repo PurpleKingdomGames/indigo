@@ -2,6 +2,7 @@ package indigo.shared.dice
 
 import utest._
 import indigo.shared.collections.NonEmptyList
+import indigo.shared.TestFail
 
 object DiceTests extends TestSuite {
 
@@ -25,6 +26,9 @@ object DiceTests extends TestSuite {
               checkDice(d1, 6) ==> true
 
               checkDice(d2, 6) ==> true
+
+            case _ =>
+              TestFail.fail("Match fail!")
           }
 
         }
