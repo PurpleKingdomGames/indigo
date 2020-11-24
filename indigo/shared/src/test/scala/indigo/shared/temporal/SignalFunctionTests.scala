@@ -68,7 +68,7 @@ object SignalFunctionTests extends TestSuite {
         val howManyPets: SignalFunction[(List[Int], String), List[String]] =
           SignalFunction {
             case (l, str) =>
-              l.map(_ + " " + str)
+              l.map(_.toString() + " " + str)
           }
 
         val signal = Signal.Pulse(Seconds(1))
