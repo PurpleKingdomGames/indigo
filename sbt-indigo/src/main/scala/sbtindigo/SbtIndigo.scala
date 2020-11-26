@@ -43,7 +43,10 @@ object SbtIndigo extends sbt.AutoPlugin {
   )
 
   def giveScriptBasePath(baseDir: String, scalaVersion: String): String =
-    s"$baseDir/target/scala-${scalaVersion}"
+    if(scalaVersion.startsWith("2"))
+      s"$baseDir/target/scala-${scalaVersion.split('.').reverse.tail.reverse.mkString(".")}"
+    else
+      s"$baseDir/target/scala-${scalaVersion}"
 
   lazy val indigoBuildTask: Def.Initialize[Task[String]] =
     Def.task {
