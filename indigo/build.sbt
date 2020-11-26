@@ -3,7 +3,7 @@ import scala.language.postfixOps
 
 lazy val indigoVersion = IndigoVersion.getVersion
 
-val dottyVersion    = "3.0.0-M1"
+val dottyVersion    = "3.0.0-M2"
 val scala213Version = "2.13.4"
 
 lazy val commonSettings = Seq(
@@ -189,9 +189,9 @@ lazy val indigoJsonCirce =
     .settings(
       name := "indigo-json-circe",
       libraryDependencies ++= Seq(
-        ("io.circe" %%% "circe-core").withDottyCompat(scalaVersion.value),
-        ("io.circe" %%% "circe-parser").withDottyCompat(scalaVersion.value)
-      ).map(_ % "0.13.0")
+        ("io.circe" %%% "circe-core" % "0.13.0").withDottyCompat(scalaVersion.value),
+        ("io.circe" %%% "circe-parser" % "0.13.0").withDottyCompat(scalaVersion.value)
+      )
     )
     .dependsOn(indigoExtras)
 
@@ -202,9 +202,9 @@ lazy val indigoProject =
     .settings(commonSettings: _*)
     .settings(
       code := { "code ." ! },
-      openshareddocs := { "open -a Firefox shared/.jvm/target/scala-2.13/api/indigo/index.html" ! },
-      openindigodocs := { "open -a Firefox indigo/.jvm/target/scala-2.13/api/indigo/index.html" ! },
-      openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-2.13/api/indigoexts/index.html" ! }
+      openshareddocs := { "open -a Firefox shared/.jvm/target/scala-3.0.0-M2/api/indigo/index.html" ! },
+      openindigodocs := { "open -a Firefox indigo/.jvm/target/scala-3.0.0-M2/api/indigo/index.html" ! },
+      openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-3.0.0-M2/api/indigoexts/index.html" ! }
     )
     .aggregate(
       shared,
