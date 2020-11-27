@@ -9,6 +9,7 @@ val scala213Version = "2.13.4"
 lazy val commonSettings = Seq(
   version := indigoVersion,
   scalaVersion := dottyVersion,
+  crossScalaVersions := Seq(dottyVersion, scala213Version),
   organization := "io.indigoengine",
   libraryDependencies ++= Seq(
     "org.scalameta" %%% "munit" % "0.7.19" % Test
@@ -132,9 +133,8 @@ lazy val facades =
       name := "facades",
       version := indigoVersion,
       scalaVersion := dottyVersion,
+      crossScalaVersions := Seq(dottyVersion, scala213Version),
       organization := "io.indigoengine",
-      // scalacOptions += "-Yrangepos",
-      scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits"),
       libraryDependencies ++= Seq(
         ("org.scala-js" %%% "scalajs-dom" % "1.1.0").withDottyCompat(scalaVersion.value)
       )
@@ -189,7 +189,7 @@ lazy val indigoJsonCirce =
     .settings(
       name := "indigo-json-circe",
       libraryDependencies ++= Seq(
-        ("io.circe" %%% "circe-core" % "0.13.0").withDottyCompat(scalaVersion.value),
+        ("io.circe" %%% "circe-core"   % "0.13.0").withDottyCompat(scalaVersion.value),
         ("io.circe" %%% "circe-parser" % "0.13.0").withDottyCompat(scalaVersion.value)
       )
     )

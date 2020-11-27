@@ -18,6 +18,9 @@ lazy val coreProjects: List[String] =
 def applyCommand(projects: List[String], command: String): String =
   projects.map(p => p + "/" + command).mkString(";", ";", "")
 
+def applyCrossCommand(projects: List[String], command: String): String =
+  projects.map(p => "+" + p + "/" + command).mkString(";", ";", "")
+
 def applyToAll(command: String): String =
   List(
     applyCommand(coreProjects, command)
@@ -93,7 +96,7 @@ addCommandAlias(
 addCommandAlias(
   "localPublishIndigo",
   applyCommand(
-    coreProjects.filterNot(name => name == "indigoExtsExp" || name == "sandbox" || name == "perf"),
+    coreProjects.filterNot(name => name == "sandbox" || name == "perf"),
     "publishLocal"
   )
 )
@@ -112,6 +115,25 @@ addCommandAlias(
   List(
     "buildIndigo",
     "localPublishIndigo"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "crossBuildIndigo",
+  applyCrossCommand(coreProjects, "compile")
+)
+addCommandAlias(
+  "crossLocalPublishIndigo",
+  applyCrossCommand(
+    coreProjects.filterNot(name => name == "sandbox" || name == "perf"),
+    "publishLocal"
+  )
+)
+addCommandAlias(
+  "crossLocalPublishNoClean",
+  List(
+    "crossBuildIndigo",
+    "crossLocalPublishIndigo"
   ).mkString(";", ";", "")
 )
 

@@ -3,12 +3,13 @@ package indigo.facades
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLProgram
 import org.scalajs.dom.raw.WebGLRenderingContext
-import org.scalajs.dom.raw.WebGLRenderingContext._
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation._
-// import scala.scalajs.js.typedarray._
 
+import scala.annotation.nowarn
+
+@nowarn
 @js.native
 trait WebGL2RenderingContext extends WebGLRenderingContext {
 
@@ -122,6 +123,7 @@ object WebGL2RenderingContext {
   final val MAX_VARYING_VECTORS: Int                         = 0x8dfc
 }
 
+@nowarn
 @js.native
 @JSGlobal
 class WebGLVertexArrayObject private[this] () extends js.Object

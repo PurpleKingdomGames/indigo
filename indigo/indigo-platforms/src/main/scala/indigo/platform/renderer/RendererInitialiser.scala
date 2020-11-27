@@ -8,7 +8,6 @@ import org.scalajs.dom
 import org.scalajs.dom.raw.WebGLRenderingContext
 import org.scalajs.dom.{Element, html, raw}
 import scala.scalajs.js.Dynamic
-import scala.scalajs.js
 import indigo.platform.renderer.webgl1.RendererWebGL1
 import indigo.platform.renderer.webgl2.RendererWebGL2
 import indigo.shared.config.RenderingTechnology
@@ -189,14 +188,14 @@ final class RendererInitialiser(renderingTechnology: RenderingTechnology, global
     IndigoLogger.info("Checking WebGL 2.0 availability...")
 
     def testWebGL2Compatibility(param: Int, min: Int, name: String): Boolean =
-      try
+      try {
         val value = gl2.getParameter(param).asInstanceOf[Int]
         if (!value.toFloat.isNaN() && value >= min) true
         else {
           IndigoLogger.info(s" - WebGL 2.0 check '$name' failed. [min: ${min.toString}] [actual: ${value.toFloat.toString}]")
           false
         }
-      catch {
+      } catch {
         case _: Throwable => false
       }
 

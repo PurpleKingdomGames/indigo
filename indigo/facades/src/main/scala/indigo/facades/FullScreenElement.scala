@@ -1,7 +1,6 @@
 package indigo.facades
 
 import scala.scalajs.js
-import scala.scalajs.js.annotation._
 import org.scalajs.dom.raw.Element
 
 @js.native
