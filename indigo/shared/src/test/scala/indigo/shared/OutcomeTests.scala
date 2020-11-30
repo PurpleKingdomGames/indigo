@@ -1,12 +1,12 @@
 package indigo.shared
 
+import indigo.shared.events.GlobalEvent
+
 class OutcomeTests extends munit.FunSuite {
 
   import indigo.shared.events.GlobalEvent
   import indigo.shared.EqualTo._
   import Outcome._
-
-  final case class TestEvent(message: String) extends GlobalEvent
 
   test("Adding events.adding events after the fact") {
     assertEquals(Outcome(10).globalEvents, Nil)
@@ -184,3 +184,5 @@ class OutcomeTests extends munit.FunSuite {
   }
 
 }
+
+final case class TestEvent(message: String) extends GlobalEvent

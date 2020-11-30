@@ -11,8 +11,6 @@ import indigo.shared.events.MouseEvent
 
 class RadioButtonGroupTests extends munit.FunSuite {
 
-  final case class RadioTestEvent(message: String) extends GlobalEvent
-
   val assets =
     ButtonAssets(
       Graphic(Rectangle(0, 0, 10, 10), 1, Material.Textured(AssetName("up"))),
@@ -166,3 +164,5 @@ class RadioButtonGroupTests extends munit.FunSuite {
   }
 
 }
+
+final case class RadioTestEvent(message: String) extends GlobalEvent

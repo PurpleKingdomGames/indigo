@@ -20,8 +20,6 @@ class AutomataTests extends munit.FunSuite {
 
   import indigoextras.subsystems.FakeSubSystemFrameContext._
 
-  final case class MyCullEvent(message: String) extends GlobalEvent
-
   val eventInstance =
     MyCullEvent("Hello, I'm dead.")
 
@@ -64,7 +62,7 @@ class AutomataTests extends munit.FunSuite {
         )
       )
 
-    assertEquals(startingState.totalSpawned, 1l)
+    assertEquals(startingState.totalSpawned, 1L)
     assertEquals(startingState.pool.length, 1)
     assertEquals(startingState.pool.head, expected)
   }
@@ -109,7 +107,7 @@ class AutomataTests extends munit.FunSuite {
       automata
         .update(context(1, Seconds(1)), startingState)(AutomataEvent.Update(poolKey))
 
-    assertEquals(outcome.state.totalSpawned, 1l)
+    assertEquals(outcome.state.totalSpawned, 1L)
     assertEquals(outcome.state.pool.length, 0)
     assertEquals(outcome.globalEvents.head, eventInstance)
   }
@@ -121,7 +119,7 @@ class AutomataTests extends munit.FunSuite {
       automata
         .update(context(1, Seconds(0)), startingState)(AutomataEvent.KillAll(poolKey))
 
-    assertEquals(outcome.state.totalSpawned, 1l)
+    assertEquals(outcome.state.totalSpawned, 1L)
     assertEquals(outcome.state.pool.isEmpty, true)
     assertEquals(outcome.globalEvents.isEmpty, true)
   }
@@ -210,3 +208,5 @@ class AutomataTests extends munit.FunSuite {
   }
 
 }
+
+final case class MyCullEvent(message: String) extends GlobalEvent

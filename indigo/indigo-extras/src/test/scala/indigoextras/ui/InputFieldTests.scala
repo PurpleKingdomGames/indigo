@@ -291,6 +291,6 @@ class InputFieldTests extends munit.FunSuite {
     val fontInfo = FontInfo(fontKey, material, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
   }
 
-  final case class TestInputFieldEvent(message: String) extends GlobalEvent
-
 }
+
+final case class TestInputFieldEvent(message: String) extends GlobalEvent

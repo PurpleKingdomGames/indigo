@@ -12,8 +12,6 @@ import indigo.shared.events.GlobalEvent
 
 class ButtonTests extends munit.FunSuite {
 
-  final case class FakeEvent(message: String) extends GlobalEvent
-
   val bounds =
     Rectangle(10, 10, 100, 100)
 
@@ -164,3 +162,5 @@ class ButtonTests extends munit.FunSuite {
   }
 
 }
+
+final case class FakeEvent(message: String) extends GlobalEvent
