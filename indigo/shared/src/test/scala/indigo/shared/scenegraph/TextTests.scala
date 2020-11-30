@@ -19,55 +19,49 @@ class TextTests extends munit.FunSuite {
   val boundaryLocator: BoundaryLocator =
     new BoundaryLocator(new AnimationsRegister, fontRegister)
 
+  test("Text entities should be able to correctly calculate the bounds where all are equal") {
 
-      test("Text entities") {
+    val chars = List(
+      FontChar("a", 0, 16, 16, 16),
+      FontChar("b", 16, 16, 16, 16),
+      FontChar("c", 32, 16, 16, 16)
+    )
 
-        test("should be able to correctly calculate the bounds where all are equal") {
+    val fontKey = FontKey("test1")
 
-          val chars = List(
-            FontChar("a", 0, 16, 16, 16),
-            FontChar("b", 16, 16, 16, 16),
-            FontChar("c", 32, 16, 16, 16)
-          )
+    val fontInfo = FontInfo(fontKey, material, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
 
-          val fontKey = FontKey("test1")
+    fontRegister.register(fontInfo)
 
-          val fontInfo = FontInfo(fontKey, material, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+    val t = Text("abc", 10, 20, 1, fontKey)
 
-          fontRegister.register(fontInfo)
+    assertEquals(t.bounds(boundaryLocator) === Rectangle(10, 20, 16 * 3, 16), true)
 
-          val t = Text("abc", 10, 20, 1, fontKey)
+    fontRegister.clearRegister()
+  }
 
-          assertEquals(t.bounds(boundaryLocator) === Rectangle(10, 20, 16 * 3, 16), true)
+  test("Text entities should be able to correctly calculate the bounds with different sized chars") {
 
-          fontRegister.clearRegister()
-        }
+    val chars = List(
+      FontChar("a", 0, 16, 10, 10),
+      FontChar("b", 30, 16, 20, 20),
+      FontChar("c", 60, 16, 30, 30)
+    )
 
-        test("should be able to correctly calculate the bounds with different sized chars") {
+    val fontKey = FontKey("test2")
 
-          val chars = List(
-            FontChar("a", 0, 16, 10, 10),
-            FontChar("b", 30, 16, 20, 20),
-            FontChar("c", 60, 16, 30, 30)
-          )
+    val fontInfo = FontInfo(fontKey, material, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
 
-          val fontKey = FontKey("test2")
+    fontRegister.register(fontInfo)
 
-          val fontInfo = FontInfo(fontKey, material, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+    val t = Text("abc", 10, 20, 1, fontKey)
 
-          fontRegister.register(fontInfo)
+    val actual   = t.bounds(boundaryLocator)           // 48 x 16
+    val expected = Rectangle(10, 20, 10 + 20 + 30, 30) // 60 x 30
 
-          val t = Text("abc", 10, 20, 1, fontKey)
+    assertEquals(actual === expected, true)
 
-          val actual   = t.bounds(boundaryLocator)           // 48 x 16
-          val expected = Rectangle(10, 20, 10 + 20 + 30, 30) // 60 x 30
-
-          assertEquals(actual === expected, true)
-
-          fontRegister.clearRegister()
-        }
-
-      }
-    }
+    fontRegister.clearRegister()
+  }
 
 }

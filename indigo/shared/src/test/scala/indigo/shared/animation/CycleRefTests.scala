@@ -20,98 +20,87 @@ class CycleRefTests extends munit.FunSuite {
   val cycle: CycleRef =
     CycleRef.create(CycleLabel("test"), List(frame1, frame2, frame3))
 
+  test("General functions.calculate next play head position") {
+    val actual: CycleMemento =
+      CycleRef
+        .calculateNextPlayheadPosition(
+          currentPosition = 2,
+          frameDuration = Millis(30),
+          frameCount = 10,
+          lastFrameAdvance = Millis(60)
+        )
+        .at(Millis(90).toSeconds)
 
+    val expected: CycleMemento =
+      CycleMemento(3, Millis(90))
 
-      test("General functions") {
+    assertEquals(actual === expected, true)
+  }
 
-        test("calculate next play head position") {
-          val actual: CycleMemento =
-            CycleRef
-              .calculateNextPlayheadPosition(
-                currentPosition = 2,
-                frameDuration = Millis(30),
-                frameCount = 10,
-                lastFrameAdvance = Millis(60)
-              )
-              .at(Millis(90).toSeconds)
+  test("General functions.calculate next play head position, skip several") {
+    val actual: CycleMemento =
+      CycleRef
+        .calculateNextPlayheadPosition(
+          currentPosition = 0,
+          frameDuration = Millis(100),
+          frameCount = 10,
+          lastFrameAdvance = Millis(0)
+        )
+        .at(Millis(300).toSeconds)
 
-          val expected: CycleMemento =
-            CycleMemento(3, Millis(90))
+    val expected: CycleMemento =
+      CycleMemento(3, Millis(300))
 
-          assertEquals(actual === expected, true)
-        }
+    assertEquals(actual, expected)
+  }
 
-        test("calculate next play head position, skip several") {
-          val actual: CycleMemento =
-            CycleRef
-              .calculateNextPlayheadPosition(
-                currentPosition = 0,
-                frameDuration = Millis(100),
-                frameCount = 10,
-                lastFrameAdvance = Millis(0)
-              )
-              .at(Millis(300).toSeconds)
+  test("General functions.get the current frame") {
+    assertEquals(cycle.currentFrame === frame1, true)
+  }
 
-          val expected: CycleMemento =
-            CycleMemento(3, Millis(300))
+  test("General functions.save a memento") {
+    assertEquals(cycle.saveMemento === CycleMemento(0, Millis(0)), true)
+    assertEquals(cycle.updatePlayheadAndLastAdvance(3, Millis(10)).saveMemento === CycleMemento(3, Millis(10)), true)
+  }
 
-          assertEquals(actual, expected)
-        }
+  test("General functions.apply a memento") {
+    assertEquals(cycle.applyMemento(CycleMemento(2, Millis(0))).currentFrame === frame3, true)
+  }
 
-        test("get the current frame") {
-          assertEquals(cycle.currentFrame === frame1, true)
-        }
+  import AnimationAction._
 
-        test("save a memento") {
-          assertEquals(cycle.saveMemento === CycleMemento(0, Millis(0)), true)
-          assertEquals(cycle.updatePlayheadAndLastAdvance(3, Millis(10)).saveMemento === CycleMemento(3, Millis(10)), true)
-        }
+  test("Running actions.Play") {
+    val actual =
+      cycle
+        .runActions(GameTime.is(Seconds(0)), List(Play))
+        .runActions(GameTime.is(Seconds(10)), List(Play))
+        .currentFrame
 
-        test("apply a memento") {
-          assertEquals(cycle.applyMemento(CycleMemento(2, Millis(0))).currentFrame === frame3, true)
-        }
+    val expected =
+      frame2
 
-      }
+    assertEquals(actual === expected, true)
+  }
 
-      test("Running actions") {
-        import AnimationAction._
+  test("Running actions.ChangeCycle") {
+    //no op
+    assertEquals(cycle.runActions(GameTime.zero, List(ChangeCycle(CycleLabel("fish")))).currentFrame === frame1, true)
+  }
 
-        test("Play") {
-          val actual =
-            cycle
-              .runActions(GameTime.is(Seconds(0)), List(Play))
-              .runActions(GameTime.is(Seconds(10)), List(Play))
-              .currentFrame
+  test("Running actions.JumpToFirstFrame") {
+    assertEquals(cycle.applyMemento(CycleMemento(2, Millis(0))).runActions(GameTime.zero, List(JumpToFirstFrame)).currentFrame === frame1, true)
+  }
 
-          val expected =
-            frame2
+  test("Running actions.JumpToLastFrame") {
+    assertEquals(cycle.runActions(GameTime.zero, List(JumpToLastFrame)).currentFrame === frame3, true)
+  }
 
-          assertEquals(actual === expected, true)
-        }
+  test("Running actions.JumpToFrame") {
+    assertEquals(cycle.runActions(GameTime.zero, List(JumpToFrame(1))).currentFrame === frame2, true)
+  }
 
-        test("ChangeCycle") {
-          //no op
-          assertEquals(cycle.runActions(GameTime.zero, List(ChangeCycle(CycleLabel("fish")))).currentFrame === frame1, true)
-        }
-
-        test("JumpToFirstFrame") {
-          assertEquals(cycle.applyMemento(CycleMemento(2, Millis(0))).runActions(GameTime.zero, List(JumpToFirstFrame)).currentFrame === frame1, true)
-        }
-
-        test("JumpToLastFrame") {
-          assertEquals(cycle.runActions(GameTime.zero, List(JumpToLastFrame)).currentFrame === frame3, true)
-        }
-
-        test("JumpToFrame") {
-          assertEquals(cycle.runActions(GameTime.zero, List(JumpToFrame(1))).currentFrame === frame2, true)
-        }
-
-        test("JumpToFrame (capped at max)") {
-          assertEquals(cycle.runActions(GameTime.zero, List(JumpToFrame(10))).currentFrame === frame3, true)
-        }
-
-      }
-
-    }
+  test("Running actions.JumpToFrame (capped at max)") {
+    assertEquals(cycle.runActions(GameTime.zero, List(JumpToFrame(10))).currentFrame === frame3, true)
+  }
 
 }

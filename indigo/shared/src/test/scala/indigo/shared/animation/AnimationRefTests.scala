@@ -52,48 +52,40 @@ class AnimationRefTests extends munit.FunSuite {
   val bindingKey: BindingKey =
     BindingKey("test")
 
+  test("Can record a memento") {
 
+    val expected =
+      AnimationMemento(
+        bindingKey,
+        cycleLabel1,
+        CycleMemento(0, Millis(0))
+      )
 
-      test("AnimationRef mementos") {
+    val actual = animation.saveMemento(bindingKey)
 
-        test("Can record a memento") {
+    assertEquals(expected === actual, true)
 
-          val expected =
-            AnimationMemento(
-              bindingKey,
-              cycleLabel1,
-              CycleMemento(0, Millis(0))
-            )
+  }
 
-          val actual = animation.saveMemento(bindingKey)
+  test("Can apply a memeto") {
 
-          assertEquals(expected === actual, true)
+    val expected =
+      AnimationMemento(
+        bindingKey,
+        cycleLabel2,
+        CycleMemento(3, Millis(300))
+      )
 
-        }
+    val updated = animation.applyMemento(expected)
 
-        test("Can apply a memeto") {
+    val actual = updated.saveMemento(bindingKey)
 
-          val expected =
-            AnimationMemento(
-              bindingKey,
-              cycleLabel2,
-              CycleMemento(3, Millis(300))
-            )
+    assertEquals(updated.currentCycleLabel, cycleLabel2)
+    assertEquals(updated.currentCycle.playheadPosition, 3)
+    assertEquals(updated.currentCycle.lastFrameAdvance, Millis(300))
 
-          val updated = animation.applyMemento(expected)
+    assertEquals(expected === actual, true)
 
-          val actual = updated.saveMemento(bindingKey)
-
-          assertEquals(updated.currentCycleLabel, cycleLabel2)
-          assertEquals(updated.currentCycle.playheadPosition, 3)
-          assertEquals(updated.currentCycle.lastFrameAdvance, Millis(300))
-
-          assertEquals(expected === actual, true)
-
-        }
-
-      }
-
-    }
+  }
 
 }

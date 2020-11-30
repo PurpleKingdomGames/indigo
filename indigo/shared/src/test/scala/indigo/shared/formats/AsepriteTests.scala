@@ -14,25 +14,19 @@ import indigo.shared.time.Millis
 
 class AsepriteTests extends munit.FunSuite {
 
+  test("Create an Aseprite asset.should be able to convert the loaded definition into a renderable Sprite object") {
+    val SpriteAndAnimations(sprite, animation) =
+      AsepriteSampleData.aseprite
+        .toSpriteAndAnimations(Dice.loaded(0), AsepriteSampleData.imageAssetRef)
+        .get
 
-      test("Create an Aseprite asset") {
+    assertEquals(sprite.bindingKey, AsepriteSampleData.sprite.bindingKey)
+    assertEquals(sprite.animationKey, AsepriteSampleData.sprite.animationKey)
 
-        test("should be able to convert the loaded definition into a renderable Sprite object") {
-          val SpriteAndAnimations(sprite, animation) =
-            AsepriteSampleData.aseprite
-              .toSpriteAndAnimations(Dice.loaded(0), AsepriteSampleData.imageAssetRef)
-              .get
-
-          assertEquals(sprite.bindingKey, AsepriteSampleData.sprite.bindingKey)
-          assertEquals(sprite.animationKey, AsepriteSampleData.sprite.animationKey)
-
-          assertEquals(animation.cycles.length, 1)
-          assertEquals(animation.currentCycleLabel.value, "lights")
-          assertEquals(animation.cycles.find(c => c.label == animation.currentCycleLabel).get.frames.length, 3)
-        }
-
-      }
-    }
+    assertEquals(animation.cycles.length, 1)
+    assertEquals(animation.currentCycleLabel.value, "lights")
+    assertEquals(animation.cycles.find(c => c.label == animation.currentCycleLabel).get.frames.length, 3)
+  }
 
 }
 

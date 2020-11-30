@@ -10,63 +10,59 @@ class SceneLayerTests extends munit.FunSuite {
   val dummyGraphic: Graphic =
     Graphic(Rectangle.zero, 0, Material.Textured(AssetName("foo")))
 
+  test("can provide a scene node count for an empty scene") {
 
+    val nodes: List[SceneGraphNode] =
+      Nil
 
-      test("can provide a scene node count for an empty scene") {
+    val layer: SceneLayer =
+      new SceneLayer(nodes, RGBA.None, 1.0, None)
 
-        val nodes: List[SceneGraphNode] =
-          Nil
+    assertEquals(layer.visibleNodeCount, 0)
+  }
 
-        val layer: SceneLayer =
-          new SceneLayer(nodes, RGBA.None, 1.0, None)
+  test("can provide a scene node count for flat scene") {
 
-        assertEquals(layer.visibleNodeCount, 0)
-      }
+    val nodes: List[SceneGraphNode] =
+      List(
+        dummyGraphic,
+        dummyGraphic,
+        dummyGraphic
+      )
 
-      test("can provide a scene node count for flat scene") {
+    val layer: SceneLayer =
+      new SceneLayer(nodes, RGBA.None, 1.0, None)
 
-        val nodes: List[SceneGraphNode] =
-          List(
-            dummyGraphic,
+    assertEquals(layer.visibleNodeCount, 3)
+  }
+
+  test("can provide a scene node count for grouped scene") {
+
+    val nodes: List[SceneGraphNode] =
+      List(
+        dummyGraphic,
+        dummyGraphic,
+        dummyGraphic,
+        Group(
+          dummyGraphic
+        ),
+        dummyGraphic,
+        Group(
+          dummyGraphic,
+          dummyGraphic,
+          Group(
             dummyGraphic,
             dummyGraphic
-          )
+          ),
+          dummyGraphic
+        ),
+        dummyGraphic
+      )
 
-        val layer: SceneLayer =
-          new SceneLayer(nodes, RGBA.None, 1.0, None)
+    val layer: SceneLayer =
+      new SceneLayer(nodes, RGBA.None, 1.0, None)
 
-        assertEquals(layer.visibleNodeCount, 3)
-      }
-
-      test("can provide a scene node count for grouped scene") {
-
-        val nodes: List[SceneGraphNode] =
-          List(
-            dummyGraphic,
-            dummyGraphic,
-            dummyGraphic,
-            Group(
-              dummyGraphic
-            ),
-            dummyGraphic,
-            Group(
-              dummyGraphic,
-              dummyGraphic,
-              Group(
-                dummyGraphic,
-                dummyGraphic
-              ),
-              dummyGraphic
-            ),
-            dummyGraphic
-          )
-
-        val layer: SceneLayer =
-          new SceneLayer(nodes, RGBA.None, 1.0, None)
-
-        assertEquals(layer.visibleNodeCount, 11)
-      }
-
-    }
+    assertEquals(layer.visibleNodeCount, 11)
+  }
 
 }

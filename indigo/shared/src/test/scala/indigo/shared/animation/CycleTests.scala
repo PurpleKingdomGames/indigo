@@ -20,16 +20,8 @@ class CycleTests extends munit.FunSuite {
   val cycle: Cycle =
     Cycle.create("test", NonEmptyList(frame1, frame2, frame3))
 
-
-
-      test("General functions") {
-
-        test("adding a frame") {
-          assertEquals(Cycle.create("test", NonEmptyList(frame1)).addFrame(frame2) === Cycle.create("test", NonEmptyList(frame1, frame2)), true)
-        }
-
-      }
-
-    }
+  test("adding a frame") {
+    assertEquals(Cycle.create("test", NonEmptyList(frame1)).addFrame(frame2) === Cycle.create("test", NonEmptyList(frame1, frame2)), true)
+  }
 
 }

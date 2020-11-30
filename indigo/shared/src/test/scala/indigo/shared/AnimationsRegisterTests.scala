@@ -20,156 +20,152 @@ import indigo.shared.EqualTo._
 
 class AnimationsRegisterTests extends munit.FunSuite {
 
+  test("can look up an animation by key") {
+    val register = new AnimationsRegister()
+    register.register(AnimationSample.animation)
 
+    val actual = register.findByAnimationKey(AnimationSample.key)
 
-      test("can look up an animation by key") {
-        val register = new AnimationsRegister()
-        register.register(AnimationSample.animation)
+    assertEquals(actual.isDefined, true)
+    assertEquals(actual.get.animationKey, AnimationSample.key)
 
-        val actual = register.findByAnimationKey(AnimationSample.key)
+    assertEquals(register.findByAnimationKey(AnimationKey("nope")).isEmpty, true)
+  }
 
-        assertEquals(actual.isDefined, true)
-        assertEquals(actual.get.animationKey, AnimationSample.key)
+  test("can look up a memento by key") {
 
-        assertEquals(register.findByAnimationKey(AnimationKey("nope")).isEmpty, true)
-      }
+    val bindingKey = BindingKey("sprite 1")
 
-      test("can look up a memento by key") {
+    val register = new AnimationsRegister()
+    register.register(AnimationSample.animation)
 
-        val bindingKey = BindingKey("sprite 1")
+    assertEquals(register.findMementoByBindingKey(bindingKey).isEmpty, true)
 
-        val register = new AnimationsRegister()
-        register.register(AnimationSample.animation)
+    register.fetchAnimationForSprite(
+      GameTime.is(Seconds(0)),
+      bindingKey,
+      AnimationSample.key,
+      Nil
+    )
 
-        assertEquals(register.findMementoByBindingKey(bindingKey).isEmpty, true)
+    val actual = register.findMementoByBindingKey(bindingKey)
 
-        register.fetchAnimationForSprite(
-          GameTime.is(Seconds(0)),
-          bindingKey,
-          AnimationSample.key,
-          Nil
-        )
+    assertEquals(actual.isDefined, true)
+    assertEquals(actual.get.bindingKey, bindingKey)
+    assertEquals(actual.get.currentCycleLabel, AnimationSample.cycleLabel1)
+    assertEquals(actual.get.currentCycleMemento.playheadPosition, 0)
+    assertEquals(actual.get.currentCycleMemento.lastFrameAdvance, Millis.zero)
+  }
 
-        val actual = register.findMementoByBindingKey(bindingKey)
+  test("can apply and store animations mementos") {
 
-        assertEquals(actual.isDefined, true)
-        assertEquals(actual.get.bindingKey, bindingKey)
-        assertEquals(actual.get.currentCycleLabel, AnimationSample.cycleLabel1)
-        assertEquals(actual.get.currentCycleMemento.playheadPosition, 0)
-        assertEquals(actual.get.currentCycleMemento.lastFrameAdvance, Millis.zero)
-      }
+    val bindingKey = BindingKey("sprite 1")
 
-      test("can apply and store animations mementos") {
+    // Fetch default animation
+    val register = new AnimationsRegister()
+    register.register(AnimationSample.animation)
 
-        val bindingKey = BindingKey("sprite 1")
+    // ------------
+    // Round 1 - control, do nothing.
+    val updatedAnim1 = register.fetchAnimationForSprite(
+      GameTime.is(Seconds(0)),
+      bindingKey,
+      AnimationSample.key,
+      Nil
+    )
 
-        // Fetch default animation
-        val register = new AnimationsRegister()
-        register.register(AnimationSample.animation)
+    assertEquals(updatedAnim1.isDefined, true)
+    assertEquals(updatedAnim1.get.animationKey, AnimationSample.key)
+    assertEquals(updatedAnim1.get.currentCycle.label, AnimationSample.cycleLabel1)
+    assertEquals(updatedAnim1.get.currentCycle.playheadPosition, 0)
+    assertEquals(updatedAnim1.get.currentCycle.lastFrameAdvance, Millis.zero)
 
-        // ------------
-        // Round 1 - control, do nothing.
-        val updatedAnim1 = register.fetchAnimationForSprite(
-          GameTime.is(Seconds(0)),
-          bindingKey,
-          AnimationSample.key,
-          Nil
-        )
+    val memento1 = register.findMementoByBindingKey(bindingKey)
 
-        assertEquals(updatedAnim1.isDefined, true)
-        assertEquals(updatedAnim1.get.animationKey, AnimationSample.key)
-        assertEquals(updatedAnim1.get.currentCycle.label, AnimationSample.cycleLabel1)
-        assertEquals(updatedAnim1.get.currentCycle.playheadPosition, 0)
-        assertEquals(updatedAnim1.get.currentCycle.lastFrameAdvance, Millis.zero)
+    assertEquals(memento1.isDefined, true)
+    assertEquals(memento1.get.bindingKey, bindingKey)
+    assertEquals(memento1.get.currentCycleLabel, AnimationSample.cycleLabel1)
+    assertEquals(memento1.get.currentCycleMemento.playheadPosition, 0)
+    assertEquals(memento1.get.currentCycleMemento.lastFrameAdvance, Millis.zero)
+    // ------------
 
-        val memento1 = register.findMementoByBindingKey(bindingKey)
+    // ------------
+    // Round 2
+    val updatedAnim2 = register.fetchAnimationForSprite(
+      GameTime.is(Millis(100).toSeconds),
+      bindingKey,
+      AnimationSample.key,
+      List(ChangeCycle(AnimationSample.cycleLabel2), Play)
+    )
 
-        assertEquals(memento1.isDefined, true)
-        assertEquals(memento1.get.bindingKey, bindingKey)
-        assertEquals(memento1.get.currentCycleLabel, AnimationSample.cycleLabel1)
-        assertEquals(memento1.get.currentCycleMemento.playheadPosition, 0)
-        assertEquals(memento1.get.currentCycleMemento.lastFrameAdvance, Millis.zero)
-        // ------------
+    assertEquals(updatedAnim2.isDefined, true)
+    assertEquals(updatedAnim2.get.animationKey, AnimationSample.key)
+    assertEquals(updatedAnim2.get.currentCycle.label, AnimationSample.cycleLabel2)
+    assertEquals(updatedAnim2.get.currentCycle.playheadPosition, 1)
+    assertEquals(updatedAnim2.get.currentCycle.lastFrameAdvance, Millis(100))
 
-        // ------------
-        // Round 2
-        val updatedAnim2 = register.fetchAnimationForSprite(
-          GameTime.is(Millis(100).toSeconds),
-          bindingKey,
-          AnimationSample.key,
-          List(ChangeCycle(AnimationSample.cycleLabel2), Play)
-        )
+    val memento2 = register.findMementoByBindingKey(bindingKey)
 
-        assertEquals(updatedAnim2.isDefined, true)
-        assertEquals(updatedAnim2.get.animationKey, AnimationSample.key)
-        assertEquals(updatedAnim2.get.currentCycle.label, AnimationSample.cycleLabel2)
-        assertEquals(updatedAnim2.get.currentCycle.playheadPosition, 1)
-        assertEquals(updatedAnim2.get.currentCycle.lastFrameAdvance, Millis(100))
+    assertEquals(memento2.isDefined, true)
+    assertEquals(memento2.get.bindingKey, bindingKey)
+    assertEquals(memento2.get.currentCycleLabel, AnimationSample.cycleLabel2)
+    assertEquals(memento2.get.currentCycleMemento.playheadPosition, 1)
+    assertEquals(memento2.get.currentCycleMemento.lastFrameAdvance, Millis(100))
+    // ------------
 
-        val memento2 = register.findMementoByBindingKey(bindingKey)
+    // ------------
+    // Round 3
+    val updatedAnim3 = register.fetchAnimationForSprite(
+      GameTime.is(Millis(200).toSeconds),
+      bindingKey,
+      AnimationSample.key,
+      List(Play)
+    )
 
-        assertEquals(memento2.isDefined, true)
-        assertEquals(memento2.get.bindingKey, bindingKey)
-        assertEquals(memento2.get.currentCycleLabel, AnimationSample.cycleLabel2)
-        assertEquals(memento2.get.currentCycleMemento.playheadPosition, 1)
-        assertEquals(memento2.get.currentCycleMemento.lastFrameAdvance, Millis(100))
-        // ------------
+    assertEquals(updatedAnim3.isDefined, true)
+    assertEquals(updatedAnim3.get.animationKey, AnimationSample.key)
+    assertEquals(updatedAnim3.get.currentCycle.label, AnimationSample.cycleLabel2)
+    assertEquals(updatedAnim3.get.currentCycle.playheadPosition, 2)
+    assertEquals(updatedAnim3.get.currentCycle.lastFrameAdvance, Millis(200))
 
-        // ------------
-        // Round 3
-        val updatedAnim3 = register.fetchAnimationForSprite(
-          GameTime.is(Millis(200).toSeconds),
-          bindingKey,
-          AnimationSample.key,
-          List(Play)
-        )
+    val memento3 = register.findMementoByBindingKey(bindingKey)
 
-        assertEquals(updatedAnim3.isDefined, true)
-        assertEquals(updatedAnim3.get.animationKey, AnimationSample.key)
-        assertEquals(updatedAnim3.get.currentCycle.label, AnimationSample.cycleLabel2)
-        assertEquals(updatedAnim3.get.currentCycle.playheadPosition, 2)
-        assertEquals(updatedAnim3.get.currentCycle.lastFrameAdvance, Millis(200))
+    assertEquals(memento3.isDefined, true)
+    assertEquals(memento3.get.bindingKey, bindingKey)
+    assertEquals(memento3.get.currentCycleLabel, AnimationSample.cycleLabel2)
+    assertEquals(memento3.get.currentCycleMemento.playheadPosition, 2)
+    assertEquals(memento3.get.currentCycleMemento.lastFrameAdvance, Millis(200))
+    // ------------
 
-        val memento3 = register.findMementoByBindingKey(bindingKey)
+    // ------------
+    // Round 4
+    val updatedAnim4 = register.fetchAnimationForSprite(
+      GameTime.is(Millis(400).toSeconds),
+      bindingKey,
+      AnimationSample.key,
+      List(Play)
+    )
 
-        assertEquals(memento3.isDefined, true)
-        assertEquals(memento3.get.bindingKey, bindingKey)
-        assertEquals(memento3.get.currentCycleLabel, AnimationSample.cycleLabel2)
-        assertEquals(memento3.get.currentCycleMemento.playheadPosition, 2)
-        assertEquals(memento3.get.currentCycleMemento.lastFrameAdvance, Millis(200))
-        // ------------
+    assertEquals(updatedAnim4.isDefined, true)
+    assertEquals(updatedAnim4.get.animationKey, AnimationSample.key)
+    assertEquals(updatedAnim4.get.currentCycle.label, AnimationSample.cycleLabel2)
+    assertEquals(updatedAnim4.get.currentCycle.playheadPosition, 1)
+    assertEquals(updatedAnim4.get.currentCycle.lastFrameAdvance, Millis(400))
 
-        // ------------
-        // Round 4
-        val updatedAnim4 = register.fetchAnimationForSprite(
-          GameTime.is(Millis(400).toSeconds),
-          bindingKey,
-          AnimationSample.key,
-          List(Play)
-        )
+    val memento4 = register.findMementoByBindingKey(bindingKey)
 
-        assertEquals(updatedAnim4.isDefined, true)
-        assertEquals(updatedAnim4.get.animationKey, AnimationSample.key)
-        assertEquals(updatedAnim4.get.currentCycle.label, AnimationSample.cycleLabel2)
-        assertEquals(updatedAnim4.get.currentCycle.playheadPosition, 1)
-        assertEquals(updatedAnim4.get.currentCycle.lastFrameAdvance, Millis(400))
+    assertEquals(memento4.isDefined, true)
+    assertEquals(memento4.get.bindingKey, bindingKey)
+    assertEquals(memento4.get.currentCycleLabel, AnimationSample.cycleLabel2)
+    assertEquals(memento4.get.currentCycleMemento.playheadPosition, 1)
+    assertEquals(memento4.get.currentCycleMemento.lastFrameAdvance, Millis(400))
+    // ------------
 
-        val memento4 = register.findMementoByBindingKey(bindingKey)
+    assertEquals(memento1 === memento2, false)
+    assertEquals(memento2 === memento3, false)
+    assertEquals(memento3 === memento4, false)
 
-        assertEquals(memento4.isDefined, true)
-        assertEquals(memento4.get.bindingKey, bindingKey)
-        assertEquals(memento4.get.currentCycleLabel, AnimationSample.cycleLabel2)
-        assertEquals(memento4.get.currentCycleMemento.playheadPosition, 1)
-        assertEquals(memento4.get.currentCycleMemento.lastFrameAdvance, Millis(400))
-        // ------------
-
-        assertEquals(memento1 === memento2, false)
-        assertEquals(memento2 === memento3, false)
-        assertEquals(memento3 === memento4, false)
-
-      }
-
-    }
+  }
 
 }
 

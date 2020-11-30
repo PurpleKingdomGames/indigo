@@ -2,15 +2,14 @@ package indigo.gameengine
 
 class AnimationStateTests extends munit.FunSuite {
 
-
-      //TODO: Needs to be update to test the AnimationsRegister
+  //TODO: Needs to be update to test the AnimationsRegister
 //  test("Using animation states") {
 //
 //    test("Should be able to extract animation states") {
 //
 //      val states = AnimationState.extractAnimationStates(SceneGraphSamples.api.flatten)
 //
-assertEquals(//      states.states.length, 1)
+// assertEquals(//      states.states.length, 1)
 //
 //    }
 //
@@ -60,11 +59,11 @@ assertEquals(//      states.states.length, 1)
 //      )
 //
 //      test("Simple operations") {
-assertEquals(//        sprite.animations.currentFrame.bounds.x, 0)
+// assertEquals(//        sprite.animations.currentFrame.bounds.x, 0)
 //
-assertEquals(//        sprite.jumpToLastFrame().animations.runActions(GameTime.is(10, 10)).currentFrame.bounds.x, 6)
+// assertEquals(//        sprite.jumpToLastFrame().animations.runActions(GameTime.is(10, 10)).currentFrame.bounds.x, 6)
 //
-assertEquals(//        sprite.play().animations.runActions(GameTime.is(10, 10)).currentFrame.bounds.x, 1)
+// assertEquals(//        sprite.play().animations.runActions(GameTime.is(10, 10)).currentFrame.bounds.x, 1)
 //      }
 //
 //      test("Check memento save") {
@@ -74,12 +73,12 @@ assertEquals(//        sprite.play().animations.runActions(GameTime.is(10, 10)).
 //        val sa = s.animations
 //          .runActions(GameTime.is(10, 10))
 //
-assertEquals(//        sa.currentCycleName, "test-cycle")
-assertEquals(//        sa.currentFrame.bounds.x, 1)
+// assertEquals(//        sa.currentCycleName, "test-cycle")
+// assertEquals(//        sa.currentFrame.bounds.x, 1)
 //
 //        val memento = sa.saveMemento(s.bindingKey)
 //
-assertEquals(//        memento, AnimationMemento(BindingKey("test"), CycleLabel("test-cycle"), CycleMemento(1, 10)))
+// assertEquals(//        memento, AnimationMemento(BindingKey("test"), CycleLabel("test-cycle"), CycleMemento(1, 10)))
 //      }
 //
 //      test("Check memento save and apply with cycle change") {
@@ -90,22 +89,21 @@ assertEquals(//        memento, AnimationMemento(BindingKey("test"), CycleLabel(
 //        val sa2 = s2.animations
 //          .runActions(GameTime.is(10, 10))
 //
-assertEquals(//        sa2.currentCycleName, "test-cycle2")
-assertEquals(//        sa2.currentFrame.bounds.x, 1)
+// assertEquals(//        sa2.currentCycleName, "test-cycle2")
+// assertEquals(//        sa2.currentFrame.bounds.x, 1)
 //
 //        val memento2 = sa2.saveMemento(s2.bindingKey)
 //
-assertEquals(//        memento2, AnimationMemento(BindingKey("test"), CycleLabel("test-cycle2"), CycleMemento(1, 10)))
+// assertEquals(//        memento2, AnimationMemento(BindingKey("test"), CycleLabel("test-cycle2"), CycleMemento(1, 10)))
 //
 //        val s3 = sprite.applyAnimationMemento(AnimationStates(List(memento2)))
 //
-assertEquals(//        s3.animations.currentCycleName, "test-cycle2")
-assertEquals(//        s3.animations.currentFrame.bounds.x, 1)
+// assertEquals(//        s3.animations.currentCycleName, "test-cycle2")
+// assertEquals(//        s3.animations.currentFrame.bounds.x, 1)
 //
 //      }
 //
 //    }
 //
 //  }
-    }
 }
