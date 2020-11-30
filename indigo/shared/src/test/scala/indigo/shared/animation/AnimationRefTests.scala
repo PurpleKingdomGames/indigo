@@ -1,14 +1,12 @@
 package indigo.shared.animation
 
-import utest._
-
 import indigo.shared.datatypes._
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.EqualTo._
 import indigo.shared.assets.AssetName
 import indigo.shared.time.Millis
 
-object AnimationRefTests extends TestSuite {
+class AnimationRefTests extends munit.FunSuite {
 
   val frame1: Frame =
     Frame(Rectangle(Point(0, 0), Point(10, 10)), Millis(10))
@@ -54,12 +52,11 @@ object AnimationRefTests extends TestSuite {
   val bindingKey: BindingKey =
     BindingKey("test")
 
-  val tests: Tests =
-    Tests {
 
-      "AnimationRef mementos" - {
 
-        "Can record a memento" - {
+      test("AnimationRef mementos") {
+
+        test("Can record a memento") {
 
           val expected =
             AnimationMemento(
@@ -70,11 +67,11 @@ object AnimationRefTests extends TestSuite {
 
           val actual = animation.saveMemento(bindingKey)
 
-          expected === actual ==> true
+          assertEquals(expected === actual, true)
 
         }
 
-        "Can apply a memeto" - {
+        test("Can apply a memeto") {
 
           val expected =
             AnimationMemento(
@@ -87,11 +84,11 @@ object AnimationRefTests extends TestSuite {
 
           val actual = updated.saveMemento(bindingKey)
 
-          updated.currentCycleLabel ==> cycleLabel2
-          updated.currentCycle.playheadPosition ==> 3
-          updated.currentCycle.lastFrameAdvance ==> Millis(300)
+          assertEquals(updated.currentCycleLabel, cycleLabel2)
+          assertEquals(updated.currentCycle.playheadPosition, 3)
+          assertEquals(updated.currentCycle.lastFrameAdvance, Millis(300))
 
-          expected === actual ==> true
+          assertEquals(expected === actual, true)
 
         }
 

@@ -1,90 +1,88 @@
 package indigoextras.geometry
 
-import utest._
 import indigo.shared.EqualTo._
 import indigo.shared.time.Seconds
 import indigo.shared.datatypes.Rectangle
 
-object BezierTests extends TestSuite {
+class BezierTests extends munit.FunSuite {
 
-  val tests: Tests =
-    Tests {
 
-      "Interpolation" - {
-        Bezier.interpolate(Vertex(0, 0), Vertex(10, 10), 0d) === Vertex(0, 0) ==> true
-        Bezier.interpolate(Vertex(0, 0), Vertex(10, 10), 0.5d) === Vertex(5, 5) ==> true
-        Bezier.interpolate(Vertex(0, 0), Vertex(10, 10), 1d) === Vertex(10, 10) ==> true
+
+      test("Interpolation") {
+        assertEquals(Bezier.interpolate(Vertex(0, 0), Vertex(10, 10), 0d) === Vertex(0, 0), true)
+        assertEquals(Bezier.interpolate(Vertex(0, 0), Vertex(10, 10), 0.5d) === Vertex(5, 5), true)
+        assertEquals(Bezier.interpolate(Vertex(0, 0), Vertex(10, 10), 1d) === Vertex(10, 10), true)
       }
 
-      "Reduction" - {
+      test("Reduction") {
 
-        "Empty list" - {
-          Bezier.reduce(Nil, 0d) === Vertex.zero ==> true
+        test("Empty list") {
+          assertEquals(Bezier.reduce(Nil, 0d) === Vertex.zero, true)
         }
 
-        "one point" - {
-          Bezier.reduce(List(Vertex(1, 1)), 0d) === Vertex(1, 1) ==> true
+        test("one point") {
+          assertEquals(Bezier.reduce(List(Vertex(1, 1)), 0d) === Vertex(1, 1), true)
         }
 
-        "two points" - {
-          Bezier.reduce(List(Vertex(0, 0), Vertex(10, 10)), 0d) === Vertex(0, 0) ==> true
-          Bezier.reduce(List(Vertex(0, 0), Vertex(10, 10)), 0.5d) === Vertex(5, 5) ==> true
-          Bezier.reduce(List(Vertex(0, 0), Vertex(10, 10)), 1d) === Vertex(10, 10) ==> true
+        test("two points") {
+          assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(10, 10)), 0d) === Vertex(0, 0), true)
+          assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(10, 10)), 0.5d) === Vertex(5, 5), true)
+          assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(10, 10)), 1d) === Vertex(10, 10), true)
         }
 
-        "three points" - {
-          Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 0d) === Vertex(0, 0) ==> true
-          Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 0.5d) === Vertex(5, 2.5) ==> true
-          Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 1d) === Vertex(10, 0) ==> true
+        test("three points") {
+          assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 0d) === Vertex(0, 0), true)
+          assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 0.5d) === Vertex(5, 2.5), true)
+          assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 1d) === Vertex(10, 0), true)
         }
 
       }
 
-      "One dimensional (1 point)" - {
+      test("One dimensional (1 point)") {
 
         val bezier =
           Bezier(Vertex(5, 5))
 
-        bezier.at(0d) === Vertex(5, 5) ==> true
-        bezier.at(0d) === Bezier.atUnspecialised(bezier, 0d) ==> true
+        assertEquals(bezier.at(0d) === Vertex(5, 5), true)
+        assertEquals(bezier.at(0d) === Bezier.atUnspecialised(bezier, 0d), true)
 
-        bezier.at(0.5d) === Vertex(5, 5) ==> true
-        bezier.at(0.5d) === Bezier.atUnspecialised(bezier, 0.5d) ==> true
+        assertEquals(bezier.at(0.5d) === Vertex(5, 5), true)
+        assertEquals(bezier.at(0.5d) === Bezier.atUnspecialised(bezier, 0.5d), true)
 
-        bezier.at(1d) === Vertex(5, 5) ==> true
-        bezier.at(1d) === Bezier.atUnspecialised(bezier, 1d) ==> true
+        assertEquals(bezier.at(1d) === Vertex(5, 5), true)
+        assertEquals(bezier.at(1d) === Bezier.atUnspecialised(bezier, 1d), true)
 
       }
 
-      "Linear (2 points)" - {
+      test("Linear (2 points)") {
 
         val bezier =
           Bezier(Vertex(0, 0), Vertex(10, 10))
 
-        bezier.at(-50d) === Vertex(0, 0) ==> true
-        bezier.at(-50d) === Bezier.atUnspecialised(bezier, -50d) ==> true
+        assertEquals(bezier.at(-50d) === Vertex(0, 0), true)
+        assertEquals(bezier.at(-50d) === Bezier.atUnspecialised(bezier, -50d), true)
 
-        bezier.at(0d) === Vertex(0, 0) ==> true
-        bezier.at(0d) === Bezier.atUnspecialised(bezier, 0d) ==> true
+        assertEquals(bezier.at(0d) === Vertex(0, 0), true)
+        assertEquals(bezier.at(0d) === Bezier.atUnspecialised(bezier, 0d), true)
 
-        bezier.at(0.25d) === Vertex(2.5, 2.5) ==> true
-        bezier.at(0.25d) === Bezier.atUnspecialised(bezier, 0.25d) ==> true
+        assertEquals(bezier.at(0.25d) === Vertex(2.5, 2.5), true)
+        assertEquals(bezier.at(0.25d) === Bezier.atUnspecialised(bezier, 0.25d), true)
 
-        bezier.at(0.5d) === Vertex(5, 5) ==> true
-        bezier.at(0.5d) === Bezier.atUnspecialised(bezier, 0.5d) ==> true
+        assertEquals(bezier.at(0.5d) === Vertex(5, 5), true)
+        assertEquals(bezier.at(0.5d) === Bezier.atUnspecialised(bezier, 0.5d), true)
 
-        bezier.at(0.75d) === Vertex(7.5, 7.5) ==> true
-        bezier.at(0.75d) === Bezier.atUnspecialised(bezier, 0.75d) ==> true
+        assertEquals(bezier.at(0.75d) === Vertex(7.5, 7.5), true)
+        assertEquals(bezier.at(0.75d) === Bezier.atUnspecialised(bezier, 0.75d), true)
 
-        bezier.at(1d) === Vertex(10, 10) ==> true
-        bezier.at(1d) === Bezier.atUnspecialised(bezier, 1d) ==> true
+        assertEquals(bezier.at(1d) === Vertex(10, 10), true)
+        assertEquals(bezier.at(1d) === Bezier.atUnspecialised(bezier, 1d), true)
 
-        bezier.at(100d) === Vertex(10, 10) ==> true
-        bezier.at(100d) === Bezier.atUnspecialised(bezier, 100d) ==> true
+        assertEquals(bezier.at(100d) === Vertex(10, 10), true)
+        assertEquals(bezier.at(100d) === Bezier.atUnspecialised(bezier, 100d), true)
 
       }
 
-      "Quadtratic (3 points)" - {
+      test("Quadtratic (3 points)") {
 
         val bezier =
           Bezier(Vertex(2, 2), Vertex(4, 7), Vertex(20, 10))
@@ -99,17 +97,17 @@ object BezierTests extends TestSuite {
 
          */
 
-        bezier.at(0d) === Vertex(2, 2) ==> true
-        bezier.at(0d) === Bezier.atUnspecialised(bezier, 0d) ==> true
+        assertEquals(bezier.at(0d) === Vertex(2, 2), true)
+        assertEquals(bezier.at(0d) === Bezier.atUnspecialised(bezier, 0d), true)
 
-        bezier.at(0.5d) === Vertex(7.5, 6.5) ==> true
-        bezier.at(0.5d) === Bezier.atUnspecialised(bezier, 0.5d) ==> true
+        assertEquals(bezier.at(0.5d) === Vertex(7.5, 6.5), true)
+        assertEquals(bezier.at(0.5d) === Bezier.atUnspecialised(bezier, 0.5d), true)
 
-        bezier.at(1d) === Vertex(20, 10) ==> true
+        assertEquals(bezier.at(1d) === Vertex(20, 10), true)
 
       }
 
-      "Cubic (4 points)" - {
+      test("Cubic (4 points)") {
 
         val bezier =
           Bezier(Vertex(2, 2), Vertex(4, 7), Vertex(20, 10), Vertex(3, 100))
@@ -126,20 +124,20 @@ object BezierTests extends TestSuite {
 
          */
 
-        bezier.at(0d) === Vertex(2, 2) ==> true
-        bezier.at(0d) === Bezier.atUnspecialised(bezier, 0d) ==> true
+        assertEquals(bezier.at(0d) === Vertex(2, 2), true)
+        assertEquals(bezier.at(0d) === Bezier.atUnspecialised(bezier, 0d), true)
 
-        bezier.at(0.5d) === Vertex(9.625, 19.125) ==> true
-        bezier.at(0.5d) === Bezier.atUnspecialised(bezier, 0.5d) ==> true
+        assertEquals(bezier.at(0.5d) === Vertex(9.625, 19.125), true)
+        assertEquals(bezier.at(0.5d) === Bezier.atUnspecialised(bezier, 0.5d), true)
 
-        bezier.at(1d) === Vertex(3, 100) ==> true
-        bezier.at(1d) === Bezier.atUnspecialised(bezier, 1d) ==> true
+        assertEquals(bezier.at(1d) === Vertex(3, 100), true)
+        assertEquals(bezier.at(1d) === Bezier.atUnspecialised(bezier, 1d), true)
 
       }
 
-      "to points" - {
+      test("to points") {
 
-        "linear" - {
+        test("linear") {
           val bezier =
             Bezier(Vertex.zero, Vertex(100, 0))
 
@@ -160,11 +158,11 @@ object BezierTests extends TestSuite {
               Vertex(100, 0)
             )
 
-          actual.length ==> expected.length
-          actual.zip(expected).forall(vs => vs._1 ~== vs._2) ==> true
+          assertEquals(actual.length, expected.length)
+          assertEquals(actual.zip(expected).forall(vs => vs._1 ~== vs._2), true)
         }
 
-        "higher order" - {
+        test("higher order") {
           val bezier =
             Bezier(Vertex(2, 2), Vertex(4, 7), Vertex(20, 10), Vertex(3, 100))
 
@@ -177,14 +175,14 @@ object BezierTests extends TestSuite {
               Vertex(3, 100)
             )
 
-          actual.length ==> expected.length
-          actual.zip(expected).forall(vs => vs._1 ~== vs._2) ==> true
+          assertEquals(actual.length, expected.length)
+          assertEquals(actual.zip(expected).forall(vs => vs._1 ~== vs._2), true)
         }
       }
 
-      "to polygon" - {
+      test("to polygon") {
 
-        "linear" - {
+        test("linear") {
           val bezier =
             Bezier(Vertex.zero, Vertex(100, 0))
 
@@ -192,35 +190,35 @@ object BezierTests extends TestSuite {
 
           val expected: Int = 10
 
-          actual ==> expected
+          assertEquals(actual, expected)
         }
 
       }
 
-      "to line segments" - {
+      test("to line segments") {
         val bezier =
           Bezier(Vertex(2, 2), Vertex(4, 7), Vertex(20, 10), Vertex(3, 100))
 
         val lineSegments = bezier.toLineSegments(2)
 
-        lineSegments.length ==> 2
-        lineSegments(0) === LineSegment(Vertex(2, 2), Vertex(9.625, 19.125)) ==> true
-        lineSegments(1) === LineSegment(Vertex(9.625, 19.125), Vertex(3, 100)) ==> true
+        assertEquals(lineSegments.length, 2)
+        assertEquals(lineSegments(0) === LineSegment(Vertex(2, 2), Vertex(9.625, 19.125)), true)
+        assertEquals(lineSegments(1) === LineSegment(Vertex(9.625, 19.125), Vertex(3, 100)), true)
       }
 
-      "to signal" - {
+      test("to signal") {
         val bezier =
           Bezier(Vertex(2, 2), Vertex(4, 7), Vertex(20, 10), Vertex(3, 100))
 
         val signal =
           bezier.toSignal(Seconds(1.5))
 
-        signal.at(Seconds(0)) === Vertex(2, 2) ==> true
-        signal.at(Seconds(0.75)) === Vertex(9.625, 19.125) ==> true
-        signal.at(Seconds(1.5)) === Vertex(3, 100) ==> true
+        assertEquals(signal.at(Seconds(0)) === Vertex(2, 2), true)
+        assertEquals(signal.at(Seconds(0.75)) === Vertex(9.625, 19.125), true)
+        assertEquals(signal.at(Seconds(1.5)) === Vertex(3, 100), true)
       }
 
-      "give bounding rectangle" - {
+      test("give bounding rectangle") {
 
         val bezier =
           Bezier(Vertex(20, 10), Vertex(3, 100), Vertex(2, 2))
@@ -231,7 +229,7 @@ object BezierTests extends TestSuite {
         val expected: BoundingBox =
           BoundingBox(2, 2, 18, 98)
 
-        actual === expected ==> true
+        assertEquals(actual === expected, true)
       }
 
     }

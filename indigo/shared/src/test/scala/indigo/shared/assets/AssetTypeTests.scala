@@ -1,14 +1,12 @@
 package indigo.shared.assets
 
-import utest._
 import indigo.shared.assets.AssetType.Image
 
-object AssetTypeTests extends TestSuite {
+class AssetTypeTests extends munit.FunSuite {
 
-  val tests: Tests =
-    Tests {
 
-      "should be able to tag images" - {
+
+      test("should be able to tag images") {
 
         val assets: Set[AssetType] =
           Set(
@@ -22,10 +20,10 @@ object AssetTypeTests extends TestSuite {
             AssetType.Text(AssetName("text"), AssetPath("text path"))
           )
 
-        assets.toList.flatMap(_.toList).collect { case i: Image => i }.find(_.name.value == "image 1").get.tag ==> Some(AssetTag("fish"))
-        assets.toList.flatMap(_.toList).collect { case i: Image => i }.find(_.name.value == "image 2").get.tag ==> Some(AssetTag("fish"))
-        assets.toList.flatMap(_.toList).collect { case i: Image => i }.find(_.name.value == "image 3").get.tag ==> Some(AssetTag("fish"))
-        assets.toList.flatMap(_.toList).collect { case i: Image => i }.find(_.name.value == "image 4").get.tag ==> None
+        assertEquals(assets.toList.flatMap(_.toList).collect { case i: Image => i }.find(_.name.value == "image 1").get.tag, Some(AssetTag("fish")))
+        assertEquals(assets.toList.flatMap(_.toList).collect { case i: Image => i }.find(_.name.value == "image 2").get.tag, Some(AssetTag("fish")))
+        assertEquals(assets.toList.flatMap(_.toList).collect { case i: Image => i }.find(_.name.value == "image 3").get.tag, Some(AssetTag("fish")))
+        assertEquals(assets.toList.flatMap(_.toList).collect { case i: Image => i }.find(_.name.value == "image 4").get.tag, None)
 
       }
 

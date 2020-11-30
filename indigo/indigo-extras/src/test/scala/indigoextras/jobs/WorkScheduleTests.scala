@@ -1,6 +1,5 @@
 package indigoextras.jobs
 
-import utest._
 import indigo.shared.time.GameTime
 import indigo.shared.time.Millis
 import indigo.shared.time.Seconds
@@ -10,7 +9,7 @@ import indigo.shared.events.GlobalEvent
 import indigoextras.TestFail._
 import indigo.shared.dice.Dice
 
-object WorkScheduleTests extends TestSuite {
+class WorkScheduleTests extends munit.FunSuite {
 
   implicit def intToMillis(i: Int): Millis =
     Millis(i.toLong)
@@ -30,15 +29,14 @@ object WorkScheduleTests extends TestSuite {
 
   val dice = Dice.loaded(1)
 
-  val tests: Tests =
-    Tests {
-      "The WorkSchedule" - {
 
-        "should allow you to create an empty work schedule" - {
-          WorkSchedule[SampleActor, SampleContext](bindingKey).jobStack ==> Nil
+      test("The WorkSchedule") {
+
+        test("should allow you to create an empty work schedule") {
+          assertEquals(WorkSchedule[SampleActor, SampleContext](bindingKey).jobStack, Nil)
         }
 
-        "should generate new local jobs when the stack is empty" - {
+        test("should generate new local jobs when the stack is empty") {
 
           val actor: SampleActor     = SampleActor(10, likesFishing = false)
           val context: SampleContext = SampleContext(false)
@@ -50,11 +48,11 @@ object WorkScheduleTests extends TestSuite {
 
           val actual = workSchedule.update(gameTime, dice, actor, context)(FrameTick).state.workSchedule.jobStack
 
-          actual ==> expected
+          assertEquals(actual, expected)
 
         }
 
-        "should allow work to be done on jobs" - {
+        test("should allow work to be done on jobs") {
 
           val actor: SampleActor     = SampleActor(10, likesFishing = false)
           val context: SampleContext = SampleContext(false)
@@ -65,7 +63,7 @@ object WorkScheduleTests extends TestSuite {
 
           workSchedule.update(gameTime, dice, actor, context)(FrameTick).state.workSchedule.jobStack.headOption match {
             case Some(j @ Fishing(done)) =>
-              done ==> SampleActor.defaultFishingSpeed
+              assertEquals(done, SampleActor.defaultFishingSpeed)
 
             case _ =>
               fail("error")
@@ -73,7 +71,7 @@ object WorkScheduleTests extends TestSuite {
 
         }
 
-        "should ignore unrelated events" - {
+        test("should ignore unrelated events") {
           case class UnrelatedEvent(id: String) extends GlobalEvent
 
           val actor: SampleActor     = SampleActor(10, likesFishing = false)
@@ -91,10 +89,10 @@ object WorkScheduleTests extends TestSuite {
             .workSchedule
             .jobStack
 
-          actual ==> expected
+          assertEquals(actual, expected)
         }
 
-        "should accept jobs allocated to this worker" - {
+        test("should accept jobs allocated to this worker") {
           val actor: SampleActor     = SampleActor(10, likesFishing = false)
           val context: SampleContext = SampleContext(false)
           val jobToAllocate: Fishing = Fishing(0)
@@ -111,10 +109,10 @@ object WorkScheduleTests extends TestSuite {
             .workSchedule
             .jobStack
 
-          actual ==> expected
+          assertEquals(actual, expected)
         }
 
-        "should generate work if no global work could be found" - {
+        test("should generate work if no global work could be found") {
           val actor: SampleActor     = SampleActor(10, likesFishing = false)
           val context: SampleContext = SampleContext(false)
           val expected: List[Job]    = WanderTo(100) :: Nil
@@ -130,10 +128,10 @@ object WorkScheduleTests extends TestSuite {
             .workSchedule
             .jobStack
 
-          actual ==> expected
+          assertEquals(actual, expected)
         }
 
-        "should be able to post to a global job board on destruction" - {
+        test("should be able to post to a global job board on destruction") {
 
           val globalJob                      = CantHave()
           val expected: List[JobMarketEvent] = JobMarketEvent.Post(globalJob) :: Nil
@@ -142,12 +140,12 @@ object WorkScheduleTests extends TestSuite {
 
           val actual = workSchedule.destroy().globalEvents
 
-          actual ==> expected
+          assertEquals(actual, expected)
 
         }
 
         // Note, the behaviours here are very specific to the Worker instance. But this proves the general flow is sound.
-        "should complete a job and move onto the next one" - {
+        test("should complete a job and move onto the next one") {
 
           val actor: SampleActor     = SampleActor(10, likesFishing = false)
           val context: SampleContext = SampleContext(false)
@@ -159,10 +157,10 @@ object WorkScheduleTests extends TestSuite {
 
           val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, SampleActor.worker, jobList)
 
-          "Check the current" - {
+          test("Check the current") {
             workSchedule.currentJob match {
               case Some(WanderTo(position)) =>
-                position ==> 10
+                assertEquals(position, 10)
 
               case _ =>
                 fail("error")
@@ -173,10 +171,10 @@ object WorkScheduleTests extends TestSuite {
 
           val workSchedule2 = workSchedule.update(gameTime, dice, actor, context)(FrameTick).state.workSchedule
 
-          "Arrived, move onto next job" - {
+          test("Arrived, move onto next job") {
             workSchedule2.currentJob match {
               case Some(Fishing(done)) =>
-                done ==> 10
+                assertEquals(done, 10)
 
               case _ =>
                 fail("error")
@@ -210,10 +208,10 @@ object WorkScheduleTests extends TestSuite {
               .state
               .workSchedule //90
 
-          "Nearly done" - {
+          test("Nearly done") {
             workSchedule3.currentJob match {
               case Some(Fishing(done)) =>
-                done ==> 90
+                assertEquals(done, 90)
 
               case _ =>
                 fail("error")
@@ -232,10 +230,10 @@ object WorkScheduleTests extends TestSuite {
               .state
               .workSchedule // WanderTo(0) complete, now back to the original job list.
 
-          "Moving on.." - {
+          test("Moving on..") {
             workSchedule4.currentJob match {
               case Some(WanderTo(position)) =>
-                position ==> 30
+                assertEquals(position, 30)
 
               case _ =>
                 fail("error")
@@ -243,7 +241,7 @@ object WorkScheduleTests extends TestSuite {
           }
         }
 
-        "should allow you to see the current job" - {
+        test("should allow you to see the current job") {
 
           val jobList: List[Job] = List(
             Fishing(100)
@@ -253,7 +251,7 @@ object WorkScheduleTests extends TestSuite {
 
           actual match {
             case Some(Fishing(done)) =>
-              done ==> 100
+              assertEquals(done, 100)
 
             case _ =>
               fail("error")

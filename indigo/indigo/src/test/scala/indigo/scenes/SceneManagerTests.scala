@@ -5,14 +5,13 @@ import indigo.shared.events.{FrameTick, GlobalEvent}
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.dice.Dice
 
-import utest._
 import indigo.shared.events.InputState
 import indigo.shared.FrameContext
 import indigo.shared.BoundaryLocator
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 
-object SceneManagerTests extends TestSuite {
+class SceneManagerTests extends munit.FunSuite {
 
   import indigo.scenes.FakeFrameContext._
 
@@ -25,97 +24,90 @@ object SceneManagerTests extends TestSuite {
 
   val gameModel = TestGameModel(TestSceneModelA(0), TestSceneModelB(0))
 
-  val tests: Tests =
-    Tests {
-      "A journey through the SceneManager" - {
+  test("A journey through the SceneManager.Should be able to return a scenes modelEventFilter") {
+    val events: List[GlobalEvent] =
+      List(TestSceneEvent1, TestSceneEvent2, TestSceneEvent3, TestSceneEvent4)
 
-        "Should be able to return a scenes modelEventFilter" - {
-          val events: List[GlobalEvent] =
-            List(TestSceneEvent1, TestSceneEvent2, TestSceneEvent3, TestSceneEvent4)
+    val sceneManager1 = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
+    val actual1       = events.map(sceneManager1.eventFilters.modelFilter).collect { case Some(e) => e }
+    assertEquals(actual1.length, 1)
+    assertEquals(actual1.head, TestSceneEvent1)
 
-          val sceneManager1 = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
-          val actual1 = events.map(sceneManager1.eventFilters.modelFilter).collect { case Some(e) => e }
-          actual1.length ==> 1
-          actual1.head ==> TestSceneEvent1
+    val sceneManager2 = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder.forward)
+    val actual2       = events.map(sceneManager2.eventFilters.modelFilter).collect { case Some(e) => e }
+    assertEquals(actual2.length, 2)
+    assertEquals(actual2, List(TestSceneEvent2, TestSceneEvent3))
+  }
 
-          val sceneManager2 = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder.forward)
-          val actual2 = events.map(sceneManager2.eventFilters.modelFilter).collect { case Some(e) => e }
-          actual2.length ==> 2
-          actual2 ==> List(TestSceneEvent2, TestSceneEvent3)
-        }
+  test("A journey through the SceneManager.Should be able to return a scenes viewModelEventFilter") {
+    val events: List[GlobalEvent] =
+      List(TestSceneEvent1, TestSceneEvent2, TestSceneEvent3, TestSceneEvent4)
 
-        "Should be able to return a scenes viewModelEventFilter" - {
-          val events: List[GlobalEvent] =
-            List(TestSceneEvent1, TestSceneEvent2, TestSceneEvent3, TestSceneEvent4)
+    val sceneManager1 = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
+    val actual1       = events.map(sceneManager1.eventFilters.viewModelFilter).collect { case Some(e) => e }
+    assertEquals(actual1.length, 1)
+    assertEquals(actual1.head, TestSceneEvent2)
 
-          val sceneManager1 = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
-          val actual1 = events.map(sceneManager1.eventFilters.viewModelFilter).collect { case Some(e) => e }
-          actual1.length ==> 1
-          actual1.head ==> TestSceneEvent2
+    val sceneManager2 = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder.forward)
+    val actual2       = events.map(sceneManager2.eventFilters.viewModelFilter).collect { case Some(e) => e }
+    assertEquals(actual2.length, 2)
+    assertEquals(actual2, List(TestSceneEvent1, TestSceneEvent4))
+  }
 
-          val sceneManager2 = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder.forward)
-          val actual2 = events.map(sceneManager2.eventFilters.viewModelFilter).collect { case Some(e) => e }
-          actual2.length ==> 2
-          actual2 ==> List(TestSceneEvent1, TestSceneEvent4)
-        }
+  test("A journey through the SceneManager.Should be able to update a model on frametick") {
 
-        "Should be able to update a model on frametick" - {
+    val sceneManager = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
 
-          val sceneManager = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
+    val events = List(FrameTick)
 
-          val events = List(FrameTick)
+    val expected = TestGameModel(TestSceneModelA(1), TestSceneModelB(0))
 
-          val expected = TestGameModel(TestSceneModelA(1), TestSceneModelB(0))
+    val actual = runModel(events, gameModel, sceneManager)
 
-          val actual = runModel(events, gameModel, sceneManager)
+    assertEquals(actual, expected)
 
-          actual ==> expected
+  }
 
-        }
+  test("A journey through the SceneManager.Should be able to change scenes and update on frametick") {
 
-        "Should be able to change scenes and update on frametick" - {
+    val sceneManager = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
 
-          val sceneManager = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
+    val events = List(SceneEvent.Next, FrameTick)
 
-          val events = List(SceneEvent.Next, FrameTick)
+    val expected = TestGameModel(TestSceneModelA(0), TestSceneModelB(10))
 
-          val expected = TestGameModel(TestSceneModelA(0), TestSceneModelB(10))
+    val actual = runModel(events, gameModel, sceneManager)
 
-          val actual = runModel(events, gameModel, sceneManager)
+    assertEquals(actual, expected)
+  }
 
-          actual ==> expected
-        }
+  test("A journey through the SceneManager.should be able to move between scenes and update the model accordingly") {
 
-        "should be able to move between scenes and update the model accordingly" - {
+    val sceneManager = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
 
-          val sceneManager = new SceneManager[Unit, TestGameModel, TestViewModel](scenes, sceneFinder)
+    // A = 2, B = 40
+    val events = List(
+      FrameTick,                      // update scene A - 1
+      SceneEvent.Next,                // move to scene B
+      FrameTick,                      // update scene B - 10
+      SceneEvent.Next,                // do nothing
+      FrameTick,                      // update scene B - 20
+      SceneEvent.Previous,            // move to scene A
+      SceneEvent.Next,                // move to scene B,
+      FrameTick,                      // update scene B - 30
+      SceneEvent.Previous,            // move to scene A
+      FrameTick,                      // update scene A - 2
+      SceneEvent.JumpTo(sceneB.name), // jump to scene B
+      FrameTick                       // update scene B - 40
+    )
 
-          // A = 2, B = 40
-          val events = List(
-            FrameTick,                      // update scene A - 1
-            SceneEvent.Next,                // move to scene B
-            FrameTick,                      // update scene B - 10
-            SceneEvent.Next,                // do nothing
-            FrameTick,                      // update scene B - 20
-            SceneEvent.Previous,            // move to scene A
-            SceneEvent.Next,                // move to scene B,
-            FrameTick,                      // update scene B - 30
-            SceneEvent.Previous,            // move to scene A
-            FrameTick,                      // update scene A - 2
-            SceneEvent.JumpTo(sceneB.name), // jump to scene B
-            FrameTick                       // update scene B - 40
-          )
+    val expected = TestGameModel(TestSceneModelA(2), TestSceneModelB(40))
 
-          val expected = TestGameModel(TestSceneModelA(2), TestSceneModelB(40))
+    val actual = runModel(events, gameModel, sceneManager)
 
-          val actual = runModel(events, gameModel, sceneManager)
+    assertEquals(actual, expected)
 
-          actual ==> expected
-
-        }
-
-      }
-    }
+  }
 
   private def runModel(events: List[GlobalEvent], model: TestGameModel, sceneManager: SceneManager[Unit, TestGameModel, TestViewModel]): TestGameModel =
     events.foldLeft(model)((m, e) => sceneManager.updateModel(context(6), m)(e).state)

@@ -1,6 +1,5 @@
 package indigoextras.ui
 
-import utest._
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Material
@@ -10,12 +9,11 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.input.Mouse
 import indigo.shared.events.MouseEvent
 
-object RadioButtonGroupTests extends TestSuite {
+class RadioButtonGroupTests extends munit.FunSuite {
 
-  val tests: Tests =
-    Tests {
 
-      "Radio button group update" - {
+
+      test("Radio button group update") {
 
         final case class RadioTestEvent(message: String) extends GlobalEvent
 
@@ -51,7 +49,7 @@ object RadioButtonGroupTests extends TestSuite {
           RadioButtonGroup(assets, 10, 10)
             .withRadioButtons(option1, option2, option3)
 
-        "No mouse interaction" - {
+        test("No mouse interaction") {
 
           val mouse =
             new Mouse(Nil, Point(-10, -10), false)
@@ -60,12 +58,12 @@ object RadioButtonGroupTests extends TestSuite {
 
           val expected = radioButtons
 
-          actual.state ==> expected
-          actual.globalEvents ==> Nil
+          assertEquals(actual.state, expected)
+          assertEquals(actual.globalEvents, Nil)
 
         }
 
-        "hover over unselected button" - {
+        test("hover over unselected button") {
 
           val mouse =
             new Mouse(Nil, Point(5, 25), false)
@@ -81,11 +79,11 @@ object RadioButtonGroupTests extends TestSuite {
               )
             )
 
-          actual.state ==> expected
-          actual.globalEvents ==> List(RadioTestEvent("option 2 hover over"))
+          assertEquals(actual.state, expected)
+          assertEquals(actual.globalEvents, List(RadioTestEvent("option 2 hover over")))
         }
 
-        "hover out unselected button" - {
+        test("hover out unselected button") {
 
           val mouse =
             new Mouse(Nil, Point(-5, 25), false)
@@ -110,11 +108,11 @@ object RadioButtonGroupTests extends TestSuite {
               )
             )
 
-          actual.state ==> expected
-          actual.globalEvents ==> List(RadioTestEvent("option 2 hover out"))
+          assertEquals(actual.state, expected)
+          assertEquals(actual.globalEvents, List(RadioTestEvent("option 2 hover out")))
         }
 
-        "selecting a hovered button" - {
+        test("selecting a hovered button") {
 
           val mouse =
             new Mouse(List(MouseEvent.Click(5, 25)), Point(5, 25), true)
@@ -139,11 +137,11 @@ object RadioButtonGroupTests extends TestSuite {
               )
             )
 
-          actual.state.options.map(_.state) ==> expected.options.map(_.state)
-          actual.globalEvents ==> List(RadioTestEvent("option 2 selected"))
+          assertEquals(actual.state.options.map(_.state), expected.options.map(_.state))
+          assertEquals(actual.globalEvents, List(RadioTestEvent("option 2 selected")))
         }
 
-        "selecting a hovered button, existing selected is de-selected" - {
+        test("selecting a hovered button, existing selected is de-selected") {
           val mouse =
             new Mouse(List(MouseEvent.Click(5, 25)), Point(5, 25), true)
 
@@ -167,8 +165,8 @@ object RadioButtonGroupTests extends TestSuite {
               )
             )
 
-          actual.state.options.map(_.state) ==> expected.options.map(_.state)
-          actual.globalEvents ==> List(RadioTestEvent("option 1 unselected"), RadioTestEvent("option 2 selected"))
+          assertEquals(actual.state.options.map(_.state), expected.options.map(_.state))
+          assertEquals(actual.globalEvents, List(RadioTestEvent("option 1 unselected"), RadioTestEvent("option 2 selected")))
         }
 
       }

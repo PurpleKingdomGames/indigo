@@ -1,6 +1,5 @@
 package indigoextras.ui
 
-import utest._
 import indigo.shared.scenegraph.Text
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.scenegraph.Graphic
@@ -25,7 +24,7 @@ import indigo.shared.constants.Key
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.events.GlobalEvent
 
-object InputFieldTests extends TestSuite {
+class InputFieldTests extends munit.FunSuite {
 
   import Samples._
 
@@ -43,108 +42,107 @@ object InputFieldTests extends TestSuite {
   val boundaryLocator: BoundaryLocator =
     new BoundaryLocator(new AnimationsRegister, fontRegister)
 
-  val tests: Tests =
-    Tests {
 
-      "Editing operations" - {
+
+      test("Editing operations") {
 
         val atCommaPosition =
           InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorRight.cursorRight.cursorRight
 
-        "set cursor position directly" - {
+        test("set cursor position directly") {
           val text  = "Hello, world!"
           val field = InputField(text, assets).cursorHome
-          field.moveCursorTo(-1).cursorPosition ==> 0
-          field.moveCursorTo(0).cursorPosition ==> 0
-          field.moveCursorTo(text.length() + 1).cursorPosition ==> text.length() - 1
-          field.moveCursorTo(text.length()).cursorPosition ==> text.length() - 1
-          field.moveCursorTo(text.length() - 1).cursorPosition ==> text.length() - 1
-          field.moveCursorTo(5).cursorPosition ==> 5
+          assertEquals(field.moveCursorTo(-1).cursorPosition, 0)
+          assertEquals(field.moveCursorTo(0).cursorPosition, 0)
+          assertEquals(field.moveCursorTo(text.length() + 1).cursorPosition, text.length() - 1)
+          assertEquals(field.moveCursorTo(text.length()).cursorPosition, text.length() - 1)
+          assertEquals(field.moveCursorTo(text.length() - 1).cursorPosition, text.length() - 1)
+          assertEquals(field.moveCursorTo(5).cursorPosition, 5)
         }
-        "cursor movement" - {
-          InputField("Hello, world!", assets).cursorHome.cursorPosition ==> 0
-          InputField("Hello, world!", assets).cursorHome.cursorRight.cursorPosition ==> 1
-          InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorPosition ==> 2
-          InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorLeft.cursorPosition ==> 1
-          InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorLeft.cursorLeft.cursorPosition ==> 0
+        test("cursor movement") {
+          assertEquals(InputField("Hello, world!", assets).cursorHome.cursorPosition, 0)
+          assertEquals(InputField("Hello, world!", assets).cursorHome.cursorRight.cursorPosition, 1)
+          assertEquals(InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorPosition, 2)
+          assertEquals(InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorLeft.cursorPosition, 1)
+          assertEquals(InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorLeft.cursorLeft.cursorPosition, 0)
         }
-        "cursor left treats newlines as a normal character" - {
-          InputField("ab\nc", assets).cursorEnd.cursorPosition ==> 4
-          InputField("ab\nc", assets).cursorEnd.cursorLeft.cursorPosition ==> 3
-          InputField("ab\nc", assets).cursorEnd.cursorLeft.cursorLeft.cursorPosition ==> 2
-          InputField("ab\nc", assets).cursorEnd.cursorLeft.cursorLeft.cursorLeft.cursorPosition ==> 1
-          InputField("ab\nc", assets).cursorEnd.cursorLeft.cursorLeft.cursorLeft.cursorLeft.cursorPosition ==> 0
+        test("cursor left treats newlines as a normal character") {
+          assertEquals(InputField("ab\nc", assets).cursorEnd.cursorPosition, 4)
+          assertEquals(InputField("ab\nc", assets).cursorEnd.cursorLeft.cursorPosition, 3)
+          assertEquals(InputField("ab\nc", assets).cursorEnd.cursorLeft.cursorLeft.cursorPosition, 2)
+          assertEquals(InputField("ab\nc", assets).cursorEnd.cursorLeft.cursorLeft.cursorLeft.cursorPosition, 1)
+          assertEquals(InputField("ab\nc", assets).cursorEnd.cursorLeft.cursorLeft.cursorLeft.cursorLeft.cursorPosition, 0)
         }
-        "cursor right treats newlines as a normal character" - {
-          InputField("ab\nc", assets).cursorHome.cursorPosition ==> 0
-          InputField("ab\nc", assets).cursorHome.cursorRight.cursorPosition ==> 1
-          InputField("ab\nc", assets).cursorHome.cursorRight.cursorRight.cursorPosition ==> 2
-          InputField("ab\nc", assets).cursorHome.cursorRight.cursorRight.cursorRight.cursorPosition ==> 3
-          InputField("ab\nc", assets).cursorHome.cursorRight.cursorRight.cursorRight.cursorRight.cursorPosition ==> 4
+        test("cursor right treats newlines as a normal character") {
+          assertEquals(InputField("ab\nc", assets).cursorHome.cursorPosition, 0)
+          assertEquals(InputField("ab\nc", assets).cursorHome.cursorRight.cursorPosition, 1)
+          assertEquals(InputField("ab\nc", assets).cursorHome.cursorRight.cursorRight.cursorPosition, 2)
+          assertEquals(InputField("ab\nc", assets).cursorHome.cursorRight.cursorRight.cursorRight.cursorPosition, 3)
+          assertEquals(InputField("ab\nc", assets).cursorHome.cursorRight.cursorRight.cursorRight.cursorRight.cursorPosition, 4)
         }
-        "cursor home" - {
-          InputField("Hello, world!", assets).cursorHome.cursorPosition ==> 0
+        test("cursor home") {
+          assertEquals(InputField("Hello, world!", assets).cursorHome.cursorPosition, 0)
         }
-        "cursor end" - {
-          InputField("Hello, world!", assets).cursorHome.cursorEnd.cursorPosition ==> "Hello, world!".length()
+        test("cursor end") {
+          assertEquals(InputField("Hello, world!", assets).cursorHome.cursorEnd.cursorPosition, "Hello, world!".length())
         }
-        "delete" - {
-          InputField("Hello, world!", assets).cursorHome.delete.text ==> "ello, world!"
-          InputField("Hello, world!", assets).cursorHome.delete.cursorPosition ==> 0
-          InputField("Hello, world!", assets).cursorEnd.delete.text ==> "Hello, world!"
-          InputField("Hello, world!", assets).cursorEnd.delete.cursorPosition ==> "Hello, world!".length()
+        test("delete") {
+          assertEquals(InputField("Hello, world!", assets).cursorHome.delete.text, "ello, world!")
+          assertEquals(InputField("Hello, world!", assets).cursorHome.delete.cursorPosition, 0)
+          assertEquals(InputField("Hello, world!", assets).cursorEnd.delete.text, "Hello, world!")
+          assertEquals(InputField("Hello, world!", assets).cursorEnd.delete.cursorPosition, "Hello, world!".length())
 
-          atCommaPosition.delete.text ==> "Hello world!"
-          atCommaPosition.delete.cursorPosition ==> 5
+          assertEquals(atCommaPosition.delete.text, "Hello world!")
+          assertEquals(atCommaPosition.delete.cursorPosition, 5)
         }
-        "backspace" - {
-          InputField("Hello, world!", assets).cursorHome.backspace.text ==> "Hello, world!"
-          InputField("Hello, world!", assets).cursorHome.backspace.cursorPosition ==> 0
-          InputField("Hello, world!", assets).cursorEnd.backspace.text ==> "Hello, world"
-          InputField("Hello, world!", assets).cursorEnd.backspace.cursorPosition ==> "Hello, world!".length() - 1
+        test("backspace") {
+          assertEquals(InputField("Hello, world!", assets).cursorHome.backspace.text, "Hello, world!")
+          assertEquals(InputField("Hello, world!", assets).cursorHome.backspace.cursorPosition, 0)
+          assertEquals(InputField("Hello, world!", assets).cursorEnd.backspace.text, "Hello, world")
+          assertEquals(InputField("Hello, world!", assets).cursorEnd.backspace.cursorPosition, "Hello, world!".length() - 1)
 
-          atCommaPosition.backspace.text ==> "Hell, world!"
-          atCommaPosition.backspace.cursorPosition ==> 4
+          assertEquals(atCommaPosition.backspace.text, "Hell, world!")
+          assertEquals(atCommaPosition.backspace.cursorPosition, 4)
         }
-        "add character(s)" - {
-          InputField("Hello, world!", assets).addCharacterText(" Fish!").text ==> "Hello, world! Fish!"
+        test("add character(s)") {
+          assertEquals(InputField("Hello, world!", assets).addCharacterText(" Fish!").text, "Hello, world! Fish!")
 
           InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorRight.cursorRight.cursorRight.delete
             .addCharacterText(" Fish!")
-            .text ==> "Hello Fish! world!"
+            assertEquals(.text, "Hello Fish! world!")
 
-          InputField("Hello, world!", assets).cursorHome.addCharacter('X').text ==> "XHello, world!"
+          assertEquals(InputField("Hello, world!", assets).cursorHome.addCharacter('X').text, "XHello, world!")
 
           InputField("Hello, world!", assets).makeSingleLine
             .addCharacter('x')
-            .text ==> "Hello, world!x"
+            assertEquals(.text, "Hello, world!x")
 
           InputField("Hello, world!", assets).makeSingleLine
             .addCharacter('\n')
-            .text ==> "Hello, world!"
+            assertEquals(.text, "Hello, world!")
 
           InputField("Hello, world!", assets).makeMultiLine
             .addCharacterText("a\nb")
-            .text ==> "Hello, world!a\nb"
+            assertEquals(.text, "Hello, world!a\nb")
 
           InputField("Hello, world!", assets).makeSingleLine
             .addCharacterText("a\nb")
-            .text ==> "Hello, world!ab"
+            assertEquals(.text, "Hello, world!ab")
         }
 
       }
 
-      "Multi line boxes have bounds correctly caluculated" - {
+      test("Multi line boxes have bounds correctly caluculated") {
         val actual =
           InputField("ab\nc", assets).moveTo(50, 50).bounds(boundaryLocator)
 
         val expected =
           Rectangle(50, 50, 26, 36)
 
-        actual ==> expected
+        assertEquals(actual, expected)
       }
 
-      "Cursor drawing" - {
+      test("Cursor drawing") {
 
         val initialPosition: Point =
           Point(50, 50)
@@ -162,49 +160,49 @@ object InputFieldTests extends TestSuite {
             .head
             .position
 
-        "home" - {
+        test("home") {
           val actual =
             extractCursorPosition(inputField.cursorHome)
 
           val expected =
             initialPosition
 
-          actual ==> expected
+          assertEquals(actual, expected)
         }
 
-        "somewhere in the middle" - {
+        test("somewhere in the middle") {
           val actual =
             extractCursorPosition(inputField.cursorHome.cursorRight)
 
           val expected =
             initialPosition + Point(16, 0)
 
-          actual ==> expected
+          assertEquals(actual, expected)
         }
 
-        "end" - {
+        test("end") {
           val actual =
             extractCursorPosition(inputField.cursorEnd)
 
           val expected =
             initialPosition + Point(16, 20)
 
-          actual ==> expected
+          assertEquals(actual, expected)
         }
 
-        "newlines move cursor to home on next line" - {
+        test("newlines move cursor to home on next line") {
           val actual =
             extractCursorPosition(inputField.moveTo(Point.zero).moveCursorTo(3))
 
           val expected =
             Point(0, 20)
 
-          actual ==> expected
+          assertEquals(actual, expected)
         }
 
-        "Updated text emits an event" - {
+        test("Updated text emits an event") {
 
-          "if the key is set" - {
+          test("if the key is set") {
             val key =
               BindingKey("test")
 
@@ -214,25 +212,25 @@ object InputFieldTests extends TestSuite {
             val actual =
               field.update(context).flatMap(_.update(context))
 
-            actual.state.text ==> "ABCABC"
-            actual.globalEvents.head ==> InputFieldChange(key, "ABC")
-            actual.globalEvents(1) ==> InputFieldChange(key, "ABCABC")
+            assertEquals(actual.state.text, "ABCABC")
+            assertEquals(actual.globalEvents.head, InputFieldChange(key, "ABC"))
+            assertEquals(actual.globalEvents(1), InputFieldChange(key, "ABCABC"))
           }
 
-          "unless the key is unset" - {
+          test("unless the key is unset") {
             val field =
               InputField("", assets).giveFocus.state
 
             val actual =
               field.update(context).flatMap(_.update(context))
 
-            actual.state.text ==> "ABCABC"
-            actual.globalEvents ==> Nil
+            assertEquals(actual.state.text, "ABCABC")
+            assertEquals(actual.globalEvents, Nil)
           }
 
         }
 
-        "Focusing an input field emits events" - {
+        test("Focusing an input field emits events") {
           val event =
             TestInputFieldEvent("test 1")
 
@@ -241,11 +239,11 @@ object InputFieldTests extends TestSuite {
               .withFocusActions(event)
               .giveFocus
 
-          actual.state.hasFocus ==> true
-          actual.globalEvents ==> List(event)
+          assertEquals(actual.state.hasFocus, true)
+          assertEquals(actual.globalEvents, List(event))
         }
 
-        "Losing focus on an input field emits events" - {
+        test("Losing focus on an input field emits events") {
           val event =
             TestInputFieldEvent("test 2")
 
@@ -256,8 +254,8 @@ object InputFieldTests extends TestSuite {
               .state
               .loseFocus
 
-          actual.state.hasFocus ==> false
-          actual.globalEvents ==> List(event)
+          assertEquals(actual.state.hasFocus, false)
+          assertEquals(actual.globalEvents, List(event))
         }
 
       }

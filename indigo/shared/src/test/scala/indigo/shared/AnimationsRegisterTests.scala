@@ -1,6 +1,5 @@
 package indigo.shared
 
-import utest._
 import indigo.shared.animation.Frame
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
@@ -19,31 +18,30 @@ import indigo.shared.time.Millis
 import indigo.shared.animation.AnimationAction.Play
 import indigo.shared.EqualTo._
 
-object AnimationsRegisterTests extends TestSuite {
+class AnimationsRegisterTests extends munit.FunSuite {
 
-  val tests: Tests =
-    Tests {
 
-      "can look up an animation by key" - {
+
+      test("can look up an animation by key") {
         val register = new AnimationsRegister()
         register.register(AnimationSample.animation)
 
         val actual = register.findByAnimationKey(AnimationSample.key)
 
-        actual.isDefined ==> true
-        actual.get.animationKey ==> AnimationSample.key
+        assertEquals(actual.isDefined, true)
+        assertEquals(actual.get.animationKey, AnimationSample.key)
 
-        register.findByAnimationKey(AnimationKey("nope")).isEmpty ==> true
+        assertEquals(register.findByAnimationKey(AnimationKey("nope")).isEmpty, true)
       }
 
-      "can look up a memento by key" - {
+      test("can look up a memento by key") {
 
         val bindingKey = BindingKey("sprite 1")
 
         val register = new AnimationsRegister()
         register.register(AnimationSample.animation)
 
-        register.findMementoByBindingKey(bindingKey).isEmpty ==> true
+        assertEquals(register.findMementoByBindingKey(bindingKey).isEmpty, true)
 
         register.fetchAnimationForSprite(
           GameTime.is(Seconds(0)),
@@ -54,14 +52,14 @@ object AnimationsRegisterTests extends TestSuite {
 
         val actual = register.findMementoByBindingKey(bindingKey)
 
-        actual.isDefined ==> true
-        actual.get.bindingKey ==> bindingKey
-        actual.get.currentCycleLabel ==> AnimationSample.cycleLabel1
-        actual.get.currentCycleMemento.playheadPosition ==> 0
-        actual.get.currentCycleMemento.lastFrameAdvance ==> Millis.zero
+        assertEquals(actual.isDefined, true)
+        assertEquals(actual.get.bindingKey, bindingKey)
+        assertEquals(actual.get.currentCycleLabel, AnimationSample.cycleLabel1)
+        assertEquals(actual.get.currentCycleMemento.playheadPosition, 0)
+        assertEquals(actual.get.currentCycleMemento.lastFrameAdvance, Millis.zero)
       }
 
-      "can apply and store animations mementos" - {
+      test("can apply and store animations mementos") {
 
         val bindingKey = BindingKey("sprite 1")
 
@@ -78,19 +76,19 @@ object AnimationsRegisterTests extends TestSuite {
           Nil
         )
 
-        updatedAnim1.isDefined ==> true
-        updatedAnim1.get.animationKey ==> AnimationSample.key
-        updatedAnim1.get.currentCycle.label ==> AnimationSample.cycleLabel1
-        updatedAnim1.get.currentCycle.playheadPosition ==> 0
-        updatedAnim1.get.currentCycle.lastFrameAdvance ==> Millis.zero
+        assertEquals(updatedAnim1.isDefined, true)
+        assertEquals(updatedAnim1.get.animationKey, AnimationSample.key)
+        assertEquals(updatedAnim1.get.currentCycle.label, AnimationSample.cycleLabel1)
+        assertEquals(updatedAnim1.get.currentCycle.playheadPosition, 0)
+        assertEquals(updatedAnim1.get.currentCycle.lastFrameAdvance, Millis.zero)
 
         val memento1 = register.findMementoByBindingKey(bindingKey)
 
-        memento1.isDefined ==> true
-        memento1.get.bindingKey ==> bindingKey
-        memento1.get.currentCycleLabel ==> AnimationSample.cycleLabel1
-        memento1.get.currentCycleMemento.playheadPosition ==> 0
-        memento1.get.currentCycleMemento.lastFrameAdvance ==> Millis.zero
+        assertEquals(memento1.isDefined, true)
+        assertEquals(memento1.get.bindingKey, bindingKey)
+        assertEquals(memento1.get.currentCycleLabel, AnimationSample.cycleLabel1)
+        assertEquals(memento1.get.currentCycleMemento.playheadPosition, 0)
+        assertEquals(memento1.get.currentCycleMemento.lastFrameAdvance, Millis.zero)
         // ------------
 
         // ------------
@@ -102,19 +100,19 @@ object AnimationsRegisterTests extends TestSuite {
           List(ChangeCycle(AnimationSample.cycleLabel2), Play)
         )
 
-        updatedAnim2.isDefined ==> true
-        updatedAnim2.get.animationKey ==> AnimationSample.key
-        updatedAnim2.get.currentCycle.label ==> AnimationSample.cycleLabel2
-        updatedAnim2.get.currentCycle.playheadPosition ==> 1
-        updatedAnim2.get.currentCycle.lastFrameAdvance ==> Millis(100)
+        assertEquals(updatedAnim2.isDefined, true)
+        assertEquals(updatedAnim2.get.animationKey, AnimationSample.key)
+        assertEquals(updatedAnim2.get.currentCycle.label, AnimationSample.cycleLabel2)
+        assertEquals(updatedAnim2.get.currentCycle.playheadPosition, 1)
+        assertEquals(updatedAnim2.get.currentCycle.lastFrameAdvance, Millis(100))
 
         val memento2 = register.findMementoByBindingKey(bindingKey)
 
-        memento2.isDefined ==> true
-        memento2.get.bindingKey ==> bindingKey
-        memento2.get.currentCycleLabel ==> AnimationSample.cycleLabel2
-        memento2.get.currentCycleMemento.playheadPosition ==> 1
-        memento2.get.currentCycleMemento.lastFrameAdvance ==> Millis(100)
+        assertEquals(memento2.isDefined, true)
+        assertEquals(memento2.get.bindingKey, bindingKey)
+        assertEquals(memento2.get.currentCycleLabel, AnimationSample.cycleLabel2)
+        assertEquals(memento2.get.currentCycleMemento.playheadPosition, 1)
+        assertEquals(memento2.get.currentCycleMemento.lastFrameAdvance, Millis(100))
         // ------------
 
         // ------------
@@ -126,19 +124,19 @@ object AnimationsRegisterTests extends TestSuite {
           List(Play)
         )
 
-        updatedAnim3.isDefined ==> true
-        updatedAnim3.get.animationKey ==> AnimationSample.key
-        updatedAnim3.get.currentCycle.label ==> AnimationSample.cycleLabel2
-        updatedAnim3.get.currentCycle.playheadPosition ==> 2
-        updatedAnim3.get.currentCycle.lastFrameAdvance ==> Millis(200)
+        assertEquals(updatedAnim3.isDefined, true)
+        assertEquals(updatedAnim3.get.animationKey, AnimationSample.key)
+        assertEquals(updatedAnim3.get.currentCycle.label, AnimationSample.cycleLabel2)
+        assertEquals(updatedAnim3.get.currentCycle.playheadPosition, 2)
+        assertEquals(updatedAnim3.get.currentCycle.lastFrameAdvance, Millis(200))
 
         val memento3 = register.findMementoByBindingKey(bindingKey)
 
-        memento3.isDefined ==> true
-        memento3.get.bindingKey ==> bindingKey
-        memento3.get.currentCycleLabel ==> AnimationSample.cycleLabel2
-        memento3.get.currentCycleMemento.playheadPosition ==> 2
-        memento3.get.currentCycleMemento.lastFrameAdvance ==> Millis(200)
+        assertEquals(memento3.isDefined, true)
+        assertEquals(memento3.get.bindingKey, bindingKey)
+        assertEquals(memento3.get.currentCycleLabel, AnimationSample.cycleLabel2)
+        assertEquals(memento3.get.currentCycleMemento.playheadPosition, 2)
+        assertEquals(memento3.get.currentCycleMemento.lastFrameAdvance, Millis(200))
         // ------------
 
         // ------------
@@ -150,24 +148,24 @@ object AnimationsRegisterTests extends TestSuite {
           List(Play)
         )
 
-        updatedAnim4.isDefined ==> true
-        updatedAnim4.get.animationKey ==> AnimationSample.key
-        updatedAnim4.get.currentCycle.label ==> AnimationSample.cycleLabel2
-        updatedAnim4.get.currentCycle.playheadPosition ==> 1
-        updatedAnim4.get.currentCycle.lastFrameAdvance ==> Millis(400)
+        assertEquals(updatedAnim4.isDefined, true)
+        assertEquals(updatedAnim4.get.animationKey, AnimationSample.key)
+        assertEquals(updatedAnim4.get.currentCycle.label, AnimationSample.cycleLabel2)
+        assertEquals(updatedAnim4.get.currentCycle.playheadPosition, 1)
+        assertEquals(updatedAnim4.get.currentCycle.lastFrameAdvance, Millis(400))
 
         val memento4 = register.findMementoByBindingKey(bindingKey)
 
-        memento4.isDefined ==> true
-        memento4.get.bindingKey ==> bindingKey
-        memento4.get.currentCycleLabel ==> AnimationSample.cycleLabel2
-        memento4.get.currentCycleMemento.playheadPosition ==> 1
-        memento4.get.currentCycleMemento.lastFrameAdvance ==> Millis(400)
+        assertEquals(memento4.isDefined, true)
+        assertEquals(memento4.get.bindingKey, bindingKey)
+        assertEquals(memento4.get.currentCycleLabel, AnimationSample.cycleLabel2)
+        assertEquals(memento4.get.currentCycleMemento.playheadPosition, 1)
+        assertEquals(memento4.get.currentCycleMemento.lastFrameAdvance, Millis(400))
         // ------------
 
-        memento1 === memento2 ==> false
-        memento2 === memento3 ==> false
-        memento3 === memento4 ==> false
+        assertEquals(memento1 === memento2, false)
+        assertEquals(memento2 === memento3, false)
+        assertEquals(memento3 === memento4, false)
 
       }
 

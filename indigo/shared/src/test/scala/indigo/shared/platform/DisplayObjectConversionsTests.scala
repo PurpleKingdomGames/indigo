@@ -1,6 +1,5 @@
 package indigo.shared.platform
 
-import utest._
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Material
@@ -19,10 +18,9 @@ import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.scenegraph.Group
 import indigo.shared.datatypes.Depth
 
-object DisplayObjectConversionsTests extends TestSuite {
+class DisplayObjectConversionsTests extends munit.FunSuite {
 
-  val tests: Tests =
-    Tests {
+
 
       val graphic: Graphic =
         Graphic(Rectangle(10, 20, 200, 100), 2, Material.Textured(AssetName("texture")))
@@ -60,21 +58,21 @@ object DisplayObjectConversionsTests extends TestSuite {
         }
       }
 
-      "convert a graphic to a display object" - {
+      test("convert a graphic to a display object") {
         val actual: DisplayObject =
           convert(graphic)
 
-        actual.x ==> 10.0f
-        actual.y ==> 20.0f
-        actual.z ==> 2.0f
-        actual.width ==> 200.0f
-        actual.height ==> 100.0f
-        actual.scaleX ==> 1.0f
-        actual.scaleY ==> 1.0f
-        actual.rotation ==> 0.0f
+        assertEquals(actual.x, 10.0f)
+        assertEquals(actual.y, 20.0f)
+        assertEquals(actual.z, 2.0f)
+        assertEquals(actual.width, 200.0f)
+        assertEquals(actual.height, 100.0f)
+        assertEquals(actual.scaleX, 1.0f)
+        assertEquals(actual.scaleY, 1.0f)
+        assertEquals(actual.rotation, 0.0f)
       }
 
-      "convert a group with a graphic in it" - {
+      test("convert a group with a graphic in it") {
         val actual: DisplayObject =
           convert(
             Group(graphic)
@@ -82,17 +80,17 @@ object DisplayObjectConversionsTests extends TestSuite {
               .withDepth(Depth(100))
           )
 
-        actual.x ==> 15.0f
-        actual.y ==> 35.0f
-        actual.z ==> 102.0f
-        actual.width ==> 200.0f
-        actual.height ==> 100.0f
-        actual.scaleX ==> 1.0f
-        actual.scaleY ==> 1.0f
-        actual.rotation ==> 0.0f
+        assertEquals(actual.x, 15.0f)
+        assertEquals(actual.y, 35.0f)
+        assertEquals(actual.z, 102.0f)
+        assertEquals(actual.width, 200.0f)
+        assertEquals(actual.height, 100.0f)
+        assertEquals(actual.scaleX, 1.0f)
+        assertEquals(actual.scaleY, 1.0f)
+        assertEquals(actual.rotation, 0.0f)
       }
 
-      "convert a group of a group with a graphic in it" - {
+      test("convert a group of a group with a graphic in it") {
         val actual: DisplayObject =
           convert(
             Group(
@@ -102,14 +100,14 @@ object DisplayObjectConversionsTests extends TestSuite {
             )
           )
 
-        actual.x ==> 10.0f
-        actual.y ==> 20.0f
-        actual.z ==> 2.0f
-        actual.width ==> 200.0f
-        actual.height ==> 100.0f
-        actual.scaleX ==> 1.0f
-        actual.scaleY ==> 1.0f
-        actual.rotation ==> 0.0f
+        assertEquals(actual.x, 10.0f)
+        assertEquals(actual.y, 20.0f)
+        assertEquals(actual.z, 2.0f)
+        assertEquals(actual.width, 200.0f)
+        assertEquals(actual.height, 100.0f)
+        assertEquals(actual.scaleX, 1.0f)
+        assertEquals(actual.scaleY, 1.0f)
+        assertEquals(actual.rotation, 0.0f)
       }
 
     }

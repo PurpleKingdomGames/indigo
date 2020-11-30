@@ -1,20 +1,20 @@
 package indigoextras.jobs
 
 import indigo.shared.time.GameTime
-import utest._
+
 import indigoextras.jobs.SampleJobs.{CantHave, Fishing, WanderTo}
 import indigo.shared.Outcome
 import indigo.shared.dice.Dice
 import indigo.shared.time.Seconds
 
-object WorkerTests extends TestSuite {
+class WorkerTests extends munit.FunSuite {
 
   val worker: Worker[SampleActor, SampleContext] = SampleActor.worker
   val actor: SampleActor                         = SampleActor(0, likesFishing = false)
 
   def tests: Tests =
     Tests {
-      "You should be able to create a Worker instance" - {
+      test("You should be able to create a Worker instance") {
         final case class TestActor()
         final case class TestContext()
         final case class TestJob() extends Job {
@@ -60,15 +60,15 @@ object WorkerTests extends TestSuite {
             context
           )
 
-        worker.isJobComplete(workContext)(job) ==> true
+        assertEquals(worker.isJobComplete(workContext)(job), true)
 
         val completed = worker.onJobComplete(workContext)(job)
-        completed.state ==> (Nil, TestActor())
-        completed.globalEvents ==> Nil
+        assertEquals(completed.state, (Nil, TestActor()))
+        assertEquals(completed.globalEvents, Nil)
 
-        worker.workOnJob(workContext)(job) ==> (job, actor)
-        worker.generateJobs(workContext) ==> Nil
-        worker.canTakeJob(workContext)(job) ==> false
+        assertEquals(worker.workOnJob(workContext)(job), (job, actor))
+        assertEquals(worker.generateJobs(workContext), Nil)
+        assertEquals(worker.canTakeJob(workContext)(job), false)
       }
 
       def workContext(time: Double, p: Boolean): WorkContext[SampleActor, SampleContext] =
@@ -79,33 +79,33 @@ object WorkerTests extends TestSuite {
           SampleContext(p)
         )
 
-      "A Worker instance" - {
+      test("A Worker instance") {
 
-        "should be able to check a job is complete" - {
-          worker.isJobComplete(workContext(0d, true))(Fishing(Fishing.totalWorkUnits)) ==> true
+        test("should be able to check a job is complete") {
+          assertEquals(worker.isJobComplete(workContext(0d, true))(Fishing(Fishing.totalWorkUnits)), true)
         }
 
-        "should be able to perform an action when a job completes" - {
-          worker.onJobComplete(workContext(0d, false))(Fishing(Fishing.totalWorkUnits)).state._1.head ==> WanderTo(0)
+        test("should be able to perform an action when a job completes") {
+          assertEquals(worker.onJobComplete(workContext(0d, false))(Fishing(Fishing.totalWorkUnits)).state._1.head, WanderTo(0))
         }
 
-        "should be able to work on a job" - {
+        test("should be able to work on a job") {
           val res = worker.workOnJob(workContext(0d, false))(Fishing(0))
-          res ==> (Fishing(SampleActor.defaultFishingSpeed), actor)
+          assertEquals(res, (Fishing(SampleActor.defaultFishingSpeed), actor))
         }
 
-        "and working on a job can affect the actor" - {
+        test("and working on a job can affect the actor") {
           val res = worker.workOnJob(workContext(0d, true))(Fishing(0))
-          res ==> (Fishing(SampleActor.defaultFishingSpeed), actor.copy(likesFishing = true))
+          assertEquals(res, (Fishing(SampleActor.defaultFishingSpeed), actor.copy(likesFishing = true)))
         }
 
-        "should be able to generate jobs" - {
-          worker.generateJobs(workContext(0d, true)) ==> List(WanderTo(100))
+        test("should be able to generate jobs") {
+          assertEquals(worker.generateJobs(workContext(0d, true)), List(WanderTo(100)))
         }
 
-        "should be able to distinguish between jobs you can take and ones you can't" - {
-          worker.canTakeJob(workContext(0d, true))(WanderTo(30)) ==> true
-          worker.canTakeJob(workContext(0d, true))(CantHave()) ==> false
+        test("should be able to distinguish between jobs you can take and ones you can't") {
+          assertEquals(worker.canTakeJob(workContext(0d, true))(WanderTo(30)), true)
+          assertEquals(worker.canTakeJob(workContext(0d, true))(CantHave()), false)
         }
 
       }

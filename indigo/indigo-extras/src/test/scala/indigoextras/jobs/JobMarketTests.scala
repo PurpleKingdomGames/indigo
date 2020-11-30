@@ -1,7 +1,6 @@
 package indigoextras.jobs
 
 import indigo._
-import utest._
 
 import indigo.shared.EqualTo._
 import indigo.shared.AnimationsRegister
@@ -16,7 +15,7 @@ import indigo.shared.events.FrameTick
 import indigo.shared.scenegraph.SceneAudio
 import indigo.shared.datatypes.RGBA
 
-object JobMarketTests extends TestSuite {
+class JobMarketTests extends munit.FunSuite {
 
   val context =
     new SubSystemFrameContext(
@@ -36,23 +35,23 @@ object JobMarketTests extends TestSuite {
 
   def tests: Tests =
     Tests {
-      "The job market" - {
+      test("The job market") {
 
-        "subsytem event filter should only allow JobMarketEvents" - {
+        test("subsytem event filter should only allow JobMarketEvents") {
           val market = JobMarket.subSystem
 
           val job: Job                  = SampleJobs.CantHave()
           val key: BindingKey           = BindingKey("test")
           val predicate: Job => Boolean = _ => true
 
-          market.eventFilter(FrameTick) ==> None
-          market.eventFilter(JobMarketEvent.Post(job)) ==> Some(JobMarketEvent.Post(job))
-          market.eventFilter(JobMarketEvent.Find(key, predicate)) ==> Some(JobMarketEvent.Find(key, predicate))
-          market.eventFilter(JobMarketEvent.Allocate(key, job)) ==> Some(JobMarketEvent.Allocate(key, job))
-          market.eventFilter(JobMarketEvent.NothingFound(key)) ==> Some(JobMarketEvent.NothingFound(key))
+          assertEquals(market.eventFilter(FrameTick), None)
+          assertEquals(market.eventFilter(JobMarketEvent.Post(job)), Some(JobMarketEvent.Post(job)))
+          assertEquals(market.eventFilter(JobMarketEvent.Find(key, predicate)), Some(JobMarketEvent.Find(key, predicate)))
+          assertEquals(market.eventFilter(JobMarketEvent.Allocate(key, job)), Some(JobMarketEvent.Allocate(key, job)))
+          assertEquals(market.eventFilter(JobMarketEvent.NothingFound(key)), Some(JobMarketEvent.NothingFound(key)))
         }
 
-        "should not process outbound JobMarketEvent types" - {
+        test("should not process outbound JobMarketEvent types") {
 
           val bindingKey: BindingKey            = BindingKey("0001")
           val job: Job                          = SampleJobs.WanderTo(10)
@@ -61,44 +60,44 @@ object JobMarketTests extends TestSuite {
           val nothingFoundEvent: JobMarketEvent = JobMarketEvent.NothingFound(bindingKey)
 
           val updatedA = market.update(context, List(job))(allocateEvent)
-          updatedA.state ==> List(job)
-          updatedA.globalEvents ==> Nil
+          assertEquals(updatedA.state, List(job))
+          assertEquals(updatedA.globalEvents, Nil)
 
           val updatedB = market.update(context, updatedA.state)(nothingFoundEvent)
-          updatedB.state ==> List(job)
-          updatedB.globalEvents ==> Nil
+          assertEquals(updatedB.state, List(job))
+          assertEquals(updatedB.globalEvents, Nil)
 
         }
 
-        "should be able to report it's current jobs" - {
+        test("should be able to report it's current jobs") {
           val job: Job          = SampleJobs.CantHave()
           val market: JobMarket = JobMarket(List(job))
 
           val report = market.availableJobs.map(_.jobName.value).mkString(",")
 
-          report.contains(job.jobName.value) ==> true
+          assertEquals(report.contains(job.jobName.value), true)
         }
 
-        "should not render anything" - {
+        test("should not render anything") {
           val job: Job          = SampleJobs.WanderTo(10)
           val market: JobMarket = JobMarket.subSystem
 
-          market.present(context, List(job)).gameLayer.nodes.isEmpty ==> true
-          market.present(context, List(job)).lightingLayer.nodes.isEmpty ==> true
-          market.present(context, List(job)).uiLayer.nodes.isEmpty ==> true
-          market.present(context, List(job)).globalEvents.isEmpty ==> true
-          market.present(context, List(job)).ambientLight === RGBA.Normal ==> true
-          market.present(context, List(job)).audio ==> SceneAudio.None
+          assertEquals(market.present(context, List(job)).gameLayer.nodes.isEmpty, true)
+          assertEquals(market.present(context, List(job)).lightingLayer.nodes.isEmpty, true)
+          assertEquals(market.present(context, List(job)).uiLayer.nodes.isEmpty, true)
+          assertEquals(market.present(context, List(job)).globalEvents.isEmpty, true)
+          assertEquals(market.present(context, List(job)).ambientLight === RGBA.Normal, true)
+          assertEquals(market.present(context, List(job)).audio, SceneAudio.None)
         }
 
-        "should have an empty subsystem representation" - {
+        test("should have an empty subsystem representation") {
           val market = JobMarket.subSystem
 
-          market.availableJobs ==> Nil
+          assertEquals(market.availableJobs, Nil)
         }
 
-        "should allow a you to find work" - {
-          "when there is a job you can do" - {
+        test("should allow a you to find work") {
+          test("when there is a job you can do") {
             val bindingKey: BindingKey    = BindingKey("0001")
             val job: Job                  = SampleJobs.WanderTo(10)
             val market: JobMarket         = JobMarket.subSystem
@@ -106,22 +105,22 @@ object JobMarketTests extends TestSuite {
 
             val updated = market.update(context, List(job))(findEvent)
 
-            updated.state ==> Nil
-            updated.globalEvents.head ==> JobMarketEvent.Allocate(bindingKey, job)
+            assertEquals(updated.state, Nil)
+            assertEquals(updated.globalEvents.head, JobMarketEvent.Allocate(bindingKey, job))
           }
 
-          "but not when there isn't any work" - {
+          test("but not when there isn't any work") {
             val bindingKey: BindingKey    = BindingKey("0001")
             val market: JobMarket         = JobMarket.subSystem
             val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
 
             val updated = market.update(context, Nil)(findEvent)
 
-            updated.state ==> Nil
-            updated.globalEvents.head ==> JobMarketEvent.NothingFound(bindingKey)
+            assertEquals(updated.state, Nil)
+            assertEquals(updated.globalEvents.head, JobMarketEvent.NothingFound(bindingKey))
           }
 
-          "or when the work is not acceptable to the worker" - {
+          test("or when the work is not acceptable to the worker") {
             val bindingKey: BindingKey    = BindingKey("0001")
             val job: Job                  = SampleJobs.CantHave()
             val market: JobMarket         = JobMarket.subSystem
@@ -129,11 +128,11 @@ object JobMarketTests extends TestSuite {
 
             val updated = market.update(context, List(job))(findEvent)
 
-            updated.state ==> List(job)
-            updated.globalEvents.head ==> JobMarketEvent.NothingFound(bindingKey)
+            assertEquals(updated.state, List(job))
+            assertEquals(updated.globalEvents.head, JobMarketEvent.NothingFound(bindingKey))
           }
 
-          "should give you the highest priority job first" - {
+          test("should give you the highest priority job first") {
             val bindingKey: BindingKey    = BindingKey("0001")
             val jobs: List[Job]           = List(SampleJobs.WanderTo(10), SampleJobs.WanderTo(20), SampleJobs.Fishing(0))
             val market: JobMarket         = JobMarket.subSystem
@@ -141,41 +140,41 @@ object JobMarketTests extends TestSuite {
 
             val updated = market.update(context, jobs)(findEvent)
 
-            updated.state ==> List(SampleJobs.WanderTo(10), SampleJobs.WanderTo(20))
-            updated.globalEvents.head ==> JobMarketEvent.Allocate(bindingKey, SampleJobs.Fishing(0))
+            assertEquals(updated.state, List(SampleJobs.WanderTo(10), SampleJobs.WanderTo(20)))
+            assertEquals(updated.globalEvents.head, JobMarketEvent.Allocate(bindingKey, SampleJobs.Fishing(0)))
           }
         }
 
-        "should allow you to post a job" - {
+        test("should allow you to post a job") {
 
-          "to an empty market" - {
+          test("to an empty market") {
             val job: Job                  = SampleJobs.WanderTo(10)
             val market: JobMarket         = JobMarket.subSystem
             val postEvent: JobMarketEvent = JobMarketEvent.Post(job)
 
             val updated = market.update(context, Nil)(postEvent)
 
-            updated.state ==> List(job)
+            assertEquals(updated.state, List(job))
           }
 
-          "and append to a non-empty market" - {
+          test("and append to a non-empty market") {
             val job: Job                  = SampleJobs.WanderTo(10)
             val market: JobMarket         = JobMarket.subSystem
             val postEvent: JobMarketEvent = JobMarketEvent.Post(job)
 
             val updated = market.update(context, List(SampleJobs.Fishing(0)))(postEvent)
 
-            updated.state ==> List(SampleJobs.Fishing(0), job)
+            assertEquals(updated.state, List(SampleJobs.Fishing(0), job))
           }
 
-          "the jobs state will be preserved" - {
+          test("the jobs state will be preserved") {
             val job: Job                  = SampleJobs.Fishing(50)
             val market: JobMarket         = JobMarket.subSystem
             val postEvent: JobMarketEvent = JobMarketEvent.Post(job)
 
             val updated = market.update(context, Nil)(postEvent)
 
-            updated.state ==> List(SampleJobs.Fishing(50))
+            assertEquals(updated.state, List(SampleJobs.Fishing(50)))
           }
         }
 

@@ -1,15 +1,13 @@
 package indigoextras.datatypes
 
-import utest._
 import indigoextras.datatypes.UpdateList
 import indigoextras.datatypes.UpdatePattern
 
-object UpdateListTests extends TestSuite {
+class UpdateListTests extends munit.FunSuite {
 
-  val tests: Tests =
-    Tests {
 
-      "trivial updating" - {
+
+      test("trivial updating") {
 
         val l: UpdateList[Int] =
           UpdateList(List(1, 2, 3))
@@ -20,11 +18,11 @@ object UpdateListTests extends TestSuite {
         val actual =
           l.update(_ + 1)
 
-        expected.toList ==> actual.toList
+        assertEquals(expected.toList, actual.toList)
 
       }
 
-      "interleaved update" - {
+      test("interleaved update") {
 
         val p =
           UpdatePattern.Interleave()
@@ -53,13 +51,13 @@ object UpdateListTests extends TestSuite {
         val actual3 =
           actual2.update(f)
 
-        expected1.toList ==> actual1.toList
-        expected2.toList ==> actual2.toList
-        expected3.toList ==> actual3.toList
+        assertEquals(expected1.toList, actual1.toList)
+        assertEquals(expected2.toList, actual2.toList)
+        assertEquals(expected3.toList, actual3.toList)
 
       }
 
-      "update every" - {
+      test("update every") {
 
         val p =
           UpdatePattern.Every(3)
@@ -94,14 +92,14 @@ object UpdateListTests extends TestSuite {
         val actual4 =
           actual3.update(f)
 
-        expected1.toList ==> actual1.toList
-        expected2.toList ==> actual2.toList
-        expected3.toList ==> actual3.toList
-        expected4.toList ==> actual4.toList
+        assertEquals(expected1.toList, actual1.toList)
+        assertEquals(expected2.toList, actual2.toList)
+        assertEquals(expected3.toList, actual3.toList)
+        assertEquals(expected4.toList, actual4.toList)
 
       }
 
-      "batch update" - {
+      test("batch update") {
 
         val p =
           UpdatePattern.Batch(4)
@@ -142,11 +140,11 @@ object UpdateListTests extends TestSuite {
         val actual5 =
           actual4.update(_ + 1)
 
-        expected1.toList ==> actual1.toList
-        expected2.toList ==> actual2.toList
-        expected3.toList ==> actual3.toList
-        expected4.toList ==> actual4.toList
-        expected5.toList ==> actual5.toList
+        assertEquals(expected1.toList, actual1.toList)
+        assertEquals(expected2.toList, actual2.toList)
+        assertEquals(expected3.toList, actual3.toList)
+        assertEquals(expected4.toList, actual4.toList)
+        assertEquals(expected5.toList, actual5.toList)
       }
 
     }

@@ -1,6 +1,5 @@
 package indigo.shared.formats
 
-import utest._
 import indigo.shared.formats.TiledMap
 import indigo.shared.formats.TileSet
 import indigo.shared.formats.TiledLayer
@@ -12,14 +11,13 @@ import indigo.shared.datatypes.Point
 import indigo.shared.collections.NonEmptyList
 import scala.annotation.nowarn
 
-object TiledMapTests extends TestSuite {
+class TiledMapTests extends munit.FunSuite {
 
-  val tests: Tests =
-    Tests {
 
-      "should be able to convert to a TiledGridMap" - {
 
-        "identity (Int)" - {
+      test("should be able to convert to a TiledGridMap") {
+
+        test("identity (Int)") {
           val actual =
             TiledSamples.tiledMap
               .toGrid[Int](identity[Int])
@@ -31,11 +29,11 @@ object TiledMapTests extends TestSuite {
           val expected: List[Int] =
             TiledSamples.gridMapInt.layers.head.grid.map(_.tile)
 
-          actual ==> expected
+          assertEquals(actual, expected)
 
         }
 
-        "with mapping" - {
+        test("with mapping") {
           // Using nowarn as it's a partial match and I want it
           // to blow up if it finds anything else.
           @nowarn val matcher: ((Int, TileTypes)) => Boolean = {
@@ -56,11 +54,11 @@ object TiledMapTests extends TestSuite {
           TiledSamples.gridMapInt.layers.head.grid
             .map(_.tile)
             .zip(actual)
-            .forall(matcher) ==> true
+            assertEquals(.forall(matcher), true)
 
         }
 
-        "to 2D grid (int)" - {
+        test("to 2D grid (int)") {
           val actual: List[List[Int]] =
             TiledSamples.tiledMap
               .toGrid[Int](identity[Int])
@@ -72,12 +70,12 @@ object TiledMapTests extends TestSuite {
           val expected: List[List[Int]] =
             TiledSamples.gridMapInt2D
 
-          actual ==> expected
+          assertEquals(actual, expected)
         }
 
       }
 
-      "should be able to convert to a Group of graphics" - {
+      test("should be able to convert to a Group of graphics") {
         val actual: Group =
           TiledSamples.tiledMap.toGroup(AssetName("test")).get
 
@@ -87,10 +85,10 @@ object TiledMapTests extends TestSuite {
             val graphics: List[Graphic] =
               g.children.collect { case graphic: Graphic => graphic }
 
-            graphics.length ==> 3
-            graphics(0).position ==> Point(32, 64)
-            graphics(1).position ==> Point(64, 64)
-            graphics(2).position ==> Point(64, 96)
+            assertEquals(graphics.length, 3)
+            assertEquals(graphics(0).position, Point(32, 64))
+            assertEquals(graphics(1).position, Point(64, 64))
+            assertEquals(graphics(2).position, Point(64, 96))
 
           case _: Renderable =>
             throw new Exception("failed")

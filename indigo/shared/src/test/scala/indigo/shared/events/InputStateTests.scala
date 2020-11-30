@@ -1,6 +1,5 @@
 package indigo.shared.events
 
-import utest._
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
 import indigo.shared.constants.Key
@@ -10,10 +9,9 @@ import indigo.shared.input.AnalogAxis
 import indigo.shared.input.GamepadDPad
 import indigo.shared.input.GamepadButtons
 
-object InputStateTests extends TestSuite {
+class InputStateTests extends munit.FunSuite {
 
-  val tests: Tests =
-    Tests {
+
 
       val bounds: Rectangle =
         Rectangle(10, 10, 100, 100)
@@ -24,14 +22,14 @@ object InputStateTests extends TestSuite {
       val gamepadState: Gamepad =
         Gamepad.default
 
-      "The default state object does the expected thing" - {
-        inputState.mouse.leftMouseIsDown ==> false
-        inputState.mouse.position ==> Point.zero
+      test("The default state object does the expected thing") {
+        assertEquals(inputState.mouse.leftMouseIsDown, false)
+        assertEquals(inputState.mouse.position, Point.zero)
 
-        inputState.mouse.wasMouseClickedWithin(bounds) ==> false
+        assertEquals(inputState.mouse.wasMouseClickedWithin(bounds), false)
       }
 
-      "Mouse state" - {
+      test("Mouse state") {
 
         val events: List[MouseEvent] =
           List(
@@ -43,87 +41,87 @@ object InputStateTests extends TestSuite {
 
         val state = InputState.calculateNext(inputState, events, gamepadState)
 
-        "position" - {
-          state.mouse.position === Point(10, 10) ==> true
+        test("position") {
+          assertEquals(state.mouse.position === Point(10, 10), true)
         }
 
-        "mousePressed" - {
-          state.mouse.mousePressed ==> true
+        test("mousePressed") {
+          assertEquals(state.mouse.mousePressed, true)
         }
 
-        "mouseReleased" - {
-          state.mouse.mouseReleased ==> true
+        test("mouseReleased") {
+          assertEquals(state.mouse.mouseReleased, true)
         }
 
-        "mouseClicked" - {
-          state.mouse.mouseClicked ==> true
+        test("mouseClicked") {
+          assertEquals(state.mouse.mouseClicked, true)
 
-          InputState.calculateNext(inputState, List(MouseEvent.MouseDown(0, 0)), gamepadState).mouse.mouseClicked ==> false
+          assertEquals(InputState.calculateNext(inputState, List(MouseEvent.MouseDown(0, 0)), gamepadState).mouse.mouseClicked, false)
         }
 
-        "mouseClickAt" - {
-          state.mouse.mouseClickAt ==> Some(Point(10, 10))
+        test("mouseClickAt") {
+          assertEquals(state.mouse.mouseClickAt, Some(Point(10, 10)))
 
-          InputState.calculateNext(inputState, List(MouseEvent.MouseDown(0, 0)), gamepadState).mouse.mouseClickAt ==> None
+          assertEquals(InputState.calculateNext(inputState, List(MouseEvent.MouseDown(0, 0)), gamepadState).mouse.mouseClickAt, None)
         }
 
-        "mouseUpAt" - {
-          state.mouse.mouseUpAt ==> Some(Point(10, 10))
+        test("mouseUpAt") {
+          assertEquals(state.mouse.mouseUpAt, Some(Point(10, 10)))
 
-          InputState.calculateNext(inputState, List(MouseEvent.MouseDown(0, 0)), gamepadState).mouse.mouseUpAt ==> None
+          assertEquals(InputState.calculateNext(inputState, List(MouseEvent.MouseDown(0, 0)), gamepadState).mouse.mouseUpAt, None)
         }
 
-        "mouseDownAt" - {
-          state.mouse.mouseDownAt ==> Some(Point(10, 10))
+        test("mouseDownAt") {
+          assertEquals(state.mouse.mouseDownAt, Some(Point(10, 10)))
 
-          InputState.calculateNext(inputState, List(MouseEvent.MouseUp(0, 0)), gamepadState).mouse.mouseDownAt ==> None
+          assertEquals(InputState.calculateNext(inputState, List(MouseEvent.MouseUp(0, 0)), gamepadState).mouse.mouseDownAt, None)
         }
 
-        "wasMouseClickedAt" - {
-          state.mouse.wasMouseClickedAt(10, 10) ==> true
-          state.mouse.wasMouseClickedAt(20, 10) ==> false
+        test("wasMouseClickedAt") {
+          assertEquals(state.mouse.wasMouseClickedAt(10, 10), true)
+          assertEquals(state.mouse.wasMouseClickedAt(20, 10), false)
         }
 
-        "wasMouseUpAt" - {
-          state.mouse.wasMouseUpAt(10, 10) ==> true
-          state.mouse.wasMouseUpAt(20, 10) ==> false
+        test("wasMouseUpAt") {
+          assertEquals(state.mouse.wasMouseUpAt(10, 10), true)
+          assertEquals(state.mouse.wasMouseUpAt(20, 10), false)
         }
 
-        "wasMouseDownAt" - {
-          state.mouse.wasMouseDownAt(10, 10) ==> true
-          state.mouse.wasMouseDownAt(20, 10) ==> false
+        test("wasMouseDownAt") {
+          assertEquals(state.mouse.wasMouseDownAt(10, 10), true)
+          assertEquals(state.mouse.wasMouseDownAt(20, 10), false)
         }
 
-        "wasMousePositionAt" - {
-          state.mouse.wasMousePositionAt(Point.zero) ==> false
-          state.mouse.wasMousePositionAt(Point(10, 10)) ==> true
+        test("wasMousePositionAt") {
+          assertEquals(state.mouse.wasMousePositionAt(Point.zero), false)
+          assertEquals(state.mouse.wasMousePositionAt(Point(10, 10)), true)
         }
 
-        "wasMouseClickedWithin" - {
-          state.mouse.wasMouseClickedWithin(Rectangle(0, 0, 5, 5)) ==> false
-          state.mouse.wasMouseClickedWithin(Rectangle(50, 50, 5, 5)) ==> false
-          state.mouse.wasMouseClickedWithin(Rectangle(5, 5, 10, 10)) ==> true
+        test("wasMouseClickedWithin") {
+          assertEquals(state.mouse.wasMouseClickedWithin(Rectangle(0, 0, 5, 5)), false)
+          assertEquals(state.mouse.wasMouseClickedWithin(Rectangle(50, 50, 5, 5)), false)
+          assertEquals(state.mouse.wasMouseClickedWithin(Rectangle(5, 5, 10, 10)), true)
         }
 
-        "wasMouseUpWithin" - {
-          state.mouse.wasMouseUpWithin(Rectangle(0, 0, 5, 5)) ==> false
-          state.mouse.wasMouseUpWithin(Rectangle(50, 50, 5, 5)) ==> false
-          state.mouse.wasMouseUpWithin(Rectangle(5, 5, 10, 10)) ==> true
+        test("wasMouseUpWithin") {
+          assertEquals(state.mouse.wasMouseUpWithin(Rectangle(0, 0, 5, 5)), false)
+          assertEquals(state.mouse.wasMouseUpWithin(Rectangle(50, 50, 5, 5)), false)
+          assertEquals(state.mouse.wasMouseUpWithin(Rectangle(5, 5, 10, 10)), true)
         }
 
-        "wasMouseDownWithin" - {
-          state.mouse.wasMouseDownWithin(Rectangle(0, 0, 5, 5)) ==> false
-          state.mouse.wasMouseDownWithin(Rectangle(50, 50, 5, 5)) ==> false
-          state.mouse.wasMouseDownWithin(Rectangle(5, 5, 10, 10)) ==> true
+        test("wasMouseDownWithin") {
+          assertEquals(state.mouse.wasMouseDownWithin(Rectangle(0, 0, 5, 5)), false)
+          assertEquals(state.mouse.wasMouseDownWithin(Rectangle(50, 50, 5, 5)), false)
+          assertEquals(state.mouse.wasMouseDownWithin(Rectangle(5, 5, 10, 10)), true)
         }
 
-        "wasMousePositionWithin" - {
-          state.mouse.wasMousePositionWithin(Rectangle(0, 0, 5, 5)) ==> false
-          state.mouse.wasMousePositionWithin(Rectangle(50, 50, 5, 5)) ==> false
-          state.mouse.wasMousePositionWithin(Rectangle(5, 5, 10, 10)) ==> true
+        test("wasMousePositionWithin") {
+          assertEquals(state.mouse.wasMousePositionWithin(Rectangle(0, 0, 5, 5)), false)
+          assertEquals(state.mouse.wasMousePositionWithin(Rectangle(50, 50, 5, 5)), false)
+          assertEquals(state.mouse.wasMousePositionWithin(Rectangle(5, 5, 10, 10)), true)
         }
 
-        "leftMouseIsDown" - {
+        test("leftMouseIsDown") {
 
           val state2 = InputState.calculateNext(state, List(MouseEvent.MouseDown(0, 0)), gamepadState)                                // true
           val state3 = InputState.calculateNext(state2, Nil, gamepadState)                                                            // still true
@@ -132,17 +130,17 @@ object InputStateTests extends TestSuite {
           val state6 = InputState.calculateNext(state5, List(MouseEvent.MouseUp(20, 20)), gamepadState)                               // false
           val state7 = InputState.calculateNext(state6, List(MouseEvent.MouseDown(20, 20), MouseEvent.MouseUp(20, 20)), gamepadState) // Still false
 
-          state.mouse.leftMouseIsDown ==> false
-          state2.mouse.leftMouseIsDown ==> true
-          state3.mouse.leftMouseIsDown ==> true
-          state4.mouse.leftMouseIsDown ==> true
-          state5.mouse.leftMouseIsDown ==> true
-          state6.mouse.leftMouseIsDown ==> false
-          state7.mouse.leftMouseIsDown ==> false
+          assertEquals(state.mouse.leftMouseIsDown, false)
+          assertEquals(state2.mouse.leftMouseIsDown, true)
+          assertEquals(state3.mouse.leftMouseIsDown, true)
+          assertEquals(state4.mouse.leftMouseIsDown, true)
+          assertEquals(state5.mouse.leftMouseIsDown, true)
+          assertEquals(state6.mouse.leftMouseIsDown, false)
+          assertEquals(state7.mouse.leftMouseIsDown, false)
         }
       }
 
-      "Keyboard state" - {
+      test("Keyboard state") {
 
         val events: List[KeyboardEvent] =
           List(
@@ -157,7 +155,7 @@ object InputStateTests extends TestSuite {
             KeyboardEvent.KeyUp(Key.KEY_C)
           )
 
-        "keysDown" - {
+        test("keysDown") {
           val state = InputState.calculateNext(inputState, events, gamepadState)
 
           val expected =
@@ -170,30 +168,30 @@ object InputStateTests extends TestSuite {
           val actual =
             state.keyboard.keysDown
 
-          actual ==> expected
+          assertEquals(actual, expected)
         }
 
-        "keysAreDown" - {
+        test("keysAreDown") {
           val state = InputState.calculateNext(inputState, events, gamepadState)
 
-          state.keyboard.keysAreDown(Key.KEY_D, Key.KEY_E, Key.KEY_F) ==> true
-          state.keyboard.keysAreDown(Key.KEY_F, Key.KEY_D) ==> true
-          state.keyboard.keysAreDown(Key.KEY_A) ==> false
-          state.keyboard.keysAreDown(Key.KEY_D) ==> true
-          state.keyboard.keysAreDown(Key.KEY_A, Key.KEY_D) ==> false
+          assertEquals(state.keyboard.keysAreDown(Key.KEY_D, Key.KEY_E, Key.KEY_F), true)
+          assertEquals(state.keyboard.keysAreDown(Key.KEY_F, Key.KEY_D), true)
+          assertEquals(state.keyboard.keysAreDown(Key.KEY_A), false)
+          assertEquals(state.keyboard.keysAreDown(Key.KEY_D), true)
+          assertEquals(state.keyboard.keysAreDown(Key.KEY_A, Key.KEY_D), false)
         }
 
-        "keysAreUp" - {
+        test("keysAreUp") {
           val state = InputState.calculateNext(inputState, events, gamepadState)
 
-          state.keyboard.keysAreUp(Key.KEY_A, Key.KEY_B, Key.KEY_C) ==> true
-          state.keyboard.keysAreUp(Key.KEY_C, Key.KEY_B) ==> true
-          state.keyboard.keysAreUp(Key.KEY_D) ==> false
-          state.keyboard.keysAreUp(Key.KEY_A) ==> true
-          state.keyboard.keysAreUp(Key.KEY_A, Key.KEY_D) ==> false
+          assertEquals(state.keyboard.keysAreUp(Key.KEY_A, Key.KEY_B, Key.KEY_C), true)
+          assertEquals(state.keyboard.keysAreUp(Key.KEY_C, Key.KEY_B), true)
+          assertEquals(state.keyboard.keysAreUp(Key.KEY_D), false)
+          assertEquals(state.keyboard.keysAreUp(Key.KEY_A), true)
+          assertEquals(state.keyboard.keysAreUp(Key.KEY_A, Key.KEY_D), false)
         }
 
-        "keysReleased" - {
+        test("keysReleased") {
           val state = InputState.calculateNext(inputState, events, gamepadState)
 
           val expected =
@@ -206,14 +204,14 @@ object InputStateTests extends TestSuite {
           val actual =
             state.keyboard.keysReleased
 
-          actual ==> expected
+          assertEquals(actual, expected)
 
         }
 
-        "keysDown persist across frames" - {
+        test("keysDown persist across frames") {
           val state1 = InputState.calculateNext(inputState, events, gamepadState)
 
-          state1.keyboard.keysDown ==> List(Key.KEY_D, Key.KEY_E, Key.KEY_F)
+          assertEquals(state1.keyboard.keysDown, List(Key.KEY_D, Key.KEY_E, Key.KEY_F))
 
           val state2 = InputState.calculateNext(
             state1,
@@ -224,12 +222,12 @@ object InputStateTests extends TestSuite {
             gamepadState
           )
 
-          state2.keyboard.keysDown ==> List(Key.KEY_E, Key.KEY_F, Key.KEY_Z)
+          assertEquals(state2.keyboard.keysDown, List(Key.KEY_E, Key.KEY_F, Key.KEY_Z))
         }
 
-        "lastKeyHeldDown" - {
+        test("lastKeyHeldDown") {
 
-          inputState.keyboard.lastKeyHeldDown ==> None
+          assertEquals(inputState.keyboard.lastKeyHeldDown, None)
 
           val state1 =
             InputState.calculateNext(
@@ -238,7 +236,7 @@ object InputStateTests extends TestSuite {
               gamepadState
             )
 
-          state1.keyboard.lastKeyHeldDown ==> Some(Key.KEY_F)
+          assertEquals(state1.keyboard.lastKeyHeldDown, Some(Key.KEY_F))
 
           val state2 =
             InputState.calculateNext(
@@ -247,7 +245,7 @@ object InputStateTests extends TestSuite {
               gamepadState
             )
 
-          state2.keyboard.lastKeyHeldDown ==> Some(Key.KEY_E)
+          assertEquals(state2.keyboard.lastKeyHeldDown, Some(Key.KEY_E))
 
           val state3 =
             InputState.calculateNext(
@@ -260,12 +258,12 @@ object InputStateTests extends TestSuite {
               gamepadState
             )
 
-          state3.keyboard.lastKeyHeldDown ==> None
+          assertEquals(state3.keyboard.lastKeyHeldDown, None)
         }
 
       }
 
-      "Mapping combinations of inputs" - {
+      test("Mapping combinations of inputs") {
 
         val events: List[InputEvent] =
           List(
@@ -290,7 +288,7 @@ object InputStateTests extends TestSuite {
             )
           )
 
-        "keyboard combo found" - {
+        test("keyboard combo found") {
 
           val mappings: InputMapping[Int] =
             InputMapping[Int](Combo.KeyInputs(Key.KEY_C, Key.KEY_A, Key.KEY_B) -> 10)
@@ -303,10 +301,10 @@ object InputStateTests extends TestSuite {
           val actual =
             state.mapInputs(mappings, 0)
 
-          actual ==> expected
+          assertEquals(actual, expected)
         }
 
-        "keyboard combo not found" - {
+        test("keyboard combo not found") {
 
           val mappings: InputMapping[Int] =
             InputMapping[Int]
@@ -322,10 +320,10 @@ object InputStateTests extends TestSuite {
           val actual =
             state.mapInputs(mappings, 0)
 
-          actual ==> expected
+          assertEquals(actual, expected)
         }
 
-        "mouse combo found" - {
+        test("mouse combo found") {
 
           val mappings: InputMapping[Int] =
             InputMapping[Int](Combo.MouseInputs(MouseInput.MouseDown, MouseInput.MouseAt(10, 10)) -> 10)
@@ -338,10 +336,10 @@ object InputStateTests extends TestSuite {
           val actual =
             state.mapInputs(mappings, 0)
 
-          actual ==> expected
+          assertEquals(actual, expected)
         }
 
-        "mouse combo not found" - {
+        test("mouse combo not found") {
 
           val mappings: InputMapping[Int] =
             InputMapping[Int]
@@ -357,10 +355,10 @@ object InputStateTests extends TestSuite {
           val actual =
             state.mapInputs(mappings, 0)
 
-          actual ==> expected
+          assertEquals(actual, expected)
         }
 
-        "gamepad combo found" - {
+        test("gamepad combo found") {
 
           val mappings: InputMapping[Int] =
             InputMapping[Int](
@@ -375,10 +373,10 @@ object InputStateTests extends TestSuite {
           val actual =
             state.mapInputs(mappings, 0)
 
-          actual ==> expected
+          assertEquals(actual, expected)
         }
 
-        "gamepad combo not found" - {
+        test("gamepad combo not found") {
 
           val mappings: InputMapping[Int] =
             InputMapping[Int]
@@ -394,10 +392,10 @@ object InputStateTests extends TestSuite {
           val actual =
             state.mapInputs(mappings, 0)
 
-          actual ==> expected
+          assertEquals(actual, expected)
         }
 
-        "Mixed combo" - {
+        test("Mixed combo") {
 
           val comboA =
             Combo
@@ -430,9 +428,9 @@ object InputStateTests extends TestSuite {
               .calculateNext(inputState, List(KeyboardEvent.KeyDown(Key.LEFT_ARROW)), gamepadState)
               .mapInputs(mappings, "Combo not met! (3)")
 
-          mappingResult1 ==> "Combo A met"
-          mappingResult2 ==> "Combo B met"
-          mappingResult3 ==> "Combo not met! (3)"
+          assertEquals(mappingResult1, "Combo A met")
+          assertEquals(mappingResult2, "Combo B met")
+          assertEquals(mappingResult3, "Combo not met! (3)")
         }
 
       }

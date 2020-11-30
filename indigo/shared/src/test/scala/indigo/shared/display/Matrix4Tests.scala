@@ -3,58 +3,55 @@ package indigo.shared.display
 import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Matrix4
 
-import utest._
+class Matrix4Tests extends munit.FunSuite {
 
-object Matrix4Tests extends TestSuite {
 
-  val tests: Tests =
-    Tests {
 
-      "Identity" - {
+      test("Identity") {
 
         val expected: List[Double] = List(
           1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
         )
 
-        Matrix4.identity.mat === expected ==> true
+        assertEquals(Matrix4.identity.mat === expected, true)
 
       }
 
-      "Translation" - {
+      test("Translation") {
 
-        "should be able to translate in the X direction" - {
+        test("should be able to translate in the X direction") {
 
           val expected: List[Double] = List(
             1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 2, 0, 0, 1
           )
 
-          Matrix4.identity.translate(2.0, 0, 0).mat === expected ==> true
+          assertEquals(Matrix4.identity.translate(2.0, 0, 0).mat === expected, true)
 
         }
 
-        "should be able to translate in the Y direction" - {
+        test("should be able to translate in the Y direction") {
 
           val expected: List[Double] = List(
             1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 2, 0, 1
           )
 
-          Matrix4.identity.translate(0, 2.0, 0).mat === expected ==> true
+          assertEquals(Matrix4.identity.translate(0, 2.0, 0).mat === expected, true)
 
         }
 
-        "should be able to translate in the Z direction" - {
+        test("should be able to translate in the Z direction") {
 
           val expected: List[Double] = List(
             1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 2, 1
           )
 
-          Matrix4.identity.translate(0, 0, 2.0).mat === expected ==> true
+          assertEquals(Matrix4.identity.translate(0, 0, 2.0).mat === expected, true)
 
         }
 
       }
 
-      "Rotation" - {
+      test("Rotation") {
 
         val s = Math.sin(Math.PI)
         val c = Math.cos(Math.PI)
@@ -78,18 +75,18 @@ object Matrix4Tests extends TestSuite {
           1
         )
 
-        Matrix4.identity.rotate(Math.PI).mat === expected ==> true
+        assertEquals(Matrix4.identity.rotate(Math.PI).mat === expected, true)
       }
 
-      "Scale" - {
+      test("Scale") {
 
-        "should be able to translate in the X direction" - {
+        test("should be able to translate in the X direction") {
 
           val expected: List[Double] = List(
             2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1
           )
 
-          Matrix4.identity.scale(2.0, 3.0, 4.0).mat === expected ==> true
+          assertEquals(Matrix4.identity.scale(2.0, 3.0, 4.0).mat === expected, true)
 
         }
       }

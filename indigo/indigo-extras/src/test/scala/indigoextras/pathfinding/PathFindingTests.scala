@@ -1,20 +1,18 @@
 package indigoextras.pathfinding
 
 import indigoextras.pathfinding.GridSquare.{EmptySquare, EndSquare, ImpassableSquare, StartSquare}
-import utest._
 
 import scala.language.implicitConversions
 import indigo.shared.dice.Dice
 
-object PathFindingTests extends TestSuite {
+class PathFindingTests extends munit.FunSuite {
 
   val coords: Coords = Coords(0, 0)
 
-  val tests: Tests =
-    Tests {
-      "Finding an unobscured path" - {
 
-        "should be able to find a route" - {
+      test("Finding an unobscured path") {
+
+        test("should be able to find a route") {
 
           val start: Coords      = Coords(2, 1)
           val end: Coords        = Coords(0, 2)
@@ -30,15 +28,15 @@ object PathFindingTests extends TestSuite {
             List(start, Coords(1, 1), Coords(1, 2), end)
           )
 
-          possiblePaths.contains(path) ==> true
+          assertEquals(possiblePaths.contains(path), true)
 
         }
 
       }
 
-      "Scoring the grid" - {
+      test("Scoring the grid") {
 
-        "should be able to score a grid" - {
+        test("should be able to score a grid") {
           val start: Coords      = Coords(2, 1)
           val end: Coords        = Coords(0, 2)
           val impassable: Coords = Coords(1, 0)
@@ -58,15 +56,15 @@ object PathFindingTests extends TestSuite {
               EmptySquare(8, Coords(2, 2), Some(2))
             )
 
-          SearchGrid.score(searchGrid) ==> SearchGrid(3, 3, start, end, expected)
+          assertEquals(SearchGrid.score(searchGrid), SearchGrid(3, 3, start, end, expected))
 
         }
 
       }
 
-      "Sampling the grid" - {
+      test("Sampling the grid") {
 
-        "should be able to take a sample in the middle of the map" - {
+        test("should be able to take a sample in the middle of the map") {
           val start: Coords      = Coords(1, 1)
           val end: Coords        = Coords(3, 2)
           val impassable: Coords = Coords(2, 2)
@@ -82,10 +80,10 @@ object PathFindingTests extends TestSuite {
               ImpassableSquare(10, Coords(2, 2))
             )
 
-          SearchGrid.sampleAt(searchGrid, Coords(2, 1), searchGrid.validationWidth) ==> expected
+          assertEquals(SearchGrid.sampleAt(searchGrid, Coords(2, 1), searchGrid.validationWidth), expected)
         }
 
-        "should be able to take a sample at the edge of the map" - {
+        test("should be able to take a sample at the edge of the map") {
           val start: Coords      = Coords(1, 1)
           val end: Coords        = Coords(3, 2)
           val impassable: Coords = Coords(2, 2)
@@ -100,10 +98,10 @@ object PathFindingTests extends TestSuite {
               EndSquare(11, Coords(3, 2))
             )
 
-          SearchGrid.sampleAt(searchGrid, Coords(3, 1), searchGrid.validationWidth) ==> expected
+          assertEquals(SearchGrid.sampleAt(searchGrid, Coords(3, 1), searchGrid.validationWidth), expected)
         }
 
-        "should be able to take a sample at the top left of the map" - {
+        test("should be able to take a sample at the top left of the map") {
           val start: Coords      = Coords(1, 1)
           val end: Coords        = Coords(3, 2)
           val impassable: Coords = Coords(2, 2)
@@ -117,36 +115,36 @@ object PathFindingTests extends TestSuite {
               EmptySquare(4, Coords(0, 1), None)
             )
 
-          SearchGrid.sampleAt(searchGrid, Coords(0, 0), searchGrid.validationWidth) ==> expected
+          assertEquals(SearchGrid.sampleAt(searchGrid, Coords(0, 0), searchGrid.validationWidth), expected)
         }
 
       }
 
-      "Coords" - {
+      test("Coords") {
 
-        "should be able to convert zero indexed coordinates into a one dimensional array position" - {
+        test("should be able to convert zero indexed coordinates into a one dimensional array position") {
 
-          Coords(0, 0).toGridPosition(4) ==> 0
-          Coords(1, 1).toGridPosition(4) ==> 5
-          Coords(2, 3).toGridPosition(4) ==> 14
-          Coords(2, 2).toGridPosition(3) ==> 8
+          assertEquals(Coords(0, 0).toGridPosition(4), 0)
+          assertEquals(Coords(1, 1).toGridPosition(4), 5)
+          assertEquals(Coords(2, 3).toGridPosition(4), 14)
+          assertEquals(Coords(2, 2).toGridPosition(3), 8)
 
         }
 
-        "should be able to convert a zero indexed array position into coordinates" - {
+        test("should be able to convert a zero indexed array position into coordinates") {
 
-          Coords.fromIndex(0, 4) ==> Coords(0, 0)
-          Coords.fromIndex(5, 4) ==> Coords(1, 1)
-          Coords.fromIndex(14, 4) ==> Coords(2, 3)
-          Coords.fromIndex(8, 3) ==> Coords(2, 2)
+          assertEquals(Coords.fromIndex(0, 4), Coords(0, 0))
+          assertEquals(Coords.fromIndex(5, 4), Coords(1, 1))
+          assertEquals(Coords.fromIndex(14, 4), Coords(2, 3))
+          assertEquals(Coords.fromIndex(8, 3), Coords(2, 2))
 
         }
 
       }
 
-      "Generating a grid" - {
+      test("Generating a grid") {
 
-        "should be able to generate a simple search grid" - {
+        test("should be able to generate a simple search grid") {
 
           val start: Coords      = Coords(1, 1)
           val end: Coords        = Coords(3, 2)
@@ -154,29 +152,29 @@ object PathFindingTests extends TestSuite {
 
           val searchGrid = SearchGrid.generate(start, end, List(impassable), 4, 3)
 
-          "is valid" - {
-            searchGrid.isValid ==> true
+          test("is valid") {
+            assertEquals(searchGrid.isValid, true)
           }
 
-          "start" - {
-            searchGrid.grid(start.toGridPosition(4)) ==> StartSquare(5, start)
+          test("start") {
+            assertEquals(searchGrid.grid(start.toGridPosition(4)), StartSquare(5, start))
           }
 
-          "end" - {
-            searchGrid.grid(end.toGridPosition(4)) ==> EndSquare(11, end)
+          test("end") {
+            assertEquals(searchGrid.grid(end.toGridPosition(4)), EndSquare(11, end))
           }
 
-          "impassable" - {
-            searchGrid.grid(impassable.toGridPosition(4)) ==> ImpassableSquare(10, impassable)
+          test("impassable") {
+            assertEquals(searchGrid.grid(impassable.toGridPosition(4)), ImpassableSquare(10, impassable))
           }
 
         }
 
       }
 
-      "Validating a grid" - {
+      test("Validating a grid") {
 
-        "should be able to spot a good grid" - {
+        test("should be able to spot a good grid") {
           val start: Coords = Coords(1, 1)
           val end: Coords   = Coords(2, 2)
 
@@ -192,10 +190,10 @@ object PathFindingTests extends TestSuite {
             EndSquare(0, end)
           )
 
-          SearchGrid.isValid(SearchGrid(3, 3, start, end, grid)) ==> true
+          assertEquals(SearchGrid.isValid(SearchGrid(3, 3, start, end, grid)), true)
         }
 
-        "should be able to spot a grid missing a start" - {
+        test("should be able to spot a grid missing a start") {
           val start: Coords = Coords(1, 1)
           val end: Coords   = Coords(2, 2)
 
@@ -211,10 +209,10 @@ object PathFindingTests extends TestSuite {
             EndSquare(0, end)
           )
 
-          SearchGrid.isValid(SearchGrid(3, 3, start, end, grid)) ==> false
+          assertEquals(SearchGrid.isValid(SearchGrid(3, 3, start, end, grid)), false)
         }
 
-        "should be able to spot a grid missing an end" - {
+        test("should be able to spot a grid missing an end") {
           val start: Coords = Coords(1, 1)
           val end: Coords   = Coords(2, 2)
 
@@ -230,11 +228,11 @@ object PathFindingTests extends TestSuite {
             EmptySquare(0, coords, None)
           )
 
-          SearchGrid.isValid(SearchGrid(3, 3, start, end, grid)) ==> false
+          assertEquals(SearchGrid.isValid(SearchGrid(3, 3, start, end, grid)), false)
 
         }
 
-        "should be able to spot a grid of the wrong size" - {
+        test("should be able to spot a grid of the wrong size") {
           val start: Coords = Coords(1, 1)
           val end: Coords   = Coords(2, 2)
 
@@ -250,7 +248,7 @@ object PathFindingTests extends TestSuite {
             EndSquare(0, end)
           )
 
-          SearchGrid.isValid(SearchGrid(3, 3, start, end, grid)) ==> false
+          assertEquals(SearchGrid.isValid(SearchGrid(3, 3, start, end, grid)), false)
 
         }
 
