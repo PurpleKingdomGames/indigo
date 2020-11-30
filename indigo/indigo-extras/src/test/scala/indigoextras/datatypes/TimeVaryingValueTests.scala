@@ -5,178 +5,179 @@ import indigo.shared.EqualTo._
 
 class TimeVaryingValueTests extends munit.FunSuite {
 
+  test("increasing.should increase one value over time.") {
+    assertEquals(Increasing(0, 10).update(Seconds(0.1)).value, 1.0)
+  }
 
-      test("increasing") {
+  test("increasing.should do a number of iterations over time") {
+    val increments: List[Seconds] =
+      (1 to 10).toList.map(r => Millis(100).toSeconds)
 
-        test("should increase one value over time.") {
-          assertEquals(Increasing(0, 10).update(Seconds(0.1)).value, 1)
-        }
+    val actual: TimeVaryingValue =
+      increments.foldLeft(Increasing(0, 10))((tv, rt) => tv.update(rt))
 
-        test("should do a number of iterations over time") {
-          val increments: List[Seconds] =
-            (1 to 10).toList.map(r => Millis(100).toSeconds)
+    val expected: TimeVaryingValue =
+      Increasing(10, 10)
 
-          val actual: TimeVaryingValue =
-            increments.foldLeft(Increasing(0, 10))((tv, rt) => tv.update(rt))
+    assertEquals(actual, expected)
+  }
 
-          val expected: TimeVaryingValue =
-            Increasing(10, 10)
+  test("increasing capped.should increase one value over time.") {
+    assertEquals(IncreaseTo(0, 10, 100).update(Millis((33.3 * 4).toLong).toSeconds).toInt, 1)
+    assertEquals(IncreaseTo(0, 10, 100).update(Millis(50000).toSeconds).value, 100.0)
+  }
 
-          assertEquals(actual, expected)
-        }
+  test("increasing capped.should do a number of iterations over time up to a limit") {
+    val increments: List[Seconds] =
+      (1 to 11).toList.map(_ * 100).map(r => Millis(r).toSeconds)
 
-      }
+    val actual: IncreaseTo =
+      increments.foldLeft(IncreaseTo(0, 10, 5))((tv, rt) => tv.update(rt))
 
-      test("increasing capped") {
+    val expected: IncreaseTo =
+      IncreaseTo(5, 10, 5)
 
-        test("should increase one value over time.") {
-          assertEquals(IncreaseTo(0, 10, 100).update(Millis((33.3 * 4).toLong).toSeconds).toInt, 1)
-          assertEquals(IncreaseTo(0, 10, 100).update(Millis(50000).toSeconds).value, 100)
-        }
+    assertEquals(actual, expected)
+  }
 
-        test("should do a number of iterations over time up to a limit") {
-          val increments: List[Seconds] =
-            (1 to 11).toList.map(_ * 100).map(r => Millis(r).toSeconds)
+  test("increasing wrapped.should increase one value over time.Case A") {
+    assertEquals(
+      IncreaseWrapAt(10, 3)
+        .update(Millis(100).toSeconds)
+        .value,
+      1.0
+    )
+  }
 
-          val actual: IncreaseTo =
-            increments.foldLeft(IncreaseTo(0, 10, 5))((tv, rt) => tv.update(rt))
+  test("increasing wrapped.should increase one value over time.Case B") {
+    assertEquals(
+      IncreaseWrapAt(10, 3)
+        .update(Millis(100).toSeconds) // 1
+        .update(Millis(100).toSeconds) // 2
+        .value,
+      2.0
+    )
+  }
 
-          val expected: TimeVaryingValue =
-            IncreaseTo(5, 10, 5)
+  test("increasing wrapped.should increase one value over time.Case C") {
+    assertEquals(
+      IncreaseWrapAt(10, 3)
+        .update(Millis(100).toSeconds) // 1
+        .update(Millis(100).toSeconds) // 2
+        .update(Millis(100).toSeconds) // 3
+        .value,
+      3.0
+    )
+  }
 
-          assertEquals(actual, expected)
-        }
+  test("increasing wrapped.should increase one value over time.Case D") {
+    assertEquals(
+      IncreaseWrapAt(10, 3)
+        .update(Millis(100).toSeconds) // 1
+        .update(Millis(100).toSeconds) // 2
+        .update(Millis(100).toSeconds) // 3
+        .update(Millis(100).toSeconds) // 0
+        .value,
+      0.0
+    )
+  }
 
-      }
+  test("increasing wrapped.should increase one value over time.Case E") {
+    assertEquals(
+      IncreaseWrapAt(10, 3)
+        .update(Millis(100).toSeconds) // 1
+        .update(Millis(100).toSeconds) // 2
+        .update(Millis(100).toSeconds) // 3
+        .update(Millis(100).toSeconds) // 0
+        .update(Millis(100).toSeconds) // 1
+        .value,
+      1.0
+    )
+  }
 
-      test("increasing wrapped") {
+  test("decreasing.should decrease one value over time.") {
+    assertEquals(Decreasing(0, 10).update(Seconds(0.1)).value, -1.0)
+  }
 
-        test("should increase one value over time.") {
-          test("Case A") {
-            IncreaseWrapAt(10, 3)
-              .update(Millis(100).toSeconds)
-              assertEquals(.value, 1)
-          }
+  test("decreasing.should do a number of iterations over time") {
+    val increments: List[Seconds] =
+      (1 to 10).toList.map(_ => Millis(100).toSeconds)
 
-          test("Case B") {
-            IncreaseWrapAt(10, 3)
-              .update(Millis(100).toSeconds) // 1
-              .update(Millis(100).toSeconds) // 2
-              assertEquals(.value, 2)
-          }
+    val actual: TimeVaryingValue =
+      increments.foldLeft(Decreasing(0, 10))((tv, rt) => tv.update(rt))
 
-          test("Case C") {
-            IncreaseWrapAt(10, 3)
-              .update(Millis(100).toSeconds) // 1
-              .update(Millis(100).toSeconds) // 2
-              .update(Millis(100).toSeconds) // 3
-              assertEquals(.value, 3)
-          }
+    val expected: TimeVaryingValue =
+      Decreasing(-10, 10)
 
-          test("Case D") {
-            IncreaseWrapAt(10, 3)
-              .update(Millis(100).toSeconds) // 1
-              .update(Millis(100).toSeconds) // 2
-              .update(Millis(100).toSeconds) // 3
-              .update(Millis(100).toSeconds) // 0
-              assertEquals(.value, 0)
-          }
+    assertEquals(actual, expected)
+  }
 
-          test("Case E") {
-            IncreaseWrapAt(10, 3)
-              .update(Millis(100).toSeconds) // 1
-              .update(Millis(100).toSeconds) // 2
-              .update(Millis(100).toSeconds) // 3
-              .update(Millis(100).toSeconds) // 0
-              .update(Millis(100).toSeconds) // 1
-              assertEquals(.value, 1)
-          }
-        }
-      }
+  test("decreasing capped.should do a number of iterations over time down to a limit") {
+    val increments: List[Seconds] =
+      (1 to 10).toList.map(_ * 100).map(r => Millis(r).toSeconds)
 
-      test("decreasing") {
+    val actual: TimeVaryingValue =
+      increments.foldLeft(DecreaseTo(0, 10, -5))((tv, rt) => tv.update(rt))
 
-        test("should decrease one value over time.") {
-          assertEquals(Decreasing(0, 10).update(Seconds(0.1)).value, -1)
-        }
+    val expected: TimeVaryingValue =
+      new DecreaseTo(-5, 10, -5)
 
-        test("should do a number of iterations over time") {
-          val increments: List[Seconds] =
-            (1 to 10).toList.map(_ => Millis(100).toSeconds)
+    assertEquals(actual, expected)
+  }
 
-          val actual: TimeVaryingValue =
-            increments.foldLeft(Decreasing(0, 10))((tv, rt) => tv.update(rt))
+  test("decreasing wrapped.should decrease one value over time.Case A") {
+    assertEquals(
+      DecreaseWrapAt(10, 3)
+        .update(Millis(100).toSeconds)
+        .value,
+      -1.0
+    )
+  }
 
-          val expected: TimeVaryingValue =
-            Decreasing(-10, 10)
+  test("decreasing wrapped.should decrease one value over time.Case B") {
+    assertEquals(
+      DecreaseWrapAt(10, 3)
+        .update(Millis(100).toSeconds)
+        .update(Millis(100).toSeconds)
+        .value,
+      -2.0
+    )
+  }
 
-          assertEquals(actual, expected)
-        }
+  test("decreasing wrapped.should decrease one value over time.Case C") {
+    assertEquals(
+      DecreaseWrapAt(10, 3)
+        .update(Millis(100).toSeconds)
+        .update(Millis(100).toSeconds)
+        .update(Millis(100).toSeconds)
+        .value,
+      -3.0
+    )
+  }
 
-      }
+  test("decreasing wrapped.should decrease one value over time.Case D") {
+    assertEquals(
+      DecreaseWrapAt(10, 3)
+        .update(Millis(100).toSeconds)
+        .update(Millis(100).toSeconds)
+        .update(Millis(100).toSeconds)
+        .update(Millis(100).toSeconds)
+        .value,
+      0.0
+    )
+  }
 
-      test("decreasing capped") {
-
-        test("should do a number of iterations over time down to a limit") {
-          val increments: List[Seconds] =
-            (1 to 10).toList.map(_ * 100).map(r => Millis(r).toSeconds)
-
-          val actual: TimeVaryingValue =
-            increments.foldLeft(DecreaseTo(0, 10, -5))((tv, rt) => tv.update(rt))
-
-          val expected: TimeVaryingValue =
-            new DecreaseTo(-5, 10, -5)
-
-          assertEquals(actual, expected)
-        }
-
-      }
-
-      test("decreasing wrapped") {
-
-        test("should decrease one value over time.") {
-          test("Case A") {
-            DecreaseWrapAt(10, 3)
-              .update(Millis(100).toSeconds)
-              assertEquals(.value, -1)
-          }
-
-          test("Case B") {
-            DecreaseWrapAt(10, 3)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
-              assertEquals(.value, -2)
-          }
-
-          test("Case C") {
-            DecreaseWrapAt(10, 3)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
-              assertEquals(.value, -3)
-          }
-
-          test("Case D") {
-            DecreaseWrapAt(10, 3)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
-              assertEquals(.value, 0)
-          }
-
-          test("Case E") {
-            DecreaseWrapAt(10, 3)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
-              .update(Millis(100).toSeconds)
-              assertEquals(.value, -1)
-          }
-        }
-
-      }
-    }
+  test("decreasing wrapped.should decrease one value over time.Case E") {
+    assertEquals(
+      DecreaseWrapAt(10, 3)
+        .update(Millis(100).toSeconds)
+        .update(Millis(100).toSeconds)
+        .update(Millis(100).toSeconds)
+        .update(Millis(100).toSeconds)
+        .update(Millis(100).toSeconds)
+        .value,
+      -1.0
+    )
+  }
 
 }

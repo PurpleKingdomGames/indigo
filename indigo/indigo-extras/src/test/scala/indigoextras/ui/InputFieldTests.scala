@@ -42,241 +42,240 @@ class InputFieldTests extends munit.FunSuite {
   val boundaryLocator: BoundaryLocator =
     new BoundaryLocator(new AnimationsRegister, fontRegister)
 
+  val atCommaPosition =
+    InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorRight.cursorRight.cursorRight
 
+  test("Editing operations.set cursor position directly") {
+    val text  = "Hello, world!"
+    val field = InputField(text, assets).cursorHome
+    assertEquals(field.moveCursorTo(-1).cursorPosition, 0)
+    assertEquals(field.moveCursorTo(0).cursorPosition, 0)
+    assertEquals(field.moveCursorTo(text.length() + 1).cursorPosition, text.length() - 1)
+    assertEquals(field.moveCursorTo(text.length()).cursorPosition, text.length() - 1)
+    assertEquals(field.moveCursorTo(text.length() - 1).cursorPosition, text.length() - 1)
+    assertEquals(field.moveCursorTo(5).cursorPosition, 5)
+  }
+  test("Editing operations.cursor movement") {
+    assertEquals(InputField("Hello, world!", assets).cursorHome.cursorPosition, 0)
+    assertEquals(InputField("Hello, world!", assets).cursorHome.cursorRight.cursorPosition, 1)
+    assertEquals(InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorPosition, 2)
+    assertEquals(InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorLeft.cursorPosition, 1)
+    assertEquals(InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorLeft.cursorLeft.cursorPosition, 0)
+  }
+  test("Editing operations.cursor left treats newlines as a normal character") {
+    assertEquals(InputField("ab\nc", assets).cursorEnd.cursorPosition, 4)
+    assertEquals(InputField("ab\nc", assets).cursorEnd.cursorLeft.cursorPosition, 3)
+    assertEquals(InputField("ab\nc", assets).cursorEnd.cursorLeft.cursorLeft.cursorPosition, 2)
+    assertEquals(InputField("ab\nc", assets).cursorEnd.cursorLeft.cursorLeft.cursorLeft.cursorPosition, 1)
+    assertEquals(InputField("ab\nc", assets).cursorEnd.cursorLeft.cursorLeft.cursorLeft.cursorLeft.cursorPosition, 0)
+  }
+  test("Editing operations.cursor right treats newlines as a normal character") {
+    assertEquals(InputField("ab\nc", assets).cursorHome.cursorPosition, 0)
+    assertEquals(InputField("ab\nc", assets).cursorHome.cursorRight.cursorPosition, 1)
+    assertEquals(InputField("ab\nc", assets).cursorHome.cursorRight.cursorRight.cursorPosition, 2)
+    assertEquals(InputField("ab\nc", assets).cursorHome.cursorRight.cursorRight.cursorRight.cursorPosition, 3)
+    assertEquals(InputField("ab\nc", assets).cursorHome.cursorRight.cursorRight.cursorRight.cursorRight.cursorPosition, 4)
+  }
+  test("Editing operations.cursor home") {
+    assertEquals(InputField("Hello, world!", assets).cursorHome.cursorPosition, 0)
+  }
+  test("Editing operations.cursor end") {
+    assertEquals(InputField("Hello, world!", assets).cursorHome.cursorEnd.cursorPosition, "Hello, world!".length())
+  }
+  test("Editing operations.delete") {
+    assertEquals(InputField("Hello, world!", assets).cursorHome.delete.text, "ello, world!")
+    assertEquals(InputField("Hello, world!", assets).cursorHome.delete.cursorPosition, 0)
+    assertEquals(InputField("Hello, world!", assets).cursorEnd.delete.text, "Hello, world!")
+    assertEquals(InputField("Hello, world!", assets).cursorEnd.delete.cursorPosition, "Hello, world!".length())
 
-      test("Editing operations") {
+    assertEquals(atCommaPosition.delete.text, "Hello world!")
+    assertEquals(atCommaPosition.delete.cursorPosition, 5)
+  }
+  test("Editing operations.backspace") {
+    assertEquals(InputField("Hello, world!", assets).cursorHome.backspace.text, "Hello, world!")
+    assertEquals(InputField("Hello, world!", assets).cursorHome.backspace.cursorPosition, 0)
+    assertEquals(InputField("Hello, world!", assets).cursorEnd.backspace.text, "Hello, world")
+    assertEquals(InputField("Hello, world!", assets).cursorEnd.backspace.cursorPosition, "Hello, world!".length() - 1)
 
-        val atCommaPosition =
-          InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorRight.cursorRight.cursorRight
+    assertEquals(atCommaPosition.backspace.text, "Hell, world!")
+    assertEquals(atCommaPosition.backspace.cursorPosition, 4)
+  }
+  test("Editing operations.add character(s)") {
+    assertEquals(InputField("Hello, world!", assets).addCharacterText(" Fish!").text, "Hello, world! Fish!")
 
-        test("set cursor position directly") {
-          val text  = "Hello, world!"
-          val field = InputField(text, assets).cursorHome
-          assertEquals(field.moveCursorTo(-1).cursorPosition, 0)
-          assertEquals(field.moveCursorTo(0).cursorPosition, 0)
-          assertEquals(field.moveCursorTo(text.length() + 1).cursorPosition, text.length() - 1)
-          assertEquals(field.moveCursorTo(text.length()).cursorPosition, text.length() - 1)
-          assertEquals(field.moveCursorTo(text.length() - 1).cursorPosition, text.length() - 1)
-          assertEquals(field.moveCursorTo(5).cursorPosition, 5)
-        }
-        test("cursor movement") {
-          assertEquals(InputField("Hello, world!", assets).cursorHome.cursorPosition, 0)
-          assertEquals(InputField("Hello, world!", assets).cursorHome.cursorRight.cursorPosition, 1)
-          assertEquals(InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorPosition, 2)
-          assertEquals(InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorLeft.cursorPosition, 1)
-          assertEquals(InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorLeft.cursorLeft.cursorPosition, 0)
-        }
-        test("cursor left treats newlines as a normal character") {
-          assertEquals(InputField("ab\nc", assets).cursorEnd.cursorPosition, 4)
-          assertEquals(InputField("ab\nc", assets).cursorEnd.cursorLeft.cursorPosition, 3)
-          assertEquals(InputField("ab\nc", assets).cursorEnd.cursorLeft.cursorLeft.cursorPosition, 2)
-          assertEquals(InputField("ab\nc", assets).cursorEnd.cursorLeft.cursorLeft.cursorLeft.cursorPosition, 1)
-          assertEquals(InputField("ab\nc", assets).cursorEnd.cursorLeft.cursorLeft.cursorLeft.cursorLeft.cursorPosition, 0)
-        }
-        test("cursor right treats newlines as a normal character") {
-          assertEquals(InputField("ab\nc", assets).cursorHome.cursorPosition, 0)
-          assertEquals(InputField("ab\nc", assets).cursorHome.cursorRight.cursorPosition, 1)
-          assertEquals(InputField("ab\nc", assets).cursorHome.cursorRight.cursorRight.cursorPosition, 2)
-          assertEquals(InputField("ab\nc", assets).cursorHome.cursorRight.cursorRight.cursorRight.cursorPosition, 3)
-          assertEquals(InputField("ab\nc", assets).cursorHome.cursorRight.cursorRight.cursorRight.cursorRight.cursorPosition, 4)
-        }
-        test("cursor home") {
-          assertEquals(InputField("Hello, world!", assets).cursorHome.cursorPosition, 0)
-        }
-        test("cursor end") {
-          assertEquals(InputField("Hello, world!", assets).cursorHome.cursorEnd.cursorPosition, "Hello, world!".length())
-        }
-        test("delete") {
-          assertEquals(InputField("Hello, world!", assets).cursorHome.delete.text, "ello, world!")
-          assertEquals(InputField("Hello, world!", assets).cursorHome.delete.cursorPosition, 0)
-          assertEquals(InputField("Hello, world!", assets).cursorEnd.delete.text, "Hello, world!")
-          assertEquals(InputField("Hello, world!", assets).cursorEnd.delete.cursorPosition, "Hello, world!".length())
+    assertEquals(
+      InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorRight.cursorRight.cursorRight.delete
+        .addCharacterText(" Fish!")
+        .text,
+      "Hello Fish! world!"
+    )
 
-          assertEquals(atCommaPosition.delete.text, "Hello world!")
-          assertEquals(atCommaPosition.delete.cursorPosition, 5)
-        }
-        test("backspace") {
-          assertEquals(InputField("Hello, world!", assets).cursorHome.backspace.text, "Hello, world!")
-          assertEquals(InputField("Hello, world!", assets).cursorHome.backspace.cursorPosition, 0)
-          assertEquals(InputField("Hello, world!", assets).cursorEnd.backspace.text, "Hello, world")
-          assertEquals(InputField("Hello, world!", assets).cursorEnd.backspace.cursorPosition, "Hello, world!".length() - 1)
+    assertEquals(InputField("Hello, world!", assets).cursorHome.addCharacter('X').text, "XHello, world!")
 
-          assertEquals(atCommaPosition.backspace.text, "Hell, world!")
-          assertEquals(atCommaPosition.backspace.cursorPosition, 4)
-        }
-        test("add character(s)") {
-          assertEquals(InputField("Hello, world!", assets).addCharacterText(" Fish!").text, "Hello, world! Fish!")
+    assertEquals(
+      InputField("Hello, world!", assets).makeSingleLine
+        .addCharacter('x')
+        .text,
+      "Hello, world!x"
+    )
 
-          InputField("Hello, world!", assets).cursorHome.cursorRight.cursorRight.cursorRight.cursorRight.cursorRight.delete
-            .addCharacterText(" Fish!")
-            assertEquals(.text, "Hello Fish! world!")
+    assertEquals(
+      InputField("Hello, world!", assets).makeSingleLine
+        .addCharacter('\n')
+        .text,
+      "Hello, world!"
+    )
 
-          assertEquals(InputField("Hello, world!", assets).cursorHome.addCharacter('X').text, "XHello, world!")
+    assertEquals(
+      InputField("Hello, world!", assets).makeMultiLine
+        .addCharacterText("a\nb")
+        .text,
+      "Hello, world!a\nb"
+    )
 
-          InputField("Hello, world!", assets).makeSingleLine
-            .addCharacter('x')
-            assertEquals(.text, "Hello, world!x")
+    assertEquals(
+      InputField("Hello, world!", assets).makeSingleLine
+        .addCharacterText("a\nb")
+        .text,
+      "Hello, world!ab"
+    )
+  }
 
-          InputField("Hello, world!", assets).makeSingleLine
-            .addCharacter('\n')
-            assertEquals(.text, "Hello, world!")
+  test("Multi line boxes have bounds correctly caluculated") {
+    val actual =
+      InputField("ab\nc", assets).moveTo(50, 50).bounds(boundaryLocator)
 
-          InputField("Hello, world!", assets).makeMultiLine
-            .addCharacterText("a\nb")
-            assertEquals(.text, "Hello, world!a\nb")
+    val expected =
+      Rectangle(50, 50, 26, 36)
 
-          InputField("Hello, world!", assets).makeSingleLine
-            .addCharacterText("a\nb")
-            assertEquals(.text, "Hello, world!ab")
-        }
+    assertEquals(actual, expected)
+  }
 
-      }
+  val initialPosition: Point =
+    Point(50, 50)
 
-      test("Multi line boxes have bounds correctly caluculated") {
-        val actual =
-          InputField("ab\nc", assets).moveTo(50, 50).bounds(boundaryLocator)
+  val inputField =
+    InputField("ab\nc", assets).noCursorBlink.giveFocus.state
+      .moveTo(initialPosition)
 
-        val expected =
-          Rectangle(50, 50, 26, 36)
+  def extractCursorPosition(field: InputField): Point =
+    field
+      .draw(GameTime.zero, boundaryLocator)
+      .uiLayer
+      .nodes
+      .collect { case g: Graphic => g }
+      .head
+      .position
 
-        assertEquals(actual, expected)
-      }
+  test("Cursor drawing.home") {
+    val actual =
+      extractCursorPosition(inputField.cursorHome)
 
-      test("Cursor drawing") {
+    val expected =
+      initialPosition
 
-        val initialPosition: Point =
-          Point(50, 50)
+    assertEquals(actual, expected)
+  }
 
-        val inputField =
-          InputField("ab\nc", assets).noCursorBlink.giveFocus.state
-            .moveTo(initialPosition)
+  test("Cursor drawing.somewhere in the middle") {
+    val actual =
+      extractCursorPosition(inputField.cursorHome.cursorRight)
 
-        def extractCursorPosition(field: InputField): Point =
-          field
-            .draw(GameTime.zero, boundaryLocator)
-            .uiLayer
-            .nodes
-            .collect { case g: Graphic => g }
-            .head
-            .position
+    val expected =
+      initialPosition + Point(16, 0)
 
-        test("home") {
-          val actual =
-            extractCursorPosition(inputField.cursorHome)
+    assertEquals(actual, expected)
+  }
 
-          val expected =
-            initialPosition
+  test("Cursor drawing.end") {
+    val actual =
+      extractCursorPosition(inputField.cursorEnd)
 
-          assertEquals(actual, expected)
-        }
+    val expected =
+      initialPosition + Point(16, 20)
 
-        test("somewhere in the middle") {
-          val actual =
-            extractCursorPosition(inputField.cursorHome.cursorRight)
+    assertEquals(actual, expected)
+  }
 
-          val expected =
-            initialPosition + Point(16, 0)
+  test("Cursor drawing.newlines move cursor to home on next line") {
+    val actual =
+      extractCursorPosition(inputField.moveTo(Point.zero).moveCursorTo(3))
 
-          assertEquals(actual, expected)
-        }
+    val expected =
+      Point(0, 20)
 
-        test("end") {
-          val actual =
-            extractCursorPosition(inputField.cursorEnd)
+    assertEquals(actual, expected)
+  }
 
-          val expected =
-            initialPosition + Point(16, 20)
+  test("Cursor drawing.Updated text emits an event.if the key is set") {
+    val key =
+      BindingKey("test")
 
-          assertEquals(actual, expected)
-        }
+    val field =
+      InputField("", assets).giveFocus.state.withKey(BindingKey("test"))
 
-        test("newlines move cursor to home on next line") {
-          val actual =
-            extractCursorPosition(inputField.moveTo(Point.zero).moveCursorTo(3))
+    val actual =
+      field.update(context).flatMap(_.update(context))
 
-          val expected =
-            Point(0, 20)
+    assertEquals(actual.state.text, "ABCABC")
+    assertEquals(actual.globalEvents.head, InputFieldChange(key, "ABC"))
+    assertEquals(actual.globalEvents(1), InputFieldChange(key, "ABCABC"))
+  }
 
-          assertEquals(actual, expected)
-        }
+  test("Cursor drawing.Updated text emits an event.unless the key is unset") {
+    val field =
+      InputField("", assets).giveFocus.state
 
-        test("Updated text emits an event") {
+    val actual =
+      field.update(context).flatMap(_.update(context))
 
-          test("if the key is set") {
-            val key =
-              BindingKey("test")
+    assertEquals(actual.state.text, "ABCABC")
+    assertEquals(actual.globalEvents, Nil)
+  }
 
-            val field =
-              InputField("", assets).giveFocus.state.withKey(BindingKey("test"))
+  test("Cursor drawing.Focusing an input field emits events") {
+    val event =
+      TestInputFieldEvent("test 1")
 
-            val actual =
-              field.update(context).flatMap(_.update(context))
+    val actual =
+      InputField("", assets)
+        .withFocusActions(event)
+        .giveFocus
 
-            assertEquals(actual.state.text, "ABCABC")
-            assertEquals(actual.globalEvents.head, InputFieldChange(key, "ABC"))
-            assertEquals(actual.globalEvents(1), InputFieldChange(key, "ABCABC"))
-          }
+    assertEquals(actual.state.hasFocus, true)
+    assertEquals(actual.globalEvents, List(event))
+  }
 
-          test("unless the key is unset") {
-            val field =
-              InputField("", assets).giveFocus.state
+  test("Cursor drawing.Losing focus on an input field emits events") {
+    val event =
+      TestInputFieldEvent("test 2")
 
-            val actual =
-              field.update(context).flatMap(_.update(context))
+    val actual =
+      InputField("", assets)
+        .withLoseFocusActions(event)
+        .giveFocus
+        .state
+        .loseFocus
 
-            assertEquals(actual.state.text, "ABCABC")
-            assertEquals(actual.globalEvents, Nil)
-          }
+    assertEquals(actual.state.hasFocus, false)
+    assertEquals(actual.globalEvents, List(event))
+  }
 
-        }
+  val keysUp: List[KeyboardEvent.KeyUp] =
+    List(
+      KeyboardEvent.KeyUp(Key.KEY_A),
+      KeyboardEvent.KeyUp(Key.KEY_B),
+      KeyboardEvent.KeyUp(Key.KEY_C)
+    )
 
-        test("Focusing an input field emits events") {
-          val event =
-            TestInputFieldEvent("test 1")
-
-          val actual =
-            InputField("", assets)
-              .withFocusActions(event)
-              .giveFocus
-
-          assertEquals(actual.state.hasFocus, true)
-          assertEquals(actual.globalEvents, List(event))
-        }
-
-        test("Losing focus on an input field emits events") {
-          val event =
-            TestInputFieldEvent("test 2")
-
-          val actual =
-            InputField("", assets)
-              .withLoseFocusActions(event)
-              .giveFocus
-              .state
-              .loseFocus
-
-          assertEquals(actual.state.hasFocus, false)
-          assertEquals(actual.globalEvents, List(event))
-        }
-
-      }
-
-      val keysUp: List[KeyboardEvent.KeyUp] =
-        List(
-          KeyboardEvent.KeyUp(Key.KEY_A),
-          KeyboardEvent.KeyUp(Key.KEY_B),
-          KeyboardEvent.KeyUp(Key.KEY_C)
-        )
-
-      def context: FrameContext[Unit] =
-        new FrameContext[Unit](
-          GameTime.zero,
-          Dice.loaded(1),
-          new InputState(Mouse.default, new Keyboard(keysUp, Nil, None), Gamepad.default),
-          new BoundaryLocator(new AnimationsRegister, new FontRegister),
-          ()
-        )
-
-    }
+  def context: FrameContext[Unit] =
+    new FrameContext[Unit](
+      GameTime.zero,
+      Dice.loaded(1),
+      new InputState(Mouse.default, new Keyboard(keysUp, Nil, None), Gamepad.default),
+      new BoundaryLocator(new AnimationsRegister, new FontRegister),
+      ()
+    )
 
   object Samples {
     val material = Material.Textured(AssetName("font-sheet"))

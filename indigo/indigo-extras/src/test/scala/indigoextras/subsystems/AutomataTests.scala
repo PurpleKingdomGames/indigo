@@ -48,142 +48,137 @@ class AutomataTests extends munit.FunSuite {
       .update(context(1), AutomataState(0, Nil))(AutomataEvent.Spawn(poolKey, Point.zero, None, None))
       .state
 
+  test("Starting state should contain 1 automaton") {
 
+    val expected =
+      SpawnedAutomaton(
+        graphic,
+        ModiferFunctions.signal,
+        onCull,
+        new AutomatonSeedValues(
+          Point.zero,
+          Seconds(0),
+          Seconds(1),
+          1, // comes from the fake frame context
+          None
+        )
+      )
 
-      test("Starting state should contain 1 automaton") {
+    assertEquals(startingState.totalSpawned, 1l)
+    assertEquals(startingState.pool.length, 1)
+    assertEquals(startingState.pool.head, expected)
+  }
 
-        val expected =
-          SpawnedAutomaton(
-            graphic,
-            ModiferFunctions.signal,
-            onCull,
-            new AutomatonSeedValues(
-              Point.zero,
-              Seconds(0),
-              Seconds(1),
-              1, // comes from the fake frame context
-              None
-            )
-          )
+  test("should move a particle with a modifier signal") {
 
-        assertEquals(startingState.totalSpawned, 1)
-        assertEquals(startingState.pool.length, 1)
-        assertEquals(startingState.pool.head, expected)
-      }
+    import ModiferFunctions._
 
-      test("should move a particle with a modifier signal") {
+    // Test the signal
+    val seed = new AutomatonSeedValues(Point.zero, Seconds.zero, Seconds(1), 0, None)
 
-        import ModiferFunctions._
+    assertEquals(makePosition(seed).at(Seconds(0)), Point(0, 0))
+    assertEquals(makePosition(seed).at(Seconds(0.5)), Point(0, -15))
+    assertEquals(makePosition(seed).at(Seconds(1)), Point(0, -30))
 
-        // Test the signal
-        val seed = new AutomatonSeedValues(Point.zero, Seconds.zero, Seconds(1), 0, None)
+    // Test the automaton
+    def drawAt(time: Seconds): Graphic = {
+      val ctx = context(1, time, time)
 
-        assertEquals(makePosition(seed).at(Seconds(0)), Point(0, 0))
-        assertEquals(makePosition(seed).at(Seconds(0.5)), Point(0, -15))
-        assertEquals(makePosition(seed).at(Seconds(1)), Point(0, -30))
+      val nextState =
+        automata
+          .update(ctx, startingState)(AutomataEvent.Update(poolKey))
+          .state
 
-        // Test the automaton
-        def drawAt(time: Seconds): Graphic = {
-          val ctx = context(1, time, time)
-
-          val nextState =
-            automata
-              .update(ctx, startingState)(AutomataEvent.Update(poolKey))
-              .state
-
-          automata
-            .present(ctx, nextState)
-            .gameLayer
-            .nodes
-            .collect { case g: Graphic => g }
-            .head
-        }
-
-        assertEquals(drawAt(Seconds(0)).position, Point(0, 0))
-        assertEquals(drawAt(Seconds(0.5)).position, Point(0, -15))
-        assertEquals(drawAt(Seconds(0.9)).position, Point(0, -27))
-      }
-
-      test("culling an automaton should result in an event") {
-
-        // 1 ms over the lifespan, so should be culled
-        val outcome =
-          automata
-            .update(context(1, Seconds(1)), startingState)(AutomataEvent.Update(poolKey))
-
-        assertEquals(outcome.state.totalSpawned, 1)
-        assertEquals(outcome.state.pool.length, 0)
-        assertEquals(outcome.globalEvents.head, eventInstance)
-      }
-
-      test("KillAll should... kill all the automatons.") {
-
-        // At any time, KillAll, should remove all automatons without trigger cull events.
-        val outcome =
-          automata
-            .update(context(1, Seconds(0)), startingState)(AutomataEvent.KillAll(poolKey))
-
-        assertEquals(outcome.state.totalSpawned, 1)
-        assertEquals(outcome.state.pool.isEmpty, true)
-        assertEquals(outcome.globalEvents.isEmpty, true)
-      }
-
-      test("AutomatonNode") {
-
-        test("fixed") {
-          val node =
-            AutomatonNode.Fixed(graphic).giveNode(0, Dice.loaded(0))
-
-          assertEquals(node, graphic)
-        }
-
-        test("one of") {
-          val nodeList: NonEmptyList[SceneGraphNode] =
-            NonEmptyList(
-              graphic.moveTo(0, 0),
-              graphic.moveTo(0, 10),
-              graphic.moveTo(0, 20)
-            )
-
-          val nodes =
-            AutomatonNode.OneOf(nodeList)
-
-          assertEquals(nodes.giveNode(0, Dice.loaded(0)).y, graphic.moveTo(0, 0).y)
-          assertEquals(nodes.giveNode(0, Dice.loaded(1)).y, graphic.moveTo(0, 10).y)
-          assertEquals(nodes.giveNode(0, Dice.loaded(2)).y, graphic.moveTo(0, 20).y)
-
-          val dice = Dice.Sides.MaxInt(0)
-
-          (0 to 100).toList.forall { _ =>
-            val g = nodes.giveNode(0, dice).y
-            nodeList.toList.map(_.y).contains(g)
-          assertEquals(}, true)
-
-        }
-
-        test("cycle") {
-          val nodeList: NonEmptyList[SceneGraphNode] =
-            NonEmptyList(
-              graphic.moveTo(0, 0),
-              graphic.moveTo(0, 10),
-              graphic.moveTo(0, 20)
-            )
-
-          val nodes =
-            AutomatonNode.Cycle(nodeList)
-
-          assertEquals(nodes.giveNode(0, Dice.loaded(0)).y, graphic.moveTo(0, 0).y)
-          assertEquals(nodes.giveNode(1, Dice.loaded(0)).y, graphic.moveTo(0, 10).y)
-          assertEquals(nodes.giveNode(2, Dice.loaded(0)).y, graphic.moveTo(0, 20).y)
-          assertEquals(nodes.giveNode(3, Dice.loaded(0)).y, graphic.moveTo(0, 0).y)
-          assertEquals(nodes.giveNode(4, Dice.loaded(0)).y, graphic.moveTo(0, 10).y)
-          assertEquals(nodes.giveNode(5, Dice.loaded(0)).y, graphic.moveTo(0, 20).y)
-          assertEquals(nodes.giveNode(6, Dice.loaded(0)).y, graphic.moveTo(0, 0).y)
-        }
-
-      }
-
+      automata
+        .present(ctx, nextState)
+        .gameLayer
+        .nodes
+        .collect { case g: Graphic => g }
+        .head
     }
+
+    assertEquals(drawAt(Seconds(0)).position, Point(0, 0))
+    assertEquals(drawAt(Seconds(0.5)).position, Point(0, -15))
+    assertEquals(drawAt(Seconds(0.9)).position, Point(0, -27))
+  }
+
+  test("culling an automaton should result in an event") {
+
+    // 1 ms over the lifespan, so should be culled
+    val outcome =
+      automata
+        .update(context(1, Seconds(1)), startingState)(AutomataEvent.Update(poolKey))
+
+    assertEquals(outcome.state.totalSpawned, 1l)
+    assertEquals(outcome.state.pool.length, 0)
+    assertEquals(outcome.globalEvents.head, eventInstance)
+  }
+
+  test("KillAll should... kill all the automatons.") {
+
+    // At any time, KillAll, should remove all automatons without trigger cull events.
+    val outcome =
+      automata
+        .update(context(1, Seconds(0)), startingState)(AutomataEvent.KillAll(poolKey))
+
+    assertEquals(outcome.state.totalSpawned, 1l)
+    assertEquals(outcome.state.pool.isEmpty, true)
+    assertEquals(outcome.globalEvents.isEmpty, true)
+  }
+
+  test("AutomatonNode.fixed") {
+    val node =
+      AutomatonNode.Fixed(graphic).giveNode(0, Dice.loaded(0))
+
+    assertEquals(node, graphic)
+  }
+
+  test("AutomatonNode.one of") {
+    val nodeList: NonEmptyList[SceneGraphNode] =
+      NonEmptyList(
+        graphic.moveTo(0, 0),
+        graphic.moveTo(0, 10),
+        graphic.moveTo(0, 20)
+      )
+
+    val nodes =
+      AutomatonNode.OneOf(nodeList)
+
+    assertEquals(nodes.giveNode(0, Dice.loaded(0)).y, graphic.moveTo(0, 0).y)
+    assertEquals(nodes.giveNode(0, Dice.loaded(1)).y, graphic.moveTo(0, 10).y)
+    assertEquals(nodes.giveNode(0, Dice.loaded(2)).y, graphic.moveTo(0, 20).y)
+
+    val dice = Dice.Sides.MaxInt(0)
+
+    assertEquals(
+      (0 to 100).toList.forall { _ =>
+        val g = nodes.giveNode(0, dice).y
+        nodeList.toList.map(_.y).contains(g)
+      },
+      true
+    )
+
+  }
+
+  test("AutomatonNode.cycle") {
+    val nodeList: NonEmptyList[SceneGraphNode] =
+      NonEmptyList(
+        graphic.moveTo(0, 0),
+        graphic.moveTo(0, 10),
+        graphic.moveTo(0, 20)
+      )
+
+    val nodes =
+      AutomatonNode.Cycle(nodeList)
+
+    assertEquals(nodes.giveNode(0, Dice.loaded(0)).y, graphic.moveTo(0, 0).y)
+    assertEquals(nodes.giveNode(1, Dice.loaded(0)).y, graphic.moveTo(0, 10).y)
+    assertEquals(nodes.giveNode(2, Dice.loaded(0)).y, graphic.moveTo(0, 20).y)
+    assertEquals(nodes.giveNode(3, Dice.loaded(0)).y, graphic.moveTo(0, 0).y)
+    assertEquals(nodes.giveNode(4, Dice.loaded(0)).y, graphic.moveTo(0, 10).y)
+    assertEquals(nodes.giveNode(5, Dice.loaded(0)).y, graphic.moveTo(0, 20).y)
+    assertEquals(nodes.giveNode(6, Dice.loaded(0)).y, graphic.moveTo(0, 0).y)
+  }
 
   object ModiferFunctions {
 
