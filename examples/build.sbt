@@ -6,18 +6,19 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.13.4",
   organization := "indigo-examples",
   libraryDependencies ++= Seq(
-    "com.lihaoyi"     %%% "utest"         % "0.7.4" % "test",
+    "org.scalameta"   %%% "munit"          % "0.7.19" % Test,
     "io.indigoengine" %%% "indigo"        % IndigoVersion.getVersion,
     "io.indigoengine" %%% "indigo-extras" % IndigoVersion.getVersion
   ),
-  testFrameworks += new TestFramework("utest.runner.Framework"),
+  testFrameworks += new TestFramework("munit.Framework"),
   scalacOptions in (Compile, compile) ++= ScalacOptions.scala213Compile,
   scalacOptions in (Test, test) ++= ScalacOptions.scala213Test,
   wartremoverWarnings in (Compile, compile) ++= Warts.allBut(
     Wart.Overloading,
     Wart.ImplicitParameter
   ),
-  scalacOptions += "-Yrangepos"
+  scalacOptions += "-Yrangepos",
+  Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
 )
 
 // Examples
