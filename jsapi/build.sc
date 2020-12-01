@@ -28,9 +28,9 @@ object apigen extends ScalaModule {
     )
 
   object test extends Tests {
-    def ivyDeps = Agg(ivy"com.lihaoyi::utest:0.7.4")
+    def ivyDeps = Agg(ivy"org.scalameta::munit:0.7.19")
 
-    def testFrameworks = Seq("utest.runner.Framework")
+    def testFrameworks = Seq("munit.Framework")
 
     def scalacOptions = ScalacOptions.scala213Test
   }
@@ -59,9 +59,11 @@ object indigojs extends ScalaJSModule {
   def scalacOptions = ScalacOptions.scala213Compile
 
   object test extends Tests {
-    def ivyDeps = Agg(ivy"com.lihaoyi::utest:0.7.4")
+    def ivyDeps = Agg(ivy"org.scalameta::munit::0.7.19")
 
-    def testFrameworks = Seq("utest.runner.Framework")
+    def testFrameworks = Seq("munit.Framework")
+
+    override def moduleKind = T(mill.scalajslib.api.ModuleKind.CommonJSModule)
 
     def scalacOptions = ScalacOptions.scala213Test ++ Seq(
       "-P:wartremover:traverser:org.wartremover.warts.Unsafe"
@@ -139,7 +141,7 @@ object IndigoVersion {
     def rec(path: String, levels: Int, version: Option[String]): String = {
       val msg = "ERROR: Couldn't find indigo version."
       version match {
-        case Some(v) => 
+        case Some(v) =>
           println(s"""Indigo version set to '$v'""")
           v
 
@@ -157,7 +159,7 @@ object IndigoVersion {
           throw new Exception(msg)
       }
     }
-    
+
     rec(".indigo-version", 0, None)
   }
 }
