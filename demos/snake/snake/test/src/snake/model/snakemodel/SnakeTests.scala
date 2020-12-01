@@ -2,9 +2,7 @@ package snake.model.snakemodel
 
 import snake.model.grid.{GridPoint, GridSize}
 
-import utest._
-
-object SnakeTests extends TestSuite {
+class SnakeTests extends munit.FunSuite {
 
   val gridSize: GridSize = GridSize(10, 10, 16)
 
@@ -18,217 +16,186 @@ object SnakeTests extends TestSuite {
     def doTick(): Snake = tick(snake, 1)
   }
 
-  val tests: Tests =
-    Tests {
-      "Moving and turning" - {
+  test("Moving and turning.should advance forward on each tick") {
 
-        "should advance forward on each tick" - {
+    val s = tick(Snake(GridPoint.identity), 1)
 
-          val s = tick(Snake(GridPoint.identity), 1)
+    assertEquals(s.length, 1)
+    assertEquals(s.start, GridPoint(0, 1))
 
-          s.length ==> 1
-          s.start ==> GridPoint(0, 1)
+  }
 
-        }
+  test("Moving and turning.Turning.should be able to turn left") {
 
-        "Turning" - {
-          "should be able to turn left" - {
+    val s = Snake(GridPoint(1, 1)).turnLeft
 
-            val s = Snake(GridPoint(1, 1)).turnLeft
+    assertEquals(s.direction, SnakeDirection.Left)
 
-            s.direction ==> SnakeDirection.Left
+    val s2 = tick(s, 1)
 
-            val s2 = tick(s, 1)
+    assertEquals(s2.start, GridPoint(0, 1))
 
-            s2.start ==> GridPoint(0, 1)
+  }
 
-          }
+  test("Moving and turning.Turning.should be able to turn right") {
 
-          "should be able to turn right" - {
+    val s = Snake(GridPoint.identity).turnRight
 
-            val s = Snake(GridPoint.identity).turnRight
+    assertEquals(s.direction, SnakeDirection.Right)
 
-            s.direction ==> SnakeDirection.Right
+    val s2 = tick(s, 1)
 
-            val s2 = tick(s, 1)
+    assertEquals(s2.start, GridPoint(1, 0))
 
-            s2.start ==> GridPoint(1, 0)
+  }
 
-          }
-        }
+  test("Moving and turning.Going (instead of turning).should be able to go up") {
 
-        "Going (instead of turning)" - {
+    //Turning proved in another test, turning to allow a legal move
+    val s = Snake(GridPoint(1, 1)).turnLeft.goUp
 
-          "should be able to go up" - {
+    assertEquals(s.direction, SnakeDirection.Up)
 
-            //Turning proved in another test, turning to allow a legal move
-            val s = Snake(GridPoint(1, 1)).turnLeft.goUp
+    val s2 = tick(s, 1)
 
-            s.direction ==> SnakeDirection.Up
+    assertEquals(s2.start, GridPoint(1, 2))
 
-            val s2 = tick(s, 1)
+  }
 
-            s2.start ==> GridPoint(1, 2)
+  test("Moving and turning.Going (instead of turning).should be able to go down") {
 
-          }
+    //Turning proved in another test, turning to allow a legal move
+    val s = Snake(GridPoint(1, 1)).turnLeft.goDown
 
-          "should be able to go down" - {
+    assertEquals(s.direction, SnakeDirection.Down)
 
-            //Turning proved in another test, turning to allow a legal move
-            val s = Snake(GridPoint(1, 1)).turnLeft.goDown
+    val s2 = tick(s, 1)
 
-            s.direction ==> SnakeDirection.Down
+    assertEquals(s2.start, GridPoint(1, 0))
 
-            val s2 = tick(s, 1)
+  }
 
-            s2.start ==> GridPoint(1, 0)
+  test("Moving and turning.Going (instead of turning).should be able to go left") {
 
-          }
+    val s = Snake(GridPoint(1, 1)).goLeft
 
-          "should be able to go left" - {
+    assertEquals(s.direction, SnakeDirection.Left)
 
-            val s = Snake(GridPoint(1, 1)).goLeft
+    val s2 = tick(s, 1)
 
-            s.direction ==> SnakeDirection.Left
+    assertEquals(s2.start, GridPoint(0, 1))
 
-            val s2 = tick(s, 1)
+  }
 
-            s2.start ==> GridPoint(0, 1)
+  test("Moving and turning.Going (instead of turning).should be able to go right") {
 
-          }
+    val s = Snake(GridPoint(1, 1)).goRight
 
-          "should be able to go right" - {
+    assertEquals(s.direction, SnakeDirection.Right)
 
-            val s = Snake(GridPoint(1, 1)).goRight
+    val s2 = tick(s, 1)
 
-            s.direction ==> SnakeDirection.Right
+    assertEquals(s2.start, GridPoint(2, 1))
 
-            val s2 = tick(s, 1)
+  }
 
-            s2.start ==> GridPoint(2, 1)
+  test("Moving and turning.should wrap the world.up and over") {
+    assertEquals(tick(Snake(GridPoint(0, 5)), 5).start, GridPoint(0, 0))
+  }
 
-          }
+  test("Moving and turning.should wrap the world.down and out") {
+    assertEquals(tick(Snake(GridPoint(5, 0)).turnLeft.turnLeft, 1).start, GridPoint(5, 10))
+  }
 
-        }
+  test("Moving and turning.should be able to move") {
 
-        "should wrap the world" - {
-          "up and over" - {
-            tick(Snake(GridPoint(0, 5)), 5).start ==> GridPoint(0, 0)
-          }
-
-          "down and out" - {
-            tick(Snake(GridPoint(5, 0)).turnLeft.turnLeft, 1).start ==> GridPoint(5, 10)
-          }
-        }
-
-        "should be able to move" - {
-
-          val path: List[(Int, Int)] =
-            Snake(GridPoint.identity).grow
-              .doTick()
-              .grow
-              .turnRight
-              .doTick()
-              .grow
-              .doTick()
-              .grow
-              .turnLeft
-              .doTick()
-              .grow
-              .doTick()
-              .grow
-              .doTick()
-              .grow
-              .turnLeft
-              .doTick()
-              .grow
-              .turnLeft
-              .doTick()
-              .givePathList
-
-          val expected: List[(Int, Int)] = List(
-            (0, 0), //start
-            (0, 1), //up
-            (1, 1), //right
-            (2, 1), //right
-            (2, 2), //up
-            (2, 3), //up
-            (2, 4), //up
-            (1, 4), //left
-            (1, 3)  //down
-          ).reverse
-
-          path ==> expected
-
-        }
-
-      }
-
-      "Growing" - {
-
-        "should be able to grow" - {
-          val s = Snake(GridPoint.identity).grow
-          s.length ==> 2
-          s.body.length ==> 1
-          s.start ==> s.body.headOption.get
-
-          val s2 = Snake(GridPoint(0, 3), List(GridPoint(0, 2), GridPoint(0, 1)), SnakeDirection.Up, SnakeStatus.Alive).grow
-          s2.length ==> 4
-          s2.body.length ==> 3
-          s2.start ==> GridPoint(0, 3)
-          s2.end ==> GridPoint(0, 1)
-          s2.body ==> List(GridPoint(0, 2), GridPoint(0, 1), GridPoint(0, 1))
-        }
-
-      }
-
-      "Shrinking" - {
-
-        "should be able to shrink" - {
-          val s =
-            Snake(GridPoint(0, 3), List(GridPoint(0, 2), GridPoint(0, 1), GridPoint(0, 0)), SnakeDirection.Up, SnakeStatus.Alive)
-
-          s.length ==> 4
-
-          s.shrink.length ==> 3
-          s.shrink.start ==> GridPoint(0, 3)
-          s.shrink.end ==> GridPoint(0, 1)
-          s.shrink.body ==> List(GridPoint(0, 2), GridPoint(0, 1))
-
-          s.shrink.shrink.shrink.start ==> GridPoint(0, 3)
-          s.shrink.shrink.shrink.end ==> GridPoint(0, 3)
-          s.shrink.shrink.shrink.shrink.shrink.shrink.shrink.length ==> 1
-        }
-
-      }
-
-      "Colliding" - {
-
-        "should die when it crashes into something" - {
-          val f: GridPoint => CollisionCheckOutcome = pt => CollisionCheckOutcome.Crashed(pt)
-
-          val s = Snake(GridPoint.identity)
-          s.status ==> SnakeStatus.Alive
-
-          val s2 = s.update(gridSize, f)._1
-          s2.status ==> SnakeStatus.Dead
-        }
-
-      }
-
-      "Collecting" - {
-
-        "should grow on item pick up" - {
-          val f: GridPoint => CollisionCheckOutcome = pt => CollisionCheckOutcome.PickUp(pt)
-
-          val s = Snake(GridPoint.identity)
-          s.length ==> 1
-
-          val s2 = s.update(gridSize, f)._1
-          s2.length ==> 2
-        }
-
-      }
-    }
+    val path: List[(Int, Int)] =
+      Snake(GridPoint.identity).grow
+        .doTick()
+        .grow
+        .turnRight
+        .doTick()
+        .grow
+        .doTick()
+        .grow
+        .turnLeft
+        .doTick()
+        .grow
+        .doTick()
+        .grow
+        .doTick()
+        .grow
+        .turnLeft
+        .doTick()
+        .grow
+        .turnLeft
+        .doTick()
+        .givePathList
+
+    val expected: List[(Int, Int)] = List(
+      (0, 0), //start
+      (0, 1), //up
+      (1, 1), //right
+      (2, 1), //right
+      (2, 2), //up
+      (2, 3), //up
+      (2, 4), //up
+      (1, 4), //left
+      (1, 3)  //down
+    ).reverse
+
+    assertEquals(path, expected)
+
+  }
+
+  test("Growing.should be able to grow") {
+    val s = Snake(GridPoint.identity).grow
+    assertEquals(s.length, 2)
+    assertEquals(s.body.length, 1)
+    assertEquals(s.start, s.body.headOption.get)
+
+    val s2 = Snake(GridPoint(0, 3), List(GridPoint(0, 2), GridPoint(0, 1)), SnakeDirection.Up, SnakeStatus.Alive).grow
+    assertEquals(s2.length, 4)
+    assertEquals(s2.body.length, 3)
+    assertEquals(s2.start, GridPoint(0, 3))
+    assertEquals(s2.end, GridPoint(0, 1))
+    assertEquals(s2.body, List(GridPoint(0, 2), GridPoint(0, 1), GridPoint(0, 1)))
+  }
+
+  test("Shrinking.should be able to shrink") {
+    val s =
+      Snake(GridPoint(0, 3), List(GridPoint(0, 2), GridPoint(0, 1), GridPoint(0, 0)), SnakeDirection.Up, SnakeStatus.Alive)
+
+    assertEquals(s.length, 4)
+
+    assertEquals(s.shrink.length, 3)
+    assertEquals(s.shrink.start, GridPoint(0, 3))
+    assertEquals(s.shrink.end, GridPoint(0, 1))
+    assertEquals(s.shrink.body, List(GridPoint(0, 2), GridPoint(0, 1)))
+
+    assertEquals(s.shrink.shrink.shrink.start, GridPoint(0, 3))
+    assertEquals(s.shrink.shrink.shrink.end, GridPoint(0, 3))
+    assertEquals(s.shrink.shrink.shrink.shrink.shrink.shrink.shrink.length, 1)
+  }
+
+  test("Colliding.should die when it crashes into something") {
+    val f: GridPoint => CollisionCheckOutcome = pt => CollisionCheckOutcome.Crashed(pt)
+
+    val s = Snake(GridPoint.identity)
+    assertEquals(s.status, SnakeStatus.Alive)
+
+    val s2 = s.update(gridSize, f)._1
+    assertEquals(s2.status, SnakeStatus.Dead)
+  }
+
+  test("Collecting.should grow on item pick up") {
+    val f: GridPoint => CollisionCheckOutcome = pt => CollisionCheckOutcome.PickUp(pt)
+
+    val s = Snake(GridPoint.identity)
+    assertEquals(s.length, 1)
+
+    val s2 = s.update(gridSize, f)._1
+    assertEquals(s2.length, 2)
+  }
 
 }

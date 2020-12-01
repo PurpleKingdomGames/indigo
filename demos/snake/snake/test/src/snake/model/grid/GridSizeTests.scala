@@ -1,26 +1,17 @@
 package snake.model.grid
 
-import utest._
+class GridSizeTests extends munit.FunSuite {
 
-object GridSizeTests extends TestSuite {
+  test("GridSize should be able to calculate a power of 2 size") {
 
-  val tests: Tests =
-    Tests {
-      "GridSize" - {
+    val gridSize: GridSize = GridSize(
+      columns = 32,
+      rows = 20,
+      gridSquareSize = 16
+    )
 
-        "should be able to calculate a power of 2 size" - {
+    assertEquals(gridSize.asPowerOf2.value, 32)
 
-          val gridSize: GridSize = GridSize(
-            columns = 32,
-            rows = 20,
-            gridSquareSize = 16
-          )
-
-          gridSize.asPowerOf2.value ==> 32
-
-        }
-
-      }
-    }
+  }
 
 }
