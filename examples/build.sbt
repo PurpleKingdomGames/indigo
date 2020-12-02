@@ -14,13 +14,6 @@ lazy val commonSettings = Seq(
     "io.indigoengine" %%% "indigo-extras" % IndigoVersion.getVersion
   ),
   testFrameworks += new TestFramework("munit.Framework"),
-  // scalacOptions in (Compile, compile) ++= ScalacOptions.scala213Compile,
-  // scalacOptions in (Test, test) ++= ScalacOptions.scala213Test,
-  // wartremoverWarnings in (Compile, compile) ++= Warts.allBut(
-  //   Wart.Overloading,
-  //   Wart.ImplicitParameter
-  // ),
-  // scalacOptions += "-Yrangepos",
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
 )
 

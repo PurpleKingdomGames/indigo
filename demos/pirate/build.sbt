@@ -3,7 +3,6 @@
 //-----------------------------------
 
 val dottyVersion    = "3.0.0-M2"
-// val scala213Version = "2.13.4"
 
 lazy val pirate =
   (project in file("."))

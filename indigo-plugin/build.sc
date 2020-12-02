@@ -30,12 +30,8 @@ class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule
       MavenRepository("https://oss.sonatype.org/content/repositories/releases")
     )
 
-  // def compileIvyDeps      = T(super.compileIvyDeps() ++ Agg(ivy"org.wartremover::wartremover:2.4.13"))
-  // def scalacPluginIvyDeps = T(super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.13"))
-
   def scalacOptions =
-    ScalacOptions.scala213Compile //++ 
-    // Seq("-P:wartremover:traverser:org.wartremover.warts.Unsafe")
+    ScalacOptions.scala213Compile 
 
   object test extends Tests {
     def ivyDeps =
