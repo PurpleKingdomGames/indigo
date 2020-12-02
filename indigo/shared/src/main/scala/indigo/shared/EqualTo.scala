@@ -73,9 +73,6 @@ object EqualTo {
     create {
       case (Right(a), Right(b)) =>
         eqB.equal(a, b)
-
-      case _ =>
-        false
     }
 
   @SuppressWarnings(Array("org.wartremover.warts.Equals", "org.wartremover.warts.Nothing"))
@@ -83,9 +80,6 @@ object EqualTo {
     create {
       case (Left(a), Left(b)) =>
         eqA.equal(a, b)
-
-      case _ =>
-        false
     }
 
   implicit class EqualToSyntax[A](val value: A)(implicit val eq: EqualTo[A]) {

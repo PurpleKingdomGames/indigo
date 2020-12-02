@@ -9,7 +9,6 @@ import indigo.shared.scenegraph.Renderable
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.datatypes.Point
 import indigo.shared.collections.NonEmptyList
-import scala.annotation.nowarn
 
 class TiledMapTests extends munit.FunSuite {
 
@@ -32,11 +31,13 @@ class TiledMapTests extends munit.FunSuite {
   test("should be able to convert to a TiledGridMap.with mapping") {
     // Using nowarn as it's a partial match and I want it
     // to blow up if it finds anything else.
-    @nowarn val matcher: ((Int, TileTypes)) => Boolean = {
+    val matcher: ((Int, TileTypes)) => Boolean = {
       case (0, TileTypes.Empty)           => true
       case (i, TileTypes.Solid) if i != 0 => true
       case (i, TileTypes.Empty) if i != 0 => false
       case (i, TileTypes.Solid) if i == 0 => false
+      case _ =>
+        throw new Exception("test failed")
     }
 
     val actual =

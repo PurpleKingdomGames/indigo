@@ -2,4 +2,4 @@
 
 # Run from root.
 
-sbt cleanAll testAllNoClean localPublishNoClean
+sbt crossCleanAll crossTestAllNoClean crossLocalPublishNoClean

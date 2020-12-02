@@ -1,7 +1,5 @@
 package indigo.shared.time
 
-import indigo.shared.EqualTo._
-
 class MillisTests extends munit.FunSuite {
 
   test("Should be able to convert Millis to Seconds") {

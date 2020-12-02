@@ -55,7 +55,6 @@ object DisplayEffects {
     case Thickness.None  => 0.0f
     case Thickness.Thin  => 1.0f
     case Thickness.Thick => 2.0f
-    case _               => 0.0f
   }
 
   def fromEffects(effects: Effects): DisplayEffects =

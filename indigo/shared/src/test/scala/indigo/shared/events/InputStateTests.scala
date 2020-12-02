@@ -296,7 +296,7 @@ class InputStateTests extends munit.FunSuite {
   test("Mapping combinations of inputs.keyboard combo not found") {
 
     val mappings: InputMapping[Int] =
-      InputMapping[Int]
+      InputMapping[Int]()
         .add(
           Combo.KeyInputs(Key.UP_ARROW) -> 10
         )
@@ -331,7 +331,7 @@ class InputStateTests extends munit.FunSuite {
   test("Mapping combinations of inputs.mouse combo not found") {
 
     val mappings: InputMapping[Int] =
-      InputMapping[Int]
+      InputMapping[Int]()
         .add(
           Combo.MouseInputs(MouseInput.MouseUp) -> 10
         )
@@ -368,7 +368,7 @@ class InputStateTests extends munit.FunSuite {
   test("Mapping combinations of inputs.gamepad combo not found") {
 
     val mappings: InputMapping[Int] =
-      InputMapping[Int]
+      InputMapping[Int]()
         .add(
           Combo.GamepadInputs(GamepadInput.Triangle) -> 10
         )

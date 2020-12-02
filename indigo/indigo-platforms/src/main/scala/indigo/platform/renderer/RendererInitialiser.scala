@@ -188,15 +188,14 @@ final class RendererInitialiser(renderingTechnology: RenderingTechnology, global
     IndigoLogger.info("Checking WebGL 2.0 availability...")
 
     def testWebGL2Compatibility(param: Int, min: Int, name: String): Boolean =
-      try if (gl2.getParameter(param).isInstanceOf[Int]) {
+      try {
         val value = gl2.getParameter(param).asInstanceOf[Int]
         if (!value.toFloat.isNaN() && value >= min) true
         else {
           IndigoLogger.info(s" - WebGL 2.0 check '$name' failed. [min: ${min.toString}] [actual: ${value.toFloat.toString}]")
           false
         }
-      } else false
-      catch {
+      } catch {
         case _: Throwable => false
       }
 

@@ -192,7 +192,7 @@ object GameEngine {
         IndigoLogger.info(e.report)
         Failure[StartUpData](new Exception("Game aborted due to start up failure"))
 
-      case x: Startup.Success[StartUpData] =>
+      case x: Startup.Success[_] =>
         IndigoLogger.info("Game initialisation succeeded")
         Success(x.success)
     }

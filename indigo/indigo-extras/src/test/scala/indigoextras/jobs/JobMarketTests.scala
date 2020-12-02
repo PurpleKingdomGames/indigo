@@ -1,8 +1,5 @@
 package indigoextras.jobs
 
-import indigo._
-
-import indigo.shared.EqualTo._
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 import indigo.shared.subsystems.SubSystemFrameContext

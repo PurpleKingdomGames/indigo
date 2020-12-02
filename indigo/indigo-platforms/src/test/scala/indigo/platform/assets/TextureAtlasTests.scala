@@ -2,7 +2,6 @@ package indigo.platform.assets
 
 import indigo.shared.PowerOfTwo
 import indigo.shared.datatypes.Point
-import indigo.TestFail._
 import indigo.shared.EqualTo._
 import indigo.platform.assets._
 import indigo.shared.assets.AssetName

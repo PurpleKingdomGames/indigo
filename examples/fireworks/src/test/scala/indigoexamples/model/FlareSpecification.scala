@@ -13,11 +13,11 @@ class FlareSpecification extends Properties("Flare") {
 
   import Generators._
 
-  property("always creates two control points") = Prop.forAll { target: Vertex =>
+  property("always creates two control points") = Prop.forAll { (target: Vertex) =>
     Flare.createArcControlVertices(Vertex.zero)(target).length === 2
   }
 
-  property("Supplied vertex is always first") = Prop.forAll { target: Vertex =>
+  property("Supplied vertex is always first") = Prop.forAll { (target: Vertex) =>
     Flare.createArcControlVertices(Vertex.zero)(target).head === Vertex.zero
   }
 

@@ -6,7 +6,6 @@ import indigo.shared.time.Seconds
 import indigo.shared.events.FrameTick
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.events.GlobalEvent
-import indigoextras.TestFail._
 import indigo.shared.dice.Dice
 
 class WorkScheduleTests extends munit.FunSuite {
@@ -59,7 +58,7 @@ class WorkScheduleTests extends munit.FunSuite {
     val gameTime     = new GameTime(0, 0, GameTime.FPS(0))
 
     workSchedule.update(gameTime, dice, actor, context)(FrameTick).state.workSchedule.jobStack.headOption match {
-      case Some(j @ Fishing(done)) =>
+      case Some(Fishing(done)) =>
         assertEquals(done, SampleActor.defaultFishingSpeed)
 
       case _ =>
@@ -77,8 +76,6 @@ class WorkScheduleTests extends munit.FunSuite {
 
     val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, SampleActor.worker, Nil)
     val gameTime     = new GameTime(0, 0, GameTime.FPS(0))
-
-    val allocationId = bindingKey
 
     val actual = workSchedule
       .update(gameTime, dice, actor, context)(UnrelatedEvent("ignored!"))

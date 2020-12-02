@@ -83,14 +83,14 @@ object GamepadInputCaptureImpl {
   @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   def init(): Unit = {
     window.addEventListener(
-      "gamepadconnected", { _: Any =>
+      "gamepadconnected", { (_: Any) =>
         gamepads = window.navigator.asInstanceOf[GamepadNavigator].getGamepads()
       },
       false
     )
 
     window.addEventListener(
-      "gamepaddisconnected", { _: Any =>
+      "gamepaddisconnected", { (_: Any) =>
         gamepads = window.navigator.asInstanceOf[GamepadNavigator].getGamepads()
       },
       false

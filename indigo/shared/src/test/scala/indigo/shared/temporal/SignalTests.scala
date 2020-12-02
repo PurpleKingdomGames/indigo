@@ -1,9 +1,7 @@
 package indigo.shared.temporal
 
-import indigo.shared.time.GameTime
 import indigo.shared.time.Seconds
 import indigo.shared.datatypes.Point
-import indigo.shared.time.Millis
 
 class SignalTests extends munit.FunSuite {
 
@@ -15,7 +13,7 @@ class SignalTests extends munit.FunSuite {
     val sig = Signal(t => t.toInt * 10)
 
     (0 to 10).foreach { t =>
-      assertEquals(sig.at(Seconds(t)), t * 10)
+      assertEquals(sig.at(Seconds(t.toDouble)), t * 10)
     }
   }
 
@@ -134,7 +132,7 @@ Where a thing moves in a circle for 2 seconds and then stops.
 
     // Sanity check, basic signal should adance position over time
     (0 to 10).toList.foreach { i =>
-      assertEquals(signal.at(Seconds(i * 1000)), conditions.xPos + (conditions.velocity * i).toInt)
+      assertEquals(signal.at(Seconds(i.toDouble * 1000d)), conditions.xPos + (conditions.velocity * i).toInt)
     }
 
     assertEquals(signal.at(Seconds(30000)), signal.at(Seconds(20000)))

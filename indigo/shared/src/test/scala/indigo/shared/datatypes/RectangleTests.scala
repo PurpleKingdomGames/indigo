@@ -1,7 +1,5 @@
 package indigo.shared.datatypes
 
-import indigo.shared.EqualTo._
-
 class RectangleTests extends munit.FunSuite {
 
   test("should be able to construct a rectangle from two points") {

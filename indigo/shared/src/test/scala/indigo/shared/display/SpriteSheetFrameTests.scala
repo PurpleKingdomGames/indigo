@@ -1,6 +1,5 @@
 package indigo.shared.display
 
-import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Rectangle
 

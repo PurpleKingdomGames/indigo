@@ -1,14 +1,6 @@
 package indigo.shared.subsystems
 
-import indigo.shared.time.GameTime
 import indigo.shared.scenegraph.Text
-import indigo.shared.dice.Dice
-
-import indigo.shared.events.InputState
-import indigo.shared.FrameContext
-import indigo.shared.BoundaryLocator
-import indigo.shared.FontRegister
-import indigo.shared.AnimationsRegister
 
 class SubSystemsRegisterTests extends munit.FunSuite {
 

@@ -35,12 +35,9 @@ object WebSockets {
         reEstablishConnection(insertUpdateConfig(config), None, globalEventStream).foreach { socket =>
           socket.send(message)
         }
-
-      case _ =>
-        ()
     } catch {
       case e: Throwable =>
-        globalEventStream.pushGlobalEvent(WebSocketEvent.Error(event.giveId.getOrElse(WebSocketId("<not found>")), e.getMessage))
+        globalEventStream.pushGlobalEvent(WebSocketEvent.Error(event.giveId, e.getMessage))
     }
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))

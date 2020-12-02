@@ -11,7 +11,7 @@ object Generators {
   val diceGen: Gen[Dice] =
     for {
       sides <- Gen.choose(1, Int.MaxValue)
-      seed  <- Gen.choose(0, Long.MaxValue)
+      seed  <- Gen.choose(0L, Long.MaxValue)
     } yield Dice.diceSidesN(sides, seed)
 
   implicit val arbDice: Arbitrary[Dice] =

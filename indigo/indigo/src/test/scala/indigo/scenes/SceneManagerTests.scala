@@ -1,15 +1,7 @@
 package indigo.scenes
 
-import indigo.shared.time.GameTime
 import indigo.shared.events.{FrameTick, GlobalEvent}
 import indigo.shared.collections.NonEmptyList
-import indigo.shared.dice.Dice
-
-import indigo.shared.events.InputState
-import indigo.shared.FrameContext
-import indigo.shared.BoundaryLocator
-import indigo.shared.AnimationsRegister
-import indigo.shared.FontRegister
 
 class SceneManagerTests extends munit.FunSuite {
 

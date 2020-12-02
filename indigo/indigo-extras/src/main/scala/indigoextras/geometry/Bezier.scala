@@ -143,13 +143,14 @@ object Bezier {
 
 object BezierMath {
 
-  /** Linear
-    * B(t) = P0 + ((P1 - P0) * t)
-    *      = ((1 - t) * P0) +
-    *        (t * P1)
-    *
-    *      = (1 - t) * P0 + t * P1
-    */
+  /*
+   * Linear
+   * B(t) = P0 + ((P1 - P0) * t)
+   *      = ((1 - t) * P0) +
+   *        (t * P1)
+   *
+   *      = (1 - t) * P0 + t * P1
+   */
   def linear(t: Double, p0: Double, p1: Double): Double =
     (1 - t) * p0 + t * p1
 
@@ -159,13 +160,14 @@ object BezierMath {
   def linearNormalised(t: Double, p0: Vertex, p1: Vertex): Vertex =
     linearWithVertices(Math.max(0, Math.min(1, t)), p0, p1)
 
-  /** Quadratic
-    * B(t) = (((1 - t) * (1 - t)) * P0) +
-    *        (((2 * t) * (1 - t) * P1) +
-    *        ((t * t) * P2)
-    *
-    *        pow(1 - t, 2) * P0 + 2 * t * (1 - t) * P1 + pow(t, 2) * P2
-    */
+  /*
+   * Quadratic
+   * B(t) = (((1 - t) * (1 - t)) * P0) +
+   *        (((2 * t) * (1 - t) * P1) +
+   *        ((t * t) * P2)
+   *
+   *        pow(1 - t, 2) * P0 + 2 * t * (1 - t) * P1 + pow(t, 2) * P2
+   */
   def quadratic(t: Double, p0: Double, p1: Double, p2: Double): Double =
     Math.pow(1 - t, 2) * p0 + 2 * t * (1 - t) * p1 + Math.pow(t, 2) * p2
 
@@ -175,14 +177,15 @@ object BezierMath {
   def quadraticNormalised(t: Double, p0: Vertex, p1: Vertex, p2: Vertex): Vertex =
     quadraticWithVertices(Math.max(0, Math.min(1, t)), p0, p1, p2)
 
-  /** Cubic
-    * B(t) = (((1 - t) * (1 - t) * (1 - t)) * P0) +
-    *        (((3 * t) * ((1 - t) * (1 - t)) * P1) +
-    *        ((3 * (t * t)) * (1 -t)) * P2) +
-    *        ((t * t * t) * P3)
-    *
-    *      = pow(1 - t, 3) * P0 + 3 * t * pow(1 - t, 2) * P1 + 3 * pow(t, 2) * (1 - t) * P2 + pow(t, 3) * P3
-    */
+  /*
+   * Cubic
+   * B(t) = (((1 - t) * (1 - t) * (1 - t)) * P0) +
+   *        (((3 * t) * ((1 - t) * (1 - t)) * P1) +
+   *        ((3 * (t * t)) * (1 -t)) * P2) +
+   *        ((t * t * t) * P3)
+   *
+   *      = pow(1 - t, 3) * P0 + 3 * t * pow(1 - t, 2) * P1 + 3 * pow(t, 2) * (1 - t) * P2 + pow(t, 3) * P3
+   */
   def cubic(t: Double, p0: Double, p1: Double, p2: Double, p3: Double): Double =
     Math.pow(1 - t, 3) * p0 + 3 * t * Math.pow(1 - t, 2) * p1 + 3 * Math.pow(t, 2) * (1 - t) * p2 + Math.pow(t, 3) * p3
 

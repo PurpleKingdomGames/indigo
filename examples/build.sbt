@@ -1,9 +1,12 @@
 import scala.sys.process._
 import scala.language.postfixOps
 
+val dottyVersion    = "3.0.0-M2"
+val scala213Version = "2.13.4"
+
 lazy val commonSettings = Seq(
   version := "0.0.1",
-  scalaVersion := "2.13.4",
+  scalaVersion := dottyVersion,
   organization := "indigo-examples",
   libraryDependencies ++= Seq(
     "org.scalameta"   %%% "munit"          % "0.7.19" % Test,
@@ -11,13 +14,6 @@ lazy val commonSettings = Seq(
     "io.indigoengine" %%% "indigo-extras" % IndigoVersion.getVersion
   ),
   testFrameworks += new TestFramework("munit.Framework"),
-  scalacOptions in (Compile, compile) ++= ScalacOptions.scala213Compile,
-  scalacOptions in (Test, test) ++= ScalacOptions.scala213Test,
-  wartremoverWarnings in (Compile, compile) ++= Warts.allBut(
-    Wart.Overloading,
-    Wart.ImplicitParameter
-  ),
-  scalacOptions += "-Yrangepos",
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
 )
 
@@ -206,7 +202,7 @@ lazy val fireworks =
       title := "Fireworks!",
       gameAssetsDirectory := "assets",
       libraryDependencies ++= Seq(
-        "org.scalacheck" %%% "scalacheck" % "1.14.3" % "test"
+        "org.scalacheck" %%% "scalacheck" % "1.15.1" % "test"
       )
     )
 

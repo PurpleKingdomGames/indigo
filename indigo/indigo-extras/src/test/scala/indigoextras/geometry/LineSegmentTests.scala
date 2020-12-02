@@ -3,7 +3,6 @@ package indigoextras.geometry
 import indigo.shared.datatypes.Vector2
 import indigoextras.geometry.IntersectionResult._
 import indigoextras.geometry.LineProperties._
-import indigo.shared.EqualTo._
 
 class LineSegmentTests extends munit.FunSuite {
 

@@ -1,12 +1,9 @@
 package indigo.scenes
 
-import indigo.shared.time.GameTime
-import indigo.shared.events.{InputState, GlobalEvent}
+import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.Outcome
-import indigo.shared.dice.Dice
 import indigo.shared.subsystems.SubSystem
-import indigo.shared.BoundaryLocator
 import indigo.shared.FrameContext
 import indigo.shared.events.EventFilters
 

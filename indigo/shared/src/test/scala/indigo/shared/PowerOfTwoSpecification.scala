@@ -15,11 +15,11 @@ object PowerOfTwoSpecification extends Properties("PowerOfTwo") {
       .choose(-10000, 10000)
       .filter(i => !validValues.contains(i))
 
-  property("is valid") = Prop.forAll(genValid) { i: Int =>
+  property("is valid") = Prop.forAll(genValid) { (i: Int) =>
     PowerOfTwo.isValidPowerOfTwo(i)
   }
 
-  property("is invalid") = Prop.forAll(genInvalid) { i: Int =>
+  property("is invalid") = Prop.forAll(genInvalid) { (i: Int) =>
     !PowerOfTwo.isValidPowerOfTwo(i)
   }
 

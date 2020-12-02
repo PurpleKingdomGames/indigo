@@ -19,7 +19,7 @@ class RocketSpecification extends Properties("Rocket") {
 
   import Generators._
 
-  property("always creates three control points") = Prop.forAll { dice: Dice =>
+  property("always creates three control points") = Prop.forAll { (dice: Dice) =>
     Rocket.createArcControlVertices(dice, Vertex.zero)(Vertex.zero).length === 3
   }
 
@@ -87,7 +87,7 @@ class RocketSpecification extends Properties("Rocket") {
     )
   }
 
-  property("pickColor always generates a valid RGBA") = Prop.forAll { dice: Dice =>
+  property("pickColor always generates a valid RGBA") = Prop.forAll { (dice: Dice) =>
     Rocket.pickColour(dice).toString().toLowerCase().contains("rgba") ==> true
   }
 

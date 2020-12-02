@@ -75,28 +75,25 @@ object WebSocketReadyState {
 }
 
 sealed trait WebSocketEvent {
-  def giveId: Option[WebSocketId] =
+  def giveId: WebSocketId =
     this match {
       case WebSocketEvent.ConnectOnly(config) =>
-        Option(config.id)
+        config.id
 
       case WebSocketEvent.Open(_, config) =>
-        Option(config.id)
+        config.id
 
       case WebSocketEvent.Send(_, config) =>
-        Option(config.id)
+        config.id
 
       case WebSocketEvent.Receive(id, _) =>
-        Option(id)
+        id
 
       case WebSocketEvent.Error(id, _) =>
-        Option(id)
+        id
 
       case WebSocketEvent.Close(id) =>
-        Option(id)
-
-      case _ =>
-        None
+        id
     }
 }
 object WebSocketEvent {

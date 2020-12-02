@@ -68,5 +68,5 @@ final case class FloatingPointEntity(spawnedAt: Point, createdAt: Seconds, ttl: 
 sealed trait FloatingPointEvent extends GlobalEvent
 object FloatingPointEvent {
   final case class Spawn(point: Point) extends FloatingPointEvent
-  final case object Update             extends FloatingPointEvent
+  case object Update             extends FloatingPointEvent
 }
