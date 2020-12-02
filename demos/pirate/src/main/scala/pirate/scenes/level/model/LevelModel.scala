@@ -14,7 +14,7 @@ sealed trait LevelModel {
   def update(gameTime: GameTime, inputState: InputState): Outcome[LevelModel]
 }
 object LevelModel {
-  final case object NotReady extends LevelModel {
+  case object NotReady extends LevelModel {
     val notReady: Boolean = true
 
     def update(gameTime: GameTime, inputState: InputState): Outcome[NotReady.type] =
