@@ -155,3 +155,11 @@ addCommandAlias(
     "radio/indigoBuild"
   ).mkString(";", ";", "")
 )
+
+addCommandAlias(
+  "inputmapperBuild",
+  List(
+    "inputmapper/fastOptJS",
+    "inputmapper/indigoBuild"
+  ).mkString(";", ";", "")
+)
