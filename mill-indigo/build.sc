@@ -27,9 +27,9 @@ object `mill-indigo` extends ScalaModule with PublishModule {
   def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.13") }
 
   object test extends Tests {
-    def ivyDeps = Agg(ivy"com.lihaoyi::utest:0.7.4")
+    def ivyDeps = Agg(ivy"org.scalameta::munit:0.7.19")
 
-    def testFrameworks = Seq("utest.runner.Framework")
+    def testFrameworks = Seq("munit.Framework")
   }
 
   def publishVersion = IndigoVersion.getVersion
