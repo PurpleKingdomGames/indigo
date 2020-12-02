@@ -19,6 +19,16 @@ final case class Point(x: Int, y: Int) {
   def invert: Point =
     Point(-x, -y)
 
+  def moveTo(newPosition: Point): Point =
+    newPosition
+  def moveTo(x: Int, y: Int): Point =
+    moveTo(Point(x, y))
+
+  def moveBy(amount: Point): Point =
+    this + amount
+  def moveBy(x: Int, y: Int): Point =
+    moveBy(Point(x, y))
+
   def distanceTo(other: Point): Double =
     Point.distanceBetween(this, other)
 
