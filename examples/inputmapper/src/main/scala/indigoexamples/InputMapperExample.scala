@@ -91,14 +91,17 @@ object Dot {
     val xSpeed = 30.0d
     val ySpeed = -30.0d
     InputMapping(
-      Combo.withKeyInputs(Key.KEY_A, Key.KEY_W) -> Vector2(-xSpeed, ySpeed),
+      // WASD keymap
+      Combo.withKeyInputs(Key.KEY_W, Key.KEY_A) -> Vector2(-xSpeed, ySpeed),
+      Combo.withKeyInputs(Key.KEY_W, Key.KEY_S) -> Vector2(0.0d, 0.0d),
+      Combo.withKeyInputs(Key.KEY_W, Key.KEY_D) -> Vector2(xSpeed, ySpeed),
       Combo.withKeyInputs(Key.KEY_A, Key.KEY_S) -> Vector2(-xSpeed, -ySpeed),
-      Combo.withKeyInputs(Key.KEY_D, Key.KEY_W) -> Vector2(xSpeed, ySpeed),
-      Combo.withKeyInputs(Key.KEY_D, Key.KEY_S) -> Vector2(xSpeed, -ySpeed),
-      Combo.withKeyInputs(Key.KEY_A)            -> Vector2(-xSpeed, 0.0d),
-      Combo.withKeyInputs(Key.KEY_D)            -> Vector2(xSpeed, 0.0d),
+      Combo.withKeyInputs(Key.KEY_A, Key.KEY_D) -> Vector2(0.0d, 0.0d),
+      Combo.withKeyInputs(Key.KEY_S, Key.KEY_D) -> Vector2(xSpeed, -ySpeed),
       Combo.withKeyInputs(Key.KEY_W)            -> Vector2(0.0d, ySpeed),
-      Combo.withKeyInputs(Key.KEY_S)            -> Vector2(0.0d, -ySpeed)
+      Combo.withKeyInputs(Key.KEY_A)            -> Vector2(-xSpeed, 0.0d),
+      Combo.withKeyInputs(Key.KEY_S)            -> Vector2(0.0d, -ySpeed),
+      Combo.withKeyInputs(Key.KEY_D)            -> Vector2(xSpeed, 0.0d)
     )
   }
 }
