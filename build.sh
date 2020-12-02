@@ -37,10 +37,3 @@ echo ">>> Demos"
 cd demos
 bash build.sh
 cd ..
-
-# IndigoJS
-echo ">>> IndigoJS"
-cd jsapi
-bash build.sh
-cd ..
-
