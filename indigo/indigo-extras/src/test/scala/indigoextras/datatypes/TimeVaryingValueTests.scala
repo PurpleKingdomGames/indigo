@@ -1,7 +1,6 @@
 package indigoextras.datatypes
 
 import indigo.shared.time.{Seconds, Millis}
-import indigo.shared.EqualTo._
 
 class TimeVaryingValueTests extends munit.FunSuite {
 
@@ -11,7 +10,7 @@ class TimeVaryingValueTests extends munit.FunSuite {
 
   test("increasing.should do a number of iterations over time") {
     val increments: List[Seconds] =
-      (1 to 10).toList.map(r => Millis(100).toSeconds)
+      (1 to 10).toList.map(_ => Millis(100).toSeconds)
 
     val actual: TimeVaryingValue =
       increments.foldLeft(Increasing(0, 10))((tv, rt) => tv.update(rt))
@@ -29,7 +28,7 @@ class TimeVaryingValueTests extends munit.FunSuite {
 
   test("increasing capped.should do a number of iterations over time up to a limit") {
     val increments: List[Seconds] =
-      (1 to 11).toList.map(_ * 100).map(r => Millis(r).toSeconds)
+      (1 to 11).toList.map(_ * 100).map(r => Millis(r.toLong).toSeconds)
 
     val actual: IncreaseTo =
       increments.foldLeft(IncreaseTo(0, 10, 5))((tv, rt) => tv.update(rt))
@@ -114,7 +113,7 @@ class TimeVaryingValueTests extends munit.FunSuite {
 
   test("decreasing capped.should do a number of iterations over time down to a limit") {
     val increments: List[Seconds] =
-      (1 to 10).toList.map(_ * 100).map(r => Millis(r).toSeconds)
+      (1 to 10).toList.map(_ * 100).map(r => Millis(r.toLong).toSeconds)
 
     val actual: TimeVaryingValue =
       increments.foldLeft(DecreaseTo(0, 10, -5))((tv, rt) => tv.update(rt))

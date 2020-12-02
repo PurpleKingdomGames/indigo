@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
-mill clean mill-indigo[2.13]
-# mill clean mill-indigo[3.0.0-M2]
+SCALA2=2.13
+SCALA3=3.0.0-M2
 
-mill mill-indigo[2.13].compile
-# mill mill-indigo[3.0.0-M2].compile
+mill clean mill-indigo[$SCALA2]
+mill mill-indigo[$SCALA2].compile
+mill mill-indigo[$SCALA2].publishLocal
 
-mill mill-indigo[2.13].publishLocal
-# mill mill-indigo[3.0.0-M2].publishLocal
+# mill clean mill-indigo[$SCALA3]
+# mill mill-indigo[$SCALA3].compile
+# mill mill-indigo[$SCALA3].publishLocal

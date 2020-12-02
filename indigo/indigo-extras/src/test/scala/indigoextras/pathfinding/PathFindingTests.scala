@@ -2,7 +2,6 @@ package indigoextras.pathfinding
 
 import indigoextras.pathfinding.GridSquare.{EmptySquare, EndSquare, ImpassableSquare, StartSquare}
 
-import scala.language.implicitConversions
 import indigo.shared.dice.Dice
 
 class PathFindingTests extends munit.FunSuite {

@@ -5,10 +5,7 @@ import indigo.shared.assets.AssetType
 import indigo.shared.assets.AssetPath
 import indigo.shared.assets.AssetName
 import indigo.shared.assets.AssetTypePrimitive
-import indigo.shared.time.GameTime
-import indigo.shared.dice.Dice
 import indigo.shared.events.AssetEvent
-import indigo.shared.events.InputState
 
 class AssetBundleLoaderTests extends munit.FunSuite {
 
@@ -69,10 +66,6 @@ class AssetBundleLoaderTests extends munit.FunSuite {
   }
 
   test("AssetBundleLoader - Journey (unhappy path)") {
-    val gt = GameTime.zero
-    val d  = Dice.loaded(0)
-    val is = InputState.default
-
     val loader  = AssetBundleLoader
     val tracker = AssetBundleTracker.empty
 

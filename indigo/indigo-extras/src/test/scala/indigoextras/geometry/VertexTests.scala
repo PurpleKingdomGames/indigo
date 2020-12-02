@@ -1,7 +1,5 @@
 package indigoextras.geometry
 
-import indigo.shared.EqualTo._
-
 class VertexTests extends munit.FunSuite {
 
   test("Distance.horizontal distance") {

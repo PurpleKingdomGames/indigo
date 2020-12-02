@@ -1,9 +1,7 @@
 package indigoextras.jobs
 
-import indigo.shared.time.GameTime
 import indigoextras.jobs.SampleJobs.Fishing
 import indigo.shared.Outcome
-import indigo.shared.dice.Dice
 
 sealed trait SampleJobs extends Job
 object SampleJobs {
@@ -89,7 +87,7 @@ object SampleActor {
         case SampleJobs.CantHave() =>
           false
 
-        case j: SampleJobs =>
+        case _: SampleJobs =>
           true
 
         case _ =>

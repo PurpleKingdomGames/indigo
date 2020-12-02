@@ -1,7 +1,5 @@
 package indigoextras.geometry
 
-import indigo.shared.EqualTo._
-
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
 

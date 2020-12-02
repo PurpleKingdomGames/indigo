@@ -1,7 +1,5 @@
 package indigo.shared.datatypes
 
-import indigo.shared.EqualTo._
-
 class PointTests extends munit.FunSuite {
 
   test("should be able to calculate a linear interpolation") {

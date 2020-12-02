@@ -1,8 +1,6 @@
 package indigoextras.geometry
 
-import indigo.shared.EqualTo._
 import indigo.shared.time.Seconds
-import indigo.shared.datatypes.Rectangle
 
 class BezierTests extends munit.FunSuite {
 

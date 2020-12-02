@@ -2,7 +2,6 @@ package indigo.shared.scenegraph
 
 import indigo.shared.FontRegister
 import indigo.shared.datatypes.{FontChar, FontInfo, FontKey, Rectangle}
-import indigo.shared.EqualTo._
 
 import indigo.shared.assets.AssetName
 import indigo.shared.datatypes.Material

@@ -2,18 +2,13 @@ package indigoextras.subsystems
 
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.events.GlobalEvent
-import indigo.shared.time.GameTime
 import indigo.shared.dice.Dice
 import indigo.shared.datatypes.Point
-import indigo.shared.Outcome
 import indigo.shared.assets.AssetName
 import indigo.shared.datatypes.Material
 import indigo.shared.time.Seconds
-import indigo.shared.events.InputState
 import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.temporal.Signal
-import indigo.shared.temporal.SignalFunction
-import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.collections.NonEmptyList
 
 class AutomataTests extends munit.FunSuite {

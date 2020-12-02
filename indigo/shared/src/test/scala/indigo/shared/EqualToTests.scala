@@ -30,8 +30,8 @@ class EqualToTests extends munit.FunSuite {
   }
 
   test("should be able to compare tuple 2s") {
-    assert(("a", 1) === ("a", 1))
-    assert(("a", 1) !== ("b", 2))
+    assert((("a", 1)) === (("a", 1)))
+    assert((("a", 1)) !== (("b", 2)))
   }
 
   test("should be able to compare lists") {

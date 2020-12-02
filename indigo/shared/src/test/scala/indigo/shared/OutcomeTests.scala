@@ -1,12 +1,10 @@
 package indigo.shared
 
 import indigo.shared.events.GlobalEvent
+import indigo.shared.EqualTo._
+import Outcome._
 
 class OutcomeTests extends munit.FunSuite {
-
-  import indigo.shared.events.GlobalEvent
-  import indigo.shared.EqualTo._
-  import Outcome._
 
   test("Adding events.adding events after the fact") {
     assertEquals(Outcome(10).globalEvents, Nil)
@@ -33,9 +31,6 @@ class OutcomeTests extends munit.FunSuite {
         assertEquals(s, "a")
     }
   }
-
-  import indigo.shared.EqualTo._
-  import Outcome._
 
   test("Transforming outcomes.sequencing") {
     val l: List[Outcome[Int]] =

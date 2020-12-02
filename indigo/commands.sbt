@@ -26,9 +26,19 @@ def applyToAll(command: String): String =
     applyCommand(coreProjects, command)
   ).mkString
 
+def applyCrossToAll(command: String): String =
+  List(
+    applyCrossCommand(coreProjects, command)
+  ).mkString
+
 def applyToAllReleaseable(command: String): String =
   List(
     applyCommand(releaseProjects, command)
+  ).mkString
+
+def applyCrossToAllReleaseable(command: String): String =
+  List(
+    applyCrossCommand(releaseProjects, command)
   ).mkString
 
 // Rebuild ScalaDocs and open in Firefox
@@ -119,25 +129,6 @@ addCommandAlias(
 )
 
 addCommandAlias(
-  "crossBuildIndigo",
-  applyCrossCommand(coreProjects, "compile")
-)
-addCommandAlias(
-  "crossLocalPublishIndigo",
-  applyCrossCommand(
-    coreProjects.filterNot(name => name == "sandbox" || name == "perf"),
-    "publishLocal"
-  )
-)
-addCommandAlias(
-  "crossLocalPublishNoClean",
-  List(
-    "crossBuildIndigo",
-    "crossLocalPublishIndigo"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
   "sandboxBuild",
   List(
     "buildAllNoClean",
@@ -187,4 +178,62 @@ addCommandAlias(
     "indigoPublishAllSigned",
     "sonatypeBundleRelease"
   ).mkString(";", ";", "")
+)
+
+// -- cross building --
+
+
+
+addCommandAlias(
+  "crossBuildIndigo",
+  applyCrossCommand(coreProjects, "compile")
+)
+addCommandAlias(
+  "crossLocalPublishIndigo",
+  applyCrossCommand(
+    coreProjects.filterNot(name => name == "sandbox" || name == "perf"),
+    "publishLocal"
+  )
+)
+addCommandAlias(
+  "crossLocalPublishNoClean",
+  List(
+    "crossBuildIndigo",
+    "crossLocalPublishIndigo"
+  ).mkString(";", ";", "")
+)
+
+
+addCommandAlias(
+  "crossTestIndigo",
+  applyCrossCommand(coreProjects, "test")
+)
+addCommandAlias(
+  "crossTestAllNoClean",
+  List(
+    "crossTestIndigo"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "crossCleanAll",
+  applyCrossToAll("clean")
+)
+
+addCommandAlias(
+  "crossIndigoRelease",
+  List(
+    "crossCleanAll",
+    "buildAllNoClean",
+    "testAllNoClean",
+    "crossBuildIndigo", // partial repeat
+    "crossTestAllNoClean", // partial repeat
+    "crossIndigoPublishAllSigned",
+    "sonatypeBundleRelease"
+  ).mkString(";", ";", "")
+)
+
+addCommandAlias(
+  "crossIndigoPublishAllSigned",
+  applyCrossToAllReleaseable("publishSigned")
 )

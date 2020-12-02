@@ -1,6 +1,5 @@
 package indigo.shared.display
 
-import indigo.shared.EqualTo._
 import indigo.shared.datatypes.{Vector4, Matrix4}
 
 class Vector4Tests extends munit.FunSuite {
