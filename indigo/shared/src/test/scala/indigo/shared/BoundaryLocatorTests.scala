@@ -1,6 +1,5 @@
 package indigo.shared
 
-import utest._
 import indigo.shared.datatypes.FontChar
 import indigo.shared.datatypes.FontKey
 import indigo.shared.datatypes.FontInfo
@@ -9,7 +8,7 @@ import indigo.shared.assets.AssetName
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.scenegraph.Text
 
-object BoundaryLocatorTests extends TestSuite {
+class BoundaryLocatorTests extends munit.FunSuite {
 
   import Samples._
 
@@ -21,85 +20,65 @@ object BoundaryLocatorTests extends TestSuite {
   val boundaryLocator: BoundaryLocator =
     new BoundaryLocator(new AnimationsRegister, fontRegister)
 
-  val tests: Tests =
-    Tests {
+  test("Text boundary calculations.Text as lines with bounds.empty") {
+    val actual = boundaryLocator.textAsLinesWithBounds("", fontKey)
+    assertEquals(actual.length, 0)
+  }
+  test("Text boundary calculations.Text as lines with bounds.abc") {
+    val actual = boundaryLocator.textAsLinesWithBounds("abc", fontKey)
+    assertEquals(actual.length, 1)
+    assertEquals(actual.headOption.get.text, "abc")
+    assertEquals(actual.headOption.get.lineBounds, Rectangle(0, 0, 42, 20))
+  }
+  test("Text boundary calculations.Text as lines with bounds.ab->c") {
+    val actual = boundaryLocator.textAsLinesWithBounds("ab\nc", fontKey)
+    assertEquals(actual.length, 2)
+    assertEquals(actual(0).text, "ab")
+    assertEquals(actual(0).lineBounds, Rectangle(0, 0, 26, 20))
+    assertEquals(actual(1).text, "c")
+    assertEquals(actual(1).lineBounds, Rectangle(0, 20, 16, 16))
+  }
 
-      "Text boundary calculations" - {
+  // These should be identical, regardless of alignment.
+  // The lines move around within the same bounding area.
+  test("Text boundary calculations.Text bounds.aligned left.empty") {
+    val actual = boundaryLocator.textBounds(text.alignLeft.withText(""))
+    assertEquals(actual, Rectangle(50, 50, 0, 0))
+  }
+  test("Text boundary calculations.Text bounds.aligned left.abc") {
+    val actual = boundaryLocator.textBounds(text.alignLeft.withText("abc"))
+    assertEquals(actual, Rectangle(50, 50, 42, 20))
+  }
+  test("Text boundary calculations.Text bounds.aligned left.ab->c") {
+    val actual = boundaryLocator.textBounds(text.alignLeft.withText("ab\nc"))
+    assertEquals(actual, Rectangle(50, 50, 26, 36))
+  }
 
-        "Text as lines with bounds" - {
-          "empty" - {
-            val actual = boundaryLocator.textAsLinesWithBounds("", fontKey)
-            actual.length ==> 0
-          }
-          "abc" - {
-            val actual = boundaryLocator.textAsLinesWithBounds("abc", fontKey)
-            actual.length ==> 1
-            actual.headOption.get.text ==> "abc"
-            actual.headOption.get.lineBounds ==> Rectangle(0, 0, 42, 20)
-          }
-          "ab->c" - {
-            val actual = boundaryLocator.textAsLinesWithBounds("ab\nc", fontKey)
-            actual.length ==> 2
-            actual(0).text ==> "ab"
-            actual(0).lineBounds ==> Rectangle(0, 0, 26, 20)
-            actual(1).text ==> "c"
-            actual(1).lineBounds ==> Rectangle(0, 20, 16, 16)
-          }
+  test("Text boundary calculations.Text bounds.aligned right.empty") {
+    val actual = boundaryLocator.textBounds(text.alignRight.withText(""))
+    assertEquals(actual, Rectangle(50, 50, 0, 0))
+  }
+  test("Text boundary calculations.Text bounds.aligned right.abc") {
+    val actual = boundaryLocator.textBounds(text.alignRight.withText("abc"))
+    assertEquals(actual, Rectangle(50, 50, 42, 20))
+  }
+  test("Text boundary calculations.Text bounds.aligned right.ab->c") {
+    val actual = boundaryLocator.textBounds(text.alignRight.withText("ab\nc"))
+    assertEquals(actual, Rectangle(50, 50, 26, 36))
+  }
 
-        }
-
-        "Text bounds" - {
-
-          // These should be identical, regardless of alignment.
-          // The lines move around within the same bounding area.
-          "aligned left" - {
-            "empty" - {
-              val actual = boundaryLocator.textBounds(text.alignLeft.withText(""))
-              actual ==> Rectangle(50, 50, 0, 0)
-            }
-            "abc" - {
-              val actual = boundaryLocator.textBounds(text.alignLeft.withText("abc"))
-              actual ==> Rectangle(50, 50, 42, 20)
-            }
-            "ab->c" - {
-              val actual = boundaryLocator.textBounds(text.alignLeft.withText("ab\nc"))
-              actual ==> Rectangle(50, 50, 26, 36)
-            }
-          }
-          "aligned right" - {
-            "empty" - {
-              val actual = boundaryLocator.textBounds(text.alignRight.withText(""))
-              actual ==> Rectangle(50, 50, 0, 0)
-            }
-            "abc" - {
-              val actual = boundaryLocator.textBounds(text.alignRight.withText("abc"))
-              actual ==> Rectangle(50, 50, 42, 20)
-            }
-            "ab->c" - {
-              val actual = boundaryLocator.textBounds(text.alignRight.withText("ab\nc"))
-              actual ==> Rectangle(50, 50, 26, 36)
-            }
-          }
-          "aligned center" - {
-            "empty" - {
-              val actual = boundaryLocator.textBounds(text.alignCenter.withText(""))
-              actual ==> Rectangle(50, 50, 0, 0)
-            }
-            "abc" - {
-              val actual = boundaryLocator.textBounds(text.alignCenter.withText("abc"))
-              actual ==> Rectangle(50, 50, 42, 20)
-            }
-            "ab->c" - {
-              val actual = boundaryLocator.textBounds(text.alignCenter.withText("ab\nc"))
-              actual ==> Rectangle(50, 50, 26, 36)
-            }
-          }
-
-        }
-
-      }
-
-    }
+  test("Text boundary calculations.Text bounds.aligned center.empty") {
+    val actual = boundaryLocator.textBounds(text.alignCenter.withText(""))
+    assertEquals(actual, Rectangle(50, 50, 0, 0))
+  }
+  test("Text boundary calculations.Text bounds.aligned center.abc") {
+    val actual = boundaryLocator.textBounds(text.alignCenter.withText("abc"))
+    assertEquals(actual, Rectangle(50, 50, 42, 20))
+  }
+  test("Text boundary calculations.Text bounds.aligned center.ab->c") {
+    val actual = boundaryLocator.textBounds(text.alignCenter.withText("ab\nc"))
+    assertEquals(actual, Rectangle(50, 50, 26, 36))
+  }
 
   object Samples {
     val material = Material.Textured(AssetName("font-sheet"))

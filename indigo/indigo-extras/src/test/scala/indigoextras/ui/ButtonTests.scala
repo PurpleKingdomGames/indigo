@@ -1,6 +1,5 @@
 package indigoextras.ui
 
-import utest._
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Material
@@ -11,9 +10,7 @@ import indigo.shared.datatypes.Point
 import indigo.shared.events.MouseEvent
 import indigo.shared.events.GlobalEvent
 
-object ButtonTests extends TestSuite {
-
-  final case class FakeEvent(message: String) extends GlobalEvent
+class ButtonTests extends munit.FunSuite {
 
   val bounds =
     Rectangle(10, 10, 100, 100)
@@ -32,125 +29,138 @@ object ButtonTests extends TestSuite {
       .withDownActions(FakeEvent("mouse down"))
       .withUpActions(FakeEvent("mouse up"))
 
-  val tests: Tests =
-    Tests {
+  test("Initial state is up") {
+    assertEquals(button.state.isUp, true)
+  }
 
-      "Mouse interactions" - {
+  test("Transition from Up -> Over when mouse over.") {
+    assertEquals(button.state.isUp, true)
 
-        "Initial state is up" - {
-          button.state.isUp ==> true
-        }
+    val mouse =
+      new Mouse(Nil, Point(20, 20), false)
 
-        "Transition from Up -> Over when mouse over" - {
-          button.state.isUp ==> true
+    val actual = button.update(mouse)
 
-          val mouse =
-            new Mouse(Nil, Point(20, 20), false)
+    assertEquals(actual.state.state.isOver, true)
+  }
 
-          val actual = button.update(mouse)
+  test("Transition from Up -> Over when mouse over.Within the button: On mouse over, the over action is performed") {
 
-          actual.state.state.isOver ==> true
+    val mouse =
+      new Mouse(Nil, Point(20, 20), false)
 
-          "Within the button: On mouse over, the over action is performed" - {
-            assert(
-              actual.globalEvents.length == 1,
-              actual.globalEvents.contains(FakeEvent("mouse over"))
-            )
-          }
-        }
+    val actual = button.update(mouse)
+    assert(actual.globalEvents.length == 1)
+    assert(actual.globalEvents.contains(FakeEvent("mouse over")))
+  }
 
-        "Transition from Over -> Up when mouse out" - {
-          val mouse =
-            new Mouse(Nil, Point(0, 0), false)
+  test("Transition from Over -> Up when mouse out.") {
+    val mouse =
+      new Mouse(Nil, Point(0, 0), false)
 
-          val actual = button.toOverState.update(mouse)
+    val actual = button.toOverState.update(mouse)
 
-          actual.state.state.isUp ==> true
+    assertEquals(actual.state.state.isUp, true)
+  }
 
-          "Starting within the button: On mouse out, the out action is performed" - {
-            assert(
-              actual.globalEvents.length == 1,
-              actual.globalEvents.contains(FakeEvent("mouse out"))
-            )
-          }
-        }
+  test("Transition from Over -> Up when mouse out.Starting within the button: On mouse out, the out action is performed") {
+    val mouse =
+      new Mouse(Nil, Point(0, 0), false)
+    val actual = button.toOverState.update(mouse)
 
-        "Transition from Over -> Down on mouse press" - {
-          val mouse =
-            new Mouse(List(MouseEvent.MouseDown(20, 20)), Point(20, 20), false)
+    assert(actual.globalEvents.length == 1)
+    assert(actual.globalEvents.contains(FakeEvent("mouse out")))
+  }
 
-          val actual = button.toOverState.update(mouse)
+  test("Transition from Over -> Down on mouse press.") {
+    val mouse =
+      new Mouse(List(MouseEvent.MouseDown(20, 20)), Point(20, 20), false)
 
-          actual.state.state.isDown ==> true
+    val actual = button.toOverState.update(mouse)
 
-          "Within the button: On mouse down, the down action is performed" - {
-            assert(
-              actual.globalEvents.length == 1,
-              actual.globalEvents.contains(FakeEvent("mouse down"))
-            )
-          }
-        }
+    assertEquals(actual.state.state.isDown, true)
+  }
 
-        "Transition from Up -> Down on mouse press" - {
-          val mouse =
-            new Mouse(List(MouseEvent.MouseDown(20, 20)), Point(20, 20), false)
+  test("Transition from Over -> Down on mouse press.Within the button: On mouse down, the down action is performed") {
 
-          val actual = button.toUpState.update(mouse)
+    val mouse =
+      new Mouse(List(MouseEvent.MouseDown(20, 20)), Point(20, 20), false)
 
-          actual.state.state.isDown ==> true
+    val actual = button.toOverState.update(mouse)
 
-          "Within the button: On mouse down, the down action is performed" - {
-            assert(
-              actual.globalEvents.length == 2,
-              actual.globalEvents.contains(FakeEvent("mouse over")),
-              actual.globalEvents.contains(FakeEvent("mouse down")),
-              actual.globalEvents == List(FakeEvent("mouse over"), FakeEvent("mouse down"))
-            )
-          }
-        }
+    assert(actual.globalEvents.length == 1)
+    assert(actual.globalEvents.contains(FakeEvent("mouse down")))
+  }
 
-        "Transition from Down -> Over on mouse release" - {
-          val mouse =
-            new Mouse(List(MouseEvent.MouseUp(20, 20)), Point(20, 20), false)
+  test("Transition from Up -> Down on mouse press.") {
+    val mouse =
+      new Mouse(List(MouseEvent.MouseDown(20, 20)), Point(20, 20), false)
 
-          val actual = button.toDownState.update(mouse)
+    val actual = button.toUpState.update(mouse)
 
-          actual.state.state.isOver ==> true
+    assertEquals(actual.state.state.isDown, true)
+  }
 
-          "Within the button: On mouse release, the up action is performed" - {
-            assert(
-              actual.globalEvents.length == 1,
-              actual.globalEvents.contains(FakeEvent("mouse up"))
-            )
-          }
-        }
+  test("Transition from Up -> Down on mouse press.Within the button: On mouse down, the down action is performed") {
+    val mouse =
+      new Mouse(List(MouseEvent.MouseDown(20, 20)), Point(20, 20), false)
 
-        "If the button is down, and the mouse moves out, the button stays down until release." - {
-          val actual = for {
-            buttonPressed <- button.update(new Mouse(List(MouseEvent.MouseDown(20, 20)), Point(20, 20), false))
-            mouseOut      <- buttonPressed.update(new Mouse(Nil, Point(200, 200), false))
-            mouseReleased <- mouseOut.update(new Mouse(List(MouseEvent.MouseUp(200, 200)), Point(200, 200), false))
-          } yield (buttonPressed.state, mouseOut.state, mouseReleased.state)
+    val actual = button.toUpState.update(mouse)
 
-          assert(
-            actual.state._1.isDown,
-            actual.state._2.isDown,
-            actual.state._3.isUp
-          )
+    assert(actual.globalEvents.length == 2)
+    assert(actual.globalEvents.contains(FakeEvent("mouse over")))
+    assert(actual.globalEvents.contains(FakeEvent("mouse down")))
+    assert(actual.globalEvents == List(FakeEvent("mouse over"), FakeEvent("mouse down")))
 
-          "If the mouse is moved onto and pressed down on the button, dragged out and released, only the down action is performed." - {
-            println(actual.globalEvents)
-            assert(
-              actual.globalEvents.length == 2,
-              actual.globalEvents.contains(FakeEvent("mouse over")),
-              actual.globalEvents.contains(FakeEvent("mouse down")),
-              actual.globalEvents == List(FakeEvent("mouse over"), FakeEvent("mouse down"))
-            )
-          }
-        }
+  }
 
-      }
+  test("Transition from Down -> Over on mouse release.") {
+    val mouse =
+      new Mouse(List(MouseEvent.MouseUp(20, 20)), Point(20, 20), false)
 
-    }
+    val actual = button.toDownState.update(mouse)
+
+    assertEquals(actual.state.state.isOver, true)
+
+  }
+  test("Transition from Down -> Over on mouse release.Within the button: On mouse release, the up action is performed") {
+    val mouse =
+      new Mouse(List(MouseEvent.MouseUp(20, 20)), Point(20, 20), false)
+
+    val actual = button.toDownState.update(mouse)
+
+    assert(actual.globalEvents.length == 1)
+    assert(actual.globalEvents.contains(FakeEvent("mouse up")))
+  }
+
+  test("If the button is down, and the mouse moves out, the button stays down until release.") {
+    val actual = for {
+      buttonPressed <- button.update(new Mouse(List(MouseEvent.MouseDown(20, 20)), Point(20, 20), false))
+      mouseOut      <- buttonPressed.update(new Mouse(Nil, Point(200, 200), false))
+      mouseReleased <- mouseOut.update(new Mouse(List(MouseEvent.MouseUp(200, 200)), Point(200, 200), false))
+    } yield (buttonPressed.state, mouseOut.state, mouseReleased.state)
+
+    assert(actual.state._1.isDown)
+    assert(actual.state._2.isDown)
+    assert(actual.state._3.isUp)
+  }
+
+  test(
+    "If the button is down, and the mouse moves out, the button stays down until release.If the mouse is moved onto and pressed down on the button, dragged out and released, only the down action is performed."
+  ) {
+
+    val actual = for {
+      buttonPressed <- button.update(new Mouse(List(MouseEvent.MouseDown(20, 20)), Point(20, 20), false))
+      mouseOut      <- buttonPressed.update(new Mouse(Nil, Point(200, 200), false))
+      mouseReleased <- mouseOut.update(new Mouse(List(MouseEvent.MouseUp(200, 200)), Point(200, 200), false))
+    } yield (buttonPressed.state, mouseOut.state, mouseReleased.state)
+
+    assert(actual.globalEvents.length == 2)
+    assert(actual.globalEvents.contains(FakeEvent("mouse over")))
+    assert(actual.globalEvents.contains(FakeEvent("mouse down")))
+    assert(actual.globalEvents == List(FakeEvent("mouse over"), FakeEvent("mouse down")))
+  }
 
 }
+
+final case class FakeEvent(message: String) extends GlobalEvent

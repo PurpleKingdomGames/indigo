@@ -1,7 +1,7 @@
 package snake.model.quadtrees
 
 import org.scalacheck._
-import org.scalacheck.Prop.BooleanOperators
+import org.scalacheck.Prop.propBoolean
 
 import indigo.shared.EqualTo._
 

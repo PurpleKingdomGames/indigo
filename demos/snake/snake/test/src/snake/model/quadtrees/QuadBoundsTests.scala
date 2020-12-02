@@ -1,83 +1,70 @@
 package snake.model.quadtrees
 
-import utest._
-
 import indigo.shared.datatypes.Point
 import snake.model.grid.GridPoint
 import indigoextras.geometry.LineSegment
 import indigo.shared.EqualTo._
 
-object QuadBoundsTests extends TestSuite {
+class QuadBoundsTests extends munit.FunSuite {
 
-  val tests: Tests =
-    Tests {
-      "QuadBounds" - {
+  test("QuadBounds.should be able to check a point is within the bounds") {
 
-        "should be able to check a point is within the bounds" - {
+    val b = QuadBounds(0, 0, 10, 10)
 
-          val b = QuadBounds(0, 0, 10, 10)
+    assertEquals(b.isPointWithinBounds(GridPoint(5, 5)), true)
+    assertEquals(b.isPointWithinBounds(GridPoint(0, 0)), true)
+    assertEquals(b.isPointWithinBounds(GridPoint(-1, 5)), false)
+    assertEquals(b.isPointWithinBounds(GridPoint(5, 20)), false)
 
-          b.isPointWithinBounds(GridPoint(5, 5)) ==> true
-          b.isPointWithinBounds(GridPoint(0, 0)) ==> true
-          b.isPointWithinBounds(GridPoint(-1, 5)) ==> false
-          b.isPointWithinBounds(GridPoint(5, 20)) ==> false
+  }
 
-        }
+  test("QuadBounds.should be able to subdivide") {
 
-        "should be able to subdivide" - {
+    val b = QuadBounds(0, 0, 10, 10)
 
-          val b = QuadBounds(0, 0, 10, 10)
+    assertEquals(b.subdivide._1 === QuadBounds(0, 0, 5, 5), true)
+    assertEquals(b.subdivide._2 === QuadBounds(5, 0, 5, 5), true)
+    assertEquals(b.subdivide._3 === QuadBounds(0, 5, 5, 5), true)
+    assertEquals(b.subdivide._4 === QuadBounds(5, 5, 5, 5), true)
 
-          b.subdivide._1 === QuadBounds(0, 0, 5, 5) ==> true
-          b.subdivide._2 === QuadBounds(5, 0, 5, 5) ==> true
-          b.subdivide._3 === QuadBounds(0, 5, 5, 5) ==> true
-          b.subdivide._4 === QuadBounds(5, 5, 5, 5) ==> true
+  }
 
-        }
+  test("QuadBounds.should be able to re-combine") {
+    val original = QuadBounds(0, 0, 0, 2)
 
-        "should be able to re-combine" - {
-          val original = QuadBounds(0, 0, 0, 2)
+    val divisions = original.subdivide
 
-          val divisions = original.subdivide
+    val recombined =
+      QuadBounds.combine(divisions._1, List(divisions._2, divisions._3, divisions._4))
 
-          val recombined =
-            QuadBounds.combine(divisions._1, List(divisions._2, divisions._3, divisions._4))
+    assertEquals(recombined === original, true)
+  }
 
-          recombined === original ==> true
-        }
+  test("Ray (LineSegment) collision.should be able to report a ray collision") {
+    val bounds: QuadBounds = QuadBounds(10, 10, 20, 20)
+    val line: LineSegment  = LineSegment(0, 15, 50, 15)
 
-      }
+    assertEquals(QuadBounds.rayCollisionCheck(bounds, line), true)
+  }
 
-      "Ray (LineSegment) collision" - {
+  test("Ray (LineSegment) collision.should correctly report when there is no collision") {
+    val bounds: QuadBounds = QuadBounds(10, 10, 20, 20)
+    val line: LineSegment  = LineSegment(0, 15, 5, 15)
 
-        "should be able to report a ray collision" - {
-          val bounds: QuadBounds = QuadBounds(10, 10, 20, 20)
-          val line: LineSegment  = LineSegment(0, 15, 50, 15)
+    assertEquals(QuadBounds.rayCollisionCheck(bounds, line), false)
+  }
 
-          QuadBounds.rayCollisionCheck(bounds, line) ==> true
-        }
+  test("Ray (LineSegment) collision.should report where a line segment passed through the bounds") {
+    val bounds: QuadBounds = QuadBounds(10, 10, 20, 20)
+    val line: LineSegment  = LineSegment(0, 15, 50, 15)
 
-        "should correctly report when there is no collision" - {
-          val bounds: QuadBounds = QuadBounds(10, 10, 20, 20)
-          val line: LineSegment  = LineSegment(0, 15, 5, 15)
+    assertEquals(QuadBounds.rayCollisionPosition(bounds, line) === Some(Point(10, 15)), true)
+  }
 
-          QuadBounds.rayCollisionCheck(bounds, line) ==> false
-        }
+  test("Ray (LineSegment) collision.should report where a line segment did not pass through the bounds") {
+    val bounds: QuadBounds = QuadBounds(10, 10, 20, 20)
+    val line: LineSegment  = LineSegment(0, 15, 5, 15)
 
-        "should report where a line segment passed through the bounds" - {
-          val bounds: QuadBounds = QuadBounds(10, 10, 20, 20)
-          val line: LineSegment  = LineSegment(0, 15, 50, 15)
-
-          QuadBounds.rayCollisionPosition(bounds, line) === Some(Point(10, 15)) ==> true
-        }
-
-        "should report where a line segment did not pass through the bounds" - {
-          val bounds: QuadBounds = QuadBounds(10, 10, 20, 20)
-          val line: LineSegment  = LineSegment(0, 15, 5, 15)
-
-          QuadBounds.rayCollisionPosition(bounds, line) ==> None
-        }
-
-      }
-    }
+    assertEquals(QuadBounds.rayCollisionPosition(bounds, line), None)
+  }
 }

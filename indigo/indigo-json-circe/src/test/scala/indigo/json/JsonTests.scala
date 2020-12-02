@@ -1,51 +1,40 @@
 package indigo.json
 
 import indigo.shared.formats._
-import utest._
+
 import indigo.shared.datatypes.FontChar
 import indigo.shared.datatypes.Rectangle
 
-object JsonTests extends TestSuite {
+class JsonTests extends munit.FunSuite {
 
-  val tests: Tests =
-    Tests {
-      "Create an Aseprite asset" - {
+  test("Create an Aseprite asset.should be able to parse the json definition") {
+    assertEquals(Json.asepriteFromJson(AsepriteSampleData.json), AsepriteSampleData.aseprite)
+  }
 
-        "should be able to parse the json definition" - {
-          Json.asepriteFromJson(AsepriteSampleData.json) ==> AsepriteSampleData.aseprite
-        }
+  test("Create an Aseprite asset.should fail to parse a bad json definition") {
+    assertEquals(Json.asepriteFromJson("nonsense"), None)
+  }
 
-        "should fail to parse a bad json definition" - {
-          Json.asepriteFromJson("nonsense") ==> None
-        }
+  test("Fonts.should be able to parse the json definition") {
+    val actual = Json.readFontToolJson(FontToolSampleData.json).get
 
-      }
+    val expected = FontToolSampleData.sample
 
-      "Fonts" - {
-        "should be able to parse the json definition" - {
-          val actual = Json.readFontToolJson(FontToolSampleData.json).get
-          
-          val expected = FontToolSampleData.sample
-       
-          actual.length ==> expected.length
-          actual.forall(c => expected.contains(c)) ==> true
-        }
+    assertEquals(actual.length, expected.length)
+    assertEquals(actual.forall(c => expected.contains(c)), true)
+  }
 
-        "should fail to parse a bad json definition" - {
-          Json.readFontToolJson("nonsense") ==> None
-        }
-      }
+  test("Fonts.should fail to parse a bad json definition") {
+    assertEquals(Json.readFontToolJson("nonsense"), None)
+  }
 
-      "Tiled" - {
-        "should be able to parse Tiled json" - {
+  test("Tiled.should be able to parse Tiled json") {
 
-          val actual = Json.tiledMapFromJson(TiledSampleData.sampleMap)
+    val actual = Json.tiledMapFromJson(TiledSampleData.sampleMap)
 
-          actual.isDefined ==> true
+    assertEquals(actual.isDefined, true)
 
-        }
-      }
-    }
+  }
 
 }
 

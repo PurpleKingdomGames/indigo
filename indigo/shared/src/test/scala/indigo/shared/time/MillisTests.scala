@@ -1,30 +1,20 @@
 package indigo.shared.time
 
-import utest._
-
 import indigo.shared.EqualTo._
 
-object MillisTests extends TestSuite {
+class MillisTests extends munit.FunSuite {
 
-  val tests: Tests =
-    Tests {
+  test("Should be able to convert Millis to Seconds") {
+    assertEquals(Millis(1000).toSeconds, Seconds(1))
+    assertEquals(Millis(1500).toSeconds, Seconds(1.5))
+    assertEquals(Millis(10001).toSeconds, Seconds(10.001))
+  }
 
-      "Should be able to convert Millis to Seconds" - {
-        Millis(1000).toSeconds ==> Seconds(1)
-        Millis(1500).toSeconds ==> Seconds(1.5)
-        Millis(10001).toSeconds ==> Seconds(10.001)
-      }
+  test("Operations.modulo") {
 
-      "Operations" - {
+    assertEquals(Millis(1) % Millis(2) === Millis(1), true)
+    assertEquals(Millis(2) % Millis(2) === Millis(0), true)
 
-        "modulo" - {
+  }
 
-          Millis(1) % Millis(2) === Millis(1) ==> true
-          Millis(2) % Millis(2) === Millis(0) ==> true
-
-        }
-
-      }
-
-    }
 }

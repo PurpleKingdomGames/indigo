@@ -1,11 +1,10 @@
 package indigoextras.geometry
 
-import utest._
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Point
 
-object PolygonTests extends TestSuite {
+class PolygonTests extends munit.FunSuite {
 
   // Polygons
   val open: Polygon.Open =
@@ -44,129 +43,114 @@ object PolygonTests extends TestSuite {
   val intersectingRectangleWithClosed: Rectangle =
     Rectangle(Point(0, -5), Point(4, 4))
 
-  var tests: Tests =
-    Tests {
+  test("Construction.should be able to create an open polygon") {
+    assertEquals(open.edgeCount, 3)
+  }
 
-      "Construction" - {
-        "should be able to create an open polygon" - {
-          open.edgeCount ==> 3
-        }
+  test("Construction.should be able to create a closed polygon") {
+    assertEquals(closed.edgeCount, 4)
+  }
 
-        "should be able to create a closed polygon" - {
-          closed.edgeCount ==> 4
-        }
+  test("Construction.should be able to add a vertex") {
+    assertEquals(Polygon.Open.empty.addVertex(Vertex.zero).vertices.length, 1)
+  }
 
-        "should be able to add a vertex" - {
-          Polygon.Open.empty.addVertex(Vertex.zero).vertices.length ==> 1
-        }
+  test("Construction.should be able to produce a bounding rectangle") {
+    assertEquals(closed.bounds.toRectangle === Rectangle(0, -5, 10, 10), true)
+  }
 
-        "should be able to produce a bounding rectangle" - {
-          closed.bounds.toRectangle === Rectangle(0, -5, 10, 10) ==> true
-        }
+  test("Construction.should be able to create a polygon from a rectangle") {
+    val expected: Polygon =
+      Polygon.Closed(
+        Vertex(0, 0),
+        Vertex(0, 10),
+        Vertex(10, 10),
+        Vertex(10, 0)
+      )
 
-        "should be able to create a polygon from a rectangle" - {
-          val expected: Polygon =
-            Polygon.Closed(
-              Vertex(0, 0),
-              Vertex(0, 10),
-              Vertex(10, 10),
-              Vertex(10, 0)
-            )
+    val actual: Polygon =
+      Polygon.fromRectangle(Rectangle(Point(0, 0), Point(10, 10)))
 
-          val actual: Polygon =
-            Polygon.fromRectangle(Rectangle(Point(0, 0), Point(10, 10)))
+    assertEquals(expected === actual, true)
+  }
 
-          expected === actual ==> true
-        }
-      }
+  test("Operations.should be able to produce line segments (open)") {
 
-      "Operations" - {
+    val expected: List[LineSegment] =
+      List(
+        LineSegment(Vertex(0, 0), Vertex(5, 5)),
+        LineSegment(Vertex(5, 5), Vertex(10, 0)),
+        LineSegment(Vertex(10, 0), Vertex(5, -5))
+      )
 
-        "should be able to produce line segments (open)" - {
+    val actual: List[LineSegment] =
+      open.lineSegments
 
-          val expected: List[LineSegment] =
-            List(
-              LineSegment(Vertex(0, 0), Vertex(5, 5)),
-              LineSegment(Vertex(5, 5), Vertex(10, 0)),
-              LineSegment(Vertex(10, 0), Vertex(5, -5))
-            )
+    assertEquals(actual === expected, true)
+  }
 
-          val actual: List[LineSegment] =
-            open.lineSegments
+  test("Operations.should be able to produce line segments (closed)") {
 
-          actual === expected ==> true
-        }
+    val expected: List[LineSegment] =
+      List(
+        LineSegment(Vertex(0, 0), Vertex(5, 5)),
+        LineSegment(Vertex(5, 5), Vertex(10, 0)),
+        LineSegment(Vertex(10, 0), Vertex(5, -5)),
+        LineSegment(Vertex(5, -5), Vertex(0, 0))
+      )
 
-        "should be able to produce line segments (closed)" - {
+    val actual: List[LineSegment] =
+      closed.lineSegments
 
-          val expected: List[LineSegment] =
-            List(
-              LineSegment(Vertex(0, 0), Vertex(5, 5)),
-              LineSegment(Vertex(5, 5), Vertex(10, 0)),
-              LineSegment(Vertex(10, 0), Vertex(5, -5)),
-              LineSegment(Vertex(5, -5), Vertex(0, 0))
-            )
+    assertEquals(actual === expected, true)
+  }
 
-          val actual: List[LineSegment] =
-            closed.lineSegments
+  test("Intersections.contains point (open shapes can't contain)") {
+    assertEquals(open.contains(Vertex(2, 1)), false)
+  }
 
-          actual === expected ==> true
-        }
+  test("Intersections.contains point (closed).totally enclosed") {
+    assertEquals(closed.contains(Vertex(2, 0)), true)
+  }
 
-      }
+  test("Intersections.contains point (closed).within bounds but not inside polygon") {
+    assertEquals(closed.contains(Vertex(1, 4)), false)
+  }
 
-      "Intersections" - {
-        "contains point (open shapes can't contain)" - {
-          open.contains(Vertex(2, 1)) ==> false
-        }
+  test("Intersections.intersects with line (open)") {
+    assertEquals(open.lineIntersectCheck(intersectingLine), true)
+    assertEquals(open.lineIntersectCheck(noneIntersectingLine), false)
+    assertEquals(open.lineIntersectCheck(intersectingLineWithClosed), false)
+  }
 
-        "contains point (closed)" - {
-          "totally enclosed" - {
-            closed.contains(Vertex(2, 0)) ==> true
-          }
+  test("Intersections.intersects with line (closed)") {
+    assertEquals(closed.lineIntersectCheck(intersectingLine), true)
+    assertEquals(closed.lineIntersectCheck(noneIntersectingLine), false)
+    assertEquals(closed.lineIntersectCheck(intersectingLineWithClosed), true)
+  }
 
-          "within bounds but not inside polygon" - {
-            closed.contains(Vertex(1, 4)) ==> false
-          }
-        }
+  test("Intersections.intersects with rectangle (open)") {
+    assertEquals(open.rectangleIntersectCheck(intersectingRectangle), true)
+    assertEquals(open.rectangleIntersectCheck(noneIntersectingRectangle), false)
+    assertEquals(open.rectangleIntersectCheck(intersectingRectangleWithClosed), false)
+  }
 
-        "intersects with line (open)" - {
-          open.lineIntersectCheck(intersectingLine) ==> true
-          open.lineIntersectCheck(noneIntersectingLine) ==> false
-          open.lineIntersectCheck(intersectingLineWithClosed) ==> false
-        }
+  test("Intersections.intersects with rectangle (closed)") {
+    assertEquals(closed.rectangleIntersectCheck(intersectingRectangle), true)
+    assertEquals(closed.rectangleIntersectCheck(noneIntersectingRectangle), false)
+    assertEquals(closed.rectangleIntersectCheck(intersectingRectangleWithClosed), true)
+  }
 
-        "intersects with line (closed)" - {
-          closed.lineIntersectCheck(intersectingLine) ==> true
-          closed.lineIntersectCheck(noneIntersectingLine) ==> false
-          closed.lineIntersectCheck(intersectingLineWithClosed) ==> true
-        }
+  test("Intersections.intersects with polygon (open)") {
+    assertEquals(open.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangle)), true)
+    assertEquals(open.polygonIntersectCheck(Polygon.fromRectangle(noneIntersectingRectangle)), false)
+    assertEquals(open.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangleWithClosed)), false)
+  }
 
-        "intersects with rectangle (open)" - {
-          open.rectangleIntersectCheck(intersectingRectangle) ==> true
-          open.rectangleIntersectCheck(noneIntersectingRectangle) ==> false
-          open.rectangleIntersectCheck(intersectingRectangleWithClosed) ==> false
-        }
-
-        "intersects with rectangle (closed)" - {
-          closed.rectangleIntersectCheck(intersectingRectangle) ==> true
-          closed.rectangleIntersectCheck(noneIntersectingRectangle) ==> false
-          closed.rectangleIntersectCheck(intersectingRectangleWithClosed) ==> true
-        }
-
-        "intersects with polygon (open)" - {
-          open.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangle)) ==> true
-          open.polygonIntersectCheck(Polygon.fromRectangle(noneIntersectingRectangle)) ==> false
-          open.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangleWithClosed)) ==> false
-        }
-
-        "intersects with polygon (closed)" - {
-          closed.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangle)) ==> true
-          closed.polygonIntersectCheck(Polygon.fromRectangle(noneIntersectingRectangle)) ==> false
-          closed.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangleWithClosed)) ==> true
-        }
-      }
-
-    }
+  test("Intersections.intersects with polygon (closed)") {
+    assertEquals(closed.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangle)), true)
+    assertEquals(closed.polygonIntersectCheck(Polygon.fromRectangle(noneIntersectingRectangle)), false)
+    assertEquals(closed.polygonIntersectCheck(Polygon.fromRectangle(intersectingRectangleWithClosed)), true)
+  }
 
 }

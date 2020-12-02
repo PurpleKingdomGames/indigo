@@ -1,31 +1,22 @@
 package indigo.shared.datatypes
 
-import utest._
+class RGBTests extends munit.FunSuite {
 
-object RGBTests extends TestSuite {
+  test("Creating RGB instances.should convert from RGB int values") {
+    assertEquals(RGB.fromColorInts(0, 0, 0), RGB.Black)
+    assertEquals(RGB.fromColorInts(255, 255, 255), RGB.White)
+    assertEquals(RGB.fromColorInts(255, 0, 0), RGB.Red)
+    assertEquals(RGB.fromColorInts(0, 255, 0), RGB.Green)
+    assertEquals(RGB.fromColorInts(0, 0, 255), RGB.Blue)
+  }
 
-  val tests: Tests =
-    Tests {
-      "Creating RGB instances" - {
+  test("Creating RGB instances.should convert from Hexadecimal") {
+    assertEquals(RGB.fromHexString("0xFF0000"), RGB.Red)
+    assertEquals(RGB.fromHexString("FF0000"), RGB.Red)
+    assertEquals(RGB.fromHexString("00FF00"), RGB.Green)
+    assertEquals(RGB.fromHexString("0000FF"), RGB.Blue)
 
-        "should convert from RGB int values" - {
-          RGB.fromColorInts(0, 0, 0) ==> RGB.Black
-          RGB.fromColorInts(255, 255, 255) ==> RGB.White
-          RGB.fromColorInts(255, 0, 0) ==> RGB.Red
-          RGB.fromColorInts(0, 255, 0) ==> RGB.Green
-          RGB.fromColorInts(0, 0, 255) ==> RGB.Blue
-        }
-
-        "should convert from Hexadecimal" - {
-          RGB.fromHexString("0xFF0000") ==> RGB.Red
-          RGB.fromHexString("FF0000") ==> RGB.Red
-          RGB.fromHexString("00FF00") ==> RGB.Green
-          RGB.fromHexString("0000FF") ==> RGB.Blue
-
-          RGB.fromHexString("0xFF0000FF") ==> RGB.Red
-        }
-
-      }
-    }
+    assertEquals(RGB.fromHexString("0xFF0000FF"), RGB.Red)
+  }
 
 }

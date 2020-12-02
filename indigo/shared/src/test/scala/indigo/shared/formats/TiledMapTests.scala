@@ -1,6 +1,5 @@
 package indigo.shared.formats
 
-import utest._
 import indigo.shared.formats.TiledMap
 import indigo.shared.formats.TileSet
 import indigo.shared.formats.TiledLayer
@@ -12,92 +11,86 @@ import indigo.shared.datatypes.Point
 import indigo.shared.collections.NonEmptyList
 import scala.annotation.nowarn
 
-object TiledMapTests extends TestSuite {
+class TiledMapTests extends munit.FunSuite {
 
-  val tests: Tests =
-    Tests {
+  test("should be able to convert to a TiledGridMap.identity (Int)") {
+    val actual =
+      TiledSamples.tiledMap
+        .toGrid[Int](identity[Int])
+        .get
+        .toListPerLayer
+        .head
+        .map(_.tile)
 
-      "should be able to convert to a TiledGridMap" - {
+    val expected: List[Int] =
+      TiledSamples.gridMapInt.layers.head.grid.map(_.tile)
 
-        "identity (Int)" - {
-          val actual =
-            TiledSamples.tiledMap
-              .toGrid[Int](identity[Int])
-              .get
-              .toListPerLayer
-              .head
-              .map(_.tile)
+    assertEquals(actual, expected)
 
-          val expected: List[Int] =
-            TiledSamples.gridMapInt.layers.head.grid.map(_.tile)
+  }
 
-          actual ==> expected
-
-        }
-
-        "with mapping" - {
-          // Using nowarn as it's a partial match and I want it
-          // to blow up if it finds anything else.
-          @nowarn val matcher: ((Int, TileTypes)) => Boolean = {
-            case (0, TileTypes.Empty)           => true
-            case (i, TileTypes.Solid) if i != 0 => true
-            case (i, TileTypes.Empty) if i != 0 => false
-            case (i, TileTypes.Solid) if i == 0 => false
-          }
-
-          val actual =
-            TiledSamples.tiledMap
-              .toGrid[TileTypes](TiledSamples.mapping)
-              .get
-              .toListPerLayer
-              .head
-              .map(_.tile)
-
-          TiledSamples.gridMapInt.layers.head.grid
-            .map(_.tile)
-            .zip(actual)
-            .forall(matcher) ==> true
-
-        }
-
-        "to 2D grid (int)" - {
-          val actual: List[List[Int]] =
-            TiledSamples.tiledMap
-              .toGrid[Int](identity[Int])
-              .get
-              .toList2DPerLayer
-              .head
-              .map(_.map(_.tile))
-
-          val expected: List[List[Int]] =
-            TiledSamples.gridMapInt2D
-
-          actual ==> expected
-        }
-
-      }
-
-      "should be able to convert to a Group of graphics" - {
-        val actual: Group =
-          TiledSamples.tiledMap.toGroup(AssetName("test")).get
-
-        actual.children.head match {
-          case g: Group =>
-            // Only 3 tiles have contents.
-            val graphics: List[Graphic] =
-              g.children.collect { case graphic: Graphic => graphic }
-
-            graphics.length ==> 3
-            graphics(0).position ==> Point(32, 64)
-            graphics(1).position ==> Point(64, 64)
-            graphics(2).position ==> Point(64, 96)
-
-          case _: Renderable =>
-            throw new Exception("failed")
-        }
-      }
-
+  test("should be able to convert to a TiledGridMap.with mapping") {
+    // Using nowarn as it's a partial match and I want it
+    // to blow up if it finds anything else.
+    @nowarn val matcher: ((Int, TileTypes)) => Boolean = {
+      case (0, TileTypes.Empty)           => true
+      case (i, TileTypes.Solid) if i != 0 => true
+      case (i, TileTypes.Empty) if i != 0 => false
+      case (i, TileTypes.Solid) if i == 0 => false
     }
+
+    val actual =
+      TiledSamples.tiledMap
+        .toGrid[TileTypes](TiledSamples.mapping)
+        .get
+        .toListPerLayer
+        .head
+        .map(_.tile)
+
+    assertEquals(
+      TiledSamples.gridMapInt.layers.head.grid
+        .map(_.tile)
+        .zip(actual)
+        .forall(matcher),
+      true
+    )
+
+  }
+
+  test("should be able to convert to a TiledGridMap.to 2D grid (int)") {
+    val actual: List[List[Int]] =
+      TiledSamples.tiledMap
+        .toGrid[Int](identity[Int])
+        .get
+        .toList2DPerLayer
+        .head
+        .map(_.map(_.tile))
+
+    val expected: List[List[Int]] =
+      TiledSamples.gridMapInt2D
+
+    assertEquals(actual, expected)
+  }
+
+  test("should be able to convert to a Group of graphics") {
+    val actual: Group =
+      TiledSamples.tiledMap.toGroup(AssetName("test")).get
+
+    actual.children.head match {
+      case g: Group =>
+        // Only 3 tiles have contents.
+        val graphics: List[Graphic] =
+          g.children.collect { case graphic: Graphic => graphic }
+
+        assertEquals(graphics.length, 3)
+        assertEquals(graphics(0).position, Point(32, 64))
+        assertEquals(graphics(1).position, Point(64, 64))
+        assertEquals(graphics(2).position, Point(64, 96))
+
+      case _: Renderable =>
+        throw new Exception("failed")
+    }
+  }
 
 }
 

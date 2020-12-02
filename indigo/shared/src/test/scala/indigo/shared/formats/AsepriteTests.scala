@@ -7,34 +7,26 @@ import indigo.shared.datatypes._
 
 import indigo.shared.formats._
 
-import utest._
 import indigo.shared.dice.Dice
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.time.Millis
 
-object AsepriteTests extends TestSuite {
+class AsepriteTests extends munit.FunSuite {
 
-  val tests: Tests =
-    Tests {
-      "Create an Aseprite asset" - {
+  test("Create an Aseprite asset.should be able to convert the loaded definition into a renderable Sprite object") {
+    val SpriteAndAnimations(sprite, animation) =
+      AsepriteSampleData.aseprite
+        .toSpriteAndAnimations(Dice.loaded(0), AsepriteSampleData.imageAssetRef)
+        .get
 
-        "should be able to convert the loaded definition into a renderable Sprite object" - {
-          val SpriteAndAnimations(sprite, animation) =
-            AsepriteSampleData.aseprite
-              .toSpriteAndAnimations(Dice.loaded(0), AsepriteSampleData.imageAssetRef)
-              .get
+    assertEquals(sprite.bindingKey, AsepriteSampleData.sprite.bindingKey)
+    assertEquals(sprite.animationKey, AsepriteSampleData.sprite.animationKey)
 
-          sprite.bindingKey ==> AsepriteSampleData.sprite.bindingKey
-          sprite.animationKey ==> AsepriteSampleData.sprite.animationKey
-
-          animation.cycles.length ==> 1
-          animation.currentCycleLabel.value ==> "lights"
-          animation.cycles.find(c => c.label == animation.currentCycleLabel).get.frames.length ==> 3
-        }
-
-      }
-    }
+    assertEquals(animation.cycles.length, 1)
+    assertEquals(animation.currentCycleLabel.value, "lights")
+    assertEquals(animation.cycles.find(c => c.label == animation.currentCycleLabel).get.frames.length, 3)
+  }
 
 }
 

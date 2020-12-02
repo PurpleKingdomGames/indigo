@@ -1,6 +1,5 @@
 package indigo.entry
 
-import utest._
 import indigo.shared.time.GameTime
 import indigo.shared.events.InputState
 import indigo.shared.dice.Dice
@@ -14,42 +13,39 @@ import indigo.shared.FrameContext
 import indigo.shared.events.EventFilters
 import indigo.shared.subsystems.SubSystemsRegister
 
-object StandardFrameProcessorTests extends TestSuite {
+class StandardFrameProcessorTests extends munit.FunSuite {
 
   import TestFixtures._
 
   val boundaryLocator: BoundaryLocator =
     new BoundaryLocator(new AnimationsRegister, new FontRegister)
 
-  val tests: Tests =
-    Tests {
+  test("standard frame processor") {
 
-      val outcome = standardFrameProcessor.run(
-        (),
-        model,
-        viewModel,
-        GameTime.zero,
-        List(EventsOnlyEvent.Increment),
-        InputState.default,
-        Dice.loaded(0),
-        boundaryLocator
-      )
+    val outcome = standardFrameProcessor.run(
+      (),
+      model,
+      viewModel,
+      GameTime.zero,
+      List(EventsOnlyEvent.Increment),
+      InputState.default,
+      Dice.loaded(0),
+      boundaryLocator
+    )
 
-      val outModel     = outcome.state._1
-      val outViewModel = outcome.state._2
-      val outView      = outcome.state._3
+    val outModel     = outcome.state._1
+    val outViewModel = outcome.state._2
+    val outView      = outcome.state._3
 
-      assert(
-        outModel.count == 1,
-        outViewModel == 10,
-        outView.globalEvents.length == SceneUpdateFragment.empty.globalEvents.length,
-        outcome.globalEvents.length == 2,
-        outcome.globalEvents.contains(EventsOnlyEvent.Increment) == true,
-        outcome.globalEvents.contains(EventsOnlyEvent.Total(1)) == true,
-        outcome.globalEvents == List(EventsOnlyEvent.Total(1), EventsOnlyEvent.Increment)
-      )
+    assert(outModel.count == 1)
+    assert(outViewModel == 10)
+    assert(outView.globalEvents.length == SceneUpdateFragment.empty.globalEvents.length)
+    assert(outcome.globalEvents.length == 2)
+    assert(outcome.globalEvents.contains(EventsOnlyEvent.Increment))
+    assert(outcome.globalEvents.contains(EventsOnlyEvent.Total(1)))
+    assert(outcome.globalEvents == List(EventsOnlyEvent.Total(1), EventsOnlyEvent.Increment))
 
-    }
+  }
 
 }
 
@@ -75,9 +71,10 @@ object TestFixtures {
     }
 
   val viewModelUpdate: (FrameContext[Unit], GameModel, Int) => GlobalEvent => Outcome[Int] =
-    (_, _, vm) => _ => {
-      Outcome(vm + 10).addGlobalEvents(EventsOnlyEvent.Increment)
-    }
+    (_, _, vm) =>
+      _ => {
+        Outcome(vm + 10).addGlobalEvents(EventsOnlyEvent.Increment)
+      }
 
   val viewUpdate: (FrameContext[Unit], GameModel, Int) => SceneUpdateFragment =
     (_, _, _) => SceneUpdateFragment.empty

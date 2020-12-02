@@ -1,16 +1,10 @@
 package snake.model.snakemodel
 
-import utest._
+class SnakeStatusTests extends munit.FunSuite {
 
-object SnakeStatusTests extends TestSuite {
+  test("Should know if it's dead or alive") {
+    assertEquals(SnakeStatus.Alive.isDead, false)
+    assertEquals(SnakeStatus.Dead.isDead, true)
+  }
 
-  val tests: Tests =
-    Tests {
-
-      "Should know if it's dead or alive" - {
-        SnakeStatus.Alive.isDead ==> false
-        SnakeStatus.Dead.isDead ==> true
-      }
-
-    }
 }

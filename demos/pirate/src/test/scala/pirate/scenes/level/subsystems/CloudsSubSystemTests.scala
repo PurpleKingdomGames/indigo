@@ -1,44 +1,32 @@
 package pirate.scenes.level.subsystems
 
-import utest._
-
 import indigo.GameTime
 import indigo.Seconds
 
-object CloudsSubSystemTests extends TestSuite {
+class CloudsSubSystemTests extends munit.FunSuite {
 
-  val tests: Tests =
-    Tests {
+  val assetWidth: Int = 100
 
-      "Calculate next big cloud position" - {
+  test("Calculate next big cloud position.reset if less than zero") {
+    val actual =
+      CloudsSubSystem.nextBigCloudPosition(GameTime.is(Seconds(1)), -1.0d, assetWidth)
 
-        val assetWidth: Int = 100
+    val expected = assetWidth.toDouble
 
-        "reset if less than zero" - {
-          val actual =
-            CloudsSubSystem.nextBigCloudPosition(GameTime.is(Seconds(1)), -1.0d, assetWidth)
+    assertEquals(actual, expected)
+  }
 
-          val expected = assetWidth.toDouble
+  test("Calculate next big cloud position.move smoothly independant of framerate") {
+    val startPosition: Double = 50.0d
 
-          actual ==> expected
-        }
+    val at: Seconds => Double =
+      (t: Seconds) => CloudsSubSystem.nextBigCloudPosition(GameTime.withDelta(Seconds(1), t), startPosition, assetWidth)
 
-        "move smoothly independant of framerate" - {
-          val startPosition: Double = 50.0d
-
-          val at: Seconds => Double =
-            (t: Seconds) =>
-              CloudsSubSystem.nextBigCloudPosition(GameTime.withDelta(Seconds(1), t), startPosition, assetWidth)
-
-          at(Seconds(0.5)) ==> startPosition - (CloudsSubSystem.scrollSpeed / 2)
-          at(Seconds(1)) ==> startPosition - (CloudsSubSystem.scrollSpeed)
-          at(Seconds(1.5)) ==> startPosition - (CloudsSubSystem.scrollSpeed / 2 * 3)
-          at(Seconds(5)) ==> startPosition - (CloudsSubSystem.scrollSpeed * 5)
-          at(Seconds(10)) ==> startPosition - (CloudsSubSystem.scrollSpeed * 10)
-        }
-
-      }
-
-    }
+    assertEquals(at(Seconds(0.5)), startPosition - (CloudsSubSystem.scrollSpeed / 2))
+    assertEquals(at(Seconds(1)), startPosition - (CloudsSubSystem.scrollSpeed))
+    assertEquals(at(Seconds(1.5)), startPosition - (CloudsSubSystem.scrollSpeed / 2 * 3))
+    assertEquals(at(Seconds(5)), startPosition - (CloudsSubSystem.scrollSpeed * 5))
+    assertEquals(at(Seconds(10)), startPosition - (CloudsSubSystem.scrollSpeed * 10))
+  }
 
 }

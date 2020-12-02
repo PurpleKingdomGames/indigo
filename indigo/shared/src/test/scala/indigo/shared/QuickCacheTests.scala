@@ -1,87 +1,86 @@
 package indigo.shared
 
-import utest._
+class QuickCacheTests extends munit.FunSuite {
 
-object QuickCacheTests extends TestSuite {
+  test("cache behaviour checks") {
+    implicit val cache = QuickCache.empty[Int]
 
-  val tests: Tests =
-    Tests {
+    assertEquals(QuickCache("ten")(10), 10)
 
-      "cache behaviour checks" - {
-        implicit val cache = QuickCache.empty[Int]
+    assertEquals(cache.keys.map(_.value), List("ten"))
 
-        QuickCache("ten")(10) ==> 10
+    assertEquals(cache.all.map(p => (p._1.value, p._2)), List(("ten" -> 10)))
 
-        cache.keys.map(_.value) ==> List("ten")
+    assertEquals(cache.fetch(CacheKey("ten")), Some(10))
 
-        cache.all.map(p => (p._1.value, p._2)) ==> List(("ten" -> 10))
+    assertEquals(QuickCache("ten")(20), 10)
 
-        cache.fetch(CacheKey("ten")) ==> Some(10)
+    cache.purge(CacheKey("ten"))
 
-        QuickCache("ten")(20) ==> 10
+    assertEquals(cache.fetch(CacheKey("ten")), None)
 
-        cache.purge(CacheKey("ten"))
+    assertEquals(QuickCache("ten")(20), 20)
 
-        cache.fetch(CacheKey("ten")) ==> None
+    assertEquals(cache.fetch(CacheKey("ten")), Some(20))
+  }
 
-        QuickCache("ten")(20) ==> 20
+  test("values are lazily evaluated") {
 
-        cache.fetch(CacheKey("ten")) ==> Some(20)
-      }
+    var message: String = "nada"
 
-      "values are lazily evaluated" - {
+    implicit val cache = QuickCache.empty[Int]
 
-        var message: String = "nada"
+    assertEquals(
+      QuickCache("ten") {
+        message = "a"
+        10
+      },
+      10
+    )
 
-        implicit val cache = QuickCache.empty[Int]
+    assertEquals(message, "a")
 
-        QuickCache("ten") {
-          message = "a"
-          10
-        } ==> 10
+    assertEquals(
+      QuickCache("ten") {
+        message = "b"
+        20
+      },
+      10
+    )
 
-        message ==> "a"
+    assertEquals(message, "a")
 
-        QuickCache("ten") {
-          message = "b"
-          20
-        } ==> 10
+  }
 
-        message ==> "a"
+  test("Export values to Map") {
+    implicit val cache = QuickCache.empty[Int]
 
-      }
+    QuickCache("a")(1)
+    QuickCache("b")(2)
+    QuickCache("c")(3)
 
-      "Export values to Map" - {
-        implicit val cache = QuickCache.empty[Int]
+    val expected =
+      Map(
+        "a" -> 1,
+        "b" -> 2,
+        "c" -> 3
+      )
 
-        QuickCache("a")(1)
-        QuickCache("b")(2)
-        QuickCache("c")(3)
+    val actual: Map[String, Int] =
+      cache.toMap(_.value)
 
-        val expected =
-          Map(
-            "a" -> 1,
-            "b" -> 2,
-            "c" -> 3
-          )
+    assertEquals(actual, expected)
+  }
 
-        val actual: Map[String, Int] =
-          cache.toMap(_.value)
+  test("quickcache can be disabled") {
+    implicit val cache = QuickCache.empty[Int]
 
-        actual ==> expected
-      }
+    assertEquals(QuickCache("ten")(10), 10)
+    assertEquals(QuickCache("ten", true)(20), 20) // disabled)
 
-      "quickcache can be disabled" - {
-        implicit val cache = QuickCache.empty[Int]
+    assertEquals(cache.keys.map(_.value), List("ten"))
 
-        QuickCache("ten")(10) ==> 10
-        QuickCache("ten", true)(20) ==> 20 // disabled
-
-        cache.keys.map(_.value) ==> List("ten")
-
-        cache.all.map(p => (p._1.value, p._2)) ==> List(("ten" -> 10))
-      }
-
-    }
+    assertEquals(cache.all.map(p => (p._1.value, p._2)), List(("ten" -> 10)))
+  }
 
 }

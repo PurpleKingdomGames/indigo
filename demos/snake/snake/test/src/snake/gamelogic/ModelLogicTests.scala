@@ -8,10 +8,9 @@ import snake.model.{ControlScheme, GameModel, GameState}
 import snake.model.snakemodel.Snake
 import snake.model.arena.Arena
 
-import utest._
 import indigo.shared.dice.Dice
 
-object ModelLogicTests extends TestSuite {
+class ModelLogicTests extends munit.FunSuite {
 
   val defaultDelay: Seconds = Seconds(0.1)
 
@@ -21,22 +20,14 @@ object ModelLogicTests extends TestSuite {
       ControlScheme.directedKeys
     )
 
-  val tests: Tests =
-    Tests {
-      "basic model updates" - {
+  test("basic model updates should advance the game on frame tick") {
+    val actual = ModelLogic.update(GameTime.is(Seconds(0.15)), Dice.loaded(1), model)(FrameTick).state
+    val expected = model.copy(
+      snake = model.snake.copy(start = GridPoint(2, 2)),
+      gameState = model.gameState.updateNow(Seconds(0.15), model.gameState.lastSnakeDirection)
+    )
 
-        "should advance the game on frame tick" - {
-          val actual = ModelLogic.update(GameTime.is(Seconds(0.15)), Dice.loaded(1), model)(FrameTick).state
-          val expected = model.copy(
-            snake = model.snake.copy(start = GridPoint(2, 2)),
-            gameState = model.gameState.updateNow(Seconds(0.15), model.gameState.lastSnakeDirection)
-          )
-
-          actual.snake ==> expected.snake
-        }
-
-      }
-
-    }
+    assertEquals(actual.snake, expected.snake)
+  }
 
 }

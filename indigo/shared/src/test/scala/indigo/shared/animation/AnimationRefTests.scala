@@ -1,14 +1,12 @@
 package indigo.shared.animation
 
-import utest._
-
 import indigo.shared.datatypes._
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.EqualTo._
 import indigo.shared.assets.AssetName
 import indigo.shared.time.Millis
 
-object AnimationRefTests extends TestSuite {
+class AnimationRefTests extends munit.FunSuite {
 
   val frame1: Frame =
     Frame(Rectangle(Point(0, 0), Point(10, 10)), Millis(10))
@@ -54,49 +52,40 @@ object AnimationRefTests extends TestSuite {
   val bindingKey: BindingKey =
     BindingKey("test")
 
-  val tests: Tests =
-    Tests {
+  test("Can record a memento") {
 
-      "AnimationRef mementos" - {
+    val expected =
+      AnimationMemento(
+        bindingKey,
+        cycleLabel1,
+        CycleMemento(0, Millis(0))
+      )
 
-        "Can record a memento" - {
+    val actual = animation.saveMemento(bindingKey)
 
-          val expected =
-            AnimationMemento(
-              bindingKey,
-              cycleLabel1,
-              CycleMemento(0, Millis(0))
-            )
+    assertEquals(expected === actual, true)
 
-          val actual = animation.saveMemento(bindingKey)
+  }
 
-          expected === actual ==> true
+  test("Can apply a memeto") {
 
-        }
+    val expected =
+      AnimationMemento(
+        bindingKey,
+        cycleLabel2,
+        CycleMemento(3, Millis(300))
+      )
 
-        "Can apply a memeto" - {
+    val updated = animation.applyMemento(expected)
 
-          val expected =
-            AnimationMemento(
-              bindingKey,
-              cycleLabel2,
-              CycleMemento(3, Millis(300))
-            )
+    val actual = updated.saveMemento(bindingKey)
 
-          val updated = animation.applyMemento(expected)
+    assertEquals(updated.currentCycleLabel, cycleLabel2)
+    assertEquals(updated.currentCycle.playheadPosition, 3)
+    assertEquals(updated.currentCycle.lastFrameAdvance, Millis(300))
 
-          val actual = updated.saveMemento(bindingKey)
+    assertEquals(expected === actual, true)
 
-          updated.currentCycleLabel ==> cycleLabel2
-          updated.currentCycle.playheadPosition ==> 3
-          updated.currentCycle.lastFrameAdvance ==> Millis(300)
-
-          expected === actual ==> true
-
-        }
-
-      }
-
-    }
+  }
 
 }

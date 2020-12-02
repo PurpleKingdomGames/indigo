@@ -1,27 +1,18 @@
 package snake.model
 
-import utest._
-
 import indigo.Seconds
 
 import snake.model.snakemodel.SnakeDirection
 
-object GameStateTests extends TestSuite {
+class GameStateTests extends munit.FunSuite {
 
-  val tests: Tests =
-    Tests {
-      "GameState" - {
+  test("GameState should do a simple update") {
 
-        "should do a simple update" - {
+    val actual   = GameState.Running.start.updateNow(Seconds(0.1), SnakeDirection.Up)
+    val expected = GameState.Running(Seconds(0.1), SnakeDirection.Up)
 
-          val actual   = GameState.Running.start.updateNow(Seconds(0.1), SnakeDirection.Up)
-          val expected = GameState.Running(Seconds(0.1), SnakeDirection.Up)
+    assertEquals(actual, expected)
 
-          actual ==> expected
-
-        }
-
-      }
-    }
+  }
 
 }

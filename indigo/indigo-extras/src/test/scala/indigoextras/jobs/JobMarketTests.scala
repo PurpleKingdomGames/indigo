@@ -1,7 +1,6 @@
 package indigoextras.jobs
 
 import indigo._
-import utest._
 
 import indigo.shared.EqualTo._
 import indigo.shared.AnimationsRegister
@@ -16,7 +15,7 @@ import indigo.shared.events.FrameTick
 import indigo.shared.scenegraph.SceneAudio
 import indigo.shared.datatypes.RGBA
 
-object JobMarketTests extends TestSuite {
+class JobMarketTests extends munit.FunSuite {
 
   val context =
     new SubSystemFrameContext(
@@ -34,152 +33,140 @@ object JobMarketTests extends TestSuite {
       SampleContext(true)
     )
 
-  def tests: Tests =
-    Tests {
-      "The job market" - {
+  test("The job market.subsytem event filter should only allow JobMarketEvents") {
+    val market = JobMarket.subSystem
 
-        "subsytem event filter should only allow JobMarketEvents" - {
-          val market = JobMarket.subSystem
+    val job: Job                  = SampleJobs.CantHave()
+    val key: BindingKey           = BindingKey("test")
+    val predicate: Job => Boolean = _ => true
 
-          val job: Job                  = SampleJobs.CantHave()
-          val key: BindingKey           = BindingKey("test")
-          val predicate: Job => Boolean = _ => true
+    assertEquals(market.eventFilter(FrameTick), None)
+    assertEquals(market.eventFilter(JobMarketEvent.Post(job)), Some(JobMarketEvent.Post(job)))
+    assertEquals(market.eventFilter(JobMarketEvent.Find(key, predicate)), Some(JobMarketEvent.Find(key, predicate)))
+    assertEquals(market.eventFilter(JobMarketEvent.Allocate(key, job)), Some(JobMarketEvent.Allocate(key, job)))
+    assertEquals(market.eventFilter(JobMarketEvent.NothingFound(key)), Some(JobMarketEvent.NothingFound(key)))
+  }
 
-          market.eventFilter(FrameTick) ==> None
-          market.eventFilter(JobMarketEvent.Post(job)) ==> Some(JobMarketEvent.Post(job))
-          market.eventFilter(JobMarketEvent.Find(key, predicate)) ==> Some(JobMarketEvent.Find(key, predicate))
-          market.eventFilter(JobMarketEvent.Allocate(key, job)) ==> Some(JobMarketEvent.Allocate(key, job))
-          market.eventFilter(JobMarketEvent.NothingFound(key)) ==> Some(JobMarketEvent.NothingFound(key))
-        }
+  test("The job market.should not process outbound JobMarketEvent types") {
 
-        "should not process outbound JobMarketEvent types" - {
+    val bindingKey: BindingKey            = BindingKey("0001")
+    val job: Job                          = SampleJobs.WanderTo(10)
+    val market                            = JobMarket.subSystem
+    val allocateEvent: JobMarketEvent     = JobMarketEvent.Allocate(bindingKey, job)
+    val nothingFoundEvent: JobMarketEvent = JobMarketEvent.NothingFound(bindingKey)
 
-          val bindingKey: BindingKey            = BindingKey("0001")
-          val job: Job                          = SampleJobs.WanderTo(10)
-          val market                            = JobMarket.subSystem
-          val allocateEvent: JobMarketEvent     = JobMarketEvent.Allocate(bindingKey, job)
-          val nothingFoundEvent: JobMarketEvent = JobMarketEvent.NothingFound(bindingKey)
+    val updatedA = market.update(context, List(job))(allocateEvent)
+    assertEquals(updatedA.state, List(job))
+    assertEquals(updatedA.globalEvents, Nil)
 
-          val updatedA = market.update(context, List(job))(allocateEvent)
-          updatedA.state ==> List(job)
-          updatedA.globalEvents ==> Nil
+    val updatedB = market.update(context, updatedA.state)(nothingFoundEvent)
+    assertEquals(updatedB.state, List(job))
+    assertEquals(updatedB.globalEvents, Nil)
 
-          val updatedB = market.update(context, updatedA.state)(nothingFoundEvent)
-          updatedB.state ==> List(job)
-          updatedB.globalEvents ==> Nil
+  }
 
-        }
+  test("The job market.should be able to report it's current jobs") {
+    val job: Job          = SampleJobs.CantHave()
+    val market: JobMarket = JobMarket(List(job))
 
-        "should be able to report it's current jobs" - {
-          val job: Job          = SampleJobs.CantHave()
-          val market: JobMarket = JobMarket(List(job))
+    val report = market.availableJobs.map(_.jobName.value).mkString(",")
 
-          val report = market.availableJobs.map(_.jobName.value).mkString(",")
+    assertEquals(report.contains(job.jobName.value), true)
+  }
 
-          report.contains(job.jobName.value) ==> true
-        }
+  test("The job market.should not render anything") {
+    val job: Job          = SampleJobs.WanderTo(10)
+    val market: JobMarket = JobMarket.subSystem
 
-        "should not render anything" - {
-          val job: Job          = SampleJobs.WanderTo(10)
-          val market: JobMarket = JobMarket.subSystem
+    assertEquals(market.present(context, List(job)).gameLayer.nodes.isEmpty, true)
+    assertEquals(market.present(context, List(job)).lightingLayer.nodes.isEmpty, true)
+    assertEquals(market.present(context, List(job)).uiLayer.nodes.isEmpty, true)
+    assertEquals(market.present(context, List(job)).globalEvents.isEmpty, true)
+    assertEquals(market.present(context, List(job)).ambientLight === RGBA.Normal, true)
+    assertEquals(market.present(context, List(job)).audio, SceneAudio.None)
+  }
 
-          market.present(context, List(job)).gameLayer.nodes.isEmpty ==> true
-          market.present(context, List(job)).lightingLayer.nodes.isEmpty ==> true
-          market.present(context, List(job)).uiLayer.nodes.isEmpty ==> true
-          market.present(context, List(job)).globalEvents.isEmpty ==> true
-          market.present(context, List(job)).ambientLight === RGBA.Normal ==> true
-          market.present(context, List(job)).audio ==> SceneAudio.None
-        }
+  test("The job market.should have an empty subsystem representation") {
+    val market = JobMarket.subSystem
 
-        "should have an empty subsystem representation" - {
-          val market = JobMarket.subSystem
+    assertEquals(market.availableJobs, Nil)
+  }
 
-          market.availableJobs ==> Nil
-        }
+  test("The job market.should allow a you to find work.when there is a job you can do") {
+    val bindingKey: BindingKey    = BindingKey("0001")
+    val job: Job                  = SampleJobs.WanderTo(10)
+    val market: JobMarket         = JobMarket.subSystem
+    val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
 
-        "should allow a you to find work" - {
-          "when there is a job you can do" - {
-            val bindingKey: BindingKey    = BindingKey("0001")
-            val job: Job                  = SampleJobs.WanderTo(10)
-            val market: JobMarket         = JobMarket.subSystem
-            val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
+    val updated = market.update(context, List(job))(findEvent)
 
-            val updated = market.update(context, List(job))(findEvent)
+    assertEquals(updated.state, Nil)
+    assertEquals(updated.globalEvents.head, JobMarketEvent.Allocate(bindingKey, job))
+  }
 
-            updated.state ==> Nil
-            updated.globalEvents.head ==> JobMarketEvent.Allocate(bindingKey, job)
-          }
+  test("The job market.should allow a you to find work.but not when there isn't any work") {
+    val bindingKey: BindingKey    = BindingKey("0001")
+    val market: JobMarket         = JobMarket.subSystem
+    val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
 
-          "but not when there isn't any work" - {
-            val bindingKey: BindingKey    = BindingKey("0001")
-            val market: JobMarket         = JobMarket.subSystem
-            val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
+    val updated = market.update(context, Nil)(findEvent)
 
-            val updated = market.update(context, Nil)(findEvent)
+    assertEquals(updated.state, Nil)
+    assertEquals(updated.globalEvents.head, JobMarketEvent.NothingFound(bindingKey))
+  }
 
-            updated.state ==> Nil
-            updated.globalEvents.head ==> JobMarketEvent.NothingFound(bindingKey)
-          }
+  test("The job market.should allow a you to find work.or when the work is not acceptable to the worker") {
+    val bindingKey: BindingKey    = BindingKey("0001")
+    val job: Job                  = SampleJobs.CantHave()
+    val market: JobMarket         = JobMarket.subSystem
+    val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
 
-          "or when the work is not acceptable to the worker" - {
-            val bindingKey: BindingKey    = BindingKey("0001")
-            val job: Job                  = SampleJobs.CantHave()
-            val market: JobMarket         = JobMarket.subSystem
-            val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
+    val updated = market.update(context, List(job))(findEvent)
 
-            val updated = market.update(context, List(job))(findEvent)
+    assertEquals(updated.state, List(job))
+    assertEquals(updated.globalEvents.head, JobMarketEvent.NothingFound(bindingKey))
+  }
 
-            updated.state ==> List(job)
-            updated.globalEvents.head ==> JobMarketEvent.NothingFound(bindingKey)
-          }
+  test("The job market.should allow a you to find work.should give you the highest priority job first") {
+    val bindingKey: BindingKey    = BindingKey("0001")
+    val jobs: List[Job]           = List(SampleJobs.WanderTo(10), SampleJobs.WanderTo(20), SampleJobs.Fishing(0))
+    val market: JobMarket         = JobMarket.subSystem
+    val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
 
-          "should give you the highest priority job first" - {
-            val bindingKey: BindingKey    = BindingKey("0001")
-            val jobs: List[Job]           = List(SampleJobs.WanderTo(10), SampleJobs.WanderTo(20), SampleJobs.Fishing(0))
-            val market: JobMarket         = JobMarket.subSystem
-            val findEvent: JobMarketEvent = JobMarketEvent.Find(bindingKey, SampleActor.worker.canTakeJob(workContext))
+    val updated = market.update(context, jobs)(findEvent)
 
-            val updated = market.update(context, jobs)(findEvent)
+    assertEquals(updated.state, List(SampleJobs.WanderTo(10), SampleJobs.WanderTo(20)))
+    assertEquals(updated.globalEvents.head, JobMarketEvent.Allocate(bindingKey, SampleJobs.Fishing(0)))
+  }
 
-            updated.state ==> List(SampleJobs.WanderTo(10), SampleJobs.WanderTo(20))
-            updated.globalEvents.head ==> JobMarketEvent.Allocate(bindingKey, SampleJobs.Fishing(0))
-          }
-        }
+  test("The job market.should allow you to post a job.to an empty market") {
+    val job: Job                  = SampleJobs.WanderTo(10)
+    val market: JobMarket         = JobMarket.subSystem
+    val postEvent: JobMarketEvent = JobMarketEvent.Post(job)
 
-        "should allow you to post a job" - {
+    val updated = market.update(context, Nil)(postEvent)
 
-          "to an empty market" - {
-            val job: Job                  = SampleJobs.WanderTo(10)
-            val market: JobMarket         = JobMarket.subSystem
-            val postEvent: JobMarketEvent = JobMarketEvent.Post(job)
+    assertEquals(updated.state, List(job))
+  }
 
-            val updated = market.update(context, Nil)(postEvent)
+  test("The job market.should allow you to post a job.and append to a non-empty market") {
+    val job: Job                  = SampleJobs.WanderTo(10)
+    val market: JobMarket         = JobMarket.subSystem
+    val postEvent: JobMarketEvent = JobMarketEvent.Post(job)
 
-            updated.state ==> List(job)
-          }
+    val updated = market.update(context, List(SampleJobs.Fishing(0)))(postEvent)
 
-          "and append to a non-empty market" - {
-            val job: Job                  = SampleJobs.WanderTo(10)
-            val market: JobMarket         = JobMarket.subSystem
-            val postEvent: JobMarketEvent = JobMarketEvent.Post(job)
+    assertEquals(updated.state, List(SampleJobs.Fishing(0), job))
+  }
 
-            val updated = market.update(context, List(SampleJobs.Fishing(0)))(postEvent)
+  test("The job market.should allow you to post a job.the jobs state will be preserved") {
+    val job: Job                  = SampleJobs.Fishing(50)
+    val market: JobMarket         = JobMarket.subSystem
+    val postEvent: JobMarketEvent = JobMarketEvent.Post(job)
 
-            updated.state ==> List(SampleJobs.Fishing(0), job)
-          }
+    val updated = market.update(context, Nil)(postEvent)
 
-          "the jobs state will be preserved" - {
-            val job: Job                  = SampleJobs.Fishing(50)
-            val market: JobMarket         = JobMarket.subSystem
-            val postEvent: JobMarketEvent = JobMarketEvent.Post(job)
-
-            val updated = market.update(context, Nil)(postEvent)
-
-            updated.state ==> List(SampleJobs.Fishing(50))
-          }
-        }
-
-      }
-    }
+    assertEquals(updated.state, List(SampleJobs.Fishing(50)))
+  }
 
 }

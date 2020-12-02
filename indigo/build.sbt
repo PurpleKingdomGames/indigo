@@ -10,9 +10,9 @@ lazy val commonSettings = Seq(
   scalaVersion := scala2,
   organization := "io.indigoengine",
   libraryDependencies ++= Seq(
-    "com.lihaoyi" %%% "utest" % "0.7.4" % "test"
+    "org.scalameta" %%% "munit" % "0.7.19" % Test
   ),
-  testFrameworks += new TestFramework("utest.runner.Framework"),
+  testFrameworks += new TestFramework("munit.Framework"),
   scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits"),
   scalacOptions in (Compile, compile) ++= Scalac213Options.scala213Compile,
   scalacOptions in (Test, test) ++= Scalac213Options.scala213Test,
@@ -20,7 +20,8 @@ lazy val commonSettings = Seq(
     Wart.Overloading,
     Wart.ImplicitParameter
   ),
-  scalacOptions += "-Yrangepos"
+  scalacOptions += "-Yrangepos",
+  Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
 )
 
 lazy val publishSettings = {
