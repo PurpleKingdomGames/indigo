@@ -316,3 +316,18 @@ lazy val jobs =
       windowStartWidth := 400,
       windowStartHeight := 400
     )
+
+lazy val inputmapper =
+  project
+    .in(file("inputmapper"))
+    .settings(commonSettings: _*)
+    .enablePlugins(SbtIndigo)
+    .enablePlugins(ScalaJSPlugin)
+    .settings(
+      name := "inputmapper-example",
+      showCursor := true,
+      title := "Input Mapper Example",
+      gameAssetsDirectory := "assets",
+      windowStartWidth := 400,
+      windowStartHeight := 400
+    )
