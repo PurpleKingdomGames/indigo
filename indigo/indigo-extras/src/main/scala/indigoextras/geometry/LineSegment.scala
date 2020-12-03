@@ -4,7 +4,7 @@ import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Vector2
 
-final class LineSegment(val start: Vertex, val end: Vertex) {
+final case class LineSegment(start: Vertex, end: Vertex) {
   val center: Vertex =
     Vertex(
       ((end.x - start.x) / 2) + start.x,
@@ -15,6 +15,39 @@ final class LineSegment(val start: Vertex, val end: Vertex) {
   def right: Double  = Math.max(start.x, end.x)
   def top: Double    = Math.min(start.y, end.y)
   def bottom: Double = Math.max(start.y, end.y)
+
+  def moveTo(newPosition: Vertex): LineSegment =
+    this.copy(start = newPosition, end = newPosition + (end - start))
+  def moveTo(x: Double, y: Double): LineSegment =
+    moveTo(Vertex(x, y))
+
+  def moveBy(amount: Vertex): LineSegment =
+    moveTo(start + amount)
+  def moveBy(x: Double, y: Double): LineSegment =
+    moveBy(Vertex(x, y))
+
+  def moveStartTo(newPosition: Vertex): LineSegment =
+    this.copy(start = newPosition)
+  def moveStartTo(x: Double, y: Double): LineSegment =
+    moveStartTo(Vertex(x, y))
+  def moveStartBy(amount: Vertex): LineSegment =
+    moveStartTo(start + amount)
+  def moveStartBy(x: Double, y: Double): LineSegment =
+    moveStartBy(Vertex(x, y))
+
+  def moveEndTo(newPosition: Vertex): LineSegment =
+    this.copy(end = newPosition)
+  def moveEndTo(x: Double, y: Double): LineSegment =
+    moveEndTo(Vertex(x, y))
+  def moveEndBy(amount: Vertex): LineSegment =
+    moveEndTo(start + amount)
+  def moveEndBy(x: Double, y: Double): LineSegment =
+    moveEndBy(Vertex(x, y))
+
+  def invert: LineSegment =
+    LineSegment(end, start)
+  def flip: LineSegment =
+    invert
 
   def normal: Vector2 =
     LineSegment.calculateNormal(start, end)
@@ -45,15 +78,6 @@ final class LineSegment(val start: Vertex, val end: Vertex) {
   def ===(other: LineSegment): Boolean =
     implicitly[EqualTo[LineSegment]].equal(this, other)
 
-  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
-  override def toString: String =
-    s"LineSegment(start = ${start.toString()}, end = ${end.toString()})"
-
-  @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
-  override def equals(obj: Any): Boolean =
-    if (obj.isInstanceOf[LineSegment])
-      this === obj.asInstanceOf[LineSegment]
-    else false
 }
 
 object LineSegment {

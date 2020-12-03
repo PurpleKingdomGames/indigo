@@ -14,6 +14,20 @@ class LineSegmentTests extends munit.FunSuite {
   b is the y-intersect i.e. the point on the y-axis where the line passes through it
    */
 
+  // Repositioning
+
+  test("moving the whole line segment") {
+    val actual =
+      LineSegment(Vertex(10, 10), Vertex(20, -30)).moveTo(-5, 50)
+
+    val expected =
+      LineSegment(Vertex(-5, 50), Vertex(5, 10))
+
+    assertEquals(actual, expected)
+  }
+
+  // Line calculations
+
   test("calculating line components.should correctly calculate the line components.(0, 0) -> (2, 2)") {
     val expected: LineComponents = LineComponents(1, 0)
 
