@@ -87,7 +87,7 @@ class ProjectilesSpecification extends Properties("Projectiles") {
           "\n-- target: " + target.toString() +
           "\n-- Point: " + point.toString() +
           "\n-- Time: " + time.toString() +
-          "" |: true =? (bounds + BoundingBox(0, 0, 1, 1)).isVertexWithin(signal.at(time))
+          "" |: true =? (bounds + BoundingBox(0, 0, 1, 1)).contains(signal.at(time))
     }
   }
 
