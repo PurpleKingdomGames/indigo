@@ -7,16 +7,16 @@ import indigo.shared.time.Seconds
 final case class Radians(value: Double) extends AnyVal {
 
   def +(other: Radians): Radians =
-    Radians.add(this, other)
+    Radians(this.value + other.value)
 
   def -(other: Radians): Radians =
-    Radians.subtract(this, other)
+    Radians(this.value - other.value)
 
   def *(other: Radians): Radians =
-    Radians.multiply(this, other)
+    Radians(this.value * other.value)
 
   def /(other: Radians): Radians =
-    Radians.divide(this, other)
+    Radians(this.value / other.value)
 
   def hash: String =
     value.toString()
@@ -43,18 +43,6 @@ object Radians {
 
   def zero: Radians =
     Radians(0)
-
-  @inline def add(a: Radians, b: Radians): Radians =
-    Radians(a.value + b.value)
-
-  @inline def subtract(a: Radians, b: Radians): Radians =
-    Radians(a.value - b.value)
-
-  @inline def multiply(a: Radians, b: Radians): Radians =
-    Radians(a.value * b.value)
-
-  @inline def divide(a: Radians, b: Radians): Radians =
-    Radians(a.value / b.value)
 
   def fromDegrees(degrees: Double): Radians =
     Radians((TAU.value / 360d) * (degrees % 360d))
