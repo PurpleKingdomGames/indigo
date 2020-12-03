@@ -18,6 +18,9 @@ final case class Radians(value: Double) extends AnyVal {
   def /(other: Radians): Radians =
     Radians(this.value / other.value)
 
+  def wrap: Radians =
+    Radians(((this.value % Radians.TAU.value) + Radians.TAU.value) % Radians.TAU.value)
+
   def hash: String =
     value.toString()
 
