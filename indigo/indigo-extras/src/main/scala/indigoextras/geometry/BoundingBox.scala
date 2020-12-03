@@ -31,10 +31,11 @@ final case class BoundingBox(position: Vertex, size: Vertex) {
   lazy val corners: List[Vertex] =
     List(topLeft, topRight, bottomRight, bottomLeft)
 
-  def isVertexWithin(pt: Vertex): Boolean =
-    pt.x >= left && pt.x < right && pt.y >= top && pt.y < bottom
+  def contains(vertex: Vertex): Boolean =
+    vertex.x >= left && vertex.x < right && vertex.y >= top && vertex.y < bottom
 
-  def isVertexWithin(x: Double, y: Double): Boolean = isVertexWithin(Vertex(x, y))
+  def contains(x: Double, y: Double): Boolean =
+    contains(Vertex(x, y))
 
   def +(rect: BoundingBox): BoundingBox = BoundingBox(x + rect.x, y + rect.y, width + rect.width, height + rect.height)
   def +(i: Double): BoundingBox         = BoundingBox(x + i, y + i, width + i, height + i)

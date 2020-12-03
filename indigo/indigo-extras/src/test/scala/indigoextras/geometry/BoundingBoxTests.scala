@@ -64,11 +64,11 @@ class BoundingBoxTests extends munit.FunSuite {
   }
 
   test("intersecting vertices.should be able to detect if the point is inside the BoundingBox") {
-    assertEquals(BoundingBox(0, 0, 10, 10).isVertexWithin(Vertex(5, 5)), true)
+    assertEquals(BoundingBox(0, 0, 10, 10).contains(Vertex(5, 5)), true)
   }
 
   test("intersecting vertices.should be able to detect that a point is outside the BoundingBox") {
-    assertEquals(BoundingBox(0, 0, 10, 10).isVertexWithin(Vertex(20, 5)), false)
+    assertEquals(BoundingBox(0, 0, 10, 10).contains(Vertex(20, 5)), false)
   }
 
   test("Convert bounding box to line segments") {
