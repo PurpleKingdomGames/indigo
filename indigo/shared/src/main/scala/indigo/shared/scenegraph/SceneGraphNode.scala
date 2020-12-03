@@ -291,7 +291,7 @@ sealed trait Renderable extends SceneGraphNodePrimitive {
   override def moveTo(x: Int, y: Int): Renderable
   override def moveBy(pt: Point): Renderable
   override def moveBy(x: Int, y: Int): Renderable
-  def rotate(angle: Radians): Renderable
+  def rotateTo(angle: Radians): Renderable
   def rotateBy(angle: Radians): Renderable
   def scaleBy(amount: Vector2): Renderable
   def scaleBy(x: Double, y: Double): Renderable
@@ -355,10 +355,10 @@ final case class Graphic(
   def moveBy(x: Int, y: Int): Graphic =
     moveBy(Point(x, y))
 
-  def rotate(angle: Radians): Graphic =
+  def rotateTo(angle: Radians): Graphic =
     this.copy(rotation = angle)
   def rotateBy(angle: Radians): Graphic =
-    rotate(rotation + angle)
+    rotateTo(rotation + angle)
 
   def scaleBy(amount: Vector2): Graphic =
     this.copy(scale = scale * amount)
@@ -490,10 +490,10 @@ final case class Sprite(
   def moveBy(x: Int, y: Int): Sprite =
     moveBy(Point(x, y))
 
-  def rotate(angle: Radians): Sprite =
+  def rotateTo(angle: Radians): Sprite =
     this.copy(rotation = angle)
   def rotateBy(angle: Radians): Sprite =
-    rotate(rotation + angle)
+    rotateTo(rotation + angle)
 
   def scaleBy(amount: Vector2): Sprite =
     this.copy(scale = scale * amount)
@@ -640,10 +640,10 @@ final case class Text(
   def moveBy(x: Int, y: Int): Text =
     moveBy(Point(x, y))
 
-  def rotate(angle: Radians): Text =
+  def rotateTo(angle: Radians): Text =
     this.copy(rotation = angle)
   def rotateBy(angle: Radians): Text =
-    rotate(rotation + angle)
+    rotateTo(rotation + angle)
 
   def scaleBy(amount: Vector2): Text =
     this.copy(scale = scale * amount)

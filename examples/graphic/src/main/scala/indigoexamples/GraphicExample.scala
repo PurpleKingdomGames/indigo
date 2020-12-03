@@ -40,10 +40,10 @@ object GraphicExample extends IndigoSandbox[Unit, Unit] {
       .addGameLayerNodes(
         basic.withAlpha(0.5),
         basic
-          .rotate(Radians(Math.PI / 8))
+          .rotateTo(Radians(Math.PI / 8))
           .withAlpha(0.75),
         basic
-          .rotate(Radians(Math.PI / 4))
+          .rotateTo(Radians(Math.PI / 4))
           .withAlpha(0.75),
         graphic
           .withCrop(128, 0, 96, 96)
@@ -51,7 +51,7 @@ object GraphicExample extends IndigoSandbox[Unit, Unit] {
         graphic
           .withCrop(128, 0, 96, 96)
           .moveTo(137 * 2, 100)
-          .rotate(Radians(Math.PI / 4)),
+          .rotateTo(Radians(Math.PI / 4)),
         graphic
           .withCrop(128, 0, 96, 96)
           .moveTo(137 * 3, 100)
