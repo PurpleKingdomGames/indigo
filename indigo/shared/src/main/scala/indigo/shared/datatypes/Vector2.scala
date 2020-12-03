@@ -86,6 +86,9 @@ object Vector2 {
   def fromPoints(start: Point, end: Point): Vector2 =
     Vector2((end.x - start.x).toDouble, (end.y - start.y).toDouble)
 
+  def fromPoint(point: Point): Vector2 =
+    Vector2(point.x.toDouble, point.y.toDouble)
+
   @inline def add(vec1: Vector2, vec2: Vector2): Vector2 =
     Vector2(vec1.x + vec2.x, vec1.y + vec2.y)
 
