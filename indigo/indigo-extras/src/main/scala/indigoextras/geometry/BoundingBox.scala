@@ -57,9 +57,13 @@ final case class BoundingBox(position: Vertex, size: Vertex) {
 
   def moveBy(amount: Vertex): BoundingBox =
     this.copy(position = position + amount)
+  def moveBy(x: Double, y: Double): BoundingBox =
+    moveBy(Vertex(x, y))
 
   def moveTo(newPosition: Vertex): BoundingBox =
     this.copy(position = newPosition)
+  def moveTo(x: Double, y: Double): BoundingBox =
+    moveTo(Vertex(x, y))
 
   def resize(newSize: Vertex): BoundingBox =
     this.copy(size = newSize)
