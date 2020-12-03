@@ -9,7 +9,7 @@ import indigo.Seconds
 class CloudsSubSystemSpecification extends Properties("CloudsSubSystem") {
 
   val diceGen: Gen[Dice] =
-    Gen.choose(0, Long.MaxValue).map(Dice.Sides.MaxInt)
+    Gen.choose(0L, Long.MaxValue).map(Dice.Sides.MaxInt)
 
   implicit val arbDice: Arbitrary[Dice] =
     Arbitrary(diceGen)
@@ -32,7 +32,7 @@ class CloudsSubSystemSpecification extends Properties("CloudsSubSystem") {
     )
   }
 
-  property("generate a valid lifespan for a small cloud") = forAll { dice: Dice =>
+  property("generate a valid lifespan for a small cloud") = forAll { (dice: Dice) =>
     val seconds =
       CloudsSubSystem.generateSmallCloudLifeSpan(dice)
 

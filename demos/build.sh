@@ -2,6 +2,7 @@
 
 cd snake
 
+mill snake.test
 mill snake.fastOpt
 mill snake.indigoBuild
 
@@ -9,6 +10,6 @@ cd ..
 
 cd pirate
 
-sbt buildGame
+sbt test buildGame
 
 cd ..
