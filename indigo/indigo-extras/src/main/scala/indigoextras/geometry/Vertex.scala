@@ -19,7 +19,17 @@ final case class Vertex(x: Double, y: Double) {
   def translate(vec: Vertex): Vertex =
     Vertex.add(this, vec)
 
-  def scale(vec: Vertex): Vertex =
+  def moveTo(newPosition: Vertex): Vertex =
+    newPosition
+  def moveTo(x: Double, y: Double): Vertex =
+    moveTo(Vertex(x, y))
+
+  def moveBy(amount: Vertex): Vertex =
+    Vertex.add(this, amount)
+  def moveBy(x: Double, y: Double): Vertex =
+    moveBy(Vertex(x, y))
+
+  def scaleBy(vec: Vertex): Vertex =
     Vertex.multiply(this, vec)
 
   def round: Vertex =
