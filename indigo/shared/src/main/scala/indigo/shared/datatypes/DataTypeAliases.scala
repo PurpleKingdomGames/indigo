@@ -16,6 +16,9 @@ trait DataTypeAliases {
   type FontSpriteSheet = shared.datatypes.FontSpriteSheet
   val FontSpriteSheet: shared.datatypes.FontSpriteSheet.type = shared.datatypes.FontSpriteSheet
 
+  type TextAlignment = shared.datatypes.TextAlignment
+  val TextAlignment: shared.datatypes.TextAlignment.type = shared.datatypes.TextAlignment
+
   type Rectangle = shared.datatypes.Rectangle
   val Rectangle: shared.datatypes.Rectangle.type = shared.datatypes.Rectangle
 
