@@ -14,6 +14,25 @@ final case class Vector3(x: Double, y: Double, z: Double) {
   def withZ(newZ: Double): Vector3 =
     this.copy(z = newZ)
 
+  def abs: Vector3 =
+    Vector3(Math.abs(x), Math.abs(y), Math.abs(z))
+
+  def min(other: Vector3): Vector3 =
+    Vector3(Math.min(other.x, x), Math.min(other.y, y), Math.min(other.z, z))
+  def min(value: Double): Vector3 =
+    Vector3(Math.min(value, x), Math.min(value, y), Math.min(value, z))
+
+  def max(other: Vector3): Vector3 =
+    Vector3(Math.max(other.x, x), Math.max(other.y, y), Math.max(other.z, z))
+  def max(value: Double): Vector3 =
+    Vector3(Math.max(value, x), Math.max(value, y), Math.max(value, z))
+
+  def clamp(min: Double, max: Double): Vector3 =
+    Vector3(Math.min(max, Math.max(min, x)), Math.min(max, Math.max(min, y)), Math.min(max, Math.max(min, z)))
+
+  def length: Double =
+    distanceTo(Vector3.zero)
+
   def translate(vec: Vector3): Vector3 =
     Vector3.add(this, vec)
 
@@ -51,6 +70,9 @@ final case class Vector3(x: Double, y: Double, z: Double) {
   def toVector2: Vector2 =
     Vector2(x, y)
 
+  def distanceTo(other: Vector3): Double =
+    Vector3.distance(this, other)
+
   def ===(other: Vector3): Boolean =
     implicitly[EqualTo[Vector3]].equal(this, other)
 }
@@ -85,6 +107,9 @@ object Vector3 {
 
   def dotProduct(vec1: Vector3, vec2: Vector3): Double =
     (vec1.x * vec2.x) + (vec1.y * vec2.y) + (vec1.z * vec2.z)
+
+  def distance(v1: Vector3, v2: Vector3): Double =
+    Math.sqrt(Math.abs(Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2) + Math.pow(v2.z - v1.z, 2)))
 
   def applyMatrix4(vector3: Vector3, matrix4: Matrix4): Vector3 = {
     val m  = matrix4.transpose

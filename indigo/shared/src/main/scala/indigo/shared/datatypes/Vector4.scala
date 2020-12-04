@@ -17,6 +17,25 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) {
   def withW(newW: Double): Vector4 =
     this.copy(w = newW)
 
+  def abs: Vector4 =
+    Vector4(Math.abs(x), Math.abs(y), Math.abs(z), Math.abs(w))
+
+  def min(other: Vector4): Vector4 =
+    Vector4(Math.min(other.x, x), Math.min(other.y, y), Math.min(other.z, z), Math.min(other.w, w))
+  def min(value: Double): Vector4 =
+    Vector4(Math.min(value, x), Math.min(value, y), Math.min(value, z), Math.min(value, w))
+
+  def max(other: Vector4): Vector4 =
+    Vector4(Math.max(other.x, x), Math.max(other.y, y), Math.max(other.z, z), Math.max(other.w, w))
+  def max(value: Double): Vector4 =
+    Vector4(Math.max(value, x), Math.max(value, y), Math.max(value, z), Math.max(value, w))
+
+  def clamp(min: Double, max: Double): Vector4 =
+    Vector4(Math.min(max, Math.max(min, x)), Math.min(max, Math.max(min, y)), Math.min(max, Math.max(min, z)), Math.min(max, Math.max(min, w)))
+
+  def length: Double =
+    distanceTo(Vector4.zero)
+
   def translate(vec: Vector4): Vector4 =
     Vector4.add(this, vec)
 
@@ -57,6 +76,9 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) {
 
   def toVector3: Vector3 =
     Vector3(x, y, x)
+
+  def distanceTo(other: Vector4): Double =
+    Vector4.distance(this, other)
 
   override def toString: String =
     s"Vector4(x = ${x.toString()}, y = ${y.toString()}, z = ${z.toString()}, w = ${z.toString()})"
@@ -101,6 +123,9 @@ object Vector4 {
 
   def dotProduct(vec1: Vector4, vec2: Vector4): Double =
     (vec1.x * vec2.x) + (vec1.y * vec2.y) + (vec1.z * vec2.z) + (vec1.w * vec2.w)
+
+  def distance(v1: Vector4, v2: Vector4): Double =
+    Math.sqrt(Math.abs(Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2) + Math.pow(v2.z - v1.z, 2) + Math.pow(v2.w - v1.w, 2)))
 
   def applyMatrix4(vector4: Vector4, matrix4: Matrix4): Vector4 = {
     val m  = matrix4.transpose

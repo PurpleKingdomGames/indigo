@@ -11,6 +11,25 @@ final case class Vector2(x: Double, y: Double) {
   def withY(newY: Double): Vector2 =
     this.copy(y = newY)
 
+  def abs: Vector2 =
+    Vector2(Math.abs(x), Math.abs(y))
+
+  def min(other: Vector2): Vector2 =
+    Vector2(Math.min(other.x, x), Math.min(other.y, y))
+  def min(value: Double): Vector2 =
+    Vector2(Math.min(value, x), Math.min(value, y))
+
+  def max(other: Vector2): Vector2 =
+    Vector2(Math.max(other.x, x), Math.max(other.y, y))
+  def max(value: Double): Vector2 =
+    Vector2(Math.max(value, x), Math.max(value, y))
+
+  def clamp(min: Double, max: Double): Vector2 =
+    Vector2(Math.min(max, Math.max(min, x)), Math.min(max, Math.max(min, y)))
+
+  def length: Double =
+    distanceTo(Vector2.zero)
+
   def invert: Vector2 =
     Vector2(-x, -y)
 

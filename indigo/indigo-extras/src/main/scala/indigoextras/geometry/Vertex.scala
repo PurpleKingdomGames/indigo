@@ -13,6 +13,28 @@ final case class Vertex(x: Double, y: Double) {
   def withY(newY: Double): Vertex =
     this.copy(y = newY)
 
+  def dot(other: Vertex): Double =
+    Vertex.dotProduct(this, other)
+
+  def abs: Vertex =
+    Vertex(Math.abs(x), Math.abs(y))
+
+  def min(other: Vertex): Vertex =
+    Vertex(Math.min(other.x, x), Math.min(other.y, y))
+  def min(value: Double): Vertex =
+    Vertex(Math.min(value, x), Math.min(value, y))
+
+  def max(other: Vertex): Vertex =
+    Vertex(Math.max(other.x, x), Math.max(other.y, y))
+  def max(value: Double): Vertex =
+    Vertex(Math.max(value, x), Math.max(value, y))
+
+  def clamp(min: Double, max: Double): Vertex =
+    Vertex(Math.min(max, Math.max(min, x)), Math.min(max, Math.max(min, y)))
+
+  def length: Double =
+    distanceTo(Vertex.zero)
+
   def invert: Vertex =
     Vertex(-x, -y)
 
@@ -124,6 +146,9 @@ object Vertex {
 
         Math.sqrt(Math.abs((aa * aa) + (bb * bb)))
     }
+
+  def dotProduct(vec1: Vertex, vec2: Vertex): Double =
+    (vec1.x * vec2.x) + (vec1.y * vec2.y)
 
   def equalEnough(v1: Vertex, v2: Vertex, tolerance: Double): Boolean =
     v1.x >= v2.x - tolerance &&
