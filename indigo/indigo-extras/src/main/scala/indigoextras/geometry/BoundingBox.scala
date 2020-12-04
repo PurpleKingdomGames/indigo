@@ -46,6 +46,11 @@ final case class BoundingBox(position: Vertex, size: Vertex) {
   def /(rect: BoundingBox): BoundingBox = BoundingBox(x / rect.x, y / rect.y, width / rect.width, height / rect.height)
   def /(d: Double): BoundingBox         = BoundingBox(x / d, y / d, width / d, height / d)
 
+  def sdf(vertex: Vertex): Double =
+    BoundingBox.signedDistanceFunction(vertex - position, halfSize)
+  def distanceToBoundary(vertex: Vertex): Double =
+    sdf(vertex)
+
   def expandToInclude(other: BoundingBox): BoundingBox =
     BoundingBox.expandToInclude(this, other)
 
@@ -202,6 +207,12 @@ object BoundingBox {
         else acc
       }
       ._1
+  }
+
+  // Centered at the origin
+  def signedDistanceFunction(point: Vertex, halfSize: Vertex): Double = {
+    val d: Vertex = point.abs - halfSize
+    d.max(0.0).length + Math.min(Math.max(d.x, d.y), 0.0)
   }
 
 }
