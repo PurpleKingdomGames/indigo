@@ -7,11 +7,11 @@ import indigo.shared.datatypes.Rectangle
 import indigoextras.geometry.IntersectionResult.IntersectionVertex
 
 final case class BoundingBox(position: Vertex, size: Vertex) {
-  val x: Double         = position.x
-  val y: Double         = position.y
-  val width: Double     = size.x
-  val height: Double    = size.y
-  lazy val hash: String = s"${x.toString()}${y.toString()}${width.toString()}${height.toString()}"
+  lazy val x: Double      = position.x
+  lazy val y: Double      = position.y
+  lazy val width: Double  = size.x
+  lazy val height: Double = size.y
+  lazy val hash: String   = s"${x.toString()}${y.toString()}${width.toString()}${height.toString()}"
 
   lazy val left: Double   = x
   lazy val right: Double  = x + width
@@ -38,13 +38,13 @@ final case class BoundingBox(position: Vertex, size: Vertex) {
     contains(Vertex(x, y))
 
   def +(rect: BoundingBox): BoundingBox = BoundingBox(x + rect.x, y + rect.y, width + rect.width, height + rect.height)
-  def +(i: Double): BoundingBox         = BoundingBox(x + i, y + i, width + i, height + i)
+  def +(d: Double): BoundingBox         = BoundingBox(x + d, y + d, width + d, height + d)
   def -(rect: BoundingBox): BoundingBox = BoundingBox(x - rect.x, y - rect.y, width - rect.width, height - rect.height)
-  def -(i: Double): BoundingBox         = BoundingBox(x - i, y - i, width - i, height - i)
+  def -(d: Double): BoundingBox         = BoundingBox(x - d, y - d, width - d, height - d)
   def *(rect: BoundingBox): BoundingBox = BoundingBox(x * rect.x, y * rect.y, width * rect.width, height * rect.height)
-  def *(i: Double): BoundingBox         = BoundingBox(x * i, y * i, width * i, height * i)
+  def *(d: Double): BoundingBox         = BoundingBox(x * d, y * d, width * d, height * d)
   def /(rect: BoundingBox): BoundingBox = BoundingBox(x / rect.x, y / rect.y, width / rect.width, height / rect.height)
-  def /(i: Double): BoundingBox         = BoundingBox(x / i, y / i, width / i, height / i)
+  def /(d: Double): BoundingBox         = BoundingBox(x / d, y / d, width / d, height / d)
 
   def expandToInclude(other: BoundingBox): BoundingBox =
     BoundingBox.expandToInclude(this, other)
@@ -74,6 +74,9 @@ final case class BoundingBox(position: Vertex, size: Vertex) {
   def toLineSegments: List[LineSegment] =
     BoundingBox.toLineSegments(this)
 
+  def lineIntersects(line: LineSegment): Boolean =
+    BoundingBox.lineIntersects(this, line)
+
   def lineIntersectsAt(line: LineSegment): Option[Vertex] =
     BoundingBox.lineIntersectsAt(this, line)
 
@@ -89,7 +92,8 @@ final case class BoundingBox(position: Vertex, size: Vertex) {
 
 object BoundingBox {
 
-  val zero: BoundingBox = BoundingBox(0, 0, 0, 0)
+  val zero: BoundingBox =
+    BoundingBox(0, 0, 0, 0)
 
   def apply(x: Double, y: Double, width: Double, height: Double): BoundingBox =
     BoundingBox(Vertex(x, y), Vertex(width, height))
@@ -170,6 +174,9 @@ object BoundingBox {
 
   def overlapping(a: BoundingBox, b: BoundingBox): Boolean =
     Math.abs(a.center.x - b.center.x) < a.halfSize.x + b.halfSize.x && Math.abs(a.center.y - b.center.y) < a.halfSize.y + b.halfSize.y
+
+  def lineIntersects(boundingBox: BoundingBox, line: LineSegment): Boolean =
+    lineIntersectsAt(boundingBox, line).isDefined
 
   def lineIntersectsAt(boundingBox: BoundingBox, line: LineSegment): Option[Vertex] = {
     val verts =
