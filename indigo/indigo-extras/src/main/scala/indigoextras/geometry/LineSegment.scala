@@ -16,6 +16,11 @@ final case class LineSegment(start: Vertex, end: Vertex) {
   def top: Double    = Math.min(start.y, end.y)
   def bottom: Double = Math.max(start.y, end.y)
 
+  def sdf(vertex: Vertex): Double =
+    LineSegment.signedDistanceFunction(vertex, start, end)
+  def distanceToBoundary(vertex: Vertex): Double =
+    sdf(vertex)
+
   def moveTo(newPosition: Vertex): LineSegment =
     this.copy(start = newPosition, end = newPosition + (end - start))
   def moveTo(x: Double, y: Double): LineSegment =
@@ -218,6 +223,22 @@ object LineSegment {
 
   def isFacingVertex(line: LineSegment, vertex: Vertex): Boolean =
     (line.normal dot Vertex.twoVerticesToVector2(vertex, line.center)) < 0
+
+  /*
+    float sdSegment( in vec2 p, in vec2 a, in vec2 b )
+    {
+        vec2 pa = p-a, ba = b-a;
+        float h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
+        return length( pa - ba*h );
+    }
+   */
+  // Centered at the origin
+  def signedDistanceFunction(point: Vertex, start: Vertex, end: Vertex): Double = {
+    val pa: Vertex = point - start
+    val ba: Vertex = end - start
+    val h: Double  = Math.min(1.0, Math.max(0.0, (pa.dot(ba) / ba.dot(ba))))
+    (pa - (ba * h)).length
+  }
 
 }
 
