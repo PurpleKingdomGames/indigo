@@ -80,6 +80,22 @@ final case class LineSegment(start: Vertex, end: Vertex) {
   def isFacingVertex(vertex: Vertex): Boolean =
     LineSegment.isFacingVertex(this, vertex)
 
+  def closestPointOnLine(to: Vertex): Vertex = {
+    val a   = end.y - start.y
+    val b   = start.x - end.x
+    val c1  = a * start.x + b * start.y
+    val c2  = -b * to.x + a * to.y
+    val det = a * a - -b * b
+
+    if (det != 0.0)
+      Vertex(
+        x = (a * c1 - b * c2) / det,
+        y = (a * c2 - -b * c1) / det
+      )
+    else
+      Vertex.zero
+  }
+
   def ===(other: LineSegment): Boolean =
     implicitly[EqualTo[LineSegment]].equal(this, other)
 
@@ -224,14 +240,6 @@ object LineSegment {
   def isFacingVertex(line: LineSegment, vertex: Vertex): Boolean =
     (line.normal dot Vertex.twoVerticesToVector2(vertex, line.center)) < 0
 
-  /*
-    float sdSegment( in vec2 p, in vec2 a, in vec2 b )
-    {
-        vec2 pa = p-a, ba = b-a;
-        float h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
-        return length( pa - ba*h );
-    }
-   */
   // Centered at the origin
   def signedDistanceFunction(point: Vertex, start: Vertex, end: Vertex): Double = {
     val pa: Vertex = point - start
