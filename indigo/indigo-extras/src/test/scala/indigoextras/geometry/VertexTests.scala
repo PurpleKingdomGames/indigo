@@ -95,21 +95,4 @@ class VertexTests extends munit.FunSuite {
     assertEquals(Vertex.twoVerticesToVector2(Vertex(2, 2), Vertex(1, 5)), Vector2(-1, 3))
   }
 
-  /*
-  also applies to vector...
-  dot
-  abs
-  min
-  max
-  clamp
-  length
-  invert
-  translate
-  moveTo
-  moveBy
-  scaleBy
-  round
-  twoVerticesToVector2
-   */
-
 }
