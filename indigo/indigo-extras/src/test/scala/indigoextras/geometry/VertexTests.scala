@@ -58,10 +58,19 @@ class VertexTests extends munit.FunSuite {
     assertEquals(Vertex(10, 10).max(Vertex(50, 5)), Vertex(50, 10))
   }
 
-  test("clamp") {
+  test("clamp (double)") {
     assertEquals(Vertex(0.1, 0.1).clamp(0, 1), Vertex(0.1, 0.1))
     assertEquals(Vertex(-0.1, 1.1).clamp(0, 1), Vertex(0.0, 1.0))
     assertEquals(Vertex(1, 4).clamp(2, 3), Vertex(2, 3))
+  }
+
+  test("clamp (vertex)") {
+    assertEquals(Vertex(0.1, 0.1).clamp(Vertex(0, 0), Vertex(1, 1)), Vertex(0.1, 0.1))
+    assertEquals(Vertex(-0.1, 1.1).clamp(Vertex(0, 0), Vertex(1, 1)), Vertex(0.0, 1.0))
+
+    assertEquals(Vertex(1, 4).clamp(Vertex(10, 20), Vertex(30, 40)), Vertex(10, 20))
+    assertEquals(Vertex(12, 33).clamp(Vertex(10, 20), Vertex(30, 40)), Vertex(12, 33))
+    assertEquals(Vertex(50, 100).clamp(Vertex(10, 20), Vertex(30, 40)), Vertex(30, 40))
   }
 
   test("length") {
