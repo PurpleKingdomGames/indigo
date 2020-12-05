@@ -41,7 +41,7 @@ sealed trait Polygon {
     }
 
   def lineIntersectCheck(lineSegment: LineSegment): Boolean =
-    lineSegments.exists(_.intersectWithLine(lineSegment))
+    lineSegments.exists(_.intersectsWithLine(lineSegment))
 
   def rectangleIntersectCheck(rectangle: Rectangle): Boolean =
     Polygon.fromRectangle(rectangle).lineSegments.exists(lineIntersectCheck)
