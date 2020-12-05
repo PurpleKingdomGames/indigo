@@ -3,6 +3,8 @@ package indigoextras.geometry
 import indigo.shared.EqualTo
 import indigo.shared.datatypes.Vector2
 
+import scala.annotation.tailrec
+
 final case class BoundingCircle(position: Vertex, radius: Double) {
   lazy val x: Double        = position.x
   lazy val y: Double        = position.y
@@ -78,37 +80,17 @@ object BoundingCircle {
   def apply(x: Double, y: Double, radius: Double): BoundingCircle =
     BoundingCircle(Vertex(x, y), radius)
 
-  // def fromTwoVertices(pt1: Vertex, pt2: Vertex): BoundingBox = {
-  //   val x = Math.min(pt1.x, pt2.x)
-  //   val y = Math.min(pt1.y, pt2.y)
-  //   val w = Math.max(pt1.x, pt2.x) - x
-  //   val h = Math.max(pt1.y, pt2.y) - y
+  def fromTwoVertices(center: Vertex, boundary: Vertex): BoundingCircle =
+    BoundingCircle(center, center.distanceTo(boundary))
 
-  //   BoundingBox(x, y, w, h)
-  // }
+  def fromVertices(vertices: List[Vertex]): BoundingCircle =
+    fromBoundingBox(BoundingBox.fromVertices(vertices))
 
-  // def fromVertices(vertices: List[Vertex]): BoundingBox = {
-  //   @tailrec
-  //   def rec(remaining: List[Vertex], left: Double, top: Double, right: Double, bottom: Double): BoundingBox =
-  //     remaining match {
-  //       case Nil =>
-  //         BoundingBox(left, top, right - left, bottom - top)
+  def fromVertexCloud(vertices: List[Vertex]): BoundingCircle =
+    fromVertices(vertices)
 
-  //       case p :: ps =>
-  //         rec(
-  //           ps,
-  //           Math.min(left, p.x),
-  //           Math.min(top, p.y),
-  //           Math.max(right, p.x),
-  //           Math.max(bottom, p.y)
-  //         )
-  //     }
-
-  //   rec(vertices, Double.MaxValue, Double.MaxValue, Double.MinValue, Double.MinValue)
-  // }
-
-  // def fromVertexCloud(vertices: List[Vertex]): BoundingBox =
-  //   fromVertices(vertices)
+  def fromBoundingBox(boundingBox: BoundingBox): BoundingCircle =
+    BoundingCircle(boundingBox.center, Math.max(boundingBox.halfSize.x, boundingBox.halfSize.y))
 
   implicit val bcEqualTo: EqualTo[BoundingCircle] = {
     val eq = implicitly[EqualTo[Vertex]]

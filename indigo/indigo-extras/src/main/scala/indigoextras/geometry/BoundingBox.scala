@@ -76,6 +76,9 @@ final case class BoundingBox(position: Vertex, size: Vertex) {
   def toRectangle: Rectangle =
     Rectangle(position.toPoint, size.toPoint)
 
+  def toBoundingCircle: BoundingCircle =
+    BoundingCircle.fromBoundingBox(this)
+
   def toLineSegments: List[LineSegment] =
     BoundingBox.toLineSegments(this)
 
@@ -137,6 +140,9 @@ object BoundingBox {
 
   def fromRectangle(rectangle: Rectangle): BoundingBox =
     BoundingBox(Vertex.fromPoint(rectangle.position), Vertex.fromPoint(rectangle.size))
+
+  def fromBoundingCircle(boundingCircle: BoundingCircle): BoundingBox =
+    boundingCircle.toBoundingBox
 
   def toLineSegments(boundingBox: BoundingBox): List[LineSegment] =
     List(
