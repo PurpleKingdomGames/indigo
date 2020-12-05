@@ -123,6 +123,14 @@ class Vector2Tests extends munit.FunSuite {
     assertEquals(Vector2(2.2, 2.6).round, Vector2(2, 3))
   }
 
+  test("normalise") {
+    assert(clue(Vector2(10, 10).normalise) === clue(Vector2(1, 1)))
+    assert(clue(Vector2(-10, -10).normalise) === clue(Vector2(-1, -1)))
+    assert(clue(Vector2(10, 0).normalise) === clue(Vector2(1, 0)))
+    assert(clue(Vector2(0, 10).normalise) === clue(Vector2(0, 1)))
+    assert(clue(Vector2(-50, 1000).normalise) === clue(Vector2(-1, 1)))
+  }
+
   def areDoubleVectorsEqual(expected: Vector2, actual: Vector2): Boolean =
     areDoublesEqual(expected.x, actual.x) && areDoublesEqual(expected.y, actual.y)
 

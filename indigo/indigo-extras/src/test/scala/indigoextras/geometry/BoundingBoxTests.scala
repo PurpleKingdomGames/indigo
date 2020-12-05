@@ -110,6 +110,11 @@ class BoundingBoxTests extends munit.FunSuite {
     )
   }
 
+  test("intersecting lines.detecting a hit") {
+    assert(BoundingBox(1, 1, 3, 3).lineIntersects(LineSegment((1d, 2d), (4d, 2.5d))))
+    assert(!BoundingBox(5, 5, 4, 4).lineIntersects(LineSegment((0d, 0d), (3d, 3d))))
+  }
+
   test("encompasing rectangles.should return true when A encompases B") {
     val a = BoundingBox(10, 10, 110, 110)
     val b = BoundingBox(20, 20, 10, 10)

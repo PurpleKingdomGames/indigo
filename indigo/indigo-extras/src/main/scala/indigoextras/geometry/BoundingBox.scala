@@ -4,7 +4,7 @@ import indigo.shared.EqualTo
 
 import scala.annotation.tailrec
 import indigo.shared.datatypes.Rectangle
-import indigoextras.geometry.IntersectionResult.IntersectionVertex
+import indigoextras.geometry.LineIntersectionResult
 
 final case class BoundingBox(position: Vertex, size: Vertex) {
   lazy val x: Double      = position.x
@@ -186,34 +186,33 @@ object BoundingBox {
   def overlapping(a: BoundingBox, b: BoundingBox): Boolean =
     Math.abs(a.center.x - b.center.x) < a.halfSize.x + b.halfSize.x && Math.abs(a.center.y - b.center.y) < a.halfSize.y + b.halfSize.y
 
-  def lineIntersects(boundingBox: BoundingBox, line: LineSegment): Boolean =
-    lineIntersectsAt(boundingBox, line).isDefined
+  def lineIntersects(boundingBox: BoundingBox, line: LineSegment): Boolean = {
+    @tailrec
+    def rec(remaining: List[LineSegment]): Boolean =
+      remaining match {
+        case Nil =>
+          false
 
-  def lineIntersectsAt(boundingBox: BoundingBox, line: LineSegment): Option[Vertex] = {
-    val verts =
-      boundingBox.toLineSegments
-        .flatMap { bbLine =>
-          bbLine.intersectWith(line) match {
-            case r @ IntersectionVertex(_, _) =>
-              val v = r.toVertex
+        case x :: xs if x.intersectsAt(line).isDefined =>
+          true
 
-              if (line.contains(v) && bbLine.contains(v))
-                Some(v)
-              else
-                None
-            case _ =>
-              None
-          }
-        }
+        case _ :: xs =>
+          rec(xs)
+      }
 
-    verts
+    rec(boundingBox.toLineSegments)
+  }
+
+  def lineIntersectsAt(boundingBox: BoundingBox, line: LineSegment): Option[Vertex] =
+    boundingBox.toLineSegments
+      .map(_.intersectsAt(line))
+      .collect { case Some(v) => v }
       .foldLeft((Option.empty[Vertex], Double.MaxValue)) { (acc, v) =>
         val dist = v.distanceTo(line.start)
         if (dist < acc._2) (Some(v), dist)
         else acc
       }
       ._1
-  }
 
   // Centered at the origin
   def signedDistanceFunction(point: Vertex, halfSize: Vertex): Double = {
