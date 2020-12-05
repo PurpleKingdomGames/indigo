@@ -277,4 +277,54 @@ class LineSegmentTests extends munit.FunSuite {
     assertEquals(LineSegment.lineContainsVertex(line, point), false)
   }
 
+  test("moveTo | moveBy | moveStartTo | moveStartBy | moveEndTo | moveEndBy") {
+
+    val line: LineSegment = LineSegment((10d, 10d), (20d, 20d))
+
+    assertEquals(line.moveTo(1, 2), LineSegment((1d, 2d), (11d, 12d)))
+    assertEquals(line.moveBy(1, 2), LineSegment((11d, 12d), (21d, 22d)))
+
+    assertEquals(line.moveStartTo(1, 2), LineSegment((1d, 2d), (20d, 20d)))
+    assertEquals(line.moveStartBy(1, 2), LineSegment((11d, 12d), (20d, 20d)))
+
+    assertEquals(line.moveEndTo(1, 2), LineSegment((10d, 10d), (1d, 2d)))
+    assertEquals(line.moveEndBy(1, 2), LineSegment((10d, 10d), (21d, 22d)))
+  }
+
+  test("invert | flip") {
+    assertEquals(LineSegment((10d, 10d), (20d, 20d)).invert, LineSegment((20d, 20d), (10d, 10d)))
+    assertEquals(LineSegment((10d, 10d), (20d, 20d)).flip, LineSegment((20d, 20d), (10d, 10d)))
+  }
+
+  test("Finding the closet point on the line to a vertex") {
+    val line: LineSegment = LineSegment((10d, 10d), (20d, 20d))
+
+    // before line
+    assertEquals(line.closestPointOnLine(Vertex(1, 1)), Some(line.start))
+    assertEquals(line.closestPointOnLine(Vertex(10, 10)), Some(line.start))
+
+    // some where in the middle
+    assertEquals(line.closestPointOnLine(Vertex(15, 10)), Some(Vertex(12.5, 12.5)))
+    assertEquals(line.closestPointOnLine(Vertex(15, 15)), Some(Vertex(15, 15)))
+    assertEquals(line.closestPointOnLine(Vertex(15, 20)), Some(Vertex(17.5, 17.5)))
+
+    // past line
+    assertEquals(line.closestPointOnLine(Vertex(20, 20)), Some(line.end))
+    assertEquals(line.closestPointOnLine(Vertex(27, 21)), Some(line.end))
+  }
+
+  test("signed distance function") {
+    val line: LineSegment = LineSegment((10d, 10d), (20d, 20d))
+
+    // start
+    assertEquals(line.sdf(Vertex(0, 10)), 10.0d)
+
+    assertEquals(line.sdf(Vertex(15, 10)), Vertex(15, 10).distanceTo(Vertex(12.5, 12.5)))
+    assertEquals(line.sdf(Vertex(15, 15)), 0.0d)
+    assertEquals(line.sdf(Vertex(15, 20)), Vertex(15, 20).distanceTo(Vertex(17.5, 17.5)))
+
+    // end
+    assertEquals(line.sdf(Vertex(25, 25)), Math.sqrt(5 * 5 + 5 * 5))
+  }
+
 }
