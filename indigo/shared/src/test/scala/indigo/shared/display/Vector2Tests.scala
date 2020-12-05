@@ -27,7 +27,7 @@ class Vector2Tests extends munit.FunSuite {
 
     val result =
       Vector2(1, 1)
-        .scale(scaleFactor)
+        .scaleBy(scaleFactor)
         .translate(multiplier)
 
     assertEquals(areDoubleVectorsEqual(Vector2(0.66, 1), result), true)
@@ -36,7 +36,7 @@ class Vector2Tests extends munit.FunSuite {
 
   test("Basic vector operation.should be able to scale and translate") {
 
-    val res = Vector2(10, 10).scale(Vector2(2, 2)).translate(Vector2(5, 5))
+    val res = Vector2(10, 10).scaleBy(Vector2(2, 2)).translate(Vector2(5, 5))
 
     assertEquals(res.x, 25.0)
     assertEquals(res.y, 25.0)
@@ -64,6 +64,65 @@ class Vector2Tests extends munit.FunSuite {
     assertEquals(Vector2.fromPoints(Point(10, 2), Point(2, 2)) === Vector2(-8, 0), true)
   }
 
+  test("dot product") {
+    assert(clue(Vector2(1, 0).dot(Vector2(1, 0))) == 1)
+    assert(clue(Vector2(1, 0).dot(Vector2(0, -1))) == 0)
+    assert(clue(Vector2(-1, 0).dot(Vector2(1, 0))) == -1)
+    assert(clue(Vector2(1, 0).dot(Vector2(-1, 0))) == -1)
+  }
+
+  test("abs") {
+    assertEquals(Vector2(1, 1).abs, Vector2(1, 1))
+    assertEquals(Vector2(-1, 1).abs, Vector2(1, 1))
+    assertEquals(Vector2(1, -1).abs, Vector2(1, 1))
+    assertEquals(Vector2(-1, -1).abs, Vector2(1, 1))
+  }
+
+  test("min") {
+    assertEquals(Vector2(10, 10).min(1), Vector2(1, 1))
+    assertEquals(Vector2(10, 10).min(100), Vector2(10, 10))
+    assertEquals(Vector2(10, 10).min(Vector2(50, 5)), Vector2(10, 5))
+  }
+
+  test("max") {
+    assertEquals(Vector2(10, 10).max(1), Vector2(10, 10))
+    assertEquals(Vector2(10, 10).max(100), Vector2(100, 100))
+    assertEquals(Vector2(10, 10).max(Vector2(50, 5)), Vector2(50, 10))
+  }
+
+  test("clamp") {
+    assertEquals(Vector2(0.1, 0.1).clamp(0, 1), Vector2(0.1, 0.1))
+    assertEquals(Vector2(-0.1, 1.1).clamp(0, 1), Vector2(0.0, 1.0))
+    assertEquals(Vector2(1, 4).clamp(2, 3), Vector2(2, 3))
+  }
+
+  test("length") {
+    assertEquals(Vector2(10, 0).length, 10.0)
+    assertEquals(Vector2(0, 10).length, 10.0)
+    assert(nearEnoughEqual(Vector2(10, 10).length, 14.14d, 0.01))
+  }
+
+  test("invert") {
+    assertEquals(Vector2(1, 1).invert, Vector2(-1, -1))
+    assertEquals(Vector2(-1, 1).invert, Vector2(1, -1))
+    assertEquals(Vector2(1, -1).invert, Vector2(-1, 1))
+    assertEquals(Vector2(-1, -1).invert, Vector2(1, 1))
+  }
+
+  test("translate | moveBy | moveTo") {
+    assertEquals(Vector2(1, 1).translate(Vector2(10, 10)), Vector2(11, 11))
+    assertEquals(Vector2(1, 1).moveBy(Vector2(10, 10)), Vector2(11, 11))
+    assertEquals(Vector2(1, 1).moveTo(Vector2(10, 10)), Vector2(10, 10))
+  }
+
+  test("scaleBy") {
+    assertEquals(Vector2(2, 2).scaleBy(Vector2(10, 2)), Vector2(20, 4))
+  }
+
+  test("round") {
+    assertEquals(Vector2(2.2, 2.6).round, Vector2(2, 3))
+  }
+
   def areDoubleVectorsEqual(expected: Vector2, actual: Vector2): Boolean =
     areDoublesEqual(expected.x, actual.x) && areDoublesEqual(expected.y, actual.y)
 
@@ -72,5 +131,8 @@ class Vector2Tests extends munit.FunSuite {
 
   def to2dp(d: Double): Double =
     Math.round(d * 100).toDouble / 100
+
+  def nearEnoughEqual(d1: Double, d2: Double, tolerance: Double): Boolean =
+    d1 >= d2 - tolerance && d1 <= d2 + tolerance
 
 }

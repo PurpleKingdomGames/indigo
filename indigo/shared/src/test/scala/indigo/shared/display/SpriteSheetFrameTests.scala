@@ -16,17 +16,17 @@ class SpriteSheetFrameTests extends munit.FunSuite {
     val offset = SpriteSheetFrame.calculateFrameOffset(atlasSize, frameCrop, textureOffset)
 
     val textureCoordinate1   = Vector2(0, 0)
-    val resultingMultiplier1 = textureCoordinate1.scale(offset.scale).translate(offset.translate)
+    val resultingMultiplier1 = textureCoordinate1.scaleBy(offset.scale).translate(offset.translate)
 
     assertEquals(Vector2.multiply(atlasSize, resultingMultiplier1) === Vector2(74, 10), true)
 
     val textureCoordinate2   = Vector2(0.5, 0.5)
-    val resultingMultiplier2 = textureCoordinate2.scale(offset.scale).translate(offset.translate)
+    val resultingMultiplier2 = textureCoordinate2.scaleBy(offset.scale).translate(offset.translate)
 
     assertEquals(Vector2.multiply(atlasSize, resultingMultiplier2) === Vector2(106, 42), true)
 
     val textureCoordinate3   = Vector2(1, 1)
-    val resultingMultiplier3 = textureCoordinate3.scale(offset.scale).translate(offset.translate)
+    val resultingMultiplier3 = textureCoordinate3.scaleBy(offset.scale).translate(offset.translate)
 
     assertEquals(Vector2.multiply(atlasSize, resultingMultiplier3) === Vector2(138, 74.0), true)
 
@@ -41,17 +41,17 @@ class SpriteSheetFrameTests extends munit.FunSuite {
     val offset = SpriteSheetFrame.calculateFrameOffset(atlasSize, frameCrop, textureOffset)
 
     val textureCoordinate1   = Vector2(0, 0)
-    val resultingMultiplier1 = textureCoordinate1.scale(offset.scale).translate(offset.translate)
+    val resultingMultiplier1 = textureCoordinate1.scaleBy(offset.scale).translate(offset.translate)
 
     assertEquals(Vector2.multiply(atlasSize, resultingMultiplier1) === Vector2(64, 0), true)
 
     val textureCoordinate2   = Vector2(0.5, 0.5)
-    val resultingMultiplier2 = textureCoordinate2.scale(offset.scale).translate(offset.translate)
+    val resultingMultiplier2 = textureCoordinate2.scaleBy(offset.scale).translate(offset.translate)
 
     assertEquals(Vector2.multiply(atlasSize, resultingMultiplier2) === Vector2(96, 32), true)
 
     val textureCoordinate3   = Vector2(1, 1)
-    val resultingMultiplier3 = textureCoordinate3.scale(offset.scale).translate(offset.translate)
+    val resultingMultiplier3 = textureCoordinate3.scaleBy(offset.scale).translate(offset.translate)
 
     assertEquals(Vector2.multiply(atlasSize, resultingMultiplier3) === Vector2(128.0, 64.0), true)
 

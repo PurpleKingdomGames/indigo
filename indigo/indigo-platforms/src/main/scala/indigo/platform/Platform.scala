@@ -85,7 +85,7 @@ class Platform(
           .map { p =>
             p._1 -> new TextureRefAndOffset(
               atlasName = p._2.id.id,
-              atlasSize = textureAtlas.atlases.get(p._2.id).map(_.size.value).map(Vector2.apply).getOrElse(Vector2.one),
+              atlasSize = textureAtlas.atlases.get(p._2.id).map(_.size.value).map(i => Vector2(i.toDouble)).getOrElse(Vector2.one),
               offset = p._2.offset
             )
           }
