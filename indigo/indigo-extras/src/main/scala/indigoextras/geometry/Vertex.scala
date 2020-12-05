@@ -14,8 +14,8 @@ final case class Vertex(x: Double, y: Double) {
     this.copy(y = newY)
 
   /**
-   * Dot product. Here for convenience but really this is vector operation.
-   */
+    * Dot product. Here for convenience but really this is vector operation.
+    */
   def dot(other: Vertex): Double =
     Vertex.dotProduct(this, other)
 
@@ -34,6 +34,8 @@ final case class Vertex(x: Double, y: Double) {
 
   def clamp(min: Double, max: Double): Vertex =
     Vertex(Math.min(max, Math.max(min, x)), Math.min(max, Math.max(min, y)))
+  def clamp(min: Vertex, max: Vertex): Vertex =
+    Vertex(Math.min(max.x, Math.max(min.x, x)), Math.min(max.y, Math.max(min.y, y)))
 
   def length: Double =
     distanceTo(Vertex.zero)
