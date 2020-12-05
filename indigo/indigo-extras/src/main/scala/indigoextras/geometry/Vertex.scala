@@ -13,6 +13,9 @@ final case class Vertex(x: Double, y: Double) {
   def withY(newY: Double): Vertex =
     this.copy(y = newY)
 
+  /**
+   * Dot product. Here for convenience but really this is vector operation.
+   */
   def dot(other: Vertex): Double =
     Vertex.dotProduct(this, other)
 
@@ -53,6 +56,8 @@ final case class Vertex(x: Double, y: Double) {
 
   def scaleBy(vec: Vertex): Vertex =
     Vertex.multiply(this, vec)
+  def scaleBy(amount: Double): Vertex =
+    scaleBy(Vertex(amount))
 
   def round: Vertex =
     Vertex(Math.round(x).toDouble, Math.round(y).toDouble)
