@@ -45,7 +45,7 @@ final case class LineSegment(start: Vertex, end: Vertex) {
   def moveEndTo(x: Double, y: Double): LineSegment =
     moveEndTo(Vertex(x, y))
   def moveEndBy(amount: Vertex): LineSegment =
-    moveEndTo(start + amount)
+    moveEndTo(end + amount)
   def moveEndBy(x: Double, y: Double): LineSegment =
     moveEndBy(Vertex(x, y))
 
@@ -80,7 +80,7 @@ final case class LineSegment(start: Vertex, end: Vertex) {
   def isFacingVertex(vertex: Vertex): Boolean =
     LineSegment.isFacingVertex(this, vertex)
 
-  def closestPointOnLine(to: Vertex): Vertex = {
+  def closestPointOnLine(to: Vertex): Option[Vertex] = {
     val a   = end.y - start.y
     val b   = start.x - end.x
     val c1  = a * start.x + b * start.y
@@ -88,12 +88,14 @@ final case class LineSegment(start: Vertex, end: Vertex) {
     val det = a * a - -b * b
 
     if (det != 0.0)
-      Vertex(
-        x = (a * c1 - b * c2) / det,
-        y = (a * c2 - -b * c1) / det
+      Some(
+        Vertex(
+          x = (a * c1 - b * c2) / det,
+          y = (a * c2 - -b * c1) / det
+        ).clamp(start, end)
       )
     else
-      Vertex.zero
+      None
   }
 
   def ===(other: LineSegment): Boolean =
