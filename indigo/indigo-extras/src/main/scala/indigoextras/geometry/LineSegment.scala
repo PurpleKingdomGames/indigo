@@ -70,11 +70,11 @@ final case class LineSegment(start: Vertex, end: Vertex) {
 
       case r @ IntersectionResult.IntersectionVertex(_, _) =>
         val pt = r.toVertex
-        containsVertex(pt) && other.containsVertex(pt)
+        contains(pt) && other.contains(pt)
 
     }
 
-  def containsVertex(vertex: Vertex): Boolean =
+  def contains(vertex: Vertex): Boolean =
     LineSegment.lineContainsVertex(this, vertex, 0.5f)
 
   def isFacingVertex(vertex: Vertex): Boolean =

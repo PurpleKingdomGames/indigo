@@ -197,7 +197,7 @@ object BoundingBox {
             case r @ IntersectionVertex(_, _) =>
               val v = r.toVertex
 
-              if (line.containsVertex(v) && bbLine.containsVertex(v))
+              if (line.contains(v) && bbLine.contains(v))
                 Some(v)
               else
                 None
