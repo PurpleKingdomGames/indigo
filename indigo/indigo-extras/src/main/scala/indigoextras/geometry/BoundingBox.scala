@@ -4,7 +4,6 @@ import indigo.shared.EqualTo
 
 import scala.annotation.tailrec
 import indigo.shared.datatypes.Rectangle
-import indigoextras.geometry.LineIntersectionResult
 
 final case class BoundingBox(position: Vertex, size: Vertex) {
   lazy val x: Double      = position.x
@@ -197,7 +196,7 @@ object BoundingBox {
         case Nil =>
           false
 
-        case x :: xs if x.intersectsAt(line).isDefined =>
+        case x :: _ if x.intersectsAt(line).isDefined =>
           true
 
         case _ :: xs =>

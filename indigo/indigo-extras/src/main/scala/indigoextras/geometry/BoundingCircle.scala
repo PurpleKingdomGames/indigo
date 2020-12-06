@@ -3,8 +3,6 @@ package indigoextras.geometry
 import indigo.shared.EqualTo
 import indigo.shared.datatypes.Vector2
 
-import scala.annotation.tailrec
-
 final case class BoundingCircle(position: Vertex, radius: Double) {
   lazy val x: Double        = position.x
   lazy val y: Double        = position.y
