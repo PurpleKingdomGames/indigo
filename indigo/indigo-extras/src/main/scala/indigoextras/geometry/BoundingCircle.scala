@@ -83,8 +83,11 @@ object BoundingCircle {
   def fromTwoVertices(center: Vertex, boundary: Vertex): BoundingCircle =
     BoundingCircle(center, center.distanceTo(boundary))
 
-  def fromVertices(vertices: List[Vertex]): BoundingCircle =
-    fromBoundingBox(BoundingBox.fromVertices(vertices))
+  def fromVertices(vertices: List[Vertex]): BoundingCircle = {
+    val bb = BoundingBox.fromVertices(vertices)
+
+    BoundingCircle(bb.center, bb.center.distanceTo(bb.topLeft))
+  }
 
   def fromVertexCloud(vertices: List[Vertex]): BoundingCircle =
     fromVertices(vertices)
@@ -104,7 +107,7 @@ object BoundingCircle {
     a.resize(a.position.distanceTo(b.position) + Math.abs(b.radius))
 
   def encompassing(a: BoundingCircle, b: BoundingCircle): Boolean =
-    a.position.distanceTo(b.position) < Math.abs(a.radius) - Math.abs(b.radius)
+    a.position.distanceTo(b.position) <= Math.abs(a.radius) - Math.abs(b.radius)
 
   def overlapping(a: BoundingCircle, b: BoundingCircle): Boolean =
     a.position.distanceTo(b.position) < Math.abs(a.radius) + Math.abs(b.radius)
@@ -159,7 +162,7 @@ object BoundingCircle {
           if (t2 < 0 || t2 > 1)
             BoundingCircleLineIntersect.Zero
           else
-            BoundingCircleLineIntersect.One(Vertex(i1X, i1Y))
+            BoundingCircleLineIntersect.One(Vertex(i2X, i2Y))
 
         near |+| far
       } else
@@ -174,6 +177,20 @@ object BoundingCircle {
 }
 
 sealed trait BoundingCircleLineIntersect {
+  def nearest: Option[Vertex] =
+    this match {
+      case BoundingCircleLineIntersect.Zero         => None
+      case BoundingCircleLineIntersect.One(at)      => Some(at)
+      case BoundingCircleLineIntersect.Two(near, _) => Some(near)
+    }
+
+  def furthest: Option[Vertex] =
+    this match {
+      case BoundingCircleLineIntersect.Zero        => None
+      case BoundingCircleLineIntersect.One(at)     => Some(at)
+      case BoundingCircleLineIntersect.Two(_, far) => Some(far)
+    }
+
   def toOption: Option[List[Vertex]] =
     this match {
       case BoundingCircleLineIntersect.Zero           => None
