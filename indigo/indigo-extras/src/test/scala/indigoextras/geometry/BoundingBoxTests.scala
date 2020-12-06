@@ -158,4 +158,45 @@ class BoundingBoxTests extends munit.FunSuite {
     assertEquals(BoundingBox.expand(b, 50) === BoundingBox(-50, -40, 200, 105), true)
   }
 
+  test("signed distance function") {
+    val bb = BoundingBox(10, 20, 30, 40)
+
+    // TL
+    val tl = Vertex(5, 5)
+    assertEquals(bb.sdf(tl), tl.distanceTo(bb.topLeft))
+
+    // T
+    val t = Vertex(15, 0)
+    assertEquals(bb.sdf(t), t.distanceTo(Vertex(15, 20)))
+
+    // TR
+    val tr = Vertex(45, 5)
+    assertEquals(bb.sdf(tr), tr.distanceTo(bb.topRight))
+
+    // ML
+    val ml = Vertex(2, 25)
+    assertEquals(bb.sdf(ml), ml.distanceTo(Vertex(10, 25)))
+
+    // M
+    val m = Vertex(15, 25)
+    assertEquals(bb.sdf(m), -m.distanceTo(Vertex(10, 25)))
+
+    // MR
+    val mr = Vertex(55, 30)
+    assertEquals(bb.sdf(mr), mr.distanceTo(Vertex(40, 30)))
+
+    // BL
+    val bl = Vertex(5, 70)
+    assertEquals(bb.sdf(bl), bl.distanceTo(bb.bottomLeft))
+
+    // B
+    val b = Vertex(20, 80)
+    assertEquals(bb.sdf(b), b.distanceTo(Vertex(20, 60)))
+
+    // BR
+    val br = Vertex(45, 70)
+    assertEquals(bb.sdf(br), br.distanceTo(bb.bottomRight))
+
+  }
+
 }
