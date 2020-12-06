@@ -301,11 +301,11 @@ object QuadTree {
         case QuadLeaf(bounds, value) if lineSegment.end.toPoint === bounds.position.toPoint =>
           List(value)
 
-        case QuadLeaf(bounds, value) if LineSegment.lineContainsVertex(lineSegment, bounds.centerAsVertex, 0.15d) =>
+        case QuadLeaf(bounds, value) if LineSegment.lineSegmentContainsVertex(lineSegment, bounds.centerAsVertex, 0.15d) =>
           List(value)
 
         case QuadLeaf(bounds, value)
-            if LineSegment.lineContainsVertex(lineSegment, Vertex.fromPoint(bounds.position.toPoint), 0.25f) =>
+            if LineSegment.lineSegmentContainsVertex(lineSegment, Vertex.fromPoint(bounds.position.toPoint), 0.25f) =>
           List(value)
 
         case _ =>
