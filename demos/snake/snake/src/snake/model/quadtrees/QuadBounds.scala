@@ -1,7 +1,7 @@
 package snake.model.quadtrees
 
 import indigo.shared.datatypes.{Point, Rectangle}
-import indigoextras.geometry.{IntersectionResult, LineSegment}
+import indigoextras.geometry.LineSegment
 
 import indigo.shared.EqualTo
 import indigo.shared.EqualTo._
@@ -147,28 +147,13 @@ object QuadBounds {
 
   def rayCollisionCheck(bounds: QuadBounds, line: LineSegment): Boolean =
     bounds.edges.exists { edge =>
-      line.intersectWith(edge) match {
-        case ip: IntersectionResult.IntersectionVertex =>
-          line.containsVertex(ip.toVertex)
-
-        case IntersectionResult.NoIntersection =>
-          false
-      }
+      line.intersectsWithLine(edge)
     }
 
   def rayCollisionPosition(bounds: QuadBounds, line: LineSegment): Option[Point] =
     bounds.edges
       .map { edge =>
-        line.intersectWith(edge) match {
-          case ip @ IntersectionResult.IntersectionVertex(_, _) if line.containsVertex(ip.toVertex) =>
-            Some(ip.toVertex)
-
-          case IntersectionResult.IntersectionVertex(_, _) =>
-            None
-
-          case IntersectionResult.NoIntersection =>
-            None
-        }
+        line.intersectsAt(edge)
       }
       .collect { case Some(s) => s }
       .sortWith((p1, p2) => line.start.distanceTo(p1) < line.start.distanceTo(p2))
