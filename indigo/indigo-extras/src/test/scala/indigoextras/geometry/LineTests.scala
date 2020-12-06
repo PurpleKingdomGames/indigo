@@ -1,6 +1,5 @@
 package indigoextras.geometry
 
-import indigo.shared.datatypes.Vector2
 import indigoextras.geometry.LineIntersectionResult._
 import indigoextras.geometry.LineSegment
 

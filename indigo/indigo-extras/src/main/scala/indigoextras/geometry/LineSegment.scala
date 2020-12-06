@@ -1,7 +1,6 @@
 package indigoextras.geometry
 
 import indigo.shared.EqualTo
-import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Vector2
 
 final case class LineSegment(start: Vertex, end: Vertex) {
@@ -140,7 +139,7 @@ object LineSegment {
       case Line.InvalidLine =>
         false
 
-      case Line.ParallelToAxisY(x) =>
+      case Line.ParallelToAxisY(_) =>
         if (vertex.x >= lineSegment.start.x - tolerance && vertex.x <= lineSegment.start.x + tolerance && vertex.y >= lineSegment.top && vertex.y <= lineSegment.bottom) true
         else false
 
