@@ -151,7 +151,7 @@ object Vertex {
         val aa = x2.toDouble - x1.toDouble
         val bb = y2.toDouble - y1.toDouble
 
-        Math.sqrt(Math.abs((aa * aa) + (bb * bb)))
+        Math.sqrt(Math.abs(aa * aa + bb * bb))
     }
 
   def dotProduct(vec1: Vertex, vec2: Vertex): Double =
