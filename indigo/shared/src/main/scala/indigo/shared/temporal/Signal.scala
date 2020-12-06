@@ -19,11 +19,12 @@ final class Signal[A](val f: Seconds => A) extends AnyVal {
 
   def |>[B](sf: SignalFunction[A, B]): Signal[B] =
     pipe(sf)
-
   def pipe[B](sf: SignalFunction[A, B]): Signal[B] =
     sf.run(this)
 
   def |*|[B](other: Signal[B]): Signal[(A, B)] =
+    combine(other)
+  def combine[B](other: Signal[B]): Signal[(A, B)] =
     Signal.product(this, other)
 
   def clampTime(from: Seconds, to: Seconds): Signal[A] =
