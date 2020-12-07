@@ -12,13 +12,15 @@ Documentation can be found on [indigoengine.io](https://indigoengine.io).
 
 ## Full local build and test instructions
 
+> Updated! The 0.5.0 release was Scala 2 only, the master branch is now built primarily against the Scala 3 compiler. Though we intend to publish to Scala 2 & 3 in the short term, as soon as is viable Scala 2 support will be dropped.
+
 ### Build requirements
 
 You will need:
 
 - Mill
 - SBT
-- JDK 1.8
+- JDK 15 (Update: 1.8 works, 11 should be fine and is LTS, currently building against 15)
 - [glslang validator](https://github.com/KhronosGroup/glslang) - can be installed with your favorite package manager.
 
 ### Running the build
