@@ -48,16 +48,6 @@ class SignalStateTests extends munit.FunSuite {
   }
 
   test("flatMap") {
-    // val a = SignalState((count: Int) => (count + 1, Signal.fixed("foo")))
-    // val b = SignalState((count: Int) => (count + 1, Signal.fixed("foo")))
-    // val a = SignalState((count: Int) => (count + 1, Signal.fixed("foo")))
-
-    // val res =
-    //   for {
-    //     (count1, fooSig) <- a
-    //   } yield aa
-
-    // assertEquals(res.run(0), 10)
 
     val res =
       SignalState((count: Int) => Signal.fixed((count + 1, "foo"))).flatMap { (str: String) =>
@@ -71,38 +61,26 @@ class SignalStateTests extends munit.FunSuite {
 
   }
 
+  test("for comp") {
+    val a = SignalState((count: Int) => Signal.fixed(count + 1, "foo"))
+    val b = SignalState((count: Int) => Signal.fixed(count + 1, "bar"))
+    val c = SignalState((count: Int) => Signal.fixed(count + 1, "baz"))
+
+    val res =
+      for {
+        aa <- a
+        bb <- b.map(_ + s"($aa)")
+        cc <- c.map(_ + s"($aa)[$bb]")
+      } yield aa + ", " + bb + ", " + cc
+
+    val actual =
+      res.run(10).at(Seconds(0))
+
+    val expected =
+      (13, "foo, bar(foo), baz(foo)[bar(foo)]")
+
+    assertEquals(actual, expected)
+
+  }
+
 }
-/*
-final case class State[S, A](run: S => (S, A)) {
-  
-  def get(s: S): A =
-    run(s)._2
-  
-  def map[B](f: A => B): State[S, B] =
-    State { (s: S) =>
-      val (ss, value) = run(s)
-      (ss, f(value))
-    }
-  
-  def flatMap[B](f: A => State[S, B]): State[S, B] =
-    State { (s: S) =>
-      val (s0, v0) = run(s)
-      val (s1, v1) = f(v0).run(s0)
-      (s1, v1)
-    }
-  
-}
-
-val foo = State((count: Int) => (count + 1, "foo"))
-
-
-val f: String => State[Int, Boolean] =
-  (str: String) => State((i: Int) => (i + 1, str == "foo"))
-
-val g: Boolean => State[Int, Int] =
-  (p: Boolean) => State((i: Int) => (i + 1, if(p) 10 else 100))
-
-foo.run(0)
-foo.flatMap(f).run(0)
-foo.flatMap(f).flatMap(g).run(0)
-*/
