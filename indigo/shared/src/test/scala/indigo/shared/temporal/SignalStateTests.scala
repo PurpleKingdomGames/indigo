@@ -47,6 +47,16 @@ class SignalStateTests extends munit.FunSuite {
 
   }
 
+  test("ap") {
+    val apf = SignalState((str: String) => Signal.fixed((str + "f", (str2: String) => str2 + "bar")))
+    val ss  = SignalState((str: String) => Signal.fixed((str + "s", "foo")))
+
+    assertEquals(
+      ss.ap(apf).run("order: ").at(Seconds.zero),
+      ("order: sf", "foobar")
+    )
+  }
+
   test("flatMap") {
 
     val res =
