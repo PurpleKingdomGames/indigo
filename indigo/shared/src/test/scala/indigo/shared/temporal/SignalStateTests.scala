@@ -111,4 +111,50 @@ class SignalStateTests extends munit.FunSuite {
 
   }
 
+  test("merge") {
+    val a = SignalState((count: Int) => Signal.fixed(count + 1, "foo"))
+    val b = SignalState((count: Int) => Signal.fixed(count + 1, "bar"))
+
+    val actual =
+      a.merge(b)(_ + ", " + _).run(0).at(Seconds.zero)
+
+    val expected =
+      (2, "foo, bar")
+
+    assertEquals(actual, expected)
+  }
+
+  test("combine") {
+    val a = SignalState((count: Int) => Signal.fixed(count + 1, "foo"))
+    val b = SignalState((count: Int) => Signal.fixed(count + 1, "bar"))
+
+    val actual =
+      a.combine(b).run(0).at(Seconds.zero)
+
+    val expected =
+      (2, ("foo", "bar"))
+
+    assertEquals(actual, expected)
+  }
+
+  test("signal functions") {
+    val sf1: SignalFunction[Int, String] =
+      SignalFunction((i: Int) => List.fill(i)("i").mkString)
+
+    val sf2: SignalFunction[String, String] =
+      SignalFunction((str: String) => "[" + str + "]")
+
+    val sig: SignalState[Int, Int] =
+      SignalState((count: Int) => Signal.fixed(count + 1, count + 5))
+
+    val actual =
+      (sig |> sf1 >>> sf2).run(1).at(Seconds.zero)
+
+    val expected =
+      (1, "[iiiiii]")
+
+    assertEquals(actual, expected)
+
+  }
+
 }
