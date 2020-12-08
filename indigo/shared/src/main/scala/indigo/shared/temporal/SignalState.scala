@@ -7,6 +7,21 @@ final class SignalState[S, A](val run: S => Signal[(S, A)]) extends AnyVal {
   def toSignal(state: S): Signal[A] =
     run(state).map(_._2)
 
+  def modify(f: S => S): SignalState[S, Unit] =
+    SignalState { (s: S) =>
+      run(s).map(p => (f(p._1), ()))
+    }
+
+  def get: SignalState[S, S] =
+    SignalState { (s: S) =>
+      run(s).map(p => (p._1, p._1))
+    }
+
+  def set(newState: S): SignalState[S, Unit] =
+    SignalState { (s: S) =>
+      run(s).map(_ => (newState, ()))
+    }
+
   // def merge[B, C](other: SignalState[B])(f: (A, B) => C): SignalState[C]
 
   // def |>[B](sf: SignalFunction[A, B]): SignalState[B]
