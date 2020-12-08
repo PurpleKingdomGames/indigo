@@ -22,17 +22,34 @@ final class SignalState[S, A](val run: S => Signal[(S, A)]) extends AnyVal {
       run(s).map(_ => (newState, ()))
     }
 
-  // def merge[B, C](other: SignalState[B])(f: (A, B) => C): SignalState[C]
+  def merge[B, C](other: SignalState[S, B])(f: (A, B) => C): SignalState[S, C] =
+    for {
+      a <- this
+      b <- other
+    } yield f(a, b)
 
-  // def |>[B](sf: SignalFunction[A, B]): SignalState[B]
-  // def pipe[B](sf: SignalFunction[A, B]): SignalState[B]
+  def |>[B](sf: SignalFunction[A, B]): SignalState[S, B] =
+    pipe(sf)
+  def pipe[B](sf: SignalFunction[A, B]): SignalState[S, B] =
+    SignalState { (s: S) =>
+      val sig = run(s)
+      sf.run(sig.map(_._2)).flatMap(b => sig.map(_ => (s, b)))
+    }
 
-  // def |*|[B](other: SignalState[B]): SignalState[(A, B)]
-  // def combine[B](other: SignalState[B]): SignalState[(A, B)]
+  def |*|[B](other: SignalState[S, B]): SignalState[S, (A, B)] =
+    combine(other)
+  def combine[B](other: SignalState[S, B]): SignalState[S, (A, B)] =
+    for {
+      a <- this
+      b <- other
+    } yield (a, b)
 
-  // def clampTime(from: Seconds, to: Seconds): SignalState[A]
-  // def wrapTime(at: Seconds): SignalState[A]
-  // def affectTime(multiplyBy: Double): SignalState[A]
+  def clampTime(from: Seconds, to: Seconds): SignalState[S, A] =
+    SignalState((s: S) => run(s).clampTime(from, to))
+  def wrapTime(at: Seconds): SignalState[S, A] =
+    SignalState((s: S) => run(s).wrapTime(at))
+  def affectTime(multiplyBy: Double): SignalState[S, A] =
+    SignalState((s: S) => run(s).affectTime(multiplyBy))
 
   def map[B](f: A => B): SignalState[S, B] =
     SignalState { (s: S) =>
