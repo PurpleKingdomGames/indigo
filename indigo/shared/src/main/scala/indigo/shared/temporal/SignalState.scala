@@ -24,12 +24,20 @@ final class SignalState[S, A](val run: S => Signal[(S, A)]) extends AnyVal {
       run(s).map { case (s, a) => (s, f(a)) }
     }
 
-  // def ap[B](f: SignalState[A => B]): SignalState[B]
+  def ap[B](f: SignalState[S, A => B]): SignalState[S, B] =
+    SignalState { (s: S) =>
+      run(s).flatMap {
+        case (nextState, a) =>
+          f.run(nextState).map {
+            case (finalState, g) =>
+              (finalState, g(a))
+          }
+      }
+    }
 
   def flatMap[B](f: A => SignalState[S, B]): SignalState[S, B] =
     SignalState { (s: S) =>
-      val sig: Signal[(S, A)] = run(s)
-      sig.flatMap { case (ss, aa) => f(aa).run(ss) }
+      run(s).flatMap { case (ss, aa) => f(aa).run(ss) }
     }
 
 }
