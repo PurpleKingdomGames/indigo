@@ -9,10 +9,10 @@ import indigo.shared.datatypes.Radians
 /**
   * A Signal is function t: Seconds -> A
   */
-final class Signal[A](val f: Seconds => A) extends AnyVal {
+final class Signal[A](val run: Seconds => A) extends AnyVal {
 
   def at(t: Seconds): A =
-    f(t)
+    run(t)
 
   def merge[B, C](other: Signal[B])(f: (A, B) => C): Signal[C] =
     Signal.merge(this, other)(f)
