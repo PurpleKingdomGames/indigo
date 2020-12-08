@@ -2,10 +2,10 @@ package indigo.shared.temporal
 
 import indigo.shared.time.Seconds
 
-final class SignalState[S, A](val f: S => (S, Signal[A])) extends AnyVal {
+final class SignalState[S, A](val run: S => Signal[(S, A)]) extends AnyVal {
 
   def toSignal(state: S): Signal[A] =
-    f(state)._2
+    run(state).map(_._2)
 
   // def merge[B, C](other: SignalState[B])(f: (A, B) => C): SignalState[C]
 
@@ -20,22 +20,43 @@ final class SignalState[S, A](val f: S => (S, Signal[A])) extends AnyVal {
   // def affectTime(multiplyBy: Double): SignalState[A]
 
   def map[B](f: A => B): SignalState[S, B] =
-    SignalState((s: S) => (s, toSignal(s).map(f)))
-  //SignalReader((r: R) => toSignal(r).map(f))
+    SignalState { (s: S) =>
+      // val sig: Signal[(S, A)] = run(s)
+      // (s, sig.map(f))
+
+      run(s).map { case (s, a) => (s, f(a)) }
+    }
+
   // def ap[B](f: SignalState[A => B]): SignalState[B]
-  // def flatMap[B](f: A => SignalState[B]): SignalState[B]
+
+  def flatMap[B](f: A => SignalState[S, B]): SignalState[S, B] =
+    SignalState { (s: S) =>
+      // val (ss, sig) = run(s)
+      // (ss, sig.map(a => f(a).run(ss)).flatMap(_._2))
+      val sig: Signal[(S, A)] = run(s)
+
+      val z: Signal[(S, B)] = sig.flatMap { case (ss, aa) => f(aa).run(ss) }
+      // val z: Signal[Signal[(S, B)]] = sig0.map(a => f(a).run(s0))
+
+      z
+
+      // val (s1, sig1) = sig0.flatMap(a => f(a).run(s0))
+      // // val (s1, v1) = f(v0).run(s0)
+      // (s1, sig1)
+      // ???
+    }
 
 }
 
 object SignalState {
 
   def fromSignal[S, A](signal: Signal[A]): SignalState[S, A] =
-    apply((s: S) => (s, signal))
+    apply((s: S) => signal.map(a => (s, a)))
 
   def fixed[S, A](a: A): SignalState[S, A] =
-    apply((s: S) => (s, Signal.fixed(a)))
+    apply((s: S) => Signal.fixed((s, a)))
 
-  def apply[S, A](f: S => (S, Signal[A])): SignalState[S, A] =
+  def apply[S, A](f: S => Signal[(S, A)]): SignalState[S, A] =
     new SignalState[S, A](f)
 
 }
