@@ -26,6 +26,24 @@ class SignalStateTests extends munit.FunSuite {
     )
   }
 
+  test("modify") {
+    val sig = SignalState((count: Int) => Signal.fixed(count + 1, "foo"))
+
+    assertEquals(sig.modify(_ * 10).get.run(10).at(Seconds.zero)._2, 110)
+  }
+
+  test("get") {
+    val sig = SignalState((count: Int) => Signal.fixed(count + 1, "foo"))
+
+    assertEquals(sig.get.run(1).at(Seconds.zero)._2, 2)
+  }
+
+  test("set") {
+    val sig = SignalState((count: Int) => Signal.fixed(count + 1, "foo"))
+
+    assertEquals(sig.set(200).get.run(0).at(Seconds.zero)._2, 200)
+  }
+
   test("map") {
     val signal =
       SignalState((name: String) => Signal.fixed((name, s"name: $name")))
