@@ -63,4 +63,28 @@ class SignalReaderTests extends munit.FunSuite {
     assertEquals(actual.toSignal(message).at(Seconds(1)), expected)
   }
 
+  test("merge") {
+    val a = SignalReader.fixed[Unit, Int](100)
+    val b = SignalReader.fixed[Unit, String]("hello")
+
+    val actual =
+      a.merge(b)(_.toString() + ", " + _).run(()).at(Seconds.zero)
+
+    val expected = "100, hello"
+
+    assertEquals(actual, expected)
+  }
+
+  test("combine") {
+    val a = SignalReader.fixed[Unit, Int](100)
+    val b = SignalReader.fixed[Unit, String]("hello")
+
+    val actual =
+      a.combine(b).run(()).at(Seconds.zero)
+
+    val expected =
+      (100, "hello")
+
+    assertEquals(actual, expected)
+  }
 }
