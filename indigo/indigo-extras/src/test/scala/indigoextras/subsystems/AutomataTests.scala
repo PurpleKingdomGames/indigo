@@ -8,7 +8,7 @@ import indigo.shared.assets.AssetName
 import indigo.shared.datatypes.Material
 import indigo.shared.time.Seconds
 import indigo.shared.scenegraph.SceneGraphNode
-import indigo.shared.temporal.Signal
+import indigo.shared.temporal.{Signal, SignalReader}
 import indigo.shared.collections.NonEmptyList
 
 class AutomataTests extends munit.FunSuite {
@@ -185,8 +185,8 @@ class AutomataTests extends munit.FunSuite {
             )
         }
 
-    val signal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
-      (seed, sceneGraphNode) =>
+    val signal: SignalReader[(AutomatonSeedValues, SceneGraphNode), AutomatonUpdate] =
+      SignalReader { (seed, sceneGraphNode) =>
         makePosition(seed).map { position =>
           AutomatonUpdate(
             sceneGraphNode match {
@@ -199,6 +199,7 @@ class AutomataTests extends munit.FunSuite {
             Nil
           )
         }
+      }
 
   }
 

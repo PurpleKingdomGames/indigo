@@ -15,7 +15,7 @@ import indigo.shared.datatypes.Point
 import indigo.shared.time.Seconds
 import indigo.shared.dice.Dice
 import indigo.shared.scenegraph.{SceneGraphNode, Renderable}
-import indigo.shared.temporal.Signal
+import indigo.shared.temporal.{Signal, SignalReader}
 import indigo.shared.scenegraph.Clone
 import indigo.shared.collections.NonEmptyList
 
@@ -169,7 +169,7 @@ object Automata {
   def renderNoLayer(pool: List[SpawnedAutomaton], gameTime: GameTime): AutomatonUpdate =
     AutomatonUpdate.sequence(
       pool.map { sa =>
-        sa.modifier(sa.seedValues, sa.sceneGraphNode).at(gameTime.running - sa.seedValues.createdAt)
+        sa.modifier.run((sa.seedValues, sa.sceneGraphNode)).at(gameTime.running - sa.seedValues.createdAt)
       }
     )
 
@@ -212,11 +212,11 @@ object AutomataPoolKey {
 final case class Automaton(
     node: AutomatonNode,
     lifespan: Seconds,
-    modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate],
+    modifier: SignalReader[(AutomatonSeedValues, SceneGraphNode), AutomatonUpdate],
     onCull: AutomatonSeedValues => List[GlobalEvent]
 ) {
 
-  def withModifier(newModifier: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate]): Automaton =
+  def withModifier(newModifier: SignalReader[(AutomatonSeedValues, SceneGraphNode), AutomatonUpdate]): Automaton =
     this.copy(modifier = newModifier)
 
   def withOnCullEvent(onCullEvent: AutomatonSeedValues => List[GlobalEvent]): Automaton =
@@ -225,8 +225,8 @@ final case class Automaton(
 
 object Automaton {
 
-  val NoModifySignal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
-    (sa, n) => {
+  val NoModifySignal: SignalReader[(AutomatonSeedValues, SceneGraphNode), AutomatonUpdate] =
+    SignalReader((sa, n) =>
       Signal.fixed(
         n match {
           case r: Renderable =>
@@ -239,7 +239,7 @@ object Automaton {
             AutomatonUpdate(n)
         }
       )
-    }
+    )
 
   val NoCullEvent: AutomatonSeedValues => List[GlobalEvent] =
     _ => Nil
@@ -306,7 +306,7 @@ final case class AutomatonSeedValues(
 
 final case class SpawnedAutomaton(
     sceneGraphNode: SceneGraphNode,
-    modifier: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate],
+    modifier: SignalReader[(AutomatonSeedValues, SceneGraphNode), AutomatonUpdate],
     onCull: AutomatonSeedValues => List[GlobalEvent],
     seedValues: AutomatonSeedValues
 ) {
