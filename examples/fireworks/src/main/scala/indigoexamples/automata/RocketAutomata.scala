@@ -37,18 +37,20 @@ object RocketAutomata {
 
   object ModifierFunctions {
 
-    def signal(toScreenSpace: Vertex => Point): (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
-      (sa, n) =>
-        (sa.payload, n) match {
-          case (Some(Rocket(_, moveSignal, _, tint)), r: Renderable) =>
-            for {
-              position <- moveSignal |> SignalFunction(toScreenSpace)
-              events   <- Projectiles.emitTrailEvents(position, tint, Millis(25).toSeconds)
-            } yield AutomatonUpdate(List(r.moveTo(position)), events)
+    def signal(toScreenSpace: Vertex => Point): SignalReader[(AutomatonSeedValues, SceneGraphNode), AutomatonUpdate] =
+      SignalReader {
+        case (sa, n) =>
+          (sa.payload, n) match {
+            case (Some(Rocket(_, moveSignal, _, tint)), r: Renderable) =>
+              for {
+                position <- moveSignal |> SignalFunction(toScreenSpace)
+                events   <- Projectiles.emitTrailEvents(position, tint, Millis(25).toSeconds)
+              } yield AutomatonUpdate(List(r.moveTo(position)), events)
 
-          case _ =>
-            Signal.fixed(AutomatonUpdate.empty)
-        }
+            case _ =>
+              Signal.fixed(AutomatonUpdate.empty)
+          }
+      }
 
   }
 }

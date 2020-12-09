@@ -39,15 +39,17 @@ object TrailAutomata {
         )
       }
 
-    val signal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
-      (sa, n) =>
-        (sa.payload, n) match {
-          case (Some(TrailParticle(_, t)), g: Graphic) =>
-            TrailParticle.fade(sa.lifeSpan) |> present(g, sa.spawnedAt, t)
+    val signal: SignalReader[(AutomatonSeedValues, SceneGraphNode), AutomatonUpdate] =
+      SignalReader {
+        case (sa, n) =>
+          (sa.payload, n) match {
+            case (Some(TrailParticle(_, t)), g: Graphic) =>
+              TrailParticle.fade(sa.lifeSpan) |> present(g, sa.spawnedAt, t)
 
-          case _ =>
-            Signal.fixed(AutomatonUpdate.empty)
-        }
+            case _ =>
+              Signal.fixed(AutomatonUpdate.empty)
+          }
+      }
 
   }
 

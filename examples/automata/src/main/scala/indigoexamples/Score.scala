@@ -63,28 +63,30 @@ object Score {
     val newTint: AutomatonSeedValues => Signal[RGBA] =
       seed => multiplierS(seed) |> tintSF
 
-    val signal: (AutomatonSeedValues, SceneGraphNode) => Signal[AutomatonUpdate] =
-      (seed, sceneGraphNode) =>
-        sceneGraphNode match {
-          case t: Text =>
-            seed.payload match {
-              case Some(ScoreAmount(score)) =>
-                Signal.triple(newPosition(seed), newAlpha(seed, t), newTint(seed)).map {
-                  case (position, alpha, tint) =>
-                    AutomatonUpdate(
-                      t.moveTo(position)
-                        .withAlpha(alpha)
-                        .withTint(tint)
-                        .withText(score)
-                    )
-                }
-              case _ =>
-                Signal.fixed(AutomatonUpdate(sceneGraphNode))
-            }
+    val signal: SignalReader[(AutomatonSeedValues, SceneGraphNode), AutomatonUpdate] =
+      SignalReader {
+        case (seed, sceneGraphNode) =>
+          sceneGraphNode match {
+            case t: Text =>
+              seed.payload match {
+                case Some(ScoreAmount(score)) =>
+                  Signal.triple(newPosition(seed), newAlpha(seed, t), newTint(seed)).map {
+                    case (position, alpha, tint) =>
+                      AutomatonUpdate(
+                        t.moveTo(position)
+                          .withAlpha(alpha)
+                          .withTint(tint)
+                          .withText(score)
+                      )
+                  }
+                case _ =>
+                  Signal.fixed(AutomatonUpdate(sceneGraphNode))
+              }
 
-          case _ =>
-            Signal.fixed(AutomatonUpdate.empty)
-        }
+            case _ =>
+              Signal.fixed(AutomatonUpdate.empty)
+          }
+      }
 
   }
 
