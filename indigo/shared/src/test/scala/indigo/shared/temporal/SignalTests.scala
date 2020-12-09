@@ -144,9 +144,11 @@ Where a thing moves in a circle for 2 seconds and then stops.
 
   test("Utils.Lerp (linear interpolation)") {
     // X
+    assertEquals(Signal.Lerp(Point(60, 10), Point(10, 10), Seconds(1)).at(Seconds(-0.5)), Point(60, 10))
     assertEquals(Signal.Lerp(Point(60, 10), Point(10, 10), Seconds(1)).at(Seconds(0.0)), Point(60, 10))
     assertEquals(Signal.Lerp(Point(60, 10), Point(10, 10), Seconds(1)).at(Seconds(0.5)), Point(35, 10))
     assertEquals(Signal.Lerp(Point(60, 10), Point(10, 10), Seconds(1)).at(Seconds(1.0)), Point(10, 10))
+    assertEquals(Signal.Lerp(Point(60, 10), Point(10, 10), Seconds(1)).at(Seconds(2.0)), Point(10, 10))
     // Y
     assertEquals(Signal.Lerp(Point(10, 10), Point(10, 60), Seconds(1)).at(Seconds(0.0)), Point(10, 10))
     assertEquals(Signal.Lerp(Point(10, 10), Point(10, 60), Seconds(1)).at(Seconds(0.5)), Point(10, 35))
@@ -163,6 +165,18 @@ Where a thing moves in a circle for 2 seconds and then stops.
     assertEquals(Signal.Lerp(Point(10, 10), Point(60, 60), Seconds(10)).at(Seconds(0.0)), Point(10, 10))
     assertEquals(Signal.Lerp(Point(10, 10), Point(60, 60), Seconds(10)).at(Seconds(5.0)), Point(35, 35))
     assertEquals(Signal.Lerp(Point(10, 10), Point(60, 60), Seconds(10)).at(Seconds(10.0)), Point(60, 60))
+  }
+
+  test("Utils.Linear") {
+    assertEquals(Signal.Linear(Seconds(1)).at(Seconds(-0.5)), 0.0)
+    assertEquals(Signal.Linear(Seconds(1)).at(Seconds(0.0)), 0.0)
+    assertEquals(Signal.Linear(Seconds(1)).at(Seconds(0.5)), 0.5)
+    assertEquals(Signal.Linear(Seconds(1)).at(Seconds(1.0)), 1.0)
+    assertEquals(Signal.Linear(Seconds(1)).at(Seconds(2.0)), 1.0)
+
+    assertEquals(Signal.Linear(Seconds(10)).at(Seconds(0.0)), 0.0)
+    assertEquals(Signal.Linear(Seconds(10)).at(Seconds(5.0)), 0.5)
+    assertEquals(Signal.Linear(Seconds(10)).at(Seconds(10.0)), 1.0)
   }
 
   test("Utils.SmoothPulse smoothly interpolates from 0 to 1") {
