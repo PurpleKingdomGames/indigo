@@ -55,6 +55,12 @@ package object indigo extends DataTypeAliases with SceneGraphTypeAliases with Ne
   type Signal[A] = shared.temporal.Signal[A]
   val Signal: shared.temporal.Signal.type = shared.temporal.Signal
 
+  type SignalReader[R, A] = shared.temporal.SignalReader[R, A]
+  val SignalReader: shared.temporal.SignalReader.type = shared.temporal.SignalReader
+
+  type SignalState[S, A] = shared.temporal.SignalState[S, A]
+  val SignalState: shared.temporal.SignalState.type = shared.temporal.SignalState
+
   type SignalFunction[A, B] = shared.temporal.SignalFunction[A, B]
   val SignalFunction: shared.temporal.SignalFunction.type = shared.temporal.SignalFunction
 
