@@ -109,7 +109,7 @@ object Signal {
         )
 
       Signal { t =>
-        val time   = t.toDouble / over.toDouble
+        val time   = Math.max(0.0d, Math.min(1.0d, t.toDouble / over.toDouble))
         val interp = linear(time, from.toVector, to.toVector).toPoint
 
         Point(
@@ -117,6 +117,12 @@ object Signal {
           y = if (from.y === to.y) from.y else interp.y
         )
       }
+    }
+
+  def Linear(over: Seconds): Signal[Double] =
+    Signal { t =>
+      val time = Math.max(0.0d, Math.min(1.0d, t.toDouble / over.toDouble))
+      (time - t.toDouble) * 0.0 + time * 1.0d
     }
 
   @inline private def easeInOut(t: Double): Double =
