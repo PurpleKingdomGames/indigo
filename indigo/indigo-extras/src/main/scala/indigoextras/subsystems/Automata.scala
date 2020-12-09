@@ -226,20 +226,21 @@ final case class Automaton(
 object Automaton {
 
   val NoModifySignal: SignalReader[(AutomatonSeedValues, SceneGraphNode), AutomatonUpdate] =
-    SignalReader((sa, n) =>
-      Signal.fixed(
-        n match {
-          case r: Renderable =>
-            AutomatonUpdate(r.moveTo(sa.spawnedAt))
+    SignalReader {
+      case (sa, n) =>
+        Signal.fixed(
+          n match {
+            case r: Renderable =>
+              AutomatonUpdate(r.moveTo(sa.spawnedAt))
 
-          case c: Clone =>
-            AutomatonUpdate(c.withTransforms(sa.spawnedAt, c.rotation, c.scale, c.alpha, c.flipHorizontal, c.flipVertical))
+            case c: Clone =>
+              AutomatonUpdate(c.withTransforms(sa.spawnedAt, c.rotation, c.scale, c.alpha, c.flipHorizontal, c.flipVertical))
 
-          case _ =>
-            AutomatonUpdate(n)
-        }
-      )
-    )
+            case _ =>
+              AutomatonUpdate(n)
+          }
+        )
+    }
 
   val NoCullEvent: AutomatonSeedValues => List[GlobalEvent] =
     _ => Nil

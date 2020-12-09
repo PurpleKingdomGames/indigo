@@ -186,7 +186,7 @@ class AutomataTests extends munit.FunSuite {
         }
 
     val signal: SignalReader[(AutomatonSeedValues, SceneGraphNode), AutomatonUpdate] =
-      SignalReader { (seed, sceneGraphNode) =>
+      SignalReader { case (seed, sceneGraphNode) =>
         makePosition(seed).map { position =>
           AutomatonUpdate(
             sceneGraphNode match {
