@@ -27,19 +27,19 @@ class SignalStateTests extends munit.FunSuite {
   }
 
   test("modify") {
-    val sig = SignalState((count: Int) => Signal.fixed(count + 1, "foo"))
+    val sig = SignalState((count: Int) => Signal.fixed((count + 1, "foo")))
 
     assertEquals(sig.modify(_ * 10).get.run(10).at(Seconds.zero)._2, 110)
   }
 
   test("get") {
-    val sig = SignalState((count: Int) => Signal.fixed(count + 1, "foo"))
+    val sig = SignalState((count: Int) => Signal.fixed((count + 1, "foo")))
 
     assertEquals(sig.get.run(1).at(Seconds.zero)._2, 2)
   }
 
   test("set") {
-    val sig = SignalState((count: Int) => Signal.fixed(count + 1, "foo"))
+    val sig = SignalState((count: Int) => Signal.fixed((count + 1, "foo")))
 
     assertEquals(sig.set(200).get.run(0).at(Seconds.zero)._2, 200)
   }
@@ -90,9 +90,9 @@ class SignalStateTests extends munit.FunSuite {
   }
 
   test("for comp") {
-    val a = SignalState((count: Int) => Signal.fixed(count + 1, "foo"))
-    val b = SignalState((count: Int) => Signal.fixed(count + 1, "bar"))
-    val c = SignalState((count: Int) => Signal.fixed(count + 1, "baz"))
+    val a = SignalState((count: Int) => Signal.fixed((count + 1, "foo")))
+    val b = SignalState((count: Int) => Signal.fixed((count + 1, "bar")))
+    val c = SignalState((count: Int) => Signal.fixed((count + 1, "baz")))
 
     val res =
       for {
@@ -112,8 +112,8 @@ class SignalStateTests extends munit.FunSuite {
   }
 
   test("merge") {
-    val a = SignalState((count: Int) => Signal.fixed(count + 1, "foo"))
-    val b = SignalState((count: Int) => Signal.fixed(count + 1, "bar"))
+    val a = SignalState((count: Int) => Signal.fixed((count + 1, "foo")))
+    val b = SignalState((count: Int) => Signal.fixed((count + 1, "bar")))
 
     val actual =
       a.merge(b)(_ + ", " + _).run(0).at(Seconds.zero)
@@ -125,8 +125,8 @@ class SignalStateTests extends munit.FunSuite {
   }
 
   test("combine") {
-    val a = SignalState((count: Int) => Signal.fixed(count + 1, "foo"))
-    val b = SignalState((count: Int) => Signal.fixed(count + 1, "bar"))
+    val a = SignalState((count: Int) => Signal.fixed((count + 1, "foo")))
+    val b = SignalState((count: Int) => Signal.fixed((count + 1, "bar")))
 
     val actual =
       a.combine(b).run(0).at(Seconds.zero)
@@ -145,7 +145,7 @@ class SignalStateTests extends munit.FunSuite {
       SignalFunction((str: String) => "[" + str + "]")
 
     val sig: SignalState[Int, Int] =
-      SignalState((count: Int) => Signal.fixed(count + 1, count + 5))
+      SignalState((count: Int) => Signal.fixed((count + 1, count + 5)))
 
     val actual =
       (sig |> sf1 >>> sf2).run(1).at(Seconds.zero)
