@@ -38,7 +38,7 @@ object RendererHelper {
     )
 
   def mat4ToJsArray(mat4d: Matrix4): scalajs.js.Array[Double] =
-    mat4d.mat.toJSArray
+    mat4d.toList.toJSArray
 
   val sortByDepth: mutable.ListBuffer[DisplayEntity] => mutable.ListBuffer[DisplayEntity] =
     _.sortWith((d1, d2) => d1.z > d2.z)
