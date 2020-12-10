@@ -20,7 +20,7 @@ You will need:
 
 - Mill
 - SBT
-- JDK 15 (Update: 1.8 works, 11 should be fine and is LTS, currently building against 15)
+- JDK (Update: 1.8 works, 11 should be fine too and is an LTS version)
 - [glslang validator](https://github.com/KhronosGroup/glslang) - can be installed with your favorite package manager.
 
 ### Running the build
@@ -33,7 +33,7 @@ bash build.sh
 
 > Windows users: Most of the things in the script mentioned above should work, but Indigo is not routinely built on Windows machines so we currently offer no guarantees or support. We hope to in the future.
 
-There is also another script which is faster since it doesn't build the examples, demos, or IndigoJS.
+There is also another script which is faster since it doesn't build the examples or demos.
 
 ```bash
 bash localpublish.sh
