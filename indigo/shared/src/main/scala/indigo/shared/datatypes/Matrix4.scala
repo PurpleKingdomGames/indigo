@@ -269,7 +269,7 @@ object Matrix4 {
 
   def multiply(a: Matrix4, b: Matrix4): Matrix4 = {
     val listA = a.mat
-    val ListB = b.mat
+    val listB = b.mat
 
     val a00 = listA(0 * 4 + 0)
     val a01 = listA(0 * 4 + 1)
@@ -288,22 +288,22 @@ object Matrix4 {
     val a32 = listA(3 * 4 + 2)
     val a33 = listA(3 * 4 + 3)
 
-    val b00 = ListB(0 * 4 + 0)
-    val b01 = ListB(0 * 4 + 1)
-    val b02 = ListB(0 * 4 + 2)
-    val b03 = ListB(0 * 4 + 3)
-    val b10 = ListB(1 * 4 + 0)
-    val b11 = ListB(1 * 4 + 1)
-    val b12 = ListB(1 * 4 + 2)
-    val b13 = ListB(1 * 4 + 3)
-    val b20 = ListB(2 * 4 + 0)
-    val b21 = ListB(2 * 4 + 1)
-    val b22 = ListB(2 * 4 + 2)
-    val b23 = ListB(2 * 4 + 3)
-    val b30 = ListB(3 * 4 + 0)
-    val b31 = ListB(3 * 4 + 1)
-    val b32 = ListB(3 * 4 + 2)
-    val b33 = ListB(3 * 4 + 3)
+    val b00 = listB(0 * 4 + 0)
+    val b01 = listB(0 * 4 + 1)
+    val b02 = listB(0 * 4 + 2)
+    val b03 = listB(0 * 4 + 3)
+    val b10 = listB(1 * 4 + 0)
+    val b11 = listB(1 * 4 + 1)
+    val b12 = listB(1 * 4 + 2)
+    val b13 = listB(1 * 4 + 3)
+    val b20 = listB(2 * 4 + 0)
+    val b21 = listB(2 * 4 + 1)
+    val b22 = listB(2 * 4 + 2)
+    val b23 = listB(2 * 4 + 3)
+    val b30 = listB(3 * 4 + 0)
+    val b31 = listB(3 * 4 + 1)
+    val b32 = listB(3 * 4 + 2)
+    val b33 = listB(3 * 4 + 3)
 
     Matrix4(
       a00 * b00 + a01 * b10 + a02 * b20 + a03 * b30,

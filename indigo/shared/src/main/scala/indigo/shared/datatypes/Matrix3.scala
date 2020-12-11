@@ -132,7 +132,7 @@ object Matrix3 {
 
   def multiply(a: Matrix3, b: Matrix3): Matrix3 = {
     val listA = a.mat
-    val ListB = b.mat
+    val listB = b.mat
 
     val a00 = listA(0 * 3 + 0)
     val a01 = listA(0 * 3 + 1)
@@ -144,15 +144,15 @@ object Matrix3 {
     val a21 = listA(2 * 3 + 1)
     val a22 = listA(2 * 3 + 2)
 
-    val b00 = ListB(0 * 3 + 0)
-    val b01 = ListB(0 * 3 + 1)
-    val b02 = ListB(0 * 3 + 2)
-    val b10 = ListB(1 * 3 + 0)
-    val b11 = ListB(1 * 3 + 1)
-    val b12 = ListB(1 * 3 + 2)
-    val b20 = ListB(2 * 3 + 0)
-    val b21 = ListB(2 * 3 + 1)
-    val b22 = ListB(2 * 3 + 2)
+    val b00 = listB(0 * 3 + 0)
+    val b01 = listB(0 * 3 + 1)
+    val b02 = listB(0 * 3 + 2)
+    val b10 = listB(1 * 3 + 0)
+    val b11 = listB(1 * 3 + 1)
+    val b12 = listB(1 * 3 + 2)
+    val b20 = listB(2 * 3 + 0)
+    val b21 = listB(2 * 3 + 1)
+    val b22 = listB(2 * 3 + 2)
 
     Matrix3(
       a00 * b00 + a01 * b10 + a02 * b20,
