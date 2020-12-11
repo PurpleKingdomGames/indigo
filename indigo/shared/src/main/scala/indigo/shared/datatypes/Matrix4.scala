@@ -2,7 +2,7 @@ package indigo.shared.datatypes
 
 import indigo.shared.EqualTo
 
-final case class Matrix4(mat: List[Double]) {
+final case class Matrix4(private val mat: List[Double]) {
 
   def row1: List[Double] = List(mat(0), mat(1), mat(2), mat(3))
   def row2: List[Double] = List(mat(4), mat(5), mat(6), mat(7))
@@ -35,6 +35,8 @@ final case class Matrix4(mat: List[Double]) {
   def flip(horizontal: Boolean, vertical: Boolean): Matrix4 =
     this * Matrix4.flip(horizontal, vertical)
 
+  def toList: List[Double] =
+    mat
 }
 
 object Matrix4 {
@@ -47,18 +49,20 @@ object Matrix4 {
     }
   }
 
-  def identity: Matrix4 =
+  val identity: Matrix4 =
     Matrix4(
-      mat = List(
-        1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
-      )
+      (1, 0, 0, 0),
+      (0, 1, 0, 0),
+      (0, 0, 1, 0),
+      (0, 0, 0, 1)
     )
 
-  def one: Matrix4 =
+  val one: Matrix4 =
     Matrix4(
-      mat = List(
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-      )
+      (1, 1, 1, 1),
+      (1, 1, 1, 1),
+      (1, 1, 1, 1),
+      (1, 1, 1, 1)
     )
 
   /**
@@ -66,46 +70,42 @@ object Matrix4 {
     */
   def projection(width: Double, height: Double, depth: Double): Matrix4 =
     Matrix4(
-      List(
-        2 / width,
-        0,
-        0,
-        0,
-        0,
-        2 / height,
-        0,
-        0,
-        0,
-        0,
-        2 / depth,
-        0,
-        0,
-        0,
-        0,
-        1
-      )
+      2 / width,
+      0,
+      0,
+      0,
+      0,
+      2 / height,
+      0,
+      0,
+      0,
+      0,
+      2 / depth,
+      0,
+      0,
+      0,
+      0,
+      1
     )
 
   def orthographic(left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double): Matrix4 =
     Matrix4(
-      List(
-        2 / (right - left),
-        0,
-        0,
-        0,
-        0,
-        2 / (top - bottom),
-        0,
-        0,
-        0,
-        0,
-        2 / (near - far),
-        0,
-        (left + right) / (left - right),
-        (bottom + top) / (bottom - top),
-        (near + far) / (near - far),
-        1
-      )
+      2 / (right - left),
+      0,
+      0,
+      0,
+      0,
+      2 / (top - bottom),
+      0,
+      0,
+      0,
+      0,
+      2 / (near - far),
+      0,
+      (left + right) / (left - right),
+      (bottom + top) / (bottom - top),
+      (near + far) / (near - far),
+      1
     )
 
   def orthographic(width: Double, height: Double): Matrix4 =
@@ -116,47 +116,43 @@ object Matrix4 {
     val s = Math.sin(r)
 
     Matrix4(
-      List(
-        sx * c,
-        s,
-        0,
-        0,
-        -s,
-        sy * c,
-        0,
-        0,
-        0,
-        0,
-        1,
-        0,
-        tx,
-        ty,
-        0,
-        1
-      )
+      sx * c,
+      s,
+      0,
+      0,
+      -s,
+      sy * c,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      tx,
+      ty,
+      0,
+      1
     )
   }
 
   def translation(tx: Double, ty: Double, tz: Double): Matrix4 =
     Matrix4(
-      List(
-        1,
-        0,
-        0,
-        0,
-        0,
-        1,
-        0,
-        0,
-        0,
-        0,
-        1,
-        0,
-        tx,
-        ty,
-        tz,
-        1
-      )
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      tx,
+      ty,
+      tz,
+      1
     )
 
   def xRotation(angleInRadians: Double): Matrix4 = {
@@ -164,24 +160,22 @@ object Matrix4 {
     val s = Math.sin(angleInRadians)
 
     Matrix4(
-      List(
-        1,
-        0,
-        0,
-        0,
-        0,
-        c,
-        s,
-        0,
-        0,
-        -s,
-        c,
-        0,
-        0,
-        0,
-        0,
-        1
-      )
+      1,
+      0,
+      0,
+      0,
+      0,
+      c,
+      s,
+      0,
+      0,
+      -s,
+      c,
+      0,
+      0,
+      0,
+      0,
+      1
     )
   }
 
@@ -190,24 +184,22 @@ object Matrix4 {
     val s = Math.sin(angleInRadians)
 
     Matrix4(
-      List(
-        c,
-        0,
-        -s,
-        0,
-        0,
-        1,
-        0,
-        0,
-        s,
-        0,
-        c,
-        0,
-        0,
-        0,
-        0,
-        1
-      )
+      c,
+      0,
+      -s,
+      0,
+      0,
+      1,
+      0,
+      0,
+      s,
+      0,
+      c,
+      0,
+      0,
+      0,
+      0,
+      1
     )
   }
 
@@ -216,74 +208,68 @@ object Matrix4 {
     val s = Math.sin(angleInRadians)
 
     Matrix4(
-      List(
-        c,
-        s,
-        0,
-        0,
-        -s,
-        c,
-        0,
-        0,
-        0,
-        0,
-        1,
-        0,
-        0,
-        0,
-        0,
-        1
-      )
+      c,
+      s,
+      0,
+      0,
+      -s,
+      c,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
     )
   }
 
   def scale(sx: Double, sy: Double, sz: Double): Matrix4 =
     Matrix4(
-      List(
-        sx,
-        0,
-        0,
-        0,
-        0,
-        sy,
-        0,
-        0,
-        0,
-        0,
-        sz,
-        0,
-        0,
-        0,
-        0,
-        1
-      )
+      sx,
+      0,
+      0,
+      0,
+      0,
+      sy,
+      0,
+      0,
+      0,
+      0,
+      sz,
+      0,
+      0,
+      0,
+      0,
+      1
     )
 
   def translateAndScale(tx: Double, ty: Double, tz: Double, sx: Double, sy: Double, sz: Double): Matrix4 =
     Matrix4(
-      List(
-        sx,
-        0,
-        0,
-        0,
-        0,
-        sy,
-        0,
-        0,
-        0,
-        0,
-        sz,
-        0,
-        tx,
-        ty,
-        tz,
-        1
-      )
+      sx,
+      0,
+      0,
+      0,
+      0,
+      sy,
+      0,
+      0,
+      0,
+      0,
+      sz,
+      0,
+      tx,
+      ty,
+      tz,
+      1
     )
 
   def multiply(a: Matrix4, b: Matrix4): Matrix4 = {
     val listA = a.mat
-    val ListB = b.mat
+    val listB = b.mat
 
     val a00 = listA(0 * 4 + 0)
     val a01 = listA(0 * 4 + 1)
@@ -302,66 +288,62 @@ object Matrix4 {
     val a32 = listA(3 * 4 + 2)
     val a33 = listA(3 * 4 + 3)
 
-    val b00 = ListB(0 * 4 + 0)
-    val b01 = ListB(0 * 4 + 1)
-    val b02 = ListB(0 * 4 + 2)
-    val b03 = ListB(0 * 4 + 3)
-    val b10 = ListB(1 * 4 + 0)
-    val b11 = ListB(1 * 4 + 1)
-    val b12 = ListB(1 * 4 + 2)
-    val b13 = ListB(1 * 4 + 3)
-    val b20 = ListB(2 * 4 + 0)
-    val b21 = ListB(2 * 4 + 1)
-    val b22 = ListB(2 * 4 + 2)
-    val b23 = ListB(2 * 4 + 3)
-    val b30 = ListB(3 * 4 + 0)
-    val b31 = ListB(3 * 4 + 1)
-    val b32 = ListB(3 * 4 + 2)
-    val b33 = ListB(3 * 4 + 3)
+    val b00 = listB(0 * 4 + 0)
+    val b01 = listB(0 * 4 + 1)
+    val b02 = listB(0 * 4 + 2)
+    val b03 = listB(0 * 4 + 3)
+    val b10 = listB(1 * 4 + 0)
+    val b11 = listB(1 * 4 + 1)
+    val b12 = listB(1 * 4 + 2)
+    val b13 = listB(1 * 4 + 3)
+    val b20 = listB(2 * 4 + 0)
+    val b21 = listB(2 * 4 + 1)
+    val b22 = listB(2 * 4 + 2)
+    val b23 = listB(2 * 4 + 3)
+    val b30 = listB(3 * 4 + 0)
+    val b31 = listB(3 * 4 + 1)
+    val b32 = listB(3 * 4 + 2)
+    val b33 = listB(3 * 4 + 3)
 
     Matrix4(
-      List(
-        a00 * b00 + a01 * b10 + a02 * b20 + a03 * b30,
-        a00 * b01 + a01 * b11 + a02 * b21 + a03 * b31,
-        a00 * b02 + a01 * b12 + a02 * b22 + a03 * b32,
-        a00 * b03 + a01 * b13 + a02 * b23 + a03 * b33,
-        a10 * b00 + a11 * b10 + a12 * b20 + a13 * b30,
-        a10 * b01 + a11 * b11 + a12 * b21 + a13 * b31,
-        a10 * b02 + a11 * b12 + a12 * b22 + a13 * b32,
-        a10 * b03 + a11 * b13 + a12 * b23 + a13 * b33,
-        a20 * b00 + a21 * b10 + a22 * b20 + a23 * b30,
-        a20 * b01 + a21 * b11 + a22 * b21 + a23 * b31,
-        a20 * b02 + a21 * b12 + a22 * b22 + a23 * b32,
-        a20 * b03 + a21 * b13 + a22 * b23 + a23 * b33,
-        a30 * b00 + a31 * b10 + a32 * b20 + a33 * b30,
-        a30 * b01 + a31 * b11 + a32 * b21 + a33 * b31,
-        a30 * b02 + a31 * b12 + a32 * b22 + a33 * b32,
-        a30 * b03 + a31 * b13 + a32 * b23 + a33 * b33
-      )
+      a00 * b00 + a01 * b10 + a02 * b20 + a03 * b30,
+      a00 * b01 + a01 * b11 + a02 * b21 + a03 * b31,
+      a00 * b02 + a01 * b12 + a02 * b22 + a03 * b32,
+      a00 * b03 + a01 * b13 + a02 * b23 + a03 * b33,
+      a10 * b00 + a11 * b10 + a12 * b20 + a13 * b30,
+      a10 * b01 + a11 * b11 + a12 * b21 + a13 * b31,
+      a10 * b02 + a11 * b12 + a12 * b22 + a13 * b32,
+      a10 * b03 + a11 * b13 + a12 * b23 + a13 * b33,
+      a20 * b00 + a21 * b10 + a22 * b20 + a23 * b30,
+      a20 * b01 + a21 * b11 + a22 * b21 + a23 * b31,
+      a20 * b02 + a21 * b12 + a22 * b22 + a23 * b32,
+      a20 * b03 + a21 * b13 + a22 * b23 + a23 * b33,
+      a30 * b00 + a31 * b10 + a32 * b20 + a33 * b30,
+      a30 * b01 + a31 * b11 + a32 * b21 + a33 * b31,
+      a30 * b02 + a31 * b12 + a32 * b22 + a33 * b32,
+      a30 * b03 + a31 * b13 + a32 * b23 + a33 * b33
     )
   }
 
   def transpose(matrix4: Matrix4): Matrix4 = {
     val m = matrix4.mat
     Matrix4(
-      mat = List(
-        m(0),
-        m(4),
-        m(8),
-        m(12),
-        m(1),
-        m(5),
-        m(9),
-        m(13),
-        m(2),
-        m(6),
-        m(10),
-        m(14),
-        m(3),
-        m(7),
-        m(11),
-        m(15)
-      )
+      m(0),
+      m(4),
+      m(8),
+      m(12),
+      m(1),
+      m(5),
+      m(9),
+      m(13),
+      m(2),
+      m(6),
+      m(10),
+      m(14),
+      m(3),
+      m(7),
+      m(11),
+      m(15)
     )
   }
 
@@ -375,4 +357,55 @@ object Matrix4 {
 
   def apply(): Matrix4 = identity
 
+  def apply(
+      row0: (Double, Double, Double, Double),
+      row1: (Double, Double, Double, Double),
+      row2: (Double, Double, Double, Double),
+      row3: (Double, Double, Double, Double)
+  ): Matrix4 =
+    Matrix4(
+      List(row0._1, row0._2, row0._3, row0._4) ++
+        List(row1._1, row1._2, row1._3, row1._4) ++
+        List(row2._1, row2._2, row2._3, row2._4) ++
+        List(row3._1, row3._2, row3._3, row3._4)
+    )
+
+  def apply(
+      a1: Double,
+      a2: Double,
+      a3: Double,
+      a4: Double,
+      b1: Double,
+      b2: Double,
+      b3: Double,
+      b4: Double,
+      c1: Double,
+      c2: Double,
+      c3: Double,
+      c4: Double,
+      d1: Double,
+      d2: Double,
+      d3: Double,
+      d4: Double
+  ): Matrix4 =
+    Matrix4(
+      List(
+        a1,
+        a2,
+        a3,
+        a4,
+        b1,
+        b2,
+        b3,
+        b4,
+        c1,
+        c2,
+        c3,
+        c4,
+        d1,
+        d2,
+        d3,
+        d4
+      )
+    )
 }
