@@ -1,6 +1,5 @@
 package indigo.shared.display
 
-import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Matrix3
 
 class Matrix3Tests extends munit.FunSuite {

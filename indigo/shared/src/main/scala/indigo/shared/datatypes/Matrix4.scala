@@ -35,7 +35,7 @@ final case class Matrix4(private val mat: List[Double]) {
   def flip(horizontal: Boolean, vertical: Boolean): Matrix4 =
     this * Matrix4.flip(horizontal, vertical)
 
-  def toList[Double] =
+  def toList: List[Double] =
     mat
 }
 
