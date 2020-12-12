@@ -22,3 +22,7 @@ final case class Flip(horizontal: Boolean, vertical: Boolean) {
       case (true, true)   => "11"
     }
 }
+object Flip {
+  val default: Flip =
+    Flip(false, false)
+}

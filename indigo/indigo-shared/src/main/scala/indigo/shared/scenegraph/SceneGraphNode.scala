@@ -13,11 +13,19 @@ import indigo.shared.BoundaryLocator
   * The parent type of anything that can affect the visual representation of the game.
   */
 sealed trait SceneGraphNode extends Product with Serializable {
-  val depth: Depth
-  def x: Int
-  def y: Int
+  def position: Point
   def rotation: Radians
   def scale: Vector2
+  val depth: Depth
+  def ref: Point
+  def flip: Flip
+
+  def withPosition(newPosition: Point): SceneGraphNode
+  def withRotation(newRotation: Radians): SceneGraphNode
+  def withScale(newScale: Vector2): SceneGraphNode
+  def withDepth(newDepth: Depth): SceneGraphNode
+  def withRef(newRef: Point): SceneGraphNode
+  def withFlip(newFlip: Flip): SceneGraphNode
 }
 object SceneGraphNode {
   def empty: Group = Group.empty
@@ -28,12 +36,15 @@ object SceneGraphNode {
   */
 sealed trait SceneGraphNodePrimitive extends SceneGraphNode {
   def bounds(locator: BoundaryLocator): Rectangle
-  def ref: Point
 
-  def withDepth(depth: Depth): SceneGraphNodePrimitive
-  def withRef(newRef: Point): SceneGraphNodePrimitive
+  override def withPosition(newPosition: Point): SceneGraphNodePrimitive
+  override def withRotation(newRotation: Radians): SceneGraphNodePrimitive
+  override def withScale(newScale: Vector2): SceneGraphNodePrimitive
+  override def withDepth(newDepth: Depth): SceneGraphNodePrimitive
+  override def withRef(newRef: Point): SceneGraphNodePrimitive
+  override def withFlip(newFlip: Flip): SceneGraphNodePrimitive
+
   def withRef(x: Int, y: Int): SceneGraphNodePrimitive
-
   def moveTo(pt: Point): SceneGraphNodePrimitive
   def moveTo(x: Int, y: Int): SceneGraphNodePrimitive
   def moveBy(pt: Point): SceneGraphNodePrimitive
@@ -44,6 +55,8 @@ sealed trait SceneGraphNodePrimitive extends SceneGraphNode {
   def scaleBy(x: Double, y: Double): SceneGraphNodePrimitive
   def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): SceneGraphNodePrimitive
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): SceneGraphNodePrimitive
+  def flipHorizontal(isFlipped: Boolean): SceneGraphNodePrimitive
+  def flipVertical(isFlipped: Boolean): SceneGraphNodePrimitive
 }
 
 /**
@@ -55,10 +68,10 @@ sealed trait SceneGraphNodePrimitive extends SceneGraphNode {
   * @param depth
   * @param children
   */
-final case class Group(positionOffset: Point, rotation: Radians, scale: Vector2, depth: Depth, ref: Point, children: List[SceneGraphNodePrimitive]) extends SceneGraphNodePrimitive {
+final case class Group(children: List[SceneGraphNodePrimitive], position: Point, rotation: Radians, scale: Vector2, depth: Depth, ref: Point, flip: Flip) extends SceneGraphNodePrimitive {
 
-  lazy val x: Int = positionOffset.x
-  lazy val y: Int = positionOffset.y
+  lazy val x: Int = position.x
+  lazy val y: Int = position.y
 
   def withDepth(newDepth: Depth): Group =
     this.copy(depth = newDepth)
@@ -69,12 +82,14 @@ final case class Group(positionOffset: Point, rotation: Radians, scale: Vector2,
     withRef(Point(x, y))
 
   def moveTo(pt: Point): Group =
-    this.copy(positionOffset = pt)
+    this.copy(position = pt)
   def moveTo(x: Int, y: Int): Group =
     moveTo(Point(x, y))
+  def withPosition(newPosition: Point): Group =
+    moveTo(newPosition)
 
   def moveBy(pt: Point): Group =
-    moveTo(positionOffset + pt)
+    moveTo(position + pt)
   def moveBy(x: Int, y: Int): Group =
     moveBy(Point(x, y))
 
@@ -82,17 +97,28 @@ final case class Group(positionOffset: Point, rotation: Radians, scale: Vector2,
     this.copy(rotation = angle)
   def rotateBy(angle: Radians): Group =
     rotateTo(rotation + angle)
+  def withRotation(newRotation: Radians): Group =
+    rotateTo(newRotation)
 
   def scaleBy(x: Double, y: Double): Group =
     scaleBy(Vector2(x, y))
   def scaleBy(amount: Vector2): Group =
     this.copy(scale = scale * amount)
+  def withScale(newScale: Vector2): Group =
+    this.copy(scale = newScale)
+
+  def flipHorizontal(isFlipped: Boolean): Group =
+    this.copy(flip = flip.withHorizontalFlip(isFlipped))
+  def flipVertical(isFlipped: Boolean): Group =
+    this.copy(flip = flip.withVerticalFlip(isFlipped))
+  def withFlip(newFlip: Flip): Group =
+    this.copy(flip = newFlip)
 
   def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Group =
-    this.copy(positionOffset = newPosition, rotation = newRotation, scale = newScale)
+    this.copy(position = newPosition, rotation = newRotation, scale = newScale)
 
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Group =
-    transformTo(positionOffset + positionDiff, rotation + rotationDiff, scale * scaleDiff)
+    transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
   def bounds(locator: BoundaryLocator): Rectangle =
     children match {
@@ -115,14 +141,11 @@ final case class Group(positionOffset: Point, rotation: Radians, scale: Vector2,
 
 object Group {
 
-  def apply(positionOffset: Point, rotation: Radians, scale: Vector2, depth: Depth, ref: Point, children: SceneGraphNodePrimitive*): Group =
-    Group(positionOffset, rotation, scale, depth, ref, children.toList)
-
   def apply(children: SceneGraphNodePrimitive*): Group =
-    Group(Point.zero, Radians.zero, Vector2.one, Depth.Zero, Point.zero, children.toList)
+    Group(children.toList, Point.zero, Radians.zero, Vector2.one, Depth.Zero, Point.zero, Flip.default)
 
   def apply(children: List[SceneGraphNodePrimitive]): Group =
-    Group(Point.zero, Radians.zero, Vector2.one, Depth.Zero, Point.zero, children)
+    Group(children, Point.zero, Radians.zero, Vector2.one, Depth.Zero, Point.zero, Flip.default)
 
   def empty: Group =
     apply(Nil)
@@ -207,11 +230,18 @@ final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
   lazy val flipHorizontal: Boolean = transform.flipHorizontal
   lazy val flipVertical: Boolean   = transform.flipVertical
 
+  def position: Point = Point(transform.position.x, transform.position.y)
+  def ref: Point      = Point.zero
+  def flip: Flip      = Flip(transform.flipHorizontal, transform.flipVertical)
+
   def withCloneId(newCloneId: CloneId): Clone =
     this.copy(id = newCloneId)
 
   def withDepth(newDepth: Depth): Clone =
     this.copy(depth = newDepth)
+
+  def withRef(newRef: Point): Clone =
+    this
 
   def withTransforms(newPosition: Point, newRotation: Radians, newScale: Vector2, alpha: Double, flipHorizontal: Boolean, flipVertical: Boolean): Clone =
     this.copy(transform = CloneTransformData(newPosition, newRotation, newScale, alpha, flipHorizontal, flipVertical))
@@ -233,6 +263,13 @@ final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
 
   def withVerticalFlip(isFlipped: Boolean): Clone =
     this.copy(transform = transform.withVerticalFlip(isFlipped))
+
+  def withFlip(newFlip: Flip): Clone =
+    this.copy(
+      transform = transform
+        .withVerticalFlip(newFlip.vertical)
+        .withHorizontalFlip(newFlip.horizontal)
+    )
 }
 
 /**
@@ -253,11 +290,18 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
   lazy val flipHorizontal: Boolean = transform.flipHorizontal
   lazy val flipVertical: Boolean   = transform.flipVertical
 
+  def position: Point = Point(transform.position.x, transform.position.y)
+  def ref: Point      = Point.zero
+  def flip: Flip      = Flip(transform.flipHorizontal, transform.flipVertical)
+
   def withCloneId(newCloneId: CloneId): CloneBatch =
     this.copy(id = newCloneId)
 
   def withDepth(newDepth: Depth): CloneBatch =
     this.copy(depth = newDepth)
+
+  def withRef(newRef: Point): CloneBatch =
+    this
 
   def withTransforms(newPosition: Point, newRotation: Radians, newScale: Vector2, alpha: Double, flipHorizontal: Boolean, flipVertical: Boolean): CloneBatch =
     this.copy(transform = CloneTransformData(newPosition, newRotation, newScale, alpha, flipHorizontal, flipVertical))
@@ -279,6 +323,13 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
 
   def withVerticalFlip(isFlipped: Boolean): CloneBatch =
     this.copy(transform = transform.withVerticalFlip(isFlipped))
+
+  def withFlip(newFlip: Flip): CloneBatch =
+    this.copy(
+      transform = transform
+        .withVerticalFlip(newFlip.vertical)
+        .withHorizontalFlip(newFlip.horizontal)
+    )
 
   def withClones(newClones: List[CloneTransformData]): CloneBatch =
     this.copy(clones = newClones)
@@ -309,20 +360,27 @@ sealed trait Renderable extends SceneGraphNodePrimitive {
   def withBorder(newBorder: Border): Renderable
   def withGlow(newGlow: Glow): Renderable
   def withAlpha(a: Double): Renderable
-  def flipHorizontal(h: Boolean): Renderable
-  def flipVertical(v: Boolean): Renderable
 
-  override def withDepth(depth: Depth): Renderable
+  override def withPosition(newPosition: Point): Renderable
+  override def withRotation(newRotation: Radians): Renderable
+  override def withScale(newScale: Vector2): Renderable
+  override def withDepth(newDepth: Depth): Renderable
+  override def withRef(newRef: Point): Renderable
+  override def withFlip(newFlip: Flip): Renderable
+
+  override def withRef(x: Int, y: Int): Renderable
   override def moveTo(pt: Point): Renderable
   override def moveTo(x: Int, y: Int): Renderable
   override def moveBy(pt: Point): Renderable
   override def moveBy(x: Int, y: Int): Renderable
-  def rotateTo(angle: Radians): Renderable
-  def rotateBy(angle: Radians): Renderable
-  def scaleBy(amount: Vector2): Renderable
-  def scaleBy(x: Double, y: Double): Renderable
-  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): SceneGraphNodePrimitive
-  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): SceneGraphNodePrimitive
+  override def rotateTo(angle: Radians): Renderable
+  override def rotateBy(angle: Radians): Renderable
+  override def scaleBy(amount: Vector2): Renderable
+  override def scaleBy(x: Double, y: Double): Renderable
+  override def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Renderable
+  override def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Renderable
+  override def flipHorizontal(h: Boolean): Renderable
+  override def flipVertical(v: Boolean): Renderable
 
 }
 
@@ -339,23 +397,25 @@ sealed trait EventHandling {
   * Graphics party trick is it's ability to crop images.
   *
   * @param position
-  * @param depth
   * @param rotation
   * @param scale
+  * @param depth
   * @param ref
+  * @param flip
   * @param crop
   * @param effects
   * @param material
   */
 final case class Graphic(
-    position: Point,
-    depth: Depth,
-    rotation: Radians,
-    scale: Vector2,
-    ref: Point,
+    material: Material,
     crop: Rectangle,
     effects: Effects,
-    material: Material
+    position: Point,
+    rotation: Radians,
+    scale: Vector2,
+    depth: Depth,
+    ref: Point,
+    flip: Flip
 ) extends Renderable
     with Cloneable {
 
@@ -375,6 +435,8 @@ final case class Graphic(
     this.copy(position = pt)
   def moveTo(x: Int, y: Int): Graphic =
     moveTo(Point(x, y))
+  def withPosition(newPosition: Point): Graphic =
+    moveTo(newPosition)
 
   def moveBy(pt: Point): Graphic =
     this.copy(position = position + pt)
@@ -385,11 +447,15 @@ final case class Graphic(
     this.copy(rotation = angle)
   def rotateBy(angle: Radians): Graphic =
     rotateTo(rotation + angle)
+  def withRotation(newRotation: Radians): Graphic =
+    rotateTo(newRotation)
 
   def scaleBy(amount: Vector2): Graphic =
     this.copy(scale = scale * amount)
   def scaleBy(x: Double, y: Double): Graphic =
     scaleBy(Vector2(x, y))
+  def withScale(newScale: Vector2): Graphic =
+    this.copy(scale = newScale)
 
   def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Graphic =
     this.copy(position = newPosition, rotation = newRotation, scale = newScale)
@@ -422,10 +488,11 @@ final case class Graphic(
     this.copy(effects = effects.withGlow(newGlow))
 
   def flipHorizontal(isFlipped: Boolean): Graphic =
-    this.copy(effects = effects.withHorizontalFlip(isFlipped))
-
+    this.copy(flip = flip.withHorizontalFlip(isFlipped))
   def flipVertical(isFlipped: Boolean): Graphic =
-    this.copy(effects = effects.withVerticalFlip(isFlipped))
+    this.copy(flip = flip.withVerticalFlip(isFlipped))
+  def withFlip(newFlip: Flip): Graphic =
+    this.copy(flip = newFlip)
 
   def withRef(newRef: Point): Graphic =
     this.copy(ref = newRef)
@@ -446,10 +513,11 @@ object Graphic {
   def apply(x: Int, y: Int, width: Int, height: Int, depth: Int, material: Material): Graphic =
     Graphic(
       position = Point(x, y),
-      depth = Depth(depth),
       rotation = Radians.zero,
       scale = Vector2.one,
+      depth = Depth(depth),
       ref = Point.zero,
+      flip = Flip.default,
       crop = Rectangle(0, 0, width, height),
       effects = Effects.default,
       material = material
@@ -458,11 +526,25 @@ object Graphic {
   def apply(bounds: Rectangle, depth: Int, material: Material): Graphic =
     Graphic(
       position = bounds.position,
-      depth = Depth(depth),
       rotation = Radians.zero,
       scale = Vector2.one,
+      depth = Depth(depth),
       ref = Point.zero,
+      flip = Flip.default,
       crop = bounds,
+      effects = Effects.default,
+      material = material
+    )
+
+  def apply(width: Int, height: Int, material: Material): Graphic =
+    Graphic(
+      position = Point.zero,
+      rotation = Radians.zero,
+      scale = Vector2.one,
+      depth = Depth(1),
+      ref = Point.zero,
+      flip = Flip.default,
+      crop = Rectangle(0, 0, width, height),
       effects = Effects.default,
       material = material
     )
@@ -471,28 +553,30 @@ object Graphic {
 /**
   * Sprites are used to represented key-frame animated screen elements.
   *
-  * @param bindingKey
   * @param position
-  * @param depth
   * @param rotation
   * @param scale
-  * @param animationKey
+  * @param depth
   * @param ref
+  * @param flip
+  * @param bindingKey
+  * @param animationKey
   * @param effects
   * @param eventHandler
   * @param animationActions
   */
 final case class Sprite(
     bindingKey: BindingKey,
+    animationKey: AnimationKey,
+    animationActions: List[AnimationAction],
+    eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
+    effects: Effects,
     position: Point,
-    depth: Depth,
     rotation: Radians,
     scale: Vector2,
-    animationKey: AnimationKey,
+    depth: Depth,
     ref: Point,
-    effects: Effects,
-    eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
-    animationActions: List[AnimationAction]
+    flip: Flip
 ) extends Renderable
     with EventHandling
     with Cloneable {
@@ -510,6 +594,8 @@ final case class Sprite(
     this.copy(position = pt)
   def moveTo(x: Int, y: Int): Sprite =
     moveTo(Point(x, y))
+  def withPosition(newPosition: Point): Sprite =
+    moveTo(newPosition)
 
   def moveBy(pt: Point): Sprite =
     this.copy(position = position + pt)
@@ -520,11 +606,15 @@ final case class Sprite(
     this.copy(rotation = angle)
   def rotateBy(angle: Radians): Sprite =
     rotateTo(rotation + angle)
+  def withRotation(newRotation: Radians): Sprite =
+    rotateTo(newRotation)
 
   def scaleBy(amount: Vector2): Sprite =
     this.copy(scale = scale * amount)
   def scaleBy(x: Double, y: Double): Sprite =
     scaleBy(Vector2(x, y))
+  def withScale(newScale: Vector2): Sprite =
+    this.copy(scale = newScale)
 
   def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Sprite =
     this.copy(position = newPosition, rotation = newRotation, scale = newScale)
@@ -557,10 +647,11 @@ final case class Sprite(
     this.copy(effects = effects.withGlow(newGlow))
 
   def flipHorizontal(isFlipped: Boolean): Sprite =
-    this.copy(effects = effects.withHorizontalFlip(isFlipped))
-
+    this.copy(flip = flip.withHorizontalFlip(isFlipped))
   def flipVertical(isFlipped: Boolean): Sprite =
-    this.copy(effects = effects.withVerticalFlip(isFlipped))
+    this.copy(flip = flip.withVerticalFlip(isFlipped))
+  def withFlip(newFlip: Flip): Sprite =
+    this.copy(flip = newFlip)
 
   def withRef(newRef: Point): Sprite =
     this.copy(ref = newRef)
@@ -596,15 +687,17 @@ final case class Sprite(
 object Sprite {
   def apply(bindingKey: BindingKey, x: Int, y: Int, depth: Int, animationKey: AnimationKey): Sprite =
     Sprite(
-      bindingKey = bindingKey,
       position = Point(x, y),
-      depth = Depth(depth),
       rotation = Radians.zero,
       scale = Vector2.one,
-      animationKey = animationKey,
+      depth = Depth(depth),
       ref = Point.zero,
+      flip = Flip.default,
+      bindingKey = bindingKey,
+      animationKey = animationKey,
       effects = Effects.default,
-      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil
+      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
+      animationActions = Nil
     )
 
   def apply(
@@ -618,19 +711,46 @@ object Sprite {
       effects: Effects,
       eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
   ): Sprite =
-    Sprite(bindingKey, position, depth, rotation, scale, animationKey, ref, effects, eventHandler, Nil)
+    Sprite(
+      position = position,
+      rotation = rotation,
+      scale = scale,
+      depth = depth,
+      ref = ref,
+      flip = Flip.default,
+      bindingKey = bindingKey,
+      animationKey = animationKey,
+      effects = effects,
+      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
+      animationActions = Nil
+    )
 
+  def apply(bindingKey: BindingKey, animationKey: AnimationKey): Sprite =
+    Sprite(
+      position = Point.zero,
+      rotation = Radians.zero,
+      scale = Vector2.one,
+      depth = Depth(1),
+      ref = Point.zero,
+      flip = Flip.default,
+      bindingKey = bindingKey,
+      animationKey = animationKey,
+      effects = Effects.default,
+      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
+      animationActions = Nil
+    )
 }
 
 /**
   * Used to draw text onto the screen.
   *
-  * @param text
-  * @param alignment
   * @param position
-  * @param depth
   * @param rotation
   * @param scale
+  * @param depth
+  * @param ref
+  * @param text
+  * @param alignment
   * @param fontKey
   * @param effects
   * @param eventHandler
@@ -638,14 +758,15 @@ object Sprite {
 final case class Text(
     text: String,
     alignment: TextAlignment,
-    position: Point,
-    depth: Depth,
-    rotation: Radians,
-    scale: Vector2,
-    ref: Point,
     fontKey: FontKey,
     effects: Effects,
-    eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
+    eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
+    position: Point,
+    rotation: Radians,
+    scale: Vector2,
+    depth: Depth,
+    ref: Point,
+    flip: Flip
 ) extends Renderable
     with EventHandling {
 
@@ -659,6 +780,8 @@ final case class Text(
     this.copy(position = pt)
   def moveTo(x: Int, y: Int): Text =
     moveTo(Point(x, y))
+  def withPosition(newPosition: Point): Text =
+    moveTo(newPosition)
 
   def moveBy(pt: Point): Text =
     this.copy(position = position + pt)
@@ -669,11 +792,15 @@ final case class Text(
     this.copy(rotation = angle)
   def rotateBy(angle: Radians): Text =
     rotateTo(rotation + angle)
+  def withRotation(newRotation: Radians): Text =
+    rotateTo(newRotation)
 
   def scaleBy(amount: Vector2): Text =
     this.copy(scale = scale * amount)
   def scaleBy(x: Double, y: Double): Text =
     scaleBy(Vector2(x, y))
+  def withScale(newScale: Vector2): Text =
+    this.copy(scale = newScale)
 
   def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Text =
     this.copy(position = newPosition, rotation = newRotation, scale = newScale)
@@ -711,10 +838,11 @@ final case class Text(
     this.copy(effects = effects.withGlow(newGlow))
 
   def flipHorizontal(isFlipped: Boolean): Text =
-    this.copy(effects = effects.withHorizontalFlip(isFlipped))
-
+    this.copy(flip = flip.withHorizontalFlip(isFlipped))
   def flipVertical(isFlipped: Boolean): Text =
-    this.copy(effects = effects.withVerticalFlip(isFlipped))
+    this.copy(flip = flip.withVerticalFlip(isFlipped))
+  def withFlip(newFlip: Flip): Text =
+    this.copy(flip = newFlip)
 
   def withAlignment(newAlignment: TextAlignment): Text =
     this.copy(alignment = newAlignment)
@@ -744,13 +872,29 @@ object Text {
 
   def apply(text: String, x: Int, y: Int, depth: Int, fontKey: FontKey): Text =
     Text(
-      text = text,
-      alignment = TextAlignment.Left,
       position = Point(x, y),
-      depth = Depth(depth),
       rotation = Radians.zero,
       scale = Vector2.one,
+      depth = Depth(depth),
       ref = Point.zero,
+      flip = Flip.default,
+      text = text,
+      alignment = TextAlignment.Left,
+      fontKey = fontKey,
+      effects = Effects.default,
+      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil
+    )
+
+  def apply(text: String, fontKey: FontKey): Text =
+    Text(
+      position = Point.zero,
+      rotation = Radians.zero,
+      scale = Vector2.one,
+      depth = Depth(1),
+      ref = Point.zero,
+      flip = Flip.default,
+      text = text,
+      alignment = TextAlignment.Left,
       fontKey = fontKey,
       effects = Effects.default,
       eventHandler = (_: (Rectangle, GlobalEvent)) => Nil

@@ -152,7 +152,7 @@ final class DisplayObjectConversions(
             x.children
               .map { c =>
                 c.withDepth(c.depth + x.depth)
-                  .moveBy(x.positionOffset)
+                  .withPosition(c.position + x.position)
               }
 
           rec(childNodes ++ xs)
@@ -293,7 +293,9 @@ final class DisplayObjectConversions(
       isLit = if (leaf.material.isLit) 1.0f else 0.0f,
       refX = leaf.ref.x,
       refY = leaf.ref.y,
-      effects = effectsValues
+      effects = effectsValues,
+      flipHorizontal = if (leaf.flip.horizontal) -1 else 1,
+      flipVertical = if (leaf.flip.vertical) 1 else -1
     )
   }
 
@@ -342,7 +344,9 @@ final class DisplayObjectConversions(
       isLit = if (material.isLit) 1.0f else 0.0f,
       refX = leaf.ref.x,
       refY = leaf.ref.y,
-      effects = effectsValues
+      effects = effectsValues,
+      flipHorizontal = if (leaf.flip.horizontal) -1 else 1,
+      flipVertical = if (leaf.flip.vertical) 1 else -1
     )
   }
 
@@ -405,7 +409,9 @@ final class DisplayObjectConversions(
               isLit = if (fontInfo.fontSpriteSheet.material.isLit) 1.0f else 0.0f,
               refX = leaf.ref.x,
               refY = leaf.ref.y,
-              effects = effectsValues
+              effects = effectsValues,
+              flipHorizontal = if (leaf.flip.horizontal) -1 else 1,
+              flipVertical = if (leaf.flip.vertical) 1 else -1
             )
         }
       }
