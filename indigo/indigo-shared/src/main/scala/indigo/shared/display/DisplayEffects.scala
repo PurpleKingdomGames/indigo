@@ -15,9 +15,7 @@ final class DisplayEffects(
     val glowColor: Array[Float],
     val innerGlowAmount: Float,
     val outerGlowAmount: Float,
-    val alpha: Float,
-    val flipHorizontal: Float,
-    val flipVertical: Float
+    val alpha: Float
 )
 
 object DisplayEffects {
@@ -69,9 +67,7 @@ object DisplayEffects {
       effects.glow.color.toArray,
       effects.glow.innerGlowAmount.toFloat,
       effects.glow.outerGlowAmount.toFloat,
-      effects.alpha.toFloat,
-      if (effects.flip.horizontal) -1 else 1,
-      if (effects.flip.vertical) 1 else -1
+      effects.alpha.toFloat
     )
 
   val default: DisplayEffects =

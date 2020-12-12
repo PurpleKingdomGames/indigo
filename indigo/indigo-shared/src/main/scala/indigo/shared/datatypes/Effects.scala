@@ -5,8 +5,7 @@ final case class Effects(
     overlay: Overlay,
     border: Border,
     glow: Glow,
-    alpha: Double,
-    flip: Flip
+    alpha: Double
 ) {
   def withTint(newTint: RGBA): Effects =
     this.copy(tint = newTint)
@@ -23,22 +22,12 @@ final case class Effects(
   def withAlpha(newAlpha: Double): Effects =
     this.copy(alpha = newAlpha)
 
-  def withFlip(newFlip: Flip): Effects =
-    this.copy(flip = newFlip)
-
-  def withHorizontalFlip(isFlipped: Boolean): Effects =
-    this.copy(flip = flip.withHorizontalFlip(isFlipped))
-
-  def withVerticalFlip(isFlipped: Boolean): Effects =
-    this.copy(flip = flip.withVerticalFlip(isFlipped))
-
   def hash: String =
     tint.hash +
       overlay.hash +
       border.hash +
       glow.hash +
-      alpha.toString() +
-      flip.hash
+      alpha.toString()
 }
 object Effects {
   val default: Effects = Effects(
@@ -46,11 +35,7 @@ object Effects {
     overlay = Overlay.Color.default,
     border = Border.default,
     glow = Glow.default,
-    alpha = 1.0,
-    flip = Flip(
-      horizontal = false,
-      vertical = false
-    )
+    alpha = 1.0
   )
 
 }

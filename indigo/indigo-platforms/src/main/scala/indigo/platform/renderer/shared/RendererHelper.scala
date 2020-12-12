@@ -34,7 +34,9 @@ object RendererHelper {
       isLit = 0.0f,
       refX = 0,
       refY = 0,
-      effects = DisplayEffects.default
+      effects = DisplayEffects.default,
+      flipHorizontal = 1.0f,
+      flipVertical = -1.0f
     )
 
   def mat4ToJsArray(mat4d: Matrix4): scalajs.js.Array[Double] =

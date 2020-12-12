@@ -138,16 +138,16 @@ class AutomataTests extends munit.FunSuite {
     val nodes =
       AutomatonNode.OneOf(nodeList)
 
-    assertEquals(nodes.giveNode(0, Dice.loaded(0)).y, graphic.moveTo(0, 0).y)
-    assertEquals(nodes.giveNode(0, Dice.loaded(1)).y, graphic.moveTo(0, 10).y)
-    assertEquals(nodes.giveNode(0, Dice.loaded(2)).y, graphic.moveTo(0, 20).y)
+    assertEquals(nodes.giveNode(0, Dice.loaded(0)).position.y, graphic.moveTo(0, 0).y)
+    assertEquals(nodes.giveNode(0, Dice.loaded(1)).position.y, graphic.moveTo(0, 10).y)
+    assertEquals(nodes.giveNode(0, Dice.loaded(2)).position.y, graphic.moveTo(0, 20).y)
 
     val dice = Dice.Sides.MaxInt(0)
 
     assertEquals(
       (0 to 100).toList.forall { _ =>
-        val g = nodes.giveNode(0, dice).y
-        nodeList.toList.map(_.y).contains(g)
+        val g = nodes.giveNode(0, dice).position.y
+        nodeList.toList.map(_.position.y).contains(g)
       },
       true
     )
@@ -165,13 +165,13 @@ class AutomataTests extends munit.FunSuite {
     val nodes =
       AutomatonNode.Cycle(nodeList)
 
-    assertEquals(nodes.giveNode(0, Dice.loaded(0)).y, graphic.moveTo(0, 0).y)
-    assertEquals(nodes.giveNode(1, Dice.loaded(0)).y, graphic.moveTo(0, 10).y)
-    assertEquals(nodes.giveNode(2, Dice.loaded(0)).y, graphic.moveTo(0, 20).y)
-    assertEquals(nodes.giveNode(3, Dice.loaded(0)).y, graphic.moveTo(0, 0).y)
-    assertEquals(nodes.giveNode(4, Dice.loaded(0)).y, graphic.moveTo(0, 10).y)
-    assertEquals(nodes.giveNode(5, Dice.loaded(0)).y, graphic.moveTo(0, 20).y)
-    assertEquals(nodes.giveNode(6, Dice.loaded(0)).y, graphic.moveTo(0, 0).y)
+    assertEquals(nodes.giveNode(0, Dice.loaded(0)).position.y, graphic.moveTo(0, 0).y)
+    assertEquals(nodes.giveNode(1, Dice.loaded(0)).position.y, graphic.moveTo(0, 10).y)
+    assertEquals(nodes.giveNode(2, Dice.loaded(0)).position.y, graphic.moveTo(0, 20).y)
+    assertEquals(nodes.giveNode(3, Dice.loaded(0)).position.y, graphic.moveTo(0, 0).y)
+    assertEquals(nodes.giveNode(4, Dice.loaded(0)).position.y, graphic.moveTo(0, 10).y)
+    assertEquals(nodes.giveNode(5, Dice.loaded(0)).position.y, graphic.moveTo(0, 20).y)
+    assertEquals(nodes.giveNode(6, Dice.loaded(0)).position.y, graphic.moveTo(0, 0).y)
   }
 
   object ModiferFunctions {
@@ -187,19 +187,20 @@ class AutomataTests extends munit.FunSuite {
         }
 
     val signal: SignalReader[(AutomatonSeedValues, SceneGraphNode), AutomatonUpdate] =
-      SignalReader { case (seed, sceneGraphNode) =>
-        makePosition(seed).map { position =>
-          AutomatonUpdate(
-            sceneGraphNode match {
-              case g: Graphic =>
-                List(g.moveTo(position))
+      SignalReader {
+        case (seed, sceneGraphNode) =>
+          makePosition(seed).map { position =>
+            AutomatonUpdate(
+              sceneGraphNode match {
+                case g: Graphic =>
+                  List(g.moveTo(position))
 
-              case _ =>
-                Nil
-            },
-            Nil
-          )
-        }
+                case _ =>
+                  Nil
+              },
+              Nil
+            )
+          }
       }
 
   }

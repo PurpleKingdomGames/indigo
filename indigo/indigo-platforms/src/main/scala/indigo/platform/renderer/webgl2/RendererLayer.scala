@@ -119,8 +119,8 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
     rotationAlphaFlipHFlipVData((i * 4) + 0) = d.rotation
     rotationAlphaFlipHFlipVData((i * 4) + 1) = d.effects.alpha
-    rotationAlphaFlipHFlipVData((i * 4) + 2) = d.effects.flipHorizontal
-    rotationAlphaFlipHFlipVData((i * 4) + 3) = d.effects.flipVertical
+    rotationAlphaFlipHFlipVData((i * 4) + 2) = d.flipHorizontal
+    rotationAlphaFlipHFlipVData((i * 4) + 3) = d.flipVertical
 
     emissiveNormalOffsetsData((i * 4) + 0) = d.emissiveOffset.x.toFloat
     emissiveNormalOffsetsData((i * 4) + 1) = d.emissiveOffset.y.toFloat
