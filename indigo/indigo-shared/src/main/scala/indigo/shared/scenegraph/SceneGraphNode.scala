@@ -38,7 +38,7 @@ sealed trait SceneGraphNodePrimitive extends SceneGraphNode {
   def moveTo(x: Int, y: Int): SceneGraphNodePrimitive
   def moveBy(pt: Point): SceneGraphNodePrimitive
   def moveBy(x: Int, y: Int): SceneGraphNodePrimitive
-  def rotate(angle: Radians): SceneGraphNodePrimitive
+  def rotateTo(angle: Radians): SceneGraphNodePrimitive
   def rotateBy(angle: Radians): SceneGraphNodePrimitive
   def scaleBy(amount: Vector2): SceneGraphNodePrimitive
   def scaleBy(x: Double, y: Double): SceneGraphNodePrimitive
@@ -78,10 +78,10 @@ final case class Group(positionOffset: Point, rotation: Radians, scale: Vector2,
   def moveBy(x: Int, y: Int): Group =
     moveBy(Point(x, y))
 
-  def rotate(angle: Radians): Group =
+  def rotateTo(angle: Radians): Group =
     this.copy(rotation = angle)
   def rotateBy(angle: Radians): Group =
-    rotate(rotation + angle)
+    rotateTo(rotation + angle)
 
   def scaleBy(x: Double, y: Double): Group =
     scaleBy(Vector2(x, y))
