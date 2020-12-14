@@ -17,6 +17,8 @@ import indigo.shared.display.DisplayCloneBatch
 import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.scenegraph.Group
 import indigo.shared.datatypes.Depth
+import indigo.shared.datatypes.Matrix3
+import indigo.shared.datatypes.Radians
 
 class DisplayObjectConversionsTests extends munit.FunSuite {
 
@@ -106,6 +108,83 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     assertEquals(actual.scaleX, 1.0f)
     assertEquals(actual.scaleY, 1.0f)
     assertEquals(actual.rotation, 0.0f)
+  }
+
+  test("create a Matrix3 from a SceneGraphNode.translation") {
+
+    val node: SceneGraphNode =
+      Graphic(100, 100, Material.Textured(AssetName("test")))
+        .moveTo(10, 20)
+
+    val expected: Matrix3 =
+      Matrix3(
+        (1, 0, 0),
+        (0, 1, 0),
+        (10, 20, 1)
+      )
+
+    val actual =
+      DisplayObjectConversions.nodeToMatrix3(node)
+
+    assertEquals(actual, expected)
+  }
+
+  test("create a Matrix3 from a SceneGraphNode.translation with ref") {
+
+    val node: SceneGraphNode =
+      Graphic(100, 100, Material.Textured(AssetName("test")))
+        .moveTo(10, 20)
+        .withRef(50, 50)
+
+    val expected: Matrix3 =
+      Matrix3(
+        (1, 0, 0),
+        (0, 1, 0),
+        (10, 20, 1)
+      )
+
+    val actual =
+      DisplayObjectConversions.nodeToMatrix3(node)
+
+    assertEquals(actual, expected)
+  }
+
+  test("create a Matrix3 from a SceneGraphNode.scale") {
+
+    val node: SceneGraphNode =
+      Graphic(100, 100, Material.Textured(AssetName("test")))
+        .scaleBy(2, 10)
+
+    val expected: Matrix3 =
+      Matrix3(
+        (1, 0, 0),
+        (0, 1, 0),
+        (0, 0, 1)
+      )
+
+    val actual =
+      DisplayObjectConversions.nodeToMatrix3(node)
+
+    assertEquals(actual, expected)
+  }
+
+  test("create a Matrix3 from a SceneGraphNode.rotation") {
+
+    val node: SceneGraphNode =
+      Graphic(100, 100, Material.Textured(AssetName("test")))
+        .rotateTo(Radians.TAUby4)
+
+    val expected: Matrix3 =
+      Matrix3(
+        (1, 0, 0),
+        (0, 1, 0),
+        (0, 0, 1)
+      )
+
+    val actual =
+      DisplayObjectConversions.nodeToMatrix3(node)
+
+    assertEquals(actual, expected)
   }
 
 }
