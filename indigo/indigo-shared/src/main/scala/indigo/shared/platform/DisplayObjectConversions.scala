@@ -28,6 +28,7 @@ import indigo.shared.display.DisplayEffects
 import indigo.shared.datatypes.Texture
 import indigo.shared.BoundaryLocator
 import indigo.shared.animation.AnimationRef
+import indigo.shared.datatypes.Matrix3
 
 final class DisplayObjectConversions(
     boundaryLocator: BoundaryLocator,
@@ -433,6 +434,32 @@ final class DisplayObjectConversions(
 
     accCharDetails = new ListBuffer()
     rec(charList.map(c => (c, fontInfo.findByCharacter(c))), 0)
+  }
+
+}
+
+object DisplayObjectConversions {
+
+  def nodeToMatrix3(node: SceneGraphNode): Matrix3 = {
+    val tx: Double = node.position.x
+    val ty: Double = node.position.y
+    val sx: Double = node.scale.x
+    val sy: Double = node.scale.y
+    val r: Double  = node.rotation.value
+    val c          = Math.cos(r)
+    val s          = Math.sin(r)
+
+    Matrix3(
+      sx * c,
+      s,
+      0,
+      -s,
+      sy * c,
+      0,
+      tx,
+      ty,
+      1
+    )
   }
 
 }
