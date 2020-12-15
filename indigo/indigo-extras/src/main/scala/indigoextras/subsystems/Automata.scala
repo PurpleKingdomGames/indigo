@@ -7,8 +7,7 @@ import indigo.shared.scenegraph._
 import indigo.shared.subsystems.SubSystem
 import indigoextras.subsystems.AutomataEvent._
 import indigoextras.subsystems.Automata.Layer
-import indigo.shared.EqualTo._
-import indigo.shared.EqualTo
+
 import indigo.shared.datatypes.RGBA
 import indigo.shared.subsystems.SubSystemFrameContext
 import indigo.shared.datatypes.Point
@@ -42,7 +41,7 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
 
   // @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def update(frameContext: SubSystemFrameContext, state: AutomataState): AutomataEvent => Outcome[AutomataState] = {
-    case Spawn(key, position, lifeSpan, payload) if key === poolKey =>
+    case Spawn(key, position, lifeSpan, payload) if key == poolKey =>
       val spawned =
         SpawnedAutomaton(
           automaton.node.giveNode(state.totalSpawned, frameContext.dice),
@@ -71,7 +70,7 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
               pool = spawned :: state.pool
             )
 
-          case Some(limit) if state.pool.length === limit =>
+          case Some(limit) if state.pool.length == limit =>
             state.copy(
               totalSpawned = state.totalSpawned + 1,
               pool = spawned :: state.pool.dropRight(1)
@@ -85,10 +84,10 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
         }
       )
 
-    case KillAll(key) if key === poolKey =>
+    case KillAll(key) if key == poolKey =>
       Outcome(state.copy(pool = Nil))
 
-    case Update(key) if key === poolKey =>
+    case Update(key) if key == poolKey =>
       val cullEvents = state.pool
         .filterNot(_.isAlive(frameContext.gameTime.running))
         .toList
@@ -195,11 +194,6 @@ final class AutomataPoolKey(val key: String) extends AnyVal {
     s"AutomataPoolKey(key = $key)"
 }
 object AutomataPoolKey {
-
-  implicit val eq: EqualTo[AutomataPoolKey] =
-    EqualTo.create { (a, b) =>
-      implicitly[EqualTo[String]].equal(a.key, b.key)
-    }
 
   def apply(key: String): AutomataPoolKey =
     new AutomataPoolKey(key)

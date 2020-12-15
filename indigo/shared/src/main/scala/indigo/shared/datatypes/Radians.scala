@@ -1,7 +1,5 @@
 package indigo.shared.datatypes
 
-import indigo.shared.EqualTo
-import indigo.shared.EqualTo._
 import indigo.shared.time.Seconds
 
 final case class Radians(value: Double) extends AnyVal {
@@ -25,17 +23,10 @@ final case class Radians(value: Double) extends AnyVal {
     value.toString()
 
   def ===(other: Radians): Boolean =
-    implicitly[EqualTo[Radians]].equal(this, other)
+    value == other.value
 
 }
 object Radians {
-
-  implicit val equalTo: EqualTo[Radians] = {
-    val eqD = implicitly[EqualTo[Double]]
-    EqualTo.create { (a, b) =>
-      eqD.equal(a.value, b.value)
-    }
-  }
 
   val `2PI`: Radians  = Radians(Math.PI * 2)
   val PI: Radians     = Radians(Math.PI)

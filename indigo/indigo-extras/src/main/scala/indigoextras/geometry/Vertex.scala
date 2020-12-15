@@ -1,7 +1,5 @@
 package indigoextras.geometry
 
-import indigo.shared.EqualTo
-import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Vector2
 
@@ -86,28 +84,12 @@ final case class Vertex(x: Double, y: Double) {
   def toVector2: Vector2 =
     Vector2(x, y)
 
-  def ===(other: Vertex): Boolean =
-    implicitly[EqualTo[Vertex]].equal(this, other)
-
   def ~==(other: Vertex): Boolean =
     Vertex.equalEnough(this, other, 0.001)
 
-  // @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
-  override def equals(obj: Any): Boolean =
-    if (obj.isInstanceOf[Vertex])
-      this === obj.asInstanceOf[Vertex]
-    else false
 }
 
 object Vertex {
-
-  implicit val eq: EqualTo[Vertex] = {
-    val ev = implicitly[EqualTo[Double]]
-
-    EqualTo.create { (a, b) =>
-      ev.equal(a.x, b.x) && ev.equal(a.y, b.y)
-    }
-  }
 
   def apply(d: Double): Vertex =
     Vertex(d, d)
@@ -141,10 +123,10 @@ object Vertex {
 
   def distanceBetween(a: Vertex, b: Vertex): Double =
     (a, b) match {
-      case (Vertex(x1, y1), Vertex(x2, y2)) if x1 === x2 =>
+      case (Vertex(x1, y1), Vertex(x2, y2)) if x1 == x2 =>
         Math.abs(y2 - y1)
 
-      case (Vertex(x1, y1), Vertex(x2, y2)) if y1 === y2 =>
+      case (Vertex(x1, y1), Vertex(x2, y2)) if y1 == y2 =>
         Math.abs(x2 - x1)
 
       case (Vertex(x1, y1), Vertex(x2, y2)) =>

@@ -1,7 +1,7 @@
 package indigo.shared
 
 import indigo.shared.events.GlobalEvent
-import indigo.shared.EqualTo._
+
 import Outcome._
 
 class OutcomeTests extends munit.FunSuite {
@@ -47,29 +47,29 @@ class OutcomeTests extends munit.FunSuite {
       Outcome(List(1, 2, 3))
         .addGlobalEvents(TestEvent("a"), TestEvent("b"), TestEvent("c"))
 
-    assertEquals(actual === expected, true)
+    assertEquals(actual == expected, true)
   }
 
   test("Equality true") {
-    assertEquals(Outcome(1) === Outcome(1), true)
+    assertEquals(Outcome(1) == Outcome(1), true)
   }
 
   test("Equality false") {
-    assertEquals(Outcome(1) === Outcome(2), false)
+    assertEquals(Outcome(1) == Outcome(2), false)
   }
 
   test("Show") {
 
     val actual = Outcome(1).toString()
 
-    val expected = "Outcome(1, List())"
+    val expected = "Outcome(1,List())"
 
     assertEquals(actual, expected)
   }
 
   test("Mapping over Outcomes.map state") {
-    assertEquals(Outcome(10).mapState(_ + 10) === Outcome(20), true)
-    assertEquals(Outcome(10).addGlobalEvents(TestEvent("a")).mapState(_ + 10) === Outcome(20).addGlobalEvents(TestEvent("a")), true)
+    assertEquals(Outcome(10).mapState(_ + 10) == Outcome(20), true)
+    assertEquals(Outcome(10).addGlobalEvents(TestEvent("a")).mapState(_ + 10) == Outcome(20).addGlobalEvents(TestEvent("a")), true)
   }
 
   test("Mapping over Outcomes.map global events") {
@@ -85,7 +85,7 @@ class OutcomeTests extends munit.FunSuite {
       Outcome(10)
         .addGlobalEvents(TestEvent("b"))
 
-    assertEquals(actual === expected, true)
+    assertEquals(actual == expected, true)
   }
 
   test("Mapping over Outcomes.map all") {
@@ -104,7 +104,7 @@ class OutcomeTests extends munit.FunSuite {
       Outcome(30)
         .addGlobalEvents(TestEvent("b"))
 
-    assertEquals(actual === expected, true)
+    assertEquals(actual == expected, true)
   }
 
   test("flat map & join.join preserves event order") {
@@ -121,11 +121,11 @@ class OutcomeTests extends munit.FunSuite {
 
     val actual = Outcome.join(Outcome.join(oa))
 
-    assertEquals(actual === expected, true)
+    assertEquals(actual == expected, true)
   }
 
   test("flat map & join.flatMapState") {
-    assertEquals(Outcome(10).flatMapState(i => Outcome(i * 10)) === Outcome(100), true)
+    assertEquals(Outcome(10).flatMapState(i => Outcome(i * 10)) == Outcome(100), true)
   }
 
   test("Combine.Outcomes can be combined") {
@@ -139,7 +139,7 @@ class OutcomeTests extends munit.FunSuite {
     val expected =
       Outcome(("count", 1)).addGlobalEvents(TestEvent("x"), TestEvent("y"), TestEvent("z"))
 
-    assertEquals(actual === expected, true)
+    assertEquals(actual == expected, true)
   }
 
   test("Applicative.ap") {
@@ -150,7 +150,7 @@ class OutcomeTests extends munit.FunSuite {
     val expected: Outcome[Int] =
       Outcome(20)
 
-    assertEquals(actual === expected, true)
+    assertEquals(actual == expected, true)
   }
 
   test("Applicative.ap with event") {
@@ -161,7 +161,7 @@ class OutcomeTests extends munit.FunSuite {
     val expected: Outcome[Int] =
       Outcome(20).addGlobalEvents(TestEvent("x"))
 
-    assertEquals(actual === expected, true)
+    assertEquals(actual == expected, true)
   }
 
   test("Applicative.map2 / merge") {
@@ -174,7 +174,7 @@ class OutcomeTests extends munit.FunSuite {
     val expected: Outcome[String] =
       Outcome("count: 1").addGlobalEvents(TestEvent("x"), TestEvent("y"), TestEvent("z"))
 
-    assertEquals(actual === expected, true)
+    assertEquals(actual == expected, true)
 
   }
 

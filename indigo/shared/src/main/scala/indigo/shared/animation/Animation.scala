@@ -1,7 +1,6 @@
 package indigo.shared.animation
 
 import indigo.shared.collections.NonEmptyList
-import indigo.shared.EqualTo
 
 import indigo.shared.datatypes.Material
 import indigo.shared.time.Millis
@@ -18,24 +17,10 @@ final case class Animation(
 
   def withAnimationKey(animationKey: AnimationKey): Animation =
     this.copy(animationKey = animationKey)
-  
+
 }
 
 object Animation {
-
-  implicit val animationEqualTo: EqualTo[Animation] = {
-    val eAK   = implicitly[EqualTo[AnimationKey]]
-    val eM    = implicitly[EqualTo[Material]]
-    val eCL   = implicitly[EqualTo[CycleLabel]]
-    val eNelC = implicitly[EqualTo[NonEmptyList[Cycle]]]
-
-    EqualTo.create { (a, b) =>
-      eAK.equal(a.animationKey, b.animationKey) &&
-      eM.equal(a.material, b.material) &&
-      eCL.equal(a.currentCycleLabel, b.currentCycleLabel) &&
-      eNelC.equal(a.cycles, b.cycles)
-    }
-  }
 
   def apply(
       animationKey: AnimationKey,

@@ -1,7 +1,7 @@
 package indigoextras.geometry
 
 import indigo.shared.datatypes.Rectangle
-import indigo.shared.EqualTo
+
 import scala.annotation.tailrec
 
 sealed trait Polygon {
@@ -49,9 +49,6 @@ sealed trait Polygon {
   def polygonIntersectCheck(polygon: Polygon): Boolean =
     polygon.lineSegments.exists(lineIntersectCheck)
 
-  def ===(other: Polygon): Boolean =
-    implicitly[EqualTo[Polygon]].equal(this, other)
-
   override def toString: String =
     this match {
       case Polygon.Open(vs) =>
@@ -61,11 +58,6 @@ sealed trait Polygon {
         s"Polygon.Closed(${vs.toString()})"
     }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
-  override def equals(obj: Any): Boolean =
-    if (obj.isInstanceOf[Polygon])
-      this === obj.asInstanceOf[Polygon]
-    else false
 }
 
 object Polygon {
@@ -112,28 +104,8 @@ object Polygon {
     }
   }
 
-  implicit val polygonEqualTo: EqualTo[Polygon] = {
-    val e = implicitly[EqualTo[List[Vertex]]]
-
-    EqualTo.create {
-      case (Open(vsA), Open(vsB)) =>
-        e.equal(vsA, vsB)
-
-      case (Closed(vsA), Closed(vsB)) =>
-        e.equal(vsA, vsB)
-
-      case (_, _) =>
-        false
-    }
-  }
-
   final case class Open(vertices: List[Vertex]) extends Polygon
   object Open {
-
-    implicit val openEqualTo: EqualTo[Closed] =
-      EqualTo.create { (a, b) =>
-        polygonEqualTo.equal(a, b)
-      }
 
     val empty: Open =
       Open(Nil)
@@ -144,11 +116,6 @@ object Polygon {
 
   final case class Closed(vertices: List[Vertex]) extends Polygon
   object Closed {
-
-    implicit val closedEqualTo: EqualTo[Closed] =
-      EqualTo.create { (a, b) =>
-        polygonEqualTo.equal(a, b)
-      }
 
     val empty: Closed =
       Closed(Nil)

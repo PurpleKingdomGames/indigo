@@ -4,7 +4,7 @@ import indigo.shared.events.GlobalEvent
 
 import scala.annotation.tailrec
 
-final class Outcome[+A](val state: A, val globalEvents: List[GlobalEvent]) {
+final case class Outcome[+A](state: A, globalEvents: List[GlobalEvent]) {
 
   def addGlobalEvents(newEvents: GlobalEvent*): Outcome[A] =
     Outcome.addGlobalEvents(this, newEvents.toList)
@@ -45,10 +45,6 @@ final class Outcome[+A](val state: A, val globalEvents: List[GlobalEvent]) {
   def flatMap[B](f: A => Outcome[B]): Outcome[B] =
     flatMapState(f)
 
-  // @SuppressWarnings(Array("org.wartremover.warts.ToString"))
-  override def toString(): String =
-    s"Outcome(${state.toString()}, ${globalEvents.toString()})"
-
 }
 
 object Outcome {
@@ -58,26 +54,11 @@ object Outcome {
       Outcome.sequence(l)
   }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Equals"))
-  implicit val eqGlobalEvent: EqualTo[GlobalEvent] =
-    EqualTo.create(_ == _)
-
-  implicit def eq[A](implicit eqA: EqualTo[A], eqE: EqualTo[List[GlobalEvent]]): EqualTo[Outcome[A]] =
-    EqualTo.create { (a, b) =>
-      eqA.equal(a.state, b.state) && eqE.equal(a.globalEvents, b.globalEvents)
-    }
-
-  def apply[A](state: A, globalEvents: List[GlobalEvent]): Outcome[A] =
-    new Outcome(state, globalEvents)
-
   def apply[A](state: A): Outcome[A] =
     pure(state)
 
   def pure[A](state: A): Outcome[A] =
     new Outcome[A](state, Nil)
-
-  def unapply[A](outcome: Outcome[A]): Option[(A, List[GlobalEvent])] =
-    Option((outcome.state, outcome.globalEvents))
 
   def addGlobalEvents[A](o: Outcome[A], newEvents: List[GlobalEvent]): Outcome[A] =
     new Outcome(o.state, o.globalEvents ++ newEvents)

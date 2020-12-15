@@ -16,7 +16,6 @@ import indigo.shared.animation.CycleLabel
 import indigo.shared.animation.AnimationAction.ChangeCycle
 import indigo.shared.time.Millis
 import indigo.shared.animation.AnimationAction.Play
-import indigo.shared.EqualTo._
 
 class AnimationsRegisterTests extends munit.FunSuite {
 
@@ -161,9 +160,9 @@ class AnimationsRegisterTests extends munit.FunSuite {
     assertEquals(memento4.get.currentCycleMemento.lastFrameAdvance, Millis(400))
     // ------------
 
-    assertEquals(memento1 === memento2, false)
-    assertEquals(memento2 === memento3, false)
-    assertEquals(memento3 === memento4, false)
+    assertEquals(memento1 == memento2, false)
+    assertEquals(memento2 == memento3, false)
+    assertEquals(memento3 == memento4, false)
 
   }
 

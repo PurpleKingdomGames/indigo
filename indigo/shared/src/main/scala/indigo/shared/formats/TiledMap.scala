@@ -6,7 +6,7 @@ import indigo.shared.assets.AssetName
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.datatypes.Material
 import indigo.shared.datatypes.Rectangle
-import indigo.shared.EqualTo._
+
 import scala.annotation.tailrec
 import indigo.shared.collections.NonEmptyList
 
@@ -133,7 +133,7 @@ object TiledMap {
         Group(
           layer.data.zipWithIndex.flatMap {
             case (tileIndex, positionIndex) =>
-              if (tileIndex === 0) Nil
+              if (tileIndex == 0) Nil
               else
                 tilesInUse
                   .get(tileIndex)
@@ -160,7 +160,7 @@ final case class TiledGridMap[A](layers: NonEmptyList[TiledGridLayer[A]]) {
         case Nil =>
           acc.reverse
 
-        case x :: xs if x.column === columnCount - 1 =>
+        case x :: xs if x.column == columnCount - 1 =>
           rec(xs, columnCount, Nil, (current ++ List(x)) :: acc)
 
         case x :: xs =>

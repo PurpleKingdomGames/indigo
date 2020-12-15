@@ -4,7 +4,7 @@ import indigo.shared.input.Keyboard
 import indigo.shared.input.Gamepad
 import indigo.shared.input.Mouse
 import indigo.shared.constants.Key
-import indigo.shared.EqualTo._
+
 import indigo.shared.datatypes.Point
 
 final case class InputMapping[A](oneOf: List[(Combo, A)]) {
@@ -43,10 +43,10 @@ final case class InputMapping[A](oneOf: List[(Combo, A)]) {
           case GamepadInput.TouchPad   => gamepad.buttons.TouchPad
 
           case GamepadInput.LEFT_ANALOG(xp, yp, pressed) =>
-            xp(gamepad.analog.left.x) && yp(gamepad.analog.left.y) && gamepad.analog.left.pressed === pressed
+            xp(gamepad.analog.left.x) && yp(gamepad.analog.left.y) && gamepad.analog.left.pressed == pressed
 
           case GamepadInput.RIGHT_ANALOG(xp, yp, pressed) =>
-            xp(gamepad.analog.right.x) && yp(gamepad.analog.right.y) && gamepad.analog.right.pressed === pressed
+            xp(gamepad.analog.right.x) && yp(gamepad.analog.right.y) && gamepad.analog.right.pressed == pressed
         }
       }
       .map(_._2)

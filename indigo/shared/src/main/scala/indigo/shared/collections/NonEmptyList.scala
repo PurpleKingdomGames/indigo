@@ -1,26 +1,12 @@
 package indigo.shared.collections
 
-import indigo.shared.EqualTo._
-import indigo.shared.EqualTo
-
 /**
   * An ordered list-type object that requires there to always be
   * at least one element present, ruling out the possibility of
   * unsafely accessing the `head` element.
   * @tparam A The type of element to be stored in the list.
   */
-trait NonEmptyList[A] {
-
-  /**
-    * The first element of the list
-    */
-  val head: A
-
-  /**
-    * The remaining elements of the list, as a List since the
-    * tail can be empty.
-    */
-  val tail: List[A]
+final case class NonEmptyList[A](head: A, tail: List[A]) {
 
   /**
     * Alias for `head`
@@ -191,20 +177,11 @@ trait NonEmptyList[A] {
 
 object NonEmptyList {
 
-  implicit def equalToNonEmptyList[A](implicit eq: EqualTo[A]): EqualTo[NonEmptyList[A]] =
-    EqualTo.create((a, b) => equality(a, b))
-
   def apply[A](head: A, tail: A*): NonEmptyList[A] =
     pure(head, tail.toList)
 
-  def apply[A](head: A, tail: List[A]): NonEmptyList[A] =
-    pure(head, tail)
-
   def pure[A](headItem: A, tailItems: List[A]): NonEmptyList[A] =
-    new NonEmptyList[A] {
-      val head: A       = headItem
-      val tail: List[A] = tailItems
-    }
+    NonEmptyList[A](headItem, tailItems)
 
   def unapply[A](nel: NonEmptyList[A]): Option[(A, List[A])] =
     Option((nel.head, nel.tail))
@@ -220,9 +197,6 @@ object NonEmptyList {
       case x :: xs =>
         Some(pure(x, xs))
     }
-
-  def equality[A](a: NonEmptyList[A], b: NonEmptyList[A])(implicit eq: EqualTo[A]): Boolean =
-    a.length === b.length && a.zip(b).forall(as => eq.equal(as._1, as._2))
 
   def length[A](fa: NonEmptyList[A]): Int =
     fa.tail.length + 1

@@ -1,7 +1,7 @@
 package indigo.shared.temporal
 
 import indigo.shared.time.Seconds
-import indigo.shared.EqualTo._
+
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
@@ -81,7 +81,7 @@ object Signal {
     Signal(identity)
 
   def Pulse(interval: Seconds): Signal[Boolean] =
-    Signal(t => (t.toMillis / interval.toMillis).value % 2 === 0)
+    Signal(t => (t.toMillis / interval.toMillis).value % 2 == 0)
 
   def SinWave: Signal[Double] =
     Signal(t => Math.sin(Radians.fromSeconds(t).value))
@@ -113,8 +113,8 @@ object Signal {
         val interp = linear(time, from.toVector, to.toVector).toPoint
 
         Point(
-          x = if (from.x === to.x) from.x else interp.x,
-          y = if (from.y === to.y) from.y else interp.y
+          x = if (from.x == to.x) from.x else interp.x,
+          y = if (from.y == to.y) from.y else interp.y
         )
       }
     }

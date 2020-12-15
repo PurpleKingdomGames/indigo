@@ -4,7 +4,6 @@ import indigo.shared.time.GameTime
 import indigo.shared.datatypes._
 import indigo.shared.scenegraph.{Graphic, SceneUpdateFragment, Text}
 
-import indigo.shared.EqualTo._
 import indigo.shared.temporal.Signal
 import indigo.shared.BoundaryLocator
 import scala.collection.immutable.Nil
@@ -108,7 +107,7 @@ final case class InputField(
     this.copy(cursorPosition = text.length)
 
   def delete: InputField =
-    if (cursorPosition === text.length()) this
+    if (cursorPosition == text.length()) this
     else {
       val splitString = text.splitAt(cursorPosition)
       copy(text = splitString._1 + splitString._2.substring(1))
@@ -139,7 +138,7 @@ final case class InputField(
         case _ if (textHead + textTail).length >= characterLimit =>
           rec(Nil, textHead, textTail, position)
 
-        case c :: cs if (c !== '\n') || multiLine =>
+        case c :: cs if (c != '\n') || multiLine =>
           rec(cs, textHead + c.toString(), textTail, position + 1)
 
         case _ :: cs =>

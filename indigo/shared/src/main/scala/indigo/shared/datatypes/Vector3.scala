@@ -1,8 +1,5 @@
 package indigo.shared.datatypes
 
-import indigo.shared.EqualTo
-import indigo.shared.EqualTo._
-
 final case class Vector3(x: Double, y: Double, z: Double) {
 
   def withX(newX: Double): Vector3 =
@@ -60,9 +57,9 @@ final case class Vector3(x: Double, y: Double, z: Double) {
 
   def normalise: Vector3 =
     Vector3(
-      if (x === 0) 0 else (x / Math.abs(x)),
-      if (y === 0) 0 else (y / Math.abs(y)),
-      if (z === 0) 0 else (z / Math.abs(z))
+      if (x == 0) 0 else (x / Math.abs(x)),
+      if (y == 0) 0 else (y / Math.abs(y)),
+      if (z == 0) 0 else (z / Math.abs(z))
     )
 
   def applyMatrix4(matrix4: Matrix4): Vector3 = Vector3.applyMatrix4(this, matrix4)
@@ -74,18 +71,10 @@ final case class Vector3(x: Double, y: Double, z: Double) {
     Vector3.distance(this, other)
 
   def ===(other: Vector3): Boolean =
-    implicitly[EqualTo[Vector3]].equal(this, other)
+    x == other.x && y == other.y && z == other.z
 }
 
 object Vector3 {
-
-  implicit val eq: EqualTo[Vector3] = {
-    val ev = implicitly[EqualTo[Double]]
-
-    EqualTo.create { (a, b) =>
-      ev.equal(a.x, b.x) && ev.equal(a.y, b.y) && ev.equal(a.z, b.z)
-    }
-  }
 
   def apply(i: Int): Vector3 =
     Vector3(i.toDouble, i.toDouble, i.toDouble)

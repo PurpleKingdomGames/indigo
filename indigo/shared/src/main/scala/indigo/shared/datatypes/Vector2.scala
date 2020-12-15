@@ -1,8 +1,5 @@
 package indigo.shared.datatypes
 
-import indigo.shared.EqualTo
-import indigo.shared.EqualTo._
-
 final case class Vector2(x: Double, y: Double) {
 
   def withX(newX: Double): Vector2 =
@@ -72,8 +69,8 @@ final case class Vector2(x: Double, y: Double) {
 
   def normalise: Vector2 =
     Vector2(
-      if (x === 0) 0 else (x / Math.abs(x)),
-      if (y === 0) 0 else (y / Math.abs(y))
+      if (x == 0) 0 else (x / Math.abs(x)),
+      if (y == 0) 0 else (y / Math.abs(y))
     )
 
   def distanceTo(other: Vector2): Double =
@@ -84,28 +81,14 @@ final case class Vector2(x: Double, y: Double) {
 
   def applyMatrix4(matrix4: Matrix4): Vector2 = Vector2.applyMatrix4(this, matrix4)
 
-  // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.IsInstanceOf"))
-  override def equals(obj: Any): Boolean =
-    if (obj.isInstanceOf[Vector2])
-      this === obj.asInstanceOf[Vector2]
-    else false
-
   def ===(other: Vector2): Boolean =
-    implicitly[EqualTo[Vector2]].equal(this, other)
+    x == other.x && y == other.y
 
   def hash: String =
     x.toString() + y.toString()
 }
 
 object Vector2 {
-
-  implicit val eq: EqualTo[Vector2] = {
-    val ev = implicitly[EqualTo[Double]]
-
-    EqualTo.create { (a, b) =>
-      ev.equal(a.x, b.x) && ev.equal(a.y, b.y)
-    }
-  }
 
   def apply(d: Double): Vector2 =
     Vector2(d, d)

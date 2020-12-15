@@ -1,26 +1,10 @@
 package indigo.shared.networking
 
 import indigo.shared.events.{NetworkSendEvent, NetworkReceiveEvent}
-import indigo.shared.EqualTo
 
 final case class WebSocketId(id: String)
-object WebSocketId {
-  implicit val eq: EqualTo[WebSocketId] = {
-    val eqS = implicitly[EqualTo[String]]
-    EqualTo.create((a, b) => eqS.equal(a.id, b.id))
-  }
-}
 
 final case class WebSocketConfig(id: WebSocketId, address: String)
-object WebSocketConfig {
-
-  implicit val eq: EqualTo[WebSocketConfig] = {
-    val eqId = implicitly[EqualTo[WebSocketId]]
-    val eqS  = implicitly[EqualTo[String]]
-    EqualTo.create((a, b) => eqId.equal(a.id, b.id) && eqS.equal(a.address, b.address))
-  }
-
-}
 
 sealed trait WebSocketReadyState {
   val value: Int

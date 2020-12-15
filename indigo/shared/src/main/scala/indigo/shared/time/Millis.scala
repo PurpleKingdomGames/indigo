@@ -1,7 +1,5 @@
 package indigo.shared.time
 
-import indigo.shared.EqualTo
-
 final case class Millis(value: Long) extends AnyVal {
 
   def +(other: Millis): Millis =
@@ -26,10 +24,10 @@ final case class Millis(value: Long) extends AnyVal {
     Millis.greaterThan(this, other)
 
   def <=(other: Millis): Boolean =
-    Millis.lessThan(this, other) || implicitly[EqualTo[Long]].equal(this.value, other.value)
+    Millis.lessThan(this, other) || this === other
 
   def >=(other: Millis): Boolean =
-    Millis.greaterThan(this, other) || implicitly[EqualTo[Long]].equal(this.value, other.value)
+    Millis.greaterThan(this, other) || this === other
 
   def toInt: Int =
     value.toInt
@@ -47,18 +45,13 @@ final case class Millis(value: Long) extends AnyVal {
     Seconds(value.toDouble / 1000)
 
   def ===(other: Millis): Boolean =
-    implicitly[EqualTo[Millis]].equal(this, other)
+    this.value == other.value
 
 }
 object Millis {
 
   val zero: Millis =
     Millis(0)
-
-  implicit val equalToMillis: EqualTo[Millis] =
-    EqualTo.create { (a, b) =>
-      implicitly[EqualTo[Long]].equal(a.value, b.value)
-    }
 
   @inline def plus(a: Millis, b: Millis): Millis =
     Millis(a.value + b.value)

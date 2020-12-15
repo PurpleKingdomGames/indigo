@@ -1,6 +1,5 @@
 package indigoextras.datatypes
 
-import indigo.shared.EqualTo._
 import scala.collection.mutable.ListBuffer
 
 final class UpdateList[A](list: List[A], pattern: UpdatePattern) {
@@ -74,7 +73,7 @@ object UpdatePattern {
 
   final class Interleave(flip: Boolean) extends UpdatePattern {
     def update[A, B](value: A, f: A => B, default: B, position: Int): B =
-      if (position % 2 === 0 ^ flip) f(value) else default
+      if (position % 2 == 0 ^ flip) f(value) else default
 
     def step: UpdatePattern =
       new Interleave(!flip)
@@ -86,7 +85,7 @@ object UpdatePattern {
 
   final class Every(every: Int, count: Int) extends UpdatePattern {
     def update[A, B](value: A, f: A => B, default: B, position: Int): B =
-      if ((position - count) % every === 0) f(value) else default
+      if ((position - count) % every == 0) f(value) else default
 
     def step: UpdatePattern =
       new Every(every, (count + 1) % every)
@@ -98,7 +97,7 @@ object UpdatePattern {
 
   final class Batch(size: Int, count: Int) extends UpdatePattern {
     def update[A, B](value: A, f: A => B, default: B, position: Int): B =
-      if (((position / size) - count) % size === 0) f(value) else default
+      if (((position / size) - count) % size == 0) f(value) else default
 
     def step: UpdatePattern =
       new Batch(size, (count + 1) % size)

@@ -17,8 +17,6 @@ import indigo.platform.assets.TextureAtlas
 import indigo.platform.assets.TextureAtlasFunctions
 import indigo.platform.assets.ImageRef
 
-import indigo.shared.EqualTo._
-
 import org.scalajs.dom
 import org.scalajs.dom.html.Canvas
 import scala.util.Try
@@ -66,7 +64,7 @@ class Platform(
     Success(
       TextureAtlas.create(
         assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height, i.tag.map(_.value))),
-        (name: String) => assetCollection.images.find(_.name.value === name),
+        (name: String) => assetCollection.images.find(_.name.value == name),
         TextureAtlasFunctions.createAtlasData
       )
     )

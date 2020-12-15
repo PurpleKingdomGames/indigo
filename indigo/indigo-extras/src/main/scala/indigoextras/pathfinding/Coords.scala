@@ -1,7 +1,5 @@
 package indigoextras.pathfinding
 
-import indigo.shared.EqualTo
-
 final case class Coords(x: Int, y: Int) {
 
   def toGridPosition(gridWidth: Int): Int =
@@ -13,13 +11,6 @@ final case class Coords(x: Int, y: Int) {
 }
 
 object Coords {
-
-  implicit val eq: EqualTo[Coords] = {
-    val eqI = implicitly[EqualTo[Int]]
-    EqualTo.create { (a, b) =>
-      eqI.equal(a.x, b.x) && eqI.equal(a.y, b.y)
-    }
-  }
 
   val relativeUpLeft: Coords    = Coords(-1, -1)
   val relativeUp: Coords        = Coords(0, -1)

@@ -1,8 +1,5 @@
 package indigo.shared.datatypes
 
-import indigo.shared.EqualTo
-import indigo.shared.EqualTo._
-
 final case class RGBA(r: Double, g: Double, b: Double, a: Double) {
   def +(other: RGBA): RGBA =
     RGBA.combine(this, other)
@@ -32,7 +29,7 @@ final case class RGBA(r: Double, g: Double, b: Double, a: Double) {
     RGB(r, g, b)
 
   def ===(other: RGBA): Boolean =
-    implicitly[EqualTo[RGBA]].equal(this, other)
+    r == other.r && g == other.g && b == other.b && a == other.a
 
   def toArray: Array[Float] =
     Array(r.toFloat, g.toFloat, b.toFloat, a.toFloat)
@@ -41,14 +38,6 @@ final case class RGBA(r: Double, g: Double, b: Double, a: Double) {
     r.toString() + g.toString() + b.toString() + a.toString()
 }
 object RGBA {
-
-  implicit val eq: EqualTo[RGBA] = {
-    val ev = implicitly[EqualTo[Double]]
-
-    EqualTo.create { (a, b) =>
-      ev.equal(a.r, b.r) && ev.equal(a.g, b.g) && ev.equal(a.b, b.b)
-    }
-  }
 
   val Red: RGBA     = RGBA(1, 0, 0, 1)
   val Green: RGBA   = RGBA(0, 1, 0, 1)
@@ -78,7 +67,7 @@ object RGBA {
 
   def fromHexString(hex: String): RGBA =
     hex.trim match {
-      case h if h.startsWith("0x") && h.length === 10 =>
+      case h if h.startsWith("0x") && h.length == 10 =>
         fromColorInts(
           Integer.parseInt(hex.substring(2, 4), 16),
           Integer.parseInt(hex.substring(4, 6), 16),
@@ -86,14 +75,14 @@ object RGBA {
           Integer.parseInt(hex.substring(8, 10), 16)
         )
 
-      case h if h.startsWith("0x") && h.length === 8 =>
+      case h if h.startsWith("0x") && h.length == 8 =>
         fromColorInts(
           Integer.parseInt(hex.substring(2, 4), 16),
           Integer.parseInt(hex.substring(4, 6), 16),
           Integer.parseInt(hex.substring(6, 8), 16)
         )
 
-      case h if h.length === 8 =>
+      case h if h.length == 8 =>
         fromColorInts(
           Integer.parseInt(hex.substring(0, 2), 16),
           Integer.parseInt(hex.substring(2, 4), 16),
@@ -101,7 +90,7 @@ object RGBA {
           Integer.parseInt(hex.substring(6, 8), 16)
         )
 
-      case h if h.length === 6 =>
+      case h if h.length == 6 =>
         fromColorInts(
           Integer.parseInt(hex.substring(0, 2), 16),
           Integer.parseInt(hex.substring(2, 4), 16),

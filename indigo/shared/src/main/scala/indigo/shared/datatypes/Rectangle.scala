@@ -1,7 +1,5 @@
 package indigo.shared.datatypes
 
-import indigo.shared.EqualTo
-
 import scala.annotation.tailrec
 
 final case class Rectangle(position: Point, size: Point) {
@@ -65,7 +63,7 @@ final case class Rectangle(position: Point, size: Point) {
     this.copy(size = newSize)
 
   def ===(other: Rectangle): Boolean =
-    implicitly[EqualTo[Rectangle]].equal(this, other)
+    position === other.position && size === other.size
 
 }
 
@@ -103,13 +101,6 @@ object Rectangle {
       }
 
     rec(points, Int.MaxValue, Int.MaxValue, Int.MinValue, Int.MinValue)
-  }
-
-  implicit val rectangleEqualTo: EqualTo[Rectangle] = {
-    val eq = implicitly[EqualTo[Point]]
-    EqualTo.create { (a, b) =>
-      eq.equal(a.position, b.position) && eq.equal(a.size, b.size)
-    }
   }
 
   def expand(rectangle: Rectangle, amount: Int): Rectangle =

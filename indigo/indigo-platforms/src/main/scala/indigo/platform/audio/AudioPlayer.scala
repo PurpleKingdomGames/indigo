@@ -9,7 +9,6 @@ import org.scalajs.dom.raw.AudioContext
 import org.scalajs.dom
 import scala.scalajs.js
 
-import indigo.shared.EqualTo._
 import indigo.shared.assets.AssetName
 import indigo.platform.assets.LoadedAudioAsset
 import org.scalajs.dom.raw.AudioBuffer
@@ -115,7 +114,7 @@ final class AudioPlayer(context: AudioContextProxy) {
   }
 
   private def findAudioDataByName(assetName: AssetName): Option[dom.AudioBuffer] =
-    soundAssets.find(a => a.name === assetName).map(_.data)
+    soundAssets.find(a => a.name == assetName).map(_.data)
 
   def playSound(assetName: AssetName, volume: Volume): Unit =
     findAudioDataByName(assetName).foreach { sound =>
@@ -142,7 +141,7 @@ final class AudioPlayer(context: AudioContextProxy) {
   }
 
   private def updateSource(sceneAudioSource: SceneAudioSource, currentSource: AudioSourceState): Option[AudioSourceState] =
-    if (sceneAudioSource.bindingKey === currentSource.bindingKey) None
+    if (sceneAudioSource.bindingKey == currentSource.bindingKey) None
     else
       Option {
         sceneAudioSource.playbackPattern match {

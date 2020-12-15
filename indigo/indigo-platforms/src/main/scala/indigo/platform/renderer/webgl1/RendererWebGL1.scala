@@ -1,7 +1,7 @@
 package indigo.platform.renderer.webgl1
 
 import indigo.shared.display.DisplayObject
-import indigo.shared.EqualTo._
+
 import indigo.platform.renderer.Renderer
 import indigo.shared.platform.RendererConfig
 import indigo.shared.datatypes.Matrix4
@@ -217,7 +217,7 @@ final class RendererWebGL1(
             uiFrameBuffer.diffuse
           )
         else {
-          textureLocations.find(t => t.name === displayObject.atlasName) match {
+          textureLocations.find(t => t.name == displayObject.atlasName) match {
             case None =>
               gl.activeTexture(TEXTURE0);
               gl.bindTexture(TEXTURE_2D, null)
@@ -248,7 +248,7 @@ final class RendererWebGL1(
     val actualWidth  = canvas.width
     val actualHeight = canvas.height
 
-    if (!resizeRun || (lastWidth !== actualWidth) || (lastHeight !== actualHeight)) {
+    if (!resizeRun || (lastWidth != actualWidth) || (lastHeight != actualHeight)) {
       resizeRun = true
       lastWidth = actualWidth
       lastHeight = actualHeight

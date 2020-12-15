@@ -1,8 +1,5 @@
 package indigo.shared.datatypes
 
-import indigo.shared.EqualTo
-import indigo.shared.EqualTo._
-
 final case class Vector4(x: Double, y: Double, z: Double, w: Double) {
 
   def withX(newX: Double): Vector4 =
@@ -63,10 +60,10 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) {
 
   def normalise: Vector4 =
     Vector4(
-      if (x === 0) 0 else (x / Math.abs(x)),
-      if (y === 0) 0 else (y / Math.abs(y)),
-      if (z === 0) 0 else (z / Math.abs(z)),
-      if (w === 0) 0 else (w / Math.abs(w))
+      if (x == 0) 0 else (x / Math.abs(x)),
+      if (y == 0) 0 else (y / Math.abs(y)),
+      if (z == 0) 0 else (z / Math.abs(z)),
+      if (w == 0) 0 else (w / Math.abs(w))
     )
 
   def applyMatrix4(matrix4: Matrix4): Vector4 = Vector4.applyMatrix4(this, matrix4)
@@ -84,18 +81,10 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) {
     s"Vector4(x = ${x.toString()}, y = ${y.toString()}, z = ${z.toString()}, w = ${z.toString()})"
 
   def ===(other: Vector4): Boolean =
-    implicitly[EqualTo[Vector4]].equal(this, other)
+    x == other.x && y == other.y && z == other.z && w == other.w
 }
 
 object Vector4 {
-
-  implicit val eq: EqualTo[Vector4] = {
-    val ev = implicitly[EqualTo[Double]]
-
-    EqualTo.create { (a, b) =>
-      ev.equal(a.x, b.x) && ev.equal(a.y, b.y) && ev.equal(a.z, b.z) && ev.equal(a.w, b.w)
-    }
-  }
 
   def apply(i: Int): Vector4 =
     Vector4(i.toDouble, i.toDouble, i.toDouble, i.toDouble)

@@ -19,7 +19,6 @@ import indigo.shared.platform.AssetMapping
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import indigo.shared.EqualTo._
 import indigo.platform.storage.Storage
 import indigo.shared.input.GamepadInputCapture
 import scala.util.Try
@@ -93,7 +92,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
       IndigoLogger.info("Configuration: " + gameConfig.asString)
 
-      if ((gameConfig.viewport.width % 2 !== 0) || (gameConfig.viewport.height % 2 !== 0))
+      if ((gameConfig.viewport.width % 2 != 0) || (gameConfig.viewport.height % 2 != 0))
         IndigoLogger.info(
           "WARNING: Setting a resolution that has a width and/or height that is not divisible by 2 could cause stretched graphics!"
         )

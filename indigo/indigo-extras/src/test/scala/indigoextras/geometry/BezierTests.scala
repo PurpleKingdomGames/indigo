@@ -5,29 +5,29 @@ import indigo.shared.time.Seconds
 class BezierTests extends munit.FunSuite {
 
   test("Interpolation") {
-    assertEquals(Bezier.interpolate(Vertex(0, 0), Vertex(10, 10), 0d) === Vertex(0, 0), true)
-    assertEquals(Bezier.interpolate(Vertex(0, 0), Vertex(10, 10), 0.5d) === Vertex(5, 5), true)
-    assertEquals(Bezier.interpolate(Vertex(0, 0), Vertex(10, 10), 1d) === Vertex(10, 10), true)
+    assertEquals(Bezier.interpolate(Vertex(0, 0), Vertex(10, 10), 0d) == Vertex(0, 0), true)
+    assertEquals(Bezier.interpolate(Vertex(0, 0), Vertex(10, 10), 0.5d) == Vertex(5, 5), true)
+    assertEquals(Bezier.interpolate(Vertex(0, 0), Vertex(10, 10), 1d) == Vertex(10, 10), true)
   }
 
   test("Reduction.Empty list") {
-    assertEquals(Bezier.reduce(Nil, 0d) === Vertex.zero, true)
+    assertEquals(Bezier.reduce(Nil, 0d) == Vertex.zero, true)
   }
 
   test("Reduction.one point") {
-    assertEquals(Bezier.reduce(List(Vertex(1, 1)), 0d) === Vertex(1, 1), true)
+    assertEquals(Bezier.reduce(List(Vertex(1, 1)), 0d) == Vertex(1, 1), true)
   }
 
   test("Reduction.two points") {
-    assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(10, 10)), 0d) === Vertex(0, 0), true)
-    assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(10, 10)), 0.5d) === Vertex(5, 5), true)
-    assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(10, 10)), 1d) === Vertex(10, 10), true)
+    assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(10, 10)), 0d) == Vertex(0, 0), true)
+    assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(10, 10)), 0.5d) == Vertex(5, 5), true)
+    assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(10, 10)), 1d) == Vertex(10, 10), true)
   }
 
   test("Reduction.three points") {
-    assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 0d) === Vertex(0, 0), true)
-    assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 0.5d) === Vertex(5, 2.5), true)
-    assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 1d) === Vertex(10, 0), true)
+    assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 0d) == Vertex(0, 0), true)
+    assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 0.5d) == Vertex(5, 2.5), true)
+    assertEquals(Bezier.reduce(List(Vertex(0, 0), Vertex(5, 5), Vertex(10, 0)), 1d) == Vertex(10, 0), true)
   }
 
   test("One dimensional (1 point)") {
@@ -35,14 +35,14 @@ class BezierTests extends munit.FunSuite {
     val bezier =
       Bezier(Vertex(5, 5))
 
-    assertEquals(bezier.at(0d) === Vertex(5, 5), true)
-    assertEquals(bezier.at(0d) === Bezier.atUnspecialised(bezier, 0d), true)
+    assertEquals(bezier.at(0d) == Vertex(5, 5), true)
+    assertEquals(bezier.at(0d) == Bezier.atUnspecialised(bezier, 0d), true)
 
-    assertEquals(bezier.at(0.5d) === Vertex(5, 5), true)
-    assertEquals(bezier.at(0.5d) === Bezier.atUnspecialised(bezier, 0.5d), true)
+    assertEquals(bezier.at(0.5d) == Vertex(5, 5), true)
+    assertEquals(bezier.at(0.5d) == Bezier.atUnspecialised(bezier, 0.5d), true)
 
-    assertEquals(bezier.at(1d) === Vertex(5, 5), true)
-    assertEquals(bezier.at(1d) === Bezier.atUnspecialised(bezier, 1d), true)
+    assertEquals(bezier.at(1d) == Vertex(5, 5), true)
+    assertEquals(bezier.at(1d) == Bezier.atUnspecialised(bezier, 1d), true)
 
   }
 
@@ -51,26 +51,26 @@ class BezierTests extends munit.FunSuite {
     val bezier =
       Bezier(Vertex(0, 0), Vertex(10, 10))
 
-    assertEquals(bezier.at(-50d) === Vertex(0, 0), true)
-    assertEquals(bezier.at(-50d) === Bezier.atUnspecialised(bezier, -50d), true)
+    assertEquals(bezier.at(-50d) == Vertex(0, 0), true)
+    assertEquals(bezier.at(-50d) == Bezier.atUnspecialised(bezier, -50d), true)
 
-    assertEquals(bezier.at(0d) === Vertex(0, 0), true)
-    assertEquals(bezier.at(0d) === Bezier.atUnspecialised(bezier, 0d), true)
+    assertEquals(bezier.at(0d) == Vertex(0, 0), true)
+    assertEquals(bezier.at(0d) == Bezier.atUnspecialised(bezier, 0d), true)
 
-    assertEquals(bezier.at(0.25d) === Vertex(2.5, 2.5), true)
-    assertEquals(bezier.at(0.25d) === Bezier.atUnspecialised(bezier, 0.25d), true)
+    assertEquals(bezier.at(0.25d) == Vertex(2.5, 2.5), true)
+    assertEquals(bezier.at(0.25d) == Bezier.atUnspecialised(bezier, 0.25d), true)
 
-    assertEquals(bezier.at(0.5d) === Vertex(5, 5), true)
-    assertEquals(bezier.at(0.5d) === Bezier.atUnspecialised(bezier, 0.5d), true)
+    assertEquals(bezier.at(0.5d) == Vertex(5, 5), true)
+    assertEquals(bezier.at(0.5d) == Bezier.atUnspecialised(bezier, 0.5d), true)
 
-    assertEquals(bezier.at(0.75d) === Vertex(7.5, 7.5), true)
-    assertEquals(bezier.at(0.75d) === Bezier.atUnspecialised(bezier, 0.75d), true)
+    assertEquals(bezier.at(0.75d) == Vertex(7.5, 7.5), true)
+    assertEquals(bezier.at(0.75d) == Bezier.atUnspecialised(bezier, 0.75d), true)
 
-    assertEquals(bezier.at(1d) === Vertex(10, 10), true)
-    assertEquals(bezier.at(1d) === Bezier.atUnspecialised(bezier, 1d), true)
+    assertEquals(bezier.at(1d) == Vertex(10, 10), true)
+    assertEquals(bezier.at(1d) == Bezier.atUnspecialised(bezier, 1d), true)
 
-    assertEquals(bezier.at(100d) === Vertex(10, 10), true)
-    assertEquals(bezier.at(100d) === Bezier.atUnspecialised(bezier, 100d), true)
+    assertEquals(bezier.at(100d) == Vertex(10, 10), true)
+    assertEquals(bezier.at(100d) == Bezier.atUnspecialised(bezier, 100d), true)
 
   }
 
@@ -89,13 +89,13 @@ class BezierTests extends munit.FunSuite {
 
      */
 
-    assertEquals(bezier.at(0d) === Vertex(2, 2), true)
-    assertEquals(bezier.at(0d) === Bezier.atUnspecialised(bezier, 0d), true)
+    assertEquals(bezier.at(0d) == Vertex(2, 2), true)
+    assertEquals(bezier.at(0d) == Bezier.atUnspecialised(bezier, 0d), true)
 
-    assertEquals(bezier.at(0.5d) === Vertex(7.5, 6.5), true)
-    assertEquals(bezier.at(0.5d) === Bezier.atUnspecialised(bezier, 0.5d), true)
+    assertEquals(bezier.at(0.5d) == Vertex(7.5, 6.5), true)
+    assertEquals(bezier.at(0.5d) == Bezier.atUnspecialised(bezier, 0.5d), true)
 
-    assertEquals(bezier.at(1d) === Vertex(20, 10), true)
+    assertEquals(bezier.at(1d) == Vertex(20, 10), true)
 
   }
 
@@ -116,14 +116,14 @@ class BezierTests extends munit.FunSuite {
 
      */
 
-    assertEquals(bezier.at(0d) === Vertex(2, 2), true)
-    assertEquals(bezier.at(0d) === Bezier.atUnspecialised(bezier, 0d), true)
+    assertEquals(bezier.at(0d) == Vertex(2, 2), true)
+    assertEquals(bezier.at(0d) == Bezier.atUnspecialised(bezier, 0d), true)
 
-    assertEquals(bezier.at(0.5d) === Vertex(9.625, 19.125), true)
-    assertEquals(bezier.at(0.5d) === Bezier.atUnspecialised(bezier, 0.5d), true)
+    assertEquals(bezier.at(0.5d) == Vertex(9.625, 19.125), true)
+    assertEquals(bezier.at(0.5d) == Bezier.atUnspecialised(bezier, 0.5d), true)
 
-    assertEquals(bezier.at(1d) === Vertex(3, 100), true)
-    assertEquals(bezier.at(1d) === Bezier.atUnspecialised(bezier, 1d), true)
+    assertEquals(bezier.at(1d) == Vertex(3, 100), true)
+    assertEquals(bezier.at(1d) == Bezier.atUnspecialised(bezier, 1d), true)
 
   }
 
@@ -187,8 +187,8 @@ class BezierTests extends munit.FunSuite {
     val lineSegments = bezier.toLineSegments(2)
 
     assertEquals(lineSegments.length, 2)
-    assertEquals(lineSegments(0) === LineSegment(Vertex(2, 2), Vertex(9.625, 19.125)), true)
-    assertEquals(lineSegments(1) === LineSegment(Vertex(9.625, 19.125), Vertex(3, 100)), true)
+    assertEquals(lineSegments(0) == LineSegment(Vertex(2, 2), Vertex(9.625, 19.125)), true)
+    assertEquals(lineSegments(1) == LineSegment(Vertex(9.625, 19.125), Vertex(3, 100)), true)
   }
 
   test("to signal") {
@@ -198,9 +198,9 @@ class BezierTests extends munit.FunSuite {
     val signal =
       bezier.toSignal(Seconds(1.5))
 
-    assertEquals(signal.at(Seconds(0)) === Vertex(2, 2), true)
-    assertEquals(signal.at(Seconds(0.75)) === Vertex(9.625, 19.125), true)
-    assertEquals(signal.at(Seconds(1.5)) === Vertex(3, 100), true)
+    assertEquals(signal.at(Seconds(0)) == Vertex(2, 2), true)
+    assertEquals(signal.at(Seconds(0.75)) == Vertex(9.625, 19.125), true)
+    assertEquals(signal.at(Seconds(1.5)) == Vertex(3, 100), true)
   }
 
   test("give bounding rectangle") {
@@ -214,7 +214,7 @@ class BezierTests extends munit.FunSuite {
     val expected: BoundingBox =
       BoundingBox(2, 2, 18, 98)
 
-    assertEquals(actual === expected, true)
+    assertEquals(actual == expected, true)
   }
 
 }

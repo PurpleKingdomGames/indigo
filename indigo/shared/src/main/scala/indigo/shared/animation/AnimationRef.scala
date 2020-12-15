@@ -10,7 +10,6 @@ import indigo.shared.animation.AnimationAction.ChangeCycle
 import indigo.shared.animation.AnimationAction.JumpToFirstFrame
 import indigo.shared.animation.AnimationAction.JumpToLastFrame
 import indigo.shared.animation.AnimationAction.JumpToFrame
-import indigo.shared.EqualTo
 
 final case class AnimationRef(
     animationKey: AnimationKey,
@@ -153,34 +152,8 @@ object CycleRef {
     }
 }
 
-final case class AnimationMemento(bindingKey: BindingKey, currentCycleLabel: CycleLabel, currentCycleMemento: CycleMemento) {
-
-  def ===(other: AnimationMemento): Boolean =
-    implicitly[EqualTo[AnimationMemento]].equal(this, other)
-
-  // @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
-  override def equals(obj: Any): Boolean =
-    if (obj.isInstanceOf[AnimationMemento])
-      this === obj.asInstanceOf[AnimationMemento]
-    else false
-
-}
+final case class AnimationMemento(bindingKey: BindingKey, currentCycleLabel: CycleLabel, currentCycleMemento: CycleMemento)
 object AnimationMemento {
-
-  // @SuppressWarnings(Array("org.wartremover.warts.Equals"))
-  implicit val animationMementoEqualTo: EqualTo[AnimationMemento] = {
-    val bk = implicitly[EqualTo[BindingKey]]
-    val cl = implicitly[EqualTo[CycleLabel]]
-    val cm = implicitly[EqualTo[CycleMemento]]
-
-    EqualTo.create {
-      case (a, b) =>
-        bk.equal(a.bindingKey, b.bindingKey) &&
-          cl.equal(a.currentCycleLabel, b.currentCycleLabel) &&
-          cm.equal(a.currentCycleMemento, b.currentCycleMemento)
-    }
-  }
-
   def apply(bindingKey: BindingKey, currentCycleLabel: CycleLabel, currentCycleMemento: CycleMemento): AnimationMemento =
     new AnimationMemento(bindingKey, currentCycleLabel, currentCycleMemento)
 }

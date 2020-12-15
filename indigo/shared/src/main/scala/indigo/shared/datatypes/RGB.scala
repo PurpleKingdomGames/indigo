@@ -1,8 +1,5 @@
 package indigo.shared.datatypes
 
-import indigo.shared.EqualTo
-import indigo.shared.EqualTo._
-
 final case class RGB(r: Double, g: Double, b: Double) {
   def +(other: RGB): RGB =
     RGB.combine(this, other)
@@ -20,7 +17,7 @@ final case class RGB(r: Double, g: Double, b: Double) {
     RGBA(r, g, b, 1.0)
 
   def ===(other: RGB): Boolean =
-    implicitly[EqualTo[RGB]].equal(this, other)
+    r == other.r && g == other.g && b == other.b
 
   def toArray: Array[Float] =
     Array(r.toFloat, g.toFloat, b.toFloat)
@@ -29,14 +26,6 @@ final case class RGB(r: Double, g: Double, b: Double) {
     r.toString() + g.toString() + b.toString()
 }
 object RGB {
-
-  implicit val eq: EqualTo[RGB] = {
-    val ev = implicitly[EqualTo[Double]]
-
-    EqualTo.create { (a, b) =>
-      ev.equal(a.r, b.r) && ev.equal(a.g, b.g) && ev.equal(a.b, b.b)
-    }
-  }
 
   val Red: RGB     = RGB(1, 0, 0)
   val Green: RGB   = RGB(0, 1, 0)

@@ -1,6 +1,5 @@
 package indigoextras.geometry
 
-import indigo.shared.EqualTo
 import indigo.shared.datatypes.Vector2
 
 final case class LineSegment(start: Vertex, end: Vertex) {
@@ -113,20 +112,9 @@ final case class LineSegment(start: Vertex, end: Vertex) {
       None
   }
 
-  def ===(other: LineSegment): Boolean =
-    implicitly[EqualTo[LineSegment]].equal(this, other)
-
 }
 
 object LineSegment {
-
-  implicit val lsEqualTo: EqualTo[LineSegment] = {
-    val eqPt = implicitly[EqualTo[Vertex]]
-
-    EqualTo.create { (a, b) =>
-      eqPt.equal(a.start, b.start) && eqPt.equal(a.end, b.end)
-    }
-  }
 
   def apply(start: Vertex, end: Vertex): LineSegment =
     new LineSegment(start, end)

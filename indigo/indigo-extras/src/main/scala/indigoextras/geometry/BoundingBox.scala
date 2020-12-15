@@ -1,7 +1,5 @@
 package indigoextras.geometry
 
-import indigo.shared.EqualTo
-
 import scala.annotation.tailrec
 import indigo.shared.datatypes.Rectangle
 
@@ -90,15 +88,6 @@ final case class BoundingBox(position: Vertex, size: Vertex) {
 
   def lineIntersectsAt(line: LineSegment): Option[Vertex] =
     BoundingBox.lineIntersectsAt(this, line)
-
-  def ===(other: BoundingBox): Boolean =
-    implicitly[EqualTo[BoundingBox]].equal(this, other)
-
-  // @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
-  override def equals(obj: Any): Boolean =
-    if (obj.isInstanceOf[BoundingBox])
-      this === obj.asInstanceOf[BoundingBox]
-    else false
 }
 
 object BoundingBox {
@@ -154,14 +143,6 @@ object BoundingBox {
       LineSegment(boundingBox.bottomRight, boundingBox.topRight),
       LineSegment(boundingBox.topRight, boundingBox.topLeft)
     )
-
-  implicit val bbEqualTo: EqualTo[BoundingBox] = {
-    val eq = implicitly[EqualTo[Vertex]]
-
-    EqualTo.create { (a, b) =>
-      eq.equal(a.position, b.position) && eq.equal(a.size, b.size)
-    }
-  }
 
   def expand(boundingBox: BoundingBox, amount: Double): BoundingBox =
     BoundingBox(

@@ -1,7 +1,7 @@
 package indigoextras.geometry
 
 import indigo.shared.datatypes.Rectangle
-import indigo.shared.EqualTo._
+
 import indigo.shared.datatypes.Point
 
 class PolygonTests extends munit.FunSuite {
@@ -56,7 +56,7 @@ class PolygonTests extends munit.FunSuite {
   }
 
   test("Construction.should be able to produce a bounding rectangle") {
-    assertEquals(closed.bounds.toRectangle === Rectangle(0, -5, 10, 10), true)
+    assertEquals(closed.bounds.toRectangle == Rectangle(0, -5, 10, 10), true)
   }
 
   test("Construction.should be able to create a polygon from a rectangle") {
@@ -71,7 +71,7 @@ class PolygonTests extends munit.FunSuite {
     val actual: Polygon =
       Polygon.fromRectangle(Rectangle(Point(0, 0), Point(10, 10)))
 
-    assertEquals(expected === actual, true)
+    assertEquals(expected == actual, true)
   }
 
   test("Operations.should be able to produce line segments (open)") {
@@ -86,7 +86,7 @@ class PolygonTests extends munit.FunSuite {
     val actual: List[LineSegment] =
       open.lineSegments
 
-    assertEquals(actual === expected, true)
+    assertEquals(actual == expected, true)
   }
 
   test("Operations.should be able to produce line segments (closed)") {
@@ -102,7 +102,7 @@ class PolygonTests extends munit.FunSuite {
     val actual: List[LineSegment] =
       closed.lineSegments
 
-    assertEquals(actual === expected, true)
+    assertEquals(actual == expected, true)
   }
 
   test("Intersections.contains point (open shapes can't contain)") {

@@ -5,8 +5,7 @@ import indigo.shared.animation.AnimationAction._
 import indigo.shared.animation.AnimationKey
 import indigo.shared.animation.CycleLabel
 import indigo.shared.datatypes._
-import indigo.shared.EqualTo
-import indigo.shared.EqualTo._
+
 import indigo.shared.animation.AnimationAction
 import indigo.shared.BoundaryLocator
 
@@ -103,10 +102,6 @@ object Group {
   * @param value
   */
 final case class CloneId(value: String) extends AnyVal
-object CloneId {
-  implicit val equalTo: EqualTo[CloneId] =
-    EqualTo.create(_.value === _.value)
-}
 
 /**
   * Used to distingush between cloneable and non-clonable scene graph nodes.

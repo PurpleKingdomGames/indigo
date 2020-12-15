@@ -1,7 +1,6 @@
 package indigo.shared
 
 import scala.collection.mutable
-import EqualTo._
 
 // @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures", "org.wartremover.warts.NonUnitStatements", "org.wartremover.warts.Null"))
 final class QuickCache[A](private val cache: mutable.HashMap[CacheKey, A]) {
@@ -43,7 +42,7 @@ final class QuickCache[A](private val cache: mutable.HashMap[CacheKey, A]) {
     cache.toList
 
   def entryExistsFor(key: CacheKey): Boolean =
-    cache.keys.exists(_.value === key.value)
+    cache.keys.exists(_.value == key.value)
 
   def unsafeFetch(key: CacheKey): A =
     cache(key)

@@ -2,7 +2,6 @@ package indigoextras.pathfinding
 
 import indigoextras.pathfinding.GridSquare.{EmptySquare, EndSquare, ImpassableSquare, StartSquare}
 
-import indigo.shared.EqualTo._
 import scala.annotation.tailrec
 import indigo.shared.dice.Dice
 
@@ -19,7 +18,7 @@ final case class SearchGrid(validationWidth: Int, validationHeight: Int, start: 
 object SearchGrid {
 
   def isValid(searchGrid: SearchGrid): Boolean =
-    searchGrid.grid.lengthCompare(searchGrid.validationWidth * searchGrid.validationHeight) === 0 &&
+    searchGrid.grid.lengthCompare(searchGrid.validationWidth * searchGrid.validationHeight) == 0 &&
       searchGrid.grid.exists(_.isStart) && searchGrid.grid.exists(_.isEnd)
 
   def coordsWithinGrid(searchGrid: SearchGrid, coords: Coords): Boolean =
@@ -36,10 +35,10 @@ object SearchGrid {
   def generate(start: Coords, end: Coords, impassable: List[Coords], gridWidth: Int, gridHeight: Int): SearchGrid = {
     val grid: List[GridSquare] = (0 until (gridWidth * gridHeight)).toList.map { index =>
       Coords.fromIndex(index, gridWidth) match {
-        case c: Coords if c === start =>
+        case c: Coords if c == start =>
           StartSquare(index, start)
 
-        case c: Coords if c === end =>
+        case c: Coords if c == end =>
           EndSquare(index, end)
 
         case c: Coords if impassable.contains(c) =>
@@ -61,7 +60,7 @@ object SearchGrid {
         case (Nil, _) | (_, Nil) =>
           scored ++ unscored
 
-        case (_, last) if last.exists(_ === target) =>
+        case (_, last) if last.exists(_ == target) =>
           scored ++ unscored
 
         case (remainingSquares, lastScoredLocations) =>
@@ -77,13 +76,13 @@ object SearchGrid {
           val next: List[GridSquare] =
             edges
               .foldLeft[List[GridSquare]](Nil) { (l, x) =>
-                if (l.exists(p => p.coords === x.coords)) l else l ++ List(x)
+                if (l.exists(p => p.coords == x.coords)) l else l ++ List(x)
               }
               .map(_.withScore(scoreValue))
 
           rec(
             target = target,
-            unscored = remainingSquares.filter(p => !next.exists(q => q.coords === p.coords)),
+            unscored = remainingSquares.filter(p => !next.exists(q => q.coords == p.coords)),
             scoreValue = scoreValue + 1,
             lastCoords = next.map(_.coords),
             scored = next ++ scored
@@ -101,7 +100,7 @@ object SearchGrid {
   def locatePath(dice: Dice, searchGrid: SearchGrid): List[Coords] = {
     @tailrec
     def rec(currentPosition: Coords, currentScore: Int, target: Coords, grid: SearchGrid, width: Int, acc: List[Coords]): List[Coords] =
-      if (currentPosition === target) acc
+      if (currentPosition == target) acc
       else
         sampleAt(grid, currentPosition, width).filter(c => c.score.getOrElse(GridSquare.max) < currentScore) match {
           case Nil =>

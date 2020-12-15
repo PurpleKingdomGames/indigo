@@ -61,7 +61,7 @@ class AnimationRefTests extends munit.FunSuite {
 
     val actual = animation.saveMemento(bindingKey)
 
-    assertEquals(expected === actual, true)
+    assertEquals(expected == actual, true)
 
   }
 
@@ -82,7 +82,7 @@ class AnimationRefTests extends munit.FunSuite {
     assertEquals(updated.currentCycle.playheadPosition, 3)
     assertEquals(updated.currentCycle.lastFrameAdvance, Millis(300))
 
-    assertEquals(expected === actual, true)
+    assertEquals(expected == actual, true)
 
   }
 

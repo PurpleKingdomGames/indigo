@@ -3,7 +3,7 @@ package indigo.scenes
 import indigo.shared.Outcome
 import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.EqualTo
+
 import indigo.shared.subsystems.SubSystem
 import indigo.shared.FrameContext
 import indigo.shared.events.EventFilters
@@ -42,13 +42,3 @@ object Scene {
 }
 
 final case class SceneName(name: String) extends AnyVal
-object SceneName {
-
-  implicit val EqSceneName: EqualTo[SceneName] = {
-    val eq = implicitly[EqualTo[String]]
-    EqualTo.create { (a, b) =>
-      eq.equal(a.name, b.name)
-    }
-  }
-
-}

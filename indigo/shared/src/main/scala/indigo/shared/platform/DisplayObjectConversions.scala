@@ -10,7 +10,7 @@ import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 import indigo.shared.platform.AssetMapping
 import indigo.shared.scenegraph.{Graphic, Sprite, Text, TextLine}
-import indigo.shared.EqualTo._
+
 import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.scenegraph.Group
 import indigo.shared.QuickCache
@@ -57,7 +57,7 @@ final class DisplayObjectConversions(
   def lookupTextureOffset(assetMapping: AssetMapping, name: String): Vector2 =
     QuickCache("tex-offset-" + name) {
       assetMapping.mappings
-        .find(p => p._1 === name)
+        .find(p => p._1 == name)
         .map(_._2.offset)
         .map(pt => Vector2(pt.x.toDouble, pt.y.toDouble))
         .getOrElse {
@@ -68,7 +68,7 @@ final class DisplayObjectConversions(
   // @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   def lookupAtlasName(assetMapping: AssetMapping, name: String): String =
     QuickCache("atlas-" + name) {
-      assetMapping.mappings.find(p => p._1 === name).map(_._2.atlasName).getOrElse {
+      assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasName).getOrElse {
         throw new Exception("Failed to find atlas name for texture: " + name)
       }
     }
@@ -76,14 +76,14 @@ final class DisplayObjectConversions(
   // @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   private def lookupAtlasSize(assetMapping: AssetMapping, name: String): Vector2 =
     QuickCache("atlas-size-" + name) {
-      assetMapping.mappings.find(p => p._1 === name).map(_._2.atlasSize).getOrElse {
+      assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasSize).getOrElse {
         throw new Exception("Failed to find atlas size for texture: " + name)
       }
     }
 
   private def cloneDataToDisplayEntity(id: String, cloneDepth: Float, data: CloneTransformData): DisplayClone =
     new DisplayClone(
-      id = id.value,
+      id = id,
       x = data.position.x.toFloat,
       y = data.position.y.toFloat,
       z = cloneDepth,

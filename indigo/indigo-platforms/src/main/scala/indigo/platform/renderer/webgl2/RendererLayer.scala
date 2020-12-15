@@ -5,7 +5,7 @@ import indigo.shared.display.DisplayObject
 import org.scalajs.dom.raw.WebGLProgram
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
-import indigo.shared.EqualTo._
+
 import scala.annotation.tailrec
 import scala.scalajs.js.typedarray.Float32Array
 import scala.collection.mutable.ListBuffer
@@ -232,11 +232,11 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
         case Nil =>
           drawBuffer(batchCount)
 
-        case (d: DisplayObject) :: _ if d.atlasName !== atlasName =>
+        case (d: DisplayObject) :: _ if d.atlasName != atlasName =>
           drawBuffer(batchCount)
 
           // Diffuse
-          textureLocations.find(t => t.name === d.atlasName) match {
+          textureLocations.find(t => t.name == d.atlasName) match {
             case None =>
               gl2.activeTexture(TEXTURE0);
               gl2.bindTexture(TEXTURE_2D, null)
@@ -248,7 +248,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
           rec(remaining, 0, d.atlasName)
 
-        case _ if batchCount === maxBatchSize =>
+        case _ if batchCount == maxBatchSize =>
           drawBuffer(batchCount)
           rec(remaining, 0, atlasName)
 

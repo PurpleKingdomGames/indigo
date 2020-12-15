@@ -143,13 +143,13 @@ final case class AssetBundleTracker(val register: List[AssetBundle]) {
     }
 
   def findBundleByKey(key: BindingKey): Option[AssetBundle] =
-    register.find(_.key === key)
+    register.find(_.key == key)
 
   def findAssetByPath(path: AssetPath): List[AssetToLoad] =
     register.flatMap(_.assets.get(path).toList)
 
   def containsBundle(key: BindingKey): Boolean =
-    register.exists(_.key === key)
+    register.exists(_.key == key)
 
   def containsAssetFromKey(key: BindingKey): Boolean =
     containsAsset(AssetPath(key.value))

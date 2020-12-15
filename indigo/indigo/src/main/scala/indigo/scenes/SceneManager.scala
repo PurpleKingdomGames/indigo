@@ -5,7 +5,7 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.IndigoLogger
 import indigo.shared.collections.NonEmptyList
-import indigo.shared.EqualTo._
+
 import indigo.shared.subsystems.SubSystemsRegister
 import indigo.shared.FrameContext
 import indigo.shared.subsystems.SubSystemFrameContext._
@@ -42,7 +42,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
       Outcome(model)
 
     case event =>
-      scenes.find(_.name === finderInstance.current.name) match {
+      scenes.find(_.name == finderInstance.current.name) match {
         case None =>
           IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
           Outcome(model)
@@ -55,7 +55,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
 
   def updateSubSystems(frameContext: SubSystemFrameContext, globalEvents: List[GlobalEvent]): List[GlobalEvent] =
     scenes
-      .find(_.name === finderInstance.current.name)
+      .find(_.name == finderInstance.current.name)
       .flatMap { scene =>
         subSystemStates
           .get(scene.name)
@@ -66,7 +66,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
       .getOrElse(Nil)
 
   def updateViewModel(frameContext: FrameContext[StartUpData], model: GameModel, viewModel: ViewModel): GlobalEvent => Outcome[ViewModel] =
-    scenes.find(_.name === finderInstance.current.name) match {
+    scenes.find(_.name == finderInstance.current.name) match {
       case None =>
         IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
         _ => Outcome(viewModel)
@@ -76,7 +76,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
     }
 
   def updateView(frameContext: FrameContext[StartUpData], model: GameModel, viewModel: ViewModel): SceneUpdateFragment =
-    scenes.find(_.name === finderInstance.current.name) match {
+    scenes.find(_.name == finderInstance.current.name) match {
       case None =>
         IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
         SceneUpdateFragment.empty
@@ -96,7 +96,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
     (e: GlobalEvent) => Some(e)
 
   def eventFilters: EventFilters =
-    scenes.find(_.name === finderInstance.current.name) match {
+    scenes.find(_.name == finderInstance.current.name) match {
       case None =>
         EventFilters.Default
 

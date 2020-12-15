@@ -1,8 +1,6 @@
 package indigoextras.datatypes
 
 import indigo.shared.time.Seconds
-import indigo.shared.EqualTo
-import indigo.shared.EqualTo._
 
 /**
   * Represents one of the type of values that changes over time.
@@ -58,7 +56,7 @@ sealed trait TimeVaryingValue {
     * @return TimeVaryingValue
     */
   def update(timeDelta: Seconds): TimeVaryingValue
-  
+
 }
 
 /**
@@ -85,7 +83,7 @@ final case class IncreaseTo(value: Double, unitsPerSecond: Double, limit: Double
   def update(timeDelta: Seconds): IncreaseTo =
     this.copy(
       value = value + unitsPerSecond * timeDelta.value match {
-        case x if x === limit || x > limit =>
+        case x if x == limit || x > limit =>
           limit
 
         case x =>
@@ -146,7 +144,7 @@ final case class DecreaseTo(value: Double, unitsPerSecond: Double, limit: Double
   def update(timeDelta: Seconds): DecreaseTo =
     this.copy(
       value = value - unitsPerSecond * timeDelta.value match {
-        case x if x === limit || x < limit =>
+        case x if x == limit || x < limit =>
           limit
 
         case x =>
@@ -181,14 +179,5 @@ object DecreaseWrapAt {
     */
   def apply(unitsPerSecond: Double, limit: Double): DecreaseWrapAt =
     DecreaseWrapAt(0, unitsPerSecond, limit)
-
-}
-
-object TimeVaryingValue {
-
-  implicit def eqTimeVaryingValue: EqualTo[TimeVaryingValue] =
-    EqualTo.create[TimeVaryingValue] { (a, b) =>
-      a.value === b.value
-    }
 
 }

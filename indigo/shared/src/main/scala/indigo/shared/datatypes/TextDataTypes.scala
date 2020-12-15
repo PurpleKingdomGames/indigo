@@ -1,8 +1,5 @@
 package indigo.shared.datatypes
 
-import indigo.shared.EqualTo
-
-import indigo.shared.EqualTo._
 import indigo.shared.QuickCache
 import indigo.shared.datatypes.Material
 
@@ -25,7 +22,7 @@ final case class FontInfo(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, un
     QuickCache("char-" + character + "-" + fontKey.key) {
       nonEmptyChars
         .find { p =>
-          if (caseSensitive) p.character === character else p.character.toLowerCase === character.toLowerCase
+          if (caseSensitive) p.character == character else p.character.toLowerCase == character.toLowerCase
         }
         .getOrElse(unknownChar)
     }
@@ -56,16 +53,6 @@ object FontInfo {
 }
 
 final case class FontKey(key: String) extends AnyVal
-object FontKey {
-
-  implicit val eq: EqualTo[FontKey] = {
-    val eqS = implicitly[EqualTo[String]]
-    EqualTo.create { (a, b) =>
-      eqS.equal(a.key, b.key)
-    }
-  }
-
-}
 
 final case class FontSpriteSheet(material: Material, size: Point)
 

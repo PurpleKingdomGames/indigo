@@ -3,7 +3,6 @@ package indigo.shared.animation
 import indigo.shared.time._
 import indigo.shared.datatypes._
 import indigo.shared.collections.NonEmptyList
-import indigo.shared.EqualTo._
 
 class CycleTests extends munit.FunSuite {
 
@@ -20,7 +19,10 @@ class CycleTests extends munit.FunSuite {
     Cycle.create("test", NonEmptyList(frame1, frame2, frame3))
 
   test("adding a frame") {
-    assertEquals(Cycle.create("test", NonEmptyList(frame1)).addFrame(frame2) === Cycle.create("test", NonEmptyList(frame1, frame2)), true)
+    assertEquals(
+      Cycle.create("test", NonEmptyList(frame1)).addFrame(frame2),
+      Cycle.create("test", NonEmptyList(frame1, frame2))
+    )
   }
 
 }

@@ -1,10 +1,8 @@
 package indigoextras.geometry
 
-import indigo.shared.EqualTo._
-
 /**
- * Defines a line in terms of y = mx + b
- */
+  * Defines a line in terms of y = mx + b
+  */
 sealed trait Line
 object Line {
   final case class Components(m: Double, b: Double) extends Line {
@@ -12,7 +10,7 @@ object Line {
     def slopeComparison(vertex: Vertex, tolerance: Double): Boolean = {
       // This is a slope comparison.. Any point on the line should have the same slope as the line.
       val m2: Double =
-        if (vertex.x === 0) 0
+        if (vertex.x == 0) 0
         else (b - vertex.y) / (0 - vertex.x)
 
       val mDelta: Double =
@@ -34,10 +32,10 @@ object Line {
    */
   def fromLineSegment(lineSegment: LineSegment): Line =
     (lineSegment.start, lineSegment.end) match {
-      case (Vertex(x1, y1), Vertex(x2, y2)) if x1 === x2 && y1 === y2 =>
+      case (Vertex(x1, y1), Vertex(x2, y2)) if x1 == x2 && y1 == y2 =>
         Line.InvalidLine
 
-      case (Vertex(x1, _), Vertex(x2, _)) if x1 === x2 =>
+      case (Vertex(x1, _), Vertex(x2, _)) if x1 == x2 =>
         Line.ParallelToAxisY(x1)
 
       case (Vertex(x1, y1), Vertex(x2, y2)) =>
@@ -52,7 +50,7 @@ object Line {
     x-intercept = -b/m   (i.e. x = -b/m where y is moved to 0)
      */
     (l1, l2) match {
-      case (Line.Components(m1, _), Line.Components(m2, _)) if m1 === m2 =>
+      case (Line.Components(m1, _), Line.Components(m2, _)) if m1 == m2 =>
         // Same slope, so parallel
         LineIntersectionResult.NoIntersection
 

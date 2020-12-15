@@ -9,8 +9,6 @@ import indigo.platform.events.GlobalEventStream
 
 import org.scalajs.dom
 
-import indigo.shared.EqualTo._
-
 import scala.collection.mutable
 
 object WebSockets {
@@ -46,7 +44,7 @@ object WebSockets {
 
     maybeConfig
       .flatMap { c =>
-        if (c === config)
+        if (c == config)
           Option(c)
         else {
           configs.remove(config.id)

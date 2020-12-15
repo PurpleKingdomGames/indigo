@@ -1,6 +1,5 @@
 package indigoextras.geometry
 
-import indigo.shared.EqualTo
 import indigo.shared.datatypes.Vector2
 
 final case class BoundingCircle(position: Vertex, radius: Double) {
@@ -60,14 +59,6 @@ final case class BoundingCircle(position: Vertex, radius: Double) {
   def lineIntersectsAt(line: LineSegment): BoundingCircleLineIntersect =
     BoundingCircle.lineIntersectsAt(this, line)
 
-  def ===(other: BoundingCircle): Boolean =
-    implicitly[EqualTo[BoundingCircle]].equal(this, other)
-
-  // @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
-  override def equals(obj: Any): Boolean =
-    if (obj.isInstanceOf[BoundingCircle])
-      this === obj.asInstanceOf[BoundingCircle]
-    else false
 }
 
 object BoundingCircle {
@@ -92,14 +83,6 @@ object BoundingCircle {
 
   def fromBoundingBox(boundingBox: BoundingBox): BoundingCircle =
     BoundingCircle(boundingBox.center, Math.max(boundingBox.halfSize.x, boundingBox.halfSize.y))
-
-  implicit val bcEqualTo: EqualTo[BoundingCircle] = {
-    val eq = implicitly[EqualTo[Vertex]]
-
-    EqualTo.create { (a, b) =>
-      eq.equal(a.position, b.position) && EqualTo.eqDouble.equal(a.radius, b.radius)
-    }
-  }
 
   def expandToInclude(a: BoundingCircle, b: BoundingCircle): BoundingCircle =
     a.resize(a.position.distanceTo(b.position) + Math.abs(b.radius))

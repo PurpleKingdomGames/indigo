@@ -1,29 +1,15 @@
 package indigo.shared.constants
 
-import indigo.shared.EqualTo
-import indigo.shared.EqualTo._
-
 final case class Key(code: Int, key: String) {
   def isPrintable: Boolean =
-    (key !== "") && Key.printable.map(_.code).contains(this.code)
+    (key != "") && Key.printable.map(_.code).contains(this.code)
 
   def ===(other: Key): Boolean =
-    implicitly[EqualTo[Key]].equal(this, other)
+    code == other.code && key == other.key
 
-  // @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf"))
-  override def equals(that: Any): Boolean =
-    that match {
-      case that: Key =>
-        that.isInstanceOf[Key] && this.code === that.code
-      case _ => false
-    }
 }
 
 object Key {
-  implicit val equals: EqualTo[Key] = {
-    val eqI = implicitly[EqualTo[Int]]
-    EqualTo.create((a, b) => eqI.equal(a.code, b.code))
-  }
 
   implicit private def intToKey(i: Int): Key =
     Key(i, "")

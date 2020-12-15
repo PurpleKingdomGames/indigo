@@ -1,7 +1,5 @@
 package indigo.shared.datatypes
 
-import indigo.shared.EqualTo
-
 final case class Matrix4(private val mat: List[Double]) {
 
   def row1: List[Double] = List(mat(0), mat(1), mat(2), mat(3))
@@ -40,14 +38,6 @@ final case class Matrix4(private val mat: List[Double]) {
 }
 
 object Matrix4 {
-
-  implicit val eq: EqualTo[Matrix4] = {
-    val ev = implicitly[EqualTo[List[Double]]]
-
-    EqualTo.create { (a, b) =>
-      ev.equal(a.mat, b.mat)
-    }
-  }
 
   val identity: Matrix4 =
     Matrix4(

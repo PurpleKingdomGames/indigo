@@ -1,7 +1,5 @@
 package indigo.shared.time
 
-import indigo.shared.EqualTo
-
 final case class Seconds(value: Double) extends AnyVal {
 
   def +(other: Seconds): Seconds =
@@ -26,10 +24,10 @@ final case class Seconds(value: Double) extends AnyVal {
     Seconds.greaterThan(this, other)
 
   def <=(other: Seconds): Boolean =
-    Seconds.lessThan(this, other) || implicitly[EqualTo[Double]].equal(this.value, other.value)
+    Seconds.lessThan(this, other) || this.value == other.value
 
   def >=(other: Seconds): Boolean =
-    Seconds.greaterThan(this, other) || implicitly[EqualTo[Double]].equal(this.value, other.value)
+    Seconds.greaterThan(this, other) || this.value == other.value
 
   def toInt: Int =
     value.toInt
@@ -45,20 +43,15 @@ final case class Seconds(value: Double) extends AnyVal {
 
   def toMillis: Millis =
     Millis(Math.floor(value * 1000).toLong)
-
+    
   def ===(other: Seconds): Boolean =
-    implicitly[EqualTo[Seconds]].equal(this, other)
+    this.value == other.value
 
 }
 object Seconds {
 
   val zero: Seconds =
     Seconds(0)
-
-  implicit val equalToSeconds: EqualTo[Seconds] =
-    EqualTo.create { (a, b) =>
-      implicitly[EqualTo[Double]].equal(a.value, b.value)
-    }
 
   @inline def plus(a: Seconds, b: Seconds): Seconds =
     Seconds(a.value + b.value)

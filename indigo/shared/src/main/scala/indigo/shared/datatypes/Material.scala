@@ -1,8 +1,6 @@
 package indigo.shared.datatypes
 
 import indigo.shared.assets.AssetName
-import indigo.shared.EqualTo
-import indigo.shared.EqualTo._
 
 sealed trait Material {
   val default: AssetName
@@ -13,22 +11,6 @@ sealed trait Material {
 }
 
 object Material {
-
-  implicit val eq: EqualTo[Material] =
-    EqualTo.create {
-      case (Textured(diffuseA, isLitA), Textured(diffuseB, isLitB)) =>
-        diffuseA === diffuseB &&
-          isLitA === isLitB
-
-      case (Lit(albedoA, emissiveA, normalA, specularA, isLitA), Lit(albedoB, emissiveB, normalB, specularB, isLitB)) =>
-        albedoA === albedoB &&
-          emissiveA === emissiveB &&
-          normalA === normalB &&
-          specularA === specularB &&
-          isLitA === isLitB
-      case _ =>
-        false
-    }
 
   final case class Textured(diffuse: AssetName, isLit: Boolean) extends Material {
     val default: AssetName = diffuse
@@ -149,14 +131,4 @@ object Material {
 final case class Texture(assetName: AssetName, amount: Double) {
   def hash: String =
     assetName.value + amount.toString()
-}
-object Texture {
-
-  implicit val eq: EqualTo[Texture] =
-    EqualTo.create {
-      case (a, b) =>
-        a.assetName === b.assetName &&
-          a.amount === b.amount
-    }
-
 }

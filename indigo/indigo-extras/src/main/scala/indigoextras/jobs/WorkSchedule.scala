@@ -62,7 +62,7 @@ object WorkSchedule {
       context: Context,
       worker: Worker[Actor, Context]
   ): GlobalEvent => Outcome[WorkProgressReport[Actor, Context]] = {
-    case JobMarketEvent.Allocate(allocationId, job) if allocationId === id =>
+    case JobMarketEvent.Allocate(allocationId, job) if allocationId == id =>
       Outcome(
         WorkProgressReport(
           workSchedule.copy[Actor, Context](
@@ -72,7 +72,7 @@ object WorkSchedule {
         )
       )
 
-    case JobMarketEvent.NothingFound(allocationId) if allocationId === id =>
+    case JobMarketEvent.NothingFound(allocationId) if allocationId == id =>
       updateWorkSchedule[Actor, Context](workSchedule, WorkContext(gameTime, dice, actor, context), worker)
 
     case FrameTick =>

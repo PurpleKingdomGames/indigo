@@ -11,7 +11,7 @@ import indigo.facades.WebGL2RenderingContext
 import indigo.platform.shaders._
 import indigo.shared.datatypes.Matrix4
 import org.scalajs.dom.html
-import indigo.shared.EqualTo._
+
 import indigo.shared.platform.ProcessedSceneData
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
@@ -218,7 +218,7 @@ final class RendererWebGL2(
     val actualWidth  = canvas.width
     val actualHeight = canvas.height
 
-    if (!resizeRun || (lastWidth !== actualWidth) || (lastHeight !== actualHeight)) {
+    if (!resizeRun || (lastWidth != actualWidth) || (lastHeight != actualHeight)) {
       resizeRun = true
       lastWidth = actualWidth
       lastHeight = actualHeight

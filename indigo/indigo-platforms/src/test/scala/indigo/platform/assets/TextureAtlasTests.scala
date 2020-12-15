@@ -2,7 +2,7 @@ package indigo.platform.assets
 
 import indigo.shared.PowerOfTwo
 import indigo.shared.datatypes.Point
-import indigo.shared.EqualTo._
+
 import indigo.platform.assets._
 import indigo.shared.assets.AssetName
 
@@ -24,31 +24,31 @@ class TextureAtlasTests extends munit.FunSuite {
     val actual: TextureAtlas = TextureAtlas.create(imageRefs, lookupByName, createAtlasFunc)
 
     assert(
-      actual.lookUpByName("a") === Some(
+      actual.lookUpByName("a") == Some(
         new AtlasLookupResult("a", new AtlasId(TextureAtlas.IdPrefix + "0"), new Atlas(PowerOfTwo.Max, None), Point(512, 0))
       )
     )
 
     assert(
-      actual.lookUpByName("b") === Some(
+      actual.lookUpByName("b") == Some(
         new AtlasLookupResult("b", new AtlasId(TextureAtlas.IdPrefix + "0"), new Atlas(PowerOfTwo.Max, None), Point(1024, 0))
       )
     )
 
     assert(
-      actual.lookUpByName("c") === Some(
+      actual.lookUpByName("c") == Some(
         new AtlasLookupResult("c", new AtlasId(TextureAtlas.IdPrefix + "0"), new Atlas(PowerOfTwo.Max, None), Point.zero)
       )
     )
 
     assert(
-      actual.lookUpByName("d") === Some(
+      actual.lookUpByName("d") == Some(
         new AtlasLookupResult("d", new AtlasId(TextureAtlas.IdPrefix + "0"), new Atlas(PowerOfTwo.Max, None), Point(0, 1024))
       )
     )
 
     assert(
-      actual.lookUpByName("e") === Some(
+      actual.lookUpByName("e") == Some(
         new AtlasLookupResult("e", new AtlasId(TextureAtlas.IdPrefix + "1"), new Atlas(PowerOfTwo.Max, None), Point.zero)
       )
     )
@@ -71,31 +71,31 @@ class TextureAtlasTests extends munit.FunSuite {
     val actual: TextureAtlas = TextureAtlas.createWithMaxSize(PowerOfTwo._128, imageRefs, lookupByName, createAtlasFunc)
 
     assert(
-      actual.lookUpByName("a") === Some(
+      actual.lookUpByName("a") == Some(
         new AtlasLookupResult("a", new AtlasId(TextureAtlas.IdPrefix + "0"), new Atlas(PowerOfTwo._128, None), Point(0, 0))
       )
     )
 
     assert(
-      actual.lookUpByName("b") === Some(
+      actual.lookUpByName("b") == Some(
         new AtlasLookupResult("b", new AtlasId(TextureAtlas.IdPrefix + "1"), new Atlas(PowerOfTwo._128, None), Point(0, 0))
       )
     )
 
     assert(
-      actual.lookUpByName("c") === Some(
+      actual.lookUpByName("c") == Some(
         new AtlasLookupResult("c", new AtlasId(TextureAtlas.IdPrefix + "2"), new Atlas(PowerOfTwo._128, None), Point(0, 0))
       )
     )
 
     assert(
-      actual.lookUpByName("d") === Some(
+      actual.lookUpByName("d") == Some(
         new AtlasLookupResult("d", new AtlasId(TextureAtlas.IdPrefix + "0"), new Atlas(PowerOfTwo._128, None), Point(64, 0))
       )
     )
 
     assert(
-      actual.lookUpByName("e") === Some(
+      actual.lookUpByName("e") == Some(
         new AtlasLookupResult("e", new AtlasId(TextureAtlas.IdPrefix + "0"), new Atlas(PowerOfTwo._128, None), Point(0, 64))
       )
     )
@@ -528,12 +528,12 @@ class TextureAtlasTests extends munit.FunSuite {
       case node: AtlasQuadNode =>
         val textureMap = node.toTextureMap
 
-        assertEquals(textureMap.size === PowerOfTwo._16, true)
+        assertEquals(textureMap.size == PowerOfTwo._16, true)
 
-        assertEquals(textureMap.textureCoords.find(_.imageRef.name.value == "8_1").map(_.coords) === Some(Point(0, 0)), true)
-        assertEquals(textureMap.textureCoords.find(_.imageRef.name.value == "8_2").map(_.coords) === Some(Point(8, 0)), true)
-        assertEquals(textureMap.textureCoords.find(_.imageRef.name.value == "8_3").map(_.coords) === Some(Point(0, 8)), true)
-        assertEquals(textureMap.textureCoords.find(_.imageRef.name.value == "8_4").map(_.coords) === Some(Point(8, 8)), true)
+        assertEquals(textureMap.textureCoords.find(_.imageRef.name.value == "8_1").map(_.coords) == Some(Point(0, 0)), true)
+        assertEquals(textureMap.textureCoords.find(_.imageRef.name.value == "8_2").map(_.coords) == Some(Point(8, 0)), true)
+        assertEquals(textureMap.textureCoords.find(_.imageRef.name.value == "8_3").map(_.coords) == Some(Point(0, 8)), true)
+        assertEquals(textureMap.textureCoords.find(_.imageRef.name.value == "8_4").map(_.coords) == Some(Point(8, 8)), true)
 
       case _ =>
         fail("error")
