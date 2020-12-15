@@ -2,7 +2,6 @@ package com.example.jobs
 
 import indigo._
 import indigoextras.jobs._
-import indigo.shared.EqualTo._
 import indigoextras.datatypes.IncreaseTo
 
 // Bob is our NPC 'Actor'
@@ -45,7 +44,7 @@ object Bob {
         case Wander(to) if context.actor.position === to =>
           true
 
-        case Idle(percentDone) if percentDone.value === 100 =>
+        case Idle(percentDone) if percentDone.value == 100 =>
           true
 
         case _ =>
@@ -79,11 +78,11 @@ object Bob {
       private def moveTowards(position: Point, target: Point): Point =
         Point(
           x =
-            if (target.x === position.x) target.x
+            if (target.x == position.x) target.x
             else if (target.x < position.x) position.x - 1
             else position.x + 1,
           y =
-            if (target.y === position.y) target.y
+            if (target.y == position.y) target.y
             else if (target.y < position.y) position.y - 1
             else position.y + 1
         )

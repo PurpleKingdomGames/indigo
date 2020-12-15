@@ -2,7 +2,6 @@ package snake.model.quadtrees
 
 import indigo.shared.PowerOfTwo
 import indigo.shared.datatypes.{Point, Rectangle}
-import indigo.shared.EqualTo
 import snake.model.grid.{GridPoint, GridSize}
 import indigoextras.geometry.LineSegment
 
@@ -64,29 +63,28 @@ sealed trait QuadTree[T] {
     rec(this, "")
   }
 
+  def ===(other: QuadTree[T]): Boolean = {
+    @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+    def rec(a: QuadTree[T], b: QuadTree[T]): Boolean =
+      (a, b) match {
+        case (QuadTree.QuadEmpty(b1), QuadTree.QuadEmpty(b2)) if b1 == b2 =>
+          true
+
+        case (QuadTree.QuadLeaf(b1, v1), QuadTree.QuadLeaf(b2, v2)) if b1 == b2 =>
+          v1 == v2
+
+        case (QuadTree.QuadBranch(bounds1, a1, b1, c1, d1), QuadTree.QuadBranch(bounds2, a2, b2, c2, d2)) =>
+          bounds1 === bounds2 && rec(a1, a2) && rec(b1, b2) && rec(c1, c2) && rec(d1, d2)
+
+        case _ =>
+          false
+      }
+
+    rec(this, other)
+  }
+
 }
 object QuadTree {
-
-  implicit def eq[T](implicit eqT: EqualTo[T]): EqualTo[QuadTree[T]] =
-    EqualTo.create { (a, b) =>
-      @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
-      def rec(a: QuadTree[T], b: QuadTree[T]): Boolean =
-        (a, b) match {
-          case (QuadEmpty(b1), QuadEmpty(b2)) if b1 === b2 =>
-            true
-
-          case (QuadLeaf(b1, v1), QuadLeaf(b2, v2)) if b1 === b2 && eqT.equal(v1, v2) =>
-            true
-
-          case (QuadBranch(bounds1, a1, b1, c1, d1), QuadBranch(bounds2, a2, b2, c2, d2)) =>
-            bounds1 === bounds2 && rec(a1, a2) && rec(b1, b2) && rec(c1, c2) && rec(d1, d2)
-
-          case _ =>
-            false
-        }
-
-      rec(a, b)
-    }
 
   def empty[T](size: PowerOfTwo): QuadTree[T] =
     QuadEmpty(QuadBounds.apply(size.value))
@@ -106,19 +104,7 @@ object QuadTree {
     def isEmpty: Boolean = true
   }
 
-  object QuadLeaf {
-    implicit def eq[T](implicit eqQ: EqualTo[QuadTree[T]]): EqualTo[QuadLeaf[T]] =
-      EqualTo.create((a, b) => eqQ.equal(a, b))
-  }
-
-  object QuadEmpty {
-    implicit def eq[T](implicit eqQ: EqualTo[QuadTree[T]]): EqualTo[QuadEmpty[T]] =
-      EqualTo.create((a, b) => eqQ.equal(a, b))
-  }
-
   object QuadBranch {
-    implicit def eq[T](implicit eqQ: EqualTo[QuadTree[T]]): EqualTo[QuadBranch[T]] =
-      EqualTo.create((a, b) => eqQ.equal(a, b))
 
     def fromBounds[T](bounds: QuadBounds): QuadBranch[T] =
       fromBoundsAndQuarters(bounds, bounds.subdivide)
@@ -274,7 +260,7 @@ object QuadTree {
 
   @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def searchByLine[T](quadTree: QuadTree[T], lineSegment: LineSegment): List[T] =
-    if (lineSegment.start === lineSegment.end) searchByPoint(quadTree, lineSegment.start.toPoint)
+    if (lineSegment.start == lineSegment.end) searchByPoint(quadTree, lineSegment.start.toPoint)
     else
       quadTree match {
         case QuadBranch(bounds, a, b, c, d) if bounds.toRectangle.isPointWithin(lineSegment.start.toPoint) =>

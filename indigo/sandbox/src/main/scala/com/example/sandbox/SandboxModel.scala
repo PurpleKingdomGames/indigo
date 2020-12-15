@@ -59,6 +59,7 @@ object SandboxModel {
       }
 
     case KeyboardEvent.KeyDown(Key.LEFT_ARROW) =>
+    println("left")
       Outcome(
         state.copy(
           dude = state.dude.walkLeft

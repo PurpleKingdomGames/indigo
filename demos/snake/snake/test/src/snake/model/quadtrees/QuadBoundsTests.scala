@@ -3,7 +3,6 @@ package snake.model.quadtrees
 import indigo.shared.datatypes.Point
 import snake.model.grid.GridPoint
 import indigoextras.geometry.LineSegment
-import indigo.shared.EqualTo._
 
 class QuadBoundsTests extends munit.FunSuite {
 
@@ -58,7 +57,7 @@ class QuadBoundsTests extends munit.FunSuite {
     val bounds: QuadBounds = QuadBounds(10, 10, 20, 20)
     val line: LineSegment  = LineSegment(0, 15, 50, 15)
 
-    assertEquals(QuadBounds.rayCollisionPosition(bounds, line) === Some(Point(10, 15)), true)
+    assertEquals(QuadBounds.rayCollisionPosition(bounds, line) == Some(Point(10, 15)), true)
   }
 
   test("Ray (LineSegment) collision.should report where a line segment did not pass through the bounds") {

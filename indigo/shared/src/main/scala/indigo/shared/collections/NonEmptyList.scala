@@ -183,9 +183,6 @@ object NonEmptyList {
   def pure[A](headItem: A, tailItems: List[A]): NonEmptyList[A] =
     NonEmptyList[A](headItem, tailItems)
 
-  def unapply[A](nel: NonEmptyList[A]): Option[(A, List[A])] =
-    Option((nel.head, nel.tail))
-
   def point[A](a: A): NonEmptyList[A] =
     pure(a, List.empty[A])
 

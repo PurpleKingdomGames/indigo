@@ -89,12 +89,12 @@ object Pirate {
     InputMapping(
       Combo.withKeyInputs(Key.LEFT_ARROW, Key.UP_ARROW)  -> Vector2(-xSpeed, ySpeed),
       Combo.withKeyInputs(Key.LEFT_ARROW, Key.SPACE)     -> Vector2(-xSpeed, ySpeed),
-      Combo.withKeyInputs(Key.LEFT_ARROW)                 -> Vector2(-xSpeed, 0.0d),
+      Combo.withKeyInputs(Key.LEFT_ARROW)                -> Vector2(-xSpeed, 0.0d),
       Combo.withKeyInputs(Key.RIGHT_ARROW, Key.UP_ARROW) -> Vector2(xSpeed, ySpeed),
       Combo.withKeyInputs(Key.RIGHT_ARROW, Key.SPACE)    -> Vector2(xSpeed, ySpeed),
-      Combo.withKeyInputs(Key.RIGHT_ARROW)                -> Vector2(xSpeed, 0.0d),
-      Combo.withKeyInputs(Key.UP_ARROW)                   -> Vector2(0.0d, ySpeed),
-      Combo.withKeyInputs(Key.SPACE)                      -> Vector2(0.0d, ySpeed),
+      Combo.withKeyInputs(Key.RIGHT_ARROW)               -> Vector2(xSpeed, 0.0d),
+      Combo.withKeyInputs(Key.UP_ARROW)                  -> Vector2(0.0d, ySpeed),
+      Combo.withKeyInputs(Key.SPACE)                     -> Vector2(0.0d, ySpeed),
       Combo.withGamepadInputs(
         GamepadInput.LEFT_ANALOG(_ < -0.5, _ => true, false),
         GamepadInput.Cross

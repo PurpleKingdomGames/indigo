@@ -4,7 +4,6 @@ import indigo._
 import pirate.core.TileType
 import scala.annotation.tailrec
 import scala.collection.immutable.Nil
-import indigo.shared.EqualTo._
 import indigoextras.geometry.BoundingBox
 
 /*
@@ -94,12 +93,12 @@ object Platform {
             acc
 
           case head :: next =>
-            next.find(r => head.y === r.y && (r.x + r.width === head.x || r.x === head.x + head.width)) match {
+            next.find(r => head.y == r.y && (r.x + r.width == head.x || r.x == head.x + head.width)) match {
               case Some(r) =>
-                if (r.x + r.width === head.x)
-                  rec(BoundingBox(r.x, r.y, r.width + head.width, 1) :: next.filterNot(_ === r), acc)
-                else if (r.x === head.x + head.width)
-                  rec(BoundingBox(head.x, head.y, head.width + r.width, 1) :: next.filterNot(_ === r), acc)
+                if (r.x + r.width == head.x)
+                  rec(BoundingBox(r.x, r.y, r.width + head.width, 1) :: next.filterNot(_ == r), acc)
+                else if (r.x == head.x + head.width)
+                  rec(BoundingBox(head.x, head.y, head.width + r.width, 1) :: next.filterNot(_ == r), acc)
                 else
                   rec(next, head :: acc) // Shouldn't get here.
 

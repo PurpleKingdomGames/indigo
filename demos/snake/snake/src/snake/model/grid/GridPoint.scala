@@ -1,12 +1,9 @@
 package snake.model.grid
 
 import indigo.shared.datatypes.Point
-import indigo.shared.EqualTo
+import indigo.shared.dice.Dice
 
 import scala.annotation.tailrec
-
-import indigo.shared.EqualTo._
-import indigo.shared.dice.Dice
 
 final case class GridPoint(x: Int, y: Int) {
 
@@ -24,13 +21,6 @@ final case class GridPoint(x: Int, y: Int) {
 
 }
 object GridPoint {
-
-  implicit val eq: EqualTo[GridPoint] = {
-    val eqI = implicitly[EqualTo[Int]]
-    EqualTo.create { (a, b) =>
-      eqI.equal(a.x, b.x) && eqI.equal(a.y, b.y)
-    }
-  }
 
   def tupleToGridPoint(t: (Int, Int)): GridPoint =
     GridPoint(t._1, t._2)
@@ -50,7 +40,7 @@ object GridPoint {
     GridPoint(point.x, point.y)
 
   def equality(a: GridPoint, b: GridPoint): Boolean =
-    a.x === b.x && a.y === b.y
+    a.x == b.x && a.y == b.y
 
   def append(a: GridPoint, b: GridPoint): GridPoint =
     GridPoint(a.x + b.x, a.y + b.y)
@@ -69,8 +59,8 @@ object GridPoint {
         rec(next, dest, p, acc :+ next)
       }
 
-    if (start <= end) rec(start, end, (gp: GridPoint) => gp === end, List(start))
-    else rec(end, start, (gp: GridPoint) => gp === start, List(end))
+    if (start <= end) rec(start, end, (gp: GridPoint) => gp == end, List(start))
+    else rec(end, start, (gp: GridPoint) => gp == start, List(end))
   }
 
   def random(dice: Dice, maxX: Int, maxY: Int): GridPoint =

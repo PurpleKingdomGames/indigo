@@ -4,7 +4,6 @@ import org.scalacheck._
 import org.scalacheck.Prop._
 
 import indigo.shared.datatypes.Point
-import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.temporal.Signal
 import indigo.shared.collections.NonEmptyList
@@ -20,14 +19,14 @@ class RocketSpecification extends Properties("Rocket") {
   import Generators._
 
   property("always creates three control points") = Prop.forAll { (dice: Dice) =>
-    Rocket.createArcControlVertices(dice, Vertex.zero)(Vertex.zero).length === 3
+    Rocket.createArcControlVertices(dice, Vertex.zero)(Vertex.zero).length == 3
   }
 
   property("control points are always in order [start, mid, target]") = Prop.forAll(diceGen, launchPadVertexGen) { (dice: Dice, launch: Vertex) =>
     Prop.forAll(rocketTargetVertexGen(launch)) { target =>
       Rocket.createArcControlVertices(dice, launch)(target) match {
         case NonEmptyList(s, _ :: e :: Nil) =>
-          s === launch && e === target
+          s == launch && e == target
 
         case _ =>
           false
@@ -39,7 +38,7 @@ class RocketSpecification extends Properties("Rocket") {
     Prop.forAll(rocketTargetVertexGen(launch)) { target =>
       Rocket.createArcControlVertices(dice, launch)(target) match {
         case NonEmptyList(s, m :: e :: Nil) =>
-          m.y === e.y
+          m.y == e.y
 
         case _ =>
           false

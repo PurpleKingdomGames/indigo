@@ -3,26 +3,21 @@ package snake.model.quadtrees
 import indigo.shared.datatypes.{Point, Rectangle}
 import indigoextras.geometry.LineSegment
 
-import indigo.shared.EqualTo
-import indigo.shared.EqualTo._
 import indigoextras.geometry.Polygon
 import indigoextras.geometry.Vertex
 
 import snake.model.grid.GridPoint
 
-trait QuadBounds {
-  val x: Int
-  val y: Int
-  val width: Int
-  val height: Int
+final case class QuadBounds(position: GridPoint, size: Point) {
+  val x: Int      = position.x
+  val y: Int      = position.y
+  val width: Int  = size.x
+  val height: Int = size.y
 
   def left: Int   = x
   def top: Int    = y
   def right: Int  = x + width
   def bottom: Int = y + height
-
-  def position: GridPoint =
-    GridPoint(x, y)
 
   def center: GridPoint =
     GridPoint(x + (width / 2), y + (height / 2))
@@ -40,7 +35,7 @@ trait QuadBounds {
     )
 
   def isOneUnitSquare: Boolean =
-    width === 1 && height === 1
+    width == 1 && height == 1
 
   def subdivide: (QuadBounds, QuadBounds, QuadBounds, QuadBounds) =
     QuadBounds.subdivide(this)
@@ -64,18 +59,11 @@ trait QuadBounds {
     s"""QuadBounds(${x.toString()}, ${y.toString}, ${width.toString()}, ${height.toString()})"""
 
   def ===(other: QuadBounds): Boolean =
-    implicitly[EqualTo[QuadBounds]].equal(this, other)
+    x == other.x && y == other.y && width == other.width && height == other.height
 
 }
 
 object QuadBounds {
-
-  implicit val equalTo: EqualTo[QuadBounds] = {
-    val eqI = implicitly[EqualTo[Int]]
-    EqualTo.create { (a, b) =>
-      eqI.equal(a.x, b.x) && eqI.equal(a.y, b.y) && eqI.equal(a.width, b.width) && eqI.equal(a.height, b.height)
-    }
-  }
 
   def apply(size: Int): QuadBounds =
     unsafeCreate(
@@ -85,24 +73,22 @@ object QuadBounds {
       if (size < 2) 2 else size
     )
 
-  def apply(_x: Int, _y: Int, _width: Int, _height: Int): QuadBounds =
+  def apply(x: Int, y: Int, width: Int, height: Int): QuadBounds =
     unsafeCreate(
-      if (_x < 0) 0 else _x,
-      if (_y < 0) 0 else _y,
-      if (_width < 2) 2 else _width,
-      if (_height < 2) 2 else _height
+      if (x < 0) 0 else x,
+      if (y < 0) 0 else y,
+      if (width < 2) 2 else width,
+      if (height < 2) 2 else height
     )
 
   def fromRectangle(rectangle: Rectangle): QuadBounds =
     unsafeCreate(rectangle.x, rectangle.y, rectangle.width, rectangle.height)
 
-  def unsafeCreate(_x: Int, _y: Int, _width: Int, _height: Int): QuadBounds =
-    new QuadBounds {
-      val x: Int      = _x
-      val y: Int      = _y
-      val width: Int  = if (_width < 1) 1 else _width
-      val height: Int = if (_height < 1) 1 else _height
-    }
+  def unsafeCreate(x: Int, y: Int, width: Int, height: Int): QuadBounds =
+    QuadBounds(
+      GridPoint(x, y),
+      Point(if (width < 1) 1 else width, if (height < 1) 1 else height)
+    )
 
   def pointWithinBounds(quadBounds: QuadBounds, gridPoint: GridPoint): Boolean =
     gridPoint.x >= quadBounds.left &&

@@ -4,7 +4,6 @@ import org.scalacheck._
 
 import indigo.Dice
 import indigo.shared.datatypes.Point
-import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Rectangle
 import indigoexamples.automata.LaunchPadAutomata
 
@@ -26,7 +25,7 @@ class LaunchPadSpecification extends Properties("LaunchPad") {
     val launchPad: LaunchPad =
       LaunchPad.generateLaunchPad(dice)
 
-    launchPad.position.y === 0 && launchPad.position.x >= -1 && launchPad.position.x <= 1
+    launchPad.position.y == 0 && launchPad.position.x >= -1 && launchPad.position.x <= 1
   }
 
   property("generate a launch pad at x < 0") = Prop.exists { (dice: Dice) =>

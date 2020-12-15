@@ -1,7 +1,6 @@
 package com.example.jobs
 
 import indigo._
-import indigo.shared.EqualTo._
 import indigoextras.jobs.JobMarketEvent
 import indigoextras.datatypes.IncreaseTo
 
@@ -54,7 +53,7 @@ final case class Model(bob: Bob, grove: Grove, woodPiles: List[Wood], woodCollec
   def removeWoodWithId(id: BindingKey): Outcome[Model] =
     Outcome(
       this.copy(
-        woodPiles = woodPiles.filter(_.id !== id),
+        woodPiles = woodPiles.filter(_.id != id),
         woodCollected = woodCollected + 1
       )
     )
@@ -90,7 +89,7 @@ final case class Grove(trees: List[Tree]) {
       .map(ts => this.copy(trees = ts))
 
   def removeTreeWithIndex(index: Int): Grove =
-    this.copy(trees = trees.filter(_.index !== index))
+    this.copy(trees = trees.filter(_.index != index))
 
 }
 
@@ -100,7 +99,7 @@ final case class Tree(index: Int, position: Point, growth: IncreaseTo, fullyGrow
     if (fullyGrown) Outcome(this)
     else {
       val nextGrowth   = growth.update(timeDelta)
-      val isFullyGrown = nextGrowth.toInt === 100
+      val isFullyGrown = nextGrowth.toInt == 100
 
       Outcome(
         this.copy(

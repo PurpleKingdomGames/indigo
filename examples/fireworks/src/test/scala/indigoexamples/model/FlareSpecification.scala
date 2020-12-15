@@ -6,7 +6,6 @@ import indigo.shared.dice.Dice
 import indigo.shared.time.Millis
 import indigoextras.geometry.Vertex
 import indigo.shared.datatypes.Radians
-import indigo.shared.EqualTo._
 import indigo.shared.datatypes.Point
 
 class FlareSpecification extends Properties("Flare") {
@@ -14,15 +13,14 @@ class FlareSpecification extends Properties("Flare") {
   import Generators._
 
   property("always creates two control points") = Prop.forAll { (target: Vertex) =>
-    Flare.createArcControlVertices(Vertex.zero)(target).length === 2
+    Flare.createArcControlVertices(Vertex.zero)(target).length == 2
   }
 
   property("Supplied vertex is always first") = Prop.forAll { (target: Vertex) =>
-    Flare.createArcControlVertices(Vertex.zero)(target).head === Vertex.zero
+    Flare.createArcControlVertices(Vertex.zero)(target).head == Vertex.zero
   }
 
   property("able to generate a good target vertex based on a start point") = Prop.forAll(radiansGen, diceGen, clampedRadiusGen) { (angle: Radians, dice: Dice, radius: Radius) =>
-
     val maxX: Double = 1.21d
     val maxY: Double = 0.61d
 
