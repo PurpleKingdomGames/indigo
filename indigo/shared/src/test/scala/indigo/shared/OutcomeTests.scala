@@ -29,6 +29,9 @@ class OutcomeTests extends munit.FunSuite {
       case Outcome(n, TestEvent(s) :: Nil) =>
         assertEquals(n, 1)
         assertEquals(s, "a")
+
+      case _ =>
+        fail("shouldn't have got here.")
     }
   }
 

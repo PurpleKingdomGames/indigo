@@ -15,6 +15,9 @@ class NonEmptyListTests extends munit.FunSuite {
       case NonEmptyList(head, tail) =>
         assertEquals(head, 1)
         assertEquals(tail, List(2, 3))
+
+      case _ =>
+        fail("shouldn't have got here")
     }
   }
 
