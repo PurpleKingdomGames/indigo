@@ -28,7 +28,7 @@ import indigo.platform.events.GlobalEventStream
 import indigo.shared.events.ViewportResize
 import indigo.shared.config.GameViewport
 
-@SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
+// @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
 final class RendererWebGL1(
     config: RendererConfig,
     loadedTextureAssets: List[LoadedTextureAsset],
@@ -36,15 +36,15 @@ final class RendererWebGL1(
     globalEventStream: GlobalEventStream
 ) extends Renderer {
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var resizeRun: Boolean = false
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var lastWidth: Int = 0
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var lastHeight: Int = 0
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var orthographicProjectionMatrix: Matrix4 = Matrix4.identity
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var orthographicProjectionMatrixNoMag: Matrix4 = Matrix4.identity
 
   def screenWidth: Int  = lastWidth
@@ -66,17 +66,17 @@ final class RendererWebGL1(
   private val lightingShaderProgram = WebGLHelper.shaderProgramSetup(gl, "Lighting", WebGL1StandardLightingPixelArt)
   private val mergeShaderProgram    = WebGLHelper.shaderProgramSetup(gl, "Merge", WebGL1StandardMerge)
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var gameFrameBuffer: FrameBufferComponents.SingleOutput =
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var lightingFrameBuffer: FrameBufferComponents.SingleOutput =
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var uiFrameBuffer: FrameBufferComponents.SingleOutput =
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
 
-  @SuppressWarnings(Array("org.wartremover.warts.Null"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Null"))
   def init(): Unit = {
     // some basic set up.
     gl.disable(DEPTH_TEST)
@@ -156,7 +156,7 @@ final class RendererWebGL1(
     )
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.Null"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Null"))
   def drawLayer(
       displayEntities: mutable.ListBuffer[DisplayEntity],
       frameBufferComponents: Option[FrameBufferComponents],

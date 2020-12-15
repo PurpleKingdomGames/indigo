@@ -48,10 +48,11 @@ object TextureAtlas {
 
 // Output
 final case class TextureAtlas(atlases: Map[AtlasId, Atlas], legend: Map[String, AtlasIndex]) {
-  def +(other: TextureAtlas): TextureAtlas = TextureAtlas(
-    this.atlases ++ other.atlases,
-    this.legend ++ other.legend
-  )
+  def +(other: TextureAtlas): TextureAtlas =
+    TextureAtlas(
+      this.atlases ++ other.atlases,
+      this.legend ++ other.legend
+    )
 
   def lookUpByName(name: String): Option[AtlasLookupResult] =
     legend.get(name).flatMap { i =>
@@ -157,49 +158,57 @@ object TextureAtlasFunctions {
       .sortBy(_.size.value)
       .reverse
 
-  def groupTexturesIntoAtlasBuckets(max: PowerOfTwo): List[TextureDetails] => List[List[TextureDetails]] = list => {
-    val runningTotal: List[TextureDetails] => Int = _.map(_.size.value).sum
+  def groupTexturesIntoAtlasBuckets(max: PowerOfTwo): List[TextureDetails] => List[List[TextureDetails]] =
+    list => {
+      val runningTotal: List[TextureDetails] => Int = _.map(_.size.value).sum
 
-    @tailrec
-    def createBuckets(remaining: List[TextureDetails], current: List[TextureDetails], rejected: List[TextureDetails], acc: List[List[TextureDetails]], maximum: PowerOfTwo): List[List[TextureDetails]] =
-      (remaining, rejected) match {
-        case (Nil, Nil) =>
-          current :: acc
+      @tailrec
+      def createBuckets(
+          remaining: List[TextureDetails],
+          current: List[TextureDetails],
+          rejected: List[TextureDetails],
+          acc: List[List[TextureDetails]],
+          maximum: PowerOfTwo
+      ): List[List[TextureDetails]] =
+        (remaining, rejected) match {
+          case (Nil, Nil) =>
+            current :: acc
 
-        case (Nil, x :: xs) =>
-          createBuckets(x :: xs, Nil, Nil, current :: acc, maximum)
+          case (Nil, x :: xs) =>
+            createBuckets(x :: xs, Nil, Nil, current :: acc, maximum)
 
-        case (x :: xs, _) if x.size >= maximum =>
-          createBuckets(xs, current, rejected, List(x) :: acc, maximum)
+          case (x :: xs, _) if x.size >= maximum =>
+            createBuckets(xs, current, rejected, List(x) :: acc, maximum)
 
-        case (x :: xs, _) if runningTotal(current) + x.size.value > maximum.value * 2 =>
-          createBuckets(xs, current, x :: rejected, acc, maximum)
+          case (x :: xs, _) if runningTotal(current) + x.size.value > maximum.value * 2 =>
+            createBuckets(xs, current, x :: rejected, acc, maximum)
 
-        case (x :: xs, _) =>
-          createBuckets(xs, x :: current, rejected, acc, maximum)
+          case (x :: xs, _) =>
+            createBuckets(xs, x :: current, rejected, acc, maximum)
 
+        }
+
+      // @tailrec
+      // def splitByTags(remaining: List[TextureDetails]): List[List[TextureDetails]] =
+      //   remaining.sortBy(_.tag.getOrElse("")) match {
+
+      //   }
+
+      def sortAndGroupByTag: List[TextureDetails] => List[(String, List[TextureDetails])] =
+        _.groupBy(_.tag.getOrElse("")).toList.sortBy(_._1)
+
+      // val x: List[List[TextureDetails]] =
+      sortAndGroupByTag(list).flatMap {
+        case (_, tds) =>
+          createBuckets(tds, Nil, Nil, Nil, max)
       }
 
-    // @tailrec
-    // def splitByTags(remaining: List[TextureDetails]): List[List[TextureDetails]] = 
-    //   remaining.sortBy(_.tag.getOrElse("")) match {
-        
-    //   }
+      // x
 
-    def sortAndGroupByTag: List[TextureDetails] => List[(String, List[TextureDetails])] =
-      _.groupBy(_.tag.getOrElse("")).toList.sortBy(_._1)
-
-    // val x: List[List[TextureDetails]] = 
-    sortAndGroupByTag(list).flatMap { case (_, tds) =>
-      createBuckets(tds, Nil, Nil, Nil, max)
+      // createBuckets(list, Nil, Nil, Nil, max)
     }
 
-    // x
-
-    // createBuckets(list, Nil, Nil, Nil, max)
-  }
-
-  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+  // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   private def createCanvas(width: Int, height: Int): html.Canvas = {
     val canvas: html.Canvas = dom.document.createElement("canvas").asInstanceOf[html.Canvas]
     // Handy if you want to draw the atlas to the page...
@@ -210,7 +219,7 @@ object TextureAtlasFunctions {
     canvas
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+  // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   val createAtlasData: (TextureMap, String => Option[LoadedImageAsset]) => Atlas = (textureMap, lookupByName) => {
     val canvas: html.Canvas = createCanvas(textureMap.size.value, textureMap.size.value)
     val ctx                 = canvas.getContext("2d")
@@ -241,9 +250,7 @@ object TextureAtlasFunctions {
             val textureMap = n.toTextureMap
 
             val legend: Map[String, AtlasIndex] =
-              textureMap.textureCoords.foldLeft(Map.empty[String, AtlasIndex])(
-                (m, t) => m ++ Map(t.imageRef.name.value -> new AtlasIndex(atlasId, t.coords))
-              )
+              textureMap.textureCoords.foldLeft(Map.empty[String, AtlasIndex])((m, t) => m ++ Map(t.imageRef.name.value -> new AtlasIndex(atlasId, t.coords)))
 
             val atlas = createAtlasFunc(textureMap, lookupByName)
 
@@ -345,7 +352,7 @@ final case class AtlasQuadNode(size: PowerOfTwo, atlas: AtlasSum) extends AtlasQ
     if (size < requiredSize) false
     else atlas.canAccommodate(requiredSize)
 
-  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def insert(tree: AtlasQuadTree): AtlasQuadTree =
     this.copy(atlas = atlas match {
       case AtlasTexture(_) => this.atlas

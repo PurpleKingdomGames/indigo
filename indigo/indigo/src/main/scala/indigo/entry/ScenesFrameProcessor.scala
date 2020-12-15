@@ -13,7 +13,7 @@ import indigo.shared.subsystems.SubSystemsRegister
 import indigo.shared.subsystems.SubSystemFrameContext._
 import indigo.scenes.SceneManager
 
-@SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
+// @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
 final class ScenesFrameProcessor[StartUpData, Model, ViewModel](
     subSystemsRegister: SubSystemsRegister,
     sceneManager: SceneManager[StartUpData, Model, ViewModel]

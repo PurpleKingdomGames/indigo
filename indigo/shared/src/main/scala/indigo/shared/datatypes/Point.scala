@@ -38,7 +38,7 @@ final case class Point(x: Int, y: Int) {
   def ===(other: Point): Boolean =
     implicitly[EqualTo[Point]].equal(this, other)
 
-  @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
+  // @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
   override def equals(obj: Any): Boolean =
     if (obj.isInstanceOf[Point])
       this === obj.asInstanceOf[Point]

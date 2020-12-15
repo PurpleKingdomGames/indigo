@@ -11,16 +11,16 @@ import org.scalajs.dom.raw.WebGLRenderingContext
 
 object WebGLHelper {
 
-  @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny", "org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.Throw"))
+  // @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny", "org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.Throw"))
   def shaderProgramSetup(gl: raw.WebGLRenderingContext, layerLabel: String, shader: Shader): WebGLProgram = {
     //Create a vertex shader program object and compile it
     val vertShader = gl.createShader(VERTEX_SHADER)
     gl.shaderSource(vertShader, shader.vertex)
     gl.compileShader(vertShader)
 
-    if (gl.getShaderParameter(vertShader, COMPILE_STATUS).asInstanceOf[Boolean]) {
+    if (gl.getShaderParameter(vertShader, COMPILE_STATUS).asInstanceOf[Boolean])
       IndigoLogger.info(s"$layerLabel vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
-    } else {
+    else {
       IndigoLogger.info(s"$layerLabel vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
       IndigoLogger.error(gl.getShaderInfoLog(vertShader));
       gl.deleteShader(vertShader);
@@ -32,9 +32,9 @@ object WebGLHelper {
     gl.shaderSource(fragShader, shader.fragment)
     gl.compileShader(fragShader)
 
-    if (gl.getShaderParameter(fragShader, COMPILE_STATUS).asInstanceOf[Boolean]) {
+    if (gl.getShaderParameter(fragShader, COMPILE_STATUS).asInstanceOf[Boolean])
       IndigoLogger.info(s"$layerLabel fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
-    } else {
+    else {
       IndigoLogger.info(s"$layerLabel fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
       IndigoLogger.error(gl.getShaderInfoLog(fragShader));
       gl.deleteShader(fragShader);
@@ -47,16 +47,16 @@ object WebGLHelper {
     gl.attachShader(shaderProgram, fragShader)
     gl.linkProgram(shaderProgram)
 
-    if (gl.getProgramParameter(shaderProgram, LINK_STATUS).asInstanceOf[Boolean]) {
+    if (gl.getProgramParameter(shaderProgram, LINK_STATUS).asInstanceOf[Boolean])
       shaderProgram
-    } else {
+    else {
       IndigoLogger.error(gl.getProgramInfoLog(shaderProgram));
       gl.deleteProgram(shaderProgram);
       throw new Exception("Fatal: Shader program link error")
     }
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.Throw"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Throw"))
   def intToTextureLocation: Int => Int = {
     case 0  => TEXTURE0
     case 1  => TEXTURE1

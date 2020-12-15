@@ -24,7 +24,7 @@ import indigo.platform.events.GlobalEventStream
 import indigo.shared.events.ViewportResize
 import indigo.shared.config.GameViewport
 
-@SuppressWarnings(Array("org.wartremover.warts.Null"))
+// @SuppressWarnings(Array("org.wartremover.warts.Null"))
 final class RendererWebGL2(
     config: RendererConfig,
     loadedTextureAssets: List[LoadedTextureAsset],
@@ -63,36 +63,36 @@ final class RendererWebGL2(
   private val distortionShaderProgram =
     WebGLHelper.shaderProgramSetup(gl, "Lighting", WebGL2StandardDistortionPixelArt)
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var gameFrameBuffer: FrameBufferComponents.MultiOutput =
     FrameBufferFunctions.createFrameBufferMulti(gl, cNc.canvas.width, cNc.canvas.height)
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var lightsFrameBuffer: FrameBufferComponents.SingleOutput =
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var lightingFrameBuffer: FrameBufferComponents.SingleOutput =
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var distortionFrameBuffer: FrameBufferComponents.SingleOutput =
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var uiFrameBuffer: FrameBufferComponents.SingleOutput =
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var resizeRun: Boolean = false
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var lastWidth: Int = 0
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var lastHeight: Int = 0
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var orthographicProjectionMatrixJS: scalajs.js.Array[Double] = RendererHelper.mat4ToJsArray(Matrix4.identity)
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var orthographicProjectionMatrixNoMagJS: scalajs.js.Array[Float] = RendererHelper.mat4ToJsArray(Matrix4.identity).map(_.toFloat)
 
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastHeight
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var orthographicProjectionMatrix: Matrix4 = Matrix4.identity
 
   def init(): Unit = {

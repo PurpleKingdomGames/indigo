@@ -150,7 +150,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     rotationAlphaFlipHFlipVData((i * 4) + 3) = cloneData.flipVertical
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.Null"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Null"))
   def drawLayer(
       projection: scalajs.js.Array[Double],
       cloneBlankDisplayObjects: Map[String, DisplayObject],
@@ -285,7 +285,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.While"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.While"))
   private def processCloneBatch(c: DisplayCloneBatch, refDisplayObject: DisplayObject, batchCount: Int): Int = {
 
     val count: Int = c.clones.length

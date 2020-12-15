@@ -5,10 +5,10 @@ import indigo.shared.dice.Dice
 
 final case class BindingKey(value: String) extends AnyVal {
 
-  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   def ===(other: BindingKey): Boolean =
     implicitly[EqualTo[BindingKey]].equal(this, other)
-    
+
 }
 
 object BindingKey {

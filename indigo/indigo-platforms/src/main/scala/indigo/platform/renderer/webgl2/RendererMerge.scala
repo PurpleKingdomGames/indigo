@@ -83,7 +83,7 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
     // uboData(31) = 0d
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   def drawLayer(
       projection: scalajs.js.Array[Float],
       gameFrameBuffer: FrameBufferComponents.MultiOutput,
@@ -103,7 +103,6 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
       lightingLayerSaturation: Double,
       uiLayerSaturation: Double
   ): Unit = {
-
 
     FrameBufferFunctions.switchToCanvas(gl2, clearColor)
 
@@ -150,7 +149,7 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
 
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var"))
   def setupMergeFragmentShaderState(
       game: FrameBufferComponents.MultiOutput,
       textureLights: FrameBufferComponents.SingleOutput,

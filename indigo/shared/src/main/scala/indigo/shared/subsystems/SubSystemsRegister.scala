@@ -8,20 +8,20 @@ import scala.collection.mutable
 
 import java.util.UUID
 
-@SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
+// @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
 final class SubSystemsRegister(subSystems: List[SubSystem]) {
 
-  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
+  // @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   val stateMap: mutable.HashMap[String, Object] = new mutable.HashMap[String, Object]()
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var registeredSubSystems: List[RegisteredSubSystem] =
     subSystems.map(initialiseSubSystem)
 
   def register(newSubSystems: List[SubSystem]): Unit =
     registeredSubSystems = registeredSubSystems ++ newSubSystems.map(initialiseSubSystem)
 
-  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+  // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   private def initialiseSubSystem(subSystem: SubSystem): RegisteredSubSystem = {
     val key = UUID.randomUUID().toString
     val res = RegisteredSubSystem(key, subSystem)
@@ -31,7 +31,7 @@ final class SubSystemsRegister(subSystems: List[SubSystem]) {
     res
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+  // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   def update(frameContext: SubSystemFrameContext, globalEvents: List[GlobalEvent]): Outcome[SubSystemsRegister] = {
     val outcomeEvents = registeredSubSystems.flatMap { rss =>
       val key       = rss.id
@@ -58,7 +58,7 @@ final class SubSystemsRegister(subSystems: List[SubSystem]) {
     Outcome(this, outcomeEvents)
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+  // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   def present(frameContext: SubSystemFrameContext): SceneUpdateFragment =
     registeredSubSystems
       .map { rss =>

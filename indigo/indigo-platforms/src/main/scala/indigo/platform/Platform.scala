@@ -39,7 +39,7 @@ class Platform(
   val rendererInit: RendererInitialiser =
     new RendererInitialiser(gameConfig.advanced.renderingTechnology, globalEventStream)
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   private var _canvas: Canvas = null
 
   def initialise(): Try[(Renderer, AssetMapping)] =
@@ -56,7 +56,7 @@ class Platform(
       (renderer, assetMapping)
     }
 
-  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
+  // @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def tick(loop: Long => Unit): Unit = {
     dom.window.requestAnimationFrame(t => loop(t.toLong))
     ()

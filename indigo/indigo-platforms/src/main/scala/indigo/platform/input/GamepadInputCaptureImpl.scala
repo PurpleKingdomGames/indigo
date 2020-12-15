@@ -77,22 +77,20 @@ object GamepadInputCaptureImpl {
         Gamepad.default
     }
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var gamepads: scalajs.js.Array[GamepadJS] = new scalajs.js.Array()
 
-  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+  // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   def init(): Unit = {
     window.addEventListener(
-      "gamepadconnected", { (_: Any) =>
-        gamepads = window.navigator.asInstanceOf[GamepadNavigator].getGamepads()
-      },
+      "gamepadconnected",
+      (_: Any) => gamepads = window.navigator.asInstanceOf[GamepadNavigator].getGamepads(),
       false
     )
 
     window.addEventListener(
-      "gamepaddisconnected", { (_: Any) =>
-        gamepads = window.navigator.asInstanceOf[GamepadNavigator].getGamepads()
-      },
+      "gamepaddisconnected",
+      (_: Any) => gamepads = window.navigator.asInstanceOf[GamepadNavigator].getGamepads(),
       false
     )
   }

@@ -92,7 +92,7 @@ final case class Vertex(x: Double, y: Double) {
   def ~==(other: Vertex): Boolean =
     Vertex.equalEnough(this, other, 0.001)
 
-  @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
+  // @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
   override def equals(obj: Any): Boolean =
     if (obj.isInstanceOf[Vertex])
       this === obj.asInstanceOf[Vertex]

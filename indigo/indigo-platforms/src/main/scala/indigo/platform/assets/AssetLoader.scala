@@ -90,15 +90,13 @@ object AssetLoader {
       }
       image.addEventListener(
         "error",
-        { (_: Event) =>
-          p.failure(new Exception("Image load error"))
-        },
+        (_: Event) => p.failure(new Exception("Image load error")),
         false
       )
       p.future
     }
 
-  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+  // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   def loadImageAsset(imageAsset: AssetType.Image): Future[LoadedImageAsset] = {
     IndigoLogger.info(s"[Image] Loading ${imageAsset.path.value}")
 
@@ -126,7 +124,7 @@ object AssetLoader {
   val loadAudioAssets: List[AssetType.Audio] => Future[List[LoadedAudioAsset]] =
     audioAssets => Future.sequence(audioAssets.map(loadAudioAsset))
 
-  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+  // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
   def loadAudioAsset(audioAsset: AssetType.Audio): Future[LoadedAudioAsset] = {
     IndigoLogger.info(s"[Audio] Loading ${audioAsset.path.value}")
 

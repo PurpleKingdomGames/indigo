@@ -77,15 +77,15 @@ class RendererLights(gl2: WebGL2RenderingContext) {
     uboData(10) = 0.0f // position x
     uboData(11) = 0.0f // position y
 
-    uboData(12) = light.color.r.toFloat                            // color r
-    uboData(13) = light.color.g.toFloat                            // color g
-    uboData(14) = light.color.b.toFloat                            // color b
+    uboData(12) = light.color.r.toFloat                                    // color r
+    uboData(13) = light.color.g.toFloat                                    // color g
+    uboData(14) = light.color.b.toFloat                                    // color b
     uboData(15) = Radians.TAU.value.toFloat - light.rotation.value.toFloat // rotation
 
-    uboData(16) = 0.0f                           // angle
+    uboData(16) = 0.0f                          // angle
     uboData(17) = light.height.toFloat / 100.0f // height
-    uboData(18) = 0.0f                           // near
-    uboData(19) = 0.0f                           // far
+    uboData(18) = 0.0f                          // near
+    uboData(19) = 0.0f                          // far
 
     uboData(20) = light.power.toFloat // power
     uboData(21) = 0.0f
@@ -115,7 +115,7 @@ class RendererLights(gl2: WebGL2RenderingContext) {
     uboData(23) = 0.0f
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.While", "org.wartremover.warts.Null"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.While", "org.wartremover.warts.Null"))
   def drawLayer(
       lights: List[Light],
       projection: scalajs.js.Array[Float],
@@ -187,7 +187,7 @@ class RendererLights(gl2: WebGL2RenderingContext) {
         updateDirectionLightUBOData(light)
     }
 
-  @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var"))
   def setupLightsFragmentShaderState(game: FrameBufferComponents.MultiOutput): Unit = {
 
     val uniformTextures: List[(String, WebGLTexture)] =

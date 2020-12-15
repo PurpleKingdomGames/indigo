@@ -20,7 +20,7 @@ final case class FontInfo(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, un
   def addChars(chars: FontChar*): FontInfo =
     addChars(chars.toList)
 
-  @SuppressWarnings(Array("org.wartremover.warts.PlatformDefault"))
+  // @SuppressWarnings(Array("org.wartremover.warts.PlatformDefault"))
   def findByCharacter(character: String): FontChar =
     QuickCache("char-" + character + "-" + fontKey.key) {
       nonEmptyChars

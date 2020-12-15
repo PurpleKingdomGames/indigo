@@ -61,7 +61,7 @@ sealed trait Polygon {
         s"Polygon.Closed(${vs.toString()})"
     }
 
-  @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
+  // @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
   override def equals(obj: Any): Boolean =
     if (obj.isInstanceOf[Polygon])
       this === obj.asInstanceOf[Polygon]

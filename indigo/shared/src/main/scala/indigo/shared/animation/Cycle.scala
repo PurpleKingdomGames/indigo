@@ -45,7 +45,7 @@ final case class CycleMemento(playheadPosition: Int, lastFrameAdvance: Millis) {
   def ===(other: CycleMemento): Boolean =
     implicitly[EqualTo[CycleMemento]].equal(this, other)
 
-  @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
+  // @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
   override def equals(obj: Any): Boolean =
     if (obj.isInstanceOf[CycleMemento])
       this === obj.asInstanceOf[CycleMemento]

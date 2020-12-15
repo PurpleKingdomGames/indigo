@@ -22,7 +22,7 @@ final case class AnimationRef(
   lazy val frameHash: String =
     currentFrame.crop.hash + "_" + currentFrame.frameMaterial.map(_.hash).getOrElse(material.hash)
 
-  @SuppressWarnings(Array("org.wartremover.warts.TraversableOps"))
+  // @SuppressWarnings(Array("org.wartremover.warts.TraversableOps"))
   def currentCycle: CycleRef =
     cycles.get(currentCycleLabel).getOrElse(cycles.head._2)
 
@@ -158,7 +158,7 @@ final case class AnimationMemento(bindingKey: BindingKey, currentCycleLabel: Cyc
   def ===(other: AnimationMemento): Boolean =
     implicitly[EqualTo[AnimationMemento]].equal(this, other)
 
-  @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
+  // @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
   override def equals(obj: Any): Boolean =
     if (obj.isInstanceOf[AnimationMemento])
       this === obj.asInstanceOf[AnimationMemento]
@@ -167,7 +167,7 @@ final case class AnimationMemento(bindingKey: BindingKey, currentCycleLabel: Cyc
 }
 object AnimationMemento {
 
-  @SuppressWarnings(Array("org.wartremover.warts.Equals"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   implicit val animationMementoEqualTo: EqualTo[AnimationMemento] = {
     val bk = implicitly[EqualTo[BindingKey]]
     val cl = implicitly[EqualTo[CycleLabel]]

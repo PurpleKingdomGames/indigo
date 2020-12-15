@@ -23,19 +23,19 @@ class GameLoop[StartUpData, GameModel, ViewModel](
     frameProcessor: FrameProcessor[StartUpData, GameModel, ViewModel]
 ) {
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var gameModelState: GameModel = initialModel
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var viewModelState: ViewModel = initialViewModel
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var runningTimeReference: Long = 0
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var inputState: InputState = InputState.default
 
-  @SuppressWarnings(Array("org.wartremover.warts.Recursion", "org.wartremover.warts.OptionPartial"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Recursion", "org.wartremover.warts.OptionPartial"))
   def loop(lastUpdateTime: Long): Long => Unit = { time =>
     runningTimeReference = time
     val timeDelta: Long = time - lastUpdateTime

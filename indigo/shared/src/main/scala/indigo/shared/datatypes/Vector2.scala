@@ -84,7 +84,7 @@ final case class Vector2(x: Double, y: Double) {
 
   def applyMatrix4(matrix4: Matrix4): Vector2 = Vector2.applyMatrix4(this, matrix4)
 
-  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.IsInstanceOf"))
+  // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.IsInstanceOf"))
   override def equals(obj: Any): Boolean =
     if (obj.isInstanceOf[Vector2])
       this === obj.asInstanceOf[Vector2]

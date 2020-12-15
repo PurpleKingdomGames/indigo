@@ -15,10 +15,10 @@ import indigo.shared.subsystems.SubSystemFrameContext
 class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]], scenesFinder: SceneFinder) {
 
   // Scene management
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var finderInstance: SceneFinder = scenesFinder
 
-  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
+  // @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   private val subSystemStates: Map[SceneName, SubSystemsRegister] =
     scenes.toList.map { s =>
       val r = new SubSystemsRegister(Nil)
@@ -27,7 +27,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
     }.toMap
 
   // Scene delegation
-  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
+  // @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def updateModel(frameContext: FrameContext[StartUpData], model: GameModel): GlobalEvent => Outcome[GameModel] = {
     case SceneEvent.Next =>
       finderInstance = finderInstance.forward

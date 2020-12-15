@@ -63,7 +63,7 @@ final case class BoundingCircle(position: Vertex, radius: Double) {
   def ===(other: BoundingCircle): Boolean =
     implicitly[EqualTo[BoundingCircle]].equal(this, other)
 
-  @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
+  // @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
   override def equals(obj: Any): Boolean =
     if (obj.isInstanceOf[BoundingCircle])
       this === obj.asInstanceOf[BoundingCircle]

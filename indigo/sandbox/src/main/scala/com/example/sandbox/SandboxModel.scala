@@ -15,7 +15,7 @@ object SandboxModel {
       None
     )
 
-  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
+  // @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   def updateModel(state: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] = {
     case rd @ RendererDetails(_, _, _) =>
       println(rd)

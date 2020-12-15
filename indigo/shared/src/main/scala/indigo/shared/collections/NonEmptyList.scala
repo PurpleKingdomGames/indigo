@@ -167,7 +167,7 @@ trait NonEmptyList[A] {
   def exists(p: A => Boolean): Boolean =
     NonEmptyList.exists(this)(p)
 
-  @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
+  // @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
   override def toString: String =
     s"NonEmptyList[$head][${tail.mkString(", ")}]"
 
@@ -183,7 +183,7 @@ trait NonEmptyList[A] {
     * @param separator A string to add between the elements
     * @return `String`
     */
-  @SuppressWarnings(Array("org.wartremover.warts.ToString"))
+  // @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   def mkString(separator: String): String =
     head.toString + separator + tail.mkString(separator)
 

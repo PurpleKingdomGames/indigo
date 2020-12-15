@@ -27,7 +27,7 @@ final class GlobalEventStream(
   private val eventQueue: mutable.Queue[GlobalEvent] =
     new mutable.Queue[GlobalEvent]()
 
-  @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
+  // @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   val pushGlobalEvent: GlobalEvent => Unit = {
     // Networking
     case httpRequest: HttpRequest =>

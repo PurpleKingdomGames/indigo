@@ -18,7 +18,7 @@ import org.scalajs.dom.raw.AudioDestinationNode
 
 object AudioPlayer {
 
-  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.Null", "org.wartremover.warts.Equals"))
+  // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.Null", "org.wartremover.warts.Equals"))
   def giveAudioContext(): AudioContextProxy =
     if (js.Dynamic.global.window.webkitAudioContext != null && !js.isUndefined(js.Dynamic.global.window.webkitAudioContext))
       AudioContextProxy.WebKitAudioContext(js.Dynamic.newInstance(js.Dynamic.global.window.webkitAudioContext)())
@@ -62,7 +62,7 @@ object AudioContextProxy {
       context.destination
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.Throw", "org.wartremover.warts.Equals"))
+  // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.Throw", "org.wartremover.warts.Equals"))
   final case class WebKitAudioContext(context: js.Dynamic) extends AudioContextProxy {
     import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
     import scalajs.js.JSConverters._
@@ -95,7 +95,7 @@ object AudioContextProxy {
 
 final class AudioPlayer(context: AudioContextProxy) {
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var soundAssets: List[LoadedAudioAsset] = Nil
 
   def addAudioAssets(audioAssets: List[LoadedAudioAsset]): Unit =
@@ -122,11 +122,11 @@ final class AudioPlayer(context: AudioContextProxy) {
       setupNodes(sound, volume, loop = false).audioBufferSourceNode.start(0)
     }
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var sourceA: AudioSourceState = new AudioSourceState(BindingKey("none"), None)
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var sourceB: AudioSourceState = new AudioSourceState(BindingKey("none"), None)
-  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var sourceC: AudioSourceState = new AudioSourceState(BindingKey("none"), None)
 
   def playAudio(sceneAudio: SceneAudio): Unit = {

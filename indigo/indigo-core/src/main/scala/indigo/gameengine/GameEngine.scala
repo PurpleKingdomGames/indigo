@@ -50,30 +50,30 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   val audioPlayer: AudioPlayer =
     AudioPlayer.init
 
-  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var gameConfig: GameConfig = null
-  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var storage: Storage = null
-  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var globalEventStream: GlobalEventStream = null
-  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var gamepadInputCapture: GamepadInputCapture = null
-  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var gameLoop: Long => Long => Unit = null
-  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var gameLoopInstance: GameLoop[StartUpData, GameModel, ViewModel] = null
-  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var accumulatedAssetCollection: AssetCollection = AssetCollection.empty
-  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var assetMapping: AssetMapping = null
-  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var renderer: Renderer = null
-  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var startUpData: StartUpData = _
-  @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   var platform: Platform = null
 
-  @SuppressWarnings(Array("org.wartremover.warts.Equals", "org.wartremover.warts.GlobalExecutionContext"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Equals", "org.wartremover.warts.GlobalExecutionContext"))
   def start(
       config: GameConfig,
       configAsync: Future[Option[GameConfig]],

@@ -47,7 +47,7 @@ final case class BoundingBox(position: Vertex, size: Vertex) {
 
   def sdf(vertex: Vertex): Double = {
     val p: Vertex = vertex - center
-    val d: Vertex     = p.abs - halfSize
+    val d: Vertex = p.abs - halfSize
     d.max(0.0).length + Math.min(Math.max(d.x, d.y), 0.0)
   }
 
@@ -94,7 +94,7 @@ final case class BoundingBox(position: Vertex, size: Vertex) {
   def ===(other: BoundingBox): Boolean =
     implicitly[EqualTo[BoundingBox]].equal(this, other)
 
-  @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
+  // @SuppressWarnings(Array("org.wartremover.warts.IsInstanceOf", "org.wartremover.warts.AsInstanceOf"))
   override def equals(obj: Any): Boolean =
     if (obj.isInstanceOf[BoundingBox])
       this === obj.asInstanceOf[BoundingBox]
