@@ -5,7 +5,17 @@ final case class Key(code: Int, key: String) {
     (key != "") && Key.printable.map(_.code).contains(this.code)
 
   def ===(other: Key): Boolean =
-    code == other.code && key == other.key
+    code == other.code
+
+  // This is not an accident, or it was, but now it's a feature...
+  // This allows us to pattern match on specific key instances.
+  // Hopefully we can replace with Scala 3 enums or something...
+  override def equals(that: Any): Boolean =
+    that match {
+      case that: Key =>
+        that.isInstanceOf[Key] && this.code == that.code
+      case _ => false
+    }
 
 }
 
