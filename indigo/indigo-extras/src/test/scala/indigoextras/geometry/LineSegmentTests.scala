@@ -4,6 +4,12 @@ import indigo.shared.datatypes.Vector2
 
 class LineSegmentTests extends munit.FunSuite {
 
+  test("length") {
+    assertEquals(LineSegment(Vertex(10, 10), Vertex(20, 10)).length, 10.0d)
+    assertEquals(LineSegment(Vertex(10, 10), Vertex(10, -10)).length, 20.0d)
+    assertEquals(Math.floor(LineSegment(Vertex(10, 10), Vertex(15, 13)).length * 100) * 0.01, 5.83d)
+  }
+
   test("moving the whole line segment") {
     val actual =
       LineSegment(Vertex(10, 10), Vertex(20, -30)).moveTo(-5, 50)

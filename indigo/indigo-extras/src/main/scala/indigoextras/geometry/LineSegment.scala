@@ -15,6 +15,9 @@ final case class LineSegment(start: Vertex, end: Vertex) {
   def top: Double    = Math.min(start.y, end.y)
   def bottom: Double = Math.max(start.y, end.y)
 
+  def length: Double =
+    start.distanceTo(end)
+
   def sdf(vertex: Vertex): Double =
     LineSegment.signedDistanceFunction(this, vertex)
   def distanceToBoundary(vertex: Vertex): Double =
