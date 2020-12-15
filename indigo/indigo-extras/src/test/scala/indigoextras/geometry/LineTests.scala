@@ -52,6 +52,19 @@ class LineTests extends munit.FunSuite {
     assertEquals(actual, expected)
   }
 
+  test("line intersections.should not intersect with a parallel lines (faster)") {
+    val actual: Boolean =
+      LineSegment((-3d, 3d), (2d, 3d)).toLine
+        .intersectsWith(LineSegment((1d, 1d), (-2d, 1d)).toLine)
+
+    val expected = Line.intersection(
+      LineSegment((-3d, 3d), (2d, 3d)).toLine,
+      LineSegment((1d, 1d), (-2d, 1d)).toLine
+    )
+
+    assertEquals(actual, expected.hasIntersected)
+  }
+
   test("line intersections.should intersect lines at right angles to each other") {
     val actual: LineIntersectionResult = Line.intersection(
       LineSegment((2d, 2d), (2d, -3d)).toLine,
@@ -59,6 +72,23 @@ class LineTests extends munit.FunSuite {
     )
 
     val expected: IntersectionVertex = IntersectionVertex(2, -2)
+
+    assertEquals(actual, expected)
+  }
+
+  test("line intersections.should intersect lines at right angles to each other (faster)") {
+    val actual: Option[Vertex] =
+      LineSegment((2d, 2d), (2d, -3d)).toLine
+        .intersectsAt(
+          LineSegment((-1d, -2d), (3d, -2d)).toLine
+        )
+
+    val expected: Option[Vertex] = Line
+      .intersection(
+        LineSegment((2d, 2d), (2d, -3d)).toLine,
+        LineSegment((-1d, -2d), (3d, -2d)).toLine
+      )
+      .toOption
 
     assertEquals(actual, expected)
   }
@@ -74,6 +104,23 @@ class LineTests extends munit.FunSuite {
     assertEquals(actual, expected)
   }
 
+  test("line intersections.should intersect diagonally right angle lines (faster)") {
+    val actual =
+      LineSegment((1d, 1d), (5d, 5d)).toLine
+        .intersectsAt(
+          LineSegment((1d, 5d), (4d, 2d)).toLine
+        )
+
+    val expected = Line
+      .intersection(
+        LineSegment((1d, 1d), (5d, 5d)).toLine,
+        LineSegment((1d, 5d), (4d, 2d)).toLine
+      )
+      .toOption
+
+    assertEquals(actual, expected)
+  }
+
   test("line intersections.should intersect diagonally non-right angle lines") {
     val actual: LineIntersectionResult = Line.intersection(
       LineSegment((1d, 5d), (3d, 1d)).toLine,
@@ -81,6 +128,21 @@ class LineTests extends munit.FunSuite {
     )
 
     val expected: IntersectionVertex = IntersectionVertex(2, 3)
+
+    assertEquals(actual, expected)
+  }
+
+  test("line intersections.should intersect diagonally non-right angle lines (faster)") {
+    val actual =
+      LineSegment((1d, 5d), (3d, 1d)).toLine
+        .intersectsAt(LineSegment((1d, 2d), (4d, 5d)).toLine)
+
+    val expected = Line
+      .intersection(
+        LineSegment((1d, 5d), (3d, 1d)).toLine,
+        LineSegment((1d, 2d), (4d, 5d)).toLine
+      )
+      .toOption
 
     assertEquals(actual, expected)
   }
@@ -96,6 +158,23 @@ class LineTests extends munit.FunSuite {
     assertEquals(actual, expected)
   }
 
+  test("line intersections.should intersect where one line is parallel to the y-axis (faster)") {
+    val actual =
+      LineSegment((4d, 1d), (4d, 4d)).toLine
+        .intersectsAt(
+          LineSegment((2d, 1d), (5d, 4d)).toLine
+        )
+
+    val expected = Line
+      .intersection(
+        LineSegment((4d, 1d), (4d, 4d)).toLine,
+        LineSegment((2d, 1d), (5d, 4d)).toLine
+      )
+      .toOption
+
+    assertEquals(actual, expected)
+  }
+
   test("line intersections.should intersect where one line is parallel to the x-axis") {
     val actual: LineIntersectionResult = Line.intersection(
       LineSegment((1d, 2d), (5d, 2d)).toLine,
@@ -103,6 +182,23 @@ class LineTests extends munit.FunSuite {
     )
 
     val expected: IntersectionVertex = IntersectionVertex(4, 2)
+
+    assertEquals(actual, expected)
+  }
+
+  test("line intersections.should intersect where one line is parallel to the x-axis (faster)") {
+    val actual =
+      LineSegment((1d, 2d), (5d, 2d)).toLine
+        .intersectsAt(
+          LineSegment((2d, 4d), (5d, 1d)).toLine
+        )
+
+    val expected = Line
+      .intersection(
+        LineSegment((1d, 2d), (5d, 2d)).toLine,
+        LineSegment((2d, 4d), (5d, 1d)).toLine
+      )
+      .toOption
 
     assertEquals(actual, expected)
   }

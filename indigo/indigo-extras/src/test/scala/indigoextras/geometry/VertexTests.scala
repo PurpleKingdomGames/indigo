@@ -101,7 +101,7 @@ class VertexTests extends munit.FunSuite {
   }
 
   test("twoVerticesToVector2") {
-    assertEquals(Vertex.twoVerticesToVector2(Vertex(2, 2), Vertex(1, 5)), Vector2(-1, 3))
+    assertEquals(Vertex(2, 2).makeVectorWith(Vertex(1, 5)), Vector2(-1, 3))
   }
 
 }
