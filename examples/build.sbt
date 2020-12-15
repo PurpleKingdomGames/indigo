@@ -9,7 +9,7 @@ lazy val commonSettings = Seq(
   scalaVersion := dottyVersion,
   organization := "indigo-examples",
   libraryDependencies ++= Seq(
-    "org.scalameta"   %%% "munit"          % "0.7.19" % Test,
+    "org.scalameta"   %%% "munit"         % "0.7.19" % Test,
     "io.indigoengine" %%% "indigo"        % IndigoVersion.getVersion,
     "io.indigoengine" %%% "indigo-extras" % IndigoVersion.getVersion
   ),
@@ -201,6 +201,8 @@ lazy val fireworks =
       showCursor := true,
       title := "Fireworks!",
       gameAssetsDirectory := "assets",
+      windowStartWidth := 1280,
+      windowStartHeight := 720,
       libraryDependencies ++= Seq(
         "org.scalacheck" %%% "scalacheck" % "1.15.1" % "test"
       )

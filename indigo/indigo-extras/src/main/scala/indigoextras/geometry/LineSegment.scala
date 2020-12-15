@@ -80,7 +80,7 @@ final case class LineSegment(start: Vertex, end: Vertex) {
       .map(pt => contains(pt) && other.contains(pt))
       .getOrElse(false)
 
-  def contains(vertex: Vertex): Boolean =
+  def contains(vertex: Vertex, tolerance: Double): Boolean =
     if (vertex.x >= left && vertex.x <= right && vertex.y >= top && vertex.y <= bottom)
       toLine match {
         case Line.InvalidLine =>
@@ -90,9 +90,12 @@ final case class LineSegment(start: Vertex, end: Vertex) {
           true
 
         case l: Line.Components =>
-          l.slopeComparison(vertex, 0.5f)
+          l.slopeComparison(vertex, tolerance)
       }
     else false
+
+  def contains(vertex: Vertex): Boolean =
+    contains(vertex, 0.5d)
 
   def isFacingVertex(vertex: Vertex): Boolean =
     (normal.dot(vertex.makeVectorWith(center))) < 0

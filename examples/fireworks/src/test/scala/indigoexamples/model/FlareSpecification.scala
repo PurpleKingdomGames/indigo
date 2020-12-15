@@ -28,7 +28,7 @@ class FlareSpecification extends Properties("Flare") {
       Flare.pickEndPoint(angle)(dice)
 
     val distance: Double =
-      Vertex.distanceBetween(Vertex.zero, target)
+      Vertex.zero.distanceTo(target)
 
     val maxDistance: Double =
       Vertex.zero.distanceTo(Vertex(maxX, maxY))
