@@ -28,13 +28,13 @@ object Scene {
     e =>
       scene
         .updateModel(context, scene.modelLens.get(gameModel))(e)
-        .mapState(scene.modelLens.set(gameModel, _))
+        .map(scene.modelLens.set(gameModel, _))
 
   def updateViewModel[SD, GM, VM](scene: Scene[SD, GM, VM], context: FrameContext[SD], model: GM, viewModel: VM): GlobalEvent => Outcome[VM] =
     e =>
       scene
         .updateViewModel(context, scene.modelLens.get(model), scene.viewModelLens.get(viewModel))(e)
-        .mapState(scene.viewModelLens.set(viewModel, _))
+        .map(scene.viewModelLens.set(viewModel, _))
 
   def updateView[SD, GM, VM](scene: Scene[SD, GM, VM], context: FrameContext[SD], model: GM, viewModel: VM): Outcome[SceneUpdateFragment] =
     scene.present(context, scene.modelLens.get(model), scene.viewModelLens.get(viewModel))

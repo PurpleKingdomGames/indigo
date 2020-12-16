@@ -46,7 +46,7 @@ final class SubSystemsRegister(subSystems: List[SubSystem]) {
 
       val out =
         filteredEvents.foldLeft(Outcome(model)) { (acc, e) =>
-          acc.flatMapState { m =>
+          acc.flatMap { m =>
             subSystem.update(frameContext, m)(e)
           }
         }

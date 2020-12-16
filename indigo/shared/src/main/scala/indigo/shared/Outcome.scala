@@ -8,43 +8,41 @@ import scala.annotation.tailrec
 final case class Outcome[+A](state: A, globalEvents: List[GlobalEvent]) {
 
   def addGlobalEvents(newEvents: GlobalEvent*): Outcome[A] =
-    Outcome.addGlobalEvents(this, newEvents.toList)
+    addGlobalEvents(newEvents.toList)
 
   def addGlobalEvents(newEvents: List[GlobalEvent]): Outcome[A] =
-    Outcome.addGlobalEvents(this, newEvents)
+    this.copy(globalEvents = globalEvents ++ newEvents)
 
   def createGlobalEvents(f: A => List[GlobalEvent]): Outcome[A] =
-    Outcome.createGlobalEvents(this, f)
-
-  def mapState[B](f: A => B): Outcome[B] =
-    Outcome.mapState(this)(f)
-
-  def map[B](f: A => B): Outcome[B] =
-    mapState(f)
-
-  def mapGlobalEvents[B](f: List[GlobalEvent] => List[GlobalEvent]): Outcome[A] =
-    Outcome.mapGlobalEvents(this)(f)
+    this.copy(globalEvents = globalEvents ++ f(state))
 
   def mapAll[B](f: A => B, g: List[GlobalEvent] => List[GlobalEvent]): Outcome[B] =
-    Outcome.mapAll(this)(f, g)
+    Outcome(f(state), g(globalEvents))
 
-  def apState[B](of: Outcome[A => B]): Outcome[B] =
-    Outcome.apState(this)(of)
+  def map[B](f: A => B): Outcome[B] =
+    this.copy(state = f(state))
+
+  def mapGlobalEventList(f: List[GlobalEvent] => List[GlobalEvent]): Outcome[A] =
+    this.copy(globalEvents = f(globalEvents))
+
+  def mapGlobalEvents(f: GlobalEvent => GlobalEvent): Outcome[A] =
+    this.copy(globalEvents = globalEvents.map(f))
 
   def ap[B](of: Outcome[A => B]): Outcome[B] =
-    apState(of)
+    map(of.state)
 
   def merge[B, C](other: Outcome[B])(f: (A, B) => C): Outcome[C] =
-    Outcome.merge(this, other)(f)
+    flatMap(a => other.map(b => (a, b))).map(p => f(p._1, p._2))
 
+  def combine[B](other: Outcome[B]): Outcome[(A, B)] =
+    Outcome((state, other.state), globalEvents ++ other.globalEvents)
   def |+|[B](other: Outcome[B]): Outcome[(A, B)] =
-    Outcome.combine(this, other)
+    combine(other)
 
-  def flatMapState[B](f: A => Outcome[B]): Outcome[B] =
-    Outcome.flatMapState(this)(f)
-
-  def flatMap[B](f: A => Outcome[B]): Outcome[B] =
-    flatMapState(f)
+  def flatMap[B](f: A => Outcome[B]): Outcome[B] = {
+    val next = f(state)
+    this.copy(state = next.state, globalEvents = globalEvents ++ next.globalEvents)
+  }
 
 }
 
@@ -54,18 +52,32 @@ object Outcome {
     def sequence: Outcome[List[A]] =
       Outcome.sequence(l)
   }
+  implicit class tuple2Outcomes[A, B](val t: (Outcome[A], Outcome[B])) extends AnyVal {
+    def combine: Outcome[(A, B)] =
+      t._1.combine(t._2)
+    def merge[C](f: (A, B) => C): Outcome[C] =
+      t._1.merge(t._2)(f)
+    def map2[C](f: (A, B) => C): Outcome[C] =
+      merge(f)
+  }
+  implicit class tuple3Outcomes[A, B, C](val t: (Outcome[A], Outcome[B], Outcome[C])) extends AnyVal {
+    def combine: Outcome[(A, B, C)] =
+      Outcome((t._1.state, t._2.state, t._3.state), t._1.globalEvents ++ t._2.globalEvents ++ t._3.globalEvents)
+    def merge[D](f: (A, B, C) => D): Outcome[D] =
+      for {
+        aa <- t._1
+        bb <- t._2
+        cc <- t._3
+      } yield f(aa, bb, cc)
+    def map3[D](f: (A, B, C) => D): Outcome[D] =
+      merge(f)
+  }
 
   def apply[A](state: A): Outcome[A] =
     pure(state)
 
   def pure[A](state: A): Outcome[A] =
-    new Outcome[A](state, Nil)
-
-  def addGlobalEvents[A](o: Outcome[A], newEvents: List[GlobalEvent]): Outcome[A] =
-    new Outcome(o.state, o.globalEvents ++ newEvents)
-
-  def createGlobalEvents[A](o: Outcome[A], f: A => List[GlobalEvent]): Outcome[A] =
-    new Outcome(o.state, o.globalEvents ++ f(o.state))
+    Outcome[A](state, Nil)
 
   def sequence[A](l: List[Outcome[A]]): Outcome[List[A]] = {
     @tailrec
@@ -81,38 +93,27 @@ object Outcome {
     rec(l, Nil, Nil)
   }
 
-  def mapState[A, B](oa: Outcome[A])(f: A => B): Outcome[B] =
-    mapAll(oa)(f, identity)
-
-  def mapGlobalEvents[A](oa: Outcome[A])(f: List[GlobalEvent] => List[GlobalEvent]): Outcome[A] =
-    mapAll(oa)(identity, f)
-
-  def mapAll[A, B](oa: Outcome[A])(f: A => B, g: List[GlobalEvent] => List[GlobalEvent]): Outcome[B] =
-    Outcome(f(oa.state))
-      .addGlobalEvents(g(oa.globalEvents))
-
-  def apState[A, B](oa: Outcome[A])(of: Outcome[A => B]): Outcome[B] =
-    oa.mapState(of.state)
-
-  def ap2State[A, B, C](oa: Outcome[A], ob: Outcome[B])(of: Outcome[(A, B) => C]): Outcome[C] =
-    apState(combine(oa, ob))(of.mapState(f => (t: (A, B)) => f.curried(t._1)(t._2)))
-
   def merge[A, B, C](oa: Outcome[A], ob: Outcome[B])(f: (A, B) => C): Outcome[C] =
-    oa.flatMap(a => ob.map(b => (a, b))).map(p => f(p._1, p._2))
+    oa.merge(ob)(f)
+  def map2[A, B, C](oa: Outcome[A], ob: Outcome[B])(f: (A, B) => C): Outcome[C] =
+    merge(oa, ob)(f)
+  def merge3[A, B, C, D](oa: Outcome[A], ob: Outcome[B], oc: Outcome[C])(f: (A, B, C) => D): Outcome[D] =
+    for {
+      aa <- oa
+      bb <- ob
+      cc <- oc
+    } yield f(aa, bb, cc)
+  def map3[A, B, C, D](oa: Outcome[A], ob: Outcome[B], oc: Outcome[C])(f: (A, B, C) => D): Outcome[D] =
+    merge3(oa, ob, oc)(f)
 
   def combine[A, B](oa: Outcome[A], ob: Outcome[B]): Outcome[(A, B)] =
-    Outcome((oa.state, ob.state)).addGlobalEvents(oa.globalEvents ++ ob.globalEvents)
-
+    oa.combine(ob)
   def combine3[A, B, C](oa: Outcome[A], ob: Outcome[B], oc: Outcome[C]): Outcome[(A, B, C)] =
     Outcome((oa.state, ob.state, oc.state)).addGlobalEvents(oa.globalEvents ++ ob.globalEvents ++ oc.globalEvents)
 
   def join[A](faa: Outcome[Outcome[A]]): Outcome[A] =
     Outcome(faa.state.state).addGlobalEvents(faa.globalEvents ++ faa.state.globalEvents)
-
   def flatten[A](faa: Outcome[Outcome[A]]): Outcome[A] =
     join(faa)
-
-  def flatMapState[A, B](fa: Outcome[A])(f: A => Outcome[B]): Outcome[B] =
-    join(mapState(fa)(f))
 
 }
