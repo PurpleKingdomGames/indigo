@@ -23,7 +23,6 @@ object PerfView {
       uiLayer,
       RGBA.White.withAmount(0.5),
       Nil,
-      Nil,
       SceneAudio.None,
       ScreenEffects.None,
       Nil

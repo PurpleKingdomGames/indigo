@@ -103,54 +103,30 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
       Outcome(state)
   }
 
-  def present(frameContext: SubSystemFrameContext, state: AutomataState): SceneUpdateFragment =
+  def present(frameContext: SubSystemFrameContext, state: AutomataState): Outcome[SceneUpdateFragment] =
     layer.emptyScene(Automata.renderNoLayer(state.pool, frameContext.gameTime))
 }
 object Automata {
 
   sealed trait Layer {
-    def emptyScene(automatonUpdate: AutomatonUpdate): SceneUpdateFragment =
+    def emptyScene(automatonUpdate: AutomatonUpdate): Outcome[SceneUpdateFragment] =
       this match {
         case Layer.Game =>
-          SceneUpdateFragment(
-            automatonUpdate.nodes,
-            Nil,
-            Nil,
-            Nil,
-            RGBA.None,
-            Nil,
-            automatonUpdate.events,
-            SceneAudio.None,
-            ScreenEffects.None,
-            Nil
+          Outcome(
+            SceneUpdateFragment.empty.addGameLayerNodes(automatonUpdate.nodes),
+            automatonUpdate.events
           )
 
         case Layer.Lighting =>
-          SceneUpdateFragment(
-            Nil,
-            automatonUpdate.nodes,
-            Nil,
-            Nil,
-            RGBA.None,
-            Nil,
-            automatonUpdate.events,
-            SceneAudio.None,
-            ScreenEffects.None,
-            Nil
+          Outcome(
+            SceneUpdateFragment.empty.addLightingLayerNodes(automatonUpdate.nodes),
+            automatonUpdate.events
           )
 
         case Layer.UI =>
-          SceneUpdateFragment(
-            Nil,
-            Nil,
-            Nil,
-            automatonUpdate.nodes,
-            RGBA.None,
-            Nil,
-            automatonUpdate.events,
-            SceneAudio.None,
-            ScreenEffects.None,
-            Nil
+          Outcome(
+            SceneUpdateFragment.empty.addUiLayerNodes(automatonUpdate.nodes),
+            automatonUpdate.events
           )
       }
 

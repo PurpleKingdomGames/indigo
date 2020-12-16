@@ -75,12 +75,12 @@ class JobMarketTests extends munit.FunSuite {
     val job: Job          = SampleJobs.WanderTo(10)
     val market: JobMarket = JobMarket.subSystem
 
-    assertEquals(market.present(context, List(job)).gameLayer.nodes.isEmpty, true)
-    assertEquals(market.present(context, List(job)).lightingLayer.nodes.isEmpty, true)
-    assertEquals(market.present(context, List(job)).uiLayer.nodes.isEmpty, true)
+    assertEquals(market.present(context, List(job)).state.gameLayer.nodes.isEmpty, true)
+    assertEquals(market.present(context, List(job)).state.lightingLayer.nodes.isEmpty, true)
+    assertEquals(market.present(context, List(job)).state.uiLayer.nodes.isEmpty, true)
     assertEquals(market.present(context, List(job)).globalEvents.isEmpty, true)
-    assertEquals(market.present(context, List(job)).ambientLight === RGBA.Normal, true)
-    assertEquals(market.present(context, List(job)).audio, SceneAudio.None)
+    assertEquals(market.present(context, List(job)).state.ambientLight === RGBA.Normal, true)
+    assertEquals(market.present(context, List(job)).state.audio, SceneAudio.None)
   }
 
   test("The job market.should have an empty subsystem representation") {

@@ -84,6 +84,7 @@ class AutomataTests extends munit.FunSuite {
 
       automata
         .present(ctx, nextState)
+        .state
         .gameLayer
         .nodes
         .collect { case g: Graphic => g }

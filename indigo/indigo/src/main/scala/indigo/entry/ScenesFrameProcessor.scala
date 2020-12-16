@@ -56,12 +56,14 @@ final class ScenesFrameProcessor[StartUpData, Model, ViewModel](
           }
         }
 
-    val view: SceneUpdateFragment =
-      sceneManager.updateView(frameContext, updatedModel.state, updatedViewModel.state) |+|
+    val view: Outcome[SceneUpdateFragment] =
+      Outcome.merge(
+        sceneManager.updateView(frameContext, updatedModel.state, updatedViewModel.state),
         subSystemsRegister.present(frameContext.forSubSystems)
+      )(_ |+| _)
 
     Outcome
-      .combine3(updatedModel, updatedViewModel, Outcome(view))
+      .combine3(updatedModel, updatedViewModel, view)
       .addGlobalEvents(subSystemEvents)
   }
 

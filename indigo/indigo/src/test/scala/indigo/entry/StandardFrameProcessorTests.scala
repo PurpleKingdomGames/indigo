@@ -39,7 +39,6 @@ class StandardFrameProcessorTests extends munit.FunSuite {
 
     assert(outModel.count == 1)
     assert(outViewModel == 10)
-    assert(outView.globalEvents.length == SceneUpdateFragment.empty.globalEvents.length)
     assert(outcome.globalEvents.length == 2)
     assert(outcome.globalEvents.contains(EventsOnlyEvent.Increment))
     assert(outcome.globalEvents.contains(EventsOnlyEvent.Total(1)))
@@ -76,8 +75,8 @@ object TestFixtures {
         Outcome(vm + 10).addGlobalEvents(EventsOnlyEvent.Increment)
       }
 
-  val viewUpdate: (FrameContext[Unit], GameModel, Int) => SceneUpdateFragment =
-    (_, _, _) => SceneUpdateFragment.empty
+  val viewUpdate: (FrameContext[Unit], GameModel, Int) => Outcome[SceneUpdateFragment] =
+    (_, _, _) => Outcome(SceneUpdateFragment.empty)
 
   val standardFrameProcessor: StandardFrameProcessor[Unit, GameModel, Int] = {
     new StandardFrameProcessor(new SubSystemsRegister(Nil), EventFilters.NoFilter, modelUpdate, viewModelUpdate, viewUpdate)

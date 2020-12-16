@@ -2,12 +2,13 @@ package indigo.shared.scenegraph
 
 import indigo.shared.events.GlobalEvent
 import indigo.shared.datatypes.RGBA
+import indigo.shared.Outcome
 
 /**
   * A description of what the engine should next present to the player.
-  * 
+  *
   * SceneUpdateFragments are predicatably composable, so you can make a scene in pieces and then combine them all at the end.
-  * 
+  *
   * Note that a SceneUpdateFragment represents what is to happen next. It is not a diff. If you remove a sprite from the definition it will not be drawn.
   *
   * @param gameLayer The layer game elements are placed on.
@@ -16,7 +17,6 @@ import indigo.shared.datatypes.RGBA
   * @param uiLayer The layer that UI elements are placed on.
   * @param ambientLight The scene's ambient light levels.
   * @param lights Dynamic lights.
-  * @param globalEvents Any GlobalEvents emitted by the view.
   * @param audio Background audio.
   * @param screenEffects Effects to be applied at screen level.
   * @param cloneBlanks A list of elements that will be referenced by clones in the main layers.
@@ -28,7 +28,6 @@ final case class SceneUpdateFragment(
     uiLayer: SceneLayer,
     ambientLight: RGBA,
     lights: List[Light],
-    globalEvents: List[GlobalEvent],
     audio: SceneAudio,
     screenEffects: ScreenEffects,
     cloneBlanks: List[CloneBlank]
@@ -83,12 +82,6 @@ final case class SceneUpdateFragment(
 
   def addLights(newLights: List[Light]): SceneUpdateFragment =
     withLights(lights ++ newLights)
-
-  def addGlobalEvents(events: GlobalEvent*): SceneUpdateFragment =
-    addGlobalEvents(events.toList)
-
-  def addGlobalEvents(events: List[GlobalEvent]): SceneUpdateFragment =
-    this.copy(globalEvents = globalEvents ++ events)
 
   def withAudio(sceneAudio: SceneAudio): SceneUpdateFragment =
     this.copy(audio = sceneAudio)
@@ -169,7 +162,6 @@ object SceneUpdateFragment {
       uiLayer: List[SceneGraphNode],
       ambientLight: RGBA,
       lights: List[Light],
-      globalEvents: List[GlobalEvent],
       audio: SceneAudio,
       screenEffects: ScreenEffects,
       cloneBlanks: List[CloneBlank]
@@ -181,20 +173,19 @@ object SceneUpdateFragment {
       SceneLayer(uiLayer),
       ambientLight,
       lights,
-      globalEvents,
       audio,
       screenEffects,
       cloneBlanks
     )
 
   def apply(gameLayer: SceneGraphNode*): SceneUpdateFragment =
-    SceneUpdateFragment(gameLayer.toList, Nil, Nil, Nil, RGBA.None, Nil, Nil, SceneAudio.None, ScreenEffects.None, Nil)
+    SceneUpdateFragment(gameLayer.toList, Nil, Nil, Nil, RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
 
   def apply(gameLayer: List[SceneGraphNode]): SceneUpdateFragment =
-    SceneUpdateFragment(gameLayer.toList, Nil, Nil, Nil, RGBA.None, Nil, Nil, SceneAudio.None, ScreenEffects.None, Nil)
+    SceneUpdateFragment(gameLayer.toList, Nil, Nil, Nil, RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
 
-  def empty: SceneUpdateFragment =
-    SceneUpdateFragment(Nil, Nil, Nil, Nil, RGBA.None, Nil, Nil, SceneAudio.None, ScreenEffects.None, Nil)
+  val empty: SceneUpdateFragment =
+    SceneUpdateFragment(Nil, Nil, Nil, Nil, RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
 
   def append(a: SceneUpdateFragment, b: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment(
@@ -204,7 +195,6 @@ object SceneUpdateFragment {
       a.uiLayer |+| b.uiLayer,
       a.ambientLight + b.ambientLight,
       a.lights ++ b.lights,
-      a.globalEvents ++ b.globalEvents,
       a.audio |+| b.audio,
       a.screenEffects |+| b.screenEffects,
       a.cloneBlanks ++ b.cloneBlanks

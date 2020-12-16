@@ -72,7 +72,6 @@ class GameLoop[StartUpData, GameModel, ViewModel](
           val scene = processedFrame.state._3
 
           // Process events
-          scene.globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
           SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.gameLayer.nodes, collectedEvents, gameEngine.globalEventStream.pushGlobalEvent)
           SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.lightingLayer.nodes, collectedEvents, gameEngine.globalEventStream.pushGlobalEvent)
           SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.uiLayer.nodes, collectedEvents, gameEngine.globalEventStream.pushGlobalEvent)

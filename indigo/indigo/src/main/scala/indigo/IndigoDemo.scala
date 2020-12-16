@@ -30,7 +30,7 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
 
   def updateViewModel(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): GlobalEvent => Outcome[ViewModel]
 
-  def present(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): SceneUpdateFragment
+  def present(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): Outcome[SceneUpdateFragment]
 
   private val subSystemsRegister: SubSystemsRegister =
     new SubSystemsRegister(Nil)

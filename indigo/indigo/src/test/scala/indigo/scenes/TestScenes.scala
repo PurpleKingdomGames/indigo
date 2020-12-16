@@ -67,8 +67,8 @@ final case class TestSceneA() extends Scene[Unit, TestGameModel, TestViewModel] 
   def updateViewModel(context: FrameContext[Unit], sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA): GlobalEvent => Outcome[TestSceneViewModelA] =
     _ => Outcome(TestSceneViewModelA())
 
-  def present(context: FrameContext[Unit], sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA): SceneUpdateFragment =
-    SceneUpdateFragment.empty
+  def present(context: FrameContext[Unit], sceneModel: TestSceneModelA, sceneViewModel: TestSceneViewModelA): Outcome[SceneUpdateFragment] =
+    Outcome(SceneUpdateFragment.empty)
 }
 
 final case class TestSceneModelA(count: Int)
@@ -122,8 +122,8 @@ final case class TestSceneB() extends Scene[Unit, TestGameModel, TestViewModel] 
   def updateViewModel(context: FrameContext[Unit], sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB): GlobalEvent => Outcome[TestSceneViewModelB] =
     _ => Outcome(TestSceneViewModelB())
 
-  def present(context: FrameContext[Unit], sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB): SceneUpdateFragment =
-    SceneUpdateFragment.empty
+  def present(context: FrameContext[Unit], sceneModel: TestSceneModelB, sceneViewModel: TestSceneViewModelB): Outcome[SceneUpdateFragment] =
+    Outcome(SceneUpdateFragment.empty)
 }
 
 final case class TestSceneModelB(count: Int)

@@ -20,7 +20,7 @@ trait Scene[StartUpData, GameModel, ViewModel] {
 
   def updateModel(context: FrameContext[StartUpData], model: SceneModel): GlobalEvent => Outcome[SceneModel]
   def updateViewModel(context: FrameContext[StartUpData], model: SceneModel, viewModel: SceneViewModel): GlobalEvent => Outcome[SceneViewModel]
-  def present(context: FrameContext[StartUpData], model: SceneModel, viewModel: SceneViewModel): SceneUpdateFragment
+  def present(context: FrameContext[StartUpData], model: SceneModel, viewModel: SceneViewModel): Outcome[SceneUpdateFragment]
 }
 object Scene {
 
@@ -36,7 +36,7 @@ object Scene {
         .updateViewModel(context, scene.modelLens.get(model), scene.viewModelLens.get(viewModel))(e)
         .mapState(scene.viewModelLens.set(viewModel, _))
 
-  def updateView[SD, GM, VM](scene: Scene[SD, GM, VM], context: FrameContext[SD], model: GM, viewModel: VM): SceneUpdateFragment =
+  def updateView[SD, GM, VM](scene: Scene[SD, GM, VM], context: FrameContext[SD], model: GM, viewModel: VM): Outcome[SceneUpdateFragment] =
     scene.present(context, scene.modelLens.get(model), scene.viewModelLens.get(viewModel))
 
 }

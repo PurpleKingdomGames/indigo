@@ -28,7 +28,7 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher {
 
   def updateModel(context: FrameContext[StartUpData], model: Model): GlobalEvent => Outcome[Model]
 
-  def present(context: FrameContext[StartUpData], model: Model): SceneUpdateFragment
+  def present(context: FrameContext[StartUpData], model: Model): Outcome[SceneUpdateFragment]
 
   private def indigoGame: GameEngine[StartUpData, Model, Unit] = {
 
