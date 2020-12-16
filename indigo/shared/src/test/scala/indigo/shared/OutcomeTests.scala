@@ -71,15 +71,15 @@ class OutcomeTests extends munit.FunSuite {
   }
 
   test("Mapping over Outcomes.map state") {
-    assertEquals(Outcome(10).mapState(_ + 10) == Outcome(20), true)
-    assertEquals(Outcome(10).addGlobalEvents(TestEvent("a")).mapState(_ + 10) == Outcome(20).addGlobalEvents(TestEvent("a")), true)
+    assertEquals(Outcome(10).map(_ + 10) == Outcome(20), true)
+    assertEquals(Outcome(10).addGlobalEvents(TestEvent("a")).map(_ + 10) == Outcome(20).addGlobalEvents(TestEvent("a")), true)
   }
 
-  test("Mapping over Outcomes.map global events") {
+  test("Mapping over Outcomes.map global event list") {
     val actual =
       Outcome(10)
         .addGlobalEvents(TestEvent("a"), TestEvent("b"), TestEvent("c"))
-        .mapGlobalEvents(_.filter {
+        .mapGlobalEventList(_.filter {
           case TestEvent(msg) =>
             msg == "b"
         })
@@ -87,6 +87,22 @@ class OutcomeTests extends munit.FunSuite {
     val expected =
       Outcome(10)
         .addGlobalEvents(TestEvent("b"))
+
+    assertEquals(actual == expected, true)
+  }
+
+  test("Mapping over Outcomes.map global events") {
+    val actual =
+      Outcome(10)
+        .addGlobalEvents(TestEvent("a"), TestEvent("b"), TestEvent("c"))
+        .mapGlobalEvents {
+          case TestEvent(msg) =>
+            TestEvent(msg + msg)
+        }
+
+    val expected =
+      Outcome(10)
+        .addGlobalEvents(TestEvent("aa"), TestEvent("bb"), TestEvent("cc"))
 
     assertEquals(actual == expected, true)
   }
@@ -127,28 +143,15 @@ class OutcomeTests extends munit.FunSuite {
     assertEquals(actual == expected, true)
   }
 
-  test("flat map & join.flatMapState") {
-    assertEquals(Outcome(10).flatMapState(i => Outcome(i * 10)) == Outcome(100), true)
-  }
-
-  test("Combine.Outcomes can be combined") {
-
-    val oa = Outcome("count").addGlobalEvents(TestEvent("x"))
-    val ob = Outcome(1).addGlobalEvents(TestEvent("y"), TestEvent("z"))
-
-    val actual =
-      oa |+| ob
-
-    val expected =
-      Outcome(("count", 1)).addGlobalEvents(TestEvent("x"), TestEvent("y"), TestEvent("z"))
-
-    assertEquals(actual == expected, true)
+  test("flat map & join.flatMap") {
+    assertEquals(Outcome(10).flatMap(i => Outcome(i * 10)), Outcome(100))
+    assertEquals(Outcome.join(Outcome(10).map(i => Outcome(i * 10))), Outcome(100))
   }
 
   test("Applicative.ap") {
 
     val actual: Outcome[Int] =
-      Outcome(10).apState(Outcome((i: Int) => i + 10))
+      Outcome(10).ap(Outcome((i: Int) => i + 10))
 
     val expected: Outcome[Int] =
       Outcome(20)
@@ -159,7 +162,7 @@ class OutcomeTests extends munit.FunSuite {
   test("Applicative.ap with event") {
 
     val actual: Outcome[Int] =
-      Outcome(10).addGlobalEvents(TestEvent("x")).apState(Outcome((i: Int) => i + 10))
+      Outcome(10).addGlobalEvents(TestEvent("x")).ap(Outcome((i: Int) => i + 10))
 
     val expected: Outcome[Int] =
       Outcome(20).addGlobalEvents(TestEvent("x"))
@@ -167,18 +170,73 @@ class OutcomeTests extends munit.FunSuite {
     assertEquals(actual == expected, true)
   }
 
+  test("Combine - 2 Outcomes can be combined") {
+
+    val oa = Outcome("count").addGlobalEvents(TestEvent("x"))
+    val ob = Outcome(1).addGlobalEvents(TestEvent("y"), TestEvent("z"))
+
+    val actual1 = oa.combine(ob)
+    val actual2 = Outcome.combine(oa, ob)
+    val actual3 = (oa, ob).combine
+
+    val expected =
+      Outcome(("count", 1)).addGlobalEvents(TestEvent("x"), TestEvent("y"), TestEvent("z"))
+
+    assertEquals(actual1, expected)
+    assertEquals(actual2, expected)
+    assertEquals(actual3, expected)
+  }
+
+  test("Combine - 3 Outcomes can be combined") {
+
+    val oa = Outcome("count").addGlobalEvents(TestEvent("x"))
+    val ob = Outcome(1).addGlobalEvents(TestEvent("y"), TestEvent("z"))
+    val oc = Outcome(true).addGlobalEvents(TestEvent("w"))
+
+    val actual1 = Outcome.combine3(oa, ob, oc)
+    val actual2 = (oa, ob, oc).combine
+
+    val expected =
+      Outcome(("count", 1, true)).addGlobalEvents(TestEvent("x"), TestEvent("y"), TestEvent("z"), TestEvent("w"))
+
+    assertEquals(actual1, expected)
+    assertEquals(actual2, expected)
+  }
+
   test("Applicative.map2 / merge") {
     val oa = Outcome("count").addGlobalEvents(TestEvent("x"))
     val ob = Outcome(1).addGlobalEvents(TestEvent("y"), TestEvent("z"))
 
-    val actual: Outcome[String] =
+    val actual1: Outcome[String] =
       Outcome.merge(oa, ob)((a: String, b: Int) => a + ": " + b)
+    val actual2: Outcome[String] =
+      oa.merge(ob)((a: String, b: Int) => a + ": " + b)
+    val actual3: Outcome[String] =
+      (oa, ob).merge((a: String, b: Int) => a + ": " + b)
 
     val expected: Outcome[String] =
       Outcome("count: 1").addGlobalEvents(TestEvent("x"), TestEvent("y"), TestEvent("z"))
 
-    assertEquals(actual == expected, true)
+    assertEquals(actual1, expected)
+    assertEquals(actual2, expected)
+    assertEquals(actual3, expected)
+  }
 
+  test("Applicative.map3 / merge") {
+    val oa = Outcome("count").addGlobalEvents(TestEvent("x"))
+    val ob = Outcome(1).addGlobalEvents(TestEvent("y"), TestEvent("z"))
+    val oc = Outcome(true).addGlobalEvents(TestEvent("w"))
+
+    val actual1: Outcome[String] =
+      Outcome.merge3(oa, ob, oc)((a: String, b: Int, c: Boolean) => a + ": " + b + ": " + c)
+    val actual2: Outcome[String] =
+      (oa, ob, oc).merge((a: String, b: Int, c: Boolean) => a + ": " + b + ": " + c)
+
+    val expected: Outcome[String] =
+      Outcome("count: 1: true").addGlobalEvents(TestEvent("x"), TestEvent("y"), TestEvent("z"), TestEvent("w"))
+
+    assertEquals(actual1, expected)
+    assertEquals(actual2, expected)
   }
 
 }

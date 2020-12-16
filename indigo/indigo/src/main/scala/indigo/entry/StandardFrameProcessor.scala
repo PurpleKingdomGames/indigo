@@ -40,7 +40,7 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
         .map(eventFilters.modelFilter)
         .collect { case Some(e) => e }
         .foldLeft(Outcome(model)) { (acc, e) =>
-          acc.flatMapState { next =>
+          acc.flatMap { next =>
             modelUpdate(frameContext, next)(e)
           }
         }
@@ -53,7 +53,7 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
         .map(eventFilters.viewModelFilter)
         .collect { case Some(e) => e }
         .foldLeft(Outcome(viewModel)) { (acc, e) =>
-          acc.flatMapState { next =>
+          acc.flatMap { next =>
             viewModelUpdate(frameContext, updatedModel.state, next)(e)
           }
         }
@@ -83,7 +83,7 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
     val frameContext = new FrameContext[StartUpData](gameTime, dice, inputState, boundaryLocator, startUpData)
 
     val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
-      acc.flatMapState { next =>
+      acc.flatMap { next =>
         modelUpdate(frameContext, next)(e)
       }
     }
