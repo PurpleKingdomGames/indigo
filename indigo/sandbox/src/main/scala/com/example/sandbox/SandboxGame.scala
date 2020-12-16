@@ -129,10 +129,12 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
       Outcome(viewModel)
   }
 
-  def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): SceneUpdateFragment =
-    SandboxView.updateView(model, viewModel, context.inputState) |+|
-      // viewModel.single.draw(gameTime, boundaryLocator) //|+|
-      viewModel.multi.draw(context.gameTime, context.boundaryLocator)
+  def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] =
+    Outcome(
+      SandboxView.updateView(model, viewModel, context.inputState) |+|
+        // viewModel.single.draw(gameTime, boundaryLocator) //|+|
+        viewModel.multi.draw(context.gameTime, context.boundaryLocator)
+    )
 }
 
 final case class Dude(aseprite: Aseprite, sprite: Sprite)

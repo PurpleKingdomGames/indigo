@@ -88,8 +88,8 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
   def updateViewModel(context: FrameContext[Dude], model: DudeModel, viewModel: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(viewModel)
 
-  def present(context: FrameContext[Dude], model: DudeModel, viewModel: Unit): SceneUpdateFragment =
-    PerfView.updateView(model, context.inputState)
+  def present(context: FrameContext[Dude], model: DudeModel, viewModel: Unit): Outcome[SceneUpdateFragment] =
+    Outcome(PerfView.updateView(model, context.inputState))
 
 }
 

@@ -47,8 +47,8 @@ final case class JobMarket(availableJobs: List[Job]) extends SubSystem {
       Outcome(jobs)
   }
 
-  def present(frameContext: SubSystemFrameContext, jobs: List[Job]): SceneUpdateFragment =
-    SceneUpdateFragment.empty
+  def present(frameContext: SubSystemFrameContext, jobs: List[Job]): Outcome[SceneUpdateFragment] =
+    Outcome(SceneUpdateFragment.empty)
 }
 
 object JobMarket {

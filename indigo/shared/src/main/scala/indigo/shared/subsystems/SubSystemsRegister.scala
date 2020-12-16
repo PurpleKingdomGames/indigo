@@ -59,7 +59,7 @@ final class SubSystemsRegister(subSystems: List[SubSystem]) {
   }
 
   // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
-  def present(frameContext: SubSystemFrameContext): SceneUpdateFragment =
+  def present(frameContext: SubSystemFrameContext): Outcome[SceneUpdateFragment] =
     registeredSubSystems
       .map { rss =>
         rss.subSystem.present(
@@ -67,7 +67,7 @@ final class SubSystemsRegister(subSystems: List[SubSystem]) {
           stateMap(rss.id).asInstanceOf[rss.subSystem.SubSystemModel]
         )
       }
-      .foldLeft(SceneUpdateFragment.empty)(_ |+| _)
+      .foldLeft(Outcome(SceneUpdateFragment.empty))((acc, next) => Outcome.merge(acc, next)(_ |+| _))
 
   def size: Int =
     registeredSubSystems.length

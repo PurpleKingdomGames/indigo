@@ -27,9 +27,11 @@ final case class PointsTrackerExample(startingPoints: Int) extends SubSystem {
         .addGlobalEvents(GameOver)
   }
 
-  def present(context: SubSystemFrameContext, points: Int): SceneUpdateFragment =
-    SceneUpdateFragment.empty
-      .addGameLayerNodes(Text(points.toString, 0, 0, 1, FontKey("")))
+  def present(context: SubSystemFrameContext, points: Int): Outcome[SceneUpdateFragment] =
+    Outcome(
+      SceneUpdateFragment.empty
+        .addGameLayerNodes(Text(points.toString, 0, 0, 1, FontKey("")))
+    )
 }
 
 sealed trait PointsTrackerEvent extends GlobalEvent with Product with Serializable

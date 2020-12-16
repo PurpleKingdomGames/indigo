@@ -1,6 +1,7 @@
 package indigo.shared
 
 import indigo.shared.events.GlobalEvent
+import indigo.shared.scenegraph.SceneUpdateFragment
 
 import scala.annotation.tailrec
 

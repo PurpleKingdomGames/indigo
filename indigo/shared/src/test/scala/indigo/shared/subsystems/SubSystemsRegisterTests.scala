@@ -47,6 +47,7 @@ class SubSystemsRegisterTests extends munit.FunSuite {
       r.update(context(6), List(PointsTrackerEvent.Add(10)))
         .state
         .present(context(6))
+        .state
         .gameLayer
         .nodes
         .map(_.asInstanceOf[Text].text)

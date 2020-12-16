@@ -19,7 +19,7 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
     eventFilters: EventFilters,
     modelUpdate: (FrameContext[StartUpData], Model) => GlobalEvent => Outcome[Model],
     viewModelUpdate: (FrameContext[StartUpData], Model, ViewModel) => GlobalEvent => Outcome[ViewModel],
-    viewUpdate: (FrameContext[StartUpData], Model, ViewModel) => SceneUpdateFragment
+    viewUpdate: (FrameContext[StartUpData], Model, ViewModel) => Outcome[SceneUpdateFragment]
 ) extends FrameProcessor[StartUpData, Model, ViewModel] {
 
   def run(
@@ -58,12 +58,14 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
           }
         }
 
-    val view: SceneUpdateFragment =
-      viewUpdate(frameContext, updatedModel.state, updatedViewModel.state) |+|
+    val view: Outcome[SceneUpdateFragment] =
+      Outcome.merge(
+        viewUpdate(frameContext, updatedModel.state, updatedViewModel.state),
         subSystemsRegister.present(frameContext.forSubSystems)
+      )(_ |+| _)
 
     Outcome
-      .combine3(updatedModel, updatedViewModel, Outcome(view))
+      .combine3(updatedModel, updatedViewModel, view)
       .addGlobalEvents(subSystemEvents)
   }
 

@@ -63,8 +63,8 @@ object AssetBundleLoader extends SubSystem {
       Outcome(tracker)
   }
 
-  def present(frameContext: SubSystemFrameContext, model: AssetBundleTracker): SceneUpdateFragment =
-    SceneUpdateFragment.empty
+  def present(frameContext: SubSystemFrameContext, model: AssetBundleTracker): Outcome[SceneUpdateFragment] =
+    Outcome(SceneUpdateFragment.empty)
 
   private def createBeginLoadingOutcome(key: BindingKey, assets: Set[AssetType], tracker: AssetBundleTracker): Outcome[AssetBundleTracker] = {
     val assetPrimitives = AssetType.flattenAssetList(assets.toList)

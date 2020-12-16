@@ -9,7 +9,7 @@ class SubSystemTests extends munit.FunSuite {
   val subSystem = PointsTrackerExample(0)
 
   test("A SubSystem (PointsTracker example).should render the initial state correctly") {
-    val expected = subSystem.present(context(6), 1230).gameLayer.nodes.head.asInstanceOf[Text].text
+    val expected = subSystem.present(context(6), 1230).state.gameLayer.nodes.head.asInstanceOf[Text].text
 
     assert(expected == "1230")
   }
@@ -21,6 +21,7 @@ class SubSystemTests extends munit.FunSuite {
 
       subSystem
         .present(context(6), points.state)
+        .state
         .gameLayer
         .nodes
         .head
@@ -38,6 +39,7 @@ class SubSystemTests extends munit.FunSuite {
 
       subSystem
         .present(context(6), points.state)
+        .state
         .gameLayer
         .nodes
         .head

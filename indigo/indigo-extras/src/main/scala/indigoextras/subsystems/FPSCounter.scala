@@ -42,13 +42,15 @@ object FPSCounter {
           Outcome(model.copy(frameCountSinceInterval = model.frameCountSinceInterval + 1))
     }
 
-  def present(fontKey: FontKey, position: Point, targetFPS: Int): (SubSystemFrameContext, FPSCounterState) => SceneUpdateFragment =
+  def present(fontKey: FontKey, position: Point, targetFPS: Int): (SubSystemFrameContext, FPSCounterState) => Outcome[SceneUpdateFragment] =
     (_, model) => {
-      SceneUpdateFragment.empty
-        .addUiLayerNodes(
-          Text(s"""FPS ${model.fps.toString}""", position.x, position.y, 1, fontKey)
-            .withTint(pickTint(targetFPS, model.fps))
-        )
+      Outcome(
+        SceneUpdateFragment.empty
+          .addUiLayerNodes(
+            Text(s"""FPS ${model.fps.toString}""", position.x, position.y, 1, fontKey)
+              .withTint(pickTint(targetFPS, model.fps))
+          )
+      )
     }
 
   def pickTint(targetFPS: Int, fps: Int): RGBA =

@@ -93,11 +93,11 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
         Scene.updateViewModel(scene, frameContext, model, viewModel)
     }
 
-  def updateView(frameContext: FrameContext[StartUpData], model: GameModel, viewModel: ViewModel): SceneUpdateFragment =
+  def updateView(frameContext: FrameContext[StartUpData], model: GameModel, viewModel: ViewModel): Outcome[SceneUpdateFragment] =
     scenes.find(_.name == finderInstance.current.name) match {
       case None =>
         IndigoLogger.errorOnce("Could not find scene called: " + finderInstance.current.name.name)
-        SceneUpdateFragment.empty
+        Outcome(SceneUpdateFragment.empty)
 
       case Some(scene) =>
         val subsystemView = subSystemStates
@@ -105,9 +105,10 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
           .map { ssr =>
             ssr.present(frameContext.forSubSystems)
           }
-          .getOrElse(SceneUpdateFragment.empty)
+          .getOrElse(Outcome(SceneUpdateFragment.empty))
 
-        Scene.updateView(scene, frameContext, model, viewModel) |+| subsystemView
+        Outcome.merge(Scene.updateView(scene, frameContext, model, viewModel), subsystemView)(_ |+| _)
+
     }
 
   val defaultFilter: GlobalEvent => Option[GlobalEvent] =
