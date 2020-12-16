@@ -30,16 +30,34 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
   // @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def updateModel(frameContext: FrameContext[StartUpData], model: GameModel): GlobalEvent => Outcome[GameModel] = {
     case SceneEvent.Next =>
+      val from = finderInstance.current.name
       finderInstance = finderInstance.forward
-      Outcome(model)
+      val to = finderInstance.current.name
+      val events =
+        if (from == to) Nil
+        else List(SceneEvent.SceneChange(from, to, frameContext.gameTime.running))
+
+      Outcome(model, events)
 
     case SceneEvent.Previous =>
+      val from = finderInstance.current.name
       finderInstance = finderInstance.backward
-      Outcome(model)
+      val to = finderInstance.current.name
+      val events =
+        if (from == to) Nil
+        else List(SceneEvent.SceneChange(from, to, frameContext.gameTime.running))
+
+      Outcome(model, events)
 
     case SceneEvent.JumpTo(name) =>
+      val from = finderInstance.current.name
       finderInstance = finderInstance.jumpToSceneByName(name)
-      Outcome(model)
+      val to = finderInstance.current.name
+      val events =
+        if (from == to) Nil
+        else List(SceneEvent.SceneChange(from, to, frameContext.gameTime.running))
+
+      Outcome(model, events)
 
     case event =>
       scenes.find(_.name == finderInstance.current.name) match {

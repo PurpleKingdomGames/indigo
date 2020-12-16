@@ -28,8 +28,14 @@ object SceneB extends Scene[StartUpData, GameModel, Unit] {
     )
 
   // Nothing to do
-  def updateModel(context: FrameContext[StartUpData], sceneModel: MessageB): GlobalEvent => Outcome[MessageB] =
-    _ => Outcome(sceneModel)
+  def updateModel(context: FrameContext[StartUpData], sceneModel: MessageB): GlobalEvent => Outcome[MessageB] = {
+    case SceneEvent.SceneChange(from, to, at) =>
+      println(s"B: Changed scene from '${from.name}' to '${to.name}' at running time: ${at.value}")
+      Outcome(sceneModel)
+
+    case _ =>
+      Outcome(sceneModel)
+  }
 
   // Nothing to do
   def updateViewModel(context: FrameContext[StartUpData], sceneModel: MessageB, sceneViewModel: Unit): GlobalEvent => Outcome[Unit] =

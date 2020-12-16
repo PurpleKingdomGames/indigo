@@ -27,9 +27,14 @@ object SceneA extends Scene[StartUpData, GameModel, Unit] {
       HelloSubSystem("Scene SubSystem A", FontStuff.fontKey)
     )
 
-  // Nothing to do
-  def updateModel(context: FrameContext[StartUpData], sceneModel: MessageA): GlobalEvent => Outcome[MessageA] =
-    _ => Outcome(sceneModel)
+  def updateModel(context: FrameContext[StartUpData], sceneModel: MessageA): GlobalEvent => Outcome[MessageA] = {
+    case SceneEvent.SceneChange(from, to, at) =>
+      println(s"A: Changed scene from '${from.name}' to '${to.name}' at running time: ${at.value}")
+      Outcome(sceneModel)
+
+    case _ =>
+      Outcome(sceneModel)
+  }
 
   // Nothing to do
   def updateViewModel(context: FrameContext[StartUpData], sceneModel: MessageA, sceneViewModel: Unit): GlobalEvent => Outcome[Unit] =
