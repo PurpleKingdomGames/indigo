@@ -4,6 +4,7 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.scenegraph.SceneUpdateFragment
 
 import scala.annotation.tailrec
+import scala.annotation.targetName
 
 final case class Outcome[+A](state: A, globalEvents: List[GlobalEvent]) {
 
@@ -16,14 +17,17 @@ final case class Outcome[+A](state: A, globalEvents: List[GlobalEvent]) {
   def createGlobalEvents(f: A => List[GlobalEvent]): Outcome[A] =
     this.copy(globalEvents = globalEvents ++ f(state))
 
+  def clearGlobalEvents: Outcome[A] =
+    this.copy(globalEvents = Nil)
+
+  def replaceGlobalEvents(f: List[GlobalEvent] => List[GlobalEvent]): Outcome[A] =
+    this.copy(globalEvents = f(globalEvents))
+
   def mapAll[B](f: A => B, g: List[GlobalEvent] => List[GlobalEvent]): Outcome[B] =
     Outcome(f(state), g(globalEvents))
 
   def map[B](f: A => B): Outcome[B] =
     this.copy(state = f(state))
-
-  def mapGlobalEventList(f: List[GlobalEvent] => List[GlobalEvent]): Outcome[A] =
-    this.copy(globalEvents = f(globalEvents))
 
   def mapGlobalEvents(f: GlobalEvent => GlobalEvent): Outcome[A] =
     this.copy(globalEvents = globalEvents.map(f))
@@ -36,8 +40,6 @@ final case class Outcome[+A](state: A, globalEvents: List[GlobalEvent]) {
 
   def combine[B](other: Outcome[B]): Outcome[(A, B)] =
     Outcome((state, other.state), globalEvents ++ other.globalEvents)
-  def |+|[B](other: Outcome[B]): Outcome[(A, B)] =
-    combine(other)
 
   def flatMap[B](f: A => Outcome[B]): Outcome[B] = {
     val next = f(state)
@@ -74,9 +76,6 @@ object Outcome {
   }
 
   def apply[A](state: A): Outcome[A] =
-    pure(state)
-
-  def pure[A](state: A): Outcome[A] =
     Outcome[A](state, Nil)
 
   def sequence[A](l: List[Outcome[A]]): Outcome[List[A]] = {
