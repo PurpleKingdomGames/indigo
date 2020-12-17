@@ -1,8 +1,6 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.events.GlobalEvent
 import indigo.shared.datatypes.RGBA
-import indigo.shared.Outcome
 
 /**
   * A description of what the engine should next present to the player.
