@@ -71,17 +71,17 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
       }
   }
 
-  def updateSubSystems(frameContext: SubSystemFrameContext, globalEvents: List[GlobalEvent]): List[GlobalEvent] =
+  def updateSubSystems(frameContext: SubSystemFrameContext, globalEvents: List[GlobalEvent]): Outcome[Unit] =
     scenes
       .find(_.name == finderInstance.current.name)
       .flatMap { scene =>
         subSystemStates
           .get(scene.name)
           .map {
-            _.update(frameContext, globalEvents).globalEvents
+            _.update(frameContext, globalEvents)
           }
       }
-      .getOrElse(Nil)
+      .getOrElse(Outcome.raiseError(new Exception(s"Couldn't find scene with name '${finderInstance.current.name}' in order to update subsystems")))
 
   def updateViewModel(frameContext: FrameContext[StartUpData], model: GameModel, viewModel: ViewModel): GlobalEvent => Outcome[ViewModel] =
     scenes.find(_.name == finderInstance.current.name) match {

@@ -11,6 +11,7 @@ import indigo.shared.time.Millis
 import indigo.shared.scenegraph.SceneGraphViewEvents
 import indigo.shared.time.Seconds
 import indigo.shared.BoundaryLocator
+import indigo.shared.IndigoLogger
 import indigo.shared.platform.SceneProcessor
 
 class GameLoop[StartUpData, GameModel, ViewModel](
@@ -65,11 +66,18 @@ class GameLoop[StartUpData, GameModel, ViewModel](
             frameProcessor.run(startUpData, gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)
 
           // Persist frame state
-          gameModelState = processedFrame.state._1
-          viewModelState = processedFrame.state._2
-          processedFrame.globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
+          val scene =
+            processedFrame match {
+              case oe @ Outcome.Error(e, reporter) =>
+                IndigoLogger.error(reporter(e))
+                throw e
 
-          val scene = processedFrame.state._3
+              case Outcome.Result(state, globalEvents) =>
+                gameModelState = state._1
+                viewModelState = state._2
+                globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
+                state._3
+            }
 
           // Process events
           SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.gameLayer.nodes, collectedEvents, gameEngine.globalEventStream.pushGlobalEvent)
@@ -96,9 +104,16 @@ class GameLoop[StartUpData, GameModel, ViewModel](
             frameProcessor.runSkipView(startUpData, gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)
 
           // Persist frame state
-          gameModelState = processedFrame.state._1
-          viewModelState = processedFrame.state._2
-          processedFrame.globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
+          processedFrame match {
+            case oe @ Outcome.Error(e, reporter) =>
+              IndigoLogger.error(reporter(e))
+              throw e
+
+            case Outcome.Result(state, globalEvents) =>
+              gameModelState = state._1
+              viewModelState = state._2
+              globalEvents.foreach(e => gameEngine.globalEventStream.pushGlobalEvent(e))
+          }
         }
 
       }

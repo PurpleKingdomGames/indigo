@@ -4,18 +4,18 @@ import indigo.shared.events.GlobalEvent
 
 import Outcome._
 
-class OutcomeTests extends munit.FunSuite {
+class Outcome2Tests extends munit.FunSuite {
 
   test("Adding events.adding events after the fact") {
-    assertEquals(Outcome(10).globalEvents, Nil)
-    assertEquals(Outcome(10).addGlobalEvents(TestEvent("a")).globalEvents, List(TestEvent("a")))
+    assertEquals(Outcome(10).unsafeGlobalEvents, Nil)
+    assertEquals(Outcome(10).addGlobalEvents(TestEvent("a")).unsafeGlobalEvents, List(TestEvent("a")))
   }
 
   test("Adding events.creating events based on new state") {
     val actual = Outcome(10)
       .addGlobalEvents(TestEvent("a"))
       .createGlobalEvents(i => List(TestEvent(s"count: $i")))
-      .globalEvents
+      .unsafeGlobalEvents
 
     val expected = List(TestEvent("a"), TestEvent("count: 10"))
 
@@ -50,29 +50,15 @@ class OutcomeTests extends munit.FunSuite {
       Outcome(List(1, 2, 3))
         .addGlobalEvents(TestEvent("a"), TestEvent("b"), TestEvent("c"))
 
-    assertEquals(actual, expected)
-  }
-
-  test("Equality true") {
-    assert(Outcome(1) == Outcome(1))
-  }
-
-  test("Equality false") {
-    assert((Outcome(1) == Outcome(2)) == false)
-  }
-
-  test("Show") {
-
-    val actual = Outcome(1).toString()
-
-    val expected = "Outcome(1,List())"
-
-    assertEquals(actual, expected)
+    assertEquals(actual.unsafeGet, expected.unsafeGet)
+    assertEquals(actual.unsafeGlobalEvents, expected.unsafeGlobalEvents)
   }
 
   test("Mapping over Outcomes.map state") {
-    assertEquals(Outcome(10).map(_ + 10), Outcome(20))
-    assertEquals(Outcome(10).addGlobalEvents(TestEvent("a")).map(_ + 10), Outcome(20).addGlobalEvents(TestEvent("a")))
+    assertEquals(Outcome(10).map(_ + 10).unsafeGet, Outcome(20).unsafeGet)
+
+    assertEquals(Outcome(10).addGlobalEvents(TestEvent("a")).map(_ + 10).unsafeGet, Outcome(20).addGlobalEvents(TestEvent("a")).unsafeGet)
+    assertEquals(Outcome(10).addGlobalEvents(TestEvent("a")).map(_ + 10).unsafeGlobalEvents, Outcome(20).addGlobalEvents(TestEvent("a")).unsafeGlobalEvents)
   }
 
   test("Replace global event list") {
@@ -88,7 +74,8 @@ class OutcomeTests extends munit.FunSuite {
       Outcome(10)
         .addGlobalEvents(TestEvent("b"))
 
-    assertEquals(actual, expected)
+    assertEquals(actual.unsafeGet, expected.unsafeGet)
+    assertEquals(actual.unsafeGlobalEvents, expected.unsafeGlobalEvents)
   }
 
   test("clear global event list") {
@@ -100,7 +87,8 @@ class OutcomeTests extends munit.FunSuite {
     val expected =
       Outcome(10, Nil)
 
-    assertEquals(actual, expected)
+    assertEquals(actual.unsafeGet, expected.unsafeGet)
+    assertEquals(actual.unsafeGlobalEvents, expected.unsafeGlobalEvents)
   }
 
   test("Mapping over Outcomes.map global events") {
@@ -116,7 +104,8 @@ class OutcomeTests extends munit.FunSuite {
       Outcome(10)
         .addGlobalEvents(TestEvent("aa"), TestEvent("bb"), TestEvent("cc"))
 
-    assertEquals(actual, expected)
+    assertEquals(actual.unsafeGet, expected.unsafeGet)
+    assertEquals(actual.unsafeGlobalEvents, expected.unsafeGlobalEvents)
   }
 
   test("Mapping over Outcomes.map all") {
@@ -135,7 +124,8 @@ class OutcomeTests extends munit.FunSuite {
       Outcome(30)
         .addGlobalEvents(TestEvent("b"))
 
-    assertEquals(actual, expected)
+    assertEquals(actual.unsafeGet, expected.unsafeGet)
+    assertEquals(actual.unsafeGlobalEvents, expected.unsafeGlobalEvents)
   }
 
   test("flat map & join.join preserves event order") {
@@ -152,12 +142,16 @@ class OutcomeTests extends munit.FunSuite {
 
     val actual = Outcome.join(Outcome.join(oa))
 
-    assertEquals(actual, expected)
+    assertEquals(actual.unsafeGet, expected.unsafeGet)
+    assertEquals(actual.unsafeGlobalEvents, expected.unsafeGlobalEvents)
   }
 
   test("flat map & join.flatMap") {
-    assertEquals(Outcome(10).flatMap(i => Outcome(i * 10)), Outcome(100))
-    assertEquals(Outcome.join(Outcome(10).map(i => Outcome(i * 10))), Outcome(100))
+    assertEquals(Outcome(10).flatMap(i => Outcome(i * 10)).unsafeGet, Outcome(100).unsafeGet)
+    assertEquals(Outcome(10).flatMap(i => Outcome(i * 10)).unsafeGlobalEvents, Outcome(100).unsafeGlobalEvents)
+
+    assertEquals(Outcome.join(Outcome(10).map(i => Outcome(i * 10))).unsafeGet, Outcome(100).unsafeGet)
+    assertEquals(Outcome.join(Outcome(10).map(i => Outcome(i * 10))).unsafeGlobalEvents, Outcome(100).unsafeGlobalEvents)
   }
 
   test("Applicative.ap") {
@@ -168,7 +162,8 @@ class OutcomeTests extends munit.FunSuite {
     val expected: Outcome[Int] =
       Outcome(20)
 
-    assertEquals(actual, expected)
+    assertEquals(actual.unsafeGet, expected.unsafeGet)
+    assertEquals(actual.unsafeGlobalEvents, expected.unsafeGlobalEvents)
   }
 
   test("Applicative.ap with event") {
@@ -179,7 +174,8 @@ class OutcomeTests extends munit.FunSuite {
     val expected: Outcome[Int] =
       Outcome(20).addGlobalEvents(TestEvent("x"))
 
-    assertEquals(actual, expected)
+    assertEquals(actual.unsafeGet, expected.unsafeGet)
+    assertEquals(actual.unsafeGlobalEvents, expected.unsafeGlobalEvents)
   }
 
   test("Combine - 2 Outcomes can be combined") {
@@ -194,9 +190,12 @@ class OutcomeTests extends munit.FunSuite {
     val expected =
       Outcome(("count", 1)).addGlobalEvents(TestEvent("x"), TestEvent("y"), TestEvent("z"))
 
-    assertEquals(actual1, expected)
-    assertEquals(actual2, expected)
-    assertEquals(actual3, expected)
+    assertEquals(actual1.unsafeGet, expected.unsafeGet)
+    assertEquals(actual1.unsafeGlobalEvents, expected.unsafeGlobalEvents)
+    assertEquals(actual2.unsafeGet, expected.unsafeGet)
+    assertEquals(actual2.unsafeGlobalEvents, expected.unsafeGlobalEvents)
+    assertEquals(actual3.unsafeGet, expected.unsafeGet)
+    assertEquals(actual3.unsafeGlobalEvents, expected.unsafeGlobalEvents)
   }
 
   test("Combine - 3 Outcomes can be combined") {
@@ -211,8 +210,10 @@ class OutcomeTests extends munit.FunSuite {
     val expected =
       Outcome(("count", 1, true)).addGlobalEvents(TestEvent("x"), TestEvent("y"), TestEvent("z"), TestEvent("w"))
 
-    assertEquals(actual1, expected)
-    assertEquals(actual2, expected)
+    assertEquals(actual1.unsafeGet, expected.unsafeGet)
+    assertEquals(actual1.unsafeGlobalEvents, expected.unsafeGlobalEvents)
+    assertEquals(actual2.unsafeGet, expected.unsafeGet)
+    assertEquals(actual2.unsafeGlobalEvents, expected.unsafeGlobalEvents)
   }
 
   test("Applicative.map2 / merge") {
@@ -229,9 +230,12 @@ class OutcomeTests extends munit.FunSuite {
     val expected: Outcome[String] =
       Outcome("count: 1").addGlobalEvents(TestEvent("x"), TestEvent("y"), TestEvent("z"))
 
-    assertEquals(actual1, expected)
-    assertEquals(actual2, expected)
-    assertEquals(actual3, expected)
+    assertEquals(actual1.unsafeGet, expected.unsafeGet)
+    assertEquals(actual1.unsafeGlobalEvents, expected.unsafeGlobalEvents)
+    assertEquals(actual2.unsafeGet, expected.unsafeGet)
+    assertEquals(actual2.unsafeGlobalEvents, expected.unsafeGlobalEvents)
+    assertEquals(actual3.unsafeGet, expected.unsafeGet)
+    assertEquals(actual3.unsafeGlobalEvents, expected.unsafeGlobalEvents)
   }
 
   test("Applicative.map3 / merge") {
@@ -247,10 +251,134 @@ class OutcomeTests extends munit.FunSuite {
     val expected: Outcome[String] =
       Outcome("count: 1: true").addGlobalEvents(TestEvent("x"), TestEvent("y"), TestEvent("z"), TestEvent("w"))
 
-    assertEquals(actual1, expected)
-    assertEquals(actual2, expected)
+    assertEquals(actual1.unsafeGet, expected.unsafeGet)
+    assertEquals(actual1.unsafeGlobalEvents, expected.unsafeGlobalEvents)
+    assertEquals(actual2.unsafeGet, expected.unsafeGet)
+    assertEquals(actual2.unsafeGlobalEvents, expected.unsafeGlobalEvents)
+  }
+
+  // Error handline
+
+  test("Exceptions thrown during creation are handled") {
+    val e = new Exception("Boom!")
+
+    val actual =
+      Outcome(throw e)
+
+    val expected =
+      Outcome.Error(e)
+
+    assertEquals(actual, expected)
+  }
+
+  test("mapping an error") {
+    val e = new Exception("Boom!")
+    val actual =
+      Outcome(10).map[Int](_ => throw e).map(i => i * i)
+
+    val expected =
+      Outcome.Error(e)
+
+    assertEquals(actual, expected)
+  }
+
+  test("flatMapping an error") {
+    def foo(): Int =
+      throw new Exception("amount: 10")
+
+    val actual =
+      for {
+        a <- Outcome(10)
+        b <- Outcome(foo())
+        c <- Outcome(30)
+      } yield a + b + c
+
+    val expected =
+      Outcome.Error(new Exception("amount: 10"))
+
+    assertEquals(actual.isError, expected.isError)
+
+    (actual, expected) match {
+      case (Outcome.Error(e1, _), Outcome.Error(e2, _)) =>
+        assertEquals(e1.getMessage, e2.getMessage)
+
+      case _ =>
+        fail("test failed, should have got here.")
+    }
+  }
+
+  test("raising an error") {
+    val e = new Exception("Boom!")
+
+    def foo(o: Outcome[Int]): Outcome[Int] =
+      o.flatMap { i =>
+        if (i % 2 == 0) Outcome(i * 10)
+        else Outcome.raiseError(e)
+      }
+
+    val expected =
+      Outcome.Error(e)
+
+    assertEquals(foo(Outcome(4)), Outcome(40))
+    assertEquals(foo(Outcome(5)), Outcome(throw e))
+  }
+
+  test("recovering from an error") {
+    val e = new Exception("Boom!")
+    val actual =
+      Outcome(10)
+        .map[Int](_ => throw e)
+        .map(i => i * i)
+        .handleError {
+          case e =>
+            Outcome(e.getMessage.length)
+        }
+
+    val expected =
+      Outcome(5)
+
+    assertEquals(actual, expected)
+  }
+
+  test("recovering from an error with orElse") {
+    val e = new Exception("Boom!")
+    val actual =
+      Outcome(10)
+        .map[Int](_ => throw e)
+        .map(i => i * i)
+        .orElse(Outcome(e.getMessage.length))
+
+    val expected =
+      Outcome(5)
+
+    assertEquals(actual, expected)
+  }
+
+  test("logging a crash") {
+    val e = new Exception("Boom!")
+
+    val actual =
+      try Outcome(10)
+        .map[Int](_ => throw e)
+        .map(i => i * i)
+        .logCrash(e => e.getMessage)
+      catch {
+        _ => ()
+      }
+
+    val expected =
+      "Boom!"
+
+    actual match {
+      case Error(e, r) =>
+        assertEquals(r(e), expected)
+
+      case _ =>
+        fail("Failed...")
+    }
+
   }
 
 }
 
-// final case class TestEvent(message: String) extends GlobalEvent
+final case class TestEvent(message: String) extends GlobalEvent
