@@ -75,11 +75,11 @@ class OutcomeTests extends munit.FunSuite {
     assertEquals(Outcome(10).addGlobalEvents(TestEvent("a")).map(_ + 10) == Outcome(20).addGlobalEvents(TestEvent("a")), true)
   }
 
-  test("Mapping over Outcomes.map global event list") {
+  test("Replace global event list") {
     val actual =
       Outcome(10)
         .addGlobalEvents(TestEvent("a"), TestEvent("b"), TestEvent("c"))
-        .mapGlobalEventList(_.filter {
+        .replaceGlobalEvents(_.filter {
           case TestEvent(msg) =>
             msg == "b"
         })
@@ -88,7 +88,19 @@ class OutcomeTests extends munit.FunSuite {
       Outcome(10)
         .addGlobalEvents(TestEvent("b"))
 
-    assertEquals(actual == expected, true)
+    assertEquals(actual, expected)
+  }
+
+  test("clear global event list") {
+    val actual =
+      Outcome(10)
+        .addGlobalEvents(TestEvent("a"), TestEvent("b"), TestEvent("c"))
+        .clearGlobalEvents
+
+    val expected =
+      Outcome(10, Nil)
+
+    assertEquals(actual, expected)
   }
 
   test("Mapping over Outcomes.map global events") {
