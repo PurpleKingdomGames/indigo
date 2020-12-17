@@ -39,7 +39,7 @@ class AutomataTests extends munit.FunSuite {
   val startingState: AutomataState =
     automata
       .update(context(1), AutomataState(0, Nil))(AutomataEvent.Spawn(poolKey, Point.zero, None, None))
-      .state
+      .unsafeGet
 
   test("Starting state should contain 1 automaton") {
 
@@ -80,11 +80,11 @@ class AutomataTests extends munit.FunSuite {
       val nextState =
         automata
           .update(ctx, startingState)(AutomataEvent.Update(poolKey))
-          .state
+          .unsafeGet
 
       automata
         .present(ctx, nextState)
-        .state
+        .unsafeGet
         .gameLayer
         .nodes
         .collect { case g: Graphic => g }
@@ -103,9 +103,9 @@ class AutomataTests extends munit.FunSuite {
       automata
         .update(context(1, Seconds(1)), startingState)(AutomataEvent.Update(poolKey))
 
-    assertEquals(outcome.state.totalSpawned, 1L)
-    assertEquals(outcome.state.pool.length, 0)
-    assertEquals(outcome.globalEvents.head, eventInstance)
+    assertEquals(outcome.unsafeGet.totalSpawned, 1L)
+    assertEquals(outcome.unsafeGet.pool.length, 0)
+    assertEquals(outcome.unsafeGlobalEvents.head, eventInstance)
   }
 
   test("KillAll should... kill all the automatons.") {
@@ -115,9 +115,9 @@ class AutomataTests extends munit.FunSuite {
       automata
         .update(context(1, Seconds(0)), startingState)(AutomataEvent.KillAll(poolKey))
 
-    assertEquals(outcome.state.totalSpawned, 1L)
-    assertEquals(outcome.state.pool.isEmpty, true)
-    assertEquals(outcome.globalEvents.isEmpty, true)
+    assertEquals(outcome.unsafeGet.totalSpawned, 1L)
+    assertEquals(outcome.unsafeGet.pool.isEmpty, true)
+    assertEquals(outcome.unsafeGlobalEvents.isEmpty, true)
   }
 
   test("AutomatonNode.fixed") {

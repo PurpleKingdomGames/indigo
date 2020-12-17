@@ -61,8 +61,8 @@ class WorkerTests extends munit.FunSuite {
     assertEquals(worker.isJobComplete(workContext)(job), true)
 
     val completed = worker.onJobComplete(workContext)(job)
-    assertEquals(completed.state, (Nil, TestActor()))
-    assertEquals(completed.globalEvents, Nil)
+    assertEquals(completed.unsafeGet, (Nil, TestActor()))
+    assertEquals(completed.unsafeGlobalEvents, Nil)
 
     assertEquals(worker.workOnJob(workContext)(job), (job, actor))
     assertEquals(worker.generateJobs(workContext), Nil)
@@ -82,7 +82,7 @@ class WorkerTests extends munit.FunSuite {
   }
 
   test("A Worker instance.should be able to perform an action when a job completes") {
-    assertEquals(worker.onJobComplete(workContext(0d, false))(Fishing(Fishing.totalWorkUnits)).state._1.head, WanderTo(0))
+    assertEquals(worker.onJobComplete(workContext(0d, false))(Fishing(Fishing.totalWorkUnits)).unsafeGet._1.head, WanderTo(0))
   }
 
   test("A Worker instance.should be able to work on a job") {

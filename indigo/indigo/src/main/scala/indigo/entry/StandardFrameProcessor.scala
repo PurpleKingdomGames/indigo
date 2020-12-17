@@ -45,7 +45,7 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
           }
         }
 
-    val subSystemEvents: Outcome[Unit] =
+    val subSystemEvents: Outcome[SubSystemsRegister] =
       subSystemsRegister.update(frameContext.forSubSystems, globalEvents)
 
     val updatedViewModel: Model => Outcome[ViewModel] = m =>
@@ -98,7 +98,7 @@ final class StandardFrameProcessor[StartUpData, Model, ViewModel](
           }
         }
 
-    val subSystemEvents: Outcome[Unit] =
+    val subSystemEvents: Outcome[SubSystemsRegister] =
       subSystemsRegister.update(frameContext.forSubSystems, globalEvents)
 
     Outcome.join(

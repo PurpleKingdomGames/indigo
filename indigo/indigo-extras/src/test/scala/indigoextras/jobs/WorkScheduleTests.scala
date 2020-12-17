@@ -42,7 +42,7 @@ class WorkScheduleTests extends munit.FunSuite {
 
     val gameTime = new GameTime(0, 0, GameTime.FPS(0))
 
-    val actual = workSchedule.update(gameTime, dice, actor, context)(FrameTick).state.workSchedule.jobStack
+    val actual = workSchedule.update(gameTime, dice, actor, context)(FrameTick).unsafeGet.workSchedule.jobStack
 
     assertEquals(actual, expected)
 
@@ -57,7 +57,7 @@ class WorkScheduleTests extends munit.FunSuite {
     val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, SampleActor.worker, jobs)
     val gameTime     = new GameTime(0, 0, GameTime.FPS(0))
 
-    workSchedule.update(gameTime, dice, actor, context)(FrameTick).state.workSchedule.jobStack.headOption match {
+    workSchedule.update(gameTime, dice, actor, context)(FrameTick).unsafeGet.workSchedule.jobStack.headOption match {
       case Some(Fishing(done)) =>
         assertEquals(done, SampleActor.defaultFishingSpeed)
 
@@ -79,7 +79,7 @@ class WorkScheduleTests extends munit.FunSuite {
 
     val actual = workSchedule
       .update(gameTime, dice, actor, context)(UnrelatedEvent("ignored!"))
-      .state
+      .unsafeGet
       .workSchedule
       .jobStack
 
@@ -99,7 +99,7 @@ class WorkScheduleTests extends munit.FunSuite {
 
     val actual = workSchedule
       .update(gameTime, dice, actor, context)(JobMarketEvent.Allocate(allocationId, jobToAllocate))
-      .state
+      .unsafeGet
       .workSchedule
       .jobStack
 
@@ -118,7 +118,7 @@ class WorkScheduleTests extends munit.FunSuite {
 
     val actual = workSchedule
       .update(gameTime, dice, actor, context)(JobMarketEvent.NothingFound(allocationId))
-      .state
+      .unsafeGet
       .workSchedule
       .jobStack
 
@@ -132,7 +132,7 @@ class WorkScheduleTests extends munit.FunSuite {
 
     val workSchedule = WorkSchedule[SampleActor, SampleContext](bindingKey, SampleActor.worker, List(globalJob))
 
-    val actual = workSchedule.destroy().globalEvents
+    val actual = workSchedule.destroy().unsafeGlobalEvents
 
     assertEquals(actual, expected)
 
@@ -162,7 +162,7 @@ class WorkScheduleTests extends munit.FunSuite {
 
   val gameTime = new GameTime(0, 0, GameTime.FPS(0))
 
-  val workSchedule2 = workSchedule.update(gameTime, dice, actor, context)(FrameTick).state.workSchedule
+  val workSchedule2 = workSchedule.update(gameTime, dice, actor, context)(FrameTick).unsafeGet.workSchedule
 
   test("The WorkSchedule.should complete a job and move onto the next one.Arrived, move onto next job") {
     workSchedule2.currentJob match {
@@ -177,28 +177,28 @@ class WorkScheduleTests extends munit.FunSuite {
   val workSchedule3 =
     workSchedule2
       .update(gameTime, dice, actor, context)(FrameTick)
-      .state
+      .unsafeGet
       .workSchedule //20
       .update(gameTime, dice, actor, context)(FrameTick)
-      .state
+      .unsafeGet
       .workSchedule //30
       .update(gameTime, dice, actor, context)(FrameTick)
-      .state
+      .unsafeGet
       .workSchedule //40
       .update(gameTime, dice, actor, context)(FrameTick)
-      .state
+      .unsafeGet
       .workSchedule //50
       .update(gameTime, dice, actor, context)(FrameTick)
-      .state
+      .unsafeGet
       .workSchedule //60
       .update(gameTime, dice, actor, context)(FrameTick)
-      .state
+      .unsafeGet
       .workSchedule //70
       .update(gameTime, dice, actor, context)(FrameTick)
-      .state
+      .unsafeGet
       .workSchedule //80
       .update(gameTime, dice, actor, context)(FrameTick)
-      .state
+      .unsafeGet
       .workSchedule //90
 
   test("The WorkSchedule.should complete a job and move onto the next one.Nearly done") {
@@ -214,13 +214,13 @@ class WorkScheduleTests extends munit.FunSuite {
   val workSchedule4 =
     workSchedule3
       .update(gameTime, dice, actor, context)(FrameTick)
-      .state
+      .unsafeGet
       .workSchedule // 100
       .update(gameTime, dice, actor, context)(FrameTick)
-      .state
+      .unsafeGet
       .workSchedule // Complete fishing job, onJobComplete creates WanderTo(0) which is prepended.
       .update(gameTime, dice, actor.copy(position = 0), context)(FrameTick)
-      .state
+      .unsafeGet
       .workSchedule // WanderTo(0) complete, now back to the original job list.
 
   test("The WorkSchedule.should complete a job and move onto the next one. on..") {

@@ -68,7 +68,7 @@ class GameLoop[StartUpData, GameModel, ViewModel](
           // Persist frame state
           val scene =
             processedFrame match {
-              case oe @ Outcome.Error(e, reporter) =>
+              case Outcome.Error(e, reporter) =>
                 IndigoLogger.error(reporter(e))
                 throw e
 
@@ -105,7 +105,7 @@ class GameLoop[StartUpData, GameModel, ViewModel](
 
           // Persist frame state
           processedFrame match {
-            case oe @ Outcome.Error(e, reporter) =>
+            case Outcome.Error(e, reporter) =>
               IndigoLogger.error(reporter(e))
               throw e
 

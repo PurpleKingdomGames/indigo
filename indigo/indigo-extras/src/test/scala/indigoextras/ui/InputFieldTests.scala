@@ -155,7 +155,7 @@ class InputFieldTests extends munit.FunSuite {
     Point(50, 50)
 
   val inputField =
-    InputField("ab\nc", assets).noCursorBlink.giveFocus.state
+    InputField("ab\nc", assets).noCursorBlink.giveFocus.unsafeGet
       .moveTo(initialPosition)
 
   def extractCursorPosition(field: InputField): Point =
@@ -212,25 +212,25 @@ class InputFieldTests extends munit.FunSuite {
       BindingKey("test")
 
     val field =
-      InputField("", assets).giveFocus.state.withKey(BindingKey("test"))
+      InputField("", assets).giveFocus.unsafeGet.withKey(BindingKey("test"))
 
     val actual =
       field.update(context).flatMap(_.update(context))
 
-    assertEquals(actual.state.text, "ABCABC")
-    assertEquals(actual.globalEvents.head, InputFieldChange(key, "ABC"))
-    assertEquals(actual.globalEvents(1), InputFieldChange(key, "ABCABC"))
+    assertEquals(actual.unsafeGet.text, "ABCABC")
+    assertEquals(actual.unsafeGlobalEvents.head, InputFieldChange(key, "ABC"))
+    assertEquals(actual.unsafeGlobalEvents(1), InputFieldChange(key, "ABCABC"))
   }
 
   test("Cursor drawing.Updated text emits an event.unless the key is unset") {
     val field =
-      InputField("", assets).giveFocus.state
+      InputField("", assets).giveFocus.unsafeGet
 
     val actual =
       field.update(context).flatMap(_.update(context))
 
-    assertEquals(actual.state.text, "ABCABC")
-    assertEquals(actual.globalEvents, Nil)
+    assertEquals(actual.unsafeGet.text, "ABCABC")
+    assertEquals(actual.unsafeGlobalEvents, Nil)
   }
 
   test("Cursor drawing.Focusing an input field emits events") {
@@ -242,8 +242,8 @@ class InputFieldTests extends munit.FunSuite {
         .withFocusActions(event)
         .giveFocus
 
-    assertEquals(actual.state.hasFocus, true)
-    assertEquals(actual.globalEvents, List(event))
+    assertEquals(actual.unsafeGet.hasFocus, true)
+    assertEquals(actual.unsafeGlobalEvents, List(event))
   }
 
   test("Cursor drawing.Losing focus on an input field emits events") {
@@ -254,11 +254,11 @@ class InputFieldTests extends munit.FunSuite {
       InputField("", assets)
         .withLoseFocusActions(event)
         .giveFocus
-        .state
+        .unsafeGet
         .loseFocus
 
-    assertEquals(actual.state.hasFocus, false)
-    assertEquals(actual.globalEvents, List(event))
+    assertEquals(actual.unsafeGet.hasFocus, false)
+    assertEquals(actual.unsafeGlobalEvents, List(event))
   }
 
   val keysUp: List[KeyboardEvent.KeyUp] =

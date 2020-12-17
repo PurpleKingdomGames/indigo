@@ -71,7 +71,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
       }
   }
 
-  def updateSubSystems(frameContext: SubSystemFrameContext, globalEvents: List[GlobalEvent]): Outcome[Unit] =
+  def updateSubSystems(frameContext: SubSystemFrameContext, globalEvents: List[GlobalEvent]): Outcome[SubSystemsRegister] =
     scenes
       .find(_.name == finderInstance.current.name)
       .flatMap { scene =>

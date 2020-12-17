@@ -8,7 +8,6 @@ import indigo.shared.subsystems.SubSystem
 import indigoextras.subsystems.AutomataEvent._
 import indigoextras.subsystems.Automata.Layer
 
-import indigo.shared.datatypes.RGBA
 import indigo.shared.subsystems.SubSystemFrameContext
 import indigo.shared.datatypes.Point
 import indigo.shared.time.Seconds
