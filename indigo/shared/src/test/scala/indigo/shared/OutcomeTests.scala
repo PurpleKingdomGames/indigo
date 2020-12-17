@@ -50,15 +50,15 @@ class OutcomeTests extends munit.FunSuite {
       Outcome(List(1, 2, 3))
         .addGlobalEvents(TestEvent("a"), TestEvent("b"), TestEvent("c"))
 
-    assertEquals(actual == expected, true)
+    assertEquals(actual, expected)
   }
 
   test("Equality true") {
-    assertEquals(Outcome(1) == Outcome(1), true)
+    assert(Outcome(1) == Outcome(1))
   }
 
   test("Equality false") {
-    assertEquals(Outcome(1) == Outcome(2), false)
+    assert((Outcome(1) == Outcome(2)) == false)
   }
 
   test("Show") {
@@ -71,8 +71,8 @@ class OutcomeTests extends munit.FunSuite {
   }
 
   test("Mapping over Outcomes.map state") {
-    assertEquals(Outcome(10).map(_ + 10) == Outcome(20), true)
-    assertEquals(Outcome(10).addGlobalEvents(TestEvent("a")).map(_ + 10) == Outcome(20).addGlobalEvents(TestEvent("a")), true)
+    assertEquals(Outcome(10).map(_ + 10), Outcome(20))
+    assertEquals(Outcome(10).addGlobalEvents(TestEvent("a")).map(_ + 10), Outcome(20).addGlobalEvents(TestEvent("a")))
   }
 
   test("Replace global event list") {
@@ -116,7 +116,7 @@ class OutcomeTests extends munit.FunSuite {
       Outcome(10)
         .addGlobalEvents(TestEvent("aa"), TestEvent("bb"), TestEvent("cc"))
 
-    assertEquals(actual == expected, true)
+    assertEquals(actual, expected)
   }
 
   test("Mapping over Outcomes.map all") {
@@ -135,7 +135,7 @@ class OutcomeTests extends munit.FunSuite {
       Outcome(30)
         .addGlobalEvents(TestEvent("b"))
 
-    assertEquals(actual == expected, true)
+    assertEquals(actual, expected)
   }
 
   test("flat map & join.join preserves event order") {
@@ -152,7 +152,7 @@ class OutcomeTests extends munit.FunSuite {
 
     val actual = Outcome.join(Outcome.join(oa))
 
-    assertEquals(actual == expected, true)
+    assertEquals(actual, expected)
   }
 
   test("flat map & join.flatMap") {
@@ -168,7 +168,7 @@ class OutcomeTests extends munit.FunSuite {
     val expected: Outcome[Int] =
       Outcome(20)
 
-    assertEquals(actual == expected, true)
+    assertEquals(actual, expected)
   }
 
   test("Applicative.ap with event") {
@@ -179,7 +179,7 @@ class OutcomeTests extends munit.FunSuite {
     val expected: Outcome[Int] =
       Outcome(20).addGlobalEvents(TestEvent("x"))
 
-    assertEquals(actual == expected, true)
+    assertEquals(actual, expected)
   }
 
   test("Combine - 2 Outcomes can be combined") {
