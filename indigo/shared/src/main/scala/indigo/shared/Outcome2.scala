@@ -12,13 +12,12 @@ sealed trait Outcome2[+A] {
   def isResult: Boolean
   def isError: Boolean
 
-  def unsafeGet[B >: A]: B
-  def getOrElse[B >: A](b: B): B
+  def unsafeGet: A
+  def getOrElse[B >: A](b: => B): B
+  def orElse[B >: A](b: => Outcome2[B]): Outcome2[B]
 
   def unsafeGlobalEvents: List[GlobalEvent]
   def globalEventsOrNil: List[GlobalEvent]
-
-  def raiseError(throwable: Throwable): Outcome2.Error = Outcome2.Error(throwable)
 
   def handleError[B >: A](recoverWith: Throwable => Outcome2[B]): Outcome2[B]
 
@@ -50,15 +49,17 @@ sealed trait Outcome2[+A] {
 }
 object Outcome2 {
 
-  final case class Result[A](state: A, globalEvents: List[GlobalEvent]) extends Outcome2[A] {
+  final case class Result[+A](state: A, globalEvents: List[GlobalEvent]) extends Outcome2[A] {
 
     def isResult: Boolean = true
     def isError: Boolean  = false
 
-    def unsafeGet[B >: A]: B =
+    def unsafeGet: A =
       state
-    def getOrElse[B >: A](b: B): B =
+    def getOrElse[B >: A](b: => B): B =
       state
+    def orElse[B >: A](b: => Outcome2[B]): Outcome2[B] =
+      this
 
     def unsafeGlobalEvents: List[GlobalEvent] =
       globalEvents
@@ -132,9 +133,11 @@ object Outcome2 {
     def isResult: Boolean = false
     def isError: Boolean  = true
 
-    def unsafeGet[B >: Nothing]: B =
+    def unsafeGet: Nothing =
       throw e
-    def getOrElse[B >: Nothing](b: B): B =
+    def getOrElse[B >: Nothing](b: => B): B =
+      b
+    def orElse[B >: Nothing](b: => Outcome2[B]): Outcome2[B] =
       b
 
     def unsafeGlobalEvents: List[GlobalEvent] =
@@ -224,6 +227,9 @@ object Outcome2 {
       case Outcome2.Result(s, es) =>
         Some((s, es))
     }
+
+  def raiseError(throwable: Throwable): Outcome2.Error =
+    Outcome2.Error(throwable)
 
   def sequence[A](l: List[Outcome2[A]]): Outcome2[List[A]] = {
     @tailrec

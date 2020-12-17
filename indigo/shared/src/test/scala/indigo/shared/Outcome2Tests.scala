@@ -262,13 +262,117 @@ class Outcome2Tests extends munit.FunSuite {
   test("Exceptions thrown during creation are handled") {
     val e = new Exception("Boom!")
 
-    val actual = Outcome2(throw e)
+    val actual =
+      Outcome2(throw e)
 
-    val expected = Outcome2.Error(e)
+    val expected =
+      Outcome2.Error(e)
 
     assertEquals(actual, expected)
   }
 
+  test("mapping an error") {
+    val e = new Exception("Boom!")
+    val actual =
+      Outcome2(10).map[Int](_ => throw e).map(i => i * i)
+
+    val expected =
+      Outcome2.Error(e)
+
+    assertEquals(actual, expected)
+  }
+
+  test("flatMapping an error") {
+    def foo(): Int =
+      throw new Exception("amount: 10")
+
+    val actual =
+      for {
+        a <- Outcome2(10)
+        b <- Outcome2(foo())
+        c <- Outcome2(30)
+      } yield a + b + c
+
+    val expected =
+      Outcome2.Error(new Exception("amount: 10"))
+
+    assertEquals(actual.isError, expected.isError)
+
+    (actual, expected) match {
+      case (Outcome2.Error(e1), Outcome2.Error(e2)) =>
+        assertEquals(e1.getMessage, e2.getMessage)
+
+      case _ =>
+        fail("test failed, should have got here.")
+    }
+  }
+
+  test("raising an error") {
+    val e = new Exception("Boom!")
+
+    def foo(o: Outcome2[Int]): Outcome2[Int] =
+      o.flatMap { i =>
+        if (i % 2 == 0) Outcome2(i * 10)
+        else Outcome2.raiseError(e)
+      }
+
+    val expected =
+      Outcome2.Error(e)
+
+    assertEquals(foo(Outcome2(4)), Outcome2(40))
+    assertEquals(foo(Outcome2(5)), Outcome2(throw e))
+  }
+
+  test("recovering from an error") {
+    val e = new Exception("Boom!")
+    val actual =
+      Outcome2(10)
+        .map[Int](_ => throw e)
+        .map(i => i * i)
+        .handleError {
+          case e =>
+            Outcome2(e.getMessage.length)
+        }
+
+    val expected =
+      Outcome2(5)
+
+    assertEquals(actual, expected)
+  }
+
+  test("recovering from an error with orElse") {
+    val e = new Exception("Boom!")
+    val actual =
+      Outcome2(10)
+        .map[Int](_ => throw e)
+        .map(i => i * i)
+        .orElse(Outcome2(e.getMessage.length))
+
+    val expected =
+      Outcome2(5)
+
+    assertEquals(actual, expected)
+  }
+
+  test("logging a crash") {
+    val e = new Exception("Boom!")
+
+    var logs: String = ""
+
+    try Outcome2(10)
+      .map[Int](_ => throw e)
+      .map(i => i * i)
+      .logCrash(e => logs = e.getMessage)
+    catch {
+      _ => ()
+    }
+
+    val expected =
+      "Boom!"
+
+    assertEquals(logs, expected)
+  }
+
 }
 
-// final case class TestEvent(message: String) extends GlobalEvent
+final case class TestEvent(message: String) extends GlobalEvent
