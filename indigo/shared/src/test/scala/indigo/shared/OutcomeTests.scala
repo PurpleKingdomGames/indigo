@@ -253,4 +253,4 @@ class OutcomeTests extends munit.FunSuite {
 
 }
 
-final case class TestEvent(message: String) extends GlobalEvent
+// final case class TestEvent(message: String) extends GlobalEvent
