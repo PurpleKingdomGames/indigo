@@ -5,7 +5,6 @@ import indigo.shared.events.GlobalEvent
 import scala.util.control.NonFatal
 
 import scala.annotation.tailrec
-import scala.deprecated
 
 sealed trait Outcome[+A] {
 

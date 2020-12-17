@@ -56,7 +56,7 @@ class SceneManagerTests extends munit.FunSuite {
 
     val expected = TestGameModel(TestSceneModelA(1), TestSceneModelB(0))
 
-    val actual = runModel(events, gameModel, sceneManager).state
+    val actual = runModel(events, gameModel, sceneManager).unsafeGet
 
     assertEquals(actual, expected)
 
@@ -70,7 +70,7 @@ class SceneManagerTests extends munit.FunSuite {
 
     val expected = TestGameModel(TestSceneModelA(0), TestSceneModelB(10))
 
-    val actual = runModel(events, gameModel, sceneManager).state
+    val actual = runModel(events, gameModel, sceneManager).unsafeGet
 
     assertEquals(actual, expected)
   }

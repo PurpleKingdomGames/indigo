@@ -17,7 +17,7 @@ class SubSystemsRegisterTests extends munit.FunSuite {
 
     val data = r
       .update(context(6), List(PointsTrackerEvent.Add(10)))
-      .state
+      .unsafeGet
       .stateMap
 
     val actual = data.toList.map(_._2.asInstanceOf[Int])
@@ -32,12 +32,12 @@ class SubSystemsRegisterTests extends munit.FunSuite {
 
     val updated = r.update(context(6), List(PointsTrackerEvent.LoseAll))
 
-    val actual = updated.state.stateMap.toList.map(_._2.asInstanceOf[Int])
+    val actual = updated.unsafeGet.stateMap.toList.map(_._2.asInstanceOf[Int])
 
     assertEquals(actual.length, 2)
     assertEquals(actual.forall(_ == 0), true)
 
-    assert(updated.globalEvents == List(GameOver, GameOver))
+    assert(updated.unsafeGlobalEvents == List(GameOver, GameOver))
   }
 
   test("The sub system register.should allow you to render sub systems") {
@@ -45,9 +45,9 @@ class SubSystemsRegisterTests extends munit.FunSuite {
 
     val rendered =
       r.update(context(6), List(PointsTrackerEvent.Add(10)))
-        .state
+        .unsafeGet
         .present(context(6))
-        .state
+        .unsafeGet
         .gameLayer
         .nodes
         .map(_.asInstanceOf[Text].text)

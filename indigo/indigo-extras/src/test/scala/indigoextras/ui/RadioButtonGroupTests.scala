@@ -52,8 +52,8 @@ class RadioButtonGroupTests extends munit.FunSuite {
 
     val expected = radioButtons
 
-    assertEquals(actual.state, expected)
-    assertEquals(actual.globalEvents, Nil)
+    assertEquals(actual.unsafeGet, expected)
+    assertEquals(actual.unsafeGlobalEvents, Nil)
 
   }
 
@@ -73,8 +73,8 @@ class RadioButtonGroupTests extends munit.FunSuite {
         )
       )
 
-    assertEquals(actual.state, expected)
-    assertEquals(actual.globalEvents, List(RadioTestEvent("option 2 hover over")))
+    assertEquals(actual.unsafeGet, expected)
+    assertEquals(actual.unsafeGlobalEvents, List(RadioTestEvent("option 2 hover over")))
   }
 
   test("hover out unselected button") {
@@ -102,8 +102,8 @@ class RadioButtonGroupTests extends munit.FunSuite {
         )
       )
 
-    assertEquals(actual.state, expected)
-    assertEquals(actual.globalEvents, List(RadioTestEvent("option 2 hover out")))
+    assertEquals(actual.unsafeGet, expected)
+    assertEquals(actual.unsafeGlobalEvents, List(RadioTestEvent("option 2 hover out")))
   }
 
   test("selecting a hovered button") {
@@ -131,8 +131,8 @@ class RadioButtonGroupTests extends munit.FunSuite {
         )
       )
 
-    assertEquals(actual.state.options.map(_.state), expected.options.map(_.state))
-    assertEquals(actual.globalEvents, List(RadioTestEvent("option 2 selected")))
+    assertEquals(actual.unsafeGet.options.map(_.state), expected.options.map(_.state))
+    assertEquals(actual.unsafeGlobalEvents, List(RadioTestEvent("option 2 selected")))
   }
 
   test("selecting a hovered button, existing selected is de-selected") {
@@ -159,8 +159,8 @@ class RadioButtonGroupTests extends munit.FunSuite {
         )
       )
 
-    assertEquals(actual.state.options.map(_.state), expected.options.map(_.state))
-    assertEquals(actual.globalEvents, List(RadioTestEvent("option 1 unselected"), RadioTestEvent("option 2 selected")))
+    assertEquals(actual.unsafeGet.options.map(_.state), expected.options.map(_.state))
+    assertEquals(actual.unsafeGlobalEvents, List(RadioTestEvent("option 1 unselected"), RadioTestEvent("option 2 selected")))
   }
 
 }

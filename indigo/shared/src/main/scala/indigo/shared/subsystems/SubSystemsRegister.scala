@@ -32,7 +32,7 @@ final class SubSystemsRegister(subSystems: List[SubSystem]) {
   }
 
   // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
-  def update(frameContext: SubSystemFrameContext, globalEvents: List[GlobalEvent]): Outcome[Unit] = {
+  def update(frameContext: SubSystemFrameContext, globalEvents: List[GlobalEvent]): Outcome[SubSystemsRegister] = {
     def outcomeEvents: Outcome[List[GlobalEvent]] =
       registeredSubSystems.map { rss =>
         val key       = rss.id
@@ -59,7 +59,7 @@ final class SubSystemsRegister(subSystems: List[SubSystem]) {
         }
       }.sequence.map(_.flatten)
 
-    outcomeEvents.flatMap(l => Outcome((), l))
+    outcomeEvents.flatMap(l => Outcome(this, l))
   }
 
   // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))

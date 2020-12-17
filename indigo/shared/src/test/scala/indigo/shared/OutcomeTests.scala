@@ -4,7 +4,7 @@ import indigo.shared.events.GlobalEvent
 
 import Outcome._
 
-class Outcome2Tests extends munit.FunSuite {
+class OutcomeTests extends munit.FunSuite {
 
   test("Adding events.adding events after the fact") {
     assertEquals(Outcome(10).unsafeGlobalEvents, Nil)
@@ -259,6 +259,15 @@ class Outcome2Tests extends munit.FunSuite {
 
   // Error handline
 
+  def errorsMatch[A](actual: Outcome[A], expected: Outcome[A]): Boolean =
+    (actual, expected) match {
+      case (Outcome.Error(e1, _), Outcome.Error(e2, _)) =>
+        e1.getMessage == e2.getMessage
+
+      case _ =>
+        false
+    }
+
   test("Exceptions thrown during creation are handled") {
     val e = new Exception("Boom!")
 
@@ -268,7 +277,7 @@ class Outcome2Tests extends munit.FunSuite {
     val expected =
       Outcome.Error(e)
 
-    assertEquals(actual, expected)
+    assert(errorsMatch(actual, expected))
   }
 
   test("mapping an error") {
@@ -279,7 +288,7 @@ class Outcome2Tests extends munit.FunSuite {
     val expected =
       Outcome.Error(e)
 
-    assertEquals(actual, expected)
+    assert(errorsMatch(actual, expected))
   }
 
   test("flatMapping an error") {
@@ -297,14 +306,7 @@ class Outcome2Tests extends munit.FunSuite {
       Outcome.Error(new Exception("amount: 10"))
 
     assertEquals(actual.isError, expected.isError)
-
-    (actual, expected) match {
-      case (Outcome.Error(e1, _), Outcome.Error(e2, _)) =>
-        assertEquals(e1.getMessage, e2.getMessage)
-
-      case _ =>
-        fail("test failed, should have got here.")
-    }
+    assert(errorsMatch(actual, expected))
   }
 
   test("raising an error") {
@@ -316,11 +318,8 @@ class Outcome2Tests extends munit.FunSuite {
         else Outcome.raiseError(e)
       }
 
-    val expected =
-      Outcome.Error(e)
-
     assertEquals(foo(Outcome(4)), Outcome(40))
-    assertEquals(foo(Outcome(5)), Outcome(throw e))
+    assert(errorsMatch(foo(Outcome(5)), Outcome(throw e)))
   }
 
   test("recovering from an error") {
@@ -361,9 +360,9 @@ class Outcome2Tests extends munit.FunSuite {
       try Outcome(10)
         .map[Int](_ => throw e)
         .map(i => i * i)
-        .logCrash(e => e.getMessage)
-      catch {
-        _ => ()
+        .logCrash { case e => e.getMessage } catch {
+        case _: Throwable =>
+          ()
       }
 
     val expected =

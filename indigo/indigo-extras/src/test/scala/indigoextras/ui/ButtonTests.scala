@@ -41,7 +41,7 @@ class ButtonTests extends munit.FunSuite {
 
     val actual = button.update(mouse)
 
-    assertEquals(actual.state.state.isOver, true)
+    assertEquals(actual.unsafeGet.state.isOver, true)
   }
 
   test("Transition from Up -> Over when mouse over.Within the button: On mouse over, the over action is performed") {
@@ -50,8 +50,8 @@ class ButtonTests extends munit.FunSuite {
       new Mouse(Nil, Point(20, 20), false)
 
     val actual = button.update(mouse)
-    assert(actual.globalEvents.length == 1)
-    assert(actual.globalEvents.contains(FakeEvent("mouse over")))
+    assert(actual.unsafeGlobalEvents.length == 1)
+    assert(actual.unsafeGlobalEvents.contains(FakeEvent("mouse over")))
   }
 
   test("Transition from Over -> Up when mouse out.") {
@@ -60,7 +60,7 @@ class ButtonTests extends munit.FunSuite {
 
     val actual = button.toOverState.update(mouse)
 
-    assertEquals(actual.state.state.isUp, true)
+    assertEquals(actual.unsafeGet.state.isUp, true)
   }
 
   test("Transition from Over -> Up when mouse out.Starting within the button: On mouse out, the out action is performed") {
@@ -68,8 +68,8 @@ class ButtonTests extends munit.FunSuite {
       new Mouse(Nil, Point(0, 0), false)
     val actual = button.toOverState.update(mouse)
 
-    assert(actual.globalEvents.length == 1)
-    assert(actual.globalEvents.contains(FakeEvent("mouse out")))
+    assert(actual.unsafeGlobalEvents.length == 1)
+    assert(actual.unsafeGlobalEvents.contains(FakeEvent("mouse out")))
   }
 
   test("Transition from Over -> Down on mouse press.") {
@@ -78,7 +78,7 @@ class ButtonTests extends munit.FunSuite {
 
     val actual = button.toOverState.update(mouse)
 
-    assertEquals(actual.state.state.isDown, true)
+    assertEquals(actual.unsafeGet.state.isDown, true)
   }
 
   test("Transition from Over -> Down on mouse press.Within the button: On mouse down, the down action is performed") {
@@ -88,8 +88,8 @@ class ButtonTests extends munit.FunSuite {
 
     val actual = button.toOverState.update(mouse)
 
-    assert(actual.globalEvents.length == 1)
-    assert(actual.globalEvents.contains(FakeEvent("mouse down")))
+    assert(actual.unsafeGlobalEvents.length == 1)
+    assert(actual.unsafeGlobalEvents.contains(FakeEvent("mouse down")))
   }
 
   test("Transition from Up -> Down on mouse press.") {
@@ -98,7 +98,7 @@ class ButtonTests extends munit.FunSuite {
 
     val actual = button.toUpState.update(mouse)
 
-    assertEquals(actual.state.state.isDown, true)
+    assertEquals(actual.unsafeGet.state.isDown, true)
   }
 
   test("Transition from Up -> Down on mouse press.Within the button: On mouse down, the down action is performed") {
@@ -107,10 +107,10 @@ class ButtonTests extends munit.FunSuite {
 
     val actual = button.toUpState.update(mouse)
 
-    assert(actual.globalEvents.length == 2)
-    assert(actual.globalEvents.contains(FakeEvent("mouse over")))
-    assert(actual.globalEvents.contains(FakeEvent("mouse down")))
-    assert(actual.globalEvents == List(FakeEvent("mouse over"), FakeEvent("mouse down")))
+    assert(actual.unsafeGlobalEvents.length == 2)
+    assert(actual.unsafeGlobalEvents.contains(FakeEvent("mouse over")))
+    assert(actual.unsafeGlobalEvents.contains(FakeEvent("mouse down")))
+    assert(actual.unsafeGlobalEvents == List(FakeEvent("mouse over"), FakeEvent("mouse down")))
 
   }
 
@@ -120,7 +120,7 @@ class ButtonTests extends munit.FunSuite {
 
     val actual = button.toDownState.update(mouse)
 
-    assertEquals(actual.state.state.isOver, true)
+    assertEquals(actual.unsafeGet.state.isOver, true)
 
   }
   test("Transition from Down -> Over on mouse release.Within the button: On mouse release, the up action is performed") {
@@ -129,8 +129,8 @@ class ButtonTests extends munit.FunSuite {
 
     val actual = button.toDownState.update(mouse)
 
-    assert(actual.globalEvents.length == 1)
-    assert(actual.globalEvents.contains(FakeEvent("mouse up")))
+    assert(actual.unsafeGlobalEvents.length == 1)
+    assert(actual.unsafeGlobalEvents.contains(FakeEvent("mouse up")))
   }
 
   test("If the button is down, and the mouse moves out, the button stays down until release.") {
@@ -140,9 +140,9 @@ class ButtonTests extends munit.FunSuite {
       mouseReleased <- mouseOut.update(new Mouse(List(MouseEvent.MouseUp(200, 200)), Point(200, 200), false))
     } yield (buttonPressed.state, mouseOut.state, mouseReleased.state)
 
-    assert(actual.state._1.isDown)
-    assert(actual.state._2.isDown)
-    assert(actual.state._3.isUp)
+    assert(actual.unsafeGet._1.isDown)
+    assert(actual.unsafeGet._2.isDown)
+    assert(actual.unsafeGet._3.isUp)
   }
 
   test(
@@ -155,10 +155,10 @@ class ButtonTests extends munit.FunSuite {
       mouseReleased <- mouseOut.update(new Mouse(List(MouseEvent.MouseUp(200, 200)), Point(200, 200), false))
     } yield (buttonPressed.state, mouseOut.state, mouseReleased.state)
 
-    assert(actual.globalEvents.length == 2)
-    assert(actual.globalEvents.contains(FakeEvent("mouse over")))
-    assert(actual.globalEvents.contains(FakeEvent("mouse down")))
-    assert(actual.globalEvents == List(FakeEvent("mouse over"), FakeEvent("mouse down")))
+    assert(actual.unsafeGlobalEvents.length == 2)
+    assert(actual.unsafeGlobalEvents.contains(FakeEvent("mouse over")))
+    assert(actual.unsafeGlobalEvents.contains(FakeEvent("mouse down")))
+    assert(actual.unsafeGlobalEvents == List(FakeEvent("mouse over"), FakeEvent("mouse down")))
   }
 
 }
