@@ -42,29 +42,37 @@ final class ScenesFrameProcessor[StartUpData, Model, ViewModel](
           }
         }
 
-    val subSystemEvents: List[GlobalEvent] =
-      subSystemsRegister.update(frameContext.forSubSystems, globalEvents).globalEvents ++
+    val subSystemEvents: Outcome[Unit] =
+      Outcome.merge(
+        subSystemsRegister.update(frameContext.forSubSystems, globalEvents),
         sceneManager.updateSubSystems(frameContext.forSubSystems, globalEvents)
+      )((_, _) => ())
 
-    val updatedViewModel: Outcome[ViewModel] =
+    val updatedViewModel: Model => Outcome[ViewModel] = m =>
       globalEvents
         .map(sceneManager.eventFilters.viewModelFilter)
         .collect { case Some(e) => e }
         .foldLeft(Outcome(viewModel)) { (acc, e) =>
           acc.flatMap { next =>
-            sceneManager.updateViewModel(frameContext, updatedModel.state, next)(e)
+            sceneManager.updateViewModel(frameContext, m, next)(e)
           }
         }
 
-    val view: Outcome[SceneUpdateFragment] =
-      Outcome.merge(
-        sceneManager.updateView(frameContext, updatedModel.state, updatedViewModel.state),
-        subSystemsRegister.present(frameContext.forSubSystems)
-      )(_ |+| _)
+    val view: Model => ViewModel => Outcome[SceneUpdateFragment] = m =>
+      vm =>
+        Outcome.merge(
+          sceneManager.updateView(frameContext, m, vm),
+          subSystemsRegister.present(frameContext.forSubSystems)
+        )(_ |+| _)
 
-    Outcome
-      .combine3(updatedModel, updatedViewModel, view)
-      .addGlobalEvents(subSystemEvents)
+    Outcome.join(
+      for {
+        m  <- updatedModel
+        vm <- updatedViewModel(m)
+        e  <- subSystemEvents.eventsAsOutcome
+        v  <- view(m)(vm)
+      } yield Outcome((m, vm, v), e)
+    )
   }
 
   def runSkipView(
@@ -80,18 +88,27 @@ final class ScenesFrameProcessor[StartUpData, Model, ViewModel](
 
     val frameContext = new FrameContext[StartUpData](gameTime, dice, inputState, boundaryLocator, startUpData)
 
-    val updatedModel: Outcome[Model] = globalEvents.foldLeft(Outcome(model)) { (acc, e) =>
-      acc.flatMap { next =>
-        sceneManager.updateModel(frameContext, next)(e)
-      }
-    }
+    val updatedModel: Outcome[Model] =
+      globalEvents
+        .map(sceneManager.eventFilters.modelFilter)
+        .collect { case Some(e) => e }
+        .foldLeft(Outcome(model)) { (acc, e) =>
+          acc.flatMap { next =>
+            sceneManager.updateModel(frameContext, next)(e)
+          }
+        }
 
-    val subSystemEvents: List[GlobalEvent] =
-      subSystemsRegister.update(frameContext.forSubSystems, globalEvents).globalEvents ++
+    val subSystemEvents: Outcome[Unit] =
+      Outcome.merge(
+        subSystemsRegister.update(frameContext.forSubSystems, globalEvents),
         sceneManager.updateSubSystems(frameContext.forSubSystems, globalEvents)
+      )((_, _) => ())
 
-    Outcome
-      .combine(updatedModel, Outcome(viewModel))
-      .addGlobalEvents(subSystemEvents)
+    Outcome.join(
+      for {
+        m <- updatedModel
+        e <- subSystemEvents.eventsAsOutcome
+      } yield Outcome((m, viewModel), e)
+    )
   }
 }
