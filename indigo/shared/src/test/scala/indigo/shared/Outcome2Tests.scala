@@ -257,6 +257,18 @@ class Outcome2Tests extends munit.FunSuite {
     assertEquals(actual2.unsafeGlobalEvents, expected.unsafeGlobalEvents)
   }
 
+  // Error handline
+
+  test("Exceptions thrown during creation are handled") {
+    val e = new Exception("Boom!")
+
+    val actual = Outcome2(throw e)
+
+    val expected = Outcome2.Error(e)
+
+    assertEquals(actual, expected)
+  }
+
 }
 
 // final case class TestEvent(message: String) extends GlobalEvent
