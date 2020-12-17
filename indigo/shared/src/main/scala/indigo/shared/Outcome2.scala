@@ -12,13 +12,9 @@ sealed trait Outcome2[+A] {
   def isResult: Boolean
   def isError: Boolean
 
-  @deprecated("The state field is now unsafe, use unsafeGet or getOrElse.")
-  def state[B >: A]: B = unsafeGet
   def unsafeGet[B >: A]: B
   def getOrElse[B >: A](b: B): B
 
-  @deprecated("The globalEvents field is now unsafe, use unsafeGlobalEvents or globalEventsOrNil.")
-  def globalEvents: List[GlobalEvent] = unsafeGlobalEvents
   def unsafeGlobalEvents: List[GlobalEvent]
   def globalEventsOrNil: List[GlobalEvent]
 
@@ -54,20 +50,20 @@ sealed trait Outcome2[+A] {
 }
 object Outcome2 {
 
-  final case class Result[A](_state: () => A, _globalEvents: () => List[GlobalEvent]) extends Outcome2[A] {
+  final case class Result[A](state: A, globalEvents: List[GlobalEvent]) extends Outcome2[A] {
 
     def isResult: Boolean = true
     def isError: Boolean  = false
 
     def unsafeGet[B >: A]: B =
-      _state()
+      state
     def getOrElse[B >: A](b: B): B =
-      _state()
+      state
 
     def unsafeGlobalEvents: List[GlobalEvent] =
-      _globalEvents()
+      globalEvents
     def globalEventsOrNil: List[GlobalEvent] =
-      _globalEvents()
+      globalEvents
 
     def handleError[B >: A](recoverWith: Throwable => Outcome2[B]): Outcome2[B] =
       this
@@ -79,25 +75,25 @@ object Outcome2 {
       addGlobalEvents(newEvents.toList)
 
     def addGlobalEvents(newEvents: => List[GlobalEvent]): Outcome2[A] =
-      Outcome2(_state(), _globalEvents() ++ newEvents)
+      Outcome2(state, globalEvents ++ newEvents)
 
     def createGlobalEvents(f: A => List[GlobalEvent]): Outcome2[A] =
-      Outcome2(_state(), _globalEvents() ++ f(_state()))
+      Outcome2(state, globalEvents ++ f(state))
 
     def clearGlobalEvents: Outcome2[A] =
-      Outcome2(_state())
+      Outcome2(state)
 
     def replaceGlobalEvents(f: List[GlobalEvent] => List[GlobalEvent]): Outcome2[A] =
-      Outcome2(_state(), f(_globalEvents()))
+      Outcome2(state, f(globalEvents))
 
     def mapAll[B](f: A => B, g: List[GlobalEvent] => List[GlobalEvent]): Outcome2[B] =
-      Outcome2(f(_state()), g(_globalEvents()))
+      Outcome2(f(state), g(globalEvents))
 
     def map[B](f: A => B): Outcome2[B] =
-      Outcome2(f(_state()), _globalEvents())
+      Outcome2(f(state), globalEvents)
 
     def mapGlobalEvents(f: GlobalEvent => GlobalEvent): Outcome2[A] =
-      Outcome2(_state(), _globalEvents().map(f))
+      Outcome2(state, globalEvents.map(f))
 
     def ap[B](of: Outcome2[A => B]): Outcome2[B] =
       of match {
@@ -105,7 +101,7 @@ object Outcome2 {
           Error(e)
 
         case Result(s, es) =>
-          map(s()).addGlobalEvents(es())
+          map(s).addGlobalEvents(es)
       }
 
     def merge[B, C](other: Outcome2[B])(f: (A, B) => C): Outcome2[C] =
@@ -117,16 +113,16 @@ object Outcome2 {
           Error(e)
 
         case Result(s, es) =>
-          Outcome2((_state(), s()), _globalEvents() ++ es())
+          Outcome2((state, s), globalEvents ++ es)
       }
 
     def flatMap[B](f: A => Outcome2[B]): Outcome2[B] =
-      f(_state()) match {
+      f(state) match {
         case Error(e) =>
           Error(e)
 
         case Result(s, es) =>
-          Outcome2(s(), _globalEvents() ++ es())
+          Outcome2(s, globalEvents ++ es)
       }
 
   }
@@ -185,7 +181,7 @@ object Outcome2 {
     def combine: Outcome2[(A, B, C)] =
       t match {
         case (Result(s1, es1), Result(s2, es2), Result(s3, es3)) =>
-          Outcome2((s1(), s2(), s3()), es1() ++ es2() ++ es3())
+          Outcome2((s1, s2, s3), es1 ++ es2 ++ es3)
 
         case (Error(e), _, _) =>
           Error(e)
@@ -207,14 +203,14 @@ object Outcome2 {
   }
 
   def apply[A](state: => A): Outcome2[A] =
-    try Outcome2.Result[A](() => state, () => Nil)
+    try Outcome2.Result[A](state, Nil)
     catch {
       case NonFatal(e) =>
         Outcome2.Error(e)
     }
 
   def apply[A](state: => A, globalEvents: => List[GlobalEvent]): Outcome2[A] =
-    try Outcome2.Result[A](() => state, () => globalEvents)
+    try Outcome2.Result[A](state, globalEvents)
     catch {
       case NonFatal(e) =>
         Outcome2.Error(e)
@@ -226,7 +222,7 @@ object Outcome2 {
         None
 
       case Outcome2.Result(s, es) =>
-        Some((s(), es()))
+        Some((s, es))
     }
 
   def sequence[A](l: List[Outcome2[A]]): Outcome2[List[A]] = {
@@ -240,7 +236,7 @@ object Outcome2 {
           Error(e)
 
         case Result(s, es) :: xs =>
-          rec(xs, accA ++ List(s()), accEvents ++ es())
+          rec(xs, accA ++ List(s), accEvents ++ es)
       }
 
     rec(l, Nil, Nil)
@@ -264,7 +260,7 @@ object Outcome2 {
   def combine3[A, B, C](oa: Outcome2[A], ob: Outcome2[B], oc: Outcome2[C]): Outcome2[(A, B, C)] =
     (oa, ob, oc) match {
       case (Result(s1, es1), Result(s2, es2), Result(s3, es3)) =>
-        Outcome2((s1(), s2(), s3()), es1() ++ es2() ++ es3())
+        Outcome2((s1, s2, s3), es1 ++ es2 ++ es3)
 
       case (Error(e), _, _) =>
         Error(e)
@@ -282,8 +278,7 @@ object Outcome2 {
         Error(e)
 
       case Result(outcome, es) =>
-        val next = outcome()
-        Outcome2(next.unsafeGet, es() ++ next.unsafeGlobalEvents)
+        Outcome2(outcome.unsafeGet, es ++ outcome.unsafeGlobalEvents)
     }
   def flatten[A](faa: Outcome2[Outcome2[A]]): Outcome2[A] =
     join(faa)
