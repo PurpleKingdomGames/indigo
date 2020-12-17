@@ -35,6 +35,24 @@ lazy val publishSettings = {
 
 // Testing
 
+lazy val errors =
+  project
+    .enablePlugins(ScalaJSPlugin)
+    .enablePlugins(SbtIndigo)
+    .settings(commonSettings: _*)
+    .settings(
+      name := "errors",
+      showCursor := true,
+      title := "Error Handling",
+      gameAssetsDirectory := "assets"
+    )
+    .settings(
+      publish := {},
+      publishLocal := {}
+    )
+    .dependsOn(indigo)
+    .dependsOn(indigoExtras)
+
 lazy val sandbox =
   project
     .enablePlugins(ScalaJSPlugin)
@@ -207,7 +225,8 @@ lazy val indigoProject =
       indigo,
       facades,
       sandbox,
-      perf
+      perf,
+      errors
     )
 
 lazy val code =
