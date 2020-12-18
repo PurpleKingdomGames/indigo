@@ -329,3 +329,20 @@ lazy val inputmapper =
       windowStartWidth := 400,
       windowStartHeight := 400
     )
+
+
+
+lazy val errors =
+  project
+    .in(file("errors"))
+    .settings(commonSettings: _*)
+    .enablePlugins(ScalaJSPlugin)
+    .enablePlugins(SbtIndigo)
+    .settings(
+      name := "errors",
+      showCursor := true,
+      title := "Error Handling",
+      gameAssetsDirectory := "assets",
+      windowStartWidth := 800,
+      windowStartHeight := 800
+    )
