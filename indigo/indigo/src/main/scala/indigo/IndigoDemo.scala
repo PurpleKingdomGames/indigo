@@ -10,6 +10,7 @@ import scala.concurrent.Future
 
 /**
   * A trait representing a minimal set of functions to get your game running
+  * @tparam BootData The class type representing you a successful game boot up
   * @tparam StartUpData The class type representing your successful startup data
   * @tparam Model The class type representing your game's model
   * @tparam ViewModel The class type representing your game's view model

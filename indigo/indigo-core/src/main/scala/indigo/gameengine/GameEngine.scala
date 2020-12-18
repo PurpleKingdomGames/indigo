@@ -135,7 +135,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
       initialise(accumulatedAssetCollection)(Dice.fromSeed(time)) match {
         case oe @ Outcome.Error(error, _) =>
           IndigoLogger.error(if (firstRun) "Error during first initialisation - Halting." else "Error during re-initialisation - Halting.")
-          IndigoLogger.error("Crash report (if available):")
+          IndigoLogger.error("Crash report:")
           IndigoLogger.error(oe.reportCrash)
           throw error
 
@@ -189,7 +189,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
               ()
 
             case oe @ Outcome.Error(e, _) =>
-              IndigoLogger.error(if (firstRun) "Error during startup" else "Error during reinitialisation")
+              IndigoLogger.error(if (firstRun) "Error during first engine start up" else "Error during engine restart")
               IndigoLogger.error(oe.reportCrash)
               throw e
           }

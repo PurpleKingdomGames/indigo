@@ -22,7 +22,7 @@ final class SubSystemsRegister() {
     newSubSystems.map(initialiseSubSystem).sequence match {
       case oe @ Outcome.Error(e, _) =>
         IndigoLogger.error("Error during subsystem setup - Halting.")
-        IndigoLogger.error("Crash report (if available):")
+        IndigoLogger.error("Crash report:")
         IndigoLogger.error(oe.reportCrash)
         throw e
 
