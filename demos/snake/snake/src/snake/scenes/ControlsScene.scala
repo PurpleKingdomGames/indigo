@@ -50,15 +50,16 @@ object ControlsScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewMo
       context: FrameContext[SnakeStartupData],
       sceneModel: ControlScheme,
       sceneViewModel: Unit
-  ): SceneUpdateFragment = {
-    val horizontalCenter: Int = (Settings.viewportWidth / Settings.magnificationLevel) / 2
-    val verticalMiddle: Int   = (Settings.viewportHeight / Settings.magnificationLevel) / 2
+  ): Outcome[SceneUpdateFragment] =
+    Outcome {
+      val horizontalCenter: Int = (Settings.viewportWidth / Settings.magnificationLevel) / 2
+      val verticalMiddle: Int   = (Settings.viewportHeight / Settings.magnificationLevel) / 2
 
-    SceneUpdateFragment.empty
-      .addUiLayerNodes(drawControlsText(24, verticalMiddle, sceneModel))
-      .addUiLayerNodes(drawSelectText(horizontalCenter))
-      .addUiLayerNodes(SharedElements.drawHitSpaceToStart(horizontalCenter, Seconds(1), context.gameTime))
-  }
+      SceneUpdateFragment.empty
+        .addUiLayerNodes(drawControlsText(24, verticalMiddle, sceneModel))
+        .addUiLayerNodes(drawSelectText(horizontalCenter))
+        .addUiLayerNodes(SharedElements.drawHitSpaceToStart(horizontalCenter, Seconds(1), context.gameTime))
+    }
 
   def drawControlsText(center: Int, middle: Int, controlScheme: ControlScheme): List[SceneGraphNode] =
     List(

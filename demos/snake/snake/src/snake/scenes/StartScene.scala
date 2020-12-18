@@ -49,24 +49,25 @@ object StartScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel
       context: FrameContext[SnakeStartupData],
       snakeGameModel: SnakeGameModel,
       snakeViewModel: SnakeViewModel
-  ): SceneUpdateFragment = {
-    val horizontalCenter: Int = (Settings.viewportWidth / Settings.magnificationLevel) / 2
-    val verticalMiddle: Int   = (Settings.viewportHeight / Settings.magnificationLevel) / 2
+  ): Outcome[SceneUpdateFragment] =
+    Outcome {
+      val horizontalCenter: Int = (Settings.viewportWidth / Settings.magnificationLevel) / 2
+      val verticalMiddle: Int   = (Settings.viewportHeight / Settings.magnificationLevel) / 2
 
-    SceneUpdateFragment.empty
-      .addUiLayerNodes(drawTitleText(horizontalCenter, verticalMiddle))
-      .addUiLayerNodes(SharedElements.drawHitSpaceToStart(horizontalCenter, Seconds(1), context.gameTime))
-      .withAudio(
-        SceneAudio(
-          SceneAudioSource(
-            BindingKey("intro music"),
-            PlaybackPattern.SingleTrackLoop(
-              Track(GameAssets.soundIntro)
+      SceneUpdateFragment.empty
+        .addUiLayerNodes(drawTitleText(horizontalCenter, verticalMiddle))
+        .addUiLayerNodes(SharedElements.drawHitSpaceToStart(horizontalCenter, Seconds(1), context.gameTime))
+        .withAudio(
+          SceneAudio(
+            SceneAudioSource(
+              BindingKey("intro music"),
+              PlaybackPattern.SingleTrackLoop(
+                Track(GameAssets.soundIntro)
+              )
             )
           )
         )
-      )
-  }
+    }
 
   def drawTitleText(center: Int, middle: Int): List[SceneGraphNode] =
     List(
