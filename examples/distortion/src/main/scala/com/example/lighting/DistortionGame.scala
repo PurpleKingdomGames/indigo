@@ -33,11 +33,11 @@ object DistortionGame extends IndigoSandbox[Unit, Unit] {
   val animations: Set[Animation] =
     Set()
 
-  def setup(assetCollection: AssetCollection, dice: Dice): Startup[Unit] =
-    Startup.Success(())
+  def setup(assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
+    Outcome(Startup.Success(()))
 
-  def initialModel(startupData: Unit): Unit =
-    ()
+  def initialModel(startupData: Unit): Outcome[Unit] =
+    Outcome(())
 
   def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(())
@@ -64,32 +64,34 @@ object DistortionGame extends IndigoSandbox[Unit, Unit] {
       distortion.moveTo(vec.toPoint)
     }
 
-  def present(context: FrameContext[Unit], model: Unit): SceneUpdateFragment =
-    SceneUpdateFragment.empty
-      .addGameLayerNodes(
-        background,
-        graphic,
-        graphic.moveBy(-60, 0).withMaterial(DistortionAssets.junctionBoxMaterialOff),
-        graphic.moveBy(-30, 0).withMaterial(DistortionAssets.junctionBoxMaterialGlass),
-        graphic.moveBy(30, 0).withMaterial(DistortionAssets.junctionBoxMaterialFlat),
-        graphic.moveBy(60, 0).withMaterial(DistortionAssets.junctionBoxMaterialFlat.unlit)
-      )
-      .withAmbientLight(RGBA.White.withAmount(0.1))
-      .withLights(
-        PointLight.default
-          .moveTo(config.viewport.center + Point(50, 0))
-          .withAttenuation(50)
-          .withColor(RGB.Magenta)
-          .withPower(0.4),
-        DirectionLight(30, RGB.Green, 1.2, Radians.fromDegrees(30))
-      )
-      .addLightingLayerNodes(
-        imageLight
-      )
-      .addDistortionLayerNodes(
-        distortion.withAlpha(1.0),
-        orbiting(40).affectTime(0.25).at(context.gameTime.running)
-      )
+  def present(context: FrameContext[Unit], model: Unit): Outcome[SceneUpdateFragment] =
+    Outcome(
+      SceneUpdateFragment.empty
+        .addGameLayerNodes(
+          background,
+          graphic,
+          graphic.moveBy(-60, 0).withMaterial(DistortionAssets.junctionBoxMaterialOff),
+          graphic.moveBy(-30, 0).withMaterial(DistortionAssets.junctionBoxMaterialGlass),
+          graphic.moveBy(30, 0).withMaterial(DistortionAssets.junctionBoxMaterialFlat),
+          graphic.moveBy(60, 0).withMaterial(DistortionAssets.junctionBoxMaterialFlat.unlit)
+        )
+        .withAmbientLight(RGBA.White.withAmount(0.1))
+        .withLights(
+          PointLight.default
+            .moveTo(config.viewport.center + Point(50, 0))
+            .withAttenuation(50)
+            .withColor(RGB.Magenta)
+            .withPower(0.4),
+          DirectionLight(30, RGB.Green, 1.2, Radians.fromDegrees(30))
+        )
+        .addLightingLayerNodes(
+          imageLight
+        )
+        .addDistortionLayerNodes(
+          distortion.withAlpha(1.0),
+          orbiting(40).affectTime(0.25).at(context.gameTime.running)
+        )
+    )
 }
 
 object DistortionAssets {

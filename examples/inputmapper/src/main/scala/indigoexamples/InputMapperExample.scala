@@ -27,12 +27,14 @@ object InputMapperExample extends IndigoSandbox[Unit, Model] {
   def setup(
       assetCollection: AssetCollection,
       dice: Dice
-  ): Startup[Unit] =
-    Startup.Success(())
+  ): Outcome[Startup[Unit]] =
+    Outcome(Startup.Success(()))
 
-  def initialModel(startupData: Unit): Model =
-    Model.initial(
-      config.viewport.giveDimensions(magnification).center
+  def initialModel(startupData: Unit): Outcome[Model] =
+    Outcome(
+      Model.initial(
+        config.viewport.giveDimensions(magnification).center
+      )
     )
 
   def updateModel(
@@ -49,9 +51,11 @@ object InputMapperExample extends IndigoSandbox[Unit, Model] {
   def present(
       context: FrameContext[Unit],
       model: Model
-  ): SceneUpdateFragment =
-    SceneUpdateFragment.empty
-      .addGameLayerNodes(drawDot(model.dot))
+  ): Outcome[SceneUpdateFragment] =
+    Outcome(
+      SceneUpdateFragment.empty
+        .addGameLayerNodes(drawDot(model.dot))
+    )
 
   def drawDot(
       dot: Dot

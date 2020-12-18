@@ -20,28 +20,28 @@ class TreeTests extends munit.FunSuite {
     val actual =
       tree
         .update(Millis(17).toSeconds)
-        .state
+        .unsafeGet
         .update(Millis(17).toSeconds)
-        .state
+        .unsafeGet
         .update(Millis(17).toSeconds)
-        .state
+        .unsafeGet
         .update(Millis(17).toSeconds)
-        .state
+        .unsafeGet
         .update(Millis(17).toSeconds)
-        .state
+        .unsafeGet
         .update(Millis(17).toSeconds)
-        .state
+        .unsafeGet
         .update(Millis(17).toSeconds)
-        .state
+        .unsafeGet
         .update(Millis(17).toSeconds)
-        .state
+        .unsafeGet
         .update(Millis(17).toSeconds)
-        .state
+        .unsafeGet
         .update(Millis(17).toSeconds)
 
     // Slightly confusing at first glance - remember the growth rate.
     // 10 iterations of 0.017 Seconds = 0.17 * growth rate of 10 = 1.7
-    assertEquals(Math.round(actual.state.growth.value * 10d) / 10d, 1.7)
+    assertEquals(Math.round(actual.unsafeGet.growth.value * 10d) / 10d, 1.7)
   }
 
   test("Tree update function.general growth 100 millis") {
@@ -54,8 +54,8 @@ class TreeTests extends munit.FunSuite {
         fullyGrown = false
       )
 
-    assertEquals(actual.state, expected)
-    assertEquals(actual.globalEvents, Nil)
+    assertEquals(actual.unsafeGet, expected)
+    assertEquals(actual.unsafeGlobalEvents, Nil)
   }
 
   test("Tree update function.general growth 1000 millis") {
@@ -68,8 +68,8 @@ class TreeTests extends munit.FunSuite {
         fullyGrown = false
       )
 
-    assertEquals(actual.state, expected)
-    assertEquals(actual.globalEvents, Nil)
+    assertEquals(actual.unsafeGet, expected)
+    assertEquals(actual.unsafeGlobalEvents, Nil)
   }
 
   test("Tree update function.fully grown") {
@@ -82,8 +82,8 @@ class TreeTests extends munit.FunSuite {
         fullyGrown = true
       )
 
-    assertEquals(actual.state, expected)
-    assertEquals(actual.globalEvents, List(JobMarketEvent.Post(ChopDown(0, Point.zero))))
+    assertEquals(actual.unsafeGet, expected)
+    assertEquals(actual.unsafeGlobalEvents, List(JobMarketEvent.Post(ChopDown(0, Point.zero))))
   }
 
 }

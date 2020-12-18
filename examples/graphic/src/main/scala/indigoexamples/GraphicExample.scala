@@ -15,11 +15,11 @@ object GraphicExample extends IndigoSandbox[Unit, Unit] {
 
   val animations: Set[Animation] = Set()
 
-  def setup(assetCollection: AssetCollection, dice: Dice): Startup[Unit] =
-    Startup.Success(())
+  def setup(assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
+    Outcome(Startup.Success(()))
 
-  def initialModel(startupData: Unit): Unit =
-    ()
+  def initialModel(startupData: Unit): Outcome[Unit] =
+    Outcome(())
 
   def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
@@ -35,39 +35,41 @@ object GraphicExample extends IndigoSandbox[Unit, Unit] {
       .scaleBy(1.5, 1.5)
       .withRef(96, 96)
 
-  def present(context: FrameContext[Unit], model: Unit): SceneUpdateFragment =
-    SceneUpdateFragment.empty
-      .addGameLayerNodes(
-        basic.withAlpha(0.5),
-        basic
-          .rotateTo(Radians(Math.PI / 8))
-          .withAlpha(0.75),
-        basic
-          .rotateTo(Radians(Math.PI / 4))
-          .withAlpha(0.75),
-        graphic
-          .withCrop(128, 0, 96, 96)
-          .moveTo(137 * 1, 100),
-        graphic
-          .withCrop(128, 0, 96, 96)
-          .moveTo(137 * 2, 100)
-          .rotateTo(Radians(Math.PI / 4)),
-        graphic
-          .withCrop(128, 0, 96, 96)
-          .moveTo(137 * 3, 100)
-          .flipHorizontal(true)
-          .flipVertical(true),
-        graphic
-          .withCrop(128, 0, 96, 96)
-          .moveTo(137 * 1, 300)
-          .withAlpha(0.5),
-        graphic
-          .withCrop(128, 0, 96, 96)
-          .moveTo(137 * 2, 300)
-          .withTint(RGBA.Red),
-        graphic
-          .withCrop(128, 0, 96, 96)
-          .moveTo(137 * 3, 300)
-          .scaleBy(2.0, 2.0)
-      )
+  def present(context: FrameContext[Unit], model: Unit): Outcome[SceneUpdateFragment] =
+    Outcome(
+      SceneUpdateFragment.empty
+        .addGameLayerNodes(
+          basic.withAlpha(0.5),
+          basic
+            .rotateTo(Radians(Math.PI / 8))
+            .withAlpha(0.75),
+          basic
+            .rotateTo(Radians(Math.PI / 4))
+            .withAlpha(0.75),
+          graphic
+            .withCrop(128, 0, 96, 96)
+            .moveTo(137 * 1, 100),
+          graphic
+            .withCrop(128, 0, 96, 96)
+            .moveTo(137 * 2, 100)
+            .rotateTo(Radians(Math.PI / 4)),
+          graphic
+            .withCrop(128, 0, 96, 96)
+            .moveTo(137 * 3, 100)
+            .flipHorizontal(true)
+            .flipVertical(true),
+          graphic
+            .withCrop(128, 0, 96, 96)
+            .moveTo(137 * 1, 300)
+            .withAlpha(0.5),
+          graphic
+            .withCrop(128, 0, 96, 96)
+            .moveTo(137 * 2, 300)
+            .withTint(RGBA.Red),
+          graphic
+            .withCrop(128, 0, 96, 96)
+            .moveTo(137 * 3, 300)
+            .scaleBy(2.0, 2.0)
+        )
+    )
 }

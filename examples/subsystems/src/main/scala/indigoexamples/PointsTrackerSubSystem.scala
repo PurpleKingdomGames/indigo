@@ -11,15 +11,18 @@ final case class PointsTrackerSubSystem(fontKey: FontKey) extends SubSystem {
     case _                         => None
   }
 
-  def initialModel: Int = 0
+  def initialModel: Outcome[Int] =
+    Outcome(0)
 
   def update(context: SubSystemFrameContext, points: Int): Int => Outcome[Int] = { additionalPoints =>
     Outcome(points + additionalPoints)
   }
 
-  def present(context: SubSystemFrameContext, points: Int): SceneUpdateFragment =
-    SceneUpdateFragment.empty
-      .addGameLayerNodes(Text(s"""Points: ${points.toString()}""", 10, 10, 1, fontKey))
+  def present(context: SubSystemFrameContext, points: Int): Outcome[SceneUpdateFragment] =
+    Outcome(
+      SceneUpdateFragment.empty
+        .addGameLayerNodes(Text(s"""Points: ${points.toString()}""", 10, 10, 1, fontKey))
+    )
 }
 
 sealed trait PointsTrackerEvent extends GlobalEvent with Product with Serializable

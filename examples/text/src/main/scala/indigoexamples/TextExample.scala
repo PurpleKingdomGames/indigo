@@ -22,11 +22,11 @@ object TextExample extends IndigoSandbox[Unit, Model] {
   val animations: Set[Animation] =
     Set()
 
-  def setup(assetCollection: AssetCollection, dice: Dice): Startup[Unit] =
-    Startup.Success(())
+  def setup(assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
+    Outcome(Startup.Success(()))
 
-  def initialModel(startupData: Unit): Model =
-    Model(RGBA.None)
+  def initialModel(startupData: Unit): Outcome[Model] =
+    Outcome(Model(RGBA.None))
 
   def updateModel(context: FrameContext[Unit], model: Model): GlobalEvent => Outcome[Model] = {
     case ChangeColour =>
@@ -36,9 +36,9 @@ object TextExample extends IndigoSandbox[Unit, Model] {
       Outcome(model)
   }
 
-  def present(context: FrameContext[Unit], model: Model): SceneUpdateFragment =
-    SceneUpdateFragment.empty
-      .addGameLayerNodes(
+  def present(context: FrameContext[Unit], model: Model): Outcome[SceneUpdateFragment] =
+    Outcome(
+      SceneUpdateFragment(
         Text("Hello, world!\nThis is some text!", config.viewport.width - 10, 20, 1, fontKey)
           .withTint(model.tint)
           .alignRight
@@ -50,6 +50,7 @@ object TextExample extends IndigoSandbox[Unit, Model] {
               Nil
           }
       )
+    )
 
 }
 
