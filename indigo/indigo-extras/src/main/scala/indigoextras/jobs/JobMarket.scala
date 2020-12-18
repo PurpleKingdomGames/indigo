@@ -25,8 +25,8 @@ final case class JobMarket(availableJobs: List[Job]) extends SubSystem {
     case _                 => None
   }
 
-  val initialModel: List[Job] =
-    availableJobs
+  val initialModel: Outcome[List[Job]] =
+    Outcome(availableJobs)
 
   def update(frameContext: SubSystemFrameContext, jobs: List[Job]): JobMarketEvent => Outcome[List[Job]] = {
     case JobMarketEvent.Post(job) =>

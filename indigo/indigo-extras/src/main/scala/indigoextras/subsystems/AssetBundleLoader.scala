@@ -23,8 +23,8 @@ object AssetBundleLoader extends SubSystem {
     case _                         => None
   }
 
-  def initialModel: AssetBundleTracker =
-    AssetBundleTracker.empty
+  def initialModel: Outcome[AssetBundleTracker] =
+    Outcome(AssetBundleTracker.empty)
 
   def update(frameContext: SubSystemFrameContext, tracker: AssetBundleTracker): GlobalEvent => Outcome[AssetBundleTracker] = {
     // Asset Bundle Loader Commands

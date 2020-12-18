@@ -21,7 +21,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
   // @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   private val subSystemStates: Map[SceneName, SubSystemsRegister] =
     scenes.toList.map { s =>
-      val r = new SubSystemsRegister(Nil)
+      val r = new SubSystemsRegister()
       r.register(s.subSystems.toList)
       (s.name -> r)
     }.toMap

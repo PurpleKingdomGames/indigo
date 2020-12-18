@@ -15,8 +15,8 @@ final case class PointsTrackerExample(startingPoints: Int) extends SubSystem {
     case _                     => None
   }
 
-  def initialModel: Int =
-    startingPoints
+  def initialModel: Outcome[Int] =
+    Outcome(startingPoints)
 
   def update(context: SubSystemFrameContext, points: Int): PointsTrackerEvent => Outcome[Int] = {
     case PointsTrackerEvent.Add(pts) =>

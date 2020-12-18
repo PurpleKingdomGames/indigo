@@ -155,6 +155,9 @@ object Outcome {
     def logCrash(reporter: PartialFunction[Throwable, String]): Outcome[Nothing] =
       this.copy(crashReporter = reporter)
 
+    def reportCrash: String =
+      crashReporter.orElse[Throwable, String]({ case (e: Throwable) => e.getMessage + "\n" + e.getStackTrace.mkString("\n") })(e)
+
     def addGlobalEvents(newEvents: GlobalEvent*): Error                              = this
     def addGlobalEvents(newEvents: => List[GlobalEvent]): Error                      = this
     def createGlobalEvents(f: Nothing => List[GlobalEvent]): Error                   = this

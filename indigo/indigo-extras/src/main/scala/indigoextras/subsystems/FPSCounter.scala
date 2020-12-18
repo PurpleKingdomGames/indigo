@@ -17,7 +17,7 @@ object FPSCounter {
   def apply(fontKey: FontKey, position: Point, targetFPS: Int): SubSystem =
     SubSystem[GlobalEvent, FPSCounterState](
       _eventFilter = eventFilter,
-      _initialModel = FPSCounterState.default,
+      _initialModel = Outcome(FPSCounterState.default),
       _update = update(targetFPS),
       _present = present(fontKey, position, targetFPS)
     )

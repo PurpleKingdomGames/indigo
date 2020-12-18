@@ -10,7 +10,7 @@ trait SubSystem {
 
   def eventFilter: GlobalEvent => Option[EventType]
 
-  def initialModel: SubSystemModel
+  def initialModel: Outcome[SubSystemModel]
 
   def update(context: SubSystemFrameContext, model: SubSystemModel): EventType => Outcome[SubSystemModel]
 
@@ -21,7 +21,7 @@ object SubSystem {
 
   def apply[Event, Model](
       _eventFilter: GlobalEvent => Option[Event],
-      _initialModel: Model,
+      _initialModel: Outcome[Model],
       _update: (SubSystemFrameContext, Model) => Event => Outcome[Model],
       _present: (SubSystemFrameContext, Model) => Outcome[SceneUpdateFragment]
   ): SubSystem =
@@ -32,7 +32,7 @@ object SubSystem {
       def eventFilter: GlobalEvent => Option[EventType] =
         _eventFilter
 
-      def initialModel: SubSystemModel =
+      def initialModel: Outcome[SubSystemModel] =
         _initialModel
 
       def update(context: SubSystemFrameContext, model: SubSystemModel): EventType => Outcome[SubSystemModel] =

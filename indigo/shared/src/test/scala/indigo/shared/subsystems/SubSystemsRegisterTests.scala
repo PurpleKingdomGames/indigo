@@ -7,13 +7,15 @@ class SubSystemsRegisterTests extends munit.FunSuite {
   import FakeSubSystemFrameContext._
 
   test("The sub system register.should allow you to add sub systems") {
-    val r = new SubSystemsRegister(List(PointsTrackerExample(0), PointsTrackerExample(0)))
+    val r = new SubSystemsRegister()
+    r.register(List(PointsTrackerExample(0), PointsTrackerExample(0)))
 
     assertEquals(r.size, 2)
   }
 
   test("The sub system register.should allow you to update sub systems") {
-    val r = new SubSystemsRegister(List(PointsTrackerExample(10), PointsTrackerExample(50)))
+    val r = new SubSystemsRegister()
+    r.register(List(PointsTrackerExample(10), PointsTrackerExample(50)))
 
     val data = r
       .update(context(6), List(PointsTrackerEvent.Add(10)))
@@ -28,7 +30,8 @@ class SubSystemsRegisterTests extends munit.FunSuite {
   }
 
   test("The sub system register.should allow you to update sub systems and emit events") {
-    val r = new SubSystemsRegister(List(PointsTrackerExample(10), PointsTrackerExample(50)))
+    val r = new SubSystemsRegister()
+    r.register(List(PointsTrackerExample(10), PointsTrackerExample(50)))
 
     val updated = r.update(context(6), List(PointsTrackerEvent.LoseAll))
 
@@ -41,7 +44,8 @@ class SubSystemsRegisterTests extends munit.FunSuite {
   }
 
   test("The sub system register.should allow you to render sub systems") {
-    val r = new SubSystemsRegister(List(PointsTrackerExample(10), PointsTrackerExample(50)))
+    val r = new SubSystemsRegister()
+    r.register(List(PointsTrackerExample(10), PointsTrackerExample(50)))
 
     val rendered =
       r.update(context(6), List(PointsTrackerEvent.Add(10)))

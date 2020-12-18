@@ -2,7 +2,6 @@ package indigo.shared
 
 import indigo.shared.animation.Animation
 import indigo.shared.datatypes.FontInfo
-import indigo.shared.events.GlobalEvent
 
 sealed trait Startup[+SuccessType] extends Product with Serializable {
   def additionalAnimations: Set[Animation] =
@@ -10,7 +9,7 @@ sealed trait Startup[+SuccessType] extends Product with Serializable {
       case Startup.Failure(_) =>
         Set()
 
-      case Startup.Success(_, a, _, _) =>
+      case Startup.Success(_, a, _) =>
         a
     }
 
@@ -19,17 +18,8 @@ sealed trait Startup[+SuccessType] extends Product with Serializable {
       case Startup.Failure(_) =>
         Set()
 
-      case Startup.Success(_, _, f, _) =>
+      case Startup.Success(_, _, f) =>
         f
-    }
-
-  def startUpEvents: List[GlobalEvent] =
-    this match {
-      case Startup.Failure(_) =>
-        Nil
-
-      case Startup.Success(_, _, _, events) =>
-        events
     }
 
 }
@@ -47,27 +37,21 @@ object Startup {
   final case class Success[SuccessType](
       success: SuccessType,
       animations: Set[Animation],
-      fonts: Set[FontInfo],
-      globalEvents: List[GlobalEvent]
+      fonts: Set[FontInfo]
   ) extends Startup[SuccessType] {
     def addAnimations(value: Animation*): Success[SuccessType] =
       addAnimations(value.toList)
     def addAnimations(value: List[Animation]): Success[SuccessType] =
-      Success(success, animations ++ value, fonts, globalEvents)
+      Success(success, animations ++ value, fonts)
 
     def addFonts(value: FontInfo*): Success[SuccessType] =
       addFonts(value.toList)
     def addFonts(value: List[FontInfo]): Success[SuccessType] =
-      Success(success, animations, fonts ++ value, globalEvents)
-
-    def addGlobalEvents(events: GlobalEvent*): Success[SuccessType] =
-      addGlobalEvents(events.toList)
-    def addGlobalEvents(events: List[GlobalEvent]): Success[SuccessType] =
-      Success(success, animations, fonts, globalEvents ++ events)
+      Success(success, animations, fonts ++ value)
   }
   object Success {
     def apply[SuccessType](success: SuccessType): Success[SuccessType] =
-      Success(success, Set(), Set(), Nil)
+      Success(success, Set(), Set())
   }
 
 }
