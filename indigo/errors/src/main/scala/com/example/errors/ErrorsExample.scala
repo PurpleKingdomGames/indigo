@@ -3,91 +3,156 @@ package com.example.sandbox
 import indigo._
 import scala.scalajs.js.annotation._
 
+import scala.util.control.NoStackTrace
+
+/*
+This is a bit of a strange example. It's an indigo game designed to crash.
+
+At every stage, the game will immediately crash and recover. When it
+recovers it will emit an event with the function name it's currently in.
+When a full frame has been completed the game will finally crash by catching
+the trace event called "present" (from the present method on the previous
+frame), and throwing an exception that will not be handled.
+
+You can alter where the game crashes by commenting out the `handleError`
+method calls.
+
+To see the output, open the developer tools / console in your browser, or
+in electron if you used indigoRun.
+*/
+
 @JSExportTopLevel("IndigoGame")
-object ErrorsExample extends IndigoSandbox[Unit, Unit] {
+object ErrorsExample extends IndigoDemo[BootData, StartUpData, Model, ViewModel] {
 
-  val config: GameConfig =
-    GameConfig.default
+  // We're going to let all events through everywhere for logging purposes.
+  def eventFilters: EventFilters =
+    EventFilters.NoFilter
 
-  val assets: Set[AssetType] =
-    Assets.assets
+  def boot(flags: Map[String, String]): Outcome[BootResult[BootData]] =
+    Outcome
+      .raiseError(BootUpCrash)
+      .logCrash {
+        case BootUpCrash =>
+          "[Crash] Boot Error"
+      }
+      .handleError {
+        case BootUpCrash =>
+          Outcome(BootResult(GameConfig.default, BootData()))
+            .addGlobalEvents(TraceEvent("boot"))
+      }
 
-  val fonts: Set[FontInfo] =
-    Set(Assets.fontInfo)
+  def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[StartUpData]] =
+    Outcome
+      .raiseError(StartUpCrash)
+      .logCrash {
+        case StartUpCrash =>
+          "[Crash] Startup Error"
+      }
+      .handleError {
+        case StartUpCrash =>
+          Outcome(Startup.Success(StartUpData()))
+            .addGlobalEvents(TraceEvent("setup"))
+      }
 
-  val animations: Set[Animation] =
-    Set()
+  def initialModel(startupData: StartUpData): Outcome[Model] =
+    Outcome
+      .raiseError(InitialiseModelCrash)
+      .logCrash {
+        case InitialiseModelCrash =>
+          "[Crash] Initial Model Error"
+      }
+      .handleError {
+        case InitialiseModelCrash =>
+          Outcome(Model())
+            .addGlobalEvents(TraceEvent("initialModel"))
+      }
 
-  def setup(assetCollection: AssetCollection, dice: Dice):  Outcome[Startup[Unit]] =
-    Outcome(Startup.Success(()))
+  def initialViewModel(startupData: StartUpData, model: Model): Outcome[ViewModel] =
+    Outcome
+      .raiseError(InitialiseViewModelCrash)
+      .logCrash {
+        case InitialiseViewModelCrash =>
+          "[Crash] Initial ViewModel Error"
+      }
+      .handleError {
+        case InitialiseViewModelCrash =>
+          Outcome(ViewModel())
+            .addGlobalEvents(TraceEvent("initialViewModel"))
+      }
 
-  def initialModel(startupData: Unit): Outcome[Unit] =
-    Outcome(())
+  def updateModel(context: FrameContext[StartUpData], model: Model): GlobalEvent => Outcome[Model] = {
+    case FrameTick =>
+      Outcome
+        .raiseError(UpdateModelCrash)
+        .logCrash {
+          case UpdateModelCrash =>
+            "[Crash] Update Model Error"
+        }
+        .handleError {
+          case UpdateModelCrash =>
+            Outcome(model)
+              .addGlobalEvents(TraceEvent("updateModel"))
+        }
 
-  def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] = {
+    case TraceEvent("present") =>
+        Outcome.raiseError(new Exception("One full frame completed, time to stop."))
+
+    case TraceEvent(origin) =>
+      println("Model recieved trace event from: " + origin)
+      Outcome(model)
+
     case _ =>
       Outcome(model)
   }
 
-  def present(context: FrameContext[Unit], model: Unit): Outcome[SceneUpdateFragment] =
-    Outcome(SceneUpdateFragment.empty)
+  def updateViewModel(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): GlobalEvent => Outcome[ViewModel] = {
+    case FrameTick =>
+      Outcome
+        .raiseError(UpdateViewModelCrash)
+        .logCrash {
+          case UpdateViewModelCrash =>
+            "[Crash] Update ViewModel Error"
+        }
+        .handleError {
+          case UpdateViewModelCrash =>
+            Outcome(viewModel)
+              .addGlobalEvents(TraceEvent("updateViewModel"))
+        }
+
+    case TraceEvent(origin) =>
+      println("ViewModel recieved trace event from: " + origin)
+      Outcome(viewModel)
+
+    case _ =>
+      Outcome(viewModel)
+  }
+
+  def present(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): Outcome[SceneUpdateFragment] =
+    Outcome
+      .raiseError(PresentViewCrash)
+      .logCrash {
+        case PresentViewCrash =>
+          "[Crash] Presentation Error"
+      }
+      .handleError {
+        case PresentViewCrash =>
+          Outcome(SceneUpdateFragment.empty)
+            .addGlobalEvents(TraceEvent("present"))
+      }
 
 }
 
-object Assets {
+final case class BootData()
+final case class StartUpData()
+final case class Model()
+final case class ViewModel()
 
-  val smallFontName: AssetName = AssetName("smallFontName")
+case object BootUpCrash              extends Exception with NoStackTrace
+case object StartUpCrash             extends Exception with NoStackTrace
+case object InitialiseModelCrash     extends Exception with NoStackTrace
+case object InitialiseViewModelCrash extends Exception with NoStackTrace
+case object UpdateModelCrash         extends Exception with NoStackTrace
+case object UpdateViewModelCrash     extends Exception with NoStackTrace
+case object PresentViewCrash         extends Exception with NoStackTrace
 
-  val smallFontNameMaterial: Material.Textured = Material.Textured(smallFontName)
-
-  def assets: Set[AssetType] =
-    Set(
-      AssetType.Image(smallFontName, AssetPath("assets/boxy_font.png"))
-    )
-
-  val fontKey: FontKey = FontKey("Sandbox font")
-
-  val fontInfo: FontInfo =
-    FontInfo(fontKey, smallFontNameMaterial, 320, 230, FontChar(" ", 145, 52, 23, 23)).isCaseInSensitive
-      .addChar(FontChar("A", 3, 78, 23, 23))
-      .addChar(FontChar("B", 26, 78, 23, 23))
-      .addChar(FontChar("C", 50, 78, 23, 23))
-      .addChar(FontChar("D", 73, 78, 23, 23))
-      .addChar(FontChar("E", 96, 78, 23, 23))
-      .addChar(FontChar("F", 119, 78, 23, 23))
-      .addChar(FontChar("G", 142, 78, 23, 23))
-      .addChar(FontChar("H", 165, 78, 23, 23))
-      .addChar(FontChar("I", 188, 78, 15, 23))
-      .addChar(FontChar("J", 202, 78, 23, 23))
-      .addChar(FontChar("K", 225, 78, 23, 23))
-      .addChar(FontChar("L", 248, 78, 23, 23))
-      .addChar(FontChar("M", 271, 78, 23, 23))
-      .addChar(FontChar("N", 3, 104, 23, 23))
-      .addChar(FontChar("O", 29, 104, 23, 23))
-      .addChar(FontChar("P", 54, 104, 23, 23))
-      .addChar(FontChar("Q", 75, 104, 23, 23))
-      .addChar(FontChar("R", 101, 104, 23, 23))
-      .addChar(FontChar("S", 124, 104, 23, 23))
-      .addChar(FontChar("T", 148, 104, 23, 23))
-      .addChar(FontChar("U", 173, 104, 23, 23))
-      .addChar(FontChar("V", 197, 104, 23, 23))
-      .addChar(FontChar("W", 220, 104, 23, 23))
-      .addChar(FontChar("X", 248, 104, 23, 23))
-      .addChar(FontChar("Y", 271, 104, 23, 23))
-      .addChar(FontChar("Z", 297, 104, 23, 23))
-      .addChar(FontChar("0", 3, 26, 23, 23))
-      .addChar(FontChar("1", 26, 26, 15, 23))
-      .addChar(FontChar("2", 41, 26, 23, 23))
-      .addChar(FontChar("3", 64, 26, 23, 23))
-      .addChar(FontChar("4", 87, 26, 23, 23))
-      .addChar(FontChar("5", 110, 26, 23, 23))
-      .addChar(FontChar("6", 133, 26, 23, 23))
-      .addChar(FontChar("7", 156, 26, 23, 23))
-      .addChar(FontChar("8", 179, 26, 23, 23))
-      .addChar(FontChar("9", 202, 26, 23, 23))
-      .addChar(FontChar("?", 93, 52, 23, 23))
-      .addChar(FontChar("!", 3, 0, 15, 23))
-      .addChar(FontChar(".", 286, 0, 15, 23))
-      .addChar(FontChar(",", 248, 0, 15, 23))
-      .addChar(FontChar(" ", 145, 52, 23, 23))
-}
+final case class TraceEvent(origin: String) extends GlobalEvent

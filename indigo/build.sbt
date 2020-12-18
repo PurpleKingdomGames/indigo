@@ -44,7 +44,9 @@ lazy val errors =
       name := "errors",
       showCursor := true,
       title := "Error Handling",
-      gameAssetsDirectory := "assets"
+      gameAssetsDirectory := "assets",
+      windowStartWidth := 800,
+      windowStartHeight := 800
     )
     .settings(
       publish := {},
