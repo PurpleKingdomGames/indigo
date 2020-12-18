@@ -32,34 +32,36 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
       _ => None
     )
 
-  def boot(flags: Map[String, String]): BootResult[Unit] =
-    BootResult
-      .noData(
-        GameConfig(
-          viewport = GameViewport(viewportWidth, viewportHeight),
-          frameRate = targetFPS,
-          clearColor = RGBA(0.4, 0.2, 0.5, 1),
-          magnification = magnificationLevel,
-          advanced = AdvancedGameConfig(
-            renderingTechnology = RenderingTechnology.WebGL2,
-            antiAliasing = false,
-            batchSize = 512,
-            disableSkipModelUpdates = true,
-            disableSkipViewUpdates = true
+  def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
+    Outcome {
+      BootResult
+        .noData(
+          GameConfig(
+            viewport = GameViewport(viewportWidth, viewportHeight),
+            frameRate = targetFPS,
+            clearColor = RGBA(0.4, 0.2, 0.5, 1),
+            magnification = magnificationLevel,
+            advanced = AdvancedGameConfig(
+              renderingTechnology = RenderingTechnology.WebGL2,
+              antiAliasing = false,
+              batchSize = 512,
+              disableSkipModelUpdates = true,
+              disableSkipViewUpdates = true
+            )
           )
         )
-      )
-      .withAssets(PerfAssets.assets)
-      .withFonts(PerfView.fontInfo)
-      .withSubSystems(FPSCounter(PerfView.fontKey, Point(10, 565), targetFPS))
+        .withAssets(PerfAssets.assets)
+        .withFonts(PerfView.fontInfo)
+        .withSubSystems(FPSCounter(PerfView.fontKey, Point(10, 565), targetFPS))
+    }
 
-  def initialModel(startupData: Dude): DudeModel =
-    PerfModel.initialModel(startupData)
+  def initialModel(startupData: Dude): Outcome[DudeModel] =
+    Outcome(PerfModel.initialModel(startupData))
 
-  def initialViewModel(startupData: Dude, model: DudeModel): Unit =
-    ()
+  def initialViewModel(startupData: Dude, model: DudeModel): Outcome[Unit] =
+    Outcome(())
 
-  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[Dude] = {
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Dude]] = {
     def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[Dude] =
       Startup
         .Success(
@@ -79,7 +81,7 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
       spriteAndAnimations <- aseprite.toSpriteAndAnimations(dice, PerfAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)
 
-    res.getOrElse(Startup.Failure("Failed to load the dude"))
+    Outcome(res.getOrElse(Startup.Failure("Failed to load the dude")))
   }
 
   def updateModel(context: FrameContext[Dude], model: DudeModel): GlobalEvent => Outcome[DudeModel] =

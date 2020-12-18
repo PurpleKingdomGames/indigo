@@ -18,13 +18,13 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
 
   def eventFilters: EventFilters
 
-  def boot(flags: Map[String, String]): BootResult[BootData]
+  def boot(flags: Map[String, String]): Outcome[BootResult[BootData]]
 
-  def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Startup[StartUpData]
+  def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[StartUpData]]
 
-  def initialModel(startupData: StartUpData): Model
+  def initialModel(startupData: StartUpData): Outcome[Model]
 
-  def initialViewModel(startupData: StartUpData, model: Model): ViewModel
+  def initialViewModel(startupData: StartUpData, model: Model): Outcome[ViewModel]
 
   def updateModel(context: FrameContext[StartUpData], model: Model): GlobalEvent => Outcome[Model]
 
@@ -33,10 +33,10 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
   def present(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): Outcome[SceneUpdateFragment]
 
   private val subSystemsRegister: SubSystemsRegister =
-    new SubSystemsRegister(Nil)
+    new SubSystemsRegister()
 
   private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartUpData, Model, ViewModel] = {
-    subSystemsRegister.register(bootUp.subSystems.toList)
+    val subSystemEvents = subSystemsRegister.register(bootUp.subSystems.toList)
 
     val frameProcessor: StandardFrameProcessor[StartUpData, Model, ViewModel] =
       new StandardFrameProcessor(
@@ -53,14 +53,21 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
       (ac: AssetCollection) => (d: Dice) => setup(bootUp.bootData, ac, d),
       (sd: StartUpData) => initialModel(sd),
       (sd: StartUpData) => (m: Model) => initialViewModel(sd, m),
-      frameProcessor
+      frameProcessor,
+      subSystemEvents
     )
   }
 
-  // // @SuppressWarnings(Array("org.wartremover.warts.GlobalExecutionContext"))
-  final protected def ready(flags: Map[String, String]): Unit = {
-    val b = boot(flags)
-    indigoGame(b).start(b.gameConfig, Future(None), b.assets, Future(Set()))
+  // @SuppressWarnings(Array("org.wartremover.warts.GlobalExecutionContext"))
+  final protected def ready(flags: Map[String, String]): Unit =
+    boot(flags) match {
+      case oe @ Outcome.Error(e, _) =>
+        IndigoLogger.error("Error during boot - Halting")
+        IndigoLogger.error(oe.reportCrash)
+        throw e
+
+      case Outcome.Result(b, evts) =>
+        indigoGame(b).start(b.gameConfig, Future(None), b.assets, Future(Set()), evts)
   }
 
 }

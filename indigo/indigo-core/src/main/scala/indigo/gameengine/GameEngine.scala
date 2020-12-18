@@ -6,6 +6,7 @@ import indigo.shared.config.GameConfig
 import indigo.shared.assets.AssetType
 import indigo.shared.IndigoLogger
 import indigo.shared.Startup
+import indigo.shared.Outcome
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 import indigo.platform.assets._
@@ -21,20 +22,19 @@ import scala.concurrent.Future
 
 import indigo.platform.storage.Storage
 import indigo.shared.input.GamepadInputCapture
-import scala.util.Try
-import scala.util.Success
-import scala.util.Failure
 import indigo.shared.BoundaryLocator
 import indigo.shared.platform.SceneProcessor
 import indigo.shared.dice.Dice
+import indigo.shared.events.GlobalEvent
 
 final class GameEngine[StartUpData, GameModel, ViewModel](
     fonts: Set[FontInfo],
     animations: Set[Animation],
-    initialise: AssetCollection => Dice => Startup[StartUpData],
-    initialModel: StartUpData => GameModel,
-    initialViewModel: StartUpData => GameModel => ViewModel,
-    frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel]
+    initialise: AssetCollection => Dice => Outcome[Startup[StartUpData]],
+    initialModel: StartUpData => Outcome[GameModel],
+    initialViewModel: StartUpData => GameModel => Outcome[ViewModel],
+    frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel],
+    initialisationEvents: List[GlobalEvent]
 ) {
 
   val animationsRegister: AnimationsRegister =
@@ -77,7 +77,8 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
       config: GameConfig,
       configAsync: Future[Option[GameConfig]],
       assets: Set[AssetType],
-      assetsAsync: Future[Set[AssetType]]
+      assetsAsync: Future[Set[AssetType]],
+      bootEvents: List[GlobalEvent]
   ): Unit = {
 
     IndigoLogger.info("Starting Indigo")
@@ -85,6 +86,10 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
     storage = Storage.default
     globalEventStream = new GlobalEventStream(rebuildGameLoop(false), audioPlayer, storage, platform)
     gamepadInputCapture = GamepadInputCaptureImpl()
+
+    // Intialisation / Boot events
+    initialisationEvents.foreach(globalEventStream.pushGlobalEvent)
+    bootEvents.foreach(globalEventStream.pushGlobalEvent)
 
     // Arrange config
     configAsync.map(_.getOrElse(config)).foreach { gc =>
@@ -127,50 +132,68 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
       platform = new Platform(gameConfig, accumulatedAssetCollection, globalEventStream)
 
-      val startupData: Startup[StartUpData] =
-        initialise(accumulatedAssetCollection)(Dice.fromSeed(time))
+      initialise(accumulatedAssetCollection)(Dice.fromSeed(time)) match {
+        case oe @ Outcome.Error(error, _) =>
+          IndigoLogger.error(if (firstRun) "Error during first initialisation - Halting." else "Error during re-initialisation - Halting.")
+          IndigoLogger.error("Crash report (if available):")
+          IndigoLogger.error(oe.reportCrash)
+          throw error
 
-      startupData.startUpEvents.foreach(globalEventStream.pushGlobalEvent)
+        case Outcome.Result(startupData, globalEvents) =>
+          globalEvents.foreach(globalEventStream.pushGlobalEvent)
 
-      GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
+          GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
 
-      GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
+          GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
 
-      val loop: Try[Long => Long => Unit] =
-        for {
-          rendererAndAssetMapping <- platform.initialise()
-          startUpSuccessData      <- GameEngine.initialisedGame(startupData)
-          initialisedGameLoop <- GameEngine.initialiseGameLoop(
-            this,
-            boundaryLocator,
-            sceneProcessor,
-            gameConfig,
-            if (firstRun) initialModel(startUpSuccessData) else gameLoopInstance.gameModelState,
-            if (firstRun) initialViewModel(startUpSuccessData) else (_: GameModel) => gameLoopInstance.viewModelState,
-            frameProccessor
-          )
-        } yield {
-          renderer = rendererAndAssetMapping._1
-          assetMapping = rendererAndAssetMapping._2
-          gameLoopInstance = initialisedGameLoop
-          startUpData = startUpSuccessData
-          initialisedGameLoop.loop
-        }
+          def modelToUse(startUpSuccessData: => StartUpData): Outcome[GameModel] =
+            if (firstRun) initialModel(startUpSuccessData)
+            else Outcome(gameLoopInstance.gameModelState)
 
-      loop match {
-        case Success(firstTick) =>
-          IndigoLogger.info("Starting main loop, there will be no more info log messages.")
-          IndigoLogger.info("You may get first occurrence error logs.")
+          def viewModelToUse(startUpSuccessData: => StartUpData, m: GameModel): Outcome[GameModel => ViewModel] =
+            if (firstRun) initialViewModel(startUpSuccessData)(m).map(vm => (_: GameModel) => vm)
+            else Outcome((_: GameModel) => gameLoopInstance.viewModelState)
 
-          gameLoop = firstTick
+          val loop: Outcome[Long => Long => Unit] =
+            for {
+              rendererAndAssetMapping <- platform.initialise()
+              startUpSuccessData      <- GameEngine.initialisedGame(startupData)
+              m                       <- modelToUse(startUpSuccessData)
+              vm                      <- viewModelToUse(startUpSuccessData, m)
+              initialisedGameLoop <- GameEngine.initialiseGameLoop(
+                this,
+                boundaryLocator,
+                sceneProcessor,
+                gameConfig,
+                m,
+                vm,
+                frameProccessor
+              )
+            } yield {
+              renderer = rendererAndAssetMapping._1
+              assetMapping = rendererAndAssetMapping._2
+              gameLoopInstance = initialisedGameLoop
+              startUpData = startUpSuccessData
+              initialisedGameLoop.loop
+            }
 
-          ()
+          loop match {
+            case Outcome.Result(firstTick, events) =>
+              IndigoLogger.info("Starting main loop, there will be no more info log messages.")
+              IndigoLogger.info("You may get first occurrence error logs.")
 
-        case Failure(e) =>
-          IndigoLogger.error("Error during startup")
-          IndigoLogger.error(e.getMessage)
+              events.foreach(globalEventStream.pushGlobalEvent)
 
-          ()
+              gameLoop = firstTick
+
+              ()
+
+            case oe @ Outcome.Error(e, _) =>
+              IndigoLogger.error(if (firstRun) "Error during startup" else "Error during reinitialisation")
+              IndigoLogger.error(oe.reportCrash)
+              throw e
+          }
+
       }
     }
 
@@ -184,16 +207,16 @@ object GameEngine {
   def registerFonts(fontRegister: FontRegister, fonts: Set[FontInfo]): Unit =
     fonts.foreach(fontRegister.register)
 
-  def initialisedGame[StartUpData](startupData: Startup[StartUpData]): Try[StartUpData] =
+  def initialisedGame[StartUpData](startupData: Startup[StartUpData]): Outcome[StartUpData] =
     startupData match {
       case e: Startup.Failure =>
         IndigoLogger.info("Game initialisation failed")
         IndigoLogger.info(e.report)
-        Failure[StartUpData](new Exception("Game aborted due to start up failure"))
+        Outcome.raiseError(new Exception("Game aborted due to start up failure"))
 
       case x: Startup.Success[_] =>
         IndigoLogger.info("Game initialisation succeeded")
-        Success(x.success)
+        Outcome(x.success)
     }
 
   def initialiseGameLoop[StartUpData, GameModel, ViewModel](
@@ -204,8 +227,8 @@ object GameEngine {
       initialModel: GameModel,
       initialViewModel: GameModel => ViewModel,
       frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel]
-  ): Try[GameLoop[StartUpData, GameModel, ViewModel]] =
-    Success(
+  ): Outcome[GameLoop[StartUpData, GameModel, ViewModel]] =
+    Outcome(
       new GameLoop[StartUpData, GameModel, ViewModel](
         boundaryLocator,
         sceneProcessor,

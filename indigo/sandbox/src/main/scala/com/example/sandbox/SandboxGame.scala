@@ -21,7 +21,7 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
 
   val eventFilters: EventFilters = EventFilters.Default
 
-  def boot(flags: Map[String, String]): BootResult[SandboxBootData] = {
+  def boot(flags: Map[String, String]): Outcome[BootResult[SandboxBootData]] = {
     val gameViewport =
       (flags.get("width"), flags.get("height")) match {
         case (Some(w), Some(h)) =>
@@ -31,20 +31,22 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
           GameViewport(viewportWidth, viewportHeight)
       }
 
-    BootResult(
-      GameConfig(
-        viewport = gameViewport,
-        frameRate = targetFPS,
-        clearColor = RGBA(0.4, 0.2, 0.5, 1),
-        magnification = magnificationLevel
-      ),
-      SandboxBootData(flags.getOrElse("key", "No entry for 'key'."))
-    ).withAssets(SandboxAssets.assets)
-      .withFonts(SandboxView.fontInfo)
-      .withSubSystems(FPSCounter(SandboxView.fontKey, Point(3, 100), targetFPS))
+    Outcome(
+      BootResult(
+        GameConfig(
+          viewport = gameViewport,
+          frameRate = targetFPS,
+          clearColor = RGBA(0.4, 0.2, 0.5, 1),
+          magnification = magnificationLevel
+        ),
+        SandboxBootData(flags.getOrElse("key", "No entry for 'key'."))
+      ).withAssets(SandboxAssets.assets)
+        .withFonts(SandboxView.fontInfo)
+        .withSubSystems(FPSCounter(SandboxView.fontKey, Point(3, 100), targetFPS))
+    )
   }
 
-  def setup(bootData: SandboxBootData, assetCollection: AssetCollection, dice: Dice): Startup[SandboxStartupData] = {
+  def setup(bootData: SandboxBootData, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[SandboxStartupData]] = {
     println(bootData.message)
 
     def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[SandboxStartupData] =
@@ -68,23 +70,25 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
       spriteAndAnimations <- aseprite.toSpriteAndAnimations(dice, SandboxAssets.dudeName)
     } yield makeStartupData(aseprite, spriteAndAnimations)
 
-    res.getOrElse(Startup.Failure("Failed to load the dude"))
+    Outcome(res.getOrElse(Startup.Failure("Failed to load the dude")))
   }
 
-  def initialModel(startupData: SandboxStartupData): SandboxGameModel =
-    SandboxModel.initialModel(startupData)
+  def initialModel(startupData: SandboxStartupData): Outcome[SandboxGameModel] =
+    Outcome(SandboxModel.initialModel(startupData))
 
-  def initialViewModel(startupData: SandboxStartupData, model: SandboxGameModel): SandboxViewModel = {
+  def initialViewModel(startupData: SandboxStartupData, model: SandboxGameModel): Outcome[SandboxViewModel] = {
     val assets =
       new InputFieldAssets(
         Text("placeholder", 0, 0, 0, SandboxView.fontKey).alignLeft,
         Graphic(0, 0, 16, 16, 2, Material.Textured(SandboxAssets.smallFontName)).withCrop(188, 78, 14, 23).withTint(0, 0, 1)
       )
 
-    SandboxViewModel(
-      Point.zero,
-      InputField("single", assets).withKey(BindingKey("single")).makeSingleLine,
-      InputField("multi\nline", assets).withKey(BindingKey("multi")).makeMultiLine
+    Outcome(
+      SandboxViewModel(
+        Point.zero,
+        InputField("single", assets).withKey(BindingKey("single")).makeSingleLine,
+        InputField("multi\nline", assets).withKey(BindingKey("multi")).makeMultiLine
+      )
     )
   }
 

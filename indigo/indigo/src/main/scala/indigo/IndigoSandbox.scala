@@ -22,9 +22,9 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher {
 
   val animations: Set[Animation]
 
-  def setup(assetCollection: AssetCollection, dice: Dice): Startup[StartUpData]
+  def setup(assetCollection: AssetCollection, dice: Dice): Outcome[Startup[StartUpData]]
 
-  def initialModel(startupData: StartUpData): Model
+  def initialModel(startupData: StartUpData): Outcome[Model]
 
   def updateModel(context: FrameContext[StartUpData], model: Model): GlobalEvent => Outcome[Model]
 
@@ -37,7 +37,7 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher {
 
     val frameProcessor: StandardFrameProcessor[StartUpData, Model, Unit] =
       new StandardFrameProcessor(
-        new SubSystemsRegister(Nil),
+        new SubSystemsRegister(),
         EventFilters.Default,
         (ctx, m) => (e: GlobalEvent) => updateModel(ctx, m)(e),
         updateViewModel,
@@ -49,13 +49,14 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher {
       animations,
       (ac: AssetCollection) => (d: Dice) => setup(ac, d),
       (sd: StartUpData) => initialModel(sd),
-      (_: StartUpData) => (_: Model) => (),
-      frameProcessor
+      (_: StartUpData) => (_: Model) => Outcome(()),
+      frameProcessor,
+      Nil
     )
   }
 
   // @SuppressWarnings(Array("org.wartremover.warts.GlobalExecutionContext"))
   final protected def ready(flags: Map[String, String]): Unit =
-    indigoGame.start(config, Future(None), assets, Future(Set()))
+    indigoGame.start(config, Future(None), assets, Future(Set()), Nil)
 
 }

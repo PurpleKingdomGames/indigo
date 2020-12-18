@@ -4,6 +4,7 @@ import indigo.platform.renderer.Renderer
 import indigo.platform.events.GlobalEventStream
 import indigo.shared.config.GameConfig
 import indigo.shared.IndigoLogger
+import indigo.shared.Outcome
 import indigo.shared.datatypes.Vector2
 import indigo.platform.renderer.RendererInitialiser
 import indigo.platform.renderer.shared.LoadedTextureAsset
@@ -19,7 +20,6 @@ import indigo.platform.assets.ImageRef
 
 import org.scalajs.dom
 import org.scalajs.dom.html.Canvas
-import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
 import indigo.facades.FullScreenElement
@@ -40,7 +40,7 @@ class Platform(
   // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
   private var _canvas: Canvas = null
 
-  def initialise(): Try[(Renderer, AssetMapping)] =
+  def initialise(): Outcome[(Renderer, AssetMapping)] =
     for {
       textureAtlas        <- createTextureAtlas(assetCollection)
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
@@ -60,8 +60,8 @@ class Platform(
     ()
   }
 
-  def createTextureAtlas(assetCollection: AssetCollection): Try[TextureAtlas] =
-    Success(
+  def createTextureAtlas(assetCollection: AssetCollection): Outcome[TextureAtlas] =
+    Outcome(
       TextureAtlas.create(
         assetCollection.images.map(i => ImageRef(i.name, i.data.width, i.data.height, i.tag.map(_.value))),
         (name: String) => assetCollection.images.find(_.name.value == name),
@@ -69,15 +69,15 @@ class Platform(
       )
     )
 
-  def extractLoadedTextures(textureAtlas: TextureAtlas): Try[List[LoadedTextureAsset]] =
-    Success(
+  def extractLoadedTextures(textureAtlas: TextureAtlas): Outcome[List[LoadedTextureAsset]] =
+    Outcome(
       textureAtlas.atlases.toList
         .map(a => a._2.imageData.map(data => new LoadedTextureAsset(a._1.id, data)))
         .collect { case Some(s) => s }
     )
 
-  def setupAssetMapping(textureAtlas: TextureAtlas): Try[AssetMapping] =
-    Success(
+  def setupAssetMapping(textureAtlas: TextureAtlas): Outcome[AssetMapping] =
+    Outcome(
       new AssetMapping(
         mappings = textureAtlas.legend
           .map { p =>
@@ -90,13 +90,13 @@ class Platform(
       )
     )
 
-  def createCanvas(gameConfig: GameConfig): Try[Canvas] =
+  def createCanvas(gameConfig: GameConfig): Outcome[Canvas] =
     Option(dom.document.getElementById("indigo-container")) match {
       case None =>
-        Failure[Canvas](new Exception("""Parent element "indigo-container" could not be found on page."""))
+        Outcome.raiseError(new Exception("""Parent element "indigo-container" could not be found on page."""))
 
       case Some(parent) =>
-        Success(
+        Outcome(
           rendererInit.createCanvas(
             gameConfig.viewport.width,
             gameConfig.viewport.height,
@@ -105,8 +105,8 @@ class Platform(
         )
     }
 
-  def listenToWorldEvents(canvas: Canvas, magnification: Int, globalEventStream: GlobalEventStream): Try[Unit] =
-    Success {
+  def listenToWorldEvents(canvas: Canvas, magnification: Int, globalEventStream: GlobalEventStream): Outcome[Unit] =
+    Outcome {
       IndigoLogger.info("Starting world events")
       WorldEvents.init(canvas, magnification, globalEventStream)
       GamepadInputCaptureImpl.init()
@@ -116,8 +116,8 @@ class Platform(
       gameConfig: GameConfig,
       loadedTextureAssets: List[LoadedTextureAsset],
       canvas: Canvas
-  ): Try[Renderer] =
-    Success {
+  ): Outcome[Renderer] =
+    Outcome {
       IndigoLogger.info("Starting renderer")
       rendererInit.setup(
         new RendererConfig(

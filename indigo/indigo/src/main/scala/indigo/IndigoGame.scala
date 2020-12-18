@@ -17,14 +17,6 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
 
   /**
     * A non-empty ordered list of scenes
-    * @param flags A simply key-value object/map passed in during initial boot.
-    * @return Bootup data consisting of a custom data type, animations, subsytems,
-    *         assets, fonts, and the games config.
-    */
-  def boot(flags: Map[String, String]): BootResult[BootData]
-
-  /**
-    * A non-empty ordered list of scenes
     * @param bootData Data created during initial game boot.
     * @return A list of scenes that ensures at least one scene exists.
     */
@@ -40,6 +32,14 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
   def initialScene(bootData: BootData): Option[SceneName]
 
   /**
+    * A non-empty ordered list of scenes
+    * @param flags A simply key-value object/map passed in during initial boot.
+    * @return Bootup data consisting of a custom data type, animations, subsytems,
+    *         assets, fonts, and the games config.
+    */
+  def boot(flags: Map[String, String]): Outcome[BootResult[BootData]]
+
+  /**
     * The `setup` function is your only opportunity to do an initial work
     * to set up your game. For example, perhaps one of your assets was a
     * JSON description of a map or an animation sequence, you could process
@@ -53,27 +53,27 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
     * @return Either an `Startup.Success[...your startup data...]` or a
     *         `Startup.Failure[StartupErrors]`.
     */
-  def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Startup[StartUpData]
+  def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[StartUpData]]
 
   /**
     * Set up of your initial model
     * @param startupData Access to Startup data in case you need it for the model
     * @return An instance of your game model
     */
-  def initialModel(startupData: StartUpData): Model
+  def initialModel(startupData: StartUpData): Outcome[Model]
 
   /**
     * Set up of your initial view model
     * @param startupData Access to Startup data in case you need it for the view model
     * @return An instance of your game's view model
     */
-  def initialViewModel(startupData: StartUpData, model: Model): ViewModel
+  def initialViewModel(startupData: StartUpData, model: Model): Outcome[ViewModel]
 
   private val subSystemsRegister: SubSystemsRegister =
-    new SubSystemsRegister(Nil)
+    new SubSystemsRegister()
 
   private def indigoGame(bootUp: BootResult[BootData]): GameEngine[StartUpData, Model, ViewModel] = {
-    subSystemsRegister.register(bootUp.subSystems.toList)
+    val subSystemEvents = subSystemsRegister.register(bootUp.subSystems.toList)
 
     val sceneManager: SceneManager[StartUpData, Model, ViewModel] = {
       val s = scenes(bootUp.bootData)
@@ -100,14 +100,21 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
       (ac: AssetCollection) => (d: Dice) => setup(bootUp.bootData, ac, d),
       (sd: StartUpData) => initialModel(sd),
       (sd: StartUpData) => (m: Model) => initialViewModel(sd, m),
-      frameProcessor
+      frameProcessor,
+      subSystemEvents
     )
   }
 
   // @SuppressWarnings(Array("org.wartremover.warts.GlobalExecutionContext"))
-  final protected def ready(flags: Map[String, String]): Unit = {
-    val b = boot(flags)
-    indigoGame(b).start(b.gameConfig, Future(None), b.assets, Future(Set()))
-  }
+  final protected def ready(flags: Map[String, String]): Unit =
+    boot(flags) match {
+      case oe @ Outcome.Error(e, _) =>
+        IndigoLogger.error("Error during boot - Halting")
+        IndigoLogger.error(oe.reportCrash)
+        throw e
+
+      case Outcome.Result(b, evts) =>
+        indigoGame(b).start(b.gameConfig, Future(None), b.assets, Future(Set()), evts)
+    }
 
 }

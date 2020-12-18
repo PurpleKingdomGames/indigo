@@ -35,8 +35,8 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
       None
   }
 
-  val initialModel: AutomataState =
-    AutomataState(0, Nil)
+  val initialModel: Outcome[AutomataState] =
+    Outcome(AutomataState(0, Nil))
 
   // @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def update(frameContext: SubSystemFrameContext, state: AutomataState): AutomataEvent => Outcome[AutomataState] = {
