@@ -30,11 +30,11 @@ object EffectsExample extends IndigoSandbox[Unit, Unit] {
   val animations: Set[Animation] =
     Set()
 
-  def setup(assetCollection: AssetCollection, dice: Dice): Startup[Unit] =
-    Startup.Success(())
+  def setup(assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
+    Outcome(Startup.Success(()))
 
-  def initialModel(startupData: Unit): Unit =
-    ()
+  def initialModel(startupData: Unit): Outcome[Unit] =
+    Outcome(())
 
   def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(())
@@ -44,44 +44,46 @@ object EffectsExample extends IndigoSandbox[Unit, Unit] {
       .withRef(20, 20)
       .moveTo(config.viewport.giveDimensions(config.magnification).center + Point(0, -25))
 
-  def present(context: FrameContext[Unit], model: Unit): SceneUpdateFragment =
-    SceneUpdateFragment.empty
-      .addGameLayerNodes(
-        graphic
-          .withTint(RGBA.Magenta),
-        graphic
-          .moveBy(-60, 0)
-          .withOverlay(Overlay.Color(RGBA.Magenta.withAmount(0.75))),
-        graphic
-          .moveBy(-30, 0)
-          .withOverlay(
-            Overlay.LinearGradiant(Point.zero, RGBA.Magenta, Point(64, 64), RGBA.Cyan.withAmount(0.5))
-          ),
-        graphic
-          .moveBy(30, 0)
-          .withBorder(Border(RGBA.Yellow, Thickness.Thick, Thickness.None)),
-        graphic
-          .moveBy(60, 0)
-          .withBorder(Border(RGBA.Red, Thickness.None, Thickness.Thick)),
-        graphic
-          .moveBy(-60, 50)
-          .withBorder(Border(RGBA(1.0, 0.5, 0.0, 1.0), Thickness.Thick, Thickness.Thick)),
-        graphic
-          .moveBy(0, 50)
-          .withGlow(Glow(RGBA.Green, 2.0, 0.0)),
-        graphic
-          .moveBy(-30, 50)
-          .withGlow(Glow(RGBA.Blue, 0.0, 2.0)),
-        graphic
-          .moveBy(30, 50)
-          .withGlow(Glow(RGBA.Cyan, 2.0, 2.0)),
-        graphic
-          .withRef(32, 32)
-          .moveBy(48, 39)
-          .withAlpha(0.5)
-          .flipHorizontal(true)
-          .flipVertical(true)
-      )
+  def present(context: FrameContext[Unit], model: Unit): Outcome[SceneUpdateFragment] =
+    Outcome(
+      SceneUpdateFragment.empty
+        .addGameLayerNodes(
+          graphic
+            .withTint(RGBA.Magenta),
+          graphic
+            .moveBy(-60, 0)
+            .withOverlay(Overlay.Color(RGBA.Magenta.withAmount(0.75))),
+          graphic
+            .moveBy(-30, 0)
+            .withOverlay(
+              Overlay.LinearGradiant(Point.zero, RGBA.Magenta, Point(64, 64), RGBA.Cyan.withAmount(0.5))
+            ),
+          graphic
+            .moveBy(30, 0)
+            .withBorder(Border(RGBA.Yellow, Thickness.Thick, Thickness.None)),
+          graphic
+            .moveBy(60, 0)
+            .withBorder(Border(RGBA.Red, Thickness.None, Thickness.Thick)),
+          graphic
+            .moveBy(-60, 50)
+            .withBorder(Border(RGBA(1.0, 0.5, 0.0, 1.0), Thickness.Thick, Thickness.Thick)),
+          graphic
+            .moveBy(0, 50)
+            .withGlow(Glow(RGBA.Green, 2.0, 0.0)),
+          graphic
+            .moveBy(-30, 50)
+            .withGlow(Glow(RGBA.Blue, 0.0, 2.0)),
+          graphic
+            .moveBy(30, 50)
+            .withGlow(Glow(RGBA.Cyan, 2.0, 2.0)),
+          graphic
+            .withRef(32, 32)
+            .moveBy(48, 39)
+            .withAlpha(0.5)
+            .flipHorizontal(true)
+            .flipVertical(true)
+        )
+    )
 }
 
 object EffectsAssets {

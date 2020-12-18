@@ -10,34 +10,37 @@ object InputFieldExample extends IndigoDemo[Unit, Unit, Unit, MyViewModel] {
 
   val eventFilters: EventFilters = EventFilters.Default
 
-  def boot(flags: Map[String, String]): BootResult[Unit] =
-    BootResult
-      .noData(defaultGameConfig.withClearColor(RGBA.fromHexString("0xAA3399")))
-      .withAssets(AssetType.Image(FontStuff.fontName, AssetPath("assets/boxy_font.png")))
-      .withFonts(FontStuff.fontInfo)
-
-  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[Unit] =
-    Startup.Success(())
-
-  def initialModel(startupData: Unit): Unit =
-    ()
-
-  def initialViewModel(startupData: Unit, model: Unit): MyViewModel = {
-    val assets =
-      InputFieldAssets(
-        Text("placeholder", 0, 0, 0, FontStuff.fontKey).alignLeft,
-        Graphic(0, 0, 16, 16, 2, Material.Textured(FontStuff.fontName)).withCrop(188, 78, 14, 23).withTint(0, 0, 1)
-      )
-
-    MyViewModel(
-      InputField("Single line", assets).makeSingleLine.moveTo(Point(10, 10)),
-      InputField("Multi\nline", assets).makeMultiLine
-        .withKey(BindingKey("test input field")) // On change events are only emitted with a key is set
-        .moveTo(Point(10, 50))
-        .withFocusActions(MyInputFieldEvent("got focus"))
-        .withLoseFocusActions(MyInputFieldEvent("lost focus"))
+  def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
+    Outcome(
+      BootResult
+        .noData(defaultGameConfig.withClearColor(RGBA.fromHexString("0xAA3399")))
+        .withAssets(AssetType.Image(FontStuff.fontName, AssetPath("assets/boxy_font.png")))
+        .withFonts(FontStuff.fontInfo)
     )
-  }
+
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
+    Outcome(Startup.Success(()))
+
+  def initialModel(startupData: Unit): Outcome[Unit] =
+    Outcome(())
+
+  def initialViewModel(startupData: Unit, model: Unit): Outcome[MyViewModel] =
+    Outcome {
+      val assets =
+        InputFieldAssets(
+          Text("placeholder", 0, 0, 0, FontStuff.fontKey).alignLeft,
+          Graphic(0, 0, 16, 16, 2, Material.Textured(FontStuff.fontName)).withCrop(188, 78, 14, 23).withTint(0, 0, 1)
+        )
+
+      MyViewModel(
+        InputField("Single line", assets).makeSingleLine.moveTo(Point(10, 10)),
+        InputField("Multi\nline", assets).makeMultiLine
+          .withKey(BindingKey("test input field")) // On change events are only emitted with a key is set
+          .moveTo(Point(10, 50))
+          .withFocusActions(MyInputFieldEvent("got focus"))
+          .withLoseFocusActions(MyInputFieldEvent("lost focus"))
+      )
+    }
 
   def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] = {
     case InputFieldChange(key, updatedText) =>
@@ -64,7 +67,7 @@ object InputFieldExample extends IndigoDemo[Unit, Unit, Unit, MyViewModel] {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw"))
-  def present(context: FrameContext[Unit], model: Unit, viewModel: MyViewModel): SceneUpdateFragment = {
+  def present(context: FrameContext[Unit], model: Unit, viewModel: MyViewModel): Outcome[SceneUpdateFragment] = {
 
     val single = viewModel.singleLine.draw(
       context.gameTime,
@@ -76,7 +79,7 @@ object InputFieldExample extends IndigoDemo[Unit, Unit, Unit, MyViewModel] {
       context.boundaryLocator
     )
 
-    single |+| multi
+    Outcome(single |+| multi)
 
   }
 

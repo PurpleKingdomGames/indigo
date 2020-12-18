@@ -16,13 +16,15 @@ object RadioButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMode
   val radioButtonGraphic: AssetName = AssetName("graphics")
   val backgroundGraphic: AssetName  = AssetName("background")
 
-  def boot(flags: Map[String, String]): BootResult[Unit] =
-    BootResult
-      .noData(defaultGameConfig)
-      .withAssets(
-        AssetType.Image(radioButtonGraphic, AssetPath("assets/radio-example.png")),
-        AssetType.Image(backgroundGraphic, AssetPath("assets/background.png"))
-      )
+  def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
+    Outcome(
+      BootResult
+        .noData(defaultGameConfig)
+        .withAssets(
+          AssetType.Image(radioButtonGraphic, AssetPath("assets/radio-example.png")),
+          AssetType.Image(backgroundGraphic, AssetPath("assets/background.png"))
+        )
+    )
 
   val buttonAssets: ButtonAssets =
     ButtonAssets(
@@ -34,26 +36,28 @@ object RadioButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMode
   val background: Graphic =
     Graphic(0, 0, 66, 26, 3, Material.Textured(AssetName("background")))
 
-  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[Unit] =
-    Startup.Success(())
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
+    Outcome(Startup.Success(()))
 
-  def initialModel(startupData: Unit): MyGameModel =
-    MyGameModel(RGBA.Black)
+  def initialModel(startupData: Unit): Outcome[MyGameModel] =
+    Outcome(MyGameModel(RGBA.Black))
 
-  def initialViewModel(startupData: Unit, model: MyGameModel): MyViewModel =
+  def initialViewModel(startupData: Unit, model: MyGameModel): Outcome[MyViewModel] =
     // Create three radio option buttons, each firing an event to tint the background differently
     // Group the radio buttons and present them using loaded graphics
     // Button option1 is selected initially
-    MyViewModel(
-      RadioButtonGroup(buttonAssets, 16, 16)
-        .withRadioButtons(
-          RadioButton(Point(5, 5))
-            .withSelectedActions(MyRadioButtonEvent(RGBA.Red))
-            .selected,
-          RadioButton(Point(25, 5)).withSelectedActions(MyRadioButtonEvent(RGBA.Green)),
-          RadioButton(Point(45, 5)).withSelectedActions(MyRadioButtonEvent(RGBA.Blue))
-        ),
-      background
+    Outcome(
+      MyViewModel(
+        RadioButtonGroup(buttonAssets, 16, 16)
+          .withRadioButtons(
+            RadioButton(Point(5, 5))
+              .withSelectedActions(MyRadioButtonEvent(RGBA.Red))
+              .selected,
+            RadioButton(Point(25, 5)).withSelectedActions(MyRadioButtonEvent(RGBA.Green)),
+            RadioButton(Point(45, 5)).withSelectedActions(MyRadioButtonEvent(RGBA.Blue))
+          ),
+        background
+      )
     )
 
   def updateModel(context: FrameContext[Unit], model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
@@ -78,8 +82,10 @@ object RadioButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewMode
       Outcome(viewModel)
   }
 
-  def present(context: FrameContext[Unit], model: MyGameModel, viewModel: MyViewModel): SceneUpdateFragment =
-    SceneUpdateFragment(viewModel.radioButtons.draw, viewModel.background.withTint(model.tint))
+  def present(context: FrameContext[Unit], model: MyGameModel, viewModel: MyViewModel): Outcome[SceneUpdateFragment] =
+    Outcome(
+      SceneUpdateFragment(viewModel.radioButtons.draw, viewModel.background.withTint(model.tint))
+    )
 }
 
 // The game model says how to tint the background

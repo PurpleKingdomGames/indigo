@@ -41,11 +41,11 @@ object LightingGame extends IndigoSandbox[Unit, Unit] {
       )
     )
 
-  def setup(assetCollection: AssetCollection, dice: Dice): Startup[Unit] =
-    Startup.Success(())
+  def setup(assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
+    Outcome(Startup.Success(()))
 
-  def initialModel(startupData: Unit): Unit =
-    ()
+  def initialModel(startupData: Unit): Outcome[Unit] =
+    Outcome(())
 
   def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(())
@@ -71,43 +71,45 @@ object LightingGame extends IndigoSandbox[Unit, Unit] {
         .withColor(RGB.Cyan)
     }
 
-  def present(context: FrameContext[Unit], model: Unit): SceneUpdateFragment =
-    SceneUpdateFragment.empty
-      .addGameLayerNodes(
-        graphic,
-        graphic.moveBy(-60, 0).withMaterial(LightingAssets.junctionBoxMaterialOff),
-        graphic.moveBy(-30, 0).withMaterial(LightingAssets.junctionBoxMaterialGlass),
-        graphic.moveBy(30, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat),
-        graphic.moveBy(60, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat.unlit)
-      )
-      .withAmbientLight(RGBA.White.withAmount(0.1))
-      .withLights(
-        // PointLight.default
-        //   .moveTo(config.viewport.center + Point(50, 0))
-        //   .withAttenuation(50)
-        //   .withColor(RGB.Green),
-        // PointLight.default
-        //   .moveTo(config.viewport.center + Point(-50, 0))
-        //   .withAttenuation(50)
-        //   .withColor(RGB.Red),
-        orbitingLight(120).affectTime(0.25).at(context.gameTime.running),
-        pulsingLight.affectTime(0.5).at(context.gameTime.running)
-        // DirectionLight(30, RGB.Green, 1.2, Radians.fromDegrees(30)),
-        // SpotLight.default
-        //   .withColor(RGB.Yellow)
-        //   .moveTo(config.viewport.center + Point(-150, -60))
-        //   .rotateBy(Radians.fromDegrees(45))
-        //   .withHeight(25)
-        //   .withPower(1.5)
-      )
-      .addGameLayerNodes(
-        Sprite(BindingKey("lights animation"), 0, 0, 1, animationsKey).play()
-      )
-  // .addGameLayerNodes(
-  //   graphic
-  //     .moveTo(config.viewport.giveDimensions(config.magnification).center.x, 30)
-  //     .withCrop(10, 10, 20, 20)
-  // )
+  def present(context: FrameContext[Unit], model: Unit): Outcome[SceneUpdateFragment] =
+    Outcome(
+      SceneUpdateFragment.empty
+        .addGameLayerNodes(
+          graphic,
+          graphic.moveBy(-60, 0).withMaterial(LightingAssets.junctionBoxMaterialOff),
+          graphic.moveBy(-30, 0).withMaterial(LightingAssets.junctionBoxMaterialGlass),
+          graphic.moveBy(30, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat),
+          graphic.moveBy(60, 0).withMaterial(LightingAssets.junctionBoxMaterialFlat.unlit)
+        )
+        .withAmbientLight(RGBA.White.withAmount(0.1))
+        .withLights(
+          // PointLight.default
+          //   .moveTo(config.viewport.center + Point(50, 0))
+          //   .withAttenuation(50)
+          //   .withColor(RGB.Green),
+          // PointLight.default
+          //   .moveTo(config.viewport.center + Point(-50, 0))
+          //   .withAttenuation(50)
+          //   .withColor(RGB.Red),
+          orbitingLight(120).affectTime(0.25).at(context.gameTime.running),
+          pulsingLight.affectTime(0.5).at(context.gameTime.running)
+          // DirectionLight(30, RGB.Green, 1.2, Radians.fromDegrees(30)),
+          // SpotLight.default
+          //   .withColor(RGB.Yellow)
+          //   .moveTo(config.viewport.center + Point(-150, -60))
+          //   .rotateBy(Radians.fromDegrees(45))
+          //   .withHeight(25)
+          //   .withPower(1.5)
+        )
+        .addGameLayerNodes(
+          Sprite(BindingKey("lights animation"), 0, 0, 1, animationsKey).play()
+        )
+      // .addGameLayerNodes(
+      //   graphic
+      //     .moveTo(config.viewport.giveDimensions(config.magnification).center.x, 30)
+      //     .withCrop(10, 10, 20, 20)
+      // )
+    )
 }
 
 object LightingAssets {

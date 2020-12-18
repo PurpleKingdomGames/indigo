@@ -25,30 +25,31 @@ object TiledExample extends IndigoSandbox[Group, Unit] {
 
   val animations: Set[Animation] = Set()
 
-  def setup(assetCollection: AssetCollection, dice: Dice): Startup[Group] = {
+  def setup(assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Group]] =
+    Outcome {
+      val maybeTiledMap = for {
+        j <- assetCollection.findTextDataByName(terrianData)
+        t <- Json.tiledMapFromJson(j)
+        g <- t.toGroup(terrianImage)
+      } yield g
 
-    val maybeTiledMap = for {
-      j <- assetCollection.findTextDataByName(terrianData)
-      t <- Json.tiledMapFromJson(j)
-      g <- t.toGroup(terrianImage)
-    } yield g
+      maybeTiledMap match {
+        case None =>
+          Startup.Failure("Could not generate TiledMap from data.")
 
-    maybeTiledMap match {
-      case None =>
-        Startup.Failure("Could not generate TiledMap from data.")
-
-      case Some(tiledMap) =>
-        Startup.Success(tiledMap)
+        case Some(tiledMap) =>
+          Startup.Success(tiledMap)
+      }
     }
 
-  }
-
-  def initialModel(startupData: Group): Unit =
-    ()
+  def initialModel(startupData: Group): Outcome[Unit] =
+    Outcome(())
 
   def updateModel(context: FrameContext[Group], model: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(model)
 
-  def present(context: FrameContext[Group], model: Unit): SceneUpdateFragment =
-    SceneUpdateFragment(context.startUpData)
+  def present(context: FrameContext[Group], model: Unit): Outcome[SceneUpdateFragment] =
+    Outcome(
+      SceneUpdateFragment(context.startUpData)
+    )
 }

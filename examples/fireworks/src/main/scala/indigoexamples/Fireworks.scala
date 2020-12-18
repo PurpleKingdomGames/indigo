@@ -35,29 +35,30 @@ object Fireworks extends IndigoDemo[Vertex => Point, FireworksStartupData, Unit,
       _ => None
     )
 
-  def boot(flags: Map[String, String]): BootResult[Vertex => Point] = {
-    val config =
-      defaultGameConfig
-        .withFrameRate(targetFPS)
-        .withMagnification(magnification)
-        .withViewport(GameViewport.at720p)
+  def boot(flags: Map[String, String]): Outcome[BootResult[Vertex => Point]] =
+    Outcome {
+      val config =
+        defaultGameConfig
+          .withFrameRate(targetFPS)
+          .withMagnification(magnification)
+          .withViewport(GameViewport.at720p)
 
-    val toScreenSpace: Vertex => Point =
-      Projectiles.toScreenSpace(config.viewport.giveDimensions(magnification))
+      val toScreenSpace: Vertex => Point =
+        Projectiles.toScreenSpace(config.viewport.giveDimensions(magnification))
 
-    BootResult(
-      config,
-      toScreenSpace
-    ).withAssets(Assets.assets)
-      .withFonts(FontDetails.fontInfo)
-      .withSubSystems(
-        FPSCounter(FontDetails.fontKey, Point(5, 5), targetFPS),
-        LaunchPadAutomata.automata,
-        RocketAutomata.automata(toScreenSpace),
-        TrailAutomata.automata,
-        FlareAutomata.automata(toScreenSpace)
-      )
-  }
+      BootResult(
+        config,
+        toScreenSpace
+      ).withAssets(Assets.assets)
+        .withFonts(FontDetails.fontInfo)
+        .withSubSystems(
+          FPSCounter(FontDetails.fontKey, Point(5, 5), targetFPS),
+          LaunchPadAutomata.automata,
+          RocketAutomata.automata(toScreenSpace),
+          TrailAutomata.automata,
+          FlareAutomata.automata(toScreenSpace)
+        )
+    }
 
   def launchFireworks(dice: Dice, toScreenSpace: Vertex => Point): List[AutomataEvent.Spawn] =
     List.fill(dice.roll(5) + 5)(
@@ -67,16 +68,18 @@ object Fireworks extends IndigoDemo[Vertex => Point, FireworksStartupData, Unit,
       )
     )
 
-  def setup(toScreenSpace: Vertex => Point, assetCollection: AssetCollection, dice: Dice): Startup[FireworksStartupData] =
-    Startup.Success(
-      FireworksStartupData(toScreenSpace)
+  def setup(toScreenSpace: Vertex => Point, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[FireworksStartupData]] =
+    Outcome(
+      Startup.Success(
+        FireworksStartupData(toScreenSpace)
+      )
     )
 
-  def initialModel(startupData: FireworksStartupData): Unit =
-    ()
+  def initialModel(startupData: FireworksStartupData): Outcome[Unit] =
+    Outcome(())
 
-  def initialViewModel(startupData: FireworksStartupData, model: Unit): Unit =
-    ()
+  def initialViewModel(startupData: FireworksStartupData, model: Unit): Outcome[Unit] =
+    Outcome(())
 
   def updateModel(context: FrameContext[FireworksStartupData], model: Unit): GlobalEvent => Outcome[Unit] = {
     case KeyboardEvent.KeyUp(Key.SPACE) =>
@@ -89,8 +92,8 @@ object Fireworks extends IndigoDemo[Vertex => Point, FireworksStartupData, Unit,
   def updateViewModel(context: FrameContext[FireworksStartupData], model: Unit, viewModel: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(())
 
-  def present(context: FrameContext[FireworksStartupData], model: Unit, viewModel: Unit): SceneUpdateFragment =
-    SceneUpdateFragment.empty
+  def present(context: FrameContext[FireworksStartupData], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
+    Outcome(SceneUpdateFragment.empty)
 
 }
 

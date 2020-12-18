@@ -13,8 +13,8 @@ final case class FloatingPoints(fontKey: FontKey) extends SubSystem {
     case _                           => None
   }
 
-  def initialModel: List[FloatingPointEntity] =
-    Nil
+  def initialModel: Outcome[List[FloatingPointEntity]] =
+    Outcome(Nil)
 
   def update(context: SubSystemFrameContext, entities: List[FloatingPointEntity]): FloatingPointEvent => Outcome[List[FloatingPointEntity]] = {
     case FloatingPointEvent.Spawn(position) =>
@@ -33,16 +33,14 @@ final case class FloatingPoints(fontKey: FontKey) extends SubSystem {
   val text: Text =
     Text("10", 0, 0, 1, fontKey).alignCenter
 
-  def present(context: SubSystemFrameContext, entities: List[FloatingPointEntity]): SceneUpdateFragment =
-    SceneUpdateFragment.empty
-      .addUiLayerNodes(
-        entities
-          .map { e =>
-            FloatingPoints.modifier(e, text).at(context.gameTime.running)
-          }
-          .sequence
-          .state
-      )
+  def present(context: SubSystemFrameContext, entities: List[FloatingPointEntity]): Outcome[SceneUpdateFragment] =
+    entities
+      .map { e =>
+        FloatingPoints.modifier(e, text).at(context.gameTime.running)
+      }
+      .sequence
+      .map(SceneUpdateFragment.empty.addUiLayerNodes)
+
 }
 
 object FloatingPoints {
@@ -68,5 +66,5 @@ final case class FloatingPointEntity(spawnedAt: Point, createdAt: Seconds, ttl: 
 sealed trait FloatingPointEvent extends GlobalEvent
 object FloatingPointEvent {
   final case class Spawn(point: Point) extends FloatingPointEvent
-  case object Update             extends FloatingPointEvent
+  case object Update                   extends FloatingPointEvent
 }

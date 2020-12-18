@@ -10,10 +10,12 @@ object ButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewModel] {
 
   val eventFilters: EventFilters = EventFilters.Default
 
-  def boot(flags: Map[String, String]): BootResult[Unit] =
-    BootResult
-      .noData(defaultGameConfig)
-      .withAssets(AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")))
+  def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
+    Outcome(
+      BootResult
+        .noData(defaultGameConfig)
+        .withAssets(AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")))
+    )
 
   val buttonAssets: ButtonAssets =
     ButtonAssets(
@@ -22,19 +24,21 @@ object ButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewModel] {
       down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 32, 16, 16)
     )
 
-  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[Unit] =
-    Startup.Success(())
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
+    Outcome(Startup.Success(()))
 
-  def initialModel(startupData: Unit): MyGameModel =
-    MyGameModel(count = 0)
+  def initialModel(startupData: Unit): Outcome[MyGameModel] =
+    Outcome(MyGameModel(count = 0))
 
-  def initialViewModel(startupData: Unit, model: MyGameModel): MyViewModel =
-    MyViewModel(
-      button = Button(
-        buttonAssets = buttonAssets,
-        bounds = Rectangle(10, 10, 16, 16),
-        depth = Depth(2)
-      ).withUpActions(MyButtonEvent)
+  def initialViewModel(startupData: Unit, model: MyGameModel): Outcome[MyViewModel] =
+    Outcome(
+      MyViewModel(
+        button = Button(
+          buttonAssets = buttonAssets,
+          bounds = Rectangle(10, 10, 16, 16),
+          depth = Depth(2)
+        ).withUpActions(MyButtonEvent)
+      )
     )
 
   def updateModel(context: FrameContext[Unit], model: MyGameModel): GlobalEvent => Outcome[MyGameModel] = {
@@ -57,8 +61,8 @@ object ButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewModel] {
       Outcome(viewModel)
   }
 
-  def present(context: FrameContext[Unit], model: MyGameModel, viewModel: MyViewModel): SceneUpdateFragment =
-    SceneUpdateFragment(viewModel.button.draw)
+  def present(context: FrameContext[Unit], model: MyGameModel, viewModel: MyViewModel): Outcome[SceneUpdateFragment] =
+    Outcome(SceneUpdateFragment(viewModel.button.draw))
 }
 
 final case class MyGameModel(count: Int)

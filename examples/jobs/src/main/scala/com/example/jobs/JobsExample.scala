@@ -12,19 +12,21 @@ object JobsExample extends IndigoDemo[Unit, StartupData, Model, Unit] {
 
   val eventFilters: EventFilters = EventFilters.Default
 
-  def boot(flags: Map[String, String]): BootResult[Unit] =
-    BootResult
-      .noData(
-        GameConfig.default
-          .withViewport(400, 400)
-          .withClearColor(RGBA(0.0, 0.2, 0.0, 1.0))
-          .withMagnification(2)
-      )
-      .withAssets(Assets.assets)
-      .withFonts(Assets.fontInfo)
-      .withSubSystems(JobMarket.subSystem)
+  def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
+    Outcome(
+      BootResult
+        .noData(
+          GameConfig.default
+            .withViewport(400, 400)
+            .withClearColor(RGBA(0.0, 0.2, 0.0, 1.0))
+            .withMagnification(2)
+        )
+        .withAssets(Assets.assets)
+        .withFonts(Assets.fontInfo)
+        .withSubSystems(JobMarket.subSystem)
+    )
 
-  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[StartupData] = {
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[StartupData]] = {
     val treeData = (1 to (dice.roll(3) + 3)).toList.map { i =>
       TreeData(
         i,
@@ -36,14 +38,14 @@ object JobsExample extends IndigoDemo[Unit, StartupData, Model, Unit] {
       )
     }
 
-    Startup.Success(StartupData(treeData))
+    Outcome(Startup.Success(StartupData(treeData)))
   }
 
-  def initialModel(startupData: StartupData): Model =
-    Model.initialModel(startupData)
+  def initialModel(startupData: StartupData): Outcome[Model] =
+    Outcome(Model.initialModel(startupData))
 
-  def initialViewModel(startupData: StartupData, model: Model): Unit =
-    ()
+  def initialViewModel(startupData: StartupData, model: Model): Outcome[Unit] =
+    Outcome(())
 
   def updateModel(context: FrameContext[StartupData], model: Model): GlobalEvent => Outcome[Model] = {
     case e @ FrameTick =>
@@ -68,8 +70,8 @@ object JobsExample extends IndigoDemo[Unit, StartupData, Model, Unit] {
   def updateViewModel(context: FrameContext[StartupData], model: Model, viewModel: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(viewModel)
 
-  def present(context: FrameContext[StartupData], model: Model, viewModel: Unit): SceneUpdateFragment =
-    View.present(model)
+  def present(context: FrameContext[StartupData], model: Model, viewModel: Unit): Outcome[SceneUpdateFragment] =
+    Outcome(View.present(model))
 }
 
 final case class StartupData(trees: List[TreeData])

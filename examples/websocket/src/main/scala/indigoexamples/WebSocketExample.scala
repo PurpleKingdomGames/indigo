@@ -2,6 +2,7 @@ package indigoexamples
 
 import indigo._
 import indigoextras.ui._
+import Outcome._
 
 import scala.scalajs.js.annotation._
 
@@ -20,10 +21,12 @@ object WebSocketExample extends IndigoDemo[Unit, MySetupData, Unit, MyViewModel]
 
   val eventFilters: EventFilters = EventFilters.Default
 
-  def boot(flags: Map[String, String]): BootResult[Unit] =
-    BootResult
-      .noData(defaultGameConfig)
-      .withAssets(AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")))
+  def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
+    Outcome(
+      BootResult
+        .noData(defaultGameConfig)
+        .withAssets(AssetType.Image(AssetName("graphics"), AssetPath("assets/graphics.png")))
+    )
 
   val buttonAssets: ButtonAssets =
     ButtonAssets(
@@ -32,35 +35,39 @@ object WebSocketExample extends IndigoDemo[Unit, MySetupData, Unit, MyViewModel]
       down = Graphic(0, 0, 16, 16, 2, Material.Textured(AssetName("graphics"))).withCrop(32, 32, 16, 16)
     )
 
-  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[MySetupData] =
-    Startup.Success(
-      MySetupData(
-        pingSocket = WebSocketConfig(
-          id = WebSocketId("ping"),
-          address = "ws://localhost:8080/ws"
-        ),
-        echoSocket = WebSocketConfig(
-          id = WebSocketId("echo"),
-          address = "ws://localhost:8080/wsecho"
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[MySetupData]] =
+    Outcome(
+      Startup.Success(
+        MySetupData(
+          pingSocket = WebSocketConfig(
+            id = WebSocketId("ping"),
+            address = "ws://localhost:8080/ws"
+          ),
+          echoSocket = WebSocketConfig(
+            id = WebSocketId("echo"),
+            address = "ws://localhost:8080/wsecho"
+          )
         )
       )
     )
 
-  def initialModel(startupData: MySetupData): Unit =
-    ()
+  def initialModel(startupData: MySetupData): Outcome[Unit] =
+    Outcome(())
 
-  def initialViewModel(startupData: MySetupData, model: Unit): MyViewModel =
-    MyViewModel(
-      ping = Button(
-        buttonAssets = buttonAssets,
-        bounds = Rectangle(10, 32, 16, 16),
-        depth = Depth(2)
-      ).withUpActions(WebSocketEvent.ConnectOnly(startupData.pingSocket)),
-      echo = Button(
-        buttonAssets = buttonAssets,
-        bounds = Rectangle(10, 32, 16, 16),
-        depth = Depth(2)
-      ).withUpActions(WebSocketEvent.Send("Hello!", startupData.echoSocket))
+  def initialViewModel(startupData: MySetupData, model: Unit): Outcome[MyViewModel] =
+    Outcome(
+      MyViewModel(
+        ping = Button(
+          buttonAssets = buttonAssets,
+          bounds = Rectangle(10, 32, 16, 16),
+          depth = Depth(2)
+        ).withUpActions(WebSocketEvent.ConnectOnly(startupData.pingSocket)),
+        echo = Button(
+          buttonAssets = buttonAssets,
+          bounds = Rectangle(10, 32, 16, 16),
+          depth = Depth(2)
+        ).withUpActions(WebSocketEvent.Send("Hello!", startupData.echoSocket))
+      )
     )
 
   def updateModel(context: FrameContext[MySetupData], model: Unit): GlobalEvent => Outcome[Unit] = {
@@ -86,19 +93,22 @@ object WebSocketExample extends IndigoDemo[Unit, MySetupData, Unit, MyViewModel]
 
   def updateViewModel(context: FrameContext[MySetupData], model: Unit, viewModel: MyViewModel): GlobalEvent => Outcome[MyViewModel] = {
     case FrameTick =>
-      (viewModel.ping.update(context.inputState.mouse) |+| viewModel.echo.update(context.inputState.mouse)).map {
-        case (ping, echo) =>
-          MyViewModel(ping, echo)
-      }
+      (viewModel.ping.update(context.inputState.mouse), viewModel.echo.update(context.inputState.mouse)).combine
+        .map {
+          case (ping, echo) =>
+            MyViewModel(ping, echo)
+        }
 
     case _ =>
       Outcome(viewModel)
   }
 
-  def present(context: FrameContext[MySetupData], model: Unit, viewModel: MyViewModel): SceneUpdateFragment =
-    SceneUpdateFragment(
-      viewModel.ping.draw,
-      viewModel.echo.draw
+  def present(context: FrameContext[MySetupData], model: Unit, viewModel: MyViewModel): Outcome[SceneUpdateFragment] =
+    Outcome(
+      SceneUpdateFragment(
+        viewModel.ping.draw,
+        viewModel.echo.draw
+      )
     )
 }
 

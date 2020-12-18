@@ -11,23 +11,26 @@ object SubSystemsExample extends IndigoDemo[Unit, Unit, Unit, Unit] {
 
   val eventFilters: EventFilters = EventFilters.Default
 
-  def boot(flags: Map[String, String]): BootResult[Unit] =
-    BootResult
-      .noData(defaultGameConfig.withClearColor(RGBA.fromHexString("0xAA3399")))
-      .withAssets(AssetType.Image(AssetName(fontName), AssetPath("assets/boxy_font.png")))
-      .withFonts(fontInfo)
-      .withSubSystems(
-        PointsTrackerSubSystem(fontKey),
-        FloatingPoints(fontKey)
-      )
+  def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
+    Outcome(
+      BootResult
+        .noData(defaultGameConfig.withClearColor(RGBA.fromHexString("0xAA3399")))
+        .withAssets(AssetType.Image(AssetName(fontName), AssetPath("assets/boxy_font.png")))
+        .withFonts(fontInfo)
+        .withSubSystems(
+          PointsTrackerSubSystem(fontKey),
+          FloatingPoints(fontKey)
+        )
+    )
 
-  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Startup[Unit] =
-    Startup.Success(())
+  def setup(bootData: Unit, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
+    Outcome(Startup.Success(()))
 
-  def initialModel(startupData: Unit): Unit =
-    ()
+  def initialModel(startupData: Unit): Outcome[Unit] =
+    Outcome(())
 
-  def initialViewModel(startupData: Unit, model: Unit): Unit = ()
+  def initialViewModel(startupData: Unit, model: Unit): Outcome[Unit] =
+    Outcome(())
 
   def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] = {
     case e @ MouseEvent.Click(_, _) =>
@@ -44,8 +47,8 @@ object SubSystemsExample extends IndigoDemo[Unit, Unit, Unit, Unit] {
   def updateViewModel(context: FrameContext[Unit], model: Unit, viewModel: Unit): GlobalEvent => Outcome[Unit] =
     _ => Outcome(viewModel)
 
-  def present(context: FrameContext[Unit], model: Unit, viewModel: Unit): SceneUpdateFragment =
-    noRender
+  def present(context: FrameContext[Unit], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
+    Outcome(noRender)
 }
 
 object FontDetails {
