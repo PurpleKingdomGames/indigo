@@ -99,14 +99,16 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
       context: FrameContext[StartupData],
       model: LevelModel,
       viewModel: SceneViewModel
-  ): SceneUpdateFragment =
-    (model, viewModel) match {
-      case (m @ LevelModel.Ready(_, _), vm @ LevelViewModel.Ready(_, _)) =>
-        LevelView.draw(context.gameTime, m, vm, context.startUpData.captain, context.startUpData.levelDataStore)
+  ): Outcome[SceneUpdateFragment] =
+    Outcome(
+      (model, viewModel) match {
+        case (m @ LevelModel.Ready(_, _), vm @ LevelViewModel.Ready(_, _)) =>
+          LevelView.draw(context.gameTime, m, vm, context.startUpData.captain, context.startUpData.levelDataStore)
 
-      case _ =>
-        SceneUpdateFragment.empty
-    }
+        case _ =>
+          SceneUpdateFragment.empty
+      }
+    )
 }
 
 object LevelScene {

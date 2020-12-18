@@ -84,11 +84,17 @@ final case class LoadingScene(assetPath: String, screenDimensions: Rectangle)
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(viewModel)
 
-  def present(context: FrameContext[StartupData], loadingState: LoadingState, viewModel: Unit): SceneUpdateFragment =
-    LoadingView.draw(
-      screenDimensions,
-      context.startUpData.captain,
-      loadingState
+  def present(
+      context: FrameContext[StartupData],
+      loadingState: LoadingState,
+      viewModel: Unit
+  ): Outcome[SceneUpdateFragment] =
+    Outcome(
+      LoadingView.draw(
+        screenDimensions,
+        context.startUpData.captain,
+        loadingState
+      )
     )
 
 }

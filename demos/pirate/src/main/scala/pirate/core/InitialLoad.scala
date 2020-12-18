@@ -27,20 +27,22 @@ object InitialLoad {
       screenDimensions: Rectangle,
       assetCollection: AssetCollection,
       dice: Dice
-  ): Startup[StartupData] =
-    loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.ref, Depth(2))
-      .map { captain =>
-        makeStartupData(
-          captain,
-          levelDataStore(screenDimensions, assetCollection, dice)
-        )
-      } match {
-      case Left(message) =>
-        Startup.Failure(message)
+  ): Outcome[Startup[StartupData]] =
+    Outcome(
+      loadAnimation(assetCollection, dice)(Assets.Captain.jsonRef, Assets.Captain.ref, Depth(2))
+        .map { captain =>
+          makeStartupData(
+            captain,
+            levelDataStore(screenDimensions, assetCollection, dice)
+          )
+        } match {
+        case Left(message) =>
+          Startup.Failure(message)
 
-      case Right(success) =>
-        success
-    }
+        case Right(success) =>
+          success
+      }
+    )
 
   def levelDataStore(
       screenDimensions: Rectangle,
