@@ -11,15 +11,16 @@ object ViewLogic {
   def gridPointToPoint(gridPoint: GridPoint, gridSize: GridSize): Point =
     Point(gridPoint.x * gridSize.gridSquareSize, ((gridSize.rows - 1) - gridPoint.y) * gridSize.gridSquareSize)
 
-  def update(model: GameModel, snakeViewModel: SnakeViewModel): SceneUpdateFragment =
-    SceneUpdateFragment.empty
-      .addGameLayerNodes(
+  def update(model: GameModel, snakeViewModel: SnakeViewModel): Outcome[SceneUpdateFragment] =
+    Outcome(
+      SceneUpdateFragment(
         gameLayer(
           model,
           snakeViewModel.staticAssets,
           snakeViewModel.walls
         )
       )
+    )
 
   def gameLayer(
       currentState: GameModel,

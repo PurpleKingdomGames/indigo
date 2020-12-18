@@ -41,6 +41,6 @@ object GameScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel]
       context: FrameContext[SnakeStartupData],
       gameModel: GameModel,
       snakeViewModel: SnakeViewModel
-  ): SceneUpdateFragment =
+  ): Outcome[SceneUpdateFragment] =
     ViewLogic.update(gameModel, snakeViewModel)
 }

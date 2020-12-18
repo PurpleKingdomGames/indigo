@@ -44,15 +44,16 @@ object GameOverScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewMo
       context: FrameContext[SnakeStartupData],
       pointsScored: Int,
       sceneViewModel: Unit
-  ): SceneUpdateFragment = {
-    val horizontalCenter: Int = (Settings.viewportWidth / Settings.magnificationLevel) / 2
-    val verticalMiddle: Int   = (Settings.viewportHeight / Settings.magnificationLevel) / 2
+  ): Outcome[SceneUpdateFragment] =
+    Outcome {
+      val horizontalCenter: Int = (Settings.viewportWidth / Settings.magnificationLevel) / 2
+      val verticalMiddle: Int   = (Settings.viewportHeight / Settings.magnificationLevel) / 2
 
-    SceneUpdateFragment.empty
-      .addUiLayerNodes(
-        Text("Game Over!", horizontalCenter, verticalMiddle - 20, 1, GameAssets.fontKey).alignCenter,
-        Text(s"You scored: ${pointsScored.toString()} pts!", horizontalCenter, verticalMiddle - 5, 1, GameAssets.fontKey).alignCenter,
-        Text("(hit space to restart)", horizontalCenter, 220, 1, GameAssets.fontKey).alignCenter
-      )
-  }
+      SceneUpdateFragment.empty
+        .addUiLayerNodes(
+          Text("Game Over!", horizontalCenter, verticalMiddle - 20, 1, GameAssets.fontKey).alignCenter,
+          Text(s"You scored: ${pointsScored.toString()} pts!", horizontalCenter, verticalMiddle - 5, 1, GameAssets.fontKey).alignCenter,
+          Text("(hit space to restart)", horizontalCenter, 220, 1, GameAssets.fontKey).alignCenter
+        )
+    }
 }
