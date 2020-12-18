@@ -18,7 +18,7 @@ object CloudsSubSystem {
   def apply(screenWidth: Int): SubSystem =
     SubSystem[FrameTick, CloudsState](
       eventFilter,
-      CloudsState.initial,
+      Outcome(CloudsState.initial),
       update(screenWidth),
       render
     )
@@ -61,24 +61,26 @@ object CloudsSubSystem {
         )
     }
 
-  val render: (SubSystemFrameContext, CloudsState) => SceneUpdateFragment =
+  val render: (SubSystemFrameContext, CloudsState) => Outcome[SceneUpdateFragment] =
     (_, model) =>
-      SceneUpdateFragment(
-        Assets.Clouds.bigCloudsGraphic
-          .moveTo(
-            model.bigCloudPosition.toInt - Assets.Clouds.bigCloudsWidth,
-            verticalCenter
-          ),
-        Assets.Clouds.bigCloudsGraphic
-          .moveTo(
-            model.bigCloudPosition.toInt,
-            verticalCenter
-          ),
-        Assets.Clouds.bigCloudsGraphic
-          .moveTo(
-            model.bigCloudPosition.toInt + Assets.Clouds.bigCloudsWidth,
-            verticalCenter
-          )
+      Outcome(
+        SceneUpdateFragment(
+          Assets.Clouds.bigCloudsGraphic
+            .moveTo(
+              model.bigCloudPosition.toInt - Assets.Clouds.bigCloudsWidth,
+              verticalCenter
+            ),
+          Assets.Clouds.bigCloudsGraphic
+            .moveTo(
+              model.bigCloudPosition.toInt,
+              verticalCenter
+            ),
+          Assets.Clouds.bigCloudsGraphic
+            .moveTo(
+              model.bigCloudPosition.toInt + Assets.Clouds.bigCloudsWidth,
+              verticalCenter
+            )
+        )
       )
 
   def generateSmallCloudStartPoint(screenWidth: Int, dice: Dice): Point =
