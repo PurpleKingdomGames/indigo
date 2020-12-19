@@ -16,7 +16,8 @@ lazy val commonSettings = Seq(
   ),
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
-  crossScalaVersions := Seq(dottyVersion, scala213Version)
+  crossScalaVersions := Seq(dottyVersion, scala213Version),
+  bspEnabled := false
 )
 
 lazy val publishSettings = {
