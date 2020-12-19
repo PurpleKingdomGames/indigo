@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 SCALA2=2.13
-SCALA3=3.0.0-M2
+#SCALA3=3.0.0-M3
 
 mill clean mill-indigo[$SCALA2]
 mill mill-indigo[$SCALA2].compile

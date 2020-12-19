@@ -1,7 +1,7 @@
 import scala.sys.process._
 import scala.language.postfixOps
 
-val dottyVersion    = "3.0.0-M2"
+val dottyVersion    = "3.0.0-M3"
 val scala213Version = "2.13.4"
 
 lazy val commonSettings = Seq(
@@ -9,7 +9,7 @@ lazy val commonSettings = Seq(
   scalaVersion := dottyVersion,
   organization := "indigo-examples",
   libraryDependencies ++= Seq(
-    "org.scalameta"   %%% "munit"         % "0.7.19" % Test,
+    "org.scalameta"   %%% "munit"         % "0.7.20" % Test,
     "io.indigoengine" %%% "indigo"        % IndigoVersion.getVersion,
     "io.indigoengine" %%% "indigo-extras" % IndigoVersion.getVersion
   ),
@@ -204,7 +204,7 @@ lazy val fireworks =
       windowStartWidth := 1280,
       windowStartHeight := 720,
       libraryDependencies ++= Seq(
-        "org.scalacheck" %%% "scalacheck" % "1.15.1" % "test"
+        "org.scalacheck" %%% "scalacheck" % "1.15.2" % "test"
       )
     )
 

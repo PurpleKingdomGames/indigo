@@ -6,13 +6,13 @@ import publish._
 import coursier.maven.MavenRepository
 
 
-object `mill-indigo` extends Cross[MillIndigoPluginModule]("2.13"/*, "3.0.0-M2"*/)
+object `mill-indigo` extends Cross[MillIndigoPluginModule]("2.13"/*, "3.0.0-M3"*/)
 class MillIndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule with PublishModule {
 
   def scalaVersion   = 
     crossScalaVersion match {
       case "2.13" => "2.13.4"
-      // case _=> "3.0.0-M2"
+      // case _=> "3.0.0-M3"
     }
 
   def millLibVersion = "0.9.3"
@@ -35,7 +35,7 @@ class MillIndigoPluginModule(val crossScalaVersion: String) extends CrossScalaMo
   // def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.13") }
 
   object test extends Tests {
-    def ivyDeps = Agg(ivy"org.scalameta::munit:0.7.19")
+    def ivyDeps = Agg(ivy"org.scalameta::munit:0.7.20")
 
     def testFrameworks = Seq("munit.Framework")
   }

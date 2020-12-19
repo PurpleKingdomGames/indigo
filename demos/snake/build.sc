@@ -56,8 +56,8 @@ object snake extends ScalaJSModule with MillIndigo {
 
   object test extends Tests {
     def ivyDeps = Agg(
-      ivy"org.scalameta::munit::0.7.19",
-      ivy"org.scalacheck::scalacheck::1.14.3"
+      ivy"org.scalameta::munit::0.7.20",
+      ivy"org.scalacheck::scalacheck::1.15.2"
     )
 
     def testFrameworks = Seq("munit.Framework")
