@@ -63,17 +63,20 @@ const float border2px[9] = float[9](
 
 vec4 calculateOuterBorder(float baseAlpha, float[9] alphas, float amount) {
   vec4 outColor = vec4(0.0);
-  int checkedAmount = int(clamp(amount, 0.0, 2.0));
-
-  if(checkedAmount == 0 || baseAlpha > 0.01) {
-    return outColor;
-  }
-
+  float checkedAmount = clamp(amount, 0.0, 2.0);
   float[9] kernel;
 
-  if(checkedAmount == 1) {
+  if(baseAlpha > 0.001) {
+    return outColor;
+  }
+  
+  if(abs(checkedAmount) >= 0.0 && abs(checkedAmount) < 0.001) {
+    return outColor;
+  }
+  if(abs(checkedAmount) >= 0.999 && abs(checkedAmount) < 1.001) {
     kernel = border1px;
-  } else {
+  }
+  if(abs(checkedAmount) >= 1.999 && abs(checkedAmount) < 2.001) {
     kernel = border2px;
   }
 
@@ -97,17 +100,20 @@ vec4 calculateOuterBorder(float baseAlpha, float[9] alphas, float amount) {
 
 vec4 calculateInnerBorder(float baseAlpha, float[9] alphas, float amount) {
   vec4 outColor = vec4(0.0);
-  int checkedAmount = int(clamp(amount, 0.0, 2.0));
+  float checkedAmount = clamp(amount, 0.0, 2.0);
+  float[9] kernel;
 
-  if(checkedAmount == 0 || baseAlpha < 0.01) {
+  if(baseAlpha < 0.001) {
     return outColor;
   }
 
-  float[9] kernel;
-
-  if(checkedAmount == 1) {
+  if(abs(checkedAmount) >= 0.0 && abs(checkedAmount) < 0.001) {
+    return outColor;
+  }
+  if(abs(checkedAmount) >= 0.999 && abs(checkedAmount) < 1.001) {
     kernel = border1px;
-  } else {
+  }
+  if(abs(checkedAmount) >= 1.999 && abs(checkedAmount) < 2.001) {
     kernel = border2px;
   }
 
