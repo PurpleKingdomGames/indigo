@@ -42,6 +42,7 @@ out vec2 v_offsetBL;
 out vec2 v_offsetBC;
 out vec2 v_offsetBR;
 out vec2 v_texcoordSpecular;
+out float v_rotation;
 
 mat4 rotate2d(float angle){
     return mat4(cos(angle), -sin(angle), 0, 0,
@@ -157,6 +158,6 @@ void main(void) {
   v_offsetBC = offsets[7];
   v_offsetBR = offsets[8];
   v_texcoordSpecular = scaleTexCoordsWithOffset(texcoords, texcoordsSpecular);
-
+  v_rotation = rotation;
 
 }

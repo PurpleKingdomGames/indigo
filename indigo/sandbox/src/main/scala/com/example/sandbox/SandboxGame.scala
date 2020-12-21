@@ -41,8 +41,8 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
         ),
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."))
       ).withAssets(SandboxAssets.assets)
-        .withFonts(SandboxView.fontInfo)
-        .withSubSystems(FPSCounter(SandboxView.fontKey, Point(3, 100), targetFPS))
+        .withFonts(SandboxAssets.fontInfo)
+        .withSubSystems(FPSCounter(SandboxAssets.fontKey, Point(3, 100), targetFPS))
     )
   }
 
@@ -79,7 +79,7 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
   def initialViewModel(startupData: SandboxStartupData, model: SandboxGameModel): Outcome[SandboxViewModel] = {
     val assets =
       new InputFieldAssets(
-        Text("placeholder", 0, 0, 0, SandboxView.fontKey).alignLeft,
+        Text("placeholder", 0, 0, 0, SandboxAssets.fontKey).alignLeft,
         Graphic(0, 0, 16, 16, 2, Material.Textured(SandboxAssets.smallFontName)).withCrop(188, 78, 14, 23).withTint(0, 0, 1)
       )
 
@@ -135,7 +135,7 @@ object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, Sandb
 
   def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] =
     Outcome(
-      SandboxView.updateView(model, viewModel, context.inputState) |+|
+      SandboxView.updateView(context.running, model, viewModel, context.inputState) |+|
         // viewModel.single.draw(gameTime, boundaryLocator) //|+|
         viewModel.multi.draw(context.gameTime, context.boundaryLocator)
     )

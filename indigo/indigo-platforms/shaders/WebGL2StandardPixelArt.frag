@@ -24,6 +24,7 @@ in vec2 v_offsetBL;
 in vec2 v_offsetBC;
 in vec2 v_offsetBR;
 in vec2 v_texcoordSpecular;
+in float v_rotation;
 
 layout(location = 0) out vec4 albedo;
 layout(location = 1) out vec4 emissive;
@@ -198,14 +199,13 @@ vec4 calculateInnerGlow(float baseAlpha, float[9] alphas, float amount) {
 }
 
 vec4 calculateNormal(vec4 normalColor, float alpha) {
-  if (v_relativeScreenCoordsIsLitAlpha.z > 0.0) {
-    if(normalColor.a < 0.001) {
-      return vec4(0.5, 0.5, 1.0, alpha);
-    } else {
-      return vec4(normalColor.rgb, alpha);
-    }
+  if(normalColor.a < 0.001) {
+    return vec4(0.5, 0.5, 1.0, alpha);
   } else {
-    return vec4(0.0, 0.0, 0.0, alpha);
+    vec4 objectNormal = vec4(sin(v_rotation), cos(v_rotation), 1.0, 1.0);
+    vec4 textureNormal = vec4(normalColor.rgb, alpha);
+
+    return normalize(objectNormal + textureNormal);
   }
 }
 
