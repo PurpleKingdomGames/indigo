@@ -84,7 +84,7 @@ lazy val indigoCore =
     .settings(
       name := "indigo-core",
       libraryDependencies ++= Seq(
-        "org.scalacheck" %% "scalacheck" % "1.15.2" % "test"
+        "org.scalacheck" %%% "scalacheck" % "1.15.2" % "test"
       )
     )
     .dependsOn(shared)
@@ -100,7 +100,7 @@ lazy val indigoExtras =
     .dependsOn(shared)
     .settings(
       name := "indigo-extras",
-      libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.15.2" % "test"
+      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.2" % "test"
     )
 
 // Indigo Game
@@ -113,7 +113,7 @@ lazy val indigo =
     .dependsOn(indigoCore)
     .settings(
       name := "indigo",
-      libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.15.2" % "test"
+      libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.2" % "test"
     )
 
 // Indigo Facades
@@ -143,7 +143,7 @@ lazy val indigoPlatforms =
     .settings(
       name := "indigo-platforms",
       libraryDependencies ++= Seq(
-        "org.scalacheck" %% "scalacheck"  % "1.15.2" % "test",
+        "org.scalacheck" %%% "scalacheck"  % "1.15.2" % "test",
         ("org.scala-js"  %%% "scalajs-dom" % "1.1.0").withDottyCompat(scalaVersion.value)
       )
     )
