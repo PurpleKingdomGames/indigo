@@ -2,20 +2,26 @@ package indigo.shared.datatypes
 
 final case class Matrix4(private val mat: List[Double]) {
 
-  def row1: List[Double] = List(mat(0), mat(1), mat(2), mat(3))
-  def row2: List[Double] = List(mat(4), mat(5), mat(6), mat(7))
-  def row3: List[Double] = List(mat(8), mat(9), mat(10), mat(11))
-  def row4: List[Double] = List(mat(12), mat(13), mat(14), mat(15))
+  lazy val row1: List[Double] = List(mat(0), mat(1), mat(2), mat(3))
+  lazy val row2: List[Double] = List(mat(4), mat(5), mat(6), mat(7))
+  lazy val row3: List[Double] = List(mat(8), mat(9), mat(10), mat(11))
+  lazy val row4: List[Double] = List(mat(12), mat(13), mat(14), mat(15))
+
+  lazy val col1: List[Double] = List(mat(0), mat(4), mat(8), mat(12))
+  lazy val col2: List[Double] = List(mat(1), mat(5), mat(9), mat(13))
+  lazy val col3: List[Double] = List(mat(2), mat(6), mat(10), mat(14))
+  lazy val col4: List[Double] = List(mat(3), mat(7), mat(11), mat(15))
 
   def identity: Matrix4 = Matrix4.identity
 
-  def translate(tx: Double, ty: Double, tz: Double): Matrix4 =
-    this * Matrix4.translation(tx, ty, tz)
+  def translate(by: Vector3): Matrix4 =
+    this * Matrix4.translation(by.x, by.y, by.z)
 
-  def rotate(angleInRadians: Double): Matrix4 =
-    this * Matrix4.zRotation(angleInRadians)
+  def rotate(angle: Radians): Matrix4 =
+    this * Matrix4.zRotation(angle.value)
 
-  def scale(sx: Double, sy: Double, sz: Double): Matrix4 = this * Matrix4.scale(sx, sy, sz)
+  def scale(by: Vector3): Matrix4 = 
+  this * Matrix4.scale(by.x, by.y, by.z)
 
   def transpose: Matrix4 = Matrix4.transpose(this)
 
@@ -35,6 +41,26 @@ final case class Matrix4(private val mat: List[Double]) {
 
   def toList: List[Double] =
     mat
+
+  def transform(vector: Vector3): Vector3 =
+    Vector3(
+      x = col1(0) * vector.x + col1(1) * vector.x + col1(2) * vector.x + col1(3),
+      y = col2(0) * vector.y + col2(1) * vector.y + col2(2) * vector.y + col2(3),
+      z = col3(0) * vector.z + col3(1) * vector.z + col3(2) * vector.z + col3(3)
+    )
+
+  def transform(vector: Vector4): Vector3 =
+    Vector3(
+      x = col1(0) * vector.x + col1(1) * vector.x + col1(2) * vector.x + col1(3),
+      y = col2(0) * vector.y + col2(1) * vector.y + col2(2) * vector.y + col2(3),
+      z = col3(0) * vector.z + col3(1) * vector.z + col3(2) * vector.z + col3(3)
+    )
+
+  def prettyPrint: String =
+    row1.mkString("(", ",\t", ")") + "\n" +
+      row2.mkString("(", ",\t", ")") + "\n" +
+      row3.mkString("(", ",\t", ")") + "\n" +
+      row4.mkString("(", ",\t", ")")
 }
 
 object Matrix4 {

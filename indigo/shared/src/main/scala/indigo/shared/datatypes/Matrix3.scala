@@ -2,21 +2,25 @@ package indigo.shared.datatypes
 
 final case class Matrix3(private val mat: List[Double]) {
 
-  def row1: List[Double] = List(mat(0), mat(1), mat(2))
-  def row2: List[Double] = List(mat(3), mat(4), mat(5))
-  def row3: List[Double] = List(mat(6), mat(7), mat(8))
+  lazy val row1: List[Double] = List(mat(0), mat(1), mat(2))
+  lazy val row2: List[Double] = List(mat(3), mat(4), mat(5))
+  lazy val row3: List[Double] = List(mat(6), mat(7), mat(8))
+
+  lazy val col1: List[Double] = List(mat(0), mat(3), mat(6))
+  lazy val col2: List[Double] = List(mat(1), mat(4), mat(7))
+  lazy val col3: List[Double] = List(mat(2), mat(5), mat(8))
 
   def identity: Matrix3 =
     Matrix3.identity
 
-  def translate(tx: Double, ty: Double): Matrix3 =
-    this * Matrix3.translation(tx, ty)
+  def translate(by: Vector2): Matrix3 =
+    this * Matrix3.translation(by.x, by.y)
 
-  def rotate(angleInRadians: Double): Matrix3 =
-    this * Matrix3.rotation(angleInRadians)
+  def rotate(angle: Radians): Matrix3 =
+    this * Matrix3.rotation(angle.value)
 
-  def scale(sx: Double, sy: Double): Matrix3 =
-    this * Matrix3.scale(sx, sy)
+  def scale(by: Vector2): Matrix3 =
+    this * Matrix3.scale(by.x, by.y)
 
   def transpose: Matrix3 =
     Matrix3.transpose(this)
@@ -29,6 +33,17 @@ final case class Matrix3(private val mat: List[Double]) {
 
   def toList: List[Double] =
     mat
+
+  def transform(vector: Vector2): Vector2 =
+    Vector2(
+      x = col1(0) * vector.x + col1(1) * vector.x + col1(2),
+      y = col2(0) * vector.y + col2(1) * vector.y + col2(2)
+    )
+
+  def prettyPrint: String =
+    row1.mkString("(", ",\t", ")") + "\n" +
+      row2.mkString("(", ",\t", ")") + "\n" +
+      row3.mkString("(", ",\t", ")")
 }
 
 object Matrix3 {

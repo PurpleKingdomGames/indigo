@@ -131,6 +131,11 @@ class Vector2Tests extends munit.FunSuite {
     assert(clue(Vector2(-50, 1000).normalise) === clue(Vector2(-1, 1)))
   }
 
+  test("approx equal") {
+    assert(Vector2(5.0, 5.0) ~== Vector2(4.999999, 5.00001))
+    assert(!(Vector2(5.0, 5.0) ~== Vector2(-4.999999, 5.00001)))
+  }
+
   def areDoubleVectorsEqual(expected: Vector2, actual: Vector2): Boolean =
     areDoublesEqual(expected.x, actual.x) && areDoublesEqual(expected.y, actual.y)
 

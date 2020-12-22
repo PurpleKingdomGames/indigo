@@ -82,6 +82,12 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) {
 
   def ===(other: Vector4): Boolean =
     x == other.x && y == other.y && z == other.z && w == other.w
+
+  def ~==(other: Vector4): Boolean =
+    Math.abs(x - other.x) < 0.001 &&
+    Math.abs(y - other.y) < 0.001 &&
+    Math.abs(z - other.z) < 0.001 &&
+    Math.abs(w - other.w) < 0.001
 }
 
 object Vector4 {

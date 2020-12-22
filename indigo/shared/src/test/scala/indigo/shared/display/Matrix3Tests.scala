@@ -1,6 +1,8 @@
 package indigo.shared.display
 
 import indigo.shared.datatypes.Matrix3
+import indigo.shared.datatypes.Vector2
+import indigo.shared.datatypes.Radians
 
 class Matrix3Tests extends munit.FunSuite {
 
@@ -32,7 +34,7 @@ class Matrix3Tests extends munit.FunSuite {
         (150, 20, 1)
       )
 
-    assertEquals(matrix.translate(140.0, 0), expected)
+    assertEquals(matrix.translate(Vector2(140.0, 0)), expected)
 
   }
 
@@ -45,7 +47,7 @@ class Matrix3Tests extends munit.FunSuite {
         (0, 2, 1)
       )
 
-    assertEquals(Matrix3.identity.translate(0, 2.0), expected)
+    assertEquals(Matrix3.identity.translate(Vector2(0, 2.0)), expected)
 
   }
 
@@ -61,7 +63,7 @@ class Matrix3Tests extends munit.FunSuite {
         (0, 0, 1)
       )
 
-    assertEquals(Matrix3.identity.rotate(Math.PI), expected)
+    assertEquals(Matrix3.identity.rotate(Radians.PI), expected)
   }
 
   test("scale") {
@@ -73,7 +75,7 @@ class Matrix3Tests extends munit.FunSuite {
         (0, 0, 1)
       )
 
-    assertEquals(Matrix3.identity.scale(2.0, 3.0), expected)
+    assertEquals(Matrix3.identity.scale(Vector2(2.0, 3.0)), expected)
 
   }
 
@@ -140,6 +142,45 @@ class Matrix3Tests extends munit.FunSuite {
       )
 
     assertEquals(mat.flip(true, true), expected)
+  }
+
+  test("transforming vectors - translation") {
+    val mat: Matrix3 =
+      Matrix3.identity.translate(Vector2(10.0, 20.0))
+
+    val actual: Vector2 =
+      mat.transform(Vector2(5.0, 5.0))
+
+    val expected: Vector2 =
+      Vector2(15.0, 25.0)
+
+    assertEquals(actual, expected)
+  }
+
+  test("transforming vectors - rotation") {
+    val mat: Matrix3 =
+      Matrix3.identity.rotate(Radians.TAUby2)
+
+    val actual: Vector2 =
+      mat.transform(Vector2(5.0, 5.0))
+
+    val expected: Vector2 =
+      Vector2(-5.0, -5.0)
+
+    assert(actual ~== expected)
+  }
+
+  test("transforming vectors - scaling") {
+    val mat: Matrix3 =
+      Matrix3.identity.scale(Vector2(10.0, 20.0))
+
+    val actual: Vector2 =
+      mat.transform(Vector2(5.0, 5.0))
+
+    val expected: Vector2 =
+      Vector2(50.0, 100.0)
+
+    assertEquals(actual, expected)
   }
 
 }

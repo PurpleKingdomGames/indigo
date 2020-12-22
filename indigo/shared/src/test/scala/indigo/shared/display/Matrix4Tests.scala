@@ -1,6 +1,8 @@
 package indigo.shared.display
 
 import indigo.shared.datatypes.Matrix4
+import indigo.shared.datatypes.Vector3
+import indigo.shared.datatypes.Radians
 
 class Matrix4Tests extends munit.FunSuite {
 
@@ -28,7 +30,7 @@ class Matrix4Tests extends munit.FunSuite {
         (2, 0, 0, 1)
       )
 
-    assertEquals(Matrix4.identity.translate(2.0, 0, 0), expected)
+    assertEquals(Matrix4.identity.translate(Vector3(2.0, 0, 0)), expected)
 
   }
 
@@ -42,7 +44,7 @@ class Matrix4Tests extends munit.FunSuite {
         (0, 2, 0, 1)
       )
 
-    assertEquals(Matrix4.identity.translate(0, 2.0, 0), expected)
+    assertEquals(Matrix4.identity.translate(Vector3(0, 2.0, 0)), expected)
 
   }
 
@@ -56,7 +58,7 @@ class Matrix4Tests extends munit.FunSuite {
         (0, 0, 2, 1)
       )
 
-    assertEquals(Matrix4.identity.translate(0, 0, 2.0), expected)
+    assertEquals(Matrix4.identity.translate(Vector3(0, 0, 2.0)), expected)
 
   }
 
@@ -73,7 +75,7 @@ class Matrix4Tests extends munit.FunSuite {
         (0, 0, 0, 1)
       )
 
-    assertEquals(Matrix4.identity.rotate(Math.PI), expected)
+    assertEquals(Matrix4.identity.rotate(Radians.PI), expected)
   }
 
   test("scale") {
@@ -86,7 +88,7 @@ class Matrix4Tests extends munit.FunSuite {
         (0, 0, 0, 1)
       )
 
-    assertEquals(Matrix4.identity.scale(2.0, 3.0, 4.0), expected)
+    assertEquals(Matrix4.identity.scale(Vector3(2.0, 3.0, 4.0)), expected)
 
   }
 
@@ -160,6 +162,45 @@ class Matrix4Tests extends munit.FunSuite {
       )
 
     assertEquals(mat.flip(true, true), expected)
+  }
+
+  test("transforming vectors - translation") {
+    val mat: Matrix4 =
+      Matrix4.identity.translate(Vector3(10.0, 20.0, 30.0))
+
+    val actual: Vector3 =
+      mat.transform(Vector3(5.0, 5.0, 5.0))
+
+    val expected: Vector3 =
+      Vector3(15.0, 25.0, 35.0)
+
+    assertEquals(actual, expected)
+  }
+
+  test("transforming vectors - rotation") {
+    val mat: Matrix4 =
+      Matrix4.identity.rotate(Radians.TAUby2)
+
+    val actual: Vector3 =
+      mat.transform(Vector3(5.0, 5.0, 5.0))
+
+    val expected: Vector3 =
+      Vector3(-5.0, -5.0, 5.0)
+
+    assert(actual ~== expected)
+  }
+
+  test("transforming vectors - scaling") {
+    val mat: Matrix4 =
+      Matrix4.identity.scale(Vector3(10.0, 20.0, 30.0))
+
+    val actual: Vector3 =
+      mat.transform(Vector3(5.0, 5.0, 5.0))
+
+    val expected: Vector3 =
+      Vector3(50.0, 100.0, 150.0)
+
+    assertEquals(actual, expected)
   }
 
 }

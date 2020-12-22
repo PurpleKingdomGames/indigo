@@ -104,4 +104,9 @@ class VertexTests extends munit.FunSuite {
     assertEquals(Vertex(2, 2).makeVectorWith(Vertex(1, 5)), Vector2(-1, 3))
   }
 
+  test("approx equal") {
+    assert(Vertex(5.0, 5.0) ~== Vertex(4.999999, 5.00001))
+    assert(!(Vertex(5.0, 5.0) ~== Vertex(-4.999999, 5.00001)))
+  }
+
 }

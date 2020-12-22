@@ -18,17 +18,17 @@ class SpriteSheetFrameTests extends munit.FunSuite {
     val textureCoordinate1   = Vector2(0, 0)
     val resultingMultiplier1 = textureCoordinate1.scaleBy(offset.scale).translate(offset.translate)
 
-    assertEquals(Vector2.multiply(atlasSize, resultingMultiplier1) === Vector2(74, 10), true)
+    assertEquals(Vector2.multiply(atlasSize, resultingMultiplier1), Vector2(74, 10))
 
     val textureCoordinate2   = Vector2(0.5, 0.5)
     val resultingMultiplier2 = textureCoordinate2.scaleBy(offset.scale).translate(offset.translate)
 
-    assertEquals(Vector2.multiply(atlasSize, resultingMultiplier2) === Vector2(106, 42), true)
+    assertEquals(Vector2.multiply(atlasSize, resultingMultiplier2), Vector2(106, 42))
 
     val textureCoordinate3   = Vector2(1, 1)
     val resultingMultiplier3 = textureCoordinate3.scaleBy(offset.scale).translate(offset.translate)
 
-    assertEquals(Vector2.multiply(atlasSize, resultingMultiplier3) === Vector2(138, 74.0), true)
+    assertEquals(Vector2.multiply(atlasSize, resultingMultiplier3), Vector2(138, 74.0))
 
   }
 
@@ -43,17 +43,17 @@ class SpriteSheetFrameTests extends munit.FunSuite {
     val textureCoordinate1   = Vector2(0, 0)
     val resultingMultiplier1 = textureCoordinate1.scaleBy(offset.scale).translate(offset.translate)
 
-    assertEquals(Vector2.multiply(atlasSize, resultingMultiplier1) === Vector2(64, 0), true)
+    assertEquals(Vector2.multiply(atlasSize, resultingMultiplier1), Vector2(64, 0))
 
     val textureCoordinate2   = Vector2(0.5, 0.5)
     val resultingMultiplier2 = textureCoordinate2.scaleBy(offset.scale).translate(offset.translate)
 
-    assertEquals(Vector2.multiply(atlasSize, resultingMultiplier2) === Vector2(96, 32), true)
+    assertEquals(Vector2.multiply(atlasSize, resultingMultiplier2), Vector2(96, 32))
 
     val textureCoordinate3   = Vector2(1, 1)
     val resultingMultiplier3 = textureCoordinate3.scaleBy(offset.scale).translate(offset.translate)
 
-    assertEquals(Vector2.multiply(atlasSize, resultingMultiplier3) === Vector2(128.0, 64.0), true)
+    assertEquals(Vector2.multiply(atlasSize, resultingMultiplier3), Vector2(128.0, 64.0))
 
   }
 
