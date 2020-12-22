@@ -1,8 +1,4 @@
-package indigo.shared.display
-
-import indigo.shared.datatypes.Matrix4
-import indigo.shared.datatypes.Vector3
-import indigo.shared.datatypes.Radians
+package indigo.shared.datatypes
 
 class Matrix4Tests extends munit.FunSuite {
 

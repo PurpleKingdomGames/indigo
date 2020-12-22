@@ -30,11 +30,26 @@ final case class Vector3(x: Double, y: Double, z: Double) {
   def length: Double =
     distanceTo(Vector3.zero)
 
+  def invert: Vector3 =
+    Vector3(-x, -y, -z)
+
   def translate(vec: Vector3): Vector3 =
     Vector3.add(this, vec)
 
-  def scale(vec: Vector3): Vector3 =
+  def moveTo(newPosition: Vector3): Vector3 =
+    newPosition
+  def moveTo(x: Double, y: Double, z: Double): Vector3 =
+    moveTo(Vector3(x, y, z))
+
+  def moveBy(amount: Vector3): Vector3 =
+    Vector3.add(this, amount)
+  def moveBy(x: Double, y: Double, z: Double): Vector3 =
+    moveBy(Vector3(x, y, z))
+
+  def scaleBy(vec: Vector3): Vector3 =
     Vector3.multiply(this, vec)
+  def scaleBy(amount: Double): Vector3 =
+    scaleBy(Vector3(amount))
 
   def round: Vector3 =
     Vector3(Math.round(x).toDouble, Math.round(y).toDouble, Math.round(z).toDouble)
@@ -81,8 +96,8 @@ final case class Vector3(x: Double, y: Double, z: Double) {
 
 object Vector3 {
 
-  def apply(i: Int): Vector3 =
-    Vector3(i.toDouble, i.toDouble, i.toDouble)
+  def apply(d: Double): Vector3 =
+    Vector3(d, d, d)
 
   val zero: Vector3 = Vector3(0d, 0d, 0d)
   val one: Vector3  = Vector3(1d, 1d, 1d)

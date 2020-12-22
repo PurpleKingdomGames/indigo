@@ -33,11 +33,26 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) {
   def length: Double =
     distanceTo(Vector4.zero)
 
+  def invert: Vector4 =
+    Vector4(-x, -y, -z, -w)
+
   def translate(vec: Vector4): Vector4 =
     Vector4.add(this, vec)
 
-  def scale(vec: Vector4): Vector4 =
+  def moveTo(newPosition: Vector4): Vector4 =
+    newPosition
+  def moveTo(x: Double, y: Double, z: Double, w: Double): Vector4 =
+    moveTo(Vector4(x, y, z, w))
+
+  def moveBy(amount: Vector4): Vector4 =
+    Vector4.add(this, amount)
+  def moveBy(x: Double, y: Double, z: Double, w: Double): Vector4 =
+    moveBy(Vector4(x, y, z, w))
+
+  def scaleBy(vec: Vector4): Vector4 =
     Vector4.multiply(this, vec)
+  def scaleBy(amount: Double): Vector4 =
+    scaleBy(Vector4(amount))
 
   def round: Vector4 =
     Vector4(Math.round(x).toDouble, Math.round(y).toDouble, Math.round(z).toDouble, Math.round(w).toDouble)
@@ -92,8 +107,8 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) {
 
 object Vector4 {
 
-  def apply(i: Int): Vector4 =
-    Vector4(i.toDouble, i.toDouble, i.toDouble, i.toDouble)
+  def apply(d: Double): Vector4 =
+    Vector4(d, d, d, d)
 
   val zero: Vector4 = Vector4(0d, 0d, 0d, 0d)
   val one: Vector4  = Vector4(1d, 1d, 1d, 1d)

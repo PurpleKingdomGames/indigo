@@ -1,7 +1,4 @@
-package indigo.shared.display
-
-import indigo.shared.datatypes.Point
-import indigo.shared.datatypes.Vector2
+package indigo.shared.datatypes
 
 class Vector2Tests extends munit.FunSuite {
 
@@ -10,7 +7,7 @@ class Vector2Tests extends munit.FunSuite {
   val framePosition = Vector2(64, 0)
 
   test("Basic vector operation.should be able to divide") {
-    assertEquals(areDoubleVectorsEqual(Vector2(0.33, 1), frameSize / imageSize), true)
+    assert(clue(Vector2(0.333, 1)) ~== clue(frameSize / imageSize))
   }
 
   test("Basic vector operation.distance function") {
@@ -30,7 +27,7 @@ class Vector2Tests extends munit.FunSuite {
         .scaleBy(scaleFactor)
         .translate(multiplier)
 
-    assertEquals(areDoubleVectorsEqual(Vector2(0.66, 1), result), true)
+    assert(Vector2(0.66666, 1) ~== result)
 
   }
 
@@ -135,12 +132,6 @@ class Vector2Tests extends munit.FunSuite {
     assert(Vector2(5.0, 5.0) ~== Vector2(4.999999, 5.00001))
     assert(!(Vector2(5.0, 5.0) ~== Vector2(-4.999999, 5.00001)))
   }
-
-  def areDoubleVectorsEqual(expected: Vector2, actual: Vector2): Boolean =
-    areDoublesEqual(expected.x, actual.x) && areDoublesEqual(expected.y, actual.y)
-
-  def areDoublesEqual(expected: Double, actual: Double): Boolean =
-    actual >= expected - 0.01d && actual <= expected + 0.01d
 
   def to2dp(d: Double): Double =
     Math.round(d * 100).toDouble / 100
