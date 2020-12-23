@@ -117,8 +117,8 @@ class Vector4Tests extends munit.FunSuite {
 
     val m = Matrix4.identity
 
-    assertEquals(v.applyMatrix4(m), v)
-    assertEquals(m.transform(v), Vector3(1, 2, 3))
+    assertEquals(v.transform(m).toVector3, v.toVector3)
+    assertEquals(m.transform(v.toVector3), Vector3(1, 2, 3))
   }
 
   test("Multiplying a Vector4 by a Matrix4.should translate...") {
@@ -127,8 +127,8 @@ class Vector4Tests extends munit.FunSuite {
 
     val m = Matrix4.identity.translate(Vector3(5, 10, 20))
 
-    assertEquals(v.applyMatrix4(m), Vector4.position(15, 20, 30))
-    assertEquals(m.transform(v), Vector3(15, 20, 30))
+    assertEquals(v.transform(m), Vector4.position(15, 20, 30))
+    assertEquals(m.transform(v.toVector3), Vector3(15, 20, 30))
   }
 
   test("Multiplying a Vector4 by a Matrix4.should scale...") {
@@ -137,8 +137,8 @@ class Vector4Tests extends munit.FunSuite {
 
     val m = Matrix4.identity.scale(Vector3(2, 2, 2))
 
-    assertEquals(v.applyMatrix4(m), Vector4.position(20, 20, 2))
-    assertEquals(m.transform(v), Vector3(20, 20, 2))
+    assertEquals(v.transform(m), Vector4.position(20, 20, 2))
+    assertEquals(m.transform(v.toVector3), Vector3(20, 20, 2))
   }
 
   test("Multiplying a Vector4 by a Matrix4.should translate then scale...") {
@@ -147,8 +147,8 @@ class Vector4Tests extends munit.FunSuite {
 
     val m = Matrix4.identity.translate(Vector3(10, 10, 10)).scale(Vector3(2, 2, 2))
 
-    assertEquals(v.applyMatrix4(m), Vector4.position(40, 40, 40))
-    assertEquals(m.transform(v), Vector3(40, 40, 40))
+    assertEquals(v.transform(m), Vector4.position(40, 40, 40))
+    assertEquals(m.transform(v.toVector3), Vector3(40, 40, 40))
   }
 
   test("Multiplying a Vector4 by a Matrix4.should scale then translate...") {
@@ -157,8 +157,30 @@ class Vector4Tests extends munit.FunSuite {
 
     val m = Matrix4.identity.scale(Vector3(2, 2, 2)).translate(Vector3(10, 10, 10))
 
-    assertEquals(v.applyMatrix4(m), Vector4.position(30, 30, 30))
-    assertEquals(m.transform(v), Vector3(30, 30, 30))
+    assertEquals(v.transform(m), Vector4.position(30, 30, 30))
+    assertEquals(m.transform(v.toVector3), Vector3(30, 30, 30))
+  }
+
+  test("Multiplying a Vector4 by a Matrix4.should translate then rotate...1") {
+
+    val v = Vector4.position(0, 0, 0)
+
+    val m = Matrix4.identity
+      .translate(Vector3(0, 8, 0))
+      .rotate(Radians.TAUby4.negative)
+
+    assert(v.transform(m) ~== Vector4.position(8, 0, 0))
+  }
+
+  test("Multiplying a Vector4 by a Matrix4.should translate then rotate...2") {
+
+    val v = Vector4.position(2, 10, 0)
+
+    val m = Matrix4.identity
+      .translate(Vector3(-2, -2, 0))
+      .rotate(Radians.TAUby4.negative)
+
+    assert(v.transform(m) ~==  Vector4.position(8, 0, 0))
   }
 
   def to2dp(d: Double): Double =

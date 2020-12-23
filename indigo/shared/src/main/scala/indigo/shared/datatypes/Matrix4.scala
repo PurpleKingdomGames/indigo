@@ -44,16 +44,9 @@ final case class Matrix4(private val mat: List[Double]) {
 
   def transform(vector: Vector3): Vector3 =
     Vector3(
-      x = col1(0) * vector.x + col1(1) * vector.x + col1(2) * vector.x + col1(3),
-      y = col2(0) * vector.y + col2(1) * vector.y + col2(2) * vector.y + col2(3),
-      z = col3(0) * vector.z + col3(1) * vector.z + col3(2) * vector.z + col3(3)
-    )
-
-  def transform(vector: Vector4): Vector3 =
-    Vector3(
-      x = col1(0) * vector.x + col1(1) * vector.x + col1(2) * vector.x + col1(3),
-      y = col2(0) * vector.y + col2(1) * vector.y + col2(2) * vector.y + col2(3),
-      z = col3(0) * vector.z + col3(1) * vector.z + col3(2) * vector.z + col3(3)
+      x = col1(0) * vector.x + col1(1) * vector.y + col1(2) * vector.z + col1(3),
+      y = col2(0) * vector.x + col2(1) * vector.y + col2(2) * vector.z + col2(3),
+      z = col3(0) * vector.x + col3(1) * vector.y + col3(2) * vector.z + col3(3)
     )
 
   def prettyPrint: String =

@@ -77,10 +77,14 @@ final case class Vector3(x: Double, y: Double, z: Double) {
       if (z == 0) 0 else (z / Math.abs(z))
     )
 
-  def applyMatrix4(matrix4: Matrix4): Vector3 = Vector3.applyMatrix4(this, matrix4)
+  def applyMatrix4(matrix4: Matrix4): Vector3 =
+    matrix4.transform(this)
 
   def toVector2: Vector2 =
     Vector2(x, y)
+
+  def toVector4: Vector4 =
+    Vector4(x, y, z, 1)
 
   def distanceTo(other: Vector3): Double =
     Vector3.distance(this, other)
@@ -90,8 +94,8 @@ final case class Vector3(x: Double, y: Double, z: Double) {
 
   def ~==(other: Vector3): Boolean =
     Math.abs(x - other.x) < 0.001 &&
-    Math.abs(y - other.y) < 0.001 &&
-    Math.abs(z - other.z) < 0.001
+      Math.abs(y - other.y) < 0.001 &&
+      Math.abs(z - other.z) < 0.001
 }
 
 object Vector3 {
@@ -119,16 +123,5 @@ object Vector3 {
 
   def distance(v1: Vector3, v2: Vector3): Double =
     Math.sqrt(Math.abs(Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2) + Math.pow(v2.z - v1.z, 2)))
-
-  def applyMatrix4(vector3: Vector3, matrix4: Matrix4): Vector3 = {
-    val m  = matrix4.transpose
-    val vl = vector3.toList
-
-    Vector3(
-      x = m.row1.zip(vl).map(p => p._1 * p._2).sum,
-      y = m.row2.zip(vl).map(p => p._1 * p._2).sum,
-      z = m.row3.zip(vl).map(p => p._1 * p._2).sum
-    )
-  }
 
 }

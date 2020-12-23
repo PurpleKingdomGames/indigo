@@ -79,7 +79,17 @@ final case class Vector2(x: Double, y: Double) {
   def toPoint: Point =
     Point(x.toInt, y.toInt)
 
-  def applyMatrix4(matrix4: Matrix4): Vector2 = Vector2.applyMatrix4(this, matrix4)
+  def transform(matrix3: Matrix3): Vector2 =
+    matrix3.transform(this)
+
+  def transform(matrix4: Matrix4): Vector2 =
+    matrix4.transform(toVector3).toVector2
+
+  def toVector3: Vector3 =
+    Vector3(x, y, 1)
+
+  def toVector4: Vector4 =
+    Vector4(x, y, 1, 1)
 
   def ===(other: Vector2): Boolean =
     x == other.x && y == other.y
@@ -124,15 +134,5 @@ object Vector2 {
 
   def distance(v1: Vector2, v2: Vector2): Double =
     Math.sqrt(Math.abs(Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2)))
-
-  def applyMatrix4(vector2: Vector2, matrix4: Matrix4): Vector2 = {
-    val m  = matrix4.transpose
-    val vl = vector2.toList
-
-    Vector2(
-      x = m.row1.zip(vl).map(p => p._1 * p._2).sum,
-      y = m.row2.zip(vl).map(p => p._1 * p._2).sum
-    )
-  }
 
 }

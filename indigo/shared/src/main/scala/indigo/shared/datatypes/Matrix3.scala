@@ -36,8 +36,8 @@ final case class Matrix3(private val mat: List[Double]) {
 
   def transform(vector: Vector2): Vector2 =
     Vector2(
-      x = col1(0) * vector.x + col1(1) * vector.x + col1(2),
-      y = col2(0) * vector.y + col2(1) * vector.y + col2(2)
+      x = col1(0) * vector.x + col1(1) * vector.y + col1(2),
+      y = col2(0) * vector.x + col2(1) * vector.y + col2(2)
     )
 
   def prettyPrint: String =

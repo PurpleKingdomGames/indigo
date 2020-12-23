@@ -199,4 +199,34 @@ class Matrix4Tests extends munit.FunSuite {
     assertEquals(actual, expected)
   }
 
+  test("transforming vectors - translate (forward) and rotation") {
+    val mat: Matrix4 =
+      Matrix4.identity
+        .translate(Vector3(0, 8, 0))
+        .rotate(Radians.TAUby4.negative)
+
+    val actual: Vector3 =
+      mat.transform(Vector3(0, 0, 0))
+
+    val expected: Vector3 =
+      Vector3(8, 0, 0)
+
+    assert(clue(actual) ~== clue(expected))
+  }
+
+  test("transforming vectors - translate (backwards) and rotation") {
+    val mat: Matrix4 =
+      Matrix4.identity
+        .translate(Vector3(-2, -2, 0))
+        .rotate(Radians.TAUby4.negative)
+
+    val actual: Vector3 =
+      mat.transform(Vector3(2, 10, 0))
+
+    val expected: Vector3 =
+      Vector3(8, 0, 0)
+
+    assert(clue(actual) ~== clue(expected))
+  }
+
 }

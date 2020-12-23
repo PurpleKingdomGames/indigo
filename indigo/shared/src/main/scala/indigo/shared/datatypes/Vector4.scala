@@ -81,13 +81,14 @@ final case class Vector4(x: Double, y: Double, z: Double, w: Double) {
       if (w == 0) 0 else (w / Math.abs(w))
     )
 
-  def applyMatrix4(matrix4: Matrix4): Vector4 = Vector4.applyMatrix4(this, matrix4)
+  def transform(matrix4: Matrix4): Vector4 =
+    matrix4.transform(toVector3).toVector4
 
   def toVector2: Vector2 =
     Vector2(x, y)
 
   def toVector3: Vector3 =
-    Vector3(x, y, x)
+    Vector3(x, y, z)
 
   def distanceTo(other: Vector4): Double =
     Vector4.distance(this, other)
@@ -136,17 +137,5 @@ object Vector4 {
 
   def distance(v1: Vector4, v2: Vector4): Double =
     Math.sqrt(Math.abs(Math.pow(v2.x - v1.x, 2) + Math.pow(v2.y - v1.y, 2) + Math.pow(v2.z - v1.z, 2) + Math.pow(v2.w - v1.w, 2)))
-
-  def applyMatrix4(vector4: Vector4, matrix4: Matrix4): Vector4 = {
-    val m  = matrix4.transpose
-    val vl = vector4.toList
-
-    Vector4(
-      x = m.row1.zip(vl).map(p => p._1 * p._2).sum,
-      y = m.row2.zip(vl).map(p => p._1 * p._2).sum,
-      z = m.row3.zip(vl).map(p => p._1 * p._2).sum,
-      w = m.row4.zip(vl).map(p => p._1 * p._2).sum
-    )
-  }
 
 }
