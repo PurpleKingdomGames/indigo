@@ -19,6 +19,9 @@ final case class Radians(value: Double) extends AnyVal {
   def wrap: Radians =
     Radians(((this.value % Radians.TAU.value) + Radians.TAU.value) % Radians.TAU.value)
 
+  def negative: Radians =
+    Radians(-value)
+
   def hash: String =
     value.toString()
 
