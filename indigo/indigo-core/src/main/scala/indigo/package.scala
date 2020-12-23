@@ -188,6 +188,9 @@ package object indigo {
   type Vector4 = shared.datatypes.Vector4
   val Vector4: shared.datatypes.Vector4.type = shared.datatypes.Vector4
 
+  type Matrix3 = shared.datatypes.Matrix3
+  val Matrix3: shared.datatypes.Matrix3.type = shared.datatypes.Matrix3
+
   type Matrix4 = shared.datatypes.Matrix4
   val Matrix4: shared.datatypes.Matrix4.type = shared.datatypes.Matrix4
 
