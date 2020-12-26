@@ -10,6 +10,9 @@ import scala.concurrent.Future
 
 /**
   * A trait representing a minimal set of functions to get your game running
+  *
+  * @example `object MyGame extends IndigoDemo[BootData, StartUpData, Model, ViewModel]`
+  *
   * @tparam BootData The class type representing you a successful game boot up
   * @tparam StartUpData The class type representing your successful startup data
   * @tparam Model The class type representing your game's model
@@ -17,20 +20,98 @@ import scala.concurrent.Future
   */
 trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
 
+  /**
+    * Event filters represent a mapping from events to possible events,
+    * and act like a firewall to prevent unnecessary event processing
+    * by the model or view model.
+    */
   def eventFilters: EventFilters
 
+  /**
+    * `boot` provides the initial boot up function for your game, accepting
+    * commandline-like arguments and allowing you to declare pre-requist
+    * assets assets and data that must be in place for your game to get going.
+    *
+    * @param flags A simply key-value object/map passed in during initial boot.
+    * @return Bootup data consisting of a custom data type, animations,
+    *         subsytems, assets, fonts, and the game's config.
+    */
   def boot(flags: Map[String, String]): Outcome[BootResult[BootData]]
 
+  /**
+    * The `setup` function is your only opportunity to do an initial work
+    * to set up your game. For example, perhaps one of your assets was a
+    * JSON description of a map or an animation sequence, you could process
+    * that now, which is why you have access to the `AssetCollection` object.
+    * `setup` is typically only called when new assets are loaded. In a simple
+    * game this may only be once, but if assets are dynamically loaded, set up
+    * will be called again.
+    *
+    * @param bootData Data created during initial game boot.
+    * @param assetCollection Access to the Asset collection in order to,
+    *                        for example, parse text files.
+    * @param dice Psuedorandom number generator
+    * @return Return start up data, which can include animations and fonts
+    *         that could not be declared at boot time.
+    */
   def setup(bootData: BootData, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[StartUpData]]
 
+  /**
+    * Set up of your initial model state
+    *
+    * @param startupData Access to Startup data in case you need it for the model
+    * @return An instance of your game model
+    */
   def initialModel(startupData: StartUpData): Outcome[Model]
 
+  /**
+    * Set up of your initial view model state
+    *
+    * @param startupData Access to Startup data in case you need it for the view model
+    * @return An instance of your game's view model
+    */
   def initialViewModel(startupData: StartUpData, model: Model): Outcome[ViewModel]
 
+  /**
+    * A pure function for updating your game's model in the context of the
+    * running frame and the events acting upon it.
+    *
+    * @param context The context the frame should be produced in, including the time,
+    *                input state, a dice instance, the state of the inputs, and a
+    *                read only reference to your start up data.
+    * @param model The latest version of the model to read from.
+    * @return A function that maps GlobalEvent's to the next version of your model,
+    *         and encapsuates failures or resulting events within the Outcome wrapper.
+    */
   def updateModel(context: FrameContext[StartUpData], model: Model): GlobalEvent => Outcome[Model]
 
+  /**
+    * A pure function for updating your game's view model in the context of the
+    * running frame and the events acting upon it.
+    *
+    *  @param context The context the frame should be produced in, including the time,
+    *                input state, a dice instance, the state of the inputs, and a
+    *                read only reference to your start up data.
+    * @param model The latest version of the model to read from.
+    * @param viewModel The latest version of the view model to read from.
+    * @return A function that maps GlobalEvent's to the next version of your view model,
+    *         and encapsuates failures or resulting events within the Outcome wrapper.
+    */
   def updateViewModel(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): GlobalEvent => Outcome[ViewModel]
 
+  /**
+    * A pure function for presenting your game. The result is a side effect
+    * free declaration of what you intend to be presented to the player next.
+    *
+    * @param context The context the frame should be produced in, including the time,
+    *                input state, a dice instance, the state of the inputs, and a
+    *                read only reference to your start up data.
+    * @param model The latest version of the model to read from.
+    * @param viewModel The latest version of the view model to read from.
+    * @return A function that produces a description of what to present next,
+    *         and encapsuates failures or resulting events within the Outcome
+    *         wrapper.
+    */
   def present(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): Outcome[SceneUpdateFragment]
 
   private val subSystemsRegister: SubSystemsRegister =
@@ -69,6 +150,6 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
 
       case Outcome.Result(b, evts) =>
         indigoGame(b).start(b.gameConfig, Future(None), b.assets, Future(Set()), evts)
-  }
+    }
 
 }
