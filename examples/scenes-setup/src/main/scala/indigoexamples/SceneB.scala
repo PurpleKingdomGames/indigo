@@ -20,7 +20,7 @@ object SceneB extends Scene[StartUpData, GameModel, Unit] {
   val viewModelLens: Lens[Unit, Unit] =
     Lens.fixed(())
 
-  val eventFilters: EventFilters = EventFilters.Default
+  val eventFilters: EventFilters = EventFilters.Permissive
 
   val subSystems: Set[SubSystem] =
     Set(

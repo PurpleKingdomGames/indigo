@@ -16,6 +16,9 @@ object ScenesSetup extends IndigoGame[Unit, StartUpData, GameModel, Unit] {
 
   def initialScene(bootData: Unit): Option[SceneName] = Option(SceneA.name)
 
+  def eventFilters: EventFilters =
+    EventFilters.Permissive
+
   def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
     Outcome(
       BootResult
@@ -42,6 +45,15 @@ object ScenesSetup extends IndigoGame[Unit, StartUpData, GameModel, Unit] {
 
   def initialViewModel(startupData: StartUpData, model: GameModel): Outcome[Unit] =
     Outcome(())
+
+  def updateModel(context: FrameContext[StartUpData], model: GameModel): GlobalEvent => Outcome[GameModel] =
+    _ => Outcome(model)
+
+  def updateViewModel(context: FrameContext[StartUpData], model: GameModel, viewModel: Unit): GlobalEvent => Outcome[Unit] =
+    _ => Outcome(viewModel)
+
+  def present(context: FrameContext[StartUpData], model: GameModel, viewModel: Unit): Outcome[SceneUpdateFragment] =
+    Outcome(SceneUpdateFragment.empty)
 }
 
 final case class StartUpData(messageA: String, messageB: String)

@@ -8,7 +8,7 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object InputFieldExample extends IndigoDemo[Unit, Unit, Unit, MyViewModel] {
 
-  val eventFilters: EventFilters = EventFilters.Default
+  val eventFilters: EventFilters = EventFilters.Permissive
 
   def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
     Outcome(

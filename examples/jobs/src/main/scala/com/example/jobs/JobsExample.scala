@@ -10,7 +10,7 @@ import indigoextras.jobs.JobMarketEvent
 @JSExportTopLevel("IndigoGame")
 object JobsExample extends IndigoDemo[Unit, StartupData, Model, Unit] {
 
-  val eventFilters: EventFilters = EventFilters.Default
+  val eventFilters: EventFilters = EventFilters.Permissive
 
   def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
     Outcome(

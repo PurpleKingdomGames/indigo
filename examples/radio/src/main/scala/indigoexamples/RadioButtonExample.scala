@@ -11,7 +11,7 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object RadioButtonExample extends IndigoDemo[Unit, Unit, MyGameModel, MyViewModel] {
 
-  val eventFilters: EventFilters = EventFilters.Default
+  val eventFilters: EventFilters = EventFilters.Permissive
 
   val radioButtonGraphic: AssetName = AssetName("graphics")
   val backgroundGraphic: AssetName  = AssetName("background")

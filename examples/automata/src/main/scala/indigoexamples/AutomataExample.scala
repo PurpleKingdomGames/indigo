@@ -8,7 +8,7 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object AutomataExample extends IndigoDemo[Point, Point, Unit, ViewModel] {
 
-  val eventFilters: EventFilters = EventFilters.Default
+  val eventFilters: EventFilters = EventFilters.Permissive
 
   def boot(flags: Map[String, String]): Outcome[BootResult[Point]] =
     Outcome {
