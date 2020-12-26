@@ -6,18 +6,25 @@ import indigo.json.Json
 import indigoextras.subsystems.FPSCounter
 import indigoextras.ui.InputField
 import indigoextras.ui.InputFieldAssets
+import indigo.scenes._
 
 import scala.scalajs.js.annotation._
 import indigo.shared.events.FullScreenEntered
 import indigo.shared.events.FullScreenExited
 
 @JSExportTopLevel("IndigoGame")
-object SandboxGame extends IndigoDemo[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {
+object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
   private val targetFPS: Int          = 60
   private val magnificationLevel: Int = 2
   private val viewportWidth: Int      = 228 * magnificationLevel
   private val viewportHeight: Int     = 128 * magnificationLevel
+
+  def initialScene(bootData: SandboxBootData): Option[SceneName] =
+    None
+
+  def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
+    NonEmptyList(TestScene)
 
   val eventFilters: EventFilters = EventFilters.Default
 
@@ -145,3 +152,38 @@ final case class Dude(aseprite: Aseprite, sprite: Sprite)
 final case class SandboxBootData(message: String)
 final case class SandboxStartupData(dude: Dude)
 final case class SandboxViewModel(offset: Point, single: InputField, multi: InputField)
+
+object TestScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
+
+  type SceneModel     = Unit
+  type SceneViewModel = Unit
+
+  def eventFilters: EventFilters =
+    EventFilters.Default
+
+  def modelLens: indigo.scenes.Lens[SandboxGameModel, Unit] =
+    Lens.unit[SandboxGameModel]
+
+  def viewModelLens: Lens[SandboxViewModel, Unit] =
+    Lens.unit[SandboxViewModel]
+
+  def name: SceneName =
+    SceneName("test")
+
+  def subSystems: Set[SubSystem] =
+    Set()
+
+  def updateModel(context: FrameContext[SandboxStartupData], model: Unit): GlobalEvent => Outcome[Unit] =
+    _ => Outcome(model)
+
+  def updateViewModel(context: FrameContext[SandboxStartupData], model: Unit, viewModel: Unit): GlobalEvent => Outcome[Unit] =
+    _ => Outcome(viewModel)
+
+  def present(context: FrameContext[SandboxStartupData], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
+    Outcome(
+      SceneUpdateFragment(
+        Graphic(120, 10, 32, 32, 1, SandboxAssets.dotsMaterial)
+      )
+    )
+
+}

@@ -31,6 +31,8 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
     */
   def initialScene(bootData: BootData): Option[SceneName]
 
+  def eventFilters: EventFilters
+
   /**
     * A non-empty ordered list of scenes
     * @param flags A simply key-value object/map passed in during initial boot.
@@ -69,6 +71,12 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
     */
   def initialViewModel(startupData: StartUpData, model: Model): Outcome[ViewModel]
 
+  def updateModel(context: FrameContext[StartUpData], model: Model): GlobalEvent => Outcome[Model]
+
+  def updateViewModel(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): GlobalEvent => Outcome[ViewModel]
+
+  def present(context: FrameContext[StartUpData], model: Model, viewModel: ViewModel): Outcome[SceneUpdateFragment]
+
   private val subSystemsRegister: SubSystemsRegister =
     new SubSystemsRegister()
 
@@ -90,7 +98,11 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
     val frameProcessor: ScenesFrameProcessor[StartUpData, Model, ViewModel] = {
       new ScenesFrameProcessor(
         subSystemsRegister,
-        sceneManager
+        sceneManager,
+        eventFilters,
+        updateModel,
+        updateViewModel,
+        present
       )
     }
 
