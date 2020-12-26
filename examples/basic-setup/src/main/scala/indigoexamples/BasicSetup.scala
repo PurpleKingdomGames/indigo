@@ -7,7 +7,7 @@ import scala.scalajs.js.annotation._
 @JSExportTopLevel("IndigoGame")
 object BasicSetup extends IndigoDemo[Unit, MyStartUpData, MyGameModel, MyViewModel] {
 
-  val eventFilters: EventFilters = EventFilters.Default
+  val eventFilters: EventFilters = EventFilters.Permissive
 
   def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
     Outcome(

@@ -19,7 +19,7 @@ Ping! to the console.
 @JSExportTopLevel("IndigoGame")
 object WebSocketExample extends IndigoDemo[Unit, MySetupData, Unit, MyViewModel] {
 
-  val eventFilters: EventFilters = EventFilters.Default
+  val eventFilters: EventFilters = EventFilters.Permissive
 
   def boot(flags: Map[String, String]): Outcome[BootResult[Unit]] =
     Outcome(
