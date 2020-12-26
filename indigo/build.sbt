@@ -87,7 +87,7 @@ lazy val indigoCore =
         "org.scalacheck" %%% "scalacheck" % "1.15.2" % "test"
       )
     )
-    .dependsOn(shared)
+    .dependsOn(indigoShared)
     .dependsOn(indigoPlatforms)
 
 // Indigo Extensions
@@ -97,7 +97,7 @@ lazy val indigoExtras =
     .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(publishSettings: _*)
-    .dependsOn(shared)
+    .dependsOn(indigoShared)
     .settings(
       name := "indigo-extras",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.2" % "test"
@@ -117,13 +117,13 @@ lazy val indigo =
     )
 
 // Indigo Facades
-lazy val facades =
+lazy val indigoFacades =
   project
-    .in(file("facades"))
+    .in(file("indigo-facades"))
     .enablePlugins(ScalaJSPlugin)
     .settings(publishSettings: _*)
     .settings(
-      name := "facades",
+      name := "indigo-facades",
       version := indigoVersion,
       scalaVersion := dottyVersion,
       crossScalaVersions := Seq(dottyVersion, scala213Version),
@@ -158,17 +158,18 @@ lazy val indigoPlatforms =
         cachedFun(IO.listFiles((baseDirectory.value / "shaders")).toSet).toSeq
       }.taskValue
     )
-    .dependsOn(shared)
-    .dependsOn(facades)
+    .dependsOn(indigoShared)
+    .dependsOn(indigoFacades)
 
 // Shared
-lazy val shared =
+lazy val indigoShared =
   project
+    .in(file("indigo-shared"))
     .enablePlugins(ScalaJSPlugin)
     .settings(commonSettings: _*)
     .settings(publishSettings: _*)
     .settings(
-      name := "shared",
+      name := "indigo-shared",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.2" % "test"
     )
 
@@ -195,18 +196,18 @@ lazy val indigoProject =
     .settings(commonSettings: _*)
     .settings(
       code := { "code ." ! },
-      openshareddocs := { "open -a Firefox shared/.jvm/target/scala-3.0.0-M3/api/indigo/index.html" ! },
+      openshareddocs := { "open -a Firefox indigo-shared/.jvm/target/scala-3.0.0-M3/api/indigo/index.html" ! },
       openindigodocs := { "open -a Firefox indigo/.jvm/target/scala-3.0.0-M3/api/indigo/index.html" ! },
       openindigoextsdocs := { "open -a Firefox indigo-exts/.jvm/target/scala-3.0.0-M3/api/indigoexts/index.html" ! }
     )
     .aggregate(
-      shared,
+      indigoShared,
       indigoPlatforms,
       indigoJsonCirce,
       indigoCore,
       indigoExtras,
       indigo,
-      facades,
+      indigoFacades,
       sandbox,
       perf
     )
