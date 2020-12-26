@@ -32,7 +32,7 @@ final case class LevelScene(screenWidth: Int) extends Scene[StartupData, Model, 
     )
 
   val eventFilters: EventFilters =
-    EventFilters.Default
+    EventFilters.Restricted
 
   val subSystems: Set[SubSystem] =
     Set(

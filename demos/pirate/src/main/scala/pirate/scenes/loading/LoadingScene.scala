@@ -42,7 +42,7 @@ final case class LoadingScene(assetPath: String, screenDimensions: Rectangle)
     Lens(_ => (), (vm, _) => vm)
 
   val eventFilters: EventFilters =
-    EventFilters.Default
+    EventFilters.Restricted
 
   val subSystems: Set[SubSystem] =
     Set(AssetBundleLoader)

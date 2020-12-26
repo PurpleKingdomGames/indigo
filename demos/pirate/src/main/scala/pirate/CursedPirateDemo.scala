@@ -33,6 +33,9 @@ object CursedPirateDemo extends IndigoGame[BootInformation, StartupData, Model, 
       LevelScene(bootInfo.screenDimensions.width)
     )
 
+  val eventFilters: EventFilters =
+    EventFilters.BlockAll
+
   /*
   The boot function sets up the game basics.
   Two important things to watch out for:
@@ -71,6 +74,19 @@ object CursedPirateDemo extends IndigoGame[BootInformation, StartupData, Model, 
 
   def initialViewModel(startupData: StartupData, model: Model): Outcome[ViewModel] =
     Outcome(ViewModel.initial)
+
+  def updateModel(context: FrameContext[StartupData], model: Model): GlobalEvent => Outcome[Model] =
+    _ => Outcome(model)
+
+  def updateViewModel(
+      context: FrameContext[StartupData],
+      model: Model,
+      viewModel: ViewModel
+  ): GlobalEvent => Outcome[ViewModel] =
+    _ => Outcome(viewModel)
+
+  def present(context: FrameContext[StartupData], model: Model, viewModel: ViewModel): Outcome[SceneUpdateFragment] =
+    Outcome(SceneUpdateFragment.empty)
 
 }
 
