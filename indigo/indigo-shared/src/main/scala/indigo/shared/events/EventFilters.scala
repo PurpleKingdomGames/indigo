@@ -83,6 +83,18 @@ object EventFilters {
     )
 
   /**
+    * Block all events to model and view model. This is likely
+    * not the effect you want since your game will not hear
+    * about any events at all. However, one use case is a
+    * game with scenes where no global processing is required.
+    */
+  val BlockAll: EventFilters =
+    EventFilters(
+      { case _: GlobalEvent => None },
+      { case _: GlobalEvent => None }
+    )
+
+  /**
     * Model and view model receive all events _apart_ from
     * messages intended for subsystems. Inefficient, but
     * easy to develop against since you can listen for anything
