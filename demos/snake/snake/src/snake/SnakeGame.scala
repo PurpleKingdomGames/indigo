@@ -18,6 +18,9 @@ object SnakeGame extends IndigoGame[GameViewport, SnakeStartupData, SnakeGameMod
   def scenes(bootData: GameViewport): NonEmptyList[Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel]] =
     NonEmptyList(StartScene, ControlsScene, GameScene, GameOverScene)
 
+  val eventFilters: EventFilters =
+    EventFilters.BlockAll
+
   def boot(flags: Map[String, String]): Outcome[BootResult[GameViewport]] =
     Outcome {
       val assetPath: String =
@@ -47,5 +50,22 @@ object SnakeGame extends IndigoGame[GameViewport, SnakeStartupData, SnakeGameMod
 
   def setup(viewport: GameViewport, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[SnakeStartupData]] =
     SnakeStartupData.initialise(viewport, Settings.gridSize)
+
+  def updateModel(context: FrameContext[SnakeStartupData], model: SnakeGameModel): GlobalEvent => Outcome[SnakeGameModel] =
+    _ => Outcome(model)
+
+  def updateViewModel(
+      context: FrameContext[SnakeStartupData],
+      model: SnakeGameModel,
+      viewModel: SnakeViewModel
+  ): GlobalEvent => Outcome[SnakeViewModel] =
+    _ => Outcome(viewModel)
+
+  def present(
+      context: FrameContext[SnakeStartupData],
+      model: SnakeGameModel,
+      viewModel: SnakeViewModel
+  ): Outcome[SceneUpdateFragment] =
+    Outcome(SceneUpdateFragment.empty)
 
 }
