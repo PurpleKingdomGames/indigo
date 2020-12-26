@@ -20,7 +20,7 @@ object StartScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel
     Lens.keepLatest
 
   val eventFilters: EventFilters =
-    EventFilters.Default
+    EventFilters.Restricted
       .withViewModelFilter(_ => None)
 
   val subSystems: Set[SubSystem] =

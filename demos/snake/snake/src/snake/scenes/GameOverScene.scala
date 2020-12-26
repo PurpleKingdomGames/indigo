@@ -18,7 +18,7 @@ object GameOverScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewMo
     Lens.fixed(())
 
   val eventFilters: EventFilters =
-    EventFilters.Default
+    EventFilters.Restricted
       .withViewModelFilter(_ => None)
 
   val subSystems: Set[SubSystem] =
