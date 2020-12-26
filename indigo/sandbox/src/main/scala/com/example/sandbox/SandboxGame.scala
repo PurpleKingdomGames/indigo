@@ -26,7 +26,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(TestScene)
 
-  val eventFilters: EventFilters = EventFilters.Default
+  val eventFilters: EventFilters = EventFilters.Permissive
 
   def boot(flags: Map[String, String]): Outcome[BootResult[SandboxBootData]] = {
     val gameViewport =
@@ -159,7 +159,7 @@ object TestScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
   type SceneViewModel = Unit
 
   def eventFilters: EventFilters =
-    EventFilters.Default
+    EventFilters.Restricted
 
   def modelLens: indigo.scenes.Lens[SandboxGameModel, Unit] =
     Lens.unit[SandboxGameModel]

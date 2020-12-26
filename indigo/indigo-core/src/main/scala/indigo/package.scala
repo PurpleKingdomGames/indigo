@@ -90,6 +90,9 @@ package object indigo {
   type EventFilters = shared.events.EventFilters
   val EventFilters: shared.events.EventFilters.type = shared.events.EventFilters
 
+  type AccessControl = shared.events.AccessControl
+  val AccessControl: shared.events.AccessControl.type = shared.events.AccessControl
+
   type RendererDetails = shared.events.RendererDetails
   val RendererDetails: shared.events.RendererDetails.type = shared.events.RendererDetails
 

@@ -97,10 +97,16 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher {
     val updateViewModel: (FrameContext[StartUpData], Model, Unit) => GlobalEvent => Outcome[Unit] =
       (_, _, vm) => _ => Outcome(vm)
 
+    val eventFilters: EventFilters =
+      EventFilters(
+        { case e => Some(e) },
+        { case _ => None }
+      )
+
     val frameProcessor: StandardFrameProcessor[StartUpData, Model, Unit] =
       new StandardFrameProcessor(
         new SubSystemsRegister(),
-        EventFilters.Default,
+        eventFilters,
         (ctx, m) => (e: GlobalEvent) => updateModel(ctx, m)(e),
         updateViewModel,
         (ctx, m, _) => present(ctx, m)
