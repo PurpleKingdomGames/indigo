@@ -111,13 +111,11 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
 
     }
 
-  val defaultFilter: GlobalEvent => Option[GlobalEvent] =
-    (e: GlobalEvent) => Some(e)
-
   def eventFilters: EventFilters =
     scenes.find(_.name == finderInstance.current.name) match {
       case None =>
-        EventFilters.Default
+        // This should never be the case, we should always find a scene.
+        EventFilters((_: GlobalEvent) => None, (_: GlobalEvent) => None)
 
       case Some(value) =>
         value.eventFilters

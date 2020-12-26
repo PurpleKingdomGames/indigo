@@ -80,7 +80,7 @@ object TestFixtures {
     (_, _, _) => Outcome(SceneUpdateFragment.empty.withAmbientLightAmount(0.5))
 
   val standardFrameProcessor: StandardFrameProcessor[Unit, GameModel, Int] = {
-    new StandardFrameProcessor(new SubSystemsRegister(), EventFilters.NoFilter, modelUpdate, viewModelUpdate, viewUpdate)
+    new StandardFrameProcessor(new SubSystemsRegister(), EventFilters.AllowAll, modelUpdate, viewModelUpdate, viewUpdate)
   }
 
   final case class GameModel(count: Int)
