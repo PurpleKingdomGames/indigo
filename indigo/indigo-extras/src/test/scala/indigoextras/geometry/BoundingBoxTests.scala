@@ -5,6 +5,11 @@ import indigo.shared.datatypes.Point
 
 class BoundingBoxTests extends munit.FunSuite {
 
+  test("approx equal") {
+    assert(BoundingBox(5.0, 5.0, 5.0, 5.0) ~== BoundingBox(4.999999, 5.00001, 4.999999, 5.00001))
+    assert(!(BoundingBox(5.0, 5.0, 5.0, 5.0) ~== BoundingBox(4.98, 5.00001, 4.98, 5.00001)))
+  }
+
   test("creating rectangles.should be able to construct a bounding box from two vertices") {
     val pt1 = Vertex(5, 6)
     val pt2 = Vertex(1, 3)
