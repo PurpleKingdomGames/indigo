@@ -4,6 +4,11 @@ import indigo.shared.datatypes.Vector2
 
 class LineSegmentTests extends munit.FunSuite {
 
+  test("approx equal") {
+    assert(LineSegment(5.0, 5.0, 5.0, 5.0) ~== LineSegment(4.999999, 5.00001, 4.999999, 5.00001))
+    assert(!(LineSegment(5.0, 5.0, 5.0, 5.0) ~== LineSegment(4.98, 5.00001, 4.98, 5.00001)))
+  }
+
   test("length") {
     assertEquals(LineSegment(Vertex(10, 10), Vertex(20, 10)).length, 10.0d)
     assertEquals(LineSegment(Vertex(10, 10), Vertex(10, -10)).length, 20.0d)
