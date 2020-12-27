@@ -33,3 +33,4 @@ elm-stuff
 .bloop
 metals.sbt
 .bsp/
+.ammonite
