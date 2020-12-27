@@ -2,42 +2,142 @@ import $ivy.`com.github.wi101::embroidery:0.1.1`
 
 import embroidery._
 
-val pixelsWithArt: List[PixelAsciiArt] =
+// val pixelsWithArt: List[PixelAsciiArt] =
+//   List(
+//     PixelAsciiArt(Pixel(255), Art(' ')),
+//     PixelAsciiArt(Pixel(133), Art('@')),
+//     PixelAsciiArt(Pixel(0), Art('-'))
+//   )
+
+// // val img = ImagePath("indigo_logo_40x20.png").toAsciiArt(pixelsWithArt, 40, 20)
+// val img =
+//   ImagePath("indigo_logo_40x20_simple.png").toAsciiArt(pixelsWithArt, 40, 20)
+
+// val out = img.flatMap(c =>
+//   if (c != ' ' && c != '\n')
+//     Console.MAGENTA + c.toString + Console.RESET
+//   else c.toString
+// )
+
+// println(out)
+
+val pixelsWithArtSmall: List[PixelAsciiArt] =
   List(
     PixelAsciiArt(Pixel(255), Art(' ')),
-    PixelAsciiArt(Pixel(133), Art('@')),
-    PixelAsciiArt(Pixel(0), Art('-'))
+    PixelAsciiArt(Pixel(133), Art('0')),
+    PixelAsciiArt(Pixel(0), Art(' '))
   )
 
-// val img = ImagePath("indigo_logo_40x20.png").toAsciiArt(pixelsWithArt, 40, 20)
-val img =
-  ImagePath("indigo_logo_40x20_simple.png").toAsciiArt(pixelsWithArt, 40, 20)
+val imgSmall = ImagePath("indigo_ascii_logo.png").toAsciiArt(
+  pixelsWithArtSmall,
+  40,
+  20
+)
 
-val out = img.flatMap(c =>
+val outSmall = imgSmall.flatMap(c =>
   if (c != ' ' && c != '\n')
     Console.MAGENTA + c.toString + Console.RESET
   else c.toString
 )
 
-println(out)
+println(outSmall)
+
+/*
+  00                  00  00
+                      00
+  00  000000      000000  00    0000      000000
+  00  00    00  00    00  00  00    00  00    00
+  00  00    00  00000000  00  00000000  000000
+                                    00
+                              000000
+ */
+
+/*
+  ==                  ==  ==
+                      ==
+  ==  ======      ======  ==    ====      ======
+  ==  ==    ==  ==    ==  ==  ==    ==  ==    ==
+  ==  ==    ==  ========  ==  ========  ======
+                                    ==
+                              ======
+
+
+  OO                  OO  OO
+                      OO
+  OO  OOOOOO      OOOOOO  OO    OOOO      OOOOOO
+  OO  OO    OO  OO    OO  OO  OO    OO  OO    OO
+  OO  OO    OO  OOOOOOOO  OO  OOOOOOOO  OOOOOO
+                                    OO
+                              OOOOOO
+
+
+
+  00                  00  00
+                      00
+  00  000000      000000  00    0000      000000
+  00  00    00  00    00  00  00    00  00    00
+  00  00    00  00000000  00  00000000  000000
+                                    00
+                              000000
+
+
+  oo                  oo  oo
+                      oo
+  oo  oooooo      oooooo  oo    oooo      oooooo
+  oo  oo    oo  oo    oo  oo  oo    oo  oo    oo
+  oo  oo    oo  oooooooo  oo  oooooooo  oooooo
+                                    oo
+                              oooooo
+
+
+ */
 
 /*
 
 
-                                  ------
-      ------                      --@@--------
-      --@@--                      --@@----@@--
-      ------------------    --------@@--------------------    ----------
-      --@@----@@@@@@@@--------@@@@@@@@----@@------@@@@@@--------@@@@@@----
-      --@@----@@------@@----@@------@@----@@----@@------@@----@@------@@--
-      --@@----@@--  --@@----@@------@@----@@----@@------@@----@@------@@--
-      --@@----@@--  --@@------@@@@@@@@----@@----@@@@@@@@@@------@@@@@@----
-      ------------  ------------------------------------@@--  ----------
-                                              --@@------@@--
-                                              ----@@@@@@----
-                                                ----------
+    ●●                  ●●  ●●
+                        ●●
+    ●●  ●●●●●●      ●●●●●●  ●●  ●●●●●●      ●●●●
+    ●●  ●●    ●●  ●●    ●●  ●●  ●●    ●●  ●●    ●●
+    ●●  ●●    ●●  ●●●●●●●●  ●●  ●●●●●●●●  ●●●●●●●●
+                                      ●●
+                                ●●●●●●
 
-*/
+
+ */
+
+/*
+
+
+    @@                  @@  @@
+                        @@
+    @@  @@@@@@      @@@@@@  @@  @@@@@@      @@@@
+    @@  @@    @@  @@    @@  @@  @@    @@  @@    @@
+    @@  @@    @@  @@@@@@@@  @@  @@@@@@@@  @@@@@@@@
+                                      @@
+                                @@@@@@
+
+
+
+ */
+
+/*
+
+
+                              ------
+  ------                      --@@--------
+  --@@--                      --@@----@@--
+  ------------------    --------@@--------------------    ----------
+  --@@----@@@@@@@@--------@@@@@@@@----@@------@@@@@@--------@@@@@@----
+  --@@----@@------@@----@@------@@----@@----@@------@@----@@------@@--
+  --@@----@@--  --@@----@@------@@----@@----@@------@@----@@------@@--
+  --@@----@@--  --@@------@@@@@@@@----@@----@@@@@@@@@@------@@@@@@----
+  ------------  ------------------------------------@@--  ----------
+                                          --@@------@@--
+                                          ----@@@@@@----
+                                            ----------
+
+ */
 
 /*
         --                          --
