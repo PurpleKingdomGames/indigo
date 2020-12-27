@@ -143,7 +143,7 @@ class QuadTreeTests extends munit.FunSuite {
       .insertElement("b", Vertex(0, 1))
       .insertElement("c", Vertex(1, 0))
 
-    val expected: List[String] = List("b")
+    val expected: Option[String] = Some("b")
 
     val point: Vertex = Vertex(0, 1)
 
@@ -163,7 +163,7 @@ class QuadTreeTests extends munit.FunSuite {
   }
 
   test("should allow a search of squares between two horizontal points") {
-    val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(1, 1), Vertex(3, 1))
+    val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(1.1, 1.5), Vertex(3.5, 1.5))
 
     val expected: List[String] =
       List(
@@ -172,12 +172,12 @@ class QuadTreeTests extends munit.FunSuite {
         "3,1"
       )
 
-    assertEquals(actual.length, expected.length)
     assertEquals(expected, actual)
+    assertEquals(actual.length, expected.length)
   }
 
   test("should allow a search of squares between two vertical points") {
-    val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(2, 0), Vertex(2, 2))
+    val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(2.1, 0.5), Vertex(2.1, 2.1))
 
     val expected: List[String] =
       List(
@@ -191,23 +191,23 @@ class QuadTreeTests extends munit.FunSuite {
   }
 
   test("should allow a search of squares between two 45 degree points") {
-    val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(0, 0), Vertex(3, 3))
+    val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(0.5, 0.5), Vertex(3.5, 3.5))
 
     val expected: List[String] =
       List(
         "0,0",
+        "1,0",
+        "0,1",
         "1,1",
+        "2,1",
+        "1,2",
         "2,2",
+        "3,2",
+        "2,3",
         "3,3"
       )
 
-    assertEquals(expected.forall(p => actual.contains(p)), true)
-
-    // This is not an exact search. We know intuitively that all the points in "expected" must
-    // be there, however, due to floating points and tolerances and what-not, we could get other
-    // hits that are very near by, and that is kind of ok. The expectation is that our game
-    // coder will be doing further checks on this reduced list if they want greater accuracy.
-    assert(actual.length <= expected.length + 2)
+    assertEquals(actual, expected)
   }
 
   /*
@@ -218,13 +218,14 @@ class QuadTreeTests extends munit.FunSuite {
   2 |_|_|_|e|
   3 |_|_|_|_|
    */
-  test("should allow a search of squares between two diagonal degree points") {
-    val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(0, 1), Vertex(3, 2))
+  test("should allow a search of squares between two diagonal points") {
+    val actual = QuadTree.searchByLine(SampleTree.tree, Vertex(0.5, 1.5), Vertex(3.5, 2.5))
 
     val expected: List[String] =
       List(
         "0,1",
         "1,1",
+        "1,2",
         "2,1",
         "2,2",
         "3,2"
@@ -237,7 +238,7 @@ class QuadTreeTests extends munit.FunSuite {
   test("should allow a search of squares intersecting with a 1x1 rectangle") {
     val r: BoundingBox = BoundingBox(1, 1, 1, 1)
 
-    val actual = QuadTree.searchByRectangle(SampleTree.tree, r)
+    val actual = QuadTree.searchByBoundingBox(SampleTree.tree, r)
 
     val expected: List[String] = List("1,1")
 
@@ -248,7 +249,7 @@ class QuadTreeTests extends munit.FunSuite {
   test("should allow a search of squares intersecting with a 2x2 rectangle") {
     val r: BoundingBox = BoundingBox(0, 1, 2, 2)
 
-    val actual = QuadTree.searchByRectangle(SampleTree.tree, r)
+    val actual = QuadTree.searchByBoundingBox(SampleTree.tree, r)
 
     val expected: List[String] = List(
       "0,1",
@@ -264,7 +265,7 @@ class QuadTreeTests extends munit.FunSuite {
   test("should allow a search of squares intersecting with a rectangle the size of the grid") {
     val r: BoundingBox = BoundingBox(0, 0, 4, 4)
 
-    val actual = QuadTree.searchByRectangle(SampleTree.tree, r)
+    val actual = QuadTree.searchByBoundingBox(SampleTree.tree, r)
 
     val expected: List[String] =
       List(
@@ -293,7 +294,7 @@ class QuadTreeTests extends munit.FunSuite {
   test("should allow a search of squares intersecting with a rectangle") {
     val r: BoundingBox = BoundingBox(0, 1, 4, 2)
 
-    val actual = QuadTree.searchByRectangle(SampleTree.tree, r)
+    val actual = QuadTree.searchByBoundingBox(SampleTree.tree, r)
 
     val expected: List[String] =
       List(
