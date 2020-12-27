@@ -13,11 +13,19 @@ object QuadTreeSpecification extends Properties("QuadTree") {
 
     val divisions = QuadTree.QuadBranch.subdivide(original)
 
+    val z =
+      BoundingBox(
+        Double.PositiveInfinity,
+        Double.PositiveInfinity,
+        Double.NegativeInfinity,
+        Double.NegativeInfinity
+      )
+
     val recombined: BoundingBox =
       List(divisions._1, divisions._2, divisions._3, divisions._4)
-        .foldLeft(BoundingBox.zero)((acc, next) => acc.expandToInclude(next))
+        .foldLeft(z)((acc, next) => acc.expandToInclude(next))
 
-    (recombined == original) :| s"Recombined: ${recombined.toString()} - Original: ${original.toString()} - Divisions: $divisions"
+    (recombined ~== original) :| s"Recombined: ${recombined.toString()} - Original: ${original.toString()} - Divisions: $divisions"
   }
 
 }

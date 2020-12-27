@@ -311,6 +311,57 @@ class QuadTreeTests extends munit.FunSuite {
     assertEquals(expected.forall(p => actual.contains(p)), true)
   }
 
+  test("subdivision") {
+    val original = BoundingBox(0, 0, 100, 200)
+
+    val (q1, q2, q3, q4) = QuadTree.QuadBranch.subdivide(original)
+
+    assert(q1 ~== BoundingBox(0, 0, 50, 100))
+    assert(q2 ~== BoundingBox(50, 0, 50, 100))
+    assert(q3 ~== BoundingBox(0, 100, 50, 100))
+    assert(q4 ~== BoundingBox(50, 100, 50, 100))
+
+    val z =
+      BoundingBox(
+        Double.PositiveInfinity,
+        Double.PositiveInfinity,
+        Double.NegativeInfinity,
+        Double.NegativeInfinity
+      )
+
+    val recombined: BoundingBox =
+      List(q1, q2, q3, q4)
+        .foldLeft(z)((acc, next) => acc.expandToInclude(next))
+
+    assert(recombined ~== original)
+  }
+
+  test("subdivision 2") {
+    val original =
+      BoundingBox(
+        23.58955381905776,
+        13.407618217557008,
+        67.05705540086909,
+        84.26157060607267
+      )
+
+    val (q1, q2, q3, q4) = QuadTree.QuadBranch.subdivide(original)
+
+    val z =
+      BoundingBox(
+        Double.PositiveInfinity,
+        Double.PositiveInfinity,
+        Double.NegativeInfinity,
+        Double.NegativeInfinity
+      )
+
+    val recombined: BoundingBox =
+      List(q1, q2, q3, q4)
+        .foldLeft(z)((acc, next) => acc.expandToInclude(next))
+
+    assert(clue(recombined) ~== clue(original))
+  }
+
 }
 
 object SampleTree {
