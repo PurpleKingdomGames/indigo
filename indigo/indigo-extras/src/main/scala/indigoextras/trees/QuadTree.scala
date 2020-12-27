@@ -21,8 +21,8 @@ sealed trait QuadTree[T] {
   def removeElement(gridPoint: Vertex): QuadTree[T] =
     QuadTree.removeElement(this, gridPoint)
 
-  def findEmptySpace(dice: Dice, gridSize: Vertex, not: List[Vertex]): Vertex =
-    QuadTree.findEmptySpace(this, dice, gridSize, not)
+  def findRandomEmptySpace(dice: Dice, gridSize: Vertex, not: List[Vertex], maxAttempts: Option[Int]): Option[Vertex] =
+    QuadTree.findRandomEmptySpace(this, dice, gridSize, not, maxAttempts)
 
   def asElementList: List[T] =
     QuadTree.asElementList(this)
@@ -30,14 +30,14 @@ sealed trait QuadTree[T] {
   def prune: QuadTree[T] =
     QuadTree.prune(this)
 
-  def searchByPoint(point: Vertex): List[T] =
+  def searchByPoint(point: Vertex): Option[T] =
     QuadTree.searchByPoint(this, point)
 
   def searchByLine(start: Vertex, end: Vertex): List[T] =
     QuadTree.searchByLine(this, start, end)
 
   def searchByRectangle(boundingBox: BoundingBox): List[T] =
-    QuadTree.searchByRectangle(this, boundingBox)
+    QuadTree.searchByBoundingBox(this, boundingBox)
 
   override def toString(): String = {
     @SuppressWarnings(Array("org.wartremover.warts.Recursion", "org.wartremover.warts.ToString"))
@@ -61,17 +61,17 @@ sealed trait QuadTree[T] {
   }
 
   def ===(other: QuadTree[T]): Boolean = {
-    @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+    // @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
     def rec(a: QuadTree[T], b: QuadTree[T]): Boolean =
       (a, b) match {
-        case (QuadTree.QuadEmpty(b1), QuadTree.QuadEmpty(b2)) if b1 == b2 =>
+        case (QuadTree.QuadEmpty(b1), QuadTree.QuadEmpty(b2)) if b1 ~== b2 =>
           true
 
-        case (QuadTree.QuadLeaf(b1, v1), QuadTree.QuadLeaf(b2, v2)) if b1 == b2 =>
+        case (QuadTree.QuadLeaf(b1, v1), QuadTree.QuadLeaf(b2, v2)) if b1 ~== b2 =>
           v1 == v2
 
         case (QuadTree.QuadBranch(bounds1, a1, b1, c1, d1), QuadTree.QuadBranch(bounds2, a2, b2, c2, d2)) =>
-          bounds1 == bounds2 && rec(a1, a2) && rec(b1, b2) && rec(c1, c2) && rec(d1, d2)
+          (bounds1 ~== bounds2) && rec(a1, a2) && rec(b1, b2) && rec(c1, c2) && rec(d1, d2)
 
         case _ =>
           false
@@ -103,7 +103,7 @@ object QuadTree {
   object QuadBranch {
 
     def fromBounds[T](bounds: BoundingBox): QuadBranch[T] =
-      fromBoundsAndQuarters(bounds, subdivide(bounds))
+      fromBoundsAndQuads(bounds, subdivide(bounds))
 
     def subdivide(quadBounds: BoundingBox): (BoundingBox, BoundingBox, BoundingBox, BoundingBox) =
       (
@@ -128,13 +128,13 @@ object QuadTree {
         )
       )
 
-    def fromBoundsAndQuarters[T](bounds: BoundingBox, quarters: (BoundingBox, BoundingBox, BoundingBox, BoundingBox)): QuadBranch[T] =
+    def fromBoundsAndQuads[T](bounds: BoundingBox, quads: (BoundingBox, BoundingBox, BoundingBox, BoundingBox)): QuadBranch[T] =
       QuadBranch(
         bounds,
-        QuadEmpty(quarters._1),
-        QuadEmpty(quarters._2),
-        QuadEmpty(quarters._3),
-        QuadEmpty(quarters._4)
+        QuadEmpty(quads._1),
+        QuadEmpty(quads._2),
+        QuadEmpty(quads._3),
+        QuadEmpty(quads._4)
       )
   }
 
@@ -178,7 +178,7 @@ object QuadTree {
       case b: QuadBranch[T] =>
         b
 
-      case QuadEmpty(bounds) if bounds.contains(gridPoint) && bounds.size == Vertex(1, 1) =>
+      case QuadEmpty(bounds) if bounds.contains(gridPoint) && (bounds.size ~== Vertex(1, 1)) =>
         QuadLeaf(bounds, element)
 
       case QuadEmpty(bounds) if bounds.contains(gridPoint) =>
@@ -206,26 +206,35 @@ object QuadTree {
         tree
     }
 
-  def findEmptySpace[T](quadTree: QuadTree[T], dice: Dice, gridSize: Vertex, not: List[Vertex]): Vertex = {
+  def findRandomEmptySpace[T](quadTree: QuadTree[T], dice: Dice, gridSize: Vertex, not: List[Vertex], maxAttempts: Option[Int]): Option[Vertex] = {
     def makeRandom: () => Vertex = () => Vertex(dice.rollFromZero(gridSize.x.toInt - 2), dice.rollFromZero(gridSize.y.toInt - 2)) + Vertex(1, 1)
 
     @tailrec
-    def rec(pt: Vertex): Vertex =
-      fetchElementAt(quadTree, pt) match {
-        case None if !not.contains(pt) =>
-          pt
+    def rec(pt: Vertex, triesRemaining: Option[Int]): Option[Vertex] =
+      (fetchElementAt(quadTree, pt), triesRemaining) match {
+        case (None, _) if !not.contains(pt) =>
+          Some(pt)
 
-        case None =>
-          rec(makeRandom())
+        case (_, Some(count)) if count < 0 =>
+          None
 
-        case Some(_) =>
-          rec(makeRandom())
+        case (None, None) =>
+          rec(makeRandom(), None)
+
+        case (None, Some(count)) =>
+          rec(makeRandom(), Some(count - 1))
+
+        case (Some(_), None) =>
+          rec(makeRandom(), None)
+
+        case (Some(_), Some(count)) =>
+          rec(makeRandom(), Some(count - 1))
       }
 
-    rec(makeRandom())
+    rec(makeRandom(), maxAttempts)
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+  // @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def asElementList[T](quadTree: QuadTree[T]): List[T] =
     quadTree match {
       case l: QuadLeaf[T] =>
@@ -256,82 +265,77 @@ object QuadTree {
         QuadBranch[T](bounds, a.prune, b.prune, c.prune, d.prune)
     }
 
-  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
-  def searchByPoint[T](quadTree: QuadTree[T], point: Vertex): List[T] =
+  // @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+  def searchByPoint[T](quadTree: QuadTree[T], point: Vertex): Option[T] =
     quadTree match {
       case QuadBranch(bounds, a, b, c, d) if bounds.contains(point) =>
-        List(
-          searchByPoint(a, point),
-          searchByPoint(b, point),
-          searchByPoint(c, point),
-          searchByPoint(d, point)
-        ).flatten
+        searchByPoint(a, point)
+          .orElse(
+            searchByPoint(b, point)
+              .orElse(
+                searchByPoint(c, point)
+                  .orElse(searchByPoint(d, point))
+              )
+          )
 
       case QuadLeaf(bounds, value) if bounds.contains(point) =>
+        Some(value)
+
+      case _ =>
+        None
+    }
+
+  def searchByLine[T](quadTree: QuadTree[T], start: Vertex, end: Vertex): List[T] =
+    searchByLine(quadTree, LineSegment(start, end))
+
+  // @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+  def searchByLine[T](quadTree: QuadTree[T], lineSegment: LineSegment): List[T] =
+    quadTree match {
+      case QuadBranch(bounds, a, b, c, d) if bounds.contains(lineSegment.start) =>
+        searchByLine(a, lineSegment) ++
+          searchByLine(b, lineSegment) ++
+          searchByLine(c, lineSegment) ++
+          searchByLine(d, lineSegment)
+
+      case QuadBranch(bounds, a, b, c, d) if bounds.contains(lineSegment.end) =>
+        searchByLine(a, lineSegment) ++
+          searchByLine(b, lineSegment) ++
+          searchByLine(c, lineSegment) ++
+          searchByLine(d, lineSegment)
+
+      case QuadBranch(bounds, a, b, c, d) if bounds.lineIntersects(lineSegment) =>
+        searchByLine(a, lineSegment) ++
+          searchByLine(b, lineSegment) ++
+          searchByLine(c, lineSegment) ++
+          searchByLine(d, lineSegment)
+
+      case QuadLeaf(bounds, value) if bounds.contains(lineSegment.start) =>
+        List(value)
+
+      case QuadLeaf(bounds, value) if bounds.contains(lineSegment.end) =>
+        List(value)
+
+      case QuadLeaf(bounds, value) if bounds.lineIntersects(lineSegment) =>
         List(value)
 
       case _ =>
         Nil
     }
 
-  def searchByLine[T](quadTree: QuadTree[T], start: Vertex, end: Vertex): List[T] =
-    searchByLine(quadTree, LineSegment(start, end))
+  // @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+  def searchByBoundingBox[T](quadTree: QuadTree[T], boundingBox: BoundingBox): List[T] =
+    quadTree match {
+      case QuadBranch(bounds, a, b, c, d) if boundingBox.overlaps(bounds) =>
+        searchByBoundingBox(a, boundingBox) ++
+          searchByBoundingBox(b, boundingBox) ++
+          searchByBoundingBox(c, boundingBox) ++
+          searchByBoundingBox(d, boundingBox)
 
-  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
-  def searchByLine[T](quadTree: QuadTree[T], lineSegment: LineSegment): List[T] =
-    if (lineSegment.start == lineSegment.end) searchByPoint(quadTree, lineSegment.start)
-    else
-      quadTree match {
-        case QuadBranch(bounds, a, b, c, d) if bounds.toRectangle.isPointWithin(lineSegment.start.toPoint) =>
-          searchByLine(a, lineSegment) ++
-            searchByLine(b, lineSegment) ++
-            searchByLine(c, lineSegment) ++
-            searchByLine(d, lineSegment)
+      case QuadLeaf(bounds, value) if boundingBox.contains(Vertex(bounds.x, bounds.y)) =>
+        List(value)
 
-        case QuadBranch(bounds, a, b, c, d) if bounds.toRectangle.isPointWithin(lineSegment.end.toPoint) =>
-          searchByLine(a, lineSegment) ++
-            searchByLine(b, lineSegment) ++
-            searchByLine(c, lineSegment) ++
-            searchByLine(d, lineSegment)
-
-        case QuadBranch(bounds, a, b, c, d) if bounds.lineIntersects(lineSegment) =>
-          searchByLine(a, lineSegment) ++
-            searchByLine(b, lineSegment) ++
-            searchByLine(c, lineSegment) ++
-            searchByLine(d, lineSegment)
-
-        case QuadLeaf(bounds, value) if lineSegment.start ~== bounds.position =>
-          List(value)
-
-        case QuadLeaf(bounds, value) if lineSegment.end ~== bounds.position =>
-          List(value)
-
-        case QuadLeaf(bounds, value) if lineSegment.contains(bounds.center, 0.15d) =>
-          List(value)
-
-        case QuadLeaf(bounds, value) if lineSegment.contains(bounds.position, 0.25f) =>
-          List(value)
-
-        case _ =>
-          Nil
-      }
-
-  @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
-  def searchByRectangle[T](quadTree: QuadTree[T], boundingBox: BoundingBox): List[T] =
-    if (boundingBox.width <= 1 && boundingBox.height <= 1) searchByPoint(quadTree, boundingBox.position)
-    else
-      quadTree match {
-        case QuadBranch(bounds, a, b, c, d) if boundingBox.overlaps(bounds) =>
-          searchByRectangle(a, boundingBox) ++
-            searchByRectangle(b, boundingBox) ++
-            searchByRectangle(c, boundingBox) ++
-            searchByRectangle(d, boundingBox)
-
-        case QuadLeaf(bounds, value) if boundingBox.contains(Vertex(bounds.x, bounds.y)) =>
-          List(value)
-
-        case _ =>
-          Nil
-      }
+      case _ =>
+        Nil
+    }
 
 }
