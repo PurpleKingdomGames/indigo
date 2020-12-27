@@ -12,14 +12,14 @@ sealed trait QuadTree[T] {
 
   def isEmpty: Boolean
 
-  def fetchElementAt(gridPoint: Vertex): Option[T] =
-    QuadTree.fetchElementAt(this, gridPoint)
+  def fetchElementAt(vertex: Vertex): Option[T] =
+    QuadTree.fetchElementAt(this, vertex)
 
-  def insertElement(element: T, gridPoint: Vertex): QuadTree[T] =
-    QuadTree.insertElementAt(gridPoint, this, element)
+  def insertElement(element: T, vertex: Vertex): QuadTree[T] =
+    QuadTree.insertElementAt(vertex, this, element)
 
-  def removeElement(gridPoint: Vertex): QuadTree[T] =
-    QuadTree.removeElement(this, gridPoint)
+  def removeElement(vertex: Vertex): QuadTree[T] =
+    QuadTree.removeElement(this, vertex)
 
   def asElementList: List[T] =
     QuadTree.asElementList(this)
@@ -135,68 +135,68 @@ object QuadTree {
       )
   }
 
-  def fetchElementAt[T](quadTree: QuadTree[T], gridPoint: Vertex): Option[T] =
+  def fetchElementAt[T](quadTree: QuadTree[T], vertex: Vertex): Option[T] =
     quadTree match {
-      case QuadEmpty(bounds) if bounds.contains(gridPoint) =>
+      case QuadEmpty(bounds) if bounds.contains(vertex) =>
         None
 
-      case QuadBranch(bounds, a, b, c, d) if bounds.contains(gridPoint) =>
+      case QuadBranch(bounds, a, b, c, d) if bounds.contains(vertex) =>
         List(
-          a.fetchElementAt(gridPoint),
-          b.fetchElementAt(gridPoint),
-          c.fetchElementAt(gridPoint),
-          d.fetchElementAt(gridPoint)
+          a.fetchElementAt(vertex),
+          b.fetchElementAt(vertex),
+          c.fetchElementAt(vertex),
+          d.fetchElementAt(vertex)
         ).find(p => p.isDefined).flatten
 
-      case QuadLeaf(bounds, value) if bounds.contains(gridPoint) =>
+      case QuadLeaf(bounds, value) if bounds.contains(vertex) =>
         Some(value)
 
       case _ =>
         None
     }
 
-  def insertElementAt[T](gridPoint: Vertex, quadTree: QuadTree[T], element: T): QuadTree[T] =
+  def insertElementAt[T](vertex: Vertex, quadTree: QuadTree[T], element: T): QuadTree[T] =
     quadTree match {
-      case QuadLeaf(bounds, _) if bounds.contains(gridPoint) =>
+      case QuadLeaf(bounds, _) if bounds.contains(vertex) =>
         QuadLeaf(bounds, element)
 
       case l: QuadLeaf[T] =>
         l
 
-      case QuadBranch(bounds, a, b, c, d) if bounds.contains(gridPoint) =>
+      case QuadBranch(bounds, a, b, c, d) if bounds.contains(vertex) =>
         QuadBranch[T](
           bounds,
-          insertElementAt(gridPoint, a, element),
-          insertElementAt(gridPoint, b, element),
-          insertElementAt(gridPoint, c, element),
-          insertElementAt(gridPoint, d, element)
+          insertElementAt(vertex, a, element),
+          insertElementAt(vertex, b, element),
+          insertElementAt(vertex, c, element),
+          insertElementAt(vertex, d, element)
         )
 
       case b: QuadBranch[T] =>
         b
 
-      case QuadEmpty(bounds) if bounds.contains(gridPoint) && (bounds.size ~== Vertex(1, 1)) =>
+      case QuadEmpty(bounds) if bounds.contains(vertex) && (bounds.size ~== Vertex(1, 1)) =>
         QuadLeaf(bounds, element)
 
-      case QuadEmpty(bounds) if bounds.contains(gridPoint) =>
-        QuadBranch.fromBounds(bounds).insertElement(element, gridPoint)
+      case QuadEmpty(bounds) if bounds.contains(vertex) =>
+        QuadBranch.fromBounds(bounds).insertElement(element, vertex)
 
       case e: QuadEmpty[T] =>
         e
     }
 
-  def removeElement[T](quadTree: QuadTree[T], gridPoint: Vertex): QuadTree[T] =
+  def removeElement[T](quadTree: QuadTree[T], vertex: Vertex): QuadTree[T] =
     quadTree match {
-      case QuadLeaf(bounds, _) if bounds.contains(gridPoint) =>
+      case QuadLeaf(bounds, _) if bounds.contains(vertex) =>
         QuadEmpty(bounds)
 
-      case QuadBranch(bounds, a, b, c, d) if bounds.contains(gridPoint) =>
+      case QuadBranch(bounds, a, b, c, d) if bounds.contains(vertex) =>
         QuadBranch[T](
           bounds,
-          a.removeElement(gridPoint),
-          b.removeElement(gridPoint),
-          c.removeElement(gridPoint),
-          d.removeElement(gridPoint)
+          a.removeElement(vertex),
+          b.removeElement(vertex),
+          c.removeElement(vertex),
+          d.removeElement(vertex)
         )
 
       case tree =>
