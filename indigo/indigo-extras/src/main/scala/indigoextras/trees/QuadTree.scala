@@ -21,9 +21,6 @@ sealed trait QuadTree[T] {
   def removeElement(gridPoint: Vertex): QuadTree[T] =
     QuadTree.removeElement(this, gridPoint)
 
-  def findRandomEmptySpace(dice: Dice, gridSize: Vertex, not: List[Vertex], maxAttempts: Option[Int]): Option[Vertex] =
-    QuadTree.findRandomEmptySpace(this, dice, gridSize, not, maxAttempts)
-
   def asElementList: List[T] =
     QuadTree.asElementList(this)
 
@@ -40,7 +37,7 @@ sealed trait QuadTree[T] {
     QuadTree.searchByBoundingBox(this, boundingBox)
 
   override def toString(): String = {
-    @SuppressWarnings(Array("org.wartremover.warts.Recursion", "org.wartremover.warts.ToString"))
+    // @SuppressWarnings(Array("org.wartremover.warts.Recursion", "org.wartremover.warts.ToString"))
     def rec(quadTree: QuadTree[T], indent: String): String =
       quadTree match {
         case QuadTree.QuadEmpty(bounds) =>
@@ -169,10 +166,10 @@ object QuadTree {
       case QuadBranch(bounds, a, b, c, d) if bounds.contains(gridPoint) =>
         QuadBranch[T](
           bounds,
-          a.insertElement(element, gridPoint),
-          b.insertElement(element, gridPoint),
-          c.insertElement(element, gridPoint),
-          d.insertElement(element, gridPoint)
+          insertElementAt(gridPoint, a, element),
+          insertElementAt(gridPoint, b, element),
+          insertElementAt(gridPoint, c, element),
+          insertElementAt(gridPoint, d, element)
         )
 
       case b: QuadBranch[T] =>
@@ -205,34 +202,6 @@ object QuadTree {
       case tree =>
         tree
     }
-
-  def findRandomEmptySpace[T](quadTree: QuadTree[T], dice: Dice, gridSize: Vertex, not: List[Vertex], maxAttempts: Option[Int]): Option[Vertex] = {
-    def makeRandom: () => Vertex = () => Vertex(dice.rollFromZero(gridSize.x.toInt - 2), dice.rollFromZero(gridSize.y.toInt - 2)) + Vertex(1, 1)
-
-    @tailrec
-    def rec(pt: Vertex, triesRemaining: Option[Int]): Option[Vertex] =
-      (fetchElementAt(quadTree, pt), triesRemaining) match {
-        case (None, _) if !not.contains(pt) =>
-          Some(pt)
-
-        case (_, Some(count)) if count < 0 =>
-          None
-
-        case (None, None) =>
-          rec(makeRandom(), None)
-
-        case (None, Some(count)) =>
-          rec(makeRandom(), Some(count - 1))
-
-        case (Some(_), None) =>
-          rec(makeRandom(), None)
-
-        case (Some(_), Some(count)) =>
-          rec(makeRandom(), Some(count - 1))
-      }
-
-    rec(makeRandom(), maxAttempts)
-  }
 
   // @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def asElementList[T](quadTree: QuadTree[T]): List[T] =
