@@ -88,6 +88,9 @@ final case class BoundingBox(position: Vertex, size: Vertex) {
 
   def lineIntersectsAt(line: LineSegment): Option[Vertex] =
     BoundingBox.lineIntersectsAt(this, line)
+
+  def ~==(other: BoundingBox): Boolean =
+    (position ~== other.position) && (size ~== other.size)
 }
 
 object BoundingBox {
