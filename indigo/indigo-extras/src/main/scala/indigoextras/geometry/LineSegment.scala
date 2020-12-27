@@ -118,6 +118,9 @@ final case class LineSegment(start: Vertex, end: Vertex) {
       None
   }
 
+  def ~==(other: LineSegment): Boolean =
+    (start ~== other.start) && (end ~== other.end)
+
 }
 
 object LineSegment {
