@@ -107,6 +107,7 @@ class VertexTests extends munit.FunSuite {
   test("approx equal") {
     assert(Vertex(5.0, 5.0) ~== Vertex(4.999999, 5.00001))
     assert(!(Vertex(5.0, 5.0) ~== Vertex(-4.999999, 5.00001)))
+    assert(!(Vertex(5.0, 5.0) ~== Vertex(4.98, 5.00001)))
   }
 
 }
