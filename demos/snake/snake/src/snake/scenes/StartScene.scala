@@ -6,18 +6,20 @@ import indigo.scenes._
 import snake.init.GameAssets
 import snake.model.{SnakeGameModel, SnakeViewModel}
 import snake.init.SnakeStartupData
+import snake.GameReset
 
 object StartScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel] {
-  type SceneModel     = SnakeGameModel
-  type SceneViewModel = SnakeViewModel
+  type SceneModel     = Unit
+  type SceneViewModel = Unit
 
-  val name: SceneName = SceneName("start")
+  val name: SceneName =
+    SceneName("start")
 
-  val modelLens: Lens[SnakeGameModel, SnakeGameModel] =
-    Lens.keepLatest
+  val modelLens: Lens[SnakeGameModel, Unit] =
+    Lens.unit
 
-  val viewModelLens: Lens[SnakeViewModel, SnakeViewModel] =
-    Lens.keepLatest
+  val viewModelLens: Lens[SnakeViewModel, Unit] =
+    Lens.unit
 
   val eventFilters: EventFilters =
     EventFilters.Restricted
@@ -28,11 +30,14 @@ object StartScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel
 
   def updateModel(
       context: FrameContext[SnakeStartupData],
-      snakeGameModel: SnakeGameModel
-  ): GlobalEvent => Outcome[SnakeGameModel] = {
+      snakeGameModel: Unit
+  ): GlobalEvent => Outcome[Unit] = {
     case KeyboardEvent.KeyUp(Key.SPACE) =>
-      Outcome(snakeGameModel.reset)
-        .addGlobalEvents(SceneEvent.JumpTo(ControlsScene.name))
+      Outcome(snakeGameModel)
+        .addGlobalEvents(
+          GameReset,
+          SceneEvent.JumpTo(ControlsScene.name)
+        )
 
     case _ =>
       Outcome(snakeGameModel)
@@ -40,15 +45,15 @@ object StartScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel
 
   def updateViewModel(
       context: FrameContext[SnakeStartupData],
-      snakeGameModel: SnakeGameModel,
-      snakeViewModel: SnakeViewModel
-  ): GlobalEvent => Outcome[SnakeViewModel] =
+      snakeGameModel: Unit,
+      snakeViewModel: Unit
+  ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(snakeViewModel)
 
   def present(
       context: FrameContext[SnakeStartupData],
-      snakeGameModel: SnakeGameModel,
-      snakeViewModel: SnakeViewModel
+      snakeGameModel: Unit,
+      snakeViewModel: Unit
   ): Outcome[SceneUpdateFragment] =
     Outcome {
       val horizontalCenter: Int = context.startUpData.viewConfig.horizontalCenter

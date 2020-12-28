@@ -5,6 +5,7 @@ import indigo._
 import snake.model.snakemodel.{Snake, SnakeDirection}
 
 sealed trait ControlScheme {
+
   def instructSnake(keyboardEvent: KeyboardEvent, snake: Snake, currentDirection: SnakeDirection): Snake =
     (this, keyboardEvent) match {
       case (ControlScheme.Turning(left, _), KeyboardEvent.KeyDown(code)) if code === left =>
@@ -43,6 +44,6 @@ object ControlScheme {
   val turningKeys: Turning   = Turning(Key.LEFT_ARROW, Key.RIGHT_ARROW)
   val directedKeys: Directed = Directed(Key.UP_ARROW, Key.DOWN_ARROW, Key.LEFT_ARROW, Key.RIGHT_ARROW)
 
-  case class Turning(left: Key, right: Key)                              extends ControlScheme
+  case class Turning(left: Key, right: Key)                      extends ControlScheme
   case class Directed(up: Key, down: Key, left: Key, right: Key) extends ControlScheme
 }

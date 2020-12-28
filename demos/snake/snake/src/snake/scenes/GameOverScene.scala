@@ -9,13 +9,14 @@ object GameOverScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewMo
   type SceneModel     = Int
   type SceneViewModel = Unit
 
-  val name: SceneName = SceneName("game over")
+  val name: SceneName =
+    SceneName("game over")
 
   val modelLens: Lens[SnakeGameModel, Int] =
-    Lens(_.gameModel.score, (m, _) => m)
+    Lens.readOnly(_.gameModel.score)
 
   val viewModelLens: Lens[SnakeViewModel, Unit] =
-    Lens.fixed(())
+    Lens.unit
 
   val eventFilters: EventFilters =
     EventFilters.Restricted
