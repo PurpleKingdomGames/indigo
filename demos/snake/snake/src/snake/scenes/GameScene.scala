@@ -3,7 +3,7 @@ package snake.scenes
 import indigo._
 import indigo.scenes._
 
-import snake.gamelogic.{ModelLogic, ViewLogic}
+import snake.gamelogic.ViewLogic
 import snake.model.{GameModel, SnakeGameModel, SnakeViewModel}
 import snake.gamelogic.Score
 import snake.init.{GameAssets, SnakeStartupData}
@@ -25,10 +25,10 @@ object GameScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel]
       .withViewModelFilter(_ => None)
 
   val subSystems: Set[SubSystem] =
-    Set(Score.automataSubSystem(ModelLogic.ScoreIncrement.toString(), GameAssets.fontKey))
+    Set(Score.automataSubSystem(GameModel.ScoreIncrement.toString(), GameAssets.fontKey))
 
   def updateModel(context: FrameContext[SnakeStartupData], gameModel: GameModel): GlobalEvent => Outcome[GameModel] =
-    ModelLogic.update(context.gameTime, context.dice, gameModel, context.startUpData.viewConfig.gridSquareSize)
+    GameModel.update(context.gameTime, context.dice, gameModel, context.startUpData.viewConfig.gridSquareSize)
 
   def updateViewModel(
       context: FrameContext[SnakeStartupData],
