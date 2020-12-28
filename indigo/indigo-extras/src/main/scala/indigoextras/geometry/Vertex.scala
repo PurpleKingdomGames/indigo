@@ -88,8 +88,8 @@ final case class Vertex(x: Double, y: Double) {
     Vector2((other.x - x), (other.y - y))
 
   def ~==(other: Vertex): Boolean =
-    Math.abs(x - other.x) < 0.001 &&
-    Math.abs(y - other.y) < 0.001
+    Math.abs(x - other.x) < 0.0001 &&
+    Math.abs(y - other.y) < 0.0001
 
 }
 

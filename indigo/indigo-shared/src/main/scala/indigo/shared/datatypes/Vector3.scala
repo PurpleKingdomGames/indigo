@@ -93,9 +93,9 @@ final case class Vector3(x: Double, y: Double, z: Double) {
     x == other.x && y == other.y && z == other.z
 
   def ~==(other: Vector3): Boolean =
-    Math.abs(x - other.x) < 0.001 &&
-      Math.abs(y - other.y) < 0.001 &&
-      Math.abs(z - other.z) < 0.001
+    Math.abs(x - other.x) < 0.0001 &&
+      Math.abs(y - other.y) < 0.0001 &&
+      Math.abs(z - other.z) < 0.0001
 }
 
 object Vector3 {

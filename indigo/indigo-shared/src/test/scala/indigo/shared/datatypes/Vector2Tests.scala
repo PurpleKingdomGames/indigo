@@ -7,7 +7,7 @@ class Vector2Tests extends munit.FunSuite {
   val framePosition = Vector2(64, 0)
 
   test("Basic vector operation.should be able to divide") {
-    assert(clue(Vector2(0.333, 1)) ~== clue(frameSize / imageSize))
+    assert(clue(Vector2(0.3333, 1)) ~== clue(frameSize / imageSize))
   }
 
   test("Basic vector operation.distance function") {
