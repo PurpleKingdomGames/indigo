@@ -9,12 +9,11 @@ object Arena {
 
   def genLevel(gridSize: BoundingBox): GameMap =
     GameMap(gridSize)
-      .insertElement(Apple(gridSize.center + Vertex(3, 2)))
+      .insertApple(Apple(gridSize.center + Vertex(3, 2)))
       .insertElements(topEdgeWall(gridSize))
       .insertElements(rightEdgeWall(gridSize))
       .insertElements(bottomEdgeWall(gridSize))
       .insertElements(leftEdgeWall(gridSize))
-      .optimise
 
   private def topEdgeWall(gridSize: BoundingBox): List[Wall] =
     fillIncrementally(gridSize.topLeft, gridSize.topRight).map(Wall.apply)
