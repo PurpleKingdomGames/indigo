@@ -1,23 +1,26 @@
 package snake.init
 
-import snake.model.grid.GridSize
+import indigoextras.geometry.BoundingBox
 
 object Settings {
 
-  val gridSize: GridSize = GridSize(
-    columns = 30,
-    rows = 20,
-    gridSquareSize = 12
+  val gridSize: BoundingBox = BoundingBox(
+    x = 0,
+    y = 0,
+    width = 30,
+    height = 20
   )
+
+  val gridSquareSize: Int = 12
 
   val footerHeight: Int = 36
 
   val magnificationLevel: Int = 2
 
   val viewportWidth: Int =
-    (gridSize.gridSquareSize * gridSize.columns) * magnificationLevel
+    (gridSquareSize * gridSize.width.toInt) * magnificationLevel
 
   val viewportHeight: Int =
-    ((gridSize.gridSquareSize * gridSize.rows) * magnificationLevel) + footerHeight
+    ((gridSquareSize * gridSize.height.toInt) * magnificationLevel) + footerHeight
 
 }

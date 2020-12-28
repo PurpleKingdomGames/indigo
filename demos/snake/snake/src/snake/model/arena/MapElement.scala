@@ -1,12 +1,12 @@
 package snake.model.arena
 
-import snake.model.grid.GridPoint
+import indigoextras.geometry.Vertex
 
 sealed trait MapElement {
-  val gridPoint: GridPoint
+  val gridPoint: Vertex
 }
 
 object MapElement {
-  case class Wall(gridPoint: GridPoint)  extends MapElement
-  case class Apple(gridPoint: GridPoint) extends MapElement
+  case class Wall(gridPoint: Vertex)  extends MapElement
+  case class Apple(gridPoint: Vertex) extends MapElement
 }

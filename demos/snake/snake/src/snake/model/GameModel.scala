@@ -1,12 +1,13 @@
 package snake.model
 
-import indigo.{GameTime, Seconds}
-import snake.model.grid._
+import indigo._
 import snake.model.arena.GameMap
 import snake.model.snakemodel.{CollisionCheckOutcome, Snake}
+import indigoextras.geometry.Vertex
+import indigoextras.geometry.BoundingBox
 
 case class GameModel(
-    gridSize: GridSize,
+    gridSize: BoundingBox,
     snake: Snake,
     gameState: GameState,
     gameMap: GameMap,
@@ -21,8 +22,8 @@ case class GameModel(
 
   def update(
       gameTime: GameTime,
-      gridSize: GridSize,
-      collisionCheck: GridPoint => CollisionCheckOutcome
+      gridSize: BoundingBox,
+      collisionCheck: Vertex => CollisionCheckOutcome
   ): (GameModel, CollisionCheckOutcome) =
     snake.update(gridSize, collisionCheck) match {
       case (s, outcome) =>

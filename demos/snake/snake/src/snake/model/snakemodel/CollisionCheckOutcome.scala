@@ -1,12 +1,13 @@
 package snake.model.snakemodel
 
-import snake.model.grid._
+import indigoextras.geometry.Vertex
+
 
 sealed trait CollisionCheckOutcome {
-  val gridPoint: GridPoint
+  val gridPoint: Vertex
 }
 object CollisionCheckOutcome {
-  case class NoCollision(gridPoint: GridPoint) extends CollisionCheckOutcome
-  case class PickUp(gridPoint: GridPoint)      extends CollisionCheckOutcome
-  case class Crashed(gridPoint: GridPoint)     extends CollisionCheckOutcome
+  case class NoCollision(gridPoint: Vertex) extends CollisionCheckOutcome
+  case class PickUp(gridPoint: Vertex)      extends CollisionCheckOutcome
+  case class Crashed(gridPoint: Vertex)     extends CollisionCheckOutcome
 }

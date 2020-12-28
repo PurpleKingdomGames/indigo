@@ -1,19 +1,19 @@
 package snake.init
 
 import indigo._
-import snake.model.grid._
+import indigoextras.geometry.BoundingBox
 
 object SnakeStartupData {
 
   def initialise(
       viewport: GameViewport,
-      gridSize: GridSize
+      gridSize: BoundingBox
   ): Outcome[Startup[SnakeStartupData]] =
     Outcome(
-      Startup.Success(createStartupData(viewport, gridSize, gridSize.gridSquareSize))
+      Startup.Success(createStartupData(viewport, gridSize, Settings.gridSquareSize))
     )
 
-  def createStartupData(viewport: GameViewport, gridSize: GridSize, blockSize: Int): SnakeStartupData =
+  def createStartupData(viewport: GameViewport, gridSize: BoundingBox, blockSize: Int): SnakeStartupData =
     SnakeStartupData(
       viewport = viewport,
       gridSize = gridSize,
@@ -28,6 +28,6 @@ object SnakeStartupData {
 
 }
 
-case class SnakeStartupData(viewport: GameViewport, gridSize: GridSize, staticAssets: StaticAssets)
+case class SnakeStartupData(viewport: GameViewport, gridSize: BoundingBox, staticAssets: StaticAssets)
 
 case class StaticAssets(apple: Graphic, snake: Graphic, wall: Graphic)
