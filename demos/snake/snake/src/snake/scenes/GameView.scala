@@ -2,7 +2,7 @@ package snake.scenes
 
 import indigo._
 import snake.init.{GameAssets, StaticAssets, ViewConfig}
-import snake.model.arena.GameMap
+import snake.model.GameMap
 import snake.model.GameModel
 import indigoextras.geometry.Vertex
 import indigoextras.geometry.BoundingBox

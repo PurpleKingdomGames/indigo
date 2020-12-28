@@ -5,7 +5,6 @@ import indigo.shared.events.FrameTick
 
 import snake.model.{ControlScheme, GameModel, GameState}
 import snake.model.snakemodel.Snake
-import snake.model.arena.Arena
 
 import indigo.shared.dice.Dice
 import indigoextras.geometry.BoundingBox
