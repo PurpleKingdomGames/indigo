@@ -28,7 +28,7 @@ object GameScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel]
     Set(Score.automataSubSystem(ModelLogic.ScoreIncrement.toString(), GameAssets.fontKey))
 
   def updateModel(context: FrameContext[SnakeStartupData], gameModel: GameModel): GlobalEvent => Outcome[GameModel] =
-    ModelLogic.update(context.gameTime, context.dice, gameModel)
+    ModelLogic.update(context.gameTime, context.dice, gameModel, context.startUpData.viewConfig.gridSquareSize)
 
   def updateViewModel(
       context: FrameContext[SnakeStartupData],
@@ -42,5 +42,5 @@ object GameScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel]
       gameModel: GameModel,
       snakeViewModel: SnakeViewModel
   ): Outcome[SceneUpdateFragment] =
-    ViewLogic.update(gameModel, snakeViewModel)
+    ViewLogic.update(context.startUpData.viewConfig, gameModel, snakeViewModel)
 }

@@ -30,7 +30,7 @@ object ModelLogic {
       lastUpdated = Seconds.zero
     )
 
-  def update(gameTime: GameTime, dice: Dice, state: GameModel): GlobalEvent => Outcome[GameModel] = {
+  def update(gameTime: GameTime, dice: Dice, state: GameModel, gridSquareSize: Int): GlobalEvent => Outcome[GameModel] = {
     case FrameTick if gameTime.running < state.lastUpdated + state.tickDelay =>
       Outcome(state)
 
@@ -41,7 +41,8 @@ object ModelLogic {
             gameTime,
             dice,
             state.resetLastUpdated(gameTime.running),
-            s
+            s,
+            gridSquareSize
           )(FrameTick)
 
         case s @ GameState.Crashed(_, _, _, _) =>
@@ -55,7 +56,7 @@ object ModelLogic {
     case gameEvent =>
       state.gameState match {
         case s @ GameState.Running(_, _) =>
-          updateRunning(gameTime, dice, state, s)(gameEvent)
+          updateRunning(gameTime, dice, state, s, gridSquareSize)(gameEvent)
 
         case s @ GameState.Crashed(_, _, _, _) =>
           updateCrashed(gameTime, state, s)(gameEvent)
@@ -66,10 +67,11 @@ object ModelLogic {
       gameTime: GameTime,
       dice: Dice,
       state: GameModel,
-      runningDetails: GameState.Running
+      runningDetails: GameState.Running,
+      gridSquareSize: Int
   ): GlobalEvent => Outcome[GameModel] = {
     case FrameTick =>
-      updateBasedOnCollision(gameTime, dice)(
+      updateBasedOnCollision(gameTime, dice, gridSquareSize)(
         normalUpdate(gameTime, state)
       )
 
@@ -115,7 +117,7 @@ object ModelLogic {
       }
   }
 
-  def updateBasedOnCollision(gameTime: GameTime, dice: Dice): ((GameModel, CollisionCheckOutcome)) => Outcome[GameModel] = {
+  def updateBasedOnCollision(gameTime: GameTime, dice: Dice, gridSquareSize: Int): ((GameModel, CollisionCheckOutcome)) => Outcome[GameModel] = {
     case (gameModel, CollisionCheckOutcome.Crashed(_)) =>
       Outcome(
         gameModel.copy(
@@ -145,7 +147,7 @@ object ModelLogic {
         )
       ).addGlobalEvents(
         PlaySound(GameAssets.soundPoint, Volume.Max),
-        Score.spawnEvent(ViewLogic.gridPointToPoint(pt, gameModel.gameMap.gridSize))
+        Score.spawnEvent(ViewLogic.gridPointToPoint(pt, gameModel.gameMap.gridSize, gridSquareSize))
       )
 
     case (gameModel, CollisionCheckOutcome.NoCollision(_)) =>
