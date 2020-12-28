@@ -23,18 +23,39 @@ final case class GameModel(
     lastUpdated: Seconds
 ) {
 
-  def resetLastUpdated(time: Seconds): GameModel =
-    this.copy(lastUpdated = time)
+  def update(gameTime: GameTime, dice: Dice, gridSquareSize: Int): GlobalEvent => Outcome[GameModel] = {
+    case FrameTick if gameTime.running < lastUpdated + tickDelay =>
+      Outcome(this)
 
-  def update(
-      gameTime: GameTime,
-      gridSize: BoundingBox,
-      collisionCheck: Vertex => CollisionCheckOutcome
-  ): (GameModel, CollisionCheckOutcome) =
-    snake.update(gridSize, collisionCheck) match {
-      case (s, outcome) =>
-        (this.copy(snake = s, gameState = gameState.updateNow(gameTime.running, snake.direction)), outcome)
-    }
+    case FrameTick =>
+      gameState match {
+        case s @ GameState.Running(_, _) =>
+          GameModel.updateRunning(
+            gameTime,
+            dice,
+            this.copy(lastUpdated = gameTime.running),
+            s,
+            gridSquareSize
+          )(FrameTick)
+
+        case s @ GameState.Crashed(_, _, _, _) =>
+          GameModel.updateCrashed(
+            gameTime,
+            this.copy(lastUpdated = gameTime.running),
+            s
+          )(FrameTick)
+      }
+
+    case e =>
+      gameState match {
+        case s @ GameState.Running(_, _) =>
+          GameModel.updateRunning(gameTime, dice, this, s, gridSquareSize)(e)
+
+        case s @ GameState.Crashed(_, _, _, _) =>
+          GameModel.updateCrashed(gameTime, this, s)(e)
+      }
+  }
+
 }
 
 object GameModel {
@@ -56,39 +77,6 @@ object GameModel {
       lastUpdated = Seconds.zero
     )
 
-  def update(gameTime: GameTime, dice: Dice, state: GameModel, gridSquareSize: Int): GlobalEvent => Outcome[GameModel] = {
-    case FrameTick if gameTime.running < state.lastUpdated + state.tickDelay =>
-      Outcome(state)
-
-    case FrameTick =>
-      state.gameState match {
-        case s @ GameState.Running(_, _) =>
-          updateRunning(
-            gameTime,
-            dice,
-            state.resetLastUpdated(gameTime.running),
-            s,
-            gridSquareSize
-          )(FrameTick)
-
-        case s @ GameState.Crashed(_, _, _, _) =>
-          updateCrashed(
-            gameTime,
-            state.resetLastUpdated(gameTime.running),
-            s
-          )(FrameTick)
-      }
-
-    case gameEvent =>
-      state.gameState match {
-        case s @ GameState.Running(_, _) =>
-          updateRunning(gameTime, dice, state, s, gridSquareSize)(gameEvent)
-
-        case s @ GameState.Crashed(_, _, _, _) =>
-          updateCrashed(gameTime, state, s)(gameEvent)
-      }
-  }
-
   def updateRunning(
       gameTime: GameTime,
       dice: Dice,
@@ -97,9 +85,13 @@ object GameModel {
       gridSquareSize: Int
   ): GlobalEvent => Outcome[GameModel] = {
     case FrameTick =>
-      updateBasedOnCollision(gameTime, dice, gridSquareSize)(
-        normalUpdate(gameTime, state)
-      )
+      val (updatedModel, collisionResult) =
+        state.snake.update(state.gridSize, hitTest(state.gameMap, state.snake.givePath)) match {
+          case (s, outcome) =>
+            (state.copy(snake = s, gameState = state.gameState.updateNow(gameTime.running, state.snake.direction)), outcome)
+        }
+
+      updateBasedOnCollision(gameTime, dice, gridSquareSize, updatedModel, collisionResult)
 
     case e: KeyboardEvent =>
       Outcome(
@@ -112,77 +104,65 @@ object GameModel {
       Outcome(state)
   }
 
-  def normalUpdate(
-      gameTime: GameTime,
-      state: GameModel
-  ): (GameModel, CollisionCheckOutcome) =
-    state.update(
-      gameTime,
-      state.gameMap.gridSize,
-      hitTest(
-        state.gameMap,
-        state.snake.givePath
-      )
-    )
+  def hitTest(gameMap: GameMap, body: List[Vertex]): Vertex => CollisionCheckOutcome =
+    pt => {
+      if (body.contains(pt)) CollisionCheckOutcome.Crashed(pt)
+      else
+        gameMap.fetchElementAt(pt) match {
+          case Some(MapElement.Apple(_)) =>
+            CollisionCheckOutcome.PickUp(pt)
 
-  def hitTest(
-      gameMap: GameMap,
-      body: List[Vertex]
-  ): Vertex => CollisionCheckOutcome = pt => {
-    if (body.contains(pt)) CollisionCheckOutcome.Crashed(pt)
-    else
-      gameMap.fetchElementAt(pt) match {
-        case Some(MapElement.Apple(_)) =>
-          CollisionCheckOutcome.PickUp(pt)
+          case Some(MapElement.Wall(_)) =>
+            CollisionCheckOutcome.Crashed(pt)
 
-        case Some(MapElement.Wall(_)) =>
-          CollisionCheckOutcome.Crashed(pt)
-
-        case None =>
-          CollisionCheckOutcome.NoCollision(pt)
-      }
-  }
+          case None =>
+            CollisionCheckOutcome.NoCollision(pt)
+        }
+    }
 
   def updateBasedOnCollision(
       gameTime: GameTime,
       dice: Dice,
-      gridSquareSize: Int
-  ): ((GameModel, CollisionCheckOutcome)) => Outcome[GameModel] = {
-    case (gameModel, CollisionCheckOutcome.Crashed(_)) =>
-      Outcome(
-        gameModel.copy(
-          gameState = gameModel.gameState match {
-            case c @ GameState.Crashed(_, _, _, _) =>
-              c
+      gridSquareSize: Int,
+      gameModel: GameModel,
+      collisionResult: CollisionCheckOutcome
+  ): Outcome[GameModel] =
+    collisionResult match {
+      case CollisionCheckOutcome.Crashed(_) =>
+        Outcome(
+          gameModel.copy(
+            gameState = gameModel.gameState match {
+              case c @ GameState.Crashed(_, _, _, _) =>
+                c
 
-            case r @ GameState.Running(_, _) =>
-              r.crash(gameTime.running, gameModel.snake.length)
-          }
+              case r @ GameState.Running(_, _) =>
+                r.crash(gameTime.running, gameModel.snake.length)
+            }
+          )
+        ).addGlobalEvents(PlaySound(GameAssets.soundLose, Volume.Max))
+
+      case CollisionCheckOutcome.PickUp(pt) =>
+        Outcome(
+          gameModel.copy(
+            snake = gameModel.snake.grow,
+            gameMap = gameModel.gameMap
+              .removeApple(pt)
+              .insertApple(
+                MapElement.Apple(
+                  gameModel.gameMap
+                    .findEmptySpace(dice, pt :: gameModel.snake.givePath)
+                )
+              ),
+            score = gameModel.score + ScoreIncrement
+          )
+        ).addGlobalEvents(
+          PlaySound(GameAssets.soundPoint, Volume.Max),
+          Score.spawnEvent(GameView.gridPointToPoint(pt, gameModel.gameMap.gridSize, gridSquareSize))
         )
-      ).addGlobalEvents(PlaySound(GameAssets.soundLose, Volume.Max))
 
-    case (gameModel, CollisionCheckOutcome.PickUp(pt)) =>
-      Outcome(
-        gameModel.copy(
-          snake = gameModel.snake.grow,
-          gameMap = gameModel.gameMap
-            .removeApple(pt)
-            .insertApple(
-              MapElement.Apple(
-                gameModel.gameMap
-                  .findEmptySpace(dice, pt :: gameModel.snake.givePath)
-              )
-            ),
-          score = gameModel.score + ScoreIncrement
-        )
-      ).addGlobalEvents(
-        PlaySound(GameAssets.soundPoint, Volume.Max),
-        Score.spawnEvent(GameView.gridPointToPoint(pt, gameModel.gameMap.gridSize, gridSquareSize))
-      )
-
-    case (gameModel, CollisionCheckOutcome.NoCollision(_)) =>
-      Outcome(gameModel)
-  }
+      case CollisionCheckOutcome.NoCollision(_) =>
+        Outcome(gameModel)
+    }
 
   def updateCrashed(
       gameTime: GameTime,

@@ -16,12 +16,12 @@ class GameModelTests extends munit.FunSuite {
 
   val model: GameModel =
     GameModel.initialModel(
-      BoundingBox(0, 0, 5, 5), // grid square size 10
+      BoundingBox(0, 0, 5, 5),
       ControlScheme.directedKeys
     )
 
   test("basic model updates should advance the game on frame tick") {
-    val actual = GameModel.update(GameTime.is(Seconds(0.15)), Dice.loaded(1), model, 10)(FrameTick).unsafeGet
+    val actual = model.update(GameTime.is(Seconds(0.15)), Dice.loaded(1), 10)(FrameTick).unsafeGet
     val expected = model.copy(
       snake = model.snake.copy(start = Vertex(2, 2)),
       gameState = model.gameState.updateNow(Seconds(0.15), model.gameState.lastSnakeDirection)
