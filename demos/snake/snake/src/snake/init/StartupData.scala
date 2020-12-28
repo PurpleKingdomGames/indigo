@@ -3,19 +3,19 @@ package snake.init
 import indigo._
 import indigoextras.geometry.BoundingBox
 
-object SnakeStartupData {
+object StartupData {
 
   def initialise(
       viewConfig: ViewConfig
-  ): Outcome[Startup[SnakeStartupData]] =
+  ): Outcome[Startup[StartupData]] =
     Outcome(
       Startup.Success(createStartupData(viewConfig))
     )
 
-  def createStartupData(viewConfig: ViewConfig): SnakeStartupData = {
+  def createStartupData(viewConfig: ViewConfig): StartupData = {
     val blockSize = viewConfig.gridSquareSize
 
-    SnakeStartupData(
+    StartupData(
       viewConfig = viewConfig,
       staticAssets = StaticAssets(
         apple = GameAssets.apple(blockSize),
@@ -27,7 +27,7 @@ object SnakeStartupData {
 
 }
 
-final case class SnakeStartupData(viewConfig: ViewConfig, staticAssets: StaticAssets)
+final case class StartupData(viewConfig: ViewConfig, staticAssets: StaticAssets)
 
 final case class StaticAssets(apple: Graphic, snake: Graphic, wall: Graphic)
 

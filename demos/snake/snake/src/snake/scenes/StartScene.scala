@@ -5,11 +5,11 @@ import indigo.scenes._
 
 import snake.init.GameAssets
 import snake.model.ViewModel
-import snake.init.SnakeStartupData
+import snake.init.StartupData
 import snake.GameReset
 import snake.model.GameModel
 
-object StartScene extends Scene[SnakeStartupData, GameModel, ViewModel] {
+object StartScene extends Scene[StartupData, GameModel, ViewModel] {
   type SceneModel     = Unit
   type SceneViewModel = Unit
 
@@ -30,7 +30,7 @@ object StartScene extends Scene[SnakeStartupData, GameModel, ViewModel] {
     Set()
 
   def updateModel(
-      context: FrameContext[SnakeStartupData],
+      context: FrameContext[StartupData],
       snakeGameModel: Unit
   ): GlobalEvent => Outcome[Unit] = {
     case KeyboardEvent.KeyUp(Key.SPACE) =>
@@ -45,14 +45,14 @@ object StartScene extends Scene[SnakeStartupData, GameModel, ViewModel] {
   }
 
   def updateViewModel(
-      context: FrameContext[SnakeStartupData],
+      context: FrameContext[StartupData],
       snakeGameModel: Unit,
       snakeViewModel: Unit
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(snakeViewModel)
 
   def present(
-      context: FrameContext[SnakeStartupData],
+      context: FrameContext[StartupData],
       snakeGameModel: Unit,
       snakeViewModel: Unit
   ): Outcome[SceneUpdateFragment] =
