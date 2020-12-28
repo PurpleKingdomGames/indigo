@@ -8,8 +8,8 @@ import indigoextras.geometry.BoundingBox
 import snake.model.arena.Arena
 import snake.model.arena.MapElement
 import snake.init.GameAssets
-import snake.gamelogic.ViewLogic
-import snake.gamelogic.Score
+import snake.scenes.GameView
+import snake.Score
 import indigo.scenes.SceneEvent
 import snake.scenes.GameOverScene
 
@@ -174,7 +174,7 @@ object GameModel {
         )
       ).addGlobalEvents(
         PlaySound(GameAssets.soundPoint, Volume.Max),
-        Score.spawnEvent(ViewLogic.gridPointToPoint(pt, gameModel.gameMap.gridSize, gridSquareSize))
+        Score.spawnEvent(GameView.gridPointToPoint(pt, gameModel.gameMap.gridSize, gridSquareSize))
       )
 
     case (gameModel, CollisionCheckOutcome.NoCollision(_)) =>

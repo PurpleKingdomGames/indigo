@@ -1,7 +1,7 @@
 package snake.model
 
 import indigo._
-import snake.gamelogic.ViewLogic
+import snake.scenes.GameView
 import snake.init.{SnakeStartupData, StaticAssets}
 
 final case class SnakeViewModel(walls: Group, staticAssets: StaticAssets)
@@ -11,7 +11,9 @@ object SnakeViewModel {
       walls = Group(
         snakeModel.gameModel.gameMap.findWalls.map { wall =>
           startupData.staticAssets.wall
-            .moveTo(ViewLogic.gridPointToPoint(wall.gridPoint, startupData.viewConfig.gridSize, startupData.viewConfig.gridSquareSize))
+            .moveTo(
+              GameView.gridPointToPoint(wall.gridPoint, startupData.viewConfig.gridSize, startupData.viewConfig.gridSquareSize)
+            )
         }
       ),
       staticAssets = startupData.staticAssets
