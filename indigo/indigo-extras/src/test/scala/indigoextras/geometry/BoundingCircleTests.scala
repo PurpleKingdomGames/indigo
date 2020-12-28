@@ -70,7 +70,8 @@ class BoundingCircleTests extends munit.FunSuite {
     val expected =
       BoundingCircle(Vertex(15, 15), Vertex(15, 15).distanceTo(Vertex(10, 10)))
 
-    assertEquals(actual, expected)
+    assert(clue(actual.position.round) ~== clue(expected.position))
+    assert(doubleCloseEnough(actual.radius, expected.radius))
   }
 
   test("lineIntersects - miss") {
@@ -160,5 +161,8 @@ class BoundingCircleTests extends munit.FunSuite {
     assertEquals(Math.round(c.sdf(Vertex.zero)).toDouble, 18.0d)
 
   }
+
+  def doubleCloseEnough(r1: Double, r2: Double): Boolean =
+    r1 - 0.001 < r2 && r1 + 0.001 > r2
 
 }

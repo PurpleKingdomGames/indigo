@@ -33,12 +33,14 @@ class BoundingBoxTests extends munit.FunSuite {
       )
 
     val expected: BoundingBox =
-      BoundingBox(0, 7, 6, 6)
+      BoundingBox(0, 7, 6.001, 6.001)
 
     val actual: BoundingBox =
       BoundingBox.fromVertexCloud(vertices)
 
     assertEquals(actual == expected, true)
+
+    assert(vertices.forall(actual.contains))
   }
 
   test("creating rectangles.should be able to construct a bounding box from a rectangle") {

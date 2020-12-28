@@ -111,11 +111,12 @@ object BoundingBox {
   }
 
   def fromVertices(vertices: List[Vertex]): BoundingBox = {
+    val margin: Double = 0.001
     @tailrec
     def rec(remaining: List[Vertex], left: Double, top: Double, right: Double, bottom: Double): BoundingBox =
       remaining match {
         case Nil =>
-          BoundingBox(left, top, right - left, bottom - top)
+          BoundingBox(left, top, right - left + margin, bottom - top + margin)
 
         case p :: ps =>
           rec(
@@ -130,6 +131,11 @@ object BoundingBox {
     rec(vertices, Double.MaxValue, Double.MaxValue, Double.MinValue, Double.MinValue)
   }
 
+  /**
+   * Produces a bounding box that could include all of the vertices. Since the `contains`
+   * methods right and bottom checks are < not <= (to allow bounds to sit next to each other with
+   * no overlap), a small fixed margin of 0.001 is add to the size values.
+   */
   def fromVertexCloud(vertices: List[Vertex]): BoundingBox =
     fromVertices(vertices)
 
