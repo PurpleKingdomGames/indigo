@@ -77,3 +77,5 @@ object SnakeGame extends IndigoGame[ViewConfig, SnakeStartupData, GameModel, Vie
     Outcome(SceneUpdateFragment.empty)
 
 }
+
+final case object GameReset extends GlobalEvent
