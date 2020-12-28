@@ -7,6 +7,6 @@ sealed trait MapElement {
 }
 
 object MapElement {
-  case class Wall(gridPoint: Vertex)  extends MapElement
-  case class Apple(gridPoint: Vertex) extends MapElement
+  final case class Wall(gridPoint: Vertex)  extends MapElement
+  final case class Apple(gridPoint: Vertex) extends MapElement
 }

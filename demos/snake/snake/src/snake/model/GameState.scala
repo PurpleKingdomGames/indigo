@@ -9,14 +9,14 @@ sealed trait GameState {
   def updateNow(time: Seconds, currentDirection: SnakeDirection): GameState
 }
 object GameState {
-  case class Crashed(crashedAt: Seconds, snakeLengthOnCrash: Int, lastUpdated: Seconds, lastSnakeDirection: SnakeDirection)
+  final case class Crashed(crashedAt: Seconds, snakeLengthOnCrash: Int, lastUpdated: Seconds, lastSnakeDirection: SnakeDirection)
       extends GameState {
     val hasCrashed: Boolean = true
 
     def updateNow(time: Seconds, currentDirection: SnakeDirection): GameState.Crashed =
       this.copy(lastUpdated = time, lastSnakeDirection = currentDirection)
   }
-  case class Running(lastUpdated: Seconds, lastSnakeDirection: SnakeDirection) extends GameState {
+  final case class Running(lastUpdated: Seconds, lastSnakeDirection: SnakeDirection) extends GameState {
     val hasCrashed: Boolean = false
 
     def updateNow(time: Seconds, currentDirection: SnakeDirection): GameState.Running =
