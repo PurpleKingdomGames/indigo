@@ -1,4 +1,4 @@
-package snake.gamelogic
+package snake.scenes
 
 import indigo._
 import snake.init.{GameAssets, StaticAssets, ViewConfig}
@@ -7,10 +7,7 @@ import snake.model.{GameModel, SnakeViewModel}
 import indigoextras.geometry.Vertex
 import indigoextras.geometry.BoundingBox
 
-object ViewLogic {
-
-  def gridPointToPoint(gridPoint: Vertex, gridSize: BoundingBox, gridSquareSize: Int): Point =
-    Point((gridPoint.x * gridSquareSize).toInt, (((gridSize.height - 1) - gridPoint.y) * gridSquareSize).toInt)
+object GameView {
 
   def update(viewConfig: ViewConfig, model: GameModel, snakeViewModel: SnakeViewModel): Outcome[SceneUpdateFragment] =
     Outcome(
@@ -55,5 +52,8 @@ object ViewLogic {
         GameAssets.fontKey
       ).alignRight
     )
+
+  def gridPointToPoint(gridPoint: Vertex, gridSize: BoundingBox, gridSquareSize: Int): Point =
+    Point((gridPoint.x * gridSquareSize).toInt, (((gridSize.height - 1) - gridPoint.y) * gridSquareSize).toInt)
 
 }

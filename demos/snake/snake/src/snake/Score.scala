@@ -1,4 +1,4 @@
-package snake.gamelogic
+package snake
 
 import indigo._
 import indigoextras.subsystems._

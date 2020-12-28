@@ -3,9 +3,8 @@ package snake.scenes
 import indigo._
 import indigo.scenes._
 
-import snake.gamelogic.ViewLogic
 import snake.model.{GameModel, SnakeGameModel, SnakeViewModel}
-import snake.gamelogic.Score
+import snake.Score
 import snake.init.{GameAssets, SnakeStartupData}
 
 object GameScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel] {
@@ -42,5 +41,5 @@ object GameScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel]
       gameModel: GameModel,
       snakeViewModel: SnakeViewModel
   ): Outcome[SceneUpdateFragment] =
-    ViewLogic.update(context.startUpData.viewConfig, gameModel, snakeViewModel)
+    GameView.update(context.startUpData.viewConfig, gameModel, snakeViewModel)
 }
