@@ -9,15 +9,16 @@ import snake.init.{GameAssets, SnakeStartupData}
 
 object GameScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel] {
   type SceneModel     = GameModel
-  type SceneViewModel = SnakeViewModel
+  type SceneViewModel = Group
 
-  val name: SceneName = SceneName("game scene")
+  val name: SceneName =
+    SceneName("game scene")
 
   val modelLens: Lens[SnakeGameModel, GameModel] =
     SnakeGameModel.Lenses.gameLens
 
-  val viewModelLens: Lens[SnakeViewModel, SnakeViewModel] =
-    Lens.keepLatest
+  val viewModelLens: Lens[SnakeViewModel, Group] =
+    Lens.readOnly(_.walls)
 
   val eventFilters: EventFilters =
     EventFilters.Restricted
@@ -32,14 +33,14 @@ object GameScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel]
   def updateViewModel(
       context: FrameContext[SnakeStartupData],
       gameModel: GameModel,
-      snakeViewModel: SnakeViewModel
-  ): GlobalEvent => Outcome[SnakeViewModel] =
-    _ => Outcome(snakeViewModel)
+      walls: Group
+  ): GlobalEvent => Outcome[Group] =
+    _ => Outcome(walls)
 
   def present(
       context: FrameContext[SnakeStartupData],
       gameModel: GameModel,
-      snakeViewModel: SnakeViewModel
+      walls: Group
   ): Outcome[SceneUpdateFragment] =
-    GameView.update(context.startUpData.viewConfig, gameModel, snakeViewModel)
+    GameView.update(context.startUpData.viewConfig, gameModel, walls, context.startUpData.staticAssets)
 }

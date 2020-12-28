@@ -3,20 +3,20 @@ package snake.scenes
 import indigo._
 import snake.init.{GameAssets, StaticAssets, ViewConfig}
 import snake.model.arena.GameMap
-import snake.model.{GameModel, SnakeViewModel}
+import snake.model.GameModel
 import indigoextras.geometry.Vertex
 import indigoextras.geometry.BoundingBox
 
 object GameView {
 
-  def update(viewConfig: ViewConfig, model: GameModel, snakeViewModel: SnakeViewModel): Outcome[SceneUpdateFragment] =
+  def update(viewConfig: ViewConfig, model: GameModel, walls: Group, staticAssets: StaticAssets): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
         gameLayer(
-          viewConfig, 
+          viewConfig,
           model,
-          snakeViewModel.staticAssets,
-          snakeViewModel.walls
+          staticAssets,
+          walls
         )
       )
     )
