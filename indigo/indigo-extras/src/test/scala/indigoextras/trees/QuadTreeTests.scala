@@ -1,6 +1,5 @@
 package indigoextras.trees
 
-import indigo.shared.PowerOfTwo
 import indigoextras.geometry.{Vertex, BoundingBox}
 import indigoextras.trees.QuadTree.{QuadBranch, QuadEmpty, QuadLeaf}
 
