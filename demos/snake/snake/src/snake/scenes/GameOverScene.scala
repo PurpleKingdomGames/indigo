@@ -3,10 +3,10 @@ package snake.scenes
 import indigo._
 import indigo.scenes._
 import snake.model.ViewModel
-import snake.init.{GameAssets, SnakeStartupData}
+import snake.init.{GameAssets, StartupData}
 import snake.model.GameModel
 
-object GameOverScene extends Scene[SnakeStartupData, GameModel, ViewModel] {
+object GameOverScene extends Scene[StartupData, GameModel, ViewModel] {
   type SceneModel     = Int
   type SceneViewModel = Unit
 
@@ -26,7 +26,7 @@ object GameOverScene extends Scene[SnakeStartupData, GameModel, ViewModel] {
   val subSystems: Set[SubSystem] =
     Set()
 
-  def updateModel(context: FrameContext[SnakeStartupData], pointsScored: Int): GlobalEvent => Outcome[Int] = {
+  def updateModel(context: FrameContext[StartupData], pointsScored: Int): GlobalEvent => Outcome[Int] = {
     case KeyboardEvent.KeyUp(Key.SPACE) =>
       Outcome(pointsScored)
         .addGlobalEvents(SceneEvent.JumpTo(StartScene.name))
@@ -36,14 +36,14 @@ object GameOverScene extends Scene[SnakeStartupData, GameModel, ViewModel] {
   }
 
   def updateViewModel(
-      context: FrameContext[SnakeStartupData],
+      context: FrameContext[StartupData],
       pointsScored: Int,
       sceneViewModel: Unit
   ): GlobalEvent => Outcome[Unit] =
     _ => Outcome(sceneViewModel)
 
   def present(
-      context: FrameContext[SnakeStartupData],
+      context: FrameContext[StartupData],
       pointsScored: Int,
       sceneViewModel: Unit
   ): Outcome[SceneUpdateFragment] =
