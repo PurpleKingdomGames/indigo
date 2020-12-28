@@ -1,12 +1,11 @@
 package snake.model
 
 import indigo._
-import snake.model.arena.GameMap
+import snake.model.GameMap
 import snake.model.snakemodel.{CollisionCheckOutcome, Snake}
 import indigoextras.geometry.Vertex
 import indigoextras.geometry.BoundingBox
-import snake.model.arena.Arena
-import snake.model.arena.MapElement
+import snake.model.MapElement
 import snake.init.GameAssets
 import snake.scenes.GameView
 import snake.Score
@@ -50,7 +49,7 @@ object GameModel {
         gridSize.center.y.toInt - (gridSize.center.y / 2).toInt
       ).grow.grow,
       gameState = GameState.Running.start,
-      gameMap = Arena.genLevel(gridSize),
+      gameMap = GameMap.genLevel(gridSize),
       score = 0,
       tickDelay = Seconds(0.1),
       controlScheme = controlScheme,
@@ -144,7 +143,11 @@ object GameModel {
       }
   }
 
-  def updateBasedOnCollision(gameTime: GameTime, dice: Dice, gridSquareSize: Int): ((GameModel, CollisionCheckOutcome)) => Outcome[GameModel] = {
+  def updateBasedOnCollision(
+      gameTime: GameTime,
+      dice: Dice,
+      gridSquareSize: Int
+  ): ((GameModel, CollisionCheckOutcome)) => Outcome[GameModel] = {
     case (gameModel, CollisionCheckOutcome.Crashed(_)) =>
       Outcome(
         gameModel.copy(
