@@ -95,8 +95,8 @@ final case class Vector2(x: Double, y: Double) {
     x == other.x && y == other.y
 
   def ~==(other: Vector2): Boolean =
-    Math.abs(x - other.x) < 0.001 &&
-      Math.abs(y - other.y) < 0.001
+    Math.abs(x - other.x) < 0.0001 &&
+      Math.abs(y - other.y) < 0.0001
 
   def hash: String =
     x.toString() + y.toString()
