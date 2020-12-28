@@ -6,7 +6,7 @@ import snake.model.snakemodel.{CollisionCheckOutcome, Snake}
 import indigoextras.geometry.Vertex
 import indigoextras.geometry.BoundingBox
 
-case class GameModel(
+final case class GameModel(
     gridSize: BoundingBox,
     snake: Snake,
     gameState: GameState,

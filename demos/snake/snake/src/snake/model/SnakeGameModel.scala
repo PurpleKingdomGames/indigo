@@ -4,7 +4,7 @@ import indigo.scenes._
 import snake.gamelogic.ModelLogic
 import indigoextras.geometry.BoundingBox
 
-case class SnakeGameModel(gridSize: BoundingBox, gameModel: GameModel) {
+final case class SnakeGameModel(gridSize: BoundingBox, gameModel: GameModel) {
   def reset: SnakeGameModel =
     this.copy(gameModel = ModelLogic.initialModel(gridSize, gameModel.controlScheme))
 }

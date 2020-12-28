@@ -3,7 +3,7 @@ package snake.model.snakemodel
 import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.Vertex
 
-case class Snake(start: Vertex, body: List[Vertex], direction: SnakeDirection, status: SnakeStatus) {
+final case class Snake(start: Vertex, body: List[Vertex], direction: SnakeDirection, status: SnakeStatus) {
 
   def goUp: Snake =
     Snake.goUp(this)
