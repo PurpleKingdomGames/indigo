@@ -12,6 +12,17 @@ object GameAssets {
 
   val snakeMaterial: Material.Textured = Material.Textured(snakeTexture)
 
+  def apple(blockSize: Int): Graphic =
+    Graphic(0, 0, blockSize, blockSize, 2, GameAssets.snakeMaterial)
+      .withCrop(blockSize, 0, blockSize, blockSize)
+
+  def snake(blockSize: Int): Graphic =
+    Graphic(0, 0, blockSize, blockSize, 2, GameAssets.snakeMaterial)
+
+  def wall(blockSize: Int): Graphic =
+    Graphic(0, 0, blockSize, blockSize, 2, GameAssets.snakeMaterial)
+      .withCrop(blockSize * 2, 0, blockSize, blockSize)
+
   def assets(baseUrl: String): Set[AssetType] =
     Set(
       AssetType.Image(smallFontName, AssetPath(baseUrl + "assets/boxy_font_small.png")),

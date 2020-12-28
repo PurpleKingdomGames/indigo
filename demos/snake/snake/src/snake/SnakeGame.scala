@@ -46,7 +46,7 @@ object SnakeGame extends IndigoGame[ViewConfig, SnakeStartupData, SnakeGameModel
     }
 
   def initialModel(startupData: SnakeStartupData): Outcome[SnakeGameModel] =
-    Outcome(SnakeGameModel.initialModel(startupData, ControlScheme.directedKeys))
+    Outcome(SnakeGameModel.initialModel(startupData.viewConfig.gridSize, ControlScheme.directedKeys))
 
   def initialViewModel(startupData: SnakeStartupData, model: SnakeGameModel): Outcome[SnakeViewModel] =
     Outcome(SnakeViewModel.initialViewModel(startupData, model))
