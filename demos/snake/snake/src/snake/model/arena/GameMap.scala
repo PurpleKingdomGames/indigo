@@ -7,32 +7,29 @@ import indigoextras.trees.QuadTree
 import indigoextras.geometry.Vertex
 import scala.annotation.tailrec
 
-case class GameMap(quadTree: QuadTree[MapElement], gridSize: BoundingBox) {
-
-  def isEmpty: Boolean = quadTree.isEmpty
-
-  def fetchElementAt(x: Int, y: Int): Option[MapElement] =
-    quadTree.fetchElementAt(Vertex(x.toDouble, y.toDouble))
+final case class GameMap(quadTree: QuadTree[MapElement], gridSize: BoundingBox) {
 
   def fetchElementAt(gridPoint: Vertex): Option[MapElement] =
     quadTree.fetchElementAt(gridPoint)
 
-  def insertElement(element: MapElement): GameMap =
-    this.copy(quadTree = quadTree.insertElement(element, element.gridPoint))
+  def insertApple(element: MapElement.Apple): GameMap =
+    this.copy(quadTree = quadTree.insertElement(element, element.gridPoint).prune)
+
+  def removeApple(gridPoint: Vertex): GameMap =
+    this.copy(quadTree = quadTree.removeElement(gridPoint).prune)
 
   def insertElements(elements: List[MapElement]): GameMap =
-    elements.foldLeft(this)((map, elem) => map.insertElement(elem))
-
-  def removeElement(gridPoint: Vertex): GameMap =
-    this.copy(quadTree = quadTree.removeElement(gridPoint))
+    this.copy(
+      quadTree = quadTree.insertElements(elements.map(me => (me, me.gridPoint))).prune
+    )
 
   def findEmptySpace(dice: Dice, not: List[Vertex]): Vertex =
-    findEmptySpace(quadTree, dice, gridSize, not)
+    GameMap.findEmptySpace(quadTree, dice, gridSize, not)
 
   def asElementList: List[MapElement] =
     quadTree.asElementList
 
-  def findWalls: List[Wall] =
+  lazy val findWalls: List[Wall] =
     asElementList.flatMap {
       case w: Wall =>
         List(w)
@@ -50,16 +47,21 @@ case class GameMap(quadTree: QuadTree[MapElement], gridSize: BoundingBox) {
         Nil
     }
 
-  def optimise: GameMap =
-    this.copy(quadTree = quadTree.prune)
+}
 
-  def randomVertex(dice: Dice, maxX: Int, maxY: Int): Vertex =
-    Vertex(
-      x = dice.rollFromZero(maxX).toDouble,
-      y = dice.rollFromZero(maxY).toDouble
-    )
+object GameMap {
+
+  def apply(gridSize: BoundingBox): GameMap =
+    GameMap(QuadTree.empty[MapElement](gridSize.size), gridSize)
 
   def findEmptySpace[T](quadTree: QuadTree[T], dice: Dice, gridSize: BoundingBox, not: List[Vertex]): Vertex = {
+
+    def randomVertex(dice: Dice, maxX: Int, maxY: Int): Vertex =
+      Vertex(
+        x = dice.rollFromZero(maxX).toDouble,
+        y = dice.rollFromZero(maxY).toDouble
+      )
+
     def makeRandom: () => Vertex =
       () => randomVertex(dice, (gridSize.width - 2).toInt, (gridSize.height - 2).toInt) + Vertex(1, 1)
 
@@ -78,12 +80,4 @@ case class GameMap(quadTree: QuadTree[MapElement], gridSize: BoundingBox) {
 
     rec(makeRandom())
   }
-
-}
-
-object GameMap {
-
-  def apply(gridSize: BoundingBox): GameMap =
-    GameMap(QuadTree.empty[MapElement](gridSize.size), gridSize)
-
 }

@@ -136,8 +136,8 @@ object ModelLogic {
         gameModel.copy(
           snake = gameModel.snake.grow,
           gameMap = gameModel.gameMap
-            .removeElement(pt)
-            .insertElement(
+            .removeApple(pt)
+            .insertApple(
               Apple(
                 gameModel.gameMap
                   .findEmptySpace(dice, pt :: gameModel.snake.givePath)
