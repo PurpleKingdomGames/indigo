@@ -1,6 +1,6 @@
 package snake.model.snakemodel
 
-import snake.model.grid._
+import indigoextras.geometry.Vertex
 
 sealed trait SnakeDirection {
 
@@ -39,7 +39,7 @@ sealed trait SnakeDirection {
   def goRight: SnakeDirection =
     SnakeDirection.go(this, SnakeDirection.Right)
 
-  def oneSquareForward(current: GridPoint): GridPoint =
+  def oneSquareForward(current: Vertex): Vertex =
     SnakeDirection.oneSquareForward(this, current)
 
 }
@@ -107,19 +107,24 @@ object SnakeDirection {
         Down
     }
 
-  def oneSquareForward(snakeDirection: SnakeDirection, current: GridPoint): GridPoint =
+  def oneSquareForward(snakeDirection: SnakeDirection, current: Vertex): Vertex =
     snakeDirection match {
       case Up =>
-        current + GridPoint.Up
+        current + MoveUp
 
       case Down =>
-        current + GridPoint.Down
+        current + MoveDown
 
       case Left =>
-        current + GridPoint.Left
+        current + MoveLeft
 
       case Right =>
-        current + GridPoint.Right
+        current + MoveRight
     }
+
+  val MoveUp: Vertex    = Vertex(0, 1)
+  val MoveDown: Vertex  = Vertex(0, -1)
+  val MoveLeft: Vertex  = Vertex(-1, 0)
+  val MoveRight: Vertex = Vertex(1, 0)
 
 }

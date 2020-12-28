@@ -1,7 +1,6 @@
 package snake.gamelogic
 
 import indigo._
-import snake.model.grid._
 import indigo.scenes._
 import snake.init.GameAssets
 import snake.model._
@@ -9,17 +8,19 @@ import snake.model.arena.MapElement.Apple
 import snake.model.arena.{Arena, GameMap, MapElement}
 import snake.model.snakemodel.{CollisionCheckOutcome, Snake}
 import snake.scenes.GameOverScene
+import indigoextras.geometry.BoundingBox
+import indigoextras.geometry.Vertex
 
 object ModelLogic {
 
   val ScoreIncrement: Int = 100
 
-  def initialModel(gridSize: GridSize, controlScheme: ControlScheme): GameModel =
+  def initialModel(gridSize: BoundingBox, controlScheme: ControlScheme): GameModel =
     GameModel(
       gridSize = gridSize,
       snake = Snake(
-        gridSize.centre.x,
-        gridSize.centre.y - (gridSize.centre.y / 2)
+        gridSize.center.x.toInt,
+        gridSize.center.y.toInt - (gridSize.center.y / 2).toInt
       ).grow.grow,
       gameState = GameState.Running.start,
       gameMap = Arena.genLevel(gridSize),
@@ -98,11 +99,11 @@ object ModelLogic {
 
   def hitTest(
       gameMap: GameMap,
-      body: List[GridPoint]
-  ): GridPoint => CollisionCheckOutcome = pt => {
+      body: List[Vertex]
+  ): Vertex => CollisionCheckOutcome = pt => {
     if (body.contains(pt)) CollisionCheckOutcome.Crashed(pt)
     else
-      gameMap.fetchElementAt(pt.x, pt.y) match {
+      gameMap.fetchElementAt(pt) match {
         case Some(MapElement.Apple(_)) =>
           CollisionCheckOutcome.PickUp(pt)
 
