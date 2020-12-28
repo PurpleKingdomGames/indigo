@@ -33,9 +33,10 @@ object GameView {
       drawScore(viewConfig, currentState.score)
 
   def drawApple(viewConfig: ViewConfig, gameMap: GameMap, staticAssets: StaticAssets): List[Graphic] =
-    gameMap.findApples.map(
-      a => staticAssets.apple.moveTo(gridPointToPoint(a.gridPoint, gameMap.gridSize, viewConfig.gridSquareSize))
-    )
+    gameMap.findApples.map { a =>
+      staticAssets.apple
+        .moveTo(gridPointToPoint(a.gridPoint, gameMap.gridSize, viewConfig.gridSquareSize))
+    }
 
   def drawSnake(viewConfig: ViewConfig, currentState: GameModel, snakeAsset: Graphic): List[Graphic] =
     currentState.snake.givePath.map { pt =>
