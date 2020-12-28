@@ -19,7 +19,7 @@ object SnakeGame extends IndigoGame[ViewConfig, SnakeStartupData, SnakeGameModel
     NonEmptyList(StartScene, ControlsScene, GameScene, GameOverScene)
 
   val eventFilters: EventFilters =
-    EventFilters.BlockAll
+    EventFilters.Restricted
 
   def boot(flags: Map[String, String]): Outcome[BootResult[ViewConfig]] =
     Outcome {
@@ -54,8 +54,13 @@ object SnakeGame extends IndigoGame[ViewConfig, SnakeStartupData, SnakeGameModel
   def setup(viewConfig: ViewConfig, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[SnakeStartupData]] =
     SnakeStartupData.initialise(viewConfig)
 
-  def updateModel(context: FrameContext[SnakeStartupData], model: SnakeGameModel): GlobalEvent => Outcome[SnakeGameModel] =
-    _ => Outcome(model)
+  def updateModel(context: FrameContext[SnakeStartupData], model: SnakeGameModel): GlobalEvent => Outcome[SnakeGameModel] = {
+    case GameReset =>
+      Outcome(model.reset)
+
+    case _ =>
+      Outcome(model)
+  }
 
   def updateViewModel(
       context: FrameContext[SnakeStartupData],

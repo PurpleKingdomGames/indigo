@@ -9,13 +9,14 @@ object ControlsScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewMo
   type SceneModel     = ControlScheme
   type SceneViewModel = Unit
 
-  val name: SceneName = SceneName("controls")
+  val name: SceneName =
+    SceneName("controls")
 
   val modelLens: Lens[SnakeGameModel, ControlScheme] =
     SnakeGameModel.Lenses.controlSchemeAccessors
 
   val viewModelLens: Lens[SnakeViewModel, Unit] =
-    Lens.fixed(())
+    Lens.unit
 
   val eventFilters: EventFilters =
     EventFilters.Restricted
