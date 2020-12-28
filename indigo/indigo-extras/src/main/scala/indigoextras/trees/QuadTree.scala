@@ -1,10 +1,8 @@
 package indigoextras.trees
 
-import scala.annotation.tailrec
 import indigoextras.geometry.Vertex
 import indigoextras.geometry.BoundingBox
 import indigoextras.geometry.LineSegment
-import indigo.shared.dice.Dice
 
 sealed trait QuadTree[T] {
 
@@ -171,7 +169,7 @@ object QuadTree {
         // Straight insert
         QuadLeaf(bounds, vertex, element)
 
-      case QuadLeaf(bounds, position, value) if position ~== vertex =>
+      case QuadLeaf(bounds, position, _) if position ~== vertex =>
         // Replace
         QuadLeaf(bounds, vertex, element)
 
