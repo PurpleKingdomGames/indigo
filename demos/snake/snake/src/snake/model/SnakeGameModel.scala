@@ -1,19 +1,18 @@
 package snake.model
 
 import indigo.scenes._
-import snake.gamelogic.ModelLogic
 import indigoextras.geometry.BoundingBox
 
 final case class SnakeGameModel(gridSize: BoundingBox, gameModel: GameModel) {
   def reset: SnakeGameModel =
-    this.copy(gameModel = ModelLogic.initialModel(gridSize, gameModel.controlScheme))
+    this.copy(gameModel = GameModel.initialModel(gridSize, gameModel.controlScheme))
 }
 object SnakeGameModel {
 
   def initialModel(gridSize: BoundingBox, controlScheme: ControlScheme): SnakeGameModel =
     SnakeGameModel(
       gridSize = gridSize,
-      gameModel = ModelLogic.initialModel(gridSize, controlScheme)
+      gameModel = GameModel.initialModel(gridSize, controlScheme)
     )
 
   object Lenses {
