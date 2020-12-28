@@ -5,36 +5,39 @@ import indigo.scenes._
 import indigoextras.subsystems.FPSCounter
 
 import snake.model.{ControlScheme, SnakeGameModel, SnakeViewModel}
-import snake.init.{GameAssets, Settings, SnakeStartupData}
+import snake.init.{GameAssets, SnakeStartupData, ViewConfig}
 import snake.scenes.{ControlsScene, GameOverScene, GameScene, StartScene}
 import scala.scalajs.js.annotation.JSExportTopLevel
 
 @JSExportTopLevel("IndigoGame")
-object SnakeGame extends IndigoGame[GameViewport, SnakeStartupData, SnakeGameModel, SnakeViewModel] {
+object SnakeGame extends IndigoGame[ViewConfig, SnakeStartupData, SnakeGameModel, SnakeViewModel] {
 
-  def initialScene(bootData: GameViewport): Option[SceneName] =
+  def initialScene(bootData: ViewConfig): Option[SceneName] =
     Option(StartScene.name)
 
-  def scenes(bootData: GameViewport): NonEmptyList[Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel]] =
+  def scenes(bootData: ViewConfig): NonEmptyList[Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel]] =
     NonEmptyList(StartScene, ControlsScene, GameScene, GameOverScene)
 
   val eventFilters: EventFilters =
     EventFilters.BlockAll
 
-  def boot(flags: Map[String, String]): Outcome[BootResult[GameViewport]] =
+  def boot(flags: Map[String, String]): Outcome[BootResult[ViewConfig]] =
     Outcome {
+      val viewConfig: ViewConfig =
+        ViewConfig.default
+
       val assetPath: String =
         flags.getOrElse("baseUrl", "")
 
       val config =
         GameConfig(
-          viewport = GameViewport(Settings.viewportWidth, Settings.viewportHeight),
+          viewport = viewConfig.viewport,
           frameRate = 60,
           clearColor = RGBA.Black,
-          magnification = Settings.magnificationLevel
+          magnification = viewConfig.magnificationLevel
         )
 
-      BootResult(config, config.viewport)
+      BootResult(config, viewConfig)
         .withAssets(GameAssets.assets(assetPath))
         .withFonts(GameAssets.fontInfo)
         .withSubSystems(
@@ -48,8 +51,8 @@ object SnakeGame extends IndigoGame[GameViewport, SnakeStartupData, SnakeGameMod
   def initialViewModel(startupData: SnakeStartupData, model: SnakeGameModel): Outcome[SnakeViewModel] =
     Outcome(SnakeViewModel.initialViewModel(startupData, model))
 
-  def setup(viewport: GameViewport, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[SnakeStartupData]] =
-    SnakeStartupData.initialise(viewport, Settings.gridSize)
+  def setup(viewConfig: ViewConfig, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[SnakeStartupData]] =
+    SnakeStartupData.initialise(viewConfig)
 
   def updateModel(context: FrameContext[SnakeStartupData], model: SnakeGameModel): GlobalEvent => Outcome[SnakeGameModel] =
     _ => Outcome(model)

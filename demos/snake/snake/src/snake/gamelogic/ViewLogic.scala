@@ -1,7 +1,7 @@
 package snake.gamelogic
 
 import indigo._
-import snake.init.{GameAssets, Settings, StaticAssets}
+import snake.init.{GameAssets, StaticAssets, ViewConfig}
 import snake.model.arena.GameMap
 import snake.model.{GameModel, SnakeViewModel}
 import indigoextras.geometry.Vertex
@@ -9,13 +9,14 @@ import indigoextras.geometry.BoundingBox
 
 object ViewLogic {
 
-  def gridPointToPoint(gridPoint: Vertex, gridSize: BoundingBox): Point =
-    Point((gridPoint.x * Settings.gridSquareSize).toInt, (((gridSize.height - 1) - gridPoint.y) * Settings.gridSquareSize).toInt)
+  def gridPointToPoint(gridPoint: Vertex, gridSize: BoundingBox, gridSquareSize: Int): Point =
+    Point((gridPoint.x * gridSquareSize).toInt, (((gridSize.height - 1) - gridPoint.y) * gridSquareSize).toInt)
 
-  def update(model: GameModel, snakeViewModel: SnakeViewModel): Outcome[SceneUpdateFragment] =
+  def update(viewConfig: ViewConfig, model: GameModel, snakeViewModel: SnakeViewModel): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
         gameLayer(
+          viewConfig, 
           model,
           snakeViewModel.staticAssets,
           snakeViewModel.walls
@@ -24,31 +25,32 @@ object ViewLogic {
     )
 
   def gameLayer(
+      viewConfig: ViewConfig,
       currentState: GameModel,
       staticAssets: StaticAssets,
       walls: Group
   ): List[SceneGraphNode] =
     walls ::
-      drawApple(currentState.gameMap, staticAssets) ++
-        drawSnake(currentState, staticAssets.snake) ++
-      drawScore(currentState.score)
+      drawApple(viewConfig, currentState.gameMap, staticAssets) ++
+        drawSnake(viewConfig, currentState, staticAssets.snake) ++
+      drawScore(viewConfig, currentState.score)
 
-  def drawApple(gameMap: GameMap, staticAssets: StaticAssets): List[Graphic] =
+  def drawApple(viewConfig: ViewConfig, gameMap: GameMap, staticAssets: StaticAssets): List[Graphic] =
     gameMap.findApples.map(
-      a => staticAssets.apple.moveTo(gridPointToPoint(a.gridPoint, gameMap.gridSize))
+      a => staticAssets.apple.moveTo(gridPointToPoint(a.gridPoint, gameMap.gridSize, viewConfig.gridSquareSize))
     )
 
-  def drawSnake(currentState: GameModel, snakeAsset: Graphic): List[Graphic] =
+  def drawSnake(viewConfig: ViewConfig, currentState: GameModel, snakeAsset: Graphic): List[Graphic] =
     currentState.snake.givePath.map { pt =>
-      snakeAsset.moveTo(gridPointToPoint(pt, currentState.gameMap.gridSize))
+      snakeAsset.moveTo(gridPointToPoint(pt, currentState.gameMap.gridSize, viewConfig.gridSquareSize))
     }
 
-  def drawScore(score: Int): List[SceneGraphNode] =
+  def drawScore(viewConfig: ViewConfig, score: Int): List[SceneGraphNode] =
     List(
       Text(
         score.toString,
-        (Settings.viewportWidth / Settings.magnificationLevel) - 3,
-        (Settings.viewportHeight / Settings.magnificationLevel) - Settings.footerHeight + 21,
+        (viewConfig.viewport.width / viewConfig.magnificationLevel) - 3,
+        (viewConfig.viewport.height / viewConfig.magnificationLevel) - viewConfig.footerHeight + 21,
         1,
         GameAssets.fontKey
       ).alignRight

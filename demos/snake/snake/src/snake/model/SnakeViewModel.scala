@@ -11,7 +11,7 @@ object SnakeViewModel {
       walls = Group(
         snakeModel.gameModel.gameMap.findWalls.map { wall =>
           startupData.staticAssets.wall
-            .moveTo(ViewLogic.gridPointToPoint(wall.gridPoint, startupData.gridSize))
+            .moveTo(ViewLogic.gridPointToPoint(wall.gridPoint, startupData.viewConfig.gridSize, startupData.viewConfig.gridSquareSize))
         }
       ),
       staticAssets = startupData.staticAssets

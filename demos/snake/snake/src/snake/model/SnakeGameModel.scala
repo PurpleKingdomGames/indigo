@@ -6,14 +6,14 @@ import snake.init.SnakeStartupData
 
 case class SnakeGameModel(startupData: SnakeStartupData, gameModel: GameModel) {
   def reset: SnakeGameModel =
-    this.copy(gameModel = ModelLogic.initialModel(startupData.gridSize, gameModel.controlScheme))
+    this.copy(gameModel = ModelLogic.initialModel(startupData.viewConfig.gridSize, gameModel.controlScheme))
 }
 object SnakeGameModel {
 
   def initialModel(startupData: SnakeStartupData, controlScheme: ControlScheme): SnakeGameModel =
     SnakeGameModel(
       startupData = startupData,
-      gameModel = ModelLogic.initialModel(startupData.gridSize, controlScheme)
+      gameModel = ModelLogic.initialModel(startupData.viewConfig.gridSize, controlScheme)
     )
 
   object Lenses {

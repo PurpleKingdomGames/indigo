@@ -3,7 +3,7 @@ package snake.scenes
 import indigo._
 import indigo.scenes._
 import snake.model.{SnakeGameModel, SnakeViewModel}
-import snake.init.{GameAssets, Settings, SnakeStartupData}
+import snake.init.{GameAssets, SnakeStartupData}
 
 object GameOverScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel] {
   type SceneModel     = Int
@@ -46,8 +46,8 @@ object GameOverScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewMo
       sceneViewModel: Unit
   ): Outcome[SceneUpdateFragment] =
     Outcome {
-      val horizontalCenter: Int = (Settings.viewportWidth / Settings.magnificationLevel) / 2
-      val verticalMiddle: Int   = (Settings.viewportHeight / Settings.magnificationLevel) / 2
+      val horizontalCenter: Int = context.startUpData.viewConfig.horizontalCenter
+      val verticalMiddle: Int   = context.startUpData.viewConfig.verticalMiddle
 
       SceneUpdateFragment.empty
         .addUiLayerNodes(
