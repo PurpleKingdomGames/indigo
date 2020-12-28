@@ -18,6 +18,11 @@ sealed trait QuadTree[T] {
   def insertElement(element: T, vertex: Vertex): QuadTree[T] =
     QuadTree.insertElementAt(vertex, this, element)
 
+  def insertElements(elements: (T, Vertex)*): QuadTree[T] =
+    insertElements(elements.toList)
+  def insertElements(elements: List[(T, Vertex)]): QuadTree[T] =
+    elements.foldLeft(this)((acc, item) => acc.insertElement(item._1, item._2))
+
   def removeElement(vertex: Vertex): QuadTree[T] =
     QuadTree.removeElement(this, vertex)
 
@@ -85,6 +90,11 @@ object QuadTree {
 
   def empty[T](gridSize: Vertex): QuadTree[T] =
     QuadEmpty(BoundingBox(Vertex.zero, gridSize))
+
+  def apply[T](elements: (T, Vertex)*): QuadTree[T] =
+    QuadTree(elements.toList)
+  def apply[T](elements: List[(T, Vertex)]): QuadTree[T] =
+    QuadEmpty(BoundingBox.fromVertexCloud(elements.map(_._2))).insertElements(elements)
 
   final case class QuadBranch[T](bounds: BoundingBox, a: QuadTree[T], b: QuadTree[T], c: QuadTree[T], d: QuadTree[T]) extends QuadTree[T] {
     def isEmpty: Boolean =

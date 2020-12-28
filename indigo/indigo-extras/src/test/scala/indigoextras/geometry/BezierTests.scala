@@ -212,7 +212,7 @@ class BezierTests extends munit.FunSuite {
       bezier.bounds
 
     val expected: BoundingBox =
-      BoundingBox(2, 2, 18, 98)
+      BoundingBox(2, 2, 18.001, 98.001)
 
     assertEquals(actual == expected, true)
   }

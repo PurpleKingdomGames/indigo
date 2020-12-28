@@ -40,6 +40,33 @@ class QuadTreeTests extends munit.FunSuite {
     .insertElement("c", Vertex(10, 10))
     .insertElement("d", Vertex(20, 50))
 
+  test("should be able insert multiple items") {
+    val actual =
+      QuadTree(
+        ("a", Vertex(9, 2)),
+        ("b", Vertex(0, 0)),
+        ("c", Vertex(10, 10))
+      )
+
+    val expected =
+      QuadBranch(
+        BoundingBox(Vertex(0, 0), Vertex(10.001, 10.001)),
+        QuadLeaf(BoundingBox(Vertex(0, 0), Vertex(5.0005, 5.0005)), Vertex(0, 0), "b"),
+        QuadLeaf(BoundingBox(Vertex(5.0005, 0), Vertex(5.0005, 5.0005)), Vertex(9, 2), "a"),
+        QuadEmpty(BoundingBox(Vertex(0, 5.0005), Vertex(5.0005, 5.0005))),
+        QuadLeaf(BoundingBox(Vertex(5.0005, 5.0005), Vertex(5.0005, 5.0005)), Vertex(10, 10), "c")
+      )
+
+    assertEquals(actual, expected)
+
+    assert(
+      List(Vertex(9, 2), Vertex(0, 0), Vertex(10, 10)).forall { v =>
+        clue(tree.fetchElementAt(clue(v))) == actual.fetchElementAt(v) &&
+        tree.fetchElementAt(v) == expected.fetchElementAt(v)
+      }
+    )
+  }
+
   test("should be able to insert an element at a given position.[9, 2]") {
     assertEquals(tree.fetchElementAt(Vertex(9, 2)), Some("a"))
   }
