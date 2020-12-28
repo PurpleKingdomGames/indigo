@@ -2,20 +2,21 @@ package snake.scenes
 
 import indigo._
 import indigo.scenes._
-import snake.model.{SnakeGameModel, SnakeViewModel}
+import snake.model.ViewModel
 import snake.init.{GameAssets, SnakeStartupData}
+import snake.model.GameModel
 
-object GameOverScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel] {
+object GameOverScene extends Scene[SnakeStartupData, GameModel, ViewModel] {
   type SceneModel     = Int
   type SceneViewModel = Unit
 
   val name: SceneName =
     SceneName("game over")
 
-  val modelLens: Lens[SnakeGameModel, Int] =
-    Lens.readOnly(_.gameModel.score)
+  val modelLens: Lens[GameModel, Int] =
+    Lens.readOnly(_.score)
 
-  val viewModelLens: Lens[SnakeViewModel, Unit] =
+  val viewModelLens: Lens[ViewModel, Unit] =
     Lens.unit
 
   val eventFilters: EventFilters =

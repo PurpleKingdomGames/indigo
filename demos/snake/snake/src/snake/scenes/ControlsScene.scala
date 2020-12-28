@@ -2,20 +2,21 @@ package snake.scenes
 
 import indigo._
 import indigo.scenes._
-import snake.model.{ControlScheme, SnakeGameModel, SnakeViewModel}
+import snake.model.{ControlScheme, ViewModel}
 import snake.init.{GameAssets, SnakeStartupData}
+import snake.model.GameModel
 
-object ControlsScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel] {
+object ControlsScene extends Scene[SnakeStartupData, GameModel, ViewModel] {
   type SceneModel     = ControlScheme
   type SceneViewModel = Unit
 
   val name: SceneName =
     SceneName("controls")
 
-  val modelLens: Lens[SnakeGameModel, ControlScheme] =
-    SnakeGameModel.Lenses.controlSchemeAccessors
+  val modelLens: Lens[GameModel, ControlScheme] =
+    Lens(_.controlScheme, (m, c) => m.copy(controlScheme = c))
 
-  val viewModelLens: Lens[SnakeViewModel, Unit] =
+  val viewModelLens: Lens[ViewModel, Unit] =
     Lens.unit
 
   val eventFilters: EventFilters =

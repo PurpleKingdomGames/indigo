@@ -4,21 +4,22 @@ import indigo._
 import indigo.scenes._
 
 import snake.init.GameAssets
-import snake.model.{SnakeGameModel, SnakeViewModel}
+import snake.model.ViewModel
 import snake.init.SnakeStartupData
 import snake.GameReset
+import snake.model.GameModel
 
-object StartScene extends Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel] {
+object StartScene extends Scene[SnakeStartupData, GameModel, ViewModel] {
   type SceneModel     = Unit
   type SceneViewModel = Unit
 
   val name: SceneName =
     SceneName("start")
 
-  val modelLens: Lens[SnakeGameModel, Unit] =
+  val modelLens: Lens[GameModel, Unit] =
     Lens.unit
 
-  val viewModelLens: Lens[SnakeViewModel, Unit] =
+  val viewModelLens: Lens[ViewModel, Unit] =
     Lens.unit
 
   val eventFilters: EventFilters =

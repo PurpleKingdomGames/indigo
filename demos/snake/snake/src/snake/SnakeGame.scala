@@ -4,18 +4,18 @@ import indigo._
 import indigo.scenes._
 import indigoextras.subsystems.FPSCounter
 
-import snake.model.{ControlScheme, SnakeGameModel, SnakeViewModel}
+import snake.model.{ControlScheme, GameModel, ViewModel}
 import snake.init.{GameAssets, SnakeStartupData, ViewConfig}
 import snake.scenes.{ControlsScene, GameOverScene, GameScene, StartScene}
 import scala.scalajs.js.annotation.JSExportTopLevel
 
 @JSExportTopLevel("IndigoGame")
-object SnakeGame extends IndigoGame[ViewConfig, SnakeStartupData, SnakeGameModel, SnakeViewModel] {
+object SnakeGame extends IndigoGame[ViewConfig, SnakeStartupData, GameModel, ViewModel] {
 
   def initialScene(bootData: ViewConfig): Option[SceneName] =
     Option(StartScene.name)
 
-  def scenes(bootData: ViewConfig): NonEmptyList[Scene[SnakeStartupData, SnakeGameModel, SnakeViewModel]] =
+  def scenes(bootData: ViewConfig): NonEmptyList[Scene[SnakeStartupData, GameModel, ViewModel]] =
     NonEmptyList(StartScene, ControlsScene, GameScene, GameOverScene)
 
   val eventFilters: EventFilters =
@@ -45,18 +45,18 @@ object SnakeGame extends IndigoGame[ViewConfig, SnakeStartupData, SnakeGameModel
         )
     }
 
-  def initialModel(startupData: SnakeStartupData): Outcome[SnakeGameModel] =
-    Outcome(SnakeGameModel.initialModel(startupData.viewConfig.gridSize, ControlScheme.directedKeys))
+  def initialModel(startupData: SnakeStartupData): Outcome[GameModel] =
+    Outcome(GameModel.initialModel(startupData.viewConfig.gridSize, ControlScheme.directedKeys))
 
-  def initialViewModel(startupData: SnakeStartupData, model: SnakeGameModel): Outcome[SnakeViewModel] =
-    Outcome(SnakeViewModel.initialViewModel(startupData, model))
+  def initialViewModel(startupData: SnakeStartupData, model: GameModel): Outcome[ViewModel] =
+    Outcome(ViewModel.initialViewModel(startupData, model))
 
   def setup(viewConfig: ViewConfig, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[SnakeStartupData]] =
     SnakeStartupData.initialise(viewConfig)
 
-  def updateModel(context: FrameContext[SnakeStartupData], model: SnakeGameModel): GlobalEvent => Outcome[SnakeGameModel] = {
+  def updateModel(context: FrameContext[SnakeStartupData], model: GameModel): GlobalEvent => Outcome[GameModel] = {
     case GameReset =>
-      Outcome(model.reset)
+      Outcome(GameModel.initialModel(context.startUpData.viewConfig.gridSize, model.controlScheme))
 
     case _ =>
       Outcome(model)
@@ -64,15 +64,15 @@ object SnakeGame extends IndigoGame[ViewConfig, SnakeStartupData, SnakeGameModel
 
   def updateViewModel(
       context: FrameContext[SnakeStartupData],
-      model: SnakeGameModel,
-      viewModel: SnakeViewModel
-  ): GlobalEvent => Outcome[SnakeViewModel] =
+      model: GameModel,
+      viewModel: ViewModel
+  ): GlobalEvent => Outcome[ViewModel] =
     _ => Outcome(viewModel)
 
   def present(
       context: FrameContext[SnakeStartupData],
-      model: SnakeGameModel,
-      viewModel: SnakeViewModel
+      model: GameModel,
+      viewModel: ViewModel
   ): Outcome[SceneUpdateFragment] =
     Outcome(SceneUpdateFragment.empty)
 
