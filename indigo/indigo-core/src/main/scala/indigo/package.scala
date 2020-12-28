@@ -40,9 +40,6 @@ package object indigo {
   type Key = shared.constants.Key
   val Key: shared.constants.Key.type = shared.constants.Key
 
-  type PowerOfTwo = shared.PowerOfTwo
-  val PowerOfTwo: shared.PowerOfTwo.type = shared.PowerOfTwo
-
   type NonEmptyList[A] = shared.collections.NonEmptyList[A]
   val NonEmptyList: shared.collections.NonEmptyList.type = shared.collections.NonEmptyList
 
