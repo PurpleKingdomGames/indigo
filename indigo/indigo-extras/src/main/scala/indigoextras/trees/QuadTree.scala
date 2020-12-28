@@ -36,15 +36,15 @@ sealed trait QuadTree[T] {
   def searchByRectangle(boundingBox: BoundingBox): List[T] =
     QuadTree.searchByBoundingBox(this, boundingBox)
 
-  override def toString(): String = {
+  def prettyPrint: String = {
     // @SuppressWarnings(Array("org.wartremover.warts.Recursion", "org.wartremover.warts.ToString"))
     def rec(quadTree: QuadTree[T], indent: String): String =
       quadTree match {
         case QuadTree.QuadEmpty(bounds) =>
           indent + s"Empty [${bounds.toString()}]"
 
-        case QuadTree.QuadLeaf(bounds, value) =>
-          indent + s"Leaf [${bounds.toString()}] - ${value.toString()}"
+        case QuadTree.QuadLeaf(bounds, exactPosition, value) =>
+          indent + s"Leaf [${bounds.toString()}] - ${exactPosition.toString} - ${value.toString()}"
 
         case QuadTree.QuadBranch(bounds, a, b, c, d) =>
           s"""${indent}Branch [${bounds.toString()}]
@@ -64,8 +64,8 @@ sealed trait QuadTree[T] {
         case (QuadTree.QuadEmpty(b1), QuadTree.QuadEmpty(b2)) if b1 ~== b2 =>
           true
 
-        case (QuadTree.QuadLeaf(b1, v1), QuadTree.QuadLeaf(b2, v2)) if b1 ~== b2 =>
-          v1 == v2
+        case (QuadTree.QuadLeaf(b1, p1, v1), QuadTree.QuadLeaf(b2, p2, v2)) if b1 ~== b2 =>
+          (p1 ~== p2) && v1 == v2
 
         case (QuadTree.QuadBranch(bounds1, a1, b1, c1, d1), QuadTree.QuadBranch(bounds2, a2, b2, c2, d2)) =>
           (bounds1 ~== bounds2) && rec(a1, a2) && rec(b1, b2) && rec(c1, c2) && rec(d1, d2)
@@ -90,7 +90,7 @@ object QuadTree {
     def isEmpty: Boolean =
       a.isEmpty && b.isEmpty && c.isEmpty && d.isEmpty
   }
-  final case class QuadLeaf[T](bounds: BoundingBox, value: T) extends QuadTree[T] {
+  final case class QuadLeaf[T](bounds: BoundingBox, exactPosition: Vertex, value: T) extends QuadTree[T] {
     def isEmpty: Boolean = false
   }
   final case class QuadEmpty[T](bounds: BoundingBox) extends QuadTree[T] {
@@ -148,7 +148,7 @@ object QuadTree {
           d.fetchElementAt(vertex)
         ).find(p => p.isDefined).flatten
 
-      case QuadLeaf(bounds, value) if bounds.contains(vertex) =>
+      case QuadLeaf(_, position, value) if position ~== vertex =>
         Some(value)
 
       case _ =>
@@ -157,13 +157,24 @@ object QuadTree {
 
   def insertElementAt[T](vertex: Vertex, quadTree: QuadTree[T], element: T): QuadTree[T] =
     quadTree match {
-      case QuadLeaf(bounds, _) if bounds.contains(vertex) =>
-        QuadLeaf(bounds, element)
+      case QuadEmpty(bounds) if bounds.contains(vertex) =>
+        // Straight insert
+        QuadLeaf(bounds, vertex, element)
 
-      case l: QuadLeaf[T] =>
-        l
+      case QuadLeaf(bounds, position, value) if position ~== vertex =>
+        // Replace
+        QuadLeaf(bounds, vertex, element)
+
+      case QuadLeaf(bounds, position, value) if bounds.contains(vertex) =>
+        // Both elements in the same region but not overlapping,
+        // subdivide and insert both.
+        QuadBranch
+          .fromBounds(bounds)
+          .insertElement(value, position) // original
+          .insertElement(element, vertex) // new
 
       case QuadBranch(bounds, a, b, c, d) if bounds.contains(vertex) =>
+        // Delegate to sub-regions
         QuadBranch[T](
           bounds,
           insertElementAt(vertex, a, element),
@@ -172,22 +183,13 @@ object QuadTree {
           insertElementAt(vertex, d, element)
         )
 
-      case b: QuadBranch[T] =>
-        b
-
-      case QuadEmpty(bounds) if bounds.contains(vertex) && (bounds.size ~== Vertex(1, 1)) =>
-        QuadLeaf(bounds, element)
-
-      case QuadEmpty(bounds) if bounds.contains(vertex) =>
-        QuadBranch.fromBounds(bounds).insertElement(element, vertex)
-
-      case e: QuadEmpty[T] =>
-        e
+      case _ =>
+        quadTree
     }
 
   def removeElement[T](quadTree: QuadTree[T], vertex: Vertex): QuadTree[T] =
     quadTree match {
-      case QuadLeaf(bounds, _) if bounds.contains(vertex) =>
+      case QuadLeaf(bounds, p, _) if bounds.contains(vertex) && (p ~== vertex) =>
         QuadEmpty(bounds)
 
       case QuadBranch(bounds, a, b, c, d) if bounds.contains(vertex) =>
@@ -247,7 +249,7 @@ object QuadTree {
               )
           )
 
-      case QuadLeaf(bounds, value) if bounds.contains(point) =>
+      case QuadLeaf(bounds, _, value) if bounds.contains(point) =>
         Some(value)
 
       case _ =>
@@ -278,13 +280,13 @@ object QuadTree {
           searchByLine(c, lineSegment) ++
           searchByLine(d, lineSegment)
 
-      case QuadLeaf(bounds, value) if bounds.contains(lineSegment.start) =>
+      case QuadLeaf(bounds, _, value) if bounds.contains(lineSegment.start) =>
         List(value)
 
-      case QuadLeaf(bounds, value) if bounds.contains(lineSegment.end) =>
+      case QuadLeaf(bounds, _, value) if bounds.contains(lineSegment.end) =>
         List(value)
 
-      case QuadLeaf(bounds, value) if bounds.lineIntersects(lineSegment) =>
+      case QuadLeaf(bounds, _, value) if bounds.lineIntersects(lineSegment) =>
         List(value)
 
       case _ =>
@@ -300,7 +302,7 @@ object QuadTree {
           searchByBoundingBox(c, boundingBox) ++
           searchByBoundingBox(d, boundingBox)
 
-      case QuadLeaf(bounds, value) if boundingBox.contains(Vertex(bounds.x, bounds.y)) =>
+      case QuadLeaf(_, exactPosition, value) if boundingBox.contains(exactPosition) =>
         List(value)
 
       case _ =>
