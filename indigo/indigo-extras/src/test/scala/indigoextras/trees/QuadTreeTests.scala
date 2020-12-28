@@ -19,7 +19,7 @@ class QuadTreeTests extends munit.FunSuite {
           QuadEmpty(BoundingBox(4, 0, 1, 1)),
           QuadEmpty(BoundingBox(5, 0, 1, 1)),
           QuadEmpty(BoundingBox(4, 1, 1, 1)),
-          QuadLeaf(BoundingBox(5, 1, 1, 1), "hello")
+          QuadLeaf(BoundingBox(5, 1, 1, 1), Vertex(5, 1), "hello")
         ),
         QuadEmpty(BoundingBox(6, 0, 2, 2)),
         QuadEmpty(BoundingBox(4, 2, 2, 2)),
