@@ -5,7 +5,7 @@ import indigoextras.geometry.Vertex
 
 class SnakeTests extends munit.FunSuite {
 
-  val gridSize: BoundingBox = BoundingBox(0, 0, 10, 10) // grid size... 16
+  val gridSize: BoundingBox = BoundingBox(0, 0, 10, 10)
 
   def collisionF: Vertex => CollisionCheckOutcome = pt => CollisionCheckOutcome.NoCollision(pt)
 
