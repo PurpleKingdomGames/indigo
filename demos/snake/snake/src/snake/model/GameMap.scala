@@ -80,13 +80,16 @@ object GameMap {
     rec(makeRandom())
   }
 
-  def genLevel(gridSize: BoundingBox): GameMap =
+  def genLevel(gridSize: BoundingBox): GameMap = {
+    val adjustedGridSize = gridSize.resize(gridSize.size - Vertex(1, 1))
+
     GameMap(gridSize)
-      .insertApple(MapElement.Apple(gridSize.center + Vertex(3, 2)))
-      .insertElements(topEdgeWall(gridSize))
-      .insertElements(rightEdgeWall(gridSize))
-      .insertElements(bottomEdgeWall(gridSize))
-      .insertElements(leftEdgeWall(gridSize))
+      .insertApple(MapElement.Apple(adjustedGridSize.center.round + Vertex(3, 2)))
+      .insertElements(topEdgeWall(adjustedGridSize))
+      .insertElements(rightEdgeWall(adjustedGridSize))
+      .insertElements(bottomEdgeWall(adjustedGridSize))
+      .insertElements(leftEdgeWall(adjustedGridSize))
+  }
 
   private def topEdgeWall(gridSize: BoundingBox): List[MapElement.Wall] =
     fillIncrementally(gridSize.topLeft, gridSize.topRight).map(MapElement.Wall.apply)
