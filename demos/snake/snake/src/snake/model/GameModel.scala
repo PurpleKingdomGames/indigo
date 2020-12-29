@@ -135,6 +135,12 @@ object GameModel {
 
               case r @ GameState.Running(_, _) =>
                 r.crash(gameTime.running, gameModel.snake.length)
+            },
+            tickDelay = gameModel.snake.length match {
+              case l if l < 5  => Seconds(0.1)
+              case l if l < 10 => Seconds(0.05)
+              case l if l < 25 => Seconds(0.025)
+              case _           => Seconds(0.015)
             }
           )
         ).addGlobalEvents(PlaySound(GameAssets.soundLose, Volume.Max))
