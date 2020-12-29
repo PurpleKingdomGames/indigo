@@ -13,7 +13,6 @@ import indigo.scenes.SceneEvent
 import snake.scenes.GameOverScene
 
 final case class GameModel(
-    gridSize: BoundingBox,
     snake: Snake,
     gameState: GameState,
     gameMap: GameMap,
@@ -64,7 +63,6 @@ object GameModel {
 
   def initialModel(gridSize: BoundingBox, controlScheme: ControlScheme): GameModel =
     GameModel(
-      gridSize = gridSize,
       snake = Snake(
         gridSize.center.x.toInt,
         gridSize.center.y.toInt - (gridSize.center.y / 2).toInt
@@ -86,7 +84,7 @@ object GameModel {
   ): GlobalEvent => Outcome[GameModel] = {
     case FrameTick =>
       val (updatedModel, collisionResult) =
-        state.snake.update(state.gridSize, hitTest(state.gameMap, state.snake.givePath)) match {
+        state.snake.update(state.gameMap.gridSize, hitTest(state.gameMap, state.snake.givePath)) match {
           case (s, outcome) =>
             (state.copy(snake = s, gameState = state.gameState.updateNow(gameTime.running, state.snake.direction)), outcome)
         }
