@@ -151,9 +151,9 @@ object EventFilters {
     )
 
   /**
-    * Block all events to model and view model. Only useful for 'games'
-    * that are effectively animations, since there will be no input from
-    * the user.
+    * Block all events to model and view model. Useful for games
+    * that only require a frame tick to update and, for example,
+    * process input via input mapping rather than events.
     */
   val FrameTickOnly: EventFilters =
     EventFilters(
