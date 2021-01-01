@@ -327,6 +327,8 @@ package object indigo {
   type SceneGraphNode = shared.scenegraph.SceneGraphNode
   val SceneGraphNode: shared.scenegraph.SceneGraphNode.type = shared.scenegraph.SceneGraphNode
 
+  type SceneGraphNodePrimitive = shared.scenegraph.SceneGraphNodePrimitive
+
   type Renderable = shared.scenegraph.Renderable
 
   // Audio
