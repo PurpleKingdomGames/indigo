@@ -70,12 +70,17 @@ final case class Vector3(x: Double, y: Double, z: Double) {
   def dot(other: Vector3): Double =
     Vector3.dotProduct(this, other)
 
-  def normalise: Vector3 =
-    Vector3(
-      if (x == 0) 0 else (x / Math.abs(x)),
-      if (y == 0) 0 else (y / Math.abs(y)),
-      if (z == 0) 0 else (z / Math.abs(z))
-    )
+  def normalise: Vector3 = {
+    val magnitude = length
+    
+    if (magnitude == 0) Vector3.zero
+    else
+      Vector3(
+        x / magnitude,
+        y / magnitude,
+        z / magnitude
+      )
+  }
 
   def applyMatrix4(matrix4: Matrix4): Vector3 =
     matrix4.transform(this)

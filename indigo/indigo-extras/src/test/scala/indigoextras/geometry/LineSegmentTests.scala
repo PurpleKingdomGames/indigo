@@ -30,7 +30,7 @@ class LineSegmentTests extends munit.FunSuite {
     val end: Vertex   = Vertex(10, 1)
     val line          = LineSegment(start, end)
 
-    assertEquals(line.normal === Vector2(0, 1), true)
+    assert(clue(line.normal) ~== clue(Vector2(0, 1)))
   }
 
   test("normals.should calculate the normal for a horizontal line (Right -> Left)") {
@@ -38,7 +38,7 @@ class LineSegmentTests extends munit.FunSuite {
     val end: Vertex   = Vertex(-5, 2)
     val line          = LineSegment(start, end)
 
-    assertEquals(line.normal === Vector2(0, -1), true)
+    assert(clue(line.normal) ~== clue(Vector2(0, -1)))
   }
 
   test("normals.should calculate the normal for a vertical line (Top -> Bottom") {
@@ -46,7 +46,7 @@ class LineSegmentTests extends munit.FunSuite {
     val end: Vertex   = Vertex(-1, -10)
     val line          = LineSegment(start, end)
 
-    assertEquals(line.normal === Vector2(1, 0), true)
+    assert(clue(line.normal) ~== clue(Vector2(1, 0)))
   }
 
   test("normals.should calculate the normal for a vertical line (Bottom -> Top") {
@@ -54,7 +54,7 @@ class LineSegmentTests extends munit.FunSuite {
     val end: Vertex   = Vertex(1, 10)
     val line          = LineSegment(start, end)
 
-    assertEquals(line.normal === Vector2(-1, 0), true)
+    assert(clue(line.normal) ~== clue(Vector2(-1, 0)))
   }
 
   test("normals.should calculate the normal for a diagonal line") {
@@ -62,21 +62,21 @@ class LineSegmentTests extends munit.FunSuite {
     val end: Vertex   = Vertex(-2, -2)
     val line          = LineSegment(start, end)
 
-    assertEquals(line.normal === Vector2(1, -1), true)
+    assert(clue(line.normal) ~== clue(Vector2(0.7071, -0.7071)))
   }
 
   test("Vertexs & Lines.Facing a vertex.facing") {
     val line: LineSegment = LineSegment((1d, 5d), (9d, 5d))
     val vertex: Vertex    = Vertex(5, 20)
 
-    assertEquals(line.isFacingVertex(vertex), true)
+    assert(line.isFacingVertex(vertex))
   }
 
   test("Vertexs & Lines.Facing a vertex.not facing") {
     val line: LineSegment = LineSegment((1d, 5d), (9d, 5d))
     val vertex: Vertex    = Vertex(5, 2)
 
-    assertEquals(line.isFacingVertex(vertex), false)
+    assert(!line.isFacingVertex(vertex))
   }
 
   //TODO: Can do a property based check here. Forall vertices on a line

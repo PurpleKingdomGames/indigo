@@ -67,11 +67,16 @@ final case class Vector2(x: Double, y: Double) {
   def dot(other: Vector2): Double =
     Vector2.dotProduct(this, other)
 
-  def normalise: Vector2 =
-    Vector2(
-      if (x == 0) 0 else (x / Math.abs(x)),
-      if (y == 0) 0 else (y / Math.abs(y))
-    )
+  def normalise: Vector2 = {
+    val magnitude = length
+    
+    if (magnitude == 0) Vector2.zero
+    else
+      Vector2(
+        x / magnitude,
+        y / magnitude
+      )
+  }
 
   def distanceTo(other: Vector2): Double =
     Vector2.distance(this, other)
