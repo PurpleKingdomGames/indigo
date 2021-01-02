@@ -480,7 +480,7 @@ object DisplayObjectConversions {
         Vector3(
           x = node.position.x.toDouble,
           y = node.position.y.toDouble,
-          z = node.depth.zIndex.toDouble
+          z = 0.0d
         )
       )
   /*
