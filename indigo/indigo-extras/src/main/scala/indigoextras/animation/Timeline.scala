@@ -2,6 +2,9 @@ package indigoextras.animation
 
 import indigo.shared.time.Seconds
 import indigo.shared.time.GameTime
+import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Vector2
 
 import scala.annotation.tailrec
 
@@ -120,6 +123,50 @@ object Timeline {
 
 }
 
-final case class Marker(label: MarkerLabel, position: Seconds)
+final case class Marker(label: MarkerLabel, position: Seconds, diff: TransformDiff) {
+
+  def moveTo(x: Int, y: Int): TransformDiff =
+    diff.moveTo(x, y)
+  def moveTo(newPosition: Point): TransformDiff =
+    diff.moveTo(newPosition)
+
+  def rotateTo(newRotation: Radians): TransformDiff =
+    diff.rotateTo(newRotation)
+
+  def scaleTo(x: Double, y: Double): TransformDiff =
+    diff.scaleTo(x, y)
+  def scaleTo(newScale: Vector2): TransformDiff =
+    diff.scaleTo(newScale)
+
+}
+object Marker {
+
+  def apply(label: MarkerLabel, position: Seconds): Marker =
+    Marker(label, position, TransformDiff.NoChange)
+
+}
 
 final case class MarkerLabel(value: String) extends AnyVal
+
+final case class TransformDiff(maybeMoveTo: Option[Point], maybeRotateTo: Option[Radians], maybeScaleTo: Option[Vector2]) {
+
+  def moveTo(x: Int, y: Int): TransformDiff =
+    moveTo(Point(x, y))
+  def moveTo(newPosition: Point): TransformDiff =
+    this.copy(maybeMoveTo = Option(newPosition))
+
+  def rotateTo(newRotation: Radians): TransformDiff =
+    this.copy(maybeRotateTo = Option(newRotation))
+
+  def scaleTo(x: Double, y: Double): TransformDiff =
+    scaleTo(Vector2(x, y))
+  def scaleTo(newScale: Vector2): TransformDiff =
+    this.copy(maybeScaleTo = Option(newScale))
+
+}
+object TransformDiff {
+
+  val NoChange: TransformDiff =
+    TransformDiff(None, None, None)
+
+}
