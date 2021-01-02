@@ -6,6 +6,7 @@ import indigo.shared.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import indigo.shared.IndigoLogger
 import indigo.shared.time.GameTime
 import indigo.shared.datatypes.Vector2
+import indigo.shared.datatypes.Vector3
 import indigo.shared.datatypes.Flip
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
@@ -29,7 +30,7 @@ import indigo.shared.display.DisplayEffects
 import indigo.shared.datatypes.Texture
 import indigo.shared.BoundaryLocator
 import indigo.shared.animation.AnimationRef
-import indigo.shared.datatypes.Matrix3
+import indigo.shared.datatypes.Matrix4
 
 final class DisplayObjectConversions(
     boundaryLocator: BoundaryLocator,
@@ -83,38 +84,44 @@ final class DisplayObjectConversions(
       }
     }
 
-  private def cloneDataToDisplayEntity(id: String, cloneDepth: Float, data: CloneTransformData): DisplayClone =
+  private def cloneDataToDisplayEntity(id: String, cloneDepth: Double, data: CloneTransformData): DisplayClone =
     new DisplayClone(
       id = id,
-      x = data.position.x.toFloat,
-      y = data.position.y.toFloat,
-      z = cloneDepth,
-      rotation = data.rotation.value.toFloat,
-      scaleX = data.scale.x.toFloat,
-      scaleY = data.scale.y.toFloat,
-      alpha = data.alpha.toFloat,
-      flipHorizontal = if (data.flipHorizontal) -1f else 1f,
-      flipVertical = if (data.flipVertical) 1f else -1f
+      // x = data.position.x.toFloat,
+      // y = data.position.y.toFloat,
+      // z = cloneDepth,
+      transform = DisplayObjectConversions.cloneTransformDataToMatrix4(data, cloneDepth),
+      // rotation = data.rotation.value.toFloat,
+      // scaleX = data.scale.x.toFloat,
+      // scaleY = data.scale.y.toFloat,
+      alpha = data.alpha.toFloat
+      // flipHorizontal = if (data.flipHorizontal) -1f else 1f,
+      // flipVertical = if (data.flipVertical) 1f else -1f
     )
 
   private def cloneBatchDataToDisplayEntities(batch: CloneBatch): DisplayCloneBatch = {
-    def convert(): DisplayCloneBatch =
+    def convert(): DisplayCloneBatch = {
+      val z = batch.depth.zIndex.toDouble
+
       new DisplayCloneBatch(
         id = batch.id.value,
-        z = batch.depth.zIndex.toFloat,
+        z = z,
         clones = batch.clones.map { td =>
           new DisplayCloneBatchData(
-            x = batch.transform.position.x + td.position.x.toFloat,
-            y = batch.transform.position.y + td.position.y.toFloat,
-            rotation = batch.transform.rotation.value.toFloat + td.rotation.value.toFloat,
-            scaleX = batch.transform.scale.x.toFloat * td.scale.x.toFloat,
-            scaleY = batch.transform.scale.x.toFloat * td.scale.y.toFloat,
-            alpha = batch.transform.alpha.toFloat,
-            flipHorizontal = if (batch.transform.flipHorizontal) -1f else 1f,
-            flipVertical = if (batch.transform.flipVertical) 1f else -1f
+            // x = batch.transform.position.x + td.position.x.toFloat,
+            // y = batch.transform.position.y + td.position.y.toFloat,
+            // rotation = batch.transform.rotation.value.toFloat + td.rotation.value.toFloat,
+            // scaleX = batch.transform.scale.x.toFloat * td.scale.x.toFloat,
+            // scaleY = batch.transform.scale.x.toFloat * td.scale.y.toFloat,
+            transform = DisplayObjectConversions.cloneTransformDataToMatrix4(batch.transform, z),
+            alpha = batch.transform.alpha.toFloat
+            // flipHorizontal = if (batch.transform.flipHorizontal) -1f else 1f,
+            // flipVertical = if (batch.transform.flipVertical) 1f else -1f
           )
         }
       )
+    }
+
     batch.staticBatchKey match {
       case None =>
         convert()
@@ -142,7 +149,7 @@ final class DisplayObjectConversions(
           accDisplayObjects
 
         case (c: Clone) :: xs =>
-          accDisplayObjects += cloneDataToDisplayEntity(c.id.value, c.depth.zIndex.toFloat, c.transform)
+          accDisplayObjects += cloneDataToDisplayEntity(c.id.value, c.depth.zIndex.toDouble, c.transform)
           rec(xs)
 
         case (c: CloneBatch) :: xs =>
@@ -275,14 +282,15 @@ final class DisplayObjectConversions(
       }
 
     DisplayObject(
-      x = leaf.x,
-      y = leaf.y,
-      z = leaf.depth.zIndex,
+      // x = leaf.x,
+      // y = leaf.y,
+      // z = leaf.depth.zIndex,
+      transform = DisplayObjectConversions.nodeToMatrix4(leaf),
       width = leaf.crop.size.x,
       height = leaf.crop.size.y,
-      rotation = leaf.rotation.value.toFloat,
-      scaleX = leaf.scale.x.toFloat,
-      scaleY = leaf.scale.y.toFloat,
+      // rotation = leaf.rotation.value.toFloat,
+      // scaleX = leaf.scale.x.toFloat,
+      // scaleY = leaf.scale.y.toFloat,
       atlasName = lookupAtlasName(assetMapping, materialName),
       frame = frameInfo,
       albedoAmount = albedoAmount,
@@ -293,11 +301,11 @@ final class DisplayObjectConversions(
       specularOffset = frameInfo.offsetToCoords(specularOffset),
       specularAmount = specularAmount.toFloat,
       isLit = if (leaf.material.isLit) 1.0f else 0.0f,
-      refX = leaf.ref.x,
-      refY = leaf.ref.y,
-      effects = effectsValues,
-      flipHorizontal = if (leaf.flip.horizontal) -1 else 1,
-      flipVertical = if (leaf.flip.vertical) 1 else -1
+      // refX = leaf.ref.x,
+      // refY = leaf.ref.y,
+      effects = effectsValues
+      // flipHorizontal = if (leaf.flip.horizontal) -1 else 1,
+      // flipVertical = if (leaf.flip.vertical) 1 else -1
     )
   }
 
@@ -326,14 +334,15 @@ final class DisplayObjectConversions(
       }
 
     DisplayObject(
-      x = leaf.x,
-      y = leaf.y,
-      z = leaf.depth.zIndex,
+      // x = leaf.x,
+      // y = leaf.y,
+      // z = leaf.depth.zIndex,
+      transform = DisplayObjectConversions.nodeToMatrix4(leaf),
       width = leaf.bounds(boundaryLocator).size.x,
       height = leaf.bounds(boundaryLocator).size.y,
-      rotation = leaf.rotation.value.toFloat,
-      scaleX = leaf.scale.x.toFloat,
-      scaleY = leaf.scale.y.toFloat,
+      // rotation = leaf.rotation.value.toFloat,
+      // scaleX = leaf.scale.x.toFloat,
+      // scaleY = leaf.scale.y.toFloat,
       atlasName = lookupAtlasName(assetMapping, materialName),
       frame = frameInfo,
       albedoAmount = albedoAmount,
@@ -344,11 +353,11 @@ final class DisplayObjectConversions(
       specularOffset = frameInfo.offsetToCoords(specularOffset),
       specularAmount = specularAmount.toFloat,
       isLit = if (material.isLit) 1.0f else 0.0f,
-      refX = leaf.ref.x,
-      refY = leaf.ref.y,
-      effects = effectsValues,
-      flipHorizontal = if (leaf.flip.horizontal) -1 else 1,
-      flipVertical = if (leaf.flip.vertical) 1 else -1
+      // refX = leaf.ref.x,
+      // refY = leaf.ref.y,
+      effects = effectsValues
+      // flipHorizontal = if (leaf.flip.horizontal) -1 else 1,
+      // flipVertical = if (leaf.flip.vertical) 1 else -1
     )
   }
 
@@ -391,14 +400,15 @@ final class DisplayObjectConversions(
               }
 
             DisplayObject(
-              x = leaf.position.x + xPosition + alignmentOffsetX,
-              y = leaf.position.y + yOffset,
-              z = leaf.depth.zIndex,
+              // x = leaf.position.x + xPosition + alignmentOffsetX,
+              // y = leaf.position.y + yOffset,
+              // z = leaf.depth.zIndex,
+              transform = DisplayObjectConversions.nodeToMatrix4(leaf),
               width = fontChar.bounds.width,
               height = fontChar.bounds.height,
-              rotation = leaf.rotation.value.toFloat,
-              scaleX = leaf.scale.x.toFloat,
-              scaleY = leaf.scale.y.toFloat,
+              // rotation = leaf.rotation.value.toFloat,
+              // scaleX = leaf.scale.x.toFloat,
+              // scaleY = leaf.scale.y.toFloat,
               atlasName = lookupAtlasName(assetMapping, materialName),
               frame = frameInfo,
               albedoAmount = albedoAmount,
@@ -409,11 +419,11 @@ final class DisplayObjectConversions(
               specularOffset = frameInfo.offsetToCoords(specularOffset),
               specularAmount = specularAmount.toFloat,
               isLit = if (fontInfo.fontSpriteSheet.material.isLit) 1.0f else 0.0f,
-              refX = leaf.ref.x,
-              refY = leaf.ref.y,
-              effects = effectsValues,
-              flipHorizontal = if (leaf.flip.horizontal) -1 else 1,
-              flipVertical = if (leaf.flip.vertical) 1 else -1
+              // refX = leaf.ref.x,
+              // refY = leaf.ref.y,
+              effects = effectsValues
+              // flipHorizontal = if (leaf.flip.horizontal) -1 else 1,
+              // flipVertical = if (leaf.flip.vertical) 1 else -1
             )
         }
       }
@@ -441,17 +451,39 @@ final class DisplayObjectConversions(
 
 object DisplayObjectConversions {
 
-  def flipToVector2(flip: Flip): Vector2 =
-    Vector2(
+  def flipToVector2(flip: Flip): Vector3 =
+    Vector3(
       x = if (flip.horizontal) -1.0 else 1.0,
-      y = if (flip.vertical) 1.0 else -1.0
+      y = if (flip.vertical) 1.0 else -1.0,
+      z = 1.0d
     )
 
-  def nodeToMatrix3(node: SceneGraphNode): Matrix3 =
-    Matrix3
+  def nodeToMatrix4(node: SceneGraphNode): Matrix4 = {
+    val adjustedPosition = node.position - node.ref
+    Matrix4
       .scale(flipToVector2(node.flip))
-      .scale(node.scale)
+      .scale(node.scale.toVector3)
       .rotate(node.rotation)
-      .translate((node.position - node.ref).toVector)
+      .translate(//((node.position - node.ref).toVector.toVector3)
+        Vector3(
+          x = adjustedPosition.x.toDouble,
+          y = adjustedPosition.y.toDouble,
+          z = node.depth.zIndex.toDouble
+        )
+      )
+  }
+
+  def cloneTransformDataToMatrix4(data: CloneTransformData, depth: Double): Matrix4 =
+    Matrix4
+      .scale(flipToVector2(Flip(data.flipHorizontal, data.flipVertical)))
+      .scale(data.scale.toVector3)
+      .rotate(data.rotation)
+      .translate(//(data.position.toVector.toVector3)
+        Vector3(
+          x = data.position.x.toDouble,
+          y = data.position.y.toDouble,
+          z = depth
+        )
+      )
 
 }

@@ -14,14 +14,15 @@ object RendererHelper {
 
   def screenDisplayObject(w: Int, h: Int): DisplayObject =
     DisplayObject(
-      x = 0,
-      y = 0,
-      z = 1,
+      // x = 0,
+      // y = 0,
+      // z = 1,
+      transform = Matrix4.scale(1.0, -1.0, 1.0),
       width = w,
       height = h,
-      rotation = 0,
-      scaleX = 1,
-      scaleY = 1,
+      // rotation = 0,
+      // scaleX = 1,
+      // scaleY = 1,
       atlasName = "",
       frame = SpriteSheetFrame.defaultOffset,
       albedoAmount = 1.0f,
@@ -32,11 +33,11 @@ object RendererHelper {
       specularOffset = Vector2.zero,
       specularAmount = 0.0f,
       isLit = 0.0f,
-      refX = 0,
-      refY = 0,
-      effects = DisplayEffects.default,
-      flipHorizontal = 1.0f,
-      flipVertical = -1.0f
+      // refX = 0,
+      // refY = 0,
+      effects = DisplayEffects.default
+      // flipHorizontal = 1.0f,
+      // flipVertical = -1.0f
     )
 
   def mat4ToJsArray(mat4d: Matrix4): scalajs.js.Array[Double] =
