@@ -122,12 +122,21 @@ class TimelineTests extends munit.FunSuite {
         Marker(MarkerLabel("c"), Seconds(10))
       )
 
-    assertEquals(t.skipTo(Seconds(3)).tweenProgress, 0.5d)
-    assertEquals(t.skipTo(Seconds(10)).tweenProgress, 1.0d)
     assertEquals(t.skipTo(Seconds(0)).tweenProgress, 0.0d)
     assertEquals(t.skipTo(Seconds(1)).tweenProgress, 0.5d)
     assertEquals(t.skipTo(Seconds(2)).tweenProgress, 1.0d)
+    assertEquals(t.skipTo(Seconds(3)).tweenProgress, 0.5d)
+    assertEquals(t.skipTo(Seconds(4)).tweenProgress, 1.0d)
+    assert(nearEnoughEqual(clue(t.skipTo(Seconds(5)).tweenProgress), clue(0.16667d * 1), 0.001))
+    assert(nearEnoughEqual(clue(t.skipTo(Seconds(6)).tweenProgress), clue(0.16667d * 2), 0.001))
+    assert(nearEnoughEqual(clue(t.skipTo(Seconds(7)).tweenProgress), clue(0.16667d * 3), 0.001))
+    assert(nearEnoughEqual(clue(t.skipTo(Seconds(8)).tweenProgress), clue(0.16667d * 4), 0.001))
+    assert(nearEnoughEqual(clue(t.skipTo(Seconds(9)).tweenProgress), clue(0.16667d * 5), 0.001))
+    assert(nearEnoughEqual(clue(t.skipTo(Seconds(10)).tweenProgress), clue(0.16667d * 6), 0.001))
   }
+
+  def nearEnoughEqual(d1: Double, d2: Double, tolerance: Double): Boolean =
+    d1 >= d2 - tolerance && d1 <= d2 + tolerance
 
   test("Reporting: Next marker") {
     val t =

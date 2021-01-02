@@ -12,7 +12,7 @@ final case class Timeline(markers: List[Marker], playhead: Seconds) {
 
   def play(gameTime: GameTime): Timeline = {
     val next = playhead + gameTime.delta
-    this.copy(playhead = if(next >= duration) duration else next)
+    this.copy(playhead = if (next >= duration) duration else next)
   }
 
   def reverse(gameTime: GameTime): Timeline = {
@@ -50,31 +50,6 @@ final case class Timeline(markers: List[Marker], playhead: Seconds) {
   def jumpToPrevious: Timeline =
     previousMarker.map(jumpTo).getOrElse(this)
 
-  def progress: Double =
-    playhead.value / duration.value
-
-  def tweenProgress: Double =
-    @tailrec
-    def rec(remaining: List[Marker], last: Seconds): Double =
-      remaining match {
-        case Nil =>
-          if(last.value != 0)
-            (playhead.value - last.value) / (duration.value - last.value)
-          else
-            playhead.value / duration.value
-
-        case m :: _ if m.position >= playhead =>
-          if(last.value != 0)
-            (playhead.value - last.value) / (m.position.value - last.value)
-          else
-            playhead.value / m.position.value
-
-        case m :: ms =>
-          rec(ms, m.position)
-      }
-
-    rec(markers, Seconds.zero)
-
   def nextMarker: Option[MarkerLabel] = {
     @tailrec
     def rec(remaining: List[Marker]): Option[MarkerLabel] =
@@ -107,6 +82,32 @@ final case class Timeline(markers: List[Marker], playhead: Seconds) {
       }
 
     rec(markers, None)
+  }
+
+  def progress: Double =
+    playhead.value / duration.value
+
+  def tweenProgress: Double = {
+    @tailrec
+    def rec(remaining: List[Marker], last: Seconds): Double =
+      remaining match {
+        case Nil =>
+          if (last.value != 0)
+            (playhead.value - last.value) / (duration.value - last.value)
+          else
+            playhead.value / duration.value
+
+        case m :: _ if m.position >= playhead =>
+          if (last.value != 0)
+            (playhead.value - last.value) / (m.position.value - last.value)
+          else
+            playhead.value / m.position.value
+
+        case m :: ms =>
+          rec(ms, m.position)
+      }
+
+    rec(markers, Seconds.zero)
   }
 
 }
