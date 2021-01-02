@@ -84,13 +84,13 @@ final class DisplayObjectConversions(
       }
     }
 
-  private def cloneDataToDisplayEntity(id: String, cloneDepth: Double, data: CloneTransformData): DisplayClone =
+  private def cloneDataToDisplayEntity(id: String, cloneDepth: Double, data: CloneTransformData, blankTransform: Matrix4): DisplayClone =
     new DisplayClone(
       id = id,
       // x = data.position.x.toFloat,
       // y = data.position.y.toFloat,
       // z = cloneDepth,
-      transform = DisplayObjectConversions.cloneTransformDataToMatrix4(data, cloneDepth),
+      transform = DisplayObjectConversions.cloneTransformDataToMatrix4(data, blankTransform),
       // rotation = data.rotation.value.toFloat,
       // scaleX = data.scale.x.toFloat,
       // scaleY = data.scale.y.toFloat,
@@ -99,13 +99,11 @@ final class DisplayObjectConversions(
       // flipVertical = if (data.flipVertical) 1f else -1f
     )
 
-  private def cloneBatchDataToDisplayEntities(batch: CloneBatch): DisplayCloneBatch = {
-    def convert(): DisplayCloneBatch = {
-      val z = batch.depth.zIndex.toDouble
-
+  private def cloneBatchDataToDisplayEntities(batch: CloneBatch, blankTransform: Matrix4): DisplayCloneBatch = {
+    def convert(): DisplayCloneBatch =
       new DisplayCloneBatch(
         id = batch.id.value,
-        z = z,
+        z = batch.depth.zIndex.toDouble,
         clones = batch.clones.map { td =>
           new DisplayCloneBatchData(
             // x = batch.transform.position.x + td.position.x.toFloat,
@@ -113,14 +111,13 @@ final class DisplayObjectConversions(
             // rotation = batch.transform.rotation.value.toFloat + td.rotation.value.toFloat,
             // scaleX = batch.transform.scale.x.toFloat * td.scale.x.toFloat,
             // scaleY = batch.transform.scale.x.toFloat * td.scale.y.toFloat,
-            transform = DisplayObjectConversions.cloneTransformDataToMatrix4(batch.transform, z),
+            transform = DisplayObjectConversions.cloneTransformDataToMatrix4(batch.transform |+| td, blankTransform),
             alpha = batch.transform.alpha.toFloat
             // flipHorizontal = if (batch.transform.flipHorizontal) -1f else 1f,
             // flipVertical = if (batch.transform.flipVertical) 1f else -1f
           )
         }
       )
-    }
 
     batch.staticBatchKey match {
       case None =>
@@ -140,7 +137,8 @@ final class DisplayObjectConversions(
   def sceneNodesToDisplayObjects(
       sceneNodes: List[SceneGraphNode],
       gameTime: GameTime,
-      assetMapping: AssetMapping
+      assetMapping: AssetMapping,
+      cloneBlankDisplayObjects: Map[String, DisplayObject]
   ): ListBuffer[DisplayEntity] = {
     @tailrec
     def rec(remaining: List[SceneGraphNode]): ListBuffer[DisplayEntity] =
@@ -149,12 +147,32 @@ final class DisplayObjectConversions(
           accDisplayObjects
 
         case (c: Clone) :: xs =>
-          accDisplayObjects += cloneDataToDisplayEntity(c.id.value, c.depth.zIndex.toDouble, c.transform)
-          rec(xs)
+          cloneBlankDisplayObjects.get(c.id.value) match {
+            case None =>
+              rec(xs)
+
+            case Some(refDisplayObject) =>
+              accDisplayObjects += cloneDataToDisplayEntity(
+                c.id.value,
+                c.depth.zIndex.toDouble,
+                c.transform,
+                refDisplayObject.transform
+              )
+              rec(xs)
+          }
 
         case (c: CloneBatch) :: xs =>
-          accDisplayObjects += cloneBatchDataToDisplayEntities(c)
-          rec(xs)
+          cloneBlankDisplayObjects.get(c.id.value) match {
+            case None =>
+              rec(xs)
+
+            case Some(refDisplayObject) =>
+              accDisplayObjects += cloneBatchDataToDisplayEntities(
+                c,
+                refDisplayObject.transform
+              )
+              rec(xs)
+          }
 
         case (x: Group) :: xs =>
           val childNodes =
@@ -483,6 +501,20 @@ object DisplayObjectConversions {
           z = 0.0d
         )
       )
+
+  def cloneTransformDataToMatrix4(data: CloneTransformData, blankTransform: Matrix4): Matrix4 =
+    blankTransform * Matrix4
+      .translation(-blankTransform.x, -blankTransform.y, 0.0d)
+      .scale(flipToVector2(Flip(data.flipHorizontal, !data.flipVertical)))
+      .scale(data.scale.toVector3)
+      .rotate(data.rotation)
+      .translate( //(data.position.toVector.toVector3)
+        Vector3(
+          x = data.position.x.toDouble,
+          y = data.position.y.toDouble,
+          z = 0.0d
+        )
+      )
   /*
 From Shader (which is in reverse?):
 
@@ -495,18 +527,5 @@ From Shader (which is in reverse?):
 
     move to ref: -(ref / size) + 0.5;
    */
-
-  def cloneTransformDataToMatrix4(data: CloneTransformData, depth: Double): Matrix4 =
-    Matrix4
-      .scale(flipToVector2(Flip(data.flipHorizontal, data.flipVertical)))
-      .scale(data.scale.toVector3)
-      .rotate(data.rotation)
-      .translate( //(data.position.toVector.toVector3)
-        Vector3(
-          x = data.position.x.toDouble,
-          y = data.position.y.toDouble,
-          z = depth
-        )
-      )
 
 }

@@ -67,18 +67,6 @@ final class SceneProcessor(
         }
         .getOrElse(orthographicProjectionMatrix)
 
-    val gameLayerDisplayObjects =
-      displayObjectConverterGame.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping)
-
-    val lightingLayerDisplayObjects =
-      displayObjectConverterLighting.sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping)
-
-    val distortionLayerDisplayObjects =
-      displayObjectConverterDistortion.sceneNodesToDisplayObjects(scene.distortionLayer.nodes, gameTime, assetMapping)
-
-    val uiLayerDisplayObjects =
-      displayObjectConverterUi.sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping)
-
     val cloneBlankDisplayObjects =
       scene.cloneBlanks.foldLeft(Map.empty[String, DisplayObject]) { (acc, blank) =>
         blank.cloneable match {
@@ -95,6 +83,18 @@ final class SceneProcessor(
             }
         }
       }
+
+    val gameLayerDisplayObjects =
+      displayObjectConverterGame.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
+
+    val lightingLayerDisplayObjects =
+      displayObjectConverterLighting.sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
+
+    val distortionLayerDisplayObjects =
+      displayObjectConverterDistortion.sceneNodesToDisplayObjects(scene.distortionLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
+
+    val uiLayerDisplayObjects =
+      displayObjectConverterUi.sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
 
     new ProcessedSceneData(
       gameProjection,

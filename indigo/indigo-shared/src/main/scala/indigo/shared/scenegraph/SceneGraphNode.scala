@@ -188,6 +188,17 @@ final case class CloneBlank(id: CloneId, cloneable: Cloneable) {
   * @param flipVertical
   */
 final case class CloneTransformData(position: Point, rotation: Radians, scale: Vector2, alpha: Double, flipHorizontal: Boolean, flipVertical: Boolean) {
+
+  def |+|(other: CloneTransformData): CloneTransformData =
+    CloneTransformData(
+      position = position + other.position,
+      rotation = rotation + other.rotation,
+      scale = scale * other.scale,
+      alpha = alpha * other.alpha,
+      flipHorizontal = if(flipHorizontal) !other.flipHorizontal else other.flipHorizontal,
+      flipVertical = if(flipVertical) !other.flipVertical else other.flipVertical
+    )
+
   def withPosition(newPosition: Point): CloneTransformData =
     this.copy(position = newPosition)
 
