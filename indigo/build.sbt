@@ -63,7 +63,9 @@ lazy val perf =
       name := "indigo-perf",
       showCursor := true,
       title := "Perf",
-      gameAssetsDirectory := "assets"
+      gameAssetsDirectory := "assets",
+      windowStartWidth := 800,
+      windowStartHeight := 600,
     )
     .settings(
       publish := {},
