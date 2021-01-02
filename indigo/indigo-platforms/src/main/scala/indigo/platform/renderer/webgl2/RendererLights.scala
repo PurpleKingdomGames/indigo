@@ -38,10 +38,10 @@ class RendererLights(gl2: WebGL2RenderingContext) {
     List.fill(displayObjectUBODataSize)(0.0f).toJSArray
 
   def updateStaticUBOData(displayObject: DisplayObject): Unit = {
-    uboData(0) = displayObject.x.toFloat
-    uboData(1) = displayObject.y.toFloat
-    uboData(2) = displayObject.width.toFloat * displayObject.scaleX
-    uboData(3) = displayObject.height.toFloat * displayObject.scaleY
+    uboData(0) = 0.0f                         //displayObject.x.toFloat
+    uboData(1) = 0.0f                         //displayObject.y.toFloat
+    uboData(2) = displayObject.width.toFloat  // * displayObject.scaleX
+    uboData(3) = displayObject.height.toFloat // * displayObject.scaleY
 
     uboData(4) = displayObject.frameX
     uboData(5) = displayObject.frameY

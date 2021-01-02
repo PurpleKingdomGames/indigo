@@ -22,9 +22,10 @@ import indigo.shared.datatypes.RGBA
 class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int) {
 
   // Instance Array Buffers
-  private val transformInstanceArray: WebGLBuffer                = gl2.createBuffer()
+  private val matRotateScaleInstanceArray: WebGLBuffer           = gl2.createBuffer()
+  private val matTranslateAlphaInstanceArray: WebGLBuffer        = gl2.createBuffer()
+  private val sizeInstanceArray: WebGLBuffer                     = gl2.createBuffer()
   private val frameTransformInstanceArray: WebGLBuffer           = gl2.createBuffer()
-  private val dimensionsInstanceArray: WebGLBuffer               = gl2.createBuffer()
   private val tintInstanceArray: WebGLBuffer                     = gl2.createBuffer()
   private val gradiantOverlayPositionsInstanceArray: WebGLBuffer = gl2.createBuffer()
   private val gradiantOverlayFromColorInstanceArray: WebGLBuffer = gl2.createBuffer()
@@ -32,7 +33,6 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val borderColorInstanceArray: WebGLBuffer              = gl2.createBuffer()
   private val glowColorInstanceArray: WebGLBuffer                = gl2.createBuffer()
   private val amountsInstanceArray: WebGLBuffer                  = gl2.createBuffer()
-  private val rotationAlphaFlipHFlipVInstanceArray: WebGLBuffer  = gl2.createBuffer()
   private val emissiveNormalOffsetsArray: WebGLBuffer            = gl2.createBuffer()
   private val specularOffsetIsLitArray: WebGLBuffer              = gl2.createBuffer()
   private val textureAmountsArray: WebGLBuffer                   = gl2.createBuffer()
@@ -45,9 +45,10 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   }
 
   // Instance Data Arrays
-  private val transformData: scalajs.js.Array[Float]                = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val matRotateScaleData: scalajs.js.Array[Float]           = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val matTranslateAlphaData: scalajs.js.Array[Float]        = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val sizeData: scalajs.js.Array[Float]                     = scalajs.js.Array[Float](4f * maxBatchSize)
   private val frameTransformData: scalajs.js.Array[Float]           = scalajs.js.Array[Float](4f * maxBatchSize)
-  private val dimensionsData: scalajs.js.Array[Float]               = scalajs.js.Array[Float](4f * maxBatchSize)
   private val tintData: scalajs.js.Array[Float]                     = scalajs.js.Array[Float](4f * maxBatchSize)
   private val gradiantOverlayPositionsData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
   private val gradiantOverlayFromColorData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
@@ -55,7 +56,6 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val borderColorData: scalajs.js.Array[Float]              = scalajs.js.Array[Float](4f * maxBatchSize)
   private val glowColorData: scalajs.js.Array[Float]                = scalajs.js.Array[Float](4f * maxBatchSize)
   private val amountsData: scalajs.js.Array[Float]                  = scalajs.js.Array[Float](4f * maxBatchSize)
-  private val rotationAlphaFlipHFlipVData: scalajs.js.Array[Float]  = scalajs.js.Array[Float](4f * maxBatchSize)
   private val emissiveNormalOffsetsData: scalajs.js.Array[Float]    = scalajs.js.Array[Float](4f * maxBatchSize)
   private val specularOffsetIsLitData: scalajs.js.Array[Float]      = scalajs.js.Array[Float](4f * maxBatchSize)
   private val textureAmountsData: scalajs.js.Array[Float]           = scalajs.js.Array[Float](4f * maxBatchSize)
@@ -66,20 +66,25 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   }
 
   private def updateData(d: DisplayObject, i: Int): Unit = {
-    transformData((i * 4) + 0) = d.x
-    transformData((i * 4) + 1) = d.y
-    transformData((i * 4) + 2) = d.scaleX
-    transformData((i * 4) + 3) = d.scaleY
+    val (l1, l2) = d.transform.data
+
+    matRotateScaleData((i * 4) + 0) = l1(0).toFloat
+    matRotateScaleData((i * 4) + 1) = l1(1).toFloat
+    matRotateScaleData((i * 4) + 2) = l1(2).toFloat
+    matRotateScaleData((i * 4) + 3) = l1(3).toFloat
+
+    matTranslateAlphaData((i * 4) + 0) = l2(0).toFloat
+    matTranslateAlphaData((i * 4) + 1) = l2(1).toFloat
+    matTranslateAlphaData((i * 4) + 2) = l2(2).toFloat
+    matTranslateAlphaData((i * 4) + 3) = d.effects.alpha
+
+    sizeData((i * 2) + 0) = d.width
+    sizeData((i * 2) + 1) = d.height
 
     frameTransformData((i * 4) + 0) = d.frameX
     frameTransformData((i * 4) + 1) = d.frameY
     frameTransformData((i * 4) + 2) = d.frameScaleX
     frameTransformData((i * 4) + 3) = d.frameScaleY
-
-    dimensionsData((i * 4) + 0) = d.refX
-    dimensionsData((i * 4) + 1) = d.refY
-    dimensionsData((i * 4) + 2) = d.width
-    dimensionsData((i * 4) + 3) = d.height
 
     //Effects
     tintData((i * 4) + 0) = d.effects.tint(0)
@@ -117,11 +122,6 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     amountsData((i * 4) + 2) = d.effects.outerGlowAmount
     amountsData((i * 4) + 3) = d.effects.innerGlowAmount
 
-    rotationAlphaFlipHFlipVData((i * 4) + 0) = d.rotation
-    rotationAlphaFlipHFlipVData((i * 4) + 1) = d.effects.alpha
-    rotationAlphaFlipHFlipVData((i * 4) + 2) = d.flipHorizontal
-    rotationAlphaFlipHFlipVData((i * 4) + 3) = d.flipVertical
-
     emissiveNormalOffsetsData((i * 4) + 0) = d.emissiveOffset.x.toFloat
     emissiveNormalOffsetsData((i * 4) + 1) = d.emissiveOffset.y.toFloat
     emissiveNormalOffsetsData((i * 4) + 2) = d.normalOffset.x.toFloat
@@ -139,15 +139,26 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   }
 
   private def overwriteFromDisplayBatchClone(cloneData: DisplayCloneBatchData, i: Int): Unit = {
-    transformData((i * 4) + 0) = cloneData.x
-    transformData((i * 4) + 1) = cloneData.y
-    transformData((i * 4) + 2) = cloneData.scaleX
-    transformData((i * 4) + 3) = cloneData.scaleY
+    val (l1, l2) = cloneData.transform.data
 
-    rotationAlphaFlipHFlipVData((i * 4) + 0) = cloneData.rotation
-    rotationAlphaFlipHFlipVData((i * 4) + 1) = cloneData.alpha
-    rotationAlphaFlipHFlipVData((i * 4) + 2) = cloneData.flipHorizontal
-    rotationAlphaFlipHFlipVData((i * 4) + 3) = cloneData.flipVertical
+    matRotateScaleData((i * 4) + 0) = l1(0).toFloat
+    matRotateScaleData((i * 4) + 1) = l1(1).toFloat
+    matRotateScaleData((i * 4) + 2) = l1(2).toFloat
+    matRotateScaleData((i * 4) + 3) = l1(3).toFloat
+
+    matTranslateAlphaData((i * 4) + 0) = l2(0).toFloat
+    matTranslateAlphaData((i * 4) + 1) = l2(1).toFloat
+    matTranslateAlphaData((i * 4) + 2) = l2(2).toFloat
+    matTranslateAlphaData((i * 4) + 3) = cloneData.alpha
+    // transformData((i * 4) + 0) = cloneData.x
+    // transformData((i * 4) + 1) = cloneData.y
+    // transformData((i * 4) + 2) = cloneData.scaleX
+    // transformData((i * 4) + 3) = cloneData.scaleY
+
+    // rotationAlphaFlipHFlipVData((i * 4) + 0) = cloneData.rotation
+    // rotationAlphaFlipHFlipVData((i * 4) + 1) = cloneData.alpha
+    // rotationAlphaFlipHFlipVData((i * 4) + 2) = cloneData.flipHorizontal
+    // rotationAlphaFlipHFlipVData((i * 4) + 3) = cloneData.flipVertical
   }
 
   // @SuppressWarnings(Array("org.wartremover.warts.Null"))
@@ -173,28 +184,28 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     gl2.uniformMatrix4fv(projectionLocation, false, projection)
 
     // Instance attributes
-    // vec4 a_transform
-    setupInstanceArray(transformInstanceArray, 1, 4)
-    // vec2 a_frameTransform
-    setupInstanceArray(frameTransformInstanceArray, 2, 4)
-    // float a_dimensions
-    setupInstanceArray(dimensionsInstanceArray, 3, 4)
-    // vec4 a_tint
-    setupInstanceArray(tintInstanceArray, 4, 4)
+    // vec4 a_matRotateScale
+    setupInstanceArray(matRotateScaleInstanceArray, 1, 4) //
+    // vec4 a_matTranslateAlpha
+    setupInstanceArray(matTranslateAlphaInstanceArray, 2, 4) //
+    // vec2 a_size
+    setupInstanceArray(sizeInstanceArray, 3, 2) //
+    // vec4 a_frameTransform
+    setupInstanceArray(frameTransformInstanceArray, 4, 4) //
+    // vec4 a_tint --
+    setupInstanceArray(tintInstanceArray, 5, 4)
     // vec4 a_gradiantPositions
-    setupInstanceArray(gradiantOverlayPositionsInstanceArray, 5, 4)
+    setupInstanceArray(gradiantOverlayPositionsInstanceArray, 6, 4)
     // vec4 a_gradiantOverlayFromColor
-    setupInstanceArray(gradiantOverlayFromColorInstanceArray, 6, 4)
+    setupInstanceArray(gradiantOverlayFromColorInstanceArray, 7, 4)
     // vec4 a_gradiantOverlayToColor
-    setupInstanceArray(gradiantOverlayToColorInstanceArray, 7, 4)
+    setupInstanceArray(gradiantOverlayToColorInstanceArray, 8, 4)
     // vec4 a_borderColor
-    setupInstanceArray(borderColorInstanceArray, 8, 4)
+    setupInstanceArray(borderColorInstanceArray, 9, 4)
     // vec4 a_glowColor
-    setupInstanceArray(glowColorInstanceArray, 9, 4)
+    setupInstanceArray(glowColorInstanceArray, 10, 4)
     // vec4 a_amounts
-    setupInstanceArray(amountsInstanceArray, 10, 4)
-    // vec4 a_rotationAlphaFlipHFlipV --
-    setupInstanceArray(rotationAlphaFlipHFlipVInstanceArray, 11, 4)
+    setupInstanceArray(amountsInstanceArray, 11, 4)
     // vec4 a_emissiveNormalOffsets --
     setupInstanceArray(emissiveNormalOffsetsArray, 12, 4)
     // vec4 a_specularOffsetIsLit --
@@ -208,9 +219,10 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
     @inline def drawBuffer(instanceCount: Int): Unit =
       if (instanceCount > 0) {
-        bindData(transformInstanceArray, transformData)
+        bindData(matRotateScaleInstanceArray, matRotateScaleData)
+        bindData(matTranslateAlphaInstanceArray, matTranslateAlphaData)
+        bindData(sizeInstanceArray, sizeData)
         bindData(frameTransformInstanceArray, frameTransformData)
-        bindData(dimensionsInstanceArray, dimensionsData)
         bindData(tintInstanceArray, tintData)
         bindData(gradiantOverlayPositionsInstanceArray, gradiantOverlayPositionsData)
         bindData(gradiantOverlayFromColorInstanceArray, gradiantOverlayFromColorData)
@@ -218,7 +230,6 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
         bindData(borderColorInstanceArray, borderColorData)
         bindData(glowColorInstanceArray, glowColorData)
         bindData(amountsInstanceArray, amountsData)
-        bindData(rotationAlphaFlipHFlipVInstanceArray, rotationAlphaFlipHFlipVData)
         bindData(emissiveNormalOffsetsArray, emissiveNormalOffsetsData)
         bindData(specularOffsetIsLitArray, specularOffsetIsLitData)
         bindData(textureAmountsArray, textureAmountsData)

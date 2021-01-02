@@ -59,13 +59,13 @@ out vec2 v_offsetBC;
 out vec2 v_offsetBR;
 out vec2 v_texcoordSpecular;
 
-mat4 rotate2d(float angle){
-    return mat4(cos(angle), -sin(angle), 0, 0,
-                sin(angle), cos(angle), 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1
-                );
-}
+// mat4 rotate2d(float angle){
+//     return mat4(cos(angle), -sin(angle), 0, 0,
+//                 sin(angle), cos(angle), 0, 0,
+//                 0, 0, 1, 0,
+//                 0, 0, 0, 1
+//                 );
+// }
 
 mat4 translate2d(vec2 t){
     return mat4(1, 0, 0, 0,
