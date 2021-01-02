@@ -1,5 +1,6 @@
 package indigo.platform.renderer.webgl1
 
+import indigo.platform.renderer.shared.RendererHelper
 import org.scalajs.dom.raw
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.{WebGLProgram, WebGLTexture}
@@ -54,35 +55,56 @@ object RendererFunctions {
   def setupVertexShaderState(
       gl: raw.WebGLRenderingContext,
       displayObject: DisplayObject,
-      transformLocation: WebGLUniformLocation,
-      dimensions: WebGLUniformLocation,
-      rotationAlphaFlipLocation: WebGLUniformLocation,
+      // transformLocation: WebGLUniformLocation,
+      // dimensions: WebGLUniformLocation,
+      // rotationAlphaFlipLocation: WebGLUniformLocation,
+      transformMatrixLocation: WebGLUniformLocation,
+      alphaLocation: WebGLUniformLocation,
       frameTransform: WebGLUniformLocation
   ): Unit = {
 
-    gl.uniform4f(
-      transformLocation,
-      displayObject.x.toDouble,
-      displayObject.y.toDouble,
-      displayObject.scaleX.toDouble,
-      displayObject.scaleY.toDouble
+    /*
+uniform mat4 u_transform;
+uniform vec3 u_sizeAlpha;
+// uniform vec4 u_transform; // remove
+// uniform vec4 u_dimensions; // width + height
+// uniform vec4 u_rotationAlphaFlipHFlipV; // only need alpha... and depth?
+uniform vec4 u_frameTransform; // fine
+     */
+    gl.uniformMatrix4fv(
+      location = transformMatrixLocation,
+      transpose = false,
+      value = RendererHelper.mat4ToJsArray(displayObject.transform)
     )
 
-    gl.uniform4f(
-      dimensions,
-      displayObject.refX.toDouble,
-      displayObject.refY.toDouble,
-      displayObject.width.toDouble,
-      displayObject.height.toDouble
+    gl.uniform1f(
+      alphaLocation,
+      displayObject.effects.alpha.toDouble
     )
 
-    gl.uniform4f(
-      rotationAlphaFlipLocation,
-      displayObject.rotation.toDouble,
-      displayObject.effects.alpha.toDouble,
-      displayObject.flipHorizontal.toDouble,
-      displayObject.flipVertical.toDouble
-    )
+    // gl.uniform4f(
+    //   transformLocation,
+    //   displayObject.x.toDouble,
+    //   displayObject.y.toDouble,
+    //   displayObject.scaleX.toDouble,
+    //   displayObject.scaleY.toDouble
+    // )
+
+    // gl.uniform4f(
+    //   dimensions,
+    //   displayObject.refX.toDouble,
+    //   displayObject.refY.toDouble,
+    //   displayObject.width.toDouble,
+    //   displayObject.height.toDouble
+    // )
+
+    // gl.uniform4f(
+    //   rotationAlphaFlipLocation,
+    //   displayObject.rotation.toDouble,
+    //   displayObject.effects.alpha.toDouble,
+    //   displayObject.flipHorizontal.toDouble,
+    //   displayObject.flipVertical.toDouble
+    // )
 
     gl.uniform4f(
       frameTransform,
