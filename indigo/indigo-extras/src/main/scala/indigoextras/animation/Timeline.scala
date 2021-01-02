@@ -113,6 +113,35 @@ final case class Timeline(markers: List[Marker], playhead: Seconds) {
     rec(markers, Seconds.zero)
   }
 
+  def transformDiff: TransformDiff = {
+    @tailrec
+    def rec(remaining: List[Marker], last: Seconds, acc: TransformDiff): TransformDiff =
+      remaining match {
+        case Nil =>
+          val tweenAmount =
+            if (last.value != 0)
+              (playhead.value - last.value) / (duration.value - last.value)
+            else
+              playhead.value / duration.value
+
+          acc
+
+        case m :: _ if m.position >= playhead =>
+          val tweenAmount =
+            if (last.value != 0)
+              (playhead.value - last.value) / (m.position.value - last.value)
+            else
+              playhead.value / m.position.value
+
+          acc.tweenTo(m.diff, tweenAmount)
+
+        case m :: ms =>
+          rec(ms, m.position, acc.chooseLatest(m.diff))
+      }
+
+    rec(markers, Seconds.zero, TransformDiff.NoChange)
+  }
+
 }
 object Timeline {
 
@@ -149,6 +178,81 @@ object Marker {
 final case class MarkerLabel(value: String) extends AnyVal
 
 final case class TransformDiff(maybeMoveTo: Option[Point], maybeRotateTo: Option[Radians], maybeScaleTo: Option[Vector2]) {
+
+  def chooseLatest(next: TransformDiff): TransformDiff =
+    TransformDiff(
+      (maybeMoveTo, next.maybeMoveTo) match {
+        case (None, None) => None
+        case (p, None)    => p
+        case (None, p)    => p
+        case (Some(_), p) => p
+      },
+      (maybeRotateTo, next.maybeRotateTo) match {
+        case (None, None) => None
+        case (p, None)    => p
+        case (None, p)    => p
+        case (Some(_), p) => p
+      },
+      (maybeScaleTo, next.maybeScaleTo) match {
+        case (None, None) => None
+        case (p, None)    => p
+        case (None, p)    => p
+        case (Some(_), p) => p
+      }
+    )
+
+  def tweenTo(next: TransformDiff, amount: Double): TransformDiff =
+    TransformDiff(
+      (maybeMoveTo, next.maybeMoveTo) match {
+        case (None, None) =>
+          None
+
+        case (p, None) =>
+          p
+
+        case (None, p) =>
+          p
+
+        case (Some(p1), Some(p2)) =>
+          Some(
+            Point(
+              x = ((p2.x.toDouble - p1.x.toDouble) * amount).toInt,
+              y = ((p2.y.toDouble - p1.y.toDouble) * amount).toInt
+            )
+          )
+      },
+      (maybeRotateTo, next.maybeRotateTo) match {
+        case (None, None) =>
+          None
+
+        case (p, None) =>
+          p
+
+        case (None, p) =>
+          p
+
+        case (Some(p1), Some(p2)) =>
+          Some(Radians((p2.value - p1.value) * amount))
+      },
+      (maybeScaleTo, next.maybeScaleTo) match {
+        case (None, None) =>
+          None
+
+        case (p, None) =>
+          p
+
+        case (None, p) =>
+          p
+
+        case (Some(p1), Some(p2)) =>
+          Some(
+            Vector2(
+              x = (p2.x - p1.x) * amount,
+              y = (p2.y - p1.y) * amount
+            )
+          )
+      }
+    )
 
   def moveTo(x: Int, y: Int): TransformDiff =
     moveTo(Point(x, y))
