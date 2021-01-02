@@ -1,5 +1,7 @@
 package indigo.shared.datatypes
 
+import util.control.Breaks._
+
 final case class Matrix4(private val mat: List[Double]) {
 
   lazy val row1: List[Double] = List(mat(0), mat(1), mat(2), mat(3))
@@ -54,6 +56,23 @@ final case class Matrix4(private val mat: List[Double]) {
       row2.mkString("(", ",\t", ")") + "\n" +
       row3.mkString("(", ",\t", ")") + "\n" +
       row4.mkString("(", ",\t", ")")
+
+  def ~==(other: Matrix4): Boolean = {
+    if(mat.length == other.mat.length)
+      var count = mat.length - 1
+      var same = true
+      while(count > 0) {
+        breakable {
+        if(Math.abs(mat(count) - other.mat(count)) > 0.001)
+          same = false
+          break
+        }
+        count = count - 1
+      }
+      same
+    else
+      false
+  }
 }
 
 object Matrix4 {

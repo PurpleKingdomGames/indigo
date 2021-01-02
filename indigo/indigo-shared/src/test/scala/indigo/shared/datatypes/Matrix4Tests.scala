@@ -229,4 +229,16 @@ class Matrix4Tests extends munit.FunSuite {
     assert(clue(actual) ~== clue(expected))
   }
 
+  test("approx equals") {
+    val mat1: Matrix4 =
+      Matrix4.identity
+        .rotate(Radians.TAUby4)
+
+    val mat2: Matrix4 =
+      Matrix4.identity
+        .rotate(Radians(Radians.TAUby4.value + 0.0005))
+
+    assert(clue(mat1) ~== clue(mat2))
+  }
+
 }
