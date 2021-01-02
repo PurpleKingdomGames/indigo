@@ -157,8 +157,8 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
     val expected: Matrix3 =
       Matrix3(
-        (1, 0, 0),
-        (0, 1, 0),
+        (2, 0, 0),
+        (0, 10, 0),
         (0, 0, 1)
       )
 
@@ -174,17 +174,20 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       Graphic(100, 100, Material.Textured(AssetName("test")))
         .rotateTo(Radians.TAUby4)
 
+    val c = -0.0002
+    val s = 0.99999
+
     val expected: Matrix3 =
       Matrix3(
-        (1, 0, 0),
-        (0, 1, 0),
+        (c, s, 0),
+        (-s, c, 0),
         (0, 0, 1)
       )
 
     val actual =
       DisplayObjectConversions.nodeToMatrix3(node)
 
-    assertEquals(actual, expected)
+    assert(clue(actual) ~== clue(expected))
   }
 
 }
