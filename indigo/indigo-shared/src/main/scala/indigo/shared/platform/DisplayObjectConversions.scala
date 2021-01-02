@@ -406,7 +406,10 @@ final class DisplayObjectConversions(
               // x = leaf.position.x + xPosition + alignmentOffsetX,
               // y = leaf.position.y + yOffset,
               // z = leaf.depth.zIndex,
-              transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(fontChar.bounds.width, fontChar.bounds.height, 1.0)),
+              transform = DisplayObjectConversions.nodeToMatrix4(
+                leaf.moveBy(xPosition + alignmentOffsetX, yOffset),
+                Vector3(fontChar.bounds.width, fontChar.bounds.height, 1.0)
+              ),
               width = fontChar.bounds.width,
               height = fontChar.bounds.height,
               // rotation = leaf.rotation.value.toFloat,
