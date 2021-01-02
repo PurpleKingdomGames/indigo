@@ -163,6 +163,8 @@ object Matrix4 {
     )
   }
 
+  def translation(amount: Vector3): Matrix4 =
+    translation(amount.x, amount.y, amount.z)
   def translation(tx: Double, ty: Double, tz: Double): Matrix4 =
     Matrix4(
       1,
@@ -255,6 +257,8 @@ object Matrix4 {
     )
   }
 
+  def scale(amount: Vector3): Matrix4 =
+    scale(amount.x, amount.y, amount.z)
   def scale(sx: Double, sy: Double, sz: Double): Matrix4 =
     Matrix4(
       sx,
