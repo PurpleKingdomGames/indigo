@@ -197,7 +197,7 @@ class Matrix3Tests extends munit.FunSuite {
       Matrix3.identity
         .translate(Vector2(0, 8))
         .transform(Vector2(0, 0))
-        
+
     val actual2: Vector2 =
       Matrix3.identity
         .translate(Vector2(-2, -2))
@@ -240,4 +240,15 @@ class Matrix3Tests extends munit.FunSuite {
     assert(clue(actual) ~== clue(expected))
   }
 
+  test("approx equals") {
+    val mat1: Matrix3 =
+      Matrix3.identity
+        .rotate(Radians.TAUby4)
+
+    val mat2: Matrix3 =
+      Matrix3.identity
+        .rotate(Radians(Radians.TAUby4.value + 0.0005))
+
+    assert(clue(mat1) ~== clue(mat2))
+  }
 }
