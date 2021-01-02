@@ -6,6 +6,7 @@ import indigo.shared.display.SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets
 import indigo.shared.IndigoLogger
 import indigo.shared.time.GameTime
 import indigo.shared.datatypes.Vector2
+import indigo.shared.datatypes.Flip
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 import indigo.shared.platform.AssetMapping
@@ -440,10 +441,17 @@ final class DisplayObjectConversions(
 
 object DisplayObjectConversions {
 
+  def flipToVector2(flip: Flip): Vector2 =
+    Vector2(
+      x = if (flip.horizontal) -1.0 else 1.0,
+      y = if (flip.vertical) 1.0 else -1.0
+    )
+
   def nodeToMatrix3(node: SceneGraphNode): Matrix3 =
     Matrix3
-      .scale(node.scale.x, node.scale.y)
+      .scale(flipToVector2(node.flip))
+      .scale(node.scale)
       .rotate(node.rotation)
-      .translate(node.position.toVector)
+      .translate((node.position - node.ref).toVector)
 
 }

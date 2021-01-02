@@ -119,7 +119,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val expected: Matrix3 =
       Matrix3(
         (1, 0, 0),
-        (0, 1, 0),
+        (0, -1, 0),
         (10, 20, 1)
       )
 
@@ -139,8 +139,8 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val expected: Matrix3 =
       Matrix3(
         (1, 0, 0),
-        (0, 1, 0),
-        (10, 20, 1)
+        (0, -1, 0),
+        (-40, -30, 1)
       )
 
     val actual =
@@ -158,7 +158,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val expected: Matrix3 =
       Matrix3(
         (2, 0, 0),
-        (0, 10, 0),
+        (0, -10, 0),
         (0, 0, 1)
       )
 
@@ -174,13 +174,13 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       Graphic(100, 100, Material.Textured(AssetName("test")))
         .rotateTo(Radians.TAUby4)
 
-    val c = -0.0002
-    val s = 0.99999
+    val c = 0.0
+    val s = 1
 
     val expected: Matrix3 =
       Matrix3(
         (c, s, 0),
-        (-s, c, 0),
+        (s, -c, 0),
         (0, 0, 1)
       )
 
@@ -188,6 +188,27 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       DisplayObjectConversions.nodeToMatrix3(node)
 
     assert(clue(actual) ~== clue(expected))
+  }
+
+  test("create a Matrix3 from a SceneGraphNode.translation with flip") {
+
+    val node: SceneGraphNode =
+      Graphic(100, 100, Material.Textured(AssetName("test")))
+        .moveTo(10, 20)
+        .flipHorizontal(true)
+        .flipVertical(true)
+
+    val expected: Matrix3 =
+      Matrix3(
+        (-1, 0, 0),
+        (0, 1, 0),
+        (10, 20, 1)
+      )
+
+    val actual =
+      DisplayObjectConversions.nodeToMatrix3(node)
+
+    assertEquals(actual, expected)
   }
 
 }
