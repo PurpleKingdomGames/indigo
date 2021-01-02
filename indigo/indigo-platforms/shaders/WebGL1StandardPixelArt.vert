@@ -4,7 +4,7 @@ attribute vec4 a_verticesAndCoords;
 // Uniforms
 uniform mat4 u_projection;
 uniform mat4 u_transform;
-uniform vec3 u_sizeAlpha;
+uniform float u_alpha;
 // uniform vec4 u_transform; // remove
 // uniform vec4 u_dimensions; // width + height
 // uniform vec4 u_rotationAlphaFlipHFlipV; // only need alpha... and depth?
@@ -51,11 +51,11 @@ void main(void) {
   vec4 vertices = vec4(a_verticesAndCoords.xy, 1.0, 1.0);
   vec2 texcoords = a_verticesAndCoords.zw;
   // vec2 ref = u_dimensions.xy;
-  vec2 size = u_sizeAlpha.xy;
+  // vec2 size = u_sizeAlpha.xy;
   // vec2 translation = u_transform.xy;
   // vec2 scale = u_transform.zw;
   // float rotation = u_rotationAlphaFlipHFlipV.x;
-  float alpha = u_sizeAlpha.z;
+  // float alpha = u_sizeAlpha.z;
   // vec2 flip = u_rotationAlphaFlipHFlipV.zw;
 
   // vec2 moveToReferencePoint = -(ref / size) + 0.5;
@@ -70,5 +70,5 @@ void main(void) {
   gl_Position = u_projection * u_transform * vertices;
 
   v_texcoord = scaleTexCoords(texcoords);
-  v_alpha = alpha;
+  v_alpha = u_alpha;
 }

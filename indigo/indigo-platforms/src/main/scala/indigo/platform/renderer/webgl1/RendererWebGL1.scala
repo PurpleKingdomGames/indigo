@@ -185,10 +185,13 @@ final class RendererWebGL1(
     // Attribute locations
 
     // Uniform locations (vertex)
-    val transformLocation         = gl.getUniformLocation(shaderProgram, "u_transform")
-    val dimensions                = gl.getUniformLocation(shaderProgram, "u_dimensions")
-    val rotationAlphaFlipLocation = gl.getUniformLocation(shaderProgram, "u_rotationAlphaFlipHFlipV")
-    val frameTransform            = gl.getUniformLocation(shaderProgram, "u_frameTransform")
+    // val transformLocation         = gl.getUniformLocation(shaderProgram, "u_transform")
+    // val dimensions                = gl.getUniformLocation(shaderProgram, "u_dimensions")
+    // val rotationAlphaFlipLocation = gl.getUniformLocation(shaderProgram, "u_rotationAlphaFlipHFlipV")
+
+    val transformMatrixLocation = gl.getUniformLocation(shaderProgram, "u_transform")
+    val alphaLocation       = gl.getUniformLocation(shaderProgram, "u_alpha")
+    val frameTransform          = gl.getUniformLocation(shaderProgram, "u_frameTransform")
 
     // Uniform locations (fragment)
     val tintLocation    = gl.getUniformLocation(shaderProgram, "u_tint")
@@ -202,9 +205,11 @@ final class RendererWebGL1(
         RendererFunctions.setupVertexShaderState(
           gl,
           displayObject,
-          transformLocation,
-          dimensions,
-          rotationAlphaFlipLocation,
+          // transformLocation,
+          // dimensions,
+          // rotationAlphaFlipLocation,
+          transformMatrixLocation,
+          alphaLocation,
           frameTransform
         )
 

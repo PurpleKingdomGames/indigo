@@ -3,21 +3,23 @@ attribute vec4 a_verticesAndCoords;
 
 // Uniforms
 uniform mat4 u_projection;
-uniform vec4 u_transform;
-uniform vec4 u_dimensions;
-uniform vec4 u_rotationAlphaFlipHFlipV;
-uniform vec4 u_frameTransform;
+uniform mat4 u_transform;
+uniform float u_alpha;
+// uniform vec4 u_transform; // remove
+// uniform vec4 u_dimensions; // width + height
+// uniform vec4 u_rotationAlphaFlipHFlipV; // only need alpha... and depth?
+uniform vec4 u_frameTransform; // fine
 
 varying vec2 v_texcoord;
 varying float v_alpha;
 
-mat4 rotate2d(float angle){
-    return mat4(cos(angle), -sin(angle), 0, 0,
-                sin(angle), cos(angle), 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1
-                );
-}
+// mat4 rotate2d(float angle){
+//     return mat4(cos(angle), -sin(angle), 0, 0,
+//                 sin(angle), cos(angle), 0, 0,
+//                 0, 0, 1, 0,
+//                 0, 0, 0, 1
+//                 );
+// }
 
 mat4 translate2d(vec2 t){
     return mat4(1, 0, 0, 0,
@@ -47,24 +49,24 @@ vec2 scaleTexCoords(vec2 texcoord){
 void main(void) {
   vec4 vertices = vec4(a_verticesAndCoords.xy, 1.0, 1.0);
   vec2 texcoords = a_verticesAndCoords.zw;
-  vec2 ref = u_dimensions.xy;
-  vec2 size = u_dimensions.zw;
-  vec2 translation = u_transform.xy;
-  vec2 scale = u_transform.zw;
-  float rotation = u_rotationAlphaFlipHFlipV.x;
-  float alpha = u_rotationAlphaFlipHFlipV.y;
-  vec2 flip = u_rotationAlphaFlipHFlipV.zw;
+  // vec2 ref = u_dimensions.xy;
+  // vec2 size = u_dimensions.zw;
+  // vec2 translation = u_transform.xy;
+  // vec2 scale = u_transform.zw;
+  // float rotation = u_rotationAlphaFlipHFlipV.x;
+  // float alpha = u_sizeAlpha.z;
+  // vec2 flip = u_rotationAlphaFlipHFlipV.zw;
 
-  vec2 moveToReferencePoint = -(ref / size) + 0.5;
+  // vec2 moveToReferencePoint = -(ref / size) + 0.5;
 
-  mat4 transform = 
-    translate2d(translation) *
-    rotate2d(rotation) *
-    scale2d(size * scale) *
-    translate2d(moveToReferencePoint);
+  // mat4 transform = 
+  //   translate2d(translation) *
+  //   rotate2d(rotation) *
+  //   scale2d(size * scale) *
+  //   translate2d(moveToReferencePoint);
 
-  gl_Position = u_projection * transform * vertices;
+  gl_Position = u_projection * u_transform * vertices;
 
   v_texcoord = scaleTexCoords(texcoords);
-  v_alpha = alpha;
+  v_alpha = u_alpha;
 }
