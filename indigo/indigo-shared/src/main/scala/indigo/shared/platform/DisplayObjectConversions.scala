@@ -285,7 +285,7 @@ final class DisplayObjectConversions(
       // x = leaf.x,
       // y = leaf.y,
       // z = leaf.depth.zIndex,
-      transform = DisplayObjectConversions.nodeToMatrix4(leaf),
+      transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble, 1.0d)),
       width = leaf.crop.size.x,
       height = leaf.crop.size.y,
       // rotation = leaf.rotation.value.toFloat,
@@ -333,13 +333,16 @@ final class DisplayObjectConversions(
         DisplayEffects.fromEffects(leaf.effects)
       }
 
+    val width: Int  = leaf.bounds(boundaryLocator).size.x
+    val height: Int = leaf.bounds(boundaryLocator).size.y
+
     DisplayObject(
       // x = leaf.x,
       // y = leaf.y,
       // z = leaf.depth.zIndex,
-      transform = DisplayObjectConversions.nodeToMatrix4(leaf),
-      width = leaf.bounds(boundaryLocator).size.x,
-      height = leaf.bounds(boundaryLocator).size.y,
+      transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(width.toDouble, height.toDouble, 1.0d)),
+      width = width,
+      height = height,
       // rotation = leaf.rotation.value.toFloat,
       // scaleX = leaf.scale.x.toFloat,
       // scaleY = leaf.scale.y.toFloat,
@@ -403,7 +406,7 @@ final class DisplayObjectConversions(
               // x = leaf.position.x + xPosition + alignmentOffsetX,
               // y = leaf.position.y + yOffset,
               // z = leaf.depth.zIndex,
-              transform = DisplayObjectConversions.nodeToMatrix4(leaf),
+              transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(fontChar.bounds.width, fontChar.bounds.height, 1.0)),
               width = fontChar.bounds.width,
               height = fontChar.bounds.height,
               // rotation = leaf.rotation.value.toFloat,
@@ -458,27 +461,35 @@ object DisplayObjectConversions {
       z = 1.0d
     )
 
-  def nodeToMatrix4(node: SceneGraphNode): Matrix4 = {
-    val adjustedPosition = node.position - node.ref
+  def nodeToMatrix4(node: SceneGraphNode, size: Vector3): Matrix4 =
     Matrix4
       .scale(flipToVector2(node.flip))
-      .scale(node.scale.toVector3)
+      .translate(Vector3(-node.ref.x, -node.ref.y, 0))
+      .scale(size * node.scale.toVector3)
       .rotate(node.rotation)
-      .translate(//((node.position - node.ref).toVector.toVector3)
+      .translate( //((node.position - node.ref).toVector.toVector3)
         Vector3(
-          x = adjustedPosition.x.toDouble,
-          y = adjustedPosition.y.toDouble,
+          x = node.position.x.toDouble,
+          y = node.position.y.toDouble,
           z = node.depth.zIndex.toDouble
         )
       )
-  }
+  /*
+From Shader (which is in reverse?):
+
+    translate2d(translation) *
+    rotate2d(rotation) *
+    scale2d(size * scale) *
+    translate2d(moveToReferencePoint) *
+    scale2d(flip);
+   */
 
   def cloneTransformDataToMatrix4(data: CloneTransformData, depth: Double): Matrix4 =
     Matrix4
       .scale(flipToVector2(Flip(data.flipHorizontal, data.flipVertical)))
       .scale(data.scale.toVector3)
       .rotate(data.rotation)
-      .translate(//(data.position.toVector.toVector3)
+      .translate( //(data.position.toVector.toVector3)
         Vector3(
           x = data.position.x.toDouble,
           y = data.position.y.toDouble,
