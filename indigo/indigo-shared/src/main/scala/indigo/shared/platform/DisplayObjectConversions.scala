@@ -464,7 +464,13 @@ object DisplayObjectConversions {
   def nodeToMatrix4(node: SceneGraphNode, size: Vector3): Matrix4 =
     Matrix4
       .scale(flipToVector2(node.flip))
-      .translate(Vector3(-node.ref.x, -node.ref.y, 0))
+      .translate(
+        Vector3(
+          -(node.ref.x.toDouble / size.x) + 0.5d,
+          -(node.ref.y.toDouble / size.y) + 0.5d,
+          0.0d
+        )
+      )
       .scale(size * node.scale.toVector3)
       .rotate(node.rotation)
       .translate( //((node.position - node.ref).toVector.toVector3)
@@ -482,6 +488,9 @@ From Shader (which is in reverse?):
     scale2d(size * scale) *
     translate2d(moveToReferencePoint) *
     scale2d(flip);
+
+
+    move to ref: -(ref / size) + 0.5;
    */
 
   def cloneTransformDataToMatrix4(data: CloneTransformData, depth: Double): Matrix4 =
