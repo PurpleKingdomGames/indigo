@@ -42,10 +42,10 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
       lightingLayerSaturation: Double,
       uiLayerSaturation: Double
   ): Unit = {
-    uboData(0) = displayObject.x.toFloat
-    uboData(1) = displayObject.y.toFloat
-    uboData(2) = displayObject.width.toFloat * displayObject.scaleX
-    uboData(3) = displayObject.height.toFloat * displayObject.scaleY
+    uboData(0) = 0.0f
+    uboData(1) = 0.0f
+    uboData(2) = displayObject.width.toFloat
+    uboData(3) = displayObject.height.toFloat
 
     uboData(4) = displayObject.frameX.toFloat
     uboData(5) = displayObject.frameY.toFloat
