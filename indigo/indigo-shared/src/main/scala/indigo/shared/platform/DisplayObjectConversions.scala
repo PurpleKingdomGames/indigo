@@ -440,26 +440,10 @@ final class DisplayObjectConversions(
 
 object DisplayObjectConversions {
 
-  def nodeToMatrix3(node: SceneGraphNode): Matrix3 = {
-    val tx: Double = node.position.x
-    val ty: Double = node.position.y
-    val sx: Double = node.scale.x
-    val sy: Double = node.scale.y
-    val r: Double  = node.rotation.value
-    val c          = Math.cos(r)
-    val s          = Math.sin(r)
-
-    Matrix3(
-      sx * c,
-      s,
-      0,
-      -s,
-      sy * c,
-      0,
-      tx,
-      ty,
-      1
-    )
-  }
+  def nodeToMatrix3(node: SceneGraphNode): Matrix3 =
+    Matrix3
+      .scale(node.scale.x, node.scale.y)
+      .rotate(node.rotation)
+      .translate(node.position.toVector)
 
 }
