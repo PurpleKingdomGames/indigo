@@ -454,24 +454,23 @@ final class DisplayObjectConversions(
 
 object DisplayObjectConversions {
 
-  def flipToVector2(flip: Flip): Vector3 =
-    Vector3(
-      x = if (flip.horizontal) -1.0 else 1.0,
-      y = if (flip.vertical) 1.0 else -1.0,
-      z = 1.0d
-    )
-
   def nodeToMatrix4(node: SceneGraphNode, size: Vector3): Matrix4 =
     Matrix4
-      .scale(flipToVector2(node.flip))
-      .translate(
-        Vector3(
-          -(node.ref.x.toDouble / size.x) + 0.5d,
-          -(node.ref.y.toDouble / size.y) + 0.5d,
-          0.0d
-        )
+      .scale(
+        if (node.flip.horizontal) -1.0 else 1.0,
+        if (node.flip.vertical) 1.0 else -1.0,
+        1.0d
       )
-      .scale(size * node.scale.toVector3)
+      .translate(
+        -(node.ref.x.toDouble / size.x) + 0.5d,
+        -(node.ref.y.toDouble / size.y) + 0.5d,
+        0.0d
+      )
+      .scale(
+        size.x * node.scale.x,
+        size.y * node.scale.y,
+        size.z
+      )
       .rotate(node.rotation)
       .translate(
         Vector3(
@@ -484,15 +483,17 @@ object DisplayObjectConversions {
   def cloneTransformDataToMatrix4(data: CloneTransformData, blankTransform: Matrix4): Matrix4 =
     blankTransform * Matrix4
       .translation(-blankTransform.x, -blankTransform.y, 0.0d)
-      .scale(flipToVector2(Flip(data.flipHorizontal, !data.flipVertical)))
-      .scale(data.scale.toVector3)
+      .scale(
+        if (data.flipHorizontal) -1.0 else 1.0,
+        if (!data.flipVertical) 1.0 else -1.0,
+        1.0d
+      )
+      .scale(data.scale)
       .rotate(data.rotation)
       .translate(
-        Vector3(
-          x = data.position.x.toDouble,
-          y = data.position.y.toDouble,
-          z = 0.0d
-        )
+        data.position.x.toDouble,
+        data.position.y.toDouble,
+        0.0d
       )
 
 }
