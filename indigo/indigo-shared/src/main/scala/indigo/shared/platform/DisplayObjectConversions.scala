@@ -15,6 +15,7 @@ import indigo.shared.scenegraph.{Graphic, Sprite, Text, TextLine}
 
 import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.scenegraph.Group
+import indigo.shared.scenegraph.Transformer
 import indigo.shared.QuickCache
 
 import scala.annotation.tailrec
@@ -124,103 +125,129 @@ final class DisplayObjectConversions(
       gameTime: GameTime,
       assetMapping: AssetMapping,
       cloneBlankDisplayObjects: Map[String, DisplayObject]
-  ): ListBuffer[DisplayEntity] = {
+  ): ListBuffer[DisplayEntity] =
+    deGroup(sceneNodes).flatMap { node =>
+      sceneNodeToDisplayObject(node, gameTime, assetMapping, cloneBlankDisplayObjects)
+    }
+
+  private val accSceneNodes: ListBuffer[SceneGraphNode] = new ListBuffer()
+
+  def deGroup(
+      sceneNodes: List[SceneGraphNode]
+  ): ListBuffer[SceneGraphNode] = {
     @tailrec
-    def rec(remaining: List[SceneGraphNode]): ListBuffer[DisplayEntity] =
+    def rec(remaining: List[SceneGraphNode]): ListBuffer[SceneGraphNode] =
       remaining match {
         case Nil =>
-          accDisplayObjects
+          accSceneNodes
 
-        case (c: Clone) :: xs =>
-          cloneBlankDisplayObjects.get(c.id.value) match {
-            case None =>
-              rec(xs)
+        case Transformer(g: Group, mat) :: xs =>
+          // So now the problem is that we'd need to replicate the conversion logic
+          // accSceneNodes += node
+          rec(g.toTransformers(boundaryLocator, mat) ++ xs)
 
-            case Some(refDisplayObject) =>
-              accDisplayObjects += cloneDataToDisplayEntity(
+        case Transformer(t: Transformer, mat) :: xs =>
+          // So now the problem is that we'd need to replicate the conversion logic
+          // accSceneNodes += node
+          rec(t.addTransform(mat) :: xs)
+
+        case (g: Group) :: xs =>
+          rec(g.toTransformers(boundaryLocator) ++ xs)
+
+        case node :: xs =>
+          accSceneNodes += node
+          rec(xs)
+      }
+
+    accSceneNodes.clear()
+
+    rec(sceneNodes)
+  }
+
+  def sceneNodeToDisplayObject(
+      sceneNode: SceneGraphNode,
+      gameTime: GameTime,
+      assetMapping: AssetMapping,
+      cloneBlankDisplayObjects: Map[String, DisplayObject]
+  ): List[DisplayEntity] =
+    sceneNode match {
+
+      case c: Clone =>
+        cloneBlankDisplayObjects.get(c.id.value) match {
+          case None =>
+            Nil
+
+          case Some(refDisplayObject) =>
+            List(
+              cloneDataToDisplayEntity(
                 c.id.value,
                 c.depth.zIndex.toDouble,
                 c.transform,
                 refDisplayObject.transform
               )
-              rec(xs)
+            )
+        }
+
+      case c: CloneBatch =>
+        cloneBlankDisplayObjects.get(c.id.value) match {
+          case None =>
+            Nil
+
+          case Some(refDisplayObject) =>
+            List(cloneBatchDataToDisplayEntities(c, refDisplayObject.transform))
+        }
+
+      case x: Group =>
+        Nil
+
+      case t: Transformer =>
+        sceneNodeToDisplayObject(t.node, gameTime, assetMapping, cloneBlankDisplayObjects)
+          .map(_.applyTransform(t.transform))
+
+      case x: Graphic =>
+        List(graphicToDisplayObject(x, assetMapping))
+
+      case x: Sprite =>
+        animationsRegister.fetchAnimationForSprite(gameTime, x.bindingKey, x.animationKey, x.animationActions) match {
+          case None =>
+            IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${x.animationKey.toString()}")
+            Nil
+
+          case Some(anim) =>
+            List(spriteToDisplayObject(boundaryLocator, x, assetMapping, anim))
+        }
+
+      case x: Text =>
+        val alignmentOffsetX: Rectangle => Int = lineBounds =>
+          x.alignment match {
+            case TextAlignment.Left => 0
+
+            case TextAlignment.Center => -(lineBounds.size.x / 2)
+
+            case TextAlignment.Right => -lineBounds.size.x
           }
 
-        case (c: CloneBatch) :: xs =>
-          cloneBlankDisplayObjects.get(c.id.value) match {
-            case None =>
-              rec(xs)
-
-            case Some(refDisplayObject) =>
-              accDisplayObjects += cloneBatchDataToDisplayEntities(
-                c,
-                refDisplayObject.transform
-              )
-              rec(xs)
-          }
-
-        case (x: Group) :: xs =>
-          val childNodes =
-            x.children
-              .map { c =>
-                c.withDepth(c.depth + x.depth)
-                  .withPosition(c.position + x.position)
-              }
-
-          rec(childNodes ++ xs)
-
-        case (x: Graphic) :: xs =>
-          accDisplayObjects += graphicToDisplayObject(x, assetMapping)
-          rec(xs)
-
-        case (x: Sprite) :: xs =>
-          animationsRegister.fetchAnimationForSprite(gameTime, x.bindingKey, x.animationKey, x.animationActions) match {
-            case None =>
-              IndigoLogger.errorOnce(s"Cannot render Sprite, missing Animations with key: ${x.animationKey.toString()}")
-              rec(xs)
-
-            case Some(anim) =>
-              accDisplayObjects += spriteToDisplayObject(boundaryLocator, x, assetMapping, anim)
-              rec(xs)
-          }
-
-        case (x: Text) :: xs =>
-          val alignmentOffsetX: Rectangle => Int = lineBounds =>
-            x.alignment match {
-              case TextAlignment.Left => 0
-
-              case TextAlignment.Center => -(lineBounds.size.x / 2)
-
-              case TextAlignment.Right => -lineBounds.size.x
+        val converterFunc: (TextLine, Int, Int) => List[DisplayObject] =
+          fontRegister
+            .findByFontKey(x.fontKey)
+            .map { fontInfo =>
+              textLineToDisplayObjects(x, assetMapping, fontInfo)
+            }
+            .getOrElse { (_, _, _) =>
+              IndigoLogger.errorOnce(s"Cannot render Text, missing Font with key: ${x.fontKey.toString()}")
+              Nil
             }
 
-          val converterFunc: (TextLine, Int, Int) => List[DisplayObject] =
-            fontRegister
-              .findByFontKey(x.fontKey)
-              .map { fontInfo =>
-                textLineToDisplayObjects(x, assetMapping, fontInfo)
-              }
-              .getOrElse { (_, _, _) =>
-                IndigoLogger.errorOnce(s"Cannot render Text, missing Font with key: ${x.fontKey.toString()}")
-                Nil
-              }
+        val letters =
+          boundaryLocator
+            .textAsLinesWithBounds(x.text, x.fontKey)
+            .foldLeft(0 -> List[DisplayObject]()) { (acc, textLine) =>
+              (acc._1 + textLine.lineBounds.height, acc._2 ++ converterFunc(textLine, alignmentOffsetX(textLine.lineBounds), acc._1))
+            }
+            ._2
 
-          val letters =
-            boundaryLocator
-              .textAsLinesWithBounds(x.text, x.fontKey)
-              .foldLeft(0 -> List[DisplayObject]()) { (acc, textLine) =>
-                (acc._1 + textLine.lineBounds.height, acc._2 ++ converterFunc(textLine, alignmentOffsetX(textLine.lineBounds), acc._1))
-              }
-              ._2
-
-          accDisplayObjects ++= letters
-          rec(xs)
-      }
-
-    accDisplayObjects.clear()
-
-    rec(sceneNodes)
-  }
+        letters
+    }
 
   def materialToEmissiveValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
     QuickCache(material.hash + "_emissive") {

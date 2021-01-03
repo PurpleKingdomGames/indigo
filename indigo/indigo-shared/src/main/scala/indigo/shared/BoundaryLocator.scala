@@ -12,6 +12,7 @@ import indigo.shared.scenegraph.Group
 import indigo.shared.scenegraph.Clone
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.scenegraph.Graphic
+import indigo.shared.scenegraph.Transformer
 import indigo.shared.datatypes.FontKey
 
 final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister: FontRegister) {
@@ -29,6 +30,9 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
     sceneGraphNode match {
       case g: Group =>
         groupBounds(g)
+
+      case _: Transformer =>
+        Rectangle.zero
 
       case _: Clone =>
         Rectangle.zero
