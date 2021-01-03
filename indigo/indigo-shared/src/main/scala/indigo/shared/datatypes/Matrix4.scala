@@ -24,13 +24,19 @@ final case class Matrix4(private val mat: List[Double]) {
   def identity: Matrix4 = Matrix4.identity
 
   def translate(by: Vector3): Matrix4 =
-    this * Matrix4.translation(by.x, by.y, by.z)
+    translate(by.x, by.y, by.z)
+  def translate(byX: Double, byY: Double, byZ: Double): Matrix4 =
+    this * Matrix4.translation(byX, byY, byZ)
 
   def rotate(angle: Radians): Matrix4 =
     this * Matrix4.zRotation(angle.value)
 
+  def scale(by: Vector2): Matrix4 =
+    scale(by.x, by.y, 1.0d)
   def scale(by: Vector3): Matrix4 =
-    this * Matrix4.scale(by.x, by.y, by.z)
+    scale(by.x, by.y, by.z)
+  def scale(byX: Double, byY: Double, byZ: Double): Matrix4 =
+    this * Matrix4.scale(byX, byY, byZ)
 
   def transpose: Matrix4 = Matrix4.transpose(this)
 
