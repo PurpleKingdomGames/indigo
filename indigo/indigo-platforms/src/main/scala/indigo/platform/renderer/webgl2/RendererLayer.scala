@@ -150,15 +150,6 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     matTranslateAlphaData((i * 4) + 1) = l2(1).toFloat
     matTranslateAlphaData((i * 4) + 2) = l2(2).toFloat
     matTranslateAlphaData((i * 4) + 3) = cloneData.alpha
-    // transformData((i * 4) + 0) = cloneData.x
-    // transformData((i * 4) + 1) = cloneData.y
-    // transformData((i * 4) + 2) = cloneData.scaleX
-    // transformData((i * 4) + 3) = cloneData.scaleY
-
-    // rotationAlphaFlipHFlipVData((i * 4) + 0) = cloneData.rotation
-    // rotationAlphaFlipHFlipVData((i * 4) + 1) = cloneData.alpha
-    // rotationAlphaFlipHFlipVData((i * 4) + 2) = cloneData.flipHorizontal
-    // rotationAlphaFlipHFlipVData((i * 4) + 3) = cloneData.flipVertical
   }
 
   // @SuppressWarnings(Array("org.wartremover.warts.Null"))

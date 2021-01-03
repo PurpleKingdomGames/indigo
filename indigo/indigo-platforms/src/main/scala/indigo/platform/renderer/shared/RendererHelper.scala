@@ -15,15 +15,9 @@ object RendererHelper {
 
   def screenDisplayObject(w: Int, h: Int): DisplayObject =
     DisplayObject(
-      // x = 0,
-      // y = 0,
-      // z = 1,
       transform = makeMatrix(w.toDouble, h.toDouble),
       width = w,
       height = h,
-      // rotation = 0,
-      // scaleX = 1,
-      // scaleY = 1,
       atlasName = "",
       frame = SpriteSheetFrame.defaultOffset,
       albedoAmount = 1.0f,
@@ -34,11 +28,7 @@ object RendererHelper {
       specularOffset = Vector2.zero,
       specularAmount = 0.0f,
       isLit = 0.0f,
-      // refX = 0,
-      // refY = 0,
       effects = DisplayEffects.default
-      // flipHorizontal = 1.0f,
-      // flipVertical = -1.0f
     )
 
   private def makeMatrix(w: Double, h: Double): Matrix4 =

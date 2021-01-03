@@ -87,16 +87,8 @@ final class DisplayObjectConversions(
   private def cloneDataToDisplayEntity(id: String, cloneDepth: Double, data: CloneTransformData, blankTransform: Matrix4): DisplayClone =
     new DisplayClone(
       id = id,
-      // x = data.position.x.toFloat,
-      // y = data.position.y.toFloat,
-      // z = cloneDepth,
       transform = DisplayObjectConversions.cloneTransformDataToMatrix4(data, blankTransform),
-      // rotation = data.rotation.value.toFloat,
-      // scaleX = data.scale.x.toFloat,
-      // scaleY = data.scale.y.toFloat,
       alpha = data.alpha.toFloat
-      // flipHorizontal = if (data.flipHorizontal) -1f else 1f,
-      // flipVertical = if (data.flipVertical) 1f else -1f
     )
 
   private def cloneBatchDataToDisplayEntities(batch: CloneBatch, blankTransform: Matrix4): DisplayCloneBatch = {
@@ -106,15 +98,8 @@ final class DisplayObjectConversions(
         z = batch.depth.zIndex.toDouble,
         clones = batch.clones.map { td =>
           new DisplayCloneBatchData(
-            // x = batch.transform.position.x + td.position.x.toFloat,
-            // y = batch.transform.position.y + td.position.y.toFloat,
-            // rotation = batch.transform.rotation.value.toFloat + td.rotation.value.toFloat,
-            // scaleX = batch.transform.scale.x.toFloat * td.scale.x.toFloat,
-            // scaleY = batch.transform.scale.x.toFloat * td.scale.y.toFloat,
             transform = DisplayObjectConversions.cloneTransformDataToMatrix4(batch.transform |+| td, blankTransform),
             alpha = batch.transform.alpha.toFloat
-            // flipHorizontal = if (batch.transform.flipHorizontal) -1f else 1f,
-            // flipVertical = if (batch.transform.flipVertical) 1f else -1f
           )
         }
       )
@@ -300,15 +285,9 @@ final class DisplayObjectConversions(
       }
 
     DisplayObject(
-      // x = leaf.x,
-      // y = leaf.y,
-      // z = leaf.depth.zIndex,
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble, 1.0d)),
       width = leaf.crop.size.x,
       height = leaf.crop.size.y,
-      // rotation = leaf.rotation.value.toFloat,
-      // scaleX = leaf.scale.x.toFloat,
-      // scaleY = leaf.scale.y.toFloat,
       atlasName = lookupAtlasName(assetMapping, materialName),
       frame = frameInfo,
       albedoAmount = albedoAmount,
@@ -319,11 +298,7 @@ final class DisplayObjectConversions(
       specularOffset = frameInfo.offsetToCoords(specularOffset),
       specularAmount = specularAmount.toFloat,
       isLit = if (leaf.material.isLit) 1.0f else 0.0f,
-      // refX = leaf.ref.x,
-      // refY = leaf.ref.y,
       effects = effectsValues
-      // flipHorizontal = if (leaf.flip.horizontal) -1 else 1,
-      // flipVertical = if (leaf.flip.vertical) 1 else -1
     )
   }
 
@@ -355,15 +330,9 @@ final class DisplayObjectConversions(
     val height: Int = leaf.bounds(boundaryLocator).size.y
 
     DisplayObject(
-      // x = leaf.x,
-      // y = leaf.y,
-      // z = leaf.depth.zIndex,
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(width.toDouble, height.toDouble, 1.0d)),
       width = width,
       height = height,
-      // rotation = leaf.rotation.value.toFloat,
-      // scaleX = leaf.scale.x.toFloat,
-      // scaleY = leaf.scale.y.toFloat,
       atlasName = lookupAtlasName(assetMapping, materialName),
       frame = frameInfo,
       albedoAmount = albedoAmount,
@@ -374,11 +343,7 @@ final class DisplayObjectConversions(
       specularOffset = frameInfo.offsetToCoords(specularOffset),
       specularAmount = specularAmount.toFloat,
       isLit = if (material.isLit) 1.0f else 0.0f,
-      // refX = leaf.ref.x,
-      // refY = leaf.ref.y,
       effects = effectsValues
-      // flipHorizontal = if (leaf.flip.horizontal) -1 else 1,
-      // flipVertical = if (leaf.flip.vertical) 1 else -1
     )
   }
 
@@ -421,18 +386,12 @@ final class DisplayObjectConversions(
               }
 
             DisplayObject(
-              // x = leaf.position.x + xPosition + alignmentOffsetX,
-              // y = leaf.position.y + yOffset,
-              // z = leaf.depth.zIndex,
               transform = DisplayObjectConversions.nodeToMatrix4(
                 leaf.moveBy(xPosition + alignmentOffsetX, yOffset),
                 Vector3(fontChar.bounds.width, fontChar.bounds.height, 1.0)
               ),
               width = fontChar.bounds.width,
               height = fontChar.bounds.height,
-              // rotation = leaf.rotation.value.toFloat,
-              // scaleX = leaf.scale.x.toFloat,
-              // scaleY = leaf.scale.y.toFloat,
               atlasName = lookupAtlasName(assetMapping, materialName),
               frame = frameInfo,
               albedoAmount = albedoAmount,
@@ -443,11 +402,7 @@ final class DisplayObjectConversions(
               specularOffset = frameInfo.offsetToCoords(specularOffset),
               specularAmount = specularAmount.toFloat,
               isLit = if (fontInfo.fontSpriteSheet.material.isLit) 1.0f else 0.0f,
-              // refX = leaf.ref.x,
-              // refY = leaf.ref.y,
               effects = effectsValues
-              // flipHorizontal = if (leaf.flip.horizontal) -1 else 1,
-              // flipVertical = if (leaf.flip.vertical) 1 else -1
             )
         }
       }
@@ -494,7 +449,7 @@ object DisplayObjectConversions {
       )
       .scale(size * node.scale.toVector3)
       .rotate(node.rotation)
-      .translate( //((node.position - node.ref).toVector.toVector3)
+      .translate(
         Vector3(
           x = node.position.x.toDouble,
           y = node.position.y.toDouble,
@@ -515,17 +470,5 @@ object DisplayObjectConversions {
           z = 0.0d
         )
       )
-  /*
-From Shader (which is in reverse?):
-
-    translate2d(translation) *
-    rotate2d(rotation) *
-    scale2d(size * scale) *
-    translate2d(moveToReferencePoint) *
-    scale2d(flip);
-
-
-    move to ref: -(ref / size) + 0.5;
-   */
 
 }
