@@ -5,7 +5,7 @@ import indigo._
 import scala.scalajs.js.annotation._
 
 @JSExportTopLevel("IndigoGame")
-object GroupExample extends IndigoSandbox[Unit, Unit] {
+object GroupExample extends IndigoSandbox[Unit, Radians] {
 
   val config: GameConfig =
     GameConfig.default
@@ -25,29 +25,34 @@ object GroupExample extends IndigoSandbox[Unit, Unit] {
   def setup(assetCollection: AssetCollection, dice: Dice): Outcome[Startup[Unit]] =
     Outcome(Startup.Success(()))
 
-  def initialModel(startupData: Unit): Outcome[Unit] =
-    Outcome(())
+  def initialModel(startupData: Unit): Outcome[Radians] =
+    Outcome(Radians.zero)
 
-  def updateModel(context: FrameContext[Unit], model: Unit): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(model)
+  def updateModel(context: FrameContext[Unit], model: Radians): GlobalEvent => Outcome[Radians] = {
+    case FrameTick =>
+      Outcome(model + Radians(0.01))
+    case _ =>
+      Outcome(model)
+  }
 
-  def present(context: FrameContext[Unit], model: Unit): Outcome[SceneUpdateFragment] =
+  val graphic =
+    Graphic(0, 0, 32, 32, 1, Material.Textured(assetName))
+      .withCrop(32, 0, 32, 32)
+      .withRef(16, 16)
+
+  def present(context: FrameContext[Unit], model: Radians): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment.empty.addGameLayerNodes(
+        graphic.moveTo(16, 16),
         Group(
-          Graphic(0, 0, 32, 32, 1, Material.Textured(assetName))
-            .withCrop(32, 0, 32, 32)
-            .withRef(16, 16),
-          Group(
-            Graphic(0, 0, 32, 32, 1, Material.Textured(assetName))
-              .withCrop(32, 0, 32, 32)
-              .withRef(16, 16)
-          ).moveBy(32, 32)
+          graphic,
+          Group(graphic)
+            .moveBy(64, 64)
             .scaleBy(2, 2)
-            .rotateBy(Radians.TAUby4)
+            .rotateBy(Radians(-(model * Radians(2.0)).value))
         ).moveBy(config.screenDimensions.center)
           .scaleBy(2, 2)
-          .rotateBy(Radians.TAUby4)
+          .rotateBy(model)
       )
     )
 }
