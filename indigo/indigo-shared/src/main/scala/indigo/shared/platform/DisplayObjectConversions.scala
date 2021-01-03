@@ -89,6 +89,7 @@ final class DisplayObjectConversions(
     new DisplayClone(
       id = id,
       transform = DisplayObjectConversions.cloneTransformDataToMatrix4(data, blankTransform),
+      z = cloneDepth,
       alpha = data.alpha.toFloat
     )
 
@@ -139,13 +140,13 @@ final class DisplayObjectConversions(
           accSceneNodes
 
         case Transformer(g: Group, mat) :: xs =>
-          rec(g.toTransformers(boundaryLocator, mat) ++ xs)
+          rec(g.toTransformers(mat) ++ xs)
 
         case Transformer(t: Transformer, mat) :: xs =>
           rec(t.addTransform(mat) :: xs)
 
         case (g: Group) :: xs =>
-          rec(g.toTransformers(boundaryLocator) ++ xs)
+          rec(g.toTransformers ++ xs)
 
         case node :: xs =>
           accSceneNodes += node
@@ -190,7 +191,7 @@ final class DisplayObjectConversions(
             List(cloneBatchDataToDisplayEntities(c, refDisplayObject.transform))
         }
 
-      case x: Group =>
+      case _: Group =>
         Nil
 
       case t: Transformer =>
@@ -306,6 +307,7 @@ final class DisplayObjectConversions(
 
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble, 1.0d)),
+      z = leaf.depth.zIndex.toDouble,
       width = leaf.crop.size.x,
       height = leaf.crop.size.y,
       atlasName = lookupAtlasName(assetMapping, materialName),
@@ -351,6 +353,7 @@ final class DisplayObjectConversions(
 
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(width.toDouble, height.toDouble, 1.0d)),
+      z = leaf.depth.zIndex.toDouble,
       width = width,
       height = height,
       atlasName = lookupAtlasName(assetMapping, materialName),
@@ -408,8 +411,9 @@ final class DisplayObjectConversions(
             DisplayObject(
               transform = DisplayObjectConversions.nodeToMatrix4(
                 leaf.moveBy(xPosition + alignmentOffsetX, yOffset),
-                Vector3(fontChar.bounds.width, fontChar.bounds.height, 1.0)
+                Vector3(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble, 1.0d)
               ),
+              z = leaf.depth.zIndex.toDouble,
               width = fontChar.bounds.width,
               height = fontChar.bounds.height,
               atlasName = lookupAtlasName(assetMapping, materialName),

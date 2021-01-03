@@ -16,6 +16,7 @@ object RendererHelper {
   def screenDisplayObject(w: Int, h: Int): DisplayObject =
     DisplayObject(
       transform = makeMatrix(w.toDouble, h.toDouble),
+      z = 1,
       width = w,
       height = h,
       atlasName = "",

@@ -68,7 +68,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
     assertEquals(actual.transform.x, 110.0d)
     assertEquals(actual.transform.y, 70.0d)
-    assertEquals(actual.z, 0.0d)
+    assertEquals(actual.z, 2.0d)
     assertEquals(actual.width, 200.0f)
     assertEquals(actual.height, 100.0f)
   }
@@ -83,7 +83,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
     assertEquals(actual.transform.x, 115.0d)
     assertEquals(actual.transform.y, 85.0d)
-    assertEquals(actual.z, 0.0d)
+    assertEquals(actual.z, 102.0d)
     assertEquals(actual.width, 200.0f)
     assertEquals(actual.height, 100.0f)
   }
@@ -100,7 +100,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
     assertEquals(actual.transform.x, 110.0d)
     assertEquals(actual.transform.y, 70.0d)
-    assertEquals(actual.z, 0.0d)
+    assertEquals(actual.z, 2.0d)
     assertEquals(actual.width, 200.0f)
     assertEquals(actual.height, 100.0f)
   }
@@ -172,8 +172,8 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       Graphic(100, 100, Material.Textured(AssetName("test")))
         .rotateTo(Radians.TAUby4)
 
-    val c = 0.0
-    val s = 100
+    val c = 0.0d
+    val s = 100.0d
 
     val expected: Matrix4 =
       Matrix4(
@@ -191,8 +191,8 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
   test("create a Matrix4 from a SceneGraphNode.translation with flip") {
 
-    val width  = 100
-    val height = 100
+    val width: Int  = 100
+    val height: Int = 100
 
     val node: SceneGraphNode =
       Graphic(width, height, Material.Textured(AssetName("test")))
@@ -205,11 +205,11 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         (-100, 0, 0, 0),
         (0, 100, 0, 0),
         (0, 0, 1, 0),
-        ((width / 2) + 10, (height / 2) + 20, 0, 1)
+        ((width.toDouble / 2) + 10, (height.toDouble / 2) + 20, 0, 1)
       )
 
     val actual =
-      DisplayObjectConversions.nodeToMatrix4(node, Vector3(width, height, 1.0d))
+      DisplayObjectConversions.nodeToMatrix4(node, Vector3(width.toDouble, height.toDouble, 1.0d))
 
     assertEquals(actual, expected)
   }

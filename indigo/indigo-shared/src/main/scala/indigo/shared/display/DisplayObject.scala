@@ -11,9 +11,9 @@ sealed trait DisplayEntity {
 final case class DisplayClone(
     val id: String,
     val transform: Matrix4,
+    val z: Double,
     val alpha: Float
 ) extends DisplayEntity {
-  def z: Double = transform.z
 
   def applyTransform(matrix: Matrix4): DisplayClone =
     this.copy(transform = transform * matrix)
@@ -45,6 +45,7 @@ final case class DisplayCloneBatch(
 
 final case class DisplayObject(
     val transform: Matrix4,
+    val z: Double,
     val width: Float,
     val height: Float,
     val atlasName: String,
@@ -62,7 +63,6 @@ final case class DisplayObject(
     val isLit: Float,
     val effects: DisplayEffects
 ) extends DisplayEntity {
-  def z: Double = transform.z
 
   def applyTransform(matrix: Matrix4): DisplayObject =
     this.copy(transform * matrix)
@@ -72,6 +72,7 @@ object DisplayObject {
 
   def apply(
       transform: Matrix4,
+      z: Double,
       width: Int,
       height: Int,
       atlasName: String,
@@ -88,6 +89,7 @@ object DisplayObject {
   ): DisplayObject =
     DisplayObject(
       transform,
+      z,
       width.toFloat,
       height.toFloat,
       atlasName,
