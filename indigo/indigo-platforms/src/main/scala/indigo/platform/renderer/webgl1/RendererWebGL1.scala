@@ -190,7 +190,7 @@ final class RendererWebGL1(
     // val rotationAlphaFlipLocation = gl.getUniformLocation(shaderProgram, "u_rotationAlphaFlipHFlipV")
 
     val transformMatrixLocation = gl.getUniformLocation(shaderProgram, "u_transform")
-    val alphaLocation       = gl.getUniformLocation(shaderProgram, "u_alpha")
+    val alphaLocation           = gl.getUniformLocation(shaderProgram, "u_alpha")
     val frameTransform          = gl.getUniformLocation(shaderProgram, "u_frameTransform")
 
     // Uniform locations (fragment)
