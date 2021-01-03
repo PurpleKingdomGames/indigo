@@ -49,7 +49,7 @@ object GroupExample extends IndigoSandbox[Unit, Radians] {
           Group(graphic)
             .moveBy(64, 64)
             .scaleBy(2, 2)
-            .rotateBy(Radians(-(model * Radians(2.0)).value))
+            .rotateBy(model * Radians(2.0))
         ).moveBy(config.screenDimensions.center)
           .scaleBy(2, 2)
           .rotateBy(model)
