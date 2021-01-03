@@ -463,7 +463,7 @@ object DisplayObjectConversions {
       .scale(flipToVector2(Flip(data.flipHorizontal, !data.flipVertical)))
       .scale(data.scale.toVector3)
       .rotate(data.rotation)
-      .translate( //(data.position.toVector.toVector3)
+      .translate(
         Vector3(
           x = data.position.x.toDouble,
           y = data.position.y.toDouble,
