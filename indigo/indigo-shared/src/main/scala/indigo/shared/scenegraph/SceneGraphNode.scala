@@ -161,14 +161,14 @@ final case class Group(children: List[SceneGraphNodePrimitive], position: Point,
       .scale(
         Vector3(
           x = if (flip.horizontal) -1.0 else 1.0,
-          y = if (flip.vertical) 1.0 else -1.0,
+          y = if (flip.vertical) -1.0 else 1.0,
           z = 1.0d
         )
       )
       .translate(
         Vector3(
-          -(ref.x.toDouble / bounds(boundaryLocator).width.toDouble) + 0.5d,
-          -(ref.y.toDouble / bounds(boundaryLocator).height.toDouble) + 0.5d,
+          -ref.x.toDouble,
+          -ref.y.toDouble,
           0.0d
         )
       )
