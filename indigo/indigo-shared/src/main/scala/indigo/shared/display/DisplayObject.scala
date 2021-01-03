@@ -5,14 +5,18 @@ import indigo.shared.datatypes.Matrix4
 
 sealed trait DisplayEntity {
   def z: Double
+  def applyTransform(matrix: Matrix4): DisplayEntity
 }
 
-final class DisplayClone(
+final case class DisplayClone(
     val id: String,
     val transform: Matrix4,
     val alpha: Float
 ) extends DisplayEntity {
   def z: Double = transform.z
+
+  def applyTransform(matrix: Matrix4): DisplayClone =
+    this.copy(transform = transform * matrix)
 }
 object DisplayClone {
   def asBatchData(dc: DisplayClone): DisplayCloneBatchData =
@@ -22,17 +26,24 @@ object DisplayClone {
     )
 }
 
-final class DisplayCloneBatchData(
+final case class DisplayCloneBatchData(
     val transform: Matrix4,
     val alpha: Float
-)
-final class DisplayCloneBatch(
+) {
+  def applyTransform(matrix: Matrix4): DisplayCloneBatchData =
+    this.copy(transform = transform * matrix)
+}
+final case class DisplayCloneBatch(
     val id: String,
     val z: Double,
     val clones: List[DisplayCloneBatchData]
-) extends DisplayEntity
+) extends DisplayEntity {
 
-final class DisplayObject(
+  def applyTransform(matrix: Matrix4): DisplayCloneBatch =
+    this.copy(clones = clones.map(_.applyTransform(matrix)))
+}
+
+final case class DisplayObject(
     val transform: Matrix4,
     val width: Float,
     val height: Float,
@@ -52,6 +63,10 @@ final class DisplayObject(
     val effects: DisplayEffects
 ) extends DisplayEntity {
   def z: Double = transform.z
+
+  def applyTransform(matrix: Matrix4): DisplayObject =
+    this.copy(transform * matrix)
+    
 }
 object DisplayObject {
 
@@ -71,7 +86,7 @@ object DisplayObject {
       isLit: Float,
       effects: DisplayEffects
   ): DisplayObject =
-    new DisplayObject(
+    DisplayObject(
       transform,
       width.toFloat,
       height.toFloat,

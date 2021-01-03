@@ -31,6 +31,25 @@ object SceneGraphNode {
   def empty: Group = Group.empty
 }
 
+final case class Transformer(node: SceneGraphNode, transform: Matrix4) extends SceneGraphNode {
+  def position: Point   = Point.zero
+  def rotation: Radians = Radians.zero
+  def scale: Vector2    = Vector2.one
+  val depth: Depth      = Depth(1)
+  def ref: Point        = Point.zero
+  def flip: Flip        = Flip.default
+
+  def withPosition(newPosition: Point): SceneGraphNode   = this
+  def withRotation(newRotation: Radians): SceneGraphNode = this
+  def withScale(newScale: Vector2): SceneGraphNode       = this
+  def withDepth(newDepth: Depth): SceneGraphNode         = this
+  def withRef(newRef: Point): SceneGraphNode             = this
+  def withFlip(newFlip: Flip): SceneGraphNode            = this
+
+  def addTransform(matrix: Matrix4): Transformer =
+    this.copy(transform = transform * matrix)
+}
+
 /**
   * Represents nodes with a basic spacial presence.
   */
@@ -137,6 +156,38 @@ final case class Group(children: List[SceneGraphNodePrimitive], position: Point,
   def addChildren(additionalChildren: List[SceneGraphNodePrimitive]): Group =
     this.copy(children = children ++ additionalChildren)
 
+  def toMatrix(boundaryLocator: BoundaryLocator): Matrix4 =
+    Matrix4
+      .scale(
+        Vector3(
+          x = if (flip.horizontal) -1.0 else 1.0,
+          y = if (flip.vertical) 1.0 else -1.0,
+          z = 1.0d
+        )
+      )
+      .translate(
+        Vector3(
+          -(ref.x.toDouble / bounds(boundaryLocator).width.toDouble) + 0.5d,
+          -(ref.y.toDouble / bounds(boundaryLocator).height.toDouble) + 0.5d,
+          0.0d
+        )
+      )
+      .scale(scale.toVector3)
+      .rotate(rotation)
+      .translate(
+        Vector3(
+          x = position.x.toDouble,
+          y = position.y.toDouble,
+          z = 0.0d
+        )
+      )
+
+  def toTransformers(boundaryLocator: BoundaryLocator): List[Transformer] =
+    toTransformers(boundaryLocator, Matrix4.identity)
+  def toTransformers(boundaryLocator: BoundaryLocator, parentTransform: Matrix4): List[Transformer] = {
+    val mat = toMatrix(boundaryLocator) * parentTransform // to avoid re-evaluation
+    children.map(n => Transformer(n.withDepth(n.depth + depth), mat))
+  }
 }
 
 object Group {
@@ -195,8 +246,8 @@ final case class CloneTransformData(position: Point, rotation: Radians, scale: V
       rotation = rotation + other.rotation,
       scale = scale * other.scale,
       alpha = alpha * other.alpha,
-      flipHorizontal = if(flipHorizontal) !other.flipHorizontal else other.flipHorizontal,
-      flipVertical = if(flipVertical) !other.flipVertical else other.flipVertical
+      flipHorizontal = if (flipHorizontal) !other.flipHorizontal else other.flipHorizontal,
+      flipVertical = if (flipVertical) !other.flipVertical else other.flipVertical
     )
 
   def withPosition(newPosition: Point): CloneTransformData =

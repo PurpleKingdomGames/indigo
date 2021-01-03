@@ -47,6 +47,9 @@ object SceneGraphViewEvents {
         case g: Group =>
           collectViewEvents(boundaryLocator, g.children, inputEvents, sendEvent)
 
+        case _: Transformer =>
+          ()
+
         case _: Clone =>
           ()
 
