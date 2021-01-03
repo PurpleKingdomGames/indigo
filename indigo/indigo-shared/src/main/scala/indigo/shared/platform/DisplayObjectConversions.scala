@@ -116,9 +116,6 @@ final class DisplayObjectConversions(
     }
   }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  private val accDisplayObjects: ListBuffer[DisplayEntity] = new ListBuffer()
-
   // @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements", "org.wartremover.warts.ToString"))
   def sceneNodesToDisplayObjects(
       sceneNodes: List[SceneGraphNode],
@@ -142,13 +139,9 @@ final class DisplayObjectConversions(
           accSceneNodes
 
         case Transformer(g: Group, mat) :: xs =>
-          // So now the problem is that we'd need to replicate the conversion logic
-          // accSceneNodes += node
           rec(g.toTransformers(boundaryLocator, mat) ++ xs)
 
         case Transformer(t: Transformer, mat) :: xs =>
-          // So now the problem is that we'd need to replicate the conversion logic
-          // accSceneNodes += node
           rec(t.addTransform(mat) :: xs)
 
         case (g: Group) :: xs =>
