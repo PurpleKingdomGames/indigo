@@ -156,7 +156,7 @@ final case class Group(children: List[SceneGraphNodePrimitive], position: Point,
   def addChildren(additionalChildren: List[SceneGraphNodePrimitive]): Group =
     this.copy(children = children ++ additionalChildren)
 
-  def toMatrix(boundaryLocator: BoundaryLocator): Matrix4 =
+  def toMatrix: Matrix4 =
     Matrix4
       .scale(
         Vector3(
@@ -182,10 +182,10 @@ final case class Group(children: List[SceneGraphNodePrimitive], position: Point,
         )
       )
 
-  def toTransformers(boundaryLocator: BoundaryLocator): List[Transformer] =
-    toTransformers(boundaryLocator, Matrix4.identity)
-  def toTransformers(boundaryLocator: BoundaryLocator, parentTransform: Matrix4): List[Transformer] = {
-    val mat = toMatrix(boundaryLocator) * parentTransform // to avoid re-evaluation
+  def toTransformers: List[Transformer] =
+    toTransformers(Matrix4.identity)
+  def toTransformers(parentTransform: Matrix4): List[Transformer] = {
+    val mat = toMatrix * parentTransform // to avoid re-evaluation
     children.map(n => Transformer(n.withDepth(n.depth + depth), mat))
   }
 }
@@ -783,7 +783,7 @@ object Sprite {
       bindingKey = bindingKey,
       animationKey = animationKey,
       effects = effects,
-      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
+      eventHandler = eventHandler,
       animationActions = Nil
     )
 

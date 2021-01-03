@@ -47,22 +47,21 @@ final case class Matrix3(private val mat: List[Double]) {
       row2.mkString("(", ",\t", ")") + "\n" +
       row3.mkString("(", ",\t", ")")
 
-  def ~==(other: Matrix3): Boolean = {
-    if(mat.length == other.mat.length)
+  def ~==(other: Matrix3): Boolean =
+    if (mat.length == other.mat.length) {
       var count = mat.length - 1
-      var same = true
-      while(count > 0) {
+      var same  = true
+      while (count > 0) {
         breakable {
-        if(Math.abs(mat(count) - other.mat(count)) > 0.001)
-          same = false
-          break
+          if (Math.abs(mat(count) - other.mat(count)) > 0.001)
+            same = false
+          break()
         }
         count = count - 1
       }
       same
-    else
+    } else
       false
-  }
 
 }
 

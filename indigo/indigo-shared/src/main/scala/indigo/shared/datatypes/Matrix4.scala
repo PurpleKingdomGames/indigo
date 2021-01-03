@@ -19,7 +19,7 @@ final case class Matrix4(private val mat: List[Double]) {
   lazy val z: Double = mat(14)
 
   lazy val data: (List[Double], List[Double]) =
-    (List(mat(0), mat(1),mat(4), mat(5)), List(mat(12), mat(13),mat(14)))
+    (List(mat(0), mat(1), mat(4), mat(5)), List(mat(12), mat(13), mat(14)))
 
   def identity: Matrix4 = Matrix4.identity
 
@@ -29,8 +29,8 @@ final case class Matrix4(private val mat: List[Double]) {
   def rotate(angle: Radians): Matrix4 =
     this * Matrix4.zRotation(angle.value)
 
-  def scale(by: Vector3): Matrix4 = 
-  this * Matrix4.scale(by.x, by.y, by.z)
+  def scale(by: Vector3): Matrix4 =
+    this * Matrix4.scale(by.x, by.y, by.z)
 
   def transpose: Matrix4 = Matrix4.transpose(this)
 
@@ -64,22 +64,21 @@ final case class Matrix4(private val mat: List[Double]) {
       row3.mkString("(", ",\t", ")") + "\n" +
       row4.mkString("(", ",\t", ")")
 
-  def ~==(other: Matrix4): Boolean = {
-    if(mat.length == other.mat.length)
+  def ~==(other: Matrix4): Boolean =
+    if (mat.length == other.mat.length) {
       var count = mat.length - 1
-      var same = true
-      while(count > 0) {
+      var same  = true
+      while (count > 0) {
         breakable {
-        if(Math.abs(mat(count) - other.mat(count)) > 0.001)
-          same = false
-          break
+          if (Math.abs(mat(count) - other.mat(count)) > 0.001)
+            same = false
+          break()
         }
         count = count - 1
       }
       same
-    else
+    } else
       false
-  }
 }
 
 object Matrix4 {
