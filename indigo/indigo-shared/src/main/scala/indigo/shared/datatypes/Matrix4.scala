@@ -24,7 +24,7 @@ final case class Matrix4(private val mat: List[Double]) {
   def translate(by: Vector3): Matrix4 =
     translate(by.x, by.y, by.z)
   def translate(byX: Double, byY: Double, byZ: Double): Matrix4 =
-    this * Matrix4.translation(byX, byY, byZ)
+    this * Matrix4.translate(byX, byY, byZ)
 
   def rotate(angle: Radians): Matrix4 =
     this * Matrix4.rotation(angle.value)
@@ -137,9 +137,9 @@ object Matrix4 {
   def orthographic(width: Double, height: Double): Matrix4 =
     orthographic(0, width, height, 0, -10000, 10000)
 
-  def translation(amount: Vector3): Matrix4 =
-    translation(amount.x, amount.y, amount.z)
-  def translation(tx: Double, ty: Double, tz: Double): Matrix4 =
+  def translate(amount: Vector3): Matrix4 =
+    translate(amount.x, amount.y, amount.z)
+  def translate(tx: Double, ty: Double, tz: Double): Matrix4 =
     Matrix4(
       1,
       0,

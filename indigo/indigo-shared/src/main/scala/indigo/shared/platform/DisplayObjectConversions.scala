@@ -479,7 +479,7 @@ object DisplayObjectConversions {
 
   def cloneTransformDataToMatrix4(data: CloneTransformData, blankTransform: CheapMatrix4): CheapMatrix4 =
     blankTransform * CheapMatrix4(
-      CheapMatrix4.translation(-blankTransform.x, -blankTransform.y, 0.0d)
+      CheapMatrix4.translate(-blankTransform.x, -blankTransform.y, 0.0d)
     ).scale(
         if (data.flipHorizontal) -1.0 else 1.0,
         if (!data.flipVertical) 1.0 else -1.0,
