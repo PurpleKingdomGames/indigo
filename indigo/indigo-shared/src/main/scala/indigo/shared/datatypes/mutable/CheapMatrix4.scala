@@ -94,6 +94,8 @@ final case class CheapMatrix4(mat: Array[Double]) {
   def toMatrix4: Matrix4 =
     Matrix4(mat.toList)
 
+  def deepClone: CheapMatrix4 =
+    CheapMatrix4(Array[Double]().concat(mat))
 }
 
 object CheapMatrix4 {
