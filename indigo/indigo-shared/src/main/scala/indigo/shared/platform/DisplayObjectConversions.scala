@@ -7,7 +7,6 @@ import indigo.shared.IndigoLogger
 import indigo.shared.time.GameTime
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Vector3
-import indigo.shared.datatypes.Flip
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 import indigo.shared.platform.AssetMapping
