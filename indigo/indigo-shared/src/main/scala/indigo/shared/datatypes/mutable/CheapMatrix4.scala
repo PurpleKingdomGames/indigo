@@ -11,7 +11,7 @@ final case class CheapMatrix4(mat: Array[Double]) {
     (List(mat(0), mat(1), mat(4), mat(5)), List(mat(12), mat(13), mat(14)))
 
   def translate(byX: Double, byY: Double, byZ: Double): CheapMatrix4 =
-    this * CheapMatrix4.translation(byX, byY, byZ)
+    this * CheapMatrix4.translate(byX, byY, byZ)
 
   def rotate(angle: Double): CheapMatrix4 =
     this * CheapMatrix4.rotation(angle)
@@ -129,7 +129,7 @@ object CheapMatrix4 {
   def orthographic(width: Double, height: Double): CheapMatrix4 =
     orthographic(0, width, height, 0, -10000, 10000)
 
-  def translation(tx: Double, ty: Double, tz: Double): Array[Double] =
+  def translate(tx: Double, ty: Double, tz: Double): Array[Double] =
     Array(
       1,
       0,
