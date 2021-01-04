@@ -56,6 +56,7 @@ final case class Matrix4(private val mat: List[Double]) {
       row3.mkString("(", ",\t", ")") + "\n" +
       row4.mkString("(", ",\t", ")")
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def ~==(other: Matrix4): Boolean =
     if (mat.length == other.mat.length) {
       var count = mat.length - 1

@@ -6,7 +6,7 @@ import indigo.shared.BoundaryLocator
 
 object SceneGraphViewEvents {
 
-  // @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def pushEvents(outputEvents: List[GlobalEvent], sendEvent: GlobalEvent => Unit): Unit = {
     val count = outputEvents.length
     var index = 0
@@ -17,7 +17,7 @@ object SceneGraphViewEvents {
     }
   }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def applyInputEvents(node: EventHandling, bounds: Rectangle, inputEvents: List[GlobalEvent], sendEvent: GlobalEvent => Unit): Unit = {
     val count = inputEvents.length
     var index = 0
@@ -28,7 +28,7 @@ object SceneGraphViewEvents {
     }
   }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var", "org.wartremover.warts.Recursion"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def collectViewEvents(boundaryLocator: BoundaryLocator, nodes: List[SceneGraphNode], inputEvents: List[GlobalEvent], sendEvent: GlobalEvent => Unit): Unit = {
     val count = nodes.length
     var index = 0

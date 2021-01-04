@@ -137,7 +137,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     textureAmountsData((i * 4) + 3) = d.specularAmount
   }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def drawLayer(
       projection: scalajs.js.Array[Double],
       cloneBlankDisplayObjects: Map[String, DisplayObject],
@@ -213,6 +213,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
         gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
       }
 
+    // @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
     @tailrec
     def rec(remaining: List[DisplayEntity], batchCount: Int, atlasName: String): Unit =
       remaining match {
@@ -274,7 +275,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
   }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.While"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private def processCloneBatch(c: DisplayCloneBatch, refDisplayObject: DisplayObject, batchCount: Int): Int = {
 
     val count: Int                         = c.clones.length

@@ -15,7 +15,7 @@ import indigo.shared.subsystems.SubSystemFrameContext
 class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene[StartUpData, GameModel, ViewModel]], scenesFinder: SceneFinder) {
 
   // Scene management
-  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var finderInstance: SceneFinder = scenesFinder
 
   // @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))

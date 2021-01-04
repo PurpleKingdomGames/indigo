@@ -83,7 +83,7 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
     // uboData(31) = 0d
   }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def drawLayer(
       projection: scalajs.js.Array[Float],
       gameFrameBuffer: FrameBufferComponents.MultiOutput,
@@ -149,7 +149,7 @@ class RendererMerge(gl2: WebGL2RenderingContext) {
 
   }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def setupMergeFragmentShaderState(
       game: FrameBufferComponents.MultiOutput,
       textureLights: FrameBufferComponents.SingleOutput,

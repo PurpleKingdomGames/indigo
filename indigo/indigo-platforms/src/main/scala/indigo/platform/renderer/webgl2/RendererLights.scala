@@ -115,7 +115,7 @@ class RendererLights(gl2: WebGL2RenderingContext) {
     uboData(23) = 0.0f
   }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.While", "org.wartremover.warts.Null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   def drawLayer(
       lights: List[Light],
       projection: scalajs.js.Array[Float],
@@ -187,7 +187,7 @@ class RendererLights(gl2: WebGL2RenderingContext) {
         updateDirectionLightUBOData(light)
     }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def setupLightsFragmentShaderState(game: FrameBufferComponents.MultiOutput): Unit = {
 
     val uniformTextures: List[(String, WebGLTexture)] =

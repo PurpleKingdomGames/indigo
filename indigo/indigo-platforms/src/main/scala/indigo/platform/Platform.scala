@@ -37,7 +37,12 @@ class Platform(
   val rendererInit: RendererInitialiser =
     new RendererInitialiser(gameConfig.advanced.renderingTechnology, globalEventStream)
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.Null"))
+  @SuppressWarnings(
+    Array(
+      "scalafix:DisableSyntax.null",
+      "scalafix:DisableSyntax.var"
+    )
+  )
   private var _canvas: Canvas = null
 
   def initialise(): Outcome[(Renderer, AssetMapping)] =
@@ -54,7 +59,6 @@ class Platform(
       (renderer, assetMapping)
     }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def tick(loop: Long => Unit): Unit = {
     dom.window.requestAnimationFrame(t => loop(t.toLong))
     ()
@@ -134,12 +138,14 @@ class Platform(
 
   implicit private val ec: scala.concurrent.ExecutionContext = scalajs.concurrent.JSExecutionContext.queue
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def toggleFullScreen(): Unit =
     if (Option(dom.document.asInstanceOf[FullScreenElement].fullscreenElement).isEmpty)
       enterFullScreen()
     else
       exitFullScreen()
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def enterFullScreen(): Unit =
     _canvas.asInstanceOf[FullScreenElement].requestFullscreen().toFuture.onComplete {
       case Success(()) =>
@@ -149,6 +155,7 @@ class Platform(
         globalEventStream.pushGlobalEvent(FullScreenEnterError)
     }
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def exitFullScreen(): Unit =
     dom.document.asInstanceOf[FullScreenElement].exitFullscreen().toFuture.onComplete {
       case Success(()) =>

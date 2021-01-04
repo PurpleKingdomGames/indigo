@@ -131,7 +131,8 @@ object Outcome {
       }
 
   }
-
+  
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   final case class Error(e: Throwable, crashReporter: PartialFunction[Throwable, String]) extends Outcome[Nothing] {
 
     def isResult: Boolean = false
@@ -179,11 +180,11 @@ object Outcome {
       Error(e, { case (ee: Throwable) => ee.getMessage })
   }
 
-  implicit class ListWithOutcomeSequence[A](val l: List[Outcome[A]]) extends AnyVal {
+  implicit class ListWithOutcomeSequence[A](private val l: List[Outcome[A]]) extends AnyVal {
     def sequence: Outcome[List[A]] =
       Outcome.sequence(l)
   }
-  implicit class tuple2Outcomes[A, B](val t: (Outcome[A], Outcome[B])) extends AnyVal {
+  implicit class tuple2Outcomes[A, B](private val t: (Outcome[A], Outcome[B])) extends AnyVal {
     def combine: Outcome[(A, B)] =
       t._1.combine(t._2)
     def merge[C](f: (A, B) => C): Outcome[C] =
@@ -191,7 +192,7 @@ object Outcome {
     def map2[C](f: (A, B) => C): Outcome[C] =
       merge(f)
   }
-  implicit class tuple3Outcomes[A, B, C](val t: (Outcome[A], Outcome[B], Outcome[C])) extends AnyVal {
+  implicit class tuple3Outcomes[A, B, C](private val t: (Outcome[A], Outcome[B], Outcome[C])) extends AnyVal {
     def combine: Outcome[(A, B, C)] =
       t match {
         case (Result(s1, es1), Result(s2, es2), Result(s3, es3)) =>

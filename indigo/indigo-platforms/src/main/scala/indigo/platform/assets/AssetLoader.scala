@@ -96,7 +96,7 @@ object AssetLoader {
       p.future
     }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def loadImageAsset(imageAsset: AssetType.Image): Future[LoadedImageAsset] = {
     IndigoLogger.info(s"[Image] Loading ${imageAsset.path.value}")
 
@@ -124,7 +124,7 @@ object AssetLoader {
   val loadAudioAssets: List[AssetType.Audio] => Future[List[LoadedAudioAsset]] =
     audioAssets => Future.sequence(audioAssets.map(loadAudioAsset))
 
-  // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def loadAudioAsset(audioAsset: AssetType.Audio): Future[LoadedAudioAsset] = {
     IndigoLogger.info(s"[Audio] Loading ${audioAsset.path.value}")
 

@@ -9,7 +9,7 @@ import indigo.platform.renderer.shared.WebGLHelper
 
 object FrameBufferFunctions {
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   private def createAndSetupTexture(gl: WebGLRenderingContext, width: Int, height: Int): WebGLTexture = {
     val texture = WebGLHelper.createAndBindTexture(gl)
 
@@ -68,7 +68,7 @@ object FrameBufferFunctions {
     gl.clear(COLOR_BUFFER_BIT)
   }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def switchToCanvas(gl: WebGLRenderingContext, clearColor: RGBA): Unit = {
     gl.bindFramebuffer(FRAMEBUFFER, null)
     gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a)

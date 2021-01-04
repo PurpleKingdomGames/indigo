@@ -15,9 +15,10 @@ final class SubSystemsRegister() {
   // @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   val stateMap: mutable.HashMap[String, Object] = new mutable.HashMap[String, Object]()
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var registeredSubSystems: List[RegisteredSubSystem] = Nil
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def register(newSubSystems: List[SubSystem]): List[GlobalEvent] =
     newSubSystems.map(initialiseSubSystem).sequence match {
       case oe @ Outcome.Error(e, _) =>
@@ -31,7 +32,7 @@ final class SubSystemsRegister() {
         events
     }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   private def initialiseSubSystem(subSystem: SubSystem): Outcome[RegisteredSubSystem] = {
     val key = UUID.randomUUID().toString
     val res = RegisteredSubSystem(key, subSystem)
@@ -43,7 +44,7 @@ final class SubSystemsRegister() {
     }
   }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def update(frameContext: SubSystemFrameContext, globalEvents: List[GlobalEvent]): Outcome[SubSystemsRegister] = {
     def outcomeEvents: Outcome[List[GlobalEvent]] =
       registeredSubSystems
@@ -77,7 +78,7 @@ final class SubSystemsRegister() {
     outcomeEvents.flatMap(l => Outcome(this, l))
   }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def present(frameContext: SubSystemFrameContext): Outcome[SceneUpdateFragment] =
     registeredSubSystems
       .map { rss =>

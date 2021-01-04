@@ -40,7 +40,7 @@ object UpdateList {
   def empty[A]: UpdateList[A] =
     apply(Nil)
 
-  // @SuppressWarnings(Array("org.wartremover.warts.While", "org.wartremover.warts.Var", "org.wartremover.warts.MutableDataStructures"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def updateList[A](l: List[A], f: A => A, pattern: UpdatePattern): (List[A], UpdatePattern) = {
     var i: Int             = 0
     val res: ListBuffer[A] = new ListBuffer[A]

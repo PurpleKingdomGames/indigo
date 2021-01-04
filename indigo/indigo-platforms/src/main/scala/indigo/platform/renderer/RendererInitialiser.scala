@@ -42,15 +42,13 @@ final class RendererInitialiser(renderingTechnology: RenderingTechnology, global
   def createCanvas(width: Int, height: Int, parent: Element): html.Canvas =
     createNamedCanvas(width, height, "indigo", Some(parent))
 
-  // @SuppressWarnings(
-  //   Array(
-  //     "org.wartremover.warts.NonUnitStatements",
-  //     "org.wartremover.warts.AsInstanceOf",
-  //     "org.wartremover.warts.Null",
-  //     "org.wartremover.warts.Equals",
-  //     "org.wartremover.warts.Var"
-  //   )
-  // )
+  @SuppressWarnings(
+    Array(
+      "scalafix:DisableSyntax.null",
+      "scalafix:DisableSyntax.asInstanceOf",
+      "scalafix:DisableSyntax.var"
+    )
+  )
   def createNamedCanvas(width: Int, height: Int, name: String, appendToParent: Option[Element]): html.Canvas = {
     var canvas: html.Canvas = dom.document.getElementById(name).asInstanceOf[html.Canvas]
 
@@ -85,16 +83,13 @@ final class RendererInitialiser(renderingTechnology: RenderingTechnology, global
     (cNc, tech)
   }
 
-  // @SuppressWarnings(
-  //   Array(
-  //     "org.wartremover.warts.AsInstanceOf",
-  //     "org.wartremover.warts.IsInstanceOf",
-  //     "org.wartremover.warts.Equals",
-  //     "org.wartremover.warts.Null",
-  //     "org.wartremover.warts.Throw",
-  //     "org.wartremover.warts.Var"
-  //   )
-  // )
+  @SuppressWarnings(
+    Array(
+      "scalafix:DisableSyntax.null",
+      "scalafix:DisableSyntax.asInstanceOf",
+      "scalafix:DisableSyntax.throw"
+    )
+  )
   private def getContext(canvas: html.Canvas, antiAliasing: Boolean): (WebGLRenderingContext, RenderingTechnology) = {
     val args =
       Dynamic.literal("premultipliedAlpha" -> false, "alpha" -> false, "antialias" -> antiAliasing)
@@ -122,16 +117,14 @@ final class RendererInitialiser(renderingTechnology: RenderingTechnology, global
     }
   }
 
-  // @SuppressWarnings(
-  //   Array(
-  //     "org.wartremover.warts.AsInstanceOf",
-  //     "org.wartremover.warts.IsInstanceOf",
-  //     "org.wartremover.warts.Equals",
-  //     "org.wartremover.warts.Null",
-  //     "org.wartremover.warts.Throw",
-  //     "org.wartremover.warts.Var"
-  //   )
-  // )
+  @SuppressWarnings(
+    Array(
+      "scalafix:DisableSyntax.var",
+      "scalafix:DisableSyntax.null",
+      "scalafix:DisableSyntax.asInstanceOf",
+      "scalafix:DisableSyntax.throw"
+    )
+  )
   private def chooseRenderingTechnology(usersPreference: RenderingTechnology, args: Dynamic): Either[RenderingTechnology.WebGL1.type, RenderingTechnology.WebGL2.type] = {
     /* These tests rely on a temporary canvas not attached to the document.
      * If you initialise a canvas as WebGL 2.0 and then try to reuse it as WebGL 1.0
@@ -175,15 +168,12 @@ final class RendererInitialiser(renderingTechnology: RenderingTechnology, global
     }
   }
 
-  // @SuppressWarnings(
-  //   Array(
-  //     "org.wartremover.warts.AsInstanceOf",
-  //     "org.wartremover.warts.IsInstanceOf",
-  //     "org.wartremover.warts.Throw",
-  //     "org.wartremover.warts.Null",
-  //     "org.wartremover.warts.Equals"
-  //   )
-  // )
+  @SuppressWarnings(
+    Array(
+      "scalafix:DisableSyntax.null",
+      "scalafix:DisableSyntax.asInstanceOf"
+    )
+  )
   private def isWebGL2ReallySupported(gl2: raw.WebGLRenderingContext): Boolean = {
     IndigoLogger.info("Checking WebGL 2.0 availability...")
 

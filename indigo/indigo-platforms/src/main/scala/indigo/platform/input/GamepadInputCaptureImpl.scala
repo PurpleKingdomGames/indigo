@@ -77,10 +77,10 @@ object GamepadInputCaptureImpl {
         Gamepad.default
     }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var gamepads: scalajs.js.Array[GamepadJS] = new scalajs.js.Array()
 
-  // @SuppressWarnings(Array("org.wartremover.warts.AsInstanceOf"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def init(): Unit = {
     window.addEventListener(
       "gamepadconnected",

@@ -11,7 +11,7 @@ import org.scalajs.dom.raw.WebGLRenderingContext
 
 object WebGLHelper {
 
-  // @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny", "org.wartremover.warts.AsInstanceOf", "org.wartremover.warts.Throw"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf", "scalafix:DisableSyntax.throw"))
   def shaderProgramSetup(gl: raw.WebGLRenderingContext, layerLabel: String, shader: Shader): WebGLProgram = {
     //Create a vertex shader program object and compile it
     val vertShader = gl.createShader(VERTEX_SHADER)
@@ -56,7 +56,7 @@ object WebGLHelper {
     }
   }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Throw"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def intToTextureLocation: Int => Int = {
     case 0  => TEXTURE0
     case 1  => TEXTURE1

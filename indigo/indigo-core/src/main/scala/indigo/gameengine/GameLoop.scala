@@ -24,19 +24,19 @@ class GameLoop[StartUpData, GameModel, ViewModel](
     frameProcessor: FrameProcessor[StartUpData, GameModel, ViewModel]
 ) {
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var gameModelState: GameModel = initialModel
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var viewModelState: ViewModel = initialViewModel
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var runningTimeReference: Long = 0
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var inputState: InputState = InputState.default
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Recursion", "org.wartremover.warts.OptionPartial"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def loop(lastUpdateTime: Long): Long => Unit = { time =>
     runningTimeReference = time
     val timeDelta: Long = time - lastUpdateTime

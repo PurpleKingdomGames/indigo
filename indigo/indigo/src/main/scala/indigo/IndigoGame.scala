@@ -173,7 +173,7 @@ trait IndigoGame[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
     )
   }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.GlobalExecutionContext"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   final protected def ready(flags: Map[String, String]): Unit =
     boot(flags) match {
       case oe @ Outcome.Error(e, _) =>

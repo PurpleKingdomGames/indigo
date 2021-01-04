@@ -56,7 +56,7 @@ final class DisplayObjectConversions(
     textureAmountsCache.purgeAllNow()
   }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Throw"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def lookupTextureOffset(assetMapping: AssetMapping, name: String): Vector2 =
     QuickCache("tex-offset-" + name) {
       assetMapping.mappings
@@ -68,7 +68,7 @@ final class DisplayObjectConversions(
         }
     }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Throw"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def lookupAtlasName(assetMapping: AssetMapping, name: String): String =
     QuickCache("atlas-" + name) {
       assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasName).getOrElse {
@@ -76,7 +76,7 @@ final class DisplayObjectConversions(
       }
     }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Throw"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   private def lookupAtlasSize(assetMapping: AssetMapping, name: String): Vector2 =
     QuickCache("atlas-size-" + name) {
       assetMapping.mappings.find(p => p._1 == name).map(_._2.atlasSize).getOrElse {
@@ -430,7 +430,7 @@ final class DisplayObjectConversions(
         }
       }
     }
-  // @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var accCharDetails: ListBuffer[(FontChar, Int)] = new ListBuffer()
 
   private def zipWithCharDetails(charList: List[Char], fontInfo: FontInfo): ListBuffer[(FontChar, Int)] = {
