@@ -2,22 +2,11 @@ package indigoextras.animation
 
 import indigo.shared.time.GameTime
 import indigo.shared.time.Seconds
+import indigo.shared.datatypes.Point
+import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Vector2
 
 class TimelineTests extends munit.FunSuite {
-
-  /*
-
-  play/start an animaiton
-  stop -  same as not calling play?
-  Jump to next marker
-  Jump to previous marker
-  Jump to marker
-  Jump to start
-  Jump to end
-  Report overall progress
-  Report progress through current tween
-  Report which marker it's in.
-   */
 
   test("Playback controls: play") {
     val t = Timeline(Marker(MarkerLabel("a"), Seconds(11000)))
@@ -135,9 +124,6 @@ class TimelineTests extends munit.FunSuite {
     assert(nearEnoughEqual(clue(t.skipTo(Seconds(10)).tweenProgress), clue(0.16667d * 6), 0.001))
   }
 
-  def nearEnoughEqual(d1: Double, d2: Double, tolerance: Double): Boolean =
-    d1 >= d2 - tolerance && d1 <= d2 + tolerance
-
   test("Reporting: Next marker") {
     val t =
       Timeline(
@@ -159,5 +145,63 @@ class TimelineTests extends munit.FunSuite {
 
     assertEquals(t.previousMarker.get, MarkerLabel("b"))
   }
+
+  test("TransformDiff") {
+    val t =
+      Timeline.empty
+        .addMarker(Marker(MarkerLabel("a"), Seconds(2), TransformDiff.NoChange))
+        .addMarker(Marker(MarkerLabel("b"), Seconds(4), TransformDiff.NoChange.moveTo(Point(100, 100))))
+        .addMarker(Marker(MarkerLabel("c"), Seconds(10), TransformDiff.NoChange.rotateTo(Radians.TAUby2)))
+        .addMarker(Marker(MarkerLabel("c"), Seconds(20), TransformDiff.NoChange.scaleTo(Vector2(10, 10))))
+        .addMarker(Marker(MarkerLabel("c"), Seconds(25), TransformDiff.NoChange))
+        .addMarker(Marker(MarkerLabel("c"), Seconds(30), TransformDiff.NoChange.scaleTo(Vector2(2, 2))))
+
+    assertEquals(t.skipTo(Seconds(2)).transformDiff, TransformDiff.NoChange)
+    assertEquals(t.skipTo(Seconds(3)).transformDiff, TransformDiff.NoChange.moveTo(Point(50, 50)))
+    assertEquals(t.skipTo(Seconds(4)).transformDiff, TransformDiff.NoChange.moveTo(Point(100, 100)))
+    assertEquals(
+      t.skipTo(Seconds(7)).transformDiff,
+      TransformDiff.NoChange
+        .moveTo(Point(100, 100))
+        .rotateTo(Radians.TAUby4)
+    )
+    assertEquals(
+      t.skipTo(Seconds(10)).transformDiff,
+      TransformDiff.NoChange
+        .moveTo(Point(100, 100))
+        .rotateTo(Radians.TAUby2)
+    )
+    assertEquals(
+      t.skipTo(Seconds(15)).transformDiff,
+      TransformDiff.NoChange
+        .moveTo(Point(100, 100))
+        .rotateTo(Radians.TAUby2)
+        .scaleTo(Vector2(5, 5))
+    )
+    assertEquals(
+      t.skipTo(Seconds(20)).transformDiff,
+      TransformDiff.NoChange
+        .moveTo(Point(100, 100))
+        .rotateTo(Radians.TAUby2)
+        .scaleTo(Vector2(10, 10))
+    )
+    assertEquals(
+      t.skipTo(Seconds(25)).transformDiff,
+      TransformDiff.NoChange
+        .moveTo(Point(100, 100))
+        .rotateTo(Radians.TAUby2)
+        .scaleTo(Vector2(6, 6))
+    )
+    assertEquals(
+      t.skipTo(Seconds(30)).transformDiff,
+      TransformDiff.NoChange
+        .moveTo(Point(100, 100))
+        .rotateTo(Radians.TAUby2)
+        .scaleTo(Vector2(2, 2))
+    )
+  }
+
+  def nearEnoughEqual(d1: Double, d2: Double, tolerance: Double): Boolean =
+    d1 >= d2 - tolerance && d1 <= d2 + tolerance
 
 }

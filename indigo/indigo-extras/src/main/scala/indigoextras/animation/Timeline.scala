@@ -10,8 +10,14 @@ import scala.annotation.tailrec
 
 final case class Timeline(markers: List[Marker], playhead: Seconds) {
 
+  lazy val sortedMarkers: List[Marker] =
+    markers.sortWith((m1, m2) => m1.position.value < m2.position.value)
+
   lazy val duration: Seconds =
-    markers.lastOption.map(_.position).getOrElse(Seconds.zero)
+    sortedMarkers.lastOption.map(_.position).getOrElse(Seconds.zero)
+
+  def addMarker(marker: Marker): Timeline =
+    this.copy(markers = marker :: markers)
 
   def play(gameTime: GameTime): Timeline = {
     val next = playhead + gameTime.delta
@@ -67,7 +73,7 @@ final case class Timeline(markers: List[Marker], playhead: Seconds) {
           rec(ms)
       }
 
-    rec(markers)
+    rec(sortedMarkers)
   }
 
   def previousMarker: Option[MarkerLabel] = {
@@ -84,7 +90,7 @@ final case class Timeline(markers: List[Marker], playhead: Seconds) {
           rec(ms, Some(m.label))
       }
 
-    rec(markers, None)
+    rec(sortedMarkers, None)
   }
 
   def progress: Double =
@@ -110,7 +116,7 @@ final case class Timeline(markers: List[Marker], playhead: Seconds) {
           rec(ms, m.position)
       }
 
-    rec(markers, Seconds.zero)
+    rec(sortedMarkers, Seconds.zero)
   }
 
   def transformDiff: TransformDiff = {
@@ -139,11 +145,14 @@ final case class Timeline(markers: List[Marker], playhead: Seconds) {
           rec(ms, m.position, acc.chooseLatest(m.diff))
       }
 
-    rec(markers, Seconds.zero, TransformDiff.NoChange)
+    rec(sortedMarkers, Seconds.zero, TransformDiff.NoChange)
   }
 
 }
 object Timeline {
+
+  def empty: Timeline =
+    Timeline(Nil)
 
   def apply(markers: Marker*): Timeline =
     Timeline(markers.toList)
@@ -210,8 +219,13 @@ final case class TransformDiff(maybeMoveTo: Option[Point], maybeRotateTo: Option
         case (p, None) =>
           p
 
-        case (None, p) =>
-          p
+        case (None, Some(p)) =>
+          Some(
+            Point(
+              x = (p.x.toDouble * amount).toInt,
+              y = (p.y.toDouble * amount).toInt
+            )
+          )
 
         case (Some(p1), Some(p2)) =>
           Some(
@@ -228,8 +242,8 @@ final case class TransformDiff(maybeMoveTo: Option[Point], maybeRotateTo: Option
         case (p, None) =>
           p
 
-        case (None, p) =>
-          p
+        case (None, Some(p)) =>
+          Some(Radians(p.value * amount))
 
         case (Some(p1), Some(p2)) =>
           Some(Radians((p2.value - p1.value) * amount))
@@ -241,8 +255,13 @@ final case class TransformDiff(maybeMoveTo: Option[Point], maybeRotateTo: Option
         case (p, None) =>
           p
 
-        case (None, p) =>
-          p
+        case (None, Some(p)) =>
+          Some(
+            Vector2(
+              x = p.x * amount,
+              y = p.y * amount
+            )
+          )
 
         case (Some(p1), Some(p2)) =>
           Some(
