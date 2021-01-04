@@ -33,6 +33,10 @@ final case class DisplayCloneBatchData(
   def applyTransform(matrix: Matrix4): DisplayCloneBatchData =
     this.copy(transform = transform * matrix)
 }
+object DisplayCloneBatchData {
+  val None: DisplayCloneBatchData =
+    DisplayCloneBatchData(Matrix4.identity, 0.0f)
+}
 final case class DisplayCloneBatch(
     val id: String,
     val z: Double,

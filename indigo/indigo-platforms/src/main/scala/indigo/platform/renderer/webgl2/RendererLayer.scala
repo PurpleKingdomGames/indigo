@@ -65,17 +65,16 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     gl2.bufferData(ARRAY_BUFFER, new Float32Array(data), STATIC_DRAW)
   }
 
-  private def updateData(d: DisplayObject, i: Int): Unit = {
-    val (l1, l2) = d.transform.data
+  private def updateData(d: DisplayObject, i: Int, matrixData1: List[Double], matrixData2: List[Double], alpha: Float): Unit = {
 
-    matRotateScaleData((i * 4) + 0) = l1(0).toFloat
-    matRotateScaleData((i * 4) + 1) = l1(1).toFloat
-    matRotateScaleData((i * 4) + 2) = l1(2).toFloat
-    matRotateScaleData((i * 4) + 3) = l1(3).toFloat
+    matRotateScaleData((i * 4) + 0) = matrixData1(0).toFloat
+    matRotateScaleData((i * 4) + 1) = matrixData1(1).toFloat
+    matRotateScaleData((i * 4) + 2) = matrixData1(2).toFloat
+    matRotateScaleData((i * 4) + 3) = matrixData1(3).toFloat
 
-    matTranslateAlphaData((i * 4) + 0) = l2(0).toFloat
-    matTranslateAlphaData((i * 4) + 1) = l2(1).toFloat
-    matTranslateAlphaData((i * 4) + 2) = l2(2).toFloat
+    matTranslateAlphaData((i * 4) + 0) = matrixData2(0).toFloat
+    matTranslateAlphaData((i * 4) + 1) = matrixData2(1).toFloat
+    matTranslateAlphaData((i * 4) + 2) = matrixData2(2).toFloat
     matTranslateAlphaData((i * 4) + 3) = d.effects.alpha
 
     sizeData((i * 2) + 0) = d.width
@@ -136,20 +135,6 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     textureAmountsData((i * 4) + 1) = d.emissiveAmount
     textureAmountsData((i * 4) + 2) = d.normalAmount
     textureAmountsData((i * 4) + 3) = d.specularAmount
-  }
-
-  private def overwriteFromDisplayBatchClone(cloneData: DisplayCloneBatchData, i: Int): Unit = {
-    val (l1, l2) = cloneData.transform.data
-
-    matRotateScaleData((i * 4) + 0) = l1(0).toFloat
-    matRotateScaleData((i * 4) + 1) = l1(1).toFloat
-    matRotateScaleData((i * 4) + 2) = l1(2).toFloat
-    matRotateScaleData((i * 4) + 3) = l1(3).toFloat
-
-    matTranslateAlphaData((i * 4) + 0) = l2(0).toFloat
-    matTranslateAlphaData((i * 4) + 1) = l2(1).toFloat
-    matTranslateAlphaData((i * 4) + 2) = l2(2).toFloat
-    matTranslateAlphaData((i * 4) + 3) = cloneData.alpha
   }
 
   // @SuppressWarnings(Array("org.wartremover.warts.Null"))
@@ -255,7 +240,8 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
           rec(remaining, 0, atlasName)
 
         case (d: DisplayObject) :: ds =>
-          updateData(d, batchCount)
+          val data = d.transform.data
+          updateData(d, batchCount, data._1, data._2, d.effects.alpha)
           rec(ds, batchCount + 1, atlasName)
 
         case (c: DisplayClone) :: ds =>
@@ -264,8 +250,9 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
               rec(ds, batchCount, atlasName)
 
             case Some(refDisplayObject) =>
-              updateData(refDisplayObject, batchCount)
-              overwriteFromDisplayBatchClone(DisplayClone.asBatchData(c), batchCount)
+              val cl   = DisplayClone.asBatchData(c)
+              val data = c.transform.data
+              updateData(refDisplayObject, batchCount, data._1, data._2, cl.alpha)
               rec(ds, batchCount + 1, atlasName)
           }
 
@@ -290,12 +277,15 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.While"))
   private def processCloneBatch(c: DisplayCloneBatch, refDisplayObject: DisplayObject, batchCount: Int): Int = {
 
-    val count: Int = c.clones.length
-    var i: Int     = 0
+    val count: Int                         = c.clones.length
+    var i: Int                             = 0
+    var data: (List[Double], List[Double]) = (Nil, Nil)
+    var cl: DisplayCloneBatchData          = DisplayCloneBatchData.None
 
     while (i < count) {
-      updateData(refDisplayObject, batchCount + i)
-      overwriteFromDisplayBatchClone(c.clones(i), batchCount + i)
+      cl = c.clones(i)
+      data = cl.transform.data
+      updateData(refDisplayObject, batchCount + i, data._1, data._2, cl.alpha)
       i += 1
     }
 
