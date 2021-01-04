@@ -11,9 +11,6 @@ lazy val scalaFixSettings: Seq[sbt.Def.Setting[_]] =
     scalacOptions ++= (
       if (isDotty.value) Nil else Seq(s"-P:semanticdb:targetroot:${baseDirectory.value}/target/.semanticdb", "-Yrangepos")
     ),
-    scalafixDependencies ++= (
-      if (isDotty.value) Nil else Seq(("com.github.liancheng" %% "organize-imports" % "0.4.4").withDottyCompat(dottyVersion))
-    ),
     scalafixOnCompile := (if (isDotty.value) false else true)
   )
 
