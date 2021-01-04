@@ -6,7 +6,18 @@ lazy val indigoVersion = IndigoVersion.getVersion
 val dottyVersion    = "3.0.0-M3"
 val scala213Version = "2.13.4"
 
-lazy val commonSettings = Seq(
+lazy val scalaFixSettings: Seq[sbt.Def.Setting[_]] =
+  Seq(
+    scalacOptions ++= (
+      if (isDotty.value) Nil else Seq(s"-P:semanticdb:targetroot:${baseDirectory.value}/target/.semanticdb", "-Yrangepos")
+    ),
+    scalafixDependencies ++= (
+      if (isDotty.value) Nil else Seq(("com.github.liancheng" %% "organize-imports" % "0.4.4").withDottyCompat(dottyVersion))
+    ),
+    scalafixOnCompile := (if (isDotty.value) false else true)
+  )
+
+lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version := indigoVersion,
   scalaVersion := dottyVersion,
   crossScalaVersions := Seq(dottyVersion, scala213Version),
@@ -16,8 +27,9 @@ lazy val commonSettings = Seq(
   ),
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
-  crossScalaVersions := Seq(dottyVersion, scala213Version)
-)
+  crossScalaVersions := Seq(dottyVersion, scala213Version),
+  libraryDependencies ++= (if (isDotty.value) Nil else Seq(compilerPlugin(scalafixSemanticdb)))
+) ++ scalaFixSettings
 
 lazy val publishSettings = {
   import xerial.sbt.Sonatype._
@@ -65,7 +77,7 @@ lazy val perf =
       title := "Perf",
       gameAssetsDirectory := "assets",
       windowStartWidth := 800,
-      windowStartHeight := 600,
+      windowStartHeight := 600
     )
     .settings(
       publish := {},
