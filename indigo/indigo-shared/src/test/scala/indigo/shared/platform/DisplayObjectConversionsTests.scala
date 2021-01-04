@@ -21,6 +21,7 @@ import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.datatypes.Radians
 
+@SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DisplayObjectConversionsTests extends munit.FunSuite {
 
   val graphic: Graphic =

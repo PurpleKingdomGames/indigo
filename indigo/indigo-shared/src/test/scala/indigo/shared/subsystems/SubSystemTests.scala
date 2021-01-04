@@ -2,6 +2,7 @@ package indigo.shared.subsystems
 
 import indigo.shared.scenegraph.Text
 
+@SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
 class SubSystemTests extends munit.FunSuite {
 
   import FakeSubSystemFrameContext._

@@ -1,8 +1,8 @@
 package indigo.shared.dice
 
 import indigo.shared.collections.NonEmptyList
-import indigo.shared.TestFail
 
+@SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DiceTests extends munit.FunSuite {
 
   def checkDice(roll: Int, to: Int): Boolean =
@@ -23,7 +23,7 @@ class DiceTests extends munit.FunSuite {
         assertEquals(checkDice(d2, 6), true)
 
       case _ =>
-        TestFail.fail("Match fail!")
+        throw new java.lang.AssertionError("Match fail!")
     }
 
   }

@@ -12,6 +12,7 @@ import indigo.shared.assets.AssetName
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.time.Millis
 
+@SuppressWarnings(Array("scalafix:DisableSyntax.noValPatterns"))
 class AsepriteTests extends munit.FunSuite {
 
   test("Create an Aseprite asset.should be able to convert the loaded definition into a renderable Sprite object") {

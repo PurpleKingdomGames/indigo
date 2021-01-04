@@ -4,6 +4,7 @@ import indigo.shared.events.GlobalEvent
 
 import Outcome._
 
+@SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class OutcomeTests extends munit.FunSuite {
 
   test("Adding events.adding events after the fact") {

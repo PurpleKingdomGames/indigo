@@ -10,6 +10,7 @@ import indigo.shared.scenegraph.Graphic
 import indigo.shared.datatypes.Point
 import indigo.shared.collections.NonEmptyList
 
+@SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class TiledMapTests extends munit.FunSuite {
 
   test("should be able to convert to a TiledGridMap.identity (Int)") {

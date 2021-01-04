@@ -1,5 +1,7 @@
 package indigo.shared.collections
 
+
+@SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 class NonEmptyListTests extends munit.FunSuite {
 
   test("NonEmptyList AsString should be able to show a list of Ints") {
