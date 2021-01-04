@@ -1,6 +1,6 @@
 package indigo.shared.platform
 
-import indigo.shared.datatypes.Matrix4
+import indigo.shared.datatypes.mutable.CheapMatrix4
 import scala.collection.mutable
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayObject
@@ -8,9 +8,9 @@ import indigo.shared.scenegraph.Light
 import indigo.shared.datatypes.RGBA
 
 final class ProcessedSceneData(
-    val gameProjection: Matrix4,
-    val lightingProjection: Matrix4,
-    val uiProjection: Matrix4,
+    val gameProjection: CheapMatrix4,
+    val lightingProjection: CheapMatrix4,
+    val uiProjection: CheapMatrix4,
     val gameLayerDisplayObjects: mutable.ListBuffer[DisplayEntity],
     val lightingLayerDisplayObjects: mutable.ListBuffer[DisplayEntity],
     val distortionLayerDisplayObjects: mutable.ListBuffer[DisplayEntity],

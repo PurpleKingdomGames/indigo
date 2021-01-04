@@ -9,7 +9,7 @@ import org.scalajs.dom.raw.WebGLRenderingContext
 import scala.scalajs.js.typedarray.Float32Array
 import indigo.facades.WebGL2RenderingContext
 import indigo.platform.shaders._
-import indigo.shared.datatypes.Matrix4
+import indigo.shared.datatypes.mutable.CheapMatrix4
 import org.scalajs.dom.html
 
 import indigo.shared.platform.ProcessedSceneData
@@ -86,14 +86,14 @@ final class RendererWebGL2(
   // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var lastHeight: Int = 0
   // @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  var orthographicProjectionMatrixJS: scalajs.js.Array[Double] = RendererHelper.mat4ToJsArray(Matrix4.identity)
+  var orthographicProjectionMatrixJS: scalajs.js.Array[Double] = RendererHelper.mat4ToJsArray(CheapMatrix4.identity)
   // @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  var orthographicProjectionMatrixNoMagJS: scalajs.js.Array[Float] = RendererHelper.mat4ToJsArray(Matrix4.identity).map(_.toFloat)
+  var orthographicProjectionMatrixNoMagJS: scalajs.js.Array[Float] = RendererHelper.mat4ToJsArray(CheapMatrix4.identity).map(_.toFloat)
 
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastHeight
   // @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  var orthographicProjectionMatrix: Matrix4 = Matrix4.identity
+  var orthographicProjectionMatrix: CheapMatrix4 = CheapMatrix4.identity
 
   def init(): Unit = {
 
@@ -223,9 +223,9 @@ final class RendererWebGL2(
       lastWidth = actualWidth
       lastHeight = actualHeight
 
-      orthographicProjectionMatrix = Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
+      orthographicProjectionMatrix = CheapMatrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
       orthographicProjectionMatrixJS = RendererHelper.mat4ToJsArray(orthographicProjectionMatrix)
-      orthographicProjectionMatrixNoMagJS = RendererHelper.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)).map(_.toFloat)
+      orthographicProjectionMatrixNoMagJS = RendererHelper.mat4ToJsArray(CheapMatrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)).map(_.toFloat)
 
       gameFrameBuffer = FrameBufferFunctions.createFrameBufferMulti(gl, actualWidth, actualHeight)
       lightsFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
