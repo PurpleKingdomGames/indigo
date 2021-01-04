@@ -75,7 +75,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     matTranslateAlphaData((i * 4) + 0) = matrixData2(0).toFloat
     matTranslateAlphaData((i * 4) + 1) = matrixData2(1).toFloat
     matTranslateAlphaData((i * 4) + 2) = matrixData2(2).toFloat
-    matTranslateAlphaData((i * 4) + 3) = d.effects.alpha
+    matTranslateAlphaData((i * 4) + 3) = alpha
 
     sizeData((i * 2) + 0) = d.width
     sizeData((i * 2) + 1) = d.height
