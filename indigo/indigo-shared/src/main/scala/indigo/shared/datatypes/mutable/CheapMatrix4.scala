@@ -27,7 +27,7 @@ final case class CheapMatrix4(mat: Array[Double]) {
     // If they are commented out below, it's because we know...
     // ... that those fields aren't used by the engine...
     // ... and by knowing things we can avoid work.
-    
+
     val listA = mat
     val listB = other
 
@@ -100,30 +100,29 @@ object CheapMatrix4 {
 
   def identity: CheapMatrix4 =
     CheapMatrix4(
-      (1, 0, 0, 0),
-      (0, 1, 0, 0),
-      (0, 0, 1, 0),
-      (0, 0, 0, 1)
+      Array(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
     )
 
   def orthographic(left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double): CheapMatrix4 =
     CheapMatrix4(
-      2 / (right - left),
-      0,
-      0,
-      0,
-      0,
-      2 / (top - bottom),
-      0,
-      0,
-      0,
-      0,
-      2 / (near - far),
-      0,
-      (left + right) / (left - right),
-      (bottom + top) / (bottom - top),
-      (near + far) / (near - far),
-      1
+      Array(
+        2 / (right - left),
+        0,
+        0,
+        0,
+        0,
+        2 / (top - bottom),
+        0,
+        0,
+        0,
+        0,
+        2 / (near - far),
+        0,
+        (left + right) / (left - right),
+        (bottom + top) / (bottom - top),
+        (near + far) / (near - far),
+        1
+      )
     )
 
   def orthographic(width: Double, height: Double): CheapMatrix4 =
@@ -193,6 +192,9 @@ object CheapMatrix4 {
       1
     )
 
+  /**
+    * SHOULD ONLY BE USED BY TESTS
+    */
   def apply(
       row0: (Double, Double, Double, Double),
       row1: (Double, Double, Double, Double),
@@ -204,44 +206,5 @@ object CheapMatrix4 {
         Array(row1._1, row1._2, row1._3, row1._4) ++
         Array(row2._1, row2._2, row2._3, row2._4) ++
         Array(row3._1, row3._2, row3._3, row3._4)
-    )
-
-  def apply(
-      a1: Double,
-      a2: Double,
-      a3: Double,
-      a4: Double,
-      b1: Double,
-      b2: Double,
-      b3: Double,
-      b4: Double,
-      c1: Double,
-      c2: Double,
-      c3: Double,
-      c4: Double,
-      d1: Double,
-      d2: Double,
-      d3: Double,
-      d4: Double
-  ): CheapMatrix4 =
-    CheapMatrix4(
-      Array[Double](
-        a1,
-        a2,
-        a3,
-        a4,
-        b1,
-        b2,
-        b3,
-        b4,
-        c1,
-        c2,
-        c3,
-        c4,
-        d1,
-        d2,
-        d3,
-        d4
-      )
     )
 }

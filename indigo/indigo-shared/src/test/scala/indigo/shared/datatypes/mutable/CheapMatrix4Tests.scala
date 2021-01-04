@@ -15,12 +15,7 @@ class CheapCheapMatrix4Tests extends munit.FunSuite {
   test("identity") {
 
     val expected =
-      Matrix4(
-        (1, 0, 0, 0),
-        (0, 1, 0, 0),
-        (0, 0, 1, 0),
-        (0, 0, 0, 1)
-      )
+      Matrix4.identity
 
     assertEquals(CheapMatrix4.identity.toMatrix4, expected)
 
