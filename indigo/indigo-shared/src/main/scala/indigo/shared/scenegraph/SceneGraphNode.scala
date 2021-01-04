@@ -5,6 +5,7 @@ import indigo.shared.animation.AnimationAction._
 import indigo.shared.animation.AnimationKey
 import indigo.shared.animation.CycleLabel
 import indigo.shared.datatypes._
+import indigo.shared.datatypes.mutable.CheapMatrix4
 
 import indigo.shared.animation.AnimationAction
 import indigo.shared.BoundaryLocator
@@ -31,7 +32,7 @@ object SceneGraphNode {
   def empty: Group = Group.empty
 }
 
-final case class Transformer(node: SceneGraphNode, transform: Matrix4) extends SceneGraphNode {
+final case class Transformer(node: SceneGraphNode, transform: CheapMatrix4) extends SceneGraphNode {
   def position: Point   = Point.zero
   def rotation: Radians = Radians.zero
   def scale: Vector2    = Vector2.one
@@ -46,7 +47,7 @@ final case class Transformer(node: SceneGraphNode, transform: Matrix4) extends S
   def withRef(newRef: Point): SceneGraphNode             = this
   def withFlip(newFlip: Flip): SceneGraphNode            = this
 
-  def addTransform(matrix: Matrix4): Transformer =
+  def addTransform(matrix: CheapMatrix4): Transformer =
     this.copy(transform = transform * matrix)
 }
 
@@ -156,35 +157,29 @@ final case class Group(children: List[SceneGraphNodePrimitive], position: Point,
   def addChildren(additionalChildren: List[SceneGraphNodePrimitive]): Group =
     this.copy(children = children ++ additionalChildren)
 
-  def toMatrix: Matrix4 =
-    Matrix4
+  def toMatrix: CheapMatrix4 =
+    CheapMatrix4.identity
       .scale(
-        Vector3(
-          x = if (flip.horizontal) -1.0 else 1.0,
-          y = if (flip.vertical) -1.0 else 1.0,
-          z = 1.0d
-        )
+        if (flip.horizontal) -1.0 else 1.0,
+        if (flip.vertical) -1.0 else 1.0,
+        1.0d
       )
       .translate(
-        Vector3(
-          -ref.x.toDouble,
-          -ref.y.toDouble,
-          0.0d
-        )
+        -ref.x.toDouble,
+        -ref.y.toDouble,
+        0.0d
       )
-      .scale(scale.toVector3)
-      .rotate(rotation)
+      .scale(scale.x, scale.y, 1.0d)
+      .rotate(rotation.value)
       .translate(
-        Vector3(
-          x = position.x.toDouble,
-          y = position.y.toDouble,
-          z = 0.0d
-        )
+        position.x.toDouble,
+        position.y.toDouble,
+        0.0d
       )
 
   def toTransformers: List[Transformer] =
-    toTransformers(Matrix4.identity)
-  def toTransformers(parentTransform: Matrix4): List[Transformer] = {
+    toTransformers(CheapMatrix4.identity)
+  def toTransformers(parentTransform: CheapMatrix4): List[Transformer] = {
     val mat = toMatrix * parentTransform // to avoid re-evaluation
     children.map(n => Transformer(n.withDepth(n.depth + depth), mat))
   }

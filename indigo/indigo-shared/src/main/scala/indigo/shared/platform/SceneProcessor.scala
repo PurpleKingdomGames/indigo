@@ -3,7 +3,7 @@ package indigo.shared.platform
 import indigo.shared.time.GameTime
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.platform.AssetMapping
-import indigo.shared.datatypes.Matrix4
+import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.BoundaryLocator
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
@@ -43,7 +43,7 @@ final class SceneProcessor(
       assetMapping: AssetMapping,
       screenWidth: Double,
       screenHeight: Double,
-      orthographicProjectionMatrix: Matrix4
+      orthographicProjectionMatrix: CheapMatrix4
   ): ProcessedSceneData = {
 
     val gameProjection =
@@ -118,6 +118,6 @@ final class SceneProcessor(
     )
   }
 
-  def calculateProjectionMatrix(width: Double, height: Double, magnification: Double): Matrix4 =
-    Matrix4.orthographic(width / magnification.toDouble, height / magnification.toDouble)
+  def calculateProjectionMatrix(width: Double, height: Double, magnification: Double): CheapMatrix4 =
+    CheapMatrix4.orthographic(width / magnification.toDouble, height / magnification.toDouble)
 }

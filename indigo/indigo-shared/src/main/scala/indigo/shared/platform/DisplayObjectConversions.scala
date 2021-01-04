@@ -30,7 +30,7 @@ import indigo.shared.display.DisplayEffects
 import indigo.shared.datatypes.Texture
 import indigo.shared.BoundaryLocator
 import indigo.shared.animation.AnimationRef
-import indigo.shared.datatypes.Matrix4
+import indigo.shared.datatypes.mutable.CheapMatrix4
 
 final class DisplayObjectConversions(
     boundaryLocator: BoundaryLocator,
@@ -84,7 +84,7 @@ final class DisplayObjectConversions(
       }
     }
 
-  private def cloneDataToDisplayEntity(id: String, cloneDepth: Double, data: CloneTransformData, blankTransform: Matrix4): DisplayClone =
+  private def cloneDataToDisplayEntity(id: String, cloneDepth: Double, data: CloneTransformData, blankTransform: CheapMatrix4): DisplayClone =
     new DisplayClone(
       id = id,
       transform = DisplayObjectConversions.cloneTransformDataToMatrix4(data, blankTransform),
@@ -92,7 +92,7 @@ final class DisplayObjectConversions(
       alpha = data.alpha.toFloat
     )
 
-  private def cloneBatchDataToDisplayEntities(batch: CloneBatch, blankTransform: Matrix4): DisplayCloneBatch = {
+  private def cloneBatchDataToDisplayEntities(batch: CloneBatch, blankTransform: CheapMatrix4): DisplayCloneBatch = {
     def convert(): DisplayCloneBatch =
       new DisplayCloneBatch(
         id = batch.id.value,
@@ -453,8 +453,8 @@ final class DisplayObjectConversions(
 
 object DisplayObjectConversions {
 
-  def nodeToMatrix4(node: SceneGraphNode, size: Vector3): Matrix4 =
-    Matrix4
+  def nodeToMatrix4(node: SceneGraphNode, size: Vector3): CheapMatrix4 =
+    CheapMatrix4.identity
       .scale(
         if (node.flip.horizontal) -1.0 else 1.0,
         if (node.flip.vertical) 1.0 else -1.0,
@@ -470,25 +470,23 @@ object DisplayObjectConversions {
         size.y * node.scale.y,
         size.z
       )
-      .rotate(node.rotation)
+      .rotate(node.rotation.value)
       .translate(
-        Vector3(
-          x = node.position.x.toDouble,
-          y = node.position.y.toDouble,
-          z = 0.0d
-        )
+        node.position.x.toDouble,
+        node.position.y.toDouble,
+        0.0d
       )
 
-  def cloneTransformDataToMatrix4(data: CloneTransformData, blankTransform: Matrix4): Matrix4 =
-    blankTransform * Matrix4
-      .translation(-blankTransform.x, -blankTransform.y, 0.0d)
-      .scale(
+  def cloneTransformDataToMatrix4(data: CloneTransformData, blankTransform: CheapMatrix4): CheapMatrix4 =
+    blankTransform * CheapMatrix4(
+      CheapMatrix4.translation(-blankTransform.x, -blankTransform.y, 0.0d)
+    ).scale(
         if (data.flipHorizontal) -1.0 else 1.0,
         if (!data.flipVertical) 1.0 else -1.0,
         1.0d
       )
-      .scale(data.scale)
-      .rotate(data.rotation)
+      .scale(data.scale.x, data.scale.y, 1.0d)
+      .rotate(data.rotation.value)
       .translate(
         data.position.x.toDouble,
         data.position.y.toDouble,

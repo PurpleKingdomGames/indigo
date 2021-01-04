@@ -4,7 +4,7 @@ import indigo.shared.display.DisplayObject
 
 import indigo.platform.renderer.Renderer
 import indigo.shared.platform.RendererConfig
-import indigo.shared.datatypes.Matrix4
+import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.datatypes.RGBA
 import indigo.shared.platform.ProcessedSceneData
 import indigo.shared.display.DisplayEntity
@@ -43,9 +43,9 @@ final class RendererWebGL1(
   // @SuppressWarnings(Array("org.wartremover.warts.Var"))
   var lastHeight: Int = 0
   // @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  var orthographicProjectionMatrix: Matrix4 = Matrix4.identity
+  var orthographicProjectionMatrix: CheapMatrix4 = CheapMatrix4.identity
   // @SuppressWarnings(Array("org.wartremover.warts.Var"))
-  var orthographicProjectionMatrixNoMag: Matrix4 = Matrix4.identity
+  var orthographicProjectionMatrixNoMag: CheapMatrix4 = CheapMatrix4.identity
 
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastWidth
@@ -162,7 +162,7 @@ final class RendererWebGL1(
       frameBufferComponents: Option[FrameBufferComponents],
       clearColor: RGBA,
       shaderProgram: WebGLProgram,
-      projectionMatrix: Matrix4,
+      projectionMatrix: CheapMatrix4,
       isMerge: Boolean
   ): Unit = {
 
@@ -251,8 +251,8 @@ final class RendererWebGL1(
       lastWidth = actualWidth
       lastHeight = actualHeight
 
-      orthographicProjectionMatrix = Matrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
-      orthographicProjectionMatrixNoMag = Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)
+      orthographicProjectionMatrix = CheapMatrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
+      orthographicProjectionMatrixNoMag = CheapMatrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)
       // orthographicProjectionMatrixJS = RendererFunctions.mat4ToJsArray(orthographicProjectionMatrix)
       // orthographicProjectionMatrixNoMagJS = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)).map(_.toFloat)
 

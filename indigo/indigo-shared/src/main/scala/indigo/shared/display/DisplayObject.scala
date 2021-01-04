@@ -1,21 +1,21 @@
 package indigo.shared.display
 
 import indigo.shared.datatypes.Vector2
-import indigo.shared.datatypes.Matrix4
+import indigo.shared.datatypes.mutable.CheapMatrix4
 
 sealed trait DisplayEntity {
   def z: Double
-  def applyTransform(matrix: Matrix4): DisplayEntity
+  def applyTransform(matrix: CheapMatrix4): DisplayEntity
 }
 
 final case class DisplayClone(
     val id: String,
-    val transform: Matrix4,
+    val transform: CheapMatrix4,
     val z: Double,
     val alpha: Float
 ) extends DisplayEntity {
 
-  def applyTransform(matrix: Matrix4): DisplayClone =
+  def applyTransform(matrix: CheapMatrix4): DisplayClone =
     this.copy(transform = transform * matrix)
 }
 object DisplayClone {
@@ -27,15 +27,15 @@ object DisplayClone {
 }
 
 final case class DisplayCloneBatchData(
-    val transform: Matrix4,
+    val transform: CheapMatrix4,
     val alpha: Float
 ) {
-  def applyTransform(matrix: Matrix4): DisplayCloneBatchData =
+  def applyTransform(matrix: CheapMatrix4): DisplayCloneBatchData =
     this.copy(transform = transform * matrix)
 }
 object DisplayCloneBatchData {
   val None: DisplayCloneBatchData =
-    DisplayCloneBatchData(Matrix4.identity, 0.0f)
+    DisplayCloneBatchData(CheapMatrix4.identity, 0.0f)
 }
 final case class DisplayCloneBatch(
     val id: String,
@@ -43,12 +43,12 @@ final case class DisplayCloneBatch(
     val clones: List[DisplayCloneBatchData]
 ) extends DisplayEntity {
 
-  def applyTransform(matrix: Matrix4): DisplayCloneBatch =
+  def applyTransform(matrix: CheapMatrix4): DisplayCloneBatch =
     this.copy(clones = clones.map(_.applyTransform(matrix)))
 }
 
 final case class DisplayObject(
-    val transform: Matrix4,
+    val transform: CheapMatrix4,
     val z: Double,
     val width: Float,
     val height: Float,
@@ -68,14 +68,14 @@ final case class DisplayObject(
     val effects: DisplayEffects
 ) extends DisplayEntity {
 
-  def applyTransform(matrix: Matrix4): DisplayObject =
+  def applyTransform(matrix: CheapMatrix4): DisplayObject =
     this.copy(transform * matrix)
     
 }
 object DisplayObject {
 
   def apply(
-      transform: Matrix4,
+      transform: CheapMatrix4,
       z: Double,
       width: Int,
       height: Int,

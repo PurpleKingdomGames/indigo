@@ -18,7 +18,7 @@ import indigo.shared.display.DisplayCloneBatch
 import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.scenegraph.Group
 import indigo.shared.datatypes.Depth
-import indigo.shared.datatypes.Matrix4
+import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.datatypes.Radians
 
 class DisplayObjectConversionsTests extends munit.FunSuite {
@@ -105,14 +105,14 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     assertEquals(actual.height, 100.0f)
   }
 
-  test("create a Matrix4 from a SceneGraphNode.translation") {
+  test("create a CheapMatrix4 from a SceneGraphNode.translation") {
 
     val node: SceneGraphNode =
       Graphic(100, 100, Material.Textured(AssetName("test")))
         .moveTo(10, 20)
 
-    val expected: Matrix4 =
-      Matrix4(
+    val expected: CheapMatrix4 =
+      CheapMatrix4(
         (100, 0, 0, 0),
         (0, -100, 0, 0),
         (0, 0, 1, 0),
@@ -122,18 +122,18 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val actual =
       DisplayObjectConversions.nodeToMatrix4(node, Vector3(100.0d, 100.0d, 1.0d))
 
-    assertEquals(actual, expected)
+    assertEquals(actual.toMatrix4, expected.toMatrix4)
   }
 
-  test("create a Matrix4 from a SceneGraphNode.translation with ref") {
+  test("create a CheapMatrix4 from a SceneGraphNode.translation with ref") {
 
     val node: SceneGraphNode =
       Graphic(100, 100, Material.Textured(AssetName("test")))
         .moveTo(10, 20)
         .withRef(50, 50)
 
-    val expected: Matrix4 =
-      Matrix4(
+    val expected: CheapMatrix4 =
+      CheapMatrix4(
         (100, 0, 0, 0),
         (0, -100, 0, 0),
         (0, 0, 1, 0),
@@ -143,17 +143,17 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val actual =
       DisplayObjectConversions.nodeToMatrix4(node, Vector3(100.0d, 100.0d, 1.0d))
 
-    assertEquals(actual, expected)
+    assertEquals(actual.toMatrix4, expected.toMatrix4)
   }
 
-  test("create a Matrix4 from a SceneGraphNode.scale") {
+  test("create a CheapMatrix4 from a SceneGraphNode.scale") {
 
     val node: SceneGraphNode =
       Graphic(100, 100, Material.Textured(AssetName("test")))
         .scaleBy(2, 10)
 
-    val expected: Matrix4 =
-      Matrix4(
+    val expected: CheapMatrix4 =
+      CheapMatrix4(
         (200, 0, 0, 0),
         (0, -1000, 0, 0),
         (0, 0, 1, 0),
@@ -163,10 +163,10 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val actual =
       DisplayObjectConversions.nodeToMatrix4(node, Vector3(100.0d, 100.0d, 1.0d))
 
-    assertEquals(actual, expected)
+    assertEquals(actual.toMatrix4, expected.toMatrix4)
   }
 
-  test("create a Matrix4 from a SceneGraphNode.rotation") {
+  test("create a CheapMatrix4 from a SceneGraphNode.rotation") {
 
     val node: SceneGraphNode =
       Graphic(100, 100, Material.Textured(AssetName("test")))
@@ -175,8 +175,8 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val c = 0.0d
     val s = 100.0d
 
-    val expected: Matrix4 =
-      Matrix4(
+    val expected: CheapMatrix4 =
+      CheapMatrix4(
         (c, s, 0, 0),
         (s, -c, 0, 0),
         (0, 0, 1, 0),
@@ -186,10 +186,10 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val actual =
       DisplayObjectConversions.nodeToMatrix4(node, Vector3(100.0d, 100.0d, 1.0d))
 
-    assert(clue(actual) ~== clue(expected))
+    assert(clue(actual.toMatrix4) ~== clue(expected.toMatrix4))
   }
 
-  test("create a Matrix4 from a SceneGraphNode.translation with flip") {
+  test("create a CheapMatrix4 from a SceneGraphNode.translation with flip") {
 
     val width: Int  = 100
     val height: Int = 100
@@ -200,8 +200,8 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         .flipHorizontal(true)
         .flipVertical(true)
 
-    val expected: Matrix4 =
-      Matrix4(
+    val expected: CheapMatrix4 =
+      CheapMatrix4(
         (-100, 0, 0, 0),
         (0, 100, 0, 0),
         (0, 0, 1, 0),
@@ -211,7 +211,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val actual =
       DisplayObjectConversions.nodeToMatrix4(node, Vector3(width.toDouble, height.toDouble, 1.0d))
 
-    assertEquals(actual, expected)
+    assertEquals(actual.toMatrix4, expected.toMatrix4)
   }
 
 }
