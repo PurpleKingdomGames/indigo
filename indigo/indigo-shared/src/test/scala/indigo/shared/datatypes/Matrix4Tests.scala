@@ -140,26 +140,6 @@ class Matrix4Tests extends munit.FunSuite {
     assertEquals(actual, expected)
   }
 
-  test("flip") {
-    val mat =
-      Matrix4(
-        (1, 2, 3, 4),
-        (5, 6, 7, 8),
-        (9, 10, 11, 12),
-        (13, 14, 15, 16)
-      )
-
-    val expected =
-      Matrix4(
-        (-1, -2, -3, 4),
-        (-5, -6, -7, 8),
-        (-9, -10, -11, 12),
-        (-13, -14, -15, 16)
-      )
-
-    assertEquals(mat.flip(true, true), expected)
-  }
-
   test("transforming vectors - translation") {
     val mat: Matrix4 =
       Matrix4.identity.translate(Vector3(10.0, 20.0, 30.0))

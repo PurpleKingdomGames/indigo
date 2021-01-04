@@ -21,15 +21,13 @@ final case class Matrix4(private val mat: List[Double]) {
   lazy val data: (List[Double], List[Double]) =
     (List(mat(0), mat(1), mat(4), mat(5)), List(mat(12), mat(13), mat(14)))
 
-  def identity: Matrix4 = Matrix4.identity
-
   def translate(by: Vector3): Matrix4 =
     translate(by.x, by.y, by.z)
   def translate(byX: Double, byY: Double, byZ: Double): Matrix4 =
     this * Matrix4.translation(byX, byY, byZ)
 
   def rotate(angle: Radians): Matrix4 =
-    this * Matrix4.zRotation(angle.value)
+    this * Matrix4.rotation(angle.value)
 
   def scale(by: Vector2): Matrix4 =
     scale(by.x, by.y, 1.0d)
@@ -41,18 +39,6 @@ final case class Matrix4(private val mat: List[Double]) {
   def transpose: Matrix4 = Matrix4.transpose(this)
 
   def *(other: Matrix4): Matrix4 = Matrix4.multiply(this, other)
-
-  def projection(width: Double, height: Double, depth: Double): Matrix4 =
-    this * Matrix4.projection(width, height, depth)
-
-  def orthographic(left: Double, right: Double, bottom: Double, top: Double, near: Double, far: Double): Matrix4 =
-    this * Matrix4.orthographic(left, right, bottom, top, near, far)
-
-  def withOrthographic(orthographic: Matrix4): Matrix4 =
-    this * orthographic
-
-  def flip(horizontal: Boolean, vertical: Boolean): Matrix4 =
-    this * Matrix4.flip(horizontal, vertical)
 
   def toList: List[Double] =
     mat
@@ -151,30 +137,6 @@ object Matrix4 {
   def orthographic(width: Double, height: Double): Matrix4 =
     orthographic(0, width, height, 0, -10000, 10000)
 
-  def transform2d(tx: Double, ty: Double, sx: Double, sy: Double, r: Double): Matrix4 = {
-    val c = Math.cos(r)
-    val s = Math.sin(r)
-
-    Matrix4(
-      sx * c,
-      s,
-      0,
-      0,
-      -s,
-      sy * c,
-      0,
-      0,
-      0,
-      0,
-      1,
-      0,
-      tx,
-      ty,
-      0,
-      1
-    )
-  }
-
   def translation(amount: Vector3): Matrix4 =
     translation(amount.x, amount.y, amount.z)
   def translation(tx: Double, ty: Double, tz: Double): Matrix4 =
@@ -197,55 +159,10 @@ object Matrix4 {
       1
     )
 
-  def xRotation(angleInRadians: Double): Matrix4 = {
-    val c = Math.cos(angleInRadians)
-    val s = Math.sin(angleInRadians)
-
-    Matrix4(
-      1,
-      0,
-      0,
-      0,
-      0,
-      c,
-      s,
-      0,
-      0,
-      -s,
-      c,
-      0,
-      0,
-      0,
-      0,
-      1
-    )
-  }
-
-  def yRotation(angleInRadians: Double): Matrix4 = {
-    val c = Math.cos(angleInRadians)
-    val s = Math.sin(angleInRadians)
-
-    Matrix4(
-      c,
-      0,
-      -s,
-      0,
-      0,
-      1,
-      0,
-      0,
-      s,
-      0,
-      c,
-      0,
-      0,
-      0,
-      0,
-      1
-    )
-  }
-
-  def zRotation(angleInRadians: Double): Matrix4 = {
+  /**
+    * This is really z-rotation
+    */
+  def rotation(angleInRadians: Double): Matrix4 = {
     val c = Math.cos(angleInRadians)
     val s = Math.sin(angleInRadians)
 
@@ -288,26 +205,6 @@ object Matrix4 {
       0,
       0,
       0,
-      1
-    )
-
-  def translateAndScale(tx: Double, ty: Double, tz: Double, sx: Double, sy: Double, sz: Double): Matrix4 =
-    Matrix4(
-      sx,
-      0,
-      0,
-      0,
-      0,
-      sy,
-      0,
-      0,
-      0,
-      0,
-      sz,
-      0,
-      tx,
-      ty,
-      tz,
       1
     )
 
@@ -390,14 +287,6 @@ object Matrix4 {
       m(15)
     )
   }
-
-  def flip(horizontal: Boolean, vertical: Boolean): Matrix4 =
-    (horizontal, vertical) match {
-      case (true, true)   => Matrix4.scale(-1, -1, -1)
-      case (true, false)  => Matrix4.scale(-1, 1, -1)
-      case (false, true)  => Matrix4.scale(1, -1, -1)
-      case (false, false) => Matrix4.identity
-    }
 
   def apply(): Matrix4 = identity
 
