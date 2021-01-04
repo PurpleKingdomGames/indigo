@@ -1,124 +1,93 @@
 package indigo.shared.datatypes.mutable
 
 import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Matrix4
 
+/*
+In these tests, Matrix4 is acting as the reference implementation.
+The implementations are, however, intentionally not identical, so
+we're saying that the cheap version needs to say what the real one
+says, where applicable. Full multiplication for example, isn't
+identical (but that's not a problem for our use case).
+ */
 class CheapCheapMatrix4Tests extends munit.FunSuite {
 
   test("identity") {
 
     val expected =
-      CheapMatrix4(
+      Matrix4(
         (1, 0, 0, 0),
         (0, 1, 0, 0),
         (0, 0, 1, 0),
         (0, 0, 0, 1)
       )
 
-    assertEquals(CheapMatrix4.identity.toMatrix4, expected.toMatrix4)
+    assertEquals(CheapMatrix4.identity.toMatrix4, expected)
 
   }
 
   test("translate x") {
 
     val expected =
-      CheapMatrix4(
-        (1, 0, 0, 0),
-        (0, 1, 0, 0),
-        (0, 0, 1, 0),
-        (2, 0, 0, 1)
-      )
+      Matrix4.identity.translate(2.0, 0, 0)
 
-    assertEquals(CheapMatrix4.identity.translate(2.0, 0, 0).toMatrix4, expected.toMatrix4)
+    assertEquals(CheapMatrix4.identity.translate(2.0, 0, 0).toMatrix4, expected)
 
   }
 
   test("translate y") {
 
     val expected =
-      CheapMatrix4(
-        (1, 0, 0, 0),
-        (0, 1, 0, 0),
-        (0, 0, 1, 0),
-        (0, 2, 0, 1)
-      )
+      Matrix4.identity.translate(0, 2.0, 0)
 
-    assertEquals(CheapMatrix4.identity.translate(0, 2.0, 0).toMatrix4, expected.toMatrix4)
+    assertEquals(CheapMatrix4.identity.translate(0, 2.0, 0).toMatrix4, expected)
 
   }
 
   test("translate z") {
 
     val expected =
-      CheapMatrix4(
-        (1, 0, 0, 0),
-        (0, 1, 0, 0),
-        (0, 0, 1, 0),
-        (0, 0, 2, 1)
-      )
+      Matrix4.identity.translate(0, 0, 2.0)
 
-    assertEquals(CheapMatrix4.identity.translate(0, 0, 2.0).toMatrix4, expected.toMatrix4)
+    assertEquals(CheapMatrix4.identity.translate(0, 0, 2.0).toMatrix4, expected)
 
   }
 
   test("rotation") {
 
-    val s = Math.sin(Math.PI)
-    val c = Math.cos(Math.PI)
-
     val expected =
-      CheapMatrix4(
-        (c, s, 0, 0),
-        (-s, c, 0, 0),
-        (0, 0, 1, 0),
-        (0, 0, 0, 1)
-      )
+      Matrix4.identity.rotate(Radians.PI)
 
-    assertEquals(CheapMatrix4.identity.rotate(Radians.PI.value).toMatrix4, expected.toMatrix4)
+    assertEquals(CheapMatrix4.identity.rotate(Radians.PI.value).toMatrix4, expected)
   }
 
   test("scale") {
 
     val expected =
-      CheapMatrix4(
-        (2, 0, 0, 0),
-        (0, 3, 0, 0),
-        (0, 0, 1, 0),
-        (0, 0, 0, 1)
-      )
+      Matrix4.identity.scale(2.0, 3.0, 1.0)
 
-    assertEquals(CheapMatrix4.identity.scale(2.0, 3.0, 1.0).toMatrix4, expected.toMatrix4)
+    assertEquals(CheapMatrix4.identity.scale(2.0, 3.0, 1.0).toMatrix4, expected)
 
   }
 
-  // test("multiply") {
-  //   val mat1: CheapMatrix4 =
-  //     CheapMatrix4(
-  //       (1, 2, 3, 4),
-  //       (2, 1, 2, 3),
-  //       (3, 2, 1, 2),
-  //       (4, 3, 2, 1)
-  //     )
+  test("a more realistic transformation") {
 
-  //   val mat2: CheapMatrix4 =
-  //     CheapMatrix4(
-  //       (10, 20, 30, 40),
-  //       (20, 10, 20, 30),
-  //       (30, 20, 10, 20),
-  //       (40, 30, 20, 10)
-  //     )
+    val expected =
+      Matrix4.identity
+        .scale(2.0, 3.0, 1.0)
+        .rotate(Radians.TAUby4)
+        .translate(100, 0.0, 0.0)
+        .rotate(Radians.TAUby2)
 
-  //   val expected: CheapMatrix4 =
-  //     CheapMatrix4(
-  //       (300, 220, 180, 200),
-  //       (220, 180, 160, 180),
-  //       (180, 160, 180, 220),
-  //       (200, 180, 220, 300)
-  //     )
+    val actual =
+      CheapMatrix4.identity
+        .scale(2.0, 3.0, 1.0)
+        .rotate(Radians.TAUby4.value)
+        .translate(100, 0.0, 0.0)
+        .rotate(Radians.TAUby2.value)
 
-  //   val actual: CheapMatrix4 =
-  //     mat1 * mat2
+    assertEquals(actual.toMatrix4, expected)
 
-  //   assertEquals(actual.toMatrix4, expected.toMatrix4)
-  // }
+  }
 
 }
