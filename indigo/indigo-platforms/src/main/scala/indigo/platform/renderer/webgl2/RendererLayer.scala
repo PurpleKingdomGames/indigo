@@ -213,7 +213,6 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
         gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
       }
 
-    // @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
     @tailrec
     def rec(remaining: List[DisplayEntity], batchCount: Int, atlasName: String): Unit =
       remaining match {

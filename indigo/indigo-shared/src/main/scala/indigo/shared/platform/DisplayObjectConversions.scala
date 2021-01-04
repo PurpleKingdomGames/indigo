@@ -116,7 +116,6 @@ final class DisplayObjectConversions(
     }
   }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements", "org.wartremover.warts.ToString"))
   def sceneNodesToDisplayObjects(
       sceneNodes: List[SceneGraphNode],
       gameTime: GameTime,

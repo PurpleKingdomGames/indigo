@@ -18,7 +18,6 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var finderInstance: SceneFinder = scenesFinder
 
-  // @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   private val subSystemStates: Map[SceneName, SubSystemsRegister] =
     scenes.toList.map { s =>
       val r = new SubSystemsRegister()
@@ -27,7 +26,7 @@ class SceneManager[StartUpData, GameModel, ViewModel](scenes: NonEmptyList[Scene
     }.toMap
 
   // Scene delegation
-  // @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
+
   def updateModel(frameContext: FrameContext[StartUpData], model: GameModel): GlobalEvent => Outcome[GameModel] = {
     case SceneEvent.Next =>
       val from = finderInstance.current.name

@@ -14,7 +14,6 @@ import indigo.shared.subsystems.SubSystemFrameContext._
 import indigo.scenes.SceneManager
 import indigo.shared.events.EventFilters
 
-// @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
 final case class ScenesFrameProcessor[StartUpData, Model, ViewModel](
     subSystemsRegister: SubSystemsRegister,
     sceneManager: SceneManager[StartUpData, Model, ViewModel],

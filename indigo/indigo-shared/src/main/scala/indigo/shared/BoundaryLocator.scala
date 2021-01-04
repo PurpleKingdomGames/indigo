@@ -56,7 +56,6 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
   def graphicBounds(graphic: Graphic): Rectangle =
     graphic.lazyBounds
 
-  // @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   def spriteBounds(sprite: Sprite): Rectangle =
     QuickCache(s"""sprite-${sprite.bindingKey.value}-${sprite.animationKey.value}""") {
       animationsRegister.fetchAnimationInLastState(sprite.bindingKey, sprite.animationKey) match {
@@ -79,7 +78,6 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
         Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height))
       }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   def textAsLinesWithBounds(text: String, fontKey: FontKey): List[TextLine] =
     QuickCache(s"""text-lines-${fontKey.key}-${text}""") {
       fontRegister

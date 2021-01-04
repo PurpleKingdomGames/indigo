@@ -9,10 +9,8 @@ import scala.collection.mutable
 
 import java.util.UUID
 
-// @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
 final class SubSystemsRegister() {
 
-  // @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   val stateMap: mutable.HashMap[String, Object] = new mutable.HashMap[String, Object]()
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))

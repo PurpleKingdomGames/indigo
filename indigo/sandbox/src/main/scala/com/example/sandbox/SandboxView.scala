@@ -6,7 +6,6 @@ object SandboxView {
 
   val dudeCloneId: CloneId = CloneId("Dude")
 
-  // @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   def updateView(model: SandboxGameModel, viewModel: SandboxViewModel, inputState: InputState): SceneUpdateFragment = {
     inputState.mouse.mouseClickAt match {
       case Some(position) => println("Mouse clicked at: " + position.toString())

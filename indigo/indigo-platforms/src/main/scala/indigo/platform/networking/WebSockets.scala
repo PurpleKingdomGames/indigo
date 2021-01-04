@@ -13,12 +13,10 @@ import scala.collection.mutable
 
 object WebSockets {
 
-  // @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   private val connections: mutable.HashMap[WebSocketId, dom.WebSocket] = mutable.HashMap()
-  // @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
+
   private val configs: mutable.HashMap[WebSocketId, WebSocketConfig] = mutable.HashMap()
 
-  // @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def processSendEvent(event: WebSocketEvent with NetworkSendEvent, globalEventStream: GlobalEventStream): Unit =
     try event match {
       case WebSocketEvent.ConnectOnly(config) =>
@@ -38,7 +36,6 @@ object WebSockets {
         globalEventStream.pushGlobalEvent(WebSocketEvent.Error(event.giveId, e.getMessage))
     }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   private def insertUpdateConfig(config: WebSocketConfig): WebSocketConfig = {
     val maybeConfig = configs.get(config.id)
 
@@ -54,7 +51,6 @@ object WebSockets {
       .getOrElse(config)
   }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   private def reEstablishConnection(config: WebSocketConfig, onOpenSendMessage: Option[String], globalEventStream: GlobalEventStream): Option[dom.WebSocket] =
     connections
       .get(config.id)
@@ -77,7 +73,6 @@ object WebSockets {
         }
       }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   private def newConnection(config: WebSocketConfig, onOpenSendMessage: Option[String], globalEventStream: GlobalEventStream): Option[dom.WebSocket] =
     try {
       val socket = new dom.WebSocket(config.address)

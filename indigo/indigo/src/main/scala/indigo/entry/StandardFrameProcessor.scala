@@ -13,7 +13,6 @@ import indigo.shared.events.EventFilters
 import indigo.shared.subsystems.SubSystemsRegister
 import indigo.shared.subsystems.SubSystemFrameContext._
 
-// @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
 final case class StandardFrameProcessor[StartUpData, Model, ViewModel](
     subSystemsRegister: SubSystemsRegister,
     eventFilters: EventFilters,

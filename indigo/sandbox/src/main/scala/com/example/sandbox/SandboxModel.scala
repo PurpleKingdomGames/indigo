@@ -15,7 +15,6 @@ object SandboxModel {
       None
     )
 
-  // @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   def updateModel(state: SandboxGameModel): GlobalEvent => Outcome[SandboxGameModel] = {
     case rd @ RendererDetails(_, _, _) =>
       println(rd)
@@ -59,7 +58,7 @@ object SandboxModel {
       }
 
     case KeyboardEvent.KeyDown(Key.LEFT_ARROW) =>
-    println("left")
+      println("left")
       Outcome(
         state.copy(
           dude = state.dude.walkLeft

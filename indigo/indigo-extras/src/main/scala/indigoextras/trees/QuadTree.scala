@@ -40,7 +40,7 @@ sealed trait QuadTree[T] {
     QuadTree.searchByBoundingBox(this, boundingBox)
 
   def prettyPrint: String = {
-    // @SuppressWarnings(Array("org.wartremover.warts.Recursion", "org.wartremover.warts.ToString"))
+
     def rec(quadTree: QuadTree[T], indent: String): String =
       quadTree match {
         case QuadTree.QuadEmpty(bounds) =>
@@ -61,7 +61,7 @@ sealed trait QuadTree[T] {
   }
 
   def ===(other: QuadTree[T]): Boolean = {
-    // @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
+
     def rec(a: QuadTree[T], b: QuadTree[T]): Boolean =
       (a, b) match {
         case (QuadTree.QuadEmpty(b1), QuadTree.QuadEmpty(b2)) if b1 ~== b2 =>
@@ -213,7 +213,6 @@ object QuadTree {
         tree
     }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def asElementList[T](quadTree: QuadTree[T]): List[T] =
     quadTree match {
       case l: QuadLeaf[T] =>
@@ -244,7 +243,6 @@ object QuadTree {
         QuadBranch[T](bounds, a.prune, b.prune, c.prune, d.prune)
     }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def searchByPoint[T](quadTree: QuadTree[T], point: Vertex): Option[T] =
     quadTree match {
       case QuadBranch(bounds, a, b, c, d) if bounds.contains(point) =>
@@ -267,7 +265,6 @@ object QuadTree {
   def searchByLine[T](quadTree: QuadTree[T], start: Vertex, end: Vertex): List[T] =
     searchByLine(quadTree, LineSegment(start, end))
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def searchByLine[T](quadTree: QuadTree[T], lineSegment: LineSegment): List[T] =
     quadTree match {
       case QuadBranch(bounds, a, b, c, d) if bounds.contains(lineSegment.start) =>
@@ -301,7 +298,6 @@ object QuadTree {
         Nil
     }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def searchByBoundingBox[T](quadTree: QuadTree[T], boundingBox: BoundingBox): List[T] =
     quadTree match {
       case QuadBranch(bounds, a, b, c, d) if boundingBox.overlaps(bounds) =>

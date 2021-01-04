@@ -21,7 +21,6 @@ final case class AnimationRef(
   lazy val frameHash: String =
     currentFrame.crop.hash + "_" + currentFrame.frameMaterial.map(_.hash).getOrElse(material.hash)
 
-  // @SuppressWarnings(Array("org.wartremover.warts.TraversableOps"))
   def currentCycle: CycleRef =
     cycles.get(currentCycleLabel).getOrElse(cycles.head._2)
 

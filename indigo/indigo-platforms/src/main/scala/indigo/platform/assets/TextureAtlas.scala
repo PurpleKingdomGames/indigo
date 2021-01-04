@@ -301,7 +301,6 @@ final case class AtlasQuadNode(size: PowerOfTwo, atlas: AtlasSum) extends AtlasQ
     if (size < requiredSize) false
     else atlas.canAccommodate(requiredSize)
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Recursion"))
   def insert(tree: AtlasQuadTree): AtlasQuadTree =
     this.copy(atlas = atlas match {
       case AtlasTexture(_) => this.atlas

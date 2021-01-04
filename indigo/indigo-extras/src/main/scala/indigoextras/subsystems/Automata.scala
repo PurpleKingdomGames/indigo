@@ -38,7 +38,6 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
   val initialModel: Outcome[AutomataState] =
     Outcome(AutomataState(0, Nil))
 
-  // @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   def update(frameContext: SubSystemFrameContext, state: AutomataState): AutomataEvent => Outcome[AutomataState] = {
     case Spawn(key, position, lifeSpan, payload) if key == poolKey =>
       val spawned =
@@ -139,7 +138,6 @@ object Automata {
   def apply(poolKey: AutomataPoolKey, automaton: Automaton, layer: Layer): Automata =
     new Automata(poolKey, automaton, layer, None)
 
-  // @SuppressWarnings(Array("org.wartremover.warts.Var", "org.wartremover.warts.While", "org.wartremover.warts.NonUnitStatements"))
   def renderNoLayer(pool: List[SpawnedAutomaton], gameTime: GameTime): AutomatonUpdate =
     AutomatonUpdate.sequence(
       pool.map { sa =>

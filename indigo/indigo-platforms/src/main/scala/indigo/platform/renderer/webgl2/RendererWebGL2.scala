@@ -97,7 +97,6 @@ final class RendererWebGL2(
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var orthographicProjectionMatrix: CheapMatrix4 = CheapMatrix4.identity
 
-  // @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def init(): Unit = {
 
     val verticesAndTextureCoords: scalajs.js.Array[Float] = {

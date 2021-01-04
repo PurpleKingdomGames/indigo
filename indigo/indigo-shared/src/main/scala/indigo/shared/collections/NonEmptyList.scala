@@ -153,7 +153,6 @@ final case class NonEmptyList[A](head: A, tail: List[A]) {
   def exists(p: A => Boolean): Boolean =
     NonEmptyList.exists(this)(p)
 
-  // @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
   override def toString: String =
     s"NonEmptyList[$head][${tail.mkString(", ")}]"
 
@@ -169,7 +168,7 @@ final case class NonEmptyList[A](head: A, tail: List[A]) {
     * @param separator A string to add between the elements
     * @return `String`
     */
-  // @SuppressWarnings(Array("org.wartremover.warts.ToString"))
+
   def mkString(separator: String): String =
     head.toString + separator + tail.mkString(separator)
 

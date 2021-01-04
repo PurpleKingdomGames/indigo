@@ -2,7 +2,6 @@ package indigo.shared
 
 import scala.collection.mutable
 
-// @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures", "org.wartremover.warts.NonUnitStatements", "org.wartremover.warts.Null"))
 final class QuickCache[A](private val cache: mutable.HashMap[CacheKey, A]) {
 
   def fetch(key: CacheKey): Option[A] =
@@ -57,7 +56,6 @@ final class QuickCache[A](private val cache: mutable.HashMap[CacheKey, A]) {
 
 }
 
-// @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
 object QuickCache {
 
   def apply[A](key: String)(value: => A)(implicit cache: QuickCache[A]): A =

@@ -40,7 +40,6 @@ final case class AsepriteFrameTag(name: String, from: Int, to: Int, direction: S
 final case class SpriteAndAnimations(sprite: Sprite, animations: Animation)
 object Aseprite {
 
-  // @SuppressWarnings(Array("org.wartremover.warts.StringPlusAny"))
   def toSpriteAndAnimations(aseprite: Aseprite, dice: Dice, assetName: AssetName): Option[SpriteAndAnimations] =
     extractCycles(aseprite) match {
       case Nil =>
@@ -72,7 +71,6 @@ object Aseprite {
         )
     }
 
-  // @SuppressWarnings(Array("org.wartremover.warts.ToString"))
   def extractCycles(aseprite: Aseprite): List[Cycle] =
     aseprite.meta.frameTags
       .map { frameTag =>

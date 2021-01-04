@@ -28,7 +28,6 @@ import indigo.platform.events.GlobalEventStream
 import indigo.shared.events.ViewportResize
 import indigo.shared.config.GameViewport
 
-// @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
 final class RendererWebGL1(
     config: RendererConfig,
     loadedTextureAssets: List[LoadedTextureAsset],
