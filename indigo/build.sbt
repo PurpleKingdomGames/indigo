@@ -184,8 +184,8 @@ lazy val indigoJsonCirce =
     .settings(
       name := "indigo-json-circe",
       libraryDependencies ++= Seq(
-        "io.circe" %%% "circe-core"   % "0.14.0-M2",
-        "io.circe" %%% "circe-parser" % "0.14.0-M2"
+        "io.circe" %%% "circe-core"   % "0.14.0-M3",
+        "io.circe" %%% "circe-parser" % "0.14.0-M3"
       )
     )
     .dependsOn(indigoExtras)
