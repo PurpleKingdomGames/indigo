@@ -90,4 +90,16 @@ class CheapCheapMatrix4Tests extends munit.FunSuite {
 
   }
 
+  test("orthographic") {
+
+    val expected =
+      Matrix4.orthographic(320, 240)
+
+    val actual =
+      CheapMatrix4.orthographic(320, 240)
+
+    assertEquals(actual.toMatrix4, expected)
+
+  }
+
 }
