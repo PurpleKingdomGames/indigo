@@ -1,4 +1,4 @@
-package indigo.scenes
+package indigo.shared
 
 trait Lens[A, B] {
   def get(from: A): B

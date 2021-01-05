@@ -1,4 +1,4 @@
-package indigo.scenes
+package indigo.shared
 
 class LensTests extends munit.FunSuite {
 
