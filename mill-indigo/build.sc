@@ -15,7 +15,7 @@ class MillIndigoPluginModule(val crossScalaVersion: String) extends CrossScalaMo
       // case _=> "3.0.0-M3"
     }
 
-  def millLibVersion = "0.9.3"
+  def millLibVersion = "0.9.4"
 
   def ivyDeps = Agg(
     ivy"com.lihaoyi::mill-main:${millLibVersion}",

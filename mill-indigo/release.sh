@@ -12,16 +12,9 @@ SCALA2=2.13
 mill clean mill-indigo[$SCALA2]
 mill mill-indigo[$SCALA2].compile
 mill mill-indigo[$SCALA2].test
-mill -i mill-indigo[$SCALA2].publish \
-  --sonatypeCreds $SONATYPE_USERNAME:$SONATYPE_PASSWORD \
-  --release true 
-#  --gpgArgs --passphrase=$GPG_PASSWORD,--batch,--yes,-a,-b
-
+mill -i mill-indigo[$SCALA2].publish --sonatypeCreds $SONATYPE_USERNAME:$SONATYPE_PASSWORD --release true
 
 # mill clean mill-indigo[$SCALA3]
 # mill mill-indigo[$SCALA3].compile
 # mill mill-indigo[$SCALA3].test
-# mill -i mill-indigo[$SCALA3].publish \
-#   --sonatypeCreds $SONATYPE_USERNAME:$SONATYPE_PASSWORD \
-#   --release true 
-# #  --gpgArgs --passphrase=$GPG_PASSWORD,--batch,--yes,-a,-b
+# mill -i mill-indigo[$SCALA3].publish --sonatypeCreds $SONATYPE_USERNAME:$SONATYPE_PASSWORD --release true 
