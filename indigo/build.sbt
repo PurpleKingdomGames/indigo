@@ -143,6 +143,24 @@ lazy val indigoFacades =
       )
     )
 
+
+// Indigo Render Worker
+lazy val indigoRenderWorker=
+  project
+    .in(file("indigo-render-worker"))
+    .enablePlugins(ScalaJSPlugin)
+    .settings(publishSettings: _*)
+    .settings(
+      name := "indigo-render-worker",
+      version := indigoVersion,
+      scalaVersion := dottyVersion,
+      crossScalaVersions := Seq(dottyVersion, scala213Version),
+      organization := "io.indigoengine",
+      libraryDependencies ++= Seq(
+        ("org.scala-js" %%% "scalajs-dom" % "1.1.0").withDottyCompat(scalaVersion.value)
+      )
+    )
+
 // Indigo Platforms
 lazy val indigoPlatforms =
   project
@@ -218,6 +236,7 @@ lazy val indigoProject =
       indigoExtras,
       indigo,
       indigoFacades,
+      indigoRenderWorker,
       sandbox,
       perf
     )

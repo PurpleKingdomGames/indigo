@@ -6,7 +6,8 @@ lazy val releaseProjects: List[String] =
     "indigoCore",
     "indigoExtras",
     "indigo",
-    "indigoFacades"
+    "indigoFacades",
+    "indigoRenderWorker"
   )
 
 lazy val coreProjects: List[String] =
