@@ -26,7 +26,7 @@ object ErrorsExample extends IndigoDemo[BootData, StartUpData, Model, ViewModel]
 
   // We're going to let all events through everywhere for logging purposes.
   def eventFilters: EventFilters =
-    EventFilters.NoFilter
+    EventFilters.AllowAll
 
   def boot(flags: Map[String, String]): Outcome[BootResult[BootData]] =
     Outcome
