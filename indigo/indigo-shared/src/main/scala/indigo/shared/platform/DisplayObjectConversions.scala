@@ -46,16 +46,6 @@ final class DisplayObjectConversions(
   implicit private val effectsCache: QuickCache[DisplayEffects]                  = QuickCache.empty
   implicit private val textureAmountsCache: QuickCache[(Vector2, Double)]        = QuickCache.empty
 
-  def purgeCaches(): Unit = {
-    stringCache.purgeAllNow()
-    vector2Cache.purgeAllNow()
-    frameCache.purgeAllNow()
-    listDoCache.purgeAllNow()
-    cloneBatchCache.purgeAllNow()
-    effectsCache.purgeAllNow()
-    textureAmountsCache.purgeAllNow()
-  }
-
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def lookupTextureOffset(assetMapping: AssetMapping, name: String): Vector2 =
     QuickCache("tex-offset-" + name) {

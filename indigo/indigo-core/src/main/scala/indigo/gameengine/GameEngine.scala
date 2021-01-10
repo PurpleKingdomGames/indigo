@@ -121,8 +121,6 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   def rebuildGameLoop(firstRun: Boolean): AssetCollection => Unit =
     ac => {
 
-      sceneProcessor.purgeCaches()
-
       accumulatedAssetCollection = accumulatedAssetCollection |+| ac
 
       audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)

@@ -18,24 +18,8 @@ final class SceneProcessor(
     fontRegister: FontRegister
 ) {
 
-  private val displayObjectConverterGame: DisplayObjectConversions =
+  private val displayObjectConverter: DisplayObjectConversions =
     new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
-  private val displayObjectConverterLighting: DisplayObjectConversions =
-    new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
-  private val displayObjectConverterDistortion: DisplayObjectConversions =
-    new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
-  private val displayObjectConverterUi: DisplayObjectConversions =
-    new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
-  private val displayObjectConverterClone: DisplayObjectConversions =
-    new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
-
-  def purgeCaches(): Unit = {
-    displayObjectConverterGame.purgeCaches()
-    displayObjectConverterLighting.purgeCaches()
-    displayObjectConverterDistortion.purgeCaches()
-    displayObjectConverterUi.purgeCaches()
-    displayObjectConverterClone.purgeCaches()
-  }
 
   def processScene(
       gameTime: GameTime,
@@ -71,7 +55,7 @@ final class SceneProcessor(
       scene.cloneBlanks.foldLeft(Map.empty[String, DisplayObject]) { (acc, blank) =>
         blank.cloneable match {
           case g: Graphic =>
-            acc + (blank.id.value -> displayObjectConverterClone.graphicToDisplayObject(g, assetMapping))
+            acc + (blank.id.value -> displayObjectConverter.graphicToDisplayObject(g, assetMapping))
 
           case s: Sprite =>
             animationsRegister.fetchAnimationForSprite(gameTime, s.bindingKey, s.animationKey, s.animationActions) match {
@@ -79,22 +63,22 @@ final class SceneProcessor(
                 acc
 
               case Some(anim) =>
-                acc + (blank.id.value -> displayObjectConverterClone.spriteToDisplayObject(boundaryLocator, s, assetMapping, anim))
+                acc + (blank.id.value -> displayObjectConverter.spriteToDisplayObject(boundaryLocator, s, assetMapping, anim))
             }
         }
       }
 
     val gameLayerDisplayObjects =
-      displayObjectConverterGame.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
+      displayObjectConverter.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
 
     val lightingLayerDisplayObjects =
-      displayObjectConverterLighting.sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
+      displayObjectConverter.sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
 
     val distortionLayerDisplayObjects =
-      displayObjectConverterDistortion.sceneNodesToDisplayObjects(scene.distortionLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
+      displayObjectConverter.sceneNodesToDisplayObjects(scene.distortionLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
 
     val uiLayerDisplayObjects =
-      displayObjectConverterUi.sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
+      displayObjectConverter.sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
 
     new ProcessedSceneData(
       gameProjection,
