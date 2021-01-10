@@ -121,7 +121,6 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   def rebuildGameLoop(firstRun: Boolean): AssetCollection => Unit =
     ac => {
 
-      boundaryLocator.purgeCache()
       sceneProcessor.purgeCaches()
 
       accumulatedAssetCollection = accumulatedAssetCollection |+| ac

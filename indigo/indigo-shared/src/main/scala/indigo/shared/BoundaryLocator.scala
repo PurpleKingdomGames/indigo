@@ -20,11 +20,6 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
   implicit private val boundsCache: QuickCache[Rectangle]         = QuickCache.empty
   implicit private val textLinesCache: QuickCache[List[TextLine]] = QuickCache.empty
 
-  def purgeCache(): Unit = {
-    boundsCache.purgeAllNow()
-    textLinesCache.purgeAllNow()
-  }
-
   // General
   def findBounds(sceneGraphNode: SceneGraphNode): Rectangle =
     sceneGraphNode match {
@@ -56,6 +51,8 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
   def graphicBounds(graphic: Graphic): Rectangle =
     graphic.lazyBounds
 
+  // Cache assumes sprite key + animation key combo is unqiue AND that all frames have the same dimensions...
+  // ...which might not be true...?
   def spriteBounds(sprite: Sprite): Rectangle =
     QuickCache(s"""sprite-${sprite.bindingKey.value}-${sprite.animationKey.value}""") {
       animationsRegister.fetchAnimationInLastState(sprite.bindingKey, sprite.animationKey) match {
@@ -77,17 +74,16 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
       .foldLeft(Rectangle.zero) { (acc, curr) =>
         Rectangle(0, 0, acc.width + curr.width, Math.max(acc.height, curr.height))
       }
-
+  // Cache assumes that font key + text line should be unique / safely reusable
   def textAsLinesWithBounds(text: String, fontKey: FontKey): List[TextLine] =
-    QuickCache(s"""text-lines-${fontKey.key}-${text}""") {
+    QuickCache(s"""${fontKey.key}-${text}""") {
       fontRegister
         .findByFontKey(fontKey)
         .map { fontInfo =>
           text.linesIterator.toList
             .map(lineText => new TextLine(lineText, textLineBounds(lineText, fontInfo)))
-            .foldLeft((0, List[TextLine]())) {
-              case ((yPos, lines), textLine) =>
-                (yPos + textLine.lineBounds.height, lines ++ List(textLine.moveTo(0, yPos)))
+            .foldLeft((0, List[TextLine]())) { case ((yPos, lines), textLine) =>
+              (yPos + textLine.lineBounds.height, lines ++ List(textLine.moveTo(0, yPos)))
             }
             ._2
         }
