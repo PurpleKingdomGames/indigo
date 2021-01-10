@@ -23,7 +23,16 @@
       throw error;
     };
 
-    worker.postMessage({"boom": true, "fish": "haddock"});
+    var x = {
+      a: 1,
+      b: 2,
+      c: 3
+    }
+
+    worker.postMessage({operation: "boom", data: {"boom": true, "fish": "haddock"}})
+    worker.postMessage({operation: "foo", data: {"bar": "Oooof."}})
+    worker.postMessage({operation: "cod"})
+    worker.postMessage("Hi there!")
 
   } else {
     console.log("workers not supported");
