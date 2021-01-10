@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"  />
+    <title>Render worker test</title>
+  </head>
+  <body>
+
+  <div id="result"></div>
+
+  <script language="javascript">
+
+  if (window.Worker) {
+    var worker = new Worker('worker.js');
+
+    worker.onmessage = function(event) {
+      document.getElementById('result').textContent = event.data;
+      console.log('Got: ' + event.data + '\n');
+    };
+
+    worker.onerror = function(error) {
+      console.log('Worker error: ' + error.message + '\n');
+      throw error;
+    };
+
+    var x = {
+      a: 1,
+      b: 2,
+      c: 3
+    }
+
+    worker.postMessage({operation: "boom", data: {"boom": true, "fish": "haddock"}})
+    worker.postMessage({operation: "foo", data: {"bar": "Oooof."}})
+    worker.postMessage({operation: "cod"})
+    worker.postMessage("Hi there!")
+
+  } else {
+    console.log("workers not supported");
+  }
+
+  </script>
+  </body>
+</html>
