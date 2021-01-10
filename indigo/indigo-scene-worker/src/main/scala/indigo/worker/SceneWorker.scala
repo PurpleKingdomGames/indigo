@@ -1,5 +1,16 @@
 package indigo.worker
 
+import indigo.shared.BoundaryLocator
+import indigo.shared.AnimationsRegister
+import indigo.shared.FontRegister
+import indigo.shared.platform.SceneProcessor
+import indigo.shared.datatypes.{FontInfo, FontKey}
+import indigo.shared.animation.{Animation, AnimationKey}
+import indigo.shared.time.GameTime
+import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.shared.platform.AssetMapping
+import indigo.shared.datatypes.mutable.CheapMatrix4
+
 import org.scalajs.dom
 
 import scala.scalajs.js
@@ -9,33 +20,64 @@ import scala.annotation.nowarn
 
 @JSExportTopLevel("SceneWorker")
 object SceneWorker {
+
+  val animationsRegister: AnimationsRegister =
+    new AnimationsRegister()
+  val fontRegister: FontRegister =
+    new FontRegister()
+  val boundaryLocator: BoundaryLocator =
+    new BoundaryLocator(animationsRegister, fontRegister)
+  val sceneProcessor: SceneProcessor =
+    new SceneProcessor(boundaryLocator, animationsRegister, fontRegister)
+
   @JSExport
   def main(): Unit = {
     SceneWorkerGlobal.addEventListener("message", onMessage)
-    SceneWorkerGlobal.postMessage(s"Started")
+    SceneWorkerGlobal.postMessage(s"Scene Worker Started")
   }
 
-  val onMessage: dom.MessageEvent => Unit = msg => {
-    SceneWorkerGlobal.postMessage(s"[Worker] onMessage: " + msg.data.toString)
-    val message =
-      msg.data.asInstanceOf[Command] match {
-        case c if c.operation.isDefined && c.operation.get == "boom" =>
-          val s = c.data.asInstanceOf[Boom]
-          s"${s.boom} - ${s.fish}"
+  def validate(c: Command, name: String): Boolean =
+    c.operation.isDefined && c.operation.get == name
 
-        case c if c.operation.isDefined && c.operation.get == "foo" =>
-          val s = c.data.asInstanceOf[Foo]
-          s"${s.bar}"
+  val onMessage: dom.MessageEvent => Unit =
+    msg =>
+      msg.data.asInstanceOf[Command] match {
+        case c if validate(c, "addFont") =>
+          fontRegister.register(c.data.asInstanceOf[FontInfo])
+
+        case c if validate(c, "addFonts") =>
+          fontRegister.registerAll(c.data.asInstanceOf[Array[FontInfo]])
+
+        case c if validate(c, "addAnimation") =>
+          animationsRegister.register(c.data.asInstanceOf[Animation])
+
+        case c if validate(c, "addAnimations") =>
+          animationsRegister.registerAll(c.data.asInstanceOf[Array[Animation]])
+
+        case c if validate(c, "processScene") =>
+          val args = c.data.asInstanceOf[SceneFrameData]
+
+          val res =
+            sceneProcessor.processScene(
+              gameTime = args.gameTime,
+              scene = args.scene,
+              assetMapping = args.assetMapping,
+              screenWidth = args.screenWidth,
+              screenHeight = args.screenHeight,
+              orthographicProjectionMatrix = args.orthographicProjectionMatrix
+            )
+
+          SceneWorkerGlobal.postMessage(res.asInstanceOf[js.Any])
 
         case c if c.operation.isDefined =>
-          s"Unknown operation: ${c.operation.get}"
+          println(s"Scene Worker - Unknown operation: ${c.operation.get}")
+          ()
 
         case _ =>
-          s"Unexpected message: " + msg.data.toString // Should use JSON.stringify
+          // Should use JSON.stringify?
+          println(s"Scene Worker - Unexpected message: " + msg.data.toString)
+          ()
       }
-
-    SceneWorkerGlobal.postMessage(s"Received: $message")
-  }
 }
 
 object SceneWorkerGlobal {
@@ -52,16 +94,16 @@ object SceneWorkerGlobal {
 
 }
 
-trait Boom extends js.Object {
-  val boom: Boolean
-  val fish: js.UndefOr[String]
-}
-
-trait Foo extends js.Object {
-  val bar: String
-}
-
 trait Command extends js.Object {
   val operation: js.UndefOr[String]
   val data: js.Object
+}
+
+trait SceneFrameData extends js.Object {
+  val gameTime: GameTime
+  val scene: SceneUpdateFragment
+  val assetMapping: AssetMapping
+  val screenWidth: Double
+  val screenHeight: Double
+  val orthographicProjectionMatrix: CheapMatrix4
 }
