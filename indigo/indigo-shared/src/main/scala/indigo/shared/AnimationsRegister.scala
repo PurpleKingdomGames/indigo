@@ -18,6 +18,9 @@ final class AnimationsRegister {
     ()
   }
 
+  def registerAll(animations: Set[Animation]): Unit =
+    animations.foreach(register)
+
   def findByAnimationKey(animationKey: AnimationKey): Option[AnimationRef] =
     animationRegistry.get(animationKey)
 

@@ -121,7 +121,6 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   def rebuildGameLoop(firstRun: Boolean): AssetCollection => Unit =
     ac => {
 
-      fontRegister.clearRegister()
       boundaryLocator.purgeCache()
       sceneProcessor.purgeCaches()
 
@@ -143,9 +142,9 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
         case Outcome.Result(startupData, globalEvents) =>
           globalEvents.foreach(globalEventStream.pushGlobalEvent)
 
-          GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
-
-          GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
+          // Additive only. Adds new, does not replace existing.
+          animationsRegister.registerAll(animations ++ startupData.additionalAnimations)
+          fontRegister.registerAll(fonts ++ startupData.additionalFonts)
 
           def modelToUse(startUpSuccessData: => StartUpData): Outcome[GameModel] =
             if (firstRun) initialModel(startUpSuccessData)
@@ -201,12 +200,6 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 }
 
 object GameEngine {
-
-  def registerAnimations(animationsRegister: AnimationsRegister, animations: Set[Animation]): Unit =
-    animations.foreach(animationsRegister.register)
-
-  def registerFonts(fontRegister: FontRegister, fonts: Set[FontInfo]): Unit =
-    fonts.foreach(fontRegister.register)
 
   def initialisedGame[StartUpData](startupData: Startup[StartUpData]): Outcome[StartUpData] =
     startupData match {

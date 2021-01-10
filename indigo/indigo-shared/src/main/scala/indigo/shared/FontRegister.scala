@@ -11,12 +11,10 @@ final class FontRegister {
     ()
   }
 
+  def registerAll(fontInfos: Set[FontInfo]): Unit =
+    fontInfos.foreach(register)
+
   def findByFontKey(fontKey: FontKey): Option[FontInfo] =
     cache.fetch(CacheKey(fontKey.key))
-
-  def clearRegister(): Unit = {
-    cache.purgeAll()
-    ()
-  }
 
 }

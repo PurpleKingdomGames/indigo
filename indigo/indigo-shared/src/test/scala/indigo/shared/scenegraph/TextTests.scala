@@ -12,13 +12,13 @@ class TextTests extends munit.FunSuite {
 
   val material = Material.Textured(AssetName("font-sheet"))
 
-  val fontRegister: FontRegister =
-    new FontRegister
-
-  val boundaryLocator: BoundaryLocator =
-    new BoundaryLocator(new AnimationsRegister, fontRegister)
-
   test("Text entities should be able to correctly calculate the bounds where all are equal") {
+
+    val fontRegister: FontRegister =
+      new FontRegister
+
+    val boundaryLocator: BoundaryLocator =
+      new BoundaryLocator(new AnimationsRegister, fontRegister)
 
     val chars = List(
       FontChar("a", 0, 16, 16, 16),
@@ -36,10 +36,15 @@ class TextTests extends munit.FunSuite {
 
     assertEquals(t.bounds(boundaryLocator) === Rectangle(10, 20, 16 * 3, 16), true)
 
-    fontRegister.clearRegister()
   }
 
   test("Text entities should be able to correctly calculate the bounds with different sized chars") {
+
+    val fontRegister: FontRegister =
+        new FontRegister
+      
+    val boundaryLocator: BoundaryLocator =
+      new BoundaryLocator(new AnimationsRegister, fontRegister)
 
     val chars = List(
       FontChar("a", 0, 16, 10, 10),
@@ -59,8 +64,6 @@ class TextTests extends munit.FunSuite {
     val expected = Rectangle(10, 20, 10 + 20 + 30, 30) // 60 x 30
 
     assertEquals(actual === expected, true)
-
-    fontRegister.clearRegister()
   }
 
 }
