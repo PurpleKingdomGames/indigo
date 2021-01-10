@@ -35,14 +35,12 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
   val cloneBlankMapping: Map[String, DisplayObject] = Map.empty[String, DisplayObject]
 
-  val doc = new DisplayObjectConversions(
-    boundaryLocator,
-    animationRegister,
-    fontRegister
-  )
-
   def convert(node: SceneGraphNode): DisplayObject = {
-    doc.purgeCaches()
+    val doc = new DisplayObjectConversions(
+      boundaryLocator,
+      animationRegister,
+      fontRegister
+    )
 
     doc
       .sceneNodesToDisplayObjects(
