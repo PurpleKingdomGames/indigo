@@ -42,48 +42,6 @@ lazy val publishSettings = {
   )
 }
 
-// Testing
-
-lazy val sandbox =
-  project
-    .enablePlugins(ScalaJSPlugin)
-    .enablePlugins(SbtIndigo)
-    .settings(commonSettings: _*)
-    .settings(
-      name := "sandbox",
-      showCursor := true,
-      title := "Sandbox",
-      gameAssetsDirectory := "assets"
-    )
-    .settings(
-      publish := {},
-      publishLocal := {}
-    )
-    .dependsOn(indigo)
-    .dependsOn(indigoExtras)
-    .dependsOn(indigoJsonCirce)
-
-lazy val perf =
-  project
-    .enablePlugins(ScalaJSPlugin)
-    .enablePlugins(SbtIndigo)
-    .settings(commonSettings: _*)
-    .settings(
-      name := "indigo-perf",
-      showCursor := true,
-      title := "Perf",
-      gameAssetsDirectory := "assets",
-      windowStartWidth := 800,
-      windowStartHeight := 600
-    )
-    .settings(
-      publish := {},
-      publishLocal := {}
-    )
-    .dependsOn(indigo)
-    .dependsOn(indigoExtras)
-    .dependsOn(indigoJsonCirce)
-
 // Indigo
 lazy val indigoCore =
   project
@@ -254,9 +212,7 @@ lazy val indigoProject =
       indigo,
       indigoFacades,
       indigoRenderWorker,
-      indigoSceneWorker,
-      sandbox,
-      perf
+      indigoSceneWorker
     )
 
 lazy val code =

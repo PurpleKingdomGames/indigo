@@ -12,10 +12,7 @@ lazy val releaseProjects: List[String] =
   )
 
 lazy val coreProjects: List[String] =
-  releaseProjects ++ List(
-    "sandbox",
-    "perf"
-  )
+  releaseProjects
 
 def applyCommand(projects: List[String], command: String): String =
   projects.map(p => p + "/" + command).mkString(";", ";", "")
@@ -108,7 +105,7 @@ addCommandAlias(
 addCommandAlias(
   "localPublishIndigo",
   applyCommand(
-    coreProjects.filterNot(name => name == "sandbox" || name == "perf"),
+    coreProjects,
     "publishLocal"
   )
 )
@@ -131,42 +128,6 @@ addCommandAlias(
 )
 
 addCommandAlias(
-  "sandboxBuild",
-  List(
-    "buildAllNoClean",
-    "sandbox/fastOptJS",
-    "sandbox/indigoBuild"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "sandboxRun",
-  List(
-    "buildAllNoClean",
-    "sandbox/fastOptJS",
-    "sandbox/indigoRun"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "perfBuild",
-  List(
-    "buildAllNoClean",
-    "perf/fastOptJS",
-    "perf/indigoBuild"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
-  "perfRun",
-  List(
-    "buildAllNoClean",
-    "perf/fastOptJS",
-    "perf/indigoRun"
-  ).mkString(";", ";", "")
-)
-
-addCommandAlias(
   "indigoPublishAllSigned",
   applyToAllReleaseable("publishSigned")
 )
@@ -184,8 +145,6 @@ addCommandAlias(
 
 // -- cross building --
 
-
-
 addCommandAlias(
   "crossBuildIndigo",
   applyCrossCommand(coreProjects, "compile")
@@ -193,7 +152,7 @@ addCommandAlias(
 addCommandAlias(
   "crossLocalPublishIndigo",
   applyCrossCommand(
-    coreProjects.filterNot(name => name == "sandbox" || name == "perf"),
+    coreProjects,
     "publishLocal"
   )
 )
@@ -204,7 +163,6 @@ addCommandAlias(
     "crossLocalPublishIndigo"
   ).mkString(";", ";", "")
 )
-
 
 addCommandAlias(
   "crossTestIndigo",
