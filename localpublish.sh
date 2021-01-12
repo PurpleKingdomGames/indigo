@@ -2,6 +2,12 @@
 
 set -e
 
+# Indigo
+echo ">>> Indigo"
+cd indigo
+bash localpublish.sh
+cd ..
+
 # Indigo Plugin
 echo ">>> Indigo Plugin"
 cd indigo-plugin
@@ -17,12 +23,6 @@ cd ..
 # Mill Indigo
 echo ">>> Mill-Indigo"
 cd mill-indigo
-bash build.sh
-cd ..
-
-# Indigo
-echo ">>> Indigo"
-cd indigo
 bash build.sh
 cd ..
 

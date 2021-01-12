@@ -1,4 +1,4 @@
-object SandboxIndigoVersion {
+object IndigoVersion {
   def getVersion: String = {
     def rec(path: String, levels: Int, version: Option[String]): String = {
       val msg = "ERROR: Couldn't find indigo version."

@@ -3,6 +3,7 @@ import scala.language.postfixOps
 
 val dottyVersion    = "3.0.0-M3"
 val scala213Version = "2.13.4"
+lazy val indigoVersion = IndigoVersion.getVersion
 
 lazy val commonSettings = Seq(
   version := "0.0.1",
@@ -10,8 +11,8 @@ lazy val commonSettings = Seq(
   organization := "indigo-examples",
   libraryDependencies ++= Seq(
     "org.scalameta"   %%% "munit"         % "0.7.20" % Test,
-    "io.indigoengine" %%% "indigo"        % IndigoVersion.getVersion,
-    "io.indigoengine" %%% "indigo-extras" % IndigoVersion.getVersion
+    "io.indigoengine" %%% "indigo"        % indigoVersion,
+    "io.indigoengine" %%% "indigo-extras" % indigoVersion
   ),
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
@@ -134,7 +135,7 @@ lazy val tiled =
       title := "Tiled example",
       gameAssetsDirectory := "assets",
       libraryDependencies ++= Seq(
-        "io.indigoengine" %%% "indigo-json-circe" % IndigoVersion.getVersion
+        "io.indigoengine" %%% "indigo-json-circe" % indigoVersion
       )
     )
 

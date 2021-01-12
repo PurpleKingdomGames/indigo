@@ -4,8 +4,8 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 import indigo.shared.platform.SceneProcessor
-import indigo.shared.datatypes.{FontInfo, FontKey}
-import indigo.shared.animation.{Animation, AnimationKey}
+import indigo.shared.datatypes.FontInfo
+import indigo.shared.animation.Animation
 import indigo.shared.time.GameTime
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.platform.AssetMapping

@@ -3,6 +3,7 @@
 //-----------------------------------
 
 val dottyVersion    = "3.0.0-M3"
+lazy val indigoVersion = IndigoVersion.getVersion
 
 lazy val pirate =
   (project in file("."))
@@ -30,9 +31,9 @@ lazy val pirate =
       windowStartWidth := 1280,
       windowStartHeight := 720,
       libraryDependencies ++= Seq(
-        "io.indigoengine" %%% "indigo-json-circe" % IndigoVersion.getVersion, // Needed for Aseprite & Tiled support
-        "io.indigoengine" %%% "indigo"            % IndigoVersion.getVersion, // Important! :-)
-        "io.indigoengine" %%% "indigo-extras"     % IndigoVersion.getVersion // Important! :-)
+        "io.indigoengine" %%% "indigo-json-circe" % indigoVersion, // Needed for Aseprite & Tiled support
+        "io.indigoengine" %%% "indigo"            % indigoVersion, // Important! :-)
+        "io.indigoengine" %%% "indigo-extras"     % indigoVersion // Important! :-)
       )
     )
 

@@ -1,5 +1,0 @@
-addSbtPlugin("org.scala-js"             %% "sbt-scalajs"  % "1.4.0")
-addSbtPlugin("io.indigoengine"          %% "sbt-indigo"   % SbtIndigoVersion.getVersion)
-addSbtPlugin("ch.epfl.lamp"              % "sbt-dotty"    % "0.5.1")
-addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.1.16")
-addSbtPlugin("ch.epfl.scala"             % "sbt-scalafix" % "0.9.24")
