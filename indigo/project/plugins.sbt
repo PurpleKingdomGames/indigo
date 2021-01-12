@@ -1,4 +1,4 @@
-addSbtPlugin("org.scala-js"             %% "sbt-scalajs"  % "1.3.1")
+addSbtPlugin("org.scala-js"             %% "sbt-scalajs"  % "1.4.0")
 addSbtPlugin("io.indigoengine"          %% "sbt-indigo"   % SbtIndigoVersion.getVersion)
 addSbtPlugin("com.eed3si9n"             %% "sbt-assembly" % "0.14.10")
 addSbtPlugin("org.xerial.sbt"           %% "sbt-sonatype" % "3.9.2")
