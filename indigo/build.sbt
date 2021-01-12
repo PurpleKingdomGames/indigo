@@ -116,6 +116,10 @@ lazy val indigoRenderWorker =
         ("org.scala-js" %%% "scalajs-dom" % "1.1.0").withDottyCompat(scalaVersion.value)
       )
     )
+    .settings(
+      publish := {},
+      publishLocal := {}
+    )
 
 // Indigo Scene Worker
 lazy val indigoSceneWorker =
@@ -132,6 +136,10 @@ lazy val indigoSceneWorker =
       libraryDependencies ++= Seq(
         ("org.scala-js" %%% "scalajs-dom" % "1.1.0").withDottyCompat(scalaVersion.value)
       )
+    )
+    .settings(
+      publish := {},
+      publishLocal := {}
     )
     .dependsOn(indigoShared)
 
