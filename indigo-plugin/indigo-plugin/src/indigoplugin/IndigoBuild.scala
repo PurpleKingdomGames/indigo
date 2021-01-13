@@ -8,6 +8,17 @@ object IndigoBuild {
 
   def build(templateOptions: TemplateOptions, directoryStructure: DirectoryStructure, newScriptName: String): Unit = {
 
+    // copy resources
+    IndigoBuild.copyResources(
+      directoryStructure.artefacts,
+      "indigo-render-worker-opt.js",
+      "indigo-render-worker-opt.js.map",
+      "indigo-render-worker.js",
+      "indigo-scene-worker-opt.js",
+      "indigo-scene-worker-opt.js.map",
+      "indigo-scene-worker.js"
+    )
+
     // copy built js file into scripts dir
     IndigoBuild.copyScript(templateOptions, directoryStructure.artefacts, newScriptName)
 
@@ -67,6 +78,21 @@ object IndigoBuild {
       os.copy(scriptFile, destScriptsFolder / fileName)
     else
       throw new Exception("Script file does not exist, have you compiled the JS file? Tried: " + scriptFile.toString())
+  }
+
+  def copyResources(destScriptsFolder: Path, fileNames: String*): Unit =
+    fileNames.toList.foreach(f => copyResource(destScriptsFolder, f))
+
+  @SuppressWarnings(Array("org.wartremover.warts.Throw"))
+  def copyResource(destScriptsFolder: Path, fileName: String): Unit = {
+    val cl           = getClass.getClassLoader
+    val resourceFile = os.resource(cl) / "workers" / fileName
+
+    try os.write(destScriptsFolder / fileName, os.read(resourceFile))
+    catch {
+      case e: Throwable =>
+        throw new Exception("Resource file does not exist. Tried: " + resourceFile.toString())
+    }
   }
 
   def writeHtml(directoryStructure: DirectoryStructure, html: String): Path = {
