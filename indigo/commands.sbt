@@ -6,13 +6,17 @@ lazy val releaseProjects: List[String] =
     "indigoCore",
     "indigoExtras",
     "indigo",
-    "indigoFacades",
+    "indigoFacades"
+  )
+
+lazy val workerProjects: List[String] =
+  List(
     "indigoRenderWorker",
     "indigoSceneWorker"
   )
 
 lazy val coreProjects: List[String] =
-  releaseProjects
+  releaseProjects ++ workerProjects
 
 def applyCommand(projects: List[String], command: String): String =
   projects.map(p => p + "/" + command).mkString(";", ";", "")
@@ -143,6 +147,11 @@ addCommandAlias(
   ).mkString(";", ";", "")
 )
 
+addCommandAlias(
+  "exportWorkers",
+  applyCommand(workerProjects, "fullOptJS")
+)
+
 // -- cross building --
 
 addCommandAlias(
@@ -186,7 +195,7 @@ addCommandAlias(
     "crossCleanAll",
     "buildAllNoClean",
     "testAllNoClean",
-    "crossBuildIndigo", // partial repeat
+    "crossBuildIndigo",    // partial repeat
     "crossTestAllNoClean", // partial repeat
     "crossIndigoPublishAllSigned",
     "sonatypeBundleRelease"
