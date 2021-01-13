@@ -42,6 +42,9 @@ object SceneWorker {
   val onMessage: dom.MessageEvent => Unit =
     msg =>
       msg.data.asInstanceOf[Command] match {
+        case c if validate(c, "echo") =>
+          SceneWorkerGlobal.postMessage("Echo: " + c.data.asInstanceOf[String])
+
         case c if validate(c, "addFont") =>
           fontRegister.register(c.data.asInstanceOf[FontInfo])
 

@@ -19,6 +19,10 @@ object RenderWorker {
     RenderWorkerGlobal.postMessage(s"[Worker] onMessage: " + msg.data.toString)
     val message =
       msg.data.asInstanceOf[Command] match {
+        case c if c.operation.isDefined && c.operation.get == "echo" =>
+          val s = c.data.asInstanceOf[String]
+          s"Echo: $s"
+
         case c if c.operation.isDefined && c.operation.get == "boom" =>
           val s = c.data.asInstanceOf[Boom]
           s"${s.boom} - ${s.fish}"
