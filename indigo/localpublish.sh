@@ -2,4 +2,4 @@
 
 # Does not run tests.
 
-sbt crossLocalPublishNoClean
+sbt crossLocalPublishNoClean exportWorkers

@@ -18,6 +18,8 @@ import indigo.platform.assets.TextureAtlas
 import indigo.platform.assets.TextureAtlasFunctions
 import indigo.platform.assets.ImageRef
 
+import scala.scalajs.js
+import org.scalajs.dom.raw.Worker
 import org.scalajs.dom
 import org.scalajs.dom.html.Canvas
 import scala.util.Success
@@ -45,7 +47,29 @@ class Platform(
   )
   private var _canvas: Canvas = null
 
-  def initialise(): Outcome[(Renderer, AssetMapping)] =
+  @SuppressWarnings(
+    Array(
+      "scalafix:DisableSyntax.asInstanceOf"
+    )
+  )
+  def initialise(): Outcome[(Renderer, AssetMapping)] = {
+
+    val sceneWorker = new Worker("indigo-scene-worker.js")
+    sceneWorker.postMessage(js.Dynamic.literal("operation" -> "echo", "data" -> "Hello, Scene Worker!"))
+
+    val renderWorker = new Worker("indigo-render-worker.js")
+    renderWorker.postMessage(js.Dynamic.literal("operation" -> "echo", "data" -> "Hello, Render Worker!"))
+
+    sceneWorker.onmessage = (e: js.Any) => {
+      val msg = e.asInstanceOf[dom.MessageEvent].data.asInstanceOf[String]
+      println("Scene worker said: " + msg)
+    }
+
+    renderWorker.onmessage = (e: js.Any) => {
+      val msg = e.asInstanceOf[dom.MessageEvent].data.asInstanceOf[String]
+      println("Render worker said: " + msg)
+    }
+
     for {
       textureAtlas        <- createTextureAtlas(assetCollection)
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
@@ -58,6 +82,7 @@ class Platform(
 
       (renderer, assetMapping)
     }
+  }
 
   def tick(loop: Long => Unit): Unit = {
     dom.window.requestAnimationFrame(t => loop(t.toLong))

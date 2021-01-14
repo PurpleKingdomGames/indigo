@@ -13,9 +13,12 @@ object IndigoBuild {
       directoryStructure.artefacts,
       "indigo-render-worker-opt.js",
       "indigo-render-worker-opt.js.map",
-      "indigo-render-worker.js",
       "indigo-scene-worker-opt.js",
-      "indigo-scene-worker-opt.js.map",
+      "indigo-scene-worker-opt.js.map"
+    )
+    IndigoBuild.copyResources(
+      directoryStructure.base,
+      "indigo-render-worker.js",
       "indigo-scene-worker.js"
     )
 

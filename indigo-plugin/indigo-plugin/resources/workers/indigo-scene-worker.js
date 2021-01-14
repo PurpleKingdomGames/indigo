@@ -1,2 +1,2 @@
-importScripts("./indigo-scene-worker-opt.js");
+importScripts("./scripts/indigo-scene-worker-opt.js");
 SceneWorker.main();

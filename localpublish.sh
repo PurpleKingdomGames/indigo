@@ -3,9 +3,18 @@
 set -e
 
 # Indigo
-echo ">>> Indigo"
+echo ">>> Indigo (+ Workers)"
 cd indigo
 bash localpublish.sh
+cd ..
+
+# Indigo
+echo ">>> Copy Indigo Workers"
+cd indigo
+cp indigo-render-worker/target/scala-3.0.0-M3/indigo-render-worker-opt.js ../indigo-plugin/indigo-plugin/resources/workers/
+cp indigo-render-worker/target/scala-3.0.0-M3/indigo-render-worker-opt.js.map ../indigo-plugin/indigo-plugin/resources/workers/
+cp indigo-render-worker/target/scala-3.0.0-M3/indigo-render-worker-opt.js ../indigo-plugin/indigo-plugin/resources/workers/
+cp indigo-render-worker/target/scala-3.0.0-M3/indigo-render-worker-opt.js.map ../indigo-plugin/indigo-plugin/resources/workers/
 cd ..
 
 # Indigo Plugin
