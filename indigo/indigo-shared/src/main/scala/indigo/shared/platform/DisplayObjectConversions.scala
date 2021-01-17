@@ -46,6 +46,13 @@ final class DisplayObjectConversions(
   implicit private val effectsCache: QuickCache[DisplayEffects]                  = QuickCache.empty
   implicit private val textureAmountsCache: QuickCache[(Vector2, Double)]        = QuickCache.empty
 
+  def purgeTextureAtlasCaches(): Unit = {
+    stringCache.purgeAllNow()
+    vector2Cache.purgeAllNow()
+    frameCache.purgeAllNow()
+    ()
+  }
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def lookupTextureOffset(assetMapping: AssetMapping, name: String): Vector2 =
     QuickCache("tex-offset-" + name) {
@@ -385,37 +392,36 @@ final class DisplayObjectConversions(
         }
 
       QuickCache(lineHash) {
-        zipWithCharDetails(line.text.toList, fontInfo).toList.map {
-          case (fontChar, xPosition) =>
-            val frameInfo =
-              QuickCache(fontChar.bounds.hash + "_" + fontInfo.fontSpriteSheet.material.hash) {
-                SpriteSheetFrame.calculateFrameOffset(
-                  atlasSize = lookupAtlasSize(assetMapping, materialName),
-                  frameCrop = fontChar.bounds,
-                  textureOffset = lookupTextureOffset(assetMapping, materialName)
-                )
-              }
+        zipWithCharDetails(line.text.toList, fontInfo).toList.map { case (fontChar, xPosition) =>
+          val frameInfo =
+            QuickCache(fontChar.bounds.hash + "_" + fontInfo.fontSpriteSheet.material.hash) {
+              SpriteSheetFrame.calculateFrameOffset(
+                atlasSize = lookupAtlasSize(assetMapping, materialName),
+                frameCrop = fontChar.bounds,
+                textureOffset = lookupTextureOffset(assetMapping, materialName)
+              )
+            }
 
-            DisplayObject(
-              transform = DisplayObjectConversions.nodeToMatrix4(
-                leaf.moveBy(xPosition + alignmentOffsetX, yOffset),
-                Vector3(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble, 1.0d)
-              ),
-              z = leaf.depth.zIndex.toDouble,
-              width = fontChar.bounds.width,
-              height = fontChar.bounds.height,
-              atlasName = lookupAtlasName(assetMapping, materialName),
-              frame = frameInfo,
-              albedoAmount = albedoAmount,
-              emissiveOffset = frameInfo.offsetToCoords(emissiveOffset),
-              emissiveAmount = emissiveAmount.toFloat,
-              normalOffset = frameInfo.offsetToCoords(normalOffset),
-              normalAmount = normalAmount.toFloat,
-              specularOffset = frameInfo.offsetToCoords(specularOffset),
-              specularAmount = specularAmount.toFloat,
-              isLit = if (fontInfo.fontSpriteSheet.material.isLit) 1.0f else 0.0f,
-              effects = effectsValues
-            )
+          DisplayObject(
+            transform = DisplayObjectConversions.nodeToMatrix4(
+              leaf.moveBy(xPosition + alignmentOffsetX, yOffset),
+              Vector3(fontChar.bounds.width.toDouble, fontChar.bounds.height.toDouble, 1.0d)
+            ),
+            z = leaf.depth.zIndex.toDouble,
+            width = fontChar.bounds.width,
+            height = fontChar.bounds.height,
+            atlasName = lookupAtlasName(assetMapping, materialName),
+            frame = frameInfo,
+            albedoAmount = albedoAmount,
+            emissiveOffset = frameInfo.offsetToCoords(emissiveOffset),
+            emissiveAmount = emissiveAmount.toFloat,
+            normalOffset = frameInfo.offsetToCoords(normalOffset),
+            normalAmount = normalAmount.toFloat,
+            specularOffset = frameInfo.offsetToCoords(specularOffset),
+            specularAmount = specularAmount.toFloat,
+            isLit = if (fontInfo.fontSpriteSheet.material.isLit) 1.0f else 0.0f,
+            effects = effectsValues
+          )
         }
       }
     }

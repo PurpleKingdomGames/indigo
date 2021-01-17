@@ -21,6 +21,9 @@ final class SceneProcessor(
   private val displayObjectConverter: DisplayObjectConversions =
     new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
 
+  def purgeTextureAtlasCaches(): Unit =
+    displayObjectConverter.purgeTextureAtlasCaches()
+
   def processScene(
       gameTime: GameTime,
       scene: SceneUpdateFragment,

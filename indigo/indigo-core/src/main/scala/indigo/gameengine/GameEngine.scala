@@ -115,6 +115,8 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   def rebuildGameLoop(firstRun: Boolean): AssetCollection => Unit =
     ac => {
 
+      sceneProcessor.purgeTextureAtlasCaches()
+
       val time = if (firstRun) 0 else gameLoopInstance.runningTimeReference
 
       platform.addAssetsToCollection(ac)
