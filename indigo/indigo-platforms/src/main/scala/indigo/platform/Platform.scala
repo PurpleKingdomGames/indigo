@@ -37,6 +37,9 @@ import indigo.shared.platform.SceneProcessor
 import indigo.platform.audio.AudioPlayer
 import indigo.shared.audio.Volume
 import indigo.shared.assets.AssetName
+import indigo.shared.AnimationsRegister
+import indigo.shared.FontRegister
+import indigo.shared.BoundaryLocator
 
 class Platform(
     gameConfig: GameConfig,
@@ -49,6 +52,8 @@ class Platform(
   val rendererInit: RendererInitialiser =
     new RendererInitialiser(gameConfig.advanced.renderingTechnology, globalEventStream)
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
+  private var sceneProcessor: SceneProcessor = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
   private var _canvas: Canvas = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -64,12 +69,14 @@ class Platform(
   def giveAssetCollection: AssetCollection =
     assetCollection
 
-  @SuppressWarnings(
-    Array(
-      "scalafix:DisableSyntax.asInstanceOf"
-    )
-  )
-  def initialise(): Outcome[Unit] = {
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+  def purgeTextureAtlasCaches(): Unit =
+    if (sceneProcessor != null) {
+      sceneProcessor.purgeTextureAtlasCaches()
+    }
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
+  def initialise(boundaryLocator: BoundaryLocator, animationsRegister: AnimationsRegister, fontRegister: FontRegister): Outcome[Unit] = {
 
     val sceneWorker = new Worker("indigo-scene-worker.js")
     sceneWorker.postMessage(js.Dynamic.literal("operation" -> "echo", "data" -> "Hello, Scene Worker!"))
@@ -86,6 +93,8 @@ class Platform(
       val msg = e.asInstanceOf[dom.MessageEvent].data.asInstanceOf[String]
       println("Render worker said: " + msg)
     }
+
+    sceneProcessor = new SceneProcessor(boundaryLocator, animationsRegister, fontRegister)
 
     for {
       _ <- createCanvas(gameConfig)
@@ -213,8 +222,7 @@ class Platform(
 
   def presentScene(
       gameTime: GameTime,
-      scene: SceneUpdateFragment,
-      sceneProcessor: SceneProcessor
+      scene: SceneUpdateFragment
   ): Unit = {
 
     // Play audio
@@ -243,4 +251,5 @@ trait PlatformAPI {
   def enterFullScreen(): Unit
   def exitFullScreen(): Unit
   def playSound(assetName: AssetName, volume: Volume): Unit
+  def purgeTextureAtlasCaches(): Unit
 }

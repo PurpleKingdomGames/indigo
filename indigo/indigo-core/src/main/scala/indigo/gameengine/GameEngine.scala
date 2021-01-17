@@ -42,8 +42,6 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
     new FontRegister()
   private val boundaryLocator: BoundaryLocator =
     new BoundaryLocator(animationsRegister, fontRegister)
-  private val sceneProcessor: SceneProcessor =
-    new SceneProcessor(boundaryLocator, animationsRegister, fontRegister)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   private var gameLoopInstance: GameLoop[StartUpData, GameModel, ViewModel] = null
@@ -106,7 +104,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   def rebuildGameLoop(firstRun: Boolean, gameConfig: GameConfig): AssetCollection => Unit =
     ac => {
 
-      sceneProcessor.purgeTextureAtlasCaches()
+      platform.purgeTextureAtlasCaches()
 
       val time = if (firstRun) 0 else gameLoopInstance.runningTimeReference
 
@@ -143,7 +141,6 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
               GameEngine.initialiseGameLoop(
                 this,
                 boundaryLocator,
-                sceneProcessor,
                 gameConfig,
                 m,
                 vm,
@@ -153,7 +150,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
           val loop: Outcome[Long => Long => Unit] =
             for {
-              _                   <- if (firstRun) platform.initialise() else platform.reinitialise()
+              _                   <- if (firstRun) platform.initialise(boundaryLocator, animationsRegister, fontRegister) else platform.reinitialise()
               startUpSuccessData  <- GameEngine.initialisedGame(startupData)
               m                   <- modelToUse(startUpSuccessData)
               vm                  <- viewModelToUse(startUpSuccessData, m)
@@ -206,7 +203,6 @@ object GameEngine {
   def initialiseGameLoop[StartUpData, GameModel, ViewModel](
       gameEngine: GameEngine[StartUpData, GameModel, ViewModel],
       boundaryLocator: BoundaryLocator,
-      sceneProcessor: SceneProcessor,
       gameConfig: GameConfig,
       initialModel: GameModel,
       initialViewModel: GameModel => ViewModel,
@@ -215,7 +211,6 @@ object GameEngine {
     Outcome(
       new GameLoop[StartUpData, GameModel, ViewModel](
         boundaryLocator,
-        sceneProcessor,
         gameEngine,
         gameConfig,
         initialModel,

@@ -16,7 +16,6 @@ import indigo.shared.platform.SceneProcessor
 
 class GameLoop[StartUpData, GameModel, ViewModel](
     boundaryLocator: BoundaryLocator,
-    sceneProcessor: SceneProcessor,
     gameEngine: GameEngine[StartUpData, GameModel, ViewModel],
     gameConfig: GameConfig,
     initialModel: GameModel,
@@ -84,7 +83,7 @@ class GameLoop[StartUpData, GameModel, ViewModel](
           SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.lightingLayer.nodes, collectedEvents, gameEngine.globalEventStream.pushGlobalEvent)
           SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.uiLayer.nodes, collectedEvents, gameEngine.globalEventStream.pushGlobalEvent)
 
-          gameEngine.platform.presentScene(gameTime, scene, sceneProcessor)
+          gameEngine.platform.presentScene(gameTime, scene)
         } else {
           val processedFrame: Outcome[(GameModel, ViewModel)] =
             frameProcessor.runSkipView(startUpData, gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)
