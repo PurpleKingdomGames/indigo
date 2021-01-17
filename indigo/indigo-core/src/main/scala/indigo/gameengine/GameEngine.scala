@@ -11,14 +11,13 @@ import indigo.platform.assets._
 import indigo.platform.input.GamepadInputCaptureImpl
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.Platform
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-
 import indigo.platform.storage.Storage
 import indigo.shared.input.GamepadInputCapture
 import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 final class GameEngine[StartUpData, GameModel, ViewModel](
     fonts: Set[FontInfo],
@@ -127,7 +126,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
             if (firstRun) {
               Outcome(
                 new GameLoop[StartUpData, GameModel, ViewModel](
-                  platform.giveBoundaryLocator,
+                  platform.boundaryLocator,
                   this,
                   gameConfig,
                   m,

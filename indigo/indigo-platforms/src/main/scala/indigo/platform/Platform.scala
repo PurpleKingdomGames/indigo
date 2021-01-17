@@ -17,7 +17,6 @@ import indigo.platform.assets.AssetCollection
 import indigo.platform.assets.TextureAtlas
 import indigo.platform.assets.TextureAtlasFunctions
 import indigo.platform.assets.ImageRef
-
 import scala.scalajs.js
 import org.scalajs.dom.raw.Worker
 import org.scalajs.dom
@@ -31,7 +30,6 @@ import indigo.shared.events.FullScreenExited
 import indigo.shared.events.FullScreenExitError
 import indigo.shared.time.GameTime
 import indigo.shared.scenegraph.SceneUpdateFragment
-
 import indigo.shared.platform.SceneProcessor
 import indigo.platform.audio.AudioPlayer
 import indigo.shared.audio.Volume
@@ -42,16 +40,13 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.animation.Animation
 
-class Platform(
-    gameConfig: GameConfig,
-    globalEventStream: GlobalEventStream
-) extends PlatformAPI {
+class Platform(gameConfig: GameConfig, globalEventStream: GlobalEventStream) extends PlatformAPI {
 
   private val animationsRegister: AnimationsRegister =
     new AnimationsRegister()
   private val fontRegister: FontRegister =
     new FontRegister()
-  private val boundaryLocator: BoundaryLocator =
+  val boundaryLocator: BoundaryLocator =
     new BoundaryLocator(animationsRegister, fontRegister)
 
   val audioPlayer: AudioPlayer =
@@ -76,9 +71,6 @@ class Platform(
 
   def giveAssetCollection: AssetCollection =
     assetCollection
-
-  def giveBoundaryLocator: BoundaryLocator =
-    boundaryLocator
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def purgeTextureAtlasCaches(): Unit =
