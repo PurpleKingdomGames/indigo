@@ -84,21 +84,18 @@ class GameLoop[StartUpData, GameModel, ViewModel](
           SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.lightingLayer.nodes, collectedEvents, gameEngine.globalEventStream.pushGlobalEvent)
           SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.uiLayer.nodes, collectedEvents, gameEngine.globalEventStream.pushGlobalEvent)
 
-          // Play audio
-          gameEngine.audioPlayer.playAudio(scene.audio)
-
-          // Prepare scene
-          val sceneData = sceneProcessor.processScene(
+          gameEngine.platform.presentScene(
             gameTime,
             scene,
             gameEngine.assetMapping,
             gameEngine.renderer.screenWidth.toDouble,
             gameEngine.renderer.screenHeight.toDouble,
-            gameEngine.renderer.orthographicProjectionMatrix
+            gameEngine.renderer.orthographicProjectionMatrix,
+            gameEngine.audioPlayer,
+            gameEngine.renderer,
+            sceneProcessor
           )
-
-          // Render scene
-          gameEngine.renderer.drawScene(sceneData)
+          
         } else {
           val processedFrame: Outcome[(GameModel, ViewModel)] =
             frameProcessor.runSkipView(startUpData, gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)

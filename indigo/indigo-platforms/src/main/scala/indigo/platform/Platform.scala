@@ -29,6 +29,12 @@ import indigo.shared.events.FullScreenEntered
 import indigo.shared.events.FullScreenEnterError
 import indigo.shared.events.FullScreenExited
 import indigo.shared.events.FullScreenExitError
+import indigo.shared.time.GameTime
+import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.shared.datatypes.mutable.CheapMatrix4
+
+import indigo.shared.platform.SceneProcessor
+import indigo.platform.audio.AudioPlayer
 
 class Platform(
     gameConfig: GameConfig,
@@ -189,6 +195,35 @@ class Platform(
       case Failure(_) =>
         globalEventStream.pushGlobalEvent(FullScreenExitError)
     }
+
+  def presentScene(
+      gameTime: GameTime,
+      scene: SceneUpdateFragment,
+      assetMapping: AssetMapping,
+      screenWidth: Double,
+      screenHeight: Double,
+      orthographicProjectionMatrix: CheapMatrix4,
+      audioPlayer: AudioPlayer,
+      renderer: Renderer,
+      sceneProcessor: SceneProcessor
+  ): Unit = {
+
+    // Play audio
+    audioPlayer.playAudio(scene.audio)
+
+    // Prepare scene
+    val sceneData = sceneProcessor.processScene(
+      gameTime,
+      scene,
+      assetMapping,
+      screenWidth,
+      screenHeight,
+      orthographicProjectionMatrix
+    )
+
+    // Render scene
+    renderer.drawScene(sceneData)
+  }
 }
 
 trait PlatformFullScreen {
