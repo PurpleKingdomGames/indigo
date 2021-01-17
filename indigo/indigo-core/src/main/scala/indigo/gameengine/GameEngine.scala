@@ -36,31 +36,27 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
     initialisationEvents: List[GlobalEvent]
 ) {
 
-  val animationsRegister: AnimationsRegister =
+  private val animationsRegister: AnimationsRegister =
     new AnimationsRegister()
-  val fontRegister: FontRegister =
+  private val fontRegister: FontRegister =
     new FontRegister()
-  val boundaryLocator: BoundaryLocator =
+  private val boundaryLocator: BoundaryLocator =
     new BoundaryLocator(animationsRegister, fontRegister)
-  val sceneProcessor: SceneProcessor =
+  private val sceneProcessor: SceneProcessor =
     new SceneProcessor(boundaryLocator, animationsRegister, fontRegister)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var gameConfig: GameConfig = null
+  private var gameLoopInstance: GameLoop[StartUpData, GameModel, ViewModel] = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var storage: Storage = null
+  private[gameengine] var globalEventStream: GlobalEventStream = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var globalEventStream: GlobalEventStream = null
+  private[gameengine] var gamepadInputCapture: GamepadInputCapture = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var gamepadInputCapture: GamepadInputCapture = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var gameLoop: Long => Long => Unit = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var gameLoopInstance: GameLoop[StartUpData, GameModel, ViewModel] = null
+  private[gameengine] var gameLoop: Long => Long => Unit = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  var startUpData: StartUpData = _
+  private[gameengine] var startUpData: StartUpData = _
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var platform: Platform = null
+  private[gameengine] var platform: Platform = null
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def start(
@@ -70,20 +66,15 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
       assetsAsync: Future[Set[AssetType]],
       bootEvents: List[GlobalEvent]
   ): Unit = {
-
     IndigoLogger.info("Starting Indigo")
 
-    storage = Storage.default
-    globalEventStream = new GlobalEventStream(rebuildGameLoop(false), storage, platform)
-    gamepadInputCapture = GamepadInputCaptureImpl()
-
-    // Intialisation / Boot events
-    initialisationEvents.foreach(globalEventStream.pushGlobalEvent)
-    bootEvents.foreach(globalEventStream.pushGlobalEvent)
-
     // Arrange config
-    configAsync.map(_.getOrElse(config)).foreach { gc =>
-      gameConfig = gc
+    configAsync.map(_.getOrElse(config)).foreach { gameConfig =>
+      // Intialisation / Boot events
+      globalEventStream = new GlobalEventStream(rebuildGameLoop(false, gameConfig), Storage.default, platform)
+      initialisationEvents.foreach(globalEventStream.pushGlobalEvent)
+      bootEvents.foreach(globalEventStream.pushGlobalEvent)
+      gamepadInputCapture = GamepadInputCaptureImpl()
 
       IndigoLogger.info("Configuration: " + gameConfig.asString)
 
@@ -102,7 +93,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
           platform = new Platform(gameConfig, globalEventStream)
         }
 
-        rebuildGameLoop(true)(assetCollection)
+        rebuildGameLoop(true, gameConfig)(assetCollection)
 
         if (gameLoop != null)
           platform.tick(gameLoop(0))
@@ -112,7 +103,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
-  def rebuildGameLoop(firstRun: Boolean): AssetCollection => Unit =
+  def rebuildGameLoop(firstRun: Boolean, gameConfig: GameConfig): AssetCollection => Unit =
     ac => {
 
       sceneProcessor.purgeTextureAtlasCaches()
@@ -147,13 +138,9 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
             if (firstRun) initialViewModel(startUpSuccessData)(m).map(vm => (_: GameModel) => vm)
             else Outcome((_: GameModel) => gameLoopInstance.viewModelState)
 
-          val loop: Outcome[Long => Long => Unit] =
-            for {
-              _                  <- if (firstRun) platform.initialise() else platform.reinitialise()
-              startUpSuccessData <- GameEngine.initialisedGame(startupData)
-              m                  <- modelToUse(startUpSuccessData)
-              vm                 <- viewModelToUse(startUpSuccessData, m)
-              initialisedGameLoop <- GameEngine.initialiseGameLoop(
+          def gameLoopStart(m: GameModel, vm: GameModel => ViewModel): Outcome[GameLoop[StartUpData, GameModel, ViewModel]] =
+            if (firstRun) {
+              GameEngine.initialiseGameLoop(
                 this,
                 boundaryLocator,
                 sceneProcessor,
@@ -162,10 +149,22 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
                 vm,
                 frameProccessor
               )
+            } else Outcome(gameLoopInstance)
+
+          val loop: Outcome[Long => Long => Unit] =
+            for {
+              _                   <- if (firstRun) platform.initialise() else platform.reinitialise()
+              startUpSuccessData  <- GameEngine.initialisedGame(startupData)
+              m                   <- modelToUse(startUpSuccessData)
+              vm                  <- viewModelToUse(startUpSuccessData, m)
+              initialisedGameLoop <- gameLoopStart(m, vm)
             } yield {
-              gameLoopInstance = initialisedGameLoop
+              if (firstRun) {
+                gameLoopInstance = initialisedGameLoop
+              }
+
               startUpData = startUpSuccessData
-              initialisedGameLoop.loop
+              gameLoopInstance.loop
             }
 
           loop match {
