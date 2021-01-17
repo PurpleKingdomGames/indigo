@@ -11,7 +11,6 @@ import indigo.platform.storage.Storage
 import indigo.shared.events.AssetEvent
 import indigo.platform.assets.AssetLoader
 import indigo.platform.assets.AssetCollection
-import indigo.platform.audio.AudioPlayer
 import indigo.shared.events.ToggleFullScreen
 import indigo.shared.events.EnterFullScreen
 import indigo.shared.events.ExitFullScreen

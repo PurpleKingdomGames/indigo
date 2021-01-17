@@ -31,7 +31,6 @@ import indigo.shared.events.FullScreenExited
 import indigo.shared.events.FullScreenExitError
 import indigo.shared.time.GameTime
 import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.datatypes.mutable.CheapMatrix4
 
 import indigo.shared.platform.SceneProcessor
 import indigo.platform.audio.AudioPlayer
@@ -40,11 +39,20 @@ import indigo.shared.assets.AssetName
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 import indigo.shared.BoundaryLocator
+import indigo.shared.datatypes.FontInfo
+import indigo.shared.animation.Animation
 
 class Platform(
     gameConfig: GameConfig,
     globalEventStream: GlobalEventStream
 ) extends PlatformAPI {
+
+  private val animationsRegister: AnimationsRegister =
+    new AnimationsRegister()
+  private val fontRegister: FontRegister =
+    new FontRegister()
+  private val boundaryLocator: BoundaryLocator =
+    new BoundaryLocator(animationsRegister, fontRegister)
 
   val audioPlayer: AudioPlayer =
     AudioPlayer.init
@@ -69,6 +77,9 @@ class Platform(
   def giveAssetCollection: AssetCollection =
     assetCollection
 
+  def giveBoundaryLocator: BoundaryLocator =
+    boundaryLocator
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def purgeTextureAtlasCaches(): Unit =
     if (sceneProcessor != null) {
@@ -76,7 +87,7 @@ class Platform(
     }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
-  def initialise(boundaryLocator: BoundaryLocator, animationsRegister: AnimationsRegister, fontRegister: FontRegister): Outcome[Unit] = {
+  def initialise(): Outcome[Unit] = {
 
     val sceneWorker = new Worker("indigo-scene-worker.js")
     sceneWorker.postMessage(js.Dynamic.literal("operation" -> "echo", "data" -> "Hello, Scene Worker!"))
@@ -244,6 +255,12 @@ class Platform(
 
   def playSound(assetName: AssetName, volume: Volume): Unit =
     audioPlayer.playSound(assetName, volume)
+
+  def registerAllFonts(fontInfos: Set[FontInfo]): Unit =
+    fontRegister.registerAll(fontInfos)
+
+  def registerAllAnimations(animations: Set[Animation]): Unit =
+    animationsRegister.registerAll(animations)
 }
 
 trait PlatformAPI {

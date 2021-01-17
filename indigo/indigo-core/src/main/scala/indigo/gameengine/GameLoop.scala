@@ -12,7 +12,6 @@ import indigo.shared.scenegraph.SceneGraphViewEvents
 import indigo.shared.time.Seconds
 import indigo.shared.BoundaryLocator
 import indigo.shared.IndigoLogger
-import indigo.shared.platform.SceneProcessor
 
 class GameLoop[StartUpData, GameModel, ViewModel](
     boundaryLocator: BoundaryLocator,

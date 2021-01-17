@@ -7,22 +7,16 @@ import indigo.shared.assets.AssetType
 import indigo.shared.IndigoLogger
 import indigo.shared.Startup
 import indigo.shared.Outcome
-import indigo.shared.AnimationsRegister
-import indigo.shared.FontRegister
 import indigo.platform.assets._
 import indigo.platform.input.GamepadInputCaptureImpl
 import indigo.platform.events.GlobalEventStream
-import indigo.platform.renderer.Renderer
 import indigo.platform.Platform
-import indigo.shared.platform.AssetMapping
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import indigo.platform.storage.Storage
 import indigo.shared.input.GamepadInputCapture
-import indigo.shared.BoundaryLocator
-import indigo.shared.platform.SceneProcessor
 import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
 
@@ -35,13 +29,6 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
     frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel],
     initialisationEvents: List[GlobalEvent]
 ) {
-
-  private val animationsRegister: AnimationsRegister =
-    new AnimationsRegister()
-  private val fontRegister: FontRegister =
-    new FontRegister()
-  private val boundaryLocator: BoundaryLocator =
-    new BoundaryLocator(animationsRegister, fontRegister)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   private var gameLoopInstance: GameLoop[StartUpData, GameModel, ViewModel] = null
@@ -125,8 +112,8 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
           globalEvents.foreach(globalEventStream.pushGlobalEvent)
 
           // Additive only. Adds new, does not replace existing.
-          animationsRegister.registerAll(animations ++ startupData.additionalAnimations)
-          fontRegister.registerAll(fonts ++ startupData.additionalFonts)
+          platform.registerAllAnimations(animations ++ startupData.additionalAnimations)
+          platform.registerAllFonts(fonts ++ startupData.additionalFonts)
 
           def modelToUse(startUpSuccessData: => StartUpData): Outcome[GameModel] =
             if (firstRun) initialModel(startUpSuccessData)
@@ -138,19 +125,21 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
           def gameLoopStart(m: GameModel, vm: GameModel => ViewModel): Outcome[GameLoop[StartUpData, GameModel, ViewModel]] =
             if (firstRun) {
-              GameEngine.initialiseGameLoop(
-                this,
-                boundaryLocator,
-                gameConfig,
-                m,
-                vm,
-                frameProccessor
+              Outcome(
+                new GameLoop[StartUpData, GameModel, ViewModel](
+                  platform.giveBoundaryLocator,
+                  this,
+                  gameConfig,
+                  m,
+                  vm(m),
+                  frameProccessor
+                )
               )
             } else Outcome(gameLoopInstance)
 
           val loop: Outcome[Long => Long => Unit] =
             for {
-              _                   <- if (firstRun) platform.initialise(boundaryLocator, animationsRegister, fontRegister) else platform.reinitialise()
+              _                   <- if (firstRun) platform.initialise() else platform.reinitialise()
               startUpSuccessData  <- GameEngine.initialisedGame(startupData)
               m                   <- modelToUse(startUpSuccessData)
               vm                  <- viewModelToUse(startUpSuccessData, m)
@@ -199,24 +188,5 @@ object GameEngine {
         IndigoLogger.info("Game initialisation succeeded")
         Outcome(x.success)
     }
-
-  def initialiseGameLoop[StartUpData, GameModel, ViewModel](
-      gameEngine: GameEngine[StartUpData, GameModel, ViewModel],
-      boundaryLocator: BoundaryLocator,
-      gameConfig: GameConfig,
-      initialModel: GameModel,
-      initialViewModel: GameModel => ViewModel,
-      frameProccessor: FrameProcessor[StartUpData, GameModel, ViewModel]
-  ): Outcome[GameLoop[StartUpData, GameModel, ViewModel]] =
-    Outcome(
-      new GameLoop[StartUpData, GameModel, ViewModel](
-        boundaryLocator,
-        gameEngine,
-        gameConfig,
-        initialModel,
-        initialViewModel(initialModel),
-        frameProccessor
-      )
-    )
 
 }
