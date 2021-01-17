@@ -87,15 +87,9 @@ class GameLoop[StartUpData, GameModel, ViewModel](
           gameEngine.platform.presentScene(
             gameTime,
             scene,
-            gameEngine.assetMapping,
-            gameEngine.renderer.screenWidth.toDouble,
-            gameEngine.renderer.screenHeight.toDouble,
-            gameEngine.renderer.orthographicProjectionMatrix,
-            gameEngine.audioPlayer,
-            gameEngine.renderer,
             sceneProcessor
           )
-          
+
         } else {
           val processedFrame: Outcome[(GameModel, ViewModel)] =
             frameProcessor.runSkipView(startUpData, gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)

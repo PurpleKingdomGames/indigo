@@ -35,30 +35,41 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
 
 import indigo.shared.platform.SceneProcessor
 import indigo.platform.audio.AudioPlayer
+import indigo.shared.audio.Volume
+import indigo.shared.assets.AssetName
 
 class Platform(
     gameConfig: GameConfig,
-    assetCollection: AssetCollection,
     globalEventStream: GlobalEventStream
-) extends PlatformFullScreen {
+) extends PlatformAPI {
+
+  val audioPlayer: AudioPlayer =
+    AudioPlayer.init
 
   val rendererInit: RendererInitialiser =
     new RendererInitialiser(gameConfig.advanced.renderingTechnology, globalEventStream)
 
-  @SuppressWarnings(
-    Array(
-      "scalafix:DisableSyntax.null",
-      "scalafix:DisableSyntax.var"
-    )
-  )
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.var"))
   private var _canvas: Canvas = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var assetCollection: AssetCollection = AssetCollection.empty
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var assetMapping: AssetMapping = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var renderer: Renderer = null
+
+  def addAssetsToCollection(newAssets: AssetCollection): Unit =
+    assetCollection = assetCollection |+| newAssets
+
+  def giveAssetCollection: AssetCollection =
+    assetCollection
 
   @SuppressWarnings(
     Array(
       "scalafix:DisableSyntax.asInstanceOf"
     )
   )
-  def initialise(): Outcome[(Renderer, AssetMapping)] = {
+  def initialise(): Outcome[Unit] = {
 
     val sceneWorker = new Worker("indigo-scene-worker.js")
     sceneWorker.postMessage(js.Dynamic.literal("operation" -> "echo", "data" -> "Hello, Scene Worker!"))
@@ -77,18 +88,23 @@ class Platform(
     }
 
     for {
+      _ <- createCanvas(gameConfig)
+      _ <- listenToWorldEvents(_canvas, gameConfig.magnification, globalEventStream)
+      _ <- reinitialise()
+    } yield ()
+  }
+
+  def reinitialise(): Outcome[Unit] =
+    for {
       textureAtlas        <- createTextureAtlas(assetCollection)
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
-      assetMapping        <- setupAssetMapping(textureAtlas)
-      canvas              <- createCanvas(gameConfig)
-      _                   <- listenToWorldEvents(canvas, gameConfig.magnification, globalEventStream)
-      renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas)
+      am                  <- setupAssetMapping(textureAtlas)
+      r                   <- startRenderer(gameConfig, loadedTextureAssets)
     } yield {
-      _canvas = canvas
-
-      (renderer, assetMapping)
+      assetMapping = am
+      renderer = r
+      ()
     }
-  }
 
   def tick(loop: Long => Unit): Unit = {
     dom.window.requestAnimationFrame(t => loop(t.toLong))
@@ -125,19 +141,19 @@ class Platform(
       )
     )
 
-  def createCanvas(gameConfig: GameConfig): Outcome[Canvas] =
+  def createCanvas(gameConfig: GameConfig): Outcome[Unit] =
     Option(dom.document.getElementById("indigo-container")) match {
       case None =>
         Outcome.raiseError(new Exception("""Parent element "indigo-container" could not be found on page."""))
 
       case Some(parent) =>
-        Outcome(
-          rendererInit.createCanvas(
-            gameConfig.viewport.width,
-            gameConfig.viewport.height,
-            parent
-          )
+        _canvas = rendererInit.createCanvas(
+          gameConfig.viewport.width,
+          gameConfig.viewport.height,
+          parent
         )
+
+        Outcome(())
     }
 
   def listenToWorldEvents(canvas: Canvas, magnification: Int, globalEventStream: GlobalEventStream): Outcome[Unit] =
@@ -149,8 +165,7 @@ class Platform(
 
   def startRenderer(
       gameConfig: GameConfig,
-      loadedTextureAssets: List[LoadedTextureAsset],
-      canvas: Canvas
+      loadedTextureAssets: List[LoadedTextureAsset]
   ): Outcome[Renderer] =
     Outcome {
       IndigoLogger.info("Starting renderer")
@@ -163,7 +178,7 @@ class Platform(
           antiAliasing = gameConfig.advanced.antiAliasing
         ),
         loadedTextureAssets,
-        canvas
+        _canvas
       )
     }
 
@@ -199,12 +214,6 @@ class Platform(
   def presentScene(
       gameTime: GameTime,
       scene: SceneUpdateFragment,
-      assetMapping: AssetMapping,
-      screenWidth: Double,
-      screenHeight: Double,
-      orthographicProjectionMatrix: CheapMatrix4,
-      audioPlayer: AudioPlayer,
-      renderer: Renderer,
       sceneProcessor: SceneProcessor
   ): Unit = {
 
@@ -216,18 +225,22 @@ class Platform(
       gameTime,
       scene,
       assetMapping,
-      screenWidth,
-      screenHeight,
-      orthographicProjectionMatrix
+      renderer.screenWidth.toDouble,
+      renderer.screenHeight.toDouble,
+      renderer.orthographicProjectionMatrix
     )
 
     // Render scene
     renderer.drawScene(sceneData)
   }
+
+  def playSound(assetName: AssetName, volume: Volume): Unit =
+    audioPlayer.playSound(assetName, volume)
 }
 
-trait PlatformFullScreen {
+trait PlatformAPI {
   def toggleFullScreen(): Unit
   def enterFullScreen(): Unit
   def exitFullScreen(): Unit
+  def playSound(assetName: AssetName, volume: Volume): Unit
 }

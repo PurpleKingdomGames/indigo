@@ -10,7 +10,6 @@ import indigo.shared.Outcome
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 import indigo.platform.assets._
-import indigo.platform.audio.AudioPlayer
 import indigo.platform.input.GamepadInputCaptureImpl
 import indigo.platform.events.GlobalEventStream
 import indigo.platform.renderer.Renderer
@@ -46,9 +45,6 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   val sceneProcessor: SceneProcessor =
     new SceneProcessor(boundaryLocator, animationsRegister, fontRegister)
 
-  val audioPlayer: AudioPlayer =
-    AudioPlayer.init
-
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   var gameConfig: GameConfig = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
@@ -61,12 +57,6 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   var gameLoop: Long => Long => Unit = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   var gameLoopInstance: GameLoop[StartUpData, GameModel, ViewModel] = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  var accumulatedAssetCollection: AssetCollection = AssetCollection.empty
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var assetMapping: AssetMapping = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
-  var renderer: Renderer = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var startUpData: StartUpData = _
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
@@ -84,7 +74,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
     IndigoLogger.info("Starting Indigo")
 
     storage = Storage.default
-    globalEventStream = new GlobalEventStream(rebuildGameLoop(false), audioPlayer, storage, platform)
+    globalEventStream = new GlobalEventStream(rebuildGameLoop(false), storage, platform)
     gamepadInputCapture = GamepadInputCaptureImpl()
 
     // Intialisation / Boot events
@@ -108,6 +98,10 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
       assetsAsync.flatMap(aa => AssetLoader.loadAssets(aa ++ assets)).foreach { assetCollection =>
         IndigoLogger.info("Asset load complete")
 
+        if (platform == null) {
+          platform = new Platform(gameConfig, globalEventStream)
+        }
+
         rebuildGameLoop(true)(assetCollection)
 
         if (gameLoop != null)
@@ -121,13 +115,13 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   def rebuildGameLoop(firstRun: Boolean): AssetCollection => Unit =
     ac => {
 
-      accumulatedAssetCollection = accumulatedAssetCollection |+| ac
-
-      audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
-
       val time = if (firstRun) 0 else gameLoopInstance.runningTimeReference
 
-      platform = new Platform(gameConfig, accumulatedAssetCollection, globalEventStream)
+      platform.addAssetsToCollection(ac)
+
+      val accumulatedAssetCollection = platform.giveAssetCollection
+
+      platform.audioPlayer.addAudioAssets(accumulatedAssetCollection.sounds)
 
       initialise(accumulatedAssetCollection)(Dice.fromSeed(time)) match {
         case oe @ Outcome.Error(error, _) =>
@@ -153,10 +147,10 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
           val loop: Outcome[Long => Long => Unit] =
             for {
-              rendererAndAssetMapping <- platform.initialise()
-              startUpSuccessData      <- GameEngine.initialisedGame(startupData)
-              m                       <- modelToUse(startUpSuccessData)
-              vm                      <- viewModelToUse(startUpSuccessData, m)
+              _                  <- if (firstRun) platform.initialise() else platform.reinitialise()
+              startUpSuccessData <- GameEngine.initialisedGame(startupData)
+              m                  <- modelToUse(startUpSuccessData)
+              vm                 <- viewModelToUse(startUpSuccessData, m)
               initialisedGameLoop <- GameEngine.initialiseGameLoop(
                 this,
                 boundaryLocator,
@@ -167,8 +161,6 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
                 frameProccessor
               )
             } yield {
-              renderer = rendererAndAssetMapping._1
-              assetMapping = rendererAndAssetMapping._2
               gameLoopInstance = initialisedGameLoop
               startUpData = startUpSuccessData
               initialisedGameLoop.loop

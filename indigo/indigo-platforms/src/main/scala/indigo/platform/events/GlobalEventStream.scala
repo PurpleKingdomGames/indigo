@@ -15,13 +15,12 @@ import indigo.platform.audio.AudioPlayer
 import indigo.shared.events.ToggleFullScreen
 import indigo.shared.events.EnterFullScreen
 import indigo.shared.events.ExitFullScreen
-import indigo.platform.PlatformFullScreen
+import indigo.platform.PlatformAPI
 
 final class GlobalEventStream(
     rebuildGameLoop: AssetCollection => Unit,
-    audioPlayer: AudioPlayer,
     storage: Storage,
-    platform: => PlatformFullScreen
+    platform: => PlatformAPI
 ) {
 
   private val eventQueue: mutable.Queue[GlobalEvent] =
@@ -37,7 +36,7 @@ final class GlobalEventStream(
 
     //Audio
     case PlaySound(assetName, volume) =>
-      audioPlayer.playSound(assetName, volume)
+      platform.playSound(assetName, volume)
 
     // Storage
     case StorageEvent.Save(key, data) =>
