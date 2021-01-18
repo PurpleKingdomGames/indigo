@@ -10,6 +10,7 @@ import indigo.shared.time.GameTime
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.platform.AssetMapping
 import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.platform.SceneFrameData
 
 import org.scalajs.dom
 
@@ -100,13 +101,4 @@ object SceneWorkerGlobal {
 trait Command extends js.Object {
   val operation: js.UndefOr[String]
   val data: js.Object
-}
-
-trait SceneFrameData extends js.Object {
-  val gameTime: GameTime
-  val scene: SceneUpdateFragment
-  val assetMapping: AssetMapping
-  val screenWidth: Double
-  val screenHeight: Double
-  val orthographicProjectionMatrix: CheapMatrix4
 }

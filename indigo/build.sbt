@@ -99,6 +99,7 @@ lazy val indigoFacades =
         ("org.scala-js" %%% "scalajs-dom" % "1.1.0").withDottyCompat(scalaVersion.value)
       )
     )
+    .dependsOn(indigoShared)
 
 // Indigo Render Worker
 lazy val indigoRenderWorker =
@@ -142,6 +143,7 @@ lazy val indigoSceneWorker =
       publishLocal := {}
     )
     .dependsOn(indigoShared)
+    .dependsOn(indigoFacades)
 
 // Indigo Platforms
 lazy val indigoPlatforms =

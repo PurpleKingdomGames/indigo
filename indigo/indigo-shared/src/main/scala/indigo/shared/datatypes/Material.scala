@@ -30,9 +30,6 @@ object Material {
   object Textured {
     def apply(diffuse: AssetName): Textured =
       new Textured(diffuse, false)
-
-    def unapply(t: Textured): Option[(AssetName, Boolean)] =
-      Some((t.diffuse, t.isLit))
   }
 
   final case class Lit(
