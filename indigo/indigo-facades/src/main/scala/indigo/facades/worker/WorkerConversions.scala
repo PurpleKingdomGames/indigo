@@ -125,11 +125,25 @@ object AnimationConversion {
 
 object PrimitiveConversion {
 
+  trait RectangleJS extends js.Object {
+    val position: PointJS
+    val size: PointJS
+  }
+
   def rectangleToJS(rectangle: Rectangle): js.Any =
     js.Dynamic.literal(
       position = pointToJS(rectangle.position),
       size = pointToJS(rectangle.size)
     )
+  def rectangleFromJS(obj: js.Any): Rectangle = {
+    val res = obj.asInstanceOf[RectangleJS]
+    Rectangle(pointFromJS(res.position), pointFromJS(res.size))
+  }
+
+  trait PointJS extends js.Object {
+    val x: Int
+    val y: Int
+  }
 
   def pointToJS(point: Point): js.Any =
     js.Dynamic.literal(
@@ -137,11 +151,26 @@ object PrimitiveConversion {
       y = point.y
     )
 
+  def pointFromJS(obj: js.Any): Point = {
+    val res = obj.asInstanceOf[PointJS]
+    Point(res.x, res.y)
+  }
+
   def vector2ToJS(vector: Vector2): js.Any =
     js.Dynamic.literal(
       x = vector.x,
       y = vector.y
     )
+
+  trait Vector2JS extends js.Object {
+    val x: Double
+    val y: Double
+  }
+
+  def vector2FromJS(obj: js.Any): Vector2 = {
+    val res = obj.asInstanceOf[Vector2JS]
+    Vector2(res.x, res.y)
+  }
 
 }
 

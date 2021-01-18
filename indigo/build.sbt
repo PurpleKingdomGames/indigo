@@ -88,6 +88,7 @@ lazy val indigoFacades =
   project
     .in(file("indigo-facades"))
     .enablePlugins(ScalaJSPlugin)
+    .settings(commonSettings: _*)
     .settings(publishSettings: _*)
     .settings(
       name := "indigo-facades",
