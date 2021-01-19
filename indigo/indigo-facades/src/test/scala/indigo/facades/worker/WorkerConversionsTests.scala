@@ -11,7 +11,7 @@ class WorkerConversionsTests extends munit.FunSuite {
       Point(20, 30)
 
     val actual =
-      PrimitiveConversion.pointFromJS(PrimitiveConversion.pointToJS(expected))
+      PointConversion.fromJS(PointConversion.toJS(expected))
 
     assertEquals(actual, expected)
   }
@@ -21,7 +21,7 @@ class WorkerConversionsTests extends munit.FunSuite {
       Vector2(20, 30)
 
     val actual =
-      PrimitiveConversion.vector2FromJS(PrimitiveConversion.vector2ToJS(expected))
+      Vector2Conversion.fromJS(Vector2Conversion.toJS(expected))
 
     assertEquals(actual, expected)
   }
@@ -31,7 +31,7 @@ class WorkerConversionsTests extends munit.FunSuite {
       Rectangle(Point(20, 30), Point(50, 100))
 
     val actual =
-      PrimitiveConversion.rectangleFromJS(PrimitiveConversion.rectangleToJS(expected))
+      RectangleConversion.fromJS(RectangleConversion.toJS(expected))
 
     assertEquals(actual, expected)
   }

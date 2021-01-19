@@ -71,7 +71,7 @@ object FontInfoConversion {
     def toJS(fontSpriteSheet: FontSpriteSheet): js.Any =
       js.Dynamic.literal(
         material = MaterialConversion.toJS(fontSpriteSheet.material),
-        size = PrimitiveConversion.pointToJS(fontSpriteSheet.size)
+        size = PointConversion.toJS(fontSpriteSheet.size)
       )
 
   }
@@ -81,7 +81,7 @@ object FontInfoConversion {
     def toJS(fontChar: FontChar): js.Any =
       js.Dynamic.literal(
         character = fontChar.character,
-        bounds = PrimitiveConversion.rectangleToJS(fontChar.bounds)
+        bounds = RectangleConversion.toJS(fontChar.bounds)
       )
 
   }
@@ -114,7 +114,7 @@ object AnimationConversion {
 
     def toJS(frame: Frame): js.Any =
       js.Dynamic.literal(
-        crop = PrimitiveConversion.rectangleToJS(frame.crop),
+        crop = RectangleConversion.toJS(frame.crop),
         duration = frame.duration.value.toDouble,
         frameMaterial = frame.frameMaterial.map(MaterialConversion.toJS).orUndefined
       )
@@ -123,51 +123,44 @@ object AnimationConversion {
 
 }
 
-object PrimitiveConversion {
+object RectangleConversion {
 
-  trait RectangleJS extends js.Object {
-    val position: PointJS
-    val size: PointJS
-  }
-
-  def rectangleToJS(rectangle: Rectangle): js.Any =
+  def toJS(rectangle: Rectangle): js.Any =
     js.Dynamic.literal(
-      position = pointToJS(rectangle.position),
-      size = pointToJS(rectangle.size)
+      position = PointConversion.toJS(rectangle.position),
+      size = PointConversion.toJS(rectangle.size)
     )
-  def rectangleFromJS(obj: js.Any): Rectangle = {
+
+  def fromJS(obj: js.Any): Rectangle = {
     val res = obj.asInstanceOf[RectangleJS]
-    Rectangle(pointFromJS(res.position), pointFromJS(res.size))
+    Rectangle(PointConversion.fromJS(res.position), PointConversion.fromJS(res.size))
   }
 
-  trait PointJS extends js.Object {
-    val x: Int
-    val y: Int
-  }
+}
 
-  def pointToJS(point: Point): js.Any =
+object PointConversion {
+
+  def toJS(point: Point): js.Any =
     js.Dynamic.literal(
       x = point.x,
       y = point.y
     )
 
-  def pointFromJS(obj: js.Any): Point = {
+  def fromJS(obj: js.Any): Point = {
     val res = obj.asInstanceOf[PointJS]
     Point(res.x, res.y)
   }
+}
 
-  def vector2ToJS(vector: Vector2): js.Any =
+object Vector2Conversion {
+
+  def toJS(vector: Vector2): js.Any =
     js.Dynamic.literal(
       x = vector.x,
       y = vector.y
     )
 
-  trait Vector2JS extends js.Object {
-    val x: Double
-    val y: Double
-  }
-
-  def vector2FromJS(obj: js.Any): Vector2 = {
+  def fromJS(obj: js.Any): Vector2 = {
     val res = obj.asInstanceOf[Vector2JS]
     Vector2(res.x, res.y)
   }
@@ -241,8 +234,8 @@ object SceneFrameDataConversion {
     def toJS(textureRefAndOffset: TextureRefAndOffset): js.Any =
       js.Dynamic.literal(
         atlasName = textureRefAndOffset.atlasName,
-        atlasSize = PrimitiveConversion.vector2ToJS(textureRefAndOffset.atlasSize),
-        offset = PrimitiveConversion.pointToJS(textureRefAndOffset.offset)
+        atlasSize = Vector2Conversion.toJS(textureRefAndOffset.atlasSize),
+        offset = PointConversion.toJS(textureRefAndOffset.offset)
       )
 
   }
@@ -323,7 +316,7 @@ object SceneUpdateFragmentConversion {
       light match {
         case PointLight(position, height, color, power, attenuation) =>
           js.Dynamic.literal(
-            position = PrimitiveConversion.pointToJS(position),
+            position = PointConversion.toJS(position),
             height = height,
             color = RGBConversion.toJS(color),
             power = power,
@@ -332,7 +325,7 @@ object SceneUpdateFragmentConversion {
 
         case SpotLight(position, height, color, power, attenuation, angle, rotation, near, far) =>
           js.Dynamic.literal(
-            position = PrimitiveConversion.pointToJS(position),
+            position = PointConversion.toJS(position),
             height = height,
             color = RGBConversion.toJS(color),
             power = power,
@@ -437,9 +430,9 @@ object SceneUpdateFragmentConversion {
 
     def toJS(data: CloneTransformData): js.Any =
       js.Dynamic.literal(
-        position = PrimitiveConversion.pointToJS(data.position),
+        position = PointConversion.toJS(data.position),
         rotation = data.rotation.value,
-        scale = PrimitiveConversion.vector2ToJS(data.scale),
+        scale = Vector2Conversion.toJS(data.scale),
         alpha = data.alpha,
         flipHorizontal = data.flipHorizontal,
         flipVertical = data.flipVertical
@@ -456,11 +449,11 @@ object SceneUpdateFragmentConversion {
         animationActions = node.animationActions.map(AnimationActionConversion.toJS).toJSArray,
         eventHandler = null,
         effects = EffectsConversion.toJS(node.effects),
-        position = PrimitiveConversion.pointToJS(node.position),
+        position = PointConversion.toJS(node.position),
         rotation = node.rotation.value,
-        scale = PrimitiveConversion.vector2ToJS(node.scale),
+        scale = Vector2Conversion.toJS(node.scale),
         depth = node.depth.zIndex,
-        ref = PrimitiveConversion.pointToJS(node.ref),
+        ref = PointConversion.toJS(node.ref),
         flip = FlipConversion.toJS(node.flip)
       )
 
@@ -471,13 +464,13 @@ object SceneUpdateFragmentConversion {
     def toJS(node: Graphic): js.Any =
       js.Dynamic.literal(
         material = MaterialConversion.toJS(node.material),
-        crop = PrimitiveConversion.rectangleToJS(node.crop),
+        crop = RectangleConversion.toJS(node.crop),
         effects = EffectsConversion.toJS(node.effects),
-        position = PrimitiveConversion.pointToJS(node.position),
+        position = PointConversion.toJS(node.position),
         rotation = node.rotation.value,
-        scale = PrimitiveConversion.vector2ToJS(node.scale),
+        scale = Vector2Conversion.toJS(node.scale),
         depth = node.depth.zIndex,
-        ref = PrimitiveConversion.pointToJS(node.ref),
+        ref = PointConversion.toJS(node.ref),
         flip = FlipConversion.toJS(node.flip)
       )
 
@@ -496,11 +489,11 @@ object SceneUpdateFragmentConversion {
         fontKey = node.fontKey.key,
         effects = EffectsConversion.toJS(node.effects),
         eventHandler = null,
-        position = PrimitiveConversion.pointToJS(node.position),
+        position = PointConversion.toJS(node.position),
         rotation = node.rotation.value,
-        scale = PrimitiveConversion.vector2ToJS(node.scale),
+        scale = Vector2Conversion.toJS(node.scale),
         depth = node.depth.zIndex,
-        ref = PrimitiveConversion.pointToJS(node.ref),
+        ref = PointConversion.toJS(node.ref),
         flip = FlipConversion.toJS(node.flip)
       )
 
@@ -516,11 +509,11 @@ object SceneUpdateFragmentConversion {
           case g: Graphic => GraphicConversion.toJS(g)
           case t: Text    => TextConversion.toJS(t)
         },
-        position = PrimitiveConversion.pointToJS(node.position),
+        position = PointConversion.toJS(node.position),
         rotation = node.rotation.value,
-        scale = PrimitiveConversion.vector2ToJS(node.scale),
+        scale = Vector2Conversion.toJS(node.scale),
         depth = node.depth.zIndex,
-        ref = PrimitiveConversion.pointToJS(node.ref),
+        ref = PointConversion.toJS(node.ref),
         flip = FlipConversion.toJS(node.flip)
       )
 
@@ -562,9 +555,9 @@ object SceneUpdateFragmentConversion {
           case Overlay.LinearGradiant(fromPoint, fromColor, toPoint, toColor) =>
             js.Dynamic.literal(
               _type = "linear gradiant",
-              fromPoint = PrimitiveConversion.pointToJS(fromPoint),
+              fromPoint = PointConversion.toJS(fromPoint),
               fromColor = RGBAConversion.toJS(fromColor),
-              toPoint = PrimitiveConversion.pointToJS(toPoint),
+              toPoint = PointConversion.toJS(toPoint),
               toColor = RGBAConversion.toJS(toColor)
             )
         },
@@ -583,4 +576,19 @@ object SceneUpdateFragmentConversion {
 
   }
 
+}
+
+trait Vector2JS extends js.Object {
+  val x: Double
+  val y: Double
+}
+
+trait PointJS extends js.Object {
+  val x: Int
+  val y: Int
+}
+
+trait RectangleJS extends js.Object {
+  val position: PointJS
+  val size: PointJS
 }
