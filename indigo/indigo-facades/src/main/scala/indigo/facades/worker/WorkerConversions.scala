@@ -33,6 +33,7 @@ import indigo.shared.platform.SceneFrameData
 import indigo.shared.platform.AssetMapping
 import indigo.shared.platform.TextureRefAndOffset
 import indigo.shared.time.GameTime
+import indigo.shared.time.Millis
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.scenegraph.SceneAudio
 import indigo.shared.scenegraph.SceneAudioSource
@@ -53,6 +54,7 @@ import indigo.shared.scenegraph.Clone
 import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.scenegraph.CloneTransformData
+import indigo.shared.collections.NonEmptyList
 
 import scala.scalajs.js
 import scalajs.js.JSConverters._
@@ -82,7 +84,13 @@ object FontInfoConversion {
     fromFontInfoJS(obj.asInstanceOf[FontInfoJS])
 
   def fromFontInfoJS(res: FontInfoJS): FontInfo =
-    ???
+    FontInfo(
+      fontKey = FontKey(res.fontKey),
+      fontSpriteSheet = FontSpriteSheetConversion.fromFontSpriteSheetJS(res.fontSpriteSheet),
+      unknownChar = FontCharConversion.fromFontCharJS(res.unknownChar),
+      fontChars = res.fontChars.toList.map(FontCharConversion.fromFontCharJS),
+      caseSensitive = res.caseSensitive
+    )
 
   object FontSpriteSheetConversion {
 
@@ -96,7 +104,10 @@ object FontInfoConversion {
       fromFontSpriteSheetJS(obj.asInstanceOf[FontSpriteSheetJS])
 
     def fromFontSpriteSheetJS(res: FontSpriteSheetJS): FontSpriteSheet =
-      ???
+      FontSpriteSheet(
+        material = MaterialConversion.fromMaterialJS(res.material),
+        size = PointConversion.fromPointJS(res.size)
+      )
 
   }
 
@@ -112,7 +123,10 @@ object FontInfoConversion {
       fromFontCharJS(obj.asInstanceOf[FontCharJS])
 
     def fromFontCharJS(res: FontCharJS): FontChar =
-      ???
+      FontChar(
+        character = res.character,
+        bounds = RectangleConversion.fromRectangleJS(res.bounds)
+      )
 
   }
 
@@ -128,6 +142,17 @@ object AnimationConversion {
       cycles = animation.cycles.toList.map(CycleConversion.toJS).toJSArray
     )
 
+  def fromJS(obj: js.Any): Animation =
+    fromAnimationJS(obj.asInstanceOf[AnimationJS])
+
+  def fromAnimationJS(res: AnimationJS): Animation =
+    Animation(
+      animationKey = AnimationKey(res.animationKey),
+      material = MaterialConversion.fromMaterialJS(res.material),
+      currentCycleLabel = CycleLabel(res.currentCycleLabel),
+      cycles = NonEmptyList.fromList(res.cycles.toList.map(CycleConversion.fromCycleJS)).get
+    )
+
   object CycleConversion {
 
     def toJS(cycle: Cycle): js.Any =
@@ -136,6 +161,17 @@ object AnimationConversion {
         frames = cycle.frames.toList.map(FrameConversion.toJS).toJSArray,
         playheadPosition = cycle.playheadPosition,
         lastFrameAdvance = cycle.lastFrameAdvance.value.toDouble
+      )
+
+    def fromJS(obj: js.Any): Cycle =
+      fromCycleJS(obj.asInstanceOf[CycleJS])
+
+    def fromCycleJS(res: CycleJS): Cycle =
+      Cycle(
+        label = CycleLabel(res.label),
+        frames = NonEmptyList.fromList(res.frames.toList.map(FrameConversion.fromFrameJS)).get,
+        playheadPosition = res.playheadPosition,
+        lastFrameAdvance = Millis(res.lastFrameAdvance.toLong)
       )
 
   }
@@ -147,6 +183,16 @@ object AnimationConversion {
         crop = RectangleConversion.toJS(frame.crop),
         duration = frame.duration.value.toDouble,
         frameMaterial = frame.frameMaterial.map(MaterialConversion.toJS).orUndefined
+      )
+
+    def fromJS(obj: js.Any): Frame =
+      fromFrameJS(obj.asInstanceOf[FrameJS])
+
+    def fromFrameJS(res: FrameJS): Frame =
+      Frame(
+        crop = RectangleConversion.fromRectangleJS(res.crop),
+        duration = Millis(res.duration.toLong),
+        frameMaterial = res.frameMaterial.toOption.map(MaterialConversion.fromMaterialJS)
       )
 
   }
@@ -985,4 +1031,42 @@ trait GraphicJS extends js.Object {
   val depth: Int
   val ref: PointJS
   val flip: FlipJS
+}
+
+trait FrameJS extends js.Object {
+  val crop: RectangleJS
+  val duration: Double
+  val frameMaterial: js.UndefOr[MaterialJS]
+}
+
+trait CycleJS extends js.Object {
+  val label: String
+  val frames: js.Array[FrameJS]
+  val playheadPosition: Int
+  val lastFrameAdvance: Double
+}
+
+trait AnimationJS extends js.Object {
+  val animationKey: String
+  val material: MaterialJS
+  val currentCycleLabel: String
+  val cycles: js.Array[CycleJS]
+}
+
+trait FontCharJS extends js.Object {
+  val character: String
+  val bounds: RectangleJS
+}
+
+trait FontSpriteSheetJS extends js.Object {
+  val material: MaterialJS
+  val size: PointJS
+}
+
+trait FontInfoJS extends js.Object {
+  val fontKey: String
+  val fontSpriteSheet: FontSpriteSheetJS
+  val unknownChar: FontCharJS
+  val fontChars: js.Array[FontCharJS]
+  val caseSensitive: Boolean
 }
