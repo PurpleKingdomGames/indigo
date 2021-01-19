@@ -100,17 +100,29 @@ object Border {
 }
 
 sealed trait Thickness {
-  def hash: String =
-    (this match {
+
+  def toInt: Int =
+    this match {
       case Thickness.None  => 0
       case Thickness.Thin  => 1
       case Thickness.Thick => 2
-    }).toString()
+    }
+
+  def hash: String =
+    toInt.toString()
 }
 object Thickness {
   case object None  extends Thickness
   case object Thin  extends Thickness
   case object Thick extends Thickness
+
+  def fromInt(amount: Int): Thickness =
+    amount match {
+      case 0 => None
+      case 1 => Thin
+      case 2 => Thick
+      case _ => None
+    }
 }
 
 final case class Glow(color: RGBA, innerGlowAmount: Double, outerGlowAmount: Double) {
