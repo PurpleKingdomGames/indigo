@@ -10,6 +10,8 @@ import indigo.shared.datatypes.Texture
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Vector2
+import indigo.shared.datatypes.Radians
+import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.datatypes.FontSpriteSheet
 import indigo.shared.datatypes.FontChar
@@ -22,6 +24,7 @@ import indigo.shared.datatypes.Border
 import indigo.shared.datatypes.Thickness
 import indigo.shared.datatypes.Glow
 import indigo.shared.datatypes.Overlay
+import indigo.shared.datatypes.BindingKey
 import indigo.shared.platform.SceneFrameData
 import indigo.shared.platform.AssetMapping
 import indigo.shared.platform.TextureRefAndOffset
@@ -43,6 +46,7 @@ import indigo.shared.scenegraph.Sprite
 import indigo.shared.scenegraph.Text
 import indigo.shared.scenegraph.Transformer
 import indigo.shared.scenegraph.Clone
+import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.scenegraph.CloneTransformData
 
@@ -165,10 +169,11 @@ object Vector2Conversion {
       y = vector.y
     )
 
-  def fromJS(obj: js.Any): Vector2 = {
-    val res = obj.asInstanceOf[Vector2JS]
+  def fromJS(obj: js.Any): Vector2 =
+    fromVector2JS(obj.asInstanceOf[Vector2JS])
+
+  def fromVector2JS(res: Vector2JS): Vector2 =
     Vector2(res.x, res.y)
-  }
 
 }
 
@@ -419,7 +424,11 @@ object SceneUpdateFragmentConversion {
       fromCloneJS(obj.asInstanceOf[CloneJS])
 
     def fromCloneJS(res: CloneJS): Clone =
-      ???
+      Clone(
+        id = CloneId(res.id),
+        depth = Depth(res.depth),
+        transform = CloneTransformDataConversion.fromCloneTransformDataJS(res.transform)
+      )
 
   }
 
@@ -439,7 +448,13 @@ object SceneUpdateFragmentConversion {
       fromCloneBatchJS(obj.asInstanceOf[CloneBatchJS])
 
     def fromCloneBatchJS(res: CloneBatchJS): CloneBatch =
-      ???
+      CloneBatch(
+        id = CloneId(res.id),
+        depth = Depth(res.depth),
+        transform = CloneTransformDataConversion.fromCloneTransformDataJS(res.transform),
+        clones = res.clones.toList.map(CloneTransformDataConversion.fromCloneTransformDataJS),
+        staticBatchKey = res.staticBatchKey.toOption.map(BindingKey.apply)
+      )
 
   }
 
@@ -455,6 +470,19 @@ object SceneUpdateFragmentConversion {
         flipVertical = data.flipVertical
       )
 
+    def fromJS(obj: js.Any): CloneTransformData =
+      fromCloneTransformDataJS(obj.asInstanceOf[CloneTransformDataJS])
+
+    def fromCloneTransformDataJS(res: CloneTransformDataJS): CloneTransformData =
+      CloneTransformData(
+        position = PointConversion.fromPointJS(res.position),
+        rotation = Radians(res.rotation),
+        scale = Vector2Conversion.fromVector2JS(res.scale),
+        alpha = res.alpha,
+        flipHorizontal = res.flipHorizontal,
+        flipVertical = res.flipVertical
+      )
+
   }
 
   object SpriteConversion {
@@ -465,7 +493,6 @@ object SceneUpdateFragmentConversion {
         bindingKey = node.bindingKey.value,
         animationKey = node.animationKey.value,
         animationActions = node.animationActions.map(AnimationActionConversion.toJS).toJSArray,
-        eventHandler = null,
         effects = EffectsConversion.toJS(node.effects),
         position = PointConversion.toJS(node.position),
         rotation = node.rotation.value,
@@ -474,6 +501,19 @@ object SceneUpdateFragmentConversion {
         ref = PointConversion.toJS(node.ref),
         flip = FlipConversion.toJS(node.flip)
       )
+
+    trait SpriteJS extends js.Object {
+      val bindingKey: String
+      val animationKey: String
+      val animationActions: js.Array[AnimationActionJS]
+      val effects: EffectsJS
+      val position: PointJS
+      val rotation: Double
+      val scale: Vector2JS
+      val depth: Int
+      val ref: PointJS
+      val flip: FlipJS
+    }
 
     def fromJS(obj: js.Any): Sprite =
       fromSpriteJS(obj.asInstanceOf[SpriteJS])
@@ -499,6 +539,18 @@ object SceneUpdateFragmentConversion {
         flip = FlipConversion.toJS(node.flip)
       )
 
+    trait GraphicJS extends js.Object {
+      val material: MaterialJS
+      val crop: RectangleJS
+      val effects: EffectsJS
+      val position: PointJS
+      val rotation: Double
+      val scale: Vector2JS
+      val depth: Int
+      val ref: PointJS
+      val flip: FlipJS
+    }
+
     def fromJS(obj: js.Any): Graphic =
       fromGraphicJS(obj.asInstanceOf[GraphicJS])
 
@@ -520,7 +572,6 @@ object SceneUpdateFragmentConversion {
         },
         fontKey = node.fontKey.key,
         effects = EffectsConversion.toJS(node.effects),
-        eventHandler = null,
         position = PointConversion.toJS(node.position),
         rotation = node.rotation.value,
         scale = Vector2Conversion.toJS(node.scale),
@@ -528,6 +579,19 @@ object SceneUpdateFragmentConversion {
         ref = PointConversion.toJS(node.ref),
         flip = FlipConversion.toJS(node.flip)
       )
+
+    trait TextJS extends js.Object {
+      val text: String
+      val alignment: String
+      val fontKey: String
+      val effects: EffectsJS
+      val position: PointJS
+      val rotation: Double
+      val scale: Vector2JS
+      val depth: Int
+      val ref: PointJS
+      val flip: FlipJS
+    }
 
     def fromJS(obj: js.Any): Text =
       fromTextJS(obj.asInstanceOf[TextJS])
@@ -556,21 +620,31 @@ object SceneUpdateFragmentConversion {
         flip = FlipConversion.toJS(node.flip)
       )
 
-    trait GroupJS extends js.Object {
-      val children: js.Array[SceneGraphNodeJS]
-      val position: PointJS
-      val rotation: Double
-      val scale: Vector2JS
-      val depth: Int
-      val ref: PointJS
-      val flip: FlipJS
-    }
-
     def fromJS(obj: js.Any): Group =
       fromGroupJS(obj.asInstanceOf[GroupJS])
 
     def fromGroupJS(res: GroupJS): Group =
-      ???
+      Group(
+        children = res.children.toList.map {
+          case node: SceneGraphNodeJS if node._type == "group" =>
+            fromJS(node)
+
+          case node: SceneGraphNodeJS if node._type == "graphic" =>
+            GraphicConversion.fromJS(node)
+
+          case node: SceneGraphNodeJS if node._type == "sprite" =>
+            SpriteConversion.fromJS(node)
+
+          case node: SceneGraphNodeJS if node._type == "text" =>
+            TextConversion.fromJS(node)
+        },
+        position = PointConversion.fromPointJS(res.position),
+        rotation = Radians(res.rotation),
+        scale = Vector2Conversion.fromVector2JS(res.scale),
+        depth = Depth(res.depth),
+        ref = PointConversion.fromPointJS(res.ref),
+        flip = FlipConversion.fromFlipJS(res.flip)
+      )
 
   }
 
@@ -582,10 +656,11 @@ object SceneUpdateFragmentConversion {
         vertical = flip.vertical
       )
 
-    def fromJS(obj: js.Any): Flip = {
-      val res = obj.asInstanceOf[FlipJS]
+    def fromJS(obj: js.Any): Flip =
+      fromFlipJS(obj.asInstanceOf[FlipJS])
+
+    def fromFlipJS(res: FlipJS): Flip =
       Flip(res.horizontal, res.vertical)
-    }
 
   }
 
@@ -600,8 +675,10 @@ object SceneUpdateFragmentConversion {
         case AnimationAction.JumpToFrame(num) => js.Dynamic.literal(_action = "jump", to = num)
       }
 
-    def fromJS(obj: js.Any): AnimationAction = {
-      val res = obj.asInstanceOf[AnimationActionJS]
+    def fromJS(obj: js.Any): AnimationAction =
+      fromAnimationActionJS(obj.asInstanceOf[AnimationActionJS])
+
+    def fromAnimationActionJS(res: AnimationActionJS): AnimationAction =
       res._action match {
         case "play"   => AnimationAction.Play
         case "change" => AnimationAction.ChangeCycle(CycleLabel(res.label.get))
@@ -610,44 +687,10 @@ object SceneUpdateFragmentConversion {
         case "jump"   => AnimationAction.JumpToFrame(res.to.get)
         case _        => AnimationAction.Play
       }
-    }
 
   }
 
   object EffectsConversion {
-
-    trait OverlayJS extends js.Object {
-      val _type: String
-
-      // Color
-      val color: js.UndefOr[RGBAJS]
-
-      // Linear Gradiant
-      val fromPoint: js.UndefOr[PointJS]
-      val fromColor: js.UndefOr[RGBAJS]
-      val toPoint: js.UndefOr[PointJS]
-      val toColor: js.UndefOr[RGBAJS]
-    }
-
-    trait BorderJS extends js.Object {
-      val color: RGBAJS
-      val innerThickness: Int
-      val outerThickness: Int
-    }
-
-    trait GlowJS extends js.Object {
-      val color: RGBAJS
-      val innerGlowAmount: Double
-      val outerGlowAmount: Double
-    }
-
-    trait EffectsJS extends js.Object {
-      val tint: RGBAJS
-      val overlay: OverlayJS
-      val border: BorderJS
-      val glow: GlowJS
-      val alpha: Double
-    }
 
     def toJS(effects: Effects): js.Any =
       js.Dynamic.literal(
@@ -767,4 +810,72 @@ trait AnimationActionJS extends js.Object {
 
 trait SceneGraphNodeJS extends js.Object {
   val _type: String
+}
+
+trait CloneTransformDataJS extends js.Object {
+  val position: PointJS
+  val rotation: Double
+  val scale: Vector2JS
+  val alpha: Double
+  val flipHorizontal: Boolean
+  val flipVertical: Boolean
+}
+
+trait CloneJS extends js.Object {
+  val _type: String
+  val id: String
+  val depth: Int
+  val transform: CloneTransformDataJS
+}
+
+trait CloneBatchJS extends js.Object {
+  val _type: String
+  val id: String
+  val depth: Int
+  val transform: CloneTransformDataJS
+  val clones: js.Array[CloneTransformDataJS]
+  val staticBatchKey: js.UndefOr[String]
+}
+
+trait GroupJS extends js.Object {
+  val children: js.Array[SceneGraphNodeJS]
+  val position: PointJS
+  val rotation: Double
+  val scale: Vector2JS
+  val depth: Int
+  val ref: PointJS
+  val flip: FlipJS
+}
+
+trait OverlayJS extends js.Object {
+  val _type: String
+
+  // Color
+  val color: js.UndefOr[RGBAJS]
+
+  // Linear Gradiant
+  val fromPoint: js.UndefOr[PointJS]
+  val fromColor: js.UndefOr[RGBAJS]
+  val toPoint: js.UndefOr[PointJS]
+  val toColor: js.UndefOr[RGBAJS]
+}
+
+trait BorderJS extends js.Object {
+  val color: RGBAJS
+  val innerThickness: Int
+  val outerThickness: Int
+}
+
+trait GlowJS extends js.Object {
+  val color: RGBAJS
+  val innerGlowAmount: Double
+  val outerGlowAmount: Double
+}
+
+trait EffectsJS extends js.Object {
+  val tint: RGBAJS
+  val overlay: OverlayJS
+  val border: BorderJS
+  val glow: GlowJS
+  val alpha: Double
 }
