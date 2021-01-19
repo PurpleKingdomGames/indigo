@@ -1,7 +1,10 @@
 package indigo.facades.worker
 
+import indigo.shared.events.GlobalEvent
+import indigo.shared.assets.AssetName
 import indigo.shared.animation.Animation
 import indigo.shared.animation.AnimationAction
+import indigo.shared.animation.AnimationKey
 import indigo.shared.animation.Cycle
 import indigo.shared.animation.CycleLabel
 import indigo.shared.animation.Frame
@@ -25,6 +28,7 @@ import indigo.shared.datatypes.Thickness
 import indigo.shared.datatypes.Glow
 import indigo.shared.datatypes.Overlay
 import indigo.shared.datatypes.BindingKey
+import indigo.shared.datatypes.FontKey
 import indigo.shared.platform.SceneFrameData
 import indigo.shared.platform.AssetMapping
 import indigo.shared.platform.TextureRefAndOffset
@@ -74,6 +78,12 @@ object FontInfoConversion {
       caseSensitive = fontInfo.caseSensitive
     )
 
+  def fromJS(obj: js.Any): FontInfo =
+    fromFontInfoJS(obj.asInstanceOf[FontInfoJS])
+
+  def fromFontInfoJS(res: FontInfoJS): FontInfo =
+    ???
+
   object FontSpriteSheetConversion {
 
     def toJS(fontSpriteSheet: FontSpriteSheet): js.Any =
@@ -81,6 +91,12 @@ object FontInfoConversion {
         material = MaterialConversion.toJS(fontSpriteSheet.material),
         size = PointConversion.toJS(fontSpriteSheet.size)
       )
+
+    def fromJS(obj: js.Any): FontSpriteSheet =
+      fromFontSpriteSheetJS(obj.asInstanceOf[FontSpriteSheetJS])
+
+    def fromFontSpriteSheetJS(res: FontSpriteSheetJS): FontSpriteSheet =
+      ???
 
   }
 
@@ -91,6 +107,12 @@ object FontInfoConversion {
         character = fontChar.character,
         bounds = RectangleConversion.toJS(fontChar.bounds)
       )
+
+    def fromJS(obj: js.Any): FontChar =
+      fromFontCharJS(obj.asInstanceOf[FontCharJS])
+
+    def fromFontCharJS(res: FontCharJS): FontChar =
+      ???
 
   }
 
@@ -139,10 +161,11 @@ object RectangleConversion {
       size = PointConversion.toJS(rectangle.size)
     )
 
-  def fromJS(obj: js.Any): Rectangle = {
-    val res = obj.asInstanceOf[RectangleJS]
+  def fromJS(obj: js.Any): Rectangle =
+    fromRectangleJS(obj.asInstanceOf[RectangleJS])
+
+  def fromRectangleJS(res: RectangleJS): Rectangle =
     Rectangle(PointConversion.fromJS(res.position), PointConversion.fromJS(res.size))
-  }
 
 }
 
@@ -185,17 +208,35 @@ object MaterialConversion {
         js.Dynamic.literal(
           _type = "textured",
           diffuse = diffuse.value,
-          isList = isLit
+          isLit = isLit
         )
 
       case Material.Lit(albedo, emissive, normal, specular, isLit) =>
         js.Dynamic.literal(
-          _type = "textured",
+          _type = "lit",
           albedo = albedo.value,
           emissive = emissive.map(TextureConversion.toJS).orUndefined,
           normal = normal.map(TextureConversion.toJS).orUndefined,
           specular = specular.map(TextureConversion.toJS).orUndefined,
-          isList = isLit
+          isLit = isLit
+        )
+    }
+
+  def fromJS(obj: js.Any): Material =
+    fromMaterialJS(obj.asInstanceOf[MaterialJS])
+
+  def fromMaterialJS(res: MaterialJS): Material =
+    res._type match {
+      case "textured" =>
+        Material.Textured(AssetName(res.diffuse), res.isLit)
+
+      case "lit" =>
+        Material.Lit(
+          albedo = AssetName(res.albedo),
+          emissive = res.emissive.toOption.map(TextureConversion.fromTextureJS),
+          normal = res.normal.toOption.map(TextureConversion.fromTextureJS),
+          specular = res.specular.toOption.map(TextureConversion.fromTextureJS),
+          isLit = res.isLit
         )
     }
 
@@ -206,6 +247,12 @@ object MaterialConversion {
         assetName = texture.assetName.value,
         amount = texture.amount
       )
+
+    def fromJS(obj: js.Any): Texture =
+      fromTextureJS(obj.asInstanceOf[TextureJS])
+
+    def fromTextureJS(res: TextureJS): Texture =
+      Texture(AssetName(res.assetName), res.amount)
 
   }
 
@@ -291,10 +338,11 @@ object SceneUpdateFragmentConversion {
         b = rgb.b
       )
 
-    def fromJS(obj: js.Any): RGB = {
-      val res = obj.asInstanceOf[RGBJS]
-      RGB(res.r, res.g, res.b)
-    }
+    def fromJS(obj: js.Any): RGB =
+      fromRGBJS(obj.asInstanceOf[RGBJS])
+
+    def fromRGBJS(rgbJS: RGBJS): RGB =
+      RGB(rgbJS.r, rgbJS.g, rgbJS.b)
 
   }
 
@@ -502,24 +550,23 @@ object SceneUpdateFragmentConversion {
         flip = FlipConversion.toJS(node.flip)
       )
 
-    trait SpriteJS extends js.Object {
-      val bindingKey: String
-      val animationKey: String
-      val animationActions: js.Array[AnimationActionJS]
-      val effects: EffectsJS
-      val position: PointJS
-      val rotation: Double
-      val scale: Vector2JS
-      val depth: Int
-      val ref: PointJS
-      val flip: FlipJS
-    }
-
     def fromJS(obj: js.Any): Sprite =
       fromSpriteJS(obj.asInstanceOf[SpriteJS])
 
     def fromSpriteJS(res: SpriteJS): Sprite =
-      ???
+      Sprite(
+        bindingKey = BindingKey(res.bindingKey),
+        animationKey = AnimationKey(res.animationKey),
+        animationActions = res.animationActions.toList.map(AnimationActionConversion.fromAnimationActionJS),
+        eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
+        effects = EffectsConversion.fromEffectsJS(res.effects),
+        position = PointConversion.fromPointJS(res.position),
+        rotation = Radians(res.rotation),
+        scale = Vector2Conversion.fromVector2JS(res.scale),
+        depth = Depth(res.depth),
+        ref = PointConversion.fromPointJS(res.ref),
+        flip = FlipConversion.fromFlipJS(res.flip)
+      )
 
   }
 
@@ -539,23 +586,21 @@ object SceneUpdateFragmentConversion {
         flip = FlipConversion.toJS(node.flip)
       )
 
-    trait GraphicJS extends js.Object {
-      val material: MaterialJS
-      val crop: RectangleJS
-      val effects: EffectsJS
-      val position: PointJS
-      val rotation: Double
-      val scale: Vector2JS
-      val depth: Int
-      val ref: PointJS
-      val flip: FlipJS
-    }
-
     def fromJS(obj: js.Any): Graphic =
       fromGraphicJS(obj.asInstanceOf[GraphicJS])
 
     def fromGraphicJS(res: GraphicJS): Graphic =
-      ???
+      Graphic(
+        material = MaterialConversion.fromMaterialJS(res.material),
+        crop = RectangleConversion.fromRectangleJS(res.crop),
+        effects = EffectsConversion.fromEffectsJS(res.effects),
+        position = PointConversion.fromPointJS(res.position),
+        rotation = Radians(res.rotation),
+        scale = Vector2Conversion.fromVector2JS(res.scale),
+        depth = Depth(res.depth),
+        ref = PointConversion.fromPointJS(res.ref),
+        flip = FlipConversion.fromFlipJS(res.flip)
+      )
 
   }
 
@@ -580,24 +625,28 @@ object SceneUpdateFragmentConversion {
         flip = FlipConversion.toJS(node.flip)
       )
 
-    trait TextJS extends js.Object {
-      val text: String
-      val alignment: String
-      val fontKey: String
-      val effects: EffectsJS
-      val position: PointJS
-      val rotation: Double
-      val scale: Vector2JS
-      val depth: Int
-      val ref: PointJS
-      val flip: FlipJS
-    }
-
     def fromJS(obj: js.Any): Text =
       fromTextJS(obj.asInstanceOf[TextJS])
 
     def fromTextJS(res: TextJS): Text =
-      ???
+      Text(
+        text = res.text,
+        alignment = res.alignment match {
+          case "left"   => TextAlignment.Left
+          case "right"  => TextAlignment.Right
+          case "center" => TextAlignment.Center
+          case _        => TextAlignment.Left
+        },
+        fontKey = FontKey(res.fontKey),
+        eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
+        effects = EffectsConversion.fromEffectsJS(res.effects),
+        position = PointConversion.fromPointJS(res.position),
+        rotation = Radians(res.rotation),
+        scale = Vector2Conversion.fromVector2JS(res.scale),
+        depth = Depth(res.depth),
+        ref = PointConversion.fromPointJS(res.ref),
+        flip = FlipConversion.fromFlipJS(res.flip)
+      )
 
   }
 
@@ -721,9 +770,10 @@ object SceneUpdateFragmentConversion {
         alpha = effects.alpha
       )
 
-    def fromJS(obj: js.Any): Effects = {
-      val res = obj.asInstanceOf[EffectsJS]
+    def fromJS(obj: js.Any): Effects =
+      fromEffectsJS(obj.asInstanceOf[EffectsJS])
 
+    def fromEffectsJS(res: EffectsJS): Effects = {
       val overlay =
         res.overlay._type match {
           case "color" =>
@@ -878,4 +928,61 @@ trait EffectsJS extends js.Object {
   val border: BorderJS
   val glow: GlowJS
   val alpha: Double
+}
+
+trait TextureJS extends js.Object {
+  val assetName: String
+  val amount: Double
+}
+
+trait MaterialJS extends js.Object {
+  val _type: String
+  val isLit: Boolean
+
+  // Textured
+  val diffuse: String
+
+  // Lit
+  val albedo: String
+  val emissive: js.UndefOr[TextureJS]
+  val normal: js.UndefOr[TextureJS]
+  val specular: js.UndefOr[TextureJS]
+}
+
+trait TextJS extends js.Object {
+  val text: String
+  val alignment: String
+  val fontKey: String
+  val effects: EffectsJS
+  val position: PointJS
+  val rotation: Double
+  val scale: Vector2JS
+  val depth: Int
+  val ref: PointJS
+  val flip: FlipJS
+}
+
+trait SpriteJS extends js.Object {
+  val bindingKey: String
+  val animationKey: String
+  val animationActions: js.Array[AnimationActionJS]
+  val effects: EffectsJS
+  val position: PointJS
+  val rotation: Double
+  val scale: Vector2JS
+  val depth: Int
+  val ref: PointJS
+  val flip: FlipJS
+}
+
+trait GraphicJS extends js.Object {
+  val material: MaterialJS
+  val crop: RectangleJS
+  val effects: EffectsJS
+  val position: PointJS
+  val rotation: Double
+  val scale: Vector2JS
+  val depth: Int
+  val ref: PointJS
+  val flip: FlipJS
 }

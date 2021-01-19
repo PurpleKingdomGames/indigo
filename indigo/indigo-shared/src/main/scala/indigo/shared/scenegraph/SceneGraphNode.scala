@@ -10,8 +10,7 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.animation.AnimationAction
 import indigo.shared.BoundaryLocator
 
-/**
-  * The parent type of anything that can affect the visual representation of the game.
+/** The parent type of anything that can affect the visual representation of the game.
   */
 sealed trait SceneGraphNode extends Product with Serializable {
   def position: Point
@@ -51,8 +50,7 @@ final case class Transformer(node: SceneGraphNode, transform: CheapMatrix4) exte
     this.copy(transform = transform * matrix)
 }
 
-/**
-  * Represents nodes with a basic spacial presence.
+/** Represents nodes with a basic spacial presence.
   */
 sealed trait SceneGraphNodePrimitive extends SceneGraphNode {
   def bounds(locator: BoundaryLocator): Rectangle
@@ -79,8 +77,7 @@ sealed trait SceneGraphNodePrimitive extends SceneGraphNode {
   def flipVertical(isFlipped: Boolean): SceneGraphNodePrimitive
 }
 
-/**
-  * Used to group elements to allow them to be manipulated as a collection.
+/** Used to group elements to allow them to be manipulated as a collection.
   *
   * @param positionOffset
   * @param rotation
@@ -197,20 +194,17 @@ object Group {
     apply(Nil)
 }
 
-/**
-  * A CloneId is used to connect a Clone instance to a CloneBlank.
+/** A CloneId is used to connect a Clone instance to a CloneBlank.
   *
   * @param value
   */
 final case class CloneId(value: String) extends AnyVal
 
-/**
-  * Used to distingush between cloneable and non-clonable scene graph nodes.
+/** Used to distingush between cloneable and non-clonable scene graph nodes.
   */
 sealed trait Cloneable
 
-/**
-  * Used as the blueprint for any clones that want to copy it.
+/** Used as the blueprint for any clones that want to copy it.
   *
   * @param id
   * @param cloneable
@@ -223,8 +217,7 @@ final case class CloneBlank(id: CloneId, cloneable: Cloneable) {
     this.copy(cloneable = newCloneable)
 }
 
-/**
-  * Represents the standard allowable transformations of a clone.
+/** Represents the standard allowable transformations of a clone.
   *
   * @param position
   * @param rotation
@@ -271,8 +264,7 @@ object CloneTransformData {
     CloneTransformData(Point.zero, Radians.zero, Vector2.one, 1f, false, false)
 }
 
-/**
-  * A single clone instance of a cloneblank
+/** A single clone instance of a cloneblank
   *
   * @param id
   * @param depth
@@ -329,8 +321,7 @@ final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
     )
 }
 
-/**
-  * Represents many clones of the same cloneblank, differentiated only by their transform data.
+/** Represents many clones of the same cloneblank, differentiated only by their transform data.
   *
   * @param id
   * @param depth
@@ -404,8 +395,7 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
     withMaybeStaticBatchKey(None)
 }
 
-/**
-  * Represents nodes with more advanced spacial and visual properties
+/** Represents nodes with more advanced spacial and visual properties
   */
 sealed trait Renderable extends SceneGraphNodePrimitive {
   def effects: Effects
@@ -441,16 +431,14 @@ sealed trait Renderable extends SceneGraphNodePrimitive {
 
 }
 
-/**
-  * Tags nodes that can handle events.
+/** Tags nodes that can handle events.
   */
 sealed trait EventHandling {
   def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
   def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Renderable
 }
 
-/**
-  * Graphics are used to draw images on the screen, in a cheap efficient but expressive way.
+/** Graphics are used to draw images on the screen, in a cheap efficient but expressive way.
   * Graphics party trick is it's ability to crop images.
   *
   * @param position
@@ -607,8 +595,7 @@ object Graphic {
     )
 }
 
-/**
-  * Sprites are used to represented key-frame animated screen elements.
+/** Sprites are used to represented key-frame animated screen elements.
   *
   * @param position
   * @param rotation
@@ -798,8 +785,7 @@ object Sprite {
     )
 }
 
-/**
-  * Used to draw text onto the screen.
+/** Used to draw text onto the screen.
   *
   * @param position
   * @param rotation
@@ -816,8 +802,8 @@ final case class Text(
     text: String,
     alignment: TextAlignment,
     fontKey: FontKey,
-    effects: Effects,
     eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
+    effects: Effects,
     position: Point,
     rotation: Radians,
     scale: Vector2,
@@ -959,8 +945,7 @@ object Text {
 
 }
 
-/**
-  * Represents a single line of text.
+/** Represents a single line of text.
   *
   * @param text
   * @param lineBounds
