@@ -8,6 +8,7 @@ import org.scalajs.dom.raw.WebGLBuffer
 
 import scala.annotation.tailrec
 import scala.scalajs.js.typedarray.Float32Array
+import scala.scalajs.js
 import scala.collection.mutable.ListBuffer
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayClone
@@ -121,13 +122,13 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     amountsData((i * 4) + 2) = d.effects.outerGlowAmount
     amountsData((i * 4) + 3) = d.effects.innerGlowAmount
 
-    emissiveNormalOffsetsData((i * 4) + 0) = d.emissiveOffset.x.toFloat
-    emissiveNormalOffsetsData((i * 4) + 1) = d.emissiveOffset.y.toFloat
-    emissiveNormalOffsetsData((i * 4) + 2) = d.normalOffset.x.toFloat
-    emissiveNormalOffsetsData((i * 4) + 3) = d.normalOffset.y.toFloat
+    emissiveNormalOffsetsData((i * 4) + 0) = d.emissiveOffsetX
+    emissiveNormalOffsetsData((i * 4) + 1) = d.emissiveOffsetY
+    emissiveNormalOffsetsData((i * 4) + 2) = d.normalOffsetX
+    emissiveNormalOffsetsData((i * 4) + 3) = d.normalOffsetY
 
-    specularOffsetIsLitData((i * 4) + 0) = d.specularOffset.x.toFloat
-    specularOffsetIsLitData((i * 4) + 1) = d.specularOffset.y.toFloat
+    specularOffsetIsLitData((i * 4) + 0) = d.specularOffsetX
+    specularOffsetIsLitData((i * 4) + 1) = d.specularOffsetY
     specularOffsetIsLitData((i * 4) + 2) = d.isLit
     specularOffsetIsLitData((i * 4) + 3) = 1.0f
 
@@ -240,7 +241,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
           rec(remaining, 0, atlasName)
 
         case (d: DisplayObject) :: ds =>
-          val data = d.transform.data
+          val data = extractMatrixData(d.transform)
           updateData(d, batchCount, data._1, data._2, d.effects.alpha)
           rec(ds, batchCount + 1, atlasName)
 
@@ -251,7 +252,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
             case Some(refDisplayObject) =>
               val cl   = DisplayClone.asBatchData(c)
-              val data = c.transform.data
+              val data = extractMatrixData(c.transform)
               updateData(refDisplayObject, batchCount, data._1, data._2, cl.alpha)
               rec(ds, batchCount + 1, atlasName)
           }
@@ -284,12 +285,15 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
     while (i < count) {
       cl = c.clones(i)
-      data = cl.transform.data
+      data = extractMatrixData(cl.transform)
       updateData(refDisplayObject, batchCount + i, data._1, data._2, cl.alpha)
       i += 1
     }
 
     count
   }
+
+  private def extractMatrixData(mat: js.Array[Double]): (List[Double], List[Double]) =
+    (List(mat(0), mat(1), mat(4), mat(5)), List(mat(12), mat(13), mat(14)))
 
 }

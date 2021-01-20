@@ -32,6 +32,8 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.animation.AnimationRef
 import indigo.shared.datatypes.mutable.CheapMatrix4
 
+import scalajs.js.JSConverters._
+
 final class DisplayObjectConversions(
     boundaryLocator: BoundaryLocator,
     animationsRegister: AnimationsRegister,
@@ -84,7 +86,7 @@ final class DisplayObjectConversions(
   private def cloneDataToDisplayEntity(id: String, cloneDepth: Double, data: CloneTransformData, blankTransform: CheapMatrix4): DisplayClone =
     new DisplayClone(
       id = id,
-      transform = DisplayObjectConversions.cloneTransformDataToMatrix4(data, blankTransform),
+      transform = DisplayObjectConversions.cloneTransformDataToMatrix4(data, blankTransform).mat.toJSArray,
       z = cloneDepth,
       alpha = data.alpha.toFloat
     )
@@ -96,7 +98,7 @@ final class DisplayObjectConversions(
         z = batch.depth.zIndex.toDouble,
         clones = batch.clones.map { td =>
           new DisplayCloneBatchData(
-            transform = DisplayObjectConversions.cloneTransformDataToMatrix4(batch.transform |+| td, blankTransform),
+            transform = DisplayObjectConversions.cloneTransformDataToMatrix4(batch.transform |+| td, blankTransform).mat.toJSArray,
             alpha = batch.transform.alpha.toFloat
           )
         }
@@ -172,7 +174,7 @@ final class DisplayObjectConversions(
                 c.id.value,
                 c.depth.zIndex.toDouble,
                 c.transform,
-                refDisplayObject.transform
+                CheapMatrix4(refDisplayObject.transform.toArray)
               )
             )
         }
@@ -183,7 +185,7 @@ final class DisplayObjectConversions(
             Nil
 
           case Some(refDisplayObject) =>
-            List(cloneBatchDataToDisplayEntities(c, refDisplayObject.transform))
+            List(cloneBatchDataToDisplayEntities(c, CheapMatrix4(refDisplayObject.transform.toArray)))
         }
 
       case _: Group =>

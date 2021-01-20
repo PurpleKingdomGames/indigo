@@ -4,19 +4,22 @@ import indigo.shared.datatypes.Effects
 import indigo.shared.datatypes.Overlay
 import indigo.shared.datatypes.Thickness
 
+import scala.scalajs.js
+import scalajs.js.JSConverters._
+
 final class DisplayEffects(
-    val tint: Array[Float],
-    val gradiantOverlayPositions: Array[Float],
-    val gradiantOverlayFromColor: Array[Float],
-    val gradiantOverlayToColor: Array[Float],
-    val borderColor: Array[Float],
+    val tint: js.Array[Float],
+    val gradiantOverlayPositions: js.Array[Float],
+    val gradiantOverlayFromColor: js.Array[Float],
+    val gradiantOverlayToColor: js.Array[Float],
+    val borderColor: js.Array[Float],
     val innerBorderAmount: Float,
     val outerBorderAmount: Float,
-    val glowColor: Array[Float],
+    val glowColor: js.Array[Float],
     val innerGlowAmount: Float,
     val outerGlowAmount: Float,
     val alpha: Float
-)
+) extends js.Object
 
 object DisplayEffects {
 
@@ -57,14 +60,14 @@ object DisplayEffects {
 
   def fromEffects(effects: Effects): DisplayEffects =
     new DisplayEffects(
-      effects.tint.toArray,
-      overlayToPositionsArray(effects.overlay),
-      overlayToFromColorArray(effects.overlay),
-      overlayToToColorArray(effects.overlay),
-      effects.border.color.toArray,
+      effects.tint.toArray.toJSArray,
+      overlayToPositionsArray(effects.overlay).toJSArray,
+      overlayToFromColorArray(effects.overlay).toJSArray,
+      overlayToToColorArray(effects.overlay).toJSArray,
+      effects.border.color.toArray.toJSArray,
       thicknessToFloat(effects.border.innerThickness),
       thicknessToFloat(effects.border.outerThickness),
-      effects.glow.color.toArray,
+      effects.glow.color.toArray.toJSArray,
       effects.glow.innerGlowAmount.toFloat,
       effects.glow.outerGlowAmount.toFloat,
       effects.alpha.toFloat

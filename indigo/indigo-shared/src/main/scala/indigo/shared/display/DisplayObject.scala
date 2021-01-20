@@ -3,20 +3,23 @@ package indigo.shared.display
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.mutable.CheapMatrix4
 
-sealed trait DisplayEntity {
+import scala.scalajs.js
+import scalajs.js.JSConverters._
+
+sealed abstract class DisplayEntity extends js.Object {
   def z: Double
   def applyTransform(matrix: CheapMatrix4): DisplayEntity
 }
 
-final case class DisplayClone(
+final class DisplayClone(
     val id: String,
-    val transform: CheapMatrix4,
+    val transform: js.Array[Double],
     val z: Double,
     val alpha: Float
 ) extends DisplayEntity {
 
   def applyTransform(matrix: CheapMatrix4): DisplayClone =
-    this.copy(transform = transform * matrix)
+    new DisplayClone(id, (CheapMatrix4(transform.toArray) * matrix).mat.toJSArray, z, alpha)
 }
 object DisplayClone {
   def asBatchData(dc: DisplayClone): DisplayCloneBatchData =
@@ -26,29 +29,29 @@ object DisplayClone {
     )
 }
 
-final case class DisplayCloneBatchData(
-    val transform: CheapMatrix4,
+final class DisplayCloneBatchData(
+    val transform: js.Array[Double],
     val alpha: Float
-) {
+) extends js.Object {
   def applyTransform(matrix: CheapMatrix4): DisplayCloneBatchData =
-    this.copy(transform = transform * matrix)
+    new DisplayCloneBatchData((CheapMatrix4(transform.toArray) * matrix).mat.toJSArray, alpha)
 }
 object DisplayCloneBatchData {
   val None: DisplayCloneBatchData =
-    DisplayCloneBatchData(CheapMatrix4.identity, 0.0f)
+    new DisplayCloneBatchData(CheapMatrix4.identity.mat.toJSArray, 0.0f)
 }
-final case class DisplayCloneBatch(
+final class DisplayCloneBatch(
     val id: String,
     val z: Double,
     val clones: List[DisplayCloneBatchData]
 ) extends DisplayEntity {
 
   def applyTransform(matrix: CheapMatrix4): DisplayCloneBatch =
-    this.copy(clones = clones.map(_.applyTransform(matrix)))
+    new DisplayCloneBatch(id, z, clones.map(_.applyTransform(matrix)))
 }
 
-final case class DisplayObject(
-    val transform: CheapMatrix4,
+final class DisplayObject(
+    val transform: js.Array[Double],
     val z: Double,
     val width: Float,
     val height: Float,
@@ -58,19 +61,44 @@ final case class DisplayObject(
     val frameScaleX: Float,
     val frameScaleY: Float,
     val albedoAmount: Float,
-    val emissiveOffset: Vector2,
+    val emissiveOffsetX: Float,
+    val emissiveOffsetY: Float,
     val emissiveAmount: Float,
-    val normalOffset: Vector2,
+    val normalOffsetX: Float,
+    val normalOffsetY: Float,
     val normalAmount: Float,
-    val specularOffset: Vector2,
+    val specularOffsetX: Float,
+    val specularOffsetY: Float,
     val specularAmount: Float,
     val isLit: Float,
     val effects: DisplayEffects
 ) extends DisplayEntity {
 
   def applyTransform(matrix: CheapMatrix4): DisplayObject =
-    this.copy(transform * matrix)
-    
+    new DisplayObject(
+      (CheapMatrix4(transform.toArray) * matrix).mat.toJSArray,
+      z,
+      width,
+      height,
+      atlasName,
+      frameX,
+      frameY,
+      frameScaleX,
+      frameScaleY,
+      albedoAmount,
+      emissiveOffsetX,
+      emissiveOffsetY,
+      emissiveAmount,
+      normalOffsetX,
+      normalOffsetY,
+      normalAmount,
+      specularOffsetX,
+      specularOffsetY,
+      specularAmount,
+      isLit,
+      effects
+    )
+
 }
 object DisplayObject {
 
@@ -91,8 +119,8 @@ object DisplayObject {
       isLit: Float,
       effects: DisplayEffects
   ): DisplayObject =
-    DisplayObject(
-      transform,
+    new DisplayObject(
+      transform.mat.toJSArray,
       z,
       width.toFloat,
       height.toFloat,
@@ -102,11 +130,14 @@ object DisplayObject {
       frame.scale.x.toFloat,
       frame.scale.y.toFloat,
       albedoAmount,
-      emissiveOffset,
+      emissiveOffset.x.toFloat,
+      emissiveOffset.y.toFloat,
       emissiveAmount,
-      normalOffset,
+      normalOffset.x.toFloat,
+      normalOffset.y.toFloat,
       normalAmount,
-      specularOffset,
+      specularOffset.x.toFloat,
+      specularOffset.y.toFloat,
       specularAmount,
       isLit,
       effects

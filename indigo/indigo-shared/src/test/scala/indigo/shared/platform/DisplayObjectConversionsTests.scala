@@ -65,8 +65,8 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val actual: DisplayObject =
       convert(graphic)
 
-    assertEquals(actual.transform.x, 110.0d)
-    assertEquals(actual.transform.y, 70.0d)
+    assertEquals(CheapMatrix4(actual.transform.toArray).x, 110.0d)
+    assertEquals(CheapMatrix4(actual.transform.toArray).y, 70.0d)
     assertEquals(actual.z, 2.0d)
     assertEquals(actual.width, 200.0f)
     assertEquals(actual.height, 100.0f)
@@ -80,8 +80,8 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
           .withDepth(Depth(100))
       )
 
-    assertEquals(actual.transform.x, 115.0d)
-    assertEquals(actual.transform.y, 85.0d)
+    assertEquals(CheapMatrix4(actual.transform.toArray).x, 115.0d)
+    assertEquals(CheapMatrix4(actual.transform.toArray).y, 85.0d)
     assertEquals(actual.z, 102.0d)
     assertEquals(actual.width, 200.0f)
     assertEquals(actual.height, 100.0f)
@@ -97,8 +97,8 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         )
       )
 
-    assertEquals(actual.transform.x, 110.0d)
-    assertEquals(actual.transform.y, 70.0d)
+    assertEquals(CheapMatrix4(actual.transform.toArray).x, 110.0d)
+    assertEquals(CheapMatrix4(actual.transform.toArray).y, 70.0d)
     assertEquals(actual.z, 2.0d)
     assertEquals(actual.width, 200.0f)
     assertEquals(actual.height, 100.0f)
