@@ -141,8 +141,8 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def drawLayer(
       projection: scalajs.js.Array[Double],
-      cloneBlankDisplayObjects: Map[String, DisplayObject],
-      displayEntities: ListBuffer[DisplayEntity],
+      cloneBlankDisplayObjects: js.Map[String, DisplayObject],
+      displayEntities: js.Array[DisplayEntity],
       frameBufferComponents: FrameBufferComponents,
       clearColor: RGBA,
       shaderProgram: WebGLProgram
@@ -191,7 +191,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     setupInstanceArray(textureAmountsArray, 14, 4)
     //
 
-    val sorted: ListBuffer[DisplayEntity] =
+    val sorted: js.Array[DisplayEntity] =
       RendererHelper.sortByDepth(displayEntities)
 
     @inline def drawBuffer(instanceCount: Int): Unit =

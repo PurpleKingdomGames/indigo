@@ -3,7 +3,7 @@ package indigo.worker
 import indigo.shared.BoundaryLocator
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
-import indigo.shared.platform.SceneProcessor
+import indigo.facades.worker.SceneProcessor
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.animation.Animation
 import indigo.shared.time.GameTime
@@ -59,19 +59,20 @@ object SceneWorker {
           animationsRegister.registerAll(c.data.asInstanceOf[Array[Animation]])
 
         case c if validate(c, "processScene") =>
-          val args = c.data.asInstanceOf[SceneFrameData]
+          // val args = c.data.asInstanceOf[SceneFrameData]
 
-          val res =
-            sceneProcessor.processScene(
-              gameTime = args.gameTime,
-              scene = args.scene,
-              assetMapping = args.assetMapping,
-              screenWidth = args.screenWidth,
-              screenHeight = args.screenHeight,
-              orthographicProjectionMatrix = args.orthographicProjectionMatrix
-            )
+          // val res =
+          //   sceneProcessor.processScene(
+          //     gameTime = args.gameTime,
+          //     scene = args.scene,
+          //     assetMapping = args.assetMapping,
+          //     screenWidth = args.screenWidth,
+          //     screenHeight = args.screenHeight,
+          //     orthographicProjectionMatrix = args.orthographicProjectionMatrix
+          //   )
 
-          SceneWorkerGlobal.postMessage(res.asInstanceOf[js.Any])
+          // SceneWorkerGlobal.postMessage(res.asInstanceOf[js.Any])
+          ???
 
         case c if c.operation.isDefined =>
           println(s"Scene Worker - Unknown operation: ${c.operation.get}")

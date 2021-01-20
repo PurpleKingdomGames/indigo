@@ -402,10 +402,8 @@ object SceneUpdateFragmentConversion {
         a = rgba.a
       )
 
-    def fromJS(obj: js.Any): RGBA = {
-      val res = obj.asInstanceOf[RGBAJS]
-      RGBA(res.r, res.g, res.b, res.a)
-    }
+    def fromJS(obj: js.Any): RGBA =
+      fromRGBAJS(obj.asInstanceOf[RGBAJS])
 
     def fromRGBAJS(rgbaJS: RGBAJS): RGBA =
       RGBA(rgbaJS.r, rgbaJS.g, rgbaJS.b, rgbaJS.a)
@@ -418,6 +416,7 @@ object SceneUpdateFragmentConversion {
       light match {
         case PointLight(position, height, color, power, attenuation) =>
           js.Dynamic.literal(
+            _type = "point",
             position = PointConversion.toJS(position),
             height = height,
             color = RGBConversion.toJS(color),
@@ -427,6 +426,7 @@ object SceneUpdateFragmentConversion {
 
         case SpotLight(position, height, color, power, attenuation, angle, rotation, near, far) =>
           js.Dynamic.literal(
+            _type = "spot",
             position = PointConversion.toJS(position),
             height = height,
             color = RGBConversion.toJS(color),
@@ -440,10 +440,47 @@ object SceneUpdateFragmentConversion {
 
         case DirectionLight(height, color, power, rotation) =>
           js.Dynamic.literal(
+            _type = "direction",
             height = height,
             power = power,
             color = RGBConversion.toJS(color),
             rotation = rotation.value
+          )
+      }
+
+    def fromJS(obj: js.Any): Light =
+      fromLightJS(obj.asInstanceOf[LightJS])
+
+    def fromLightJS(res: LightJS): Light =
+      res._type match {
+        case "point" =>
+          PointLight(
+            PointConversion.fromPointJS(res.position),
+            res.height,
+            RGBConversion.fromRGBJS(res.color),
+            res.power,
+            res.attenuation
+          )
+
+        case "spot" =>
+          SpotLight(
+            PointConversion.fromPointJS(res.position),
+            res.height,
+            RGBConversion.fromRGBJS(res.color),
+            res.power,
+            res.attenuation,
+            Radians(res.angle),
+            Radians(res.rotation),
+            res.near,
+            res.far
+          )
+
+        case "direction" =>
+          DirectionLight(
+            res.height,
+            RGBConversion.fromRGBJS(res.color),
+            res.power,
+            Radians(res.rotation)
           )
       }
 
@@ -1069,4 +1106,17 @@ trait FontInfoJS extends js.Object {
   val unknownChar: FontCharJS
   val fontChars: js.Array[FontCharJS]
   val caseSensitive: Boolean
+}
+
+trait LightJS extends js.Object {
+  val _type: String
+  val position: PointJS
+  val height: Int
+  val color: RGBJS
+  val power: Double
+  val attenuation: Int
+  val angle: Double
+  val rotation: Double
+  val near: Int
+  val far: Int
 }

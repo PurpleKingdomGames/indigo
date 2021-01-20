@@ -6,7 +6,8 @@ import indigo.platform.renderer.Renderer
 import indigo.shared.platform.RendererConfig
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.datatypes.RGBA
-import indigo.shared.platform.ProcessedSceneData
+import indigo.facades.worker.ProcessedSceneData
+import indigo.facades.worker.SceneUpdateFragmentConversion
 import indigo.shared.display.DisplayEntity
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
@@ -15,6 +16,8 @@ import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.FrameBufferComponents
 
 import scala.collection.mutable
+import scalajs.js.JSConverters._
+import scala.scalajs.js
 
 import org.scalajs.dom.html
 import org.scalajs.dom.raw.WebGLRenderingContext
@@ -42,9 +45,9 @@ final class RendererWebGL1(
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var lastHeight: Int = 0
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  var orthographicProjectionMatrix: CheapMatrix4 = CheapMatrix4.identity
+  var orthographicProjectionMatrix: js.Array[Double] = CheapMatrix4.identity.mat.toJSArray
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  var orthographicProjectionMatrixNoMag: CheapMatrix4 = CheapMatrix4.identity
+  var orthographicProjectionMatrixNoMag: js.Array[Double]  = CheapMatrix4.identity.mat.toJSArray
 
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastWidth
@@ -128,7 +131,7 @@ final class RendererWebGL1(
     drawLayer(
       sceneData.lightingLayerDisplayObjects,
       Some(lightingFrameBuffer),
-      sceneData.clearColor,
+      SceneUpdateFragmentConversion.RGBAConversion.fromJS(sceneData.clearColor),
       lightingShaderProgram,
       sceneData.lightingProjection,
       false
@@ -146,7 +149,7 @@ final class RendererWebGL1(
 
     WebGLHelper.setNormalBlend(gl)
     drawLayer(
-      mutable.ListBuffer(RendererHelper.screenDisplayObject(lastWidth, lastHeight)),
+      js.Array(RendererHelper.screenDisplayObject(lastWidth, lastHeight)),
       None,
       config.clearColor,
       mergeShaderProgram,
@@ -157,11 +160,11 @@ final class RendererWebGL1(
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def drawLayer(
-      displayEntities: mutable.ListBuffer[DisplayEntity],
+      displayEntities: js.Array[DisplayEntity],
       frameBufferComponents: Option[FrameBufferComponents],
       clearColor: RGBA,
       shaderProgram: WebGLProgram,
-      projectionMatrix: CheapMatrix4,
+      projectionMatrix: js.Array[Double],
       isMerge: Boolean
   ): Unit = {
 
@@ -178,7 +181,7 @@ final class RendererWebGL1(
     gl.uniformMatrix4fv(
       location = gl.getUniformLocation(shaderProgram, "u_projection"),
       transpose = false,
-      value = RendererHelper.mat4ToJsArray(projectionMatrix)
+      value = projectionMatrix
     )
 
     // Attribute locations
@@ -250,8 +253,8 @@ final class RendererWebGL1(
       lastWidth = actualWidth
       lastHeight = actualHeight
 
-      orthographicProjectionMatrix = CheapMatrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
-      orthographicProjectionMatrixNoMag = CheapMatrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)
+      orthographicProjectionMatrix = CheapMatrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification).mat.toJSArray
+      orthographicProjectionMatrixNoMag = CheapMatrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble).mat.toJSArray
       // orthographicProjectionMatrixJS = RendererFunctions.mat4ToJsArray(orthographicProjectionMatrix)
       // orthographicProjectionMatrixNoMagJS = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)).map(_.toFloat)
 
