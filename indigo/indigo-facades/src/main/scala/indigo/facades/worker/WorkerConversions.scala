@@ -34,6 +34,7 @@ import indigo.shared.platform.AssetMapping
 import indigo.shared.platform.TextureRefAndOffset
 import indigo.shared.time.GameTime
 import indigo.shared.time.Millis
+import indigo.shared.time.Seconds
 import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.scenegraph.SceneAudio
 import indigo.shared.scenegraph.SceneAudioSource
@@ -55,6 +56,8 @@ import indigo.shared.scenegraph.CloneId
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.scenegraph.CloneTransformData
 import indigo.shared.collections.NonEmptyList
+import indigo.shared.audio.Volume
+import indigo.shared.audio.Track
 
 import scala.scalajs.js
 import scalajs.js.JSConverters._
@@ -313,7 +316,29 @@ object SceneFrameDataConversion {
       assetMapping = sceneFrameData.assetMapping.mappings.map((k, v) => (k, TextureRefAndOffsetConversion.toJS(v))).toJSDictionary,
       screenWidth = sceneFrameData.screenWidth,
       screenHeight = sceneFrameData.screenHeight,
-      orthographicProjectionMatrix = sceneFrameData.orthographicProjectionMatrix.mat.toJSArray
+      orthographicProjectionMatrix = sceneFrameData.orthographicProjectionMatrix
+    )
+
+  trait SceneFrameDataJS extends js.Object {
+    val gameTime: GameTimeJS
+    val scene: SceneUpdateFragmentJS
+    val assetMapping: js.Dictionary[TextureRefAndOffsetJS]
+    val screenWidth: Double
+    val screenHeight: Double
+    val orthographicProjectionMatrix: js.Array[Double]
+  }
+
+  def fromJS(obj: js.Any): SceneFrameData =
+    fromSceneFrameDataJS(obj.asInstanceOf[SceneFrameDataJS])
+
+  def fromSceneFrameDataJS(res: SceneFrameDataJS): SceneFrameData =
+    SceneFrameData(
+      gameTime = GameTimeConversion.fromGameTimeJS(res.gameTime),
+      scene = SceneUpdateFragmentConversion.fromSceneUpdateFragmentJS(res.scene),
+      assetMapping = AssetMapping(res.assetMapping.toMap.map((k, v) => (k, TextureRefAndOffsetConversion.fromTextureRefAndOffsetJS(v)))),
+      screenWidth = res.screenWidth,
+      screenHeight = res.screenHeight,
+      orthographicProjectionMatrix = res.orthographicProjectionMatrix
     )
 
   object GameTimeConversion {
@@ -325,6 +350,16 @@ object SceneFrameDataConversion {
         targetFPS = gameTime.targetFPS.value
       )
 
+    def fromJS(obj: js.Any): GameTime =
+      fromGameTimeJS(obj.asInstanceOf[GameTimeJS])
+
+    def fromGameTimeJS(res: GameTimeJS): GameTime =
+      GameTime(
+        running = Seconds(res.running),
+        delta = Seconds(res.delta),
+        targetFPS = GameTime.FPS(res.targetFPS)
+      )
+
   }
 
   object TextureRefAndOffsetConversion {
@@ -334,6 +369,16 @@ object SceneFrameDataConversion {
         atlasName = textureRefAndOffset.atlasName,
         atlasSize = Vector2Conversion.toJS(textureRefAndOffset.atlasSize),
         offset = PointConversion.toJS(textureRefAndOffset.offset)
+      )
+
+    def fromJS(obj: js.Any): TextureRefAndOffset =
+      fromTextureRefAndOffsetJS(obj.asInstanceOf[TextureRefAndOffsetJS])
+
+    def fromTextureRefAndOffsetJS(res: TextureRefAndOffsetJS): TextureRefAndOffset =
+      TextureRefAndOffset(
+        atlasName = res.atlasName,
+        atlasSize = Vector2Conversion.fromVector2JS(res.atlasSize),
+        offset = PointConversion.fromPointJS(res.offset)
       )
 
   }
@@ -355,6 +400,22 @@ object SceneUpdateFragmentConversion {
       cloneBlanks = suf.cloneBlanks.map(CloneBlankConversion.toJS).toJSArray
     )
 
+  def fromJS(obj: js.Any): SceneUpdateFragment =
+    fromSceneUpdateFragmentJS(obj.asInstanceOf[SceneUpdateFragmentJS])
+
+  def fromSceneUpdateFragmentJS(res: SceneUpdateFragmentJS): SceneUpdateFragment =
+    SceneUpdateFragment(
+      gameLayer = SceneLayerConversion.fromSceneLayerJS(res.gameLayer),
+      lightingLayer = SceneLayerConversion.fromSceneLayerJS(res.lightingLayer),
+      distortionLayer = SceneLayerConversion.fromSceneLayerJS(res.distortionLayer),
+      uiLayer = SceneLayerConversion.fromSceneLayerJS(res.uiLayer),
+      ambientLight = RGBAConversion.fromRGBAJS(res.ambientLight),
+      lights = res.lights.toList.map(LightConversion.fromLightJS),
+      audio = SceneAudioConversion.fromSceneAudioJS(res.audio),
+      screenEffects = ScreenEffectsConversion.fromScreenEffectsJS(res.screenEffects),
+      cloneBlanks = res.cloneBlanks.toList.map(CloneBlankConversion.fromCloneBlankJS)
+    )
+
   object SceneLayerConversion {
 
     def toJS(sceneLayer: SceneLayer): js.Any =
@@ -371,6 +432,26 @@ object SceneUpdateFragmentConversion {
         tint = RGBAConversion.toJS(sceneLayer.tint),
         saturation = sceneLayer.saturation,
         magnification = sceneLayer.magnification.orUndefined
+      )
+
+    def fromJS(obj: js.Any): SceneLayer =
+      fromSceneLayerJS(obj.asInstanceOf[SceneLayerJS])
+
+    val nodeTypes: List[String] = List("graphic", "group", "sprite", "text", "clone", "clone batch")
+
+    def fromSceneLayerJS(res: SceneLayerJS): SceneLayer =
+      SceneLayer(
+        nodes = res.nodes.toList.filter(nodeTypes.contains).map {
+          case node: SceneGraphNodeJS if node._type == "graphic"     => GraphicConversion.fromJS(node)
+          case node: SceneGraphNodeJS if node._type == "group"       => GroupConversion.fromJS(node)
+          case node: SceneGraphNodeJS if node._type == "sprite"      => SpriteConversion.fromJS(node)
+          case node: SceneGraphNodeJS if node._type == "text"        => TextConversion.fromJS(node)
+          case node: SceneGraphNodeJS if node._type == "clone"       => CloneConversion.fromJS(node)
+          case node: SceneGraphNodeJS if node._type == "clone batch" => CloneBatchConversion.fromJS(node)
+        },
+        tint = RGBAConversion.fromRGBAJS(res.tint),
+        saturation = res.saturation,
+        magnification = res.magnification.toOption
       )
 
   }
@@ -495,23 +576,48 @@ object SceneUpdateFragmentConversion {
         sourceC = SceneAudioSourceConversion.toJS(sceneAudio.sourceC)
       )
 
+    def fromJS(obj: js.Any): SceneAudio =
+      fromSceneAudioJS(obj.asInstanceOf[SceneAudioJS])
+
+    def fromSceneAudioJS(res: SceneAudioJS): SceneAudio =
+      SceneAudio(
+        sourceA = SceneAudioSourceConversion.fromSceneAudioSourceJS(res.sourceA),
+        sourceB = SceneAudioSourceConversion.fromSceneAudioSourceJS(res.sourceB),
+        sourceC = SceneAudioSourceConversion.fromSceneAudioSourceJS(res.sourceC)
+      )
+
     object SceneAudioSourceConversion {
 
       def toJS(source: SceneAudioSource): js.Any =
-        js.Dynamic.literal(
-          bindingKey = source.bindingKey.value,
-          playbackPattern = source.playbackPattern match {
-            case PlaybackPattern.Silent =>
-              js.Dynamic.literal(_type = "silent")
+        source.playbackPattern match {
+          case PlaybackPattern.Silent =>
+            js.Dynamic.literal(
+              _type = "silent",
+              bindingKey = source.bindingKey.value,
+              masterVolume = source.masterVolume.amount
+            )
 
-            case PlaybackPattern.SingleTrackLoop(track) =>
-              js.Dynamic.literal(
-                _type = "single",
-                assetName = track.assetName.value,
-                volume = track.volume.amount
-              )
+          case PlaybackPattern.SingleTrackLoop(track) =>
+            js.Dynamic.literal(
+              _type = "single",
+              bindingKey = source.bindingKey.value,
+              masterVolume = source.masterVolume.amount,
+              assetName = track.assetName.value,
+              volume = track.volume.amount
+            )
+        }
+
+      def fromJS(obj: js.Any): SceneAudioSource =
+        fromSceneAudioSourceJS(obj.asInstanceOf[SceneAudioSourceJS])
+
+      def fromSceneAudioSourceJS(res: SceneAudioSourceJS): SceneAudioSource =
+        SceneAudioSource(
+          bindingKey = BindingKey(res.bindingKey),
+          playbackPattern = res._type match {
+            case "silent" => PlaybackPattern.Silent
+            case "single" => PlaybackPattern.SingleTrackLoop(Track(AssetName(res.assetName)))
           },
-          masterVolume = source.masterVolume.amount
+          masterVolume = Volume(res.masterVolume)
         )
 
     }
@@ -526,6 +632,15 @@ object SceneUpdateFragmentConversion {
         uiColorOverlay = RGBAConversion.toJS(screenEffects.uiColorOverlay)
       )
 
+    def fromJS(obj: js.Any): ScreenEffects =
+      fromScreenEffectsJS(obj.asInstanceOf[ScreenEffectsJS])
+
+    def fromScreenEffectsJS(res: ScreenEffectsJS): ScreenEffects =
+      ScreenEffects(
+        gameColorOverlay = RGBAConversion.fromRGBAJS(res.gameColorOverlay),
+        uiColorOverlay = RGBAConversion.fromRGBAJS(res.uiColorOverlay)
+      )
+
   }
 
   object CloneBlankConversion {
@@ -536,6 +651,21 @@ object SceneUpdateFragmentConversion {
         cloneable = cloneBlank.cloneable match {
           case s: Sprite  => SpriteConversion.toJS(s)
           case g: Graphic => GraphicConversion.toJS(g)
+        }
+      )
+
+    def fromJS(obj: js.Any): CloneBlank =
+      fromCloneBlankJS(obj.asInstanceOf[CloneBlankJS])
+
+    def fromCloneBlankJS(res: CloneBlankJS): CloneBlank =
+      CloneBlank(
+        id = CloneId(res.id),
+        cloneable = res.cloneable._type match {
+          case "graphic" =>
+            GraphicConversion.fromJS(res.cloneable)
+
+          case "sprite" =>
+            SpriteConversion.fromJS(res.cloneable)
         }
       )
 
@@ -1119,4 +1249,59 @@ trait LightJS extends js.Object {
   val rotation: Double
   val near: Int
   val far: Int
+}
+
+trait CloneBlankJS extends js.Object {
+  val id: String
+  val cloneable: SceneGraphNodeJS
+}
+
+trait ScreenEffectsJS extends js.Object {
+  val gameColorOverlay: RGBAJS
+  val uiColorOverlay: RGBAJS
+}
+
+trait SceneAudioSourceJS extends js.Object {
+  val _type: String
+  val bindingKey: String
+  val masterVolume: Double
+  val assetName: String
+  val volume: Double
+}
+
+trait SceneAudioJS extends js.Object {
+  val sourceA: SceneAudioSourceJS
+  val sourceB: SceneAudioSourceJS
+  val sourceC: SceneAudioSourceJS
+}
+
+trait SceneLayerJS extends js.Object {
+  val nodes: js.Array[SceneGraphNodeJS]
+  val tint: RGBAJS
+  val saturation: Double
+  val magnification: js.UndefOr[Int]
+}
+
+trait SceneUpdateFragmentJS extends js.Object {
+  val gameLayer: SceneLayerJS
+  val lightingLayer: SceneLayerJS
+  val distortionLayer: SceneLayerJS
+  val uiLayer: SceneLayerJS
+  val ambientLight: RGBAJS
+  val lights: js.Array[LightJS]
+  val audio: SceneAudioJS
+  val screenEffects: ScreenEffectsJS
+  val cloneBlanks: js.Array[CloneBlankJS]
+}
+
+trait GameTimeJS extends js.Object {
+  val running: Double
+  val delta: Double
+  val targetFPS: Int
+}
+
+trait TextureRefAndOffsetJS extends js.Object {
+  val atlasName: String
+  val atlasSize: Vector2JS
+  val offset: PointJS
 }
