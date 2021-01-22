@@ -63,7 +63,7 @@ object RendererFunctions {
     gl.uniformMatrix4fv(
       location = transformMatrixLocation,
       transpose = false,
-      value = displayObject.transform
+      value = RendererHelper.mat4ToJsArray(displayObject.transform)
     )
 
     gl.uniform1f(

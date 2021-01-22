@@ -7,8 +7,8 @@ final case class CheapMatrix4(mat: Array[Double]) {
   lazy val x: Double = mat(12)
   lazy val y: Double = mat(13)
 
-  // lazy val data: (List[Double], List[Double]) =
-  //   (List(mat(0), mat(1), mat(4), mat(5)), List(mat(12), mat(13), mat(14)))
+  lazy val data: (List[Double], List[Double]) =
+    (List(mat(0), mat(1), mat(4), mat(5)), List(mat(12), mat(13), mat(14)))
 
   def translate(byX: Double, byY: Double, byZ: Double): CheapMatrix4 =
     this * CheapMatrix4.translate(byX, byY, byZ)
