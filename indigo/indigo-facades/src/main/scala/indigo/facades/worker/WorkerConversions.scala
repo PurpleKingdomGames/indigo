@@ -65,10 +65,25 @@ import scalajs.js.JSConverters._
 object WorkerConversions {
 
   // FontInfo
+  def readFontInfo(obj: js.Any): FontInfo =
+    FontInfoConversion.fromJS(obj)
+
+  def writeFontInfo(value: FontInfo): js.Any =
+    FontInfoConversion.toJS(value)
 
   // Animation
+  def readAnimation(obj: js.Any): Animation =
+    AnimationConversion.fromJS(obj)
+
+  def writeAnimation(value: Animation): js.Any =
+    AnimationConversion.toJS(value)
 
   // SceneFrameData
+  def readSceneFrameData(obj: js.Any): SceneFrameData =
+    SceneFrameDataConversion.fromJS(obj)
+
+  def writeSceneFrameData(value: SceneFrameData): js.Any =
+    SceneFrameDataConversion.toJS(value)
 
 }
 

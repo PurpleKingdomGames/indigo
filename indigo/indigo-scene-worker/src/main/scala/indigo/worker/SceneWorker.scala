@@ -11,6 +11,7 @@ import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.platform.AssetMapping
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.platform.SceneFrameData
+import indigo.facades.worker.WorkerConversions._
 
 import org.scalajs.dom
 
@@ -34,7 +35,12 @@ object SceneWorker {
   @JSExport
   def main(): Unit = {
     SceneWorkerGlobal.addEventListener("message", onMessage)
-    SceneWorkerGlobal.postMessage(s"Scene Worker Started")
+    SceneWorkerGlobal.postMessage(
+      new WorkerMessage {
+        val _type = "message"
+        val data  = "Scene Worker Started"
+      }
+    )
   }
 
   def validate(c: Command, name: String): Boolean =
@@ -44,35 +50,55 @@ object SceneWorker {
     msg =>
       msg.data.asInstanceOf[Command] match {
         case c if validate(c, "echo") =>
-          SceneWorkerGlobal.postMessage("Echo: " + c.data.asInstanceOf[String])
+          SceneWorkerGlobal.postMessage(
+            new WorkerMessage {
+              val _type = "echo"
+              val data  = "Echo: " + c.data.asInstanceOf[String]
+            }
+          )
+
+        case c if validate(c, "purge") =>
+          sceneProcessor.purgeTextureAtlasCaches()
 
         case c if validate(c, "addFont") =>
-          fontRegister.register(c.data.asInstanceOf[FontInfo])
+          fontRegister.register(
+            readFontInfo(c.data)
+          )
 
         case c if validate(c, "addFonts") =>
-          fontRegister.registerAll(c.data.asInstanceOf[Array[FontInfo]])
+          fontRegister.registerAll(
+            c.data.asInstanceOf[js.Array[js.Any]].map(readFontInfo).toArray
+          )
 
         case c if validate(c, "addAnimation") =>
-          animationsRegister.register(c.data.asInstanceOf[Animation])
+          animationsRegister.register(
+            readAnimation(c.data)
+          )
 
         case c if validate(c, "addAnimations") =>
-          animationsRegister.registerAll(c.data.asInstanceOf[Array[Animation]])
+          animationsRegister.registerAll(
+            c.data.asInstanceOf[js.Array[js.Any]].map(readAnimation).toArray
+          )
 
         case c if validate(c, "processScene") =>
-          // val args = c.data.asInstanceOf[SceneFrameData]
+          val args = readSceneFrameData(c.data)
 
-          // val res =
-          //   sceneProcessor.processScene(
-          //     gameTime = args.gameTime,
-          //     scene = args.scene,
-          //     assetMapping = args.assetMapping,
-          //     screenWidth = args.screenWidth,
-          //     screenHeight = args.screenHeight,
-          //     orthographicProjectionMatrix = args.orthographicProjectionMatrix
-          //   )
+          val res =
+            sceneProcessor.processScene(
+              gameTime = args.gameTime,
+              scene = args.scene,
+              assetMapping = args.assetMapping,
+              screenWidth = args.screenWidth,
+              screenHeight = args.screenHeight,
+              orthographicProjectionMatrix = args.orthographicProjectionMatrix
+            )
 
-          // SceneWorkerGlobal.postMessage(res.asInstanceOf[js.Any])
-          ???
+          SceneWorkerGlobal.postMessage(
+            new WorkerMessage {
+              val _type = "processed scene"
+              val data  = res
+            }
+          )
 
         case c if c.operation.isDefined =>
           println(s"Scene Worker - Unknown operation: ${c.operation.get}")
@@ -102,4 +128,9 @@ object SceneWorkerGlobal {
 trait Command extends js.Object {
   val operation: js.UndefOr[String]
   val data: js.Object
+}
+
+trait WorkerMessage extends js.Object {
+  val _type: js.UndefOr[String]
+  val data: js.Any
 }

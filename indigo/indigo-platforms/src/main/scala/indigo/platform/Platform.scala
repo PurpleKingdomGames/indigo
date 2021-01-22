@@ -39,8 +39,16 @@ import indigo.shared.FontRegister
 import indigo.shared.BoundaryLocator
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.animation.Animation
+import indigo.shared.platform.SceneFrameData
+import indigo.facades.worker.WorkerConversions
+import indigo.facades.worker.ProcessedSceneData
+
+import scalajs.js.JSConverters._
 
 class Platform(gameConfig: GameConfig, globalEventStream: GlobalEventStream) extends PlatformAPI {
+
+  private val sceneWorker  = new Worker("indigo-scene-worker.js")
+  private val renderWorker = new Worker("indigo-render-worker.js")
 
   private val animationsRegister: AnimationsRegister =
     new AnimationsRegister()
@@ -73,25 +81,40 @@ class Platform(gameConfig: GameConfig, globalEventStream: GlobalEventStream) ext
     assetCollection
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  def purgeTextureAtlasCaches(): Unit =
+  def purgeTextureAtlasCaches(): Unit = {
+    sceneWorker.postMessage(
+      js.Dynamic.literal(
+        "operation" -> "purge"
+      )
+    )
+
     if (sceneProcessor != null) {
       sceneProcessor.purgeTextureAtlasCaches()
     }
+  }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   def initialise(): Outcome[Unit] = {
 
-    val sceneWorker = new Worker("indigo-scene-worker.js")
     sceneWorker.postMessage(js.Dynamic.literal("operation" -> "echo", "data" -> "Hello, Scene Worker!"))
-
-    val renderWorker = new Worker("indigo-render-worker.js")
-    renderWorker.postMessage(js.Dynamic.literal("operation" -> "echo", "data" -> "Hello, Render Worker!"))
-
     sceneWorker.onmessage = (e: js.Any) => {
-      val msg = e.asInstanceOf[dom.MessageEvent].data.asInstanceOf[String]
-      println("Scene worker said: " + msg)
+      val msg = e.asInstanceOf[dom.MessageEvent].data.asInstanceOf[WorkerMessage]
+
+      msg match {
+        case m if m._type.isDefined && m._type.get == "message" =>
+          println("Scene Worker: " + msg.data.asInstanceOf[String])
+
+        case m if m._type.isDefined && m._type.get == "echo" =>
+          println("Scene Worker Echo: " + msg.data.asInstanceOf[String])
+
+        case m if m._type.isDefined && m._type.get == "processed scene" =>
+          // Render scene
+          renderer.drawScene(msg.data.asInstanceOf[ProcessedSceneData])
+      }
+
     }
 
+    renderWorker.postMessage(js.Dynamic.literal("operation" -> "echo", "data" -> "Hello, Render Worker!"))
     renderWorker.onmessage = (e: js.Any) => {
       val msg = e.asInstanceOf[dom.MessageEvent].data.asInstanceOf[String]
       println("Render worker said: " + msg)
@@ -231,28 +254,65 @@ class Platform(gameConfig: GameConfig, globalEventStream: GlobalEventStream) ext
     // Play audio
     audioPlayer.playAudio(scene.audio)
 
-    // Prepare scene
-    val sceneData = sceneProcessor.processScene(
-      gameTime,
-      scene,
-      assetMapping,
-      renderer.screenWidth.toDouble,
-      renderer.screenHeight.toDouble,
-      renderer.orthographicProjectionMatrix
+    // worker
+    val sceneFrameData =
+      SceneFrameData(
+        gameTime,
+        scene,
+        assetMapping,
+        renderer.screenWidth.toDouble,
+        renderer.screenHeight.toDouble,
+        renderer.orthographicProjectionMatrix
+      )
+
+    sceneWorker.postMessage(
+      js.Dynamic.literal(
+        "operation" -> "processScene",
+        "data"      -> WorkerConversions.writeSceneFrameData(sceneFrameData)
+      )
     )
 
-    // Render scene
-    renderer.drawScene(sceneData)
+    // val x =
+    //   WorkerConversions.readSceneFrameData(WorkerConversions.writeSceneFrameData(sceneFrameData))
+
+    // // Prepare scene
+    // val sceneData = sceneProcessor.processScene(
+    //   x.gameTime,
+    //   x.scene,
+    //   x.assetMapping,
+    //   x.screenWidth,
+    //   x.screenHeight,
+    //   x.orthographicProjectionMatrix
+    // )
+
+    // // Render scene
+    // renderer.drawScene(sceneData)
   }
 
   def playSound(assetName: AssetName, volume: Volume): Unit =
     audioPlayer.playSound(assetName, volume)
 
-  def registerAllFonts(fontInfos: Set[FontInfo]): Unit =
-    fontRegister.registerAll(fontInfos)
+  def registerAllFonts(fontInfos: Set[FontInfo]): Unit = {
+    sceneWorker.postMessage(
+      js.Dynamic.literal(
+        "operation" -> "addFonts",
+        "data"      -> fontInfos.toJSArray.map(WorkerConversions.writeFontInfo)
+      )
+    )
 
-  def registerAllAnimations(animations: Set[Animation]): Unit =
+    fontRegister.registerAll(fontInfos)
+  }
+
+  def registerAllAnimations(animations: Set[Animation]): Unit = {
+    sceneWorker.postMessage(
+      js.Dynamic.literal(
+        "operation" -> "addAnimations",
+        "data"      -> animations.toJSArray.map(WorkerConversions.writeAnimation)
+      )
+    )
+
     animationsRegister.registerAll(animations)
+  }
 }
 
 trait PlatformAPI {
@@ -261,4 +321,9 @@ trait PlatformAPI {
   def exitFullScreen(): Unit
   def playSound(assetName: AssetName, volume: Volume): Unit
   def purgeTextureAtlasCaches(): Unit
+}
+
+trait WorkerMessage extends js.Object {
+  val _type: js.UndefOr[String]
+  val data: js.Object
 }
