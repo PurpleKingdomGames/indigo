@@ -7,7 +7,6 @@ import indigo.shared.display.DisplayEffects
 import indigo.shared.datatypes.mutable.CheapMatrix4
 
 import scalajs.js.JSConverters._
-import scala.scalajs.js
 import scala.collection.mutable
 import indigo.shared.display.DisplayEntity
 
@@ -37,7 +36,10 @@ object RendererHelper {
       .translate(0.5d, 0.5d, 0.0d) // reposition on screen
       .scale(w, h, 1.0)
 
-  val sortByDepth: js.Array[DisplayEntity] => js.Array[DisplayEntity] =
+  def mat4ToJsArray(mat4d: CheapMatrix4): scalajs.js.Array[Double] =
+    mat4d.mat.toJSArray
+
+  val sortByDepth: mutable.ListBuffer[DisplayEntity] => mutable.ListBuffer[DisplayEntity] =
     _.sortWith((d1, d2) => d1.z > d2.z)
 
 }

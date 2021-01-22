@@ -1,4 +1,4 @@
-package indigo.facades.worker
+package indigo.shared.platform
 
 import indigo.shared.time.GameTime
 import indigo.shared.scenegraph.SceneUpdateFragment
@@ -10,11 +10,7 @@ import indigo.shared.FontRegister
 import indigo.shared.display.DisplayObject
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Sprite
-import indigo.facades.worker.ProcessedSceneData
-import indigo.shared.platform.DisplayObjectConversions
-
-import scala.scalajs.js
-import scalajs.js.JSConverters._
+import indigo.shared.platform.ProcessedSceneData
 
 final class SceneProcessor(
     boundaryLocator: BoundaryLocator,
@@ -34,27 +30,27 @@ final class SceneProcessor(
       assetMapping: AssetMapping,
       screenWidth: Double,
       screenHeight: Double,
-      orthographicProjectionMatrix: js.Array[Double]
+      orthographicProjectionMatrix: CheapMatrix4
   ): ProcessedSceneData = {
 
     val gameProjection =
       scene.gameLayer.magnification
         .map { m =>
-          calculateProjectionMatrix(screenWidth, screenHeight, m.toDouble).mat.toJSArray
+          calculateProjectionMatrix(screenWidth, screenHeight, m.toDouble)
         }
         .getOrElse(orthographicProjectionMatrix)
 
     val lightingProjection =
       scene.lightingLayer.magnification
         .map { m =>
-          calculateProjectionMatrix(screenWidth, screenHeight, m.toDouble).mat.toJSArray
+          calculateProjectionMatrix(screenWidth, screenHeight, m.toDouble)
         }
         .getOrElse(orthographicProjectionMatrix)
 
     val uiProjection =
       scene.uiLayer.magnification
         .map { m =>
-          calculateProjectionMatrix(screenWidth, screenHeight, m.toDouble).mat.toJSArray
+          calculateProjectionMatrix(screenWidth, screenHeight, m.toDouble)
         }
         .getOrElse(orthographicProjectionMatrix)
 
@@ -91,18 +87,18 @@ final class SceneProcessor(
       gameProjection,
       lightingProjection,
       uiProjection,
-      gameLayerDisplayObjects.toJSArray,
-      lightingLayerDisplayObjects.toJSArray,
-      distortionLayerDisplayObjects.toJSArray,
-      uiLayerDisplayObjects.toJSArray,
-      cloneBlankDisplayObjects.toJSMap,
-      scene.lights.map(SceneUpdateFragmentConversion.LightConversion.toJS).toJSArray,
-      SceneUpdateFragmentConversion.RGBAConversion.toJS(scene.ambientLight),
-      SceneUpdateFragmentConversion.RGBAConversion.toJS(scene.screenEffects.gameColorOverlay),
-      SceneUpdateFragmentConversion.RGBAConversion.toJS(scene.screenEffects.uiColorOverlay),
-      SceneUpdateFragmentConversion.RGBAConversion.toJS(scene.gameLayer.tint),
-      SceneUpdateFragmentConversion.RGBAConversion.toJS(scene.lightingLayer.tint),
-      SceneUpdateFragmentConversion.RGBAConversion.toJS(scene.uiLayer.tint),
+      gameLayerDisplayObjects,
+      lightingLayerDisplayObjects,
+      distortionLayerDisplayObjects,
+      uiLayerDisplayObjects,
+      cloneBlankDisplayObjects,
+      scene.lights,
+      scene.ambientLight,
+      scene.screenEffects.gameColorOverlay,
+      scene.screenEffects.uiColorOverlay,
+      scene.gameLayer.tint,
+      scene.lightingLayer.tint,
+      scene.uiLayer.tint,
       scene.gameLayer.saturation,
       scene.lightingLayer.saturation,
       scene.uiLayer.saturation

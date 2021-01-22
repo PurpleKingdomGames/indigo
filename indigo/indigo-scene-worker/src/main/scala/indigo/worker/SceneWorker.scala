@@ -3,7 +3,7 @@ package indigo.worker
 import indigo.shared.BoundaryLocator
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
-import indigo.facades.worker.SceneProcessor
+import indigo.shared.platform.SceneProcessor
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.animation.Animation
 import indigo.shared.time.GameTime

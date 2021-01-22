@@ -7,8 +7,6 @@ import indigo.shared.scenegraph.DirectionLight
 import indigo.shared.scenegraph.SpotLight
 import indigo.shared.scenegraph.Light
 
-import scalajs.js.JSConverters._
-
 class RendererLightsTests extends munit.FunSuite {
 
   val viewBound = Rectangle(0, 0, 200, 100)
@@ -74,7 +72,7 @@ class RendererLightsTests extends munit.FunSuite {
       )
 
     val actual: List[Light] =
-      RendererLights.lightsInRange(lights.toJSArray, viewBound).toList
+      RendererLights.lightsInRange(lights, viewBound)
 
     assertEquals(actual.length, 3)
     assertEquals(expected, actual)

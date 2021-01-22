@@ -8,7 +8,6 @@ import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
 import indigo.platform.shaders.WebGL2StandardLights
 import org.scalajs.dom.raw.WebGLTexture
-import scala.scalajs.js
 import scala.scalajs.js.JSConverters._
 import indigo.shared.scenegraph.Light
 import indigo.shared.scenegraph.PointLight
@@ -118,8 +117,8 @@ class RendererLights(gl2: WebGL2RenderingContext) {
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
   def drawLayer(
-      lights: js.Array[Light],
-      projection: js.Array[Float],
+      lights: List[Light],
+      projection: scalajs.js.Array[Float],
       frameBufferComponents: FrameBufferComponents,
       gameFrameBuffer: FrameBufferComponents.MultiOutput,
       width: Int,
@@ -213,7 +212,7 @@ class RendererLights(gl2: WebGL2RenderingContext) {
 
 object RendererLights {
 
-  def lightsInRange(ls: js.Array[Light], viewBounds: Rectangle): js.Array[Light] =
+  def lightsInRange(ls: List[Light], viewBounds: Rectangle): List[Light] =
     ls.filter(l => lightIsInRange(l, viewBounds))
 
   def lightIsInRange(light: Light, viewBounds: Rectangle): Boolean =

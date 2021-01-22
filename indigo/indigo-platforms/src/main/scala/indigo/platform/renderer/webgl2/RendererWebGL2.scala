@@ -12,11 +12,7 @@ import indigo.platform.shaders._
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import org.scalajs.dom.html
 
-import scala.scalajs.js
-import scalajs.js.JSConverters._
-
-import indigo.facades.worker.SceneUpdateFragmentConversion
-import indigo.facades.worker.ProcessedSceneData
+import indigo.shared.platform.ProcessedSceneData
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.ContextAndCanvas
@@ -91,15 +87,15 @@ final class RendererWebGL2(
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var lastHeight: Int = 0
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  var orthographicProjectionMatrixJS: scalajs.js.Array[Double] = CheapMatrix4.identity.mat.toJSArray
+  var orthographicProjectionMatrixJS: scalajs.js.Array[Double] = RendererHelper.mat4ToJsArray(CheapMatrix4.identity)
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  var orthographicProjectionMatrixNoMagJS: scalajs.js.Array[Double] = CheapMatrix4.identity.mat.toJSArray
+  var orthographicProjectionMatrixNoMagJS: scalajs.js.Array[Float] = RendererHelper.mat4ToJsArray(CheapMatrix4.identity).map(_.toFloat)
 
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastHeight
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  var orthographicProjectionMatrix: js.Array[Double] = CheapMatrix4.identity.mat.toJSArray
+  var orthographicProjectionMatrix: CheapMatrix4 = CheapMatrix4.identity
 
   def init(): Unit = {
 
@@ -143,7 +139,7 @@ final class RendererWebGL2(
     // Game layer
     WebGLHelper.setNormalBlend(gl)
     layerRenderer.drawLayer(
-      sceneData.gameProjection,
+      RendererHelper.mat4ToJsArray(sceneData.gameProjection),
       sceneData.cloneBlankDisplayObjects,
       sceneData.gameLayerDisplayObjects,
       gameFrameBuffer,
@@ -154,8 +150,8 @@ final class RendererWebGL2(
     // Dynamic lighting
     WebGLHelper.setLightsBlend(gl)
     lightsRenderer.drawLayer(
-      sceneData.lights.map(SceneUpdateFragmentConversion.LightConversion.fromJS),
-      orthographicProjectionMatrixNoMagJS.map(_.toFloat),
+      sceneData.lights,
+      orthographicProjectionMatrixNoMagJS,
       lightsFrameBuffer,
       gameFrameBuffer,
       cNc.canvas.width,
@@ -166,18 +162,18 @@ final class RendererWebGL2(
     // Image based lighting
     WebGLHelper.setLightingBlend(gl)
     layerRenderer.drawLayer(
-      sceneData.lightingProjection,
+      RendererHelper.mat4ToJsArray(sceneData.lightingProjection),
       sceneData.cloneBlankDisplayObjects,
       sceneData.lightingLayerDisplayObjects,
       lightingFrameBuffer,
-      SceneUpdateFragmentConversion.RGBAConversion.fromJS(sceneData.clearColor),
+      sceneData.clearColor,
       lightingShaderProgram
     )
 
     // Distortion
     WebGLHelper.setDistortionBlend(gl)
     layerRenderer.drawLayer(
-      sceneData.lightingProjection,
+      RendererHelper.mat4ToJsArray(sceneData.lightingProjection),
       sceneData.cloneBlankDisplayObjects,
       sceneData.distortionLayerDisplayObjects,
       distortionFrameBuffer,
@@ -188,7 +184,7 @@ final class RendererWebGL2(
     // UI
     WebGLHelper.setNormalBlend(gl)
     layerRenderer.drawLayer(
-      sceneData.uiProjection,
+      RendererHelper.mat4ToJsArray(sceneData.uiProjection),
       sceneData.cloneBlankDisplayObjects,
       sceneData.uiLayerDisplayObjects,
       uiFrameBuffer,
@@ -199,7 +195,7 @@ final class RendererWebGL2(
     // Merge
     WebGLHelper.setNormalBlend(gl2)
     mergeRenderer.drawLayer(
-      orthographicProjectionMatrixNoMagJS.map(_.toFloat),
+      orthographicProjectionMatrixNoMagJS,
       gameFrameBuffer,
       lightsFrameBuffer,
       lightingFrameBuffer,
@@ -208,11 +204,11 @@ final class RendererWebGL2(
       lastWidth,
       lastHeight,
       config.clearColor,
-      SceneUpdateFragmentConversion.RGBAConversion.fromJS(sceneData.gameLayerColorOverlay),
-      SceneUpdateFragmentConversion.RGBAConversion.fromJS(sceneData.uiLayerColorOverlay),
-      SceneUpdateFragmentConversion.RGBAConversion.fromJS(sceneData.gameLayerTint),
-      SceneUpdateFragmentConversion.RGBAConversion.fromJS(sceneData.lightingLayerTint),
-      SceneUpdateFragmentConversion.RGBAConversion.fromJS(sceneData.uiLayerTint),
+      sceneData.gameLayerColorOverlay,
+      sceneData.uiLayerColorOverlay,
+      sceneData.gameLayerTint,
+      sceneData.lightingLayerTint,
+      sceneData.uiLayerTint,
       sceneData.gameLayerSaturation,
       sceneData.lightingLayerSaturation,
       sceneData.uiLayerSaturation
@@ -229,9 +225,9 @@ final class RendererWebGL2(
       lastWidth = actualWidth
       lastHeight = actualHeight
 
-      orthographicProjectionMatrix = CheapMatrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification).mat.toJSArray
-      orthographicProjectionMatrixJS = orthographicProjectionMatrix
-      orthographicProjectionMatrixNoMagJS = CheapMatrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble).mat.toJSArray
+      orthographicProjectionMatrix = CheapMatrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
+      orthographicProjectionMatrixJS = RendererHelper.mat4ToJsArray(orthographicProjectionMatrix)
+      orthographicProjectionMatrixNoMagJS = RendererHelper.mat4ToJsArray(CheapMatrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)).map(_.toFloat)
 
       gameFrameBuffer = FrameBufferFunctions.createFrameBufferMulti(gl, actualWidth, actualHeight)
       lightsFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)

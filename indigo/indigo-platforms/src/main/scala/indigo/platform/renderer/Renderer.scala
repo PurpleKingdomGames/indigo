@@ -1,13 +1,13 @@
 package indigo.platform.renderer
 
-import indigo.facades.worker.ProcessedSceneData
-import scala.scalajs.js
+import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.platform.ProcessedSceneData
 
 trait Renderer {
 
   def screenWidth: Int
   def screenHeight: Int
-  def orthographicProjectionMatrix: js.Array[Double]
+  def orthographicProjectionMatrix: CheapMatrix4
 
   def init(): Unit
   def drawScene(sceneData: ProcessedSceneData): Unit

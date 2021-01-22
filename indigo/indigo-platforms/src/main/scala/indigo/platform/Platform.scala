@@ -30,7 +30,7 @@ import indigo.shared.events.FullScreenExited
 import indigo.shared.events.FullScreenExitError
 import indigo.shared.time.GameTime
 import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.facades.worker.SceneProcessor
+import indigo.shared.platform.SceneProcessor
 import indigo.platform.audio.AudioPlayer
 import indigo.shared.audio.Volume
 import indigo.shared.assets.AssetName
