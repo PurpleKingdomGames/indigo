@@ -441,7 +441,7 @@ object SceneUpdateFragmentConversion {
 
     def fromSceneLayerJS(res: SceneLayerJS): SceneLayer =
       SceneLayer(
-        nodes = res.nodes.toList.filter(nodeTypes.contains).map {
+        nodes = res.nodes.toList.filterNot(nodeTypes.contains).map {
           case node: SceneGraphNodeJS if node._type == "graphic"     => GraphicConversion.fromJS(node)
           case node: SceneGraphNodeJS if node._type == "group"       => GroupConversion.fromJS(node)
           case node: SceneGraphNodeJS if node._type == "sprite"      => SpriteConversion.fromJS(node)
@@ -615,7 +615,7 @@ object SceneUpdateFragmentConversion {
           bindingKey = BindingKey(res.bindingKey),
           playbackPattern = res._type match {
             case "silent" => PlaybackPattern.Silent
-            case "single" => PlaybackPattern.SingleTrackLoop(Track(AssetName(res.assetName)))
+            case "single" => PlaybackPattern.SingleTrackLoop(Track(AssetName(res.assetName), Volume(res.volume)))
           },
           masterVolume = Volume(res.masterVolume)
         )
@@ -869,11 +869,11 @@ object SceneUpdateFragmentConversion {
       js.Dynamic.literal(
         _type = "group",
         children = node.children.map {
-          case g: Group   => toJS(g)
+          case g: Group   => GroupConversion.toJS(g)
           case s: Sprite  => SpriteConversion.toJS(s)
           case g: Graphic => GraphicConversion.toJS(g)
           case t: Text    => TextConversion.toJS(t)
-        },
+        }.toJSArray,
         position = PointConversion.toJS(node.position),
         rotation = node.rotation.value,
         scale = Vector2Conversion.toJS(node.scale),
@@ -889,7 +889,7 @@ object SceneUpdateFragmentConversion {
       Group(
         children = res.children.toList.map {
           case node: SceneGraphNodeJS if node._type == "group" =>
-            fromJS(node)
+            GroupConversion.fromJS(node)
 
           case node: SceneGraphNodeJS if node._type == "graphic" =>
             GraphicConversion.fromJS(node)

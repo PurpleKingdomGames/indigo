@@ -5,7 +5,45 @@ import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.{FontChar, FontInfo, FontKey}
 import indigo.shared.datatypes.Material
+import indigo.shared.datatypes.Depth
 import indigo.shared.assets.AssetName
+import indigo.shared.animation.Frame
+import indigo.shared.time.Millis
+import indigo.shared.animation.Cycle
+import indigo.shared.animation.CycleLabel
+import indigo.shared.collections.NonEmptyList
+import indigo.shared.animation.Animation
+import indigo.shared.animation.AnimationKey
+import indigo.shared.platform.SceneFrameData
+import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.datatypes.RGB
+import indigo.shared.datatypes.RGBA
+import indigo.shared.datatypes.Radians
+import indigo.shared.platform.AssetMapping
+import indigo.shared.platform.TextureRefAndOffset
+import indigo.shared.time.GameTime
+import indigo.shared.time.Seconds
+import indigo.shared.scenegraph.SceneUpdateFragment
+import indigo.shared.scenegraph.PointLight
+import indigo.shared.scenegraph.CloneBlank
+import indigo.shared.scenegraph.CloneId
+import indigo.shared.scenegraph.Graphic
+import indigo.shared.scenegraph.Text
+import indigo.shared.scenegraph.Group
+import indigo.shared.scenegraph.Sprite
+import indigo.shared.animation.AnimationKey
+import indigo.shared.datatypes.BindingKey
+import indigo.shared.scenegraph.SceneAudio
+import indigo.shared.scenegraph.SceneAudioSource
+import indigo.shared.scenegraph.PlaybackPattern
+import indigo.shared.audio.Volume
+import indigo.shared.audio.Track
+import indigo.shared.scenegraph.Clone
+import indigo.shared.scenegraph.CloneId
+import indigo.shared.scenegraph.CloneBatch
+import indigo.shared.scenegraph.CloneTransformData
+
+import scalajs.js.JSConverters._
 
 class WorkerConversionsTests extends munit.FunSuite {
 
@@ -76,22 +114,95 @@ class WorkerConversionsTests extends munit.FunSuite {
     assertEquals(actual, expected)
   }
 
+  // Text
+
+  test("text") {
+    val expected =
+      Text("Hello, World!", FontKey("my font"))
+
+    val actual =
+      SceneUpdateFragmentConversion.TextConversion.fromJS(SceneUpdateFragmentConversion.TextConversion.toJS(expected))
+
+    assertEquals(actual.position, expected.position)
+    assertEquals(actual.rotation, expected.rotation)
+    assertEquals(actual.scale, expected.scale)
+    assertEquals(actual.depth, expected.depth)
+    assertEquals(actual.ref, expected.ref)
+    assertEquals(actual.flip, expected.flip)
+    assertEquals(actual.text, expected.text)
+    assertEquals(actual.alignment, expected.alignment)
+    assertEquals(actual.fontKey, expected.fontKey)
+    assertEquals(actual.effects, expected.effects)
+  }
+
+  // Sprite
+
+  test("sprite") {
+    val expected =
+      Sprite(BindingKey("binding key 1"), AnimationKey("anim key 1"))
+
+    val actual =
+      SceneUpdateFragmentConversion.SpriteConversion.fromJS(SceneUpdateFragmentConversion.SpriteConversion.toJS(expected))
+
+    assertEquals(actual.position, expected.position)
+    assertEquals(actual.rotation, expected.rotation)
+    assertEquals(actual.scale, expected.scale)
+    assertEquals(actual.depth, expected.depth)
+    assertEquals(actual.ref, expected.ref)
+    assertEquals(actual.flip, expected.flip)
+    assertEquals(actual.animationActions, expected.animationActions)
+    assertEquals(actual.animationKey, expected.animationKey)
+    assertEquals(actual.effects, expected.effects)
+  }
+
   // SceneFrameData
-
-  import indigo.shared.platform.SceneFrameData
-  import indigo.shared.datatypes.mutable.CheapMatrix4
-  import indigo.shared.platform.AssetMapping
-  import indigo.shared.platform.TextureRefAndOffset
-  import indigo.shared.time.GameTime
-  import indigo.shared.time.Seconds
-  import indigo.shared.scenegraph.SceneUpdateFragment
-
-  import scalajs.js.JSConverters._
 
   test("scene frame data") {
 
     val scene =
       SceneUpdateFragment.empty
+        .addGameLayerNodes(
+          Group(
+            Group(
+              Graphic(64, 64, Material.Lit(AssetName("albedo"), AssetName("emmisive")))
+                .withCrop(10, 10, 20, 20)
+            ).moveBy(10, 10)
+          )
+        )
+        .addLightingLayerNodes(
+          Clone(CloneId("light clone"), Depth(10), CloneTransformData.startAt(Point(20, 20))),
+          CloneBatch(
+            CloneId("light batch"), 
+            Depth(100), 
+            CloneTransformData.startAt(Point(1, 1)).withRotation(Radians(0.2)), 
+            List(CloneTransformData.startAt(Point(1, 12))),
+            Some(BindingKey("static key"))
+          )
+        )
+        .addUiLayerNodes(
+          Graphic(64, 64, Material.Lit(AssetName("albedo"), AssetName("emmisive")))
+            .withCrop(10, 10, 20, 20)
+            .rotateTo(Radians(10.0))
+            .scaleBy(2.0, 1.5)
+        )
+        .addLights(PointLight(Point(10, 10), 10, RGB.Red, 1.2, 30))
+        .withAmbientLightAmount(0.5)
+        .addCloneBlanks(
+          CloneBlank(
+            CloneId("test clone blank"),
+            Graphic(64, 64, Material.Lit(AssetName("albedo"), AssetName("emmisive")))
+          )
+        )
+        .withAudio(
+          SceneAudio(
+            SceneAudioSource(
+              BindingKey("audio"),
+              PlaybackPattern.SingleTrackLoop(Track(AssetName("track"), Volume(0.75))),
+              Volume(0.2)
+            )
+          )
+        )
+        .withColorOverlay(RGBA.Green.withAmount(0.2))
 
     val expected =
       SceneFrameData(
@@ -110,14 +221,6 @@ class WorkerConversionsTests extends munit.FunSuite {
   }
 
 }
-
-import indigo.shared.animation.Frame
-import indigo.shared.time.Millis
-import indigo.shared.animation.Cycle
-import indigo.shared.animation.CycleLabel
-import indigo.shared.collections.NonEmptyList
-import indigo.shared.animation.Animation
-import indigo.shared.animation.AnimationKey
 
 object AnimationSample {
 
