@@ -1,3 +1,3 @@
 package indigo.shared.platform
 
-final class AssetMapping(val mappings: Map[String, TextureRefAndOffset])
+final case class AssetMapping(mappings: Map[String, TextureRefAndOffset])
