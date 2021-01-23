@@ -41,7 +41,7 @@ import indigo.shared.datatypes.FontInfo
 import indigo.shared.animation.Animation
 import indigo.shared.platform.SceneFrameData
 import indigo.facades.worker.WorkerConversions
-import indigo.facades.worker.ProcessedSceneData
+import indigo.shared.platform.ProcessedSceneData
 
 import scalajs.js.JSConverters._
 
@@ -109,7 +109,8 @@ class Platform(gameConfig: GameConfig, globalEventStream: GlobalEventStream) ext
 
         case m if m._type.isDefined && m._type.get == "processed scene" =>
           // Render scene
-          renderer.drawScene(msg.data.asInstanceOf[ProcessedSceneData])
+          // TODO: read JS into ProcessedSceneData
+          renderer.drawScene(WorkerConversions.readProcessedSceneData(msg.data))
       }
 
     }

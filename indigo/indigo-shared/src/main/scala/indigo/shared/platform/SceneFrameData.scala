@@ -2,6 +2,7 @@ package indigo.shared.platform
 
 import indigo.shared.time.GameTime
 import indigo.shared.scenegraph.SceneUpdateFragment
+  import indigo.shared.datatypes.mutable.CheapMatrix4
 import scala.scalajs.js
 
 final case class SceneFrameData(
@@ -10,5 +11,5 @@ final case class SceneFrameData(
   assetMapping: AssetMapping,
   screenWidth: Double,
   screenHeight: Double,
-  orthographicProjectionMatrix: js.Array[Double]
+  orthographicProjectionMatrix: CheapMatrix4
 )

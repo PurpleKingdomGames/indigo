@@ -3,6 +3,7 @@ package indigo.facades.worker
 import indigo.shared.datatypes.FontInfo
 import indigo.shared.animation.Animation
 import indigo.shared.platform.SceneFrameData
+import indigo.shared.platform.ProcessedSceneData
 
 import scala.scalajs.js
 
@@ -28,5 +29,12 @@ object WorkerConversions {
 
   def writeSceneFrameData(value: SceneFrameData): js.Any =
     SceneFrameDataConversion.toJS(value)
+
+  // ProcessedSceneData
+  def readProcessedSceneData(obj: js.Any): ProcessedSceneData =
+    ProcessedSceneDataConversion.fromJS(obj)
+
+  def writeProcessedSceneData(value: ProcessedSceneData): js.Any =
+    ProcessedSceneDataConversion.toJS(value)
 
 }

@@ -6,10 +6,10 @@ set -e
 echo ">>> Indigo Workers"
 cd indigo
 sbt exportWorkers
-cp indigo-scene-worker/target/scala-3.0.0-M3/indigo-scene-worker-opt.js ../indigo-plugin/indigo-plugin/resources/workers/
-cp indigo-scene-worker/target/scala-3.0.0-M3/indigo-scene-worker-opt.js.map ../indigo-plugin/indigo-plugin/resources/workers/
-cp indigo-render-worker/target/scala-3.0.0-M3/indigo-render-worker-opt.js ../indigo-plugin/indigo-plugin/resources/workers/
-cp indigo-render-worker/target/scala-3.0.0-M3/indigo-render-worker-opt.js.map ../indigo-plugin/indigo-plugin/resources/workers/
+cp -u indigo-scene-worker/target/scala-3.0.0-M3/indigo-scene-worker-opt.js ../indigo-plugin/indigo-plugin/resources/workers/
+cp -u indigo-scene-worker/target/scala-3.0.0-M3/indigo-scene-worker-opt.js.map ../indigo-plugin/indigo-plugin/resources/workers/
+cp -u indigo-render-worker/target/scala-3.0.0-M3/indigo-render-worker-opt.js ../indigo-plugin/indigo-plugin/resources/workers/
+cp -u indigo-render-worker/target/scala-3.0.0-M3/indigo-render-worker-opt.js.map ../indigo-plugin/indigo-plugin/resources/workers/
 cd ..
 
 # Indigo Plugin

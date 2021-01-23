@@ -146,7 +146,7 @@ final class RendererWebGL1(
 
     WebGLHelper.setNormalBlend(gl)
     drawLayer(
-      mutable.ListBuffer(RendererHelper.screenDisplayObject(lastWidth, lastHeight)),
+      List(RendererHelper.screenDisplayObject(lastWidth, lastHeight)),
       None,
       config.clearColor,
       mergeShaderProgram,
@@ -157,7 +157,7 @@ final class RendererWebGL1(
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def drawLayer(
-      displayEntities: mutable.ListBuffer[DisplayEntity],
+      displayEntities: List[DisplayEntity],
       frameBufferComponents: Option[FrameBufferComponents],
       clearColor: RGBA,
       shaderProgram: WebGLProgram,
@@ -195,7 +195,7 @@ final class RendererWebGL1(
     // Set once
     gl.uniform1i(textureLocation, 0)
 
-    RendererHelper.sortByDepth(displayEntities).foreach {
+    displayEntities.foreach {
       case displayObject: DisplayObject =>
         RendererFunctions.setupVertexShaderState(
           gl,

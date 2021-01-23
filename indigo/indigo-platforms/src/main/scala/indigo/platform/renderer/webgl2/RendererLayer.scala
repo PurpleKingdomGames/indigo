@@ -141,7 +141,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   def drawLayer(
       projection: scalajs.js.Array[Double],
       cloneBlankDisplayObjects: Map[String, DisplayObject],
-      displayEntities: ListBuffer[DisplayEntity],
+      displayEntities: List[DisplayEntity],
       frameBufferComponents: FrameBufferComponents,
       clearColor: RGBA,
       shaderProgram: WebGLProgram
@@ -190,8 +190,8 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     setupInstanceArray(textureAmountsArray, 14, 4)
     //
 
-    val sorted: ListBuffer[DisplayEntity] =
-      RendererHelper.sortByDepth(displayEntities)
+    // val sorted: ListBuffer[DisplayEntity] =
+    //   RendererHelper.sortByDepth(displayEntities)
 
     @inline def drawBuffer(instanceCount: Int): Unit =
       if (instanceCount > 0) {
@@ -270,7 +270,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
       }
 
-    rec(sorted.toList, 0, "")
+    rec(displayEntities, 0, "")
 
   }
 

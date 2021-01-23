@@ -163,618 +163,618 @@ object SceneUpdateFragmentConversion {
       cloneBlanks = res.cloneBlanks.toList.map(CloneBlankConversion.fromCloneBlankJS)
     )
 
-  object SceneLayerConversion {
+}
 
-    def toJS(sceneLayer: SceneLayer): js.Any =
-      js.Dynamic.literal(
-        nodes = sceneLayer.nodes.map {
-          case g: Graphic     => GraphicConversion.toJS(g)
-          case g: Group       => GroupConversion.toJS(g)
-          case s: Sprite      => SpriteConversion.toJS(s)
-          case t: Text        => TextConversion.toJS(t)
-          case c: Clone       => CloneConversion.toJS(c)
-          case c: CloneBatch  => CloneBatchConversion.toJS(c)
-          case t: Transformer => null
-        }.toJSArray,
-        tint = RGBAConversion.toJS(sceneLayer.tint),
-        saturation = sceneLayer.saturation,
-        magnification = sceneLayer.magnification.orUndefined
-      )
+object SceneLayerConversion {
 
-    def fromJS(obj: js.Any): SceneLayer =
-      fromSceneLayerJS(obj.asInstanceOf[SceneLayerJS])
+  def toJS(sceneLayer: SceneLayer): js.Any =
+    js.Dynamic.literal(
+      nodes = sceneLayer.nodes.map {
+        case g: Graphic     => GraphicConversion.toJS(g)
+        case g: Group       => GroupConversion.toJS(g)
+        case s: Sprite      => SpriteConversion.toJS(s)
+        case t: Text        => TextConversion.toJS(t)
+        case c: Clone       => CloneConversion.toJS(c)
+        case c: CloneBatch  => CloneBatchConversion.toJS(c)
+        case t: Transformer => null
+      }.toJSArray,
+      tint = RGBAConversion.toJS(sceneLayer.tint),
+      saturation = sceneLayer.saturation,
+      magnification = sceneLayer.magnification.orUndefined
+    )
 
-    val nodeTypes: List[String] = List("graphic", "group", "sprite", "text", "clone", "clone batch")
+  def fromJS(obj: js.Any): SceneLayer =
+    fromSceneLayerJS(obj.asInstanceOf[SceneLayerJS])
 
-    def fromSceneLayerJS(res: SceneLayerJS): SceneLayer =
-      SceneLayer(
-        nodes = res.nodes.toList.filterNot(nodeTypes.contains).map {
-          case node: SceneGraphNodeJS if node._type == "graphic"     => GraphicConversion.fromJS(node)
-          case node: SceneGraphNodeJS if node._type == "group"       => GroupConversion.fromJS(node)
-          case node: SceneGraphNodeJS if node._type == "sprite"      => SpriteConversion.fromJS(node)
-          case node: SceneGraphNodeJS if node._type == "text"        => TextConversion.fromJS(node)
-          case node: SceneGraphNodeJS if node._type == "clone"       => CloneConversion.fromJS(node)
-          case node: SceneGraphNodeJS if node._type == "clone batch" => CloneBatchConversion.fromJS(node)
-        },
-        tint = RGBAConversion.fromRGBAJS(res.tint),
-        saturation = res.saturation,
-        magnification = res.magnification.toOption
-      )
+  val nodeTypes: List[String] = List("graphic", "group", "sprite", "text", "clone", "clone batch")
 
-  }
+  def fromSceneLayerJS(res: SceneLayerJS): SceneLayer =
+    SceneLayer(
+      nodes = res.nodes.toList.filterNot(nodeTypes.contains).map {
+        case node: SceneGraphNodeJS if node._type == "graphic"     => GraphicConversion.fromJS(node)
+        case node: SceneGraphNodeJS if node._type == "group"       => GroupConversion.fromJS(node)
+        case node: SceneGraphNodeJS if node._type == "sprite"      => SpriteConversion.fromJS(node)
+        case node: SceneGraphNodeJS if node._type == "text"        => TextConversion.fromJS(node)
+        case node: SceneGraphNodeJS if node._type == "clone"       => CloneConversion.fromJS(node)
+        case node: SceneGraphNodeJS if node._type == "clone batch" => CloneBatchConversion.fromJS(node)
+      },
+      tint = RGBAConversion.fromRGBAJS(res.tint),
+      saturation = res.saturation,
+      magnification = res.magnification.toOption
+    )
 
-  object RGBConversion {
+}
 
-    def toJS(rgb: RGB): js.Any =
-      js.Dynamic.literal(
-        r = rgb.r,
-        g = rgb.g,
-        b = rgb.b
-      )
+object RGBConversion {
 
-    def fromJS(obj: js.Any): RGB =
-      fromRGBJS(obj.asInstanceOf[RGBJS])
+  def toJS(rgb: RGB): js.Any =
+    js.Dynamic.literal(
+      r = rgb.r,
+      g = rgb.g,
+      b = rgb.b
+    )
 
-    def fromRGBJS(rgbJS: RGBJS): RGB =
-      RGB(rgbJS.r, rgbJS.g, rgbJS.b)
+  def fromJS(obj: js.Any): RGB =
+    fromRGBJS(obj.asInstanceOf[RGBJS])
 
-  }
+  def fromRGBJS(rgbJS: RGBJS): RGB =
+    RGB(rgbJS.r, rgbJS.g, rgbJS.b)
 
-  object RGBAConversion {
+}
 
-    def toJS(rgba: RGBA): js.Any =
-      js.Dynamic.literal(
-        r = rgba.r,
-        g = rgba.g,
-        b = rgba.b,
-        a = rgba.a
-      )
+object RGBAConversion {
 
-    def fromJS(obj: js.Any): RGBA =
-      fromRGBAJS(obj.asInstanceOf[RGBAJS])
+  def toJS(rgba: RGBA): js.Any =
+    js.Dynamic.literal(
+      r = rgba.r,
+      g = rgba.g,
+      b = rgba.b,
+      a = rgba.a
+    )
 
-    def fromRGBAJS(rgbaJS: RGBAJS): RGBA =
-      RGBA(rgbaJS.r, rgbaJS.g, rgbaJS.b, rgbaJS.a)
+  def fromJS(obj: js.Any): RGBA =
+    fromRGBAJS(obj.asInstanceOf[RGBAJS])
 
-  }
+  def fromRGBAJS(rgbaJS: RGBAJS): RGBA =
+    RGBA(rgbaJS.r, rgbaJS.g, rgbaJS.b, rgbaJS.a)
 
-  object LightConversion {
+}
 
-    def toJS(light: Light): js.Any =
-      light match {
-        case PointLight(position, height, color, power, attenuation) =>
-          js.Dynamic.literal(
-            _type = "point",
-            position = PointConversion.toJS(position),
-            height = height,
-            color = RGBConversion.toJS(color),
-            power = power,
-            attenuation = attenuation
-          )
+object LightConversion {
 
-        case SpotLight(position, height, color, power, attenuation, angle, rotation, near, far) =>
-          js.Dynamic.literal(
-            _type = "spot",
-            position = PointConversion.toJS(position),
-            height = height,
-            color = RGBConversion.toJS(color),
-            power = power,
-            attenuation = attenuation,
-            angle = angle.value,
-            rotation = rotation.value,
-            near = near,
-            far = far
-          )
-
-        case DirectionLight(height, color, power, rotation) =>
-          js.Dynamic.literal(
-            _type = "direction",
-            height = height,
-            power = power,
-            color = RGBConversion.toJS(color),
-            rotation = rotation.value
-          )
-      }
-
-    def fromJS(obj: js.Any): Light =
-      fromLightJS(obj.asInstanceOf[LightJS])
-
-    def fromLightJS(res: LightJS): Light =
-      res._type match {
-        case "point" =>
-          PointLight(
-            PointConversion.fromPointJS(res.position),
-            res.height,
-            RGBConversion.fromRGBJS(res.color),
-            res.power,
-            res.attenuation
-          )
-
-        case "spot" =>
-          SpotLight(
-            PointConversion.fromPointJS(res.position),
-            res.height,
-            RGBConversion.fromRGBJS(res.color),
-            res.power,
-            res.attenuation,
-            Radians(res.angle),
-            Radians(res.rotation),
-            res.near,
-            res.far
-          )
-
-        case "direction" =>
-          DirectionLight(
-            res.height,
-            RGBConversion.fromRGBJS(res.color),
-            res.power,
-            Radians(res.rotation)
-          )
-      }
-
-  }
-
-  object SceneAudioConversion {
-
-    def toJS(sceneAudio: SceneAudio): js.Any =
-      js.Dynamic.literal(
-        sourceA = SceneAudioSourceConversion.toJS(sceneAudio.sourceA),
-        sourceB = SceneAudioSourceConversion.toJS(sceneAudio.sourceB),
-        sourceC = SceneAudioSourceConversion.toJS(sceneAudio.sourceC)
-      )
-
-    def fromJS(obj: js.Any): SceneAudio =
-      fromSceneAudioJS(obj.asInstanceOf[SceneAudioJS])
-
-    def fromSceneAudioJS(res: SceneAudioJS): SceneAudio =
-      SceneAudio(
-        sourceA = SceneAudioSourceConversion.fromSceneAudioSourceJS(res.sourceA),
-        sourceB = SceneAudioSourceConversion.fromSceneAudioSourceJS(res.sourceB),
-        sourceC = SceneAudioSourceConversion.fromSceneAudioSourceJS(res.sourceC)
-      )
-
-    object SceneAudioSourceConversion {
-
-      def toJS(source: SceneAudioSource): js.Any =
-        source.playbackPattern match {
-          case PlaybackPattern.Silent =>
-            js.Dynamic.literal(
-              _type = "silent",
-              bindingKey = source.bindingKey.value,
-              masterVolume = source.masterVolume.amount
-            )
-
-          case PlaybackPattern.SingleTrackLoop(track) =>
-            js.Dynamic.literal(
-              _type = "single",
-              bindingKey = source.bindingKey.value,
-              masterVolume = source.masterVolume.amount,
-              assetName = track.assetName.value,
-              volume = track.volume.amount
-            )
-        }
-
-      def fromJS(obj: js.Any): SceneAudioSource =
-        fromSceneAudioSourceJS(obj.asInstanceOf[SceneAudioSourceJS])
-
-      def fromSceneAudioSourceJS(res: SceneAudioSourceJS): SceneAudioSource =
-        SceneAudioSource(
-          bindingKey = BindingKey(res.bindingKey),
-          playbackPattern = res._type match {
-            case "silent" => PlaybackPattern.Silent
-            case "single" => PlaybackPattern.SingleTrackLoop(Track(AssetName(res.assetName), Volume(res.volume)))
-          },
-          masterVolume = Volume(res.masterVolume)
+  def toJS(light: Light): js.Any =
+    light match {
+      case PointLight(position, height, color, power, attenuation) =>
+        js.Dynamic.literal(
+          _type = "point",
+          position = PointConversion.toJS(position),
+          height = height,
+          color = RGBConversion.toJS(color),
+          power = power,
+          attenuation = attenuation
         )
 
+      case SpotLight(position, height, color, power, attenuation, angle, rotation, near, far) =>
+        js.Dynamic.literal(
+          _type = "spot",
+          position = PointConversion.toJS(position),
+          height = height,
+          color = RGBConversion.toJS(color),
+          power = power,
+          attenuation = attenuation,
+          angle = angle.value,
+          rotation = rotation.value,
+          near = near,
+          far = far
+        )
+
+      case DirectionLight(height, color, power, rotation) =>
+        js.Dynamic.literal(
+          _type = "direction",
+          height = height,
+          power = power,
+          color = RGBConversion.toJS(color),
+          rotation = rotation.value
+        )
     }
 
-  }
+  def fromJS(obj: js.Any): Light =
+    fromLightJS(obj.asInstanceOf[LightJS])
 
-  object ScreenEffectsConversion {
+  def fromLightJS(res: LightJS): Light =
+    res._type match {
+      case "point" =>
+        PointLight(
+          PointConversion.fromPointJS(res.position),
+          res.height,
+          RGBConversion.fromRGBJS(res.color),
+          res.power,
+          res.attenuation
+        )
 
-    def toJS(screenEffects: ScreenEffects): js.Any =
-      js.Dynamic.literal(
-        gameColorOverlay = RGBAConversion.toJS(screenEffects.gameColorOverlay),
-        uiColorOverlay = RGBAConversion.toJS(screenEffects.uiColorOverlay)
-      )
+      case "spot" =>
+        SpotLight(
+          PointConversion.fromPointJS(res.position),
+          res.height,
+          RGBConversion.fromRGBJS(res.color),
+          res.power,
+          res.attenuation,
+          Radians(res.angle),
+          Radians(res.rotation),
+          res.near,
+          res.far
+        )
 
-    def fromJS(obj: js.Any): ScreenEffects =
-      fromScreenEffectsJS(obj.asInstanceOf[ScreenEffectsJS])
+      case "direction" =>
+        DirectionLight(
+          res.height,
+          RGBConversion.fromRGBJS(res.color),
+          res.power,
+          Radians(res.rotation)
+        )
+    }
 
-    def fromScreenEffectsJS(res: ScreenEffectsJS): ScreenEffects =
-      ScreenEffects(
-        gameColorOverlay = RGBAConversion.fromRGBAJS(res.gameColorOverlay),
-        uiColorOverlay = RGBAConversion.fromRGBAJS(res.uiColorOverlay)
-      )
+}
 
-  }
+object SceneAudioConversion {
 
-  object CloneBlankConversion {
+  def toJS(sceneAudio: SceneAudio): js.Any =
+    js.Dynamic.literal(
+      sourceA = SceneAudioSourceConversion.toJS(sceneAudio.sourceA),
+      sourceB = SceneAudioSourceConversion.toJS(sceneAudio.sourceB),
+      sourceC = SceneAudioSourceConversion.toJS(sceneAudio.sourceC)
+    )
 
-    def toJS(cloneBlank: CloneBlank): js.Any =
-      js.Dynamic.literal(
-        id = cloneBlank.id.value,
-        cloneable = cloneBlank.cloneable match {
-          case s: Sprite  => SpriteConversion.toJS(s)
-          case g: Graphic => GraphicConversion.toJS(g)
-        }
-      )
+  def fromJS(obj: js.Any): SceneAudio =
+    fromSceneAudioJS(obj.asInstanceOf[SceneAudioJS])
 
-    def fromJS(obj: js.Any): CloneBlank =
-      fromCloneBlankJS(obj.asInstanceOf[CloneBlankJS])
+  def fromSceneAudioJS(res: SceneAudioJS): SceneAudio =
+    SceneAudio(
+      sourceA = SceneAudioSourceConversion.fromSceneAudioSourceJS(res.sourceA),
+      sourceB = SceneAudioSourceConversion.fromSceneAudioSourceJS(res.sourceB),
+      sourceC = SceneAudioSourceConversion.fromSceneAudioSourceJS(res.sourceC)
+    )
 
-    def fromCloneBlankJS(res: CloneBlankJS): CloneBlank =
-      CloneBlank(
-        id = CloneId(res.id),
-        cloneable = res.cloneable._type match {
-          case "graphic" =>
-            GraphicConversion.fromJS(res.cloneable)
+  object SceneAudioSourceConversion {
 
-          case "sprite" =>
-            SpriteConversion.fromJS(res.cloneable)
-        }
-      )
+    def toJS(source: SceneAudioSource): js.Any =
+      source.playbackPattern match {
+        case PlaybackPattern.Silent =>
+          js.Dynamic.literal(
+            _type = "silent",
+            bindingKey = source.bindingKey.value,
+            masterVolume = source.masterVolume.amount
+          )
 
-  }
+        case PlaybackPattern.SingleTrackLoop(track) =>
+          js.Dynamic.literal(
+            _type = "single",
+            bindingKey = source.bindingKey.value,
+            masterVolume = source.masterVolume.amount,
+            assetName = track.assetName.value,
+            volume = track.volume.amount
+          )
+      }
 
-  object CloneConversion {
+    def fromJS(obj: js.Any): SceneAudioSource =
+      fromSceneAudioSourceJS(obj.asInstanceOf[SceneAudioSourceJS])
 
-    def toJS(node: Clone): js.Any =
-      js.Dynamic.literal(
-        _type = "clone",
-        id = node.id.value,
-        depth = node.depth.zIndex,
-        transform = CloneTransformDataConversion.toJS(node.transform)
-      )
-
-    def fromJS(obj: js.Any): Clone =
-      fromCloneJS(obj.asInstanceOf[CloneJS])
-
-    def fromCloneJS(res: CloneJS): Clone =
-      Clone(
-        id = CloneId(res.id),
-        depth = Depth(res.depth),
-        transform = CloneTransformDataConversion.fromCloneTransformDataJS(res.transform)
-      )
-
-  }
-
-  object CloneBatchConversion {
-
-    def toJS(node: CloneBatch): js.Any =
-      js.Dynamic.literal(
-        _type = "clone batch",
-        id = node.id.value,
-        depth = node.depth.zIndex,
-        transform = CloneTransformDataConversion.toJS(node.transform),
-        clones = node.clones.map(CloneTransformDataConversion.toJS).toJSArray,
-        staticBatchKey = node.staticBatchKey.map(_.value).orUndefined
-      )
-
-    def fromJS(obj: js.Any): CloneBatch =
-      fromCloneBatchJS(obj.asInstanceOf[CloneBatchJS])
-
-    def fromCloneBatchJS(res: CloneBatchJS): CloneBatch =
-      CloneBatch(
-        id = CloneId(res.id),
-        depth = Depth(res.depth),
-        transform = CloneTransformDataConversion.fromCloneTransformDataJS(res.transform),
-        clones = res.clones.toList.map(CloneTransformDataConversion.fromCloneTransformDataJS),
-        staticBatchKey = res.staticBatchKey.toOption.map(BindingKey.apply)
-      )
-
-  }
-
-  object CloneTransformDataConversion {
-
-    def toJS(data: CloneTransformData): js.Any =
-      js.Dynamic.literal(
-        position = PointConversion.toJS(data.position),
-        rotation = data.rotation.value,
-        scale = Vector2Conversion.toJS(data.scale),
-        alpha = data.alpha,
-        flipHorizontal = data.flipHorizontal,
-        flipVertical = data.flipVertical
-      )
-
-    def fromJS(obj: js.Any): CloneTransformData =
-      fromCloneTransformDataJS(obj.asInstanceOf[CloneTransformDataJS])
-
-    def fromCloneTransformDataJS(res: CloneTransformDataJS): CloneTransformData =
-      CloneTransformData(
-        position = PointConversion.fromPointJS(res.position),
-        rotation = Radians(res.rotation),
-        scale = Vector2Conversion.fromVector2JS(res.scale),
-        alpha = res.alpha,
-        flipHorizontal = res.flipHorizontal,
-        flipVertical = res.flipVertical
-      )
-
-  }
-
-  object SpriteConversion {
-
-    def toJS(node: Sprite): js.Any =
-      js.Dynamic.literal(
-        _type = "sprite",
-        bindingKey = node.bindingKey.value,
-        animationKey = node.animationKey.value,
-        animationActions = node.animationActions.map(AnimationActionConversion.toJS).toJSArray,
-        effects = EffectsConversion.toJS(node.effects),
-        position = PointConversion.toJS(node.position),
-        rotation = node.rotation.value,
-        scale = Vector2Conversion.toJS(node.scale),
-        depth = node.depth.zIndex,
-        ref = PointConversion.toJS(node.ref),
-        flip = FlipConversion.toJS(node.flip)
-      )
-
-    def fromJS(obj: js.Any): Sprite =
-      fromSpriteJS(obj.asInstanceOf[SpriteJS])
-
-    def fromSpriteJS(res: SpriteJS): Sprite =
-      Sprite(
+    def fromSceneAudioSourceJS(res: SceneAudioSourceJS): SceneAudioSource =
+      SceneAudioSource(
         bindingKey = BindingKey(res.bindingKey),
-        animationKey = AnimationKey(res.animationKey),
-        animationActions = res.animationActions.toList.map(AnimationActionConversion.fromAnimationActionJS),
-        eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
-        effects = EffectsConversion.fromEffectsJS(res.effects),
-        position = PointConversion.fromPointJS(res.position),
-        rotation = Radians(res.rotation),
-        scale = Vector2Conversion.fromVector2JS(res.scale),
-        depth = Depth(res.depth),
-        ref = PointConversion.fromPointJS(res.ref),
-        flip = FlipConversion.fromFlipJS(res.flip)
-      )
-
-  }
-
-  object GraphicConversion {
-
-    def toJS(node: Graphic): js.Any =
-      js.Dynamic.literal(
-        _type = "graphic",
-        material = MaterialConversion.toJS(node.material),
-        crop = RectangleConversion.toJS(node.crop),
-        effects = EffectsConversion.toJS(node.effects),
-        position = PointConversion.toJS(node.position),
-        rotation = node.rotation.value,
-        scale = Vector2Conversion.toJS(node.scale),
-        depth = node.depth.zIndex,
-        ref = PointConversion.toJS(node.ref),
-        flip = FlipConversion.toJS(node.flip)
-      )
-
-    def fromJS(obj: js.Any): Graphic =
-      fromGraphicJS(obj.asInstanceOf[GraphicJS])
-
-    def fromGraphicJS(res: GraphicJS): Graphic =
-      Graphic(
-        material = MaterialConversion.fromMaterialJS(res.material),
-        crop = RectangleConversion.fromRectangleJS(res.crop),
-        effects = EffectsConversion.fromEffectsJS(res.effects),
-        position = PointConversion.fromPointJS(res.position),
-        rotation = Radians(res.rotation),
-        scale = Vector2Conversion.fromVector2JS(res.scale),
-        depth = Depth(res.depth),
-        ref = PointConversion.fromPointJS(res.ref),
-        flip = FlipConversion.fromFlipJS(res.flip)
-      )
-
-  }
-
-  object TextConversion {
-
-    def toJS(node: Text): js.Any =
-      js.Dynamic.literal(
-        _type = "text",
-        text = node.text,
-        alignment = node.alignment match {
-          case TextAlignment.Left   => "left"
-          case TextAlignment.Right  => "right"
-          case TextAlignment.Center => "center"
+        playbackPattern = res._type match {
+          case "silent" => PlaybackPattern.Silent
+          case "single" => PlaybackPattern.SingleTrackLoop(Track(AssetName(res.assetName), Volume(res.volume)))
         },
-        fontKey = node.fontKey.key,
-        effects = EffectsConversion.toJS(node.effects),
-        position = PointConversion.toJS(node.position),
-        rotation = node.rotation.value,
-        scale = Vector2Conversion.toJS(node.scale),
-        depth = node.depth.zIndex,
-        ref = PointConversion.toJS(node.ref),
-        flip = FlipConversion.toJS(node.flip)
-      )
-
-    def fromJS(obj: js.Any): Text =
-      fromTextJS(obj.asInstanceOf[TextJS])
-
-    def fromTextJS(res: TextJS): Text =
-      Text(
-        text = res.text,
-        alignment = res.alignment match {
-          case "left"   => TextAlignment.Left
-          case "right"  => TextAlignment.Right
-          case "center" => TextAlignment.Center
-          case _        => TextAlignment.Left
-        },
-        fontKey = FontKey(res.fontKey),
-        eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
-        effects = EffectsConversion.fromEffectsJS(res.effects),
-        position = PointConversion.fromPointJS(res.position),
-        rotation = Radians(res.rotation),
-        scale = Vector2Conversion.fromVector2JS(res.scale),
-        depth = Depth(res.depth),
-        ref = PointConversion.fromPointJS(res.ref),
-        flip = FlipConversion.fromFlipJS(res.flip)
+        masterVolume = Volume(res.masterVolume)
       )
 
   }
 
-  object GroupConversion {
+}
 
-    def toJS(node: Group): js.Any =
-      js.Dynamic.literal(
-        _type = "group",
-        children = node.children.map {
-          case g: Group   => GroupConversion.toJS(g)
-          case s: Sprite  => SpriteConversion.toJS(s)
-          case g: Graphic => GraphicConversion.toJS(g)
-          case t: Text    => TextConversion.toJS(t)
-        }.toJSArray,
-        position = PointConversion.toJS(node.position),
-        rotation = node.rotation.value,
-        scale = Vector2Conversion.toJS(node.scale),
-        depth = node.depth.zIndex,
-        ref = PointConversion.toJS(node.ref),
-        flip = FlipConversion.toJS(node.flip)
-      )
+object ScreenEffectsConversion {
 
-    def fromJS(obj: js.Any): Group =
-      fromGroupJS(obj.asInstanceOf[GroupJS])
+  def toJS(screenEffects: ScreenEffects): js.Any =
+    js.Dynamic.literal(
+      gameColorOverlay = RGBAConversion.toJS(screenEffects.gameColorOverlay),
+      uiColorOverlay = RGBAConversion.toJS(screenEffects.uiColorOverlay)
+    )
 
-    def fromGroupJS(res: GroupJS): Group =
-      Group(
-        children = res.children.toList.map {
-          case node: SceneGraphNodeJS if node._type == "group" =>
-            GroupConversion.fromJS(node)
+  def fromJS(obj: js.Any): ScreenEffects =
+    fromScreenEffectsJS(obj.asInstanceOf[ScreenEffectsJS])
 
-          case node: SceneGraphNodeJS if node._type == "graphic" =>
-            GraphicConversion.fromJS(node)
+  def fromScreenEffectsJS(res: ScreenEffectsJS): ScreenEffects =
+    ScreenEffects(
+      gameColorOverlay = RGBAConversion.fromRGBAJS(res.gameColorOverlay),
+      uiColorOverlay = RGBAConversion.fromRGBAJS(res.uiColorOverlay)
+    )
 
-          case node: SceneGraphNodeJS if node._type == "sprite" =>
-            SpriteConversion.fromJS(node)
+}
 
-          case node: SceneGraphNodeJS if node._type == "text" =>
-            TextConversion.fromJS(node)
-        },
-        position = PointConversion.fromPointJS(res.position),
-        rotation = Radians(res.rotation),
-        scale = Vector2Conversion.fromVector2JS(res.scale),
-        depth = Depth(res.depth),
-        ref = PointConversion.fromPointJS(res.ref),
-        flip = FlipConversion.fromFlipJS(res.flip)
-      )
+object CloneBlankConversion {
 
-  }
-
-  object FlipConversion {
-
-    def toJS(flip: Flip): js.Any =
-      js.Dynamic.literal(
-        horizontal = flip.horizontal,
-        vertical = flip.vertical
-      )
-
-    def fromJS(obj: js.Any): Flip =
-      fromFlipJS(obj.asInstanceOf[FlipJS])
-
-    def fromFlipJS(res: FlipJS): Flip =
-      Flip(res.horizontal, res.vertical)
-
-  }
-
-  object AnimationActionConversion {
-
-    def toJS(action: AnimationAction): js.Any =
-      action match {
-        case AnimationAction.Play             => js.Dynamic.literal(_action = "play")
-        case AnimationAction.ChangeCycle(l)   => js.Dynamic.literal(_action = "change", label = l.value)
-        case AnimationAction.JumpToFirstFrame => js.Dynamic.literal(_action = "first")
-        case AnimationAction.JumpToLastFrame  => js.Dynamic.literal(_action = "last")
-        case AnimationAction.JumpToFrame(num) => js.Dynamic.literal(_action = "jump", to = num)
+  def toJS(cloneBlank: CloneBlank): js.Any =
+    js.Dynamic.literal(
+      id = cloneBlank.id.value,
+      cloneable = cloneBlank.cloneable match {
+        case s: Sprite  => SpriteConversion.toJS(s)
+        case g: Graphic => GraphicConversion.toJS(g)
       }
+    )
 
-    def fromJS(obj: js.Any): AnimationAction =
-      fromAnimationActionJS(obj.asInstanceOf[AnimationActionJS])
+  def fromJS(obj: js.Any): CloneBlank =
+    fromCloneBlankJS(obj.asInstanceOf[CloneBlankJS])
 
-    def fromAnimationActionJS(res: AnimationActionJS): AnimationAction =
-      res._action match {
-        case "play"   => AnimationAction.Play
-        case "change" => AnimationAction.ChangeCycle(CycleLabel(res.label.get))
-        case "first"  => AnimationAction.JumpToFirstFrame
-        case "last"   => AnimationAction.JumpToLastFrame
-        case "jump"   => AnimationAction.JumpToFrame(res.to.get)
-        case _        => AnimationAction.Play
+  def fromCloneBlankJS(res: CloneBlankJS): CloneBlank =
+    CloneBlank(
+      id = CloneId(res.id),
+      cloneable = res.cloneable._type match {
+        case "graphic" =>
+          GraphicConversion.fromJS(res.cloneable)
+
+        case "sprite" =>
+          SpriteConversion.fromJS(res.cloneable)
       }
+    )
 
-  }
+}
 
-  object EffectsConversion {
+object CloneConversion {
 
-    def toJS(effects: Effects): js.Any =
-      js.Dynamic.literal(
-        tint = RGBAConversion.toJS(effects.tint),
-        overlay = effects.overlay match {
-          case Overlay.Color(rgba) =>
-            js.Dynamic.literal(_type = "color", color = RGBAConversion.toJS(rgba))
+  def toJS(node: Clone): js.Any =
+    js.Dynamic.literal(
+      _type = "clone",
+      id = node.id.value,
+      depth = node.depth.zIndex,
+      transform = CloneTransformDataConversion.toJS(node.transform)
+    )
 
-          case Overlay.LinearGradiant(fromPoint, fromColor, toPoint, toColor) =>
-            js.Dynamic.literal(
-              _type = "linear gradiant",
-              fromPoint = PointConversion.toJS(fromPoint),
-              fromColor = RGBAConversion.toJS(fromColor),
-              toPoint = PointConversion.toJS(toPoint),
-              toColor = RGBAConversion.toJS(toColor)
-            )
-        },
-        border = js.Dynamic.literal(
-          color = RGBAConversion.toJS(effects.border.color),
-          innerThickness = effects.border.innerThickness.toInt,
-          outerThickness = effects.border.outerThickness.toInt
-        ),
-        glow = js.Dynamic.literal(
-          color = RGBAConversion.toJS(effects.glow.color),
-          innerGlowAmount = effects.glow.innerGlowAmount,
-          outerGlowAmount = effects.glow.outerGlowAmount
-        ),
-        alpha = effects.alpha
-      )
+  def fromJS(obj: js.Any): Clone =
+    fromCloneJS(obj.asInstanceOf[CloneJS])
 
-    def fromJS(obj: js.Any): Effects =
-      fromEffectsJS(obj.asInstanceOf[EffectsJS])
+  def fromCloneJS(res: CloneJS): Clone =
+    Clone(
+      id = CloneId(res.id),
+      depth = Depth(res.depth),
+      transform = CloneTransformDataConversion.fromCloneTransformDataJS(res.transform)
+    )
 
-    def fromEffectsJS(res: EffectsJS): Effects = {
-      val overlay =
-        res.overlay._type match {
-          case "color" =>
-            Overlay.Color(RGBAConversion.fromRGBAJS(res.overlay.color.get))
+}
 
-          case "linear gradiant" =>
-            Overlay.LinearGradiant(
-              fromPoint = PointConversion.fromPointJS(res.overlay.fromPoint.get),
-              fromColor = RGBAConversion.fromRGBAJS(res.overlay.fromColor.get),
-              toPoint = PointConversion.fromPointJS(res.overlay.toPoint.get),
-              toColor = RGBAConversion.fromRGBAJS(res.overlay.toColor.get)
-            )
+object CloneBatchConversion {
 
-          case _ =>
-            Overlay.Color.default
+  def toJS(node: CloneBatch): js.Any =
+    js.Dynamic.literal(
+      _type = "clone batch",
+      id = node.id.value,
+      depth = node.depth.zIndex,
+      transform = CloneTransformDataConversion.toJS(node.transform),
+      clones = node.clones.map(CloneTransformDataConversion.toJS).toJSArray,
+      staticBatchKey = node.staticBatchKey.map(_.value).orUndefined
+    )
 
-        }
+  def fromJS(obj: js.Any): CloneBatch =
+    fromCloneBatchJS(obj.asInstanceOf[CloneBatchJS])
 
-      val border =
-        Border(
-          RGBAConversion.fromRGBAJS(res.glow.color),
-          Thickness.fromInt(res.border.innerThickness),
-          Thickness.fromInt(res.border.outerThickness)
-        )
+  def fromCloneBatchJS(res: CloneBatchJS): CloneBatch =
+    CloneBatch(
+      id = CloneId(res.id),
+      depth = Depth(res.depth),
+      transform = CloneTransformDataConversion.fromCloneTransformDataJS(res.transform),
+      clones = res.clones.toList.map(CloneTransformDataConversion.fromCloneTransformDataJS),
+      staticBatchKey = res.staticBatchKey.toOption.map(BindingKey.apply)
+    )
 
-      val glow =
-        Glow(
-          RGBAConversion.fromRGBAJS(res.glow.color),
-          res.glow.innerGlowAmount,
-          res.glow.outerGlowAmount
-        )
+}
 
-      Effects(
-        tint = RGBAConversion.fromRGBAJS(res.tint),
-        overlay = overlay,
-        border = border,
-        glow = glow,
-        alpha = res.alpha
-      )
+object CloneTransformDataConversion {
+
+  def toJS(data: CloneTransformData): js.Any =
+    js.Dynamic.literal(
+      position = PointConversion.toJS(data.position),
+      rotation = data.rotation.value,
+      scale = Vector2Conversion.toJS(data.scale),
+      alpha = data.alpha,
+      flipHorizontal = data.flipHorizontal,
+      flipVertical = data.flipVertical
+    )
+
+  def fromJS(obj: js.Any): CloneTransformData =
+    fromCloneTransformDataJS(obj.asInstanceOf[CloneTransformDataJS])
+
+  def fromCloneTransformDataJS(res: CloneTransformDataJS): CloneTransformData =
+    CloneTransformData(
+      position = PointConversion.fromPointJS(res.position),
+      rotation = Radians(res.rotation),
+      scale = Vector2Conversion.fromVector2JS(res.scale),
+      alpha = res.alpha,
+      flipHorizontal = res.flipHorizontal,
+      flipVertical = res.flipVertical
+    )
+
+}
+
+object SpriteConversion {
+
+  def toJS(node: Sprite): js.Any =
+    js.Dynamic.literal(
+      _type = "sprite",
+      bindingKey = node.bindingKey.value,
+      animationKey = node.animationKey.value,
+      animationActions = node.animationActions.map(AnimationActionConversion.toJS).toJSArray,
+      effects = EffectsConversion.toJS(node.effects),
+      position = PointConversion.toJS(node.position),
+      rotation = node.rotation.value,
+      scale = Vector2Conversion.toJS(node.scale),
+      depth = node.depth.zIndex,
+      ref = PointConversion.toJS(node.ref),
+      flip = FlipConversion.toJS(node.flip)
+    )
+
+  def fromJS(obj: js.Any): Sprite =
+    fromSpriteJS(obj.asInstanceOf[SpriteJS])
+
+  def fromSpriteJS(res: SpriteJS): Sprite =
+    Sprite(
+      bindingKey = BindingKey(res.bindingKey),
+      animationKey = AnimationKey(res.animationKey),
+      animationActions = res.animationActions.toList.map(AnimationActionConversion.fromAnimationActionJS),
+      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
+      effects = EffectsConversion.fromEffectsJS(res.effects),
+      position = PointConversion.fromPointJS(res.position),
+      rotation = Radians(res.rotation),
+      scale = Vector2Conversion.fromVector2JS(res.scale),
+      depth = Depth(res.depth),
+      ref = PointConversion.fromPointJS(res.ref),
+      flip = FlipConversion.fromFlipJS(res.flip)
+    )
+
+}
+
+object GraphicConversion {
+
+  def toJS(node: Graphic): js.Any =
+    js.Dynamic.literal(
+      _type = "graphic",
+      material = MaterialConversion.toJS(node.material),
+      crop = RectangleConversion.toJS(node.crop),
+      effects = EffectsConversion.toJS(node.effects),
+      position = PointConversion.toJS(node.position),
+      rotation = node.rotation.value,
+      scale = Vector2Conversion.toJS(node.scale),
+      depth = node.depth.zIndex,
+      ref = PointConversion.toJS(node.ref),
+      flip = FlipConversion.toJS(node.flip)
+    )
+
+  def fromJS(obj: js.Any): Graphic =
+    fromGraphicJS(obj.asInstanceOf[GraphicJS])
+
+  def fromGraphicJS(res: GraphicJS): Graphic =
+    Graphic(
+      material = MaterialConversion.fromMaterialJS(res.material),
+      crop = RectangleConversion.fromRectangleJS(res.crop),
+      effects = EffectsConversion.fromEffectsJS(res.effects),
+      position = PointConversion.fromPointJS(res.position),
+      rotation = Radians(res.rotation),
+      scale = Vector2Conversion.fromVector2JS(res.scale),
+      depth = Depth(res.depth),
+      ref = PointConversion.fromPointJS(res.ref),
+      flip = FlipConversion.fromFlipJS(res.flip)
+    )
+
+}
+
+object TextConversion {
+
+  def toJS(node: Text): js.Any =
+    js.Dynamic.literal(
+      _type = "text",
+      text = node.text,
+      alignment = node.alignment match {
+        case TextAlignment.Left   => "left"
+        case TextAlignment.Right  => "right"
+        case TextAlignment.Center => "center"
+      },
+      fontKey = node.fontKey.key,
+      effects = EffectsConversion.toJS(node.effects),
+      position = PointConversion.toJS(node.position),
+      rotation = node.rotation.value,
+      scale = Vector2Conversion.toJS(node.scale),
+      depth = node.depth.zIndex,
+      ref = PointConversion.toJS(node.ref),
+      flip = FlipConversion.toJS(node.flip)
+    )
+
+  def fromJS(obj: js.Any): Text =
+    fromTextJS(obj.asInstanceOf[TextJS])
+
+  def fromTextJS(res: TextJS): Text =
+    Text(
+      text = res.text,
+      alignment = res.alignment match {
+        case "left"   => TextAlignment.Left
+        case "right"  => TextAlignment.Right
+        case "center" => TextAlignment.Center
+        case _        => TextAlignment.Left
+      },
+      fontKey = FontKey(res.fontKey),
+      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
+      effects = EffectsConversion.fromEffectsJS(res.effects),
+      position = PointConversion.fromPointJS(res.position),
+      rotation = Radians(res.rotation),
+      scale = Vector2Conversion.fromVector2JS(res.scale),
+      depth = Depth(res.depth),
+      ref = PointConversion.fromPointJS(res.ref),
+      flip = FlipConversion.fromFlipJS(res.flip)
+    )
+
+}
+
+object GroupConversion {
+
+  def toJS(node: Group): js.Any =
+    js.Dynamic.literal(
+      _type = "group",
+      children = node.children.map {
+        case g: Group   => GroupConversion.toJS(g)
+        case s: Sprite  => SpriteConversion.toJS(s)
+        case g: Graphic => GraphicConversion.toJS(g)
+        case t: Text    => TextConversion.toJS(t)
+      }.toJSArray,
+      position = PointConversion.toJS(node.position),
+      rotation = node.rotation.value,
+      scale = Vector2Conversion.toJS(node.scale),
+      depth = node.depth.zIndex,
+      ref = PointConversion.toJS(node.ref),
+      flip = FlipConversion.toJS(node.flip)
+    )
+
+  def fromJS(obj: js.Any): Group =
+    fromGroupJS(obj.asInstanceOf[GroupJS])
+
+  def fromGroupJS(res: GroupJS): Group =
+    Group(
+      children = res.children.toList.map {
+        case node: SceneGraphNodeJS if node._type == "group" =>
+          GroupConversion.fromJS(node)
+
+        case node: SceneGraphNodeJS if node._type == "graphic" =>
+          GraphicConversion.fromJS(node)
+
+        case node: SceneGraphNodeJS if node._type == "sprite" =>
+          SpriteConversion.fromJS(node)
+
+        case node: SceneGraphNodeJS if node._type == "text" =>
+          TextConversion.fromJS(node)
+      },
+      position = PointConversion.fromPointJS(res.position),
+      rotation = Radians(res.rotation),
+      scale = Vector2Conversion.fromVector2JS(res.scale),
+      depth = Depth(res.depth),
+      ref = PointConversion.fromPointJS(res.ref),
+      flip = FlipConversion.fromFlipJS(res.flip)
+    )
+
+}
+
+object FlipConversion {
+
+  def toJS(flip: Flip): js.Any =
+    js.Dynamic.literal(
+      horizontal = flip.horizontal,
+      vertical = flip.vertical
+    )
+
+  def fromJS(obj: js.Any): Flip =
+    fromFlipJS(obj.asInstanceOf[FlipJS])
+
+  def fromFlipJS(res: FlipJS): Flip =
+    Flip(res.horizontal, res.vertical)
+
+}
+
+object AnimationActionConversion {
+
+  def toJS(action: AnimationAction): js.Any =
+    action match {
+      case AnimationAction.Play             => js.Dynamic.literal(_action = "play")
+      case AnimationAction.ChangeCycle(l)   => js.Dynamic.literal(_action = "change", label = l.value)
+      case AnimationAction.JumpToFirstFrame => js.Dynamic.literal(_action = "first")
+      case AnimationAction.JumpToLastFrame  => js.Dynamic.literal(_action = "last")
+      case AnimationAction.JumpToFrame(num) => js.Dynamic.literal(_action = "jump", to = num)
     }
 
+  def fromJS(obj: js.Any): AnimationAction =
+    fromAnimationActionJS(obj.asInstanceOf[AnimationActionJS])
+
+  def fromAnimationActionJS(res: AnimationActionJS): AnimationAction =
+    res._action match {
+      case "play"   => AnimationAction.Play
+      case "change" => AnimationAction.ChangeCycle(CycleLabel(res.label.get))
+      case "first"  => AnimationAction.JumpToFirstFrame
+      case "last"   => AnimationAction.JumpToLastFrame
+      case "jump"   => AnimationAction.JumpToFrame(res.to.get)
+      case _        => AnimationAction.Play
+    }
+
+}
+
+object EffectsConversion {
+
+  def toJS(effects: Effects): js.Any =
+    js.Dynamic.literal(
+      tint = RGBAConversion.toJS(effects.tint),
+      overlay = effects.overlay match {
+        case Overlay.Color(rgba) =>
+          js.Dynamic.literal(_type = "color", color = RGBAConversion.toJS(rgba))
+
+        case Overlay.LinearGradiant(fromPoint, fromColor, toPoint, toColor) =>
+          js.Dynamic.literal(
+            _type = "linear gradiant",
+            fromPoint = PointConversion.toJS(fromPoint),
+            fromColor = RGBAConversion.toJS(fromColor),
+            toPoint = PointConversion.toJS(toPoint),
+            toColor = RGBAConversion.toJS(toColor)
+          )
+      },
+      border = js.Dynamic.literal(
+        color = RGBAConversion.toJS(effects.border.color),
+        innerThickness = effects.border.innerThickness.toInt,
+        outerThickness = effects.border.outerThickness.toInt
+      ),
+      glow = js.Dynamic.literal(
+        color = RGBAConversion.toJS(effects.glow.color),
+        innerGlowAmount = effects.glow.innerGlowAmount,
+        outerGlowAmount = effects.glow.outerGlowAmount
+      ),
+      alpha = effects.alpha
+    )
+
+  def fromJS(obj: js.Any): Effects =
+    fromEffectsJS(obj.asInstanceOf[EffectsJS])
+
+  def fromEffectsJS(res: EffectsJS): Effects = {
+    val overlay =
+      res.overlay._type match {
+        case "color" =>
+          Overlay.Color(RGBAConversion.fromRGBAJS(res.overlay.color.get))
+
+        case "linear gradiant" =>
+          Overlay.LinearGradiant(
+            fromPoint = PointConversion.fromPointJS(res.overlay.fromPoint.get),
+            fromColor = RGBAConversion.fromRGBAJS(res.overlay.fromColor.get),
+            toPoint = PointConversion.fromPointJS(res.overlay.toPoint.get),
+            toColor = RGBAConversion.fromRGBAJS(res.overlay.toColor.get)
+          )
+
+        case _ =>
+          Overlay.Color.default
+
+      }
+
+    val border =
+      Border(
+        RGBAConversion.fromRGBAJS(res.glow.color),
+        Thickness.fromInt(res.border.innerThickness),
+        Thickness.fromInt(res.border.outerThickness)
+      )
+
+    val glow =
+      Glow(
+        RGBAConversion.fromRGBAJS(res.glow.color),
+        res.glow.innerGlowAmount,
+        res.glow.outerGlowAmount
+      )
+
+    Effects(
+      tint = RGBAConversion.fromRGBAJS(res.tint),
+      overlay = overlay,
+      border = border,
+      glow = glow,
+      alpha = res.alpha
+    )
   }
 
 }

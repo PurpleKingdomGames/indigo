@@ -121,7 +121,7 @@ class WorkerConversionsTests extends munit.FunSuite {
       Text("Hello, World!", FontKey("my font"))
 
     val actual =
-      SceneUpdateFragmentConversion.TextConversion.fromJS(SceneUpdateFragmentConversion.TextConversion.toJS(expected))
+      TextConversion.fromJS(TextConversion.toJS(expected))
 
     assertEquals(actual.position, expected.position)
     assertEquals(actual.rotation, expected.rotation)
@@ -142,7 +142,7 @@ class WorkerConversionsTests extends munit.FunSuite {
       Sprite(BindingKey("binding key 1"), AnimationKey("anim key 1"))
 
     val actual =
-      SceneUpdateFragmentConversion.SpriteConversion.fromJS(SceneUpdateFragmentConversion.SpriteConversion.toJS(expected))
+      SpriteConversion.fromJS(SpriteConversion.toJS(expected))
 
     assertEquals(actual.position, expected.position)
     assertEquals(actual.rotation, expected.rotation)
@@ -211,13 +211,19 @@ class WorkerConversionsTests extends munit.FunSuite {
         assetMapping = AssetMapping(Map("texture1" -> TextureRefAndOffset("atlas1", Vector2(1024, 1024), Point(32, 32)))),
         screenWidth = 320,
         screenHeight = 200,
-        orthographicProjectionMatrix = CheapMatrix4.orthographic(320, 200).mat.toJSArray
+        orthographicProjectionMatrix = CheapMatrix4.orthographic(320, 200)
       )
 
     val actual =
       SceneFrameDataConversion.fromJS(SceneFrameDataConversion.toJS(expected))
 
-    assertEquals(actual, expected)
+    assertEquals(actual.gameTime, expected.gameTime)
+    assertEquals(actual.scene, expected.scene)
+    assertEquals(actual.assetMapping, expected.assetMapping)
+    assertEquals(actual.screenWidth, expected.screenWidth)
+    assertEquals(actual.screenHeight, expected.screenHeight)
+    assertEquals(actual.orthographicProjectionMatrix.mat.length, expected.orthographicProjectionMatrix.mat.length)
+    assert(actual.orthographicProjectionMatrix.mat.zip(expected.orthographicProjectionMatrix.mat).forall(p => p._1 == p._2))
   }
 
 }

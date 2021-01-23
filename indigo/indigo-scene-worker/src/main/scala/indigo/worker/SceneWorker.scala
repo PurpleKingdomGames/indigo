@@ -96,7 +96,7 @@ object SceneWorker {
           SceneWorkerGlobal.postMessage(
             new WorkerMessage {
               val _type = "processed scene"
-              val data  = res
+              val data  = writeProcessedSceneData(res)
             }
           )
 

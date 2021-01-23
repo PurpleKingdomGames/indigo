@@ -72,25 +72,33 @@ final class SceneProcessor(
       }
 
     val gameLayerDisplayObjects =
-      displayObjectConverter.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
+      displayObjectConverter
+        .sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
+        .sortWith((d1, d2) => d1.z > d2.z)
 
     val lightingLayerDisplayObjects =
-      displayObjectConverter.sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
+      displayObjectConverter
+        .sceneNodesToDisplayObjects(scene.lightingLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
+        .sortWith((d1, d2) => d1.z > d2.z)
 
     val distortionLayerDisplayObjects =
-      displayObjectConverter.sceneNodesToDisplayObjects(scene.distortionLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
+      displayObjectConverter
+        .sceneNodesToDisplayObjects(scene.distortionLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
+        .sortWith((d1, d2) => d1.z > d2.z)
 
     val uiLayerDisplayObjects =
-      displayObjectConverter.sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
+      displayObjectConverter
+        .sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
+        .sortWith((d1, d2) => d1.z > d2.z)
 
     new ProcessedSceneData(
       gameProjection,
       lightingProjection,
       uiProjection,
-      gameLayerDisplayObjects,
-      lightingLayerDisplayObjects,
-      distortionLayerDisplayObjects,
-      uiLayerDisplayObjects,
+      gameLayerDisplayObjects.toList,
+      lightingLayerDisplayObjects.toList,
+      distortionLayerDisplayObjects.toList,
+      uiLayerDisplayObjects.toList,
       cloneBlankDisplayObjects,
       scene.lights,
       scene.ambientLight,
