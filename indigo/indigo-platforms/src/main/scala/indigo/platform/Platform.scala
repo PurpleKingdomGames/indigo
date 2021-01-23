@@ -109,7 +109,6 @@ class Platform(gameConfig: GameConfig, globalEventStream: GlobalEventStream) ext
 
         case m if m._type.isDefined && m._type.get == "processed scene" =>
           // Render scene
-          // TODO: read JS into ProcessedSceneData
           renderer.drawScene(WorkerConversions.readProcessedSceneData(msg.data))
       }
 
