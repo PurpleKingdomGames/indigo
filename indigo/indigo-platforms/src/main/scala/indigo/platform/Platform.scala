@@ -273,17 +273,16 @@ class Platform(gameConfig: GameConfig, globalEventStream: GlobalEventStream) ext
       )
     )
 
-    // val x =
-    //   WorkerConversions.readSceneFrameData(WorkerConversions.writeSceneFrameData(sceneFrameData))
+    // TODO: If no worker or offscreen canvas? Carry on as before?
 
     // // Prepare scene
     // val sceneData = sceneProcessor.processScene(
-    //   x.gameTime,
-    //   x.scene,
-    //   x.assetMapping,
-    //   x.screenWidth,
-    //   x.screenHeight,
-    //   x.orthographicProjectionMatrix
+    //   gameTime,
+    //   scene,
+    //   assetMapping,
+    //   renderer.screenWidth.toDouble,
+    //   renderer.screenHeight.toDouble,
+    //   renderer.orthographicProjectionMatrix
     // )
 
     // // Render scene
