@@ -70,7 +70,7 @@ final case class DisplayObject(
 
   def applyTransform(matrix: CheapMatrix4): DisplayObject =
     this.copy(transform * matrix)
-    
+
 }
 object DisplayObject {
 
@@ -111,4 +111,16 @@ object DisplayObject {
       isLit,
       effects
     )
+}
+
+final case class DisplayObjectShape(
+    val transform: CheapMatrix4,
+    val z: Double,
+    val width: Float,
+    val height: Float
+) extends DisplayEntity {
+
+  def applyTransform(matrix: CheapMatrix4): DisplayObjectShape =
+    this.copy(transform * matrix)
+
 }
