@@ -14,9 +14,11 @@ object ShaderGen {
   def template(name: String, vextexContents: String, fragmentContents: String): String =
     s"""package indigo.platform.shaders
     |
-    |import indigo.shared.display.Shader
+    |import indigo.shared.display.{Shader, ShaderId}
     |
     |object $name extends Shader {
+    |  val id: ShaderId = ShaderId("indigo_default_$name")
+    |
     |  val vertex: String =
     |    ${tripleQuotes}${vextexContents}${tripleQuotes}
     |
