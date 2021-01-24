@@ -35,6 +35,9 @@ object SceneGraphViewEvents {
 
     while (index < count) {
       nodes(index) match {
+        case _: Shape =>
+          ()
+
         case s: Sprite =>
           applyInputEvents(s, s.bounds(boundaryLocator), inputEvents, sendEvent)
 
