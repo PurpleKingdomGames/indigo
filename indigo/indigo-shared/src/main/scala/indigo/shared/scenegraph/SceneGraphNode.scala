@@ -79,6 +79,72 @@ sealed trait SceneGraphNodePrimitive extends SceneGraphNode {
   def flipVertical(isFlipped: Boolean): SceneGraphNodePrimitive
 }
 
+final case class Shape(bounds: Rectangle, rotation: Radians, scale: Vector2, depth: Depth, ref: Point, flip: Flip) extends SceneGraphNodePrimitive {
+
+  lazy val position: Point = bounds.position
+  lazy val size: Point     = bounds.size
+  lazy val x: Int          = position.x
+  lazy val y: Int          = position.y
+
+  def withDepth(newDepth: Depth): Shape =
+    this.copy(depth = newDepth)
+
+  def withRef(newRef: Point): Shape =
+    this.copy(ref = newRef)
+  def withRef(x: Int, y: Int): Shape =
+    withRef(Point(x, y))
+
+  def moveTo(pt: Point): Shape =
+    this.copy(bounds = bounds.moveTo(pt))
+  def moveTo(x: Int, y: Int): Shape =
+    moveTo(Point(x, y))
+  def withPosition(newPosition: Point): Shape =
+    moveTo(newPosition)
+
+  def moveBy(pt: Point): Shape =
+    moveTo(position + pt)
+  def moveBy(x: Int, y: Int): Shape =
+    moveBy(Point(x, y))
+
+  def rotateTo(angle: Radians): Shape =
+    this.copy(rotation = angle)
+  def rotateBy(angle: Radians): Shape =
+    rotateTo(rotation + angle)
+  def withRotation(newRotation: Radians): Shape =
+    rotateTo(newRotation)
+
+  def scaleBy(x: Double, y: Double): Shape =
+    scaleBy(Vector2(x, y))
+  def scaleBy(amount: Vector2): Shape =
+    this.copy(scale = scale * amount)
+  def withScale(newScale: Vector2): Shape =
+    this.copy(scale = newScale)
+
+  def flipHorizontal(isFlipped: Boolean): Shape =
+    this.copy(flip = flip.withHorizontalFlip(isFlipped))
+  def flipVertical(isFlipped: Boolean): Shape =
+    this.copy(flip = flip.withVerticalFlip(isFlipped))
+  def withFlip(newFlip: Flip): Shape =
+    this.copy(flip = newFlip)
+
+  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Shape =
+    this.copy(bounds = bounds.moveTo(newPosition), rotation = newRotation, scale = newScale)
+
+  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Shape =
+    transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
+
+  lazy val lazyBounds: Rectangle =
+    bounds
+
+  def bounds(locator: BoundaryLocator): Rectangle =
+    lazyBounds
+
+  def resizeTo(newSize: Point): Shape =
+    this.copy(bounds = bounds.resize(newSize))
+  def resizeBy(amount: Point): Shape =
+    resizeTo(bounds.size + amount)
+}
+
 /**
   * Used to group elements to allow them to be manipulated as a collection.
   *

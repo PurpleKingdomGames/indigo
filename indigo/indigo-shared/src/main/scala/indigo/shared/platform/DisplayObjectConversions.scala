@@ -164,6 +164,11 @@ final class DisplayObjectConversions(
   ): List[DisplayEntity] =
     sceneNode match {
 
+      case s: Shape =>
+        DisplayObjectShape(
+          
+        )
+
       case c: Clone =>
         cloneBlankDisplayObjects.get(c.id.value) match {
           case None =>
