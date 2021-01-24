@@ -4,26 +4,27 @@ precision lowp float;
 
 uniform sampler2D u_texture;
 
-in vec4 v_texcoordEmissiveNormal;
-in vec4 v_relativeScreenCoordsIsLitAlpha;
-in vec4 v_tint;
-in vec4 v_gradiantFromTo;
-in vec4 v_gradiantOverlayFromColor;
-in vec4 v_gradiantOverlayToColor;
-in vec4 v_borderColor;
-in vec4 v_glowColor;
-in vec4 v_effectAmounts;
-in vec4 v_textureAmounts;
-in vec2 v_offsetTL;
-in vec2 v_offsetTC;
-in vec2 v_offsetTR;
-in vec2 v_offsetML;
-in vec2 v_offsetMC;
-in vec2 v_offsetMR;
-in vec2 v_offsetBL;
-in vec2 v_offsetBC;
-in vec2 v_offsetBR;
-in vec2 v_texcoordSpecular;
+// in vec4 v_texcoordEmissiveNormal;
+// in vec4 v_relativeScreenCoordsIsLitAlpha;
+// in vec4 v_tint;
+// in vec4 v_gradiantFromTo;
+// in vec4 v_gradiantOverlayFromColor;
+// in vec4 v_gradiantOverlayToColor;
+// in vec4 v_borderColor;
+// in vec4 v_glowColor;
+// in vec4 v_effectAmounts;
+// in vec4 v_textureAmounts;
+// in vec2 v_offsetTL;
+// in vec2 v_offsetTC;
+// in vec2 v_offsetTR;
+// in vec2 v_offsetML;
+// in vec2 v_offsetMC;
+// in vec2 v_offsetMR;
+// in vec2 v_offsetBL;
+// in vec2 v_offsetBC;
+// in vec2 v_offsetBR;
+// in vec2 v_texcoordSpecular;
+in vec2 v_texcoords;
 
 layout(location = 0) out vec4 albedo;
 layout(location = 1) out vec4 emissive;
@@ -271,7 +272,11 @@ void main(void) {
   // float normalAmount = v_textureAmounts.z;
   // float specularAmount = v_textureAmounts.w;
 
-  albedo = vec4(0.0, 1.0, 0.0, 1.0); // GREEN;//vec4(outColor.rgb, outColor.a * albedoAmount);
+  // circle SDF
+  float alpha = 1.0 - step(0.0, length(v_texcoords - 0.5) - 0.5);
+  albedo = vec4(0.0, 1.0, 0.0, alpha);
+  
+  // GREEN;//vec4(outColor.rgb, outColor.a * albedoAmount);
 
   emissive = vec4(0.0);//texture(u_texture, v_texcoordEmissiveNormal.xy) * emissiveAmount;
 
