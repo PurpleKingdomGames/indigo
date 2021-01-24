@@ -22,26 +22,27 @@ uniform mat4 u_projection;
 
 // The varying values are organised this way to help the packer
 // squash them into 15 varying vectors
-out vec4 v_texcoordEmissiveNormal;
-out vec4 v_relativeScreenCoordsIsLitAlpha;
-out vec4 v_tint;
-out vec4 v_gradiantFromTo;
-out vec4 v_gradiantOverlayFromColor;
-out vec4 v_gradiantOverlayToColor;
-out vec4 v_borderColor;
-out vec4 v_glowColor;
-out vec4 v_effectAmounts;
-out vec4 v_textureAmounts;
-out vec2 v_offsetTL;
-out vec2 v_offsetTC;
-out vec2 v_offsetTR;
-out vec2 v_offsetML;
-out vec2 v_offsetMC;
-out vec2 v_offsetMR;
-out vec2 v_offsetBL;
-out vec2 v_offsetBC;
-out vec2 v_offsetBR;
-out vec2 v_texcoordSpecular;
+// out vec4 v_texcoordEmissiveNormal;
+// out vec4 v_relativeScreenCoordsIsLitAlpha;
+// out vec4 v_tint;
+// out vec4 v_gradiantFromTo;
+// out vec4 v_gradiantOverlayFromColor;
+// out vec4 v_gradiantOverlayToColor;
+// out vec4 v_borderColor;
+// out vec4 v_glowColor;
+// out vec4 v_effectAmounts;
+// out vec4 v_textureAmounts;
+// out vec2 v_offsetTL;
+// out vec2 v_offsetTC;
+// out vec2 v_offsetTR;
+// out vec2 v_offsetML;
+// out vec2 v_offsetMC;
+// out vec2 v_offsetMR;
+// out vec2 v_offsetBL;
+// out vec2 v_offsetBC;
+// out vec2 v_offsetBR;
+// out vec2 v_texcoordSpecular;
+out vec2 v_texcoords;
 
 mat4 translate2d(vec2 t){
     return mat4(1, 0, 0, 0,
@@ -103,14 +104,14 @@ vec2[9] generateTexCoords3x3(vec2 texcoords, vec2 onePixel) {
 void main(void) {
 
   vec4 vertices = vec4(a_verticesAndCoords.xy, 1.0, 1.0);
-  vec2 texcoords = a_verticesAndCoords.zw;
-  float alpha = a_matTranslateAlpha.w;
-  vec2 texcoordsEmissive = a_emissiveNormalOffsets.xy;
-  vec2 texcoordsNormal = a_emissiveNormalOffsets.zw;
-  vec2 texcoordsSpecular = a_specularOffsetIsLit.xy;
-  float isLit = a_specularOffsetIsLit.z;
+  // vec2 texcoords = a_verticesAndCoords.zw;
+  // float alpha = a_matTranslateAlpha.w;
+  // vec2 texcoordsEmissive = a_emissiveNormalOffsets.xy;
+  // vec2 texcoordsNormal = a_emissiveNormalOffsets.zw;
+  // vec2 texcoordsSpecular = a_specularOffsetIsLit.xy;
+  // float isLit = a_specularOffsetIsLit.z;
 
-  vec2 offsets[9] = generateTexCoords3x3(texcoords, sizeOfAPixel());
+  // vec2 offsets[9] = generateTexCoords3x3(texcoords, sizeOfAPixel());
 
   mat4 transform =
     mat4(a_matRotateScale.x,    a_matRotateScale.y,    0,                     0,
@@ -121,26 +122,27 @@ void main(void) {
 
   gl_Position = u_projection * transform * vertices;
 
-  v_texcoordEmissiveNormal = vec4(scaleTexCoordsWithOffset(texcoords, texcoordsEmissive), scaleTexCoordsWithOffset(texcoords, texcoordsNormal));
-  v_relativeScreenCoordsIsLitAlpha = vec4(texcoords * a_size, isLit, alpha);
-  v_tint = a_tint;
-  v_gradiantFromTo = a_gradiantPositions;
-  v_gradiantOverlayFromColor = a_gradiantOverlayFromColor;
-  v_gradiantOverlayToColor = a_gradiantOverlayToColor;
-  v_borderColor = a_borderColor;
-  v_glowColor = a_glowColor;
-  v_effectAmounts = a_amounts;
-  v_textureAmounts = a_textureAmounts;
-  v_offsetTL = offsets[0];
-  v_offsetTC = offsets[1];
-  v_offsetTR = offsets[2];
-  v_offsetML = offsets[3];
-  v_offsetMC = offsets[4];
-  v_offsetMR = offsets[5];
-  v_offsetBL = offsets[6];
-  v_offsetBC = offsets[7];
-  v_offsetBR = offsets[8];
-  v_texcoordSpecular = scaleTexCoordsWithOffset(texcoords, texcoordsSpecular);
+  // v_texcoordEmissiveNormal = vec4(scaleTexCoordsWithOffset(texcoords, texcoordsEmissive), scaleTexCoordsWithOffset(texcoords, texcoordsNormal));
+  // v_relativeScreenCoordsIsLitAlpha = vec4(texcoords * a_size, isLit, alpha);
+  // v_tint = a_tint;
+  // v_gradiantFromTo = a_gradiantPositions;
+  // v_gradiantOverlayFromColor = a_gradiantOverlayFromColor;
+  // v_gradiantOverlayToColor = a_gradiantOverlayToColor;
+  // v_borderColor = a_borderColor;
+  // v_glowColor = a_glowColor;
+  // v_effectAmounts = a_amounts;
+  // v_textureAmounts = a_textureAmounts;
+  // v_offsetTL = offsets[0];
+  // v_offsetTC = offsets[1];
+  // v_offsetTR = offsets[2];
+  // v_offsetML = offsets[3];
+  // v_offsetMC = offsets[4];
+  // v_offsetMR = offsets[5];
+  // v_offsetBL = offsets[6];
+  // v_offsetBC = offsets[7];
+  // v_offsetBR = offsets[8];
+  // v_texcoordSpecular = scaleTexCoordsWithOffset(texcoords, texcoordsSpecular);
+  v_texcoords = a_verticesAndCoords.zw;
 
 
 }
