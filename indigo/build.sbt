@@ -132,13 +132,10 @@ lazy val indigoFacades =
   project
     .in(file("indigo-facades"))
     .enablePlugins(ScalaJSPlugin)
+    .settings(commonSettings: _*)
     .settings(publishSettings: _*)
     .settings(
       name := "indigo-facades",
-      version := indigoVersion,
-      scalaVersion := dottyVersion,
-      crossScalaVersions := Seq(dottyVersion, scala213Version),
-      organization := "io.indigoengine",
       libraryDependencies ++= Seq(
         ("org.scala-js" %%% "scalajs-dom" % "1.1.0").withDottyCompat(scalaVersion.value)
       )
