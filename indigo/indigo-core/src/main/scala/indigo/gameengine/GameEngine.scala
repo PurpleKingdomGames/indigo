@@ -26,10 +26,13 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.platform.SceneProcessor
 import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
+import indigo.shared.display.Shader
+import indigo.shared.ShaderRegister
 
 final class GameEngine[StartUpData, GameModel, ViewModel](
     fonts: Set[FontInfo],
     animations: Set[Animation],
+    shaders: Set[Shader],
     initialise: AssetCollection => Dice => Outcome[Startup[StartUpData]],
     initialModel: StartUpData => Outcome[GameModel],
     initialViewModel: StartUpData => GameModel => Outcome[ViewModel],
@@ -41,6 +44,8 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
     new AnimationsRegister()
   val fontRegister: FontRegister =
     new FontRegister()
+  val shaderRegister: ShaderRegister =
+    new ShaderRegister()
   val boundaryLocator: BoundaryLocator =
     new BoundaryLocator(animationsRegister, fontRegister)
   val sceneProcessor: SceneProcessor =
@@ -143,9 +148,11 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
         case Outcome.Result(startupData, globalEvents) =>
           globalEvents.foreach(globalEventStream.pushGlobalEvent)
 
-          GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
+          val allShaders: Set[Shader] = shaders ++ startupData.additionalShaders
 
+          GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
           GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
+          GameEngine.registerShaders(shaderRegister, allShaders)
 
           def modelToUse(startUpSuccessData: => StartUpData): Outcome[GameModel] =
             if (firstRun) initialModel(startUpSuccessData)
@@ -157,7 +164,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
           val loop: Outcome[Long => Long => Unit] =
             for {
-              rendererAndAssetMapping <- platform.initialise()
+              rendererAndAssetMapping <- platform.initialise(allShaders)
               startUpSuccessData      <- GameEngine.initialisedGame(startupData)
               m                       <- modelToUse(startUpSuccessData)
               vm                      <- viewModelToUse(startUpSuccessData, m)
@@ -207,6 +214,9 @@ object GameEngine {
 
   def registerFonts(fontRegister: FontRegister, fonts: Set[FontInfo]): Unit =
     fonts.foreach(fontRegister.register)
+
+  def registerShaders(shaderRegister: ShaderRegister, shaders: Set[Shader]): Unit =
+    shaders.foreach(shaderRegister.register)
 
   def initialisedGame[StartUpData](startupData: Startup[StartUpData]): Outcome[StartUpData] =
     startupData match {

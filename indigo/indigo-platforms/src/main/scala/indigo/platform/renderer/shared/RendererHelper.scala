@@ -28,7 +28,8 @@ object RendererHelper {
       specularOffset = Vector2.zero,
       specularAmount = 0.0f,
       isLit = 0.0f,
-      effects = DisplayEffects.default
+      effects = DisplayEffects.default,
+      shaderId = None
     )
 
   private def makeMatrix(w: Double, h: Double): CheapMatrix4 =

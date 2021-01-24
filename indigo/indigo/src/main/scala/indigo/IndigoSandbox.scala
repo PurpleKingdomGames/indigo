@@ -40,6 +40,11 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher {
   val animations: Set[Animation]
 
   /**
+    * A fixed set of custom shaders you will be able to render with
+    */
+  val shaders: Set[Shader]
+
+  /**
     * The `setup` function is your only opportunity to do an initial work
     * to set up your game. For example, perhaps one of your assets was a
     * JSON description of a map or an animation sequence, you could process
@@ -115,6 +120,7 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher {
     new GameEngine[StartUpData, Model, Unit](
       fonts,
       animations,
+      shaders,
       (ac: AssetCollection) => (d: Dice) => setup(ac, d),
       (sd: StartUpData) => initialModel(sd),
       (_: StartUpData) => (_: Model) => Outcome(()),
