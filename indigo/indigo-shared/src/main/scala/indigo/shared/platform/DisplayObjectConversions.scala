@@ -11,6 +11,7 @@ import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 import indigo.shared.platform.AssetMapping
 import indigo.shared.scenegraph.{Graphic, Sprite, Text, TextLine}
+import indigo.shared.scenegraph.Shape
 
 import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.scenegraph.Group
@@ -20,6 +21,7 @@ import indigo.shared.QuickCache
 import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
 import indigo.shared.display.DisplayEntity
+import indigo.shared.display.DisplayObjectShape
 import indigo.shared.scenegraph.Clone
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.display.DisplayClone
@@ -165,8 +167,13 @@ final class DisplayObjectConversions(
     sceneNode match {
 
       case s: Shape =>
-        DisplayObjectShape(
-          
+        List(
+          DisplayObjectShape(
+            transform = DisplayObjectConversions.nodeToMatrix4(s, Vector3(s.bounds.size.x.toDouble, s.bounds.size.y.toDouble, 1.0d)),
+            z = s.depth.zIndex.toDouble,
+            width = s.bounds.size.x.toFloat,
+            height = s.bounds.size.y.toFloat
+          )
         )
 
       case c: Clone =>
