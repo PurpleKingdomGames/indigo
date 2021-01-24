@@ -27,6 +27,7 @@ import indigo.shared.events.FullScreenEntered
 import indigo.shared.events.FullScreenEnterError
 import indigo.shared.events.FullScreenExited
 import indigo.shared.events.FullScreenExitError
+import indigo.shared.display.Shader
 
 class Platform(
     gameConfig: GameConfig,
@@ -45,14 +46,14 @@ class Platform(
   )
   private var _canvas: Canvas = null
 
-  def initialise(): Outcome[(Renderer, AssetMapping)] =
+  def initialise(shaders: Set[Shader]): Outcome[(Renderer, AssetMapping)] =
     for {
       textureAtlas        <- createTextureAtlas(assetCollection)
       loadedTextureAssets <- extractLoadedTextures(textureAtlas)
       assetMapping        <- setupAssetMapping(textureAtlas)
       canvas              <- createCanvas(gameConfig)
       _                   <- listenToWorldEvents(canvas, gameConfig.magnification, globalEventStream)
-      renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas)
+      renderer            <- startRenderer(gameConfig, loadedTextureAssets, canvas, shaders)
     } yield {
       _canvas = canvas
 
@@ -119,7 +120,8 @@ class Platform(
   def startRenderer(
       gameConfig: GameConfig,
       loadedTextureAssets: List[LoadedTextureAsset],
-      canvas: Canvas
+      canvas: Canvas,
+      shaders: Set[Shader]
   ): Outcome[Renderer] =
     Outcome {
       IndigoLogger.info("Starting renderer")
@@ -132,7 +134,8 @@ class Platform(
           antiAliasing = gameConfig.advanced.antiAliasing
         ),
         loadedTextureAssets,
-        canvas
+        canvas,
+        shaders
       )
     }
 

@@ -1,6 +1,7 @@
 package indigo.shared.datatypes
 
 import indigo.shared.assets.AssetName
+import indigo.shared.display.ShaderId
 
 sealed trait Material {
   val default: AssetName
@@ -11,6 +12,14 @@ sealed trait Material {
 }
 
 object Material {
+
+  final case class Custom(shaderId: ShaderId, diffuse: AssetName) extends Material {
+    val default: AssetName = diffuse
+    val isLit: Boolean = false
+    def lit: Material = this
+    def unlit: Material = this
+    def hash: String = s"custom-${shaderId.value}"
+  }
 
   final case class Textured(diffuse: AssetName, isLit: Boolean) extends Material {
     val default: AssetName = diffuse

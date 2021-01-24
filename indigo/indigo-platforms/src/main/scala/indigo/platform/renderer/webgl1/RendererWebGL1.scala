@@ -27,6 +27,7 @@ import indigo.platform.renderer.shared.WebGLHelper
 import indigo.platform.events.GlobalEventStream
 import indigo.shared.events.ViewportResize
 import indigo.shared.config.GameViewport
+import indigo.shared.display.Shader
 
 final class RendererWebGL1(
     config: RendererConfig,
@@ -76,7 +77,7 @@ final class RendererWebGL1(
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  def init(): Unit = {
+  def init(shaders: Set[Shader]): Unit = {
     // some basic set up.
     gl.disable(DEPTH_TEST)
     gl.viewport(0, 0, gl.drawingBufferWidth.toDouble, gl.drawingBufferHeight.toDouble)

@@ -34,6 +34,11 @@ package object indigo {
   type Texture = shared.datatypes.Texture
   val Texture: shared.datatypes.Texture.type = shared.datatypes.Texture
 
+  type Shader = shared.display.Shader
+
+  type ShaderId = shared.display.ShaderId
+  val ShaderId: shared.display.ShaderId.type = shared.display.ShaderId
+
   type Outcome[T] = shared.Outcome[T]
   val Outcome: shared.Outcome.type = shared.Outcome
 

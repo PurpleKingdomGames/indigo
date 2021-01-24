@@ -256,6 +256,9 @@ final class DisplayObjectConversions(
   def materialToEmissiveValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
     QuickCache(material.hash + "_emissive") {
       material match {
+        case _: Material.Custom =>
+          (Vector2.zero, 0.0d)
+
         case _: Material.Textured =>
           (Vector2.zero, 0.0d)
 
@@ -267,6 +270,9 @@ final class DisplayObjectConversions(
   def materialToNormalValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
     QuickCache(material.hash + "_normal") {
       material match {
+        case _: Material.Custom =>
+          (Vector2.zero, 0.0d)
+
         case _: Material.Textured =>
           (Vector2.zero, 0.0d)
 
@@ -278,6 +284,9 @@ final class DisplayObjectConversions(
   def materialToSpecularValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
     QuickCache(material.hash + "_specular") {
       material match {
+        case _: Material.Custom =>
+          (Vector2.zero, 0.0d)
+
         case _: Material.Textured =>
           (Vector2.zero, 0.0d)
 
@@ -330,7 +339,11 @@ final class DisplayObjectConversions(
       specularOffset = frameInfo.offsetToCoords(specularOffset),
       specularAmount = specularAmount.toFloat,
       isLit = if (leaf.material.isLit) 1.0f else 0.0f,
-      effects = effectsValues
+      effects = effectsValues,
+      shaderId = leaf.material match {
+        case Material.Custom(shaderId, _) => Some(shaderId)
+        case _                         => None
+      }
     )
   }
 
@@ -376,7 +389,11 @@ final class DisplayObjectConversions(
       specularOffset = frameInfo.offsetToCoords(specularOffset),
       specularAmount = specularAmount.toFloat,
       isLit = if (material.isLit) 1.0f else 0.0f,
-      effects = effectsValues
+      effects = effectsValues,
+      shaderId = material match {
+        case Material.Custom(shaderId, _) => Some(shaderId)
+        case _                         => None
+      }
     )
   }
 
@@ -436,7 +453,11 @@ final class DisplayObjectConversions(
               specularOffset = frameInfo.offsetToCoords(specularOffset),
               specularAmount = specularAmount.toFloat,
               isLit = if (fontInfo.fontSpriteSheet.material.isLit) 1.0f else 0.0f,
-              effects = effectsValues
+              effects = effectsValues,
+              shaderId = fontInfo.fontSpriteSheet.material match {
+                case Material.Custom(shaderId, _) => Some(shaderId)
+                case _                         => None
+              }
             )
         }
       }
