@@ -132,6 +132,7 @@ trait IndigoDemo[BootData, StartUpData, Model, ViewModel] extends GameLauncher {
     new GameEngine[StartUpData, Model, ViewModel](
       bootUp.fonts,
       bootUp.animations,
+      bootUp.shaders,
       (ac: AssetCollection) => (d: Dice) => setup(bootUp.bootData, ac, d),
       (sd: StartUpData) => initialModel(sd),
       (sd: StartUpData) => (m: Model) => initialViewModel(sd, m),

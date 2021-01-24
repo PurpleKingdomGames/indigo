@@ -48,24 +48,25 @@ final case class DisplayCloneBatch(
 }
 
 final case class DisplayObject(
-    val transform: CheapMatrix4,
-    val z: Double,
-    val width: Float,
-    val height: Float,
-    val atlasName: String,
-    val frameX: Float,
-    val frameY: Float,
-    val frameScaleX: Float,
-    val frameScaleY: Float,
-    val albedoAmount: Float,
-    val emissiveOffset: Vector2,
-    val emissiveAmount: Float,
-    val normalOffset: Vector2,
-    val normalAmount: Float,
-    val specularOffset: Vector2,
-    val specularAmount: Float,
-    val isLit: Float,
-    val effects: DisplayEffects
+    transform: CheapMatrix4,
+    z: Double,
+    width: Float,
+    height: Float,
+    atlasName: String,
+    frameX: Float,
+    frameY: Float,
+    frameScaleX: Float,
+    frameScaleY: Float,
+    albedoAmount: Float,
+    emissiveOffset: Vector2,
+    emissiveAmount: Float,
+    normalOffset: Vector2,
+    normalAmount: Float,
+    specularOffset: Vector2,
+    specularAmount: Float,
+    isLit: Float,
+    effects: DisplayEffects,
+    shaderId: Option[ShaderId]
 ) extends DisplayEntity {
 
   def applyTransform(matrix: CheapMatrix4): DisplayObject =
@@ -89,7 +90,8 @@ object DisplayObject {
       specularOffset: Vector2,
       specularAmount: Float,
       isLit: Float,
-      effects: DisplayEffects
+      effects: DisplayEffects,
+      shaderId: Option[ShaderId]
   ): DisplayObject =
     DisplayObject(
       transform,
@@ -109,7 +111,8 @@ object DisplayObject {
       specularOffset,
       specularAmount,
       isLit,
-      effects
+      effects,
+      shaderId
     )
 }
 

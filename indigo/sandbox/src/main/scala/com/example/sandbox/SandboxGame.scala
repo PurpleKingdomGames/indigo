@@ -11,6 +11,7 @@ import indigo.scenes._
 import scala.scalajs.js.annotation._
 import indigo.shared.events.FullScreenEntered
 import indigo.shared.events.FullScreenExited
+import indigo.platform.shaders.Green
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {
@@ -50,6 +51,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       ).withAssets(SandboxAssets.assets)
         .withFonts(SandboxView.fontInfo)
         .withSubSystems(FPSCounter(SandboxView.fontKey, Point(3, 100), targetFPS))
+        .withShaders(Green)
     )
   }
 
@@ -182,7 +184,8 @@ object TestScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
   def present(context: FrameContext[SandboxStartupData], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment(
-        Graphic(120, 10, 32, 32, 1, SandboxAssets.dotsMaterial)
+        Graphic(120, 10, 32, 32, 1, SandboxAssets.dotsMaterial),
+        Graphic(140, 50, 32, 32, 1, Material.Custom(Green.id, SandboxAssets.dots))
       )
     )
 

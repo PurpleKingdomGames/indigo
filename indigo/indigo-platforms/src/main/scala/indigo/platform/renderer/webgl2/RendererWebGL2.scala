@@ -24,6 +24,11 @@ import indigo.platform.events.GlobalEventStream
 import indigo.shared.events.ViewportResize
 import indigo.shared.config.GameViewport
 
+import scala.collection.mutable
+import indigo.shared.display.ShaderId
+import org.scalajs.dom.raw.WebGLProgram
+import indigo.shared.display.Shader
+
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 final class RendererWebGL2(
     config: RendererConfig,
@@ -63,6 +68,8 @@ final class RendererWebGL2(
     WebGLHelper.shaderProgramSetup(gl, "Lighting", WebGL2StandardLightingPixelArt)
   private val distortionShaderProgram =
     WebGLHelper.shaderProgramSetup(gl, "Lighting", WebGL2StandardDistortionPixelArt)
+  private val customShaders: mutable.HashMap[ShaderId, WebGLProgram] =
+    new mutable.HashMap()
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var gameFrameBuffer: FrameBufferComponents.MultiOutput =
@@ -97,7 +104,15 @@ final class RendererWebGL2(
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var orthographicProjectionMatrix: CheapMatrix4 = CheapMatrix4.identity
 
-  def init(): Unit = {
+  def init(shaders: Set[Shader]): Unit = {
+
+    shaders.foreach { shader =>
+      if (!customShaders.contains(shader.id))
+        customShaders.put(
+          shader.id,
+          WebGLHelper.shaderProgramSetup(gl, shader.id.value, shader)
+        )
+    }
 
     val verticesAndTextureCoords: scalajs.js.Array[Float] = {
       val vert0 = scalajs.js.Array[Float](-0.5f, -0.5f, 0.0f, 1.0f)
@@ -144,7 +159,8 @@ final class RendererWebGL2(
       sceneData.gameLayerDisplayObjects,
       gameFrameBuffer,
       RGBA.Black.makeTransparent,
-      standardShaderProgram
+      standardShaderProgram,
+      customShaders
     )
 
     // Dynamic lighting
@@ -167,7 +183,8 @@ final class RendererWebGL2(
       sceneData.lightingLayerDisplayObjects,
       lightingFrameBuffer,
       sceneData.clearColor,
-      lightingShaderProgram
+      lightingShaderProgram,
+      customShaders
     )
 
     // Distortion
@@ -178,7 +195,8 @@ final class RendererWebGL2(
       sceneData.distortionLayerDisplayObjects,
       distortionFrameBuffer,
       RGBA(0.5, 0.5, 1.0, 1.0),
-      distortionShaderProgram
+      distortionShaderProgram,
+      customShaders
     )
 
     // UI
@@ -189,7 +207,8 @@ final class RendererWebGL2(
       sceneData.uiLayerDisplayObjects,
       uiFrameBuffer,
       RGBA.Black.makeTransparent,
-      standardShaderProgram
+      standardShaderProgram,
+      customShaders
     )
 
     // Merge
