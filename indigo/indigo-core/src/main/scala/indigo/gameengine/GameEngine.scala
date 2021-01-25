@@ -148,11 +148,9 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
         case Outcome.Result(startupData, globalEvents) =>
           globalEvents.foreach(globalEventStream.pushGlobalEvent)
 
-          val allShaders: Set[Shader] = shaders ++ startupData.additionalShaders
-
           GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
           GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
-          GameEngine.registerShaders(shaderRegister, allShaders)
+          GameEngine.registerShaders(shaderRegister, shaders)
 
           def modelToUse(startUpSuccessData: => StartUpData): Outcome[GameModel] =
             if (firstRun) initialModel(startUpSuccessData)
@@ -164,7 +162,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
           val loop: Outcome[Long => Long => Unit] =
             for {
-              rendererAndAssetMapping <- platform.initialise(allShaders)
+              rendererAndAssetMapping <- platform.initialise(shaders)
               startUpSuccessData      <- GameEngine.initialisedGame(startupData)
               m                       <- modelToUse(startUpSuccessData)
               vm                      <- viewModelToUse(startUpSuccessData, m)
