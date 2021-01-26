@@ -11,7 +11,6 @@ import indigo.scenes._
 import scala.scalajs.js.annotation._
 import indigo.shared.events.FullScreenEntered
 import indigo.shared.events.FullScreenExited
-import indigo.platform.shaders.Green
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {
@@ -51,7 +50,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       ).withAssets(SandboxAssets.assets)
         .withFonts(SandboxView.fontInfo)
         .withSubSystems(FPSCounter(SandboxView.fontKey, Point(3, 100), targetFPS))
-        .withShaders(Green)
+        .withShaders(Shaders.circle)
     )
   }
 
@@ -185,8 +184,37 @@ object TestScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
     Outcome(
       SceneUpdateFragment(
         Graphic(120, 10, 32, 32, 1, SandboxAssets.dotsMaterial),
-        Graphic(140, 50, 32, 32, 1, Material.Custom(Green.id, SandboxAssets.dots))
+        Graphic(140, 50, 32, 32, 1, Material.Custom(Shaders.circleId, SandboxAssets.dots))
       )
+    )
+
+}
+
+object Shaders {
+
+  val circleId: ShaderId =
+    ShaderId("circle")
+
+  val circleVertex: String =
+    """
+    |void vertex() {
+    | // Do nothing.
+    |}
+    |""".stripMargin
+
+  val circleFragment: String =
+    """
+    |void fragment() {
+    |  float alpha = 1.0 - step(0.0, length(UV - 0.5) - 0.5);
+    |  COLOR = vec4(UV, 0.0, alpha);
+    |}
+    |""".stripMargin
+
+  val circle: CustomShader.Source =
+    CustomShader.Source(
+      id = circleId,
+      vertex = circleVertex,
+      fragment = circleFragment
     )
 
 }

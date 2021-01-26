@@ -26,13 +26,13 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.platform.SceneProcessor
 import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
-import indigo.shared.display.Shader
+import indigo.shared.display.CustomShader
 import indigo.shared.ShaderRegister
 
 final class GameEngine[StartUpData, GameModel, ViewModel](
     fonts: Set[FontInfo],
     animations: Set[Animation],
-    shaders: Set[Shader],
+    shaders: Set[CustomShader.Source],
     initialise: AssetCollection => Dice => Outcome[Startup[StartUpData]],
     initialModel: StartUpData => Outcome[GameModel],
     initialViewModel: StartUpData => GameModel => Outcome[ViewModel],
@@ -162,7 +162,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
           val loop: Outcome[Long => Long => Unit] =
             for {
-              rendererAndAssetMapping <- platform.initialise(shaders)
+              rendererAndAssetMapping <- platform.initialise(shaderRegister.toSet)
               startUpSuccessData      <- GameEngine.initialisedGame(startupData)
               m                       <- modelToUse(startUpSuccessData)
               vm                      <- viewModelToUse(startUpSuccessData, m)
@@ -213,7 +213,7 @@ object GameEngine {
   def registerFonts(fontRegister: FontRegister, fonts: Set[FontInfo]): Unit =
     fonts.foreach(fontRegister.register)
 
-  def registerShaders(shaderRegister: ShaderRegister, shaders: Set[Shader]): Unit =
+  def registerShaders(shaderRegister: ShaderRegister, shaders: Set[CustomShader.Source]): Unit =
     shaders.foreach(shaderRegister.register)
 
   def initialisedGame[StartUpData](startupData: Startup[StartUpData]): Outcome[StartUpData] =
