@@ -1,7 +1,7 @@
 package indigo
 
 import indigo.shared.subsystems.SubSystem
-import indigo.shared.display.Shader
+import indigo.shared.display.CustomShader
 
 final case class BootResult[A](
     gameConfig: GameConfig,
@@ -10,7 +10,7 @@ final case class BootResult[A](
     assets: Set[AssetType],
     fonts: Set[FontInfo],
     subSystems: Set[SubSystem],
-    shaders: Set[Shader]
+    shaders: Set[CustomShader.Source]
 ) {
 
   def addAnimations(newAnimations: Set[Animation]): BootResult[A] =
@@ -49,13 +49,13 @@ final case class BootResult[A](
   def withSubSystems(newSubSystems: SubSystem*): BootResult[A] =
     withSubSystems(newSubSystems.toSet)
 
-  def addShaders(newShaders: Set[Shader]): BootResult[A] =
+  def addShaders(newShaders: Set[CustomShader.Source]): BootResult[A] =
     this.copy(shaders = shaders ++ newShaders)
-  def addShaders(newShaders: Shader*): BootResult[A] =
+  def addShaders(newShaders: CustomShader.Source*): BootResult[A] =
     addShaders(newShaders.toSet)
-  def withShaders(newShaders: Set[Shader]): BootResult[A] =
+  def withShaders(newShaders: Set[CustomShader.Source]): BootResult[A] =
     this.copy(shaders = newShaders)
-  def withShaders(newShaders: Shader*): BootResult[A] =
+  def withShaders(newShaders: CustomShader.Source*): BootResult[A] =
     withShaders(newShaders.toSet)
 
 }
