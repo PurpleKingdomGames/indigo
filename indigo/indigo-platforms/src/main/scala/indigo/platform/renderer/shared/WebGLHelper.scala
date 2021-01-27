@@ -24,7 +24,7 @@ object WebGLHelper {
       IndigoLogger.info(s"$layerLabel vshader compiled: " + gl.getShaderParameter(vertShader, COMPILE_STATUS))
       IndigoLogger.error(gl.getShaderInfoLog(vertShader));
       gl.deleteShader(vertShader);
-      throw new Exception("Fatal: Vertex shader compile error")
+      throw new Exception(s"Fatal: Vertex shader compile error ($layerLabel)")
     }
 
     //Create a fragment shader program object and compile it
@@ -38,7 +38,7 @@ object WebGLHelper {
       IndigoLogger.info(s"$layerLabel fshader compiled: " + gl.getShaderParameter(fragShader, COMPILE_STATUS))
       IndigoLogger.error(gl.getShaderInfoLog(fragShader));
       gl.deleteShader(fragShader);
-      throw new Exception("Fatal: Fragment shader compile error")
+      throw new Exception(s"Fatal: Fragment shader compile error ($layerLabel)")
     }
 
     //Create and use combined shader program
@@ -52,7 +52,7 @@ object WebGLHelper {
     else {
       IndigoLogger.error(gl.getProgramInfoLog(shaderProgram));
       gl.deleteProgram(shaderProgram);
-      throw new Exception("Fatal: Shader program link error")
+      throw new Exception(s"Fatal: Shader program link error ($layerLabel)")
     }
   }
 

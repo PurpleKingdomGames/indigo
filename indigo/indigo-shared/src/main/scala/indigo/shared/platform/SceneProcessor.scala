@@ -8,6 +8,7 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 import indigo.shared.display.DisplayObject
+import indigo.shared.display.DisplayLayer
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Sprite
 import indigo.shared.platform.ProcessedSceneData
@@ -17,7 +18,8 @@ final class SceneProcessor(
     animationsRegister: AnimationsRegister,
     fontRegister: FontRegister
 ) {
-
+  private val displayObjectConverter: DisplayObjectConversions =
+    new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
   private val displayObjectConverterGame: DisplayObjectConversions =
     new DisplayObjectConversions(boundaryLocator, animationsRegister, fontRegister)
   private val displayObjectConverterLighting: DisplayObjectConversions =
@@ -84,6 +86,9 @@ final class SceneProcessor(
         }
       }
 
+    val displayLayers: List[DisplayLayer] =
+      scene.layers.map(l => DisplayLayer(displayObjectConverter.sceneNodesToDisplayObjects(l.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)))
+
     val gameLayerDisplayObjects =
       displayObjectConverterGame.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
 
@@ -97,6 +102,7 @@ final class SceneProcessor(
       displayObjectConverterUi.sceneNodesToDisplayObjects(scene.uiLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
 
     new ProcessedSceneData(
+      displayLayers,
       gameProjection,
       lightingProjection,
       uiProjection,

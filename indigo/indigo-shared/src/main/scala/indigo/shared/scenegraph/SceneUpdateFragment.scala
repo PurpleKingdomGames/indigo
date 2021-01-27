@@ -20,6 +20,7 @@ import indigo.shared.datatypes.RGBA
   * @param cloneBlanks A list of elements that will be referenced by clones in the main layers.
   */
 final case class SceneUpdateFragment(
+    layers: List[Layer],
     gameLayer: SceneLayer,
     lightingLayer: SceneLayer,
     distortionLayer: SceneLayer,
@@ -32,6 +33,9 @@ final case class SceneUpdateFragment(
 ) {
   def |+|(other: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment.append(this, other)
+
+  def addLayer(newLayer: Layer): SceneUpdateFragment =
+    this.copy(layers = layers :+ newLayer)
 
   def addGameLayerNodes(nodes: SceneGraphNode*): SceneUpdateFragment =
     addGameLayerNodes(nodes.toList)
@@ -154,6 +158,7 @@ final case class SceneUpdateFragment(
 object SceneUpdateFragment {
 
   def apply(
+      layers: List[Layer],
       gameLayer: List[SceneGraphNode],
       lightingLayer: List[SceneGraphNode],
       distortionLayer: List[SceneGraphNode],
@@ -165,6 +170,7 @@ object SceneUpdateFragment {
       cloneBlanks: List[CloneBlank]
   ): SceneUpdateFragment =
     SceneUpdateFragment(
+      layers,
       SceneLayer(gameLayer),
       SceneLayer(lightingLayer),
       SceneLayer(distortionLayer),
@@ -177,16 +183,17 @@ object SceneUpdateFragment {
     )
 
   def apply(gameLayer: SceneGraphNode*): SceneUpdateFragment =
-    SceneUpdateFragment(gameLayer.toList, Nil, Nil, Nil, RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
+    SceneUpdateFragment(Nil, gameLayer.toList, Nil, Nil, Nil, RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
 
   def apply(gameLayer: List[SceneGraphNode]): SceneUpdateFragment =
-    SceneUpdateFragment(gameLayer.toList, Nil, Nil, Nil, RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
+    SceneUpdateFragment(Nil, gameLayer.toList, Nil, Nil, Nil, RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
 
   val empty: SceneUpdateFragment =
-    SceneUpdateFragment(Nil, Nil, Nil, Nil, RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
+    SceneUpdateFragment(Nil, Nil, Nil, Nil, Nil, RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
 
   def append(a: SceneUpdateFragment, b: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment(
+      a.layers ++ b.layers,
       a.gameLayer |+| b.gameLayer,
       a.lightingLayer |+| b.lightingLayer,
       a.distortionLayer |+| b.distortionLayer,

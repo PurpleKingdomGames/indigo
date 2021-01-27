@@ -49,43 +49,43 @@ final class RendererWebGL2(
       new TextureLookupResult(li.name, WebGLHelper.organiseImage(gl, li.data))
     }
 
-  private val mergeRenderer: RendererMerge =
-    new RendererMerge(gl2)
+  // private val mergeRenderer: RendererMerge =
+  //   new RendererMerge(gl2)
 
-  private val lightsRenderer: RendererLights =
-    new RendererLights(gl2)
+  // private val lightsRenderer: RendererLights =
+  //   new RendererLights(gl2)
 
-  private val layerRenderer: RendererLayer =
-    new RendererLayer(gl2, textureLocations, config.maxBatchSize)
+  // private val layerRenderer: RendererLayer =
+  //   new RendererLayer(gl2, textureLocations, config.maxBatchSize)
 
   private val vertexAndTextureCoordsBuffer: WebGLBuffer = gl.createBuffer()
 
   private val vao = gl2.createVertexArray()
 
-  private val standardShaderProgram =
-    WebGLHelper.shaderProgramSetup(gl, "Pixel", WebGL2StandardPixelArt)
-  private val lightingShaderProgram =
-    WebGLHelper.shaderProgramSetup(gl, "Lighting", WebGL2StandardLightingPixelArt)
-  private val distortionShaderProgram =
-    WebGLHelper.shaderProgramSetup(gl, "Lighting", WebGL2StandardDistortionPixelArt)
+  // private val standardShaderProgram =
+  //   WebGLHelper.shaderProgramSetup(gl, "Pixel", WebGL2StandardPixelArt)
+  // private val lightingShaderProgram =
+  //   WebGLHelper.shaderProgramSetup(gl, "Lighting", WebGL2StandardLightingPixelArt)
+  // private val distortionShaderProgram =
+  // WebGLHelper.shaderProgramSetup(gl, "Lighting", WebGL2StandardDistortionPixelArt)
   private val customShaders: mutable.HashMap[ShaderId, WebGLProgram] =
     new mutable.HashMap()
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var gameFrameBuffer: FrameBufferComponents.MultiOutput =
-    FrameBufferFunctions.createFrameBufferMulti(gl, cNc.canvas.width, cNc.canvas.height)
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var lightsFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var lightingFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var distortionFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var uiFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  // private var gameFrameBuffer: FrameBufferComponents.MultiOutput =
+  //   FrameBufferFunctions.createFrameBufferMulti(gl, cNc.canvas.width, cNc.canvas.height)
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  // private var lightsFrameBuffer: FrameBufferComponents.SingleOutput =
+  //   FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  // private var lightingFrameBuffer: FrameBufferComponents.SingleOutput =
+  //   FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  // private var distortionFrameBuffer: FrameBufferComponents.SingleOutput =
+  //   FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  // private var uiFrameBuffer: FrameBufferComponents.SingleOutput =
+  //   FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var resizeRun: Boolean = false
@@ -145,93 +145,136 @@ final class RendererWebGL2(
     gl2.bindVertexArray(null)
   }
 
+  private val layerRenderInstance: LayerRenderer =
+    new LayerRenderer(gl2, textureLocations, config.maxBatchSize)
+  private val layerMergeRenderInstance: LayerMergeRenderer =
+    new LayerMergeRenderer(gl2)
+
+  private val defaultShaderProgram =
+    WebGLHelper.shaderProgramSetup(gl, "Default", WebGL2Default)
+
+  private val layerFrameBuffer: FrameBufferComponents.SingleOutput =
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
+
   def drawScene(sceneData: ProcessedSceneData): Unit = {
 
     gl2.bindVertexArray(vao)
 
     resize(cNc.canvas, cNc.magnification)
 
-    // Game layer
-    WebGLHelper.setNormalBlend(gl)
-    layerRenderer.drawLayer(
-      RendererHelper.mat4ToJsArray(sceneData.gameProjection),
-      sceneData.cloneBlankDisplayObjects,
-      sceneData.gameLayerDisplayObjects,
-      gameFrameBuffer,
-      RGBA.Black.makeTransparent,
-      standardShaderProgram,
-      customShaders
-    )
+    /*
+    Currently the renderers take a lump of stuff and draw it.
 
-    // Dynamic lighting
-    WebGLHelper.setLightsBlend(gl)
-    lightsRenderer.drawLayer(
-      sceneData.lights,
-      orthographicProjectionMatrixNoMagJS,
-      lightsFrameBuffer,
-      gameFrameBuffer,
-      cNc.canvas.width,
-      cNc.canvas.height,
-      cNc.magnification
-    )
+    What we need to do is...
+    Take a layer's worth of display entities.
+    Draw them one at a time to a buffer.
+    Then merge the buffer to the canvas
+    Repeat.
+     */
 
-    // Image based lighting
-    WebGLHelper.setLightingBlend(gl)
-    layerRenderer.drawLayer(
-      RendererHelper.mat4ToJsArray(sceneData.lightingProjection),
-      sceneData.cloneBlankDisplayObjects,
-      sceneData.lightingLayerDisplayObjects,
-      lightingFrameBuffer,
-      sceneData.clearColor,
-      lightingShaderProgram,
-      customShaders
-    )
+    sceneData.layers.foreach { layer =>
+      WebGLHelper.setNormalBlend(gl)
+      layerRenderInstance.drawLayer(
+        RendererHelper.mat4ToJsArray(sceneData.gameProjection),
+        sceneData.cloneBlankDisplayObjects,
+        layer.entities,
+        layerFrameBuffer,
+        RGBA.Black.makeTransparent,
+        defaultShaderProgram,
+        customShaders
+      )
 
-    // Distortion
-    WebGLHelper.setDistortionBlend(gl)
-    layerRenderer.drawLayer(
-      RendererHelper.mat4ToJsArray(sceneData.lightingProjection),
-      sceneData.cloneBlankDisplayObjects,
-      sceneData.distortionLayerDisplayObjects,
-      distortionFrameBuffer,
-      RGBA(0.5, 0.5, 1.0, 1.0),
-      distortionShaderProgram,
-      customShaders
-    )
+      WebGLHelper.setNormalBlend(gl)
+      layerMergeRenderInstance.merge(
+        orthographicProjectionMatrixNoMagJS,
+        layerFrameBuffer,
+        lastWidth,
+        lastHeight,
+        config.clearColor
+      )
+    }
 
-    // UI
-    WebGLHelper.setNormalBlend(gl)
-    layerRenderer.drawLayer(
-      RendererHelper.mat4ToJsArray(sceneData.uiProjection),
-      sceneData.cloneBlankDisplayObjects,
-      sceneData.uiLayerDisplayObjects,
-      uiFrameBuffer,
-      RGBA.Black.makeTransparent,
-      standardShaderProgram,
-      customShaders
-    )
+    // // Game layer
+    // WebGLHelper.setNormalBlend(gl)
+    // layerRenderer.drawLayer(
+    //   RendererHelper.mat4ToJsArray(sceneData.gameProjection),
+    //   sceneData.cloneBlankDisplayObjects,
+    //   sceneData.gameLayerDisplayObjects,
+    //   gameFrameBuffer,
+    //   RGBA.Black.makeTransparent,
+    //   standardShaderProgram,
+    //   customShaders
+    // )
 
-    // Merge
-    WebGLHelper.setNormalBlend(gl2)
-    mergeRenderer.drawLayer(
-      orthographicProjectionMatrixNoMagJS,
-      gameFrameBuffer,
-      lightsFrameBuffer,
-      lightingFrameBuffer,
-      distortionFrameBuffer,
-      uiFrameBuffer,
-      lastWidth,
-      lastHeight,
-      config.clearColor,
-      sceneData.gameLayerColorOverlay,
-      sceneData.uiLayerColorOverlay,
-      sceneData.gameLayerTint,
-      sceneData.lightingLayerTint,
-      sceneData.uiLayerTint,
-      sceneData.gameLayerSaturation,
-      sceneData.lightingLayerSaturation,
-      sceneData.uiLayerSaturation
-    )
+    // // Dynamic lighting
+    // WebGLHelper.setLightsBlend(gl)
+    // lightsRenderer.drawLayer(
+    //   sceneData.lights,
+    //   orthographicProjectionMatrixNoMagJS,
+    //   lightsFrameBuffer,
+    //   gameFrameBuffer,
+    //   cNc.canvas.width,
+    //   cNc.canvas.height,
+    //   cNc.magnification
+    // )
+
+    // // Image based lighting
+    // WebGLHelper.setLightingBlend(gl)
+    // layerRenderer.drawLayer(
+    //   RendererHelper.mat4ToJsArray(sceneData.lightingProjection),
+    //   sceneData.cloneBlankDisplayObjects,
+    //   sceneData.lightingLayerDisplayObjects,
+    //   lightingFrameBuffer,
+    //   sceneData.clearColor,
+    //   lightingShaderProgram,
+    //   customShaders
+    // )
+
+    // // Distortion
+    // WebGLHelper.setDistortionBlend(gl)
+    // layerRenderer.drawLayer(
+    //   RendererHelper.mat4ToJsArray(sceneData.lightingProjection),
+    //   sceneData.cloneBlankDisplayObjects,
+    //   sceneData.distortionLayerDisplayObjects,
+    //   distortionFrameBuffer,
+    //   RGBA(0.5, 0.5, 1.0, 1.0),
+    //   distortionShaderProgram,
+    //   customShaders
+    // )
+
+    // // UI
+    // WebGLHelper.setNormalBlend(gl)
+    // layerRenderer.drawLayer(
+    //   RendererHelper.mat4ToJsArray(sceneData.uiProjection),
+    //   sceneData.cloneBlankDisplayObjects,
+    //   sceneData.uiLayerDisplayObjects,
+    //   uiFrameBuffer,
+    //   RGBA.Black.makeTransparent,
+    //   standardShaderProgram,
+    //   customShaders
+    // )
+
+    // // Merge
+    // WebGLHelper.setNormalBlend(gl2)
+    // mergeRenderer.drawLayer(
+    //   orthographicProjectionMatrixNoMagJS,
+    //   gameFrameBuffer,
+    //   lightsFrameBuffer,
+    //   lightingFrameBuffer,
+    //   distortionFrameBuffer,
+    //   uiFrameBuffer,
+    //   lastWidth,
+    //   lastHeight,
+    //   config.clearColor,
+    //   sceneData.gameLayerColorOverlay,
+    //   sceneData.uiLayerColorOverlay,
+    //   sceneData.gameLayerTint,
+    //   sceneData.lightingLayerTint,
+    //   sceneData.uiLayerTint,
+    //   sceneData.gameLayerSaturation,
+    //   sceneData.lightingLayerSaturation,
+    //   sceneData.uiLayerSaturation
+    // )
 
   }
 
@@ -248,11 +291,11 @@ final class RendererWebGL2(
       orthographicProjectionMatrixJS = RendererHelper.mat4ToJsArray(orthographicProjectionMatrix)
       orthographicProjectionMatrixNoMagJS = RendererHelper.mat4ToJsArray(CheapMatrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)).map(_.toFloat)
 
-      gameFrameBuffer = FrameBufferFunctions.createFrameBufferMulti(gl, actualWidth, actualHeight)
-      lightsFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
-      lightingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
-      distortionFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
-      uiFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
+      // gameFrameBuffer = FrameBufferFunctions.createFrameBufferMulti(gl, actualWidth, actualHeight)
+      // lightsFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
+      // lightingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
+      // distortionFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
+      // uiFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
 
       gl.viewport(0, 0, actualWidth.toDouble, actualHeight.toDouble)
 

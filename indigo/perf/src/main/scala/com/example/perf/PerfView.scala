@@ -16,6 +16,7 @@ object PerfView {
     }
 
     SceneUpdateFragment(
+      Nil,
       gameLayer(model),
       lightingLayer(inputState),
       Nil,
