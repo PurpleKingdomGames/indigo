@@ -15,20 +15,16 @@ object PerfView {
       case None           => ()
     }
 
-    SceneUpdateFragment(
-      Nil,
-      gameLayer(model),
-      lightingLayer(inputState),
-      Nil,
-      uiLayer,
-      RGBA.White.withAmount(0.5),
-      Nil,
-      SceneAudio.None,
-      ScreenEffects.None,
-      Nil
-    ).addCloneBlanks(
-      CloneBlank(cloneId, model.dude.sprite)
-    )
+    SceneUpdateFragment.empty
+      .addLayers(
+        Layer(gameLayer(model)),
+        Layer(lightingLayer(inputState)),
+        Layer(uiLayer)
+      )
+      .withAmbientLight(RGBA.White.withAmount(0.5))
+      .addCloneBlanks(
+        CloneBlank(cloneId, model.dude.sprite)
+      )
   }
 
   private val herdCount: Int = 9999
