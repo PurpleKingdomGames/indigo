@@ -28,6 +28,7 @@ import scala.collection.mutable
 import indigo.shared.display.ShaderId
 import org.scalajs.dom.raw.WebGLProgram
 import indigo.shared.display.Shader
+import scalajs.js.JSConverters._
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 final class RendererWebGL2(
@@ -153,7 +154,11 @@ final class RendererWebGL2(
   private val defaultShaderProgram =
     WebGLHelper.shaderProgramSetup(gl, "Default", WebGL2Default)
 
-  private val layerFrameBuffer: FrameBufferComponents.SingleOutput =
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var layerFrameBuffer: FrameBufferComponents.SingleOutput =
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var backFrameBuffer: FrameBufferComponents.SingleOutput =
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
 
   def drawScene(sceneData: ProcessedSceneData): Unit = {
@@ -172,10 +177,14 @@ final class RendererWebGL2(
     Repeat.
      */
 
+    // Clear down the back buffer
+    FrameBufferFunctions.switchToFramebuffer(gl2, backFrameBuffer.frameBuffer, RGBA.Black.makeTransparent, true)
+
     sceneData.layers.foreach { layer =>
+      // Draw the layer
       WebGLHelper.setNormalBlend(gl)
       layerRenderInstance.drawLayer(
-        RendererHelper.mat4ToJsArray(sceneData.gameProjection),
+        orthographicProjectionMatrixNoMagJS.map(_.toDouble),
         sceneData.cloneBlankDisplayObjects,
         layer.entities,
         layerFrameBuffer,
@@ -184,15 +193,37 @@ final class RendererWebGL2(
         customShaders
       )
 
+      val projection =
+        layer.magnification match {
+          case None =>
+            orthographicProjectionMatrixJS.map(_.toFloat)
+
+          case Some(m) =>
+            CheapMatrix4.orthographic(cNc.canvas.width.toDouble / m.toDouble, cNc.canvas.height.toDouble / m.toDouble).mat.toJSArray.map(_.toFloat)
+        }
+
+      // Merge it onto the back buffer
       WebGLHelper.setNormalBlend(gl)
       layerMergeRenderInstance.merge(
-        orthographicProjectionMatrixNoMagJS,
+        projection,
         layerFrameBuffer,
+        Some(backFrameBuffer),
         lastWidth,
         lastHeight,
-        config.clearColor
+        RGBA.Black.makeTransparent
       )
     }
+
+    // transfer the back buffer to the canvas
+    WebGLHelper.setNormalBlend(gl)
+    layerMergeRenderInstance.merge(
+      orthographicProjectionMatrixNoMagJS,
+      backFrameBuffer,
+      None,
+      lastWidth,
+      lastHeight,
+      config.clearColor
+    )
 
     // // Game layer
     // WebGLHelper.setNormalBlend(gl)
@@ -291,6 +322,8 @@ final class RendererWebGL2(
       orthographicProjectionMatrixJS = RendererHelper.mat4ToJsArray(orthographicProjectionMatrix)
       orthographicProjectionMatrixNoMagJS = RendererHelper.mat4ToJsArray(CheapMatrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)).map(_.toFloat)
 
+      layerFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
+      backFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       // gameFrameBuffer = FrameBufferFunctions.createFrameBufferMulti(gl, actualWidth, actualHeight)
       // lightsFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       // lightingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)

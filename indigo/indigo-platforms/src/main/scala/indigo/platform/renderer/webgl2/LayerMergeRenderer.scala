@@ -49,12 +49,19 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext) {
   def merge(
       projection: scalajs.js.Array[Float],
       layerFrameBuffer: FrameBufferComponents.SingleOutput,
+      backFrameBuffer: Option[FrameBufferComponents.SingleOutput],
       width: Int,
       height: Int,
       clearColor: RGBA
   ): Unit = {
 
-    FrameBufferFunctions.switchToCanvas(gl2, clearColor)
+    backFrameBuffer match {
+      case Some(buffer) =>
+        FrameBufferFunctions.switchToFramebuffer(gl2, buffer.frameBuffer, clearColor, false)
+
+      case None =>
+        FrameBufferFunctions.switchToCanvas(gl2, clearColor)
+    }
 
     gl2.useProgram(mergeShaderProgram)
 
@@ -94,7 +101,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext) {
 
     val uniformTextures: List[(String, WebGLTexture)] =
       List(
-        "u_texture_layer"   -> layer.diffuse
+        "u_texture_layer" -> layer.diffuse
       )
 
     var i: Int = 0
