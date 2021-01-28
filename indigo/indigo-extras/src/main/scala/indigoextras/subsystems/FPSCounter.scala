@@ -11,6 +11,7 @@ import indigo.shared.scenegraph.SceneUpdateFragment
 import indigo.shared.datatypes.RGBA
 import indigo.shared.scenegraph.Text
 import indigo.shared.events.FrameTick
+import indigo.shared.scenegraph.Layer
 
 object FPSCounter {
 
@@ -46,9 +47,11 @@ object FPSCounter {
     (_, model) => {
       Outcome(
         SceneUpdateFragment.empty
-          .addUiLayerNodes(
-            Text(s"""FPS ${model.fps.toString}""", position.x, position.y, 1, fontKey)
-              .withTint(pickTint(targetFPS, model.fps))
+          .addLayer(
+            Layer(
+              Text(s"""FPS ${model.fps.toString}""", position.x, position.y, 1, fontKey)
+                .withTint(pickTint(targetFPS, model.fps))
+            )
           )
       )
     }
