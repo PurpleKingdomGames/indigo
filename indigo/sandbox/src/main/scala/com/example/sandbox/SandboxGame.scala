@@ -143,9 +143,14 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
 
   def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] =
     Outcome(
-      SandboxView.updateView(model, viewModel, context.inputState) |+|
-        // viewModel.single.draw(gameTime, boundaryLocator) //|+|
-        viewModel.multi.draw(context.gameTime, context.boundaryLocator)
+      SandboxView
+        .updateView(model, viewModel, context.inputState)
+        .addLayer(
+          Layer(
+            // viewModel.single.draw(gameTime, boundaryLocator) //|+|
+            viewModel.multi.draw(context.gameTime, context.boundaryLocator)
+          )
+        )
     )
 }
 
@@ -182,10 +187,13 @@ object TestScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
 
   def present(context: FrameContext[SandboxStartupData], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment(
-        Graphic(120, 10, 32, 32, 1, SandboxAssets.dotsMaterial),
-        Graphic(140, 50, 32, 32, 1, Material.Custom(Shaders.circleId, SandboxAssets.dots))
-      )
+      SceneUpdateFragment.empty
+        .addLayer(
+          Layer(
+            Graphic(120, 10, 32, 32, 1, SandboxAssets.dotsMaterial),
+            Graphic(140, 50, 32, 32, 1, Material.Custom(Shaders.circleId, SandboxAssets.dots))
+          )
+        )
     )
 
 }
