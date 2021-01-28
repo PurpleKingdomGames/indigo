@@ -1,7 +1,6 @@
 package com.example.sandbox
 
 import indigo._
-import scala.annotation.nowarn
 
 object SandboxView {
 
@@ -17,20 +16,18 @@ object SandboxView {
       .addLayer(Layer(gameLayer(model, viewModel), Some(3)))
       .addLayer(Layer(gameLayer(model, viewModel).map {
         case s: Sprite => s.moveBy(10, 10)
-        case n => n
+        case n         => n
       }))
-    // .addGameLayerNodes(gameLayer(model, viewModel))
-    // .addLightingLayerNodes(lightingLayer(inputState))
-    // .addUiLayerNodes(uiLayer(inputState))
-    // .withAmbientLight(RGBA.White.withAmount(0.25))
-    // .addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
-    // .withSaturationLevel(0.5)
-    // .withTint(RGBA.Cyan.withAmount(0.25))
-    // .withUiColorOverlay(RGBA.Black.withAmount(0.5))
-    // .withGameColorOverlay(RGBA.Red.withAmount(0.5))
+      // .addLayer(Layer(lightingLayer(inputState)))
+      // .addLayer(Layer(uiLayer(inputState)))
+      .withAmbientLight(RGBA.White.withAmount(0.25))
+      .addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
+      // .withSaturationLevel(0.5)
+      // .withTint(RGBA.Cyan.withAmount(0.25))
+      // .withUiColorOverlay(RGBA.Black.withAmount(0.5))
+      // .withGameColorOverlay(RGBA.Red.withAmount(0.5))
   }
 
-  @nowarn
   def gameLayer(currentState: SandboxGameModel, viewModel: SandboxViewModel): List[SceneGraphNode] =
     List(
       currentState.dude.walkDirection match {
@@ -58,12 +55,12 @@ object SandboxView {
           currentState.dude.dude.sprite
             .changeCycle(d.cycleName)
             .play()
-      }//,
-      // currentState.dude.dude.sprite.moveBy(8, 10).moveBy(viewModel.offset).withAlpha(1).withTint(RGBA.Green.withAmount(0.25)),
-      // currentState.dude.dude.sprite.moveBy(8, -10).withAlpha(0.5).withTint(RGBA.Red.withAmount(0.75)),
-      // Clone(dudeCloneId, Depth(1), CloneTransformData.startAt(Point(16, 64)))
-      //   .withHorizontalFlip(true)
-      //   .withAlpha(0.5f)
+      },
+      currentState.dude.dude.sprite.moveBy(8, 10).moveBy(viewModel.offset).withAlpha(1).withTint(RGBA.Green.withAmount(0.25)),
+      currentState.dude.dude.sprite.moveBy(8, -10).withAlpha(0.5).withTint(RGBA.Red.withAmount(0.75)),
+      Clone(dudeCloneId, Depth(1), CloneTransformData.startAt(Point(16, 64)))
+        .withHorizontalFlip(true)
+        .withAlpha(0.5f)
     )
 
   def lightingLayer(inputState: InputState): List[SceneGraphNode] =
