@@ -161,8 +161,6 @@ class InputFieldTests extends munit.FunSuite {
   def extractCursorPosition(field: InputField): Point =
     field
       .draw(GameTime.zero, boundaryLocator)
-      .uiLayer
-      .nodes
       .collect { case g: Graphic => g }
       .head
       .position
