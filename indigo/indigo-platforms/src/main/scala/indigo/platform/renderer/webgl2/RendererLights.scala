@@ -126,7 +126,7 @@ class RendererLights(gl2: WebGL2RenderingContext) {
       magnification: Int
   ): Unit = {
 
-    FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, RGBA.Black.makeTransparent)
+    FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, RGBA.Black.makeTransparent, true)
     gl2.drawBuffers(frameBufferComponents.colorAttachments)
 
     val lightsInRange =

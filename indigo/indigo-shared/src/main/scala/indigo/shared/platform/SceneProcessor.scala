@@ -87,7 +87,7 @@ final class SceneProcessor(
       }
 
     val displayLayers: List[DisplayLayer] =
-      scene.layers.map(l => DisplayLayer(displayObjectConverter.sceneNodesToDisplayObjects(l.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)))
+      scene.layers.map(l => DisplayLayer(displayObjectConverter.sceneNodesToDisplayObjects(l.nodes, gameTime, assetMapping, cloneBlankDisplayObjects), l.magnification))
 
     val gameLayerDisplayObjects =
       displayObjectConverterGame.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)

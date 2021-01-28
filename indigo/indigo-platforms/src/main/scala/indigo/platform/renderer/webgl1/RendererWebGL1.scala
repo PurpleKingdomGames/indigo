@@ -168,7 +168,7 @@ final class RendererWebGL1(
 
     frameBufferComponents match {
       case Some(fb) =>
-        FrameBufferFunctions.switchToFramebuffer(gl, fb.frameBuffer, clearColor)
+        FrameBufferFunctions.switchToFramebuffer(gl, fb.frameBuffer, clearColor, true)
 
       case None =>
         FrameBufferFunctions.switchToCanvas(gl, config.clearColor)

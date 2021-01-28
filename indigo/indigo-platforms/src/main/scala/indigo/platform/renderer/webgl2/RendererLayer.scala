@@ -151,7 +151,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       customShaders: HashMap[ShaderId, WebGLProgram]
   ): Unit = {
 
-    FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, clearColor)
+    FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, clearColor, true)
     gl2.drawBuffers(frameBufferComponents.colorAttachments)
 
     def setupShader(program: WebGLProgram): Unit = {

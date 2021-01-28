@@ -62,10 +62,13 @@ object FrameBufferFunctions {
     )
   }
 
-  def switchToFramebuffer(gl: WebGLRenderingContext, frameBuffer: WebGLFramebuffer, clearColor: RGBA): Unit = {
+  def switchToFramebuffer(gl: WebGLRenderingContext, frameBuffer: WebGLFramebuffer, clearColor: RGBA, clear: Boolean): Unit = {
     gl.bindFramebuffer(FRAMEBUFFER, frameBuffer)
-    gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a)
-    gl.clear(COLOR_BUFFER_BIT)
+
+    if (clear) {
+      gl.clearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a)
+      gl.clear(COLOR_BUFFER_BIT)
+    }
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
