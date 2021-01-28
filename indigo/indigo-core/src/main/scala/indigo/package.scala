@@ -102,6 +102,14 @@ package object indigo {
   type ViewportResize = shared.events.ViewportResize
   val ViewportResize: shared.events.ViewportResize.type = shared.events.ViewportResize
 
+  val ToggleFullScreen: shared.events.ToggleFullScreen.type         = shared.events.ToggleFullScreen
+  val EnterFullScreen: shared.events.EnterFullScreen.type           = shared.events.EnterFullScreen
+  val ExitFullScreen: shared.events.ExitFullScreen.type             = shared.events.ExitFullScreen
+  val FullScreenEntered: shared.events.FullScreenEntered.type       = shared.events.FullScreenEntered
+  val FullScreenEnterError: shared.events.FullScreenEnterError.type = shared.events.FullScreenEnterError
+  val FullScreenExited: shared.events.FullScreenExited.type         = shared.events.FullScreenExited
+  val FullScreenExitError: shared.events.FullScreenExitError.type   = shared.events.FullScreenExitError
+
   type InputState = shared.events.InputState
   val InputState: shared.events.InputState.type = shared.events.InputState
 
