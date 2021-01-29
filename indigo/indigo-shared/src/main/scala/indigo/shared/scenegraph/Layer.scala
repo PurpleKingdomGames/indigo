@@ -1,11 +1,32 @@
 package indigo.shared.scenegraph
 
-import scala.annotation.tailrec
+import indigo.shared.datatypes.BindingKey
+import indigo.shared.datatypes.Depth
 
-final case class Layer(nodes: List[SceneGraphNode], magnification: Option[Int]) {
+final case class Layer(nodes: List[SceneGraphNode], key: Option[BindingKey], magnification: Option[Int], depth: Option[Depth]) {
 
   def |+|(other: Layer): Layer =
-    this.copy(nodes = nodes ++ other.nodes)
+    this.copy(
+      nodes = nodes ++ other.nodes,
+      key = (key, other.key) match {
+        case (Some(k), Some(_)) => Some(k)
+        case (Some(k), None)    => Some(k)
+        case (None, Some(k))    => Some(k)
+        case _                  => None
+      },
+      magnification = (magnification, other.magnification) match {
+        case (Some(m), Some(_)) => Some(m)
+        case (Some(m), None)    => Some(m)
+        case (None, Some(m))    => Some(m)
+        case _                  => None
+      },
+      depth = (depth, other.depth) match {
+        case (Some(d), Some(_)) => Some(d)
+        case (Some(d), None)    => Some(d)
+        case (None, Some(d))    => Some(d)
+        case _                  => None
+      }
+    )
 
   def withNodes(newNodes: List[SceneGraphNode]): Layer =
     this.copy(nodes = newNodes)
@@ -14,37 +35,35 @@ final case class Layer(nodes: List[SceneGraphNode], magnification: Option[Int]) 
   def ++(moreNodes: List[SceneGraphNode]): Layer =
     addNodes(moreNodes)
 
-  def visibleNodeCount: Int = {
-    @tailrec
-    def rec(remaining: List[SceneGraphNode], count: Int): Int =
-      remaining match {
-        case Nil =>
-          count
-
-        case (g: Group) :: xs =>
-          rec(g.children ++ xs, count)
-
-        case _ :: xs =>
-          rec(xs, count + 1)
-      }
-
-    rec(nodes, 0)
-  }
-
   def withMagnification(level: Int): Layer =
     this.copy(magnification = Option(Math.max(1, Math.min(256, level))))
+
+  def withKey(newKey: BindingKey): Layer =
+    this.copy(key = Option(newKey))
+
+  def withDepth(newDepth: Depth): Layer =
+    this.copy(depth = Option(newDepth))
 
 }
 
 object Layer {
 
-  def None: Layer =
-    Layer(Nil, Option.empty[Int])
+  def empty: Layer =
+    Layer(Nil, None, None, None)
 
   def apply(nodes: SceneGraphNode*): Layer =
-    Layer(nodes.toList, Option.empty[Int])
+    Layer(nodes.toList, None, None, None)
 
   def apply(nodes: List[SceneGraphNode]): Layer =
-    Layer(nodes, Option.empty[Int])
+    Layer(nodes, None, None, None)
+
+  def apply(key: BindingKey, magnification: Int, depth: Depth)(nodes: SceneGraphNode*): Layer =
+    Layer(nodes.toList, Option(key), Option(magnification), Option(depth))
+
+  def apply(key: BindingKey): Layer =
+    Layer(Nil, Option(key), None, None)
+
+  def apply(key: BindingKey, magnification: Int, depth: Depth): Layer =
+    Layer(Nil, Option(key), Option(magnification), Option(depth))
 
 }
