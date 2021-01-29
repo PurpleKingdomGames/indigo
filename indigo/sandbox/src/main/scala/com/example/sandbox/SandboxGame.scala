@@ -149,7 +149,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           Layer(
             // viewModel.single.draw(gameTime, boundaryLocator) //|+|
             viewModel.multi.draw(context.gameTime, context.boundaryLocator)
-          )
+          ).withDepth(Depth(1000))
         )
     )
 }

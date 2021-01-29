@@ -13,7 +13,7 @@ object SandboxView {
     }
 
     SceneUpdateFragment.empty
-      .addLayer(Layer(gameLayer(model, viewModel), Some(3)))
+      .addLayer(Layer(gameLayer(model, viewModel)).withMagnification(3))
       .addLayer(Layer(gameLayer(model, viewModel).map {
         case s: Sprite => s.moveBy(10, 10)
         case n         => n
