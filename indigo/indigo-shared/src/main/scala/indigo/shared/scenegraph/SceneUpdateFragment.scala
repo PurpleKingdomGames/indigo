@@ -35,12 +35,12 @@ final case class SceneUpdateFragment(
     SceneUpdateFragment.append(this, other)
 
   def addLayer(newLayer: Layer): SceneUpdateFragment =
-    this.copy(layers = layers :+ newLayer)
+    this.copy(layers = SceneUpdateFragment.addLayer(layers, newLayer))
 
   def addLayers(newLayers: Layer*): SceneUpdateFragment =
     addLayers(newLayers.toList)
   def addLayers(newLayers: List[Layer]): SceneUpdateFragment =
-    this.copy(layers = layers ++ newLayers)
+    this.copy(layers = newLayers.foldLeft(layers)((acc, l) => SceneUpdateFragment.addLayer(acc, l)))
 
   def addGameLayerNodes(nodes: SceneGraphNode*): SceneUpdateFragment =
     addGameLayerNodes(nodes.toList)
@@ -209,4 +209,9 @@ object SceneUpdateFragment {
       a.screenEffects |+| b.screenEffects,
       a.cloneBlanks ++ b.cloneBlanks
     )
+
+  def addLayer(layers: List[Layer], layer: Layer): List[Layer] =
+    if (layer.key.isDefined && layers.exists(_.key == layer.key))
+      layers.map(l => if (l.key == layer.key) l.addNodes(layer.nodes) else l)
+    else layers :+ layer
 }

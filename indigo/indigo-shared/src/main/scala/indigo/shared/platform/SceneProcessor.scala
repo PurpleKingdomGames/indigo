@@ -87,7 +87,16 @@ final class SceneProcessor(
       }
 
     val displayLayers: List[DisplayLayer] =
-      scene.layers.map(l => DisplayLayer(displayObjectConverter.sceneNodesToDisplayObjects(l.nodes, gameTime, assetMapping, cloneBlankDisplayObjects), l.magnification))
+      scene.layers.zipWithIndex
+        .map {
+          case (l, i) =>
+            DisplayLayer(
+              displayObjectConverter.sceneNodesToDisplayObjects(l.nodes, gameTime, assetMapping, cloneBlankDisplayObjects),
+              l.magnification,
+              l.depth.map(_.zIndex).getOrElse(i)
+            )
+        }
+        .sortBy(_.depth)
 
     val gameLayerDisplayObjects =
       displayObjectConverterGame.sceneNodesToDisplayObjects(scene.gameLayer.nodes, gameTime, assetMapping, cloneBlankDisplayObjects)
