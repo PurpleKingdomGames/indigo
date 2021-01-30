@@ -6,7 +6,8 @@ lazy val releaseProjects: List[String] =
     "indigoCore",
     "indigoExtras",
     "indigo",
-    "indigoFacades"
+    "indigoFacades",
+    "indigoShaders"
   )
 
 lazy val coreProjects: List[String] =
@@ -182,8 +183,6 @@ addCommandAlias(
 
 // -- cross building --
 
-
-
 addCommandAlias(
   "crossBuildIndigo",
   applyCrossCommand(coreProjects, "compile")
@@ -202,7 +201,6 @@ addCommandAlias(
     "crossLocalPublishIndigo"
   ).mkString(";", ";", "")
 )
-
 
 addCommandAlias(
   "crossTestIndigo",
@@ -226,7 +224,7 @@ addCommandAlias(
     "crossCleanAll",
     "buildAllNoClean",
     "testAllNoClean",
-    "crossBuildIndigo", // partial repeat
+    "crossBuildIndigo",    // partial repeat
     "crossTestAllNoClean", // partial repeat
     "crossIndigoPublishAllSigned",
     "sonatypeBundleRelease"
