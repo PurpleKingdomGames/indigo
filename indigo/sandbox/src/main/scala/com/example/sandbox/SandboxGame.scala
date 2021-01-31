@@ -222,7 +222,8 @@ object Shaders {
     CustomShader.Source(
       id = circleId,
       vertex = circleVertex,
-      fragment = circleFragment
+      fragment = circleFragment,
+      lighting = "vode light(){}"
     )
 
 }

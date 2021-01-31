@@ -4,11 +4,12 @@ precision lowp float;
 
 layout (location = 0) in vec4 a_verticesAndCoords; // a_vertices, a_texcoord
 layout (location = 1) in vec4 a_matRotateScale; // mat(0,1,4,5)
-layout (location = 2) in vec4 a_matTranslateAlpha; // mat(12,13,14,alpha)
+layout (location = 2) in vec3 a_matTranslate; // mat(12,13,14)
 layout (location = 3) in vec2 a_size; // 
 layout (location = 4) in vec4 a_frameTransform; // a_frameTranslation, a_frameScale
 
 uniform mat4 u_projection;
+uniform float TIME;
 
 out vec2 v_texcoords;
 
@@ -37,6 +38,10 @@ vec2 scaleTexCoords(vec2 texcoord){
   return scaleTexCoordsWithOffset(texcoord, a_frameTransform.xy);
 }
 
+vec4 VERTEX;
+
+void vertex() {}
+
 void main(void) {
 
   vec4 vertices = vec4(a_verticesAndCoords.xy, 1.0, 1.0);
@@ -46,10 +51,14 @@ void main(void) {
     mat4(a_matRotateScale.x,    a_matRotateScale.y,    0,                     0,
          a_matRotateScale.z,    a_matRotateScale.w,    0,                     0,
          0,                     0,                     1,                     0,
-         a_matTranslateAlpha.x, a_matTranslateAlpha.y, a_matTranslateAlpha.z, 1
+         a_matTranslate.x,      a_matTranslate.y,      a_matTranslate.z,      1
         );
 
-  gl_Position = u_projection * transform * vertices;
+  VERTEX = u_projection * transform * vertices;
+  
+  vertex();
+
+  gl_Position = VERTEX;
 
   v_texcoords = texcoords;
 
