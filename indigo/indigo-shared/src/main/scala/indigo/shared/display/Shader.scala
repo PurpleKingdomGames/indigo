@@ -1,6 +1,6 @@
 package indigo.shared.display
 
-import indigo.shaders.WebGL2Diffuse
+import indigo.shaders.WebGL2Base
 
 trait Shader {
   val id: ShaderId
@@ -20,10 +20,10 @@ object Shader {
   object ShaderTemplates {
 
     def webGL2Vertex(vertexShader: Option[String]): String =
-      WebGL2Diffuse.vertexShader(vertexShader)
+      WebGL2Base.vertexShader(vertexShader)
 
     def webGL2Fragment(fragmentShader: Option[String], lightShader: Option[String]): String =
-      WebGL2Diffuse.fragmentShader(fragmentShader, lightShader)
+      WebGL2Base.fragmentShader(fragmentShader, lightShader)
 
   }
 
