@@ -11,21 +11,60 @@ object ShaderGen {
 
   val tripleQuotes: String = "\"\"\""
 
-  def template(name: String, vextexContents: String, fragmentContents: String): String =
+  def template(name: String, vextexContents: String, fragmentContents: String): String = {
+    val vertexCode =
+      injectCode(vextexContents, "vertex", "vertexProgram", "void vertex(){}")
+      
+    val fragmentCode =
+      injectCode(
+        injectCode(
+          fragmentContents,
+          "fragment",
+          "fragmentProgram",
+          "void fragment(){}"
+        ),
+        "light",
+        "lightProgram",
+        "void light(){}"
+      )
+
+    val useNoWarn: Boolean =
+       !(vertexCode.contains("vertexProgram.getOrElse") || fragmentCode.contains("fragmentProgram.getOrElse"))
+
     s"""package indigo.platform.shaders
     |
     |import indigo.shared.display.{Shader, ShaderId}
+    |${if(useNoWarn) "import scala.annotation.nowarn" else ""}
     |
     |object $name extends Shader {
     |  val id: ShaderId = ShaderId("indigo_default_$name")
     |
     |  val vertex: String =
-    |    ${tripleQuotes}${vextexContents}${tripleQuotes}
+    |    vertexShader(None)
     |
     |  val fragment: String =
-    |    ${tripleQuotes}${fragmentContents}${tripleQuotes}
+    |    fragmentShader(None, None)
+    |
+    |  ${if(useNoWarn) "@nowarn" else ""}
+    |  def vertexShader(vertexProgram: Option[String]): String =
+    |    s${tripleQuotes}${vertexCode}${tripleQuotes}
+    |
+    |  ${if(useNoWarn) "@nowarn" else ""}
+    |  def fragmentShader(fragmentProgram: Option[String], lightProgram: Option[String]): String =
+    |    s${tripleQuotes}${fragmentCode}${tripleQuotes}
     |}
     """.stripMargin
+  }
+
+  def injectCode(program: String, programType: String, argName: String, default: String): String =
+    if (program.contains(s"//#${programType}_start") && program.contains(s"//#${programType}_end")) {
+      val code = program.split('\n').toList
+
+      val start = code.takeWhile(line => !line.startsWith(s"//#${programType}_start"))
+      val end   = code.reverse.takeWhile(line => !line.startsWith(s"//#${programType}_end")).reverse
+
+      (start ++ List(s"""|$${$argName.getOrElse("$default")}""") ++ end).mkString("\n")
+    } else program
 
   def splitAndPair(remaining: Seq[String], name: String, file: File): Option[ShaderDetails] =
     remaining match {
@@ -51,19 +90,17 @@ object ShaderGen {
     println("GLSL Validation")
     println("***************")
 
-    if (glslValidatorExitCode == 0) {
+    if (glslValidatorExitCode == 0)
       shaderFiles.foreach { f =>
         val exit = ("glslangValidator " + f.getCanonicalPath) !
 
-        if (exit != 0) {
+        if (exit != 0)
           throw new Exception("GLSL Validation Error in: " + f.getName)
-        } else {
+        else
           println(f.getName + " [valid]")
-        }
       }
-    } else {
+    else
       println("**WARNING**: GLSL Validator not installed, shader code not checked.")
-    }
 
     val dict: Map[String, Seq[ShaderDetails]] =
       shaderFiles
