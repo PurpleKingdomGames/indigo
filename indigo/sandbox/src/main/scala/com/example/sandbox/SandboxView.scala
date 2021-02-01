@@ -13,11 +13,11 @@ object SandboxView {
     }
 
     SceneUpdateFragment.empty
-      .addLayer(Layer(gameLayer(model, viewModel)).withMagnification(3))
-      .addLayer(Layer(gameLayer(model, viewModel).map {
-        case s: Sprite => s.moveBy(10, 10)
-        case n         => n
-      }))
+      .addLayer(Layer(gameLayer(model, viewModel)).withMagnification(2))
+      // .addLayer(Layer(gameLayer(model, viewModel).map {
+      //   case s: Sprite => s.moveBy(10, 10)
+      //   case n         => n
+      // }))
       // .addLayer(Layer(lightingLayer(inputState)))
       // .addLayer(Layer(uiLayer(inputState)))
       .withAmbientLight(RGBA.White.withAmount(0.25))
