@@ -57,9 +57,13 @@ vec4 COLOR;
 vec4 LIGHT;
 vec4 AMBIENT_LIGHT;
 
+//#fragment_start
 void fragment(){}
+//#fragment_end
 
+//#light_start
 void light(){}
+//#light_end
 
 void main(void) {
   // Basic colour

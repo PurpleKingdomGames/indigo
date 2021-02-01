@@ -8,7 +8,7 @@ import indigo.shared.platform.RendererConfig
 import org.scalajs.dom.raw.WebGLRenderingContext
 import scala.scalajs.js.typedarray.Float32Array
 import indigo.facades.WebGL2RenderingContext
-import indigo.platform.shaders._
+import indigo.shaders._
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import org.scalajs.dom.html
 
