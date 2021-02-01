@@ -152,7 +152,7 @@ final class RendererWebGL2(
     new LayerMergeRenderer(gl2)
 
   private val defaultShaderProgram =
-    WebGLHelper.shaderProgramSetup(gl, "Default", WebGL2Diffuse)
+    WebGLHelper.shaderProgramSetup(gl, "Default", WebGL2Base)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var layerFrameBuffer: FrameBufferComponents.SingleOutput =
