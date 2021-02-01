@@ -155,17 +155,6 @@ lazy val indigoPlatforms =
         ("org.scala-js"  %%% "scalajs-dom" % "1.1.0").withDottyCompat(scalaVersion.value)
       )
     )
-    .settings(
-      sourceGenerators in Compile += Def.task {
-        val cachedFun = FileFunction.cached(
-          streams.value.cacheDirectory / "shaders"
-        ) { (files: Set[File]) =>
-          ShaderGen.makeShader(files, (sourceManaged in Compile).value).toSet
-        }
-
-        cachedFun(IO.listFiles((baseDirectory.value / "shaders")).toSet).toSeq
-      }.taskValue
-    )
     .dependsOn(indigoShared)
     .dependsOn(indigoFacades)
 
@@ -179,6 +168,17 @@ lazy val indigoShared =
     .settings(
       name := "indigo-shared",
       libraryDependencies += "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
+    )
+    .settings(
+      sourceGenerators in Compile += Def.task {
+        val cachedFun = FileFunction.cached(
+          streams.value.cacheDirectory / "shaders"
+        ) { (files: Set[File]) =>
+          ShaderGen.makeShader(files, (sourceManaged in Compile).value).toSet
+        }
+
+        cachedFun(IO.listFiles((baseDirectory.value / "shaders")).toSet).toSeq
+      }.taskValue
     )
 
 // Circe

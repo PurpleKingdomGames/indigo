@@ -52,7 +52,9 @@ vec2 scaleTexCoordsWithOffset(vec2 texcoord, vec2 offset){
 
 vec4 VERTEX;
 
+//#vertex_start
 void vertex(){}
+//#vertex_end
 
 void main(void) {
 

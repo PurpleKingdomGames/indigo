@@ -6,7 +6,7 @@ import org.scalajs.dom.raw.WebGLProgram
 import indigo.facades.WebGL2RenderingContext
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
-import indigo.platform.shaders.WebGL2LayerMerge
+import indigo.shaders.WebGL2LayerMerge
 import org.scalajs.dom.raw.WebGLTexture
 import scala.scalajs.js.JSConverters._
 import indigo.shared.datatypes.RGBA
