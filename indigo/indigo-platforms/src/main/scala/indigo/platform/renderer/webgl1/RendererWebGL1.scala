@@ -50,7 +50,7 @@ final class RendererWebGL1(
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastWidth
 
-  import indigo.platform.shaders._
+  import indigo.shaders._
 
   private val gl: WebGLRenderingContext =
     cNc.context

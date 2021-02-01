@@ -31,7 +31,7 @@ object ShaderGen {
     val useNoWarn: Boolean =
        !(vertexCode.contains("vertexProgram.getOrElse") || fragmentCode.contains("fragmentProgram.getOrElse"))
 
-    s"""package indigo.platform.shaders
+    s"""package indigo.shaders
     |
     |import indigo.shared.display.{Shader, ShaderId}
     |${if(useNoWarn) "import scala.annotation.nowarn" else ""}
