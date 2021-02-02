@@ -210,7 +210,7 @@ object Shaders {
     |}
     |
     |void vertex() {
-    |  vec2 orbit = vec2(sin(timeToRadians(TIME / 2.0)) * 0.1 + VERTEX.x, cos(timeToRadians(TIME / 2.0)) * 1.0 + VERTEX.y);
+    |  vec2 orbit = vec2(sin(timeToRadians(TIME / 2.0)) * 0.1 + VERTEX.x, cos(timeToRadians(TIME / 2.0)) * 0.1 + VERTEX.y);
     |  VERTEX = vec4(orbit, VERTEX.zw);
     |}
     |""".stripMargin
