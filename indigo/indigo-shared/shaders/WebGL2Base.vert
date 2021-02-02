@@ -59,7 +59,8 @@ void vertex(){}
 
 void main(void) {
 
-  vec4 vertices = vec4(a_verticesAndCoords.xy, 1.0, 1.0);
+  VERTEX = vec4(a_verticesAndCoords.xy, 1.0, 1.0);
+
   vec2 texcoords = scaleTexCoordsWithOffset(a_verticesAndCoords.zw, a_frameTransform.xy);
 
   //
@@ -76,11 +77,9 @@ void main(void) {
          a_matTranslateAlpha.x, a_matTranslateAlpha.y, a_matTranslateAlpha.z, 1
         );
 
-  VERTEX = u_projection * transform * vertices;
-  
   vertex();
 
-  gl_Position = VERTEX;
+  gl_Position = u_projection * transform * VERTEX;
 
   TEXCOORDS = texcoords;
   UV = a_verticesAndCoords.zw;

@@ -10,7 +10,7 @@ final case class BootResult[A](
     assets: Set[AssetType],
     fonts: Set[FontInfo],
     subSystems: Set[SubSystem],
-    shaders: Set[CustomShader.Source]
+    shaders: Set[CustomShader]
 ) {
 
   def addAnimations(newAnimations: Set[Animation]): BootResult[A] =
@@ -53,9 +53,9 @@ final case class BootResult[A](
     this.copy(shaders = shaders ++ newShaders)
   def addShaders(newShaders: CustomShader.Source*): BootResult[A] =
     addShaders(newShaders.toSet)
-  def withShaders(newShaders: Set[CustomShader.Source]): BootResult[A] =
+  def withShaders(newShaders: Set[CustomShader]): BootResult[A] =
     this.copy(shaders = newShaders)
-  def withShaders(newShaders: CustomShader.Source*): BootResult[A] =
+  def withShaders(newShaders: CustomShader*): BootResult[A] =
     withShaders(newShaders.toSet)
 
 }

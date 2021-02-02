@@ -28,11 +28,12 @@ import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
 import indigo.shared.display.CustomShader
 import indigo.shared.ShaderRegister
+import indigo.shared.assets.AssetName
 
 final class GameEngine[StartUpData, GameModel, ViewModel](
     fonts: Set[FontInfo],
     animations: Set[Animation],
-    shaders: Set[CustomShader.Source],
+    shaders: Set[CustomShader],
     initialise: AssetCollection => Dice => Outcome[Startup[StartUpData]],
     initialModel: StartUpData => Outcome[GameModel],
     initialViewModel: StartUpData => GameModel => Outcome[ViewModel],
@@ -150,7 +151,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
           GameEngine.registerAnimations(animationsRegister, animations ++ startupData.additionalAnimations)
           GameEngine.registerFonts(fontRegister, fonts ++ startupData.additionalFonts)
-          GameEngine.registerShaders(shaderRegister, shaders)
+          GameEngine.registerShaders(shaderRegister, shaders, accumulatedAssetCollection)
 
           def modelToUse(startUpSuccessData: => StartUpData): Outcome[GameModel] =
             if (firstRun) initialModel(startUpSuccessData)
@@ -213,8 +214,34 @@ object GameEngine {
   def registerFonts(fontRegister: FontRegister, fonts: Set[FontInfo]): Unit =
     fonts.foreach(fontRegister.register)
 
-  def registerShaders(shaderRegister: ShaderRegister, shaders: Set[CustomShader.Source]): Unit =
-    shaders.foreach(shaderRegister.register)
+  def registerShaders(shaderRegister: ShaderRegister, shaders: Set[CustomShader], assetCollection: AssetCollection): Unit =
+    shaders.foreach {
+      case s: CustomShader.Source =>
+        shaderRegister.register(s)
+
+      case CustomShader.External(id, vertex, fragment, light) =>
+        val source: CustomShader.Source =
+          CustomShader.Source(
+            id = id,
+            vertex = extractShaderCode(assetCollection.findTextDataByName(vertex), "indigo-vertex", vertex),
+            fragment = extractShaderCode(assetCollection.findTextDataByName(fragment), "indigo-fragment", fragment),
+            light = extractShaderCode(assetCollection.findTextDataByName(light), "indigo-light", light)
+          )
+
+        shaderRegister.register(source)
+    }
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  def extractShaderCode(maybeText: Option[String], tag: String, assetName: AssetName): String =
+    maybeText.flatMap(s"""//<$tag>\n((.|\n|\r)*)//</$tag>""".r.findFirstIn) match {
+      case Some(s) =>
+        s
+
+      case None =>
+        val msg = s"Error parsing external shader could not match '$tag' tag pair in asset '${assetName.value}' - Halting."
+        IndigoLogger.error(msg)
+        throw new Exception(msg)
+    }
 
   def initialisedGame[StartUpData](startupData: Startup[StartUpData]): Outcome[StartUpData] =
     startupData match {
