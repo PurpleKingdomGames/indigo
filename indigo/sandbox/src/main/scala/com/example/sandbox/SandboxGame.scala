@@ -47,10 +47,13 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           magnification = magnificationLevel
         ),
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."))
-      ).withAssets(SandboxAssets.assets)
+      ).withAssets(SandboxAssets.assets ++ Shaders.assets)
         .withFonts(SandboxView.fontInfo)
         .withSubSystems(FPSCounter(SandboxView.fontKey, Point(3, 100), targetFPS))
-        .withShaders(Shaders.circle)
+        .withShaders(
+          Shaders.circle,
+          Shaders.external
+        )
     )
   }
 
@@ -191,7 +194,8 @@ object TestScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
         .addLayer(
           Layer(
             Graphic(120, 10, 32, 32, 1, SandboxAssets.dotsMaterial),
-            Graphic(140, 50, 32, 32, 1, Material.Custom(Shaders.circleId, SandboxAssets.dots))
+            Graphic(140, 50, 32, 32, 1, Material.Custom(Shaders.circleId, SandboxAssets.dots)),
+            Graphic(140, 50, 32, 32, 1, Material.Custom(Shaders.externalId, SandboxAssets.dots))
           )
         )
     )
@@ -203,14 +207,16 @@ object Shaders {
   val circleId: ShaderId =
     ShaderId("circle")
 
-  val circleVertex: String =
-    """
+  def circleVertex(orbitDist: Double): String =
+    s"""
     |float timeToRadians(float t) {
     |  return TAU * mod(t, 1.0);
     |}
     |
     |void vertex() {
-    |  vec2 orbit = vec2(sin(timeToRadians(TIME / 2.0)) * 0.1 + VERTEX.x, cos(timeToRadians(TIME / 2.0)) * 0.1 + VERTEX.y);
+    |  float x = sin(timeToRadians(TIME / 2.0)) * ${orbitDist.toString()} + VERTEX.x;
+    |  float y = cos(timeToRadians(TIME / 2.0)) * ${orbitDist.toString()} + VERTEX.y;
+    |  vec2 orbit = vec2(x, y);
     |  VERTEX = vec4(orbit, VERTEX.zw);
     |}
     |""".stripMargin
@@ -232,9 +238,29 @@ object Shaders {
   val circle: CustomShader.Source =
     CustomShader.Source(
       id = circleId,
-      vertex = circleVertex,
+      vertex = circleVertex(0.5),
       fragment = circleFragment,
-      lighting = "vode light(){}"
+      light = "void light(){}"
+    )
+
+  val externalId: ShaderId =
+    ShaderId("external")
+
+  val vertAsset: AssetName = AssetName("vertex")
+  val fragAsset: AssetName = AssetName("fragment")
+
+  val external: CustomShader.External =
+    CustomShader.External(
+      id = externalId,
+      vertex = vertAsset,
+      fragment = fragAsset,
+      light = fragAsset
+    )
+
+  def assets: Set[AssetType] =
+    Set(
+      AssetType.Text(vertAsset, AssetPath("assets/shader.vert")),
+      AssetType.Text(fragAsset, AssetPath("assets/shader.frag"))
     )
 
 }
