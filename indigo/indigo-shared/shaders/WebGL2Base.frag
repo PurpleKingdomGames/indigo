@@ -15,8 +15,7 @@ uniform sampler2D u_texture;
 // uniform sampler2D CHANNEL_4;
 
 // So here we should be able to set flags and mod them out.
-// Modding (rather than bitwise) will work for GLSL 300 & 100
-// and provde up to 23 flags.
+// Modding (rather than bitwise) will work for GLSL 300 & 100.
 // uniform highp float u_flags;
 
 // ----------------
@@ -29,8 +28,6 @@ uniform vec4 u_ambientLight;
 // ----------------
 // public
 uniform float TIME; // Running time
-uniform float TIME_DELTA; // Time delta between frames
-uniform float WINDOW_SIZE; // Size of the viewport
 
 // Could be UBO?
 // Can be packed up.
@@ -59,6 +56,10 @@ in vec2 TEXCOORDS;
 in vec2 UV; // Unscaled texture coordinates
 in vec2 SIZE; // Width / height of the objects
 in float ALPHA; // Alpha of entity
+
+// Constants
+float TAU = 2.0 * 3.141592653589793;
+float PI = 3.141592653589793;
 
 // Outputs
 vec4 COLOR;
@@ -97,5 +98,5 @@ void main(void) {
     light();
   }
   
-  fragColor = COLOR * (AMBIENT_LIGHT + LIGHT); // Should combine or... not?
+  fragColor = COLOR + (AMBIENT_LIGHT * LIGHT);//COLOR * (AMBIENT_LIGHT + LIGHT); // Should combine or... not?
 }
