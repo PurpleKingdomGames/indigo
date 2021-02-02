@@ -76,7 +76,8 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       frameBufferComponents: FrameBufferComponents,
       clearColor: RGBA,
       shaderProgram: WebGLProgram,
-      customShaders: HashMap[ShaderId, WebGLProgram]
+      customShaders: HashMap[ShaderId, WebGLProgram],
+      runningTime: Double
   ): Unit = {
 
     FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, clearColor, true)
@@ -85,13 +86,17 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     def setupShader(program: WebGLProgram): Unit = {
 
       gl2.useProgram(program)
+      
+      gl2.uniformMatrix4fv(
+        gl2.getUniformLocation(program, "u_projection"),
+        false,
+        projection
+      )
 
-      val textureLocation = gl2.getUniformLocation(program, "u_textureDiffuse")
-      gl2.uniform1i(textureLocation, 0)
-
-      // Projection
-      val projectionLocation = gl2.getUniformLocation(program, "u_projection")
-      gl2.uniformMatrix4fv(projectionLocation, false, projection)
+      gl2.uniform1f(
+        gl2.getUniformLocation(program, "TIME"),
+        runningTime
+      )
 
       // Instance attributes
       // vec4 a_matRotateScale

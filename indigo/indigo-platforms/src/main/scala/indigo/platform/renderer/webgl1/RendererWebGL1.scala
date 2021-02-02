@@ -28,6 +28,7 @@ import indigo.platform.events.GlobalEventStream
 import indigo.shared.events.ViewportResize
 import indigo.shared.config.GameViewport
 import indigo.shared.display.Shader
+import indigo.shared.time.Seconds
 
 final class RendererWebGL1(
     config: RendererConfig,
@@ -111,7 +112,7 @@ final class RendererWebGL1(
     gl.bindBuffer(ARRAY_BUFFER, null)
   }
 
-  def drawScene(sceneData: ProcessedSceneData): Unit = {
+  def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = {
 
     resize(cNc.canvas, cNc.magnification)
 

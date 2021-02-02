@@ -205,16 +205,27 @@ object Shaders {
 
   val circleVertex: String =
     """
+    |float timeToRadians(float t) {
+    |  return TAU * mod(t, 1.0);
+    |}
+    |
     |void vertex() {
-    | // Do nothing.
+    |  vec2 orbit = vec2(sin(timeToRadians(TIME / 2.0)) * 0.1 + VERTEX.x, cos(timeToRadians(TIME / 2.0)) * 1.0 + VERTEX.y);
+    |  VERTEX = vec4(orbit, VERTEX.zw);
     |}
     |""".stripMargin
 
   val circleFragment: String =
     """
+    |float timeToRadians(float t) {
+    |  return TAU * mod(t, 1.0);
+    |}
+    |
     |void fragment() {
+    |  float red = UV.x * (1.0 - ((cos(timeToRadians(TIME)) + 1.0) / 2.0));
     |  float alpha = 1.0 - step(0.0, length(UV - 0.5) - 0.5);
-    |  COLOR = vec4(UV, 0.0, alpha);
+    |  vec4 circle = vec4(red, UV.y, 0.0, alpha);
+    |  COLOR = circle;
     |}
     |""".stripMargin
 

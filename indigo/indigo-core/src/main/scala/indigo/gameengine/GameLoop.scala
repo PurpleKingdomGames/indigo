@@ -98,7 +98,7 @@ class GameLoop[StartUpData, GameModel, ViewModel](
           )
 
           // Render scene
-          gameEngine.renderer.drawScene(sceneData)
+          gameEngine.renderer.drawScene(sceneData, gameTime.running)
         } else {
           val processedFrame: Outcome[(GameModel, ViewModel)] =
             frameProcessor.runSkipView(startUpData, gameModelState, viewModelState, gameTime, collectedEvents, inputState, dice, boundaryLocator)
