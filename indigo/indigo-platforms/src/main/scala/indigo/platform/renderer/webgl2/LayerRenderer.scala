@@ -86,7 +86,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     def setupShader(program: WebGLProgram): Unit = {
 
       gl2.useProgram(program)
-      
+
       gl2.uniformMatrix4fv(
         gl2.getUniformLocation(program, "u_projection"),
         false,
