@@ -29,6 +29,7 @@ import indigo.shared.display.ShaderId
 import org.scalajs.dom.raw.WebGLProgram
 import indigo.shared.display.Shader
 import scalajs.js.JSConverters._
+import indigo.shared.time.Seconds
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 final class RendererWebGL2(
@@ -161,7 +162,7 @@ final class RendererWebGL2(
   private var backFrameBuffer: FrameBufferComponents.SingleOutput =
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
 
-  def drawScene(sceneData: ProcessedSceneData): Unit = {
+  def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = {
 
     gl2.bindVertexArray(vao)
 
@@ -190,7 +191,8 @@ final class RendererWebGL2(
         layerFrameBuffer,
         RGBA.Black.makeTransparent,
         defaultShaderProgram,
-        customShaders
+        customShaders,
+        runningTime.value
       )
 
       val projection =

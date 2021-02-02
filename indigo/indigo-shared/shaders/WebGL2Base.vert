@@ -26,6 +26,10 @@ out float ALPHA; // Alpha of entity
 // out vec4 v_textureAmounts;
 // out vec4 v_texcoordSpecularIsLitMatType;
 
+// Constants
+float TAU = 2.0 * 3.141592653589793;
+float PI = 3.141592653589793;
+
 mat4 translate2d(vec2 t){
     return mat4(1, 0, 0, 0,
                 0, 1, 0, 0,

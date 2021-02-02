@@ -3,6 +3,7 @@ package indigo.platform.renderer
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.platform.ProcessedSceneData
 import indigo.shared.display.Shader
+import indigo.shared.time.Seconds
 
 trait Renderer {
 
@@ -11,5 +12,5 @@ trait Renderer {
   def orthographicProjectionMatrix: CheapMatrix4
 
   def init(shaders: Set[Shader]): Unit
-  def drawScene(sceneData: ProcessedSceneData): Unit
+  def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit
 }
