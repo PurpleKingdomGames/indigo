@@ -6,8 +6,8 @@ layout (location = 0) in vec4 a_verticesAndCoords; // a_vertices, a_texcoord
 layout (location = 1) in vec4 a_matRotateScale; // mat(0,1,4,5)
 
 layout (location = 2) in vec3 a_matTranslate; // mat(12,13,14)
-layout (location = 3) in vec2 a_size; // 
-layout (location = 4) in vec4 a_frameTransform; // a_frameTranslation, a_frameScale
+layout (location = 3) in vec4 a_sizeAndFrameScale; // 
+layout (location = 4) in vec2 a_frameOffset; // a_frameTranslation, a_frameScale
 
 // TODO: Is lit and matType to become flags.
 // TODO: put size in with channel offsets. Or size with frame scale and all offsets together.
@@ -53,7 +53,7 @@ mat4 scale2d(vec2 s){
 }
 
 vec2 scaleTexCoordsWithOffset(vec2 texcoord, vec2 offset){
-  mat4 transform = translate2d(offset) * scale2d(a_frameTransform.zw);
+  mat4 transform = translate2d(offset) * scale2d(a_sizeAndFrameScale.zw);
   return (transform * vec4(texcoord, 1.0, 1.0)).xy;
 }
 
@@ -67,7 +67,7 @@ void main(void) {
 
   VERTEX = vec4(a_verticesAndCoords.xy, 1.0, 1.0);
 
-  vec2 texcoords = scaleTexCoordsWithOffset(a_verticesAndCoords.zw, a_frameTransform.xy);
+  vec2 texcoords = scaleTexCoordsWithOffset(a_verticesAndCoords.zw, a_frameOffset);
 
   //
   // vec2 texcoordsEmissive = a_emissiveNormalOffsets.xy;
@@ -89,7 +89,7 @@ void main(void) {
 
   TEXCOORDS = texcoords;
   UV = a_verticesAndCoords.zw;
-  SIZE = a_size;
+  SIZE = a_sizeAndFrameScale.xy;
 
   //
   // v_texcoordEmissiveNormal = vec4(scaleTexCoordsWithOffset(texcoords, texcoordsEmissive), scaleTexCoordsWithOffset(texcoords, texcoordsNormal));
