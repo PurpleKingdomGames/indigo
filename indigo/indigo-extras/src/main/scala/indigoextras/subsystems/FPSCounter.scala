@@ -12,15 +12,16 @@ import indigo.shared.datatypes.RGBA
 import indigo.shared.scenegraph.Text
 import indigo.shared.events.FrameTick
 import indigo.shared.scenegraph.Layer
+import indigo.shared.datatypes.Depth
 
 object FPSCounter {
 
-  def apply(fontKey: FontKey, position: Point, targetFPS: Int): SubSystem =
+  def apply(fontKey: FontKey, position: Point, targetFPS: Int, depth: Depth): SubSystem =
     SubSystem[GlobalEvent, FPSCounterState](
       _eventFilter = eventFilter,
       _initialModel = Outcome(FPSCounterState.default),
       _update = update(targetFPS),
-      _present = present(fontKey, position, targetFPS)
+      _present = present(fontKey, position, targetFPS, depth)
     )
 
   lazy val eventFilter: GlobalEvent => Option[GlobalEvent] = {
@@ -43,7 +44,7 @@ object FPSCounter {
           Outcome(model.copy(frameCountSinceInterval = model.frameCountSinceInterval + 1))
     }
 
-  def present(fontKey: FontKey, position: Point, targetFPS: Int): (SubSystemFrameContext, FPSCounterState) => Outcome[SceneUpdateFragment] =
+  def present(fontKey: FontKey, position: Point, targetFPS: Int, depth: Depth): (SubSystemFrameContext, FPSCounterState) => Outcome[SceneUpdateFragment] =
     (_, model) => {
       Outcome(
         SceneUpdateFragment.empty
@@ -51,7 +52,7 @@ object FPSCounter {
             Layer(
               Text(s"""FPS ${model.fps.toString}""", position.x, position.y, 1, fontKey)
                 .withTint(pickTint(targetFPS, model.fps))
-            )
+            ).withDepth(depth)
           )
       )
     }
