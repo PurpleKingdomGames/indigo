@@ -28,7 +28,8 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val matRotateScaleInstanceArray: WebGLBuffer    = gl2.createBuffer()
   private val matTranslateAlphaInstanceArray: WebGLBuffer = gl2.createBuffer()
   private val sizeAndFrameScaleInstanceArray: WebGLBuffer = gl2.createBuffer()
-  private val frameOffsetInstanceArray: WebGLBuffer    = gl2.createBuffer()
+  private val channelOffsets01InstanceArray: WebGLBuffer  = gl2.createBuffer()
+  private val channelOffsets23InstanceArray: WebGLBuffer  = gl2.createBuffer()
 
   def setupInstanceArray(buffer: WebGLBuffer, location: Int, size: Int): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -41,7 +42,8 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   private val matRotateScaleData: scalajs.js.Array[Float]    = scalajs.js.Array[Float](4f * maxBatchSize)
   private val matTranslateAlphaData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
   private val sizeAndFrameScaleData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
-  private val frameOffsetData: scalajs.js.Array[Float]    = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val channelOffsets01Data: scalajs.js.Array[Float]  = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val channelOffsets23Data: scalajs.js.Array[Float]  = scalajs.js.Array[Float](4f * maxBatchSize)
 
   @inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Float]): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -64,8 +66,15 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     sizeAndFrameScaleData((i * 4) + 2) = d.frameScaleX
     sizeAndFrameScaleData((i * 4) + 3) = d.frameScaleY
 
-    frameOffsetData((i * 2) + 0) = d.frameX
-    frameOffsetData((i * 2) + 1) = d.frameY
+    channelOffsets01Data((i * 4) + 0) = d.frameX
+    channelOffsets01Data((i * 4) + 1) = d.frameY
+    channelOffsets01Data((i * 4) + 2) = 0.0f
+    channelOffsets01Data((i * 4) + 3) = 0.0f
+
+    channelOffsets23Data((i * 4) + 0) = 0.0f
+    channelOffsets23Data((i * 4) + 1) = 0.0f
+    channelOffsets23Data((i * 4) + 2) = 0.0f
+    channelOffsets23Data((i * 4) + 3) = 0.0f
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
@@ -103,10 +112,12 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       setupInstanceArray(matRotateScaleInstanceArray, 1, 4) //
       // vec4 a_matTranslateAlpha
       setupInstanceArray(matTranslateAlphaInstanceArray, 2, 4) //
-      // vec2 a_sizeAndFrameScale
+      // vec4 a_sizeAndFrameScale
       setupInstanceArray(sizeAndFrameScaleInstanceArray, 3, 4) //
-      // vec4 a_frameOffset
-      setupInstanceArray(frameOffsetInstanceArray, 4, 2) //
+      // vec4 a_channelOffsets01
+      setupInstanceArray(channelOffsets01InstanceArray, 4, 4) //
+      // vec4 a_channelOffsets23
+      setupInstanceArray(channelOffsets23InstanceArray, 5, 4) //
     }
 
     setupShader(shaderProgram)
@@ -119,10 +130,13 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
         bindData(matRotateScaleInstanceArray, matRotateScaleData)
         bindData(matTranslateAlphaInstanceArray, matTranslateAlphaData)
         bindData(sizeAndFrameScaleInstanceArray, sizeAndFrameScaleData)
-        bindData(frameOffsetInstanceArray, frameOffsetData)
+        bindData(channelOffsets01InstanceArray, channelOffsets01Data)
+        bindData(channelOffsets23InstanceArray, channelOffsets23Data)
 
         gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
       }
+    
+    gl2.activeTexture(TEXTURE0);
 
     @tailrec
     def rec(remaining: List[DisplayEntity], batchCount: Int, atlasName: String, currentShader: Option[ShaderId]): Unit =
@@ -155,11 +169,9 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
           // Diffuse
           textureLocations.find(t => t.name == d.atlasName) match {
             case None =>
-              gl2.activeTexture(TEXTURE0);
               gl2.bindTexture(TEXTURE_2D, null)
 
             case Some(textureLookup) =>
-              gl2.activeTexture(TEXTURE0);
               gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
           }
 

@@ -8,11 +8,12 @@ layout(location = 0) out vec4 fragColor;
 // ----------------
 // Per object batch / texture / shader
 // ----------------
-uniform sampler2D u_texture;
-// uniform sampler2D CHANNEL_1;
-// uniform sampler2D CHANNEL_2;
-// uniform sampler2D CHANNEL_3;
-// uniform sampler2D CHANNEL_4;
+
+// Currently we only ever bind one texture at a time.
+// The texture is however an atlas of textures, so in
+// practice you can read many sub-textures at once.
+// Could remove this limitation.
+uniform sampler2D u_channel_0;
 
 // So here we should be able to set flags and mod them out.
 // Modding (rather than bitwise) will work for GLSL 300 & 100.
@@ -51,8 +52,9 @@ uniform float u_lightAttenuation[16];
 // in vec4 v_textureAmounts;
 // in vec4 v_texcoordSpecularIsLitMatType;
 
+in vec2 v_channel_coords_0;
+
 // public
-in vec2 TEXCOORDS;
 in vec2 UV; // Unscaled texture coordinates
 in vec2 SIZE; // Width / height of the objects
 
@@ -80,7 +82,7 @@ void main(void) {
   AMBIENT_LIGHT = u_ambientLight;
 
   // Basic colour
-  COLOR = texture(u_texture, TEXCOORDS);
+  COLOR = texture(u_channel_0, v_channel_coords_0);
 
   fragment();
 
