@@ -9,6 +9,7 @@ import indigo.shared.datatypes.Vector3
 
 import indigo.shared.display.DisplayObject
 import org.scalajs.dom.raw.WebGLUniformLocation
+import scala.annotation.nowarn
 
 object RendererFunctions {
 
@@ -52,6 +53,7 @@ object RendererFunctions {
     case (false, false) => Matrix4.identity
   }
 
+  @nowarn
   def setupVertexShaderState(
       gl: raw.WebGLRenderingContext,
       displayObject: DisplayObject,
@@ -66,18 +68,18 @@ object RendererFunctions {
       value = RendererHelper.mat4ToJsArray(displayObject.transform)
     )
 
-    gl.uniform1f(
-      alphaLocation,
-      displayObject.effects.alpha.toDouble
-    )
+    // gl.uniform1f(
+    //   alphaLocation,
+    //   displayObject.effects.alpha.toDouble
+    // )
 
-    gl.uniform4f(
-      frameTransform,
-      displayObject.frameX.toDouble,
-      displayObject.frameY.toDouble,
-      displayObject.frameScaleX.toDouble,
-      displayObject.frameScaleY.toDouble
-    )
+    // gl.uniform4f(
+    //   frameTransform,
+    //   displayObject.frameX.toDouble,
+    //   displayObject.frameY.toDouble,
+    //   displayObject.frameScaleX.toDouble,
+    //   displayObject.frameScaleY.toDouble
+    // )
   }
 
 }

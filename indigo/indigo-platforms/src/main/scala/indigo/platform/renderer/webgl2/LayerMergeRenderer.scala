@@ -39,8 +39,8 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext) {
     uboData(2) = displayObject.width.toFloat
     uboData(3) = displayObject.height.toFloat
 
-    uboData(4) = displayObject.frameX.toFloat
-    uboData(5) = displayObject.frameY.toFloat
+    uboData(4) = displayObject.channelOffset0X
+    uboData(5) = displayObject.channelOffset0X
     uboData(6) = displayObject.frameScaleX.toFloat
     uboData(7) = displayObject.frameScaleY.toFloat
   }
