@@ -66,15 +66,15 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     sizeAndFrameScaleData((i * 4) + 2) = d.frameScaleX
     sizeAndFrameScaleData((i * 4) + 3) = d.frameScaleY
 
-    channelOffsets01Data((i * 4) + 0) = d.frameX
-    channelOffsets01Data((i * 4) + 1) = d.frameY
-    channelOffsets01Data((i * 4) + 2) = 0.0f
-    channelOffsets01Data((i * 4) + 3) = 0.0f
+    channelOffsets01Data((i * 4) + 0) = d.channelOffset0X
+    channelOffsets01Data((i * 4) + 1) = d.channelOffset0Y
+    channelOffsets01Data((i * 4) + 2) = d.channelOffset1X
+    channelOffsets01Data((i * 4) + 3) = d.channelOffset1Y
 
-    channelOffsets23Data((i * 4) + 0) = 0.0f
-    channelOffsets23Data((i * 4) + 1) = 0.0f
-    channelOffsets23Data((i * 4) + 2) = 0.0f
-    channelOffsets23Data((i * 4) + 3) = 0.0f
+    channelOffsets23Data((i * 4) + 0) = d.channelOffset2X
+    channelOffsets23Data((i * 4) + 1) = d.channelOffset2Y
+    channelOffsets23Data((i * 4) + 2) = d.channelOffset3X
+    channelOffsets23Data((i * 4) + 3) = d.channelOffset3Y
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))

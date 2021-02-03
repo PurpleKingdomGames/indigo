@@ -48,15 +48,19 @@ uniform float u_lightAttenuation[16];
 // internal
 //in float v_materialType; // 0 = no texture, 1 = diffuse, 2 = albedo, emissive, normal, specular
 //in float v_isLit;
-// in vec4 v_texcoordEmissiveNormal;
-// in vec4 v_textureAmounts;
 // in vec4 v_texcoordSpecularIsLitMatType;
 
-in vec2 v_channel_coords_0;
+in vec4 v_channel_coords_01;
+in vec4 v_channel_coords_23;
+in vec4 v_uv_size; // Unscaled texture coordinates + Width / height of the objects
 
-// public
-in vec2 UV; // Unscaled texture coordinates
-in vec2 SIZE; // Width / height of the objects
+// Variables
+vec2 UV; // Unscaled texture coordinates
+vec2 SIZE; // Width / height of the objects
+vec4 CHANNEL_0; // Pixel value from texture channel 0
+vec4 CHANNEL_1; // Pixel value from texture channel 1
+vec4 CHANNEL_2; // Pixel value from texture channel 2
+vec4 CHANNEL_3; // Pixel value from texture channel 3
 
 // Constants
 const float TAU = 2.0 * 3.141592653589793;
@@ -77,22 +81,22 @@ void light(){}
 
 void main(void) {
   // Defaults
+  UV = v_uv_size.xy;
+  SIZE = v_uv_size.zw;
   COLOR = vec4(0.0);
   LIGHT = vec4(0.0);
   AMBIENT_LIGHT = u_ambientLight;
+  CHANNEL_0 = texture(u_channel_0, v_channel_coords_01.xy);
+  CHANNEL_1 = texture(u_channel_0, v_channel_coords_01.zw);
+  CHANNEL_2 = texture(u_channel_0, v_channel_coords_23.xy);
+  CHANNEL_3 = texture(u_channel_0, v_channel_coords_23.zw);
 
   // Basic colour
-  COLOR = texture(u_channel_0, v_channel_coords_0);
+  COLOR = CHANNEL_0;
 
   fragment();
 
   // Lighting
-
-  // float albedoAmount = v_textureAmounts.x;
-  // float emissiveAmount = v_textureAmounts.y;
-  // float normalAmount = v_textureAmounts.z;
-  // float specularAmount = v_textureAmounts.w;
-
   int lightCount = min(16, max(0, u_numOfLights));
   for(int i = 0; i < lightCount; i++) {
     light();

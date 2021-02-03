@@ -3,7 +3,7 @@ package indigo.platform.renderer.shared
 import indigo.shared.display.DisplayObject
 import indigo.shared.display.SpriteSheetFrame
 import indigo.shared.datatypes.Vector2
-import indigo.shared.display.DisplayEffects
+// import indigo.shared.display.DisplayEffects
 import indigo.shared.datatypes.mutable.CheapMatrix4
 
 import scalajs.js.JSConverters._
@@ -20,15 +20,18 @@ object RendererHelper {
       height = h,
       atlasName = "",
       frame = SpriteSheetFrame.defaultOffset,
-      albedoAmount = 1.0f,
-      emissiveOffset = Vector2.zero,
-      emissiveAmount = 0.0f,
-      normalOffset = Vector2.zero,
-      normalAmount = 0.0f,
-      specularOffset = Vector2.zero,
-      specularAmount = 0.0f,
+      channelOffset1 = Vector2.zero,
+      channelOffset2 = Vector2.zero,
+      channelOffset3 = Vector2.zero,
+      // albedoAmount = 1.0f,
+      // emissiveOffset = Vector2.zero,
+      // emissiveAmount = 0.0f,
+      // normalOffset = Vector2.zero,
+      // normalAmount = 0.0f,
+      // specularOffset = Vector2.zero,
+      // specularAmount = 0.0f,
       isLit = 0.0f,
-      effects = DisplayEffects.default,
+      // effects = DisplayEffects.default,
       shaderId = None
     )
 

@@ -191,7 +191,7 @@ final class RendererWebGL1(
     val frameTransform          = gl.getUniformLocation(shaderProgram, "u_frameTransform")
 
     // Uniform locations (fragment)
-    val tintLocation    = gl.getUniformLocation(shaderProgram, "u_tint")
+    // val tintLocation    = gl.getUniformLocation(shaderProgram, "u_tint")
     val textureLocation = gl.getUniformLocation(shaderProgram, "u_texture")
 
     // Set once
@@ -226,13 +226,13 @@ final class RendererWebGL1(
               gl.bindTexture(TEXTURE_2D, textureLookup.texture)
           }
 
-          gl.uniform4f(
-            tintLocation,
-            displayObject.effects.tint(0).toDouble,
-            displayObject.effects.tint(1).toDouble,
-            displayObject.effects.tint(2).toDouble,
-            displayObject.effects.tint(3).toDouble
-          )
+          // gl.uniform4f(
+          //   tintLocation,
+          //   displayObject.effects.tint(0).toDouble,
+          //   displayObject.effects.tint(1).toDouble,
+          //   displayObject.effects.tint(2).toDouble,
+          //   displayObject.effects.tint(3).toDouble
+          // )
         }
 
         gl.drawArrays(TRIANGLE_STRIP, 0, 4)
