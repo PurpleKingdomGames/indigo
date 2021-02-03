@@ -55,7 +55,6 @@ uniform float u_lightAttenuation[16];
 in vec2 TEXCOORDS;
 in vec2 UV; // Unscaled texture coordinates
 in vec2 SIZE; // Width / height of the objects
-in float ALPHA; // Alpha of entity
 
 // Constants
 const float TAU = 2.0 * 3.141592653589793;
@@ -82,7 +81,6 @@ void main(void) {
 
   // Basic colour
   COLOR = texture(u_texture, TEXCOORDS);
-  COLOR = vec4(COLOR.rgb, COLOR.a * ALPHA);
 
   fragment();
 

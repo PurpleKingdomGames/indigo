@@ -5,8 +5,7 @@ precision mediump float;
 layout (location = 0) in vec4 a_verticesAndCoords; // a_vertices, a_texcoord
 layout (location = 1) in vec4 a_matRotateScale; // mat(0,1,4,5)
 
-// TODO: Remove alpha again? Lets say yes.
-layout (location = 2) in vec4 a_matTranslateAlpha; // mat(12,13,14,alpha)
+layout (location = 2) in vec3 a_matTranslate; // mat(12,13,14)
 layout (location = 3) in vec2 a_size; // 
 layout (location = 4) in vec4 a_frameTransform; // a_frameTranslation, a_frameScale
 
@@ -28,7 +27,6 @@ uniform float TIME; // Running time
 out vec2 TEXCOORDS; // Scaled to position on texture atlas
 out vec2 UV; // Unscaled texture coordinates
 out vec2 SIZE; // Width / height of the objects
-out float ALPHA; // Alpha of entity
 //
 // out vec4 v_texcoordEmissiveNormal;
 // out vec4 v_textureAmounts;
@@ -82,7 +80,7 @@ void main(void) {
     mat4(a_matRotateScale.x,    a_matRotateScale.y,    0,                     0,
          a_matRotateScale.z,    a_matRotateScale.w,    0,                     0,
          0,                     0,                     1,                     0,
-         a_matTranslateAlpha.x, a_matTranslateAlpha.y, a_matTranslateAlpha.z, 1
+         a_matTranslate.x,      a_matTranslate.y,      a_matTranslate.z,      1
         );
 
   vertex();
@@ -92,7 +90,6 @@ void main(void) {
   TEXCOORDS = texcoords;
   UV = a_verticesAndCoords.zw;
   SIZE = a_size;
-  ALPHA = a_matTranslateAlpha.w;
 
   //
   // v_texcoordEmissiveNormal = vec4(scaleTexCoordsWithOffset(texcoords, texcoordsEmissive), scaleTexCoordsWithOffset(texcoords, texcoordsNormal));
