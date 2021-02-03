@@ -48,7 +48,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     gl2.bufferData(ARRAY_BUFFER, new Float32Array(data), STATIC_DRAW)
   }
 
-  private def updateData(d: DisplayObject, i: Int, matrixData1: List[Double], matrixData2: List[Double], alpha: Float): Unit = {
+  private def updateData(d: DisplayObject, i: Int, matrixData1: List[Double], matrixData2: List[Double]): Unit = {
     matRotateScaleData((i * 4) + 0) = matrixData1(0).toFloat
     matRotateScaleData((i * 4) + 1) = matrixData1(1).toFloat
     matRotateScaleData((i * 4) + 2) = matrixData1(2).toFloat
@@ -57,7 +57,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     matTranslateAlphaData((i * 4) + 0) = matrixData2(0).toFloat
     matTranslateAlphaData((i * 4) + 1) = matrixData2(1).toFloat
     matTranslateAlphaData((i * 4) + 2) = matrixData2(2).toFloat
-    matTranslateAlphaData((i * 4) + 3) = alpha
+    matTranslateAlphaData((i * 4) + 3) = 0.0f
 
     sizeData((i * 2) + 0) = d.width
     sizeData((i * 2) + 1) = d.height
@@ -171,7 +171,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
         case (d: DisplayObject) :: ds =>
           val data = d.transform.data
-          updateData(d, batchCount, data._1, data._2, d.effects.alpha)
+          updateData(d, batchCount, data._1, data._2)
           rec(ds, batchCount + 1, atlasName, currentShader)
 
         case (c: DisplayClone) :: ds =>
@@ -180,9 +180,9 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
               rec(ds, batchCount, atlasName, currentShader)
 
             case Some(refDisplayObject) =>
-              val cl   = DisplayClone.asBatchData(c)
+              // val cl   = DisplayClone.asBatchData(c)
               val data = c.transform.data
-              updateData(refDisplayObject, batchCount, data._1, data._2, cl.alpha)
+              updateData(refDisplayObject, batchCount, data._1, data._2)
               rec(ds, batchCount + 1, atlasName, currentShader)
           }
 
@@ -215,7 +215,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     while (i < count) {
       cl = c.clones(i)
       data = cl.transform.data
-      updateData(refDisplayObject, batchCount + i, data._1, data._2, cl.alpha)
+      updateData(refDisplayObject, batchCount + i, data._1, data._2)
       i += 1
     }
 
