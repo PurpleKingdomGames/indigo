@@ -27,8 +27,8 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   // Instance Array Buffers
   private val matRotateScaleInstanceArray: WebGLBuffer    = gl2.createBuffer()
   private val matTranslateAlphaInstanceArray: WebGLBuffer = gl2.createBuffer()
-  private val sizeInstanceArray: WebGLBuffer              = gl2.createBuffer()
-  private val frameTransformInstanceArray: WebGLBuffer    = gl2.createBuffer()
+  private val sizeAndFrameScaleInstanceArray: WebGLBuffer = gl2.createBuffer()
+  private val frameOffsetInstanceArray: WebGLBuffer    = gl2.createBuffer()
 
   def setupInstanceArray(buffer: WebGLBuffer, location: Int, size: Int): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -40,8 +40,8 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
   // Instance Data Arrays
   private val matRotateScaleData: scalajs.js.Array[Float]    = scalajs.js.Array[Float](4f * maxBatchSize)
   private val matTranslateAlphaData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
-  private val sizeData: scalajs.js.Array[Float]              = scalajs.js.Array[Float](4f * maxBatchSize)
-  private val frameTransformData: scalajs.js.Array[Float]    = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val sizeAndFrameScaleData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val frameOffsetData: scalajs.js.Array[Float]    = scalajs.js.Array[Float](4f * maxBatchSize)
 
   @inline private def bindData(buffer: WebGLBuffer, data: scalajs.js.Array[Float]): Unit = {
     gl2.bindBuffer(ARRAY_BUFFER, buffer)
@@ -59,13 +59,13 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     matTranslateAlphaData((i * 4) + 2) = matrixData2(2).toFloat
     matTranslateAlphaData((i * 4) + 3) = 0.0f
 
-    sizeData((i * 2) + 0) = d.width
-    sizeData((i * 2) + 1) = d.height
+    sizeAndFrameScaleData((i * 4) + 0) = d.width
+    sizeAndFrameScaleData((i * 4) + 1) = d.height
+    sizeAndFrameScaleData((i * 4) + 2) = d.frameScaleX
+    sizeAndFrameScaleData((i * 4) + 3) = d.frameScaleY
 
-    frameTransformData((i * 4) + 0) = d.frameX
-    frameTransformData((i * 4) + 1) = d.frameY
-    frameTransformData((i * 4) + 2) = d.frameScaleX
-    frameTransformData((i * 4) + 3) = d.frameScaleY
+    frameOffsetData((i * 2) + 0) = d.frameX
+    frameOffsetData((i * 2) + 1) = d.frameY
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
@@ -103,10 +103,10 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       setupInstanceArray(matRotateScaleInstanceArray, 1, 4) //
       // vec4 a_matTranslateAlpha
       setupInstanceArray(matTranslateAlphaInstanceArray, 2, 4) //
-      // vec2 a_size
-      setupInstanceArray(sizeInstanceArray, 3, 2) //
-      // vec4 a_frameTransform
-      setupInstanceArray(frameTransformInstanceArray, 4, 4) //
+      // vec2 a_sizeAndFrameScale
+      setupInstanceArray(sizeAndFrameScaleInstanceArray, 3, 4) //
+      // vec4 a_frameOffset
+      setupInstanceArray(frameOffsetInstanceArray, 4, 2) //
     }
 
     setupShader(shaderProgram)
@@ -118,8 +118,8 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       if (instanceCount > 0) {
         bindData(matRotateScaleInstanceArray, matRotateScaleData)
         bindData(matTranslateAlphaInstanceArray, matTranslateAlphaData)
-        bindData(sizeInstanceArray, sizeData)
-        bindData(frameTransformInstanceArray, frameTransformData)
+        bindData(sizeAndFrameScaleInstanceArray, sizeAndFrameScaleData)
+        bindData(frameOffsetInstanceArray, frameOffsetData)
 
         gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
       }
