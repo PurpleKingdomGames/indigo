@@ -26,7 +26,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
   // Instance Array Buffers
   private val matRotateScaleInstanceArray: WebGLBuffer           = gl2.createBuffer()
-  private val matTranslateAlphaInstanceArray: WebGLBuffer        = gl2.createBuffer()
+  private val matTranslateInstanceArray: WebGLBuffer             = gl2.createBuffer()
   private val sizeInstanceArray: WebGLBuffer                     = gl2.createBuffer()
   private val frameTransformInstanceArray: WebGLBuffer           = gl2.createBuffer()
   private val tintInstanceArray: WebGLBuffer                     = gl2.createBuffer()
@@ -49,7 +49,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
   // Instance Data Arrays
   private val matRotateScaleData: scalajs.js.Array[Float]           = scalajs.js.Array[Float](4f * maxBatchSize)
-  private val matTranslateAlphaData: scalajs.js.Array[Float]        = scalajs.js.Array[Float](4f * maxBatchSize)
+  private val matTranslateData: scalajs.js.Array[Float]             = scalajs.js.Array[Float](4f * maxBatchSize)
   private val sizeData: scalajs.js.Array[Float]                     = scalajs.js.Array[Float](4f * maxBatchSize)
   private val frameTransformData: scalajs.js.Array[Float]           = scalajs.js.Array[Float](4f * maxBatchSize)
   private val tintData: scalajs.js.Array[Float]                     = scalajs.js.Array[Float](4f * maxBatchSize)
@@ -68,17 +68,16 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     gl2.bufferData(ARRAY_BUFFER, new Float32Array(data), STATIC_DRAW)
   }
 
-  private def updateData(d: DisplayObject, i: Int, matrixData1: List[Double], matrixData2: List[Double], alpha: Float): Unit = {
+  private def updateData(d: DisplayObject, i: Int, matrixData1: List[Double], matrixData2: List[Double]): Unit = {
 
     matRotateScaleData((i * 4) + 0) = matrixData1(0).toFloat
     matRotateScaleData((i * 4) + 1) = matrixData1(1).toFloat
     matRotateScaleData((i * 4) + 2) = matrixData1(2).toFloat
     matRotateScaleData((i * 4) + 3) = matrixData1(3).toFloat
 
-    matTranslateAlphaData((i * 4) + 0) = matrixData2(0).toFloat
-    matTranslateAlphaData((i * 4) + 1) = matrixData2(1).toFloat
-    matTranslateAlphaData((i * 4) + 2) = matrixData2(2).toFloat
-    matTranslateAlphaData((i * 4) + 3) = alpha
+    matTranslateData((i * 3) + 0) = matrixData2(0).toFloat
+    matTranslateData((i * 3) + 1) = matrixData2(1).toFloat
+    matTranslateData((i * 3) + 2) = matrixData2(2).toFloat
 
     sizeData((i * 2) + 0) = d.width
     sizeData((i * 2) + 1) = d.height
@@ -168,8 +167,8 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       // Instance attributes
       // vec4 a_matRotateScale
       setupInstanceArray(matRotateScaleInstanceArray, 1, 4) //
-      // vec4 a_matTranslateAlpha
-      setupInstanceArray(matTranslateAlphaInstanceArray, 2, 4) //
+      // vec4 a_matTranslate
+      setupInstanceArray(matTranslateInstanceArray, 2, 4) //
       // vec2 a_size
       setupInstanceArray(sizeInstanceArray, 3, 2) //
       // vec4 a_frameTransform
@@ -205,7 +204,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     @inline def drawBuffer(instanceCount: Int): Unit =
       if (instanceCount > 0) {
         bindData(matRotateScaleInstanceArray, matRotateScaleData)
-        bindData(matTranslateAlphaInstanceArray, matTranslateAlphaData)
+        bindData(matTranslateInstanceArray, matTranslateData)
         bindData(sizeInstanceArray, sizeData)
         bindData(frameTransformInstanceArray, frameTransformData)
         bindData(tintInstanceArray, tintData)
@@ -269,7 +268,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
         case (d: DisplayObject) :: ds =>
           val data = d.transform.data
-          updateData(d, batchCount, data._1, data._2, d.effects.alpha)
+          updateData(d, batchCount, data._1, data._2)
           rec(ds, batchCount + 1, atlasName, currentShader)
 
         case (c: DisplayClone) :: ds =>
@@ -278,9 +277,9 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
               rec(ds, batchCount, atlasName, currentShader)
 
             case Some(refDisplayObject) =>
-              val cl   = DisplayClone.asBatchData(c)
+              // val cl   = DisplayClone.asBatchData(c)
               val data = c.transform.data
-              updateData(refDisplayObject, batchCount, data._1, data._2, cl.alpha)
+              updateData(refDisplayObject, batchCount, data._1, data._2)
               rec(ds, batchCount + 1, atlasName, currentShader)
           }
 
@@ -313,7 +312,7 @@ class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     while (i < count) {
       cl = c.clones(i)
       data = cl.transform.data
-      updateData(refDisplayObject, batchCount + i, data._1, data._2, cl.alpha)
+      updateData(refDisplayObject, batchCount + i, data._1, data._2)
       i += 1
     }
 
