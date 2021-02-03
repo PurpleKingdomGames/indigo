@@ -49,10 +49,11 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."))
       ).withAssets(SandboxAssets.assets ++ Shaders.assets)
         .withFonts(SandboxView.fontInfo)
-        .withSubSystems(FPSCounter(SandboxView.fontKey, Point(3, 100), targetFPS))
+        .withSubSystems(FPSCounter(SandboxView.fontKey, Point(3, 100), targetFPS, Depth(200)))
         .withShaders(
           Shaders.circle,
-          Shaders.external
+          Shaders.external,
+          Shaders.sea
         )
     )
   }
@@ -144,8 +145,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       Outcome(viewModel)
   }
 
-  def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] =
-    Outcome(
+  def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] = {
+    val scene =
       SandboxView
         .updateView(model, viewModel, context.inputState)
         .addLayer(
@@ -154,7 +155,17 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
             viewModel.multi.draw(context.gameTime, context.boundaryLocator)
           ).withDepth(Depth(1000))
         )
+
+    Outcome(
+      SceneUpdateFragment.empty
+        .addLayer(
+          Layer.empty
+            .withKey(BindingKey("bg"))
+            // .withDepth(Depth(500))
+            .withMagnification(1)
+        ) |+| scene
     )
+  }
 }
 
 final case class Dude(aseprite: Aseprite, sprite: Sprite)
@@ -191,6 +202,12 @@ object TestScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
   def present(context: FrameContext[SandboxStartupData], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment.empty
+        .addLayer(
+          Layer(
+            Graphic(0, 0, 228 * 3, 140 * 3, 10, Material.Custom(Shaders.seaId, SandboxAssets.dots)) //.flipVertical(true)
+          ).withKey(BindingKey("bg"))
+            .withMagnification(1)
+        )
         .addLayer(
           Layer(
             Graphic(120, 10, 32, 32, 1, SandboxAssets.dotsMaterial),
@@ -248,6 +265,7 @@ object Shaders {
 
   val vertAsset: AssetName = AssetName("vertex")
   val fragAsset: AssetName = AssetName("fragment")
+  val seaAsset: AssetName  = AssetName("sea")
 
   val external: CustomShader.External =
     CustomShader.External(
@@ -257,10 +275,22 @@ object Shaders {
       light = fragAsset
     )
 
+  val seaId: ShaderId =
+    ShaderId("sea")
+
+  val sea: CustomShader.External =
+    CustomShader.External(
+      id = seaId,
+      vertex = seaAsset,
+      fragment = seaAsset,
+      light = seaAsset
+    )
+
   def assets: Set[AssetType] =
     Set(
       AssetType.Text(vertAsset, AssetPath("assets/shader.vert")),
-      AssetType.Text(fragAsset, AssetPath("assets/shader.frag"))
+      AssetType.Text(fragAsset, AssetPath("assets/shader.frag")),
+      AssetType.Text(seaAsset, AssetPath("assets/sea.frag"))
     )
 
 }

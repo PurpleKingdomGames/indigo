@@ -4,11 +4,18 @@ precision mediump float;
 
 layout (location = 0) in vec4 a_verticesAndCoords; // a_vertices, a_texcoord
 layout (location = 1) in vec4 a_matRotateScale; // mat(0,1,4,5)
+
+// TODO: Remove alpha again? Lets say yes.
 layout (location = 2) in vec4 a_matTranslateAlpha; // mat(12,13,14,alpha)
 layout (location = 3) in vec2 a_size; // 
 layout (location = 4) in vec4 a_frameTransform; // a_frameTranslation, a_frameScale
+
+// TODO: Is lit and matType to become flags.
+// TODO: put size in with channel offsets. Or size with frame scale and all offsets together.
 // layout (location = 5) in vec4 a_emissiveNormalOffsets; // a_emissive (vec2), a_normal (vec2)
 // layout (location = 6) in vec4 a_specularOffsetIsLitMatType; // a_specular (vec2), a_isLit (float), a_materialType (float)
+
+// TODO: Do we want this one? Bespoke per shader?
 // layout (location = 7) in vec4 a_textureAmounts; // albedoAmount (float), emissiveAmount (float), normalAmount (float), specularAmount (float)
 
 uniform mat4 u_projection;
@@ -17,6 +24,7 @@ uniform mat4 u_projection;
 uniform float TIME; // Running time
 
 // public
+// TODO: TEXCOORDS shouldn't be exposed but we should(?) allow altering of UV's before they become TEXCOORDS?
 out vec2 TEXCOORDS; // Scaled to position on texture atlas
 out vec2 UV; // Unscaled texture coordinates
 out vec2 SIZE; // Width / height of the objects
@@ -27,8 +35,8 @@ out float ALPHA; // Alpha of entity
 // out vec4 v_texcoordSpecularIsLitMatType;
 
 // Constants
-float TAU = 2.0 * 3.141592653589793;
-float PI = 3.141592653589793;
+const float TAU = 2.0 * 3.141592653589793;
+const float PI = 3.141592653589793;
 
 mat4 translate2d(vec2 t){
     return mat4(1, 0, 0, 0,

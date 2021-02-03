@@ -58,8 +58,8 @@ in vec2 SIZE; // Width / height of the objects
 in float ALPHA; // Alpha of entity
 
 // Constants
-float TAU = 2.0 * 3.141592653589793;
-float PI = 3.141592653589793;
+const float TAU = 2.0 * 3.141592653589793;
+const float PI = 3.141592653589793;
 
 // Outputs
 vec4 COLOR;
