@@ -9,9 +9,6 @@ layout (location = 3) in vec4 a_sizeAndFrameScale;
 layout (location = 4) in vec4 a_channelOffsets01;
 layout (location = 5) in vec4 a_channelOffsets23;
 
-// TODO: Is lit and matType to become flags.
-// layout (location = 6) in vec4 a_specularOffsetIsLitMatType; // a_specular (vec2), a_isLit (float), a_materialType (float)
-
 uniform mat4 u_projection;
 
 // public
@@ -22,10 +19,6 @@ out vec4 v_channel_coords_23; // Scaled to position on texture atlas
 
 // public
 out vec4 v_uv_size; // Unscaled texture coordinates + Width / height of the objects
-//
-// out vec4 v_texcoordEmissiveNormal;
-// out vec4 v_textureAmounts;
-// out vec4 v_texcoordSpecularIsLitMatType;
 
 // Constants
 const float TAU = 2.0 * 3.141592653589793;
@@ -79,9 +72,4 @@ void main(void) {
 
   v_channel_coords_01 = vec4(scaleTexCoordsWithOffset(TEXTURE_COORDS, a_channelOffsets01.xy), scaleTexCoordsWithOffset(TEXTURE_COORDS, a_channelOffsets01.zw));
   v_channel_coords_23 = vec4(scaleTexCoordsWithOffset(TEXTURE_COORDS, a_channelOffsets23.xy), scaleTexCoordsWithOffset(TEXTURE_COORDS, a_channelOffsets23.zw));
-
-  //
-  // float isLit = a_specularOffsetIsLitMatType.z;
-  // float materialType = a_specularOffsetIsLitMatType.w;
-  // v_texcoordSpecularIsLitMatType = vec4(scaleTexCoordsWithOffset(texcoords, texcoordsSpecular), vec2(isLit, materialType));
 }
