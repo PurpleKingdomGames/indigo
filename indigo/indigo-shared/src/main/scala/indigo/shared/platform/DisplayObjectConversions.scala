@@ -305,10 +305,10 @@ final class DisplayObjectConversions(
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
     val materialName = leaf.material.default.value
 
-    val albedoAmount                     = 1.0f
-    val (emissiveOffset, emissiveAmount) = materialToEmissiveValues(assetMapping, leaf.material)
-    val (normalOffset, normalAmount)     = materialToNormalValues(assetMapping, leaf.material)
-    val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, leaf.material)
+    // val albedoAmount                     = 1.0f
+    val (emissiveOffset, _) = materialToEmissiveValues(assetMapping, leaf.material)
+    val (normalOffset, _)   = materialToNormalValues(assetMapping, leaf.material)
+    val (specularOffset, _) = materialToSpecularValues(assetMapping, leaf.material)
 
     val frameInfo =
       QuickCache(s"${leaf.crop.hash}_${leaf.material.hash}") {
@@ -319,10 +319,10 @@ final class DisplayObjectConversions(
         )
       }
 
-    val effectsValues =
-      QuickCache(leaf.effects.hash) {
-        DisplayEffects.fromEffects(leaf.effects)
-      }
+    // val effectsValues =
+    //   QuickCache(leaf.effects.hash) {
+    //     DisplayEffects.fromEffects(leaf.effects)
+    //   }
 
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble, 1.0d)),
@@ -331,18 +331,13 @@ final class DisplayObjectConversions(
       height = leaf.crop.size.y,
       atlasName = lookupAtlasName(assetMapping, materialName),
       frame = frameInfo,
-      albedoAmount = albedoAmount,
-      emissiveOffset = frameInfo.offsetToCoords(emissiveOffset),
-      emissiveAmount = emissiveAmount.toFloat,
-      normalOffset = frameInfo.offsetToCoords(normalOffset),
-      normalAmount = normalAmount.toFloat,
-      specularOffset = frameInfo.offsetToCoords(specularOffset),
-      specularAmount = specularAmount.toFloat,
+      channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
+      channelOffset2 = frameInfo.offsetToCoords(normalOffset),
+      channelOffset3 = frameInfo.offsetToCoords(specularOffset),
       isLit = if (leaf.material.isLit) 1.0f else 0.0f,
-      effects = effectsValues,
       shaderId = leaf.material match {
         case Material.Custom(shaderId, _) => Some(shaderId)
-        case _                         => None
+        case _                            => None
       }
     )
   }
@@ -352,10 +347,10 @@ final class DisplayObjectConversions(
 
     val materialName = material.default.value
 
-    val albedoAmount                     = 1.0f
-    val (emissiveOffset, emissiveAmount) = materialToEmissiveValues(assetMapping, material)
-    val (normalOffset, normalAmount)     = materialToNormalValues(assetMapping, material)
-    val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, material)
+    // val albedoAmount                     = 1.0f
+    val (emissiveOffset, _) = materialToEmissiveValues(assetMapping, material)
+    val (normalOffset, _)   = materialToNormalValues(assetMapping, material)
+    val (specularOffset, _) = materialToSpecularValues(assetMapping, material)
 
     val frameInfo =
       QuickCache(anim.frameHash) {
@@ -366,10 +361,10 @@ final class DisplayObjectConversions(
         )
       }
 
-    val effectsValues =
-      QuickCache(leaf.effects.hash) {
-        DisplayEffects.fromEffects(leaf.effects)
-      }
+    // val effectsValues =
+    //   QuickCache(leaf.effects.hash) {
+    //     DisplayEffects.fromEffects(leaf.effects)
+    //   }
 
     val width: Int  = leaf.bounds(boundaryLocator).size.x
     val height: Int = leaf.bounds(boundaryLocator).size.y
@@ -381,18 +376,13 @@ final class DisplayObjectConversions(
       height = height,
       atlasName = lookupAtlasName(assetMapping, materialName),
       frame = frameInfo,
-      albedoAmount = albedoAmount,
-      emissiveOffset = frameInfo.offsetToCoords(emissiveOffset),
-      emissiveAmount = emissiveAmount.toFloat,
-      normalOffset = frameInfo.offsetToCoords(normalOffset),
-      normalAmount = normalAmount.toFloat,
-      specularOffset = frameInfo.offsetToCoords(specularOffset),
-      specularAmount = specularAmount.toFloat,
+      channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
+      channelOffset2 = frameInfo.offsetToCoords(normalOffset),
+      channelOffset3 = frameInfo.offsetToCoords(specularOffset),
       isLit = if (material.isLit) 1.0f else 0.0f,
-      effects = effectsValues,
       shaderId = material match {
         case Material.Custom(shaderId, _) => Some(shaderId)
-        case _                         => None
+        case _                            => None
       }
     )
   }
@@ -413,15 +403,15 @@ final class DisplayObjectConversions(
 
       val materialName = fontInfo.fontSpriteSheet.material.default.value
 
-      val albedoAmount                     = 1.0f
-      val (emissiveOffset, emissiveAmount) = materialToEmissiveValues(assetMapping, fontInfo.fontSpriteSheet.material)
-      val (normalOffset, normalAmount)     = materialToNormalValues(assetMapping, fontInfo.fontSpriteSheet.material)
-      val (specularOffset, specularAmount) = materialToSpecularValues(assetMapping, fontInfo.fontSpriteSheet.material)
+      // val albedoAmount                     = 1.0f
+      val (emissiveOffset, _) = materialToEmissiveValues(assetMapping, fontInfo.fontSpriteSheet.material)
+      val (normalOffset, _)   = materialToNormalValues(assetMapping, fontInfo.fontSpriteSheet.material)
+      val (specularOffset, _) = materialToSpecularValues(assetMapping, fontInfo.fontSpriteSheet.material)
 
-      val effectsValues =
-        QuickCache(leaf.effects.hash) {
-          DisplayEffects.fromEffects(leaf.effects)
-        }
+      // val effectsValues =
+      //   QuickCache(leaf.effects.hash) {
+      //     DisplayEffects.fromEffects(leaf.effects)
+      //   }
 
       QuickCache(lineHash) {
         zipWithCharDetails(line.text.toList, fontInfo).toList.map {
@@ -445,18 +435,13 @@ final class DisplayObjectConversions(
               height = fontChar.bounds.height,
               atlasName = lookupAtlasName(assetMapping, materialName),
               frame = frameInfo,
-              albedoAmount = albedoAmount,
-              emissiveOffset = frameInfo.offsetToCoords(emissiveOffset),
-              emissiveAmount = emissiveAmount.toFloat,
-              normalOffset = frameInfo.offsetToCoords(normalOffset),
-              normalAmount = normalAmount.toFloat,
-              specularOffset = frameInfo.offsetToCoords(specularOffset),
-              specularAmount = specularAmount.toFloat,
+              channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
+              channelOffset2 = frameInfo.offsetToCoords(normalOffset),
+              channelOffset3 = frameInfo.offsetToCoords(specularOffset),
               isLit = if (fontInfo.fontSpriteSheet.material.isLit) 1.0f else 0.0f,
-              effects = effectsValues,
               shaderId = fontInfo.fontSpriteSheet.material match {
                 case Material.Custom(shaderId, _) => Some(shaderId)
-                case _                         => None
+                case _                            => None
               }
             )
         }
