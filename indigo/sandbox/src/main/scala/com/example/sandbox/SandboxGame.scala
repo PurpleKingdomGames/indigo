@@ -253,12 +253,10 @@ object Shaders {
     |""".stripMargin
 
   val circle: CustomShader.Source =
-    CustomShader.Source(
-      id = circleId,
-      vertex = circleVertex(0.5),
-      fragment = circleFragment,
-      light = "void light(){}"
-    )
+    CustomShader
+      .Source(circleId)
+      .withVertexProgram(circleVertex(0.5))
+      .withFragmentProgram(circleFragment)
 
   val externalId: ShaderId =
     ShaderId("external")
@@ -268,23 +266,19 @@ object Shaders {
   val seaAsset: AssetName  = AssetName("sea")
 
   val external: CustomShader.External =
-    CustomShader.External(
-      id = externalId,
-      vertex = vertAsset,
-      fragment = fragAsset,
-      light = fragAsset
-    )
+    CustomShader
+      .External(externalId)
+      .withVertexProgram(vertAsset)
+      .withFragmentProgram(fragAsset)
+      .withLightProgram(fragAsset)
 
   val seaId: ShaderId =
     ShaderId("sea")
 
   val sea: CustomShader.External =
-    CustomShader.External(
-      id = seaId,
-      vertex = seaAsset,
-      fragment = seaAsset,
-      light = seaAsset
-    )
+    CustomShader
+      .External(seaId)
+      .withFragmentProgram(seaAsset)
 
   def assets: Set[AssetType] =
     Set(

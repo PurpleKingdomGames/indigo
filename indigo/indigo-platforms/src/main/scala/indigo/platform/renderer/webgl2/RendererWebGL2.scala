@@ -25,9 +25,9 @@ import indigo.shared.events.ViewportResize
 import indigo.shared.config.GameViewport
 
 import scala.collection.mutable
-import indigo.shared.display.ShaderId
+import indigo.shared.shader.ShaderId
 import org.scalajs.dom.raw.WebGLProgram
-import indigo.shared.display.Shader
+import indigo.shared.shader.Shader
 import scalajs.js.JSConverters._
 import indigo.shared.time.Seconds
 

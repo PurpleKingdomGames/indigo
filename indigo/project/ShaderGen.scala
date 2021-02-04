@@ -33,7 +33,7 @@ object ShaderGen {
 
     s"""package indigo.shaders
     |
-    |import indigo.shared.display.{Shader, ShaderId}
+    |import indigo.shared.shader.{Shader, ShaderId}
     |${if(useNoWarn) "import scala.annotation.nowarn" else ""}
     |
     |object $name extends Shader {

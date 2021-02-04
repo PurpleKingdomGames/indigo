@@ -12,10 +12,6 @@ vec4 COLOR;
 const float PI	 	= 3.141592;
 vec2 SIZE;
 
-//<indigo-vertex>
-void vertex(){}
-//</indigo-vertex>
-
 //<indigo-fragment>
 
 //Shadertoy conversion
@@ -214,7 +210,3 @@ void fragment(){
 	COLOR = vec4(pow(color,vec3(0.65)), 1.0);
 }
 //</indigo-fragment>
-
-//<indigo-light>
-void light(){}
-//</indigo-light>

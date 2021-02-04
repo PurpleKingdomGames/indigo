@@ -20,7 +20,7 @@
 // import indigo.shared.datatypes.RGBA
 // import indigo.shared.display.DisplayObjectShape
 // import scala.collection.mutable.HashMap
-// import indigo.shared.display.ShaderId
+// import indigo.shared.shader.ShaderId
 
 // class RendererLayer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int) {
 

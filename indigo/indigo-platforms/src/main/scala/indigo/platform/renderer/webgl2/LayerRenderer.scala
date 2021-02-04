@@ -20,7 +20,7 @@ import indigo.platform.renderer.shared.RendererHelper
 import indigo.shared.datatypes.RGBA
 import indigo.shared.display.DisplayObjectShape
 import scala.collection.mutable.HashMap
-import indigo.shared.display.ShaderId
+import indigo.shared.shader.ShaderId
 
 class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int) {
 
@@ -135,7 +135,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
         gl2.drawArraysInstanced(TRIANGLE_STRIP, 0, 4, instanceCount)
       }
-    
+
     gl2.activeTexture(TEXTURE0);
 
     @tailrec

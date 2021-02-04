@@ -2,6 +2,7 @@ package indigo.shared.display
 
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.shader.ShaderId
 
 sealed trait DisplayEntity {
   def z: Double

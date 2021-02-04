@@ -1,7 +1,7 @@
 package indigo
 
 import indigo.shared.subsystems.SubSystem
-import indigo.shared.display.CustomShader
+import indigo.shared.shader.CustomShader
 
 final case class BootResult[A](
     gameConfig: GameConfig,
