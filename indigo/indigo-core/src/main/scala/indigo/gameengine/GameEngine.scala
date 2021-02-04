@@ -26,8 +26,8 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.platform.SceneProcessor
 import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
-import indigo.shared.display.CustomShader
-import indigo.shared.ShaderRegister
+import indigo.shared.shader.CustomShader
+import indigo.shared.shader.ShaderRegister
 import indigo.shared.assets.AssetName
 
 final class GameEngine[StartUpData, GameModel, ViewModel](
@@ -219,13 +219,20 @@ object GameEngine {
       case s: CustomShader.Source =>
         shaderRegister.register(s)
 
-      case CustomShader.External(id, vertex, fragment, light) =>
+      case CustomShader.External(id, vertex, fragment, light, uniforms) =>
         val source: CustomShader.Source =
           CustomShader.Source(
             id = id,
-            vertex = extractShaderCode(assetCollection.findTextDataByName(vertex), "indigo-vertex", vertex),
-            fragment = extractShaderCode(assetCollection.findTextDataByName(fragment), "indigo-fragment", fragment),
-            light = extractShaderCode(assetCollection.findTextDataByName(light), "indigo-light", light)
+            vertex = vertex
+              .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-vertex", a))
+              .getOrElse(CustomShader.defaultVertexProgram),
+            fragment = fragment
+              .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-fragment", a))
+              .getOrElse(CustomShader.defaultFragmentProgram),
+            light = light
+              .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-light", a))
+              .getOrElse(CustomShader.defaultLightProgram),
+            uniforms = uniforms
           )
 
         shaderRegister.register(source)
@@ -234,8 +241,8 @@ object GameEngine {
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def extractShaderCode(maybeText: Option[String], tag: String, assetName: AssetName): String =
     maybeText.flatMap(s"""//<$tag>\n((.|\n|\r)*)//</$tag>""".r.findFirstIn) match {
-      case Some(s) =>
-        s
+      case Some(program) =>
+        program
 
       case None =>
         val msg = s"Error parsing external shader could not match '$tag' tag pair in asset '${assetName.value}' - Halting."

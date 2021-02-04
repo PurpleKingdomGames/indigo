@@ -6,7 +6,7 @@ import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLTexture
 import org.scalajs.dom.raw.WebGLProgram
 
-import indigo.shared.display.Shader
+import indigo.shared.shader.Shader
 import org.scalajs.dom.raw.WebGLRenderingContext
 
 object WebGLHelper {

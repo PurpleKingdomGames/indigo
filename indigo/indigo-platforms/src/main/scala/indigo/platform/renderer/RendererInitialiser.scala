@@ -15,7 +15,7 @@ import indigo.shared.IndigoLogger
 import indigo.facades.WebGL2RenderingContext
 import indigo.platform.events.GlobalEventStream
 import indigo.shared.events.RendererDetails
-import indigo.shared.display.Shader
+import indigo.shared.shader.Shader
 
 final class RendererInitialiser(renderingTechnology: RenderingTechnology, globalEventStream: GlobalEventStream) {
 

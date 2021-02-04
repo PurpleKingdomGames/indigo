@@ -1,4 +1,4 @@
-package indigo.shared.display
+package indigo.shared.shader
 
 import indigo.shaders.WebGL2Base
 

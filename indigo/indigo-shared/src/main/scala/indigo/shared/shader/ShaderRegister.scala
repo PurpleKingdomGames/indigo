@@ -1,7 +1,7 @@
-package indigo.shared
+package indigo.shared.shader
 
-import indigo.shared.display.{Shader, ShaderId}
-import indigo.shared.display.CustomShader
+import indigo.shared.QuickCache
+import indigo.shared.CacheKey
 
 final class ShaderRegister {
 
