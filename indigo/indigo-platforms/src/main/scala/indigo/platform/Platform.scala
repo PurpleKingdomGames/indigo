@@ -27,7 +27,7 @@ import indigo.shared.events.FullScreenEntered
 import indigo.shared.events.FullScreenEnterError
 import indigo.shared.events.FullScreenExited
 import indigo.shared.events.FullScreenExitError
-import indigo.shared.display.Shader
+import indigo.shared.shader.Shader
 
 class Platform(
     gameConfig: GameConfig,

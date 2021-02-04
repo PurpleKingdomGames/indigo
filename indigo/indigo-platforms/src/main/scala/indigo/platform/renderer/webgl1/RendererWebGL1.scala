@@ -27,7 +27,7 @@ import indigo.platform.renderer.shared.WebGLHelper
 import indigo.platform.events.GlobalEventStream
 import indigo.shared.events.ViewportResize
 import indigo.shared.config.GameViewport
-import indigo.shared.display.Shader
+import indigo.shared.shader.Shader
 import indigo.shared.time.Seconds
 
 final class RendererWebGL1(
@@ -215,7 +215,7 @@ final class RendererWebGL1(
             lightingFrameBuffer.diffuse,
             uiFrameBuffer.diffuse
           )
-        else {
+        else
           textureLocations.find(t => t.name == displayObject.atlasName) match {
             case None =>
               gl.activeTexture(TEXTURE0);
@@ -226,14 +226,13 @@ final class RendererWebGL1(
               gl.bindTexture(TEXTURE_2D, textureLookup.texture)
           }
 
-          // gl.uniform4f(
-          //   tintLocation,
-          //   displayObject.effects.tint(0).toDouble,
-          //   displayObject.effects.tint(1).toDouble,
-          //   displayObject.effects.tint(2).toDouble,
-          //   displayObject.effects.tint(3).toDouble
-          // )
-        }
+        // gl.uniform4f(
+        //   tintLocation,
+        //   displayObject.effects.tint(0).toDouble,
+        //   displayObject.effects.tint(1).toDouble,
+        //   displayObject.effects.tint(2).toDouble,
+        //   displayObject.effects.tint(3).toDouble
+        // )
 
         gl.drawArrays(TRIANGLE_STRIP, 0, 4)
 
