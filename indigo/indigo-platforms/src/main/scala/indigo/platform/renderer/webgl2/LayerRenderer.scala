@@ -22,7 +22,12 @@ import indigo.shared.display.DisplayObjectShape
 import scala.collection.mutable.HashMap
 import indigo.shared.shader.ShaderId
 
+import scala.scalajs.js.JSConverters._
+
 class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int) {
+
+  private val customDataUBOBuffer: WebGLBuffer =
+    gl2.createBuffer()
 
   // Instance Array Buffers
   private val matRotateScaleInstanceArray: WebGLBuffer    = gl2.createBuffer()
@@ -92,7 +97,11 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, clearColor, true)
     gl2.drawBuffers(frameBufferComponents.colorAttachments)
 
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+    var currentProgram: WebGLProgram = null
+
     def setupShader(program: WebGLProgram): Unit = {
+      currentProgram = program
 
       gl2.useProgram(program)
 
@@ -139,7 +148,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     gl2.activeTexture(TEXTURE0);
 
     @tailrec
-    def rec(remaining: List[DisplayEntity], batchCount: Int, atlasName: String, currentShader: Option[ShaderId]): Unit =
+    def rec(remaining: List[DisplayEntity], batchCount: Int, atlasName: String, currentShader: ShaderId, currentShaderHash: String): Unit =
       remaining match {
         case Nil =>
           drawBuffer(batchCount)
@@ -148,12 +157,13 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
           //TODO
           // val data = d.transform.data
           // updateData(d, batchCount, data._1, data._2, d.effects.alpha)
-          rec(ds, batchCount, atlasName, currentShader)
+          rec(ds, batchCount, atlasName, currentShader, currentShaderHash)
 
+        // Switch shader
         case (d: DisplayObject) :: _ if d.shaderId != currentShader =>
           drawBuffer(batchCount)
 
-          d.shaderId.flatMap(customShaders.get) match {
+          customShaders.get(d.shaderId) match {
             case Some(s) =>
               setupShader(s)
 
@@ -161,12 +171,47 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
               setupShader(shaderProgram)
           }
 
-          rec(remaining, 0, d.atlasName, d.shaderId)
+          rec(remaining, 0, d.atlasName, d.shaderId, currentShaderHash)
 
+        // Update uniforms
+        case (d: DisplayObject) :: _ if d.shaderUniformHash != currentShaderHash =>
+          if (d.shaderUniformHash.isEmpty()) {
+            gl2.bindBuffer(gl2.UNIFORM_BUFFER, null);
+            rec(remaining, batchCount, d.atlasName, d.shaderId, d.shaderUniformHash)
+          } else {
+            drawBuffer(batchCount)
+
+            // UBO blocks must be multiples of 16
+            val length: Int = d.shaderUBO.length
+            val uboSize: Int =
+              Math.ceil(length.toDouble / 16).toInt * 16
+
+            // println(">>> size1: " + uboSize.toString()) // 16
+            // println(">>> size2: " + (uboSize * Float32Array.BYTES_PER_ELEMENT).toString()) // 64
+            // println(">>> data: " + d.shaderUBO.mkString(",").toString()) // [0.75,1,1,0,0.5]
+
+            // TODO: The stride is set to 4 - why?
+
+            // UBO data
+            gl2.bindBuffer(gl2.UNIFORM_BUFFER, customDataUBOBuffer)
+            gl2.bufferData(gl2.UNIFORM_BUFFER, uboSize * Float32Array.BYTES_PER_ELEMENT, STATIC_DRAW)
+            gl2.bindBufferRange(
+              gl2.UNIFORM_BUFFER,
+              0,
+              customDataUBOBuffer,
+              0,
+              uboSize * Float32Array.BYTES_PER_ELEMENT
+            )
+            // gl2.uniformBlockBinding(currentProgram, gl2.getUniformBlockIndex(currentProgram, "CustomData"), 0); // Needed?
+            gl2.bufferSubData(gl2.UNIFORM_BUFFER, 0, new Float32Array(d.shaderUBO.toJSArray))
+
+            rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformHash)
+          }
+
+        // Switch Atlas
         case (d: DisplayObject) :: _ if d.atlasName != atlasName =>
           drawBuffer(batchCount)
 
-          // Diffuse
           textureLocations.find(t => t.name == d.atlasName) match {
             case None =>
               gl2.bindTexture(TEXTURE_2D, null)
@@ -175,44 +220,45 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
               gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
           }
 
-          rec(remaining, 0, d.atlasName, currentShader)
+          rec(remaining, 0, d.atlasName, currentShader, currentShaderHash)
 
+        // Batch full
         case _ if batchCount == maxBatchSize =>
           drawBuffer(batchCount)
-          rec(remaining, 0, atlasName, currentShader)
+          rec(remaining, 0, atlasName, currentShader, currentShaderHash)
 
         case (d: DisplayObject) :: ds =>
           val data = d.transform.data
           updateData(d, batchCount, data._1, data._2)
-          rec(ds, batchCount + 1, atlasName, currentShader)
+          rec(ds, batchCount + 1, atlasName, currentShader, currentShaderHash)
 
         case (c: DisplayClone) :: ds =>
           cloneBlankDisplayObjects.get(c.id) match {
             case None =>
-              rec(ds, batchCount, atlasName, currentShader)
+              rec(ds, batchCount, atlasName, currentShader, currentShaderHash)
 
             case Some(refDisplayObject) =>
               // val cl   = DisplayClone.asBatchData(c)
               val data = c.transform.data
               updateData(refDisplayObject, batchCount, data._1, data._2)
-              rec(ds, batchCount + 1, atlasName, currentShader)
+              rec(ds, batchCount + 1, atlasName, currentShader, currentShaderHash)
           }
 
         case (c: DisplayCloneBatch) :: ds =>
           cloneBlankDisplayObjects.get(c.id) match {
             case None =>
-              rec(ds, batchCount, atlasName, currentShader)
+              rec(ds, batchCount, atlasName, currentShader, currentShaderHash)
 
             case Some(refDisplayObject) =>
               val numberProcessed: Int =
                 processCloneBatch(c, refDisplayObject, batchCount)
 
-              rec(ds, batchCount + numberProcessed, atlasName, currentShader)
+              rec(ds, batchCount + numberProcessed, atlasName, currentShader, currentShaderHash)
           }
 
       }
 
-    rec(sorted.toList, 0, "", None)
+    rec(sorted.toList, 0, "", ShaderId(""), "")
 
   }
 

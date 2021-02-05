@@ -4,7 +4,6 @@ import indigo.shared.assets.AssetName
 
 sealed trait CustomShader {
   def id: ShaderId
-  def uniforms: Map[Uniform, ShaderPrimitive]
 }
 object CustomShader {
 
@@ -16,8 +15,7 @@ object CustomShader {
       id: ShaderId,
       vertex: String,
       fragment: String,
-      light: String,
-      uniforms: Map[Uniform, ShaderPrimitive]
+      light: String
   ) extends CustomShader {
     def withShaderId(newId: ShaderId): Source =
       this.copy(id = newId)
@@ -30,16 +28,6 @@ object CustomShader {
 
     def withLightProgram(program: String): Source =
       this.copy(light = program)
-
-    def withUniforms(newUniforms: List[(Uniform, ShaderPrimitive)]): Source =
-      this.copy(uniforms = newUniforms.toMap)
-    def withUniforms(newUniforms: (Uniform, ShaderPrimitive)*): Source =
-      withUniforms(newUniforms.toList)
-
-    def addUniforms(newUniforms: List[(Uniform, ShaderPrimitive)]): Source =
-      this.copy(uniforms = uniforms ++ newUniforms)
-    def addUniforms(newUniforms: (Uniform, ShaderPrimitive)*): Source =
-      addUniforms(newUniforms.toList)
   }
   object Source {
 
@@ -48,8 +36,7 @@ object CustomShader {
         id,
         defaultVertexProgram,
         defaultFragmentProgram,
-        defaultLightProgram,
-        Map.empty[Uniform, ShaderPrimitive]
+        defaultLightProgram
       )
 
   }
@@ -58,8 +45,7 @@ object CustomShader {
       id: ShaderId,
       vertex: Option[AssetName],
       fragment: Option[AssetName],
-      light: Option[AssetName],
-      uniforms: Map[Uniform, ShaderPrimitive]
+      light: Option[AssetName]
   ) extends CustomShader {
 
     def withShaderId(newId: ShaderId): External =
@@ -74,16 +60,6 @@ object CustomShader {
     def withLightProgram(program: AssetName): External =
       this.copy(light = Option(program))
 
-    def withUniforms(newUniforms: List[(Uniform, ShaderPrimitive)]): External =
-      this.copy(uniforms = newUniforms.toMap)
-    def withUniforms(newUniforms: (Uniform, ShaderPrimitive)*): External =
-      withUniforms(newUniforms.toList)
-
-    def addUniforms(newUniforms: List[(Uniform, ShaderPrimitive)]): External =
-      this.copy(uniforms = uniforms ++ newUniforms)
-    def addUniforms(newUniforms: (Uniform, ShaderPrimitive)*): External =
-      addUniforms(newUniforms.toList)
-
   }
   object External {
 
@@ -92,8 +68,7 @@ object CustomShader {
         id,
         None,
         None,
-        None,
-        Map.empty[Uniform, ShaderPrimitive]
+        None
       )
 
   }

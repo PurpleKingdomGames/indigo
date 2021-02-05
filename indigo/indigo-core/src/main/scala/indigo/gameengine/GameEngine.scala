@@ -219,7 +219,7 @@ object GameEngine {
       case s: CustomShader.Source =>
         shaderRegister.register(s)
 
-      case CustomShader.External(id, vertex, fragment, light, uniforms) =>
+      case CustomShader.External(id, vertex, fragment, light) =>
         val source: CustomShader.Source =
           CustomShader.Source(
             id = id,
@@ -231,8 +231,7 @@ object GameEngine {
               .getOrElse(CustomShader.defaultFragmentProgram),
             light = light
               .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-light", a))
-              .getOrElse(CustomShader.defaultLightProgram),
-            uniforms = uniforms
+              .getOrElse(CustomShader.defaultLightProgram)
           )
 
         shaderRegister.register(source)
