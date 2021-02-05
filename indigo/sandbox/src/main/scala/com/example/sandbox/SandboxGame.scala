@@ -9,8 +9,8 @@ import indigoextras.ui.InputFieldAssets
 import indigo.scenes._
 
 import scala.scalajs.js.annotation._
-import indigo.shared.events.FullScreenEntered
-import indigo.shared.events.FullScreenExited
+import indigo.shared.shader.Uniform
+import indigo.shared.shader.ShaderPrimitive._
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {
@@ -204,15 +204,29 @@ object TestScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
       SceneUpdateFragment.empty
         .addLayer(
           Layer(
-            Graphic(0, 0, 228 * 3, 140 * 3, 10, Material.Custom(Shaders.seaId, SandboxAssets.dots)) //.flipVertical(true)
+            Graphic(0, 0, 228 * 3, 140 * 3, 10, Material.Custom(Shaders.seaId, Map(), SandboxAssets.dots))
           ).withKey(BindingKey("bg"))
             .withMagnification(1)
         )
         .addLayer(
           Layer(
             Graphic(120, 10, 32, 32, 1, SandboxAssets.dotsMaterial),
-            Graphic(140, 50, 32, 32, 1, Material.Custom(Shaders.circleId, SandboxAssets.dots)),
-            Graphic(140, 50, 32, 32, 1, Material.Custom(Shaders.externalId, SandboxAssets.dots))
+            Graphic(140, 50, 32, 32, 1, Material.Custom(Shaders.circleId, Map(), SandboxAssets.dots)),
+            Graphic(
+              140,
+              50,
+              32,
+              32,
+              1,
+              Material.Custom(
+                Shaders.externalId,
+                Map(
+                  Uniform("ALPHA")        -> float(0.75),
+                  Uniform("BORDER_COLOR") -> vec4(1.0, 1.0, 0.0, 0.5)
+                ),
+                SandboxAssets.dots
+              )
+            )
           )
         )
     )

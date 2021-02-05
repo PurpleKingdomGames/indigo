@@ -47,6 +47,7 @@ final class DisplayObjectConversions(
   implicit private val cloneBatchCache: QuickCache[DisplayCloneBatch]            = QuickCache.empty
   implicit private val effectsCache: QuickCache[DisplayEffects]                  = QuickCache.empty
   implicit private val textureAmountsCache: QuickCache[(Vector2, Double)]        = QuickCache.empty
+  implicit private val uniformsCache: QuickCache[Array[Float]]                   = QuickCache.empty
 
   def purgeCaches(): Unit = {
     stringCache.purgeAllNow()
@@ -56,6 +57,7 @@ final class DisplayObjectConversions(
     cloneBatchCache.purgeAllNow()
     effectsCache.purgeAllNow()
     textureAmountsCache.purgeAllNow()
+    uniformsCache.purgeAllNow()
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
@@ -324,6 +326,20 @@ final class DisplayObjectConversions(
     //     DisplayEffects.fromEffects(leaf.effects)
     //   }
 
+    val shaderId = leaf.material.shaderId
+    val (shaderUniformHash, shaderUBO) = leaf.material match {
+      case s @ Material.Custom(_, uniforms, _) =>
+        val hash = s.uniformHash
+        val us = QuickCache(hash) {
+          uniforms.toArray.map(_._2.toArray).flatten
+        }
+
+        (hash, us)
+
+      case _ =>
+        ("", Array[Float]())
+    }
+
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble, 1.0d)),
       z = leaf.depth.zIndex.toDouble,
@@ -335,10 +351,9 @@ final class DisplayObjectConversions(
       channelOffset2 = frameInfo.offsetToCoords(normalOffset),
       channelOffset3 = frameInfo.offsetToCoords(specularOffset),
       isLit = if (leaf.material.isLit) 1.0f else 0.0f,
-      shaderId = leaf.material match {
-        case Material.Custom(shaderId, _) => Some(shaderId)
-        case _                            => None
-      }
+      shaderId = shaderId,
+      shaderUniformHash = shaderUniformHash,
+      shaderUBO = shaderUBO
     )
   }
 
@@ -369,6 +384,20 @@ final class DisplayObjectConversions(
     val width: Int  = leaf.bounds(boundaryLocator).size.x
     val height: Int = leaf.bounds(boundaryLocator).size.y
 
+    val shaderId = material.shaderId
+    val (shaderUniformHash, shaderUBO) = material match {
+      case s @ Material.Custom(_, uniforms, _) =>
+        val hash = s.uniformHash
+        val us = QuickCache(hash) {
+          uniforms.toArray.foldLeft(Array[Float]())(_ ++ _._2.toArray)
+        }
+
+        (hash, us)
+
+      case _ =>
+        ("", Array[Float]())
+    }
+
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(width.toDouble, height.toDouble, 1.0d)),
       z = leaf.depth.zIndex.toDouble,
@@ -380,10 +409,9 @@ final class DisplayObjectConversions(
       channelOffset2 = frameInfo.offsetToCoords(normalOffset),
       channelOffset3 = frameInfo.offsetToCoords(specularOffset),
       isLit = if (material.isLit) 1.0f else 0.0f,
-      shaderId = material match {
-        case Material.Custom(shaderId, _) => Some(shaderId)
-        case _                            => None
-      }
+      shaderId = shaderId,
+      shaderUniformHash = shaderUniformHash,
+      shaderUBO = shaderUBO
     )
   }
 
@@ -413,6 +441,20 @@ final class DisplayObjectConversions(
       //     DisplayEffects.fromEffects(leaf.effects)
       //   }
 
+      val shaderId = fontInfo.fontSpriteSheet.material.shaderId
+      val (shaderUniformHash, shaderUBO) = fontInfo.fontSpriteSheet.material match {
+        case s @ Material.Custom(_, uniforms, _) =>
+          val hash = s.uniformHash
+          val us = QuickCache(hash) {
+            uniforms.toArray.foldLeft(Array[Float]())(_ ++ _._2.toArray)
+          }
+
+          (hash, us)
+
+        case _ =>
+          ("", Array[Float]())
+      }
+
       QuickCache(lineHash) {
         zipWithCharDetails(line.text.toList, fontInfo).toList.map {
           case (fontChar, xPosition) =>
@@ -439,10 +481,9 @@ final class DisplayObjectConversions(
               channelOffset2 = frameInfo.offsetToCoords(normalOffset),
               channelOffset3 = frameInfo.offsetToCoords(specularOffset),
               isLit = if (fontInfo.fontSpriteSheet.material.isLit) 1.0f else 0.0f,
-              shaderId = fontInfo.fontSpriteSheet.material match {
-                case Material.Custom(shaderId, _) => Some(shaderId)
-                case _                            => None
-              }
+              shaderId = shaderId,
+              shaderUniformHash = shaderUniformHash,
+              shaderUBO = shaderUBO
             )
         }
       }
