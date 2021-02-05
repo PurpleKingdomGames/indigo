@@ -63,6 +63,9 @@ trait WebGL2RenderingContext extends WebGLRenderingContext {
   val COLOR_ATTACHMENT14: Int = js.native // 0x8cee
   val COLOR_ATTACHMENT15: Int = js.native // 0x8cef
 
+  def uniformBlockBinding(program: WebGLProgram, uniformBlockIndex: Int, uniformBlockBinding: Int): Unit =
+    js.native
+
   def getUniformBlockIndex(program: WebGLProgram, uniformBlockName: String): Int =
     js.native
 

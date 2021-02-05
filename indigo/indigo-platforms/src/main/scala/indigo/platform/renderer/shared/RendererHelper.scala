@@ -9,6 +9,7 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
 import scalajs.js.JSConverters._
 import scala.collection.mutable
 import indigo.shared.display.DisplayEntity
+import indigo.shared.shader.ShaderId
 
 object RendererHelper {
 
@@ -32,7 +33,9 @@ object RendererHelper {
       // specularAmount = 0.0f,
       isLit = 0.0f,
       // effects = DisplayEffects.default,
-      shaderId = None
+      shaderId = ShaderId(""),
+      shaderUniformHash = "",
+      shaderUBO = Array[Float]()
     )
 
   private def makeMatrix(w: Double, h: Double): CheapMatrix4 =

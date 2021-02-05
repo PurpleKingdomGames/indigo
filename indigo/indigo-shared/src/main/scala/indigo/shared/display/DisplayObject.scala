@@ -65,7 +65,9 @@ final case class DisplayObject(
     channelOffset3X: Float,
     channelOffset3Y: Float,
     isLit: Float,
-    shaderId: Option[ShaderId]
+    shaderId: ShaderId,
+    shaderUniformHash: String,
+    shaderUBO: Array[Float]
 ) extends DisplayEntity {
 
   def applyTransform(matrix: CheapMatrix4): DisplayObject =
@@ -85,7 +87,9 @@ object DisplayObject {
       channelOffset2: Vector2,
       channelOffset3: Vector2,
       isLit: Float,
-      shaderId: Option[ShaderId]
+      shaderId: ShaderId,
+      shaderUniformHash: String,
+      shaderUBO: Array[Float]
   ): DisplayObject =
     DisplayObject(
       transform,
@@ -104,7 +108,9 @@ object DisplayObject {
       channelOffset3.x.toFloat,
       channelOffset3.y.toFloat,
       isLit,
-      shaderId
+      shaderId,
+      shaderUniformHash,
+      shaderUBO
     )
 }
 
