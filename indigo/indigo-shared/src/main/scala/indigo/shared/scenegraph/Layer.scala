@@ -3,7 +3,7 @@ package indigo.shared.scenegraph
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Depth
 
-final case class Layer(nodes: List[SceneGraphNode], key: Option[BindingKey], magnification: Option[Int], depth: Option[Depth]) {
+final case class Layer(nodes: List[SceneGraphNode], key: Option[BindingKey], magnification: Option[Int], depth: Option[Depth], visible: Boolean) {
 
   def |+|(other: Layer): Layer =
     this.copy(
@@ -44,26 +44,34 @@ final case class Layer(nodes: List[SceneGraphNode], key: Option[BindingKey], mag
   def withDepth(newDepth: Depth): Layer =
     this.copy(depth = Option(newDepth))
 
+  def withVisibility(isVisible: Boolean): Layer =
+    this.copy(visible = isVisible)
+
+  def show: Layer =
+    withVisibility(true)
+
+  def hide: Layer =
+    withVisibility(false)
 }
 
 object Layer {
 
   def empty: Layer =
-    Layer(Nil, None, None, None)
+    Layer(Nil, None, None, None, true)
 
   def apply(nodes: SceneGraphNode*): Layer =
-    Layer(nodes.toList, None, None, None)
+    Layer(nodes.toList, None, None, None, true)
 
   def apply(nodes: List[SceneGraphNode]): Layer =
-    Layer(nodes, None, None, None)
+    Layer(nodes, None, None, None, true)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth)(nodes: SceneGraphNode*): Layer =
-    Layer(nodes.toList, Option(key), Option(magnification), Option(depth))
+    Layer(nodes.toList, Option(key), Option(magnification), Option(depth), true)
 
   def apply(key: BindingKey): Layer =
-    Layer(Nil, Option(key), None, None)
+    Layer(Nil, Option(key), None, None, true)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth): Layer =
-    Layer(Nil, Option(key), Option(magnification), Option(depth))
+    Layer(Nil, Option(key), Option(magnification), Option(depth), true)
 
 }

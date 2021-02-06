@@ -87,7 +87,7 @@ final class SceneProcessor(
       }
 
     val displayLayers: List[DisplayLayer] =
-      scene.layers.zipWithIndex
+      scene.layers.filter(_.visible).zipWithIndex
         .map {
           case (l, i) =>
             DisplayLayer(
