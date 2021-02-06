@@ -200,10 +200,16 @@ lazy val indigoJsonCirce =
 lazy val indigoShaders =
   project
     .in(file("indigo-shaders"))
-    .settings(commonSettings: _*)
-    .settings(publishSettings: _*)
     .settings(
-      name := "indigo-shaders"
+      name := "indigo-shaders",
+      version := indigoVersion,
+      scalaVersion := dottyVersion,
+      organization := "io.indigoengine",
+      libraryDependencies ++= Seq(
+        "org.scalameta" %%% "munit" % "0.7.20" % Test
+      ),
+      testFrameworks += new TestFramework("munit.Framework"),
+      Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
     )
 
 // Root
