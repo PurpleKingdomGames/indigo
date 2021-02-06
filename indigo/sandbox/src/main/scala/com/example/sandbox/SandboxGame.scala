@@ -49,7 +49,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."))
       ).withAssets(SandboxAssets.assets ++ Shaders.assets)
         .withFonts(SandboxView.fontInfo)
-        .withSubSystems(FPSCounter(SandboxView.fontKey, Point(3, 100), targetFPS, Depth(200)))
+        .withSubSystems(FPSCounter(SandboxView.fontKey, Point(5, 165), targetFPS, Depth(200)))
         .withShaders(
           Shaders.circle,
           Shaders.external,
@@ -99,7 +99,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       SandboxViewModel(
         Point.zero,
         InputField("single", assets).withKey(BindingKey("single")).makeSingleLine,
-        InputField("multi\nline", assets).withKey(BindingKey("multi")).makeMultiLine
+        InputField("multi\nline", assets).withKey(BindingKey("multi")).makeMultiLine.moveTo(5, 5)
       )
     )
   }
@@ -161,7 +161,6 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         .addLayer(
           Layer.empty
             .withKey(BindingKey("bg"))
-            // .withDepth(Depth(500))
             .withMagnification(1)
         ) |+| scene
     )
