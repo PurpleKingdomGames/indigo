@@ -79,12 +79,23 @@ sealed trait SceneGraphNodePrimitive extends SceneGraphNode {
   def flipVertical(isFlipped: Boolean): SceneGraphNodePrimitive
 }
 
-final case class Shape(bounds: Rectangle, rotation: Radians, scale: Vector2, depth: Depth, ref: Point, flip: Flip) extends SceneGraphNodePrimitive {
+final case class Shape(
+    bounds: Rectangle,
+    rotation: Radians,
+    scale: Vector2,
+    depth: Depth,
+    ref: Point,
+    flip: Flip,
+    material: Material.Custom
+) extends SceneGraphNodePrimitive {
 
   lazy val position: Point = bounds.position
   lazy val size: Point     = bounds.size
   lazy val x: Int          = position.x
   lazy val y: Int          = position.y
+
+  def withMaterial(newMaterial: Material.Custom): Shape =
+    this.copy(material = newMaterial)
 
   def withDepth(newDepth: Depth): Shape =
     this.copy(depth = newDepth)
@@ -143,6 +154,42 @@ final case class Shape(bounds: Rectangle, rotation: Radians, scale: Vector2, dep
     this.copy(bounds = bounds.resize(newSize))
   def resizeBy(amount: Point): Shape =
     resizeTo(bounds.size + amount)
+}
+
+object Shape {
+
+  def apply(x: Int, y: Int, width: Int, height: Int, depth: Int, material: Material.Custom): Shape =
+    Shape(
+      bounds = Rectangle(x, y, width, height),
+      rotation = Radians.zero,
+      scale = Vector2.one,
+      depth = Depth(depth),
+      ref = Point.zero,
+      flip = Flip.default,
+      material = material
+    )
+
+  def apply(bounds: Rectangle, depth: Int, material: Material.Custom): Shape =
+    Shape(
+      bounds = bounds,
+      rotation = Radians.zero,
+      scale = Vector2.one,
+      depth = Depth(depth),
+      ref = Point.zero,
+      flip = Flip.default,
+      material = material
+    )
+
+  def apply(width: Int, height: Int, material: Material.Custom): Shape =
+    Shape(
+      bounds = Rectangle(0, 0, width, height),
+      rotation = Radians.zero,
+      scale = Vector2.one,
+      depth = Depth(1),
+      ref = Point.zero,
+      flip = Flip.default,
+      material = material
+    )
 }
 
 /**
@@ -530,7 +577,7 @@ sealed trait EventHandling {
   * @param material
   */
 final case class Graphic(
-    material: Material,
+    material: StandardMaterial,
     crop: Rectangle,
     effects: Effects,
     position: Point,
@@ -551,7 +598,7 @@ final case class Graphic(
   lazy val x: Int = position.x
   lazy val y: Int = position.y
 
-  def withMaterial(newMaterial: Material): Graphic =
+  def withMaterial(newMaterial: StandardMaterial): Graphic =
     this.copy(material = newMaterial)
 
   def moveTo(pt: Point): Graphic =
@@ -633,7 +680,7 @@ final case class Graphic(
 
 object Graphic {
 
-  def apply(x: Int, y: Int, width: Int, height: Int, depth: Int, material: Material): Graphic =
+  def apply(x: Int, y: Int, width: Int, height: Int, depth: Int, material: StandardMaterial): Graphic =
     Graphic(
       position = Point(x, y),
       rotation = Radians.zero,
@@ -646,7 +693,7 @@ object Graphic {
       material = material
     )
 
-  def apply(bounds: Rectangle, depth: Int, material: Material): Graphic =
+  def apply(bounds: Rectangle, depth: Int, material: StandardMaterial): Graphic =
     Graphic(
       position = bounds.position,
       rotation = Radians.zero,
@@ -659,7 +706,7 @@ object Graphic {
       material = material
     )
 
-  def apply(width: Int, height: Int, material: Material): Graphic =
+  def apply(width: Int, height: Int, material: StandardMaterial): Graphic =
     Graphic(
       position = Point.zero,
       rotation = Radians.zero,

@@ -2,12 +2,12 @@ package indigo.shared.animation
 
 import indigo.shared.collections.NonEmptyList
 
-import indigo.shared.datatypes.Material
+import indigo.shared.datatypes.StandardMaterial
 import indigo.shared.time.Millis
 
 final case class Animation(
     animationKey: AnimationKey,
-    material: Material,
+    material: StandardMaterial,
     currentCycleLabel: CycleLabel,
     cycles: NonEmptyList[Cycle]
 ) {
@@ -24,7 +24,7 @@ object Animation {
 
   def apply(
       animationKey: AnimationKey,
-      material: Material,
+      material: StandardMaterial,
       frameOne: Frame,
       frames: Frame*
   ): Animation =
@@ -35,7 +35,7 @@ object Animation {
       NonEmptyList(Cycle(CycleLabel("default"), NonEmptyList(frameOne, frames.toList), 0, Millis.zero))
     )
 
-  def create(animationKey: AnimationKey, material: Material, cycle: Cycle): Animation =
+  def create(animationKey: AnimationKey, material: StandardMaterial, cycle: Cycle): Animation =
     apply(animationKey, material, cycle.label, NonEmptyList(cycle))
 
 }

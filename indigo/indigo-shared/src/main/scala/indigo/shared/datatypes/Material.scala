@@ -6,24 +6,29 @@ import indigo.shared.shader.Uniform
 import indigo.shared.shader.ShaderPrimitive
 
 sealed trait Material {
-  val default: AssetName
-  val isLit: Boolean
+  def hash: String
+  // def shaderId: ShaderId
+}
+
+sealed trait StandardMaterial extends Material {
+  def default: AssetName
+  def isLit: Boolean
   def lit: Material
   def unlit: Material
-  def hash: String
-  def shaderId: ShaderId
 }
 
 object Material {
 
-  // TODO: This needs revision.
-  final case class Custom(shaderId: ShaderId, uniforms: Map[Uniform, ShaderPrimitive], diffuse: AssetName) extends Material {
-    val default: AssetName  = diffuse
-    val isLit: Boolean      = false
-    def lit: Material       = this
-    def unlit: Material     = this
-    def hash: String        = s"custom-${shaderId.value}"
-    def uniformHash: String = uniforms.toList.map(p => p._1.name + p._2.hash).mkString
+  final case class Custom(
+      shaderId: ShaderId,
+      uniforms: Map[Uniform, ShaderPrimitive],
+      channel0: Option[AssetName],
+      channel1: Option[AssetName],
+      channel2: Option[AssetName],
+      channel3: Option[AssetName]
+  ) extends Material {
+    def uniformHash: String =
+      uniforms.toList.map(p => p._1.name + p._2.hash).mkString
 
     def withUniforms(newUniforms: List[(Uniform, ShaderPrimitive)]): Custom =
       this.copy(uniforms = newUniforms.toMap)
@@ -35,9 +40,38 @@ object Material {
     def addUniforms(newUniforms: (Uniform, ShaderPrimitive)*): Custom =
       addUniforms(newUniforms.toList)
 
+    def withChannel0(assetName: AssetName): Custom =
+      this.copy(channel0 = Some(assetName))
+    def withChannel1(assetName: AssetName): Custom =
+      this.copy(channel1 = Some(assetName))
+    def withChannel2(assetName: AssetName): Custom =
+      this.copy(channel2 = Some(assetName))
+    def withChannel3(assetName: AssetName): Custom =
+      this.copy(channel3 = Some(assetName))
+
+    lazy val hash: String =
+      s"custom-${shaderId.value}" +
+        s"-${uniformHash}" +
+        s"-${channel0.map(_.value).getOrElse("")}" +
+        s"-${channel1.map(_.value).getOrElse("")}" +
+        s"-${channel2.map(_.value).getOrElse("")}" +
+        s"-${channel3.map(_.value).getOrElse("")}"
+
+  }
+  object Custom {
+
+    def apply(shaderId: ShaderId): Custom =
+      Custom(shaderId, Map(), None, None, None, None)
+
+    def apply(shaderId: ShaderId, uniforms: Map[Uniform, ShaderPrimitive]): Custom =
+      Custom(shaderId, uniforms, None, None, None, None)
+
+    def apply(shaderId: ShaderId, channel0: AssetName, channel1: AssetName, channel2: AssetName, channel3: AssetName): Custom =
+      Custom(shaderId, Map(), Option(channel0), Option(channel1), Option(channel2), Option(channel3))
+
   }
 
-  final case class Textured(diffuse: AssetName, isLit: Boolean) extends Material {
+  final case class Textured(diffuse: AssetName, isLit: Boolean) extends StandardMaterial {
     val default: AssetName = diffuse
 
     def withDiffuse(newDiffuse: AssetName): Textured =
@@ -49,11 +83,11 @@ object Material {
     def unlit: Textured =
       this.copy(isLit = false)
 
+    // def shaderId: ShaderId =
+    //   ShaderId("")
+
     lazy val hash: String =
       diffuse.value + (if (isLit) "1" else "0")
-
-    def shaderId: ShaderId =
-      ShaderId("")
   }
   object Textured {
     def apply(diffuse: AssetName): Textured =
@@ -69,7 +103,7 @@ object Material {
       normal: Option[Texture],
       specular: Option[Texture],
       isLit: Boolean
-  ) extends Material {
+  ) extends StandardMaterial {
     val default: AssetName = albedo
 
     def withAlbedo(newAlbedo: AssetName): Lit =
@@ -97,8 +131,8 @@ object Material {
         specular.map(_.hash).getOrElse("_") +
         (if (isLit) "1" else "0")
 
-    def shaderId: ShaderId =
-      ShaderId("")
+    // def shaderId: ShaderId =
+    //   ShaderId("")
   }
   object Lit {
     def apply(

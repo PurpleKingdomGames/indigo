@@ -1,6 +1,6 @@
 package indigo.shared.animation
 
-import indigo.shared.datatypes.Material
+import indigo.shared.datatypes.StandardMaterial
 import indigo.shared.time.Millis
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.temporal.Signal
@@ -13,7 +13,7 @@ import indigo.shared.animation.AnimationAction.JumpToFrame
 
 final case class AnimationRef(
     animationKey: AnimationKey,
-    material: Material,
+    material: StandardMaterial,
     currentCycleLabel: CycleLabel,
     cycles: Map[CycleLabel, CycleRef]
 ) {
