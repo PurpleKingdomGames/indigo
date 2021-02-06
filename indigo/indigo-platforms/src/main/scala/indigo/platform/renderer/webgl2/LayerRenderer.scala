@@ -175,26 +175,19 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
         // Update uniforms
         case (d: DisplayObject) :: _ if d.shaderUniformHash != currentShaderHash =>
-          if (d.shaderUniformHash.isEmpty()) {
-            gl2.bindBuffer(gl2.UNIFORM_BUFFER, null);
+          if (d.shaderUniformHash.isEmpty())
             rec(remaining, batchCount, d.atlasName, d.shaderId, d.shaderUniformHash)
-          } else {
+          else {
             drawBuffer(batchCount)
 
             // UBO blocks must be multiples of 16
-            val length: Int = d.shaderUBO.length
             val uboSize: Int =
-              Math.ceil(length.toDouble / 16).toInt * 16
-
-            // println(">>> size1: " + uboSize.toString()) // 16
-            // println(">>> size2: " + (uboSize * Float32Array.BYTES_PER_ELEMENT).toString()) // 64
-            // println(">>> data: " + d.shaderUBO.mkString(",").toString()) // [0.75,1,1,0,0.5]
-
-            // TODO: The stride is set to 4 - why?
+              Math.ceil(d.shaderUBO.length.toDouble / 16).toInt * 16
 
             // UBO data
             gl2.bindBuffer(gl2.UNIFORM_BUFFER, customDataUBOBuffer)
-            gl2.bufferData(gl2.UNIFORM_BUFFER, uboSize * Float32Array.BYTES_PER_ELEMENT, STATIC_DRAW)
+            gl2.bufferData(gl2.UNIFORM_BUFFER, uboSize * Float32Array.BYTES_PER_ELEMENT, DYNAMIC_DRAW)
+            gl2.bindBufferBase(gl2.UNIFORM_BUFFER, 0, customDataUBOBuffer)
             gl2.bindBufferRange(
               gl2.UNIFORM_BUFFER,
               0,
@@ -202,8 +195,8 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
               0,
               uboSize * Float32Array.BYTES_PER_ELEMENT
             )
-            // gl2.uniformBlockBinding(currentProgram, gl2.getUniformBlockIndex(currentProgram, "CustomData"), 0); // Needed?
             gl2.bufferSubData(gl2.UNIFORM_BUFFER, 0, new Float32Array(d.shaderUBO.toJSArray))
+            gl2.bindBuffer(gl2.UNIFORM_BUFFER, null);
 
             rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformHash)
           }

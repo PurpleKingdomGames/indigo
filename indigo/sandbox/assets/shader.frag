@@ -6,11 +6,9 @@ vec2 UV;
 vec4 COLOR;
 
 //<indigo-fragment>
-
 layout (std140) uniform CustomData {
-  // vec4 ALPHA_BORDER_COLOR;
   float ALPHA;
-  vec4 BORDER_COLOR;
+  vec3 BORDER_COLOR;
 };
 
 float sdf(vec2 p) {
@@ -21,11 +19,8 @@ float sdf(vec2 p) {
 }
 
 void fragment(){
-  // float ALPHA = ALPHA_BORDER_COLOR.x;
-  // vec3 BORDER_COLOR = ALPHA_BORDER_COLOR.yzw;
-
   float amount = sdf(UV - 0.5);
-  COLOR=vec4(BORDER_COLOR.rgb, amount * ALPHA);
+  COLOR=vec4(BORDER_COLOR, amount * ALPHA);
 }
 //</indigo-fragment>
 
