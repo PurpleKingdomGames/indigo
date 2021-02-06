@@ -66,6 +66,9 @@ trait WebGL2RenderingContext extends WebGLRenderingContext {
   def uniformBlockBinding(program: WebGLProgram, uniformBlockIndex: Int, uniformBlockBinding: Int): Unit =
     js.native
 
+  def bindBufferBase(target: Int, index: Int, buffer: WebGLBuffer): Unit =
+    js.native
+
   def getUniformBlockIndex(program: WebGLProgram, uniformBlockName: String): Int =
     js.native
 
