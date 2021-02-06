@@ -4,9 +4,9 @@ import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
 
 import indigo.shared.time.Millis
-import indigo.shared.datatypes.Material
+import indigo.shared.datatypes.StandardMaterial
 
-final case class Frame(crop: Rectangle, duration: Millis, frameMaterial: Option[Material])
+final case class Frame(crop: Rectangle, duration: Millis, frameMaterial: Option[StandardMaterial])
 
 object Frame {
 

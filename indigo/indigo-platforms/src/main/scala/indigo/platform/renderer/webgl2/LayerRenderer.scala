@@ -18,7 +18,6 @@ import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.FrameBufferComponents
 import indigo.platform.renderer.shared.RendererHelper
 import indigo.shared.datatypes.RGBA
-import indigo.shared.display.DisplayObjectShape
 import scala.collection.mutable.HashMap
 import indigo.shared.shader.ShaderId
 
@@ -148,16 +147,10 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     gl2.activeTexture(TEXTURE0);
 
     @tailrec
-    def rec(remaining: List[DisplayEntity], batchCount: Int, atlasName: String, currentShader: ShaderId, currentShaderHash: String): Unit =
+    def rec(remaining: List[DisplayEntity], batchCount: Int, atlasName: Option[String], currentShader: ShaderId, currentShaderHash: String): Unit =
       remaining match {
         case Nil =>
           drawBuffer(batchCount)
-
-        case (_: DisplayObjectShape) :: ds =>
-          //TODO
-          // val data = d.transform.data
-          // updateData(d, batchCount, data._1, data._2, d.effects.alpha)
-          rec(ds, batchCount, atlasName, currentShader, currentShaderHash)
 
         // Switch shader
         case (d: DisplayObject) :: _ if d.shaderId != currentShader =>
@@ -171,12 +164,12 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
               setupShader(shaderProgram)
           }
 
-          rec(remaining, 0, d.atlasName, d.shaderId, currentShaderHash)
+          rec(remaining, 0, atlasName, d.shaderId, currentShaderHash)
 
         // Update uniforms
         case (d: DisplayObject) :: _ if d.shaderUniformHash != currentShaderHash =>
           if (d.shaderUniformHash.isEmpty())
-            rec(remaining, batchCount, d.atlasName, d.shaderId, d.shaderUniformHash)
+            rec(remaining, batchCount, atlasName, d.shaderId, d.shaderUniformHash)
           else {
             drawBuffer(batchCount)
 
@@ -198,7 +191,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
             gl2.bufferSubData(gl2.UNIFORM_BUFFER, 0, new Float32Array(d.shaderUBO.toJSArray))
             gl2.bindBuffer(gl2.UNIFORM_BUFFER, null);
 
-            rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformHash)
+            rec(remaining, 0, atlasName, d.shaderId, d.shaderUniformHash)
           }
 
         // Switch Atlas
@@ -251,7 +244,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
 
       }
 
-    rec(sorted.toList, 0, "", ShaderId(""), "")
+    rec(sorted.toList, 0, None, ShaderId(""), "")
 
   }
 

@@ -53,7 +53,7 @@ final case class DisplayObject(
     z: Double,
     width: Float,
     height: Float,
-    atlasName: String,
+    atlasName: Option[String],
     frameScaleX: Float,
     frameScaleY: Float,
     channelOffset0X: Float,
@@ -81,7 +81,7 @@ object DisplayObject {
       z: Double,
       width: Int,
       height: Int,
-      atlasName: String,
+      atlasName: Option[String],
       frame: SpriteSheetFrame.SpriteSheetFrameCoordinateOffsets,
       channelOffset1: Vector2,
       channelOffset2: Vector2,
@@ -114,14 +114,14 @@ object DisplayObject {
     )
 }
 
-final case class DisplayObjectShape(
-    val transform: CheapMatrix4,
-    val z: Double,
-    val width: Float,
-    val height: Float
-) extends DisplayEntity {
+// final case class DisplayObjectShape(
+//     val transform: CheapMatrix4,
+//     val z: Double,
+//     val width: Float,
+//     val height: Float
+// ) extends DisplayEntity {
 
-  def applyTransform(matrix: CheapMatrix4): DisplayObjectShape =
-    this.copy(transform * matrix)
+//   def applyTransform(matrix: CheapMatrix4): DisplayObjectShape =
+//     this.copy(transform * matrix)
 
-}
+// }
