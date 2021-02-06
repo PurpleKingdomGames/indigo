@@ -198,7 +198,9 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
         case (d: DisplayObject) :: _ if d.atlasName != atlasName =>
           drawBuffer(batchCount)
 
-          textureLocations.find(t => t.name == d.atlasName) match {
+          d.atlasName.flatMap { nextAtlas =>
+            textureLocations.find(t => t.name == nextAtlas)
+          } match {
             case None =>
               gl2.bindTexture(TEXTURE_2D, null)
 
