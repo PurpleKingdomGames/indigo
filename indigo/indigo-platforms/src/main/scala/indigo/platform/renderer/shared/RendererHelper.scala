@@ -19,7 +19,7 @@ object RendererHelper {
       z = 1,
       width = w,
       height = h,
-      atlasName = "",
+      atlasName = None,
       frame = SpriteSheetFrame.defaultOffset,
       channelOffset1 = Vector2.zero,
       channelOffset2 = Vector2.zero,

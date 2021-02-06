@@ -382,6 +382,9 @@ package object indigo {
   val AnimationAction: indigo.shared.animation.AnimationAction.type = indigo.shared.animation.AnimationAction
 
   // Primitives
+  type Shape = shared.scenegraph.Shape
+  val Shape: shared.scenegraph.Shape.type = shared.scenegraph.Shape
+
   type Sprite = shared.scenegraph.Sprite
   val Sprite: shared.scenegraph.Sprite.type = shared.scenegraph.Sprite
 

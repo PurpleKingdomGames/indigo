@@ -203,15 +203,15 @@ object TestScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
       SceneUpdateFragment.empty
         .addLayer(
           Layer(
-            Graphic(0, 0, 228 * 3, 140 * 3, 10, Material.Custom(Shaders.seaId, Map(), SandboxAssets.dots))
+            Shape(0, 0, 228 * 3, 140 * 3, 10, Material.Custom(Shaders.seaId))
           ).withKey(BindingKey("bg"))
             .withMagnification(1)
         )
         .addLayer(
           Layer(
             Graphic(120, 10, 32, 32, 1, SandboxAssets.dotsMaterial),
-            Graphic(140, 50, 32, 32, 1, Material.Custom(Shaders.circleId, Map(), SandboxAssets.dots)),
-            Graphic(
+            Shape(140, 50, 32, 32, 1, Material.Custom(Shaders.circleId)),
+            Shape(
               140,
               50,
               32,
@@ -222,11 +222,10 @@ object TestScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
                 Map(
                   Uniform("ALPHA")        -> float(0.75),
                   Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 0.0)
-                ),
-                SandboxAssets.dots
+                )
               )
             ),
-            Graphic(
+            Shape(
               150,
               60,
               32,
@@ -237,8 +236,7 @@ object TestScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
                 Map(
                   Uniform("ALPHA")        -> float(0.5),
                   Uniform("BORDER_COLOR") -> vec3(1.0, 0.0, 1.0)
-                ),
-                SandboxAssets.dots
+                )
               )
             )
           )

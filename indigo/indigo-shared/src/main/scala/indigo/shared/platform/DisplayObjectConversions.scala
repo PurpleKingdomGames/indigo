@@ -21,7 +21,6 @@ import indigo.shared.QuickCache
 import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
 import indigo.shared.display.DisplayEntity
-import indigo.shared.display.DisplayObjectShape
 import indigo.shared.scenegraph.Clone
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.display.DisplayClone
@@ -33,6 +32,8 @@ import indigo.shared.datatypes.Texture
 import indigo.shared.BoundaryLocator
 import indigo.shared.animation.AnimationRef
 import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.shader.ShaderId
+import indigo.shared.assets.AssetName
 
 final class DisplayObjectConversions(
     boundaryLocator: BoundaryLocator,
@@ -169,14 +170,7 @@ final class DisplayObjectConversions(
     sceneNode match {
 
       case s: Shape =>
-        List(
-          DisplayObjectShape(
-            transform = DisplayObjectConversions.nodeToMatrix4(s, Vector3(s.bounds.size.x.toDouble, s.bounds.size.y.toDouble, 1.0d)),
-            z = s.depth.zIndex.toDouble,
-            width = s.bounds.size.x.toFloat,
-            height = s.bounds.size.y.toFloat
-          )
-        )
+        List(shapeToDisplayObject(s, assetMapping))
 
       case c: Clone =>
         cloneBlankDisplayObjects.get(c.id.value) match {
@@ -304,6 +298,59 @@ final class DisplayObjectConversions(
       }
       .getOrElse((Vector2.zero, 0.0d))
 
+  def optionalAssetToOffset(assetMapping: AssetMapping, maybeAssetName: Option[AssetName]): Vector2 =
+    maybeAssetName match {
+      case None =>
+        Vector2.zero
+
+      case Some(assetName) =>
+        lookupTextureOffset(assetMapping, assetName.value)
+    }
+
+  def shapeToDisplayObject(leaf: Shape, assetMapping: AssetMapping): DisplayObject = {
+    val material: Material.Custom = leaf.material
+
+    val channelOffset1 = optionalAssetToOffset(assetMapping, material.channel1)
+    val channelOffset2 = optionalAssetToOffset(assetMapping, material.channel2)
+    val channelOffset3 = optionalAssetToOffset(assetMapping, material.channel3)
+
+    val frameInfo: SpriteSheetFrameCoordinateOffsets =
+      material.channel1 match {
+        case None =>
+          SpriteSheetFrame.defaultOffset
+        case Some(assetName) =>
+          QuickCache(s"${leaf.bounds.hash}_${leaf.material.hash}") {
+            SpriteSheetFrame.calculateFrameOffset(
+              atlasSize = lookupAtlasSize(assetMapping, assetName.value),
+              frameCrop = leaf.bounds,
+              textureOffset = lookupTextureOffset(assetMapping, assetName.value)
+            )
+          }
+      }
+
+    val shaderId          = material.shaderId
+    val shaderUniformHash = material.uniformHash
+    val shaderUBO = QuickCache(shaderUniformHash) {
+      material.uniforms.toArray.map(_._2.toArray).flatten
+    }
+
+    DisplayObject(
+      transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)),
+      z = leaf.depth.zIndex.toDouble,
+      width = leaf.bounds.size.x,
+      height = leaf.bounds.size.y,
+      atlasName = material.channel0.map(assetName => lookupAtlasName(assetMapping, assetName.value)),
+      frame = frameInfo,
+      channelOffset1 = frameInfo.offsetToCoords(channelOffset1),
+      channelOffset2 = frameInfo.offsetToCoords(channelOffset2),
+      channelOffset3 = frameInfo.offsetToCoords(channelOffset3),
+      isLit = 0.0f,
+      shaderId = shaderId,
+      shaderUniformHash = shaderUniformHash,
+      shaderUBO = shaderUBO
+    )
+  }
+
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
     val materialName = leaf.material.default.value
 
@@ -326,26 +373,29 @@ final class DisplayObjectConversions(
     //     DisplayEffects.fromEffects(leaf.effects)
     //   }
 
-    val shaderId = leaf.material.shaderId
-    val (shaderUniformHash, shaderUBO) = leaf.material match {
-      case s @ Material.Custom(_, uniforms, _) =>
-        val hash = s.uniformHash
-        val us = QuickCache(hash) {
-          uniforms.toArray.map(_._2.toArray).flatten
-        }
+    // val shaderId = leaf.material.shaderId
+    // val (shaderUniformHash, shaderUBO) = leaf.material match {
+    //   case s @ Material.Custom(_, uniforms, _) =>
+    //     val hash = s.uniformHash
+    //     val us = QuickCache(hash) {
+    //       uniforms.toArray.map(_._2.toArray).flatten
+    //     }
 
-        (hash, us)
+    //     (hash, us)
 
-      case _ =>
-        ("", Array[Float]())
-    }
+    //   case _ =>
+    //     ("", Array[Float]())
+    // }
+    val shaderId          = ShaderId("")
+    val shaderUniformHash = ""
+    val shaderUBO         = Array[Float]()
 
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble, 1.0d)),
       z = leaf.depth.zIndex.toDouble,
       width = leaf.crop.size.x,
       height = leaf.crop.size.y,
-      atlasName = lookupAtlasName(assetMapping, materialName),
+      atlasName = Some(lookupAtlasName(assetMapping, materialName)),
       frame = frameInfo,
       channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
       channelOffset2 = frameInfo.offsetToCoords(normalOffset),
@@ -384,26 +434,29 @@ final class DisplayObjectConversions(
     val width: Int  = leaf.bounds(boundaryLocator).size.x
     val height: Int = leaf.bounds(boundaryLocator).size.y
 
-    val shaderId = material.shaderId
-    val (shaderUniformHash, shaderUBO) = material match {
-      case s @ Material.Custom(_, uniforms, _) =>
-        val hash = s.uniformHash
-        val us = QuickCache(hash) {
-          uniforms.toArray.foldLeft(Array[Float]())(_ ++ _._2.toArray)
-        }
+    // val shaderId = material.shaderId
+    // val (shaderUniformHash, shaderUBO) = material match {
+    //   case s @ Material.Custom(_, uniforms, _) =>
+    //     val hash = s.uniformHash
+    //     val us = QuickCache(hash) {
+    //       uniforms.toArray.foldLeft(Array[Float]())(_ ++ _._2.toArray)
+    //     }
 
-        (hash, us)
+    //     (hash, us)
 
-      case _ =>
-        ("", Array[Float]())
-    }
+    //   case _ =>
+    //     ("", Array[Float]())
+    // }
+    val shaderId          = ShaderId("")
+    val shaderUniformHash = ""
+    val shaderUBO         = Array[Float]()
 
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(width.toDouble, height.toDouble, 1.0d)),
       z = leaf.depth.zIndex.toDouble,
       width = width,
       height = height,
-      atlasName = lookupAtlasName(assetMapping, materialName),
+      atlasName = Some(lookupAtlasName(assetMapping, materialName)),
       frame = frameInfo,
       channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
       channelOffset2 = frameInfo.offsetToCoords(normalOffset),
@@ -441,19 +494,22 @@ final class DisplayObjectConversions(
       //     DisplayEffects.fromEffects(leaf.effects)
       //   }
 
-      val shaderId = fontInfo.fontSpriteSheet.material.shaderId
-      val (shaderUniformHash, shaderUBO) = fontInfo.fontSpriteSheet.material match {
-        case s @ Material.Custom(_, uniforms, _) =>
-          val hash = s.uniformHash
-          val us = QuickCache(hash) {
-            uniforms.toArray.foldLeft(Array[Float]())(_ ++ _._2.toArray)
-          }
+      // val shaderId = fontInfo.fontSpriteSheet.material.shaderId
+      // val (shaderUniformHash, shaderUBO) = fontInfo.fontSpriteSheet.material match {
+      //   case s @ Material.Custom(_, uniforms, _) =>
+      //     val hash = s.uniformHash
+      //     val us = QuickCache(hash) {
+      //       uniforms.toArray.foldLeft(Array[Float]())(_ ++ _._2.toArray)
+      //     }
 
-          (hash, us)
+      //     (hash, us)
 
-        case _ =>
-          ("", Array[Float]())
-      }
+      //   case _ =>
+      //     ("", Array[Float]())
+      // }
+      val shaderId          = ShaderId("")
+      val shaderUniformHash = ""
+      val shaderUBO         = Array[Float]()
 
       QuickCache(lineHash) {
         zipWithCharDetails(line.text.toList, fontInfo).toList.map {
@@ -475,7 +531,7 @@ final class DisplayObjectConversions(
               z = leaf.depth.zIndex.toDouble,
               width = fontChar.bounds.width,
               height = fontChar.bounds.height,
-              atlasName = lookupAtlasName(assetMapping, materialName),
+              atlasName = Some(lookupAtlasName(assetMapping, materialName)),
               frame = frameInfo,
               channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
               channelOffset2 = frameInfo.offsetToCoords(normalOffset),
