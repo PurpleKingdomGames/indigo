@@ -25,7 +25,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext) {
 
   // They're all blocks of 16, it's the only block length allowed in WebGL.
   private val projectionMatrixUBODataSize: Int = 16
-  private val displayObjectUBODataSize: Int    = 16 * 2
+  private val displayObjectUBODataSize: Int    = 16
   private val uboDataSize: Int                 = projectionMatrixUBODataSize + displayObjectUBODataSize
 
   private val uboData: scalajs.js.Array[Float] =
@@ -70,7 +70,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext) {
     )
 
     // UBO data
-    gl2.bindBuffer(ARRAY_BUFFER, displayObjectUBOBuffer)
+    gl2.bindBuffer(gl2.UNIFORM_BUFFER, displayObjectUBOBuffer)
     gl2.bindBufferRange(
       gl2.UNIFORM_BUFFER,
       0,
@@ -79,7 +79,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext) {
       uboDataSize * Float32Array.BYTES_PER_ELEMENT
     )
     gl2.bufferData(
-      ARRAY_BUFFER,
+      gl2.UNIFORM_BUFFER,
       new Float32Array(projection ++ uboData),
       STATIC_DRAW
     )
