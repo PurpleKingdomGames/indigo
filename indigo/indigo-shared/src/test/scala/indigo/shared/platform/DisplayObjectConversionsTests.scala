@@ -20,7 +20,6 @@ import indigo.shared.scenegraph.Group
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.datatypes.Radians
-import indigo.shared.display.DisplayObjectShape
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DisplayObjectConversionsTests extends munit.FunSuite {
@@ -58,9 +57,6 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
       case _: DisplayCloneBatch =>
         throw new Exception("failed (DisplayCloneBatch)")
-
-      case _: DisplayObjectShape =>
-        throw new Exception("failed (DisplayObjectShape)")
 
       case d: DisplayObject =>
         d
