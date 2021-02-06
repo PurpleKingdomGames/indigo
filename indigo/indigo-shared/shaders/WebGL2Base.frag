@@ -5,24 +5,12 @@ precision mediump float;
 layout(location = 0) out vec4 fragColor;
 
 // ** Uniforms **
-// ----------------
-// Per object batch / texture / shader
-// ----------------
-
 // Currently we only ever bind one texture at a time.
 // The texture is however an atlas of textures, so in
 // practice you can read many sub-textures at once.
 // Could remove this limitation.
 uniform sampler2D u_channel_0;
-
-// ----------------
-// Per layer
-// ----------------
 uniform vec4 u_ambientLight;
-
-// ----------------
-// Per frame
-// ----------------
 // public
 uniform float TIME; // Running time
 
@@ -82,9 +70,7 @@ void main(void) {
   CHANNEL_2 = texture(u_channel_0, v_channel_coords_23.xy);
   CHANNEL_3 = texture(u_channel_0, v_channel_coords_23.zw);
 
-  // Basic colour
-  COLOR = CHANNEL_0;
-
+  // Colour
   fragment();
 
   // Lighting
