@@ -27,7 +27,7 @@ object PerfView {
       )
   }
 
-  private val herdCount: Int = 9999
+  private val herdCount: Int = 11999
 
   private val positions: List[Point] =
     (1 to herdCount).toList.map { _ =>
@@ -92,7 +92,8 @@ object PerfView {
 
   val staticLights: List[Graphic] =
     List(
-      Graphic(0, 0, 320, 240, 1, PerfAssets.lightMaterial).withTint(1, 0, 0),
+      Graphic(0, 0, 320, 240, 1, PerfAssets.lightMaterial),
+      // .withTint(1, 0, 0),
       Graphic(-115, -100, 320, 240, 1, PerfAssets.lightMaterial)
     )
 

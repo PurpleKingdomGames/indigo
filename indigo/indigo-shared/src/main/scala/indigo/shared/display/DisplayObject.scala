@@ -12,40 +12,41 @@ sealed trait DisplayEntity {
 final case class DisplayClone(
     val id: String,
     val transform: CheapMatrix4,
-    val z: Double,
-    val alpha: Float
+    val z: Double//,
+    // val alpha: Float
 ) extends DisplayEntity {
 
   def applyTransform(matrix: CheapMatrix4): DisplayClone =
     this.copy(transform = transform * matrix)
 }
 object DisplayClone {
-  def asBatchData(dc: DisplayClone): DisplayCloneBatchData =
-    new DisplayCloneBatchData(
-      dc.transform,
-      dc.alpha
-    )
+  def asBatchData(dc: DisplayClone): CheapMatrix4 =
+    // new DisplayCloneBatchData(
+      dc.transform//,
+    //   dc.alpha
+    // )
 }
 
-final case class DisplayCloneBatchData(
-    val transform: CheapMatrix4,
-    val alpha: Float
-) {
-  def applyTransform(matrix: CheapMatrix4): DisplayCloneBatchData =
-    this.copy(transform = transform * matrix)
-}
-object DisplayCloneBatchData {
-  val None: DisplayCloneBatchData =
-    DisplayCloneBatchData(CheapMatrix4.identity, 0.0f)
-}
+// final case class DisplayCloneBatchData(
+//     val transform: CheapMatrix4,
+//     val alpha: Float
+// ) {
+//   def applyTransform(matrix: CheapMatrix4): DisplayCloneBatchData =
+//     this.copy(transform = transform * matrix)
+// }
+// object DisplayCloneBatchData {
+//   val None: DisplayCloneBatchData =
+//     DisplayCloneBatchData(CheapMatrix4.identity, 0.0f)
+// }
 final case class DisplayCloneBatch(
     val id: String,
     val z: Double,
-    val clones: List[DisplayCloneBatchData]
+    val clones: List[CheapMatrix4]
 ) extends DisplayEntity {
 
   def applyTransform(matrix: CheapMatrix4): DisplayCloneBatch =
-    this.copy(clones = clones.map(_.applyTransform(matrix)))
+    this.copy(clones = clones.map(_ * matrix))
+    // this.copy(clones = clones.map(_.applyTransform(matrix)))
 }
 
 final case class DisplayObject(
