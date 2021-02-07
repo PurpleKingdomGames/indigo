@@ -116,45 +116,45 @@ final class RendererWebGL1(
 
     resize(cNc.canvas, cNc.magnification)
 
-    WebGLHelper.setNormalBlend(gl)
-    drawLayer(
-      sceneData.gameLayerDisplayObjects,
-      Some(gameFrameBuffer),
-      RGBA.Black.makeTransparent,
-      standardShaderProgram,
-      sceneData.gameProjection,
-      false
-    )
+    // WebGLHelper.setNormalBlend(gl)
+    // drawLayer(
+    //   sceneData.gameLayerDisplayObjects,
+    //   Some(gameFrameBuffer),
+    //   RGBA.Black.makeTransparent,
+    //   standardShaderProgram,
+    //   sceneData.gameProjection,
+    //   false
+    // )
 
-    WebGLHelper.setLightingBlend(gl)
-    drawLayer(
-      sceneData.lightingLayerDisplayObjects,
-      Some(lightingFrameBuffer),
-      sceneData.clearColor,
-      lightingShaderProgram,
-      sceneData.lightingProjection,
-      false
-    )
+    // WebGLHelper.setLightingBlend(gl)
+    // drawLayer(
+    //   sceneData.lightingLayerDisplayObjects,
+    //   Some(lightingFrameBuffer),
+    //   sceneData.clearColor,
+    //   lightingShaderProgram,
+    //   sceneData.lightingProjection,
+    //   false
+    // )
 
-    WebGLHelper.setNormalBlend(gl)
-    drawLayer(
-      sceneData.uiLayerDisplayObjects,
-      Some(uiFrameBuffer),
-      RGBA.Black.makeTransparent,
-      standardShaderProgram,
-      sceneData.uiProjection,
-      false
-    )
+    // WebGLHelper.setNormalBlend(gl)
+    // drawLayer(
+    //   sceneData.uiLayerDisplayObjects,
+    //   Some(uiFrameBuffer),
+    //   RGBA.Black.makeTransparent,
+    //   standardShaderProgram,
+    //   sceneData.uiProjection,
+    //   false
+    // )
 
-    WebGLHelper.setNormalBlend(gl)
-    drawLayer(
-      mutable.ListBuffer(RendererHelper.screenDisplayObject(lastWidth, lastHeight)),
-      None,
-      config.clearColor,
-      mergeShaderProgram,
-      orthographicProjectionMatrixNoMag,
-      true
-    )
+    // WebGLHelper.setNormalBlend(gl)
+    // drawLayer(
+    //   mutable.ListBuffer(RendererHelper.screenDisplayObject(lastWidth, lastHeight)),
+    //   None,
+    //   config.clearColor,
+    //   mergeShaderProgram,
+    //   orthographicProjectionMatrixNoMag,
+    //   true
+    // )
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
