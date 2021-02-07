@@ -209,7 +209,7 @@ object AnimationSample {
   val animation: Animation =
     Animation(
       key,
-      Material.Basic(AssetName("imageAssetRef")),
+      StandardMaterial.Basic(AssetName("imageAssetRef")),
       cycles.head.label,
       cycles
     )
