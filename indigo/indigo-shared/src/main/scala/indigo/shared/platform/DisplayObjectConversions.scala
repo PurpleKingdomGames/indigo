@@ -32,7 +32,6 @@ import indigo.shared.datatypes.Texture
 import indigo.shared.BoundaryLocator
 import indigo.shared.animation.AnimationRef
 import indigo.shared.datatypes.mutable.CheapMatrix4
-import indigo.shared.shader.ShaderId
 import indigo.shared.assets.AssetName
 
 final class DisplayObjectConversions(
@@ -255,6 +254,9 @@ final class DisplayObjectConversions(
         case _: Material.Custom =>
           (Vector2.zero, 0.0d)
 
+        case _: Material.Basic =>
+          (Vector2.zero, 0.0d)
+
         case _: Material.Textured =>
           (Vector2.zero, 0.0d)
 
@@ -269,6 +271,9 @@ final class DisplayObjectConversions(
         case _: Material.Custom =>
           (Vector2.zero, 0.0d)
 
+        case _: Material.Basic =>
+          (Vector2.zero, 0.0d)
+
         case _: Material.Textured =>
           (Vector2.zero, 0.0d)
 
@@ -281,6 +286,9 @@ final class DisplayObjectConversions(
     QuickCache(material.hash + "_specular") {
       material match {
         case _: Material.Custom =>
+          (Vector2.zero, 0.0d)
+
+        case _: Material.Basic =>
           (Vector2.zero, 0.0d)
 
         case _: Material.Textured =>
@@ -352,7 +360,8 @@ final class DisplayObjectConversions(
   }
 
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
-    val materialName = leaf.material.default.value
+    val asCustom     = leaf.material.toCustom
+    val materialName = asCustom.channel0.get.value
 
     // val albedoAmount                     = 1.0f
     val (emissiveOffset, _) = materialToEmissiveValues(assetMapping, leaf.material)
@@ -386,9 +395,12 @@ final class DisplayObjectConversions(
     //   case _ =>
     //     ("", Array[Float]())
     // }
-    val shaderId          = ShaderId("")
-    val shaderUniformHash = ""
-    val shaderUBO         = Array[Float]()
+
+    val shaderId          = asCustom.shaderId
+    val shaderUniformHash = asCustom.uniformHash
+    val shaderUBO = QuickCache(shaderUniformHash) {
+      asCustom.uniforms.toArray.map(_._2.toArray).flatten
+    }
 
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble, 1.0d)),
@@ -400,7 +412,7 @@ final class DisplayObjectConversions(
       channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
       channelOffset2 = frameInfo.offsetToCoords(normalOffset),
       channelOffset3 = frameInfo.offsetToCoords(specularOffset),
-      isLit = if (leaf.material.isLit) 1.0f else 0.0f,
+      isLit = 0.0f, // if (leaf.material.isLit) 1.0f else 0.0f,
       shaderId = shaderId,
       shaderUniformHash = shaderUniformHash,
       shaderUBO = shaderUBO
@@ -408,9 +420,9 @@ final class DisplayObjectConversions(
   }
 
   def spriteToDisplayObject(boundaryLocator: BoundaryLocator, leaf: Sprite, assetMapping: AssetMapping, anim: AnimationRef): DisplayObject = {
-    val material = anim.currentFrame.frameMaterial.getOrElse(anim.material)
-
-    val materialName = material.default.value
+    val material     = anim.currentFrame.frameMaterial.getOrElse(anim.material)
+    val asCustom     = material.toCustom
+    val materialName = asCustom.channel0.get.value
 
     // val albedoAmount                     = 1.0f
     val (emissiveOffset, _) = materialToEmissiveValues(assetMapping, material)
@@ -447,9 +459,12 @@ final class DisplayObjectConversions(
     //   case _ =>
     //     ("", Array[Float]())
     // }
-    val shaderId          = ShaderId("")
-    val shaderUniformHash = ""
-    val shaderUBO         = Array[Float]()
+
+    val shaderId          = asCustom.shaderId
+    val shaderUniformHash = asCustom.uniformHash
+    val shaderUBO = QuickCache(shaderUniformHash) {
+      asCustom.uniforms.toArray.map(_._2.toArray).flatten
+    }
 
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(width.toDouble, height.toDouble, 1.0d)),
@@ -461,7 +476,7 @@ final class DisplayObjectConversions(
       channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
       channelOffset2 = frameInfo.offsetToCoords(normalOffset),
       channelOffset3 = frameInfo.offsetToCoords(specularOffset),
-      isLit = if (material.isLit) 1.0f else 0.0f,
+      isLit = 0.0f, // if (material.isLit) 1.0f else 0.0f,
       shaderId = shaderId,
       shaderUniformHash = shaderUniformHash,
       shaderUBO = shaderUBO
@@ -470,6 +485,9 @@ final class DisplayObjectConversions(
 
   def textLineToDisplayObjects(leaf: Text, assetMapping: AssetMapping, fontInfo: FontInfo): (TextLine, Int, Int) => List[DisplayObject] =
     (line, alignmentOffsetX, yOffset) => {
+
+      val asCustom     = fontInfo.fontSpriteSheet.material.toCustom
+      val materialName = asCustom.channel0.get.value
 
       val lineHash: String =
         leaf.fontKey.key +
@@ -481,8 +499,6 @@ final class DisplayObjectConversions(
           ":" + leaf.scale.hash +
           ":" + fontInfo.fontSpriteSheet.material.hash +
           ":" + leaf.effects.hash
-
-      val materialName = fontInfo.fontSpriteSheet.material.default.value
 
       // val albedoAmount                     = 1.0f
       val (emissiveOffset, _) = materialToEmissiveValues(assetMapping, fontInfo.fontSpriteSheet.material)
@@ -507,9 +523,12 @@ final class DisplayObjectConversions(
       //   case _ =>
       //     ("", Array[Float]())
       // }
-      val shaderId          = ShaderId("")
-      val shaderUniformHash = ""
-      val shaderUBO         = Array[Float]()
+
+      val shaderId          = asCustom.shaderId
+      val shaderUniformHash = asCustom.uniformHash
+      val shaderUBO = QuickCache(shaderUniformHash) {
+        asCustom.uniforms.toArray.map(_._2.toArray).flatten
+      }
 
       QuickCache(lineHash) {
         zipWithCharDetails(line.text.toList, fontInfo).toList.map {
@@ -536,7 +555,7 @@ final class DisplayObjectConversions(
               channelOffset1 = frameInfo.offsetToCoords(emissiveOffset),
               channelOffset2 = frameInfo.offsetToCoords(normalOffset),
               channelOffset3 = frameInfo.offsetToCoords(specularOffset),
-              isLit = if (fontInfo.fontSpriteSheet.material.isLit) 1.0f else 0.0f,
+              isLit = 0.0f, // if (fontInfo.fontSpriteSheet.material.isLit) 1.0f else 0.0f,
               shaderId = shaderId,
               shaderUniformHash = shaderUniformHash,
               shaderUBO = shaderUBO

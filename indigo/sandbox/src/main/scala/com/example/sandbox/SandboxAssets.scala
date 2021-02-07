@@ -9,10 +9,10 @@ object SandboxAssets {
   val light: AssetName         = AssetName("light")
   val dots: AssetName         = AssetName("dots")
 
-  val smallFontNameMaterial: Material.Textured = Material.Textured(smallFontName)
-  val dudeNameMaterial: Material.Textured      = Material.Textured(dudeName)
-  val lightMaterial: Material.Textured         = Material.Textured(light)
-  val dotsMaterial: Material.Textured         = Material.Textured(dots)
+  val smallFontNameMaterial: Material.Basic = Material.Basic(smallFontName, 1.0)
+  val dudeNameMaterial: Material.Basic      = Material.Basic(dudeName, 0.5)
+  val lightMaterial: Material.Basic         = Material.Basic(light, 1.0)
+  val dotsMaterial: Material.Basic         = Material.Basic(dots, 1.0)
 
   def assets: Set[AssetType] =
     Set(
