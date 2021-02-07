@@ -180,6 +180,17 @@ lazy val indigoShared =
         cachedFun(IO.listFiles((baseDirectory.value / "shaders")).toSet).toSeq
       }.taskValue
     )
+    .settings(
+      sourceGenerators in Compile += Def.task {
+        val cachedFun = FileFunction.cached(
+          streams.value.cacheDirectory / "shader-library"
+        ) { (files: Set[File]) =>
+          ShaderLibraryGen.makeShaderLibrary(files, (sourceManaged in Compile).value).toSet
+        }
+
+        cachedFun(IO.listFiles((baseDirectory.value / "shader-library")).toSet).toSeq
+      }.taskValue
+    )
 
 // Circe
 lazy val indigoJsonCirce =

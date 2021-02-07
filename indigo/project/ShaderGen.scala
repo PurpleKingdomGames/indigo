@@ -130,7 +130,7 @@ object ShaderGen {
             println("> " + originalName + " --> " + newName + ".scala")
 
             val file: File =
-              sourceManagedDir / "indigo" / "platform" / "shaders" / (newName + ".scala")
+              sourceManagedDir / "indigo" / "shaders" / (newName + ".scala")
 
             val newContents: String =
               template(newName, v, f)
@@ -154,6 +154,6 @@ object ShaderGen {
     }
   }
 
-}
+  case class ShaderDetails(newName: String, originalName: String, ext: String, shaderCode: String)
 
-case class ShaderDetails(newName: String, originalName: String, ext: String, shaderCode: String)
+}
