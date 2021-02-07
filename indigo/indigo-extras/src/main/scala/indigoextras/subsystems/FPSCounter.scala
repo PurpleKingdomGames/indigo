@@ -8,7 +8,7 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.subsystems.SubSystemFrameContext
 import indigo.shared.Outcome
 import indigo.shared.scenegraph.SceneUpdateFragment
-import indigo.shared.datatypes.RGBA
+// import indigo.shared.datatypes.RGBA
 import indigo.shared.scenegraph.Text
 import indigo.shared.events.FrameTick
 import indigo.shared.scenegraph.Layer
@@ -21,7 +21,7 @@ object FPSCounter {
       _eventFilter = eventFilter,
       _initialModel = Outcome(FPSCounterState.default),
       _update = update(targetFPS),
-      _present = present(fontKey, position, targetFPS, depth)
+      _present = present(fontKey, position/*, targetFPS*/, depth)
     )
 
   lazy val eventFilter: GlobalEvent => Option[GlobalEvent] = {
@@ -44,23 +44,23 @@ object FPSCounter {
           Outcome(model.copy(frameCountSinceInterval = model.frameCountSinceInterval + 1))
     }
 
-  def present(fontKey: FontKey, position: Point, targetFPS: Int, depth: Depth): (SubSystemFrameContext, FPSCounterState) => Outcome[SceneUpdateFragment] =
+  def present(fontKey: FontKey, position: Point/*, targetFPS: Int*/, depth: Depth): (SubSystemFrameContext, FPSCounterState) => Outcome[SceneUpdateFragment] =
     (_, model) => {
       Outcome(
         SceneUpdateFragment.empty
           .addLayer(
             Layer(
               Text(s"""FPS ${model.fps.toString}""", position.x, position.y, 1, fontKey)
-                .withTint(pickTint(targetFPS, model.fps))
+                // .withTint(pickTint(targetFPS, model.fps))
             ).withDepth(depth)
           )
       )
     }
 
-  def pickTint(targetFPS: Int, fps: Int): RGBA =
-    if (fps > targetFPS - (targetFPS * 0.05)) RGBA.Green
-    else if (fps > targetFPS / 2) RGBA.Yellow
-    else RGBA.Red
+  // def pickTint(targetFPS: Int, fps: Int): RGBA =
+  //   if (fps > targetFPS - (targetFPS * 0.05)) RGBA.Green
+  //   else if (fps > targetFPS / 2) RGBA.Yellow
+  //   else RGBA.Red
 
 }
 

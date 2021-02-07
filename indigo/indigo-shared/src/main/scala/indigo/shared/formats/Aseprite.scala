@@ -13,7 +13,7 @@ import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Vector2
-import indigo.shared.datatypes.Effects
+// import indigo.shared.datatypes.Effects
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.events.GlobalEvent
 import indigo.shared.animation.Cycle
@@ -63,7 +63,7 @@ object Aseprite {
               scale = Vector2.one,
               animationKey = animations.animationKey,
               ref = Point(0, 0),
-              effects = Effects.default,
+              // effects = Effects.default,
               eventHandler = (_: (Rectangle, GlobalEvent)) => Nil
             ),
             animations

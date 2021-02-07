@@ -22,10 +22,10 @@ object SandboxView {
       // .addLayer(Layer(uiLayer(inputState)))
       .withAmbientLight(RGBA.White.withAmount(0.25))
       .addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
-      // .withSaturationLevel(0.5)
-      // .withTint(RGBA.Cyan.withAmount(0.25))
-      // .withUiColorOverlay(RGBA.Black.withAmount(0.5))
-      // .withGameColorOverlay(RGBA.Red.withAmount(0.5))
+    // .withSaturationLevel(0.5)
+    // .withTint(RGBA.Cyan.withAmount(0.25))
+    // .withUiColorOverlay(RGBA.Black.withAmount(0.5))
+    // .withGameColorOverlay(RGBA.Red.withAmount(0.5))
   }
 
   def gameLayer(currentState: SandboxGameModel, viewModel: SandboxViewModel): List[SceneGraphNode] =
@@ -56,21 +56,29 @@ object SandboxView {
             .changeCycle(d.cycleName)
             .play()
       },
-      currentState.dude.dude.sprite.moveBy(8, 10).moveBy(viewModel.offset).withAlpha(1).withTint(RGBA.Green.withAmount(0.25)),
-      currentState.dude.dude.sprite.moveBy(8, -10).withAlpha(0.5).withTint(RGBA.Red.withAmount(0.75)),
+      currentState.dude.dude.sprite.moveBy(8, 10).moveBy(viewModel.offset),
+      // .withAlpha(1).withTint(RGBA.Green.withAmount(0.25)),
+      currentState.dude.dude.sprite.moveBy(8, -10),
+      // .withAlpha(0.5).withTint(RGBA.Red.withAmount(0.75)),
       Clone(dudeCloneId, Depth(1), CloneTransformData.startAt(Point(16, 64)))
         .withHorizontalFlip(true)
-        .withAlpha(0.5f)
+        // .withAlpha(0.5f)
     )
 
   def lightingLayer(inputState: InputState): List[SceneGraphNode] =
     List(
-      Graphic(114, 64 - 20, 320, 240, 1, SandboxAssets.lightMaterial).withRef(Point(160, 120)).withTint(RGBA.Red),
-      Graphic(114 - 20, 64 + 20, 320, 240, 1, SandboxAssets.lightMaterial).withRef(Point(160, 120)).withTint(RGBA.Green),
-      Graphic(114 + 20, 64 + 20, 320, 240, 1, SandboxAssets.lightMaterial).withRef(Point(160, 120)).withTint(RGBA.Blue),
+      Graphic(114, 64 - 20, 320, 240, 1, SandboxAssets.lightMaterial)
+        .withRef(Point(160, 120)),
+      // .withTint(RGBA.Red),
+      Graphic(114 - 20, 64 + 20, 320, 240, 1, SandboxAssets.lightMaterial)
+        .withRef(Point(160, 120)),
+      // .withTint(RGBA.Green),
+      Graphic(114 + 20, 64 + 20, 320, 240, 1, SandboxAssets.lightMaterial)
+        .withRef(Point(160, 120)),
+      // .withTint(RGBA.Blue),
       Graphic(0, 0, 320, 240, 1, SandboxAssets.lightMaterial)
-        .withTint(1, 1, 0.0, 1)
-        .withAlpha(1)
+      // .withTint(1, 1, 0.0, 1)
+        // .withAlpha(1)
         .withRef(Point(160, 120))
         .moveTo(inputState.mouse.position.x, inputState.mouse.position.y)
     )

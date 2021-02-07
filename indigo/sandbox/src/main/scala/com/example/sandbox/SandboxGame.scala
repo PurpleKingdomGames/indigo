@@ -92,7 +92,9 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
     val assets =
       new InputFieldAssets(
         Text("placeholder", 0, 0, 0, SandboxView.fontKey).alignLeft,
-        Graphic(0, 0, 16, 16, 2, StandardMaterial.Basic(SandboxAssets.smallFontName, 1.0)).withCrop(188, 78, 14, 23).withTint(0, 0, 1)
+        Graphic(0, 0, 16, 16, 2, StandardMaterial.Basic(SandboxAssets.smallFontName, 1.0))
+          .withCrop(188, 78, 14, 23)
+        //.withTint(0, 0, 1)
       )
 
     Outcome(

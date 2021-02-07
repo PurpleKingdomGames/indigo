@@ -201,7 +201,7 @@ object Automaton {
               AutomatonUpdate(r.moveTo(sa.spawnedAt))
 
             case c: Clone =>
-              AutomatonUpdate(c.withTransforms(sa.spawnedAt, c.rotation, c.scale, c.alpha, c.flipHorizontal, c.flipVertical))
+              AutomatonUpdate(c.withTransforms(sa.spawnedAt, c.rotation, c.scale/*, c.alpha*/, c.flipHorizontal, c.flipVertical))
 
             case _ =>
               AutomatonUpdate(n)
