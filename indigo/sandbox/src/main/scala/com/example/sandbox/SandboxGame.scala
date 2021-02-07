@@ -203,21 +203,21 @@ object TestScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
       SceneUpdateFragment.empty
         .addLayer(
           Layer(
-            Shape(0, 0, 228 * 3, 140 * 3, 10, Material.Custom(Shaders.seaId))
+            Shape(0, 0, 228 * 3, 140 * 3, 10, GLSLShader(Shaders.seaId))
           ).withKey(BindingKey("bg"))
             .withMagnification(1)
         )
         .addLayer(
           Layer(
             Graphic(120, 10, 32, 32, 1, SandboxAssets.dotsMaterial),
-            Shape(140, 50, 32, 32, 1, Material.Custom(Shaders.circleId)),
+            Shape(140, 50, 32, 32, 1, GLSLShader(Shaders.circleId)),
             Shape(
               140,
               50,
               32,
               32,
               1,
-              Material.Custom(
+              GLSLShader(
                 Shaders.externalId,
                 Map(
                   Uniform("ALPHA")        -> float(0.75),
@@ -231,7 +231,7 @@ object TestScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
               32,
               32,
               1,
-              Material.Custom(
+              GLSLShader(
                 Shaders.externalId,
                 Map(
                   Uniform("ALPHA")        -> float(0.5),

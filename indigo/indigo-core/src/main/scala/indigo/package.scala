@@ -31,8 +31,11 @@ package object indigo {
   type Material = shared.datatypes.Material
   val Material: shared.datatypes.Material.type = shared.datatypes.Material
 
-  type Texture = shared.datatypes.Texture
-  val Texture: shared.datatypes.Texture.type = shared.datatypes.Texture
+  type GLSLShader = shared.datatypes.GLSLShader
+  val GLSLShader: shared.datatypes.GLSLShader.type = shared.datatypes.GLSLShader
+
+  // type Texture = shared.datatypes.Texture
+  // val Texture: shared.datatypes.Texture.type = shared.datatypes.Texture
 
   type CustomShader = shared.shader.CustomShader
   val CustomShader: shared.shader.CustomShader.type = shared.shader.CustomShader

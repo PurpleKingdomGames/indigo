@@ -86,7 +86,7 @@ final case class Shape(
     depth: Depth,
     ref: Point,
     flip: Flip,
-    material: Material.Custom
+    material: GLSLShader
 ) extends SceneGraphNodePrimitive {
 
   lazy val position: Point = bounds.position
@@ -94,7 +94,7 @@ final case class Shape(
   lazy val x: Int          = position.x
   lazy val y: Int          = position.y
 
-  def withMaterial(newMaterial: Material.Custom): Shape =
+  def withMaterial(newMaterial: GLSLShader): Shape =
     this.copy(material = newMaterial)
 
   def withDepth(newDepth: Depth): Shape =
@@ -158,7 +158,7 @@ final case class Shape(
 
 object Shape {
 
-  def apply(x: Int, y: Int, width: Int, height: Int, depth: Int, material: Material.Custom): Shape =
+  def apply(x: Int, y: Int, width: Int, height: Int, depth: Int, material: GLSLShader): Shape =
     Shape(
       bounds = Rectangle(x, y, width, height),
       rotation = Radians.zero,
@@ -169,7 +169,7 @@ object Shape {
       material = material
     )
 
-  def apply(bounds: Rectangle, depth: Int, material: Material.Custom): Shape =
+  def apply(bounds: Rectangle, depth: Int, material: GLSLShader): Shape =
     Shape(
       bounds = bounds,
       rotation = Radians.zero,
@@ -180,7 +180,7 @@ object Shape {
       material = material
     )
 
-  def apply(width: Int, height: Int, material: Material.Custom): Shape =
+  def apply(width: Int, height: Int, material: GLSLShader): Shape =
     Shape(
       bounds = Rectangle(0, 0, width, height),
       rotation = Radians.zero,
