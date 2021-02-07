@@ -1,78 +1,13 @@
-package indigo.shared.datatypes
+package indigo.shared.materials
 
 import indigo.shared.assets.AssetName
-import indigo.shared.shader.ShaderId
 import indigo.shared.shader.Uniform
-import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.ShaderPrimitive.float
 
-sealed trait Material {
-  def hash: String
-  // def shaderId: ShaderId
-}
+sealed trait StandardMaterial extends Material
 
-sealed trait StandardMaterial extends Material {
-  // def default: AssetName
-  // def isLit: Boolean
-  // def lit: Material
-  // def unlit: Material
-  def toGLSLShader: GLSLShader
-}
-
-final case class GLSLShader(
-    shaderId: ShaderId,
-    uniforms: Map[Uniform, ShaderPrimitive],
-    channel0: Option[AssetName],
-    channel1: Option[AssetName],
-    channel2: Option[AssetName],
-    channel3: Option[AssetName]
-) extends Material {
-  def uniformHash: String =
-    uniforms.toList.map(p => p._1.name + p._2.hash).mkString
-
-  def withUniforms(newUniforms: List[(Uniform, ShaderPrimitive)]): GLSLShader =
-    this.copy(uniforms = newUniforms.toMap)
-  def withUniforms(newUniforms: (Uniform, ShaderPrimitive)*): GLSLShader =
-    withUniforms(newUniforms.toList)
-
-  def addUniforms(newUniforms: List[(Uniform, ShaderPrimitive)]): GLSLShader =
-    this.copy(uniforms = uniforms ++ newUniforms)
-  def addUniforms(newUniforms: (Uniform, ShaderPrimitive)*): GLSLShader =
-    addUniforms(newUniforms.toList)
-
-  def withChannel0(assetName: AssetName): GLSLShader =
-    this.copy(channel0 = Some(assetName))
-  def withChannel1(assetName: AssetName): GLSLShader =
-    this.copy(channel1 = Some(assetName))
-  def withChannel2(assetName: AssetName): GLSLShader =
-    this.copy(channel2 = Some(assetName))
-  def withChannel3(assetName: AssetName): GLSLShader =
-    this.copy(channel3 = Some(assetName))
-
-  lazy val hash: String =
-    s"custom-${shaderId.value}" +
-      s"-${uniformHash}" +
-      s"-${channel0.map(_.value).getOrElse("")}" +
-      s"-${channel1.map(_.value).getOrElse("")}" +
-      s"-${channel2.map(_.value).getOrElse("")}" +
-      s"-${channel3.map(_.value).getOrElse("")}"
-
-}
-object GLSLShader {
-
-  def apply(shaderId: ShaderId): GLSLShader =
-    GLSLShader(shaderId, Map(), None, None, None, None)
-
-  def apply(shaderId: ShaderId, uniforms: Map[Uniform, ShaderPrimitive]): GLSLShader =
-    GLSLShader(shaderId, uniforms, None, None, None, None)
-
-  def apply(shaderId: ShaderId, channel0: AssetName, channel1: AssetName, channel2: AssetName, channel3: AssetName): GLSLShader =
-    GLSLShader(shaderId, Map(), Option(channel0), Option(channel1), Option(channel2), Option(channel3))
-
-}
-
-object Material {
+object StandardMaterial {
 
   final case class Basic(diffuse: AssetName, alpha: Double) extends StandardMaterial {
     val hash: String =

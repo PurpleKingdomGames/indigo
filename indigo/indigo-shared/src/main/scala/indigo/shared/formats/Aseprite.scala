@@ -7,7 +7,7 @@ import indigo.shared.assets.AssetName
 import indigo.shared.dice.Dice
 import indigo.shared.IndigoLogger
 import indigo.shared.animation.AnimationKey
-import indigo.shared.datatypes.Material
+import indigo.shared.materials.StandardMaterial
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Radians
@@ -49,7 +49,7 @@ object Aseprite {
         val animations: Animation =
           Animation(
             animationKey = AnimationKey.fromDice(dice),
-            material = Material.Basic(assetName, 1.0),
+            material = StandardMaterial.Basic(assetName, 1.0),
             currentCycleLabel = x.label,
             cycles = NonEmptyList.pure(x, xs)
           )

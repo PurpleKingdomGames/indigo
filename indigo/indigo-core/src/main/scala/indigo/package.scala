@@ -28,11 +28,13 @@ package object indigo {
   type AssetTag = shared.assets.AssetTag
   val AssetTag: shared.assets.AssetTag.type = shared.assets.AssetTag
 
-  type Material = shared.datatypes.Material
-  val Material: shared.datatypes.Material.type = shared.datatypes.Material
+  type Material = shared.materials.Material
 
-  type GLSLShader = shared.datatypes.GLSLShader
-  val GLSLShader: shared.datatypes.GLSLShader.type = shared.datatypes.GLSLShader
+  type StandardMaterial = shared.materials.StandardMaterial
+  val StandardMaterial: shared.materials.StandardMaterial.type = shared.materials.StandardMaterial
+
+  type GLSLShader = shared.materials.GLSLShader
+  val GLSLShader: shared.materials.GLSLShader.type = shared.materials.GLSLShader
 
   // type Texture = shared.datatypes.Texture
   // val Texture: shared.datatypes.Texture.type = shared.datatypes.Texture

@@ -5,7 +5,7 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.dice.Dice
 import indigo.shared.datatypes.Point
 import indigo.shared.assets.AssetName
-import indigo.shared.datatypes.Material
+import indigo.shared.materials.StandardMaterial
 import indigo.shared.time.Seconds
 import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.temporal.{Signal, SignalReader}
