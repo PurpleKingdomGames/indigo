@@ -1,7 +1,7 @@
 package indigo.shared.datatypes
 
 import indigo.shared.QuickCache
-import indigo.shared.datatypes.StandardMaterial
+import indigo.shared.materials.StandardMaterial
 
 final case class FontInfo(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean) {
   import FontInfo.fontCharCache

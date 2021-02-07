@@ -5,6 +5,8 @@ import indigo.shared.animation.AnimationAction._
 import indigo.shared.animation.AnimationKey
 import indigo.shared.animation.CycleLabel
 import indigo.shared.datatypes._
+import indigo.shared.materials.StandardMaterial
+import indigo.shared.materials.GLSLShader
 import indigo.shared.datatypes.mutable.CheapMatrix4
 
 import indigo.shared.animation.AnimationAction

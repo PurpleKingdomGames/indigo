@@ -4,7 +4,7 @@ import indigo.shared.scenegraph.Text
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.datatypes.FontKey
-import indigo.shared.datatypes.Material
+import indigo.shared.materials.StandardMaterial
 import indigo.shared.assets.AssetName
 import indigo.shared.FontRegister
 import indigo.shared.BoundaryLocator
