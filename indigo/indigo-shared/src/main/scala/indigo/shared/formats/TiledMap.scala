@@ -123,7 +123,7 @@ object TiledMap {
           layer.data.toSet.foldLeft(Map.empty[Int, Graphic]) { (tiles, i) =>
             tiles ++ Map(
               i ->
-                Graphic(Rectangle(Point.zero, tileSize), 1, Material.Textured(assetName))
+                Graphic(Rectangle(Point.zero, tileSize), 1, Material.Basic(assetName, 1.0))
                   .withCrop(
                     Rectangle(fromIndex(i - 1, tileSheetColumnCount) * tileSize, tileSize)
                   )
