@@ -28,6 +28,7 @@ import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
 import indigo.shared.shader.CustomShader
 import indigo.shared.shader.ShaderRegister
+import indigo.shared.shader.StandardShaders
 import indigo.shared.assets.AssetName
 
 final class GameEngine[StartUpData, GameModel, ViewModel](
@@ -97,6 +98,8 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
     initialisationEvents.foreach(globalEventStream.pushGlobalEvent)
     bootEvents.foreach(globalEventStream.pushGlobalEvent)
 
+    registerStandardShaders()
+
     // Arrange config
     configAsync.map(_.getOrElse(config)).foreach { gc =>
       gameConfig = gc
@@ -122,6 +125,9 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
     }
   }
+
+  def registerStandardShaders(): Unit =
+    shaderRegister.register(StandardShaders.BasicShader)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def rebuildGameLoop(firstRun: Boolean): AssetCollection => Unit =

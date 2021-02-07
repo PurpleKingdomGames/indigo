@@ -4,6 +4,8 @@ import indigo.shared.assets.AssetName
 import indigo.shared.shader.ShaderId
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.ShaderPrimitive
+import indigo.shared.shader.StandardShaders
+import indigo.shared.shader.ShaderPrimitive.float
 
 sealed trait Material {
   def hash: String
@@ -11,10 +13,11 @@ sealed trait Material {
 }
 
 sealed trait StandardMaterial extends Material {
-  def default: AssetName
-  def isLit: Boolean
-  def lit: Material
-  def unlit: Material
+  // def default: AssetName
+  // def isLit: Boolean
+  // def lit: Material
+  // def unlit: Material
+  def toCustom: Material.Custom
 }
 
 object Material {
@@ -71,8 +74,22 @@ object Material {
 
   }
 
+  final case class Basic(diffuse: AssetName, alpha: Double) extends StandardMaterial {
+    val hash: String =
+      diffuse.value + alpha.toString().take(5)
+
+    def toCustom: Custom =
+      Custom(
+        StandardShaders.Basic,
+        Map(Uniform("ALPHA") -> float(alpha)),
+        Some(diffuse),
+        None,
+        None,
+        None
+      )
+  }
+
   final case class Textured(diffuse: AssetName, isLit: Boolean) extends StandardMaterial {
-    val default: AssetName = diffuse
 
     def withDiffuse(newDiffuse: AssetName): Textured =
       this.copy(diffuse = newDiffuse)
@@ -83,8 +100,15 @@ object Material {
     def unlit: Textured =
       this.copy(isLit = false)
 
-    // def shaderId: ShaderId =
-    //   ShaderId("")
+    def toCustom: Custom =
+      Custom(
+        StandardShaders.Basic,
+        Map(),
+        Some(diffuse),
+        None,
+        None,
+        None
+      )
 
     lazy val hash: String =
       diffuse.value + (if (isLit) "1" else "0")
@@ -104,7 +128,6 @@ object Material {
       specular: Option[Texture],
       isLit: Boolean
   ) extends StandardMaterial {
-    val default: AssetName = albedo
 
     def withAlbedo(newAlbedo: AssetName): Lit =
       this.copy(albedo = newAlbedo)
@@ -131,8 +154,15 @@ object Material {
         specular.map(_.hash).getOrElse("_") +
         (if (isLit) "1" else "0")
 
-    // def shaderId: ShaderId =
-    //   ShaderId("")
+    def toCustom: Custom =
+      Custom(
+        StandardShaders.Basic,
+        Map(),
+        Some(albedo),
+        emissive.map(_.assetName),
+        normal.map(_.assetName),
+        specular.map(_.assetName)
+      )
   }
   object Lit {
     def apply(
