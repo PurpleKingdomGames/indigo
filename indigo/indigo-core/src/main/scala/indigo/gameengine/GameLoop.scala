@@ -80,9 +80,12 @@ class GameLoop[StartUpData, GameModel, ViewModel](
             }
 
           // Process events
-          SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.gameLayer.nodes, collectedEvents, gameEngine.globalEventStream.pushGlobalEvent)
-          SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.lightingLayer.nodes, collectedEvents, gameEngine.globalEventStream.pushGlobalEvent)
-          SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.uiLayer.nodes, collectedEvents, gameEngine.globalEventStream.pushGlobalEvent)
+          // SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.gameLayer.nodes, collectedEvents, gameEngine.globalEventStream.pushGlobalEvent)
+          // SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.lightingLayer.nodes, collectedEvents, gameEngine.globalEventStream.pushGlobalEvent)
+          // SceneGraphViewEvents.collectViewEvents(boundaryLocator, scene.uiLayer.nodes, collectedEvents, gameEngine.globalEventStream.pushGlobalEvent)
+          scene.layers.foreach { layer =>
+            SceneGraphViewEvents.collectViewEvents(boundaryLocator, layer.nodes, collectedEvents, gameEngine.globalEventStream.pushGlobalEvent)
+          }
 
           // Play audio
           gameEngine.audioPlayer.playAudio(scene.audio)
@@ -91,10 +94,10 @@ class GameLoop[StartUpData, GameModel, ViewModel](
           val sceneData = sceneProcessor.processScene(
             gameTime,
             scene,
-            gameEngine.assetMapping,
-            gameEngine.renderer.screenWidth.toDouble,
-            gameEngine.renderer.screenHeight.toDouble,
-            gameEngine.renderer.orthographicProjectionMatrix
+            gameEngine.assetMapping //,
+            // gameEngine.renderer.screenWidth.toDouble,
+            // gameEngine.renderer.screenHeight.toDouble,
+            // gameEngine.renderer.orthographicProjectionMatrix
           )
 
           // Render scene
