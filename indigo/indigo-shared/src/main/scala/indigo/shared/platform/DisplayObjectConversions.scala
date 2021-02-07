@@ -25,7 +25,7 @@ import indigo.shared.scenegraph.Clone
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.display.DisplayClone
 import indigo.shared.scenegraph.CloneTransformData
-import indigo.shared.display.DisplayCloneBatchData
+// import indigo.shared.display.DisplayCloneBatchData
 import indigo.shared.materials.GLSLShader
 import indigo.shared.display.DisplayEffects
 import indigo.shared.BoundaryLocator
@@ -91,8 +91,8 @@ final class DisplayObjectConversions(
     new DisplayClone(
       id = id,
       transform = DisplayObjectConversions.cloneTransformDataToMatrix4(data, blankTransform),
-      z = cloneDepth,
-      alpha = data.alpha.toFloat
+      z = cloneDepth//,
+      // alpha = data.alpha.toFloat
     )
 
   private def cloneBatchDataToDisplayEntities(batch: CloneBatch, blankTransform: CheapMatrix4): DisplayCloneBatch = {
@@ -101,10 +101,11 @@ final class DisplayObjectConversions(
         id = batch.id.value,
         z = batch.depth.zIndex.toDouble,
         clones = batch.clones.map { td =>
-          new DisplayCloneBatchData(
-            transform = DisplayObjectConversions.cloneTransformDataToMatrix4(batch.transform |+| td, blankTransform),
-            alpha = batch.transform.alpha.toFloat
-          )
+          DisplayObjectConversions.cloneTransformDataToMatrix4(batch.transform |+| td, blankTransform)
+          // new DisplayCloneBatchData(
+          //   transform = DisplayObjectConversions.cloneTransformDataToMatrix4(batch.transform |+| td, blankTransform),
+          //   alpha = batch.transform.alpha.toFloat
+          // )
         }
       )
 
@@ -497,8 +498,8 @@ final class DisplayObjectConversions(
           ":" + leaf.position.hash +
           ":" + leaf.rotation.hash +
           ":" + leaf.scale.hash +
-          ":" + fontInfo.fontSpriteSheet.material.hash +
-          ":" + leaf.effects.hash
+          ":" + fontInfo.fontSpriteSheet.material.hash// +
+          // ":" + leaf.effects.hash
 
       // val albedoAmount                     = 1.0f
       val (emissiveOffset, _) = (Vector2.zero, 0.0d) //materialToEmissiveValues(assetMapping, fontInfo.fontSpriteSheet.material)

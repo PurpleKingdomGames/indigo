@@ -12,7 +12,7 @@ import scala.collection.mutable.ListBuffer
 import indigo.shared.display.DisplayEntity
 import indigo.shared.display.DisplayClone
 import indigo.shared.display.DisplayCloneBatch
-import indigo.shared.display.DisplayCloneBatchData
+// import indigo.shared.display.DisplayCloneBatchData
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.FrameBufferComponents
@@ -22,6 +22,7 @@ import scala.collection.mutable.HashMap
 import indigo.shared.shader.ShaderId
 
 import scala.scalajs.js.JSConverters._
+import indigo.shared.datatypes.mutable.CheapMatrix4
 
 class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int) {
 
@@ -256,11 +257,11 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     val count: Int                         = c.clones.length
     var i: Int                             = 0
     var data: (List[Double], List[Double]) = (Nil, Nil)
-    var cl: DisplayCloneBatchData          = DisplayCloneBatchData.None
+    var cl: CheapMatrix4          = CheapMatrix4.identity
 
     while (i < count) {
       cl = c.clones(i)
-      data = cl.transform.data
+      data = cl.data
       updateData(refDisplayObject, batchCount + i, data._1, data._2)
       i += 1
     }
