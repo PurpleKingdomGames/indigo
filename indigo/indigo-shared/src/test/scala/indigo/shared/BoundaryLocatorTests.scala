@@ -3,7 +3,7 @@ package indigo.shared
 import indigo.shared.datatypes.FontChar
 import indigo.shared.datatypes.FontKey
 import indigo.shared.datatypes.FontInfo
-import indigo.shared.datatypes.Material
+import indigo.shared.materials.StandardMaterial
 import indigo.shared.assets.AssetName
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.scenegraph.Text

@@ -4,7 +4,7 @@ import indigo.shared.FontRegister
 import indigo.shared.datatypes.{FontChar, FontInfo, FontKey, Rectangle}
 
 import indigo.shared.assets.AssetName
-import indigo.shared.datatypes.Material
+import indigo.shared.materials.StandardMaterial
 import indigo.shared.BoundaryLocator
 import indigo.shared.AnimationsRegister
 

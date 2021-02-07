@@ -1,6 +1,6 @@
 package indigo.shared.animation
 
-import indigo.shared.datatypes.StandardMaterial
+import indigo.shared.materials.StandardMaterial
 import indigo.shared.time.Millis
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.temporal.Signal

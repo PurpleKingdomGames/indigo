@@ -2,7 +2,7 @@ package indigo.shared.scenegraph
 
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Rectangle
-import indigo.shared.datatypes.Material
+import indigo.shared.materials.StandardMaterial
 import indigo.shared.assets.AssetName
 
 class SceneLayerTests extends munit.FunSuite {

@@ -2,7 +2,7 @@ package indigoextras.ui
 
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.datatypes.Rectangle
-import indigo.shared.datatypes.Material
+import indigo.shared.materials.StandardMaterial
 import indigo.shared.assets.AssetName
 import indigo.shared.datatypes.Point
 import indigo.shared.events.GlobalEvent

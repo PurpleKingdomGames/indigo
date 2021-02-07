@@ -2,7 +2,7 @@ package indigo.shared.animation
 
 import indigo.shared.collections.NonEmptyList
 
-import indigo.shared.datatypes.StandardMaterial
+import indigo.shared.materials.StandardMaterial
 import indigo.shared.time.Millis
 
 final case class Animation(

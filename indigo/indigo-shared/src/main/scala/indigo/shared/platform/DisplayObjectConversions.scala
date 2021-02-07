@@ -26,7 +26,7 @@ import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.display.DisplayClone
 import indigo.shared.scenegraph.CloneTransformData
 import indigo.shared.display.DisplayCloneBatchData
-import indigo.shared.datatypes.GLSLShader
+import indigo.shared.materials.GLSLShader
 import indigo.shared.display.DisplayEffects
 import indigo.shared.BoundaryLocator
 import indigo.shared.animation.AnimationRef
