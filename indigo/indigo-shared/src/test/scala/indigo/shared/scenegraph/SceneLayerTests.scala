@@ -8,7 +8,7 @@ import indigo.shared.assets.AssetName
 class SceneLayerTests extends munit.FunSuite {
 
   val dummyGraphic: Graphic =
-    Graphic(Rectangle.zero, 0, Material.Textured(AssetName("foo")))
+    Graphic(Rectangle.zero, 0, Material.Basic(AssetName("foo")))
 
   test("can provide a scene node count for an empty scene") {
 
