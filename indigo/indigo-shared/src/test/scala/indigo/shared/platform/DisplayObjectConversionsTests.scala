@@ -25,7 +25,7 @@ import indigo.shared.datatypes.Radians
 class DisplayObjectConversionsTests extends munit.FunSuite {
 
   val graphic: Graphic =
-    Graphic(Rectangle(10, 20, 200, 100), 2, Material.Basic(AssetName("texture")))
+    Graphic(Rectangle(10, 20, 200, 100), 2, StandardMaterial.Basic(AssetName("texture")))
 
   val animationRegister          = new AnimationsRegister
   val fontRegister               = new FontRegister
@@ -109,7 +109,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   test("create a CheapMatrix4 from a SceneGraphNode.translation") {
 
     val node: SceneGraphNode =
-      Graphic(100, 100, Material.Basic(AssetName("test")))
+      Graphic(100, 100, StandardMaterial.Basic(AssetName("test")))
         .moveTo(10, 20)
 
     val expected: CheapMatrix4 =
@@ -129,7 +129,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   test("create a CheapMatrix4 from a SceneGraphNode.translation with ref") {
 
     val node: SceneGraphNode =
-      Graphic(100, 100, Material.Basic(AssetName("test")))
+      Graphic(100, 100, StandardMaterial.Basic(AssetName("test")))
         .moveTo(10, 20)
         .withRef(50, 50)
 
@@ -150,7 +150,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   test("create a CheapMatrix4 from a SceneGraphNode.scale") {
 
     val node: SceneGraphNode =
-      Graphic(100, 100, Material.Basic(AssetName("test")))
+      Graphic(100, 100, StandardMaterial.Basic(AssetName("test")))
         .scaleBy(2, 10)
 
     val expected: CheapMatrix4 =
@@ -170,7 +170,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   test("create a CheapMatrix4 from a SceneGraphNode.rotation") {
 
     val node: SceneGraphNode =
-      Graphic(100, 100, Material.Basic(AssetName("test")))
+      Graphic(100, 100, StandardMaterial.Basic(AssetName("test")))
         .rotateTo(Radians.TAUby4)
 
     val c = 0.0d
@@ -196,7 +196,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val height: Int = 100
 
     val node: SceneGraphNode =
-      Graphic(width, height, Material.Basic(AssetName("test")))
+      Graphic(width, height, StandardMaterial.Basic(AssetName("test")))
         .moveTo(10, 20)
         .flipHorizontal(true)
         .flipVertical(true)

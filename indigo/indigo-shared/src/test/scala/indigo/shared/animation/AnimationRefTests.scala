@@ -3,6 +3,7 @@ package indigo.shared.animation
 import indigo.shared.datatypes._
 import indigo.shared.assets.AssetName
 import indigo.shared.time.Millis
+import indigo.shared.materials.StandardMaterial
 
 class AnimationRefTests extends munit.FunSuite {
 
@@ -42,7 +43,7 @@ class AnimationRefTests extends munit.FunSuite {
   val animation: AnimationRef =
     AnimationRef(
       AnimationKey("test anim"),
-      Material.Basic(AssetName("imageAssetRef")),
+      StandardMaterial.Basic(AssetName("imageAssetRef")),
       cycles.head._1,
       cycles
     )

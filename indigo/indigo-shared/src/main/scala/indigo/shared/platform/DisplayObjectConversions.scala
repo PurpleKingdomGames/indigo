@@ -91,7 +91,7 @@ final class DisplayObjectConversions(
     new DisplayClone(
       id = id,
       transform = DisplayObjectConversions.cloneTransformDataToMatrix4(data, blankTransform),
-      z = cloneDepth//,
+      z = cloneDepth //,
       // alpha = data.alpha.toFloat
     )
 
@@ -102,10 +102,10 @@ final class DisplayObjectConversions(
         z = batch.depth.zIndex.toDouble,
         clones = batch.clones.map { td =>
           DisplayObjectConversions.cloneTransformDataToMatrix4(batch.transform |+| td, blankTransform)
-          // new DisplayCloneBatchData(
-          //   transform = DisplayObjectConversions.cloneTransformDataToMatrix4(batch.transform |+| td, blankTransform),
-          //   alpha = batch.transform.alpha.toFloat
-          // )
+        // new DisplayCloneBatchData(
+        //   transform = DisplayObjectConversions.cloneTransformDataToMatrix4(batch.transform |+| td, blankTransform),
+        //   alpha = batch.transform.alpha.toFloat
+        // )
         }
       )
 
@@ -255,7 +255,7 @@ final class DisplayObjectConversions(
   //     case _: GLSLShader =>
   //       (Vector2.zero, 0.0d)
 
-  //     case _: Material.Basic =>
+  //     case _: StandardMaterial.Basic =>
   //       (Vector2.zero, 0.0d)
 
   //     case _: Material.Textured =>
@@ -272,7 +272,7 @@ final class DisplayObjectConversions(
   //       case _: GLSLShader =>
   //         (Vector2.zero, 0.0d)
 
-  //       case _: Material.Basic =>
+  //       case _: StandardMaterial.Basic =>
   //         (Vector2.zero, 0.0d)
 
   //       case _: Material.Textured =>
@@ -289,7 +289,7 @@ final class DisplayObjectConversions(
   //       case _: GLSLShader =>
   //         (Vector2.zero, 0.0d)
 
-  //       case _: Material.Basic =>
+  //       case _: StandardMaterial.Basic =>
   //         (Vector2.zero, 0.0d)
 
   //       case _: Material.Textured =>
@@ -498,8 +498,8 @@ final class DisplayObjectConversions(
           ":" + leaf.position.hash +
           ":" + leaf.rotation.hash +
           ":" + leaf.scale.hash +
-          ":" + fontInfo.fontSpriteSheet.material.hash// +
-          // ":" + leaf.effects.hash
+          ":" + fontInfo.fontSpriteSheet.material.hash // +
+      // ":" + leaf.effects.hash
 
       // val albedoAmount                     = 1.0f
       val (emissiveOffset, _) = (Vector2.zero, 0.0d) //materialToEmissiveValues(assetMapping, fontInfo.fontSpriteSheet.material)
