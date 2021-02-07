@@ -89,6 +89,11 @@ object Material {
       )
   }
 
+  object Basic {
+    def apply(diffuse: AssetName): Basic =
+      Basic(diffuse, 1.0d)
+  }
+
   // final case class Textured(diffuse: AssetName, isLit: Boolean) extends StandardMaterial {
 
   //   def withDiffuse(newDiffuse: AssetName): Textured =

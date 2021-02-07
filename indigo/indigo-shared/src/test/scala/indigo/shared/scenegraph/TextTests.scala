@@ -10,7 +10,7 @@ import indigo.shared.AnimationsRegister
 
 class TextTests extends munit.FunSuite {
 
-  val material = Material.Textured(AssetName("font-sheet"))
+  val material = Material.Basic(AssetName("font-sheet"))
 
   val fontRegister: FontRegister =
     new FontRegister
