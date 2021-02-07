@@ -26,9 +26,8 @@ import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.display.DisplayClone
 import indigo.shared.scenegraph.CloneTransformData
 import indigo.shared.display.DisplayCloneBatchData
-import indigo.shared.datatypes.Material
+import indigo.shared.datatypes.GLSLShader
 import indigo.shared.display.DisplayEffects
-import indigo.shared.datatypes.Texture
 import indigo.shared.BoundaryLocator
 import indigo.shared.animation.AnimationRef
 import indigo.shared.datatypes.mutable.CheapMatrix4
@@ -248,63 +247,64 @@ final class DisplayObjectConversions(
         letters
     }
 
-  def materialToEmissiveValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
-    QuickCache(material.hash + "_emissive") {
-      material match {
-        case _: Material.Custom =>
-          (Vector2.zero, 0.0d)
+  // def materialToEmissiveValues(assetMapping: AssetMapping, material: GLSLShader): (Vector2, Double) =
+  //   (Vector2.zero, 0.0d)
+  // QuickCache(material.hash + "_emissive") {
+  //   material match {
+  //     case _: GLSLShader =>
+  //       (Vector2.zero, 0.0d)
 
-        case _: Material.Basic =>
-          (Vector2.zero, 0.0d)
+  //     case _: Material.Basic =>
+  //       (Vector2.zero, 0.0d)
 
-        case _: Material.Textured =>
-          (Vector2.zero, 0.0d)
+  //     case _: Material.Textured =>
+  //       (Vector2.zero, 0.0d)
 
-        case t: Material.Lit =>
-          optionalAssetToValues(assetMapping, t.emissive)
-      }
-    }
+  //     case t: Material.Lit =>
+  //       optionalAssetToValues(assetMapping, t.emissive)
+  //   }
+  // }
 
-  def materialToNormalValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
-    QuickCache(material.hash + "_normal") {
-      material match {
-        case _: Material.Custom =>
-          (Vector2.zero, 0.0d)
+  // def materialToNormalValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
+  //   QuickCache(material.hash + "_normal") {
+  //     material match {
+  //       case _: GLSLShader =>
+  //         (Vector2.zero, 0.0d)
 
-        case _: Material.Basic =>
-          (Vector2.zero, 0.0d)
+  //       case _: Material.Basic =>
+  //         (Vector2.zero, 0.0d)
 
-        case _: Material.Textured =>
-          (Vector2.zero, 0.0d)
+  //       case _: Material.Textured =>
+  //         (Vector2.zero, 0.0d)
 
-        case t: Material.Lit =>
-          optionalAssetToValues(assetMapping, t.normal)
-      }
-    }
+  //       case t: Material.Lit =>
+  //         optionalAssetToValues(assetMapping, t.normal)
+  //     }
+  //   }
 
-  def materialToSpecularValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
-    QuickCache(material.hash + "_specular") {
-      material match {
-        case _: Material.Custom =>
-          (Vector2.zero, 0.0d)
+  // def materialToSpecularValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
+  //   QuickCache(material.hash + "_specular") {
+  //     material match {
+  //       case _: GLSLShader =>
+  //         (Vector2.zero, 0.0d)
 
-        case _: Material.Basic =>
-          (Vector2.zero, 0.0d)
+  //       case _: Material.Basic =>
+  //         (Vector2.zero, 0.0d)
 
-        case _: Material.Textured =>
-          (Vector2.zero, 0.0d)
+  //       case _: Material.Textured =>
+  //         (Vector2.zero, 0.0d)
 
-        case t: Material.Lit =>
-          optionalAssetToValues(assetMapping, t.specular)
-      }
-    }
+  //       case t: Material.Lit =>
+  //         optionalAssetToValues(assetMapping, t.specular)
+  //     }
+  //   }
 
-  def optionalAssetToValues(assetMapping: AssetMapping, maybeAssetName: Option[Texture]): (Vector2, Double) =
-    maybeAssetName
-      .map { t =>
-        (lookupTextureOffset(assetMapping, t.assetName.value), Math.min(1.0d, Math.max(0.0d, t.amount)))
-      }
-      .getOrElse((Vector2.zero, 0.0d))
+  // def optionalAssetToValues(assetMapping: AssetMapping, maybeAssetName: Option[Texture]): (Vector2, Double) =
+  //   maybeAssetName
+  //     .map { t =>
+  //       (lookupTextureOffset(assetMapping, t.assetName.value), Math.min(1.0d, Math.max(0.0d, t.amount)))
+  //     }
+  //     .getOrElse((Vector2.zero, 0.0d))
 
   def optionalAssetToOffset(assetMapping: AssetMapping, maybeAssetName: Option[AssetName]): Vector2 =
     maybeAssetName match {
@@ -316,7 +316,7 @@ final class DisplayObjectConversions(
     }
 
   def shapeToDisplayObject(leaf: Shape, assetMapping: AssetMapping): DisplayObject = {
-    val material: Material.Custom = leaf.material
+    val material: GLSLShader = leaf.material
 
     val channelOffset1 = optionalAssetToOffset(assetMapping, material.channel1)
     val channelOffset2 = optionalAssetToOffset(assetMapping, material.channel2)
@@ -360,13 +360,13 @@ final class DisplayObjectConversions(
   }
 
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
-    val asCustom     = leaf.material.toCustom
+    val asCustom     = leaf.material.toGLSLShader
     val materialName = asCustom.channel0.get.value
 
     // val albedoAmount                     = 1.0f
-    val (emissiveOffset, _) = materialToEmissiveValues(assetMapping, leaf.material)
-    val (normalOffset, _)   = materialToNormalValues(assetMapping, leaf.material)
-    val (specularOffset, _) = materialToSpecularValues(assetMapping, leaf.material)
+    val (emissiveOffset, _) = (Vector2.zero, 0.0d) //materialToEmissiveValues(assetMapping, leaf.material)
+    val (normalOffset, _)   = (Vector2.zero, 0.0d) //materialToNormalValues(assetMapping, leaf.material)
+    val (specularOffset, _) = (Vector2.zero, 0.0d) //materialToSpecularValues(assetMapping, leaf.material)
 
     val frameInfo =
       QuickCache(s"${leaf.crop.hash}_${leaf.material.hash}") {
@@ -384,7 +384,7 @@ final class DisplayObjectConversions(
 
     // val shaderId = leaf.material.shaderId
     // val (shaderUniformHash, shaderUBO) = leaf.material match {
-    //   case s @ Material.Custom(_, uniforms, _) =>
+    //   case s @ GLSLShader(_, uniforms, _) =>
     //     val hash = s.uniformHash
     //     val us = QuickCache(hash) {
     //       uniforms.toArray.map(_._2.toArray).flatten
@@ -421,13 +421,13 @@ final class DisplayObjectConversions(
 
   def spriteToDisplayObject(boundaryLocator: BoundaryLocator, leaf: Sprite, assetMapping: AssetMapping, anim: AnimationRef): DisplayObject = {
     val material     = anim.currentFrame.frameMaterial.getOrElse(anim.material)
-    val asCustom     = material.toCustom
+    val asCustom     = material.toGLSLShader
     val materialName = asCustom.channel0.get.value
 
     // val albedoAmount                     = 1.0f
-    val (emissiveOffset, _) = materialToEmissiveValues(assetMapping, material)
-    val (normalOffset, _)   = materialToNormalValues(assetMapping, material)
-    val (specularOffset, _) = materialToSpecularValues(assetMapping, material)
+    val (emissiveOffset, _) = (Vector2.zero, 0.0d) //materialToEmissiveValues(assetMapping, material)
+    val (normalOffset, _)   = (Vector2.zero, 0.0d) //materialToNormalValues(assetMapping, material)
+    val (specularOffset, _) = (Vector2.zero, 0.0d) //materialToSpecularValues(assetMapping, material)
 
     val frameInfo =
       QuickCache(anim.frameHash) {
@@ -448,7 +448,7 @@ final class DisplayObjectConversions(
 
     // val shaderId = material.shaderId
     // val (shaderUniformHash, shaderUBO) = material match {
-    //   case s @ Material.Custom(_, uniforms, _) =>
+    //   case s @ GLSLShader(_, uniforms, _) =>
     //     val hash = s.uniformHash
     //     val us = QuickCache(hash) {
     //       uniforms.toArray.foldLeft(Array[Float]())(_ ++ _._2.toArray)
@@ -486,7 +486,7 @@ final class DisplayObjectConversions(
   def textLineToDisplayObjects(leaf: Text, assetMapping: AssetMapping, fontInfo: FontInfo): (TextLine, Int, Int) => List[DisplayObject] =
     (line, alignmentOffsetX, yOffset) => {
 
-      val asCustom     = fontInfo.fontSpriteSheet.material.toCustom
+      val asCustom     = fontInfo.fontSpriteSheet.material.toGLSLShader
       val materialName = asCustom.channel0.get.value
 
       val lineHash: String =
@@ -501,9 +501,9 @@ final class DisplayObjectConversions(
           ":" + leaf.effects.hash
 
       // val albedoAmount                     = 1.0f
-      val (emissiveOffset, _) = materialToEmissiveValues(assetMapping, fontInfo.fontSpriteSheet.material)
-      val (normalOffset, _)   = materialToNormalValues(assetMapping, fontInfo.fontSpriteSheet.material)
-      val (specularOffset, _) = materialToSpecularValues(assetMapping, fontInfo.fontSpriteSheet.material)
+      val (emissiveOffset, _) = (Vector2.zero, 0.0d) //materialToEmissiveValues(assetMapping, fontInfo.fontSpriteSheet.material)
+      val (normalOffset, _)   = (Vector2.zero, 0.0d) //materialToNormalValues(assetMapping, fontInfo.fontSpriteSheet.material)
+      val (specularOffset, _) = (Vector2.zero, 0.0d) //materialToSpecularValues(assetMapping, fontInfo.fontSpriteSheet.material)
 
       // val effectsValues =
       //   QuickCache(leaf.effects.hash) {
@@ -512,7 +512,7 @@ final class DisplayObjectConversions(
 
       // val shaderId = fontInfo.fontSpriteSheet.material.shaderId
       // val (shaderUniformHash, shaderUBO) = fontInfo.fontSpriteSheet.material match {
-      //   case s @ Material.Custom(_, uniforms, _) =>
+      //   case s @ GLSLShader(_, uniforms, _) =>
       //     val hash = s.uniformHash
       //     val us = QuickCache(hash) {
       //       uniforms.toArray.foldLeft(Array[Float]())(_ ++ _._2.toArray)
