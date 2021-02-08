@@ -10,6 +10,7 @@ import indigo.shared.time.Seconds
 import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.temporal.{Signal, SignalReader}
 import indigo.shared.collections.NonEmptyList
+import indigo.shared.datatypes.BindingKey
 
 class AutomataTests extends munit.FunSuite {
 
@@ -33,8 +34,11 @@ class AutomataTests extends munit.FunSuite {
     ).withOnCullEvent(onCull)
       .withModifier(ModiferFunctions.signal)
 
+  val layerKey =
+    BindingKey("test layer")
+
   val automata: Automata =
-    Automata(poolKey, automaton, Automata.Layer.Game)
+    Automata(poolKey, automaton, layerKey)
 
   val startingState: AutomataState =
     automata
@@ -85,7 +89,9 @@ class AutomataTests extends munit.FunSuite {
       automata
         .present(ctx, nextState)
         .unsafeGet
-        .gameLayer
+        .layers
+        .find(l => l.key.contains(layerKey))
+        .get
         .nodes
         .collect { case g: Graphic => g }
         .head

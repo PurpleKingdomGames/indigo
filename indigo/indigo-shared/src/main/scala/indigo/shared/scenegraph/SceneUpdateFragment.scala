@@ -9,10 +9,7 @@ import indigo.shared.datatypes.RGBA
   *
   * Note that a SceneUpdateFragment represents what is to happen next. It is not a diff. If you remove a sprite from the definition it will not be drawn.
   *
-  * @param gameLayer The layer game elements are placed on.
-  * @param lightingLayer The layer image based lighting elements are placed on.
-  * @param distortionLayer The layer that distoration elements are placed on.
-  * @param uiLayer The layer that UI elements are placed on.
+  * @param layers The layers game elements are placed on.
   * @param ambientLight The scene's ambient light levels.
   * @param lights Dynamic lights.
   * @param audio Background audio.
@@ -21,10 +18,6 @@ import indigo.shared.datatypes.RGBA
   */
 final case class SceneUpdateFragment(
     layers: List[Layer],
-    gameLayer: SceneLayer,
-    lightingLayer: SceneLayer,
-    distortionLayer: SceneLayer,
-    uiLayer: SceneLayer,
     ambientLight: RGBA,
     lights: List[Light],
     audio: SceneAudio,
@@ -41,30 +34,6 @@ final case class SceneUpdateFragment(
     addLayers(newLayers.toList)
   def addLayers(newLayers: List[Layer]): SceneUpdateFragment =
     this.copy(layers = newLayers.foldLeft(layers)((acc, l) => SceneUpdateFragment.addLayer(acc, l)))
-
-  def addGameLayerNodes(nodes: SceneGraphNode*): SceneUpdateFragment =
-    addGameLayerNodes(nodes.toList)
-
-  def addGameLayerNodes(nodes: List[SceneGraphNode]): SceneUpdateFragment =
-    this.copy(gameLayer = gameLayer ++ nodes)
-
-  def addLightingLayerNodes(nodes: SceneGraphNode*): SceneUpdateFragment =
-    addLightingLayerNodes(nodes.toList)
-
-  def addLightingLayerNodes(nodes: List[SceneGraphNode]): SceneUpdateFragment =
-    this.copy(lightingLayer = lightingLayer ++ nodes)
-
-  def addDistortionLayerNodes(nodes: SceneGraphNode*): SceneUpdateFragment =
-    addDistortionLayerNodes(nodes.toList)
-
-  def addDistortionLayerNodes(nodes: List[SceneGraphNode]): SceneUpdateFragment =
-    this.copy(distortionLayer = distortionLayer ++ nodes)
-
-  def addUiLayerNodes(nodes: SceneGraphNode*): SceneUpdateFragment =
-    addUiLayerNodes(nodes.toList)
-
-  def addUiLayerNodes(nodes: List[SceneGraphNode]): SceneUpdateFragment =
-    this.copy(uiLayer = uiLayer ++ nodes)
 
   def withAmbientLight(light: RGBA): SceneUpdateFragment =
     this.copy(ambientLight = light)
@@ -99,22 +68,6 @@ final case class SceneUpdateFragment(
   def addCloneBlanks(blanks: List[CloneBlank]): SceneUpdateFragment =
     this.copy(cloneBlanks = cloneBlanks ++ blanks)
 
-  def withSaturationLevel(amount: Double): SceneUpdateFragment =
-    this.copy(
-      gameLayer = gameLayer.withSaturationLevel(amount),
-      lightingLayer = lightingLayer.withSaturationLevel(amount),
-      uiLayer = uiLayer.withSaturationLevel(amount)
-    )
-
-  def withGameLayerSaturationLevel(amount: Double): SceneUpdateFragment =
-    this.copy(gameLayer = gameLayer.withSaturationLevel(amount))
-
-  def withLightingLayerSaturationLevel(amount: Double): SceneUpdateFragment =
-    this.copy(lightingLayer = lightingLayer.withSaturationLevel(amount))
-
-  def withUiLayerSaturationLevel(amount: Double): SceneUpdateFragment =
-    this.copy(uiLayer = uiLayer.withSaturationLevel(amount))
-
   def withColorOverlay(overlay: RGBA): SceneUpdateFragment =
     this.copy(screenEffects = ScreenEffects(overlay, overlay))
 
@@ -124,85 +77,28 @@ final case class SceneUpdateFragment(
   def withUiColorOverlay(overlay: RGBA): SceneUpdateFragment =
     this.copy(screenEffects = screenEffects.withUiColorOverlay(overlay))
 
-  def withTint(tint: RGBA): SceneUpdateFragment =
-    this.copy(
-      gameLayer = gameLayer.withTint(tint),
-      lightingLayer = lightingLayer.withTint(tint),
-      uiLayer = uiLayer.withTint(tint)
-    )
-
-  def withGameLayerTint(tint: RGBA): SceneUpdateFragment =
-    this.copy(gameLayer = gameLayer.withTint(tint))
-
-  def withLightingLayerTint(tint: RGBA): SceneUpdateFragment =
-    this.copy(lightingLayer = lightingLayer.withTint(tint))
-
-  def withUiLayerTint(tint: RGBA): SceneUpdateFragment =
-    this.copy(uiLayer = uiLayer.withTint(tint))
-
   def withMagnification(level: Int): SceneUpdateFragment =
     this.copy(
-      gameLayer = gameLayer.withMagnification(level),
-      lightingLayer = lightingLayer.withMagnification(level),
-      distortionLayer = distortionLayer.withMagnification(level),
-      uiLayer = uiLayer.withMagnification(level)
+      layers = layers.map(_.withMagnification(level))
     )
-
-  def withGameLayerMagnification(level: Int): SceneUpdateFragment =
-    this.copy(gameLayer = gameLayer.withMagnification(level))
-
-  def withLightingLayerMagnification(level: Int): SceneUpdateFragment =
-    this.copy(lightingLayer = lightingLayer.withMagnification(level))
-
-  def withDistortionLayerMagnification(level: Int): SceneUpdateFragment =
-    this.copy(distortionLayer = distortionLayer.withMagnification(level))
-
-  def withUiLayerMagnification(level: Int): SceneUpdateFragment =
-    this.copy(uiLayer = uiLayer.withMagnification(level))
 }
 object SceneUpdateFragment {
 
-  def apply(
-      layers: List[Layer],
-      gameLayer: List[SceneGraphNode],
-      lightingLayer: List[SceneGraphNode],
-      distortionLayer: List[SceneGraphNode],
-      uiLayer: List[SceneGraphNode],
-      ambientLight: RGBA,
-      lights: List[Light],
-      audio: SceneAudio,
-      screenEffects: ScreenEffects,
-      cloneBlanks: List[CloneBlank]
-  ): SceneUpdateFragment =
-    SceneUpdateFragment(
-      layers,
-      SceneLayer(gameLayer),
-      SceneLayer(lightingLayer),
-      SceneLayer(distortionLayer),
-      SceneLayer(uiLayer),
-      ambientLight,
-      lights,
-      audio,
-      screenEffects,
-      cloneBlanks
-    )
+  def apply(nodes: SceneGraphNode*): SceneUpdateFragment =
+    SceneUpdateFragment(nodes.toList)
 
-  def apply(gameLayer: SceneGraphNode*): SceneUpdateFragment =
-    SceneUpdateFragment(Nil, gameLayer.toList, Nil, Nil, Nil, RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
+  def apply(nodes: List[SceneGraphNode]): SceneUpdateFragment =
+    SceneUpdateFragment(List(Layer(nodes)), RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
 
-  def apply(gameLayer: List[SceneGraphNode]): SceneUpdateFragment =
-    SceneUpdateFragment(Nil, gameLayer.toList, Nil, Nil, Nil, RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
+  def apply(layer: Layer): SceneUpdateFragment =
+    SceneUpdateFragment(List(layer), RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
 
   val empty: SceneUpdateFragment =
-    SceneUpdateFragment(Nil, Nil, Nil, Nil, Nil, RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
+    SceneUpdateFragment(Nil, RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
 
   def append(a: SceneUpdateFragment, b: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment(
       a.layers ++ b.layers,
-      a.gameLayer |+| b.gameLayer,
-      a.lightingLayer |+| b.lightingLayer,
-      a.distortionLayer |+| b.distortionLayer,
-      a.uiLayer |+| b.uiLayer,
       a.ambientLight + b.ambientLight,
       a.lights ++ b.lights,
       a.audio |+| b.audio,

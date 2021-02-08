@@ -53,8 +53,7 @@ class SubSystemsRegisterTests extends munit.FunSuite {
         .unsafeGet
         .present(context(6))
         .unsafeGet
-        .gameLayer
-        .nodes
+        .layers.flatMap(_.nodes)
         .map(_.asInstanceOf[Text].text)
 
     assert(rendered.contains("20"))
