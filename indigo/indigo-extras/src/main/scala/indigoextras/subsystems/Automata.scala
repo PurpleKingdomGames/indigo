@@ -18,12 +18,12 @@ import indigo.shared.scenegraph.Clone
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.BindingKey
 
-final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val layerKey: BindingKey, maxPoolSize: Option[Int]) extends SubSystem {
+final case class Automata(poolKey: AutomataPoolKey, automaton: Automaton, layerKey: BindingKey, maxPoolSize: Option[Int]) extends SubSystem {
   type EventType      = AutomataEvent
   type SubSystemModel = AutomataState
 
   def withMaxPoolSize(limit: Int): Automata =
-    new Automata(poolKey, automaton, layerKey, Option(limit))
+    Automata(poolKey, automaton, layerKey, Option(limit))
 
   val eventFilter: GlobalEvent => Option[AutomataEvent] = {
     case e: AutomataEvent =>
@@ -116,7 +116,7 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
 object Automata {
 
   def apply(poolKey: AutomataPoolKey, automaton: Automaton, layerKey: BindingKey): Automata =
-    new Automata(poolKey, automaton, layerKey, None)
+    Automata(poolKey, automaton, layerKey, None)
 
   def renderNoLayer(pool: List[SpawnedAutomaton], gameTime: GameTime): AutomatonUpdate =
     AutomatonUpdate.sequence(
@@ -142,14 +142,11 @@ object AutomataEvent {
 
 trait AutomatonPayload
 
-final class AutomataPoolKey(val key: String) extends AnyVal {
+final case class AutomataPoolKey(key: String) extends AnyVal {
   override def toString: String =
     s"AutomataPoolKey(key = $key)"
 }
 object AutomataPoolKey {
-
-  def apply(key: String): AutomataPoolKey =
-    new AutomataPoolKey(key)
 
   def fromDice(dice: Dice): AutomataPoolKey =
     AutomataPoolKey(dice.rollAlphaNumeric)
@@ -262,7 +259,7 @@ final case class SpawnedAutomaton(
     seedValues.createdAt + seedValues.lifeSpan > currentTime
 }
 
-final class AutomatonUpdate(val nodes: List[SceneGraphNode], val events: List[GlobalEvent]) {
+final case class AutomatonUpdate(nodes: List[SceneGraphNode], events: List[GlobalEvent]) {
 
   def |+|(other: AutomatonUpdate): AutomatonUpdate =
     AutomatonUpdate(nodes ++ other.nodes, events ++ other.events)
@@ -271,7 +268,7 @@ final class AutomatonUpdate(val nodes: List[SceneGraphNode], val events: List[Gl
     addGlobalEvents(newEvents.toList)
 
   def addGlobalEvents(newEvents: List[GlobalEvent]): AutomatonUpdate =
-    new AutomatonUpdate(nodes, events ++ newEvents)
+    AutomatonUpdate(nodes, events ++ newEvents)
 
 }
 
@@ -279,9 +276,6 @@ object AutomatonUpdate {
 
   def empty: AutomatonUpdate =
     new AutomatonUpdate(Nil, Nil)
-
-  def apply(nodes: List[SceneGraphNode], events: List[GlobalEvent]): AutomatonUpdate =
-    new AutomatonUpdate(nodes, events)
 
   def apply(nodes: SceneGraphNode*): AutomatonUpdate =
     new AutomatonUpdate(nodes.toList, Nil)

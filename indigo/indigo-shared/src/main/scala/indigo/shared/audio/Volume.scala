@@ -1,6 +1,6 @@
 package indigo.shared.audio
 
-final class Volume(val amount: Double) extends AnyVal {
+final case class Volume(amount: Double) extends AnyVal {
   def *(other: Volume): Volume =
     Volume(this.amount * other.amount)
 
