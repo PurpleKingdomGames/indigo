@@ -75,9 +75,7 @@ class JobMarketTests extends munit.FunSuite {
     val job: Job          = SampleJobs.WanderTo(10)
     val market: JobMarket = JobMarket.subSystem
 
-    assertEquals(market.present(context, List(job)).unsafeGet.gameLayer.nodes.isEmpty, true)
-    assertEquals(market.present(context, List(job)).unsafeGet.lightingLayer.nodes.isEmpty, true)
-    assertEquals(market.present(context, List(job)).unsafeGet.uiLayer.nodes.isEmpty, true)
+    assertEquals(market.present(context, List(job)).unsafeGet.layers.flatMap(_.nodes).isEmpty, true)
     assertEquals(market.present(context, List(job)).unsafeGlobalEvents.isEmpty, true)
     assertEquals(market.present(context, List(job)).unsafeGet.ambientLight === RGBA.Normal, true)
     assertEquals(market.present(context, List(job)).unsafeGet.audio, SceneAudio.None)

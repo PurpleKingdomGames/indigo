@@ -29,8 +29,7 @@ final case class PointsTrackerExample(startingPoints: Int) extends SubSystem {
 
   def present(context: SubSystemFrameContext, points: Int): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment.empty
-        .addGameLayerNodes(Text(points.toString, 0, 0, 1, FontKey("")))
+      SceneUpdateFragment(Text(points.toString, 0, 0, 1, FontKey("")))
     )
 }
 
