@@ -203,7 +203,8 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
             textureLocations.find(t => t.name == nextAtlas)
           } match {
             case None =>
-              gl2.bindTexture(TEXTURE_2D, null)
+              //gl2.bindTexture(TEXTURE_2D, null)
+              ()
 
             case Some(textureLookup) =>
               gl2.bindTexture(TEXTURE_2D, textureLookup.texture)
