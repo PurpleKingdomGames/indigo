@@ -6,7 +6,7 @@ import indigo.shared.events.{FrameTick, GlobalEvent, SubSystemEvent}
 import indigo.shared.scenegraph._
 import indigo.shared.subsystems.SubSystem
 import indigoextras.subsystems.AutomataEvent._
-import indigoextras.subsystems.Automata.Layer
+// import indigoextras.subsystems.Automata.Layer
 
 import indigo.shared.subsystems.SubSystemFrameContext
 import indigo.shared.datatypes.Point
@@ -16,13 +16,14 @@ import indigo.shared.scenegraph.{SceneGraphNode, Renderable}
 import indigo.shared.temporal.{Signal, SignalReader}
 import indigo.shared.scenegraph.Clone
 import indigo.shared.collections.NonEmptyList
+import indigo.shared.datatypes.BindingKey
 
-final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val layer: Layer, maxPoolSize: Option[Int]) extends SubSystem {
+final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val layerKey: BindingKey, maxPoolSize: Option[Int]) extends SubSystem {
   type EventType      = AutomataEvent
   type SubSystemModel = AutomataState
 
   def withMaxPoolSize(limit: Int): Automata =
-    new Automata(poolKey, automaton, layer, Option(limit))
+    new Automata(poolKey, automaton, layerKey, Option(limit))
 
   val eventFilter: GlobalEvent => Option[AutomataEvent] = {
     case e: AutomataEvent =>
@@ -101,42 +102,21 @@ final class Automata(val poolKey: AutomataPoolKey, val automaton: Automaton, val
       Outcome(state)
   }
 
-  def present(frameContext: SubSystemFrameContext, state: AutomataState): Outcome[SceneUpdateFragment] =
-    layer.emptyScene(Automata.renderNoLayer(state.pool, frameContext.gameTime))
+  def present(frameContext: SubSystemFrameContext, state: AutomataState): Outcome[SceneUpdateFragment] = {
+    val updated = Automata.renderNoLayer(state.pool, frameContext.gameTime)
+
+    // TODO: How to control what layer you end up on? Pass in layer key?
+    Outcome(
+      SceneUpdateFragment(Layer(layerKey, updated.nodes)),
+      updated.events
+    )
+
+  }
 }
 object Automata {
 
-  sealed trait Layer {
-    def emptyScene(automatonUpdate: AutomatonUpdate): Outcome[SceneUpdateFragment] =
-      this match {
-        case Layer.Game =>
-          Outcome(
-            SceneUpdateFragment.empty.addGameLayerNodes(automatonUpdate.nodes),
-            automatonUpdate.events
-          )
-
-        case Layer.Lighting =>
-          Outcome(
-            SceneUpdateFragment.empty.addLightingLayerNodes(automatonUpdate.nodes),
-            automatonUpdate.events
-          )
-
-        case Layer.UI =>
-          Outcome(
-            SceneUpdateFragment.empty.addUiLayerNodes(automatonUpdate.nodes),
-            automatonUpdate.events
-          )
-      }
-
-  }
-  object Layer {
-    case object Game     extends Layer
-    case object Lighting extends Layer
-    case object UI       extends Layer
-  }
-
-  def apply(poolKey: AutomataPoolKey, automaton: Automaton, layer: Layer): Automata =
-    new Automata(poolKey, automaton, layer, None)
+  def apply(poolKey: AutomataPoolKey, automaton: Automaton, layerKey: BindingKey): Automata =
+    new Automata(poolKey, automaton, layerKey, None)
 
   def renderNoLayer(pool: List[SpawnedAutomaton], gameTime: GameTime): AutomatonUpdate =
     AutomatonUpdate.sequence(
@@ -201,7 +181,7 @@ object Automaton {
               AutomatonUpdate(r.moveTo(sa.spawnedAt))
 
             case c: Clone =>
-              AutomatonUpdate(c.withTransforms(sa.spawnedAt, c.rotation, c.scale/*, c.alpha*/, c.flipHorizontal, c.flipVertical))
+              AutomatonUpdate(c.withTransforms(sa.spawnedAt, c.rotation, c.scale /*, c.alpha*/, c.flipHorizontal, c.flipVertical))
 
             case _ =>
               AutomatonUpdate(n)

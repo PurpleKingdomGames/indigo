@@ -65,6 +65,9 @@ object Layer {
   def apply(nodes: List[SceneGraphNode]): Layer =
     Layer(nodes, None, None, None, true)
 
+  def apply(key: BindingKey, nodes: List[SceneGraphNode]): Layer =
+    Layer(nodes, Option(key), None, None, true)
+
   def apply(key: BindingKey, magnification: Int, depth: Depth)(nodes: SceneGraphNode*): Layer =
     Layer(nodes.toList, Option(key), Option(magnification), Option(depth), true)
 
