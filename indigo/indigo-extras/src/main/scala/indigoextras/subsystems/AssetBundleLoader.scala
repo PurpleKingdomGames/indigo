@@ -167,9 +167,9 @@ object AssetBundleTracker {
   val empty: AssetBundleTracker =
     new AssetBundleTracker(Nil)
 }
-final class AssetBundle(val key: BindingKey, val assetCount: Int, val assets: Map[AssetPath, AssetToLoad]) {
+final case class AssetBundle(key: BindingKey, assetCount: Int, assets: Map[AssetPath, AssetToLoad]) {
   def assetLoadComplete(assetPath: AssetPath, loaded: Boolean): AssetBundle =
-    new AssetBundle(
+    AssetBundle(
       key,
       assetCount,
       assets.updatedWith(assetPath) {
@@ -206,7 +206,7 @@ final class AssetBundle(val key: BindingKey, val assetCount: Int, val assets: Ma
   def containsAsset(path: AssetPath): Boolean =
     assets.contains(path)
 }
-final class AssetToLoad(val asset: AssetTypePrimitive, val complete: Boolean, val loaded: Boolean)
+final case class AssetToLoad(asset: AssetTypePrimitive, complete: Boolean, loaded: Boolean)
 
 sealed trait AssetBundleStatus {
   val percent: Int
