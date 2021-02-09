@@ -18,9 +18,9 @@ class ButtonTests extends munit.FunSuite {
   val button =
     Button(
       ButtonAssets(
-        Graphic(bounds, 1, StandardMaterial.Basic(AssetName("up"))),
-        Graphic(bounds, 1, StandardMaterial.Basic(AssetName("over"))),
-        Graphic(bounds, 1, StandardMaterial.Basic(AssetName("down")))
+        Graphic(bounds, 1, StandardMaterial.Blit(AssetName("up"))),
+        Graphic(bounds, 1, StandardMaterial.Blit(AssetName("over"))),
+        Graphic(bounds, 1, StandardMaterial.Blit(AssetName("down")))
       ),
       bounds,
       Depth(1)

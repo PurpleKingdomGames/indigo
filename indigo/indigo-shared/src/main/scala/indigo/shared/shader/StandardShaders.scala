@@ -4,15 +4,15 @@ import indigo.shaders.ShaderLibrary
 
 object StandardShaders {
 
-  val Basic: ShaderId =
-    ShaderId("[indigo_engine_basic]")
+  val Blit: ShaderId =
+    ShaderId("[indigo_engine_blit]")
 
-  val BasicShader: CustomShader.Source =
+  val BlitShader: CustomShader.Source =
     CustomShader.Source(
-      id = Basic,
-      vertex = ShaderLibrary.BasicVertex,
-      fragment = ShaderLibrary.BasicFragment,
-      light = ShaderLibrary.BasicLight
+      id = Blit,
+      vertex = ShaderLibrary.NoOpVertex,
+      fragment = ShaderLibrary.BlitFragment,
+      light = ShaderLibrary.NoOpLight
     )
 
 }
