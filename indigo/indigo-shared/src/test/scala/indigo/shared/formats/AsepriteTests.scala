@@ -137,7 +137,7 @@ object AsepriteSampleData {
   val animation: Animation =
     Animation(
       animationKey,
-      StandardMaterial.Basic(imageAssetRef),
+      StandardMaterial.Blit(imageAssetRef),
       currentCycleLabel = CycleLabel("lights"),
       cycles = NonEmptyList(
         Cycle.create(

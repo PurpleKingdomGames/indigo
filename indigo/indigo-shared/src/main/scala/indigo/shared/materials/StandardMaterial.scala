@@ -1,32 +1,29 @@
 package indigo.shared.materials
 
 import indigo.shared.assets.AssetName
-import indigo.shared.shader.Uniform
 import indigo.shared.shader.StandardShaders
-import indigo.shared.shader.ShaderPrimitive.float
+
+// import indigo.shared.shader.Uniform
+// import indigo.shared.shader.ShaderPrimitive.float
 
 sealed trait StandardMaterial extends Material
 
 object StandardMaterial {
 
-  final case class Basic(diffuse: AssetName, alpha: Double) extends StandardMaterial {
+  final case class Blit(diffuse: AssetName) extends StandardMaterial {
     val hash: String =
-      diffuse.value + alpha.toString().take(5)
+      diffuse.value
 
     def toGLSLShader: GLSLShader =
       GLSLShader(
-        StandardShaders.Basic,
-        Map(Uniform("ALPHA") -> float(alpha)),
+        StandardShaders.Blit,
+        Map(),
+        // Map(Uniform("ALPHA") -> float(alpha)),
         Some(diffuse),
         None,
         None,
         None
       )
-  }
-
-  object Basic {
-    def apply(diffuse: AssetName): Basic =
-      Basic(diffuse, 1.0d)
   }
 
   // final case class Textured(diffuse: AssetName, isLit: Boolean) extends StandardMaterial {
