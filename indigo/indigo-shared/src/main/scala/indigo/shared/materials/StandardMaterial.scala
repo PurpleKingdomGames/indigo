@@ -3,8 +3,8 @@ package indigo.shared.materials
 import indigo.shared.assets.AssetName
 import indigo.shared.shader.StandardShaders
 
-// import indigo.shared.shader.Uniform
-// import indigo.shared.shader.ShaderPrimitive.float
+import indigo.shared.shader.Uniform
+import indigo.shared.shader.ShaderPrimitive.float
 
 sealed trait StandardMaterial extends Material
 
@@ -16,9 +16,23 @@ object StandardMaterial {
 
     def toGLSLShader: GLSLShader =
       GLSLShader(
-        StandardShaders.Blit,
+        StandardShaders.Blit.id,
         Map(),
-        // Map(Uniform("ALPHA") -> float(alpha)),
+        Some(diffuse),
+        None,
+        None,
+        None
+      )
+  }
+
+  final case class ImageEffects(diffuse: AssetName, alpha: Double) extends StandardMaterial {
+    val hash: String =
+      diffuse.value
+
+    def toGLSLShader: GLSLShader =
+      GLSLShader(
+        StandardShaders.ImageEffects.id,
+        Map(Uniform("ALPHA") -> float(alpha)),
         Some(diffuse),
         None,
         None,
