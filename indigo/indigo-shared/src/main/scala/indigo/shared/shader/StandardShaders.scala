@@ -6,17 +6,23 @@ object StandardShaders {
 
   def shaderList: List[CustomShader.Source] =
     List(
-      BlitShader
+      Blit,
+      ImageEffects
     )
 
-  val Blit: ShaderId =
-    ShaderId("[indigo_engine_blit]")
-
-  private val BlitShader: CustomShader.Source =
+  val Blit: CustomShader.Source =
     CustomShader.Source(
-      id = Blit,
+      id = ShaderId("[indigo_engine_blit]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.BlitFragment,
+      light = ShaderLibrary.NoOpLight
+    )
+
+  val ImageEffects: CustomShader.Source =
+    CustomShader.Source(
+      id = ShaderId("[indigo_engine_effects]"),
+      vertex = ShaderLibrary.NoOpVertex,
+      fragment = ShaderLibrary.ImageEffectsFragment,
       light = ShaderLibrary.NoOpLight
     )
 
