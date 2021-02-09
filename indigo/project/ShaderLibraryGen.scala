@@ -35,7 +35,10 @@ object ShaderLibraryGen {
 
   def extractShaderCode(text: String, tag: String, assetName: String, newName: String): Seq[ShaderSnippet] =
     s"""//<indigo-$tag>\n((.|\n|\r)*)//</indigo-$tag>""".r
-      .findAllIn(text).toSeq
+      .findAllIn(text)
+      .toSeq
+      .map(_.toString)
+      .map(_.split('\n').drop(1).dropRight(1).mkString("\n"))
       .map(program => ShaderSnippet(newName + tag.capitalize, program))
 
   def makeShaderLibrary(files: Set[File], sourceManagedDir: File): Seq[File] = {
