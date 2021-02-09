@@ -9,9 +9,9 @@ object SandboxAssets {
   val light: AssetName         = AssetName("light")
   val dots: AssetName          = AssetName("dots")
 
-  val smallFontNameMaterial: StandardMaterial.Blit = StandardMaterial.Blit(smallFontName)
-  val lightMaterial: StandardMaterial.Blit         = StandardMaterial.Blit(light)
-  val dotsMaterial: StandardMaterial.Blit          = StandardMaterial.Blit(dots)
+  val smallFontNameMaterial: StandardMaterial = StandardMaterial.Blit(smallFontName)
+  val lightMaterial: StandardMaterial         = StandardMaterial.Blit(light)
+  val dotsMaterial: StandardMaterial          = StandardMaterial.ImageEffects(dots, 0.5)
 
   def assets: Set[AssetType] =
     Set(
