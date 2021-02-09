@@ -81,7 +81,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
   }
 
   object Samples {
-    val material = StandardMaterial.Basic(AssetName("font-sheet"))
+    val material = StandardMaterial.Blit(AssetName("font-sheet"))
 
     val chars = List(
       FontChar("a", 0, 16, 16, 16),

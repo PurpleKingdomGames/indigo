@@ -127,7 +127,7 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
   }
 
   def registerStandardShaders(): Unit =
-    shaderRegister.register(StandardShaders.BasicShader)
+    shaderRegister.register(StandardShaders.BlitShader)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def rebuildGameLoop(firstRun: Boolean): AssetCollection => Unit =

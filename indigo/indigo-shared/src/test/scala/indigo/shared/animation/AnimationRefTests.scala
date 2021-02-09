@@ -43,7 +43,7 @@ class AnimationRefTests extends munit.FunSuite {
   val animation: AnimationRef =
     AnimationRef(
       AnimationKey("test anim"),
-      StandardMaterial.Basic(AssetName("imageAssetRef")),
+      StandardMaterial.Blit(AssetName("imageAssetRef")),
       cycles.head._1,
       cycles
     )

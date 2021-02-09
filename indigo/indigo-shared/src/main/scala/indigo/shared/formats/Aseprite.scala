@@ -49,7 +49,7 @@ object Aseprite {
         val animations: Animation =
           Animation(
             animationKey = AnimationKey.fromDice(dice),
-            material = StandardMaterial.Basic(assetName, 1.0),
+            material = StandardMaterial.Blit(assetName),
             currentCycleLabel = x.label,
             cycles = NonEmptyList.pure(x, xs)
           )
