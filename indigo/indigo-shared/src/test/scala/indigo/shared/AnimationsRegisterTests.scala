@@ -7,8 +7,6 @@ import indigo.shared.collections.NonEmptyList
 import indigo.shared.animation.Cycle
 import indigo.shared.animation.Animation
 import indigo.shared.animation.AnimationKey
-import indigo.shared.materials.StandardMaterial
-import indigo.shared.assets.AssetName
 import indigo.shared.time.Seconds
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.time.GameTime
@@ -209,7 +207,6 @@ object AnimationSample {
   val animation: Animation =
     Animation(
       key,
-      StandardMaterial.Blit(AssetName("imageAssetRef")),
       cycles.head.label,
       cycles
     )

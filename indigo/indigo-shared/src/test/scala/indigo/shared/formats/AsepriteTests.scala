@@ -137,7 +137,6 @@ object AsepriteSampleData {
   val animation: Animation =
     Animation(
       animationKey,
-      StandardMaterial.Blit(imageAssetRef),
       currentCycleLabel = CycleLabel("lights"),
       cycles = NonEmptyList(
         Cycle.create(
@@ -169,8 +168,8 @@ object AsepriteSampleData {
       scale = Vector2.one,
       animationKey = animationKey,
       ref = Point.zero,
-      // effects = Effects.default,
-      (_: (Rectangle, GlobalEvent)) => Nil
+      (_: (Rectangle, GlobalEvent)) => Nil,
+      StandardMaterial.Blit(imageAssetRef)
     )
 
 }
