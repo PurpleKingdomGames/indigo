@@ -51,8 +51,8 @@ object PerfGame extends IndigoDemo[Unit, Dude, DudeModel, Unit] {
           )
         )
         .withAssets(PerfAssets.assets)
-        .withFonts(PerfView.fontInfo)
-        .withSubSystems(FPSCounter(PerfView.fontKey, Point(10, 565), targetFPS, Depth(1)))
+        .withFonts(Fonts.fontInfo)
+        .withSubSystems(FPSCounter(Fonts.fontKey, Point(10, 565), targetFPS, Depth(1), PerfAssets.fontMaterial))
     }
 
   def initialModel(startupData: Dude): Outcome[DudeModel] =

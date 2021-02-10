@@ -236,7 +236,7 @@ final case class CloneBlank(id: CloneId, cloneable: Cloneable) {
   * @param flipHorizontal
   * @param flipVertical
   */
-final case class CloneTransformData(position: Point, rotation: Radians, scale: Vector2/*, alpha: Double*/, flipHorizontal: Boolean, flipVertical: Boolean) {
+final case class CloneTransformData(position: Point, rotation: Radians, scale: Vector2 /*, alpha: Double*/, flipHorizontal: Boolean, flipVertical: Boolean) {
 
   def |+|(other: CloneTransformData): CloneTransformData =
     CloneTransformData(
@@ -268,10 +268,10 @@ final case class CloneTransformData(position: Point, rotation: Radians, scale: V
 }
 object CloneTransformData {
   def startAt(position: Point): CloneTransformData =
-    CloneTransformData(position, Radians.zero, Vector2.one/*, 1f*/, false, false)
+    CloneTransformData(position, Radians.zero, Vector2.one /*, 1f*/, false, false)
 
   val identity: CloneTransformData =
-    CloneTransformData(Point.zero, Radians.zero, Vector2.one/*, 1f*/, false, false)
+    CloneTransformData(Point.zero, Radians.zero, Vector2.one /*, 1f*/, false, false)
 }
 
 /**
@@ -282,10 +282,10 @@ object CloneTransformData {
   * @param transform
   */
 final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData) extends SceneGraphNode {
-  lazy val x: Int                  = transform.position.x
-  lazy val y: Int                  = transform.position.y
-  lazy val rotation: Radians       = transform.rotation
-  lazy val scale: Vector2          = transform.scale
+  lazy val x: Int            = transform.position.x
+  lazy val y: Int            = transform.position.y
+  lazy val rotation: Radians = transform.rotation
+  lazy val scale: Vector2    = transform.scale
   // lazy val alpha: Double           = transform.alpha
   lazy val flipHorizontal: Boolean = transform.flipHorizontal
   lazy val flipVertical: Boolean   = transform.flipVertical
@@ -303,8 +303,8 @@ final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
   def withRef(newRef: Point): Clone =
     this
 
-  def withTransforms(newPosition: Point, newRotation: Radians, newScale: Vector2/*, alpha: Double*/, flipHorizontal: Boolean, flipVertical: Boolean): Clone =
-    this.copy(transform = CloneTransformData(newPosition, newRotation, newScale/*, alpha*/, flipHorizontal, flipVertical))
+  def withTransforms(newPosition: Point, newRotation: Radians, newScale: Vector2 /*, alpha: Double*/, flipHorizontal: Boolean, flipVertical: Boolean): Clone =
+    this.copy(transform = CloneTransformData(newPosition, newRotation, newScale /*, alpha*/, flipHorizontal, flipVertical))
 
   def withPosition(newPosition: Point): Clone =
     this.copy(transform = transform.withPosition(newPosition))
@@ -342,10 +342,10 @@ final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
   * @param staticBatchKey
   */
 final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransformData, clones: List[CloneTransformData], staticBatchKey: Option[BindingKey]) extends SceneGraphNode {
-  lazy val x: Int                  = transform.position.x
-  lazy val y: Int                  = transform.position.y
-  lazy val rotation: Radians       = transform.rotation
-  lazy val scale: Vector2          = transform.scale
+  lazy val x: Int            = transform.position.x
+  lazy val y: Int            = transform.position.y
+  lazy val rotation: Radians = transform.rotation
+  lazy val scale: Vector2    = transform.scale
   // lazy val alpha: Double           = transform.alpha
   lazy val flipHorizontal: Boolean = transform.flipHorizontal
   lazy val flipVertical: Boolean   = transform.flipVertical
@@ -363,8 +363,8 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
   def withRef(newRef: Point): CloneBatch =
     this
 
-  def withTransforms(newPosition: Point, newRotation: Radians, newScale: Vector2/*, alpha: Double*/, flipHorizontal: Boolean, flipVertical: Boolean): CloneBatch =
-    this.copy(transform = CloneTransformData(newPosition, newRotation, newScale/*, alpha*/, flipHorizontal, flipVertical))
+  def withTransforms(newPosition: Point, newRotation: Radians, newScale: Vector2 /*, alpha: Double*/, flipHorizontal: Boolean, flipVertical: Boolean): CloneBatch =
+    this.copy(transform = CloneTransformData(newPosition, newRotation, newScale /*, alpha*/, flipHorizontal, flipVertical))
 
   def withPosition(newPosition: Point): CloneBatch =
     this.copy(transform = transform.withPosition(newPosition))
@@ -411,9 +411,10 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
   * Represents nodes with more advanced spacial and visual properties
   */
 sealed trait Renderable extends SceneGraphNodePrimitive {
-  // def material: Material
+  def material: StandardMaterial
 
-  // def withMaterial(newMaterial: StandardMaterial): Renderable
+  def withMaterial(newMaterial: StandardMaterial): Renderable
+  def modifyMaterial(alter: StandardMaterial => StandardMaterial): Renderable
 
   // def effects: Effects
 
@@ -464,7 +465,7 @@ final case class Shape(
     ref: Point,
     flip: Flip,
     material: GLSLShader
-) extends Renderable {
+) extends SceneGraphNodePrimitive {
 
   lazy val position: Point = bounds.position
   lazy val size: Point     = bounds.size
@@ -609,6 +610,9 @@ final case class Graphic(
   def withMaterial(newMaterial: StandardMaterial): Graphic =
     this.copy(material = newMaterial)
 
+  def modifyMaterial(alter: StandardMaterial => StandardMaterial): Graphic =
+    this.copy(material = alter(material))
+
   def moveTo(pt: Point): Graphic =
     this.copy(position = pt)
   def moveTo(x: Int, y: Int): Graphic =
@@ -745,6 +749,7 @@ object Graphic {
   */
 final case class Sprite(
     bindingKey: BindingKey,
+    material: StandardMaterial,
     animationKey: AnimationKey,
     animationActions: List[AnimationAction],
     eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
@@ -767,6 +772,12 @@ final case class Sprite(
 
   def withDepth(newDepth: Depth): Sprite =
     this.copy(depth = newDepth)
+
+  def withMaterial(newMaterial: StandardMaterial): Sprite =
+    this.copy(material = newMaterial)
+
+  def modifyMaterial(alter: StandardMaterial => StandardMaterial): Sprite =
+    this.copy(material = alter(material))
 
   def moveTo(pt: Point): Sprite =
     this.copy(position = pt)
@@ -863,7 +874,7 @@ final case class Sprite(
 }
 
 object Sprite {
-  def apply(bindingKey: BindingKey, x: Int, y: Int, depth: Int, animationKey: AnimationKey): Sprite =
+  def apply(bindingKey: BindingKey, x: Int, y: Int, depth: Int, animationKey: AnimationKey, material: StandardMaterial): Sprite =
     Sprite(
       position = Point(x, y),
       rotation = Radians.zero,
@@ -875,7 +886,8 @@ object Sprite {
       animationKey = animationKey,
       // effects = Effects.default,
       eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
-      animationActions = Nil
+      animationActions = Nil,
+      material = material
     )
 
   def apply(
@@ -887,7 +899,8 @@ object Sprite {
       animationKey: AnimationKey,
       ref: Point,
       // effects: Effects,
-      eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
+      eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
+      material: StandardMaterial
   ): Sprite =
     Sprite(
       position = position,
@@ -900,10 +913,11 @@ object Sprite {
       animationKey = animationKey,
       // effects = effects,
       eventHandler = eventHandler,
-      animationActions = Nil
+      animationActions = Nil,
+      material = material
     )
 
-  def apply(bindingKey: BindingKey, animationKey: AnimationKey): Sprite =
+  def apply(bindingKey: BindingKey, animationKey: AnimationKey, material: StandardMaterial): Sprite =
     Sprite(
       position = Point.zero,
       rotation = Radians.zero,
@@ -915,7 +929,8 @@ object Sprite {
       animationKey = animationKey,
       // effects = Effects.default,
       eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
-      animationActions = Nil
+      animationActions = Nil,
+      material = material
     )
 }
 
@@ -937,6 +952,7 @@ final case class Text(
     text: String,
     alignment: TextAlignment,
     fontKey: FontKey,
+    material: StandardMaterial,
     // effects: Effects,
     eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
     position: Point,
@@ -953,6 +969,12 @@ final case class Text(
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
+
+  def withMaterial(newMaterial: StandardMaterial): Text =
+    this.copy(material = newMaterial)
+
+  def modifyMaterial(alter: StandardMaterial => StandardMaterial): Text =
+    this.copy(material = alter(material))
 
   def moveTo(pt: Point): Text =
     this.copy(position = pt)
@@ -1048,7 +1070,7 @@ final case class Text(
 
 object Text {
 
-  def apply(text: String, x: Int, y: Int, depth: Int, fontKey: FontKey): Text =
+  def apply(text: String, x: Int, y: Int, depth: Int, fontKey: FontKey, material: StandardMaterial): Text =
     Text(
       position = Point(x, y),
       rotation = Radians.zero,
@@ -1060,10 +1082,11 @@ object Text {
       alignment = TextAlignment.Left,
       fontKey = fontKey,
       // effects = Effects.default,
-      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil
+      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
+      material = material
     )
 
-  def apply(text: String, fontKey: FontKey): Text =
+  def apply(text: String, fontKey: FontKey, material: StandardMaterial): Text =
     Text(
       position = Point.zero,
       rotation = Radians.zero,
@@ -1075,7 +1098,8 @@ object Text {
       alignment = TextAlignment.Left,
       fontKey = fontKey,
       // effects = Effects.default,
-      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil
+      eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
+      material = material
     )
 
 }
