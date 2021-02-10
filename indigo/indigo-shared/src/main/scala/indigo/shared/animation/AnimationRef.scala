@@ -1,6 +1,5 @@
 package indigo.shared.animation
 
-import indigo.shared.materials.StandardMaterial
 import indigo.shared.time.Millis
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.temporal.Signal
@@ -13,13 +12,12 @@ import indigo.shared.animation.AnimationAction.JumpToFrame
 
 final case class AnimationRef(
     animationKey: AnimationKey,
-    material: StandardMaterial,
     currentCycleLabel: CycleLabel,
     cycles: Map[CycleLabel, CycleRef]
 ) {
 
   lazy val frameHash: String =
-    currentFrame.crop.hash + "_" + currentFrame.frameMaterial.map(_.hash).getOrElse(material.hash)
+    currentFrame.crop.hash
 
   def currentCycle: CycleRef =
     cycles.get(currentCycleLabel).getOrElse(cycles.head._2)
@@ -71,7 +69,6 @@ object AnimationRef {
   def fromAnimation(animation: Animation): AnimationRef =
     new AnimationRef(
       animation.animationKey,
-      animation.material,
       animation.currentCycleLabel,
       animation.cycles.toList.map(c => (c.label, CycleRef.fromCycle(c))).toMap
     )

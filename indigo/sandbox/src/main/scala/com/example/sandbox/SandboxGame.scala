@@ -48,8 +48,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
         ),
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."))
       ).withAssets(SandboxAssets.assets ++ Shaders.assets)
-        .withFonts(SandboxView.fontInfo)
-        .withSubSystems(FPSCounter(SandboxView.fontKey, Point(5, 165), targetFPS, Depth(200)))
+        .withFonts(Fonts.fontInfo)
+        .withSubSystems(FPSCounter(Fonts.fontKey, Point(5, 165), targetFPS, Depth(200), SandboxAssets.fontMaterial))
         .withShaders(
           Shaders.circle,
           Shaders.external,
@@ -71,6 +71,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
                 .withDepth(Depth(3))
                 .withRef(16, 16)                                                                         // Initial offset, so when talk about his position it's the center of the sprite
                 .moveTo(viewportWidth / 2 / magnificationLevel, viewportHeight / 2 / magnificationLevel) // Also place him in the middle of the screen initially
+                .withMaterial(SandboxAssets.dudeMaterial)
             )
           )
         )
@@ -91,7 +92,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   def initialViewModel(startupData: SandboxStartupData, model: SandboxGameModel): Outcome[SandboxViewModel] = {
     val assets =
       new InputFieldAssets(
-        Text("placeholder", 0, 0, 0, SandboxView.fontKey).alignLeft,
+        Text("placeholder", 0, 0, 0, Fonts.fontKey, SandboxAssets.fontMaterial).alignLeft,
         Graphic(0, 0, 16, 16, 2, StandardMaterial.Blit(SandboxAssets.smallFontName))
           .withCrop(188, 78, 14, 23)
         //.withTint(0, 0, 1)

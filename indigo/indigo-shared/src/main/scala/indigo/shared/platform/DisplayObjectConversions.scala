@@ -421,7 +421,7 @@ final class DisplayObjectConversions(
   }
 
   def spriteToDisplayObject(boundaryLocator: BoundaryLocator, leaf: Sprite, assetMapping: AssetMapping, anim: AnimationRef): DisplayObject = {
-    val material     = anim.currentFrame.frameMaterial.getOrElse(anim.material)
+    val material     = leaf.material
     val asCustom     = material.toGLSLShader
     val materialName = asCustom.channel0.get.value
 
@@ -431,7 +431,7 @@ final class DisplayObjectConversions(
     val (specularOffset, _) = (Vector2.zero, 0.0d) //materialToSpecularValues(assetMapping, material)
 
     val frameInfo =
-      QuickCache(anim.frameHash) {
+      QuickCache(anim.frameHash + material.hash) {
         SpriteSheetFrame.calculateFrameOffset(
           atlasSize = lookupAtlasSize(assetMapping, materialName),
           frameCrop = anim.currentFrame.crop,
@@ -487,7 +487,8 @@ final class DisplayObjectConversions(
   def textLineToDisplayObjects(leaf: Text, assetMapping: AssetMapping, fontInfo: FontInfo): (TextLine, Int, Int) => List[DisplayObject] =
     (line, alignmentOffsetX, yOffset) => {
 
-      val asCustom     = fontInfo.fontSpriteSheet.material.toGLSLShader
+      val material     = leaf.material
+      val asCustom     = material.toGLSLShader
       val materialName = asCustom.channel0.get.value
 
       val lineHash: String =
@@ -498,7 +499,7 @@ final class DisplayObjectConversions(
           ":" + leaf.position.hash +
           ":" + leaf.rotation.hash +
           ":" + leaf.scale.hash +
-          ":" + fontInfo.fontSpriteSheet.material.hash // +
+          ":" + material.hash // +
       // ":" + leaf.effects.hash
 
       // val albedoAmount                     = 1.0f
@@ -535,7 +536,7 @@ final class DisplayObjectConversions(
         zipWithCharDetails(line.text.toList, fontInfo).toList.map {
           case (fontChar, xPosition) =>
             val frameInfo =
-              QuickCache(fontChar.bounds.hash + "_" + fontInfo.fontSpriteSheet.material.hash) {
+              QuickCache(fontChar.bounds.hash + "_" + material.hash) {
                 SpriteSheetFrame.calculateFrameOffset(
                   atlasSize = lookupAtlasSize(assetMapping, materialName),
                   frameCrop = fontChar.bounds,

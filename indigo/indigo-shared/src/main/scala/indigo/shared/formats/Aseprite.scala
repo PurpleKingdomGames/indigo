@@ -49,7 +49,6 @@ object Aseprite {
         val animations: Animation =
           Animation(
             animationKey = AnimationKey.fromDice(dice),
-            material = StandardMaterial.Blit(assetName),
             currentCycleLabel = x.label,
             cycles = NonEmptyList.pure(x, xs)
           )
@@ -57,13 +56,13 @@ object Aseprite {
           SpriteAndAnimations(
             Sprite(
               bindingKey = BindingKey.fromDice(dice),
+              material = StandardMaterial.Blit(assetName),
               position = Point(0, 0),
               depth = Depth(1),
               rotation = Radians.zero,
               scale = Vector2.one,
               animationKey = animations.animationKey,
               ref = Point(0, 0),
-              // effects = Effects.default,
               eventHandler = (_: (Rectangle, GlobalEvent)) => Nil
             ),
             animations
