@@ -30,6 +30,7 @@ import org.scalajs.dom.raw.WebGLProgram
 import indigo.shared.shader.Shader
 import scalajs.js.JSConverters._
 import indigo.shared.time.Seconds
+import indigo.shared.scenegraph.Blend
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 final class RendererWebGL2(
@@ -205,7 +206,11 @@ final class RendererWebGL2(
         }
 
       // Merge it onto the back buffer
-      WebGLHelper.setNormalBlend(gl)
+      layer.blend match {
+        case Blend.Normal => WebGLHelper.setNormalBlend(gl)
+        case Blend.Alpha  => WebGLHelper.setLightingBlend(gl)
+      }
+      // WebGLHelper.setNormalBlend(gl)
       layerMergeRenderInstance.merge(
         projection,
         layerFrameBuffer,

@@ -3,7 +3,14 @@ package indigo.shared.scenegraph
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Depth
 
-final case class Layer(nodes: List[SceneGraphNode], key: Option[BindingKey], magnification: Option[Int], depth: Option[Depth], visible: Boolean) {
+final case class Layer(
+    nodes: List[SceneGraphNode],
+    key: Option[BindingKey],
+    magnification: Option[Int],
+    depth: Option[Depth],
+    visible: Boolean,
+    blend: Blend
+) {
 
   def |+|(other: Layer): Layer =
     this.copy(
@@ -52,29 +59,38 @@ final case class Layer(nodes: List[SceneGraphNode], key: Option[BindingKey], mag
 
   def hide: Layer =
     withVisibility(false)
+
+  def withBlend(newBlend: Blend): Layer =
+    this.copy(blend = newBlend)
 }
 
 object Layer {
 
   def empty: Layer =
-    Layer(Nil, None, None, None, true)
+    Layer(Nil, None, None, None, true, Blend.Normal)
 
   def apply(nodes: SceneGraphNode*): Layer =
-    Layer(nodes.toList, None, None, None, true)
+    Layer(nodes.toList, None, None, None, true, Blend.Normal)
 
   def apply(nodes: List[SceneGraphNode]): Layer =
-    Layer(nodes, None, None, None, true)
+    Layer(nodes, None, None, None, true, Blend.Normal)
 
   def apply(key: BindingKey, nodes: List[SceneGraphNode]): Layer =
-    Layer(nodes, Option(key), None, None, true)
+    Layer(nodes, Option(key), None, None, true, Blend.Normal)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth)(nodes: SceneGraphNode*): Layer =
-    Layer(nodes.toList, Option(key), Option(magnification), Option(depth), true)
+    Layer(nodes.toList, Option(key), Option(magnification), Option(depth), true, Blend.Normal)
 
   def apply(key: BindingKey): Layer =
-    Layer(Nil, Option(key), None, None, true)
+    Layer(Nil, Option(key), None, None, true, Blend.Normal)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth): Layer =
-    Layer(Nil, Option(key), Option(magnification), Option(depth), true)
+    Layer(Nil, Option(key), Option(magnification), Option(depth), true, Blend.Normal)
 
+}
+
+sealed trait Blend
+object Blend {
+  case object Normal extends Blend
+  case object Alpha  extends Blend
 }
