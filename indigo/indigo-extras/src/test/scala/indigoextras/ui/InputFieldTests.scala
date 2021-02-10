@@ -30,7 +30,7 @@ class InputFieldTests extends munit.FunSuite {
 
   val assets =
     InputFieldAssets(
-      Text("", 0, 0, 1, fontKey),
+      Text("", 0, 0, 1, fontKey, material),
       Graphic(Rectangle(0, 0, 0, 0), 1, StandardMaterial.Blit(AssetName("fake")))
     )
 
@@ -286,7 +286,7 @@ class InputFieldTests extends munit.FunSuite {
 
     val fontKey = FontKey("test1")
 
-    val fontInfo = FontInfo(fontKey, material, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
+    val fontInfo = FontInfo(fontKey, 256, 256, FontChar("?", 0, 0, 16, 16)).addChars(chars)
   }
 
 }
