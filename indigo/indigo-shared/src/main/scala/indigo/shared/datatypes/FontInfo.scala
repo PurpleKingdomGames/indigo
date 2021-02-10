@@ -3,7 +3,7 @@ package indigo.shared.datatypes
 import indigo.shared.QuickCache
 import indigo.shared.materials.StandardMaterial
 
-final case class FontInfo(fontKey: FontKey, fontSpriteSheet: FontSpriteSheet, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean) {
+final case class FontInfo(fontKey: FontKey, fontSheetBounds: Point, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean) {
   import FontInfo.fontCharCache
 
   private val nonEmptyChars: List[FontChar] = unknownChar +: fontChars
@@ -41,10 +41,10 @@ object FontInfo {
 
   implicit val fontCharCache: QuickCache[FontChar] = QuickCache.empty
 
-  def apply(fontKey: FontKey, material: StandardMaterial, sheetWidth: Int, sheetHeight: Int, unknownChar: FontChar, chars: FontChar*): FontInfo =
+  def apply(fontKey: FontKey, sheetWidth: Int, sheetHeight: Int, unknownChar: FontChar, chars: FontChar*): FontInfo =
     FontInfo(
       fontKey = fontKey,
-      fontSpriteSheet = FontSpriteSheet(material, Point(sheetWidth, sheetHeight)),
+      fontSheetBounds = Point(sheetWidth, sheetHeight),
       unknownChar = unknownChar,
       fontChars = chars.toList,
       caseSensitive = false
