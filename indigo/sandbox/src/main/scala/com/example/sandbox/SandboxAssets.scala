@@ -11,7 +11,12 @@ object SandboxAssets {
 
   val smallFontNameMaterial: StandardMaterial = StandardMaterial.Blit(smallFontName)
   val lightMaterial: StandardMaterial         = StandardMaterial.Blit(light)
-  val dotsMaterial: StandardMaterial          = StandardMaterial.ImageEffects(dots, 0.5)
+
+  val dotsMaterial: StandardMaterial =
+    StandardMaterial
+      .ImageEffects(dots)
+      .withOverlay(Overlay.LinearGradiant(Point.zero, RGBA.Cyan, Point(32, 32), RGBA.Magenta))
+  // .withTint(RGBA.Red)
 
   def assets: Set[AssetType] =
     Set(

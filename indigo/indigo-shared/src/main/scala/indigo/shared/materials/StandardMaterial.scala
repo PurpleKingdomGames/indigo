@@ -4,7 +4,12 @@ import indigo.shared.assets.AssetName
 import indigo.shared.shader.StandardShaders
 
 import indigo.shared.shader.Uniform
-import indigo.shared.shader.ShaderPrimitive.float
+import indigo.shared.shader.ShaderPrimitive.{float, vec4}
+import indigo.shared.datatypes.RGBA
+import indigo.shared.datatypes.Overlay
+import indigo.shared.datatypes.Overlay.Color
+import indigo.shared.datatypes.Overlay.LinearGradiant
+import indigo.shared.shader.ShaderPrimitive
 
 sealed trait StandardMaterial extends Material
 
@@ -17,7 +22,7 @@ object StandardMaterial {
     def toGLSLShader: GLSLShader =
       GLSLShader(
         StandardShaders.Blit.id,
-        Map(),
+        Nil,
         Some(diffuse),
         None,
         None,
@@ -25,19 +30,58 @@ object StandardMaterial {
       )
   }
 
-  final case class ImageEffects(diffuse: AssetName, alpha: Double) extends StandardMaterial {
-    val hash: String =
-      diffuse.value
+  final case class ImageEffects(diffuse: AssetName, alpha: Double, tint: RGBA, overlay: Overlay) extends StandardMaterial {
 
-    def toGLSLShader: GLSLShader =
+    def withAlpha(newAlpha: Double): ImageEffects =
+      this.copy(alpha = newAlpha)
+
+    def withTint(newTint: RGBA): ImageEffects =
+      this.copy(tint = newTint)
+
+    def withOverlay(newOverlay: Overlay): ImageEffects =
+      this.copy(overlay = newOverlay)
+
+    val hash: String =
+      diffuse.value + alpha.toString() + tint.hash + overlay.hash
+
+    def toGLSLShader: GLSLShader = {
+      val gradiantUniforms: List[(Uniform, ShaderPrimitive)] =
+        overlay match {
+          case Color(color) =>
+            val c = vec4(color.r, color.g, color.b, color.a)
+            List(
+              Uniform("GRADIANT_FROM_TO")    -> vec4(0.0d),
+              Uniform("GRADIANT_FROM_COLOR") -> c,
+              Uniform("GRADIANT_TO_COLOR")   -> c
+            )
+
+          case LinearGradiant(fromPoint, fromColor, toPoint, toColor) =>
+            List(
+              Uniform("GRADIANT_FROM_TO")    -> vec4(fromPoint.x.toDouble, fromPoint.y.toDouble, toPoint.x.toDouble, toPoint.y.toDouble),
+              Uniform("GRADIANT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
+              Uniform("GRADIANT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
+            )
+        }
+
       GLSLShader(
         StandardShaders.ImageEffects.id,
-        Map(Uniform("ALPHA") -> float(alpha)),
+        List(
+          Uniform("ALPHA") -> float(alpha),
+          Uniform("TINT")  -> vec4(tint.r, tint.g, tint.b, tint.a)
+        ) ++ gradiantUniforms,
         Some(diffuse),
         None,
         None,
         None
       )
+    }
+  }
+  object ImageEffects {
+    def apply(diffuse: AssetName): ImageEffects =
+      ImageEffects(diffuse, 1.0, RGBA.None, Overlay.Color.default)
+
+    def apply(diffuse: AssetName, alpha: Double): ImageEffects =
+      ImageEffects(diffuse, alpha, RGBA.None, Overlay.Color.default)
   }
 
   // final case class Textured(diffuse: AssetName, isLit: Boolean) extends StandardMaterial {
