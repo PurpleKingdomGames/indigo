@@ -221,7 +221,7 @@ object TestScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
               1,
               GLSLShader(
                 Shaders.externalId,
-                Map(
+                List(
                   Uniform("ALPHA")        -> float(0.75),
                   Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 0.0)
                 )
@@ -235,7 +235,7 @@ object TestScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxView
               1,
               GLSLShader(
                 Shaders.externalId,
-                Map(
+                List(
                   Uniform("ALPHA")        -> float(0.5),
                   Uniform("BORDER_COLOR") -> vec3(1.0, 0.0, 1.0)
                 )

@@ -7,7 +7,7 @@ import indigo.shared.shader.ShaderPrimitive
 
 final case class GLSLShader(
     shaderId: ShaderId,
-    uniforms: Map[Uniform, ShaderPrimitive],
+    uniforms: List[(Uniform, ShaderPrimitive)],
     channel0: Option[AssetName],
     channel1: Option[AssetName],
     channel2: Option[AssetName],
@@ -17,7 +17,7 @@ final case class GLSLShader(
     uniforms.toList.map(p => p._1.name + p._2.hash).mkString
 
   def withUniforms(newUniforms: List[(Uniform, ShaderPrimitive)]): GLSLShader =
-    this.copy(uniforms = newUniforms.toMap)
+    this.copy(uniforms = newUniforms)
   def withUniforms(newUniforms: (Uniform, ShaderPrimitive)*): GLSLShader =
     withUniforms(newUniforms.toList)
 
@@ -50,12 +50,12 @@ final case class GLSLShader(
 object GLSLShader {
 
   def apply(shaderId: ShaderId): GLSLShader =
-    GLSLShader(shaderId, Map(), None, None, None, None)
+    GLSLShader(shaderId, Nil, None, None, None, None)
 
-  def apply(shaderId: ShaderId, uniforms: Map[Uniform, ShaderPrimitive]): GLSLShader =
+  def apply(shaderId: ShaderId, uniforms: List[(Uniform, ShaderPrimitive)]): GLSLShader =
     GLSLShader(shaderId, uniforms, None, None, None, None)
 
   def apply(shaderId: ShaderId, channel0: AssetName, channel1: AssetName, channel2: AssetName, channel3: AssetName): GLSLShader =
-    GLSLShader(shaderId, Map(), Option(channel0), Option(channel1), Option(channel2), Option(channel3))
+    GLSLShader(shaderId, Nil, Option(channel0), Option(channel1), Option(channel2), Option(channel3))
 
 }
