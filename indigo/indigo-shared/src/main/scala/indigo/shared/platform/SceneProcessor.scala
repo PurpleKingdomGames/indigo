@@ -96,7 +96,8 @@ final class SceneProcessor(
             DisplayLayer(
               displayObjectConverter.sceneNodesToDisplayObjects(l.nodes, gameTime, assetMapping, cloneBlankDisplayObjects),
               l.magnification,
-              l.depth.map(_.zIndex).getOrElse(i)
+              l.depth.map(_.zIndex).getOrElse(i),
+              l.blend
             )
         }
         .sortBy(_.depth)
