@@ -20,7 +20,7 @@ float sdf(vec2 p) {
 
 void fragment(){
   float amount = sdf(UV - 0.5);
-  COLOR=vec4(BORDER_COLOR, amount * ALPHA);
+  COLOR = vec4(BORDER_COLOR * amount, amount) * ALPHA;
 }
 //</indigo-fragment>
 

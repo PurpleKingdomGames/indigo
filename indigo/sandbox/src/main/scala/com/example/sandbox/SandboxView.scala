@@ -19,11 +19,11 @@ object SandboxView {
           .withDepth(Depth(300))
           // .withBlend(Blend.Alpha)
       )
-      .addLayer(
-        Layer(lightingLayer(inputState))
-          .withDepth(Depth(301))
-          .withBlend(Blend.Alpha)
-      )
+      // .addLayer(
+      //   Layer(lightingLayer(inputState))
+      //     .withDepth(Depth(301))
+      //     .withBlend(Blend.Alpha)
+      // )
       // .addLayer(Layer(uiLayer(inputState)))
       .withAmbientLight(RGBA.White.withAmount(0.25))
       .addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))

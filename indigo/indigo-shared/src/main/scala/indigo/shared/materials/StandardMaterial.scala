@@ -10,6 +10,7 @@ import indigo.shared.datatypes.Overlay
 import indigo.shared.datatypes.Overlay.Color
 import indigo.shared.datatypes.Overlay.LinearGradiant
 import indigo.shared.shader.ShaderPrimitive
+import indigo.shared.datatypes.RGB
 
 sealed trait StandardMaterial extends Material
 
@@ -37,6 +38,8 @@ object StandardMaterial {
 
     def withTint(newTint: RGBA): ImageEffects =
       this.copy(tint = newTint)
+    def withTint(newTint: RGB): ImageEffects =
+      this.copy(tint = newTint.toRGBA)
 
     def withOverlay(newOverlay: Overlay): ImageEffects =
       this.copy(overlay = newOverlay)

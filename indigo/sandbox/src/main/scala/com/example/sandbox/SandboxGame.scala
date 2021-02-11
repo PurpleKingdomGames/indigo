@@ -93,9 +93,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
     val assets =
       new InputFieldAssets(
         Text("placeholder", 0, 0, 0, Fonts.fontKey, SandboxAssets.fontMaterial).alignLeft,
-        Graphic(0, 0, 16, 16, 2, StandardMaterial.Blit(SandboxAssets.smallFontName))
+        Graphic(0, 0, 16, 16, 2, StandardMaterial.ImageEffects(SandboxAssets.smallFontName).withTint(RGB(0, 0, 1)))
           .withCrop(188, 78, 14, 23)
-        //.withTint(0, 0, 1)
       )
 
     Outcome(
@@ -276,7 +275,7 @@ object Shaders {
     |void fragment() {
     |  float red = UV.x * (1.0 - ((cos(timeToRadians(TIME)) + 1.0) / 2.0));
     |  float alpha = 1.0 - step(0.0, length(UV - 0.5) - 0.5);
-    |  vec4 circle = vec4(red, UV.y, 0.0, alpha);
+    |  vec4 circle = vec4(vec3(red, UV.y, 0.0) * alpha, alpha);
     |  COLOR = circle;
     |}
     |""".stripMargin
