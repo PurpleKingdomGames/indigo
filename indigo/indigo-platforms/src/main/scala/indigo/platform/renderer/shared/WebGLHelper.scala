@@ -8,6 +8,7 @@ import org.scalajs.dom.raw.WebGLProgram
 
 import indigo.shared.shader.Shader
 import org.scalajs.dom.raw.WebGLRenderingContext
+import indigo.facades.WebGL2RenderingContext
 
 object WebGLHelper {
 
