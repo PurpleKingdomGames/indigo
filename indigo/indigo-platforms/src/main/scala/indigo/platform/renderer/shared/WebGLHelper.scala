@@ -99,6 +99,27 @@ object WebGLHelper {
     gl.bindTexture(TEXTURE_2D, texture)
   }
 
+  // Blend Equations
+  def setBlendAdd(gl: raw.WebGLRenderingContext): Unit =
+    gl.blendEquation(FUNC_ADD)
+
+  def setBlendSubract(gl: raw.WebGLRenderingContext): Unit =
+    gl.blendEquation(FUNC_SUBTRACT)
+
+  def setBlendReverseSubract(gl: raw.WebGLRenderingContext): Unit =
+    gl.blendEquation(FUNC_REVERSE_SUBTRACT)
+
+  def setBlendMin(gl2: WebGL2RenderingContext): Unit =
+    gl2.blendEquation(gl2.MIN)
+  def setBlendDarken(gl2: WebGL2RenderingContext): Unit =
+    setBlendMin(gl2)
+
+  def setBlendMax(gl2: WebGL2RenderingContext): Unit =
+    gl2.blendEquation(gl2.MAX)
+  def setBlendLighten(gl2: WebGL2RenderingContext): Unit =
+    setBlendMax(gl2)
+
+  // Blend Modes
   def setAlphaBlend(gl: raw.WebGLRenderingContext): Unit =
     gl.blendFunc(SRC_ALPHA, DST_ALPHA)
 
