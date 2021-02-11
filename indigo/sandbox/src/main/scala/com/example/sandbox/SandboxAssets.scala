@@ -17,7 +17,6 @@ object SandboxAssets {
     StandardMaterial
       .ImageEffects(dots)
       .withOverlay(Overlay.LinearGradiant(Point.zero, RGBA.Cyan, Point(32, 32), RGBA.Magenta))
-  // .withTint(RGBA.Red)
 
   def assets: Set[AssetType] =
     Set(
