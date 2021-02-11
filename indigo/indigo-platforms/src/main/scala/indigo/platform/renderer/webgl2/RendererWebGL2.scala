@@ -184,7 +184,12 @@ final class RendererWebGL2(
 
     sceneData.layers.foreach { layer =>
       // Draw the layer
-      WebGLHelper.setNormalBlend(gl)
+
+      layer.blend match {
+        case Blend.Normal => WebGLHelper.setNormalBlend(gl)
+        case Blend.Alpha  => WebGLHelper.setLightingBlend(gl)
+      }
+      // WebGLHelper.setNormalBlend(gl)
       layerRenderInstance.drawLayer(
         orthographicProjectionMatrixNoMagJS.map(_.toDouble),
         sceneData.cloneBlankDisplayObjects,
@@ -206,10 +211,11 @@ final class RendererWebGL2(
         }
 
       // Merge it onto the back buffer
-      layer.blend match {
-        case Blend.Normal => WebGLHelper.setNormalBlend(gl)
-        case Blend.Alpha  => WebGLHelper.setLightingBlend(gl)
-      }
+      // This is set above
+      // layer.blend match {
+      //   case Blend.Normal => WebGLHelper.setNormalBlend(gl)
+      //   case Blend.Alpha  => WebGLHelper.setLightingBlend(gl)
+      // }
       // WebGLHelper.setNormalBlend(gl)
       layerMergeRenderInstance.merge(
         projection,
