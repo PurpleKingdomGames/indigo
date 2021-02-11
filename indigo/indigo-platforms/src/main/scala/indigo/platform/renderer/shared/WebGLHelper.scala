@@ -125,7 +125,7 @@ object WebGLHelper {
     gl.blendFunc(SRC_ALPHA, DST_ALPHA)
 
   def setNormalBlend(gl: raw.WebGLRenderingContext): Unit =
-    gl.blendFuncSeparate(SRC_ALPHA, ONE_MINUS_SRC_ALPHA, ONE, ONE_MINUS_SRC_ALPHA)
+    gl.blendFunc(ONE, ONE_MINUS_SRC_ALPHA)
 
   def setLightingBlend(gl: raw.WebGLRenderingContext): Unit =
     gl.blendFunc(SRC_ALPHA, DST_ALPHA)

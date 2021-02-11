@@ -93,7 +93,7 @@ final class RendererInitialiser(renderingTechnology: RenderingTechnology, global
   )
   private def getContext(canvas: html.Canvas, antiAliasing: Boolean): (WebGLRenderingContext, RenderingTechnology) = {
     val args =
-      Dynamic.literal("premultipliedAlpha" -> false, "alpha" -> false, "antialias" -> antiAliasing)
+      Dynamic.literal("premultipliedAlpha" -> true, "alpha" -> false, "antialias" -> antiAliasing)
 
     val tech = chooseRenderingTechnology(renderingTechnology, args)
 
