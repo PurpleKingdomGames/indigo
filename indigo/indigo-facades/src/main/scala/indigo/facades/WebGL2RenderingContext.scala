@@ -63,6 +63,10 @@ trait WebGL2RenderingContext extends WebGLRenderingContext {
   val COLOR_ATTACHMENT14: Int = js.native // 0x8cee
   val COLOR_ATTACHMENT15: Int = js.native // 0x8cef
 
+  // WebGL2 Blend equations
+  val MIN: Int = js.native // 0x8007
+  val MAX: Int = js.native // 0x8008
+
   def uniformBlockBinding(program: WebGLProgram, uniformBlockIndex: Int, uniformBlockBinding: Int): Unit =
     js.native
 
@@ -127,6 +131,8 @@ object WebGL2RenderingContext {
   val MAX_VERTEX_TEXTURE_IMAGE_UNITS: Int              = 0x8b4c
   val MAX_FRAGMENT_INPUT_COMPONENTS: Int               = 0x9125
   val MAX_VARYING_VECTORS: Int                         = 0x8dfc
+  val MIN: Int                                         = 0x8007
+  val MAX: Int                                         = 0x8008
 }
 
 @nowarn
