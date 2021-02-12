@@ -110,8 +110,12 @@ object Blending {
     Blending(Blend.Normal, Blend.Normal)
   val Alpha: Blending =
     Blending(Blend.Alpha, Blend.Alpha)
+
+  /**
+    * Specifically replicates Indigo's lighting layer behaviour
+    */
   val Lighting: Blending =
-    Blending(Blend.Alpha, Blend.Normal)
+    Blending(Blend.LightingEntity, Blend.LightingLayer)
 }
 
 sealed trait Blend {
@@ -146,6 +150,10 @@ object Blend {
     Add(BlendFactor.One, BlendFactor.OneMinusSrcAlpha)
   val Alpha: Blend =
     Add(BlendFactor.SrcAlpha, BlendFactor.DstAlpha)
+  val LightingEntity: Blend =
+    Alpha
+  val LightingLayer: Blend =
+    Min(BlendFactor.SrcColor, BlendFactor.DstColor)
 }
 
 sealed trait BlendFactor
