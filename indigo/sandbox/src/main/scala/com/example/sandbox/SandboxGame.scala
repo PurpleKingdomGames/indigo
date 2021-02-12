@@ -9,8 +9,9 @@ import indigoextras.ui.InputFieldAssets
 import indigo.scenes._
 
 import scala.scalajs.js.annotation._
-import indigo.shared.shader.Uniform
-import indigo.shared.shader.ShaderPrimitive._
+
+import com.example.sandbox.scenes.OriginalScene
+import com.example.sandbox.scenes.Shaders
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {
@@ -21,10 +22,10 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   private val viewportHeight: Int     = 128 * magnificationLevel
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    None
+    Some(OriginalScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
-    NonEmptyList(TestScene)
+    NonEmptyList(OriginalScene)
 
   val eventFilters: EventFilters = EventFilters.Permissive
 
@@ -147,172 +148,11 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       Outcome(viewModel)
   }
 
-  def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] = {
-    val scene =
-      SandboxView
-        .updateView(model, viewModel, context.inputState)
-        .addLayer(
-          Layer(
-            // viewModel.single.draw(gameTime, boundaryLocator) //|+|
-            viewModel.multi.draw(context.gameTime, context.boundaryLocator)
-          ).withDepth(Depth(1000))
-        )
-
-    Outcome(
-      SceneUpdateFragment.empty
-        .addLayer(
-          Layer.empty
-            .withKey(BindingKey("bg"))
-            .withMagnification(1)
-        ) |+| scene
-    )
-  }
+  def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] =
+    Outcome(SceneUpdateFragment.empty)
 }
 
 final case class Dude(aseprite: Aseprite, sprite: Sprite)
 final case class SandboxBootData(message: String)
 final case class SandboxStartupData(dude: Dude)
 final case class SandboxViewModel(offset: Point, single: InputField, multi: InputField)
-
-object TestScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
-
-  type SceneModel     = Unit
-  type SceneViewModel = Unit
-
-  def eventFilters: EventFilters =
-    EventFilters.Restricted
-
-  def modelLens: indigo.scenes.Lens[SandboxGameModel, Unit] =
-    Lens.unit[SandboxGameModel]
-
-  def viewModelLens: Lens[SandboxViewModel, Unit] =
-    Lens.unit[SandboxViewModel]
-
-  def name: SceneName =
-    SceneName("test")
-
-  def subSystems: Set[SubSystem] =
-    Set()
-
-  def updateModel(context: FrameContext[SandboxStartupData], model: Unit): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(model)
-
-  def updateViewModel(context: FrameContext[SandboxStartupData], model: Unit, viewModel: Unit): GlobalEvent => Outcome[Unit] =
-    _ => Outcome(viewModel)
-
-  def present(context: FrameContext[SandboxStartupData], model: Unit, viewModel: Unit): Outcome[SceneUpdateFragment] =
-    Outcome(
-      SceneUpdateFragment.empty
-        .addLayer(
-          Layer(
-            Shape(0, 0, 228 * 3, 140 * 3, 10, GLSLShader(Shaders.seaId))
-          ).withKey(BindingKey("bg"))
-            .withMagnification(1)
-        )
-        .addLayer(
-          Layer(
-            Graphic(120, 10, 32, 32, 1, SandboxAssets.dotsMaterial),
-            Shape(140, 50, 32, 32, 1, GLSLShader(Shaders.circleId)),
-            Shape(
-              140,
-              50,
-              32,
-              32,
-              1,
-              GLSLShader(
-                Shaders.externalId,
-                List(
-                  Uniform("ALPHA")        -> float(0.75),
-                  Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 0.0)
-                )
-              )
-            ),
-            Shape(
-              150,
-              60,
-              32,
-              32,
-              1,
-              GLSLShader(
-                Shaders.externalId,
-                List(
-                  Uniform("ALPHA")        -> float(0.5),
-                  Uniform("BORDER_COLOR") -> vec3(1.0, 0.0, 1.0)
-                )
-              )
-            )
-          )
-        )
-    )
-
-}
-
-object Shaders {
-
-  val circleId: ShaderId =
-    ShaderId("circle")
-
-  def circleVertex(orbitDist: Double): String =
-    s"""
-    |float timeToRadians(float t) {
-    |  return TAU * mod(t, 1.0);
-    |}
-    |
-    |void vertex() {
-    |  float x = sin(timeToRadians(TIME / 2.0)) * ${orbitDist.toString()} + VERTEX.x;
-    |  float y = cos(timeToRadians(TIME / 2.0)) * ${orbitDist.toString()} + VERTEX.y;
-    |  vec2 orbit = vec2(x, y);
-    |  VERTEX = vec4(orbit, VERTEX.zw);
-    |}
-    |""".stripMargin
-
-  val circleFragment: String =
-    """
-    |float timeToRadians(float t) {
-    |  return TAU * mod(t, 1.0);
-    |}
-    |
-    |void fragment() {
-    |  float red = UV.x * (1.0 - ((cos(timeToRadians(TIME)) + 1.0) / 2.0));
-    |  float alpha = 1.0 - step(0.0, length(UV - 0.5) - 0.5);
-    |  vec4 circle = vec4(vec3(red, UV.y, 0.0) * alpha, alpha);
-    |  COLOR = circle;
-    |}
-    |""".stripMargin
-
-  val circle: CustomShader.Source =
-    CustomShader
-      .Source(circleId)
-      .withVertexProgram(circleVertex(0.5))
-      .withFragmentProgram(circleFragment)
-
-  val externalId: ShaderId =
-    ShaderId("external")
-
-  val vertAsset: AssetName = AssetName("vertex")
-  val fragAsset: AssetName = AssetName("fragment")
-  val seaAsset: AssetName  = AssetName("sea")
-
-  val external: CustomShader.External =
-    CustomShader
-      .External(externalId)
-      .withVertexProgram(vertAsset)
-      .withFragmentProgram(fragAsset)
-      .withLightProgram(fragAsset)
-
-  val seaId: ShaderId =
-    ShaderId("sea")
-
-  val sea: CustomShader.External =
-    CustomShader
-      .External(seaId)
-      .withFragmentProgram(seaAsset)
-
-  def assets: Set[AssetType] =
-    Set(
-      AssetType.Text(vertAsset, AssetPath("assets/shader.vert")),
-      AssetType.Text(fragAsset, AssetPath("assets/shader.frag")),
-      AssetType.Text(seaAsset, AssetPath("assets/sea.frag"))
-    )
-
-}
