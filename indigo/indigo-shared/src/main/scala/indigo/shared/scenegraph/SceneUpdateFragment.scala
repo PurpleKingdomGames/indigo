@@ -30,6 +30,11 @@ final case class SceneUpdateFragment(
   def addLayer(newLayer: Layer): SceneUpdateFragment =
     this.copy(layers = SceneUpdateFragment.addLayer(layers, newLayer))
 
+  def addLayer(nodes: SceneGraphNode*): SceneUpdateFragment =
+    addLayer(nodes.toList)
+  def addLayer(nodes: List[SceneGraphNode]): SceneUpdateFragment =
+    this.copy(layers = SceneUpdateFragment.addLayer(layers, Layer(nodes.toList)))
+
   def addLayers(newLayers: Layer*): SceneUpdateFragment =
     addLayers(newLayers.toList)
   def addLayers(newLayers: List[Layer]): SceneUpdateFragment =
