@@ -4,7 +4,7 @@ import indigo.shared.assets.AssetName
 import indigo.shared.shader.StandardShaders
 
 import indigo.shared.shader.Uniform
-import indigo.shared.shader.ShaderPrimitive.{float, vec4}
+import indigo.shared.shader.ShaderPrimitive.{vec2, vec4}
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Overlay
 import indigo.shared.datatypes.Overlay.Color
@@ -31,7 +31,7 @@ object StandardMaterial {
       )
   }
 
-  final case class ImageEffects(diffuse: AssetName, alpha: Double, tint: RGBA, overlay: Overlay) extends StandardMaterial {
+  final case class ImageEffects(diffuse: AssetName, alpha: Double, tint: RGBA, overlay: Overlay, saturation: Double) extends StandardMaterial {
 
     def withAlpha(newAlpha: Double): ImageEffects =
       this.copy(alpha = newAlpha)
@@ -43,6 +43,9 @@ object StandardMaterial {
 
     def withOverlay(newOverlay: Overlay): ImageEffects =
       this.copy(overlay = newOverlay)
+
+    def withSaturation(newSaturation: Double): ImageEffects =
+      this.copy(saturation = newSaturation)
 
     val hash: String =
       diffuse.value + alpha.toString() + tint.hash + overlay.hash
@@ -69,8 +72,8 @@ object StandardMaterial {
       GLSLShader(
         StandardShaders.ImageEffects.id,
         List(
-          Uniform("ALPHA") -> float(alpha),
-          Uniform("TINT")  -> vec4(tint.r, tint.g, tint.b, tint.a)
+          Uniform("ALPHA_SATURATION") -> vec2(alpha, saturation),
+          Uniform("TINT")             -> vec4(tint.r, tint.g, tint.b, tint.a)
         ) ++ gradiantUniforms,
         Some(diffuse),
         None,
@@ -81,10 +84,10 @@ object StandardMaterial {
   }
   object ImageEffects {
     def apply(diffuse: AssetName): ImageEffects =
-      ImageEffects(diffuse, 1.0, RGBA.None, Overlay.Color.default)
+      ImageEffects(diffuse, 1.0, RGBA.None, Overlay.Color.default, 1.0)
 
     def apply(diffuse: AssetName, alpha: Double): ImageEffects =
-      ImageEffects(diffuse, alpha, RGBA.None, Overlay.Color.default)
+      ImageEffects(diffuse, alpha, RGBA.None, Overlay.Color.default, 1.0)
   }
 
   // final case class Textured(diffuse: AssetName, isLit: Boolean) extends StandardMaterial {
