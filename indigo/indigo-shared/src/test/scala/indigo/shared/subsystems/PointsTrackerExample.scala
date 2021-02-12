@@ -31,7 +31,7 @@ final case class PointsTrackerExample(startingPoints: Int) extends SubSystem {
 
   def present(context: SubSystemFrameContext, points: Int): Outcome[SceneUpdateFragment] =
     Outcome(
-      SceneUpdateFragment(Text(points.toString, 0, 0, 1, FontKey(""), StandardMaterial.Blit(AssetName("Testing"))))
+      SceneUpdateFragment(Text(points.toString, 0, 0, 1, FontKey(""), StandardMaterial.Bitmap(AssetName("Testing"))))
     )
 }
 

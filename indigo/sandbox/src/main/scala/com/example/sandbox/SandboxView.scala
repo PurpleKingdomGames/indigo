@@ -65,7 +65,7 @@ object SandboxView {
         .moveBy(8, 10)
         .moveBy(viewModel.offset)
         .modifyMaterial {
-          case m: StandardMaterial.Blit =>
+          case m: StandardMaterial.Bitmap =>
             m
 
           case m: StandardMaterial.ImageEffects =>
@@ -76,7 +76,7 @@ object SandboxView {
       currentState.dude.dude.sprite
         .moveBy(8, -10)
         .modifyMaterial {
-          case m: StandardMaterial.Blit         => m
+          case m: StandardMaterial.Bitmap       => m
           case m: StandardMaterial.ImageEffects => m.withAlpha(0.5).withTint(RGBA.Red.withAmount(0.75))
         },
       Clone(dudeCloneId, Depth(1), CloneTransformData.startAt(Point(16, 64)))
