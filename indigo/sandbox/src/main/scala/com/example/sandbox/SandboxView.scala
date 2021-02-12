@@ -65,8 +65,13 @@ object SandboxView {
         .moveBy(8, 10)
         .moveBy(viewModel.offset)
         .modifyMaterial {
-          case m: StandardMaterial.Blit         => m
-          case m: StandardMaterial.ImageEffects => m.withAlpha(1).withTint(RGBA.Green.withAmount(0.25))
+          case m: StandardMaterial.Blit =>
+            m
+
+          case m: StandardMaterial.ImageEffects =>
+            m.withAlpha(1)
+              .withTint(RGBA.Green.withAmount(0.25))
+              .withSaturation(1.0)
         },
       currentState.dude.dude.sprite
         .moveBy(8, -10)
