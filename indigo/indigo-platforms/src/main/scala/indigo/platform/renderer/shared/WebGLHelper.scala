@@ -9,6 +9,7 @@ import org.scalajs.dom.raw.WebGLProgram
 import indigo.shared.shader.Shader
 import org.scalajs.dom.raw.WebGLRenderingContext
 import indigo.facades.WebGL2RenderingContext
+import indigo.shared.scenegraph.BlendFactor
 
 object WebGLHelper {
 
@@ -104,10 +105,10 @@ object WebGLHelper {
   def setBlendAdd(gl: raw.WebGLRenderingContext): Unit =
     gl.blendEquation(FUNC_ADD)
 
-  def setBlendSubract(gl: raw.WebGLRenderingContext): Unit =
+  def setBlendSubtract(gl: raw.WebGLRenderingContext): Unit =
     gl.blendEquation(FUNC_SUBTRACT)
 
-  def setBlendReverseSubract(gl: raw.WebGLRenderingContext): Unit =
+  def setBlendReverseSubtract(gl: raw.WebGLRenderingContext): Unit =
     gl.blendEquation(FUNC_REVERSE_SUBTRACT)
 
   def setBlendMin(gl2: WebGL2RenderingContext): Unit =
@@ -127,14 +128,26 @@ object WebGLHelper {
   def setNormalBlend(gl: raw.WebGLRenderingContext): Unit =
     gl.blendFunc(ONE, ONE_MINUS_SRC_ALPHA)
 
-  def setLightingBlend(gl: raw.WebGLRenderingContext): Unit =
-    gl.blendFunc(SRC_ALPHA, DST_ALPHA)
-
-  def setDistortionBlend(gl: raw.WebGLRenderingContext): Unit =
-    gl.blendFunc(SRC_ALPHA, DST_ALPHA)
-
   def setLightsBlend(gl: raw.WebGLRenderingContext): Unit =
     gl.blendFunc(SRC_ALPHA, ONE)
+
+  def convertBlendFactor(bf: BlendFactor): Int =
+    bf match {
+      case BlendFactor.Zero             => ZERO
+      case BlendFactor.One              => ONE
+      case BlendFactor.SrcColor         => SRC_COLOR
+      case BlendFactor.DstColor         => DST_COLOR
+      case BlendFactor.SrcAlpha         => SRC_ALPHA
+      case BlendFactor.DstAlpha         => DST_ALPHA
+      case BlendFactor.OneMinusSrcColor => ONE_MINUS_SRC_COLOR
+      case BlendFactor.OneMinusDstColor => ONE_MINUS_DST_COLOR
+      case BlendFactor.OneMinusSrcAlpha => ONE_MINUS_SRC_ALPHA
+      case BlendFactor.OneMinusDstAlpha => ONE_MINUS_DST_ALPHA
+      case BlendFactor.SrcAlphaSaturate => SRC_ALPHA_SATURATE
+    }
+
+  def setBlendFunc(gl: raw.WebGLRenderingContext, src: BlendFactor, dst: BlendFactor): Unit =
+    gl.blendFunc(convertBlendFactor(src), convertBlendFactor(dst))
 
   def organiseImage(gl: raw.WebGLRenderingContext, image: raw.ImageData): WebGLTexture = {
     val texture = createAndBindTexture(gl)
