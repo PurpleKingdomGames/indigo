@@ -340,8 +340,14 @@ package object indigo {
   type Layer = shared.scenegraph.Layer
   val Layer: shared.scenegraph.Layer.type = shared.scenegraph.Layer
 
+  type Blending = shared.scenegraph.Blending
+  val Blending: shared.scenegraph.Blending.type = shared.scenegraph.Blending
+
   type Blend = shared.scenegraph.Blend
   val Blend: shared.scenegraph.Blend.type = shared.scenegraph.Blend
+  
+  type BlendFactor = shared.scenegraph.BlendFactor
+  val BlendFactor: shared.scenegraph.BlendFactor.type = shared.scenegraph.BlendFactor
 
   type ScreenEffects = shared.scenegraph.ScreenEffects
   val ScreenEffects: shared.scenegraph.ScreenEffects.type = shared.scenegraph.ScreenEffects

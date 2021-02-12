@@ -31,6 +31,7 @@ import indigo.shared.shader.Shader
 import scalajs.js.JSConverters._
 import indigo.shared.time.Seconds
 import indigo.shared.scenegraph.Blend
+import indigo.shared.scenegraph.BlendFactor
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 final class RendererWebGL2(
@@ -163,6 +164,46 @@ final class RendererWebGL2(
   private var backFrameBuffer: FrameBufferComponents.SingleOutput =
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var currentBlendEq: String                          = "add"
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var currentBlendFactors: (BlendFactor, BlendFactor) = (Blend.Normal.src, Blend.Normal.dst)
+
+  def setBlendMode(blend: Blend): Unit = {
+    if (blend.op != currentBlendEq) {
+      currentBlendEq = blend.op
+
+      blend match {
+        case Blend.Add(_, _) =>
+          WebGLHelper.setBlendAdd(gl)
+
+        case Blend.Subtract(_, _) =>
+          WebGLHelper.setBlendSubtract(gl)
+
+        case Blend.ReverseSubtract(_, _) =>
+          WebGLHelper.setBlendReverseSubtract(gl)
+
+        case Blend.Min(_, _) =>
+          WebGLHelper.setBlendMin(gl2)
+
+        case Blend.Max(_, _) =>
+          WebGLHelper.setBlendMax(gl2)
+
+        case Blend.Lighten(_, _) =>
+          WebGLHelper.setBlendLighten(gl2)
+
+        case Blend.Darken(_, _) =>
+          WebGLHelper.setBlendDarken(gl2)
+      }
+    }
+
+    val nextBlendPair = (blend.src, blend.dst)
+    if (currentBlendFactors != nextBlendPair) {
+      currentBlendFactors = nextBlendPair
+      WebGLHelper.setBlendFunc(gl, blend.src, blend.dst)
+    }
+  }
+
   def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = {
 
     gl2.bindVertexArray(vao)
@@ -182,14 +223,17 @@ final class RendererWebGL2(
     // Clear down the back buffer
     FrameBufferFunctions.switchToFramebuffer(gl2, backFrameBuffer.frameBuffer, RGBA.Black.makeTransparent, true)
 
-    sceneData.layers.foreach { layer =>
-      // Draw the layer
+    @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+    var currentBlend: Blend = Blend.Normal
 
-      layer.blend match {
-        case Blend.Normal => WebGLHelper.setNormalBlend(gl)
-        case Blend.Alpha  => WebGLHelper.setLightingBlend(gl)
+    sceneData.layers.foreach { layer =>
+      // Set the entity blend mode
+      if (currentBlend != layer.entityBlend) {
+        currentBlend = layer.entityBlend
+        setBlendMode(currentBlend)
       }
-      // WebGLHelper.setNormalBlend(gl)
+
+      // Draw the entities onto the layer buffer
       layerRenderInstance.drawLayer(
         orthographicProjectionMatrixNoMagJS.map(_.toDouble),
         sceneData.cloneBlankDisplayObjects,
@@ -210,13 +254,13 @@ final class RendererWebGL2(
             CheapMatrix4.orthographic(cNc.canvas.width.toDouble / m.toDouble, cNc.canvas.height.toDouble / m.toDouble).mat.toJSArray.map(_.toFloat)
         }
 
-      // Merge it onto the back buffer
-      // This is set above
-      // layer.blend match {
-      //   case Blend.Normal => WebGLHelper.setNormalBlend(gl)
-      //   case Blend.Alpha  => WebGLHelper.setLightingBlend(gl)
-      // }
-      // WebGLHelper.setNormalBlend(gl)
+      // Set the layer blend mode
+      if (currentBlend != layer.layerBlend) {
+        currentBlend = layer.layerBlend
+        setBlendMode(currentBlend)
+      }
+
+      // Merge the layer buffer onto the back buffer
       layerMergeRenderInstance.merge(
         projection,
         layerFrameBuffer,
