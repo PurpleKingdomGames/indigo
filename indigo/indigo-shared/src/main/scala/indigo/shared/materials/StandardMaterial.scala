@@ -16,13 +16,13 @@ sealed trait StandardMaterial extends Material
 
 object StandardMaterial {
 
-  final case class Blit(diffuse: AssetName) extends StandardMaterial {
+  final case class Bitmap(diffuse: AssetName) extends StandardMaterial {
     val hash: String =
       diffuse.value
 
     def toGLSLShader: GLSLShader =
       GLSLShader(
-        StandardShaders.Blit.id,
+        StandardShaders.Bitmap.id,
         Nil,
         Some(diffuse),
         None,

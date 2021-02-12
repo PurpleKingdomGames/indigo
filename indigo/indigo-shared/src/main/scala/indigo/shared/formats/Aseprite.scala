@@ -56,7 +56,7 @@ object Aseprite {
           SpriteAndAnimations(
             Sprite(
               bindingKey = BindingKey.fromDice(dice),
-              material = StandardMaterial.Blit(assetName),
+              material = StandardMaterial.Bitmap(assetName),
               position = Point(0, 0),
               depth = Depth(1),
               rotation = Radians.zero,

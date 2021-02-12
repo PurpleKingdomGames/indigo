@@ -31,7 +31,7 @@ class InputFieldTests extends munit.FunSuite {
   val assets =
     InputFieldAssets(
       Text("", 0, 0, 1, fontKey, material),
-      Graphic(Rectangle(0, 0, 0, 0), 1, StandardMaterial.Blit(AssetName("fake")))
+      Graphic(Rectangle(0, 0, 0, 0), 1, StandardMaterial.Bitmap(AssetName("fake")))
     )
 
   val fontRegister: FontRegister =
@@ -276,7 +276,7 @@ class InputFieldTests extends munit.FunSuite {
     )
 
   object Samples {
-    val material = StandardMaterial.Blit(AssetName("font-sheet"))
+    val material = StandardMaterial.Bitmap(AssetName("font-sheet"))
 
     val chars = List(
       FontChar("a", 0, 16, 16, 16),

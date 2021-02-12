@@ -169,7 +169,7 @@ object AsepriteSampleData {
       animationKey = animationKey,
       ref = Point.zero,
       (_: (Rectangle, GlobalEvent)) => Nil,
-      StandardMaterial.Blit(imageAssetRef)
+      StandardMaterial.Bitmap(imageAssetRef)
     )
 
 }
