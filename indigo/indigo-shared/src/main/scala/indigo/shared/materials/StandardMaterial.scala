@@ -4,13 +4,14 @@ import indigo.shared.assets.AssetName
 import indigo.shared.shader.StandardShaders
 
 import indigo.shared.shader.Uniform
-import indigo.shared.shader.ShaderPrimitive.{vec2, vec4}
+import indigo.shared.shader.ShaderPrimitive.{vec3, vec4}
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Overlay
 import indigo.shared.datatypes.Overlay.Color
 import indigo.shared.datatypes.Overlay.LinearGradiant
 import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.datatypes.RGB
+import indigo.shared.datatypes.Overlay.RadialGradiant
 
 sealed trait StandardMaterial extends Material
 
@@ -67,13 +68,27 @@ object StandardMaterial {
               Uniform("GRADIANT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
               Uniform("GRADIANT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
             )
+
+          case RadialGradiant(fromPoint, fromColor, toPoint, toColor) =>
+            List(
+              Uniform("GRADIANT_FROM_TO")    -> vec4(fromPoint.x.toDouble, fromPoint.y.toDouble, toPoint.x.toDouble, toPoint.y.toDouble),
+              Uniform("GRADIANT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
+              Uniform("GRADIANT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
+            )
+        }
+
+      val overlayType: Double =
+        overlay match {
+          case _: Color          => 0.0
+          case _: LinearGradiant => 1.0
+          case _: RadialGradiant => 2.0
         }
 
       GLSLShader(
         StandardShaders.ImageEffects.id,
         List(
-          Uniform("ALPHA_SATURATION") -> vec2(alpha, saturation),
-          Uniform("TINT")             -> vec4(tint.r, tint.g, tint.b, tint.a)
+          Uniform("ALPHA_SATURATION_OVERLAYTYPE") -> vec3(alpha, saturation, overlayType),
+          Uniform("TINT")                         -> vec4(tint.r, tint.g, tint.b, tint.a)
         ) ++ gradiantUniforms,
         Some(diffuse),
         None,
