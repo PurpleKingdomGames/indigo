@@ -31,6 +31,14 @@ object DisplayEffects {
         toPoint.x.toFloat,
         toPoint.y.toFloat
       )
+
+    case Overlay.RadialGradiant(fromPoint, _, toPoint, _) =>
+      Array(
+        fromPoint.x.toFloat,
+        fromPoint.y.toFloat,
+        toPoint.x.toFloat,
+        toPoint.y.toFloat
+      )
   }
 
   private val overlayToFromColorArray: Overlay => Array[Float] = {
@@ -39,6 +47,9 @@ object DisplayEffects {
 
     case Overlay.LinearGradiant(_, fromColor, _, _) =>
       fromColor.toArray
+
+    case Overlay.RadialGradiant(_, fromColor, _, _) =>
+      fromColor.toArray
   }
 
   private val overlayToToColorArray: Overlay => Array[Float] = {
@@ -46,6 +57,9 @@ object DisplayEffects {
       color.toArray
 
     case Overlay.LinearGradiant(_, _, _, toColor) =>
+      toColor.toArray
+
+    case Overlay.RadialGradiant(_, _, _, toColor) =>
       toColor.toArray
   }
 
