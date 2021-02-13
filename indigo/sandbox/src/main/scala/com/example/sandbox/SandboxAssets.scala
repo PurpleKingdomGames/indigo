@@ -16,7 +16,9 @@ object SandboxAssets {
   val dotsMaterial: StandardMaterial =
     StandardMaterial
       .ImageEffects(dots)
-      .withOverlay(Overlay.LinearGradiant(Point.zero, RGBA.Cyan, Point(32, 32), RGBA.Magenta))
+      // .withOverlay(Overlay.Color(RGBA.Magenta.withAlpha(0.75)))
+      // .withOverlay(Overlay.LinearGradiant(Point.zero, RGBA.Cyan, Point(32, 32), RGBA.Magenta))
+      .withOverlay(Overlay.RadialGradiant(Point(4, 4), RGBA.Cyan, Point(32, 32), RGBA.Magenta))
 
   def assets: Set[AssetType] =
     Set(
