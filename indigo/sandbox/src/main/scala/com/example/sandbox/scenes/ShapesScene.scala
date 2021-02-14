@@ -38,19 +38,19 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
       SceneUpdateFragment.empty
         .addLayer(
           Shape(
-            140,
-            50,
-            32,
-            32,
+            0,
+            0,
+            64,
+            64,
             1,
             GLSLShader(
-              Shaders.externalId,
+              ShapeShaders.externalCircleId,
               List(
                 Uniform("ALPHA")        -> float(0.75),
                 Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 0.0)
               )
             )
-          )
+          ).moveTo(context.startUpData.viewportCenter - Point(32, 32))
         )
     )
 

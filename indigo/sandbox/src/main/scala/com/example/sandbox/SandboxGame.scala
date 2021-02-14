@@ -49,7 +49,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           clearColor = RGBA(0.4, 0.2, 0.5, 1),
           magnification = magnificationLevel
         ),
-        SandboxBootData(flags.getOrElse("key", "No entry for 'key'."))
+        SandboxBootData(flags.getOrElse("key", "No entry for 'key'."), gameViewport)
       ).withAssets(SandboxAssets.assets ++ Shaders.assets ++ ShapeShaders.assets)
         .withFonts(Fonts.fontInfo)
         .withSubSystems(FPSCounter(Fonts.fontKey, Point(5, 165), targetFPS, Depth(200), SandboxAssets.fontMaterial))
@@ -65,6 +65,9 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   def setup(bootData: SandboxBootData, assetCollection: AssetCollection, dice: Dice): Outcome[Startup[SandboxStartupData]] = {
     println(bootData.message)
 
+    val screenCenter: Point =
+      bootData.gameViewport.giveDimensions(magnificationLevel).center
+
     def makeStartupData(aseprite: Aseprite, spriteAndAnimations: SpriteAndAnimations): Startup.Success[SandboxStartupData] =
       Startup
         .Success(
@@ -73,10 +76,11 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
               aseprite,
               spriteAndAnimations.sprite
                 .withDepth(Depth(3))
-                .withRef(16, 16)                                                                         // Initial offset, so when talk about his position it's the center of the sprite
-                .moveTo(viewportWidth / 2 / magnificationLevel, viewportHeight / 2 / magnificationLevel) // Also place him in the middle of the screen initially
+                .withRef(16, 16)      // Initial offset, so when talk about his position it's the center of the sprite
+                .moveTo(screenCenter) // Also place him in the middle of the screen initially
                 .withMaterial(SandboxAssets.dudeMaterial)
-            )
+            ),
+            screenCenter
           )
         )
         .addAnimations(spriteAndAnimations.animations)
@@ -156,6 +160,6 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
 }
 
 final case class Dude(aseprite: Aseprite, sprite: Sprite)
-final case class SandboxBootData(message: String)
-final case class SandboxStartupData(dude: Dude)
+final case class SandboxBootData(message: String, gameViewport: GameViewport)
+final case class SandboxStartupData(dude: Dude, viewportCenter: Point)
 final case class SandboxViewModel(offset: Point, single: InputField, multi: InputField)
