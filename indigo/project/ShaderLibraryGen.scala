@@ -39,7 +39,7 @@ object ShaderLibraryGen {
       .toSeq
       .map(_.toString)
       .map(_.split('\n').drop(1).dropRight(1).mkString("\n"))
-      .map(program => ShaderSnippet(newName + tag.capitalize, program))
+      .map(program => ShaderSnippet(newName + tag.split("-").map(_.capitalize).mkString, program))
 
   def makeShaderLibrary(files: Set[File], sourceManagedDir: File): Seq[File] = {
     println("Generating Indigo Shader Library...")
@@ -75,7 +75,10 @@ object ShaderLibraryGen {
         .flatMap { d =>
           extractShaderCode(d.shaderCode, "vertex", d.originalName + d.ext, d.newName) ++
             extractShaderCode(d.shaderCode, "fragment", d.originalName + d.ext, d.newName) ++
-            extractShaderCode(d.shaderCode, "light", d.originalName + d.ext, d.newName)
+            extractShaderCode(d.shaderCode, "light", d.originalName + d.ext, d.newName) ++
+            extractShaderCode(d.shaderCode, "post-vertex", d.originalName + d.ext, d.newName) ++
+            extractShaderCode(d.shaderCode, "post-fragment", d.originalName + d.ext, d.newName) ++
+            extractShaderCode(d.shaderCode, "post-light", d.originalName + d.ext, d.newName)
         }
         .map { snippet =>
           s"""  val ${snippet.variableName}: String =

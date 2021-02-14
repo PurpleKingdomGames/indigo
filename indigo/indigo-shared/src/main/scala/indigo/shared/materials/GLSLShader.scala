@@ -13,6 +13,10 @@ final case class GLSLShader(
     channel2: Option[AssetName],
     channel3: Option[AssetName]
 ) extends Material {
+
+  def withShaderId(newShaderId: ShaderId): GLSLShader =
+    this.copy(shaderId = newShaderId)
+
   def uniformHash: String =
     uniforms.toList.map(p => p._1.name + p._2.hash).mkString
 

@@ -225,23 +225,92 @@ object GameEngine {
       case s: CustomShader.Source =>
         shaderRegister.register(s)
 
-      case CustomShader.External(id, vertex, fragment, light) =>
-        val source: CustomShader.Source =
+      case s: CustomShader.External =>
+        shaderRegister.register(externalShaderToSource(s, assetCollection))
+
+      case s: CustomShader.PostSource =>
+        val parent: CustomShader.Source =
+          s.parentShader match {
+            case ps: CustomShader.Source =>
+              ps
+
+            case ps: CustomShader.External =>
+              externalShaderToSource(ps, assetCollection)
+          }
+
+        val shader =
           CustomShader.Source(
-            id = id,
-            vertex = vertex
-              .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-vertex", a))
-              .getOrElse(CustomShader.defaultVertexProgram),
-            fragment = fragment
-              .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-fragment", a))
-              .getOrElse(CustomShader.defaultFragmentProgram),
-            light = light
-              .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-light", a))
-              .getOrElse(CustomShader.defaultLightProgram)
+            id = s.id,
+            vertex = parent.vertex,
+            postVertex = s.postVertex,
+            fragment = parent.fragment,
+            postFragment = s.postFragment,
+            light = parent.light,
+            postLight = s.postLight
           )
 
-        shaderRegister.register(source)
+        shaderRegister.register(shader)
+
+      case e: CustomShader.PostExternal =>
+        val s: CustomShader.Source =
+          externalShaderToSource(
+            CustomShader.External(
+              id = e.id,
+              vertex = None,
+              postVertex = e.postVertex,
+              fragment = None,
+              postFragment = e.postFragment,
+              light = None,
+              postLight = e.postLight
+            ),
+            assetCollection
+          )
+
+        val parent: CustomShader.Source =
+          e.parentShader match {
+            case ps: CustomShader.Source =>
+              ps
+
+            case ps: CustomShader.External =>
+              externalShaderToSource(ps, assetCollection)
+          }
+
+        val shader =
+          CustomShader.Source(
+            id = s.id,
+            vertex = parent.vertex,
+            postVertex = s.postVertex,
+            fragment = parent.fragment,
+            postFragment = s.postFragment,
+            light = parent.light,
+            postLight = s.postLight
+          )
+
+        shaderRegister.register(shader)
     }
+
+  def externalShaderToSource(external: CustomShader.External, assetCollection: AssetCollection): CustomShader.Source =
+    CustomShader.Source(
+      id = external.id,
+      vertex = external.vertex
+        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-vertex", a))
+        .getOrElse(CustomShader.defaultVertexProgram),
+      postVertex = external.postVertex
+        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-post-vertex", a))
+        .getOrElse(CustomShader.defaultPostVertexProgram),
+      fragment = external.fragment
+        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-fragment", a))
+        .getOrElse(CustomShader.defaultFragmentProgram),
+      postFragment = external.postFragment
+        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-post-fragment", a))
+        .getOrElse(CustomShader.defaultPostFragmentProgram),
+      light = external.light
+        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-light", a))
+        .getOrElse(CustomShader.defaultLightProgram),
+      postLight = external.postLight
+        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-post-light", a))
+        .getOrElse(CustomShader.defaultPostLightProgram)
+    )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def extractShaderCode(maybeText: Option[String], tag: String, assetName: AssetName): String =

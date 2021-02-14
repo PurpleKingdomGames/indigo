@@ -53,6 +53,10 @@ vec2 scaleTexCoordsWithOffset(vec2 texcoord, vec2 offset){
 void vertex(){}
 //#vertex_end
 
+//#post_vertex_start
+void postVertex(){}
+//#post_vertex_end
+
 void main(void) {
 
   VERTEX = vec4(a_verticesAndCoords.xy, 1.0, 1.0);
@@ -60,6 +64,7 @@ void main(void) {
   v_uv_size = vec4(a_verticesAndCoords.zw, a_sizeAndFrameScale.xy);
 
   vertex();
+  postVertex();
 
   mat4 transform =
     mat4(a_matRotateScale.x,    a_matRotateScale.y,    0,                     0,

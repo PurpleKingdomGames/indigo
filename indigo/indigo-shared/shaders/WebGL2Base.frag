@@ -54,9 +54,17 @@ vec4 AMBIENT_LIGHT;
 void fragment(){}
 //#fragment_end
 
+//#post_fragment_start
+void postFragment(){}
+//#post_fragment_end
+
 //#light_start
 void light(){}
 //#light_end
+
+//#post_light_start
+void postLight(){}
+//#post_light_end
 
 void main(void) {
   // Defaults
@@ -72,11 +80,13 @@ void main(void) {
 
   // Colour
   fragment();
+  postFragment();
 
   // Lighting
   int lightCount = min(16, max(0, u_numOfLights));
   for(int i = 0; i < lightCount; i++) {
     light();
+    postLight();
   }
   
   fragColor = COLOR + (AMBIENT_LIGHT * LIGHT);
