@@ -415,6 +415,8 @@ package object indigo {
   val Group: shared.scenegraph.Group.type = shared.scenegraph.Group
 
   // Clones
+  type Cloneable = shared.scenegraph.Cloneable
+
   type CloneBlank = shared.scenegraph.CloneBlank
   val CloneBlank: shared.scenegraph.CloneBlank.type = shared.scenegraph.CloneBlank
 
