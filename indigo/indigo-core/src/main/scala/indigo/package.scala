@@ -48,6 +48,8 @@ package object indigo {
   type ShaderPrimitive = shared.shader.ShaderPrimitive
   val ShaderPrimitive: shared.shader.ShaderPrimitive.type = shared.shader.ShaderPrimitive
 
+  val StandardShaders: shared.shader.StandardShaders.type = shared.shader.StandardShaders
+
   type Outcome[T] = shared.Outcome[T]
   val Outcome: shared.Outcome.type = shared.Outcome
 

@@ -11,46 +11,95 @@ object ShaderGen {
 
   val tripleQuotes: String = "\"\"\""
 
-  def template(name: String, vextexContents: String, fragmentContents: String): String = {
-    val vertexCode =
-      injectCode(vextexContents, "vertex", "vertexProgram", "void vertex(){}")
-      
-    val fragmentCode =
-      injectCode(
+  def template(
+      name: String,
+      vextexContents: String,
+      fragmentContents: String
+  ): String = {
+    val vertexCode = {
+      val withVertex =
+        injectCode(
+          vextexContents,
+          "vertex",
+          "vertexProgram",
+          "void vertex(){}"
+        )
+
+      val withPostVertex =
+        injectCode(
+          withVertex,
+          "post_vertex",
+          "postVertexProgram",
+          "void postVertex(){}"
+        )
+
+      withPostVertex
+    }
+
+    val fragmentCode = {
+      val withFragment =
         injectCode(
           fragmentContents,
           "fragment",
           "fragmentProgram",
           "void fragment(){}"
-        ),
-        "light",
-        "lightProgram",
-        "void light(){}"
-      )
+        )
+
+      val withPostFragment =
+        injectCode(
+          withFragment,
+          "post_fragment",
+          "postFragmentProgram",
+          "void postFragment(){}"
+        )
+
+      val withLight =
+        injectCode(
+          withPostFragment,
+          "light",
+          "lightProgram",
+          "void light(){}"
+        )
+
+      val withPostLight =
+        injectCode(
+          withLight,
+          "post_light",
+          "postLightProgram",
+          "void postLight(){}"
+        )
+
+      withPostLight
+    }
 
     val useNoWarn: Boolean =
-       !(vertexCode.contains("vertexProgram.getOrElse") || fragmentCode.contains("fragmentProgram.getOrElse"))
+      !(vertexCode.contains("vertexProgram.getOrElse") || fragmentCode.contains("fragmentProgram.getOrElse"))
 
     s"""package indigo.shaders
     |
     |import indigo.shared.shader.{Shader, ShaderId}
-    |${if(useNoWarn) "import scala.annotation.nowarn" else ""}
+    |${if (useNoWarn) "import scala.annotation.nowarn" else ""}
     |
     |object $name extends Shader {
     |  val id: ShaderId = ShaderId("indigo_default_$name")
     |
     |  val vertex: String =
-    |    vertexShader(None)
+    |    vertexShader(None, None)
     |
     |  val fragment: String =
-    |    fragmentShader(None, None)
+    |    fragmentShader(None, None, None, None)
     |
-    |  ${if(useNoWarn) "@nowarn" else ""}
-    |  def vertexShader(vertexProgram: Option[String]): String =
+    |  ${if (useNoWarn) "@nowarn" else ""}
+    |  def vertexShader(vertexProgram: Option[String], postVertexProgram: Option[String]): String =
     |    s${tripleQuotes}${vertexCode}${tripleQuotes}
     |
-    |  ${if(useNoWarn) "@nowarn" else ""}
-    |  def fragmentShader(fragmentProgram: Option[String], lightProgram: Option[String]): String =
+    |  ${if (useNoWarn) "@nowarn" else ""}
+    |  def fragmentShader(
+    |    fragmentProgram: Option[String],
+    |    postFragmentProgram: Option[String],
+    |    lightProgram: Option[String],
+    |    postLightProgram: Option[String]
+    |  ): String =
     |    s${tripleQuotes}${fragmentCode}${tripleQuotes}
     |}
     """.stripMargin
