@@ -97,6 +97,7 @@ package object indigo {
   type SubSystemEvent = shared.events.SubSystemEvent
   type ViewEvent      = shared.events.ViewEvent
   type InputEvent     = shared.events.InputEvent
+  type EventHandler   = shared.scenegraph.EventHandler
 
   type EventFilters = shared.events.EventFilters
   val EventFilters: shared.events.EventFilters.type = shared.events.EventFilters
@@ -348,7 +349,7 @@ package object indigo {
 
   type Blend = shared.scenegraph.Blend
   val Blend: shared.scenegraph.Blend.type = shared.scenegraph.Blend
-  
+
   type BlendFactor = shared.scenegraph.BlendFactor
   val BlendFactor: shared.scenegraph.BlendFactor.type = shared.scenegraph.BlendFactor
 
