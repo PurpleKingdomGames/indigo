@@ -18,7 +18,7 @@ object SceneGraphViewEvents {
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  def applyInputEvents(node: EventHandling, bounds: Rectangle, inputEvents: List[GlobalEvent], sendEvent: GlobalEvent => Unit): Unit = {
+  def applyInputEvents(node: EventHandler, bounds: Rectangle, inputEvents: List[GlobalEvent], sendEvent: GlobalEvent => Unit): Unit = {
     val count = inputEvents.length
     var index = 0
 

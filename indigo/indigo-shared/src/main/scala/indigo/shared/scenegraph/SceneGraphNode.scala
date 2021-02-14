@@ -452,9 +452,8 @@ sealed trait Renderable extends SceneGraphNodePrimitive {
 /**
   * Tags nodes that can handle events.
   */
-sealed trait EventHandling {
+trait EventHandler {
   def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
-  def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Renderable
 }
 
 final case class Shape(
@@ -761,7 +760,7 @@ final case class Sprite(
     ref: Point,
     flip: Flip
 ) extends Renderable
-    with EventHandling
+    with EventHandler
     with Cloneable {
 
   lazy val x: Int = position.x
@@ -962,7 +961,7 @@ final case class Text(
     ref: Point,
     flip: Flip
 ) extends Renderable
-    with EventHandling {
+    with EventHandler {
 
   def bounds(locator: BoundaryLocator): Rectangle =
     locator.findBounds(this)
