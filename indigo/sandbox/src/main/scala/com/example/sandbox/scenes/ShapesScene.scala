@@ -37,23 +37,41 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          Shape(
-            0,
-            0,
-            64,
-            64,
-            1,
-            GLSLShader(
-              ShapeShaders.externalCircleId,
-              List(
-                Uniform("ALPHA")        -> float(0.75),
-                Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 0.0)
-              )
-            )
-          ).moveTo(context.startUpData.viewportCenter - Point(32, 32))
+          Foo()
+          // Shape(
+          //   0,
+          //   0,
+          //   64,
+          //   64,
+          //   1,
+          //   GLSLShader(
+          //     ShapeShaders.externalCircleId,
+          //     List(
+          //       Uniform("ALPHA")        -> float(0.75),
+          //       Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 0.0)
+          //     )
+          //   )
+          // ).moveTo(context.startUpData.viewportCenter - Point(32, 32))
         )
     )
 
+}
+
+final case class Foo() extends SceneEntity {
+  val bounds: Rectangle = Rectangle(10, 10, 100, 100)
+  val material: Material = GLSLShader(
+    ShapeShaders.externalCircleId,
+    List(
+      Uniform("ALPHA")        -> float(0.75),
+      Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 0.0)
+    )
+  )
+  val depth: Depth      = Depth(1)
+  val flip: Flip        = Flip.default
+  val position: Point   = bounds.position
+  val ref: Point        = Point.zero
+  val rotation: Radians = Radians.zero
+  val scale: Vector2    = Vector2.one
 }
 
 object ShapeShaders {

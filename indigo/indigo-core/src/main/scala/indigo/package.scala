@@ -349,7 +349,7 @@ package object indigo {
 
   type Blend = shared.scenegraph.Blend
   val Blend: shared.scenegraph.Blend.type = shared.scenegraph.Blend
-  
+
   type BlendFactor = shared.scenegraph.BlendFactor
   val BlendFactor: shared.scenegraph.BlendFactor.type = shared.scenegraph.BlendFactor
 
@@ -362,7 +362,8 @@ package object indigo {
   type SceneGraphNode = shared.scenegraph.SceneGraphNode
   val SceneGraphNode: shared.scenegraph.SceneGraphNode.type = shared.scenegraph.SceneGraphNode
 
-  type Renderable = shared.scenegraph.Renderable
+  type SceneEntity = shared.scenegraph.SceneEntity
+  type Renderable  = shared.scenegraph.Renderable
 
   // Audio
   type SceneAudio = shared.scenegraph.SceneAudio

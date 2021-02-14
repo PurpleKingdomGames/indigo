@@ -35,28 +35,13 @@ object SceneGraphViewEvents {
 
     while (index < count) {
       nodes(index) match {
-        case _: Shape =>
-          ()
-
-        case s: Sprite =>
-          applyInputEvents(s, s.bounds(boundaryLocator), inputEvents, sendEvent)
-
-        case t: Text =>
-          applyInputEvents(t, t.bounds(boundaryLocator), inputEvents, sendEvent)
-
-        case _: Graphic =>
-          ()
-
         case g: Group =>
           collectViewEvents(boundaryLocator, g.children, inputEvents, sendEvent)
 
-        case _: Transformer =>
-          ()
+        case t: EventHandler =>
+          applyInputEvents(t, t.bounds(boundaryLocator), inputEvents, sendEvent)
 
-        case _: Clone =>
-          ()
-
-        case _: CloneBatch =>
+        case _ =>
           ()
       }
 

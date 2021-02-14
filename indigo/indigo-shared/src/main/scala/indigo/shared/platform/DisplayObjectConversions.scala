@@ -25,13 +25,13 @@ import indigo.shared.scenegraph.Clone
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.display.DisplayClone
 import indigo.shared.scenegraph.CloneTransformData
-// import indigo.shared.display.DisplayCloneBatchData
 import indigo.shared.materials.GLSLShader
 import indigo.shared.display.DisplayEffects
 import indigo.shared.BoundaryLocator
 import indigo.shared.animation.AnimationRef
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.assets.AssetName
+import indigo.shared.scenegraph.SceneEntity
 
 final class DisplayObjectConversions(
     boundaryLocator: BoundaryLocator,
@@ -91,8 +91,7 @@ final class DisplayObjectConversions(
     new DisplayClone(
       id = id,
       transform = DisplayObjectConversions.cloneTransformDataToMatrix4(data, blankTransform),
-      z = cloneDepth //,
-      // alpha = data.alpha.toFloat
+      z = cloneDepth
     )
 
   private def cloneBatchDataToDisplayEntities(batch: CloneBatch, blankTransform: CheapMatrix4): DisplayCloneBatch = {
@@ -102,10 +101,6 @@ final class DisplayObjectConversions(
         z = batch.depth.zIndex.toDouble,
         clones = batch.clones.map { td =>
           DisplayObjectConversions.cloneTransformDataToMatrix4(batch.transform |+| td, blankTransform)
-        // new DisplayCloneBatchData(
-        //   transform = DisplayObjectConversions.cloneTransformDataToMatrix4(batch.transform |+| td, blankTransform),
-        //   alpha = batch.transform.alpha.toFloat
-        // )
         }
       )
 
@@ -167,6 +162,9 @@ final class DisplayObjectConversions(
       cloneBlankDisplayObjects: Map[String, DisplayObject]
   ): List[DisplayEntity] =
     sceneNode match {
+
+      case s: SceneEntity =>
+        List(sceneEntityToDisplayObject(s, assetMapping))
 
       case s: Shape =>
         List(shapeToDisplayObject(s, assetMapping))
@@ -248,65 +246,6 @@ final class DisplayObjectConversions(
         letters
     }
 
-  // def materialToEmissiveValues(assetMapping: AssetMapping, material: GLSLShader): (Vector2, Double) =
-  //   (Vector2.zero, 0.0d)
-  // QuickCache(material.hash + "_emissive") {
-  //   material match {
-  //     case _: GLSLShader =>
-  //       (Vector2.zero, 0.0d)
-
-  //     case _: StandardMaterial.Basic =>
-  //       (Vector2.zero, 0.0d)
-
-  //     case _: Material.Textured =>
-  //       (Vector2.zero, 0.0d)
-
-  //     case t: Material.Lit =>
-  //       optionalAssetToValues(assetMapping, t.emissive)
-  //   }
-  // }
-
-  // def materialToNormalValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
-  //   QuickCache(material.hash + "_normal") {
-  //     material match {
-  //       case _: GLSLShader =>
-  //         (Vector2.zero, 0.0d)
-
-  //       case _: StandardMaterial.Basic =>
-  //         (Vector2.zero, 0.0d)
-
-  //       case _: Material.Textured =>
-  //         (Vector2.zero, 0.0d)
-
-  //       case t: Material.Lit =>
-  //         optionalAssetToValues(assetMapping, t.normal)
-  //     }
-  //   }
-
-  // def materialToSpecularValues(assetMapping: AssetMapping, material: Material): (Vector2, Double) =
-  //   QuickCache(material.hash + "_specular") {
-  //     material match {
-  //       case _: GLSLShader =>
-  //         (Vector2.zero, 0.0d)
-
-  //       case _: StandardMaterial.Basic =>
-  //         (Vector2.zero, 0.0d)
-
-  //       case _: Material.Textured =>
-  //         (Vector2.zero, 0.0d)
-
-  //       case t: Material.Lit =>
-  //         optionalAssetToValues(assetMapping, t.specular)
-  //     }
-  //   }
-
-  // def optionalAssetToValues(assetMapping: AssetMapping, maybeAssetName: Option[Texture]): (Vector2, Double) =
-  //   maybeAssetName
-  //     .map { t =>
-  //       (lookupTextureOffset(assetMapping, t.assetName.value), Math.min(1.0d, Math.max(0.0d, t.amount)))
-  //     }
-  //     .getOrElse((Vector2.zero, 0.0d))
-
   def optionalAssetToOffset(assetMapping: AssetMapping, maybeAssetName: Option[AssetName]): Vector2 =
     maybeAssetName match {
       case None =>
@@ -315,6 +254,50 @@ final class DisplayObjectConversions(
       case Some(assetName) =>
         lookupTextureOffset(assetMapping, assetName.value)
     }
+
+  def sceneEntityToDisplayObject(leaf: SceneEntity, assetMapping: AssetMapping): DisplayObject = {
+    val material: GLSLShader = leaf.material.toGLSLShader
+
+    val channelOffset1 = optionalAssetToOffset(assetMapping, material.channel1)
+    val channelOffset2 = optionalAssetToOffset(assetMapping, material.channel2)
+    val channelOffset3 = optionalAssetToOffset(assetMapping, material.channel3)
+
+    val frameInfo: SpriteSheetFrameCoordinateOffsets =
+      material.channel1 match {
+        case None =>
+          SpriteSheetFrame.defaultOffset
+        case Some(assetName) =>
+          QuickCache(s"${leaf.bounds.hash}_${leaf.material.hash}") {
+            SpriteSheetFrame.calculateFrameOffset(
+              atlasSize = lookupAtlasSize(assetMapping, assetName.value),
+              frameCrop = leaf.bounds,
+              textureOffset = lookupTextureOffset(assetMapping, assetName.value)
+            )
+          }
+      }
+
+    val shaderId          = material.shaderId
+    val shaderUniformHash = material.uniformHash
+    val shaderUBO = QuickCache(shaderUniformHash) {
+      material.uniforms.toArray.map(_._2.toArray).flatten
+    }
+
+    DisplayObject(
+      transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)),
+      z = leaf.depth.zIndex.toDouble,
+      width = leaf.bounds.size.x,
+      height = leaf.bounds.size.y,
+      atlasName = material.channel0.map(assetName => lookupAtlasName(assetMapping, assetName.value)),
+      frame = frameInfo,
+      channelOffset1 = frameInfo.offsetToCoords(channelOffset1),
+      channelOffset2 = frameInfo.offsetToCoords(channelOffset2),
+      channelOffset3 = frameInfo.offsetToCoords(channelOffset3),
+      isLit = 0.0f,
+      shaderId = shaderId,
+      shaderUniformHash = shaderUniformHash,
+      shaderUBO = shaderUBO
+    )
+  }
 
   def shapeToDisplayObject(leaf: Shape, assetMapping: AssetMapping): DisplayObject = {
     val material: GLSLShader = leaf.material
@@ -378,25 +361,6 @@ final class DisplayObjectConversions(
         )
       }
 
-    // val effectsValues =
-    //   QuickCache(leaf.effects.hash) {
-    //     DisplayEffects.fromEffects(leaf.effects)
-    //   }
-
-    // val shaderId = leaf.material.shaderId
-    // val (shaderUniformHash, shaderUBO) = leaf.material match {
-    //   case s @ GLSLShader(_, uniforms, _) =>
-    //     val hash = s.uniformHash
-    //     val us = QuickCache(hash) {
-    //       uniforms.toArray.map(_._2.toArray).flatten
-    //     }
-
-    //     (hash, us)
-
-    //   case _ =>
-    //     ("", Array[Float]())
-    // }
-
     val shaderId          = asCustom.shaderId
     val shaderUniformHash = asCustom.uniformHash
     val shaderUBO = QuickCache(shaderUniformHash) {
@@ -439,27 +403,8 @@ final class DisplayObjectConversions(
         )
       }
 
-    // val effectsValues =
-    //   QuickCache(leaf.effects.hash) {
-    //     DisplayEffects.fromEffects(leaf.effects)
-    //   }
-
     val width: Int  = leaf.bounds(boundaryLocator).size.x
     val height: Int = leaf.bounds(boundaryLocator).size.y
-
-    // val shaderId = material.shaderId
-    // val (shaderUniformHash, shaderUBO) = material match {
-    //   case s @ GLSLShader(_, uniforms, _) =>
-    //     val hash = s.uniformHash
-    //     val us = QuickCache(hash) {
-    //       uniforms.toArray.foldLeft(Array[Float]())(_ ++ _._2.toArray)
-    //     }
-
-    //     (hash, us)
-
-    //   case _ =>
-    //     ("", Array[Float]())
-    // }
 
     val shaderId          = asCustom.shaderId
     val shaderUniformHash = asCustom.uniformHash
@@ -506,25 +451,6 @@ final class DisplayObjectConversions(
       val (emissiveOffset, _) = (Vector2.zero, 0.0d) //materialToEmissiveValues(assetMapping, fontInfo.fontSpriteSheet.material)
       val (normalOffset, _)   = (Vector2.zero, 0.0d) //materialToNormalValues(assetMapping, fontInfo.fontSpriteSheet.material)
       val (specularOffset, _) = (Vector2.zero, 0.0d) //materialToSpecularValues(assetMapping, fontInfo.fontSpriteSheet.material)
-
-      // val effectsValues =
-      //   QuickCache(leaf.effects.hash) {
-      //     DisplayEffects.fromEffects(leaf.effects)
-      //   }
-
-      // val shaderId = fontInfo.fontSpriteSheet.material.shaderId
-      // val (shaderUniformHash, shaderUBO) = fontInfo.fontSpriteSheet.material match {
-      //   case s @ GLSLShader(_, uniforms, _) =>
-      //     val hash = s.uniformHash
-      //     val us = QuickCache(hash) {
-      //       uniforms.toArray.foldLeft(Array[Float]())(_ ++ _._2.toArray)
-      //     }
-
-      //     (hash, us)
-
-      //   case _ =>
-      //     ("", Array[Float]())
-      // }
 
       val shaderId          = asCustom.shaderId
       val shaderUniformHash = asCustom.uniformHash
