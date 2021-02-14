@@ -6,6 +6,7 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxViewModel
 import indigo.ShaderPrimitive._
+import com.example.sandbox.SandboxAssets
 
 object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
@@ -37,7 +38,15 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          Foo()
+          Foo(),
+          Graphic(
+            32,
+            32,
+            StandardMaterial.PostMaterial(
+              ShapeShaders.postShader.id,
+              StandardMaterial.ImageEffects(SandboxAssets.dots)
+            )
+          )
           // Shape(
           //   0,
           //   0,
@@ -89,10 +98,21 @@ object ShapeShaders {
       .withFragmentProgram(fragAsset)
       .withLightProgram(fragAsset)
 
+  val postVertAsset: AssetName = AssetName("post vertex")
+  val postFragAsset: AssetName = AssetName("post fragment")
+
+  def postShader: CustomShader.PostExternal =
+    CustomShader
+      .PostExternal(ShaderId("post shader test"), StandardShaders.Bitmap)
+      .withPostVertexProgram(postVertAsset)
+      .withPostFragmentProgram(postFragAsset)
+
   def assets: Set[AssetType] =
     Set(
       AssetType.Text(vertAsset, AssetPath("assets/circle.vert")),
-      AssetType.Text(fragAsset, AssetPath("assets/circle.frag"))
+      AssetType.Text(fragAsset, AssetPath("assets/circle.frag")),
+      AssetType.Text(postVertAsset, AssetPath("assets/post.vert")),
+      AssetType.Text(postFragAsset, AssetPath("assets/post.frag"))
     )
 
 }
