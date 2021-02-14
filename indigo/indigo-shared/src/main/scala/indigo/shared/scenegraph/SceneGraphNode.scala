@@ -11,6 +11,7 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
 
 import indigo.shared.animation.AnimationAction
 import indigo.shared.BoundaryLocator
+import indigo.shared.materials.Material
 // import indigo.shared.materials.Material
 
 /**
@@ -20,19 +21,22 @@ sealed trait SceneGraphNode extends Product with Serializable {
   def position: Point
   def rotation: Radians
   def scale: Vector2
-  val depth: Depth
+  def depth: Depth
   def ref: Point
   def flip: Flip
-
-  def withPosition(newPosition: Point): SceneGraphNode
-  def withRotation(newRotation: Radians): SceneGraphNode
-  def withScale(newScale: Vector2): SceneGraphNode
-  def withDepth(newDepth: Depth): SceneGraphNode
-  def withRef(newRef: Point): SceneGraphNode
-  def withFlip(newFlip: Flip): SceneGraphNode
 }
 object SceneGraphNode {
   def empty: Group = Group.empty
+}
+
+/**
+  * Can be extended to create custom scene elements.
+  * May be used in conjunction with `EventHandler` and
+  * `Cloneable`.
+  */
+trait SceneEntity extends SceneGraphNode {
+  def bounds: Rectangle
+  def material: Material
 }
 
 final case class Transformer(node: SceneGraphNode, transform: CheapMatrix4) extends SceneGraphNode {
@@ -42,13 +46,6 @@ final case class Transformer(node: SceneGraphNode, transform: CheapMatrix4) exte
   val depth: Depth      = Depth(1)
   def ref: Point        = Point.zero
   def flip: Flip        = Flip.default
-
-  def withPosition(newPosition: Point): SceneGraphNode   = this
-  def withRotation(newRotation: Radians): SceneGraphNode = this
-  def withScale(newScale: Vector2): SceneGraphNode       = this
-  def withDepth(newDepth: Depth): SceneGraphNode         = this
-  def withRef(newRef: Point): SceneGraphNode             = this
-  def withFlip(newFlip: Flip): SceneGraphNode            = this
 
   def addTransform(matrix: CheapMatrix4): Transformer =
     this.copy(transform = transform * matrix)
@@ -60,12 +57,12 @@ final case class Transformer(node: SceneGraphNode, transform: CheapMatrix4) exte
 sealed trait SceneGraphNodePrimitive extends SceneGraphNode {
   def bounds(locator: BoundaryLocator): Rectangle
 
-  override def withPosition(newPosition: Point): SceneGraphNodePrimitive
-  override def withRotation(newRotation: Radians): SceneGraphNodePrimitive
-  override def withScale(newScale: Vector2): SceneGraphNodePrimitive
-  override def withDepth(newDepth: Depth): SceneGraphNodePrimitive
-  override def withRef(newRef: Point): SceneGraphNodePrimitive
-  override def withFlip(newFlip: Flip): SceneGraphNodePrimitive
+  def withPosition(newPosition: Point): SceneGraphNodePrimitive
+  def withRotation(newRotation: Radians): SceneGraphNodePrimitive
+  def withScale(newScale: Vector2): SceneGraphNodePrimitive
+  def withDepth(newDepth: Depth): SceneGraphNodePrimitive
+  def withRef(newRef: Point): SceneGraphNodePrimitive
+  def withFlip(newFlip: Flip): SceneGraphNodePrimitive
 
   def withRef(x: Int, y: Int): SceneGraphNodePrimitive
   def moveTo(pt: Point): SceneGraphNodePrimitive
@@ -300,9 +297,6 @@ final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
   def withDepth(newDepth: Depth): Clone =
     this.copy(depth = newDepth)
 
-  def withRef(newRef: Point): Clone =
-    this
-
   def withTransforms(newPosition: Point, newRotation: Radians, newScale: Vector2 /*, alpha: Double*/, flipHorizontal: Boolean, flipVertical: Boolean): Clone =
     this.copy(transform = CloneTransformData(newPosition, newRotation, newScale /*, alpha*/, flipHorizontal, flipVertical))
 
@@ -314,9 +308,6 @@ final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
 
   def withScale(newScale: Vector2): Clone =
     this.copy(transform = transform.withScale(newScale))
-
-  // def withAlpha(newAlpha: Double): Clone =
-  //   this.copy(transform = transform.withAlpha(newAlpha))
 
   def withHorizontalFlip(isFlipped: Boolean): Clone =
     this.copy(transform = transform.withHorizontalFlip(isFlipped))
@@ -360,9 +351,6 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
   def withDepth(newDepth: Depth): CloneBatch =
     this.copy(depth = newDepth)
 
-  def withRef(newRef: Point): CloneBatch =
-    this
-
   def withTransforms(newPosition: Point, newRotation: Radians, newScale: Vector2 /*, alpha: Double*/, flipHorizontal: Boolean, flipVertical: Boolean): CloneBatch =
     this.copy(transform = CloneTransformData(newPosition, newRotation, newScale /*, alpha*/, flipHorizontal, flipVertical))
 
@@ -374,9 +362,6 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
 
   def withScale(newScale: Vector2): CloneBatch =
     this.copy(transform = transform.withScale(newScale))
-
-  // def withAlpha(newAlpha: Double): CloneBatch =
-  //   this.copy(transform = transform.withAlpha(newAlpha))
 
   def withHorizontalFlip(isFlipped: Boolean): CloneBatch =
     this.copy(transform = transform.withHorizontalFlip(isFlipped))
@@ -415,44 +400,13 @@ sealed trait Renderable extends SceneGraphNodePrimitive {
 
   def withMaterial(newMaterial: StandardMaterial): Renderable
   def modifyMaterial(alter: StandardMaterial => StandardMaterial): Renderable
-
-  // def effects: Effects
-
-  // def withEffects(newEffects: Effects): Renderable
-  // def withTint(tint: RGBA): Renderable
-  // def withTint(red: Double, green: Double, blue: Double): Renderable
-  // def withOverlay(newOverlay: Overlay): Renderable
-  // def withBorder(newBorder: Border): Renderable
-  // def withGlow(newGlow: Glow): Renderable
-  // def withAlpha(a: Double): Renderable
-
-  // override def withPosition(newPosition: Point): Renderable
-  // override def withRotation(newRotation: Radians): Renderable
-  // override def withScale(newScale: Vector2): Renderable
-  // override def withDepth(newDepth: Depth): Renderable
-  // override def withRef(newRef: Point): Renderable
-  // override def withFlip(newFlip: Flip): Renderable
-
-  // override def withRef(x: Int, y: Int): Renderable
-  // override def moveTo(pt: Point): Renderable
-  // override def moveTo(x: Int, y: Int): Renderable
-  // override def moveBy(pt: Point): Renderable
-  // override def moveBy(x: Int, y: Int): Renderable
-  // override def rotateTo(angle: Radians): Renderable
-  // override def rotateBy(angle: Radians): Renderable
-  // override def scaleBy(amount: Vector2): Renderable
-  // override def scaleBy(x: Double, y: Double): Renderable
-  // override def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Renderable
-  // override def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Renderable
-  // override def flipHorizontal(h: Boolean): Renderable
-  // override def flipVertical(v: Boolean): Renderable
-
 }
 
 /**
   * Tags nodes that can handle events.
   */
 trait EventHandler {
+  def bounds(locator: BoundaryLocator): Rectangle
   def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
 }
 
