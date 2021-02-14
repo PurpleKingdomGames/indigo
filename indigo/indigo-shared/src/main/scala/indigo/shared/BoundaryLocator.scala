@@ -15,6 +15,7 @@ import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Transformer
 import indigo.shared.datatypes.FontKey
 import indigo.shared.scenegraph.Shape
+import indigo.shared.scenegraph.SceneEntity
 
 final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister: FontRegister) {
 
@@ -30,6 +31,9 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
   def findBounds(sceneGraphNode: SceneGraphNode): Rectangle =
     sceneGraphNode match {
       case s: Shape =>
+        s.bounds
+
+      case s: SceneEntity =>
         s.bounds
 
       case g: Group =>
