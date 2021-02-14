@@ -210,7 +210,7 @@ final case class CloneId(value: String) extends AnyVal
 /**
   * Used to distingush between cloneable and non-clonable scene graph nodes.
   */
-sealed trait Cloneable
+trait Cloneable
 
 /**
   * Used as the blueprint for any clones that want to copy it.
