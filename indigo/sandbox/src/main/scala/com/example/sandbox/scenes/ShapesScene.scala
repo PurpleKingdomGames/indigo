@@ -38,7 +38,8 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          Circle(Point(50), 20),
+          Circle(Point(50, 50), 20).outside,
+          Circle(Point(100, 50), 20).inside,
           Circle(Point(50, 75), 10),
           Circle(Point(100), 15),
           Circle(Point(30, 75), 15),
@@ -77,17 +78,30 @@ final case class Circle(
     center: Point,
     radius: Int,
     depth: Depth,
-    material: Material
+    material: Material,
+    borderThickness: Int,
+    borderInside: Boolean
 ) extends SceneEntity {
+
+  def inside: Circle =
+    this.copy(borderInside = true)
+
+  def outside: Circle =
+    this.copy(borderInside = false)
 
   val rotation: Radians = Radians.zero
   val scale: Vector2    = Vector2.one
   val flip: Flip        = Flip.default
   val ref: Point        = Point.zero
 
-  val position: Point = center - radius
+  val position: Point =
+    center - radius - (if (borderInside) 0 else borderThickness)
+
   val bounds: Rectangle =
-    Rectangle(position, Point(radius * 2))
+    Rectangle(
+      position,
+      Point(radius * 2) + (if (borderInside) 0 else borderThickness * 2)
+    )
 }
 object Circle {
 
@@ -96,7 +110,7 @@ object Circle {
       ShapeShaders.circleId,
       List(
         Uniform("BORDER_WIDTH") -> float(4),
-        Uniform("SMOOTH") -> float(0.0),
+        Uniform("SMOOTH")       -> float(0.0),
         Uniform("BORDER_COLOR") -> vec4(1.0, 1.0, 1.0, 1.0),
         Uniform("FILL_COLOR")   -> vec4(0.0, 0.0, 1.0, 0.5)
       )
@@ -107,7 +121,9 @@ object Circle {
       Point.zero,
       radius,
       Depth(1),
-      material
+      material,
+      4,
+      false
     )
 
   def apply(position: Point, radius: Int): Circle =
@@ -115,7 +131,9 @@ object Circle {
       position,
       radius,
       Depth(1),
-      material
+      material,
+      4,
+      false
     )
 
 }
