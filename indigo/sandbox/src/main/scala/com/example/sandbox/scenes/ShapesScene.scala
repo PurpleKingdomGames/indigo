@@ -96,6 +96,7 @@ object Circle {
       List(
         Uniform("ALPHA")        -> float(1.0),
         Uniform("BORDER_WIDTH") -> float(4),
+        Uniform("SMOOTH") -> float(1.0),
         Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 1.0),
         Uniform("FILL_COLOR")   -> vec3(0.0, 0.0, 1.0)
       )
