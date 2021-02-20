@@ -10,11 +10,10 @@ vec2 SIZE;
 
 //<indigo-fragment>
 layout (std140) uniform CustomData {
-  float ALPHA;
   float BORDER_WIDTH;
   float SMOOTH;
-  vec3 BORDER_COLOR;
-  vec3 FILL_COLOR;
+  vec4 BORDER_COLOR;
+  vec4 FILL_COLOR;
 };
 
 
@@ -27,8 +26,8 @@ void fragment() {
   float borderWidthPx = BORDER_WIDTH;
   float borderWidth = borderWidthPx / SIZE.x; // circle, so equal w/h
 
-  vec3 fillColor = FILL_COLOR;
-  vec3 borderColor = BORDER_COLOR;
+  vec4 borderColor = vec4(BORDER_COLOR.rgb * BORDER_COLOR.a, BORDER_COLOR.a);
+  vec4 fillColor = vec4(FILL_COLOR.rgb * FILL_COLOR.a, FILL_COLOR.a);
 
   float borderSdf = length(UV - 0.5) - 0.5;
   float borderAmount = 1.0 - step(0.0, borderSdf);
@@ -44,9 +43,16 @@ void fragment() {
     fillAmount = max(fillAmount, fillAA);
   }
 
-  vec3 paintColor = mix(borderColor, fillColor, fillAmount);
-  float paintAmount = max(fillAmount, borderAmount) * ALPHA;
-  vec4 circle = vec4(paintColor * paintAmount, paintAmount);
+  vec4 paintColor = mix(borderColor, fillColor, fillAmount);
+  float paintAmount = 0.0;
+
+  if(fillSdf > 0.0) {
+    paintAmount = borderAmount * BORDER_COLOR.a;
+  } else {
+    paintAmount = fillAmount * FILL_COLOR.a;
+  }
+
+  vec4 circle = vec4(paintColor.rgb * paintAmount, paintColor.a * paintAmount);
   
   COLOR = circle;
 }

@@ -94,11 +94,10 @@ object Circle {
     GLSLShader(
       ShapeShaders.circleId,
       List(
-        Uniform("ALPHA")        -> float(1.0),
         Uniform("BORDER_WIDTH") -> float(4),
-        Uniform("SMOOTH") -> float(1.0),
-        Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 1.0),
-        Uniform("FILL_COLOR")   -> vec3(0.0, 0.0, 1.0)
+        Uniform("SMOOTH") -> float(0.0),
+        Uniform("BORDER_COLOR") -> vec4(1.0, 1.0, 1.0, 1.0),
+        Uniform("FILL_COLOR")   -> vec4(0.0, 0.0, 1.0, 0.5)
       )
     )
 
