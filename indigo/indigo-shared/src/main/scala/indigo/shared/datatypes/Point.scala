@@ -40,6 +40,9 @@ final case class Point(x: Int, y: Int) {
 
 object Point {
 
+  def apply(xy: Int): Point =
+    Point(xy, xy)
+
   val zero: Point = Point(0, 0)
 
   def tuple2ToPoint(t: (Int, Int)): Point = Point(t._1, t._2)
