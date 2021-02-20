@@ -12,6 +12,7 @@ vec2 SIZE;
 layout (std140) uniform CustomData {
   float ALPHA;
   float BORDER_WIDTH;
+  float SMOOTH;
   vec3 BORDER_COLOR;
   vec3 FILL_COLOR;
 };
@@ -23,15 +24,25 @@ float timeToRadians(float t) {
 
 void fragment() {
 
-  float borderWidthPx = BORDER_WIDTH;//4.0;
-  float borderWidth = -(borderWidthPx / SIZE.x); // circle, so equal w/h
+  float borderWidthPx = BORDER_WIDTH;
+  float borderWidth = borderWidthPx / SIZE.x; // circle, so equal w/h
 
-  vec3 fillColor = FILL_COLOR;//vec3(0.0, 0.0, 0.0);
-  vec3 borderColor = BORDER_COLOR;//vec3(1.0, 1.0, 1.0);
+  vec3 fillColor = FILL_COLOR;
+  vec3 borderColor = BORDER_COLOR;
 
-  float sdf = length(UV - 0.5) - 0.5;
-  float fillAmount = 1.0 - step(borderWidth, sdf);
-  float borderAmount = 1.0 - step(0.0, sdf);
+  float borderSdf = length(UV - 0.5) - 0.5;
+  float borderAmount = 1.0 - step(0.0, borderSdf);
+
+  float fillSdf = length(UV - 0.5) - (0.5 - borderWidth);
+  float fillAmount = 1.0 - step(0.0, fillSdf);
+
+  if(SMOOTH > 0.0) {
+    float borderAA = cos(borderSdf * SIZE.x) * (1.0 - clamp(abs(borderSdf * SIZE.x), 0.0, 1.0));
+    borderAmount = max(borderAmount, borderAA);
+
+    float fillAA = cos(fillSdf * SIZE.x) * (1.0 - clamp(abs(fillSdf * SIZE.x), 0.0, 1.0));
+    fillAmount = max(fillAmount, fillAA);
+  }
 
   vec3 paintColor = mix(borderColor, fillColor, fillAmount);
   float paintAmount = max(fillAmount, borderAmount) * ALPHA;
