@@ -20,6 +20,7 @@ import indigo.shared.scenegraph.Group
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.datatypes.Radians
+import indigo.shared.shader.Uniform
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DisplayObjectConversionsTests extends munit.FunSuite {
@@ -213,6 +214,32 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
       DisplayObjectConversions.nodeToMatrix4(node, Vector3(width.toDouble, height.toDouble, 1.0d))
 
     assertEquals(actual.toMatrix4, expected.toMatrix4)
+  }
+
+  test("ubo packing") {
+
+    import indigo.shared.shader.ShaderPrimitive._
+
+    val uniforms =
+      List(
+        Uniform("a") -> float(1),
+        Uniform("b") -> float(2),
+        Uniform("c") -> vec3(3, 4, 5),
+        Uniform("d") -> float(6)
+      )
+
+    val expected: Array[Float] =
+      Array[Array[Float]](
+        Array[Float](1, 2, 0, 0),
+        Array[Float](3, 4, 5, 0),
+        Array[Float](6, 0, 0, 0)
+      ).flatten
+
+    val actual: Array[Float] =
+      DisplayObjectConversions.packUBO(uniforms)
+
+    assertEquals(actual.toList, expected.toList)
+
   }
 
 }
