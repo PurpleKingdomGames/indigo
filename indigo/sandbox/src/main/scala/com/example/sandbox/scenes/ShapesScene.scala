@@ -74,7 +74,7 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
 // ).moveTo(context.startUpData.viewportCenter - Point(32, 32))
 
 final case class Circle(
-    position: Point,
+    center: Point,
     radius: Int,
     depth: Depth,
     material: Material
@@ -85,6 +85,7 @@ final case class Circle(
   val flip: Flip        = Flip.default
   val ref: Point        = Point.zero
 
+  val position: Point = center - radius
   val bounds: Rectangle =
     Rectangle(position, Point(radius * 2))
 }
