@@ -6,7 +6,7 @@ import com.example.sandbox.SandboxStartupData
 import com.example.sandbox.SandboxGameModel
 import com.example.sandbox.SandboxViewModel
 import indigo.ShaderPrimitive._
-import com.example.sandbox.SandboxAssets
+// import com.example.sandbox.SandboxAssets
 
 object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel] {
 
@@ -38,15 +38,16 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          Foo(),
-          Graphic(
-            32,
-            32,
-            StandardMaterial.PostMaterial(
-              ShapeShaders.postShader.id,
-              StandardMaterial.ImageEffects(SandboxAssets.dots)
-            )
-          )
+          Circle(Point(50), 20) //,
+          // Foo(),
+          // Graphic(
+          //   32,
+          //   32,
+          //   StandardMaterial.PostMaterial(
+          //     ShapeShaders.postShader.id,
+          //     StandardMaterial.ImageEffects(SandboxAssets.dots)
+          //   )
+          // )
           // Shape(
           //   0,
           //   0,
@@ -62,6 +63,41 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
           //   )
           // ).moveTo(context.startUpData.viewportCenter - Point(32, 32))
         )
+    )
+
+}
+
+final case class Circle(
+    position: Point,
+    radius: Int,
+    depth: Depth,
+    material: Material
+) extends SceneEntity {
+
+  val rotation: Radians = Radians.zero
+  val scale: Vector2    = Vector2.one
+  val flip: Flip        = Flip.default
+  val ref: Point        = Point.zero
+
+  val bounds: Rectangle =
+    Rectangle(position, Point(radius * 2))
+}
+object Circle {
+
+  def apply(radius: Int): Circle =
+    Circle(
+      Point.zero,
+      radius,
+      Depth(1),
+      GLSLShader(ShapeShaders.externalCircleId, Nil)
+    )
+
+  def apply(position: Point, radius: Int): Circle =
+    Circle(
+      position,
+      radius,
+      Depth(1),
+      GLSLShader(ShapeShaders.externalCircleId, Nil)
     )
 
 }
