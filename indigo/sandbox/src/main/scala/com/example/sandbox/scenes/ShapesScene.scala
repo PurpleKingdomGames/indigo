@@ -37,35 +37,35 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment.empty
-        .addLayer(
-          Circle(Point(50), 20) //,
-          // Foo(),
-          // Graphic(
-          //   32,
-          //   32,
-          //   StandardMaterial.PostMaterial(
-          //     ShapeShaders.postShader.id,
-          //     StandardMaterial.ImageEffects(SandboxAssets.dots)
-          //   )
-          // )
-          // Shape(
-          //   0,
-          //   0,
-          //   64,
-          //   64,
-          //   1,
-          //   GLSLShader(
-          //     ShapeShaders.externalCircleId,
-          //     List(
-          //       Uniform("ALPHA")        -> float(0.75),
-          //       Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 0.0)
-          //     )
-          //   )
-          // ).moveTo(context.startUpData.viewportCenter - Point(32, 32))
-        )
+        .addLayer(Circle(Point(50), 20))
     )
 
 }
+
+//,
+// Foo(),
+// Graphic(
+//   32,
+//   32,
+//   StandardMaterial.PostMaterial(
+//     ShapeShaders.postShader.id,
+//     StandardMaterial.ImageEffects(SandboxAssets.dots)
+//   )
+// )
+// Shape(
+//   0,
+//   0,
+//   64,
+//   64,
+//   1,
+//   GLSLShader(
+//     ShapeShaders.externalCircleId,
+//     List(
+//       Uniform("ALPHA")        -> float(0.75),
+//       Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 0.0)
+//     )
+//   )
+// ).moveTo(context.startUpData.viewportCenter - Point(32, 32))
 
 final case class Circle(
     position: Point,
@@ -89,7 +89,7 @@ object Circle {
       Point.zero,
       radius,
       Depth(1),
-      GLSLShader(ShapeShaders.externalCircleId, Nil)
+      GLSLShader(ShapeShaders.circleId, Nil)
     )
 
   def apply(position: Point, radius: Int): Circle =
@@ -97,7 +97,7 @@ object Circle {
       position,
       radius,
       Depth(1),
-      GLSLShader(ShapeShaders.externalCircleId, Nil)
+      GLSLShader(ShapeShaders.circleId, Nil)
     )
 
 }
@@ -105,7 +105,7 @@ object Circle {
 final case class Foo() extends SceneEntity {
   val bounds: Rectangle = Rectangle(10, 10, 100, 100)
   val material: Material = GLSLShader(
-    ShapeShaders.externalCircleId,
+    ShapeShaders.circleId,
     List(
       Uniform("ALPHA")        -> float(0.75),
       Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 0.0)
@@ -121,34 +121,26 @@ final case class Foo() extends SceneEntity {
 
 object ShapeShaders {
 
-  val externalCircleId: ShaderId =
-    ShaderId("circle external")
+  def assets: Set[AssetType] =
+    Set(
+      AssetType.Text(circleAsset, AssetPath("assets/circle.frag")),
+      AssetType.Text(postVertAsset, AssetPath("assets/post.vert")),
+      AssetType.Text(postFragAsset, AssetPath("assets/post.frag"))
+    )
 
-  val vertAsset: AssetName = AssetName("circle vertex")
-  val fragAsset: AssetName = AssetName("circle fragment")
-
+  val circleId: ShaderId     = ShaderId("circle external")
+  val circleAsset: AssetName = AssetName("circle fragment")
   val circleExternal: CustomShader.External =
     CustomShader
-      .External(externalCircleId)
-      .withVertexProgram(vertAsset)
-      .withFragmentProgram(fragAsset)
-      .withLightProgram(fragAsset)
+      .External(circleId)
+      .withFragmentProgram(circleAsset)
 
   val postVertAsset: AssetName = AssetName("post vertex")
   val postFragAsset: AssetName = AssetName("post fragment")
-
   def postShader: CustomShader.PostExternal =
     CustomShader
       .PostExternal(ShaderId("post shader test"), StandardShaders.Bitmap)
       .withPostVertexProgram(postVertAsset)
       .withPostFragmentProgram(postFragAsset)
-
-  def assets: Set[AssetType] =
-    Set(
-      AssetType.Text(vertAsset, AssetPath("assets/circle.vert")),
-      AssetType.Text(fragAsset, AssetPath("assets/circle.frag")),
-      AssetType.Text(postVertAsset, AssetPath("assets/post.vert")),
-      AssetType.Text(postFragAsset, AssetPath("assets/post.frag"))
-    )
 
 }

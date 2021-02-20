@@ -20,7 +20,3 @@ void fragment() {
   COLOR = circle;
 }
 //</indigo-fragment>
-
-//<indigo-light>
-void light(){}
-//</indigo-light>
