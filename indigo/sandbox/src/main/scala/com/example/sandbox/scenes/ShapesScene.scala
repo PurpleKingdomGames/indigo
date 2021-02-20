@@ -95,12 +95,12 @@ final case class Circle(
   val ref: Point        = Point.zero
 
   val position: Point =
-    center - radius - (if (borderInside) 0 else borderThickness)
+    center - radius - (if (borderInside) 0 else borderThickness) - 1
 
   val bounds: Rectangle =
     Rectangle(
       position,
-      Point(radius * 2) + (if (borderInside) 0 else borderThickness * 2)
+      Point(radius * 2) + (if (borderInside) 0 else borderThickness * 2) + 2
     )
 }
 object Circle {
@@ -110,7 +110,7 @@ object Circle {
       ShapeShaders.circleId,
       List(
         Uniform("BORDER_WIDTH") -> float(4),
-        Uniform("SMOOTH")       -> float(0.0),
+        Uniform("SMOOTH")       -> float(1.0),
         Uniform("BORDER_COLOR") -> vec4(1.0, 1.0, 1.0, 1.0),
         Uniform("FILL_COLOR")   -> vec4(0.0, 0.0, 1.0, 0.5)
       )

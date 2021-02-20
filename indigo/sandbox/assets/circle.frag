@@ -16,12 +16,13 @@ layout (std140) uniform CustomData {
   vec4 FILL_COLOR;
 };
 
-
 float timeToRadians(float t) {
   return TAU * mod(t, 1.0);
 }
 
 void fragment() {
+
+  float padding = 1.0 / SIZE.x;
 
   float borderWidthPx = BORDER_WIDTH;
   float borderWidth = borderWidthPx / SIZE.x; // circle, so equal w/h
@@ -29,10 +30,10 @@ void fragment() {
   vec4 borderColor = vec4(BORDER_COLOR.rgb * BORDER_COLOR.a, BORDER_COLOR.a);
   vec4 fillColor = vec4(FILL_COLOR.rgb * FILL_COLOR.a, FILL_COLOR.a);
 
-  float borderSdf = length(UV - 0.5) - 0.5;
+  float borderSdf = length(UV - 0.5) - (0.5 - padding);
   float borderAmount = 1.0 - step(0.0, borderSdf);
 
-  float fillSdf = length(UV - 0.5) - (0.5 - borderWidth);
+  float fillSdf = length(UV - 0.5) - (0.5 - (borderWidth + padding));
   float fillAmount = 1.0 - step(0.0, fillSdf);
 
   if(SMOOTH > 0.0) {
