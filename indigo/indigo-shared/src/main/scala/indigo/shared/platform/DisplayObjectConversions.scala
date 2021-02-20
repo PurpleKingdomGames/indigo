@@ -32,6 +32,8 @@ import indigo.shared.animation.AnimationRef
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.assets.AssetName
 import indigo.shared.scenegraph.SceneEntity
+import indigo.shared.shader.Uniform
+import indigo.shared.shader.ShaderPrimitive
 
 final class DisplayObjectConversions(
     boundaryLocator: BoundaryLocator,
@@ -279,7 +281,7 @@ final class DisplayObjectConversions(
     val shaderId          = material.shaderId
     val shaderUniformHash = material.uniformHash
     val shaderUBO = QuickCache(shaderUniformHash) {
-      material.uniforms.toArray.map(_._2.toArray).flatten
+      DisplayObjectConversions.packUBO(material.uniforms)
     }
 
     DisplayObject(
@@ -323,7 +325,7 @@ final class DisplayObjectConversions(
     val shaderId          = material.shaderId
     val shaderUniformHash = material.uniformHash
     val shaderUBO = QuickCache(shaderUniformHash) {
-      material.uniforms.toArray.map(_._2.toArray).flatten
+      DisplayObjectConversions.packUBO(material.uniforms)
     }
 
     DisplayObject(
@@ -364,7 +366,7 @@ final class DisplayObjectConversions(
     val shaderId          = asCustom.shaderId
     val shaderUniformHash = asCustom.uniformHash
     val shaderUBO = QuickCache(shaderUniformHash) {
-      asCustom.uniforms.toArray.map(_._2.toArray).flatten
+      DisplayObjectConversions.packUBO(asCustom.uniforms)
     }
 
     DisplayObject(
@@ -409,7 +411,7 @@ final class DisplayObjectConversions(
     val shaderId          = asCustom.shaderId
     val shaderUniformHash = asCustom.uniformHash
     val shaderUBO = QuickCache(shaderUniformHash) {
-      asCustom.uniforms.toArray.map(_._2.toArray).flatten
+      DisplayObjectConversions.packUBO(asCustom.uniforms)
     }
 
     DisplayObject(
@@ -455,7 +457,7 @@ final class DisplayObjectConversions(
       val shaderId          = asCustom.shaderId
       val shaderUniformHash = asCustom.uniformHash
       val shaderUBO = QuickCache(shaderUniformHash) {
-        asCustom.uniforms.toArray.map(_._2.toArray).flatten
+      DisplayObjectConversions.packUBO(asCustom.uniforms)
       }
 
       QuickCache(lineHash) {
@@ -553,5 +555,46 @@ object DisplayObjectConversions {
         data.position.y.toDouble,
         0.0d
       )
+
+  private val empty0: Array[Float] = Array[Float]()
+  private val empty1: Array[Float] = Array[Float](0.0f)
+  private val empty2: Array[Float] = Array[Float](0.0f, 0.0f)
+  private val empty3: Array[Float] = Array[Float](0.0f, 0.0f, 0.0f)
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  def expandTo4(arr: Array[Float]): Array[Float] =
+    arr.length match {
+      case 0 => arr
+      case 1 => arr ++ empty3
+      case 2 => arr ++ empty2
+      case 3 => arr ++ empty1
+      case 4 => arr
+      case l =>
+        throw new Exception(s"cannot expand array of length $l up to 4")
+    }
+
+  def packUBO(uniforms: List[(Uniform, ShaderPrimitive)]): Array[Float] = {
+    def rec(remaining: List[ShaderPrimitive], current: Array[Float], acc: Array[Float]): Array[Float] =
+      remaining match {
+        case Nil =>
+          // println(s"done, expanded: ${current.toList} to ${expandTo4(current).toList}")
+          // println(s"result: ${(acc ++ expandTo4(current)).toList}")
+          acc ++ expandTo4(current)
+        
+        case us if current.length == 4 =>
+          // println(s"current full, sub-result: ${(acc ++ current).toList}")
+          rec(us, empty0, acc ++ current)
+
+        case u :: _ if current.length + u.length > 4 =>
+          // println(s"doesn't fit, expanded: ${current.toList} to ${expandTo4(current).toList},  sub-result: ${(acc ++ expandTo4(current)).toList}")
+          rec(remaining, empty0, acc ++ expandTo4(current))
+
+        case u :: us =>
+          // println(s"fits, current is now: ${(current ++ u.toArray).toList}")
+          rec(us, current ++ u.toArray, acc)
+      }
+
+    rec(uniforms.map(_._2), empty0, empty0)
+  }
 
 }
