@@ -37,7 +37,13 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] =
     Outcome(
       SceneUpdateFragment.empty
-        .addLayer(Circle(Point(50), 20))
+        .addLayer(
+          Circle(Point(50), 20),
+          Circle(Point(50, 75), 10),
+          Circle(Point(100), 15),
+          Circle(Point(30, 75), 15),
+          Circle(Point(150), 50)
+        )
     )
 
 }
@@ -84,12 +90,23 @@ final case class Circle(
 }
 object Circle {
 
+  val material: GLSLShader =
+    GLSLShader(
+      ShapeShaders.circleId,
+      List(
+        Uniform("ALPHA")        -> float(1.0),
+        Uniform("BORDER_WIDTH") -> float(4),
+        Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 1.0),
+        Uniform("FILL_COLOR")   -> vec3(0.0, 0.0, 1.0)
+      )
+    )
+
   def apply(radius: Int): Circle =
     Circle(
       Point.zero,
       radius,
       Depth(1),
-      GLSLShader(ShapeShaders.circleId, Nil)
+      material
     )
 
   def apply(position: Point, radius: Int): Circle =
@@ -97,7 +114,7 @@ object Circle {
       position,
       radius,
       Depth(1),
-      GLSLShader(ShapeShaders.circleId, Nil)
+      material
     )
 
 }
