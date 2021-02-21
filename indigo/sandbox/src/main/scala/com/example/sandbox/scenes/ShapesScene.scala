@@ -38,12 +38,12 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          Circle(Point(50, 50), 20).outside,
-          Circle(Point(100, 50), 20).inside,
-          Circle(Point(50, 75), 10),
-          Circle(Point(100), 15),
-          Circle(Point(30, 75), 15),
-          Circle(Point(150), 50)
+          Circle(Point(50, 50), 20, ShapeMaterial(RGBA.Red, RGBA.White, 3, true)).outside,
+          Circle(Point(100, 50), 20, ShapeMaterial(RGBA.Green, RGBA.White, 4, true)).inside,
+          Circle(Point(50, 75), 10, ShapeMaterial(RGBA.Blue, RGBA.Yellow, 10, false)),
+          Circle(Point(100), 15, ShapeMaterial(RGBA.Magenta, RGBA.White, 2, true)),
+          Circle(Point(30, 75), 15, ShapeMaterial(RGBA.Cyan, RGBA.White, 0, false)),
+          Circle(Point(150), 50, ShapeMaterial(RGBA.Yellow, RGBA.Black, 7, true))
         )
     )
 
@@ -78,63 +78,84 @@ final case class Circle(
     center: Point,
     radius: Int,
     depth: Depth,
-    material: Material,
-    borderThickness: Int,
-    borderInside: Boolean
+    lineInside: Boolean,
+    material: ShapeMaterial
 ) extends SceneEntity {
 
   def inside: Circle =
-    this.copy(borderInside = true)
+    this.copy(lineInside = true)
 
   def outside: Circle =
-    this.copy(borderInside = false)
+    this.copy(lineInside = false)
 
   val rotation: Radians = Radians.zero
   val scale: Vector2    = Vector2.one
   val flip: Flip        = Flip.default
   val ref: Point        = Point.zero
 
-  val position: Point =
-    center - radius - (if (borderInside) 0 else borderThickness) - 1
+  def position: Point =
+    center - radius - (if (lineInside) 0 else material.lineWidth) - 1
 
-  val bounds: Rectangle =
+  def bounds: Rectangle =
     Rectangle(
       position,
-      Point(radius * 2) + (if (borderInside) 0 else borderThickness * 2) + 2
+      Point(radius * 2) + (if (lineInside) 0 else material.lineWidth * 2) + 2
     )
 }
 object Circle {
 
-  val material: GLSLShader =
+  def apply(center: Point, radius: Int, material: ShapeMaterial): Circle =
+    Circle(
+      center,
+      radius,
+      Depth(1),
+      false,
+      material
+    )
+
+}
+
+final case class ShapeMaterial(fill: RGBA, line: RGBA, lineWidth: Int, useAntiAliasing: Boolean) extends Material {
+
+  def withFillColor(newFill: RGBA): ShapeMaterial =
+    this.copy(fill = newFill)
+
+  def withLineColor(newLine: RGBA): ShapeMaterial =
+    this.copy(line = newLine)
+
+  def withLineWidth(newWidth: Int): ShapeMaterial =
+    this.copy(lineWidth = newWidth)
+
+  def withAntiAliasing(smoothEdges: Boolean): ShapeMaterial =
+    this.copy(useAntiAliasing = smoothEdges)
+
+  def smooth: ShapeMaterial =
+    this.copy(useAntiAliasing = true)
+
+  def sharp: ShapeMaterial =
+    this.copy(useAntiAliasing = false)
+
+  val hash: String =
+    "shape" + fill.hash + line.hash + lineWidth.toString() + useAntiAliasing.toString()
+
+  def toGLSLShader: GLSLShader =
     GLSLShader(
       ShapeShaders.circleId,
       List(
-        Uniform("BORDER_WIDTH") -> float(4),
-        Uniform("SMOOTH")       -> float(1.0),
-        Uniform("BORDER_COLOR") -> vec4(1.0, 1.0, 1.0, 1.0),
-        Uniform("FILL_COLOR")   -> vec4(0.0, 0.0, 1.0, 0.5)
+        Uniform("BORDER_WIDTH") -> float(lineWidth.toDouble),
+        Uniform("SMOOTH")       -> float(if (useAntiAliasing) 1.0 else 0.0),
+        Uniform("BORDER_COLOR") -> vec4(fill.r, fill.g, fill.b, fill.a),
+        Uniform("FILL_COLOR")   -> vec4(line.r, line.g, line.b, line.a)
       )
     )
+}
+object ShapeMaterial {
 
-  def apply(radius: Int): Circle =
-    Circle(
-      Point.zero,
-      radius,
-      Depth(1),
-      material,
-      4,
-      false
-    )
+  def apply(fill: RGBA): ShapeMaterial =
+    ShapeMaterial(fill, RGBA.Zero, 0, false)
 
-  def apply(position: Point, radius: Int): Circle =
-    Circle(
-      position,
-      radius,
-      Depth(1),
-      material,
-      4,
-      false
-    )
+  def apply(fill: RGBA, line: RGBA, lineWidth: Int): ShapeMaterial =
+    ShapeMaterial(fill, line, lineWidth, false)
 
 }
 
