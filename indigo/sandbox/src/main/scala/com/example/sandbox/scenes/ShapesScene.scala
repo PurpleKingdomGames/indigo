@@ -38,12 +38,12 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          Circle(Point(50, 50), 20, ShapeMaterial(RGBA.Red, RGBA.White, 3, false, true).strokeOutside),
-          Circle(Point(100, 50), 20, ShapeMaterial(RGBA.Green, RGBA.White, 4, false, true).strokeInside),
-          Circle(Point(50, 75), 10, ShapeMaterial(RGBA.Blue, RGBA.Yellow, 10, false, false)),
-          Circle(Point(100), 15, ShapeMaterial(RGBA.Magenta, RGBA.White, 2, false, true)),
-          Circle(Point(30, 75), 15, ShapeMaterial(RGBA.Cyan, RGBA.White, 0, false, false)),
-          Circle(Point(150), 50, ShapeMaterial(RGBA.Yellow, RGBA.Black, 7, false, true))
+          Circle(Point(50, 50), 20, ShapeMaterial(RGBA.Red, RGBA.White, 3)),
+          Circle(Point(100, 50), 20, ShapeMaterial(RGBA.Green, RGBA.White.withAlpha(0.5), 4)),
+          Circle(Point(50, 75), 10, ShapeMaterial(RGBA.Blue, RGBA.Yellow, 10)),
+          Circle(Point(100), 15, ShapeMaterial(RGBA.Magenta, RGBA.White, 2)),
+          Circle(Point(30, 75), 15, ShapeMaterial(RGBA.Cyan, RGBA.White, 0)),
+          Circle(Point(150), 50, ShapeMaterial(RGBA.Yellow, RGBA.Black, 7))
         )
     )
 

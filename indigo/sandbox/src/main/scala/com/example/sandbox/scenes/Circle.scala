@@ -21,12 +21,12 @@ final case class Circle(
   val ref: Point        = Point.zero
 
   def position: Point =
-    center - radius - (if (material.strokeIsInside) 0 else material.strokeWidth) - 1
+    center - radius - (material.strokeWidth / 2)
 
   def bounds: Rectangle =
     Rectangle(
       position,
-      Point(radius * 2) + (if (material.strokeIsInside) 0 else material.strokeWidth * 2) + 2
+      Point(radius * 2) + material.strokeWidth
     )
 }
 object Circle {
