@@ -8,11 +8,9 @@ import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Rectangle
 
-final case class Circle(
-    center: Point,
-    radius: Int,
+final case class Line(
     depth: Depth,
-    material: ShapeMaterial
+    material: StrokeMaterial
 ) extends SceneEntity {
 
   val rotation: Radians = Radians.zero
@@ -21,20 +19,22 @@ final case class Circle(
   val ref: Point        = Point.zero
 
   lazy val position: Point =
-    center - radius - (material.strokeWidth / 2)
+    Point(
+      Math.min(material.start.x, material.end.x),
+      Math.min(material.start.y, material.end.y)
+    ) - (material.strokeWidth / 2)
 
-  lazy val bounds: Rectangle =
-    Rectangle(
-      position,
-      Point(radius * 2) + material.strokeWidth
-    )
+  lazy val bounds: Rectangle = {
+    val w = Math.max(material.start.x, material.end.x) - position.x
+    val h = Math.max(material.start.y, material.end.y) - position.y
+
+    Rectangle(position, Point(Math.max(w, h)) + material.strokeWidth)
+  }
 }
-object Circle {
+object Line {
 
-  def apply(center: Point, radius: Int, material: ShapeMaterial): Circle =
-    Circle(
-      center,
-      radius,
+  def apply(material: StrokeMaterial): Line =
+    Line(
       Depth(1),
       material
     )
