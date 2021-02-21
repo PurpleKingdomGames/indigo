@@ -15,11 +15,15 @@ layout (std140) uniform CustomData {
   vec4 FILL_COLOR;
 };
 
+float sdfCalc(vec2 p, float r) {
+  return length(p) - r;
+}
+
 void fragment() {
 
   float strokeWidthHalf = max(0.0, STROKE_WIDTH / SIZE.x / 2.0); // circle, so equal w/h
 
-  float sdf = length(UV - 0.5) - (0.5 - strokeWidthHalf);
+  float sdf = sdfCalc(UV - 0.5, 0.5 - strokeWidthHalf);
   float annularSdf = abs(sdf) - strokeWidthHalf;
 
   float fillAmount = (1.0 - step(0.0, sdf)) * FILL_COLOR.a;
