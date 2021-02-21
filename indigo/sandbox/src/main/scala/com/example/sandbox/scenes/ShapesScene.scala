@@ -38,12 +38,12 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          Circle(Point(50, 50), 20, ShapeMaterial(RGBA.Red, RGBA.White, 3, true)).outside,
-          Circle(Point(100, 50), 20, ShapeMaterial(RGBA.Green, RGBA.White, 4, true)).inside,
-          Circle(Point(50, 75), 10, ShapeMaterial(RGBA.Blue, RGBA.Yellow, 10, false)),
-          Circle(Point(100), 15, ShapeMaterial(RGBA.Magenta, RGBA.White, 2, true)),
-          Circle(Point(30, 75), 15, ShapeMaterial(RGBA.Cyan, RGBA.White, 0, false)),
-          Circle(Point(150), 50, ShapeMaterial(RGBA.Yellow, RGBA.Black, 7, true))
+          Circle(Point(50, 50), 20, ShapeMaterial(RGBA.Red, RGBA.White, 3, false, true).lineOutside),
+          Circle(Point(100, 50), 20, ShapeMaterial(RGBA.Green, RGBA.White, 4, false, true).lineInside),
+          Circle(Point(50, 75), 10, ShapeMaterial(RGBA.Blue, RGBA.Yellow, 10, false, false)),
+          Circle(Point(100), 15, ShapeMaterial(RGBA.Magenta, RGBA.White, 2, false, true)),
+          Circle(Point(30, 75), 15, ShapeMaterial(RGBA.Cyan, RGBA.White, 0, false, false)),
+          Circle(Point(150), 50, ShapeMaterial(RGBA.Yellow, RGBA.Black, 7, false, true))
         )
     )
 
@@ -78,15 +78,8 @@ final case class Circle(
     center: Point,
     radius: Int,
     depth: Depth,
-    lineInside: Boolean,
     material: ShapeMaterial
 ) extends SceneEntity {
-
-  def inside: Circle =
-    this.copy(lineInside = true)
-
-  def outside: Circle =
-    this.copy(lineInside = false)
 
   val rotation: Radians = Radians.zero
   val scale: Vector2    = Vector2.one
@@ -94,12 +87,12 @@ final case class Circle(
   val ref: Point        = Point.zero
 
   def position: Point =
-    center - radius - (if (lineInside) 0 else material.lineWidth) - 1
+    center - radius - (if (material.lineIsInside) 0 else material.lineWidth) - 1
 
   def bounds: Rectangle =
     Rectangle(
       position,
-      Point(radius * 2) + (if (lineInside) 0 else material.lineWidth * 2) + 2
+      Point(radius * 2) + (if (material.lineIsInside) 0 else material.lineWidth * 2) + 2
     )
 }
 object Circle {
@@ -109,13 +102,12 @@ object Circle {
       center,
       radius,
       Depth(1),
-      false,
       material
     )
 
 }
 
-final case class ShapeMaterial(fill: RGBA, line: RGBA, lineWidth: Int, useAntiAliasing: Boolean) extends Material {
+final case class ShapeMaterial(fill: RGBA, line: RGBA, lineWidth: Int, lineIsInside: Boolean, useAntiAliasing: Boolean) extends Material {
 
   def withFillColor(newFill: RGBA): ShapeMaterial =
     this.copy(fill = newFill)
@@ -126,14 +118,23 @@ final case class ShapeMaterial(fill: RGBA, line: RGBA, lineWidth: Int, useAntiAl
   def withLineWidth(newWidth: Int): ShapeMaterial =
     this.copy(lineWidth = newWidth)
 
+  def withLineInside(isInside: Boolean): ShapeMaterial =
+    this.copy(lineIsInside = isInside)
+
+  def lineInside: ShapeMaterial =
+    this.copy(lineIsInside = true)
+
+  def lineOutside: ShapeMaterial =
+    this.copy(lineIsInside = false)
+
   def withAntiAliasing(smoothEdges: Boolean): ShapeMaterial =
     this.copy(useAntiAliasing = smoothEdges)
 
   def smooth: ShapeMaterial =
-    this.copy(useAntiAliasing = true)
+    withAntiAliasing(true)
 
   def sharp: ShapeMaterial =
-    this.copy(useAntiAliasing = false)
+    withAntiAliasing(false)
 
   val hash: String =
     "shape" + fill.hash + line.hash + lineWidth.toString() + useAntiAliasing.toString()
@@ -152,10 +153,10 @@ final case class ShapeMaterial(fill: RGBA, line: RGBA, lineWidth: Int, useAntiAl
 object ShapeMaterial {
 
   def apply(fill: RGBA): ShapeMaterial =
-    ShapeMaterial(fill, RGBA.Zero, 0, false)
+    ShapeMaterial(fill, RGBA.Zero, 0, false, false)
 
   def apply(fill: RGBA, line: RGBA, lineWidth: Int): ShapeMaterial =
-    ShapeMaterial(fill, line, lineWidth, false)
+    ShapeMaterial(fill, line, lineWidth, false, false)
 
 }
 
