@@ -38,8 +38,8 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          Circle(Point(50, 50), 20, ShapeMaterial(RGBA.Red, RGBA.White, 3, false, true).lineOutside),
-          Circle(Point(100, 50), 20, ShapeMaterial(RGBA.Green, RGBA.White, 4, false, true).lineInside),
+          Circle(Point(50, 50), 20, ShapeMaterial(RGBA.Red, RGBA.White, 3, false, true).strokeOutside),
+          Circle(Point(100, 50), 20, ShapeMaterial(RGBA.Green, RGBA.White, 4, false, true).strokeInside),
           Circle(Point(50, 75), 10, ShapeMaterial(RGBA.Blue, RGBA.Yellow, 10, false, false)),
           Circle(Point(100), 15, ShapeMaterial(RGBA.Magenta, RGBA.White, 2, false, true)),
           Circle(Point(30, 75), 15, ShapeMaterial(RGBA.Cyan, RGBA.White, 0, false, false)),
@@ -87,12 +87,12 @@ final case class Circle(
   val ref: Point        = Point.zero
 
   def position: Point =
-    center - radius - (if (material.lineIsInside) 0 else material.lineWidth) - 1
+    center - radius - (if (material.strokeIsInside) 0 else material.strokeWidth) - 1
 
   def bounds: Rectangle =
     Rectangle(
       position,
-      Point(radius * 2) + (if (material.lineIsInside) 0 else material.lineWidth * 2) + 2
+      Point(radius * 2) + (if (material.strokeIsInside) 0 else material.strokeWidth * 2) + 2
     )
 }
 object Circle {
@@ -107,25 +107,25 @@ object Circle {
 
 }
 
-final case class ShapeMaterial(fill: RGBA, line: RGBA, lineWidth: Int, lineIsInside: Boolean, useAntiAliasing: Boolean) extends Material {
+final case class ShapeMaterial(fill: RGBA, stroke: RGBA, strokeWidth: Int, strokeIsInside: Boolean, useAntiAliasing: Boolean) extends Material {
 
   def withFillColor(newFill: RGBA): ShapeMaterial =
     this.copy(fill = newFill)
 
-  def withLineColor(newLine: RGBA): ShapeMaterial =
-    this.copy(line = newLine)
+  def withStrokeColor(newStroke: RGBA): ShapeMaterial =
+    this.copy(stroke = newStroke)
 
-  def withLineWidth(newWidth: Int): ShapeMaterial =
-    this.copy(lineWidth = newWidth)
+  def withStrokeWidth(newWidth: Int): ShapeMaterial =
+    this.copy(strokeWidth = newWidth)
 
-  def withLineInside(isInside: Boolean): ShapeMaterial =
-    this.copy(lineIsInside = isInside)
+  def withStrokeInside(isInside: Boolean): ShapeMaterial =
+    this.copy(strokeIsInside = isInside)
 
-  def lineInside: ShapeMaterial =
-    this.copy(lineIsInside = true)
+  def strokeInside: ShapeMaterial =
+    this.copy(strokeIsInside = true)
 
-  def lineOutside: ShapeMaterial =
-    this.copy(lineIsInside = false)
+  def strokeOutside: ShapeMaterial =
+    this.copy(strokeIsInside = false)
 
   def withAntiAliasing(smoothEdges: Boolean): ShapeMaterial =
     this.copy(useAntiAliasing = smoothEdges)
@@ -137,16 +137,16 @@ final case class ShapeMaterial(fill: RGBA, line: RGBA, lineWidth: Int, lineIsIns
     withAntiAliasing(false)
 
   val hash: String =
-    "shape" + fill.hash + line.hash + lineWidth.toString() + useAntiAliasing.toString()
+    "shape" + fill.hash + stroke.hash + strokeWidth.toString() + useAntiAliasing.toString()
 
   def toGLSLShader: GLSLShader =
     GLSLShader(
       ShapeShaders.circleId,
       List(
-        Uniform("BORDER_WIDTH") -> float(lineWidth.toDouble),
+        Uniform("STROKE_WIDTH") -> float(strokeWidth.toDouble),
         Uniform("SMOOTH")       -> float(if (useAntiAliasing) 1.0 else 0.0),
-        Uniform("BORDER_COLOR") -> vec4(fill.r, fill.g, fill.b, fill.a),
-        Uniform("FILL_COLOR")   -> vec4(line.r, line.g, line.b, line.a)
+        Uniform("STROKE_COLOR") -> vec4(fill.r, fill.g, fill.b, fill.a),
+        Uniform("FILL_COLOR")   -> vec4(stroke.r, stroke.g, stroke.b, stroke.a)
       )
     )
 }
@@ -155,8 +155,8 @@ object ShapeMaterial {
   def apply(fill: RGBA): ShapeMaterial =
     ShapeMaterial(fill, RGBA.Zero, 0, false, false)
 
-  def apply(fill: RGBA, line: RGBA, lineWidth: Int): ShapeMaterial =
-    ShapeMaterial(fill, line, lineWidth, false, false)
+  def apply(fill: RGBA, stroke: RGBA, strokeWidth: Int): ShapeMaterial =
+    ShapeMaterial(fill, stroke, strokeWidth, false, false)
 
 }
 
