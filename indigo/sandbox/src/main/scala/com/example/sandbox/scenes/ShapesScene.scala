@@ -34,11 +34,19 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   def updateViewModel(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): GlobalEvent => Outcome[SandboxViewModel] =
     _ => Outcome(viewModel)
 
-  def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] =
+  def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] = {
+
+    val width1: Int =
+      Signal.SmoothPulse.map(d => (10 * d).toInt).at(context.running)
+    val width2: Int =
+      Signal.SmoothPulse.map(d => (10 * d).toInt).affectTime(0.5).at(context.running)
+
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
           Circle(Point(50, 50), 20, ShapeMaterial(RGBA.Red, RGBA.White, 3)),
+          Line(StrokeMaterial(RGBA.Cyan, width1, Point(30, 10), Point(100, 50))),
+          Line(StrokeMaterial(RGBA.Yellow, width2, Point(20, 60), Point(90, 10))),
           Circle(Point(100, 50), 20, ShapeMaterial(RGBA.Green, RGBA.White.withAlpha(0.5), 4)),
           Circle(Point(50, 75), 10, ShapeMaterial(RGBA.Blue, RGBA.Yellow, 10)),
           Circle(Point(100), 15, ShapeMaterial(RGBA.Magenta, RGBA.White, 2)),
@@ -46,33 +54,9 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
           Circle(Point(150), 50, ShapeMaterial(RGBA.Yellow, RGBA.Black, 7))
         )
     )
+  }
 
 }
-
-//,
-// Foo(),
-// Graphic(
-//   32,
-//   32,
-//   StandardMaterial.PostMaterial(
-//     ShapeShaders.postShader.id,
-//     StandardMaterial.ImageEffects(SandboxAssets.dots)
-//   )
-// )
-// Shape(
-//   0,
-//   0,
-//   64,
-//   64,
-//   1,
-//   GLSLShader(
-//     ShapeShaders.externalCircleId,
-//     List(
-//       Uniform("ALPHA")        -> float(0.75),
-//       Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 0.0)
-//     )
-//   )
-// ).moveTo(context.startUpData.viewportCenter - Point(32, 32))
 
 final case class Foo() extends SceneEntity {
   val bounds: Rectangle = Rectangle(10, 10, 100, 100)
@@ -96,6 +80,7 @@ object ShapeShaders {
   def assets: Set[AssetType] =
     Set(
       AssetType.Text(circleAsset, AssetPath("assets/circle.frag")),
+      AssetType.Text(lineAsset, AssetPath("assets/line.frag")),
       AssetType.Text(postVertAsset, AssetPath("assets/post.vert")),
       AssetType.Text(postFragAsset, AssetPath("assets/post.frag"))
     )
@@ -106,6 +91,13 @@ object ShapeShaders {
     CustomShader
       .External(circleId)
       .withFragmentProgram(circleAsset)
+
+  val lineId: ShaderId     = ShaderId("line external")
+  val lineAsset: AssetName = AssetName("line fragment")
+  val lineExternal: CustomShader.External =
+    CustomShader
+      .External(lineId)
+      .withFragmentProgram(lineAsset)
 
   val postVertAsset: AssetName = AssetName("post vertex")
   val postFragAsset: AssetName = AssetName("post fragment")

@@ -15,6 +15,7 @@ layout (std140) uniform CustomData {
   vec4 FILL_COLOR;
 };
 
+// Borrowed with thanks! https://www.iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm
 float sdfCalc(vec2 p, float r) {
   return length(p) - r;
 }
