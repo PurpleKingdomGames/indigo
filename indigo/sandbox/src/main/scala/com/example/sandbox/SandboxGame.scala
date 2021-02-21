@@ -58,6 +58,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           Shaders.external,
           Shaders.sea,
           ShapeShaders.circleExternal,
+          ShapeShaders.lineExternal,
           ShapeShaders.postShader
         )
     )
