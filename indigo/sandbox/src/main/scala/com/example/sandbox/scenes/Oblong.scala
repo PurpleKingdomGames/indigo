@@ -19,13 +19,16 @@ final case class Oblong(
   val flip: Flip        = Flip.default
   val ref: Point        = Point.zero
 
+  private lazy val square: Int =
+    Math.max(surface.size.x, surface.size.y)
+
   lazy val position: Point =
-    surface.position - (material.strokeWidth / 2)
+    surface.position - (Point(square) / 2) - (material.strokeWidth / 2)
 
   lazy val bounds: Rectangle =
     Rectangle(
       position,
-      surface.size + material.strokeWidth
+      Point(square) + material.strokeWidth
     )
 }
 object Oblong {

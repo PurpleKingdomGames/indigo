@@ -36,23 +36,37 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
 
   def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] = {
 
-    val width1: Int =
-      Signal.SmoothPulse.map(d => (10 * d).toInt).at(context.running)
-    val width2: Int =
-      Signal.SmoothPulse.map(d => (10 * d).toInt).affectTime(0.5).at(context.running)
+    // val width1: Int =
+    //   Signal.SmoothPulse.map(d => (10 * d).toInt).at(context.running)
+    // val width2: Int =
+    //   Signal.SmoothPulse.map(d => (10 * d).toInt).affectTime(0.5).at(context.running)
+
+    val w: Int =
+      Signal.SmoothPulse.map(d => (100 - (10 + (90 * d).toInt))).affectTime(0.25).at(context.running)
+    val h: Int =
+      Signal.SmoothPulse.map(d => 10 + (90 * d).toInt).affectTime(0.25).at(context.running)
+
+    val size: Point =
+      Point(w, h)
+
+    val aspect: Vector2 =
+      if (size.x > size.y)
+        Vector2(1.0, size.y.toDouble / size.x.toDouble)
+      else
+        Vector2(size.x.toDouble / size.y.toDouble, 1.0)
 
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          Circle(Point(50, 50), 20, CircleMaterial(RGBA.Red, RGBA.White, 3)),
-          Line(StrokeMaterial(RGBA.Cyan, width1, Point(30, 10), Point(100, 50))),
-          Line(StrokeMaterial(RGBA.Yellow, width2, Point(20, 60), Point(90, 10))),
-          Circle(Point(100, 50), 20, CircleMaterial(RGBA.Green, RGBA.White.withAlpha(0.5), 4)),
-          Circle(Point(50, 75), 10, CircleMaterial(RGBA.Blue, RGBA.Yellow, 10)),
-          Circle(Point(100), 15, CircleMaterial(RGBA.Magenta, RGBA.White, 2)),
-          Circle(Point(30, 75), 15, CircleMaterial(RGBA.Cyan, RGBA.White, 0)),
-          Circle(Point(150), 50, CircleMaterial(RGBA.Yellow, RGBA.Black, 7)),
-          Oblong(Rectangle(100, 100, 60, 30), OblongMaterial(RGBA.White, RGBA.Black, 6, 0)),
+          // Circle(Point(50, 50), 20, CircleMaterial(RGBA.Red, RGBA.White, 3)),
+          // Line(StrokeMaterial(RGBA.Cyan, width1, Point(30, 10), Point(100, 50))),
+          // Line(StrokeMaterial(RGBA.Yellow, width2, Point(20, 60), Point(90, 10))),
+          // Circle(Point(100, 50), 20, CircleMaterial(RGBA.Green, RGBA.White.withAlpha(0.5), 4)),
+          // Circle(Point(50, 75), 10, CircleMaterial(RGBA.Blue, RGBA.Yellow, 10)),
+          // Circle(Point(100), 15, CircleMaterial(RGBA.Magenta, RGBA.White, 2)),
+          // Circle(Point(30, 75), 15, CircleMaterial(RGBA.Cyan, RGBA.White, 0)),
+          // Circle(Point(150), 50, CircleMaterial(RGBA.Yellow, RGBA.Black, 7)),
+          Oblong(Rectangle(Point(100, 100), size), OblongMaterial(RGBA.White, RGBA.Black.withAlpha(0.75), 10, aspect, 0))
         )
     )
   }
