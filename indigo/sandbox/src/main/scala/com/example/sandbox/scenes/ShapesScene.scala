@@ -44,14 +44,15 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          Circle(Point(50, 50), 20, ShapeMaterial(RGBA.Red, RGBA.White, 3)),
+          Circle(Point(50, 50), 20, CircleMaterial(RGBA.Red, RGBA.White, 3)),
           Line(StrokeMaterial(RGBA.Cyan, width1, Point(30, 10), Point(100, 50))),
           Line(StrokeMaterial(RGBA.Yellow, width2, Point(20, 60), Point(90, 10))),
-          Circle(Point(100, 50), 20, ShapeMaterial(RGBA.Green, RGBA.White.withAlpha(0.5), 4)),
-          Circle(Point(50, 75), 10, ShapeMaterial(RGBA.Blue, RGBA.Yellow, 10)),
-          Circle(Point(100), 15, ShapeMaterial(RGBA.Magenta, RGBA.White, 2)),
-          Circle(Point(30, 75), 15, ShapeMaterial(RGBA.Cyan, RGBA.White, 0)),
-          Circle(Point(150), 50, ShapeMaterial(RGBA.Yellow, RGBA.Black, 7))
+          Circle(Point(100, 50), 20, CircleMaterial(RGBA.Green, RGBA.White.withAlpha(0.5), 4)),
+          Circle(Point(50, 75), 10, CircleMaterial(RGBA.Blue, RGBA.Yellow, 10)),
+          Circle(Point(100), 15, CircleMaterial(RGBA.Magenta, RGBA.White, 2)),
+          Circle(Point(30, 75), 15, CircleMaterial(RGBA.Cyan, RGBA.White, 0)),
+          Circle(Point(150), 50, CircleMaterial(RGBA.Yellow, RGBA.Black, 7)),
+          Oblong(Rectangle(100, 100, 60, 30), OblongMaterial(RGBA.White, RGBA.Black, 6, 0)),
         )
     )
   }
@@ -81,6 +82,7 @@ object ShapeShaders {
     Set(
       AssetType.Text(circleAsset, AssetPath("assets/circle.frag")),
       AssetType.Text(lineAsset, AssetPath("assets/line.frag")),
+      AssetType.Text(oblongAsset, AssetPath("assets/oblong.frag")),
       AssetType.Text(postVertAsset, AssetPath("assets/post.vert")),
       AssetType.Text(postFragAsset, AssetPath("assets/post.frag"))
     )
@@ -98,6 +100,13 @@ object ShapeShaders {
     CustomShader
       .External(lineId)
       .withFragmentProgram(lineAsset)
+
+  val oblongId: ShaderId     = ShaderId("oblong external")
+  val oblongAsset: AssetName = AssetName("oblong fragment")
+  val oblongExternal: CustomShader.External =
+    CustomShader
+      .External(oblongId)
+      .withFragmentProgram(oblongAsset)
 
   val postVertAsset: AssetName = AssetName("post vertex")
   val postFragAsset: AssetName = AssetName("post fragment")
