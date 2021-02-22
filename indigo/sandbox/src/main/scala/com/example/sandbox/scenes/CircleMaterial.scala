@@ -6,15 +6,15 @@ import indigo.shared.shader.Uniform
 import indigo.shared.shader.ShaderPrimitive._
 import indigo.shared.materials.Material
 
-final case class ShapeMaterial(fill: RGBA, stroke: RGBA, strokeWidth: Int) extends Material {
+final case class CircleMaterial(fill: RGBA, stroke: RGBA, strokeWidth: Int) extends Material {
 
-  def withFillColor(newFill: RGBA): ShapeMaterial =
+  def withFillColor(newFill: RGBA): CircleMaterial =
     this.copy(fill = newFill)
 
-  def withStrokeColor(newStroke: RGBA): ShapeMaterial =
+  def withStrokeColor(newStroke: RGBA): CircleMaterial =
     this.copy(stroke = newStroke)
 
-  def withStrokeWidth(newWidth: Int): ShapeMaterial =
+  def withStrokeWidth(newWidth: Int): CircleMaterial =
     this.copy(strokeWidth = newWidth)
 
   val hash: String =
@@ -30,9 +30,9 @@ final case class ShapeMaterial(fill: RGBA, stroke: RGBA, strokeWidth: Int) exten
       )
     )
 }
-object ShapeMaterial {
+object CircleMaterial {
 
-  def apply(fill: RGBA): ShapeMaterial =
-    ShapeMaterial(fill, RGBA.Zero, 0)
+  def apply(fill: RGBA): CircleMaterial =
+    CircleMaterial(fill, RGBA.Zero, 0)
 
 }
