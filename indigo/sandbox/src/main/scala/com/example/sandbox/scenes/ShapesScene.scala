@@ -36,40 +36,30 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
 
   def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] = {
 
-    val width1: Int =
-      Signal.SmoothPulse.map(d => (10 * d).toInt).at(context.running)
-    val width2: Int =
+    val circleBorder: Int =
       Signal.SmoothPulse.map(d => 2 + (10 * d).toInt).affectTime(0.5).at(context.running)
 
-    val pos: Point =
+    val circlePosition: Point =
       Signal.Orbit(Point(200, 100), 10).map(_.toPoint).affectTime(0.25).at(context.running)
 
-    val w: Int =
-      Signal.SmoothPulse.map(d => 20 + (80 * d).toInt).affectTime(0.25).at(context.running)
-    val h: Int =
-      Signal.SmoothPulse.map(d => 20 + (80 * d).toInt).affectTime(0.25).at(context.running)
+    val lineThickness: Int =
+      Signal.SmoothPulse.map(d => (10 * d).toInt).at(context.running)
 
-    val size: Point =
-      Point(w, h)
-
-    val aspect: Vector2 =
-      if (size.x > size.y)
-        Vector2(1.0, size.y.toDouble / size.x.toDouble)
-      else
-        Vector2(size.x.toDouble / size.y.toDouble, 1.0)
+    val squareSize: Point =
+      Point(Signal.SmoothPulse.map(d => 20 + (80 * d).toInt).affectTime(0.25).at(context.running))
 
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          Circle(pos, 20, CircleMaterial(RGBA.Red, RGBA.White, width2)),
-          Line(StrokeMaterial(RGBA.Cyan, width1, Point(30, 80), Point(100, 20))),
+          Circle(circlePosition, 20, Depth(1), RGBA.Red, RGBA.White, circleBorder),
+          Line(Point(30, 80), Point(100, 20), Depth(1), RGBA.Cyan, lineThickness),
           // Line(StrokeMaterial(RGBA.Yellow, width2, Point(20, 60), Point(90, 10))),
           // Circle(Point(100, 50), 20, CircleMaterial(RGBA.Green, RGBA.White.withAlpha(0.5), 4)),
           // Circle(Point(50, 75), 10, CircleMaterial(RGBA.Blue, RGBA.Yellow, 10)),
           // Circle(Point(100), 15, CircleMaterial(RGBA.Magenta, RGBA.White, 2)),
           // Circle(Point(30, 75), 15, CircleMaterial(RGBA.Cyan, RGBA.White, 0)),
           // Circle(Point(150), 50, CircleMaterial(RGBA.Yellow, RGBA.Black, 7)),
-          Oblong(Rectangle(Point(100, 100), size), OblongMaterial(RGBA.White, RGBA.Black.withAlpha(0.75), 10, aspect))
+          Oblong(Rectangle(Point(100, 100), squareSize), Depth(1), RGBA.White, RGBA.Black.withAlpha(0.75), 10)
         )
     )
   }
@@ -77,20 +67,22 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
 }
 
 final case class Foo() extends SceneEntity {
-  val bounds: Rectangle = Rectangle(10, 10, 100, 100)
-  val material: Material = GLSLShader(
-    ShapeShaders.circleId,
-    List(
-      Uniform("ALPHA")        -> float(0.75),
-      Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 0.0)
-    )
-  )
   val depth: Depth      = Depth(1)
   val flip: Flip        = Flip.default
+  val bounds: Rectangle = Rectangle(10, 10, 100, 100)
   val position: Point   = bounds.position
   val ref: Point        = Point.zero
   val rotation: Radians = Radians.zero
   val scale: Vector2    = Vector2.one
+
+  def toGLSLShader: GLSLShader =
+    GLSLShader(
+      ShapeShaders.circleId,
+      List(
+        Uniform("ALPHA")        -> float(0.75),
+        Uniform("BORDER_COLOR") -> vec3(1.0, 1.0, 0.0)
+      )
+    )
 }
 
 object ShapeShaders {
