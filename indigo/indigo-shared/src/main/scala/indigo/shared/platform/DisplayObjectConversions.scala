@@ -258,18 +258,18 @@ final class DisplayObjectConversions(
     }
 
   def sceneEntityToDisplayObject(leaf: SceneEntity, assetMapping: AssetMapping): DisplayObject = {
-    val material: GLSLShader = leaf.material.toGLSLShader
+    val shader: GLSLShader = leaf.toGLSLShader
 
-    val channelOffset1 = optionalAssetToOffset(assetMapping, material.channel1)
-    val channelOffset2 = optionalAssetToOffset(assetMapping, material.channel2)
-    val channelOffset3 = optionalAssetToOffset(assetMapping, material.channel3)
+    val channelOffset1 = optionalAssetToOffset(assetMapping, shader.channel1)
+    val channelOffset2 = optionalAssetToOffset(assetMapping, shader.channel2)
+    val channelOffset3 = optionalAssetToOffset(assetMapping, shader.channel3)
 
     val frameInfo: SpriteSheetFrameCoordinateOffsets =
-      material.channel1 match {
+      shader.channel1 match {
         case None =>
           SpriteSheetFrame.defaultOffset
         case Some(assetName) =>
-          QuickCache(s"${leaf.bounds.hash}_${leaf.material.hash}") {
+          QuickCache(s"${leaf.bounds.hash}_${shader.hash}") {
             SpriteSheetFrame.calculateFrameOffset(
               atlasSize = lookupAtlasSize(assetMapping, assetName.value),
               frameCrop = leaf.bounds,
@@ -278,10 +278,10 @@ final class DisplayObjectConversions(
           }
       }
 
-    val shaderId          = material.shaderId
-    val shaderUniformHash = material.uniformHash
+    val shaderId          = shader.shaderId
+    val shaderUniformHash = shader.uniformHash
     val shaderUBO = QuickCache(shaderUniformHash) {
-      DisplayObjectConversions.packUBO(material.uniforms)
+      DisplayObjectConversions.packUBO(shader.uniforms)
     }
 
     DisplayObject(
@@ -289,7 +289,7 @@ final class DisplayObjectConversions(
       z = leaf.depth.zIndex.toDouble,
       width = leaf.bounds.size.x,
       height = leaf.bounds.size.y,
-      atlasName = material.channel0.map(assetName => lookupAtlasName(assetMapping, assetName.value)),
+      atlasName = shader.channel0.map(assetName => lookupAtlasName(assetMapping, assetName.value)),
       frame = frameInfo,
       channelOffset1 = frameInfo.offsetToCoords(channelOffset1),
       channelOffset2 = frameInfo.offsetToCoords(channelOffset2),
@@ -457,7 +457,7 @@ final class DisplayObjectConversions(
       val shaderId          = asCustom.shaderId
       val shaderUniformHash = asCustom.uniformHash
       val shaderUBO = QuickCache(shaderUniformHash) {
-      DisplayObjectConversions.packUBO(asCustom.uniforms)
+        DisplayObjectConversions.packUBO(asCustom.uniforms)
       }
 
       QuickCache(lineHash) {
@@ -580,7 +580,7 @@ object DisplayObjectConversions {
           // println(s"done, expanded: ${current.toList} to ${expandTo4(current).toList}")
           // println(s"result: ${(acc ++ expandTo4(current)).toList}")
           acc ++ expandTo4(current)
-        
+
         case us if current.length == 4 =>
           // println(s"current full, sub-result: ${(acc ++ current).toList}")
           rec(us, empty0, acc ++ current)
