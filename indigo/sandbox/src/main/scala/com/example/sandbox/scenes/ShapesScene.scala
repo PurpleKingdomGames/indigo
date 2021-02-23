@@ -36,15 +36,18 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
 
   def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] = {
 
-    // val width1: Int =
-    //   Signal.SmoothPulse.map(d => (10 * d).toInt).at(context.running)
-    // val width2: Int =
-    //   Signal.SmoothPulse.map(d => (10 * d).toInt).affectTime(0.5).at(context.running)
+    val width1: Int =
+      Signal.SmoothPulse.map(d => (10 * d).toInt).at(context.running)
+    val width2: Int =
+      Signal.SmoothPulse.map(d => 2 + (10 * d).toInt).affectTime(0.5).at(context.running)
+
+    val pos: Point =
+      Signal.Orbit(Point(200, 100), 10).map(_.toPoint).affectTime(0.25).at(context.running)
 
     val w: Int =
-      Signal.SmoothPulse.map(d => (100 - (10 + (90 * d).toInt))).affectTime(0.25).at(context.running)
+      Signal.SmoothPulse.map(d => 20 + (80 * d).toInt).affectTime(0.25).at(context.running)
     val h: Int =
-      Signal.SmoothPulse.map(d => 10 + (90 * d).toInt).affectTime(0.25).at(context.running)
+      Signal.SmoothPulse.map(d => 20 + (80 * d).toInt).affectTime(0.25).at(context.running)
 
     val size: Point =
       Point(w, h)
@@ -58,8 +61,8 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          // Circle(Point(50, 50), 20, CircleMaterial(RGBA.Red, RGBA.White, 3)),
-          // Line(StrokeMaterial(RGBA.Cyan, width1, Point(30, 10), Point(100, 50))),
+          Circle(pos, 20, CircleMaterial(RGBA.Red, RGBA.White, width2)),
+          Line(StrokeMaterial(RGBA.Cyan, width1, Point(30, 80), Point(100, 20))),
           // Line(StrokeMaterial(RGBA.Yellow, width2, Point(20, 60), Point(90, 10))),
           // Circle(Point(100, 50), 20, CircleMaterial(RGBA.Green, RGBA.White.withAlpha(0.5), 4)),
           // Circle(Point(50, 75), 10, CircleMaterial(RGBA.Blue, RGBA.Yellow, 10)),
