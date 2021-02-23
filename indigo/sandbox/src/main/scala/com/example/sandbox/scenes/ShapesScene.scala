@@ -66,7 +66,7 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
           // Circle(Point(100), 15, CircleMaterial(RGBA.Magenta, RGBA.White, 2)),
           // Circle(Point(30, 75), 15, CircleMaterial(RGBA.Cyan, RGBA.White, 0)),
           // Circle(Point(150), 50, CircleMaterial(RGBA.Yellow, RGBA.Black, 7)),
-          Oblong(Rectangle(Point(100, 100), size), OblongMaterial(RGBA.White, RGBA.Black.withAlpha(0.75), 10, aspect, 0))
+          Oblong(Rectangle(Point(100, 100), size), OblongMaterial(RGBA.White, RGBA.Black.withAlpha(0.75), 10, aspect))
         )
     )
   }

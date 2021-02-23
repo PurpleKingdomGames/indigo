@@ -7,7 +7,7 @@ import indigo.shared.shader.ShaderPrimitive._
 import indigo.shared.materials.Material
 import indigo.shared.datatypes.Vector2
 
-final case class OblongMaterial(fill: RGBA, stroke: RGBA, strokeWidth: Int, aspect: Vector2, cornerRadius: Int) extends Material {
+final case class OblongMaterial(fill: RGBA, stroke: RGBA, strokeWidth: Int, aspect: Vector2) extends Material {
 
   def withFillColor(newFill: RGBA): OblongMaterial =
     this.copy(fill = newFill)
@@ -21,9 +21,6 @@ final case class OblongMaterial(fill: RGBA, stroke: RGBA, strokeWidth: Int, aspe
   def withDimensions(newAspect: Vector2): OblongMaterial =
     this.copy(aspect = newAspect)
 
-  def withCornerRadius(newCornerRadius: Int): OblongMaterial =
-    this.copy(cornerRadius = newCornerRadius)
-
   val hash: String =
     "shape" + fill.hash + stroke.hash + strokeWidth.toString()
 
@@ -32,7 +29,6 @@ final case class OblongMaterial(fill: RGBA, stroke: RGBA, strokeWidth: Int, aspe
       ShapeShaders.oblongId,
       List(
         Uniform("ASPECT_RATIO")  -> vec2(aspect.x, aspect.y),
-        Uniform("CORNER_RADIUS") -> float(cornerRadius.toDouble),
         Uniform("STROKE_WIDTH")  -> float(strokeWidth.toDouble),
         Uniform("STROKE_COLOR")  -> vec4(stroke.r, stroke.g, stroke.b, stroke.a),
         Uniform("FILL_COLOR")    -> vec4(fill.r, fill.g, fill.b, fill.a)

@@ -11,7 +11,6 @@ vec2 SIZE;
 //<indigo-fragment>
 layout (std140) uniform CustomData {
   vec2 ASPECT_RATIO;
-  float CORNER_RADIUS;
   float STROKE_WIDTH;
   vec4 STROKE_COLOR;
   vec4 FILL_COLOR;
