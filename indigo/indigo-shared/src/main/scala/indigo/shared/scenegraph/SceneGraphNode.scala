@@ -11,8 +11,6 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
 
 import indigo.shared.animation.AnimationAction
 import indigo.shared.BoundaryLocator
-import indigo.shared.materials.Material
-// import indigo.shared.materials.Material
 
 /**
   * The parent type of anything that can affect the visual representation of the game.
@@ -36,7 +34,7 @@ object SceneGraphNode {
   */
 trait SceneEntity extends SceneGraphNode {
   def bounds: Rectangle
-  def material: Material
+  def toGLSLShader: GLSLShader
 }
 
 final case class Transformer(node: SceneGraphNode, transform: CheapMatrix4) extends SceneGraphNode {
