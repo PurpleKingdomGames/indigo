@@ -9,7 +9,6 @@ import indigo.shared.scenegraph.Renderable
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.datatypes.Point
 import indigo.shared.collections.NonEmptyList
-import indigo.shared.scenegraph.Shape
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class TiledMapTests extends munit.FunSuite {
@@ -89,9 +88,6 @@ class TiledMapTests extends munit.FunSuite {
         assertEquals(graphics(0).position, Point(32, 64))
         assertEquals(graphics(1).position, Point(64, 64))
         assertEquals(graphics(2).position, Point(64, 96))
-
-      case _: Shape =>
-        throw new Exception("failed (shape)")
 
       case _: Renderable =>
         throw new Exception("failed (renderable)")
