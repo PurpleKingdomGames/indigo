@@ -11,7 +11,6 @@ import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
 import indigo.shared.platform.AssetMapping
 import indigo.shared.scenegraph.{Graphic, Sprite, Text, TextLine}
-import indigo.shared.scenegraph.Shape
 
 import indigo.shared.scenegraph.SceneGraphNode
 import indigo.shared.scenegraph.Group
@@ -168,9 +167,6 @@ final class DisplayObjectConversions(
       case s: SceneEntity =>
         List(sceneEntityToDisplayObject(s, assetMapping))
 
-      case s: Shape =>
-        List(shapeToDisplayObject(s, assetMapping))
-
       case c: Clone =>
         cloneBlankDisplayObjects.get(c.id.value) match {
           case None =>
@@ -290,50 +286,6 @@ final class DisplayObjectConversions(
       width = leaf.bounds.size.x,
       height = leaf.bounds.size.y,
       atlasName = shader.channel0.map(assetName => lookupAtlasName(assetMapping, assetName.value)),
-      frame = frameInfo,
-      channelOffset1 = frameInfo.offsetToCoords(channelOffset1),
-      channelOffset2 = frameInfo.offsetToCoords(channelOffset2),
-      channelOffset3 = frameInfo.offsetToCoords(channelOffset3),
-      isLit = 0.0f,
-      shaderId = shaderId,
-      shaderUniformHash = shaderUniformHash,
-      shaderUBO = shaderUBO
-    )
-  }
-
-  def shapeToDisplayObject(leaf: Shape, assetMapping: AssetMapping): DisplayObject = {
-    val material: GLSLShader = leaf.material
-
-    val channelOffset1 = optionalAssetToOffset(assetMapping, material.channel1)
-    val channelOffset2 = optionalAssetToOffset(assetMapping, material.channel2)
-    val channelOffset3 = optionalAssetToOffset(assetMapping, material.channel3)
-
-    val frameInfo: SpriteSheetFrameCoordinateOffsets =
-      material.channel1 match {
-        case None =>
-          SpriteSheetFrame.defaultOffset
-        case Some(assetName) =>
-          QuickCache(s"${leaf.bounds.hash}_${leaf.material.hash}") {
-            SpriteSheetFrame.calculateFrameOffset(
-              atlasSize = lookupAtlasSize(assetMapping, assetName.value),
-              frameCrop = leaf.bounds,
-              textureOffset = lookupTextureOffset(assetMapping, assetName.value)
-            )
-          }
-      }
-
-    val shaderId          = material.shaderId
-    val shaderUniformHash = material.uniformHash
-    val shaderUBO = QuickCache(shaderUniformHash) {
-      DisplayObjectConversions.packUBO(material.uniforms)
-    }
-
-    DisplayObject(
-      transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)),
-      z = leaf.depth.zIndex.toDouble,
-      width = leaf.bounds.size.x,
-      height = leaf.bounds.size.y,
-      atlasName = material.channel0.map(assetName => lookupAtlasName(assetMapping, assetName.value)),
       frame = frameInfo,
       channelOffset1 = frameInfo.offsetToCoords(channelOffset1),
       channelOffset2 = frameInfo.offsetToCoords(channelOffset2),
