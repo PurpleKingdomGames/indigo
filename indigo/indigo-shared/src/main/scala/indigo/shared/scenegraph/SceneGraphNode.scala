@@ -196,75 +196,6 @@ object Group {
 }
 
 /**
-  * A CloneId is used to connect a Clone instance to a CloneBlank.
-  *
-  * @param value
-  */
-final case class CloneId(value: String) extends AnyVal
-
-/**
-  * Used to distingush between cloneable and non-clonable scene graph nodes.
-  */
-trait Cloneable
-
-/**
-  * Used as the blueprint for any clones that want to copy it.
-  *
-  * @param id
-  * @param cloneable
-  */
-final case class CloneBlank(id: CloneId, cloneable: Cloneable) {
-  def withCloneId(newCloneId: CloneId): CloneBlank =
-    this.copy(id = newCloneId)
-
-  def withCloneable(newCloneable: Cloneable): CloneBlank =
-    this.copy(cloneable = newCloneable)
-}
-
-/**
-  * Represents the standard allowable transformations of a clone.
-  *
-  * @param position
-  * @param rotation
-  * @param scale
-  * @param flipHorizontal
-  * @param flipVertical
-  */
-final case class CloneTransformData(position: Point, rotation: Radians, scale: Vector2, flipHorizontal: Boolean, flipVertical: Boolean) {
-
-  def |+|(other: CloneTransformData): CloneTransformData =
-    CloneTransformData(
-      position = position + other.position,
-      rotation = rotation + other.rotation,
-      scale = scale * other.scale,
-      flipHorizontal = if (flipHorizontal) !other.flipHorizontal else other.flipHorizontal,
-      flipVertical = if (flipVertical) !other.flipVertical else other.flipVertical
-    )
-
-  def withPosition(newPosition: Point): CloneTransformData =
-    this.copy(position = newPosition)
-
-  def withRotation(newRotation: Radians): CloneTransformData =
-    this.copy(rotation = newRotation)
-
-  def withScale(newScale: Vector2): CloneTransformData =
-    this.copy(scale = newScale)
-
-  def withHorizontalFlip(isFlipped: Boolean): CloneTransformData =
-    this.copy(flipHorizontal = isFlipped)
-
-  def withVerticalFlip(isFlipped: Boolean): CloneTransformData =
-    this.copy(flipVertical = isFlipped)
-}
-object CloneTransformData {
-  def startAt(position: Point): CloneTransformData =
-    CloneTransformData(position, Radians.zero, Vector2.one, false, false)
-
-  val identity: CloneTransformData =
-    CloneTransformData(Point.zero, Radians.zero, Vector2.one, false, false)
-}
-
-/**
   * A single clone instance of a cloneblank
   *
   * @param id
@@ -391,14 +322,6 @@ sealed trait Renderable extends SceneGraphNodePrimitive {
 
   def withMaterial(newMaterial: StandardMaterial): Renderable
   def modifyMaterial(alter: StandardMaterial => StandardMaterial): Renderable
-}
-
-/**
-  * Tags nodes that can handle events.
-  */
-trait EventHandler {
-  def calculatedBounds(locator: BoundaryLocator): Rectangle
-  def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
 }
 
 /**
@@ -848,19 +771,4 @@ object Text {
       material = material
     )
 
-}
-
-/**
-  * Represents a single line of text.
-  *
-  * @param text
-  * @param lineBounds
-  */
-final case class TextLine(text: String, lineBounds: Rectangle) {
-  def moveTo(x: Int, y: Int): TextLine =
-    moveTo(Point(x, y))
-  def moveTo(newPosition: Point): TextLine =
-    this.copy(lineBounds = lineBounds.moveTo(newPosition))
-
-  def hash: String = text + lineBounds.hash
 }
