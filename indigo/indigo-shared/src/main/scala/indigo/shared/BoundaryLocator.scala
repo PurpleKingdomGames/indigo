@@ -59,7 +59,7 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
     }
 
   def groupBounds(group: Group): Rectangle =
-    group.bounds(this)
+    group.calculatedBounds(this)
 
   def graphicBounds(graphic: Graphic): Rectangle =
     graphic.lazyBounds

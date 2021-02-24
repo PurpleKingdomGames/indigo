@@ -357,8 +357,8 @@ final class DisplayObjectConversions(
         )
       }
 
-    val width: Int  = leaf.bounds(boundaryLocator).size.x
-    val height: Int = leaf.bounds(boundaryLocator).size.y
+    val width: Int  = leaf.calculatedBounds(boundaryLocator).size.x
+    val height: Int = leaf.calculatedBounds(boundaryLocator).size.y
 
     val shaderId          = asCustom.shaderId
     val shaderUniformHash = asCustom.uniformHash
