@@ -4,7 +4,7 @@ import scala.language.postfixOps
 lazy val indigoVersion = IndigoVersion.getVersion
 
 val dottyVersion    = "3.0.0-M3"
-val scala213Version = "2.13.4"
+val scala213Version = "2.13.5"
 
 lazy val scalaFixSettings: Seq[sbt.Def.Setting[_]] =
   Seq(

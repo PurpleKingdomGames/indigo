@@ -2,7 +2,7 @@ import scala.sys.process._
 import scala.language.postfixOps
 
 val dottyVersion    = "3.0.0-M3"
-val scala213Version = "2.13.4"
+val scala213Version = "2.13.5"
 
 lazy val commonSettings = Seq(
   version := "0.0.1",

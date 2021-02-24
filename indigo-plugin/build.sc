@@ -14,7 +14,7 @@ class IndigoPluginModule(val crossScalaVersion: String) extends CrossScalaModule
   def scalaVersion =
     crossScalaVersion match {
       case "2.12" => "2.12.10"
-      case "2.13" => "2.13.4"
+      case "2.13" => "2.13.5"
       // case _=> "3.0.0-M3"
     }
 

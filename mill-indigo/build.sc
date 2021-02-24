@@ -8,7 +8,7 @@ import coursier.maven.MavenRepository
 
 object `mill-indigo` extends ScalaModule with PublishModule {
 
-  def scalaVersion = "2.13.4"
+  def scalaVersion = "2.13.5"
 
   def millLibVersion = "0.9.4"
 
