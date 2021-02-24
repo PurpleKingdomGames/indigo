@@ -258,10 +258,10 @@ final case class CloneTransformData(position: Point, rotation: Radians, scale: V
 }
 object CloneTransformData {
   def startAt(position: Point): CloneTransformData =
-    CloneTransformData(position, Radians.zero, Vector2.one /*, 1f*/, false, false)
+    CloneTransformData(position, Radians.zero, Vector2.one, false, false)
 
   val identity: CloneTransformData =
-    CloneTransformData(Point.zero, Radians.zero, Vector2.one /*, 1f*/, false, false)
+    CloneTransformData(Point.zero, Radians.zero, Vector2.one, false, false)
 }
 
 /**
