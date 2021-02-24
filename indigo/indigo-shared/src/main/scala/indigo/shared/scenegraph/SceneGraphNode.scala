@@ -53,7 +53,7 @@ final case class Transformer(node: SceneGraphNode, transform: CheapMatrix4) exte
   * Represents nodes with a basic spacial presence.
   */
 sealed trait SceneGraphNodePrimitive extends SceneGraphNode {
-  def bounds(locator: BoundaryLocator): Rectangle
+  def calculatedBounds(locator: BoundaryLocator): Rectangle
 
   def withPosition(newPosition: Point): SceneGraphNodePrimitive
   def withRotation(newRotation: Radians): SceneGraphNodePrimitive
@@ -138,14 +138,14 @@ final case class Group(children: List[SceneGraphNodePrimitive], position: Point,
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Group =
     transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
 
-  def bounds(locator: BoundaryLocator): Rectangle =
+  def calculatedBounds(locator: BoundaryLocator): Rectangle =
     children match {
       case Nil =>
         Rectangle.zero
 
       case x :: xs =>
-        xs.foldLeft(x.bounds(locator)) { (acc, node) =>
-          Rectangle.expandToInclude(acc, node.bounds(locator))
+        xs.foldLeft(x.calculatedBounds(locator)) { (acc, node) =>
+          Rectangle.expandToInclude(acc, node.calculatedBounds(locator))
         }
     }
 
@@ -397,7 +397,7 @@ sealed trait Renderable extends SceneGraphNodePrimitive {
   * Tags nodes that can handle events.
   */
 trait EventHandler {
-  def bounds(locator: BoundaryLocator): Rectangle
+  def calculatedBounds(locator: BoundaryLocator): Rectangle
   def eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent]
 }
 
@@ -426,7 +426,7 @@ final case class Graphic(
 ) extends Renderable
     with Cloneable {
 
-  def bounds(locator: BoundaryLocator): Rectangle =
+  def calculatedBounds(locator: BoundaryLocator): Rectangle =
     Rectangle(position, crop.size)
 
   lazy val lazyBounds: Rectangle =
@@ -568,7 +568,7 @@ final case class Sprite(
   lazy val x: Int = position.x
   lazy val y: Int = position.y
 
-  def bounds(locator: BoundaryLocator): Rectangle =
+  def calculatedBounds(locator: BoundaryLocator): Rectangle =
     locator.findBounds(this)
 
   def withDepth(newDepth: Depth): Sprite =
@@ -736,7 +736,7 @@ final case class Text(
 ) extends Renderable
     with EventHandler {
 
-  def bounds(locator: BoundaryLocator): Rectangle =
+  def calculatedBounds(locator: BoundaryLocator): Rectangle =
     locator.findBounds(this)
 
   lazy val x: Int = position.x
