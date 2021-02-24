@@ -227,18 +227,16 @@ final case class CloneBlank(id: CloneId, cloneable: Cloneable) {
   * @param position
   * @param rotation
   * @param scale
-  * @param alpha
   * @param flipHorizontal
   * @param flipVertical
   */
-final case class CloneTransformData(position: Point, rotation: Radians, scale: Vector2 /*, alpha: Double*/, flipHorizontal: Boolean, flipVertical: Boolean) {
+final case class CloneTransformData(position: Point, rotation: Radians, scale: Vector2, flipHorizontal: Boolean, flipVertical: Boolean) {
 
   def |+|(other: CloneTransformData): CloneTransformData =
     CloneTransformData(
       position = position + other.position,
       rotation = rotation + other.rotation,
       scale = scale * other.scale,
-      // alpha = alpha * other.alpha,
       flipHorizontal = if (flipHorizontal) !other.flipHorizontal else other.flipHorizontal,
       flipVertical = if (flipVertical) !other.flipVertical else other.flipVertical
     )
@@ -251,9 +249,6 @@ final case class CloneTransformData(position: Point, rotation: Radians, scale: V
 
   def withScale(newScale: Vector2): CloneTransformData =
     this.copy(scale = newScale)
-
-  // def withAlpha(newAlpha: Double): CloneTransformData =
-  //   this.copy(alpha = newAlpha)
 
   def withHorizontalFlip(isFlipped: Boolean): CloneTransformData =
     this.copy(flipHorizontal = isFlipped)
@@ -281,7 +276,6 @@ final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
   lazy val y: Int            = transform.position.y
   lazy val rotation: Radians = transform.rotation
   lazy val scale: Vector2    = transform.scale
-  // lazy val alpha: Double           = transform.alpha
   lazy val flipHorizontal: Boolean = transform.flipHorizontal
   lazy val flipVertical: Boolean   = transform.flipVertical
 
@@ -295,8 +289,8 @@ final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
   def withDepth(newDepth: Depth): Clone =
     this.copy(depth = newDepth)
 
-  def withTransforms(newPosition: Point, newRotation: Radians, newScale: Vector2 /*, alpha: Double*/, flipHorizontal: Boolean, flipVertical: Boolean): Clone =
-    this.copy(transform = CloneTransformData(newPosition, newRotation, newScale /*, alpha*/, flipHorizontal, flipVertical))
+  def withTransforms(newPosition: Point, newRotation: Radians, newScale: Vector2, flipHorizontal: Boolean, flipVertical: Boolean): Clone =
+    this.copy(transform = CloneTransformData(newPosition, newRotation, newScale, flipHorizontal, flipVertical))
 
   def withPosition(newPosition: Point): Clone =
     this.copy(transform = transform.withPosition(newPosition))
@@ -335,7 +329,6 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
   lazy val y: Int            = transform.position.y
   lazy val rotation: Radians = transform.rotation
   lazy val scale: Vector2    = transform.scale
-  // lazy val alpha: Double           = transform.alpha
   lazy val flipHorizontal: Boolean = transform.flipHorizontal
   lazy val flipVertical: Boolean   = transform.flipVertical
 
@@ -349,8 +342,8 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
   def withDepth(newDepth: Depth): CloneBatch =
     this.copy(depth = newDepth)
 
-  def withTransforms(newPosition: Point, newRotation: Radians, newScale: Vector2 /*, alpha: Double*/, flipHorizontal: Boolean, flipVertical: Boolean): CloneBatch =
-    this.copy(transform = CloneTransformData(newPosition, newRotation, newScale /*, alpha*/, flipHorizontal, flipVertical))
+  def withTransforms(newPosition: Point, newRotation: Radians, newScale: Vector2, flipHorizontal: Boolean, flipVertical: Boolean): CloneBatch =
+    this.copy(transform = CloneTransformData(newPosition, newRotation, newScale, flipHorizontal, flipVertical))
 
   def withPosition(newPosition: Point): CloneBatch =
     this.copy(transform = transform.withPosition(newPosition))
@@ -419,13 +412,11 @@ trait EventHandler {
   * @param ref
   * @param flip
   * @param crop
-  // * @param effects
   * @param material
   */
 final case class Graphic(
     material: StandardMaterial,
     crop: Rectangle,
-    // effects: Effects,
     position: Point,
     rotation: Radians,
     scale: Vector2,
@@ -485,27 +476,6 @@ final case class Graphic(
   def withDepth(newDepth: Depth): Graphic =
     this.copy(depth = newDepth)
 
-  // def withAlpha(newAlpha: Double): Graphic =
-  //   this.copy(effects = effects.withAlpha(newAlpha))
-
-  // def withTint(newTint: RGBA): Graphic =
-  //   this.copy(effects = effects.withTint(newTint))
-
-  // def withTint(red: Double, green: Double, blue: Double): Graphic =
-  //   this.copy(effects = effects.withTint(RGBA(red, green, blue, 1)))
-
-  // def withTint(red: Double, green: Double, blue: Double, amount: Double): Graphic =
-  //   this.copy(effects = effects.withTint(RGBA(red, green, blue, amount)))
-
-  // def withOverlay(newOverlay: Overlay): Graphic =
-  //   this.copy(effects = effects.withOverlay(newOverlay))
-
-  // def withBorder(newBorder: Border): Graphic =
-  //   this.copy(effects = effects.withBorder(newBorder))
-
-  // def withGlow(newGlow: Glow): Graphic =
-  //   this.copy(effects = effects.withGlow(newGlow))
-
   def flipHorizontal(isFlipped: Boolean): Graphic =
     this.copy(flip = flip.withHorizontalFlip(isFlipped))
   def flipVertical(isFlipped: Boolean): Graphic =
@@ -523,8 +493,6 @@ final case class Graphic(
   def withCrop(x: Int, y: Int, width: Int, height: Int): Graphic =
     withCrop(Rectangle(x, y, width, height))
 
-  // def withEffects(newEffects: Effects): Graphic =
-  //   this.copy(effects = newEffects)
 }
 
 object Graphic {
@@ -538,7 +506,6 @@ object Graphic {
       ref = Point.zero,
       flip = Flip.default,
       crop = Rectangle(0, 0, width, height),
-      // effects = Effects.default,
       material = material
     )
 
@@ -551,7 +518,6 @@ object Graphic {
       ref = Point.zero,
       flip = Flip.default,
       crop = bounds,
-      // effects = Effects.default,
       material = material
     )
 
@@ -564,7 +530,6 @@ object Graphic {
       ref = Point.zero,
       flip = Flip.default,
       crop = Rectangle(0, 0, width, height),
-      // effects = Effects.default,
       material = material
     )
 }
@@ -590,7 +555,6 @@ final case class Sprite(
     animationKey: AnimationKey,
     animationActions: List[AnimationAction],
     eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
-    // effects: Effects,
     position: Point,
     rotation: Radians,
     scale: Vector2,
@@ -651,27 +615,6 @@ final case class Sprite(
   def withBindingKey(newBindingKey: BindingKey): Sprite =
     this.copy(bindingKey = newBindingKey)
 
-  // def withAlpha(newAlpha: Double): Sprite =
-  //   this.copy(effects = effects.withAlpha(newAlpha))
-
-  // def withTint(newTint: RGBA): Sprite =
-  //   this.copy(effects = effects.withTint(newTint))
-
-  // def withTint(red: Double, green: Double, blue: Double): Sprite =
-  //   withTint(RGBA(red, green, blue, 1))
-
-  // def withTint(red: Double, green: Double, blue: Double, amount: Double): Sprite =
-  //   withTint(RGBA(red, green, blue, amount))
-
-  // def withOverlay(newOverlay: Overlay): Sprite =
-  //   this.copy(effects = effects.withOverlay(newOverlay))
-
-  // def withBorder(newBorder: Border): Sprite =
-  //   this.copy(effects = effects.withBorder(newBorder))
-
-  // def withGlow(newGlow: Glow): Sprite =
-  //   this.copy(effects = effects.withGlow(newGlow))
-
   def flipHorizontal(isFlipped: Boolean): Sprite =
     this.copy(flip = flip.withHorizontalFlip(isFlipped))
   def flipVertical(isFlipped: Boolean): Sprite =
@@ -705,9 +648,6 @@ final case class Sprite(
   def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Sprite =
     this.copy(eventHandler = e)
 
-  // def withEffects(newEffects: Effects): Sprite =
-  //   this.copy(effects = newEffects)
-
 }
 
 object Sprite {
@@ -721,7 +661,6 @@ object Sprite {
       flip = Flip.default,
       bindingKey = bindingKey,
       animationKey = animationKey,
-      // effects = Effects.default,
       eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
       animationActions = Nil,
       material = material
@@ -735,7 +674,6 @@ object Sprite {
       scale: Vector2,
       animationKey: AnimationKey,
       ref: Point,
-      // effects: Effects,
       eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
       material: StandardMaterial
   ): Sprite =
@@ -748,7 +686,6 @@ object Sprite {
       flip = Flip.default,
       bindingKey = bindingKey,
       animationKey = animationKey,
-      // effects = effects,
       eventHandler = eventHandler,
       animationActions = Nil,
       material = material
@@ -764,7 +701,6 @@ object Sprite {
       flip = Flip.default,
       bindingKey = bindingKey,
       animationKey = animationKey,
-      // effects = Effects.default,
       eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
       animationActions = Nil,
       material = material
@@ -790,7 +726,6 @@ final case class Text(
     alignment: TextAlignment,
     fontKey: FontKey,
     material: StandardMaterial,
-    // effects: Effects,
     eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
     position: Point,
     rotation: Radians,
@@ -853,27 +788,6 @@ final case class Text(
   def withRef(x: Int, y: Int): Text =
     withRef(Point(x, y))
 
-  // def withAlpha(newAlpha: Double): Text =
-  //   this.copy(effects = effects.withAlpha(newAlpha))
-
-  // def withTint(newTint: RGBA): Text =
-  //   this.copy(effects = effects.withTint(newTint))
-
-  // def withTint(red: Double, green: Double, blue: Double): Text =
-  //   this.copy(effects = effects.withTint(RGBA(red, green, blue, 1)))
-
-  // def withTint(red: Double, green: Double, blue: Double, amount: Double): Text =
-  //   this.copy(effects = effects.withTint(RGBA(red, green, blue, amount)))
-
-  // def withOverlay(newOverlay: Overlay): Text =
-  //   this.copy(effects = effects.withOverlay(newOverlay))
-
-  // def withBorder(newBorder: Border): Text =
-  //   this.copy(effects = effects.withBorder(newBorder))
-
-  // def withGlow(newGlow: Glow): Text =
-  //   this.copy(effects = effects.withGlow(newGlow))
-
   def flipHorizontal(isFlipped: Boolean): Text =
     this.copy(flip = flip.withHorizontalFlip(isFlipped))
   def flipVertical(isFlipped: Boolean): Text =
@@ -900,9 +814,6 @@ final case class Text(
   def onEvent(e: ((Rectangle, GlobalEvent)) => List[GlobalEvent]): Text =
     this.copy(eventHandler = e)
 
-  // def withEffects(newEffects: Effects): Text =
-  //   this.copy(effects = newEffects)
-
 }
 
 object Text {
@@ -918,7 +829,6 @@ object Text {
       text = text,
       alignment = TextAlignment.Left,
       fontKey = fontKey,
-      // effects = Effects.default,
       eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
       material = material
     )
@@ -934,7 +844,6 @@ object Text {
       text = text,
       alignment = TextAlignment.Left,
       fontKey = fontKey,
-      // effects = Effects.default,
       eventHandler = (_: (Rectangle, GlobalEvent)) => Nil,
       material = material
     )
