@@ -9,7 +9,7 @@ val scala213Version = "2.13.4"
 lazy val scalaFixSettings: Seq[sbt.Def.Setting[_]] =
   Seq(
     scalacOptions ++= (
-      if (isDotty.value) Nil else Seq(s"-P:semanticdb:targetroot:${baseDirectory.value}/target/.semanticdb", "-Yrangepos")
+      if (isDotty.value) Nil else Seq(s"-P:semanticdb:targetroot:${baseDirectory.value}/target/.semanticdb")
     ),
     scalafixOnCompile := (if (isDotty.value) false else true)
   )
@@ -17,6 +17,8 @@ lazy val scalaFixSettings: Seq[sbt.Def.Setting[_]] =
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version := indigoVersion,
   scalaVersion := dottyVersion,
+  semanticdbEnabled := !isDotty.value,
+  semanticdbVersion := scalafixSemanticdb.revision, // use Scalafix compatible version
   crossScalaVersions := Seq(dottyVersion, scala213Version),
   organization := "io.indigoengine",
   libraryDependencies ++= Seq(
@@ -24,8 +26,7 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   ),
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
-  crossScalaVersions := Seq(dottyVersion, scala213Version),
-  libraryDependencies ++= (if (isDotty.value) Nil else Seq(compilerPlugin(scalafixSemanticdb)))
+  crossScalaVersions := Seq(dottyVersion, scala213Version)
 ) ++ scalaFixSettings
 
 lazy val publishSettings = {
