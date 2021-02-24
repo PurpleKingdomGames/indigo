@@ -32,7 +32,7 @@ final case class InputField(
 ) {
 
   def bounds(boundaryLocator: BoundaryLocator): Rectangle =
-    assets.text.withText(text).moveTo(position).bounds(boundaryLocator)
+    assets.text.withText(text).moveTo(position).calculatedBounds(boundaryLocator)
 
   def withText(newText: String): InputField =
     this.copy(

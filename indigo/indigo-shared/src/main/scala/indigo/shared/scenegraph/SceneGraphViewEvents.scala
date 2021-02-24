@@ -39,7 +39,7 @@ object SceneGraphViewEvents {
           collectViewEvents(boundaryLocator, g.children, inputEvents, sendEvent)
 
         case t: EventHandler =>
-          applyInputEvents(t, t.bounds(boundaryLocator), inputEvents, sendEvent)
+          applyInputEvents(t, t.calculatedBounds(boundaryLocator), inputEvents, sendEvent)
 
         case _ =>
           ()
