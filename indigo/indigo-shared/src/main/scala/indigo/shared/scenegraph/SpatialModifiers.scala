@@ -30,11 +30,9 @@ trait SpatialModifiers[T <: SceneNode] extends BasicSpatialModifiers[T] {
   def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): T
   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): T
 
-  def flipHorizontal(isFlipped: Boolean): T
-  def flipVertical(isFlipped: Boolean): T
-}
-
-trait SpatialModifersWithRef[T <: SceneNode] extends SpatialModifiers[T] {
   def withRef(newRef: Point): T
   def withRef(x: Int, y: Int): T
+
+  def flipHorizontal(isFlipped: Boolean): T
+  def flipVertical(isFlipped: Boolean): T
 }

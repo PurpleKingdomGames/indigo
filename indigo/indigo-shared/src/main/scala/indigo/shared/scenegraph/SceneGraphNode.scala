@@ -199,7 +199,7 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
   * Used to group elements to allow them to be manipulated as a collection.
   */
 final case class Group(children: List[RenderNode], position: Point, rotation: Radians, scale: Vector2, depth: Depth, ref: Point, flip: Flip)
-extends CompositeNode with SpatialModifersWithRef[Group] {
+extends CompositeNode with SpatialModifiers[Group] {
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
@@ -349,7 +349,7 @@ final case class Sprite(
 ) extends CompositeNode
     with EventHandler
     with Cloneable
-    with SpatialModifersWithRef[Sprite] {
+    with SpatialModifiers[Sprite] {
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
@@ -510,7 +510,7 @@ final case class Text(
     flip: Flip
 ) extends CompositeNode
     with EventHandler
-    with SpatialModifersWithRef[Text] {
+    with SpatialModifiers[Text] {
 
   def calculatedBounds(locator: BoundaryLocator): Rectangle =
     locator.findBounds(this)

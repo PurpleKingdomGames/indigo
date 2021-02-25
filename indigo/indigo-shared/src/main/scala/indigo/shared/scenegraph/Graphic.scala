@@ -33,7 +33,7 @@ final case class Graphic(
     flip: Flip
 ) extends EntityNode
     with Cloneable
-    with SpatialModifersWithRef[Graphic] {
+    with SpatialModifiers[Graphic] {
 
   def bounds: Rectangle =
     Rectangle(position, crop.size)
