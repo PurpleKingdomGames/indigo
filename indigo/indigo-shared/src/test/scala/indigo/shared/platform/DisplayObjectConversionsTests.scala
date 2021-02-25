@@ -21,6 +21,7 @@ import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.datatypes.Radians
 import indigo.shared.shader.Uniform
+import indigo.shared.scenegraph.RenderNode
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
 class DisplayObjectConversionsTests extends munit.FunSuite {
@@ -109,7 +110,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
   test("create a CheapMatrix4 from a SceneNode.translation") {
 
-    val node: SceneNode =
+    val node: RenderNode =
       Graphic(100, 100, StandardMaterial.Bitmap(AssetName("test")))
         .moveTo(10, 20)
 
@@ -129,7 +130,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
   test("create a CheapMatrix4 from a SceneNode.translation with ref") {
 
-    val node: SceneNode =
+    val node: RenderNode =
       Graphic(100, 100, StandardMaterial.Bitmap(AssetName("test")))
         .moveTo(10, 20)
         .withRef(50, 50)
@@ -150,7 +151,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
   test("create a CheapMatrix4 from a SceneNode.scale") {
 
-    val node: SceneNode =
+    val node: RenderNode =
       Graphic(100, 100, StandardMaterial.Bitmap(AssetName("test")))
         .scaleBy(2, 10)
 
@@ -170,7 +171,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
 
   test("create a CheapMatrix4 from a SceneNode.rotation") {
 
-    val node: SceneNode =
+    val node: RenderNode =
       Graphic(100, 100, StandardMaterial.Bitmap(AssetName("test")))
         .rotateTo(Radians.TAUby4)
 
@@ -196,7 +197,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val width: Int  = 100
     val height: Int = 100
 
-    val node: SceneNode =
+    val node: RenderNode =
       Graphic(width, height, StandardMaterial.Bitmap(AssetName("test")))
         .moveTo(10, 20)
         .flipHorizontal(true)

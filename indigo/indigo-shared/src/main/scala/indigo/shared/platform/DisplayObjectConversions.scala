@@ -13,8 +13,7 @@ import indigo.shared.platform.AssetMapping
 import indigo.shared.scenegraph.{Graphic, Sprite, Text, TextLine}
 
 import indigo.shared.scenegraph.SceneNode
-import indigo.shared.scenegraph.SpacialProperties
-import indigo.shared.scenegraph.RefProperty
+import indigo.shared.scenegraph.RenderNode
 import indigo.shared.scenegraph.Group
 import indigo.shared.scenegraph.Transformer
 import indigo.shared.QuickCache
@@ -35,8 +34,6 @@ import indigo.shared.assets.AssetName
 import indigo.shared.scenegraph.EntityNode
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.ShaderPrimitive
-import indigo.shared.scenegraph.DependentNode
-import indigo.shared.scenegraph.CompositeNode
 
 final class DisplayObjectConversions(
     boundaryLocator: BoundaryLocator,
@@ -246,12 +243,6 @@ final class DisplayObjectConversions(
             ._2
 
         letters
-
-      case _: DependentNode =>
-        Nil
-
-      case _: CompositeNode =>
-        Nil
     }
 
   def optionalAssetToOffset(assetMapping: AssetMapping, maybeAssetName: Option[AssetName]): Vector2 =
@@ -478,7 +469,7 @@ final class DisplayObjectConversions(
 
 object DisplayObjectConversions {
 
-  def nodeToMatrix4(node: SceneNode with RefProperty with SpacialProperties, size: Vector3): CheapMatrix4 =
+  def nodeToMatrix4(node: RenderNode, size: Vector3): CheapMatrix4 =
     CheapMatrix4.identity
       .scale(
         if (node.flip.horizontal) -1.0 else 1.0,

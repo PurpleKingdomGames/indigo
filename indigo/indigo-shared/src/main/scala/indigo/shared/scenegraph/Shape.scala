@@ -12,7 +12,31 @@ import indigo.shared.shader.ShaderPrimitive._
 import indigo.shared.datatypes.RGBA
 import indigo.shared.shader.StandardShaders
 
-sealed trait Shape extends EntityNode with SpacialPropertyMethods
+sealed trait Shape extends EntityNode {
+  def moveTo(pt: Point): Shape
+  def moveTo(x: Int, y: Int): Shape
+  def withPosition(newPosition: Point): Shape
+
+  def moveBy(pt: Point): Shape
+  def moveBy(x: Int, y: Int): Shape
+
+  def rotateTo(angle: Radians): Shape
+  def rotateBy(angle: Radians): Shape
+  def withRotation(newRotation: Radians): Shape
+
+  def scaleBy(amount: Vector2): Shape
+  def scaleBy(x: Double, y: Double): Shape
+  def withScale(newScale: Vector2): Shape
+
+  def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Shape
+  def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Shape
+
+  def withDepth(newDepth: Depth): Shape
+
+  def flipHorizontal(isFlipped: Boolean): Shape
+  def flipVertical(isFlipped: Boolean): Shape
+  def withFlip(newFlip: Flip): Shape
+}
 
 object Shape {
 
@@ -144,14 +168,6 @@ object Shape {
 
   }
 
-  /*
-    position: Point,
-    rotation: Radians,
-    scale: Vector2,
-    depth: Depth,
-    ref: Point,
-    flip: Flip
-   */
   final case class Circle(
       center: Point,
       radius: Int,

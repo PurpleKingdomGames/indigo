@@ -13,7 +13,6 @@ import indigo.shared.time.Seconds
 import indigo.shared.dice.Dice
 import indigo.shared.scenegraph.{SceneNode}
 import indigo.shared.temporal.{Signal, SignalReader}
-import indigo.shared.scenegraph.Clone
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.BindingKey
 
@@ -168,28 +167,26 @@ final case class Automaton(
 
 object Automaton {
 
-  val NoModifySignal: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
+  def NoOpModifier: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
+    SignalReader {
+      case (_, n) =>
+        Signal.fixed(AutomatonUpdate(n))
+    }
+
+  def FixedModifier(transform: (AutomatonSeedValues, SceneNode) => SceneNode): SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
     SignalReader {
       case (sa, n) =>
-        Signal.fixed(
-          n match {
-            case r: SceneNode with SpacialPropertyMethods =>
-              AutomatonUpdate(r.withPosition(sa.spawnedAt))
-
-            case c: Clone =>
-              AutomatonUpdate(c.withTransforms(sa.spawnedAt, c.rotation, c.scale /*, c.alpha*/, c.flipHorizontal, c.flipVertical))
-
-            case _ =>
-              AutomatonUpdate(n)
-          }
-        )
+        Signal.fixed(AutomatonUpdate(transform(sa, n)))
     }
 
   val NoCullEvent: AutomatonSeedValues => List[GlobalEvent] =
     _ => Nil
 
   def apply(node: AutomatonNode, lifespan: Seconds): Automaton =
-    Automaton(node, lifespan, NoModifySignal, NoCullEvent)
+    Automaton(node, lifespan, NoOpModifier, NoCullEvent)
+
+  def apply(node: AutomatonNode, lifespan: Seconds, placeModifier: (Point, SceneNode) => SceneNode): Automaton =
+    Automaton(node, lifespan, FixedModifier((sa, n) => placeModifier(sa.spawnedAt, n)), NoCullEvent)
 
 }
 

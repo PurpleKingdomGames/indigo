@@ -32,9 +32,7 @@ final case class Graphic(
     ref: Point,
     flip: Flip
 ) extends EntityNode
-    with Cloneable
-    with RefPropertyMethod
-    with SpacialPropertyMethods {
+    with Cloneable {
 
   def bounds: Rectangle =
     Rectangle(position, crop.size)

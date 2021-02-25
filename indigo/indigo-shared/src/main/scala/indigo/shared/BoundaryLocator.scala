@@ -16,7 +16,6 @@ import indigo.shared.scenegraph.Transformer
 import indigo.shared.datatypes.FontKey
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.EntityNode
-import indigo.shared.scenegraph.CompositeNode
 import indigo.shared.scenegraph.DependentNode
 
 final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister: FontRegister) {
@@ -61,9 +60,6 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
 
       case t: Text =>
         textBounds(t)
-
-      case _: CompositeNode =>
-        Rectangle.zero
     }
 
   def spriteBounds(sprite: Sprite): Rectangle =
