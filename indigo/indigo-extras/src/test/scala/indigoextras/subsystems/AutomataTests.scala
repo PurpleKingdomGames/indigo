@@ -11,6 +11,7 @@ import indigo.shared.scenegraph.SceneNode
 import indigo.shared.temporal.{Signal, SignalReader}
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.BindingKey
+import indigo.shared.scenegraph.RenderNode
 
 class AutomataTests extends munit.FunSuite {
 
@@ -133,6 +134,13 @@ class AutomataTests extends munit.FunSuite {
     assertEquals(node, graphic)
   }
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+  def toRenderNode(node: SceneNode): RenderNode =
+    node match {
+      case r: RenderNode => r
+      case _             => throw new Exception("Wasn't a render node")
+    }
+
   test("AutomatonNode.one of") {
     val nodeList: NonEmptyList[SceneNode] =
       NonEmptyList(
@@ -144,16 +152,16 @@ class AutomataTests extends munit.FunSuite {
     val nodes =
       AutomatonNode.OneOf(nodeList)
 
-    assertEquals(nodes.giveNode(0, Dice.loaded(0)).position.y, graphic.moveTo(0, 0).y)
-    assertEquals(nodes.giveNode(0, Dice.loaded(1)).position.y, graphic.moveTo(0, 10).y)
-    assertEquals(nodes.giveNode(0, Dice.loaded(2)).position.y, graphic.moveTo(0, 20).y)
+    assertEquals(toRenderNode(nodes.giveNode(0, Dice.loaded(0))).position.y, graphic.moveTo(0, 0).y)
+    assertEquals(toRenderNode(nodes.giveNode(0, Dice.loaded(1))).position.y, graphic.moveTo(0, 10).y)
+    assertEquals(toRenderNode(nodes.giveNode(0, Dice.loaded(2))).position.y, graphic.moveTo(0, 20).y)
 
     val dice = Dice.Sides.MaxInt(0)
 
     assertEquals(
       (0 to 100).toList.forall { _ =>
-        val g = nodes.giveNode(0, dice).position.y
-        nodeList.toList.map(_.position.y).contains(g)
+        val g = toRenderNode(nodes.giveNode(0, dice)).position.y
+        nodeList.toList.map(n => toRenderNode(n).position.y).contains(g)
       },
       true
     )
@@ -171,13 +179,13 @@ class AutomataTests extends munit.FunSuite {
     val nodes =
       AutomatonNode.Cycle(nodeList)
 
-    assertEquals(nodes.giveNode(0, Dice.loaded(0)).position.y, graphic.moveTo(0, 0).y)
-    assertEquals(nodes.giveNode(1, Dice.loaded(0)).position.y, graphic.moveTo(0, 10).y)
-    assertEquals(nodes.giveNode(2, Dice.loaded(0)).position.y, graphic.moveTo(0, 20).y)
-    assertEquals(nodes.giveNode(3, Dice.loaded(0)).position.y, graphic.moveTo(0, 0).y)
-    assertEquals(nodes.giveNode(4, Dice.loaded(0)).position.y, graphic.moveTo(0, 10).y)
-    assertEquals(nodes.giveNode(5, Dice.loaded(0)).position.y, graphic.moveTo(0, 20).y)
-    assertEquals(nodes.giveNode(6, Dice.loaded(0)).position.y, graphic.moveTo(0, 0).y)
+    assertEquals(toRenderNode(nodes.giveNode(0, Dice.loaded(0))).position.y, graphic.moveTo(0, 0).y)
+    assertEquals(toRenderNode(nodes.giveNode(1, Dice.loaded(0))).position.y, graphic.moveTo(0, 10).y)
+    assertEquals(toRenderNode(nodes.giveNode(2, Dice.loaded(0))).position.y, graphic.moveTo(0, 20).y)
+    assertEquals(toRenderNode(nodes.giveNode(3, Dice.loaded(0))).position.y, graphic.moveTo(0, 0).y)
+    assertEquals(toRenderNode(nodes.giveNode(4, Dice.loaded(0))).position.y, graphic.moveTo(0, 10).y)
+    assertEquals(toRenderNode(nodes.giveNode(5, Dice.loaded(0))).position.y, graphic.moveTo(0, 20).y)
+    assertEquals(toRenderNode(nodes.giveNode(6, Dice.loaded(0))).position.y, graphic.moveTo(0, 0).y)
   }
 
   object ModiferFunctions {

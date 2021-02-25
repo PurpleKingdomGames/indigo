@@ -5,7 +5,6 @@ import indigo.shared.formats.TileSet
 import indigo.shared.formats.TiledLayer
 import indigo.shared.assets.AssetName
 import indigo.shared.scenegraph.Group
-import indigo.shared.scenegraph.Renderable
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.datatypes.Point
 import indigo.shared.collections.NonEmptyList
@@ -89,8 +88,8 @@ class TiledMapTests extends munit.FunSuite {
         assertEquals(graphics(1).position, Point(64, 64))
         assertEquals(graphics(2).position, Point(64, 96))
 
-      case _: Renderable =>
-        throw new Exception("failed (renderable)")
+      case _ =>
+        throw new Exception("failed")
     }
   }
 

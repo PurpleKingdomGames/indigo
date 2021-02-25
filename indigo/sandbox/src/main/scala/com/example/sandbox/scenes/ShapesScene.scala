@@ -49,9 +49,9 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
     Outcome(
       SceneUpdateFragment.empty
         .addLayer(
-          Shape.Circle(circlePosition, 20, Depth(1), RGBA.Red, RGBA.White, circleBorder),
-          Shape.Line(Point(30, 80), Point(100, 20), Depth(1), RGBA.Cyan, lineThickness),
-          Shape.Box(Rectangle(Point(100, 100), squareSize), Depth(1), RGBA.White, RGBA.Black.withAlpha(0.75), 10)
+          Shape.Circle(circlePosition, 20, RGBA.Red, RGBA.White, circleBorder),
+          Shape.Line(Point(30, 80), Point(100, 20), RGBA.Cyan, lineThickness),
+          Shape.Box(Rectangle(Point(100, 100), squareSize), RGBA.White, RGBA.Black.withAlpha(0.75), 10)
         )
     )
   }
