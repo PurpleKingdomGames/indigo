@@ -361,8 +361,8 @@ package object indigo {
   // type SceneLayer = shared.scenegraph.SceneLayer
   // val SceneLayer: shared.scenegraph.SceneLayer.type = shared.scenegraph.SceneLayer
 
-  type SceneGraphNode = shared.scenegraph.SceneGraphNode
-  val SceneGraphNode: shared.scenegraph.SceneGraphNode.type = shared.scenegraph.SceneGraphNode
+  type SceneNode = shared.scenegraph.SceneNode
+  val SceneNode: shared.scenegraph.SceneNode.type = shared.scenegraph.SceneNode
 
   type SceneEntity = shared.scenegraph.SceneEntity
   type Renderable  = shared.scenegraph.Renderable

@@ -4,7 +4,9 @@ import indigo.shared.datatypes.{Depth, Rectangle}
 import indigo.shared.events.GlobalEvent
 import indigo.shared.input.Mouse
 import indigo.shared.Outcome
-import indigo.shared.scenegraph.SceneGraphNodePrimitive
+import indigo.shared.scenegraph.SceneNode
+import indigo.shared.scenegraph.SpacialPropertyMethods
+import indigo.shared.scenegraph.DepthProperty
 
 final case class Button(
     buttonAssets: ButtonAssets,
@@ -44,16 +46,22 @@ final case class Button(
     }
   }
 
-  def draw: SceneGraphNodePrimitive =
+  def draw: SceneNode with SpacialPropertyMethods with DepthProperty =
     state match {
       case ButtonState.Up =>
-        buttonAssets.up.moveTo(bounds.position).withDepth(depth)
+        buttonAssets.up
+          .withPosition(bounds.position)
+          .withDepth(depth)
 
       case ButtonState.Over =>
-        buttonAssets.over.moveTo(bounds.position).withDepth(depth)
+        buttonAssets.over
+          .withPosition(bounds.position)
+          .withDepth(depth)
 
       case ButtonState.Down =>
-        buttonAssets.down.moveTo(bounds.position).withDepth(depth)
+        buttonAssets.down
+          .withPosition(bounds.position)
+          .withDepth(depth)
     }
 
   def withUpActions(actions: GlobalEvent*): Button =
@@ -127,4 +135,8 @@ object ButtonState {
 
 }
 
-final case class ButtonAssets(up: SceneGraphNodePrimitive, over: SceneGraphNodePrimitive, down: SceneGraphNodePrimitive)
+final case class ButtonAssets(
+    up: SceneNode with SpacialPropertyMethods with DepthProperty,
+    over: SceneNode with SpacialPropertyMethods with DepthProperty,
+    down: SceneNode with SpacialPropertyMethods with DepthProperty
+)

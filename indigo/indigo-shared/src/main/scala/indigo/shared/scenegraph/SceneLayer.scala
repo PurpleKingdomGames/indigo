@@ -3,7 +3,7 @@
 // import indigo.shared.datatypes.RGBA
 // import scala.annotation.tailrec
 
-// final case class SceneLayer(nodes: List[SceneGraphNode], tint: RGBA, saturation: Double, magnification: Option[Int]) {
+// final case class SceneLayer(nodes: List[SceneNode], tint: RGBA, saturation: Double, magnification: Option[Int]) {
 
 //   def |+|(other: SceneLayer): SceneLayer = {
 //     val newSaturation: Double =
@@ -16,7 +16,7 @@
 //     SceneLayer(nodes ++ other.nodes, tint + other.tint, newSaturation, magnification.orElse(other.magnification))
 //   }
 
-//   def ++(moreNodes: List[SceneGraphNode]): SceneLayer =
+//   def ++(moreNodes: List[SceneNode]): SceneLayer =
 //     SceneLayer(nodes ++ moreNodes, tint, saturation, magnification)
 
 //   def withTint(newTint: RGBA): SceneLayer =
@@ -30,7 +30,7 @@
 
 //   def visibleNodeCount: Int = {
 //     @tailrec
-//     def rec(remaining: List[SceneGraphNode], count: Int): Int =
+//     def rec(remaining: List[SceneNode], count: Int): Int =
 //       remaining match {
 //         case Nil =>
 //           count
@@ -49,7 +49,7 @@
 
 // object SceneLayer {
 
-//   def apply(nodes: List[SceneGraphNode]): SceneLayer =
+//   def apply(nodes: List[SceneNode]): SceneLayer =
 //     new SceneLayer(nodes, RGBA.None, 1.0d, Option.empty[Int])
 
 //   def None: SceneLayer =

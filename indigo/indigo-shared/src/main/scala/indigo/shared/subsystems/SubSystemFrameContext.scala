@@ -3,7 +3,7 @@ package indigo.shared.subsystems
 import indigo.shared.time.GameTime
 import indigo.shared.events.InputState
 import indigo.shared.dice.Dice
-import indigo.shared.scenegraph.SceneGraphNode
+import indigo.shared.scenegraph.SceneNode
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.input.Mouse
 import indigo.shared.input.Keyboard
@@ -16,7 +16,7 @@ import indigo.shared.FrameContext
   * Similar to [FrameContext] but without access to start up data.
   * The SubSystemFrameContext is the context in which the current frame will be processed.
   * In includes values that are unique to this frame, and also globally available services.
-  * 
+  *
   * @param gameTime A sampled instance of time that you should use everywhere that you need a time value.
   * @param dice A psuedorandom number generator, made predicatable/reproducable by being seeded on the current running time.
   * @param inputState A snapshot of the state of the various input methods, also allows input mapping of combinations of inputs.
@@ -36,7 +36,7 @@ final class SubSystemFrameContext(
   val keyboard: Keyboard = inputState.keyboard
   val gamepad: Gamepad   = inputState.gamepad
 
-  def findBounds(sceneGraphNode: SceneGraphNode): Rectangle =
+  def findBounds(sceneGraphNode: SceneNode): Rectangle =
     boundaryLocator.findBounds(sceneGraphNode)
 
 }

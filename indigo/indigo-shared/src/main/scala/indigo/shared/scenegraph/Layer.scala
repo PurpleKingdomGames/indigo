@@ -5,7 +5,7 @@ import indigo.shared.datatypes.Depth
 import scala.annotation.nowarn
 
 final case class Layer(
-    nodes: List[SceneGraphNode],
+    nodes: List[SceneNode],
     key: Option[BindingKey],
     magnification: Option[Int],
     depth: Option[Depth],
@@ -36,11 +36,11 @@ final case class Layer(
       }
     )
 
-  def withNodes(newNodes: List[SceneGraphNode]): Layer =
+  def withNodes(newNodes: List[SceneNode]): Layer =
     this.copy(nodes = newNodes)
-  def addNodes(moreNodes: List[SceneGraphNode]): Layer =
+  def addNodes(moreNodes: List[SceneNode]): Layer =
     withNodes(nodes ++ moreNodes)
-  def ++(moreNodes: List[SceneGraphNode]): Layer =
+  def ++(moreNodes: List[SceneNode]): Layer =
     addNodes(moreNodes)
 
   def withMagnification(level: Int): Layer =
@@ -74,16 +74,16 @@ object Layer {
   def empty: Layer =
     Layer(Nil, None, None, None, true, Blending.Normal)
 
-  def apply(nodes: SceneGraphNode*): Layer =
+  def apply(nodes: SceneNode*): Layer =
     Layer(nodes.toList, None, None, None, true, Blending.Normal)
 
-  def apply(nodes: List[SceneGraphNode]): Layer =
+  def apply(nodes: List[SceneNode]): Layer =
     Layer(nodes, None, None, None, true, Blending.Normal)
 
-  def apply(key: BindingKey, nodes: List[SceneGraphNode]): Layer =
+  def apply(key: BindingKey, nodes: List[SceneNode]): Layer =
     Layer(nodes, Option(key), None, None, true, Blending.Normal)
 
-  def apply(key: BindingKey, magnification: Int, depth: Depth)(nodes: SceneGraphNode*): Layer =
+  def apply(key: BindingKey, magnification: Int, depth: Depth)(nodes: SceneNode*): Layer =
     Layer(nodes.toList, Option(key), Option(magnification), Option(depth), true, Blending.Normal)
 
   def apply(key: BindingKey): Layer =

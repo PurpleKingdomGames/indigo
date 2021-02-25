@@ -7,7 +7,7 @@ import indigo.shared.datatypes.Point
 import indigo.shared.assets.AssetName
 import indigo.shared.materials.StandardMaterial
 import indigo.shared.time.Seconds
-import indigo.shared.scenegraph.SceneGraphNode
+import indigo.shared.scenegraph.SceneNode
 import indigo.shared.temporal.{Signal, SignalReader}
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.BindingKey
@@ -134,7 +134,7 @@ class AutomataTests extends munit.FunSuite {
   }
 
   test("AutomatonNode.one of") {
-    val nodeList: NonEmptyList[SceneGraphNode] =
+    val nodeList: NonEmptyList[SceneNode] =
       NonEmptyList(
         graphic.moveTo(0, 0),
         graphic.moveTo(0, 10),
@@ -161,7 +161,7 @@ class AutomataTests extends munit.FunSuite {
   }
 
   test("AutomatonNode.cycle") {
-    val nodeList: NonEmptyList[SceneGraphNode] =
+    val nodeList: NonEmptyList[SceneNode] =
       NonEmptyList(
         graphic.moveTo(0, 0),
         graphic.moveTo(0, 10),
@@ -192,7 +192,7 @@ class AutomataTests extends munit.FunSuite {
             )
         }
 
-    val signal: SignalReader[(AutomatonSeedValues, SceneGraphNode), AutomatonUpdate] =
+    val signal: SignalReader[(AutomatonSeedValues, SceneNode), AutomatonUpdate] =
       SignalReader {
         case (seed, sceneGraphNode) =>
           makePosition(seed).map { position =>

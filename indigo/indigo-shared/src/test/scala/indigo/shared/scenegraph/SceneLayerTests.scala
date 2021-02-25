@@ -12,7 +12,7 @@
 
 //   test("can provide a scene node count for an empty scene") {
 
-//     val nodes: List[SceneGraphNode] =
+//     val nodes: List[SceneNode] =
 //       Nil
 
 //     val layer: SceneLayer =
@@ -23,7 +23,7 @@
 
 //   test("can provide a scene node count for flat scene") {
 
-//     val nodes: List[SceneGraphNode] =
+//     val nodes: List[SceneNode] =
 //       List(
 //         dummyGraphic,
 //         dummyGraphic,
@@ -38,7 +38,7 @@
 
 //   test("can provide a scene node count for grouped scene") {
 
-//     val nodes: List[SceneGraphNode] =
+//     val nodes: List[SceneNode] =
 //       List(
 //         dummyGraphic,
 //         dummyGraphic,
