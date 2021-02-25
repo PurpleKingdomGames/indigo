@@ -12,7 +12,7 @@ import indigo.shared.shader.ShaderPrimitive._
 import indigo.shared.datatypes.RGBA
 import indigo.shared.shader.StandardShaders
 
-sealed trait Shape extends EntityNode with SpatialModifiers[Shape] {
+sealed trait Shape extends EntityNode with Cloneable with SpatialModifiers[Shape] {
   def moveTo(pt: Point): Shape
   def moveTo(x: Int, y: Int): Shape
   def withPosition(newPosition: Point): Shape
