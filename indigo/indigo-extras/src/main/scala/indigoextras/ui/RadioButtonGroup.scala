@@ -4,8 +4,14 @@ import indigo.shared.Outcome
 import indigo.shared.datatypes.{Depth, Point, Rectangle}
 import indigo.shared.events.GlobalEvent
 import indigo.shared.input.Mouse
+import indigo.shared.scenegraph.EntityNode
+import indigo.shared.scenegraph.Shape
+import indigo.shared.scenegraph.Graphic
+import indigo.shared.scenegraph.Sprite
+import indigo.shared.scenegraph.Text
 import indigo.shared.scenegraph.Group
 import scala.annotation.tailrec
+import indigo.shared.scenegraph.RenderNode
 
 /**
   * Represents an individual option button in a radio button group. This class just containing the distinct information
@@ -324,24 +330,48 @@ final case class RadioButtonGroup(
     updatedOptions.sequence.map(opts => this.copy(options = opts))
   }
 
+  private def applyPositionAndDepth(sceneNode: RenderNode, pt: Point, d: Depth): RenderNode =
+    sceneNode match {
+      case n: Shape         => n.withPosition(pt).withDepth(d)
+      case n: Graphic       => n.withPosition(pt).withDepth(d)
+      case n: Sprite        => n.withPosition(pt).withDepth(d)
+      case n: Text          => n.withPosition(pt).withDepth(d)
+      case n: Group         => n.withPosition(pt).withDepth(d)
+      case n: EntityNode    => n
+    }
+
   /**
     * Returns graphics to present the current state of the radio button.
     *
     * @return A Group of scene update primitives collecting the graphics for all options
     */
   def draw: Group =
-    Group(options.map { option =>
-      option.state.toButtonState match {
-        case ButtonState.Up =>
-          option.buttonAssets.getOrElse(buttonAssets).up.moveTo(option.position).withDepth(depth)
+    Group(
+      options.map { option =>
+        option.state.toButtonState match {
+          case ButtonState.Up =>
+            applyPositionAndDepth(
+              option.buttonAssets.getOrElse(buttonAssets).up,
+              option.position,
+              depth
+            )
 
-        case ButtonState.Over =>
-          option.buttonAssets.getOrElse(buttonAssets).over.moveTo(option.position).withDepth(depth)
+          case ButtonState.Over =>
+            applyPositionAndDepth(
+              option.buttonAssets.getOrElse(buttonAssets).over,
+              option.position,
+              depth
+            )
 
-        case ButtonState.Down =>
-          option.buttonAssets.getOrElse(buttonAssets).down.moveTo(option.position).withDepth(depth)
+          case ButtonState.Down =>
+            applyPositionAndDepth(
+              option.buttonAssets.getOrElse(buttonAssets).down,
+              option.position,
+              depth
+            )
+        }
       }
-    })
+    )
 }
 
 object RadioButtonGroup {

@@ -32,12 +32,23 @@ object SceneNode {
   def empty: Group = Group.empty
 }
 
+sealed trait RenderNode extends SceneNode {
+  def position: Point
+  def rotation: Radians
+  def scale: Vector2
+  def depth: Depth
+  def flip: Flip
+  def ref: Point
+
+  def withDepth(newDepth: Depth): RenderNode
+}
+
 /**
   * Can be extended to create custom scene elements.
   *
   * May be used in conjunction with `EventHandler` and `Cloneable`.
   */
-trait EntityNode extends SceneNode with DepthProperty with RefProperty with SpacialProperties {
+trait EntityNode extends RenderNode {
   def bounds: Rectangle
   def toGLSLShader: GLSLShader
 }
@@ -83,7 +94,15 @@ final case class Transformer(node: SceneNode, transform: CheapMatrix4) extends S
 // Dependent Nodes
 //------------------
 
-trait DependentNode extends SceneNode with DepthProperty with SpacialProperties
+sealed trait DependentNode extends SceneNode {
+  def position: Point
+  def rotation: Radians
+  def scale: Vector2
+  def depth: Depth
+  def flip: Flip
+
+  def withDepth(newDepth: Depth): DependentNode
+}
 
 /**
   * A single cloned instance of a cloneblank
@@ -92,7 +111,7 @@ trait DependentNode extends SceneNode with DepthProperty with SpacialProperties
   * @param depth
   * @param transform
   */
-final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData) extends DependentNode with SpacialPropertyMethods {
+final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData) extends DependentNode {
   lazy val x: Int                  = transform.position.x
   lazy val y: Int                  = transform.position.y
   lazy val rotation: Radians       = transform.rotation
@@ -145,9 +164,7 @@ final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
   * @param clones
   * @param staticBatchKey
   */
-final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransformData, clones: List[CloneTransformData], staticBatchKey: Option[BindingKey])
-    extends DependentNode
-    with SpacialPropertyMethods {
+final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransformData, clones: List[CloneTransformData], staticBatchKey: Option[BindingKey]) extends DependentNode {
   lazy val x: Int                  = transform.position.x
   lazy val y: Int                  = transform.position.y
   lazy val rotation: Radians       = transform.rotation
@@ -215,11 +232,7 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
   * @param depth
   * @param children
   */
-final case class Group(children: List[SceneNode], position: Point, rotation: Radians, scale: Vector2, depth: Depth, ref: Point, flip: Flip)
-    extends DependentNode
-    with SpacialPropertyMethods
-    with RefProperty
-    with RefPropertyMethod {
+final case class Group(children: List[RenderNode], position: Point, rotation: Radians, scale: Vector2, depth: Depth, ref: Point, flip: Flip) extends CompositeNode {
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
@@ -274,14 +287,11 @@ final case class Group(children: List[SceneNode], position: Point, rotation: Rad
   def calculatedBounds(locator: BoundaryLocator): Rectangle = {
     def giveBounds(n: SceneNode): Rectangle =
       n match {
-        case n: CompositeNode =>
-          n.calculatedBounds(locator)
-
-        case n: Group =>
-          n.calculatedBounds(locator)
-
         case n: EntityNode =>
           n.bounds
+
+        case n: CompositeNode =>
+          n.calculatedBounds(locator)
 
         case _ =>
           Rectangle.zero
@@ -298,10 +308,10 @@ final case class Group(children: List[SceneNode], position: Point, rotation: Rad
     }
   }
 
-  def addChild(child: SceneNode): Group =
+  def addChild(child: RenderNode): Group =
     this.copy(children = children ++ List(child))
 
-  def addChildren(additionalChildren: List[SceneNode]): Group =
+  def addChildren(additionalChildren: List[RenderNode]): Group =
     this.copy(children = children ++ additionalChildren)
 
   def toMatrix: CheapMatrix4 =
@@ -328,7 +338,7 @@ final case class Group(children: List[SceneNode], position: Point, rotation: Rad
     toTransformers(CheapMatrix4.identity)
   def toTransformers(parentTransform: CheapMatrix4): List[Transformer] = {
     val mat = toMatrix * parentTransform // to avoid re-evaluation
-    children.collect { case n: DepthProperty => n }.map { n =>
+    children.map { n =>
       Transformer(n.withDepth(n.depth + depth), mat)
     }
   }
@@ -336,10 +346,10 @@ final case class Group(children: List[SceneNode], position: Point, rotation: Rad
 
 object Group {
 
-  def apply(children: SceneNode*): Group =
+  def apply(children: RenderNode*): Group =
     Group(children.toList, Point.zero, Radians.zero, Vector2.one, Depth.Zero, Point.zero, Flip.default)
 
-  def apply(children: List[SceneNode]): Group =
+  def apply(children: List[RenderNode]): Group =
     Group(children, Point.zero, Radians.zero, Vector2.one, Depth.Zero, Point.zero, Flip.default)
 
   def empty: Group =
@@ -350,7 +360,7 @@ object Group {
 // Composite Nodes
 //------------------
 
-trait CompositeNode extends SceneNode with DepthProperty with RefProperty with SpacialProperties {
+sealed trait CompositeNode extends RenderNode {
   def calculatedBounds(locator: BoundaryLocator): Rectangle
 }
 
@@ -393,9 +403,7 @@ final case class Sprite(
     flip: Flip
 ) extends CompositeNode
     with EventHandler
-    with Cloneable
-    with RefPropertyMethod
-    with SpacialPropertyMethods {
+    with Cloneable {
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
@@ -566,9 +574,7 @@ final case class Text(
     ref: Point,
     flip: Flip
 ) extends CompositeNode
-    with EventHandler
-    with RefPropertyMethod
-    with SpacialPropertyMethods {
+    with EventHandler {
 
   def calculatedBounds(locator: BoundaryLocator): Rectangle =
     locator.findBounds(this)

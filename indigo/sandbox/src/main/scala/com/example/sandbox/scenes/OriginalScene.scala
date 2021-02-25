@@ -97,7 +97,7 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
 
 }
 
-final case class CustomShape(x: Int, y: Int, width: Int, height: Int, depth: Depth, shader: GLSLShader) extends SceneEntity {
+final case class CustomShape(x: Int, y: Int, width: Int, height: Int, depth: Depth, shader: GLSLShader) extends EntityNode {
   val flip: Flip               = Flip.default
   val bounds: Rectangle        = Rectangle(x, y, width, height)
   val position: Point          = bounds.position
@@ -105,6 +105,9 @@ final case class CustomShape(x: Int, y: Int, width: Int, height: Int, depth: Dep
   val rotation: Radians        = Radians.zero
   val scale: Vector2           = Vector2.one
   val toGLSLShader: GLSLShader = shader
+
+  def withDepth(newDepth: Depth): CustomShape =
+    this.copy(depth = newDepth)
 }
 
 object Shaders {
