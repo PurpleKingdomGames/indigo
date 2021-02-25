@@ -62,34 +62,6 @@ final case class Transformer(node: SceneNode, transform: CheapMatrix4) extends S
     this.copy(transform = transform * matrix)
 }
 
-/**
-  * Represents nodes with a basic spacial presence.
-  */
-// sealed trait SceneGraphNodePrimitive extends SceneNode {
-//   def calculatedBounds(locator: BoundaryLocator): Rectangle
-
-//   def withPosition(newPosition: Point): SceneGraphNodePrimitive
-//   def withRotation(newRotation: Radians): SceneGraphNodePrimitive
-//   def withScale(newScale: Vector2): SceneGraphNodePrimitive
-//   def withDepth(newDepth: Depth): SceneGraphNodePrimitive
-//   def withRef(newRef: Point): SceneGraphNodePrimitive
-//   def withFlip(newFlip: Flip): SceneGraphNodePrimitive
-
-//   def withRef(x: Int, y: Int): SceneGraphNodePrimitive
-//   def moveTo(pt: Point): SceneGraphNodePrimitive
-//   def moveTo(x: Int, y: Int): SceneGraphNodePrimitive
-//   def moveBy(pt: Point): SceneGraphNodePrimitive
-//   def moveBy(x: Int, y: Int): SceneGraphNodePrimitive
-//   def rotateTo(angle: Radians): SceneGraphNodePrimitive
-//   def rotateBy(angle: Radians): SceneGraphNodePrimitive
-//   def scaleBy(amount: Vector2): SceneGraphNodePrimitive
-//   def scaleBy(x: Double, y: Double): SceneGraphNodePrimitive
-//   def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): SceneGraphNodePrimitive
-//   def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): SceneGraphNodePrimitive
-//   def flipHorizontal(isFlipped: Boolean): SceneGraphNodePrimitive
-//   def flipVertical(isFlipped: Boolean): SceneGraphNodePrimitive
-// }
-
 //------------------
 // Dependent Nodes
 //------------------
@@ -111,7 +83,7 @@ sealed trait DependentNode extends SceneNode {
   * @param depth
   * @param transform
   */
-final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData) extends DependentNode {
+final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData) extends DependentNode with BasicSpatialModifiers[Clone] {
   lazy val x: Int                  = transform.position.x
   lazy val y: Int                  = transform.position.y
   lazy val rotation: Radians       = transform.rotation
@@ -120,8 +92,7 @@ final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
   lazy val flipVertical: Boolean   = transform.flipVertical
 
   def position: Point = Point(transform.position.x, transform.position.y)
-  // def ref: Point      = Point.zero
-  def flip: Flip = Flip(transform.flipHorizontal, transform.flipVertical)
+  def flip: Flip      = Flip(transform.flipHorizontal, transform.flipVertical)
 
   def withCloneId(newCloneId: CloneId): Clone =
     this.copy(id = newCloneId)
@@ -164,7 +135,9 @@ final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
   * @param clones
   * @param staticBatchKey
   */
-final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransformData, clones: List[CloneTransformData], staticBatchKey: Option[BindingKey]) extends DependentNode {
+final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransformData, clones: List[CloneTransformData], staticBatchKey: Option[BindingKey])
+    extends DependentNode
+    with BasicSpatialModifiers[CloneBatch] {
   lazy val x: Int                  = transform.position.x
   lazy val y: Int                  = transform.position.y
   lazy val rotation: Radians       = transform.rotation
@@ -173,7 +146,6 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
   lazy val flipVertical: Boolean   = transform.flipVertical
 
   def position: Point = Point(transform.position.x, transform.position.y)
-  // def ref: Point      = Point.zero
   def flip: Flip = Flip(transform.flipHorizontal, transform.flipVertical)
 
   def withCloneId(newCloneId: CloneId): CloneBatch =
@@ -225,14 +197,9 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
 
 /**
   * Used to group elements to allow them to be manipulated as a collection.
-  *
-  * @param positionOffset
-  * @param rotation
-  * @param scale
-  * @param depth
-  * @param children
   */
-final case class Group(children: List[RenderNode], position: Point, rotation: Radians, scale: Vector2, depth: Depth, ref: Point, flip: Flip) extends CompositeNode {
+final case class Group(children: List[RenderNode], position: Point, rotation: Radians, scale: Vector2, depth: Depth, ref: Point, flip: Flip)
+extends CompositeNode with SpatialModifersWithRef[Group] {
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
@@ -364,30 +331,8 @@ sealed trait CompositeNode extends RenderNode {
   def calculatedBounds(locator: BoundaryLocator): Rectangle
 }
 
-// /**
-//   * Represents nodes with more advanced spacial and visual properties
-//   */
-// // sealed trait Renderable extends SceneGraphNodePrimitive {
-// //   def material: StandardMaterial
-
-// //   def withMaterial(newMaterial: StandardMaterial): Renderable
-// //   def modifyMaterial(alter: StandardMaterial => StandardMaterial): Renderable
-// // }
-
 /**
   * Sprites are used to represented key-frame animated screen elements.
-  *
-  * @param position
-  * @param rotation
-  * @param scale
-  * @param depth
-  * @param ref
-  * @param flip
-  * @param bindingKey
-  * @param animationKey
-  * @param effects
-  * @param eventHandler
-  * @param animationActions
   */
 final case class Sprite(
     bindingKey: BindingKey,
@@ -403,7 +348,8 @@ final case class Sprite(
     flip: Flip
 ) extends CompositeNode
     with EventHandler
-    with Cloneable {
+    with Cloneable
+    with SpatialModifersWithRef[Sprite] {
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y
@@ -549,17 +495,6 @@ object Sprite {
 
 /**
   * Used to draw text onto the screen.
-  *
-  * @param position
-  * @param rotation
-  * @param scale
-  * @param depth
-  * @param ref
-  * @param text
-  * @param alignment
-  * @param fontKey
-  * @param effects
-  * @param eventHandler
   */
 final case class Text(
     text: String,
@@ -574,7 +509,8 @@ final case class Text(
     ref: Point,
     flip: Flip
 ) extends CompositeNode
-    with EventHandler {
+    with EventHandler
+    with SpatialModifersWithRef[Text] {
 
   def calculatedBounds(locator: BoundaryLocator): Rectangle =
     locator.findBounds(this)
