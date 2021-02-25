@@ -48,6 +48,7 @@ object Shape {
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
+      ref: Point,
       flip: Flip
   ) extends Shape {
 
@@ -55,9 +56,6 @@ object Shape {
       Math.max(dimensions.size.x, dimensions.size.y)
 
     lazy val position: Point =
-      dimensions.position
-
-    lazy val ref: Point =
       dimensions.position - (Point(square) / 2) - (strokeWidth / 2)
 
     lazy val bounds: Rectangle =
@@ -122,6 +120,11 @@ object Shape {
     def withDepth(newDepth: Depth): Box =
       this.copy(depth = newDepth)
 
+    def withRef(newRef: Point): Box =
+      this.copy(ref = newRef)
+    def withRef(x: Int, y: Int): Box =
+      withRef(Point(x, y))
+
     def flipHorizontal(isFlipped: Boolean): Box =
       this.copy(flip = flip.withHorizontalFlip(isFlipped))
     def flipVertical(isFlipped: Boolean): Box =
@@ -151,6 +154,7 @@ object Shape {
         Radians.zero,
         Vector2.one,
         Depth(1),
+        Point.zero,
         Flip.default
       )
 
@@ -163,6 +167,7 @@ object Shape {
         Radians.zero,
         Vector2.one,
         Depth(1),
+        Point.zero,
         Flip.default
       )
 
@@ -177,14 +182,12 @@ object Shape {
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
+      ref: Point,
       flip: Flip
   ) extends Shape {
 
-    lazy val ref: Point =
-      center - radius - (strokeWidth / 2)
-
     lazy val position: Point =
-      center
+      center - radius - (strokeWidth / 2)
 
     lazy val bounds: Rectangle =
       Rectangle(
@@ -236,6 +239,11 @@ object Shape {
     def withDepth(newDepth: Depth): Circle =
       this.copy(depth = newDepth)
 
+    def withRef(newRef: Point): Circle =
+      this.copy(ref = newRef)
+    def withRef(x: Int, y: Int): Circle =
+      withRef(Point(x, y))
+
     def flipHorizontal(isFlipped: Boolean): Circle =
       this.copy(flip = flip.withHorizontalFlip(isFlipped))
     def flipVertical(isFlipped: Boolean): Circle =
@@ -265,6 +273,7 @@ object Shape {
         Radians.zero,
         Vector2.one,
         Depth(1),
+        Point.zero,
         Flip.default
       )
 
@@ -278,6 +287,7 @@ object Shape {
         Radians.zero,
         Vector2.one,
         Depth(1),
+        Point.zero,
         Flip.default
       )
 
@@ -291,17 +301,15 @@ object Shape {
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
+      ref: Point,
       flip: Flip
   ) extends Shape {
 
-    lazy val ref: Point =
+    lazy val position: Point =
       Point(
         Math.min(start.x, end.x),
         Math.min(start.y, end.y)
       ) - (strokeWidth / 2)
-
-    lazy val position: Point =
-      start
 
     lazy val bounds: Rectangle = {
       val w = Math.max(start.x, end.x) - position.x
@@ -351,6 +359,11 @@ object Shape {
     def withDepth(newDepth: Depth): Line =
       this.copy(depth = newDepth)
 
+    def withRef(newRef: Point): Line =
+      this.copy(ref = newRef)
+    def withRef(x: Int, y: Int): Line =
+      withRef(Point(x, y))
+
     def flipHorizontal(isFlipped: Boolean): Line =
       this.copy(flip = flip.withHorizontalFlip(isFlipped))
     def flipVertical(isFlipped: Boolean): Line =
@@ -388,6 +401,7 @@ object Shape {
         Radians.zero,
         Vector2.one,
         Depth(1),
+        Point.zero,
         Flip.default
       )
 
@@ -400,6 +414,7 @@ object Shape {
         Radians.zero,
         Vector2.one,
         Depth(1),
+        Point.zero,
         Flip.default
       )
 
