@@ -125,6 +125,10 @@ final case class Clone(id: CloneId, depth: Depth, transform: CloneTransformData)
         .withHorizontalFlip(newFlip.horizontal)
     )
 }
+object Clone {
+  def apply(id: CloneId): Clone =
+    Clone(id, Depth(1), CloneTransformData.identity)
+}
 
 /**
   * Represents many clones of the same cloneblank, differentiated only by their transform data.
