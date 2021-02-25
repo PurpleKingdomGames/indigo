@@ -1,6 +1,6 @@
 package indigo.shared
 
-import indigo.shared.scenegraph.SceneGraphNode
+import indigo.shared.scenegraph.SceneNode
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.scenegraph.TextLine
 import indigo.shared.datatypes.FontInfo
@@ -15,7 +15,9 @@ import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Transformer
 import indigo.shared.datatypes.FontKey
 import indigo.shared.scenegraph.Shape
-import indigo.shared.scenegraph.SceneEntity
+import indigo.shared.scenegraph.EntityNode
+import indigo.shared.scenegraph.CompositeNode
+import indigo.shared.scenegraph.DependentNode
 
 final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister: FontRegister) {
 
@@ -28,16 +30,19 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
   }
 
   // General
-  def findBounds(sceneGraphNode: SceneGraphNode): Rectangle =
+  def findBounds(sceneGraphNode: SceneNode): Rectangle =
     sceneGraphNode match {
       case s: Shape =>
         s.bounds
 
-      case s: SceneEntity =>
+      case g: Graphic =>
+        g.bounds
+
+      case s: EntityNode =>
         s.bounds
 
       case g: Group =>
-        groupBounds(g)
+        g.calculatedBounds(this)
 
       case _: Transformer =>
         Rectangle.zero
@@ -48,21 +53,18 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
       case _: CloneBatch =>
         Rectangle.zero
 
-      case g: Graphic =>
-        graphicBounds(g)
+      case _: DependentNode =>
+        Rectangle.zero
 
       case s: Sprite =>
         spriteBounds(s)
 
       case t: Text =>
         textBounds(t)
+
+      case _: CompositeNode =>
+        Rectangle.zero
     }
-
-  def groupBounds(group: Group): Rectangle =
-    group.calculatedBounds(this)
-
-  def graphicBounds(graphic: Graphic): Rectangle =
-    graphic.lazyBounds
 
   def spriteBounds(sprite: Sprite): Rectangle =
     QuickCache(s"""sprite-${sprite.bindingKey.value}-${sprite.animationKey.value}""") {
