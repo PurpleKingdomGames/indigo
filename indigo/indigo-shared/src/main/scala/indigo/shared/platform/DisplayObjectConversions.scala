@@ -12,7 +12,9 @@ import indigo.shared.FontRegister
 import indigo.shared.platform.AssetMapping
 import indigo.shared.scenegraph.{Graphic, Sprite, Text, TextLine}
 
-import indigo.shared.scenegraph.SceneGraphNode
+import indigo.shared.scenegraph.SceneNode
+import indigo.shared.scenegraph.SpacialProperties
+import indigo.shared.scenegraph.RefProperty
 import indigo.shared.scenegraph.Group
 import indigo.shared.scenegraph.Transformer
 import indigo.shared.QuickCache
@@ -30,9 +32,11 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.animation.AnimationRef
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.shared.assets.AssetName
-import indigo.shared.scenegraph.SceneEntity
+import indigo.shared.scenegraph.EntityNode
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.ShaderPrimitive
+import indigo.shared.scenegraph.DependentNode
+import indigo.shared.scenegraph.CompositeNode
 
 final class DisplayObjectConversions(
     boundaryLocator: BoundaryLocator,
@@ -117,7 +121,7 @@ final class DisplayObjectConversions(
   }
 
   def sceneNodesToDisplayObjects(
-      sceneNodes: List[SceneGraphNode],
+      sceneNodes: List[SceneNode],
       gameTime: GameTime,
       assetMapping: AssetMapping,
       cloneBlankDisplayObjects: Map[String, DisplayObject]
@@ -126,13 +130,13 @@ final class DisplayObjectConversions(
       sceneNodeToDisplayObject(node, gameTime, assetMapping, cloneBlankDisplayObjects)
     }
 
-  private val accSceneNodes: ListBuffer[SceneGraphNode] = new ListBuffer()
+  private val accSceneNodes: ListBuffer[SceneNode] = new ListBuffer()
 
   def deGroup(
-      sceneNodes: List[SceneGraphNode]
-  ): ListBuffer[SceneGraphNode] = {
+      sceneNodes: List[SceneNode]
+  ): ListBuffer[SceneNode] = {
     @tailrec
-    def rec(remaining: List[SceneGraphNode]): ListBuffer[SceneGraphNode] =
+    def rec(remaining: List[SceneNode]): ListBuffer[SceneNode] =
       remaining match {
         case Nil =>
           accSceneNodes
@@ -157,14 +161,17 @@ final class DisplayObjectConversions(
   }
 
   def sceneNodeToDisplayObject(
-      sceneNode: SceneGraphNode,
+      sceneNode: SceneNode,
       gameTime: GameTime,
       assetMapping: AssetMapping,
       cloneBlankDisplayObjects: Map[String, DisplayObject]
   ): List[DisplayEntity] =
     sceneNode match {
 
-      case s: SceneEntity =>
+      case x: Graphic =>
+        List(graphicToDisplayObject(x, assetMapping))
+
+      case s: EntityNode =>
         List(sceneEntityToDisplayObject(s, assetMapping))
 
       case c: Clone =>
@@ -198,9 +205,6 @@ final class DisplayObjectConversions(
       case t: Transformer =>
         sceneNodeToDisplayObject(t.node, gameTime, assetMapping, cloneBlankDisplayObjects)
           .map(_.applyTransform(t.transform))
-
-      case x: Graphic =>
-        List(graphicToDisplayObject(x, assetMapping))
 
       case x: Sprite =>
         animationsRegister.fetchAnimationForSprite(gameTime, x.bindingKey, x.animationKey, x.animationActions) match {
@@ -242,6 +246,12 @@ final class DisplayObjectConversions(
             ._2
 
         letters
+
+      case _: DependentNode =>
+        Nil
+
+      case _: CompositeNode =>
+        Nil
     }
 
   def optionalAssetToOffset(assetMapping: AssetMapping, maybeAssetName: Option[AssetName]): Vector2 =
@@ -253,7 +263,7 @@ final class DisplayObjectConversions(
         lookupTextureOffset(assetMapping, assetName.value)
     }
 
-  def sceneEntityToDisplayObject(leaf: SceneEntity, assetMapping: AssetMapping): DisplayObject = {
+  def sceneEntityToDisplayObject(leaf: EntityNode, assetMapping: AssetMapping): DisplayObject = {
     val shader: GLSLShader = leaf.toGLSLShader
 
     val channelOffset1 = optionalAssetToOffset(assetMapping, shader.channel1)
@@ -468,7 +478,7 @@ final class DisplayObjectConversions(
 
 object DisplayObjectConversions {
 
-  def nodeToMatrix4(node: SceneGraphNode, size: Vector3): CheapMatrix4 =
+  def nodeToMatrix4(node: SceneNode with RefProperty with SpacialProperties, size: Vector3): CheapMatrix4 =
     CheapMatrix4.identity
       .scale(
         if (node.flip.horizontal) -1.0 else 1.0,

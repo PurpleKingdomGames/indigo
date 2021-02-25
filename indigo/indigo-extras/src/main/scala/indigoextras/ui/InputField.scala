@@ -2,7 +2,7 @@ package indigoextras.ui
 
 import indigo.shared.time.GameTime
 import indigo.shared.datatypes._
-import indigo.shared.scenegraph.{Graphic, SceneGraphNode, Text}
+import indigo.shared.scenegraph.{Graphic, SceneNode, Text}
 
 import indigo.shared.temporal.Signal
 import indigo.shared.BoundaryLocator
@@ -217,7 +217,7 @@ final case class InputField(
   def draw(
       gameTime: GameTime,
       boundaryLocator: BoundaryLocator
-  ): List[SceneGraphNode] = {
+  ): List[SceneNode] = {
     val field =
       assets.text
         .withText(this.text)

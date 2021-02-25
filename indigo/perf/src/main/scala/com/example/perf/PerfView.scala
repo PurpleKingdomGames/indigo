@@ -60,7 +60,7 @@ object PerfView {
     rec(positions, 256, 0, Nil)
   }
 
-  def gameLayer(currentState: DudeModel): List[SceneGraphNode] =
+  def gameLayer(currentState: DudeModel): List[SceneNode] =
     List(
       currentState.walkDirection match {
         case d @ DudeLeft =>
@@ -97,10 +97,10 @@ object PerfView {
       Graphic(-115, -100, 320, 240, 1, PerfAssets.lightMaterial)
     )
 
-  def lightingLayer(inputState: InputState): List[SceneGraphNode] =
+  def lightingLayer(inputState: InputState): List[SceneNode] =
     Graphic(inputState.mouse.position.x - 160, inputState.mouse.position.y - 120, 320, 240, 1, PerfAssets.lightMaterial) :: staticLights
 
-  val uiLayer: List[SceneGraphNode] =
+  val uiLayer: List[SceneNode] =
     List(
       Text((herdCount + 1).toString + " Naked dudes!", PerfGame.viewportWidth / 2, 40, 5, Fonts.fontKey, PerfAssets.fontMaterial).alignCenter,
       Text("Thundering Herd!", PerfGame.viewportWidth / 2, 10, 5, Fonts.fontKey, PerfAssets.fontMaterial).alignCenter

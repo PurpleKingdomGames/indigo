@@ -29,7 +29,7 @@ object SceneGraphViewEvents {
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  def collectViewEvents(boundaryLocator: BoundaryLocator, nodes: List[SceneGraphNode], inputEvents: List[GlobalEvent], sendEvent: GlobalEvent => Unit): Unit = {
+  def collectViewEvents(boundaryLocator: BoundaryLocator, nodes: List[SceneNode], inputEvents: List[GlobalEvent], sendEvent: GlobalEvent => Unit): Unit = {
     val count = nodes.length
     var index = 0
 
