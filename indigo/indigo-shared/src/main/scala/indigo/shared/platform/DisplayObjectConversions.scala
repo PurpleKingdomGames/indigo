@@ -34,6 +34,7 @@ import indigo.shared.assets.AssetName
 import indigo.shared.scenegraph.EntityNode
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.ShaderPrimitive
+import indigo.shared.scenegraph.Shape
 
 final class DisplayObjectConversions(
     boundaryLocator: BoundaryLocator,
@@ -168,6 +169,9 @@ final class DisplayObjectConversions(
       case x: Graphic =>
         List(graphicToDisplayObject(x, assetMapping))
 
+      case s: Shape =>
+        List(shapeToDisplayObject(s))
+
       case s: EntityNode =>
         List(sceneEntityToDisplayObject(s, assetMapping))
 
@@ -253,6 +257,31 @@ final class DisplayObjectConversions(
       case Some(assetName) =>
         lookupTextureOffset(assetMapping, assetName.value)
     }
+
+  def shapeToDisplayObject(leaf: Shape): DisplayObject = {
+    val shader: GLSLShader = leaf.toGLSLShader
+    val offset             = Vector2.zero
+    val shaderUniformHash  = shader.uniformHash
+    val shaderUBO = QuickCache(shaderUniformHash) {
+      DisplayObjectConversions.packUBO(shader.uniforms)
+    }
+
+    DisplayObject(
+      transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)),
+      z = leaf.depth.zIndex.toDouble,
+      width = leaf.bounds.size.x,
+      height = leaf.bounds.size.y,
+      atlasName = None,
+      frame = SpriteSheetFrame.defaultOffset,
+      channelOffset1 = offset,
+      channelOffset2 = offset,
+      channelOffset3 = offset,
+      isLit = 0.0f,
+      shaderId = shader.shaderId,
+      shaderUniformHash = shaderUniformHash,
+      shaderUBO = shaderUBO
+    )
+  }
 
   def sceneEntityToDisplayObject(leaf: EntityNode, assetMapping: AssetMapping): DisplayObject = {
     val shader: GLSLShader = leaf.toGLSLShader

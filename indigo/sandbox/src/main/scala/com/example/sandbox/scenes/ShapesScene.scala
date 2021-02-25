@@ -51,8 +51,12 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
         .addLayer(
           Shape.Circle(circlePosition, 20, RGBA.Red, RGBA.White, circleBorder),
           Shape.Line(Point(30, 80), Point(100, 20), RGBA.Cyan, lineThickness),
-          Shape.Box(Rectangle(Point(100, 100), squareSize), RGBA.White, RGBA.Black.withAlpha(0.75), 10)
+          Shape.Box(Rectangle(Point(100, 100), squareSize), RGBA.White, RGBA.Black.withAlpha(0.75), 10),
+          Clone(CloneId("shape clone")).withPosition(Point(10, 10)),
+          Clone(CloneId("shape clone")).withPosition(Point(20, 10)),
+          Clone(CloneId("shape clone")).withPosition(Point(30, 10))
         )
+        .addCloneBlanks(CloneBlank(CloneId("shape clone"), Shape.Circle(Point.zero, 5, RGBA.Green, RGBA.White, 2)))
     )
   }
 
