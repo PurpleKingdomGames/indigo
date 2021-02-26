@@ -5,19 +5,19 @@ import indigo.shared.CacheKey
 
 final class ShaderRegister {
 
-  implicit private val cache: QuickCache[Shader] = QuickCache.empty
+  implicit private val cache: QuickCache[RawShaderCode] = QuickCache.empty
 
   def register(shader: CustomShader.Source): Unit = {
     QuickCache(shader.id.value) {
-      Shader.fromCustomShader(shader)
+      RawShaderCode.fromCustomShader(shader)
     }
     ()
   }
 
-  def findByFontKey(shaderId: ShaderId): Option[Shader] =
+  def findByFontKey(shaderId: ShaderId): Option[RawShaderCode] =
     cache.fetch(CacheKey(shaderId.value))
 
-  def toSet: Set[Shader] =
+  def toSet: Set[RawShaderCode] =
     cache.all.map(_._2).toSet
 
   def clearRegister(): Unit = {

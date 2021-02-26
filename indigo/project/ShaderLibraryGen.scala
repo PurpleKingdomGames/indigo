@@ -42,7 +42,7 @@ object ShaderLibraryGen {
       .map(program => ShaderSnippet(newName + tag.split("-").map(_.capitalize).mkString, program))
 
   def makeShaderLibrary(files: Set[File], sourceManagedDir: File): Seq[File] = {
-    println("Generating Indigo Shader Library...")
+    println("Generating Indigo RawShaderCode Library...")
 
     val shaderFiles: Seq[File] =
       files.filter(f => fileFilter(f.name)).toSeq

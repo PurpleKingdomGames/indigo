@@ -15,11 +15,11 @@ import indigo.shared.IndigoLogger
 import indigo.facades.WebGL2RenderingContext
 import indigo.platform.events.GlobalEventStream
 import indigo.shared.events.RendererDetails
-import indigo.shared.shader.Shader
+import indigo.shared.shader.RawShaderCode
 
 final class RendererInitialiser(renderingTechnology: RenderingTechnology, globalEventStream: GlobalEventStream) {
 
-  def setup(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: html.Canvas, shaders: Set[Shader]): Renderer = {
+  def setup(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: html.Canvas, shaders: Set[RawShaderCode]): Renderer = {
     val (cNc, tech) = setupContextAndCanvas(canvas, config.magnification, config.antiAliasing)
 
     globalEventStream.pushGlobalEvent(new RendererDetails(tech, config.clearColor, config.magnification))
