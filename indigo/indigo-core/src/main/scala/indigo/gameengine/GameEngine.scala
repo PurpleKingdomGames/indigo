@@ -26,7 +26,7 @@ import indigo.shared.BoundaryLocator
 import indigo.shared.platform.SceneProcessor
 import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
-import indigo.shared.shader.CustomShader
+import indigo.shared.shader.Shader
 import indigo.shared.shader.ShaderRegister
 import indigo.shared.shader.StandardShaders
 import indigo.shared.assets.AssetName
@@ -34,7 +34,7 @@ import indigo.shared.assets.AssetName
 final class GameEngine[StartUpData, GameModel, ViewModel](
     fonts: Set[FontInfo],
     animations: Set[Animation],
-    shaders: Set[CustomShader],
+    shaders: Set[Shader],
     initialise: AssetCollection => Dice => Outcome[Startup[StartUpData]],
     initialModel: StartUpData => Outcome[GameModel],
     initialViewModel: StartUpData => GameModel => Outcome[ViewModel],
@@ -220,26 +220,26 @@ object GameEngine {
   def registerFonts(fontRegister: FontRegister, fonts: Set[FontInfo]): Unit =
     fonts.foreach(fontRegister.register)
 
-  def registerShaders(shaderRegister: ShaderRegister, shaders: Set[CustomShader], assetCollection: AssetCollection): Unit =
+  def registerShaders(shaderRegister: ShaderRegister, shaders: Set[Shader], assetCollection: AssetCollection): Unit =
     shaders.foreach {
-      case s: CustomShader.Source =>
+      case s: Shader.Source =>
         shaderRegister.register(s)
 
-      case s: CustomShader.External =>
+      case s: Shader.External =>
         shaderRegister.register(externalShaderToSource(s, assetCollection))
 
-      case s: CustomShader.PostSource =>
-        val parent: CustomShader.Source =
+      case s: Shader.PostSource =>
+        val parent: Shader.Source =
           s.parentShader match {
-            case ps: CustomShader.Source =>
+            case ps: Shader.Source =>
               ps
 
-            case ps: CustomShader.External =>
+            case ps: Shader.External =>
               externalShaderToSource(ps, assetCollection)
           }
 
         val shader =
-          CustomShader.Source(
+          Shader.Source(
             id = s.id,
             vertex = parent.vertex,
             postVertex = s.postVertex,
@@ -251,10 +251,10 @@ object GameEngine {
 
         shaderRegister.register(shader)
 
-      case e: CustomShader.PostExternal =>
-        val s: CustomShader.Source =
+      case e: Shader.PostExternal =>
+        val s: Shader.Source =
           externalShaderToSource(
-            CustomShader.External(
+            Shader.External(
               id = e.id,
               vertex = None,
               postVertex = e.postVertex,
@@ -266,17 +266,17 @@ object GameEngine {
             assetCollection
           )
 
-        val parent: CustomShader.Source =
+        val parent: Shader.Source =
           e.parentShader match {
-            case ps: CustomShader.Source =>
+            case ps: Shader.Source =>
               ps
 
-            case ps: CustomShader.External =>
+            case ps: Shader.External =>
               externalShaderToSource(ps, assetCollection)
           }
 
         val shader =
-          CustomShader.Source(
+          Shader.Source(
             id = s.id,
             vertex = parent.vertex,
             postVertex = s.postVertex,
@@ -289,27 +289,27 @@ object GameEngine {
         shaderRegister.register(shader)
     }
 
-  def externalShaderToSource(external: CustomShader.External, assetCollection: AssetCollection): CustomShader.Source =
-    CustomShader.Source(
+  def externalShaderToSource(external: Shader.External, assetCollection: AssetCollection): Shader.Source =
+    Shader.Source(
       id = external.id,
       vertex = external.vertex
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-vertex", a))
-        .getOrElse(CustomShader.defaultVertexProgram),
+        .getOrElse(Shader.defaultVertexProgram),
       postVertex = external.postVertex
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-post-vertex", a))
-        .getOrElse(CustomShader.defaultPostVertexProgram),
+        .getOrElse(Shader.defaultPostVertexProgram),
       fragment = external.fragment
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-fragment", a))
-        .getOrElse(CustomShader.defaultFragmentProgram),
+        .getOrElse(Shader.defaultFragmentProgram),
       postFragment = external.postFragment
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-post-fragment", a))
-        .getOrElse(CustomShader.defaultPostFragmentProgram),
+        .getOrElse(Shader.defaultPostFragmentProgram),
       light = external.light
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-light", a))
-        .getOrElse(CustomShader.defaultLightProgram),
+        .getOrElse(Shader.defaultLightProgram),
       postLight = external.postLight
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-post-light", a))
-        .getOrElse(CustomShader.defaultPostLightProgram)
+        .getOrElse(Shader.defaultPostLightProgram)
     )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
