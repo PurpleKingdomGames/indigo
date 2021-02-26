@@ -7,7 +7,7 @@ import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Depth
 import indigo.shared.datatypes.Flip
-import indigo.shared.materials.GLSLShader
+import indigo.shared.materials.ShaderData
 
 /**
   * Graphics are used to draw images on the screen, in a cheap efficient but expressive way.
@@ -99,8 +99,8 @@ final case class Graphic(
   def withCrop(x: Int, y: Int, width: Int, height: Int): Graphic =
     withCrop(Rectangle(x, y, width, height))
 
-  def toGLSLShader: GLSLShader =
-    material.toGLSLShader
+  def toShaderData: ShaderData =
+    material.toShaderData
 
 }
 
