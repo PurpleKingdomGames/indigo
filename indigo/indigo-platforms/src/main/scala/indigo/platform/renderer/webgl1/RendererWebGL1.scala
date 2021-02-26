@@ -27,7 +27,7 @@ import indigo.platform.renderer.shared.WebGLHelper
 import indigo.platform.events.GlobalEventStream
 import indigo.shared.events.ViewportResize
 import indigo.shared.config.GameViewport
-import indigo.shared.shader.Shader
+import indigo.shared.shader.RawShaderCode
 import indigo.shared.time.Seconds
 
 final class RendererWebGL1(
@@ -78,7 +78,7 @@ final class RendererWebGL1(
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  def init(shaders: Set[Shader]): Unit = {
+  def init(shaders: Set[RawShaderCode]): Unit = {
     // some basic set up.
     gl.disable(DEPTH_TEST)
     gl.viewport(0, 0, gl.drawingBufferWidth.toDouble, gl.drawingBufferHeight.toDouble)
@@ -112,50 +112,48 @@ final class RendererWebGL1(
     gl.bindBuffer(ARRAY_BUFFER, null)
   }
 
-  def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = {
-
+  def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit =
     resize(cNc.canvas, cNc.magnification)
 
-    // WebGLHelper.setNormalBlend(gl)
-    // drawLayer(
-    //   sceneData.gameLayerDisplayObjects,
-    //   Some(gameFrameBuffer),
-    //   RGBA.Black.makeTransparent,
-    //   standardShaderProgram,
-    //   sceneData.gameProjection,
-    //   false
-    // )
+  // WebGLHelper.setNormalBlend(gl)
+  // drawLayer(
+  //   sceneData.gameLayerDisplayObjects,
+  //   Some(gameFrameBuffer),
+  //   RGBA.Black.makeTransparent,
+  //   standardShaderProgram,
+  //   sceneData.gameProjection,
+  //   false
+  // )
 
-    // WebGLHelper.setLightingBlend(gl)
-    // drawLayer(
-    //   sceneData.lightingLayerDisplayObjects,
-    //   Some(lightingFrameBuffer),
-    //   sceneData.clearColor,
-    //   lightingShaderProgram,
-    //   sceneData.lightingProjection,
-    //   false
-    // )
+  // WebGLHelper.setLightingBlend(gl)
+  // drawLayer(
+  //   sceneData.lightingLayerDisplayObjects,
+  //   Some(lightingFrameBuffer),
+  //   sceneData.clearColor,
+  //   lightingShaderProgram,
+  //   sceneData.lightingProjection,
+  //   false
+  // )
 
-    // WebGLHelper.setNormalBlend(gl)
-    // drawLayer(
-    //   sceneData.uiLayerDisplayObjects,
-    //   Some(uiFrameBuffer),
-    //   RGBA.Black.makeTransparent,
-    //   standardShaderProgram,
-    //   sceneData.uiProjection,
-    //   false
-    // )
+  // WebGLHelper.setNormalBlend(gl)
+  // drawLayer(
+  //   sceneData.uiLayerDisplayObjects,
+  //   Some(uiFrameBuffer),
+  //   RGBA.Black.makeTransparent,
+  //   standardShaderProgram,
+  //   sceneData.uiProjection,
+  //   false
+  // )
 
-    // WebGLHelper.setNormalBlend(gl)
-    // drawLayer(
-    //   mutable.ListBuffer(RendererHelper.screenDisplayObject(lastWidth, lastHeight)),
-    //   None,
-    //   config.clearColor,
-    //   mergeShaderProgram,
-    //   orthographicProjectionMatrixNoMag,
-    //   true
-    // )
-  }
+  // WebGLHelper.setNormalBlend(gl)
+  // drawLayer(
+  //   mutable.ListBuffer(RendererHelper.screenDisplayObject(lastWidth, lastHeight)),
+  //   None,
+  //   config.clearColor,
+  //   mergeShaderProgram,
+  //   orthographicProjectionMatrixNoMag,
+  //   true
+  // )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def drawLayer(

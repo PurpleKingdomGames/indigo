@@ -27,7 +27,7 @@ import indigo.shared.config.GameViewport
 import scala.collection.mutable
 import indigo.shared.shader.ShaderId
 import org.scalajs.dom.raw.WebGLProgram
-import indigo.shared.shader.Shader
+import indigo.shared.shader.RawShaderCode
 import scalajs.js.JSConverters._
 import indigo.shared.time.Seconds
 import indigo.shared.scenegraph.Blend
@@ -108,7 +108,7 @@ final class RendererWebGL2(
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var orthographicProjectionMatrix: CheapMatrix4 = CheapMatrix4.identity
 
-  def init(shaders: Set[Shader]): Unit = {
+  def init(shaders: Set[RawShaderCode]): Unit = {
 
     shaders.foreach { shader =>
       if (!customShaders.contains(shader.id))
@@ -165,7 +165,7 @@ final class RendererWebGL2(
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var currentBlendEq: String                          = "add"
+  private var currentBlendEq: String = "add"
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var currentBlendFactors: (BlendFactor, BlendFactor) = (Blend.Normal.src, Blend.Normal.dst)
 

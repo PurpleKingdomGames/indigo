@@ -6,7 +6,7 @@ import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLTexture
 import org.scalajs.dom.raw.WebGLProgram
 
-import indigo.shared.shader.Shader
+import indigo.shared.shader.RawShaderCode
 import org.scalajs.dom.raw.WebGLRenderingContext
 import indigo.facades.WebGL2RenderingContext
 import indigo.shared.scenegraph.BlendFactor
@@ -14,7 +14,7 @@ import indigo.shared.scenegraph.BlendFactor
 object WebGLHelper {
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf", "scalafix:DisableSyntax.throw"))
-  def shaderProgramSetup(gl: raw.WebGLRenderingContext, layerLabel: String, shader: Shader): WebGLProgram = {
+  def shaderProgramSetup(gl: raw.WebGLRenderingContext, layerLabel: String, shader: RawShaderCode): WebGLProgram = {
     //Create a vertex shader program object and compile it
     val vertShader = gl.createShader(VERTEX_SHADER)
     gl.shaderSource(vertShader, shader.vertex)
@@ -54,7 +54,7 @@ object WebGLHelper {
     else {
       IndigoLogger.error(gl.getProgramInfoLog(shaderProgram));
       gl.deleteProgram(shaderProgram);
-      throw new Exception(s"Fatal: Shader program link error ($layerLabel)")
+      throw new Exception(s"Fatal: RawShaderCode program link error ($layerLabel)")
     }
   }
 

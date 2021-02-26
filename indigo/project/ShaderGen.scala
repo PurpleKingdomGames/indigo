@@ -77,10 +77,10 @@ object ShaderGen {
 
     s"""package indigo.shaders
     |
-    |import indigo.shared.shader.{Shader, ShaderId}
+    |import indigo.shared.shader.{RawShaderCode, ShaderId}
     |${if (useNoWarn) "import scala.annotation.nowarn" else ""}
     |
-    |object $name extends Shader {
+    |object $name extends RawShaderCode {
     |  val id: ShaderId = ShaderId("indigo_default_$name")
     |
     |  val vertex: String =
@@ -128,7 +128,7 @@ object ShaderGen {
     }
 
   def makeShader(files: Set[File], sourceManagedDir: File): Seq[File] = {
-    println("Generating Indigo Shader Classes...")
+    println("Generating Indigo RawShaderCode Classes...")
 
     val shaderFiles: Seq[File] =
       files.filter(f => fileFilter(f.name)).toSeq
@@ -159,13 +159,13 @@ object ShaderGen {
 
     dict.toSeq.map {
       case (newName, subShaders: Seq[ShaderDetails]) if subShaders.length != 2 =>
-        throw new Exception("Shader called '" + newName + "' did not appear to be a pair of shaders .vert and .frag")
+        throw new Exception("RawShaderCode called '" + newName + "' did not appear to be a pair of shaders .vert and .frag")
 
       case (newName, subShaders: Seq[ShaderDetails]) if !subShaders.exists(_.ext == ".vert") =>
-        throw new Exception("Shader called '" + newName + "' is missing a .vert shader")
+        throw new Exception("RawShaderCode called '" + newName + "' is missing a .vert shader")
 
       case (newName, subShaders: Seq[ShaderDetails]) if !subShaders.exists(_.ext == ".frag") =>
-        throw new Exception("Shader called '" + newName + "' is missing a .frag shader")
+        throw new Exception("RawShaderCode called '" + newName + "' is missing a .frag shader")
 
       case (newName, subShaders: Seq[ShaderDetails]) =>
         val vert = subShaders.find(_.ext == ".vert").map(_.shaderCode)
