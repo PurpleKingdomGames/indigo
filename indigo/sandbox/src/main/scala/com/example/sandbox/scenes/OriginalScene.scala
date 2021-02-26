@@ -143,8 +143,8 @@ object Shaders {
     |}
     |""".stripMargin
 
-  val circle: CustomShader.Source =
-    CustomShader
+  val circle: Shader.Source =
+    Shader
       .Source(circleId)
       .withVertexProgram(circleVertex(0.5))
       .withFragmentProgram(circleFragment)
@@ -156,8 +156,8 @@ object Shaders {
   val fragAsset: AssetName = AssetName("fragment")
   val seaAsset: AssetName  = AssetName("sea")
 
-  val external: CustomShader.External =
-    CustomShader
+  val external: Shader.External =
+    Shader
       .External(externalId)
       .withVertexProgram(vertAsset)
       .withFragmentProgram(fragAsset)
@@ -166,8 +166,8 @@ object Shaders {
   val seaId: ShaderId =
     ShaderId("sea")
 
-  val sea: CustomShader.External =
-    CustomShader
+  val sea: Shader.External =
+    Shader
       .External(seaId)
       .withFragmentProgram(seaAsset)
 

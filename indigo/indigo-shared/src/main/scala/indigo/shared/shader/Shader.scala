@@ -2,13 +2,13 @@ package indigo.shared.shader
 
 import indigo.shared.assets.AssetName
 
-sealed trait CustomShader {
+sealed trait Shader {
   def id: ShaderId
 }
 
-sealed trait ShaderSource extends CustomShader
+sealed trait ShaderSource extends Shader
 
-object CustomShader {
+object Shader {
 
   val defaultVertexProgram: String       = "void vertex(){}"
   val defaultPostVertexProgram: String   = "void postVertex(){}"
@@ -115,7 +115,7 @@ object CustomShader {
       postVertex: String,
       postFragment: String,
       postLight: String
-  ) extends CustomShader {
+  ) extends Shader {
     def withShaderId(newId: ShaderId): PostSource =
       this.copy(id = newId)
 
@@ -150,7 +150,7 @@ object CustomShader {
       postVertex: Option[AssetName],
       postFragment: Option[AssetName],
       postLight: Option[AssetName]
-  ) extends CustomShader {
+  ) extends Shader {
 
     def withShaderId(newId: ShaderId): PostExternal =
       this.copy(id = newId)
