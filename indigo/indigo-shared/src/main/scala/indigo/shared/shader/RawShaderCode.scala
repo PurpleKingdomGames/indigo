@@ -2,16 +2,16 @@ package indigo.shared.shader
 
 import indigo.shaders.WebGL2Base
 
-trait Shader {
+trait RawShaderCode {
   val id: ShaderId
   val vertex: String
   val fragment: String
 }
 
-object Shader {
+object RawShaderCode {
 
-  def fromCustomShader(customShader: CustomShader.Source): Shader =
-    new Shader {
+  def fromCustomShader(customShader: CustomShader.Source): RawShaderCode =
+    new RawShaderCode {
       val id: ShaderId = customShader.id
       val vertex: String = ShaderTemplates.webGL2Vertex(
         Some(customShader.vertex),
