@@ -25,7 +25,7 @@ import indigo.shared.scenegraph.Clone
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.display.DisplayClone
 import indigo.shared.scenegraph.CloneTransformData
-import indigo.shared.materials.GLSLShader
+import indigo.shared.materials.ShaderData
 import indigo.shared.display.DisplayEffects
 import indigo.shared.BoundaryLocator
 import indigo.shared.animation.AnimationRef
@@ -259,7 +259,7 @@ final class DisplayObjectConversions(
     }
 
   def shapeToDisplayObject(leaf: Shape): DisplayObject = {
-    val shader: GLSLShader = leaf.toGLSLShader
+    val shader: ShaderData = leaf.toShaderData
     val offset             = Vector2.zero
     val shaderUniformHash  = shader.uniformHash
     val shaderUBO = QuickCache(shaderUniformHash) {
@@ -284,7 +284,7 @@ final class DisplayObjectConversions(
   }
 
   def sceneEntityToDisplayObject(leaf: EntityNode, assetMapping: AssetMapping): DisplayObject = {
-    val shader: GLSLShader = leaf.toGLSLShader
+    val shader: ShaderData = leaf.toShaderData
 
     val channelOffset1 = optionalAssetToOffset(assetMapping, shader.channel1)
     val channelOffset2 = optionalAssetToOffset(assetMapping, shader.channel2)
@@ -328,7 +328,7 @@ final class DisplayObjectConversions(
   }
 
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
-    val asCustom     = leaf.material.toGLSLShader
+    val asCustom     = leaf.material.toShaderData
     val materialName = asCustom.channel0.get.value
 
     // val albedoAmount                     = 1.0f
@@ -370,7 +370,7 @@ final class DisplayObjectConversions(
 
   def spriteToDisplayObject(boundaryLocator: BoundaryLocator, leaf: Sprite, assetMapping: AssetMapping, anim: AnimationRef): DisplayObject = {
     val material     = leaf.material
-    val asCustom     = material.toGLSLShader
+    val asCustom     = material.toShaderData
     val materialName = asCustom.channel0.get.value
 
     // val albedoAmount                     = 1.0f
@@ -417,7 +417,7 @@ final class DisplayObjectConversions(
     (line, alignmentOffsetX, yOffset) => {
 
       val material     = leaf.material
-      val asCustom     = material.toGLSLShader
+      val asCustom     = material.toShaderData
       val materialName = asCustom.channel0.get.value
 
       val lineHash: String =

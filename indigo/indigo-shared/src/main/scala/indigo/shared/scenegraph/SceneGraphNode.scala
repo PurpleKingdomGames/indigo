@@ -6,7 +6,7 @@ import indigo.shared.animation.AnimationKey
 import indigo.shared.animation.CycleLabel
 import indigo.shared.datatypes._
 import indigo.shared.materials.StandardMaterial
-import indigo.shared.materials.GLSLShader
+import indigo.shared.materials.ShaderData
 import indigo.shared.datatypes.mutable.CheapMatrix4
 
 import indigo.shared.animation.AnimationAction
@@ -50,7 +50,7 @@ sealed trait RenderNode extends SceneNode {
   */
 trait EntityNode extends RenderNode {
   def bounds: Rectangle
-  def toGLSLShader: GLSLShader
+  def toShaderData: ShaderData
 }
 
 //------------------
@@ -150,7 +150,7 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
   lazy val flipVertical: Boolean   = transform.flipVertical
 
   def position: Point = Point(transform.position.x, transform.position.y)
-  def flip: Flip = Flip(transform.flipHorizontal, transform.flipVertical)
+  def flip: Flip      = Flip(transform.flipHorizontal, transform.flipVertical)
 
   def withCloneId(newCloneId: CloneId): CloneBatch =
     this.copy(id = newCloneId)
@@ -202,8 +202,7 @@ final case class CloneBatch(id: CloneId, depth: Depth, transform: CloneTransform
 /**
   * Used to group elements to allow them to be manipulated as a collection.
   */
-final case class Group(children: List[RenderNode], position: Point, rotation: Radians, scale: Vector2, depth: Depth, ref: Point, flip: Flip)
-extends CompositeNode with SpatialModifiers[Group] {
+final case class Group(children: List[RenderNode], position: Point, rotation: Radians, scale: Vector2, depth: Depth, ref: Point, flip: Flip) extends CompositeNode with SpatialModifiers[Group] {
 
   lazy val x: Int = position.x
   lazy val y: Int = position.y

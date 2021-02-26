@@ -22,8 +22,8 @@ object StandardMaterial {
     val hash: String =
       diffuse.value
 
-    def toGLSLShader: GLSLShader =
-      GLSLShader(
+    def toShaderData: ShaderData =
+      ShaderData(
         StandardShaders.Bitmap.id,
         Nil,
         Some(diffuse),
@@ -52,7 +52,7 @@ object StandardMaterial {
     val hash: String =
       diffuse.value + alpha.toString() + tint.hash + overlay.hash
 
-    def toGLSLShader: GLSLShader = {
+    def toShaderData: ShaderData = {
       val gradiantUniforms: List[(Uniform, ShaderPrimitive)] =
         overlay match {
           case Color(color) =>
@@ -85,7 +85,7 @@ object StandardMaterial {
           case _: RadialGradiant => 2.0
         }
 
-      GLSLShader(
+      ShaderData(
         StandardShaders.ImageEffects.id,
         List(
           Uniform("ALPHA_SATURATION_OVERLAYTYPE") -> vec3(alpha, saturation, overlayType),
@@ -110,8 +110,8 @@ object StandardMaterial {
     def hash: String =
       parent.hash + postShaderId.value
 
-    def toGLSLShader: GLSLShader =
-      parent.toGLSLShader.withShaderId(postShaderId)
+    def toShaderData: ShaderData =
+      parent.toShaderData.withShaderId(postShaderId)
   }
 
   // final case class Textured(diffuse: AssetName, isLit: Boolean) extends StandardMaterial {
@@ -125,8 +125,8 @@ object StandardMaterial {
   //   def unlit: Textured =
   //     this.copy(isLit = false)
 
-  //   def toGLSLShader: GLSLShader =
-  //     GLSLShader(
+  //   def toShaderData: ShaderData =
+  //     ShaderData(
   //       StandardShaders.Basic,
   //       Map(),
   //       Some(diffuse),
@@ -179,8 +179,8 @@ object StandardMaterial {
   //       specular.map(_.hash).getOrElse("_") +
   //       (if (isLit) "1" else "0")
 
-  //   def toGLSLShader: GLSLShader =
-  //     GLSLShader(
+  //   def toShaderData: ShaderData =
+  //     ShaderData(
   //       StandardShaders.Basic,
   //       Map(),
   //       Some(albedo),

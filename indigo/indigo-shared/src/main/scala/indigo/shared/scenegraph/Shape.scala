@@ -6,7 +6,7 @@ import indigo.shared.datatypes.Radians
 import indigo.shared.datatypes.Vector2
 import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Rectangle
-import indigo.shared.materials.GLSLShader
+import indigo.shared.materials.ShaderData
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.ShaderPrimitive._
 import indigo.shared.datatypes.RGBA
@@ -132,8 +132,8 @@ object Shape {
     def withFlip(newFlip: Flip): Box =
       this.copy(flip = newFlip)
 
-    def toGLSLShader: GLSLShader =
-      GLSLShader(
+    def toShaderData: ShaderData =
+      ShaderData(
         StandardShaders.ShapeBox.id,
         List(
           Uniform("ASPECT_RATIO") -> vec2(aspect.x, aspect.y),
@@ -251,8 +251,8 @@ object Shape {
     def withFlip(newFlip: Flip): Circle =
       this.copy(flip = newFlip)
 
-    def toGLSLShader: GLSLShader =
-      GLSLShader(
+    def toShaderData: ShaderData =
+      ShaderData(
         StandardShaders.ShapeCircle.id,
         List(
           Uniform("STROKE_WIDTH") -> float(strokeWidth.toDouble),
@@ -371,7 +371,7 @@ object Shape {
     def withFlip(newFlip: Flip): Line =
       this.copy(flip = newFlip)
 
-    def toGLSLShader: GLSLShader = {
+    def toShaderData: ShaderData = {
       val bounds: Rectangle =
         Rectangle.fromTwoPoints(start, end)
 
@@ -379,7 +379,7 @@ object Shape {
       val s = start - bounds.position + (strokeWidth / 2)
       val e = end - bounds.position + (strokeWidth / 2)
 
-      GLSLShader(
+      ShaderData(
         StandardShaders.ShapeLine.id,
         List(
           Uniform("STROKE_WIDTH") -> float(strokeWidth.toDouble),

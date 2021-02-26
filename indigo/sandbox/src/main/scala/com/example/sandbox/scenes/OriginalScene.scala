@@ -54,21 +54,21 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
         ) |+| scene
         .addLayer(
           Layer(
-            CustomShape(0, 0, 228 * 3, 140 * 3, Depth(10), GLSLShader(Shaders.seaId))
+            CustomShape(0, 0, 228 * 3, 140 * 3, Depth(10), ShaderData(Shaders.seaId))
           ).withKey(BindingKey("bg"))
             .withMagnification(1)
         )
         .addLayer(
           Layer(
             Graphic(120, 10, 32, 32, 1, SandboxAssets.dotsMaterial),
-            CustomShape(140, 50, 32, 32, Depth(1), GLSLShader(Shaders.circleId)),
+            CustomShape(140, 50, 32, 32, Depth(1), ShaderData(Shaders.circleId)),
             CustomShape(
               140,
               50,
               32,
               32,
               Depth(1),
-              GLSLShader(
+              ShaderData(
                 Shaders.externalId,
                 List(
                   Uniform("ALPHA")        -> float(0.75),
@@ -82,7 +82,7 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
               32,
               32,
               Depth(1),
-              GLSLShader(
+              ShaderData(
                 Shaders.externalId,
                 List(
                   Uniform("ALPHA")        -> float(0.5),
@@ -97,14 +97,14 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
 
 }
 
-final case class CustomShape(x: Int, y: Int, width: Int, height: Int, depth: Depth, shader: GLSLShader) extends EntityNode {
+final case class CustomShape(x: Int, y: Int, width: Int, height: Int, depth: Depth, shader: ShaderData) extends EntityNode {
   val flip: Flip               = Flip.default
   val bounds: Rectangle        = Rectangle(x, y, width, height)
   val position: Point          = bounds.position
   val ref: Point               = Point.zero
   val rotation: Radians        = Radians.zero
   val scale: Vector2           = Vector2.one
-  val toGLSLShader: GLSLShader = shader
+  val toShaderData: ShaderData = shader
 
   def withDepth(newDepth: Depth): CustomShape =
     this.copy(depth = newDepth)

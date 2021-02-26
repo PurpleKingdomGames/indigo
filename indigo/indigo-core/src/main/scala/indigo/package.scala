@@ -33,8 +33,8 @@ package object indigo {
   type StandardMaterial = shared.materials.StandardMaterial
   val StandardMaterial: shared.materials.StandardMaterial.type = shared.materials.StandardMaterial
 
-  type GLSLShader = shared.materials.GLSLShader
-  val GLSLShader: shared.materials.GLSLShader.type = shared.materials.GLSLShader
+  type ShaderData = shared.materials.ShaderData
+  val ShaderData: shared.materials.ShaderData.type = shared.materials.ShaderData
 
   type CustomShader = shared.shader.CustomShader
   val CustomShader: shared.shader.CustomShader.type = shared.shader.CustomShader
@@ -361,10 +361,10 @@ package object indigo {
   type SceneNode = shared.scenegraph.SceneNode
   val SceneNode: shared.scenegraph.SceneNode.type = shared.scenegraph.SceneNode
 
-  type EntityNode = shared.scenegraph.EntityNode
+  type EntityNode    = shared.scenegraph.EntityNode
   type DependentNode = shared.scenegraph.DependentNode
   type CompositeNode = shared.scenegraph.CompositeNode
-  type RenderNode  = shared.scenegraph.RenderNode
+  type RenderNode    = shared.scenegraph.RenderNode
 
   // Audio
   type SceneAudio = shared.scenegraph.SceneAudio
