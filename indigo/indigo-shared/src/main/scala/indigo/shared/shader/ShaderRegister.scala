@@ -7,7 +7,7 @@ final class ShaderRegister {
 
   implicit private val cache: QuickCache[RawShaderCode] = QuickCache.empty
 
-  def register(shader: CustomShader.Source): Unit = {
+  def register(shader: Shader.Source): Unit = {
     QuickCache(shader.id.value) {
       RawShaderCode.fromCustomShader(shader)
     }

@@ -42,7 +42,7 @@ trait IndigoSandbox[StartUpData, Model] extends GameLauncher {
   /**
     * A fixed set of custom shaders you will be able to render with
     */
-  val shaders: Set[CustomShader]
+  val shaders: Set[Shader]
 
   /**
     * The `setup` function is your only opportunity to do an initial work

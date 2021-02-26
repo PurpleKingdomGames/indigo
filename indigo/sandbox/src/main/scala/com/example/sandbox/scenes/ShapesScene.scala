@@ -72,8 +72,8 @@ object ShapeShaders {
 
   val postVertAsset: AssetName = AssetName("post vertex")
   val postFragAsset: AssetName = AssetName("post fragment")
-  def postShader: CustomShader.PostExternal =
-    CustomShader
+  def postShader: Shader.PostExternal =
+    Shader
       .PostExternal(ShaderId("post shader test"), StandardShaders.Bitmap)
       .withPostVertexProgram(postVertAsset)
       .withPostFragmentProgram(postFragAsset)

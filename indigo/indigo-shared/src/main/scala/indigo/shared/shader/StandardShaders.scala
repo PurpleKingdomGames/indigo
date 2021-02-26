@@ -4,17 +4,17 @@ import indigo.shaders.ShaderLibrary
 
 object StandardShaders {
 
-  def shaderList: List[CustomShader.Source] =
+  def shaderList: List[Shader.Source] =
     List(
       Bitmap,
       ImageEffects,
       ShapeBox,
       ShapeCircle,
-      ShapeLine,
+      ShapeLine
     )
 
-  val Bitmap: CustomShader.Source =
-    CustomShader.Source(
+  val Bitmap: Shader.Source =
+    Shader.Source(
       id = ShaderId("[indigo_engine_blit]"),
       vertex = ShaderLibrary.NoOpVertex,
       postVertex = ShaderLibrary.NoOpPostVertex,
@@ -24,8 +24,8 @@ object StandardShaders {
       postLight = ShaderLibrary.NoOpPostLight
     )
 
-  val ImageEffects: CustomShader.Source =
-    CustomShader.Source(
+  val ImageEffects: Shader.Source =
+    Shader.Source(
       id = ShaderId("[indigo_engine_effects]"),
       vertex = ShaderLibrary.NoOpVertex,
       postVertex = ShaderLibrary.NoOpPostVertex,
@@ -35,8 +35,8 @@ object StandardShaders {
       postLight = ShaderLibrary.NoOpPostLight
     )
 
-  val ShapeBox: CustomShader.Source =
-    CustomShader.Source(
+  val ShapeBox: Shader.Source =
+    Shader.Source(
       id = ShaderId("[indigo_engine_shape_box]"),
       vertex = ShaderLibrary.NoOpVertex,
       postVertex = ShaderLibrary.NoOpPostVertex,
@@ -46,8 +46,8 @@ object StandardShaders {
       postLight = ShaderLibrary.NoOpPostLight
     )
 
-  val ShapeCircle: CustomShader.Source =
-    CustomShader.Source(
+  val ShapeCircle: Shader.Source =
+    Shader.Source(
       id = ShaderId("[indigo_engine_shape_circle]"),
       vertex = ShaderLibrary.NoOpVertex,
       postVertex = ShaderLibrary.NoOpPostVertex,
@@ -57,8 +57,8 @@ object StandardShaders {
       postLight = ShaderLibrary.NoOpPostLight
     )
 
-  val ShapeLine: CustomShader.Source =
-    CustomShader.Source(
+  val ShapeLine: Shader.Source =
+    Shader.Source(
       id = ShaderId("[indigo_engine_shape_line]"),
       vertex = ShaderLibrary.NoOpVertex,
       postVertex = ShaderLibrary.NoOpPostVertex,
