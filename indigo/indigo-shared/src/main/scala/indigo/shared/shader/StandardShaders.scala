@@ -10,7 +10,8 @@ object StandardShaders {
       ImageEffects,
       ShapeBox,
       ShapeCircle,
-      ShapeLine
+      ShapeLine,
+      ShapePolygon
     )
 
   val Bitmap: Shader.Source =
@@ -63,6 +64,17 @@ object StandardShaders {
       vertex = ShaderLibrary.NoOpVertex,
       postVertex = ShaderLibrary.NoOpPostVertex,
       fragment = ShaderLibrary.ShapeLineFragment,
+      postFragment = ShaderLibrary.NoOpPostFragment,
+      light = ShaderLibrary.NoOpLight,
+      postLight = ShaderLibrary.NoOpPostLight
+    )
+
+  val ShapePolygon: Shader.Source =
+    Shader.Source(
+      id = ShaderId("[indigo_engine_shape_polygon]"),
+      vertex = ShaderLibrary.NoOpVertex,
+      postVertex = ShaderLibrary.NoOpPostVertex,
+      fragment = ShaderLibrary.ShapePolygonFragment,
       postFragment = ShaderLibrary.NoOpPostFragment,
       light = ShaderLibrary.NoOpLight,
       postLight = ShaderLibrary.NoOpPostLight
