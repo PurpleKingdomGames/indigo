@@ -93,15 +93,18 @@ object ShaderPrimitive {
   @SuppressWarnings(Array("scalafix:DisableSyntax.asInstanceOf"))
   final case class array[T](size: Int, values: Array[T])(implicit ev: IsShaderValue[T]) extends ShaderPrimitive {
     val hash: String     = s"array${values.mkString}"
-    val length: Int      = values.map(_ => ev.giveLength).sum
+    val length: Int      = values.length * 4
     val isArray: Boolean = true
 
     def toArray: Array[Float] = {
       val data =
-        values.map(p => ev.toArray(p.asInstanceOf[ShaderPrimitive])).flatten.toArray
+        values
+          .map(p => expandTo4(ev.toArray(p.asInstanceOf[ShaderPrimitive])))
+          .flatten
+          .toArray
 
-      val len = data.length
-      val allocatedSize = size * ev.giveLength
+      val len           = data.length
+      val allocatedSize = size * 4
 
       if (len == allocatedSize)
         data
@@ -110,6 +113,20 @@ object ShaderPrimitive {
       else
         data ++ Array.fill[Float](allocatedSize - data.length)(0)
     }
+
+    private val empty1: Array[Float] = Array[Float](0.0f)
+    private val empty2: Array[Float] = Array[Float](0.0f, 0.0f)
+    private val empty3: Array[Float] = Array[Float](0.0f, 0.0f, 0.0f)
+
+    private def expandTo4(arr: Array[Float]): Array[Float] =
+      arr.length match {
+        case 0 => arr
+        case 1 => arr ++ empty3
+        case 2 => arr ++ empty2
+        case 3 => arr ++ empty1
+        case 4 => arr
+        case _ => arr
+      }
   }
   object array {
     def apply[T: ClassTag](size: Int)(values: T*)(implicit ev: IsShaderValue[T]): array[T] =

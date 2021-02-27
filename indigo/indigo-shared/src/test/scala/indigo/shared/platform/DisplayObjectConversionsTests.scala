@@ -227,7 +227,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         Uniform("b") -> float(2),
         Uniform("c") -> vec3(3, 4, 5),
         Uniform("d") -> float(6),
-        Uniform("e") -> array(6)(vec2(7, 8), vec2(9, 10), vec2(11, 12)),
+        Uniform("e") -> array(4)(vec2(7, 8), vec2(9, 10), vec2(11, 12)),
         Uniform("f") -> float(13)
       )
 
@@ -236,7 +236,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         Array[Float](1, 2, 0, 0),
         Array[Float](3, 4, 5, 0),
         Array[Float](6, 0, 0, 0),
-        Array[Float](7, 8, 9, 10, 11, 12, 0, 0, 0, 0, 0, 0),
+        Array[Float](7, 8, 0, 0, 9, 10, 0, 0, 11, 12, 0, 0, 0, 0, 0, 0),
         Array[Float](13, 0, 0, 0)
       ).flatten
 
@@ -277,59 +277,58 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     // Exact 3 array.
     assertEquals(
       DisplayObjectConversions.packUBO(uniforms :+ Uniform("VERTICES") -> array(3)(vec2(6.0), vec2(7.0), vec2(8.0))).toList,
-      expected.toList ++ List[Float](6, 6, 7, 7, 8, 8)
+      expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0)
     )
 
     // 4 array padded.
     assertEquals(
       DisplayObjectConversions.packUBO(uniforms :+ Uniform("VERTICES") -> array(4)(vec2(6.0), vec2(7.0), vec2(8.0))).toList,
-      expected.toList ++ List[Float](6, 6, 7, 7, 8, 8) ++ List[Float](0, 0)
+      expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ List[Float](0, 0, 0, 0)
     )
 
     // 5 array padded.
     assertEquals(
       DisplayObjectConversions.packUBO(uniforms :+ Uniform("VERTICES") -> array(5)(vec2(6.0), vec2(7.0), vec2(8.0))).toList,
-      expected.toList ++ List[Float](6, 6, 7, 7, 8, 8) ++ List[Float](0, 0) ++ List[Float](0, 0)
+      expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ List[Float](0, 0, 0, 0) ++ List[Float](0, 0, 0, 0)
     )
 
     // 6 array padded.
     assertEquals(
       DisplayObjectConversions.packUBO(uniforms :+ Uniform("VERTICES") -> array(6)(vec2(6.0), vec2(7.0), vec2(8.0))).toList,
-      expected.toList ++ List[Float](6, 6, 7, 7, 8, 8) ++ List[Float](0, 0) ++ List[Float](0, 0) ++ List[Float](0, 0)
+      expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ List[Float](0, 0, 0, 0) ++ List[Float](0, 0, 0, 0) ++ List[Float](0, 0, 0, 0)
     )
 
     // 7 array padded.
     assertEquals(
       DisplayObjectConversions.packUBO(uniforms :+ Uniform("VERTICES") -> array(7)(vec2(6.0), vec2(7.0), vec2(8.0))).toList,
-      expected.toList ++ List[Float](6, 6, 7, 7, 8, 8) ++ List[Float](0, 0) ++ List[Float](0, 0) ++ List[Float](0, 0) ++ List[Float](0, 0)
+      expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ List[Float](0, 0, 0, 0) ++ List[Float](0, 0, 0, 0) ++ List[Float](0, 0, 0, 0) ++ List[Float](0, 0, 0, 0)
     )
 
     // 8 array padded.
     assertEquals(
       DisplayObjectConversions.packUBO(uniforms :+ Uniform("VERTICES") -> array(8)(vec2(6.0), vec2(7.0), vec2(8.0))).toList,
-      expected.toList ++ List[Float](6, 6, 7, 7, 8, 8) ++ List[Float](0, 0) ++ List[Float](0, 0) ++ List[Float](0, 0) ++ List[Float](0, 0) ++ List[Float](0, 0)
+      expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++ List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++ List[Float](0, 0, 0, 0) ++ List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0)
     )
-
-    //List(1, 1, 2, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 7, 7, 8, 8, 0, 0, 0, 0, 0, 0, 0, 0)
-    println(DisplayObjectConversions.packUBO(uniforms :+ Uniform("VERTICES") -> array(5)(vec2(6.0), vec2(7.0), vec2(8.0))).toList.length)
 
     // 16 array padded.
     assertEquals(
       DisplayObjectConversions.packUBO(uniforms :+ Uniform("VERTICES") -> array(16)(vec2(6.0), vec2(7.0), vec2(8.0))).toList,
-      expected.toList ++ List[Float](6, 6, 7, 7, 8, 8) ++ 
-      List[Float](0, 0) ++ 
-      List[Float](0, 0) ++ 
-      List[Float](0, 0) ++ 
-      List[Float](0, 0) ++ 
-      List[Float](0, 0) ++ 
-      List[Float](0, 0) ++ 
-      List[Float](0, 0) ++ 
-      List[Float](0, 0) ++ 
-      List[Float](0, 0) ++ 
-      List[Float](0, 0) ++ 
-      List[Float](0, 0) ++ 
-      List[Float](0, 0) ++ 
-      List[Float](0, 0)
+      expected.toList ++ List[Float](6, 6, 0, 0, 7, 7, 0, 0, 8, 8, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0) ++
+        List[Float](0, 0, 0, 0)
     )
 
   }

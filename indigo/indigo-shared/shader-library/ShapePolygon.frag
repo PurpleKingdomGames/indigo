@@ -9,7 +9,7 @@ float TIME;
 vec2 SIZE;
 
 //<indigo-fragment>
-const int MAX_VERTICES = 3;
+const int MAX_VERTICES = 16;
 
 layout (std140) uniform CustomData {
   vec2 ASPECT_RATIO;
@@ -37,18 +37,9 @@ float sdfCalc(vec2 p, int count, vec2[MAX_VERTICES] v) {
 
 void fragment() {
 
-  vec2 v0 = VERTICES[0];
-  // vec2 v0 = vec2(0.1, 0.1);
-  vec2 v1 = VERTICES[2];
-  // vec2 v1 = vec2(0.2, 0.7);
-  vec2 v2 = vec2(0.9, 0.9);
-  // vec2 v2 = VERTICES[2];
-  vec2 ve = vec2(0.0, 0.0);
-  vec2[MAX_VERTICES] polygon = vec2[MAX_VERTICES](v0, v1, v2);
-
   float strokeWidthHalf = max(0.0, STROKE_WIDTH / SIZE.x / 2.0);
 
-  float sdf = sdfCalc(UV, int(COUNT), polygon);
+  float sdf = sdfCalc(UV, int(COUNT), VERTICES);
   float annularSdf = abs(sdf) - strokeWidthHalf;
 
   float fillAmount = (1.0 - step(0.0, sdf)) * FILL_COLOR.a;
