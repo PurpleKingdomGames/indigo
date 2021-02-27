@@ -521,7 +521,7 @@ object Shape {
           Uniform("COUNT")        -> float(3.0),
           Uniform("STROKE_COLOR") -> vec4(strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a),
           Uniform("FILL_COLOR")   -> vec4(fill.r, fill.g, fill.b, fill.a),
-          Uniform("VERTICES")     -> array(vec2(0.1, 0.1), vec2(0.9, 0.9), vec2(0.2, 0.7))
+          Uniform("VERTICES")     -> array(3)(vec2(0.1, 0.1), vec2(0.2, 0.7), vec2(0.9, 0.9))
         )
       )
   }
