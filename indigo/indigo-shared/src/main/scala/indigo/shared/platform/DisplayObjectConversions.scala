@@ -550,8 +550,7 @@ object DisplayObjectConversions {
       case 2 => arr ++ empty2
       case 3 => arr ++ empty1
       case 4 => arr
-      case l =>
-        arr ++ Array.fill[Float](l % 4)(0)
+      case _ => arr
     }
 
   def packUBO(uniforms: List[(Uniform, ShaderPrimitive)]): Array[Float] = {
@@ -576,7 +575,7 @@ object DisplayObjectConversions {
 
         case u :: _ if u.isArray =>
           // println(s"fits but next value is array, expanded: ${current.toList} to ${expandTo4(current).toList},  sub-result: ${(acc ++ expandTo4(current)).toList}")
-          rec(remaining, empty0, acc ++ expandTo4(current))
+          rec(remaining, empty0, acc ++ current)
 
         case u :: us =>
           // println(s"fits, current is now: ${(current ++ u.toArray).toList}")

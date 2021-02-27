@@ -227,8 +227,8 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         Uniform("b") -> float(2),
         Uniform("c") -> vec3(3, 4, 5),
         Uniform("d") -> float(6),
-        Uniform("e") -> array(vec2(7, 8), vec2(9, 10), vec2(11, 12)),
-        Uniform("f") -> float(13),
+        Uniform("e") -> array(6)(vec2(7, 8), vec2(9, 10), vec2(11, 12)),
+        Uniform("f") -> float(13)
       )
 
     val expected: Array[Float] =
@@ -236,14 +236,101 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         Array[Float](1, 2, 0, 0),
         Array[Float](3, 4, 5, 0),
         Array[Float](6, 0, 0, 0),
-        Array[Float](7, 8, 9, 10, 11, 12, 0, 0),
-        Array[Float](13, 0, 0, 0),
+        Array[Float](7, 8, 9, 10, 11, 12, 0, 0, 0, 0, 0, 0),
+        Array[Float](13, 0, 0, 0)
       ).flatten
 
     val actual: Array[Float] =
       DisplayObjectConversions.packUBO(uniforms)
 
     assertEquals(actual.toList, expected.toList)
+
+  }
+
+  test("ubo packing - arrays") {
+
+    import indigo.shared.shader.ShaderPrimitive._
+
+    val uniforms =
+      List(
+        Uniform("ASPECT_RATIO") -> vec2(1.0),
+        Uniform("STROKE_WIDTH") -> float(2.0),
+        Uniform("COUNT")        -> float(3.0),
+        Uniform("STROKE_COLOR") -> vec4(4.0),
+        Uniform("FILL_COLOR")   -> vec4(5.0)
+      )
+
+    val expected: Array[Float] =
+      Array[Array[Float]](
+        Array[Float](1, 1),
+        Array[Float](2),
+        Array[Float](3),
+        Array[Float](4, 4, 4, 4),
+        Array[Float](5, 5, 5, 5)
+      ).flatten
+
+    assertEquals(
+      DisplayObjectConversions.packUBO(uniforms).toList,
+      expected.toList
+    )
+
+    // Exact 3 array.
+    assertEquals(
+      DisplayObjectConversions.packUBO(uniforms :+ Uniform("VERTICES") -> array(3)(vec2(6.0), vec2(7.0), vec2(8.0))).toList,
+      expected.toList ++ List[Float](6, 6, 7, 7, 8, 8)
+    )
+
+    // 4 array padded.
+    assertEquals(
+      DisplayObjectConversions.packUBO(uniforms :+ Uniform("VERTICES") -> array(4)(vec2(6.0), vec2(7.0), vec2(8.0))).toList,
+      expected.toList ++ List[Float](6, 6, 7, 7, 8, 8) ++ List[Float](0, 0)
+    )
+
+    // 5 array padded.
+    assertEquals(
+      DisplayObjectConversions.packUBO(uniforms :+ Uniform("VERTICES") -> array(5)(vec2(6.0), vec2(7.0), vec2(8.0))).toList,
+      expected.toList ++ List[Float](6, 6, 7, 7, 8, 8) ++ List[Float](0, 0) ++ List[Float](0, 0)
+    )
+
+    // 6 array padded.
+    assertEquals(
+      DisplayObjectConversions.packUBO(uniforms :+ Uniform("VERTICES") -> array(6)(vec2(6.0), vec2(7.0), vec2(8.0))).toList,
+      expected.toList ++ List[Float](6, 6, 7, 7, 8, 8) ++ List[Float](0, 0) ++ List[Float](0, 0) ++ List[Float](0, 0)
+    )
+
+    // 7 array padded.
+    assertEquals(
+      DisplayObjectConversions.packUBO(uniforms :+ Uniform("VERTICES") -> array(7)(vec2(6.0), vec2(7.0), vec2(8.0))).toList,
+      expected.toList ++ List[Float](6, 6, 7, 7, 8, 8) ++ List[Float](0, 0) ++ List[Float](0, 0) ++ List[Float](0, 0) ++ List[Float](0, 0)
+    )
+
+    // 8 array padded.
+    assertEquals(
+      DisplayObjectConversions.packUBO(uniforms :+ Uniform("VERTICES") -> array(8)(vec2(6.0), vec2(7.0), vec2(8.0))).toList,
+      expected.toList ++ List[Float](6, 6, 7, 7, 8, 8) ++ List[Float](0, 0) ++ List[Float](0, 0) ++ List[Float](0, 0) ++ List[Float](0, 0) ++ List[Float](0, 0)
+    )
+
+    //List(1, 1, 2, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 7, 7, 8, 8, 0, 0, 0, 0, 0, 0, 0, 0)
+    println(DisplayObjectConversions.packUBO(uniforms :+ Uniform("VERTICES") -> array(5)(vec2(6.0), vec2(7.0), vec2(8.0))).toList.length)
+
+    // 16 array padded.
+    assertEquals(
+      DisplayObjectConversions.packUBO(uniforms :+ Uniform("VERTICES") -> array(16)(vec2(6.0), vec2(7.0), vec2(8.0))).toList,
+      expected.toList ++ List[Float](6, 6, 7, 7, 8, 8) ++ 
+      List[Float](0, 0) ++ 
+      List[Float](0, 0) ++ 
+      List[Float](0, 0) ++ 
+      List[Float](0, 0) ++ 
+      List[Float](0, 0) ++ 
+      List[Float](0, 0) ++ 
+      List[Float](0, 0) ++ 
+      List[Float](0, 0) ++ 
+      List[Float](0, 0) ++ 
+      List[Float](0, 0) ++ 
+      List[Float](0, 0) ++ 
+      List[Float](0, 0) ++ 
+      List[Float](0, 0)
+    )
 
   }
 
