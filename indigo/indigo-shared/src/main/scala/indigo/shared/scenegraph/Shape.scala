@@ -420,4 +420,139 @@ object Shape {
 
   }
 
+  final case class Polygon(
+      dimensions: Rectangle,
+      fill: RGBA,
+      strokeColor: RGBA,
+      strokeWidth: Int,
+      rotation: Radians,
+      scale: Vector2,
+      depth: Depth,
+      ref: Point,
+      flip: Flip
+  ) extends Shape {
+
+    private lazy val square: Int =
+      Math.max(dimensions.size.x, dimensions.size.y)
+
+    lazy val position: Point =
+      dimensions.position - (Point(square) / 2) - (strokeWidth / 2)
+
+    lazy val bounds: Rectangle =
+      Rectangle(
+        position,
+        Point(square) + strokeWidth
+      )
+
+    def withDimensions(newDimensions: Rectangle): Polygon =
+      this.copy(dimensions = newDimensions)
+
+    def resize(size: Point): Polygon =
+      this.copy(dimensions = dimensions.resize(size))
+
+    def withFillColor(newFill: RGBA): Polygon =
+      this.copy(fill = newFill)
+
+    def withStrokeColor(newStrokeColor: RGBA): Polygon =
+      this.copy(strokeColor = newStrokeColor)
+
+    def withStrokeWidth(newWidth: Int): Polygon =
+      this.copy(strokeWidth = newWidth)
+
+    private lazy val aspect: Vector2 =
+      if (bounds.size.x > bounds.size.y)
+        Vector2(1.0, bounds.size.y.toDouble / bounds.size.x.toDouble)
+      else
+        Vector2(bounds.size.x.toDouble / bounds.size.y.toDouble, 1.0)
+
+    def moveTo(pt: Point): Polygon =
+      this.copy(dimensions = dimensions.moveTo(pt))
+    def moveTo(x: Int, y: Int): Polygon =
+      moveTo(Point(x, y))
+    def withPosition(newPosition: Point): Polygon =
+      moveTo(newPosition)
+
+    def moveBy(pt: Point): Polygon =
+      this.copy(dimensions = dimensions.moveBy(pt))
+    def moveBy(x: Int, y: Int): Polygon =
+      moveBy(Point(x, y))
+
+    def rotateTo(angle: Radians): Polygon =
+      this.copy(rotation = angle)
+    def rotateBy(angle: Radians): Polygon =
+      rotateTo(rotation + angle)
+    def withRotation(newRotation: Radians): Polygon =
+      rotateTo(newRotation)
+
+    def scaleBy(amount: Vector2): Polygon =
+      this.copy(scale = scale * amount)
+    def scaleBy(x: Double, y: Double): Polygon =
+      scaleBy(Vector2(x, y))
+    def withScale(newScale: Vector2): Polygon =
+      this.copy(scale = newScale)
+
+    def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Polygon =
+      this.copy(dimensions = dimensions.moveTo(newPosition), rotation = newRotation, scale = newScale)
+
+    def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Polygon =
+      transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
+
+    def withDepth(newDepth: Depth): Polygon =
+      this.copy(depth = newDepth)
+
+    def withRef(newRef: Point): Polygon =
+      this.copy(ref = newRef)
+    def withRef(x: Int, y: Int): Polygon =
+      withRef(Point(x, y))
+
+    def flipHorizontal(isFlipped: Boolean): Polygon =
+      this.copy(flip = flip.withHorizontalFlip(isFlipped))
+    def flipVertical(isFlipped: Boolean): Polygon =
+      this.copy(flip = flip.withVerticalFlip(isFlipped))
+    def withFlip(newFlip: Flip): Polygon =
+      this.copy(flip = newFlip)
+
+    def toShaderData: ShaderData =
+      ShaderData(
+        StandardShaders.ShapePolygon.id,
+        List(
+          Uniform("ASPECT_RATIO") -> vec2(aspect.x, aspect.y),
+          Uniform("STROKE_WIDTH") -> float(strokeWidth.toDouble),
+          Uniform("COUNT")        -> float(3.0),
+          Uniform("STROKE_COLOR") -> vec4(strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a),
+          Uniform("FILL_COLOR")   -> vec4(fill.r, fill.g, fill.b, fill.a),
+          Uniform("VERTICES")     -> array(vec2(0.1, 0.1), vec2(0.9, 0.9), vec2(0.2, 0.7))
+        )
+      )
+  }
+  object Polygon {
+
+    def apply(dimensions: Rectangle, fill: RGBA): Polygon =
+      Polygon(
+        dimensions,
+        fill,
+        RGBA.Zero,
+        0,
+        Radians.zero,
+        Vector2.one,
+        Depth(1),
+        Point.zero,
+        Flip.default
+      )
+
+    def apply(dimensions: Rectangle, fill: RGBA, strokeColor: RGBA, strokeWidth: Int): Polygon =
+      Polygon(
+        dimensions,
+        fill,
+        strokeColor,
+        strokeWidth,
+        Radians.zero,
+        Vector2.one,
+        Depth(1),
+        Point.zero,
+        Flip.default
+      )
+
+  }
+
 }

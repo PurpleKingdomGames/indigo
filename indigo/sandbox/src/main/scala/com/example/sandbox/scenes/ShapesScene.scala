@@ -38,7 +38,7 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
       Signal.SmoothPulse.map(d => 2 + (10 * d).toInt).affectTime(0.5).at(context.running)
 
     val circlePosition: Point =
-      Signal.Orbit(Point(200, 100), 10).map(_.toPoint).affectTime(0.25).at(context.running)
+      Signal.Orbit(Point(200, 150), 10).map(_.toPoint).affectTime(0.25).at(context.running)
 
     val lineThickness: Int =
       Signal.SmoothPulse.map(d => (10 * d).toInt).at(context.running)
@@ -54,7 +54,8 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
           Shape.Box(Rectangle(Point(100, 100), squareSize), RGBA.White, RGBA.Black.withAlpha(0.75), 10),
           Clone(CloneId("shape clone")).withPosition(Point(10, 10)),
           Clone(CloneId("shape clone")).withPosition(Point(20, 10)),
-          Clone(CloneId("shape clone")).withPosition(Point(30, 10))
+          Clone(CloneId("shape clone")).withPosition(Point(30, 10)),
+          Shape.Polygon(Rectangle(Point(200, 100), Point(100)), RGBA.Green, RGBA.White.withAlpha(0.75), 10)
         )
         .addCloneBlanks(CloneBlank(CloneId("shape clone"), Shape.Circle(Point.zero, 5, RGBA.Green, RGBA.White, 2)))
     )

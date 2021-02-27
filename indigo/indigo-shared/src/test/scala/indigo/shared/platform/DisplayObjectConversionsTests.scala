@@ -226,14 +226,18 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
         Uniform("a") -> float(1),
         Uniform("b") -> float(2),
         Uniform("c") -> vec3(3, 4, 5),
-        Uniform("d") -> float(6)
+        Uniform("d") -> float(6),
+        Uniform("e") -> array(vec2(7, 8), vec2(9, 10), vec2(11, 12)),
+        Uniform("f") -> float(13),
       )
 
     val expected: Array[Float] =
       Array[Array[Float]](
         Array[Float](1, 2, 0, 0),
         Array[Float](3, 4, 5, 0),
-        Array[Float](6, 0, 0, 0)
+        Array[Float](6, 0, 0, 0),
+        Array[Float](7, 8, 9, 10, 11, 12, 0, 0),
+        Array[Float](13, 0, 0, 0),
       ).flatten
 
     val actual: Array[Float] =

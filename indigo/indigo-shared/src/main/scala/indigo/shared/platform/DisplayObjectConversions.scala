@@ -543,7 +543,6 @@ object DisplayObjectConversions {
   private val empty2: Array[Float] = Array[Float](0.0f, 0.0f)
   private val empty3: Array[Float] = Array[Float](0.0f, 0.0f, 0.0f)
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def expandTo4(arr: Array[Float]): Array[Float] =
     arr.length match {
       case 0 => arr
@@ -552,7 +551,7 @@ object DisplayObjectConversions {
       case 3 => arr ++ empty1
       case 4 => arr
       case l =>
-        throw new Exception(s"cannot expand array of length $l up to 4")
+        arr ++ Array.fill[Float](l % 4)(0)
     }
 
   def packUBO(uniforms: List[(Uniform, ShaderPrimitive)]): Array[Float] = {
@@ -567,8 +566,16 @@ object DisplayObjectConversions {
           // println(s"current full, sub-result: ${(acc ++ current).toList}")
           rec(us, empty0, acc ++ current)
 
+        case u :: us if current.isEmpty && u.isArray =>
+          // println(s"Found an array, current is empty, set current to: ${u.toArray.toList}")
+          rec(us, u.toArray, acc)
+
         case u :: _ if current.length + u.length > 4 =>
           // println(s"doesn't fit, expanded: ${current.toList} to ${expandTo4(current).toList},  sub-result: ${(acc ++ expandTo4(current)).toList}")
+          rec(remaining, empty0, acc ++ expandTo4(current))
+
+        case u :: _ if u.isArray =>
+          // println(s"fits but next value is array, expanded: ${current.toList} to ${expandTo4(current).toList},  sub-result: ${(acc ++ expandTo4(current)).toList}")
           rec(remaining, empty0, acc ++ expandTo4(current))
 
         case u :: us =>
