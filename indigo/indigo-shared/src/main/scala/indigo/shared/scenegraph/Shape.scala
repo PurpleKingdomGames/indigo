@@ -137,7 +137,7 @@ object Shape {
         StandardShaders.ShapeBox.id,
         List(
           Uniform("ASPECT_RATIO") -> vec2(aspect.x, aspect.y),
-          Uniform("STROKE_WIDTH") -> float(strokeWidth.toDouble),
+          Uniform("STROKE_WIDTH") -> float(strokeWidth.toFloat),
           Uniform("STROKE_COLOR") -> vec4(strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a),
           Uniform("FILL_COLOR")   -> vec4(fill.r, fill.g, fill.b, fill.a)
         )
@@ -262,7 +262,7 @@ object Shape {
       ShaderData(
         StandardShaders.ShapeCircle.id,
         List(
-          Uniform("STROKE_WIDTH") -> float(strokeWidth.toDouble),
+          Uniform("STROKE_WIDTH") -> float(strokeWidth.toFloat),
           Uniform("STROKE_COLOR") -> vec4(strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a),
           Uniform("FILL_COLOR")   -> vec4(fill.r, fill.g, fill.b, fill.a)
         )
@@ -408,10 +408,10 @@ object Shape {
       ShaderData(
         StandardShaders.ShapeLine.id,
         List(
-          Uniform("STROKE_WIDTH") -> float(strokeWidth.toDouble),
+          Uniform("STROKE_WIDTH") -> float(strokeWidth.toFloat),
           Uniform("STROKE_COLOR") -> vec4(strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a),
-          Uniform("START")        -> vec2(s.x.toDouble, s.y.toDouble),
-          Uniform("END")          -> vec2(e.x.toDouble, e.y.toDouble)
+          Uniform("START")        -> vec2(s.x.toFloat, s.y.toFloat),
+          Uniform("END")          -> vec2(e.x.toFloat, e.y.toFloat)
         )
       )
     }
@@ -447,7 +447,7 @@ object Shape {
   }
 
   final case class Polygon(
-      dimensions: Rectangle,
+      vertices: List[Point],
       fill: RGBA,
       strokeColor: RGBA,
       strokeWidth: Int,
@@ -458,23 +458,11 @@ object Shape {
       flip: Flip
   ) extends Shape {
 
-    private lazy val square: Int =
-      Math.max(dimensions.size.x, dimensions.size.y)
-
     lazy val position: Point =
-      dimensions.position - (Point(square) / 2) - (strokeWidth / 2)
+      bounds.position
 
     lazy val bounds: Rectangle =
-      Rectangle(
-        position,
-        Point(square) + strokeWidth
-      )
-
-    def withDimensions(newDimensions: Rectangle): Polygon =
-      this.copy(dimensions = newDimensions)
-
-    def resize(size: Point): Polygon =
-      this.copy(dimensions = dimensions.resize(size))
+      Rectangle.fromPointCloud(vertices).toSquare.expand(strokeWidth / 2)
 
     def withFillColor(newFill: RGBA): Polygon =
       this.copy(fill = newFill)
@@ -485,21 +473,18 @@ object Shape {
     def withStrokeWidth(newWidth: Int): Polygon =
       this.copy(strokeWidth = newWidth)
 
-    private lazy val aspect: Vector2 =
-      if (bounds.size.x > bounds.size.y)
-        Vector2(1.0, bounds.size.y.toDouble / bounds.size.x.toDouble)
-      else
-        Vector2(bounds.size.x.toDouble / bounds.size.y.toDouble, 1.0)
+    private def relativeShift(by: Point): List[Point] =
+      vertices.map(_.moveBy(by - position))
 
     def moveTo(pt: Point): Polygon =
-      this.copy(dimensions = dimensions.moveTo(pt))
+      this.copy(vertices = relativeShift(pt))
     def moveTo(x: Int, y: Int): Polygon =
       moveTo(Point(x, y))
     def withPosition(newPosition: Point): Polygon =
       moveTo(newPosition)
 
     def moveBy(pt: Point): Polygon =
-      this.copy(dimensions = dimensions.moveBy(pt))
+      moveTo(position + pt)
     def moveBy(x: Int, y: Int): Polygon =
       moveBy(Point(x, y))
 
@@ -518,7 +503,7 @@ object Shape {
       this.copy(scale = newScale)
 
     def transformTo(newPosition: Point, newRotation: Radians, newScale: Vector2): Polygon =
-      this.copy(dimensions = dimensions.moveTo(newPosition), rotation = newRotation, scale = newScale)
+      this.copy(vertices = relativeShift(newPosition), rotation = newRotation, scale = newScale)
 
     def transformBy(positionDiff: Point, rotationDiff: Radians, scaleDiff: Vector2): Polygon =
       transformTo(position + positionDiff, rotation + rotationDiff, scale * scaleDiff)
@@ -538,24 +523,33 @@ object Shape {
     def withFlip(newFlip: Flip): Polygon =
       this.copy(flip = newFlip)
 
-    def toShaderData: ShaderData =
+    def toShaderData: ShaderData = {
+      val verts: Array[vec2] =
+        vertices.map { v =>
+          vec2(
+            (v.x - bounds.x).toFloat,
+            (v.y - bounds.y).toFloat
+          )
+        }.toArray
+
       ShaderData(
         StandardShaders.ShapePolygon.id,
         List(
-          Uniform("ASPECT_RATIO") -> vec2(aspect.x, aspect.y),
-          Uniform("STROKE_WIDTH") -> float(strokeWidth.toDouble),
-          Uniform("COUNT")        -> float(3.0),
+          Uniform("STROKE_WIDTH") -> float(strokeWidth.toFloat),
+          Uniform("COUNT")        -> float(verts.length.toFloat),
           Uniform("STROKE_COLOR") -> vec4(strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a),
           Uniform("FILL_COLOR")   -> vec4(fill.r, fill.g, fill.b, fill.a),
-          Uniform("VERTICES")     -> array(16)(vec2(0.1, 0.1), vec2(0.2, 0.7), vec2(0.9, 0.9))
+          Uniform("VERTICES")     -> array(16, verts)
+          // Uniform("VERTICES")     -> array(16)(vec2(0.1, 0.1), vec2(0.2, 0.7), vec2(0.9, 0.9))
         )
       )
+    }
   }
   object Polygon {
 
-    def apply(dimensions: Rectangle, fill: RGBA): Polygon =
+    def apply(vertices: List[Point], fill: RGBA): Polygon =
       Polygon(
-        dimensions,
+        vertices,
         fill,
         RGBA.Zero,
         0,
@@ -566,9 +560,22 @@ object Shape {
         Flip.default
       )
 
-    def apply(dimensions: Rectangle, fill: RGBA, strokeColor: RGBA, strokeWidth: Int): Polygon =
+    def apply(vertices: List[Point], fill: RGBA, strokeColor: RGBA, strokeWidth: Int): Polygon =
       Polygon(
-        dimensions,
+        vertices,
+        fill,
+        strokeColor,
+        strokeWidth,
+        Radians.zero,
+        Vector2.one,
+        Depth(1),
+        Point.zero,
+        Flip.default
+      )
+
+    def apply(fill: RGBA, strokeColor: RGBA, strokeWidth: Int)(vertices: Point*): Polygon =
+      Polygon(
+        vertices.toList,
         fill,
         strokeColor,
         strokeWidth,

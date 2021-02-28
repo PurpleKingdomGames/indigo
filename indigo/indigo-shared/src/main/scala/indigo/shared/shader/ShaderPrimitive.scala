@@ -22,62 +22,83 @@ object IsShaderValue {
 
 object ShaderPrimitive {
 
-  final case class float(value: Double) extends ShaderPrimitive {
+  final case class float(value: Float) extends ShaderPrimitive {
     val hash: String          = s"float${value.toString()}"
     val length: Int           = float.length
-    def toArray: Array[Float] = Array(value.toFloat)
+    def toArray: Array[Float] = Array(value)
     val isArray: Boolean      = false
   }
   object float {
     val length: Int = 1
 
+    def apply(fill: Double): float =
+      float(fill.toFloat)
+
     implicit val isShaderValue: IsShaderValue[float] =
       IsShaderValue.create[float](length)
   }
 
-  final case class vec2(x: Double, y: Double) extends ShaderPrimitive {
+  final case class vec2(x: Float, y: Float) extends ShaderPrimitive {
     val hash: String          = s"vec2$x$y"
     val length: Int           = vec2.length
-    def toArray: Array[Float] = Array(x.toFloat, y.toFloat)
+    def toArray: Array[Float] = Array(x, y)
     val isArray: Boolean      = false
   }
   object vec2 {
     val length: Int = 2
 
-    def apply(fill: Double): vec2 =
+    def apply(fill: Float): vec2 =
       vec2(fill, fill)
+
+    def apply(fill: Double): vec2 =
+      vec2(fill.toFloat, fill.toFloat)
+
+    def apply(x: Double, y: Double): vec2 =
+      vec2(x.toFloat, y.toFloat)
 
     implicit val isShaderValue: IsShaderValue[vec2] =
       IsShaderValue.create[vec2](length)
   }
 
-  final case class vec3(x: Double, y: Double, z: Double) extends ShaderPrimitive {
+  final case class vec3(x: Float, y: Float, z: Float) extends ShaderPrimitive {
     val hash: String          = s"vec3$x$y$z"
     val length: Int           = vec3.length
-    def toArray: Array[Float] = Array(x.toFloat, y.toFloat, z.toFloat, 0.0f)
+    def toArray: Array[Float] = Array(x, y, z, 0.0f)
     val isArray: Boolean      = false
   }
   object vec3 {
     val length: Int = 4
 
-    def apply(fill: Double): vec3 =
+    def apply(fill: Float): vec3 =
       vec3(fill, fill, fill)
+
+    def apply(fill: Double): vec3 =
+      vec3(fill.toFloat, fill.toFloat, fill.toFloat)
+
+    def apply(x: Double, y: Double, z: Double): vec3 =
+      vec3(x.toFloat, y.toFloat, z.toFloat)
 
     implicit val isShaderValue: IsShaderValue[vec3] =
       IsShaderValue.create[vec3](length)
   }
 
-  final case class vec4(x: Double, y: Double, z: Double, w: Double) extends ShaderPrimitive {
+  final case class vec4(x: Float, y: Float, z: Float, w: Float) extends ShaderPrimitive {
     val hash: String          = s"vec4$x$y$z$w"
     val length: Int           = vec4.length
-    def toArray: Array[Float] = Array(x.toFloat, y.toFloat, z.toFloat, w.toFloat)
+    def toArray: Array[Float] = Array(x, y, z, w)
     val isArray: Boolean      = false
   }
   object vec4 {
     val length: Int = 4
 
-    def apply(fill: Double): vec4 =
+    def apply(fill: Float): vec4 =
       vec4(fill, fill, fill, fill)
+
+    def apply(fill: Double): vec4 =
+      vec4(fill.toFloat, fill.toFloat, fill.toFloat, fill.toFloat)
+
+    def apply(x: Double, y: Double, z: Double, w: Double): vec4 =
+      vec4(x.toFloat, y.toFloat, z.toFloat, w.toFloat)
 
     implicit val isShaderValue: IsShaderValue[vec4] =
       IsShaderValue.create[vec4](length)
