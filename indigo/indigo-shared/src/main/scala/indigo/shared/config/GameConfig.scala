@@ -14,9 +14,8 @@ import indigo.shared.datatypes.RGBA
   */
 final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: RGBA, magnification: Int, advanced: AdvancedGameConfig) {
   val frameRateDeltaMillis: Int = 1000 / frameRate
-
-  val haltViewUpdatesAt: Int  = frameRateDeltaMillis * 2
-  val haltModelUpdatesAt: Int = frameRateDeltaMillis * 3
+  val haltViewUpdatesAt: Int    = frameRateDeltaMillis * 2
+  val haltModelUpdatesAt: Int   = frameRateDeltaMillis * 3
 
   def screenDimensions: Rectangle =
     viewport.giveDimensions(magnification)
@@ -32,21 +31,28 @@ final case class GameConfig(viewport: GameViewport, frameRate: Int, clearColor: 
        |${advanced.asString}
        |""".stripMargin
 
-  def withViewport(width: Int, height: Int): GameConfig   = this.copy(viewport = GameViewport(width, height))
-  def withViewport(newViewport: GameViewport): GameConfig = this.copy(viewport = newViewport)
-  def withFrameRate(frameRate: Int): GameConfig           = this.copy(frameRate = frameRate)
-  def withClearColor(clearColor: RGBA): GameConfig  = this.copy(clearColor = clearColor)
-  def withMagnification(magnification: Int): GameConfig   = this.copy(magnification = magnification)
+  def withViewport(width: Int, height: Int): GameConfig =
+    this.copy(viewport = GameViewport(width, height))
+  def withViewport(newViewport: GameViewport): GameConfig =
+    this.copy(viewport = newViewport)
+  def withFrameRate(frameRate: Int): GameConfig =
+    this.copy(frameRate = frameRate)
+  def withClearColor(clearColor: RGBA): GameConfig =
+    this.copy(clearColor = clearColor)
+  def withMagnification(magnification: Int): GameConfig =
+    this.copy(magnification = magnification)
 
-  def withAdvancedSettings(advanced: AdvancedGameConfig): GameConfig = this.copy(advanced = advanced)
-  def disableSkipModelUpdates: GameConfig = this.copy(advanced = advanced.copy(disableSkipModelUpdates = true))
-  def enableSkipModelUpdates: GameConfig  = this.copy(advanced = advanced.copy(disableSkipModelUpdates = false))
-  def disableSkipViewUpdates: GameConfig  = this.copy(advanced = advanced.copy(disableSkipViewUpdates = true))
-  def enableSkipViewUpdates: GameConfig   = this.copy(advanced = advanced.copy(disableSkipViewUpdates = false))
+  def withAdvancedSettings(advanced: AdvancedGameConfig): GameConfig =
+    this.copy(advanced = advanced)
+  def modifyAdvancedSettings(modify: AdvancedGameConfig => AdvancedGameConfig): GameConfig =
+    this.copy(advanced = modify(advanced))
 
-  def useWebGL1: GameConfig = this.copy(advanced = advanced.copy(renderingTechnology = RenderingTechnology.WebGL1))
-  def useWebGL2: GameConfig = this.copy(advanced = advanced.copy(renderingTechnology = RenderingTechnology.WebGL2))
-  def useWebGL2WithFallback: GameConfig = this.copy(advanced = advanced.copy(renderingTechnology = RenderingTechnology.WebGL2WithFallback))
+  def useWebGL1: GameConfig =
+    this.copy(advanced = advanced.copy(renderingTechnology = RenderingTechnology.WebGL1))
+  def useWebGL2: GameConfig =
+    this.copy(advanced = advanced.copy(renderingTechnology = RenderingTechnology.WebGL2))
+  def useWebGL2WithFallback: GameConfig =
+    this.copy(advanced = advanced.copy(renderingTechnology = RenderingTechnology.WebGL2WithFallback))
 }
 
 object GameConfig {

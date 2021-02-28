@@ -5,7 +5,7 @@ import indigo.shared.config.RenderingTechnology.WebGL1
 import indigo.shared.config.RenderingTechnology.WebGL2
 
 /**
-  * Additional settings to help tune a games performance. 
+  * Additional settings to help tune a games performance.
   *
   * @param renderingTechnology Use WebGL 1.0 or 2.0? Defaults to 2.0 with fallback to 1.0.
   * @param antiAliasing Smooth the rendered view? Defaults to false.
@@ -14,7 +14,33 @@ import indigo.shared.config.RenderingTechnology.WebGL2
   * @param disableSkipViewUpdates By default, view updates will be skipped if the frame rate drops too low.
   */
 final case class AdvancedGameConfig(renderingTechnology: RenderingTechnology, antiAliasing: Boolean, batchSize: Int, disableSkipModelUpdates: Boolean, disableSkipViewUpdates: Boolean) {
-    val asString: String =
+
+  def withRenderingTechnology(tech: RenderingTechnology): AdvancedGameConfig =
+    this.copy(renderingTechnology = tech)
+  def useWebGL1: AdvancedGameConfig =
+    this.copy(renderingTechnology = RenderingTechnology.WebGL1)
+  def useWebGL2: AdvancedGameConfig =
+    this.copy(renderingTechnology = RenderingTechnology.WebGL2)
+  def useWebGL2WithFallback: AdvancedGameConfig =
+    this.copy(renderingTechnology = RenderingTechnology.WebGL2WithFallback)
+
+  def withAntiAliasing(enabled: Boolean): AdvancedGameConfig =
+    this.copy(antiAliasing = enabled)
+  def useAntiAliasing: AdvancedGameConfig =
+    withAntiAliasing(true)
+  def noAntiAliasing: AdvancedGameConfig =
+    withAntiAliasing(false)
+
+  def withBatchSize(size: Int): AdvancedGameConfig =
+    this.copy(batchSize = size)
+
+  def withSkipModelUpdates(skip: Boolean): AdvancedGameConfig =
+    this.copy(disableSkipModelUpdates = skip)
+
+  def withSkipViewUpdates(skip: Boolean): AdvancedGameConfig =
+    this.copy(disableSkipViewUpdates = skip)
+
+  val asString: String =
     s"""
        |Advanced settings
        |- Rendering technology:        ${renderingTechnology.name}
@@ -27,13 +53,13 @@ final case class AdvancedGameConfig(renderingTechnology: RenderingTechnology, an
 
 object AdvancedGameConfig {
   val default: AdvancedGameConfig =
-  AdvancedGameConfig(
-    renderingTechnology = WebGL2WithFallback,
-    antiAliasing = false,
-    batchSize = 256,
-    disableSkipModelUpdates = false,
-    disableSkipViewUpdates = false
-  )
+    AdvancedGameConfig(
+      renderingTechnology = WebGL2WithFallback,
+      antiAliasing = false,
+      batchSize = 256,
+      disableSkipModelUpdates = false,
+      disableSkipViewUpdates = false
+    )
 }
 
 /**
@@ -43,13 +69,13 @@ object AdvancedGameConfig {
 sealed trait RenderingTechnology {
   def name: String =
     this match {
-      case WebGL1 => "WebGL 1.0"
-      case WebGL2 => "WebGL 2.0"
+      case WebGL1             => "WebGL 1.0"
+      case WebGL2             => "WebGL 2.0"
       case WebGL2WithFallback => "WebGL 2.0 (will fallback to WebGL 1.0)"
     }
 }
 object RenderingTechnology {
-  case object WebGL1 extends RenderingTechnology
-  case object WebGL2 extends RenderingTechnology
+  case object WebGL1             extends RenderingTechnology
+  case object WebGL2             extends RenderingTechnology
   case object WebGL2WithFallback extends RenderingTechnology
 }
