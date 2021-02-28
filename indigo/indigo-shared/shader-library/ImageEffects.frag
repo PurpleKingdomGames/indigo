@@ -11,9 +11,9 @@ vec2 SIZE;
 layout (std140) uniform CustomData {
   highp vec3 ALPHA_SATURATION_OVERLAYTYPE;
   vec4 TINT;
-  vec4 GRADIANT_FROM_TO;
-  vec4 GRADIANT_FROM_COLOR;
-  vec4 GRADIANT_TO_COLOR;
+  vec4 GRADIENT_FROM_TO;
+  vec4 GRADIENT_FROM_COLOR;
+  vec4 GRADIENT_TO_COLOR;
 };
 
 vec4 applyBasicEffects(vec4 textureColor) {
@@ -25,25 +25,25 @@ vec4 applyBasicEffects(vec4 textureColor) {
 }
 
 vec4 calculateColorOverlay(vec4 color) {
-  return mix(color, vec4(GRADIANT_FROM_COLOR.rgb * color.a, color.a), GRADIANT_FROM_COLOR.a);
+  return mix(color, vec4(GRADIENT_FROM_COLOR.rgb * color.a, color.a), GRADIENT_FROM_COLOR.a);
 }
 
 vec4 calculateLinearGradientOverlay(vec4 color) {
-  vec2 pointA = GRADIANT_FROM_TO.xy;
-  vec2 pointB = GRADIANT_FROM_TO.zw;
+  vec2 pointA = GRADIENT_FROM_TO.xy;
+  vec2 pointB = GRADIENT_FROM_TO.zw;
   vec2 pointP = UV * SIZE;
 
   // `h` is the distance along the gradient 0 at A, 1 at B
   float h = min(1.0, max(0.0, dot(pointP - pointA, pointB - pointA) / dot(pointB - pointA, pointB - pointA)));
 
-  vec4 gradient = mix(GRADIANT_FROM_COLOR, GRADIANT_TO_COLOR, h);
+  vec4 gradient = mix(GRADIENT_FROM_COLOR, GRADIENT_TO_COLOR, h);
 
   return mix(color, vec4(gradient.rgb * color.a, color.a), gradient.a);
 }
 
 vec4 calculateRadialGradientOverlay(vec4 color) {
-  vec2 pointA = GRADIANT_FROM_TO.xy;
-  vec2 pointB = GRADIANT_FROM_TO.zw;
+  vec2 pointA = GRADIENT_FROM_TO.xy;
+  vec2 pointB = GRADIENT_FROM_TO.zw;
   vec2 pointP = UV * SIZE;
 
   float radius = length(pointB - pointA);
@@ -51,7 +51,7 @@ vec4 calculateRadialGradientOverlay(vec4 color) {
 
   float sdf = clamp(-((distanceToP - radius) / radius), 0.0, 1.0);
 
-  vec4 gradient = mix(GRADIANT_TO_COLOR, GRADIANT_FROM_COLOR, sdf);
+  vec4 gradient = mix(GRADIENT_TO_COLOR, GRADIENT_FROM_COLOR, sdf);
 
   return mix(color, vec4(gradient.rgb * color.a, color.a), gradient.a);
 }

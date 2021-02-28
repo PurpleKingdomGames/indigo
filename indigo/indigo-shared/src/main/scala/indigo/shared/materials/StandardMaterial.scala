@@ -55,23 +55,23 @@ object StandardMaterial {
           case Fill.Color(color) =>
             val c = vec4(color.r, color.g, color.b, color.a)
             List(
-              Uniform("GRADIANT_FROM_TO")    -> vec4(0.0d),
-              Uniform("GRADIANT_FROM_COLOR") -> c,
-              Uniform("GRADIANT_TO_COLOR")   -> c
+              Uniform("GRADIENT_FROM_TO")    -> vec4(0.0d),
+              Uniform("GRADIENT_FROM_COLOR") -> c,
+              Uniform("GRADIENT_TO_COLOR")   -> c
             )
 
           case Fill.LinearGradient(fromPoint, fromColor, toPoint, toColor) =>
             List(
-              Uniform("GRADIANT_FROM_TO")    -> vec4(fromPoint.x.toDouble, fromPoint.y.toDouble, toPoint.x.toDouble, toPoint.y.toDouble),
-              Uniform("GRADIANT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
-              Uniform("GRADIANT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
+              Uniform("GRADIENT_FROM_TO")    -> vec4(fromPoint.x.toDouble, fromPoint.y.toDouble, toPoint.x.toDouble, toPoint.y.toDouble),
+              Uniform("GRADIENT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
+              Uniform("GRADIENT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
             )
 
           case Fill.RadialGradient(fromPoint, fromColor, toPoint, toColor) =>
             List(
-              Uniform("GRADIANT_FROM_TO")    -> vec4(fromPoint.x.toDouble, fromPoint.y.toDouble, toPoint.x.toDouble, toPoint.y.toDouble),
-              Uniform("GRADIANT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
-              Uniform("GRADIANT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
+              Uniform("GRADIENT_FROM_TO")    -> vec4(fromPoint.x.toDouble, fromPoint.y.toDouble, toPoint.x.toDouble, toPoint.y.toDouble),
+              Uniform("GRADIENT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
+              Uniform("GRADIENT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
             )
         }
 
