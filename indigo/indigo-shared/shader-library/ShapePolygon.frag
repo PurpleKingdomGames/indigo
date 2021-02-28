@@ -89,7 +89,6 @@ void fragment() {
 
   vec2[MAX_VERTICES] polygon = toUvSpace(iCount, VERTICES);
 
-
   //--- Fill
   // 0 = color; 1 = linear gradient; 2 = radial gradient
   int fillType = int(round(FILL_TYPE));
