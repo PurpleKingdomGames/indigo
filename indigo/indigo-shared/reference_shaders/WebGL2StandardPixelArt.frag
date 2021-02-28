@@ -7,9 +7,9 @@ uniform sampler2D u_texture;
 in vec4 v_texcoordEmissiveNormal;
 in vec4 v_relativeScreenCoordsIsLitAlpha;
 in vec4 v_tint;
-in vec4 v_gradiantFromTo;
-in vec4 v_gradiantOverlayFromColor;
-in vec4 v_gradiantOverlayToColor;
+in vec4 v_gradientFromTo;
+in vec4 v_gradientOverlayFromColor;
+in vec4 v_gradientOverlayToColor;
 in vec4 v_borderColor;
 in vec4 v_glowColor;
 in vec4 v_effectAmounts;
@@ -38,15 +38,15 @@ vec4 applyBasicEffects(vec4 textureColor) {
   return mix(withAlpha, tintedVersion, max(0.0, v_tint.a));
 }
 
-vec4 calculateGradiantOverlay() {
-  vec2 pointA = v_gradiantFromTo.xy;
-  vec2 pointB = v_gradiantFromTo.zw;
+vec4 calculateGradientOverlay() {
+  vec2 pointA = v_gradientFromTo.xy;
+  vec2 pointB = v_gradientFromTo.zw;
   vec2 pointP = v_relativeScreenCoordsIsLitAlpha.xy;
 
-  // `h` is the distance along the gradiant 0 at A, 1 at B
+  // `h` is the distance along the gradient 0 at A, 1 at B
   float h = min(1.0, max(0.0, dot(pointP - pointA, pointB - pointA) / dot(pointB - pointA, pointB - pointA)));
 
-  return mix(v_gradiantOverlayFromColor, v_gradiantOverlayToColor, h);
+  return mix(v_gradientOverlayFromColor, v_gradientOverlayToColor, h);
 }
 
 const float border1px[9] = float[9](
@@ -252,7 +252,7 @@ void main(void) {
   float outerGlowAmount = v_effectAmounts.z;
   float innerGlowAmount = v_effectAmounts.w;
 
-  vec4 overlay = calculateGradiantOverlay();
+  vec4 overlay = calculateGradientOverlay();
   vec4 innerGlow = calculateInnerGlow(baseColor.a, sampledRegionAlphasInverse, innerGlowAmount);
   vec4 outerGlow = calculateOuterGlow(baseColor.a, sampledRegionAlphas, outerGlowAmount);
   vec4 innerBorder = calculateInnerBorder(baseColor.a, sampledRegionAlphasInverse, innerBorderAmount);

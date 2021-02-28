@@ -30,9 +30,9 @@
 //   private val sizeInstanceArray: WebGLBuffer                     = gl2.createBuffer()
 //   private val frameTransformInstanceArray: WebGLBuffer           = gl2.createBuffer()
 //   private val tintInstanceArray: WebGLBuffer                     = gl2.createBuffer()
-//   private val gradiantOverlayPositionsInstanceArray: WebGLBuffer = gl2.createBuffer()
-//   private val gradiantOverlayFromColorInstanceArray: WebGLBuffer = gl2.createBuffer()
-//   private val gradiantOverlayToColorInstanceArray: WebGLBuffer   = gl2.createBuffer()
+//   private val gradientOverlayPositionsInstanceArray: WebGLBuffer = gl2.createBuffer()
+//   private val gradientOverlayFromColorInstanceArray: WebGLBuffer = gl2.createBuffer()
+//   private val gradientOverlayToColorInstanceArray: WebGLBuffer   = gl2.createBuffer()
 //   private val borderColorInstanceArray: WebGLBuffer              = gl2.createBuffer()
 //   private val glowColorInstanceArray: WebGLBuffer                = gl2.createBuffer()
 //   private val amountsInstanceArray: WebGLBuffer                  = gl2.createBuffer()
@@ -53,9 +53,9 @@
 //   private val sizeData: scalajs.js.Array[Float]                     = scalajs.js.Array[Float](4f * maxBatchSize)
 //   private val frameTransformData: scalajs.js.Array[Float]           = scalajs.js.Array[Float](4f * maxBatchSize)
 //   private val tintData: scalajs.js.Array[Float]                     = scalajs.js.Array[Float](4f * maxBatchSize)
-//   private val gradiantOverlayPositionsData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
-//   private val gradiantOverlayFromColorData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
-//   private val gradiantOverlayToColorData: scalajs.js.Array[Float]   = scalajs.js.Array[Float](4f * maxBatchSize)
+//   private val gradientOverlayPositionsData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
+//   private val gradientOverlayFromColorData: scalajs.js.Array[Float] = scalajs.js.Array[Float](4f * maxBatchSize)
+//   private val gradientOverlayToColorData: scalajs.js.Array[Float]   = scalajs.js.Array[Float](4f * maxBatchSize)
 //   private val borderColorData: scalajs.js.Array[Float]              = scalajs.js.Array[Float](4f * maxBatchSize)
 //   private val glowColorData: scalajs.js.Array[Float]                = scalajs.js.Array[Float](4f * maxBatchSize)
 //   private val amountsData: scalajs.js.Array[Float]                  = scalajs.js.Array[Float](4f * maxBatchSize)
@@ -93,20 +93,20 @@
 //     tintData((i * 4) + 2) = d.effects.tint(2)
 //     tintData((i * 4) + 3) = d.effects.tint(3)
 
-//     gradiantOverlayPositionsData((i * 4) + 0) = d.effects.gradiantOverlayPositions(0)
-//     gradiantOverlayPositionsData((i * 4) + 1) = d.effects.gradiantOverlayPositions(1)
-//     gradiantOverlayPositionsData((i * 4) + 2) = d.effects.gradiantOverlayPositions(2)
-//     gradiantOverlayPositionsData((i * 4) + 3) = d.effects.gradiantOverlayPositions(3)
+//     gradientOverlayPositionsData((i * 4) + 0) = d.effects.gradientOverlayPositions(0)
+//     gradientOverlayPositionsData((i * 4) + 1) = d.effects.gradientOverlayPositions(1)
+//     gradientOverlayPositionsData((i * 4) + 2) = d.effects.gradientOverlayPositions(2)
+//     gradientOverlayPositionsData((i * 4) + 3) = d.effects.gradientOverlayPositions(3)
 
-//     gradiantOverlayFromColorData((i * 4) + 0) = d.effects.gradiantOverlayFromColor(0)
-//     gradiantOverlayFromColorData((i * 4) + 1) = d.effects.gradiantOverlayFromColor(1)
-//     gradiantOverlayFromColorData((i * 4) + 2) = d.effects.gradiantOverlayFromColor(2)
-//     gradiantOverlayFromColorData((i * 4) + 3) = d.effects.gradiantOverlayFromColor(3)
+//     gradientOverlayFromColorData((i * 4) + 0) = d.effects.gradientOverlayFromColor(0)
+//     gradientOverlayFromColorData((i * 4) + 1) = d.effects.gradientOverlayFromColor(1)
+//     gradientOverlayFromColorData((i * 4) + 2) = d.effects.gradientOverlayFromColor(2)
+//     gradientOverlayFromColorData((i * 4) + 3) = d.effects.gradientOverlayFromColor(3)
 
-//     gradiantOverlayToColorData((i * 4) + 0) = d.effects.gradiantOverlayToColor(0)
-//     gradiantOverlayToColorData((i * 4) + 1) = d.effects.gradiantOverlayToColor(1)
-//     gradiantOverlayToColorData((i * 4) + 2) = d.effects.gradiantOverlayToColor(2)
-//     gradiantOverlayToColorData((i * 4) + 3) = d.effects.gradiantOverlayToColor(3)
+//     gradientOverlayToColorData((i * 4) + 0) = d.effects.gradientOverlayToColor(0)
+//     gradientOverlayToColorData((i * 4) + 1) = d.effects.gradientOverlayToColor(1)
+//     gradientOverlayToColorData((i * 4) + 2) = d.effects.gradientOverlayToColor(2)
+//     gradientOverlayToColorData((i * 4) + 3) = d.effects.gradientOverlayToColor(3)
 
 //     borderColorData((i * 4) + 0) = d.effects.borderColor(0)
 //     borderColorData((i * 4) + 1) = d.effects.borderColor(1)
@@ -175,12 +175,12 @@
 //       setupInstanceArray(frameTransformInstanceArray, 4, 4) //
 //       // vec4 a_tint --
 //       setupInstanceArray(tintInstanceArray, 5, 4)
-//       // vec4 a_gradiantPositions
-//       setupInstanceArray(gradiantOverlayPositionsInstanceArray, 6, 4)
-//       // vec4 a_gradiantOverlayFromColor
-//       setupInstanceArray(gradiantOverlayFromColorInstanceArray, 7, 4)
-//       // vec4 a_gradiantOverlayToColor
-//       setupInstanceArray(gradiantOverlayToColorInstanceArray, 8, 4)
+//       // vec4 a_gradientPositions
+//       setupInstanceArray(gradientOverlayPositionsInstanceArray, 6, 4)
+//       // vec4 a_gradientOverlayFromColor
+//       setupInstanceArray(gradientOverlayFromColorInstanceArray, 7, 4)
+//       // vec4 a_gradientOverlayToColor
+//       setupInstanceArray(gradientOverlayToColorInstanceArray, 8, 4)
 //       // vec4 a_borderColor
 //       setupInstanceArray(borderColorInstanceArray, 9, 4)
 //       // vec4 a_glowColor
@@ -208,9 +208,9 @@
 //         bindData(sizeInstanceArray, sizeData)
 //         bindData(frameTransformInstanceArray, frameTransformData)
 //         bindData(tintInstanceArray, tintData)
-//         bindData(gradiantOverlayPositionsInstanceArray, gradiantOverlayPositionsData)
-//         bindData(gradiantOverlayFromColorInstanceArray, gradiantOverlayFromColorData)
-//         bindData(gradiantOverlayToColorInstanceArray, gradiantOverlayToColorData)
+//         bindData(gradientOverlayPositionsInstanceArray, gradientOverlayPositionsData)
+//         bindData(gradientOverlayFromColorInstanceArray, gradientOverlayFromColorData)
+//         bindData(gradientOverlayToColorInstanceArray, gradientOverlayToColorData)
 //         bindData(borderColorInstanceArray, borderColorData)
 //         bindData(glowColorInstanceArray, glowColorData)
 //         bindData(amountsInstanceArray, amountsData)
