@@ -231,8 +231,11 @@ package object indigo {
   type Effects = shared.datatypes.Effects
   val Effects: shared.datatypes.Effects.type = shared.datatypes.Effects
 
-  type Overlay = shared.datatypes.Fill
-  val Overlay: shared.datatypes.Fill.type = shared.datatypes.Fill
+  type Fill = shared.datatypes.Fill
+  val Fill: shared.datatypes.Fill.type = shared.datatypes.Fill
+
+  type Stroke = shared.datatypes.Stroke
+  val Stroke: shared.datatypes.Stroke.type = shared.datatypes.Stroke
 
   type Thickness = shared.datatypes.Thickness
   val Thickness: shared.datatypes.Thickness.type = shared.datatypes.Thickness

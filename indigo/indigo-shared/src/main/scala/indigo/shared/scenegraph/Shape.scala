@@ -11,6 +11,8 @@ import indigo.shared.shader.Uniform
 import indigo.shared.shader.ShaderPrimitive._
 import indigo.shared.datatypes.RGBA
 import indigo.shared.shader.StandardShaders
+import indigo.shared.datatypes.Fill
+import indigo.shared.datatypes.Stroke
 
 sealed trait Shape extends EntityNode with Cloneable with SpatialModifiers[Shape] {
   def moveTo(pt: Point): Shape
@@ -42,9 +44,8 @@ object Shape {
 
   final case class Box(
       dimensions: Rectangle,
-      fill: RGBA,
-      strokeColor: RGBA,
-      strokeWidth: Int,
+      fill: Fill,
+      stroke: Stroke,
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
@@ -56,12 +57,12 @@ object Shape {
       Math.max(dimensions.size.x, dimensions.size.y)
 
     lazy val position: Point =
-      dimensions.position - (Point(square) / 2) - (strokeWidth / 2)
+      dimensions.position - (Point(square) / 2) - (stroke.width / 2)
 
     lazy val bounds: Rectangle =
       Rectangle(
         position,
-        Point(square) + strokeWidth
+        Point(square) + stroke.width
       )
 
     def withDimensions(newDimensions: Rectangle): Box =
@@ -70,14 +71,17 @@ object Shape {
     def resize(size: Point): Box =
       this.copy(dimensions = dimensions.resize(size))
 
-    def withFillColor(newFill: RGBA): Box =
+    def withFill(newFill: Fill): Box =
       this.copy(fill = newFill)
 
+    def withStroke(newStroke: Stroke): Box =
+      this.copy(stroke = newStroke)
+
     def withStrokeColor(newStrokeColor: RGBA): Box =
-      this.copy(strokeColor = newStrokeColor)
+      this.copy(stroke = stroke.withColor(newStrokeColor))
 
     def withStrokeWidth(newWidth: Int): Box =
-      this.copy(strokeWidth = newWidth)
+      this.copy(stroke = stroke.withWidth(newWidth))
 
     private lazy val aspect: Vector2 =
       if (bounds.size.x > bounds.size.y)
@@ -137,20 +141,19 @@ object Shape {
         StandardShaders.ShapeBox.id,
         List(
           Uniform("ASPECT_RATIO") -> vec2(aspect.x, aspect.y),
-          Uniform("STROKE_WIDTH") -> float(strokeWidth.toFloat),
-          Uniform("STROKE_COLOR") -> vec4(strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a),
-          Uniform("FILL_COLOR")   -> vec4(fill.r, fill.g, fill.b, fill.a)
-        )
+          Uniform("STROKE_WIDTH") -> float(stroke.width.toFloat),
+          Uniform("FILL_TYPE")    -> fillType(fill),
+          Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a)
+        ) ++ gradientUniforms(fill)
       )
   }
   object Box {
 
-    def apply(dimensions: Rectangle, fill: RGBA): Box =
+    def apply(dimensions: Rectangle, fill: Fill): Box =
       Box(
         dimensions,
         fill,
-        RGBA.Zero,
-        0,
+        Stroke.None,
         Radians.zero,
         Vector2.one,
         Depth(1),
@@ -158,12 +161,11 @@ object Shape {
         Flip.default
       )
 
-    def apply(dimensions: Rectangle, fill: RGBA, strokeColor: RGBA, strokeWidth: Int): Box =
+    def apply(dimensions: Rectangle, fill: Fill, stroke: Stroke): Box =
       Box(
         dimensions,
         fill,
-        strokeColor,
-        strokeWidth,
+        stroke,
         Radians.zero,
         Vector2.one,
         Depth(1),
@@ -176,9 +178,8 @@ object Shape {
   final case class Circle(
       center: Point,
       radius: Int,
-      fill: RGBA,
-      strokeColor: RGBA,
-      strokeWidth: Int,
+      fill: Fill,
+      stroke: Stroke,
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
@@ -187,22 +188,25 @@ object Shape {
   ) extends Shape {
 
     lazy val position: Point =
-      center - radius - (strokeWidth / 2)
+      center - radius - (stroke.width / 2)
 
     lazy val bounds: Rectangle =
       Rectangle(
         position,
-        Point(radius * 2) + strokeWidth
+        Point(radius * 2) + stroke.width
       )
 
-    def withFillColor(newFill: RGBA): Circle =
+    def withFillColor(newFill: Fill): Circle =
       this.copy(fill = newFill)
 
+    def withStroke(newStroke: Stroke): Circle =
+      this.copy(stroke = newStroke)
+
     def withStrokeColor(newStrokeColor: RGBA): Circle =
-      this.copy(strokeColor = newStrokeColor)
+      this.copy(stroke = stroke.withColor(newStrokeColor))
 
     def withStrokeWidth(newWidth: Int): Circle =
-      this.copy(strokeWidth = newWidth)
+      this.copy(stroke = stroke.withWidth(newWidth))
 
     def withRadius(newRadius: Int): Circle =
       this.copy(radius = newRadius)
@@ -262,21 +266,20 @@ object Shape {
       ShaderData(
         StandardShaders.ShapeCircle.id,
         List(
-          Uniform("STROKE_WIDTH") -> float(strokeWidth.toFloat),
-          Uniform("STROKE_COLOR") -> vec4(strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a),
-          Uniform("FILL_COLOR")   -> vec4(fill.r, fill.g, fill.b, fill.a)
-        )
+          Uniform("STROKE_WIDTH") -> float(stroke.width.toFloat),
+          Uniform("FILL_TYPE")    -> fillType(fill),
+          Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a)
+        ) ++ gradientUniforms(fill)
       )
   }
   object Circle {
 
-    def apply(center: Point, radius: Int, fill: RGBA): Circle =
+    def apply(center: Point, radius: Int, fill: Fill): Circle =
       Circle(
         center,
         radius,
         fill,
-        RGBA.Zero,
-        0,
+        Stroke.None,
         Radians.zero,
         Vector2.one,
         Depth(1),
@@ -284,13 +287,12 @@ object Shape {
         Flip.default
       )
 
-    def apply(center: Point, radius: Int, fill: RGBA, strokeColor: RGBA, strokeWidth: Int): Circle =
+    def apply(center: Point, radius: Int, fill: Fill, stroke: Stroke): Circle =
       Circle(
         center,
         radius,
         fill,
-        strokeColor,
-        strokeWidth,
+        stroke,
         Radians.zero,
         Vector2.one,
         Depth(1),
@@ -303,8 +305,7 @@ object Shape {
   final case class Line(
       start: Point,
       end: Point,
-      strokeColor: RGBA,
-      strokeWidth: Int,
+      stroke: Stroke,
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
@@ -316,20 +317,23 @@ object Shape {
       Point(
         Math.min(start.x, end.x),
         Math.min(start.y, end.y)
-      ) - (strokeWidth / 2)
+      ) - (stroke.width / 2)
 
     lazy val bounds: Rectangle = {
       val w = Math.max(start.x, end.x) - position.x
       val h = Math.max(start.y, end.y) - position.y
 
-      Rectangle(position, Point(Math.max(w, h)) + strokeWidth)
+      Rectangle(position, Point(Math.max(w, h)) + stroke.width)
     }
 
+    def withStroke(newStroke: Stroke): Line =
+      this.copy(stroke = newStroke)
+
     def withStrokeColor(newStrokeColor: RGBA): Line =
-      this.copy(strokeColor = newStrokeColor)
+      this.copy(stroke = stroke.withColor(newStrokeColor))
 
     def withStrokeWidth(newWidth: Int): Line =
-      this.copy(strokeWidth = newWidth)
+      this.copy(stroke = stroke.withWidth(newWidth))
 
     def moveTo(newPosition: Point): Line =
       this.copy(start = newPosition, end = newPosition + (end - start))
@@ -402,14 +406,14 @@ object Shape {
         Rectangle.fromTwoPoints(start, end)
 
       // Relative to bounds
-      val s = start - bounds.position + (strokeWidth / 2)
-      val e = end - bounds.position + (strokeWidth / 2)
+      val s = start - bounds.position + (stroke.width / 2)
+      val e = end - bounds.position + (stroke.width / 2)
 
       ShaderData(
         StandardShaders.ShapeLine.id,
         List(
-          Uniform("STROKE_WIDTH") -> float(strokeWidth.toFloat),
-          Uniform("STROKE_COLOR") -> vec4(strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a),
+          Uniform("STROKE_WIDTH") -> float(stroke.width.toFloat),
+          Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a),
           Uniform("START")        -> vec2(s.x.toFloat, s.y.toFloat),
           Uniform("END")          -> vec2(e.x.toFloat, e.y.toFloat)
         )
@@ -418,25 +422,11 @@ object Shape {
   }
   object Line {
 
-    def apply(start: Point, end: Point, strokeWidth: Int): Line =
+    def apply(start: Point, end: Point, stroke: Stroke): Line =
       Line(
         start,
         end,
-        RGBA.Black,
-        strokeWidth,
-        Radians.zero,
-        Vector2.one,
-        Depth(1),
-        Point.zero,
-        Flip.default
-      )
-
-    def apply(start: Point, end: Point, strokeColor: RGBA, strokeWidth: Int): Line =
-      Line(
-        start,
-        end,
-        strokeColor,
-        strokeWidth,
+        stroke,
         Radians.zero,
         Vector2.one,
         Depth(1),
@@ -448,9 +438,8 @@ object Shape {
 
   final case class Polygon(
       vertices: List[Point],
-      fill: RGBA,
-      strokeColor: RGBA,
-      strokeWidth: Int,
+      fill: Fill,
+      stroke: Stroke,
       rotation: Radians,
       scale: Vector2,
       depth: Depth,
@@ -462,16 +451,19 @@ object Shape {
       bounds.position
 
     lazy val bounds: Rectangle =
-      Rectangle.fromPointCloud(vertices).toSquare.expand(strokeWidth / 2)
+      Rectangle.fromPointCloud(vertices).toSquare.expand(stroke.width / 2)
 
-    def withFillColor(newFill: RGBA): Polygon =
+    def withFillColor(newFill: Fill): Polygon =
       this.copy(fill = newFill)
 
+    def withStroke(newStroke: Stroke): Polygon =
+      this.copy(stroke = newStroke)
+
     def withStrokeColor(newStrokeColor: RGBA): Polygon =
-      this.copy(strokeColor = newStrokeColor)
+      this.copy(stroke = stroke.withColor(newStrokeColor))
 
     def withStrokeWidth(newWidth: Int): Polygon =
-      this.copy(strokeWidth = newWidth)
+      this.copy(stroke = stroke.withWidth(newWidth))
 
     private def relativeShift(by: Point): List[Point] =
       vertices.map(_.moveBy(by - position))
@@ -535,23 +527,21 @@ object Shape {
       ShaderData(
         StandardShaders.ShapePolygon.id,
         List(
-          Uniform("STROKE_WIDTH") -> float(strokeWidth.toFloat),
+          Uniform("STROKE_WIDTH") -> float(stroke.width.toFloat),
+          Uniform("FILL_TYPE")    -> fillType(fill),
           Uniform("COUNT")        -> float(verts.length.toFloat),
-          Uniform("STROKE_COLOR") -> vec4(strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a),
-          Uniform("FILL_COLOR")   -> vec4(fill.r, fill.g, fill.b, fill.a),
-          Uniform("VERTICES")     -> array(16, verts)
-        )
+          Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a)
+        ) ++ gradientUniforms(fill) ++ List(Uniform("VERTICES") -> array(16, verts))
       )
     }
   }
   object Polygon {
 
-    def apply(vertices: List[Point], fill: RGBA): Polygon =
+    def apply(vertices: List[Point], fill: Fill): Polygon =
       Polygon(
         vertices,
         fill,
-        RGBA.Zero,
-        0,
+        Stroke.None,
         Radians.zero,
         Vector2.one,
         Depth(1),
@@ -559,12 +549,11 @@ object Shape {
         Flip.default
       )
 
-    def apply(vertices: List[Point], fill: RGBA, strokeColor: RGBA, strokeWidth: Int): Polygon =
+    def apply(vertices: List[Point], fill: Fill, stroke: Stroke): Polygon =
       Polygon(
         vertices,
         fill,
-        strokeColor,
-        strokeWidth,
+        stroke,
         Radians.zero,
         Vector2.one,
         Depth(1),
@@ -572,12 +561,11 @@ object Shape {
         Flip.default
       )
 
-    def apply(fill: RGBA, strokeColor: RGBA, strokeWidth: Int)(vertices: Point*): Polygon =
+    def apply(fill: Fill, stroke: Stroke)(vertices: Point*): Polygon =
       Polygon(
         vertices.toList,
         fill,
-        strokeColor,
-        strokeWidth,
+        stroke,
         Radians.zero,
         Vector2.one,
         Depth(1),
@@ -586,5 +574,37 @@ object Shape {
       )
 
   }
+
+  def gradientUniforms(fill: Fill): List[(Uniform, vec4)] =
+    fill match {
+      case Fill.Color(color) =>
+        val c = vec4(color.r, color.g, color.b, color.a)
+        List(
+          Uniform("GRADIENT_FROM_TO")    -> vec4(0.0d),
+          Uniform("GRADIENT_FROM_COLOR") -> c,
+          Uniform("GRADIENT_TO_COLOR")   -> c
+        )
+
+      case Fill.LinearGradient(fromPoint, fromColor, toPoint, toColor) =>
+        List(
+          Uniform("GRADIENT_FROM_TO")    -> vec4(fromPoint.x.toDouble, fromPoint.y.toDouble, toPoint.x.toDouble, toPoint.y.toDouble),
+          Uniform("GRADIENT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
+          Uniform("GRADIENT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
+        )
+
+      case Fill.RadialGradient(fromPoint, fromColor, toPoint, toColor) =>
+        List(
+          Uniform("GRADIENT_FROM_TO")    -> vec4(fromPoint.x.toDouble, fromPoint.y.toDouble, toPoint.x.toDouble, toPoint.y.toDouble),
+          Uniform("GRADIENT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
+          Uniform("GRADIENT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
+        )
+    }
+
+  def fillType(fill: Fill): float =
+    fill match {
+      case _: Fill.Color          => float(0.0)
+      case _: Fill.LinearGradient => float(1.0)
+      case _: Fill.RadialGradient => float(2.0)
+    }
 
 }
