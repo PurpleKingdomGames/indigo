@@ -28,20 +28,20 @@ vec4 calculateColorOverlay(vec4 color) {
   return mix(color, vec4(GRADIANT_FROM_COLOR.rgb * color.a, color.a), GRADIANT_FROM_COLOR.a);
 }
 
-vec4 calculateLinearGradiantOverlay(vec4 color) {
+vec4 calculateLinearGradientOverlay(vec4 color) {
   vec2 pointA = GRADIANT_FROM_TO.xy;
   vec2 pointB = GRADIANT_FROM_TO.zw;
   vec2 pointP = UV * SIZE;
 
-  // `h` is the distance along the gradiant 0 at A, 1 at B
+  // `h` is the distance along the gradient 0 at A, 1 at B
   float h = min(1.0, max(0.0, dot(pointP - pointA, pointB - pointA) / dot(pointB - pointA, pointB - pointA)));
 
-  vec4 gradiant = mix(GRADIANT_FROM_COLOR, GRADIANT_TO_COLOR, h);
+  vec4 gradient = mix(GRADIANT_FROM_COLOR, GRADIANT_TO_COLOR, h);
 
-  return mix(color, vec4(gradiant.rgb * color.a, color.a), gradiant.a);
+  return mix(color, vec4(gradient.rgb * color.a, color.a), gradient.a);
 }
 
-vec4 calculateRadialGradiantOverlay(vec4 color) {
+vec4 calculateRadialGradientOverlay(vec4 color) {
   vec2 pointA = GRADIANT_FROM_TO.xy;
   vec2 pointB = GRADIANT_FROM_TO.zw;
   vec2 pointP = UV * SIZE;
@@ -51,9 +51,9 @@ vec4 calculateRadialGradiantOverlay(vec4 color) {
 
   float sdf = clamp(abs((distanceToP - radius) / radius), 0.0, 1.0);
 
-  vec4 gradiant = mix(GRADIANT_TO_COLOR, GRADIANT_FROM_COLOR, sdf);
+  vec4 gradient = mix(GRADIANT_TO_COLOR, GRADIANT_FROM_COLOR, sdf);
 
-  return mix(color, vec4(gradiant.rgb * color.a, color.a), gradiant.a);
+  return mix(color, vec4(gradient.rgb * color.a, color.a), gradient.a);
 }
 
 vec4 calculateSaturation(vec4 color) {
@@ -67,7 +67,7 @@ vec4 calculateSaturation(vec4 color) {
 void fragment(){
   vec4 baseColor = applyBasicEffects(CHANNEL_0);
 
-  // 0 = color; 1 = linear gradient; 2 = radial gradiant
+  // 0 = color; 1 = linear gradient; 2 = radial gradient
   int overlayType = int(round(ALPHA_SATURATION_OVERLAYTYPE.z));
   vec4 overlay;
 
@@ -77,11 +77,11 @@ void fragment(){
       break;
 
     case 1:
-      overlay = calculateLinearGradiantOverlay(baseColor);
+      overlay = calculateLinearGradientOverlay(baseColor);
       break;
 
     case 2:
-      overlay = calculateRadialGradiantOverlay(baseColor);
+      overlay = calculateRadialGradientOverlay(baseColor);
       break;
 
     default:
