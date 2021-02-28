@@ -8,9 +8,9 @@ layout (location = 2) in vec4 a_matTranslateAlpha; // mat(12,13,14,alpha)
 layout (location = 3) in vec2 a_size; // mat(12,13,14,alpha)
 layout (location = 4) in vec4 a_frameTransform; // a_frameTranslation, a_frameScale
 layout (location = 5) in vec4 a_tint;
-layout (location = 6) in vec4 a_gradiantPositions; // a_gradiantOverlayFrom, a_gradiantOverlayTo
-layout (location = 7) in vec4 a_gradiantOverlayFromColor;
-layout (location = 8) in vec4 a_gradiantOverlayToColor;
+layout (location = 6) in vec4 a_gradientPositions; // a_gradientOverlayFrom, a_gradientOverlayTo
+layout (location = 7) in vec4 a_gradientOverlayFromColor;
+layout (location = 8) in vec4 a_gradientOverlayToColor;
 layout (location = 9) in vec4 a_borderColor;
 layout (location = 10) in vec4 a_glowColor;
 layout (location = 11) in vec4 a_amounts; // a_outerBorderAmount, a_innerBorderAmount, a_outerGlowAmount, a_innerGlowAmount
@@ -25,9 +25,9 @@ uniform mat4 u_projection;
 out vec4 v_texcoordEmissiveNormal;
 out vec4 v_relativeScreenCoordsIsLitAlpha;
 out vec4 v_tint;
-out vec4 v_gradiantFromTo;
-out vec4 v_gradiantOverlayFromColor;
-out vec4 v_gradiantOverlayToColor;
+out vec4 v_gradientFromTo;
+out vec4 v_gradientOverlayFromColor;
+out vec4 v_gradientOverlayToColor;
 out vec4 v_borderColor;
 out vec4 v_glowColor;
 out vec4 v_effectAmounts;
@@ -124,9 +124,9 @@ void main(void) {
   v_texcoordEmissiveNormal = vec4(scaleTexCoordsWithOffset(texcoords, texcoordsEmissive), scaleTexCoordsWithOffset(texcoords, texcoordsNormal));
   v_relativeScreenCoordsIsLitAlpha = vec4(texcoords * a_size, isLit, alpha);
   v_tint = a_tint;
-  v_gradiantFromTo = a_gradiantPositions;
-  v_gradiantOverlayFromColor = a_gradiantOverlayFromColor;
-  v_gradiantOverlayToColor = a_gradiantOverlayToColor;
+  v_gradientFromTo = a_gradientPositions;
+  v_gradientOverlayFromColor = a_gradientOverlayFromColor;
+  v_gradientOverlayToColor = a_gradientOverlayToColor;
   v_borderColor = a_borderColor;
   v_glowColor = a_glowColor;
   v_effectAmounts = a_amounts;

@@ -6,9 +6,9 @@ import indigo.shared.datatypes.Thickness
 
 final class DisplayEffects(
     val tint: Array[Float],
-    val gradiantOverlayPositions: Array[Float],
-    val gradiantOverlayFromColor: Array[Float],
-    val gradiantOverlayToColor: Array[Float],
+    val gradientOverlayPositions: Array[Float],
+    val gradientOverlayFromColor: Array[Float],
+    val gradientOverlayToColor: Array[Float],
     val borderColor: Array[Float],
     val innerBorderAmount: Float,
     val outerBorderAmount: Float,
@@ -24,7 +24,7 @@ object DisplayEffects {
     case Fill.Color(_) =>
       Array(0.0f, 0.0f, 1.0f, 1.0f)
 
-    case Fill.LinearGradiant(fromPoint, _, toPoint, _) =>
+    case Fill.LinearGradient(fromPoint, _, toPoint, _) =>
       Array(
         fromPoint.x.toFloat,
         fromPoint.y.toFloat,
@@ -32,7 +32,7 @@ object DisplayEffects {
         toPoint.y.toFloat
       )
 
-    case Fill.RadialGradiant(fromPoint, _, toPoint, _) =>
+    case Fill.RadialGradient(fromPoint, _, toPoint, _) =>
       Array(
         fromPoint.x.toFloat,
         fromPoint.y.toFloat,
@@ -45,10 +45,10 @@ object DisplayEffects {
     case Fill.Color(color) =>
       color.toArray
 
-    case Fill.LinearGradiant(_, fromColor, _, _) =>
+    case Fill.LinearGradient(_, fromColor, _, _) =>
       fromColor.toArray
 
-    case Fill.RadialGradiant(_, fromColor, _, _) =>
+    case Fill.RadialGradient(_, fromColor, _, _) =>
       fromColor.toArray
   }
 
@@ -56,10 +56,10 @@ object DisplayEffects {
     case Fill.Color(color) =>
       color.toArray
 
-    case Fill.LinearGradiant(_, _, _, toColor) =>
+    case Fill.LinearGradient(_, _, _, toColor) =>
       toColor.toArray
 
-    case Fill.RadialGradiant(_, _, _, toColor) =>
+    case Fill.RadialGradient(_, _, _, toColor) =>
       toColor.toArray
   }
 

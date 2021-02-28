@@ -17,8 +17,8 @@ object SandboxAssets {
     StandardMaterial
       .ImageEffects(dots)
       // .withOverlay(Overlay.Color(RGBA.Magenta.withAlpha(0.75)))
-      // .withOverlay(Overlay.LinearGradiant(Point.zero, RGBA.Cyan, Point(32, 32), RGBA.Magenta))
-      .withOverlay(Overlay.RadialGradiant(Point(4, 4), RGBA.Cyan, Point(32, 32), RGBA.Magenta))
+      // .withOverlay(Overlay.LinearGradient(Point.zero, RGBA.Cyan, Point(32, 32), RGBA.Magenta))
+      .withOverlay(Overlay.RadialGradient(Point(4, 4), RGBA.Cyan, Point(32, 32), RGBA.Magenta))
 
   def assets: Set[AssetType] =
     Set(

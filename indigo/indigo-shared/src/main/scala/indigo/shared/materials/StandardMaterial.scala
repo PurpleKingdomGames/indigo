@@ -50,7 +50,7 @@ object StandardMaterial {
       diffuse.value + alpha.toString() + tint.hash + overlay.hash
 
     def toShaderData: ShaderData = {
-      val gradiantUniforms: List[(Uniform, ShaderPrimitive)] =
+      val gradientUniforms: List[(Uniform, ShaderPrimitive)] =
         overlay match {
           case Fill.Color(color) =>
             val c = vec4(color.r, color.g, color.b, color.a)
@@ -60,14 +60,14 @@ object StandardMaterial {
               Uniform("GRADIANT_TO_COLOR")   -> c
             )
 
-          case Fill.LinearGradiant(fromPoint, fromColor, toPoint, toColor) =>
+          case Fill.LinearGradient(fromPoint, fromColor, toPoint, toColor) =>
             List(
               Uniform("GRADIANT_FROM_TO")    -> vec4(fromPoint.x.toDouble, fromPoint.y.toDouble, toPoint.x.toDouble, toPoint.y.toDouble),
               Uniform("GRADIANT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
               Uniform("GRADIANT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
             )
 
-          case Fill.RadialGradiant(fromPoint, fromColor, toPoint, toColor) =>
+          case Fill.RadialGradient(fromPoint, fromColor, toPoint, toColor) =>
             List(
               Uniform("GRADIANT_FROM_TO")    -> vec4(fromPoint.x.toDouble, fromPoint.y.toDouble, toPoint.x.toDouble, toPoint.y.toDouble),
               Uniform("GRADIANT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
@@ -78,8 +78,8 @@ object StandardMaterial {
       val overlayType: Double =
         overlay match {
           case _: Fill.Color          => 0.0
-          case _: Fill.LinearGradiant => 1.0
-          case _: Fill.RadialGradiant => 2.0
+          case _: Fill.LinearGradient => 1.0
+          case _: Fill.RadialGradient => 2.0
         }
 
       ShaderData(
@@ -87,7 +87,7 @@ object StandardMaterial {
         List(
           Uniform("ALPHA_SATURATION_OVERLAYTYPE") -> vec3(alpha, saturation, overlayType),
           Uniform("TINT")                         -> vec4(tint.r, tint.g, tint.b, tint.a)
-        ) ++ gradiantUniforms,
+        ) ++ gradientUniforms,
         Some(diffuse),
         None,
         None,

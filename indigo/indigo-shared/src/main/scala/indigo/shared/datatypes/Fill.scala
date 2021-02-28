@@ -18,23 +18,23 @@ object Fill {
       Color(RGBA.Zero)
   }
 
-  final case class LinearGradiant(
+  final case class LinearGradient(
       fromPoint: Point,
       fromColor: RGBA,
       toPoint: Point,
       toColor: RGBA
   ) extends Fill {
 
-    def withFromColor(newColor: RGBA): LinearGradiant =
+    def withFromColor(newColor: RGBA): LinearGradient =
       this.copy(fromColor = newColor)
 
-    def withToColor(newColor: RGBA): LinearGradiant =
+    def withToColor(newColor: RGBA): LinearGradient =
       this.copy(toColor = newColor)
 
-    def withFromPoint(newPosition: Point): LinearGradiant =
+    def withFromPoint(newPosition: Point): LinearGradient =
       this.copy(fromPoint = newPosition)
 
-    def withToPoint(newPosition: Point): LinearGradiant =
+    def withToPoint(newPosition: Point): LinearGradient =
       this.copy(toPoint = newPosition)
 
     lazy val hash: String =
@@ -46,28 +46,28 @@ object Fill {
         toPoint.y.toString +
         toColor.hash
   }
-  object LinearGradiant {
-    val default: LinearGradiant =
-      LinearGradiant(Point.zero, RGBA.Zero, Point.zero, RGBA.Zero)
+  object LinearGradient {
+    val default: LinearGradient =
+      LinearGradient(Point.zero, RGBA.Zero, Point.zero, RGBA.Zero)
   }
 
-  final case class RadialGradiant(
+  final case class RadialGradient(
       fromPoint: Point,
       fromColor: RGBA,
       toPoint: Point,
       toColor: RGBA
   ) extends Fill {
 
-    def withFromColor(newColor: RGBA): RadialGradiant =
+    def withFromColor(newColor: RGBA): RadialGradient =
       this.copy(fromColor = newColor)
 
-    def withToColor(newColor: RGBA): RadialGradiant =
+    def withToColor(newColor: RGBA): RadialGradient =
       this.copy(toColor = newColor)
 
-    def withFromPoint(newPosition: Point): RadialGradiant =
+    def withFromPoint(newPosition: Point): RadialGradient =
       this.copy(fromPoint = newPosition)
 
-    def withToPoint(newPosition: Point): RadialGradiant =
+    def withToPoint(newPosition: Point): RadialGradient =
       this.copy(toPoint = newPosition)
 
     lazy val hash: String =
@@ -79,9 +79,9 @@ object Fill {
         toPoint.y.toString +
         toColor.hash
   }
-  object RadialGradiant {
-    val default: RadialGradiant =
-      RadialGradiant(Point.zero, RGBA.Zero, Point.zero, RGBA.Zero)
+  object RadialGradient {
+    val default: RadialGradient =
+      RadialGradient(Point.zero, RGBA.Zero, Point.zero, RGBA.Zero)
   }
 
 }
