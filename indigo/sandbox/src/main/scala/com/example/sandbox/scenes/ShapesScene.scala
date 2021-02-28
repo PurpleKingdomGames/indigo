@@ -55,11 +55,12 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
           Clone(CloneId("shape clone")).withPosition(Point(10, 10)),
           Clone(CloneId("shape clone")).withPosition(Point(20, 10)),
           Clone(CloneId("shape clone")).withPosition(Point(30, 10)),
-          Shape.Polygon(RGBA.Green, RGBA.White.withAlpha(0.75), 10)(
+          Shape.Polygon(RGBA.Green, RGBA.Black.withAlpha(0.75), 4)(
             Point(10, 10),
             Point(20, 70),
-            Point(90, 90)
-          )
+            Point(90, 90),
+            Point(70, 20)
+          ).moveTo(175, 10)
         )
         .addCloneBlanks(CloneBlank(CloneId("shape clone"), Shape.Circle(Point.zero, 5, RGBA.Green, RGBA.White, 2)))
     )
