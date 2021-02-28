@@ -23,6 +23,7 @@ layout (std140) uniform CustomData {
 float sdfCalc(vec2 p, int count, vec2[MAX_VERTICES] v) {
     float d = dot(p - v[0], p - v[0]);
     float s = 1.0;
+
     for(int i = 0, j = count - 1; i < count; j = i, i++) {
         vec2 e = v[j] - v[i];
         vec2 w =    p - v[i];
@@ -31,21 +32,29 @@ float sdfCalc(vec2 p, int count, vec2[MAX_VERTICES] v) {
         bvec3 c = bvec3(p.y >= v[i].y, p.y < v[j].y, e.x * w.y > e.y * w.x);
         if(all(c) || all(not(c))) s *= -1.0;  
     }
+
     return s * sqrt(d);
+}
+
+vec2[MAX_VERTICES] toUvSpace(int count, vec2[MAX_VERTICES] v) {
+  vec2[MAX_VERTICES] polygon;
+  
+  for(int i = 0; i < count; i++) {
+    polygon[i] = v[i] / SIZE;
+  }
+
+  return polygon;
 }
 
 void fragment() {
 
-  // Move vertices to UV space
-  vec2[MAX_VERTICES] polygon;
-  int count = VERTICES.length();
-  for(int i = 0; i < count; i++) {
-    polygon[i] = VERTICES[i] / SIZE;
-  }
-
   float strokeWidthHalf = max(0.0, STROKE_WIDTH / SIZE.x / 2.0);
 
-  float sdf = sdfCalc(UV, int(COUNT), polygon);
+  int iCount = int(COUNT);
+
+  vec2[MAX_VERTICES] polygon = toUvSpace(iCount, VERTICES);
+
+  float sdf = sdfCalc(UV, iCount, polygon);
   float annularSdf = abs(sdf) - strokeWidthHalf;
 
   float fillAmount = (1.0 - step(0.0, sdf)) * FILL_COLOR.a;
