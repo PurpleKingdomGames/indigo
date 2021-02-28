@@ -540,7 +540,6 @@ object Shape {
           Uniform("STROKE_COLOR") -> vec4(strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a),
           Uniform("FILL_COLOR")   -> vec4(fill.r, fill.g, fill.b, fill.a),
           Uniform("VERTICES")     -> array(16, verts)
-          // Uniform("VERTICES")     -> array(16)(vec2(0.1, 0.1), vec2(0.2, 0.7), vec2(0.9, 0.9))
         )
       )
     }
