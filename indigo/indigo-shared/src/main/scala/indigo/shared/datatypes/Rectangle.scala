@@ -62,6 +62,9 @@ final case class Rectangle(position: Point, size: Point) {
   def resize(newSize: Point): Rectangle =
     this.copy(size = newSize)
 
+  def toSquare: Rectangle =
+    this.copy(size = Point(Math.max(size.x, size.y)))
+
   def ===(other: Rectangle): Boolean =
     position === other.position && size === other.size
 

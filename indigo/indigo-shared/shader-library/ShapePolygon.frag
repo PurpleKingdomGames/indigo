@@ -12,7 +12,6 @@ vec2 SIZE;
 const int MAX_VERTICES = 16;
 
 layout (std140) uniform CustomData {
-  vec2 ASPECT_RATIO;
   float STROKE_WIDTH;
   float COUNT;
   vec4 STROKE_COLOR;
@@ -37,9 +36,16 @@ float sdfCalc(vec2 p, int count, vec2[MAX_VERTICES] v) {
 
 void fragment() {
 
+  // Move vertices to UV space
+  vec2[MAX_VERTICES] polygon;
+  int count = VERTICES.length();
+  for(int i = 0; i < count; i++) {
+    polygon[i] = VERTICES[i] / SIZE;
+  }
+
   float strokeWidthHalf = max(0.0, STROKE_WIDTH / SIZE.x / 2.0);
 
-  float sdf = sdfCalc(UV, int(COUNT), VERTICES);
+  float sdf = sdfCalc(UV, int(COUNT), polygon);
   float annularSdf = abs(sdf) - strokeWidthHalf;
 
   float fillAmount = (1.0 - step(0.0, sdf)) * FILL_COLOR.a;
