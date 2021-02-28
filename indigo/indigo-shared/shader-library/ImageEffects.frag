@@ -49,7 +49,7 @@ vec4 calculateRadialGradientOverlay(vec4 color) {
   float radius = length(pointB - pointA);
   float distanceToP = length(pointP - pointA);
 
-  float sdf = clamp(abs((distanceToP - radius) / radius), 0.0, 1.0);
+  float sdf = clamp(-((distanceToP - radius) / radius), 0.0, 1.0);
 
   vec4 gradient = mix(GRADIANT_TO_COLOR, GRADIANT_FROM_COLOR, sdf);
 
