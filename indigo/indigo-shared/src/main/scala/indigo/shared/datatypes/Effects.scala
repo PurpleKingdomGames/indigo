@@ -2,7 +2,7 @@ package indigo.shared.datatypes
 
 final case class Effects(
     tint: RGBA,
-    overlay: Overlay,
+    overlay: Fill,
     border: Border,
     glow: Glow,
     alpha: Double
@@ -10,7 +10,7 @@ final case class Effects(
   def withTint(newTint: RGBA): Effects =
     this.copy(tint = newTint)
 
-  def withOverlay(newOverlay: Overlay): Effects =
+  def withOverlay(newOverlay: Fill): Effects =
     this.copy(overlay = newOverlay)
 
   def withBorder(newBorder: Border): Effects =
@@ -32,7 +32,7 @@ final case class Effects(
 object Effects {
   val default: Effects = Effects(
     tint = RGBA.None,
-    overlay = Overlay.Color.default,
+    overlay = Fill.Color.default,
     border = Border.default,
     glow = Glow.default,
     alpha = 1.0

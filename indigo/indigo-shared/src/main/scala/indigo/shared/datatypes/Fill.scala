@@ -1,11 +1,11 @@
 package indigo.shared.datatypes
 
-sealed trait Overlay {
+sealed trait Fill {
   def hash: String
 }
-object Overlay {
+object Fill {
 
-  final case class Color(color: RGBA) extends Overlay {
+  final case class Color(color: RGBA) extends Fill {
 
     def withColor(newColor: RGBA): Color =
       this.copy(color = newColor)
@@ -23,7 +23,7 @@ object Overlay {
       fromColor: RGBA,
       toPoint: Point,
       toColor: RGBA
-  ) extends Overlay {
+  ) extends Fill {
 
     def withFromColor(newColor: RGBA): LinearGradiant =
       this.copy(fromColor = newColor)
@@ -56,7 +56,7 @@ object Overlay {
       fromColor: RGBA,
       toPoint: Point,
       toColor: RGBA
-  ) extends Overlay {
+  ) extends Fill {
 
     def withFromColor(newColor: RGBA): RadialGradiant =
       this.copy(fromColor = newColor)
