@@ -6,12 +6,9 @@ import indigo.shared.shader.StandardShaders
 import indigo.shared.shader.Uniform
 import indigo.shared.shader.ShaderPrimitive.{vec3, vec4}
 import indigo.shared.datatypes.RGBA
-import indigo.shared.datatypes.Overlay
-import indigo.shared.datatypes.Overlay.Color
-import indigo.shared.datatypes.Overlay.LinearGradiant
+import indigo.shared.datatypes.Fill
 import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.datatypes.RGB
-import indigo.shared.datatypes.Overlay.RadialGradiant
 import indigo.shared.shader.ShaderId
 
 sealed trait StandardMaterial extends Material
@@ -33,7 +30,7 @@ object StandardMaterial {
       )
   }
 
-  final case class ImageEffects(diffuse: AssetName, alpha: Double, tint: RGBA, overlay: Overlay, saturation: Double) extends StandardMaterial {
+  final case class ImageEffects(diffuse: AssetName, alpha: Double, tint: RGBA, overlay: Fill, saturation: Double) extends StandardMaterial {
 
     def withAlpha(newAlpha: Double): ImageEffects =
       this.copy(alpha = newAlpha)
@@ -43,7 +40,7 @@ object StandardMaterial {
     def withTint(newTint: RGB): ImageEffects =
       this.copy(tint = newTint.toRGBA)
 
-    def withOverlay(newOverlay: Overlay): ImageEffects =
+    def withOverlay(newOverlay: Fill): ImageEffects =
       this.copy(overlay = newOverlay)
 
     def withSaturation(newSaturation: Double): ImageEffects =
@@ -55,7 +52,7 @@ object StandardMaterial {
     def toShaderData: ShaderData = {
       val gradiantUniforms: List[(Uniform, ShaderPrimitive)] =
         overlay match {
-          case Color(color) =>
+          case Fill.Color(color) =>
             val c = vec4(color.r, color.g, color.b, color.a)
             List(
               Uniform("GRADIANT_FROM_TO")    -> vec4(0.0d),
@@ -63,14 +60,14 @@ object StandardMaterial {
               Uniform("GRADIANT_TO_COLOR")   -> c
             )
 
-          case LinearGradiant(fromPoint, fromColor, toPoint, toColor) =>
+          case Fill.LinearGradiant(fromPoint, fromColor, toPoint, toColor) =>
             List(
               Uniform("GRADIANT_FROM_TO")    -> vec4(fromPoint.x.toDouble, fromPoint.y.toDouble, toPoint.x.toDouble, toPoint.y.toDouble),
               Uniform("GRADIANT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
               Uniform("GRADIANT_TO_COLOR")   -> vec4(toColor.r, toColor.g, toColor.b, toColor.a)
             )
 
-          case RadialGradiant(fromPoint, fromColor, toPoint, toColor) =>
+          case Fill.RadialGradiant(fromPoint, fromColor, toPoint, toColor) =>
             List(
               Uniform("GRADIANT_FROM_TO")    -> vec4(fromPoint.x.toDouble, fromPoint.y.toDouble, toPoint.x.toDouble, toPoint.y.toDouble),
               Uniform("GRADIANT_FROM_COLOR") -> vec4(fromColor.r, fromColor.g, fromColor.b, fromColor.a),
@@ -80,9 +77,9 @@ object StandardMaterial {
 
       val overlayType: Double =
         overlay match {
-          case _: Color          => 0.0
-          case _: LinearGradiant => 1.0
-          case _: RadialGradiant => 2.0
+          case _: Fill.Color          => 0.0
+          case _: Fill.LinearGradiant => 1.0
+          case _: Fill.RadialGradiant => 2.0
         }
 
       ShaderData(
@@ -100,10 +97,10 @@ object StandardMaterial {
   }
   object ImageEffects {
     def apply(diffuse: AssetName): ImageEffects =
-      ImageEffects(diffuse, 1.0, RGBA.None, Overlay.Color.default, 1.0)
+      ImageEffects(diffuse, 1.0, RGBA.None, Fill.Color.default, 1.0)
 
     def apply(diffuse: AssetName, alpha: Double): ImageEffects =
-      ImageEffects(diffuse, alpha, RGBA.None, Overlay.Color.default, 1.0)
+      ImageEffects(diffuse, alpha, RGBA.None, Fill.Color.default, 1.0)
   }
 
   final case class PostMaterial(postShaderId: ShaderId, parent: Material) extends StandardMaterial {

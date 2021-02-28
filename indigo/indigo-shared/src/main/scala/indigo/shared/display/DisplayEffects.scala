@@ -1,7 +1,7 @@
 package indigo.shared.display
 
 import indigo.shared.datatypes.Effects
-import indigo.shared.datatypes.Overlay
+import indigo.shared.datatypes.Fill
 import indigo.shared.datatypes.Thickness
 
 final class DisplayEffects(
@@ -20,11 +20,11 @@ final class DisplayEffects(
 
 object DisplayEffects {
 
-  private val overlayToPositionsArray: Overlay => Array[Float] = {
-    case Overlay.Color(_) =>
+  private val overlayToPositionsArray: Fill => Array[Float] = {
+    case Fill.Color(_) =>
       Array(0.0f, 0.0f, 1.0f, 1.0f)
 
-    case Overlay.LinearGradiant(fromPoint, _, toPoint, _) =>
+    case Fill.LinearGradiant(fromPoint, _, toPoint, _) =>
       Array(
         fromPoint.x.toFloat,
         fromPoint.y.toFloat,
@@ -32,7 +32,7 @@ object DisplayEffects {
         toPoint.y.toFloat
       )
 
-    case Overlay.RadialGradiant(fromPoint, _, toPoint, _) =>
+    case Fill.RadialGradiant(fromPoint, _, toPoint, _) =>
       Array(
         fromPoint.x.toFloat,
         fromPoint.y.toFloat,
@@ -41,25 +41,25 @@ object DisplayEffects {
       )
   }
 
-  private val overlayToFromColorArray: Overlay => Array[Float] = {
-    case Overlay.Color(color) =>
+  private val overlayToFromColorArray: Fill => Array[Float] = {
+    case Fill.Color(color) =>
       color.toArray
 
-    case Overlay.LinearGradiant(_, fromColor, _, _) =>
+    case Fill.LinearGradiant(_, fromColor, _, _) =>
       fromColor.toArray
 
-    case Overlay.RadialGradiant(_, fromColor, _, _) =>
+    case Fill.RadialGradiant(_, fromColor, _, _) =>
       fromColor.toArray
   }
 
-  private val overlayToToColorArray: Overlay => Array[Float] = {
-    case Overlay.Color(color) =>
+  private val overlayToToColorArray: Fill => Array[Float] = {
+    case Fill.Color(color) =>
       color.toArray
 
-    case Overlay.LinearGradiant(_, _, _, toColor) =>
+    case Fill.LinearGradiant(_, _, _, toColor) =>
       toColor.toArray
 
-    case Overlay.RadialGradiant(_, _, _, toColor) =>
+    case Fill.RadialGradiant(_, _, _, toColor) =>
       toColor.toArray
   }
 
