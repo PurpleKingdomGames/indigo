@@ -204,6 +204,13 @@ object Shape {
     def withStrokeWidth(newWidth: Int): Circle =
       this.copy(strokeWidth = newWidth)
 
+    def withRadius(newRadius: Int): Circle =
+      this.copy(radius = newRadius)
+    def resizeTo(newRadius: Int): Circle =
+      withRadius(newRadius)
+    def resizeBy(amount: Int): Circle =
+      withRadius(radius + amount)
+
     def moveTo(pt: Point): Circle =
       this.copy(center = pt)
     def moveTo(x: Int, y: Int): Circle =
@@ -324,17 +331,36 @@ object Shape {
     def withStrokeWidth(newWidth: Int): Line =
       this.copy(strokeWidth = newWidth)
 
-    def moveTo(pt: Point): Line =
-      this.copy(start = pt)
+    def moveTo(newPosition: Point): Line =
+      this.copy(start = newPosition, end = newPosition + (end - start))
     def moveTo(x: Int, y: Int): Line =
       moveTo(Point(x, y))
-    def withPosition(newPosition: Point): Line =
-      moveTo(newPosition)
 
-    def moveBy(pt: Point): Line =
-      this.copy(start = start + pt)
+    def moveBy(amount: Point): Line =
+      moveTo(start + amount)
     def moveBy(x: Int, y: Int): Line =
       moveBy(Point(x, y))
+
+    def moveStartTo(newPosition: Point): Line =
+      this.copy(start = newPosition)
+    def moveStartTo(x: Int, y: Int): Line =
+      moveStartTo(Point(x, y))
+    def moveStartBy(amount: Point): Line =
+      moveStartTo(start + amount)
+    def moveStartBy(x: Int, y: Int): Line =
+      moveStartBy(Point(x, y))
+
+    def moveEndTo(newPosition: Point): Line =
+      this.copy(end = newPosition)
+    def moveEndTo(x: Int, y: Int): Line =
+      moveEndTo(Point(x, y))
+    def moveEndBy(amount: Point): Line =
+      moveEndTo(end + amount)
+    def moveEndBy(x: Int, y: Int): Line =
+      moveEndBy(Point(x, y))
+
+    def withPosition(newPosition: Point): Line =
+      moveTo(newPosition)
 
     def rotateTo(angle: Radians): Line =
       this.copy(rotation = angle)
