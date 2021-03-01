@@ -2,7 +2,7 @@
 // The essentials.
 //-----------------------------------
 
-val dottyVersion    = "3.0.0-M3"
+val dottyVersion    = "3.0.0-RC1"
 
 lazy val pirate =
   (project in file("."))
@@ -16,8 +16,8 @@ lazy val pirate =
       scalaVersion := dottyVersion,
       organization := "pirate",
       libraryDependencies ++= Seq(
-        "org.scalameta" %%% "munit" % "0.7.20" % Test,
-        "org.scalacheck" %%% "scalacheck" % "1.15.2" % "test"
+        "org.scalameta" %%% "munit" % "0.7.22" % Test,
+        "org.scalacheck" %%% "scalacheck" % "1.15.3" % "test"
       ),
       testFrameworks += new TestFramework("munit.Framework"),
       // wartremoverWarnings in (Compile, compile) ++= Warts.unsafe,
