@@ -30,7 +30,7 @@ object `mill-indigo` extends ScalaModule with PublishModule {
   // def scalacPluginIvyDeps = T { super.scalacPluginIvyDeps() ++ Agg(ivy"org.wartremover:::wartremover:2.4.13") }
 
   object test extends Tests {
-    def ivyDeps = Agg(ivy"org.scalameta::munit:0.7.20")
+    def ivyDeps = Agg(ivy"org.scalameta::munit:0.7.22")
 
     def testFrameworks = Seq("munit.Framework")
   }
