@@ -214,7 +214,7 @@ final class RendererWebGL1(
             uiFrameBuffer.diffuse
           )
         else
-          textureLocations.find(t => t.name == displayObject.atlasName) match {
+          displayObject.atlasName.flatMap(atlas => textureLocations.find(t => t.name == atlas)) match {
             case None =>
               gl.activeTexture(TEXTURE0);
               gl.bindTexture(TEXTURE_2D, null)
