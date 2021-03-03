@@ -1,34 +1,35 @@
 package indigo.platform.renderer.webgl1
 
-import indigo.shared.display.DisplayObject
-
 import indigo.platform.renderer.Renderer
-import indigo.shared.platform.RendererConfig
-import indigo.shared.datatypes.mutable.CheapMatrix4
-import indigo.shared.datatypes.RGBA
-import indigo.shared.platform.ProcessedSceneData
-import indigo.shared.display.DisplayEntity
+import indigo.platform.renderer.shared.WebGLHelper
+import indigo.platform.renderer.shared.RendererHelper
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.ContextAndCanvas
-import indigo.platform.renderer.shared.FrameBufferFunctions
-import indigo.platform.renderer.shared.FrameBufferComponents
-
-import scala.collection.mutable
-
-import org.scalajs.dom.html
-import org.scalajs.dom.raw.WebGLRenderingContext
-import org.scalajs.dom.raw.WebGLProgram
-import scala.scalajs.js.typedarray.Float32Array
-import org.scalajs.dom.raw.WebGLBuffer
-import org.scalajs.dom.raw.WebGLRenderingContext._
-import indigo.platform.renderer.shared.RendererHelper
-import indigo.platform.renderer.shared.WebGLHelper
 import indigo.platform.events.GlobalEventStream
+
+import indigo.shared.platform.RendererConfig
+import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.shared.platform.ProcessedSceneData
+import indigo.shared.display.DisplayEntity
+import indigo.shared.display.DisplayObject
 import indigo.shared.events.ViewportResize
 import indigo.shared.config.GameViewport
 import indigo.shared.shader.RawShaderCode
 import indigo.shared.time.Seconds
+
+import scala.scalajs.js.typedarray.Float32Array
+import org.scalajs.dom.html
+import org.scalajs.dom.raw.WebGLRenderingContext
+import org.scalajs.dom.raw.WebGLProgram
+import org.scalajs.dom.raw.WebGLBuffer
+import org.scalajs.dom.raw.WebGLRenderingContext._
+import org.scalajs.dom.raw
+import org.scalajs.dom.raw.WebGLUniformLocation
+
+import scalajs.js.JSConverters._
+
+import scala.collection.mutable
 
 final class RendererWebGL1(
     config: RendererConfig,
@@ -45,46 +46,24 @@ final class RendererWebGL1(
   var lastHeight: Int = 0
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var orthographicProjectionMatrix: CheapMatrix4 = CheapMatrix4.identity
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  var orthographicProjectionMatrixNoMag: CheapMatrix4 = CheapMatrix4.identity
 
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastWidth
 
-  import indigo.shaders._
-
-  private val gl: WebGLRenderingContext =
-    cNc.context
+  private val gl: WebGLRenderingContext = cNc.context
+  private val vertexBuffer: WebGLBuffer = gl.createBuffer()
+  private val standardShaderProgram     = WebGLHelper.shaderProgramSetup(gl, "Pixel", indigo.shaders.WebGL1)
 
   private val textureLocations: List[TextureLookupResult] =
-    loadedTextureAssets.map { li =>
-      new TextureLookupResult(li.name, WebGLHelper.organiseImage(gl, li.data))
-    }
-
-  private val vertexBuffer: WebGLBuffer = gl.createBuffer()
-
-  private val standardShaderProgram = WebGLHelper.shaderProgramSetup(gl, "Pixel", WebGL1StandardPixelArt)
-  private val lightingShaderProgram = WebGLHelper.shaderProgramSetup(gl, "Lighting", WebGL1StandardLightingPixelArt)
-  private val mergeShaderProgram    = WebGLHelper.shaderProgramSetup(gl, "Merge", WebGL1StandardMerge)
-
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var gameFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var lightingFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var uiFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
+    loadedTextureAssets.map(li => new TextureLookupResult(li.name, WebGLHelper.organiseImage(gl, li.data)))
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def init(shaders: Set[RawShaderCode]): Unit = {
-    // some basic set up.
     gl.disable(DEPTH_TEST)
     gl.viewport(0, 0, gl.drawingBufferWidth.toDouble, gl.drawingBufferHeight.toDouble)
     gl.enable(BLEND)
+    gl.blendFunc(ONE, ONE_MINUS_SRC_ALPHA)
 
-    // Bind the triangles to the vertex buffer.
     val verticesAndTextureCoords: scalajs.js.Array[Float] = {
       val vert0 = scalajs.js.Array[Float](-0.5f, -0.5f, 0.0f, 1.0f)
       val vert1 = scalajs.js.Array[Float](-0.5f, 0.5f, 0.0f, 0.0f)
@@ -98,123 +77,67 @@ final class RendererWebGL1(
     gl.bufferData(ARRAY_BUFFER, new Float32Array(verticesAndTextureCoords), STATIC_DRAW)
 
     gl.useProgram(standardShaderProgram)
+
     val verticesLocation1 = gl.getAttribLocation(standardShaderProgram, "a_verticesAndCoords")
-    RendererFunctions.bindAttibuteBuffer(gl, verticesLocation1, 4)
-
-    gl.useProgram(standardShaderProgram)
-    val verticesLocation2 = gl.getAttribLocation(lightingShaderProgram, "a_verticesAndCoords")
-    RendererFunctions.bindAttibuteBuffer(gl, verticesLocation2, 4)
-
-    gl.useProgram(standardShaderProgram)
-    val verticesLocation3 = gl.getAttribLocation(mergeShaderProgram, "a_verticesAndCoords")
-    RendererFunctions.bindAttibuteBuffer(gl, verticesLocation3, 4)
+    bindAttibuteBuffer(gl, verticesLocation1, 4)
 
     gl.bindBuffer(ARRAY_BUFFER, null)
+
+    gl.bindFramebuffer(FRAMEBUFFER, null)
   }
 
-  def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit =
+  def drawScene(sceneData: ProcessedSceneData, runningTime: Seconds): Unit = {
     resize(cNc.canvas, cNc.magnification)
 
-  // WebGLHelper.setNormalBlend(gl)
-  // drawLayer(
-  //   sceneData.gameLayerDisplayObjects,
-  //   Some(gameFrameBuffer),
-  //   RGBA.Black.makeTransparent,
-  //   standardShaderProgram,
-  //   sceneData.gameProjection,
-  //   false
-  // )
+    gl.clearColor(config.clearColor.r, config.clearColor.g, config.clearColor.b, config.clearColor.a)
+    gl.clear(COLOR_BUFFER_BIT)
 
-  // WebGLHelper.setLightingBlend(gl)
-  // drawLayer(
-  //   sceneData.lightingLayerDisplayObjects,
-  //   Some(lightingFrameBuffer),
-  //   sceneData.clearColor,
-  //   lightingShaderProgram,
-  //   sceneData.lightingProjection,
-  //   false
-  // )
+    val gameProjection = orthographicProjectionMatrix.mat.toJSArray
 
-  // WebGLHelper.setNormalBlend(gl)
-  // drawLayer(
-  //   sceneData.uiLayerDisplayObjects,
-  //   Some(uiFrameBuffer),
-  //   RGBA.Black.makeTransparent,
-  //   standardShaderProgram,
-  //   sceneData.uiProjection,
-  //   false
-  // )
+    sceneData.layers.foreach { layer =>
+      val projection =
+        layer.magnification match {
+          case None =>
+            gameProjection
 
-  // WebGLHelper.setNormalBlend(gl)
-  // drawLayer(
-  //   mutable.ListBuffer(RendererHelper.screenDisplayObject(lastWidth, lastHeight)),
-  //   None,
-  //   config.clearColor,
-  //   mergeShaderProgram,
-  //   orthographicProjectionMatrixNoMag,
-  //   true
-  // )
+          case Some(m) =>
+            CheapMatrix4.orthographic(cNc.canvas.width.toDouble / m.toDouble, cNc.canvas.height.toDouble / m.toDouble).mat.toJSArray
+        }
+
+      drawLayer(layer.entities, standardShaderProgram, projection)
+    }
+  }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def drawLayer(
       displayEntities: mutable.ListBuffer[DisplayEntity],
-      frameBufferComponents: Option[FrameBufferComponents],
-      clearColor: RGBA,
       shaderProgram: WebGLProgram,
-      projectionMatrix: CheapMatrix4,
-      isMerge: Boolean
+      projectionMatrix: scalajs.js.Array[Double]
   ): Unit = {
-
-    frameBufferComponents match {
-      case Some(fb) =>
-        FrameBufferFunctions.switchToFramebuffer(gl, fb.frameBuffer, clearColor, true)
-
-      case None =>
-        FrameBufferFunctions.switchToCanvas(gl, config.clearColor)
-    }
-
-    gl.useProgram(shaderProgram)
 
     gl.uniformMatrix4fv(
       location = gl.getUniformLocation(shaderProgram, "u_projection"),
       transpose = false,
-      value = RendererHelper.mat4ToJsArray(projectionMatrix)
+      value = projectionMatrix
     )
 
-    // Attribute locations
+    gl.uniform1i(gl.getUniformLocation(shaderProgram, "u_texture"), 0)
 
-    // Uniform locations (vertex)
-    val transformMatrixLocation = gl.getUniformLocation(shaderProgram, "u_transform")
-    val alphaLocation           = gl.getUniformLocation(shaderProgram, "u_alpha")
-    val frameTransform          = gl.getUniformLocation(shaderProgram, "u_frameTransform")
-
-    // Uniform locations (fragment)
-    // val tintLocation    = gl.getUniformLocation(shaderProgram, "u_tint")
-    val textureLocation = gl.getUniformLocation(shaderProgram, "u_texture")
-
-    // Set once
-    gl.uniform1i(textureLocation, 0)
-
-    RendererHelper.sortByDepth(displayEntities).foreach {
-      case displayObject: DisplayObject =>
-        RendererFunctions.setupVertexShaderState(
-          gl,
-          displayObject,
-          transformMatrixLocation,
-          alphaLocation,
-          frameTransform
-        )
-
-        if (isMerge)
-          RendererFunctions.setupMergeFragmentShaderState(
+    // This basic renderer only renders entities with images. So we can save work by only considering
+    // 1) display objects, and that 2) have an atlas reference.
+    displayEntities
+      .collect { case d: DisplayObject if d.atlasName.isDefined => (d, d.atlasName.get) }
+      .sortWith((d1, d2) => d1._1.z > d2._1.z)
+      .foreach {
+        case (displayObject: DisplayObject, objectAtlas) =>
+          setupVertexShaderState(
             gl,
-            mergeShaderProgram,
-            gameFrameBuffer.diffuse,
-            lightingFrameBuffer.diffuse,
-            uiFrameBuffer.diffuse
+            displayObject,
+            gl.getUniformLocation(shaderProgram, "u_transform"),
+            gl.getUniformLocation(shaderProgram, "u_frameTransform")
           )
-        else
-          displayObject.atlasName.flatMap(atlas => textureLocations.find(t => t.name == atlas)) match {
+
+          textureLocations.find(t => t.name == objectAtlas) match {
             case None =>
               gl.activeTexture(TEXTURE0);
               gl.bindTexture(TEXTURE_2D, null)
@@ -224,19 +147,11 @@ final class RendererWebGL1(
               gl.bindTexture(TEXTURE_2D, textureLookup.texture)
           }
 
-        // gl.uniform4f(
-        //   tintLocation,
-        //   displayObject.effects.tint(0).toDouble,
-        //   displayObject.effects.tint(1).toDouble,
-        //   displayObject.effects.tint(2).toDouble,
-        //   displayObject.effects.tint(3).toDouble
-        // )
+          gl.drawArrays(TRIANGLE_STRIP, 0, 4)
 
-        gl.drawArrays(TRIANGLE_STRIP, 0, 4)
-
-      case _ =>
-        ()
-    }
+        case _ =>
+          ()
+      }
 
   }
 
@@ -248,17 +163,7 @@ final class RendererWebGL1(
       resizeRun = true
       lastWidth = actualWidth
       lastHeight = actualHeight
-
       orthographicProjectionMatrix = CheapMatrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
-      orthographicProjectionMatrixNoMag = CheapMatrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)
-      // orthographicProjectionMatrixJS = RendererFunctions.mat4ToJsArray(orthographicProjectionMatrix)
-      // orthographicProjectionMatrixNoMagJS = RendererFunctions.mat4ToJsArray(Matrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)).map(_.toFloat)
-
-      gameFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
-      // lightsFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
-      lightingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
-      // distortionFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
-      uiFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
 
       gl.viewport(0, 0, actualWidth.toDouble, actualHeight.toDouble)
 
@@ -266,6 +171,40 @@ final class RendererWebGL1(
 
       ()
     }
+  }
+
+  def bindAttibuteBuffer(gl: raw.WebGLRenderingContext, attributeLocation: Int, size: Int): Unit = {
+    gl.enableVertexAttribArray(attributeLocation)
+    gl.vertexAttribPointer(
+      indx = attributeLocation,
+      size = size,
+      `type` = FLOAT,
+      normalized = false,
+      stride = 0,
+      offset = 0
+    )
+  }
+
+  def setupVertexShaderState(
+      gl: raw.WebGLRenderingContext,
+      displayObject: DisplayObject,
+      transformMatrixLocation: WebGLUniformLocation,
+      frameTransform: WebGLUniformLocation
+  ): Unit = {
+
+    gl.uniformMatrix4fv(
+      location = transformMatrixLocation,
+      transpose = false,
+      value = RendererHelper.mat4ToJsArray(displayObject.transform)
+    )
+
+    gl.uniform4f(
+      frameTransform,
+      displayObject.channelOffset0X.toDouble,
+      displayObject.channelOffset0Y.toDouble,
+      displayObject.frameScaleX.toDouble,
+      displayObject.frameScaleY.toDouble
+    )
   }
 
 }
