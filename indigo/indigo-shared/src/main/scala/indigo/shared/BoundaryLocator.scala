@@ -16,7 +16,6 @@ import indigo.shared.scenegraph.Transformer
 import indigo.shared.datatypes.FontKey
 import indigo.shared.scenegraph.Shape
 import indigo.shared.scenegraph.EntityNode
-import indigo.shared.scenegraph.DependentNode
 
 final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister: FontRegister) {
 
