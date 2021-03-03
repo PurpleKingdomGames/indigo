@@ -109,7 +109,8 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
       SandboxViewModel(
         Point.zero,
         InputField("single", assets).withKey(BindingKey("single")).makeSingleLine,
-        InputField("multi\nline", assets).withKey(BindingKey("multi")).makeMultiLine.moveTo(5, 5)
+        InputField("multi\nline", assets).withKey(BindingKey("multi")).makeMultiLine.moveTo(5, 5),
+        true
       )
     )
   }
@@ -118,6 +119,9 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
     SandboxModel.updateModel(model)
 
   def updateViewModel(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): GlobalEvent => Outcome[SandboxViewModel] = {
+    case RendererDetails(RenderingTechnology.WebGL1, _, _) =>
+      Outcome(viewModel.copy(useLightingLayer = false))
+
     case FrameTick =>
       val updateOffset: Point =
         context.inputState.gamepad.dpad match {
@@ -162,4 +166,4 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
 final case class Dude(aseprite: Aseprite, sprite: Sprite)
 final case class SandboxBootData(message: String, gameViewport: GameViewport)
 final case class SandboxStartupData(dude: Dude, viewportCenter: Point)
-final case class SandboxViewModel(offset: Point, single: InputField, multi: InputField)
+final case class SandboxViewModel(offset: Point, single: InputField, multi: InputField, useLightingLayer: Boolean)

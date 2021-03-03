@@ -20,9 +20,12 @@ object SandboxView {
         // .withBlend(Blend.Alpha)
       )
       .addLayer(
-        Layer(lightingLayer(inputState))
-          .withDepth(Depth(301))
-          .withBlending(Blending.Lighting)
+        if (viewModel.useLightingLayer)
+          Layer(lightingLayer(inputState))
+            .withDepth(Depth(301))
+            .withBlending(Blending.Lighting)
+        else
+          Layer.empty
       )
       // .addLayer(Layer(uiLayer(inputState)))
       .withAmbientLight(RGBA.White.withAmount(0.25))
