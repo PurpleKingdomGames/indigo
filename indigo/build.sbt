@@ -16,7 +16,7 @@ lazy val scalaFixSettings: Seq[sbt.Def.Setting[_]] =
 
 lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   version := indigoVersion,
-  scalaVersion := dottyVersion,
+  scalaVersion := scala213Version,
   semanticdbEnabled := !isDotty.value,
   semanticdbVersion := scalafixSemanticdb.revision, // use Scalafix compatible version
   crossScalaVersions := Seq(dottyVersion, scala213Version),
