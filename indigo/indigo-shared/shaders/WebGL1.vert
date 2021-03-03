@@ -4,11 +4,10 @@ attribute vec4 a_verticesAndCoords;
 // Uniforms
 uniform mat4 u_projection;
 uniform mat4 u_transform;
-uniform float u_alpha;
-uniform vec4 u_frameTransform; // fine
+uniform vec4 u_frameTransform;
 
+// Varying
 varying vec2 v_texcoord;
-varying float v_alpha;
 
 mat4 translate2d(vec2 t){
     return mat4(1, 0, 0, 0,
@@ -42,5 +41,4 @@ void main(void) {
   gl_Position = u_projection * u_transform * vertices;
 
   v_texcoord = scaleTexCoords(texcoords);
-  v_alpha = u_alpha;
 }
