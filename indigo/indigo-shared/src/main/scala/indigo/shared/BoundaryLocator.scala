@@ -52,9 +52,6 @@ final class BoundaryLocator(animationsRegister: AnimationsRegister, fontRegister
       case _: CloneBatch =>
         Rectangle.zero
 
-      case _: DependentNode =>
-        Rectangle.zero
-
       case s: Sprite =>
         spriteBounds(s)
 
