@@ -22,7 +22,7 @@ final class RendererInitialiser(renderingTechnology: RenderingTechnology, global
   def setup(config: RendererConfig, loadedTextureAssets: List[LoadedTextureAsset], canvas: html.Canvas, shaders: Set[RawShaderCode]): Renderer = {
     val (cNc, tech) = setupContextAndCanvas(canvas, config.magnification, config.antiAliasing)
 
-    globalEventStream.pushGlobalEvent(new RendererDetails(tech, config.clearColor, config.magnification))
+    globalEventStream.pushGlobalEvent(RendererDetails(tech, config.clearColor, config.magnification))
 
     val r =
       tech match {
