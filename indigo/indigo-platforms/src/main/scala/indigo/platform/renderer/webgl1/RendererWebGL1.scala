@@ -2,7 +2,6 @@ package indigo.platform.renderer.webgl1
 
 import indigo.platform.renderer.Renderer
 import indigo.platform.renderer.shared.WebGLHelper
-import indigo.platform.renderer.shared.RendererHelper
 import indigo.platform.renderer.shared.LoadedTextureAsset
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.ContextAndCanvas
@@ -195,7 +194,7 @@ final class RendererWebGL1(
     gl.uniformMatrix4fv(
       location = transformMatrixLocation,
       transpose = false,
-      value = RendererHelper.mat4ToJsArray(displayObject.transform)
+      value = displayObject.transform.mat.toJSArray
     )
 
     gl.uniform4f(
