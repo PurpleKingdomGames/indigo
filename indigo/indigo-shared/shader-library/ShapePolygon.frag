@@ -11,7 +11,7 @@ vec2 SIZE;
 //<indigo-fragment>
 const int MAX_VERTICES = 16;
 
-layout (std140) uniform CustomData {
+layout (std140) uniform IndigoShapeData {
   float STROKE_WIDTH;
   float FILL_TYPE;
   float COUNT;

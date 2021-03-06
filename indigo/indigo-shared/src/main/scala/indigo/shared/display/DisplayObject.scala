@@ -12,8 +12,7 @@ sealed trait DisplayEntity {
 final case class DisplayClone(
     val id: String,
     val transform: CheapMatrix4,
-    val z: Double//,
-    // val alpha: Float
+    val z: Double
 ) extends DisplayEntity {
 
   def applyTransform(matrix: CheapMatrix4): DisplayClone =
@@ -21,23 +20,9 @@ final case class DisplayClone(
 }
 object DisplayClone {
   def asBatchData(dc: DisplayClone): CheapMatrix4 =
-    // new DisplayCloneBatchData(
-      dc.transform//,
-    //   dc.alpha
-    // )
+    dc.transform
 }
 
-// final case class DisplayCloneBatchData(
-//     val transform: CheapMatrix4,
-//     val alpha: Float
-// ) {
-//   def applyTransform(matrix: CheapMatrix4): DisplayCloneBatchData =
-//     this.copy(transform = transform * matrix)
-// }
-// object DisplayCloneBatchData {
-//   val None: DisplayCloneBatchData =
-//     DisplayCloneBatchData(CheapMatrix4.identity, 0.0f)
-// }
 final case class DisplayCloneBatch(
     val id: String,
     val z: Double,
@@ -46,7 +31,6 @@ final case class DisplayCloneBatch(
 
   def applyTransform(matrix: CheapMatrix4): DisplayCloneBatch =
     this.copy(clones = clones.map(_ * matrix))
-    // this.copy(clones = clones.map(_.applyTransform(matrix)))
 }
 
 final case class DisplayObject(
@@ -67,8 +51,7 @@ final case class DisplayObject(
     channelOffset3Y: Float,
     isLit: Float,
     shaderId: ShaderId,
-    shaderUniformHash: String,
-    shaderUBO: Array[Float]
+    shaderUniformData: Option[DisplayObjectUniformData]
 ) extends DisplayEntity {
 
   def applyTransform(matrix: CheapMatrix4): DisplayObject =
@@ -89,8 +72,7 @@ object DisplayObject {
       channelOffset3: Vector2,
       isLit: Float,
       shaderId: ShaderId,
-      shaderUniformHash: String,
-      shaderUBO: Array[Float]
+      shaderUniformData: Option[DisplayObjectUniformData]
   ): DisplayObject =
     DisplayObject(
       transform,
@@ -110,19 +92,8 @@ object DisplayObject {
       channelOffset3.y.toFloat,
       isLit,
       shaderId,
-      shaderUniformHash,
-      shaderUBO
+      shaderUniformData
     )
 }
 
-// final case class DisplayObjectShape(
-//     val transform: CheapMatrix4,
-//     val z: Double,
-//     val width: Float,
-//     val height: Float
-// ) extends DisplayEntity {
-
-//   def applyTransform(matrix: CheapMatrix4): DisplayObjectShape =
-//     this.copy(transform * matrix)
-
-// }
+final case class DisplayObjectUniformData(uniformHash: String, blockName: String, data: Array[Float])

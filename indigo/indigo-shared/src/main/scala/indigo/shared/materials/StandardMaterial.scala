@@ -4,6 +4,7 @@ import indigo.shared.assets.AssetName
 import indigo.shared.shader.StandardShaders
 
 import indigo.shared.shader.Uniform
+import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.ShaderPrimitive.{vec3, vec4}
 import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Fill
@@ -22,7 +23,7 @@ object StandardMaterial {
     def toShaderData: ShaderData =
       ShaderData(
         StandardShaders.Bitmap.id,
-        Nil,
+        None,
         Some(diffuse),
         None,
         None,
@@ -84,10 +85,15 @@ object StandardMaterial {
 
       ShaderData(
         StandardShaders.ImageEffects.id,
-        List(
-          Uniform("ALPHA_SATURATION_OVERLAYTYPE") -> vec3(alpha, saturation, overlayType),
-          Uniform("TINT")                         -> vec4(tint.r, tint.g, tint.b, tint.a)
-        ) ++ gradientUniforms,
+        Some(
+          UniformBlock(
+            "IndigoImageEffectsData",
+            List(
+              Uniform("ALPHA_SATURATION_OVERLAYTYPE") -> vec3(alpha, saturation, overlayType),
+              Uniform("TINT")                         -> vec4(tint.r, tint.g, tint.b, tint.a)
+            ) ++ gradientUniforms
+          )
+        ),
         Some(diffuse),
         None,
         None,
