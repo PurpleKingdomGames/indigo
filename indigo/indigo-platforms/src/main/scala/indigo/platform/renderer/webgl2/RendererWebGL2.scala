@@ -62,7 +62,12 @@ final class RendererWebGL2(
   // private val layerRenderer: RendererLayer =
   //   new RendererLayer(gl2, textureLocations, config.maxBatchSize)
 
-  private val vertexAndTextureCoordsBuffer: WebGLBuffer = gl.createBuffer()
+  private val vertexAndTextureCoordsBuffer: WebGLBuffer =
+    gl.createBuffer()
+  // private val projectionUBOBuffer: WebGLBuffer =
+  //   gl2.createBuffer()
+  private val frameDataUBOBuffer: WebGLBuffer =
+    gl2.createBuffer()
 
   private val vao = gl2.createVertexArray()
 
@@ -101,6 +106,8 @@ final class RendererWebGL2(
   var orthographicProjectionMatrixJS: scalajs.js.Array[Double] = RendererHelper.mat4ToJsArray(CheapMatrix4.identity)
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var orthographicProjectionMatrixNoMagJS: scalajs.js.Array[Float] = RendererHelper.mat4ToJsArray(CheapMatrix4.identity).map(_.toFloat)
+  // @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  // var orthographicProjectionMatrixNoMag: Array[Float] = CheapMatrix4.identity.mat.map(_.toFloat)
 
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastHeight
@@ -150,7 +157,7 @@ final class RendererWebGL2(
   }
 
   private val layerRenderInstance: LayerRenderer =
-    new LayerRenderer(gl2, textureLocations, config.maxBatchSize)
+    new LayerRenderer(gl2, textureLocations, config.maxBatchSize, frameDataUBOBuffer/*, projectionUBOBuffer*/)
   private val layerMergeRenderInstance: LayerMergeRenderer =
     new LayerMergeRenderer(gl2)
 
@@ -210,15 +217,11 @@ final class RendererWebGL2(
 
     resize(cNc.canvas, cNc.magnification)
 
-    /*
-    Currently the renderers take a lump of stuff and draw it.
+    // WebGLHelper.bindUBO(gl2, defaultShaderProgram, "IndigoProjectionData", RendererWebGL2Constants.projectionBlockPointer, projectionUBOBuffer)
+    // WebGLHelper.attachUBOData(gl2, orthographicProjectionMatrixNoMag, projectionUBOBuffer)
 
-    What we need to do is...
-    Take a layer's worth of display entities.
-    Draw them one at a time to a buffer.
-    Then merge the buffer to the canvas
-    Repeat.
-     */
+    WebGLHelper.bindUBO(gl2, defaultShaderProgram, "IndigoFrameData", RendererWebGL2Constants.frameDataBlockPointer, frameDataUBOBuffer)
+    WebGLHelper.attachUBOData(gl2, Array[Float](runningTime.value.toFloat), frameDataUBOBuffer)
 
     // Clear down the back buffer
     FrameBufferFunctions.switchToFramebuffer(gl2, backFrameBuffer.frameBuffer, RGBA.Black.makeTransparent, true)
@@ -241,8 +244,8 @@ final class RendererWebGL2(
         layerFrameBuffer,
         RGBA.Black.makeTransparent,
         defaultShaderProgram,
-        customShaders,
-        runningTime.value
+        customShaders //,
+        // runningTime.value
       )
 
       val projection =
@@ -378,6 +381,7 @@ final class RendererWebGL2(
       orthographicProjectionMatrix = CheapMatrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
       orthographicProjectionMatrixJS = RendererHelper.mat4ToJsArray(orthographicProjectionMatrix)
       orthographicProjectionMatrixNoMagJS = RendererHelper.mat4ToJsArray(CheapMatrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble)).map(_.toFloat)
+      // orthographicProjectionMatrixNoMag = CheapMatrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble).mat.map(_.toFloat)
 
       layerFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       backFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)

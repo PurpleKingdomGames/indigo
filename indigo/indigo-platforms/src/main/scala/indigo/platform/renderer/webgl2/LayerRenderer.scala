@@ -20,15 +20,11 @@ import indigo.shared.datatypes.RGBA
 import scala.collection.mutable.HashMap
 import indigo.shared.shader.ShaderId
 
-import scala.scalajs.js.JSConverters._
 import indigo.shared.datatypes.mutable.CheapMatrix4
+import indigo.platform.renderer.shared.WebGLHelper
 
-class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int) {
+class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int, frameDataUboBuffer: => WebGLBuffer/*, projectionUboBuffer: => WebGLBuffer*/) {
 
-  private val customDataBlockPointer: Int = 3
-
-  // private val frameDataUBOBuffer: WebGLBuffer =
-  //   gl2.createBuffer()
   private val customDataUBOBuffer: WebGLBuffer =
     gl2.createBuffer()
 
@@ -100,8 +96,8 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       currentUniformHash: String,
       shaderProgram: WebGLProgram,
       projection: scalajs.js.Array[Double],
-      customShaders: HashMap[ShaderId, WebGLProgram],
-      runningTime: Double
+      customShaders: HashMap[ShaderId, WebGLProgram] //,
+      // runningTime: Double
   ): Unit = {
 
     // Switch and referernce shader
@@ -109,19 +105,21 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       if (d.shaderId != currentShader)
         customShaders.get(d.shaderId) match {
           case Some(s) =>
-            setupShader(s, projection, runningTime)
+            setupShader(s, projection/*, runningTime*/ )
             s
 
           case None =>
-            setupShader(shaderProgram, projection, runningTime)
+            setupShader(shaderProgram, projection/*, runningTime*/ )
             shaderProgram
         }
       else shaderProgram
 
     // UBO data
     d.shaderUniformData.foreach { ud =>
-      if (ud.uniformHash.nonEmpty && ud.uniformHash != currentUniformHash)
-        attachUBOData(activeShader, ud.blockName, customDataBlockPointer, ud.data, customDataUBOBuffer)
+      if (ud.uniformHash.nonEmpty && ud.uniformHash != currentUniformHash) {
+        WebGLHelper.attachUBOData(gl2, ud.data, customDataUBOBuffer)
+        WebGLHelper.bindUBO(gl2, activeShader, ud.blockName, RendererWebGL2Constants.customDataBlockPointer, customDataUBOBuffer)
+      }
     }
 
     // Atlas
@@ -139,30 +137,19 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     ()
   }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
-  def attachUBOData(activeShader: WebGLProgram, uboStructName: String, blockPointer: Int, data: Array[Float], buffer: WebGLBuffer): Unit = {
-    gl2.uniformBlockBinding(activeShader, gl2.getUniformBlockIndex(activeShader, uboStructName), blockPointer)
-    gl2.bindBuffer(gl2.UNIFORM_BUFFER, buffer)
-    gl2.bufferData(gl2.UNIFORM_BUFFER, (Math.ceil(data.length.toDouble / 16).toInt * 16) * Float32Array.BYTES_PER_ELEMENT, DYNAMIC_DRAW)
-    gl2.bindBufferBase(gl2.UNIFORM_BUFFER, blockPointer, buffer)
-    gl2.bufferSubData(gl2.UNIFORM_BUFFER, 0, new Float32Array(data.toJSArray))
-    gl2.bindBuffer(gl2.UNIFORM_BUFFER, null);
-  }
-
-  def setupShader(program: WebGLProgram, projection: scalajs.js.Array[Double], runningTime: Double): Unit = {
+  def setupShader(program: WebGLProgram, projection: scalajs.js.Array[Double]/*, runningTime: Double*/ ): Unit = {
 
     gl2.useProgram(program)
 
+    //TODO: convert to UBO binding.
     gl2.uniformMatrix4fv(
       gl2.getUniformLocation(program, "u_projection"),
       false,
       projection
     )
 
-    gl2.uniform1f(
-      gl2.getUniformLocation(program, "TIME"),
-      runningTime
-    )
+    // WebGLHelper.bindUBO(gl2, program, "IndigoProjectionData", RendererWebGL2Constants.projectionBlockPointer, projectionUboBuffer)
+    WebGLHelper.bindUBO(gl2, program, "IndigoFrameData", RendererWebGL2Constants.frameDataBlockPointer, frameDataUboBuffer)
 
     // Instance attributes
     // vec4 a_matRotateScale
@@ -195,14 +182,14 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       frameBufferComponents: FrameBufferComponents,
       clearColor: RGBA,
       shaderProgram: WebGLProgram,
-      customShaders: HashMap[ShaderId, WebGLProgram],
-      runningTime: Double
+      customShaders: HashMap[ShaderId, WebGLProgram] //,
+      // runningTime: Double
   ): Unit = {
 
     FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, clearColor, true)
     gl2.drawBuffers(frameBufferComponents.colorAttachments)
 
-    setupShader(shaderProgram, projection, runningTime)
+    setupShader(shaderProgram, projection/*, runningTime*/)
 
     val sorted: ListBuffer[DisplayEntity] =
       RendererHelper.sortByDepth(displayEntities)
@@ -228,8 +215,8 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
             currentShaderHash,
             shaderProgram,
             projection,
-            customShaders,
-            runningTime
+            customShaders //,
+            // runningTime
           )
           rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
 
@@ -253,8 +240,8 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
                   currentShaderHash,
                   shaderProgram,
                   projection,
-                  customShaders,
-                  runningTime
+                  customShaders //,
+                  // runningTime
                 )
                 rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
               } else {
@@ -279,8 +266,8 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
                   currentShaderHash,
                   shaderProgram,
                   projection,
-                  customShaders,
-                  runningTime
+                  customShaders //,
+                  // runningTime
                 )
                 rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
               } else {
