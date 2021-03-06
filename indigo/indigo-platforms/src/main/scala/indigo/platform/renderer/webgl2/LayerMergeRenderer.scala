@@ -6,7 +6,7 @@ import org.scalajs.dom.raw.WebGLProgram
 import indigo.facades.WebGL2RenderingContext
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
-import indigo.shaders.WebGL2LayerMerge
+import indigo.shaders.WebGL2Merge
 import org.scalajs.dom.raw.WebGLTexture
 import scala.scalajs.js.JSConverters._
 import indigo.shared.datatypes.RGBA
@@ -18,7 +18,7 @@ import indigo.platform.renderer.shared.FrameBufferComponents
 class LayerMergeRenderer(gl2: WebGL2RenderingContext) {
 
   private val mergeShaderProgram: WebGLProgram =
-    WebGLHelper.shaderProgramSetup(gl2, "Layer Merge", WebGL2LayerMerge)
+    WebGLHelper.shaderProgramSetup(gl2, "Layer Merge", WebGL2Merge)
 
   private val displayObjectUBOBuffer: WebGLBuffer =
     gl2.createBuffer()
