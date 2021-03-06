@@ -12,7 +12,6 @@ import scala.scalajs.js.annotation._
 
 import com.example.sandbox.scenes.OriginalScene
 import com.example.sandbox.scenes.Shaders
-import com.example.sandbox.scenes.ShapeShaders
 import com.example.sandbox.scenes.ShapesScene
 
 @JSExportTopLevel("IndigoGame")
@@ -24,7 +23,7 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   private val viewportHeight: Int     = 128 * magnificationLevel
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(OriginalScene.name)
+    Some(ShapesScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
     NonEmptyList(OriginalScene, ShapesScene)
@@ -50,14 +49,13 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
           magnification = magnificationLevel
         ),
         SandboxBootData(flags.getOrElse("key", "No entry for 'key'."), gameViewport)
-      ).withAssets(SandboxAssets.assets ++ Shaders.assets ++ ShapeShaders.assets)
+      ).withAssets(SandboxAssets.assets ++ Shaders.assets)
         .withFonts(Fonts.fontInfo)
         .withSubSystems(FPSCounter(Fonts.fontKey, Point(5, 165), targetFPS, Depth(200), SandboxAssets.fontMaterial))
         .withShaders(
           Shaders.circle,
           Shaders.external,
-          Shaders.sea,
-          ShapeShaders.postShader
+          Shaders.sea
         )
     )
   }

@@ -69,21 +69,3 @@ object ShapesScene extends Scene[SandboxStartupData, SandboxGameModel, SandboxVi
   }
 
 }
-
-object ShapeShaders {
-
-  def assets: Set[AssetType] =
-    Set(
-      AssetType.Text(postVertAsset, AssetPath("assets/post.vert")),
-      AssetType.Text(postFragAsset, AssetPath("assets/post.frag"))
-    )
-
-  val postVertAsset: AssetName = AssetName("post vertex")
-  val postFragAsset: AssetName = AssetName("post fragment")
-  def postShader: Shader.PostExternal =
-    Shader
-      .PostExternal(ShaderId("post shader test"), StandardShaders.Bitmap)
-      .withPostVertexProgram(postVertAsset)
-      .withPostFragmentProgram(postFragAsset)
-
-}

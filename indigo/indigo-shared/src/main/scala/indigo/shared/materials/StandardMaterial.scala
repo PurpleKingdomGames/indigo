@@ -10,7 +10,6 @@ import indigo.shared.datatypes.RGBA
 import indigo.shared.datatypes.Fill
 import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.datatypes.RGB
-import indigo.shared.shader.ShaderId
 
 sealed trait StandardMaterial extends Material
 
@@ -107,14 +106,6 @@ object StandardMaterial {
 
     def apply(diffuse: AssetName, alpha: Double): ImageEffects =
       ImageEffects(diffuse, alpha, RGBA.None, Fill.Color.default, 1.0)
-  }
-
-  final case class PostMaterial(postShaderId: ShaderId, parent: Material) extends StandardMaterial {
-    def hash: String =
-      parent.hash + postShaderId.value
-
-    def toShaderData: ShaderData =
-      parent.toShaderData.withShaderId(postShaderId)
   }
 
   // final case class Textured(diffuse: AssetName, isLit: Boolean) extends StandardMaterial {

@@ -227,66 +227,6 @@ object GameEngine {
 
       case s: Shader.External =>
         shaderRegister.register(externalShaderToSource(s, assetCollection))
-
-      case s: Shader.PostSource =>
-        val parent: Shader.Source =
-          s.parentShader match {
-            case ps: Shader.Source =>
-              ps
-
-            case ps: Shader.External =>
-              externalShaderToSource(ps, assetCollection)
-          }
-
-        val shader =
-          Shader.Source(
-            id = s.id,
-            vertex = parent.vertex,
-            postVertex = s.postVertex,
-            fragment = parent.fragment,
-            postFragment = s.postFragment,
-            light = parent.light,
-            postLight = s.postLight
-          )
-
-        shaderRegister.register(shader)
-
-      case e: Shader.PostExternal =>
-        val s: Shader.Source =
-          externalShaderToSource(
-            Shader.External(
-              id = e.id,
-              vertex = None,
-              postVertex = e.postVertex,
-              fragment = None,
-              postFragment = e.postFragment,
-              light = None,
-              postLight = e.postLight
-            ),
-            assetCollection
-          )
-
-        val parent: Shader.Source =
-          e.parentShader match {
-            case ps: Shader.Source =>
-              ps
-
-            case ps: Shader.External =>
-              externalShaderToSource(ps, assetCollection)
-          }
-
-        val shader =
-          Shader.Source(
-            id = s.id,
-            vertex = parent.vertex,
-            postVertex = s.postVertex,
-            fragment = parent.fragment,
-            postFragment = s.postFragment,
-            light = parent.light,
-            postLight = s.postLight
-          )
-
-        shaderRegister.register(shader)
     }
 
   def externalShaderToSource(external: Shader.External, assetCollection: AssetCollection): Shader.Source =
@@ -295,21 +235,12 @@ object GameEngine {
       vertex = external.vertex
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-vertex", a))
         .getOrElse(Shader.defaultVertexProgram),
-      postVertex = external.postVertex
-        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-post-vertex", a))
-        .getOrElse(Shader.defaultPostVertexProgram),
       fragment = external.fragment
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-fragment", a))
         .getOrElse(Shader.defaultFragmentProgram),
-      postFragment = external.postFragment
-        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-post-fragment", a))
-        .getOrElse(Shader.defaultPostFragmentProgram),
       light = external.light
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-light", a))
         .getOrElse(Shader.defaultLightProgram),
-      postLight = external.postLight
-        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-post-light", a))
-        .getOrElse(Shader.defaultPostLightProgram)
     )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
