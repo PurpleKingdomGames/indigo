@@ -23,7 +23,7 @@ import indigo.shared.shader.ShaderId
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.platform.renderer.shared.WebGLHelper
 
-class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int, frameDataUboBuffer: => WebGLBuffer/*, projectionUboBuffer: => WebGLBuffer*/) {
+class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int, frameDataUBOBuffer: => WebGLBuffer, projectionUBOBuffer: => WebGLBuffer) {
 
   private val customDataUBOBuffer: WebGLBuffer =
     gl2.createBuffer()
@@ -148,8 +148,8 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       projection
     )
 
-    // WebGLHelper.bindUBO(gl2, program, "IndigoProjectionData", RendererWebGL2Constants.projectionBlockPointer, projectionUboBuffer)
-    WebGLHelper.bindUBO(gl2, program, "IndigoFrameData", RendererWebGL2Constants.frameDataBlockPointer, frameDataUboBuffer)
+    WebGLHelper.bindUBO(gl2, program, "IndigoProjectionData", RendererWebGL2Constants.projectionBlockPointer, projectionUBOBuffer)
+    WebGLHelper.bindUBO(gl2, program, "IndigoFrameData", RendererWebGL2Constants.frameDataBlockPointer, frameDataUBOBuffer)
 
     // Instance attributes
     // vec4 a_matRotateScale
