@@ -11,6 +11,10 @@ layout (location = 5) in vec4 a_channelOffsets23;
 
 uniform mat4 u_projection;
 
+layout (std140) uniform IndigoProjectionData {
+  mat4 u_projection2;
+};
+
 // public
 layout (std140) uniform IndigoFrameData {
   float TIME; // Running time
@@ -75,7 +79,7 @@ void main(void) {
          a_matTranslate.x,      a_matTranslate.y,      a_matTranslate.z,      1
         );
 
-  gl_Position = u_projection * transform * VERTEX;
+  gl_Position = u_projection2 * transform * VERTEX;
 
   v_channel_coords_01 = vec4(scaleTexCoordsWithOffset(TEXTURE_COORDS, a_channelOffsets01.xy), scaleTexCoordsWithOffset(TEXTURE_COORDS, a_channelOffsets01.zw));
   v_channel_coords_23 = vec4(scaleTexCoordsWithOffset(TEXTURE_COORDS, a_channelOffsets23.xy), scaleTexCoordsWithOffset(TEXTURE_COORDS, a_channelOffsets23.zw));
