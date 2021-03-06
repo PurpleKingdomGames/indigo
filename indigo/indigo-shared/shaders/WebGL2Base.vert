@@ -9,10 +9,8 @@ layout (location = 3) in vec4 a_sizeAndFrameScale;
 layout (location = 4) in vec4 a_channelOffsets01;
 layout (location = 5) in vec4 a_channelOffsets23;
 
-uniform mat4 u_projection;
-
 layout (std140) uniform IndigoProjectionData {
-  mat4 u_projection2;
+  mat4 u_projection;
 };
 
 // public
@@ -79,7 +77,7 @@ void main(void) {
          a_matTranslate.x,      a_matTranslate.y,      a_matTranslate.z,      1
         );
 
-  gl_Position = u_projection2 * transform * VERTEX;
+  gl_Position = u_projection * transform * VERTEX;
 
   v_channel_coords_01 = vec4(scaleTexCoordsWithOffset(TEXTURE_COORDS, a_channelOffsets01.xy), scaleTexCoordsWithOffset(TEXTURE_COORDS, a_channelOffsets01.zw));
   v_channel_coords_23 = vec4(scaleTexCoordsWithOffset(TEXTURE_COORDS, a_channelOffsets23.xy), scaleTexCoordsWithOffset(TEXTURE_COORDS, a_channelOffsets23.zw));

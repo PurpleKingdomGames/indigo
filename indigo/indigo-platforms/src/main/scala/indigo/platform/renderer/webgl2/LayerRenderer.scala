@@ -95,9 +95,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       currentShader: ShaderId,
       currentUniformHash: String,
       shaderProgram: WebGLProgram,
-      projection: scalajs.js.Array[Double],
-      customShaders: HashMap[ShaderId, WebGLProgram] //,
-      // runningTime: Double
+      customShaders: HashMap[ShaderId, WebGLProgram]
   ): Unit = {
 
     // Switch and referernce shader
@@ -105,11 +103,11 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       if (d.shaderId != currentShader)
         customShaders.get(d.shaderId) match {
           case Some(s) =>
-            setupShader(s, projection/*, runningTime*/ )
+            setupShader(s)
             s
 
           case None =>
-            setupShader(shaderProgram, projection/*, runningTime*/ )
+            setupShader(shaderProgram)
             shaderProgram
         }
       else shaderProgram
@@ -137,16 +135,9 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     ()
   }
 
-  def setupShader(program: WebGLProgram, projection: scalajs.js.Array[Double]/*, runningTime: Double*/ ): Unit = {
+  def setupShader(program: WebGLProgram): Unit = {
 
     gl2.useProgram(program)
-
-    //TODO: convert to UBO binding.
-    gl2.uniformMatrix4fv(
-      gl2.getUniformLocation(program, "u_projection"),
-      false,
-      projection
-    )
 
     WebGLHelper.bindUBO(gl2, program, "IndigoProjectionData", RendererWebGL2Constants.projectionBlockPointer, projectionUBOBuffer)
     WebGLHelper.bindUBO(gl2, program, "IndigoFrameData", RendererWebGL2Constants.frameDataBlockPointer, frameDataUBOBuffer)
@@ -176,20 +167,18 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     }
 
   def drawLayer(
-      projection: scalajs.js.Array[Double],
       cloneBlankDisplayObjects: Map[String, DisplayObject],
       displayEntities: ListBuffer[DisplayEntity],
       frameBufferComponents: FrameBufferComponents,
       clearColor: RGBA,
       shaderProgram: WebGLProgram,
-      customShaders: HashMap[ShaderId, WebGLProgram] //,
-      // runningTime: Double
+      customShaders: HashMap[ShaderId, WebGLProgram]
   ): Unit = {
 
     FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, clearColor, true)
     gl2.drawBuffers(frameBufferComponents.colorAttachments)
 
-    setupShader(shaderProgram, projection/*, runningTime*/)
+    setupShader(shaderProgram)
 
     val sorted: ListBuffer[DisplayEntity] =
       RendererHelper.sortByDepth(displayEntities)
@@ -214,9 +203,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
             currentShader,
             currentShaderHash,
             shaderProgram,
-            projection,
-            customShaders //,
-            // runningTime
+            customShaders
           )
           rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
 
@@ -239,9 +226,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
                   currentShader,
                   currentShaderHash,
                   shaderProgram,
-                  projection,
-                  customShaders //,
-                  // runningTime
+                  customShaders
                 )
                 rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
               } else {
@@ -265,9 +250,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
                   currentShader,
                   currentShaderHash,
                   shaderProgram,
-                  projection,
-                  customShaders //,
-                  // runningTime
+                  customShaders
                 )
                 rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
               } else {
