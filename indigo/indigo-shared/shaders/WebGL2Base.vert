@@ -12,7 +12,9 @@ layout (location = 5) in vec4 a_channelOffsets23;
 uniform mat4 u_projection;
 
 // public
-uniform float TIME; // Running time
+layout (std140) uniform IndigoFrameData {
+  float TIME; // Running time
+};
 
 out vec4 v_channel_coords_01; // Scaled to position on texture atlas
 out vec4 v_channel_coords_23; // Scaled to position on texture atlas

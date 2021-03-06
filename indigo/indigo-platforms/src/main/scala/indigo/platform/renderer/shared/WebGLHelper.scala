@@ -5,11 +5,14 @@ import org.scalajs.dom.raw
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLTexture
 import org.scalajs.dom.raw.WebGLProgram
+import org.scalajs.dom.raw.WebGLRenderingContext
+import scala.scalajs.js.typedarray.Float32Array
+import org.scalajs.dom.raw.WebGLBuffer
 
 import indigo.shared.shader.RawShaderCode
-import org.scalajs.dom.raw.WebGLRenderingContext
 import indigo.facades.WebGL2RenderingContext
 import indigo.shared.scenegraph.BlendFactor
+import scala.scalajs.js.JSConverters._
 
 object WebGLHelper {
 
@@ -56,6 +59,20 @@ object WebGLHelper {
       gl.deleteProgram(shaderProgram);
       throw new Exception(s"Fatal: RawShaderCode program link error ($layerLabel)")
     }
+  }
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+  def attachUBOData(gl2: WebGL2RenderingContext, data: Array[Float], buffer: WebGLBuffer): Unit = {
+    gl2.bindBuffer(gl2.UNIFORM_BUFFER, buffer)
+    gl2.bufferData(gl2.UNIFORM_BUFFER, (Math.ceil(data.length.toDouble / 16).toInt * 16) * Float32Array.BYTES_PER_ELEMENT, DYNAMIC_DRAW)
+    gl2.bufferSubData(gl2.UNIFORM_BUFFER, 0, new Float32Array(data.toJSArray))
+    gl2.bindBuffer(gl2.UNIFORM_BUFFER, null);
+  }
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+  def bindUBO(gl2: WebGL2RenderingContext, activeShader: WebGLProgram, uboStructName: String, blockPointer: Int, buffer: WebGLBuffer): Unit = {
+    gl2.uniformBlockBinding(activeShader, gl2.getUniformBlockIndex(activeShader, uboStructName), blockPointer)
+    gl2.bindBufferBase(gl2.UNIFORM_BUFFER, blockPointer, buffer)
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
