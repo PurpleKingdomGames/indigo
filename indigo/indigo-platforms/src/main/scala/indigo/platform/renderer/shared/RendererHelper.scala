@@ -34,8 +34,7 @@ object RendererHelper {
       isLit = 0.0f,
       // effects = DisplayEffects.default,
       shaderId = ShaderId(""),
-      shaderUniformHash = "",
-      shaderUBO = Array[Float]()
+      shaderUniformData = None
     )
 
   private def makeMatrix(w: Double, h: Double): CheapMatrix4 =

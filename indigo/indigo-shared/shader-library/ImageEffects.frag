@@ -8,7 +8,7 @@ vec2 UV;
 vec2 SIZE;
 
 //<indigo-fragment>
-layout (std140) uniform CustomData {
+layout (std140) uniform IndigoImageEffectsData {
   highp vec3 ALPHA_SATURATION_OVERLAYTYPE;
   vec4 TINT;
   vec4 GRADIENT_FROM_TO;

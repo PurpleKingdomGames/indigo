@@ -182,5 +182,3 @@ object Shader {
   }
 
 }
-
-final case class Uniform(name: String) extends AnyVal

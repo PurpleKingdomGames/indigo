@@ -21,6 +21,7 @@ import indigo.shared.QuickCache
 import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
 import indigo.shared.display.DisplayEntity
+import indigo.shared.display.DisplayObjectUniformData
 import indigo.shared.scenegraph.Clone
 import indigo.shared.scenegraph.CloneBatch
 import indigo.shared.display.DisplayClone
@@ -261,10 +262,14 @@ final class DisplayObjectConversions(
   def shapeToDisplayObject(leaf: Shape): DisplayObject = {
     val shader: ShaderData = leaf.toShaderData
     val offset             = Vector2.zero
-    val shaderUniformHash  = shader.uniformHash
-    val shaderUBO = QuickCache(shaderUniformHash) {
-      DisplayObjectConversions.packUBO(shader.uniforms)
-    }
+    val uniformData: Option[DisplayObjectUniformData] =
+      shader.uniformBlock.map { ub =>
+        DisplayObjectUniformData(
+          uniformHash = ub.uniformHash,
+          blockName = ub.blockName,
+          data = DisplayObjectConversions.packUBO(ub.uniforms)
+        )
+      }
 
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)),
@@ -278,8 +283,7 @@ final class DisplayObjectConversions(
       channelOffset3 = offset,
       isLit = 0.0f,
       shaderId = shader.shaderId,
-      shaderUniformHash = shaderUniformHash,
-      shaderUBO = shaderUBO
+      shaderUniformData = uniformData
     )
   }
 
@@ -304,11 +308,16 @@ final class DisplayObjectConversions(
           }
       }
 
-    val shaderId          = shader.shaderId
-    val shaderUniformHash = shader.uniformHash
-    val shaderUBO = QuickCache(shaderUniformHash) {
-      DisplayObjectConversions.packUBO(shader.uniforms)
-    }
+    val shaderId = shader.shaderId
+
+    val uniformData: Option[DisplayObjectUniformData] =
+      shader.uniformBlock.map { ub =>
+        DisplayObjectUniformData(
+          uniformHash = ub.uniformHash,
+          blockName = ub.blockName,
+          data = DisplayObjectConversions.packUBO(ub.uniforms)
+        )
+      }
 
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.bounds.size.x.toDouble, leaf.bounds.size.y.toDouble, 1.0d)),
@@ -322,8 +331,7 @@ final class DisplayObjectConversions(
       channelOffset3 = frameInfo.offsetToCoords(channelOffset3),
       isLit = 0.0f,
       shaderId = shaderId,
-      shaderUniformHash = shaderUniformHash,
-      shaderUBO = shaderUBO
+      shaderUniformData = uniformData
     )
   }
 
@@ -345,11 +353,16 @@ final class DisplayObjectConversions(
         )
       }
 
-    val shaderId          = asCustom.shaderId
-    val shaderUniformHash = asCustom.uniformHash
-    val shaderUBO = QuickCache(shaderUniformHash) {
-      DisplayObjectConversions.packUBO(asCustom.uniforms)
-    }
+    val shaderId = asCustom.shaderId
+
+    val uniformData: Option[DisplayObjectUniformData] =
+      asCustom.uniformBlock.map { ub =>
+        DisplayObjectUniformData(
+          uniformHash = ub.uniformHash,
+          blockName = ub.blockName,
+          data = DisplayObjectConversions.packUBO(ub.uniforms)
+        )
+      }
 
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(leaf.crop.size.x.toDouble, leaf.crop.size.y.toDouble, 1.0d)),
@@ -363,8 +376,7 @@ final class DisplayObjectConversions(
       channelOffset3 = frameInfo.offsetToCoords(specularOffset),
       isLit = 0.0f, // if (leaf.material.isLit) 1.0f else 0.0f,
       shaderId = shaderId,
-      shaderUniformHash = shaderUniformHash,
-      shaderUBO = shaderUBO
+      shaderUniformData = uniformData
     )
   }
 
@@ -390,11 +402,16 @@ final class DisplayObjectConversions(
     val width: Int  = leaf.calculatedBounds(boundaryLocator).size.x
     val height: Int = leaf.calculatedBounds(boundaryLocator).size.y
 
-    val shaderId          = asCustom.shaderId
-    val shaderUniformHash = asCustom.uniformHash
-    val shaderUBO = QuickCache(shaderUniformHash) {
-      DisplayObjectConversions.packUBO(asCustom.uniforms)
-    }
+    val shaderId = asCustom.shaderId
+
+    val uniformData: Option[DisplayObjectUniformData] =
+      asCustom.uniformBlock.map { ub =>
+        DisplayObjectUniformData(
+          uniformHash = ub.uniformHash,
+          blockName = ub.blockName,
+          data = DisplayObjectConversions.packUBO(ub.uniforms)
+        )
+      }
 
     DisplayObject(
       transform = DisplayObjectConversions.nodeToMatrix4(leaf, Vector3(width.toDouble, height.toDouble, 1.0d)),
@@ -408,8 +425,7 @@ final class DisplayObjectConversions(
       channelOffset3 = frameInfo.offsetToCoords(specularOffset),
       isLit = 0.0f, // if (material.isLit) 1.0f else 0.0f,
       shaderId = shaderId,
-      shaderUniformHash = shaderUniformHash,
-      shaderUBO = shaderUBO
+      shaderUniformData = uniformData
     )
   }
 
@@ -436,11 +452,16 @@ final class DisplayObjectConversions(
       val (normalOffset, _)   = (Vector2.zero, 0.0d) //materialToNormalValues(assetMapping, fontInfo.fontSpriteSheet.material)
       val (specularOffset, _) = (Vector2.zero, 0.0d) //materialToSpecularValues(assetMapping, fontInfo.fontSpriteSheet.material)
 
-      val shaderId          = asCustom.shaderId
-      val shaderUniformHash = asCustom.uniformHash
-      val shaderUBO = QuickCache(shaderUniformHash) {
-        DisplayObjectConversions.packUBO(asCustom.uniforms)
-      }
+      val shaderId = asCustom.shaderId
+
+      val uniformData: Option[DisplayObjectUniformData] =
+        asCustom.uniformBlock.map { ub =>
+          DisplayObjectUniformData(
+            uniformHash = ub.uniformHash,
+            blockName = ub.blockName,
+            data = DisplayObjectConversions.packUBO(ub.uniforms)
+          )
+        }
 
       QuickCache(lineHash) {
         zipWithCharDetails(line.text.toList, fontInfo).toList.map {
@@ -469,8 +490,7 @@ final class DisplayObjectConversions(
               channelOffset3 = frameInfo.offsetToCoords(specularOffset),
               isLit = 0.0f, // if (fontInfo.fontSpriteSheet.material.isLit) 1.0f else 0.0f,
               shaderId = shaderId,
-              shaderUniformHash = shaderUniformHash,
-              shaderUBO = shaderUBO
+              shaderUniformData = uniformData
             )
         }
       }

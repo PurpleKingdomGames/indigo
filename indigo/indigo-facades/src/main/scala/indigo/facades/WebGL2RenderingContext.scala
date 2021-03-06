@@ -67,13 +67,13 @@ trait WebGL2RenderingContext extends WebGLRenderingContext {
   val MIN: Int = js.native // 0x8007
   val MAX: Int = js.native // 0x8008
 
-  def uniformBlockBinding(program: WebGLProgram, uniformBlockIndex: Int, uniformBlockBinding: Int): Unit =
+  def uniformBlockBinding(program: WebGLProgram, uniformBlockIndex: Double, uniformBlockBinding: Int): Unit =
     js.native
 
   def bindBufferBase(target: Int, index: Int, buffer: WebGLBuffer): Unit =
     js.native
 
-  def getUniformBlockIndex(program: WebGLProgram, uniformBlockName: String): Int =
+  def getUniformBlockIndex(program: WebGLProgram, uniformBlockName: String): Double =
     js.native
 
   def bindBufferRange(target: Int, index: Int, buffer: WebGLBuffer, offset: Int, size: Int): Unit =

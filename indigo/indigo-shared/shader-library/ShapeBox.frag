@@ -9,7 +9,7 @@ float TIME;
 vec2 SIZE;
 
 //<indigo-fragment>
-layout (std140) uniform CustomData {
+layout (std140) uniform IndigoShapeData {
   vec2 ASPECT_RATIO;
   float STROKE_WIDTH;
   float FILL_TYPE;
