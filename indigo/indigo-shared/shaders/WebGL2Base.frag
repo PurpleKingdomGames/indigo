@@ -11,11 +11,11 @@ layout(location = 0) out vec4 fragColor;
 // Could remove this limitation.
 uniform sampler2D u_channel_0;
 uniform vec4 u_ambientLight;
+
 // public
-uniform float TIME; // Running time
-// layout (std140) uniform IndigoFrameData {
-//   float TIME; // Running time
-// };
+layout (std140) uniform IndigoFrameData {
+  float TIME; // Running time
+};
 
 // Could be UBO?
 // Can be packed up.
