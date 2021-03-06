@@ -45,6 +45,9 @@ package object indigo {
   type Uniform = shared.shader.Uniform
   val Uniform: shared.shader.Uniform.type = shared.shader.Uniform
 
+  type UniformBlock = shared.shader.UniformBlock
+  val UniformBlock: shared.shader.UniformBlock.type = shared.shader.UniformBlock
+
   type ShaderPrimitive = shared.shader.ShaderPrimitive
   val ShaderPrimitive: shared.shader.ShaderPrimitive.type = shared.shader.ShaderPrimitive
 

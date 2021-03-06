@@ -8,6 +8,7 @@ import indigo.shared.datatypes.Flip
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.materials.ShaderData
 import indigo.shared.shader.Uniform
+import indigo.shared.shader.UniformBlock
 import indigo.shared.shader.ShaderPrimitive._
 import indigo.shared.datatypes.RGBA
 import indigo.shared.shader.StandardShaders
@@ -139,12 +140,15 @@ object Shape {
     def toShaderData: ShaderData =
       ShaderData(
         StandardShaders.ShapeBox.id,
-        List(
-          Uniform("ASPECT_RATIO") -> vec2(aspect.x, aspect.y),
-          Uniform("STROKE_WIDTH") -> float(stroke.width.toFloat),
-          Uniform("FILL_TYPE")    -> fillType(fill),
-          Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a)
-        ) ++ gradientUniforms(fill)
+        UniformBlock(
+          "IndigoShapeData",
+          List(
+            Uniform("ASPECT_RATIO") -> vec2(aspect.x, aspect.y),
+            Uniform("STROKE_WIDTH") -> float(stroke.width.toFloat),
+            Uniform("FILL_TYPE")    -> fillType(fill),
+            Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a)
+          ) ++ gradientUniforms(fill)
+        )
       )
   }
   object Box {
@@ -265,11 +269,14 @@ object Shape {
     def toShaderData: ShaderData =
       ShaderData(
         StandardShaders.ShapeCircle.id,
-        List(
-          Uniform("STROKE_WIDTH") -> float(stroke.width.toFloat),
-          Uniform("FILL_TYPE")    -> fillType(fill),
-          Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a)
-        ) ++ gradientUniforms(fill)
+        UniformBlock(
+          "IndigoShapeData",
+          List(
+            Uniform("STROKE_WIDTH") -> float(stroke.width.toFloat),
+            Uniform("FILL_TYPE")    -> fillType(fill),
+            Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a)
+          ) ++ gradientUniforms(fill)
+        )
       )
   }
   object Circle {
@@ -411,11 +418,14 @@ object Shape {
 
       ShaderData(
         StandardShaders.ShapeLine.id,
-        List(
-          Uniform("STROKE_WIDTH") -> float(stroke.width.toFloat),
-          Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a),
-          Uniform("START")        -> vec2(s.x.toFloat, s.y.toFloat),
-          Uniform("END")          -> vec2(e.x.toFloat, e.y.toFloat)
+        UniformBlock(
+          "IndigoShapeData",
+          List(
+            Uniform("STROKE_WIDTH") -> float(stroke.width.toFloat),
+            Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a),
+            Uniform("START")        -> vec2(s.x.toFloat, s.y.toFloat),
+            Uniform("END")          -> vec2(e.x.toFloat, e.y.toFloat)
+          )
         )
       )
     }
@@ -526,12 +536,15 @@ object Shape {
 
       ShaderData(
         StandardShaders.ShapePolygon.id,
-        List(
-          Uniform("STROKE_WIDTH") -> float(stroke.width.toFloat),
-          Uniform("FILL_TYPE")    -> fillType(fill),
-          Uniform("COUNT")        -> float(verts.length.toFloat),
-          Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a)
-        ) ++ gradientUniforms(fill) ++ List(Uniform("VERTICES") -> array(16, verts))
+        UniformBlock(
+          "IndigoShapeData",
+          List(
+            Uniform("STROKE_WIDTH") -> float(stroke.width.toFloat),
+            Uniform("FILL_TYPE")    -> fillType(fill),
+            Uniform("COUNT")        -> float(verts.length.toFloat),
+            Uniform("STROKE_COLOR") -> vec4(stroke.color.r, stroke.color.g, stroke.color.b, stroke.color.a)
+          ) ++ gradientUniforms(fill) ++ List(Uniform("VERTICES") -> array(16, verts))
+        )
       )
     }
   }

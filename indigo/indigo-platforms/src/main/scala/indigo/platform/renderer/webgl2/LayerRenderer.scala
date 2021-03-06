@@ -25,6 +25,10 @@ import indigo.shared.datatypes.mutable.CheapMatrix4
 
 class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int) {
 
+  private val customDataBlockPointer: Int = 3
+
+  // private val frameDataUBOBuffer: WebGLBuffer =
+  //   gl2.createBuffer()
   private val customDataUBOBuffer: WebGLBuffer =
     gl2.createBuffer()
 
@@ -81,52 +85,46 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     channelOffsets23Data((i * 4) + 3) = d.channelOffset3Y
   }
 
-  def requiresContextChange(d: DisplayObject, atlasName: Option[String], currentShader: ShaderId, currentShaderHash: String): Boolean =
-    d.shaderId != currentShader ||
-      (d.shaderUniformHash != currentShaderHash && d.shaderUniformHash.nonEmpty) ||
-      d.atlasName != atlasName
+  def requiresContextChange(d: DisplayObject, atlasName: Option[String], currentShader: ShaderId, currentUniformHash: String): Boolean = {
+    val uniformHash: String = d.shaderUniformData.map(_.uniformHash).getOrElse("")
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+    d.shaderId != currentShader ||
+    (uniformHash.nonEmpty && uniformHash != currentUniformHash) ||
+    d.atlasName != atlasName
+  }
+
   def doContextChange(
       d: DisplayObject,
       atlasName: Option[String],
       currentShader: ShaderId,
-      currentShaderHash: String,
+      currentUniformHash: String,
       shaderProgram: WebGLProgram,
       projection: scalajs.js.Array[Double],
       customShaders: HashMap[ShaderId, WebGLProgram],
       runningTime: Double
   ): Unit = {
 
-    if (d.shaderId != currentShader)
-      customShaders.get(d.shaderId) match {
-        case Some(s) =>
-          setupShader(s, projection, runningTime)
+    // Switch and referernce shader
+    val activeShader: WebGLProgram =
+      if (d.shaderId != currentShader)
+        customShaders.get(d.shaderId) match {
+          case Some(s) =>
+            setupShader(s, projection, runningTime)
+            s
 
-        case None =>
-          setupShader(shaderProgram, projection, runningTime)
-      }
+          case None =>
+            setupShader(shaderProgram, projection, runningTime)
+            shaderProgram
+        }
+      else shaderProgram
 
-    if (d.shaderUniformHash != currentShaderHash && d.shaderUniformHash.nonEmpty) {
-      // UBO blocks must be multiples of 16
-      val uboSize: Int =
-        Math.ceil(d.shaderUBO.length.toDouble / 16).toInt * 16
-
-      // UBO data
-      gl2.bindBuffer(gl2.UNIFORM_BUFFER, customDataUBOBuffer)
-      gl2.bufferData(gl2.UNIFORM_BUFFER, uboSize * Float32Array.BYTES_PER_ELEMENT, DYNAMIC_DRAW)
-      gl2.bindBufferBase(gl2.UNIFORM_BUFFER, 0, customDataUBOBuffer)
-      gl2.bindBufferRange(
-        gl2.UNIFORM_BUFFER,
-        0,
-        customDataUBOBuffer,
-        0,
-        uboSize * Float32Array.BYTES_PER_ELEMENT
-      )
-      gl2.bufferSubData(gl2.UNIFORM_BUFFER, 0, new Float32Array(d.shaderUBO.toJSArray))
-      gl2.bindBuffer(gl2.UNIFORM_BUFFER, null);
+    // UBO data
+    d.shaderUniformData.foreach { ud =>
+      if (ud.uniformHash.nonEmpty && ud.uniformHash != currentUniformHash)
+        attachUBOData(activeShader, ud.blockName, customDataBlockPointer, ud.data, customDataUBOBuffer)
     }
 
+    // Atlas
     if (d.atlasName != atlasName)
       d.atlasName.flatMap { nextAtlas =>
         textureLocations.find(t => t.name == nextAtlas)
@@ -139,6 +137,16 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       }
 
     ()
+  }
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+  def attachUBOData(activeShader: WebGLProgram, uboStructName: String, blockPointer: Int, data: Array[Float], buffer: WebGLBuffer): Unit = {
+    gl2.uniformBlockBinding(activeShader, gl2.getUniformBlockIndex(activeShader, uboStructName), blockPointer)
+    gl2.bindBuffer(gl2.UNIFORM_BUFFER, buffer)
+    gl2.bufferData(gl2.UNIFORM_BUFFER, (Math.ceil(data.length.toDouble / 16).toInt * 16) * Float32Array.BYTES_PER_ELEMENT, DYNAMIC_DRAW)
+    gl2.bindBufferBase(gl2.UNIFORM_BUFFER, blockPointer, buffer)
+    gl2.bufferSubData(gl2.UNIFORM_BUFFER, 0, new Float32Array(data.toJSArray))
+    gl2.bindBuffer(gl2.UNIFORM_BUFFER, null);
   }
 
   def setupShader(program: WebGLProgram, projection: scalajs.js.Array[Double], runningTime: Double): Unit = {
@@ -223,7 +231,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
             customShaders,
             runningTime
           )
-          rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformHash)
+          rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
 
         case (d: DisplayObject) :: ds =>
           val data = d.transform.data
@@ -248,11 +256,11 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
                   customShaders,
                   runningTime
                 )
-                rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformHash)
+                rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
               } else {
                 val data = c.transform.data
                 updateData(d, batchCount, data._1, data._2)
-                rec(ds, batchCount + 1, d.atlasName, d.shaderId, d.shaderUniformHash)
+                rec(ds, batchCount + 1, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
               }
           }
 
@@ -274,12 +282,12 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
                   customShaders,
                   runningTime
                 )
-                rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformHash)
+                rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
               } else {
                 val numberProcessed: Int =
                   processCloneBatch(c, d, batchCount)
 
-                rec(ds, batchCount + numberProcessed, d.atlasName, d.shaderId, d.shaderUniformHash)
+                rec(ds, batchCount + numberProcessed, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
               }
           }
 
