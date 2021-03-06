@@ -18,66 +18,48 @@ object StandardShaders {
     Shader.Source(
       id = ShaderId("[indigo_engine_blit]"),
       vertex = ShaderLibrary.NoOpVertex,
-      postVertex = ShaderLibrary.NoOpPostVertex,
       fragment = ShaderLibrary.BlitFragment,
-      postFragment = ShaderLibrary.NoOpPostFragment,
-      light = ShaderLibrary.NoOpLight,
-      postLight = ShaderLibrary.NoOpPostLight
+      light = ShaderLibrary.NoOpLight
     )
 
   val ImageEffects: Shader.Source =
     Shader.Source(
       id = ShaderId("[indigo_engine_effects]"),
       vertex = ShaderLibrary.NoOpVertex,
-      postVertex = ShaderLibrary.NoOpPostVertex,
       fragment = ShaderLibrary.ImageEffectsFragment,
-      postFragment = ShaderLibrary.NoOpPostFragment,
-      light = ShaderLibrary.NoOpLight,
-      postLight = ShaderLibrary.NoOpPostLight
+      light = ShaderLibrary.NoOpLight
     )
 
   val ShapeBox: Shader.Source =
     Shader.Source(
       id = ShaderId("[indigo_engine_shape_box]"),
       vertex = ShaderLibrary.NoOpVertex,
-      postVertex = ShaderLibrary.NoOpPostVertex,
       fragment = ShaderLibrary.ShapeBoxFragment,
-      postFragment = ShaderLibrary.NoOpPostFragment,
-      light = ShaderLibrary.NoOpLight,
-      postLight = ShaderLibrary.NoOpPostLight
+      light = ShaderLibrary.NoOpLight
     )
 
   val ShapeCircle: Shader.Source =
     Shader.Source(
       id = ShaderId("[indigo_engine_shape_circle]"),
       vertex = ShaderLibrary.NoOpVertex,
-      postVertex = ShaderLibrary.NoOpPostVertex,
       fragment = ShaderLibrary.ShapeCircleFragment,
-      postFragment = ShaderLibrary.NoOpPostFragment,
-      light = ShaderLibrary.NoOpLight,
-      postLight = ShaderLibrary.NoOpPostLight
+      light = ShaderLibrary.NoOpLight
     )
 
   val ShapeLine: Shader.Source =
     Shader.Source(
       id = ShaderId("[indigo_engine_shape_line]"),
       vertex = ShaderLibrary.NoOpVertex,
-      postVertex = ShaderLibrary.NoOpPostVertex,
       fragment = ShaderLibrary.ShapeLineFragment,
-      postFragment = ShaderLibrary.NoOpPostFragment,
-      light = ShaderLibrary.NoOpLight,
-      postLight = ShaderLibrary.NoOpPostLight
+      light = ShaderLibrary.NoOpLight
     )
 
   val ShapePolygon: Shader.Source =
     Shader.Source(
       id = ShaderId("[indigo_engine_shape_polygon]"),
       vertex = ShaderLibrary.NoOpVertex,
-      postVertex = ShaderLibrary.NoOpPostVertex,
       fragment = ShaderLibrary.ShapePolygonFragment,
-      postFragment = ShaderLibrary.NoOpPostFragment,
-      light = ShaderLibrary.NoOpLight,
-      postLight = ShaderLibrary.NoOpPostLight
+      light = ShaderLibrary.NoOpLight
     )
 
 }

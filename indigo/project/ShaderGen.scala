@@ -25,15 +25,7 @@ object ShaderGen {
           "void vertex(){}"
         )
 
-      val withPostVertex =
-        injectCode(
-          withVertex,
-          "post_vertex",
-          "postVertexProgram",
-          "void postVertex(){}"
-        )
-
-      withPostVertex
+      withVertex
     }
 
     val fragmentCode = {
@@ -45,31 +37,15 @@ object ShaderGen {
           "void fragment(){}"
         )
 
-      val withPostFragment =
-        injectCode(
-          withFragment,
-          "post_fragment",
-          "postFragmentProgram",
-          "void postFragment(){}"
-        )
-
       val withLight =
         injectCode(
-          withPostFragment,
+          withFragment,
           "light",
           "lightProgram",
           "void light(){}"
         )
 
-      val withPostLight =
-        injectCode(
-          withLight,
-          "post_light",
-          "postLightProgram",
-          "void postLight(){}"
-        )
-
-      withPostLight
+      withLight
     }
 
     val useNoWarn: Boolean =
@@ -84,21 +60,19 @@ object ShaderGen {
     |  val id: ShaderId = ShaderId("indigo_default_$name")
     |
     |  val vertex: String =
-    |    vertexShader(None, None)
+    |    vertexShader(None)
     |
     |  val fragment: String =
-    |    fragmentShader(None, None, None, None)
+    |    fragmentShader(None, None)
     |
     |  ${if (useNoWarn) "@nowarn" else ""}
-    |  def vertexShader(vertexProgram: Option[String], postVertexProgram: Option[String]): String =
+    |  def vertexShader(vertexProgram: Option[String]): String =
     |    s${tripleQuotes}${vertexCode}${tripleQuotes}
     |
     |  ${if (useNoWarn) "@nowarn" else ""}
     |  def fragmentShader(
     |    fragmentProgram: Option[String],
-    |    postFragmentProgram: Option[String],
-    |    lightProgram: Option[String],
-    |    postLightProgram: Option[String]
+    |    lightProgram: Option[String]
     |  ): String =
     |    s${tripleQuotes}${fragmentCode}${tripleQuotes}
     |}
