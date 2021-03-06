@@ -69,10 +69,9 @@ object WebGLHelper {
     gl2.bindBuffer(gl2.UNIFORM_BUFFER, null);
   }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def bindUBO(gl2: WebGL2RenderingContext, activeShader: WebGLProgram, uboStructName: String, blockPointer: Int, buffer: WebGLBuffer): Unit = {
-    gl2.uniformBlockBinding(activeShader, gl2.getUniformBlockIndex(activeShader, uboStructName), blockPointer)
     gl2.bindBufferBase(gl2.UNIFORM_BUFFER, blockPointer, buffer)
+    gl2.uniformBlockBinding(activeShader, gl2.getUniformBlockIndex(activeShader, uboStructName), blockPointer)
   }
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
