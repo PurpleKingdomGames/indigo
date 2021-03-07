@@ -9,7 +9,7 @@ val scala213Version = "2.13.5"
 lazy val scalaFixSettings: Seq[sbt.Def.Setting[_]] =
   Seq(
     scalacOptions ++= (
-      if (isDotty.value) Nil else Seq(s"-P:semanticdb:targetroot:${baseDirectory.value}/target/.semanticdb")
+      if (isDotty.value) Nil else Seq(s"-P:semanticdb:targetroot:${baseDirectory.value}/target/.semanticdb", "-Yrangepos")
     ),
     scalafixOnCompile := (if (isDotty.value) false else true)
   )
