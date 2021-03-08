@@ -2,6 +2,7 @@ package indigo.platform.renderer.webgl2
 
 import indigo.shared.datatypes.RGBA
 import org.scalajs.dom.raw.WebGLBuffer
+import org.scalajs.dom.raw.WebGLFramebuffer
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import indigo.platform.renderer.Renderer
 import indigo.shared.platform.RendererConfig
@@ -84,6 +85,32 @@ final class RendererWebGL2(
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastHeight
 
+  private val layerRenderInstance: LayerRenderer =
+    new LayerRenderer(gl2, textureLocations, config.maxBatchSize, frameDataUBOBuffer, projectionUBOBuffer)
+  private val layerMergeRenderInstance: LayerMergeRenderer =
+    new LayerMergeRenderer(gl2)
+
+  private val defaultShaderProgram =
+    WebGLHelper.shaderProgramSetup(gl, "Default", WebGL2Base)
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var layerEntityFrameBuffer: FrameBufferComponents.SingleOutput =
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var greenDstFrameBuffer: FrameBufferComponents.SingleOutput =
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var blueDstFrameBuffer: FrameBufferComponents.SingleOutput =
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var greenIsTarget: Boolean = true
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var currentBlendEq: String = "add"
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var currentBlendFactors: (BlendFactor, BlendFactor) = (Blend.Normal.src, Blend.Normal.dst)
+
   def init(shaders: Set[RawShaderCode]): Unit = {
 
     shaders.foreach { shader =>
@@ -124,26 +151,6 @@ final class RendererWebGL2(
 
     gl2.bindVertexArray(null)
   }
-
-  private val layerRenderInstance: LayerRenderer =
-    new LayerRenderer(gl2, textureLocations, config.maxBatchSize, frameDataUBOBuffer, projectionUBOBuffer)
-  private val layerMergeRenderInstance: LayerMergeRenderer =
-    new LayerMergeRenderer(gl2)
-
-  private val defaultShaderProgram =
-    WebGLHelper.shaderProgramSetup(gl, "Default", WebGL2Base)
-
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var layerFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var backFrameBuffer: FrameBufferComponents.SingleOutput =
-    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
-
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var currentBlendEq: String = "add"
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  private var currentBlendFactors: (BlendFactor, BlendFactor) = (Blend.Normal.src, Blend.Normal.dst)
 
   def setBlendMode(blend: Blend): Unit = {
     if (blend.op != currentBlendEq) {
@@ -190,9 +197,6 @@ final class RendererWebGL2(
 
     WebGLHelper.attachUBOData(gl2, Array[Float](runningTime.value.toFloat), frameDataUBOBuffer)
 
-    // Clear down the back buffer
-    FrameBufferFunctions.switchToFramebuffer(gl2, backFrameBuffer.frameBuffer, RGBA.Black.makeTransparent, true)
-
     @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
     var currentBlend: Blend = Blend.Normal
 
@@ -207,7 +211,7 @@ final class RendererWebGL2(
       layerRenderInstance.drawLayer(
         sceneData.cloneBlankDisplayObjects,
         layer.entities,
-        layerFrameBuffer,
+        layerEntityFrameBuffer,
         RGBA.Black.makeTransparent,
         defaultShaderProgram,
         customShaders
@@ -228,14 +232,23 @@ final class RendererWebGL2(
         setBlendMode(currentBlend)
       }
 
+      // Flip which buffer is the target.
+      if (greenIsTarget) {
+        greenIsTarget = false
+        blitBuffers(blueDstFrameBuffer.frameBuffer, greenDstFrameBuffer.frameBuffer)
+      } else {
+        greenIsTarget = true
+        blitBuffers(greenDstFrameBuffer.frameBuffer, blueDstFrameBuffer.frameBuffer)
+      }
+
       // Merge the layer buffer onto the back buffer
       layerMergeRenderInstance.merge(
         projection,
-        layerFrameBuffer,
-        Some(backFrameBuffer),
+        layerEntityFrameBuffer,
         lastWidth,
         lastHeight,
-        RGBA.Black.makeTransparent
+        RGBA.Black.makeTransparent,
+        false
       )
     }
 
@@ -243,13 +256,36 @@ final class RendererWebGL2(
     WebGLHelper.setNormalBlend(gl)
     layerMergeRenderInstance.merge(
       canvasMergeProjectionMatrixNoMagJS,
-      backFrameBuffer,
-      None,
+      if (!greenIsTarget) greenDstFrameBuffer else blueDstFrameBuffer, // Inverted condition, because outside the loop.
       lastWidth,
       lastHeight,
-      config.clearColor
+      config.clearColor,
+      true
     )
 
+    clearBuffer(blueDstFrameBuffer.frameBuffer)
+    clearBuffer(greenDstFrameBuffer.frameBuffer)
+  }
+
+  def blitBuffers(from: WebGLFramebuffer, to: WebGLFramebuffer): Unit = {
+
+    import org.scalajs.dom.raw.WebGLRenderingContext._
+
+    gl2.clearColor(0, 0, 0, 0)
+
+    // Bind and clear 'to'
+    gl2.bindFramebuffer(FRAMEBUFFER, to)
+    gl2.clear(COLOR_BUFFER_BIT)
+
+    // Blit 'from' to 'to'
+    gl2.bindFramebuffer(WebGL2RenderingContext.READ_FRAMEBUFFER, from)
+    gl2.bindFramebuffer(WebGL2RenderingContext.DRAW_FRAMEBUFFER, to)
+    gl2.blitFramebuffer(0, lastHeight, lastWidth, 0, 0, lastHeight, lastWidth, 0, COLOR_BUFFER_BIT, NEAREST)
+  }
+
+  def clearBuffer(buffer: WebGLFramebuffer): Unit = {
+    gl2.bindFramebuffer(WebGL2RenderingContext.DRAW_FRAMEBUFFER, buffer)
+    gl2.clear(COLOR_BUFFER_BIT)
   }
 
   def resize(canvas: html.Canvas, magnification: Int): Unit = {
@@ -266,8 +302,9 @@ final class RendererWebGL2(
       orthographicProjectionMatrixNoMag = CheapMatrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble).mat.map(_.toFloat)
       canvasMergeProjectionMatrixNoMagJS = orthographicProjectionMatrixNoMag.toJSArray
 
-      layerFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
-      backFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
+      layerEntityFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
+      greenDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
+      blueDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
 
       gl.viewport(0, 0, actualWidth.toDouble, actualHeight.toDouble)
 

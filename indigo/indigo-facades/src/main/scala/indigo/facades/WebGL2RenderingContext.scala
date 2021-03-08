@@ -47,6 +47,9 @@ trait WebGL2RenderingContext extends WebGLRenderingContext {
   val MAX_VERTEX_TEXTURE_IMAGE_UNITS: Int              = js.native // 0x8b4c
   val MAX_FRAGMENT_INPUT_COMPONENTS: Int               = js.native // 0x9125
 
+  val READ_FRAMEBUFFER: Int = js.native // 0x8CA8
+  val DRAW_FRAMEBUFFER: Int = js.native // 0x8CA9
+
   val COLOR_ATTACHMENT1: Int  = js.native // 0x8ce1
   val COLOR_ATTACHMENT2: Int  = js.native // 0x8ce2
   val COLOR_ATTACHMENT3: Int  = js.native // 0x8ce3
@@ -94,6 +97,9 @@ trait WebGL2RenderingContext extends WebGLRenderingContext {
   def drawBuffers(buffers: scalajs.js.Array[Int]): Unit =
     js.native
 
+  def blitFramebuffer(srcX0: Int, srcY0: Int, srcX1: Int, srcY1: Int, dstX0: Int, dstY0: Int, dstX1: Int, dstY1: Int, mask: Int, filter: Int): Unit =
+    js.native
+
 }
 
 object WebGL2RenderingContext {
@@ -133,6 +139,9 @@ object WebGL2RenderingContext {
   val MAX_VARYING_VECTORS: Int                         = 0x8dfc
   val MIN: Int                                         = 0x8007
   val MAX: Int                                         = 0x8008
+
+  val READ_FRAMEBUFFER: Int = 0x8ca8
+  val DRAW_FRAMEBUFFER: Int = 0x8ca9
 }
 
 @nowarn

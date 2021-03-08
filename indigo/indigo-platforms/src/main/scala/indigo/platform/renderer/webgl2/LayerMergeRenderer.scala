@@ -48,20 +48,15 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext) {
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def merge(
       projection: scalajs.js.Array[Float],
-      layerFrameBuffer: FrameBufferComponents.SingleOutput,
-      backFrameBuffer: Option[FrameBufferComponents.SingleOutput],
+      srcFrameBuffer: FrameBufferComponents.SingleOutput,
       width: Int,
       height: Int,
-      clearColor: RGBA
+      clearColor: RGBA,
+      isMerge: Boolean
   ): Unit = {
 
-    backFrameBuffer match {
-      case Some(buffer) =>
-        FrameBufferFunctions.switchToFramebuffer(gl2, buffer.frameBuffer, clearColor, false)
-
-      case None =>
-        FrameBufferFunctions.switchToCanvas(gl2, clearColor)
-    }
+    if (isMerge)
+      FrameBufferFunctions.switchToCanvas(gl2, clearColor)
 
     gl2.useProgram(mergeShaderProgram)
 
@@ -85,7 +80,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext) {
     )
 
     setupMergeFragmentShaderState(
-      layerFrameBuffer
+      srcFrameBuffer
     )
 
     gl2.drawArrays(TRIANGLE_STRIP, 0, 4)
