@@ -88,7 +88,7 @@ final class RendererWebGL2(
   private val layerRenderInstance: LayerRenderer =
     new LayerRenderer(gl2, textureLocations, config.maxBatchSize, frameDataUBOBuffer, projectionUBOBuffer)
   private val layerMergeRenderInstance: LayerMergeRenderer =
-    new LayerMergeRenderer(gl2)
+    new LayerMergeRenderer(gl2, frameDataUBOBuffer)
 
   private val defaultShaderProgram =
     WebGLHelper.shaderProgramSetup(gl, "Default", WebGL2Base)
@@ -281,6 +281,8 @@ final class RendererWebGL2(
     gl2.bindFramebuffer(WebGL2RenderingContext.READ_FRAMEBUFFER, from)
     gl2.bindFramebuffer(WebGL2RenderingContext.DRAW_FRAMEBUFFER, to)
     gl2.blitFramebuffer(0, lastHeight, lastWidth, 0, 0, lastHeight, lastWidth, 0, COLOR_BUFFER_BIT, NEAREST)
+
+    //TODO replace blitting with piping from into to as a source.
   }
 
   def clearBuffer(buffer: WebGLFramebuffer): Unit = {
