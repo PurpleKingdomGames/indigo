@@ -49,6 +49,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
   def merge(
       projection: scalajs.js.Array[Float],
       srcFrameBuffer: FrameBufferComponents.SingleOutput,
+      dstFrameBuffer: FrameBufferComponents.SingleOutput,
       width: Int,
       height: Int,
       clearColor: RGBA,
@@ -81,9 +82,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
 
     WebGLHelper.bindUBO(gl2, mergeShaderProgram, "IndigoFrameData", RendererWebGL2Constants.frameDataBlockPointer, frameDataUBOBuffer)
 
-    setupMergeFragmentShaderState(
-      srcFrameBuffer
-    )
+    setupMergeFragmentShaderState(srcFrameBuffer, dstFrameBuffer)
 
     gl2.drawArrays(TRIANGLE_STRIP, 0, 4)
 
@@ -93,12 +92,14 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   def setupMergeFragmentShaderState(
-      layer: FrameBufferComponents.SingleOutput
+      src: FrameBufferComponents.SingleOutput,
+      dst: FrameBufferComponents.SingleOutput,
   ): Unit = {
 
     val uniformTextures: List[(String, WebGLTexture)] =
       List(
-        "u_channel_0" -> layer.diffuse
+        "u_channel_0" -> src.diffuse,
+        "u_channel_1" -> dst.diffuse,
       )
 
     var i: Int = 0
