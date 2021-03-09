@@ -15,7 +15,7 @@ import indigo.platform.renderer.shared.WebGLHelper
 import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.FrameBufferComponents
 
-class LayerMergeRenderer(gl2: WebGL2RenderingContext) {
+class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => WebGLBuffer) {
 
   private val mergeShaderProgram: WebGLProgram =
     WebGLHelper.shaderProgramSetup(gl2, "Layer Merge", WebGL2Merge)
@@ -79,6 +79,8 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext) {
       STATIC_DRAW
     )
 
+    WebGLHelper.bindUBO(gl2, mergeShaderProgram, "IndigoFrameData", RendererWebGL2Constants.frameDataBlockPointer, frameDataUBOBuffer)
+
     setupMergeFragmentShaderState(
       srcFrameBuffer
     )
@@ -96,7 +98,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext) {
 
     val uniformTextures: List[(String, WebGLTexture)] =
       List(
-        "u_texture_layer" -> layer.diffuse
+        "u_channel_0" -> layer.diffuse
       )
 
     var i: Int = 0

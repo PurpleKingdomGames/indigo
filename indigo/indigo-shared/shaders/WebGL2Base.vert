@@ -20,8 +20,6 @@ layout (std140) uniform IndigoFrameData {
 
 out vec4 v_channel_coords_01; // Scaled to position on texture atlas
 out vec4 v_channel_coords_23; // Scaled to position on texture atlas
-
-// public
 out vec4 v_uv_size; // Unscaled texture coordinates + Width / height of the objects
 
 // Constants
