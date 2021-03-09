@@ -16,6 +16,7 @@ layout (std140) uniform IndigoProjectionData {
 // public
 layout (std140) uniform IndigoFrameData {
   float TIME; // Running time
+  vec2 VIEWPORT_SIZE; // Size of the viewport in pixels
 };
 
 out vec4 v_channel_coords_01; // Scaled to position on texture atlas

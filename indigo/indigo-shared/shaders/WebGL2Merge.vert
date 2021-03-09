@@ -14,6 +14,7 @@ layout (std140) uniform DisplayObjectUBO {
 
 layout (std140) uniform IndigoFrameData {
   float TIME; // Running time
+  vec2 VIEWPORT_SIZE; // Size of the viewport in pixels
 };
 
 out vec2 TEXTURE_COORDS;
