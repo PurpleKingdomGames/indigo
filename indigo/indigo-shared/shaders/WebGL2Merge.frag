@@ -7,6 +7,7 @@ in vec2 SIZE; // In this case, screen size.
 in vec2 UV; // Unscaled texture coordinates
 
 uniform sampler2D u_channel_0;
+uniform sampler2D u_channel_1;
 
 out vec4 fragColor;
 
@@ -20,6 +21,7 @@ const float TAU = 2.0 * 3.141592653589793;
 const float PI = 3.141592653589793;
 
 vec4 SRC; // Pixel value from SRC texture
+vec4 DST; // Pixel value from DST texture
 
 // Output
 vec4 COLOR;
@@ -35,6 +37,7 @@ void light(){} // Placeholder only to appeal src generator. No lights used.
 void main(void) {
 
   SRC = texture(u_channel_0, TEXTURE_COORDS);
+  DST = texture(u_channel_1, TEXTURE_COORDS);
   COLOR = SRC;
 
   // Colour

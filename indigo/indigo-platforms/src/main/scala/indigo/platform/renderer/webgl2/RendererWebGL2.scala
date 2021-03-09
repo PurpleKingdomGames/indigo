@@ -102,6 +102,9 @@ final class RendererWebGL2(
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var blueDstFrameBuffer: FrameBufferComponents.SingleOutput =
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var emptyFrameBuffer: FrameBufferComponents.SingleOutput =
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var greenIsTarget: Boolean = true
@@ -245,6 +248,7 @@ final class RendererWebGL2(
       layerMergeRenderInstance.merge(
         projection,
         layerEntityFrameBuffer,
+        if (!greenIsTarget) blueDstFrameBuffer else greenDstFrameBuffer, // Inverted condition, because by now it's flipped.
         lastWidth,
         lastHeight,
         RGBA.Black.makeTransparent,
@@ -257,6 +261,7 @@ final class RendererWebGL2(
     layerMergeRenderInstance.merge(
       canvasMergeProjectionMatrixNoMagJS,
       if (!greenIsTarget) greenDstFrameBuffer else blueDstFrameBuffer, // Inverted condition, because outside the loop.
+      emptyFrameBuffer,                                                // just giving it something to use...
       lastWidth,
       lastHeight,
       config.clearColor,
@@ -265,6 +270,7 @@ final class RendererWebGL2(
 
     clearBuffer(blueDstFrameBuffer.frameBuffer)
     clearBuffer(greenDstFrameBuffer.frameBuffer)
+    clearBuffer(emptyFrameBuffer.frameBuffer)
   }
 
   def blitBuffers(from: WebGLFramebuffer, to: WebGLFramebuffer): Unit = {
@@ -281,8 +287,10 @@ final class RendererWebGL2(
     gl2.bindFramebuffer(WebGL2RenderingContext.READ_FRAMEBUFFER, from)
     gl2.bindFramebuffer(WebGL2RenderingContext.DRAW_FRAMEBUFFER, to)
     gl2.blitFramebuffer(0, lastHeight, lastWidth, 0, 0, lastHeight, lastWidth, 0, COLOR_BUFFER_BIT, NEAREST)
+    gl2.bindFramebuffer(WebGL2RenderingContext.READ_FRAMEBUFFER, null)
+    gl2.bindFramebuffer(WebGL2RenderingContext.DRAW_FRAMEBUFFER, null)
 
-    //TODO replace blitting with piping from into to as a source.
+    gl2.bindFramebuffer(FRAMEBUFFER, to)
   }
 
   def clearBuffer(buffer: WebGLFramebuffer): Unit = {
@@ -307,6 +315,7 @@ final class RendererWebGL2(
       layerEntityFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       greenDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       blueDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
+      emptyFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
 
       gl.viewport(0, 0, actualWidth.toDouble, actualHeight.toDouble)
 
