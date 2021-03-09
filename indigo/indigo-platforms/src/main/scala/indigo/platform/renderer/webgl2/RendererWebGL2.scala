@@ -196,9 +196,10 @@ final class RendererWebGL2(
 
     resize(cNc.canvas, cNc.magnification)
 
-    WebGLHelper.attachUBOData(gl2, orthographicProjectionMatrixNoMag, projectionUBOBuffer)
+    val frameData = Array[Float](runningTime.value.toFloat, lastWidth.toFloat, lastHeight.toFloat)
 
-    WebGLHelper.attachUBOData(gl2, Array[Float](runningTime.value.toFloat), frameDataUBOBuffer)
+    WebGLHelper.attachUBOData(gl2, orthographicProjectionMatrixNoMag, projectionUBOBuffer)
+    WebGLHelper.attachUBOData(gl2, frameData, frameDataUBOBuffer)
 
     @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
     var currentBlend: Blend = Blend.Normal
