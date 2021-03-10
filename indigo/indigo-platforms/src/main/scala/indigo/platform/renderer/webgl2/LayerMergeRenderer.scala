@@ -1,14 +1,12 @@
 package indigo.platform.renderer.webgl2
 
 import indigo.shared.display.DisplayObject
-import scala.scalajs.js.typedarray.Float32Array
 import org.scalajs.dom.raw.WebGLProgram
 import indigo.facades.WebGL2RenderingContext
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
 import indigo.shaders.WebGL2Merge
 import org.scalajs.dom.raw.WebGLTexture
-import scala.scalajs.js.JSConverters._
 import indigo.shared.datatypes.RGBA
 import indigo.platform.renderer.shared.RendererHelper
 import indigo.platform.renderer.shared.WebGLHelper
@@ -24,12 +22,10 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
     gl2.createBuffer()
 
   // They're all blocks of 16, it's the only block length allowed in WebGL.
-  private val projectionMatrixUBODataSize: Int = 16
   private val displayObjectUBODataSize: Int    = 16
-  private val uboDataSize: Int                 = projectionMatrixUBODataSize + displayObjectUBODataSize
 
-  private val uboData: scalajs.js.Array[Float] =
-    List.fill(displayObjectUBODataSize)(0.0f).toJSArray
+  private val uboData: Array[Float] =
+    Array.fill(displayObjectUBODataSize)(0.0f)
 
   def updateUBOData(
       displayObject: DisplayObject
@@ -47,7 +43,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def merge(
-      projection: scalajs.js.Array[Float],
+      projection: Array[Float],
       srcFrameBuffer: FrameBufferComponents.SingleOutput,
       dstFrameBuffer: FrameBufferComponents.SingleOutput,
       width: Int,
@@ -61,25 +57,10 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
 
     gl2.useProgram(mergeShaderProgram)
 
-    updateUBOData(
-      RendererHelper.screenDisplayObject(width, height)
-    )
+    updateUBOData(RendererHelper.screenDisplayObject(width, height))
 
-    // UBO data
-    gl2.bindBuffer(gl2.UNIFORM_BUFFER, displayObjectUBOBuffer)
-    gl2.bindBufferRange(
-      gl2.UNIFORM_BUFFER,
-      0,
-      displayObjectUBOBuffer,
-      0,
-      uboDataSize * Float32Array.BYTES_PER_ELEMENT
-    )
-    gl2.bufferData(
-      gl2.UNIFORM_BUFFER,
-      new Float32Array(projection ++ uboData),
-      STATIC_DRAW
-    )
-
+    WebGLHelper.attachUBOData(gl2, projection ++ uboData, displayObjectUBOBuffer)
+    WebGLHelper.bindUBO(gl2, mergeShaderProgram, "IndigoMergeData", RendererWebGL2Constants.mergeObjectBlockPointer, displayObjectUBOBuffer)
     WebGLHelper.bindUBO(gl2, mergeShaderProgram, "IndigoFrameData", RendererWebGL2Constants.frameDataBlockPointer, frameDataUBOBuffer)
 
     setupMergeFragmentShaderState(srcFrameBuffer, dstFrameBuffer)
