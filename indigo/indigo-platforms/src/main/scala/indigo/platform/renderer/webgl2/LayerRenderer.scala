@@ -116,7 +116,8 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
     d.shaderUniformData.foreach { ud =>
       if (ud.uniformHash.nonEmpty && ud.uniformHash != currentUniformHash) {
         WebGLHelper.attachUBOData(gl2, ud.data, customDataUBOBuffer)
-        WebGLHelper.bindUBO(gl2, activeShader, ud.blockName, RendererWebGL2Constants.customDataBlockPointer, customDataUBOBuffer)
+        if (d.shaderId != currentShader)
+          WebGLHelper.bindUBO(gl2, activeShader, ud.blockName, RendererWebGL2Constants.customDataBlockPointer, customDataUBOBuffer)
       }
     }
 
