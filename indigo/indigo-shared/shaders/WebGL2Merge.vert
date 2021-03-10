@@ -4,7 +4,7 @@ precision lowp float;
 
 layout (location = 0) in vec4 a_verticesAndCoords; // a_vertices, a_texcoord
 
-layout (std140) uniform DisplayObjectUBO {
+layout (std140) uniform IndigoMergeData {
   mat4 u_projection;
   vec2 u_translation;
   vec2 u_scale;
