@@ -28,7 +28,6 @@ import scala.collection.mutable
 import indigo.shared.shader.ShaderId
 import org.scalajs.dom.raw.WebGLProgram
 import indigo.shared.shader.RawShaderCode
-import scalajs.js.JSConverters._
 import indigo.shared.time.Seconds
 import indigo.shared.scenegraph.Blend
 import indigo.shared.scenegraph.BlendFactor
@@ -76,11 +75,9 @@ final class RendererWebGL2(
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var orthographicProjectionMatrix: CheapMatrix4 = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  var defaultLayerProjectionMatrixJS: scalajs.js.Array[Float] = null
+  var defaultLayerProjectionMatrix: Array[Float] = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var orthographicProjectionMatrixNoMag: Array[Float] = null
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-  var canvasMergeProjectionMatrixNoMagJS: scalajs.js.Array[Float] = null
 
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastHeight
@@ -224,10 +221,10 @@ final class RendererWebGL2(
       val projection =
         layer.magnification match {
           case None =>
-            defaultLayerProjectionMatrixJS
+            defaultLayerProjectionMatrix
 
           case Some(m) =>
-            CheapMatrix4.orthographic(cNc.canvas.width.toDouble / m.toDouble, cNc.canvas.height.toDouble / m.toDouble).mat.toJSArray.map(_.toFloat)
+            CheapMatrix4.orthographic(cNc.canvas.width.toDouble / m.toDouble, cNc.canvas.height.toDouble / m.toDouble).mat.map(_.toFloat)
         }
 
       // Set the layer blend mode
@@ -260,7 +257,7 @@ final class RendererWebGL2(
     // transfer the back buffer to the canvas
     WebGLHelper.setNormalBlend(gl)
     layerMergeRenderInstance.merge(
-      canvasMergeProjectionMatrixNoMagJS,
+      orthographicProjectionMatrixNoMag,
       if (!greenIsTarget) greenDstFrameBuffer else blueDstFrameBuffer, // Inverted condition, because outside the loop.
       emptyFrameBuffer,                                                // just giving it something to use...
       lastWidth,
@@ -309,9 +306,8 @@ final class RendererWebGL2(
       lastHeight = actualHeight
 
       orthographicProjectionMatrix = CheapMatrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
-      defaultLayerProjectionMatrixJS = orthographicProjectionMatrix.mat.map(_.toFloat).toJSArray
+      defaultLayerProjectionMatrix = orthographicProjectionMatrix.mat.map(_.toFloat)
       orthographicProjectionMatrixNoMag = CheapMatrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble).mat.map(_.toFloat)
-      canvasMergeProjectionMatrixNoMagJS = orthographicProjectionMatrixNoMag.toJSArray
 
       layerEntityFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       greenDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
