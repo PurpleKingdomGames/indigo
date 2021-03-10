@@ -49,9 +49,9 @@ final case class BootResult[A](
   def withSubSystems(newSubSystems: SubSystem*): BootResult[A] =
     withSubSystems(newSubSystems.toSet)
 
-  def addShaders(newShaders: Set[Shader.Source]): BootResult[A] =
+  def addShaders(newShaders: Set[Shader]): BootResult[A] =
     this.copy(shaders = shaders ++ newShaders)
-  def addShaders(newShaders: Shader.Source*): BootResult[A] =
+  def addShaders(newShaders: Shader*): BootResult[A] =
     addShaders(newShaders.toSet)
   def withShaders(newShaders: Set[Shader]): BootResult[A] =
     this.copy(shaders = newShaders)

@@ -4,7 +4,7 @@ import indigo.shaders.ShaderLibrary
 
 object StandardShaders {
 
-  def shaderList: List[Shader.Source] =
+  def shaderList: List[EntityShader.Source] =
     List(
       Bitmap,
       ImageEffects,
@@ -14,48 +14,48 @@ object StandardShaders {
       ShapePolygon
     )
 
-  val Bitmap: Shader.Source =
-    Shader.Source(
+  val Bitmap: EntityShader.Source =
+    EntityShader.Source(
       id = ShaderId("[indigo_engine_blit]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.BlitFragment,
       light = ShaderLibrary.NoOpLight
     )
 
-  val ImageEffects: Shader.Source =
-    Shader.Source(
+  val ImageEffects: EntityShader.Source =
+    EntityShader.Source(
       id = ShaderId("[indigo_engine_effects]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ImageEffectsFragment,
       light = ShaderLibrary.NoOpLight
     )
 
-  val ShapeBox: Shader.Source =
-    Shader.Source(
+  val ShapeBox: EntityShader.Source =
+    EntityShader.Source(
       id = ShaderId("[indigo_engine_shape_box]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ShapeBoxFragment,
       light = ShaderLibrary.NoOpLight
     )
 
-  val ShapeCircle: Shader.Source =
-    Shader.Source(
+  val ShapeCircle: EntityShader.Source =
+    EntityShader.Source(
       id = ShaderId("[indigo_engine_shape_circle]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ShapeCircleFragment,
       light = ShaderLibrary.NoOpLight
     )
 
-  val ShapeLine: Shader.Source =
-    Shader.Source(
+  val ShapeLine: EntityShader.Source =
+    EntityShader.Source(
       id = ShaderId("[indigo_engine_shape_line]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ShapeLineFragment,
       light = ShaderLibrary.NoOpLight
     )
 
-  val ShapePolygon: Shader.Source =
-    Shader.Source(
+  val ShapePolygon: EntityShader.Source =
+    EntityShader.Source(
       id = ShaderId("[indigo_engine_shape_polygon]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ShapePolygonFragment,

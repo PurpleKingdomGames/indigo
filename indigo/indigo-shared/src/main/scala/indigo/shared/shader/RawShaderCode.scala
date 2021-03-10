@@ -10,7 +10,7 @@ trait RawShaderCode {
 
 object RawShaderCode {
 
-  def fromCustomShader(customShader: Shader.Source): RawShaderCode =
+  def fromEntityShader(customShader: EntityShader.Source): RawShaderCode =
     new RawShaderCode {
       val id: ShaderId = customShader.id
       val vertex: String = ShaderTemplates.webGL2Vertex(

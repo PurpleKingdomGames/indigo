@@ -27,6 +27,7 @@ import indigo.shared.platform.SceneProcessor
 import indigo.shared.dice.Dice
 import indigo.shared.events.GlobalEvent
 import indigo.shared.shader.Shader
+import indigo.shared.shader.EntityShader
 import indigo.shared.shader.ShaderRegister
 import indigo.shared.shader.StandardShaders
 import indigo.shared.assets.AssetName
@@ -222,25 +223,29 @@ object GameEngine {
 
   def registerShaders(shaderRegister: ShaderRegister, shaders: Set[Shader], assetCollection: AssetCollection): Unit =
     shaders.foreach {
-      case s: Shader.Source =>
+      case s: EntityShader.Source =>
         shaderRegister.register(s)
 
-      case s: Shader.External =>
+      case s: EntityShader.External =>
         shaderRegister.register(externalShaderToSource(s, assetCollection))
+
+      case _ =>
+        // TODO: MergeShaders
+        ()
     }
 
-  def externalShaderToSource(external: Shader.External, assetCollection: AssetCollection): Shader.Source =
-    Shader.Source(
+  def externalShaderToSource(external: EntityShader.External, assetCollection: AssetCollection): EntityShader.Source =
+    EntityShader.Source(
       id = external.id,
       vertex = external.vertex
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-vertex", a))
-        .getOrElse(Shader.defaultVertexProgram),
+        .getOrElse(EntityShader.defaultVertexProgram),
       fragment = external.fragment
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-fragment", a))
-        .getOrElse(Shader.defaultFragmentProgram),
+        .getOrElse(EntityShader.defaultFragmentProgram),
       light = external.light
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-light", a))
-        .getOrElse(Shader.defaultLightProgram),
+        .getOrElse(EntityShader.defaultLightProgram)
     )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
