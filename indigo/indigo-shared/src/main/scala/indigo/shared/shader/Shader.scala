@@ -6,9 +6,9 @@ sealed trait Shader {
   def id: ShaderId
 }
 
-sealed trait ShaderSource extends Shader
+sealed trait EntityShader extends Shader
 
-object Shader {
+object EntityShader {
 
   val defaultVertexProgram: String       = "void vertex(){}"
   val defaultFragmentProgram: String     = "void fragment(){}"
@@ -19,7 +19,7 @@ object Shader {
       vertex: String,
       fragment: String,
       light: String,
-  ) extends ShaderSource {
+  ) extends EntityShader {
     def withShaderId(newId: ShaderId): Source =
       this.copy(id = newId)
 
@@ -50,7 +50,7 @@ object Shader {
       vertex: Option[AssetName],
       fragment: Option[AssetName],
       light: Option[AssetName],
-  ) extends ShaderSource {
+  ) extends EntityShader {
 
     def withShaderId(newId: ShaderId): External =
       this.copy(id = newId)
