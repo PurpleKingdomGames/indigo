@@ -4,16 +4,19 @@ import indigo.shaders.ShaderLibrary
 
 object StandardShaders {
 
-  def shaderList: List[EntityShader.Source] =
+  def shaderList: List[Shader] =
     List(
       Bitmap,
       ImageEffects,
       ShapeBox,
       ShapeCircle,
       ShapeLine,
-      ShapePolygon
+      ShapePolygon,
+      NormalBlend
     )
 
+  // Entity Shaders
+  
   val Bitmap: EntityShader.Source =
     EntityShader.Source(
       id = ShaderId("[indigo_engine_blit]"),
@@ -62,4 +65,12 @@ object StandardShaders {
       light = ShaderLibrary.NoOpLight
     )
 
+  // Blend Shaders
+
+  val NormalBlend: BlendShader.Source =
+    BlendShader.Source(
+      id = ShaderId("[indigo_engine_blend_use_src]"),
+      vertex = ShaderLibrary.NoOpVertex,
+      fragment = ShaderLibrary.NormalBlendFragment
+    )
 }

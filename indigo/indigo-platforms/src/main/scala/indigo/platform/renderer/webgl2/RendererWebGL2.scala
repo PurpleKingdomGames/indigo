@@ -31,6 +31,7 @@ import indigo.shared.shader.RawShaderCode
 import indigo.shared.time.Seconds
 import indigo.shared.scenegraph.Blend
 import indigo.shared.scenegraph.BlendFactor
+import indigo.shared.shader.StandardShaders
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 final class RendererWebGL2(
@@ -255,7 +256,9 @@ final class RendererWebGL2(
         RGBA.Black.makeTransparent,
         false,
         defaultMergeShaderProgram,
-        customShaders
+        customShaders,
+        layer.shaderId,
+        layer.shaderUniformData
       )
     }
 
@@ -270,7 +273,9 @@ final class RendererWebGL2(
       config.clearColor,
       true,
       defaultMergeShaderProgram,
-      customShaders
+      customShaders,
+      StandardShaders.NormalBlend.id,
+      None
     )
 
     clearBuffer(blueDstFrameBuffer.frameBuffer)

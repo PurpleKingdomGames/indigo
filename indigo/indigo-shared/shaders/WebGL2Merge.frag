@@ -39,7 +39,7 @@ void main(void) {
 
   SRC = texture(u_channel_0, TEXTURE_COORDS);
   DST = texture(u_channel_1, TEXTURE_COORDS);
-  COLOR = SRC;
+  COLOR = vec4(0.0);
 
   // Colour
   fragment();

@@ -13,6 +13,9 @@ import indigo.shared.scenegraph.Graphic
 import indigo.shared.scenegraph.Sprite
 import indigo.shared.platform.ProcessedSceneData
 import indigo.shared.scenegraph.Shape
+import indigo.shared.display.DisplayObjectUniformData
+import indigo.shared.materials.ShaderData
+import indigo.shared.shader.StandardShaders
 
 final class SceneProcessor(
     boundaryLocator: BoundaryLocator,
@@ -66,7 +69,9 @@ final class SceneProcessor(
               l.magnification,
               l.depth.map(_.zIndex).getOrElse(i),
               l.blending.entity,
-              l.blending.layer
+              l.blending.layer,
+              l.blendShader.map(_.shaderId).getOrElse(StandardShaders.NormalBlend.id),
+              mergeShaderToUniformData(l.blendShader)
             )
         }
         .sortBy(_.depth)
@@ -81,4 +86,16 @@ final class SceneProcessor(
 
   def calculateProjectionMatrix(width: Double, height: Double, magnification: Double): CheapMatrix4 =
     CheapMatrix4.orthographic(width / magnification.toDouble, height / magnification.toDouble)
+
+  def mergeShaderToUniformData(shaderData: Option[ShaderData]): Option[DisplayObjectUniformData] =
+    shaderData.flatMap { sd =>
+      sd.uniformBlock.map { ub =>
+        DisplayObjectUniformData(
+          uniformHash = ub.uniformHash,
+          blockName = ub.blockName,
+          data = DisplayObjectConversions.packUBO(ub.uniforms)
+        )
+      }
+    }
+
 }

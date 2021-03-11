@@ -13,11 +13,13 @@ import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.FrameBufferComponents
 import scala.collection.mutable.HashMap
 import indigo.shared.shader.ShaderId
-import scala.annotation.nowarn
+import indigo.shared.display.DisplayObjectUniformData
 
 class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => WebGLBuffer) {
 
   private val displayObjectUBOBuffer: WebGLBuffer =
+    gl2.createBuffer()
+  private val customDataUBOBuffer: WebGLBuffer =
     gl2.createBuffer()
 
   // They're all blocks of 16, it's the only block length allowed in WebGL.
@@ -40,7 +42,17 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
     uboData(7) = displayObject.frameScaleY.toFloat
   }
 
-  @nowarn
+  def setupShader(program: WebGLProgram, projection: Array[Float], width: Int, height: Int): Unit = {
+
+    gl2.useProgram(program)
+
+    updateUBOData(RendererHelper.screenDisplayObject(width, height))
+
+    WebGLHelper.attachUBOData(gl2, projection ++ uboData, displayObjectUBOBuffer)
+    WebGLHelper.bindUBO(gl2, program, "IndigoMergeData", RendererWebGL2Constants.mergeObjectBlockPointer, displayObjectUBOBuffer)
+    WebGLHelper.bindUBO(gl2, program, "IndigoFrameData", RendererWebGL2Constants.frameDataBlockPointer, frameDataUBOBuffer)
+  }
+
   @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
   def merge(
       projection: Array[Float],
@@ -51,21 +63,36 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
       clearColor: RGBA,
       isCanvasMerge: Boolean,
       defaultShaderProgram: WebGLProgram,
-      customShaders: HashMap[ShaderId, WebGLProgram]
+      customShaders: HashMap[ShaderId, WebGLProgram],
+      shaderId: ShaderId,
+      shaderUniformData: Option[DisplayObjectUniformData]
   ): Unit = {
 
     if (isCanvasMerge)
       FrameBufferFunctions.switchToCanvas(gl2, clearColor)
 
-    gl2.useProgram(defaultShaderProgram)
+    // Switch and reference shader
+    val activeShader: WebGLProgram =
+      customShaders.get(shaderId) match {
+        case Some(s) =>
+          setupShader(s, projection, width, height)
+          s
 
-    updateUBOData(RendererHelper.screenDisplayObject(width, height))
+        case None =>
+          setupShader(defaultShaderProgram, projection, width, height)
+          defaultShaderProgram
+      }
 
-    WebGLHelper.attachUBOData(gl2, projection ++ uboData, displayObjectUBOBuffer)
-    WebGLHelper.bindUBO(gl2, defaultShaderProgram, "IndigoMergeData", RendererWebGL2Constants.mergeObjectBlockPointer, displayObjectUBOBuffer)
-    WebGLHelper.bindUBO(gl2, defaultShaderProgram, "IndigoFrameData", RendererWebGL2Constants.frameDataBlockPointer, frameDataUBOBuffer)
+    // UBO data
+    shaderUniformData.foreach { ud =>
+      if (ud.uniformHash.nonEmpty) {
+        WebGLHelper.attachUBOData(gl2, ud.data, customDataUBOBuffer)
+        WebGLHelper.bindUBO(gl2, activeShader, ud.blockName, RendererWebGL2Constants.customDataBlockPointer, customDataUBOBuffer)
+      }
+    }
 
-    setupMergeFragmentShaderState(defaultShaderProgram, srcFrameBuffer, dstFrameBuffer)
+    // Assign src and dst channels
+    setupMergeFragmentShaderState(activeShader, srcFrameBuffer, dstFrameBuffer)
 
     gl2.drawArrays(TRIANGLE_STRIP, 0, 4)
 
