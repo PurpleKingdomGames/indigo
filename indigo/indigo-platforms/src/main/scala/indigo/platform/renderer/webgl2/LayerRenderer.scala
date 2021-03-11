@@ -94,7 +94,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       atlasName: Option[String],
       currentShader: ShaderId,
       currentUniformHash: String,
-      shaderProgram: WebGLProgram,
+      defaultShaderProgram: WebGLProgram,
       customShaders: HashMap[ShaderId, WebGLProgram]
   ): Unit = {
 
@@ -107,10 +107,10 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
             s
 
           case None =>
-            setupShader(shaderProgram)
-            shaderProgram
+            setupShader(defaultShaderProgram)
+            defaultShaderProgram
         }
-      else shaderProgram
+      else defaultShaderProgram
 
     // UBO data
     d.shaderUniformData.foreach { ud =>
@@ -172,14 +172,14 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       displayEntities: ListBuffer[DisplayEntity],
       frameBufferComponents: FrameBufferComponents,
       clearColor: RGBA,
-      shaderProgram: WebGLProgram,
+      defaultShaderProgram: WebGLProgram,
       customShaders: HashMap[ShaderId, WebGLProgram]
   ): Unit = {
 
     FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, clearColor, true)
     gl2.drawBuffers(frameBufferComponents.colorAttachments)
 
-    setupShader(shaderProgram)
+    setupShader(defaultShaderProgram)
 
     val sorted: ListBuffer[DisplayEntity] =
       RendererHelper.sortByDepth(displayEntities)
@@ -203,7 +203,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
             atlasName,
             currentShader,
             currentShaderHash,
-            shaderProgram,
+            defaultShaderProgram,
             customShaders
           )
           rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
@@ -226,7 +226,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
                   atlasName,
                   currentShader,
                   currentShaderHash,
-                  shaderProgram,
+                  defaultShaderProgram,
                   customShaders
                 )
                 rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
@@ -250,7 +250,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
                   atlasName,
                   currentShader,
                   currentShaderHash,
-                  shaderProgram,
+                  defaultShaderProgram,
                   customShaders
                 )
                 rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
