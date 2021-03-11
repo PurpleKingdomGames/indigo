@@ -5,20 +5,22 @@ import indigo.shared.assets.AssetName
 sealed trait Shader {
   def id: ShaderId
 }
+object Shader {
+
+  val defaultVertexProgram: String   = "void vertex(){}"
+  val defaultFragmentProgram: String = "void fragment(){}"
+  val defaultLightProgram: String    = "void light(){}"
+
+}
 
 sealed trait EntityShader extends Shader
-
 object EntityShader {
-
-  val defaultVertexProgram: String       = "void vertex(){}"
-  val defaultFragmentProgram: String     = "void fragment(){}"
-  val defaultLightProgram: String        = "void light(){}"
 
   final case class Source(
       id: ShaderId,
       vertex: String,
       fragment: String,
-      light: String,
+      light: String
   ) extends EntityShader {
     def withShaderId(newId: ShaderId): Source =
       this.copy(id = newId)
@@ -38,9 +40,9 @@ object EntityShader {
     def apply(id: ShaderId): Source =
       Source(
         id,
-        defaultVertexProgram,
-        defaultFragmentProgram,
-        defaultLightProgram
+        Shader.defaultVertexProgram,
+        Shader.defaultFragmentProgram,
+        Shader.defaultLightProgram
       )
 
   }
@@ -49,7 +51,7 @@ object EntityShader {
       id: ShaderId,
       vertex: Option[AssetName],
       fragment: Option[AssetName],
-      light: Option[AssetName],
+      light: Option[AssetName]
   ) extends EntityShader {
 
     def withShaderId(newId: ShaderId): External =
@@ -70,6 +72,64 @@ object EntityShader {
       External(
         id,
         None,
+        None,
+        None
+      )
+
+  }
+
+}
+
+sealed trait BlendShader extends Shader
+object BlendShader {
+
+  final case class Source(
+      id: ShaderId,
+      vertex: String,
+      fragment: String
+  ) extends EntityShader {
+    def withShaderId(newId: ShaderId): Source =
+      this.copy(id = newId)
+
+    def withVertexProgram(program: String): Source =
+      this.copy(vertex = program)
+
+    def withFragmentProgram(program: String): Source =
+      this.copy(fragment = program)
+
+  }
+  object Source {
+
+    def apply(id: ShaderId): Source =
+      Source(
+        id,
+        Shader.defaultVertexProgram,
+        Shader.defaultFragmentProgram
+      )
+
+  }
+
+  final case class External(
+      id: ShaderId,
+      vertex: Option[AssetName],
+      fragment: Option[AssetName]
+  ) extends EntityShader {
+
+    def withShaderId(newId: ShaderId): External =
+      this.copy(id = newId)
+
+    def withVertexProgram(program: AssetName): External =
+      this.copy(vertex = Option(program))
+
+    def withFragmentProgram(program: AssetName): External =
+      this.copy(fragment = Option(program))
+
+  }
+  object External {
+
+    def apply(id: ShaderId): External =
+      External(
+        id,
         None,
         None
       )

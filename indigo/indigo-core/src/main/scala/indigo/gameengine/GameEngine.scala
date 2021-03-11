@@ -31,6 +31,7 @@ import indigo.shared.shader.EntityShader
 import indigo.shared.shader.ShaderRegister
 import indigo.shared.shader.StandardShaders
 import indigo.shared.assets.AssetName
+import indigo.shared.shader.BlendShader
 
 final class GameEngine[StartUpData, GameModel, ViewModel](
     fonts: Set[FontInfo],
@@ -224,28 +225,41 @@ object GameEngine {
   def registerShaders(shaderRegister: ShaderRegister, shaders: Set[Shader], assetCollection: AssetCollection): Unit =
     shaders.foreach {
       case s: EntityShader.Source =>
-        shaderRegister.register(s)
+        shaderRegister.registerEntityShader(s)
 
       case s: EntityShader.External =>
-        shaderRegister.register(externalShaderToSource(s, assetCollection))
+        shaderRegister.registerEntityShader(externalEntityShaderToSource(s, assetCollection))
 
-      case _ =>
-        // TODO: MergeShaders
-        ()
+      case s: BlendShader.Source =>
+        shaderRegister.registerBlendShader(s)
+
+      case s: BlendShader.External =>
+        shaderRegister.registerBlendShader(externalBlendShaderToSource(s, assetCollection))
     }
 
-  def externalShaderToSource(external: EntityShader.External, assetCollection: AssetCollection): EntityShader.Source =
+  def externalEntityShaderToSource(external: EntityShader.External, assetCollection: AssetCollection): EntityShader.Source =
     EntityShader.Source(
       id = external.id,
       vertex = external.vertex
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-vertex", a))
-        .getOrElse(EntityShader.defaultVertexProgram),
+        .getOrElse(Shader.defaultVertexProgram),
       fragment = external.fragment
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-fragment", a))
-        .getOrElse(EntityShader.defaultFragmentProgram),
+        .getOrElse(Shader.defaultFragmentProgram),
       light = external.light
         .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-light", a))
-        .getOrElse(EntityShader.defaultLightProgram)
+        .getOrElse(Shader.defaultLightProgram)
+    )
+
+  def externalBlendShaderToSource(external: BlendShader.External, assetCollection: AssetCollection): BlendShader.Source =
+    BlendShader.Source(
+      id = external.id,
+      vertex = external.vertex
+        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-vertex", a))
+        .getOrElse(Shader.defaultVertexProgram),
+      fragment = external.fragment
+        .map(a => extractShaderCode(assetCollection.findTextDataByName(a), "indigo-fragment", a))
+        .getOrElse(Shader.defaultFragmentProgram)
     )
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
