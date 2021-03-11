@@ -98,7 +98,7 @@ class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureL
       customShaders: HashMap[ShaderId, WebGLProgram]
   ): Unit = {
 
-    // Switch and referernce shader
+    // Switch and reference shader
     val activeShader: WebGLProgram =
       if (d.shaderId != currentShader)
         customShaders.get(d.shaderId) match {

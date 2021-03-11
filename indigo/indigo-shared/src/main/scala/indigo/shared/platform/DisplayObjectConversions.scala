@@ -295,9 +295,10 @@ final class DisplayObjectConversions(
     val channelOffset3 = optionalAssetToOffset(assetMapping, shader.channel3)
 
     val frameInfo: SpriteSheetFrameCoordinateOffsets =
-      shader.channel1 match {
+      shader.channel0 match {
         case None =>
           SpriteSheetFrame.defaultOffset
+          
         case Some(assetName) =>
           QuickCache(s"${leaf.bounds.hash}_${shader.hash}") {
             SpriteSheetFrame.calculateFrameOffset(
