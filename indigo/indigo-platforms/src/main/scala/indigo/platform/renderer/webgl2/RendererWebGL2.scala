@@ -87,8 +87,11 @@ final class RendererWebGL2(
   private val layerMergeRenderInstance: LayerMergeRenderer =
     new LayerMergeRenderer(gl2, frameDataUBOBuffer)
 
-  private val defaultShaderProgram =
-    WebGLHelper.shaderProgramSetup(gl, "Default", WebGL2Base)
+  private val defaultEntityShaderProgram =
+    WebGLHelper.shaderProgramSetup(gl, "IndigoDefaultEntityShader", WebGL2Base)
+
+  private val defaultMergeShaderProgram: WebGLProgram =
+    WebGLHelper.shaderProgramSetup(gl2, "IndigoDefaultMergeShader", WebGL2Merge)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var layerEntityFrameBuffer: FrameBufferComponents.SingleOutput =
@@ -214,7 +217,7 @@ final class RendererWebGL2(
         layer.entities,
         layerEntityFrameBuffer,
         RGBA.Black.makeTransparent,
-        defaultShaderProgram,
+        defaultEntityShaderProgram,
         customShaders
       )
 
@@ -250,7 +253,9 @@ final class RendererWebGL2(
         lastWidth,
         lastHeight,
         RGBA.Black.makeTransparent,
-        false
+        false,
+        defaultMergeShaderProgram,
+        customShaders
       )
     }
 
@@ -263,7 +268,9 @@ final class RendererWebGL2(
       lastWidth,
       lastHeight,
       config.clearColor,
-      true
+      true,
+      defaultMergeShaderProgram,
+      customShaders
     )
 
     clearBuffer(blueDstFrameBuffer.frameBuffer)
