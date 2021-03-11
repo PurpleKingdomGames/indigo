@@ -3,6 +3,7 @@ package indigo.shared.scenegraph
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Depth
 import scala.annotation.nowarn
+import indigo.shared.materials.ShaderData
 
 final case class Layer(
     nodes: List[SceneNode],
@@ -10,7 +11,8 @@ final case class Layer(
     magnification: Option[Int],
     depth: Option[Depth],
     visible: Boolean,
-    blending: Blending
+    blending: Blending,
+    blendShader: Option[ShaderData]
 ) {
 
   def |+|(other: Layer): Layer =
@@ -67,30 +69,33 @@ final case class Layer(
     this.copy(blending = blending.withEntityBlend(newBlend))
   def withLayerBlend(newBlend: Blend): Layer =
     this.copy(blending = blending.withLayerBlend(newBlend))
+
+  def withBlendShaderData(newShaderData: ShaderData): Layer =
+    this.copy(blendShader = Option(newShaderData))
 }
 
 object Layer {
 
   def empty: Layer =
-    Layer(Nil, None, None, None, true, Blending.Normal)
+    Layer(Nil, None, None, None, true, Blending.Normal, None)
 
   def apply(nodes: SceneNode*): Layer =
-    Layer(nodes.toList, None, None, None, true, Blending.Normal)
+    Layer(nodes.toList, None, None, None, true, Blending.Normal, None)
 
   def apply(nodes: List[SceneNode]): Layer =
-    Layer(nodes, None, None, None, true, Blending.Normal)
+    Layer(nodes, None, None, None, true, Blending.Normal, None)
 
   def apply(key: BindingKey, nodes: List[SceneNode]): Layer =
-    Layer(nodes, Option(key), None, None, true, Blending.Normal)
+    Layer(nodes, Option(key), None, None, true, Blending.Normal, None)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth)(nodes: SceneNode*): Layer =
-    Layer(nodes.toList, Option(key), Option(magnification), Option(depth), true, Blending.Normal)
+    Layer(nodes.toList, Option(key), Option(magnification), Option(depth), true, Blending.Normal, None)
 
   def apply(key: BindingKey): Layer =
-    Layer(Nil, Option(key), None, None, true, Blending.Normal)
+    Layer(Nil, Option(key), None, None, true, Blending.Normal, None)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth): Layer =
-    Layer(Nil, Option(key), Option(magnification), Option(depth), true, Blending.Normal)
+    Layer(Nil, Option(key), Option(magnification), Option(depth), true, Blending.Normal, None)
 
 }
 
