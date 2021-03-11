@@ -7,9 +7,31 @@ final class ShaderRegister {
 
   implicit private val cache: QuickCache[RawShaderCode] = QuickCache.empty
 
-  def register(shader: EntityShader.Source): Unit = {
+  def register(shader: Shader): Unit =
+    shader match {
+      case s: EntityShader.Source =>
+        registerEntityShader(s)
+
+      case _: EntityShader.External =>
+        ()
+
+      case s: BlendShader.Source =>
+        registerBlendShader(s)
+
+      case _: BlendShader.External =>
+        ()
+    }
+
+  def registerEntityShader(shader: EntityShader.Source): Unit = {
     QuickCache(shader.id.value) {
       RawShaderCode.fromEntityShader(shader)
+    }
+    ()
+  }
+
+  def registerBlendShader(shader: BlendShader.Source): Unit = {
+    QuickCache(shader.id.value) {
+      RawShaderCode.fromBlendShader(shader)
     }
     ()
   }
