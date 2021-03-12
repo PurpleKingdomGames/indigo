@@ -12,11 +12,12 @@ object StandardShaders {
       ShapeCircle,
       ShapeLine,
       ShapePolygon,
-      NormalBlend
+      NormalBlend,
+      BlendEffects
     )
 
   // Entity Shaders
-  
+
   val Bitmap: EntityShader.Source =
     EntityShader.Source(
       id = ShaderId("[indigo_engine_blit]"),
@@ -72,5 +73,12 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_blend_use_src]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.NormalBlendFragment
+    )
+
+  val BlendEffects: BlendShader.Source =
+    BlendShader.Source(
+      id = ShaderId("[indigo_engine_blend_effects]"),
+      vertex = ShaderLibrary.NoOpVertex,
+      fragment = ShaderLibrary.BlendEffectsFragment
     )
 }
