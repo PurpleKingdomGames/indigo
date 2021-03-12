@@ -4,6 +4,7 @@ import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Depth
 import scala.annotation.nowarn
 import indigo.shared.materials.ShaderData
+import indigo.shared.shader.StandardShaders
 
 final case class Layer(
     nodes: List[SceneNode],
@@ -11,8 +12,7 @@ final case class Layer(
     magnification: Option[Int],
     depth: Option[Depth],
     visible: Boolean,
-    blending: Blending,
-    blendShader: Option[ShaderData]
+    blending: Blending
 ) {
 
   def |+|(other: Layer): Layer =
@@ -69,58 +69,67 @@ final case class Layer(
     this.copy(blending = blending.withEntityBlend(newBlend))
   def withLayerBlend(newBlend: Blend): Layer =
     this.copy(blending = blending.withLayerBlend(newBlend))
-
   def withBlendShaderData(newShaderData: ShaderData): Layer =
-    this.copy(blendShader = Option(newShaderData))
+    this.copy(blending = blending.withBlendShaderData(newShaderData))
+  def modifyBlending(modifier: Blending => Blending): Layer =
+    this.copy(blending = modifier(blending))
 }
 
 object Layer {
 
   def empty: Layer =
-    Layer(Nil, None, None, None, true, Blending.Normal, None)
+    Layer(Nil, None, None, None, true, Blending.Normal)
 
   def apply(nodes: SceneNode*): Layer =
-    Layer(nodes.toList, None, None, None, true, Blending.Normal, None)
+    Layer(nodes.toList, None, None, None, true, Blending.Normal)
 
   def apply(nodes: List[SceneNode]): Layer =
-    Layer(nodes, None, None, None, true, Blending.Normal, None)
+    Layer(nodes, None, None, None, true, Blending.Normal)
 
   def apply(key: BindingKey, nodes: List[SceneNode]): Layer =
-    Layer(nodes, Option(key), None, None, true, Blending.Normal, None)
+    Layer(nodes, Option(key), None, None, true, Blending.Normal)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth)(nodes: SceneNode*): Layer =
-    Layer(nodes.toList, Option(key), Option(magnification), Option(depth), true, Blending.Normal, None)
+    Layer(nodes.toList, Option(key), Option(magnification), Option(depth), true, Blending.Normal)
 
   def apply(key: BindingKey): Layer =
-    Layer(Nil, Option(key), None, None, true, Blending.Normal, None)
+    Layer(Nil, Option(key), None, None, true, Blending.Normal)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth): Layer =
-    Layer(Nil, Option(key), Option(magnification), Option(depth), true, Blending.Normal, None)
+    Layer(Nil, Option(key), Option(magnification), Option(depth), true, Blending.Normal)
 
 }
 
-final case class Blending(entity: Blend, layer: Blend) {
+final case class Blending(entity: Blend, layer: Blend, blendShader: ShaderData) {
 
   def withEntityBlend(newBlend: Blend): Blending =
     this.copy(entity = newBlend)
+
   def withLayerBlend(newBlend: Blend): Blending =
     this.copy(layer = newBlend)
 
+  def withBlendShaderData(newShaderData: ShaderData): Blending =
+    this.copy(blendShader = newShaderData)
+
 }
 object Blending {
+
+  val DefaultBlendShader: ShaderData =
+    ShaderData(StandardShaders.NormalBlend.id)
+
   def apply(blend: Blend): Blending =
-    Blending(blend, blend)
+    Blending(blend, blend, DefaultBlendShader)
 
   val Normal: Blending =
-    Blending(Blend.Normal, Blend.Normal)
+    Blending(Blend.Normal, Blend.Normal, DefaultBlendShader)
   val Alpha: Blending =
-    Blending(Blend.Alpha, Blend.Alpha)
+    Blending(Blend.Alpha, Blend.Alpha, DefaultBlendShader)
 
   /**
     * Specifically replicates Indigo's lighting layer behaviour
     */
   val Lighting: Blending =
-    Blending(Blend.LightingEntity, Blend.LightingLayer)
+    Blending(Blend.LightingEntity, Blend.LightingLayer, DefaultBlendShader)
 }
 
 sealed trait Blend {
