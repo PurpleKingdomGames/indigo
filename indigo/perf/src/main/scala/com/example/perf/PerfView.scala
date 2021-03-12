@@ -9,25 +9,18 @@ object PerfView {
 
   val cloneId: CloneId = CloneId("Dude")
 
-  def updateView(model: DudeModel, inputState: InputState): SceneUpdateFragment = {
-    inputState.mouse.mouseClickAt match {
-      case Some(position) => println("Mouse clicked at: " + position.toString())
-      case None           => ()
-    }
-
+  def updateView(model: DudeModel): SceneUpdateFragment =
     SceneUpdateFragment.empty
       .addLayers(
         Layer(gameLayer(model)),
-        Layer(lightingLayer(inputState)),
         Layer(uiLayer)
       )
-      .withAmbientLight(RGBA.White.withAmount(0.5))
       .addCloneBlanks(
         CloneBlank(cloneId, model.dude.sprite)
       )
-  }
 
-  private val herdCount: Int = 11999
+  private val herdCount: Int = 19999
+  private val cloneBatchSize: Int = 32
 
   private val positions: List[Point] =
     (1 to herdCount).toList.map { _ =>
@@ -57,7 +50,7 @@ object PerfView {
           )
       }
 
-    rec(positions, 256, 0, Nil)
+    rec(positions, cloneBatchSize, 0, Nil)
   }
 
   def gameLayer(currentState: DudeModel): List[SceneNode] =
@@ -89,16 +82,6 @@ object PerfView {
             .play()
       }
     ) ++ theHerd
-
-  val staticLights: List[Graphic] =
-    List(
-      Graphic(0, 0, 320, 240, 1, PerfAssets.lightMaterial),
-      // .withTint(1, 0, 0),
-      Graphic(-115, -100, 320, 240, 1, PerfAssets.lightMaterial)
-    )
-
-  def lightingLayer(inputState: InputState): List[SceneNode] =
-    Graphic(inputState.mouse.position.x - 160, inputState.mouse.position.y - 120, 320, 240, 1, PerfAssets.lightMaterial) :: staticLights
 
   val uiLayer: List[SceneNode] =
     List(
