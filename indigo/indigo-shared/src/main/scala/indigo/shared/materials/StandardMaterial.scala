@@ -47,7 +47,7 @@ object StandardMaterial {
       this.copy(saturation = newSaturation)
 
     val hash: String =
-      diffuse.value + alpha.toString() + tint.hash + overlay.hash
+      diffuse.value + alpha.toString() + tint.hash + overlay.hash + saturation.toString()
 
     def toShaderData: ShaderData = {
       val gradientUniforms: List[(Uniform, ShaderPrimitive)] =
