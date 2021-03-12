@@ -298,7 +298,7 @@ final class DisplayObjectConversions(
       shader.channel0 match {
         case None =>
           SpriteSheetFrame.defaultOffset
-          
+
         case Some(assetName) =>
           QuickCache(s"${leaf.bounds.hash}_${shader.hash}") {
             SpriteSheetFrame.calculateFrameOffset(
@@ -337,8 +337,8 @@ final class DisplayObjectConversions(
   }
 
   def graphicToDisplayObject(leaf: Graphic, assetMapping: AssetMapping): DisplayObject = {
-    val asCustom     = leaf.material.toShaderData
-    val materialName = asCustom.channel0.get.value
+    val shaderData     = leaf.material.toShaderData
+    val materialName = shaderData.channel0.get.value
 
     // val albedoAmount                     = 1.0f
     val (emissiveOffset, _) = (Vector2.zero, 0.0d) //materialToEmissiveValues(assetMapping, leaf.material)
@@ -346,7 +346,7 @@ final class DisplayObjectConversions(
     val (specularOffset, _) = (Vector2.zero, 0.0d) //materialToSpecularValues(assetMapping, leaf.material)
 
     val frameInfo =
-      QuickCache(s"${leaf.crop.hash}_${leaf.material.hash}") {
+      QuickCache(s"${leaf.crop.hash}_${shaderData.hash}") {
         SpriteSheetFrame.calculateFrameOffset(
           atlasSize = lookupAtlasSize(assetMapping, materialName),
           frameCrop = leaf.crop,
@@ -354,10 +354,10 @@ final class DisplayObjectConversions(
         )
       }
 
-    val shaderId = asCustom.shaderId
+    val shaderId = shaderData.shaderId
 
     val uniformData: Option[DisplayObjectUniformData] =
-      asCustom.uniformBlock.map { ub =>
+      shaderData.uniformBlock.map { ub =>
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
@@ -383,8 +383,8 @@ final class DisplayObjectConversions(
 
   def spriteToDisplayObject(boundaryLocator: BoundaryLocator, leaf: Sprite, assetMapping: AssetMapping, anim: AnimationRef): DisplayObject = {
     val material     = leaf.material
-    val asCustom     = material.toShaderData
-    val materialName = asCustom.channel0.get.value
+    val shaderData     = material.toShaderData
+    val materialName = shaderData.channel0.get.value
 
     // val albedoAmount                     = 1.0f
     val (emissiveOffset, _) = (Vector2.zero, 0.0d) //materialToEmissiveValues(assetMapping, material)
@@ -392,7 +392,7 @@ final class DisplayObjectConversions(
     val (specularOffset, _) = (Vector2.zero, 0.0d) //materialToSpecularValues(assetMapping, material)
 
     val frameInfo =
-      QuickCache(anim.frameHash + material.hash) {
+      QuickCache(anim.frameHash + shaderData.hash) {
         SpriteSheetFrame.calculateFrameOffset(
           atlasSize = lookupAtlasSize(assetMapping, materialName),
           frameCrop = anim.currentFrame.crop,
@@ -403,10 +403,10 @@ final class DisplayObjectConversions(
     val width: Int  = leaf.calculatedBounds(boundaryLocator).size.x
     val height: Int = leaf.calculatedBounds(boundaryLocator).size.y
 
-    val shaderId = asCustom.shaderId
+    val shaderId = shaderData.shaderId
 
     val uniformData: Option[DisplayObjectUniformData] =
-      asCustom.uniformBlock.map { ub =>
+      shaderData.uniformBlock.map { ub =>
         DisplayObjectUniformData(
           uniformHash = ub.uniformHash,
           blockName = ub.blockName,
@@ -434,8 +434,8 @@ final class DisplayObjectConversions(
     (line, alignmentOffsetX, yOffset) => {
 
       val material     = leaf.material
-      val asCustom     = material.toShaderData
-      val materialName = asCustom.channel0.get.value
+      val shaderData     = material.toShaderData
+      val materialName = shaderData.channel0.get.value
 
       val lineHash: String =
         leaf.fontKey.key +
@@ -445,7 +445,7 @@ final class DisplayObjectConversions(
           ":" + leaf.position.hash +
           ":" + leaf.rotation.hash +
           ":" + leaf.scale.hash +
-          ":" + material.hash // +
+          ":" + shaderData.hash // +
       // ":" + leaf.effects.hash
 
       // val albedoAmount                     = 1.0f
@@ -453,10 +453,10 @@ final class DisplayObjectConversions(
       val (normalOffset, _)   = (Vector2.zero, 0.0d) //materialToNormalValues(assetMapping, fontInfo.fontSpriteSheet.material)
       val (specularOffset, _) = (Vector2.zero, 0.0d) //materialToSpecularValues(assetMapping, fontInfo.fontSpriteSheet.material)
 
-      val shaderId = asCustom.shaderId
+      val shaderId = shaderData.shaderId
 
       val uniformData: Option[DisplayObjectUniformData] =
-        asCustom.uniformBlock.map { ub =>
+        shaderData.uniformBlock.map { ub =>
           DisplayObjectUniformData(
             uniformHash = ub.uniformHash,
             blockName = ub.blockName,
@@ -468,7 +468,7 @@ final class DisplayObjectConversions(
         zipWithCharDetails(line.text.toList, fontInfo).toList.map {
           case (fontChar, xPosition) =>
             val frameInfo =
-              QuickCache(fontChar.bounds.hash + "_" + material.hash) {
+              QuickCache(fontChar.bounds.hash + "_" + shaderData.hash) {
                 SpriteSheetFrame.calculateFrameOffset(
                   atlasSize = lookupAtlasSize(assetMapping, materialName),
                   frameCrop = fontChar.bounds,
