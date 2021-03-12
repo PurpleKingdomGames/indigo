@@ -20,7 +20,7 @@ object SandboxView {
         // .withBlend(Blend.Alpha)
       )
       .addLayer(
-        if (viewModel.useLightingLayer)
+        if (!viewModel.useLightingLayer)
           Layer(lightingLayer(inputState))
             .withDepth(Depth(301))
             .withBlending(Blending.Lighting)
