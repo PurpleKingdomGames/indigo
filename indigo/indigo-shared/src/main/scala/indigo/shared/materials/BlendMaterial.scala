@@ -10,16 +10,12 @@ import indigo.shared.shader.ShaderPrimitive
 import indigo.shared.datatypes.RGB
 
 trait BlendMaterial {
-  def hash: String
   def toShaderData: BlendShaderData
 }
 
 object BlendMaterial {
 
   case object Normal extends BlendMaterial {
-    val hash: String =
-      "[indigo_normal_blend_material]"
-
     def toShaderData: BlendShaderData =
       BlendShaderData(
         StandardShaders.NormalBlend.id,
@@ -49,9 +45,6 @@ object BlendMaterial {
       this.copy(affectsBackground = true)
     def ignoreBackground: BlendMaterial =
       this.copy(affectsBackground = false)
-
-    val hash: String =
-      "[indigo_blend_effects_material]" + alpha.toString() + tint.hash + overlay.hash + saturation.toString()
 
     def toShaderData: BlendShaderData = {
       val gradientUniforms: List[(Uniform, ShaderPrimitive)] =

@@ -15,9 +15,6 @@ sealed trait StandardMaterial extends Material
 object StandardMaterial {
 
   final case class Bitmap(diffuse: AssetName) extends StandardMaterial {
-    val hash: String =
-      diffuse.value
-
     def toShaderData: ShaderData =
       ShaderData(
         StandardShaders.Bitmap.id,
@@ -44,9 +41,6 @@ object StandardMaterial {
 
     def withSaturation(newSaturation: Double): ImageEffects =
       this.copy(saturation = newSaturation)
-
-    val hash: String =
-      diffuse.value + alpha.toString() + tint.hash + overlay.hash + saturation.toString()
 
     def toShaderData: ShaderData = {
       val gradientUniforms: List[(Uniform, ShaderPrimitive)] =
