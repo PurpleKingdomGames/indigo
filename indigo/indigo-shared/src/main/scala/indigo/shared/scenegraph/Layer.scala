@@ -3,8 +3,7 @@ package indigo.shared.scenegraph
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Depth
 import scala.annotation.nowarn
-import indigo.shared.materials.ShaderData
-import indigo.shared.shader.StandardShaders
+import indigo.shared.materials.BlendMaterial
 
 final case class Layer(
     nodes: List[SceneNode],
@@ -35,7 +34,9 @@ final case class Layer(
         case (Some(d), None)    => Some(d)
         case (None, Some(d))    => Some(d)
         case _                  => None
-      }
+      },
+      visible = other.visible,
+      blending = other.blending
     )
 
   def withNodes(newNodes: List[SceneNode]): Layer =
@@ -69,8 +70,8 @@ final case class Layer(
     this.copy(blending = blending.withEntityBlend(newBlend))
   def withLayerBlend(newBlend: Blend): Layer =
     this.copy(blending = blending.withLayerBlend(newBlend))
-  def withBlendShaderData(newShaderData: ShaderData): Layer =
-    this.copy(blending = blending.withBlendShaderData(newShaderData))
+  def withBlendMaterial(newBlendMaterial: BlendMaterial): Layer =
+    this.copy(blending = blending.withBlendMaterial(newBlendMaterial))
   def modifyBlending(modifier: Blending => Blending): Layer =
     this.copy(blending = modifier(blending))
 }
@@ -100,7 +101,7 @@ object Layer {
 
 }
 
-final case class Blending(entity: Blend, layer: Blend, blendShader: ShaderData) {
+final case class Blending(entity: Blend, layer: Blend, blendMaterial: BlendMaterial) {
 
   def withEntityBlend(newBlend: Blend): Blending =
     this.copy(entity = newBlend)
@@ -108,28 +109,25 @@ final case class Blending(entity: Blend, layer: Blend, blendShader: ShaderData) 
   def withLayerBlend(newBlend: Blend): Blending =
     this.copy(layer = newBlend)
 
-  def withBlendShaderData(newShaderData: ShaderData): Blending =
-    this.copy(blendShader = newShaderData)
+  def withBlendMaterial(newBlendMaterial: BlendMaterial): Blending =
+    this.copy(blendMaterial = newBlendMaterial)
 
 }
 object Blending {
 
-  val DefaultBlendShader: ShaderData =
-    ShaderData(StandardShaders.NormalBlend.id)
-
   def apply(blend: Blend): Blending =
-    Blending(blend, blend, DefaultBlendShader)
+    Blending(blend, blend, BlendMaterial.Normal)
 
   val Normal: Blending =
-    Blending(Blend.Normal, Blend.Normal, DefaultBlendShader)
+    Blending(Blend.Normal, Blend.Normal, BlendMaterial.Normal)
   val Alpha: Blending =
-    Blending(Blend.Alpha, Blend.Alpha, DefaultBlendShader)
+    Blending(Blend.Alpha, Blend.Alpha, BlendMaterial.Normal)
 
   /**
     * Specifically replicates Indigo's lighting layer behaviour
     */
   val Lighting: Blending =
-    Blending(Blend.LightingEntity, Blend.LightingLayer, DefaultBlendShader)
+    Blending(Blend.LightingEntity, Blend.LightingLayer, BlendMaterial.Normal)
 }
 
 sealed trait Blend {
