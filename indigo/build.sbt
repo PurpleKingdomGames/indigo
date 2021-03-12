@@ -26,7 +26,6 @@ lazy val commonSettings: Seq[sbt.Def.Setting[_]] = Seq(
   ),
   testFrameworks += new TestFramework("munit.Framework"),
   Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
-  libraryDependencies ++= (if (isDotty.value) Nil else Seq(compilerPlugin(scalafixSemanticdb))),
   crossScalaVersions := Seq(dottyVersion, scala213Version)
 ) ++ scalaFixSettings
 
