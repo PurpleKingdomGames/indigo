@@ -82,6 +82,9 @@ object Fill {
   object RadialGradient {
     val default: RadialGradient =
       RadialGradient(Point.zero, RGBA.Zero, Point.zero, RGBA.Zero)
+
+    def apply(center: Point, radius: Int, fromColor: RGBA, toColor: RGBA): RadialGradient =
+      RadialGradient(center, fromColor, center + Point(center.x + radius, center.y), toColor)
   }
 
 }
