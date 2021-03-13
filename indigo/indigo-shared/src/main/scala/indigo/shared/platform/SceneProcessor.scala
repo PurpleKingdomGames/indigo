@@ -16,6 +16,7 @@ import indigo.shared.scenegraph.Shape
 import indigo.shared.display.DisplayObjectUniformData
 import indigo.shared.materials.BlendShaderData
 import indigo.shared.materials.BlendMaterial
+import indigo.shared.scenegraph.Blending
 
 final class SceneProcessor(
     boundaryLocator: BoundaryLocator,
@@ -60,18 +61,19 @@ final class SceneProcessor(
 
     val displayLayers: List[DisplayLayer] =
       scene.layers
-        .filter(l => l.visible && l.nodes.nonEmpty)
+        .filter(l => l.visible.getOrElse(true) && l.nodes.nonEmpty)
         .zipWithIndex
         .map {
           case (l, i) =>
-            val shaderData = l.blending.blendMaterial.toShaderData
+            val blending   = l.blending.getOrElse(Blending.Normal)
+            val shaderData = blending.blendMaterial.toShaderData
 
             DisplayLayer(
               displayObjectConverter.sceneNodesToDisplayObjects(l.nodes, gameTime, assetMapping, cloneBlankDisplayObjects),
               l.magnification,
               l.depth.map(_.zIndex).getOrElse(i),
-              l.blending.entity,
-              l.blending.layer,
+              blending.entity,
+              blending.layer,
               shaderData.shaderId,
               mergeShaderToUniformData(shaderData)
             )

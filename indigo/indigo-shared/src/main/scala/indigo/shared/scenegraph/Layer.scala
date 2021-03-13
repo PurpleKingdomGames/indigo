@@ -2,42 +2,51 @@ package indigo.shared.scenegraph
 
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Depth
-import scala.annotation.nowarn
 import indigo.shared.materials.BlendMaterial
+import scala.annotation.nowarn
 
+/**
+  * A layers are used to stack collections screen elements on top of one another.
+  * 
+  * During the scene render, each layer in depth order is _blended_ into the one
+  * below it, a bit like doing a foldLeft over a list. You can control how the blend
+  * is performed to create effects.
+  * 
+  * Layer fields are all either Lists or options to denote that you _can_ have them
+  * but that it isn't necessary. Layers are "monoids" which just means that they
+  * can be empty and they can be combined. It is important to note that when they
+  * combine they are left bias in the case of all optional fields, which means, that
+  * if you do: a.show |+| b.hide, the layer will be visible. This may look odd, and maybe
+  * it is (time will tell!), but the idea is that you can set empty placeholder layers
+  * early in your scene and then add things to them, confident of the outcome.
+  *
+  * @param nodes
+  * @param key
+  * @param magnification
+  * @param depth
+  * @param visible
+  * @param blending
+  */
 final case class Layer(
     nodes: List[SceneNode],
     key: Option[BindingKey],
     magnification: Option[Int],
     depth: Option[Depth],
-    visible: Boolean,
-    blending: Blending
+    visible: Option[Boolean],
+    blending: Option[Blending]
 ) {
 
   def |+|(other: Layer): Layer =
     this.copy(
       nodes = nodes ++ other.nodes,
-      key = (key, other.key) match {
-        case (Some(k), Some(_)) => Some(k)
-        case (Some(k), None)    => Some(k)
-        case (None, Some(k))    => Some(k)
-        case _                  => None
-      },
-      magnification = (magnification, other.magnification) match {
-        case (Some(m), Some(_)) => Some(m)
-        case (Some(m), None)    => Some(m)
-        case (None, Some(m))    => Some(m)
-        case _                  => None
-      },
-      depth = (depth, other.depth) match {
-        case (Some(d), Some(_)) => Some(d)
-        case (Some(d), None)    => Some(d)
-        case (None, Some(d))    => Some(d)
-        case _                  => None
-      },
-      visible = other.visible,
-      blending = other.blending
+      key = key.orElse(other.key),
+      magnification = magnification.orElse(other.magnification),
+      depth = depth.orElse(other.depth),
+      visible = visible.orElse(other.visible),
+      blending = blending.orElse(other.blending)
     )
+  def combine(other: Layer): Layer =
+    this |+| other
 
   def withNodes(newNodes: List[SceneNode]): Layer =
     this.copy(nodes = newNodes)
@@ -56,7 +65,7 @@ final case class Layer(
     this.copy(depth = Option(newDepth))
 
   def withVisibility(isVisible: Boolean): Layer =
-    this.copy(visible = isVisible)
+    this.copy(visible = Option(isVisible))
 
   def show: Layer =
     withVisibility(true)
@@ -65,39 +74,39 @@ final case class Layer(
     withVisibility(false)
 
   def withBlending(newBlending: Blending): Layer =
-    this.copy(blending = newBlending)
+    this.copy(blending = Option(newBlending))
   def withEntityBlend(newBlend: Blend): Layer =
-    this.copy(blending = blending.withEntityBlend(newBlend))
+    this.copy(blending = blending.map(_.withEntityBlend(newBlend)))
   def withLayerBlend(newBlend: Blend): Layer =
-    this.copy(blending = blending.withLayerBlend(newBlend))
+    this.copy(blending = blending.map(_.withLayerBlend(newBlend)))
   def withBlendMaterial(newBlendMaterial: BlendMaterial): Layer =
-    this.copy(blending = blending.withBlendMaterial(newBlendMaterial))
+    this.copy(blending = blending.map(_.withBlendMaterial(newBlendMaterial)))
   def modifyBlending(modifier: Blending => Blending): Layer =
-    this.copy(blending = modifier(blending))
+    this.copy(blending = blending.map(modifier))
 }
 
 object Layer {
 
   def empty: Layer =
-    Layer(Nil, None, None, None, true, Blending.Normal)
+    Layer(Nil, None, None, None, None, None)
 
   def apply(nodes: SceneNode*): Layer =
-    Layer(nodes.toList, None, None, None, true, Blending.Normal)
+    Layer(nodes.toList, None, None, None, None, None)
 
   def apply(nodes: List[SceneNode]): Layer =
-    Layer(nodes, None, None, None, true, Blending.Normal)
+    Layer(nodes, None, None, None, None, None)
 
   def apply(key: BindingKey, nodes: List[SceneNode]): Layer =
-    Layer(nodes, Option(key), None, None, true, Blending.Normal)
+    Layer(nodes, Option(key), None, None, None, None)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth)(nodes: SceneNode*): Layer =
-    Layer(nodes.toList, Option(key), Option(magnification), Option(depth), true, Blending.Normal)
+    Layer(nodes.toList, Option(key), Option(magnification), Option(depth), None, None)
 
   def apply(key: BindingKey): Layer =
-    Layer(Nil, Option(key), None, None, true, Blending.Normal)
+    Layer(Nil, Option(key), None, None, None, None)
 
   def apply(key: BindingKey, magnification: Int, depth: Depth): Layer =
-    Layer(Nil, Option(key), Option(magnification), Option(depth), true, Blending.Normal)
+    Layer(Nil, Option(key), Option(magnification), Option(depth), None, None)
 
 }
 
