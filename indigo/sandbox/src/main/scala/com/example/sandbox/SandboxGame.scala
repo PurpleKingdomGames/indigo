@@ -13,6 +13,8 @@ import scala.scalajs.js.annotation._
 import com.example.sandbox.scenes.OriginalScene
 import com.example.sandbox.scenes.Shaders
 import com.example.sandbox.scenes.ShapesScene
+import com.example.sandbox.scenes.LightsScene
+import com.example.sandbox.scenes.RefractionScene
 
 @JSExportTopLevel("IndigoGame")
 object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, SandboxGameModel, SandboxViewModel] {
@@ -23,10 +25,10 @@ object SandboxGame extends IndigoGame[SandboxBootData, SandboxStartupData, Sandb
   private val viewportHeight: Int     = 128 * magnificationLevel
 
   def initialScene(bootData: SandboxBootData): Option[SceneName] =
-    Some(OriginalScene.name)
+    Some(RefractionScene.name)
 
   def scenes(bootData: SandboxBootData): NonEmptyList[Scene[SandboxStartupData, SandboxGameModel, SandboxViewModel]] =
-    NonEmptyList(OriginalScene, ShapesScene)
+    NonEmptyList(OriginalScene, ShapesScene, LightsScene, RefractionScene)
 
   val eventFilters: EventFilters = EventFilters.Permissive
 
