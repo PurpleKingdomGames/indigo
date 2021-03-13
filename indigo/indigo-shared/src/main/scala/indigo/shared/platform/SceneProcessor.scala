@@ -15,6 +15,7 @@ import indigo.shared.platform.ProcessedSceneData
 import indigo.shared.scenegraph.Shape
 import indigo.shared.display.DisplayObjectUniformData
 import indigo.shared.materials.BlendShaderData
+import indigo.shared.materials.BlendMaterial
 
 final class SceneProcessor(
     boundaryLocator: BoundaryLocator,
@@ -77,11 +78,15 @@ final class SceneProcessor(
         }
         .sortBy(_.depth)
 
+    val sceneBlend = scene.blendMaterial.getOrElse(BlendMaterial.Normal).toShaderData
+
     new ProcessedSceneData(
       displayLayers,
       cloneBlankDisplayObjects,
       scene.lights,
-      scene.ambientLight
+      scene.ambientLight,
+      sceneBlend.shaderId,
+      mergeShaderToUniformData(sceneBlend)
     )
   }
 

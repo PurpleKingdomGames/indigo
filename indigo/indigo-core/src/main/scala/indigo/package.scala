@@ -366,9 +366,6 @@ package object indigo {
   type BlendFactor = shared.scenegraph.BlendFactor
   val BlendFactor: shared.scenegraph.BlendFactor.type = shared.scenegraph.BlendFactor
 
-  type ScreenEffects = shared.scenegraph.ScreenEffects
-  val ScreenEffects: shared.scenegraph.ScreenEffects.type = shared.scenegraph.ScreenEffects
-
   type SceneNode = shared.scenegraph.SceneNode
   val SceneNode: shared.scenegraph.SceneNode.type = shared.scenegraph.SceneNode
 
