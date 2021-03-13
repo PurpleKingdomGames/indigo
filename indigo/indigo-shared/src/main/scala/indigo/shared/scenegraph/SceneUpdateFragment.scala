@@ -1,6 +1,7 @@
 package indigo.shared.scenegraph
 
 import indigo.shared.datatypes.RGBA
+import indigo.shared.materials.BlendMaterial
 
 /**
   * A description of what the engine should next present to the player.
@@ -21,7 +22,7 @@ final case class SceneUpdateFragment(
     ambientLight: RGBA,
     lights: List[Light],
     audio: SceneAudio,
-    screenEffects: ScreenEffects,
+    blendMaterial: Option[BlendMaterial],
     cloneBlanks: List[CloneBlank]
 ) {
   def |+|(other: SceneUpdateFragment): SceneUpdateFragment =
@@ -73,14 +74,10 @@ final case class SceneUpdateFragment(
   def addCloneBlanks(blanks: List[CloneBlank]): SceneUpdateFragment =
     this.copy(cloneBlanks = cloneBlanks ++ blanks)
 
-  def withColorOverlay(overlay: RGBA): SceneUpdateFragment =
-    this.copy(screenEffects = ScreenEffects(overlay, overlay))
-
-  def withGameColorOverlay(overlay: RGBA): SceneUpdateFragment =
-    this.copy(screenEffects = screenEffects.withGameColorOverlay(overlay))
-
-  def withUiColorOverlay(overlay: RGBA): SceneUpdateFragment =
-    this.copy(screenEffects = screenEffects.withUiColorOverlay(overlay))
+  def withBlendMaterial(newBlendMaterial: BlendMaterial): SceneUpdateFragment =
+    this.copy(blendMaterial = Option(newBlendMaterial))
+  def modifyBlendMaterial(modifier: BlendMaterial => BlendMaterial): SceneUpdateFragment =
+    this.copy(blendMaterial = blendMaterial.map(modifier))
 
   def withMagnification(level: Int): SceneUpdateFragment =
     this.copy(
@@ -93,13 +90,13 @@ object SceneUpdateFragment {
     SceneUpdateFragment(nodes.toList)
 
   def apply(nodes: List[SceneNode]): SceneUpdateFragment =
-    SceneUpdateFragment(List(Layer(nodes)), RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
+    SceneUpdateFragment(List(Layer(nodes)), RGBA.None, Nil, SceneAudio.None, None, Nil)
 
   def apply(layer: Layer): SceneUpdateFragment =
-    SceneUpdateFragment(List(layer), RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
+    SceneUpdateFragment(List(layer), RGBA.None, Nil, SceneAudio.None, None, Nil)
 
   val empty: SceneUpdateFragment =
-    SceneUpdateFragment(Nil, RGBA.None, Nil, SceneAudio.None, ScreenEffects.None, Nil)
+    SceneUpdateFragment(Nil, RGBA.None, Nil, SceneAudio.None, None, Nil)
 
   def append(a: SceneUpdateFragment, b: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment(
@@ -107,7 +104,7 @@ object SceneUpdateFragment {
       a.ambientLight + b.ambientLight,
       a.lights ++ b.lights,
       a.audio |+| b.audio,
-      a.screenEffects |+| b.screenEffects,
+      b.blendMaterial.orElse(a.blendMaterial),
       a.cloneBlanks ++ b.cloneBlanks
     )
 
