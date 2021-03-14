@@ -91,6 +91,14 @@ final case class NonEmptyList[A](head: A, tail: List[A]) {
     NonEmptyList.combine(this)(other)
 
   /**
+    * Concatenate a `NonEmptyList` with a `List`
+    * @param other A List of the same type
+    * @return A new NonEmptyList containing the elements of both lists
+    */
+  def ++(other: List[A]): NonEmptyList[A] =
+    NonEmptyList.combineWithList(this)(other)
+
+  /**
     * Apply a function `f` to each element of the list to produce a new list.
     * @example `NonEmptyList(1, 2, 3).map(_ * 10)` results in `NonEmptyList(10, 20, 30)`
     * @param f function to apply to each element
@@ -210,6 +218,9 @@ object NonEmptyList {
     pure(f(fa.head), fa.tail.map(f))
 
   def combine[A](fa: NonEmptyList[A])(fb: NonEmptyList[A]): NonEmptyList[A] =
+    pure(fa.head, fa.tail ++ fb.toList)
+
+  def combineWithList[A](fa: NonEmptyList[A])(fb: List[A]): NonEmptyList[A] =
     pure(fa.head, fa.tail ++ fb.toList)
 
   def flatten[A](fa: NonEmptyList[NonEmptyList[A]]): NonEmptyList[A] =
