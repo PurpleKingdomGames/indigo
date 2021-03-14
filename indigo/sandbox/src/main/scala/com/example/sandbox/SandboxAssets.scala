@@ -20,13 +20,32 @@ object SandboxAssets {
       // .withOverlay(Overlay.LinearGradient(Point.zero, RGBA.Cyan, Point(32, 32), RGBA.Magenta))
       .withOverlay(Fill.RadialGradient(Point(4, 4), RGBA.Cyan, Point(32, 32), RGBA.Magenta))
 
+  val junctionBoxAlbedo: AssetName   = AssetName("junctionbox_albedo")
+  val junctionBoxEmission: AssetName = AssetName("junctionbox_emission")
+  val junctionBoxNormal: AssetName   = AssetName("junctionbox_normal")
+  val junctionBoxSpecular: AssetName = AssetName("junctionbox_specular")
+  val imageLightName: AssetName      = AssetName("light_texture")
+  val foliageName: AssetName         = AssetName("foliage")
+  val smoothBumpName: AssetName      = AssetName("smooth-bump2")
+  val trafficLightsName: AssetName   = AssetName("trafficlights")
+
   def assets: Set[AssetType] =
     Set(
       AssetType.Image(smallFontName, AssetPath("assets/boxy_font.png")),
       AssetType.Image(light, AssetPath("assets/light_texture.png")),
       AssetType.Text(AssetName(dudeName.value + "-json"), AssetPath("assets/" + dudeName.value + ".json")),
       AssetType.Image(dudeName, AssetPath("assets/" + dudeName.value + ".png")),
-      AssetType.Image(dots, AssetPath("assets/" + dots.value + ".png"))
+      AssetType.Image(dots, AssetPath("assets/" + dots.value + ".png")),
+      AssetType.Tagged("atlas1")(
+        AssetType.Image(junctionBoxAlbedo, AssetPath("assets/" + junctionBoxAlbedo.value + ".png")),
+        AssetType.Image(junctionBoxEmission, AssetPath("assets/" + junctionBoxEmission.value + ".png")),
+        AssetType.Image(junctionBoxNormal, AssetPath("assets/" + junctionBoxNormal.value + ".png")),
+        AssetType.Image(junctionBoxSpecular, AssetPath("assets/" + junctionBoxSpecular.value + ".png")),
+        AssetType.Image(imageLightName, AssetPath("assets/" + imageLightName.value + ".png")),
+        AssetType.Image(foliageName, AssetPath("assets/" + foliageName.value + ".png")),
+        AssetType.Image(smoothBumpName, AssetPath("assets/" + smoothBumpName.value + ".png"))
+      ),
+      AssetType.Image(trafficLightsName, AssetPath("assets/" + trafficLightsName.value + ".png"))
     )
 
 }
