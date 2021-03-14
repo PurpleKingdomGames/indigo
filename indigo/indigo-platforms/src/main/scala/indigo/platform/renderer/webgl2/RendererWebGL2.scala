@@ -216,7 +216,7 @@ final class RendererWebGL2(
         sceneData.cloneBlankDisplayObjects,
         layer.entities,
         layerEntityFrameBuffer,
-        RGBA.Black.makeTransparent,
+        layer.bgColor,
         defaultEntityShaderProgram,
         customShaders
       )

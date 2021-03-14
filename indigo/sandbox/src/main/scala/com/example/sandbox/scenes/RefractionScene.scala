@@ -67,7 +67,7 @@ object RefractionScene extends Scene[SandboxStartupData, SandboxGameModel, Sandb
             graphic.moveTo(viewCenter).moveBy(30, 0).withMaterial(SandboxAssets.junctionBoxMaterial),
             graphic.moveTo(viewCenter).moveBy(60, 0).withMaterial(SandboxAssets.junctionBoxMaterial)
           ).withMagnification(2),
-          Layer(imageLight).withBlending(Blending.Lighting),
+          Layer(imageLight).withBlending(Blending.Lighting).withBackgroundColor(RGBA.Black),
           Layer(
             distortion.moveTo(viewCenter),
             orbiting(40, viewCenter).affectTime(0.25).at(context.gameTime.running)

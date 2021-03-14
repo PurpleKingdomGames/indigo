@@ -17,6 +17,7 @@ import indigo.shared.display.DisplayObjectUniformData
 import indigo.shared.materials.BlendShaderData
 import indigo.shared.materials.BlendMaterial
 import indigo.shared.scenegraph.Blending
+import indigo.shared.datatypes.RGBA
 
 final class SceneProcessor(
     boundaryLocator: BoundaryLocator,
@@ -70,6 +71,7 @@ final class SceneProcessor(
 
             DisplayLayer(
               displayObjectConverter.sceneNodesToDisplayObjects(l.nodes, gameTime, assetMapping, cloneBlankDisplayObjects),
+              l.backgroundColor.getOrElse(RGBA.Zero),
               l.magnification,
               l.depth.map(_.zIndex).getOrElse(i),
               blending.entity,
