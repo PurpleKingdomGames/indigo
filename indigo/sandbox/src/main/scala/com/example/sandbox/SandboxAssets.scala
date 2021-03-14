@@ -29,6 +29,18 @@ object SandboxAssets {
   val smoothBumpName: AssetName      = AssetName("smooth-bump2")
   val trafficLightsName: AssetName   = AssetName("trafficlights")
 
+  val junctionBoxMaterial: StandardMaterial.Bitmap =
+    StandardMaterial.Bitmap(junctionBoxAlbedo)
+
+  val foliageMaterial: StandardMaterial.Bitmap =
+    StandardMaterial.Bitmap(foliageName)
+
+  val imageLightMaterial: StandardMaterial.Bitmap =
+    StandardMaterial.Bitmap(imageLightName)
+
+  val smoothBumpMaterial: StandardMaterial.Bitmap =
+    StandardMaterial.Bitmap(smoothBumpName)
+
   def assets: Set[AssetType] =
     Set(
       AssetType.Image(smallFontName, AssetPath("assets/boxy_font.png")),
