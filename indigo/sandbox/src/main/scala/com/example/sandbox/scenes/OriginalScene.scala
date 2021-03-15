@@ -50,7 +50,7 @@ object OriginalScene extends Scene[SandboxStartupData, SandboxGameModel, Sandbox
         .addLayer(
           Layer.empty
             .withKey(BindingKey("bg"))
-            .withMagnification(1)
+            // .withMagnification(1) // TODO: This one should be enough!
         ) |+| scene
         .addLayer(
           Layer(
