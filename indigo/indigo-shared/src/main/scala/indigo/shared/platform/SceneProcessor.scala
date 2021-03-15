@@ -62,7 +62,7 @@ final class SceneProcessor(
 
     val displayLayers: List[DisplayLayer] =
       scene.layers
-        .filter(l => l.visible.getOrElse(true) && l.nodes.nonEmpty)
+        .filter(l => l.visible.getOrElse(true))
         .zipWithIndex
         .map {
           case (l, i) =>
