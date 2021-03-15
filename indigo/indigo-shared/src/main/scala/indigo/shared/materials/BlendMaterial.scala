@@ -23,6 +23,21 @@ object BlendMaterial {
       )
   }
 
+  final case class Lighting(ambient: RGBA) extends BlendMaterial {
+    def toShaderData: BlendShaderData =
+      BlendShaderData(
+        StandardShaders.LightingBlend.id,
+        Some(
+          UniformBlock(
+            "IndigoLightingBlendData",
+            List(
+              Uniform("AMBIENT_LIGHT_COLOR") -> vec4(ambient.r, ambient.g, ambient.b, ambient.a)
+            )
+          )
+        )
+      )
+  }
+
   final case class BlendEffects(alpha: Double, tint: RGBA, overlay: Fill, saturation: Double, affectsBackground: Boolean) extends BlendMaterial {
 
     def withAlpha(newAlpha: Double): BlendEffects =

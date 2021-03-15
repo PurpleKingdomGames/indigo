@@ -1,6 +1,5 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.datatypes.RGBA
 import indigo.shared.materials.BlendMaterial
 
 /**
@@ -19,7 +18,6 @@ import indigo.shared.materials.BlendMaterial
   */
 final case class SceneUpdateFragment(
     layers: List[Layer],
-    ambientLight: RGBA,
     lights: List[Light],
     audio: SceneAudio,
     blendMaterial: Option[BlendMaterial],
@@ -40,15 +38,6 @@ final case class SceneUpdateFragment(
     addLayers(newLayers.toList)
   def addLayers(newLayers: List[Layer]): SceneUpdateFragment =
     this.copy(layers = newLayers.foldLeft(layers)((acc, l) => SceneUpdateFragment.addLayer(acc, l)))
-
-  def withAmbientLight(light: RGBA): SceneUpdateFragment =
-    this.copy(ambientLight = light)
-
-  def withAmbientLightAmount(amount: Double): SceneUpdateFragment =
-    this.copy(ambientLight = ambientLight.withAmount(amount))
-
-  def withAmbientLightTint(r: Double, g: Double, b: Double): SceneUpdateFragment =
-    withAmbientLight(RGBA(r, g, b, 1))
 
   def noLights: SceneUpdateFragment =
     this.copy(lights = Nil)
@@ -90,18 +79,17 @@ object SceneUpdateFragment {
     SceneUpdateFragment(nodes.toList)
 
   def apply(nodes: List[SceneNode]): SceneUpdateFragment =
-    SceneUpdateFragment(List(Layer(nodes)), RGBA.None, Nil, SceneAudio.None, None, Nil)
+    SceneUpdateFragment(List(Layer(nodes)), Nil, SceneAudio.None, None, Nil)
 
   def apply(layer: Layer): SceneUpdateFragment =
-    SceneUpdateFragment(List(layer), RGBA.None, Nil, SceneAudio.None, None, Nil)
+    SceneUpdateFragment(List(layer), Nil, SceneAudio.None, None, Nil)
 
   val empty: SceneUpdateFragment =
-    SceneUpdateFragment(Nil, RGBA.None, Nil, SceneAudio.None, None, Nil)
+    SceneUpdateFragment(Nil, Nil, SceneAudio.None, None, Nil)
 
   def append(a: SceneUpdateFragment, b: SceneUpdateFragment): SceneUpdateFragment =
     SceneUpdateFragment(
       a.layers ++ b.layers,
-      a.ambientLight + b.ambientLight,
       a.lights ++ b.lights,
       a.audio |+| b.audio,
       b.blendMaterial.orElse(a.blendMaterial),

@@ -88,7 +88,6 @@ final class SceneProcessor(
       displayLayers,
       cloneBlankDisplayObjects,
       scene.lights,
-      scene.ambientLight,
       sceneBlend.shaderId,
       mergeShaderToUniformData(sceneBlend)
     )

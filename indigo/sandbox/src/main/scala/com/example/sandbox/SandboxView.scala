@@ -15,7 +15,6 @@ object SandboxView {
     SceneUpdateFragment.empty
       .addLayer(
         Layer(gameLayer(model, viewModel))
-          .withMagnification(2)
           .withDepth(Depth(300))
         // .withBlend(Blend.Alpha)
       )
@@ -23,12 +22,12 @@ object SandboxView {
         if (viewModel.useLightingLayer)
           Layer(lightingLayer(inputState))
             .withDepth(Depth(301))
-            .withBlending(Blending.Lighting)
+            .withBackgroundColor(RGBA.Black)
+            .withBlending(Blending.Lighting(RGBA.White.withAlpha(0.25)))
         else
           Layer.empty
       )
       // .addLayer(Layer(uiLayer(inputState)))
-      .withAmbientLight(RGBA.White.withAmount(0.25))
       .addCloneBlanks(CloneBlank(dudeCloneId, model.dude.dude.sprite))
     // .withSaturationLevel(0.5)
     // .withTint(RGBA.Cyan.withAmount(0.25))

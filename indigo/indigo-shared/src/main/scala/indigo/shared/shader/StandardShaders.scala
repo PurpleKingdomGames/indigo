@@ -13,6 +13,7 @@ object StandardShaders {
       ShapeLine,
       ShapePolygon,
       NormalBlend,
+      LightingBlend,
       BlendEffects
     )
 
@@ -70,9 +71,16 @@ object StandardShaders {
 
   val NormalBlend: BlendShader.Source =
     BlendShader.Source(
-      id = ShaderId("[indigo_engine_blend_use_src]"),
+      id = ShaderId("[indigo_engine_blend_normal]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.NormalBlendFragment
+    )
+
+  val LightingBlend: BlendShader.Source =
+    BlendShader.Source(
+      id = ShaderId("[indigo_engine_blend_lighting]"),
+      vertex = ShaderLibrary.NoOpVertex,
+      fragment = ShaderLibrary.LightingBlendFragment
     )
 
   val BlendEffects: BlendShader.Source =
