@@ -9,11 +9,11 @@ layout (location = 3) in vec4 a_sizeAndFrameScale;
 layout (location = 4) in vec4 a_channelOffsets01;
 layout (location = 5) in vec4 a_channelOffsets23;
 
+// public
 layout (std140) uniform IndigoProjectionData {
   mat4 u_projection;
 };
 
-// public
 layout (std140) uniform IndigoFrameData {
   float TIME; // Running time
   vec2 VIEWPORT_SIZE; // Size of the viewport in pixels
