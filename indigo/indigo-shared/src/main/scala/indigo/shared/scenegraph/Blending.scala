@@ -30,7 +30,7 @@ object Blending {
     * Specifically replicates Indigo's lighting layer behaviour
     */
   def Lighting(ambientLightColor: RGBA): Blending =
-    Blending(Blend.LightingEntity, Blend.LightingLayer, BlendMaterial.Lighting(ambientLightColor))
+    Blending(Blend.LightingEntity, Blend.Normal, BlendMaterial.Lighting(ambientLightColor))
 }
 
 sealed trait Blend {
@@ -67,8 +67,6 @@ object Blend {
     Add(BlendFactor.SrcAlpha, BlendFactor.DstAlpha)
   val LightingEntity: Blend =
     Lighten(BlendFactor.SrcAlpha, BlendFactor.DstAlpha)
-  val LightingLayer: Blend =
-    Darken(BlendFactor.SrcColor, BlendFactor.DstColor)
 }
 
 sealed trait BlendFactor

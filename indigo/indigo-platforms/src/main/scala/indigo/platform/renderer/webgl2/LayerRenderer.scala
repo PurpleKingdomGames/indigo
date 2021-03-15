@@ -23,7 +23,13 @@ import indigo.shared.shader.ShaderId
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import indigo.platform.renderer.shared.WebGLHelper
 
-class LayerRenderer(gl2: WebGL2RenderingContext, textureLocations: List[TextureLookupResult], maxBatchSize: Int, frameDataUBOBuffer: => WebGLBuffer, projectionUBOBuffer: => WebGLBuffer) {
+class LayerRenderer(
+    gl2: WebGL2RenderingContext,
+    textureLocations: List[TextureLookupResult],
+    maxBatchSize: Int,
+    projectionUBOBuffer: => WebGLBuffer,
+    frameDataUBOBuffer: => WebGLBuffer
+) {
 
   private val customDataUBOBuffer: WebGLBuffer =
     gl2.createBuffer()

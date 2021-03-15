@@ -3,6 +3,7 @@
 precision mediump float;
 
 vec4 SRC;
+vec4 DST;
 vec4 COLOR;
 
 //<indigo-fragment>
@@ -13,6 +14,6 @@ layout (std140) uniform IndigoLightingBlendData {
 void fragment(){
   vec4 ambient = vec4(AMBIENT_LIGHT_COLOR.rgb * AMBIENT_LIGHT_COLOR.a, 1.0);
 
-  COLOR = ambient + SRC;
+  COLOR = (DST * ambient) + (DST * SRC);
 }
 //</indigo-fragment>

@@ -2,7 +2,6 @@
 
 precision lowp float;
 
-in vec2 TEXTURE_COORDS; // texture coordinates on atlas
 in vec2 SIZE; // In this case, screen size.
 in vec2 UV; // Unscaled texture coordinates
 
@@ -37,8 +36,8 @@ void light(){} // Placeholder only to appeal src generator. No lights used.
 
 void main(void) {
 
-  SRC = texture(u_channel_0, TEXTURE_COORDS);
-  DST = texture(u_channel_1, TEXTURE_COORDS);
+  SRC = texture(u_channel_0, UV);
+  DST = texture(u_channel_1, UV);
   COLOR = vec4(0.0);
 
   // Colour

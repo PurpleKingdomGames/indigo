@@ -58,6 +58,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
       projection: Array[Float],
       srcFrameBuffer: FrameBufferComponents.SingleOutput,
       dstFrameBuffer: FrameBufferComponents.SingleOutput,
+      targetFrameBuffer: Option[FrameBufferComponents.SingleOutput],
       width: Int,
       height: Int,
       clearColor: RGBA,
@@ -70,6 +71,10 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
 
     if (isCanvasMerge)
       FrameBufferFunctions.switchToCanvas(gl2, clearColor)
+
+    targetFrameBuffer.foreach { target =>
+      FrameBufferFunctions.switchToFramebuffer(gl2, target.frameBuffer, RGBA.Zero, true)
+    }
 
     // Switch and reference shader
     val activeShader: WebGLProgram =
@@ -120,9 +125,6 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
       WebGLHelper.attach(gl2, program, i + 1, tex._1, tex._2)
       i = i + 1
     }
-
-    // Reset to TEXTURE0 before the next round of rendering happens.
-    gl2.activeTexture(TEXTURE0)
   }
 
 }

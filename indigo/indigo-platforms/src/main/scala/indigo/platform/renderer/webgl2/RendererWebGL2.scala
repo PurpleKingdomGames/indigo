@@ -31,6 +31,7 @@ import indigo.shared.shader.RawShaderCode
 import indigo.shared.time.Seconds
 import indigo.shared.scenegraph.Blend
 import indigo.shared.scenegraph.BlendFactor
+import indigo.shared.shader.StandardShaders
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 final class RendererWebGL2(
@@ -83,7 +84,7 @@ final class RendererWebGL2(
   def screenHeight: Int = lastHeight
 
   private val layerRenderInstance: LayerRenderer =
-    new LayerRenderer(gl2, textureLocations, config.maxBatchSize, frameDataUBOBuffer, projectionUBOBuffer)
+    new LayerRenderer(gl2, textureLocations, config.maxBatchSize, projectionUBOBuffer, frameDataUBOBuffer)
   private val layerMergeRenderInstance: LayerMergeRenderer =
     new LayerMergeRenderer(gl2, frameDataUBOBuffer)
 
@@ -95,6 +96,9 @@ final class RendererWebGL2(
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var layerEntityFrameBuffer: FrameBufferComponents.SingleOutput =
+    FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  private var scalingFrameBuffer: FrameBufferComponents.SingleOutput =
     FrameBufferFunctions.createFrameBufferSingle(gl, cNc.canvas.width, cNc.canvas.height)
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var greenDstFrameBuffer: FrameBufferComponents.SingleOutput =
@@ -230,6 +234,28 @@ final class RendererWebGL2(
             CheapMatrix4.orthographic(cNc.canvas.width.toDouble / m.toDouble, cNc.canvas.height.toDouble / m.toDouble).mat.map(_.toFloat)
         }
 
+      // Clear the blend mode
+      if (currentBlend != Blend.Normal) {
+        currentBlend = Blend.Normal
+        setBlendMode(currentBlend)
+      }
+
+      // Merge the layer buffer onto the staging buffer, this clears the magnification
+      layerMergeRenderInstance.merge(
+        projection,
+        layerEntityFrameBuffer,
+        emptyFrameBuffer,
+        Some(scalingFrameBuffer),
+        lastWidth,
+        lastHeight,
+        RGBA.Black.makeTransparent,
+        false,
+        defaultMergeShaderProgram,
+        customShaders,
+        StandardShaders.NormalBlend.id,
+        None
+      )
+
       // Set the layer blend mode
       if (currentBlend != layer.layerBlend) {
         currentBlend = layer.layerBlend
@@ -247,9 +273,10 @@ final class RendererWebGL2(
 
       // Merge the layer buffer onto the back buffer
       layerMergeRenderInstance.merge(
-        projection,
-        layerEntityFrameBuffer,
+        orthographicProjectionMatrixNoMag,
+        scalingFrameBuffer,
         if (!greenIsTarget) blueDstFrameBuffer else greenDstFrameBuffer, // Inverted condition, because by now it's flipped.
+        None,
         lastWidth,
         lastHeight,
         RGBA.Black.makeTransparent,
@@ -267,6 +294,7 @@ final class RendererWebGL2(
       orthographicProjectionMatrixNoMag,
       if (!greenIsTarget) greenDstFrameBuffer else blueDstFrameBuffer, // Inverted condition, because outside the loop.
       emptyFrameBuffer,                                                // just giving it something to use...
+      None,
       lastWidth,
       lastHeight,
       config.clearColor,
@@ -321,6 +349,7 @@ final class RendererWebGL2(
       orthographicProjectionMatrixNoMag = CheapMatrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble).mat.map(_.toFloat)
 
       layerEntityFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
+      scalingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       greenDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       blueDstFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       emptyFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)

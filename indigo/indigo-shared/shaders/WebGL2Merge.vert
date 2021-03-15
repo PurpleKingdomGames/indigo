@@ -17,7 +17,6 @@ layout (std140) uniform IndigoFrameData {
   vec2 VIEWPORT_SIZE; // Size of the viewport in pixels
 };
 
-out vec2 TEXTURE_COORDS;
 out vec2 SIZE;
 out vec2 UV;
 
@@ -41,11 +40,6 @@ mat4 scale2d(vec2 s){
                 );
 }
 
-vec2 scaleTextCoords(){
-  mat4 transform = translate2d(u_frameTranslation) * scale2d(u_frameScale);
-  return (transform * vec4(a_verticesAndCoords.z, a_verticesAndCoords.w, 1, 1)).xy;
-}
-
 vec4 VERTEX;
 
 //#vertex_start
@@ -54,10 +48,9 @@ void vertex(){}
 
 void main(void) {
 
-  TEXTURE_COORDS = scaleTextCoords();
+  UV = a_verticesAndCoords.zw;
   SIZE = u_scale;
   VERTEX = vec4(a_verticesAndCoords.x, a_verticesAndCoords.y, 1.0, 1.0);
-  UV = a_verticesAndCoords.zw;
 
   vertex();
 
