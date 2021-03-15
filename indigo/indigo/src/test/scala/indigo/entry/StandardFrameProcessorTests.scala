@@ -12,6 +12,8 @@ import indigo.shared.FontRegister
 import indigo.shared.FrameContext
 import indigo.shared.events.EventFilters
 import indigo.shared.subsystems.SubSystemsRegister
+import indigo.shared.materials.BlendMaterial
+import indigo.shared.datatypes.RGBA
 
 class StandardFrameProcessorTests extends munit.FunSuite {
 
@@ -37,9 +39,18 @@ class StandardFrameProcessorTests extends munit.FunSuite {
     val outViewModel = outcome.unsafeGet._2
     val outView      = outcome.unsafeGet._3
 
+    @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
+    val ambientLight: RGBA =
+      outView.blendMaterial match {
+        case Some(BlendMaterial.Lighting(rgba)) =>
+          rgba
+        case _ =>
+          throw new Exception("Boom! Missing blend material.")
+      }
+
     assert(outModel.count == 1)
     assert(outViewModel == 10)
-    assert(outView.ambientLight.a == 0.5d)
+    assert(ambientLight == RGBA.Red.withAlpha(0.5))
     assert(outcome.unsafeGlobalEvents.length == 2)
     assert(outcome.unsafeGlobalEvents.contains(EventsOnlyEvent.Increment))
     assert(outcome.unsafeGlobalEvents.contains(EventsOnlyEvent.Total(1)))
@@ -77,7 +88,7 @@ object TestFixtures {
       }
 
   val viewUpdate: (FrameContext[Unit], GameModel, Int) => Outcome[SceneUpdateFragment] =
-    (_, _, _) => Outcome(SceneUpdateFragment.empty.withAmbientLightAmount(0.5))
+    (_, _, _) => Outcome(SceneUpdateFragment.empty.withBlendMaterial(BlendMaterial.Lighting(RGBA.Red.withAlpha(0.5))))
 
   val standardFrameProcessor: StandardFrameProcessor[Unit, GameModel, Int] = {
     new StandardFrameProcessor(new SubSystemsRegister(), EventFilters.AllowAll, modelUpdate, viewModelUpdate, viewUpdate)
