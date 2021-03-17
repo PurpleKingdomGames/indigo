@@ -31,7 +31,7 @@ void fragment(){}
 //#fragment_end
 
 //#light_start
-void light(){} // Placeholder only to appeal src generator. No lights used.
+void light(){} // Placeholder only to appease src generator. No lights used.
 //#light_end
 
 void main(void) {
