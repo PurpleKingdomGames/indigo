@@ -39,7 +39,15 @@ package object indigo {
   type ShaderData = shared.materials.ShaderData
   val ShaderData: shared.materials.ShaderData.type = shared.materials.ShaderData
 
+  type BlendShaderData = shared.materials.BlendShaderData
+  val BlendShaderData: shared.materials.BlendShaderData.type = shared.materials.BlendShaderData
+
   type Shader = shared.shader.Shader
+
+  type BlendShader = shared.shader.BlendShader
+  val BlendShader: shared.shader.BlendShader.type = shared.shader.BlendShader
+
+  val ShaderLibrary: indigo.shaders.ShaderLibrary.type = indigo.shaders.ShaderLibrary
 
   type EntityShader = shared.shader.EntityShader
   val EntityShader: shared.shader.EntityShader.type = shared.shader.EntityShader
