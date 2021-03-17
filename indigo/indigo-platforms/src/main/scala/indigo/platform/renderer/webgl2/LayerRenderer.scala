@@ -15,7 +15,6 @@ import indigo.shared.display.DisplayCloneBatch
 import indigo.platform.renderer.shared.TextureLookupResult
 import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.FrameBufferComponents
-import indigo.platform.renderer.shared.RendererHelper
 import indigo.shared.datatypes.RGBA
 import scala.collection.mutable.HashMap
 import indigo.shared.shader.ShaderId
@@ -188,7 +187,7 @@ class LayerRenderer(
     setupShader(defaultShaderProgram)
 
     val sorted: ListBuffer[DisplayEntity] =
-      RendererHelper.sortByDepth(displayEntities)
+      displayEntities.sortWith((d1, d2) => d1.z > d2.z)
 
     gl2.activeTexture(TEXTURE0);
 
