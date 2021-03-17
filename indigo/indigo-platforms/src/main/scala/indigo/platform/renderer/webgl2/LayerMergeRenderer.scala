@@ -1,13 +1,11 @@
 package indigo.platform.renderer.webgl2
 
-import indigo.shared.display.DisplayObject
 import org.scalajs.dom.raw.WebGLProgram
 import indigo.facades.WebGL2RenderingContext
 import org.scalajs.dom.raw.WebGLRenderingContext._
 import org.scalajs.dom.raw.WebGLBuffer
 import org.scalajs.dom.raw.WebGLTexture
 import indigo.shared.datatypes.RGBA
-import indigo.platform.renderer.shared.RendererHelper
 import indigo.platform.renderer.shared.WebGLHelper
 import indigo.platform.renderer.shared.FrameBufferFunctions
 import indigo.platform.renderer.shared.FrameBufferComponents
@@ -28,25 +26,12 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
   private val uboData: Array[Float] =
     Array.fill(displayObjectUBODataSize)(0.0f)
 
-  def updateUBOData(
-      displayObject: DisplayObject
-  ): Unit = {
-    uboData(0) = 0.0f
-    uboData(1) = 0.0f
-    uboData(2) = displayObject.width.toFloat
-    uboData(3) = displayObject.height.toFloat
-
-    uboData(4) = displayObject.channelOffset0X
-    uboData(5) = displayObject.channelOffset0X
-    uboData(6) = displayObject.frameScaleX.toFloat
-    uboData(7) = displayObject.frameScaleY.toFloat
-  }
-
   def setupShader(program: WebGLProgram, projection: Array[Float], width: Int, height: Int): Unit = {
 
     gl2.useProgram(program)
 
-    updateUBOData(RendererHelper.screenDisplayObject(width, height))
+    uboData(0) = width.toFloat
+    uboData(1) = height.toFloat
 
     WebGLHelper.attachUBOData(gl2, projection ++ uboData, displayObjectUBOBuffer)
     WebGLHelper.bindUBO(gl2, program, "IndigoMergeData", RendererWebGL2Constants.mergeObjectBlockPointer, displayObjectUBOBuffer)

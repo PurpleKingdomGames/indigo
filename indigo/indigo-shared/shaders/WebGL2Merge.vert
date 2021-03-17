@@ -6,10 +6,7 @@ layout (location = 0) in vec4 a_verticesAndCoords; // a_vertices, a_texcoord
 
 layout (std140) uniform IndigoMergeData {
   mat4 u_projection;
-  vec2 u_translation;
   vec2 u_scale;
-  vec2 u_frameTranslation;
-  vec2 u_frameScale;
 };
 
 layout (std140) uniform IndigoFrameData {
@@ -56,7 +53,7 @@ void main(void) {
 
   vec2 moveToTopLeft = u_scale / 2.0;
 
-  mat4 transform = translate2d(moveToTopLeft + u_translation) * scale2d(u_scale);
+  mat4 transform = translate2d(moveToTopLeft) * scale2d(u_scale);
 
   gl_Position = u_projection * transform * VERTEX;
 
