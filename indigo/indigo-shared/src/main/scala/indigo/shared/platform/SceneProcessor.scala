@@ -71,7 +71,7 @@ final class SceneProcessor(
 
             DisplayLayer(
               displayObjectConverter.sceneNodesToDisplayObjects(l.nodes, gameTime, assetMapping, cloneBlankDisplayObjects),
-              l.backgroundColor.getOrElse(RGBA.Zero),
+              blending.clearColor.getOrElse(RGBA.Zero),
               l.magnification,
               l.depth.map(_.zIndex).getOrElse(i),
               blending.entity,

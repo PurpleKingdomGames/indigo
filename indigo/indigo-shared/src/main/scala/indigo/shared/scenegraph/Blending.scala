@@ -4,7 +4,10 @@ import indigo.shared.materials.BlendMaterial
 import indigo.shared.datatypes.RGBA
 import scala.annotation.nowarn
 
-final case class Blending(entity: Blend, layer: Blend, blendMaterial: BlendMaterial) {
+final case class Blending(entity: Blend, layer: Blend, blendMaterial: BlendMaterial, clearColor: Option[RGBA]) {
+
+  def withClearColor(clearColor: RGBA): Blending =
+    this.copy(clearColor = Option(clearColor))
 
   def withEntityBlend(newBlend: Blend): Blending =
     this.copy(entity = newBlend)
@@ -19,18 +22,18 @@ final case class Blending(entity: Blend, layer: Blend, blendMaterial: BlendMater
 object Blending {
 
   def apply(blend: Blend): Blending =
-    Blending(blend, blend, BlendMaterial.Normal)
+    Blending(blend, blend, BlendMaterial.Normal, None)
 
   val Normal: Blending =
-    Blending(Blend.Normal, Blend.Normal, BlendMaterial.Normal)
+    Blending(Blend.Normal, Blend.Normal, BlendMaterial.Normal, None)
   val Alpha: Blending =
-    Blending(Blend.Alpha, Blend.Alpha, BlendMaterial.Normal)
+    Blending(Blend.Alpha, Blend.Alpha, BlendMaterial.Normal, None)
 
   /**
     * Specifically replicates Indigo's lighting layer behaviour
     */
   def Lighting(ambientLightColor: RGBA): Blending =
-    Blending(Blend.LightingEntity, Blend.Normal, BlendMaterial.Lighting(ambientLightColor))
+    Blending(Blend.LightingEntity, Blend.Normal, BlendMaterial.Lighting(ambientLightColor), Option(RGBA.Black))
 }
 
 sealed trait Blend {
