@@ -99,8 +99,8 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
 
     val uniformTextures: List[(String, WebGLTexture)] =
       List(
-        "u_channel_0" -> src.diffuse,
-        "u_channel_1" -> dst.diffuse
+        "SRC_CHANNEL" -> src.diffuse,
+        "DST_CHANNEL" -> dst.diffuse
       )
 
     var i: Int = 0

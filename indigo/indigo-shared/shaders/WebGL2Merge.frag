@@ -5,8 +5,8 @@ precision lowp float;
 in vec2 SIZE; // In this case, screen size.
 in vec2 UV; // Unscaled texture coordinates
 
-uniform sampler2D u_channel_0;
-uniform sampler2D u_channel_1;
+uniform sampler2D SRC_CHANNEL;
+uniform sampler2D DST_CHANNEL;
 
 out vec4 fragColor;
 
@@ -36,8 +36,8 @@ void light(){} // Placeholder only to appease src generator. No lights used.
 
 void main(void) {
 
-  SRC = texture(u_channel_0, UV);
-  DST = texture(u_channel_1, UV);
+  SRC = texture(SRC_CHANNEL, UV);
+  DST = texture(DST_CHANNEL, UV);
   COLOR = vec4(0.0);
 
   // Colour
