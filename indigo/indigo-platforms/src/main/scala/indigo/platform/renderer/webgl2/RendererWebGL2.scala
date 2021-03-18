@@ -32,6 +32,7 @@ import indigo.shared.time.Seconds
 import indigo.shared.scenegraph.Blend
 import indigo.shared.scenegraph.BlendFactor
 import indigo.shared.shader.StandardShaders
+import indigo.shared.QuickCache
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
 final class RendererWebGL2(
@@ -40,6 +41,8 @@ final class RendererWebGL2(
     cNc: ContextAndCanvas,
     globalEventStream: GlobalEventStream
 ) extends Renderer {
+
+  implicit private val projectionsCache: QuickCache[Array[Float]] = QuickCache.empty
 
   private val gl: WebGLRenderingContext =
     cNc.context
@@ -79,6 +82,8 @@ final class RendererWebGL2(
   var defaultLayerProjectionMatrix: Array[Float] = null
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   var orthographicProjectionMatrixNoMag: Array[Float] = null
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
+  var orthographicProjectionMatrixNoMagFlipped: Array[Float] = null
 
   def screenWidth: Int  = lastWidth
   def screenHeight: Int = lastHeight
@@ -231,7 +236,13 @@ final class RendererWebGL2(
             defaultLayerProjectionMatrix
 
           case Some(m) =>
-            CheapMatrix4.orthographic(cNc.canvas.width.toDouble / m.toDouble, cNc.canvas.height.toDouble / m.toDouble).mat.map(_.toFloat)
+            QuickCache(s"${m.toString}_${lastWidth.toString()}x${lastHeight.toString()}") {
+              CheapMatrix4
+                .orthographic(lastWidth.toDouble / m.toDouble, lastHeight.toDouble / m.toDouble)
+                .scale(1.0, -1.0, 1.0)
+                .mat
+                .map(_.toFloat)
+            }
         }
 
       // Clear the blend mode
@@ -291,7 +302,7 @@ final class RendererWebGL2(
     // transfer the back buffer to the canvas
     WebGLHelper.setNormalBlend(gl)
     layerMergeRenderInstance.merge(
-      orthographicProjectionMatrixNoMag,
+      orthographicProjectionMatrixNoMagFlipped,
       if (!greenIsTarget) greenDstFrameBuffer else blueDstFrameBuffer, // Inverted condition, because outside the loop.
       emptyFrameBuffer,                                                // just giving it something to use...
       None,
@@ -345,8 +356,9 @@ final class RendererWebGL2(
       lastHeight = actualHeight
 
       orthographicProjectionMatrix = CheapMatrix4.orthographic(actualWidth.toDouble / magnification, actualHeight.toDouble / magnification)
-      defaultLayerProjectionMatrix = orthographicProjectionMatrix.mat.map(_.toFloat)
+      defaultLayerProjectionMatrix = orthographicProjectionMatrix.scale(1.0, -1.0, 1.0).mat.map(_.toFloat)
       orthographicProjectionMatrixNoMag = CheapMatrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble).mat.map(_.toFloat)
+      orthographicProjectionMatrixNoMagFlipped = CheapMatrix4.orthographic(actualWidth.toDouble, actualHeight.toDouble).scale(1.0, -1.0, 1.0).mat.map(_.toFloat)
 
       layerEntityFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
       scalingFrameBuffer = FrameBufferFunctions.createFrameBufferSingle(gl, actualWidth, actualHeight)
