@@ -72,7 +72,7 @@ object RefractionScene extends Scene[SandboxStartupData, SandboxGameModel, Sandb
           Layer(
             distortion.moveTo(viewCenter),
             orbiting(40, viewCenter).affectTime(0.25).at(context.gameTime.running)
-          )
+          ).withBlending(Blending.Refraction(25.0))
         )
     )
   }

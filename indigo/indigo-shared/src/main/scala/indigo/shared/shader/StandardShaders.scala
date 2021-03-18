@@ -14,7 +14,8 @@ object StandardShaders {
       ShapePolygon,
       NormalBlend,
       LightingBlend,
-      BlendEffects
+      BlendEffects,
+      RefractionBlend
     )
 
   // Entity Shaders
@@ -88,5 +89,12 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_blend_effects]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.BlendEffectsFragment
+    )
+
+  val RefractionBlend: BlendShader.Source =
+    BlendShader.Source(
+      id = ShaderId("[indigo_engine_blend_refraction]"),
+      vertex = ShaderLibrary.NoOpVertex,
+      fragment = ShaderLibrary.RefractionBlendFragment
     )
 }

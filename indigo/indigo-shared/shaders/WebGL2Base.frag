@@ -9,8 +9,7 @@ layout(location = 0) out vec4 fragColor;
 // The texture is however an atlas of textures, so in
 // practice you can read many sub-textures at once.
 // Could remove this limitation.
-uniform sampler2D u_channel_0;
-uniform vec4 u_ambientLight;
+uniform sampler2D SRC_CHANNEL;
 
 // public
 layout (std140) uniform IndigoFrameData {
@@ -52,7 +51,6 @@ const float PI = 3.141592653589793;
 // Outputs
 vec4 COLOR;
 vec4 LIGHT;
-vec4 AMBIENT_LIGHT;
 
 //#fragment_start
 void fragment(){}
@@ -68,11 +66,10 @@ void main(void) {
   SIZE = v_uv_size.zw;
   COLOR = vec4(0.0);
   LIGHT = vec4(0.0);
-  AMBIENT_LIGHT = u_ambientLight;
-  CHANNEL_0 = texture(u_channel_0, v_channel_coords_01.xy);
-  CHANNEL_1 = texture(u_channel_0, v_channel_coords_01.zw);
-  CHANNEL_2 = texture(u_channel_0, v_channel_coords_23.xy);
-  CHANNEL_3 = texture(u_channel_0, v_channel_coords_23.zw);
+  CHANNEL_0 = texture(SRC_CHANNEL, v_channel_coords_01.xy);
+  CHANNEL_1 = texture(SRC_CHANNEL, v_channel_coords_01.zw);
+  CHANNEL_2 = texture(SRC_CHANNEL, v_channel_coords_23.xy);
+  CHANNEL_3 = texture(SRC_CHANNEL, v_channel_coords_23.zw);
 
   // Colour
   fragment();
@@ -83,5 +80,5 @@ void main(void) {
     light();
   }
   
-  fragColor = COLOR + (AMBIENT_LIGHT * LIGHT);
+  fragColor = COLOR + LIGHT;
 }
