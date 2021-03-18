@@ -22,7 +22,6 @@ object SandboxView {
         if (viewModel.useLightingLayer)
           Layer(lightingLayer(inputState))
             .withDepth(Depth(301))
-            .withBackgroundColor(RGBA.Black)
             .withBlending(Blending.Lighting(RGBA.White.withAlpha(0.25)))
         else
           Layer.empty
