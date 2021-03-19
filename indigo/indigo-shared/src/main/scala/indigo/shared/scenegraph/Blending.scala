@@ -47,7 +47,7 @@ object Blending {
     * @param distance Max distance in pixels
     */
   def Refraction(distance: Double): Blending =
-    Blending(Blend.LightingEntity, Blend.Normal, BlendMaterial.Refraction(distance), Option(RGBA(0.5, 0.5, 1.0, 1.0)))
+    Blending(Blend.Normal, Blend.Normal, BlendMaterial.Refraction(distance), Option(RGBA.Zero))
 }
 
 sealed trait Blend {

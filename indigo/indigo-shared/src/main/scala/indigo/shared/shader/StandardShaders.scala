@@ -8,6 +8,7 @@ object StandardShaders {
     List(
       Bitmap,
       ImageEffects,
+      NormalMinusBlue,
       ShapeBox,
       ShapeCircle,
       ShapeLine,
@@ -33,6 +34,14 @@ object StandardShaders {
       id = ShaderId("[indigo_engine_effects]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ImageEffectsFragment,
+      light = ShaderLibrary.NoOpLight
+    )
+
+  val NormalMinusBlue: EntityShader.Source =
+    EntityShader.Source(
+      id = ShaderId("[indigo_engine_normal_minus_blue]"),
+      vertex = ShaderLibrary.NoOpVertex,
+      fragment = ShaderLibrary.NormalMinusBlueFragment,
       light = ShaderLibrary.NoOpLight
     )
 

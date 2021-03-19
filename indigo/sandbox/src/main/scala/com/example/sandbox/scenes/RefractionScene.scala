@@ -42,15 +42,16 @@ object RefractionScene extends Scene[SandboxStartupData, SandboxGameModel, Sandb
       .moveBy(-14, -60)
 
   val distortion: Graphic =
-    Graphic(Rectangle(0, 0, 64, 64), 1, SandboxAssets.smoothBumpMaterial)
-      .withRef(32, 32)
+    Graphic(Rectangle(0, 0, 240, 240), 1, SandboxAssets.normalMapMaterial)
+      .scaleBy(0.5, 0.5)
+      .withRef(120, 120)
 
   val background: Graphic =
     Graphic(Rectangle(0, 0, 790, 380), 1, SandboxAssets.foliageMaterial)
 
-  def orbiting(distance: Int, around: Point): Signal[Graphic] =
-    Signal.Orbit(around, distance.toDouble).map { vec =>
-      distortion.moveTo(vec.toPoint)
+  def sliding: Signal[Graphic] =
+    Signal.SmoothPulse.map { d =>
+      distortion.moveTo(Point(70, 70 + (50 * d).toInt))
     }
 
   def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] = {
@@ -70,9 +71,16 @@ object RefractionScene extends Scene[SandboxStartupData, SandboxGameModel, Sandb
           Layer(imageLight)
             .withBlending(Blending.Lighting(RGBA(0.2, 0.5, 0.3, 0.5))),
           Layer(
-            distortion.moveTo(viewCenter),
-            orbiting(40, viewCenter).affectTime(0.25).at(context.gameTime.running)
-          ).withBlending(Blending.Refraction(25.0))
+            distortion.moveTo(viewCenter + Point(50, 0)),
+            sliding.affectTime(0.3).at(context.gameTime.running)
+          ).withBlending(
+            Blending.Refraction(
+              Signal.SmoothPulse
+                .map(d => 0.25 * d)
+                .affectTime(0.25)
+                .at(context.running)
+            )
+          )
         )
     )
   }

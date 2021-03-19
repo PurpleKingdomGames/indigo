@@ -27,6 +27,7 @@ object SandboxAssets {
   val imageLightName: AssetName      = AssetName("light_texture")
   val foliageName: AssetName         = AssetName("foliage")
   val smoothBumpName: AssetName      = AssetName("smooth-bump2")
+  val normalMapName: AssetName       = AssetName("normal-map")
   val trafficLightsName: AssetName   = AssetName("trafficlights")
 
   val junctionBoxMaterial: StandardMaterial.Bitmap =
@@ -40,6 +41,9 @@ object SandboxAssets {
 
   val smoothBumpMaterial: StandardMaterial.Bitmap =
     StandardMaterial.Bitmap(smoothBumpName)
+
+  val normalMapMaterial: StandardMaterial.Refraction =
+    StandardMaterial.Refraction(normalMapName)
 
   def assets: Set[AssetType] =
     Set(
@@ -55,7 +59,8 @@ object SandboxAssets {
         AssetType.Image(junctionBoxSpecular, AssetPath("assets/" + junctionBoxSpecular.value + ".png")),
         AssetType.Image(imageLightName, AssetPath("assets/" + imageLightName.value + ".png")),
         AssetType.Image(foliageName, AssetPath("assets/" + foliageName.value + ".png")),
-        AssetType.Image(smoothBumpName, AssetPath("assets/" + smoothBumpName.value + ".png"))
+        AssetType.Image(smoothBumpName, AssetPath("assets/" + smoothBumpName.value + ".png")),
+        AssetType.Image(normalMapName, AssetPath("assets/" + normalMapName.value + ".png"))
       ),
       AssetType.Image(trafficLightsName, AssetPath("assets/" + trafficLightsName.value + ".png"))
     )

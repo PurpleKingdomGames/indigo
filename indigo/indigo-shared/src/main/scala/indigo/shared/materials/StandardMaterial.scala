@@ -101,6 +101,18 @@ object StandardMaterial {
       ImageEffects(diffuse, alpha, RGBA.None, Fill.Color.default, 1.0)
   }
 
+  final case class Refraction(diffuse: AssetName) extends StandardMaterial {
+    def toShaderData: ShaderData =
+      ShaderData(
+        StandardShaders.NormalMinusBlue.id,
+        None,
+        Some(diffuse),
+        None,
+        None,
+        None
+      )
+  }
+
 }
 
 // final case class Textured(diffuse: AssetName, isLit: Boolean) extends StandardMaterial {
