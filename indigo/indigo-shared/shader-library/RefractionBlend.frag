@@ -15,8 +15,8 @@ layout (std140) uniform IndigoRefractionBlendData {
 };
 
 void fragment(){
-  vec2 normal = normalize((2.0 * SRC) - 1.0).rg;
-  vec2 offset =  UV + ((1.0 / SIZE) * normal * REFRACTION_AMOUNT);
+  vec2 normal = normalize(SRC - 0.5).rg;
+  vec2 offset = UV + (normal * REFRACTION_AMOUNT * SRC.a);
 
   COLOR = texture(DST_CHANNEL, offset);
 }
