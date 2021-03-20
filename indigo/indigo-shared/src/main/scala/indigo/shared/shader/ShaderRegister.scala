@@ -1,7 +1,6 @@
 package indigo.shared.shader
 
 import indigo.shared.QuickCache
-import indigo.shared.CacheKey
 
 final class ShaderRegister {
 
@@ -38,9 +37,6 @@ final class ShaderRegister {
     }
     ()
   }
-
-  def findByFontKey(shaderId: ShaderId): Option[RawShaderCode] =
-    cache.fetch(CacheKey(shaderId.value))
 
   def toSet: Set[RawShaderCode] =
     cache.all.map(_._2).toSet
