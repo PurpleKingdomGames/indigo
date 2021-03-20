@@ -4,8 +4,8 @@ import indigo.shaders.ShaderLibrary
 
 object StandardShaders {
 
-  def shaderList: List[Shader] =
-    List(
+  def all: Set[Shader] =
+    Set(
       Bitmap,
       ImageEffects,
       NormalMinusBlue,

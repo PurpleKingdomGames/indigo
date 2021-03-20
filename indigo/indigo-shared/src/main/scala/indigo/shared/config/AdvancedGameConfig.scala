@@ -13,7 +13,14 @@ import indigo.shared.config.RenderingTechnology.WebGL2
   * @param disableSkipModelUpdates By default, model updates will be skipped if the frame rate drops too low.
   * @param disableSkipViewUpdates By default, view updates will be skipped if the frame rate drops too low.
   */
-final case class AdvancedGameConfig(renderingTechnology: RenderingTechnology, antiAliasing: Boolean, batchSize: Int, disableSkipModelUpdates: Boolean, disableSkipViewUpdates: Boolean) {
+final case class AdvancedGameConfig(
+    renderingTechnology: RenderingTechnology,
+    antiAliasing: Boolean,
+    batchSize: Int,
+    disableSkipModelUpdates: Boolean,
+    disableSkipViewUpdates: Boolean,
+    autoLoadStandardShaders: Boolean
+) {
 
   def withRenderingTechnology(tech: RenderingTechnology): AdvancedGameConfig =
     this.copy(renderingTechnology = tech)
@@ -40,6 +47,9 @@ final case class AdvancedGameConfig(renderingTechnology: RenderingTechnology, an
   def withSkipViewUpdates(skip: Boolean): AdvancedGameConfig =
     this.copy(disableSkipViewUpdates = skip)
 
+  def withAutoLoadStandardShaders(autoLoad: Boolean): AdvancedGameConfig =
+    this.copy(autoLoadStandardShaders = autoLoad)
+
   val asString: String =
     s"""
        |Advanced settings
@@ -58,7 +68,8 @@ object AdvancedGameConfig {
       antiAliasing = false,
       batchSize = 256,
       disableSkipModelUpdates = false,
-      disableSkipViewUpdates = false
+      disableSkipViewUpdates = false,
+      autoLoadStandardShaders = true
     )
 }
 
