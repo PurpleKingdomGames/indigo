@@ -9,7 +9,6 @@ import indigo.shared.platform.RendererConfig
 import org.scalajs.dom.raw.WebGLRenderingContext
 import scala.scalajs.js.typedarray.Float32Array
 import indigo.facades.WebGL2RenderingContext
-import indigo.shaders._
 import indigo.shared.datatypes.mutable.CheapMatrix4
 import org.scalajs.dom.html
 
@@ -92,12 +91,6 @@ final class RendererWebGL2(
     new LayerRenderer(gl2, textureLocations, config.maxBatchSize, projectionUBOBuffer, frameDataUBOBuffer)
   private val layerMergeRenderInstance: LayerMergeRenderer =
     new LayerMergeRenderer(gl2, frameDataUBOBuffer)
-
-  private val defaultEntityShaderProgram =
-    WebGLHelper.shaderProgramSetup(gl, "IndigoDefaultEntityShader", WebGL2Base)
-
-  private val defaultMergeShaderProgram: WebGLProgram =
-    WebGLHelper.shaderProgramSetup(gl2, "IndigoDefaultMergeShader", WebGL2Merge)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
   private var layerEntityFrameBuffer: FrameBufferComponents.SingleOutput =
@@ -226,7 +219,6 @@ final class RendererWebGL2(
         layer.entities,
         layerEntityFrameBuffer,
         layer.bgColor,
-        defaultEntityShaderProgram,
         customShaders
       )
 
@@ -261,7 +253,6 @@ final class RendererWebGL2(
         lastHeight,
         RGBA.Black.makeTransparent,
         false,
-        defaultMergeShaderProgram,
         customShaders,
         StandardShaders.NormalBlend.id,
         None
@@ -292,7 +283,6 @@ final class RendererWebGL2(
         lastHeight,
         RGBA.Black.makeTransparent,
         false,
-        defaultMergeShaderProgram,
         customShaders,
         layer.shaderId,
         layer.shaderUniformData
@@ -310,7 +300,6 @@ final class RendererWebGL2(
       lastHeight,
       config.clearColor,
       true,
-      defaultMergeShaderProgram,
       customShaders,
       sceneData.shaderId,
       sceneData.shaderUniformData
