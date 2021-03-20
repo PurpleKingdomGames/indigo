@@ -217,7 +217,7 @@ lazy val indigoShaders =
       scalaVersion := dottyVersion,
       organization := "io.indigoengine",
       libraryDependencies ++= Seq(
-        "org.scalameta" %%% "munit" % "0.7.20" % Test
+        "org.scalameta" %%% "munit" % "0.7.22" % Test
       ),
       testFrameworks += new TestFramework("munit.Framework"),
       Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
