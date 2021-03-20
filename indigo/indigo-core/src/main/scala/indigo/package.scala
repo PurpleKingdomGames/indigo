@@ -29,12 +29,10 @@ package object indigo {
   val AssetTag: shared.assets.AssetTag.type = shared.assets.AssetTag
 
   type Material = shared.materials.Material
+  val Material: shared.materials.Material.type = shared.materials.Material
 
   type BlendMaterial = shared.materials.BlendMaterial
   val BlendMaterial: shared.materials.BlendMaterial.type = shared.materials.BlendMaterial
-
-  type StandardMaterial = shared.materials.StandardMaterial
-  val StandardMaterial: shared.materials.StandardMaterial.type = shared.materials.StandardMaterial
 
   type ShaderData = shared.materials.ShaderData
   val ShaderData: shared.materials.ShaderData.type = shared.materials.ShaderData

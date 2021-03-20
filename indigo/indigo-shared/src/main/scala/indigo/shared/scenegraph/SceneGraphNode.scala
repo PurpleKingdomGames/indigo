@@ -5,7 +5,7 @@ import indigo.shared.animation.AnimationAction._
 import indigo.shared.animation.AnimationKey
 import indigo.shared.animation.CycleLabel
 import indigo.shared.datatypes._
-import indigo.shared.materials.StandardMaterial
+import indigo.shared.materials.Material
 import indigo.shared.materials.ShaderData
 import indigo.shared.datatypes.mutable.CheapMatrix4
 
@@ -339,7 +339,7 @@ sealed trait CompositeNode extends RenderNode {
   */
 final case class Sprite(
     bindingKey: BindingKey,
-    material: StandardMaterial,
+    material: Material,
     animationKey: AnimationKey,
     animationActions: List[AnimationAction],
     eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
@@ -363,10 +363,10 @@ final case class Sprite(
   def withDepth(newDepth: Depth): Sprite =
     this.copy(depth = newDepth)
 
-  def withMaterial(newMaterial: StandardMaterial): Sprite =
+  def withMaterial(newMaterial: Material): Sprite =
     this.copy(material = newMaterial)
 
-  def modifyMaterial(alter: StandardMaterial => StandardMaterial): Sprite =
+  def modifyMaterial(alter: Material => Material): Sprite =
     this.copy(material = alter(material))
 
   def moveTo(pt: Point): Sprite =
@@ -440,7 +440,7 @@ final case class Sprite(
 }
 
 object Sprite {
-  def apply(bindingKey: BindingKey, x: Int, y: Int, depth: Int, animationKey: AnimationKey, material: StandardMaterial): Sprite =
+  def apply(bindingKey: BindingKey, x: Int, y: Int, depth: Int, animationKey: AnimationKey, material: Material): Sprite =
     Sprite(
       position = Point(x, y),
       rotation = Radians.zero,
@@ -464,7 +464,7 @@ object Sprite {
       animationKey: AnimationKey,
       ref: Point,
       eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
-      material: StandardMaterial
+      material: Material
   ): Sprite =
     Sprite(
       position = position,
@@ -480,7 +480,7 @@ object Sprite {
       material = material
     )
 
-  def apply(bindingKey: BindingKey, animationKey: AnimationKey, material: StandardMaterial): Sprite =
+  def apply(bindingKey: BindingKey, animationKey: AnimationKey, material: Material): Sprite =
     Sprite(
       position = Point.zero,
       rotation = Radians.zero,
@@ -503,7 +503,7 @@ final case class Text(
     text: String,
     alignment: TextAlignment,
     fontKey: FontKey,
-    material: StandardMaterial,
+    material: Material,
     eventHandler: ((Rectangle, GlobalEvent)) => List[GlobalEvent],
     position: Point,
     rotation: Radians,
@@ -521,10 +521,10 @@ final case class Text(
   lazy val x: Int = position.x
   lazy val y: Int = position.y
 
-  def withMaterial(newMaterial: StandardMaterial): Text =
+  def withMaterial(newMaterial: Material): Text =
     this.copy(material = newMaterial)
 
-  def modifyMaterial(alter: StandardMaterial => StandardMaterial): Text =
+  def modifyMaterial(alter: Material => Material): Text =
     this.copy(material = alter(material))
 
   def moveTo(pt: Point): Text =
@@ -597,7 +597,7 @@ final case class Text(
 
 object Text {
 
-  def apply(text: String, x: Int, y: Int, depth: Int, fontKey: FontKey, material: StandardMaterial): Text =
+  def apply(text: String, x: Int, y: Int, depth: Int, fontKey: FontKey, material: Material): Text =
     Text(
       position = Point(x, y),
       rotation = Radians.zero,
@@ -612,7 +612,7 @@ object Text {
       material = material
     )
 
-  def apply(text: String, fontKey: FontKey, material: StandardMaterial): Text =
+  def apply(text: String, fontKey: FontKey, material: Material): Text =
     Text(
       position = Point.zero,
       rotation = Radians.zero,

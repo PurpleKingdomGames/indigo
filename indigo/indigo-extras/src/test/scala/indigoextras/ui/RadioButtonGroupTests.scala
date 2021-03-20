@@ -2,7 +2,7 @@ package indigoextras.ui
 
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.datatypes.Rectangle
-import indigo.shared.materials.StandardMaterial
+import indigo.shared.materials.Material
 import indigo.shared.assets.AssetName
 import indigo.shared.datatypes.Point
 import indigo.shared.events.GlobalEvent
@@ -13,9 +13,9 @@ class RadioButtonGroupTests extends munit.FunSuite {
 
   val assets =
     ButtonAssets(
-      Graphic(Rectangle(0, 0, 10, 10), 1, StandardMaterial.Bitmap(AssetName("up"))),
-      Graphic(Rectangle(0, 0, 10, 10), 1, StandardMaterial.Bitmap(AssetName("over"))),
-      Graphic(Rectangle(0, 0, 10, 10), 1, StandardMaterial.Bitmap(AssetName("down")))
+      Graphic(Rectangle(0, 0, 10, 10), 1, Material.Bitmap(AssetName("up"))),
+      Graphic(Rectangle(0, 0, 10, 10), 1, Material.Bitmap(AssetName("over"))),
+      Graphic(Rectangle(0, 0, 10, 10), 1, Material.Bitmap(AssetName("down")))
     )
 
   val option1 =

@@ -3,7 +3,7 @@ package indigo.shared
 import indigo.shared.datatypes.FontChar
 import indigo.shared.datatypes.FontKey
 import indigo.shared.datatypes.FontInfo
-import indigo.shared.materials.StandardMaterial
+import indigo.shared.materials.Material
 import indigo.shared.assets.AssetName
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.scenegraph.Text
@@ -81,7 +81,7 @@ class BoundaryLocatorTests extends munit.FunSuite {
   }
 
   object Samples {
-    val material = StandardMaterial.Bitmap(AssetName("font-sheet"))
+    val material = Material.Bitmap(AssetName("font-sheet"))
 
     val chars = List(
       FontChar("a", 0, 16, 16, 16),

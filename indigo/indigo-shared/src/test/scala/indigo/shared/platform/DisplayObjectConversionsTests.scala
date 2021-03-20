@@ -2,7 +2,7 @@ package indigo.shared.platform
 
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.datatypes.Rectangle
-import indigo.shared.materials.StandardMaterial
+import indigo.shared.materials.Material
 import indigo.shared.assets.AssetName
 import indigo.shared.AnimationsRegister
 import indigo.shared.FontRegister
@@ -27,7 +27,7 @@ import indigo.shared.scenegraph.RenderNode
 class DisplayObjectConversionsTests extends munit.FunSuite {
 
   val graphic: Graphic =
-    Graphic(Rectangle(10, 20, 200, 100), 2, StandardMaterial.Bitmap(AssetName("texture")))
+    Graphic(Rectangle(10, 20, 200, 100), 2, Material.Bitmap(AssetName("texture")))
 
   val animationRegister          = new AnimationsRegister
   val fontRegister               = new FontRegister
@@ -111,7 +111,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   test("create a CheapMatrix4 from a SceneNode.translation") {
 
     val node: RenderNode =
-      Graphic(100, 100, StandardMaterial.Bitmap(AssetName("test")))
+      Graphic(100, 100, Material.Bitmap(AssetName("test")))
         .moveTo(10, 20)
 
     val expected: CheapMatrix4 =
@@ -131,7 +131,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   test("create a CheapMatrix4 from a SceneNode.translation with ref") {
 
     val node: RenderNode =
-      Graphic(100, 100, StandardMaterial.Bitmap(AssetName("test")))
+      Graphic(100, 100, Material.Bitmap(AssetName("test")))
         .moveTo(10, 20)
         .withRef(50, 50)
 
@@ -152,7 +152,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   test("create a CheapMatrix4 from a SceneNode.scale") {
 
     val node: RenderNode =
-      Graphic(100, 100, StandardMaterial.Bitmap(AssetName("test")))
+      Graphic(100, 100, Material.Bitmap(AssetName("test")))
         .scaleBy(2, 10)
 
     val expected: CheapMatrix4 =
@@ -172,7 +172,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
   test("create a CheapMatrix4 from a SceneNode.rotation") {
 
     val node: RenderNode =
-      Graphic(100, 100, StandardMaterial.Bitmap(AssetName("test")))
+      Graphic(100, 100, Material.Bitmap(AssetName("test")))
         .rotateTo(Radians.TAUby4)
 
     val c = 0.0d
@@ -198,7 +198,7 @@ class DisplayObjectConversionsTests extends munit.FunSuite {
     val height: Int = 100
 
     val node: RenderNode =
-      Graphic(width, height, StandardMaterial.Bitmap(AssetName("test")))
+      Graphic(width, height, Material.Bitmap(AssetName("test")))
         .moveTo(10, 20)
         .flipHorizontal(true)
         .flipVertical(true)

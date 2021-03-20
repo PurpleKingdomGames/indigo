@@ -8,8 +8,8 @@ object PerfAssets {
   val dudeName: AssetName      = AssetName("base_charactor")
   val light: AssetName         = AssetName("light")
 
-  val fontMaterial: StandardMaterial.ImageEffects = StandardMaterial.ImageEffects(smallFontName)
-  val lightMaterial: StandardMaterial.Bitmap      = StandardMaterial.Bitmap(light)
+  val fontMaterial: Material.ImageEffects = Material.ImageEffects(smallFontName)
+  val lightMaterial: Material.Bitmap      = Material.Bitmap(light)
 
   def assets: Set[AssetType] =
     Set(

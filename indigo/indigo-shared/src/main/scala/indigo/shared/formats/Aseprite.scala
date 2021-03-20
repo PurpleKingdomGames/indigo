@@ -7,7 +7,7 @@ import indigo.shared.assets.AssetName
 import indigo.shared.dice.Dice
 import indigo.shared.IndigoLogger
 import indigo.shared.animation.AnimationKey
-import indigo.shared.materials.StandardMaterial
+import indigo.shared.materials.Material
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.datatypes.BindingKey
 import indigo.shared.datatypes.Radians
@@ -56,7 +56,7 @@ object Aseprite {
           SpriteAndAnimations(
             Sprite(
               bindingKey = BindingKey.fromDice(dice),
-              material = StandardMaterial.Bitmap(assetName),
+              material = Material.Bitmap(assetName),
               position = Point(0, 0),
               depth = Depth(1),
               rotation = Radians.zero,

@@ -4,7 +4,7 @@ import indigo.shared.scenegraph.Text
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.datatypes.FontKey
-import indigo.shared.materials.StandardMaterial
+import indigo.shared.materials.Material
 import indigo.shared.assets.AssetName
 import indigo.shared.FontRegister
 import indigo.shared.BoundaryLocator
@@ -31,7 +31,7 @@ class InputFieldTests extends munit.FunSuite {
   val assets =
     InputFieldAssets(
       Text("", 0, 0, 1, fontKey, material),
-      Graphic(Rectangle(0, 0, 0, 0), 1, StandardMaterial.Bitmap(AssetName("fake")))
+      Graphic(Rectangle(0, 0, 0, 0), 1, Material.Bitmap(AssetName("fake")))
     )
 
   val fontRegister: FontRegister =
@@ -276,7 +276,7 @@ class InputFieldTests extends munit.FunSuite {
     )
 
   object Samples {
-    val material = StandardMaterial.Bitmap(AssetName("font-sheet"))
+    val material = Material.Bitmap(AssetName("font-sheet"))
 
     val chars = List(
       FontChar("a", 0, 16, 16, 16),

@@ -13,11 +13,11 @@ import indigo.shared.scenegraph.Text
 import indigo.shared.events.FrameTick
 import indigo.shared.scenegraph.Layer
 import indigo.shared.datatypes.Depth
-import indigo.shared.materials.StandardMaterial
+import indigo.shared.materials.Material
 
 object FPSCounter {
 
-  def apply(fontKey: FontKey, position: Point, targetFPS: Int, depth: Depth, material: StandardMaterial.ImageEffects): SubSystem =
+  def apply(fontKey: FontKey, position: Point, targetFPS: Int, depth: Depth, material: Material.ImageEffects): SubSystem =
     SubSystem[GlobalEvent, FPSCounterState](
       _eventFilter = eventFilter,
       _initialModel = Outcome(FPSCounterState.default),
@@ -45,7 +45,7 @@ object FPSCounter {
           Outcome(model.copy(frameCountSinceInterval = model.frameCountSinceInterval + 1))
     }
 
-  def present(fontKey: FontKey, position: Point, targetFPS: Int, depth: Depth, material: StandardMaterial.ImageEffects): (SubSystemFrameContext, FPSCounterState) => Outcome[SceneUpdateFragment] =
+  def present(fontKey: FontKey, position: Point, targetFPS: Int, depth: Depth, material: Material.ImageEffects): (SubSystemFrameContext, FPSCounterState) => Outcome[SceneUpdateFragment] =
     (_, model) => {
       Outcome(
         SceneUpdateFragment.empty

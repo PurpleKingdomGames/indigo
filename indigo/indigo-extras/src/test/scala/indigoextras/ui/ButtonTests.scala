@@ -2,7 +2,7 @@ package indigoextras.ui
 
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Depth
-import indigo.shared.materials.StandardMaterial
+import indigo.shared.materials.Material
 import indigo.shared.assets.AssetName
 import indigo.shared.scenegraph.Graphic
 import indigo.shared.input.Mouse
@@ -18,9 +18,9 @@ class ButtonTests extends munit.FunSuite {
   val button =
     Button(
       ButtonAssets(
-        Graphic(bounds, 1, StandardMaterial.Bitmap(AssetName("up"))),
-        Graphic(bounds, 1, StandardMaterial.Bitmap(AssetName("over"))),
-        Graphic(bounds, 1, StandardMaterial.Bitmap(AssetName("down")))
+        Graphic(bounds, 1, Material.Bitmap(AssetName("up"))),
+        Graphic(bounds, 1, Material.Bitmap(AssetName("over"))),
+        Graphic(bounds, 1, Material.Bitmap(AssetName("down")))
       ),
       bounds,
       Depth(1)

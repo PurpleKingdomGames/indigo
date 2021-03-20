@@ -4,7 +4,7 @@ import indigo.shared.datatypes.Point
 import indigo.shared.scenegraph.Group
 import indigo.shared.assets.AssetName
 import indigo.shared.scenegraph.Graphic
-import indigo.shared.materials.StandardMaterial
+import indigo.shared.materials.Material
 import indigo.shared.datatypes.Rectangle
 
 import scala.annotation.tailrec
@@ -123,7 +123,7 @@ object TiledMap {
           layer.data.toSet.foldLeft(Map.empty[Int, Graphic]) { (tiles, i) =>
             tiles ++ Map(
               i ->
-                Graphic(Rectangle(Point.zero, tileSize), 1, StandardMaterial.Bitmap(assetName))
+                Graphic(Rectangle(Point.zero, tileSize), 1, Material.Bitmap(assetName))
                   .withCrop(
                     Rectangle(fromIndex(i - 1, tileSheetColumnCount) * tileSize, tileSize)
                   )
