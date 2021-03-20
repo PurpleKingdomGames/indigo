@@ -148,7 +148,7 @@ final class RendererWebGL1(
 
           gl.drawArrays(TRIANGLE_STRIP, 0, 4)
 
-        case _ =>
+        case null =>
           ()
       }
 

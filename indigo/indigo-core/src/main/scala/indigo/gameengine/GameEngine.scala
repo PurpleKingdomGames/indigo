@@ -235,6 +235,9 @@ object GameEngine {
 
       case s: BlendShader.External =>
         shaderRegister.registerBlendShader(externalBlendShaderToSource(s, assetCollection))
+
+      case _ =>
+        ()
     }
 
   def externalEntityShaderToSource(external: EntityShader.External, assetCollection: AssetCollection): EntityShader.Source =

@@ -20,6 +20,9 @@ final class ShaderRegister {
 
       case _: BlendShader.External =>
         ()
+
+      case _ =>
+        ()
     }
 
   def registerEntityShader(shader: EntityShader.Source): Unit = {
