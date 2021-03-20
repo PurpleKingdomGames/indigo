@@ -100,7 +100,9 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
     initialisationEvents.foreach(globalEventStream.pushGlobalEvent)
     bootEvents.foreach(globalEventStream.pushGlobalEvent)
 
-    registerStandardShaders()
+    if(config.advanced.autoLoadStandardShaders) {
+      StandardShaders.all.foreach(shaderRegister.register)
+    }
 
     // Arrange config
     configAsync.map(_.getOrElse(config)).foreach { gc =>
@@ -127,9 +129,6 @@ final class GameEngine[StartUpData, GameModel, ViewModel](
 
     }
   }
-
-  def registerStandardShaders(): Unit =
-    StandardShaders.shaderList.foreach(shaderRegister.register)
 
   @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def rebuildGameLoop(firstRun: Boolean): AssetCollection => Unit =
