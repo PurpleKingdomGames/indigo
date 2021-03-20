@@ -4,13 +4,13 @@ import indigo.shared.FontRegister
 import indigo.shared.datatypes.{FontChar, FontInfo, FontKey, Rectangle}
 
 import indigo.shared.assets.AssetName
-import indigo.shared.materials.StandardMaterial
+import indigo.shared.materials.Material
 import indigo.shared.BoundaryLocator
 import indigo.shared.AnimationsRegister
 
 class TextTests extends munit.FunSuite {
 
-  val material = StandardMaterial.Bitmap(AssetName("font-sheet"))
+  val material = Material.Bitmap(AssetName("font-sheet"))
 
   val fontRegister: FontRegister =
     new FontRegister
@@ -55,7 +55,7 @@ class TextTests extends munit.FunSuite {
 
     val t = Text("abc", 10, 20, 1, fontKey, material)
 
-    val actual   = t.calculatedBounds(boundaryLocator)           // 48 x 16
+    val actual   = t.calculatedBounds(boundaryLocator) // 48 x 16
     val expected = Rectangle(10, 20, 10 + 20 + 30, 30) // 60 x 30
 
     assertEquals(actual === expected, true)

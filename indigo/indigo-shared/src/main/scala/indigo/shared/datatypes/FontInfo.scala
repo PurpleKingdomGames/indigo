@@ -1,7 +1,7 @@
 package indigo.shared.datatypes
 
 import indigo.shared.QuickCache
-import indigo.shared.materials.StandardMaterial
+import indigo.shared.materials.Material
 
 final case class FontInfo(fontKey: FontKey, fontSheetBounds: Point, unknownChar: FontChar, fontChars: List[FontChar], caseSensitive: Boolean) {
   import FontInfo.fontCharCache
@@ -53,7 +53,7 @@ object FontInfo {
 
 final case class FontKey(key: String) extends AnyVal
 
-final case class FontSpriteSheet(material: StandardMaterial, size: Point)
+final case class FontSpriteSheet(material: Material, size: Point)
 
 final case class FontChar(character: String, bounds: Rectangle)
 object FontChar {

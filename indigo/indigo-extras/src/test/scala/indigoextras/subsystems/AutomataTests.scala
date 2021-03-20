@@ -5,7 +5,7 @@ import indigo.shared.events.GlobalEvent
 import indigo.shared.dice.Dice
 import indigo.shared.datatypes.Point
 import indigo.shared.assets.AssetName
-import indigo.shared.materials.StandardMaterial
+import indigo.shared.materials.Material
 import indigo.shared.time.Seconds
 import indigo.shared.scenegraph.SceneNode
 import indigo.shared.temporal.{Signal, SignalReader}
@@ -23,7 +23,7 @@ class AutomataTests extends munit.FunSuite {
   val poolKey: AutomataPoolKey =
     AutomataPoolKey("test")
 
-  val graphic = Graphic(0, 0, 10, 10, 1, StandardMaterial.Bitmap(AssetName("fish")))
+  val graphic = Graphic(0, 0, 10, 10, 1, Material.Bitmap(AssetName("fish")))
 
   val onCull: AutomatonSeedValues => List[GlobalEvent] =
     _ => List(eventInstance)

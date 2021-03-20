@@ -9,12 +9,12 @@ object SandboxAssets {
   val light: AssetName         = AssetName("light")
   val dots: AssetName          = AssetName("dots")
 
-  val fontMaterial: StandardMaterial.ImageEffects  = StandardMaterial.ImageEffects(smallFontName)
-  val lightMaterial: StandardMaterial.ImageEffects = StandardMaterial.ImageEffects(light)
-  val dudeMaterial: StandardMaterial.ImageEffects  = StandardMaterial.ImageEffects(dudeName)
+  val fontMaterial: Material.ImageEffects  = Material.ImageEffects(smallFontName)
+  val lightMaterial: Material.ImageEffects = Material.ImageEffects(light)
+  val dudeMaterial: Material.ImageEffects  = Material.ImageEffects(dudeName)
 
-  val dotsMaterial: StandardMaterial =
-    StandardMaterial
+  val dotsMaterial: Material =
+    Material
       .ImageEffects(dots)
       // .withOverlay(Overlay.Color(RGBA.Magenta.withAlpha(0.75)))
       // .withOverlay(Overlay.LinearGradient(Point.zero, RGBA.Cyan, Point(32, 32), RGBA.Magenta))
@@ -30,20 +30,20 @@ object SandboxAssets {
   val normalMapName: AssetName       = AssetName("normal-map")
   val trafficLightsName: AssetName   = AssetName("trafficlights")
 
-  val junctionBoxMaterial: StandardMaterial.Bitmap =
-    StandardMaterial.Bitmap(junctionBoxAlbedo)
+  val junctionBoxMaterial: Material.Bitmap =
+    Material.Bitmap(junctionBoxAlbedo)
 
-  val foliageMaterial: StandardMaterial.Bitmap =
-    StandardMaterial.Bitmap(foliageName)
+  val foliageMaterial: Material.Bitmap =
+    Material.Bitmap(foliageName)
 
-  val imageLightMaterial: StandardMaterial.Bitmap =
-    StandardMaterial.Bitmap(imageLightName)
+  val imageLightMaterial: Material.Bitmap =
+    Material.Bitmap(imageLightName)
 
-  val smoothBumpMaterial: StandardMaterial.Bitmap =
-    StandardMaterial.Bitmap(smoothBumpName)
+  val smoothBumpMaterial: Material.Bitmap =
+    Material.Bitmap(smoothBumpName)
 
-  val normalMapMaterial: StandardMaterial.Refraction =
-    StandardMaterial.Refraction(normalMapName)
+  val normalMapMaterial: Material.Refraction =
+    Material.Refraction(normalMapName)
 
   def assets: Set[AssetType] =
     Set(

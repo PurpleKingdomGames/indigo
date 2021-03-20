@@ -1,6 +1,6 @@
 package indigo.shared.scenegraph
 
-import indigo.shared.materials.StandardMaterial
+import indigo.shared.materials.Material
 import indigo.shared.datatypes.Rectangle
 import indigo.shared.datatypes.Point
 import indigo.shared.datatypes.Radians
@@ -23,7 +23,7 @@ import indigo.shared.materials.ShaderData
   * @param material
   */
 final case class Graphic(
-    material: StandardMaterial,
+    material: Material,
     crop: Rectangle,
     position: Point,
     rotation: Radians,
@@ -41,10 +41,10 @@ final case class Graphic(
   lazy val x: Int = position.x
   lazy val y: Int = position.y
 
-  def withMaterial(newMaterial: StandardMaterial): Graphic =
+  def withMaterial(newMaterial: Material): Graphic =
     this.copy(material = newMaterial)
 
-  def modifyMaterial(alter: StandardMaterial => StandardMaterial): Graphic =
+  def modifyMaterial(alter: Material => Material): Graphic =
     this.copy(material = alter(material))
 
   def moveTo(pt: Point): Graphic =
@@ -106,7 +106,7 @@ final case class Graphic(
 
 object Graphic {
 
-  def apply(x: Int, y: Int, width: Int, height: Int, depth: Int, material: StandardMaterial): Graphic =
+  def apply(x: Int, y: Int, width: Int, height: Int, depth: Int, material: Material): Graphic =
     Graphic(
       position = Point(x, y),
       rotation = Radians.zero,
@@ -118,7 +118,7 @@ object Graphic {
       material = material
     )
 
-  def apply(bounds: Rectangle, depth: Int, material: StandardMaterial): Graphic =
+  def apply(bounds: Rectangle, depth: Int, material: Material): Graphic =
     Graphic(
       position = bounds.position,
       rotation = Radians.zero,
@@ -130,7 +130,7 @@ object Graphic {
       material = material
     )
 
-  def apply(width: Int, height: Int, material: StandardMaterial): Graphic =
+  def apply(width: Int, height: Int, material: Material): Graphic =
     Graphic(
       position = Point.zero,
       rotation = Radians.zero,

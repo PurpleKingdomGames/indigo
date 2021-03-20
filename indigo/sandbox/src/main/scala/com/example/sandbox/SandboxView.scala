@@ -66,7 +66,7 @@ object SandboxView {
         .moveBy(8, 10)
         .moveBy(viewModel.offset)
         .modifyMaterial {
-          case m: StandardMaterial.ImageEffects =>
+          case m: Material.ImageEffects =>
             m.withAlpha(1)
               .withTint(RGBA.Green.withAmount(0.25))
               .withSaturation(1.0)
@@ -77,8 +77,8 @@ object SandboxView {
       currentState.dude.dude.sprite
         .moveBy(8, -10)
         .modifyMaterial {
-          case m: StandardMaterial.ImageEffects => m.withAlpha(0.5).withTint(RGBA.Red.withAmount(0.75))
-          case m                                => m
+          case m: Material.ImageEffects => m.withAlpha(0.5).withTint(RGBA.Red.withAmount(0.75))
+          case m                        => m
         },
       Clone(dudeCloneId, Depth(1), CloneTransformData.startAt(Point(16, 64)))
         .withHorizontalFlip(true)

@@ -11,7 +11,7 @@ import indigo.shared.dice.Dice
 import indigo.shared.assets.AssetName
 import indigo.shared.collections.NonEmptyList
 import indigo.shared.time.Millis
-import indigo.shared.materials.StandardMaterial
+import indigo.shared.materials.Material
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.noValPatterns"))
 class AsepriteTests extends munit.FunSuite {
@@ -169,7 +169,7 @@ object AsepriteSampleData {
       animationKey = animationKey,
       ref = Point.zero,
       (_: (Rectangle, GlobalEvent)) => Nil,
-      StandardMaterial.Bitmap(imageAssetRef)
+      Material.Bitmap(imageAssetRef)
     )
 
 }
