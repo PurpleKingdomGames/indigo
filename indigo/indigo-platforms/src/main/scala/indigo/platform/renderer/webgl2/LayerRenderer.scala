@@ -94,12 +94,15 @@ class LayerRenderer(
     d.atlasName != atlasName
   }
 
+  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.null"))
+  private var currentProgram: WebGLProgram = null
+
+  @SuppressWarnings(Array("scalafix:DisableSyntax.throw"))
   def doContextChange(
       d: DisplayObject,
       atlasName: Option[String],
       currentShader: ShaderId,
       currentUniformHash: String,
-      defaultShaderProgram: WebGLProgram,
       customShaders: HashMap[ShaderId, WebGLProgram]
   ): Unit = {
 
@@ -108,14 +111,14 @@ class LayerRenderer(
       if (d.shaderId != currentShader)
         customShaders.get(d.shaderId) match {
           case Some(s) =>
+            currentProgram = s
             setupShader(s)
             s
 
           case None =>
-            setupShader(defaultShaderProgram)
-            defaultShaderProgram
+            throw new Exception(s"Missing entity shader '${d.shaderId.value}'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?")
         }
-      else defaultShaderProgram
+      else currentProgram
 
     // UBO data
     d.shaderUniformData.foreach { ud =>
@@ -177,14 +180,11 @@ class LayerRenderer(
       displayEntities: ListBuffer[DisplayEntity],
       frameBufferComponents: FrameBufferComponents,
       clearColor: RGBA,
-      defaultShaderProgram: WebGLProgram,
       customShaders: HashMap[ShaderId, WebGLProgram]
   ): Unit = {
 
     FrameBufferFunctions.switchToFramebuffer(gl2, frameBufferComponents.frameBuffer, clearColor, true)
     gl2.drawBuffers(frameBufferComponents.colorAttachments)
-
-    setupShader(defaultShaderProgram)
 
     val sorted: ListBuffer[DisplayEntity] =
       displayEntities.sortWith((d1, d2) => d1.z > d2.z)
@@ -208,7 +208,6 @@ class LayerRenderer(
             atlasName,
             currentShader,
             currentShaderHash,
-            defaultShaderProgram,
             customShaders
           )
           rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
@@ -231,7 +230,6 @@ class LayerRenderer(
                   atlasName,
                   currentShader,
                   currentShaderHash,
-                  defaultShaderProgram,
                   customShaders
                 )
                 rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))
@@ -255,7 +253,6 @@ class LayerRenderer(
                   atlasName,
                   currentShader,
                   currentShaderHash,
-                  defaultShaderProgram,
                   customShaders
                 )
                 rec(remaining, 0, d.atlasName, d.shaderId, d.shaderUniformData.map(_.uniformHash).getOrElse(""))

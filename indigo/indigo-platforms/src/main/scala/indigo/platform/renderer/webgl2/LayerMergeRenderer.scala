@@ -38,7 +38,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
     WebGLHelper.bindUBO(gl2, program, "IndigoFrameData", RendererWebGL2Constants.frameDataBlockPointer, frameDataUBOBuffer)
   }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.null"))
+  @SuppressWarnings(Array("scalafix:DisableSyntax.null", "scalafix:DisableSyntax.throw"))
   def merge(
       projection: Array[Float],
       srcFrameBuffer: FrameBufferComponents.SingleOutput,
@@ -48,7 +48,6 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
       height: Int,
       clearColor: RGBA,
       isCanvasMerge: Boolean,
-      defaultShaderProgram: WebGLProgram,
       customShaders: HashMap[ShaderId, WebGLProgram],
       shaderId: ShaderId,
       shaderUniformData: Option[DisplayObjectUniformData]
@@ -69,8 +68,7 @@ class LayerMergeRenderer(gl2: WebGL2RenderingContext, frameDataUBOBuffer: => Web
           s
 
         case None =>
-          setupShader(defaultShaderProgram, projection, width, height)
-          defaultShaderProgram
+          throw new Exception(s"Missing blend shader '${shaderId.value}'. Have you remembered to add the shader to the boot sequence or disabled auto-loading of default shaders?")
       }
 
     // UBO data

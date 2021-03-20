@@ -31,7 +31,7 @@ object StandardShaders {
 
   val ImageEffects: EntityShader.Source =
     EntityShader.Source(
-      id = ShaderId("[indigo_engine_effects]"),
+      id = ShaderId("[indigo_engine_image_effects]"),
       vertex = ShaderLibrary.NoOpVertex,
       fragment = ShaderLibrary.ImageEffectsFragment,
       light = ShaderLibrary.NoOpLight
