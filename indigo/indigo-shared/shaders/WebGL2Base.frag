@@ -43,6 +43,10 @@ vec4 CHANNEL_0; // Pixel value from texture channel 0
 vec4 CHANNEL_1; // Pixel value from texture channel 1
 vec4 CHANNEL_2; // Pixel value from texture channel 2
 vec4 CHANNEL_3; // Pixel value from texture channel 3
+vec2 CHANNEL_0_TEXTURE_COORDS; // Scaled texture coordinates
+vec2 CHANNEL_1_TEXTURE_COORDS; // Scaled texture coordinates
+vec2 CHANNEL_2_TEXTURE_COORDS; // Scaled texture coordinates
+vec2 CHANNEL_3_TEXTURE_COORDS; // Scaled texture coordinates
 
 // Constants
 const float TAU = 2.0 * 3.141592653589793;
@@ -66,10 +70,14 @@ void main(void) {
   SIZE = v_uv_size.zw;
   COLOR = vec4(0.0);
   LIGHT = vec4(0.0);
-  CHANNEL_0 = texture(SRC_CHANNEL, v_channel_coords_01.xy);
-  CHANNEL_1 = texture(SRC_CHANNEL, v_channel_coords_01.zw);
-  CHANNEL_2 = texture(SRC_CHANNEL, v_channel_coords_23.xy);
-  CHANNEL_3 = texture(SRC_CHANNEL, v_channel_coords_23.zw);
+  CHANNEL_0_TEXTURE_COORDS = v_channel_coords_01.xy;
+  CHANNEL_1_TEXTURE_COORDS = v_channel_coords_01.zw;
+  CHANNEL_2_TEXTURE_COORDS = v_channel_coords_23.xy;
+  CHANNEL_3_TEXTURE_COORDS = v_channel_coords_23.zw;
+  CHANNEL_0 = texture(SRC_CHANNEL, CHANNEL_0_TEXTURE_COORDS);
+  CHANNEL_1 = texture(SRC_CHANNEL, CHANNEL_1_TEXTURE_COORDS);
+  CHANNEL_2 = texture(SRC_CHANNEL, CHANNEL_2_TEXTURE_COORDS);
+  CHANNEL_3 = texture(SRC_CHANNEL, CHANNEL_3_TEXTURE_COORDS);
 
   // Colour
   fragment();
