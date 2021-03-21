@@ -34,7 +34,7 @@ object LegacyEffectsScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
     _ => Outcome(viewModel)
 
   val graphic: Graphic =
-    Graphic(Rectangle(0, 0, 64, 64), 1, SandboxAssets.junctionBoxMaterial)
+    Graphic(Rectangle(0, 0, 40, 40), 1, SandboxAssets.junctionBoxMaterial)
       .withRef(20, 20)
 
   def present(context: FrameContext[SandboxStartupData], model: SandboxGameModel, viewModel: SandboxViewModel): Outcome[SceneUpdateFragment] = {
@@ -42,50 +42,56 @@ object LegacyEffectsScene extends Scene[SandboxStartupData, SandboxGameModel, Sa
 
     Outcome(
       SceneUpdateFragment(
-        graphic
-          .moveTo(viewCenter),
+        graphic // tint
+          .moveTo(viewCenter)
+          .moveBy(0, -40),
         //   .withTint(RGBA.Magenta),
-        graphic
+        graphic // alpha
           .moveTo(viewCenter)
-          .moveBy(-60, 0),
+          .moveBy(-60, -40),
         // .withOverlay(Overlay.Color(RGBA.Magenta.withAmount(0.75))),
-        graphic
+        graphic // saturation
           .moveTo(viewCenter)
-          .moveBy(-30, 0),
+          .moveBy(-30, -40),
         // .withOverlay(
         // Overlay.LinearGradiant(Point.zero, RGBA.Magenta, Point(64, 64), RGBA.Cyan.withAmount(0.5))
         // ),
-        graphic
+        graphic //color overlay
           .moveTo(viewCenter)
-          .moveBy(30, 0),
+          .moveBy(30, -40),
         // .withBorder(Border(RGBA.Yellow, Thickness.Thick, Thickness.None)),
-        graphic
+        graphic // linear gradient overlay
           .moveTo(viewCenter)
-          .moveBy(60, 0),
+          .moveBy(60, -40),
         // .withBorder(Border(RGBA.Red, Thickness.None, Thickness.Thick)),
-        graphic
+        graphic // radial gradient overlay
           .moveTo(viewCenter)
-          .moveBy(-60, 50),
+          .moveBy(-60, 10),
         // .withBorder(Border(RGBA(1.0, 0.5, 0.0, 1.0), Thickness.Thick, Thickness.Thick)),
-        graphic
+        graphic // inner glow
           .moveTo(viewCenter)
-          .moveBy(0, 50),
+          .moveBy(0, 10),
         // .withGlow(Glow(RGBA.Green, 2.0, 0.0)),
-        graphic
+        graphic // outer glow
           .moveTo(viewCenter)
-          .moveBy(-30, 50),
+          .moveBy(-30, 10),
         // .withGlow(Glow(RGBA.Blue, 0.0, 2.0)),
-        graphic
+        graphic // inner border
           .moveTo(viewCenter)
-          .moveBy(30, 50),
-        // .withGlow(Glow(RGBA.Cyan, 2.0, 2.0)),
-        graphic
+          .moveBy(30, 60),
+        graphic // outer border
           .moveTo(viewCenter)
-          .withRef(32, 32)
-          .moveBy(48, 39)
-        // .withAlpha(0.5)
-        // .flipHorizontal(true)
-        // .flipVertical(true)
+          .moveBy(60, 60),
+        graphic // rotate & scale
+          .moveTo(viewCenter)
+          .moveBy(30, 10)
+          .rotateBy(Radians(0.2))
+          .scaleBy(1.25, 1.25),
+        graphic // flipped
+          .moveTo(viewCenter)
+          .moveBy(60, 10)
+          .flipHorizontal(true)
+          .flipVertical(true)
       )
     )
   }
